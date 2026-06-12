@@ -13,6 +13,7 @@ import { BybitCollector } from './collectors/bybit.js';
 import { OkxCollector } from './collectors/okx.js';
 import { BitmexCollector } from './collectors/bitmex.js';
 import { DeribitCollector } from './collectors/deribit.js';
+import { BitfinexCollector } from './collectors/bitfinex.js';
 import { startPhase2 } from './phase2.js';
 
 const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'migrations');
@@ -40,6 +41,7 @@ const collectors = [
   new OkxCollector({ symbols: config.symbols, onEvent }),
   new BitmexCollector({ symbols: config.symbols, onEvent }),
   new DeribitCollector({ symbols: config.symbols, onEvent }),
+  new BitfinexCollector({ symbols: config.symbols, onEvent }),
 ];
 
 function getStatus() {
