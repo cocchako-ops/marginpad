@@ -12,6 +12,7 @@ export const config = {
   retentionDays: 30,         // raw events kept 30 days; aggregates kept indefinitely
   aggIntervalMs: 60_000,     // roll new raw rows into 5-min aggregates every 60s
   pruneIntervalMs: 6 * 3600_000,
+  oiPollMs: 120_000,         // Phase 2: poll Open Interest per symbol every 2 min (staggered)
 
   // Selectable chart windows -> minutes
   windows: { '1h': 60, '4h': 240, '24h': 1440, '7d': 10080 },

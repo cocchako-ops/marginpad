@@ -131,13 +131,13 @@ async function handleKlines(url) {
   const biMap = { '15': '15m', '60': '1h', '240': '4h', '1440': '1d' };
   for (const b of ['https://data-api.binance.vision', 'https://api.binance.com']) {
     try {
-      const r = await fetch(b + '/api/v3/klines?symbol=' + pair + '&interval=' + (biMap[iv] || '1h') + '&limit=300', { cf: { cacheTtl: 30 } });
+      const r = await fetch(b + '/api/v3/klines?symbol=' + pair + '&interval=' + (biMap[iv] || '1h') + '&limit=500', { cf: { cacheTtl: 30 } });
       if (r.ok) { const d = await r.json(); if (Array.isArray(d) && d.length) return J(d.map(k => ({ time: Math.floor(k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4] }))); }
     } catch (e) {}
   }
   try {
     const byMap = { '15': '15', '60': '60', '240': '240', '1440': 'D' };
-    const r = await fetch('https://api.bybit.com/v5/market/kline?category=spot&symbol=' + pair + '&interval=' + (byMap[iv] || '60') + '&limit=300', { cf: { cacheTtl: 30 } });
+    const r = await fetch('https://api.bybit.com/v5/market/kline?category=spot&symbol=' + pair + '&interval=' + (byMap[iv] || '60') + '&limit=500', { cf: { cacheTtl: 30 } });
     if (r.ok) { const d = await r.json(); const list = d && d.result && d.result.list; if (list && list.length) return J(list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4] })).sort((a, b) => a.time - b.time)); }
   } catch (e) {}
   return J({ error: 'no data' }, 404);

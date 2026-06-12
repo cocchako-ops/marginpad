@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ethereum (ETH) Liquidation Map — Live Liquidations | MarginPad</title>
+<meta name="description" content="Live Ethereum (ETH) liquidation map: real ETH liquidations from Binance, Bybit and OKX as bubbles plus a price-level histogram, with estimated clusters. Free, no signup." />
+<meta name="keywords" content="ETH liquidation map, Ethereum liquidations, ETH liquidation heatmap, crypto liquidations, ETH liquidation levels, liquidation chart" />
+<link rel="canonical" href="https://marginpad.io/eth-liquidation-map/" />
+<meta property="og:title" content="Ethereum (ETH) Liquidation Map — Live" />
+<meta property="og:description" content="Live Ethereum (ETH) liquidation map: real ETH liquidations from Binance, Bybit and OKX as bubbles plus a price-level histogram, with estimated clusters. Free, no signup." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/eth-liquidation-map/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a Ethereum liquidation map?","acceptedAnswer":{"@type":"Answer","text":"A Ethereum liquidation map shows where leveraged ETH positions are being forcibly closed. MarginPad plots real liquidation events from Binance, Bybit and OKX as bubbles on the ETH price chart, with a price-level histogram showing where they cluster."}},{"@type":"Question","name":"Is the ETH liquidation data real?","acceptedAnswer":{"@type":"Answer","text":"Yes — the bubbles and the right-edge histogram are real liquidation events streamed live from exchange websockets. The optional \"Clusters\" layer is a model estimated from open-interest changes and assumed leverage, clearly labelled as an estimate."}},{"@type":"Question","name":"How do I read the ETH liquidation map?","acceptedAnswer":{"@type":"Answer","text":"Each bubble is one liquidation at a price and time; bigger bubbles are larger positions. Red means longs were liquidated, green means shorts. The histogram on the right shows total liquidations at each price level — the densest bands are where most leverage was wiped out."}},{"@type":"Question","name":"Is the Ethereum liquidation map free?","acceptedAnswer":{"@type":"Answer","text":"Yes, it is completely free with no signup. You can switch coins, change the timeframe (1D/1W/1M/1Y), and toggle the real, estimated and theoretical layers."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"ETH Liquidation Map","item":"https://marginpad.io/eth-liquidation-map/"}]}</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/?p=heat">Heatmap</a><a href="/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / ETH Liquidation Map</div>
+  <article>
+    <h1>Ethereum (ETH) Liquidation Map</h1>
+    <div class="meta">Live liquidation data · Binance · Bybit · OKX</div>
+    <p>The Ethereum liquidation map shows, in real time, where leveraged ETH traders are getting forced out of their positions. Every red bubble is a long liquidation, every green bubble a short — sized by how big the position was — plotted directly on the ETH price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.</p>
+    <div class="liqmap-cta"><a class="cta" href="/?p=heat&coin=ETH">Open the live ETH liquidation map →</a></div>
+    <h2>What the ETH liquidation map shows</h2>
+    <p>MarginPad streams real liquidation events from three of the largest perpetual-futures venues — Binance, Bybit and OKX — over public websockets. They are normalized and shown three ways: <strong>bubbles</strong> at the exact price and time of each liquidation, a <strong>price-level histogram</strong> of where ETH liquidations cluster, and a scrolling <strong>ticker</strong> of the largest hits. You can switch the timeframe between 1 day, 1 week, 1 month and 1 year.</p>
+    <h2>How to read it</h2>
+    <p>High-leverage positions liquidate on tiny moves, so they sit close to the current ETH price; lower-leverage positions sit further away. Dense histogram bands act like magnets and as support or resistance — once a cluster is consumed, that level often flips. Red (long) clusters sit below price; green (short) clusters sit above. Hover any bubble for the exchange, side, size and time.</p>
+    <h2>Real liquidations vs estimated clusters</h2>
+    <p>The bubbles and histogram are <strong>real events</strong>. There is also an optional <strong>Clusters</strong> layer — a model that estimates where future ETH liquidations are likely to sit, built from open-interest changes and an assumed leverage distribution. It is clearly labelled as an estimate, not exchange order-book data. A third <strong>Levels</strong> layer overlays the classic theoretical liquidation prices by leverage. Toggle any combination.</p>
+    <div class="liqmap-cta"><a class="cta" href="/?p=heat&coin=ETH">Open the live ETH liquidation map →</a></div>
+    <div class="toolshow">
+      <div class="ts-head">Everything free on MarginPad — no signup</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/#liq"><b>Liquidation Calculator</b><small>Know your exit price</small></a>
+        <a class="ts-card" href="/?p=heat"><b>Liquidation Heatmap</b><small>All coins, live</small></a>
+        <a class="ts-card" href="/?p=swap"><b>Crypto Swap</b><small>900+ coins, no account</small></a>
+        <a class="ts-card" href="/blog/how-to-read-a-liquidation-heatmap/"><b>Guide</b><small>How to read a liquidation map</small></a>
+      </div>
+    </div>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> · <a href="/?p=heat">Heatmap</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+</body>
+</html>

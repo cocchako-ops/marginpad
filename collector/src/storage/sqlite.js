@@ -12,13 +12,17 @@ export function createSqliteStorage(path) {
   db.exec('PRAGMA journal_mode = WAL;');
   db.exec('PRAGMA busy_timeout = 5000;');
 
-  let insertStmt, aggUpsert, getMeta, setMeta;
+  let insertStmt, aggUpsert, getMeta, setMeta, oiStmt, clAdd;
   function prepareAll() {
     insertStmt = db.prepare(`INSERT OR IGNORE INTO liquidations (ts,exchange,symbol,side,price,qty,notional) VALUES (?,?,?,?,?,?,?)`);
     aggUpsert = db.prepare(`INSERT INTO agg_5m (symbol,win_start,price_bucket,side,notional,cnt) VALUES (?,?,?,?,?,1)
       ON CONFLICT(symbol,win_start,price_bucket,side) DO UPDATE SET notional=notional+excluded.notional, cnt=cnt+1`);
     getMeta = db.prepare('SELECT v FROM meta WHERE k=?');
     setMeta = db.prepare('INSERT INTO meta(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v');
+    try { // Phase 2 tables (present after migration 002)
+      oiStmt = db.prepare('INSERT OR REPLACE INTO oi (symbol,exchange,ts,oi_base,price) VALUES (?,?,?,?,?)');
+      clAdd = db.prepare('INSERT INTO clusters (symbol,price_bucket,side,est_notional,updated_at) VALUES (?,?,?,?,?) ON CONFLICT(symbol,price_bucket,side) DO UPDATE SET est_notional=est_notional+excluded.est_notional, updated_at=excluded.updated_at');
+    } catch (e) {}
   }
   function ensure() { if (!insertStmt) prepareAll(); } // prepares lazily once tables exist
 
@@ -100,5 +104,20 @@ export function createSqliteStorage(path) {
     return { totalEvents: Number(total), events24h: Number(e24), lastHourBySymbol: bySym };
   }
 
-  return { migrate, insert, aggregateNew, histogram, live, prune, stats, close: () => db.close() };
+  // ---- Phase 2: open interest + estimated clusters ----
+  function insertOi(symbol, exchange, ts, oiBase, price) { ensure(); oiStmt.run(symbol, exchange, ts, oiBase, price); }
+  function latestOi(symbol) { ensure(); return db.prepare('SELECT exchange, oi_base AS oi, price, MAX(ts) AS ts FROM oi WHERE symbol=? GROUP BY exchange').all(symbol); }
+  function addCluster(symbol, bucket, side, add, ts) { ensure(); clAdd.run(symbol, bucket, side, add, ts); }
+  function decayClusters(symbol, factor, ts, minKeep) {
+    ensure();
+    db.prepare('UPDATE clusters SET est_notional=est_notional*?, updated_at=? WHERE symbol=?').run(factor, ts, symbol);
+    db.prepare('DELETE FROM clusters WHERE symbol=? AND est_notional<?').run(symbol, minKeep || 1);
+  }
+  function consumeClusters(symbol, lo, hi) { ensure(); return Number(db.prepare('DELETE FROM clusters WHERE symbol=? AND price_bucket>=? AND price_bucket<=?').run(symbol, lo, hi).changes); }
+  function getClusters(symbol) { ensure(); return db.prepare('SELECT price_bucket AS price, side, est_notional FROM clusters WHERE symbol=? AND est_notional>0 ORDER BY price_bucket').all(symbol); }
+  function pruneOi(days) { ensure(); return Number(db.prepare('DELETE FROM oi WHERE ts<?').run(Date.now() - days * 86400000).changes); }
+
+  return { migrate, insert, aggregateNew, histogram, live, prune, stats,
+    insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi,
+    close: () => db.close() };
 }

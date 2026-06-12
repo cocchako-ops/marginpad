@@ -83,6 +83,16 @@ export function createApiServer({ storage, getStatus, bus }) {
     req.on('close', () => { clearInterval(ka); bus.off('liq', onLiq); });
   });
 
+  // Phase 2: estimated liquidation clusters (a MODEL — UI must label it as such).
+  app.get('/api/v1/clusters', (req, res) => {
+    const symbol = String(req.query.symbol || 'BTC').toUpperCase();
+    if (!validSymbol(symbol)) return res.status(400).json({ error: 'bad_symbol' });
+    try {
+      res.set('Cache-Control', 'public, max-age=20');
+      res.json({ symbol, model: true, updatedAt: Date.now(), clusters: storage.getClusters ? storage.getClusters(symbol) : [] });
+    } catch (e) { log.error('clusters failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
+  });
+
   // Health — per-exchange socket state, last event, events/min. Check it from your phone.
   app.get('/api/v1/status', (req, res) => { res.set('Cache-Control', 'no-store'); res.json(getStatus()); });
   app.get('/api/v1/health', (req, res) => res.json({ ok: true }));

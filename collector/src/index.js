@@ -10,6 +10,7 @@ import { createApiServer } from './api/server.js';
 import { BinanceCollector } from './collectors/binance.js';
 import { BybitCollector } from './collectors/bybit.js';
 import { OkxCollector } from './collectors/okx.js';
+import { startPhase2 } from './phase2.js';
 
 const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'migrations');
 const startedAt = Date.now();
@@ -51,12 +52,14 @@ function getStatus() {
 }
 
 function aggregateTick() { try { const n = storage.aggregateNew(); if (n) log.info('aggregated', { rows: n }); } catch (e) { log.error('aggregate failed', { e: String(e) }); } }
-function pruneTick() { try { const n = storage.prune(config.retentionDays); if (n) log.info('pruned old raw', { rows: n }); } catch (e) { log.error('prune failed', { e: String(e) }); } }
+function pruneTick() { try { const n = storage.prune(config.retentionDays); if (storage.pruneOi) storage.pruneOi(config.retentionDays); if (n) log.info('pruned old raw', { rows: n }); } catch (e) { log.error('prune failed', { e: String(e) }); } }
 
 async function main() {
   log.info('starting collector', { symbols: config.symbols.length, exchanges: collectors.map((c) => c.name) });
   await Promise.allSettled(collectors.map((c) => c.init()));
   collectors.forEach((c) => c.start());
+  const okx = collectors.find((c) => c.name === 'okx');
+  const p2 = startPhase2(storage, okx ? okx.ctVal : {});  // Phase 2 OI poller + cluster model
   const aggTimer = setInterval(aggregateTick, config.aggIntervalMs);
   const pruneTimer = setInterval(pruneTick, config.pruneIntervalMs);
   const api = createApiServer({ storage, getStatus, bus });
@@ -64,6 +67,7 @@ async function main() {
   function shutdown(sig) {
     log.info('shutting down', { sig });
     clearInterval(aggTimer); clearInterval(pruneTimer);
+    try { p2 && p2.stop(); } catch (e) {}
     collectors.forEach((c) => c.shutdown());
     try { aggregateTick(); } catch {}
     try { api.close(() => {}); } catch {}
