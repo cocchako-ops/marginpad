@@ -593,6 +593,11 @@
   .ct-form{display:flex;gap:8px;padding:11px 12px;border-top:1px solid var(--line);}
   .ct-form button{background:#fff;color:#0a0b0d;border:none;border-radius:10px;width:42px;flex-shrink:0;font-size:15px;cursor:pointer;}
   [dir="rtl"] #chatFab,[dir="rtl"] #chatBox{right:auto;left:20px;}
+  /* mobile: make chat a panel that sits ABOVE the bottom nav so the input isn't hidden behind it */
+  @media (max-width:720px){
+    #chatBox{top:60px;bottom:calc(74px + env(safe-area-inset-bottom));left:14px;right:14px;width:auto;max-width:none;height:auto;max-height:none;}
+    [dir="rtl"] #chatBox{left:14px;right:14px;}
+  }
   .content2{position:relative;z-index:1;background:linear-gradient(180deg,var(--panel) 0%,var(--bg-grain) 100%);border:1px solid var(--line-bright);border-radius:18px;padding:38px 36px;margin:0 0 42px;}
   @media(max-width:640px){.content2{padding:26px 20px;}}
   .content2 h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:29px;letter-spacing:-.03em;margin-bottom:6px;}
