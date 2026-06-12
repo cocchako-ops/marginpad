@@ -35,6 +35,7 @@ export class BaseCollector {
 
   // ---- subclass surface (override these) ----
   url() { throw new Error(`${this.name}: url() not implemented`); }
+  wsOptions() { return undefined; }    // optional 2nd WebSocket arg (e.g. { dispatcher } to route via a proxy)
   subscribeFrames() { return []; }     // JSON frames sent on open
   pingFrame() { return null; }         // app-level keepalive ('ping' string or object); null = rely on protocol ping
   pingIntervalMs() { return 20000; }
@@ -50,7 +51,7 @@ export class BaseCollector {
     const url = this.url();
     log.info(`[${this.name}] connecting`, { url });
     let ws;
-    try { ws = new WebSocket(url); } catch (e) { return this._reconnect('construct: ' + e.message); }
+    try { const opt = this.wsOptions(); ws = opt ? new WebSocket(url, opt) : new WebSocket(url); } catch (e) { return this._reconnect('construct: ' + e.message); }
     this.ws = ws;
 
     ws.addEventListener('open', () => {

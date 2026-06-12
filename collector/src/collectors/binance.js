@@ -6,8 +6,22 @@
 // SIDE:  o.S === 'SELL'  => a LONG position was force-closed (sold)  => 'long_liquidated'
 //        o.S === 'BUY'   => a SHORT position was force-closed (bought) => 'short_liquidated'
 import { BaseCollector } from './base.js';
+import { config } from '../../config.js';
+import { log } from '../logger.js';
 
 const SUFFIX = 'USDT';
+
+// Build an HTTP(S)-CONNECT proxy dispatcher from a URL, supporting embedded credentials
+// (http://user:pass@host:port). undici's ProxyAgent does HTTP CONNECT — NOT SOCKS.
+function makeProxyAgent(ProxyAgent, u) {
+  const url = new URL(u);
+  const opts = { uri: url.origin };
+  if (url.username || url.password) {
+    const creds = Buffer.from(decodeURIComponent(url.username) + ':' + decodeURIComponent(url.password)).toString('base64');
+    opts.token = 'Basic ' + creds;
+  }
+  return new ProxyAgent(opts);
+}
 
 export class BinanceCollector extends BaseCollector {
   constructor(opts) {
@@ -15,8 +29,24 @@ export class BinanceCollector extends BaseCollector {
     // Binance can be genuinely quiet; protocol-level ping/pong keeps the socket alive, so allow long silence.
     this.silenceMs = 6 * 60 * 1000;
     this._set = new Set(this.symbols);
+    this._dispatcher = null; // set in init() when a proxy is configured
   }
   url() { return 'wss://fstream.binance.com/ws/!forceOrder@arr'; }
+  wsOptions() { return this._dispatcher ? { dispatcher: this._dispatcher } : undefined; }
+
+  async init() {
+    // Binance fstream is geo-restricted in some regions (handshake opens, ZERO data). If a proxy in an
+    // allowed region is set, route ONLY this socket through it. Lazy import so a missing `undici` (e.g. the
+    // VPS skipped `npm install`) just logs and connects directly instead of crashing the whole collector.
+    if (!config.binanceProxy) return;
+    try {
+      const { ProxyAgent } = await import('undici');
+      this._dispatcher = makeProxyAgent(ProxyAgent, config.binanceProxy);
+      log.info('[binance] routing via proxy', { proxy: new URL(config.binanceProxy).host });
+    } catch (e) {
+      log.warn('[binance] proxy setup failed (run `npm install` for undici?) — connecting directly', { e: String(e) });
+    }
+  }
   // All-market stream is path-based — no subscribe frame, no app ping (protocol ping is auto-answered).
   parse(raw) {
     const text = typeof raw === 'string' ? raw : Buffer.isBuffer(raw) ? raw.toString() : String(raw);

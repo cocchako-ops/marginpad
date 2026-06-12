@@ -5,13 +5,16 @@
   "description": "Real-time crypto liquidation collector + read API for MarginPad. Separate service — the website only reads it over HTTP.",
   "type": "module",
   "main": "src/index.js",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "node src/index.js",
     "migrate": "node src/migrate.js",
     "backup": "bash backup.sh"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "undici": "^7.27.2"
   }
 }
