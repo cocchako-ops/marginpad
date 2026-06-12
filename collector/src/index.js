@@ -10,6 +10,8 @@ import { createApiServer } from './api/server.js';
 import { BinanceCollector } from './collectors/binance.js';
 import { BybitCollector } from './collectors/bybit.js';
 import { OkxCollector } from './collectors/okx.js';
+import { BitmexCollector } from './collectors/bitmex.js';
+import { DeribitCollector } from './collectors/deribit.js';
 import { startPhase2 } from './phase2.js';
 
 const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'migrations');
@@ -35,6 +37,8 @@ const collectors = [
   new BinanceCollector({ symbols: config.symbols, onEvent }),
   new BybitCollector({ symbols: config.symbols, onEvent }),
   new OkxCollector({ symbols: config.symbols, onEvent }),
+  new BitmexCollector({ symbols: config.symbols, onEvent }),
+  new DeribitCollector({ symbols: config.symbols, onEvent }),
 ];
 
 function getStatus() {

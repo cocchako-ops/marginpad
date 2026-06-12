@@ -202,7 +202,7 @@
   .heat-stats b{color:#fff;font-weight:700;}
   .heat-stats .hs-quiet{color:var(--ink-faint);}
   /* ---- global floating live-liquidation feed (left side, semi-transparent B&W) ---- */
-  .lqfeed{position:fixed;left:14px;bottom:14px;z-index:85;display:flex;flex-direction:column;gap:7px;pointer-events:none;width:212px;}
+  .lqfeed{position:fixed;left:18px;bottom:58px;z-index:85;display:flex;flex-direction:column;gap:7px;pointer-events:none;width:212px;}
   .lqf-card{background:rgba(8,9,11,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.13);border-radius:11px;padding:9px 12px;font-family:'Space Mono',monospace;color:#e9e7df;opacity:0;transform:translateX(-16px);transition:opacity .5s ease,transform .5s ease;box-shadow:0 10px 26px -14px rgba(0,0,0,.8);}
   .lqf-card.in{opacity:.9;transform:none;}
   .lqf-card.out{opacity:0;transform:translateX(-16px);}
@@ -1791,8 +1791,15 @@ window.addEventListener('load', function () {
   function drawLiq(){ if(!overlay||!chart||!candle)return; octx.setTransform(odpr,0,0,odpr,0,0); octx.clearRect(0,0,overlay.width,overlay.height);
     if(!realMode)return; var ts=chart.timeScale(),paneW; try{paneW=ts.width();}catch(e){paneW=stage.clientWidth-64;} var H=overlay.height/odpr;
     // estimated-cluster heat bands (Phase 2 model) — drawn behind everything
-    if(showClusters&&clusters.length&&clMax>0){ for(var ci=0;ci<clusters.length;ci++){ var cl=clusters[ci],cyb=candle.priceToCoordinate(cl.price); if(cyb==null||cyb<0||cyb>H)continue;
-      var a=Math.min(0.5,0.05+0.45*(cl.est_notional/clMax)); octx.fillStyle=cl.side==='long_liquidated'?'rgba(255,92,92,'+a+')':'rgba(46,211,154,'+a+')'; octx.fillRect(0,cyb-4,paneW,8); } }
+    if(showClusters&&clusters.length&&clMax>0){
+      /* keep only clusters price hasn't swept yet (consumed ones disappear), then show the strongest ~16 magnets — not a solid wall */
+      var vis=clusters.filter(function(cl){ return !((cl.side==='short_liquidated'&&cl.price<=cur.price)||(cl.side==='long_liquidated'&&cl.price>=cur.price)); });
+      vis.sort(function(a,b){ return b.est_notional-a.est_notional; });
+      vis=vis.slice(0,16);
+      var vmax=vis.length?vis[0].est_notional:1;
+      for(var ci=0;ci<vis.length;ci++){ var cl=vis[ci];
+        var cyb=candle.priceToCoordinate(cl.price); if(cyb==null||cyb<0||cyb>H)continue;
+        var a=Math.min(0.6,0.22+0.38*(cl.est_notional/vmax)); octx.fillStyle=cl.side==='long_liquidated'?'rgba(255,92,92,'+a+')':'rgba(46,211,154,'+a+')'; octx.fillRect(0,cyb-3,paneW,7); } }
     // real price-level histogram (Phase 1)
     if(showReal&&liqBuckets.length&&liqMax>0){ var maxLen=Math.max(60,paneW*0.3);
       for(var i=0;i<liqBuckets.length;i++){ var b=liqBuckets[i],y=candle.priceToCoordinate(b.price); if(y==null)continue;
@@ -1810,7 +1817,8 @@ window.addEventListener('load', function () {
   function setFallback(fb){ realMode=!fb; var n=document.getElementById('heatFallback'); if(n)n.style.display=fb?'flex':'none'; applyTheo(); updateTicker(); updateStats(); sched(); }
   function updateStats(){ var el=document.getElementById('heatStats'); if(!el)return; if(!realMode){el.textContent='';return;}
     var cnt=0,not=0; for(var i=0;i<liqBuckets.length;i++){cnt+=liqBuckets[i].count||0;not+=(liqBuckets[i].long||0)+(liqBuckets[i].short||0);}
-    el.innerHTML = cnt ? '<b>'+cnt+'</b> liquidations · <b>$'+money(not)+'</b>' : '<span class="hs-quiet">Quiet now — liquidations spike when price moves</span>'; }
+    var wm=Math.min(WIN[win].mins,10080),wl=wm>=2880?Math.round(wm/1440)+'d':Math.round(wm/60)+'h';
+    el.innerHTML = cnt ? cur.coin+' liquidations · last '+wl+' · <b>'+cnt+'</b> · <b>$'+money(not)+'</b>' : '<span class="hs-quiet">'+cur.coin+' quiet — liquidations spike on moves</span>'; }
   function updateTicker(){ var el=document.getElementById('heatTicker'); if(!el)return; if(!realMode){el.innerHTML='';return;}
     var big=liqEvents.filter(function(e){return e.notional>=50000;}).slice(0,20);
     el.innerHTML = big.length ? '<div class="tk-track">'+big.concat(big).map(function(e){return '<span class="tk-i '+(e.side==='long_liquidated'?'tk-l':'tk-s')+'">'+(e.side==='long_liquidated'?'▼ LONG':'▲ SHORT')+' $'+money(e.notional)+' @ '+money(e.price)+' · '+e.exchange+'</span>';}).join('')+'</div>' : '<span class="tk-empty">No liquidations above $50k in view yet.</span>'; }
@@ -1818,8 +1826,10 @@ window.addEventListener('load', function () {
     Promise.all([
       fetch('/api/v1/liquidations/recent?symbol='+encodeURIComponent(c)+'&minutes='+Math.min(WIN[win].mins,10080)).then(function(r){return r.json();}).catch(function(){return {fallback:true};}),
       fetch('/api/v1/liquidations/live?symbol='+encodeURIComponent(c)+'&limit=400').then(function(r){return r.json();}).catch(function(){return {fallback:true};}),
-      fetch('/api/v1/clusters?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return {clusters:[]};})
-    ]).then(function(res){ if(c!==cur.coin)return; var rec=res[0],lv=res[1],cls=res[2];
+      fetch('/api/v1/clusters?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return {clusters:[]};}),
+      fetch('/api/price?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return null;})
+    ]).then(function(res){ if(c!==cur.coin)return; var rec=res[0],lv=res[1],cls=res[2],pd=res[3];
+      if(pd&&pd.price){cur.price=+pd.price;cur.chg=+pd.chg||0;if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>';}
       if(!rec||rec.fallback||!Array.isArray(rec.buckets)||!lv||lv.fallback){ setFallback(true); return; }
       liqBuckets=rec.buckets; liqMax=0; for(var i=0;i<liqBuckets.length;i++){var t=(liqBuckets[i].long||0)+(liqBuckets[i].short||0);if(t>liqMax)liqMax=t;}
       liqEvents=lv.events||[];
