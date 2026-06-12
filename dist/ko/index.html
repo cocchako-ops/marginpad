@@ -196,6 +196,11 @@
   .heat-lyr{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.03em;color:var(--ink-faint);background:none;border:none;border-radius:7px;padding:6px 11px;cursor:pointer;transition:.12s;white-space:nowrap;}
   .heat-lyr:hover{color:var(--ink-dim);}
   .heat-lyr.active{background:rgba(255,255,255,.1);color:#fff;}
+  .heat-ctrl2{margin-top:9px;}
+  .heat-levlbl{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);white-space:nowrap;}
+  .heat-side.active[data-side="long"]{background:rgba(255,92,92,.22);color:#ff8f8f;}
+  .heat-side.active[data-side="short"]{background:rgba(46,211,154,.22);color:#7cecc0;}
+  .heat-lev.active{background:rgba(194,246,74,.15);color:#d6f78a;}
   .heat-disc{font-size:11.5px;color:var(--ink-faint);line-height:1.55;margin:9px 0 0;}
   .heat-disc b{color:var(--ink-dim);font-weight:700;}
   .heat-stats{flex:1;text-align:center;font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-dim);letter-spacing:.02em;white-space:nowrap;}
@@ -745,16 +750,27 @@
     </div>
     <div class="heat-ctrl">
       <div class="heat-wins">
+        <button class="heat-win" data-w="1H" type="button">1H</button>
+        <button class="heat-win" data-w="4H" type="button">4H</button>
         <button class="heat-win active" data-w="1D" type="button">1D</button>
-        <button class="heat-win" data-w="1W" type="button">1W</button>
-        <button class="heat-win" data-w="1M" type="button">1M</button>
-        <button class="heat-win" data-w="1Y" type="button">1Y</button>
+        <button class="heat-win" data-w="7D" type="button">7D</button>
+        <button class="heat-win" data-w="30D" type="button">30D</button>
       </div>
       <span class="heat-stats" id="heatStats" aria-live="polite"></span>
-      <div class="heat-layers">
-        <button class="heat-lyr active" data-layer="liq" type="button" data-i18n="layReal">Liquidations</button>
-        <button class="heat-lyr" data-layer="clusters" type="button" data-i18n="layClusters">Clusters</button>
-        <button class="heat-lyr" data-layer="theo" type="button" data-i18n="layLevels">Levels</button>
+      <div class="heat-wins heat-sides">
+        <button class="heat-win heat-side active" data-side="all" type="button" data-i18n="sideAll">All</button>
+        <button class="heat-win heat-side" data-side="long" type="button">Long</button>
+        <button class="heat-win heat-side" data-side="short" type="button">Short</button>
+      </div>
+    </div>
+    <div class="heat-ctrl heat-ctrl2">
+      <span class="heat-levlbl" data-i18n="levLabel">Leverage liquidation levels (est.)</span>
+      <div class="heat-wins heat-levs">
+        <button class="heat-win heat-lev" data-lev="5" type="button">5×</button>
+        <button class="heat-win heat-lev" data-lev="10" type="button">10×</button>
+        <button class="heat-win heat-lev active" data-lev="25" type="button">25×</button>
+        <button class="heat-win heat-lev" data-lev="50" type="button">50×</button>
+        <button class="heat-win heat-lev active" data-lev="100" type="button">100×</button>
       </div>
     </div>
     <div class="heat-stage">
@@ -1788,8 +1804,8 @@ window.addEventListener('load', function () {
     ctx.fillStyle='#5c656f';ctx.font='18px "Space Mono",monospace';ctx.textAlign='left';ctx.fillText('Estimated levels by leverage · not order-book data',44,H-16);
   }
   // ============ LIVE LIQUIDATION LAYER (real data via /api/v1, graceful fallback to theoretical) ============
-  var overlay=null,octx=null,odpr=1,liqEvents=[],liqBuckets=[],liqMax=0,clusters=[],clMax=0,dispBins=[],realMode=false,showReal=true,showClusters=false,showTheo=false,win='1D',pollT=null,drawQ=false,subd=false,loadedKlines=false;
-  var WIN={'1D':{iv:'15',mins:1440},'1W':{iv:'60',mins:10080},'1M':{iv:'240',mins:43200},'1Y':{iv:'1440',mins:525600}};
+  var overlay=null,octx=null,odpr=1,liqEvents=[],liqBuckets=[],liqMax=0,clusters=[],clMax=0,dispBins=[],levLines=[],realMode=false,showReal=true,showClusters=false,showTheo=false,win='1D',sideMode='all',levSet={5:false,10:false,25:true,50:false,100:true},pollT=null,drawQ=false,subd=false,loadedKlines=false;
+  var WIN={'1H':{iv:'15',mins:60,lbl:'1h'},'4H':{iv:'15',mins:240,lbl:'4h'},'1D':{iv:'15',mins:1440,lbl:'24h'},'7D':{iv:'60',mins:10080,lbl:'7d'},'30D':{iv:'240',mins:43200,lbl:'30d'}};
   var MOCK=/[?&]mockliq=1/.test(location.search);
   var lastBar=null,priceT=null,klT=null; // live candle: track the forming bar, update its close from the price feed
   function ensureOverlay(){ if(overlay)return; overlay=document.createElement('canvas'); overlay.className='heat-ovl';
@@ -1803,59 +1819,62 @@ window.addEventListener('load', function () {
   function dispStep(p){ if(!(p>0))return 100; var t=p*0.0016,m=Math.pow(10,Math.floor(Math.log10(t))),n=t/m,s=n<1.5?1:n<3.5?2:n<7.5?5:10; return s*m; } // ~$100 bins for BTC, scales for ETH
   function drawLiq(){ if(!overlay||!chart||!candle)return; octx.setTransform(odpr,0,0,odpr,0,0); octx.clearRect(0,0,overlay.width,overlay.height);
     if(!realMode)return; var ts=chart.timeScale(),paneW; try{paneW=ts.width();}catch(e){paneW=stage.clientWidth-64;} var H=overlay.height/odpr;
-    var clLabels=[];
-    // estimated-cluster heat bands (Phase 2 model) — drawn behind everything
-    if(showClusters&&clusters.length&&clMax>0){
-      /* keep only clusters price hasn't swept yet (consumed ones disappear), then show the strongest ~16 magnets — not a solid wall */
-      var vis=clusters.filter(function(cl){ return !((cl.side==='short_liquidated'&&cl.price<=cur.price)||(cl.side==='long_liquidated'&&cl.price>=cur.price)); });
-      vis.sort(function(a,b){ return b.est_notional-a.est_notional; });
-      vis=vis.slice(0,16);
-      var vmax=vis.length?vis[0].est_notional:1;
-      for(var ci=0;ci<vis.length;ci++){ var cl=vis[ci];
-        var cyb=candle.priceToCoordinate(cl.price); if(cyb==null||cyb<0||cyb>H)continue;
-        var a=Math.min(0.6,0.22+0.38*(cl.est_notional/vmax)); octx.fillStyle=cl.side==='long_liquidated'?'rgba(255,92,92,'+a+')':'rgba(46,211,154,'+a+')'; octx.fillRect(0,cyb-3,paneW,7);
-        if(ci<2&&cyb>10&&cyb<H-5) clLabels.push({y:cyb,t:kfmt(cl.est_notional),side:cl.side}); } }
-    // ---- Coinglass-style active liquidation levels: last 24h, within ±5% of price, ~$100 bins, shorts(green) above / longs(red) below ----
+    // ---- real liquidation histogram: ±5% of price, ~$100 bins, side-filtered (All / Long / Short) ----
     dispBins=[];
     if(showReal&&liqBuckets.length&&cur.price>0){
       var lo=cur.price*0.95,hi=cur.price*1.05,step=dispStep(cur.price),mm={};
       for(var i=0;i<liqBuckets.length;i++){ var b=liqBuckets[i]; if(b.price<lo||b.price>hi)continue;
-        var key=Math.round(b.price/step)*step,bn=mm[key]||(mm[key]={price:key,long:0,short:0}); bn.long+=b.long||0; bn.short+=b.short||0; }
-      for(var kk in mm){ var bn2=mm[kk]; bn2.above=bn2.price>=cur.price; bn2.vol=bn2.above?bn2.short:bn2.long; if(bn2.vol>0)dispBins.push(bn2); }
+        var key=Math.round(b.price/step)*step,bn=mm[key]||(mm[key]={price:key,long:0,short:0,cnt:0}); bn.long+=b.long||0; bn.short+=b.short||0; bn.cnt+=b.count||0; }
+      for(var kk in mm){ var bn2=mm[kk]; bn2.above=bn2.price>=cur.price;
+        bn2.vol = sideMode==='long'?bn2.long : sideMode==='short'?bn2.short : (bn2.above?bn2.short:bn2.long);
+        bn2.green = sideMode==='long'?false : sideMode==='short'?true : bn2.above; /* green=short, red=long */
+        if(bn2.vol>0)dispBins.push(bn2); }
       var vmx=0; for(var i2=0;i2<dispBins.length;i2++) if(dispBins[i2].vol>vmx)vmx=dispBins[i2].vol;
       if(vmx>0){ var maxLen=Math.max(80,paneW*0.46);
         var p0=candle.priceToCoordinate(cur.price),p1=candle.priceToCoordinate(cur.price+step),barH=Math.max(2.5,(p0!=null&&p1!=null?Math.abs(p0-p1):4)-1);
         for(var i3=0;i3<dispBins.length;i3++){ var bn3=dispBins[i3],y3=candle.priceToCoordinate(bn3.price); if(y3==null||y3<0||y3>H)continue;
-          var len=Math.max(2,(bn3.vol/vmx)*maxLen); octx.fillStyle=bn3.above?'rgba(46,211,154,0.62)':'rgba(255,92,92,0.62)'; octx.fillRect(paneW-len,y3-barH/2,len,barH); }
+          var len=Math.max(2,(bn3.vol/vmx)*maxLen); octx.fillStyle=bn3.green?'rgba(46,211,154,0.62)':'rgba(255,92,92,0.62)'; octx.fillRect(paneW-len,y3-barH/2,len,barH); }
         var top=dispBins.slice().sort(function(a,b){return b.vol-a.vol;}).slice(0,4);
         octx.font='600 10px "Space Mono",monospace'; octx.textBaseline='middle'; octx.textAlign='right'; octx.lineWidth=3; octx.lineJoin='round';
         for(var i4=0;i4<top.length;i4++){ var bn4=top[i4],y4=candle.priceToCoordinate(bn4.price); if(y4==null||y4<6||y4>H-6)continue;
           octx.strokeStyle='rgba(8,9,11,0.9)'; octx.strokeText(kfmt(bn4.vol),paneW-6,y4);
-          octx.fillStyle=bn4.above?'rgba(132,238,198,0.99)':'rgba(255,168,168,0.99)'; octx.fillText(kfmt(bn4.vol),paneW-6,y4); }
+          octx.fillStyle=bn4.green?'rgba(132,238,198,0.99)':'rgba(255,168,168,0.99)'; octx.fillText(kfmt(bn4.vol),paneW-6,y4); }
         octx.textAlign='left'; } }
-    // strongest-magnet $ labels — drawn last (above bands+histogram), right-aligned by the price axis, dark halo for legibility
-    if(clLabels.length){ octx.font='600 10px "Space Mono",monospace'; octx.textBaseline='middle'; octx.textAlign='right'; octx.lineWidth=3; octx.lineJoin='round';
-      for(var li=0;li<clLabels.length;li++){ var lb=clLabels[li]; octx.strokeStyle='rgba(8,9,11,0.9)'; octx.strokeText(lb.t,paneW-7,lb.y);
-        octx.fillStyle=lb.side==='long_liquidated'?'rgba(255,168,168,0.99)':'rgba(132,238,198,0.99)'; octx.fillText(lb.t,paneW-7,lb.y); }
-      octx.textAlign='left'; }
+    // ---- leverage liquidation levels (computed: an Nx long liquidates near P*(1-1/N), short near P*(1+1/N)) ----
+    levLines=[];
+    if(cur.price>0){ var mmr=0.005, levs=[5,10,25,50,100];
+      for(var L=0;L<levs.length;L++){ var lev=levs[L]; if(!levSet[lev])continue;
+        if(sideMode!=='short'){ var pl=cur.price*(1-1/lev+mmr),yl=candle.priceToCoordinate(pl); if(yl!=null&&yl>=0&&yl<=H){ levLines.push({y:yl,price:pl,lev:lev,side:'long'});
+          octx.strokeStyle='rgba(255,92,92,0.45)'; octx.lineWidth=1.4; octx.setLineDash([5,4]); octx.beginPath(); octx.moveTo(0,yl); octx.lineTo(paneW,yl); octx.stroke(); octx.setLineDash([]);
+          octx.font='700 9.5px "Space Mono",monospace'; octx.textAlign='left'; octx.textBaseline='bottom'; octx.fillStyle='rgba(255,150,150,0.95)'; octx.fillText(lev+'× long',5,yl-1); } }
+        if(sideMode!=='long'){ var psr=cur.price*(1+1/lev-mmr),yr=candle.priceToCoordinate(psr); if(yr!=null&&yr>=0&&yr<=H){ levLines.push({y:yr,price:psr,lev:lev,side:'short'});
+          octx.strokeStyle='rgba(46,211,154,0.45)'; octx.lineWidth=1.4; octx.setLineDash([5,4]); octx.beginPath(); octx.moveTo(0,yr); octx.lineTo(paneW,yr); octx.stroke(); octx.setLineDash([]);
+          octx.font='700 9.5px "Space Mono",monospace'; octx.textAlign='left'; octx.textBaseline='top'; octx.fillStyle='rgba(120,235,190,0.95)'; octx.fillText(lev+'× short',5,yr+1); } }
+      } }
+    octx.textBaseline='alphabetic';
   }
   function onCross(param){ var tip=document.getElementById('heatTip'); if(!tip)return;
     if(!realMode||!param.point||!candle){ tip.style.display='none'; return; } var py=param.point.y;
-    var best=null,bd=10; for(var i=0;i<dispBins.length;i++){ var bn=dispBins[i],y=candle.priceToCoordinate(bn.price); if(y==null)continue; var d=Math.abs(y-py); if(d<bd){bd=d;best=bn;} }
-    if(!best){ tip.style.display='none'; return; }
-    tip.innerHTML='<b>'+(best.above?'Shorts liquidated':'Longs liquidated')+' @ $'+money(best.price)+'</b>$'+money(best.vol)+'<small>last 24h · within 5% of price</small>';
-    tip.style.display='block'; tip.style.left=Math.min(stage.clientWidth-200,param.point.x+14)+'px'; tip.style.top=Math.max(4,py-10)+'px'; }
+    var lv=null,ld=7; for(var j=0;j<levLines.length;j++){ var d2=Math.abs(levLines[j].y-py); if(d2<ld){ld=d2;lv=levLines[j];} } /* nearest leverage level */
+    var best=null,bd=9; for(var i=0;i<dispBins.length;i++){ var bn=dispBins[i],y=candle.priceToCoordinate(bn.price); if(y==null)continue; var d=Math.abs(y-py); if(d<bd){bd=d;best=bn;} } /* nearest histogram bin */
+    var html='';
+    if(lv&&ld<=bd){ var pct=(100/lv.lev).toFixed(1); html='<b>'+lv.lev+'× '+(lv.side==='long'?'long':'short')+' liquidation</b>@ $'+money(lv.price)+'<small>where '+lv.lev+'× '+(lv.side==='long'?'longs liquidate (−'+pct+'%)':'shorts liquidate (+'+pct+'%)')+' · estimated</small>'; }
+    else if(best){ var L=best.long||0,S=best.short||0,tot=L+S,lp=tot?Math.round(L/tot*100):0;
+      html='<b>'+(best.green?'Shorts liquidated':'Longs liquidated')+' @ $'+money(best.price)+'</b>$'+money(best.vol)+(best.cnt?' · '+best.cnt+' liqs':'')+'<small>'+kfmt(L)+' long / '+kfmt(S)+' short · '+lp+'% / '+(100-lp)+'% · last '+WIN[win].lbl+'</small>'; }
+    else { tip.style.display='none'; return; }
+    tip.innerHTML=html; tip.style.display='block'; tip.style.left=Math.min(stage.clientWidth-210,param.point.x+14)+'px'; tip.style.top=Math.max(4,py-10)+'px'; }
   function applyTheo(){ if(showTheo||!realMode){ setLines(cur.price); } else { for(var i=0;i<plines.length;i++){try{candle.removePriceLine(plines[i]);}catch(e){}} plines=[]; } }
   function setFallback(fb){ realMode=!fb; var n=document.getElementById('heatFallback'); if(n)n.style.display=fb?'flex':'none'; applyTheo(); updateTicker(); updateStats(); sched(); }
   function updateStats(){ var el=document.getElementById('heatStats'); if(!el)return; if(!realMode){el.textContent='';return;}
-    var cnt=0,not=0; for(var i=0;i<liqBuckets.length;i++){cnt+=liqBuckets[i].count||0;not+=(liqBuckets[i].long||0)+(liqBuckets[i].short||0);}
-    el.innerHTML = cnt ? cur.coin+' liquidations · last 24h · <b>'+cnt+'</b> · <b>$'+money(not)+'</b>' : '<span class="hs-quiet">'+cur.coin+' quiet — liquidations spike on moves</span>'; }
+    var cnt=0,nl=0,ns=0; for(var i=0;i<liqBuckets.length;i++){cnt+=liqBuckets[i].count||0;nl+=liqBuckets[i].long||0;ns+=liqBuckets[i].short||0;}
+    var not=sideMode==='long'?nl:sideMode==='short'?ns:nl+ns, sl=sideMode==='long'?' long':sideMode==='short'?' short':'';
+    el.innerHTML = (not>0) ? cur.coin+sl+' liquidations · last '+WIN[win].lbl+' · <b>'+cnt+'</b> · <b>$'+money(not)+'</b>' : '<span class="hs-quiet">'+cur.coin+' quiet — liquidations spike on moves</span>'; }
   function updateTicker(){ var el=document.getElementById('heatTicker'); if(!el)return; if(!realMode){el.innerHTML='';return;}
     var big=liqEvents.filter(function(e){return e.notional>=50000;}).slice(0,20);
     el.innerHTML = big.length ? '<div class="tk-track">'+big.concat(big).map(function(e){return '<span class="tk-i '+(e.side==='long_liquidated'?'tk-l':'tk-s')+'">'+(e.side==='long_liquidated'?'▼ LONG':'▲ SHORT')+' $'+money(e.notional)+' @ '+money(e.price)+' · '+e.exchange+'</span>';}).join('')+'</div>' : '<span class="tk-empty">No liquidations above $50k in view yet.</span>'; }
   function fetchLiq(){ if(MOCK){ mock(); return; } var c=cur.coin;
     Promise.all([
-      fetch('/api/v1/liquidations/recent?symbol='+encodeURIComponent(c)+'&minutes=1440').then(function(r){return r.json();}).catch(function(){return {fallback:true};}),
+      fetch('/api/v1/liquidations/recent?symbol='+encodeURIComponent(c)+'&minutes='+WIN[win].mins).then(function(r){return r.json();}).catch(function(){return {fallback:true};}),
       fetch('/api/v1/liquidations/live?symbol='+encodeURIComponent(c)+'&limit=400').then(function(r){return r.json();}).catch(function(){return {fallback:true};}),
       fetch('/api/v1/clusters?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return {clusters:[]};}),
       fetch('/api/price?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return null;})
@@ -1889,9 +1908,9 @@ window.addEventListener('load', function () {
   function startPoll(){ stopPoll(); fetchLiq(); pollT=setInterval(fetchLiq,8000); pricePoll(); priceT=setInterval(pricePoll,6000); klT=setInterval(function(){ if(loadedKlines)reloadKlines(); },45000); }
   function stopPoll(){ if(pollT){clearInterval(pollT);pollT=null;} if(priceT){clearInterval(priceT);priceT=null;} if(klT){clearInterval(klT);klT=null;} }
   document.addEventListener('click',function(ev){ if(!ev.target.closest)return;
-    var w=ev.target.closest('.heat-win'); if(w){ var ws=document.querySelectorAll('.heat-win'); for(var i=0;i<ws.length;i++)ws[i].classList.remove('active'); w.classList.add('active'); win=w.getAttribute('data-w'); if(loadedKlines)reloadKlines(); fetchLiq(); return; }
-    var ly=ev.target.closest('.heat-lyr'); if(ly){ var L=ly.getAttribute('data-layer'),on=!ly.classList.contains('active'); ly.classList.toggle('active',on);
-      if(L==='liq')showReal=on; else if(L==='clusters')showClusters=on; else if(L==='theo'){showTheo=on;applyTheo();} sched(); } });
+    var lev=ev.target.closest('.heat-lev'); if(lev){ var n=+lev.getAttribute('data-lev'); levSet[n]=!levSet[n]; lev.classList.toggle('active',levSet[n]); sched(); return; }
+    var sd=ev.target.closest('.heat-side'); if(sd){ var sds=document.querySelectorAll('.heat-side'); for(var s=0;s<sds.length;s++)sds[s].classList.remove('active'); sd.classList.add('active'); sideMode=sd.getAttribute('data-side'); updateStats(); sched(); return; }
+    var w=ev.target.closest('.heat-win'); if(w&&w.getAttribute('data-w')){ var ws=document.querySelectorAll('.heat-win[data-w]'); for(var i=0;i<ws.length;i++)ws[i].classList.remove('active'); w.classList.add('active'); win=w.getAttribute('data-w'); if(loadedKlines)reloadKlines(); fetchLiq(); return; } });
   function reloadKlines(){ var c=cur.coin,iv=WIN[win].iv;
     fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin)return;
       if(kd&&kd.length&&candle){ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; }

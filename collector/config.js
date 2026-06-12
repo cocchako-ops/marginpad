@@ -24,8 +24,8 @@ export const config = {
   oiPollMs: 120_000,         // Phase 2: poll Open Interest per symbol every 2 min (staggered)
 
   // Selectable chart windows -> minutes
-  windows: { '1h': 60, '4h': 240, '24h': 1440, '7d': 10080 },
-  maxWindowMinutes: 10080,
+  windows: { '1h': 60, '4h': 240, '24h': 1440, '7d': 10080, '30d': 43200 },
+  maxWindowMinutes: 43200, // allow up to 30 days (raw kept 30d, aggregates kept indefinitely)
 
   db: {
     driver: process.env.DB_DRIVER || 'sqlite',
