@@ -216,6 +216,11 @@
   @media(max-width:560px){.heat-lyr{padding:6px 8px;font-size:10px;}}
   .heat-ovl{position:absolute;inset:0;pointer-events:none;z-index:2;}
   .heat-tip{position:absolute;z-index:6;pointer-events:none;display:none;background:#0d1117;border:1px solid var(--line-bright);border-radius:9px;padding:8px 11px;font-family:'Space Mono',monospace;font-size:12px;color:var(--ink);box-shadow:0 12px 30px -12px rgba(0,0,0,.85);max-width:210px;}
+  .heat-legend{position:absolute;top:7px;left:10px;z-index:5;display:flex;gap:13px;font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-faint);pointer-events:none;opacity:.92;}
+  .heat-legend i{display:inline-block;width:9px;height:9px;border-radius:2px;vertical-align:middle;margin-right:5px;}
+  .heat-legend .lg-s{background:rgba(46,211,154,.72);}
+  .heat-legend .lg-l{background:rgba(255,92,92,.72);}
+  @media(max-width:560px){.heat-legend{font-size:9px;gap:9px;}}
   .heat-tip b{display:block;font-size:10.5px;color:var(--ink-dim);margin-bottom:2px;text-transform:uppercase;letter-spacing:.05em;}
   .heat-tip small{display:block;color:var(--ink-faint);font-size:10.5px;margin-top:3px;}
   .heat-fallback{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:8px;background:rgba(13,17,23,.92);border:1px solid var(--line-bright);border-radius:20px;padding:8px 16px;font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-dim);text-align:center;max-width:90%;}
@@ -750,6 +755,7 @@
     </div>
     <div class="heat-stage">
       <div id="heatChart"></div>
+      <div class="heat-legend"><span><i class="lg-s"></i><span data-i18n="legShorts">Shorts liquidated · above</span></span><span><i class="lg-l"></i><span data-i18n="legLongs">Longs liquidated · below</span></span></div>
       <div class="heat-tip" id="heatTip"></div>
       <div class="heat-fallback" id="heatFallback" style="display:none"><span data-i18n="heatWarm">Live liquidation feed is warming up — showing estimated leverage levels for now.</span></div>
     </div>
@@ -1788,8 +1794,10 @@ window.addEventListener('load', function () {
     overlay.width=Math.max(1,w*odpr); overlay.height=Math.max(1,h*odpr); overlay.style.width=w+'px'; overlay.style.height=h+'px'; }
   function sched(){ if(drawQ)return; drawQ=true; requestAnimationFrame(function(){drawQ=false;drawLiq();}); }
   function bcol(side,a){ return side==='long_liquidated'?'rgba(255,92,92,'+a+')':'rgba(46,211,154,'+a+')'; }
+  function kfmt(v){ v=+v||0; return v>=1e9?'$'+(v/1e9).toFixed(1)+'B':v>=1e6?'$'+(v/1e6).toFixed(1)+'M':v>=1e3?'$'+Math.round(v/1e3)+'K':'$'+Math.round(v); }
   function drawLiq(){ if(!overlay||!chart||!candle)return; octx.setTransform(odpr,0,0,odpr,0,0); octx.clearRect(0,0,overlay.width,overlay.height);
     if(!realMode)return; var ts=chart.timeScale(),paneW; try{paneW=ts.width();}catch(e){paneW=stage.clientWidth-64;} var H=overlay.height/odpr;
+    var clLabels=[];
     // estimated-cluster heat bands (Phase 2 model) — drawn behind everything
     if(showClusters&&clusters.length&&clMax>0){
       /* keep only clusters price hasn't swept yet (consumed ones disappear), then show the strongest ~16 magnets — not a solid wall */
@@ -1799,20 +1807,32 @@ window.addEventListener('load', function () {
       var vmax=vis.length?vis[0].est_notional:1;
       for(var ci=0;ci<vis.length;ci++){ var cl=vis[ci];
         var cyb=candle.priceToCoordinate(cl.price); if(cyb==null||cyb<0||cyb>H)continue;
-        var a=Math.min(0.6,0.22+0.38*(cl.est_notional/vmax)); octx.fillStyle=cl.side==='long_liquidated'?'rgba(255,92,92,'+a+')':'rgba(46,211,154,'+a+')'; octx.fillRect(0,cyb-3,paneW,7); } }
+        var a=Math.min(0.6,0.22+0.38*(cl.est_notional/vmax)); octx.fillStyle=cl.side==='long_liquidated'?'rgba(255,92,92,'+a+')':'rgba(46,211,154,'+a+')'; octx.fillRect(0,cyb-3,paneW,7);
+        if(ci<2&&cyb>10&&cyb<H-5) clLabels.push({y:cyb,t:kfmt(cl.est_notional),side:cl.side}); } }
     // real price-level histogram (Phase 1)
     if(showReal&&liqBuckets.length&&liqMax>0){ var maxLen=Math.max(60,paneW*0.3);
       for(var i=0;i<liqBuckets.length;i++){ var b=liqBuckets[i],y=candle.priceToCoordinate(b.price); if(y==null)continue;
         var tot=(b.long||0)+(b.short||0); if(tot<=0)continue; var len=Math.max(2,(tot/liqMax)*maxLen),ll=len*((b.long||0)/tot);
         octx.fillStyle='rgba(46,211,154,0.5)'; octx.fillRect(paneW-len,y-2.5,len-ll,5);
         octx.fillStyle='rgba(255,92,92,0.55)'; octx.fillRect(paneW-ll,y-2.5,ll,5); } }
+    // strongest-magnet $ labels — drawn last (above bands+histogram), right-aligned by the price axis, dark halo for legibility
+    if(clLabels.length){ octx.font='600 10px "Space Mono",monospace'; octx.textBaseline='middle'; octx.textAlign='right'; octx.lineWidth=3; octx.lineJoin='round';
+      for(var li=0;li<clLabels.length;li++){ var lb=clLabels[li]; octx.strokeStyle='rgba(8,9,11,0.9)'; octx.strokeText(lb.t,paneW-7,lb.y);
+        octx.fillStyle=lb.side==='long_liquidated'?'rgba(255,168,168,0.99)':'rgba(132,238,198,0.99)'; octx.fillText(lb.t,paneW-7,lb.y); }
+      octx.textAlign='left'; }
   }
   function onCross(param){ var tip=document.getElementById('heatTip'); if(!tip)return;
-    if(!realMode||!param.point){ tip.style.display='none'; return; } var px=param.point.x,py=param.point.y,best=null,bd=1e9;
-    for(var i=0;i<liqEvents.length;i++){ var e=liqEvents[i]; if(e._x==null)continue; var d=Math.hypot(e._x-px,e._y-py); if(d<e._r+4&&d<bd){bd=d;best=e;} }
-    if(!best){ tip.style.display='none'; return; }
-    tip.innerHTML='<b>'+(best.side==='long_liquidated'?'LONG liquidated':'SHORT liquidated')+'</b>$'+money(best.notional)+' @ '+money(best.price)+'<small>'+best.exchange+' · '+new Date(best.ts).toLocaleTimeString()+'</small>';
-    tip.style.display='block'; tip.style.left=Math.min(stage.clientWidth-160,best._x+12)+'px'; tip.style.top=Math.max(4,best._y-12)+'px'; }
+    if(!realMode||!param.point||!candle){ tip.style.display='none'; return; } var py=param.point.y;
+    // nearest REAL price-level bucket (the histogram) under the cursor
+    var rb=null,rbd=8; for(var i=0;i<liqBuckets.length;i++){ var b=liqBuckets[i]; if(((b.long||0)+(b.short||0))<=0)continue; var y=candle.priceToCoordinate(b.price); if(y==null)continue; var d=Math.abs(y-py); if(d<rbd){rbd=d;rb=b;} }
+    // nearest ESTIMATED cluster magnet still ahead of price (consumed ones are hidden)
+    var cb=null,cbd=8; for(var k=0;k<clusters.length;k++){ var cl=clusters[k]; if((cl.side==='short_liquidated'&&cl.price<=cur.price)||(cl.side==='long_liquidated'&&cl.price>=cur.price))continue; var cy=candle.priceToCoordinate(cl.price); if(cy==null)continue; var dd=Math.abs(cy-py); if(dd<cbd){cbd=dd;cb=cl;} }
+    if(!rb&&!cb){ tip.style.display='none'; return; }
+    var html='';
+    if(rb){ var L=rb.long||0,S=rb.short||0; html+='<b>Liquidated @ $'+money(rb.price)+'</b>$'+money(L+S)+'<small>$'+money(L)+' longs · $'+money(S)+' shorts</small>'; }
+    if(cb){ html+=(rb?'<small>':'<b>'+(cb.side==='long_liquidated'?'Long':'Short')+' magnet @ $'+money(cb.price)+'</b><small>')+'~$'+money(cb.est_notional)+' est. '+(cb.side==='long_liquidated'?'long':'short')+' liquidations (model)</small>'; }
+    tip.innerHTML=html; tip.style.display='block';
+    tip.style.left=Math.min(stage.clientWidth-220,param.point.x+14)+'px'; tip.style.top=Math.max(4,py-10)+'px'; }
   function applyTheo(){ if(showTheo||!realMode){ setLines(cur.price); } else { for(var i=0;i<plines.length;i++){try{candle.removePriceLine(plines[i]);}catch(e){}} plines=[]; } }
   function setFallback(fb){ realMode=!fb; var n=document.getElementById('heatFallback'); if(n)n.style.display=fb?'flex':'none'; applyTheo(); updateTicker(); updateStats(); sched(); }
   function updateStats(){ var el=document.getElementById('heatStats'); if(!el)return; if(!realMode){el.textContent='';return;}
