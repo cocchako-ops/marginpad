@@ -156,9 +156,10 @@ async function handleCollectorProxy(url, request, env) {
       headers: { 'x-api-key': request.headers.get('x-api-key') || '' },
       cf: isAgg ? { cacheTtl: 45, cacheEverything: true } : { cacheTtl: 0 },
     });
+    if (!r.ok) return J({ error: 'collector_unreachable', fallback: true }, 503); // DNS/origin/5xx -> clean fallback
     const body = await r.text();
     return new Response(body, {
-      status: r.status,
+      status: 200,
       headers: {
         'content-type': 'application/json; charset=utf-8',
         'access-control-allow-origin': '*',

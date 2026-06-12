@@ -12,10 +12,10 @@ binding = "ASSETS"
 crons = ["*/10 * * * *"]
 
 [vars]
-# Base URL of the separate liquidation collector service (its own VPS). Empty = graceful fallback
-# (heatmap shows theoretical lines). Set to e.g. "https://collector.marginpad.io" when the VPS is live,
-# or use `wrangler secret put COLLECTOR_URL`.
-COLLECTOR_URL = ""
+# Base URL of the separate liquidation collector (its own VPS), WITHOUT the /api/v1 suffix — the Worker
+# proxy appends the full path. Reached via a Cloudflare-proxied subdomain so TLS is valid + origin IP hidden.
+# Empty = graceful fallback (heatmap shows theoretical lines).
+COLLECTOR_URL = "https://collector.marginpad.io"
 
 [[kv_namespaces]]
 binding = "STATS"
