@@ -198,6 +198,10 @@
   .heat-lyr.active{background:rgba(255,255,255,.1);color:#fff;}
   .heat-disc{font-size:11.5px;color:var(--ink-faint);line-height:1.55;margin:9px 0 0;}
   .heat-disc b{color:var(--ink-dim);font-weight:700;}
+  .heat-stats{flex:1;text-align:center;font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-dim);letter-spacing:.02em;white-space:nowrap;}
+  .heat-stats b{color:#fff;font-weight:700;}
+  .heat-stats .hs-quiet{color:var(--ink-faint);}
+  @media(max-width:680px){.heat-stats{order:3;flex-basis:100%;text-align:left;margin-top:2px;}}
   @media(max-width:560px){.heat-lyr{padding:6px 8px;font-size:10px;}}
   .heat-ovl{position:absolute;inset:0;pointer-events:none;z-index:2;}
   .heat-tip{position:absolute;z-index:6;pointer-events:none;display:none;background:#0d1117;border:1px solid var(--line-bright);border-radius:9px;padding:8px 11px;font-family:'Space Mono',monospace;font-size:12px;color:var(--ink);box-shadow:0 12px 30px -12px rgba(0,0,0,.85);max-width:210px;}
@@ -726,6 +730,7 @@
         <button class="heat-win" data-w="1M" type="button">1M</button>
         <button class="heat-win" data-w="1Y" type="button">1Y</button>
       </div>
+      <span class="heat-stats" id="heatStats" aria-live="polite"></span>
       <div class="heat-layers">
         <button class="heat-lyr active" data-layer="liq" type="button" data-i18n="layReal">Liquidations</button>
         <button class="heat-lyr active" data-layer="clusters" type="button" data-i18n="layClusters">Clusters</button>
@@ -1787,8 +1792,9 @@ window.addEventListener('load', function () {
     if(showReal){ var vr=null; try{vr=ts.getVisibleRange();}catch(e){} if(!vr)return; var from=+vr.from,to=+vr.to,span=(to-from)||1,now=Date.now(),winMs=WIN[win].mins*60000;
       for(var j=0;j<liqEvents.length;j++){ var e=liqEvents[j]; if(now-e.ts>winMs){e._x=null;continue;}
         var x=((Math.floor(e.ts/1000)-from)/span)*paneW; if(x<2||x>paneW){e._x=null;continue;}
-        var yy=candle.priceToCoordinate(e.price); if(yy==null||yy<0||yy>H){e._x=null;continue;} var r=Math.max(3,Math.min(24,Math.sqrt(e.notional)/50));
-        octx.beginPath(); octx.arc(x,yy,r,0,6.2832); octx.fillStyle=bcol(e.side,0.26); octx.fill(); octx.lineWidth=1.4; octx.strokeStyle=bcol(e.side,0.9); octx.stroke(); e._x=x; e._y=yy; e._r=r; } } }
+        var yy=candle.priceToCoordinate(e.price); if(yy==null||yy<0||yy>H){e._x=null;continue;} var r=Math.max(5,Math.min(28,Math.sqrt(e.notional)/42));
+        octx.save(); octx.shadowColor=bcol(e.side,0.8); octx.shadowBlur=7;
+        octx.beginPath(); octx.arc(x,yy,r,0,6.2832); octx.fillStyle=bcol(e.side,0.3); octx.fill(); octx.lineWidth=1.6; octx.strokeStyle=bcol(e.side,0.95); octx.stroke(); octx.restore(); e._x=x; e._y=yy; e._r=r; } } }
   function onCross(param){ var tip=document.getElementById('heatTip'); if(!tip)return;
     if(!realMode||!param.point){ tip.style.display='none'; return; } var px=param.point.x,py=param.point.y,best=null,bd=1e9;
     for(var i=0;i<liqEvents.length;i++){ var e=liqEvents[i]; if(e._x==null)continue; var d=Math.hypot(e._x-px,e._y-py); if(d<e._r+4&&d<bd){bd=d;best=e;} }
@@ -1796,7 +1802,10 @@ window.addEventListener('load', function () {
     tip.innerHTML='<b>'+(best.side==='long_liquidated'?'LONG liquidated':'SHORT liquidated')+'</b>$'+money(best.notional)+' @ '+money(best.price)+'<small>'+best.exchange+' · '+new Date(best.ts).toLocaleTimeString()+'</small>';
     tip.style.display='block'; tip.style.left=Math.min(stage.clientWidth-160,best._x+12)+'px'; tip.style.top=Math.max(4,best._y-12)+'px'; }
   function applyTheo(){ if(showTheo||!realMode){ setLines(cur.price); } else { for(var i=0;i<plines.length;i++){try{candle.removePriceLine(plines[i]);}catch(e){}} plines=[]; } }
-  function setFallback(fb){ realMode=!fb; var n=document.getElementById('heatFallback'); if(n)n.style.display=fb?'flex':'none'; applyTheo(); updateTicker(); sched(); }
+  function setFallback(fb){ realMode=!fb; var n=document.getElementById('heatFallback'); if(n)n.style.display=fb?'flex':'none'; applyTheo(); updateTicker(); updateStats(); sched(); }
+  function updateStats(){ var el=document.getElementById('heatStats'); if(!el)return; if(!realMode){el.textContent='';return;}
+    var cnt=0,not=0; for(var i=0;i<liqBuckets.length;i++){cnt+=liqBuckets[i].count||0;not+=(liqBuckets[i].long||0)+(liqBuckets[i].short||0);}
+    el.innerHTML = cnt ? '<b>'+cnt+'</b> liquidations · <b>$'+money(not)+'</b>' : '<span class="hs-quiet">Quiet now — liquidations spike when price moves</span>'; }
   function updateTicker(){ var el=document.getElementById('heatTicker'); if(!el)return; if(!realMode){el.innerHTML='';return;}
     var big=liqEvents.filter(function(e){return e.notional>=50000;}).slice(0,20);
     el.innerHTML = big.length ? '<div class="tk-track">'+big.concat(big).map(function(e){return '<span class="tk-i '+(e.side==='long_liquidated'?'tk-l':'tk-s')+'">'+(e.side==='long_liquidated'?'▼ LONG':'▲ SHORT')+' $'+money(e.notional)+' @ '+money(e.price)+' · '+e.exchange+'</span>';}).join('')+'</div>' : '<span class="tk-empty">No liquidations above $50k in view yet.</span>'; }

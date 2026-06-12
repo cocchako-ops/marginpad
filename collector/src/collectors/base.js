@@ -20,11 +20,14 @@ export class BaseCollector {
     this.backoff = 1000;
     this.maxBackoff = 30000;
     this.silenceMs = 35000;        // force reconnect if no message in this long (override per exchange)
+    this.maxLifeMs = 18 * 60 * 1000; // proactively recycle the socket every ~18 min so a "zombie" (alive via
+                                     // pings but with a dead subscription) can never silently stop delivering events
     this.lastMsgAt = 0;
     this.lastEventAt = 0;
     this.eventsTotal = 0;
     this._silenceTimer = null;
     this._pingTimer = null;
+    this._lifeTimer = null;
   }
 
   // ---- subclass surface (override these) ----
@@ -55,6 +58,7 @@ export class BaseCollector {
       for (const f of this.subscribeFrames()) { try { ws.send(JSON.stringify(f)); } catch (e) { log.warn(`[${this.name}] subscribe send failed`, { e: String(e) }); } }
       this._armSilence();
       this._armPing();
+      this._armLife();
       this.onState();
     });
 
@@ -99,7 +103,14 @@ export class BaseCollector {
     }, this.pingIntervalMs());
   }
 
-  _clearTimers() { clearTimeout(this._silenceTimer); clearInterval(this._pingTimer); }
+  _armLife() {
+    clearTimeout(this._lifeTimer);
+    this._lifeTimer = setTimeout(() => {
+      log.info(`[${this.name}] scheduled socket refresh (${Math.round(this.maxLifeMs / 60000)}min)`);
+      try { this.ws && this.ws.close(); } catch {}
+    }, this.maxLifeMs);
+  }
+  _clearTimers() { clearTimeout(this._silenceTimer); clearInterval(this._pingTimer); clearTimeout(this._lifeTimer); }
 
   _reconnect(reason) {
     this._clearTimers();
