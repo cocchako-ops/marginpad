@@ -731,7 +731,7 @@
   <section id="heatmap" class="heatwrap" style="display:none" aria-label="Liquidation heatmap">
     <div class="heat-bar">
       <select id="heatCoin" class="heat-coin" aria-label="Coin">
-        <option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option><option>BNB</option><option>DOGE</option><option>ADA</option><option>AVAX</option><option>LINK</option><option>LTC</option><option>DOT</option><option>TRX</option><option>SHIB</option><option>PEPE</option><option>NEAR</option><option>APT</option><option>ARB</option><option>OP</option><option>INJ</option><option>SUI</option><option>TIA</option><option>ATOM</option><option>UNI</option><option>FIL</option><option>TON</option><option>AAVE</option><option>WIF</option><option>BONK</option><option>FET</option><option>ICP</option>
+        <option>BTC</option><option>ETH</option>
       </select>
       <div class="heat-px" id="heatPx">—</div>
       <div class="heat-act">
@@ -1885,7 +1885,9 @@ window.addEventListener('load', function () {
     });
   }
   if(sel)sel.addEventListener('change',function(){load(sel.value);});
-  function shot(cb){ if(!chart)return; try{ var base=chart.takeScreenshot(),c=document.createElement('canvas'); c.width=base.width; c.height=base.height; var x=c.getContext('2d'); x.drawImage(base,0,0);
+  function shot(cb){ if(!chart)return; try{ var base=chart.takeScreenshot(),c=document.createElement('canvas'); c.width=base.width; c.height=base.height; var x=c.getContext('2d');
+    x.fillStyle='#0a0b0d'; x.fillRect(0,0,c.width,c.height); /* chart layout bg is transparent -> paint our dark bg so the PNG isn't white */
+    x.drawImage(base,0,0);
     if(overlay&&realMode){try{x.drawImage(overlay,0,0,c.width,c.height);}catch(e){}}
     var pad=Math.round(c.width*0.018); x.textAlign='left'; x.font='bold '+Math.round(c.width*0.026)+'px "Bricolage Grotesque",sans-serif'; x.fillStyle='#f5f5f2'; x.fillText('MARGIN',pad,c.height-pad); var mw=x.measureText('MARGIN').width; x.fillStyle='#c2f64a'; x.fillText('PAD',pad+mw,c.height-pad);
     x.textAlign='right'; x.fillStyle='#9aa3ad'; x.font=Math.round(c.width*0.016)+'px "Space Mono",monospace'; x.fillText(cur.coin+' · '+new Date().toISOString().slice(0,16).replace('T',' ')+' UTC · marginpad.io',c.width-pad,c.height-pad);
