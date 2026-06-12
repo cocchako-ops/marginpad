@@ -1658,7 +1658,7 @@ window.addEventListener('load', function () {
     var b=e.target.closest('button');if(!b)return;
     var a=b.getAttribute('data-mn');
     if(a==='journal'){location.href='/journal/'+(window.mpLang&&window.mpLang!=='en'?'?lang='+window.mpLang:'');}
-    else if(a==='chat'){var c=document.getElementById('chatOpen');if(c)c.click();}
+    else if(a==='chat'){ var bx=document.getElementById('chatBox'); if(bx&&!bx.hidden){ var x=document.getElementById('ctClose'); if(x)x.click(); } else { var c=document.getElementById('chatOpen'); if(c)c.click(); } }
     else if(a==='calc'){var card=document.querySelector('.card');if(card)card.scrollIntoView({behavior:'smooth',block:'start'});}
     else if(a==='markets'){var hp=document.querySelector('.hotpairs');if(hp)hp.scrollIntoView({behavior:'smooth',block:'start'});}
   });
@@ -1791,7 +1791,7 @@ window.addEventListener('load', function () {
   var overlay=null,octx=null,odpr=1,liqEvents=[],liqBuckets=[],liqMax=0,clusters=[],clMax=0,dispBins=[],realMode=false,showReal=true,showClusters=false,showTheo=false,win='1D',pollT=null,drawQ=false,subd=false,loadedKlines=false;
   var WIN={'1D':{iv:'15',mins:1440},'1W':{iv:'60',mins:10080},'1M':{iv:'240',mins:43200},'1Y':{iv:'1440',mins:525600}};
   var MOCK=/[?&]mockliq=1/.test(location.search);
-  var lastBar=null,priceT=null; // live candle: track the forming bar, update its close from the price feed
+  var lastBar=null,priceT=null,klT=null; // live candle: track the forming bar, update its close from the price feed
   function ensureOverlay(){ if(overlay)return; overlay=document.createElement('canvas'); overlay.className='heat-ovl';
     stage.style.position='relative'; stage.appendChild(overlay); octx=overlay.getContext('2d');
     if(window.ResizeObserver)new ResizeObserver(function(){sizeOverlay();sched();}).observe(stage); sizeOverlay(); }
@@ -1880,13 +1880,14 @@ window.addEventListener('load', function () {
   // and roll a fresh candle when the interval ticks over — so the chart never looks frozen even when liquidations are sparse.
   function liveCandle(){ if(!candle||!cur.price||!lastBar)return;
     var ivSec=parseInt(WIN[win].iv,10)*60, nowBar=Math.floor(Date.now()/1000/ivSec)*ivSec;
-    if(nowBar>lastBar.time){ lastBar={time:nowBar,open:cur.price,high:cur.price,low:cur.price,close:cur.price}; }
+    var rolled=nowBar>lastBar.time;
+    if(rolled){ lastBar={time:nowBar,open:cur.price,high:cur.price,low:cur.price,close:cur.price}; }
     else { lastBar.close=cur.price; if(cur.price>lastBar.high)lastBar.high=cur.price; if(cur.price<lastBar.low)lastBar.low=cur.price; }
-    try{ candle.update(lastBar); }catch(e){} }
+    try{ candle.update(lastBar); if(rolled)chart.timeScale().scrollToRealTime(); }catch(e){} }
   function pricePoll(){ var c=cur.coin; fetch('/api/price?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return null;}).then(function(pd){ if(c!==cur.coin||!pd||!pd.price)return;
     cur.price=+pd.price; cur.chg=+pd.chg||0; if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>'; liveCandle(); sched(); }); }
-  function startPoll(){ stopPoll(); fetchLiq(); pollT=setInterval(fetchLiq,8000); pricePoll(); priceT=setInterval(pricePoll,6000); }
-  function stopPoll(){ if(pollT){clearInterval(pollT);pollT=null;} if(priceT){clearInterval(priceT);priceT=null;} }
+  function startPoll(){ stopPoll(); fetchLiq(); pollT=setInterval(fetchLiq,8000); pricePoll(); priceT=setInterval(pricePoll,6000); klT=setInterval(function(){ if(loadedKlines)reloadKlines(); },45000); }
+  function stopPoll(){ if(pollT){clearInterval(pollT);pollT=null;} if(priceT){clearInterval(priceT);priceT=null;} if(klT){clearInterval(klT);klT=null;} }
   document.addEventListener('click',function(ev){ if(!ev.target.closest)return;
     var w=ev.target.closest('.heat-win'); if(w){ var ws=document.querySelectorAll('.heat-win'); for(var i=0;i<ws.length;i++)ws[i].classList.remove('active'); w.classList.add('active'); win=w.getAttribute('data-w'); if(loadedKlines)reloadKlines(); fetchLiq(); return; }
     var ly=ev.target.closest('.heat-lyr'); if(ly){ var L=ly.getAttribute('data-layer'),on=!ly.classList.contains('active'); ly.classList.toggle('active',on);
