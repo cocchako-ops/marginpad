@@ -595,8 +595,7 @@
   [dir="rtl"] #chatFab,[dir="rtl"] #chatBox{right:auto;left:20px;}
   /* mobile: make chat a panel that sits ABOVE the bottom nav so the input isn't hidden behind it */
   @media (max-width:720px){
-    #chatBox{top:60px;bottom:calc(74px + env(safe-area-inset-bottom));left:14px;right:14px;width:auto;max-width:none;height:auto;max-height:none;}
-    [dir="rtl"] #chatBox{left:14px;right:14px;}
+    #chatBox{top:60px!important;bottom:calc(74px + env(safe-area-inset-bottom))!important;left:14px!important;right:14px!important;width:auto!important;max-width:none!important;height:auto!important;max-height:none!important;}
   }
   .content2{position:relative;z-index:1;background:linear-gradient(180deg,var(--panel) 0%,var(--bg-grain) 100%);border:1px solid var(--line-bright);border-radius:18px;padding:38px 36px;margin:0 0 42px;}
   @media(max-width:640px){.content2{padding:26px 20px;}}
