@@ -1787,6 +1787,7 @@ window.addEventListener('load', function () {
   var overlay=null,octx=null,odpr=1,liqEvents=[],liqBuckets=[],liqMax=0,clusters=[],clMax=0,realMode=false,showReal=true,showClusters=true,showTheo=false,win='1D',pollT=null,drawQ=false,subd=false,loadedKlines=false;
   var WIN={'1D':{iv:'15',mins:1440},'1W':{iv:'60',mins:10080},'1M':{iv:'240',mins:43200},'1Y':{iv:'1440',mins:525600}};
   var MOCK=/[?&]mockliq=1/.test(location.search);
+  var lastBar=null,priceT=null; // live candle: track the forming bar, update its close from the price feed
   function ensureOverlay(){ if(overlay)return; overlay=document.createElement('canvas'); overlay.className='heat-ovl';
     stage.style.position='relative'; stage.appendChild(overlay); octx=overlay.getContext('2d');
     if(window.ResizeObserver)new ResizeObserver(function(){sizeOverlay();sched();}).observe(stage); sizeOverlay(); }
@@ -1849,7 +1850,7 @@ window.addEventListener('load', function () {
       fetch('/api/v1/clusters?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return {clusters:[]};}),
       fetch('/api/price?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return null;})
     ]).then(function(res){ if(c!==cur.coin)return; var rec=res[0],lv=res[1],cls=res[2],pd=res[3];
-      if(pd&&pd.price){cur.price=+pd.price;cur.chg=+pd.chg||0;if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>';}
+      if(pd&&pd.price){cur.price=+pd.price;cur.chg=+pd.chg||0;if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>';liveCandle();}
       if(!rec||rec.fallback||!Array.isArray(rec.buckets)||!lv||lv.fallback){ setFallback(true); return; }
       liqBuckets=rec.buckets; liqMax=0; for(var i=0;i<liqBuckets.length;i++){var t=(liqBuckets[i].long||0)+(liqBuckets[i].short||0);if(t>liqMax)liqMax=t;}
       liqEvents=lv.events||[];
@@ -1865,21 +1866,30 @@ window.addEventListener('load', function () {
       clusters.push({price:Math.round(P*(1+1/lev-0.005)/cbs)*cbs,side:'short_liquidated',est_notional:w*6e6*(0.6+Math.random())}); });
     clMax=0; clusters.forEach(function(c){if(c.est_notional>clMax)clMax=c.est_notional;});
     setFallback(false); }
-  function startPoll(){ stopPoll(); fetchLiq(); pollT=setInterval(fetchLiq,8000); }
-  function stopPoll(){ if(pollT){clearInterval(pollT);pollT=null;} }
+  // Keep the forming candle alive between full kline reloads: move its close (and high/low) with the live price,
+  // and roll a fresh candle when the interval ticks over — so the chart never looks frozen even when liquidations are sparse.
+  function liveCandle(){ if(!candle||!cur.price||!lastBar)return;
+    var ivSec=parseInt(WIN[win].iv,10)*60, nowBar=Math.floor(Date.now()/1000/ivSec)*ivSec;
+    if(nowBar>lastBar.time){ lastBar={time:nowBar,open:cur.price,high:cur.price,low:cur.price,close:cur.price}; }
+    else { lastBar.close=cur.price; if(cur.price>lastBar.high)lastBar.high=cur.price; if(cur.price<lastBar.low)lastBar.low=cur.price; }
+    try{ candle.update(lastBar); }catch(e){} }
+  function pricePoll(){ var c=cur.coin; fetch('/api/price?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return null;}).then(function(pd){ if(c!==cur.coin||!pd||!pd.price)return;
+    cur.price=+pd.price; cur.chg=+pd.chg||0; if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>'; liveCandle(); sched(); }); }
+  function startPoll(){ stopPoll(); fetchLiq(); pollT=setInterval(fetchLiq,8000); pricePoll(); priceT=setInterval(pricePoll,6000); }
+  function stopPoll(){ if(pollT){clearInterval(pollT);pollT=null;} if(priceT){clearInterval(priceT);priceT=null;} }
   document.addEventListener('click',function(ev){ if(!ev.target.closest)return;
     var w=ev.target.closest('.heat-win'); if(w){ var ws=document.querySelectorAll('.heat-win'); for(var i=0;i<ws.length;i++)ws[i].classList.remove('active'); w.classList.add('active'); win=w.getAttribute('data-w'); if(loadedKlines)reloadKlines(); fetchLiq(); return; }
     var ly=ev.target.closest('.heat-lyr'); if(ly){ var L=ly.getAttribute('data-layer'),on=!ly.classList.contains('active'); ly.classList.toggle('active',on);
       if(L==='liq')showReal=on; else if(L==='clusters')showClusters=on; else if(L==='theo'){showTheo=on;applyTheo();} sched(); } });
   function reloadKlines(){ var c=cur.coin,iv=WIN[win].iv;
     fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin)return;
-      if(kd&&kd.length&&candle){ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} }
+      if(kd&&kd.length&&candle){ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; }
       loadedKlines=true; setTimeout(sched,80); setTimeout(sched,400); }); }
   function load(coin){ cur.coin=coin; if(pxEl)pxEl.textContent='…';
     ensureLib(function(){ initChart(); ensureOverlay();
       if(!subd){ subd=true; try{chart.timeScale().subscribeVisibleTimeRangeChange(sched); chart.subscribeCrosshairMove(onCross);}catch(e){} }
       fetch('/api/price?symbol='+encodeURIComponent(coin)).then(function(r){return r.json();}).catch(function(){return null;}).then(function(pd){ if(coin!==cur.coin)return;
-        if(pd&&pd.price){cur.price=+pd.price;cur.chg=+pd.chg||0;if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>';}
+        if(pd&&pd.price){cur.price=+pd.price;cur.chg=+pd.chg||0;if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>';liveCandle();}
         else{cur.price=0;if(pxEl)pxEl.textContent='unavailable';} applyTheo(); });
       reloadKlines(); startPoll();
     });
