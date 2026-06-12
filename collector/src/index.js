@@ -1,5 +1,6 @@
 // Entry point. Wires collectors -> dedup/insert -> aggregate, and serves the read API.
 // Designed for pm2/systemd: crash-safe, graceful SIGTERM, no shared state with the website.
+import './env.js'; // MUST be first — populates process.env from collector/.env before config is read
 import { EventEmitter } from 'node:events';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
