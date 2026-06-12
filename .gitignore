@@ -1,0 +1,22 @@
+node_modules/
+**/node_modules/
+
+# collector runtime data (DB, backups, logs) — never commit; aggregates are backed up separately
+collector/data/
+collector/backups/
+collector/logs/
+
+*.log
+.env
+.env.*
+!.env.example
+
+# cloudflare / wrangler
+.wrangler/
+
+# scratch screenshots used during development
+_*.png
+
+# os
+Thumbs.db
+.DS_Store

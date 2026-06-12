@@ -1,0 +1,17 @@
+{
+  "name": "marginpad-collector",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real-time crypto liquidation collector + read API for MarginPad. Separate service — the website only reads it over HTTP.",
+  "type": "module",
+  "main": "src/index.js",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node src/index.js",
+    "migrate": "node src/migrate.js",
+    "backup": "bash backup.sh"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

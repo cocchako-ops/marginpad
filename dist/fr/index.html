@@ -1,0 +1,1842 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Calculatrice de Liquidation et Taille de Position Crypto — MarginPad</title>
+<meta name="description" content="Calculatrices gratuites pour traders de futures crypto : prix de liquidation, taille de position, PnL, DCA et take-profit. Instantané, sans inscription." />
+<meta name="keywords" content="liquidation price calculator, position size calculator crypto, crypto pnl calculator, dca calculator crypto, average down calculator, take profit calculator, futures calculator, leverage calculator, risk management crypto" />
+<link rel="canonical" href="https://marginpad.io/fr/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="author" content="MarginPad" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"MarginPad","url":"https://marginpad.io/","logo":"https://marginpad.io/assets/apple-touch-icon.png","description":"Free crypto futures calculators: liquidation, position size, PnL, DCA, take-profit and risk/reward."}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"}
+</script>
+<meta property="og:site_name" content="MarginPad" />
+<meta property="og:title" content="MarginPad — Precision Calculators for Crypto Traders" />
+<meta property="og:description" content="Liquidation price, position size, PnL, DCA & take-profit calculators. Free, instant, no signup." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/fr/" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="MarginPad — Precision Calculators for Crypto Traders" />
+<meta name="twitter:description" content="Liquidation, position size, PnL, DCA & take-profit calculators for crypto futures. Free, no signup." />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<script src="/assets/pwa-nav.js" defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org","@type": "WebApplication","name": "MarginPad","url": "https://marginpad.io/",
+  "applicationCategory": "FinanceApplication","operatingSystem": "Any (web browser)",
+  "description": "Precision calculators for crypto futures traders: liquidation price, risk-based position size, PnL/ROI, dollar-cost-average entry, and take-profit targets.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": ["Liquidation price calculator","Position size calculator","PnL / ROI calculator","DCA average entry calculator","Take-profit target calculator"]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org","@type": "FAQPage","mainEntity": [
+    { "@type": "Question", "name": "How is liquidation price calculated?", "acceptedAnswer": { "@type": "Answer", "text": "For an isolated-margin position the estimated liquidation price is Entry × (1 − 1/Leverage + MMR) for longs and Entry × (1 + 1/Leverage − MMR) for shorts, where MMR is the maintenance margin rate." } },
+    { "@type": "Question", "name": "How do I size a position by risk?", "acceptedAnswer": { "@type": "Answer", "text": "Decide what percentage of your account to risk if your stop is hit, then divide that dollar risk by the distance between entry and stop to get the number of coins to buy." } },
+    { "@type": "Question", "name": "What is the difference between ROI and ROE?", "acceptedAnswer": { "@type": "Answer", "text": "Price ROI is the percentage the asset moved. ROE is your return on the margin posted, which leverage multiplies." } },
+    { "@type": "Question", "name": "How does a crypto DCA / average down calculator work?", "acceptedAnswer": { "@type": "Answer", "text": "It computes your blended average entry across multiple buys as the total cost divided by the total quantity." } },
+    { "@type": "Question", "name": "How do I calculate a take-profit price?", "acceptedAnswer": { "@type": "Answer", "text": "Pick a target return on equity (ROE). The required exit price is Entry × (1 + ROE / (100 × Leverage)) for longs and Entry × (1 − ROE / (100 × Leverage)) for shorts." } }
+  ]
+}
+</script>
+<style>
+  :root{--bg:#0a0b0d;--bg-grain:#0d0f12;--panel:#111419;--panel-2:#161a21;--line:#232932;--line-bright:#2f3742;--ink:#e9e7df;--ink-dim:#9aa3ad;--ink-faint:#5c656f;--lime:#ffffff;--lime-deep:#cfd3d8;--up:#2ebd85;--red:#ff6258;--amber:#ffb347;--r:14px;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;position:relative;overflow-x:hidden;}
+  .aurora{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .aurora::before,.aurora::after{content:'';position:absolute;width:55vw;height:55vw;border-radius:50%;filter:blur(90px);opacity:.05;}
+  .aurora::before{background:var(--lime);top:-12vw;left:-8vw;animation:drift1 24s ease-in-out infinite;}
+  .aurora::after{background:#ffffff;bottom:-16vw;right:-10vw;animation:drift2 30s ease-in-out infinite;}
+  @keyframes drift1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(12vw,7vw) scale(1.15);}}
+  @keyframes drift2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-10vw,-6vw) scale(1.1);}}
+  /* live animated candlestick background */
+  .bgchart{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.8;-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 32%,#000 100%);mask-image:linear-gradient(to bottom,transparent 0%,#000 32%,#000 100%);}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px;-webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 0%,transparent 70%);mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,#000 0%,transparent 70%);opacity:.30;pointer-events:none;z-index:0;}
+  .wrap{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:0 24px;}
+  /* installed PWA (home-screen app): keep content clear of the iOS status bar / notch */
+  @media (display-mode:standalone){ body{ padding-top:env(safe-area-inset-top); } }
+  /* ---- install (add to home screen) prompt ---- */
+  .pwa-banner{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:90;display:flex;align-items:center;gap:12px;background:rgba(17,20,25,.94);-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4);border:1px solid var(--line-bright);border-radius:16px;padding:12px 14px;box-shadow:0 16px 50px rgba(0,0,0,.6);animation:pwaUp .4s cubic-bezier(.2,.7,.2,1);}
+  @keyframes pwaUp{from{transform:translateY(24px);opacity:0;}to{transform:none;opacity:1;}}
+  @media (max-width:720px){ .pwa-banner{ bottom:calc(72px + env(safe-area-inset-bottom)); } }
+  .pwa-banner[hidden],.pwa-sheet[hidden]{display:none;}
+  .pwa-ic{width:46px;height:46px;border-radius:11px;flex-shrink:0;}
+  .pwa-txt{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;}
+  .pwa-txt strong{font-size:15px;color:var(--ink);}
+  .pwa-txt span{font-size:12.5px;color:var(--ink-dim);line-height:1.35;}
+  .pwa-act{flex-shrink:0;background:#fff;color:#0a0b0d;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;border:none;padding:10px 15px;border-radius:10px;cursor:pointer;}
+  .pwa-x{flex-shrink:0;background:none;border:none;color:var(--ink-faint);font-size:15px;cursor:pointer;padding:4px 6px;line-height:1;}
+  .pwa-x:hover{color:#fff;}
+  .pwa-sheet{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.62);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center;}
+  .pwa-sheet-card{position:relative;background:linear-gradient(180deg,#161a21,#0d0f12);border:1px solid var(--line-bright);border-radius:22px 22px 0 0;padding:28px 24px calc(34px + env(safe-area-inset-bottom));width:100%;max-width:460px;animation:pwaUp .35s cubic-bezier(.2,.7,.2,1);}
+  .pwa-ic-lg{width:62px;height:62px;border-radius:15px;display:block;margin-bottom:14px;}
+  .pwa-sheet-card h3{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;font-weight:600;margin-bottom:18px;color:var(--ink);}
+  .pwa-sheet-card .pwa-x{position:absolute;top:16px;right:16px;font-size:17px;}
+  .pwa-steps{list-style:none;display:flex;flex-direction:column;gap:15px;counter-reset:s;padding:0;margin:0;}
+  .pwa-steps li{counter-increment:s;display:flex;align-items:center;gap:13px;font-size:14.5px;color:var(--ink-dim);line-height:1.4;}
+  .pwa-steps li::before{content:counter(s);flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--up);color:#04150d;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;}
+  .pwa-steps strong{color:var(--ink);}
+  .pwa-steps svg{vertical-align:middle;margin:0 2px;}
+
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:26px 0 20px;border-bottom:1px solid var(--line);animation:fade .7s ease both;flex-wrap:wrap;}
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;transition:letter-spacing .25s ease;cursor:pointer;color:var(--ink);text-decoration:none;}
+  .brand .mark:hover{letter-spacing:-.02em;}
+  .brand .mark b{color:var(--lime);}
+  .brand .tag{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.18em;}
+  .hnav{display:flex;align-items:center;gap:3px;}
+  .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);text-decoration:none;background:transparent;border:none;cursor:pointer;padding:8px 11px;border-radius:9px;transition:.15s;}
+  .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}
+  .hlink svg{flex-shrink:0;}
+  .hbot{color:#7cc4ff;}
+  .hbot:hover{color:#bfe0ff;background:rgba(124,196,255,.12);}
+  .hchat{color:var(--up);}
+  .hchat:hover{color:#62e6a8;background:rgba(46,189,133,.13);}
+  #chatFab{display:none!important;}
+  .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--ink-dim);background:var(--bg);border:1px solid var(--line-bright);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;transition:.15s;max-width:140px;}
+  .lang:hover{border-color:var(--ink-faint);color:var(--ink);}
+  .pill{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--lime-deep);border:1px solid var(--line-bright);padding:6px 12px;border-radius:100px;text-transform:uppercase;transition:transform .2s ease,border-color .2s ease;}
+  .pill:hover{transform:translateY(-1px);border-color:var(--lime-deep);}
+  .pill .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--lime);margin-right:7px;vertical-align:middle;animation:pulse 1.8s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,255,255,.5);}50%{opacity:.5;box-shadow:0 0 0 5px rgba(255,255,255,0);}}
+
+  .hero{padding:58px 0 36px;}
+  .hero h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.045em;line-height:.98;font-size:clamp(36px,6.6vw,72px);animation:rise .8s cubic-bezier(.2,.7,.2,1) .05s both;}
+  .hero h1 em{font-style:normal;color:var(--lime);background:linear-gradient(100deg,var(--lime) 25%,#b9c1ca 50%,var(--lime) 75%);background-size:220% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 4.5s linear infinite;}
+  @keyframes shimmer{to{background-position:-220% center;}}
+  .hero .sub{margin-top:20px;max-width:600px;color:var(--ink-dim);font-size:18px;animation:rise .8s cubic-bezier(.2,.7,.2,1) .15s both;}
+  .hero .meta{margin-top:26px;display:flex;gap:10px;flex-wrap:wrap;animation:rise .8s cubic-bezier(.2,.7,.2,1) .25s both;}
+  .hero .meta>span{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.07em;background:linear-gradient(180deg,var(--panel),var(--bg-grain));border:1px solid var(--line-bright);border-radius:20px;padding:7px 14px;transition:border-color .18s;}
+  .hero .meta>span:hover{border-color:var(--ink-faint);}
+  .hero .meta b{color:#c2f64a;font-weight:700;}
+
+  /* ---- 3 main products switcher ---- */
+  .prodnav{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:20px 0 0;animation:rise .8s cubic-bezier(.2,.7,.2,1) .25s both;}
+  .prod{display:flex;align-items:center;gap:11px;text-align:left;background:linear-gradient(180deg,var(--panel),var(--bg-grain));border:1px solid var(--line-bright);border-radius:14px;padding:14px 15px;cursor:pointer;position:relative;transition:transform .18s,border-color .18s,box-shadow .18s;color:var(--ink);}
+  .prod:hover{border-color:var(--ink-faint);transform:translateY(-2px);}
+  .prod.active{border-color:rgba(255,255,255,.85);box-shadow:inset 0 0 0 1px rgba(255,255,255,.5),0 16px 44px -20px rgba(255,255,255,.45);}
+  .prod .pi{line-height:1;flex-shrink:0;color:var(--ink-dim);display:flex;}
+  .prod .pi svg{width:22px;height:22px;display:block;}
+  .prod.active .pi{color:#fff;}
+  .prod .pt{display:flex;flex-direction:column;gap:2px;min-width:0;}
+  .prod .pt b{font-family:'Bricolage Grotesque',sans-serif;font-size:14.5px;font-weight:600;white-space:nowrap;}
+  .prod .pt small{color:var(--ink-faint);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .prod .pnew{position:absolute;top:-7px;right:12px;background:#c2f64a;color:#0a0b0d;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;letter-spacing:.05em;}
+  @media (max-width:680px){
+    .prodnav{gap:6px;grid-template-columns:repeat(2,1fr);}
+    .prod{flex-direction:column;align-items:center;text-align:center;gap:5px;padding:11px 5px;border-radius:11px;}
+    .prod .pt b{font-size:10.5px;white-space:normal;line-height:1.15;}
+    .prod .pt small{display:none;}
+    .prod .pi svg{width:18px;height:18px;}
+    .prod .pnew{right:5px;top:-6px;font-size:8px;padding:1px 4px;}
+  }
+  /* ---- liquidation heatmap ---- */
+  .heatwrap{margin-top:16px;background:linear-gradient(180deg,var(--panel) 0%,var(--bg-grain) 100%);border:1px solid var(--line-bright);border-radius:var(--r);padding:18px;animation:panelIn .45s cubic-bezier(.2,.7,.2,1) both;}
+  .heat-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+  .heat-coin{background:var(--bg);border:1px solid var(--line-bright);color:var(--ink);font-family:'Space Mono',monospace;font-size:15px;font-weight:700;padding:9px 12px;border-radius:10px;cursor:pointer;outline:none;}
+  .heat-coin option{background:var(--panel);color:var(--ink);}
+  .heat-px{font-family:'Space Mono',monospace;font-size:18px;color:var(--ink);}
+  .heat-px small{color:var(--ink-faint);font-size:12px;}
+  .heat-act{margin-left:auto;display:flex;gap:8px;}
+  .heat-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid var(--line-bright);color:var(--ink);font-family:'Space Mono',monospace;font-size:13px;padding:9px 14px;border-radius:10px;cursor:pointer;transition:.15s;}
+  .heat-btn:hover{background:rgba(255,255,255,.14);border-color:var(--ink-faint);}
+  .heat-stage{position:relative;width:100%;margin:0 auto;}
+  #heatChart{width:100%;height:clamp(400px,60vh,580px);}
+  .heat-err{display:flex;align-items:center;justify-content:center;height:100%;color:var(--ink-faint);font-family:'Space Mono',monospace;font-size:14px;}
+  .heat-stage canvas{width:100%;height:auto;display:block;border-radius:12px;box-shadow:0 20px 60px -30px rgba(0,0,0,.8);}
+  .heat-note{font-size:12px;color:var(--ink-faint);line-height:1.5;margin:13px auto 0;text-align:center;max-width:540px;}
+  /* ---- crypto swap (ChangeNOW, non-custodial) ---- */
+  .swapwrap{margin-top:14px;padding:6px 0 0;animation:panelIn .45s cubic-bezier(.2,.7,.2,1) both;}
+  .swap-intro{font-size:13.5px;color:var(--ink-dim);line-height:1.5;text-align:center;margin:0 auto 14px;max-width:520px;}
+  .swap-frame{position:relative;width:100%;max-width:464px;margin:0 auto;border-radius:14px;overflow:hidden;}
+  .swap-frame iframe{display:block;width:100%;height:430px;border:0;background:transparent;opacity:.97;}
+  .swap-load{position:absolute;left:0;right:0;top:0;height:430px;display:flex;align-items:center;justify-content:center;color:var(--ink-faint);font-family:'Space Mono',monospace;font-size:13px;pointer-events:none;}
+  .swap-note{font-size:12px;color:var(--ink-faint);line-height:1.5;margin:14px auto 0;text-align:center;max-width:480px;}
+  @media (max-width:680px){.heat-act{margin-left:0;width:100%;}.heat-btn{flex:1;justify-content:center;}}
+  .tabs{display:flex;gap:5px;margin:8px 0 0;flex-wrap:wrap;animation:rise .8s cubic-bezier(.2,.7,.2,1) .3s both;}
+  .tab{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;color:var(--ink-dim);background:transparent;border:1px solid var(--line);border-bottom:none;padding:10px 12px;border-radius:11px 11px 0 0;cursor:pointer;transition:.18s;position:relative;top:1px;will-change:transform;}
+  .tab:hover{color:var(--ink);border-color:var(--line-bright);transform:translateY(-2px);}
+  .tab[aria-selected="true"]{color:#fff;background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.5);font-weight:700;}
+  /* mobile: pack the 7 tabs into exactly 2 tidy rows via a 4-column grid (4 + 3) */
+  @media (max-width:600px){
+    .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0 10px;}
+    .tab{min-width:0;font-size:10px;letter-spacing:0;padding:4px;min-height:40px;border-radius:10px;border-bottom:1px solid var(--line);top:0;white-space:normal;line-height:1.15;display:flex;align-items:center;justify-content:center;text-align:center;}
+    .tab:hover{transform:none;}
+    .card{border-radius:14px;}
+  }
+
+  .card{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--panel) 0%,var(--bg-grain) 100%);border:1px solid var(--line-bright);border-radius:0 var(--r) var(--r) var(--r);padding:30px;margin-bottom:38px;box-shadow:0 30px 80px -40px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.02);animation:rise .8s cubic-bezier(.2,.7,.2,1) .35s both;}
+  .card::after{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .35s ease;background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.08),rgba(255,255,255,.05) 35%,transparent 60%);}
+  .card:hover::after{opacity:1;}
+  .card>section{position:relative;z-index:1;}
+  .panel{display:none;}
+  .panel.active{display:grid;grid-template-columns:1fr 1fr;gap:36px;animation:panelIn .45s cubic-bezier(.2,.7,.2,1) both;}
+  @keyframes panelIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  @media (max-width:720px){.panel.active{grid-template-columns:1fr;gap:28px;}}
+
+  .panel h2{grid-column:1/-1;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:22px;letter-spacing:-.02em;margin-bottom:4px;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;}
+  .panel h2 small{color:var(--ink-faint);font-weight:400;font-size:13.5px;font-family:'Familjen Grotesk';}
+
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#ffffff;margin-bottom:7px;}
+  .input-line{position:relative;display:flex;align-items:center;}
+  .input-line .unit{position:absolute;right:14px;font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-faint);pointer-events:none;}
+  input[type="number"]{width:100%;background:linear-gradient(180deg,var(--panel-2),var(--bg));border:1px solid var(--line-bright);color:var(--ink);font-family:'Space Mono',monospace;font-size:16px;padding:13px 15px;border-radius:11px;transition:border-color .15s,box-shadow .15s,background .15s;outline:none;}
+  input[type="number"]:hover{border-color:var(--ink-faint);}
+  input[type="number"]:focus{border-color:#c2f64a;box-shadow:0 0 0 3px rgba(194,246,74,.16);background:linear-gradient(180deg,var(--panel-2),var(--panel));}
+  input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .input-line.has-stepper input{padding-right:58px;}
+  .input-line.has-stepper .unit{right:37px;}
+  .stepper{position:absolute;right:7px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:3px;}
+  .stepper button{width:23px;height:15px;display:flex;align-items:center;justify-content:center;background:var(--panel-2);border:1px solid var(--line-bright);border-radius:5px;color:var(--ink-dim);font-size:8px;line-height:1;cursor:pointer;padding:0;transition:.12s;}
+  .stepper button:hover{color:#c2f64a;border-color:#c2f64a;background:rgba(194,246,74,.1);}
+  .stepper button:active{transform:scale(.88);}
+  [dir="rtl"] .stepper{right:auto;left:7px;}
+  [dir="rtl"] .input-line.has-stepper input{padding-right:15px;padding-left:58px;}
+  [dir="rtl"] .input-line.has-stepper .unit{right:auto;left:37px;}
+  input[type=number]{-moz-appearance:textfield;}
+  #planSym{width:100%;background:var(--bg);border:1px solid var(--line-bright);color:var(--ink);font-family:'Space Mono',monospace;font-size:16px;padding:12px 38px 12px 15px;border-radius:10px;transition:.15s;outline:none;cursor:pointer;-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" stroke="%239aa3ad" stroke-width="2"><path d="M2 4l4 4 4-4"/></svg>');background-repeat:no-repeat;background-position:right 14px center;}
+  #planSym:hover{border-color:var(--ink-faint);}
+  #planSym:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(255,255,255,.12);}
+  #planSym option{background:var(--panel);color:var(--ink);}
+  .adv-toggle{display:flex;align-items:center;gap:10px;margin-top:6px;padding:11px 14px;border:1px dashed var(--line-bright);border-radius:10px;cursor:pointer;color:var(--ink-dim);font-size:13px;user-select:none;transition:.15s;}
+  .adv-toggle:hover{border-color:var(--ink-faint);color:var(--ink);}
+  .adv-toggle input{width:16px;height:16px;accent-color:var(--up);cursor:pointer;flex-shrink:0;}
+  .plan-adv[hidden],.plan-adv-out[hidden]{display:none;}
+  .morelinks{margin-top:30px;padding-top:24px;border-top:1px solid var(--line);}
+  .morelinks h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:17px;margin:0 0 14px;color:var(--ink);}
+  .ml-group{margin-bottom:8px;font-size:13.5px;line-height:1.85;display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline;}
+  .ml-h{min-width:92px;color:var(--ink-faint);font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;}
+  .ml-group a{color:var(--ink-dim);text-decoration:none;}
+  .ml-group a:hover{color:#fff;}
+  .ml-sep{color:var(--ink-faint);}
+  .jr-save{display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:rgba(255,255,255,.06);border:1px solid var(--line-bright);color:var(--ink);font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;padding:11px 16px;border-radius:10px;cursor:pointer;transition:.15s;}
+  .jr-save:hover{background:rgba(255,255,255,.12);border-color:#fff;}
+  .jr-save.saved{color:var(--up);border-color:var(--up);}
+  #journal{display:none;}
+  #journal.active{display:block;grid-template-columns:1fr;}
+  .jr-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+  @media(max-width:560px){.jr-stats{grid-template-columns:repeat(2,1fr);}}
+  .jr-stat{background:var(--panel-2);border:1px solid var(--line-bright);border-radius:12px;padding:15px;}
+  .jr-stat .v{font-size:23px;font-weight:800;color:var(--lime);line-height:1;font-family:'Bricolage Grotesque',sans-serif;}
+  .jr-stat .l{color:var(--ink-faint);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-top:7px;}
+  .jr-list{display:flex;flex-direction:column;gap:10px;}
+  .jr-item{background:var(--panel-2);border:1px solid var(--line-bright);border-radius:12px;padding:13px 16px;display:flex;align-items:center;gap:11px;flex-wrap:wrap;}
+  .jr-item .sym{font-family:'Space Mono',monospace;font-weight:700;font-size:15px;}
+  .jr-side{font-size:11px;text-transform:uppercase;padding:3px 8px;border-radius:6px;font-family:'Space Mono',monospace;}
+  .jr-side.long{color:var(--up);background:rgba(46,189,133,.12);}
+  .jr-side.short{color:var(--red);background:rgba(255,98,88,.12);}
+  .jr-meta{color:var(--ink-dim);font-size:12.5px;font-family:'Space Mono',monospace;}
+  .jr-actions{margin-left:auto;display:flex;gap:6px;align-items:center;}
+  .jr-btn{border:1px solid var(--line-bright);background:var(--bg);color:var(--ink-dim);border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;font-family:'Space Mono',monospace;transition:.15s;}
+  .jr-btn.win:hover{color:var(--up);border-color:var(--up);}
+  .jr-btn.loss:hover{color:var(--red);border-color:var(--red);}
+  .jr-btn.del:hover{color:var(--red);border-color:var(--red);}
+  .jr-result{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;}
+  .jr-result.pos{color:var(--up);}.jr-result.neg{color:var(--red);}
+  .jr-empty{color:var(--ink-faint);text-align:center;padding:34px 0;font-size:14px;}
+  /* ---- journal drawer (side panel) ---- */
+  .jr-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:60;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
+  .jr-drawer{position:fixed;top:0;right:0;height:100%;width:404px;max-width:92vw;background:linear-gradient(180deg,#0d0f12,#0a0b0d);border-left:1px solid var(--line-bright);z-index:61;display:flex;flex-direction:column;padding:20px 20px 30px;overflow-y:auto;box-shadow:-24px 0 70px rgba(0,0,0,.6);animation:jrIn .28s cubic-bezier(.2,.7,.2,1);}
+  @keyframes jrIn{from{transform:translateX(40px);opacity:0;}to{transform:none;opacity:1;}}
+  .jr-backdrop[hidden],.jr-drawer[hidden]{display:none;}
+  .jr-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .jr-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:19px;}
+  .jr-x{background:none;border:none;color:var(--ink-faint);font-size:18px;cursor:pointer;padding:4px 8px;line-height:1;}
+  .jr-x:hover{color:#fff;}
+  .jr-drawer .jr-stats{grid-template-columns:1fr 1fr;}
+  /* ---- tear-off tickets ---- */
+  .jr-list{display:flex;flex-direction:column;gap:14px;}
+  .ticket{display:flex;background:linear-gradient(135deg,#161a20,#0f1216);border:1px solid var(--line-bright);border-radius:12px;position:relative;box-shadow:0 6px 18px rgba(0,0,0,.35);}
+  .ticket.long{box-shadow:0 6px 18px rgba(0,0,0,.35),inset 3px 0 0 0 rgba(46,189,133,.6);}
+  .ticket.short{box-shadow:0 6px 18px rgba(0,0,0,.35),inset 3px 0 0 0 rgba(255,98,88,.6);}
+  .tk-main{flex:1;padding:14px 16px;min-width:0;}
+  .tk-top{display:flex;align-items:center;gap:9px;margin-bottom:11px;}
+  .tk-sym{font-family:'Space Mono',monospace;font-weight:700;font-size:17px;}
+  .tk-side{font-size:10px;text-transform:uppercase;padding:3px 8px;border-radius:5px;font-family:'Space Mono',monospace;letter-spacing:.05em;}
+  .tk-side.long{color:var(--up);background:rgba(46,189,133,.13);}
+  .tk-side.short{color:var(--red);background:rgba(255,98,88,.13);}
+  .tk-rows{display:grid;grid-template-columns:1fr 1fr;gap:5px 16px;}
+  .tk-rows div{display:flex;justify-content:space-between;gap:8px;font-family:'Space Mono',monospace;font-size:12.5px;}
+  .tk-rows span{color:var(--ink-faint);}
+  .tk-rows b{color:var(--ink);font-weight:600;}
+  .tk-stub{width:80px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:12px 8px;position:relative;border-left:2px dashed var(--line-bright);}
+  .tk-stub::before,.tk-stub::after{content:"";position:absolute;left:-8px;width:14px;height:14px;border-radius:50%;background:#0a0b0d;border:1px solid var(--line-bright);}
+  .tk-stub::before{top:-8px;}.tk-stub::after{bottom:-8px;}
+  .tk-result{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;text-align:center;line-height:1.2;}
+  .tk-result.pos{color:var(--up);}.tk-result.neg{color:var(--red);}
+  .tk-tag{font-family:'Space Mono',monospace;font-size:8.5px;text-transform:uppercase;color:var(--ink-faint);letter-spacing:.08em;}
+  .tk-btn{border:1px solid var(--line-bright);background:var(--bg);color:var(--ink-dim);border-radius:7px;padding:6px 0;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;width:100%;transition:.12s;}
+  .tk-btn.win:hover{color:var(--up);border-color:var(--up);}
+  .tk-btn.loss:hover{color:var(--red);border-color:var(--red);}
+  .tk-del{position:absolute;top:5px;right:7px;background:none;border:none;color:var(--ink-faint);cursor:pointer;font-size:11px;padding:2px;line-height:1;z-index:1;}
+  .tk-del:hover{color:var(--red);}
+  /* ---- mobile bottom nav (glassy, icon-only) ---- */
+  .mobnav{display:none;}
+  /* ---- clickable hint popover ---- */
+  #hintPop{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);max-width:330px;width:calc(100% - 32px);background:#f4f4ef;color:#0a0b0d;padding:13px 16px;border-radius:13px;font-size:13.5px;line-height:1.5;font-family:'Familjen Grotesk',sans-serif;box-shadow:0 14px 44px rgba(0,0,0,.55);z-index:210;}
+  #hintPop::after{content:"tap anywhere to dismiss";display:block;margin-top:7px;font-size:9.5px;color:#9098a2;text-transform:uppercase;letter-spacing:.08em;font-family:'Space Mono',monospace;}
+  .hint{cursor:pointer;}
+  @media (max-width:720px){
+    .mobnav{position:fixed;bottom:0;left:0;right:0;z-index:55;display:flex;justify-content:space-around;align-items:center;padding:13px 0 calc(env(safe-area-inset-bottom) + 16px);background:rgba(11,12,15,.74);-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);border-top:1px solid rgba(255,255,255,.1);}
+    .mobnav button{flex:1;background:none;border:none;color:rgba(255,255,255,.62);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:3px 0;transition:transform .12s,color .12s;}
+    .mobnav button:active{color:#fff;transform:scale(.86);}
+    body{padding-bottom:calc(62px + env(safe-area-inset-bottom));}
+    .hbot,.hjr,.hchat{display:none;}
+    .hint{width:19px;height:19px;font-size:11px;}
+  }
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+  .seg{display:flex;gap:6px;}
+  .seg button{flex:1;font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.05em;text-transform:uppercase;padding:11px;cursor:pointer;border-radius:10px;background:var(--bg);border:1px solid var(--line-bright);color:var(--ink-dim);transition:.15s;}
+  .seg button.on[data-side="long"]{background:rgba(255,255,255,.12);border-color:var(--lime);color:var(--lime);}
+  .seg button.on[data-side="short"]{background:rgba(255,98,88,.12);border-color:var(--red);color:var(--red);}
+
+  .results{border-left:1px solid var(--line);padding-left:36px;}
+  @media (max-width:720px){.results{border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:26px;}}
+  .result-main{margin-bottom:24px;position:relative;}
+  .copybtn{position:absolute;top:0;right:0;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;background:var(--bg);border:1px solid var(--line-bright);border-radius:8px;color:var(--ink-faint);cursor:pointer;transition:.15s ease;padding:0;}
+  .copybtn:hover{color:var(--lime);border-color:var(--lime);}
+  .copybtn svg{width:14px;height:14px;}
+  .copybtn .ic-done{display:none;}
+  .copybtn.copied{color:var(--lime);border-color:var(--lime);}
+  .copybtn.copied .ic-copy{display:none;}
+  .copybtn.copied .ic-done{display:block;}
+  [dir="rtl"] .copybtn{right:auto;left:0;}
+  .sharebtn{position:absolute;top:0;right:37px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;background:var(--bg);border:1px solid var(--line-bright);border-radius:8px;color:var(--ink-faint);cursor:pointer;transition:.15s ease;padding:0;}
+  .sharebtn:hover{color:#7cc4ff;border-color:#7cc4ff;}
+  .sharebtn svg{width:14px;height:14px;}
+  [dir="rtl"] .sharebtn{right:auto;left:37px;}
+  .hint{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin-left:6px;border-radius:50%;border:1px solid var(--line-bright);color:var(--ink-faint);font-size:10px;font-weight:700;cursor:help;vertical-align:middle;font-family:'Space Mono',monospace;line-height:1;}
+  .hint:hover{color:var(--ink);border-color:var(--ink-dim);}
+  .result-main .rlabel{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-dim);margin-bottom:10px;}
+  .result-main .rvalue{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(32px,5.5vw,50px);letter-spacing:-.03em;line-height:1;color:var(--lime);transition:color .2s ease,transform .25s cubic-bezier(.2,.7,.2,1),text-shadow .25s ease;overflow-wrap:anywhere;cursor:default;}
+  .result-main:hover .rvalue{transform:scale(1.03);text-shadow:0 0 26px rgba(255,255,255,.25);}
+  .result-main .rvalue.neg{color:var(--red);}
+  .result-main .rvalue.pos{color:var(--up);}
+  .result-main .rvalue.muted{color:var(--ink-faint);}
+  .rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line);border-radius:7px;transition:background .18s ease,padding .18s ease,border-color .18s ease;}
+  .rrow:hover{background:rgba(255,255,255,.04);padding-left:9px;padding-right:5px;border-bottom-color:var(--line-bright);}
+  .rrow .k{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.06em;}
+  .rrow .v{font-family:'Space Mono',monospace;font-size:15px;color:var(--ink);text-align:right;}
+  .rrow .v.pos{color:var(--up);}.rrow .v.neg{color:var(--red);}
+  .note{margin-top:20px;font-size:12.5px;color:var(--ink-faint);line-height:1.55;}
+
+  .ladder{width:100%;border-collapse:collapse;margin-top:4px;}
+  .ladder th,.ladder td{text-align:right;padding:10px 6px;font-family:'Space Mono',monospace;font-size:13px;border-bottom:1px dashed var(--line);}
+  .ladder th{color:var(--ink-faint);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;font-weight:400;}
+  .ladder td:first-child,.ladder th:first-child{text-align:left;color:var(--lime);}
+  .ladder td .p{color:var(--ink);}.ladder td .g{color:var(--up);}
+  .ladder tr{transition:background .15s ease;}
+  .ladder tbody tr:hover td{background:rgba(255,255,255,.04);}
+
+  .affil{grid-column:1/-1;margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--panel-2);border:1px solid var(--line-bright);border-radius:12px;padding:15px 18px;flex-wrap:wrap;}
+  .affil p{font-size:14px;color:var(--ink-dim);flex:1 1 200px;}
+  .affil .btns{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .trade-on{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-faint);}
+  .ex{display:inline-flex;align-items:center;gap:7px;font-family:'Familjen Grotesk',sans-serif;font-weight:600;font-size:13.5px;text-decoration:none;padding:9px 12px;border-radius:9px;transition:.15s ease;white-space:nowrap;will-change:transform;}
+  .ex svg{width:16px;height:16px;display:block;flex:none;}
+  .ex .mono-mark{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:4px;font-weight:800;font-size:11px;flex:none;}
+  .ex:hover{transform:translateY(-1px);}
+  .ex-bybit{background:#17181c;color:#f4f4f5;border:1px solid #34363c;}
+  .ex-bybit:hover{border-color:#f7a600;}
+  .ex-binance{background:#f0b90b;color:#181a20;border:1px solid #f0b90b;}
+  .ex-binance:hover{background:#fcd535;border-color:#fcd535;}
+  .ex-kucoin{background:#0e3d33;color:#eafff7;border:1px solid #1c6b59;}
+  .ex-kucoin:hover{border-color:#23af91;}
+  .ex-kucoin .mono-mark{background:#23af91;color:#06231d;}
+  .ex-gate{background:#14213d;color:#eaf0ff;border:1px solid #28427a;}
+  .ex-gate:hover{border-color:#3361ff;}
+  .ex-gate .mono-mark{background:#3361ff;color:#fff;}
+  .ex-kraken{background:#1d1640;color:#ece8ff;border:1px solid #3a2f72;}
+  .ex-kraken:hover{border-color:#7b5cff;}
+  .ex-kraken .mono-mark{background:#7b5cff;color:#fff;}
+  .ex-okx{background:#0d0e10;color:#fff;border:1px solid #353b40;}
+  .ex-okx:hover{border-color:#9aa3ad;}
+  .ex-okx .mono-mark{background:#fff;color:#0d0e10;}
+
+  .content{padding:12px 0 80px;}
+  .content h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:30px;letter-spacing:-.03em;margin:34px 0 6px;}
+  .content h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:19px;margin:26px 0 8px;color:var(--ink);}
+  .content p{color:var(--ink-dim);margin-bottom:12px;max-width:720px;}
+  .content code{font-family:'Space Mono',monospace;font-size:13px;color:var(--lime);background:var(--panel);padding:2px 7px;border-radius:6px;border:1px solid var(--line);}
+  .divider{height:1px;background:var(--line);margin:8px 0;}
+
+  /* ---- footer redesign ---- */
+  .site-foot{margin-top:18px;border-top:1px solid var(--line);padding:36px 0 48px;}
+  .foot-top{display:flex;justify-content:space-between;align-items:flex-start;gap:30px;flex-wrap:wrap;margin-bottom:26px;}
+  .foot-brand{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .foot-brand .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;letter-spacing:-.03em;color:var(--ink);text-decoration:none;}
+  .foot-brand .mark b{color:#c2f64a;}
+  .foot-tag{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-faint);}
+  .foot-bot{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;border:1px solid var(--line-bright);color:var(--ink-dim);transition:.15s;}
+  .foot-bot:hover{border-color:#c2f64a;color:#c2f64a;transform:translateY(-1px);}
+  .foot-links{display:flex;flex-wrap:wrap;gap:11px 20px;max-width:580px;justify-content:flex-end;}
+  .foot-links a{font-family:'Familjen Grotesk',sans-serif;font-size:14px;color:var(--ink-dim);text-decoration:none;transition:color .12s;}
+  .foot-links a:hover{color:var(--ink);}
+  .foot-bottom{display:flex;justify-content:space-between;align-items:center;gap:14px;padding-top:20px;border-top:1px solid var(--line);font-family:'Space Mono',monospace;font-size:11.5px;color:var(--ink-faint);letter-spacing:.05em;flex-wrap:wrap;}
+  @media(max-width:640px){.foot-top{flex-direction:column;gap:18px;}.foot-links{justify-content:flex-start;}}
+  /* ---- section heading accent (editorial rhythm) ---- */
+  .sec-head h2,.exchanges h2,.content2>h2,.content>h2{position:relative;padding-left:17px;}
+  .sec-head h2::before,.exchanges h2::before,.content2>h2::before,.content>h2::before{content:'';position:absolute;left:0;top:.17em;bottom:.17em;width:4px;border-radius:3px;background:linear-gradient(180deg,#c2f64a,rgba(194,246,74,.25));}
+  /* ---- unified card hover lift ---- */
+  .excard:hover,.toolcard:hover,.hp-card:hover{box-shadow:0 18px 40px -24px rgba(0,0,0,.7);}
+  footer a{color:var(--ink-dim);text-decoration:none;}footer a:hover{color:var(--lime);}
+
+  /* exchanges comparison menu */
+  .exchanges{margin:0 0 40px;animation:rise .8s cubic-bezier(.2,.7,.2,1) .4s both;}
+  .exchanges h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:27px;letter-spacing:-.03em;margin-bottom:5px;}
+  .exsub{color:var(--ink-dim);font-size:15px;margin-bottom:20px;max-width:620px;}
+  .exgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  @media(max-width:760px){.exgrid{grid-template-columns:1fr;}}
+  .excard{display:flex;flex-direction:column;gap:9px;text-decoration:none;background:linear-gradient(180deg,var(--panel),var(--bg-grain));border:1px solid var(--line-bright);border-radius:14px;padding:18px 20px 16px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;position:relative;overflow:hidden;}
+  .excard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--exc,#fff);}
+  .excard:hover{transform:translateY(-3px);border-color:var(--exc,#fff);box-shadow:0 16px 40px -22px var(--exc,#000);}
+  .exh{display:flex;align-items:center;gap:10px;}
+  .exmark{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;flex:none;}
+  .exname{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:18px;color:var(--ink);}
+  .exlev{display:flex;align-items:baseline;gap:7px;margin-top:2px;}
+  .exlev b{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:25px;color:var(--exc,var(--lime));letter-spacing:-.02em;}
+  .exlev span{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint);}
+  .extag{font-size:13px;color:var(--ink-dim);flex:1;line-height:1.4;}
+  .exgo{font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--exc,var(--lime));font-weight:700;margin-top:3px;transition:letter-spacing .18s ease;}
+  .excard:hover .exgo{letter-spacing:.14em;}
+  .exbadge{position:absolute;top:13px;right:13px;display:inline-flex;align-items:center;gap:3px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#fff;background:linear-gradient(135deg,#ff8a1e,#ff3d3d);padding:4px 9px;border-radius:20px;box-shadow:0 2px 12px -2px rgba(255,61,61,.65);animation:hotpulse 1.8s ease-in-out infinite;}
+  @keyframes hotpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+  [dir="rtl"] .exbadge{right:auto;left:13px;}
+  .exnote{margin-top:14px;font-size:11.5px;color:var(--ink-faint);line-height:1.5;}
+  [dir="rtl"] .excard::before{left:auto;right:0;}
+
+  /* section heads (shared) */
+  .sec-head{display:flex;align-items:baseline;gap:11px;margin-bottom:6px;flex-wrap:wrap;}
+  .sec-head h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:27px;letter-spacing:-.03em;}
+  .sec-head .flame{font-size:22px;line-height:1;}
+  .sec-sub{color:var(--ink-dim);font-size:15px;margin-bottom:18px;max-width:640px;}
+
+  /* ticker */
+  .tickerwrap{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:18px 0 0;background:var(--panel-2);min-height:46px;}
+
+  /* hot pairs */
+  .hotpairs{margin:0 0 38px;animation:rise .8s cubic-bezier(.2,.7,.2,1) .4s both;}
+  .hp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;grid-auto-rows:1fr;}
+  @media(max-width:860px){.hp-grid{grid-template-columns:repeat(2,1fr);}}
+  .hp-card{background:linear-gradient(180deg,var(--panel),var(--bg-grain));border:1px solid var(--line-bright);border-radius:12px;padding:13px 14px;display:flex;flex-direction:column;gap:8px;transition:transform .18s ease,border-color .18s ease;position:relative;overflow:hidden;min-width:0;}
+  .hp-sym{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .hp-card:hover{border-color:var(--lime);transform:translateY(-2px);}
+  .hp-card.hot{border-color:#ff7a18;overflow:visible;}
+  .hp-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .hp-sym{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16px;}
+  .hp-sym small{color:var(--ink-faint);font-weight:400;font-size:11px;}
+  .hp-chg{font-family:'Space Mono',monospace;font-size:11.5px;padding:3px 8px;border-radius:20px;white-space:nowrap;}
+  .hp-chg.up{color:var(--up);background:rgba(46,189,133,.14);}
+  .hp-chg.down{color:var(--red);background:rgba(255,98,88,.12);}
+  .hp-price{font-family:'Space Mono',monospace;font-size:18px;color:var(--ink);}
+  .hp-price.up{color:var(--up);}.hp-price.down{color:var(--red);}
+  .hp-trade{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;text-decoration:none;color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.28);padding:9px;border-radius:8px;transition:.15s;}
+  .hp-trade:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.5);transform:translateY(-1px);}
+  .hp-fire{position:absolute;top:-8px;left:-8px;}
+  @media(max-width:520px){
+    .hp-grid{gap:7px;}
+    .hp-card{padding:10px 11px;gap:5px;border-radius:11px;}
+    .hp-sym{font-size:13.5px;}
+    .hp-sym small{font-size:9px;}
+    .hp-chg{font-size:9.5px;padding:2px 6px;}
+    .hp-price{font-size:14.5px;}
+    .hp-trade{padding:6px;font-size:10px;gap:3px;}
+    .hp-fire{top:-7px;left:-7px;}
+  }
+  /* live animated flame (replaces the static 🔥 emoji) */
+  .liveflame{position:relative;display:inline-block;width:13px;height:13px;vertical-align:-2px;background:linear-gradient(45deg,#ff2d2d,#ff8a1e 55%,#ffcf2e);border-radius:0 50% 50% 50%;transform:rotate(45deg);box-shadow:0 0 7px rgba(255,90,20,.7);animation:flameFlick .85s ease-in-out infinite alternate;}
+  .liveflame::before{content:"";position:absolute;inset:32% 30% 14% 14%;background:linear-gradient(45deg,#ffd23e,#fff6c4);border-radius:0 50% 50% 50%;animation:flameCore .7s ease-in-out infinite alternate;}
+  @keyframes flameFlick{0%{transform:rotate(45deg) scale(1);box-shadow:0 0 5px rgba(255,90,20,.55);}50%{transform:rotate(45deg) scale(1.14,.9);}100%{transform:rotate(45deg) scale(.92,1.12);box-shadow:0 0 12px rgba(255,150,30,.92);}}
+  @keyframes flameCore{0%{opacity:.72;transform:scale(.82);}100%{opacity:1;transform:scale(1.14);}}
+
+  /* tradingview chart + signals */
+  .tvsec{margin:0 0 40px;animation:rise .8s cubic-bezier(.2,.7,.2,1) .4s both;}
+  .tvgrid{display:block;}
+  .tvbox{background:var(--panel);border:1px solid var(--line-bright);border-radius:14px;overflow:hidden;height:540px;}
+  @media(max-width:560px){.tvbox{height:420px;}}
+  .tvbox .tradingview-widget-container,.tvbox .tradingview-widget-container__widget{height:100%;width:100%;}
+
+  /* recommended tools */
+  .tools{margin:0 0 40px;animation:rise .8s cubic-bezier(.2,.7,.2,1) .4s both;}
+  .tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  @media(max-width:720px){.tools-grid{grid-template-columns:1fr;}}
+  .toolcard{display:flex;flex-direction:column;gap:8px;text-decoration:none;background:linear-gradient(180deg,var(--panel),var(--bg-grain));border:1px solid var(--line-bright);border-radius:14px;padding:18px 20px;transition:transform .18s ease,border-color .18s ease;position:relative;overflow:hidden;}
+  .toolcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--exc,#fff);}
+  .toolcard:hover{transform:translateY(-3px);border-color:var(--exc,#fff);}
+  .tc-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:18px;color:var(--ink);}
+  .tc-desc{font-size:13.5px;color:var(--ink-dim);flex:1;line-height:1.4;}
+  .tc-go{font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--exc,#fff);font-weight:700;margin-top:3px;}
+  [dir="rtl"] .toolcard::before{left:auto;right:0;}
+
+  /* content (redesigned) */
+  .league{margin:0 0 42px;}
+  .league-card{position:relative;overflow:hidden;background:linear-gradient(135deg,#16130b,#0d0f12);border:1px solid var(--line-bright);border-radius:18px;padding:34px 32px;text-align:center;}
+  .league-card::before{content:"";position:absolute;inset:0;background:radial-gradient(440px 200px at 50% -10%,rgba(255,179,71,.16),transparent);pointer-events:none;}
+  .league-badge{display:inline-block;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#ffb347;border:1px solid rgba(255,179,71,.4);border-radius:999px;padding:5px 13px;margin-bottom:14px;position:relative;}
+  .league-card h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:27px;letter-spacing:-.02em;margin:0 0 8px;position:relative;}
+  .lg-sub{color:var(--ink-dim);font-size:15px;max-width:580px;margin:0 auto 22px;line-height:1.6;position:relative;}
+  .lg-steps{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;position:relative;}
+  .lg-step{display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line-bright);border-radius:12px;padding:11px 16px;font-size:14px;color:var(--ink);}
+  .lg-step b{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#ffb347;color:#2a1a00;font-size:12px;flex-shrink:0;}
+  .lg-cta{display:inline-flex;align-items:center;gap:8px;background:#ffb347;color:#2a1a00;font-weight:700;font-family:'Space Mono',monospace;font-size:13px;text-transform:uppercase;letter-spacing:.04em;text-decoration:none;padding:13px 22px;border-radius:10px;transition:.15s;position:relative;}
+  .lg-cta:hover{transform:translateY(-1px);background:#ffc266;}
+  /* live chat */
+  #chatFab[hidden],#chatBox[hidden],.ct-gate[hidden],.ct-msgs[hidden],.ct-form[hidden]{display:none!important;}
+  #chatFab{position:fixed;bottom:20px;right:20px;z-index:50;display:inline-flex;align-items:center;gap:7px;background:#fff;color:#0a0b0d;border:none;border-radius:999px;padding:12px 18px;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.45);transition:transform .15s;}
+  #chatFab:hover{transform:translateY(-2px);}
+  #chatBox{position:fixed;bottom:20px;right:20px;z-index:51;width:340px;max-width:calc(100vw - 32px);height:460px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line-bright);border-radius:16px;overflow:hidden;box-shadow:0 14px 44px rgba(0,0,0,.55);}
+  .ct-head{display:flex;align-items:center;gap:8px;padding:13px 15px;border-bottom:1px solid var(--line);}
+  .ct-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:15px;}
+  .ct-online{font-size:11px;color:var(--up);font-family:'Space Mono',monospace;}
+  .ct-x{margin-left:auto;background:none;border:none;color:var(--ink-faint);font-size:16px;cursor:pointer;padding:2px 6px;line-height:1;}
+  .ct-x:hover{color:var(--ink);}
+  .ct-gate{padding:24px 18px;text-align:center;display:flex;flex-direction:column;gap:12px;}
+  .ct-gate p{color:var(--ink-dim);font-size:14px;margin:0;line-height:1.5;}
+  .ct-gate input,.ct-form input{background:var(--bg);border:1px solid var(--line-bright);border-radius:10px;padding:11px 13px;color:var(--ink);font-size:14px;font-family:inherit;width:100%;box-sizing:border-box;}
+  .ct-gate button{background:#fff;color:#0a0b0d;border:none;border-radius:10px;padding:11px;font-weight:700;font-family:'Space Mono',monospace;font-size:13px;cursor:pointer;}
+  .ct-msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;}
+  .ct-msg{font-size:13.5px;line-height:1.45;color:var(--ink);word-break:break-word;}
+  .ct-msg b{font-weight:700;margin-right:5px;}
+  .ct-form{display:flex;gap:8px;padding:11px 12px;border-top:1px solid var(--line);}
+  .ct-form button{background:#fff;color:#0a0b0d;border:none;border-radius:10px;width:42px;flex-shrink:0;font-size:15px;cursor:pointer;}
+  [dir="rtl"] #chatFab,[dir="rtl"] #chatBox{right:auto;left:20px;}
+  .content2{position:relative;z-index:1;background:linear-gradient(180deg,var(--panel) 0%,var(--bg-grain) 100%);border:1px solid var(--line-bright);border-radius:18px;padding:38px 36px;margin:0 0 42px;}
+  @media(max-width:640px){.content2{padding:26px 20px;}}
+  .content2 h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:29px;letter-spacing:-.03em;margin-bottom:6px;}
+  .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0 34px;}
+  @media(max-width:720px){.feature-grid{grid-template-columns:1fr;}}
+  .feat{display:block;text-decoration:none;background:var(--bg);border:1px solid var(--line-bright);border-radius:12px;padding:18px;transition:transform .18s ease,border-color .18s ease;}
+  .feat:hover{border-color:var(--lime);transform:translateY(-2px);}
+  .feat .fi{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:var(--lime);margin-bottom:11px;}
+  .feat .fi svg{width:18px;height:18px;}
+  .feat h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:17px;color:var(--ink);margin-bottom:4px;}
+  .feat p{color:var(--ink-dim);font-size:13.5px;line-height:1.45;}
+  .faq{border-top:1px solid var(--line);}
+  .faq details{border-bottom:1px solid var(--line);}
+  .faq summary{cursor:pointer;list-style:none;padding:18px 2px;font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:18px;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq summary::after{content:'+';color:var(--lime);font-size:24px;font-weight:400;line-height:1;transition:transform .2s ease;}
+  .faq details[open] summary::after{transform:rotate(45deg);}
+  .faq details .a{color:var(--ink-dim);padding:0 2px 18px;max-width:780px;}
+  .faq details .a code{font-family:'Space Mono',monospace;font-size:13px;color:var(--lime);background:var(--bg);padding:2px 7px;border-radius:6px;border:1px solid var(--line);}
+  .disc{font-size:12.5px;color:var(--ink-faint);line-height:1.55;margin-top:26px;}
+  .botnote{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--ink-faint);line-height:1.6;margin-top:24px;padding-top:20px;border-top:1px solid var(--line);}
+  .botnote svg{flex-shrink:0;color:#7cc4ff;margin-top:3px;}
+  .botnote b{color:var(--ink-dim);font-weight:600;}
+  .botnote a{color:#7cc4ff;text-decoration:none;white-space:nowrap;}
+  .botnote a:hover{text-decoration:underline;}
+
+  /* China: red = up/gain, green = down/loss (inverted), with a blue accent */
+  /* East Asian convention (China, Taiwan, Japan, Korea): red = up/gain, green = down/loss */
+  :is(html[lang="zh"],html[lang="ja"],html[lang="ko"]) .rvalue.pos,:is(html[lang="zh"],html[lang="ja"],html[lang="ko"]) .rrow .v.pos,:is(html[lang="zh"],html[lang="ja"],html[lang="ko"]) .hp-price.up,:is(html[lang="zh"],html[lang="ja"],html[lang="ko"]) .hp-chg.up,:is(html[lang="zh"],html[lang="ja"],html[lang="ko"]) .ladder td .g{color:var(--red)!important;}
+  :is(html[lang="zh"],html[lang="ja"],html[lang="ko"]) .hp-chg.up{background:rgba(255,98,88,.12)!important;}
+  :is(html[lang="zh"],html[lang="ja"],html[lang="ko"]) .rvalue.neg,:is(html[lang="zh"],html[lang="ja"],html[lang="ko"]) .rrow .v.neg,:is(html[lang="zh"],html[lang="ja"],html[lang="ko"]) .hp-price.down,:is(html[lang="zh"],html[lang="ja"],html[lang="ko"]) .hp-chg.down{color:var(--up)!important;}
+  :is(html[lang="zh"],html[lang="ja"],html[lang="ko"]) .hp-chg.down{background:rgba(46,189,133,.14)!important;}
+  /* South Korea: down/loss is BLUE (not green); up/gain stays red */
+  html[lang="ko"] .rvalue.neg,html[lang="ko"] .rrow .v.neg,html[lang="ko"] .hp-price.down,html[lang="ko"] .hp-chg.down{color:#3d8bff!important;}
+  html[lang="ko"] .hp-chg.down{background:rgba(61,139,255,.14)!important;}
+  html[lang="zh"] .tab[aria-selected="true"]{background:rgba(56,114,222,.18)!important;border-color:rgba(120,170,255,.55)!important;color:#dce8ff!important;}
+  html[lang="zh"] .hero h1 em{background:linear-gradient(100deg,#6aa3ff 25%,#bcd6ff 50%,#6aa3ff 75%)!important;-webkit-background-clip:text!important;background-clip:text!important;}
+
+  /* RTL support (Arabic) */
+  [dir="rtl"] .results{border-left:none;border-right:1px solid var(--line);padding-left:0;padding-right:36px;}
+  @media (max-width:720px){[dir="rtl"] .results{border-right:none;}}
+  [dir="rtl"] .input-line .unit{right:auto;left:14px;}
+  [dir="rtl"] .rrow .v{text-align:left;}
+  [dir="rtl"] .ladder th,[dir="rtl"] .ladder td{text-align:left;}
+  [dir="rtl"] .ladder td:first-child,[dir="rtl"] .ladder th:first-child{text-align:right;}
+  [dir="rtl"] .card{border-radius:var(--r) 0 var(--r) var(--r);}
+  [dir="rtl"] .tab{border-radius:12px 12px 0 0;}
+
+  @keyframes fade{from{opacity:0;}to{opacity:1;}}
+  @keyframes rise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+  /* ---- premium FX (phase 1) ---- */
+  .grain{position:fixed;inset:0;z-index:120;pointer-events:none;opacity:.05;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='0.6'/></svg>");background-size:150px;animation:grainShift .7s steps(4) infinite;}
+  @keyframes grainShift{0%{transform:translate(0,0)}25%{transform:translate(-2%,1%)}50%{transform:translate(1%,-2%)}75%{transform:translate(2%,2%)}100%{transform:translate(-1%,-1%)}}
+  .hero{position:relative;z-index:1;}
+  .hero::before{content:'';position:absolute;left:-8%;top:-30%;width:62%;height:180%;z-index:-1;pointer-events:none;background:radial-gradient(closest-side,rgba(194,246,74,.07),transparent 72%);animation:heroGlow 7s ease-in-out infinite;}
+  @keyframes heroGlow{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+  .prod::after{content:'';position:absolute;inset:0;border-radius:inherit;opacity:0;transition:opacity .35s;pointer-events:none;background:radial-gradient(200px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.12),transparent 60%);}
+  .prod:hover::after{opacity:1;}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);}
+  .reveal.in{opacity:1;transform:none;}
+  @keyframes cuPop{0%{transform:scale(1)}30%{transform:scale(1.05)}100%{transform:scale(1)}}
+  .cu-pop{display:inline-block;animation:cuPop .4s ease;}
+  /* ---- custom dropdown (replaces native selects) ---- */
+  .csel{position:relative;display:inline-block;vertical-align:middle;}
+  .csel-native{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;opacity:0;pointer-events:none;overflow:hidden;clip:rect(0 0 0 0);}
+  .csel-trigger{display:flex;align-items:center;justify-content:space-between;gap:9px;width:100%;background:var(--bg);border:1px solid var(--line-bright);color:var(--ink);font-family:'Space Mono',monospace;font-size:15px;font-weight:700;padding:11px 13px;border-radius:11px;cursor:pointer;transition:.15s;text-align:left;line-height:1.1;}
+  .csel-trigger:hover{border-color:var(--ink-faint);}
+  .csel-trigger.open{border-color:#c2f64a;box-shadow:0 0 0 3px rgba(194,246,74,.15);}
+  .csel-chev{flex-shrink:0;color:var(--ink-faint);transition:transform .2s ease;}
+  .csel-trigger.open .csel-chev{transform:rotate(180deg);}
+  .csel-val{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .csel-panel{position:absolute;z-index:95;left:0;right:0;top:calc(100% + 6px);min-width:160px;background:linear-gradient(180deg,#171b22,#0f1216);border:1px solid var(--line-bright);border-radius:12px;box-shadow:0 26px 64px -22px rgba(0,0,0,.85);padding:6px;animation:cselIn .16s ease;}
+  .csel-panel[hidden]{display:none;}
+  @keyframes cselIn{from{opacity:0;transform:translateY(-6px) scale(.99);}to{opacity:1;transform:none;}}
+  .csel-search{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);font-family:'Space Mono',monospace;font-size:13px;padding:8px 10px;border-radius:8px;outline:none;margin-bottom:6px;}
+  .csel-search:focus{border-color:var(--ink-faint);}
+  .csel-list{max-height:248px;overflow-y:auto;display:flex;flex-direction:column;gap:1px;scrollbar-width:thin;}
+  .csel-opt{display:block;width:100%;background:none;border:none;color:var(--ink-dim);font-family:'Space Mono',monospace;font-size:14px;font-weight:700;padding:9px 11px;border-radius:8px;cursor:pointer;text-align:left;transition:background .1s,color .1s;white-space:nowrap;}
+  .csel-opt:hover{background:rgba(255,255,255,.07);color:#fff;}
+  .csel-opt.sel{background:rgba(194,246,74,.12);color:#c2f64a;}
+  .input-line .csel{display:block;width:100%;}
+  .heat-bar .csel{min-width:118px;}
+  .hnav .csel-trigger{font-size:12px;padding:8px 11px;font-weight:400;letter-spacing:.04em;border-radius:9px;}
+  .hnav .csel-panel{min-width:150px;right:0;left:auto;}
+  @media (prefers-reduced-motion:reduce){*,.aurora::before,.aurora::after{animation:none !important;}header,.hero h1,.hero .sub,.hero .meta,.tabs,.card,.panel.active,.reveal{opacity:1 !important;transform:none !important;}.grain{display:none;}}
+</style>
+</head>
+<body>
+<div class="aurora"></div>
+<canvas class="bgchart" id="bgchart" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
+      <span class="tag" data-i18n="tag">outils de trading</span>
+    </div>
+    <nav class="hnav">
+      <a href="/blog/" class="hlink" data-i18n="navBlog">Blog</a>
+      <a href="/api/" class="hlink">API</a>
+      <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
+      <button type="button" class="hlink hjr" id="jrOpen"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Journal</button>
+      <button type="button" class="hlink hchat" id="chatOpen"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg>Chat</button>
+      <select class="lang" id="langSel" aria-label="Language"></select>
+    </nav>
+  </header>
+
+  <div class="tickerwrap">
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+      {"symbols":[{"proName":"BINANCE:BTCUSDT","title":"BTC"},{"proName":"BINANCE:ETHUSDT","title":"ETH"},{"proName":"BINANCE:SOLUSDT","title":"SOL"},{"proName":"BINANCE:BNBUSDT","title":"BNB"},{"proName":"BINANCE:XRPUSDT","title":"XRP"},{"proName":"BINANCE:DOGEUSDT","title":"DOGE"}],"showSymbolLogo":true,"isTransparent":true,"displayMode":"adaptive","colorTheme":"dark","locale":"fr"}
+      </script>
+    </div>
+  </div>
+
+  <section class="hero">
+    <h1><span data-i18n="heroA">Arrêtez de deviner votre</span><br><em data-i18n="heroB">prix de liquidation.</em></h1>
+    <p class="sub" data-i18n="sub">Calculatrices précises pour les traders de futures crypto. Liquidation, taille de position, PnL, DCA et prise de profit — instantané, sur tout exchange.</p>
+    <div class="meta">
+      <span><b>6</b> <span data-i18n="mCalc">calculatrices</span></span>
+      <span><b>0</b> <span data-i18n="mSignup">inscription</span></span>
+      <span><b>100%</b> <span data-i18n="mFree">gratuit</span></span>
+      <span data-i18n="mIso">Isolée et croisée</span>
+    </div>
+  </section>
+
+  <div class="prodnav" role="tablist" aria-label="Main tools">
+    <button class="prod active" data-prod="calc" type="button" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg></span><span class="pt"><b data-i18n="prodCalc">Calculateur de liquidation</b><small data-i18n="prodCalcS">Connaissez votre prix de sortie</small></span></button>
+    <button class="prod" data-prod="heat" type="button" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span class="pt"><b data-i18n="prodHeat">Carte thermique de liquidation</b><small data-i18n="prodHeatS">Voyez les zones de danger</small></span><span class="pnew">NEW</span></button>
+    <button class="prod" data-prod="plan" type="button" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span><span class="pt"><b data-i18n="prodPlan">Planificateur de trades</b><small data-i18n="prodPlanS">Planifiez tout le trade</small></span></button>
+    <button class="prod" data-prod="swap" type="button" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span><span class="pt"><b data-i18n="prodSwap">Échanger des Cryptos</b><small data-i18n="prodSwapS">900+ cryptos, sans compte</small></span></button>
+  </div>
+
+  <section id="heatmap" class="heatwrap" style="display:none" aria-label="Liquidation heatmap">
+    <div class="heat-bar">
+      <select id="heatCoin" class="heat-coin" aria-label="Coin">
+        <option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option><option>BNB</option><option>DOGE</option><option>ADA</option><option>AVAX</option><option>LINK</option><option>LTC</option><option>DOT</option><option>TRX</option><option>SHIB</option><option>PEPE</option><option>NEAR</option><option>APT</option><option>ARB</option><option>OP</option><option>INJ</option><option>SUI</option><option>TIA</option><option>ATOM</option><option>UNI</option><option>FIL</option><option>TON</option><option>AAVE</option><option>WIF</option><option>BONK</option><option>FET</option><option>ICP</option>
+      </select>
+      <div class="heat-px" id="heatPx">—</div>
+      <div class="heat-act">
+        <button id="heatDl" class="heat-btn" type="button"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg><span data-i18n="heatDl">Télécharger</span></button>
+        <button id="heatSh" class="heat-btn" type="button"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span data-i18n="heatSh">Partager</span></button>
+      </div>
+    </div>
+    <div class="heat-stage"><div id="heatChart"></div></div>
+    <p class="heat-note" data-i18n="heatNote">Niveaux de prix de liquidation estimés selon l'effet de levier (marge isolée), modélisés à partir du prix en direct — et non des données du carnet d'ordres de la plateforme. Un effet de levier plus élevé liquide plus près du prix actuel.</p>
+  </section>
+
+  <section id="swap" class="swapwrap" style="display:none" aria-label="Swap crypto">
+    <p class="swap-intro" data-i18n="swapIntro">Échangez 900+ cryptos instantanément — sans compte, non dépositaire. Vos fonds et adresses ne transitent jamais par MarginPad.</p>
+    <div class="swap-frame">
+      <div class="swap-load" id="swapLoad" data-i18n="swapLoad">Chargement de l'échange…</div>
+      <iframe id="iframe-widget" title="Crypto swap" allow="clipboard-write" loading="lazy"></iframe>
+    </div>
+    <p class="swap-note" data-i18n="swapNote">Les échanges sont traités par ChangeNOW. MarginPad ne détient jamais vos cryptos ni vos clés — vérifiez toujours l'adresse de réception avant d'envoyer.</p>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true"  data-tab="liq"  data-i18n="tabLiq">Liquidation</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="size" data-i18n="tabSize">Taille de position</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="pnl"  data-i18n="tabPnl">PnL / ROI</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="dca"  data-i18n="tabDca">Moyenne / DCA</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="tp"   data-i18n="tabTp">Prise de profit</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="rr"   data-i18n="tabRr">Risque / Gain</button>
+  </nav>
+
+  <div class="card">
+
+    <section class="panel" id="plan">
+      <div class="inputs">
+        <h2><span data-i18n="tPlan">Planificateur de trades</span> <small data-i18n="tPlanSub">— toute votre position sur un seul écran</small></h2>
+        <div class="field"><label data-i18n="direction">Direction</label>
+          <div class="seg" id="planSeg"><button class="on" data-side="long" data-i18n="long">Long</button><button data-side="short" data-i18n="short">Short</button></div>
+        </div>
+        <div class="field"><label data-i18n="lSymbol">Symbole</label><div class="input-line"><select id="planSym"><option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option><option>BNB</option><option>DOGE</option><option>ADA</option><option>AVAX</option><option>LINK</option><option>LTC</option><option value="">Other</option></select></div></div>
+        <div class="field"><label data-i18n="lEntry">Prix d'entrée</label><div class="input-line"><input type="number" id="planEntry" value="0" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lStop">Prix du stop-loss</label><div class="input-line"><input type="number" id="planStop" value="0" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lTp">Prix de take-profit</label><div class="input-line"><input type="number" id="planTp" value="0" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lLeverage">Levier</label><div class="input-line"><input type="number" id="planLev" value="10" step="any"><span class="unit">×</span></div></div>
+        <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span data-i18n="planAdv">⚙ Avancé — calcul de la taille de position</span></label>
+        <div class="plan-adv" id="planAdvIn" hidden>
+          <div class="field"><label data-i18n="lBalance">Solde du compte</label><div class="input-line"><input type="number" id="planBal" value="5000" step="any"><span class="unit">USD</span></div></div>
+          <div class="field"><label data-i18n="lRisk">Risque par trade</label><div class="input-line"><input type="number" id="planRisk" value="1" step="any"><span class="unit">%</span></div></div>
+        </div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rEstLiq">Prix de liquidation estimé</div><div class="rvalue" id="planLiq">—</div><button class="copybtn" data-copy="planLiq" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rRR">Ratio risque/gain</span><span class="v" id="planRR">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rBreakeven">Taux de réussite à l’équilibre</span><span class="v" id="planBe">—</span></div>
+        <div class="plan-adv-out" id="planAdvOut" hidden>
+          <div class="rrow"><span class="k" data-i18n="rPosSize">Taille de position</span><span class="v" id="planSize">—</span></div>
+          <div class="rrow"><span class="k" data-i18n="rExpProfit">Profit attendu</span><span class="v" id="planProfit">—</span></div>
+          <div class="rrow"><span class="k" data-i18n="rExpLoss">Perte attendue</span><span class="v" id="planLoss">—</span></div>
+          <div class="rrow"><span class="k" data-i18n="rNotional">Valeur notionnelle</span><span class="v" id="planNotional">—</span></div>
+          <div class="rrow"><span class="k" data-i18n="rMarginReq">Marge requise</span><span class="v" id="planMargin">—</span></div>
+        </div>
+        <p class="note" data-i18n="nPlan">La taille de position est calculée pour qu'un stop perde exactement le % de risque choisi. La liquidation utilise la marge isolée ; les chiffres excluent les frais et le financement.</p>
+        <button type="button" class="jr-save" id="planSave"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> <span data-i18n="jrSave">Enregistrer dans le journal</span></button>
+      </div>
+    </section>
+
+    <section class="panel active" id="liq">
+      <div class="inputs">
+        <h2><span data-i18n="tLiq">Prix de liquidation</span> <small data-i18n="tLiqSub">— estimation marge isolée</small></h2>
+        <div class="field"><label data-i18n="direction">Direction</label>
+          <div class="seg" data-seg="liqSide"><button class="on" data-side="long" data-i18n="long">Long</button><button data-side="short" data-i18n="short">Short</button></div>
+        </div>
+        <div class="field"><label data-i18n="lEntry">Prix d'entrée</label><div class="input-line"><input type="number" id="liqEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lLeverage">Levier</label><div class="input-line"><input type="number" id="liqLev" value="10" step="any"><span class="unit">×</span></div></div>
+        <div class="field"><label data-i18n="lMmr">Taux de marge de maintenance</label><div class="input-line"><input type="number" id="liqMmr" value="0.5" step="any"><span class="unit">%</span></div></div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rEstLiq">Prix de liquidation estimé</div><div class="rvalue" id="liqOut">—</div><button class="copybtn" data-copy="liqOut" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rDist">Distance depuis l'entrée</span><span class="v" id="liqDist">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rMove">Mouvement jusqu’à liquidation</span><span class="v" id="liqMove">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rEffMargin">Marge effective</span><span class="v" id="liqMargin">—</span></div>
+        <p class="note" data-i18n="nLiq">Estimation pour marge isolée. La liquidation réelle dépend des frais, du funding et de la marge par paliers. Gardez une marge.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="size">
+      <div class="inputs">
+        <h2><span data-i18n="tSize">Taille de position</span> <small data-i18n="tSizeSub">— selon le risque</small></h2>
+        <div class="field"><label data-i18n="lBalance">Solde du compte</label><div class="input-line"><input type="number" id="szBal" value="5000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lRisk">Risque par trade</label><div class="input-line"><input type="number" id="szRisk" value="1" step="any"><span class="unit">%</span></div></div>
+        <div class="field"><label data-i18n="lEntry">Prix d'entrée</label><div class="input-line"><input type="number" id="szEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lStop">Prix du stop-loss</label><div class="input-line"><input type="number" id="szStop" value="58800" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lLevMargin">Levier (optionnel)</label><div class="input-line"><input type="number" id="szLev" value="10" step="any"><span class="unit">×</span></div></div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rPosSize">Taille de position</div><div class="rvalue" id="szOut">—</div><button class="copybtn" data-copy="szOut" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rNotional">Valeur notionnelle</span><span class="v" id="szNotional">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rRisked">Montant risqué</span><span class="v" id="szRiskAmt">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rStopDist">Distance du stop</span><span class="v" id="szDist">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rMarginReq">Marge requise</span><span class="v" id="szMargin">—</span></div>
+        <p class="note" data-i18n="nSize">La taille est fixée pour que toucher votre stop ne perde que le % de risque choisi.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="pnl">
+      <div class="inputs">
+        <h2><span data-i18n="tPnl">PnL / ROI</span> <small data-i18n="tPnlSub">— profits et pertes</small></h2>
+        <div class="field"><label data-i18n="direction">Direction</label>
+          <div class="seg" data-seg="pnlSide"><button class="on" data-side="long" data-i18n="long">Long</button><button data-side="short" data-i18n="short">Short</button></div>
+        </div>
+        <div class="field"><label data-i18n="lEntry">Prix d'entrée</label><div class="input-line"><input type="number" id="pnlEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lExit">Prix de sortie</label><div class="input-line"><input type="number" id="pnlExit" value="66000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lPosCoin">Taille de position</label><div class="input-line"><input type="number" id="pnlQty" value="0.5" step="any"><span class="unit" data-i18n="uCoin">coin</span></div></div>
+        <div class="field"><label data-i18n="lLevRoe">Levier (optionnel)</label><div class="input-line"><input type="number" id="pnlLev" value="10" step="any"><span class="unit">×</span></div></div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rPnl">Profit / Perte</div><div class="rvalue" id="pnlOut">—</div><button class="copybtn" data-copy="pnlOut" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rPriceRoi">ROI du prix</span><span class="v" id="pnlRoi">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rRoe">ROE (sur marge)</span><span class="v" id="pnlRoe">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rEntryNot">Notionnel d'entrée</span><span class="v" id="pnlNotional">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rExitVal">Valeur de sortie</span><span class="v" id="pnlExitVal">—</span></div>
+        <p class="note" data-i18n="nPnl">Le ROE est le rendement sur la marge déposée (amplifié par le levier). Hors frais et funding.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="dca">
+      <div class="inputs">
+        <h2><span data-i18n="tDca">Moyenne / DCA</span> <small data-i18n="tDcaSub">— entrée combinée</small></h2>
+        <div class="field"><label data-i18n="lBuy1">Achat 1</label><div class="row2"><input type="number" id="dcaP1" value="60000" step="any" data-ph="phPrice" placeholder="prix"><input type="number" id="dcaQ1" value="0.1" step="any" data-ph="phQty" placeholder="qté"></div></div>
+        <div class="field"><label data-i18n="lBuy2">Achat 2</label><div class="row2"><input type="number" id="dcaP2" value="55000" step="any" data-ph="phPrice" placeholder="prix"><input type="number" id="dcaQ2" value="0.1" step="any" data-ph="phQty" placeholder="qté"></div></div>
+        <div class="field"><label data-i18n="lBuy3">Achat 3</label><div class="row2"><input type="number" id="dcaP3" value="50000" step="any" data-ph="phPrice" placeholder="prix"><input type="number" id="dcaQ3" value="0.2" step="any" data-ph="phQty" placeholder="qté"></div></div>
+        <div class="field"><label data-i18n="lBuy4">Achat 4 (optionnel)</label><div class="row2"><input type="number" id="dcaP4" step="any" data-ph="phPrice" placeholder="prix"><input type="number" id="dcaQ4" step="any" data-ph="phQty" placeholder="qté"></div></div>
+        <div class="field"><label data-i18n="lCurPrice">Prix actuel (optionnel)</label><div class="input-line"><input type="number" id="dcaCur" value="58000" step="any"><span class="unit">USD</span></div></div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rAvgEntry">Prix d'entrée moyen</div><div class="rvalue" id="dcaOut">—</div><button class="copybtn" data-copy="dcaOut" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rTotalQty">Quantité totale</span><span class="v" id="dcaQty">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rTotalInv">Total investi</span><span class="v" id="dcaCost">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rPosVal">Valeur de position</span><span class="v" id="dcaVal">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rUpnl">PnL non réalisé</span><span class="v" id="dcaPnl">—</span></div>
+        <p class="note" data-i18n="nDca">Votre entrée moyenne est le coût total ÷ la quantité totale. Renforcez une position seulement avec un plan.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="tp">
+      <div class="inputs">
+        <h2><span data-i18n="tTp">Prise de profit</span> <small data-i18n="tTpSub">— échelle de prix cibles</small></h2>
+        <div class="field"><label data-i18n="direction">Direction</label>
+          <div class="seg" data-seg="tpSide"><button class="on" data-side="long" data-i18n="long">Long</button><button data-side="short" data-i18n="short">Short</button></div>
+        </div>
+        <div class="field"><label data-i18n="lEntry">Prix d'entrée</label><div class="input-line"><input type="number" id="tpEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lLeverage">Levier</label><div class="input-line"><input type="number" id="tpLev" value="10" step="any"><span class="unit">×</span></div></div>
+        <div class="field"><label data-i18n="lPosProfit">Taille de position (optionnel)</label><div class="input-line"><input type="number" id="tpQty" value="0.5" step="any"><span class="unit" data-i18n="uCoin">coin</span></div></div>
+        <div class="field"><label data-i18n="lTargetRoe">ROE cible personnalisé</label><div class="input-line"><input type="number" id="tpCustom" value="75" step="any"><span class="unit">%</span></div></div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rCustomTgt">Prix cible personnalisé</div><div class="rvalue" id="tpOut">—</div><button class="copybtn" data-copy="tpOut" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <table class="ladder">
+          <thead><tr><th data-i18n="colRoe">ROE cible</th><th data-i18n="colExit">Prix de sortie</th><th data-i18n="colProfit">Profit</th></tr></thead>
+          <tbody id="tpLadder"></tbody>
+        </table>
+        <p class="note" data-i18n="nTp">Sortie cible pour un rendement souhaité. Le ROE est amplifié par le levier.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="rr">
+      <div class="inputs">
+        <h2><span data-i18n="tRr">Risque / Gain</span> <small data-i18n="tRrSub">— ratio et seuil de rentabilité</small></h2>
+        <div class="field"><label data-i18n="lEntry">Prix d'entrée</label><div class="input-line"><input type="number" id="rrEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lStop">Prix du stop-loss</label><div class="input-line"><input type="number" id="rrStop" value="58000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lTp">Prix de take-profit</label><div class="input-line"><input type="number" id="rrTp" value="66000" step="any"><span class="unit">USD</span></div></div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rRR">Ratio risque/gain</div><div class="rvalue" id="rrOut">—</div><button class="copybtn" data-copy="rrOut" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rRiskR">Risque par unité</span><span class="v" id="rrRisk">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rRewardR">Gain par unité</span><span class="v" id="rrReward">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rBreakeven">Taux de réussite à l’équilibre</span><span class="v" id="rrBe">—</span></div>
+        <p class="note" data-i18n="nRr">Un ratio de 2,0 vise un gain double de la mise risquée. Le taux d’équilibre est le % de trades gagnants pour ne pas perdre.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <section class="hotpairs" id="trending">
+    <div class="sec-head"><h2 data-i18n="hotTitle">Paires populaires</h2></div>
+    <p class="sec-sub" data-i18n="hotSub">Prix en direct et variation 24 h sur les marchés les plus actifs. Touchez Trader pour ouvrir la paire.</p>
+    <div class="hp-grid" id="hpGrid"></div>
+  </section>
+
+  <section class="exchanges">
+    <h2 data-i18n="exTitle">Où trader</h2>
+    <p class="exsub" data-i18n="exSub">Mettez ces chiffres à profit. Comparez les meilleurs exchanges — levier maximal et points forts de chacun.</p>
+    <div class="exgrid" id="exgrid"></div>
+    <p class="exnote" data-i18n="exNote">Le levier maximal varie selon le contrat, la région et le niveau de compte. Liens de parrainage — voir la mention ci-dessous.</p>
+    <p class="exnote" style="margin-top:8px"><span data-i18n="exPages">Calculatrices de liquidation par exchange :</span>
+      <a href="/bybit-liquidation-calculator/" style="color:var(--ink-dim)">Bybit</a> ·
+      <a href="/binance-liquidation-calculator/" style="color:var(--ink-dim)">Binance</a> ·
+      <a href="/okx-liquidation-calculator/" style="color:var(--ink-dim)">OKX</a> ·
+      <a href="/kucoin-liquidation-calculator/" style="color:var(--ink-dim)">KuCoin</a> ·
+      <a href="/gate-liquidation-calculator/" style="color:var(--ink-dim)">Gate</a> ·
+      <a href="/kraken-liquidation-calculator/" style="color:var(--ink-dim)">Kraken</a>
+    </p>
+  </section>
+
+  <section class="tvsec">
+    <div class="sec-head"><h2 data-i18n="chartTitle">Graphique et signaux en direct</h2></div>
+    <p class="sec-sub" data-i18n="chartSub">Graphique complet en temps réel, propulsé par TradingView. Changez de paire, ajoutez indicateurs et unités de temps.</p>
+    <div class="tvgrid">
+      <div class="tvbox">
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+          {"symbol":"BINANCE:BTCUSDT","interval":"60","timezone":"Etc/UTC","theme":"dark","style":"1","locale":"fr","hide_top_toolbar":false,"hide_legend":false,"allow_symbol_change":true,"withdateranges":true,"save_image":false,"backgroundColor":"#111419","gridColor":"rgba(35,41,50,0.5)","autosize":true}
+          </script>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tools">
+    <div class="sec-head"><h2 data-i18n="toolsTitle">Outils pour traders que nous recommandons</h2></div>
+    <p class="sec-sub" data-i18n="toolsSub">Les plateformes que nous associerions à MarginPad — graphiques, fiscalité et automatisation.</p>
+    <div class="tools-grid">
+      <a class="toolcard" style="--exc:#2962ff" href="https://www.tradingview.com/pricing/?share_your_love=cocchako" target="_blank" rel="sponsored noopener noreferrer">
+        <div class="tc-name">TradingView</div>
+        <div class="tc-desc" data-i18n="tdTv">Graphiques pro, plus de 100 indicateurs et alertes de prix — les graphiques que vous voyez ci-dessus.</div>
+        <span class="tc-go" data-i18n="toolGo">Visiter →</span>
+      </a>
+      <a class="toolcard" style="--exc:#14b8a6" href="https://koinly.io/?via=B5C43E3F&amp;utm_source=friend" target="_blank" rel="sponsored noopener noreferrer">
+        <div class="tc-name">Koinly</div>
+        <div class="tc-desc" data-i18n="tdKo">Déclarations fiscales crypto en quelques minutes — se connecte à toutes les grandes plateformes d'échange.</div>
+        <span class="tc-go" data-i18n="toolGo">Visiter →</span>
+      </a>
+      <a class="toolcard" style="--exc:#3a7bff" href="https://app.3commas.io/auth/registration?utm_source=referral&amp;utm_medium=cabinet&amp;c=tc2235309" target="_blank" rel="sponsored noopener noreferrer">
+        <div class="tc-name">3Commas</div>
+        <div class="tc-desc" data-i18n="td3c">Bots de trading automatisés, ordres intelligents et un terminal multi-exchange.</div>
+        <span class="tc-go" data-i18n="toolGo">Visiter →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="league">
+    <div class="league-card">
+      <span class="league-badge">🏆 Trade League</span>
+      <h2 data-i18n="lgTitle">Enregistre tes trades, gagne des USDT</h2>
+      <p class="lg-sub" data-i18n="lgSub">Signale tes trades à notre bot Telegram et grimpe dans le classement hebdomadaire. Les 10 meilleurs traders de chaque semaine se partagent une cagnotte en USDT — entrée gratuite, sans dépôt.</p>
+      <div class="lg-steps">
+        <div class="lg-step"><b>1</b><span data-i18n="lgS1">Ouvre le bot Telegram</span></div>
+        <div class="lg-step"><b>2</b><span data-i18n="lgS2">Enregistre tes trades avec /trade</span></div>
+        <div class="lg-step"><b>3</b><span data-i18n="lgS3">Le Top 10 gagne des USDT chaque semaine</span></div>
+      </div>
+      <a class="lg-cta" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg><span data-i18n="lgCta">Rejoins la ligue sur Telegram</span></a>
+    </div>
+  </section>
+
+  <section class="content2">
+    <h2 data-i18n="calcsTitle">Six calculatrices indispensables à tout trader de futures crypto</h2>
+    <p class="sec-sub" data-i18n="calcsSub">Tout fonctionne dans votre navigateur — rien n'est envoyé nulle part, aucun compte à créer. Accédez directement à celle dont vous avez besoin :</p>
+    <div class="feature-grid">
+      <a class="feat" href="#liq">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.2 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.2a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+        <h3 data-i18n="tabLiq">Liquidation</h3><p>Your exact liquidation price for any leverage, long or short.</p>
+      </a>
+      <a class="feat" href="#size">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 21V10M12 21V4M20 21v-7"/></svg></span>
+        <h3 data-i18n="tabSize">Taille de position</h3><p>Size by risk so every loss stays small and consistent.</p>
+      </a>
+      <a class="feat" href="#pnl">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6"/></svg></span>
+        <h3 data-i18n="tabPnl">PnL / ROI</h3><p>Profit, loss and leveraged ROE for any trade.</p>
+      </a>
+      <a class="feat" href="#dca">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span>
+        <h3 data-i18n="tabDca">Moyenne / DCA</h3><p>Blend multiple buys into one average entry price.</p>
+      </a>
+      <a class="feat" href="#tp">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg></span>
+        <h3 data-i18n="tabTp">Prise de profit</h3><p>A ladder of target prices for any return on equity.</p>
+      </a>
+      <a class="feat" href="#rr">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 7h14M5 7l-3 6a3 3 0 0 0 6 0L5 7zM19 7l-3 6a3 3 0 0 0 6 0l-3-6z"/></svg></span>
+        <h3 data-i18n="tabRr">Risque / Gain</h3><p>Your R:R ratio and the win rate you need to break even.</p>
+      </a>
+    </div>
+
+    <div class="faq">
+      <details open><summary data-i18n="faqQ1">Comment le prix de liquidation est-il calculé ?</summary><div class="a" data-i18n-html="faqA1">Pour une position en marge isolée, le prix de liquidation estimé est <code>Entry × (1 − 1/Leverage + MMR)</code> pour les positions longues et <code>Entry × (1 + 1/Leverage − MMR)</code> pour les positions courtes, où MMR est le taux de marge de maintenance. Un effet de levier plus élevé rapproche la liquidation du prix d'entrée ; une position longue à 100× est liquidée après une baisse d'environ 1%.</div></details>
+      <details><summary data-i18n="faqQ2">Comment dimensionner une position selon le risque ?</summary><div class="a" data-i18n-html="faqA2">Décidez quel pourcentage de votre compte vous êtes prêt à perdre si votre stop est atteint (1% est courant). Le calculateur divise ce risque en dollars par la distance entre l'entrée et le stop pour déterminer combien de pièces acheter, gardant chaque perte petite et constante.</div></details>
+      <details><summary data-i18n="faqQ3">Quelle est la différence entre le ROI et le ROE ?</summary><div class="a" data-i18n-html="faqA3">Le ROI de prix est le pourcentage de variation de l'actif. Le ROE est votre rendement sur la marge que vous avez réellement engagée, que l'effet de levier multiplie. Une variation de 6% avec un levier de 10× équivaut à un rendement sur marge d'environ 60%.</div></details>
+      <details><summary data-i18n="faqQ4">Comment fonctionne un calculateur de DCA / moyenne à la baisse ?</summary><div class="a" data-i18n-html="faqA4">Votre prix d'entrée moyen combiné correspond au coût total divisé par la quantité totale sur tous vos achats. Moyenner à la baisse abaisse votre seuil de rentabilité, mais augmente aussi votre position — n'augmentez votre position que selon un plan prédéfini.</div></details>
+      <details><summary data-i18n="faqQ5">Comment calculer un prix de prise de bénéfices ?</summary><div class="a" data-i18n-html="faqA5">Choisissez un rendement cible sur les capitaux propres. Le prix de sortie requis est <code>Entry × (1 + ROE / (100 × Leverage))</code> pour les positions longues et <code>Entry × (1 − ROE / (100 × Leverage))</code> pour les positions courtes.</div></details>
+      <details><summary data-i18n="faqQ6">Qu'est-ce qu'un bon ratio risque/rendement ?</summary><div class="a" data-i18n-html="faqA6">De nombreux traders visent au moins 2:1 — gagner deux fois ce qu'ils risquent. À 2:1, vous n'avez besoin de gagner qu'environ un tiers de vos trades pour atteindre le seuil de rentabilité. L'onglet risque/rendement affiche le taux de réussite d'équilibre exact pour votre configuration.</div></details>
+    </div>
+
+    <div class="morelinks">
+      <h3 data-i18n="moreTitle">Plus de calculatrices et de guides</h3>
+      <div class="ml-group"><span class="ml-h" data-i18n="mlCoin">Par crypto</span><a href="/btc-liquidation-calculator/">BTC</a><span class="ml-sep">·</span><a href="/eth-liquidation-calculator/">ETH</a><span class="ml-sep">·</span><a href="/sol-liquidation-calculator/">SOL</a><span class="ml-sep">·</span><a href="/xrp-liquidation-calculator/">XRP</a><span class="ml-sep">·</span><a href="/bnb-liquidation-calculator/">BNB</a><span class="ml-sep">·</span><a href="/doge-liquidation-calculator/">DOGE</a><span class="ml-sep">·</span><a href="/ada-liquidation-calculator/">ADA</a><span class="ml-sep">·</span><a href="/avax-liquidation-calculator/">AVAX</a><span class="ml-sep">·</span><a href="/link-liquidation-calculator/">LINK</a><span class="ml-sep">·</span><a href="/ltc-liquidation-calculator/">LTC</a></div>
+      <div class="ml-group"><span class="ml-h" data-i18n="mlLev">Par effet de levier</span><a href="/100x-liquidation-calculator/">100×</a><span class="ml-sep">·</span><a href="/50x-liquidation-calculator/">50×</a><span class="ml-sep">·</span><a href="/25x-liquidation-calculator/">25×</a><span class="ml-sep">·</span><a href="/20x-liquidation-calculator/">20×</a><span class="ml-sep">·</span><a href="/10x-liquidation-calculator/">10×</a><span class="ml-sep">·</span><a href="/5x-liquidation-calculator/">5×</a></div>
+      <div class="ml-group"><span class="ml-h" data-i18n="mlCompare">Comparer</span><a href="/bybit-vs-binance/">Bybit vs Binance</a><span class="ml-sep">·</span><a href="/binance-vs-okx/">Binance vs OKX</a><span class="ml-sep">·</span><a href="/bybit-vs-okx/">Bybit vs OKX</a><span class="ml-sep">·</span><a href="/binance-vs-kucoin/">Binance vs KuCoin</a><span class="ml-sep">·</span><a href="/bybit-vs-kucoin/">Bybit vs KuCoin</a><span class="ml-sep">·</span><a href="/kraken-vs-binance/">Kraken vs Binance</a></div>
+      <div class="ml-group"><span class="ml-h" data-i18n="mlTools">Outils</span><a href="/funding-fee-calculator/">Funding fee</a><span class="ml-sep">·</span><a href="/glossary/">Glossary</a><span class="ml-sep">·</span><a href="/api/">Free API</a><span class="ml-sep">·</span><a href="/blog/crypto-futures-legal-in-the-us/">US futures guide</a></div>
+    </div>
+    <p class="botnote"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg><span><b data-i18n="botTitle">Bot Telegram</b> — <span data-i18n="botFeatures">Consultez les prix en direct, configurez des alertes de prix, utilisez tous les calculateurs et rejoignez la Trade League hebdomadaire : gratuit, directement dans votre chat.</span> <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener">@MarginPadBot</a></span></p>
+    <p class="disc">MarginPad is an educational tool, not financial advice. Calculations are estimates and may differ from your exchange. Crypto trading carries substantial risk of loss. Never trade with money you can't afford to lose. Affiliate disclosure: some exchange links on this page are referral links — we may earn a commission at no cost to you, which never affects our calculations or recommendations.</p>
+  </section>
+
+  <footer class="site-foot">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a class="mark" href="/" aria-label="MarginPad home">MARGIN<b>PAD</b></a>
+        <span class="foot-tag" data-i18n="tag">outils de trading</span>
+        <a class="foot-bot" href="https://t.me/MarginPadBot" target="_blank" rel="noopener" aria-label="Telegram bot"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></a>
+      </div>
+      <nav class="foot-links">
+        <a href="#liq" data-i18n="tabLiq">Liquidation</a>
+        <a href="#size" data-i18n="tabSize">Taille de position</a>
+        <a href="#pnl">PnL</a>
+        <a href="#dca">DCA</a>
+        <a href="#tp" data-i18n="tabTp">Prise de profit</a>
+        <a href="/?p=heat" data-i18n="prodHeat">Carte thermique de liquidation</a>
+        <a href="/?p=swap" data-i18n="prodSwap">Échanger des Cryptos</a>
+        <a href="/blog/" data-i18n="navBlog">Blog</a>
+        <a href="/fr/about/" data-i18n="navAbout">À propos</a>
+        <a href="/fr/contact/" data-i18n="navContact">Contact</a>
+        <a href="/api/">API</a>
+      </nav>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 MarginPad</span>
+      <span>marginpad.io</span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const num = id => { const v = parseFloat($(id).value); return isFinite(v) ? v : NaN; };
+  const fmtUSD = n => isFinite(n) ? (Math.abs(n) >= 1 ? n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6})) : '—';
+  const fmtPct = n => isFinite(n) ? (n>=0?'+':'') + n.toFixed(2) + '%' : '—';
+  const fmtCoin = n => isFinite(n) ? n.toLocaleString('en-US',{maximumFractionDigits:6}) : '—';
+
+  function animateNum(el, to, fmt){
+    if(!isFinite(to)){ el._cur = NaN; cancelAnimationFrame(el._raf); el.textContent = '—'; return; }
+    const from = (typeof el._cur === 'number' && isFinite(el._cur)) ? el._cur : to;
+    cancelAnimationFrame(el._raf);
+    const start = performance.now(), dur = 380;
+    const tick = now => {
+      const t = Math.min(1, (now-start)/dur), e = 1 - Math.pow(1-t,3), v = from + (to-from)*e;
+      el.textContent = fmt(v);
+      if(t<1){ el._raf = requestAnimationFrame(tick); } else { el._cur = to; el.textContent = fmt(to); }
+    };
+    el._raf = requestAnimationFrame(tick);
+  }
+  const muted = el => { el.textContent='—'; el.className='rvalue muted'; el._cur=NaN; };
+
+  // exchange comparison menu — single source of truth (max leverage = "up to", varies by market/region)
+  const EXLIST = [
+    { name:'Bybit',   href:'https://www.bybit.com/invite?ref=LZKBERJ',                                                              accent:'#f7a600', fg:'#0a0b0d', letter:'B', lev:'100×', tag:'Deep liquidity, fast matching engine' },
+    { name:'Binance', href:'https://www.binance.com/register?ref=MAOZM9DS',                                                          accent:'#f0b90b', fg:'#181a20', letter:'B', lev:'125×', tag:'Largest exchange, most trading pairs', badge:'Hot' },
+    { name:'OKX',     href:'https://okx.com/join/96160298',                                                                          accent:'#e9e7df', fg:'#0a0b0d', letter:'O', lev:'125×', tag:'Pro tools, unified trading account' },
+    { name:'KuCoin',  href:'https://www.kucoin.com/r/rf/VHP8AYKY',                                                                   accent:'#23af91', fg:'#06231d', letter:'K', lev:'100×', tag:'Huge altcoin selection' },
+    { name:'Gate',    href:'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103&ut-m_cmp=rXJBDjtJ&activity_id=1778642196063', accent:'#3361ff', fg:'#ffffff', letter:'G', lev:'100×', tag:'Thousands of tokens listed' },
+    { name:'Kraken',  href:'https://invite.kraken.com/JDNW/guj2tf28',                                                                accent:'#7b5cff', fg:'#ffffff', letter:'K', lev:'50×',  tag:'Security-first, long track record' }
+  ];
+  const exgrid = document.getElementById('exgrid');
+  if (exgrid) EXLIST.forEach(ex => {
+    const a = document.createElement('a');
+    a.className = 'excard';
+    a.style.setProperty('--exc', ex.accent);
+    a.setAttribute('href', ex.href);   // setAttribute keeps & params literal
+    a.target = '_blank';
+    a.rel = 'sponsored noopener noreferrer';
+    a.innerHTML =
+      (ex.badge ? '<span class="exbadge"><span class="liveflame"></span>'+ex.badge+'</span>' : '')
+      + '<div class="exh"><span class="exmark" style="background:'+ex.accent+';color:'+ex.fg+'">'+ex.letter+'</span><span class="exname">'+ex.name+'</span></div>'
+      + '<div class="exlev"><b>'+ex.lev+'</b><span data-i18n="exMaxLev">levier max.</span></div>'
+      + '<div class="extag">'+ex.tag+'</div>'
+      + '<span class="exgo" data-i18n="exTrade">Trader →</span>';
+    exgrid.appendChild(a);
+  });
+
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected','false'));
+    t.setAttribute('aria-selected','true');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    $(t.dataset.tab).classList.add('active');
+  }));
+
+  const sides = { liqSide:'long', pnlSide:'long', tpSide:'long' };
+  document.querySelectorAll('[data-seg]').forEach(seg => {
+    seg.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      seg.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+      b.classList.add('on'); sides[seg.dataset.seg] = b.dataset.side; calcAll();
+    }));
+  });
+
+  function calcLiq(){
+    const entry=num('liqEntry'), lev=num('liqLev'), mmr=num('liqMmr')/100, out=$('liqOut');
+    if(!isFinite(entry)||!isFinite(lev)||lev<=0||!isFinite(mmr)){ muted(out); $('liqDist').textContent=$('liqMove').textContent=$('liqMargin').textContent='—'; return; }
+    const long=sides.liqSide==='long';
+    const liq=long?entry*(1-1/lev+mmr):entry*(1+1/lev-mmr);
+    const dist=(liq-entry)/entry*100;
+    out.className='rvalue '+(dist<0?'neg':'pos'); animateNum(out, liq, v=>'$'+fmtUSD(v));
+    $('liqDist').textContent=fmtPct(dist); $('liqDist').className='v '+(dist<0?'neg':'pos');
+    $('liqMove').textContent=Math.abs(dist).toFixed(2)+'% '+(long?'↓':'↑');
+    $('liqMargin').textContent=(100/lev).toFixed(2)+'%';
+  }
+  function calcSize(){
+    const bal=num('szBal'), risk=num('szRisk')/100, entry=num('szEntry'), stop=num('szStop'), lev=num('szLev'), out=$('szOut');
+    const dist=Math.abs(entry-stop);
+    if(!isFinite(bal)||!isFinite(risk)||!isFinite(entry)||!isFinite(stop)||dist===0){ muted(out); $('szNotional').textContent=$('szRiskAmt').textContent=$('szDist').textContent=$('szMargin').textContent='—'; return; }
+    const riskAmt=bal*risk, qty=riskAmt/dist, notional=qty*entry;
+    out.className='rvalue'; animateNum(out, qty, v=>fmtCoin(v));
+    $('szNotional').textContent='$'+fmtUSD(notional);
+    $('szRiskAmt').textContent='$'+fmtUSD(riskAmt);
+    $('szDist').textContent=(dist/entry*100).toFixed(2)+'%';
+    $('szMargin').textContent=(isFinite(lev)&&lev>0)?'$'+fmtUSD(notional/lev):'—';
+  }
+  function calcPnl(){
+    const entry=num('pnlEntry'), exit=num('pnlExit'), qty=num('pnlQty'), lev=num('pnlLev'), out=$('pnlOut');
+    if(!isFinite(entry)||!isFinite(exit)||!isFinite(qty)){ muted(out); $('pnlRoi').textContent=$('pnlRoe').textContent=$('pnlNotional').textContent=$('pnlExitVal').textContent='—'; return; }
+    const long=sides.pnlSide==='long';
+    const pnl=(long?(exit-entry):(entry-exit))*qty, roi=(long?(exit-entry):(entry-exit))/entry*100, notional=entry*qty;
+    out.className='rvalue'+(pnl<0?' neg':' pos'); animateNum(out, pnl, v=>(v>=0?'+$':'−$')+fmtUSD(Math.abs(v)));
+    $('pnlRoi').textContent=fmtPct(roi); $('pnlRoi').className='v '+(roi<0?'neg':'pos');
+    const roe=(isFinite(lev)&&lev>0)?roi*lev:NaN;
+    $('pnlRoe').textContent=isFinite(roe)?fmtPct(roe):'—'; $('pnlRoe').className='v '+(roe<0?'neg':'pos');
+    $('pnlNotional').textContent='$'+fmtUSD(notional);
+    $('pnlExitVal').textContent='$'+fmtUSD(exit*qty);
+  }
+  function calcDca(){
+    const out=$('dcaOut'); let cost=0, qty=0;
+    for(let i=1;i<=4;i++){ const p=num('dcaP'+i), q=num('dcaQ'+i); if(isFinite(p)&&isFinite(q)&&p>0&&q>0){ cost+=p*q; qty+=q; } }
+    if(qty<=0){ muted(out); $('dcaQty').textContent=$('dcaCost').textContent=$('dcaVal').textContent=$('dcaPnl').textContent='—'; return; }
+    const avg=cost/qty; out.className='rvalue'; animateNum(out, avg, v=>'$'+fmtUSD(v));
+    $('dcaQty').textContent=fmtCoin(qty);
+    $('dcaCost').textContent='$'+fmtUSD(cost);
+    const cur=num('dcaCur');
+    if(isFinite(cur)&&cur>0){
+      const val=cur*qty, pnl=val-cost, roi=pnl/cost*100;
+      $('dcaVal').textContent='$'+fmtUSD(val);
+      $('dcaPnl').textContent=(pnl>=0?'+$':'−$')+fmtUSD(Math.abs(pnl))+'  ('+fmtPct(roi)+')';
+      $('dcaPnl').className='v '+(pnl<0?'neg':'pos');
+    } else { $('dcaVal').textContent='—'; $('dcaPnl').textContent='—'; $('dcaPnl').className='v'; }
+  }
+  function calcTp(){
+    const entry=num('tpEntry'), lev=(isFinite(num('tpLev'))&&num('tpLev')>0)?num('tpLev'):1, qty=num('tpQty'), out=$('tpOut'), body=$('tpLadder');
+    const long=sides.tpSide==='long';
+    const targetPrice = roe => long ? entry*(1+roe/100/lev) : entry*(1-roe/100/lev);
+    const profitAt = price => isFinite(qty) ? (long?(price-entry):(entry-price))*qty : NaN;
+    if(!isFinite(entry)||entry<=0){ muted(out); body.innerHTML=''; return; }
+    const custom=num('tpCustom');
+    if(isFinite(custom)){ out.className='rvalue '+(long?'pos':'neg'); animateNum(out, targetPrice(custom), v=>'$'+fmtUSD(v)); }
+    else muted(out);
+    const levels=[25,50,100,200];
+    body.innerHTML = levels.map(r=>{
+      const px=targetPrice(r), pf=profitAt(px);
+      return '<tr><td>+'+r+'%</td><td><span class="p">$'+fmtUSD(px)+'</span></td><td>'+(isFinite(pf)?'<span class="g">+$'+fmtUSD(pf)+'</span>':'—')+'</td></tr>';
+    }).join('');
+  }
+
+  function calcRr(){
+    const entry=num('rrEntry'), stop=num('rrStop'), tp=num('rrTp'), out=$('rrOut');
+    const risk=Math.abs(entry-stop), reward=Math.abs(tp-entry);
+    if(!isFinite(entry)||!isFinite(stop)||!isFinite(tp)||risk===0){ muted(out); $('rrRisk').textContent=$('rrReward').textContent=$('rrBe').textContent='—'; return; }
+    const ratio=reward/risk, be=risk/(risk+reward)*100;
+    out.className='rvalue'; animateNum(out, ratio, v=>v.toFixed(2)+' : 1');
+    $('rrRisk').textContent='$'+fmtUSD(risk);
+    $('rrReward').textContent='$'+fmtUSD(reward);
+    $('rrBe').textContent=be.toFixed(2)+'%';
+  }
+
+  function calcAll(){ calcLiq(); calcSize(); calcPnl(); calcDca(); calcTp(); calcRr(); }
+  document.querySelectorAll('input[type=number]').forEach(i => i.addEventListener('input', calcAll));
+  calcAll();
+
+  // copy-to-clipboard buttons on each main result
+  document.querySelectorAll('.copybtn').forEach(btn => btn.addEventListener('click', () => {
+    const el = document.getElementById(btn.dataset.copy);
+    const txt = el ? el.textContent.trim() : '';
+    if (!txt || txt === '—') return;
+    const done = () => { btn.classList.add('copied'); setTimeout(() => btn.classList.remove('copied'), 1300); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done).catch(done); }
+    else { const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta); done(); }
+  }));
+
+  // ---- hot pairs: live prices via our own /api/prices (proxied, cached, fallback) ----
+  (function(){
+    const grid = document.getElementById('hpGrid');
+    if (!grid) return;
+    const PAIRS = [
+      {s:'BTCUSDT',n:'BTC'},{s:'ETHUSDT',n:'ETH'},{s:'SOLUSDT',n:'SOL'},{s:'BNBUSDT',n:'BNB'},
+      {s:'XRPUSDT',n:'XRP'},{s:'DOGEUSDT',n:'DOGE'},{s:'ADAUSDT',n:'ADA'},{s:'AVAXUSDT',n:'AVAX'}
+    ];
+    const REF = 'MAOZM9DS', BASE = 'https://www.binance.com/en/futures/';
+    const fmtP = v => { v=parseFloat(v); return v>=100 ? v.toLocaleString('en-US',{maximumFractionDigits:2}) : v>=1 ? v.toFixed(3) : v.toFixed(5); };
+    let loaded = false;
+    function render(pairs){
+      const map={}; pairs.forEach(d=>map[d.symbol]=d);
+      let hottest=null, hotAbs=0;
+      PAIRS.forEach(p=>{ const d=map[p.s]; if(d){ const a=Math.abs(parseFloat(d.changePct)); if(a>hotAbs){hotAbs=a;hottest=p.s;} } });
+      const html = PAIRS.map(p=>{
+        const d=map[p.s]; if(!d) return '';
+        const chg=parseFloat(d.changePct), up=chg>=0, hot=p.s===hottest;
+        return '<div class="hp-card'+(hot?' hot':'')+'">'
+          + (hot?'<span class="hp-fire liveflame"></span>':'')
+          + '<div class="hp-top"><span class="hp-sym">'+p.n+'<small>/USDT</small></span>'
+          + '<span class="hp-chg '+(up?'up':'down')+'">'+(up?'+':'')+chg.toFixed(2)+'%</span></div>'
+          + '<div class="hp-price '+(up?'up':'down')+'">$'+fmtP(d.price)+'</div>'
+          + '<a class="hp-trade" href="'+BASE+p.s+'?ref='+REF+'" target="_blank" rel="sponsored noopener noreferrer">Trade →</a>'
+          + '</div>';
+      }).join('');
+      if (html) { grid.innerHTML = html; loaded = true; }
+    }
+    function load(){
+      fetch('/api/prices', { cache: 'no-store' })
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(j => { if (j && j.pairs && j.pairs.length) render(j.pairs); })
+        .catch(() => { if (!loaded) grid.innerHTML = '<p class="sec-sub" style="grid-column:1/-1">Loading live prices…</p>'; });
+    }
+    load();
+    setInterval(load, 20000);
+  })();
+
+  (function(){
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!reduce) {
+      const card = document.querySelector('.card');
+      if (card) card.addEventListener('pointermove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+      const h1 = document.querySelector('.hero h1');
+      if (h1) window.addEventListener('pointermove', e => {
+        const cx = e.clientX / window.innerWidth - .5, cy = e.clientY / window.innerHeight - .5;
+        h1.style.transform = 'translate(' + (cx*10).toFixed(1) + 'px,' + (cy*7).toFixed(1) + 'px)';
+      }, { passive: true });
+    }
+
+    // ---- live line-chart background: a dot tracing a white line ----
+    const cv = document.getElementById('bgchart');
+    if (!cv) return;
+    const ctx = cv.getContext('2d');
+    const STEP = 7, SPEED = 0.9;
+    let W=0, H=0, dpr=1, pts=[], scrollX=0, vmin=0, vmax=1, tmin=0, tmax=1, raf=0;
+    function nextP(prev){ return Math.max(0.0001, prev*(1+(Math.random()-0.5)*0.02)); }
+    function recompute(instant){
+      let mn=Infinity, mx=-Infinity;
+      for (const v of pts){ if(v<mn)mn=v; if(v>mx)mx=v; }
+      const pad=(mx-mn)*0.25 || 1; tmin=mn-pad; tmax=mx+pad;
+      if(instant){ vmin=tmin; vmax=tmax; }
+    }
+    function seed(){
+      pts=[]; let p=100, n=Math.ceil(W/STEP)+3;
+      for (let i=0;i<n;i++){ pts.push(p); p=nextP(p); }
+      recompute(true);
+    }
+    function resize(){
+      dpr=Math.min(2, window.devicePixelRatio||1);
+      W=cv.clientWidth; H=cv.clientHeight;
+      cv.width=Math.max(1,Math.floor(W*dpr)); cv.height=Math.max(1,Math.floor(H*dpr));
+      ctx.setTransform(dpr,0,0,dpr,0,0); seed();
+    }
+    function yv(v){ const norm=(v-vmin)/(vmax-vmin); return H*0.22 + (1-norm)*H*0.6; }
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      vmin += (tmin-vmin)*0.05; vmax += (tmax-vmax)*0.05;
+      let lx=0, ly=0;
+      // soft area under the line
+      ctx.beginPath();
+      for (let i=0;i<pts.length;i++){ const x=i*STEP - scrollX, y=yv(pts[i]); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); lx=x; ly=y; }
+      ctx.lineTo(lx, H); ctx.lineTo(-STEP, H); ctx.closePath();
+      ctx.fillStyle='rgba(255,255,255,0.022)'; ctx.fill();
+      // the white line
+      ctx.beginPath();
+      for (let i=0;i<pts.length;i++){ const x=i*STEP - scrollX, y=yv(pts[i]); if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y); }
+      ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.lineWidth=1.5; ctx.lineJoin='round'; ctx.stroke();
+      // glowing dot that "draws" the line at the leading edge
+      ctx.shadowColor='rgba(255,255,255,0.9)'; ctx.shadowBlur=14;
+      ctx.beginPath(); ctx.arc(lx, ly, 3, 0, Math.PI*2); ctx.fillStyle='#ffffff'; ctx.fill();
+      ctx.shadowBlur=0;
+    }
+    function tick(){
+      scrollX += SPEED;
+      if (scrollX >= STEP){ scrollX-=STEP; pts.shift(); pts.push(nextP(pts[pts.length-1])); recompute(false); }
+      pts[pts.length-1] = Math.max(0.0001, pts[pts.length-1]*(1+(Math.random()-0.5)*0.004));
+      draw(); raf=requestAnimationFrame(tick);
+    }
+    window.addEventListener('resize', () => { cancelAnimationFrame(raf); resize(); raf=requestAnimationFrame(tick); });
+    resize();
+    raf=requestAnimationFrame(tick);
+  })();
+</script>
+<script>
+/* Trade Planner: whole trade on one screen */
+(function(){
+  var side='long';
+  var seg=document.getElementById('planSeg');
+  function num(id){var e=document.getElementById(id);var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
+  function money(x){if(!isFinite(x))return '—';var neg=x<0;x=Math.abs(x);return (neg?'-$':'$')+x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  function tone(id,pos){var e=document.getElementById(id);if(!e)return;e.classList.remove('pos','neg');e.classList.add(pos?'pos':'neg');}
+  function calc(){
+    var entry=num('planEntry'),stop=num('planStop'),tp=num('planTp'),lev=num('planLev'),bal=num('planBal'),risk=num('planRisk');
+    var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
+    var stopDist=Math.abs(entry-stop);
+    var ids=['planSize','planLiq','planRR','planProfit','planLoss','planBe','planNotional','planMargin'];
+    if(!isFinite(entry)||!isFinite(stop)||stopDist===0||!isFinite(bal)||!isFinite(risk)||!isFinite(lev)||lev<=0){ ids.forEach(function(i){set(i,'—');}); return; }
+    var long=side==='long';
+    var riskAmt=bal*risk/100;
+    var size=riskAmt/stopDist;
+    var notional=size*entry;
+    var liq=long?entry*(1-1/lev+0.005):entry*(1+1/lev-0.005);
+    var reward=isFinite(tp)?Math.abs(tp-entry):NaN;
+    var rr=isFinite(reward)?reward/stopDist:NaN;
+    var expProfit=isFinite(tp)?(long?tp-entry:entry-tp)*size:NaN;
+    var be=isFinite(rr)?1/(1+rr)*100:NaN;
+    set('planSize', size.toLocaleString('en-US',{maximumFractionDigits:6})+(sym?' '+sym:''));
+    set('planLiq', money(liq));
+    set('planRR', isFinite(rr)?rr.toFixed(2)+' : 1':'—');
+    set('planProfit', isFinite(expProfit)?(expProfit>=0?'+':'−')+money(Math.abs(expProfit)).replace('-',''):'—'); tone('planProfit', true);
+    set('planLoss', '−'+money(riskAmt).replace('-','')); tone('planLoss', false);
+    set('planBe', isFinite(be)?be.toFixed(1)+'%':'—');
+    set('planNotional', money(notional));
+    set('planMargin', money(notional/lev));
+  }
+  if(seg)seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
+  ['planEntry','planStop','planTp','planLev','planBal','planRisk','planSym'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
+  var advChk=document.getElementById('planAdvChk');
+  if(advChk)advChk.addEventListener('change',function(){var on=advChk.checked,ai=document.getElementById('planAdvIn'),ao=document.getElementById('planAdvOut');if(ai)ai.hidden=!on;if(ao)ao.hidden=!on;});
+  var pSym=document.getElementById('planSym');
+  if(pSym)pSym.addEventListener('change',function(){['planEntry','planStop','planTp'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='0';});calc();});
+  calc();
+})();
+</script>
+<script>
+/* Trading Journal — saved setups + results, all in localStorage */
+(function(){
+  var KEY='mp_journal';
+  function MT(k,d){return (window.mpT&&window.mpT(k))||d;}
+  function load(){try{return JSON.parse(localStorage.getItem(KEY))||[];}catch(e){return [];}}
+  function store(a){try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){}}
+  function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+  function money(x){x=+x||0;var n=x<0;x=Math.abs(x);return (n?'-$':'$')+x.toLocaleString('en-US',{maximumFractionDigits:2});}
+  function num(id){var e=document.getElementById(id);var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
+  function render(){
+    var listEl=document.getElementById('jrList'),statsEl=document.getElementById('jrStats'),emptyEl=document.getElementById('jrEmpty');
+    if(!listEl||!statsEl)return;
+    var data=load();
+    var closed=data.filter(function(e){return e.status==='win'||e.status==='loss';});
+    var wins=closed.filter(function(e){return e.status==='win';}).length;
+    var wr=closed.length?Math.round(wins/closed.length*100):null;
+    var net=closed.reduce(function(s,e){return s+(+e.pnl||0);},0);
+    var rrArr=data.filter(function(e){return isFinite(e.rr);});
+    var avgRR=rrArr.length?(rrArr.reduce(function(s,e){return s+e.rr;},0)/rrArr.length):null;
+    function stat(v,l){return '<div class="jr-stat"><div class="v">'+v+'</div><div class="l">'+l+'</div></div>';}
+    statsEl.innerHTML=stat(data.length,MT('jTrades','Trades'))+stat(wr==null?'—':wr+'%',MT('jWinRate','Win rate'))+stat(avgRR==null?'—':avgRR.toFixed(2),MT('jAvgRR','Avg R:R'))+stat((net>=0?'+':'−')+money(net).replace('-',''),MT('jNetPnl','Net PnL'));
+    listEl.innerHTML=data.slice().reverse().map(function(e){
+      var sideC=e.side==='short'?'short':'long';
+      var stub=e.status==='planned'
+        ? '<span class="tk-tag">'+MT('jResultQ','result?')+'</span><button class="tk-btn win" data-act="win" data-id="'+e.id+'">✓ '+MT('jWin','Win')+'</button><button class="tk-btn loss" data-act="loss" data-id="'+e.id+'">✗ '+MT('jLoss','Loss')+'</button>'
+        : '<span class="tk-result '+((+e.pnl)>=0?'pos':'neg')+'">'+((+e.pnl)>=0?'+':'−')+money(e.pnl).replace('-','')+'</span><span class="tk-tag">'+(e.status==='win'?MT('jWon','WIN'):MT('jLost','LOSS'))+'</span>';
+      return '<div class="ticket '+sideC+'">'
+        +'<button class="tk-del" data-act="del" data-id="'+e.id+'" aria-label="Delete">✕</button>'
+        +'<div class="tk-main"><div class="tk-top"><span class="tk-sym">'+esc(e.sym||'—')+'</span><span class="tk-side '+sideC+'">'+esc(e.side)+'</span></div>'
+        +'<div class="tk-rows"><div><span>'+MT('jEntry','Entry')+'</span><b>'+esc(String(e.entry))+'</b></div>'
+        +'<div><span>'+MT('jStop','Stop')+'</span><b>'+esc(String(e.stop))+'</b></div>'
+        +'<div><span>'+MT('jTarget','Target')+'</span><b>'+(e.tp!=null?esc(String(e.tp)):'—')+'</b></div>'
+        +'<div><span>'+MT('jRR','R:R')+'</span><b>'+(isFinite(e.rr)?e.rr.toFixed(2):'—')+'</b></div></div></div>'
+        +'<div class="tk-stub">'+stub+'</div></div>';
+    }).join('');
+    if(emptyEl)emptyEl.style.display=data.length?'none':'';
+  }
+  function add(){
+    var entry=num('planEntry'),stop=num('planStop'),tp=num('planTp'),lev=num('planLev');
+    if(!isFinite(entry)||!isFinite(stop)||entry===stop)return;
+    var seg=document.getElementById('planSeg'); var on=seg&&seg.querySelector('button.on'); var side=on?on.getAttribute('data-side'):'long';
+    var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
+    var rr=isFinite(tp)?Math.abs(tp-entry)/Math.abs(entry-stop):NaN;
+    var data=load();
+    data.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,lev:isFinite(lev)?lev:null,rr:isFinite(rr)?rr:null,status:'planned',pnl:null});
+    store(data); openJr();
+    var btn=document.getElementById('planSave'),sp=btn&&btn.querySelector('span');
+    if(btn&&sp){var o=sp.textContent;btn.classList.add('saved');sp.textContent=MT('jSaved','Saved')+' ✓';setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1500);}
+    try{if(window.__mpTrack)window.__mpTrack('journal','save');}catch(e){}
+  }
+  var saveBtn=document.getElementById('planSave'); if(saveBtn)saveBtn.addEventListener('click',add);
+  // ticket actions are delegated to document — the list lives in the drawer, which parses after this script
+  document.addEventListener('click',function(ev){
+    var b=ev.target.closest&&ev.target.closest('#jrList [data-act]'); if(!b)return;
+    var id=b.getAttribute('data-id'),act=b.getAttribute('data-act');
+    var data=load(),i=-1; for(var k=0;k<data.length;k++){if(data[k].id===id){i=k;break;}} if(i<0)return;
+    if(act==='del'){ data.splice(i,1); }
+    else if(act==='win'||act==='loss'){
+      var v=prompt(MT('jPrompt','Result for this trade in $ (e.g. 320 or -50):'),''); if(v===null)return;
+      var pnl=parseFloat(String(v).replace(/[,$%+\s]/g,'')); if(!isFinite(pnl))pnl=0;
+      if(act==='loss'&&pnl>0)pnl=-pnl;
+      data[i].status=act; data[i].pnl=pnl;
+    }
+    store(data); render();
+  });
+  // look up the drawer lazily so it works no matter when this script ran relative to the markup
+  function openJr(){var d=document.getElementById('jrDrawer'),b=document.getElementById('jrBackdrop');if(d)d.hidden=false;if(b)b.hidden=false;render();}
+  function closeJr(){var d=document.getElementById('jrDrawer'),b=document.getElementById('jrBackdrop');if(d)d.hidden=true;if(b)b.hidden=true;}
+  document.addEventListener('click',function(e){var t=e.target;if(!t)return;
+    if(t.closest&&t.closest('#jrOpen'))openJr();
+    else if(t.closest&&t.closest('#jrClose'))closeJr();
+    else if(t.id==='jrBackdrop')closeJr();
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeJr();});
+  render();
+})();
+</script>
+<script>
+(function(){
+  var CLARITY_ID = ''; // set to a Microsoft Clarity project ID for visual click heatmaps + recordings
+  if (CLARITY_ID) { (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,'clarity','script',CLARITY_ID); }
+  function send(t,e){
+    try{
+      var u='/api/track?t='+encodeURIComponent(t)+(e?'&e='+encodeURIComponent(e):'')+'&p='+encodeURIComponent(location.pathname);
+      if(t==='pageview'&&document.referrer){u+='&r='+encodeURIComponent(document.referrer);}
+      if(navigator.sendBeacon){navigator.sendBeacon(u);}else{fetch(u,{keepalive:true});}
+      if(window.clarity){window.clarity('event', t+(e?':'+e:''));}
+    }catch(_){}
+  }
+  send('pageview');
+  function describe(t){
+    var m=(t.closest&&t.closest('a,button,input,select,label,.excard,.toolcard,.hp-card,.feat,.post-card'))||t;
+    if(!m||!m.tagName) return 'other';
+    var tag=m.tagName.toLowerCase();
+    if(m.id) return tag+'#'+m.id;
+    var txt=(m.textContent||'').trim().replace(/\s+/g,' ').slice(0,22);
+    if(txt&&(tag==='a'||tag==='button'||tag==='label')) return tag+' '+txt;
+    var cls=(typeof m.className==='string'&&m.className)?m.className.split(' ')[0]:'';
+    return cls?tag+'.'+cls:tag;
+  }
+  document.addEventListener('click',function(ev){
+    // spatial heatmap cell (20 cols x 40 rows of the page)
+    try{
+      var col=Math.max(0,Math.min(19,Math.floor(ev.clientX/Math.max(1,window.innerWidth)*20)));
+      var dh=Math.max(document.documentElement.scrollHeight||1,1);
+      var row=Math.max(0,Math.min(39,Math.floor((ev.pageY!=null?ev.pageY:(ev.clientY+(window.scrollY||0)))/dh*40)));
+      send('grid',col+'_'+row);
+    }catch(_){}
+    // one descriptor per click (typed for key elements, else generic)
+    var el=ev.target.closest&&ev.target.closest('.excard,.hp-trade,.toolcard,.hbot,.tab');
+    if(el&&el.classList.contains('excard')){var n=el.querySelector('.exname'); send('exchange', n?n.textContent:'');}
+    else if(el&&el.classList.contains('hp-trade')) send('hotpair','trade');
+    else if(el&&el.classList.contains('toolcard')){var t=el.querySelector('.tc-name'); send('tool', t?t.textContent:'');}
+    else if(el&&el.classList.contains('hbot')) send('nav','bot');
+    else if(el&&el.classList.contains('tab')) send('tab', el.getAttribute('data-tab')||'');
+    else send('el', describe(ev.target));
+  },true);
+  // ---- shareable state: encode a calculator's inputs in the URL so a link reproduces it ----
+  function panelState(panel){
+    if(!panel||!panel.id) return location.pathname;
+    var p=new URLSearchParams(); p.set('c', panel.id);
+    panel.querySelectorAll('input, select').forEach(function(el){ if(el.id && el.value!=='') p.set(el.id, el.value); });
+    var on=panel.querySelector('.seg button.on'); if(on) p.set('_s', on.getAttribute('data-side'));
+    return location.pathname+'?'+p.toString();
+  }
+  function restoreState(){
+    var q; try{ q=new URLSearchParams(location.search); }catch(e){ return; }
+    var c=q.get('c'); if(!c) return;
+    var panel=document.getElementById(c); if(!panel) return;
+    var tab=document.querySelector('[data-tab="'+c+'"]'); if(tab) tab.click();
+    q.forEach(function(v,k){ if(k==='c'||k==='_s') return; var el=document.getElementById(k); if(el) el.value=v; });
+    var side=q.get('_s'); if(side){ var btn=panel.querySelector('.seg button[data-side="'+side+'"]'); if(btn) btn.click(); }
+    panel.querySelectorAll('input, select').forEach(function(el){ try{ el.dispatchEvent(new Event('input',{bubbles:true})); }catch(e){} });
+  }
+  window.addEventListener('load', restoreState);
+  // ---- share buttons (viral loop): one next to each result's copy button ----
+  document.querySelectorAll('.copybtn').forEach(function(cb){
+    var sb=document.createElement('button');
+    sb.className='sharebtn'; sb.type='button'; sb.setAttribute('aria-label','Share'); sb.title=(window.mpT&&window.mpT('jShare'))||'Share result';
+    sb.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>';
+    cb.parentNode.insertBefore(sb, cb);
+    sb.addEventListener('click', function(){
+      var rm=cb.closest('.result-main'); if(!rm) return;
+      var lbl=rm.querySelector('.rlabel'), val=rm.querySelector('.rvalue');
+      var lt=lbl?lbl.textContent.trim():'', vt=val?val.textContent.trim():'';
+      if(!vt||vt==='—') return;
+      var msg='📊 '+lt+': '+vt+' — free crypto futures calculators at marginpad.io';
+      var url='https://marginpad.io'+panelState(rm.closest('.panel'));
+      send('share', lt);
+      if(navigator.share){ navigator.share({title:'MarginPad', text:msg, url:url}).catch(function(){}); }
+      else { window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(msg+' '+url), '_blank', 'noopener,width=560,height=480'); }
+    });
+  });
+})();
+</script>
+<div id="jrBackdrop" class="jr-backdrop" hidden></div>
+<aside id="jrDrawer" class="jr-drawer" hidden aria-label="Trade journal">
+  <div class="jr-head"><span class="jr-title">🎟️ <span data-i18n="jrTitle">Journal de trading</span></span><button id="jrClose" class="jr-x" type="button" aria-label="Close">✕</button></div>
+  <div class="jr-stats" id="jrStats"></div>
+  <div class="jr-list" id="jrList"></div>
+  <p class="jr-empty" id="jrEmpty" data-i18n="jrEmpty">Aucun trade enregistré pour l'instant. Planifiez un trade ci-dessus et appuyez sur « Enregistrer dans le journal ».</p>
+</aside>
+<nav class="mobnav" aria-label="Quick navigation">
+  <button type="button" data-mn="calc" aria-label="Calculator"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="16" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="18"/><line x1="8" y1="18" x2="12" y2="18"/></svg></button>
+  <button type="button" data-mn="markets" aria-label="Markets"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></button>
+  <button type="button" data-mn="journal" aria-label="Journal"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+  <button type="button" data-mn="chat" aria-label="Chat"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg></button>
+</nav>
+<button id="chatFab" type="button" aria-label="Open trader chat">💬 <span data-i18n="chatBtn">Chat</span></button>
+<div id="chatBox" hidden>
+  <div class="ct-head"><span class="ct-title" data-i18n="chatTitleW">Chat des traders</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Close">✕</button></div>
+  <div class="ct-gate" id="ctGate">
+    <p data-i18n="chatGate">Choisissez un nom d'utilisateur pour rejoindre — sans inscription, sans e-mail.</p>
+    <input id="ctUser" maxlength="20" placeholder="username" data-ph="chatPhUser" autocomplete="off" placeholder="nom d'utilisateur">
+    <button id="ctJoin" type="button" data-i18n="chatJoin">Rejoindre le chat</button>
+  </div>
+  <div class="ct-msgs" id="ctMsgs" hidden></div>
+  <form class="ct-form" id="ctForm" hidden>
+    <input id="ctInput" maxlength="280" placeholder="Type a message…" autocomplete="off" data-ph="chatPh">
+    <button type="submit" aria-label="Send">➤</button>
+  </form>
+</div>
+<script>
+(function(){
+  var fab=document.getElementById('chatFab'),box=document.getElementById('chatBox'),gate=document.getElementById('ctGate'),
+      msgs=document.getElementById('ctMsgs'),form=document.getElementById('ctForm'),input=document.getElementById('ctInput'),
+      userIn=document.getElementById('ctUser'),joinBtn=document.getElementById('ctJoin'),onlineEl=document.getElementById('ctOnline'),
+      closeBtn=document.getElementById('ctClose');
+  if(!fab)return;
+  var ws=null,user='',joined=false;
+  try{user=localStorage.getItem('mp_chat_user')||'';}catch(e){}
+  function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+  function colorFor(u){var h=0;for(var i=0;i<u.length;i++)h=(h*31+u.charCodeAt(i))%360;return 'hsl('+h+',65%,70%)';}
+  function addMsg(m){var d=document.createElement('div');d.className='ct-msg';d.innerHTML='<b style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b>'+esc(m.t);msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;}
+  function setOnline(n){if(n!=null)onlineEl.textContent=n+(n===1?' online':' online');}
+  function connect(){
+    if(ws)return;
+    try{ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host+'/chat/ws');}catch(e){return;}
+    ws.onmessage=function(ev){var d;try{d=JSON.parse(ev.data);}catch(e){return;}
+      if(d.type==='history'){msgs.innerHTML='';(d.messages||[]).forEach(addMsg);setOnline(d.online);}
+      else if(d.type==='msg'){addMsg(d.message);setOnline(d.online);}
+      else if(d.type==='presence'){setOnline(d.online);}};
+    ws.onclose=function(){ws=null;if(joined)setTimeout(connect,3000);};
+    ws.onerror=function(){try{ws.close();}catch(e){}};
+  }
+  function showChat(){gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;connect();setTimeout(function(){input.focus();},50);}
+  function openBox(){box.hidden=false;fab.hidden=true;if(user){showChat();}else{gate.hidden=false;userIn.focus();}}
+  fab.addEventListener('click',openBox);
+  var hOpen=document.getElementById('chatOpen');if(hOpen)hOpen.addEventListener('click',openBox);
+  if(/[?&]chat=1/.test(location.search)){try{openBox();}catch(e){}}
+  closeBtn.addEventListener('click',function(){box.hidden=true;fab.hidden=false;});
+  joinBtn.addEventListener('click',function(){var u=(userIn.value||'').replace(/[<>&]/g,'').trim().slice(0,20);if(u.length<2){userIn.focus();return;}user=u;try{localStorage.setItem('mp_chat_user',u);}catch(e){}showChat();});
+  userIn.addEventListener('keydown',function(e){if(e.key==='Enter')joinBtn.click();});
+  form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t||!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));input.value='';});
+})();
+</script>
+<script src="/assets/i18n.js"></script>
+<script>
+window.addEventListener('load', function () {
+  function MT(k){ return (window.mpT && window.mpT(k)) || null; }
+  var HINTS = [
+    [/sym/i,'hSym'],[/mmr/i,'hMmr'],[/lev/i,'hLev'],[/entry/i,'hEntry'],[/exit/i,'hExit'],[/stop/i,'hStop'],
+    [/risk/i,'hRisk'],[/bal/i,'hBal'],[/(qty|pos)/i,'hQty'],[/(roe|custom)/i,'hRoe'],[/tp/i,'hTp'],[/cur/i,'hCur']
+  ];
+  function hintFor(id) { for (var i = 0; i < HINTS.length; i++) { if (HINTS[i][0].test(id)) return MT(HINTS[i][1]); } return null; }
+  var els = document.querySelectorAll('.field input, .field select');
+  for (var i = 0; i < els.length; i++) {
+    var inp = els[i], h = hintFor(inp.id || '');
+    if (!h) continue;
+    var field = inp.closest('.field'); if (!field) continue;
+    var lab = field.querySelector('label'); if (!lab || lab.getAttribute('data-hinted')) continue;
+    lab.setAttribute('title', h);            // hover the label text → explanation
+    lab.setAttribute('data-hinted', '1');
+    lab.style.cursor = 'help';
+    if (!lab.querySelector('.hint')) {
+      var s = document.createElement('span');
+      s.className = 'hint'; s.textContent = '?';
+      s.setAttribute('title', h); s.setAttribute('aria-label', h);
+      lab.appendChild(s);
+    }
+  }
+  // ---- value steppers: fine-tune any price with arrow buttons ----
+  function smartStep(v){v=Math.abs(v);if(!v)return 1;if(v>=10000)return 100;if(v>=1000)return 10;if(v>=100)return 5;if(v>=10)return 1;if(v>=1)return 0.1;return 0.01;}
+  document.querySelectorAll('.panel .input-line').forEach(function(line){
+    var inp=line.querySelector('input[type="number"]');
+    if(!inp||line.querySelector('.stepper'))return;
+    var st=document.createElement('div');st.className='stepper';
+    st.innerHTML='<button type="button" data-d="1" tabindex="-1" aria-label="Increase">▲</button><button type="button" data-d="-1" tabindex="-1" aria-label="Decrease">▼</button>';
+    line.appendChild(st);line.classList.add('has-stepper');
+    st.addEventListener('click',function(e){
+      var b=e.target.closest('button');if(!b)return;
+      var dir=+b.getAttribute('data-d'),v=parseFloat(inp.value);if(!isFinite(v))v=0;
+      var nv=v+dir*smartStep(v);if(nv<0)nv=0;nv=Math.round(nv*1e6)/1e6;
+      inp.value=nv;inp.dispatchEvent(new Event('input',{bubbles:true}));
+    });
+  });
+});
+</script>
+<script>
+(function(){
+  var mn=document.querySelector('.mobnav');
+  if(mn)mn.addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b)return;
+    var a=b.getAttribute('data-mn');
+    if(a==='journal'){location.href='/journal/'+(window.mpLang&&window.mpLang!=='en'?'?lang='+window.mpLang:'');}
+    else if(a==='chat'){var c=document.getElementById('chatOpen');if(c)c.click();}
+    else if(a==='calc'){var card=document.querySelector('.card');if(card)card.scrollIntoView({behavior:'smooth',block:'start'});}
+    else if(a==='markets'){var hp=document.querySelector('.hotpairs');if(hp)hp.scrollIntoView({behavior:'smooth',block:'start'});}
+  });
+  var pop;
+  function showHint(t){if(!t)return;if(!pop){pop=document.createElement('div');pop.id='hintPop';document.body.appendChild(pop);}pop.textContent=t;pop.style.display='block';}
+  function hideHint(){if(pop)pop.style.display='none';}
+  document.addEventListener('click',function(e){
+    var h=e.target.closest&&e.target.closest('.hint');
+    if(h){e.preventDefault();e.stopPropagation();showHint(h.getAttribute('title')||h.getAttribute('aria-label'));return;}
+    if(pop&&pop.style.display!=='none'&&!(e.target.closest&&e.target.closest('#hintPop')))hideHint();
+  });
+})();
+</script>
+<div id="pwaBanner" class="pwa-banner" hidden>
+  <img class="pwa-ic" src="/assets/app-icon-192.png" alt="MarginPad" />
+  <div class="pwa-txt"><strong data-i18n="pwaTitle">Installer MarginPad</strong><span id="pwaMsg" data-i18n="pwaDesc">Accès plein écran, comme une application, depuis votre écran d'accueil.</span></div>
+  <button id="pwaAction" class="pwa-act" type="button">Install</button>
+  <button id="pwaClose" class="pwa-x" type="button" aria-label="Dismiss">✕</button>
+</div>
+<div id="pwaSheet" class="pwa-sheet" hidden>
+  <div class="pwa-sheet-card">
+    <button id="pwaSheetClose" class="pwa-x" type="button" aria-label="Close">✕</button>
+    <img class="pwa-ic-lg" src="/assets/app-icon-192.png" alt="MarginPad" />
+    <h3 data-i18n="pwaSheetTitle">Ajouter MarginPad à votre écran d'accueil</h3>
+    <ol class="pwa-steps">
+      <li><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#2ebd85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1"/></svg> <span data-i18n="pwaStep1">Touchez le bouton Partager dans la barre d'outils de Safari</span></li>
+      <li><span data-i18n="pwaStep2">Faites défiler vers le bas et touchez « Sur l'écran d'accueil »</span></li>
+      <li><span data-i18n="pwaStep3">Touchez Ajouter — il s'ouvre en plein écran, comme une application</span></li>
+    </ol>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY='mp_pwa_dismissed';
+  function standalone(){try{return window.matchMedia('(display-mode:standalone)').matches||window.navigator.standalone===true;}catch(e){return false;}}
+  var ua=navigator.userAgent||'';
+  var isIOS=/iPhone|iPad|iPod/i.test(ua)&&!window.MSStream;
+  var isMobile=isIOS||/Android/i.test(ua);
+  if(!isMobile||standalone())return;
+  try{if(localStorage.getItem(KEY))return;}catch(e){}
+  var banner=document.getElementById('pwaBanner'),msg=document.getElementById('pwaMsg'),act=document.getElementById('pwaAction'),closeB=document.getElementById('pwaClose');
+  var sheet=document.getElementById('pwaSheet'),sheetClose=document.getElementById('pwaSheetClose');
+  if(!banner)return;
+  function dismiss(){banner.hidden=true;try{localStorage.setItem(KEY,'1');}catch(e){}}
+  closeB.addEventListener('click',dismiss);
+  if(isIOS){
+    msg.textContent=(window.mpT&&window.mpT('pwaIos'))||'Tap Share, then “Add to Home Screen”.';
+    act.textContent=(window.mpT&&window.mpT('pwaHow'))||'How';
+    act.addEventListener('click',function(){sheet.hidden=false;});
+    sheetClose.addEventListener('click',function(){sheet.hidden=true;dismiss();});
+    sheet.addEventListener('click',function(e){if(e.target===sheet)sheet.hidden=true;});
+    setTimeout(function(){banner.hidden=false;},2500);
+  } else {
+    var deferred=null;
+    window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;msg.textContent=(window.mpT&&window.mpT('pwaDesc'))||'Full-screen, app-like access from your home screen.';act.textContent=(window.mpT&&window.mpT('pwaInstall'))||'Install';banner.hidden=false;});
+    act.addEventListener('click',function(){if(deferred){deferred.prompt();deferred.userChoice.then(function(){deferred=null;dismiss();});}else dismiss();});
+  }
+})();
+</script>
+<script>
+(function(){
+  var stage=document.getElementById('heatChart'); if(!stage)return;
+  var chart=null, candle=null, plines=[], libBusy=false;
+  function ensureLib(cb){ if(window.LightweightCharts){cb();return;} if(libBusy)return; libBusy=true;
+    var s=document.createElement('script'); s.src='https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js';
+    s.onload=function(){libBusy=false;cb();}; s.onerror=function(){libBusy=false;stage.innerHTML='<div class="heat-err">Chart failed to load — check your connection.</div>';};
+    document.head.appendChild(s); }
+  function initChart(){ if(chart||!window.LightweightCharts)return;
+    chart=LightweightCharts.createChart(stage,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Space Mono', monospace",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,0.4)'},horzLines:{color:'rgba(35,41,50,0.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false},crosshair:{mode:1,vertLine:{color:'rgba(194,246,74,0.45)',labelBackgroundColor:'#3a4416'},horzLine:{color:'rgba(194,246,74,0.45)',labelBackgroundColor:'#3a4416'}},autoSize:true});
+    candle=chart.addCandlestickSeries({upColor:'#2ebd85',downColor:'#ff6258',borderVisible:false,wickUpColor:'#2ebd85',wickDownColor:'#ff6258'}); }
+  function setLines(P){ if(!candle)return; for(var i=0;i<plines.length;i++){try{candle.removePriceLine(plines[i]);}catch(e){}} plines=[]; if(!P)return;
+    plines.push(candle.createPriceLine({price:P,color:'#ffffff',lineWidth:2,lineStyle:2,axisLabelVisible:true,title:'PRICE'}));
+    [100,50,25,10,5].forEach(function(L){ var t=Math.min(1,L/100); var lc=mix('#1d6e4c','#76ffb2',t),sc=mix('#1d4c8c','#79ceff',t),w=L>=50?3:(L>=25?2:1);
+      plines.push(candle.createPriceLine({price:P*(1-1/L+0.005),color:lc,lineWidth:w,lineStyle:0,axisLabelVisible:true,title:L+'x long'}));
+      plines.push(candle.createPriceLine({price:P*(1+1/L-0.005),color:sc,lineWidth:w,lineStyle:0,axisLabelVisible:true,title:L+'x short'})); }); }
+  function refresh(){ if(chart){try{chart.timeScale().fitContent();}catch(e){}} }
+  var sel=document.getElementById('heatCoin'), pxEl=document.getElementById('heatPx');
+  var cur={coin:'BTC',price:0,chg:0};
+  var LEVS=[2,3,5,10,20,25,50,100];
+  function MT(k,d){return (window.mpT&&window.mpT(k))||d;}
+  function money(x){if(x>=1000)return x.toLocaleString('en-US',{maximumFractionDigits:0});if(x>=1)return x.toLocaleString('en-US',{maximumFractionDigits:2});return x.toLocaleString('en-US',{maximumFractionDigits:8}).replace(/0+$/,'').replace(/\.$/,'');}
+  function hx(c){c=c.replace('#','');return[parseInt(c.substr(0,2),16),parseInt(c.substr(2,2),16),parseInt(c.substr(4,2),16)];}
+  function mix(a,b,t){var A=hx(a),B=hx(b);return 'rgb('+Math.round(A[0]+(B[0]-A[0])*t)+','+Math.round(A[1]+(B[1]-A[1])*t)+','+Math.round(A[2]+(B[2]-A[2])*t)+')';}
+  function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function draw(){
+    var P=cur.price; ctx.clearRect(0,0,W,H);
+    var bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#0c1016');bg.addColorStop(1,'#080a0e');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    if(!P){return;}
+    var x0=132,x1=W-116,pt=132,pb=H-118,ph=pb-pt,pTop=P*1.45,pBot=P*0.55,plotW=x1-x0;
+    function Y(pr){return pt+ph*(pTop-pr)/(pTop-pBot);}
+    var cy=Y(P);
+    // density fills: shorts (blue, above) + longs (green, below), brightest near price
+    var gs=ctx.createLinearGradient(0,pt,0,cy);gs.addColorStop(0,'rgba(60,150,255,0)');gs.addColorStop(1,'rgba(70,165,255,0.24)');ctx.fillStyle=gs;ctx.fillRect(x0,pt,plotW,cy-pt);
+    var gl=ctx.createLinearGradient(0,cy,0,pb);gl.addColorStop(0,'rgba(46,205,140,0.24)');gl.addColorStop(1,'rgba(46,205,140,0)');ctx.fillStyle=gl;ctx.fillRect(x0,cy,plotW,pb-cy);
+    // gridlines + left price axis
+    for(var pc=-40;pc<=40;pc+=5){var pr=P*(1+pc/100),yy=Y(pr);if(yy<pt-1||yy>pb+1)continue;
+      ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x0,yy);ctx.lineTo(x1,yy);ctx.stroke();
+      if(pc%10===0){ctx.fillStyle='#5c6672';ctx.font='21px "Space Mono",monospace';ctx.textAlign='right';ctx.fillText('$'+money(pr),x0-16,yy+7);}}
+    // leverage bands
+    var lbls=[cy];
+    LEVS.forEach(function(L){var i=Math.min(1,L/100);
+      [['#1d6e4c','#76ffb2',P*(1-1/L+0.005)],['#1d4c8c','#79ceff',P*(1+1/L-0.005)]].forEach(function(a){
+        var pr=a[2];if(pr<=pBot||pr>=pTop)return;var yy=Y(pr),col=mix(a[0],a[1],i);
+        ctx.save();ctx.shadowColor=col;ctx.shadowBlur=13*i+5;ctx.strokeStyle=col;ctx.globalAlpha=0.45+0.55*i;ctx.lineWidth=2.5+5.5*i;ctx.beginPath();ctx.moveTo(x0,yy);ctx.lineTo(x1,yy);ctx.stroke();ctx.restore();
+        var ok=true;for(var k=0;k<lbls.length;k++){if(Math.abs(lbls[k]-yy)<34){ok=false;break;}}
+        if(ok){lbls.push(yy);
+          ctx.fillStyle=col;ctx.font='bold 27px "Space Mono",monospace';ctx.textAlign='left';ctx.fillText(L+'×',x1+16,yy+9);
+          var dp=(pr-P)/P*100;ctx.fillStyle='rgba(233,231,223,0.92)';ctx.font='22px "Space Mono",monospace';ctx.textAlign='right';ctx.fillText((dp>=0?'+':'')+dp.toFixed(1)+'%',x1-16,yy-10);}
+      });});
+    // current price line + pill
+    ctx.save();ctx.shadowColor='#fff';ctx.shadowBlur=14;ctx.strokeStyle='rgba(255,255,255,0.92)';ctx.lineWidth=2.5;ctx.setLineDash([12,8]);ctx.beginPath();ctx.moveTo(x0,cy);ctx.lineTo(x1,cy);ctx.stroke();ctx.restore();
+    var pT='PRICE  $'+money(P);ctx.font='bold 26px "Space Mono",monospace';var pw=ctx.measureText(pT).width+44,pxp=(x0+x1)/2-pw/2;
+    ctx.fillStyle='#11161d';rr(pxp,cy-23,pw,46,13);ctx.fill();ctx.strokeStyle='rgba(255,255,255,0.45)';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(pT,(x0+x1)/2,cy+9);
+    // zone labels
+    ctx.font='bold 22px "Space Mono",monospace';ctx.textAlign='center';
+    ctx.fillStyle='rgba(121,206,255,0.7)';ctx.fillText('▲  SHORTS LIQUIDATE',(x0+x1)/2,pt+34);
+    ctx.fillStyle='rgba(118,255,178,0.65)';ctx.fillText('▼  LONGS LIQUIDATE',(x0+x1)/2,pb-16);
+    // header
+    ctx.textAlign='left';ctx.fillStyle='#f0eee6';ctx.font='bold 47px "Bricolage Grotesque",sans-serif';ctx.fillText('LIQUIDATION HEATMAP',44,66);
+    ctx.fillStyle='#9aa3ad';ctx.font='28px "Space Mono",monospace';ctx.fillText(cur.coin+' / USDT',44,106);
+    ctx.textAlign='right';ctx.fillStyle='#f0eee6';ctx.font='bold 42px "Space Mono",monospace';ctx.fillText('$'+money(P),W-44,72);
+    ctx.fillStyle=cur.chg>=0?'#2ebd85':'#ff6258';ctx.font='25px "Space Mono",monospace';ctx.fillText((cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%  24h',W-44,108);
+    // footer / brand
+    ctx.fillStyle='#f5f5f2';ctx.font='bold 39px "Bricolage Grotesque",sans-serif';ctx.textAlign='left';ctx.fillText('MARGIN',44,H-44);var mw=ctx.measureText('MARGIN').width;ctx.fillStyle='#c2f64a';ctx.fillText('PAD',44+mw,H-44);
+    ctx.fillStyle='#9aa3ad';ctx.font='25px "Space Mono",monospace';ctx.textAlign='right';ctx.fillText('marginpad.io',W-44,H-44);
+    ctx.fillStyle='#5c656f';ctx.font='18px "Space Mono",monospace';ctx.textAlign='left';ctx.fillText('Estimated levels by leverage · not order-book data',44,H-16);
+  }
+  function load(coin){cur.coin=coin;if(pxEl)pxEl.textContent='…';
+    ensureLib(function(){ initChart();
+      Promise.all([
+        fetch('/api/price?symbol='+encodeURIComponent(coin)).then(function(r){return r.json();}).catch(function(){return null;}),
+        fetch('/api/klines?symbol='+encodeURIComponent(coin)+'&interval=60').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
+      ]).then(function(res){ var pd=res[0],kd=res[1];
+        if(pd&&pd.price){cur.price=+pd.price;cur.chg=+pd.chg||0;if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>';}
+        else{cur.price=0;if(pxEl)pxEl.textContent='unavailable';}
+        if(kd&&kd.length&&candle){try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){}}
+        setLines(cur.price);
+      });
+    });
+  }
+  if(sel)sel.addEventListener('change',function(){load(sel.value);});
+  function shot(cb){ if(!chart)return; try{var c=chart.takeScreenshot();c.toBlob(function(b){cb(b);});}catch(e){} }
+  function dl(){shot(function(b){if(!b)return;var u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='marginpad-'+cur.coin+'-liquidation-heatmap.png';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},3000);});}
+  var dlb=document.getElementById('heatDl');if(dlb)dlb.addEventListener('click',dl);
+  var shb=document.getElementById('heatSh');if(shb)shb.addEventListener('click',function(){
+    shot(function(b){if(!b)return;try{var f=new File([b],'marginpad-'+cur.coin+'-heatmap.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:cur.coin+' Liquidation Heatmap',text:cur.coin+' liquidation levels — marginpad.io'}).catch(function(){});return;}}catch(e){}dl();});
+  });
+  // product switcher
+  var heatmap=document.getElementById('heatmap'),swapEl=document.getElementById('swap'),tabsEl=document.querySelector('.tabs'),cardEl=document.querySelector('.card'),loaded=false,swapInit=false;
+  function showPlan(){var ps=document.querySelectorAll('.panel');for(var q=0;q<ps.length;q++)ps[q].classList.toggle('active',ps[q].id==='plan');}
+  function initSwap(){
+    if(swapInit)return;swapInit=true;
+    var CN_LINK='4fd768841c89de';/* ChangeNOW affiliate link_id */
+    var f=document.getElementById('iframe-widget');if(!f)return;
+    var lm={ru:'ru-RU',es:'es-ES',fr:'fr-FR',de:'de-DE',pt:'pt-PT',tr:'tr-TR',zh:'zh-CN',ja:'ja-JP',ko:'ko-KR',ar:'ar-AE',id:'id-ID',nl:'nl-NL'};
+    var pr=['FAQ=false','amount=0.01','backgroundColor=0a0b0d','darkMode=true','from=btc','horizontal=false','lang='+(lm[window.mpLang]||'en-US'),'locales=false','logo=false','primaryColor=2ebd85','to=eth'];
+    if(CN_LINK)pr.push('link_id='+CN_LINK);
+    f.onload=function(){var l=document.getElementById('swapLoad');if(l)l.style.display='none';};
+    f.src='https://changenow.io/embeds/exchange-widget/v2/widget.html?'+pr.join('&');
+    var s=document.createElement('script');s.defer=true;s.src='https://changenow.io/embeds/exchange-widget/v2/stepper-connector.js';document.body.appendChild(s);
+  }
+  var prods=document.querySelectorAll('.prod');
+  for(var i=0;i<prods.length;i++){prods[i].addEventListener('click',function(){
+    for(var j=0;j<prods.length;j++)prods[j].classList.remove('active');this.classList.add('active');
+    var p=this.getAttribute('data-prod');
+    heatmap.style.display=(p==='heat')?'':'none';
+    if(swapEl)swapEl.style.display=(p==='swap')?'':'none';
+    if(p==='heat'){if(tabsEl)tabsEl.style.display='none';if(cardEl)cardEl.style.display='none';if(!loaded){loaded=true;load(sel?sel.value:'BTC');}else{refresh();}}
+    else if(p==='swap'){if(tabsEl)tabsEl.style.display='none';if(cardEl)cardEl.style.display='none';initSwap();}
+    else if(p==='plan'){if(tabsEl)tabsEl.style.display='none';if(cardEl)cardEl.style.display='';showPlan();}
+    else{if(tabsEl)tabsEl.style.display='';if(cardEl)cardEl.style.display='';var tb=document.querySelector('.tab[data-tab="liq"]');if(tb)tb.click();}
+  });}
+  var _pq=(location.search.match(/[?&]p=(heat|swap|plan)/)||[])[1]||(/heatmap/i.test(location.hash)?'heat':(/swap/i.test(location.hash)?'swap':''));
+  if(_pq){var hb=document.querySelector('.prod[data-prod="'+_pq+'"]');if(hb)hb.click();}
+  if(window.addEventListener)window.addEventListener('resize',refresh);
+})();
+</script>
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  // 1) spotlight that follows the cursor on the product cards
+  var prods=document.querySelectorAll('.prod');
+  for(var i=0;i<prods.length;i++){(function(c){c.addEventListener('mousemove',function(e){var r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px');});})(prods[i]);}
+  // 2) scroll-reveal for below-the-fold sections
+  if(!reduce && 'IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});},{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+    var secs=document.querySelectorAll('.hotpairs,.exchanges,.league,.tvsec,.tools,.content2');
+    for(var s=0;s<secs.length;s++){ if(secs[s].getBoundingClientRect().top > window.innerHeight*0.9){ secs[s].classList.add('reveal'); io.observe(secs[s]); } }
+  }
+  // 3) count-up on calculator result numbers
+  if(!reduce){
+    function countUp(el, finalStr){
+      var m=String(finalStr).match(/^([^\d\-]*)(-?[\d,]*\.?\d+)([\s\S]*)$/);
+      if(!m){ el.textContent=finalStr; el._cuFinal=finalStr; return; }
+      var pre=m[1], numStr=m[2], suf=m[3], hasComma=numStr.indexOf(',')>=0, dot=numStr.split('.'), dec=dot[1]?dot[1].length:0;
+      var target=parseFloat(numStr.replace(/,/g,''));
+      if(!isFinite(target)){ el.textContent=finalStr; el._cuFinal=finalStr; return; }
+      var start=(el._cuVal!=null&&isFinite(el._cuVal))?el._cuVal:target;
+      if(Math.abs(target-start)<1e-9){ el.textContent=finalStr; el._cuFinal=finalStr; el._cuVal=target; return; }
+      el._cuFinal=finalStr; el._busy=true;
+      el.classList.remove('cu-pop'); void el.offsetWidth; el.classList.add('cu-pop');
+      function fmt(v){ var sg=v<0?'-':''; v=Math.abs(v); var sv=v.toFixed(dec); if(hasComma){var p=sv.split('.');p[0]=(+p[0]).toLocaleString('en-US');sv=p.join('.');} return pre+sg+sv+suf; }
+      var t0=performance.now(), dur=420;
+      function step(now){var p=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,3),v=start+(target-start)*e;el.textContent=fmt(v);if(p<1){el._raf=requestAnimationFrame(step);}else{el.textContent=finalStr;el._cuVal=target;el._busy=false;}}
+      if(el._raf)cancelAnimationFrame(el._raf); el._raf=requestAnimationFrame(step);
+    }
+    var obs=new MutationObserver(function(muts){
+      for(var k=0;k<muts.length;k++){var t=muts[k].target;var el=t.nodeType===3?t.parentNode:t;
+        if(!el||el._isCu!==true||el._busy)continue;
+        var txt=el.textContent; if(txt===el._cuFinal)continue; countUp(el,txt);}
+    });
+    var tg=document.querySelectorAll('.results .rvalue, .results .rrow .v');
+    for(var g=0;g<tg.length;g++){(function(el){el._isCu=true;el._cuFinal=el.textContent;var n=parseFloat(String(el.textContent).replace(/[^0-9.\-]/g,''));el._cuVal=isFinite(n)?n:null;obs.observe(el,{childList:true,characterData:true,subtree:true});})(tg[g]);}
+  }
+})();
+</script>
+<script>
+(function(){
+  function enhance(sel, withSearch){
+    if(!sel||sel._csel)return; sel._csel=true;
+    var wrap=document.createElement('div'); wrap.className='csel';
+    sel.parentNode.insertBefore(wrap, sel); wrap.appendChild(sel); sel.classList.add('csel-native');
+    var trig=document.createElement('button'); trig.type='button'; trig.className='csel-trigger';
+    trig.innerHTML='<span class="csel-val"></span><svg class="csel-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>';
+    var lab=trig.querySelector('.csel-val'); wrap.appendChild(trig);
+    var panel=document.createElement('div'); panel.className='csel-panel'; panel.hidden=true;
+    var search=null;
+    if(withSearch){ search=document.createElement('input'); search.className='csel-search'; search.type='text'; search.setAttribute('placeholder','Search…'); panel.appendChild(search); }
+    var list=document.createElement('div'); list.className='csel-list'; panel.appendChild(list); wrap.appendChild(panel);
+    function sync(){ var o=sel.options[sel.selectedIndex]; lab.textContent=o?o.textContent:''; }
+    function build(){ list.innerHTML='';
+      for(var i=0;i<sel.options.length;i++){(function(o){
+        var it=document.createElement('button'); it.type='button'; it.className='csel-opt'+(o.value===sel.value?' sel':''); it.textContent=o.textContent;
+        it.addEventListener('click',function(){ if(sel.value!==o.value){ sel.value=o.value; sync(); sel.dispatchEvent(new Event('change',{bubbles:true})); } close(); });
+        list.appendChild(it);
+      })(sel.options[i]); }
+    }
+    function open(){ build(); panel.hidden=false; trig.classList.add('open'); if(search){search.value='';filter('');setTimeout(function(){search.focus();},20);} var s=list.querySelector('.csel-opt.sel'); if(s)s.scrollIntoView({block:'nearest'}); }
+    function close(){ panel.hidden=true; trig.classList.remove('open'); }
+    function filter(q){ q=(q||'').toLowerCase(); var o=list.children; for(var i=0;i<o.length;i++){ o[i].style.display=o[i].textContent.toLowerCase().indexOf(q)>=0?'':'none'; } }
+    trig.addEventListener('click',function(e){ e.stopPropagation(); if(panel.hidden){open();}else{close();} });
+    if(search) search.addEventListener('input',function(){ filter(search.value); });
+    document.addEventListener('click',function(e){ if(!wrap.contains(e.target)) close(); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
+    sel.addEventListener('change', sync); sync();
+  }
+  function init(){
+    enhance(document.getElementById('heatCoin'), true);
+    enhance(document.getElementById('planSym'), false);
+    enhance(document.getElementById('langSel'), false);
+  }
+  if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>

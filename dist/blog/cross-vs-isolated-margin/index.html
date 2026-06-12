@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cross vs Isolated Margin: Which Should You Use? — MarginPad</title>
+<meta name="description" content="Cross margin vs isolated margin explained for crypto futures: how each handles liquidation, the pros and cons, and which to use as a beginner or pro." />
+<meta name="keywords" content="cross vs isolated margin, isolated margin, cross margin, crypto margin mode, futures margin explained" />
+<link rel="canonical" href="https://marginpad.io/blog/cross-vs-isolated-margin/" />
+<meta property="og:title" content="Cross vs Isolated Margin: Which Should You Use?" />
+<meta property="og:description" content="How cross and isolated margin handle liquidation — and which to use." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/blog/cross-vs-isolated-margin/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Cross vs Isolated Margin: Which Should You Use?","description":"Cross margin vs isolated margin explained for crypto futures traders.","author":{"@type":"Organization","name":"MarginPad"},"publisher":{"@type":"Organization","name":"MarginPad"},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/blog/cross-vs-isolated-margin/"}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Is isolated or cross margin better?","acceptedAnswer":{"@type":"Answer","text":"Isolated margin is safer for most traders because the loss is capped at the margin assigned to that position. Cross margin uses your whole balance as collateral, which lowers liquidation risk for one trade but puts the entire account at risk."}},
+{"@type":"Question","name":"Does margin mode change my liquidation price?","acceptedAnswer":{"@type":"Answer","text":"Yes. With cross margin your full available balance backs the position, so the liquidation price sits further away. With isolated margin only the assigned margin backs it, so liquidation is closer but losses are contained."}}
+]}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+  </header>
+
+  <div class="crumb"><a href="/">Home</a> / <a href="/blog/">Blog</a> / Cross vs isolated margin</div>
+  <article>
+    <h1>Cross vs Isolated Margin: Which Should You Use?</h1>
+    <div class="meta">Basics · 5 min read · Updated June 2026</div>
+
+    <p>Every crypto futures exchange asks you to pick a <strong>margin mode</strong> — cross or isolated — before you trade. The choice changes how much of your money is at risk and where you get liquidated. Here's the plain-English difference and how to decide.</p>
+
+    <h2>Isolated margin</h2>
+    <p>With <strong>isolated margin</strong>, only the margin you assign to a position can be lost. If the trade gets liquidated, that's the most you lose — the rest of your account is untouched. The trade-off is that your liquidation price sits closer to entry, because only that slice of money is backing the position.</p>
+    <p><strong>Best for:</strong> beginners, high-conviction single trades, and anyone who wants a hard cap on the downside of one position.</p>
+
+    <h2>Cross margin</h2>
+    <p>With <strong>cross margin</strong>, your entire available balance backs the position. That pushes the liquidation price further away — a winning balance can absorb a bigger drawdown before liquidation. But the danger is real: a single runaway trade can drain your whole account, and multiple positions share the same collateral.</p>
+    <p><strong>Best for:</strong> experienced traders hedging multiple positions, or those who actively manage margin and understand the account-wide risk.</p>
+
+    <h2>How it affects liquidation</h2>
+    <p>Margin mode directly moves your liquidation price. Our calculator uses the conservative isolated-margin estimate, which is the right default for risk planning. Whatever mode you choose, run the numbers first.</p>
+
+    <div class="callout">
+      <div class="k">Plan before you trade</div>
+      <p style="margin-bottom:14px">Check your liquidation price and size by risk in seconds — isolated or cross.</p>
+      <a class="cta" href="/#liq">Open the calculators →</a>
+    </div>
+
+    <h2>Quick rule of thumb</h2>
+    <ul>
+      <li>Learning, or one big trade you want to contain → <strong>isolated</strong>.</li>
+      <li>Hedging several positions and actively managing margin → <strong>cross</strong>.</li>
+      <li>Either way, keep leverage modest and always know your <a href="/blog/how-to-calculate-liquidation-price/">liquidation price</a>.</li>
+    </ul>
+
+    <div class="toolshow">
+      <div class="ts-head">Everything free on MarginPad — no signup</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/#liq"><b>Liquidation Calculator</b><small>Know your exit price</small></a>
+        <a class="ts-card" href="/?p=heat"><b>Liquidation Heatmap</b><small>See the danger zones</small></a>
+        <a class="ts-card" href="/?p=plan"><b>Trade Planner</b><small>Plan the whole trade</small></a>
+        <a class="ts-card" href="/?p=swap"><b>Crypto Swap</b><small>900+ coins, no account</small></a>
+        <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Telegram Bot</b><small>Live prices &amp; alerts</small></a>
+        <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Log trades, win USDT</small></a>
+      </div>
+    </div>
+  
+    <h2>Related guides</h2>
+    <div class="related">
+      <a href="/blog/how-to-calculate-liquidation-price/">How to Calculate Liquidation Price</a>
+      <a href="/blog/crypto-position-sizing-risk-management/">Crypto Position Sizing (1% Rule)</a>
+      <a href="/blog/crypto-leverage-explained/">Crypto Leverage Explained</a>
+      <a href="/blog/risk-reward-ratio-explained/">Risk/Reward Ratio Explained</a>
+    </div>
+  </article>
+
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+</body>
+</html>

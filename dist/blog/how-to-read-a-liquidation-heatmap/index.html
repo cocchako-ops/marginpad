@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<script src="/assets/pwa-nav.js" defer></script>
+<title>How to Read a Liquidation Heatmap (Crypto Guide) — MarginPad</title>
+<meta name="description" content="Learn how to read a crypto liquidation heatmap: what liquidation zones mean, why high-leverage levels cluster near price, and how to trade them." />
+<meta name="keywords" content="liquidation heatmap, crypto liquidation heatmap, how to read liquidation heatmap, liquidation levels, liquidation zones, liquidity magnets, crypto futures, leverage liquidation" />
+<link rel="canonical" href="https://marginpad.io/blog/how-to-read-a-liquidation-heatmap/" />
+<meta property="og:title" content="How to Read a Liquidation Heatmap (Crypto Guide)" />
+<meta property="og:description" content="Learn how to read a crypto liquidation heatmap: what liquidation zones mean, why high-leverage levels cluster near price, and how to trade them." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/blog/how-to-read-a-liquidation-heatmap/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to Read a Liquidation Heatmap (Crypto Guide)","description":"Learn how to read a crypto liquidation heatmap: what liquidation zones mean, why high-leverage levels cluster near price, and how to trade them.","author":{"@type":"Organization","name":"MarginPad"},"publisher":{"@type":"Organization","name":"MarginPad"},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/blog/how-to-read-a-liquidation-heatmap/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What does a liquidation heatmap actually show?","acceptedAnswer":{"@type":"Answer","text":"It overlays estimated liquidation price levels on the price chart, highlighting the zones where leveraged longs or shorts would be forcibly closed. Dense areas mark where a lot of leverage is likely concentrated and where forced buying or selling could cluster."}},{"@type":"Question","name":"Why do liquidation levels cluster close to the current price?","acceptedAnswer":{"@type":"Answer","text":"Because high-leverage positions liquidate on tiny moves. A 100x position is wiped out by about a 1% move, so its liquidation level sits right next to entry. The crowded band immediately above and below price is mostly high-leverage traders."}},{"@type":"Question","name":"Are liquidation heatmaps accurate?","acceptedAnswer":{"@type":"Answer","text":"They are a model, not a direct order-book readout. They estimate where leverage probably sits by assuming common entries and leverage settings. They cannot see actual position size, margin mode, or stops, so treat them as probable liquidity, not certainty."}},{"@type":"Question","name":"Do long liquidations sit above or below price?","acceptedAnswer":{"@type":"Answer","text":"Long liquidations sit below the current price because longs lose money as price falls. Short liquidations sit above the current price because shorts lose money as price rises. A heavy band below price signals downside fragility; a heavy band above signals squeeze potential."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Reading a liquidation heatmap","item":"https://marginpad.io/blog/how-to-read-a-liquidation-heatmap/"}]}</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / <a href="/blog/">Blog</a> / Reading a liquidation heatmap</div>
+  <article>
+    <h1>How to Read a Liquidation Heatmap (Crypto Guide)</h1>
+    <div class="meta">Liquidation · 6 min read · Updated June 2026</div>
+<p>A liquidation heatmap is one of the most useful visual tools in crypto futures trading, but it is also one of the most misunderstood. This guide explains what it actually shows, why liquidation levels cluster where they do, and how to use that information without falling for the common myths.</p>
+
+<h2>What is a liquidation heatmap?</h2>
+<p>A liquidation heatmap is a chart that overlays estimated <strong>liquidation price levels</strong> on top of normal price candles. Instead of just showing where price has been, it highlights the price zones where leveraged positions would be forcibly closed by the exchange. Bright or dense areas mark where a lot of leverage is likely sitting; empty areas mark where little is at risk.</p>
+<p>The core idea is simple. Every leveraged trade has a liquidation price set the moment it opens. If you take a long with <code>10x</code> leverage, your position gets liquidated roughly when price falls about 10% from entry. A short at the same leverage gets liquidated when price rises about 10%. A heatmap aggregates millions of these levels into a single picture so you can see where forced selling or forced buying would concentrate.</p>
+
+<h2>What liquidation levels and zones represent</h2>
+<p>A single liquidation level is the price at which one position runs out of margin and is closed automatically. You can compute one yourself with the <a href="/#liq">liquidation calculator</a>, or read the full method in our guide on <a href="/blog/how-to-calculate-liquidation-price/">how to calculate liquidation price</a>. The rough formula for a long is <code>entry x (1 - 1/leverage)</code>, and for a short it is <code>entry x (1 + 1/leverage)</code>.</p>
+<p>A liquidation <strong>zone</strong> is what you get when many of those levels stack up at similar prices. Zones matter because liquidations are not quiet. When a cluster of longs gets liquidated, the exchange sells those positions into the market, pushing price down further and potentially triggering the next cluster below. The same happens in reverse for shorts. This chain reaction is why a dense zone behaves very differently from an empty stretch of chart.</p>
+
+<h2>Why high-leverage liquidations cluster close to price</h2>
+<p>The single most important thing to understand is the relationship between leverage and distance. The higher the leverage, the closer the liquidation price sits to the entry price. At <code>100x</code>, a position is wiped out by roughly a 1% move against it. At <code>50x</code> it takes about 2%, at <code>25x</code> about 4%, and at <code>10x</code> about 10%.</p>
+<p>Because high-leverage traders are liquidated by tiny moves, their liquidation levels sit right next to the current price. That is why the band immediately above and below the candle is usually the most crowded and most reactive part of any heatmap. If you want the full picture of how this distance scales, see <a href="/blog/crypto-leverage-explained/">leverage explained</a>. The practical takeaway: the levels nearest to price are the high-leverage ones, and they are the first to get hit on any sharp move.</p>
+
+<div class="callout"><div class="k">SEE IT LIVE</div><p style="margin-bottom:14px">MarginPad's interactive heatmap plots real candles with every leverage's liquidation level — pan, zoom and hover for exact prices.</p><a class="cta" href="/?p=heat">Open the liquidation heatmap →</a></div>
+
+<h2>How clusters act as magnets and as support or resistance</h2>
+<p>Traders often describe liquidation clusters as <strong>magnets</strong>. The logic is that resting liquidations are a pool of guaranteed orders. A cluster of long liquidations below price is a pool of pending market sells; a cluster of short liquidations above price is a pool of pending market buys. Market makers and large players have an incentive to push price toward that resting liquidity, because it lets them fill size and trigger a cascade.</p>
+<p>So a heatmap can be read two ways at once:</p>
+<ul>
+<li><strong>As a target.</strong> A thick cluster slightly above or below current price often acts like a magnet that price drifts toward, especially during low-volatility periods.</li>
+<li><strong>As support or resistance.</strong> Once a cluster is consumed, that price area can flip. The cascade exhausts the leverage there, and the zone may then act as a floor or ceiling because the forced flow that would have pushed through it is gone.</li>
+</ul>
+<p>This is also closely tied to the mechanics of forced closure itself. If you are fuzzy on the underlying event, our explainer on <a href="/blog/what-is-liquidation-in-crypto/">what is liquidation</a> covers why these orders are non-negotiable market orders rather than limit orders.</p>
+
+<h2>Long zones versus short zones</h2>
+<p>Direction matters. <strong>Long liquidations sit below the current price</strong>, because longs lose money when price falls. <strong>Short liquidations sit above the current price</strong>, because shorts lose money when price rises. A heatmap with a heavy band below price tells you a lot of long leverage is exposed to a drop; a heavy band above price tells you a lot of short leverage is exposed to a squeeze.</p>
+<p>Reading both sides together is where the edge is. A market with thin liquidity above and a dense cluster below is structurally fragile to the downside, since a small dip can ignite a long-liquidation cascade. The reverse setup, a dense band above price, is the classic short-squeeze fuel that powers sudden vertical rallies.</p>
+
+<h2>An honest caveat: it is a model, not order-book data</h2>
+<p>This matters and most guides skip it. An estimated liquidation heatmap is a <strong>model</strong>, not a direct readout of the exchange order book. It infers where leverage probably sits by assuming positions were opened at recent prices across a range of common leverage settings. It does not know the actual size, entry, or margin mode of any specific trader, and it cannot see cross-margin or hedged positions.</p>
+<p>Treat the heatmap as a map of <em>probable</em> liquidity, not certainty. Real markets contain stop-losses, partial closes, added margin, and isolated-versus-cross differences that no model captures perfectly. Use it to understand structure and risk, not as a guaranteed price prediction. Combine it with your own analysis rather than trading it blindly.</p>
+
+<h2>How to use MarginPad's heatmap</h2>
+<p>The <a href="/?p=heat">liquidation heatmap</a> on MarginPad is built to make all of this readable at a glance. Here is the colour and layout convention:</p>
+<ul>
+<li><strong>White line = current price.</strong> Everything is oriented around it.</li>
+<li><strong>Green = long liquidations below price.</strong> These are the levels exposed if the market drops.</li>
+<li><strong>Blue = short liquidations above price.</strong> These are the levels exposed if the market rises.</li>
+<li><strong>100x sits nearest the price</strong> on each side, with lower leverages plotted progressively further away, so distance from the white line maps directly to how risky a position is.</li>
+</ul>
+<p>To use it, plot real candles, then pan and zoom to the area around current price and hover any level to read its exact liquidation price. Look for the densest green band below and the densest blue band above. Those are your most likely magnets and your most important support and resistance zones. If you want to verify a specific number, drop the price and leverage into the <a href="/#liq">liquidation calculator</a> and confirm it lines up with what the heatmap shows.</p>
+
+<h2>Putting it together</h2>
+<p>A liquidation heatmap will not tell you the future, but it tells you where the market is structurally fragile and where forced flow is likely to appear. Read the nearest, highest-leverage clusters first, watch how price interacts with the dense green and blue bands, and always remember you are looking at an estimate of where leverage sits, not a certified order book. Used that way, it becomes one of the sharpest context tools in a futures trader's kit.</p>
+    <div class="toolshow">
+      <div class="ts-head">Everything free on MarginPad — no signup</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/#liq"><b>Liquidation Calculator</b><small>Know your exit price</small></a>
+        <a class="ts-card" href="/?p=heat"><b>Liquidation Heatmap</b><small>See the danger zones</small></a>
+        <a class="ts-card" href="/?p=plan"><b>Trade Planner</b><small>Plan the whole trade</small></a>
+        <a class="ts-card" href="/?p=swap"><b>Crypto Swap</b><small>900+ coins, no account</small></a>
+        <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Telegram Bot</b><small>Live prices &amp; alerts</small></a>
+        <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Log trades, win USDT</small></a>
+      </div>
+    </div>
+  </article>
+  <section class="related">
+    <h2 class="rel-title">Related guides</h2>
+    <div class="rel-grid"><a class="rel-card" href="/blog/how-to-calculate-liquidation-price/"><span class="tag">Liquidation</span><span class="rel-t">How to Calculate Liquidation Price (Formula + Examples)</span></a><a class="rel-card" href="/blog/how-to-avoid-liquidation/"><span class="tag">Risk management</span><span class="rel-t">How to Avoid Liquidation in Crypto: 8 Rules That Work</span></a><a class="rel-card" href="/blog/bybit-vs-binance-futures/"><span class="tag">Exchanges</span><span class="rel-t">Bybit vs Binance for Futures Trading (2026 Comparison)</span></a></div>
+  </section>
+  <section class="comments">
+    <h2 class="cm-title">Comments</h2>
+    <form id="cmForm" class="cm-form" autocomplete="off">
+      <input id="cmName" class="cm-in" maxlength="40" placeholder="Your name (optional)" />
+      <input id="cmWebsite" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+      <textarea id="cmText" class="cm-in cm-ta" maxlength="1000" rows="3" placeholder="Share your thoughts or a question…" required></textarea>
+      <button type="submit" class="cm-submit">Post comment</button>
+    </form>
+    <div id="cmList" class="cm-list"></div>
+  </section>
+  <script src="/assets/comments.js" defer></script>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+</body>
+</html>

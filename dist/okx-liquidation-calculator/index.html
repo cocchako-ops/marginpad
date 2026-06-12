@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OKX Liquidation Calculator — Long & Short, Any Leverage | MarginPad</title>
+<meta name="description" content="Free OKX liquidation price calculator. Find your exact liquidation level for any leverage and position, long or short. Instant, no signup." />
+<meta name="keywords" content="okx liquidation calculator, okx liquidation price, okx futures calculator, okx leverage calculator" />
+<link rel="canonical" href="https://marginpad.io/okx-liquidation-calculator/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="OKX Liquidation Calculator — Long & Short, Any Leverage" />
+<meta property="og:description" content="Free OKX liquidation price calculator. Find your exact liquidation level for any leverage and position, long or short. Instant, no signup." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/okx-liquidation-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"OKX Liquidation Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"https://marginpad.io/okx-liquidation-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free OKX liquidation price calculator. Find your exact liquidation level for any leverage and position, long or short. Instant, no signup."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I calculate my liquidation price on OKX?","acceptedAnswer":{"@type":"Answer","text":"Enter entry price, leverage and direction. Liquidation = Entry x (1 - 1/Leverage + MMR) for a long and Entry x (1 + 1/Leverage - MMR) for a short."}},{"@type":"Question","name":"What is the maximum leverage on OKX?","acceptedAnswer":{"@type":"Answer","text":"OKX offers up to 125x leverage on flagship perpetuals. The maximum varies by contract, region and account tier."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"OKX Liquidation Calculator","item":"https://marginpad.io/okx-liquidation-calculator/"}]}</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / OKX liquidation calculator</div>
+  <article>
+    <h1>OKX Liquidation Calculator</h1>
+    <p class="lead">Find your exact liquidation price on OKX futures — for any leverage, long or short. Free, instant, and private (it runs in your browser).</p>
+    <div class="calc">
+      <div class="calc-in">
+        <div class="seg" id="liqSeg"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
+        <label>Entry price (USD)</label><input id="liqEntry" type="number" value="60000" step="any">
+        <label>Leverage</label><input id="liqLev" type="number" value="10" step="any">
+        <label>Maintenance margin rate (%)</label><input id="liqMmr" type="number" value="0.5" step="any">
+      </div>
+      <div class="calc-out">
+        <div class="col">Estimated liquidation price</div><div class="big" id="liqOut">—</div>
+        <div class="rr"><span>Distance from entry</span><b id="liqDist">—</b></div>
+      </div>
+    </div>
+    <a class="exbtn" style="background:#cfd3d8;color:#0a0b0d" href="https://okx.com/join/96160298" target="_blank" rel="sponsored noopener noreferrer">Trade on OKX →</a>
+    <h2>How liquidation works on OKX</h2>
+    <p>OKX pairs a powerful pro-trading interface with a unified account model and up to 125x leverage on flagship contracts. On OKX, an isolated-margin position is liquidated when losses eat through your posted margin. The estimate is <code>Entry × (1 − 1/Leverage + MMR)</code> for a long and <code>Entry × (1 + 1/Leverage − MMR)</code> for a short, where <b>MMR</b> is the maintenance margin rate.</p>
+    <p>Because OKX allows up to <b>125× leverage</b>, the liquidation buffer can get thin — the higher the leverage, the closer liquidation sits to entry. Treat the figure as an estimate; real liquidation also depends on fees, funding and tiered maintenance margin.</p>
+    <h2>Worked example</h2>
+    <p>A 10× long on OKX entered at <code>$60,000.00</code> with a 0.5% maintenance margin rate is liquidated at about:</p>
+    <div class="example">
+      <div class="row"><span>Liquidation price</span><b>$54,300.00</b></div>
+      <div class="row"><span>Move to liquidation</span><b>−9.50%</b></div>
+    </div>
+    <p>Set your stop-loss comfortably inside that level. See also the <a href="/blog/what-is-liquidation-in-crypto/">guide to avoiding liquidation</a>.</p>
+    <h2>FAQ</h2>
+    <h3>What is the maximum leverage on OKX?</h3>
+    <p>Up to <b>125×</b> on flagship perpetuals; the cap varies by contract, region and account tier.</p>
+    <h3>How do I avoid liquidation on OKX?</h3>
+    <p>Use lower leverage, set a stop-loss, and size by risk — see our <a href="/blog/crypto-position-sizing-risk-management/">position sizing guide</a>.</p>
+    <h2>More calculators</h2>
+    <div class="related">
+      <a href="/#liq">All calculators</a>
+      <a href="/okx-pnl-calculator/">OKX PnL</a>
+      <a href="/#size">Position size</a>
+      <a href="/bybit-liquidation-calculator/">Bybit liquidation</a>
+      <a href="/binance-liquidation-calculator/">Binance liquidation</a>
+      <a href="/kucoin-liquidation-calculator/">KuCoin liquidation</a>
+      <a href="/gate-liquidation-calculator/">Gate liquidation</a>
+      <a href="/kraken-liquidation-calculator/">Kraken liquidation</a>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Educational tool, not financial advice. Estimates may differ from OKX. The OKX link is a referral link; we may earn a commission at no cost to you.</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+<script src="/assets/liqcalc.js"></script>
+</body>
+</html>

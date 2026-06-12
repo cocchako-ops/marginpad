@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Binance PnL Calculator — Profit, ROI & ROE | MarginPad</title>
+<meta name="description" content="Free Binance PnL calculator. Work out profit and loss, ROI and leveraged ROE for any Binance futures trade, long or short. Instant, no signup." />
+<meta name="keywords" content="binance pnl calculator, binance profit calculator, binance roi calculator, binance futures pnl" />
+<link rel="canonical" href="https://marginpad.io/binance-pnl-calculator/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="Binance PnL Calculator — Profit, ROI & ROE" />
+<meta property="og:description" content="Free Binance PnL calculator. Work out profit and loss, ROI and leveraged ROE for any Binance futures trade, long or short. Instant, no signup." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/binance-pnl-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Binance PnL Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"https://marginpad.io/binance-pnl-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free Binance PnL calculator. Work out profit and loss, ROI and leveraged ROE for any Binance futures trade, long or short. Instant, no signup."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I calculate PnL on Binance?","acceptedAnswer":{"@type":"Answer","text":"PnL = (exit - entry) x size for a long, or (entry - exit) x size for a short. ROE multiplies the price ROI by your leverage."}},{"@type":"Question","name":"What is ROE on Binance futures?","acceptedAnswer":{"@type":"Answer","text":"ROE is the return on the margin you posted, amplified by leverage. A 10% move at 10x leverage is roughly a 100% return on margin."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Binance PnL Calculator","item":"https://marginpad.io/binance-pnl-calculator/"}]}</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / Binance PnL calculator</div>
+  <article>
+    <h1>Binance PnL Calculator</h1>
+    <p class="lead">Calculate your profit and loss, ROI and leveraged ROE for any Binance futures trade — long or short. Free, instant, no signup.</p>
+    <div class="calc">
+      <div class="calc-in">
+        <div class="seg" id="pnlSeg"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
+        <label>Entry price (USD)</label><input id="pnlEntry" type="number" value="60000" step="any">
+        <label>Exit price (USD)</label><input id="pnlExit" type="number" value="66000" step="any">
+        <label>Position size (coin)</label><input id="pnlQty" type="number" value="0.5" step="any">
+        <label>Leverage (for ROE)</label><input id="pnlLev" type="number" value="10" step="any">
+      </div>
+      <div class="calc-out">
+        <div class="col">Profit / Loss</div><div class="big" id="pnlOut">—</div>
+        <div class="rr"><span>Price ROI</span><b id="pnlRoi">—</b></div>
+        <div class="rr"><span>ROE (on margin)</span><b id="pnlRoe">—</b></div>
+      </div>
+    </div>
+    <a class="exbtn" style="background:#f0b90b;color:#181a20" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer">Trade on Binance →</a>
+    <h2>How PnL and ROE work on Binance</h2>
+    <p>Binance is the largest crypto exchange by volume, offering the widest range of futures pairs and up to 125x leverage on majors. Your raw profit on a Binance trade is the price move times your position size: <code>(Exit − Entry) × Size</code> for a long, and the reverse for a short. <b>Price ROI</b> is the percentage the asset moved; <b>ROE</b> is your return on the margin you actually posted, which Binance's leverage multiplies.</p>
+    <h2>Worked example</h2>
+    <p>A 0.5-coin long opened at <code>$60,000</code> and closed at <code>$66,000</code> at 10× leverage:</p>
+    <div class="example">
+      <div class="row"><span>Profit</span><b>+$3,000.00</b></div>
+      <div class="row"><span>Price ROI</span><b>+10.00%</b></div>
+      <div class="row"><span>ROE (10×)</span><b>+100.00%</b></div>
+    </div>
+    <p>Leverage cuts both ways — the same move down would be a 100% loss of margin. Plan your exit and check your <a href="/binance-liquidation-calculator/">Binance liquidation price</a> first.</p>
+    <h2>FAQ</h2>
+    <h3>How is ROE different from ROI on Binance?</h3>
+    <p>Price ROI is the raw % move. ROE multiplies it by your leverage — it is your return on posted margin. Fees and funding are not included.</p>
+    <h3>Does Binance show PnL automatically?</h3>
+    <p>Binance shows live PnL on open positions, but this tool lets you plan and compare scenarios <em>before</em> you trade.</p>
+    <h2>More calculators</h2>
+    <div class="related">
+      <a href="/#pnl">All calculators</a>
+      <a href="/binance-liquidation-calculator/">Binance liquidation</a>
+      <a href="/#tp">Take-profit</a>
+      <a href="/bybit-pnl-calculator/">Bybit PnL</a>
+      <a href="/okx-pnl-calculator/">OKX PnL</a>
+      <a href="/kucoin-pnl-calculator/">KuCoin PnL</a>
+      <a href="/gate-pnl-calculator/">Gate PnL</a>
+      <a href="/kraken-pnl-calculator/">Kraken PnL</a>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Educational tool, not financial advice. Estimates may differ from Binance. The Binance link is a referral link; we may earn a commission at no cost to you.</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+<script src="/assets/pnlcalc.js"></script>
+</body>
+</html>

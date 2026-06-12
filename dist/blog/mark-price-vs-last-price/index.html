@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<script src="/assets/pwa-nav.js" defer></script>
+<title>Mark Price vs Last Price: Why Liquidations Use Mark Price — MarginPad</title>
+<meta name="description" content="Your exchange liquidates positions on the mark price, not the last traded price. Here is the difference and why it protects you from manipulation." />
+<meta name="keywords" content="mark price vs last price, what is mark price, mark price liquidation, index price crypto, last price futures" />
+<link rel="canonical" href="https://marginpad.io/blog/mark-price-vs-last-price/" />
+<meta property="og:title" content="Mark Price vs Last Price: Why Liquidations Use Mark Price" />
+<meta property="og:description" content="Your exchange liquidates positions on the mark price, not the last traded price. Here is the difference and why it protects you from manipulation." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/blog/mark-price-vs-last-price/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Mark Price vs Last Price: Why Liquidations Use Mark Price","description":"Your exchange liquidates positions on the mark price, not the last traded price. Here is the difference and why it protects you from manipulation.","author":{"@type":"Organization","name":"MarginPad"},"publisher":{"@type":"Organization","name":"MarginPad"},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/blog/mark-price-vs-last-price/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the mark price?","acceptedAnswer":{"@type":"Answer","text":"The mark price is a smoothed, manipulation-resistant reference price built from the spot index price plus a funding basis. Exchanges use it to calculate unrealised PnL and to trigger liquidations."}},{"@type":"Question","name":"Why is my liquidation based on mark price not last price?","acceptedAnswer":{"@type":"Answer","text":"Using the mark price stops a single large or manipulated trade from wicking the last price into your liquidation level. It makes liquidations fairer and harder to game."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Mark vs last price","item":"https://marginpad.io/blog/mark-price-vs-last-price/"}]}</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / <a href="/blog/">Blog</a> / Mark vs last price</div>
+  <article>
+    <h1>Mark Price vs Last Price: Why Liquidations Use Mark Price</h1>
+    <div class="meta">Basics · 4 min read · Updated June 2026</div>
+    <p>If you have ever watched the price wick down, expected to be liquidated, and somehow survived — the <strong>mark price</strong> is why. Exchanges do not liquidate you on the last traded price. Here is the difference.</p>
+    <h2>Last price</h2>
+    <p>The <strong>last price</strong> is exactly that: the price of the most recent trade on that contract. It is what you see flashing on the ticker, and it is easy to move with a single large order, especially on thin books.</p>
+    <h2>Mark price</h2>
+    <p>The <strong>mark price</strong> is a calculated reference designed to resist manipulation. It is built from the <strong>index price</strong> (an average of spot prices across several major exchanges) plus a small funding basis. Because it is averaged across venues, no single trade on one exchange can yank it around.</p>
+    <h2>Why it matters</h2>
+    <p>Exchanges use the mark price — not last price — to calculate your unrealised PnL and to decide when you are liquidated. That protects you: a brief manipulated wick on the last price will not liquidate a position whose mark price never reached the trigger. It is also why your liquidation may not fire exactly where the ticker briefly printed.</p>
+    <p>Our <a href="/#liq">liquidation calculator</a> estimates the level; on a real exchange the trigger is measured against the mark price. Learn the formula in <a href="/blog/how-to-calculate-liquidation-price/">how to calculate liquidation price</a>.</p>
+    <div class="callout"><div class="k">Know your level</div><p style="margin-bottom:14px">Estimate your liquidation price for any leverage in seconds.</p><a class="cta" href="/#liq">Open the calculator →</a></div>
+    <div class="toolshow">
+      <div class="ts-head">Everything free on MarginPad — no signup</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/#liq"><b>Liquidation Calculator</b><small>Know your exit price</small></a>
+        <a class="ts-card" href="/?p=heat"><b>Liquidation Heatmap</b><small>See the danger zones</small></a>
+        <a class="ts-card" href="/?p=plan"><b>Trade Planner</b><small>Plan the whole trade</small></a>
+        <a class="ts-card" href="/?p=swap"><b>Crypto Swap</b><small>900+ coins, no account</small></a>
+        <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Telegram Bot</b><small>Live prices &amp; alerts</small></a>
+        <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Log trades, win USDT</small></a>
+      </div>
+    </div>
+  </article>
+  <section class="related">
+    <h2 class="rel-title">Related guides</h2>
+    <div class="rel-grid"><a class="rel-card" href="/blog/what-is-open-interest/"><span class="tag">Basics</span><span class="rel-t">What Is Open Interest in Crypto Futures?</span></a><a class="rel-card" href="/blog/what-is-slippage/"><span class="tag">Basics</span><span class="rel-t">What Is Slippage in Crypto Trading?</span></a><a class="rel-card" href="/blog/what-is-liquidation-in-crypto/"><span class="tag">Basics</span><span class="rel-t">What Is Liquidation in Crypto Trading (and How to Avoid It)</span></a></div>
+  </section>
+  <section class="comments">
+    <h2 class="cm-title">Comments</h2>
+    <form id="cmForm" class="cm-form" autocomplete="off">
+      <input id="cmName" class="cm-in" maxlength="40" placeholder="Your name (optional)" />
+      <input id="cmWebsite" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+      <textarea id="cmText" class="cm-in cm-ta" maxlength="1000" rows="3" placeholder="Share your thoughts or a question…" required></textarea>
+      <button type="submit" class="cm-submit">Post comment</button>
+    </form>
+    <div id="cmList" class="cm-list"></div>
+  </section>
+  <script src="/assets/comments.js" defer></script>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+</body>
+</html>

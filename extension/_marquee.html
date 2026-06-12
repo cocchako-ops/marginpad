@@ -1,0 +1,50 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{width:1400px;height:560px;background:#0a0b0d;overflow:hidden;position:relative}
+.glow{position:absolute;width:760px;height:760px;border-radius:50%;background:#c2f64a;filter:blur(140px);opacity:.13;top:-260px;left:-160px}
+.glow2{position:absolute;width:620px;height:620px;border-radius:50%;background:#27d3a2;filter:blur(140px);opacity:.10;bottom:-240px;right:-120px}
+.grid{position:absolute;inset:0;background-image:linear-gradient(#232932 1px,transparent 1px),linear-gradient(90deg,#232932 1px,transparent 1px);background-size:52px 52px;opacity:.20}
+.wrap{position:relative;z-index:1;display:flex;align-items:center;height:100%;padding:0 80px;gap:60px}
+.left{flex:1}
+.brand{font-weight:800;font-size:30px;letter-spacing:-1px;color:#e9e7df;margin-bottom:28px}
+.brand b{color:#c2f64a}
+h1{font-weight:800;font-size:58px;line-height:1.03;letter-spacing:-2px;color:#e9e7df;margin-bottom:26px}
+h1 em{font-style:normal;color:#c2f64a}
+.bul div{font-size:20px;color:#9aa3ad;margin-bottom:13px}.bul b{color:#c2f64a}
+.pop{flex:none;width:372px;background:#0a0b0d;border:1px solid #2f3742;border-radius:16px;overflow:hidden;box-shadow:0 40px 100px -30px rgba(0,0,0,.9)}
+.ph{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid #232932}
+.ph .b{font-weight:800;font-size:15px;color:#e9e7df}.ph .b b{color:#c2f64a}.ph .s{font-size:10px;color:#9aa3ad;letter-spacing:1px}
+.tabs{display:flex;gap:4px;padding:11px 13px 0}.tabs span{font-size:10px;text-transform:uppercase;color:#9aa3ad;border:1px solid #232932;padding:6px 8px;border-radius:6px}.tabs span.on{background:#c2f64a;color:#0a0b0d;border-color:#c2f64a;font-weight:700}
+.bd{padding:14px 16px 16px}
+.seg{display:flex;gap:5px;margin-bottom:10px}.seg b{flex:1;text-align:center;font-size:11px;text-transform:uppercase;padding:8px;border-radius:6px;border:1px solid #2f3742;color:#9aa3ad;font-weight:400}.seg b.on{background:rgba(194,246,74,.12);border-color:#c2f64a;color:#c2f64a}
+.lb{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#9aa3ad;margin:9px 0 4px}
+.in{background:#0a0b0d;border:1px solid #2f3742;border-radius:6px;padding:9px 10px;font-family:monospace;font-size:13px;color:#e9e7df}
+.res{margin-top:12px;background:#111419;border:1px solid #2f3742;border-radius:10px;padding:13px}
+.res .l{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#9aa3ad;margin-bottom:5px}
+.res .big{font-weight:800;font-size:28px;color:#ff6258;letter-spacing:-1px}
+.res .rr{display:flex;justify-content:space-between;font-family:monospace;font-size:11px;color:#9aa3ad;margin-top:7px}.res .rr b{color:#e9e7df;font-weight:400}
+</style></head><body>
+<div class="glow"></div><div class="glow2"></div><div class="grid"></div>
+<div class="wrap">
+  <div class="left">
+    <div class="brand">MARGIN<b>PAD</b></div>
+    <h1>5 crypto trading<br>calculators.<br><em>One click away.</em></h1>
+    <div class="bul">
+      <div><b>&#10003;</b>&nbsp; Liquidation, position size &amp; PnL</div>
+      <div><b>&#10003;</b>&nbsp; DCA average &amp; take-profit ladder</div>
+      <div><b>&#10003;</b>&nbsp; Instant. No signup. Any exchange.</div>
+    </div>
+  </div>
+  <div class="pop">
+    <div class="ph"><span class="b">MARGIN<b>PAD</b></span><span class="s">MARGINPAD.IO &#8599;</span></div>
+    <div class="tabs"><span class="on">Liquidation</span><span>Size</span><span>PnL</span><span>DCA</span></div>
+    <div class="bd">
+      <div class="seg"><b class="on">Long</b><b>Short</b></div>
+      <div class="lb">Entry price</div><div class="in">60000</div>
+      <div class="lb">Leverage</div><div class="in">10</div>
+      <div class="res"><div class="l">Liquidation price</div><div class="big">$54,300.00</div>
+        <div class="rr"><span>Distance</span><b>-9.50% (9.50% down)</b></div></div>
+    </div>
+  </div>
+</div>
+</body></html>

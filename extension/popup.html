@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+  :root{--bg:#0a0b0d;--panel:#111419;--line:#232932;--line-bright:#2f3742;--ink:#e9e7df;--ink-dim:#9aa3ad;--ink-faint:#5c656f;--lime:#c2f64a;--red:#ff6258;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:360px;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:14px}
+  header{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid var(--line)}
+  .brand{font-weight:800;font-size:16px;letter-spacing:-.03em}
+  .brand b{color:var(--lime)}
+  header a{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);text-decoration:none}
+  header a:hover{color:var(--lime)}
+  .tabs{display:flex;gap:4px;padding:10px 12px 0;overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:none;font-size:11px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-dim);background:transparent;border:1px solid var(--line);padding:8px 11px;border-radius:8px;cursor:pointer;white-space:nowrap}
+  .tab.on{color:var(--bg);background:var(--lime);border-color:var(--lime);font-weight:700}
+  .body{padding:14px 15px 16px}
+  .seg{display:flex;gap:5px;margin-bottom:10px}
+  .seg button{flex:1;font-size:12px;text-transform:uppercase;padding:8px;border-radius:7px;background:var(--bg);border:1px solid var(--line-bright);color:var(--ink-dim);cursor:pointer}
+  .seg button.on[data-side=long]{background:rgba(194,246,74,.12);border-color:var(--lime);color:var(--lime)}
+  .seg button.on[data-side=short]{background:rgba(255,98,88,.12);border-color:var(--red);color:var(--red)}
+  label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);margin:9px 0 4px}
+  input{width:100%;background:var(--bg);border:1px solid var(--line-bright);color:var(--ink);font-family:'Courier New',monospace;font-size:14px;padding:9px 10px;border-radius:7px;outline:none}
+  input:focus{border-color:var(--lime)}
+  input::-webkit-inner-spin-button{-webkit-appearance:none}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .res{margin-top:14px;background:var(--panel);border:1px solid var(--line-bright);border-radius:10px;padding:13px 14px}
+  .res .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-dim);margin-bottom:5px}
+  .res .big{font-weight:800;font-size:25px;letter-spacing:-.02em;color:var(--lime);line-height:1;font-family:Arial}
+  .res .big.neg{color:var(--red)}
+  .res .big.muted{color:var(--ink-faint)}
+  .res .rr{display:flex;justify-content:space-between;font-family:'Courier New',monospace;font-size:12px;color:var(--ink-dim);padding:6px 0 0}
+  .res .rr b{color:var(--ink);font-weight:400}
+  .panel{display:none}.panel.on{display:block}
+  .foot{padding:11px 15px;border-top:1px solid var(--line);text-align:center}
+  .foot a{display:inline-block;font-size:12px;font-weight:700;color:var(--bg);background:var(--lime);text-decoration:none;padding:9px 14px;border-radius:8px;width:100%}
+</style>
+</head>
+<body>
+  <header>
+    <span class="brand">MARGIN<b>PAD</b></span>
+    <a id="siteLink" href="https://marginpad.io" target="_blank">marginpad.io ↗</a>
+  </header>
+
+  <div class="tabs">
+    <button class="tab on" data-tab="liq">Liquidation</button>
+    <button class="tab" data-tab="size">Size</button>
+    <button class="tab" data-tab="pnl">PnL</button>
+    <button class="tab" data-tab="dca">DCA</button>
+    <button class="tab" data-tab="tp">Take-Profit</button>
+  </div>
+
+  <div class="body">
+    <!-- LIQUIDATION -->
+    <div class="panel on" id="liq">
+      <div class="seg" data-seg="liqSide"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
+      <label>Entry price</label><input type="number" id="liqEntry" value="60000" step="any">
+      <label>Leverage</label><input type="number" id="liqLev" value="10" step="any">
+      <label>Maintenance margin %</label><input type="number" id="liqMmr" value="0.5" step="any">
+      <div class="res"><div class="lbl">Liquidation price</div><div class="big" id="liqOut">—</div>
+        <div class="rr"><span>Distance</span><b id="liqDist">—</b></div></div>
+    </div>
+    <!-- SIZE -->
+    <div class="panel" id="size">
+      <label>Account balance</label><input type="number" id="szBal" value="5000" step="any">
+      <label>Risk %</label><input type="number" id="szRisk" value="1" step="any">
+      <div class="two"><div><label>Entry</label><input type="number" id="szEntry" value="60000" step="any"></div><div><label>Stop-loss</label><input type="number" id="szStop" value="58800" step="any"></div></div>
+      <div class="res"><div class="lbl">Position size</div><div class="big" id="szOut">—</div>
+        <div class="rr"><span>Notional</span><b id="szNotional">—</b></div><div class="rr"><span>Risked</span><b id="szRiskAmt">—</b></div></div>
+    </div>
+    <!-- PNL -->
+    <div class="panel" id="pnl">
+      <div class="seg" data-seg="pnlSide"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
+      <div class="two"><div><label>Entry</label><input type="number" id="pnlEntry" value="60000" step="any"></div><div><label>Exit</label><input type="number" id="pnlExit" value="66000" step="any"></div></div>
+      <div class="two"><div><label>Size (coin)</label><input type="number" id="pnlQty" value="0.5" step="any"></div><div><label>Leverage</label><input type="number" id="pnlLev" value="10" step="any"></div></div>
+      <div class="res"><div class="lbl">Profit / Loss</div><div class="big" id="pnlOut">—</div>
+        <div class="rr"><span>ROI</span><b id="pnlRoi">—</b></div><div class="rr"><span>ROE</span><b id="pnlRoe">—</b></div></div>
+    </div>
+    <!-- DCA -->
+    <div class="panel" id="dca">
+      <div class="two"><div><label>Buy 1 price</label><input type="number" id="dcaP1" value="60000" step="any"></div><div><label>Qty</label><input type="number" id="dcaQ1" value="0.1" step="any"></div></div>
+      <div class="two"><div><label>Buy 2 price</label><input type="number" id="dcaP2" value="55000" step="any"></div><div><label>Qty</label><input type="number" id="dcaQ2" value="0.1" step="any"></div></div>
+      <div class="two"><div><label>Buy 3 price</label><input type="number" id="dcaP3" value="50000" step="any"></div><div><label>Qty</label><input type="number" id="dcaQ3" value="0.2" step="any"></div></div>
+      <div class="res"><div class="lbl">Average entry</div><div class="big" id="dcaOut">—</div>
+        <div class="rr"><span>Total qty</span><b id="dcaQty">—</b></div><div class="rr"><span>Invested</span><b id="dcaCost">—</b></div></div>
+    </div>
+    <!-- TAKE PROFIT -->
+    <div class="panel" id="tp">
+      <div class="seg" data-seg="tpSide"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
+      <div class="two"><div><label>Entry</label><input type="number" id="tpEntry" value="60000" step="any"></div><div><label>Leverage</label><input type="number" id="tpLev" value="10" step="any"></div></div>
+      <label>Target ROE %</label><input type="number" id="tpCustom" value="75" step="any">
+      <div class="res"><div class="lbl">Target exit price</div><div class="big" id="tpOut">—</div>
+        <div class="rr"><span>Price move</span><b id="tpMove">—</b></div></div>
+    </div>
+  </div>
+
+  <div class="foot"><a href="https://marginpad.io" target="_blank">Open all 5 calculators on MarginPad.io →</a></div>
+  <script src="popup.js"></script>
+</body>
+</html>

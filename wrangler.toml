@@ -1,0 +1,30 @@
+name = "marginpad"
+main = "src/worker.js"
+compatibility_date = "2026-06-01"
+workers_dev = false
+preview_urls = false
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+
+[triggers]
+crons = ["*/10 * * * *"]
+
+[vars]
+# Base URL of the separate liquidation collector service (its own VPS). Empty = graceful fallback
+# (heatmap shows theoretical lines). Set to e.g. "https://collector.marginpad.io" when the VPS is live,
+# or use `wrangler secret put COLLECTOR_URL`.
+COLLECTOR_URL = ""
+
+[[kv_namespaces]]
+binding = "STATS"
+id = "0bf59a5bf3d148cd9af4b2d3741c1077"
+
+[[durable_objects.bindings]]
+name = "CHAT"
+class_name = "ChatRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ChatRoom"]
