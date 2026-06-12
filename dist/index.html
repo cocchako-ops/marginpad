@@ -749,7 +749,7 @@
       <span class="heat-stats" id="heatStats" aria-live="polite"></span>
       <div class="heat-layers">
         <button class="heat-lyr active" data-layer="liq" type="button" data-i18n="layReal">Liquidations</button>
-        <button class="heat-lyr active" data-layer="clusters" type="button" data-i18n="layClusters">Clusters</button>
+        <button class="heat-lyr" data-layer="clusters" type="button" data-i18n="layClusters">Clusters</button>
         <button class="heat-lyr" data-layer="theo" type="button" data-i18n="layLevels">Levels</button>
       </div>
     </div>
@@ -1784,7 +1784,7 @@ window.addEventListener('load', function () {
     ctx.fillStyle='#5c656f';ctx.font='18px "Space Mono",monospace';ctx.textAlign='left';ctx.fillText('Estimated levels by leverage · not order-book data',44,H-16);
   }
   // ============ LIVE LIQUIDATION LAYER (real data via /api/v1, graceful fallback to theoretical) ============
-  var overlay=null,octx=null,odpr=1,liqEvents=[],liqBuckets=[],liqMax=0,clusters=[],clMax=0,realMode=false,showReal=true,showClusters=true,showTheo=false,win='1D',pollT=null,drawQ=false,subd=false,loadedKlines=false;
+  var overlay=null,octx=null,odpr=1,liqEvents=[],liqBuckets=[],liqMax=0,clusters=[],clMax=0,dispBins=[],realMode=false,showReal=true,showClusters=false,showTheo=false,win='1D',pollT=null,drawQ=false,subd=false,loadedKlines=false;
   var WIN={'1D':{iv:'15',mins:1440},'1W':{iv:'60',mins:10080},'1M':{iv:'240',mins:43200},'1Y':{iv:'1440',mins:525600}};
   var MOCK=/[?&]mockliq=1/.test(location.search);
   var lastBar=null,priceT=null; // live candle: track the forming bar, update its close from the price feed
@@ -1796,6 +1796,7 @@ window.addEventListener('load', function () {
   function sched(){ if(drawQ)return; drawQ=true; requestAnimationFrame(function(){drawQ=false;drawLiq();}); }
   function bcol(side,a){ return side==='long_liquidated'?'rgba(255,92,92,'+a+')':'rgba(46,211,154,'+a+')'; }
   function kfmt(v){ v=+v||0; return v>=1e9?'$'+(v/1e9).toFixed(1)+'B':v>=1e6?'$'+(v/1e6).toFixed(1)+'M':v>=1e3?'$'+Math.round(v/1e3)+'K':'$'+Math.round(v); }
+  function dispStep(p){ if(!(p>0))return 100; var t=p*0.0016,m=Math.pow(10,Math.floor(Math.log10(t))),n=t/m,s=n<1.5?1:n<3.5?2:n<7.5?5:10; return s*m; } // ~$100 bins for BTC, scales for ETH
   function drawLiq(){ if(!overlay||!chart||!candle)return; octx.setTransform(odpr,0,0,odpr,0,0); octx.clearRect(0,0,overlay.width,overlay.height);
     if(!realMode)return; var ts=chart.timeScale(),paneW; try{paneW=ts.width();}catch(e){paneW=stage.clientWidth-64;} var H=overlay.height/odpr;
     var clLabels=[];
@@ -1810,12 +1811,24 @@ window.addEventListener('load', function () {
         var cyb=candle.priceToCoordinate(cl.price); if(cyb==null||cyb<0||cyb>H)continue;
         var a=Math.min(0.6,0.22+0.38*(cl.est_notional/vmax)); octx.fillStyle=cl.side==='long_liquidated'?'rgba(255,92,92,'+a+')':'rgba(46,211,154,'+a+')'; octx.fillRect(0,cyb-3,paneW,7);
         if(ci<2&&cyb>10&&cyb<H-5) clLabels.push({y:cyb,t:kfmt(cl.est_notional),side:cl.side}); } }
-    // real price-level histogram (Phase 1)
-    if(showReal&&liqBuckets.length&&liqMax>0){ var maxLen=Math.max(60,paneW*0.3);
-      for(var i=0;i<liqBuckets.length;i++){ var b=liqBuckets[i],y=candle.priceToCoordinate(b.price); if(y==null)continue;
-        var tot=(b.long||0)+(b.short||0); if(tot<=0)continue; var len=Math.max(2,(tot/liqMax)*maxLen),ll=len*((b.long||0)/tot);
-        octx.fillStyle='rgba(46,211,154,0.5)'; octx.fillRect(paneW-len,y-2.5,len-ll,5);
-        octx.fillStyle='rgba(255,92,92,0.55)'; octx.fillRect(paneW-ll,y-2.5,ll,5); } }
+    // ---- Coinglass-style active liquidation levels: last 24h, within ±5% of price, ~$100 bins, shorts(green) above / longs(red) below ----
+    dispBins=[];
+    if(showReal&&liqBuckets.length&&cur.price>0){
+      var lo=cur.price*0.95,hi=cur.price*1.05,step=dispStep(cur.price),mm={};
+      for(var i=0;i<liqBuckets.length;i++){ var b=liqBuckets[i]; if(b.price<lo||b.price>hi)continue;
+        var key=Math.round(b.price/step)*step,bn=mm[key]||(mm[key]={price:key,long:0,short:0}); bn.long+=b.long||0; bn.short+=b.short||0; }
+      for(var kk in mm){ var bn2=mm[kk]; bn2.above=bn2.price>=cur.price; bn2.vol=bn2.above?bn2.short:bn2.long; if(bn2.vol>0)dispBins.push(bn2); }
+      var vmx=0; for(var i2=0;i2<dispBins.length;i2++) if(dispBins[i2].vol>vmx)vmx=dispBins[i2].vol;
+      if(vmx>0){ var maxLen=Math.max(80,paneW*0.46);
+        var p0=candle.priceToCoordinate(cur.price),p1=candle.priceToCoordinate(cur.price+step),barH=Math.max(2.5,(p0!=null&&p1!=null?Math.abs(p0-p1):4)-1);
+        for(var i3=0;i3<dispBins.length;i3++){ var bn3=dispBins[i3],y3=candle.priceToCoordinate(bn3.price); if(y3==null||y3<0||y3>H)continue;
+          var len=Math.max(2,(bn3.vol/vmx)*maxLen); octx.fillStyle=bn3.above?'rgba(46,211,154,0.62)':'rgba(255,92,92,0.62)'; octx.fillRect(paneW-len,y3-barH/2,len,barH); }
+        var top=dispBins.slice().sort(function(a,b){return b.vol-a.vol;}).slice(0,4);
+        octx.font='600 10px "Space Mono",monospace'; octx.textBaseline='middle'; octx.textAlign='right'; octx.lineWidth=3; octx.lineJoin='round';
+        for(var i4=0;i4<top.length;i4++){ var bn4=top[i4],y4=candle.priceToCoordinate(bn4.price); if(y4==null||y4<6||y4>H-6)continue;
+          octx.strokeStyle='rgba(8,9,11,0.9)'; octx.strokeText(kfmt(bn4.vol),paneW-6,y4);
+          octx.fillStyle=bn4.above?'rgba(132,238,198,0.99)':'rgba(255,168,168,0.99)'; octx.fillText(kfmt(bn4.vol),paneW-6,y4); }
+        octx.textAlign='left'; } }
     // strongest-magnet $ labels — drawn last (above bands+histogram), right-aligned by the price axis, dark halo for legibility
     if(clLabels.length){ octx.font='600 10px "Space Mono",monospace'; octx.textBaseline='middle'; octx.textAlign='right'; octx.lineWidth=3; octx.lineJoin='round';
       for(var li=0;li<clLabels.length;li++){ var lb=clLabels[li]; octx.strokeStyle='rgba(8,9,11,0.9)'; octx.strokeText(lb.t,paneW-7,lb.y);
@@ -1824,28 +1837,21 @@ window.addEventListener('load', function () {
   }
   function onCross(param){ var tip=document.getElementById('heatTip'); if(!tip)return;
     if(!realMode||!param.point||!candle){ tip.style.display='none'; return; } var py=param.point.y;
-    // nearest REAL price-level bucket (the histogram) under the cursor
-    var rb=null,rbd=8; for(var i=0;i<liqBuckets.length;i++){ var b=liqBuckets[i]; if(((b.long||0)+(b.short||0))<=0)continue; var y=candle.priceToCoordinate(b.price); if(y==null)continue; var d=Math.abs(y-py); if(d<rbd){rbd=d;rb=b;} }
-    // nearest ESTIMATED cluster magnet still ahead of price (consumed ones are hidden)
-    var cb=null,cbd=8; for(var k=0;k<clusters.length;k++){ var cl=clusters[k]; if((cl.side==='short_liquidated'&&cl.price<=cur.price)||(cl.side==='long_liquidated'&&cl.price>=cur.price))continue; var cy=candle.priceToCoordinate(cl.price); if(cy==null)continue; var dd=Math.abs(cy-py); if(dd<cbd){cbd=dd;cb=cl;} }
-    if(!rb&&!cb){ tip.style.display='none'; return; }
-    var html='';
-    if(rb){ var L=rb.long||0,S=rb.short||0; html+='<b>Liquidated @ $'+money(rb.price)+'</b>$'+money(L+S)+'<small>$'+money(L)+' longs · $'+money(S)+' shorts</small>'; }
-    if(cb){ html+=(rb?'<small>':'<b>'+(cb.side==='long_liquidated'?'Long':'Short')+' magnet @ $'+money(cb.price)+'</b><small>')+'~$'+money(cb.est_notional)+' est. '+(cb.side==='long_liquidated'?'long':'short')+' liquidations (model)</small>'; }
-    tip.innerHTML=html; tip.style.display='block';
-    tip.style.left=Math.min(stage.clientWidth-220,param.point.x+14)+'px'; tip.style.top=Math.max(4,py-10)+'px'; }
+    var best=null,bd=10; for(var i=0;i<dispBins.length;i++){ var bn=dispBins[i],y=candle.priceToCoordinate(bn.price); if(y==null)continue; var d=Math.abs(y-py); if(d<bd){bd=d;best=bn;} }
+    if(!best){ tip.style.display='none'; return; }
+    tip.innerHTML='<b>'+(best.above?'Shorts liquidated':'Longs liquidated')+' @ $'+money(best.price)+'</b>$'+money(best.vol)+'<small>last 24h · within 5% of price</small>';
+    tip.style.display='block'; tip.style.left=Math.min(stage.clientWidth-200,param.point.x+14)+'px'; tip.style.top=Math.max(4,py-10)+'px'; }
   function applyTheo(){ if(showTheo||!realMode){ setLines(cur.price); } else { for(var i=0;i<plines.length;i++){try{candle.removePriceLine(plines[i]);}catch(e){}} plines=[]; } }
   function setFallback(fb){ realMode=!fb; var n=document.getElementById('heatFallback'); if(n)n.style.display=fb?'flex':'none'; applyTheo(); updateTicker(); updateStats(); sched(); }
   function updateStats(){ var el=document.getElementById('heatStats'); if(!el)return; if(!realMode){el.textContent='';return;}
     var cnt=0,not=0; for(var i=0;i<liqBuckets.length;i++){cnt+=liqBuckets[i].count||0;not+=(liqBuckets[i].long||0)+(liqBuckets[i].short||0);}
-    var wm=Math.min(WIN[win].mins,10080),wl=wm>=2880?Math.round(wm/1440)+'d':Math.round(wm/60)+'h';
-    el.innerHTML = cnt ? cur.coin+' liquidations · last '+wl+' · <b>'+cnt+'</b> · <b>$'+money(not)+'</b>' : '<span class="hs-quiet">'+cur.coin+' quiet — liquidations spike on moves</span>'; }
+    el.innerHTML = cnt ? cur.coin+' liquidations · last 24h · <b>'+cnt+'</b> · <b>$'+money(not)+'</b>' : '<span class="hs-quiet">'+cur.coin+' quiet — liquidations spike on moves</span>'; }
   function updateTicker(){ var el=document.getElementById('heatTicker'); if(!el)return; if(!realMode){el.innerHTML='';return;}
     var big=liqEvents.filter(function(e){return e.notional>=50000;}).slice(0,20);
     el.innerHTML = big.length ? '<div class="tk-track">'+big.concat(big).map(function(e){return '<span class="tk-i '+(e.side==='long_liquidated'?'tk-l':'tk-s')+'">'+(e.side==='long_liquidated'?'▼ LONG':'▲ SHORT')+' $'+money(e.notional)+' @ '+money(e.price)+' · '+e.exchange+'</span>';}).join('')+'</div>' : '<span class="tk-empty">No liquidations above $50k in view yet.</span>'; }
   function fetchLiq(){ if(MOCK){ mock(); return; } var c=cur.coin;
     Promise.all([
-      fetch('/api/v1/liquidations/recent?symbol='+encodeURIComponent(c)+'&minutes='+Math.min(WIN[win].mins,10080)).then(function(r){return r.json();}).catch(function(){return {fallback:true};}),
+      fetch('/api/v1/liquidations/recent?symbol='+encodeURIComponent(c)+'&minutes=1440').then(function(r){return r.json();}).catch(function(){return {fallback:true};}),
       fetch('/api/v1/liquidations/live?symbol='+encodeURIComponent(c)+'&limit=400').then(function(r){return r.json();}).catch(function(){return {fallback:true};}),
       fetch('/api/v1/clusters?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return {clusters:[]};}),
       fetch('/api/price?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return null;})
