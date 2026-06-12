@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<script src="/assets/pwa-nav.js" defer></script>
+<title>Liquidation Clusters Explained: How to Spot Liquidity Magnets — MarginPad</title>
+<meta name="description" content="Learn what liquidation clusters are, how stacked leverage forms them, and why these liquidity magnets pull crypto futures price toward them. A practical guide." />
+<meta name="keywords" content="liquidation clusters, liquidity magnets, liquidation map, open interest, crypto leverage, liquidation levels, support and resistance, futures trading" />
+<link rel="canonical" href="https://marginpad.io/blog/liquidation-clusters-explained/" />
+<meta property="og:title" content="Liquidation Clusters Explained: How to Spot Liquidity Magnets" />
+<meta property="og:description" content="Learn what liquidation clusters are, how stacked leverage forms them, and why these liquidity magnets pull crypto futures price toward them. A practical guide." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/blog/liquidation-clusters-explained/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Liquidation Clusters Explained: How to Spot Liquidity Magnets","description":"Learn what liquidation clusters are, how stacked leverage forms them, and why these liquidity magnets pull crypto futures price toward them. A practical guide.","author":{"@type":"Organization","name":"MarginPad"},"publisher":{"@type":"Organization","name":"MarginPad"},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/blog/liquidation-clusters-explained/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a liquidation cluster?","acceptedAnswer":{"@type":"Answer","text":"It is a price level where many leveraged positions would be liquidated at once. Individual liquidation levels stack up at the same price, creating a dense pool of forced orders that can move the market when price reaches it."}},{"@type":"Question","name":"Why do liquidation clusters act like magnets?","acceptedAnswer":{"@type":"Answer","text":"A liquidation is a forced market order, so a cluster is a stack of guaranteed flow at a known price. Large players seek that liquidity, and once price reaches a cluster the forced orders can trigger a self-reinforcing cascade that pulls price further in."}},{"@type":"Question","name":"Are MarginPad clusters real exchange data?","acceptedAnswer":{"@type":"Answer","text":"No. Real liquidations on the map are actual events from Bybit, OKX and Binance. The estimated clusters layer is a model built from open-interest changes and an assumed leverage distribution — a probability map of where leverage likely sits, not order-book data."}},{"@type":"Question","name":"What is the difference between long and short clusters?","acceptedAnswer":{"@type":"Answer","text":"Long clusters sit below current price because longs liquidate when price falls. Short clusters sit above current price because shorts liquidate when price rises. A rally into a short cluster can spark a squeeze; a drop into a long cluster can spark a sell cascade."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Liquidation clusters","item":"https://marginpad.io/blog/liquidation-clusters-explained/"}]}</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / <a href="/blog/">Blog</a> / Liquidation clusters</div>
+  <article>
+    <h1>Liquidation Clusters Explained: How to Spot Liquidity Magnets</h1>
+    <div class="meta">Liquidation · 6 min read · Updated June 2026</div>
+<p>If you trade crypto futures, you have probably watched price drift toward a level, accelerate into it, and then snap back. Often that level is a <strong>liquidation cluster</strong> — a price where a lot of leveraged positions are set to get forced out. This guide explains what clusters are, how they form, and how to read them on a <a href="/?p=heat">liquidation map</a> without fooling yourself about what the data actually shows.</p>
+
+<h2>What a liquidation cluster actually is</h2>
+<p>A single liquidation level is the price at which one leveraged position can no longer cover its margin and gets force-closed by the exchange. On its own, one level means nothing. A <strong>cluster</strong> is what you get when many liquidation levels stack up at or near the same price.</p>
+<p>Think of it as a pile of pending forced orders waiting at a price. If <code>42,000</code> is where hundreds of long positions would be liquidated, then a move down to <code>42,000</code> triggers a wave of forced selling all at once. That concentration is what makes clusters worth watching — not the individual levels, but the density of them at one spot.</p>
+<p>On MarginPad's <a href="/btc-liquidation-map/">BTC liquidation map</a>, clusters show up as bright, tall bands. The taller and brighter the band, the more leverage is estimated to be sitting at that price.</p>
+
+<h2>How clusters form from open interest</h2>
+<p>Clusters are a side effect of leverage piling up. When <a href="/blog/what-is-open-interest/">open interest</a> rises, it means new leveraged positions are being opened — fresh contracts that did not exist before. Every one of those positions carries an <strong>implied liquidation price</strong> that depends on entry price and leverage.</p>
+<p>Here is the key idea: traders do not all use the same leverage. A model spreads new positions across a <strong>leverage distribution</strong> — some at 5x, some at 10x, 25x, 50x and higher. Each tier implies a different liquidation distance from the entry price:</p>
+<ul>
+<li>A <code>10x</code> long liquidates roughly <code>10%</code> below entry.</li>
+<li>A <code>25x</code> long liquidates roughly <code>4%</code> below entry.</li>
+<li>A <code>50x</code> long liquidates roughly <code>2%</code> below entry.</li>
+</ul>
+<p>When lots of positions open around the same entry zone, their liquidation prices bunch together at predictable distances. The high-leverage liquidations sit close to current price; the lower-leverage ones sit further away. Stack enough of them and you get a cluster. If you are fuzzy on the mechanics, our <a href="/blog/crypto-leverage-explained/">leverage explained</a> post walks through the math.</p>
+
+<h2>Why clusters act as liquidity magnets</h2>
+<p>A liquidation is a forced market order. A long liquidation is forced <strong>selling</strong>; a short liquidation is forced <strong>buying</strong>. A dense cluster is therefore a pool of guaranteed flow sitting at a known price — and markets tend to gravitate toward known pools of liquidity.</p>
+<p>There are two honest reasons clusters pull price:</p>
+<ul>
+<li><strong>Liquidity needs liquidity.</strong> Large players who want to fill big orders need counterparties. A cluster is exactly that — a stack of forced orders waiting to be matched.</li>
+<li><strong>Cascades are self-reinforcing.</strong> When price reaches a cluster, the forced orders push price further in the same direction, which triggers the next set of liquidations, and so on.</li>
+</ul>
+<p>This is why traders describe clusters as <strong>magnets</strong>. It is not magic and it is not guaranteed — it is the simple gravity of concentrated forced flow.</p>
+
+<div class="callout"><div class="k">SEE THE CLUSTERS</div><p style="margin-bottom:14px">MarginPad's live map plots real liquidations plus estimated clusters from open-interest — toggle the layers and see where leverage is stacked.</p><a class="cta" href="/?p=heat">Open the liquidation map →</a></div>
+
+<h2>Long clusters below, short clusters above</h2>
+<p>Direction matters, and it follows directly from how leverage works:</p>
+<ul>
+<li><strong>Long clusters sit below current price.</strong> Longs get liquidated when price falls, so their stacked liquidation levels form a band underneath the market. A drop into that band can trigger a cascade of forced selling.</li>
+<li><strong>Short clusters sit above current price.</strong> Shorts get liquidated when price rises, so their levels form a band overhead. A rally into that band can trigger a short squeeze — forced buying that fuels more upside.</li>
+</ul>
+<p>Because of this, clusters often behave like soft <strong>support and resistance</strong>. A thick long cluster below can act as a downside magnet that, once hit and consumed, becomes a springboard. A thick short cluster above can cap a move until price punches through it.</p>
+
+<h2>How clusters get consumed</h2>
+<p>A cluster is not permanent. When price trades through it, the positions there get liquidated and the cluster is <strong>consumed</strong> — the leverage that was stacked at that price is gone. On the map you will see a bright band fade or disappear after price sweeps it.</p>
+<p>This is the single most useful read. A level that was a magnet on the way in is often empty on the way back, because the fuel has been spent. Watching clusters appear, get hit, and vanish tells you where the leverage has already been flushed and where it is still loaded. Our guide on <a href="/blog/how-to-read-a-liquidation-heatmap/">how to read a liquidation heatmap</a> covers this consumption pattern in more depth.</p>
+<p>A practical sequence looks like this: open interest climbs, a cluster builds at <code>42,000</code>, price grinds toward it, the band lights up as liquidations fire, and then it goes dark as the cluster clears. After that, support at <code>42,000</code> is far weaker because the forced-buy flow that defended it is gone.</p>
+
+<h2>The honest caveat: estimated clusters are a model</h2>
+<p>This matters, so be clear-eyed about it. MarginPad shows two different things, and they are not the same kind of data:</p>
+<ul>
+<li><strong>Real liquidations</strong> are actual events reported by Bybit, OKX and Binance. They happened. There is no guesswork.</li>
+<li><strong>Estimated clusters</strong> are a <strong>model</strong>. They are derived from open-interest changes plus an assumed leverage distribution. They are <em>not</em> exchange order-book data, and no exchange publishes the exact liquidation price of every position.</li>
+</ul>
+<p>In other words, the cluster layer is an educated estimate of where leverage is probably stacked, not a guaranteed list of where stops sit. Treat it as a probability map, not a price oracle. It is genuinely useful for spotting zones of concentrated risk — but anyone who tells you a cluster <em>will</em> be hit is overselling a model.</p>
+
+<h2>Reading MarginPad's Clusters layer</h2>
+<p>On the live map, toggle the <strong>Clusters</strong> layer on top of the real-liquidation feed. A few practical habits:</p>
+<ul>
+<li><strong>Read brightness as density.</strong> Brighter, taller bands mean more estimated leverage at that price. Faint bands are thin.</li>
+<li><strong>Check both sides.</strong> Note the nearest long cluster below and short cluster above — those are your two most likely magnets.</li>
+<li><strong>Watch open interest alongside it.</strong> Rising OI means clusters are building; falling OI after a sweep means they are being flushed.</li>
+<li><strong>Confirm with real liquidations.</strong> When the real-liquidation feed lights up exactly where the model predicted a cluster, your read is on solid ground.</li>
+</ul>
+<p>Used this way, clusters become a context tool: they tell you where the market's leverage is loaded, which directions carry cascade risk, and which levels have already been cleared.</p>
+
+<p>Liquidation clusters are not a crystal ball — they are a map of where leverage is stacked and where forced flow is likely to fire. Read them as liquidity magnets that can pull price, act as soft support and resistance, and then vanish once consumed. Pair the estimated <a href="/?p=heat">liquidation map</a> with the real-liquidation feed, keep the model's limits in mind, and you will have a far better sense of where the next move is most likely to accelerate.</p>
+    <div class="toolshow">
+      <div class="ts-head">Everything free on MarginPad — no signup</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/#liq"><b>Liquidation Calculator</b><small>Know your exit price</small></a>
+        <a class="ts-card" href="/?p=heat"><b>Liquidation Heatmap</b><small>See the danger zones</small></a>
+        <a class="ts-card" href="/?p=plan"><b>Trade Planner</b><small>Plan the whole trade</small></a>
+        <a class="ts-card" href="/?p=swap"><b>Crypto Swap</b><small>900+ coins, no account</small></a>
+        <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Telegram Bot</b><small>Live prices &amp; alerts</small></a>
+        <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Log trades, win USDT</small></a>
+      </div>
+    </div>
+  </article>
+  <section class="related">
+    <h2 class="rel-title">Related guides</h2>
+    <div class="rel-grid"><a class="rel-card" href="/blog/long-vs-short-liquidations/"><span class="tag">Liquidation</span><span class="rel-t">Long vs Short Liquidations: What the Balance Tells You</span></a><a class="rel-card" href="/blog/liquidation-cascade-explained/"><span class="tag">Liquidation</span><span class="rel-t">Liquidation Cascades Explained (and How to Avoid Getting Caught)</span></a><a class="rel-card" href="/blog/how-to-read-a-liquidation-heatmap/"><span class="tag">Liquidation</span><span class="rel-t">How to Read a Liquidation Heatmap (Crypto Guide)</span></a></div>
+  </section>
+  <section class="comments">
+    <h2 class="cm-title">Comments</h2>
+    <form id="cmForm" class="cm-form" autocomplete="off">
+      <input id="cmName" class="cm-in" maxlength="40" placeholder="Your name (optional)" />
+      <input id="cmWebsite" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+      <textarea id="cmText" class="cm-in cm-ta" maxlength="1000" rows="3" placeholder="Share your thoughts or a question…" required></textarea>
+      <button type="submit" class="cm-submit">Post comment</button>
+    </form>
+    <div id="cmList" class="cm-list"></div>
+  </section>
+  <script src="/assets/comments.js" defer></script>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+</body>
+</html>

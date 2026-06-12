@@ -274,6 +274,203 @@ const E = [
     {q:'Which has better liquidity for large orders?',a:'Binance generally carries the deepest order books and highest volumes across the widest set of pairs, which often means less slippage on large or thin-market orders. Bybit is also highly liquid in major pairs. For typical retail sizes the difference is frequently negligible.'}
   ]
 }
+,
+{
+  slug:'liquidation-clusters-explained', tag:'Liquidation', read:6, crumb:'Liquidation clusters',
+  title:'Liquidation Clusters Explained: How to Spot Liquidity Magnets',
+  desc:'Learn what liquidation clusters are, how stacked leverage forms them, and why these liquidity magnets pull crypto futures price toward them. A practical guide.',
+  keywords:'liquidation clusters, liquidity magnets, liquidation map, open interest, crypto leverage, liquidation levels, support and resistance, futures trading',
+  body:`&amp;lt;p&amp;gt;If you trade crypto futures, you have probably watched price drift toward a level, accelerate into it, and then snap back. Often that level is a &amp;lt;strong&amp;gt;liquidation cluster&amp;lt;/strong&amp;gt; — a price where a lot of leveraged positions are set to get forced out. This guide explains what clusters are, how they form, and how to read them on a &amp;lt;a href="/?p=heat"&amp;gt;liquidation map&amp;lt;/a&amp;gt; without fooling yourself about what the data actually shows.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;What a liquidation cluster actually is&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;A single liquidation level is the price at which one leveraged position can no longer cover its margin and gets force-closed by the exchange. On its own, one level means nothing. A &amp;lt;strong&amp;gt;cluster&amp;lt;/strong&amp;gt; is what you get when many liquidation levels stack up at or near the same price.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Think of it as a pile of pending forced orders waiting at a price. If &amp;lt;code&amp;gt;42,000&amp;lt;/code&amp;gt; is where hundreds of long positions would be liquidated, then a move down to &amp;lt;code&amp;gt;42,000&amp;lt;/code&amp;gt; triggers a wave of forced selling all at once. That concentration is what makes clusters worth watching — not the individual levels, but the density of them at one spot.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;On MarginPad's &amp;lt;a href="/btc-liquidation-map/"&amp;gt;BTC liquidation map&amp;lt;/a&amp;gt;, clusters show up as bright, tall bands. The taller and brighter the band, the more leverage is estimated to be sitting at that price.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;How clusters form from open interest&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;Clusters are a side effect of leverage piling up. When &amp;lt;a href="/blog/what-is-open-interest/"&amp;gt;open interest&amp;lt;/a&amp;gt; rises, it means new leveraged positions are being opened — fresh contracts that did not exist before. Every one of those positions carries an &amp;lt;strong&amp;gt;implied liquidation price&amp;lt;/strong&amp;gt; that depends on entry price and leverage.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Here is the key idea: traders do not all use the same leverage. A model spreads new positions across a &amp;lt;strong&amp;gt;leverage distribution&amp;lt;/strong&amp;gt; — some at 5x, some at 10x, 25x, 50x and higher. Each tier implies a different liquidation distance from the entry price:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;A &amp;lt;code&amp;gt;10x&amp;lt;/code&amp;gt; long liquidates roughly &amp;lt;code&amp;gt;10%&amp;lt;/code&amp;gt; below entry.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;A &amp;lt;code&amp;gt;25x&amp;lt;/code&amp;gt; long liquidates roughly &amp;lt;code&amp;gt;4%&amp;lt;/code&amp;gt; below entry.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;A &amp;lt;code&amp;gt;50x&amp;lt;/code&amp;gt; long liquidates roughly &amp;lt;code&amp;gt;2%&amp;lt;/code&amp;gt; below entry.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;p&amp;gt;When lots of positions open around the same entry zone, their liquidation prices bunch together at predictable distances. The high-leverage liquidations sit close to current price; the lower-leverage ones sit further away. Stack enough of them and you get a cluster. If you are fuzzy on the mechanics, our &amp;lt;a href="/blog/crypto-leverage-explained/"&amp;gt;leverage explained&amp;lt;/a&amp;gt; post walks through the math.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;Why clusters act as liquidity magnets&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;A liquidation is a forced market order. A long liquidation is forced &amp;lt;strong&amp;gt;selling&amp;lt;/strong&amp;gt;; a short liquidation is forced &amp;lt;strong&amp;gt;buying&amp;lt;/strong&amp;gt;. A dense cluster is therefore a pool of guaranteed flow sitting at a known price — and markets tend to gravitate toward known pools of liquidity.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;There are two honest reasons clusters pull price:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Liquidity needs liquidity.&amp;lt;/strong&amp;gt; Large players who want to fill big orders need counterparties. A cluster is exactly that — a stack of forced orders waiting to be matched.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Cascades are self-reinforcing.&amp;lt;/strong&amp;gt; When price reaches a cluster, the forced orders push price further in the same direction, which triggers the next set of liquidations, and so on.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;p&amp;gt;This is why traders describe clusters as &amp;lt;strong&amp;gt;magnets&amp;lt;/strong&amp;gt;. It is not magic and it is not guaranteed — it is the simple gravity of concentrated forced flow.&amp;lt;/p&amp;gt;
+
+&amp;lt;div class="callout"&amp;gt;&amp;lt;div class="k"&amp;gt;SEE THE CLUSTERS&amp;lt;/div&amp;gt;&amp;lt;p style="margin-bottom:14px"&amp;gt;MarginPad's live map plots real liquidations plus estimated clusters from open-interest — toggle the layers and see where leverage is stacked.&amp;lt;/p&amp;gt;&amp;lt;a class="cta" href="/?p=heat"&amp;gt;Open the liquidation map →&amp;lt;/a&amp;gt;&amp;lt;/div&amp;gt;
+
+&amp;lt;h2&amp;gt;Long clusters below, short clusters above&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;Direction matters, and it follows directly from how leverage works:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Long clusters sit below current price.&amp;lt;/strong&amp;gt; Longs get liquidated when price falls, so their stacked liquidation levels form a band underneath the market. A drop into that band can trigger a cascade of forced selling.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Short clusters sit above current price.&amp;lt;/strong&amp;gt; Shorts get liquidated when price rises, so their levels form a band overhead. A rally into that band can trigger a short squeeze — forced buying that fuels more upside.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;p&amp;gt;Because of this, clusters often behave like soft &amp;lt;strong&amp;gt;support and resistance&amp;lt;/strong&amp;gt;. A thick long cluster below can act as a downside magnet that, once hit and consumed, becomes a springboard. A thick short cluster above can cap a move until price punches through it.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;How clusters get consumed&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;A cluster is not permanent. When price trades through it, the positions there get liquidated and the cluster is &amp;lt;strong&amp;gt;consumed&amp;lt;/strong&amp;gt; — the leverage that was stacked at that price is gone. On the map you will see a bright band fade or disappear after price sweeps it.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;This is the single most useful read. A level that was a magnet on the way in is often empty on the way back, because the fuel has been spent. Watching clusters appear, get hit, and vanish tells you where the leverage has already been flushed and where it is still loaded. Our guide on &amp;lt;a href="/blog/how-to-read-a-liquidation-heatmap/"&amp;gt;how to read a liquidation heatmap&amp;lt;/a&amp;gt; covers this consumption pattern in more depth.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;A practical sequence looks like this: open interest climbs, a cluster builds at &amp;lt;code&amp;gt;42,000&amp;lt;/code&amp;gt;, price grinds toward it, the band lights up as liquidations fire, and then it goes dark as the cluster clears. After that, support at &amp;lt;code&amp;gt;42,000&amp;lt;/code&amp;gt; is far weaker because the forced-buy flow that defended it is gone.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;The honest caveat: estimated clusters are a model&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;This matters, so be clear-eyed about it. MarginPad shows two different things, and they are not the same kind of data:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Real liquidations&amp;lt;/strong&amp;gt; are actual events reported by Bybit, OKX and Binance. They happened. There is no guesswork.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Estimated clusters&amp;lt;/strong&amp;gt; are a &amp;lt;strong&amp;gt;model&amp;lt;/strong&amp;gt;. They are derived from open-interest changes plus an assumed leverage distribution. They are &amp;lt;em&amp;gt;not&amp;lt;/em&amp;gt; exchange order-book data, and no exchange publishes the exact liquidation price of every position.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;p&amp;gt;In other words, the cluster layer is an educated estimate of where leverage is probably stacked, not a guaranteed list of where stops sit. Treat it as a probability map, not a price oracle. It is genuinely useful for spotting zones of concentrated risk — but anyone who tells you a cluster &amp;lt;em&amp;gt;will&amp;lt;/em&amp;gt; be hit is overselling a model.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;Reading MarginPad's Clusters layer&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;On the live map, toggle the &amp;lt;strong&amp;gt;Clusters&amp;lt;/strong&amp;gt; layer on top of the real-liquidation feed. A few practical habits:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Read brightness as density.&amp;lt;/strong&amp;gt; Brighter, taller bands mean more estimated leverage at that price. Faint bands are thin.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Check both sides.&amp;lt;/strong&amp;gt; Note the nearest long cluster below and short cluster above — those are your two most likely magnets.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Watch open interest alongside it.&amp;lt;/strong&amp;gt; Rising OI means clusters are building; falling OI after a sweep means they are being flushed.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Confirm with real liquidations.&amp;lt;/strong&amp;gt; When the real-liquidation feed lights up exactly where the model predicted a cluster, your read is on solid ground.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;p&amp;gt;Used this way, clusters become a context tool: they tell you where the market's leverage is loaded, which directions carry cascade risk, and which levels have already been cleared.&amp;lt;/p&amp;gt;
+
+&amp;lt;p&amp;gt;Liquidation clusters are not a crystal ball — they are a map of where leverage is stacked and where forced flow is likely to fire. Read them as liquidity magnets that can pull price, act as soft support and resistance, and then vanish once consumed. Pair the estimated &amp;lt;a href="/?p=heat"&amp;gt;liquidation map&amp;lt;/a&amp;gt; with the real-liquidation feed, keep the model's limits in mind, and you will have a far better sense of where the next move is most likely to accelerate.&amp;lt;/p&amp;gt;`,
+  faq:[
+    {q:'What is a liquidation cluster?',a:'It is a price level where many leveraged positions would be liquidated at once. Individual liquidation levels stack up at the same price, creating a dense pool of forced orders that can move the market when price reaches it.'},
+    {q:'Why do liquidation clusters act like magnets?',a:'A liquidation is a forced market order, so a cluster is a stack of guaranteed flow at a known price. Large players seek that liquidity, and once price reaches a cluster the forced orders can trigger a self-reinforcing cascade that pulls price further in.'},
+    {q:'Are MarginPad clusters real exchange data?',a:'No. Real liquidations on the map are actual events from Bybit, OKX and Binance. The estimated clusters layer is a model built from open-interest changes and an assumed leverage distribution — a probability map of where leverage likely sits, not order-book data.'},
+    {q:'What is the difference between long and short clusters?',a:'Long clusters sit below current price because longs liquidate when price falls. Short clusters sit above current price because shorts liquidate when price rises. A rally into a short cluster can spark a squeeze; a drop into a long cluster can spark a sell cascade.'}
+  ]
+},
+{
+  slug:'long-vs-short-liquidations', tag:'Liquidation', read:5, crumb:'Long vs short liquidations',
+  title:'Long vs Short Liquidations: What the Balance Tells You',
+  desc:'Learn how long vs short liquidations work, where each sits on a liquidation map, and how to read the imbalance to spot squeeze fuel and cascade risk.',
+  keywords:'long vs short liquidations, liquidation map, long liquidation, short liquidation, liquidation cascade, short squeeze, long squeeze, leverage',
+  body:`&amp;lt;p&amp;gt;Every liquidation has a direction. A trader is either long or short when their position gets force-closed, and the side that is getting wiped out tells you a lot about where the market is fragile. This guide explains what long-liquidation and short-liquidation actually mean, where each lands on a &amp;lt;a href="/?p=heat"&amp;gt;liquidation map&amp;lt;/a&amp;gt;, and how to read the balance between the two.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;What a long vs a short liquidation means&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;A liquidation happens when a leveraged position can no longer cover its losses and the exchange force-closes it. The direction of that trade decides what the exchange has to do:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Long liquidation&amp;lt;/strong&amp;gt; — a trader bet that price would rise. When price &amp;lt;em&amp;gt;falls&amp;lt;/em&amp;gt; past their liquidation level, the exchange force-&amp;lt;strong&amp;gt;SELLS&amp;lt;/strong&amp;gt; their position to close it. More selling pushes price down further.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Short liquidation&amp;lt;/strong&amp;gt; — a trader bet that price would fall. When price &amp;lt;em&amp;gt;rises&amp;lt;/em&amp;gt; past their liquidation level, the exchange force-&amp;lt;strong&amp;gt;BUYS&amp;lt;/strong&amp;gt; their position back to close it. More buying pushes price up further.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;p&amp;gt;The key insight is that a liquidation is a forced market order in the opposite direction of the original bet. Longs liquidate &amp;lt;code&amp;gt;into selling&amp;lt;/code&amp;gt;; shorts liquidate &amp;lt;code&amp;gt;into buying&amp;lt;/code&amp;gt;. That is why liquidations feed the very move that triggered them. If you are new to the mechanics, our explainer on &amp;lt;a href="/blog/what-is-liquidation-in-crypto/"&amp;gt;what is liquidation&amp;lt;/a&amp;gt; covers the basics first.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;Where each side sits on the map&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;Because longs get liquidated when price drops and shorts get liquidated when price climbs, the two sides always sit on opposite halves of the chart relative to the current price:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Long liquidations sit BELOW current price.&amp;lt;/strong&amp;gt; The further price falls, the more long positions get hit. These show as &amp;lt;strong&amp;gt;red&amp;lt;/strong&amp;gt; on the map.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Short liquidations sit ABOVE current price.&amp;lt;/strong&amp;gt; The further price rises, the more short positions get hit. These show as &amp;lt;strong&amp;gt;green&amp;lt;/strong&amp;gt; on the map.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;p&amp;gt;So when you look at a &amp;lt;a href="/btc-liquidation-map/"&amp;gt;BTC liquidation map&amp;lt;/a&amp;gt;, the red zone below the candle and the green zone above it are not random — they are the two reservoirs of leverage waiting to be triggered if price moves their way. Understanding the long/short framing first, covered in &amp;lt;a href="/blog/long-vs-short-crypto/"&amp;gt;long vs short&amp;lt;/a&amp;gt;, makes this layout click immediately.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;Reading the long/short imbalance&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;The balance between the two sides is where the signal lives. When one side is much heavier than the other, price tends to get pulled toward the dense cluster, because that is where the most forced orders are sitting:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Heavy longs below&amp;lt;/strong&amp;gt; — a thick red band under price signals &amp;lt;strong&amp;gt;downside fragility&amp;lt;/strong&amp;gt;. A relatively small drop can start force-selling those longs, and that selling drags price lower into the next cluster. This is long-squeeze fuel.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Heavy shorts above&amp;lt;/strong&amp;gt; — a thick green band over price is &amp;lt;strong&amp;gt;short-squeeze fuel&amp;lt;/strong&amp;gt;. A modest rally can start force-buying those shorts, and that buying lifts price into the next short cluster.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;p&amp;gt;In plain terms: the over-leveraged side is the vulnerable side. If far more longs are stacked below than shorts above, the market is leaning long and is exposed to a flush down. If shorts dominate above, the crowd is leaning short and a pop higher can hurt them. Traders often describe price as being &amp;lt;em&amp;gt;magnetised&amp;lt;/em&amp;gt; toward the largest pools of liquidity.&amp;lt;/p&amp;gt;
+
+&amp;lt;div class="callout"&amp;gt;&amp;lt;div class="k"&amp;gt;SEE BOTH SIDES&amp;lt;/div&amp;gt;&amp;lt;p style="margin-bottom:14px"&amp;gt;On MarginPad's live map, red bubbles are longs liquidated, green are shorts — see which side is stacked and where.&amp;lt;/p&amp;gt;&amp;lt;a class="cta" href="/?p=heat"&amp;gt;Open the liquidation map →&amp;lt;/a&amp;gt;&amp;lt;/div&amp;gt;
+
+&amp;lt;h2&amp;gt;How cascades start on the heavier side&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;A &amp;lt;strong&amp;gt;cascade&amp;lt;/strong&amp;gt; is a chain reaction of liquidations, and it almost always begins on the heavier side. The sequence looks like this:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;Price reaches the first dense cluster of liquidation levels.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;Those positions are force-closed — longs force-&amp;lt;strong&amp;gt;sold&amp;lt;/strong&amp;gt;, shorts force-&amp;lt;strong&amp;gt;bought&amp;lt;/strong&amp;gt;.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;That forced order pushes price further in the same direction, into the &amp;lt;em&amp;gt;next&amp;lt;/em&amp;gt; cluster.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;The next batch liquidates, and the loop repeats until the leverage in that zone is exhausted.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;p&amp;gt;This is why a stack of long liquidations below price can produce a sharp, fast drop: each level that breaks adds more selling, which trips the next level. The same logic in reverse drives short-squeeze rallies. The heavier the cluster, the more energy the cascade has. Mapping these zones in advance is the whole point of a &amp;lt;a href="/blog/how-to-read-a-liquidation-heatmap/"&amp;gt;how to read a liquidation heatmap&amp;lt;/a&amp;gt; workflow.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;Using the colour code and the histogram&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;The map gives you two quick ways to judge which side is over-leveraged. First, the &amp;lt;strong&amp;gt;colour code&amp;lt;/strong&amp;gt;: &amp;lt;strong&amp;gt;red marks longs&amp;lt;/strong&amp;gt; liquidated and &amp;lt;strong&amp;gt;green marks shorts&amp;lt;/strong&amp;gt; liquidated. A wall of red below current price versus a thin scatter of green above it tells you at a glance that the long side is more crowded.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Second, the &amp;lt;strong&amp;gt;price-level histogram&amp;lt;/strong&amp;gt; aggregates liquidations by price, so you can see exactly which levels hold the most leverage. Tall bars mark the prices where the most positions are concentrated — those are the levels most likely to act as targets or to ignite a cascade. Reading the colour and the histogram together gives you a fast read on imbalance:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;Tall red bars clustered just below price → the long side is over-leveraged and exposed to a flush.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;Tall green bars clustered just above price → the short side is over-leveraged and exposed to a squeeze.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;Roughly balanced bars on both sides → no strong directional pull from leverage alone.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+
+&amp;lt;h2&amp;gt;Why liquidations come in bursts&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;One practical note: liquidations are not evenly spread over time. They &amp;lt;strong&amp;gt;spike on volatility&amp;lt;/strong&amp;gt; and go quiet when price is flat. A fast move sweeps through stacked liquidation levels and triggers a burst of red or green; a calm, ranging market leaves most levels untouched, so the live feed looks sparse. If the map suddenly fills with one colour, that is a signal volatility just hit and one side is being flushed. When price drifts sideways, expect the map to thin out — that quiet is normal, not a glitch.&amp;lt;/p&amp;gt;
+
+&amp;lt;p&amp;gt;Long versus short liquidations is really one question: which side is carrying the most leverage, and on which half of the chart. Longs liquidate into selling below price and show red; shorts liquidate into buying above price and show green. The heavier side is the fragile side, the dense clusters are where cascades start, and the colour code plus the histogram let you read that balance in seconds. Watch the imbalance, respect the clusters, and remember the bursts arrive with volatility — not in the calm.&amp;lt;/p&amp;gt;`,
+  faq:[
+    {q:'Are long liquidations bullish or bearish?',a:'Long liquidations are bearish in the moment. A long is force-sold when price falls, and that selling pushes price down further. A heavy band of long liquidations below current price signals downside fragility and can fuel a sharp drop.'},
+    {q:'Why are long liquidations below the price and shorts above?',a:'Longs profit when price rises, so they get liquidated when price falls — putting their liquidation levels below current price. Shorts profit when price falls, so they get liquidated when price rises, putting their levels above current price.'},
+    {q:'What does it mean when one side has far more liquidations?',a:'It means that side is over-leveraged and vulnerable. Heavy longs below point to a possible flush down; heavy shorts above point to short-squeeze fuel. Price tends to get pulled toward the larger cluster of forced orders.'},
+    {q:'Why does the liquidation map sometimes look empty?',a:'Liquidations spike on volatility and are sparse when price is flat. In a calm, ranging market most leverage levels are not triggered, so the live feed thins out. A sudden burst of one colour means volatility hit and that side is being flushed.'}
+  ]
+},
+{
+  slug:'liquidation-cascade-explained', tag:'Liquidation', read:6, crumb:'Liquidation cascades',
+  title:'Liquidation Cascades Explained (and How to Avoid Getting Caught)',
+  desc:'A liquidation cascade is a chain reaction of forced liquidations that snowballs price. Learn the mechanics, how to spot one, and how to avoid getting caught.',
+  keywords:'liquidation cascade, crypto liquidations, liquidation map, long squeeze, short squeeze, leverage trading, stop-loss placement, forced liquidation',
+  body:`&amp;lt;p&amp;gt;A single forced liquidation rarely matters. The danger is when one liquidation pushes price into the next pile of liquidations, which pushes price further, which triggers the next — a chain reaction known as a &amp;lt;strong&amp;gt;liquidation cascade&amp;lt;/strong&amp;gt;. This is the mechanism behind those violent vertical wicks you see on a chart, and understanding it is the difference between getting run over and stepping aside.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;What a liquidation cascade actually is&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;When a leveraged position can no longer cover its losses, the exchange force-closes it. That is a single &amp;lt;a href="/blog/what-is-liquidation-in-crypto/"&amp;gt;liquidation&amp;lt;/a&amp;gt;. A cascade is what happens when these stop happening one at a time and start happening in sequence. One liquidation moves price just far enough to trip the next cluster of positions, those get force-closed too, price moves again, and the next cluster lights up. Each link in the chain pulls the trigger on the one after it.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;The key insight is that cascades are not driven by news or fresh selling pressure. They are driven by &amp;lt;strong&amp;gt;the liquidations themselves&amp;lt;/strong&amp;gt;. Once the first domino falls, the move becomes self-sustaining until it runs out of nearby positions to consume.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;The mechanics: why liquidations feed on themselves&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;Here is the part most traders miss. When an exchange liquidates a position, it does not politely ask the market for a fair price. It dumps a &amp;lt;strong&amp;gt;market order&amp;lt;/strong&amp;gt; to close the position immediately. A long getting liquidated becomes a market &amp;lt;code&amp;gt;sell&amp;lt;/code&amp;gt;; a short getting liquidated becomes a market &amp;lt;code&amp;gt;buy&amp;lt;/code&amp;gt;.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Market orders move price. So a forced liquidation does not just react to the price move — it &amp;lt;em&amp;gt;adds&amp;lt;/em&amp;gt; to it. If a wave of longs is liquidated, the resulting market sells push price lower, which drags more longs to their liquidation level, which produces more market sells. That is a feedback loop:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Price drops&amp;lt;/strong&amp;gt; to a long position's liquidation level.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;The exchange &amp;lt;strong&amp;gt;market-sells&amp;lt;/strong&amp;gt; to close it.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;That selling &amp;lt;strong&amp;gt;pushes price lower&amp;lt;/strong&amp;gt; into the next cluster.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;Repeat until the fuel runs out.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;p&amp;gt;Thin order books make it worse. If there is little resting liquidity to absorb the forced market orders, each liquidation moves price further, so the cascade jumps from one cluster to the next more easily.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;Why high-leverage clusters near price are the fuse&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;A position's liquidation price depends on its leverage. A 3x long can fall a long way before it is liquidated; a 50x long is liquidated by a tiny move against it. That means &amp;lt;strong&amp;gt;high-leverage positions sit very close to the current price&amp;lt;/strong&amp;gt;, and they tend to pile up at the same round numbers and obvious levels.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Those tight clusters are the fuse. Because they are so close to price, it takes only a small nudge to ignite them, and once lit they release a burst of forced market orders that carries price into the next group. You can estimate where your own position sits relative to these zones with a &amp;lt;a href="/#liq"&amp;gt;liquidation calculator&amp;lt;/a&amp;gt;, and see where the broader clusters stack up on a &amp;lt;a href="/?p=heat"&amp;gt;liquidation map&amp;lt;/a&amp;gt;.&amp;lt;/p&amp;gt;
+
+&amp;lt;div class="callout"&amp;gt;&amp;lt;div class="k"&amp;gt;SEE THE FUEL&amp;lt;/div&amp;gt;&amp;lt;p style="margin-bottom:14px"&amp;gt;MarginPad's live map shows where liquidation fuel is stacked — so you can avoid putting your stop right inside a cluster.&amp;lt;/p&amp;gt;&amp;lt;a class="cta" href="/?p=heat"&amp;gt;Open the liquidation map →&amp;lt;/a&amp;gt;&amp;lt;/div&amp;gt;
+
+&amp;lt;h2&amp;gt;How cascades show up on a chart&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;A cascade looks like a &amp;lt;strong&amp;gt;sudden vertical wick&amp;lt;/strong&amp;gt; — price travels a large distance in seconds, far faster than ordinary buying or selling would explain, then often snaps partway back. That snap-back happens because the cascade overshoots: once the nearby liquidations are exhausted, there are no more forced orders, and the price was pushed below (or above) where genuine supply and demand would settle.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;If you have ever had a stop filled at a price that "never should have printed," only to watch the market recover minutes later, you were likely caught in a cascade. The wick swept through a cluster, your stop was inside it, and then price returned without you.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;Long cascades vs short squeezes&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;Cascades run in both directions, and the direction depends on which side is over-leveraged.&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Long cascade (downside).&amp;lt;/strong&amp;gt; When too many leveraged longs stack below price, a drop liquidates them, those liquidations are market sells, and the selling drives price down through cluster after cluster. This is the classic flush lower.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Short squeeze (upside).&amp;lt;/strong&amp;gt; The mirror image. When leveraged shorts pile up above price, a rally liquidates them, those liquidations are market buys, and the buying forces price up into the next short cluster — a self-feeding spike higher.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;p&amp;gt;The mechanics are identical; only the sign flips. The &amp;lt;a href="/btc-liquidation-map/"&amp;gt;BTC liquidation map&amp;lt;/a&amp;gt; often shows fuel stacked on both sides at once, which is why fast markets can spike one way, reverse, and spike the other.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;Using a liquidation map to stay out of the blast radius&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;A &amp;lt;a href="/?p=heat"&amp;gt;liquidation map&amp;lt;/a&amp;gt; plots where positions are likely to be force-closed — in other words, where the fuel is stacked. It will not tell you the exact second a cascade ignites, but it does tell you which price zones are dangerous to sit inside. Use it like this:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Find the dense clusters&amp;lt;/strong&amp;gt; above and below the current price.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Do not place your stop inside one.&amp;lt;/strong&amp;gt; A stop tucked into a cluster is likely to be swept by the very cascade the cluster fuels. Put it on the far side of the dense zone, where a wick is less likely to reach and reverse.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Treat clusters as magnets, not guarantees.&amp;lt;/strong&amp;gt; Price is often drawn toward stacked liquidations, but timing is unknowable.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+&amp;lt;p&amp;gt;Be honest with yourself about what the tool does: a map shows &amp;lt;strong&amp;gt;where&amp;lt;/strong&amp;gt; the fuel is, not &amp;lt;strong&amp;gt;when&amp;lt;/strong&amp;gt; it ignites. Estimated clusters are inferred from open positions and leverage assumptions, so treat them as a heat zone, not a countdown timer.&amp;lt;/p&amp;gt;
+
+&amp;lt;h2&amp;gt;Practical defenses&amp;lt;/h2&amp;gt;
+&amp;lt;p&amp;gt;You cannot stop a cascade, but you can avoid being its fuel. A few habits do most of the work:&amp;lt;/p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Lower your leverage.&amp;lt;/strong&amp;gt; This is the single biggest lever. Lower leverage pushes your liquidation price far from the action, so cascades that consume the tight high-leverage clusters never reach you. See &amp;lt;a href="/blog/how-to-avoid-liquidation/"&amp;gt;how to avoid liquidation&amp;lt;/a&amp;gt;.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Place stops outside dense clusters.&amp;lt;/strong&amp;gt; A stop should protect you, not feed the fire. Set it beyond the obvious liquidation zone — our guide on &amp;lt;a href="/blog/how-to-set-a-stop-loss/"&amp;gt;how to set a stop-loss&amp;lt;/a&amp;gt; covers placement in detail.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Cut size before high-volatility events.&amp;lt;/strong&amp;gt; Funding flips, macro data, and major announcements are common cascade triggers. Smaller size means a wick cannot do as much damage.&amp;lt;/li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Keep a margin buffer.&amp;lt;/strong&amp;gt; Extra collateral moves your liquidation price away from the danger zone and buys you room to survive a temporary overshoot.&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+
+&amp;lt;p&amp;gt;Liquidation cascades are not random violence — they are a predictable consequence of leveraged positions stacking up and force-closing into a thin book. Once you see them as a feedback loop of market orders, the defenses are obvious: keep your leverage modest, your stops outside the fuel, and your size sensible before volatility. Use a &amp;lt;a href="/?p=heat"&amp;gt;liquidation map&amp;lt;/a&amp;gt; to see where the clusters are stacked, and let the over-leveraged crowd be the fuel instead of you.&amp;lt;/p&amp;gt;`,
+  faq:[{q:'What is a liquidation cascade?',a:'It is a chain reaction of forced liquidations. One liquidation pushes price into the next cluster of leveraged positions, force-closing them too, which moves price further and triggers the next group — a self-sustaining loop until nearby positions are exhausted.'},{q:'Why do liquidations move the price?',a:'When an exchange liquidates a position it closes it with a market order, not a limit order. A liquidated long becomes a market sell and a liquidated short becomes a market buy, so the forced order itself pushes price in the same direction, triggering more liquidations.'},{q:'Can a liquidation map predict exactly when a cascade will happen?',a:'No. A map shows where liquidation fuel is stacked — which price zones are dangerous — but not the precise moment one ignites. Estimated clusters are inferred from open positions and leverage, so treat them as heat zones, not a countdown.'},{q:'How do I avoid getting caught in a cascade?',a:'Use lower leverage so your liquidation price sits far from the action, place stops outside dense clusters rather than inside them, reduce position size before high-volatility events, and keep a margin buffer for temporary overshoots.'}]
+}
 ];
-E.forEach(a => { a.body = a.body.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'); });
+E.forEach(a => { a.body = a.body.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>'); });
 module.exports = E;

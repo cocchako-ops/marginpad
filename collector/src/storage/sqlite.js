@@ -91,6 +91,13 @@ export function createSqliteStorage(path) {
     ).all(symbol, minNotional, Math.min(Number(limit) || 200, 1000));
   }
 
+  // Market-wide recent liquidations (all symbols) for the global floating feed.
+  function feed(minNotional = 0, limit = 30) {
+    ensure();
+    return db.prepare(`SELECT ts,exchange,symbol,side,price,qty,notional FROM liquidations WHERE notional>=? ORDER BY ts DESC LIMIT ?`)
+      .all(minNotional, Math.min(Number(limit) || 30, 200));
+  }
+
   function prune(days) {
     const cut = Date.now() - days * 86400000;
     const r = db.prepare('DELETE FROM liquidations WHERE ts<?').run(cut);
@@ -117,7 +124,7 @@ export function createSqliteStorage(path) {
   function getClusters(symbol) { ensure(); return db.prepare('SELECT price_bucket AS price, side, est_notional FROM clusters WHERE symbol=? AND est_notional>0 ORDER BY price_bucket').all(symbol); }
   function pruneOi(days) { ensure(); return Number(db.prepare('DELETE FROM oi WHERE ts<?').run(Date.now() - days * 86400000).changes); }
 
-  return { migrate, insert, aggregateNew, histogram, live, prune, stats,
+  return { migrate, insert, aggregateNew, histogram, live, feed, prune, stats,
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi,
     close: () => db.close() };
 }

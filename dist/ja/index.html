@@ -34,13 +34,13 @@
 {"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"}
 </script>
 <meta property="og:site_name" content="MarginPad" />
-<meta property="og:title" content="MarginPad — Precision Calculators for Crypto Traders" />
+<meta property="og:title" content="MarginPad — Crypto Liquidation Map &amp; Futures Calculators" />
 <meta property="og:description" content="Liquidation price, position size, PnL, DCA & take-profit calculators. Free, instant, no signup." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/ja/" />
 <meta property="og:locale" content="en_US" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="MarginPad — Precision Calculators for Crypto Traders" />
+<meta name="twitter:title" content="MarginPad — Crypto Liquidation Map &amp; Futures Calculators" />
 <meta name="twitter:description" content="Liquidation, position size, PnL, DCA & take-profit calculators for crypto futures. Free, no signup." />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
@@ -201,6 +201,17 @@
   .heat-stats{flex:1;text-align:center;font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-dim);letter-spacing:.02em;white-space:nowrap;}
   .heat-stats b{color:#fff;font-weight:700;}
   .heat-stats .hs-quiet{color:var(--ink-faint);}
+  /* ---- global floating live-liquidation feed (left side, semi-transparent B&W) ---- */
+  .lqfeed{position:fixed;left:14px;bottom:14px;z-index:85;display:flex;flex-direction:column;gap:7px;pointer-events:none;width:212px;}
+  .lqf-card{background:rgba(8,9,11,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.13);border-radius:11px;padding:9px 12px;font-family:'Space Mono',monospace;color:#e9e7df;opacity:0;transform:translateX(-16px);transition:opacity .5s ease,transform .5s ease;box-shadow:0 10px 26px -14px rgba(0,0,0,.8);}
+  .lqf-card.in{opacity:.9;transform:none;}
+  .lqf-card.out{opacity:0;transform:translateX(-16px);}
+  .lqf-r{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
+  .lqf-s{font-size:9.5px;letter-spacing:.12em;font-weight:700;color:#aab0b8;}
+  .lqf-a{font-size:15px;font-weight:700;color:#fff;}
+  .lqf-m{font-size:10.5px;color:#7a828c;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  @media(prefers-reduced-motion:reduce){.lqf-card{transition:opacity .3s;}}
+  @media(max-width:760px){.lqfeed{display:none;}}
   @media(max-width:680px){.heat-stats{order:3;flex-basis:100%;text-align:left;margin-top:2px;}}
   @media(max-width:560px){.heat-lyr{padding:6px 8px;font-size:10px;}}
   .heat-ovl{position:absolute;inset:0;pointer-events:none;z-index:2;}
@@ -1788,13 +1799,7 @@ window.addEventListener('load', function () {
         var tot=(b.long||0)+(b.short||0); if(tot<=0)continue; var len=Math.max(2,(tot/liqMax)*maxLen),ll=len*((b.long||0)/tot);
         octx.fillStyle='rgba(46,211,154,0.5)'; octx.fillRect(paneW-len,y-2.5,len-ll,5);
         octx.fillStyle='rgba(255,92,92,0.55)'; octx.fillRect(paneW-ll,y-2.5,ll,5); } }
-    // real liquidation bubbles (Phase 1)
-    if(showReal){ var vr=null; try{vr=ts.getVisibleRange();}catch(e){} if(!vr)return; var from=+vr.from,to=+vr.to,span=(to-from)||1,now=Date.now(),winMs=WIN[win].mins*60000;
-      for(var j=0;j<liqEvents.length;j++){ var e=liqEvents[j]; if(now-e.ts>winMs){e._x=null;continue;}
-        var x=((Math.floor(e.ts/1000)-from)/span)*paneW; if(x<2||x>paneW){e._x=null;continue;}
-        var yy=candle.priceToCoordinate(e.price); if(yy==null||yy<0||yy>H){e._x=null;continue;} var r=Math.max(5,Math.min(28,Math.sqrt(e.notional)/42));
-        octx.save(); octx.shadowColor=bcol(e.side,0.8); octx.shadowBlur=7;
-        octx.beginPath(); octx.arc(x,yy,r,0,6.2832); octx.fillStyle=bcol(e.side,0.3); octx.fill(); octx.lineWidth=1.6; octx.strokeStyle=bcol(e.side,0.95); octx.stroke(); octx.restore(); e._x=x; e._y=yy; e._r=r; } } }
+  }
   function onCross(param){ var tip=document.getElementById('heatTip'); if(!tip)return;
     if(!realMode||!param.point){ tip.style.display='none'; return; } var px=param.point.x,py=param.point.y,best=null,bd=1e9;
     for(var i=0;i<liqEvents.length;i++){ var e=liqEvents[i]; if(e._x==null)continue; var d=Math.hypot(e._x-px,e._y-py); if(d<e._r+4&&d<bd){bd=d;best=e;} }
@@ -1968,6 +1973,29 @@ window.addEventListener('load', function () {
     enhance(document.getElementById('langSel'), false);
   }
   if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+<script>
+/* Global live-liquidation feed — floating semi-transparent B&W cards, market-wide, ~20s each. */
+(function(){
+  var box=null, seen={}, order=[], first=true;
+  function money(n){ n=+n; if(n>=1e6)return (n/1e6).toFixed(n>=1e7?0:1)+'M'; if(n>=1e3)return (n/1e3).toFixed(0)+'K'; return n.toFixed(0); }
+  function px(p){ p=+p; return p>=1?p.toLocaleString('en-US',{maximumFractionDigits:2}):p.toLocaleString('en-US',{maximumFractionDigits:6}); }
+  function ensure(){ if(box)return; box=document.createElement('div'); box.className='lqfeed'; box.setAttribute('aria-hidden','true'); document.body.appendChild(box); }
+  function add(e){ ensure(); var card=document.createElement('div'); card.className='lqf-card'; var lng=e.side==='long_liquidated';
+    card.innerHTML='<div class="lqf-r"><span class="lqf-s">'+(lng?'LONG LIQ':'SHORT LIQ')+'</span><span class="lqf-a">$'+money(e.notional)+'</span></div><div class="lqf-m">'+e.symbol+' · '+px(e.price)+' · '+e.exchange+'</div>';
+    box.appendChild(card); requestAnimationFrame(function(){card.classList.add('in');});
+    setTimeout(function(){ card.classList.remove('in'); card.classList.add('out'); setTimeout(function(){ if(card.parentNode)card.remove(); },600); },20000);
+    while(box.children.length>6) box.firstChild.remove();
+  }
+  function poll(){ fetch('/api/v1/feed?min=5000&limit=25').then(function(r){return r.json();}).then(function(j){
+    if(!j||!Array.isArray(j.events))return; var fresh=[];
+    for(var i=0;i<j.events.length;i++){ var e=j.events[i],k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange; if(!seen[k]){seen[k]=1;order.push(k);fresh.push(e);} }
+    while(order.length>600) delete seen[order.shift()];
+    var show=(first?fresh.slice(0,2):fresh.slice(0,4)); first=false; show.reverse(); for(var s=0;s<show.length;s++) add(show[s]);
+  }).catch(function(){}); }
+  function start(){ if(window.innerWidth<760)return; poll(); setInterval(poll,4500); }
+  if(document.readyState!=='loading')start(); else document.addEventListener('DOMContentLoaded',start);
 })();
 </script>
 </body>

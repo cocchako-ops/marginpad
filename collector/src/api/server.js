@@ -31,7 +31,7 @@ function resolveWindow(q) {
   const w = config.windows[q.window] || config.windows['24h'];
   return w;
 }
-function validSymbol(s) { return typeof s === 'string' && config.symbols.includes(s.toUpperCase()); }
+function validSymbol(s) { return typeof s === 'string' && /^[A-Z0-9]{2,20}$/.test(s.toUpperCase()); } // any captured ticker
 
 export function createApiServer({ storage, getStatus, bus }) {
   const app = express();
@@ -68,6 +68,14 @@ export function createApiServer({ storage, getStatus, bus }) {
       res.set('Cache-Control', 'public, max-age=3');
       res.json({ symbol, events: storage.live(symbol, limit, min) });
     } catch (e) { log.error('live failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
+  });
+
+  // Market-wide recent liquidations (all symbols) — powers the global floating feed on the site.
+  app.get('/api/v1/feed', (req, res) => {
+    const min = parseFloat(req.query.min) || 0;
+    const limit = Math.min(parseInt(req.query.limit, 10) || 30, 200);
+    try { res.set('Cache-Control', 'public, max-age=2'); res.json({ events: storage.feed(min, limit) }); }
+    catch (e) { log.error('feed failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
   // Server-Sent Events: push new liquidations to connected browsers for a live feel.

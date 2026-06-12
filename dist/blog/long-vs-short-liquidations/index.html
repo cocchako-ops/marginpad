@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<script src="/assets/pwa-nav.js" defer></script>
+<title>Long vs Short Liquidations: What the Balance Tells You — MarginPad</title>
+<meta name="description" content="Learn how long vs short liquidations work, where each sits on a liquidation map, and how to read the imbalance to spot squeeze fuel and cascade risk." />
+<meta name="keywords" content="long vs short liquidations, liquidation map, long liquidation, short liquidation, liquidation cascade, short squeeze, long squeeze, leverage" />
+<link rel="canonical" href="https://marginpad.io/blog/long-vs-short-liquidations/" />
+<meta property="og:title" content="Long vs Short Liquidations: What the Balance Tells You" />
+<meta property="og:description" content="Learn how long vs short liquidations work, where each sits on a liquidation map, and how to read the imbalance to spot squeeze fuel and cascade risk." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/blog/long-vs-short-liquidations/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Long vs Short Liquidations: What the Balance Tells You","description":"Learn how long vs short liquidations work, where each sits on a liquidation map, and how to read the imbalance to spot squeeze fuel and cascade risk.","author":{"@type":"Organization","name":"MarginPad"},"publisher":{"@type":"Organization","name":"MarginPad"},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/blog/long-vs-short-liquidations/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Are long liquidations bullish or bearish?","acceptedAnswer":{"@type":"Answer","text":"Long liquidations are bearish in the moment. A long is force-sold when price falls, and that selling pushes price down further. A heavy band of long liquidations below current price signals downside fragility and can fuel a sharp drop."}},{"@type":"Question","name":"Why are long liquidations below the price and shorts above?","acceptedAnswer":{"@type":"Answer","text":"Longs profit when price rises, so they get liquidated when price falls — putting their liquidation levels below current price. Shorts profit when price falls, so they get liquidated when price rises, putting their levels above current price."}},{"@type":"Question","name":"What does it mean when one side has far more liquidations?","acceptedAnswer":{"@type":"Answer","text":"It means that side is over-leveraged and vulnerable. Heavy longs below point to a possible flush down; heavy shorts above point to short-squeeze fuel. Price tends to get pulled toward the larger cluster of forced orders."}},{"@type":"Question","name":"Why does the liquidation map sometimes look empty?","acceptedAnswer":{"@type":"Answer","text":"Liquidations spike on volatility and are sparse when price is flat. In a calm, ranging market most leverage levels are not triggered, so the live feed thins out. A sudden burst of one colour means volatility hit and that side is being flushed."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Long vs short liquidations","item":"https://marginpad.io/blog/long-vs-short-liquidations/"}]}</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / <a href="/blog/">Blog</a> / Long vs short liquidations</div>
+  <article>
+    <h1>Long vs Short Liquidations: What the Balance Tells You</h1>
+    <div class="meta">Liquidation · 5 min read · Updated June 2026</div>
+<p>Every liquidation has a direction. A trader is either long or short when their position gets force-closed, and the side that is getting wiped out tells you a lot about where the market is fragile. This guide explains what long-liquidation and short-liquidation actually mean, where each lands on a <a href="/?p=heat">liquidation map</a>, and how to read the balance between the two.</p>
+
+<h2>What a long vs a short liquidation means</h2>
+<p>A liquidation happens when a leveraged position can no longer cover its losses and the exchange force-closes it. The direction of that trade decides what the exchange has to do:</p>
+<ul>
+<li><strong>Long liquidation</strong> — a trader bet that price would rise. When price <em>falls</em> past their liquidation level, the exchange force-<strong>SELLS</strong> their position to close it. More selling pushes price down further.</li>
+<li><strong>Short liquidation</strong> — a trader bet that price would fall. When price <em>rises</em> past their liquidation level, the exchange force-<strong>BUYS</strong> their position back to close it. More buying pushes price up further.</li>
+</ul>
+<p>The key insight is that a liquidation is a forced market order in the opposite direction of the original bet. Longs liquidate <code>into selling</code>; shorts liquidate <code>into buying</code>. That is why liquidations feed the very move that triggered them. If you are new to the mechanics, our explainer on <a href="/blog/what-is-liquidation-in-crypto/">what is liquidation</a> covers the basics first.</p>
+
+<h2>Where each side sits on the map</h2>
+<p>Because longs get liquidated when price drops and shorts get liquidated when price climbs, the two sides always sit on opposite halves of the chart relative to the current price:</p>
+<ul>
+<li><strong>Long liquidations sit BELOW current price.</strong> The further price falls, the more long positions get hit. These show as <strong>red</strong> on the map.</li>
+<li><strong>Short liquidations sit ABOVE current price.</strong> The further price rises, the more short positions get hit. These show as <strong>green</strong> on the map.</li>
+</ul>
+<p>So when you look at a <a href="/btc-liquidation-map/">BTC liquidation map</a>, the red zone below the candle and the green zone above it are not random — they are the two reservoirs of leverage waiting to be triggered if price moves their way. Understanding the long/short framing first, covered in <a href="/blog/long-vs-short-crypto/">long vs short</a>, makes this layout click immediately.</p>
+
+<h2>Reading the long/short imbalance</h2>
+<p>The balance between the two sides is where the signal lives. When one side is much heavier than the other, price tends to get pulled toward the dense cluster, because that is where the most forced orders are sitting:</p>
+<ul>
+<li><strong>Heavy longs below</strong> — a thick red band under price signals <strong>downside fragility</strong>. A relatively small drop can start force-selling those longs, and that selling drags price lower into the next cluster. This is long-squeeze fuel.</li>
+<li><strong>Heavy shorts above</strong> — a thick green band over price is <strong>short-squeeze fuel</strong>. A modest rally can start force-buying those shorts, and that buying lifts price into the next short cluster.</li>
+</ul>
+<p>In plain terms: the over-leveraged side is the vulnerable side. If far more longs are stacked below than shorts above, the market is leaning long and is exposed to a flush down. If shorts dominate above, the crowd is leaning short and a pop higher can hurt them. Traders often describe price as being <em>magnetised</em> toward the largest pools of liquidity.</p>
+
+<div class="callout"><div class="k">SEE BOTH SIDES</div><p style="margin-bottom:14px">On MarginPad's live map, red bubbles are longs liquidated, green are shorts — see which side is stacked and where.</p><a class="cta" href="/?p=heat">Open the liquidation map →</a></div>
+
+<h2>How cascades start on the heavier side</h2>
+<p>A <strong>cascade</strong> is a chain reaction of liquidations, and it almost always begins on the heavier side. The sequence looks like this:</p>
+<ul>
+<li>Price reaches the first dense cluster of liquidation levels.</li>
+<li>Those positions are force-closed — longs force-<strong>sold</strong>, shorts force-<strong>bought</strong>.</li>
+<li>That forced order pushes price further in the same direction, into the <em>next</em> cluster.</li>
+<li>The next batch liquidates, and the loop repeats until the leverage in that zone is exhausted.</li>
+</ul>
+<p>This is why a stack of long liquidations below price can produce a sharp, fast drop: each level that breaks adds more selling, which trips the next level. The same logic in reverse drives short-squeeze rallies. The heavier the cluster, the more energy the cascade has. Mapping these zones in advance is the whole point of a <a href="/blog/how-to-read-a-liquidation-heatmap/">how to read a liquidation heatmap</a> workflow.</p>
+
+<h2>Using the colour code and the histogram</h2>
+<p>The map gives you two quick ways to judge which side is over-leveraged. First, the <strong>colour code</strong>: <strong>red marks longs</strong> liquidated and <strong>green marks shorts</strong> liquidated. A wall of red below current price versus a thin scatter of green above it tells you at a glance that the long side is more crowded.</p>
+<p>Second, the <strong>price-level histogram</strong> aggregates liquidations by price, so you can see exactly which levels hold the most leverage. Tall bars mark the prices where the most positions are concentrated — those are the levels most likely to act as targets or to ignite a cascade. Reading the colour and the histogram together gives you a fast read on imbalance:</p>
+<ul>
+<li>Tall red bars clustered just below price → the long side is over-leveraged and exposed to a flush.</li>
+<li>Tall green bars clustered just above price → the short side is over-leveraged and exposed to a squeeze.</li>
+<li>Roughly balanced bars on both sides → no strong directional pull from leverage alone.</li>
+</ul>
+
+<h2>Why liquidations come in bursts</h2>
+<p>One practical note: liquidations are not evenly spread over time. They <strong>spike on volatility</strong> and go quiet when price is flat. A fast move sweeps through stacked liquidation levels and triggers a burst of red or green; a calm, ranging market leaves most levels untouched, so the live feed looks sparse. If the map suddenly fills with one colour, that is a signal volatility just hit and one side is being flushed. When price drifts sideways, expect the map to thin out — that quiet is normal, not a glitch.</p>
+
+<p>Long versus short liquidations is really one question: which side is carrying the most leverage, and on which half of the chart. Longs liquidate into selling below price and show red; shorts liquidate into buying above price and show green. The heavier side is the fragile side, the dense clusters are where cascades start, and the colour code plus the histogram let you read that balance in seconds. Watch the imbalance, respect the clusters, and remember the bursts arrive with volatility — not in the calm.</p>
+    <div class="toolshow">
+      <div class="ts-head">Everything free on MarginPad — no signup</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/#liq"><b>Liquidation Calculator</b><small>Know your exit price</small></a>
+        <a class="ts-card" href="/?p=heat"><b>Liquidation Heatmap</b><small>See the danger zones</small></a>
+        <a class="ts-card" href="/?p=plan"><b>Trade Planner</b><small>Plan the whole trade</small></a>
+        <a class="ts-card" href="/?p=swap"><b>Crypto Swap</b><small>900+ coins, no account</small></a>
+        <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Telegram Bot</b><small>Live prices &amp; alerts</small></a>
+        <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Log trades, win USDT</small></a>
+      </div>
+    </div>
+  </article>
+  <section class="related">
+    <h2 class="rel-title">Related guides</h2>
+    <div class="rel-grid"><a class="rel-card" href="/blog/liquidation-clusters-explained/"><span class="tag">Liquidation</span><span class="rel-t">Liquidation Clusters Explained: How to Spot Liquidity Magnets</span></a><a class="rel-card" href="/blog/liquidation-cascade-explained/"><span class="tag">Liquidation</span><span class="rel-t">Liquidation Cascades Explained (and How to Avoid Getting Caught)</span></a><a class="rel-card" href="/blog/how-to-read-a-liquidation-heatmap/"><span class="tag">Liquidation</span><span class="rel-t">How to Read a Liquidation Heatmap (Crypto Guide)</span></a></div>
+  </section>
+  <section class="comments">
+    <h2 class="cm-title">Comments</h2>
+    <form id="cmForm" class="cm-form" autocomplete="off">
+      <input id="cmName" class="cm-in" maxlength="40" placeholder="Your name (optional)" />
+      <input id="cmWebsite" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+      <textarea id="cmText" class="cm-in cm-ta" maxlength="1000" rows="3" placeholder="Share your thoughts or a question…" required></textarea>
+      <button type="submit" class="cm-submit">Post comment</button>
+    </form>
+    <div id="cmList" class="cm-list"></div>
+  </section>
+  <script src="/assets/comments.js" defer></script>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+</body>
+</html>

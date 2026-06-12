@@ -528,6 +528,9 @@ const NEW = [
 
 // full list for the index (existing + new), newest first-ish
 const INDEX = [
+  {slug:'liquidation-clusters-explained', tag:'Liquidation', title:'Liquidation Clusters Explained: How to Spot Liquidity Magnets', card:'What liquidation clusters are, how stacked leverage forms them, and why they pull price like magnets.'},
+  {slug:'long-vs-short-liquidations', tag:'Liquidation', title:'Long vs Short Liquidations: What the Balance Tells You', card:'Where long and short liquidations sit, and how the imbalance signals squeeze fuel and cascade risk.'},
+  {slug:'liquidation-cascade-explained', tag:'Liquidation', title:'Liquidation Cascades Explained (and How to Avoid Getting Caught)', card:'How one liquidation triggers the next, why cascades happen, and how to stay out of the blast radius.'},
   {slug:'how-to-read-a-liquidation-heatmap', tag:'Liquidation', title:'How to Read a Liquidation Heatmap (Crypto Guide)', card:'What a liquidation heatmap shows, why high-leverage levels cluster near price, and how to trade the zones.'},
   {slug:'how-to-avoid-liquidation', tag:'Risk management', title:'How to Avoid Liquidation in Crypto: 8 Rules That Work', card:'Eight practical rules — lower leverage, the 1% rule, stops inside your liquidation, margin buffers and more.'},
   {slug:'bybit-vs-binance-futures', tag:'Exchanges', title:'Bybit vs Binance for Futures Trading (2026 Comparison)', card:'Fees, liquidity, leverage, UX and regional access compared — a neutral guide to picking your perpetuals venue.'},

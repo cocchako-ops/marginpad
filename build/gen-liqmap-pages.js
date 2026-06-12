@@ -39,6 +39,10 @@ function page(sym, name) {
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${url}" />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="${name} (${sym}) Liquidation Map — Live" />
+<meta name="twitter:description" content="${desc}" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

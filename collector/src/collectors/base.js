@@ -19,15 +19,18 @@ export class BaseCollector {
     this.stopped = false;
     this.backoff = 1000;
     this.maxBackoff = 30000;
-    this.silenceMs = 35000;        // force reconnect if no message in this long (override per exchange)
-    this.maxLifeMs = 18 * 60 * 1000; // proactively recycle the socket every ~18 min so a "zombie" (alive via
-                                     // pings but with a dead subscription) can never silently stop delivering events
+    this.silenceMs = 35000;        // force reconnect if no message (incl. pings) in this long
+    this.maxLifeMs = 12 * 60 * 1000; // proactively recycle the socket every ~12 min (backstop vs zombies)
+    this.staleMs = 0;              // if >0: reconnect when an exchange that HAS delivered events goes this long
+                                   // with no NEW event. Safe only with broad symbol coverage (market always
+                                   // liquidates something), so a long event-gap reliably means a dead subscription.
     this.lastMsgAt = 0;
     this.lastEventAt = 0;
     this.eventsTotal = 0;
     this._silenceTimer = null;
     this._pingTimer = null;
     this._lifeTimer = null;
+    this._staleTimer = null;
   }
 
   // ---- subclass surface (override these) ----
@@ -59,6 +62,7 @@ export class BaseCollector {
       this._armSilence();
       this._armPing();
       this._armLife();
+      this._armStale();
       this.onState();
     });
 
@@ -110,7 +114,17 @@ export class BaseCollector {
       try { this.ws && this.ws.close(); } catch {}
     }, this.maxLifeMs);
   }
-  _clearTimers() { clearTimeout(this._silenceTimer); clearInterval(this._pingTimer); clearTimeout(this._lifeTimer); }
+  _armStale() {
+    clearInterval(this._staleTimer);
+    if (!this.staleMs) return;
+    this._staleTimer = setInterval(() => {
+      if (this.connected && this.lastEventAt && Date.now() - this.lastEventAt > this.staleMs) {
+        log.warn(`[${this.name}] no events for ${Math.round((Date.now() - this.lastEventAt) / 1000)}s — reconnecting (likely a dead subscription)`);
+        try { this.ws && this.ws.close(); } catch {}
+      }
+    }, 30000);
+  }
+  _clearTimers() { clearTimeout(this._silenceTimer); clearInterval(this._pingTimer); clearTimeout(this._lifeTimer); clearInterval(this._staleTimer); }
 
   _reconnect(reason) {
     this._clearTimers();

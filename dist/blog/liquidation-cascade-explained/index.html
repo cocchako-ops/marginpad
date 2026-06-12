@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<script src="/assets/pwa-nav.js" defer></script>
+<title>Liquidation Cascades Explained (and How to Avoid Getting Caught) — MarginPad</title>
+<meta name="description" content="A liquidation cascade is a chain reaction of forced liquidations that snowballs price. Learn the mechanics, how to spot one, and how to avoid getting caught." />
+<meta name="keywords" content="liquidation cascade, crypto liquidations, liquidation map, long squeeze, short squeeze, leverage trading, stop-loss placement, forced liquidation" />
+<link rel="canonical" href="https://marginpad.io/blog/liquidation-cascade-explained/" />
+<meta property="og:title" content="Liquidation Cascades Explained (and How to Avoid Getting Caught)" />
+<meta property="og:description" content="A liquidation cascade is a chain reaction of forced liquidations that snowballs price. Learn the mechanics, how to spot one, and how to avoid getting caught." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/blog/liquidation-cascade-explained/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Liquidation Cascades Explained (and How to Avoid Getting Caught)","description":"A liquidation cascade is a chain reaction of forced liquidations that snowballs price. Learn the mechanics, how to spot one, and how to avoid getting caught.","author":{"@type":"Organization","name":"MarginPad"},"publisher":{"@type":"Organization","name":"MarginPad"},"datePublished":"2026-06-10","dateModified":"2026-06-10","mainEntityOfPage":"https://marginpad.io/blog/liquidation-cascade-explained/"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a liquidation cascade?","acceptedAnswer":{"@type":"Answer","text":"It is a chain reaction of forced liquidations. One liquidation pushes price into the next cluster of leveraged positions, force-closing them too, which moves price further and triggers the next group — a self-sustaining loop until nearby positions are exhausted."}},{"@type":"Question","name":"Why do liquidations move the price?","acceptedAnswer":{"@type":"Answer","text":"When an exchange liquidates a position it closes it with a market order, not a limit order. A liquidated long becomes a market sell and a liquidated short becomes a market buy, so the forced order itself pushes price in the same direction, triggering more liquidations."}},{"@type":"Question","name":"Can a liquidation map predict exactly when a cascade will happen?","acceptedAnswer":{"@type":"Answer","text":"No. A map shows where liquidation fuel is stacked — which price zones are dangerous — but not the precise moment one ignites. Estimated clusters are inferred from open positions and leverage, so treat them as heat zones, not a countdown."}},{"@type":"Question","name":"How do I avoid getting caught in a cascade?","acceptedAnswer":{"@type":"Answer","text":"Use lower leverage so your liquidation price sits far from the action, place stops outside dense clusters rather than inside them, reduce position size before high-volatility events, and keep a margin buffer for temporary overshoots."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://marginpad.io/blog/"},{"@type":"ListItem","position":3,"name":"Liquidation cascades","item":"https://marginpad.io/blog/liquidation-cascade-explained/"}]}</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / <a href="/blog/">Blog</a> / Liquidation cascades</div>
+  <article>
+    <h1>Liquidation Cascades Explained (and How to Avoid Getting Caught)</h1>
+    <div class="meta">Liquidation · 6 min read · Updated June 2026</div>
+<p>A single forced liquidation rarely matters. The danger is when one liquidation pushes price into the next pile of liquidations, which pushes price further, which triggers the next — a chain reaction known as a <strong>liquidation cascade</strong>. This is the mechanism behind those violent vertical wicks you see on a chart, and understanding it is the difference between getting run over and stepping aside.</p>
+
+<h2>What a liquidation cascade actually is</h2>
+<p>When a leveraged position can no longer cover its losses, the exchange force-closes it. That is a single <a href="/blog/what-is-liquidation-in-crypto/">liquidation</a>. A cascade is what happens when these stop happening one at a time and start happening in sequence. One liquidation moves price just far enough to trip the next cluster of positions, those get force-closed too, price moves again, and the next cluster lights up. Each link in the chain pulls the trigger on the one after it.</p>
+<p>The key insight is that cascades are not driven by news or fresh selling pressure. They are driven by <strong>the liquidations themselves</strong>. Once the first domino falls, the move becomes self-sustaining until it runs out of nearby positions to consume.</p>
+
+<h2>The mechanics: why liquidations feed on themselves</h2>
+<p>Here is the part most traders miss. When an exchange liquidates a position, it does not politely ask the market for a fair price. It dumps a <strong>market order</strong> to close the position immediately. A long getting liquidated becomes a market <code>sell</code>; a short getting liquidated becomes a market <code>buy</code>.</p>
+<p>Market orders move price. So a forced liquidation does not just react to the price move — it <em>adds</em> to it. If a wave of longs is liquidated, the resulting market sells push price lower, which drags more longs to their liquidation level, which produces more market sells. That is a feedback loop:</p>
+<ul>
+<li><strong>Price drops</strong> to a long position's liquidation level.</li>
+<li>The exchange <strong>market-sells</strong> to close it.</li>
+<li>That selling <strong>pushes price lower</strong> into the next cluster.</li>
+<li>Repeat until the fuel runs out.</li>
+</ul>
+<p>Thin order books make it worse. If there is little resting liquidity to absorb the forced market orders, each liquidation moves price further, so the cascade jumps from one cluster to the next more easily.</p>
+
+<h2>Why high-leverage clusters near price are the fuse</h2>
+<p>A position's liquidation price depends on its leverage. A 3x long can fall a long way before it is liquidated; a 50x long is liquidated by a tiny move against it. That means <strong>high-leverage positions sit very close to the current price</strong>, and they tend to pile up at the same round numbers and obvious levels.</p>
+<p>Those tight clusters are the fuse. Because they are so close to price, it takes only a small nudge to ignite them, and once lit they release a burst of forced market orders that carries price into the next group. You can estimate where your own position sits relative to these zones with a <a href="/#liq">liquidation calculator</a>, and see where the broader clusters stack up on a <a href="/?p=heat">liquidation map</a>.</p>
+
+<div class="callout"><div class="k">SEE THE FUEL</div><p style="margin-bottom:14px">MarginPad's live map shows where liquidation fuel is stacked — so you can avoid putting your stop right inside a cluster.</p><a class="cta" href="/?p=heat">Open the liquidation map →</a></div>
+
+<h2>How cascades show up on a chart</h2>
+<p>A cascade looks like a <strong>sudden vertical wick</strong> — price travels a large distance in seconds, far faster than ordinary buying or selling would explain, then often snaps partway back. That snap-back happens because the cascade overshoots: once the nearby liquidations are exhausted, there are no more forced orders, and the price was pushed below (or above) where genuine supply and demand would settle.</p>
+<p>If you have ever had a stop filled at a price that "never should have printed," only to watch the market recover minutes later, you were likely caught in a cascade. The wick swept through a cluster, your stop was inside it, and then price returned without you.</p>
+
+<h2>Long cascades vs short squeezes</h2>
+<p>Cascades run in both directions, and the direction depends on which side is over-leveraged.</p>
+<ul>
+<li><strong>Long cascade (downside).</strong> When too many leveraged longs stack below price, a drop liquidates them, those liquidations are market sells, and the selling drives price down through cluster after cluster. This is the classic flush lower.</li>
+<li><strong>Short squeeze (upside).</strong> The mirror image. When leveraged shorts pile up above price, a rally liquidates them, those liquidations are market buys, and the buying forces price up into the next short cluster — a self-feeding spike higher.</li>
+</ul>
+<p>The mechanics are identical; only the sign flips. The <a href="/btc-liquidation-map/">BTC liquidation map</a> often shows fuel stacked on both sides at once, which is why fast markets can spike one way, reverse, and spike the other.</p>
+
+<h2>Using a liquidation map to stay out of the blast radius</h2>
+<p>A <a href="/?p=heat">liquidation map</a> plots where positions are likely to be force-closed — in other words, where the fuel is stacked. It will not tell you the exact second a cascade ignites, but it does tell you which price zones are dangerous to sit inside. Use it like this:</p>
+<ul>
+<li><strong>Find the dense clusters</strong> above and below the current price.</li>
+<li><strong>Do not place your stop inside one.</strong> A stop tucked into a cluster is likely to be swept by the very cascade the cluster fuels. Put it on the far side of the dense zone, where a wick is less likely to reach and reverse.</li>
+<li><strong>Treat clusters as magnets, not guarantees.</strong> Price is often drawn toward stacked liquidations, but timing is unknowable.</li>
+</ul>
+<p>Be honest with yourself about what the tool does: a map shows <strong>where</strong> the fuel is, not <strong>when</strong> it ignites. Estimated clusters are inferred from open positions and leverage assumptions, so treat them as a heat zone, not a countdown timer.</p>
+
+<h2>Practical defenses</h2>
+<p>You cannot stop a cascade, but you can avoid being its fuel. A few habits do most of the work:</p>
+<ul>
+<li><strong>Lower your leverage.</strong> This is the single biggest lever. Lower leverage pushes your liquidation price far from the action, so cascades that consume the tight high-leverage clusters never reach you. See <a href="/blog/how-to-avoid-liquidation/">how to avoid liquidation</a>.</li>
+<li><strong>Place stops outside dense clusters.</strong> A stop should protect you, not feed the fire. Set it beyond the obvious liquidation zone — our guide on <a href="/blog/how-to-set-a-stop-loss/">how to set a stop-loss</a> covers placement in detail.</li>
+<li><strong>Cut size before high-volatility events.</strong> Funding flips, macro data, and major announcements are common cascade triggers. Smaller size means a wick cannot do as much damage.</li>
+<li><strong>Keep a margin buffer.</strong> Extra collateral moves your liquidation price away from the danger zone and buys you room to survive a temporary overshoot.</li>
+</ul>
+
+<p>Liquidation cascades are not random violence — they are a predictable consequence of leveraged positions stacking up and force-closing into a thin book. Once you see them as a feedback loop of market orders, the defenses are obvious: keep your leverage modest, your stops outside the fuel, and your size sensible before volatility. Use a <a href="/?p=heat">liquidation map</a> to see where the clusters are stacked, and let the over-leveraged crowd be the fuel instead of you.</p>
+    <div class="toolshow">
+      <div class="ts-head">Everything free on MarginPad — no signup</div>
+      <div class="ts-grid">
+        <a class="ts-card" href="/#liq"><b>Liquidation Calculator</b><small>Know your exit price</small></a>
+        <a class="ts-card" href="/?p=heat"><b>Liquidation Heatmap</b><small>See the danger zones</small></a>
+        <a class="ts-card" href="/?p=plan"><b>Trade Planner</b><small>Plan the whole trade</small></a>
+        <a class="ts-card" href="/?p=swap"><b>Crypto Swap</b><small>900+ coins, no account</small></a>
+        <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Telegram Bot</b><small>Live prices &amp; alerts</small></a>
+        <a class="ts-card" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><b>Trade League</b><small>Log trades, win USDT</small></a>
+      </div>
+    </div>
+  </article>
+  <section class="related">
+    <h2 class="rel-title">Related guides</h2>
+    <div class="rel-grid"><a class="rel-card" href="/blog/liquidation-clusters-explained/"><span class="tag">Liquidation</span><span class="rel-t">Liquidation Clusters Explained: How to Spot Liquidity Magnets</span></a><a class="rel-card" href="/blog/long-vs-short-liquidations/"><span class="tag">Liquidation</span><span class="rel-t">Long vs Short Liquidations: What the Balance Tells You</span></a><a class="rel-card" href="/blog/how-to-read-a-liquidation-heatmap/"><span class="tag">Liquidation</span><span class="rel-t">How to Read a Liquidation Heatmap (Crypto Guide)</span></a></div>
+  </section>
+  <section class="comments">
+    <h2 class="cm-title">Comments</h2>
+    <form id="cmForm" class="cm-form" autocomplete="off">
+      <input id="cmName" class="cm-in" maxlength="40" placeholder="Your name (optional)" />
+      <input id="cmWebsite" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+      <textarea id="cmText" class="cm-in cm-ta" maxlength="1000" rows="3" placeholder="Share your thoughts or a question…" required></textarea>
+      <button type="submit" class="cm-submit">Post comment</button>
+    </form>
+    <div id="cmList" class="cm-list"></div>
+  </section>
+  <script src="/assets/comments.js" defer></script>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+</body>
+</html>

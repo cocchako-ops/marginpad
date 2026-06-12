@@ -36,7 +36,6 @@ export class BinanceCollector extends BaseCollector {
   }
   _norm(instr) {
     if (!instr || !instr.endsWith(SUFFIX)) return null;
-    const base = instr.slice(0, -SUFFIX.length);
-    return this._set.has(base) ? base : null;
+    return instr.slice(0, -SUFFIX.length);   // all-market stream: keep every USDT-margined liquidation
   }
 }

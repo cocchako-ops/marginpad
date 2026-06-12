@@ -1,7 +1,11 @@
 // Single source of truth. Adding a symbol or tuning a bucket is a CONFIG change, not a code change.
 export const config = {
   // Tracked symbols (normalized base names). Matches MarginPad's coin list.
+  // The site's listed coins (always tracked + always have nice bucket sizes). The collector ALSO captures
+  // every other liquidation market-wide (OKX all-swaps, Binance all-market, Bybit top-N) so the live feed
+  // is rich and the staleness watchdog is reliable.
   symbols: ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB', 'ADA', 'LINK', 'AVAX', 'LTC'],
+  bybitTopN: 150,            // subscribe to the 150 most-active Bybit linear perps (Bybit has no all-market topic)
 
   // Histogram price-bucket size in USD per symbol (where liquidations cluster by price level).
   // Tune later; defaults aim for ~a few hundred buckets across a typical range.

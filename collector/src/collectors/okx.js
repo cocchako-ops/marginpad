@@ -13,8 +13,8 @@ export class OkxCollector extends BaseCollector {
   constructor(opts) {
     super('okx', opts);
     this.silenceMs = 35000;
-    this._set = new Set(this.symbols);
-    this.ctVal = {};            // instId -> contract value (base units per contract)
+    this.staleMs = 6 * 60 * 1000; // OKX streams ALL swaps — a 6-min event gap means a dead subscription
+    this.ctVal = {};              // instId -> contract value (base units per contract)
   }
   url() { return 'wss://ws.okx.com:8443/ws/v5/public'; }
   subscribeFrames() { return [{ op: 'subscribe', args: [{ channel: 'liquidation-orders', instType: 'SWAP' }] }]; }
@@ -28,8 +28,7 @@ export class OkxCollector extends BaseCollector {
       const j = await r.json();
       let n = 0;
       for (const it of (j.data || [])) {
-        const m = /^([A-Z0-9]+)-USDT-SWAP$/.exec(it.instId || '');
-        if (m && this._set.has(m[1])) { this.ctVal[it.instId] = parseFloat(it.ctVal) || 1; n++; }
+        if (/^[A-Z0-9]+-USDT-SWAP$/.test(it.instId || '')) { this.ctVal[it.instId] = parseFloat(it.ctVal) || 1; n++; }
       }
       log.info('[okx] loaded contract values', { count: n });
     } catch (e) {
@@ -61,6 +60,6 @@ export class OkxCollector extends BaseCollector {
   }
   _norm(instId) {
     const m = /^([A-Z0-9]+)-USDT-SWAP$/.exec(instId || '');
-    return m && this._set.has(m[1]) ? m[1] : null;
+    return m ? m[1] : null;   // capture EVERY USDT-swap liquidation, market-wide
   }
 }
