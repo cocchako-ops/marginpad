@@ -216,6 +216,7 @@
   .lqf-a{font-size:15px;font-weight:700;color:#fff;}
   .lqf-m{font-size:10.5px;color:#7a828c;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   @media(prefers-reduced-motion:reduce){.lqf-card{transition:opacity .3s;}}
+  body:not([data-prod="heat"]) .lqfeed{display:none!important;}
   @media(max-width:760px){.lqfeed{display:none;}}
   @media(max-width:680px){.heat-stats{order:3;flex-basis:100%;text-align:left;margin-top:2px;}}
   @media(max-width:560px){.heat-lyr{padding:6px 8px;font-size:10px;}}
@@ -295,6 +296,33 @@
   #planSym:hover{border-color:var(--ink-faint);}
   #planSym:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(255,255,255,.12);}
   #planSym option{background:var(--panel);color:var(--ink);}
+  /* ---- Paper Trade panel (redesigned) ---- */
+  #plan .pt2{max-width:560px;margin:0 auto;}
+  .pt2-head{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:20px;margin-bottom:18px;}
+  .pt2-head small{font-family:'Familjen Grotesk',sans-serif;font-weight:400;font-size:13px;color:var(--ink-faint);}
+  .pt2-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px;}
+  .pt2-sym{background:var(--bg);border:1px solid var(--line-bright);color:var(--ink);font-family:'Space Mono',monospace;font-size:17px;font-weight:700;padding:11px 14px;border-radius:11px;cursor:pointer;outline:none;-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" stroke="%239aa3ad" stroke-width="2"><path d="M2 4l4 4 4-4"/></svg>');background-repeat:no-repeat;background-position:right 12px center;padding-right:34px;}
+  .pt2-px{text-align:right;min-width:0;}
+  .pt2-px-lbl{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.16em;color:var(--up);margin-bottom:2px;}
+  .pt2-px-v{font-family:'Space Mono',monospace;font-size:33px;font-weight:800;line-height:1.02;letter-spacing:-1.5px;white-space:nowrap;}
+  .pt2-px-chg{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;margin-top:2px;}
+  .pt2-side{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+  .pt2-side button{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;padding:14px 0;border-radius:12px;cursor:pointer;border:1.5px solid var(--line-bright);background:var(--bg);color:var(--ink-dim);transition:.14s;letter-spacing:.03em;}
+  .pt2-side button[data-side="long"].on{background:rgba(46,189,133,.16);border-color:#2ebd85;color:#34d99a;}
+  .pt2-side button[data-side="short"].on{background:rgba(255,98,88,.16);border-color:#ff6258;color:#ff7b72;}
+  .pt2-fields{display:grid;grid-template-columns:1fr 1.25fr;gap:14px;margin-bottom:15px;}
+  @media(max-width:520px){.pt2-fields{grid-template-columns:1fr;}.pt2-px-v{font-size:27px;}}
+  .pt2-amt label,.pt2-lev label{display:block;font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin-bottom:8px;}
+  .pt2-levs{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;}
+  .pt2-levs button{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;padding:11px 0;border-radius:9px;cursor:pointer;border:1px solid var(--line-bright);background:var(--bg);color:var(--ink-dim);transition:.12s;}
+  .pt2-levs button.on{background:rgba(194,246,74,.16);border-color:#c2f64a;color:#d6f78a;}
+  .pt2-stats{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-faint);margin-bottom:14px;}
+  .pt2-stats b{color:var(--ink);font-weight:700;}
+  .pt2-open{width:100%;font-family:'Space Mono',monospace;font-size:16px;font-weight:800;padding:16px 0;border-radius:13px;cursor:pointer;border:none;color:#04150d;background:#2ebd85;transition:.14s;letter-spacing:.02em;margin-top:14px;box-shadow:0 8px 26px -8px rgba(46,189,133,.55);}
+  .pt2-open.short{background:#ff6258;color:#240707;box-shadow:0 8px 26px -8px rgba(255,98,88,.55);}
+  .pt2-open:hover{filter:brightness(1.08);}
+  .pt2-open:active{transform:translateY(1px);}
+  .pt2-note{font-size:11.5px;color:var(--ink-faint);line-height:1.5;margin:11px 0 0;text-align:center;}
   .adv-toggle{display:flex;align-items:center;gap:10px;margin-top:6px;padding:11px 14px;border:1px dashed var(--line-bright);border-radius:10px;cursor:pointer;color:var(--ink-dim);font-size:13px;user-select:none;transition:.15s;}
   .adv-toggle:hover{border-color:var(--ink-faint);color:var(--ink);}
   .adv-toggle input{width:16px;height:16px;accent-color:var(--up);cursor:pointer;flex-shrink:0;}
@@ -805,29 +833,32 @@
   <div class="card">
 
     <section class="panel" id="plan">
-      <div class="inputs">
-        <h2><span>Paper Trade</span> <small>— open at the live price, track P&amp;L live</small></h2>
-        <div class="field"><label data-i18n="direction">Direction</label>
-          <div class="seg" id="planSeg"><button class="on" data-side="long" data-i18n="long">Long</button><button data-side="short" data-i18n="short">Short</button></div>
+      <div class="pt2">
+        <div class="pt2-head"><span>Paper Trade</span> <small>— open at the live price, track P&amp;L live</small></div>
+        <div class="pt2-top">
+          <select id="planSym" class="pt2-sym" aria-label="Symbol"><option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option><option>BNB</option><option>DOGE</option></select>
+          <div class="pt2-px"><div class="pt2-px-lbl">● LIVE</div><div class="pt2-px-v" id="planLivePx">…</div><div class="pt2-px-chg" id="planLiveChg"></div></div>
         </div>
-        <div class="field"><label data-i18n="lSymbol">Symbol</label><div class="input-line"><select id="planSym"><option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option><option>BNB</option><option>DOGE</option></select></div></div>
-        <div class="field"><label data-i18n="lLivePx">Live entry price</label><div class="input-line"><input type="text" id="planLivePx" value="…" readonly aria-live="polite"><span class="unit" id="planLiveChg"></span></div></div>
-        <div class="field"><label data-i18n="lAmount">Amount — your margin</label><div class="input-line"><input type="number" id="planAmt" value="1000" step="any"><span class="unit">USD</span></div></div>
-        <div class="field"><label data-i18n="lLeverage">Leverage</label><div class="input-line"><input type="number" id="planLev" value="10" step="any"><span class="unit">×</span></div></div>
+        <div class="pt2-side" id="planSeg">
+          <button class="on" data-side="long" type="button"><span data-i18n="long">Long</span></button>
+          <button data-side="short" type="button"><span data-i18n="short">Short</span></button>
+        </div>
+        <div class="pt2-fields">
+          <div class="pt2-amt"><label data-i18n="lAmount">Amount — your margin</label><div class="input-line"><input type="number" id="planAmt" value="1000" step="any"><span class="unit">USD</span></div></div>
+          <div class="pt2-lev"><label data-i18n="lLeverage">Leverage</label>
+            <div class="pt2-levs" id="planLevs"><button data-lev="3" type="button">3×</button><button data-lev="5" type="button">5×</button><button data-lev="10" class="on" type="button">10×</button><button data-lev="25" type="button">25×</button><button data-lev="50" type="button">50×</button><button data-lev="100" type="button">100×</button></div>
+            <input type="hidden" id="planLev" value="10">
+          </div>
+        </div>
+        <div class="pt2-stats"><span data-i18n="rPosSize">Size</span> <b id="planSize">—</b> · <span data-i18n="rNotional">Notional</span> <b id="planNotional">—</b> · <span data-i18n="rEstLiq">Liq.</span> <b id="planLiq">—</b></div>
         <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span data-i18n="planAdv2">⚙ Advanced — fees, stop-loss, take-profit</span></label>
         <div class="plan-adv" id="planAdvIn" hidden>
           <div class="field"><label data-i18n="lFee">Taker fee (per side)</label><div class="input-line"><input type="number" id="planFee" value="0.05" step="any"><span class="unit">%</span></div></div>
           <div class="field"><label data-i18n="lStopOpt">Stop-loss (optional)</label><div class="input-line"><input type="number" id="planSlOpt" step="any" placeholder="—"><span class="unit">USD</span></div></div>
           <div class="field"><label data-i18n="lTpOpt">Take-profit (optional)</label><div class="input-line"><input type="number" id="planTpOpt" step="any" placeholder="—"><span class="unit">USD</span></div></div>
         </div>
-      </div>
-      <div class="results">
-        <div class="result-main"><div class="rlabel" data-i18n="rEstLiq">Estimated liquidation price</div><div class="rvalue" id="planLiq">—</div></div>
-        <div class="rrow"><span class="k" data-i18n="rPosSize">Position size</span><span class="v" id="planSize">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rNotional">Notional value</span><span class="v" id="planNotional">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rMarginReq">Margin</span><span class="v" id="planMargin">—</span></div>
-        <p class="note" data-i18n="nPaper">Opens a risk-free paper position at the current live price and tracks live P&amp;L in your Journal. Isolated margin; fees applied if set. No real funds, no account.</p>
-        <button type="button" class="jr-save" id="planSave"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> <span data-i18n="jrOpen">Open position</span></button>
+        <button type="button" class="pt2-open" id="planSave"><span id="planOpenTxt">Open Long</span></button>
+        <p class="pt2-note" data-i18n="nPaper">Risk-free paper position at the live price, tracked in your Journal. No real funds, no account.</p>
       </div>
     </section>
 
@@ -1369,19 +1400,21 @@
   function money(x){if(!isFinite(x))return '—';var neg=x<0;x=Math.abs(x);return (neg?'-$':'$')+x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
   function fmtPx(x){return '$'+(+x).toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-  function setBtn(){var sp=document.querySelector('#planSave span[data-i18n="jrOpen"]');if(sp)sp.textContent=((window.mpT&&window.mpT('jrOpen'))||'Open position')+(isFinite(live)?' @ '+fmtPx(live):'');}
-  function showLive(){var el=document.getElementById('planLivePx');if(el)el.value=isFinite(live)?fmtPx(live):'…';var c=document.getElementById('planLiveChg');if(c){c.textContent=isFinite(live)?((liveChg>=0?'+':'')+liveChg.toFixed(2)+'%'):'';c.style.color=liveChg>=0?'var(--up)':'var(--red)';}window.mpPlanLive={sym:((document.getElementById('planSym')||{}).value||''),price:live,chg:liveChg};}
+  function setBtn(){var t=document.getElementById('planOpenTxt'),b=document.getElementById('planSave'),lbl=(side==='long'?'Open Long':'Open Short');if(t)t.textContent=lbl+(isFinite(live)?' @ '+fmtPx(live):'');if(b)b.classList.toggle('short',side==='short');}
+  function showLive(){var el=document.getElementById('planLivePx');if(el)el.textContent=isFinite(live)?fmtPx(live):'…';var c=document.getElementById('planLiveChg');if(c){c.textContent=isFinite(live)?((liveChg>=0?'↑ +':'↓ ')+liveChg.toFixed(2)+'%'):'';c.style.color=liveChg>=0?'var(--up)':'var(--red)';}window.mpPlanLive={sym:((document.getElementById('planSym')||{}).value||''),price:live,chg:liveChg};}
   function calc(){
-    var amt=num('planAmt'),lev=num('planLev'),ids=['planSize','planLiq','planNotional','planMargin'];
+    var amt=num('planAmt'),lev=num('planLev'),ids=['planSize','planLiq','planNotional'];
     if(!isFinite(live)||live<=0||!isFinite(amt)||amt<=0||!isFinite(lev)||lev<=0){ids.forEach(function(i){set(i,'—');});setBtn();return;}
     var long=side==='long',notional=amt*lev,qty=notional/live,liq=long?live*(1-1/lev+0.005):live*(1+1/lev-0.005);
     var sym=((document.getElementById('planSym')||{}).value||'');
     set('planSize', qty.toLocaleString('en-US',{maximumFractionDigits:6})+(sym?' '+sym:''));
-    set('planLiq', money(liq)); set('planNotional', money(notional)); set('planMargin', money(amt)); setBtn();
+    set('planLiq', money(liq)); set('planNotional', money(notional)); setBtn();
   }
   function poll(){var sym=((document.getElementById('planSym')||{}).value||'');if(!sym)return;fetch('/api/price?symbol='+encodeURIComponent(sym)).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){live=+pd.price;liveChg=+pd.chg||0;showLive();calc();}}).catch(function(){});}
   if(seg)seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
-  ['planAmt','planLev'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
+  var levs=document.getElementById('planLevs');
+  if(levs)levs.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){levs.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');var hi=document.getElementById('planLev');if(hi)hi.value=b.getAttribute('data-lev');calc();});});
+  ['planAmt'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
   var advChk=document.getElementById('planAdvChk');
   if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;});
   var pSym=document.getElementById('planSym');
@@ -1943,6 +1976,7 @@ window.addEventListener('load', function () {
   for(var i=0;i<prods.length;i++){prods[i].addEventListener('click',function(){
     for(var j=0;j<prods.length;j++)prods[j].classList.remove('active');this.classList.add('active');
     var p=this.getAttribute('data-prod');
+    document.body.setAttribute('data-prod',p); // the floating liq feed only shows on the heatmap
     if(typeof stopPoll==='function')stopPoll();
     heatmap.style.display=(p==='heat')?'':'none';
     if(swapEl)swapEl.style.display=(p==='swap')?'':'none';
