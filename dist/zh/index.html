@@ -1544,7 +1544,10 @@
   if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;});
   var pSym=document.getElementById('planSym');
   if(pSym)pSym.addEventListener('change',function(){live=NaN;showLive();calc();poll();});
-  poll(); pollT=setInterval(poll,2500); calc();
+  // real-time price from the WebSocket feed (sub-100ms); REST poll stays as a slower fallback
+  var _rafF=false;
+  document.addEventListener('mp:price',function(ev){var sym=((document.getElementById('planSym')||{}).value||'');if(!ev.detail||ev.detail.sym!==sym)return;live=+ev.detail.price;if(ev.detail.chg!=null&&isFinite(ev.detail.chg))liveChg=+ev.detail.chg;if(_rafF)return;_rafF=true;requestAnimationFrame(function(){_rafF=false;showLive();calc();});});
+  poll(); pollT=setInterval(poll,3000); calc();
 })();
 /* Paper Trade terminal: live candlestick chart + open/closed positions list */
 (function(){
@@ -1644,7 +1647,10 @@
   function ensureChart(){var pl=document.getElementById('plan');if(!pl||!pl.classList.contains('active')||!pl.offsetParent)return;if(!inited){inited=true;loadLib(function(){initChart();loadKlines();});}else if(!chart&&window.LightweightCharts){initChart();loadKlines();}}
   function mtCount(){var el=document.getElementById('ptMtCount');if(!el)return;var n=load().filter(function(e){return e.status==='open';}).length;el.textContent=n?String(n):'';}
   function tick(){ensureChart();var d=load(),changed=false;d.forEach(function(e){if(e.status==='open'){var m=metrics(e);if(checkClose(e,m))changed=true;}});if(changed){store(d);drawLines();if(window.mpJournalRender)window.mpJournalRender();}liveCandle();chartHeader();renderPos();mtCount();updateZone();}
-  pollPrices();setInterval(pollPrices,2500);
+  // real-time chart updates from the WebSocket feed (the forming candle, header price and liq zone follow every tick)
+  var _rafC=false;
+  document.addEventListener('mp:price',function(ev){if(!ev.detail||ev.detail.sym!==chartSym)return;if(_rafC)return;_rafC=true;requestAnimationFrame(function(){_rafC=false;liveCandle();chartHeader();updateZone();});});
+  pollPrices();setInterval(pollPrices,3000);
   tick();setInterval(tick,1000);
 })();
 </script>
@@ -1790,7 +1796,36 @@
   });
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeJr();});
   window.mpJournalRender=function(){var d=document.getElementById('jrDrawer');if(d&&!d.hidden)render();};
+  // live P&L: re-render the open drawer on each price tick (throttled to ~4/s so the list doesn't thrash)
+  var _jrLast=0;
+  document.addEventListener('mp:price',function(){var d=document.getElementById('jrDrawer');if(!d||d.hidden)return;var now=(window.performance&&performance.now)?performance.now():+new Date();if(now-_jrLast<240)return;_jrLast=now;render();});
   render();
+})();
+</script>
+<script>
+/* Real-time price feed — a single Bybit spot WebSocket streaming all selectable symbols.
+   Updates window.mpLivePrices and fires a 'mp:price' event on every tick (sub-100ms), so the Paper Trade
+   price, chart candle and live P&L feel instant. REST polling stays as a fallback if the socket is down. */
+(function(){
+  if(!('WebSocket'in window))return;
+  var SYMS=['BTC','ETH','SOL','XRP','BNB','DOGE'];
+  window.mpLivePrices=window.mpLivePrices||{};
+  var ws=null,alive=false,retry=0,pingT=null;
+  function emit(sym,price,chg){
+    var prev=window.mpLivePrices[sym]||{};
+    window.mpLivePrices[sym]={p:price,t:Date.now(),chg:(chg!=null&&isFinite(chg))?chg:prev.chg};
+    try{document.dispatchEvent(new CustomEvent('mp:price',{detail:{sym:sym,price:price,chg:window.mpLivePrices[sym].chg}}));}catch(_){}
+  }
+  function connect(){
+    try{ws=new WebSocket('wss://stream.bybit.com/v5/public/spot');}catch(e){return reconnect();}
+    ws.onopen=function(){alive=true;retry=0;try{ws.send(JSON.stringify({op:'subscribe',args:SYMS.map(function(s){return 'tickers.'+s+'USDT';})}));}catch(_){}
+      if(pingT)clearInterval(pingT);pingT=setInterval(function(){try{ws.send(JSON.stringify({op:'ping'}));}catch(_){}},18000);};
+    ws.onmessage=function(ev){try{var m=JSON.parse(ev.data);if(m.topic&&m.topic.indexOf('tickers.')===0&&m.data){var sym=m.topic.slice(8).replace('USDT','');var lp=parseFloat(m.data.lastPrice);var chg=(m.data.price24hPcnt!=null&&m.data.price24hPcnt!=='')?parseFloat(m.data.price24hPcnt)*100:null;if(isFinite(lp))emit(sym,lp,chg);}}catch(_){}};
+    ws.onclose=function(){alive=false;if(pingT){clearInterval(pingT);pingT=null;}reconnect();};
+    ws.onerror=function(){try{ws.close();}catch(_){}};
+  }
+  function reconnect(){retry=Math.min(retry+1,6);setTimeout(connect,Math.min(1200*retry,8000));}
+  connect();
 })();
 </script>
 <script>
