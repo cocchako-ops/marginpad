@@ -393,8 +393,10 @@
   .pp-meta{font-size:11.5px;line-height:1.95;margin-bottom:13px;}
   .pp-btns button{padding:9px 0;font-size:11.5px;}
   @media(max-width:880px){.ptt{grid-template-columns:1fr;}.ptt-form,.ptt-pos{padding:18px;}}
-  /* Paper Trade is a terminal — ONLY this product's card breaks out of the 980px column; header/tabs stay narrow */
-  body[data-prod="plan"] .card{width:100vw;margin-left:calc(50% - 50vw);border-radius:0;border-left:none;border-right:none;padding:26px max(22px,calc(50vw - 900px));}
+  /* Paper Trade is a terminal — ONLY this product's card widens, as a bordered box centred in the viewport,
+     hugging its content with ~0.5cm padding (no full-bleed). margin-centred (not transform) so the rise animation
+     doesn't override the centring. 50% = half the .wrap content box; min(47vw,740px) = half the card width. */
+  body[data-prod="plan"] .card{width:min(94vw,1480px);margin-left:calc(50% - min(47vw,740px));padding:19px;border-radius:16px;}
   .ptt{grid-template-columns:minmax(0,1fr) 366px;align-items:start;gap:18px;} /* chart flexes wide; order form fixed; positions now live in the My Trades drawer */
   body[data-prod="plan"] .ptt-chart{height:min(76vh,880px);min-height:480px;}
   #ptChart{flex:1;min-height:0;}
@@ -405,8 +407,22 @@
   .ptt-mt-count:empty{display:none;}
   /* standard, web-app font for the whole Paper Trade terminal (no monospace) */
   #plan *{font-family:'Familjen Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif !important;}
-  @media(max-width:980px){body[data-prod="plan"] .card{width:auto;margin-left:0;border-radius:0 var(--r) var(--r) var(--r);border-left:1px solid var(--line-bright);border-right:1px solid var(--line-bright);padding:30px;}}
+  @media(max-width:980px){body[data-prod="plan"] .card{width:auto;margin-left:0;border-radius:0 var(--r) var(--r) var(--r);padding:20px;}}
   @media(max-width:880px){.ptt{grid-template-columns:1fr;}body[data-prod="plan"] .ptt-chart{height:440px;}}
+  .ptt-mytrades svg{flex:0 0 auto;}
+  /* black & white marketing balloon that points a hand-drawn arrow at the Paper Trade tab */
+  .pt-hint{position:fixed;z-index:55;width:296px;max-width:86vw;background:rgba(8,9,11,.96);border:1.5px solid #fff;border-radius:14px;padding:15px 17px 16px;box-shadow:0 18px 54px rgba(0,0,0,.62);color:#fff;animation:hintIn .42s cubic-bezier(.2,.7,.2,1) both;}
+  .pt-hint[hidden]{display:none;}
+  @keyframes hintIn{from{opacity:0;transform:translateY(7px) scale(.97);}to{opacity:1;transform:none;}}
+  .pt-hint-x{position:absolute;top:6px;right:9px;background:none;border:none;color:#8b939c;font-size:14px;cursor:pointer;line-height:1;padding:4px;}
+  .pt-hint-x:hover{color:#fff;}
+  .pt-hint-k{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:#8b939c;margin-bottom:7px;}
+  .pt-hint-t{font-size:15px;font-weight:700;line-height:1.25;margin-bottom:6px;}
+  .pt-hint-d{font-size:12.5px;line-height:1.55;color:#c7cdd4;}
+  .pt-hint-arrow{position:absolute;left:var(--ax,50%);bottom:-56px;transform:translateX(-50%);color:#fff;pointer-events:none;}
+  .pt-hint.below .pt-hint-arrow{bottom:auto;top:-56px;transform:translateX(-50%) scaleY(-1);}
+  .pp-btns .pp-share{flex:0 0 40px;display:inline-flex;align-items:center;justify-content:center;}
+  .pp-btns .pp-share:hover{color:#fff;border-color:var(--ink-faint);}
   .adv-toggle{display:flex;align-items:center;gap:10px;margin-top:6px;padding:11px 14px;border:1px dashed var(--line-bright);border-radius:10px;cursor:pointer;color:var(--ink-dim);font-size:13px;user-select:none;transition:.15s;}
   .adv-toggle:hover{border-color:var(--ink-faint);color:var(--ink);}
   .adv-toggle input{width:16px;height:16px;accent-color:var(--up);cursor:pointer;flex-shrink:0;}
@@ -952,7 +968,7 @@
             </div>
             <button type="button" class="pt2-open" id="planSave"><span id="planOpenTxt">Open Long</span></button>
           </div>
-          <button type="button" class="ptt-mytrades" data-mytrades><span data-i18n="myTradesBtn">📋 My Trades — open & closed</span><span class="ptt-mt-count" id="ptMtCount"></span></button>
+          <button type="button" class="ptt-mytrades" data-mytrades><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span data-i18n="myTradesBtn">My Trades — open &amp; closed</span><span class="ptt-mt-count" id="ptMtCount"></span></button>
         </div>
       </div>
     </section>
@@ -1589,6 +1605,7 @@
   function money(x){x=+x||0;var n=x<0;x=Math.abs(x);return (n?'-$':'$')+x.toLocaleString('en-US',{maximumFractionDigits:2});}
   function num(id){var e=document.getElementById(id);var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
   var jrTab='open';
+  var SHARE_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>';
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
@@ -1599,13 +1616,13 @@
       +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-meta">'+MT('jEntry','Entry')+' <b>'+fp(e.entry)+'</b> · '+MT('jMargin2','Margin')+' <b>'+(m.margin!=null?money(m.margin):'—')+'</b><br>'+MT('jLiq2','Liq')+' <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+') · SL <b>'+fp(e.stop)+'</b> · TP <b>'+(e.tp!=null?fp(e.tp):'—')+'</b><br>'+dur(Date.now()-e.ts)+' '+MT('jOpenLc','open')+'</div>'
-      +'<div class="pp-btns"><button data-act="share" data-id="'+e.id+'">⇪ '+MT('jShare','Share')+'</button><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button><button data-act="edit" data-id="'+e.id+'">SL/TP</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
+      +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button><button data-act="edit" data-id="'+e.id+'">SL/TP</button><button class="pp-share" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
   function closedCard(e){var win=e.status==='win',cls=((+e.pnl)>=0)?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'
       +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(win?'WIN':'LOSS')+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?(((+e.pnl)>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span>'+((e.margin&&e.pnl!=null)?'<span class="roe">ROE '+pctS(((+e.pnl)/(+e.margin||1))*100)+'</span>':'')+'</div>'
       +'<div class="pp-meta">'+fp(e.entry)+' → '+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+' · '+(e.lev||1)+'×'+(e.closeTs?'<br>'+dur(e.closeTs-e.ts)+' '+MT('jHeld','held'):'')+'</div>'
-      +'<div class="pp-btns"><button data-act="share" data-id="'+e.id+'">⇪ '+MT('jShare','Share')+'</button><button data-act="reopen" data-id="'+e.id+'">'+MT('jReopen','Reopen')+'</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
+      +'<div class="pp-btns"><button data-act="reopen" data-id="'+e.id+'">'+MT('jReopen','Reopen')+'</button><button class="pp-share" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
   function rr(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}
   function buildTicket(e){
     var m=metrics(e),closed=(e.status==='win'||e.status==='loss'),long=e.side!=='short';
@@ -1786,11 +1803,43 @@
 </script>
 <div id="jrBackdrop" class="jr-backdrop" hidden></div>
 <aside id="jrDrawer" class="jr-drawer" hidden aria-label="Trade journal">
-  <div class="jr-head"><span class="jr-title"><span>My Trades</span></span><button id="jrClose" class="jr-x" type="button" aria-label="Close">✕</button></div>
+  <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</span><button id="jrClose" class="jr-x" type="button" aria-label="Close">✕</button></div>
   <div class="jr-stats" id="jrStats"></div>
   <div class="jr-list" id="jrList"></div>
   <p class="jr-empty" id="jrEmpty" data-i18n="jrEmpty">还没有保存的交易。在上方规划一笔交易，然后点击"保存到日志"。</p>
 </aside>
+<div id="ptHint" class="pt-hint" hidden>
+  <button class="pt-hint-x" type="button" aria-label="Dismiss">✕</button>
+  <div class="pt-hint-k" data-i18n="ptHintK">New</div>
+  <div class="pt-hint-t" data-i18n="ptHintT">Open a position — for real, risk-free.</div>
+  <div class="pt-hint-d" data-i18n="ptHintD">Go Long or Short at the live price, set your size and leverage, then watch your P&amp;L play out tick by tick. No money, no account.</div>
+  <svg class="pt-hint-arrow" width="48" height="64" viewBox="0 0 48 64" fill="none" aria-hidden="true"><path d="M24 4 C 10 16, 40 30, 24 48" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M15 41 L24 51 L34 42" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<script>
+/* Marketing balloon: a hand-drawn arrow nudging users toward the Paper Trade tab. B&W, dismissible, shown once. */
+(function(){
+  var hint=document.getElementById('ptHint'),tab=document.querySelector('.prod[data-prod="plan"]');
+  if(!hint||!tab)return;
+  var KEY='mp_pt_hint';
+  function done(){try{return localStorage.getItem(KEY)==='1';}catch(e){return false;}}
+  function hide(){hint.hidden=true;}
+  function dismiss(){try{localStorage.setItem(KEY,'1');}catch(e){}hide();}
+  function place(){
+    if(hint.hidden)return;
+    var r=tab.getBoundingClientRect(),w=hint.offsetWidth||296,h=hint.offsetHeight||120;
+    var left=r.left+r.width/2-w/2; left=Math.max(12,Math.min(left,window.innerWidth-w-12));
+    var top=r.top-h-30,below=false; if(top<10){top=r.bottom+30;below=true;}
+    hint.classList.toggle('below',below);
+    hint.style.left=left+'px'; hint.style.top=top+'px';
+    var ax=(r.left+r.width/2)-left; hint.style.setProperty('--ax',Math.max(22,Math.min(ax,w-22))+'px');
+  }
+  function show(){ if(done())return; if((document.body.getAttribute('data-prod')||'')==='plan')return; hint.hidden=false; place(); }
+  hint.querySelector('.pt-hint-x').addEventListener('click',dismiss);
+  tab.addEventListener('click',dismiss);
+  window.addEventListener('resize',place); window.addEventListener('scroll',place,{passive:true});
+  setTimeout(show,1500);
+})();
+</script>
 <nav class="mobnav" aria-label="Quick navigation">
   <button type="button" data-mn="calc" aria-label="Calculator"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="16" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="18"/><line x1="8" y1="18" x2="12" y2="18"/></svg></button>
   <button type="button" data-mn="markets" aria-label="Markets"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></button>
