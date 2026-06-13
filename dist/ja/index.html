@@ -1432,8 +1432,8 @@
     statsEl.innerHTML=stat(data.length,MT('jTrades','Trades'))+stat(wr==null?'—':wr+'%',MT('jWinRate','Win rate'))+stat(avgRR==null?'—':avgRR.toFixed(2),MT('jAvgRR','Avg R:R'))+stat((net>=0?'+':'−')+money(net).replace('-',''),MT('jNetPnl','Net PnL'));
     listEl.innerHTML=data.slice().reverse().map(function(e){
       var sideC=e.side==='short'?'short':'long';
-      var stub=e.status==='planned'
-        ? '<span class="tk-tag">'+MT('jResultQ','result?')+'</span><button class="tk-btn win" data-act="win" data-id="'+e.id+'">✓ '+MT('jWin','Win')+'</button><button class="tk-btn loss" data-act="loss" data-id="'+e.id+'">✗ '+MT('jLoss','Loss')+'</button>'
+      var stub=(e.status==='planned'||e.status==='open')
+        ? '<span class="tk-tag">'+(e.status==='open'?'OPEN':MT('jResultQ','result?'))+'</span><button class="tk-btn win" data-act="win" data-id="'+e.id+'">✓ '+MT('jWin','Win')+'</button><button class="tk-btn loss" data-act="loss" data-id="'+e.id+'">✗ '+MT('jLoss','Loss')+'</button>'
         : '<span class="tk-result '+((+e.pnl)>=0?'pos':'neg')+'">'+((+e.pnl)>=0?'+':'−')+money(e.pnl).replace('-','')+'</span><span class="tk-tag">'+(e.status==='win'?MT('jWon','WIN'):MT('jLost','LOSS'))+'</span>';
       return '<div class="ticket '+sideC+'">'
         +'<button class="tk-del" data-act="del" data-id="'+e.id+'" aria-label="Delete">✕</button>'
@@ -1452,8 +1452,14 @@
     var seg=document.getElementById('planSeg'); var on=seg&&seg.querySelector('button.on'); var side=on?on.getAttribute('data-side'):'long';
     var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
     var rr=isFinite(tp)?Math.abs(tp-entry)/Math.abs(entry-stop):NaN;
+    var L=isFinite(lev)&&lev>0?lev:1, stopDist=Math.abs(entry-stop), mmr=0.005;
+    var bal=num('planBal'),risk=num('planRisk');
+    var riskAmt=(isFinite(bal)&&isFinite(risk))?bal*risk/100:NaN;
+    var qty=(isFinite(riskAmt)&&stopDist>0)?riskAmt/stopDist:NaN;
+    var notional=isFinite(qty)?qty*entry:NaN;
+    var liq=side==='long'?entry*(1-1/L+mmr):entry*(1+1/L-mmr);
     var data=load();
-    data.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,lev:isFinite(lev)?lev:null,rr:isFinite(rr)?rr:null,status:'planned',pnl:null});
+    data.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,lev:isFinite(lev)?lev:null,rr:isFinite(rr)?rr:null,qty:isFinite(qty)?qty:null,notional:isFinite(notional)?notional:null,riskAmt:isFinite(riskAmt)?riskAmt:null,liq:liq,mmr:mmr,status:'open',pnl:null});
     store(data); openJr();
     var btn=document.getElementById('planSave'),sp=btn&&btn.querySelector('span');
     if(btn&&sp){var o=sp.textContent;btn.classList.add('saved');sp.textContent=MT('jSaved','Saved')+' ✓';setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1500);}
