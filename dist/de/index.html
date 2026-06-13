@@ -362,6 +362,35 @@
   .pp-btns button{flex:1;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;padding:7px 0;border-radius:7px;cursor:pointer;border:1px solid var(--line-bright);background:var(--bg);color:var(--ink-dim);transition:.12s;}
   .pp-btns button:hover{color:#fff;}.pp-btns .cl:hover{color:#ff6258;border-color:#ff6258;}
   .pp-empty{color:var(--ink-faint);font-size:13px;text-align:center;padding:22px 10px;}
+  /* roomier terminal (Moon-style) — bigger right panel, more whitespace */
+  .ptt{grid-template-columns:1.22fr 1fr;gap:18px;}
+  .ptt-side{gap:20px;}
+  .ptt-form{padding:24px;}
+  .ptt-form .pt2-top{padding-bottom:16px;margin-bottom:18px;border-bottom:1px solid var(--line);}
+  .ptt-form .pt2-px-v{font-size:26px;}
+  .ptt-form .pt2-side{margin-bottom:18px;gap:12px;}
+  .ptt-form .pt2-side button{padding:15px 0;font-size:15px;}
+  .ptt-form .pt2-fields{gap:18px;margin-bottom:18px;}
+  .ptt-form .pt2-amt label,.ptt-form .pt2-lev label{font-size:11px;margin-bottom:9px;}
+  .ptt-form .input-line input{font-size:16px;padding:13px 14px;}
+  .ptt-form .pt2-levs{grid-template-columns:repeat(6,1fr);gap:6px;}
+  .ptt-form .pt2-levs button{padding:13px 0;font-size:13px;}
+  .ptt-form .adv-toggle{margin-top:4px;}
+  .ptt-form .pt2-open{padding:18px 0;font-size:17px;margin-top:18px;}
+  .ptt-stats{margin-bottom:18px;}
+  .ptt-stats>div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px solid rgba(35,41,50,.55);font-family:'Space Mono',monospace;font-size:13px;}
+  .ptt-stats>div:last-child{border-bottom:none;}
+  .ptt-stats span{color:var(--ink-faint);}
+  .ptt-stats b{color:#fff;font-weight:700;}
+  .ptt-pos{padding:22px;}
+  .ptt-pos-h{margin-bottom:16px;}
+  .pp{padding:16px;margin-bottom:14px;border-color:var(--line-bright);}
+  .pp-h{font-size:14px;margin-bottom:12px;}
+  .pp-pnl{margin-bottom:12px;}
+  .pp-pnl .big{font-size:21px;}
+  .pp-meta{font-size:11.5px;line-height:1.95;margin-bottom:13px;}
+  .pp-btns button{padding:9px 0;font-size:11.5px;}
+  @media(max-width:880px){.ptt{grid-template-columns:1fr;}.ptt-form,.ptt-pos{padding:18px;}}
   .adv-toggle{display:flex;align-items:center;gap:10px;margin-top:6px;padding:11px 14px;border:1px dashed var(--line-bright);border-radius:10px;cursor:pointer;color:var(--ink-dim);font-size:13px;user-select:none;transition:.15s;}
   .adv-toggle:hover{border-color:var(--ink-faint);color:var(--ink);}
   .adv-toggle input{width:16px;height:16px;accent-color:var(--up);cursor:pointer;flex-shrink:0;}
@@ -897,7 +926,7 @@
                 <input type="hidden" id="planLev" value="10">
               </div>
             </div>
-            <div class="pt2-stats"><span data-i18n="rPosSize">Positionsgröße</span> <b id="planSize">—</b> · <span data-i18n="rNotional">Nominalwert</span> <b id="planNotional">—</b> · <span data-i18n="rEstLiq">Geschätzter Liquidationspreis</span> <b id="planLiq">—</b></div>
+            <div class="ptt-stats"><div><span data-i18n="rPosSize">Positionsgröße</span><b id="planSize">—</b></div><div><span data-i18n="rNotional">Nominalwert</span><b id="planNotional">—</b></div><div><span data-i18n="rEstLiq">Geschätzter Liquidationspreis</span><b id="planLiq">—</b></div></div>
             <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span data-i18n="planAdv2">⚙ Advanced — fees, stop-loss, take-profit</span></label>
             <div class="plan-adv" id="planAdvIn" hidden>
               <div class="field"><label data-i18n="lFee">Taker fee (per side)</label><div class="input-line"><input type="number" id="planFee" value="0.05" step="any"><span class="unit">%</span></div></div>
