@@ -35,7 +35,7 @@
 </script>
 <meta property="og:site_name" content="MarginPad" />
 <meta property="og:title" content="MarginPad — Crypto Liquidation Map &amp; Futures Calculators" />
-<meta property="og:description" content="Liquidation price, position size, PnL, DCA & take-profit calculators. Free, instant, no signup." />
+<meta property="og:description" content="Risk-free Paper Trade terminal + liquidation map and calculators: liquidation price, position size, PnL, DCA & take-profit. Free, instant, no signup." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/pt/" />
 <meta property="og:locale" content="en_US" />
@@ -349,9 +349,14 @@
   .ptt-pos-tabs{display:inline-flex;gap:3px;background:var(--bg);border:1px solid var(--line-bright);border-radius:8px;padding:2px;}
   .ptt-pos-tabs button{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--ink-dim);background:none;border:none;border-radius:6px;padding:5px 11px;cursor:pointer;}
   .ptt-pos-tabs button.on{background:rgba(255,255,255,.1);color:#fff;}
-  .pp{background:#0c0f13;border:1px solid var(--line);border-radius:11px;padding:12px;margin-bottom:10px;}
+  .pp{position:relative;background:#0c0f13;border:1px solid var(--line);border-radius:11px;padding:12px;margin-bottom:10px;}
   .pp.pf{border-left:3px solid #10b981;}.pp.ls{border-left:3px solid #ef4444;}.pp.be{border-left:3px solid #6b7280;}
-  .pp-h{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:13px;margin-bottom:9px;flex-wrap:wrap;}
+  .pp-actions{position:absolute;top:10px;right:10px;display:flex;gap:5px;z-index:2;}
+  .pp-ic{width:29px;height:29px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line-bright);background:var(--bg);color:var(--ink-dim);border-radius:8px;cursor:pointer;transition:.12s;padding:0;}
+  .pp-ic:hover{color:#fff;border-color:var(--ink-faint);}
+  .mp-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);background:#11151b;border:1px solid var(--line-bright);color:#fff;font-size:13px;font-weight:600;padding:11px 18px;border-radius:11px;box-shadow:0 14px 40px rgba(0,0,0,.55);z-index:90;opacity:0;pointer-events:none;transition:.22s;}
+  .mp-toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+  .pp-h{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:13px;margin-bottom:9px;flex-wrap:wrap;padding-right:70px;}
   .pp-sym{font-weight:700;}
   .pp-dir{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.04em;}
   .pp-dir.long{color:#34d99a;background:rgba(46,189,133,.15);}.pp-dir.short{color:#ff7b72;background:rgba(255,98,88,.15);}
@@ -400,7 +405,7 @@
   /* Paper Trade is a terminal — ONLY this product's card widens, as a bordered box centred in the viewport,
      hugging its content with ~0.5cm padding (no full-bleed). margin-centred (not transform) so the rise animation
      doesn't override the centring. 50% = half the .wrap content box; min(47vw,740px) = half the card width. */
-  body[data-prod="plan"] .card{width:min(94vw,1480px);margin-left:calc(50% - min(47vw,740px));padding:19px;border-radius:16px;}
+  body[data-prod="plan"] .card{width:min(94vw,1480px);margin-left:calc(50% - min(47vw,740px));margin-top:10px;padding:19px;border-radius:16px;}
   .ptt{grid-template-columns:minmax(0,1fr) 366px;align-items:start;gap:18px;} /* chart flexes wide; order form fixed; positions now live in the My Trades drawer */
   body[data-prod="plan"] .ptt-chart{height:min(76vh,880px);min-height:480px;}
   #ptChart{flex:1;min-height:0;}
@@ -964,12 +969,11 @@
             </div>
             <div class="pt2-fields">
               <div class="pt2-amt"><label data-i18n="lAmountIn">Amount (USD)</label><div class="input-line"><input type="number" id="planAmt" value="100" step="any" min="0" inputmode="decimal"><span class="unit">$</span></div></div>
-              <div class="pt2-lev"><label data-i18n="lLeverage">Alavancagem</label><div class="input-line"><input type="number" id="planLev" value="10" step="1" min="1" inputmode="numeric"><span class="unit">×</span></div></div>
+              <div class="pt2-lev"><label data-i18n="lLeverage">Alavancagem</label><div class="input-line"><input type="number" id="planLev" value="10" step="1" min="1" max="1000" inputmode="numeric"><span class="unit">×</span></div></div>
             </div>
             <div class="ptt-stats"><div><span data-i18n="rPosSize">Tamanho da posição</span><b id="planSize">—</b></div><div><span data-i18n="rNotional">Valor nocional</span><b id="planNotional">—</b></div><div><span data-i18n="rEstLiq">Preço de liquidação estimado</span><b id="planLiq">—</b></div></div>
-            <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span data-i18n="planAdv3">⚙ Advanced — margin, fees, stop-loss, take-profit</span></label>
+            <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span data-i18n="planAdv4">⚙ Advanced — stop-loss &amp; take-profit</span></label>
             <div class="plan-adv" id="planAdvIn" hidden>
-              <div class="field"><label data-i18n="lFee">Taker fee (per side)</label><div class="input-line"><input type="number" id="planFee" value="0.05" step="any"><span class="unit">%</span></div></div>
               <div class="field"><label data-i18n="lStopOpt">Stop-loss (optional)</label><div class="input-line"><input type="number" id="planSlOpt" step="any" placeholder="—"><span class="unit">USD</span></div></div>
               <div class="field"><label data-i18n="lTpOpt">Take-profit (optional)</label><div class="input-line"><input type="number" id="planTpOpt" step="any" placeholder="—"><span class="unit">USD</span></div></div>
             </div>
@@ -1097,12 +1101,6 @@
 
   </div>
 
-  <section class="hotpairs" id="trending">
-    <div class="sec-head"><h2 data-i18n="hotTitle">Pares em alta</h2></div>
-    <p class="sec-sub" data-i18n="hotSub">Preços ao vivo e variação de 24 h nos mercados mais ativos. Toque em Operar para abrir o par.</p>
-    <div class="hp-grid" id="hpGrid"></div>
-  </section>
-
   <section class="exchanges">
     <h2 data-i18n="exTitle">Onde operar</h2>
     <p class="exsub" data-i18n="exSub">Coloque estes números para trabalhar. Compare as melhores corretoras — alavancagem máxima e o destaque de cada uma.</p>
@@ -1116,6 +1114,12 @@
       <a href="/gate-liquidation-calculator/" style="color:var(--ink-dim)">Gate</a> ·
       <a href="/kraken-liquidation-calculator/" style="color:var(--ink-dim)">Kraken</a>
     </p>
+  </section>
+
+  <section class="hotpairs" id="trending">
+    <div class="sec-head"><h2 data-i18n="hotTitle">Pares em alta</h2></div>
+    <p class="sec-sub" data-i18n="hotSub">Preços ao vivo e variação de 24 h nos mercados mais ativos. Toque em Operar para abrir o par.</p>
+    <div class="hp-grid" id="hpGrid"></div>
   </section>
 
   <section class="tvsec">
@@ -1531,6 +1535,7 @@
   function poll(){var sym=((document.getElementById('planSym')||{}).value||'');if(!sym)return;fetch('/api/price?symbol='+encodeURIComponent(sym)).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){live=+pd.price;liveChg=+pd.chg||0;showLive();calc();}}).catch(function(){});}
   if(seg)seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
   ['planAmt','planLev'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
+  var levEl=document.getElementById('planLev');if(levEl)levEl.addEventListener('input',function(){if(parseFloat(levEl.value)>1000)levEl.value='1000';});
   var advChk=document.getElementById('planAdvChk');
   if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;});
   var pSym=document.getElementById('planSym');
@@ -1553,10 +1558,10 @@
   function openSyms(){var s={};load().forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='—')s[e.sym]=1;});if(chartSym)s[chartSym]=1;return Object.keys(s);}
   function pollPrices(){openSyms().forEach(function(sym){fetch('/api/price?symbol='+encodeURIComponent(sym)).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0)prices[sym]={p:+pd.price,t:Date.now()};}).catch(function(){});});}
   function feeOf(e,exit){var fr=(+e.feeRate>0)?+e.feeRate:0;return (e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*(e.entry+exit)*fr:0;}
-  function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross!=null?gross-feeOf(e,live):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
-  function checkClose(e,m){if(e.status!=='open')return false;var tp=e.tp!=null&&(m.long?m.live>=e.tp:m.live<=e.tp),sl=e.stop!=null&&(m.long?m.live<=e.stop:m.live>=e.stop);if(tp||sl){e.status=tp?'win':'loss';e.exit=tp?e.tp:e.stop;e.closeTs=Date.now();e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*(m.long?1:-1)-feeOf(e,e.exit):null;notify(e,tp);return true;}return false;}
+  function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross;/* fee-free paper P&L: shows pure price move so it isn't negative at entry */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
+  function checkClose(e,m){if(e.status!=='open')return false;var tp=e.tp!=null&&(m.long?m.live>=e.tp:m.live<=e.tp),sl=e.stop!=null&&(m.long?m.live<=e.stop:m.live>=e.stop);if(tp||sl){e.status=tp?'win':'loss';e.exit=tp?e.tp:e.stop;e.closeTs=Date.now();e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*(m.long?1:-1):null;notify(e,tp);return true;}return false;}
   function notify(e,win){if(notified[e.id])return;notified[e.id]=true;try{if('Notification'in window&&Notification.permission==='granted')new Notification('MarginPad — '+(win?'Take-Profit hit ✅':'Stop-Loss hit ❌'),{body:(e.sym||'')+' '+String(e.side).toUpperCase()+' @ '+fp(win?e.tp:e.stop)});}catch(_){}}
-  function openCard(e){var m=metrics(e),long=m.long,cls=Math.abs(m.move)<0.0005?'be':((m.pnl!=null?m.pnl>=0:m.move>=0)?'pf':'ls');
+  function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-meta">Entry <b>'+fp(e.entry)+'</b> · Size <b>'+(e.qty!=null?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:5}):'—')+'</b> · '+(e.lev||1)+'×<br>Notional <b>'+(m.notional!=null?money(m.notional):'—')+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')<br>SL <b>'+(e.stop!=null?fp(e.stop):'—')+'</b> · TP <b>'+(e.tp!=null?fp(e.tp):'—')+'</b> · '+dur(Date.now()-e.ts)+' · '+hm(e.ts)+'</div>'
@@ -1629,23 +1634,25 @@
   function num(id){var e=document.getElementById(id);var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
   var jrTab='open';
   var SHARE_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>';
+  var COPY_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>';
+  function ppActions(e){return '<div class="pp-actions"><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button><button class="pp-ic" data-act="copy" data-id="'+e.id+'" title="'+MT('jCopyLink','Copy link + image')+'" aria-label="'+MT('jCopyLink','Copy link')+'">'+COPY_SVG+'</button></div>';}
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function feeOf(e,exit){var fr=(+e.feeRate>0)?+e.feeRate:0;return (e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*(e.entry+exit)*fr:0;}
-  function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross!=null?gross-feeOf(e,live):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,margin:margin};}
-  function openCard(e){var m=metrics(e),long=m.long,cls=Math.abs(m.move)<0.0005?'be':((m.pnl!=null?m.pnl>=0:m.move>=0)?'pf':'ls');
-    return '<div class="pp '+cls+'" data-id="'+e.id+'">'
+  function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross;/* fee-free paper P&L: shows pure price move so it isn't negative at entry */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,margin:margin};}
+  function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
+    return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e)
       +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-meta">'+MT('jEntry','Entry')+' <b>'+fp(e.entry)+'</b> · '+MT('jMargin2','Margin')+' <b>'+(m.margin!=null?money(m.margin):'—')+'</b><br>'+MT('jLiq2','Liq')+' <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+') · SL <b>'+(e.stop!=null?fp(e.stop):'—')+'</b> · TP <b>'+(e.tp!=null?fp(e.tp):'—')+'</b><br>'+dur(Date.now()-e.ts)+' '+MT('jOpenLc','open')+'</div>'
-      +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button><button data-act="edit" data-id="'+e.id+'">SL/TP</button><button class="pp-share" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
-  function closedCard(e){var win=e.status==='win',cls=((+e.pnl)>=0)?'pf':'ls',long=e.side!=='short';
-    return '<div class="pp '+cls+'" data-id="'+e.id+'">'
+      +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button><button data-act="edit" data-id="'+e.id+'">SL/TP</button><button data-act="del" data-id="'+e.id+'">'+MT('jDelete','Delete')+'</button></div></div>';}
+  function closedCard(e){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
+    return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e)
       +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(win?'WIN':'LOSS')+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?(((+e.pnl)>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span>'+((e.margin&&e.pnl!=null)?'<span class="roe">ROE '+pctS(((+e.pnl)/(+e.margin||1))*100)+'</span>':'')+'</div>'
       +'<div class="pp-meta">'+fp(e.entry)+' → '+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+' · '+(e.lev||1)+'×'+(e.closeTs?'<br>'+dur(e.closeTs-e.ts)+' '+MT('jHeld','held'):'')+'</div>'
-      +'<div class="pp-btns"><button data-act="reopen" data-id="'+e.id+'">'+MT('jReopen','Reopen')+'</button><button class="pp-share" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
+      +'<div class="pp-btns"><button data-act="reopen" data-id="'+e.id+'">'+MT('jReopen','Reopen')+'</button><button data-act="del" data-id="'+e.id+'">'+MT('jDelete','Delete')+'</button></div></div>';}
   function rr(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}
   function buildTicket(e){
     var m=metrics(e),closed=(e.status==='win'||e.status==='loss'),long=e.side!=='short';
@@ -1678,6 +1685,18 @@
       var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},5000);
     },'image/png');
   }
+  var toastT=null;
+  function toast(msg){var t=document.getElementById('mpToast');if(!t){t=document.createElement('div');t.id='mpToast';t.className='mp-toast';document.body.appendChild(t);}t.textContent=msg;t.classList.add('on');if(toastT)clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on');},2200);}
+  function copyTicket(e){
+    var url='https://marginpad.io/?p=plan';
+    if(!navigator.clipboard){toast(MT('jCopyFail','Copy not supported'));return;}
+    if(!window.ClipboardItem){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied','Link copied'));},function(){});return;}
+    try{
+      var blobP=new Promise(function(res){var c=buildTicket(e);c.toBlob(function(b){res(b);},'image/png');});
+      var item=new ClipboardItem({'image/png':blobP,'text/plain':new Blob([url],{type:'text/plain'})});
+      navigator.clipboard.write([item]).then(function(){toast(MT('jImgLinkCopied','Image + link copied'));},function(){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied','Link copied'));},function(){});});
+    }catch(_){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied','Link copied'));},function(){});}
+  }
   function render(){
     var listEl=document.getElementById('jrList'),statsEl=document.getElementById('jrStats'),emptyEl=document.getElementById('jrEmpty');
     if(!listEl||!statsEl)return;
@@ -1704,7 +1723,7 @@
     if(!isFinite(entry)||entry<=0||!isFinite(amt)||amt<=0)return;
     var seg=document.getElementById('planSeg'); var on=seg&&seg.querySelector('button.on'); var side=on?on.getAttribute('data-side'):'long';
     var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
-    var L=isFinite(lev)&&lev>0?lev:1, mmr=0.005;
+    var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=0.005;
     var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:0;
     var sl=num('planSlOpt'), tp=num('planTpOpt');
     var notional=amt*L, qty=notional/entry;
@@ -1726,6 +1745,7 @@
     var id=b.getAttribute('data-id'),act=b.getAttribute('data-act');
     var data=load(),i=-1; for(var k=0;k<data.length;k++){if(data[k].id===id){i=k;break;}} if(i<0)return; var e=data[i];
     if(act==='share'){shareTicket(e);return;}
+    if(act==='copy'){copyTicket(e);return;}
     if(act==='del'){ data.splice(i,1); }
     else if(act==='close'){ var m=metrics(e); e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss')); e.exit=m.live; e.closeTs=Date.now(); e.pnl=(m.pnl!=null?m.pnl:0); }
     else if(act==='reopen'){ e.status='open'; e.exit=null; e.closeTs=null; e.pnl=null; }
@@ -1839,14 +1859,13 @@
   <svg class="pt-hint-arrow" width="48" height="64" viewBox="0 0 48 64" fill="none" aria-hidden="true"><path d="M24 4 C 10 16, 40 30, 24 48" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M15 41 L24 51 L34 42" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 <script>
-/* Marketing balloon: a hand-drawn arrow nudging users toward the Paper Trade tab. B&W, dismissible, shown once. */
+/* Marketing balloon: a hand-drawn arrow nudging users toward the Paper Trade tab. B&W.
+   Stays until dismissed for the session; returns on every page refresh (no persisted dismissal). */
 (function(){
   var hint=document.getElementById('ptHint'),tab=document.querySelector('.prod[data-prod="plan"]');
   if(!hint||!tab)return;
-  var KEY='mp_pt_hint';
-  function done(){try{return localStorage.getItem(KEY)==='1';}catch(e){return false;}}
   function hide(){hint.hidden=true;}
-  function dismiss(){try{localStorage.setItem(KEY,'1');}catch(e){}hide();}
+  function dismiss(){hide();}
   function place(){
     if(hint.hidden)return;
     var r=tab.getBoundingClientRect(),w=hint.offsetWidth||296,h=hint.offsetHeight||120;
@@ -1856,7 +1875,7 @@
     hint.style.left=left+'px'; hint.style.top=top+'px';
     var ax=(r.left+r.width/2)-left; hint.style.setProperty('--ax',Math.max(22,Math.min(ax,w-22))+'px');
   }
-  function show(){ if(done())return; if((document.body.getAttribute('data-prod')||'')==='plan')return; hint.hidden=false; place(); }
+  function show(){ if((document.body.getAttribute('data-prod')||'')==='plan')return; hint.hidden=false; place(); }
   hint.querySelector('.pt-hint-x').addEventListener('click',dismiss);
   tab.addEventListener('click',dismiss);
   window.addEventListener('resize',place); window.addEventListener('scroll',place,{passive:true});
