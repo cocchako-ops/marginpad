@@ -128,16 +128,21 @@ async function handleKlines(url) {
   const iv = String(url.searchParams.get('interval') || '60');
   if (!sym) return J({ error: 'no symbol' }, 400);
   const pair = sym + 'USDT';
-  const biMap = { '1': '1m', '5': '5m', '15': '15m', '60': '1h', '240': '4h', '1440': '1d', '10080': '1w' };
-  for (const b of ['https://data-api.binance.vision', 'https://api.binance.com']) {
-    try {
-      const r = await fetch(b + '/api/v3/klines?symbol=' + pair + '&interval=' + (biMap[iv] || '1h') + '&limit=1000', { cf: { cacheTtl: 30 } });
-      if (r.ok) { const d = await r.json(); if (Array.isArray(d) && d.length) return J(d.map(k => ({ time: Math.floor(k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4] }))); }
-    } catch (e) {}
-  }
+  const end = parseInt(url.searchParams.get('end') || '', 10); // optional endTime (ms) for back-paginating history
+  const hasEnd = isFinite(end) && end > 0;
+  // Binance is hard-blocked (403) from Cloudflare egress, so it's not used. Gate.io is the primary source:
+  // reachable from CF, deep history in one call (BTC weekly back to 2013), and supports `to` for back-pagination.
+  // Bybit is the fallback (works from CF but only goes back to ~2021 and returns nothing for old `end`).
+  const gMap = { '1': '1m', '5': '5m', '15': '15m', '60': '1h', '240': '4h', '1440': '1d', '10080': '7d' };
+  try {
+    const g = 'https://api.gateio.ws/api/v4/spot/candlesticks?currency_pair=' + sym + '_USDT&interval=' + (gMap[iv] || '1h') + '&limit=1000' + (hasEnd ? '&to=' + Math.floor(end / 1000) : '');
+    const r = await fetch(g, { cf: { cacheTtl: hasEnd ? 600 : 20 } });
+    if (r.ok) { const d = await r.json(); // Gate row: [t, quoteVol, close, high, low, open, baseVol, closed]
+      if (Array.isArray(d) && d.length) return J(d.map(k => ({ time: +k[0], open: +k[5], high: +k[3], low: +k[4], close: +k[2] })).sort((a, b) => a.time - b.time)); }
+  } catch (e) {}
   try {
     const byMap = { '1': '1', '5': '5', '15': '15', '60': '60', '240': '240', '1440': 'D', '10080': 'W' };
-    const r = await fetch('https://api.bybit.com/v5/market/kline?category=spot&symbol=' + pair + '&interval=' + (byMap[iv] || '60') + '&limit=1000', { cf: { cacheTtl: 30 } });
+    const r = await fetch('https://api.bybit.com/v5/market/kline?category=spot&symbol=' + pair + '&interval=' + (byMap[iv] || '60') + '&limit=1000' + (hasEnd ? '&end=' + end : ''), { cf: { cacheTtl: hasEnd ? 600 : 30 } });
     if (r.ok) { const d = await r.json(); const list = d && d.result && d.result.list; if (list && list.length) return J(list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4] })).sort((a, b) => a.time - b.time)); }
   } catch (e) {}
   return J({ error: 'no data' }, 404);
