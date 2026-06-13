@@ -1790,15 +1790,34 @@
     }catch(_){}
   }
   send('pageview');
+  // human-readable label for whatever was clicked, so the stats dashboard reads clearly
+  var ID2NAME={planSave:'Open position (Long/Short)',jrOpen:'My Trades (header)',jrClose:'Close My Trades',jrBackdrop:'Close My Trades (tap-away)',planSym:'Symbol picker',planLev:'Leverage input',planAmt:'Amount input',ptSig:'Signals toggle',planAdvChk:'Advanced toggle',planSlOpt:'Stop-loss input',planTpOpt:'Take-profit input',ptMtCount:'My Trades (in terminal)',chatOpen:'Open chat',chatClose:'Close chat'};
+  var ACT2NAME={close:'Close position',del:'Delete trade',edit:'Edit SL/TP',reopen:'Reopen trade',share:'Share ticket',copy:'Copy ticket',win:'Mark win',loss:'Mark loss'};
   function describe(t){
-    var m=(t.closest&&t.closest('a,button,input,select,label,.excard,.toolcard,.hp-card,.feat,.post-card'))||t;
-    if(!m||!m.tagName) return 'other';
-    var tag=m.tagName.toLowerCase();
-    if(m.id) return tag+'#'+m.id;
-    var txt=(m.textContent||'').trim().replace(/\s+/g,' ').slice(0,22);
-    if(txt&&(tag==='a'||tag==='button'||tag==='label')) return tag+' '+txt;
-    var cls=(typeof m.className==='string'&&m.className)?m.className.split(' ')[0]:'';
-    return cls?tag+'.'+cls:tag;
+    if(!t||!t.closest) return 'Empty space / background';
+    if(t.closest('#ptChart')) return 'Price chart';
+    if(t.closest('.pt-hint')) return 'Paper Trade promo balloon';
+    if(t.closest('.mobnav')) return 'Mobile nav bar';
+    var m=t.closest('a,button,input,select,label,[data-mytrades],[data-act],.prod,.pp-ic,.ptt-sig')||t;
+    if(m.id&&ID2NAME[m.id]) return ID2NAME[m.id];
+    if(m.getAttribute){
+      if(m.getAttribute('data-mytrades')!=null) return 'My Trades';
+      var act=m.getAttribute('data-act'); if(act) return ACT2NAME[act]||('Trade action: '+act);
+    }
+    if(m.classList){
+      if(m.classList.contains('prod')){var b=m.querySelector('.pt b'); return 'Product card: '+((b&&b.textContent.trim().slice(0,24))||'?');}
+      if(m.classList.contains('pp-ic')) return m.getAttribute&&m.getAttribute('data-act')==='copy'?'Copy ticket':'Share ticket';
+      if(m.classList.contains('ptt-sig')) return 'Signals toggle';
+      if(t.closest('.ptt-tf')) return 'Chart timeframe';
+      if(t.closest('.pt2-side')) return 'Long / Short toggle';
+    }
+    var tag=m.tagName?m.tagName.toLowerCase():'';
+    if(tag==='canvas') return 'Price chart';
+    if(/^(body|html|section|div|main|header|footer|span|em|i|small|p|h1|h2|h3|ul|li|nav|svg|path|img|aside)$/.test(tag)) return 'Empty space / background';
+    var txt=(m.textContent||'').trim().replace(/\s+/g,' ').slice(0,26);
+    if(txt&&(tag==='a'||tag==='button'||tag==='label')) return (tag==='a'?'Link: ':'Button: ')+txt;
+    if(tag==='input'||tag==='select') return 'Field: '+(m.id||m.name||tag);
+    return 'Other';
   }
   document.addEventListener('click',function(ev){
     // spatial heatmap cell (20 cols x 40 rows of the page)
