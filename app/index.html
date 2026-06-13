@@ -419,8 +419,9 @@
   @media(max-width:980px){body[data-prod="plan"] .card{width:auto;margin-left:0;border-radius:0 var(--r) var(--r) var(--r);padding:20px;}}
   @media(max-width:880px){.ptt{grid-template-columns:1fr;}body[data-prod="plan"] .ptt-chart{height:440px;}}
   .ptt-mytrades svg{flex:0 0 auto;}
-  /* black & white marketing balloon that points a hand-drawn arrow at the Paper Trade tab */
-  .pt-hint{position:fixed;z-index:55;width:296px;max-width:86vw;background:rgba(8,9,11,.96);border:1.5px solid #fff;border-radius:14px;padding:15px 17px 16px;box-shadow:0 18px 54px rgba(0,0,0,.62);color:#fff;animation:hintIn .42s cubic-bezier(.2,.7,.2,1) both;}
+  /* black & white marketing balloon, pinned to the empty bottom-left corner so it never covers content;
+     a hand-drawn arrow joins the balloon and gestures up toward the Paper Trade tab */
+  .pt-hint{position:fixed;left:22px;bottom:26px;z-index:55;width:288px;max-width:82vw;background:rgba(8,9,11,.96);border:1.5px solid #fff;border-radius:14px;padding:15px 17px 16px;box-shadow:0 18px 54px rgba(0,0,0,.62);color:#fff;animation:hintIn .42s cubic-bezier(.2,.7,.2,1) both;}
   .pt-hint[hidden]{display:none;}
   @keyframes hintIn{from{opacity:0;transform:translateY(7px) scale(.97);}to{opacity:1;transform:none;}}
   .pt-hint-x{position:absolute;top:6px;right:9px;background:none;border:none;color:#8b939c;font-size:14px;cursor:pointer;line-height:1;padding:4px;}
@@ -428,8 +429,8 @@
   .pt-hint-k{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:#8b939c;margin-bottom:7px;}
   .pt-hint-t{font-size:15px;font-weight:700;line-height:1.25;margin-bottom:6px;}
   .pt-hint-d{font-size:12.5px;line-height:1.55;color:#c7cdd4;}
-  .pt-hint-arrow{position:absolute;left:var(--ax,50%);bottom:-56px;transform:translateX(-50%);color:#fff;pointer-events:none;}
-  .pt-hint.below .pt-hint-arrow{bottom:auto;top:-56px;transform:translateX(-50%) scaleY(-1);}
+  .pt-hint-arrow{position:absolute;top:-50px;right:18px;color:#fff;pointer-events:none;}
+  @media(max-width:560px){.pt-hint{left:12px;bottom:16px;width:250px;}.pt-hint-arrow{width:62px;height:52px;}}
   .pp-btns .pp-share{flex:0 0 40px;display:inline-flex;align-items:center;justify-content:center;}
   .pp-btns .pp-share:hover{color:#fff;border-color:var(--ink-faint);}
   .adv-toggle{display:flex;align-items:center;gap:10px;margin-top:6px;padding:11px 14px;border:1px dashed var(--line-bright);border-radius:10px;cursor:pointer;color:var(--ink-dim);font-size:13px;user-select:none;transition:.15s;}
@@ -469,7 +470,7 @@
   .jr-result.pos{color:var(--up);}.jr-result.neg{color:var(--red);}
   .jr-empty{color:var(--ink-faint);text-align:center;padding:34px 0;font-size:14px;}
   /* ---- journal drawer (side panel) ---- */
-  .jr-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:60;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
+  .jr-backdrop{position:fixed;inset:0;background:transparent;z-index:60;}
   .jr-drawer{position:fixed;top:0;right:0;height:100%;width:404px;max-width:92vw;background:linear-gradient(180deg,#0d0f12,#0a0b0d);border-left:1px solid var(--line-bright);z-index:61;display:flex;flex-direction:column;padding:20px 20px 30px;overflow-y:auto;box-shadow:-24px 0 70px rgba(0,0,0,.6);animation:jrIn .28s cubic-bezier(.2,.7,.2,1);}
   @keyframes jrIn{from{transform:translateX(40px);opacity:0;}to{transform:none;opacity:1;}}
   .jr-backdrop[hidden],.jr-drawer[hidden]{display:none;}
@@ -1559,15 +1560,23 @@
   function pollPrices(){openSyms().forEach(function(sym){fetch('/api/price?symbol='+encodeURIComponent(sym)).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0)prices[sym]={p:+pd.price,t:Date.now()};}).catch(function(){});});}
   function feeOf(e,exit){var fr=(+e.feeRate>0)?+e.feeRate:0;return (e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*(e.entry+exit)*fr:0;}
   function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross;/* fee-free paper P&L: shows pure price move so it isn't negative at entry */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
-  function checkClose(e,m){if(e.status!=='open')return false;var tp=e.tp!=null&&(m.long?m.live>=e.tp:m.live<=e.tp),sl=e.stop!=null&&(m.long?m.live<=e.stop:m.live>=e.stop);if(tp||sl){e.status=tp?'win':'loss';e.exit=tp?e.tp:e.stop;e.closeTs=Date.now();e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*(m.long?1:-1):null;notify(e,tp);return true;}return false;}
-  function notify(e,win){if(notified[e.id])return;notified[e.id]=true;try{if('Notification'in window&&Notification.permission==='granted')new Notification('MarginPad — '+(win?'Take-Profit hit ✅':'Stop-Loss hit ❌'),{body:(e.sym||'')+' '+String(e.side).toUpperCase()+' @ '+fp(win?e.tp:e.stop)});}catch(_){}}
+  function checkClose(e,m){if(e.status!=='open')return false;var dir=m.long?1:-1;
+    var tp=e.tp!=null&&(m.long?m.live>=e.tp:m.live<=e.tp);
+    var sl=e.stop!=null&&(m.long?m.live<=e.stop:m.live>=e.stop);
+    var liqHit=m.liq>0&&(m.long?m.live<=m.liq:m.live>=m.liq); // real liquidation: close immediately as a loss
+    if(!(tp||sl||liqHit))return false;
+    if(tp){e.status='win';e.exit=e.tp;e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*dir:null;}
+    else if(sl){e.status='loss';e.exit=e.stop;e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*dir:null;}
+    else{e.status='loss';e.exit=m.liq;e.liquidated=true;e.pnl=(+e.margin>0)?-(+e.margin):((e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*dir:null);} // liquidated = lose the full margin
+    e.closeTs=Date.now();notify(e,tp?'tp':(e.liquidated?'liq':'sl'));return true;}
+  function notify(e,kind){if(notified[e.id])return;notified[e.id]=true;var t=kind==='tp'?'Take-Profit hit ✅':(kind==='liq'?'Liquidated 💥':'Stop-Loss hit ❌');try{if('Notification'in window&&Notification.permission==='granted')new Notification('MarginPad — '+t,{body:(e.sym||'')+' '+String(e.side).toUpperCase()+' @ '+fp(e.exit)});}catch(_){}}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-meta">Entry <b>'+fp(e.entry)+'</b> · Size <b>'+(e.qty!=null?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:5}):'—')+'</b> · '+(e.lev||1)+'×<br>Notional <b>'+(m.notional!=null?money(m.notional):'—')+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')<br>SL <b>'+(e.stop!=null?fp(e.stop):'—')+'</b> · TP <b>'+(e.tp!=null?fp(e.tp):'—')+'</b> · '+dur(Date.now()-e.ts)+' · '+hm(e.ts)+'</div>'
       +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+'">Close</button><button data-act="edit" data-id="'+e.id+'">Modify</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
   function closedCard(e){var win=e.status==='win',cls=win?'pf':'ls';
-    return '<div class="pp '+cls+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span><span class="pp-live">'+(win?'WIN':'LOSS')+'</span></div>'
+    return '<div class="pp '+cls+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.liquidated?'LIQ 💥':(win?'WIN':'LOSS'))+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?((+e.pnl>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span></div>'
       +'<div class="pp-meta">'+fp(e.entry)+' → '+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+(e.closeTs?' · '+dur(e.closeTs-e.ts):'')+'</div>'
       +'<div class="pp-btns"><button data-act="reopen" data-id="'+e.id+'">Reopen</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
@@ -1649,7 +1658,7 @@
       +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button><button data-act="edit" data-id="'+e.id+'">SL/TP</button><button data-act="del" data-id="'+e.id+'">'+MT('jDelete','Delete')+'</button></div></div>';}
   function closedCard(e){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(win?'WIN':'LOSS')+'</span></div>'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.liquidated?'LIQ 💥':(win?'WIN':'LOSS'))+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?(((+e.pnl)>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span>'+((e.margin&&e.pnl!=null)?'<span class="roe">ROE '+pctS(((+e.pnl)/(+e.margin||1))*100)+'</span>':'')+'</div>'
       +'<div class="pp-meta">'+fp(e.entry)+' → '+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+' · '+(e.lev||1)+'×'+(e.closeTs?'<br>'+dur(e.closeTs-e.ts)+' '+MT('jHeld','held'):'')+'</div>'
       +'<div class="pp-btns"><button data-act="reopen" data-id="'+e.id+'">'+MT('jReopen','Reopen')+'</button><button data-act="del" data-id="'+e.id+'">'+MT('jDelete','Delete')+'</button></div></div>';}
@@ -1728,11 +1737,12 @@
     var sl=num('planSlOpt'), tp=num('planTpOpt');
     var notional=amt*L, qty=notional/entry;
     var liq=side==='long'?entry*(1-(1-mmr)/L):entry*(1+(1-mmr)/L);  // always on the correct side of entry, even at extreme leverage
-    var stop=isFinite(sl)?sl:null;                          // no SL set -> position runs (demo: no forced liquidation)
+    var stop=isFinite(sl)?sl:null;                          // optional user SL; the position still auto-liquidates at `liq`
     var rr=(isFinite(tp)&&isFinite(sl))?Math.abs(tp-entry)/Math.abs(entry-sl):NaN;
     var data=load();
     data.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,lev:L,rr:isFinite(rr)?rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:feeRate,status:'open',pnl:null});
-    store(data); /* shows inline in the terminal "My positions" list + on the My Trades page — no popup */
+    if(window.mpLivePrices&&sym)window.mpLivePrices[sym]={p:entry,t:Date.now()}; // start P&L at exactly 0 — kills the phantom -100% / instant-liquidation at open
+    store(data); /* shows live in the My Trades drawer — no popup */
     var btn=document.getElementById('planSave'),sp=btn&&btn.querySelector('span');
     if(btn&&sp){var o=sp.textContent;btn.classList.add('saved');sp.textContent=MT('jOpened','Position opened ✓');setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1600);}
     try{if(window.__mpTrack)window.__mpTrack('journal','open');}catch(e){}
@@ -1852,34 +1862,25 @@
   <p class="jr-empty" id="jrEmpty" data-i18n="jrEmpty">No tickets yet. Plan a trade and tap “Save to journal”.</p>
 </aside>
 <div id="ptHint" class="pt-hint" hidden>
+  <svg class="pt-hint-arrow" width="80" height="62" viewBox="0 0 80 62" fill="none" aria-hidden="true"><path d="M5 57 C 22 34, 47 17, 74 11" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M61 7 L75 10 L70 23" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
   <button class="pt-hint-x" type="button" aria-label="Dismiss">✕</button>
-  <div class="pt-hint-k" data-i18n="ptHintK">New</div>
-  <div class="pt-hint-t" data-i18n="ptHintT">Open a position — for real, risk-free.</div>
-  <div class="pt-hint-d" data-i18n="ptHintD">Go Long or Short at the live price, set your size and leverage, then watch your P&amp;L play out tick by tick. No money, no account.</div>
-  <svg class="pt-hint-arrow" width="48" height="64" viewBox="0 0 48 64" fill="none" aria-hidden="true"><path d="M24 4 C 10 16, 40 30, 24 48" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M15 41 L24 51 L34 42" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="pt-hint-k" data-i18n="ptHintK">New — try it</div>
+  <div class="pt-hint-t" data-i18n="ptHintT">Open a position, risk-free</div>
+  <div class="pt-hint-d" data-i18n="ptHintD">Tap Paper Trade up there ↑ — go Long or Short at the live price and watch your P&amp;L move in real time. No money, no account.</div>
 </div>
 <script>
-/* Marketing balloon: a hand-drawn arrow nudging users toward the Paper Trade tab. B&W.
-   Stays until dismissed for the session; returns on every page refresh (no persisted dismissal). */
+/* Marketing balloon: pinned to the empty bottom-left corner, arrow gestures up to the Paper Trade tab.
+   Only shows near the top of the hero (so it never covers content); session-dismissible; returns on refresh. */
 (function(){
-  var hint=document.getElementById('ptHint'),tab=document.querySelector('.prod[data-prod="plan"]');
-  if(!hint||!tab)return;
-  function hide(){hint.hidden=true;}
-  function dismiss(){hide();}
-  function place(){
-    if(hint.hidden)return;
-    var r=tab.getBoundingClientRect(),w=hint.offsetWidth||296,h=hint.offsetHeight||120;
-    var left=r.left+r.width/2-w/2; left=Math.max(12,Math.min(left,window.innerWidth-w-12));
-    var top=r.top-h-30,below=false; if(top<10){top=r.bottom+30;below=true;}
-    hint.classList.toggle('below',below);
-    hint.style.left=left+'px'; hint.style.top=top+'px';
-    var ax=(r.left+r.width/2)-left; hint.style.setProperty('--ax',Math.max(22,Math.min(ax,w-22))+'px');
-  }
-  function show(){ if((document.body.getAttribute('data-prod')||'')==='plan')return; hint.hidden=false; place(); }
-  hint.querySelector('.pt-hint-x').addEventListener('click',dismiss);
-  tab.addEventListener('click',dismiss);
-  window.addEventListener('resize',place); window.addEventListener('scroll',place,{passive:true});
-  setTimeout(show,1500);
+  var hint=document.getElementById('ptHint');if(!hint)return;
+  var tab=document.querySelector('.prod[data-prod="plan"]'),off=false;
+  function vis(){return !off && (document.body.getAttribute('data-prod')||'')!=='plan' && (window.scrollY||window.pageYOffset||0)<240;}
+  function update(){hint.hidden=!vis();}
+  function dismiss(){off=true;hint.hidden=true;}
+  var x=hint.querySelector('.pt-hint-x');if(x)x.addEventListener('click',dismiss);
+  if(tab)tab.addEventListener('click',dismiss);
+  window.addEventListener('scroll',update,{passive:true});
+  setTimeout(update,1300);
 })();
 </script>
 <nav class="mobnav" aria-label="Quick navigation">
