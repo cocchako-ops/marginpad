@@ -392,9 +392,15 @@
   .pp-btns button{padding:9px 0;font-size:11.5px;}
   @media(max-width:880px){.ptt{grid-template-columns:1fr;}.ptt-form,.ptt-pos{padding:18px;}}
   /* Paper Trade is a terminal — break out of the narrow 980px page column to use the screen */
-  body[data-prod="plan"] .wrap{max-width:1360px;}
-  body[data-prod="plan"] .ptt-chart{min-height:520px;}
-  @media(max-width:880px){body[data-prod="plan"] .ptt-chart{min-height:380px;}}
+  body[data-prod="plan"] .wrap{max-width:1480px;}
+  .ptt{grid-template-columns:1.55fr 1fr;align-items:start;} /* chart fixed (start), doesn't stretch with the positions list */
+  body[data-prod="plan"] .ptt-chart{height:680px;min-height:0;}
+  #ptChart{flex:1;min-height:0;}
+  #ptPosList{max-height:300px;overflow-y:auto;padding-right:2px;}
+  .ptt-form .pt2-fields{grid-template-columns:1fr;}
+  /* standard, web-app font for the whole Paper Trade terminal (no monospace) */
+  #plan *{font-family:'Familjen Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif !important;}
+  @media(max-width:880px){body[data-prod="plan"] .ptt-chart{height:420px;}#ptPosList{max-height:none;}}
   .adv-toggle{display:flex;align-items:center;gap:10px;margin-top:6px;padding:11px 14px;border:1px dashed var(--line-bright);border-radius:10px;cursor:pointer;color:var(--ink-dim);font-size:13px;user-select:none;transition:.15s;}
   .adv-toggle:hover{border-color:var(--ink-faint);color:var(--ink);}
   .adv-toggle input{width:16px;height:16px;accent-color:var(--up);cursor:pointer;flex-shrink:0;}
@@ -804,7 +810,7 @@
       <a href="/blog/" class="hlink" data-i18n="navBlog">Blog</a>
       <a href="/api/" class="hlink">API</a>
       <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
-      <button type="button" class="hlink hjr" id="jrOpen"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Journal</button>
+      <button type="button" class="hlink hjr" id="jrOpen"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</button>
       <button type="button" class="hlink hchat" id="chatOpen"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg>Chat</button>
       <select class="lang" id="langSel" aria-label="Language"></select>
     </nav>
@@ -908,7 +914,7 @@
       <div class="ptt">
         <div class="ptt-chart">
           <div class="ptt-chart-top">
-            <div class="ptt-tf" id="ptTf"><button data-tf="1" type="button">1m</button><button data-tf="5" type="button">5m</button><button data-tf="15" class="on" type="button">15m</button><button data-tf="60" type="button">1h</button><button data-tf="240" type="button">4h</button></div>
+            <div class="ptt-tf" id="ptTf"><button data-tf="1" type="button">1m</button><button data-tf="5" type="button">5m</button><button data-tf="15" class="on" type="button">15m</button><button data-tf="60" type="button">1h</button><button data-tf="240" type="button">4h</button><button data-tf="1440" type="button">1D</button><button data-tf="10080" type="button">1W</button></div>
             <div class="ptt-cpx"><span class="ptt-live">● LIVE</span> <b id="ptChartPx">…</b> <span id="ptChartChg"></span></div>
           </div>
           <div id="ptChart"></div>
@@ -924,15 +930,12 @@
               <button data-side="short" type="button"><span data-i18n="short">Short</span></button>
             </div>
             <div class="pt2-fields">
-              <div class="pt2-amt"><label data-i18n="lAmount">Amount — your margin</label><div class="input-line"><input type="number" id="planAmt" value="1000" step="any"><span class="unit">USD</span></div></div>
-              <div class="pt2-lev"><label data-i18n="lLeverage">Levier</label>
-                <div class="pt2-levs" id="planLevs"><button data-lev="3" type="button">3×</button><button data-lev="5" type="button">5×</button><button data-lev="10" class="on" type="button">10×</button><button data-lev="25" type="button">25×</button><button data-lev="50" type="button">50×</button><button data-lev="100" type="button">100×</button></div>
-                <input type="hidden" id="planLev" value="10">
-              </div>
+              <div class="pt2-lev"><label data-i18n="lLeverage">Levier</label><div class="input-line"><input type="number" id="planLev" value="10" step="1" min="1"><span class="unit">×</span></div></div>
             </div>
             <div class="ptt-stats"><div><span data-i18n="rPosSize">Taille de position</span><b id="planSize">—</b></div><div><span data-i18n="rNotional">Valeur notionnelle</span><b id="planNotional">—</b></div><div><span data-i18n="rEstLiq">Prix de liquidation estimé</span><b id="planLiq">—</b></div></div>
-            <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span data-i18n="planAdv2">⚙ Advanced — fees, stop-loss, take-profit</span></label>
+            <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span data-i18n="planAdv3">⚙ Advanced — margin, fees, stop-loss, take-profit</span></label>
             <div class="plan-adv" id="planAdvIn" hidden>
+              <div class="field"><label data-i18n="lMargin">Margin amount</label><div class="input-line"><input type="number" id="planAmt" value="1000" step="any"><span class="unit">USD</span></div></div>
               <div class="field"><label data-i18n="lFee">Taker fee (per side)</label><div class="input-line"><input type="number" id="planFee" value="0.05" step="any"><span class="unit">%</span></div></div>
               <div class="field"><label data-i18n="lStopOpt">Stop-loss (optional)</label><div class="input-line"><input type="number" id="planSlOpt" step="any" placeholder="—"><span class="unit">USD</span></div></div>
               <div class="field"><label data-i18n="lTpOpt">Take-profit (optional)</label><div class="input-line"><input type="number" id="planTpOpt" step="any" placeholder="—"><span class="unit">USD</span></div></div>
@@ -1497,9 +1500,7 @@
   }
   function poll(){var sym=((document.getElementById('planSym')||{}).value||'');if(!sym)return;fetch('/api/price?symbol='+encodeURIComponent(sym)).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){live=+pd.price;liveChg=+pd.chg||0;showLive();calc();}}).catch(function(){});}
   if(seg)seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
-  var levs=document.getElementById('planLevs');
-  if(levs)levs.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){levs.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');var hi=document.getElementById('planLev');if(hi)hi.value=b.getAttribute('data-lev');calc();});});
-  ['planAmt'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
+  ['planAmt','planLev'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
   var advChk=document.getElementById('planAdvChk');
   if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;});
   var pSym=document.getElementById('planSym');
@@ -1547,7 +1548,7 @@
     else if(act==='edit'){var ns=prompt('New stop-loss price:',e.stop);if(ns!==null){var v=parseFloat(ns);if(isFinite(v))e.stop=v;}var nt=prompt('New take-profit (blank = none):',e.tp!=null?e.tp:'');if(nt!==null){var v2=parseFloat(nt);e.tp=isFinite(v2)?v2:null;}notified[id]=false;}
     store(d);renderPos();drawLines();});
   function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
-  function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;chart=LightweightCharts.createChart(el,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Space Mono',monospace",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false},crosshair:{mode:1},autoSize:true});candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444'});}
+  function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;chart=LightweightCharts.createChart(el,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false},crosshair:{mode:1},autoSize:true});candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444'});}
   function formSym(){return (document.getElementById('planSym')||{}).value||'BTC';}
   function loadKlines(){var sym=formSym();chartSym=sym;fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+chartTf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(sym!==chartSym)return;if(kd&&kd.length&&candle){try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){}lastBar=kd[kd.length-1];drawLines();}});}
   function liveCandle(){var pd=window.mpPlanLive,p=(pd&&pd.sym===chartSym&&pd.price>0)?pd.price:(prices[chartSym]&&prices[chartSym].p);if(!candle||!lastBar||!(p>0))return;var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(Date.now()/1000/ivSec)*ivSec;if(nowBar>lastBar.time){lastBar={time:nowBar,open:p,high:p,low:p,close:p};try{chart.timeScale().scrollToRealTime();}catch(e){}}else{lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;}try{candle.update(lastBar);}catch(e){}}
@@ -1618,7 +1619,7 @@
     var rr=isFinite(tp)?Math.abs(tp-entry)/Math.abs(entry-stop):NaN;
     var data=load();
     data.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,lev:L,rr:isFinite(rr)?rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:feeRate,status:'open',pnl:null});
-    store(data); openJr();
+    store(data); /* shows inline in the terminal "My positions" list + on the My Trades page — no popup */
     var btn=document.getElementById('planSave'),sp=btn&&btn.querySelector('span');
     if(btn&&sp){var o=sp.textContent;btn.classList.add('saved');sp.textContent=MT('jOpened','Position opened ✓');setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1600);}
     try{if(window.__mpTrack)window.__mpTrack('journal','open');}catch(e){}
@@ -1730,7 +1731,7 @@
 </script>
 <div id="jrBackdrop" class="jr-backdrop" hidden></div>
 <aside id="jrDrawer" class="jr-drawer" hidden aria-label="Trade journal">
-  <div class="jr-head"><span class="jr-title">🎟️ <span data-i18n="jrTitle">Journal de trading</span></span><button id="jrClose" class="jr-x" type="button" aria-label="Close">✕</button></div>
+  <div class="jr-head"><span class="jr-title"><span>My Trades</span></span><button id="jrClose" class="jr-x" type="button" aria-label="Close">✕</button></div>
   <div class="jr-stats" id="jrStats"></div>
   <div class="jr-list" id="jrList"></div>
   <p class="jr-empty" id="jrEmpty" data-i18n="jrEmpty">Aucun trade enregistré pour l'instant. Planifiez un trade ci-dessus et appuyez sur « Enregistrer dans le journal ».</p>
