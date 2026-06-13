@@ -408,7 +408,9 @@
   body[data-prod="plan"] .card{width:min(94vw,1480px);margin-left:calc(50% - min(47vw,740px));margin-top:10px;padding:19px;border-radius:16px;}
   .ptt{grid-template-columns:minmax(0,1fr) 366px;align-items:start;gap:18px;} /* chart flexes wide; order form fixed; positions now live in the My Trades drawer */
   body[data-prod="plan"] .ptt-chart{height:min(76vh,880px);min-height:480px;}
-  #ptChart{flex:1;min-height:0;}
+  #ptChart{flex:1;min-height:0;position:relative;}
+  .ptt-zones{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2;border-radius:0 0 14px 14px;}
+  .ptt-zones .zone{position:absolute;left:0;right:0;background:rgba(255,59,59,.14);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);box-shadow:inset 0 0 40px rgba(255,59,59,.12);}
   .ptt-form .pt2-fields{grid-template-columns:1fr 1fr;} /* Amount + Leverage side by side */
   .ptt-mytrades{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:700;padding:15px 0;border-radius:13px;cursor:pointer;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),var(--bg-grain));color:var(--ink);transition:.14s;}
   .ptt-mytrades:hover{border-color:var(--ink-faint);color:#fff;}
@@ -429,8 +431,9 @@
   .pt-hint-k{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:#8b939c;margin-bottom:7px;}
   .pt-hint-t{font-size:15px;font-weight:700;line-height:1.25;margin-bottom:6px;}
   .pt-hint-d{font-size:12.5px;line-height:1.55;color:#c7cdd4;}
-  .pt-hint-arrow{position:absolute;left:var(--ax,40px);bottom:-50px;transform:translateX(-50%);color:#fff;pointer-events:none;}
-  .pt-hint.below .pt-hint-arrow{bottom:auto;top:-50px;transform:translateX(-50%) scaleY(-1);}
+  .pt-hint-arrow{position:absolute;left:var(--ax,40px);bottom:-48px;transform:translateX(-50%);color:#fff;pointer-events:none;}
+  .pt-hint.below .pt-hint-arrow{bottom:auto;top:-48px;transform:translateX(-50%) scaleY(-1);}
+  @media(max-width:680px){.pt-hint{display:none!important;}}
   .pp-btns .pp-share{flex:0 0 40px;display:inline-flex;align-items:center;justify-content:center;}
   .pp-btns .pp-share:hover{color:#fff;border-color:var(--ink-faint);}
   .adv-toggle{display:flex;align-items:center;gap:10px;margin-top:6px;padding:11px 14px;border:1px dashed var(--line-bright);border-radius:10px;cursor:pointer;color:var(--ink-dim);font-size:13px;user-select:none;transition:.15s;}
@@ -1594,7 +1597,7 @@
     store(d);renderPos();drawLines();});
   function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
   function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;chart=LightweightCharts.createChart(el,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false},crosshair:{mode:1},autoSize:true});candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444'});
-    chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<10)loadMore();});}
+    chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<10)loadMore();updateZone();});}
   function formSym(){return (document.getElementById('planSym')||{}).value||'BTC';}
   var bars=[],loadingMore=false,noMore=false;
   function loadKlines(){var sym=formSym();chartSym=sym;bars=[];loadingMore=false;noMore=false;fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+chartTf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(sym!==chartSym)return;if(kd&&kd.length&&candle){bars=kd;try{candle.setData(bars);chart.timeScale().fitContent();}catch(e){}lastBar=bars[bars.length-1];drawLines();applySignals();}});}
@@ -1616,7 +1619,20 @@
   if(sigBtn){if(sigOn)sigBtn.classList.add('on');sigBtn.setAttribute('aria-pressed',sigOn?'true':'false');
     sigBtn.addEventListener('click',function(){sigOn=!sigOn;sigBtn.classList.toggle('on',sigOn);sigBtn.setAttribute('aria-pressed',sigOn?'true':'false');try{localStorage.setItem('mp_sig',sigOn?'1':'0');}catch(e){}applySignals();});}
   function liveCandle(){var pd=window.mpPlanLive,p=(pd&&pd.sym===chartSym&&pd.price>0)?pd.price:(prices[chartSym]&&prices[chartSym].p);if(!candle||!lastBar||!(p>0))return;var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(Date.now()/1000/ivSec)*ivSec;if(nowBar>lastBar.time){lastBar={time:nowBar,open:p,high:p,low:p,close:p};try{chart.timeScale().scrollToRealTime();}catch(e){}}else{lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;}try{candle.update(lastBar);}catch(e){}}
-  function drawLines(){if(!candle)return;plines.forEach(function(l){try{candle.removePriceLine(l);}catch(e){}});plines=[];load().forEach(function(e){if(e.status==='open'&&e.sym===chartSym){plines.push(candle.createPriceLine({price:e.entry,color:e.side!=='short'?'#10b981':'#ef4444',lineWidth:1,lineStyle:0,axisLabelVisible:true,title:(e.side!=='short'?'LONG':'SHORT')}));if(e.tp!=null)plines.push(candle.createPriceLine({price:e.tp,color:'#6b7280',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'TP'}));if(e.stop!=null)plines.push(candle.createPriceLine({price:e.stop,color:'#6b7280',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'SL'}));}});}
+  function liqOf(e){var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);return e.liq||(long?e.entry*(1-(1-mmr)/lev):e.entry*(1+(1-mmr)/lev));}
+  function drawLines(){if(!candle)return;plines.forEach(function(l){try{candle.removePriceLine(l);}catch(e){}});plines=[];load().forEach(function(e){if(e.status==='open'&&e.sym===chartSym){plines.push(candle.createPriceLine({price:e.entry,color:e.side!=='short'?'#10b981':'#ef4444',lineWidth:1,lineStyle:0,axisLabelVisible:true,title:(e.side!=='short'?'LONG':'SHORT')}));plines.push(candle.createPriceLine({price:liqOf(e),color:'#ff3b3b',lineWidth:2,lineStyle:0,axisLabelVisible:true,title:'LIQ'}));if(e.tp!=null)plines.push(candle.createPriceLine({price:e.tp,color:'#6b7280',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'TP'}));if(e.stop!=null)plines.push(candle.createPriceLine({price:e.stop,color:'#6b7280',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'SL'}));}});updateZone();}
+  // shaded "liquidation zone" beyond the liq line: a translucent red overlay (slight blur) so candles still show through
+  var zoneEl=null;
+  function updateZone(){var host=document.getElementById('ptChart');if(!host||!candle){return;}
+    if(!zoneEl){zoneEl=document.createElement('div');zoneEl.className='ptt-zones';host.appendChild(zoneEl);}
+    var pos=load().filter(function(e){return e.status==='open'&&e.sym===chartSym;});
+    if(!pos.length){if(zoneEl.childNodes.length)zoneEl.innerHTML='';return;}
+    var H=host.clientHeight||0,html='';
+    pos.forEach(function(e){var long=e.side!=='short',y;try{y=candle.priceToCoordinate(liqOf(e));}catch(_){y=null;}
+      if(y==null||!isFinite(y))return;
+      if(long)html+='<div class="zone" style="top:'+Math.max(0,y).toFixed(1)+'px;height:'+Math.max(0,H-y).toFixed(1)+'px"></div>';
+      else html+='<div class="zone" style="top:0;height:'+Math.max(0,Math.min(H,y)).toFixed(1)+'px"></div>';});
+    zoneEl.innerHTML=html;}
   window.mpDrawLines=drawLines; // let the My Trades drawer refresh the chart lines the instant a position is closed/edited
   function chartHeader(){var px=document.getElementById('ptChartPx'),ch=document.getElementById('ptChartChg'),pd=window.mpPlanLive;var p=(pd&&pd.sym===chartSym&&pd.price>0)?pd.price:(prices[chartSym]&&prices[chartSym].p),cg=(pd&&pd.sym===chartSym)?pd.chg:0;if(p>0){if(px)px.textContent=fp(p);if(ch){ch.textContent=((cg>=0?'+':'')+(+cg||0).toFixed(2))+'%';ch.style.color=cg>=0?'var(--up)':'var(--red)';}}}
   var tfEl=document.getElementById('ptTf');
@@ -1627,7 +1643,7 @@
   if(sv)sv.addEventListener('click',function(){setTimeout(function(){renderPos();drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();},140);});
   function ensureChart(){var pl=document.getElementById('plan');if(!pl||!pl.classList.contains('active')||!pl.offsetParent)return;if(!inited){inited=true;loadLib(function(){initChart();loadKlines();});}else if(!chart&&window.LightweightCharts){initChart();loadKlines();}}
   function mtCount(){var el=document.getElementById('ptMtCount');if(!el)return;var n=load().filter(function(e){return e.status==='open';}).length;el.textContent=n?String(n):'';}
-  function tick(){ensureChart();var d=load(),changed=false;d.forEach(function(e){if(e.status==='open'){var m=metrics(e);if(checkClose(e,m))changed=true;}});if(changed){store(d);drawLines();if(window.mpJournalRender)window.mpJournalRender();}liveCandle();chartHeader();renderPos();mtCount();}
+  function tick(){ensureChart();var d=load(),changed=false;d.forEach(function(e){if(e.status==='open'){var m=metrics(e);if(checkClose(e,m))changed=true;}});if(changed){store(d);drawLines();if(window.mpJournalRender)window.mpJournalRender();}liveCandle();chartHeader();renderPos();mtCount();updateZone();}
   pollPrices();setInterval(pollPrices,2500);
   tick();setInterval(tick,1000);
 })();
@@ -1886,7 +1902,7 @@
   <div class="pt-hint-k" data-i18n="ptHintK">New — try it</div>
   <div class="pt-hint-t" data-i18n="ptHintT">Open a position, risk-free</div>
   <div class="pt-hint-d" data-i18n="ptHintD">This is Paper Trade — go Long or Short at the live price and watch your P&amp;L move in real time. No money, no account.</div>
-  <svg class="pt-hint-arrow" width="50" height="60" viewBox="0 0 50 60" fill="none" aria-hidden="true"><path d="M25 5 C 12 18, 40 32, 25 51" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M16 43 L25 53 L35 44" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <svg class="pt-hint-arrow" width="60" height="58" viewBox="0 0 60 58" fill="none" aria-hidden="true"><path d="M54 6 C 46 24, 36 30, 14 46" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M9 33 L12 48 L26 43" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 <script>
 /* Marketing balloon: sits just above-right of the Paper Trade tab (in the empty hero space) and points a
@@ -1897,14 +1913,15 @@
   var off=false;
   function place(){
     var r=tab.getBoundingClientRect(),w=hint.offsetWidth||284,h=hint.offsetHeight||120;
-    var left=r.left+r.width/2-34;                 // shift right so the balloon clears the hero text; arrow stays on the tab
+    var left=r.right-22;                          // ~3cm to the right — balloon sits above-right of the card
     left=Math.max(12,Math.min(left,window.innerWidth-w-12));
-    var top=r.top-h-20,below=false; if(top<8){top=r.bottom+20;below=true;}
+    var top=r.top-h-18,below=false; if(top<8){top=r.bottom+18;below=true;}
     hint.style.left=left+'px'; hint.style.top=top+'px'; hint.classList.toggle('below',below);
-    var ax=(r.left+r.width/2)-left; hint.style.setProperty('--ax',Math.max(20,Math.min(ax,w-24))+'px');
+    var ax=(r.right-8)-left;                       // arrow points at the top-right corner of the card (the NEW badge)
+    hint.style.setProperty('--ax',Math.max(14,Math.min(ax,w-14))+'px');
   }
   function inView(){var r=tab.getBoundingClientRect();return r.bottom>50&&r.top<window.innerHeight-30;}
-  function vis(){return !off && (document.body.getAttribute('data-prod')||'')!=='plan' && inView();}
+  function vis(){return !off && window.innerWidth>=680 && (document.body.getAttribute('data-prod')||'')!=='plan' && inView();}
   function update(){if(vis()){hint.hidden=false;place();}else{hint.hidden=true;}}
   function dismiss(){off=true;hint.hidden=true;}
   var x=hint.querySelector('.pt-hint-x');if(x)x.addEventListener('click',dismiss);
