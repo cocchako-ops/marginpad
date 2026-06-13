@@ -331,6 +331,10 @@
   .ptt-tf{display:inline-flex;gap:3px;background:var(--panel);border:1px solid var(--line-bright);border-radius:9px;padding:3px;}
   .ptt-tf button{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--ink-dim);background:none;border:none;border-radius:6px;padding:5px 9px;cursor:pointer;transition:.12s;}
   .ptt-tf button.on{background:rgba(255,255,255,.12);color:#fff;}
+  .ptt-top-l{display:flex;align-items:center;gap:9px;min-width:0;flex-wrap:wrap;}
+  .ptt-sig{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--ink-dim);background:var(--panel);border:1px solid var(--line-bright);border-radius:9px;padding:6px 11px;cursor:pointer;transition:.13s;white-space:nowrap;}
+  .ptt-sig:hover{color:var(--ink);border-color:var(--ink-faint);}
+  .ptt-sig.on{color:#04150d;background:#c2f64a;border-color:#c2f64a;}
   .ptt-cpx{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-dim);white-space:nowrap;}
   .ptt-cpx b{color:#fff;}
   .ptt-live{color:var(--up);font-size:9.5px;letter-spacing:.05em;}
@@ -940,7 +944,10 @@
       <div class="ptt">
         <div class="ptt-chart">
           <div class="ptt-chart-top">
-            <div class="ptt-tf" id="ptTf"><button data-tf="1" type="button">1m</button><button data-tf="5" type="button">5m</button><button data-tf="15" class="on" type="button">15m</button><button data-tf="60" type="button">1h</button><button data-tf="240" type="button">4h</button><button data-tf="1440" type="button">1D</button><button data-tf="10080" type="button">1W</button></div>
+            <div class="ptt-top-l">
+              <div class="ptt-tf" id="ptTf"><button data-tf="1" type="button">1m</button><button data-tf="5" type="button">5m</button><button data-tf="15" class="on" type="button">15m</button><button data-tf="60" type="button">1h</button><button data-tf="240" type="button">4h</button><button data-tf="1440" type="button">1D</button><button data-tf="10080" type="button">1W</button></div>
+              <button class="ptt-sig" id="ptSig" type="button" aria-pressed="false" title="Buy/Sell signals (Supertrend)"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg><span data-i18n="sigBtn">Signals</span></button>
+            </div>
             <div class="ptt-cpx"><span class="ptt-live">● LIVE</span> <b id="ptChartPx">…</b> <span id="ptChartChg"></span></div>
           </div>
           <div id="ptChart"></div>
@@ -1516,7 +1523,7 @@
   function calc(){
     var amt=num('planAmt'),lev=num('planLev'),ids=['planSize','planLiq','planNotional'];
     if(!isFinite(live)||live<=0||!isFinite(amt)||amt<=0||!isFinite(lev)||lev<=0){ids.forEach(function(i){set(i,'—');});setBtn();return;}
-    var long=side==='long',notional=amt*lev,qty=notional/live,liq=long?live*(1-1/lev+0.005):live*(1+1/lev-0.005);
+    var long=side==='long',notional=amt*lev,qty=notional/live,liq=long?live*(1-(1-0.005)/lev):live*(1+(1-0.005)/lev);
     var sym=((document.getElementById('planSym')||{}).value||'');
     set('planSize', qty.toLocaleString('en-US',{maximumFractionDigits:6})+(sym?' '+sym:''));
     set('planLiq', money(liq)); set('planNotional', money(notional)); setBtn();
@@ -1546,13 +1553,13 @@
   function openSyms(){var s={};load().forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='—')s[e.sym]=1;});if(chartSym)s[chartSym]=1;return Object.keys(s);}
   function pollPrices(){openSyms().forEach(function(sym){fetch('/api/price?symbol='+encodeURIComponent(sym)).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0)prices[sym]={p:+pd.price,t:Date.now()};}).catch(function(){});});}
   function feeOf(e,exit){var fr=(+e.feeRate>0)?+e.feeRate:0;return (e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*(e.entry+exit)*fr:0;}
-  function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross!=null?gross-feeOf(e,live):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-1/lev+(e.mmr||0.005)):e.entry*(1+1/lev-(e.mmr||0.005)));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
-  function checkClose(e,m){if(e.status!=='open')return false;var tp=e.tp!=null&&(m.long?m.live>=e.tp:m.live<=e.tp),sl=(m.long?m.live<=e.stop:m.live>=e.stop);if(tp||sl){e.status=tp?'win':'loss';e.exit=tp?e.tp:e.stop;e.closeTs=Date.now();e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*(m.long?1:-1)-feeOf(e,e.exit):null;notify(e,tp);return true;}return false;}
+  function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross!=null?gross-feeOf(e,live):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
+  function checkClose(e,m){if(e.status!=='open')return false;var tp=e.tp!=null&&(m.long?m.live>=e.tp:m.live<=e.tp),sl=e.stop!=null&&(m.long?m.live<=e.stop:m.live>=e.stop);if(tp||sl){e.status=tp?'win':'loss';e.exit=tp?e.tp:e.stop;e.closeTs=Date.now();e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*(m.long?1:-1)-feeOf(e,e.exit):null;notify(e,tp);return true;}return false;}
   function notify(e,win){if(notified[e.id])return;notified[e.id]=true;try{if('Notification'in window&&Notification.permission==='granted')new Notification('MarginPad — '+(win?'Take-Profit hit ✅':'Stop-Loss hit ❌'),{body:(e.sym||'')+' '+String(e.side).toUpperCase()+' @ '+fp(win?e.tp:e.stop)});}catch(_){}}
   function openCard(e){var m=metrics(e),long=m.long,cls=Math.abs(m.move)<0.0005?'be':((m.pnl!=null?m.pnl>=0:m.move>=0)?'pf':'ls');
     return '<div class="pp '+cls+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
-      +'<div class="pp-meta">Entry <b>'+fp(e.entry)+'</b> · Size <b>'+(e.qty!=null?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:5}):'—')+'</b> · '+(e.lev||1)+'×<br>Notional <b>'+(m.notional!=null?money(m.notional):'—')+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')<br>SL <b>'+fp(e.stop)+'</b> · TP <b>'+(e.tp!=null?fp(e.tp):'—')+'</b> · '+dur(Date.now()-e.ts)+' · '+hm(e.ts)+'</div>'
+      +'<div class="pp-meta">Entry <b>'+fp(e.entry)+'</b> · Size <b>'+(e.qty!=null?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:5}):'—')+'</b> · '+(e.lev||1)+'×<br>Notional <b>'+(m.notional!=null?money(m.notional):'—')+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')<br>SL <b>'+(e.stop!=null?fp(e.stop):'—')+'</b> · TP <b>'+(e.tp!=null?fp(e.tp):'—')+'</b> · '+dur(Date.now()-e.ts)+' · '+hm(e.ts)+'</div>'
       +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+'">Close</button><button data-act="edit" data-id="'+e.id+'">Modify</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
   function closedCard(e){var win=e.status==='win',cls=win?'pf':'ls';
     return '<div class="pp '+cls+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span><span class="pp-live">'+(win?'WIN':'LOSS')+'</span></div>'
@@ -1576,8 +1583,24 @@
     chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<10)loadMore();});}
   function formSym(){return (document.getElementById('planSym')||{}).value||'BTC';}
   var bars=[],loadingMore=false,noMore=false;
-  function loadKlines(){var sym=formSym();chartSym=sym;bars=[];loadingMore=false;noMore=false;fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+chartTf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(sym!==chartSym)return;if(kd&&kd.length&&candle){bars=kd;try{candle.setData(bars);chart.timeScale().fitContent();}catch(e){}lastBar=bars[bars.length-1];drawLines();}});}
-  function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=kd.filter(function(b){return b.time<first;});if(!older.length){noMore=true;return;}if(older.length<900)noMore=true;bars=older.concat(bars);try{candle.setData(bars);}catch(e){}});}
+  function loadKlines(){var sym=formSym();chartSym=sym;bars=[];loadingMore=false;noMore=false;fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+chartTf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(sym!==chartSym)return;if(kd&&kd.length&&candle){bars=kd;try{candle.setData(bars);chart.timeScale().fitContent();}catch(e){}lastBar=bars[bars.length-1];drawLines();applySignals();}});}
+  function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=kd.filter(function(b){return b.time<first;});if(!older.length){noMore=true;return;}if(older.length<900)noMore=true;bars=older.concat(bars);try{candle.setData(bars);}catch(e){}applySignals();});}
+  /* Buy/Sell signals — a Supertrend(10,3) overlay (our own equivalent of TradingView "Buy Sell" indicators;
+     kelfry98's proprietary Pine script can't be embedded here). Toggleable; plots BUY/SELL arrows on trend flips. */
+  var sigOn=false;try{sigOn=localStorage.getItem('mp_sig')==='1';}catch(e){}
+  function computeSignals(d){var n=d?d.length:0,P=10,M=3;if(n<P+3)return [];
+    var tr=[],i;for(i=0;i<n;i++){tr.push(i===0?d[i].high-d[i].low:Math.max(d[i].high-d[i].low,Math.abs(d[i].high-d[i-1].close),Math.abs(d[i].low-d[i-1].close)));}
+    var atr=[],seed=0;for(i=0;i<P;i++)seed+=tr[i];var a=seed/P;for(i=0;i<n;i++){if(i<P)atr.push(a);else{a=(a*(P-1)+tr[i])/P;atr.push(a);}}
+    var fU=[],fL=[],dir=[],mk=[];for(i=0;i<n;i++){var hl2=(d[i].high+d[i].low)/2,bU=hl2+M*atr[i],bL=hl2-M*atr[i];
+      var pU=i?fU[i-1]:bU,pL=i?fL[i-1]:bL;
+      var cU=(bU<pU||(i&&d[i-1].close>pU))?bU:pU,cL=(bL>pL||(i&&d[i-1].close<pL))?bL:pL;fU.push(cU);fL.push(cL);
+      var pd=i?dir[i-1]:1,cd;if(i===0)cd=1;else if(pd===1)cd=d[i].close<cL?-1:1;else cd=d[i].close>cU?1:-1;dir.push(cd);
+      if(i>P&&cd!==pd)mk.push(cd===1?{time:d[i].time,position:'belowBar',color:'#2ebd85',shape:'arrowUp',text:'BUY'}:{time:d[i].time,position:'aboveBar',color:'#ff6258',shape:'arrowDown',text:'SELL'});}
+    return mk;}
+  function applySignals(){if(!candle)return;try{candle.setMarkers(sigOn?computeSignals(bars):[]);}catch(e){}}
+  var sigBtn=document.getElementById('ptSig');
+  if(sigBtn){if(sigOn)sigBtn.classList.add('on');sigBtn.setAttribute('aria-pressed',sigOn?'true':'false');
+    sigBtn.addEventListener('click',function(){sigOn=!sigOn;sigBtn.classList.toggle('on',sigOn);sigBtn.setAttribute('aria-pressed',sigOn?'true':'false');try{localStorage.setItem('mp_sig',sigOn?'1':'0');}catch(e){}applySignals();});}
   function liveCandle(){var pd=window.mpPlanLive,p=(pd&&pd.sym===chartSym&&pd.price>0)?pd.price:(prices[chartSym]&&prices[chartSym].p);if(!candle||!lastBar||!(p>0))return;var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(Date.now()/1000/ivSec)*ivSec;if(nowBar>lastBar.time){lastBar={time:nowBar,open:p,high:p,low:p,close:p};try{chart.timeScale().scrollToRealTime();}catch(e){}}else{lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;}try{candle.update(lastBar);}catch(e){}}
   function drawLines(){if(!candle)return;plines.forEach(function(l){try{candle.removePriceLine(l);}catch(e){}});plines=[];load().forEach(function(e){if(e.status==='open'&&e.sym===chartSym){plines.push(candle.createPriceLine({price:e.entry,color:e.side!=='short'?'#10b981':'#ef4444',lineWidth:1,lineStyle:0,axisLabelVisible:true,title:(e.side!=='short'?'LONG':'SHORT')}));if(e.tp!=null)plines.push(candle.createPriceLine({price:e.tp,color:'#6b7280',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'TP'}));if(e.stop!=null)plines.push(candle.createPriceLine({price:e.stop,color:'#6b7280',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'SL'}));}});}
   function chartHeader(){var px=document.getElementById('ptChartPx'),ch=document.getElementById('ptChartChg'),pd=window.mpPlanLive;var p=(pd&&pd.sym===chartSym&&pd.price>0)?pd.price:(prices[chartSym]&&prices[chartSym].p),cg=(pd&&pd.sym===chartSym)?pd.chg:0;if(p>0){if(px)px.textContent=fp(p);if(ch){ch.textContent=((cg>=0?'+':'')+(+cg||0).toFixed(2))+'%';ch.style.color=cg>=0?'var(--up)':'var(--red)';}}}
@@ -1610,12 +1633,12 @@
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function feeOf(e,exit){var fr=(+e.feeRate>0)?+e.feeRate:0;return (e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*(e.entry+exit)*fr:0;}
-  function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross!=null?gross-feeOf(e,live):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-1/lev+(e.mmr||0.005)):e.entry*(1+1/lev-(e.mmr||0.005)));var liqDist=(live-liq)/live*100*(long?1:-1);return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,margin:margin};}
+  function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross!=null?gross-feeOf(e,live):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,margin:margin};}
   function openCard(e){var m=metrics(e),long=m.long,cls=Math.abs(m.move)<0.0005?'be':((m.pnl!=null?m.pnl>=0:m.move>=0)?'pf':'ls');
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'
       +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
-      +'<div class="pp-meta">'+MT('jEntry','Entry')+' <b>'+fp(e.entry)+'</b> · '+MT('jMargin2','Margin')+' <b>'+(m.margin!=null?money(m.margin):'—')+'</b><br>'+MT('jLiq2','Liq')+' <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+') · SL <b>'+fp(e.stop)+'</b> · TP <b>'+(e.tp!=null?fp(e.tp):'—')+'</b><br>'+dur(Date.now()-e.ts)+' '+MT('jOpenLc','open')+'</div>'
+      +'<div class="pp-meta">'+MT('jEntry','Entry')+' <b>'+fp(e.entry)+'</b> · '+MT('jMargin2','Margin')+' <b>'+(m.margin!=null?money(m.margin):'—')+'</b><br>'+MT('jLiq2','Liq')+' <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+') · SL <b>'+(e.stop!=null?fp(e.stop):'—')+'</b> · TP <b>'+(e.tp!=null?fp(e.tp):'—')+'</b><br>'+dur(Date.now()-e.ts)+' '+MT('jOpenLc','open')+'</div>'
       +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button><button data-act="edit" data-id="'+e.id+'">SL/TP</button><button class="pp-share" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
   function closedCard(e){var win=e.status==='win',cls=((+e.pnl)>=0)?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'
@@ -1685,9 +1708,9 @@
     var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:0;
     var sl=num('planSlOpt'), tp=num('planTpOpt');
     var notional=amt*L, qty=notional/entry;
-    var liq=side==='long'?entry*(1-1/L+mmr):entry*(1+1/L-mmr);
-    var stop=isFinite(sl)?sl:liq;                          // no SL set -> auto-close at liquidation
-    var rr=isFinite(tp)?Math.abs(tp-entry)/Math.abs(entry-stop):NaN;
+    var liq=side==='long'?entry*(1-(1-mmr)/L):entry*(1+(1-mmr)/L);  // always on the correct side of entry, even at extreme leverage
+    var stop=isFinite(sl)?sl:null;                          // no SL set -> position runs (demo: no forced liquidation)
+    var rr=(isFinite(tp)&&isFinite(sl))?Math.abs(tp-entry)/Math.abs(entry-sl):NaN;
     var data=load();
     data.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,lev:L,rr:isFinite(rr)?rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:feeRate,status:'open',pnl:null});
     store(data); /* shows inline in the terminal "My positions" list + on the My Trades page — no popup */
