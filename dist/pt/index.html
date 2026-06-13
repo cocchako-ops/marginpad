@@ -733,7 +733,7 @@
   <div class="prodnav" role="tablist" aria-label="Main tools">
     <button class="prod active" data-prod="calc" type="button" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg></span><span class="pt"><b data-i18n="prodCalc">Calculadora de liquidação</b><small data-i18n="prodCalcS">Saiba seu preço de saída</small></span></button>
     <button class="prod" data-prod="heat" type="button" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span><span class="pt"><b data-i18n="prodHeat">Mapa de calor de liquidação</b><small data-i18n="prodHeatS">Veja as zonas de perigo</small></span><span class="pnew">NEW</span></button>
-    <button class="prod" data-prod="plan" type="button" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span><span class="pt"><b data-i18n="prodPlan">Planejador de operações</b><small data-i18n="prodPlanS">Planeje toda a operação</small></span></button>
+    <button class="prod" data-prod="plan" type="button" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span><span class="pt"><b>Paper Trade</b><small>Open at live price · zero risk</small></span><span class="pnew">NEW</span></button>
     <button class="prod" data-prod="swap" type="button" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span><span class="pt"><b data-i18n="prodSwap">Troca de Cripto</b><small data-i18n="prodSwapS">900+ moedas, sem conta</small></span></button>
   </div>
 
@@ -806,34 +806,28 @@
 
     <section class="panel" id="plan">
       <div class="inputs">
-        <h2><span data-i18n="tPlan">Planejador de trades</span> <small data-i18n="tPlanSub">— toda a sua operação em uma só tela</small></h2>
+        <h2><span>Paper Trade</span> <small>— open at the live price, track P&amp;L live</small></h2>
         <div class="field"><label data-i18n="direction">Direção</label>
           <div class="seg" id="planSeg"><button class="on" data-side="long" data-i18n="long">Comprado</button><button data-side="short" data-i18n="short">Vendido</button></div>
         </div>
-        <div class="field"><label data-i18n="lSymbol">Símbolo</label><div class="input-line"><select id="planSym"><option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option><option>BNB</option><option>DOGE</option><option>ADA</option><option>AVAX</option><option>LINK</option><option>LTC</option><option value="">Other</option></select></div></div>
-        <div class="field"><label data-i18n="lEntry">Preço de entrada</label><div class="input-line"><input type="number" id="planEntry" value="0" step="any"><span class="unit">USD</span></div></div>
-        <div class="field"><label data-i18n="lStop">Preço de stop-loss</label><div class="input-line"><input type="number" id="planStop" value="0" step="any"><span class="unit">USD</span></div></div>
-        <div class="field"><label data-i18n="lTp">Preço de take-profit</label><div class="input-line"><input type="number" id="planTp" value="0" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lSymbol">Símbolo</label><div class="input-line"><select id="planSym"><option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option><option>BNB</option><option>DOGE</option></select></div></div>
+        <div class="field"><label data-i18n="lLivePx">Live entry price</label><div class="input-line"><input type="text" id="planLivePx" value="…" readonly aria-live="polite"><span class="unit" id="planLiveChg"></span></div></div>
+        <div class="field"><label data-i18n="lAmount">Amount — your margin</label><div class="input-line"><input type="number" id="planAmt" value="1000" step="any"><span class="unit">USD</span></div></div>
         <div class="field"><label data-i18n="lLeverage">Alavancagem</label><div class="input-line"><input type="number" id="planLev" value="10" step="any"><span class="unit">×</span></div></div>
-        <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span data-i18n="planAdv">⚙ Avançado — dimensionamento de posição</span></label>
+        <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span data-i18n="planAdv2">⚙ Advanced — fees, stop-loss, take-profit</span></label>
         <div class="plan-adv" id="planAdvIn" hidden>
-          <div class="field"><label data-i18n="lBalance">Saldo da conta</label><div class="input-line"><input type="number" id="planBal" value="5000" step="any"><span class="unit">USD</span></div></div>
-          <div class="field"><label data-i18n="lRisk">Risco por operação</label><div class="input-line"><input type="number" id="planRisk" value="1" step="any"><span class="unit">%</span></div></div>
+          <div class="field"><label data-i18n="lFee">Taker fee (per side)</label><div class="input-line"><input type="number" id="planFee" value="0.05" step="any"><span class="unit">%</span></div></div>
+          <div class="field"><label data-i18n="lStopOpt">Stop-loss (optional)</label><div class="input-line"><input type="number" id="planSlOpt" step="any" placeholder="—"><span class="unit">USD</span></div></div>
+          <div class="field"><label data-i18n="lTpOpt">Take-profit (optional)</label><div class="input-line"><input type="number" id="planTpOpt" step="any" placeholder="—"><span class="unit">USD</span></div></div>
         </div>
       </div>
       <div class="results">
-        <div class="result-main"><div class="rlabel" data-i18n="rEstLiq">Preço de liquidação estimado</div><div class="rvalue" id="planLiq">—</div><button class="copybtn" data-copy="planLiq" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
-        <div class="rrow"><span class="k" data-i18n="rRR">Índice risco/retorno</span><span class="v" id="planRR">—</span></div>
-        <div class="rrow"><span class="k" data-i18n="rBreakeven">Acerto de equilíbrio</span><span class="v" id="planBe">—</span></div>
-        <div class="plan-adv-out" id="planAdvOut" hidden>
-          <div class="rrow"><span class="k" data-i18n="rPosSize">Tamanho da posição</span><span class="v" id="planSize">—</span></div>
-          <div class="rrow"><span class="k" data-i18n="rExpProfit">Lucro esperado</span><span class="v" id="planProfit">—</span></div>
-          <div class="rrow"><span class="k" data-i18n="rExpLoss">Perda esperada</span><span class="v" id="planLoss">—</span></div>
-          <div class="rrow"><span class="k" data-i18n="rNotional">Valor nocional</span><span class="v" id="planNotional">—</span></div>
-          <div class="rrow"><span class="k" data-i18n="rMarginReq">Margem necessária</span><span class="v" id="planMargin">—</span></div>
-        </div>
-        <p class="note" data-i18n="nPlan">O tamanho da posição é definido para que um stop perca exatamente o % de risco escolhido. A liquidação usa margem isolada; os valores excluem taxas e financiamento.</p>
-        <button type="button" class="jr-save" id="planSave"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> <span data-i18n="jrSave">Salvar no diário</span></button>
+        <div class="result-main"><div class="rlabel" data-i18n="rEstLiq">Preço de liquidação estimado</div><div class="rvalue" id="planLiq">—</div></div>
+        <div class="rrow"><span class="k" data-i18n="rPosSize">Tamanho da posição</span><span class="v" id="planSize">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rNotional">Valor nocional</span><span class="v" id="planNotional">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rMarginReq">Margem necessária</span><span class="v" id="planMargin">—</span></div>
+        <p class="note" data-i18n="nPaper">Opens a risk-free paper position at the current live price and tracks live P&amp;L in your Journal. Isolated margin; fees applied if set. No real funds, no account.</p>
+        <button type="button" class="jr-save" id="planSave"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> <span data-i18n="jrOpen">Open position</span></button>
       </div>
     </section>
 
@@ -1367,45 +1361,32 @@
   })();
 </script>
 <script>
-/* Trade Planner: whole trade on one screen */
+/* Paper Trade: open a position at the live price, track it live in the Journal */
 (function(){
-  var side='long';
+  var side='long', live=NaN, liveChg=0, pollT=null;
   var seg=document.getElementById('planSeg');
   function num(id){var e=document.getElementById(id);var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
   function money(x){if(!isFinite(x))return '—';var neg=x<0;x=Math.abs(x);return (neg?'-$':'$')+x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function fmtPx(x){return '$'+(+x).toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-  function tone(id,pos){var e=document.getElementById(id);if(!e)return;e.classList.remove('pos','neg');e.classList.add(pos?'pos':'neg');}
+  function setBtn(){var sp=document.querySelector('#planSave span[data-i18n="jrOpen"]');if(sp)sp.textContent=((window.mpT&&window.mpT('jrOpen'))||'Open position')+(isFinite(live)?' @ '+fmtPx(live):'');}
+  function showLive(){var el=document.getElementById('planLivePx');if(el)el.value=isFinite(live)?fmtPx(live):'…';var c=document.getElementById('planLiveChg');if(c){c.textContent=isFinite(live)?((liveChg>=0?'+':'')+liveChg.toFixed(2)+'%'):'';c.style.color=liveChg>=0?'var(--up)':'var(--red)';}window.mpPlanLive={sym:((document.getElementById('planSym')||{}).value||''),price:live,chg:liveChg};}
   function calc(){
-    var entry=num('planEntry'),stop=num('planStop'),tp=num('planTp'),lev=num('planLev'),bal=num('planBal'),risk=num('planRisk');
-    var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
-    var stopDist=Math.abs(entry-stop);
-    var ids=['planSize','planLiq','planRR','planProfit','planLoss','planBe','planNotional','planMargin'];
-    if(!isFinite(entry)||!isFinite(stop)||stopDist===0||!isFinite(bal)||!isFinite(risk)||!isFinite(lev)||lev<=0){ ids.forEach(function(i){set(i,'—');}); return; }
-    var long=side==='long';
-    var riskAmt=bal*risk/100;
-    var size=riskAmt/stopDist;
-    var notional=size*entry;
-    var liq=long?entry*(1-1/lev+0.005):entry*(1+1/lev-0.005);
-    var reward=isFinite(tp)?Math.abs(tp-entry):NaN;
-    var rr=isFinite(reward)?reward/stopDist:NaN;
-    var expProfit=isFinite(tp)?(long?tp-entry:entry-tp)*size:NaN;
-    var be=isFinite(rr)?1/(1+rr)*100:NaN;
-    set('planSize', size.toLocaleString('en-US',{maximumFractionDigits:6})+(sym?' '+sym:''));
-    set('planLiq', money(liq));
-    set('planRR', isFinite(rr)?rr.toFixed(2)+' : 1':'—');
-    set('planProfit', isFinite(expProfit)?(expProfit>=0?'+':'−')+money(Math.abs(expProfit)).replace('-',''):'—'); tone('planProfit', true);
-    set('planLoss', '−'+money(riskAmt).replace('-','')); tone('planLoss', false);
-    set('planBe', isFinite(be)?be.toFixed(1)+'%':'—');
-    set('planNotional', money(notional));
-    set('planMargin', money(notional/lev));
+    var amt=num('planAmt'),lev=num('planLev'),ids=['planSize','planLiq','planNotional','planMargin'];
+    if(!isFinite(live)||live<=0||!isFinite(amt)||amt<=0||!isFinite(lev)||lev<=0){ids.forEach(function(i){set(i,'—');});setBtn();return;}
+    var long=side==='long',notional=amt*lev,qty=notional/live,liq=long?live*(1-1/lev+0.005):live*(1+1/lev-0.005);
+    var sym=((document.getElementById('planSym')||{}).value||'');
+    set('planSize', qty.toLocaleString('en-US',{maximumFractionDigits:6})+(sym?' '+sym:''));
+    set('planLiq', money(liq)); set('planNotional', money(notional)); set('planMargin', money(amt)); setBtn();
   }
+  function poll(){var sym=((document.getElementById('planSym')||{}).value||'');if(!sym)return;fetch('/api/price?symbol='+encodeURIComponent(sym)).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){live=+pd.price;liveChg=+pd.chg||0;showLive();calc();}}).catch(function(){});}
   if(seg)seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
-  ['planEntry','planStop','planTp','planLev','planBal','planRisk','planSym'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
+  ['planAmt','planLev'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
   var advChk=document.getElementById('planAdvChk');
-  if(advChk)advChk.addEventListener('change',function(){var on=advChk.checked,ai=document.getElementById('planAdvIn'),ao=document.getElementById('planAdvOut');if(ai)ai.hidden=!on;if(ao)ao.hidden=!on;});
+  if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;});
   var pSym=document.getElementById('planSym');
-  if(pSym)pSym.addEventListener('change',function(){['planEntry','planStop','planTp'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='0';});calc();});
-  calc();
+  if(pSym)pSym.addEventListener('change',function(){live=NaN;showLive();calc();poll();});
+  poll(); pollT=setInterval(poll,2500); calc();
 })();
 </script>
 <script>
@@ -1447,23 +1428,24 @@
     if(emptyEl)emptyEl.style.display=data.length?'none':'';
   }
   function add(){
-    var entry=num('planEntry'),stop=num('planStop'),tp=num('planTp'),lev=num('planLev');
-    if(!isFinite(entry)||!isFinite(stop)||entry===stop)return;
+    var pl=window.mpPlanLive, entry=pl&&pl.price;          // open AT the current live price
+    var amt=num('planAmt'), lev=num('planLev');
+    if(!isFinite(entry)||entry<=0||!isFinite(amt)||amt<=0)return;
     var seg=document.getElementById('planSeg'); var on=seg&&seg.querySelector('button.on'); var side=on?on.getAttribute('data-side'):'long';
     var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
-    var rr=isFinite(tp)?Math.abs(tp-entry)/Math.abs(entry-stop):NaN;
-    var L=isFinite(lev)&&lev>0?lev:1, stopDist=Math.abs(entry-stop), mmr=0.005;
-    var bal=num('planBal'),risk=num('planRisk');
-    var riskAmt=(isFinite(bal)&&isFinite(risk))?bal*risk/100:NaN;
-    var qty=(isFinite(riskAmt)&&stopDist>0)?riskAmt/stopDist:NaN;
-    var notional=isFinite(qty)?qty*entry:NaN;
+    var L=isFinite(lev)&&lev>0?lev:1, mmr=0.005;
+    var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:0;
+    var sl=num('planSlOpt'), tp=num('planTpOpt');
+    var notional=amt*L, qty=notional/entry;
     var liq=side==='long'?entry*(1-1/L+mmr):entry*(1+1/L-mmr);
+    var stop=isFinite(sl)?sl:liq;                          // no SL set -> auto-close at liquidation
+    var rr=isFinite(tp)?Math.abs(tp-entry)/Math.abs(entry-stop):NaN;
     var data=load();
-    data.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,lev:isFinite(lev)?lev:null,rr:isFinite(rr)?rr:null,qty:isFinite(qty)?qty:null,notional:isFinite(notional)?notional:null,riskAmt:isFinite(riskAmt)?riskAmt:null,liq:liq,mmr:mmr,status:'open',pnl:null});
+    data.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,lev:L,rr:isFinite(rr)?rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:feeRate,status:'open',pnl:null});
     store(data); openJr();
     var btn=document.getElementById('planSave'),sp=btn&&btn.querySelector('span');
-    if(btn&&sp){var o=sp.textContent;btn.classList.add('saved');sp.textContent=MT('jSaved','Saved')+' ✓';setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1500);}
-    try{if(window.__mpTrack)window.__mpTrack('journal','save');}catch(e){}
+    if(btn&&sp){var o=sp.textContent;btn.classList.add('saved');sp.textContent=MT('jOpened','Position opened ✓');setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1600);}
+    try{if(window.__mpTrack)window.__mpTrack('journal','open');}catch(e){}
   }
   var saveBtn=document.getElementById('planSave'); if(saveBtn)saveBtn.addEventListener('click',add);
   // ticket actions are delegated to document — the list lives in the drawer, which parses after this script

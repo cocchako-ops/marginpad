@@ -139,18 +139,22 @@
   var prices={},hist={},notified={},askedNotif=false;
   function symbolsOpen(){var s={},d=load();d.forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='—')s[e.sym]=1;});return Object.keys(s);}
   function pollPrices(){symbolsOpen().forEach(function(sym){fetch('/api/price?symbol='+encodeURIComponent(sym)).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0)prices[sym]={p:+pd.price,t:Date.now()};}).catch(function(){});});}
+  function feeOf(e,exit){var fr=(+e.feeRate>0)?+e.feeRate:0;return (e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*(e.entry+exit)*fr:0;}
   function metrics(e){
     var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;
     var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;
-    var move=(live-e.entry)/e.entry*(long?1:-1), roe=move*lev;
-    var pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;
+    var move=(live-e.entry)/e.entry*(long?1:-1);
+    var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;
+    var pnl=gross!=null?gross-feeOf(e,live):null;
+    var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);
+    var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev; /* ROE on margin, else price-move×lev */
     var liq=e.liq||(long?e.entry*(1-1/lev+(e.mmr||0.005)):e.entry*(1+1/lev-(e.mmr||0.005)));
     var liqDist=(live-liq)/live*100*(long?1:-1);
     var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);
-    return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional};
+    return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};
   }
   function eta(e,m){var h=hist[e.id];if(!h||h.length<4)return null;var a=h[Math.max(0,h.length-7)],b=h[h.length-1],dt=(b.t-a.t)/1000;if(dt<=0)return null;var vel=(b.p-a.p)/dt;if(Math.abs(vel)<1e-9)return null;var tgt=vel>0?(m.long?e.tp:e.stop):(m.long?e.stop:e.tp);if(tgt==null)return null;var t=(tgt-b.p)/vel;return (t>0&&isFinite(t))?t:null;}
-  function checkClose(e,m){if(e.status!=='open')return false;var tp=e.tp!=null&&(m.long?m.live>=e.tp:m.live<=e.tp),sl=(m.long?m.live<=e.stop:m.live>=e.stop);if(tp||sl){e.status=tp?'win':'loss';e.exit=tp?e.tp:e.stop;e.closeTs=Date.now();e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*(m.long?1:-1):null;notify(e,tp);return true;}return false;}
+  function checkClose(e,m){if(e.status!=='open')return false;var tp=e.tp!=null&&(m.long?m.live>=e.tp:m.live<=e.tp),sl=(m.long?m.live<=e.stop:m.live>=e.stop);if(tp||sl){e.status=tp?'win':'loss';e.exit=tp?e.tp:e.stop;e.closeTs=Date.now();e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*(m.long?1:-1)-feeOf(e,e.exit):null;notify(e,tp);return true;}return false;}
   function notify(e,win){if(notified[e.id])return;notified[e.id]=true;try{if('Notification'in window&&Notification.permission==='granted')new Notification('MarginPad — '+(win?'Take-Profit hit ✅':'Stop-Loss hit ❌'),{body:(e.sym||'')+' '+String(e.side).toUpperCase()+' closed @ '+fp(win?e.tp:e.stop)});}catch(_){}}
   function pushHist(id,p){var h=hist[id]||(hist[id]=[]);var now=Date.now();if(!h.length||now-h[h.length-1].t>900){h.push({t:now,p:p});if(h.length>40)h.shift();}}
   function spark(id){var h=hist[id];if(!h||h.length<2)return '';var w=280,hh=34,lo=Math.min.apply(null,h.map(function(x){return x.p;})),hi=Math.max.apply(null,h.map(function(x){return x.p;})),rng=hi-lo||1;var pts=h.map(function(x,i){return (i/(h.length-1)*w).toFixed(1)+','+(hh-(x.p-lo)/rng*(hh-4)-2).toFixed(1);}).join(' ');var up=h[h.length-1].p>=h[0].p;return '<svg class="lt-spark" viewBox="0 0 '+w+' '+hh+'" preserveAspectRatio="none"><polyline points="'+pts+'" fill="none" stroke="'+(up?'#2ebd85':'#ff6258')+'" stroke-width="1.5"/></svg>';}
@@ -161,7 +165,7 @@
       +'<div class="lt-h"><span class="lt-sym">'+esc(e.sym||'—')+'</span><span class="lt-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="lt-live">Live <b>'+fp(m.live)+'</b> '+(m.move>=0?'↑':'↓')+' '+pctS(m.move*100)+'</span></div>'
       +'<div class="lt-grid"><div class="lt-cell"><div class="k">Entry</div><div class="v">'+fp(e.entry)+'</div></div><div class="lt-cell"><div class="k">Stop loss</div><div class="v">'+fp(e.stop)+'</div></div><div class="lt-cell"><div class="k">Take profit</div><div class="v">'+(e.tp!=null?fp(e.tp):'—')+'</div></div></div>'
       +'<div class="lt-pnl '+cls+'"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span><span class="sub">'+(m.pnl!=null?pctS(m.move*100):'')+'</span></div>'
-      +'<div class="lt-meta"><span>Notional <b>'+(m.notional!=null?money(m.notional):'—')+'</b></span><span>Leverage <b>'+(e.lev||1)+'×</b></span><span>Risk <b>'+(e.riskAmt!=null?money(e.riskAmt):'—')+'</b></span><span>Liq. <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')</span><span>ETA TP/SL <b>'+etaS+'</b></span></div>'
+      +'<div class="lt-meta"><span>Notional <b>'+(m.notional!=null?money(m.notional):'—')+'</b></span><span>Leverage <b>'+(e.lev||1)+'×</b></span><span>Margin <b>'+((e.margin!=null||e.riskAmt!=null)?money(e.margin!=null?e.margin:e.riskAmt):'—')+'</b></span><span>Liq. <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')</span><span>ETA TP/SL <b>'+etaS+'</b></span></div>'
       +spark(e.id)
       +'<div class="lt-status"><span class="lt-dot"></span>OPEN · entry '+hms(e.ts)+' · open '+dur(Date.now()-e.ts)+'</div>'
       +'<div class="lt-btns"><button class="close" data-act="close" data-id="'+e.id+'">Close</button><button data-act="edit" data-id="'+e.id+'">Edit SL/TP</button><button data-act="del" data-id="'+e.id+'">Delete</button></div></div>';
