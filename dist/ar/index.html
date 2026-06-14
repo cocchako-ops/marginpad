@@ -121,6 +121,7 @@
   header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:26px 0 20px;border-bottom:1px solid var(--line);animation:fade .7s ease both;flex-wrap:wrap;}
   .brand{display:flex;align-items:baseline;gap:10px;}
   .brand .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;transition:letter-spacing .25s ease;cursor:pointer;color:var(--ink);text-decoration:none;}
+  .brand .mark b{color:#c2f64a;}
   .brand .mark:hover{letter-spacing:-.02em;}
   .brand .mark b{color:var(--lime);}
   .brand .tag{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.18em;}
@@ -1428,6 +1429,7 @@
         <a href="#dca">DCA</a>
         <a href="#tp" data-i18n="tabTp">جني الأرباح</a>
         <a href="/?p=heat" data-i18n="prodHeat">خريطة حرارية للتصفية</a>
+        <a href="/rekt/" data-i18n="navRekt">Live Liquidations</a>
         <a href="/?p=swap" data-i18n="prodSwap">تبادل العملات المشفرة</a>
         <a href="/blog/" data-i18n="navBlog">المدونة</a>
         <a href="/widgets/" data-i18n="navWidgets">Embed widget</a>
@@ -2675,8 +2677,9 @@ window.addEventListener('load', function () {
 })();
 </script>
 <script>
-/* Global live-liquidation feed — floating semi-transparent B&W cards, market-wide, ~20s each. */
+/* Global live-liquidation feed (floating left cards) — REMOVED; replaced by the /rekt/ live feed page. */
 (function(){
+  return;
   var box=null, seen={}, order=[], first=true;
   function money(n){ n=+n; if(n>=1e6)return (n/1e6).toFixed(n>=1e7?0:1)+'M'; if(n>=1e3)return (n/1e3).toFixed(0)+'K'; return n.toFixed(0); }
   function px(p){ p=+p; return p>=1?p.toLocaleString('en-US',{maximumFractionDigits:2}):p.toLocaleString('en-US',{maximumFractionDigits:6}); }
