@@ -131,3 +131,22 @@ footer a{color:var(--ink-dim);text-decoration:none}footer a:hover{color:var(--li
 
 .liqmap-cta{text-align:center;margin:26px 0}
 .liqmap-cta .cta{font-size:14px}
+
+/* ===== blog cards v2 ===== */
+.post-card{position:relative;overflow:hidden}
+.post-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cat,#c2f64a);opacity:0;transition:opacity .2s}
+.post-card:hover::before{opacity:1}
+.post-card:hover{border-color:var(--cat,var(--lime));box-shadow:0 20px 52px -30px rgba(0,0,0,.9)}
+.post-card .tag{color:var(--cat,var(--lime-deep))}
+.post-card[data-cat="Liquidation"]{--cat:#ff7b72}
+.post-card[data-cat="Risk management"]{--cat:#ffb347}
+.post-card[data-cat="Basics"]{--cat:#6aa3ff}
+.post-card[data-cat="Tools"]{--cat:#34d99a}
+.post-card[data-cat="News"]{--cat:#c2f64a}
+.post-card[data-cat="Exchanges"]{--cat:#c08bff}
+/* featured first card spans the row */
+.posts .post-card:first-child{grid-column:1/-1;padding:30px 32px;background:radial-gradient(130% 150% at 0% 0%,rgba(46,189,133,.10),transparent 58%),linear-gradient(180deg,var(--panel),#0d0f12);border-color:rgba(46,189,133,.35)}
+.posts .post-card:first-child::after{content:'Featured';position:absolute;top:18px;right:20px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#0a0b0d;background:#34d99a;padding:3px 9px;border-radius:6px;font-weight:700}
+.posts .post-card:first-child h2{font-size:clamp(23px,3.1vw,31px);max-width:760px}
+.posts .post-card:first-child p{font-size:16px;max-width:680px;margin-top:9px}
+@media(max-width:680px){.posts .post-card:first-child{padding:22px 22px 24px}.posts .post-card:first-child::after{top:14px;right:14px}}

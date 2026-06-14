@@ -872,6 +872,22 @@
   .hp-card.flash-dn{animation:flashDn .7s ease;}
   @keyframes flashUp{0%{box-shadow:inset 0 0 0 1px rgba(46,189,133,.6);}100%{box-shadow:inset 0 0 0 1px rgba(46,189,133,0);}}
   @keyframes flashDn{0%{box-shadow:inset 0 0 0 1px rgba(255,98,88,.6);}100%{box-shadow:inset 0 0 0 1px rgba(255,98,88,0);}}
+  /* skeleton loaders (trending) */
+  .hp-skel{pointer-events:none;}
+  .hp-skel .sk{background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.10),rgba(255,255,255,.04));background-size:200% 100%;border-radius:6px;animation:sksh 1.3s linear infinite;}
+  .hp-skel .sk-1{height:13px;width:52%;margin-bottom:11px;}
+  .hp-skel .sk-2{height:21px;width:74%;margin-bottom:13px;}
+  .hp-skel .sk-3{height:15px;width:42%;}
+  @keyframes sksh{from{background-position:200% 0;}to{background-position:-200% 0;}}
+  @media(prefers-reduced-motion:reduce){.hp-skel .sk{animation:none;}}
+  /* result card: soft persistent glow behind the headline number */
+  .result-main .rvalue{filter:drop-shadow(0 2px 18px rgba(194,246,74,.10));}
+  .result-main .rvalue.pos{filter:drop-shadow(0 2px 18px rgba(46,189,133,.16));}
+  .result-main .rvalue.neg{filter:drop-shadow(0 2px 18px rgba(255,98,88,.16));}
+  /* exchange cards: stronger accent glow on hover */
+  .excard:hover{box-shadow:0 20px 48px -24px var(--exc,#000),0 0 0 1px var(--exc,#fff);}
+  /* button press micro-interaction */
+  .heat-btn:active,.pt2-open:active,.cta:active,.hp-trade:active{transform:translateY(1px);}
 </style>
 </head>
 <body>
@@ -1453,6 +1469,7 @@
   (function(){
     const grid = document.getElementById('hpGrid');
     if (!grid) return;
+    grid.innerHTML = Array.from({length:8}).map(function(){return '<div class="hp-card hp-skel"><div class="sk sk-1"></div><div class="sk sk-2"></div><div class="sk sk-3"></div></div>';}).join('');
     const PAIRS = [
       {s:'BTCUSDT',n:'BTC'},{s:'ETHUSDT',n:'ETH'},{s:'SOLUSDT',n:'SOL'},{s:'BNBUSDT',n:'BNB'},
       {s:'XRPUSDT',n:'XRP'},{s:'DOGEUSDT',n:'DOGE'},{s:'ADAUSDT',n:'ADA'},{s:'AVAXUSDT',n:'AVAX'}
