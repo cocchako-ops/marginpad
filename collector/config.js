@@ -12,6 +12,11 @@ export const config = {
   // it. Empty = connect directly (stays at 0 data where geo-blocked). NOT for SOCKS proxies.
   binanceProxy: process.env.BINANCE_PROXY || '',
 
+  // OKX edge-blocks some datacenter/region IPs (handshake refused — socket never opens). The collector already
+  // rotates OKX's two public endpoints to dodge single-edge blocks. If the whole IP is blocked, set OKX_PROXY to
+  // an HTTP(S) CONNECT proxy in an allowed region to route ONLY OKX through it. Empty = connect directly.
+  okxProxy: process.env.OKX_PROXY || '',
+
   // Histogram price-bucket size in USD per symbol (where liquidations cluster by price level).
   // Tune later; defaults aim for ~a few hundred buckets across a typical range.
   bucketSize: { BTC: 50, ETH: 5, SOL: 0.5, XRP: 0.002, DOGE: 0.0005, BNB: 2, ADA: 0.005, LINK: 0.1, AVAX: 0.2, LTC: 0.5 },

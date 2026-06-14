@@ -7,7 +7,20 @@
 //        fetched once from REST /api/v5/public/instruments, to get base quantity + correct notional.
 // Keepalive: send the literal text 'ping' every ~25s; server replies 'pong'.
 import { BaseCollector } from './base.js';
+import { config } from '../../config.js';
 import { log } from '../logger.js';
+
+// OKX edge-blocks some datacenter/region IPs (handshake refused). Two public endpoints exist (default + AWS);
+// we rotate across them on every (re)connect so a block on one edge auto-heals onto the other — no manual change.
+const OKX_ENDPOINTS = ['wss://ws.okx.com:8443/ws/v5/public', 'wss://wsaws.okx.com:8443/ws/v5/public'];
+
+// HTTP-CONNECT proxy dispatcher (undici) — same helper Binance uses. NOT for SOCKS.
+function makeProxyAgent(ProxyAgent, u) {
+  const url = new URL(u);
+  const opts = { uri: url.origin };
+  if (url.username || url.password) opts.token = 'Basic ' + Buffer.from(decodeURIComponent(url.username) + ':' + decodeURIComponent(url.password)).toString('base64');
+  return new ProxyAgent(opts);
+}
 
 export class OkxCollector extends BaseCollector {
   constructor(opts) {
@@ -15,16 +28,25 @@ export class OkxCollector extends BaseCollector {
     this.silenceMs = 35000;
     this.staleMs = 6 * 60 * 1000; // OKX streams ALL swaps — a 6-min event gap means a dead subscription
     this.ctVal = {};              // instId -> contract value (base units per contract)
+    this._epi = 0;                // rotating endpoint index
+    this._dispatcher = null;      // set in init() when OKX_PROXY is configured
   }
-  url() { return 'wss://ws.okx.com:8443/ws/v5/public'; }
+  url() { const u = OKX_ENDPOINTS[this._epi % OKX_ENDPOINTS.length]; this._epi++; return u; }
+  wsOptions() { return this._dispatcher ? { dispatcher: this._dispatcher } : undefined; }
   subscribeFrames() { return [{ op: 'subscribe', args: [{ channel: 'liquidation-orders', instType: 'SWAP' }] }]; }
   pingFrame() { return 'ping'; }
   pingIntervalMs() { return 25000; }
 
   async init() {
+    // Optional proxy: if OKX_PROXY is set, route this socket (and the REST below) through an allowed-region
+    // HTTP CONNECT proxy — the definitive fix when OKX edge-blocks the server IP. Empty = connect directly.
+    if (config.okxProxy) {
+      try { const { ProxyAgent } = await import('undici'); this._dispatcher = makeProxyAgent(ProxyAgent, config.okxProxy); log.info('[okx] routing via proxy', { proxy: new URL(config.okxProxy).host }); }
+      catch (e) { log.warn('[okx] proxy setup failed (run `npm install` for undici?) — connecting directly', { e: String(e) }); }
+    }
     // Load contract values for tracked USDT swaps so we can convert contracts -> base qty.
     try {
-      const r = await fetch('https://www.okx.com/api/v5/public/instruments?instType=SWAP');
+      const r = await fetch('https://www.okx.com/api/v5/public/instruments?instType=SWAP', this._dispatcher ? { dispatcher: this._dispatcher } : undefined);
       const j = await r.json();
       let n = 0;
       for (const it of (j.data || [])) {
@@ -40,7 +62,7 @@ export class OkxCollector extends BaseCollector {
     const text = typeof raw === 'string' ? raw : Buffer.isBuffer(raw) ? raw.toString() : String(raw);
     if (text === 'pong') return [];
     let j; try { j = JSON.parse(text); } catch { return []; }
-    if (j.event) return []; // subscribe ack / error
+    if (j.event) { if (j.event === 'error') log.warn('[okx] error frame', { code: j.code, msg: j.msg, connId: j.connId }); return []; } // ack / error
     if (!j.arg || j.arg.channel !== 'liquidation-orders' || !Array.isArray(j.data)) return [];
     const out = [];
     for (const row of j.data) {
