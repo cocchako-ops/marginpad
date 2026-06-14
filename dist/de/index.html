@@ -832,6 +832,46 @@
   .hnav .csel-trigger{font-size:12px;padding:8px 11px;font-weight:400;letter-spacing:.04em;border-radius:9px;}
   .hnav .csel-panel{min-width:150px;right:0;left:auto;}
   @media (prefers-reduced-motion:reduce){*,.aurora::before,.aurora::after{animation:none !important;}header,.hero h1,.hero .sub,.hero .meta,.tabs,.card,.panel.active,.reveal{opacity:1 !important;transform:none !important;}.grain{display:none;}}
+  /* ============ Visual polish v2 ============ */
+  /* deeper, colour-tinted atmosphere */
+  .aurora::before{opacity:.12;background:#c2f64a;filter:blur(110px);}
+  .aurora::after{opacity:.11;background:#2ebd85;filter:blur(120px);}
+  body[data-prod="heat"] .aurora::after{background:#ff6258;}
+  body[data-prod="swap"] .aurora::after{background:#6aa3ff;}
+  body[data-prod="plan"] .aurora::after{background:#2ebd85;}
+  /* live pulse dot utility */
+  .lvdot{position:relative;display:inline-block;width:7px;height:7px;border-radius:50%;background:#34d99a;vertical-align:middle;}
+  .lvdot::after{content:'';position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 0 rgba(52,217,154,.55);animation:lvpulse 1.7s ease-out infinite;}
+  @keyframes lvpulse{0%{box-shadow:0 0 0 0 rgba(52,217,154,.5);}70%{box-shadow:0 0 0 7px rgba(52,217,154,0);}100%{box-shadow:0 0 0 0 rgba(52,217,154,0);}}
+  @media(prefers-reduced-motion:reduce){.lvdot::after{animation:none;}}
+  /* hero: brighter subtext + lime live pill */
+  .hero .sub{color:#bcc3cb;font-size:18.5px;line-height:1.6;}
+  .hero .meta .lv{color:#cfe79a;border-color:rgba(194,246,74,.3)!important;}
+  .hero .meta .lv .lvdot{background:#c2f64a;}
+  .hero .meta .lv .lvdot::after{box-shadow:0 0 0 0 rgba(194,246,74,.5);animation:lvpulseL 1.7s ease-out infinite;}
+  @keyframes lvpulseL{0%{box-shadow:0 0 0 0 rgba(194,246,74,.5);}70%{box-shadow:0 0 0 7px rgba(194,246,74,0);}100%{box-shadow:0 0 0 0 rgba(194,246,74,0);}}
+  /* section rhythm: faint top divider above each major section */
+  .exchanges,.hotpairs,.tvsec,.tools{position:relative;}
+  .exchanges::before,.hotpairs::before,.tvsec::before,.tools::before{content:'';position:absolute;left:50%;top:-3px;transform:translateX(-50%);width:min(100%,920px);height:1px;background:linear-gradient(90deg,transparent,var(--line-bright),transparent);}
+  /* product colour-coding (active accent per tool) */
+  .prod[data-prod="calc"].active{border-color:rgba(194,246,74,.8);box-shadow:inset 0 0 0 1px rgba(194,246,74,.4),0 18px 46px -22px rgba(194,246,74,.55);}
+  .prod[data-prod="calc"].active .pi{color:#c2f64a;}
+  .prod[data-prod="heat"].active{border-color:rgba(255,98,88,.8);box-shadow:inset 0 0 0 1px rgba(255,98,88,.4),0 18px 46px -22px rgba(255,98,88,.55);}
+  .prod[data-prod="heat"].active .pi{color:#ff7b72;}
+  .prod[data-prod="plan"].active{border-color:rgba(46,189,133,.8);box-shadow:inset 0 0 0 1px rgba(46,189,133,.4),0 18px 46px -22px rgba(46,189,133,.55);}
+  .prod[data-prod="plan"].active .pi{color:#34d99a;}
+  .prod[data-prod="swap"].active{border-color:rgba(106,163,255,.8);box-shadow:inset 0 0 0 1px rgba(106,163,255,.4),0 18px 46px -22px rgba(106,163,255,.55);}
+  .prod[data-prod="swap"].active .pi{color:#6aa3ff;}
+  /* reveal on scroll */
+  .reveal-up{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);}
+  .reveal-up.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){.reveal-up{opacity:1!important;transform:none!important;}}
+  /* trending: bolder + flash on price change */
+  .hp-chg{font-weight:800;}
+  .hp-card.flash-up{animation:flashUp .7s ease;}
+  .hp-card.flash-dn{animation:flashDn .7s ease;}
+  @keyframes flashUp{0%{box-shadow:inset 0 0 0 1px rgba(46,189,133,.6);}100%{box-shadow:inset 0 0 0 1px rgba(46,189,133,0);}}
+  @keyframes flashDn{0%{box-shadow:inset 0 0 0 1px rgba(255,98,88,.6);}100%{box-shadow:inset 0 0 0 1px rgba(255,98,88,0);}}
 </style>
 </head>
 <body>
@@ -868,6 +908,7 @@
     <h1><span data-i18n="heroA">Alles, was du brauchst,</span><br><em data-i18n="heroB">um Futures zu traden.</em></h1>
     <p class="sub" data-i18n="sub">Übe Trades zum Live-Preis, erkenne Liquidationszonen in der Heatmap und berechne jede Zahl — Liquidation, PnL, Positionsgröße und mehr. Ohne Anmeldung, mit jeder Börse.</p>
     <div class="meta">
+      <span class="lv"><span class="lvdot"></span> <span data-i18n="mLive">Real-time prices</span></span>
       <span><b>6</b> <span data-i18n="mCalc">Rechner</span></span>
       <span><b>0</b> <span data-i18n="mSignup">Anmeldung</span></span>
       <span><b>100%</b> <span data-i18n="mFree">gratis</span></span>
@@ -1418,7 +1459,7 @@
     ];
     const REF = 'MAOZM9DS', BASE = 'https://www.binance.com/en/futures/';
     const fmtP = v => { v=parseFloat(v); return v>=100 ? v.toLocaleString('en-US',{maximumFractionDigits:2}) : v>=1 ? v.toFixed(3) : v.toFixed(5); };
-    let loaded = false;
+    let loaded = false; const prevPx={};
     function render(pairs){
       const map={}; pairs.forEach(d=>map[d.symbol]=d);
       let hottest=null, hotAbs=0;
@@ -1426,15 +1467,17 @@
       const html = PAIRS.map(p=>{
         const d=map[p.s]; if(!d) return '';
         const chg=parseFloat(d.changePct), up=chg>=0, hot=p.s===hottest;
-        return '<div class="hp-card'+(hot?' hot':'')+'">'
+        return '<div class="hp-card'+(hot?' hot':'')+'" data-s="'+p.s+'">'
           + (hot?'<span class="hp-fire liveflame"></span>':'')
           + '<div class="hp-top"><span class="hp-sym">'+p.n+'<small>/USDT</small></span>'
-          + '<span class="hp-chg '+(up?'up':'down')+'">'+(up?'+':'')+chg.toFixed(2)+'%</span></div>'
+          + '<span class="hp-chg '+(up?'up':'down')+'">'+(up?'▲ +':'▼ ')+chg.toFixed(2)+'%</span></div>'
           + '<div class="hp-price '+(up?'up':'down')+'">$'+fmtP(d.price)+'</div>'
           + '<a class="hp-trade" href="'+BASE+p.s+'?ref='+REF+'" target="_blank" rel="sponsored noopener noreferrer">Trade →</a>'
           + '</div>';
       }).join('');
-      if (html) { grid.innerHTML = html; loaded = true; }
+      if (html) { grid.innerHTML = html; loaded = true;
+        PAIRS.forEach(p=>{ const d=map[p.s]; if(!d)return; const np=parseFloat(d.price), op=prevPx[p.s]; if(op!=null&&np!==op){ const el=grid.querySelector('.hp-card[data-s="'+p.s+'"]'); if(el)el.classList.add(np>op?'flash-up':'flash-dn'); } prevPx[p.s]=np; });
+      }
     }
     function load(){
       fetch('/api/prices', { cache: 'no-store' })
@@ -2463,6 +2506,18 @@ window.addEventListener('load', function () {
   }).catch(function(){}); }
   function start(){ if(window.innerWidth<760)return; poll(); setInterval(poll,4500); }
   if(document.readyState!=='loading')start(); else document.addEventListener('DOMContentLoaded',start);
+})();
+</script>
+<script>
+/* reveal sections on scroll (staggered, respects reduced-motion) */
+(function(){
+  var sel='.exchanges,.hotpairs,.tvsec,.tools,.site-foot,.faqs,.calc-seo';
+  var els=[].slice.call(document.querySelectorAll(sel));
+  if(!els.length)return;
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){return;}
+  if(!('IntersectionObserver'in window)){els.forEach(function(e){e.classList.add('in');});return;}
+  var io=new IntersectionObserver(function(ents){ents.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});},{threshold:.06,rootMargin:'0px 0px -36px 0px'});
+  els.forEach(function(e){e.classList.add('reveal-up');io.observe(e);});
 })();
 </script>
 </body>
