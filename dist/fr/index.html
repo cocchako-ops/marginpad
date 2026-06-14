@@ -936,6 +936,19 @@
   .prod .pnew{box-shadow:0 0 0 0 rgba(194,246,74,.5);animation:newpulse 2.4s ease-out infinite;}
   @keyframes newpulse{0%{box-shadow:0 0 0 0 rgba(194,246,74,.45);}70%{box-shadow:0 0 0 6px rgba(194,246,74,0);}100%{box-shadow:0 0 0 0 rgba(194,246,74,0);}}
   @media(prefers-reduced-motion:reduce){.prod .pnew{animation:none;}}
+  /* Paper Trade live price — styled to match the Liquidation Calculator result number (.result-main .rvalue) */
+  .ptt-form .pt2-px-v{font-family:'Bricolage Grotesque',sans-serif !important;font-weight:800;font-size:clamp(30px,3.4vw,44px);letter-spacing:-.03em;line-height:1;white-space:nowrap;transition:color .2s ease,transform .25s cubic-bezier(.2,.7,.2,1),text-shadow .25s ease;cursor:default;transform-origin:right center;}
+  .ptt-form .pt2-px-v.up{color:#2ebd85;filter:drop-shadow(0 2px 18px rgba(46,189,133,.18));}
+  .ptt-form .pt2-px-v.down{color:#ff6258;filter:drop-shadow(0 2px 18px rgba(255,98,88,.18));}
+  .ptt-form .pt2-px:hover .pt2-px-v{transform:scale(1.03);text-shadow:0 0 26px rgba(255,255,255,.22);}
+  /* swap section: blue-accent framed card + trust badges (matches swap=blue colour-coding) */
+  .swap-badges{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 auto 14px;}
+  .swap-badge{display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.03em;color:#a9c6ff;background:rgba(106,163,255,.09);border:1px solid rgba(106,163,255,.26);border-radius:20px;padding:6px 13px;}
+  .swap-badge .lvdot{background:#6aa3ff;}.swap-badge .lvdot::after{box-shadow:0 0 0 0 rgba(106,163,255,.55);animation:lvpulseB 1.7s ease-out infinite;}
+  @keyframes lvpulseB{0%{box-shadow:0 0 0 0 rgba(106,163,255,.5);}70%{box-shadow:0 0 0 7px rgba(106,163,255,0);}100%{box-shadow:0 0 0 0 rgba(106,163,255,0);}}
+  .swap-frame{border:1px solid rgba(106,163,255,.3);box-shadow:0 26px 64px -34px rgba(106,163,255,.45),inset 0 1px 0 rgba(255,255,255,.04);background:linear-gradient(180deg,var(--panel),var(--bg-grain));}
+  /* chart header live price: a touch bolder for consistency */
+  .ptt-cpx b{font-size:13.5px;font-weight:700;}
 </style>
 </head>
 <body>
@@ -1036,6 +1049,11 @@
 
   <section id="swap" class="swapwrap" style="display:none" aria-label="Swap crypto">
     <p class="swap-intro" data-i18n="swapIntro">Échangez 900+ cryptos instantanément — sans compte, non dépositaire. Vos fonds et adresses ne transitent jamais par MarginPad.</p>
+    <div class="swap-badges">
+      <span class="swap-badge"><span class="lvdot"></span> <span data-i18n="swapBadge1">Non-custodial</span></span>
+      <span class="swap-badge"><span data-i18n="swapBadge2">900+ coins</span></span>
+      <span class="swap-badge"><span data-i18n="swapBadge3">No account</span></span>
+    </div>
     <div class="swap-frame">
       <div class="swap-load" id="swapLoad" data-i18n="swapLoad">Chargement de l'échange…</div>
       <iframe id="iframe-widget" title="Crypto swap" allow="clipboard-write" loading="lazy"></iframe>
