@@ -888,6 +888,34 @@
   .excard:hover{box-shadow:0 20px 48px -24px var(--exc,#000),0 0 0 1px var(--exc,#fff);}
   /* button press micro-interaction */
   .heat-btn:active,.pt2-open:active,.cta:active,.hp-trade:active{transform:translateY(1px);}
+  /* text selection + custom dark scrollbar */
+  ::selection{background:rgba(194,246,74,.28);color:#fff;}
+  ::-webkit-scrollbar{width:11px;height:11px;}
+  ::-webkit-scrollbar-track{background:#0a0b0d;}
+  ::-webkit-scrollbar-thumb{background:#262d37;border-radius:8px;border:2px solid #0a0b0d;}
+  ::-webkit-scrollbar-thumb:hover{background:#36404c;}
+  html{scrollbar-color:#262d37 #0a0b0d;scrollbar-width:thin;}
+  /* sticky header — transparent over the hero, blurred full-bleed bar once scrolled */
+  header{position:sticky;top:0;z-index:40;transition:padding .25s ease;}
+  header::after{content:'';position:absolute;top:0;left:calc(50% - 50vw);width:100vw;height:100%;z-index:-1;background:rgba(10,11,13,.82);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);border-bottom:1px solid var(--line-bright);opacity:0;transition:opacity .28s ease;}
+  body.scrolled header{padding-top:15px;padding-bottom:13px;}
+  body.scrolled header::after{opacity:1;}
+  /* Long side in trading green (was white) */
+  .seg button.on[data-side="long"]{background:rgba(46,189,133,.14);border-color:var(--up);color:#34d99a;}
+  /* small lime accent before section headings */
+  .sec-head h2::before,.exchanges>h2::before{content:'';display:inline-block;width:4px;height:15px;border-radius:2px;background:#c2f64a;margin-right:11px;vertical-align:-1px;}
+  /* trending live sparkline */
+  .hp-spark{display:block;width:100%;height:26px;margin:1px 0 2px;overflow:visible;}
+  .hp-spark path{fill:none;stroke-width:1.6;vector-effect:non-scaling-stroke;}
+  .hp-card.flash-dn .hp-spark path,.hp-spark.dn path{stroke:#ff6258;}
+  .hp-spark.up path{stroke:#2ebd85;}
+  /* leverage slider (paired with the number input) */
+  .lev-slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;margin:11px 0 2px;border-radius:6px;outline:none;cursor:pointer;background:linear-gradient(90deg,#34d99a 0%,#c2f64a 38%,#ffb347 68%,#ff6258 100%);}
+  .lev-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #0a0b0d;box-shadow:0 2px 8px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.5);cursor:pointer;transition:transform .12s;}
+  .lev-slider::-webkit-slider-thumb:hover{transform:scale(1.12);}
+  .lev-slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #c2f64a;cursor:pointer;}
+  .lev-slider::-moz-range-track{height:6px;border-radius:6px;background:transparent;}
+  .lev-ticks{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:2px;letter-spacing:.03em;}
 </style>
 </head>
 <body>
@@ -1030,7 +1058,7 @@
             </div>
             <div class="pt2-fields">
               <div class="pt2-amt"><label data-i18n="lAmountIn">Amount (USD)</label><div class="input-line"><input type="number" id="planAmt" value="100" step="any" min="0" inputmode="decimal"><span class="unit">$</span></div></div>
-              <div class="pt2-lev"><label data-i18n="lLeverage">Leverage</label><div class="input-line"><input type="number" id="planLev" value="10" step="1" min="1" max="1000" inputmode="numeric"><span class="unit">×</span></div></div>
+              <div class="pt2-lev"><label data-i18n="lLeverage">Leverage</label><div class="input-line"><input type="number" id="planLev" value="10" step="1" min="1" max="1000" inputmode="numeric"><span class="unit">×</span></div><input type="range" id="planLevR" class="lev-slider" min="1" max="125" value="10" step="1" aria-label="Leverage slider"><div class="lev-ticks"><span>1×</span><span>25×</span><span>50×</span><span>100×</span><span>125×</span></div></div>
             </div>
             <div class="ptt-stats"><div><span data-i18n="rPosSize">Position size</span><b id="planSize">—</b></div><div><span data-i18n="rNotional">Notional value</span><b id="planNotional">—</b></div><div><span data-i18n="rEstLiq">Est. liquidation</span><b id="planLiq">—</b></div></div>
             <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span data-i18n="planAdv4">⚙ Advanced — stop-loss &amp; take-profit</span></label>
@@ -1489,13 +1517,19 @@
           + '<div class="hp-top"><span class="hp-sym">'+p.n+'<small>/USDT</small></span>'
           + '<span class="hp-chg '+(up?'up':'down')+'">'+(up?'▲ +':'▼ ')+chg.toFixed(2)+'%</span></div>'
           + '<div class="hp-price '+(up?'up':'down')+'">$'+fmtP(d.price)+'</div>'
+          + '<svg class="hp-spark" data-spark="'+p.n+'" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d=""/></svg>'
           + '<a class="hp-trade" href="'+BASE+p.s+'?ref='+REF+'" target="_blank" rel="sponsored noopener noreferrer">Trade →</a>'
           + '</div>';
       }).join('');
       if (html) { grid.innerHTML = html; loaded = true;
         PAIRS.forEach(p=>{ const d=map[p.s]; if(!d)return; const np=parseFloat(d.price), op=prevPx[p.s]; if(op!=null&&np!==op){ const el=grid.querySelector('.hp-card[data-s="'+p.s+'"]'); if(el)el.classList.add(np>op?'flash-up':'flash-dn'); } prevPx[p.s]=np; });
+        grid.querySelectorAll('.hp-spark').forEach(function(el){drawSpark(el,el.getAttribute('data-spark'));});
       }
     }
+    function sparkPath(a){ if(!a||a.length<2)return ''; var n=a.length,mn=Math.min.apply(null,a),mx=Math.max.apply(null,a),rng=(mx-mn)||1,s=''; for(var i=0;i<n;i++){var x=(i/(n-1))*100,y=25-((a[i]-mn)/rng)*23; s+=(i?'L':'M')+x.toFixed(2)+' '+y.toFixed(2)+' ';} return s.trim(); }
+    function drawSpark(el,name){ if(!el)return; var h=window.mpHist&&window.mpHist[name]; var p=el.querySelector('path'); if(!p)return; var d=sparkPath(h); if(!d){return;} p.setAttribute('d',d); var upTrend=h[h.length-1]>=h[0]; el.classList.toggle('up',upTrend); el.classList.toggle('dn',!upTrend); }
+    var _spk={};
+    document.addEventListener('mp:price',function(ev){ if(!ev.detail)return; var s=ev.detail.sym,now=(window.performance&&performance.now)?performance.now():+new Date(); if(now-(_spk[s]||0)<700)return; _spk[s]=now; var el=grid.querySelector('.hp-spark[data-spark="'+s+'"]'); if(el)drawSpark(el,s); });
     function load(){
       fetch('/api/prices', { cache: 'no-store' })
         .then(r => r.ok ? r.json() : Promise.reject())
@@ -1599,7 +1633,11 @@
   function poll(){var sym=((document.getElementById('planSym')||{}).value||'');if(!sym)return;fetch('/api/price?symbol='+encodeURIComponent(sym)).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){live=+pd.price;liveChg=+pd.chg||0;showLive();calc();}}).catch(function(){});}
   if(seg)seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
   ['planAmt','planLev'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
-  var levEl=document.getElementById('planLev');if(levEl)levEl.addEventListener('input',function(){if(parseFloat(levEl.value)>1000)levEl.value='1000';});
+  var levEl=document.getElementById('planLev'),levR=document.getElementById('planLevR');
+  function syncLevR(){if(!levR||!levEl)return;var v=parseFloat(levEl.value);if(isFinite(v))levR.value=String(Math.max(1,Math.min(125,v)));}
+  if(levEl)levEl.addEventListener('input',function(){if(parseFloat(levEl.value)>1000)levEl.value='1000';syncLevR();});
+  if(levR)levR.addEventListener('input',function(){if(levEl){levEl.value=levR.value;calc();}});
+  syncLevR();
   var advChk=document.getElementById('planAdvChk');
   if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;});
   var pSym=document.getElementById('planSym');
@@ -1868,12 +1906,15 @@
    price, chart candle and live P&L feel instant. REST polling stays as a fallback if the socket is down. */
 (function(){
   if(!('WebSocket'in window))return;
-  var SYMS=['BTC','ETH','SOL','XRP','BNB','DOGE'];
+  var SYMS=['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX'];
   window.mpLivePrices=window.mpLivePrices||{};
-  var ws=null,alive=false,retry=0,pingT=null;
+  window.mpHist=window.mpHist||{};
+  var ws=null,alive=false,retry=0,pingT=null,lastH={};
+  function pushHist(sym,price){var now=Date.now();if(now-(lastH[sym]||0)<1000)return;lastH[sym]=now;var h=window.mpHist[sym]||(window.mpHist[sym]=[]);h.push(price);if(h.length>46)h.shift();}
   function emit(sym,price,chg){
     var prev=window.mpLivePrices[sym]||{};
     window.mpLivePrices[sym]={p:price,t:Date.now(),chg:(chg!=null&&isFinite(chg))?chg:prev.chg};
+    pushHist(sym,price);
     try{document.dispatchEvent(new CustomEvent('mp:price',{detail:{sym:sym,price:price,chg:window.mpLivePrices[sym].chg}}));}catch(_){}
   }
   function connect(){
@@ -2536,6 +2577,8 @@ window.addEventListener('load', function () {
   var io=new IntersectionObserver(function(ents){ents.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});},{threshold:.06,rootMargin:'0px 0px -36px 0px'});
   els.forEach(function(e){e.classList.add('reveal-up');io.observe(e);});
 })();
+/* sticky-header backdrop appears once scrolled */
+(function(){var on=false;function upd(){var s=(window.scrollY||window.pageYOffset||0)>16;if(s!==on){on=s;document.body.classList.toggle('scrolled',s);}}window.addEventListener('scroll',upd,{passive:true});upd();})();
 </script>
 </body>
 </html>
