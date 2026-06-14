@@ -1990,7 +1990,7 @@
     store(data); /* shows live in the My Trades drawer — no popup */
     var btn=document.getElementById('planSave'),sp=btn&&btn.querySelector('span');
     if(btn&&sp){var o=sp.textContent;btn.classList.add('saved');sp.textContent=MT('jOpened','Position opened ✓');setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1600);}
-    try{if(window.__mpTrack)window.__mpTrack('journal','open');}catch(e){}
+    try{if(window.__mpTrack){window.__mpTrack('paper',(sym||'?')+' '+side);window.__mpTrack('plev',L<=5?'1-5x':L<=20?'5-20x':L<=50?'20-50x':L<=100?'50-100x':'100x+');}}catch(e){}
   }
   var saveBtn=document.getElementById('planSave'); if(saveBtn)saveBtn.addEventListener('click',add);
   // ticket + tab actions are delegated to document — the list lives in the drawer, which parses after this script
@@ -2066,6 +2066,11 @@
     }catch(_){}
   }
   send('pageview');
+  window.__mpTrack=send;
+  // scroll depth — fire once per 25/50/75/100% threshold
+  (function(){var hit={};function s(){var st=window.scrollY||document.documentElement.scrollTop||0,dh=(document.documentElement.scrollHeight-window.innerHeight)||1,pct=st/dh*100;[25,50,75,100].forEach(function(t){if(pct>=t&&!hit[t]){hit[t]=1;send('scroll',String(t));}});}window.addEventListener('scroll',s,{passive:true});})();
+  // time on page — bucketed, sent once when the tab is hidden/closed
+  (function(){var t0=Date.now(),sent=false;function leave(){if(sent)return;sent=true;var x=Math.round((Date.now()-t0)/1000);send('time',x<10?'0-10s':x<30?'10-30s':x<60?'30-60s':x<180?'1-3m':x<600?'3-10m':'10m+');}document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')leave();});window.addEventListener('pagehide',leave);})();
   // human-readable label for whatever was clicked, so the stats dashboard reads clearly
   var ID2NAME={planSave:'Open position (Long/Short)',jrOpen:'My Trades (header)',jrClose:'Close My Trades',jrBackdrop:'Close My Trades (tap-away)',planSym:'Symbol picker',planLev:'Leverage input',planAmt:'Amount input',ptSig:'Signals toggle',planAdvChk:'Advanced toggle',planSlOpt:'Stop-loss input',planTpOpt:'Take-profit input',ptMtCount:'My Trades (in terminal)',chatOpen:'Open chat',chatClose:'Close chat'};
   var ACT2NAME={close:'Close position',del:'Delete trade',edit:'Edit SL/TP',reopen:'Reopen trade',share:'Share ticket',copy:'Copy ticket',win:'Mark win',loss:'Mark loss'};
