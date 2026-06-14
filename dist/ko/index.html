@@ -121,9 +121,8 @@
   header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:26px 0 20px;border-bottom:1px solid var(--line);animation:fade .7s ease both;flex-wrap:wrap;}
   .brand{display:flex;align-items:baseline;gap:10px;}
   .brand .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;transition:letter-spacing .25s ease;cursor:pointer;color:var(--ink);text-decoration:none;}
-  .brand .mark b{color:#c2f64a;}
   .brand .mark:hover{letter-spacing:-.02em;}
-  .brand .mark b{color:var(--lime);}
+  .brand .mark b{color:#c2f64a;}
   .brand .tag{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.18em;}
   .hnav{display:flex;align-items:center;gap:3px;}
   .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);text-decoration:none;background:transparent;border:none;cursor:pointer;padding:8px 11px;border-radius:9px;transition:.15s;}
@@ -1028,6 +1027,7 @@
     </div>
     <nav class="hnav">
       <a href="/blog/" class="hlink" data-i18n="navBlog">블로그</a>
+      <a href="/rekt/" class="hlink" data-i18n="navRekt"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Rekt</a>
       <a href="/api/" class="hlink">API</a>
       <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
       <button type="button" class="hlink hjr" id="jrOpen" data-mytrades><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</button>
@@ -2182,12 +2182,22 @@
   var off=false;
   function place(){
     var r=tab.getBoundingClientRect(),w=hint.offsetWidth||284,h=hint.offsetHeight||120;
-    var left=r.right-22;                          // ~3cm to the right — balloon sits above-right of the card
+    var left=r.right-22+78;                        // ~2cm further right so it clears the hero meta pills
     left=Math.max(12,Math.min(left,window.innerWidth-w-12));
     var top=r.top-h-18,below=false; if(top<8){top=r.bottom+18;below=true;}
     hint.style.left=left+'px'; hint.style.top=top+'px'; hint.classList.toggle('below',below);
-    var ax=(r.right-8)-left;                       // arrow points at the top-right corner of the card (the NEW badge)
-    hint.style.setProperty('--ax',Math.max(14,Math.min(ax,w-14))+'px');
+    // a long hand-drawn arrow from the balloon's bottom-left back to the card's top-right corner (NEW badge)
+    var svg=hint.querySelector('.pt-hint-arrow'); if(svg){
+      if(below){ svg.style.left='24px'; svg.style.bottom='auto'; svg.style.top='-46px'; svg.setAttribute('width','50'); svg.setAttribute('height','56'); svg.setAttribute('viewBox','0 0 50 56'); svg.innerHTML='<path d="M25 50 C 12 36, 40 24, 25 6" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M16 13 L25 4 L34 12" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>'; return; }
+      var cornerX=r.right-6, cornerY=r.top;
+      var gx=Math.max(34,left-cornerX+20), gy=Math.max(26,cornerY-(top+h)+14);
+      var W=gx+22, H=gy+16;
+      svg.setAttribute('width',W); svg.setAttribute('height',H); svg.setAttribute('viewBox','0 0 '+W+' '+H);
+      svg.style.left=(-gx)+'px'; svg.style.bottom=(-gy)+'px'; svg.style.top='auto'; svg.style.transform='none';
+      var d='M '+(W-9)+' 7 C '+(W*0.62).toFixed(0)+' '+(H*0.22).toFixed(0)+', '+(W*0.32).toFixed(0)+' '+(H*0.66).toFixed(0)+', 13 '+(H-7);
+      var head='M 9 '+(H-21)+' L 12 '+(H-5)+' L 28 '+(H-12);
+      svg.innerHTML='<path d="'+d+'" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="'+head+'" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>';
+    }
   }
   function inView(){var r=tab.getBoundingClientRect();return r.bottom>50&&r.top<window.innerHeight-30;}
   function vis(){return !off && window.innerWidth>=680 && (document.body.getAttribute('data-prod')||'')!=='plan' && inView();}
