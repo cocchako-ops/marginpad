@@ -998,6 +998,20 @@
   @media(prefers-reduced-motion:reduce){.rvalue.changed,.pt2-px-v.changed{animation:none;}}
   /* 4. mobile nav active item */
   .mobnav button.active{color:#c2f64a !important;}
+  /* ===== My Trades cards → tear-off tickets ===== */
+  .jr-list .pp{overflow:visible;background:linear-gradient(180deg,#11151b,#0c0f13);border-radius:13px;box-shadow:0 10px 26px -16px rgba(0,0,0,.8);padding:15px 16px 14px;}
+  .jr-list .pp.pf{border-left:3px solid #2ebd85;}.jr-list .pp.ls{border-left:3px solid #ff6258;}.jr-list .pp.be{border-left:3px solid #6b7280;}
+  .pp-perf{position:relative;height:0;margin:13px -16px;border-top:2px dashed rgba(255,255,255,.14);}
+  .pp-perf::before,.pp-perf::after{content:'';position:absolute;top:-10px;width:18px;height:18px;border-radius:50%;background:#0a0b0d;border:1px solid var(--line-bright);box-shadow:inset 0 1px 4px rgba(0,0,0,.7);}
+  .pp-perf::before{left:-9px;}
+  .pp-perf::after{right:-9px;}
+  .jr-list .pp-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px 16px;font-family:'Space Mono',monospace;line-height:1.3;margin-bottom:12px;}
+  .jr-list .pp-meta>div{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:11.5px;min-width:0;}
+  .jr-list .pp-meta>div span{color:var(--ink-faint);white-space:nowrap;}
+  .jr-list .pp-meta>div b{color:var(--ink);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pp-foot{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.04em;color:var(--ink-faint);text-transform:uppercase;margin:-4px 0 11px;}
+  .jr-list .pp-h{padding-right:66px;}
+  .jr-list .pp-sym{font-size:15px;}
 </style>
 </head>
 <body>
@@ -1870,13 +1884,28 @@
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e)
       +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
-      +'<div class="pp-meta">'+MT('jEntry','Entry')+' <b>'+fp(e.entry)+'</b> · '+MT('jMargin2','Margin')+' <b>'+(m.margin!=null?money(m.margin):'—')+'</b><br>'+MT('jLiq2','Liq')+' <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+') · SL <b>'+(e.stop!=null?fp(e.stop):'—')+'</b> · TP <b>'+(e.tp!=null?fp(e.tp):'—')+'</b><br>'+dur(Date.now()-e.ts)+' '+MT('jOpenLc','open')+'</div>'
+      +'<div class="pp-perf"></div>'
+      +'<div class="pp-meta">'
+        +'<div><span>'+MT('jEntry','Entry')+'</span><b>'+fp(e.entry)+'</b></div>'
+        +'<div><span>'+MT('jMargin2','Margin')+'</span><b>'+(m.margin!=null?money(m.margin):'—')+'</b></div>'
+        +'<div><span>'+MT('jLiq2','Liq')+'</span><b>'+fp(m.liq)+'</b></div>'
+        +'<div><span>'+MT('jBuffer','Buffer')+'</span><b>'+pctS(m.liqDist)+'</b></div>'
+        +'<div><span>SL</span><b>'+(e.stop!=null?fp(e.stop):'—')+'</b></div>'
+        +'<div><span>TP</span><b>'+(e.tp!=null?fp(e.tp):'—')+'</b></div>'
+      +'</div>'
+      +'<div class="pp-foot">'+dur(Date.now()-e.ts)+' '+MT('jOpenLc','open')+'</div>'
       +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button><button data-act="edit" data-id="'+e.id+'">SL/TP</button><button data-act="del" data-id="'+e.id+'">'+MT('jDelete','Delete')+'</button></div></div>';}
   function closedCard(e){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e)
       +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.liquidated?'LIQ 💥':(win?'WIN':'LOSS'))+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?(((+e.pnl)>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span>'+((e.margin&&e.pnl!=null)?'<span class="roe">ROE '+pctS(((+e.pnl)/(+e.margin||1))*100)+'</span>':'')+'</div>'
-      +'<div class="pp-meta">'+fp(e.entry)+' → '+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+' · '+(e.lev||1)+'×'+(e.closeTs?'<br>'+dur(e.closeTs-e.ts)+' '+MT('jHeld','held'):'')+'</div>'
+      +'<div class="pp-perf"></div>'
+      +'<div class="pp-meta">'
+        +'<div><span>'+MT('jEntry','Entry')+'</span><b>'+fp(e.entry)+'</b></div>'
+        +'<div><span>'+MT('jExit','Exit')+'</span><b>'+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+'</b></div>'
+        +'<div><span>'+MT('jLev','Leverage')+'</span><b>'+(e.lev||1)+'×</b></div>'
+        +'<div><span>'+MT('jHeld','Held')+'</span><b>'+(e.closeTs?dur(e.closeTs-e.ts):'—')+'</b></div>'
+      +'</div>'
       +'<div class="pp-btns"><button data-act="reopen" data-id="'+e.id+'">'+MT('jReopen','Reopen')+'</button><button data-act="del" data-id="'+e.id+'">'+MT('jDelete','Delete')+'</button></div></div>';}
   function rr(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}
   function buildTicket(e){
