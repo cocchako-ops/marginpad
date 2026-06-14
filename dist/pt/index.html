@@ -950,6 +950,54 @@
   .swap-frame{border:1px solid rgba(106,163,255,.3);box-shadow:0 26px 64px -34px rgba(106,163,255,.45),inset 0 1px 0 rgba(255,255,255,.04);background:linear-gradient(180deg,var(--panel),var(--bg-grain));}
   /* chart header live price: a touch bolder for consistency */
   .ptt-cpx b{font-size:13.5px;font-weight:700;}
+  /* ===== 15 low-effort upgrades ===== */
+  /* 1. tabular numerals — live numbers stop jittering in width */
+  .result-main .rvalue,.ptt-form .pt2-px-v,.hp-price,.hp-chg,.pp-pnl .big,.pp-pnl .roe,.jr-stat .v,.ptt-cpx,.pt2-px-chg,.ptt-stats b,.pt2-px-v{font-variant-numeric:tabular-nums;}
+  /* 2. animated live label */
+  .live-lbl{display:inline-flex;align-items:center;gap:6px;}
+  /* 3. trending coin colour dot */
+  .hp-coin{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:0;box-shadow:0 0 8px -1px currentColor;}
+  /* 5. scroll-to-top */
+  .totop{position:fixed;right:18px;bottom:78px;z-index:54;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(17,20,25,.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--line-bright);color:var(--ink);cursor:pointer;opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s;}
+  .totop.on{opacity:1;transform:none;pointer-events:auto;}
+  .totop:hover{border-color:#c2f64a;color:#c2f64a;transform:translateY(-2px);}
+  @media(min-width:761px){.totop{bottom:24px;}}
+  /* 6. paper chart skeleton */
+  .chart-skel{position:absolute;inset:0;z-index:3;background:var(--bg);display:flex;align-items:flex-end;gap:5px;padding:26px 22px;}
+  .chart-skel i{flex:1;border-radius:3px 3px 0 0;background:linear-gradient(0deg,rgba(255,255,255,.03),rgba(255,255,255,.085));animation:cskel 1.3s ease-in-out infinite;}
+  @keyframes cskel{0%,100%{opacity:.35;}50%{opacity:.85;}}
+  @media(prefers-reduced-motion:reduce){.chart-skel i{animation:none;}}
+  /* 7. primary CTA sheen */
+  .pt2-open{position:relative;overflow:hidden;}
+  .pt2-open::after{content:'';position:absolute;top:0;left:-60%;width:38%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.30),transparent);transform:skewX(-18deg);animation:sheen 3.8s ease-in-out infinite;pointer-events:none;}
+  @keyframes sheen{0%,72%{left:-60%;}100%{left:135%;}}
+  @media(prefers-reduced-motion:reduce){.pt2-open::after{display:none;}}
+  /* 8. high-leverage risk hint */
+  .lev-warn{display:none;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.04em;color:var(--amber);margin-top:6px;}
+  .pt2-lev.risky .lev-warn{display:block;}
+  .pt2-lev.risky .input-line input{border-color:rgba(255,179,71,.55);}
+  /* 9. animated underline on text links */
+  .foot-links a,.hnav>a{position:relative;}
+  .foot-links a::after,.hnav>a::after{content:'';position:absolute;left:0;bottom:-2px;width:100%;height:1.5px;background:#c2f64a;transform:scaleX(0);transform-origin:left;transition:transform .22s ease;}
+  .foot-links a:hover::after,.hnav>a:hover::after{transform:scaleX(1);}
+  /* 10. keyboard focus rings */
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:2px solid rgba(194,246,74,.7);outline-offset:2px;border-radius:7px;}
+  /* 11. section eyebrow label */
+  .eyebrow{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:7px;}
+  /* 12. copy-on-click numbers */
+  .copynum{cursor:pointer;}
+  .copied-tip{position:fixed;z-index:95;background:#11151b;border:1px solid var(--line-bright);color:#c2f64a;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:5px 11px;border-radius:8px;pointer-events:none;transform:translate(-50%,-135%);box-shadow:0 8px 24px rgba(0,0,0,.5);}
+  /* 13. nicer empty My Trades state */
+  .pp-empty{display:flex;flex-direction:column;align-items:center;gap:11px;color:var(--ink-faint);}
+  .pp-empty svg{opacity:.45;}
+  /* 14. subtle grain texture for depth */
+  body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.022;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+  /* 15. result change pulse */
+  .rvalue.changed,.pt2-px-v.changed{animation:numpop .42s cubic-bezier(.2,.7,.2,1);}
+  @keyframes numpop{0%{transform:scale(1);}35%{transform:scale(1.05);}100%{transform:scale(1);}}
+  @media(prefers-reduced-motion:reduce){.rvalue.changed,.pt2-px-v.changed{animation:none;}}
+  /* 4. mobile nav active item */
+  .mobnav button.active{color:#c2f64a !important;}
 </style>
 </head>
 <body>
@@ -1081,7 +1129,7 @@
               <div class="ptt-tf" id="ptTf"><button data-tf="1" type="button">1m</button><button data-tf="5" type="button">5m</button><button data-tf="15" class="on" type="button">15m</button><button data-tf="60" type="button">1h</button><button data-tf="240" type="button">4h</button><button data-tf="1440" type="button">1D</button><button data-tf="10080" type="button">1W</button></div>
               <button class="ptt-sig" id="ptSig" type="button" aria-pressed="false" title="Buy/Sell signals (Supertrend)"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><polyline points="15 7 21 7 21 13"/></svg><span data-i18n="sigBtn">Signals</span></button>
             </div>
-            <div class="ptt-cpx"><span class="ptt-live">● LIVE</span> <b id="ptChartPx">…</b> <span id="ptChartChg"></span></div>
+            <div class="ptt-cpx"><span class="ptt-live live-lbl"><span class="lvdot"></span>LIVE</span> <b id="ptChartPx">…</b> <span id="ptChartChg"></span></div>
           </div>
           <div id="ptChart"></div>
         </div>
@@ -1089,7 +1137,7 @@
           <div class="ptt-form">
             <div class="pt2-top">
               <select id="planSym" class="pt2-sym" aria-label="Symbol"><option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option><option>BNB</option><option>DOGE</option></select>
-              <div class="pt2-px"><div class="pt2-px-lbl">● LIVE</div><div class="pt2-px-v" id="planLivePx">…</div><div class="pt2-px-chg" id="planLiveChg"></div></div>
+              <div class="pt2-px"><div class="pt2-px-lbl live-lbl"><span class="lvdot"></span>LIVE</div><div class="pt2-px-v copynum" id="planLivePx" title="Click to copy">…</div><div class="pt2-px-chg" id="planLiveChg"></div></div>
             </div>
             <div class="pt2-side" id="planSeg">
               <button class="on" data-side="long" type="button"><span data-i18n="long">Comprado</span></button>
@@ -1097,7 +1145,7 @@
             </div>
             <div class="pt2-fields">
               <div class="pt2-amt"><label data-i18n="lAmountIn">Amount (USD)</label><div class="input-line"><input type="number" id="planAmt" value="100" step="any" min="0" inputmode="decimal"><span class="unit">$</span></div></div>
-              <div class="pt2-lev"><label data-i18n="lLeverage">Alavancagem</label><div class="input-line"><input type="number" id="planLev" value="10" step="1" min="1" max="1000" inputmode="numeric"><span class="unit">×</span></div><input type="range" id="planLevR" class="lev-slider" min="0" max="1000" value="333" step="1" aria-label="Leverage slider"><div class="lev-ticks"><span>1×</span><span>10×</span><span>100×</span><span>1000×</span></div></div>
+              <div class="pt2-lev"><label data-i18n="lLeverage">Alavancagem</label><div class="input-line"><input type="number" id="planLev" value="10" step="1" min="1" max="1000" inputmode="numeric"><span class="unit">×</span></div><input type="range" id="planLevR" class="lev-slider" min="0" max="1000" value="333" step="1" aria-label="Leverage slider"><div class="lev-ticks"><span>1×</span><span>10×</span><span>100×</span><span>1000×</span></div><div class="lev-warn" data-i18n="levWarn">⚠ High leverage — liquidation sits very close to entry</div></div>
             </div>
             <div class="ptt-stats"><div><span data-i18n="rPosSize">Tamanho da posição</span><b id="planSize">—</b></div><div><span data-i18n="rNotional">Valor nocional</span><b id="planNotional">—</b></div><div><span data-i18n="rEstLiq">Preço de liquidação estimado</span><b id="planLiq">—</b></div></div>
             <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span data-i18n="planAdv4">⚙ Advanced — stop-loss &amp; take-profit</span></label>
@@ -1230,6 +1278,7 @@
   </div>
 
   <section class="exchanges">
+    <span class="eyebrow" data-i18n="ebPartners">Partners</span>
     <h2 data-i18n="exTitle">Onde operar</h2>
     <p class="exsub" data-i18n="exSub">Coloque estes números para trabalhar. Compare as melhores corretoras — alavancagem máxima e o destaque de cada uma.</p>
     <div class="exgrid" id="exgrid"></div>
@@ -1245,13 +1294,13 @@
   </section>
 
   <section class="hotpairs" id="trending">
-    <div class="sec-head"><h2 data-i18n="hotTitle">Pares em alta</h2></div>
+    <div class="sec-head"><span class="eyebrow" data-i18n="ebMarkets">Markets</span><h2 data-i18n="hotTitle">Pares em alta</h2></div>
     <p class="sec-sub" data-i18n="hotSub">Preços ao vivo e variação de 24 h nos mercados mais ativos. Toque em Operar para abrir o par.</p>
     <div class="hp-grid" id="hpGrid"></div>
   </section>
 
   <section class="tvsec">
-    <div class="sec-head"><h2 data-i18n="chartTitle">Gráfico e sinais ao vivo</h2></div>
+    <div class="sec-head"><span class="eyebrow" data-i18n="ebLive">Live</span><h2 data-i18n="chartTitle">Gráfico e sinais ao vivo</h2></div>
     <p class="sec-sub" data-i18n="chartSub">Gráfico completo em tempo real, via TradingView. Troque de par e adicione indicadores e tempos gráficos.</p>
     <div class="tvgrid">
       <div class="tvbox">
@@ -1266,7 +1315,7 @@
   </section>
 
   <section class="tools">
-    <div class="sec-head"><h2 data-i18n="toolsTitle">Ferramentas para traders que recomendamos</h2></div>
+    <div class="sec-head"><span class="eyebrow" data-i18n="ebRecommended">Recommended</span><h2 data-i18n="toolsTitle">Ferramentas para traders que recomendamos</h2></div>
     <p class="sec-sub" data-i18n="toolsSub">As plataformas que combinaríamos com o MarginPad — gráficos, impostos e automação.</p>
     <div class="tools-grid">
       <a class="toolcard" style="--exc:#2962ff" href="https://www.tradingview.com/pricing/?share_your_love=cocchako" target="_blank" rel="sponsored noopener noreferrer">
@@ -1542,6 +1591,7 @@
       {s:'XRPUSDT',n:'XRP'},{s:'DOGEUSDT',n:'DOGE'},{s:'ADAUSDT',n:'ADA'},{s:'AVAXUSDT',n:'AVAX'}
     ];
     const REF = 'MAOZM9DS', BASE = 'https://www.binance.com/en/futures/';
+    const CC = {BTC:'#f7931a',ETH:'#7b8cf0',SOL:'#14f195',BNB:'#f3ba2f',XRP:'#cfd3d8',DOGE:'#c2a633',ADA:'#3468d1',AVAX:'#e84142'};
     const fmtP = v => { v=parseFloat(v); return v>=100 ? v.toLocaleString('en-US',{maximumFractionDigits:2}) : v>=1 ? v.toFixed(3) : v.toFixed(5); };
     let loaded = false; const prevPx={};
     function render(pairs){
@@ -1553,7 +1603,7 @@
         const chg=parseFloat(d.changePct), up=chg>=0, hot=p.s===hottest;
         return '<div class="hp-card'+(hot?' hot':'')+'" data-s="'+p.s+'">'
           + (hot?'<span class="hp-fire liveflame"></span>':'')
-          + '<div class="hp-top"><span class="hp-sym">'+p.n+'<small>/USDT</small></span>'
+          + '<div class="hp-top"><span class="hp-sym"><span class="hp-coin" style="background:'+(CC[p.n]||'#8a93a0')+';color:'+(CC[p.n]||'#8a93a0')+'"></span>'+p.n+'<small>/USDT</small></span>'
           + '<span class="hp-chg '+(up?'up':'down')+'">'+(up?'▲ +':'▼ ')+chg.toFixed(2)+'%</span></div>'
           + '<div class="hp-price '+(up?'up':'down')+'">$'+fmtP(d.price)+'</div>'
           + '<svg class="hp-spark" data-spark="'+p.n+'" viewBox="0 0 100 26" preserveAspectRatio="none" aria-hidden="true"><path d=""/></svg>'
@@ -1677,9 +1727,10 @@
   function levToPos(l){l=Math.max(1,Math.min(1000,l));return Math.round(Math.log(l)/Math.log(1000)*1000);}
   function levFill(){if(levR)levR.style.setProperty('--fill',(levR.value/(levR.max||1000)*100).toFixed(1)+'%');}
   function syncLevR(){if(!levR||!levEl)return;var v=parseFloat(levEl.value);if(isFinite(v)&&v>0){levR.value=String(levToPos(v));levFill();}}
-  if(levEl)levEl.addEventListener('input',function(){if(parseFloat(levEl.value)>1000)levEl.value='1000';syncLevR();});
-  if(levR)levR.addEventListener('input',function(){if(levEl){levEl.value=String(posToLev(parseFloat(levR.value)));levFill();calc();}});
-  syncLevR();
+  function levRisk(){var f=document.querySelector('.pt2-lev');if(f)f.classList.toggle('risky',num('planLev')>50);}
+  if(levEl)levEl.addEventListener('input',function(){if(parseFloat(levEl.value)>1000)levEl.value='1000';syncLevR();levRisk();});
+  if(levR)levR.addEventListener('input',function(){if(levEl){levEl.value=String(posToLev(parseFloat(levR.value)));levFill();calc();levRisk();}});
+  syncLevR();levRisk();
   var advChk=document.getElementById('planAdvChk');
   if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;});
   var pSym=document.getElementById('planSym');
@@ -1740,10 +1791,12 @@
     store(d);renderPos();drawLines();});
   function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
   function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;chart=LightweightCharts.createChart(el,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false},crosshair:{mode:1},autoSize:true});candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444'});
-    chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<10)loadMore();updateZone();});}
+    chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<10)loadMore();updateZone();});showSkel();}
+  function showSkel(){var el=document.getElementById('ptChart');if(!el||el.querySelector('.chart-skel'))return;var b='';for(var i=0;i<26;i++){var h=16+Math.round(62*Math.abs(Math.sin(i*0.7)));b+='<i style="height:'+h+'%;animation-delay:'+(i*0.04).toFixed(2)+'s"></i>';}var d=document.createElement('div');d.className='chart-skel';d.innerHTML=b;el.appendChild(d);}
+  function hideSkel(){var el=document.getElementById('ptChart');if(!el)return;var s=el.querySelector('.chart-skel');if(s&&s.parentNode)s.parentNode.removeChild(s);}
   function formSym(){return (document.getElementById('planSym')||{}).value||'BTC';}
   var bars=[],loadingMore=false,noMore=false;
-  function loadKlines(){var sym=formSym();chartSym=sym;bars=[];loadingMore=false;noMore=false;fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+chartTf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(sym!==chartSym)return;if(kd&&kd.length&&candle){bars=kd;try{candle.setData(bars);chart.timeScale().fitContent();}catch(e){}lastBar=bars[bars.length-1];drawLines();applySignals();}});}
+  function loadKlines(){var sym=formSym();chartSym=sym;bars=[];loadingMore=false;noMore=false;fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+chartTf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(sym!==chartSym)return;if(kd&&kd.length&&candle){bars=kd;try{candle.setData(bars);chart.timeScale().fitContent();}catch(e){}lastBar=bars[bars.length-1];drawLines();applySignals();hideSkel();}});}
   function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=kd.filter(function(b){return b.time<first;});if(!older.length){noMore=true;return;}if(older.length<900)noMore=true;bars=older.concat(bars);try{candle.setData(bars);}catch(e){}applySignals();});}
   /* Buy/Sell signals — a Supertrend(10,3) overlay (our own equivalent of TradingView "Buy Sell" indicators;
      kelfry98's proprietary Pine script can't be embedded here). Toggleable; plots BUY/SELL arrows on trend flips. */
@@ -1885,7 +1938,7 @@
       +stat(wr==null?'—':wr+'%',MT('jWinRate','Win rate'))
       +stat((realized>=0?'+':'−')+money(Math.abs(realized)).replace('-',''),MT('jRealized','Realized'),realized>=0?'#34d99a':'#ff7b72');
     var rows=(jrTab==='open'?open:closed);
-    var cards=rows.length?rows.slice().reverse().map(jrTab==='open'?openCard:closedCard).join(''):'<div class="pp-empty">'+(jrTab==='open'?MT('jNoOpen','No open positions — open one from Paper Trade.'):MT('jNoClosed','No closed trades yet.'))+'</div>';
+    var cards=rows.length?rows.slice().reverse().map(jrTab==='open'?openCard:closedCard).join(''):'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='open'?MT('jNoOpen','No open positions — open one from Paper Trade.'):MT('jNoClosed','No closed trades yet.'))+'</span></div>';
     listEl.innerHTML='<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+cards;
     if(emptyEl)emptyEl.style.display='none';
   }
@@ -2068,6 +2121,7 @@
   });
 })();
 </script>
+<button id="toTop" class="totop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 <div id="jrBackdrop" class="jr-backdrop" hidden></div>
 <aside id="jrDrawer" class="jr-drawer" hidden aria-label="Trade journal">
   <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</span><button id="jrClose" class="jr-x" type="button" aria-label="Close">✕</button></div>
@@ -2621,6 +2675,18 @@ window.addEventListener('load', function () {
 })();
 /* sticky-header backdrop appears once scrolled */
 (function(){var on=false;function upd(){var s=(window.scrollY||window.pageYOffset||0)>16;if(s!==on){on=s;document.body.classList.toggle('scrolled',s);}}window.addEventListener('scroll',upd,{passive:true});upd();})();
+/* scroll-to-top */
+(function(){var b=document.getElementById('toTop');if(!b)return;function upd(){b.classList.toggle('on',(window.scrollY||window.pageYOffset||0)>520);}window.addEventListener('scroll',upd,{passive:true});upd();b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});})();
+/* click-to-copy on the calculator result + Paper Trade price */
+(function(){
+  document.querySelectorAll('.rvalue').forEach(function(el){el.classList.add('copynum');if(!el.title)el.title='Click to copy';});
+  function tip(x,y,msg){var t=document.createElement('div');t.className='copied-tip';t.textContent=msg;t.style.left=x+'px';t.style.top=y+'px';document.body.appendChild(t);setTimeout(function(){t.style.transition='opacity .3s';t.style.opacity='0';},750);setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},1100);}
+  document.addEventListener('click',function(e){var el=e.target.closest&&e.target.closest('.copynum');if(!el)return;var txt=(el.textContent||'').trim();if(!txt||txt==='…'||txt==='—')return;var r=el.getBoundingClientRect();function ok(){tip(r.left+r.width/2,r.top,'Copied ✓');}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,function(){});}else{ok();}});
+})();
+/* 15. pulse the calculator result when its value changes */
+(function(){if(!('MutationObserver'in window))return;document.querySelectorAll('.rvalue').forEach(function(el){var mo=new MutationObserver(function(){el.classList.remove('changed');void el.offsetWidth;el.classList.add('changed');});mo.observe(el,{childList:true,characterData:true,subtree:true});});})();
+/* 4. mobile-nav active item tracks the current product */
+(function(){var nav=document.querySelector('.mobnav');if(!nav)return;var map={calc:'calc',heat:'markets',pos:'calc',pnl:'calc',rr:'calc'};function upd(){var p=document.body.getAttribute('data-prod')||'calc';var mn=map[p]||null;nav.querySelectorAll('button').forEach(function(b){b.classList.toggle('active',!!mn&&b.getAttribute('data-mn')===mn);});}if('MutationObserver'in window)new MutationObserver(upd).observe(document.body,{attributes:true,attributeFilter:['data-prod']});upd();})();
 </script>
 </body>
 </html>
