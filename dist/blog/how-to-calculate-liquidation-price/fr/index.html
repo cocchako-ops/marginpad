@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Comment calculer le prix de liquidation en crypto — MarginPad</title>
+<meta name="description" content="La formule du prix de liquidation pour les futures crypto, avec un exemple, pour tout effet de levier — long ou short." />
+<link rel="canonical" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/fr/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="Comment calculer le prix de liquidation en crypto" />
+<meta property="og:description" content="La formule du prix de liquidation pour les futures crypto, avec un exemple, pour tout effet de levier — long ou short." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/blog/how-to-calculate-liquidation-price/fr/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/es/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/pt/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/fr/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/de/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ru/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/tr/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/zh/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ja/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ko/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ar/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/id/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/nl/" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Comment calculer le prix de liquidation en crypto","inLanguage":"fr","author":{"@type":"Organization","name":"MarginPad"},"publisher":{"@type":"Organization","name":"MarginPad"},"mainEntityOfPage":"https://marginpad.io/blog/how-to-calculate-liquidation-price/fr/"}</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+  </header>
+  <article>
+    <h1>Comment calculer le prix de liquidation en crypto</h1>
+    <p style="font-size:12px;color:var(--ink-faint);margin:0 0 20px;line-height:2">🌐 <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/">English</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/es/">Español</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/pt/">Português</a> · <b>Français</b> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/de/">Deutsch</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ru/">Русский</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/tr/">Türkçe</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/zh/">中文</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ja/">日本語</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ko/">한국어</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ar/">العربية</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/id/">Bahasa Indonesia</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/nl/">Nederlands</a></p>
+    <p class="lead">Votre prix de liquidation est le niveau auquel la plateforme clôture de force votre position à effet de levier. Voici la formule et comment calculer le vôtre.</p>
+    <h2>La formule de liquidation</h2>
+    <p>Pour une position en marge isolée, le prix de liquidation estimé est <code>Entrée × (1 − 1/Levier + MMR)</code> en long et <code>Entrée × (1 + 1/Levier − MMR)</code> en short, où MMR est le taux de marge de maintenance (souvent autour de 0,5 %). Plus le levier est élevé, plus la liquidation se rapproche de votre entrée.</p>
+    <h2>Exemple chiffré</h2>
+    <p>Un long 10× sur BTC ouvert à 60 000 $ avec un MMR de 0,5 % est liquidé vers 54 300 $ — une baisse d’environ 9,5 %. La même position en 100× est liquidée après un mouvement d’environ 1 %.</p>
+    <div class="callout"><a class="cta" href="/#liq">Trouvez votre prix de liquidation exact avec la calculatrice gratuite →</a></div>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+</body>
+</html>

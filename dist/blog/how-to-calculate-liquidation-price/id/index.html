@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cara menghitung harga likuidasi kripto — MarginPad</title>
+<meta name="description" content="Rumus harga likuidasi untuk futures kripto, dengan contoh, untuk leverage berapa pun — long atau short." />
+<link rel="canonical" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/id/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="Cara menghitung harga likuidasi kripto" />
+<meta property="og:description" content="Rumus harga likuidasi untuk futures kripto, dengan contoh, untuk leverage berapa pun — long atau short." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/blog/how-to-calculate-liquidation-price/id/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/es/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/pt/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/fr/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/de/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ru/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/tr/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/zh/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ja/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ko/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ar/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/id/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/blog/how-to-calculate-liquidation-price/nl/" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cara menghitung harga likuidasi kripto","inLanguage":"id","author":{"@type":"Organization","name":"MarginPad"},"publisher":{"@type":"Organization","name":"MarginPad"},"mainEntityOfPage":"https://marginpad.io/blog/how-to-calculate-liquidation-price/id/"}</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+  </header>
+  <article>
+    <h1>Cara menghitung harga likuidasi kripto</h1>
+    <p style="font-size:12px;color:var(--ink-faint);margin:0 0 20px;line-height:2">🌐 <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/">English</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/es/">Español</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/pt/">Português</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/fr/">Français</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/de/">Deutsch</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ru/">Русский</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/tr/">Türkçe</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/zh/">中文</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ja/">日本語</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ko/">한국어</a> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/ar/">العربية</a> · <b>Bahasa Indonesia</b> · <a href="https://marginpad.io/blog/how-to-calculate-liquidation-price/nl/">Nederlands</a></p>
+    <p class="lead">Harga likuidasi adalah level di mana bursa menutup paksa posisi leverage-mu. Berikut rumus dan cara menghitungnya.</p>
+    <h2>Rumus likuidasi</h2>
+    <p>Untuk posisi margin terisolasi, perkiraan harga likuidasi adalah <code>Entry × (1 − 1/Leverage + MMR)</code> untuk long dan <code>Entry × (1 + 1/Leverage − MMR)</code> untuk short, di mana MMR adalah maintenance margin rate (biasanya sekitar 0,5%). Makin tinggi leverage, makin dekat likuidasi ke entry-mu.</p>
+    <h2>Contoh perhitungan</h2>
+    <p>Long 10× BTC dibuka di $60.000 dengan MMR 0,5% dilikuidasi sekitar $54.300 — turun sekitar 9,5%. Posisi sama di 100× dilikuidasi setelah pergerakan sekitar 1%.</p>
+    <div class="callout"><a class="cta" href="/#liq">Temukan harga likuidasi pastimu dengan kalkulator gratis →</a></div>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+</body>
+</html>
