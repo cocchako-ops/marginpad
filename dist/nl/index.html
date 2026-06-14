@@ -910,11 +910,12 @@
   .hp-card.flash-dn .hp-spark path,.hp-spark.dn path{stroke:#ff6258;}
   .hp-spark.up path{stroke:#2ebd85;}
   /* leverage slider (paired with the number input) */
-  .lev-slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;margin:11px 0 2px;border-radius:6px;outline:none;cursor:pointer;background:linear-gradient(90deg,#34d99a 0%,#c2f64a 38%,#ffb347 68%,#ff6258 100%);}
-  .lev-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #0a0b0d;box-shadow:0 2px 8px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.5);cursor:pointer;transition:transform .12s;}
-  .lev-slider::-webkit-slider-thumb:hover{transform:scale(1.12);}
-  .lev-slider::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid #c2f64a;cursor:pointer;}
-  .lev-slider::-moz-range-track{height:6px;border-radius:6px;background:transparent;}
+  .lev-slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;margin:11px 0 2px;border-radius:6px;outline:none;cursor:pointer;background:linear-gradient(90deg,#c2f64a 0%,#c2f64a var(--fill,8%),#1c222b var(--fill,8%),#1c222b 100%);}
+  .lev-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:17px;height:17px;border-radius:50%;background:#fff;border:3px solid #c2f64a;box-shadow:0 2px 8px rgba(0,0,0,.6);cursor:pointer;transition:transform .12s;margin-top:0;}
+  .lev-slider::-webkit-slider-thumb:hover{transform:scale(1.14);}
+  .lev-slider::-moz-range-thumb{width:17px;height:17px;border-radius:50%;background:#fff;border:3px solid #c2f64a;cursor:pointer;}
+  .lev-slider::-moz-range-progress{background:#c2f64a;height:6px;border-radius:6px;}
+  .lev-slider::-moz-range-track{height:6px;border-radius:6px;background:#1c222b;}
   .lev-ticks{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:2px;letter-spacing:.03em;}
   /* footer polish */
   .site-foot{position:relative;}
@@ -1096,7 +1097,7 @@
             </div>
             <div class="pt2-fields">
               <div class="pt2-amt"><label data-i18n="lAmountIn">Amount (USD)</label><div class="input-line"><input type="number" id="planAmt" value="100" step="any" min="0" inputmode="decimal"><span class="unit">$</span></div></div>
-              <div class="pt2-lev"><label data-i18n="lLeverage">Hefboom</label><div class="input-line"><input type="number" id="planLev" value="10" step="1" min="1" max="1000" inputmode="numeric"><span class="unit">×</span></div><input type="range" id="planLevR" class="lev-slider" min="1" max="125" value="10" step="1" aria-label="Leverage slider"><div class="lev-ticks"><span>1×</span><span>25×</span><span>50×</span><span>100×</span><span>125×</span></div></div>
+              <div class="pt2-lev"><label data-i18n="lLeverage">Hefboom</label><div class="input-line"><input type="number" id="planLev" value="10" step="1" min="1" max="1000" inputmode="numeric"><span class="unit">×</span></div><input type="range" id="planLevR" class="lev-slider" min="0" max="1000" value="333" step="1" aria-label="Leverage slider"><div class="lev-ticks"><span>1×</span><span>10×</span><span>100×</span><span>1000×</span></div></div>
             </div>
             <div class="ptt-stats"><div><span data-i18n="rPosSize">Positiegrootte</span><b id="planSize">—</b></div><div><span data-i18n="rNotional">Notionele waarde</span><b id="planNotional">—</b></div><div><span data-i18n="rEstLiq">Geschatte liquidatieprijs</span><b id="planLiq">—</b></div></div>
             <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span data-i18n="planAdv4">⚙ Advanced — stop-loss &amp; take-profit</span></label>
@@ -1672,9 +1673,12 @@
   if(seg)seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
   ['planAmt','planLev'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
   var levEl=document.getElementById('planLev'),levR=document.getElementById('planLevR');
-  function syncLevR(){if(!levR||!levEl)return;var v=parseFloat(levEl.value);if(isFinite(v))levR.value=String(Math.max(1,Math.min(125,v)));}
+  function posToLev(p){return Math.max(1,Math.min(1000,Math.round(Math.pow(1000,p/1000))));}  // logarithmic 1×…1000×
+  function levToPos(l){l=Math.max(1,Math.min(1000,l));return Math.round(Math.log(l)/Math.log(1000)*1000);}
+  function levFill(){if(levR)levR.style.setProperty('--fill',(levR.value/(levR.max||1000)*100).toFixed(1)+'%');}
+  function syncLevR(){if(!levR||!levEl)return;var v=parseFloat(levEl.value);if(isFinite(v)&&v>0){levR.value=String(levToPos(v));levFill();}}
   if(levEl)levEl.addEventListener('input',function(){if(parseFloat(levEl.value)>1000)levEl.value='1000';syncLevR();});
-  if(levR)levR.addEventListener('input',function(){if(levEl){levEl.value=levR.value;calc();}});
+  if(levR)levR.addEventListener('input',function(){if(levEl){levEl.value=String(posToLev(parseFloat(levR.value)));levFill();calc();}});
   syncLevR();
   var advChk=document.getElementById('planAdvChk');
   if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;});
