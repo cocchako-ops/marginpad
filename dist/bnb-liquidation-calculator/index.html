@@ -37,6 +37,7 @@
   <article>
     <h1>BNB Liquidation Calculator</h1>
     <p class="lead">Find your exact <strong>BNB (BNB)</strong> liquidation price — for any leverage, long or short. Free, instant and private (it runs in your browser).</p>
+    <p style="font-family:'Space Mono',monospace;font-size:13px;color:var(--ink-dim);margin:-4px 0 16px" id="livePx" data-sym="BNB"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>Live BNB price loading…</p>
     <div class="calc">
       <div class="calc-in">
         <div class="seg" id="liqSeg"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
@@ -70,6 +71,7 @@
       <a href="/ada-liquidation-calculator/">ADA liquidation</a>
     </div>
     <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Educational tool, not financial advice. Estimates exclude fees and funding and may differ from your exchange.</p>
+<script>(function(){var el=document.getElementById('livePx');if(!el)return;var sym=el.getAttribute('data-sym');fetch('/api/price?symbol='+sym).then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.price>0){var p=+d.price;el.innerHTML='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>Live '+sym+' price: <b style="color:#c2f64a">$'+p.toLocaleString('en-US',{maximumFractionDigits:p>=1?2:6})+'</b>';var e=document.getElementById('liqEntry');if(e){e.value=p;e.dispatchEvent(new Event('input'));}}else{el.style.display='none';}}).catch(function(){el.style.display='none';});})();</script>
   </article>
   <footer>
     <span>© 2026 MarginPad</span>

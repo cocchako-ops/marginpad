@@ -18,6 +18,31 @@ const COINS = [
   { sym: 'AVAX', name: 'Avalanche', slug: 'avax', entry: 6.5, lev: 75, blurb: 'Avalanche is a volatile large-cap alt where liquidation distance shrinks fast at high leverage.' },
   { sym: 'LINK', name: 'Chainlink', slug: 'link', entry: 11, lev: 75, blurb: 'Chainlink perps are popular among alt traders and move sharply around major partnership news.' },
   { sym: 'LTC', name: 'Litecoin', slug: 'ltc', entry: 70, lev: 75, blurb: 'Litecoin is an older, comparatively steady large-cap, but leverage still puts liquidation close to entry.' },
+  { sym: 'TON', name: 'Toncoin', slug: 'ton', entry: 5.2, lev: 50, blurb: 'Toncoin perps have grown fast on the back of Telegram; liquidity is decent but thinner than the majors.' },
+  { sym: 'TRX', name: 'TRON', slug: 'trx', entry: 0.13, lev: 75, blurb: 'TRON tends to grind rather than spike, but leverage still pins liquidation near entry.' },
+  { sym: 'DOT', name: 'Polkadot', slug: 'dot', entry: 4.2, lev: 75, blurb: 'Polkadot is a liquid large-cap alt that can trend hard during alt-season rotations.' },
+  { sym: 'MATIC', name: 'Polygon', slug: 'matic', entry: 0.4, lev: 75, blurb: 'Polygon perps are widely listed and move with broader L2 sentiment.' },
+  { sym: 'SHIB', name: 'Shiba Inu', slug: 'shib', entry: 0.000018, lev: 50, blurb: 'Shiba Inu is a high-beta meme perp priced in tiny decimals — double-check your entry and size carefully.' },
+  { sym: 'NEAR', name: 'NEAR Protocol', slug: 'near', entry: 4.5, lev: 50, blurb: 'NEAR is a volatile large-cap alt where liquidation distance shrinks quickly at high leverage.' },
+  { sym: 'UNI', name: 'Uniswap', slug: 'uni', entry: 7, lev: 75, blurb: 'Uniswap is the bellwether DeFi perp and reacts sharply to governance and fee-switch news.' },
+  { sym: 'APT', name: 'Aptos', slug: 'apt', entry: 7, lev: 50, blurb: 'Aptos perps can move fast on unlock schedules and ecosystem news.' },
+  { sym: 'ICP', name: 'Internet Computer', slug: 'icp', entry: 9, lev: 50, blurb: 'Internet Computer is a high-volatility large-cap — give liquidation extra room.' },
+  { sym: 'PEPE', name: 'Pepe', slug: 'pepe', entry: 0.0000095, lev: 50, blurb: 'Pepe is one of the most volatile meme perps; high leverage here is a fast way to get liquidated.' },
+  { sym: 'FIL', name: 'Filecoin', slug: 'fil', entry: 4.5, lev: 75, blurb: 'Filecoin perps trend with storage-narrative cycles and can swing hard.' },
+  { sym: 'ARB', name: 'Arbitrum', slug: 'arb', entry: 0.65, lev: 75, blurb: 'Arbitrum moves with L2 flows and unlocks; liquidity is solid across exchanges.' },
+  { sym: 'OP', name: 'Optimism', slug: 'op', entry: 1.5, lev: 75, blurb: 'Optimism perps track the broader L2 sector and react to airdrop/unlock events.' },
+  { sym: 'INJ', name: 'Injective', slug: 'inj', entry: 18, lev: 50, blurb: 'Injective is a fast-moving DeFi large-cap; liquidation arrives quickly at high leverage.' },
+  { sym: 'SUI', name: 'Sui', slug: 'sui', entry: 1.1, lev: 50, blurb: 'Sui is a volatile newer large-cap with sharp, liquidity-driven moves.' },
+  { sym: 'SEI', name: 'Sei', slug: 'sei', entry: 0.4, lev: 50, blurb: 'Sei perps are volatile and thinner than the majors — keep leverage modest.' },
+  { sym: 'TIA', name: 'Celestia', slug: 'tia', entry: 5.5, lev: 50, blurb: 'Celestia can move hard on unlocks and modular-narrative flows.' },
+  { sym: 'ATOM', name: 'Cosmos', slug: 'atom', entry: 6.5, lev: 75, blurb: 'Cosmos is a liquid large-cap alt that trends with the wider IBC ecosystem.' },
+  { sym: 'AAVE', name: 'Aave', slug: 'aave', entry: 95, lev: 50, blurb: 'Aave is the blue-chip DeFi lending perp and reacts to TVL and rate news.' },
+  { sym: 'RNDR', name: 'Render', slug: 'rndr', entry: 6, lev: 50, blurb: 'Render rides the AI/compute narrative and can spike sharply on sentiment.' },
+  { sym: 'HBAR', name: 'Hedera', slug: 'hbar', entry: 0.07, lev: 75, blurb: 'Hedera moves on enterprise-adoption news; perps are liquid on the majors.' },
+  { sym: 'BCH', name: 'Bitcoin Cash', slug: 'bch', entry: 380, lev: 75, blurb: 'Bitcoin Cash is a higher-priced large-cap where small percent moves are big dollar moves.' },
+  { sym: 'ETC', name: 'Ethereum Classic', slug: 'etc', entry: 22, lev: 75, blurb: 'Ethereum Classic often tracks ETH and BTC with extra volatility.' },
+  { sym: 'WIF', name: 'dogwifhat', slug: 'wif', entry: 2.2, lev: 50, blurb: 'dogwifhat is a high-beta meme perp — expect violent swings and treat leverage with caution.' },
+  { sym: 'FET', name: 'Artificial Superintelligence (FET)', slug: 'fet', entry: 1.3, lev: 50, blurb: 'FET rides the AI narrative and can move sharply on sector sentiment.' },
 ];
 
 function head(o) {
@@ -81,6 +106,7 @@ function coinPage(c) {
     + `
     <h1>${c.sym} Liquidation Calculator</h1>
     <p class="lead">Find your exact <strong>${c.name} (${c.sym})</strong> liquidation price — for any leverage, long or short. Free, instant and private (it runs in your browser).</p>
+    <p style="font-family:'Space Mono',monospace;font-size:13px;color:var(--ink-dim);margin:-4px 0 16px" id="livePx" data-sym="${c.sym}"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>Live ${c.sym} price loading…</p>
     <div class="calc">
       <div class="calc-in">
         <div class="seg" id="liqSeg"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
@@ -109,6 +135,7 @@ function coinPage(c) {
       ${others.map(o => `<a href="/${o.slug}-liquidation-calculator/">${o.sym} liquidation</a>`).join('\n      ')}
     </div>
     <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Educational tool, not financial advice. Estimates exclude fees and funding and may differ from your exchange.</p>
+<script>(function(){var el=document.getElementById('livePx');if(!el)return;var sym=el.getAttribute('data-sym');fetch('/api/price?symbol='+sym).then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.price>0){var p=+d.price;el.innerHTML='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>Live '+sym+' price: <b style="color:#c2f64a">$'+p.toLocaleString('en-US',{maximumFractionDigits:p>=1?2:6})+'</b>';var e=document.getElementById('liqEntry');if(e){e.value=p;e.dispatchEvent(new Event('input'));}}else{el.style.display='none';}}).catch(function(){el.style.display='none';});})();</script>
 `
     + foot();
 }
@@ -121,4 +148,19 @@ for (const c of COINS) {
   n++;
   console.log('wrote', c.slug + '-liquidation-calculator');
 }
+// keep sitemap.xml in sync — add any missing coin-calculator URLs
+try {
+  const smp = path.join(OUT, 'sitemap.xml');
+  let sm = fs.readFileSync(smp, 'utf8');
+  const today = new Date().toISOString().slice(0, 10);
+  let added = 0;
+  for (const c of COINS) {
+    const loc = `https://marginpad.io/${c.slug}-liquidation-calculator/`;
+    if (sm.indexOf(loc) === -1) {
+      sm = sm.replace('</urlset>', `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>\n</urlset>`);
+      added++;
+    }
+  }
+  if (added) { fs.writeFileSync(smp, sm); console.log('sitemap: +' + added + ' coin URLs'); }
+} catch (e) { console.log('sitemap update skipped:', e.message); }
 console.log('done:', n, 'coin pages');
