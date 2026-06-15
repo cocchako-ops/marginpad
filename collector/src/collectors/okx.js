@@ -28,10 +28,20 @@ export class OkxCollector extends BaseCollector {
     this.silenceMs = 35000;
     this.staleMs = 6 * 60 * 1000; // OKX streams ALL swaps — a 6-min event gap means a dead subscription
     this.ctVal = {};              // instId -> contract value (base units per contract)
-    this._epi = 0;                // rotating endpoint index
+    this._epi = 0;                // current endpoint index (sticky)
+    this._gotData = false;        // did the CURRENT connection receive any frame?
+    this._notFirst = false;       // url() has been called at least once
     this._dispatcher = null;      // set in init() when OKX_PROXY is configured
   }
-  url() { const u = OKX_ENDPOINTS[this._epi % OKX_ENDPOINTS.length]; this._epi++; return u; }
+  // Sticky-with-failover: stay on the endpoint that works; rotate to the other edge ONLY when the previous
+  // connection delivered no frame at all (that edge is blocked for our IP). Stops the 12-min socket refresh
+  // from bouncing us onto a blocked endpoint every other cycle.
+  url() {
+    if (this._notFirst && !this._gotData) this._epi++;   // previous edge was silent → try the other one
+    this._notFirst = true;
+    this._gotData = false;
+    return OKX_ENDPOINTS[this._epi % OKX_ENDPOINTS.length];
+  }
   wsOptions() { return this._dispatcher ? { dispatcher: this._dispatcher } : undefined; }
   subscribeFrames() { return [{ op: 'subscribe', args: [{ channel: 'liquidation-orders', instType: 'SWAP' }] }]; }
   pingFrame() { return 'ping'; }
@@ -59,6 +69,7 @@ export class OkxCollector extends BaseCollector {
   }
 
   parse(raw) {
+    this._gotData = true;   // any frame (data / ack / pong) proves this endpoint is live → keep it
     const text = typeof raw === 'string' ? raw : Buffer.isBuffer(raw) ? raw.toString() : String(raw);
     if (text === 'pong') return [];
     let j; try { j = JSON.parse(text); } catch { return []; }
