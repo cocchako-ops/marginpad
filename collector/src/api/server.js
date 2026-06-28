@@ -101,6 +101,44 @@ export function createApiServer({ storage, getStatus, bus }) {
     } catch (e) { log.error('clusters failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
+  // Perp tickers from venues that 403-ban Cloudflare's shared edge IPs (Binance, Bitget) — fetched here from the VPS
+  // (a normal residential/datacenter IP that ISN'T banned) so the site's screener can aggregate them too. Normalized to
+  // the screener's shape; cached in-memory ~30s so the upstreams aren't hammered (the Worker also edge-caches this).
+  let _perpCache = { ts: 0, data: null };
+  app.get('/api/v1/perp-tickers', async (req, res) => {
+    const now = Date.now();
+    if (_perpCache.data && now - _perpCache.ts < 30000) {
+      res.set('Cache-Control', 'public, max-age=30');
+      return res.json(_perpCache.data);
+    }
+    const out = { updatedAt: now, binance: [], bitget: [] };
+    try { // Binance USDT-M futures: 24h tickers (quoteVolume = USD vol) + funding (premiumIndex)
+      const [tk, pm] = await Promise.all([
+        fetch('https://fapi.binance.com/fapi/v1/ticker/24hr').then(r => r.ok ? r.json() : null).catch(() => null),
+        fetch('https://fapi.binance.com/fapi/v1/premiumIndex').then(r => r.ok ? r.json() : null).catch(() => null),
+      ]);
+      const fmap = {};
+      if (Array.isArray(pm)) for (const p of pm) fmap[p.symbol] = +p.lastFundingRate;
+      if (Array.isArray(tk)) for (const t of tk) {
+        if (!/^[A-Z0-9]+USDT$/.test(t.symbol)) continue;
+        const f = fmap[t.symbol];
+        out.binance.push({ s: t.symbol.replace(/USDT$/, ''), p: +t.lastPrice, vol: +t.quoteVolume, chg: +t.priceChangePercent, f: (f != null && isFinite(f)) ? f * 100 : null, oi: 0, hi: +t.highPrice, lo: +t.lowPrice });
+      }
+    } catch (e) { log.error('binance perp failed', { e: String(e) }); }
+    try { // Bitget USDT-perp (usdtVolume = USD vol; holdingAmount = OI in base)
+      const j = await fetch('https://api.bitget.com/api/v2/mix/market/tickers?productType=usdt-futures').then(r => r.ok ? r.json() : null).catch(() => null);
+      const list = j && Array.isArray(j.data) ? j.data : [];
+      for (const t of list) {
+        if (!/^[A-Z0-9]+USDT$/.test(t.symbol || '')) continue;
+        const px = +t.lastPr;
+        out.bitget.push({ s: t.symbol.replace(/USDT$/, ''), p: px, vol: +t.usdtVolume, chg: (t.change24h != null ? +t.change24h * 100 : null), f: (t.fundingRate != null ? +t.fundingRate * 100 : null), oi: (+t.holdingAmount) * px, hi: +t.high24h, lo: +t.low24h });
+      }
+    } catch (e) { log.error('bitget perp failed', { e: String(e) }); }
+    _perpCache = { ts: now, data: out };
+    res.set('Cache-Control', 'public, max-age=30');
+    res.json(out);
+  });
+
   // Health — per-exchange socket state, last event, events/min. Check it from your phone.
   app.get('/api/v1/status', (req, res) => { res.set('Cache-Control', 'no-store'); res.json(getStatus()); });
   app.get('/api/v1/health', (req, res) => res.json({ ok: true }));
