@@ -170,7 +170,9 @@
     });}
   document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-ptl-close]');if(!b)return;
     var id=b.getAttribute('data-ptl-close'),d=load(),i=-1;for(var k=0;k<d.length;k++){if(d[k].id===id){i=k;break;}}if(i<0)return;
-    var e=d[i],m=metrics(e);e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);buzz([22]); // haptic on manual close
+    var e=d[i];
+    if(window.mpCloseSheet){window.mpCloseSheet(id,function(){renderLast();renderPos();drawLines();mtCount();});return;} /* partial-close sheet (owner task) — the sheet stores + rerenders */
+    var m=metrics(e);e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);buzz([22]); // haptic on manual close
     window._mpSltpHidden=true;store(d);renderLast();renderPos();drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();});
   function renderPos(){var el=document.getElementById('ptPosList');if(!el)return;var d=load();
     if(posTab==='open'){var o=d.filter(function(e){return e.status==='open';});el.innerHTML=o.length?o.slice().reverse().map(openCard).join(''):'<div class="pp-empty">No open positions — open one above ↑</div>';}
@@ -180,7 +182,7 @@
   var listEl=document.getElementById('ptPosList');
   if(listEl)listEl.addEventListener('click',function(ev){var b=ev.target.closest('[data-act]');if(!b)return;var id=b.getAttribute('data-id'),act=b.getAttribute('data-act');var d=load(),i=-1;for(var k=0;k<d.length;k++){if(d[k].id===id){i=k;break;}}if(i<0)return;var e=d[i];
     if(act==='del')d.splice(i,1);
-    else if(act==='close'){var m=metrics(e);e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);buzz([22]);window._mpSltpHidden=true;}
+    else if(act==='close'){if(window.mpCloseSheet){window.mpCloseSheet(id,function(){renderLast();renderPos();drawLines();mtCount();});return;}var m=metrics(e);e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);buzz([22]);window._mpSltpHidden=true;}
     else if(act==='reopen'){e.status='open';e.exit=null;e.closeTs=null;e.pnl=null;notified[id]=false;}
     else if(act==='edit'){var ns=prompt('New stop-loss price:',e.stop);if(ns!==null){var v=parseFloat(ns);if(isFinite(v))e.stop=v;}var nt=prompt('New take-profit (blank = none):',e.tp!=null?e.tp:'');if(nt!==null){var v2=parseFloat(nt);e.tp=isFinite(v2)?v2:null;}notified[id]=false;}
     store(d);renderPos();drawLines();});
@@ -623,7 +625,7 @@
     if(act==='copy'){copyTicket(e);return;}
     if(act==='chart'){gotoChart(e.sym,e.side);return;}
     if(act==='del'){ data.splice(i,1); }
-    else if(act==='close'){ var m=metrics(e); e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss')); e.exit=m.live; e.closeTs=Date.now(); e.pnl=(m.pnl!=null?m.pnl:0); if(window.mpBuzz)window.mpBuzz([22]); try{if(window.mpHidePlanLines)window.mpHidePlanLines();}catch(_){} }
+    else if(act==='close'){ if(window.mpCloseSheet){window.mpCloseSheet(id,function(){render();if(window.mpDrawLines)window.mpDrawLines();});return;} var m=metrics(e); e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss')); e.exit=m.live; e.closeTs=Date.now(); e.pnl=(m.pnl!=null?m.pnl:0); if(window.mpBuzz)window.mpBuzz([22]); try{if(window.mpHidePlanLines)window.mpHidePlanLines();}catch(_){} }
     else if(act==='reopen'){ e.status='open'; e.exit=null; e.closeTs=null; e.pnl=null; }
     else if(act==='edit'){ var ns=prompt(MT('jNewSL','New stop-loss price:'),e.stop); if(ns!==null){var v=parseFloat(ns);if(isFinite(v))e.stop=v;} var nt=prompt(MT('jNewTP','New take-profit (blank = none):'),e.tp!=null?e.tp:''); if(nt!==null){var v2=parseFloat(nt);e.tp=isFinite(v2)?v2:null;} }
     store(data); render(); if(window.mpDrawLines)window.mpDrawLines();
@@ -2092,4 +2094,81 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
   function upd(){var n=count();if(n>0){b.textContent=n>9?'9+':String(n);b.hidden=false;}else b.hidden=true;}
   upd();setInterval(upd,3000);window.addEventListener('storage',upd);
   try{var _jr=window.mpJournalRender;if(typeof _jr==='function')window.mpJournalRender=function(){try{_jr.apply(this,arguments);}finally{try{upd();}catch(e){}}};}catch(e){} /* instant badge on open/close (render fires on every journal change) */
+})();
+
+;/* ══════════ Partial-close sheet (owner task 2026-07): Close anywhere → pick how much to close ══════════
+   window.mpCloseSheet(id, onDone): bottom sheet with 25/50/75/100% chips + slider + live preview.
+   Partial close splits the position: a proportional slice (qty/margin/notional × pct) becomes its own CLOSED
+   trade (same entry/leverage → identical ROE math, so the Leaderboard/journal/stats treat it like any trade),
+   and the remainder stays OPEN with entry/liq/SL/TP untouched. 100% behaves exactly like the old full close. */
+(function(){ if(window.mpCloseSheet)return;
+  function jload(){try{return JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){return[];}}
+  function jstore(a){try{localStorage.setItem('mp_journal',JSON.stringify(a));}catch(e){}}
+  function mx(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);if(margin>0&&pnl!=null&&pnl<-margin)pnl=-margin;var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;return{live:live,long:long,move:move,pnl:pnl,margin:margin,roe:roe};}
+  function fm(x){x=+x||0;var n=x<0;x=Math.abs(x);return (n?'-$':'$')+x.toLocaleString('en-US',{maximumFractionDigits:2});}
+  function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+  var ov=null,pct=100,curId=null,after=null,syncT=null;
+  function fullClose(e,m){e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);window._mpSltpHidden=true;try{if(window.mpHidePlanLines)window.mpHidePlanLines();}catch(_){}}
+  function build(){ if(ov)return;
+    ov=document.createElement('div');ov.className='mpcs';ov.innerHTML=
+      '<div class="mpcs-card" role="dialog" aria-label="Close position">'
+      +'<div class="mpcs-h"><span class="mpcs-t"></span><button type="button" class="mpcs-x" aria-label="Cancel">✕</button></div>'
+      +'<div class="mpcs-pnl"></div>'
+      +'<div class="mpcs-chips"><button type="button" data-p="25">25%</button><button type="button" data-p="50">50%</button><button type="button" data-p="75">75%</button><button type="button" data-p="100" class="on">100%</button></div>'
+      +'<input class="mpcs-sl" type="range" min="5" max="100" step="5" value="100" aria-label="Percent to close">'
+      +'<div class="mpcs-prev"></div>'
+      +'<button type="button" class="mpcs-go"></button>'
+      +'</div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click',function(e){if(e.target===ov)hide();});
+    ov.querySelector('.mpcs-x').addEventListener('click',hide);
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')hide();});
+    ov.querySelector('.mpcs-sl').addEventListener('input',function(){pct=+this.value;sync();});
+    Array.prototype.forEach.call(ov.querySelectorAll('.mpcs-chips button'),function(b){b.addEventListener('click',function(){pct=+b.getAttribute('data-p');ov.querySelector('.mpcs-sl').value=pct;sync();try{if(navigator.vibrate)navigator.vibrate(8);}catch(_){}});});
+    ov.querySelector('.mpcs-go').addEventListener('click',go);
+  }
+  function entry(){var d=jload();for(var i=0;i<d.length;i++)if(d[i].id===curId)return d[i];return null;}
+  function sync(){ var e=entry(); if(!e||e.status!=='open'){hide();return;}
+    var m=mx(e);
+    Array.prototype.forEach.call(ov.querySelectorAll('.mpcs-chips button'),function(b){b.classList.toggle('on',+b.getAttribute('data-p')===pct);});
+    ov.querySelector('.mpcs-t').innerHTML=esc(e.sym||'—')+' <b class="'+(m.long?'lg':'sh')+'">'+(m.long?'LONG':'SHORT')+'</b> '+(e.lev||1)+'× · '+fm(m.live);
+    var pnl=(m.pnl!=null?m.pnl:0);
+    ov.querySelector('.mpcs-pnl').innerHTML='<span class="'+(pnl>=0?'up':'dn')+'">'+(pnl>=0?'+':'−')+fm(Math.abs(pnl)).replace('-','')+'</span><small>ROE '+((m.roe*100)>=0?'+':'')+(m.roe*100).toFixed(2)+'%</small>';
+    var f=pct/100,part=pnl*f,keepM=(m.margin||0)*(1-f);
+    ov.querySelector('.mpcs-prev').innerHTML= pct>=100
+      ? 'Closes the whole position at '+fm(m.live)+'.'
+      : 'Realize <b class="'+(part>=0?'up':'dn')+'">'+(part>=0?'+':'−')+fm(Math.abs(part)).replace('-','')+'</b> now · <b>'+fm(keepM)+'</b> margin stays open (entry, liq, SL/TP unchanged).';
+    var go=ov.querySelector('.mpcs-go');go.textContent='Close '+pct+'%';go.className='mpcs-go '+(pnl>=0?'up':'dn');
+  }
+  function show(id,cb){ curId=id;after=cb||null;
+    var e=entry?null:null; // placeholder for lint clarity
+    var d=jload(),tgt=null;for(var i=0;i<d.length;i++)if(d[i].id===id){tgt=d[i];break;}
+    if(!tgt||tgt.status!=='open')return;
+    // legacy entries without qty AND margin can't be split meaningfully → close in full immediately (old behaviour)
+    if(!(tgt.qty!=null&&isFinite(tgt.qty))&&!(+tgt.margin>0)){var m0=mx(tgt);fullClose(tgt,m0);jstore(d);done();return;}
+    build();pct=100;ov.querySelector('.mpcs-sl').value=100;ov.classList.add('on');sync();
+    if(syncT)clearInterval(syncT);syncT=setInterval(function(){if(ov&&ov.classList.contains('on'))sync();else{clearInterval(syncT);syncT=null;}},1200);
+  }
+  function hide(){if(ov)ov.classList.remove('on');if(syncT){clearInterval(syncT);syncT=null;}}
+  function done(){try{if(window.mpBuzz)window.mpBuzz([22]);else if(navigator.vibrate)navigator.vibrate(22);}catch(_){}
+    try{if(window.mpJournalRender)window.mpJournalRender();}catch(_){}
+    if(after)try{after();}catch(_){}}
+  function go(){ var d=jload(),e=null;for(var i=0;i<d.length;i++)if(d[i].id===curId){e=d[i];break;}
+    if(!e||e.status!=='open'){hide();return;}
+    var m=mx(e),f=Math.min(100,Math.max(5,pct))/100;
+    if(f>=1){ fullClose(e,m); }
+    else{
+      var part={};for(var k in e)if(Object.prototype.hasOwnProperty.call(e,k))part[k]=e[k];
+      part.id=String(e.id)+'p'+Date.now().toString(36)+Math.floor(Math.random()*1e3);
+      if(e.qty!=null&&isFinite(e.qty)){part.qty=e.qty*f;e.qty=e.qty*(1-f);}
+      if(+e.margin>0){part.margin=+e.margin*f;e.margin=+e.margin*(1-f);}
+      if(+e.notional>0){part.notional=+e.notional*f;e.notional=+e.notional*(1-f);}
+      var pnl=(m.pnl!=null?m.pnl:(m.move*(+part.margin>0?(part.margin*(+e.lev>0?+e.lev:1)):0)))||0;
+      if(m.pnl!=null)pnl=m.pnl*f;
+      part.status=pnl>=0?'win':'loss';part.exit=m.live;part.closeTs=Date.now();part.pnl=pnl;part.partial=Math.round(f*100);
+      d.push(part);
+    }
+    jstore(d);hide();done();
+  }
+  window.mpCloseSheet=show;
 })();

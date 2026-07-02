@@ -109,3 +109,25 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 /* UX pass (2026-07): bottom-nav Trades badge (shared pages — rekt/rewards) */
 .mobnav [data-mn="journal"]{position:relative}
 .mn-badge{position:absolute;top:-3px;right:calc(50% - 20px);min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#2ebd85;color:#04110b;font:700 9.5px/15px 'Space Mono',monospace;text-align:center;box-shadow:0 0 8px rgba(46,189,133,.55)}
+/* partial-close sheet (shared pages) */
+.mpcs{position:fixed;inset:0;z-index:96;display:flex;align-items:flex-end;justify-content:center;background:rgba(5,6,8,.66);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:.18s}
+.mpcs.on{opacity:1;pointer-events:auto}
+.mpcs-card{width:100%;max-width:420px;background:linear-gradient(180deg,#11151b,#0b0d10);border:1px solid #2f3742;border-radius:18px 18px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));transform:translateY(18px);transition:.2s}
+.mpcs.on .mpcs-card{transform:none}
+@media(min-width:721px){.mpcs{align-items:center}.mpcs-card{border-radius:18px}}
+.mpcs-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.mpcs-t{font-family:'Space Mono',monospace;font-size:14.5px;font-weight:700;color:#e9e7df}
+.mpcs-t .lg{color:#34d99a}.mpcs-t .sh{color:#ff7b72}
+.mpcs-x{background:none;border:none;color:#9aa3ad;font-size:19px;cursor:pointer;padding:4px 8px;line-height:1}
+.mpcs-pnl{font-family:'Space Mono',monospace;font-size:26px;font-weight:800;margin:2px 0 12px}
+.mpcs-pnl .up{color:#34d99a}.mpcs-pnl .dn{color:#ff7b72}
+.mpcs-pnl small{font-size:12px;color:#9aa3ad;font-weight:700;margin-left:8px}
+.mpcs-chips{display:flex;gap:7px;margin-bottom:10px}
+.mpcs-chips button{flex:1;font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;padding:10px 0;border-radius:9px;border:1px solid #2f3742;background:#0c0f13;color:#9aa3ad;cursor:pointer;transition:.12s}
+.mpcs-chips button.on{border-color:#c2f64a;color:#c2f64a;background:rgba(194,246,74,.08)}
+.mpcs-sl{width:100%;accent-color:#c2f64a;margin:2px 0 12px;height:26px}
+.mpcs-prev{font-size:12.5px;color:#9aa3ad;line-height:1.55;min-height:36px;margin-bottom:12px}
+.mpcs-prev b{color:#e9e7df}.mpcs-prev b.up{color:#34d99a}.mpcs-prev b.dn{color:#ff7b72}
+.mpcs-go{width:100%;border:none;border-radius:11px;padding:14px 0;font-family:'Space Mono',monospace;font-size:14px;font-weight:800;cursor:pointer;color:#04110b;transition:.12s}
+.mpcs-go.up{background:#2ebd85}.mpcs-go.dn{background:#ff6258;color:#1f0604}
+.mpcs-go:active{transform:scale(.985)}
