@@ -378,11 +378,12 @@
     if(!edgeEl){edgeEl=document.createElement('div');edgeEl.className='ptt-edges';host.appendChild(edgeEl);}
     if(!_openMarks||!_openMarks.length){if(edgeEl.childNodes.length)edgeEl.innerHTML='';return;}
     var H=host.clientHeight||0,html='',tN=0,bN=0;
+    var ax=0;try{ax=chart.priceScale('right').width()||0;}catch(_){} // keep the pills left of the price axis
     _openMarks.forEach(function(m){if(!(m.p>0))return;var y;try{y=candle.priceToCoordinate(m.p);}catch(_){y=null;}var top;
       if(y!=null&&isFinite(y)){if(y>=0&&y<=H)return;top=(y<0);} // on-screen → the real price line already shows it
       else{var cp=lastBar?+lastBar.close:0;if(!(cp>0))return;top=(m.p>cp);}
       var off=(top?tN++:bN++)*23;
-      html+='<div class="ptt-edge" style="'+(top?'top:':'bottom:')+(6+off)+'px;color:'+m.color+'">'+(top?'▲':'▼')+' '+m.label+' '+fmtDl(m.p)+'</div>';});
+      html+='<div class="ptt-edge" style="'+(top?'top:':'bottom:')+(6+off)+'px;right:'+(ax+8)+'px;color:'+m.color+'">'+(top?'▲':'▼')+' '+m.label+' '+fmtDl(m.p)+'</div>';});
     edgeEl.innerHTML=html;}
   function updateZone(){var host=document.getElementById('ptChart');if(!host||!candle){return;}
     updateEdges();
