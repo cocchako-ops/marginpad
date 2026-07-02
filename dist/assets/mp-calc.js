@@ -40,7 +40,6 @@
     a.rel = 'sponsored noopener noreferrer';
     a.innerHTML =
       '<div class="exh"><span class="exmark" style="background:'+ex.accent+';color:'+ex.fg+'">'+ex.letter+'</span><span class="exname">'+ex.name+'</span>'
-      + (ex.badge ? '<span class="exbadge exbadge-in"><span class="liveflame"></span>'+ex.badge+'</span>' : '')
       + '<span class="exlev exlev-chip"><b>'+ex.lev+'</b><span data-i18n="exMaxLev">max leverage</span></span></div>'
       + '<div class="extag">'+ex.tag+'</div>'
       + (ex.bonus ? '<div class="exbonus"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg><span>'+ex.bonus+'</span></div>' : '')

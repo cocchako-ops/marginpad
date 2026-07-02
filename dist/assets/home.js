@@ -1634,6 +1634,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
     try{if(navigator.vibrate)navigator.vibrate(14);}catch(e){}
     curPos=pos;updPnl();try{mtRefresh();}catch(e){}
+    try{if(window.__mpTrack)window.__mpTrack('paper',sym+' '+side+' '+lev+'x');}catch(e){} /* every open shows in ops Live activity (this quick-tap path was silent) */
     if(goEl){goEl.textContent=(window.mpT&&window.mpT('mtOpened'))||'Position opened ✓';setTimeout(function(){goEl.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';},1300);}
     try{var _pp=document.getElementById('mtpPnl');if(_pp){var _pr=_pp.getBoundingClientRect();if(_pr.bottom>window.innerHeight-76||_pr.top<0)setTimeout(function(){_pp.scrollIntoView({behavior:'smooth',block:'center'});},380);}}catch(e){}/* UX: bring the live P&L pill into view right after opening — the payoff moment was below the fold */}
   // ---- mini chart: Paper-Trade candlestick engine + a live LIQ preview (thin lines, tiny tag, blurred see-through red/green zone) ----

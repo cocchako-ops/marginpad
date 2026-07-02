@@ -2463,3 +2463,6 @@
   .scr-picks{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
   .scr-pick{padding:8px 9px}.scr-pick b{font-size:13px}.scr-pick span{font-size:9px}
 }
+
+/* where-to-trade: "max leverage" in neon green (owner request); HOT badge removed in mp-calc.js */
+.exlev-chip span{color:#c2f64a;text-shadow:0 0 9px rgba(194,246,74,.55)}
