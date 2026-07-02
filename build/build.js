@@ -17,6 +17,9 @@ function run(label, cmd) {
 process.stdout.write('▸ copy homepage app/index.html → dist/index.html\n');
 fs.copyFileSync(path.join(ROOT, 'app', 'index.html'), path.join(ROOT, 'dist', 'index.html'));
 
+// 1b) re-stamp the ?v= hash on the extracted homepage bundle (dist/assets/home.css + home.js)
+run('Version-stamp home.css/home.js', 'node build/bump-home-assets.js');
+
 // 2) standalone SEO / landing-page generators (independent of each other)
 run('SEO exchange pages', 'node build/gen-seo-pages.js');
 run('Per-coin liquidation pages', 'node build/gen-coin-pages.js');
@@ -34,6 +37,8 @@ run('How-to guides', 'node build/gen-guides-pages.js');
 run('Where-to-start beginner academy', 'node build/gen-where-to-start.js');
 run('About / Contact pages', 'node build/gen-about-pages.js');
 run('Leverage / funding-fee / glossary pages', 'node build/gen-bigupdate.js');
+run('API + Widgets pages', 'node build/gen-api-widgets-pages.js');
+run('Trading tools suite pages', 'node build/gen-tools-pages.js');
 
 // 3) blog (index + articles + flagship translations + related links)
 run('Blog', 'node build/gen-blog.js');
@@ -51,8 +56,8 @@ run('i18n assets (slim + packs)', 'node build/gen-i18n-assets.js');
 // 5) language homepages — translated copies of dist/index.html (must run AFTER the homepage copy)
 run('Language homepages', 'node build/gen-i18n-pages.js');
 
-// 6) patch the overnight-liquidation sweep into the language homepages (must run AFTER gen-i18n-pages)
-run('Patch sweepLiq into lang homepages', 'node build/add-sweepliq.js');
+// 6) (retired) add-sweepliq.js — the homepage JS now ships as the shared /assets/home.js bundle,
+//    so language homepages can never drift from it; the old string-anchored patcher is obsolete.
 
 // 7) swap Google Fonts → self-hosted fonts on every html (faster LCP, no external DNS)
 run('Self-host fonts', 'node build/self-host-fonts.js');

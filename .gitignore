@@ -21,8 +21,11 @@ _*.png
 Thumbs.db
 .DS_Store
 
-# build output — deployed via wrangler, not git (regenerate with: node build/build.js)
-dist/
+# build output — deployed via wrangler, not git (regenerate with: node build/build.js).
+# dist/assets + hand-maintained pages (rekt, rewards, alerts, coins, news, sw.js, …) ARE tracked —
+# they are sources, not build output (force-added; a NEW hand-made dist page needs `git add -f`).
+dist/*
+!dist/assets
 
 # local-only project docs & keys (repo is PUBLIC — never commit these)
 CLAUDE.md
@@ -42,3 +45,4 @@ ads/
 marginpad-ad-*.png
 marginpad-promo-*.png
 extension/marginpad-extension.zip
+.dev.vars

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Liquidation Calculator Widget — MarginPad</title>
+<meta name="robots" content="noindex,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#0c0f13;color:#e9e7df;font-family:'Space Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px}
+  body{padding:14px}
+  .w{max-width:360px;margin:0 auto}
+  .wh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:13px}
+  .wh b{font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-weight:800;font-size:17px;letter-spacing:-.02em}
+  .live{font-size:11px;color:#9aa3ad;white-space:nowrap}.live i{color:#c2f64a;font-style:normal}
+  .live .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#2ebd85;margin-right:5px;vertical-align:middle}
+  .seg{display:flex;gap:6px;margin-bottom:6px}
+  .seg button{flex:1;padding:10px;border:1px solid #2f3742;background:#0a0b0d;color:#9aa3ad;border-radius:9px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;transition:.13s}
+  .seg button.on[data-side=long]{background:rgba(46,189,133,.16);border-color:#2ebd85;color:#34d99a}
+  .seg button.on[data-side=short]{background:rgba(255,98,88,.16);border-color:#ff6258;color:#ff7b72}
+  label{display:block;font-size:10.5px;color:#9aa3ad;margin:11px 0 5px;text-transform:uppercase;letter-spacing:.06em}
+  input{width:100%;background:#0a0b0d;border:1px solid #2f3742;color:#e9e7df;padding:11px 12px;border-radius:9px;font-family:inherit;font-size:15px;outline:none;transition:.13s}
+  input:focus{border-color:#c2f64a;box-shadow:0 0 0 3px rgba(194,246,74,.14)}
+  input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .out{margin-top:15px;background:linear-gradient(180deg,#11151b,#0c0f13);border:1px solid #2f3742;border-radius:13px;padding:15px 16px;text-align:center}
+  .out .l{font-size:9.5px;color:#9aa3ad;text-transform:uppercase;letter-spacing:.11em}
+  .out .v{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:32px;color:#ff6258;margin:5px 0;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+  .out .d{font-size:12px;color:#9aa3ad}
+  .pb{display:block;text-align:center;margin-top:13px;font-size:11px;color:#5c656f;text-decoration:none}
+  .pb:hover b{text-decoration:underline}.pb b{color:#c2f64a}
+</style></head><body>
+<div class="w">
+  <div class="wh"><b id="wcoin">BTC</b><span class="live" id="livePx"></span></div>
+  <div class="seg" id="seg"><button class="on" data-side="long" type="button">Long</button><button data-side="short" type="button">Short</button></div>
+  <label>Entry price</label><input id="e" type="number" value="62000" step="any" inputmode="decimal">
+  <label>Leverage</label><input id="l" type="number" value="10" step="any" inputmode="numeric">
+  <div class="out"><div class="l">Estimated liquidation price</div><div class="v" id="o">—</div><div class="d" id="dd">—</div></div>
+  <a class="pb" href="https://marginpad.io/?utm_source=widget&utm_medium=embed" target="_blank" rel="noopener">⚡ Powered by <b>MarginPad</b> — free crypto futures tools</a>
+</div>
+<script>
+(function(){
+  var q;try{q=new URLSearchParams(location.search);}catch(e){q=null;}
+  var coin=((q&&q.get('coin'))||'BTC').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,6)||'BTC';
+  var $=function(i){return document.getElementById(i);},side='long';
+  $('wcoin').textContent=coin;
+  function fmt(n){return isFinite(n)?(Math.abs(n)>=1?n.toLocaleString('en-US',{maximumFractionDigits:2}):n.toLocaleString('en-US',{maximumFractionDigits:6})):'—';}
+  function calc(){var e=parseFloat($('e').value),l=parseFloat($('l').value),m=0.005;if(!isFinite(e)||!isFinite(l)||l<=0){$('o').textContent='—';$('dd').textContent='—';return;}var liq=side==='long'?e*(1-(1-m)/l):e*(1+(1-m)/l);var d=(liq-e)/e*100;$('o').textContent='$'+fmt(liq);$('dd').textContent=(d>=0?'+':'')+d.toFixed(2)+'% from entry ('+Math.abs(d).toFixed(2)+'% '+(side==='long'?'down':'up')+')';}
+  var seg=$('seg');seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
+  ['e','l'].forEach(function(i){$(i).addEventListener('input',calc);});
+  fetch('https://marginpad.io/api/price?symbol='+coin).then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.price>0){var p=+d.price;$('livePx').innerHTML='<span class="dot"></span>live <i>$'+p.toLocaleString('en-US',{maximumFractionDigits:p>=1?2:6})+'</i>';$('e').value=p;calc();}}).catch(function(){});
+  calc();
+})();
+</script>
+</body></html>

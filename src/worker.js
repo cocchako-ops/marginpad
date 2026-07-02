@@ -482,14 +482,14 @@ async function handleDefiOverview(env) {
   let out = null;
   try {
     const h = { headers: { accept: 'application/json' } };
-    const [cR, pR, sR] = await Promise.all([
-      fetch('https://api.llama.fi/v2/chains', h),
-      fetch('https://api.llama.fi/protocols', h),
-      fetch('https://stablecoins.llama.fi/stablecoins?includePrices=false', h)
+    const [cR, pR, sR] = await Promise.all([ // per-fetch .catch so one dead endpoint degrades gracefully instead of rejecting all three
+      fetch('https://api.llama.fi/v2/chains', h).catch(() => null),
+      fetch('https://api.llama.fi/protocols', h).catch(() => null),
+      fetch('https://stablecoins.llama.fi/stablecoins?includePrices=false', h).catch(() => null)
     ]);
-    const chainsRaw = cR.ok ? await cR.json() : [];
-    const protosRaw = pR.ok ? await pR.json() : [];
-    const stableRaw = sR.ok ? await sR.json() : null;
+    const chainsRaw = cR && cR.ok ? await cR.json() : [];
+    const protosRaw = pR && pR.ok ? await pR.json() : [];
+    const stableRaw = sR && sR.ok ? await sR.json() : null;
     const chains = (Array.isArray(chainsRaw) ? chainsRaw : [])
       .filter(c => +c.tvl > 0)
       .sort((a, b) => b.tvl - a.tvl);
@@ -865,7 +865,14 @@ async function checkAlerts(env) {
 }
 
 // ---------- privacy-friendly self-hosted analytics (hashed visitor id — no cookies, no raw IP stored) ----------
-const STATS_KEY = 'mp_9f3c7e21b84d4a6f'; // fallback; override without a deploy via the Wrangler secret STATS_KEY
+const STATS_KEY = 'mp_9f3c7e21b84d4a6f'; // legacy read-only stats key (public by owner's choice); override via the Wrangler secret STATS_KEY
+// Two-tier admin auth. The (public) stats key only opens the read-only dashboard view; every MUTATING/admin route
+// requires the ADMIN_KEY Wrangler secret. Until ADMIN_KEY is set, admin routes fall back to the stats key so a
+// deploy without the secret changes nothing.
+const statsKeyOf = (env) => (env && env.STATS_KEY) || STATS_KEY;
+const adminKeyOf = (env) => (env && (env.ADMIN_KEY || env.STATS_KEY)) || STATS_KEY;
+const isAdminKey = (env, k) => !!k && k === adminKeyOf(env);
+const isStatsKey = (env, k) => !!k && (k === statsKeyOf(env) || k === adminKeyOf(env));
 async function sha8(s) {
   try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return Array.from(new Uint8Array(b)).slice(0, 8).map(x => x.toString(16).padStart(2, '0')).join(''); } catch (e) { return ''; }
 }
@@ -890,9 +897,18 @@ function browserOf(ua) {
 function isBot(ua) {
   return !ua || /bot\b|crawl|spider|slurp|bingpreview|google(bot|-|\s)|adsbot|mediapartners|yandex|baidu|sogou|duckduckbot|facebookexternalhit|facebot|embedly|skypeuripreview|whatsapp|telegrambot|discordbot|slackbot|twitterbot|linkedinbot|pinterest|redditbot|semrush|ahrefs|mj12|dotbot|petalbot|bytespider|gptbot|oai-searchbot|chatgpt|ccbot|claudebot|claude-web|anthropic|perplexity|applebot|amazonbot|headless|phantomjs|puppeteer|playwright|selenium|python-requests|aiohttp|curl\/|wget|axios\/|node-fetch|got\s|okhttp|go-http-client|java\/|libwww|httpclient|scrapy|masscan|zgrab/i.test(ua);
 }
+const _trackHits = new Map(); // per-isolate IP throttle for /api/track — a UA-rotating flooder was ~15 KV writes/hit
 async function handleTrack(url, request, env, ctx) {
   const ok = new Response('', { status: 204, headers: CORS });
   if (!env || !env.STATS) return ok;
+  { // max 30 tracked hits / 10s / IP per isolate (a human clicking around sends a few; only floods trip this)
+    const tip = request.headers.get('cf-connecting-ip') || '';
+    if (tip) {
+      const now = Date.now(); let th = _trackHits.get(tip);
+      if (!th || now - th.t > 10000) { th = { t: now, n: 0 }; _trackHits.set(tip, th); if (_trackHits.size > 5000) _trackHits.clear(); }
+      if (++th.n > 30) return ok;
+    }
+  }
   const p = url.searchParams;
   const type = (p.get('t') || 'event').replace(/[^a-z0-9_-]/gi, '').slice(0, 24);
   const label = (p.get('e') || '').replace(/[^a-zA-Z0-9 #:._/-]/g, '').slice(0, 48);
@@ -1135,7 +1151,6 @@ go.addEventListener('click',submit);[p,p2].forEach(function(el){if(el)el.addEven
 }
 
 async function handleBug(url, request, env) {
-  const KEY = env.STATS_KEY || STATS_KEY;
   const qkey = url.searchParams.get('key') || '';
   const path = url.pathname;
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -1143,7 +1158,7 @@ async function handleBug(url, request, env) {
   if (!STATS) return new Response(JSON.stringify({ error: 'no_storage' }), { status: 500, headers: jh });
   const bugPass = (await STATS.get('cfg:bugpass2')) || ''; // SHA-256 of the bro's password (set on first login), '' until set
   const cookOk = !!bugPass && adminCookieHash(request, 'mp_badm') === bugPass;
-  const authed = (k) => (!!k && k === KEY) || qkey === KEY || cookOk; // STATS_KEY (watcher/recovery) OR the password cookie (browser)
+  const authed = (k) => isStatsKey(env, k) || isStatsKey(env, qkey) || cookOk; // stats/admin key (watcher/recovery) OR the password cookie (browser)
   const readBody = async () => { try { return await request.json(); } catch (e) { return {}; } };
   if (request.method === 'POST' && path === '/api/bug/login') return adminDoLogin(request, env, 'cfg:bugpass2', 'mp_badm', '/api/bug', '/api/bug');
   if (request.method === 'POST' && path === '/api/bug/logout') return adminLogout('mp_badm', '/api/bug');
@@ -1316,12 +1331,12 @@ render();setInterval(reload,15000);
 }
 
 async function handleStats(url, env, request) {
-  const _SK = env.STATS_KEY || STATS_KEY;
-  if (url.searchParams.get('key') !== _SK) {
+  if (!isStatsKey(env, url.searchParams.get('key'))) {
     // password gate (set-on-first-use). Logged-in cookie → hand the key over in the URL so the dashboard's own
     // client JS (which polls with ?key=) keeps working untouched; otherwise show the password / first-run screen.
+    // The password login gets the ADMIN key (full dashboard); the bare stats key still opens the read-only view.
     const _stored = (env.STATS && await env.STATS.get('cfg:statspass')) || '';
-    if (_stored && adminCookieHash(request, 'mp_sadm') === _stored) return Response.redirect(url.origin + '/api/stats?key=' + encodeURIComponent(_SK), 302);
+    if (_stored && adminCookieHash(request, 'mp_sadm') === _stored) return Response.redirect(url.origin + '/api/stats?key=' + encodeURIComponent(adminKeyOf(env)), 302);
     return new Response(adminLoginHTML('Stats dashboard', !_stored, '/api/stats/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
   }
   if (!env || !env.STATS) return new Response('No storage', { status: 500 });
@@ -1892,6 +1907,10 @@ async function leaderboard(env) {
 async function handleTelegram(request, env) {
   if (!env || !env.TELEGRAM_TOKEN) return new Response('ok');
   if (request.method !== 'POST') return new Response('ok');
+  // Anti-forgery: once TG_WEBHOOK_SECRET is set AND registered (GET /api/admin/tgsetwebhook?key=ADMIN_KEY),
+  // Telegram sends it in this header on every update — forged POSTs (e.g. fake channel_post to hijack the
+  // broadcast destination in KV tg:channel) are rejected. Fail-open while the secret is unset.
+  if (env.TG_WEBHOOK_SECRET && request.headers.get('x-telegram-bot-api-secret-token') !== env.TG_WEBHOOK_SECRET) return new Response('forbidden', { status: 403 });
   let update; try { update = await request.json(); } catch (e) { return new Response('ok'); }
   const token = env.TELEGRAM_TOKEN;
   const base = { parse_mode: 'HTML', disable_web_page_preview: true };
@@ -2164,6 +2183,21 @@ async function sendSupportEmail(env, to, subject, message) {
 // ---------- optional accounts: passwordless email sign-in (6-digit code via Resend) ----------
 function getCookie(request, name) { const h = request.headers.get('cookie') || ''; const m = h.match(new RegExp('(?:^|; )' + name + '=([^;]+)')); return m ? decodeURIComponent(m[1]) : ''; }
 const SESS_COOKIE = 'mp_sess';
+// Per-isolate session cache (30s TTL). Every authed request (AI, rewards) was a fetch to the SINGLE UserStore DO
+// instance — a serialization bottleneck that grows with signed-in traffic. Worst case a revoked session lingers
+// 30s in one isolate; ban/suspend still kill sessions at the DO so the next cache miss sees it.
+const _sessCache = new Map(); // token → { user|null, exp }
+async function sessionUser(env, tok) {
+  if (!tok || !env.USERS) return null;
+  const now = Date.now();
+  const hit = _sessCache.get(tok);
+  if (hit && hit.exp > now) return hit.user;
+  let user = null;
+  try { const sr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); const sd = await sr.json(); if (sd && sd.user && sd.user.id) user = sd.user; } catch (e) { return hit ? hit.user : null; } // DO hiccup → serve stale rather than logging everyone out
+  _sessCache.set(tok, { user, exp: now + 30000 });
+  if (_sessCache.size > 2000) _sessCache.clear();
+  return user;
+}
 const SESS_MAXAGE = 2592000; // 30 days
 async function sendAuthCode(env, to, code) {
   try {
@@ -2293,7 +2327,7 @@ async function handlePush(url, env, request) {
 async function handleAiAdmin(url, request, env) {
   const J = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
-  if (url.searchParams.get('key') !== (env.STATS_KEY || STATS_KEY)) return J({ error: 'forbidden' }, 403);
+  if (!isAdminKey(env, url.searchParams.get('key'))) return J({ error: 'forbidden' }, 403);
   const day = new Date().toISOString().slice(0, 10);
   let cfg = {}; try { cfg = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); } catch (e) {}
   const globalLimit = (cfg && Number.isFinite(cfg.limit)) ? cfg.limit : 10;
@@ -2330,7 +2364,7 @@ async function handleAiChart(url, request, env) {
   const day = new Date().toISOString().slice(0, 10);
   const tok = getCookie(request, SESS_COOKIE);
   let uid = null;
-  if (tok) { try { const sr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); const sd = await sr.json(); if (sd && sd.user && sd.user.id) uid = sd.user.id; } catch (e) {} }
+  if (tok) { const su = await sessionUser(env, tok); if (su && su.id) uid = su.id; }
   // effective daily limit = per-user override (KV ai:lim:<uid>) ?? global default (KV ai:cfg.limit) ?? 10 — both set from the admin
   let LIMIT = 10; try { const c = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); if (c && Number.isFinite(c.limit)) LIMIT = c.limit; } catch (e) {}
   if (uid) { try { const ov = await env.STATS.get('ai:lim:' + uid); if (ov != null && ov !== '') { const n = parseInt(ov, 10); if (!isNaN(n)) LIMIT = n; } } catch (e) {} }
@@ -2340,10 +2374,17 @@ async function handleAiChart(url, request, env) {
   if (request.method !== 'POST') return J({ error: 'method' }, 405);
   if (!uid) return J({ error: 'login_required' }, 401);
   if (!env.ANTHROPIC_API_KEY) return J({ error: 'ai_unconfigured' }, 503);
-  const used = await usedNow();
-  if (used >= LIMIT) return J({ error: 'rate_limit', used, limit: LIMIT }, 429);
   const gk = 'ai:g:' + day; let g = 0; try { g = parseInt(await env.STATS.get(gk) || '0', 10) || 0; } catch (e) {}
-  if (g >= 6000) return J({ error: 'busy' }, 503); // global daily backstop
+  if (g >= 6000) return J({ error: 'busy' }, 503); // global daily backstop (KV, approximate — the hard per-user gate is the DO below)
+  // Atomically RESERVE a quota slot in the UserStore DO before calling Anthropic — the old KV read-then-write
+  // let parallel requests all pass the check and over-spend the paid API. Refunded if the upstream call fails.
+  const aiStub = env.USERS.get(env.USERS.idFromName('main'));
+  const aiCall = (bodyObj) => aiStub.fetch(new Request('https://do/ailimit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(bodyObj) })).then(r => r.json()).catch(() => null);
+  const resv = await aiCall({ uid, limit: LIMIT, day });
+  if (!resv) return J({ error: 'unavailable' }, 503);
+  if (!resv.ok) return J({ error: 'rate_limit', used: resv.used || 0, limit: LIMIT }, 429);
+  const used = (resv.used || 1) - 1; // keep the "used before this call" semantics for the response fields below
+  const refund = () => { try { return aiCall({ uid, day, refund: true }); } catch (e) {} };
   let body = {}; try { body = await request.json(); } catch (e) {}
   const ctx = (body && body.context && typeof body.context === 'object') ? body.context : {};
   const question = String((body && body.question) || '').slice(0, 280);
@@ -2365,9 +2406,9 @@ async function handleAiChart(url, request, env) {
   const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
   let ar;
   try { ar = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', signal: ctl.signal, headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: reqBody }); }
-  catch (e) { clearTimeout(to); return J({ error: 'ai_error' }, 502); }
-  if (!ar.ok) { clearTimeout(to); return J({ error: 'ai_error', status: ar.status }, 502); }
-  try { await env.STATS.put(rk, String(used + 1), { expirationTtl: 172800 }); } catch (e) {} // count a successful call once
+  catch (e) { clearTimeout(to); await refund(); return J({ error: 'ai_error' }, 502); }
+  if (!ar.ok) { clearTimeout(to); await refund(); return J({ error: 'ai_error', status: ar.status }, 502); }
+  try { await env.STATS.put(rk, String(used + 1), { expirationTtl: 172800 }); } catch (e) {} // KV mirror only (admin panel reads it); the DO count is authoritative
   try { await env.STATS.put(gk, String(g + 1), { expirationTtl: 172800 }); } catch (e) {}
   if (wantStream) { clearTimeout(to); return new Response(ar.body, { status: 200, headers: { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-store', 'x-ai-used': String(used + 1), 'x-ai-limit': String(LIMIT), ...CORS } }); }
   clearTimeout(to);
@@ -2387,7 +2428,7 @@ async function handleAnnounce(url, env, request) {
     try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {}
     return new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20', ...CORS } });
   }
-  if (url.searchParams.get('key') !== (env.STATS_KEY || STATS_KEY)) return jr({ error: 'forbidden' }, 403);
+  if (!isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403);
   let b = {}; try { b = await request.json(); } catch (e) {}
   const level = ['severe', 'blocker', 'fix'].indexOf(b.level) >= 0 ? b.level : '';
   const rec = { msg: level ? String(b.msg || '').slice(0, 300) : '', level: level, ts: Date.now() };
@@ -2467,7 +2508,7 @@ async function handleUnsubscribe(url, env) {
 }
 // Standalone admin profile page for ONE user (opened in a new tab from the Users list). Key-gated; renders client-side.
 function handleUserPage(url, env) {
-  if (url.searchParams.get('key') !== (env.STATS_KEY || STATS_KEY)) return new Response('Forbidden', { status: 403 });
+  if (!isAdminKey(env, url.searchParams.get('key'))) return new Response('Forbidden', { status: 403 });
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>User · MarginPad Admin</title><style>
 *{box-sizing:border-box}body{background:#0a0b0d;color:#e9e7df;font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:920px;margin:0 auto;padding:22px 18px 80px}
 a{color:#c2f64a}.back{font-size:12.5px;color:#9aa3ad;text-decoration:none}.back:hover{color:#c2f64a}
@@ -2638,7 +2679,7 @@ async function handleAuth(url, request, env, ctx) {
   const asn = (request.cf && request.cf.asn) || 0;
   const stub = env.USERS.get(env.USERS.idFromName('main'));
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
-  const isAdmin = url.searchParams.get('key') === (env.STATS_KEY || STATS_KEY);
+  const isAdmin = isAdminKey(env, url.searchParams.get('key'));
 
   if (path === '/start') {
     const email = String(b.email || '').trim().toLowerCase();
@@ -2745,7 +2786,7 @@ async function handleReward(url, request, env) {
   const ua = request.headers.get('user-agent') || '';
   const cc = (request.cf && request.cf.country) || '';
   const vid = await sha8(ip + '|' + ua); // per-device id (same hashing as stats) — used for the one-address-per-device lock
-  const adminOk = url.searchParams.get('key') === (env.STATS_KEY || STATS_KEY);
+  const adminOk = isAdminKey(env, url.searchParams.get('key'));
   const raw = request.method === 'POST' ? await request.text() : '';
   let b = {}; try { b = JSON.parse(raw || '{}'); } catch (e) {}
   // public address-existence check (the page calls this on Save for instant feedback)
@@ -2754,7 +2795,7 @@ async function handleReward(url, request, env) {
   let acct = null;
   if (path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || (path === '/lb' && request.method === 'POST')) {
     const tok = getCookie(request, SESS_COOKIE);
-    if (tok && env.USERS) { try { const sr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); const sd = await sr.json(); if (sd && sd.user && sd.user.id) acct = 'u:' + sd.user.id; } catch (e) {} }
+    if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) acct = 'u:' + su.id; }
   }
   const full = await rewardCfg(env);
   // admin: read/write the live config (Settings tab) — applies instantly, no deploy
@@ -2932,8 +2973,8 @@ export default {
     if (url.pathname === '/api/klines') return handleKlines(url);
     if (url.pathname.startsWith('/api/v1/')) return handleCollectorProxy(url, request, env);
     if (url.pathname === '/api/track') return handleTrack(url, request, env, ctx);
-    if (url.pathname === '/api/stats/reset' && url.searchParams.get('key') === (env.STATS_KEY || STATS_KEY)) return handleStatsReset(env);
-    if (url.pathname === '/api/stats/login') return adminDoLogin(request, env, 'cfg:statspass', 'mp_sadm', '/api/stats', url.origin + '/api/stats?key=' + encodeURIComponent(env.STATS_KEY || STATS_KEY));
+    if (url.pathname === '/api/stats/reset' && isAdminKey(env, url.searchParams.get('key'))) return handleStatsReset(env);
+    if (url.pathname === '/api/stats/login') return adminDoLogin(request, env, 'cfg:statspass', 'mp_sadm', '/api/stats', url.origin + '/api/stats?key=' + encodeURIComponent(adminKeyOf(env)));
     if (url.pathname === '/api/stats/logout') return adminLogout('mp_sadm', '/api/stats');
     if (url.pathname === '/api/stats') return handleStats(url, env, request);
     if (url.pathname === '/api/bug' || url.pathname.startsWith('/api/bug/')) return handleBug(url, request, env);
@@ -2955,7 +2996,18 @@ export default {
       if (!pos) return new Response(JSON.stringify({ error: 'not_found' }), { status: 404, headers: hdr });
       return new Response(JSON.stringify({ ok: true, pos }), { headers: hdr });
     }
-    if (url.pathname === '/api/admin/tgphoto' && url.searchParams.get('key') === (env.STATS_KEY || STATS_KEY)) { // set the channel avatar to the MarginPad logo
+    if (url.pathname === '/api/admin/tgsetwebhook' && isAdminKey(env, url.searchParams.get('key'))) { // (re)register the Telegram webhook WITH the anti-forgery secret token (see handleTelegram)
+      const jh = { 'content-type': 'application/json' };
+      if (!env.TELEGRAM_TOKEN) return new Response(JSON.stringify({ error: 'no_bot' }), { status: 503, headers: jh });
+      if (!env.TG_WEBHOOK_SECRET) return new Response(JSON.stringify({ error: 'no_secret', hint: 'wrangler secret put TG_WEBHOOK_SECRET first' }), { status: 400, headers: jh });
+      let ok = false, desc = '';
+      try {
+        const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setWebhook', { method: 'POST', headers: jh, body: JSON.stringify({ url: url.origin + '/telegram/webhook', secret_token: env.TG_WEBHOOK_SECRET, allowed_updates: ['message', 'callback_query', 'channel_post', 'my_chat_member', 'chat_member'] }) });
+        const j = await r.json(); ok = !!j.ok; desc = j.description || '';
+      } catch (e) { desc = String(e); }
+      return new Response(JSON.stringify({ ok, note: desc }), { headers: jh });
+    }
+    if (url.pathname === '/api/admin/tgphoto' && isAdminKey(env, url.searchParams.get('key'))) { // set the channel avatar to the MarginPad logo
       const jh = { 'content-type': 'application/json' };
       if (!env.TELEGRAM_TOKEN) return new Response(JSON.stringify({ error: 'no_bot' }), { status: 503, headers: jh });
       const channel = env.TG_CHANNEL || (env.STATS && await env.STATS.get('tg:channel'));
@@ -2968,7 +3020,7 @@ export default {
       let ok = false, desc = ''; try { const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setChatPhoto', { method: 'POST', body: fd }); const j = await r.json(); ok = !!j.ok; desc = j.description || ''; } catch (e) { desc = String(e); }
       return new Response(JSON.stringify({ ok, error: ok ? undefined : (desc || 'failed') }), { headers: jh });
     }
-    if (url.pathname === '/api/admin/broadcast' && url.searchParams.get('key') === (env.STATS_KEY || STATS_KEY)) { // owner posts an announcement to the Telegram channel from the admin panel
+    if (url.pathname === '/api/admin/broadcast' && isAdminKey(env, url.searchParams.get('key'))) { // owner posts an announcement to the Telegram channel from the admin panel
       const jh = { 'content-type': 'application/json' };
       if (!env.TELEGRAM_TOKEN) return new Response(JSON.stringify({ error: 'no_bot' }), { status: 503, headers: jh });
       const channel = env.TG_CHANNEL || (env.STATS && await env.STATS.get('tg:channel')); // secret OR auto-captured id
@@ -2987,11 +3039,11 @@ export default {
     }
     if (url.pathname.startsWith('/api/') && url.pathname !== '/api/') return handleApi(url);
     if (url.pathname === '/telegram/webhook') return handleTelegram(request, env);
-    if (url.pathname === '/chat/reset' && url.searchParams.get('key') === (env.STATS_KEY || STATS_KEY)) {
+    if (url.pathname === '/chat/reset' && isAdminKey(env, url.searchParams.get('key'))) {
       if (!env.CHAT) return new Response('na', { status: 503 });
       return env.CHAT.get(env.CHAT.idFromName('global')).fetch(new Request('https://do/reset'));
     }
-    if (url.pathname.startsWith('/chat/admin/') && url.searchParams.get('key') === (env.STATS_KEY || STATS_KEY)) { // dashboard chat moderation: /history /post /delete
+    if (url.pathname.startsWith('/chat/admin/') && isAdminKey(env, url.searchParams.get('key'))) { // dashboard chat moderation: /history /post /delete
       if (!env.CHAT) return new Response('na', { status: 503 });
       const sub = url.pathname.slice('/chat/admin'.length); // -> /history /post /delete
       const body = request.method === 'POST' ? await request.text() : undefined;
@@ -2999,6 +3051,10 @@ export default {
     }
     if (url.pathname === '/chat/ws') {
       if (!env.CHAT) return new Response('chat unavailable', { status: 503 });
+      // Browsers always send Origin on WebSocket upgrades — reject cross-site embeds/scripts opening our chat.
+      // (Non-browser clients can fake it; this blocks the drive-by case, the DO adds per-IP limits.)
+      const org = request.headers.get('origin') || '';
+      if (org && !/^https:\/\/(www\.)?marginpad\.io$|^http:\/\/localhost(:\d+)?$/.test(org)) return new Response('forbidden', { status: 403 });
       return env.CHAT.get(env.CHAT.idFromName('global')).fetch(request);
     }
     if (url.pathname === '/charts' || url.pathname === '/charts/' || url.pathname === '/paper-trade' || url.pathname === '/paper-trade/' || url.pathname === '/calculators' || url.pathname === '/calculators/' || url.pathname === '/screener' || url.pathname === '/screener/') { // dedicated full-screen workspaces (serve the homepage; its JS switches to the right single-tool mode)
@@ -3087,9 +3143,18 @@ export class ChatRoom {
     if (cp.endsWith('/post')) { let b = {}; try { b = await request.json(); } catch (e) {} const text = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, 280); if (!text) return cj({ error: 'empty' }); const m = { u: 'MarginPad', t: text, ts: Date.now(), admin: true }; let hist = (await this.state.storage.get('hist')) || []; hist.push(m); if (hist.length > 60) hist = hist.slice(-60); await this.state.storage.put('hist', hist); this.broadcast({ type: 'msg', message: m, online: this.state.getWebSockets().length }); return cj({ ok: true }); }
     if (cp.endsWith('/delete')) { let b = {}; try { b = await request.json(); } catch (e) {} const ts = +b.ts; let hist = (await this.state.storage.get('hist')) || []; hist = hist.filter(x => x.ts !== ts); await this.state.storage.put('hist', hist); this.broadcast({ type: 'history', messages: hist }); return cj({ ok: true }); }
     if (request.headers.get('Upgrade') !== 'websocket') return new Response('expected websocket', { status: 426 });
+    // Per-IP connection cap: N sockets from one IP is a flood/scrape, not a chat user. The IP rides in the
+    // socket attachment (survives hibernation) so the count works across DO restarts.
+    const ip = request.headers.get('cf-connecting-ip') || '';
+    if (ip) {
+      let same = 0;
+      for (const s of this.state.getWebSockets()) { try { const a = s.deserializeAttachment(); if (a && typeof a === 'object' && a.ip === ip) same++; } catch (e) {} }
+      if (same >= 4) return new Response('too many connections', { status: 429 });
+    }
     const pair = new WebSocketPair();
     const client = pair[0], server = pair[1];
     this.state.acceptWebSocket(server);
+    try { server.serializeAttachment({ ip, last: 0 }); } catch (e) {}
     const hist = (await this.state.storage.get('hist')) || [];
     try { server.send(JSON.stringify({ type: 'history', messages: hist, online: this.state.getWebSockets().length })); } catch (e) {}
     this.broadcast({ type: 'presence', online: this.state.getWebSockets().length });
@@ -3102,9 +3167,13 @@ export class ChatRoom {
     const user = String(m.u || 'anon').replace(/[<>&]/g, '').trim().slice(0, 20) || 'anon';
     if (!text) return;
     const now = Date.now();
-    let last = 0; try { last = ws.deserializeAttachment() || 0; } catch (e) {}
-    if (now - last < 1200) return; // 1 message / 1.2s per connection
-    try { ws.serializeAttachment(now); } catch (e) {}
+    let att = null; try { att = ws.deserializeAttachment(); } catch (e) {}
+    if (typeof att === 'number') att = { ip: '', last: att }; // pre-upgrade sockets stored a bare timestamp
+    if (!att || typeof att !== 'object') att = { ip: '', last: 0 };
+    if (now - (att.last || 0) < 1200) return; // 1 message / 1.2s per connection
+    // …and 1 / 1.2s per IP across ALL its connections (in-memory; resets on hibernation — best-effort).
+    if (att.ip) { if (!this.ipLast) this.ipLast = new Map(); const pl = this.ipLast.get(att.ip) || 0; if (now - pl < 1200) return; this.ipLast.set(att.ip, now); if (this.ipLast.size > 500) this.ipLast.clear(); }
+    try { ws.serializeAttachment({ ip: att.ip || '', last: now }); } catch (e) {}
     const msg = { u: user, t: text, ts: now };
     let hist = (await this.state.storage.get('hist')) || [];
     hist.push(msg); if (hist.length > 60) hist = hist.slice(-60);
@@ -3432,6 +3501,7 @@ export class UserStore {
     try { s.exec('CREATE INDEX IF NOT EXISTS uev_user ON uevents(user_id, ts)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS ucl_user ON uclicks(user_id, ts)'); } catch (e) {}
     try { s.exec('CREATE UNIQUE INDEX IF NOT EXISTS uname_uniq ON users(username) WHERE username IS NOT NULL'); } catch (e) {} // enforce unique usernames at the DB level too
+    s.exec('CREATE TABLE IF NOT EXISTS aiuse(k TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)'); // atomic per-user daily "Ask AI" counter (k = uid|day) — KV was racy and over-spent the paid LLM quota
   }
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
@@ -3477,6 +3547,19 @@ export class UserStore {
       sql.exec('INSERT INTO sessions(token,user_id,created,expires,ua,ip,cc,asn,org) VALUES(?,?,?,?,?,?,?,?,?)', token, u.id, now, now + 2592000000, String(b.ua || '').slice(0, 200), String(b.ip || ''), String(b.cc || ''), asn, org);
       if (Math.random() < 0.02) sql.exec('DELETE FROM sessions WHERE expires<?', now); // occasional cleanup of expired sessions
       return this.j({ ok: true, token, isNew, user: { email: u.email, id: u.id, username: u.username || '', created: u.created } });
+    }
+    if (path === '/ailimit') { // atomic AI-quota gate: RESERVE a slot before the Anthropic call (single-threaded DO → parallel requests can't over-spend). POST {uid, limit, day, probe?, refund?}
+      const uid = String(b.uid || ''); if (!uid) return this.j({ ok: false, error: 'no_uid' });
+      const k = uid + '|' + String(b.day || day);
+      const row = this.rows('SELECT n FROM aiuse WHERE k=?', k)[0];
+      const used = row ? (row.n || 0) : 0;
+      if (b.probe) return this.j({ ok: true, used });
+      if (b.refund) { if (used > 0) sql.exec('UPDATE aiuse SET n=n-1 WHERE k=?', k); return this.j({ ok: true, used: Math.max(0, used - 1) }); }
+      const limit = Math.max(0, +b.limit || 0);
+      if (used >= limit) return this.j({ ok: false, used, limit });
+      sql.exec('INSERT INTO aiuse(k,n) VALUES(?,1) ON CONFLICT(k) DO UPDATE SET n=n+1', k);
+      if (Math.random() < 0.02) { try { sql.exec("DELETE FROM aiuse WHERE k NOT LIKE '%|' || ?", String(b.day || day)); } catch (e) {} } // occasional cleanup of past days
+      return this.j({ ok: true, used: used + 1, limit });
     }
     if (path === '/track') { // worker forwards a signed-in user's pageview/event here (best-effort)
       const uid = String(b.uid || ''); if (!uid) return this.j({ ok: false });

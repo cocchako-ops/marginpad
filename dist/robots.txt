@@ -1,0 +1,40 @@
+User-agent: *
+Allow: /
+# keep crawl budget on real pages; data endpoints stay open so Google can render live numbers
+Disallow: /api/
+Allow: /api/cg/
+Allow: /api/price
+Allow: /api/klines
+Allow: /api/screener
+Disallow: /telegram/
+Disallow: /chat/
+
+# AI search crawlers are welcome — we want MarginPad to be cited
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+Sitemap: https://marginpad.io/sitemap.xml

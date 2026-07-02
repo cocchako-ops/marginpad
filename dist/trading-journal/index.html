@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index, follow, max-image-preview:large">
+<title>Crypto Trading Journal &amp; Analytics — Track Your Performance | MarginPad</title>
+<meta name="description" content="A free crypto trading journal that turns your trades into an edge: win rate, expectancy, profit factor, R-multiples, streaks, drawdown, an equity curve and per-coin and long/short breakdowns. Auto-syncs your Paper Trade history.">
+<meta name="keywords" content="crypto trading journal, trading journal, trade analytics, trading performance tracker, expectancy calculator, profit factor, win rate tracker">
+<link rel="canonical" href="https://marginpad.io/trading-journal/">
+<meta name="theme-color" content="#08090b">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://marginpad.io/trading-journal/">
+<meta property="og:title" content="Crypto Trading Journal &amp; Analytics — Track Your Performance | MarginPad">
+<meta property="og:description" content="A free crypto trading journal that turns your trades into an edge: win rate, expectancy, profit factor, R-multiples, streaks, drawdown, an equity curve and per-coin and long/short breakdowns. Auto-syncs your Paper Trade history.">
+<meta property="og:image" content="https://marginpad.io/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Crypto Trading Journal &amp; Analytics — Track Your Performance | MarginPad">
+<meta name="twitter:description" content="A free crypto trading journal that turns your trades into an edge: win rate, expectancy, profit factor, streaks, drawdown, an equity curve and per-coin and long/short breakdowns. Auto-syncs your Paper Trade history.">
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/lab.css">
+<style>
+  .verdict{display:flex;align-items:center;gap:12px;margin:18px 0 4px;padding:15px 18px;border-radius:14px;border:1px solid var(--line2);background:linear-gradient(180deg,var(--panel2),var(--panel));font-size:14.5px;line-height:1.5}
+  .verdict .dot{flex:none;width:11px;height:11px;border-radius:50%;box-shadow:0 0 0 4px rgba(255,255,255,.04)}
+  .verdict b{color:var(--ink)}
+  .verdict.good .dot{background:var(--up);box-shadow:0 0 0 4px rgba(55,211,152,.16)}
+  .verdict.bad .dot{background:var(--red);box-shadow:0 0 0 4px rgba(255,98,88,.16)}
+  .verdict.flat .dot{background:var(--amber);box-shadow:0 0 0 4px rgba(255,179,71,.16)}
+  .vizpad{padding:18px 20px 20px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .eqwrap{position:relative}
+  .eqval{position:absolute;top:14px;right:18px;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;padding:5px 10px;border-radius:9px;border:1px solid var(--line2);background:rgba(8,9,11,.7);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .vlabel{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin:0 0 12px;font-weight:700}
+  /* histogram */
+  .hist{display:flex;align-items:flex-end;gap:5px;height:150px;padding-top:6px}
+  .hist .col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;min-width:0}
+  .hist .col .bk{width:100%;border-radius:5px 5px 2px 2px;min-height:2px;transition:height .4s}
+  .hist .col .bk.up{background:linear-gradient(180deg,var(--up),rgba(55,211,152,.35))}
+  .hist .col .bk.dn{background:linear-gradient(180deg,var(--red),rgba(255,98,88,.35))}
+  .hist .col .tk{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--faint);white-space:nowrap}
+  .hist .col .ct{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink2);font-weight:700}
+  /* side bars */
+  .sbar{margin:14px 0}
+  .sbar .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;font-size:13px}
+  .sbar .nm{font-family:'Space Mono',monospace;font-weight:700;letter-spacing:.04em}
+  .sbar .meta{font-family:'Space Mono',monospace;font-size:12px;color:var(--dim)}
+  .sbar .track{height:13px;border-radius:7px;background:#0a0c10;overflow:hidden;border:1px solid var(--line)}
+  .sbar .track>i{display:block;height:100%;border-radius:7px;transition:width .5s}
+  /* recent form */
+  .form{display:flex;flex-wrap:wrap;gap:5px}
+  .form .blk{width:22px;height:30px;border-radius:5px;border:1px solid rgba(255,255,255,.05)}
+  .form .blk.w{background:linear-gradient(180deg,var(--up),rgba(55,211,152,.5))}
+  .form .blk.l{background:linear-gradient(180deg,var(--red),rgba(255,98,88,.5))}
+  /* trade row coloring */
+  td .lg{color:var(--up);font-weight:700}
+  td .sh{color:var(--red);font-weight:700}
+  .faq{margin-top:8px}
+  .faq details{border:1px solid var(--line);border-radius:12px;padding:2px 16px;margin-bottom:10px;background:linear-gradient(180deg,var(--panel),var(--bg2))}
+  .faq summary{cursor:pointer;font-weight:700;padding:14px 0;list-style:none;font-size:15px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:'+';float:right;color:var(--cyan);font-weight:700}
+  .faq details[open] summary::after{content:'–'}
+  .faq p{color:var(--dim);font-size:14px;margin:0 0 14px;line-height:1.6}
+  .prose{max-width:760px;color:var(--ink2);font-size:15px;line-height:1.7}
+  .prose p{margin:0 0 14px}
+  .ctarow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Trading Journal","applicationCategory":"FinanceApplication","operatingSystem":"Web","url":"https://marginpad.io/trading-journal/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":3,"name":"Trading Journal","item":"https://marginpad.io/trading-journal/"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a trading journal?","acceptedAnswer":{"@type":"Answer","text":"A trading journal is a record of every trade you take, turned into performance metrics. Instead of guessing whether you are profitable, it shows your win rate, average win and loss, profit factor, expectancy per trade, streaks and drawdown — so you can see objectively whether your strategy has a real edge and where it leaks money."}},{"@type":"Question","name":"How does the journal track my trades?","acceptedAnswer":{"@type":"Answer","text":"It reads the trades you make in the free Paper Trade terminal, which are stored locally in your browser. Nothing is uploaded — your trade history is private to you. Every time you close a position, this page recomputes your stats automatically from that local history."}},{"@type":"Question","name":"What metrics matter most?","acceptedAnswer":{"@type":"Answer","text":"Expectancy per trade and profit factor matter most. Expectancy is your average profit or loss per trade — if it is positive, the strategy makes money over many trades. Profit factor (gross wins divided by gross losses) above 1 means you keep more than you lose. Win rate alone is misleading: a 40% win rate can be highly profitable if your wins are much larger than your losses."}}]}
+</script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/">MARGIN<b>PAD</b></a><nav class="tool-switch"><a href="/tools/">All tools</a><a href="/crypto-backtester/">Backtester</a><a class="on" href="/trading-journal/">Journal</a><a href="/pivot-point-calculator/">Pivots</a><a href="/risk-of-ruin-calculator/">Risk</a><a href="/crypto-correlation-matrix/">Correlation</a></nav><a class="home" href="/">← marginpad.io</a></header>
+
+<div class="wrap">
+  <section class="hero">
+    <span class="eyebrow">Journal</span>
+    <h1>Trading Journal &amp; Analytics</h1>
+    <p class="sub">Every closed trade, turned into the numbers that actually tell you whether you have an edge — win rate, expectancy, profit factor, streaks, drawdown, an equity curve and per-coin and long/short breakdowns. Auto-synced from your Paper Trade history, private to your browser.</p>
+  </section>
+
+  <div id="empty" class="card empty" hidden>
+    <div style="font-size:38px;line-height:1;margin-bottom:14px">📈</div>
+    <div style="font-size:19px;font-weight:700;color:var(--ink);margin-bottom:8px;font-family:'Bricolage Grotesque',sans-serif">No closed trades yet</div>
+    <p style="max-width:440px;margin:0 auto 6px;color:var(--dim);line-height:1.6">This journal builds itself automatically from the free <b style="color:var(--ink2)">Paper Trade</b> terminal. Open a few positions, close them on a take-profit or stop, and your full performance analytics appear here — no signup, stored privately in your browser.</p>
+    <div class="ctarow">
+      <a class="btn" href="/paper-trade">Open the Paper Trade terminal →</a>
+    </div>
+  </div>
+
+  <div id="out" hidden>
+    <div id="verdict" class="verdict"><span class="dot"></span><span id="verdictTxt"></span></div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <h2>Equity curve <span class="muted">cumulative P&amp;L over your closed trades</span></h2>
+    <div class="tablewrap eqwrap vizpad">
+      <div class="vlabel">Account growth</div>
+      <div class="eqval" id="eqVal"></div>
+      <svg class="viz" id="eq" viewBox="0 0 720 240" preserveAspectRatio="none" style="height:240px;border:none"></svg>
+    </div>
+
+    <div class="grid2">
+      <div>
+        <h2>P&amp;L distribution</h2>
+        <div class="tablewrap vizpad">
+          <div class="vlabel">How your trade outcomes cluster</div>
+          <div class="hist" id="hist"></div>
+          <div class="legend"><span><i style="background:var(--up)"></i>Winning buckets</span><span><i style="background:var(--red)"></i>Losing buckets</span></div>
+        </div>
+      </div>
+      <div>
+        <h2>Drawdown</h2>
+        <div class="tablewrap vizpad">
+          <div class="vlabel">Equity below its running peak</div>
+          <svg class="viz" id="dd" viewBox="0 0 360 150" preserveAspectRatio="none" style="height:150px;border:none"></svg>
+          <div class="legend" id="ddLegend"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div>
+        <h2>Long vs Short</h2>
+        <div class="tablewrap vizpad">
+          <div class="vlabel">Win rate by direction · bar = win rate</div>
+          <div id="bySide"></div>
+        </div>
+      </div>
+      <div>
+        <h2>Recent form <span class="muted">last 20 closed trades</span></h2>
+        <div class="tablewrap vizpad">
+          <div class="vlabel">Newest on the right</div>
+          <div class="form" id="form"></div>
+          <div class="legend"><span><i style="background:var(--up)"></i>Win</span><span><i style="background:var(--red)"></i>Loss</span></div>
+        </div>
+      </div>
+    </div>
+
+    <h2>By coin <span class="muted">sorted by net P&amp;L</span></h2>
+    <div class="tablewrap">
+      <div class="tablescroll">
+        <table id="bySym"></table>
+      </div>
+    </div>
+
+    <h2>All closed trades</h2>
+    <div class="tablewrap">
+      <div class="tablescroll">
+        <table id="trades"></table>
+      </div>
+    </div>
+    <div class="note"><b>How it's computed:</b> profit factor = gross wins ÷ gross losses · expectancy = net P&amp;L ÷ trades · ROE = P&amp;L ÷ margin. All figures are derived only from trades you've closed in the Paper Trade terminal, stored locally in your browser.</div>
+  </div>
+
+  <section class="prose" style="margin-top:46px">
+    <h2>Why journal your trades</h2>
+    <p>Most traders never find out whether they actually have an edge — they remember the big wins, forget the slow bleed of small losses, and trade on a feeling. A trading journal removes the guesswork. By recording every position and turning it into hard numbers, it answers the only question that matters: over many trades, does your approach make money or lose it?</p>
+    <p>The metrics here are the ones professionals watch. Expectancy tells you the average outcome of taking your setup once. Profit factor shows how many dollars you keep for every dollar you lose. Win streaks, loss streaks and drawdown reveal how much pain the strategy puts you through to get there. Seen together — across coins, directions and time — they expose exactly where your edge is and where it leaks.</p>
+  </section>
+
+  <section class="faq">
+    <h2>FAQ</h2>
+    <details>
+      <summary>What is a trading journal?</summary>
+      <p>A trading journal is a record of every trade you take, turned into performance metrics. Instead of guessing whether you are profitable, it shows your win rate, average win and loss, profit factor, expectancy per trade, streaks and drawdown — so you can see objectively whether your strategy has a real edge and where it leaks money.</p>
+    </details>
+    <details>
+      <summary>How does the journal track my trades?</summary>
+      <p>It reads the trades you make in the free Paper Trade terminal, which are stored locally in your browser. Nothing is uploaded — your trade history is private to you. Every time you close a position, this page recomputes your stats automatically from that local history.</p>
+    </details>
+    <details>
+      <summary>What metrics matter most?</summary>
+      <p>Expectancy per trade and profit factor matter most. Expectancy is your average profit or loss per trade — if it is positive, the strategy makes money over many trades. Profit factor (gross wins divided by gross losses) above 1 means you keep more than you lose. Win rate alone is misleading: a 40% win rate can be highly profitable if your wins are much larger than your losses.</p>
+    </details>
+  </section>
+</div>
+
+<footer class="toolfoot"><div class="cols"><div><a class="brand" href="/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">Free crypto futures tools — calculators, a live charts workspace, a paper-trading terminal and a real-time liquidation feed. No signup.</p></div><div><h4>Tools</h4><a href="/crypto-backtester/">Strategy Backtester</a><a href="/trading-journal/">Trading Journal</a><a href="/pivot-point-calculator/">Pivot Points</a><a href="/risk-of-ruin-calculator/">Risk of Ruin</a><a href="/crypto-correlation-matrix/">Correlation Matrix</a></div><div><h4>MarginPad</h4><a href="/paper-trade">Paper Trade</a><a href="/charts">Charts</a><a href="/calculators">Calculators</a><a href="/screener">Screener</a><a href="/rekt/">Liquidations</a></div></div><div class="bottom">© 2026 MarginPad · Free crypto trading tools · Not financial advice</div></footer>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  function money(x){var n=x<0;x=Math.abs(+x||0);return (n?'-$':'$')+x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function sgn(x){return (x>=0?'+':'')+money(x).replace('-','');}
+  function pct(x){return (x>=0?'+':'')+x.toFixed(0)+'%';}
+  function load(){try{return JSON.parse(localStorage.getItem('mp_journal')||'[]');}catch(e){return [];}}
+
+  var all=load().filter(function(e){return e&&(e.status==='win'||e.status==='loss');});
+  if(!all.length){$('empty').hidden=false;return;}
+  all.sort(function(a,b){return (a.closedTs||a.ts||0)-(b.closedTs||b.ts||0);});
+  all.forEach(function(e){e._pnl=+e.pnl||0;e._roe=(+e.margin>0)?e._pnl/(+e.margin)*100:0;e._long=(e.side!=='short');});
+
+  var wins=all.filter(function(e){return e._pnl>0;});
+  var losses=all.filter(function(e){return e._pnl<=0;});
+  var net=all.reduce(function(s,e){return s+e._pnl;},0);
+  var gw=wins.reduce(function(s,e){return s+e._pnl;},0);
+  var gl=Math.abs(losses.reduce(function(s,e){return s+e._pnl;},0));
+  var pf=gl>0?gw/gl:(gw>0?Infinity:0);
+  var wr=wins.length/all.length*100;
+  var avgW=wins.length?gw/wins.length:0;
+  var avgL=losses.length?-gl/losses.length:0;
+  var exp=net/all.length;
+  var best=all.reduce(function(m,e){return e._pnl>m._pnl?e:m;},all[0]);
+  var worst=all.reduce(function(m,e){return e._pnl<m._pnl?e:m;},all[0]);
+  var avgRoe=all.reduce(function(s,e){return s+e._roe;},0)/all.length;
+
+  // streaks
+  var maxW=0,maxL=0,cw=0,cl=0;
+  all.forEach(function(e){if(e._pnl>0){cw++;cl=0;if(cw>maxW)maxW=cw;}else{cl++;cw=0;if(cl>maxL)maxL=cl;}});
+
+  $('out').hidden=false;
+
+  // edge verdict
+  var posEdge=exp>0&&pf>1;
+  var vEl=$('verdict'),vTxt=$('verdictTxt');
+  if(posEdge){vEl.className='verdict good';vTxt.innerHTML='<b>Positive edge.</b> Your expectancy is '+money(exp)+' per trade and your profit factor is '+(isFinite(pf)?pf.toFixed(2):'∞')+' — over this sample, your trades make money.';}
+  else if(exp>=0||pf>=1){vEl.className='verdict flat';vTxt.innerHTML='<b>Roughly break-even.</b> Expectancy is '+money(exp)+'/trade and profit factor '+(isFinite(pf)?pf.toFixed(2):'∞')+'. The edge is marginal — tighten your losers or let winners run.';}
+  else{vEl.className='verdict bad';vTxt.innerHTML='<b>No edge yet.</b> Expectancy is '+money(exp)+' per trade and profit factor '+pf.toFixed(2)+' — this sample loses money. Review your worst trades below.';}
+
+  // KPIs
+  function kpi(v,l,cls){return '<div class="kpi '+(cls||'')+'"><div class="v '+(cls==='pos'?'pos':cls==='neg'?'neg':'')+'">'+v+'</div><div class="l">'+l+'</div></div>';}
+  $('kpis').innerHTML=
+    kpi(all.length,'Closed trades','')
+    +kpi(wr.toFixed(0)+'%','Win rate',wr>=50?'pos':'')
+    +kpi(money(net),'Net P&amp;L',net>=0?'pos':'neg')
+    +kpi(isFinite(pf)?pf.toFixed(2):'∞','Profit factor',pf>=1?'pos':'neg')
+    +kpi(money(exp),'Expectancy / trade',exp>=0?'pos':'neg')
+    +kpi(pct(avgRoe),'Avg ROE',avgRoe>=0?'pos':'neg')
+    +kpi(money(avgW),'Avg win','pos')
+    +kpi(money(avgL),'Avg loss','neg')
+    +kpi(money(best._pnl),'Best trade','pos')
+    +kpi(money(worst._pnl),'Worst trade','neg')
+    +kpi(maxW,'Max win streak','pos')
+    +kpi(maxL,'Max loss streak','neg');
+
+  // ===== equity curve =====
+  (function(){
+    var cum=0,pts=[0];
+    all.forEach(function(e){cum+=e._pnl;pts.push(cum);});
+    var mn=Math.min.apply(null,pts),mx=Math.max.apply(null,pts);
+    var W=720,H=240,padX=10,padT=14,padB=14;
+    if(mx===mn){mx+=1;mn-=1;}
+    function X(i){return padX+i/(pts.length-1||1)*(W-2*padX);}
+    function Y(v){return padT+(1-(v-mn)/(mx-mn))*(H-padT-padB);}
+    var line='',area='';
+    pts.forEach(function(v,i){var x=X(i).toFixed(1),y=Y(v).toFixed(1);line+=(i?'L':'M')+x+' '+y+' ';});
+    area=line+'L'+X(pts.length-1).toFixed(1)+' '+(H-padB)+' L'+X(0).toFixed(1)+' '+(H-padB)+' Z';
+    var zY=Y(0).toFixed(1);
+    var col=net>=0?'#37d398':'#ff6258';
+    $('eq').innerHTML=
+      '<defs><linearGradient id="eqg" x1="0" y1="0" x2="0" y2="1">'
+      +'<stop offset="0%" stop-color="'+col+'" stop-opacity="0.28"/>'
+      +'<stop offset="100%" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs>'
+      +'<line x1="'+padX+'" y1="'+zY+'" x2="'+(W-padX)+'" y2="'+zY+'" stroke="#2c333f" stroke-width="1" stroke-dasharray="4 4"/>'
+      +'<path d="'+area+'" fill="url(#eqg)" stroke="none"/>'
+      +'<path d="'+line+'" fill="none" stroke="'+col+'" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>'
+      +'<circle cx="'+X(pts.length-1).toFixed(1)+'" cy="'+Y(cum).toFixed(1)+'" r="3.4" fill="'+col+'"/>';
+    $('eqVal').innerHTML='<span class="'+(net>=0?'pos':'neg')+'">'+money(net)+'</span>';
+  })();
+
+  // ===== P&L distribution histogram =====
+  (function(){
+    var vals=all.map(function(e){return e._pnl;});
+    var lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals);
+    var N=7; // buckets
+    if(lo===hi){lo-=1;hi+=1;}
+    var span=(hi-lo)/N;
+    var buckets=[];
+    for(var b=0;b<N;b++)buckets.push({lo:lo+b*span,hi:lo+(b+1)*span,n:0});
+    vals.forEach(function(v){var idx=Math.floor((v-lo)/span);if(idx>=N)idx=N-1;if(idx<0)idx=0;buckets[idx].n++;});
+    var maxN=Math.max.apply(null,buckets.map(function(b){return b.n;}))||1;
+    function lbl(x){var a=Math.abs(x);var s=a>=1000?(x/1000).toFixed(1).replace(/\.0$/,'')+'k':a>=100?Math.round(x):x.toFixed(0);return (x<0?'-':'')+'$'+String(s).replace('-','');}
+    $('hist').innerHTML=buckets.map(function(b){
+      var h=Math.round(b.n/maxN*120);
+      var up=b.hi>0&&b.lo>=0?true:(b.hi<=0?false:(b.lo+b.hi)/2>=0);
+      return '<div class="col"><div class="ct">'+(b.n||'')+'</div><div class="bk '+(up?'up':'dn')+'" style="height:'+h+'px"></div><div class="tk">'+lbl(b.lo)+'</div></div>';
+    }).join('');
+  })();
+
+  // ===== drawdown curve =====
+  (function(){
+    var cum=0,peak=0,maxDD=0,dd=[0];
+    all.forEach(function(e){cum+=e._pnl;if(cum>peak)peak=cum;var d=cum-peak;dd.push(d);if(d<maxDD)maxDD=d;});
+    var curDD=dd[dd.length-1];
+    var W=360,H=150,padX=6,padT=8,padB=8;
+    var mn=Math.min.apply(null,dd);if(mn>=0)mn=-1;var mx=0;
+    function X(i){return padX+i/(dd.length-1||1)*(W-2*padX);}
+    function Y(v){return padT+(1-(v-mn)/(mx-mn))*(H-padT-padB);}
+    var line='',area='';
+    dd.forEach(function(v,i){var x=X(i).toFixed(1),y=Y(v).toFixed(1);line+=(i?'L':'M')+x+' '+y+' ';});
+    area=line+'L'+X(dd.length-1).toFixed(1)+' '+Y(0).toFixed(1)+' L'+X(0).toFixed(1)+' '+Y(0).toFixed(1)+' Z';
+    $('dd').innerHTML=
+      '<defs><linearGradient id="ddg" x1="0" y1="0" x2="0" y2="1">'
+      +'<stop offset="0%" stop-color="#ff6258" stop-opacity="0"/>'
+      +'<stop offset="100%" stop-color="#ff6258" stop-opacity="0.32"/></linearGradient></defs>'
+      +'<line x1="'+padX+'" y1="'+Y(0).toFixed(1)+'" x2="'+(W-padX)+'" y2="'+Y(0).toFixed(1)+'" stroke="#2c333f" stroke-width="1" stroke-dasharray="4 4"/>'
+      +'<path d="'+area+'" fill="url(#ddg)" stroke="none"/>'
+      +'<path d="'+line+'" fill="none" stroke="#ff6258" stroke-width="2" stroke-linejoin="round"/>';
+    $('ddLegend').innerHTML='<span>Current: <b class="'+(curDD<0?'neg':'pos')+'" style="font-family:Space Mono,monospace">'+money(curDD)+'</b></span><span>Max: <b class="neg" style="font-family:Space Mono,monospace">'+money(maxDD)+'</b></span>';
+  })();
+
+  // ===== long vs short =====
+  (function(){
+    function stat(isLong){
+      var a=all.filter(function(e){return e._long===isLong;});
+      var w=a.filter(function(e){return e._pnl>0;}).length;
+      var p=a.reduce(function(s,e){return s+e._pnl;},0);
+      return {n:a.length,wr:a.length?w/a.length*100:0,p:p};
+    }
+    var L=stat(true),S=stat(false);
+    function bar(nm,st,col){
+      return '<div class="sbar"><div class="top"><span class="nm" style="color:'+col+'">'+nm+'</span>'
+        +'<span class="meta">'+st.n+' trades · '+st.wr.toFixed(0)+'% win · <b class="'+(st.p>=0?'pos':'neg')+'">'+money(st.p)+'</b></span></div>'
+        +'<div class="track"><i style="width:'+(st.n?st.wr:0).toFixed(0)+'%;background:'+col+'"></i></div></div>';
+    }
+    $('bySide').innerHTML=bar('LONG',L,'#37d398')+bar('SHORT',S,'#ff6258');
+  })();
+
+  // ===== recent form =====
+  (function(){
+    var last=all.slice(-20);
+    $('form').innerHTML=last.map(function(e){
+      return '<div class="blk '+(e._pnl>0?'w':'l')+'" title="'+(e.sym||'?')+' '+(e._long?'LONG':'SHORT')+' '+money(e._pnl)+'"></div>';
+    }).join('');
+  })();
+
+  // ===== by coin =====
+  (function(){
+    var sym={};
+    all.forEach(function(e){var s=e.sym||'?';var o=sym[s]=sym[s]||{n:0,w:0,p:0};o.n++;if(e._pnl>0)o.w++;o.p+=e._pnl;});
+    var keys=Object.keys(sym).sort(function(a,b){return sym[b].p-sym[a].p;});
+    var rows='<thead><tr><th>Coin</th><th>Trades</th><th>Win rate</th><th>Net P&amp;L</th></tr></thead><tbody>';
+    keys.forEach(function(s){var o=sym[s];var w=o.n?o.w/o.n*100:0;
+      rows+='<tr><td>'+s+'</td><td>'+o.n+'</td><td class="'+(w>=50?'pos':'')+'">'+w.toFixed(0)+'%</td><td class="'+(o.p>=0?'pos':'neg')+'">'+money(o.p)+'</td></tr>';});
+    rows+='</tbody>';
+    $('bySym').innerHTML=rows;
+  })();
+
+  // ===== all trades =====
+  (function(){
+    function fmtP(x){if(x==null)return '—';x=+x;return x>=1000?x.toLocaleString('en-US',{maximumFractionDigits:2}):(+x).toPrecision(6).replace(/\.?0+$/,'');}
+    var rows='<thead><tr><th>Coin</th><th>Side</th><th>Entry</th><th>Exit</th><th>ROE</th><th>P&amp;L</th></tr></thead><tbody>';
+    all.slice().reverse().forEach(function(e){
+      rows+='<tr><td>'+(e.sym||'?')+'</td>'
+        +'<td><span class="'+(e._long?'lg':'sh')+'">'+(e._long?'LONG':'SHORT')+'</span></td>'
+        +'<td>'+fmtP(e.entry)+'</td><td>'+fmtP(e.exit)+'</td>'
+        +'<td class="'+(e._roe>=0?'pos':'neg')+'">'+pct(e._roe)+'</td>'
+        +'<td class="'+(e._pnl>=0?'pos':'neg')+'">'+money(e._pnl)+'</td></tr>';
+    });
+    rows+='</tbody>';
+    $('trades').innerHTML=rows;
+  })();
+})();
+</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>
