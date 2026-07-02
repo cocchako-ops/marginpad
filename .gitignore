@@ -20,3 +20,25 @@ _*.png
 # os
 Thumbs.db
 .DS_Store
+
+# build output — deployed via wrangler, not git (regenerate with: node build/build.js)
+dist/
+
+# local-only project docs & keys (repo is PUBLIC — never commit these)
+CLAUDE.md
+ADMIN_KEY.local.txt
+screener_prompt.md
+
+# local dev scratch
+scratchpad/
+shot.cjs
+chartsdd.png
+pt.png
+New Text Document.txt
+Bug - screenshots & videos/
+
+# marketing assets (large binaries, not source)
+ads/
+marginpad-ad-*.png
+marginpad-promo-*.png
+extension/marginpad-extension.zip
