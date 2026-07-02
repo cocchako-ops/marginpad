@@ -4,6 +4,7 @@
   function isMob(){return !!(window.matchMedia&&window.matchMedia('(max-width:880px)').matches);}
   // iOS leaves the layout viewport scaled (~2x) after a landscape→portrait rotation when user-scalable=no — re-assert + jiggle the viewport meta to clamp scale back to 1 (kills the "everything is huge" zoom after closing charts)
   function resetViewport(){try{var m=document.querySelector('meta[name="viewport"]');if(!m)return;var c=m.getAttribute('content')||'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';var base=c.replace(/,?\s*minimum-scale=[^,]*/,'');m.setAttribute('content',base+', minimum-scale=1.0');setTimeout(function(){m.setAttribute('content',base);},60);}catch(e){}}
+  function resetViewportHard(){resetViewport();setTimeout(resetViewport,280);setTimeout(resetViewport,800);} /* iOS can re-apply the stale scale after the first jiggle — hit it three times */
   function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='/assets/lightweight-charts-4.2.0.js';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
   function price(s){var lp=window.mpLivePrices&&window.mpLivePrices[s];return lp&&lp.p>0?lp.p:0;}
   // clamp ISOLATED phantom wicks (bad/transient prints) so one bad candle can't draw a giant vertical line
@@ -44,6 +45,7 @@
       +'<div class="mfc-stage" id="mfcStage"></div>'
       +'<div class="mfc-rot">'+mcT('mcRotate','↻ Rotate your phone for a wider chart')+'</div>';
     document.body.appendChild(ov);
+    var fx=document.createElement('button');fx.className='mfc-fx';fx.setAttribute('data-act','close');fx.setAttribute('aria-label','Close charts');fx.textContent='✕';ov.appendChild(fx); /* ALWAYS-reachable close — after a landscape→portrait rotation iOS can leave the layout zoomed and push the toolbar ✕ off-screen */
     var gate=document.createElement('div');gate.className='mfc-gate';gate.hidden=true;
     gate.innerHTML='<button class="mfc-gate-x" data-gx aria-label="Close">✕</button>'
       +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18.5" x2="13" y2="18.5"/></svg>'
@@ -53,8 +55,9 @@
     gate.querySelector('[data-gx]').addEventListener('click',close);
     gate.querySelector('[data-gg]').addEventListener('click',proceed);
     ov.addEventListener('click',onBarClick);
-    function onR(){if(!ov||ov.hidden)return;if(!entered){if(!isPortrait())proceed();return;}setTimeout(function(){panes.forEach(function(p){if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();});},140);}
-    window.addEventListener('resize',onR);window.addEventListener('orientationchange',function(){resetViewport();setTimeout(onR,260);});
+    function onR(){if(!ov||ov.hidden)return;if(backWait){if(isPortrait())finishBack();return;}if(!entered){if(!isPortrait())proceed();return;}setTimeout(function(){panes.forEach(function(p){if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();});},140);}
+    window.addEventListener('resize',function(){setTimeout(onR,120);});
+    window.addEventListener('orientationchange',function(){resetViewportHard();setTimeout(onR,300);});
   }
   function onBarClick(e){var b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act');
     if(a==='close')return close();
@@ -222,8 +225,23 @@
     else{panes.forEach(function(p){setTimeout(function(){if(!p.chart)loadLib(function(){initChart(p);});else{loadKlines(p);}},20);});setActive(activeI);}
     setTimeout(function(){panes.forEach(function(p){if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();});},160);
   }
-  function close(){if(!ov)return;   // user never physically turned the phone → the page behind is exactly where they started
-    ov.hidden=true; document.documentElement.style.overflow=''; closeSheet(); closeFloat(); resetViewport();
+  var backEl=null,backWait=false,backBrowse=false;
+  function showBack(){ if(!backEl){ backEl=document.createElement('div');backEl.className='mfc-back';
+      backEl.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M12 3v2M12 19v2"/></svg>'
+        +'<h3>'+mcT('mcBackT','Turn your phone upright')+'</h3><p>'+mcT('mcBackS','Charts closed — rotate back to keep browsing.')+'</p>'
+        +'<button class="mfc-back-x" type="button">'+mcT('mcBackX','Exit anyway')+'</button>';
+      ov.appendChild(backEl);
+      backEl.querySelector('.mfc-back-x').addEventListener('click',function(){finishBack();}); }
+    backEl.hidden=false; var st=ov.querySelector('#mfcStage'),bar=ov.querySelector('.mfc-bar');if(st)st.style.visibility='hidden';if(bar)bar.style.visibility='hidden'; }
+  function finishBack(){ backWait=false; if(backEl)backEl.hidden=true;
+    var st=ov&&ov.querySelector('#mfcStage'),bar=ov&&ov.querySelector('.mfc-bar');if(st)st.style.visibility='';if(bar)bar.style.visibility='';
+    reallyClose();
+    if(backBrowse){backBrowse=false;setTimeout(function(){try{if(window.__openBrowse)window.__openBrowse();}catch(e){}},220);} /* land the user straight in Browse, as requested */ }
+  function reallyClose(){ if(!ov)return; ov.hidden=true; document.documentElement.style.overflow=''; closeSheet(); closeFloat(); resetViewportHard(); }
+  function close(){ if(!ov)return;
+    if(!isPortrait()){ /* closing in LANDSCAPE used to dump the user on an 844px-wide page → the DESKTOP homepage flashed and iOS kept a ~25% zoom. Hold a dark "rotate back" panel instead; portrait finishes the close and opens Browse. */
+      backWait=true; backBrowse=true; closeSheet(); closeFloat(); showBack(); return; }
+    reallyClose();
   }
   window.mpOpenCharts=open;
   // live ticks

@@ -2431,3 +2431,12 @@
 @media(max-width:680px){.exname{font-size:13.5px}.exmark{width:20px;height:20px;font-size:11px}}
 .exname{letter-spacing:-.015em}
 @media(max-width:680px){.exname{font-size:12.5px}.exh{gap:7px}.exlev-chip b{font-size:12px}}
+/* mobile charts: always-reachable ✕ + the "rotate back" hold panel (closing in landscape used to flash the desktop homepage) */
+.mfc-fx{position:absolute;top:calc(8px + env(safe-area-inset-top));right:10px;z-index:80;width:38px;height:38px;border-radius:50%;background:rgba(18,22,28,.94);border:1px solid rgba(255,98,88,.55);color:#ff8a80;font-size:15px;font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+.mfc-fx:active{transform:scale(.92)}
+@media(orientation:landscape){.mfc-fx{top:8px}}
+.mfc-back{position:absolute;inset:0;z-index:90;background:#070809;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px}
+.mfc-back svg{width:52px;height:52px;color:#3fd8e6;animation:mfcRotPulse 2.2s ease-in-out infinite}
+.mfc-back h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:4px 0 0;color:#e9e7df}
+.mfc-back p{color:#9aa3ad;font-size:13.5px;margin:0 0 10px;max-width:280px;line-height:1.5}
+.mfc-back-x{background:none;border:1px solid #2c3540;color:#9aa3ad;border-radius:11px;padding:11px 20px;font:inherit;font-size:13px;cursor:pointer}
