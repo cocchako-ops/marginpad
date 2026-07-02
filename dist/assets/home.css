@@ -304,8 +304,8 @@
   .ptt-chart-top{position:absolute;top:8px;left:8px;z-index:6;display:flex;align-items:center;gap:7px;padding:0;border-bottom:none;pointer-events:none;}
   .ptt-chart-top>*{pointer-events:auto;}
   .ptt-tfwrap{position:relative;}
-  .ptt-tf-btn{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;color:var(--ink);background:rgba(13,16,20,.82);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);border:1px solid var(--line-bright);border-radius:8px;padding:5px 8px;cursor:pointer;transition:.12s;white-space:nowrap;}
-  .ptt-tf-btn:hover{border-color:var(--ink-faint);color:#fff;}
+  .ptt-tf-btn{display:inline-flex;align-items:center;gap:4px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);background:none;border:none;border-radius:6px;padding:4px 2px;cursor:pointer;transition:.12s;white-space:nowrap;text-shadow:0 1px 5px rgba(0,0,0,.85);}
+  .ptt-tf-btn:hover{color:#fff;}
   .ptt-tf-btn svg{opacity:.7;transition:transform .15s;}
   .ptt-tf-btn[aria-expanded="true"] svg{transform:rotate(180deg);}
   .ptt-tf{position:absolute;top:calc(100% + 5px);left:0;z-index:20;display:flex;flex-direction:column;gap:2px;background:rgba(13,16,20,.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--line-bright);border-radius:10px;padding:5px;box-shadow:0 14px 38px -16px rgba(0,0,0,.85);min-width:74px;}
@@ -315,12 +315,11 @@
   .ptt-tf button.on{background:rgba(255,255,255,.13);color:#fff;}
   /* compact floating symbol chip */
   .ptt-chart-top .pt2-sym{font-size:11.5px;font-weight:700;padding:5px 23px 5px 9px;border-radius:8px;background-color:rgba(13,16,20,.82);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);background-position:right 8px center;background-size:9px;}
-  /* DESKTOP (≥881px): show every timeframe button inline (like before) instead of the dropdown — there's plenty of room */
-  @media(min-width:881px){
-    .ptt-chart-top .ptt-tf-btn{display:none;}
-    .ptt-chart-top .ptt-tfwrap .ptt-tf,.ptt-chart-top .ptt-tfwrap .ptt-tf[hidden]{display:inline-flex!important;position:static;flex-direction:row;gap:3px;top:auto;left:auto;min-width:0;box-shadow:none;background:rgba(13,16,20,.82);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);}
-    .ptt-chart-top .ptt-tf button{padding:5px 9px;border-radius:6px;}
-  }
+  /* symbol + timeframe are PLAIN TEXT + chevron (owner request) — same dropdown on every width, no box */
+  .ptt-chart-top .csel-trigger{background:none;border:none;border-radius:6px;padding:4px 2px;font-size:13.5px;gap:5px;box-shadow:none;text-shadow:0 1px 5px rgba(0,0,0,.85);}
+  .ptt-chart-top .csel-trigger:hover{color:#fff;}
+  .ptt-chart-top .csel-trigger.open{box-shadow:none;color:#c2f64a;}
+  .ptt-chart-top .csel-trigger .csel-chev{width:13px;height:13px;opacity:.7;}
   .ptt-top-l{display:flex;align-items:center;gap:9px;min-width:0;flex-wrap:wrap;}
   .ptt-sig{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--ink-dim);background:var(--panel);border:1px solid var(--line-bright);border-radius:9px;padding:6px 11px;cursor:pointer;transition:.13s;white-space:nowrap;}
   .ptt-sig:hover{color:var(--ink);border-color:var(--ink-faint);}
