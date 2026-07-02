@@ -995,8 +995,20 @@ window.addEventListener('load', function () {
   if(!banner)return;
   function dismiss(){banner.hidden=true;try{localStorage.setItem(KEY,'1');}catch(e){}}
   closeB.addEventListener('click',dismiss);
-  // show the install promo only on first interaction (scroll/tap) or after 6s — so during load the LCP is the real hero content, not this banner
-  function showLater(fn){var done=false,go=function(){if(done)return;done=true;fn();};['scroll','touchstart','pointerdown','keydown'].forEach(function(ev){window.addEventListener(ev,go,{once:true,passive:true});});setTimeout(go,6000);}
+  /* Install-promo etiquette (2026-07 UX pass). The old "show on first touch or 6s" fired the banner right when the
+     user STARTED doing something — screenshots showed it covering the Browse panel, the My Trades drawer and the
+     just-opened-position feedback. Now: appears after 45s of engaged dwell (12s for returning visitors), NEVER while
+     an overlay/drawer/chat is open (hides itself if one opens), auto-hides after 15s without burning the dismissal —
+     only an explicit ✕ or Install ends it for good. */
+  function overlayOpen(){try{return document.documentElement.classList.contains('jr-open')||!!document.querySelector('#browsePanel.on,.scr-sheet.on')||(function(){var cb=document.getElementById('chatBox');return cb&&!cb.hidden;})()||(sheet&&!sheet.hidden);}catch(e){return false;}}
+  var VIS=1;try{VIS=+localStorage.getItem('mp_pwa_v')||0;if(!sessionStorage.getItem('mp_pwa_sv')){VIS++;localStorage.setItem('mp_pwa_v',String(VIS));sessionStorage.setItem('mp_pwa_sv','1');}}catch(e){}
+  function showLater(fn){var delay=VIS>=2?12000:45000,shown=false;
+    function attempt(){if(shown)return;
+      if(document.hidden||overlayOpen()){setTimeout(attempt,8000);return;}
+      shown=true;fn();
+      setTimeout(function(){if(!banner.hidden)banner.hidden=true;},15000);
+      var guard=setInterval(function(){if(banner.hidden){clearInterval(guard);return;}if(overlayOpen())banner.hidden=true;},800);}
+    setTimeout(attempt,delay);}
   if(isIOS){
     msg.textContent=(window.mpT&&window.mpT('pwaIos'))||'Tap Share, then “Add to Home Screen”.';
     act.textContent=(window.mpT&&window.mpT('pwaHow'))||'How';
@@ -1613,7 +1625,8 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
     try{if(navigator.vibrate)navigator.vibrate(14);}catch(e){}
     curPos=pos;updPnl();try{mtRefresh();}catch(e){}
-    if(goEl){goEl.textContent=(window.mpT&&window.mpT('mtOpened'))||'Position opened ✓';setTimeout(function(){goEl.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';},1300);}}
+    if(goEl){goEl.textContent=(window.mpT&&window.mpT('mtOpened'))||'Position opened ✓';setTimeout(function(){goEl.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';},1300);}
+    try{var _pp=document.getElementById('mtpPnl');if(_pp){var _pr=_pp.getBoundingClientRect();if(_pr.bottom>window.innerHeight-76||_pr.top<0)setTimeout(function(){_pp.scrollIntoView({behavior:'smooth',block:'center'});},380);}}catch(e){}/* UX: bring the live P&L pill into view right after opening — the payoff moment was below the fold */}
   // ---- mini chart: Paper-Trade candlestick engine + a live LIQ preview (thin lines, tiny tag, blurred see-through red/green zone) ----
   var chartEl=document.getElementById('mtpChart'),mtCv=null,mtCtx2=null,mtBars=[],mtChartSym=null,mtTagEl=null,_mlgp=0,_mrej=0,_mReload=0,mtReady=false;
   function sizeChart(){if(!chartEl||!term)return;var mtp=term.querySelector('.mtp');if(mtp&&mtp.offsetHeight>120)chartEl.style.height=Math.round(mtp.offsetHeight*1.2)+'px';}
@@ -2045,3 +2058,38 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
    Register for EVERYONE — offline app-shell + instant repeat loads. Previously sw.js was only
    registered when a user enabled push notifications, so the installed PWA had no offline support. */
 (function(){ if('serviceWorker' in navigator){ try{ navigator.serviceWorker.register('/sw.js'); }catch(e){} } })();
+
+;/* ══════════ UX pass (2026-07): calculators remember your numbers + live-price prefill ══════════
+   The calc tabs shipped with a hardcoded 60000 entry price and forgot everything on reload. Now every
+   calculator input persists in localStorage (your setup survives reloads/visits), and on a first-ever
+   visit the untouched entry-price fields fill with the LIVE BTC price the moment it arrives. */
+(function(){
+  var PANES=['liq','size','pnl','dca','tp','rr'],K='mp_calc_vals';
+  var saved={};try{saved=JSON.parse(localStorage.getItem(K)||'{}')||{};}catch(e){}
+  var els=[];PANES.forEach(function(pid){var p=document.getElementById(pid);if(!p)return;els=els.concat(Array.prototype.slice.call(p.querySelectorAll('input[type=number],select')));});
+  if(!els.length)return;
+  var restored=[];
+  function persist(el){if(!el.id)return;saved[el.id]=el.value;try{localStorage.setItem(K,JSON.stringify(saved));}catch(e){}}
+  els.forEach(function(el){ if(!el.id)return;
+    if(saved[el.id]!=null&&saved[el.id]!==''&&saved[el.id]!==el.value){el.value=saved[el.id];restored.push(el);}
+    el.addEventListener('input',function(){persist(el);});
+    el.addEventListener('change',function(){persist(el);});
+  });
+  var ENTRY=['liqEntry','szEntry','pnlEntry','tpEntry','rrEntry','dcaP1','dcaCur'];
+  function prefill(){var lp=window.mpLivePrices&&window.mpLivePrices.BTC,px=lp&&lp.p;if(!(px>0))return false;
+    ENTRY.forEach(function(id){ if(saved[id]!=null&&saved[id]!=='')return; var el=document.getElementById(id);if(!el)return;
+      var v=+el.value; if(v===60000||v===58000||v===65000){el.value=Math.round(px);try{el.dispatchEvent(new Event('input',{bubbles:true}));}catch(e){}} });
+    return true;}
+  if(!prefill()){var n=0,t=setInterval(function(){if(prefill()||++n>24)clearInterval(t);},700);}
+  restored.forEach(function(el){try{el.dispatchEvent(new Event('input',{bubbles:true}));}catch(e){}}); // recompute results with the restored values
+})();
+
+;/* ══════════ UX pass (2026-07): bottom-nav "Trades" badge — open-position count at a glance ══════════ */
+(function(){
+  var btn=document.querySelector('.mobnav [data-mn="journal"]');if(!btn)return;
+  var b=document.createElement('span');b.className='mn-badge';b.hidden=true;btn.appendChild(b);
+  function count(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')).filter(function(e){return e.status==='open';}).length;}catch(e){return 0;}}
+  function upd(){var n=count();if(n>0){b.textContent=n>9?'9+':String(n);b.hidden=false;}else b.hidden=true;}
+  upd();setInterval(upd,3000);window.addEventListener('storage',upd);
+  try{var _jr=window.mpJournalRender;if(typeof _jr==='function')window.mpJournalRender=function(){try{_jr.apply(this,arguments);}finally{try{upd();}catch(e){}}};}catch(e){} /* instant badge on open/close (render fires on every journal change) */
+})();

@@ -286,3 +286,12 @@
   window.addEventListener('mp-auth-change',function(){if(!box.hidden&&!joined){var u=meUser();if(u){user=u;showChat();}}});
   form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;if(/^\/(leaderboard|lb|leaders)\b/i.test(t)){input.value='';showLeaderboard();return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));input.value='';});
 })();
+
+/* UX pass (2026-07): bottom-nav "Trades" badge — open-position count (rekt/rewards; the homepage has its own copy in home.js) */
+(function(){
+  var btn=document.querySelector('.mobnav [data-mn="journal"]');if(!btn||btn.querySelector('.mn-badge'))return;
+  var b=document.createElement('span');b.className='mn-badge';b.hidden=true;btn.appendChild(b);
+  function count(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')).filter(function(e){return e.status==='open';}).length;}catch(e){return 0;}}
+  function upd(){var n=count();if(n>0){b.textContent=n>9?'9+':String(n);b.hidden=false;}else b.hidden=true;}
+  upd();setInterval(upd,3000);window.addEventListener('storage',upd);
+})();

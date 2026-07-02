@@ -105,3 +105,7 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
   #chatFab{display:none!important;}   /* the bottom nav already has a Chat button — no floating FAB on mobile */
   #chatBox{top:60px!important;bottom:calc(74px + env(safe-area-inset-bottom))!important;left:14px!important;right:14px!important;width:auto!important;max-width:none!important;height:auto!important;max-height:none!important;}
 }
+
+/* UX pass (2026-07): bottom-nav Trades badge (shared pages — rekt/rewards) */
+.mobnav [data-mn="journal"]{position:relative}
+.mn-badge{position:absolute;top:-3px;right:calc(50% - 20px);min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#2ebd85;color:#04110b;font:700 9.5px/15px 'Space Mono',monospace;text-align:center;box-shadow:0 0 8px rgba(46,189,133,.55)}
