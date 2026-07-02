@@ -194,6 +194,30 @@ h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:33px;l
 .cert-acts{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
 .cert-share{background:var(--lime);color:#0a0b0d;border:none;border-radius:11px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;padding:12px 20px;cursor:pointer}
 .cert-cta{background:rgba(63,216,230,.1);border:1px solid rgba(63,216,230,.4);color:var(--cyan);border-radius:11px;font:inherit;font-weight:700;font-size:14px;padding:12px 18px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+/* missions */
+.wts-mis-note{color:var(--faint);font-size:12.5px;margin:-6px 0 12px;line-height:1.45}
+.wts-missions{display:flex;flex-direction:column;gap:9px;margin:0 0 26px}
+.wts-mis{display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line);border-radius:14px;padding:13px 15px}
+.wts-mis.done{border-color:rgba(46,189,133,.45)}
+.mi-ic{flex:0 0 auto;width:38px;height:38px;border-radius:11px;background:var(--panel2);border:1px solid var(--line2);display:flex;align-items:center;justify-content:center;font-size:19px}
+.mi-t{flex:1;min-width:0}.mi-t b{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14.5px;display:block;line-height:1.3}.mi-t small{color:var(--faint);font-size:12px;line-height:1.4;display:block;margin-top:2px}
+.mi-go{flex:0 0 auto;background:rgba(194,246,74,.1);border:1px solid rgba(194,246,74,.4);color:var(--lime);text-decoration:none;border-radius:10px;padding:9px 13px;font-weight:700;font-size:12.5px;white-space:nowrap}
+.mi-done{flex:0 0 auto;color:var(--up);font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;white-space:nowrap}
+/* interactive widget */
+.wts-widget{background:rgba(194,246,74,.05);border:1px solid rgba(194,246,74,.3);border-radius:13px;padding:14px 15px;margin:16px 0}
+.ww-h{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--lime);margin-bottom:10px}
+.wts-widget input[type=range]{width:100%;accent-color:var(--lime);height:26px;margin:2px 0 10px}
+.ww-out{font-size:14px;line-height:1.6;color:var(--ink)}
+.ww-bar{height:8px;border-radius:5px;background:var(--line);overflow:hidden;margin-top:10px}.ww-bar i{display:block;height:100%;border-radius:5px;transition:width .15s}
+.ww-cap{font-size:11.5px;color:var(--faint);margin-top:7px}
+.ww-row{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:10px}
+.ww-row label{flex:1;min-width:96px;font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);display:flex;flex-direction:column;gap:5px}
+.ww-row input{background:var(--bg);border:1px solid var(--line2);border-radius:9px;padding:10px 11px;color:var(--ink);font:inherit;font-size:16px;width:100%}
+.ww-seg{display:flex;gap:8px;margin-bottom:10px}
+.ww-seg button{flex:1;background:var(--bg);border:1px solid var(--line2);border-radius:10px;padding:11px 0;color:var(--dim);font:inherit;font-weight:700;font-size:13px;cursor:pointer}
+.ww-seg button.on{border-color:var(--lime);color:var(--lime);background:rgba(194,246,74,.08)}
+.wts-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(14px);background:#11151b;border:1px solid rgba(194,246,74,.5);color:var(--ink);font-size:13.5px;font-weight:600;padding:12px 18px;border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,.6);z-index:200;opacity:0;transition:.3s;max-width:92vw}
+.wts-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 @media(max-width:560px){h1{font-size:27px}.wts-stats{grid-template-columns:auto 1fr;gap:11px}.wts-streak{display:none}}
 `;
 
@@ -248,6 +272,16 @@ function buildPage(lang) {
     { g: 'indicators', ic: '📈', t: 'I want to read charts & indicators', s: 'Candles, RSI, MACD, Bollinger and more' },
     { g: 'risk', ic: '🛡️', t: 'I want to manage risk & psychology', s: 'Sizing, stops, risk of ruin, the mental game' },
     { g: 'all', ic: '🧭', t: "Not sure — show me everything", s: 'Browse all tracks and the glossary' }
+  ];
+
+  // Practice missions — "go do it on the REAL site". The academy auto-detects completion from the site's own
+  // localStorage state (journal, watchlist, calculator use) when the user returns, awards XP and checks it off.
+  const MISSIONS = [
+    { id: 'm_watch', lesson: 'crypto', icon: '⭐', xp: 20, t: 'Star a coin you want to follow', s: 'Open Trending on the homepage and tap the ★ on any coin — it pins to the front, just for you.', href: home + '#trending', cta: 'Open Trending', det: 'watch' },
+    { id: 'm_calc', lesson: 'leverage', icon: '🧮', xp: 25, t: 'Price a liquidation BEFORE trading', s: 'Set your entry and leverage in the liquidation calculator and see exactly where you would be wiped out.', href: '/calculators?c=liq', cta: 'Open the calculator', det: 'calc' },
+    { id: 'm_trade', lesson: 'leverage', icon: '🎯', xp: 40, t: 'Open your first demo trade', s: 'Paper Trade uses the REAL live price with a fake $100 — feel leverage without risking a cent.', href: '/paper-trade', cta: 'Open Paper Trade', det: 'open' },
+    { id: 'm_sl', lesson: 'risk', icon: '🛡️', xp: 35, t: 'Protect a position with a stop-loss', s: 'In My Trades tap SL/TP on an open position and set a stop-loss — the #1 habit of traders who survive.', href: '/paper-trade', cta: 'Set a stop-loss', det: 'sl' },
+    { id: 'm_close', lesson: 'first', icon: '💰', xp: 30, t: 'Close a trade & book the result', s: 'Close any open demo position — try closing only 50% and watch the rest keep running.', href: '/paper-trade', cta: 'Close a trade', det: 'close' },
   ];
 
   // Tracks: Basics (translated, optional) + the 3 advanced tracks (English)
@@ -364,6 +398,9 @@ ${hreflang}
     <button class="wts-certbtn" id="certBtn" type="button">${esc(X.certBtn)}</button>
     <div class="sec-h">${esc(U.badgesH)}</div>
     <div class="wts-badges">${badgeRow}</div>
+    <div class="sec-h">Practice missions — on the real site <span id="misN" style="color:var(--lime)"></span></div>
+    <div class="wts-mis-note">Each mission opens the real tool. When you come back here it is checked off automatically — and you earn XP.</div>
+    <div class="wts-missions" id="wtsMis"></div>
     <div class="sec-h">${esc(X.tracksH)}</div>
     ${tracksHtml}
     </div>
@@ -372,11 +409,11 @@ ${hreflang}
 </div>
 <div class="wts-modal" id="modal" hidden><div class="wts-bd" data-close></div><div class="wts-card2" id="mcard"></div></div>
 <script>
-var L=${inj(ALL)},B=${inj(badges)},U=${inj(uiJs)},TR=${inj(trMap)},N=L.length;
+var L=${inj(ALL)},B=${inj(badges)},U=${inj(uiJs)},TR=${inj(trMap)},MIS=${inj(MISSIONS)},N=L.length;
 var KEY='mp_academy';
 function load(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
 function save(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
-var S=load();S.done=S.done||{};S.xp=S.xp||0;S.streak=S.streak||{d:0,last:''};
+var S=load();S.done=S.done||{};S.xp=S.xp||0;S.streak=S.streak||{d:0,last:''};S.miss=S.miss||{};
 function doneCount(){var n=0;for(var i=0;i<N;i++)if(S.done[L[i].id])n++;return n;}
 function trackCount(tid){var n=0;for(var i=0;i<N;i++)if(L[i].track===tid&&S.done[L[i].id])n++;return n;}
 function trackTotal(tid){var n=0;for(var i=0;i<N;i++)if(L[i].track===tid)n++;return n;}
@@ -393,6 +430,41 @@ function renderStats(){var dc=doneCount();qs('#doneN').textContent=dc;qs('#xp').
   document.querySelectorAll('.wts-card').forEach(function(el){var i=+el.getAttribute('data-i');el.classList.toggle('done',!!S.done[L[i].id]);el.classList.toggle('current',!allDone&&i===fi);});
 }
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+// ---- practice missions: detected from the live site state, so the academy literally walks you through the product ----
+function jn(){try{return JSON.parse(localStorage.getItem('mp_journal')||'[]')||[];}catch(e){return [];}}
+var MD={
+  watch:function(){try{return (JSON.parse(localStorage.getItem('mp_watchlist')||'[]')||[]).length>0;}catch(e){return false;}},
+  calc:function(){try{var v=JSON.parse(localStorage.getItem('mp_calc_vals')||'{}');for(var k in v)return true;return false;}catch(e){return false;}},
+  open:function(){return jn().length>0;},
+  sl:function(){var d=jn();for(var i=0;i<d.length;i++)if(d[i].stop!=null)return true;return false;},
+  close:function(){var d=jn();for(var i=0;i<d.length;i++)if(d[i].status==='win'||d[i].status==='loss')return true;return false;}
+};
+function misCount(){var n=0;for(var i=0;i<MIS.length;i++)if(S.miss[MIS[i].id])n++;return n;}
+function misCard(m){var done=!!S.miss[m.id];
+  return '<div class="wts-mis'+(done?' done':'')+'" data-mis="'+m.id+'"><span class="mi-ic">'+m.icon+'</span><span class="mi-t"><b>'+esc(m.t)+'</b><small>'+esc(m.s)+'</small></span>'+(done?'<span class="mi-done">✓ +'+m.xp+' XP</span>':'<a class="mi-go" href="'+m.href+'">'+esc(m.cta)+' →</a>')+'</div>';}
+function renderMissions(){var el=document.getElementById('wtsMis');if(el)el.innerHTML=MIS.map(misCard).join('');var n=document.getElementById('misN');if(n)n.textContent=misCount()+'/'+MIS.length;}
+function toast(t){var d=document.createElement('div');d.className='wts-toast';d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.classList.add('on');},20);setTimeout(function(){d.classList.remove('on');setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},350);},3600);}
+function checkMissions(){var got=[];for(var i=0;i<MIS.length;i++){var m=MIS[i];if(!S.miss[m.id]&&MD[m.det]&&MD[m.det]()){S.miss[m.id]=1;S.xp+=m.xp;got.push(m);}}
+  if(got.length){bumpStreak();save(S);renderMissions();renderStats();got.forEach(function(m,gi){setTimeout(function(){toast('🎉 Mission complete: '+m.t+' (+'+m.xp+' XP)');},gi*950);});}}
+document.addEventListener('visibilitychange',function(){if(!document.hidden)checkMissions();});
+window.addEventListener('focus',function(){checkMissions();});
+// ---- interactive lesson widgets (learn by touching, not just reading) ----
+function widgetHtml(id){
+  if(id==='leverage')return '<div class="wts-widget" data-w="lev"><div class="ww-h">Try it — drag the leverage</div><input type="range" min="1" max="125" step="1" value="10" class="ww-sl" aria-label="Leverage"><div class="ww-out"></div><div class="ww-bar"><i></i></div><div class="ww-cap">The bar is your survival room — watch it vanish as leverage grows.</div></div>';
+  if(id==='risk')return '<div class="wts-widget" data-w="risk"><div class="ww-h">Try it — size a trade like a pro</div><div class="ww-row"><label>Account $<input type="number" inputmode="decimal" class="ww-bal" value="1000"></label><label>Risk %<input type="number" inputmode="decimal" class="ww-rsk" value="1" step="0.5"></label><label>Stop dist. %<input type="number" inputmode="decimal" class="ww-stp" value="5" step="0.5"></label></div><div class="ww-out"></div></div>';
+  if(id==='trading')return '<div class="wts-widget" data-w="side"><div class="ww-h">Try it — long vs short</div><div class="ww-seg"><button type="button" class="on" data-s="long">LONG (bet up)</button><button type="button" data-s="short">SHORT (bet down)</button></div><input type="range" min="-10" max="10" step="1" value="3" class="ww-sl" aria-label="Price move %"><div class="ww-out"></div></div>';
+  return '';}
+function wireWidget(root){var w=root.querySelector('.wts-widget');if(!w)return;var kind=w.getAttribute('data-w');
+  if(kind==='lev'){var sl=w.querySelector('.ww-sl'),out=w.querySelector('.ww-out'),bar=w.querySelector('.ww-bar i');
+    var upd=function(){var lv=+sl.value,ctrl=100*lv,dist=(1-0.005)/lv*100;var col=dist<3?'#ff6258':(dist<10?'#ffb347':'#2ebd85');out.innerHTML='$100 at <b>'+lv+'×</b> controls <b>$'+ctrl.toLocaleString('en-US')+'</b> — a <b style="color:'+col+'">'+dist.toFixed(dist<10?2:1)+'%</b> move against you = <b style="color:#ff6258">liquidated</b>.';bar.style.width=Math.max(2,Math.min(100,dist*5))+'%';bar.style.background=col;};
+    sl.addEventListener('input',upd);upd();}
+  if(kind==='risk'){var b=w.querySelector('.ww-bal'),r=w.querySelector('.ww-rsk'),st=w.querySelector('.ww-stp'),out2=w.querySelector('.ww-out');
+    var u2=function(){var bal=+b.value||0,rp=+r.value||0,sp=+st.value||0;if(!(bal>0&&rp>0&&sp>0)){out2.textContent='';return;}var riskD=bal*rp/100,size=riskD/(sp/100);out2.innerHTML='You risk <b>$'+riskD.toFixed(0)+'</b> ('+rp+'% of the account). With the stop '+sp+'% away, the right position size is <b style="color:var(--lime)">$'+size.toLocaleString('en-US',{maximumFractionDigits:0})+'</b> — hit the stop and you lose exactly $'+riskD.toFixed(0)+', never more.';};
+    b.addEventListener('input',u2);r.addEventListener('input',u2);st.addEventListener('input',u2);u2();}
+  if(kind==='side'){var seg=w.querySelectorAll('.ww-seg button'),sl3=w.querySelector('.ww-sl'),out3=w.querySelector('.ww-out'),side='long';
+    var u3=function(){var mv=+sl3.value,p=side==='long'?mv:-mv;var col=p>=0?'#2ebd85':'#ff6258';out3.innerHTML='Price moves <b>'+(mv>=0?'+':'')+mv+'%</b> → your '+side.toUpperCase()+' makes <b style="color:'+col+'">'+(p>=0?'+':'−')+'$'+Math.abs(p).toFixed(0)+'</b> on $100 (no leverage). With 10× leverage that becomes <b style="color:'+col+'">'+(p>=0?'+':'−')+'$'+Math.abs(p*10).toFixed(0)+'</b>.';};
+    for(var si=0;si<seg.length;si++)(function(btn){btn.addEventListener('click',function(){side=btn.getAttribute('data-s');for(var j2=0;j2<seg.length;j2++)seg[j2].classList.toggle('on',seg[j2]===btn);u3();});})(seg[si]);
+    sl3.addEventListener('input',u3);u3();}}
 function openLesson(i){var l=L[i],m=qs('#mcard');
   var h='<div class="wts-mh"><span class="mn">'+l.tn+'</span><h2>'+esc(l.t)+'</h2><button class="wts-x" data-close type="button">✕</button></div>';
   if(l.warn)h+='<div class="wts-warn"><b>⚠ '+esc(U.importantPrefix)+'</b> '+esc(l.warn)+'</div>';
@@ -404,10 +476,14 @@ function openLesson(i){var l=L[i],m=qs('#mcard');
   h+='</div>';
   h+='<ul class="wts-key">'+l.key.map(function(p){return '<li>'+esc(p)+'</li>';}).join('')+'</ul>';
   if(l.ex)h+='<div class="wts-ex"><b>'+esc(U.exampleLabel)+'</b>'+l.ex+'</div>';
+  h+=widgetHtml(l.id);
+  var lm='';for(var mi2=0;mi2<MIS.length;mi2++)if(MIS[mi2].lesson===l.id)lm+=misCard(MIS[mi2]);
+  if(lm)h+='<div class="sec-h" style="margin:18px 0 9px">Your mission</div><div class="wts-missions" style="margin-bottom:6px">'+lm+'</div>';
   if(l.link)h+='<a class="wts-link" href="'+l.link.href+'">'+esc(l.link.label)+' →</a>';
   h+='<div class="wts-quiz"><div class="wts-qrow"><div class="qh">'+esc(U.quizOptional)+'</div><button class="wts-skip" id="lskip" type="button">'+esc(U.markRead)+'</button></div><div class="qq">'+esc(l.quiz.q)+'</div><div id="opts">'+l.quiz.o.map(function(o,oi){return '<button class="wts-opt" data-o="'+oi+'" type="button">'+esc(o)+'</button>';}).join('')+'</div></div>';
   h+='<div class="wts-done" id="ld"><div class="xp" id="ldx"></div><button class="wts-next" id="lnext" type="button"></button></div>';
   m.innerHTML=h;qs('#modal').hidden=false;qs('#modal').classList.add('on');document.documentElement.style.overflow='hidden';m.scrollTop=0;
+  try{wireWidget(m);}catch(e){}
   var answered=!!S.done[l.id];
   function award(correct){ // correct: true / false (quiz) or null (mark-read) — all complete the lesson
     var fresh=!S.done[l.id];S.done[l.id]=true;var gain=fresh?(correct===true?60:40):0;if(fresh){S.xp+=gain;bumpStreak();save(S);renderStats();}
@@ -464,7 +540,7 @@ function pickGoal(g){S.goal=g;save(S);showMain();renderRec(g);renderStats();if(g
 (function(){var iv=qs('#wtsIntake');if(iv)iv.addEventListener('click',function(e){var o=e.target.closest('[data-goal]');if(o)pickGoal(o.getAttribute('data-goal'));});
   var rec=qs('#wtsRec');if(rec)rec.addEventListener('click',function(e){var go=e.target.closest('.rec-go');if(go){openLesson(+go.getAttribute('data-li'));return;}if(e.target.closest('.rec-change'))showIntake();});})();
 if(!S.goal){showIntake();}else{renderRec(S.goal);}
-renderStats();
+renderStats();renderMissions();checkMissions();
 </script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>
