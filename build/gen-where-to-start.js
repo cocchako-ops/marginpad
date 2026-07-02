@@ -194,6 +194,18 @@ h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:33px;l
 .cert-acts{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
 .cert-share{background:var(--lime);color:#0a0b0d;border:none;border-radius:11px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;padding:12px 20px;cursor:pointer}
 .cert-cta{background:rgba(63,216,230,.1);border:1px solid rgba(63,216,230,.4);color:var(--cyan);border-radius:11px;font:inherit;font-weight:700;font-size:14px;padding:12px 18px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+/* collapsible tracks — tap the topic header to open its lessons */
+.trk-head{cursor:pointer;-webkit-user-select:none;user-select:none;border-radius:12px}
+.trk-head:active{opacity:.85}
+.trk-chev{flex:0 0 auto;align-self:center;color:var(--faint);font-size:15px;transition:transform .18s ease;margin-left:2px}
+.trk.closed .trk-chev{transform:rotate(-90deg)}
+.trk.closed .wts-road{display:none}
+/* locked lessons — sequential path: everything past your current lesson is hidden behind a grey padlock */
+.wts-card.locked{opacity:.5;cursor:not-allowed}
+.wts-card.locked:hover{transform:none;border-color:var(--line)}
+.wts-card.locked .wts-cmid small{visibility:hidden}
+.wts-card.locked .wts-n{background:var(--line);color:var(--faint)}
+.wts-card.locked .wts-state{border:none;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235c656f' stroke-width='2.2' stroke-linecap='round'><rect x='4' y='11' width='16' height='9' rx='2'/><path d='M8 11V7a4 4 0 0 1 8 0v4'/></svg>") no-repeat center/17px}
 /* missions */
 .wts-mis-note{color:var(--faint);font-size:12.5px;margin:-6px 0 12px;line-height:1.45}
 .wts-missions{display:flex;flex-direction:column;gap:9px;margin:0 0 26px}
@@ -321,6 +333,7 @@ function buildPage(lang) {
     <span class="trk-ic">${tr.icon}</span>
     <div class="trk-htxt"><div class="trk-name">${esc(tr.name)} <span class="trk-lvl lvl-${tr.level}">${esc(X.levelWord[tr.level] || tr.level)}</span>${tr.optional ? `<span class="trk-opt">${esc(X.optional)}</span>` : ''}<span class="trk-time">~${mins} ${esc(U.minWord)}</span></div><div class="trk-blurb">${esc(tr.blurb)}</div></div>
     <div class="trk-pr"><b data-trkn="${tr.id}">0</b>/${tr.lessons.length}</div>
+    <span class="trk-chev" aria-hidden="true">▾</span>
   </div>
   <div class="wts-road">${cards}</div>
 </div>`;
@@ -427,8 +440,10 @@ function renderStats(){var dc=doneCount();qs('#doneN').textContent=dc;qs('#xp').
   var tn=document.querySelectorAll('[data-trkn]');for(var k=0;k<tn.length;k++){var el=tn[k],tid=el.getAttribute('data-trkn'),c=trackCount(tid),tot=trackTotal(tid);el.textContent=c;var trk=el.closest('.trk');if(trk)trk.classList.toggle('tdone',tot>0&&c===tot);}
   var fi=firstIncomplete(),allDone=dc===N;var cb=qs('#continue');cb.textContent=allDone?U.reviewBtn:(dc===0?U.startBtn:U.continueBtn.replace('{n}',(fi+1)));
   var cbt=qs('#certBtn');if(cbt)cbt.classList.toggle('on',allDone);
-  document.querySelectorAll('.wts-card').forEach(function(el){var i=+el.getAttribute('data-i');el.classList.toggle('done',!!S.done[L[i].id]);el.classList.toggle('current',!allDone&&i===fi);});
+  document.querySelectorAll('.wts-card').forEach(function(el){var i=+el.getAttribute('data-i');el.classList.toggle('done',!!S.done[L[i].id]);el.classList.toggle('current',!allDone&&i===fi);el.classList.toggle('locked',lockedAt(i));});
 }
+// a lesson is locked until the PREVIOUS lesson of the SAME track is completed (each track starts unlocked)
+function lockedAt(i){var l=L[i];if(l.tn<=1)return false;var p=L[i-1];if(!p||p.track!==l.track)return false;return !S.done[p.id]&&!S.done[l.id];}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 // ---- practice missions: detected from the live site state, so the academy literally walks you through the product ----
 function jn(){try{return JSON.parse(localStorage.getItem('mp_journal')||'[]')||[];}catch(e){return [];}}
@@ -465,7 +480,7 @@ function wireWidget(root){var w=root.querySelector('.wts-widget');if(!w)return;v
     var u3=function(){var mv=+sl3.value,p=side==='long'?mv:-mv;var col=p>=0?'#2ebd85':'#ff6258';out3.innerHTML='Price moves <b>'+(mv>=0?'+':'')+mv+'%</b> → your '+side.toUpperCase()+' makes <b style="color:'+col+'">'+(p>=0?'+':'−')+'$'+Math.abs(p).toFixed(0)+'</b> on $100 (no leverage). With 10× leverage that becomes <b style="color:'+col+'">'+(p>=0?'+':'−')+'$'+Math.abs(p*10).toFixed(0)+'</b>.';};
     for(var si=0;si<seg.length;si++)(function(btn){btn.addEventListener('click',function(){side=btn.getAttribute('data-s');for(var j2=0;j2<seg.length;j2++)seg[j2].classList.toggle('on',seg[j2]===btn);u3();});})(seg[si]);
     sl3.addEventListener('input',u3);u3();}}
-function openLesson(i){var l=L[i],m=qs('#mcard');
+function openLesson(i){if(lockedAt(i)){toast('🔒 Finish the previous lesson first — one step at a time.');return;}var l=L[i],m=qs('#mcard');
   var h='<div class="wts-mh"><span class="mn">'+l.tn+'</span><h2>'+esc(l.t)+'</h2><button class="wts-x" data-close type="button">✕</button></div>';
   if(l.warn)h+='<div class="wts-warn"><b>⚠ '+esc(U.importantPrefix)+'</b> '+esc(l.warn)+'</div>';
   if(l.fig)h+='<div class="wts-fig">'+l.fig+'</div>';
@@ -512,7 +527,14 @@ function showCertificate(){var m=qs('#mcard');var dc=doneCount();
   var rv=document.getElementById('lnext');if(rv)rv.onclick=closeModal;
 }
 function closeModal(){qs('#modal').classList.remove('on');qs('#modal').hidden=true;document.documentElement.style.overflow='';}
-document.addEventListener('click',function(e){var c=e.target.closest&&e.target.closest('.wts-card');if(c)openLesson(+c.getAttribute('data-i'));});
+document.addEventListener('click',function(e){
+  var th=e.target.closest&&e.target.closest('.trk-head');if(th){var trk=th.closest('.trk');if(trk)trk.classList.toggle('closed');return;}
+  var c=e.target.closest&&e.target.closest('.wts-card');if(!c)return;var ci=+c.getAttribute('data-i');
+  if(c.classList.contains('locked')){toast('🔒 Finish the previous lesson first — one step at a time.');return;}
+  openLesson(ci);});
+// space saver: only the track you are currently ON starts open; tap any topic header to expand it
+(function(){var cur=L[firstIncomplete()]?L[firstIncomplete()].track:null;
+  document.querySelectorAll('.trk').forEach(function(t){var id=t.getAttribute('data-trk');if(id!==cur&&id!==S.goal)t.classList.add('closed');});})();
 qs('#continue').addEventListener('click',function(){openLesson(firstIncomplete());});
 (function(){var cbt=qs('#certBtn');if(cbt)cbt.addEventListener('click',showCertificate);})();
 qs('#modal').addEventListener('click',function(e){if(e.target.closest('[data-close]'))closeModal();});
