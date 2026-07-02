@@ -229,3 +229,40 @@
     }).catch(function () {});
   } catch (e) {}
 })();
+
+/* Trading-tools UX (2026-07): tidy the input row + add an (i) explainer to every input (lab pages only). */
+(function(){
+  var labels=document.querySelectorAll('.toolbar .row label.f');if(!labels.length)return;
+  var TIPS={
+    coin:"Which coin to analyze - any USDT pair (BTC, ETH, SOL, PEPE...).",
+    tf:"Candle timeframe the tool works on. Shorter = more signals but more noise.",
+    strat:"The rule set being tested. Entry/exit rules are explained with the results below.",
+    cap:"Starting capital for the simulation, in USD.",
+    fee:"Exchange taker fee per trade side, in %. Realistic fees matter a lot for frequent strategies.",
+    per:"Pivot period: Daily uses yesterday's candle, Weekly uses last week's.",
+    method:"Pivot formula. Classic is the standard floor-trader ladder; Fibonacci and Camarilla weight the levels differently.",
+    win:"How many recent candles feed the calculation window.",
+    wr:"Win rate - the percentage of trades your system wins.",
+    rr:"Reward-to-risk - average win vs average loss (2 means wins are twice as big as losses).",
+    risk:"How much of the account you risk on each trade, in %.",
+    n:"How many trades to simulate in each run."
+  };
+  var tip=null;
+  function hideTip(){if(tip&&tip.parentNode)tip.parentNode.removeChild(tip);tip=null;}
+  function showTip(btn){hideTip();tip=document.createElement('div');tip.className='inf-tip';tip.textContent=btn.getAttribute('data-tip')||'';document.body.appendChild(tip);
+    var r=btn.getBoundingClientRect(),w=tip.offsetWidth,x=Math.min(Math.max(8,r.left-10),window.innerWidth-w-8),y=r.bottom+8;
+    if(y+tip.offsetHeight>window.innerHeight-8)y=r.top-tip.offsetHeight-8;
+    tip.style.left=x+'px';tip.style.top=y+'px';}
+  labels.forEach(function(lb){
+    var ctl=lb.querySelector('input,select');if(!ctl)return;
+    ctl.style.width='';
+    var t=TIPS[ctl.id];
+    var span=document.createElement('span');span.className='fl';
+    while(lb.firstChild&&lb.firstChild!==ctl){var node=lb.firstChild;lb.removeChild(node);span.appendChild(node);}
+    if(t){var i=document.createElement('button');i.type='button';i.className='inf';i.textContent='i';i.setAttribute('data-tip',t);i.setAttribute('aria-label','What is this?');span.appendChild(i);}
+    lb.insertBefore(span,ctl);
+  });
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.inf');if(b){e.preventDefault();if(tip){hideTip();}else showTip(b);return;}if(!e.target.closest||!e.target.closest('.inf-tip'))hideTip();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')hideTip();});
+  window.addEventListener('scroll',hideTip,true);
+})();

@@ -74,6 +74,9 @@ run('Inject gtag into every page', 'node build/add-gtag.js');
 // 11) warm the fonts.gstatic.com connection on every font-loading page (LCP perf; idempotent)
 run('Inject font preconnect', 'node build/add-preconnect.js');
 
+// 11b) re-add hand-maintained pages the sitemap generator doesn't know about
+run('Sitemap extras (hand-made pages)', 'node build/add-sitemap-extras.js');
+
 // 12) build the Browse search content index — scans EVERY page's <title>, so it must run LAST
 run('Search index (Browse suggestions)', 'node build/gen-search-index.js');
 

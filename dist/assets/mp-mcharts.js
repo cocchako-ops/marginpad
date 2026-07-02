@@ -4,7 +4,17 @@
   function isMob(){return !!(window.matchMedia&&window.matchMedia('(max-width:880px)').matches);}
   // iOS leaves the layout viewport scaled (~2x) after a landscape→portrait rotation when user-scalable=no — re-assert + jiggle the viewport meta to clamp scale back to 1 (kills the "everything is huge" zoom after closing charts)
   function resetViewport(){try{var m=document.querySelector('meta[name="viewport"]');if(!m)return;var c=m.getAttribute('content')||'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';var base=c.replace(/,?\s*minimum-scale=[^,]*/,'');m.setAttribute('content',base+', minimum-scale=1.0');setTimeout(function(){m.setAttribute('content',base);},60);}catch(e){}}
-  function resetViewportHard(){resetViewport();setTimeout(resetViewport,280);setTimeout(resetViewport,800);} /* iOS can re-apply the stale scale after the first jiggle — hit it three times */
+  function resetViewportHard(){resetViewport();setTimeout(resetViewport,280);setTimeout(resetViewport,800);}
+  var _fsT=null;
+  function forceScale1(then){ /* verify-and-retry: iOS sometimes re-applies the stale scale — loop the meta jiggle until visualViewport really reads ~1 (max ~3s) */
+    if(_fsT){clearInterval(_fsT);_fsT=null;}
+    var n=0;resetViewport();
+    _fsT=setInterval(function(){ n++;
+      var vv=window.visualViewport,okNow=!vv||Math.abs((vv.scale||1)-1)<0.03;
+      if(okNow||n>18){clearInterval(_fsT);_fsT=null;if(then)try{then(okNow);}catch(e){}return;}
+      resetViewport();
+    },160);
+  }
   function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='/assets/lightweight-charts-4.2.0.js';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
   function price(s){var lp=window.mpLivePrices&&window.mpLivePrices[s];return lp&&lp.p>0?lp.p:0;}
   // clamp ISOLATED phantom wicks (bad/transient prints) so one bad candle can't draw a giant vertical line
@@ -47,14 +57,16 @@
     document.body.appendChild(ov);
     var gate=document.createElement('div');gate.className='mfc-gate';gate.hidden=true;
     gate.innerHTML='<button class="mfc-gate-x" data-gx aria-label="Close">✕</button>'
-      +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18.5" x2="13" y2="18.5"/></svg>'
-      +'<h3>'+mcT('mcGateT','Best in landscape')+'</h3><p>'+mcT('mcGateS','Turn your phone sideways for a wide chart — or just continue in portrait.')+'</p>'
-      +'<button class="mfc-gate-go" data-gg>'+mcT('mcContinue','Continue →')+'</button>';
+      +'<svg style="animation:mfcRotPulse 2.2s ease-in-out infinite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18.5" x2="13" y2="18.5"/></svg>'
+      +'<h3>'+mcT('mcGateT2','Rotate your phone')+'</h3><p>'+mcT('mcGateS2','Charts work in landscape — turn your phone sideways and they open instantly.')+'</p>'
+      +'<button class="mfc-gate-go" data-gx style="background:none;border:1px solid #2c3540;color:#9aa3ad">'+mcT('mcClose','Close')+' ✕</button>';
     ov.appendChild(gate);
-    gate.querySelector('[data-gx]').addEventListener('click',close);
-    gate.querySelector('[data-gg]').addEventListener('click',proceed);
+    Array.prototype.forEach.call(gate.querySelectorAll('[data-gx]'),function(x){x.addEventListener('click',close);});
     ov.addEventListener('click',onBarClick);
-    function onR(){if(!ov||ov.hidden)return;if(backWait){if(isPortrait())finishBack();return;}if(!entered){if(!isPortrait())proceed();return;}setTimeout(function(){panes.forEach(function(p){if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();});},140);}
+    function onR(){if(!ov||ov.hidden)return;if(backWait){if(isPortrait())finishBack();return;}
+      if(isPortrait()){showGate(true);return;} /* landscape is mandatory now — portrait always shows the rotate gate */
+      showGate(false);if(!entered){proceed();return;}
+      setTimeout(function(){panes.forEach(function(p){if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();});},140);}
     window.addEventListener('resize',function(){setTimeout(onR,120);});
     window.addEventListener('orientationchange',function(){resetViewportHard();setTimeout(onR,300);setTimeout(pinBar,120);setTimeout(pinBar,500);});
     if(window.visualViewport){window.visualViewport.addEventListener('resize',pinBar);window.visualViewport.addEventListener('scroll',pinBar);}
@@ -225,8 +237,8 @@
   function isPortrait(){return !!(window.matchMedia&&window.matchMedia('(orientation:portrait)').matches);}
   function showGate(on){var g=ov&&ov.querySelector('.mfc-gate');if(g)g.hidden=!on;var bar=ov&&ov.querySelector('.mfc-bar'),st=ov&&ov.querySelector('#mfcStage'),fab=ov&&ov.querySelector('.mfc-ai-fab');[bar,st,fab].forEach(function(x){if(x)x.style.visibility=on?'hidden':'';});}
   function open(){ if(!ov)build(); ov.hidden=false; document.documentElement.style.overflow='hidden';
-    if(!entered&&isPortrait()){showGate(true);return;}   // first entry in portrait → the "best in landscape" hint
-    proceed();
+    if(isPortrait()){showGate(true);return;}   // landscape required — the gate asks for a rotation every time
+    showGate(false);proceed();
   }
   function proceed(){ entered=true; showGate(false);
     if(!panes.length){var p=mkPane('BTC','60');panes.push(p);ov.querySelector('#mfcStage').appendChild(p.el);setActive(0);loadLib(function(){initChart(p);});}
@@ -244,7 +256,7 @@
   function finishBack(){ backWait=false; if(backEl)backEl.hidden=true;
     var st=ov&&ov.querySelector('#mfcStage'),bar=ov&&ov.querySelector('.mfc-bar');if(st)st.style.visibility='';if(bar)bar.style.visibility='';
     reallyClose();
-    if(backBrowse){backBrowse=false;setTimeout(function(){try{if(window.__openBrowse)window.__openBrowse();}catch(e){}},220);} /* land the user straight in Browse, as requested */ }
+    if(backBrowse){backBrowse=false;forceScale1(function(){try{if(window.__openBrowse)window.__openBrowse();}catch(e){}});} /* open Browse only after the zoom is verified back at 1:1 (or the retry window ends) */ }
   function reallyClose(){ if(!ov)return; ov.hidden=true; document.documentElement.style.overflow=''; closeSheet(); closeFloat(); resetViewportHard(); setTimeout(pinBar,80); }
   function close(){ if(!ov)return;
     if(!isPortrait()){ /* closing in LANDSCAPE used to dump the user on an 844px-wide page → the DESKTOP homepage flashed and iOS kept a ~25% zoom. Hold a dark "rotate back" panel instead; portrait finishes the close and opens Browse. */

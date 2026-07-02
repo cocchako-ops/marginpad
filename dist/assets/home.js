@@ -1865,7 +1865,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     scr:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3.5" y1="6" x2="3.51" y2="6"/><line x1="3.5" y1="12" x2="3.51" y2="12"/><line x1="3.5" y1="18" x2="3.51" y2="18"/></svg>',
     alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>',
     news:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13a1 1 0 0 1 1 1v14a1 1 0 0 0 1 1H5a1 1 0 0 1-1-1z"/><path d="M18 8h2a1 1 0 0 1 1 1v9a2 2 0 0 1-2 2"/><line x1="7" y1="8" x2="14" y2="8"/><line x1="7" y1="12" x2="14" y2="12"/><line x1="7" y1="16" x2="11" y2="16"/></svg>',
-    fng:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15a8 8 0 1 1 16 0"/><path d="M12 15l4.2-4.2"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg>',
+    fng:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16a7 7 0 1 1 14 0"/><path d="M5 16h-1M20 16h-1M12 9v-1M7 10.5l-.7-.7M17 10.5l.7-.7"/><path d="M12 16l3.4-3.4"/><circle cx="12" cy="16" r="1.6" fill="currentColor" stroke="none"/><path d="M4 20h16"/></svg>',
     chev:'<svg class="browse-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>'
   };
   function row(open,close,ic,t,s,col,badge,tk,sk,bk){return open+'<span class="browse-ic" style="color:'+col+';background:'+col+'22">'+ic+'</span><span class="browse-rt"><b><span'+(tk?' data-i18n="'+tk+'"':'')+'>'+t+'</span>'+(badge?' <em class="browse-badge"'+(bk?' data-i18n="'+bk+'"':'')+'>'+badge+'</em>':'')+'</b><small'+(sk?' data-i18n="'+sk+'"':'')+'>'+s+'</small></span>'+I.chev+close;}
@@ -1887,6 +1887,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
    +row('<button type="button" class="browse-row" data-go="plan">','</button>',I.plan,'Paper Trade','Practice at the live price · zero risk','#2ebd85','','prodPaper','brPaperS')
    +row('<a class="browse-row" href="/tools/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10"/><path d="M18 6h2"/><circle cx="16" cy="6" r="2"/><path d="M4 12h2"/><path d="M10 12h10"/><circle cx="8" cy="12" r="2"/><path d="M4 18h10"/><path d="M18 18h2"/><circle cx="16" cy="18" r="2"/></svg>','Trading Tools','Backtester · journal · pivots · risk','#46e0e6','NEW','brToolsT','brToolsS','brNew')
    +row('<a class="browse-row" href="/screener">','</a>',I.scr,'Screener','Live markets · movers, funding, OI','#6aa3ff','','prodScreener','brScrS')
+      +row('<a class="browse-row" href="/trading-api/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>','Bot API','Test your trading bot — free','#3fd8e6','NEW','','')
    +row('<a class="browse-row" href="/coins/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>','Markets','Top 100 coins · prices &amp; market cap','#16c2d6','','brMktsT','brMktsS')
    +row('<a class="browse-row" href="/defi/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>','DeFi','TVL, chains, protocols &amp; stablecoins','#9d7bff','','brDefiT','brDefiS')
    +row('<a class="browse-row" href="/news/">','</a>',I.news,'Crypto News','Latest headlines · live','#ff8c5a','','brNewsT','brNewsS')
@@ -2244,3 +2245,18 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
 
 ;/* $100k cap directly on the amount input (typing 250000 snaps to 100000; add() re-checks as a backstop) */
 (function(){var MAXT=100000,a=document.getElementById("planAmt");if(!a)return;try{a.max=String(MAXT);}catch(e){}a.addEventListener("input",function(){var v=parseFloat(a.value);if(isFinite(v)&&v>MAXT)a.value=String(MAXT);});})();
+
+;/* ══════════ iOS leftover-zoom shield for the Browse panel (owner: "zumirani browse 10-20% posle charts") ══════════
+   If the visual viewport is still scaled after a rotation, counter-transform the panel into the real on-screen
+   rect (same technique as the charts toolbar) so Browse always renders 1:1 until a navigation resets the zoom. */
+(function(){ if(!window.visualViewport)return; var vv=window.visualViewport;
+  function pin(){try{var bp=document.getElementById('browsePanel');if(!bp)return;
+    if(bp.hidden){bp.style.transform='';bp.style.width='';bp.style.height='';return;}
+    var sc=vv.scale||1,ox=vv.offsetLeft||0,oy=vv.offsetTop||0;
+    if(Math.abs(sc-1)<0.03&&ox<2&&oy<2){bp.style.transform='';bp.style.width='';bp.style.height='';return;}
+    bp.style.transformOrigin='0 0';
+    bp.style.width=(vv.width*sc)+'px';bp.style.height=(vv.height*sc)+'px';
+    bp.style.transform='translate('+ox+'px,'+oy+'px) scale('+(1/sc)+')';
+  }catch(e){}}
+  vv.addEventListener('resize',pin);vv.addEventListener('scroll',pin);setInterval(pin,700);
+})();

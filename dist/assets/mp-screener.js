@@ -99,7 +99,12 @@
     {n:'Bybit',c:'#f7a600',fg:'#0a0b0d',u:function(s){return 'https://www.bybit.com/trade/usdt/'+s+'USDT?ref=LZKBERJ';}},
     {n:'Binance',c:'#f0b90b',fg:'#181a20',u:function(s){return 'https://www.binance.com/en/futures/'+s+'USDT?ref=MAOZM9DS';}},
     {n:'OKX',c:'#cfd3d8',fg:'#0a0b0d',u:function(s){return 'https://www.okx.com/trade-swap/'+s.toLowerCase()+'-usdt-swap';}},
-    {n:'KuCoin',c:'#23af91',fg:'#06231d',u:function(s){return 'https://www.kucoin.com/futures/trade/'+(s==='BTC'?'XBT':s)+'USDTM?rcode=VHP8AYKY';}}
+    {n:'Bitget',c:'#00e7d8',fg:'#06231d',u:function(s){return 'https://www.bitget.com/futures/usdt/'+s+'USDT?clacCode=DSSSQKGK';}},
+    {n:'KuCoin',c:'#23af91',fg:'#06231d',u:function(s){return 'https://www.kucoin.com/futures/trade/'+(s==='BTC'?'XBT':s)+'USDTM?rcode=VHP8AYKY';}},
+    {n:'Gate',c:'#3361ff',fg:'#ffffff',u:function(s){return 'https://www.gate.com/futures/USDT/'+s+'_USDT?ref=VFIWB10KUG';}},
+    {n:'MEXC',c:'#0ac2d6',fg:'#06231d',u:function(s){return 'https://futures.mexc.com/exchange/'+s+'_USDT?inviteCode=GND4jI97o0';}},
+    {n:'Kraken',c:'#7b5cff',fg:'#ffffff',u:function(s){return 'https://invite.kraken.com/JDNW/guj2tf28';}},
+    {n:'Crypto.com',c:'#0b2e7a',fg:'#ffffff',u:function(s){return 'https://crypto.com/app/sdf5hb6rkv';}}
   ];
   function exchHtml(sym){return '<div class="scr-exch-h">Trade '+sym+'USDT</div>'+SCR_EXCH.map(function(x){return '<a class="scr-exch-a" href="'+x.u(sym)+'" target="_blank" rel="noopener sponsored" data-ex="'+x.n+'" style="--exc:'+x.c+'"><span class="scr-exch-ic" style="background:'+x.c+';color:'+x.fg+'">'+x.n.charAt(0)+'</span><span class="scr-exch-n">'+x.n+'</span><span class="scr-exch-go">Trade &rarr;</span></a>';}).join('');}
   function cgBn(x){if(x==null||!isFinite(x))return '—';var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}

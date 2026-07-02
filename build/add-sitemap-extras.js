@@ -1,0 +1,17 @@
+/* Idempotently re-adds hand-maintained pages to the (generator-rebuilt) sitemap. */
+const fs = require('fs');
+const path = require('path');
+const SP = path.join(__dirname, '..', 'dist', 'sitemap.xml');
+const EXTRAS = [
+  ['https://marginpad.io/trading-api/', '0.8'],
+];
+let xml = fs.readFileSync(SP, 'utf8');
+let n = 0;
+for (const [loc, pr] of EXTRAS) {
+  if (xml.indexOf(loc) === -1) {
+    xml = xml.replace('</urlset>', `  <url><loc>${loc}</loc><changefreq>monthly</changefreq><priority>${pr}</priority></url>\n</urlset>`);
+    n++;
+  }
+}
+if (n) fs.writeFileSync(SP, xml);
+console.log('sitemap extras: +' + n);

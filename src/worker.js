@@ -2471,6 +2471,84 @@ async function handleAiChart(url, request, env) {
   if (!answer) return J({ error: 'ai_empty' }, 502);
   return J({ ok: true, answer, used: used + 1, limit: LIMIT });
 }
+// ---------- Bot trading API — free paper-trading endpoints so people can TEST THEIR TRADING BOT for free ----------
+// Auth: X-API-Key header (create one signed-in via POST /api/bot/key). Simulator semantics: entry/exit at the live
+// price, isolated margin, pnl clamped at -margin, liquidation swept lazily against the live price. Docs: /trading-api/.
+async function handleBot(url, request, env, ctx) {
+  const jb = (o, s = 200) => new Response(JSON.stringify(o, null, 1), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key', 'access-control-allow-methods': 'GET, POST, OPTIONS' } });
+  if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: { ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key', 'access-control-allow-methods': 'GET, POST, OPTIONS' } });
+  if (!env.USERS) return jb({ error: 'unavailable' }, 503);
+  const path = url.pathname.slice('/api/bot'.length) || '/';
+  const stub = env.USERS.get(env.USERS.idFromName('main'));
+  const doCall = (p, body) => stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })).then(r => r.json()).catch(() => null);
+  let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
+
+  // --- key management (session-cookie auth, from the site) ---
+  if (path === '/key') {
+    const tok = getCookie(request, SESS_COOKIE);
+    const su = await sessionUser(env, tok);
+    let kuid = su && su.id;
+    if (!kuid && isAdminKey(env, url.searchParams.get('key'))) kuid = 'owner-admin'; // owner can mint a key from the dashboard without a login session
+    if (!kuid) return jb({ error: 'login_required', hint: 'Sign in on marginpad.io first, then generate your key on /trading-api/.' }, 401);
+    const r = await doCall('/botkey', { uid: kuid, rotate: request.method === 'POST' && !!b.rotate });
+    return jb(r || { error: 'unavailable' }, r && r.key ? 200 : 503);
+  }
+
+  // --- public: price (no key needed — lets people try instantly) ---
+  if (path === '/v1/price') {
+    const sym = (url.searchParams.get('symbol') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
+    const pd = await fetchPrice(sym);
+    if (!pd || !(+pd.price > 0)) return jb({ error: 'unknown_symbol', symbol: sym }, 404);
+    return jb({ symbol: sym, price: +pd.price, change_24h_pct: (pd.chg != null ? +pd.chg : null), ts: Date.now() });
+  }
+
+  // --- authenticated bot endpoints ---
+  const key = request.headers.get('x-api-key') || url.searchParams.get('api_key') || '';
+  if (!key) return jb({ error: 'missing_api_key', hint: 'Send your key in the X-API-Key header. Get one free at https://marginpad.io/trading-api/' }, 401);
+  const auth = await doCall('/botauth', { key });
+  if (!auth || auth.error === 'bad_key') return jb({ error: 'invalid_api_key' }, 401);
+  if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: '120 requests / minute' }, 429);
+  const uid = auth.uid;
+
+  const priceMap = async (syms) => { const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPrice(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
+  const openSymsOf = async () => { const r = await doCall('/botpositions', { uid, prices: {} }); return r && r.positions ? Array.from(new Set(r.positions.filter(p => p.status === 'open').map(p => p.symbol))) : []; };
+
+  if (path === '/v1/open' && request.method === 'POST') {
+    const sym = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
+    const side = b.side === 'short' ? 'short' : 'long';
+    const margin = +b.margin_usd || 0, lev = Math.min(1000, Math.max(1, +b.leverage || 1));
+    if (!sym) return jb({ error: 'symbol_required' }, 400);
+    if (!(margin >= 1)) return jb({ error: 'margin_usd_min_1' }, 400);
+    if (margin > 100000) return jb({ error: 'margin_usd_max_100000' }, 400);
+    const pd = await fetchPrice(sym);
+    if (!pd || !(+pd.price > 0)) return jb({ error: 'unknown_symbol', symbol: sym }, 404);
+    const entry = +pd.price, mmr = 0.005, long = side === 'long';
+    const liq = long ? entry * (1 - (1 - mmr) / lev) : entry * (1 + (1 - mmr) / lev);
+    const sl = (b.sl != null && isFinite(+b.sl)) ? +b.sl : null, tp = (b.tp != null && isFinite(+b.tp)) ? +b.tp : null;
+    if (sl != null && (long ? sl >= entry : sl <= entry)) return jb({ error: 'sl_wrong_side', live: entry }, 400);
+    if (tp != null && (long ? tp <= entry : tp >= entry)) return jb({ error: 'tp_wrong_side', live: entry }, 400);
+    const pos = { id: 'bp' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), symbol: sym, side, entry_price: entry, margin_usd: margin, leverage: lev, qty: margin * lev / entry, liq_price: Math.round(liq * 1e6) / 1e6, sl, tp, status: 'open', opened_ts: Date.now() };
+    const r = await doCall('/botopen', { uid, pos });
+    if (r && r.error) return jb(r, 400);
+    try { if (env.AE) env.AE.writeDataPoint({ indexes: ['botapi'], blobs: ['event', 'botapi', 'open ' + sym], doubles: [1] }); } catch (e) {}
+    return jb({ ok: true, position: pos });
+  }
+  if (path === '/v1/close' && request.method === 'POST') {
+    if (!b.id) return jb({ error: 'id_required' }, 400);
+    const syms = await openSymsOf();
+    const prices = await priceMap(syms);
+    const r = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices });
+    if (!r) return jb({ error: 'unavailable' }, 503);
+    return jb(r, r.error ? 400 : 200);
+  }
+  if (path === '/v1/positions') {
+    const syms = await openSymsOf();
+    const prices = await priceMap(syms);
+    const r = await doCall('/botpositions', { uid, prices });
+    return jb(r || { error: 'unavailable' }, r ? 200 : 503);
+  }
+  return jb({ error: 'not_found', endpoints: ['GET /api/bot/v1/price?symbol=BTC', 'POST /api/bot/v1/open', 'POST /api/bot/v1/close', 'GET /api/bot/v1/positions'] }, 404);
+}
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -3038,6 +3116,7 @@ export default {
     if (url.pathname.startsWith('/api/auth/')) return handleAuth(url, request, env, ctx);
     if (url.pathname === '/api/alerts' || url.pathname.startsWith('/api/alerts/')) return handleAlerts(url, env, request);
     if (url.pathname === '/api/push' || url.pathname.startsWith('/api/push/')) return handlePush(url, env, request);
+    if (url.pathname === '/api/bot' || url.pathname.startsWith('/api/bot/')) return handleBot(url, request, env, ctx);
     if (url.pathname === '/api/announce') return handleAnnounce(url, env, request);
     if (url.pathname === '/api/ai/chart') return handleAiChart(url, request, env);
     if (url.pathname === '/api/ai/admin') return handleAiAdmin(url, request, env);
@@ -3556,6 +3635,9 @@ export class UserStore {
     try { s.exec('CREATE INDEX IF NOT EXISTS ucl_user ON uclicks(user_id, ts)'); } catch (e) {}
     try { s.exec('CREATE UNIQUE INDEX IF NOT EXISTS uname_uniq ON users(username) WHERE username IS NOT NULL'); } catch (e) {} // enforce unique usernames at the DB level too
     s.exec('CREATE TABLE IF NOT EXISTS aiuse(k TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)'); // atomic per-user daily "Ask AI" counter (k = uid|day) — KV was racy and over-spent the paid LLM quota
+    s.exec('CREATE TABLE IF NOT EXISTS botkeys(k TEXT PRIMARY KEY, uid TEXT UNIQUE, created INTEGER, calls INTEGER DEFAULT 0, mn TEXT, mint INTEGER DEFAULT 0)'); // bot-API keys (one per account) + per-minute rate window
+    s.exec('CREATE TABLE IF NOT EXISTS botpos(id TEXT PRIMARY KEY, uid TEXT, json TEXT, status TEXT, ts INTEGER)'); // server-side paper positions opened via the bot API
+    try { s.exec('CREATE INDEX IF NOT EXISTS bp_uid ON botpos(uid, ts)'); } catch (e) {}
   }
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
@@ -3614,6 +3696,64 @@ export class UserStore {
       sql.exec('INSERT INTO aiuse(k,n) VALUES(?,1) ON CONFLICT(k) DO UPDATE SET n=n+1', k);
       if (Math.random() < 0.02) { try { sql.exec("DELETE FROM aiuse WHERE k NOT LIKE '%|' || ?", String(b.day || day)); } catch (e) {} } // occasional cleanup of past days
       return this.j({ ok: true, used: used + 1, limit });
+    }
+    if (path === '/botkey') { // create / fetch / rotate the account's bot-API key
+      const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
+      let row = this.rows('SELECT k FROM botkeys WHERE uid=?', uid)[0];
+      if (b.rotate && row) { sql.exec('DELETE FROM botkeys WHERE uid=?', uid); row = null; }
+      if (!row) { const k = 'mpb_' + this.rid(); sql.exec('INSERT INTO botkeys(k,uid,created) VALUES(?,?,?)', k, uid, now); return this.j({ key: k, created: now }); }
+      return this.j({ key: row.k });
+    }
+    if (path === '/botauth') { // resolve key → uid + 120 req/min rate limit (atomic, single-threaded DO)
+      const k = String(b.key || ''); const row = this.rows('SELECT * FROM botkeys WHERE k=?', k)[0];
+      if (!row) return this.j({ error: 'bad_key' });
+      const mn = new Date().toISOString().slice(0, 16);
+      const cnt = (row.mn === mn) ? (row.mint || 0) + 1 : 1;
+      if (cnt > 120) return this.j({ error: 'rate_limit' });
+      sql.exec('UPDATE botkeys SET mn=?, mint=?, calls=calls+1 WHERE k=?', mn, cnt, k);
+      return this.j({ uid: row.uid });
+    }
+    if (path === '/botopen') {
+      const uid = String(b.uid || ''), pos = b.pos || {};
+      const openN = this.rows("SELECT COUNT(*) AS n FROM botpos WHERE uid=? AND status='open'", uid)[0];
+      if (openN && openN.n >= 50) return this.j({ error: 'too_many_open', max: 50 });
+      sql.exec('INSERT INTO botpos(id,uid,json,status,ts) VALUES(?,?,?,?,?)', pos.id, uid, JSON.stringify(pos), 'open', now);
+      return this.j({ ok: true, position: pos });
+    }
+    if (path === '/botpositions' || path === '/botclose') {
+      const uid = String(b.uid || ''), PR = b.prices || {};
+      const liqSweep = (p) => { const live = PR[p.symbol]; if (!(live > 0) || p.status !== 'open') return p;
+        const long = p.side === 'long';
+        if (long ? live <= p.liq_price : live >= p.liq_price) { p.status = 'liquidated'; p.exit_price = p.liq_price; p.pnl_usd = -p.margin_usd; p.closed_ts = Date.now(); }
+        return p; };
+      const mark = (p) => { const live = PR[p.symbol]; if (p.status === 'open' && live > 0) { const dir = p.side === 'long' ? 1 : -1; let pnl = p.qty * (live - p.entry_price) * dir; if (pnl < -p.margin_usd) pnl = -p.margin_usd; p.mark_price = live; p.unrealized_pnl_usd = Math.round(pnl * 100) / 100; } return p; };
+      if (path === '/botclose') {
+        const row = this.rows('SELECT * FROM botpos WHERE id=? AND uid=?', String(b.id || ''), uid)[0];
+        if (!row) return this.j({ error: 'not_found' });
+        let p = {}; try { p = JSON.parse(row.json); } catch (e) {}
+        p = liqSweep(p);
+        if (p.status !== 'open') { sql.exec('UPDATE botpos SET json=?, status=? WHERE id=?', JSON.stringify(p), p.status, p.id); return this.j({ error: 'already_closed', position: p }); }
+        const live = PR[p.symbol]; if (!(live > 0)) return this.j({ error: 'no_price' });
+        const pct = Math.min(100, Math.max(1, +b.pct || 100)) / 100, dir = p.side === 'long' ? 1 : -1;
+        if (pct >= 1) {
+          let pnl = p.qty * (live - p.entry_price) * dir; if (pnl < -p.margin_usd) pnl = -p.margin_usd;
+          p.status = 'closed'; p.exit_price = live; p.pnl_usd = Math.round(pnl * 100) / 100; p.closed_ts = Date.now();
+          sql.exec('UPDATE botpos SET json=?, status=? WHERE id=?', JSON.stringify(p), 'closed', p.id);
+          return this.j({ ok: true, position: p });
+        }
+        const part = JSON.parse(JSON.stringify(p));
+        part.id = p.id + 'p' + Date.now().toString(36);
+        part.qty = p.qty * pct; part.margin_usd = Math.round(p.margin_usd * pct * 100) / 100; part.partial_pct = Math.round(pct * 100);
+        let ppnl = part.qty * (live - p.entry_price) * dir; if (ppnl < -part.margin_usd) ppnl = -part.margin_usd;
+        part.status = 'closed'; part.exit_price = live; part.pnl_usd = Math.round(ppnl * 100) / 100; part.closed_ts = Date.now();
+        p.qty = p.qty * (1 - pct); p.margin_usd = Math.round(p.margin_usd * (1 - pct) * 100) / 100;
+        sql.exec('UPDATE botpos SET json=? WHERE id=?', JSON.stringify(p), p.id);
+        sql.exec('INSERT INTO botpos(id,uid,json,status,ts) VALUES(?,?,?,?,?)', part.id, uid, JSON.stringify(part), 'closed', now);
+        return this.j({ ok: true, closed: part, remaining: p });
+      }
+      const rows = this.rows('SELECT * FROM botpos WHERE uid=? ORDER BY ts DESC LIMIT 100', uid);
+      const out = rows.map(r => { let p = {}; try { p = JSON.parse(r.json); } catch (e) {} const before = p.status; p = liqSweep(p); if (p.status !== before) sql.exec('UPDATE botpos SET json=?, status=? WHERE id=?', JSON.stringify(p), p.status, p.id); return mark(p); });
+      return this.j({ positions: out });
     }
     if (path === '/track') { // worker forwards a signed-in user's pageview/event here (best-effort)
       const uid = String(b.uid || ''); if (!uid) return this.j({ ok: false });
