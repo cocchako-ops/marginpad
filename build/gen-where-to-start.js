@@ -385,7 +385,7 @@ ${hreflang}
     <div class="gloss gloss-top">
       <div class="sec-h">${esc(X.glossaryH)}</div>
       <input class="gl-search" id="glSearch" type="text" placeholder="${esc(X.glossarySearch)}" aria-label="Search glossary">
-      <div class="gl-list" id="glList">${glossHtml}</div>
+      <div class="gl-list" id="glList" hidden>${glossHtml}</div>
       <div class="gl-empty" id="glEmpty" hidden>${esc(X.noMatch)}</div>
     </div>
     <div class="wts-rec" id="wtsRec" hidden></div>
@@ -517,8 +517,10 @@ qs('#continue').addEventListener('click',function(){openLesson(firstIncomplete()
 (function(){var cbt=qs('#certBtn');if(cbt)cbt.addEventListener('click',showCertificate);})();
 qs('#modal').addEventListener('click',function(e){if(e.target.closest('[data-close]'))closeModal();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
-(function(){var inp=qs('#glSearch');if(!inp)return;var terms=document.querySelectorAll('.gl-term'),catsEls=document.querySelectorAll('.gl-cat'),empty=qs('#glEmpty');
+(function(){var inp=qs('#glSearch');if(!inp)return;var terms=document.querySelectorAll('.gl-term'),catsEls=document.querySelectorAll('.gl-cat'),empty=qs('#glEmpty'),list=qs('#glList');
   inp.addEventListener('input',function(){var q=inp.value.trim().toLowerCase(),any=false;
+    if(list)list.hidden=!q; /* the term list only opens while searching — the academy (missions/lessons) sits right under the box instead of below hundreds of terms */
+    if(!q){if(empty)empty.hidden=true;return;}
     for(var i=0;i<terms.length;i++){var show=!q||terms[i].getAttribute('data-s').indexOf(q)>=0;terms[i].style.display=show?'':'none';if(show)any=true;}
     for(var c=0;c<catsEls.length;c++){var sib=catsEls[c].nextElementSibling,vis=false;while(sib&&!sib.classList.contains('gl-cat')){if(sib.classList.contains('gl-term')&&sib.style.display!=='none'){vis=true;break;}sib=sib.nextElementSibling;}catsEls[c].style.display=vis?'':'none';}
     if(empty)empty.hidden=any;});

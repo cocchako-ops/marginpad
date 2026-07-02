@@ -2395,3 +2395,39 @@
 .mpss-f input:focus{border-color:#c2f64a}
 .mpss-hint{font-size:11.5px;color:#5c656f;margin:2px 0 12px}
 .mpss-warn{font-size:12.5px;color:#ffb347;background:rgba(255,179,71,.08);border:1px solid rgba(255,179,71,.35);border-radius:9px;padding:9px 12px;margin-bottom:12px;line-height:1.5}
+/* ══════════ Where to trade — 2026-07 redesign: symmetric zones, calm accents, uniform CTA ══════════ */
+.excard{gap:10px;padding:16px 16px 14px}
+.excard::before{width:0}                                   /* the mixed brand-color left bars read as chaos (white for OKX looked broken) */
+.excard:hover{border-color:rgba(194,246,74,.45);box-shadow:0 16px 40px -22px rgba(0,0,0,.85)}
+.excard:hover .exgo{letter-spacing:.06em}
+.exh{display:flex;align-items:center;gap:9px;min-width:0}
+.exname{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exlev-chip{display:inline-flex;align-items:baseline;gap:5px;margin:0 0 0 auto;flex:none;background:rgba(255,255,255,.05);border:1px solid var(--line-bright);border-radius:8px;padding:4px 9px}
+.exlev-chip b{font-size:14px;color:var(--ink);letter-spacing:0}
+.exlev-chip span{font-size:8.5px}
+.exbadge-in{position:static;flex:none;animation:none;padding:3px 8px;font-size:9px}
+.extag{flex:none;font-size:12.5px;line-height:1.45;min-height:36px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.exbonus{display:flex;gap:7px;align-items:flex-start;font-size:11.5px;font-weight:600;color:var(--lime);line-height:1.4;min-height:33px}
+.exbonus svg{flex:0 0 auto;margin-top:1px}
+.exbonus span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.exgo{margin-top:auto;display:block;text-align:center;background:rgba(194,246,74,.09);border:1px solid rgba(194,246,74,.4);color:var(--lime);border-radius:10px;padding:10px 0;font-size:12px}
+.excard:hover .exgo{background:rgba(194,246,74,.16);border-color:rgba(194,246,74,.7)}
+.excard:hover{transform:translateY(-2px)}
+@media(max-width:680px){
+  .excard{padding:12px 12px 11px;gap:8px}
+  .exlev-chip{padding:3px 7px}.exlev-chip b{font-size:12.5px}.exlev-chip span{display:none} /* just "125×" on phones */
+  .exbadge-in{padding:2px 6px;font-size:8.5px}
+  .exbonus{min-height:47px}.exbonus span{-webkit-line-clamp:3}
+  .exgo{padding:9px 0;font-size:11px}
+}
+/* fix: the HOT badge squeezed the exchange name ("Bi…") — with a badge the chip drops its label; on phones the badge floats on the card edge */
+.exbadge-in~.exlev-chip span{display:none}
+@media(max-width:680px){
+  .excard{overflow:visible}
+  .exbadge-in{position:absolute;top:-9px;right:10px;padding:2px 7px;font-size:8.5px;box-shadow:0 2px 10px -2px rgba(255,61,61,.7)}
+}
+/* longest name (Crypto.com) still clipped — 1px smaller name + tighter chip fits every brand on both layouts */
+.exname{font-size:17px}
+@media(max-width:680px){.exname{font-size:13.5px}.exmark{width:20px;height:20px;font-size:11px}}
+.exname{letter-spacing:-.015em}
+@media(max-width:680px){.exname{font-size:12.5px}.exh{gap:7px}.exlev-chip b{font-size:12px}}

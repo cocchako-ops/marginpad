@@ -39,11 +39,11 @@
     a.target = '_blank';
     a.rel = 'sponsored noopener noreferrer';
     a.innerHTML =
-      (ex.badge ? '<span class="exbadge"><span class="liveflame"></span>'+ex.badge+'</span>' : '')
-      + '<div class="exh"><span class="exmark" style="background:'+ex.accent+';color:'+ex.fg+'">'+ex.letter+'</span><span class="exname">'+ex.name+'</span></div>'
-      + '<div class="exlev"><b>'+ex.lev+'</b><span data-i18n="exMaxLev">max leverage</span></div>'
+      '<div class="exh"><span class="exmark" style="background:'+ex.accent+';color:'+ex.fg+'">'+ex.letter+'</span><span class="exname">'+ex.name+'</span>'
+      + (ex.badge ? '<span class="exbadge exbadge-in"><span class="liveflame"></span>'+ex.badge+'</span>' : '')
+      + '<span class="exlev exlev-chip"><b>'+ex.lev+'</b><span data-i18n="exMaxLev">max leverage</span></span></div>'
       + '<div class="extag">'+ex.tag+'</div>'
-      + (ex.bonus ? '<div class="exbonus" style="margin-top:8px;font-size:11.5px;font-weight:600;color:#c2f64a;line-height:1.35;display:flex;gap:6px;align-items:flex-start"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto;margin-top:1px"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg><span>'+ex.bonus+'</span></div>' : '')
+      + (ex.bonus ? '<div class="exbonus"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg><span>'+ex.bonus+'</span></div>' : '')
       + '<span class="exgo" data-i18n="exTrade">Trade →</span>';
     exgrid.appendChild(a);
   });
