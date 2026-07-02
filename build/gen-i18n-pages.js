@@ -4,73 +4,26 @@ const fs = require('fs');
 const path = require('path');
 const DIST = path.join(__dirname, '..', 'dist');
 
-// ---- pull the translation dictionary out of the shipped i18n.js ----
-const i18nSrc = fs.readFileSync(path.join(DIST, 'assets', 'i18n.js'), 'utf8');
+// ---- pull the translation dictionary out of the i18n master (dist/assets/i18n.js is now English-only/slim) ----
+const i18nSrc = fs.readFileSync(path.join(__dirname, 'i18n-master.js'), 'utf8');
 const s = i18nSrc.indexOf('var T = {');
 const e = i18nSrc.indexOf('var EXTRA');
 let objText = i18nSrc.slice(s + 'var T = '.length, e).trim();
 objText = objText.replace(/;\s*$/, '');
 const T = eval('(' + objText + ')'); // trusted local file
-// also merge the EXTRA dictionary so generated pages translate the newer keys
-const exS = i18nSrc.indexOf('var EXTRA = {');
-const exE = i18nSrc.indexOf('for (var _L in EXTRA)');
-if (exS >= 0 && exE > exS) {
-  let exText = i18nSrc.slice(exS + 'var EXTRA = '.length, exE).trim().replace(/;\s*$/, '');
-  const EXTRA = eval('(' + exText + ')');
-  for (const L in EXTRA) { if (T[L]) Object.assign(T[L], EXTRA[L]); }
+// also merge every EXTRA dictionary so generated pages translate the newer keys
+// (single loop covering all suffixes — keep in sync with build/gen-i18n-assets.js)
+for (const suffix of ['', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17']) {
+  const startMark = 'var EXTRA' + suffix + ' = {';
+  const endMark = 'for (var _L' + suffix + ' in EXTRA' + suffix + ')';
+  const s2 = i18nSrc.indexOf(startMark);
+  if (s2 < 0) continue;
+  const e2 = i18nSrc.indexOf(endMark, s2);
+  if (e2 < 0) continue;
+  const body = i18nSrc.slice(s2 + ('var EXTRA' + suffix + ' = ').length, e2).trim().replace(/;\s*$/, '');
+  const EX = eval('(' + body + ')');
+  for (const L in EX) { if (T[L]) Object.assign(T[L], EX[L]); }
 }
-const ex2S = i18nSrc.indexOf('var EXTRA2 = {');
-const ex2E = i18nSrc.indexOf('for (var _L2 in EXTRA2)');
-if (ex2S >= 0 && ex2E > ex2S) {
-  let ex2Text = i18nSrc.slice(ex2S + 'var EXTRA2 = '.length, ex2E).trim().replace(/;\s*$/, '');
-  const EXTRA2 = eval('(' + ex2Text + ')');
-  for (const L in EXTRA2) { if (T[L]) Object.assign(T[L], EXTRA2[L]); }
-}
-const ex3S = i18nSrc.indexOf('var EXTRA3 = {');
-const ex3E = i18nSrc.indexOf('for (var _L3 in EXTRA3)');
-if (ex3S >= 0 && ex3E > ex3S) {
-  let ex3Text = i18nSrc.slice(ex3S + 'var EXTRA3 = '.length, ex3E).trim().replace(/;\s*$/, '');
-  const EXTRA3 = eval('(' + ex3Text + ')');
-  for (const L in EXTRA3) { if (T[L]) Object.assign(T[L], EXTRA3[L]); }
-}
-const ex4S = i18nSrc.indexOf('var EXTRA4 = {');
-const ex4E = i18nSrc.indexOf('for (var _L4 in EXTRA4)');
-if (ex4S >= 0 && ex4E > ex4S) {
-  let ex4Text = i18nSrc.slice(ex4S + 'var EXTRA4 = '.length, ex4E).trim().replace(/;\s*$/, '');
-  const EXTRA4 = eval('(' + ex4Text + ')');
-  for (const L in EXTRA4) { if (T[L]) Object.assign(T[L], EXTRA4[L]); }
-}
-const ex5S = i18nSrc.indexOf('var EXTRA5 = {');
-const ex5E = i18nSrc.indexOf('for (var _L5 in EXTRA5)');
-if (ex5S >= 0 && ex5E > ex5S) {
-  let ex5Text = i18nSrc.slice(ex5S + 'var EXTRA5 = '.length, ex5E).trim().replace(/;\s*$/, '');
-  const EXTRA5 = eval('(' + ex5Text + ')');
-  for (const L in EXTRA5) { if (T[L]) Object.assign(T[L], EXTRA5[L]); }
-}
-const ex6S = i18nSrc.indexOf('var EXTRA6 = {');
-const ex6E = i18nSrc.indexOf('for (var _L6 in EXTRA6)');
-if (ex6S >= 0 && ex6E > ex6S) {
-  let ex6Text = i18nSrc.slice(ex6S + 'var EXTRA6 = '.length, ex6E).trim().replace(/;\s*$/, '');
-  const EXTRA6 = eval('(' + ex6Text + ')');
-  for (const L in EXTRA6) { if (T[L]) Object.assign(T[L], EXTRA6[L]); }
-}
-const ex7S = i18nSrc.indexOf('var EXTRA7 = {');
-const ex7E = i18nSrc.indexOf('for (var _L7 in EXTRA7)');
-if (ex7S >= 0 && ex7E > ex7S) {
-  let ex7Text = i18nSrc.slice(ex7S + 'var EXTRA7 = '.length, ex7E).trim().replace(/;\s*$/, '');
-  const EXTRA7 = eval('(' + ex7Text + ')');
-  for (const L in EXTRA7) { if (T[L]) Object.assign(T[L], EXTRA7[L]); }
-}
-
-const ex8S = i18nSrc.indexOf("var EXTRA8 = {");
-const ex8E = i18nSrc.indexOf("for (var _L8 in EXTRA8)");
-if (ex8S >= 0 && ex8E > ex8S) {
-  let t = i18nSrc.slice(ex8S + "var EXTRA8 = ".length, ex8E).trim().replace(/;s*$/, "");
-  const E8 = eval("(" + t + ")");
-  for (const L in E8) { if (T[L]) Object.assign(T[L], E8[L]); }
-}
-const e9S=i18nSrc.indexOf("var EXTRA9 = {");const e9E=i18nSrc.indexOf("for (var _L9 in EXTRA9)");
-if(e9S>=0&&e9E>e9S){let t=i18nSrc.slice(e9S+"var EXTRA9 = ".length,e9E).trim().replace(/;s*$/,"");const E9=eval("("+t+")");for(const L in E9){if(T[L])Object.assign(T[L],E9[L]);}}
 const LANGS = ['es', 'pt', 'fr', 'de', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id', 'nl'];
 const RTL = ['ar'];
 const TVLOC = { es: 'es', pt: 'pt_BR', fr: 'fr', de: 'de_DE', ru: 'ru', tr: 'tr', zh: 'zh_CN', ja: 'ja', ko: 'kr', ar: 'ar_AE', id: 'id_ID', nl: 'nl_NL' };

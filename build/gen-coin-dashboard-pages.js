@@ -1,0 +1,336 @@
+/* /coin/<slug>/ — live per-coin perpetual-futures dashboards (Coinglass data via /api/cg/coin).
+   Programmatic SEO + affiliate trade links. Now multilingual: English at /coin/<slug>/ plus
+   12 translated variants at /<lang>/coin/<slug>/ (hreflang cross-linked). Translations in
+   build/data/coin-i18n.js. Run: node build/gen-coin-dashboard-pages.js (wired into build/build.js) */
+const fs = require('fs');
+const path = require('path');
+const { SHARED } = require('./data/coin-i18n');
+const DIST = path.join(__dirname, '..', 'dist');
+const OUT = path.join(DIST, 'coin');
+
+const LANG_CODES = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
+const RTL = { ar: 1 };
+function fill(str, map) { return str.replace(/\{(\w+)\}/g, (m, k) => (k in map ? map[k] : m)); }
+
+// English baseline (token templates), so every language uses the same builder.
+const EN = {
+  titleT: '{SYM} Perpetual Futures — Price, Funding, Open Interest & Liquidations',
+  descT: 'Live {NAME} ({SYM}) perpetual futures: price, funding rate, open interest, long/short positioning and 24h liquidations. Trade {SYM}USDT on top exchanges. Free, no signup.',
+  kwT: '{SYM} perpetual, {NAME} futures, {SYM} funding rate, {SYM} open interest, {SYM} liquidations, {SYM} long short ratio, {SYM}usdt perp',
+  navMarkets: 'Markets', navLiq: 'Liquidations', navFunding: 'Funding', navOI: 'Open Interest', navScreener: 'Screener',
+  crumbHome: 'Home', crumbCoins: 'Coins',
+  h1T: '{NAME} ({SYM}) Perpetual Futures',
+  leadT: 'Live {NAME} perpetual-futures data — price, funding rate, open interest, trader positioning and 24-hour liquidations, aggregated across major exchanges.',
+  cardFunding: 'Funding rate', cardOI: 'Open interest', cardLiqL: '24h liq · longs', cardLiqS: '24h liq · shorts', cardPos: 'Trader positioning · long vs short',
+  tradeH: 'Trade {SYM}USDT perpetual',
+  ctaScreener: 'See {SYM} on the screener →', ctaCalc: '{SYM} liquidation calculator', ctaPractice: 'Practice {SYM} risk-free',
+  h2Explained: '{NAME} perpetual futures, explained',
+  pExplained: 'A {SYM} perpetual future (perp) lets you trade {NAME} with leverage and no expiry. The <a href="/funding/">funding rate</a> keeps the perp price tethered to spot — positive funding means {SYM} longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open {SYM} positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged {SYM} traders got force-closed — long liquidations on drops, short liquidations on rallies.',
+  h2How: 'How to use this {SYM} dashboard',
+  pHow: 'Read the four numbers together. Heavy positive funding plus lopsided <a href="/long-short/">long positioning</a> and rising open interest is a crowded long setup that can unwind sharply. A spike in long liquidations often marks a local {SYM} bottom; a wave of short liquidations can fuel a squeeze higher. Confirm entries on the <a href="/screener">technical screener</a> and size with the <a href="/{SL}-liquidation-calculator/">{SYM} liquidation calculator</a> so leverage never puts you closer to liquidation than you intend.',
+  footNote: '{SYM} data aggregated across major exchanges (deepest market shown). For information only — not financial advice.',
+  jsLiveData: 'Live data', jsNotAvail: 'Not available for this market yet', jsPos: 'Trader positioning · long vs short', jsPosShort: 'Trader positioning',
+  jsLong: 'long', jsShort: 'short', jsMktOverview: 'Market overview', jsRank: 'Rank #', jsMcap: 'Market cap', jsVol: '24h volume', jsAth: 'All-time high', jsCirc: 'Circulating',
+};
+
+const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
+
+const COINS = [
+  { sym: 'BTC', name: 'Bitcoin', blurb: 'Bitcoin runs the deepest perpetual-futures market in crypto, so its funding, open interest and liquidations move the whole market.' },
+  { sym: 'ETH', name: 'Ethereum', blurb: 'Ethereum is the second-largest perp by volume and open interest, and a key barometer for altcoin risk appetite.' },
+  { sym: 'SOL', name: 'Solana', blurb: 'Solana is one of the most actively traded large-cap perps and tends to lead alt rallies and flushes.' },
+  { sym: 'XRP', name: 'XRP', blurb: 'XRP perps see sharp, news-driven moves and carry large speculative open interest.' },
+  { sym: 'BNB', name: 'BNB', blurb: 'BNB futures are deepest on Binance and track the health of the broader BNB ecosystem.' },
+  { sym: 'DOGE', name: 'Dogecoin', blurb: 'Dogecoin is a high-beta meme perp where funding and positioning can swing hard on sentiment.' },
+  { sym: 'ADA', name: 'Cardano', blurb: 'Cardano is a liquid large-cap alt that can trend for weeks during rotations.' },
+  { sym: 'LINK', name: 'Chainlink', blurb: 'Chainlink is a bellwether for DeFi and oracle-related flows.' },
+  { sym: 'AVAX', name: 'Avalanche', blurb: 'Avalanche is a volatile large-cap alt where leverage builds fast around catalysts.' },
+  { sym: 'LTC', name: 'Litecoin', blurb: 'Litecoin is an older large-cap with steadier flows but still-active perp markets.' },
+  { sym: 'DOT', name: 'Polkadot', blurb: 'Polkadot is a liquid alt that moves with broad alt-season rotations.' },
+  { sym: 'TRX', name: 'TRON', blurb: 'TRON tends to grind with heavy stablecoin flows and lower volatility than peers.' },
+  { sym: 'NEAR', name: 'NEAR Protocol', blurb: 'NEAR is a volatile large-cap alt sensitive to unlocks and ecosystem news.' },
+  { sym: 'UNI', name: 'Uniswap', blurb: 'Uniswap is the leading DeFi perp and reacts to governance and fee-switch news.' },
+  { sym: 'APT', name: 'Aptos', blurb: 'Aptos perps move quickly around unlock schedules and ecosystem catalysts.' },
+  { sym: 'ARB', name: 'Arbitrum', blurb: 'Arbitrum tracks L2 sentiment and sees active perp speculation.' },
+  { sym: 'OP', name: 'Optimism', blurb: 'Optimism is a major L2 perp that moves with the broader rollup narrative.' },
+  { sym: 'SUI', name: 'Sui', blurb: 'Sui is a fast-growing L1 perp with sharp, liquidity-driven moves.' },
+  { sym: 'INJ', name: 'Injective', blurb: 'Injective is a high-beta DeFi/derivatives token with active perp markets.' },
+  { sym: 'TIA', name: 'Celestia', blurb: 'Celestia is a volatile modular-blockchain token with heavy perp speculation.' },
+  { sym: 'PEPE', name: 'Pepe', blurb: 'Pepe is one of the most traded meme perps — huge volume and violent, sentiment-driven swings.' },
+  { sym: 'SHIB', name: 'Shiba Inu', blurb: 'Shiba Inu is a high-beta meme perp priced in tiny decimals; leverage here moves fast.' },
+  { sym: 'WIF', name: 'dogwifhat', blurb: 'WIF is a leading Solana meme perp with sharp, liquidity-driven moves.' },
+  { sym: 'BONK', name: 'Bonk', blurb: 'Bonk is a high-volatility Solana meme perp that swings hard on hype.' },
+  { sym: 'FLOKI', name: 'Floki', blurb: 'Floki is a meme perp where funding and positioning flip quickly on sentiment.' },
+  { sym: 'AAVE', name: 'Aave', blurb: 'Aave is the blue-chip DeFi lending token and a bellwether for the lending sector.' },
+  { sym: 'MKR', name: 'Maker', blurb: 'Maker is a core DeFi governance token that reacts to protocol and stablecoin news.' },
+  { sym: 'CRV', name: 'Curve', blurb: 'Curve is a heavily-shorted DeFi perp sensitive to liquidity and governance events.' },
+  { sym: 'LDO', name: 'Lido', blurb: 'Lido tracks the liquid-staking narrative and ETH staking flows.' },
+  { sym: 'ENA', name: 'Ethena', blurb: 'Ethena is a fast-moving DeFi perp tied to its synthetic-dollar yield story.' },
+  { sym: 'PENDLE', name: 'Pendle', blurb: 'Pendle is a yield-trading DeFi token with sharp moves around points and incentives.' },
+  { sym: 'GMX', name: 'GMX', blurb: 'GMX is a decentralized-perp protocol token popular with on-chain traders.' },
+  { sym: 'DYDX', name: 'dYdX', blurb: 'dYdX is a derivatives-DEX token that moves with on-chain perp volume.' },
+  { sym: 'SEI', name: 'Sei', blurb: 'Sei is a fast L1 perp with liquidity-driven volatility.' },
+  { sym: 'ATOM', name: 'Cosmos', blurb: 'Cosmos is the interchain hub token and a liquid large-cap alt.' },
+  { sym: 'FIL', name: 'Filecoin', blurb: 'Filecoin is a volatile storage-network perp with active speculation.' },
+  { sym: 'HBAR', name: 'Hedera', blurb: 'Hedera is an enterprise-focused L1 that can trend hard on partnership news.' },
+  { sym: 'ALGO', name: 'Algorand', blurb: 'Algorand is a liquid large-cap alt that moves with broad altcoin sentiment.' },
+  { sym: 'VET', name: 'VeChain', blurb: 'VeChain is a supply-chain L1 perp with steady but spiky liquidity.' },
+  { sym: 'FET', name: 'Artificial Superintelligence', blurb: 'FET is a leading AI-narrative perp that moves sharply on AI hype cycles.' },
+  { sym: 'RENDER', name: 'Render', blurb: 'Render is a GPU-compute AI perp with high beta to the AI narrative.' },
+  { sym: 'TAO', name: 'Bittensor', blurb: 'TAO is a high-priced AI perp with large swings and concentrated open interest.' },
+  { sym: 'ICP', name: 'Internet Computer', blurb: 'Internet Computer is a high-volatility large-cap — give liquidation extra room.' },
+  { sym: 'IMX', name: 'Immutable', blurb: 'Immutable is a gaming-L2 perp that tracks the on-chain gaming narrative.' },
+  { sym: 'GALA', name: 'Gala', blurb: 'Gala is a gaming-token perp with sharp, sentiment-led moves.' },
+  { sym: 'SAND', name: 'The Sandbox', blurb: 'The Sandbox is a metaverse perp that moves with gaming and NFT sentiment.' },
+  { sym: 'MANA', name: 'Decentraland', blurb: 'Decentraland is a metaverse perp with spiky, narrative-driven volatility.' },
+  { sym: 'AXS', name: 'Axie Infinity', blurb: 'Axie Infinity is a play-to-earn gaming perp with high beta to gaming hype.' },
+  { sym: 'GRT', name: 'The Graph', blurb: 'The Graph is an indexing-protocol perp tied to on-chain data demand.' },
+  { sym: 'RUNE', name: 'THORChain', blurb: 'THORChain is a cross-chain-liquidity perp with sharp, liquidity-driven swings.' },
+  { sym: 'ONDO', name: 'Ondo', blurb: 'Ondo is a real-world-asset (RWA) perp riding the tokenization narrative.' },
+  { sym: 'ENS', name: 'Ethereum Name Service', blurb: 'ENS is an Ethereum-identity perp that moves on governance and adoption news.' },
+  { sym: 'JUP', name: 'Jupiter', blurb: 'Jupiter is a Solana-DEX aggregator perp tied to Solana on-chain volume.' },
+  { sym: 'PYTH', name: 'Pyth Network', blurb: 'Pyth is an oracle-network perp sensitive to DeFi data demand.' },
+  { sym: 'ORDI', name: 'ORDI', blurb: 'ORDI is a Bitcoin-Ordinals perp with violent, hype-driven volatility.' },
+  { sym: 'BCH', name: 'Bitcoin Cash', blurb: 'Bitcoin Cash is a liquid large-cap perp that often moves with BTC.' },
+  { sym: 'ETC', name: 'Ethereum Classic', blurb: 'Ethereum Classic is a liquid large-cap that can spike on ETH-correlated moves.' },
+  { sym: 'TON', name: 'Toncoin', blurb: 'Toncoin has grown fast on the back of Telegram; liquidity is decent but thinner than the majors.' },
+];
+
+function slug(s) { return s.toLowerCase(); }
+function bybit(s) { return 'https://www.bybit.com/trade/usdt/' + s + 'USDT?ref=LZKBERJ'; }
+function binance(s) { return 'https://www.binance.com/en/futures/' + s + 'USDT?ref=MAOZM9DS'; }
+function okx(s) { return 'https://www.okx.com/trade-swap/' + s.toLowerCase() + '-usdt-swap'; }
+function kucoin(s) { return 'https://www.kucoin.com/futures/trade/' + (s === 'BTC' ? 'XBT' : s) + 'USDTM?rcode=VHP8AYKY'; }
+
+const CSS = `
+  .cdhero{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:12px 0 4px}
+  .cd-px{font-family:'Space Mono',monospace;font-weight:800;font-size:34px;letter-spacing:-1px}
+  .cd-chg{font-family:'Space Mono',monospace;font-weight:700;font-size:16px}
+  .cd-chg.up{color:#34d99a}.cd-chg.dn{color:#ff7b72}
+  .cd-live{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;color:#06231d;background:#2ebd85;padding:2px 6px;border-radius:5px;align-self:center}
+  .cdgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+  @media(min-width:620px){.cdgrid{grid-template-columns:repeat(4,1fr)}}
+  .cdcard{background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line-bright);border-radius:13px;padding:13px 14px}
+  .cd-k{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);font-weight:700;margin-bottom:6px}
+  .cd-v{font-family:'Space Mono',monospace;font-weight:800;font-size:18px;color:var(--ink)}
+  .cd-v small{font-size:11px;font-weight:700}.cd-v .up{color:#34d99a}.cd-v .dn{color:#ff7b72}
+  .cd-ls{display:flex;height:7px;border-radius:4px;overflow:hidden;background:var(--line);margin:8px 0 5px}
+  .cd-ls .l{background:#2ebd85}.cd-ls .s{background:#ff5a4d}
+  .cd-lsl{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700}
+  .cd-lsl .l{color:#34d99a}.cd-lsl .s{color:#ff7b72}
+  .cdtrade{margin:18px 0 6px}
+  .cdtrade-h{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;margin-bottom:9px}
+  .cdex{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  @media(min-width:620px){.cdex{grid-template-columns:repeat(4,1fr)}}
+  .cdex a{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:11px 13px;font-family:'Familjen Grotesk',sans-serif;font-weight:700;font-size:14px;transition:transform .13s,border-color .13s}
+  .cdex a:hover{transform:translateY(-2px)}
+  .cdex .ic{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;flex:0 0 auto}
+  .cdcta{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 8px}
+  .cdcta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
+  .cdcta a.go{background:#c2f64a;color:#0a0b0d;border-color:#c2f64a}
+  .cdload{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-faint)}
+  .cdmkt{margin:20px 0 6px}
+  .cdmkt-h{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;margin-bottom:9px}
+  .cdmkt-h .rank{color:#0a0b0d;background:#c2f64a;border-radius:5px;padding:2px 6px;font-size:10px;letter-spacing:0}
+  .cdspark{width:100%;height:56px;display:block;margin:2px 0 12px}
+  .cdmstat{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(min-width:620px){.cdmstat{grid-template-columns:repeat(4,1fr)}}
+  .cdchgs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+  .cdchg{flex:1;min-width:62px;background:var(--panel);border:1px solid var(--line-bright);border-radius:10px;padding:8px 6px;text-align:center}
+  .cdchg .w{font-family:'Space Mono',monospace;font-size:9px;color:var(--ink-faint);font-weight:700;letter-spacing:.05em}
+  .cdchg .p{font-family:'Space Mono',monospace;font-size:13px;font-weight:800;margin-top:2px}
+  .cdchg .p.up{color:#34d99a}.cdchg .p.dn{color:#ff7b72}
+  .cdbar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:7px}
+  .cdbar i{display:block;height:100%;background:linear-gradient(90deg,#2ebd85,#c2f64a)}
+`;
+
+function page(c, lang) {
+  const s = c.sym, sl = slug(s);
+  const L = lang ? SHARED[lang] : EN;
+  const code = lang || 'en';
+  const url = `https://marginpad.io/${lang ? lang + '/' : ''}coin/${sl}/`;
+  const home = lang ? `/${lang}/` : '/';
+  const nav = p => `/${lang ? lang + '/' : ''}${p}`;       // lang-aware for data pages that have variants
+  const map = { SYM: s, NAME: c.name, SL: sl };
+  const F = t => fill(t, map);
+  // lang-aware internal prose links: funding + long-short have lang variants; screener + calc are English-only
+  const langLink = h => lang ? h.replace('href="/funding/"', `href="/${lang}/funding/"`).replace('href="/long-short/"', `href="/${lang}/long-short/"`) : h;
+  const title = F(L.titleT);
+  const desc = F(L.descT);
+  const kw = F(L.kwT);
+  const blurb = lang ? '' : (' ' + c.blurb);              // per-coin flavor only on the English page
+  const jsL = JSON.stringify({ liveData: L.jsLiveData, notAvail: L.jsNotAvail, pos: L.jsPos, posShort: L.jsPosShort, long: L.jsLong, short: L.jsShort, mkt: L.jsMktOverview, rank: L.jsRank, mcap: L.jsMcap, vol: L.jsVol, ath: L.jsAth, circ: L.jsCirc });
+  let hreflang = `<link rel="alternate" hreflang="en" href="https://marginpad.io/coin/${sl}/" />\n`;
+  for (const lc of LANG_CODES) hreflang += `<link rel="alternate" hreflang="${lc}" href="https://marginpad.io/${lc}/coin/${sl}/" />\n`;
+  hreflang += `<link rel="alternate" hreflang="x-default" href="https://marginpad.io/coin/${sl}/" />`;
+  const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"${s} Perpetual Futures Dashboard","url":"${url}","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>`;
+  return `<!DOCTYPE html>
+<html lang="${code}"${RTL[lang] ? ' dir="rtl"' : ''}>
+<head>${GTAG}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>${title} | MarginPad</title>
+<meta name="description" content="${desc}" />
+<meta name="keywords" content="${kw}" />
+<link rel="canonical" href="${url}" />
+${hreflang}
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="${title}" />
+<meta property="og:description" content="${desc}" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="${url}" />
+<meta property="og:image" content="https://marginpad.io/assets/og/coin.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="${title}" />
+<meta name="twitter:description" content="${desc}" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>${CSS}</style>
+${ld}
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":${JSON.stringify(L.crumbHome)},"item":"https://marginpad.io${home}"},{"@type":"ListItem","position":2,"name":${JSON.stringify(L.crumbCoins)},"item":"https://marginpad.io/screener"},{"@type":"ListItem","position":3,"name":"${s}","item":"${url}"}]}</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="${home}">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="${nav('markets/')}">${L.navMarkets}</a><a href="${nav('liquidations/')}">${L.navLiq}</a><a href="${nav('funding/')}">${L.navFunding}</a><a href="${nav('open-interest/')}">${L.navOI}</a><a href="/screener">${L.navScreener}</a></nav>
+  </header>
+  <div class="crumb"><a href="${home}">${L.crumbHome}</a> / <a href="/screener">${L.crumbCoins}</a> / ${s}</div>
+  <article>
+    <h1>${F(L.h1T)}</h1>
+    <p class="lead">${F(L.leadT)}${blurb}</p>
+
+    <div class="cdhero"><span class="cd-px" id="cdPx">…</span><span class="cd-chg" id="cdChg"></span><span class="cd-live">LIVE</span></div>
+    <div class="cdgrid" id="cdGrid" data-sym="${s}">
+      <div class="cdcard"><div class="cd-k">${L.cardFunding}</div><div class="cd-v cdload">…</div></div>
+      <div class="cdcard"><div class="cd-k">${L.cardOI}</div><div class="cd-v cdload">…</div></div>
+      <div class="cdcard"><div class="cd-k">${L.cardLiqL}</div><div class="cd-v cdload">…</div></div>
+      <div class="cdcard"><div class="cd-k">${L.cardLiqS}</div><div class="cd-v cdload">…</div></div>
+    </div>
+    <div class="cdcard" id="cdLs"><div class="cd-k">${L.cardPos}</div><div class="cd-v cdload">…</div></div>
+
+    <div class="cdmkt" id="cdMkt" hidden>
+      <div class="cdmkt-h"><span id="cdMktH">${L.jsMktOverview}</span></div>
+      <svg class="cdspark" id="cdSpark" viewBox="0 0 100 56" preserveAspectRatio="none"></svg>
+      <div class="cdchgs" id="cdChgs"></div>
+      <div class="cdmstat" id="cdMstat"></div>
+    </div>
+
+    <div class="cdtrade">
+      <div class="cdtrade-h">${F(L.tradeH)}</div>
+      <div class="cdex">
+        <a href="${bybit(s)}" target="_blank" rel="noopener sponsored" data-ex="Bybit"><span class="ic" style="background:#f7a600;color:#0a0b0d">B</span>Bybit</a>
+        <a href="${binance(s)}" target="_blank" rel="noopener sponsored" data-ex="Binance"><span class="ic" style="background:#f0b90b;color:#181a20">B</span>Binance</a>
+        <a href="${okx(s)}" target="_blank" rel="noopener sponsored" data-ex="OKX"><span class="ic" style="background:#cfd3d8;color:#0a0b0d">O</span>OKX</a>
+        <a href="${kucoin(s)}" target="_blank" rel="noopener sponsored" data-ex="KuCoin"><span class="ic" style="background:#23af91;color:#06231d">K</span>KuCoin</a>
+      </div>
+    </div>
+
+    <div class="cdcta">
+      <a class="go" href="/screener">${F(L.ctaScreener)}</a>
+      <a href="/${sl}-liquidation-calculator/">${F(L.ctaCalc)}</a>
+      <a href="/paper-trade?coin=${s}">${F(L.ctaPractice)}</a>
+    </div>
+
+    <h2>${F(L.h2Explained)}</h2>
+    <p>${langLink(F(L.pExplained))}</p>
+
+    <h2>${F(L.h2How)}</h2>
+    <p>${langLink(F(L.pHow))}</p>
+
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">${F(L.footNote)}</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/screener">${L.navScreener}</a> · <a href="${nav('funding/')}">${L.navFunding}</a> · <a href="${nav('liquidations/')}">${L.navLiq}</a> · <a href="${nav('long-short/')}">Long/Short</a></span>
+  </footer>
+</div>
+<script>(function(){
+  var L=${jsL};
+  var grid=document.getElementById('cdGrid'),sym=grid.getAttribute('data-sym');
+  function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
+  function fpx(x){x=+x;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:6});}
+  function fn(f){if(f==null||!isFinite(f))return '—';return (f>=0?'+':'')+(+f).toFixed(4)+'%';}
+  function render(d){
+    var px=document.getElementById('cdPx'),chg=document.getElementById('cdChg');
+    if(!d||d.error||d.price==null){if(px)px.textContent='—';if(chg)chg.textContent='';var cs=grid.querySelectorAll('.cd-v');for(var i=0;i<cs.length;i++){cs[i].className='cd-v';cs[i].textContent='—';}var ls0=document.getElementById('cdLs');if(ls0)ls0.innerHTML='<div class="cd-k">'+L.liveData+'</div><div class="cd-v" style="font-size:13px">'+L.notAvail+'</div>';return;}
+    if(d.price!=null){px.textContent=fpx(d.price);}
+    if(d.chg24h!=null){var up=d.chg24h>=0;chg.textContent=(up?'+':'')+d.chg24h.toFixed(2)+'%';chg.className='cd-chg '+(up?'up':'dn');}
+    var oiCh=(d.oiChg24h!=null&&isFinite(d.oiChg24h))?(' <small class="'+(d.oiChg24h>=0?'up':'dn')+'">'+(d.oiChg24h>=0?'+':'')+d.oiChg24h.toFixed(1)+'%</small>'):'';
+    var cards=grid.querySelectorAll('.cd-v');
+    cards[0].className='cd-v '+((d.funding||0)>=0?'up':'dn');cards[0].textContent='';cards[0].appendChild(document.createTextNode(fn(d.funding)));
+    cards[1].className='cd-v';cards[1].innerHTML=bn(d.oiUsd)+oiCh;
+    cards[2].className='cd-v dn';cards[2].textContent=bn(d.longLiq24h);
+    cards[3].className='cd-v up';cards[3].textContent=bn(d.shortLiq24h);
+    var ls=document.getElementById('cdLs'),lp=(d.longPct!=null)?d.longPct:null;
+    if(lp!=null){var sp=d.shortPct;ls.innerHTML='<div class="cd-k">'+L.pos+'</div><div class="cd-ls"><i class="l" style="width:'+lp+'%"></i><i class="s" style="width:'+sp+'%"></i></div><div class="cd-lsl"><span class="l">'+lp+'% '+L.long+'</span><span class="s">'+sp+'% '+L.short+'</span></div>';}
+    else{ls.innerHTML='<div class="cd-k">'+L.posShort+'</div><div class="cd-v">—</div>';}
+  }
+  function load(){fetch('/api/cg/coin?symbol='+sym,{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}
+  load();setInterval(load,60000);
+  // CoinGecko market overview — market cap, volume, ATH, supply, multi-window change + 7d sparkline
+  (function(){
+    function bn2(x){x=+x||0;var a=Math.abs(x);if(a>=1e12)return '$'+(x/1e12).toFixed(2)+'T';if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
+    function nn(x){x=+x||0;var a=Math.abs(x);if(a>=1e12)return (x/1e12).toFixed(2)+'T';if(a>=1e9)return (x/1e9).toFixed(2)+'B';if(a>=1e6)return (x/1e6).toFixed(1)+'M';if(a>=1e3)return (x/1e3).toFixed(1)+'K';return ''+Math.round(x);}
+    function chgCell(w,v){if(v==null||!isFinite(v))return '<div class="cdchg"><div class="w">'+w+'</div><div class="p">—</div></div>';var up=v>=0;return '<div class="cdchg"><div class="w">'+w+'</div><div class="p '+(up?'up':'dn')+'">'+(up?'+':'')+v.toFixed(1)+'%</div></div>';}
+    function spark(arr){var svg=document.getElementById('cdSpark');if(!svg||!arr||arr.length<2)return;var mn=Math.min.apply(null,arr),mx=Math.max.apply(null,arr),rg=(mx-mn)||1,n=arr.length,W=100,H=56,pad=3,pts=[];for(var i=0;i<n;i++){var x=(i/(n-1))*W,y=pad+(H-2*pad)*(1-(arr[i]-mn)/rg);pts.push(x.toFixed(2)+','+y.toFixed(2));}var up=arr[n-1]>=arr[0],col=up?'#34d99a':'#ff7b72',d='M'+pts.join(' L'),area=d+(' L'+W+','+H+' L0,'+H+' Z');svg.innerHTML='<defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+col+'" stop-opacity=".22"/><stop offset="1" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs><path d="'+area+'" fill="url(#sg)"/><path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="1.4" vector-effect="non-scaling-stroke"/>';}
+    fetch('/api/gecko/coin?sym='+sym,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){
+      if(!d||d.error||d.mcap==null)return;
+      var box=document.getElementById('cdMkt');if(!box)return;
+      var h=document.getElementById('cdMktH');if(h)h.innerHTML=L.mkt+(d.rank?' <span class="rank">'+L.rank+d.rank+'</span>':'');
+      var athPct=(d.athChg!=null&&isFinite(d.athChg))?(' <small class="dn">'+d.athChg.toFixed(0)+'%</small>'):'';
+      var supPct=(d.max&&d.circ)?Math.min(100,(d.circ/d.max*100)):null;
+      var athTxt=(d.ath!=null)?('$'+(+d.ath).toLocaleString('en-US',{maximumFractionDigits:d.ath>=1?2:6})):'—';
+      var st=[[L.mcap,bn2(d.mcap)],[L.vol,bn2(d.vol)],[L.ath,athTxt+athPct],[L.circ,nn(d.circ)+' '+sym+(supPct!=null?'<div class="cdbar"><i style="width:'+supPct.toFixed(0)+'%"></i></div>':'')]];
+      var ms=document.getElementById('cdMstat');if(ms)ms.innerHTML=st.map(function(r){return '<div class="cdcard"><div class="cd-k">'+r[0]+'</div><div class="cd-v" style="font-size:16px">'+r[1]+'</div></div>';}).join('');
+      var cg=document.getElementById('cdChgs');if(cg)cg.innerHTML=chgCell('1H',d.ch1h)+chgCell('24H',d.ch24h)+chgCell('7D',d.ch7d)+chgCell('30D',d.ch30d);
+      spark(d.spark);
+      box.hidden=false;
+    }).catch(function(){});
+  })();
+  // affiliate-click beacon (analytics + Google Ads / GA4 conversion signal)
+  var ADS_CONV_LABEL='';/* paste your Google Ads conversion label here once created, e.g. 'abCdEf1gH' */
+  Array.prototype.forEach.call(document.querySelectorAll('[data-ex]'),function(a){a.addEventListener('click',function(){try{var ex=a.getAttribute('data-ex');if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathname});if(ADS_CONV_LABEL)gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon)navigator.sendBeacon(u);else (new Image()).src=u;}catch(e){}});});
+})();</script>
+</body>
+</html>
+`;
+}
+
+fs.mkdirSync(OUT, { recursive: true });
+let n = 0;
+for (const c of COINS) {
+  // English at /coin/<slug>/
+  const d = path.join(OUT, slug(c.sym));
+  fs.mkdirSync(d, { recursive: true });
+  fs.writeFileSync(path.join(d, 'index.html'), page(c, ''));
+  n++;
+  // 12 translated variants at /<lang>/coin/<slug>/
+  for (const lc of LANG_CODES) {
+    const dl = path.join(DIST, lc, 'coin', slug(c.sym));
+    fs.mkdirSync(dl, { recursive: true });
+    fs.writeFileSync(path.join(dl, 'index.html'), page(c, lc));
+    n++;
+  }
+}
+console.log('wrote', n, 'coin dashboards (' + COINS.length + ' × 13 langs) → dist/[<lang>/]coin/<slug>/');
+// keep sitemap in sync
+try {
+  const smp = path.join(__dirname, '..', 'dist', 'sitemap.xml');
+  let sm = fs.readFileSync(smp, 'utf8');
+  const today = new Date().toISOString().slice(0, 10);
+  let added = 0;
+  for (const c of COINS) {
+    const loc = `https://marginpad.io/coin/${slug(c.sym)}/`;
+    if (sm.indexOf(loc) === -1) { sm = sm.replace('</urlset>', `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>\n</urlset>`); added++; }
+  }
+  if (added) { fs.writeFileSync(smp, sm); console.log('sitemap: +' + added + ' coin URLs'); }
+} catch (e) { console.log('sitemap skipped:', e.message); }

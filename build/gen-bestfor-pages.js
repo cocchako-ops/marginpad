@@ -1,9 +1,35 @@
 /* "Best crypto exchange for X" high-intent affiliate landing pages.
-   Run: node build/gen-bestfor-pages.js */
+   Now multilingual: English at /<slug>/ plus 12 translated variants at /<lang>/<slug>/
+   (hreflang cross-linked). Translations in build/data/bestfor-i18n.js (chrome) +
+   build/data/bestfor-cases-i18n.js (per-case). Run: node build/gen-bestfor-pages.js */
 const fs = require('fs');
 const path = require('path');
+const { SHARED } = require('./data/bestfor-i18n');
+const { CASES: CASE_TR } = require('./data/bestfor-cases-i18n');
+const { KNOWN } = require('./data/compare-i18n');
 const OUT = path.join(__dirname, '..', 'dist');
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
+
+const LANG_CODES = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
+const RTL = { ar: 1 };
+function fill(str, map) { return str.replace(/\{(\w+)\}/g, (m, k) => (k in map ? map[k] : m)); }
+
+// English chrome baseline (token templates), so every language uses the same builder.
+const EN_SHARED = {
+  tagBest: 'Top pick', openCta: 'Open {X} account →', offers: '{A} offers {WHY}.',
+  thExchange: 'Exchange', thMaxLev: 'Max lev', thMaker: 'Maker', thTaker: 'Taker', thKnown: 'Best known for',
+  h2cmp: 'Side-by-side comparison', h2rank: 'How we rank',
+  rankP: 'We weight the factors that matter for this use case — here, primarily <strong>{METRIC}</strong> — alongside liquidity, reliability and overall trader experience. Fees and leverage caps vary by contract, region and account tier, so always confirm on the exchange. Before you size a trade, check exactly where it would be wiped with the <a href="/#liq">liquidation calculator</a> and practice risk-free in <a href="/?p=plan">Paper Trade</a>.',
+  updated: 'Updated for 2026. Links are referral links — see disclosure below.',
+  relBeginners: 'For beginners', relLowFee: 'Lowest fees', relHighLev: 'Highest leverage', relAlt: 'For altcoins', relDay: 'For day trading',
+  disclosure: 'Disclosure: the exchange links above are referral links. If you sign up through them MarginPad may earn a commission at no extra cost to you — it keeps the tools free. Not financial advice; trade at your own risk.',
+  faqFreeQ: 'Are these exchanges free to use?',
+  faqFreeA: 'Yes — opening an account is free on all of them; you only pay trading fees when you trade. The links here are referral links that support MarginPad at no cost to you.',
+  faqTopA: 'Our top pick is {TOP}, which offers {TOPWHY}. Runners-up are {R1} and {R2}.',
+  mLev: 'Max leverage', mTaker: 'Taker fee',
+  navCalc: 'Calculators', navBlog: 'Blog', navGloss: 'Glossary', crumbHome: 'Home',
+};
+const EN_KNOWN = { bybit: 'a fast matching engine and deep USDT-perpetual liquidity', binance: 'the largest volume and the widest range of futures pairs', okx: 'a powerful pro interface and a unified account model', kucoin: 'a huge altcoin futures selection', kraken: 'security and long-standing trust' };
 
 const EX = {
   bybit:   { name: 'Bybit',   ref: 'https://www.bybit.com/invite?ref=LZKBERJ',     lev: 100, mmr: 0.5, maker: 0.02, taker: 0.055, accent: '#f7a600', fg: '#0a0b0d', known: 'a fast matching engine and deep USDT-perp liquidity' },
@@ -39,11 +65,41 @@ const CASES = [
     rank: ['bybit', 'binance', 'okx', 'kucoin', 'kraken'], metricKey: 'taker', metric: 'Taker fee', fmt: v => v + '%',
     why: { bybit: 'a fast matching engine plus low fees — built for high order volume', binance: 'the deepest books, so large orders move price the least', okx: 'advanced order types for precise entries and exits', kucoin: 'plenty of pairs to rotate through during the day', kraken: 'reliable, but lower leverage and fewer perps' },
     kw: 'best exchange for day trading crypto, day trading futures exchange, best scalping exchange, intraday crypto trading' },
+  { slug: 'best-crypto-futures-exchange', title: 'Best Crypto Futures Exchange (2026)', h1: 'Best crypto futures exchange',
+    intro: 'The best all-round futures venue balances deep liquidity, low fees, high leverage and a fast, reliable engine. Here are the top crypto futures exchanges for 2026, ranked overall.',
+    rank: ['bybit', 'binance', 'okx', 'kucoin', 'kraken'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×',
+    why: { bybit: 'the best all-round package — a fast engine, deep USDT-perp liquidity and low fees in a clean interface', binance: 'the largest volume and the widest pair list, with 125× on the majors', okx: 'pro-grade tools and a unified account, with strong liquidity across the board', kucoin: 'a huge altcoin futures range for traders who rotate beyond the majors', kraken: 'a trusted, security-first venue, though with lower leverage and fewer perps' },
+    kw: 'best crypto futures exchange, best perpetual exchange, top crypto futures platform, best leverage trading exchange' },
+  { slug: 'best-crypto-exchange-for-scalping', title: 'Best Crypto Exchange for Scalping (2026)', h1: 'Best crypto exchange for scalping',
+    intro: 'Scalping lives or dies on fees, fill speed and order-book depth — a slow engine or a wide spread eats a high-frequency edge alive. Ranked by taker fee, the cost that matters most when you trade dozens of times a day.',
+    rank: ['binance', 'bybit', 'okx', 'kraken', 'kucoin'], metricKey: 'taker', metric: 'Taker fee', fmt: v => v + '%',
+    why: { binance: 'the lowest standard taker fee of the majors and the deepest books, so rapid entries barely move price', bybit: 'a famously fast matching engine plus low fees — purpose-built for high order volume', okx: 'advanced order types and tight spreads for precise scalps', kraken: 'reliable execution, though with higher fees and lower leverage', kucoin: 'plenty of pairs to scalp, with slightly higher taker fees' },
+    kw: 'best exchange for scalping crypto, scalping futures exchange, fastest crypto exchange, low fee scalping' },
+  { slug: 'best-crypto-exchange-for-bitcoin-futures', title: 'Best Crypto Exchange for Bitcoin Futures (2026)', h1: 'Best exchange for Bitcoin futures',
+    intro: 'Trading BTC perpetuals rewards the deepest liquidity and tightest spreads so size fills cleanly. Ranked for Bitcoin futures.',
+    rank: ['binance', 'bybit', 'okx', 'kucoin', 'kraken'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×',
+    why: { binance: 'the deepest BTC perpetual book anywhere, with up to 125× and razor-tight spreads', bybit: 'extremely deep BTCUSDT liquidity and a fast engine at 100× on Bitcoin', okx: '125× on BTC with pro order types and a unified margin account', kucoin: 'solid BTC liquidity alongside its huge altcoin list', kraken: 'a trusted home for Bitcoin with a conservative 50× cap' },
+    kw: 'best exchange for bitcoin futures, btc perpetual exchange, bitcoin leverage trading, best btc futures platform' },
+  { slug: 'best-crypto-exchange-for-ethereum-futures', title: 'Best Crypto Exchange for Ethereum Futures (2026)', h1: 'Best exchange for Ethereum futures',
+    intro: 'ETH perpetuals are among the most liquid markets in crypto. The best venue gives you tight spreads and deep books so size fills without slippage. Ranked for Ethereum futures.',
+    rank: ['binance', 'bybit', 'okx', 'kucoin', 'kraken'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×',
+    why: { binance: 'the deepest ETH perpetual liquidity with up to 125× and tight spreads', bybit: 'very deep ETHUSDT books and a fast engine at 100×', okx: '125× on ETH with a unified margin account and pro tools', kucoin: 'reliable ETH liquidity alongside a vast altcoin list', kraken: 'a trusted venue for Ethereum with a 50× cap' },
+    kw: 'best exchange for ethereum futures, eth perpetual exchange, ethereum leverage trading, best eth futures platform' },
+  { slug: 'best-crypto-exchange-for-copy-trading', title: 'Best Crypto Exchange for Copy Trading (2026)', h1: 'Best crypto exchange for copy trading',
+    intro: 'Copy trading mirrors the positions of an experienced trader into your account automatically. The best venues combine a large pool of verified lead traders with transparent stats and low fees. Ranked for copy trading.',
+    rank: ['bybit', 'okx', 'binance', 'kucoin', 'kraken'], metricKey: 'taker', metric: 'Taker fee', fmt: v => v + '%',
+    why: { bybit: 'one of the largest copy-trading marketplaces, with detailed lead-trader stats and deep perp liquidity', okx: 'a polished copy-trading product tied to its unified account', binance: 'copy trading backed by the deepest markets and the widest pair list', kucoin: 'copy trading across a huge altcoin selection', kraken: 'a security-first venue, though without a native copy-trading product' },
+    kw: 'best crypto copy trading exchange, copy trading futures, best copy trading platform crypto, mirror trading crypto' },
+  { slug: 'best-crypto-exchange-mobile-app', title: 'Best Crypto Exchange Mobile App for Futures (2026)', h1: 'Best crypto exchange mobile app',
+    intro: 'A great trading app means fast charts, one-tap orders and full position management on the go. Ranked for mobile futures trading.',
+    rank: ['bybit', 'binance', 'okx', 'kucoin', 'kraken'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×',
+    why: { bybit: 'a slick, fast app with full futures controls and quick order entry', binance: 'a feature-packed app with the deepest markets behind it', okx: 'a clean app with pro charting and a unified account view', kucoin: 'a capable app with a huge coin list', kraken: 'a tidy, reliable app focused on the larger caps' },
+    kw: 'best crypto exchange app, best futures trading app, best crypto app for leverage, mobile crypto futures' },
 ];
 
 function head(o) {
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${o.lang}"${o.dir ? ' dir="rtl"' : ''}>
 <head>${GTAG}
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -51,6 +107,7 @@ function head(o) {
 <meta name="description" content="${o.desc}" />
 <meta name="keywords" content="${o.kw}" />
 <link rel="canonical" href="${o.url}" />
+${o.hreflang}
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta name="theme-color" content="#0a0b0d" />
 <meta property="og:title" content="${o.title}" />
@@ -84,22 +141,22 @@ function head(o) {
   @media(max-width:600px){.rankcard{grid-template-columns:auto 1fr;gap:11px}.rk-metric,.rankcard .rk-cta{grid-column:2}.rk-metric{text-align:left;margin-top:8px}.cmp{display:block;overflow-x:auto}}
 </style>
 ${o.ld}
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"${o.bcName}","item":"${o.url}"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":${JSON.stringify(o.crumbHome)},"item":"${o.homeHref}"},{"@type":"ListItem","position":2,"name":${JSON.stringify(o.bcName)},"item":"${o.url}"}]}</script>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <a class="brand" href="/">MARGIN<b style="color:#c2f64a">PAD</b></a>
-    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a><a href="/glossary/">Glossary</a></nav>
+    <a class="brand" href="${o.homeHref}">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="${o.homeHref}">${o.navCalc}</a><a href="/blog/">${o.navBlog}</a><a href="/glossary/">${o.navGloss}</a></nav>
   </header>
-  <div class="crumb"><a href="/">Home</a> / ${o.crumb}</div>
+  <div class="crumb"><a href="${o.homeHref}">${o.crumbHome}</a> / ${o.crumb}</div>
   <article>`;
 }
-function foot() {
+function foot(o) {
   return `  </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a> · <a href="/glossary/">Glossary</a></span>
+    <span><a href="${o.homeHref}">${o.navCalc}</a> · <a href="/blog/">${o.navBlog}</a> · <a href="/glossary/">${o.navGloss}</a></span>
   </footer>
 </div>
 </body>
@@ -107,50 +164,79 @@ function foot() {
 `;
 }
 
-function casePage(c) {
-  const url = `https://marginpad.io/${c.slug}/`;
-  const desc = c.intro.slice(0, 155);
+function hreflang(slug) {
+  let s = `<link rel="alternate" hreflang="en" href="https://marginpad.io/${slug}/" />\n`;
+  for (const lc of LANG_CODES) s += `<link rel="alternate" hreflang="${lc}" href="https://marginpad.io/${lc}/${slug}/" />\n`;
+  s += `<link rel="alternate" hreflang="x-default" href="https://marginpad.io/${slug}/" />`;
+  return s;
+}
+
+function casePage(c, lang) {
+  const L = lang ? SHARED[lang] : EN_SHARED;
+  const KN = lang ? KNOWN[lang] : EN_KNOWN;
+  const tr = lang ? CASE_TR[lang][c.slug] : null;       // translated case content
+  const code = lang || 'en';
+  const title = tr ? tr.title : c.title;
+  const h1 = tr ? tr.h1 : c.h1;
+  const intro = tr ? tr.intro : c.intro;
+  const kw = tr ? tr.kw : c.kw;
+  const whyMap = tr ? tr.why : c.why;
+  const url = `https://marginpad.io/${lang ? lang + '/' : ''}${c.slug}/`;
+  const homeHref = lang ? `/${lang}/` : '/';
+  const rel = slug => `/${lang ? lang + '/' : ''}${slug}/`;
+  const metricLabel = lang ? (c.metricKey === 'lev' ? L.mLev : L.mTaker) : c.metric;
+  const metricLower = lang ? metricLabel : c.metric.toLowerCase();
   const top = EX[c.rank[0]];
   const cards = c.rank.map((k, i) => {
     const e = EX[k];
-    return `<div class="rankcard${i === 0 ? ' top' : ''}">${i === 0 ? '<span class="tag-best">Top pick</span>' : ''}
+    const offer = fill(L.offers, { A: e.name, WHY: whyMap[k] || KN[k] });
+    return `<div class="rankcard${i === 0 ? ' top' : ''}">${i === 0 ? `<span class="tag-best">${L.tagBest}</span>` : ''}
       <div class="rk-no">${i + 1}</div>
-      <div class="rk-body"><h3><span class="rk-mark" style="background:${e.accent};color:${e.fg}">${e.name[0]}</span>${e.name}</h3><p>${e.name} offers ${c.why[k] || e.known}.</p>
-      <a class="rk-cta" href="${e.ref}" target="_blank" rel="sponsored noopener nofollow" style="background:${e.accent};color:${e.fg}">Open ${e.name} account →</a></div>
-      <div class="rk-metric"><b>${c.fmt(e[c.metricKey])}</b><span>${c.metric}</span></div>
+      <div class="rk-body"><h3><span class="rk-mark" style="background:${e.accent};color:${e.fg}">${e.name[0]}</span>${e.name}</h3><p>${offer}</p>
+      <a class="rk-cta" href="${e.ref}" target="_blank" rel="sponsored noopener nofollow" style="background:${e.accent};color:${e.fg}">${fill(L.openCta, { X: e.name })}</a></div>
+      <div class="rk-metric"><b>${c.fmt(e[c.metricKey])}</b><span>${metricLabel}</span></div>
     </div>`;
   }).join('\n');
-  const table = `<table class="cmp"><thead><tr><th>Exchange</th><th>Max lev</th><th>Maker</th><th>Taker</th><th>Best known for</th></tr></thead><tbody>${c.rank.map(k => { const e = EX[k]; return `<tr><td>${e.name}</td><td>${e.lev}×</td><td>${e.maker}%</td><td>${e.taker}%</td><td style="white-space:normal;color:var(--ink-dim)">${e.known}</td></tr>`; }).join('')}</tbody></table>`;
-  const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"${c.h1}?","acceptedAnswer":{"@type":"Answer","text":"Our top pick is ${top.name}, which offers ${(c.why ? c.why[c.rank[0]] : top.known).replace(/"/g, '')}. Runners-up are ${EX[c.rank[1]].name} and ${EX[c.rank[2]].name}."}},{"@type":"Question","name":"Are these exchanges free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes — opening an account is free on all of them; you only pay trading fees when you trade. The links here are referral links that support MarginPad at no cost to you."}}]}</script>`;
-  return head({ title: c.title, desc, url, crumb: c.h1, bcName: c.h1, kw: c.kw, ld })
+  const table = `<table class="cmp"><thead><tr><th>${L.thExchange}</th><th>${L.thMaxLev}</th><th>${L.thMaker}</th><th>${L.thTaker}</th><th>${L.thKnown}</th></tr></thead><tbody>${c.rank.map(k => { const e = EX[k]; return `<tr><td>${e.name}</td><td>${e.lev}×</td><td>${e.maker}%</td><td>${e.taker}%</td><td style="white-space:normal;color:var(--ink-dim)">${KN[k]}</td></tr>`; }).join('')}</tbody></table>`;
+  const faqTop = fill(L.faqTopA, { TOP: top.name, TOPWHY: whyMap[c.rank[0]] || KN[c.rank[0]], R1: EX[c.rank[1]].name, R2: EX[c.rank[2]].name });
+  const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":${JSON.stringify(h1 + '?')},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(faqTop)}}},{"@type":"Question","name":${JSON.stringify(L.faqFreeQ)},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(L.faqFreeA)}}}]}</script>`;
+  return head({ lang: code, dir: RTL[lang] ? 1 : 0, title, desc: intro.slice(0, 155), url, homeHref, hreflang: hreflang(c.slug),
+    crumb: h1, bcName: h1, kw, ld, crumbHome: L.crumbHome, navCalc: L.navCalc, navBlog: L.navBlog, navGloss: L.navGloss })
     + `
-    <h1>${c.h1}</h1>
-    <p class="lead">${c.intro}</p>
-    <p style="color:var(--ink-faint);font-size:12.5px;margin:-6px 0 18px">Updated for 2026. Links are referral links — see disclosure below.</p>
+    <h1>${h1}</h1>
+    <p class="lead">${intro}</p>
+    <p style="color:var(--ink-faint);font-size:12.5px;margin:-6px 0 18px">${L.updated}</p>
     ${cards}
-    <h2>Side-by-side comparison</h2>
+    <h2>${L.h2cmp}</h2>
     ${table}
-    <h2>How we rank</h2>
-    <p>We weight the factors that matter for this use case — here, primarily <strong>${c.metric.toLowerCase()}</strong> — alongside liquidity, reliability and overall trader experience. Fees and leverage caps vary by contract, region and account tier, so always confirm on the exchange. Before you size a trade, check exactly where it would be wiped with the <a href="/#liq">liquidation calculator</a> and practice risk-free in <a href="/?p=plan">Paper Trade</a>.</p>
+    <h2>${L.h2rank}</h2>
+    <p>${fill(L.rankP, { METRIC: metricLower })}</p>
     <div class="related">
-      <a href="/best-crypto-exchange-for-beginners/">For beginners</a>
-      <a href="/lowest-fee-crypto-exchange/">Lowest fees</a>
-      <a href="/highest-leverage-crypto-exchange/">Highest leverage</a>
-      <a href="/best-crypto-exchange-for-altcoins/">For altcoins</a>
-      <a href="/best-crypto-exchange-for-day-trading/">For day trading</a>
+      <a href="${rel('best-crypto-exchange-for-beginners')}">${L.relBeginners}</a>
+      <a href="${rel('lowest-fee-crypto-exchange')}">${L.relLowFee}</a>
+      <a href="${rel('highest-leverage-crypto-exchange')}">${L.relHighLev}</a>
+      <a href="${rel('best-crypto-exchange-for-altcoins')}">${L.relAlt}</a>
+      <a href="${rel('best-crypto-exchange-for-day-trading')}">${L.relDay}</a>
     </div>
-    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:22px">Disclosure: the exchange links above are referral links. If you sign up through them MarginPad may earn a commission at no extra cost to you — it keeps the tools free. Not financial advice; trade at your own risk.</p>
+    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:22px">${L.disclosure}</p>
 `
-    + foot();
+    + foot({ homeHref, navCalc: L.navCalc, navBlog: L.navBlog, navGloss: L.navGloss });
 }
 
 let n = 0;
 for (const c of CASES) {
-  const d = path.join(OUT, c.slug);
-  fs.mkdirSync(d, { recursive: true });
-  fs.writeFileSync(path.join(d, 'index.html'), casePage(c));
+  // English at root slug
+  fs.mkdirSync(path.join(OUT, c.slug), { recursive: true });
+  fs.writeFileSync(path.join(OUT, c.slug, 'index.html'), casePage(c, ''));
   n++;
-  console.log('wrote', c.slug);
+  // 12 translated variants
+  for (const lc of LANG_CODES) {
+    const d = path.join(OUT, lc, c.slug);
+    fs.mkdirSync(d, { recursive: true });
+    fs.writeFileSync(path.join(d, 'index.html'), casePage(c, lc));
+    n++;
+  }
+  console.log('wrote', c.slug, '(en + 12)');
 }
 // keep sitemap in sync
 try {

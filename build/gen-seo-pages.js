@@ -70,6 +70,15 @@ function foot(scriptSrc) {
   </footer>
 </div>
 <script src="${scriptSrc}"></script>
+<script>
+/* affiliate-click conversion signal — Google Ads + GA4 + admin dashboard. The revenue proxy ad bidding optimises toward. */
+(function(){var ADS_CONV_LABEL='';/* paste your Google Ads conversion label here once created, e.g. 'abCdEf1gH' */
+Array.prototype.forEach.call(document.querySelectorAll('a.exbtn,[data-ex]'),function(a){a.addEventListener('click',function(){try{
+var ex=(a.getAttribute('data-ex')||a.textContent||'').replace(/Trade on|→/g,'').trim();
+if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathname});if(ADS_CONV_LABEL)gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}
+var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon)navigator.sendBeacon(u);
+}catch(_){}});});})();
+</script>
 </body>
 </html>
 `;
@@ -117,7 +126,7 @@ function liqPage(ex) {
         <div class="rr"><span>Distance from entry</span><b id="liqDist">—</b></div>
       </div>
     </div>
-    <a class="exbtn" style="background:${ex.accent};color:${ex.fg}" href="${esc(ex.ref)}" target="_blank" rel="sponsored noopener noreferrer">Trade on ${ex.name} →</a>
+    <a class="exbtn" data-ex="${ex.name}" style="background:${ex.accent};color:${ex.fg}" href="${esc(ex.ref)}" target="_blank" rel="sponsored noopener noreferrer">Trade on ${ex.name} →</a>
     <h2>How liquidation works on ${ex.name}</h2>
     <p>${ex.blurb} On ${ex.name}, an isolated-margin position is liquidated when losses eat through your posted margin. The estimate is <code>Entry × (1 − 1/Leverage + MMR)</code> for a long and <code>Entry × (1 + 1/Leverage − MMR)</code> for a short, where <b>MMR</b> is the maintenance margin rate.</p>
     <p>Because ${ex.name} allows up to <b>${ex.lev}× leverage</b>, the liquidation buffer can get thin — the higher the leverage, the closer liquidation sits to entry. Treat the figure as an estimate; real liquidation also depends on fees, funding and tiered maintenance margin.</p>
@@ -165,7 +174,7 @@ function pnlPage(ex) {
         <div class="rr"><span>ROE (on margin)</span><b id="pnlRoe">—</b></div>
       </div>
     </div>
-    <a class="exbtn" style="background:${ex.accent};color:${ex.fg}" href="${esc(ex.ref)}" target="_blank" rel="sponsored noopener noreferrer">Trade on ${ex.name} →</a>
+    <a class="exbtn" data-ex="${ex.name}" style="background:${ex.accent};color:${ex.fg}" href="${esc(ex.ref)}" target="_blank" rel="sponsored noopener noreferrer">Trade on ${ex.name} →</a>
     <h2>How PnL and ROE work on ${ex.name}</h2>
     <p>${ex.blurb} Your raw profit on a ${ex.name} trade is the price move times your position size: <code>(Exit − Entry) × Size</code> for a long, and the reverse for a short. <b>Price ROI</b> is the percentage the asset moved; <b>ROE</b> is your return on the margin you actually posted, which ${ex.name}'s leverage multiplies.</p>
     <h2>Worked example</h2>
