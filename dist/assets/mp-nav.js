@@ -89,6 +89,7 @@
     defi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>',
     tools: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10"/><path d="M18 6h2"/><circle cx="16" cy="6" r="2"/><path d="M4 12h2"/><path d="M10 12h10"/><circle cx="8" cy="12" r="2"/><path d="M4 18h10"/><path d="M18 18h2"/><circle cx="16" cy="18" r="2"/></svg>',
     start: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6v-5"/></svg>',
+    bot: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
     chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;color:#5c656f;flex-shrink:0"><path d="M9 18l6-6-6-6"/></svg>'
   };
   function row(tKey, sKey, href, c, ic) { return '<a class="mpnav-row" href="' + href + '"><span class="mpnav-ic" style="color:' + c + ';background:' + c + '22">' + I[ic] + '</span><span class="mpnav-rt"><b>' + TR(tKey) + '</b><small>' + TR(sKey) + '</small></span>' + I.chev + '</a>'; }
@@ -111,6 +112,7 @@
     + '<div class="mpnav-sec">'+TR('secTrade')+'</div>'
     + row('prodPaper', 'brPaperS', '/paper-trade', '#2ebd85', 'plan')
     + row('brToolsT', 'brToolsS', '/tools/', '#46e0e6', 'tools')
+    + row('Bot API', 'Test your trading bot free · REST API', '/trading-api/', '#3fd8e6', 'bot')
     + row('prodScreener', 'brScrS', '/screener', '#6aa3ff', 'scr')
     + row('brMktsT', 'brMktsS', '/coins/', '#16c2d6', 'mkt')
     + row('brDefiT', 'brDefiS', '/defi/', '#9d7bff', 'defi')

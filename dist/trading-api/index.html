@@ -7,10 +7,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
-<meta name="theme-color" content="#08090b" />
+<meta name="theme-color" content="#0a0b0d" />
 <title>Free Crypto Paper Trading API — Test Your Trading Bot | MarginPad</title>
-<meta name="description" content="Test your crypto trading bot for FREE. A paper-trading REST API with real live prices: open and close leveraged positions, partial closes, SL/TP and liquidation simulation. No deposit, no risk — just an API key." />
-<meta name="keywords" content="crypto paper trading api, test trading bot free, crypto bot testing, futures simulator api, paper trading rest api, crypto sandbox api, backtest bot live" />
+<meta name="description" content="Test your crypto trading bot for FREE with a paper-trading REST API on real live prices: open and close leveraged positions, partial closes, SL/TP and liquidation simulation. No deposit, no KYC, no risk — just an API key." />
+<meta name="keywords" content="crypto paper trading api, test trading bot free, crypto bot testing, trading bot simulator, futures simulator api, paper trading rest api, crypto sandbox api, forward test trading bot, demo trading api" />
 <link rel="canonical" href="https://marginpad.io/trading-api/" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/trading-api/" />
@@ -18,45 +18,104 @@
 <meta property="og:description" content="Point your bot at our free paper-trading API: real live prices, leverage, SL/TP, partial closes and liquidation simulation. No deposit, no risk." />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Free Crypto Paper Trading API — Test Your Trading Bot" />
+<meta name="twitter:description" content="A free paper-trading REST API with real live prices. Leverage, SL/TP, partial closes, liquidation simulation. No deposit." />
 <link rel="icon" href="/favicon.ico" />
+<link rel="manifest" href="/site.webmanifest" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="/assets/fonts.css">
-<link rel="stylesheet" href="/assets/lab.css">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebAPI","name":"MarginPad Paper Trading API","description":"Free REST API for testing crypto trading bots against real live prices with simulated leveraged positions.","documentation":"https://marginpad.io/trading-api/","provider":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"MarginPad","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Trading Tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":3,"name":"Paper Trading API","item":"https://marginpad.io/trading-api/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"HowTo","name":"How to test a crypto trading bot for free","description":"Forward-test any crypto trading bot against real live prices with a free paper-trading REST API — no deposit, no risk.","totalTime":"PT5M","step":[
+ {"@type":"HowToStep","position":1,"name":"Get a free API key","text":"Sign in on marginpad.io/trading-api with just an email (no password, no KYC) and generate your API key."},
+ {"@type":"HowToStep","position":2,"name":"Feed your strategy live data","text":"Pull live prices from GET /api/bot/v1/price and OHLC candles from GET /api/bot/v1/klines — both work without a key."},
+ {"@type":"HowToStep","position":3,"name":"Let the bot open simulated positions","text":"POST /api/bot/v1/open places a leveraged paper position at the real live price, with optional stop-loss and take-profit that execute automatically."},
+ {"@type":"HowToStep","position":4,"name":"Track performance and iterate","text":"GET /api/bot/v1/positions returns live unrealized P&L and GET /api/bot/v1/account returns win rate and realized P&L — measure, fix, repeat until the strategy is proven."}
+]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
  {"@type":"Question","name":"Is the trading bot API really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is a paper-trading simulator — positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing your bot immediately. 120 requests per minute per key."}},
- {"@type":"Question","name":"How realistic is the simulation?","acceptedAnswer":{"@type":"Answer","text":"Orders fill at the real live price, positions use isolated margin with leverage up to 1000x, losses are capped at your margin, and positions are liquidated when the live price crosses the liquidation level. Partial closes are supported."}},
+ {"@type":"Question","name":"How realistic is the simulation?","acceptedAnswer":{"@type":"Answer","text":"Orders fill at the real live price, positions use isolated margin with leverage up to 1000x, losses are capped at your margin, and positions are liquidated when the live price crosses the liquidation level. Stop-loss and take-profit execute automatically. Partial closes are supported."}},
  {"@type":"Question","name":"Which coins can my bot trade?","acceptedAnswer":{"@type":"Answer","text":"Any USDT pair with a live price on major exchanges — BTC, ETH, SOL and hundreds of altcoins. Check any symbol with GET /api/bot/v1/price?symbol=SOL."}},
- {"@type":"Question","name":"Do I need an exchange account or deposit?","acceptedAnswer":{"@type":"Answer","text":"No. There is no deposit, no wallet and no KYC. You only sign in with an email to get an API key so your positions persist across sessions."}}
+ {"@type":"Question","name":"Do I need an exchange account or deposit?","acceptedAnswer":{"@type":"Answer","text":"No. There is no deposit, no wallet and no KYC. You only sign in with an email to get an API key so your positions persist across sessions."}},
+ {"@type":"Question","name":"Which programming languages can I use?","acceptedAnswer":{"@type":"Answer","text":"Any language that can make an HTTPS request — Python, JavaScript/Node.js, Go, Rust, PHP, or plain curl. It is a standard REST API with JSON responses and a single X-API-Key header."}},
+ {"@type":"Question","name":"What is the difference between backtesting and paper trading a bot?","acceptedAnswer":{"@type":"Answer","text":"Backtesting replays historical candles, which is fast but can hide bugs and overfitting. Paper trading (forward testing) runs your bot against real live prices in real time — it catches logic errors, bad position sizing and over-leverage before real money is at stake. Do both: backtest first, then forward-test here."}},
+ {"@type":"Question","name":"What are the limits?","acceptedAnswer":{"@type":"Answer","text":"120 requests per minute per key, 50 open positions, $1 to $100,000 margin per trade, and leverage from 1x to 1000x. If you need more for a serious project, contact us through the site."}},
+ {"@type":"Question","name":"Can I see my bot's trades on the website?","acceptedAnswer":{"@type":"Answer","text":"Positions opened via the API live on your MarginPad account server-side, so they persist across sessions. Trading Journal and profile analytics for API positions are on the roadmap."}}
 ]}</script>
 <style>
-.api-hero{padding:34px 0 8px}
-.api-hero .free{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#c2f64a;border:1px solid rgba(194,246,74,.4);border-radius:99px;padding:6px 13px;margin-bottom:14px}
-.api-key-box{background:linear-gradient(180deg,#11151b,#0c0f13);border:1px solid rgba(194,246,74,.35);border-radius:16px;padding:20px;margin:20px 0}
-.api-key-box h3{margin:0 0 8px;font-size:17px}
-.api-key-box p{color:#9aa3ad;font-size:13.5px;line-height:1.6;margin:0 0 14px}
-.akb-btn{display:inline-block;background:#c2f64a;color:#0a0b0d;border:none;border-radius:11px;font-weight:800;font-size:14px;padding:13px 22px;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif}
-.akb-key{display:none;margin-top:14px;background:#0a0c0f;border:1px solid #2f3742;border-radius:10px;padding:12px 14px;font-family:'Space Mono',monospace;font-size:13px;color:#c2f64a;word-break:break-all}
-.akb-key.on{display:block}
-.akb-msg{font-size:12.5px;color:#ffb347;margin-top:10px}
-.ep{background:#0d1015;border:1px solid #1c2230;border-radius:14px;padding:16px 18px;margin:0 0 12px}
-.ep .m{display:inline-block;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;border-radius:6px;padding:3px 8px;margin-right:9px;vertical-align:1px}
-.ep .m.get{background:rgba(63,216,230,.15);color:#3fd8e6}.ep .m.post{background:rgba(46,189,133,.15);color:#2ebd85}
-.ep code.u{font-family:'Space Mono',monospace;font-size:13.5px;color:#e9e7df}
-.ep p{color:#9aa3ad;font-size:13px;line-height:1.6;margin:9px 0 0}
-pre{background:#0a0c0f;border:1px solid #1c2230;border-radius:12px;padding:15px 16px;overflow-x:auto;font-family:'Space Mono',monospace;font-size:12px;line-height:1.6;color:#cdd3da}
-pre b{color:#c2f64a;font-weight:400}
-h2{font-size:20px;margin:34px 0 12px}
-.limits{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}
-.limits span{font-family:'Space Mono',monospace;font-size:11px;color:#9aa3ad;border:1px solid #232932;border-radius:99px;padding:6px 12px}
-.faq{border-top:1px solid #1c2230;padding:15px 0}
-.faq b{display:block;font-size:15px;margin-bottom:6px}
-.faq p{color:#9aa3ad;font-size:13.5px;line-height:1.65;margin:0}
+  :root{--bg:#0a0b0d;--panel:#111419;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;}
+  *{box-sizing:border-box;}
+  html{touch-action:manipulation;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  a{color:var(--lime);text-decoration:none;}
+  .wrap{max-width:760px;margin:0 auto;padding:16px 16px calc(40px + env(safe-area-inset-bottom));}
+  header{display:flex;align-items:center;justify-content:space-between;padding:4px 0 16px;}
+  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);letter-spacing:-.02em;}
+  .brand b{color:var(--lime);}
+  .hnav{display:flex;align-items:center;gap:14px;}
+  .hnav a{color:var(--dim);font-size:14px;font-weight:600;}.hnav a:hover{color:var(--ink);}
+  .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+  h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:29px;margin:8px 0 10px;letter-spacing:-.02em;line-height:1.15;}
+  h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;margin:36px 0 12px;letter-spacing:-.01em;}
+  .lead{color:var(--dim);font-size:15px;line-height:1.65;margin:0;}
+  .api-hero{padding:14px 0 4px;}
+  .api-hero .free{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--lime);border:1px solid rgba(194,246,74,.4);border-radius:99px;padding:6px 13px;margin-bottom:12px;}
+  .limits{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 0;}
+  .limits span{font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:99px;padding:6px 12px;}
+  .api-key-box{background:linear-gradient(180deg,#11151b,#0c0f13);border:1px solid rgba(194,246,74,.35);border-radius:16px;padding:20px;margin:22px 0;}
+  .api-key-box h3{margin:0 0 8px;font-size:17px;font-family:'Bricolage Grotesque',sans-serif;}
+  .api-key-box p{color:var(--dim);font-size:13.5px;line-height:1.6;margin:0 0 14px;}
+  .akb-btn{display:inline-block;background:var(--lime);color:#0a0b0d;border:none;border-radius:11px;font-weight:800;font-size:14px;padding:13px 22px;cursor:pointer;font-family:'Bricolage Grotesque',sans-serif;}
+  .akb-key{display:none;margin-top:14px;background:#0a0c0f;border:1px solid var(--line2);border-radius:10px;padding:12px 14px;font-family:'Space Mono',monospace;font-size:13px;color:var(--lime);word-break:break-all;}
+  .akb-key.on{display:block;}
+  .akb-msg{font-size:12.5px;color:#ffb347;margin-top:10px;}
+  .ep{background:#0d1015;border:1px solid #1c2230;border-radius:14px;padding:16px 18px;margin:0 0 12px;}
+  .ep .m{display:inline-block;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;border-radius:6px;padding:3px 8px;margin-right:9px;vertical-align:1px;}
+  .ep .m.get{background:rgba(63,216,230,.15);color:#3fd8e6;}.ep .m.post{background:rgba(46,189,133,.15);color:#2ebd85;}
+  .ep code.u{font-family:'Space Mono',monospace;font-size:13px;color:var(--ink);word-break:break-all;}
+  .ep p{color:var(--dim);font-size:13px;line-height:1.6;margin:9px 0 0;}
+  .ep p code{font-family:'Space Mono',monospace;font-size:11.5px;word-break:break-all;overflow-wrap:anywhere;}
+  pre{background:#0a0c0f;border:1px solid #1c2230;border-radius:12px;padding:15px 16px;overflow-x:auto;font-family:'Space Mono',monospace;font-size:12px;line-height:1.6;color:#cdd3da;-webkit-overflow-scrolling:touch;}
+  pre b{color:var(--lime);font-weight:400;}
+  .why{color:var(--dim);font-size:14.5px;line-height:1.7;}
+  .why p{margin:0 0 12px;}
+  .why b{color:var(--ink);}
+  .vswrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:14px 0;}
+  table.vs{border-collapse:collapse;width:100%;min-width:520px;font-size:13px;}
+  table.vs th,table.vs td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;}
+  table.vs th{background:#0d1015;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);font-weight:700;}
+  table.vs td{color:var(--dim);line-height:1.5;}
+  table.vs td:first-child{color:var(--ink);font-weight:600;white-space:nowrap;}
+  table.vs .y{color:#2ebd85;}table.vs .n{color:#ff6258;}table.vs .hl{color:var(--lime);}
+  .faq{border-top:1px solid #1c2230;padding:15px 0;}
+  .faq b{display:block;font-size:15px;margin-bottom:6px;}
+  .faq p{color:var(--dim);font-size:13.5px;line-height:1.65;margin:0;}
+  .note{color:var(--dim);font-size:13px;}
+  code.k{font-family:'Space Mono',monospace;font-size:12px;background:#0a0c0f;border:1px solid var(--line);border-radius:6px;padding:2px 6px;}
+  footer{margin-top:34px;text-align:center;color:var(--faint);font-size:12.5px;border-top:1px solid var(--line);padding-top:18px;}
+  footer a{color:var(--dim);}
+  .smobnav{display:none;}
+  @media(max-width:720px){
+    h1{font-size:25px;}
+    .smobnav{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 9px);z-index:80;display:flex;justify-content:space-around;align-items:center;padding:9px 6px;border-radius:20px;background:rgba(9,13,10,.6);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(194,246,74,.22);box-shadow:0 10px 34px -12px rgba(0,0,0,.75),0 0 20px -8px rgba(194,246,74,.3);}
+    .smobnav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(255,255,255,.58);text-decoration:none;font-size:9.5px;font-weight:600;}
+    .smobnav a.on{color:#c2f64a;}
+    .smobnav a:active{transform:scale(.9);}
+    .smobnav svg{width:21px;height:21px;}
+    body{padding-bottom:calc(72px + env(safe-area-inset-bottom));}
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-<header><a class="brand" href="/">MARGIN<b>PAD</b></a><nav class="nav"><a href="/paper-trade">Paper Trade</a><a href="/screener">Screener</a><a href="/tools/">Tools</a><a href="/where-to-start/">Learn</a></nav></header>
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <div class="hnav">
+      <a href="/coins/">Markets</a>
+      <a href="/tools/">Tools</a>
+      <button class="hauth" type="button" data-auth-open data-auth-status>Sign in</button>
+    </div>
+  </header>
 
 <div class="api-hero">
   <span class="free">● 100% free · no deposit · real live prices</span>
@@ -75,13 +134,13 @@ h2{font-size:20px;margin:34px 0 12px}
 
 <h2>2 · Endpoints</h2>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/price?symbol=BTC</code><p>Live price for any USDT pair. <b>No key needed</b> — try it right now in your browser.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/klines?symbol=BTC&amp;interval=60</code><p>OHLC candles for your strategy (intervals: 1, 5, 15, 30, 60, 240, 1440 minutes). <b>No key needed.</b></p></div>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code><p>Open a simulated position at the live price. Body: <code>{"symbol":"BTC","side":"long","margin_usd":100,"leverage":20,"sl":58000,"tp":66000}</code> (sl/tp optional). Returns the position incl. its <code>liq_price</code>.</p></div>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/close</code><p>Close a position at the live price. Body: <code>{"id":"bp...","pct":50}</code> — <code>pct</code> is optional (default 100); partial closes split the position exactly like on the site.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/positions</code><p>All your positions with live <code>mark_price</code> and <code>unrealized_pnl_usd</code>; crossed liquidations are settled automatically.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/klines?symbol=BTC&amp;interval=60</code><p>OHLC candles for your strategy (intervals: 1, 5, 15, 30, 60, 240, 1440 minutes). <b>No key needed.</b></p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/account</code><p>Account summary: open positions, margin in use, live unrealized P&amp;L, realized P&amp;L, wins/losses and win rate.</p></div>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/close_all</code><p>Panic button — closes every open position at the live price in one call.</p></div>
-<p style="color:#9aa3ad;font-size:13px">Authenticate with the <code style="font-family:'Space Mono',monospace">X-API-Key</code> header on every call except <code style="font-family:'Space Mono',monospace">/price</code>.</p>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/positions</code><p>All your positions with live <code>mark_price</code> and <code>unrealized_pnl_usd</code>; crossed liquidations and SL/TP are settled automatically.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/account</code><p>Account summary: open positions, margin in use, live unrealized P&amp;L, realized P&amp;L, wins/losses and win rate.</p></div>
+<p class="note">Authenticate with the <code class="k">X-API-Key</code> header on every call except <code class="k">/price</code> and <code class="k">/klines</code>.</p>
 
 <h2>3 · Two-minute quickstart</h2>
 <pre><b># price (no key)</b>
@@ -113,17 +172,60 @@ if my_signal(price):  # your strategy here
     }).json()
     print("opened", r["position"]["id"], "liq @", r["position"]["liq_price"])</pre>
 
+<pre><b># node.js bot skeleton</b>
+const API = "https://marginpad.io/api/bot";
+const H = { "X-API-Key": "YOUR_KEY", "content-type": "application/json" };
+
+const { price } = await (await fetch(`${API}/v1/price?symbol=ETH`)).json();
+if (mySignal(price)) {  // your strategy here
+  const r = await (await fetch(`${API}/v1/open`, { method: "POST", headers: H,
+    body: JSON.stringify({ symbol: "ETH", side: "short", margin_usd: 50, leverage: 10 }) })).json();
+  console.log("opened", r.position.id, "liq @", r.position.liq_price);
+}</pre>
+
+<h2>Why test a trading bot on paper first</h2>
+<div class="why">
+  <p>Most crypto trading bots that look profitable in a backtest <b>lose money the first week they go live</b>. Backtests replay clean historical candles — they can't catch a race condition in your order logic, a position-sizing bug that only shows up after a losing streak, or leverage that quietly grows past what your margin survives.</p>
+  <p><b>Forward testing</b> (paper trading) runs the same bot, the same code path, against <b>real live prices in real time</b>. Your bot places actual orders — they're just settled in simulated dollars. If the strategy has a flaw, it shows up here, where a bug costs you nothing, instead of on an exchange where it costs you the account.</p>
+  <p>The usual workflow: <a href="/crypto-backtester/">backtest the idea</a> on historical data to filter out obvious losers, then point the bot at this API for days or weeks of live forward testing, and only fund a real exchange account once the paper results hold up. Track the results in the <a href="/trading-journal/">Trading Journal</a> and compare against your manual trades in <a href="/paper-trade">Paper Trade</a>.</p>
+</div>
+
+<h2>Backtesting vs paper trading vs going live</h2>
+<div class="vswrap"><table class="vs">
+  <tr><th></th><th>Backtesting</th><th class="hl">Paper trading (this API)</th><th>Live trading</th></tr>
+  <tr><td>Prices</td><td>Historical candles</td><td class="hl">Real live prices, real time</td><td>Real live prices</td></tr>
+  <tr><td>Risk</td><td class="y">None</td><td class="y">None — simulated dollars</td><td class="n">Real money at stake</td></tr>
+  <tr><td>Catches logic bugs</td><td class="n">Rarely — replayed data hides them</td><td class="y">Yes — same code path as live</td><td class="n">Yes, but each bug costs money</td></tr>
+  <tr><td>Overfitting check</td><td class="n">No — you tuned on this data</td><td class="y">Yes — unseen future data</td><td class="y">Yes</td></tr>
+  <tr><td>Cost</td><td class="y">Free</td><td class="y hl">Free</td><td class="n">Fees + losses + funding</td></tr>
+  <tr><td>Best for</td><td>Filtering ideas fast</td><td class="hl">Proving the bot before funding it</td><td>A strategy already proven twice</td></tr>
+</table></div>
+<p class="note">Do all three, in that order. The middle step is the one most people skip — and the one that would have saved them.</p>
+
 <h2>How the simulator works</h2>
 <div class="faq"><b>Fills &amp; prices</b><p>Orders fill instantly at the real live price (multi-exchange feed — the same prices as our Paper Trade). No slippage model yet, so treat results as an upper bound.</p></div>
 <div class="faq"><b>Margin, liquidation, SL/TP</b><p>Isolated margin. Losses are capped at your margin. The liquidation price uses a 0.5% maintenance margin rate; when the live price crosses it the position settles at the liq price automatically. <b>Stop-loss and take-profit orders execute automatically too</b> — when the live price crosses your <code>sl</code> or <code>tp</code>, the position settles at that level (status <code>closed_sl</code> / <code>closed_tp</code>).</p></div>
 <div class="faq"><b>Limits</b><p>120 requests/minute per key · 50 open positions · $1–$100,000 margin per trade · leverage 1–1000×. Need more for a serious project? Message us via the site.</p></div>
-<div class="faq"><b>See your bot's trades on the site</b><p>Positions opened via the API live on your account server-side. The <a href="/trading-journal/" style="color:#c2f64a">Trading Journal</a> and account profile analytics for API positions are on the roadmap.</p></div>
+<div class="faq"><b>See your bot's trades on the site</b><p>Positions opened via the API live on your account server-side. The <a href="/trading-journal/">Trading Journal</a> and account profile analytics for API positions are on the roadmap.</p></div>
 
-<p style="margin:26px 0 8px"><a class="akb-btn" href="#akb" style="text-decoration:none">Get your free key ↑</a></p>
+<h2>FAQ</h2>
+<div class="faq"><b>Is the trading bot API really free?</b><p>Yes. It's a paper-trading simulator — positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing immediately.</p></div>
+<div class="faq"><b>Which programming languages can I use?</b><p>Any language that can make an HTTPS request — Python, JavaScript/Node.js, Go, Rust, PHP, or plain curl. Standard REST, JSON responses, one <code class="k">X-API-Key</code> header.</p></div>
+<div class="faq"><b>Backtesting vs paper trading — what's the difference?</b><p>Backtesting replays historical candles (fast, but hides bugs and overfitting). Paper trading runs your bot on live prices in real time and catches what backtests can't. Do both — <a href="/crypto-backtester/">backtest here</a>, then forward-test on this API.</p></div>
+<div class="faq"><b>Which coins can my bot trade?</b><p>Any USDT pair with a live price on major exchanges — BTC, ETH, SOL and hundreds of altcoins. Check a symbol with <code class="k">GET /api/bot/v1/price?symbol=SOL</code>.</p></div>
+<div class="faq"><b>Do I need an exchange account or a deposit?</b><p>No. No deposit, no wallet, no KYC. You only sign in with an email so your API key and positions persist across sessions.</p></div>
+
+<p style="margin:28px 0 8px"><a class="akb-btn" href="#akb" style="text-decoration:none">Get your free key ↑</a></p>
+
+<footer>
+  <a href="/">← MarginPad</a> · <a href="/tools/">Trading Tools</a> · <a href="/crypto-backtester/">Backtester</a> · <a href="/paper-trade">Paper Trade</a> · <a href="/trading-journal/">Journal</a><br>
+  <span style="color:var(--faint)">Simulated trading only. Not financial advice.</span>
+</footer>
 </div>
 
 <script>
 (function(){
+  try{var u='/api/track?t=pageview&p=/trading-api/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon)navigator.sendBeacon(u);}catch(e){}
   var btn=document.getElementById('akbBtn'),out=document.getElementById('akbKey'),msg=document.getElementById('akbMsg');
   function showKey(k){out.textContent=k;out.classList.add('on');btn.textContent='Rotate key (invalidates the old one)';btn.dataset.rot='1';msg.textContent='Keep it secret — anyone with the key can trade on your paper account.';}
   function getKey(rotate){fetch('/api/bot/key',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({rotate:!!rotate}),credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){
@@ -131,11 +233,18 @@ if my_signal(price):  # your strategy here
     if(d&&d.error==='login_required'){if(window.mpAuth&&window.mpAuth.open){msg.textContent='Sign in first — the modal is open.';window.mpAuth.open();}else msg.textContent='Sign in on the homepage first, then come back.';return;}
     msg.textContent='Could not create a key — try again shortly.';}).catch(function(){msg.textContent='Network error — try again.';});}
   btn.addEventListener('click',function(){var rot=btn.dataset.rot==='1';if(rot&&!confirm('Rotate the key? Your bot must switch to the new one.'))return;getKey(rot);});
-  window.addEventListener('mp-auth-change',function(){getKey(false);});
+  window.addEventListener('mp-auth-change',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())getKey(false);});
   fetch('/api/bot/key',{method:'GET',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){if(d&&d.key)showKey(d.key);}).catch(function(){});
 })();
 </script>
 <script defer src="/assets/mp-auth.js"></script>
+<nav class="smobnav" aria-label="Site navigation">
+  <a href="#" data-mpbn="browse" role="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Browse</span></a>
+  <a href="/coins/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg><span>Markets</span></a>
+  <a href="/trading-api/" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>Bot API</span></a>
+  <a href="/tools/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10"/><path d="M18 6h2"/><circle cx="16" cy="6" r="2"/><path d="M4 12h2"/><path d="M10 12h10"/><circle cx="8" cy="12" r="2"/><path d="M4 18h10"/><path d="M18 18h2"/><circle cx="16" cy="18" r="2"/></svg><span>Tools</span></a>
+  <a href="/paper-trade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg><span>Practice</span></a>
+</nav>
 <script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>
