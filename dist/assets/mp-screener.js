@@ -2,7 +2,10 @@
 (function(){
   var listEl=document.getElementById('scrList');if(!listEl)return;
   if(!/^\/screener\/?$/.test(location.pathname))return; // dedicated route only — don't fetch on every homepage load
-  var DATA=[],sortKey='score',sheet=null,curRow=null,LOGOS={},NAMES={};
+  var DATA=[],sortKey='score',filterKey='all',query='',sheet=null,curRow=null,LOGOS={},NAMES={};
+  function wlGet(){try{return JSON.parse(localStorage.getItem('mp_watchlist')||'[]');}catch(e){return [];}}
+  function wlHas(s){var a=wlGet();return a.indexOf(s+'USDT')>=0||a.indexOf(s)>=0;}
+  function wlToggle(s){var a=wlGet(),k=s+'USDT',i=a.indexOf(k);if(i<0&&a.indexOf(s)>=0){k=s;i=a.indexOf(s);}if(i>=0)a.splice(i,1);else a.push(k);try{localStorage.setItem('mp_watchlist',JSON.stringify(a));}catch(e){}}
   function fmtPx(p){p=+p;return '$'+p.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:p>=1?2:6});}
   function fmtBig(n){n=+n;if(n>=1e9)return '$'+(n/1e9).toFixed(2)+'B';if(n>=1e6)return '$'+(n/1e6).toFixed(1)+'M';if(n>=1e3)return '$'+(n/1e3).toFixed(0)+'K';return '$'+(n||0).toFixed(0);}
   function pct(v){return ((+v)>=0?'+':'')+(+v).toFixed(2)+'%';}
@@ -20,6 +23,10 @@
     else h+='<div class="scr-an-note">No high-conviction setup — neutral zone, wait for confirmation.</div>';
     return h+'</div>';}
   function sorted(){var d=DATA.slice();
+    if(query)d=d.filter(function(e){return e.s.indexOf(query)>=0||((NAMES[e.s]||'').toUpperCase().indexOf(query)>=0);});
+    if(filterKey==='long')d=d.filter(function(e){return e.setup&&e.setup.dir==='long';});
+    else if(filterKey==='short')d=d.filter(function(e){return e.setup&&e.setup.dir==='short';});
+    else if(filterKey==='watch')d=d.filter(function(e){return wlHas(e.s);});
     if(sortKey==='score')d.sort(function(a,b){return (b.score==null?-1:b.score)-(a.score==null?-1:a.score)||b.vol-a.vol;});
     else if(sortKey==='vol')d.sort(function(a,b){return b.vol-a.vol;});
     else if(sortKey==='gain')d.sort(function(a,b){return b.chg-a.chg;});
@@ -38,7 +45,18 @@
       +'<span class="mchip"><i>Bearish</i><b class="dn">'+bear+'</b></span>'
       +(topG?'<span class="mchip"><i>Top gainer</i><b class="up">'+topG.s+' '+pct(topG.chg)+'</b></span>':'')
       +'<span class="mchip"><i>Live</i><b>7 exchanges</b></span>';}
-  function render(){var d=sorted();renderTop(d);if(!d.length){listEl.innerHTML='<div class="scr-loading">No data — retry shortly.</div>';return;}
+  function renderPicks(){var el=document.getElementById('scrPicks');if(!el)return;
+    var L=null,S=null,V=null;
+    DATA.forEach(function(e){
+      if(e.setup&&e.setup.dir==='long'&&(L==null||(e.score||0)>(L.score||0)))L=e;
+      if(e.setup&&e.setup.dir==='short'&&(S==null||(e.score||100)<(S.score||100)))S=e;
+      var vv=(e.atrPct!=null)?+e.atrPct:((e.hi-e.lo)/(e.lo||1)*100);e._vv=vv;if(V==null||vv>V._vv)V=e;
+    });
+    function pk(tag,cls,e,stat){return e?'<button type="button" class="scr-pick '+cls+'" data-pick="'+e.s+'"><i>'+tag+'</i><b>'+icHtml(e.s)+e.s+'</b><span>'+stat+'</span></button>':'';}
+    el.innerHTML=(L||S||V)?(pk('Best long setup','pk-l',L,L?('score '+L.score+(L.setup.lev?' · '+L.setup.lev+'×':'')):'')
+      +pk('Best short setup','pk-s',S,S?('score '+S.score+(S.setup.lev?' · '+S.setup.lev+'×':'')):'')
+      +pk('Most volatile','pk-v',V,V?((V._vv).toFixed(1)+'% range · 4h'):'')):'';}
+  function render(){var d=sorted();renderTop(d);renderPicks();if(!d.length){listEl.innerHTML='<div class="scr-loading">'+((query||filterKey!=='all')?'No pairs match — clear the search/filter.':'No data — retry shortly.')+'</div>';return;}
     listEl.innerHTML=d.map(function(e){var p=live(e.s,e.p),chgCls=e.chg>=0?'up':'dn',cls=(e.score==null?'na':scoreCls(e.score));
       var tr=e.trend==='up'?'<span class="scr-tag t-up">↗ up</span>':e.trend==='down'?'<span class="scr-tag t-dn">↘ down</span>':'<span class="scr-tag">→ side</span>';
       var lev=(e.setup&&e.setup.lev)?'<span class="scr-tag t-lev">'+e.setup.lev+'×</span>':'';
@@ -50,7 +68,7 @@
       return '<button type="button" class="scr-row" data-sym="'+e.s+'" data-p="'+e.p+'">'
         +'<span class="scr-score3 sc-'+cls+'"><b>'+(e.score==null?'—':e.score)+'</b><i>score</i></span>'
         +'<span class="scr-main">'
-        +'<span class="scr-line1">'+icHtml(e.s)+'<span class="scr-sym">'+e.s+'</span><span class="scr-name">'+(NAMES[e.s]||'')+'</span>'
+        +'<span class="scr-line1">'+icHtml(e.s)+'<span class="scr-sym">'+e.s+'</span><span class="scr-star'+(wlHas(e.s)?' on':'')+'" data-star="'+e.s+'" role="button" tabindex="0" aria-label="Watchlist">★</span><span class="scr-name">'+(NAMES[e.s]||'')+'</span>'
         +'<span class="scr-pxw"><b class="scr-px" data-px>'+fmtPx(p)+'</b><span class="scr-chg '+chgCls+'">'+pct(e.chg)+'</span></span></span>'
         +'<span class="scr-line2">'+(e.verdict?'<span class="scr-vd sc-'+cls+'">'+e.verdict+'</span>':'')+tr+lev+boxes+'</span>'
         +'</span></button>';
@@ -65,7 +83,12 @@
         DATA=j.rows;render();
       }else if(!DATA.length){listEl.innerHTML='<div class="scr-loading">Markets unavailable — retry shortly.</div>';}});}
   var fEl=document.getElementById('scrFilters');
-  if(fEl)fEl.addEventListener('click',function(e){var b=e.target.closest('[data-sort]');if(!b)return;sortKey=b.getAttribute('data-sort');this.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});render();});
+  if(fEl)fEl.addEventListener('click',function(e){
+    var f=e.target.closest('[data-filter]');
+    if(f){var k=f.getAttribute('data-filter');filterKey=(filterKey===k)?'all':k;this.querySelectorAll('[data-filter]').forEach(function(x){x.classList.toggle('on',x===f&&filterKey!=='all');});render();return;}
+    var b=e.target.closest('[data-sort]');if(!b)return;sortKey=b.getAttribute('data-sort');this.querySelectorAll('[data-sort]').forEach(function(x){x.classList.toggle('on',x===b);});render();});
+  var sIn=document.getElementById('scrSearch');
+  if(sIn)sIn.addEventListener('input',function(){query=(sIn.value||'').trim().toUpperCase();render();});
   function buildSheet(){sheet=document.createElement('div');sheet.className='scr-sheet';
     sheet.innerHTML='<div class="scr-sheet-bd"></div><div class="scr-sheet-card"><button type="button" class="scr-sheet-x" aria-label="Close">✕</button><div class="scr-sheet-h"><b id="scrSheetSym">—</b><span id="scrSheetPx"></span></div><div id="scrAn"></div><div id="scrLive"></div><div id="scrActs" style="margin:12px 0"></div>'
       +'<div class="scr-exch" id="scrExch"></div></div>';
@@ -98,7 +121,11 @@
     // copy-trade to Paper Trade is turned off — the Paper Trade action is a disabled "Soon" item for now
     sheet.classList.add('on');}
   function closeSheet(){if(sheet){sheet.classList.remove('on');curRow=null;}}
-  listEl.addEventListener('click',function(ev){var b=ev.target.closest('.scr-row');if(!b)return;var sym=b.getAttribute('data-sym'),e=null;for(var i=0;i<DATA.length;i++){if(DATA[i].s===sym){e=DATA[i];break;}}if(e)openSheet(e);});
+  listEl.addEventListener('click',function(ev){
+    var st=ev.target.closest&&ev.target.closest('[data-star]');
+    if(st){ev.stopPropagation();wlToggle(st.getAttribute('data-star'));st.classList.toggle('on');if(filterKey==='watch')render();return;}
+    var b=ev.target.closest('.scr-row');if(!b)return;var sym=b.getAttribute('data-sym'),e=null;for(var i=0;i<DATA.length;i++){if(DATA[i].s===sym){e=DATA[i];break;}}if(e)openSheet(e);});
+  document.addEventListener('click',function(ev){var pk=ev.target.closest&&ev.target.closest('[data-pick]');if(!pk)return;var sym=pk.getAttribute('data-pick');for(var i=0;i<DATA.length;i++){if(DATA[i].s===sym){openSheet(DATA[i]);break;}}});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet();});
   document.addEventListener('mp:price',updLive);
   load();loadLogos();setInterval(load,30000);setInterval(updLive,2000);

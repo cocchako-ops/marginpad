@@ -382,6 +382,11 @@
     .rk-stat .v{font-size:23px;letter-spacing:-1px;text-align:left;font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1}
     .rk-stat .ls{display:none}
   }
+
+.rk-q{flex:1 1 110px;min-width:96px;background:#0c0f13;border:1px solid #2c3540;border-radius:10px;padding:9px 12px;color:#e9e7df;font:inherit;font-size:13px;outline:none}
+.rk-q:focus{border-color:#3fd8e6}
+.rk-pause{flex:0 0 auto;background:#0c0f13;border:1px solid #2c3540;border-radius:10px;padding:9px 13px;color:#9aa3ad;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+.rk-pause.on{border-color:#ffb347;color:#ffb347;background:rgba(255,179,71,.08)}
 </style>
 </head>
 <body>
@@ -416,6 +421,8 @@
     <div class="rk-filters" id="rkFilters">
       <div class="rk-fg" role="group" aria-label="Side"><button data-f="all" class="on">All</button><button data-f="long">Longs</button><button data-f="short">Shorts</button></div>
       <div class="rk-fg" role="group" aria-label="Minimum size"><button data-m="0" class="on">≥ $1K</button><button data-m="25000">≥ $25K</button><button data-m="100000">≥ $100K</button></div>
+      <input id="rkQ" class="rk-q" type="search" placeholder="Coin… (BTC)" autocomplete="off" spellcheck="false" aria-label="Filter by coin">
+      <button id="rkPause" class="rk-pause" type="button" aria-pressed="false">⏸ Pause</button>
     </div>
 
     <div class="rk-off" id="rkOffline" hidden>⚠ Connection lost — reconnecting to the live feed…</div>
@@ -493,7 +500,7 @@
 <script>/* sticky-header backdrop fades in once scrolled (same as homepage) */(function(){var on=false;function u(){var s=(window.scrollY||window.pageYOffset||0)>16;if(s!==on){on=s;document.body.classList.toggle('scrolled',s);}}window.addEventListener('scroll',u,{passive:true});u();})();</script>
 <script>
 (function(){
-  var feed=document.getElementById('rkFeed'), seen={}, all=[], fSide='all', fMin=0, animated={}, firstRender=true;
+  var feed=document.getElementById('rkFeed'), seen={}, all=[], fSide='all', fMin=0, fSym='', paused=false, animated={}, firstRender=true;
   var offFails=0;
   /* clean, narrow format; the stat value is left-anchored + tabular below, so width changes never move the number */
   function money(n){n=+n;if(n>=1e9)return (n/1e9).toFixed(1)+'B';if(n>=1e6)return (n/1e6).toFixed(1)+'M';if(n>=1e3)return (n/1e3).toFixed(0)+'K';return n.toFixed(0);}
@@ -533,18 +540,19 @@
     +'</div></div>';
   }
   function render(){
+    if(paused)return; // feed frozen for inspection — data keeps collecting, display doesn't move
     // mark freshness once across everything we might show (any view) so each new liquidation animates exactly once,
     // regardless of which feed (single, shorts column, longs column) renders it.
     all.forEach(function(e){if(e.notional<1000)return;var k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;e._fresh=(!firstRender&&!animated[k]);animated[k]=1;});
     if(all.length)firstRender=false; // nothing animates on initial load; afterwards each new liquidation slams once
-    var list=all.filter(function(e){if(fSide==='long'&&e.side!=='long_liquidated')return false;if(fSide==='short'&&e.side!=='short_liquidated')return false;if(e.notional<Math.max(fMin,1000))return false;return true;}).slice(0,60);
+    var list=all.filter(function(e){if(fSide==='long'&&e.side!=='long_liquidated')return false;if(fSide==='short'&&e.side!=='short_liquidated')return false;if(e.notional<Math.max(fMin,1000))return false;if(fSym&&String(e.symbol).toUpperCase().indexOf(fSym)<0)return false;return true;}).slice(0,60);
     feed.innerHTML=list.length?list.map(row).join(''):'<div class="rk-empty">No liquidations match this filter yet…</div>';
     // desktop split board: Rekt Shorts | Rekt Longs (ignores the side filter; keeps the min-size filter)
     var fs=document.getElementById('rkFeedShort'),fl=document.getElementById('rkFeedLong');
     if(fs&&fl){
       var mn=Math.max(fMin,1000);
-      var shorts=all.filter(function(e){return e.side==='short_liquidated'&&e.notional>=mn;}).slice(0,40);
-      var longs=all.filter(function(e){return e.side==='long_liquidated'&&e.notional>=mn;}).slice(0,40);
+      var shorts=all.filter(function(e){return e.side==='short_liquidated'&&e.notional>=mn&&(!fSym||String(e.symbol).toUpperCase().indexOf(fSym)>=0);}).slice(0,40);
+      var longs=all.filter(function(e){return e.side==='long_liquidated'&&e.notional>=mn&&(!fSym||String(e.symbol).toUpperCase().indexOf(fSym)>=0);}).slice(0,40);
       fs.innerHTML=shorts.length?shorts.map(row).join(''):'<div class="rk-empty">No short liquidations yet…</div>';
       fl.innerHTML=longs.length?longs.map(row).join(''):'<div class="rk-empty">No long liquidations yet…</div>';
     }
@@ -569,6 +577,10 @@
     if(b.hasAttribute('data-m')){fMin=+b.getAttribute('data-m');this.querySelectorAll('[data-m]').forEach(function(x){x.classList.remove('on');});b.classList.add('on');}
     render();
   });
+  var rkQ=document.getElementById('rkQ');
+  if(rkQ)rkQ.addEventListener('input',function(){fSym=(rkQ.value||'').trim().toUpperCase();render();});
+  var rkP=document.getElementById('rkPause');
+  if(rkP)rkP.addEventListener('click',function(){paused=!paused;rkP.classList.toggle('on',paused);rkP.setAttribute('aria-pressed',paused?'true':'false');rkP.textContent=paused?'▶ Live':'⏸ Pause';if(!paused)render();});
   poll();setInterval(poll,4000);
   setInterval(function(){if(document.hidden)return;document.querySelectorAll('.tk-ago[data-ts]').forEach(function(el){var t=+el.getAttribute('data-ts');if(t)el.textContent=ago(t)+' ago';});},1000);
   // ---- share ----

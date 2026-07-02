@@ -187,7 +187,6 @@
         const d=map[p.s]; if(!d) return '';
         const chg=parseFloat(d.changePct), up=chg>=0, hot=p.s===hottest, star=wlHas(p.s);
         return '<div class="hp-card'+(hot?' hot':'')+(star?' starred':'')+'" data-s="'+p.s+'">'
-          + (hot?'<span class="hp-fire liveflame"></span>':'')
           + '<div class="hp-top"><span class="hp-sym"><button class="hp-star'+(star?' on':'')+'" data-star="'+p.s+'" type="button" aria-label="Watchlist">'+STAR+'</button>'+(LOGOS[p.n]?'<img class="hp-logo" src="'+LOGOS[p.n]+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<span class="hp-coin" style="background:'+(CC[p.n]||'#8a93a0')+';color:'+(CC[p.n]||'#8a93a0')+'"></span>')+p.n+'<small>/USDT</small></span>'
           + '<span class="hp-chg '+(up?'up':'down')+'">'+(up?'▲ +':'▼ ')+chg.toFixed(2)+'%</span></div>'
           + '<div class="hp-price '+(up?'up':'down')+'">$'+fmtP(d.price)+'</div>'

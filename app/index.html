@@ -94,7 +94,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=72b0e751">
+<link rel="stylesheet" href="/assets/home.css?v=92efd053">
 
 </head>
 <body>
@@ -277,6 +277,8 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
     </a>
     <div class="scr-stats" id="scrStats"></div>
     <div class="scr-meta" id="scrMeta"></div>
+    <div class="scr-picks" id="scrPicks"></div>
+    <input class="scr-search" id="scrSearch" type="search" placeholder="Search any coin… (e.g. SOL)" autocomplete="off" spellcheck="false" aria-label="Search pairs">
     <div class="scr-filters" id="scrFilters">
       <button type="button" data-sort="score" class="on">🔥 Top Score</button>
       <button type="button" data-sort="gain">Gainers</button>
@@ -285,6 +287,10 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
       <button type="button" data-sort="fund">Funding</button>
       <button type="button" data-sort="oi">Open Int.</button>
       <button type="button" data-sort="vol24">Volatile</button>
+      <span class="scr-fdiv" aria-hidden="true"></span>
+      <button type="button" data-filter="long">▲ Long setups</button>
+      <button type="button" data-filter="short">▼ Short setups</button>
+      <button type="button" data-filter="watch">★ Watchlist</button>
     </div>
     <div class="scr-list" id="scrList"><div class="scr-loading">Loading live markets…</div></div>
     <p class="scr-foot">Live multi-exchange data (Bybit · OKX · Gate · MEXC · BingX · Binance · Bitget) + Coinglass derivatives · paper trading only, not financial advice.</p>
@@ -761,6 +767,6 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=72b0e751"></script>
+<script src="/assets/home.js?v=92efd053"></script>
 </body>
 </html>
