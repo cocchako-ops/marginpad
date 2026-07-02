@@ -10,9 +10,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="/assets/fonts.css">
 <style>
-  :root{--bg:#08090b;--panel:#0e1116;--panel2:#11151b;--line:#1c2230;--line2:#2a3140;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--cyan:#3fd8e6;}
+  :root{--bg:#08090b;--panel:#0e1116;--panel2:#11151b;--line:#1c2230;--line2:#2a3140;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--cyan:#3fd8e6;--blue:#6aa3ff;--amber:#ffd75a;--purp:#9d7bff;--orng:#ff8c5a;}
   *{box-sizing:border-box;margin:0;padding:0;}
-  html{touch-action:manipulation;}
+  html{touch-action:manipulation;overflow-x:hidden;}
   body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
   a{color:inherit;text-decoration:none;}
   .mono{font-family:'Space Mono',monospace;}
@@ -35,7 +35,8 @@
   @keyframes tape{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
   /* ---------- hero ---------- */
-  .hero{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding:clamp(30px,4.5vw,64px) clamp(16px,2.6vw,52px) clamp(18px,2.4vw,34px);}
+  .hero{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding:clamp(30px,4.5vw,64px) clamp(16px,2.6vw,52px) clamp(18px,2.4vw,34px);position:relative;}
+  .hero::before{content:'';position:absolute;top:-120px;left:-160px;width:560px;height:560px;background:radial-gradient(circle,rgba(194,246,74,.07),transparent 65%);pointer-events:none;}
   .hero h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,4.4vw,62px);line-height:1.04;letter-spacing:-.03em;max-width:820px;}
   .hero h1 b{color:var(--lime);}
   .hero p{color:var(--dim);font-size:clamp(14px,1.2vw,16.5px);margin-top:12px;max-width:560px;line-height:1.55;}
@@ -48,50 +49,157 @@
 
   /* ---------- bento ---------- */
   .bento{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;padding:0 clamp(16px,2.6vw,52px) clamp(30px,3vw,56px);}
-  .tile{position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:20px;min-height:150px;transition:transform .16s,border-color .16s,box-shadow .16s;overflow:hidden;}
-  a.tile:hover{transform:translateY(-3px);border-color:rgba(194,246,74,.5);box-shadow:0 18px 44px -20px rgba(0,0,0,.8),0 0 24px -12px rgba(194,246,74,.35);}
-  .t-kick{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--faint);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
-  .t-kick .dot{width:6px;height:6px;border-radius:50%;background:var(--grn);box-shadow:0 0 8px var(--grn);animation:pulse 1.6s infinite;}
-  .t-kick .dot.red{background:var(--red);box-shadow:0 0 8px var(--red);}
+  .tile{--ac:#9aa3ad;position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:20px;min-height:150px;transition:transform .16s,border-color .16s,box-shadow .16s;overflow:hidden;}
+  .tile::before{content:'';position:absolute;top:0;left:18px;right:18px;height:1px;background:linear-gradient(90deg,transparent,var(--ac),transparent);opacity:.55;}
+  a.tile:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--ac) 55%,transparent);box-shadow:0 18px 44px -20px rgba(0,0,0,.8),0 0 26px -12px var(--ac);}
+  .t-kick{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--faint);margin-bottom:8px;display:flex;align-items:center;gap:7px;position:relative;z-index:2;}
+  .t-kick .dot{width:6px;height:6px;border-radius:50%;background:var(--ac);box-shadow:0 0 8px var(--ac);animation:pulse 1.6s infinite;}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-  .t-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.01em;}
-  .t-sub{color:var(--dim);font-size:13px;line-height:1.5;margin-top:5px;}
-  .t-go{margin-top:auto;padding-top:14px;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;color:var(--lime);}
+  .t-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.01em;position:relative;z-index:2;}
+  .t-sub{color:var(--dim);font-size:13px;line-height:1.5;margin-top:5px;position:relative;z-index:2;}
+  .t-go{margin-top:auto;padding-top:14px;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;color:var(--ac);position:relative;z-index:2;}
+  .t-mark{position:absolute;right:-14px;bottom:-18px;width:120px;height:120px;opacity:.07;pointer-events:none;color:var(--ac);z-index:1;}
+  .t-mark svg{width:100%;height:100%;}
   .s3{grid-column:span 3;}.s4{grid-column:span 4;}.s6{grid-column:span 6;}.s12{grid-column:span 12;}
   @media(max-width:1100px){.s3{grid-column:span 6;}.s4{grid-column:span 6;}.s6{grid-column:span 12;}}
   @media(max-width:640px){.s3,.s4,.s6{grid-column:span 12;}.bento{gap:10px;}}
 
-  .sec-lbl{grid-column:span 12;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--faint);padding:18px 2px 2px;}
+  .sec-lbl{grid-column:span 12;display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--faint);padding:20px 2px 2px;}
+  .sec-lbl i{display:inline-block;width:22px;height:2px;border-radius:2px;background:var(--lime);}
+  .sec-lbl.c2 i{background:var(--cyan);}
+  .sec-lbl.c3 i{background:var(--amber);}
 
-  /* live bits inside tiles */
-  #ptSpark{position:absolute;inset:auto 0 0 0;width:100%;height:78px;opacity:.9;pointer-events:none;}
-  .pt-tile{min-height:240px;}
-  .pt-px{font-family:'Space Mono',monospace;font-weight:700;font-size:15px;color:var(--grn);margin-top:8px;}
-  .mv-row,.mk-row,.lbx-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-top:1px solid rgba(255,255,255,.05);font-size:13px;}
-  .mv-row:first-of-type,.mk-row:first-of-type,.lbx-row:first-of-type{border-top:none;}
+  /* ---------- per-tile mini designs ---------- */
+  /* Paper Trade: sparkline + floating position ticket */
+  #ptSpark{position:absolute;inset:auto 0 0 0;width:100%;height:84px;opacity:.9;pointer-events:none;z-index:1;}
+  .pt-tile{min-height:250px;}
+  @media(min-width:641px){.pt-tile .t-sub{max-width:58%;}}
+  .pt-px{font-family:'Space Mono',monospace;font-weight:700;font-size:15px;color:var(--grn);margin-top:8px;position:relative;z-index:2;}
+  .pt-ticket{position:absolute;right:20px;top:64px;z-index:3;background:rgba(10,13,17,.88);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(46,189,133,.5);border-radius:12px;padding:10px 13px;font-family:'Space Mono',monospace;font-size:11px;box-shadow:0 10px 30px -12px rgba(0,0,0,.8);}
+  .pt-ticket .side{display:inline-block;background:rgba(46,189,133,.18);color:var(--grn);font-weight:700;border-radius:5px;padding:2px 7px;margin-right:6px;}
+  .pt-ticket .pnl{display:block;margin-top:6px;font-size:14px;font-weight:700;color:var(--grn);}
+  .pt-ticket .lq{display:block;margin-top:3px;color:var(--faint);font-size:10px;}
+  @media(max-width:640px){.pt-ticket{top:auto;bottom:64px;right:14px;}}
+
+  /* Screener: score-pill movers */
+  .mv-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-top:1px solid rgba(255,255,255,.05);font-size:13px;position:relative;z-index:2;}
+  .mv-row:first-of-type{border-top:none;}
   .mv-sym{font-family:'Space Mono',monospace;font-weight:700;flex:0 0 58px;}
   .mv-px{color:var(--dim);flex:1;text-align:right;font-family:'Space Mono',monospace;font-size:12px;}
-  .mv-chg{font-family:'Space Mono',monospace;font-weight:700;font-size:12px;flex:0 0 64px;text-align:right;}
+  .mv-pill{font-family:'Space Mono',monospace;font-weight:700;font-size:11px;flex:0 0 68px;text-align:center;border-radius:7px;padding:4px 0;}
+  .mv-pill.up{color:var(--grn);background:rgba(46,189,133,.14);}
+  .mv-pill.dn{color:var(--red);background:rgba(255,90,77,.13);}
   .up{color:var(--grn);}.dn{color:var(--red);}
-  .fng-big{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:52px;line-height:1;margin:6px 0 2px;}
-  .fng-cls{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;}
-  .fng-bar{height:8px;border-radius:99px;margin-top:14px;background:linear-gradient(90deg,#ff5a4d,#ff9f43,#f3d44a,#7fd957,#2ebd85);position:relative;}
-  .fng-bar i{position:absolute;top:-4px;width:4px;height:16px;border-radius:3px;background:#fff;box-shadow:0 0 0 2px #08090b;transform:translateX(-50%);}
-  .calc-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+
+  /* Rekt: liquidation ticket strips */
+  .rk-strip{display:flex;align-items:center;gap:9px;margin-top:8px;padding:8px 11px;border-radius:9px;background:linear-gradient(90deg,rgba(255,90,77,.16),rgba(255,90,77,.03));border:1px solid rgba(255,90,77,.28);font-family:'Space Mono',monospace;font-size:11px;position:relative;z-index:2;overflow:hidden;}
+  .rk-strip::after{content:'';position:absolute;right:8px;top:6px;bottom:6px;width:26px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.35) 0 1px,transparent 1px 3px);opacity:.35;}
+  .rk-strip b{color:#ff8a80;}
+  .rk-strip .amt{margin-left:auto;color:var(--ink);font-weight:700;padding-right:34px;}
+  .rk-strip.s2{opacity:.7;}.rk-strip.s3{opacity:.45;}
+
+  /* Charts: mini floating windows */
+  .cw-mock{position:relative;height:96px;margin-top:12px;z-index:2;}
+  .cw-win{position:absolute;border:1px solid var(--line2);border-radius:9px;background:#0b0e13;overflow:hidden;}
+  .cw-win .bar{height:11px;background:#141922;border-bottom:1px solid var(--line);}
+  .cw-w1{left:0;top:6px;width:62%;height:82px;}
+  .cw-w2{right:0;top:0;width:46%;height:70px;border-color:rgba(63,216,230,.4);box-shadow:0 8px 24px -10px rgba(0,0,0,.7);}
+  .cw-candles{display:flex;align-items:flex-end;gap:3px;padding:7px 9px;height:calc(100% - 11px);}
+  .cw-candles i{flex:1;border-radius:1.5px;background:var(--grn);opacity:.85;}
+  .cw-candles i.d{background:var(--red);}
+
+  /* Markets: coin logos */
+  .mk-row{display:flex;align-items:center;gap:9px;padding:6px 0;border-top:1px solid rgba(255,255,255,.05);font-size:13px;position:relative;z-index:2;}
+  .mk-row:first-of-type{border-top:none;}
+  .mk-row img{width:20px;height:20px;border-radius:50%;flex:0 0 20px;}
+  .mk-sym{font-family:'Space Mono',monospace;font-weight:700;flex:0 0 46px;}
+  .mk-px{color:var(--dim);flex:1;text-align:right;font-family:'Space Mono',monospace;font-size:12px;}
+  .mk-chg{font-family:'Space Mono',monospace;font-weight:700;font-size:12px;flex:0 0 62px;text-align:right;}
+
+  /* Alerts: bell + mock alert pill */
+  .al-pill{display:flex;align-items:center;gap:9px;margin-top:12px;background:#0b0e13;border:1px solid var(--line2);border-radius:11px;padding:10px 12px;font-family:'Space Mono',monospace;font-size:11.5px;position:relative;z-index:2;}
+  .al-pill .bell{width:26px;height:26px;border-radius:8px;background:rgba(255,215,90,.14);display:flex;align-items:center;justify-content:center;flex:0 0 26px;animation:ring 3.2s infinite;}
+  @keyframes ring{0%,86%,100%{transform:rotate(0)}88%{transform:rotate(13deg)}91%{transform:rotate(-11deg)}94%{transform:rotate(7deg)}97%{transform:rotate(-4deg)}}
+  .al-pill b{color:var(--amber);}
+  .al-chan{margin-top:9px;display:flex;gap:7px;position:relative;z-index:2;}
+  .al-chan span{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);border:1px solid var(--line2);border-radius:99px;padding:4px 10px;}
+
+  /* Calculators: chips + formula */
+  .calc-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;position:relative;z-index:2;}
   .calc-chips a{font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;color:var(--dim);border:1px solid var(--line2);border-radius:99px;padding:8px 14px;transition:.13s;}
   .calc-chips a:hover{color:#0a0b0d;background:var(--lime);border-color:var(--lime);}
-  .news-row{display:block;padding:9px 0;border-top:1px solid rgba(255,255,255,.05);font-size:13.5px;line-height:1.45;color:var(--ink);}
+  .calc-formula{margin-top:14px;font-family:'Space Mono',monospace;font-size:11px;color:var(--faint);background:#0b0e13;border:1px dashed var(--line2);border-radius:9px;padding:9px 12px;position:relative;z-index:2;}
+  .calc-formula b{color:var(--lime);font-weight:700;}
+
+  /* F&G: arc gauge */
+  .fng-wrap{display:flex;align-items:center;gap:16px;margin-top:10px;position:relative;z-index:2;}
+  .fng-g{flex:0 0 120px;}
+  .fng-big{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:44px;line-height:1;}
+  .fng-cls{font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-top:4px;}
+  .fng-hist{font-size:11.5px;color:var(--faint);margin-top:7px;font-family:'Space Mono',monospace;}
+
+  /* Tools: icon rows */
+  .tools-list{display:flex;flex-direction:column;margin-top:8px;position:relative;z-index:2;}
+  .tools-list .tr{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid rgba(255,255,255,.05);font-size:13px;color:var(--dim);}
+  .tools-list .tr:first-child{border-top:none;}
+  .tools-list .ti{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex:0 0 24px;background:rgba(70,224,230,.11);}
+  .tools-list .ti svg{width:13px;height:13px;stroke:var(--cyan);}
+
+  /* Bot API: terminal window */
+  .term{margin-top:12px;background:#0a0c0f;border:1px solid var(--line);border-radius:11px;overflow:hidden;position:relative;z-index:2;}
+  .term-bar{display:flex;align-items:center;gap:5px;padding:7px 11px;background:#10141a;border-bottom:1px solid var(--line);}
+  .term-bar i{width:8px;height:8px;border-radius:50%;background:#2a3140;}
+  .term-bar i:nth-child(1){background:#ff5a4d;}.term-bar i:nth-child(2){background:#ffd75a;}.term-bar i:nth-child(3){background:#2ebd85;}
+  .term-body{padding:11px 13px;font-family:'Space Mono',monospace;font-size:10.5px;line-height:1.75;color:#8fd8a8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .term-body .c{color:var(--faint);}
+  .term-body .caret{display:inline-block;width:7px;height:12px;background:#8fd8a8;vertical-align:-2px;animation:blink 1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0}}
+
+  /* DeFi: chain bars */
+  .defi-tvl{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:34px;color:var(--purp);margin-top:6px;letter-spacing:-.02em;position:relative;z-index:2;}
+  .chain-bars{margin-top:10px;position:relative;z-index:2;}
+  .cb{display:flex;align-items:center;gap:8px;margin-top:6px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--dim);}
+  .cb .nm{flex:0 0 72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .cb .bar{flex:1;height:6px;border-radius:99px;background:#171b23;overflow:hidden;}
+  .cb .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#6d4de0,var(--purp));}
+  .cb .v{flex:0 0 46px;text-align:right;}
+
+  /* News: numbered headlines */
+  .news-row{display:flex;gap:11px;padding:9px 0;border-top:1px solid rgba(255,255,255,.05);font-size:13.5px;line-height:1.45;color:var(--ink);position:relative;z-index:2;}
   .news-row:first-of-type{border-top:none;}
-  .news-row:hover{color:var(--lime);}
-  .code{font-family:'Space Mono',monospace;font-size:10.5px;color:#8fd8a8;background:#0a0c0f;border:1px solid var(--line);border-radius:9px;padding:9px 11px;margin-top:10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  .news-row .n{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--orng);flex:0 0 22px;padding-top:1px;}
+  .news-row:hover{color:var(--orng);}
+
+  /* Where to start: mission path */
+  .path{margin-top:12px;position:relative;z-index:2;}
+  .path .st{display:flex;align-items:flex-start;gap:11px;position:relative;padding-bottom:14px;}
+  .path .st:last-child{padding-bottom:0;}
+  .path .st::before{content:'';position:absolute;left:11px;top:24px;bottom:-2px;width:2px;background:#1d2430;}
+  .path .st:last-child::before{display:none;}
+  .path .nd{width:24px;height:24px;border-radius:50%;border:2px solid #2a3140;background:#0b0e13;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--dim);flex:0 0 24px;position:relative;z-index:1;}
+  .path .st.done .nd{border-color:var(--lime);color:#0a0b0d;background:var(--lime);}
+  .path .tx b{display:block;font-size:13px;}
+  .path .tx small{color:var(--faint);font-size:11.5px;}
+
+  /* Blog: quote + tags */
+  .blog-q{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15.5px;line-height:1.4;color:var(--ink);margin-top:10px;position:relative;z-index:2;padding-left:14px;border-left:3px solid var(--line2);}
+  .blog-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;position:relative;z-index:2;}
+  .blog-tags span{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);border:1px solid var(--line);border-radius:99px;padding:4px 9px;}
+
+  /* Rewards: lime + claim chip */
+  .tile.lime{border-color:rgba(194,246,74,.45);background:linear-gradient(180deg,rgba(194,246,74,.10),rgba(194,246,74,.02)),linear-gradient(180deg,var(--panel2),var(--panel));}
+  .rw-chip{display:inline-flex;align-items:center;gap:8px;margin-top:12px;background:rgba(194,246,74,.14);border:1px solid rgba(194,246,74,.4);border-radius:99px;padding:7px 13px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--lime);position:relative;z-index:2;width:fit-content;}
+  .rw-chip .cd{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 9px var(--lime);animation:pulse 1.4s infinite;}
+
+  /* Leaderboard: medals */
+  .lbx-row{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:9px;margin-top:5px;font-size:13px;position:relative;z-index:2;border:1px solid transparent;}
+  .lbx-row.g{background:linear-gradient(90deg,rgba(255,215,90,.12),transparent);border-color:rgba(255,215,90,.3);}
+  .lbx-med{font-family:'Space Mono',monospace;font-weight:700;font-size:11px;flex:0 0 22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .lbx-med.m1{background:rgba(255,215,90,.2);color:var(--amber);}
+  .lbx-med.m2{background:rgba(200,205,215,.14);color:#c8cdd7;}
+  .lbx-med.m3{background:rgba(205,130,74,.16);color:#cd824a;}
   .lbx-who{font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .lbx-roe{font-family:'Space Mono',monospace;font-weight:700;color:var(--grn);font-size:12.5px;}
-  .tile.lime{border-color:rgba(194,246,74,.45);background:linear-gradient(180deg,rgba(194,246,74,.10),rgba(194,246,74,.02)),linear-gradient(180deg,var(--panel2),var(--panel));}
-  .tile.lime .t-go{color:var(--lime);}
-  .tools-list{display:flex;flex-direction:column;margin-top:6px;}
-  .tools-list span{padding:6px 0;border-top:1px solid rgba(255,255,255,.05);font-size:13px;color:var(--dim);}
-  .tools-list span:first-child{border-top:none;}
-  .defi-tvl{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:34px;color:var(--cyan);margin-top:6px;letter-spacing:-.02em;}
 
   footer{border-top:1px solid var(--line);padding:20px clamp(16px,2.6vw,52px);display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;color:var(--faint);font-size:12.5px;}
   footer a{color:var(--dim);margin-right:14px;}
@@ -129,130 +237,165 @@
 
 <div class="bento">
 
-  <div class="sec-lbl">Trade</div>
+  <div class="sec-lbl"><i></i> Trade</div>
 
-  <a class="tile s6 pt-tile" href="/paper-trade">
+  <a class="tile s6 pt-tile" href="/paper-trade" style="--ac:#2ebd85">
     <div class="t-kick"><span class="dot"></span> Live price · zero risk</div>
     <div class="t-title">Paper Trade Terminal</div>
     <div class="t-sub">Open long/short up to 1000× at the real live price — SL/TP, trailing stops, partial closes, full P&amp;L. Practice until it's boring.</div>
     <div class="pt-px" id="ptPx"></div>
+    <div class="pt-ticket"><span class="side">LONG</span>BTC · 20×<span class="pnl" id="ptTickPnl">+$12.40</span><span class="lq">liq $58,463 · −4.8%</span></div>
     <div class="t-go">Open a demo trade →</div>
     <canvas id="ptSpark"></canvas>
   </a>
 
-  <a class="tile s3" href="/screener">
+  <a class="tile s3" href="/screener" style="--ac:#6aa3ff">
     <div class="t-kick"><span class="dot"></span> Top movers · 24h</div>
     <div class="t-title">Screener</div>
     <div id="movers" style="margin-top:8px"><div class="t-sub">loading…</div></div>
     <div class="t-go">Screen 200+ pairs →</div>
+    <div class="t-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg></div>
   </a>
 
-  <a class="tile s3" href="/rekt/">
-    <div class="t-kick"><span class="dot red"></span> Real-time feed</div>
+  <a class="tile s3" href="/rekt/" style="--ac:#ff5a4d">
+    <div class="t-kick"><span class="dot"></span> Real-time feed</div>
     <div class="t-title">Rekt — Liquidations</div>
-    <div class="t-sub">Watch leveraged positions get destroyed live, exchange by exchange. The best free risk lesson on the internet.</div>
+    <div class="rk-strip"><b>BTC LONG</b> 50× <span class="amt">−$234,500</span></div>
+    <div class="rk-strip s2"><b>ETH SHORT</b> 25× <span class="amt">−$88,120</span></div>
+    <div class="rk-strip s3"><b>SOL LONG</b> 100× <span class="amt">−$41,900</span></div>
     <div class="t-go">Watch the carnage →</div>
   </a>
 
-  <a class="tile s3" href="/charts">
+  <a class="tile s3" href="/charts" style="--ac:#3fd8e6">
     <div class="t-kick">Workspace</div>
     <div class="t-title">Multi-chart Workspace</div>
-    <div class="t-sub">Up to 10 floating chart windows, 12 indicators, drawing tools, sticky notes and an AI analyst that reads your chart.</div>
+    <div class="cw-mock">
+      <div class="cw-win cw-w1"><div class="bar"></div><div class="cw-candles"><i style="height:38%"></i><i class="d" style="height:56%"></i><i style="height:44%"></i><i style="height:72%"></i><i class="d" style="height:52%"></i><i style="height:80%"></i><i style="height:64%"></i><i class="d" style="height:40%"></i><i style="height:88%"></i></div></div>
+      <div class="cw-win cw-w2"><div class="bar"></div><div class="cw-candles"><i class="d" style="height:60%"></i><i style="height:42%"></i><i style="height:74%"></i><i class="d" style="height:50%"></i><i style="height:66%"></i><i style="height:84%"></i></div></div>
+    </div>
     <div class="t-go">Build your desk →</div>
   </a>
 
-  <a class="tile s3" href="/coins/">
+  <a class="tile s3" href="/coins/" style="--ac:#16c2d6">
     <div class="t-kick"><span class="dot"></span> Live markets</div>
     <div class="t-title">Markets</div>
     <div id="mkts" style="margin-top:8px"><div class="t-sub">loading…</div></div>
     <div class="t-go">Top 250 coins →</div>
   </a>
 
-  <a class="tile s3" href="/alerts/">
+  <a class="tile s3" href="/alerts/" style="--ac:#ffd75a">
     <div class="t-kick">Email · Telegram</div>
     <div class="t-title">Price Alerts</div>
-    <div class="t-sub">Set a target, walk away. We watch the market and ping you the second it crosses — email or Telegram.</div>
+    <div class="t-sub">Set a target, walk away. We ping you the second it crosses.</div>
+    <div class="al-pill"><span class="bell"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#ffd75a" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><span>BTC above <b id="alTarget">$65,000</b></span></div>
+    <div class="al-chan"><span>Email</span><span>Telegram</span></div>
     <div class="t-go">Set an alert →</div>
   </a>
 
-  <div class="sec-lbl">Analyze</div>
+  <div class="sec-lbl c2"><i></i> Analyze</div>
 
-  <div class="tile s6">
+  <div class="tile s6" style="--ac:#c2f64a">
     <div class="t-kick">Instant math</div>
     <div class="t-title">Futures Calculators</div>
     <div class="t-sub">Know your liquidation price and position size before you enter — not after.</div>
     <div class="calc-chips">
       <a href="/calculators?c=liq">Liquidation</a><a href="/calculators?c=size">Position size</a><a href="/calculators?c=pnl">PnL / ROI</a><a href="/calculators?c=dca">DCA</a><a href="/calculators?c=tp">Take-profit</a><a href="/calculators?c=rr">Risk / reward</a>
     </div>
+    <div class="calc-formula">liq ≈ entry × ( 1 − <b>1/lev</b> + mmr ) &nbsp;·&nbsp; size = risk ÷ <b>stop distance</b></div>
     <a class="t-go" href="/calculators" style="padding-top:16px">All calculators →</a>
+    <div class="t-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="10" y2="12"/><line x1="14" y1="12" x2="16" y2="12"/><line x1="8" y1="17" x2="10" y2="17"/><line x1="14" y1="17" x2="16" y2="17"/></svg></div>
   </div>
 
-  <a class="tile s3" href="/fear-greed/">
+  <a class="tile s3" href="/fear-greed/" style="--ac:#7fd957">
     <div class="t-kick"><span class="dot"></span> Sentiment</div>
     <div class="t-title">Fear &amp; Greed</div>
-    <div class="fng-big" id="fngV">—</div>
-    <div class="fng-cls" id="fngC">loading…</div>
-    <div class="fng-bar"><i id="fngM" style="left:50%"></i></div>
+    <div class="fng-wrap">
+      <svg class="fng-g" viewBox="0 0 120 70">
+        <path d="M10 65 A 50 50 0 0 1 110 65" fill="none" stroke="#1d2430" stroke-width="9" stroke-linecap="round"/>
+        <path id="fngArc" d="M10 65 A 50 50 0 0 1 110 65" fill="none" stroke="#f3d44a" stroke-width="9" stroke-linecap="round" stroke-dasharray="0 999"/>
+      </svg>
+      <div><div class="fng-big" id="fngV">—</div><div class="fng-cls" id="fngC">loading…</div></div>
+    </div>
+    <div class="fng-hist" id="fngHist"></div>
+    <div class="t-go">Full index + history →</div>
   </a>
 
-  <a class="tile s3" href="/tools/">
+  <a class="tile s3" href="/tools/" style="--ac:#46e0e6">
     <div class="t-kick">5 free tools</div>
     <div class="t-title">Trading Tools</div>
-    <div class="tools-list"><span>Strategy Backtester</span><span>Trading Journal &amp; stats</span><span>Risk of Ruin</span><span>Pivot Points</span><span>Correlation Matrix</span></div>
+    <div class="tools-list">
+      <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M9 3h6"/><path d="M10 3v5.4L4.8 17a2 2 0 0 0 1.7 3h11a2 2 0 0 0 1.7-3L14 8.4V3"/></svg></span>Strategy Backtester</div>
+      <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="5" y1="20" x2="5" y2="13"/><line x1="11" y1="20" x2="11" y2="8"/><line x1="17" y1="20" x2="17" y2="4"/></svg></span>Trading Journal &amp; stats</div>
+      <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 3l7 3v5.2c0 4.4-3 7.2-7 8.8-4-1.6-7-4.4-7-8.8V6z"/></svg></span>Risk of Ruin</div>
+      <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span>Pivot Points</div>
+      <div class="tr"><span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Correlation Matrix</div>
+    </div>
     <div class="t-go">Open the toolkit →</div>
   </a>
 
-  <a class="tile s3" href="/trading-api/">
+  <a class="tile s3" href="/trading-api/" style="--ac:#2ebd85">
     <div class="t-kick">For builders</div>
     <div class="t-title">Trading Bot API</div>
-    <div class="t-sub">Test your bot for free against real live prices — REST API with leverage, SL/TP and liquidation simulation.</div>
-    <div class="code">curl marginpad.io/api/bot/v1/price?symbol=BTC</div>
+    <div class="t-sub">Test your bot for free against real live prices.</div>
+    <div class="term">
+      <div class="term-bar"><i></i><i></i><i></i></div>
+      <div class="term-body"><span class="c">$</span> curl api/bot/v1/open -d side=long<br><span class="c">→</span> {"liq_price": 58463.37} <span class="caret"></span></div>
+    </div>
     <div class="t-go">Get a free API key →</div>
   </a>
 
-  <a class="tile s3" href="/defi/">
+  <a class="tile s3" href="/defi/" style="--ac:#9d7bff">
     <div class="t-kick"><span class="dot"></span> DeFi overview</div>
     <div class="t-title">DeFi TVL</div>
     <div class="defi-tvl" id="tvl">—</div>
-    <div class="t-sub">Total value locked · top chains, protocols and stablecoins.</div>
+    <div class="chain-bars" id="chains"></div>
     <div class="t-go">Explore DeFi →</div>
   </a>
 
-  <a class="tile s6" href="/news/">
+  <a class="tile s6" href="/news/" style="--ac:#ff8c5a">
     <div class="t-kick"><span class="dot"></span> Headlines</div>
     <div class="t-title">Crypto News</div>
     <div id="news" style="margin-top:6px"><div class="t-sub">loading…</div></div>
     <div class="t-go">All news →</div>
+    <div class="t-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 5h12v15H6a2 2 0 0 1-2-2z"/><path d="M16 9h3v9a2 2 0 0 1-2 2"/><line x1="7" y1="9" x2="13" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg></div>
   </a>
 
-  <div class="sec-lbl">Learn &amp; Earn</div>
+  <div class="sec-lbl c3"><i></i> Learn &amp; Earn</div>
 
-  <a class="tile s3" href="/where-to-start/">
+  <a class="tile s3" href="/where-to-start/" style="--ac:#c2f64a">
     <div class="t-kick">From zero</div>
     <div class="t-title">Where to Start</div>
-    <div class="t-sub">A free guided path: what leverage really is, how liquidation works, and missions that walk you through every tool.</div>
+    <div class="path">
+      <div class="st done"><span class="nd">✓</span><span class="tx"><b>What is leverage?</b><small>5-min lesson</small></span></div>
+      <div class="st"><span class="nd">02</span><span class="tx"><b>Open your first demo trade</b><small>mission · no risk</small></span></div>
+      <div class="st"><span class="nd">03</span><span class="tx"><b>Survive a liquidation</b><small>mission · learn the hard way, free</small></span></div>
+    </div>
     <div class="t-go">Start learning →</div>
   </a>
 
-  <a class="tile s3" href="/blog/">
+  <a class="tile s3" href="/blog/" style="--ac:#9aa3ad">
     <div class="t-kick">65+ guides</div>
     <div class="t-title">Blog &amp; Guides</div>
-    <div class="t-sub">Leverage, stop-losses, funding, taxes by country, exchange comparisons — written for humans.</div>
+    <div class="blog-q">"Why 90% of crypto futures traders lose money — and how to be the 10%."</div>
+    <div class="blog-tags"><span>Leverage</span><span>Stop-loss</span><span>Funding</span><span>Taxes</span><span>Exchanges</span></div>
     <div class="t-go">Read the guides →</div>
   </a>
 
-  <a class="tile s3 lime" href="/rewards/">
-    <div class="t-kick" style="color:#a9d33f"><span class="dot" style="background:var(--lime);box-shadow:0 0 8px var(--lime)"></span> Free USDT</div>
+  <a class="tile s3 lime" href="/rewards/" style="--ac:#c2f64a">
+    <div class="t-kick" style="color:#a9d33f"><span class="dot"></span> Free USDT</div>
     <div class="t-title">Rewards</div>
-    <div class="t-sub">Claim free USDT every 5 minutes, post about us for $1 a post, win the weekly trading league. Withdraw real USDT.</div>
+    <div class="t-sub">Claim free USDT every 5 minutes, earn $1 per post about us, win the weekly league. Withdraw real USDT.</div>
+    <div class="rw-chip"><span class="cd"></span> CLAIM EVERY 5 MIN · $1 PER POST</div>
     <div class="t-go">Start earning →</div>
+    <div class="t-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5c0-1 1-1.8 2.5-1.8s2.5.8 2.5 1.8-1 1.5-2.5 1.8-2.5.8-2.5 1.8 1 1.8 2.5 1.8 2.5-.8 2.5-1.8"/></svg></div>
   </a>
 
-  <a class="tile s3" href="/rewards/#league">
-    <div class="t-kick"><span class="dot"></span> Weekly league</div>
+  <a class="tile s3" href="/rewards/#league" style="--ac:#ffd75a">
+    <div class="t-kick"><span class="dot"></span> Weekly league · $60 prizes</div>
     <div class="t-title">Leaderboard</div>
-    <div id="lbx" style="margin-top:8px"><div class="t-sub">loading…</div></div>
+    <div id="lbx" style="margin-top:6px"><div class="t-sub">loading…</div></div>
     <div class="t-go">Compete for $60 →</div>
+    <div class="t-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 5M17 6h3a3 3 0 0 1-3 5"/></svg></div>
   </a>
 
 </div>
@@ -267,61 +410,76 @@
 <script>
 (function(){
   var fmt=function(n){n=+n;if(!isFinite(n))return '—';return n>=1000?n.toLocaleString('en-US',{maximumFractionDigits:n>=10000?0:1}):n>=1?n.toFixed(2):n.toPrecision(3);};
-  var pc=function(v){v=+v;return '<span class="'+(v>=0?'up':'dn')+'">'+(v>=0?'+':'')+v.toFixed(2)+'%</span>';};
 
-  // ticker tape + hero BTC (poll /api/prices every 15s)
+  // ticker tape + hero BTC + PT ticket (poll /api/prices every 15s)
   function prices(){fetch('/api/prices').then(function(r){return r.json();}).then(function(d){
     var ps=(d&&d.pairs)||[];if(!ps.length)return;
     var html=ps.map(function(p){var s=p.symbol.replace('USDT','');var v=+p.changePct;return '<span><b>'+s+'</b> $'+fmt(p.price)+' <span class="'+(v>=0?'up':'dn')+'">'+(v>=0?'+':'')+v.toFixed(2)+'%</span></span>';}).join('');
-    document.getElementById('tape').innerHTML=html+html; // duplicated for the seamless loop
+    document.getElementById('tape').innerHTML=html+html;
     var btc=ps.filter(function(p){return p.symbol==='BTCUSDT';})[0];
-    if(btc){document.getElementById('hBtc').textContent='$'+fmt(btc.price);
+    if(btc){var px=+btc.price;
+      document.getElementById('hBtc').textContent='$'+fmt(px);
       var c=+btc.changePct;var e=document.getElementById('hBtcChg');e.innerHTML=(c>=0?'▲ +':'▼ ')+c.toFixed(2)+'% today';e.className='hr-chg '+(c>=0?'up':'dn');
-      var pt=document.getElementById('ptPx');if(pt)pt.textContent='BTC $'+fmt(btc.price)+' · live';}
+      var pt=document.getElementById('ptPx');if(pt)pt.textContent='BTC $'+fmt(px)+' · live';
+      var alT=document.getElementById('alTarget');if(alT)alT.textContent='$'+fmt(Math.round(px*1.06/500)*500);
+    }
   }).catch(function(){});}
   prices();setInterval(prices,15000);
 
-  // screener → movers + markets tiles
+  // screener → movers (score pills)
   fetch('/api/screener').then(function(r){return r.json();}).then(function(d){
     var rows=(d&&d.rows)||[];if(!rows.length)return;
     var mv=rows.slice().sort(function(a,b){return Math.abs(+b.chg)-Math.abs(+a.chg);}).slice(0,5);
-    document.getElementById('movers').innerHTML=mv.map(function(r){return '<div class="mv-row"><span class="mv-sym">'+r.s+'</span><span class="mv-px">$'+fmt(r.p)+'</span><span class="mv-chg">'+pc(r.chg)+'</span></div>';}).join('');
-    var mk=rows.slice(0,5);
-    document.getElementById('mkts').innerHTML=mk.map(function(r){return '<div class="mk-row"><span class="mv-sym">'+r.s+'</span><span class="mv-px">$'+fmt(r.p)+'</span><span class="mv-chg">'+pc(r.chg)+'</span></div>';}).join('');
+    document.getElementById('movers').innerHTML=mv.map(function(r){var v=+r.chg;return '<div class="mv-row"><span class="mv-sym">'+r.s+'</span><span class="mv-px">$'+fmt(r.p)+'</span><span class="mv-pill '+(v>=0?'up':'dn')+'">'+(v>=0?'+':'')+v.toFixed(1)+'%</span></div>';}).join('');
   }).catch(function(){});
 
-  // fear & greed
+  // gecko markets → Markets tile with real coin logos
+  fetch('/api/gecko/markets').then(function(r){return r.json();}).then(function(d){
+    if(!Array.isArray(d)||!d.length)return;
+    var mk=d.slice(0,5);
+    document.getElementById('mkts').innerHTML=mk.map(function(c){var v=+c.price_change_percentage_24h;return '<div class="mk-row"><img src="'+String(c.image||'').replace(/"/g,'')+'" alt="" loading="lazy"><span class="mk-sym">'+String(c.symbol||'').toUpperCase()+'</span><span class="mk-px">$'+fmt(c.current_price)+'</span><span class="mk-chg '+(v>=0?'up':'dn')+'">'+(v>=0?'+':'')+v.toFixed(1)+'%</span></div>';}).join('');
+  }).catch(function(){});
+
+  // fear & greed → arc gauge
   fetch('/api/fng').then(function(r){return r.json();}).then(function(d){
-    var now=d&&d.data&&d.data[0];if(!now)return;var v=+now.v;
+    var arr=(d&&d.data)||[];var now=arr[0];if(!now)return;var v=+now.v;
     var col=v<25?'#ff5a4d':v<45?'#ff9f43':v<55?'#f3d44a':v<76?'#7fd957':'#2ebd85';
     var el=document.getElementById('fngV');el.textContent=v;el.style.color=col;
     var c=document.getElementById('fngC');c.textContent=now.c;c.style.color=col;
-    document.getElementById('fngM').style.left=v+'%';
+    var arc=document.getElementById('fngArc');var L=Math.PI*50;
+    arc.setAttribute('stroke',col);arc.setAttribute('stroke-dasharray',(v/100*L).toFixed(1)+' 999');
+    var y=arr[1],w=arr[7];
+    document.getElementById('fngHist').textContent='yesterday '+(y?y.v:'—')+' · last week '+(w?w.v:'—');
     document.getElementById('hFng').innerHTML='Fear &amp; Greed <b style="color:'+col+'">'+v+' · '+now.c+'</b>';
   }).catch(function(){});
 
-  // news
+  // news → numbered headlines
   fetch('/api/news').then(function(r){return r.json();}).then(function(d){
     var it=((d&&d.items)||[]).slice(0,4);if(!it.length)return;
-    document.getElementById('news').innerHTML=it.map(function(n){return '<span class="news-row">'+String(n.title||'').replace(/</g,'&lt;')+'</span>';}).join('');
+    document.getElementById('news').innerHTML=it.map(function(n,i){return '<span class="news-row"><span class="n">0'+(i+1)+'</span><span>'+String(n.title||'').replace(/</g,'&lt;')+'</span></span>';}).join('');
   }).catch(function(){});
 
-  // leaderboard
+  // leaderboard → medals
   fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){
-    var top=((d&&d.top)||[]).slice(0,3);if(!top.length)return;var med=['1.','2.','3.'];
-    document.getElementById('lbx').innerHTML=top.map(function(t,i){return '<div class="lbx-row"><span class="mono" style="color:#5c656f;flex:0 0 20px">'+med[i]+'</span><span class="lbx-who">'+String(t.who||'trader').replace(/</g,'&lt;')+'</span><span class="lbx-roe">+'+Math.round(+t.roe).toLocaleString('en-US')+'%</span></div>';}).join('');
+    var top=((d&&d.top)||[]).slice(0,3);if(!top.length)return;
+    document.getElementById('lbx').innerHTML=top.map(function(t,i){
+      return '<div class="lbx-row'+(i===0?' g':'')+'"><span class="lbx-med m'+(i+1)+'">'+(i+1)+'</span><span class="lbx-who">'+String(t.who||'trader').replace(/</g,'&lt;')+'</span><span class="lbx-roe">+'+Math.round(+t.roe).toLocaleString('en-US')+'%</span></div>';
+    }).join('');
   }).catch(function(){});
 
-  // defi tvl
+  // defi tvl + chain bars
   fetch('/api/defi/overview').then(function(r){return r.json();}).then(function(d){
     if(!(d&&d.totalTvl>0))return;
     document.getElementById('tvl').textContent='$'+(d.totalTvl/1e9).toFixed(1)+'B';
+    var ch=(d.topChains||[]).slice(0,3);if(!ch.length)return;
+    var mx=+ch[0].tvl||1;
+    document.getElementById('chains').innerHTML=ch.map(function(x){return '<div class="cb"><span class="nm">'+String(x.name||'').replace(/</g,'&lt;')+'</span><span class="bar"><i style="width:'+Math.max(6,(+x.tvl/mx*100)).toFixed(0)+'%"></i></span><span class="v">$'+(+x.tvl/1e9).toFixed(1)+'B</span></div>';}).join('');
   }).catch(function(){});
 
-  // BTC sparkline on the Paper Trade tile
+  // BTC sparkline on the Paper Trade tile + live-ish mock PnL on the ticket
   fetch('/api/klines?symbol=BTC&interval=60').then(function(r){return r.json();}).then(function(k){
     if(!Array.isArray(k)||k.length<10)return;var cv=document.getElementById('ptSpark');if(!cv)return;
-    var w=cv.offsetWidth||600,h=78;cv.width=w*2;cv.height=h*2;var g=cv.getContext('2d');g.scale(2,2);
+    var w=cv.offsetWidth||600,h=84;cv.width=w*2;cv.height=h*2;var g=cv.getContext('2d');g.scale(2,2);
     var cs=k.slice(-90).map(function(b){return +b.close;});
     var mn=Math.min.apply(null,cs),mx=Math.max.apply(null,cs),rg=(mx-mn)||1;
     g.beginPath();
@@ -330,6 +488,12 @@
     g.lineTo(w,h);g.lineTo(0,h);g.closePath();
     var gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,(up?'rgba(46,189,133,.25)':'rgba(255,90,77,.25)'));gr.addColorStop(1,'rgba(0,0,0,0)');
     g.fillStyle=gr;g.fill();
+    // entry dashed line at ~40% height for the mock ticket
+    g.setLineDash([4,4]);g.strokeStyle='rgba(233,231,223,.35)';g.lineWidth=1;
+    g.beginPath();g.moveTo(0,h*.42);g.lineTo(w,h*.42);g.stroke();
+    var pnl=document.getElementById('ptTickPnl');
+    var delta=(cs[cs.length-1]-cs[Math.max(0,cs.length-24)])/cs[Math.max(0,cs.length-24)];
+    var v=(100*20*delta);pnl.textContent=(v>=0?'+':'−')+'$'+Math.abs(v).toFixed(2);pnl.style.color=v>=0?'#2ebd85':'#ff5a4d';
   }).catch(function(){});
 })();
 </script>
