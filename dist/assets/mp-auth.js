@@ -137,6 +137,7 @@
 
   function codeStep(email) {
     bodyEl.innerHTML = '<h3 class="mpa-h">Check your inbox</h3><p class="mpa-sub">We sent a 6-digit code to <b>' + esc(email) + '</b>.</p>'
+      + '<p class="mpa-sub" style="margin-top:-6px;font-size:12px;color:#c8b26a">No email? Check your <b>spam / junk</b> folder — our codes sometimes land there.</p>'
       + '<input class="mpa-in mpa-code" id="mpaCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000">'
       + '<button class="mpa-btn" id="mpaVerify" type="button">Verify</button><div class="mpa-msg"></div>'
       + '<button class="mpa-link" id="mpaBack" type="button">← use a different email</button>';
