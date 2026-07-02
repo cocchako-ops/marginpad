@@ -664,6 +664,7 @@
     var mmr=0.005,liq=qtSide==='long'?p*(1-(1-mmr)/lev):p*(1+(1-mmr)/lev),notional=amt*lev;
     if(eE)eE.textContent=fmtP(p);if(eL)eL.textContent=fmtP(liq);if(eS)eS.textContent=fmtP(notional);}
   function doOpenPos(){ var sym=qtEl.querySelector('.cqt-sym').value,lev=qtLev,amt=+qtEl.querySelector('.cqt-amt').value||0,msg=qtEl.querySelector('.cqt-msg');
+    if(amt>100000){amt=100000;qtEl.querySelector('.cqt-amt').value='100000';if(msg)msg.textContent='Max trade size is $100,000';} // owner rule
     var advc=qtEl.querySelector('.cqt-adv-chk'),advOn=advc&&advc.checked,tp=advOn?parseFloat(qtEl.querySelector('.cqt-tp').value):NaN,sl=advOn?parseFloat(qtEl.querySelector('.cqt-sl').value):NaN;
     if(!(amt>0)){msg.style.color='#ff6258';msg.textContent='Enter an amount.';return;}
     if(window.mpTradeGate&&!window.mpTradeGate(sym,qtSide))return; // enforce open-trade limits + one-way mode

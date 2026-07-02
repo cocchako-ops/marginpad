@@ -31,16 +31,18 @@
       +'<div class="pp-meta">'
         +'<div><span>'+MT('jEntry','Entry')+'</span><b>'+fp(e.entry)+'</b></div>'
         +'<div><span>'+MT('jMargin2','Margin')+'</span><b>'+(m.margin!=null?money(m.margin):'—')+'</b></div>'
+        +'<div><span>'+MT('jValue','Value')+'</span><b>'+((m.margin!=null)?money(m.margin*((+e.lev>0)?+e.lev:1)):'—')+'</b></div>'
+        +'<div><span>'+MT('jQty2','Qty')+'</span><b>'+((e.qty!=null&&isFinite(e.qty))?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:6}):'—')+'</b></div>'
         +'<div><span>'+MT('jLiq2','Liq')+'</span><b>'+fp(m.liq)+'</b></div>'
         +'<div><span>'+MT('jBuffer','Buffer')+'</span><b>'+pctS(m.liqDist)+'</b></div>'
         +'<div><span>SL</span><b>'+(e.stop!=null?fp(e.stop):'—')+'</b></div>'
         +'<div><span>TP</span><b>'+(e.tp!=null?fp(e.tp):'—')+'</b></div>'
       +'</div>'
       +'<div class="pp-foot">'+dur(Date.now()-e.ts)+' '+MT('jOpenLc','open')+'</div>'
-      +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button></div></div>';}
+      +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="ed" data-act="sltp" data-id="'+e.id+'">SL/TP</button><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button></div></div>';}
   function closedCard(e){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.liquidated?'LIQ':(win?'WIN':'LOSS'))+'</span></div>'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.liquidated?'LIQ':(win?'WIN':'LOSS'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?(((+e.pnl)>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span>'+((e.margin&&e.pnl!=null)?'<span class="roe">ROE '+pctS(((+e.pnl)/(+e.margin||1))*100)+'</span>':'')+'</div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
@@ -48,6 +50,8 @@
         +'<div><span>'+MT('jExit','Exit')+'</span><b>'+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+'</b></div>'
         +'<div><span>'+MT('jLev','Leverage')+'</span><b>'+(e.lev||1)+'×</b></div>'
         +'<div><span>'+MT('jHeld','Held')+'</span><b>'+(e.closeTs?dur(e.closeTs-e.ts):'—')+'</b></div>'
+        +'<div><span>'+MT('jSize2','Size')+'</span><b>'+((+e.margin>0)?money(+e.margin)+(e.partial?' ('+e.partial+'%)':''):'—')+'</b></div>'
+        +'<div><span>'+MT('jValue','Value')+'</span><b>'+((+e.margin>0)?money(+e.margin*((+e.lev>0)?+e.lev:1)):'—')+'</b></div>'
       +'</div>'
       +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="cl" data-act="del" data-id="'+e.id+'">'+MT('jDelete','Delete')+'</button></div></div>';}
   function rr(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}
@@ -147,6 +151,7 @@
     if(act==='share'){shareTicket(e);return;}
     if(act==='copy'){copyTicket(e);return;}
     if(act==='chart'){gotoChart(e.sym);return;}
+    if(act==='sltp'){if(window.mpSltpSheet)window.mpSltpSheet(id,function(){render();});return;}
     if(act==='del'){ data.splice(i,1); }
     else if(act==='close'){ if(window.mpCloseSheet){window.mpCloseSheet(id,function(){render();});return;} var m=metrics(e); e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss')); e.exit=m.live; e.closeTs=Date.now(); e.pnl=(m.pnl!=null?m.pnl:0); }
     else if(act==='reopen'){ e.status='open'; e.exit=null; e.closeTs=null; e.pnl=null; }
@@ -371,4 +376,65 @@
     jstore(d);hide();done();
   }
   window.mpCloseSheet=show;
+})();
+
+;/* ══════════ SL/TP edit sheet (owner task 2026-07): change stop-loss / take-profit on any OPEN ticket ══════════
+   window.mpSltpSheet(id, onDone). Wrong-side values are rejected with a clear message (a long's SL below live,
+   TP above — otherwise checkClose would fire the instant you saved). Empty field = remove that level. */
+(function(){ if(window.mpSltpSheet)return;
+  function jload(){try{return JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){return[];}}
+  function jstore(a){try{localStorage.setItem('mp_journal',JSON.stringify(a));}catch(e){}}
+  function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
+  function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+  var ov=null,curId=null,after=null;
+  function build(){ if(ov)return;
+    ov=document.createElement('div');ov.className='mpcs mpss';ov.innerHTML=
+      '<div class="mpcs-card" role="dialog" aria-label="Edit SL / TP">'
+      +'<div class="mpcs-h"><span class="mpcs-t"></span><button type="button" class="mpcs-x" aria-label="Cancel">✕</button></div>'
+      +'<div class="mpss-live"></div>'
+      +'<label class="mpss-f"><span>Stop-loss</span><input type="number" step="any" inputmode="decimal" class="mpss-sl" placeholder="none"></label>'
+      +'<label class="mpss-f"><span>Take-profit</span><input type="number" step="any" inputmode="decimal" class="mpss-tp" placeholder="none"></label>'
+      +'<div class="mpss-hint">Leave a field empty to remove that level.</div>'
+      +'<div class="mpss-warn" hidden></div>'
+      +'<button type="button" class="mpcs-go up">Save SL / TP</button>'
+      +'</div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click',function(e){if(e.target===ov)hide();});
+    ov.querySelector('.mpcs-x').addEventListener('click',hide);
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')hide();});
+    ov.querySelector('.mpcs-go').addEventListener('click',save);
+  }
+  function find(){var d=jload();for(var i=0;i<d.length;i++)if(d[i].id===curId)return {d:d,e:d[i]};return null;}
+  function live(e){var lp=window.mpLivePrices&&window.mpLivePrices[e.sym];return (lp&&lp.p>0)?lp.p:e.entry;}
+  function show(id,cb){ curId=id;after=cb||null;
+    var r0=find(); if(!r0||r0.e.status!=='open')return; var e=r0.e;
+    build();
+    var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);
+    var liq=e.liq||(long?e.entry*(1-(1-mmr)/lev):e.entry*(1+(1-mmr)/lev));
+    ov.querySelector('.mpcs-t').innerHTML=esc(e.sym||'—')+' <b class="'+(long?'lg':'sh')+'">'+(long?'LONG':'SHORT')+'</b> '+(e.lev||1)+'×';
+    ov.querySelector('.mpss-live').innerHTML='Live <b>'+fp(live(e))+'</b> · Entry <b>'+fp(e.entry)+'</b> · Liq <b class="lq">'+fp(liq)+'</b>';
+    ov.querySelector('.mpss-sl').value=(e.stop!=null?e.stop:'');
+    ov.querySelector('.mpss-tp').value=(e.tp!=null?e.tp:'');
+    var w=ov.querySelector('.mpss-warn');w.hidden=true;w.textContent='';
+    ov.classList.add('on');
+    setTimeout(function(){try{ov.querySelector('.mpss-sl').focus();}catch(_){}},120);
+  }
+  function hide(){if(ov)ov.classList.remove('on');}
+  function warn(t){var w=ov.querySelector('.mpss-warn');w.textContent=t;w.hidden=false;}
+  function save(){ var r=find(); if(!r||r.e.status!=='open'){hide();return;} var e=r.e;
+    var long=e.side!=='short',lv=live(e);
+    var slRaw=ov.querySelector('.mpss-sl').value.trim(),tpRaw=ov.querySelector('.mpss-tp').value.trim();
+    var sl=slRaw===''?null:parseFloat(slRaw),tp=tpRaw===''?null:parseFloat(tpRaw);
+    if(sl!=null&&!isFinite(sl)){warn('Stop-loss is not a number.');return;}
+    if(tp!=null&&!isFinite(tp)){warn('Take-profit is not a number.');return;}
+    if(sl!=null&&(long?sl>=lv:sl<=lv)){warn('For a '+(long?'LONG the stop-loss must be BELOW':'SHORT the stop-loss must be ABOVE')+' the live price ('+fp(lv)+') — otherwise it would trigger instantly.');return;}
+    if(tp!=null&&(long?tp<=lv:tp>=lv)){warn('For a '+(long?'LONG the take-profit must be ABOVE':'SHORT the take-profit must be BELOW')+' the live price ('+fp(lv)+').');return;}
+    e.stop=sl;e.tp=tp;
+    jstore(r.d);hide();
+    try{document.dispatchEvent(new CustomEvent('mp:sltp',{detail:{id:e.id}}));}catch(_){}
+    try{if(window.mpBuzz)window.mpBuzz([14]);else if(navigator.vibrate)navigator.vibrate(14);}catch(_){}
+    try{if(window.mpJournalRender)window.mpJournalRender();}catch(_){}
+    if(after)try{after();}catch(_){}
+  }
+  window.mpSltpSheet=show;
 })();

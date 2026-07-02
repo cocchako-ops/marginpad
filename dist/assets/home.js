@@ -136,8 +136,9 @@
   function closedCard(e){var win=e.status==='win',cls=win?'pf':'ls';
     return '<div class="pp '+cls+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.liquidated?'LIQ':(win?'WIN':'LOSS'))+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?((+e.pnl>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span></div>'
-      +'<div class="pp-meta">'+fp(e.entry)+' → '+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+(e.closeTs?' · '+dur(e.closeTs-e.ts):'')+'</div>'
+      +'<div class="pp-meta">'+fp(e.entry)+' → '+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+((+e.margin>0)?' · Size <b>'+money(+e.margin)+'</b>':'')+(e.partial?' · <b>'+e.partial+'%</b>':'')+(e.closeTs?' · '+dur(e.closeTs-e.ts):'')+'</div>'
       +'<div class="pp-btns"><button data-act="reopen" data-id="'+e.id+'">Reopen</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
+  document.addEventListener('mp:sltp',function(ev){try{if(ev.detail)notified[ev.detail.id]=false;}catch(_){}}); // edited SL/TP -> allow a fresh close notification
   var _lastSig='';
   function _tkCls(m){return (m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));}
   function _tkPnl(m){return (m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));}
@@ -184,7 +185,7 @@
     if(act==='del')d.splice(i,1);
     else if(act==='close'){if(window.mpCloseSheet){window.mpCloseSheet(id,function(){renderLast();renderPos();drawLines();mtCount();});return;}var m=metrics(e);e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);buzz([22]);window._mpSltpHidden=true;}
     else if(act==='reopen'){e.status='open';e.exit=null;e.closeTs=null;e.pnl=null;notified[id]=false;}
-    else if(act==='edit'){var ns=prompt('New stop-loss price:',e.stop);if(ns!==null){var v=parseFloat(ns);if(isFinite(v))e.stop=v;}var nt=prompt('New take-profit (blank = none):',e.tp!=null?e.tp:'');if(nt!==null){var v2=parseFloat(nt);e.tp=isFinite(v2)?v2:null;}notified[id]=false;}
+    else if(act==='edit'){if(window.mpSltpSheet){window.mpSltpSheet(id,function(){renderPos();drawLines();});return;}var ns=prompt('New stop-loss price:',e.stop);if(ns!==null){var v=parseFloat(ns);if(isFinite(v))e.stop=v;}var nt=prompt('New take-profit (blank = none):',e.tp!=null?e.tp:'');if(nt!==null){var v2=parseFloat(nt);e.tp=isFinite(v2)?v2:null;}notified[id]=false;}
     store(d);renderPos();drawLines();});
   function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='/assets/lightweight-charts-4.2.0.js';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
   function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;chart=LightweightCharts.createChart(el,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:10,barSpacing:7},crosshair:{mode:1},autoSize:true});candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444',lastValueVisible:false,priceLineVisible:true,priceLineColor:'#9aa3ad',autoscaleInfoProvider:function(orig){try{
@@ -498,16 +499,18 @@
       +'<div class="pp-meta">'
         +'<div><span>'+MT('jEntry','Entry')+'</span><b>'+fp(e.entry)+'</b></div>'
         +'<div><span>'+MT('jMargin2','Margin')+'</span><b>'+(m.margin!=null?money(m.margin):'—')+'</b></div>'
+        +'<div><span>'+MT('jValue','Value')+'</span><b>'+((m.margin!=null)?money(m.margin*((+e.lev>0)?+e.lev:1)):'—')+'</b></div>'
+        +'<div><span>'+MT('jQty2','Qty')+'</span><b>'+((e.qty!=null&&isFinite(e.qty))?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:6}):'—')+'</b></div>'
         +'<div><span>'+MT('jLiq2','Liq')+'</span><b>'+fp(m.liq)+'</b></div>'
         +'<div><span>'+MT('jBuffer','Buffer')+'</span><b>'+pctS(m.liqDist)+'</b></div>'
         +'<div><span>SL</span><b>'+(e.stop!=null?fp(e.stop):'—')+'</b></div>'
         +'<div><span>TP</span><b>'+(e.tp!=null?fp(e.tp):'—')+'</b></div>'
       +'</div>'
       +'<div class="pp-foot">'+dur(Date.now()-e.ts)+' '+MT('jOpenLc','open')+'</div>'
-      +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button></div></div>';}
+      +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="ed" data-act="sltp" data-id="'+e.id+'">SL/TP</button><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button></div></div>';}
   function closedCard(e){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.liquidated?'LIQ':(win?'WIN':'LOSS'))+'</span></div>'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.liquidated?'LIQ':(win?'WIN':'LOSS'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?(((+e.pnl)>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span>'+((e.margin&&e.pnl!=null)?'<span class="roe">ROE '+pctS(((+e.pnl)/(+e.margin||1))*100)+'</span>':'')+'</div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
@@ -515,6 +518,8 @@
         +'<div><span>'+MT('jExit','Exit')+'</span><b>'+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+'</b></div>'
         +'<div><span>'+MT('jLev','Leverage')+'</span><b>'+(e.lev||1)+'×</b></div>'
         +'<div><span>'+MT('jHeld','Held')+'</span><b>'+(e.closeTs?dur(e.closeTs-e.ts):'—')+'</b></div>'
+        +'<div><span>'+MT('jSize2','Size')+'</span><b>'+((+e.margin>0)?money(+e.margin)+(e.partial?' ('+e.partial+'%)':''):'—')+'</b></div>'
+        +'<div><span>'+MT('jValue','Value')+'</span><b>'+((+e.margin>0)?money(+e.margin*((+e.lev>0)?+e.lev:1)):'—')+'</b></div>'
       +'</div>'
       +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="cl" data-act="del" data-id="'+e.id+'">'+MT('jDelete','Delete')+'</button></div></div>';}
   function rr(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}
@@ -585,6 +590,7 @@
     if(add._busy)return; add._busy=true; setTimeout(function(){add._busy=false;},650); // debounce: one click can't fire two opens (a double-click was creating two near-identical positions)
     var pl=window.mpPlanLive, entry=pl&&pl.price;          // open AT the current live price
     var amt=num('planAmt'), lev=num('planLev');
+    if(isFinite(amt)&&amt>100000){amt=100000;var _ael=document.getElementById('planAmt');if(_ael)_ael.value='100000';} // hard cap: max $100k per trade (owner rule)
     if(!isFinite(entry)||entry<=0||!isFinite(amt)||amt<=0)return;
     var seg=document.getElementById('planSeg'); var on=seg&&seg.querySelector('button.on'); var side=on?on.getAttribute('data-side'):'long';
     var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
@@ -624,6 +630,7 @@
     if(act==='share'){shareTicket(e);return;}
     if(act==='copy'){copyTicket(e);return;}
     if(act==='chart'){gotoChart(e.sym,e.side);return;}
+    if(act==='sltp'){if(window.mpSltpSheet)window.mpSltpSheet(id,function(){render();if(window.mpDrawLines)window.mpDrawLines();});return;}
     if(act==='del'){ data.splice(i,1); }
     else if(act==='close'){ if(window.mpCloseSheet){window.mpCloseSheet(id,function(){render();if(window.mpDrawLines)window.mpDrawLines();});return;} var m=metrics(e); e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss')); e.exit=m.live; e.closeTs=Date.now(); e.pnl=(m.pnl!=null?m.pnl:0); if(window.mpBuzz)window.mpBuzz([22]); try{if(window.mpHidePlanLines)window.mpHidePlanLines();}catch(_){} }
     else if(act==='reopen'){ e.status='open'; e.exit=null; e.closeTs=null; e.pnl=null; }
@@ -2172,3 +2179,67 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
   }
   window.mpCloseSheet=show;
 })();
+
+;/* ══════════ SL/TP edit sheet (owner task 2026-07): change stop-loss / take-profit on any OPEN ticket ══════════
+   window.mpSltpSheet(id, onDone). Wrong-side values are rejected with a clear message (a long's SL below live,
+   TP above — otherwise checkClose would fire the instant you saved). Empty field = remove that level. */
+(function(){ if(window.mpSltpSheet)return;
+  function jload(){try{return JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){return[];}}
+  function jstore(a){try{localStorage.setItem('mp_journal',JSON.stringify(a));}catch(e){}}
+  function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
+  function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+  var ov=null,curId=null,after=null;
+  function build(){ if(ov)return;
+    ov=document.createElement('div');ov.className='mpcs mpss';ov.innerHTML=
+      '<div class="mpcs-card" role="dialog" aria-label="Edit SL / TP">'
+      +'<div class="mpcs-h"><span class="mpcs-t"></span><button type="button" class="mpcs-x" aria-label="Cancel">✕</button></div>'
+      +'<div class="mpss-live"></div>'
+      +'<label class="mpss-f"><span>Stop-loss</span><input type="number" step="any" inputmode="decimal" class="mpss-sl" placeholder="none"></label>'
+      +'<label class="mpss-f"><span>Take-profit</span><input type="number" step="any" inputmode="decimal" class="mpss-tp" placeholder="none"></label>'
+      +'<div class="mpss-hint">Leave a field empty to remove that level.</div>'
+      +'<div class="mpss-warn" hidden></div>'
+      +'<button type="button" class="mpcs-go up">Save SL / TP</button>'
+      +'</div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click',function(e){if(e.target===ov)hide();});
+    ov.querySelector('.mpcs-x').addEventListener('click',hide);
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')hide();});
+    ov.querySelector('.mpcs-go').addEventListener('click',save);
+  }
+  function find(){var d=jload();for(var i=0;i<d.length;i++)if(d[i].id===curId)return {d:d,e:d[i]};return null;}
+  function live(e){var lp=window.mpLivePrices&&window.mpLivePrices[e.sym];return (lp&&lp.p>0)?lp.p:e.entry;}
+  function show(id,cb){ curId=id;after=cb||null;
+    var r0=find(); if(!r0||r0.e.status!=='open')return; var e=r0.e;
+    build();
+    var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);
+    var liq=e.liq||(long?e.entry*(1-(1-mmr)/lev):e.entry*(1+(1-mmr)/lev));
+    ov.querySelector('.mpcs-t').innerHTML=esc(e.sym||'—')+' <b class="'+(long?'lg':'sh')+'">'+(long?'LONG':'SHORT')+'</b> '+(e.lev||1)+'×';
+    ov.querySelector('.mpss-live').innerHTML='Live <b>'+fp(live(e))+'</b> · Entry <b>'+fp(e.entry)+'</b> · Liq <b class="lq">'+fp(liq)+'</b>';
+    ov.querySelector('.mpss-sl').value=(e.stop!=null?e.stop:'');
+    ov.querySelector('.mpss-tp').value=(e.tp!=null?e.tp:'');
+    var w=ov.querySelector('.mpss-warn');w.hidden=true;w.textContent='';
+    ov.classList.add('on');
+    setTimeout(function(){try{ov.querySelector('.mpss-sl').focus();}catch(_){}},120);
+  }
+  function hide(){if(ov)ov.classList.remove('on');}
+  function warn(t){var w=ov.querySelector('.mpss-warn');w.textContent=t;w.hidden=false;}
+  function save(){ var r=find(); if(!r||r.e.status!=='open'){hide();return;} var e=r.e;
+    var long=e.side!=='short',lv=live(e);
+    var slRaw=ov.querySelector('.mpss-sl').value.trim(),tpRaw=ov.querySelector('.mpss-tp').value.trim();
+    var sl=slRaw===''?null:parseFloat(slRaw),tp=tpRaw===''?null:parseFloat(tpRaw);
+    if(sl!=null&&!isFinite(sl)){warn('Stop-loss is not a number.');return;}
+    if(tp!=null&&!isFinite(tp)){warn('Take-profit is not a number.');return;}
+    if(sl!=null&&(long?sl>=lv:sl<=lv)){warn('For a '+(long?'LONG the stop-loss must be BELOW':'SHORT the stop-loss must be ABOVE')+' the live price ('+fp(lv)+') — otherwise it would trigger instantly.');return;}
+    if(tp!=null&&(long?tp<=lv:tp>=lv)){warn('For a '+(long?'LONG the take-profit must be ABOVE':'SHORT the take-profit must be BELOW')+' the live price ('+fp(lv)+').');return;}
+    e.stop=sl;e.tp=tp;
+    jstore(r.d);hide();
+    try{document.dispatchEvent(new CustomEvent('mp:sltp',{detail:{id:e.id}}));}catch(_){}
+    try{if(window.mpBuzz)window.mpBuzz([14]);else if(navigator.vibrate)navigator.vibrate(14);}catch(_){}
+    try{if(window.mpJournalRender)window.mpJournalRender();}catch(_){}
+    if(after)try{after();}catch(_){}
+  }
+  window.mpSltpSheet=show;
+})();
+
+;/* $100k cap directly on the amount input (typing 250000 snaps to 100000; add() re-checks as a backstop) */
+(function(){var MAXT=100000,a=document.getElementById("planAmt");if(!a)return;try{a.max=String(MAXT);}catch(e){}a.addEventListener("input",function(){var v=parseFloat(a.value);if(isFinite(v)&&v>MAXT)a.value=String(MAXT);});})();
