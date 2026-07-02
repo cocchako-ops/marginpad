@@ -131,3 +131,12 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;m
 .inf{width:15px;height:15px;flex:0 0 auto;border-radius:50%;border:1px solid var(--faint,#5c656f);color:var(--faint,#5c656f);font:italic 700 10px/12px Georgia,serif;display:inline-flex;align-items:center;justify-content:center;cursor:help;background:none;padding:0;text-transform:none;letter-spacing:0}
 .inf:hover,.inf:focus{color:#c2f64a;border-color:#c2f64a;outline:none}
 .inf-tip{position:fixed;z-index:99;max-width:270px;background:#11151b;border:1px solid #2f3742;border-radius:10px;padding:10px 13px;font-size:12.5px;line-height:1.55;color:#cdd3da;box-shadow:0 12px 32px rgba(0,0,0,.55);text-transform:none;letter-spacing:0;font-weight:400}
+
+/* KPI overflow safety: numbers can never escape their box */
+.kpi{min-width:0;overflow:hidden}
+.kpi .v{overflow-wrap:anywhere;line-height:1.15}
+
+/* uniform input grid: every box the same width, aligned rows (owner: "razlicitih velicina, razbacani") */
+.toolbar .row{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:560px){.toolbar .row{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:900px){.toolbar .row{grid-template-columns:repeat(5,minmax(0,1fr))}.toolbar .row .btn{grid-column:auto}}

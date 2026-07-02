@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
@@ -75,6 +78,9 @@ h2{font-size:20px;margin:34px 0 12px}
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code><p>Open a simulated position at the live price. Body: <code>{"symbol":"BTC","side":"long","margin_usd":100,"leverage":20,"sl":58000,"tp":66000}</code> (sl/tp optional). Returns the position incl. its <code>liq_price</code>.</p></div>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/close</code><p>Close a position at the live price. Body: <code>{"id":"bp...","pct":50}</code> — <code>pct</code> is optional (default 100); partial closes split the position exactly like on the site.</p></div>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/positions</code><p>All your positions with live <code>mark_price</code> and <code>unrealized_pnl_usd</code>; crossed liquidations are settled automatically.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/klines?symbol=BTC&amp;interval=60</code><p>OHLC candles for your strategy (intervals: 1, 5, 15, 30, 60, 240, 1440 minutes). <b>No key needed.</b></p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/account</code><p>Account summary: open positions, margin in use, live unrealized P&amp;L, realized P&amp;L, wins/losses and win rate.</p></div>
+<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/close_all</code><p>Panic button — closes every open position at the live price in one call.</p></div>
 <p style="color:#9aa3ad;font-size:13px">Authenticate with the <code style="font-family:'Space Mono',monospace">X-API-Key</code> header on every call except <code style="font-family:'Space Mono',monospace">/price</code>.</p>
 
 <h2>3 · Two-minute quickstart</h2>
@@ -109,7 +115,7 @@ if my_signal(price):  # your strategy here
 
 <h2>How the simulator works</h2>
 <div class="faq"><b>Fills &amp; prices</b><p>Orders fill instantly at the real live price (multi-exchange feed — the same prices as our Paper Trade). No slippage model yet, so treat results as an upper bound.</p></div>
-<div class="faq"><b>Margin &amp; liquidation</b><p>Isolated margin. Losses are capped at your margin. The liquidation price uses a 0.5% maintenance margin rate; when the live price crosses it, the position settles at the liq price automatically.</p></div>
+<div class="faq"><b>Margin, liquidation, SL/TP</b><p>Isolated margin. Losses are capped at your margin. The liquidation price uses a 0.5% maintenance margin rate; when the live price crosses it the position settles at the liq price automatically. <b>Stop-loss and take-profit orders execute automatically too</b> — when the live price crosses your <code>sl</code> or <code>tp</code>, the position settles at that level (status <code>closed_sl</code> / <code>closed_tp</code>).</p></div>
 <div class="faq"><b>Limits</b><p>120 requests/minute per key · 50 open positions · $1–$100,000 margin per trade · leverage 1–1000×. Need more for a serious project? Message us via the site.</p></div>
 <div class="faq"><b>See your bot's trades on the site</b><p>Positions opened via the API live on your account server-side. The <a href="/trading-journal/" style="color:#c2f64a">Trading Journal</a> and account profile analytics for API positions are on the roadmap.</p></div>
 
@@ -130,5 +136,6 @@ if my_signal(price):  # your strategy here
 })();
 </script>
 <script defer src="/assets/mp-auth.js"></script>
+<script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

@@ -2502,6 +2502,13 @@ async function handleBot(url, request, env, ctx) {
     return jb({ symbol: sym, price: +pd.price, change_24h_pct: (pd.chg != null ? +pd.chg : null), ts: Date.now() });
   }
 
+  if (path === '/v1/klines') { // keyless, like /price — bots need candles before they have a key
+    const ku = new URL(url.origin + '/api/klines');
+    ku.searchParams.set('symbol', (url.searchParams.get('symbol') || 'BTC').toUpperCase().replace(/USDT$/, ''));
+    ku.searchParams.set('interval', url.searchParams.get('interval') || '60');
+    if (url.searchParams.get('end')) ku.searchParams.set('end', url.searchParams.get('end'));
+    return handleKlines(ku);
+  }
   // --- authenticated bot endpoints ---
   const key = request.headers.get('x-api-key') || url.searchParams.get('api_key') || '';
   if (!key) return jb({ error: 'missing_api_key', hint: 'Send your key in the X-API-Key header. Get one free at https://marginpad.io/trading-api/' }, 401);
@@ -2547,7 +2554,22 @@ async function handleBot(url, request, env, ctx) {
     const r = await doCall('/botpositions', { uid, prices });
     return jb(r || { error: 'unavailable' }, r ? 200 : 503);
   }
-  return jb({ error: 'not_found', endpoints: ['GET /api/bot/v1/price?symbol=BTC', 'POST /api/bot/v1/open', 'POST /api/bot/v1/close', 'GET /api/bot/v1/positions'] }, 404);
+  if (path === '/v1/close_all' && request.method === 'POST') {
+    const syms = await openSymsOf();
+    const prices = await priceMap(syms);
+    const r = await doCall('/botcloseall', { uid, prices });
+    return jb(r || { error: 'unavailable' }, r ? 200 : 503);
+  }
+  if (path === '/v1/account') {
+    const syms = await openSymsOf();
+    const prices = await priceMap(syms);
+    const r = await doCall('/botpositions', { uid, prices });
+    if (!r || !r.positions) return jb({ error: 'unavailable' }, 503);
+    let openN = 0, marginUse = 0, upnl = 0, realized = 0, wins = 0, losses = 0;
+    r.positions.forEach(p => { if (p.status === 'open') { openN++; marginUse += p.margin_usd; upnl += (p.unrealized_pnl_usd || 0); } else { realized += (p.pnl_usd || 0); if ((p.pnl_usd || 0) >= 0) wins++; else losses++; } });
+    return jb({ open_positions: openN, margin_in_use_usd: Math.round(marginUse * 100) / 100, unrealized_pnl_usd: Math.round(upnl * 100) / 100, realized_pnl_usd: Math.round(realized * 100) / 100, closed_trades: wins + losses, wins, losses, win_rate_pct: (wins + losses) ? Math.round(wins / (wins + losses) * 1000) / 10 : null });
+  }
+  return jb({ error: 'not_found', endpoints: ['GET /api/bot/v1/price?symbol=BTC', 'GET /api/bot/v1/klines?symbol=BTC&interval=60', 'POST /api/bot/v1/open', 'POST /api/bot/v1/close', 'POST /api/bot/v1/close_all', 'GET /api/bot/v1/positions', 'GET /api/bot/v1/account'] }, 404);
 }
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
@@ -3720,13 +3742,25 @@ export class UserStore {
       sql.exec('INSERT INTO botpos(id,uid,json,status,ts) VALUES(?,?,?,?,?)', pos.id, uid, JSON.stringify(pos), 'open', now);
       return this.j({ ok: true, position: pos });
     }
-    if (path === '/botpositions' || path === '/botclose') {
+    if (path === '/botpositions' || path === '/botclose' || path === '/botcloseall') {
       const uid = String(b.uid || ''), PR = b.prices || {};
       const liqSweep = (p) => { const live = PR[p.symbol]; if (!(live > 0) || p.status !== 'open') return p;
-        const long = p.side === 'long';
-        if (long ? live <= p.liq_price : live >= p.liq_price) { p.status = 'liquidated'; p.exit_price = p.liq_price; p.pnl_usd = -p.margin_usd; p.closed_ts = Date.now(); }
+        const long = p.side === 'long', dir = long ? 1 : -1;
+        const settle = (px, st) => { let pnl = p.qty * (px - p.entry_price) * dir; if (pnl < -p.margin_usd) pnl = -p.margin_usd; p.status = st; p.exit_price = px; p.pnl_usd = Math.round(pnl * 100) / 100; p.closed_ts = Date.now(); };
+        if (long ? live <= p.liq_price : live >= p.liq_price) { p.status = 'liquidated'; p.exit_price = p.liq_price; p.pnl_usd = -p.margin_usd; p.closed_ts = Date.now(); return p; }
+        if (p.sl != null && (long ? live <= p.sl : live >= p.sl)) { settle(p.sl, 'closed_sl'); return p; }
+        if (p.tp != null && (long ? live >= p.tp : live <= p.tp)) { settle(p.tp, 'closed_tp'); return p; }
         return p; };
       const mark = (p) => { const live = PR[p.symbol]; if (p.status === 'open' && live > 0) { const dir = p.side === 'long' ? 1 : -1; let pnl = p.qty * (live - p.entry_price) * dir; if (pnl < -p.margin_usd) pnl = -p.margin_usd; p.mark_price = live; p.unrealized_pnl_usd = Math.round(pnl * 100) / 100; } return p; };
+      if (path === '/botcloseall') {
+        const rows = this.rows("SELECT * FROM botpos WHERE uid=? AND status='open'", uid);
+        const out = [];
+        for (const row of rows) { let p = {}; try { p = JSON.parse(row.json); } catch (e) {}
+          p = liqSweep(p);
+          if (p.status === 'open') { const live = PR[p.symbol]; if (live > 0) { const dir = p.side === 'long' ? 1 : -1; let pnl = p.qty * (live - p.entry_price) * dir; if (pnl < -p.margin_usd) pnl = -p.margin_usd; p.status = 'closed'; p.exit_price = live; p.pnl_usd = Math.round(pnl * 100) / 100; p.closed_ts = Date.now(); } }
+          sql.exec('UPDATE botpos SET json=?, status=? WHERE id=?', JSON.stringify(p), p.status, p.id); out.push(p); }
+        return this.j({ ok: true, closed: out.filter(p => p.status !== 'open').length, positions: out });
+      }
       if (path === '/botclose') {
         const row = this.rows('SELECT * FROM botpos WHERE id=? AND uid=?', String(b.id || ''), uid)[0];
         if (!row) return this.j({ error: 'not_found' });

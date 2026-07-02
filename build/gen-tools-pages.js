@@ -536,7 +536,32 @@ ${topbar(lang, S, slug)}
     <div class="row">
       <label class="f">${B.lblCoin}<input id="coin" value="BTC" maxlength="12" autocomplete="off" style="width:110px"></label>
       <label class="f">${B.lblTf}<select id="tf"><option value="60">1h</option><option value="240" selected>4h</option><option value="1440">1d</option><option value="15">15m</option></select></label>
-      <label class="f">${B.lblStrat}<select id="strat"><option value="emacross">${B.optEmaCross}</option><option value="smatrend">${B.optSmaTrend}</option><option value="rsi">${B.optRsi}</option><option value="donch">${B.optDonch}</option></select></label>
+      <label class="f">${B.lblStrat}<select id="strat">
+        <optgroup label="Trend">
+          <option value="emacross">${B.optEmaCross}</option>
+          <option value="smatrend">${B.optSmaTrend}</option>
+          <option value="goldcross">Golden cross (SMA 50/200)</option>
+          <option value="ema3">EMA ribbon (8&gt;21&gt;50)</option>
+          <option value="st">Supertrend (10, 3)</option>
+          <option value="macd">MACD cross (12/26/9)</option>
+        </optgroup>
+        <optgroup label="Momentum">
+          <option value="momo">Momentum (ROC 10 &gt; 0)</option>
+          <option value="stoch">Stochastic (14,3) 20/80</option>
+          <option value="rsi">${B.optRsi}</option>
+          <option value="rsi2">RSI-2 scalp (10/60)</option>
+        </optgroup>
+        <optgroup label="Breakout">
+          <option value="donch">${B.optDonch}</option>
+          <option value="donch55">Donchian 55 (turtle)</option>
+          <option value="bbbreak">Bollinger breakout (20,2)</option>
+          <option value="kelt">Keltner breakout (20, 2xATR)</option>
+        </optgroup>
+        <optgroup label="Mean reversion">
+          <option value="bbrevert">Bollinger dip-buy (20,2)</option>
+          <option value="mrev">Buy 2% below SMA-20</option>
+        </optgroup>
+      </select></label>
       <label class="f">${B.lblCap}<input id="cap" type="number" value="1000" min="1" style="width:110px"></label>
       <label class="f">${B.lblFee}<input id="fee" type="number" value="0.05" step="0.01" min="0" style="width:90px"></label>
       <button class="btn" id="run">${B.btnRun}</button>
@@ -584,12 +609,27 @@ ${footer(lang, S)}
   function rsi(v,p){var o=[],g=0,l=0;for(var i=0;i<v.length;i++){if(i===0){o.push(NaN);continue;}var ch=v[i]-v[i-1],u=ch>0?ch:0,d=ch<0?-ch:0;if(i<=p){g+=u;l+=d;o.push(i===p?100-100/(1+(l===0?100:g/l)):NaN);if(i===p){g/=p;l/=p;}}else{g=(g*(p-1)+u)/p;l=(l*(p-1)+d)/p;o.push(100-100/(1+(l===0?100:g/l)));}}return o;}
   function money(x){var n=x<0;x=Math.abs(+x||0);var s=x>=1000?x.toLocaleString('en-US',{maximumFractionDigits:0}):x.toFixed(2);return (n?'-$':'$')+s;}
   function pct(x){return (x>=0?'+':'')+(+x).toFixed(1)+'%';}
+  function stdv(v,p){var o=[];for(var i=0;i<v.length;i++){if(i<p-1){o.push(NaN);continue;}var s=0,j;for(j=i-p+1;j<=i;j++)s+=v[j];var m=s/p,q=0;for(j=i-p+1;j<=i;j++)q+=(v[j]-m)*(v[j]-m);o.push(Math.sqrt(q/p));}return o;}
+  function atr(h,l,c,p){var tr=[],o=[];for(var i=0;i<c.length;i++){tr.push(i?Math.max(h[i]-l[i],Math.abs(h[i]-c[i-1]),Math.abs(l[i]-c[i-1])):h[i]-l[i]);}var a=0;for(i=0;i<c.length;i++){if(i<p){a+=tr[i];o.push(i===p-1?a/p:NaN);}else{a=(o[i-1]*(p-1)+tr[i])/p;o.push(a);}}return o;}
+  function donchWant(c,h,P){var want=[],inpos=false;for(var i=0;i<c.length;i++){if(i<P){want.push(false);continue;}var hh=-Infinity,ll=Infinity;for(var j=i-P;j<i;j++){if(h[j]>hh)hh=h[j];}for(j=i-Math.ceil(P/2);j<i;j++){}if(!inpos&&c[i]>hh)inpos=true;else if(inpos){var mid=0,n=0;for(j=Math.max(0,i-P);j<i;j++){mid+=c[j];n++;}if(c[i]<mid/n)inpos=false;}want.push(inpos);}return want;}
   function signals(strat,c,h,l){
-    var want=[],i;
+    var want=[],i,j,inpos=false;
     if(strat==='emacross'){var f=ema(c,9),s=ema(c,21);for(i=0;i<c.length;i++)want.push(f[i]>s[i]);}
     else if(strat==='smatrend'){var m=sma(c,50);for(i=0;i<c.length;i++)want.push(isFinite(m[i])&&c[i]>m[i]);}
-    else if(strat==='rsi'){var r=rsi(c,14),inpos=false;for(i=0;i<c.length;i++){if(!isFinite(r[i])){want.push(false);continue;}if(!inpos&&r[i]<30)inpos=true;else if(inpos&&r[i]>55)inpos=false;want.push(inpos);}}
-    else{var P=20;for(i=0;i<c.length;i++){if(i<P){want.push(false);continue;}var hh=-Infinity,ll=Infinity;for(var j=i-P;j<i;j++){if(h[j]>hh)hh=h[j];if(l[j]<ll)ll=l[j];}want.push(c[i]>hh);}}
+    else if(strat==='goldcross'){var s50=sma(c,50),s200=sma(c,200);for(i=0;i<c.length;i++)want.push(isFinite(s200[i])&&s50[i]>s200[i]);}
+    else if(strat==='ema3'){var e8=ema(c,8),e21=ema(c,21),e50=ema(c,50);for(i=0;i<c.length;i++)want.push(i>50&&e8[i]>e21[i]&&e21[i]>e50[i]);}
+    else if(strat==='st'){var a10=atr(h,l,c,10),dir=1,ub=NaN,lb=NaN;for(i=0;i<c.length;i++){if(!isFinite(a10[i])){want.push(false);continue;}var hl2=(h[i]+l[i])/2,bu=hl2+3*a10[i],bl=hl2-3*a10[i];ub=isFinite(ub)?(c[i-1]>ub?bu:Math.min(bu,ub)):bu;lb=isFinite(lb)?(c[i-1]<lb?bl:Math.max(bl,lb)):bl;if(dir===1&&c[i]<lb)dir=-1;else if(dir===-1&&c[i]>ub)dir=1;want.push(dir===1);}}
+    else if(strat==='macd'){var e12=ema(c,12),e26=ema(c,26),md=[],sg;for(i=0;i<c.length;i++)md.push(e12[i]-e26[i]);sg=ema(md,9);for(i=0;i<c.length;i++)want.push(i>30&&md[i]>sg[i]);}
+    else if(strat==='momo'){for(i=0;i<c.length;i++)want.push(i>=10&&c[i]>c[i-10]);}
+    else if(strat==='stoch'){for(i=0;i<c.length;i++){if(i<14){want.push(false);continue;}var hh=-Infinity,ll=Infinity;for(j=i-13;j<=i;j++){if(h[j]>hh)hh=h[j];if(l[j]<ll)ll=l[j];}var kk=hh>ll?(c[i]-ll)/(hh-ll)*100:50;if(!inpos&&kk<20)inpos=true;else if(inpos&&kk>80)inpos=false;want.push(inpos);}}
+    else if(strat==='rsi'){var r=rsi(c,14);for(i=0;i<c.length;i++){if(!isFinite(r[i])){want.push(false);continue;}if(!inpos&&r[i]<30)inpos=true;else if(inpos&&r[i]>55)inpos=false;want.push(inpos);}}
+    else if(strat==='rsi2'){var r2=rsi(c,2);for(i=0;i<c.length;i++){if(!isFinite(r2[i])){want.push(false);continue;}if(!inpos&&r2[i]<10)inpos=true;else if(inpos&&r2[i]>60)inpos=false;want.push(inpos);}}
+    else if(strat==='donch55'){want=donchWant(c,h,55);}
+    else if(strat==='bbbreak'){var m20=sma(c,20),sd=stdv(c,20);for(i=0;i<c.length;i++){if(!isFinite(m20[i])){want.push(false);continue;}if(!inpos&&c[i]>m20[i]+2*sd[i])inpos=true;else if(inpos&&c[i]<m20[i])inpos=false;want.push(inpos);}}
+    else if(strat==='kelt'){var e20=ema(c,20),a10b=atr(h,l,c,10);for(i=0;i<c.length;i++){if(!isFinite(a10b[i])||i<20){want.push(false);continue;}if(!inpos&&c[i]>e20[i]+2*a10b[i])inpos=true;else if(inpos&&c[i]<e20[i])inpos=false;want.push(inpos);}}
+    else if(strat==='bbrevert'){var mB=sma(c,20),sdB=stdv(c,20);for(i=0;i<c.length;i++){if(!isFinite(mB[i])){want.push(false);continue;}if(!inpos&&c[i]<mB[i]-2*sdB[i])inpos=true;else if(inpos&&c[i]>mB[i])inpos=false;want.push(inpos);}}
+    else if(strat==='mrev'){var mR=sma(c,20);for(i=0;i<c.length;i++){if(!isFinite(mR[i])){want.push(false);continue;}if(!inpos&&c[i]<mR[i]*0.98)inpos=true;else if(inpos&&c[i]>=mR[i])inpos=false;want.push(inpos);}}
+    else{want=donchWant(c,h,20);}
     return want;
   }
   function run(){

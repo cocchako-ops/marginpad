@@ -94,7 +94,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=9c617382">
+<link rel="stylesheet" href="/assets/home.css?v=ea0a6e78">
 
 </head>
 <body>
@@ -664,6 +664,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
         <a href="/?p=heat" data-i18n="prodHeat">Liquidation Heatmap</a>
         <a href="/rekt/" data-i18n="navRekt">Live Liquidations</a>
         <a href="/tools/">Trading Tools</a>
+        <a href="/trading-api/">Bot API</a>
       </nav>
       <nav class="foot-col" aria-label="More">
         <h4 data-i18n="footMore">More</h4>
@@ -695,7 +696,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 <div id="jrBackdrop" class="jr-backdrop" hidden></div>
 <aside id="jrDrawer" class="jr-drawer" hidden aria-label="Trade journal">
   <button class="jr-grab" data-jr-close type="button" aria-label="Back"><span data-i18n="jrBack">Back</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
-  <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</span><button id="jrClose" class="jr-x" type="button" aria-label="Close">✕</button></div>
+  <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</span><a class="jr-stats-lnk" href="/trading-journal/" title="Full trading stats"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>Stats</a><button id="jrClose" class="jr-x" type="button" aria-label="Close">✕</button></div>
   <div class="jr-stats" id="jrStats"></div>
   <div class="jr-list" id="jrList"></div>
   <p class="jr-empty" id="jrEmpty" data-i18n="jrEmpty">No tickets yet. Plan a trade and tap “Save to journal”.</p>
@@ -767,6 +768,6 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=9c617382"></script>
+<script src="/assets/home.js?v=ea0a6e78"></script>
 </body>
 </html>

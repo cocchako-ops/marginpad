@@ -265,4 +265,13 @@
   document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.inf');if(b){e.preventDefault();if(tip){hideTip();}else showTip(b);return;}if(!e.target.closest||!e.target.closest('.inf-tip'))hideTip();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')hideTip();});
   window.addEventListener('scroll',hideTip,true);
+  // coin suggestions: type "ET" -> ETH offered (native datalist fed by /api/symbols, ~500 USDT perps)
+  var coinIn=document.getElementById('coin');
+  if(coinIn&&!document.getElementById('mpSymList')){
+    var dl=document.createElement('datalist');dl.id='mpSymList';document.body.appendChild(dl);
+    coinIn.setAttribute('list','mpSymList');coinIn.setAttribute('autocapitalize','characters');
+    fetch('/api/symbols').then(function(r){return r.ok?r.json():null;}).then(function(d){
+      var syms=(d&&d.symbols)||[];dl.innerHTML=syms.slice(0,400).map(function(s){return '<option value="'+s+'">';}).join('');
+    }).catch(function(){});
+  }
 })();
