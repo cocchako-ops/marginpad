@@ -2876,8 +2876,15 @@ async function handleAuth(url, request, env, ctx) {
   if (path === '/me') {
     const tok = getCookie(request, SESS_COOKIE);
     if (!tok) return jr({ user: null });
-    const r = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok)));
-    const d = await r.json();
+    // The DO connection can be severed mid-flight (deploys, DO resets) → "Network connection lost" surfaced as a 500
+    // on the hottest auth probe. Retry once, then FAIL SOFT with {user:null, transient:true} — the client re-checks
+    // on its own and a momentary signed-out beat is far better than an error page.
+    let d = null;
+    for (let attempt = 0; attempt < 2 && !d; attempt++) {
+      try { const r = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); d = await r.json(); }
+      catch (e) { if (attempt === 0) await new Promise(rs => setTimeout(rs, 150)); }
+    }
+    if (!d) return jr({ user: null, transient: true });
     const h = new Headers({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS });
     if (d.user) h.append('set-cookie', 'mp_un=' + String(d.user.username || (d.user.email || '').split('@')[0] || '').replace(/[^a-zA-Z0-9_.-]/g, '').slice(0, 24) + '; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=' + SESS_MAXAGE); // keep the admin-log display name fresh for existing sessions (and on username change)
     return new Response(JSON.stringify({ user: d.user || null, banned: !!d.banned }), { headers: h });
