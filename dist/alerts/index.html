@@ -177,14 +177,27 @@
     if(tgLinked){tgHint.innerHTML='<span style="color:#41e3a3">Telegram connected.</span> <a href="#" id="tgUnlink">Disconnect</a>';var ul=document.getElementById('tgUnlink');if(ul)ul.addEventListener('click',function(e){e.preventDefault();fetch('/api/alerts/tgunlink',{method:'POST'}).then(function(){tgLinked=false;renderTgHint();});});}
     else{tgHint.innerHTML='<a href="#" id="tgConnect">Connect Telegram</a> to get alerts in your chat.';var c=document.getElementById('tgConnect');if(c)c.addEventListener('click',function(e){e.preventDefault();connectTg();});}
   }
+  var tgPoll=null;
+  function stopTgPoll(){if(tgPoll){clearInterval(tgPoll);tgPoll=null;}}
+  function startTgPoll(){stopTgPoll();var n=0;tgPoll=setInterval(function(){n++;if(tgLinked||n>45){stopTgPoll();return;}load();},4000);}
   function connectTg(){
+    // window.open AFTER an async fetch is popup-blocked on mobile (the tap gesture is spent) — so open the
+    // tab synchronously inside the tap, then point it at the t.me link; if even that is blocked (PWA), show a REAL anchor.
+    var w=null;try{w=window.open('about:blank','_blank');}catch(e){}
     tgHint.textContent='Opening Telegram…';
     fetch('/api/alerts/tglink').then(function(r){return r.json();}).then(function(d){
-      if(d.linked){tgLinked=true;renderTgHint();return;}
-      if(d.url){window.open(d.url,'_blank');tgHint.innerHTML='Opened Telegram — tap <b>Start</b> in the bot, then <a href="#" id="tgChk">tap here</a>.';var ch=document.getElementById('tgChk');if(ch)ch.addEventListener('click',function(e){e.preventDefault();load();});}
-      else tgHint.textContent='Could not start linking — try again.';
-    }).catch(function(){tgHint.textContent='Network error — try again.';});
+      if(d.linked){if(w)try{w.close();}catch(e){};tgLinked=true;renderTgHint();return;}
+      if(d.url){
+        if(w){try{w.location.href=d.url;}catch(e){}}
+        tgHint.innerHTML='In Telegram tap <b>Start</b> — waiting for the link… &nbsp;<a href="'+d.url+'" target="_blank" rel="noopener" style="font-weight:700">Open Telegram</a>';
+        startTgPoll();
+      } else {
+        if(w)try{w.close();}catch(e){}
+        tgHint.textContent=(d&&(d.error==='not_signed_in'||d.error==='login_required'))?'Sign in first, then connect Telegram.':'Could not start linking — try again.';
+      }
+    }).catch(function(){if(w)try{w.close();}catch(e){};tgHint.textContent='Network error — try again.';});
   }
+  document.addEventListener('visibilitychange',function(){if(!document.hidden&&channel==='telegram'&&!tgLinked)load();});
   if(chSeg)chSeg.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;channel=b.getAttribute('data-ch');Array.prototype.forEach.call(this.querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});renderTgHint();});
 
   var pxTimer=null;
