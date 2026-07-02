@@ -338,7 +338,10 @@
   function reloadKlinesThrottled(){var now=Date.now();if(now-_klReload<12000)return;_klReload=now;loadKlines();}
   function liveCandle(){var pd=window.mpPlanLive,pdFresh=(pd&&pd.sym===chartSym&&pd.price>0&&pd.t&&Date.now()-pd.t<6000);
     /* the WS-fed form price (window.mpPlanLive) is the real-time truth — but ONLY while it's fresh. If it goes stale (form feed paused/disconnected) fall back to the chart's own /api/price poll so the chart can NEVER freeze on a stale value. */
-    var p=pdFresh?pd.price:((prices[chartSym]&&prices[chartSym].p)||(pd&&pd.sym===chartSym&&pd.price>0?pd.price:0));
+    var p=0;
+    if(pdFresh)p=pd.price;
+    else{var _pr=prices[chartSym],_prT=(_pr&&_pr.p>0)?(_pr.t||0):-1,_pdT=(pd&&pd.sym===chartSym&&pd.price>0)?(pd.t||0):-1;
+      if(_prT>=0||_pdT>=0)p=(_prT>=_pdT)?_pr.p:pd.price;}/* both sources stale → use the FRESHER one (the old code preferred the poll map even when it was minutes older than the WS value) */
     if(!candle||!lastBar||!(p>0))return;var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(Date.now()/1000/ivSec)*ivSec;
     if(nowBar-lastBar.time>ivSec*1.5){reloadKlinesThrottled();return;} // more than one interval missing → refetch real candles instead of leaving a hole
     if(nowBar>lastBar.time){var _op=lastBar.close,_spk=(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025),_cl=_spk?_op:p;lastBar={time:nowBar,open:_op,high:Math.max(_op,_cl),low:Math.min(_op,_cl),close:_cl};if(!_spk)_lgp=p;_rej=0;/* new candle opens at the prior close (contiguous — no "from the sky" gap) and ignores a spiked first print */try{chart.timeScale().scrollToRealTime();}catch(e){}_dispP=lastBar.close;try{candle.update(lastBar);}catch(e){}}else{if(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025){if(++_rej<3)return;/* reject a lone >2.5% print (a bad tick that would ratchet a fake wick); accept only if 3 in a row confirm it's a real move */}_lgp=p;_rej=0;lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;startSmoothP();}}

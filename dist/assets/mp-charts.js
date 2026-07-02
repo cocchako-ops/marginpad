@@ -474,6 +474,7 @@
   }
   function liveTick(w,p){ if(!w.candle||!w.lastBar||!(p>0))return;
     var ivSec=parseInt(w.tf,10)*60,nowBar=Math.floor(Date.now()/1000/ivSec)*ivSec,nb=false;
+    if(nowBar-w.lastBar.time>ivSec*1.5){ if(!w._gapT||Date.now()-w._gapT>12000){w._gapT=Date.now();refreshData(w);} return; } /* missed >1 interval (throttled/backgrounded tab, feed pause) → refetch the real candles instead of leaving a hole (mirrors the Paper Trade engine) */
     if(nowBar>w.lastBar.time){var _wop=w.lastBar.close,_wspk=(w._lgp>0&&Math.abs(p-w._lgp)/w._lgp>0.025),_wcl=_wspk?_wop:p;w.lastBar={time:nowBar,open:_wop,high:Math.max(_wop,_wcl),low:Math.min(_wop,_wcl),close:_wcl};w.bars.push(w.lastBar);if(!_wspk)w._lgp=p;w._rej=0;nb=true;}/* new candle opens at the prior close (contiguous) + spike-filtered seed → no disconnected "from the sky" bar */
     else{if(w._lgp>0&&Math.abs(p-w._lgp)/w._lgp>0.025){if((w._rej=(w._rej||0)+1)<3)return;}/* reject a lone >2.5% print that would ratchet a fake wick */w._lgp=p;w._rej=0;w.lastBar.close=p;if(p>w.lastBar.high)w.lastBar.high=p;if(p<w.lastBar.low)w.lastBar.low=p;}
     if(nb){w._disp=w.lastBar.close;try{w.candle.update(w.lastBar);}catch(e){}applyInds(w);try{w.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){} } // a fresh bar appears instantly + re-fit the price scale so candles never get clipped to "half" if the vertical scale drifted/locked over a long session
@@ -498,7 +499,22 @@
     }
     if(active){_smRun=true;requestAnimationFrame(smoothLoop);}
   }
-  document.addEventListener('visibilitychange',function(){if(!document.hidden)startSmooth();});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden){startSmooth();
+    wins.forEach(function(w){if(!w.dead&&w.candle)refreshData(w);});/* returning from a backgrounded tab: force a real klines re-sync NOW instead of waiting up to 60s (intervals were throttled while hidden → the forming candle froze / a gap formed) */
+  }});
+  /* CHART LIVENESS WATCHDOG (same cure as the Paper Trade chart) — every 6s per window while visible:
+     (1) re-assert autoScale ONLY when the realtime edge is in view (a locked/drifted price scale makes a chart LOOK
+         frozen even though data updates — and on 5m+ new-bar re-fits are rare); never fights a user scrolled into history.
+     (2) if NO price has reached this window for >15s (WS quiet for the symbol AND the 12s REST poll failing/skipped),
+         hard-recover: re-subscribe the WS and re-sync the candles. A chart can stay stale for at most ~15-20s. */
+  setInterval(function(){ if(document.hidden)return; var now=Date.now();
+    for(var i=0;i<wins.length;i++){ var w=wins[i]; if(w.dead||!w.candle)continue;
+      try{var vr=w.chart.timeScale().getVisibleLogicalRange();if(!vr||!w.bars||!w.bars.length||vr.to>=w.bars.length-2)w.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}
+      var src=Math.max(w._wsT||0,w._pollT||0);
+      if(!src||now-src>15000){ try{if(window.mpWS)window.mpWS.sub(w.sym);}catch(e){} w._pollT=now;/* claim the slot so the next sweep doesn't double-fire while the fetch is in flight */
+        (function(w){fetch('/api/price?symbol='+encodeURIComponent(w.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(w.dead)return;var px=j&&+(j.price||j.p||j.last||0);if(px>0){w._pollT=Date.now();liveTick(w,px);}else if(!w._gapT||Date.now()-w._gapT>12000){w._gapT=Date.now();refreshData(w);}});})(w);
+      }
+    } },6000);
   function bringFront(w){wins.forEach(function(x){if(x.el)x.el.classList.remove('front');});if(w.el){w.el.classList.add('front');w.el.style.zIndex=++zTop;}}
   // sync the crosshair (vertical time line) across every chart window, so hovering one reads them all at the same moment
   var _xhSync=false,_xhSyncOn=false; // crosshair sync is OFF by default — only the hovered chart shows the crosshair
@@ -584,7 +600,7 @@
       var x=(cfg.x!=null)?cfg.x:Math.min(bw-ww,18+i*30),y=(cfg.y!=null)?cfg.y:Math.min(bh-wh,18+i*30);
       w.el.style.width=ww+'px';w.el.style.height=wh+'px';w.el.style.left=Math.max(0,Math.min(x,bw-ww))+'px';w.el.style.top=Math.max(0,Math.min(y,bh-wh))+'px';}
     board.appendChild(w.el); wins.push(w); renumber(); bringFront(w); wireWin(w); setupDraw(w); buildChart(w);
-    w.poll=setInterval(function(){ if(w.dead)return; if(w._wsT&&Date.now()-w._wsT<30000)return; /* WS feed is the single source of truth — don't let the REST value (a different exchange) clobber a fresh tick and flicker the forming candle */ fetch('/api/price?symbol='+encodeURIComponent(w.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(!j||w.dead)return;var px=+(j.price||j.p||j.last||j.c||0);if(px>0)liveTick(w,px);}); },12000);
+    w.poll=setInterval(function(){ if(w.dead)return; if(w._wsT&&Date.now()-w._wsT<30000)return; /* WS feed is the single source of truth — don't let the REST value (a different exchange) clobber a fresh tick and flicker the forming candle */ fetch('/api/price?symbol='+encodeURIComponent(w.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(!j||w.dead)return;var px=+(j.price||j.p||j.last||j.c||0);if(px>0){w._pollT=Date.now();liveTick(w,px);}}); },12000);
     w.refreshT=setInterval(function(){ if(!w.dead&&!document.hidden)refreshData(w); },60000); // self-heal any phantom wick from a bad live tick by re-syncing with the true klines every 60s
     updateCount(); }
   document.addEventListener('mp:price',function(ev){ if(!ev.detail)return; var s=ev.detail.sym,p=+ev.detail.price; if(!(p>0))return;

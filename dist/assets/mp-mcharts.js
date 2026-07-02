@@ -228,7 +228,16 @@
   window.mpOpenCharts=open;
   // live ticks
   document.addEventListener('mp:price',function(ev){if(!ov||ov.hidden||!ev.detail)return;panes.forEach(function(p){if(p.sym===ev.detail.sym)live(p);});});
-  setInterval(function(){if(ov&&!ov.hidden)panes.forEach(live);},2000);
+  setInterval(function(){if(!ov||ov.hidden)return;panes.forEach(function(p){
+    // liveness: if the WS hasn't ticked this symbol for >8s, pull a REST price so the pane can NEVER freeze on a stale value
+    var lp=window.mpLivePrices&&window.mpLivePrices[p.sym];
+    if(!lp||!lp.t||Date.now()-lp.t>8000){ try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(e){}
+      if(!p._rf||Date.now()-p._rf>8000){ p._rf=Date.now();
+        fetch('/api/price?symbol='+encodeURIComponent(p.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){var px=j&&+j.price;if(px>0&&window.mpLivePrices){window.mpLivePrices[p.sym]={p:px,t:Date.now(),chg:(j.chg!=null?+j.chg:(lp&&lp.chg))};}live(p);});
+      } return; }
+    live(p);});},2000);
+  // returning to the tab: the 60s reload gate only fires from live ticks, so force a real klines re-sync immediately
+  document.addEventListener('visibilitychange',function(){if(!document.hidden&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)loadKlines(p);});});
   // Browse "Charts" → open full-screen on mobile (intercept before navigation)
   document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-mcharts]');if(!t)return;if(isMob()){e.preventDefault();e.stopPropagation();open();}},true);
   // landing on /charts on a phone → open the full-screen experience automatically
