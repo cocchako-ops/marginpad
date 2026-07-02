@@ -19,13 +19,25 @@ self.addEventListener('fetch', function (e) {
   var url; try { url = new URL(req.url); } catch (_) { return; }
   if (url.origin !== self.location.origin) return;
   if (url.pathname.indexOf('/api/') === 0 || url.pathname.indexOf('/chat/') === 0) return;
-  if (url.pathname.indexOf('/assets/') === 0) { // stale-while-revalidate
-    e.respondWith(caches.open(CACHE).then(function (c) {
-      return c.match(req).then(function (hit) {
-        var net = fetch(req).then(function (res) { if (res && res.ok) c.put(req, res.clone()); return res; }).catch(function () { return hit; });
-        return hit || net;
-      });
-    }));
+  if (url.pathname.indexOf('/assets/') === 0) {
+    // Versioned bundles (?v=hash) + fonts/images: stale-while-revalidate — a new version is a new URL, so
+    // serving from cache can never be wrong. Unversioned JS/CSS (mp-trade.js, i18n.js, …): NETWORK-first with
+    // cache fallback, so a hotfix deploy reaches every open browser on the very next load.
+    var immutable = url.searchParams.has('v') || /\.(woff2?|png|jpe?g|webp|svg|ico)$/.test(url.pathname);
+    if (immutable) {
+      e.respondWith(caches.open(CACHE).then(function (c) {
+        return c.match(req).then(function (hit) {
+          var net = fetch(req).then(function (res) { if (res && res.ok) c.put(req, res.clone()); return res; }).catch(function () { return hit; });
+          if (hit) { e.waitUntil(net.catch(function () {})); return hit; }
+          return net;
+        });
+      }));
+    } else {
+      e.respondWith(fetch(req).then(function (res) {
+        if (res && res.ok) { var copy = res.clone(); e.waitUntil(caches.open(CACHE).then(function (c) { return c.put(req, copy); })); }
+        return res;
+      }).catch(function () { return caches.match(req); }));
+    }
     return;
   }
   if (req.mode === 'navigate') { // network-first with offline fallback

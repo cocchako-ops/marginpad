@@ -1225,7 +1225,7 @@ async function handleBug(url, request, env) {
   if (!authed('')) return new Response(adminLoginHTML('Message Claude', !bugPass, '/api/bug/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
   const bugs = await listBugs();
   const LINKS = [
-    ['📊', 'Stats dashboard', '/api/stats?key=' + encodeURIComponent(KEY)],
+    ['📊', 'Stats dashboard', '/api/stats?key=' + encodeURIComponent(adminKeyOf(env))],
     ['💬', 'This inbox', '/api/bug'],
     ['🌐', 'Live site', '/'],
     ['🗺️', 'Sitemap', '/sitemap.xml'],
@@ -1340,7 +1340,7 @@ async function handleStats(url, env, request) {
     return new Response(adminLoginHTML('Stats dashboard', !_stored, '/api/stats/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
   }
   if (!env || !env.STATS) return new Response('No storage', { status: 500 });
-  if (url.searchParams.get('clearerr')) { try { await env.STATS.delete('srverrlog'); await env.STATS.delete('st:cache'); } catch (e) {} return Response.redirect(url.origin + url.pathname + '?key=' + encodeURIComponent(url.searchParams.get('key') || '') + '&nc=1', 302); } // dismiss the resolved error log
+  if (url.searchParams.get('clearerr') && isAdminKey(env, url.searchParams.get('key'))) { try { await env.STATS.delete('srverrlog'); await env.STATS.delete('st:cache'); } catch (e) {} return Response.redirect(url.origin + url.pathname + '?key=' + encodeURIComponent(url.searchParams.get('key') || '') + '&nc=1', 302); } // dismiss the resolved error log (admin key only — it deletes data)
   const htmlResp = (h) => new Response(h, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
   // #6 — lightweight live feed for the dashboard's 12s poller. Direct key reads only (NO list) so it never
   // touches the 1000/day list quota. "online" is approximated from recent ring-buffer activity (exact count
