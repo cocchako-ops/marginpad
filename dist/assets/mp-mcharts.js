@@ -45,7 +45,6 @@
       +'<div class="mfc-stage" id="mfcStage"></div>'
       +'<div class="mfc-rot">'+mcT('mcRotate','↻ Rotate your phone for a wider chart')+'</div>';
     document.body.appendChild(ov);
-    var fx=document.createElement('button');fx.className='mfc-fx';fx.setAttribute('data-act','close');fx.setAttribute('aria-label','Close charts');fx.textContent='✕';ov.appendChild(fx); /* ALWAYS-reachable close — after a landscape→portrait rotation iOS can leave the layout zoomed and push the toolbar ✕ off-screen */
     var gate=document.createElement('div');gate.className='mfc-gate';gate.hidden=true;
     gate.innerHTML='<button class="mfc-gate-x" data-gx aria-label="Close">✕</button>'
       +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18.5" x2="13" y2="18.5"/></svg>'
@@ -57,8 +56,17 @@
     ov.addEventListener('click',onBarClick);
     function onR(){if(!ov||ov.hidden)return;if(backWait){if(isPortrait())finishBack();return;}if(!entered){if(!isPortrait())proceed();return;}setTimeout(function(){panes.forEach(function(p){if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();});},140);}
     window.addEventListener('resize',function(){setTimeout(onR,120);});
-    window.addEventListener('orientationchange',function(){resetViewportHard();setTimeout(onR,300);});
+    window.addEventListener('orientationchange',function(){resetViewportHard();setTimeout(onR,300);setTimeout(pinBar,120);setTimeout(pinBar,500);});
+    if(window.visualViewport){window.visualViewport.addEventListener('resize',pinBar);window.visualViewport.addEventListener('scroll',pinBar);}
   }
+  function pinBar(){try{ var vv=window.visualViewport,bar=ov&&ov.querySelector('.mfc-bar'); if(!vv||!bar)return;
+    if(ov.hidden){bar.style.transform='';bar.style.width='';return;}
+    var sc=vv.scale||1,ox=vv.offsetLeft||0,oy=vv.offsetTop||0;
+    if(Math.abs(sc-1)<0.02&&ox<2&&oy<2){bar.style.transform='';bar.style.width='';return;}
+    bar.style.transformOrigin='0 0';
+    bar.style.width=(vv.width*sc)+'px';
+    bar.style.transform='translate('+ox+'px,'+oy+'px) scale('+(1/sc)+')';
+  }catch(e){}}
   function onBarClick(e){var b=e.target.closest&&e.target.closest('[data-act]');if(!b)return;var a=b.getAttribute('data-act');
     if(a==='close')return close();
     if(a==='split')return toggleSplit();
@@ -231,13 +239,13 @@
         +'<h3>'+mcT('mcBackT','Turn your phone upright')+'</h3><p>'+mcT('mcBackS','Charts closed — rotate back to keep browsing.')+'</p>'
         +'<button class="mfc-back-x" type="button">'+mcT('mcBackX','Exit anyway')+'</button>';
       ov.appendChild(backEl);
-      backEl.querySelector('.mfc-back-x').addEventListener('click',function(){finishBack();}); }
+      backEl.addEventListener('click',function(){finishBack();}); /* the whole dark panel is the exit — no button hunting, zoom-proof */ }
     backEl.hidden=false; var st=ov.querySelector('#mfcStage'),bar=ov.querySelector('.mfc-bar');if(st)st.style.visibility='hidden';if(bar)bar.style.visibility='hidden'; }
   function finishBack(){ backWait=false; if(backEl)backEl.hidden=true;
     var st=ov&&ov.querySelector('#mfcStage'),bar=ov&&ov.querySelector('.mfc-bar');if(st)st.style.visibility='';if(bar)bar.style.visibility='';
     reallyClose();
     if(backBrowse){backBrowse=false;setTimeout(function(){try{if(window.__openBrowse)window.__openBrowse();}catch(e){}},220);} /* land the user straight in Browse, as requested */ }
-  function reallyClose(){ if(!ov)return; ov.hidden=true; document.documentElement.style.overflow=''; closeSheet(); closeFloat(); resetViewportHard(); }
+  function reallyClose(){ if(!ov)return; ov.hidden=true; document.documentElement.style.overflow=''; closeSheet(); closeFloat(); resetViewportHard(); setTimeout(pinBar,80); }
   function close(){ if(!ov)return;
     if(!isPortrait()){ /* closing in LANDSCAPE used to dump the user on an 844px-wide page → the DESKTOP homepage flashed and iOS kept a ~25% zoom. Hold a dark "rotate back" panel instead; portrait finishes the close and opens Browse. */
       backWait=true; backBrowse=true; closeSheet(); closeFloat(); showBack(); return; }
