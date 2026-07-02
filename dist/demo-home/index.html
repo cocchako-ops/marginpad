@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="noindex,nofollow" />
+<meta name="theme-color" content="#08090b" />
+<title>MarginPad — Demo homepage (full-width)</title>
+<link rel="icon" href="/favicon.ico" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css">
+<style>
+  :root{--bg:#08090b;--panel:#0e1116;--panel2:#11151b;--line:#1c2230;--line2:#2a3140;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--cyan:#3fd8e6;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{touch-action:manipulation;}
+  body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  a{color:inherit;text-decoration:none;}
+  .mono{font-family:'Space Mono',monospace;}
+
+  /* ---------- header ---------- */
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px clamp(16px,2.6vw,52px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;background:rgba(8,9,11,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);}
+  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em;}
+  .brand b{color:var(--lime);}
+  .hnav{display:flex;align-items:center;gap:22px;font-size:14px;font-weight:600;color:var(--dim);}
+  .hnav a:hover{color:var(--ink);}
+  .hnav .cta{background:var(--lime);color:#0a0b0d;font-weight:800;border-radius:10px;padding:9px 16px;}
+  @media(max-width:760px){.hnav a:not(.cta){display:none;}}
+
+  /* ---------- ticker tape ---------- */
+  .tape{border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap;background:#0a0d11;}
+  .tape-in{display:inline-block;padding:9px 0;animation:tape 60s linear infinite;}
+  .tape span{font-family:'Space Mono',monospace;font-size:12px;color:var(--dim);margin:0 22px;}
+  .tape b{color:var(--ink);font-weight:700;}
+  .tape .up{color:var(--grn);}.tape .dn{color:var(--red);}
+  @keyframes tape{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ---------- hero ---------- */
+  .hero{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;padding:clamp(30px,4.5vw,64px) clamp(16px,2.6vw,52px) clamp(18px,2.4vw,34px);}
+  .hero h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,4.4vw,62px);line-height:1.04;letter-spacing:-.03em;max-width:820px;}
+  .hero h1 b{color:var(--lime);}
+  .hero p{color:var(--dim);font-size:clamp(14px,1.2vw,16.5px);margin-top:12px;max-width:560px;line-height:1.55;}
+  .hero-right{text-align:right;flex:0 0 auto;}
+  .hr-lbl{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);}
+  .hr-px{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(26px,2.6vw,40px);color:var(--grn);letter-spacing:-.02em;}
+  .hr-chg{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;}
+  .hr-fng{display:inline-flex;align-items:center;gap:7px;margin-top:10px;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;border:1px solid var(--line2);border-radius:99px;padding:6px 12px;color:var(--dim);}
+  @media(max-width:760px){.hero{flex-direction:column;align-items:flex-start;}.hero-right{text-align:left;}}
+
+  /* ---------- bento ---------- */
+  .bento{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;padding:0 clamp(16px,2.6vw,52px) clamp(30px,3vw,56px);}
+  .tile{position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;padding:20px;min-height:150px;transition:transform .16s,border-color .16s,box-shadow .16s;overflow:hidden;}
+  a.tile:hover{transform:translateY(-3px);border-color:rgba(194,246,74,.5);box-shadow:0 18px 44px -20px rgba(0,0,0,.8),0 0 24px -12px rgba(194,246,74,.35);}
+  .t-kick{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--faint);margin-bottom:8px;display:flex;align-items:center;gap:7px;}
+  .t-kick .dot{width:6px;height:6px;border-radius:50%;background:var(--grn);box-shadow:0 0 8px var(--grn);animation:pulse 1.6s infinite;}
+  .t-kick .dot.red{background:var(--red);box-shadow:0 0 8px var(--red);}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .t-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.01em;}
+  .t-sub{color:var(--dim);font-size:13px;line-height:1.5;margin-top:5px;}
+  .t-go{margin-top:auto;padding-top:14px;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;color:var(--lime);}
+  .s3{grid-column:span 3;}.s4{grid-column:span 4;}.s6{grid-column:span 6;}.s12{grid-column:span 12;}
+  @media(max-width:1100px){.s3{grid-column:span 6;}.s4{grid-column:span 6;}.s6{grid-column:span 12;}}
+  @media(max-width:640px){.s3,.s4,.s6{grid-column:span 12;}.bento{gap:10px;}}
+
+  .sec-lbl{grid-column:span 12;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--faint);padding:18px 2px 2px;}
+
+  /* live bits inside tiles */
+  #ptSpark{position:absolute;inset:auto 0 0 0;width:100%;height:78px;opacity:.9;pointer-events:none;}
+  .pt-tile{min-height:240px;}
+  .pt-px{font-family:'Space Mono',monospace;font-weight:700;font-size:15px;color:var(--grn);margin-top:8px;}
+  .mv-row,.mk-row,.lbx-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-top:1px solid rgba(255,255,255,.05);font-size:13px;}
+  .mv-row:first-of-type,.mk-row:first-of-type,.lbx-row:first-of-type{border-top:none;}
+  .mv-sym{font-family:'Space Mono',monospace;font-weight:700;flex:0 0 58px;}
+  .mv-px{color:var(--dim);flex:1;text-align:right;font-family:'Space Mono',monospace;font-size:12px;}
+  .mv-chg{font-family:'Space Mono',monospace;font-weight:700;font-size:12px;flex:0 0 64px;text-align:right;}
+  .up{color:var(--grn);}.dn{color:var(--red);}
+  .fng-big{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:52px;line-height:1;margin:6px 0 2px;}
+  .fng-cls{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;}
+  .fng-bar{height:8px;border-radius:99px;margin-top:14px;background:linear-gradient(90deg,#ff5a4d,#ff9f43,#f3d44a,#7fd957,#2ebd85);position:relative;}
+  .fng-bar i{position:absolute;top:-4px;width:4px;height:16px;border-radius:3px;background:#fff;box-shadow:0 0 0 2px #08090b;transform:translateX(-50%);}
+  .calc-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .calc-chips a{font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;color:var(--dim);border:1px solid var(--line2);border-radius:99px;padding:8px 14px;transition:.13s;}
+  .calc-chips a:hover{color:#0a0b0d;background:var(--lime);border-color:var(--lime);}
+  .news-row{display:block;padding:9px 0;border-top:1px solid rgba(255,255,255,.05);font-size:13.5px;line-height:1.45;color:var(--ink);}
+  .news-row:first-of-type{border-top:none;}
+  .news-row:hover{color:var(--lime);}
+  .code{font-family:'Space Mono',monospace;font-size:10.5px;color:#8fd8a8;background:#0a0c0f;border:1px solid var(--line);border-radius:9px;padding:9px 11px;margin-top:10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  .lbx-who{font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .lbx-roe{font-family:'Space Mono',monospace;font-weight:700;color:var(--grn);font-size:12.5px;}
+  .tile.lime{border-color:rgba(194,246,74,.45);background:linear-gradient(180deg,rgba(194,246,74,.10),rgba(194,246,74,.02)),linear-gradient(180deg,var(--panel2),var(--panel));}
+  .tile.lime .t-go{color:var(--lime);}
+  .tools-list{display:flex;flex-direction:column;margin-top:6px;}
+  .tools-list span{padding:6px 0;border-top:1px solid rgba(255,255,255,.05);font-size:13px;color:var(--dim);}
+  .tools-list span:first-child{border-top:none;}
+  .defi-tvl{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:34px;color:var(--cyan);margin-top:6px;letter-spacing:-.02em;}
+
+  footer{border-top:1px solid var(--line);padding:20px clamp(16px,2.6vw,52px);display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;color:var(--faint);font-size:12.5px;}
+  footer a{color:var(--dim);margin-right:14px;}
+  .demo-note{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:60;background:rgba(194,246,74,.95);color:#0a0b0d;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;border-radius:99px;padding:8px 16px;box-shadow:0 8px 30px rgba(0,0,0,.5);}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="/">MARGIN<b>PAD</b></a>
+  <nav class="hnav">
+    <a href="/screener">Screener</a>
+    <a href="/coins/">Markets</a>
+    <a href="/rekt/">Rekt</a>
+    <a href="/tools/">Tools</a>
+    <a href="/where-to-start/">Learn</a>
+    <a class="cta" href="/paper-trade">Open Paper Trade</a>
+  </nav>
+</header>
+
+<div class="tape"><div class="tape-in" id="tape"></div></div>
+
+<section class="hero">
+  <div>
+    <h1>Every crypto futures tool.<br>One free <b>terminal</b>.</h1>
+    <p>Practice with live prices, screen 200+ markets, watch liquidations in real time, backtest strategies and learn from zero — no deposit, no KYC, no catch.</p>
+  </div>
+  <div class="hero-right">
+    <div class="hr-lbl">BTC / USDT · live</div>
+    <div class="hr-px" id="hBtc">…</div>
+    <div class="hr-chg" id="hBtcChg"></div>
+    <div class="hr-fng" id="hFng">Fear &amp; Greed …</div>
+  </div>
+</section>
+
+<div class="bento">
+
+  <div class="sec-lbl">Trade</div>
+
+  <a class="tile s6 pt-tile" href="/paper-trade">
+    <div class="t-kick"><span class="dot"></span> Live price · zero risk</div>
+    <div class="t-title">Paper Trade Terminal</div>
+    <div class="t-sub">Open long/short up to 1000× at the real live price — SL/TP, trailing stops, partial closes, full P&amp;L. Practice until it's boring.</div>
+    <div class="pt-px" id="ptPx"></div>
+    <div class="t-go">Open a demo trade →</div>
+    <canvas id="ptSpark"></canvas>
+  </a>
+
+  <a class="tile s3" href="/screener">
+    <div class="t-kick"><span class="dot"></span> Top movers · 24h</div>
+    <div class="t-title">Screener</div>
+    <div id="movers" style="margin-top:8px"><div class="t-sub">loading…</div></div>
+    <div class="t-go">Screen 200+ pairs →</div>
+  </a>
+
+  <a class="tile s3" href="/rekt/">
+    <div class="t-kick"><span class="dot red"></span> Real-time feed</div>
+    <div class="t-title">Rekt — Liquidations</div>
+    <div class="t-sub">Watch leveraged positions get destroyed live, exchange by exchange. The best free risk lesson on the internet.</div>
+    <div class="t-go">Watch the carnage →</div>
+  </a>
+
+  <a class="tile s3" href="/charts">
+    <div class="t-kick">Workspace</div>
+    <div class="t-title">Multi-chart Workspace</div>
+    <div class="t-sub">Up to 10 floating chart windows, 12 indicators, drawing tools, sticky notes and an AI analyst that reads your chart.</div>
+    <div class="t-go">Build your desk →</div>
+  </a>
+
+  <a class="tile s3" href="/coins/">
+    <div class="t-kick"><span class="dot"></span> Live markets</div>
+    <div class="t-title">Markets</div>
+    <div id="mkts" style="margin-top:8px"><div class="t-sub">loading…</div></div>
+    <div class="t-go">Top 250 coins →</div>
+  </a>
+
+  <a class="tile s3" href="/alerts/">
+    <div class="t-kick">Email · Telegram</div>
+    <div class="t-title">Price Alerts</div>
+    <div class="t-sub">Set a target, walk away. We watch the market and ping you the second it crosses — email or Telegram.</div>
+    <div class="t-go">Set an alert →</div>
+  </a>
+
+  <div class="sec-lbl">Analyze</div>
+
+  <div class="tile s6">
+    <div class="t-kick">Instant math</div>
+    <div class="t-title">Futures Calculators</div>
+    <div class="t-sub">Know your liquidation price and position size before you enter — not after.</div>
+    <div class="calc-chips">
+      <a href="/calculators?c=liq">Liquidation</a><a href="/calculators?c=size">Position size</a><a href="/calculators?c=pnl">PnL / ROI</a><a href="/calculators?c=dca">DCA</a><a href="/calculators?c=tp">Take-profit</a><a href="/calculators?c=rr">Risk / reward</a>
+    </div>
+    <a class="t-go" href="/calculators" style="padding-top:16px">All calculators →</a>
+  </div>
+
+  <a class="tile s3" href="/fear-greed/">
+    <div class="t-kick"><span class="dot"></span> Sentiment</div>
+    <div class="t-title">Fear &amp; Greed</div>
+    <div class="fng-big" id="fngV">—</div>
+    <div class="fng-cls" id="fngC">loading…</div>
+    <div class="fng-bar"><i id="fngM" style="left:50%"></i></div>
+  </a>
+
+  <a class="tile s3" href="/tools/">
+    <div class="t-kick">5 free tools</div>
+    <div class="t-title">Trading Tools</div>
+    <div class="tools-list"><span>Strategy Backtester</span><span>Trading Journal &amp; stats</span><span>Risk of Ruin</span><span>Pivot Points</span><span>Correlation Matrix</span></div>
+    <div class="t-go">Open the toolkit →</div>
+  </a>
+
+  <a class="tile s3" href="/trading-api/">
+    <div class="t-kick">For builders</div>
+    <div class="t-title">Trading Bot API</div>
+    <div class="t-sub">Test your bot for free against real live prices — REST API with leverage, SL/TP and liquidation simulation.</div>
+    <div class="code">curl marginpad.io/api/bot/v1/price?symbol=BTC</div>
+    <div class="t-go">Get a free API key →</div>
+  </a>
+
+  <a class="tile s3" href="/defi/">
+    <div class="t-kick"><span class="dot"></span> DeFi overview</div>
+    <div class="t-title">DeFi TVL</div>
+    <div class="defi-tvl" id="tvl">—</div>
+    <div class="t-sub">Total value locked · top chains, protocols and stablecoins.</div>
+    <div class="t-go">Explore DeFi →</div>
+  </a>
+
+  <a class="tile s6" href="/news/">
+    <div class="t-kick"><span class="dot"></span> Headlines</div>
+    <div class="t-title">Crypto News</div>
+    <div id="news" style="margin-top:6px"><div class="t-sub">loading…</div></div>
+    <div class="t-go">All news →</div>
+  </a>
+
+  <div class="sec-lbl">Learn &amp; Earn</div>
+
+  <a class="tile s3" href="/where-to-start/">
+    <div class="t-kick">From zero</div>
+    <div class="t-title">Where to Start</div>
+    <div class="t-sub">A free guided path: what leverage really is, how liquidation works, and missions that walk you through every tool.</div>
+    <div class="t-go">Start learning →</div>
+  </a>
+
+  <a class="tile s3" href="/blog/">
+    <div class="t-kick">65+ guides</div>
+    <div class="t-title">Blog &amp; Guides</div>
+    <div class="t-sub">Leverage, stop-losses, funding, taxes by country, exchange comparisons — written for humans.</div>
+    <div class="t-go">Read the guides →</div>
+  </a>
+
+  <a class="tile s3 lime" href="/rewards/">
+    <div class="t-kick" style="color:#a9d33f"><span class="dot" style="background:var(--lime);box-shadow:0 0 8px var(--lime)"></span> Free USDT</div>
+    <div class="t-title">Rewards</div>
+    <div class="t-sub">Claim free USDT every 5 minutes, post about us for $1 a post, win the weekly trading league. Withdraw real USDT.</div>
+    <div class="t-go">Start earning →</div>
+  </a>
+
+  <a class="tile s3" href="/rewards/#league">
+    <div class="t-kick"><span class="dot"></span> Weekly league</div>
+    <div class="t-title">Leaderboard</div>
+    <div id="lbx" style="margin-top:8px"><div class="t-sub">loading…</div></div>
+    <div class="t-go">Compete for $60 →</div>
+  </a>
+
+</div>
+
+<footer>
+  <div><a href="/about/">About</a><a href="/contact/">Contact</a><a href="/privacy/">Privacy</a><a href="https://t.me/MarginPadBot">Telegram</a></div>
+  <div>© 2026 MarginPad · Not financial advice</div>
+</footer>
+
+<div class="demo-note">DEMO — predlog novog homepage-a</div>
+
+<script>
+(function(){
+  var fmt=function(n){n=+n;if(!isFinite(n))return '—';return n>=1000?n.toLocaleString('en-US',{maximumFractionDigits:n>=10000?0:1}):n>=1?n.toFixed(2):n.toPrecision(3);};
+  var pc=function(v){v=+v;return '<span class="'+(v>=0?'up':'dn')+'">'+(v>=0?'+':'')+v.toFixed(2)+'%</span>';};
+
+  // ticker tape + hero BTC (poll /api/prices every 15s)
+  function prices(){fetch('/api/prices').then(function(r){return r.json();}).then(function(d){
+    var ps=(d&&d.pairs)||[];if(!ps.length)return;
+    var html=ps.map(function(p){var s=p.symbol.replace('USDT','');var v=+p.changePct;return '<span><b>'+s+'</b> $'+fmt(p.price)+' <span class="'+(v>=0?'up':'dn')+'">'+(v>=0?'+':'')+v.toFixed(2)+'%</span></span>';}).join('');
+    document.getElementById('tape').innerHTML=html+html; // duplicated for the seamless loop
+    var btc=ps.filter(function(p){return p.symbol==='BTCUSDT';})[0];
+    if(btc){document.getElementById('hBtc').textContent='$'+fmt(btc.price);
+      var c=+btc.changePct;var e=document.getElementById('hBtcChg');e.innerHTML=(c>=0?'▲ +':'▼ ')+c.toFixed(2)+'% today';e.className='hr-chg '+(c>=0?'up':'dn');
+      var pt=document.getElementById('ptPx');if(pt)pt.textContent='BTC $'+fmt(btc.price)+' · live';}
+  }).catch(function(){});}
+  prices();setInterval(prices,15000);
+
+  // screener → movers + markets tiles
+  fetch('/api/screener').then(function(r){return r.json();}).then(function(d){
+    var rows=(d&&d.rows)||[];if(!rows.length)return;
+    var mv=rows.slice().sort(function(a,b){return Math.abs(+b.chg)-Math.abs(+a.chg);}).slice(0,5);
+    document.getElementById('movers').innerHTML=mv.map(function(r){return '<div class="mv-row"><span class="mv-sym">'+r.s+'</span><span class="mv-px">$'+fmt(r.p)+'</span><span class="mv-chg">'+pc(r.chg)+'</span></div>';}).join('');
+    var mk=rows.slice(0,5);
+    document.getElementById('mkts').innerHTML=mk.map(function(r){return '<div class="mk-row"><span class="mv-sym">'+r.s+'</span><span class="mv-px">$'+fmt(r.p)+'</span><span class="mv-chg">'+pc(r.chg)+'</span></div>';}).join('');
+  }).catch(function(){});
+
+  // fear & greed
+  fetch('/api/fng').then(function(r){return r.json();}).then(function(d){
+    var now=d&&d.data&&d.data[0];if(!now)return;var v=+now.v;
+    var col=v<25?'#ff5a4d':v<45?'#ff9f43':v<55?'#f3d44a':v<76?'#7fd957':'#2ebd85';
+    var el=document.getElementById('fngV');el.textContent=v;el.style.color=col;
+    var c=document.getElementById('fngC');c.textContent=now.c;c.style.color=col;
+    document.getElementById('fngM').style.left=v+'%';
+    document.getElementById('hFng').innerHTML='Fear &amp; Greed <b style="color:'+col+'">'+v+' · '+now.c+'</b>';
+  }).catch(function(){});
+
+  // news
+  fetch('/api/news').then(function(r){return r.json();}).then(function(d){
+    var it=((d&&d.items)||[]).slice(0,4);if(!it.length)return;
+    document.getElementById('news').innerHTML=it.map(function(n){return '<span class="news-row">'+String(n.title||'').replace(/</g,'&lt;')+'</span>';}).join('');
+  }).catch(function(){});
+
+  // leaderboard
+  fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){
+    var top=((d&&d.top)||[]).slice(0,3);if(!top.length)return;var med=['1.','2.','3.'];
+    document.getElementById('lbx').innerHTML=top.map(function(t,i){return '<div class="lbx-row"><span class="mono" style="color:#5c656f;flex:0 0 20px">'+med[i]+'</span><span class="lbx-who">'+String(t.who||'trader').replace(/</g,'&lt;')+'</span><span class="lbx-roe">+'+Math.round(+t.roe).toLocaleString('en-US')+'%</span></div>';}).join('');
+  }).catch(function(){});
+
+  // defi tvl
+  fetch('/api/defi/overview').then(function(r){return r.json();}).then(function(d){
+    if(!(d&&d.totalTvl>0))return;
+    document.getElementById('tvl').textContent='$'+(d.totalTvl/1e9).toFixed(1)+'B';
+  }).catch(function(){});
+
+  // BTC sparkline on the Paper Trade tile
+  fetch('/api/klines?symbol=BTC&interval=60').then(function(r){return r.json();}).then(function(k){
+    if(!Array.isArray(k)||k.length<10)return;var cv=document.getElementById('ptSpark');if(!cv)return;
+    var w=cv.offsetWidth||600,h=78;cv.width=w*2;cv.height=h*2;var g=cv.getContext('2d');g.scale(2,2);
+    var cs=k.slice(-90).map(function(b){return +b.close;});
+    var mn=Math.min.apply(null,cs),mx=Math.max.apply(null,cs),rg=(mx-mn)||1;
+    g.beginPath();
+    cs.forEach(function(c,i){var x=i/(cs.length-1)*w,y=h-6-((c-mn)/rg)*(h-14);i?g.lineTo(x,y):g.moveTo(x,y);});
+    var up=cs[cs.length-1]>=cs[0];g.strokeStyle=up?'#2ebd85':'#ff5a4d';g.lineWidth=1.6;g.stroke();
+    g.lineTo(w,h);g.lineTo(0,h);g.closePath();
+    var gr=g.createLinearGradient(0,0,0,h);gr.addColorStop(0,(up?'rgba(46,189,133,.25)':'rgba(255,90,77,.25)'));gr.addColorStop(1,'rgba(0,0,0,0)');
+    g.fillStyle=gr;g.fill();
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>
