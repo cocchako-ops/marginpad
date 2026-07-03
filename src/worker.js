@@ -2337,6 +2337,37 @@ async function sendAlertEmail(env, to, sym, dir, target, cur, note) {
   } catch (e) { return { ok: false }; }
 }
 // Cron: evaluate account price-alerts (UserStore DO) and email the ones that trigger. Runs alongside the Telegram alert cron.
+// Congratulate + notify a weekly leaderboard winner by email (Resend, from hello@marginpad.io).
+async function sendLeaderboardEmail(env, to, info) {
+  if (!env.RESEND_API_KEY || !to) return { ok: false };
+  const medal = info.rank === 1 ? '\uD83E\uDD47' : info.rank === 2 ? '\uD83E\uDD48' : '\uD83E\uDD49';
+  const place = info.rank === 1 ? '1st' : info.rank === 2 ? '2nd' : '3rd';
+  const prize = '$' + (Math.round(info.prizeUsd * 100) / 100).toFixed(2);
+  const roe = (info.roe >= 0 ? '+' : '') + Math.round(info.roe).toLocaleString('en-US') + '%';
+  const trade = (info.symbol ? String(info.symbol) : '') + (info.side ? ' ' + String(info.side) : '');
+  const esc = x => String(x == null ? '' : x).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
+  const hi = info.username ? ('@' + esc(info.username)) : 'trader';
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        from: 'MarginPad <hello@marginpad.io>', to: [to], reply_to: 'support@marginpad.io',
+        subject: medal + ' You finished ' + place + ' on the MarginPad leaderboard — ' + prize + ' is yours',
+        text: 'Congrats ' + hi + '!\n\nYou finished ' + place + ' place in this week\'s Trade League with a best trade of ' + roe + (trade ? ' on ' + trade : '') + '.\n\n' + prize + ' USDT has been credited to your Rewards balance. Withdraw it at https://marginpad.io/rewards/\n\nThe board just reset \u2014 defend your spot: https://marginpad.io/paper-trade\n\n\u2014 MarginPad',
+        html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:480px">'
+          + '<p style="font-size:40px;margin:0 0 4px">' + medal + '</p>'
+          + '<p style="font-size:22px;font-weight:800;margin:0 0 10px">You finished ' + place + ' place!</p>'
+          + '<p style="margin:0 0 14px">Congrats ' + hi + ' \u2014 your best paper trade this week was <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : '') + ', good enough for <b>' + place + '</b> on the weekly Trade League.</p>'
+          + '<p style="margin:0 0 16px;background:#f2fbdf;border:1px solid #c2f64a;border-radius:12px;padding:14px 16px"><b style="font-size:18px">' + prize + ' USDT</b> has been credited to your Rewards balance.</p>'
+          + '<p style="margin:0 0 18px"><a href="https://marginpad.io/rewards/" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-weight:800;padding:11px 20px;border-radius:10px">Withdraw your prize &rarr;</a></p>'
+          + '<p style="margin:0 0 4px;color:#444">The board just reset for a new week.</p>'
+          + '<p style="margin:0"><a href="https://marginpad.io/paper-trade" style="color:#15a06a;text-decoration:none;font-weight:700">Defend your spot &rarr;</a> &middot; <span style="color:#999">MarginPad \u2014 not financial advice</span></p></div>'
+      })
+    });
+    return { ok: r.ok };
+  } catch (e) { return { ok: false }; }
+}
+
 // Auto-credit the weekly Trade League top 3 with their prizes (from LIVE rewardCfg — owner can change the
 // budget from ops Settings and it applies at the next payout). Runs on the */10 cron. Idempotent: a KV flag
 // per week + a (week,acct) PRIMARY KEY in the ledger. Never back-pays weeks that ended before the feature was
@@ -2360,8 +2391,18 @@ async function payWeeklyPrizes(env) {
     try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
     const top3 = board.filter(x => x && x.uid && !banned[x.uid]).slice(0, 3);
     const payload = top3.map((x, i) => ({ acct: x.uid, cents: Math.round((prizes[i] || 0) * 100), rank: i + 1 })).filter(p => p.cents > 0);
+    let paidOut = [];
     if (payload.length) {
-      try { await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/paywinners', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ week: ws, winners: payload }) })); } catch (e) {}
+      try { const pr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/paywinners', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ week: ws, winners: payload }) })); const pj = await pr.json(); paidOut = (pj && pj.payouts) || []; } catch (e) {}
+    }
+    // email the winners who were JUST paid (idempotent — re-runs return no fresh payouts, so no duplicate emails)
+    if (paidOut.length) {
+      const prof = await resolveProfiles(env, paidOut.map(p => p.acct));
+      const byAcct = {}; top3.forEach(x => { byAcct[x.uid] = x; });
+      for (const p of paidOut) {
+        const u = prof[String(p.acct).replace(/^u:/, '')]; const x = byAcct[p.acct] || {};
+        if (u && u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, roe: +x.roe || 0, symbol: x.symbol || '', side: x.side || '', username: u.username || x.name || '' }); } catch (e) {} }
+      }
     }
     try { await env.STATS.put(flag, JSON.stringify({ ts: now, n: payload.length })); } catch (e) {} // mark the week paid (even if 0 eligible winners) so we don't retry forever
   }
