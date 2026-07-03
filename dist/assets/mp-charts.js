@@ -861,7 +861,7 @@
     document.addEventListener('visibilitychange',function(){if(!document.hidden&&mw.candle&&!mw.dead)loadData(mw,false);});
     window.addEventListener('storage',updMT);
   }
-  window.mpCharts={ activate:function(){ if(built)return; built=true; setTimeout(function(){ if(isMobile()){buildMobileChart();return;} buildInitial(); if(/^\/charts\/?$/.test(location.pathname)){setTimeout(function(){try{window.__openBrowse&&window.__openBrowse('aside');}catch(e){}},260);} },40); },
+  window.mpCharts={ activate:function(){ if(built)return; built=true; setTimeout(function(){ if(isMobile()){buildMobileChart();return;} buildInitial(); if(/^\/charts\/?$/.test(location.pathname)){try{document.body.classList.remove('cws-side-off');localStorage.setItem('mp_cws_side','1');}catch(e){}} },40); }, // /charts lands with the workspace TOOLS side panel open (not Browse) — owner request
     setTheme:function(m){chTheme=(m==='light')?'light':'dark';try{localStorage.setItem('mp_ch_theme',chTheme);}catch(e){}applyTheme();},
     getTheme:function(){return chTheme;},
     reflow:function(){try{reflowWins();}catch(e){}},
