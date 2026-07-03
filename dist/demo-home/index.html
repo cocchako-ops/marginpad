@@ -259,6 +259,31 @@
   .lbx-who{font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .lbx-roe{font-family:'Space Mono',monospace;font-weight:700;color:var(--grn);font-size:12.5px;font-variant-numeric:tabular-nums;}
 
+  /* ---------- Go live: exchanges (affiliate) ---------- */
+  .exch-feat{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .exf{--exc:#f7a600;position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.004)),var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;overflow:hidden;transition:transform .18s cubic-bezier(.2,.7,.3,1),border-color .18s,box-shadow .18s;}
+  .exf::before{content:'';position:absolute;top:0;left:18px;right:18px;height:1px;background:linear-gradient(90deg,transparent,var(--exc),transparent);opacity:.6;}
+  .exf:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--exc) 45%,transparent);box-shadow:0 24px 54px -24px rgba(0,0,0,.85),0 0 34px -16px var(--exc);}
+  .exf-top{display:flex;align-items:center;gap:12px;}
+  .exf-ic{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;background:var(--exc);flex:0 0 40px;}
+  .exf-n{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.01em;}
+  .exf-tag{margin-left:auto;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--exc);border:1px solid color-mix(in srgb,var(--exc) 45%,transparent);border-radius:99px;padding:4px 9px;}
+  .exf-sub{color:var(--dim);font-size:13.5px;line-height:1.55;margin-top:12px;}
+  .exf-cta{margin-top:auto;padding-top:18px;}
+  .exf-cta span{display:inline-block;background:var(--exc);color:#0a0b0d;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;border-radius:10px;padding:11px 18px;transition:filter .15s;}
+  .exf:hover .exf-cta span{filter:brightness(1.08);}
+  .exch-rest{position:relative;z-index:2;display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:12px;}
+  .exr{--exc:#3361ff;display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.015);border:1px solid var(--line);border-radius:13px;padding:11px 13px;font-size:13px;font-weight:700;transition:border-color .15s,background .15s,transform .15s;}
+  .exr:hover{border-color:color-mix(in srgb,var(--exc) 50%,transparent);background:rgba(255,255,255,.03);transform:translateY(-2px);}
+  .exr i{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-style:normal;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:11.5px;background:var(--exc);flex:0 0 22px;}
+  .exr b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;}
+  .exr .ar{margin-left:auto;color:var(--faint);font-family:'Space Mono',monospace;font-size:11px;transition:color .15s,transform .15s;}
+  .exr:hover .ar{color:var(--ink);transform:translateX(3px);}
+  .exch-disc{position:relative;z-index:2;margin-top:16px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--faint);line-height:1.6;}
+  @media(max-width:1100px){.exch-feat{grid-template-columns:1fr;}.exch-rest{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:640px){.exch-rest{grid-template-columns:repeat(2,1fr);}}
+  .rk-24{position:relative;z-index:2;margin-top:10px;font-family:'Space Mono',monospace;font-size:10.5px;color:#ff8a80;font-variant-numeric:tabular-nums;}
+
   /* ================= footer ================= */
   .foot{position:relative;border-top:1px solid var(--line);margin-top:clamp(26px,3vw,50px);padding:clamp(34px,4vw,60px) var(--pad) 26px;overflow:hidden;}
   .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:28px;position:relative;z-index:2;}
@@ -376,6 +401,7 @@
       <div class="t-kick"><span class="dot"></span> Real-time feed</div>
       <div class="t-title">Rekt</div>
       <div class="t-sub">Liquidations, live, exchange by exchange.</div>
+      <div class="rk-24" id="rk24"></div>
       <div id="rkFeed">
       <div class="rk-strip"><b>BTC LONG</b> 50× <span class="amt">−$234,500</span></div>
       <div class="rk-strip s2"><b>ETH SHORT</b> 25× <span class="amt">−$88,120</span></div>
@@ -500,8 +526,38 @@
   </div>
 </section>
 
+<section class="band" style="--glow:rgba(247,166,0,.05);--bandc:#f7a600">
+  <div class="band-head"><span class="band-idx">03</span><h2 class="band-t">Go live</h2><span class="band-s">When paper profits get boring — trade for real. Opening an account through these links supports MarginPad.</span></div>
+  <div class="exch-feat">
+    <a class="exf" href="https://www.bybit.com/trade/usdt/BTCUSDT?ref=LZKBERJ" target="_blank" rel="noopener sponsored" data-ex="Bybit" style="--exc:#f7a600">
+      <div class="exf-top"><span class="exf-ic" style="color:#0a0b0d">B</span><span class="exf-n">Bybit</span><span class="exf-tag">Most popular</span></div>
+      <div class="exf-sub">The paper-trader's next step — deep USDT-perp liquidity, up to 100× leverage and a terminal that feels like ours.</div>
+      <div class="exf-cta"><span>Trade on Bybit →</span></div>
+    </a>
+    <a class="exf" href="https://www.binance.com/en/futures/BTCUSDT?ref=MAOZM9DS" target="_blank" rel="noopener sponsored" data-ex="Binance" style="--exc:#f0b90b">
+      <div class="exf-top"><span class="exf-ic" style="color:#181a20">B</span><span class="exf-n">Binance</span><span class="exf-tag">Biggest volume</span></div>
+      <div class="exf-sub">The world's largest exchange — unmatched volume, the tightest spreads and every pair you will ever look for.</div>
+      <div class="exf-cta"><span>Trade on Binance →</span></div>
+    </a>
+    <a class="exf" href="https://www.okx.com/trade-swap/btc-usdt-swap" target="_blank" rel="noopener sponsored" data-ex="OKX" style="--exc:#cfd3d8">
+      <div class="exf-top"><span class="exf-ic" style="color:#0a0b0d">O</span><span class="exf-n">OKX</span><span class="exf-tag">Pro tools</span></div>
+      <div class="exf-sub">Pro-grade derivatives with copy trading, a clean multi-asset account and serious options depth.</div>
+      <div class="exf-cta"><span>Trade on OKX →</span></div>
+    </a>
+  </div>
+  <div class="exch-rest">
+    <a class="exr" href="https://www.bitget.com/futures/usdt/BTCUSDT?clacCode=DSSSQKGK" target="_blank" rel="noopener sponsored" data-ex="Bitget" style="--exc:#00e7d8"><i style="color:#06231d">B</i><b>Bitget</b><span class="ar">→</span></a>
+    <a class="exr" href="https://www.kucoin.com/futures/trade/XBTUSDTM?rcode=VHP8AYKY" target="_blank" rel="noopener sponsored" data-ex="KuCoin" style="--exc:#23af91"><i style="color:#06231d">K</i><b>KuCoin</b><span class="ar">→</span></a>
+    <a class="exr" href="https://www.gate.com/futures/USDT/BTC_USDT?ref=VFIWB10KUG" target="_blank" rel="noopener sponsored" data-ex="Gate" style="--exc:#3361ff"><i style="color:#fff">G</i><b>Gate</b><span class="ar">→</span></a>
+    <a class="exr" href="https://futures.mexc.com/exchange/BTC_USDT?inviteCode=GND4jI97o0" target="_blank" rel="noopener sponsored" data-ex="MEXC" style="--exc:#0ac2d6"><i style="color:#06231d">M</i><b>MEXC</b><span class="ar">→</span></a>
+    <a class="exr" href="https://invite.kraken.com/JDNW/guj2tf28" target="_blank" rel="noopener sponsored" data-ex="Kraken" style="--exc:#7b5cff"><i style="color:#fff">K</i><b>Kraken</b><span class="ar">→</span></a>
+    <a class="exr" href="https://crypto.com/app/sdf5hb6rkv" target="_blank" rel="noopener sponsored" data-ex="Crypto.com" style="--exc:#0b2e7a"><i style="color:#fff">C</i><b>Crypto.com</b><span class="ar">→</span></a>
+  </div>
+  <div class="exch-disc">Referral links — MarginPad may earn a commission if you open an account, at no cost to you. That is what keeps every tool here free. Trade responsibly: leverage can liquidate your entire margin.</div>
+</section>
+
 <section class="band" style="--glow:rgba(255,215,90,.045);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">03</span><h2 class="band-t">Learn &amp; earn</h2><span class="band-s">From your first lesson to your first payout — the whole path is free.</span></div>
+  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Learn &amp; earn</h2><span class="band-s">From your first lesson to your first payout — the whole path is free.</span></div>
   <div class="bento">
 
     <a class="tile s3" href="/where-to-start/" style="--ac:#c2f64a">
@@ -549,7 +605,7 @@
     </div>
     <div><h5>Trade</h5><a href="/paper-trade">Paper Trade</a><a href="/charts">Charts</a><a href="/screener">Screener</a><a href="/rekt/">Rekt — Liquidations</a><a href="/alerts/">Price Alerts</a></div>
     <div><h5>Analyze</h5><a href="/calculators">Calculators</a><a href="/tools/">Trading Tools</a><a href="/trading-api/">Bot API</a><a href="/coins/">Markets</a><a href="/defi/">DeFi</a></div>
-    <div><h5>Learn &amp; earn</h5><a href="/where-to-start/">Where to Start</a><a href="/blog/">Blog</a><a href="/news/">News</a><a href="/rewards/">Rewards</a><a href="https://t.me/MarginPadBot">Telegram</a></div>
+    <div><h5>Learn &amp; earn</h5><a href="/where-to-start/">Where to Start</a><a href="/blog/">Blog</a><a href="/news/">News</a><a href="/rewards/">Rewards</a><a href="https://t.me/MarginPadBot">Telegram</a><a href="#" onclick="return false" style="cursor:default;color:var(--faint)">Ad disclosure: referral links</a></div>
   </div>
   <div class="foot-word">MARGINPAD</div>
   <div class="foot-bottom"><span>© 2026 MarginPad · Simulated trading only · Not financial advice</span><span><a href="/about/" style="display:inline;padding:0 12px 0 0">About</a><a href="/contact/" style="display:inline;padding:0 12px 0 0">Contact</a><a href="/privacy/" style="display:inline;padding:0">Privacy</a></span></div>
@@ -680,7 +736,7 @@
   var rsz;window.addEventListener('resize',function(){clearTimeout(rsz);rsz=setTimeout(redraw,180);});
 
   // ---- scroll-reveal (staggered per row group) ----
-  var rvEls=[].slice.call(document.querySelectorAll('.bento .tile, .band-head, .snap>a, .trust>div'));
+  var rvEls=[].slice.call(document.querySelectorAll('.bento .tile, .band-head, .snap>a, .trust>div, .exch-feat>a, .exch-rest>a'));
   rvEls.forEach(function(el){var sib=[].slice.call(el.parentNode.children).filter(function(x){return x.classList&&(x.classList.contains('tile')||x.tagName==='A'||x.tagName==='DIV');});var i=sib.indexOf(el);el.style.setProperty('--i',Math.max(0,i%6));el.classList.add('rv');});
   if('IntersectionObserver' in window){
     var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
@@ -712,6 +768,18 @@
       kids.forEach(function(k,i){k.classList.remove('s2','s3');if(i===1)k.classList.add('s2');if(i===2)k.classList.add('s3');if(i>2)feed.removeChild(k);});
     },3000);
   })();
+
+  // ---- tracking: pageview + affiliate click-outs (same /api/track events as the live site) ----
+  try{var pv='/api/track?t=pageview&p=/demo-home/';if(document.referrer)pv+='&r='+encodeURIComponent(document.referrer);navigator.sendBeacon&&navigator.sendBeacon(pv);}catch(e){}
+  document.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a[data-ex]'):null;if(!a)return;
+    try{navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=exchange&e='+encodeURIComponent(a.getAttribute('data-ex'))+'&p=/demo-home/');}catch(_){}},true);
+
+  // ---- real 24h liquidation total on the Rekt tile ----
+  fetch('/api/cg/liquidations').then(function(r){return r.json();}).then(function(d){
+    var m=d&&d.market;if(!(m&&m.total>0))return;
+    var sh=m.total>0?Math.round(m.short/m.total*100):0;
+    document.getElementById('rk24').textContent='24h: −$'+(m.total/1e6).toFixed(0)+'M liquidated · '+sh+'% were shorts';
+  }).catch(function(){});
 
   // ---- header elevation on scroll ----
   var hd=document.querySelector('header');
