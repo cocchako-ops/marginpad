@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- crash/error beacon: counts JS errors & unhandled rejections so the admin dashboard can see how many users hit a broken page -->
+<script>(function(){var n=0,seen={};
+/* ignore noise that isn't our code breaking: browser extensions, Safari autofill, benign warnings, transient network blips */
+var IGN=/_AutofillCallbackHandler|ResizeObserver loop|Non-Error promise rejection|Failed to fetch|Load failed|NetworkError|AbortError|The operation was aborted|^Script error\.?$|Transition was skipped|Transition was aborted|Skipping view transition|skipTransition/i;
+function rep(m,ln){if(n>=8)return;m=String(m||'').slice(0,140);if(!m||IGN.test(m))return;var k=m+'@'+(ln||0);if(seen[k])return;seen[k]=1;n++;var lbl=(m+(ln?(' :'+ln):'')).replace(/[^a-zA-Z0-9 #:._/-]/g,' ').replace(/\s+/g,' ').slice(0,80);try{var u='/api/track?t=jserr&e='+encodeURIComponent(lbl)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon){navigator.sendBeacon(u);}else{(new Image()).src=u;}}catch(e){}}
+window.addEventListener('error',function(e){if(!e||!e.message)return;var f=(e.filename||'');if(/-extension:/i.test(f))return;rep(e.message,e.lineno);},true);
+window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((r&&r.message)||(typeof r==='string'?r:'unhandledrejection'),0);});})();</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<!-- Warm up connections to the off-origin hosts on the critical path (fonts are LCP; gtag fires conversions; CoinGecko serves the trending logos). Discovered late otherwise: fonts.gstatic is only referenced inside fonts.css. -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preconnect" href="https://www.googletagmanager.com" />
+<link rel="preconnect" href="https://api.coingecko.com" />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<script>/* Mark dedicated-tool routes on <html> BEFORE first paint so the landing never flashes when arriving at /paper-trade, /charts, /calculators (e.g. from the Rekt nav). */(function(){var p=location.pathname,c=document.documentElement;if(/^\/paper-trade\/?$/.test(p))c.className+=' route-paper';else if(/^\/charts\/?$/.test(p))c.className+=' route-charts';else if(/^\/calculators\/?$/.test(p))c.className+=' route-calc';else if(/^\/screener\/?$/.test(p))c.className+=' route-screener';})();</script>
+<!-- Instant navigation: prefetch same-origin pages on hover/pointerdown (Chromium) so clicks load near-instantly; the existing @view-transition then cross-fades them. Progressive enhancement — other browsers ignore it. -->
+<script type="speculationrules">{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/api/*"}}]},"eagerness":"moderate"}]}</script>
+<title>Crypto Liquidation Map, Heatmap & Calculators — MarginPad</title>
+<meta name="description" content="Free live crypto liquidation map, a multi-chart workspace with drawing tools &amp; indicators, and a risk-free Paper Trade terminal — open Long/Short at the live price, practice up to 1000x and watch your P&amp;L live — plus precision calculators: liquidation price, position size, PnL, DCA &amp; take-profit. No signup, any exchange." />
+<meta name="keywords" content="liquidation price calculator, position size calculator crypto, crypto pnl calculator, dca calculator crypto, average down calculator, take profit calculator, futures calculator, leverage calculator, risk management crypto, crypto chart workspace, live crypto charts, trading chart drawing tools" />
+<link rel="canonical" href="https://marginpad.io/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="author" content="MarginPad" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"MarginPad","url":"https://marginpad.io/","logo":"https://marginpad.io/assets/apple-touch-icon.png","description":"Free crypto futures calculators: liquidation, position size, PnL, DCA, take-profit and risk/reward.","sameAs":["https://t.me/MarginPadBot"]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"}
+</script>
+<meta property="og:site_name" content="MarginPad" />
+<meta property="og:title" content="MarginPad — Crypto Liquidation Map &amp; Futures Calculators" />
+<meta property="og:description" content="Risk-free Paper Trade terminal + liquidation map and calculators: liquidation price, position size, PnL, DCA & take-profit. Free, instant, no signup." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="MarginPad — Crypto Liquidation Map &amp; Futures Calculators" />
+<meta name="twitter:description" content="Liquidation, position size, PnL, DCA & take-profit calculators for crypto futures. Free, no signup." />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="MarginPad — crypto liquidation map, heatmap and futures calculators." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="MarginPad" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<script src="/assets/pwa-nav.js" defer></script>
+<link rel="stylesheet" href="/assets/fonts.css" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org","@type": "WebApplication","name": "MarginPad","url": "https://marginpad.io/",
+  "applicationCategory": "FinanceApplication","operatingSystem": "Any (web browser)",
+  "description": "A free crypto futures toolkit: risk-free paper trading at the live price, a real-time liquidation heatmap, and precision calculators — liquidation price, position size, PnL/ROI, DCA entry and take-profit.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "featureList": ["Liquidation price calculator","Position size calculator","PnL / ROI calculator","DCA average entry calculator","Take-profit target calculator"]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org","@type": "FAQPage","mainEntity": [
+    { "@type": "Question", "name": "How is liquidation price calculated?", "acceptedAnswer": { "@type": "Answer", "text": "For an isolated-margin position the estimated liquidation price is Entry × (1 − 1/Leverage + MMR) for longs and Entry × (1 + 1/Leverage − MMR) for shorts, where MMR is the maintenance margin rate." } },
+    { "@type": "Question", "name": "How do I size a position by risk?", "acceptedAnswer": { "@type": "Answer", "text": "Decide what percentage of your account to risk if your stop is hit, then divide that dollar risk by the distance between entry and stop to get the number of coins to buy." } },
+    { "@type": "Question", "name": "What is the difference between ROI and ROE?", "acceptedAnswer": { "@type": "Answer", "text": "Price ROI is the percentage the asset moved. ROE is your return on the margin posted, which leverage multiplies." } },
+    { "@type": "Question", "name": "How does a crypto DCA / average down calculator work?", "acceptedAnswer": { "@type": "Answer", "text": "It computes your blended average entry across multiple buys as the total cost divided by the total quantity." } },
+    { "@type": "Question", "name": "How do I calculate a take-profit price?", "acceptedAnswer": { "@type": "Answer", "text": "Pick a target return on equity (ROE). The required exit price is Entry × (1 + ROE / (100 × Leverage)) for longs and Entry × (1 − ROE / (100 × Leverage)) for shorts." } }
+  ]
+}
+</script>
+<link rel="stylesheet" href="/assets/home.css?v=487e7dc7">
+
+</head>
+<body>
+<script>
+/* Disable pinch-zoom on iOS (Safari ignores user-scalable=no). Double-tap zoom is killed via CSS touch-action:manipulation. */
+(function(){
+  document.addEventListener('gesturestart',function(e){e.preventDefault();},{passive:false});
+  document.addEventListener('gesturechange',function(e){e.preventDefault();},{passive:false});
+  document.addEventListener('gestureend',function(e){e.preventDefault();},{passive:false});
+})();
+</script>
+<div class="aurora"></div>
+<canvas class="bgchart" id="bgchart" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <button type="button" class="hmenu" id="hmenuBtn" aria-label="Menu"><span></span><span></span><span></span></button>
+      <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
+    </div>
+    <nav class="hnav">
+      <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
+      <a href="/rewards/" class="hlink hrwd" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>
+      <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
+      <select class="lang" id="langSel" aria-label="Language"></select>
+    </nav>
+  </header>
+
+
+  <section class="hero" id="hero">
+    <div class="hero-copy">
+      <h1><span data-i18n="heroA">Everything you need</span><br><em data-i18n="heroB">to trade futures.</em></h1>
+      <p class="sub" data-i18n="sub">Practice trades at the live price, spot liquidation zones on the heatmap, and nail every number — liquidation, PnL, position size &amp; more. No signup, works with any exchange.</p>
+      <div class="hero-actions">
+        <button type="button" class="hero-cta" data-prod-jump="plan"><span data-i18n="heroCta">Open Paper Trade</span><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <a href="/rewards/" class="hero-cta hero-cta-rwd" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg><span data-i18n="heroCtaRwd">Rewards</span></a>
+        <span class="hero-note" data-i18n="heroNote">No signup · any exchange · 100% free</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="mterm" aria-label="Quick paper trade">
+    <div class="mtick" id="mTick" aria-hidden="true"></div>
+    <div class="mtp-chart" id="mtpChart" aria-hidden="true"></div>
+    <div class="mtp">
+      <div class="mtp-top">
+        <div class="mtp-symwrap"><button type="button" class="mtp-symbtn" id="mtpSymBtn" aria-label="Choose coin"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span id="mtpSymCur">BTC</span></button><div class="mtp-dd" id="mtpDD" hidden><input type="text" class="mtp-dd-s" id="mtpDDs" placeholder="Search any ticker…" data-ph="mtSearchTicker" autocomplete="off" spellcheck="false" inputmode="search"><div class="mtp-dd-list" id="mtpDDl"></div></div></div>
+        <div class="mtp-pxw"><span class="mtp-px" id="mtpPx">$—</span><span class="mtp-chg" id="mtpChg"></span></div>
+      </div>
+      <div class="mtp-side" id="mtpSide"><button type="button" class="mtp-l on" data-side="long" data-i18n="long">Long</button><button type="button" class="mtp-s" data-side="short" data-i18n="short">Short</button></div>
+      <div class="mtp-levwrap">
+        <div class="mtp-levrow"><span class="mtp-levlbl" data-i18n="lLeverage">Leverage</span><span class="mtp-levval" id="mtpLevVal">20×</span></div>
+        <input type="range" class="mtp-levsl" id="mtpLevSl" min="0" max="1000" value="434" step="1" aria-label="Leverage">
+      </div>
+      <button type="button" class="mtp-go" id="mtpGo" data-i18n="mtOpen">Open demo trade</button>
+      <div class="mtp-pnl" id="mtpPnl" hidden></div>
+      <div class="mtp-foot" data-i18n="mtFoot">$100 demo position · no signup · risk-free</div>
+    </div>
+  </div>
+
+  <div class="prodnav" role="tablist" aria-label="Main tools">
+    <button class="prod active" data-prod="calc" type="button" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg></span><span class="pt"><b data-i18n="prodCalc">Liquidation Calculator</b><small data-i18n="prodCalcS">Know your exit price</small></span></button>
+    <button class="prod" data-prod="plan" type="button" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span><span class="pt"><b data-i18n="prodPaper">Paper Trade</b><small data-i18n="prodPaperS">Open at live price · zero risk</small></span></button>
+    <a class="prod prod-charts" href="/charts" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg></span><span class="pt"><b data-i18n="prodCharts">Charts</b><small data-i18n="prodChartsS">Your windowed workspace</small></span></a>
+    <button class="prod" data-prod="swap" type="button" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span><span class="pt"><b data-i18n="prodSwap">Swap Crypto</b><small data-i18n="prodSwapS">900+ coins, no account</small></span></button>
+    <a class="prod prod-rekt" href="/rekt/" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span><span class="pt"><b data-i18n="navRekt">Rekt</b><small data-i18n="prodRektS">Live liquidations feed</small></span></a>
+    <a class="prod" href="/alerts/"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><span class="pt"><b data-i18n="prodAlerts">Alerts</b><small>Email &amp; Telegram alerts</small></span><span class="pnew">NEW</span></a>
+    <a class="prod prod-screener" href="/screener" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span><span class="pt"><b data-i18n="prodScreener">Screener</b><small data-i18n="prodScreenerS">Scored market scanner</small></span></a>
+    <a class="prod prod-tools" href="/tools/" role="tab"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10"/><path d="M18 6h2"/><circle cx="16" cy="6" r="2"/><path d="M4 12h2"/><path d="M10 12h10"/><circle cx="8" cy="12" r="2"/><path d="M4 18h10"/><path d="M18 18h2"/><circle cx="16" cy="18" r="2"/></svg></span><span class="pt"><b>Trading Tools</b><small>Backtester · journal · risk</small></span><span class="pnew">NEW</span></a>
+  </div>
+
+  <datalist id="symTokens"></datalist>
+  
+
+  <section id="chartspace" aria-label="Charts workspace" style="display:none">
+    <button type="button" class="cws-reopen" id="cwsReopen" title="Show controls" aria-label="Show controls">Tools ▸</button>
+    <div class="cws-bar">
+      <button type="button" class="cws-side-x" id="cwsSideX" title="Hide the panel for more chart space">Hide</button>
+      <div class="cws-widgets">
+        <div class="cws-wpanel">
+          <div class="cws-wh">Chart background</div>
+          <div class="cws-bg-seg" id="cwsBg"><button type="button" data-bg="dark" class="on">Dark</button><button type="button" data-bg="light">Light</button></div>
+        </div>
+        <div class="cws-wpanel">
+          <div class="cws-wh">Watchlist</div>
+          <div class="cws-wl" id="cwsWatch"><div class="cws-w-empty">Star coins on the homepage to pin them here.</div></div>
+        </div>
+        <div class="cws-wpanel">
+          <div class="cws-wh">Top signals <small class="cws-w-live">live</small></div>
+          <div class="cws-scr" id="cwsScr"><div class="cws-w-empty">Loading…</div></div>
+        </div>
+      </div>
+      <div class="cws-actions">
+        <button type="button" class="cws-btn cws-add" id="cwsAdd"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span>Add chart</span> <small id="cwsCount">0/8</small></button>
+        <button type="button" class="cws-btn cws-trade" id="cwsTrade"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Open Paper Trade</span></button>
+        <div class="cws-tiles" id="cwsTiles" role="group" aria-label="Layout"><button type="button" class="cws-tile" data-preset="2" style="grid-template-columns:repeat(2,4px)" title="2 charts"><i></i><i></i></button><button type="button" class="cws-tile" data-preset="4" style="grid-template-columns:repeat(2,4px)" title="4 charts"><i></i><i></i><i></i><i></i></button><button type="button" class="cws-tile" data-preset="6" style="grid-template-columns:repeat(3,4px)" title="6 charts"><i></i><i></i><i></i><i></i><i></i><i></i></button><button type="button" class="cws-tile" data-preset="8" style="grid-template-columns:repeat(4,4px)" title="8 charts"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></button></div>
+        <button type="button" class="cws-btn" id="cwsSync" title="Sync the crosshair across all charts (off by default)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span>Sync</span></button>
+        <button type="button" class="cws-btn" id="cwsNote"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10l6-6V5a2 2 0 0 0-2-2z"/><path d="M15 21v-6h6"/></svg><span>Note</span></button>
+        <button type="button" class="cws-btn" id="cwsCalc"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg><span>Calculator</span></button>
+        <button type="button" class="cws-btn" id="cwsSave"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span>Save layout</span></button>
+        <button type="button" class="cws-btn" id="cwsLayouts"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Layouts</span></button>
+        <button type="button" class="cws-btn" id="cwsShare"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span>Share</span></button>
+      </div>
+      <div class="cws-hint" id="cwsHint"><span>Drag a chart by its header</span><span>Resize from any edge</span><span>Double-click to maximize</span><span>Keys 1–6 switch timeframe</span><span>A = add chart · D = draw</span></div>
+    </div>
+    <div class="cws-board" id="cwsBoard">
+      <div class="cws-empty" id="cwsEmpty"><div class="cws-empty-i"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg></div><p>Start with a <b>template</b> — or build your own.</p><div class="cws-tpls"><button type="button" data-tpl="scalp"><b>Scalping</b><span>BTC · 5m · signals + EMA</span></button><button type="button" data-tpl="swing"><b>Swing</b><span>BTC · 4h · EMA + SMA</span></button><button type="button" data-tpl="btcmtf"><b>BTC multi-TF</b><span>15m + 1H side by side</span></button><button type="button" data-tpl="top3"><b>Top 3</b><span>BTC · ETH · SOL grid</span></button></div><button type="button" class="cws-emptybtn" data-cws-add>Or add a blank chart</button></div>
+    </div>
+  </section>
+
+  <section id="heatmap" class="heatwrap" style="display:none" aria-label="Liquidation heatmap">
+    <div class="heat-bar">
+      <select id="heatCoin" class="heat-coin" aria-label="Coin">
+        <option>BTC</option><option>ETH</option>
+      </select>
+      <div class="heat-px" id="heatPx">—</div>
+      <div class="heat-act">
+        <button id="heatDl" class="heat-btn" type="button"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg><span data-i18n="heatDl">Download</span></button>
+        <button id="heatSh" class="heat-btn" type="button"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span data-i18n="heatSh">Share</span></button>
+      </div>
+    </div>
+    <div class="heat-src"><span class="heat-src-dot"></span><span data-i18n="heatSrc">Live liquidation data aggregated from <b>Binance</b>, <b>Bybit</b> &amp; <b>OKX</b> — direct exchange streams, updated in real time.</span></div>
+    <div class="heat-ctrl">
+      <div class="heat-wins">
+        <button class="heat-win" data-w="1H" type="button">1H</button>
+        <button class="heat-win" data-w="4H" type="button">4H</button>
+        <button class="heat-win active" data-w="1D" type="button">1D</button>
+        <button class="heat-win" data-w="7D" type="button">7D</button>
+        <button class="heat-win" data-w="30D" type="button">30D</button>
+      </div>
+      <span class="heat-stats" id="heatStats" aria-live="polite"></span>
+      <div class="heat-wins heat-sides">
+        <button class="heat-win heat-side active" data-side="all" type="button" data-i18n="sideAll">All</button>
+        <button class="heat-win heat-side" data-side="long" type="button">Long</button>
+        <button class="heat-win heat-side" data-side="short" type="button">Short</button>
+      </div>
+    </div>
+    <div class="heat-ctrl heat-ctrl2">
+      <span class="heat-levlbl" data-i18n="levLabel">Leverage liquidation levels (est.)</span>
+      <div class="heat-wins heat-levs">
+        <button class="heat-win heat-lev" data-lev="5" type="button">5×</button>
+        <button class="heat-win heat-lev" data-lev="10" type="button">10×</button>
+        <button class="heat-win heat-lev active" data-lev="25" type="button">25×</button>
+        <button class="heat-win heat-lev" data-lev="50" type="button">50×</button>
+        <button class="heat-win heat-lev active" data-lev="100" type="button">100×</button>
+      </div>
+    </div>
+    <div class="heat-stage">
+      <div id="heatChart"></div>
+      <div class="heat-legend"><span><i class="lg-s"></i><span data-i18n="legShorts">Shorts liquidated · above</span></span><span><i class="lg-l"></i><span data-i18n="legLongs">Longs liquidated · below</span></span></div>
+      <div class="heat-tip" id="heatTip"></div>
+      <div class="heat-fallback" id="heatFallback" style="display:none"><span data-i18n="heatWarm">Live liquidation feed is warming up — showing estimated leverage levels for now.</span></div>
+    </div>
+    <div class="heat-ticker" id="heatTicker" aria-live="polite"></div>
+    <p class="heat-note">Bubbles &amp; histogram are real liquidations · leverage lines are estimates · not order-book data.</p>
+  </section>
+
+  <section id="swap" class="swapwrap" style="display:none" aria-label="Swap crypto">
+    <p class="swap-intro" data-i18n="swapIntro">Swap 900+ coins instantly — no account, non-custodial. Your funds and addresses never touch MarginPad.</p>
+    <div class="swap-badges">
+      <span class="swap-badge"><span class="lvdot"></span> <span data-i18n="swapBadge1">Non-custodial</span></span>
+      <span class="swap-badge"><span data-i18n="swapBadge2">900+ coins</span></span>
+      <span class="swap-badge"><span data-i18n="swapBadge3">No account</span></span>
+    </div>
+    <div class="swap-frame">
+      <div class="swap-load" id="swapLoad" data-i18n="swapLoad">Loading swap…</div>
+      <iframe id="iframe-widget" title="Crypto swap" allow="clipboard-write" loading="lazy"></iframe>
+    </div>
+    <p class="swap-note" data-i18n="swapNote">Swaps are processed by ChangeNOW. MarginPad never holds your crypto or keys — always double-check the receiving address before sending.</p>
+  </section>
+
+  <section id="screener" class="scrwrap" style="display:none" aria-label="Market screener">
+    <div class="sec-head"><span class="eyebrow" data-i18n="ebMarkets">Markets</span><h2>Screener</h2></div>
+    <p class="sec-sub" data-i18n="scrSub">Live USDT-perp markets, each with a 0–100 MarginPad score (RSI, MACD, moving averages, ATR, funding &amp; volume on 4h candles). Tap any coin for the full analysis, trade setup and live derivatives.</p>
+    <a class="scr-tg" href="https://t.me/marginpad" target="_blank" rel="noopener" onclick="try{window.__mpTrack&&window.__mpTrack('telegram','screener')}catch(e){}" style="display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:13px 15px;border-radius:14px;background:linear-gradient(135deg,rgba(34,158,217,.2),rgba(34,158,217,.05));border:1px solid rgba(34,158,217,.45);text-decoration:none;box-shadow:0 0 24px -11px rgba(34,158,217,.7)">
+      <span style="flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:#229ED9;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="23" height="23" fill="#fff"><path d="M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.4-5 9-8.1c.4-.3-.1-.5-.6-.2L6.7 13.3l-4.8-1.5c-1-.3-1-1 .2-1.5L20.6 3c.9-.3 1.6.2 1.3 1.3z"/></svg></span>
+      <span style="flex:1;min-width:0;line-height:1.32"><b style="display:block;color:#e9e7df;font-size:14.5px;font-weight:700">Free trade signals on Telegram</b><i style="color:#9bb9c9;font-size:12px;font-style:normal">3–5 high-conviction setups a day — entry, stop &amp; targets</i></span>
+      <span style="flex:0 0 auto;background:#229ED9;color:#fff;font-weight:700;font-size:13px;padding:9px 17px;border-radius:10px;white-space:nowrap">Join free</span>
+    </a>
+    <div class="scr-stats" id="scrStats"></div>
+    <div class="scr-meta" id="scrMeta"></div>
+    <div class="scr-picks" id="scrPicks"></div>
+    <input class="scr-search" id="scrSearch" type="search" placeholder="Search any coin… (e.g. SOL)" autocomplete="off" spellcheck="false" aria-label="Search pairs">
+    <div class="scr-filters" id="scrFilters">
+      <button type="button" data-sort="score" class="on">🔥 Top Score</button>
+      <button type="button" data-sort="gain">Gainers</button>
+      <button type="button" data-sort="lose">Losers</button>
+      <button type="button" data-sort="vol">Volume</button>
+      <button type="button" data-sort="fund">Funding</button>
+      <button type="button" data-sort="oi">Open Int.</button>
+      <button type="button" data-sort="vol24">Volatile</button>
+      <span class="scr-fdiv" aria-hidden="true"></span>
+      <button type="button" data-filter="long">▲ Long setups</button>
+      <button type="button" data-filter="short">▼ Short setups</button>
+      <button type="button" data-filter="watch">★ Watchlist</button>
+    </div>
+    <div class="scr-list" id="scrList"><div class="scr-loading">Loading live markets…</div></div>
+    <p class="scr-foot">Live multi-exchange data (Bybit · OKX · Gate · MEXC · BingX · Binance · Bitget) + Coinglass derivatives · paper trading only, not financial advice.</p>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true"  data-tab="liq"  data-i18n="tabLiq">Liquidation</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="size" data-i18n="tabSize">Position Size</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="pnl"  data-i18n="tabPnl">PnL / ROI</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="dca"  data-i18n="tabDca">Average / DCA</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="tp"   data-i18n="tabTp">Take-Profit</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="rr"   data-i18n="tabRr">Risk / Reward</button>
+  </nav>
+
+  <div class="card">
+
+    <section class="panel" id="plan">
+      <div class="ptt">
+        <div class="ptt-chart">
+          <div class="ptt-chart-top">
+            <select id="planSym" class="pt2-sym" aria-label="Symbol"><option>BTC</option><option>ETH</option><option>SOL</option><option>XRP</option><option>BNB</option><option>DOGE</option></select>
+            <div class="ptt-tfwrap">
+              <button type="button" class="ptt-tf-btn" id="ptTfBtn" aria-haspopup="menu" aria-expanded="false"><span id="ptTfCur">5m</span><svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 4.5l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <div class="ptt-tf" id="ptTf" role="menu" hidden><button data-tf="1" type="button">1m</button><button data-tf="5" class="on" type="button">5m</button><button data-tf="15" type="button">15m</button><button data-tf="60" type="button">1h</button><button data-tf="240" type="button">4h</button><button data-tf="1440" type="button">1D</button><button data-tf="10080" type="button">1W</button></div>
+            </div>
+          </div>
+          <div id="ptChart"></div>
+        </div>
+        <div class="ptt-side">
+          <div class="ptt-form">
+            <div class="pt2-top">
+              <div class="pt2-px"><div class="pt2-px-lbl live-lbl"><span class="lvdot"></span>LIVE</div><div class="pt2-px-v copynum" id="planLivePx" title="Click to copy">…</div><div class="pt2-px-chg" id="planLiveChg"></div></div>
+            </div>
+            <div class="pt2-side" id="planSeg">
+              <button class="on" data-side="long" type="button"><span data-i18n="long">Long</span></button>
+              <button data-side="short" type="button"><span data-i18n="short">Short</span></button>
+            </div>
+            <div class="pt2-fields">
+              <div class="pt2-amt"><label data-i18n="lAmountIn">Amount (USD)</label><div class="input-line"><input type="number" id="planAmt" value="100" step="any" min="0" inputmode="decimal"><span class="unit">$</span></div><div class="lev-warn"><svg class="lw-ic" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.3 1.8 18a2 2 0 0 0 1.7 3h16.9a2 2 0 0 0 1.7-3L13.7 3.3a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><span data-i18n="levWarn">High leverage — liquidation sits very close to entry</span></div></div>
+              <div class="pt2-lev"><label data-i18n="lLeverage">Leverage</label><div class="input-line"><input type="number" id="planLev" value="20" step="1" min="1" max="1000" inputmode="numeric"><span class="unit">×</span></div></div>
+            </div>
+            <div class="lev-row">
+              <label class="adv-toggle"><input type="checkbox" id="planAdvChk"><span>Advanced</span></label>
+              <div class="lev-slidewrap"><input type="range" id="planLevR" class="lev-slider" min="0" max="1000" value="1000" step="1" aria-label="Leverage slider"><div class="lev-ticks"><span>1×</span><span>10×</span><span>100×</span><span>1000×</span></div></div>
+            </div>
+            <div class="ptt-stats"><div><span data-i18n="rPosSize">Position size</span><b id="planSize">—</b></div><div><span data-i18n="rNotional">Notional value</span><b id="planNotional">—</b></div><div><span data-i18n="rEstLiq">Est. liquidation</span><b id="planLiq">—</b></div></div>
+            <div class="plan-adv" id="planAdvIn" hidden>
+              <div class="field"><label data-i18n="lExchangePt">Exchange (sets margin rate)</label><div class="input-line"><select id="planEx" aria-label="Exchange maintenance-margin preset">
+                <option value="0.4">Binance — 0.4%</option>
+                <option value="0.5" selected>Bybit — 0.5%</option>
+                <option value="0.5">OKX — 0.5%</option>
+                <option value="0.5">Bitget — 0.5%</option>
+                <option value="0.5">KuCoin — 0.5%</option>
+                <option value="0.5">Gate — 0.5%</option>
+                <option value="0.6">Kraken — 0.6%</option>
+              </select></div></div>
+              <div class="field"><label data-i18n="lStopOpt">Stop-loss (optional)</label><div class="input-line"><input type="number" id="planSlOpt" step="any" placeholder="—"><span class="unit">USD</span></div><div class="plan-risk" id="planRiskSl" hidden></div></div>
+              <div class="field"><label data-i18n="lTpOpt">Take-profit (optional)</label><div class="input-line"><input type="number" id="planTpOpt" step="any" placeholder="—"><span class="unit">USD</span></div><div class="plan-risk" id="planRiskTp" hidden></div></div>
+              <div class="field"><label data-i18n="lTrail">Trailing stop</label><div class="input-line"><input type="number" id="planTrail" step="any" min="0" placeholder="off"><span class="unit">%</span></div></div>
+              <div class="field"><label data-i18n="lBreakEven">Break-even at ROE</label><div class="input-line"><input type="number" id="planBE" step="any" min="0" placeholder="off"><span class="unit">%</span></div></div>
+              <p class="note" style="margin-top:2px" data-i18n="advNote">Trailing stop follows the price by that %; break-even moves your stop to entry once profit (ROE) reaches the set %.</p>
+            </div>
+            <button type="button" class="pt2-open" id="planSave"><span id="planOpenTxt" data-i18n="mtOpen">Open demo trade</span></button>
+          </div>
+          <div id="ptLastTrade" class="pt-tickets" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel active" id="liq">
+      <div class="inputs">
+        <h2><span data-i18n="tLiq">Liquidation Price</span> <small data-i18n="tLiqSub">— isolated margin estimate</small></h2>
+        <div class="field"><label data-i18n="direction">Direction</label>
+          <div class="seg" data-seg="liqSide"><button class="on" data-side="long" data-i18n="long">Long</button><button data-side="short" data-i18n="short">Short</button></div>
+        </div>
+        <div class="field"><label data-i18n="lEntry">Entry price</label><div class="input-line"><input type="number" id="liqEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lLeverage">Leverage</label><div class="input-line"><input type="number" id="liqLev" value="10" step="any"><span class="unit">×</span></div></div>
+        <div class="field"><label data-i18n="lExchange">Exchange (sets margin rate)</label><div class="input-line"><select id="liqEx" aria-label="Exchange maintenance-margin preset">
+          <option value="0.4">Binance — 0.4%</option>
+          <option value="0.5" selected>Bybit — 0.5%</option>
+          <option value="0.5">OKX — 0.5%</option>
+          <option value="0.5">Bitget — 0.5%</option>
+          <option value="0.5">KuCoin — 0.5%</option>
+          <option value="0.5">Gate — 0.5%</option>
+          <option value="0.6">Kraken — 0.6%</option>
+          <option value="">Custom</option>
+        </select></div></div>
+        <div class="field"><label data-i18n="lMmr">Maintenance margin rate</label><div class="input-line"><input type="number" id="liqMmr" value="0.5" step="any"><span class="unit">%</span></div></div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rEstLiq">Estimated liquidation price</div><div class="rvalue" id="liqOut">—</div><button class="copybtn" data-copy="liqOut" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rDist">Distance from entry</span><span class="v" id="liqDist">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rMove">Price move to liq.</span><span class="v" id="liqMove">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rEffMargin">Effective margin</span><span class="v" id="liqMargin">—</span></div>
+        <p class="note" data-i18n="nLiq">Estimate for isolated margin. Real liquidation also depends on fees, funding and tiered maintenance margin. Keep a buffer.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="size">
+      <div class="inputs">
+        <h2><span data-i18n="tSize">Position Size</span> <small data-i18n="tSizeSub">— risk-based</small></h2>
+        <div class="field"><label data-i18n="lBalance">Account balance</label><div class="input-line"><input type="number" id="szBal" value="5000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lRisk">Risk per trade</label><div class="input-line"><input type="number" id="szRisk" value="1" step="any"><span class="unit">%</span></div></div>
+        <div class="field"><label data-i18n="lEntry">Entry price</label><div class="input-line"><input type="number" id="szEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lStop">Stop-loss price</label><div class="input-line"><input type="number" id="szStop" value="58800" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lLevMargin">Leverage (optional)</label><div class="input-line"><input type="number" id="szLev" value="10" step="any"><span class="unit">×</span></div></div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rPosSize">Position size</div><div class="rvalue" id="szOut">—</div><button class="copybtn" data-copy="szOut" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rNotional">Notional value</span><span class="v" id="szNotional">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rRisked">Amount risked</span><span class="v" id="szRiskAmt">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rStopDist">Stop distance</span><span class="v" id="szDist">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rMarginReq">Margin required</span><span class="v" id="szMargin">—</span></div>
+        <p class="note" data-i18n="nSize">Position size is set so hitting your stop loses exactly your chosen risk %. The habit that separates traders who survive from those who don't.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="pnl">
+      <div class="inputs">
+        <h2><span data-i18n="tPnl">PnL / ROI</span> <small data-i18n="tPnlSub">— profit &amp; loss</small></h2>
+        <div class="field"><label data-i18n="direction">Direction</label>
+          <div class="seg" data-seg="pnlSide"><button class="on" data-side="long" data-i18n="long">Long</button><button data-side="short" data-i18n="short">Short</button></div>
+        </div>
+        <div class="field"><label data-i18n="lEntry">Entry price</label><div class="input-line"><input type="number" id="pnlEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lExit">Exit price</label><div class="input-line"><input type="number" id="pnlExit" value="66000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lPosCoin">Position size</label><div class="input-line"><input type="number" id="pnlQty" value="0.5" step="any"><span class="unit" data-i18n="uCoin">coin</span></div></div>
+        <div class="field"><label data-i18n="lLevRoe">Leverage (optional)</label><div class="input-line"><input type="number" id="pnlLev" value="10" step="any"><span class="unit">×</span></div></div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rPnl">Profit / Loss</div><div class="rvalue" id="pnlOut">—</div><button class="copybtn" data-copy="pnlOut" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rPriceRoi">Price ROI</span><span class="v" id="pnlRoi">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rRoe">ROE (on margin)</span><span class="v" id="pnlRoe">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rEntryNot">Entry notional</span><span class="v" id="pnlNotional">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rExitVal">Exit value</span><span class="v" id="pnlExitVal">—</span></div>
+        <p class="note" data-i18n="nPnl">ROE is return on the margin you posted (amplified by leverage). Price ROI is the raw move. Fees and funding are not included.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="dca">
+      <div class="inputs">
+        <h2><span data-i18n="tDca">Average / DCA</span> <small data-i18n="tDcaSub">— blended entry</small></h2>
+        <div class="field"><label data-i18n="lBuy1">Buy 1</label><div class="row2"><input type="number" id="dcaP1" value="60000" step="any" data-ph="phPrice"><input type="number" id="dcaQ1" value="0.1" step="any" data-ph="phQty"></div></div>
+        <div class="field"><label data-i18n="lBuy2">Buy 2</label><div class="row2"><input type="number" id="dcaP2" value="55000" step="any" data-ph="phPrice"><input type="number" id="dcaQ2" value="0.1" step="any" data-ph="phQty"></div></div>
+        <div class="field"><label data-i18n="lBuy3">Buy 3</label><div class="row2"><input type="number" id="dcaP3" value="50000" step="any" data-ph="phPrice"><input type="number" id="dcaQ3" value="0.2" step="any" data-ph="phQty"></div></div>
+        <div class="field"><label data-i18n="lBuy4">Buy 4 (optional)</label><div class="row2"><input type="number" id="dcaP4" step="any" data-ph="phPrice"><input type="number" id="dcaQ4" step="any" data-ph="phQty"></div></div>
+        <div class="field"><label data-i18n="lCurPrice">Current price (optional)</label><div class="input-line"><input type="number" id="dcaCur" value="58000" step="any"><span class="unit">USD</span></div></div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rAvgEntry">Average entry price</div><div class="rvalue" id="dcaOut">—</div><button class="copybtn" data-copy="dcaOut" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rTotalQty">Total quantity</span><span class="v" id="dcaQty">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rTotalInv">Total invested</span><span class="v" id="dcaCost">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rPosVal">Position value now</span><span class="v" id="dcaVal">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rUpnl">Unrealized PnL</span><span class="v" id="dcaPnl">—</span></div>
+        <p class="note" data-i18n="nDca">Your average entry is total cost ÷ total quantity. Averaging down lowers your break-even — but only add on a plan, never to rescue a bad trade.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="tp">
+      <div class="inputs">
+        <h2><span data-i18n="tTp">Take-Profit</span> <small data-i18n="tTpSub">— target price ladder</small></h2>
+        <div class="field"><label data-i18n="direction">Direction</label>
+          <div class="seg" data-seg="tpSide"><button class="on" data-side="long" data-i18n="long">Long</button><button data-side="short" data-i18n="short">Short</button></div>
+        </div>
+        <div class="field"><label data-i18n="lEntry">Entry price</label><div class="input-line"><input type="number" id="tpEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lLeverage">Leverage</label><div class="input-line"><input type="number" id="tpLev" value="10" step="any"><span class="unit">×</span></div></div>
+        <div class="field"><label data-i18n="lPosProfit">Position size (optional)</label><div class="input-line"><input type="number" id="tpQty" value="0.5" step="any"><span class="unit" data-i18n="uCoin">coin</span></div></div>
+        <div class="field"><label data-i18n="lTargetRoe">Custom target ROE</label><div class="input-line"><input type="number" id="tpCustom" value="75" step="any"><span class="unit">%</span></div></div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rCustomTgt">Custom target price</div><div class="rvalue" id="tpOut">—</div><button class="copybtn" data-copy="tpOut" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <table class="ladder">
+          <thead><tr><th data-i18n="colRoe">Target ROE</th><th data-i18n="colExit">Exit price</th><th data-i18n="colProfit">Profit</th></tr></thead>
+          <tbody id="tpLadder"></tbody>
+        </table>
+        <p class="note" data-i18n="nTp">Target exit for a desired return on equity. ROE is amplified by leverage, so a small price move is a large account return.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="rr">
+      <div class="inputs">
+        <h2><span data-i18n="tRr">Risk / Reward</span> <small data-i18n="tRrSub">— ratio &amp; break-even</small></h2>
+        <div class="field"><label data-i18n="lEntry">Entry price</label><div class="input-line"><input type="number" id="rrEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lStop">Stop-loss price</label><div class="input-line"><input type="number" id="rrStop" value="58000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lTp">Take-profit price</label><div class="input-line"><input type="number" id="rrTp" value="66000" step="any"><span class="unit">USD</span></div></div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rRR">Risk / Reward ratio</div><div class="rvalue" id="rrOut">—</div><button class="copybtn" data-copy="rrOut" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rRiskR">Risk per unit</span><span class="v" id="rrRisk">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rRewardR">Reward per unit</span><span class="v" id="rrReward">—</span></div>
+        <div class="rrow"><span class="k" data-i18n="rBreakeven">Break-even win rate</span><span class="v" id="rrBe">—</span></div>
+        <p class="note" data-i18n="nRr">A ratio of 2.0 means you aim to make twice what you risk. Break-even win rate is the win % needed just to not lose money at this ratio.</p>
+      </div>
+    </section>
+
+  </div>
+
+
+
+<section class="mpulse" id="mpulse" aria-label="Live market pulse">
+    <div class="mp-head"><span class="mp-dot"></span><b>Market Pulse</b><span class="mp-livetag">LIVE</span><span class="mp-upd" id="mpUpd"></span></div>
+    <div class="mp-grid" id="mpGrid"><div class="mp-load">Loading live market data…</div></div>
+  </section>
+  
+
+    <section class="exchanges" id="exchanges">
+    <span class="eyebrow" data-i18n="ebPartners">Partners</span>
+    <h2 data-i18n="exTitle">Where to trade</h2>
+    <p class="exsub" data-i18n="exSub">Put these numbers to work. Compare top crypto exchanges — max leverage, what each is known for, and the new-user bonus you get.</p>
+    <div class="exgrid" id="exgrid"></div>
+    <p class="exnote" data-i18n="exNote">Max leverage varies by contract, region and account tier. Links are referral links — see disclosure below.</p>
+    <p class="exnote" style="margin-top:8px"><span data-i18n="exPages">Per-exchange liquidation calculators:</span>
+      <a href="/bybit-liquidation-calculator/" style="color:var(--ink-dim)">Bybit</a> ·
+      <a href="/binance-liquidation-calculator/" style="color:var(--ink-dim)">Binance</a> ·
+      <a href="/okx-liquidation-calculator/" style="color:var(--ink-dim)">OKX</a> ·
+      <a href="/kucoin-liquidation-calculator/" style="color:var(--ink-dim)">KuCoin</a> ·
+      <a href="/gate-liquidation-calculator/" style="color:var(--ink-dim)">Gate</a> ·
+      <a href="/kraken-liquidation-calculator/" style="color:var(--ink-dim)">Kraken</a>
+    </p>
+  </section>
+
+  <section class="derivsec" aria-label="Live futures market">
+    <div class="db-head"><h2>Futures market <span>live derivatives</span></h2><span class="db-live">LIVE</span></div>
+    <p class="db-sub">Funding, open interest and long/short positioning across the top perpetual markets — live.</p>
+    <div class="db-grid" id="derivBoard"><div class="db-load">Loading live derivatives…</div></div>
+  </section>
+  
+
+  <section class="hotpairs" id="trending">
+    <div class="sec-head"><span class="eyebrow" data-i18n="ebMarkets">Markets</span><h2 data-i18n="hotTitle">Trending</h2></div>
+    <p class="sec-sub" data-i18n="hotSub">Live prices and 24-hour moves on the most active markets. Tap the ★ to pin a pair to your watchlist — starred pairs jump to the front.</p>
+    <div class="hp-grid" id="hpGrid"></div>
+  </section>
+
+  <section class="mteaser" aria-label="Liquidation heatmap">
+    <div class="mteaser-card" id="mteaserHeat" role="button" tabindex="0" aria-label="Open the liquidation heatmap">
+      <div class="mteaser-fade" aria-hidden="true"></div>
+      <div class="mteaser-viz" id="mteaserViz" aria-hidden="true"></div>
+      <div class="mteaser-body">
+        <span class="mteaser-eb" data-i18n="ebHeat2">Heatmap</span>
+        <h3 data-i18n="mtHeatT">See where liquidations cluster</h3>
+        <p data-i18n="mtHeatS">Spot the exact price levels where leveraged traders get wiped — before the cascade hits.</p>
+        <span class="mteaser-cta"><span data-i18n="mtHeatCta">Open the heatmap</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="tvsec">
+    <div class="sec-head"><span class="eyebrow">Free</span><h2>Pro charts, built into MarginPad</h2></div>
+    <p class="sec-sub">A full multi-window charts workspace — draw, add indicators, import your trades and ask the AI. No login, runs in your browser.</p>
+    <a class="chads" href="/charts" aria-label="Open the MarginPad charts workspace">
+      <div class="chads-bg"></div>
+      <svg class="chads-art" viewBox="0 0 300 160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="chag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd8e6" stop-opacity=".4"/><stop offset="1" stop-color="#3fd8e6" stop-opacity="0"/></linearGradient></defs><path d="M0,124 L40,110 L72,118 L104,86 L136,96 L168,62 L200,72 L232,38 L266,52 L300,18 L300,160 L0,160 Z" fill="url(#chag)"/><path d="M0,124 L40,110 L72,118 L104,86 L136,96 L168,62 L200,72 L232,38 L266,52 L300,18" fill="none" stroke="#3fd8e6" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      <div class="chads-in">
+        <div class="chads-badge">⚡ Charts workspace · free</div>
+        <h3>Draw, analyze &amp; trade — all on one chart</h3>
+        <ul class="chads-feat">
+          <li>1–6 floating chart windows side by side</li>
+          <li>12+ indicators — RSI, MACD, Bollinger &amp; more</li>
+          <li>Trend lines, Fibs, support/resistance &amp; notes</li>
+          <li>Import your paper trades onto the chart</li>
+          <li>Ask the built-in AI about any setup</li>
+        </ul>
+        <span class="chads-cta">Open Charts →</span>
+      </div>
+    </a>
+  </section>
+
+  <section class="tools">
+    <div class="sec-head"><span class="eyebrow" data-i18n="ebRecommended">Recommended</span><h2 data-i18n="toolsTitle">Trader tools we recommend</h2></div>
+    <p class="sec-sub" data-i18n="toolsSub">The platforms we'd pair with MarginPad — charts, tax and automation.</p>
+    <div class="tools-grid">
+      <a class="toolcard" style="--exc:#2962ff" href="https://www.tradingview.com/pricing/?share_your_love=cocchako" target="_blank" rel="sponsored noopener noreferrer">
+        <div class="tc-name">TradingView</div>
+        <div class="tc-desc" data-i18n="tdTv">Pro charts, 100+ indicators and price alerts — the industry-standard charting platform.</div>
+        <span class="tc-go" data-i18n="toolGo">Visit →</span>
+      </a>
+      <a class="toolcard" style="--exc:#14b8a6" href="https://koinly.io/?via=B5C43E3F&amp;utm_source=friend" target="_blank" rel="sponsored noopener noreferrer">
+        <div class="tc-name">Koinly</div>
+        <div class="tc-desc" data-i18n="tdKo">Crypto tax reports done in minutes — connects to every major exchange.</div>
+        <span class="tc-go" data-i18n="toolGo">Visit →</span>
+      </a>
+      <a class="toolcard" style="--exc:#3a7bff" href="https://app.3commas.io/auth/registration?utm_source=referral&amp;utm_medium=cabinet&amp;c=tc2235309" target="_blank" rel="sponsored noopener noreferrer">
+        <div class="tc-name">3Commas</div>
+        <div class="tc-desc" data-i18n="td3c">Automated trading bots, smart orders and a multi-exchange terminal.</div>
+        <span class="tc-go" data-i18n="toolGo">Visit →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="league">
+    <div class="league-card">
+      <span class="league-badge"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4zM5 6H3v1a3 3 0 0 0 3 3M19 6h2v1a3 3 0 0 1-3 3"/></svg>Trade League</span>
+      <h2 data-i18n="lgTitle">Log your trades, win USDT</h2>
+      <p class="lg-sub" data-i18n="lgSub">Members only — sign in (free, just an email) to join the weekly leaderboard. Close winning paper trades and climb the board. Top 3 each week win a USDT prize (1st $30 · 2nd $20 · 3rd $10) — no deposit.</p>
+      <div class="lg-steps">
+        <div class="lg-step"><b>1</b><span data-i18n="lgS1">Sign in — free, email only</span></div>
+        <div class="lg-step"><b>2</b><span data-i18n="lgS2">Close winning paper trades</span></div>
+        <div class="lg-step"><b>3</b><span data-i18n="lgS3">Top 3 win USDT weekly</span></div>
+      </div>
+      <div class="lg-gate" id="lgGate"></div>
+      <div class="lg-board" id="lgBoard"></div>
+      <div class="lg-you" id="lgYou"></div>
+      <a class="lg-cta" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg><span data-i18n="lgCta">Join the league on Telegram</span></a>
+    </div>
+  </section>
+
+  <section class="content2">
+    <h2 data-i18n="calcsTitle">Six calculators every crypto futures trader needs</h2>
+    <p class="sec-sub" data-i18n="calcsSub">Everything runs in your browser — nothing is sent anywhere, no account to create. Jump straight to the one you need:</p>
+    <div class="feature-grid">
+      <a class="feat" href="#liq">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.2 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.2a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span>
+        <h3 data-i18n="tabLiq">Liquidation</h3><p>Your exact liquidation price for any leverage, long or short.</p>
+      </a>
+      <a class="feat" href="#size">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 21V10M12 21V4M20 21v-7"/></svg></span>
+        <h3 data-i18n="tabSize">Position Size</h3><p>Size by risk so every loss stays small and consistent.</p>
+      </a>
+      <a class="feat" href="#pnl">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6"/></svg></span>
+        <h3 data-i18n="tabPnl">PnL / ROI</h3><p>Profit, loss and leveraged ROE for any trade.</p>
+      </a>
+      <a class="feat" href="#dca">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></span>
+        <h3 data-i18n="tabDca">Average / DCA</h3><p>Blend multiple buys into one average entry price.</p>
+      </a>
+      <a class="feat" href="#tp">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg></span>
+        <h3 data-i18n="tabTp">Take-Profit</h3><p>A ladder of target prices for any return on equity.</p>
+      </a>
+      <a class="feat" href="#rr">
+        <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 7h14M5 7l-3 6a3 3 0 0 0 6 0L5 7zM19 7l-3 6a3 3 0 0 0 6 0l-3-6z"/></svg></span>
+        <h3 data-i18n="tabRr">Risk / Reward</h3><p>Your R:R ratio and the win rate you need to break even.</p>
+      </a>
+    </div>
+
+    <div class="faq">
+      <details open><summary data-i18n="faqQ1">How is liquidation price calculated?</summary><div class="a" data-i18n-html="faqA1">For an isolated-margin position the estimated liquidation price is <code>Entry × (1 − 1/Leverage + MMR)</code> for longs and <code>Entry × (1 + 1/Leverage − MMR)</code> for shorts, where MMR is the maintenance margin rate. Higher leverage pushes liquidation closer to entry; a 100× long is liquidated after roughly a 1% drop.</div></details>
+      <details><summary data-i18n="faqQ2">How do I size a position by risk?</summary><div class="a" data-i18n-html="faqA2">Decide what percentage of your account you're willing to lose if your stop is hit (1% is common). The calculator divides that dollar risk by the distance between entry and stop to find how many coins to buy, keeping every loss small and consistent.</div></details>
+      <details><summary data-i18n="faqQ3">What's the difference between ROI and ROE?</summary><div class="a" data-i18n-html="faqA3">Price ROI is the percentage the asset moved. ROE is your return on the margin you actually posted, which leverage multiplies. A 6% move at 10× leverage is roughly a 60% return on margin.</div></details>
+      <details><summary data-i18n="faqQ4">How does a DCA / average down calculator work?</summary><div class="a" data-i18n-html="faqA4">Your blended average entry is total cost divided by total quantity across every buy. Averaging down lowers your break-even, but it also increases your position — only scale in on a predefined plan.</div></details>
+      <details><summary data-i18n="faqQ5">How do I calculate a take-profit price?</summary><div class="a" data-i18n-html="faqA5">Pick a target return on equity. The required exit price is <code>Entry × (1 + ROE / (100 × Leverage))</code> for longs and <code>Entry × (1 − ROE / (100 × Leverage))</code> for shorts.</div></details>
+      <details><summary data-i18n="faqQ6">What is a good risk/reward ratio?</summary><div class="a" data-i18n-html="faqA6">Many traders aim for at least 2:1 — making twice what they risk. At 2:1 you only need to win about a third of your trades to break even. The risk/reward tab shows the exact break-even win rate for your setup.</div></details>
+    </div>
+
+    <div class="morelinks">
+      <h3 data-i18n="moreTitle">More calculators &amp; guides</h3>
+      <div class="ml-group"><span class="ml-h" data-i18n="mlCoin">By coin</span><a href="/btc-liquidation-calculator/">BTC</a><span class="ml-sep">·</span><a href="/eth-liquidation-calculator/">ETH</a><span class="ml-sep">·</span><a href="/sol-liquidation-calculator/">SOL</a><span class="ml-sep">·</span><a href="/xrp-liquidation-calculator/">XRP</a><span class="ml-sep">·</span><a href="/bnb-liquidation-calculator/">BNB</a><span class="ml-sep">·</span><a href="/doge-liquidation-calculator/">DOGE</a><span class="ml-sep">·</span><a href="/ada-liquidation-calculator/">ADA</a><span class="ml-sep">·</span><a href="/avax-liquidation-calculator/">AVAX</a><span class="ml-sep">·</span><a href="/link-liquidation-calculator/">LINK</a><span class="ml-sep">·</span><a href="/ltc-liquidation-calculator/">LTC</a></div>
+      <div class="ml-group"><span class="ml-h" data-i18n="mlLev">By leverage</span><a href="/100x-liquidation-calculator/">100×</a><span class="ml-sep">·</span><a href="/50x-liquidation-calculator/">50×</a><span class="ml-sep">·</span><a href="/25x-liquidation-calculator/">25×</a><span class="ml-sep">·</span><a href="/20x-liquidation-calculator/">20×</a><span class="ml-sep">·</span><a href="/10x-liquidation-calculator/">10×</a><span class="ml-sep">·</span><a href="/5x-liquidation-calculator/">5×</a></div>
+      <div class="ml-group"><span class="ml-h" data-i18n="mlCompare">Compare</span><a href="/bybit-vs-binance/">Bybit vs Binance</a><span class="ml-sep">·</span><a href="/binance-vs-okx/">Binance vs OKX</a><span class="ml-sep">·</span><a href="/bybit-vs-okx/">Bybit vs OKX</a><span class="ml-sep">·</span><a href="/binance-vs-kucoin/">Binance vs KuCoin</a><span class="ml-sep">·</span><a href="/bybit-vs-kucoin/">Bybit vs KuCoin</a><span class="ml-sep">·</span><a href="/kraken-vs-binance/">Kraken vs Binance</a></div>
+      <div class="ml-group"><span class="ml-h" data-i18n="mlTools">Tools</span><a href="/funding-fee-calculator/">Funding fee</a><span class="ml-sep">·</span><a href="/glossary/">Glossary</a><span class="ml-sep">·</span><a href="/api/">Free API</a><span class="ml-sep">·</span><a href="/blog/crypto-futures-legal-in-the-us/">US futures guide</a></div>
+    </div>
+    <p class="botnote"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg><span><b data-i18n="botTitle">Telegram bot</b> — <span data-i18n="botFeatures">Check live prices, set price alerts, run every calculator and join the weekly Trade League — free, right in your chat.</span> <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener">@MarginPadBot</a></span></p>
+    <p class="disc">MarginPad is an educational tool, not financial advice. Calculations are estimates and may differ from your exchange. Crypto trading carries substantial risk of loss. Never trade with money you can't afford to lose. Affiliate disclosure: some exchange links on this page are referral links — we may earn a commission at no cost to you, which never affects our calculations or recommendations.</p>
+  </section>
+
+  <footer class="site-foot">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a class="mark" href="/" aria-label="MarginPad home">MARGIN<b>PAD</b></a>
+        <p class="foot-blurb" data-i18n="footBlurb">Free crypto-futures tools — liquidation calculators, heatmap, charts &amp; risk-free paper trading. No signup.</p>
+        <div class="foot-social">
+          <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" aria-label="Telegram bot"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></a>
+        </div>
+      </div>
+      <nav class="foot-col" aria-label="Tools">
+        <h4 data-i18n="footTools">Tools</h4>
+        <a href="/calculators" data-i18n="prodCalc">Calculators</a>
+        <a href="/paper-trade">Paper Trade</a>
+        <a href="/charts" data-i18n="prodCharts">Charts</a>
+        <a href="/?p=heat" data-i18n="prodHeat">Liquidation Heatmap</a>
+        <a href="/rekt/" data-i18n="navRekt">Live Liquidations</a>
+        <a href="/tools/">Trading Tools</a>
+        <a href="/trading-api/">Bot API</a>
+      </nav>
+      <nav class="foot-col" aria-label="More">
+        <h4 data-i18n="footMore">More</h4>
+        <a href="/blog/" data-i18n="navBlog">Blog</a>
+        <a href="/widgets/" data-i18n="navWidgets">Widgets</a>
+        <a href="/about/" data-i18n="navAbout">About</a>
+        <a href="/contact/" data-i18n="navContact">Contact</a>
+      </nav>
+      <a class="foot-rwd" href="/rewards/" aria-label="Earn free USDT">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+        <span><b data-i18n="footRwd">Earn free USDT</b><small data-i18n="footRwdSub">Claim every 5 minutes</small></span>
+      </a>
+    </div>
+    <div class="foot-bottom">
+      <span data-i18n="footLegal">© 2026 MarginPad · Not financial advice</span>
+      <span>marginpad.io</span>
+    </div>
+  </footer>
+
+</div>
+
+<script defer src="/assets/mp-calc.js"></script>
+
+
+
+
+
+<button id="toTop" class="totop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+<div id="jrBackdrop" class="jr-backdrop" hidden></div>
+<aside id="jrDrawer" class="jr-drawer" hidden aria-label="Trade journal">
+  <button class="jr-grab" data-jr-close type="button" aria-label="Back"><span data-i18n="jrBack">Back</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</span><a class="jr-stats-lnk" href="/trading-journal/" title="Full trading stats"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>Stats</a><button id="jrClose" class="jr-x" type="button" aria-label="Close">✕</button></div>
+  <div class="jr-stats" id="jrStats"></div>
+  <div class="jr-list" id="jrList"></div>
+  <p class="jr-empty" id="jrEmpty" data-i18n="jrEmpty">No tickets yet. Plan a trade and tap “Save to journal”.</p>
+</aside>
+<!-- Leaders widget retired: the weekly board now lives in chat (/leaderboard) and on Telegram -->
+
+<nav class="mobnav" aria-label="Quick navigation">
+  <button type="button" data-mn="browse" aria-label="Browse"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="mn-l" data-i18n="mnBrowse">Browse</span></button>
+  <button type="button" data-mn="plan" aria-label="Paper Trade"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg><span class="mn-l" data-i18n="mnPaper">Practice</span></button>
+  <button type="button" data-mn="journal" data-mytrades aria-label="My Trades"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span class="mn-l" data-i18n="mnTrades">Trades</span></button>
+  <button type="button" data-mn="chat" aria-label="Chat"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span class="mn-l" data-i18n="mnChat">Chat</span></button>
+</nav>
+<button id="jrFab" type="button" data-mytrades aria-label="My Trades"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:1px;vertical-align:-2px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>My Trades</span></button>
+<button id="chatFab" type="button" aria-label="Open trader chat"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span data-i18n="chatBtn">Chat</span></button>
+<div id="chatBox" hidden>
+  <div class="ct-head"><span class="ct-title" data-i18n="chatTitleW">Trader Chat</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Close">✕</button></div>
+  <div class="ct-gate" id="ctGate">
+    <p data-i18n="chatGateLogin">Sign in to join the chat — it’s free (just an email code). Please don’t post your email in the chat.</p>
+    <button id="ctSignin" type="button" data-i18n="chatSigninBtn">Sign in to chat</button>
+  </div>
+  <div class="ct-msgs" id="ctMsgs" hidden></div>
+  <form class="ct-form" id="ctForm" hidden>
+    <input id="ctInput" maxlength="280" placeholder="Type a message…" autocomplete="off" data-ph="chatPh">
+    <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+  </form>
+</div>
+
+<script src="/assets/i18n.js" defer></script>
+
+
+<div id="pwaBanner" class="pwa-banner" hidden>
+  <img class="pwa-ic" src="/assets/app-icon-192.png" alt="MarginPad" />
+  <div class="pwa-txt"><strong data-i18n="pwaTitle">Install MarginPad</strong><span id="pwaMsg" data-i18n="pwaDesc">Full-screen, app-like access from your home screen.</span></div>
+  <button id="pwaAction" class="pwa-act" type="button">Install</button>
+  <button id="pwaClose" class="pwa-x" type="button" aria-label="Dismiss">✕</button>
+</div>
+<div id="pwaSheet" class="pwa-sheet" hidden>
+  <div class="pwa-sheet-card">
+    <button id="pwaSheetClose" class="pwa-x" type="button" aria-label="Close">✕</button>
+    <img class="pwa-ic-lg" src="/assets/app-icon-192.png" alt="MarginPad" />
+    <h3 data-i18n="pwaSheetTitle">Add MarginPad to your Home Screen</h3>
+    <ol class="pwa-steps">
+      <li><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#2ebd85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1"/></svg> <span data-i18n="pwaStep1">Tap the Share button in Safari's toolbar</span></li>
+      <li><span data-i18n="pwaStep2">Scroll down and tap “Add to Home Screen”</span></li>
+      <li><span data-i18n="pwaStep3">Tap Add — it opens full-screen, just like an app</span></li>
+    </ol>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script defer src="/assets/mp-auth.js"></script>
+
+<div id="mpStreak" class="mp-streak" hidden></div>
+
+
+
+
+
+<script src="/assets/home.js?v=487e7dc7"></script>
+</body>
+</html>

@@ -3283,7 +3283,7 @@ export default {
       return env.CHAT.get(env.CHAT.idFromName('global')).fetch(request);
     }
     if (url.pathname === '/charts' || url.pathname === '/charts/' || url.pathname === '/paper-trade' || url.pathname === '/paper-trade/' || url.pathname === '/calculators' || url.pathname === '/calculators/' || url.pathname === '/screener' || url.pathname === '/screener/') { // dedicated full-screen workspaces (serve the homepage; its JS switches to the right single-tool mode)
-      const r = await env.ASSETS.fetch(new Request(url.origin + '/', request)); // fetch '/' (not /index.html — ASSETS 307-redirects that to /)
+      const r = await env.ASSETS.fetch(new Request(url.origin + '/app', request)); // fetch the APP SHELL (was '/'; the homepage `/` is now the demo-home router since go-live 2026-07-03) — this is the full paper-trade/charts/calc/screener single-file app the SPA JS switches on
       const base = new Response(r.body, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
       // Per-route <title>/description/canonical so each dedicated tool reads as its own keyword-matched page (Google Ads landing-page relevance + SEO). The page HTML is shared; only the head metadata is rewritten.
       const SPA_META = {
