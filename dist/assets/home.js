@@ -978,7 +978,7 @@ window.addEventListener('load', function () {
     var a=b.getAttribute('data-mn');
     if(a==='journal'){/* opens the My Trades drawer via the global [data-mytrades] handler — same UI as Paper Trade ▸ My Trades */}
     else if(a==='chat'){ var bx=document.getElementById('chatBox'); if(bx&&!bx.hidden){ var x=document.getElementById('ctClose'); if(x)x.click(); } else { var c=document.getElementById('chatFab'); if(c)c.click(); } }
-    else if(a==='home'){if(window.mpGo){window.mpGo('/');}else{var calcTab=document.querySelector('.prod[data-prod="calc"]');if(calcTab&&!calcTab.classList.contains('active'))calcTab.click();window.scrollTo({top:0,behavior:'smooth'});}}
+    else if(a==='home'){location.href='/';}
     else if(a==='plan'){if(window.mpGo){window.mpGo('/paper-trade');}else{location.href='/paper-trade';}}
   });
   var pop;
@@ -1350,6 +1350,7 @@ window.addEventListener('load', function () {
     if(!/^\/charts\/?$/.test(path)){ requestAnimationFrame(function(){ try{ if(window.mpBgKick) window.mpBgKick(); }catch(_){} }); } // re-wake the animated background after the /charts page kept it display:none → 0×0
   }
   function mpGo(path){ var u; try{u=new URL(path,location.href);}catch(e){location.href=path;return;}
+    if(u.pathname==='/'&&!u.search){ location.href='/'; return; } // the homepage is now the separate bento page — a real nav, not an in-page applyRoute that would show the stale app-shell homepage
     var run=function(){ _inApply=true; try{ history.pushState({mp:1},'',u.pathname+u.search); applyRoute(u.pathname,u.search); }catch(e){ _inApply=false; location.href=u.pathname+u.search; return; } _inApply=false; try{if(window.__mpNav)window.__mpNav(u.pathname);}catch(_){} };
     if(document.startViewTransition){try{document.startViewTransition(run);}catch(e){run();}}else run();
   }
@@ -1362,7 +1363,7 @@ window.addEventListener('load', function () {
     var u;try{u=new URL(a.href,location.href);}catch(e){return;}
     if(u.origin!==location.origin)return;
     var p=u.pathname;
-    if(!(p==='/'||/^\/paper-trade\/?$/.test(p)||/^\/charts\/?$/.test(p)||/^\/calculators\/?$/.test(p)))return; // only the homepage-served tools; screener/rewards/rekt/coins/blog navigate normally (already smoothed by prefetch+VT)
+    if(!(/^\/paper-trade\/?$/.test(p)||/^\/charts\/?$/.test(p)||/^\/calculators\/?$/.test(p)))return; // only intercept in-page switches between the homepage-served TOOLS. '/' (the new bento homepage), screener/rewards/rekt/coins/blog navigate normally.
     if(p===location.pathname&&u.search===location.search)return;
     ev.preventDefault(); mpGo(u.pathname+u.search);
   });
