@@ -4025,8 +4025,18 @@ export class UserStore {
       stored.forEach(put); incoming.forEach(put);                  // incoming applied last → wins same-state ties; stored-only trades are kept (anti-clobber)
       let arr = Array.from(byId.values());
       arr.sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));
-      if (arr.length > 100) arr = arr.slice(-100);              // keep the 100 most recent
-      let json = JSON.stringify(arr); while (json.length > 60000 && arr.length > 1) { arr = arr.slice(-Math.max(1, arr.length - 5)); json = JSON.stringify(arr); }
+      // Trim NEVER touches OPEN positions. The old oldest-first trim sorted opens by their open-ts,
+      // so a burst of new trades silently guillotined week-old OPEN positions out of the blob
+      // (2026-07-03: 5 open AIGENSYN shorts vanished this way after a 23-trade burst). Now: opens are
+      // always kept; only CLOSED trades compete for the 100-row / 60KB budget, oldest dropped first.
+      const isOpen = (e) => e && e.status !== 'win' && e.status !== 'loss';
+      const opensArr = arr.filter(isOpen);
+      let closed = arr.filter((e) => !isOpen(e));
+      const CAP = 100;
+      if (opensArr.length + closed.length > CAP) closed = closed.slice(-Math.max(0, CAP - opensArr.length));
+      arr = opensArr.concat(closed).sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));
+      let json = JSON.stringify(arr);
+      while (json.length > 60000 && closed.length > 0) { closed = closed.slice(5); arr = opensArr.concat(closed).sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0))); json = JSON.stringify(arr); }
       let wins = 0, losses = 0, opens = 0, pnl = 0;
       arr.forEach(function (e) { const st = e && e.status; if (st === 'win') wins++; else if (st === 'loss') losses++; else opens++; const p = +(e && e.pnl); if ((st === 'win' || st === 'loss') && isFinite(p)) pnl += p; });
       sql.exec('INSERT INTO utrades(user_id,json,n,wins,losses,opens,pnl,updated) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET json=excluded.json,n=excluded.n,wins=excluded.wins,losses=excluded.losses,opens=excluded.opens,pnl=excluded.pnl,updated=excluded.updated', uid, json, arr.length, wins, losses, opens, pnl, now);
