@@ -3353,7 +3353,7 @@ export default {
       if (org && !/^https:\/\/(www\.)?marginpad\.io$|^http:\/\/localhost(:\d+)?$/.test(org)) return new Response('forbidden', { status: 403 });
       return env.CHAT.get(env.CHAT.idFromName('global')).fetch(request);
     }
-    if (url.pathname === '/charts' || url.pathname === '/charts/' || url.pathname === '/paper-trade' || url.pathname === '/paper-trade/' || url.pathname === '/calculators' || url.pathname === '/calculators/' || url.pathname === '/screener' || url.pathname === '/screener/') { // dedicated full-screen workspaces (serve the homepage; its JS switches to the right single-tool mode)
+    if (url.pathname === '/charts' || url.pathname === '/charts/' || url.pathname === '/paper-trade' || url.pathname === '/paper-trade/' || url.pathname === '/calculators' || url.pathname === '/calculators/' || url.pathname === '/screener' || url.pathname === '/screener/' || url.pathname === '/heatmap' || url.pathname === '/heatmap/' || url.pathname === '/swap' || url.pathname === '/swap/') { // dedicated full-screen workspaces (serve the homepage; its JS switches to the right single-tool mode)
       const r = await env.ASSETS.fetch(new Request(url.origin + '/app', request)); // fetch the APP SHELL (was '/'; the homepage `/` is now the demo-home router since go-live 2026-07-03) — this is the full paper-trade/charts/calc/screener single-file app the SPA JS switches on
       const base = new Response(r.body, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
       // Per-route <title>/description/canonical so each dedicated tool reads as its own keyword-matched page (Google Ads landing-page relevance + SEO). The page HTML is shared; only the head metadata is rewritten.
@@ -3362,6 +3362,8 @@ export default {
         '/calculators': { title: 'Crypto Futures Calculators — Liquidation, PnL & Size | MarginPad', desc: 'Free crypto futures calculators: liquidation price, profit & loss, position size, take-profit and risk/reward. Instant, private, no signup.', canon: 'https://marginpad.io/calculators' },
         '/charts': { title: 'Multi-Chart Crypto Workspace — Live Futures Charts | MarginPad', desc: 'A free multi-window crypto charting workspace: live futures charts, indicators, drawing tools and quick paper trades on one board.', canon: 'https://marginpad.io/charts' },
         '/screener': { title: 'Crypto Futures Screener — Scored Setups, Funding & OI | MarginPad', desc: 'Free crypto futures screener: 0-100 technical scores with RSI, MACD, funding and open interest on top USDT perps, plus ready trade setups.', canon: 'https://marginpad.io/screener' },
+        '/heatmap': { title: 'Crypto Liquidation Heatmap — Live Liquidation Levels | MarginPad', desc: 'Free live crypto liquidation heatmap: see where leveraged positions cluster and get liquidated on BTC and ETH. No signup.', canon: 'https://marginpad.io/heatmap' },
+        '/swap': { title: 'Swap Crypto — 900+ Coins, No Account | MarginPad', desc: 'Swap 900+ cryptocurrencies instantly with no account and no signup. Fast, non-custodial crypto swaps.', canon: 'https://marginpad.io/swap' },
       };
       const m = SPA_META[url.pathname.replace(/\/$/, '') || '/'];
       if (!m) return base;

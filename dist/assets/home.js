@@ -1291,6 +1291,7 @@ window.addEventListener('load', function () {
       try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(e){}
     },300);}
   if(/^\/calculators\/?$/.test(location.pathname)){document.body.classList.add('calc-page');var _ccd=document.querySelector('.card'),_ctb0=document.querySelector('.tabs'),_cwp=document.querySelector('.wrap');if(_cwp){Array.prototype.forEach.call(_cwp.children,function(ch){if(ch!==_ccd&&ch!==_ctb0&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});}if(_ctb0)_ctb0.style.display='';if(_ccd)_ccd.style.display='';var _ct=(location.search.match(/[?&]c=([a-z]+)/)||[])[1]||'liq';var _ctb=document.querySelector('.tab[data-tab="'+_ct+'"]')||document.querySelector('.tab[data-tab="liq"]');if(_ctb)_ctb.click();}
+  if(/^\/(heatmap|swap)\/?$/.test(location.pathname)){var _pid=/heatmap/.test(location.pathname)?'heatmap':'swap',_pd=_pid==='heatmap'?'heat':'swap';document.body.classList.add(_pid+'-page');document.body.setAttribute('data-prod',_pd);var _pe=document.querySelector('.prod[data-prod="'+_pd+'"]');if(_pe)_pe.click();var _se=document.getElementById(_pid),_we=document.querySelector('.wrap');if(_se&&_we){Array.prototype.forEach.call(_we.children,function(ch){if(ch!==_se&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_se.style.display='';}var _hc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_pid==='heatmap'&&_hc){var _hcS=document.getElementById('heatCoin');if(_hcS){var _cu=_hc.toUpperCase(),_ok=false;for(var _ci=0;_ci<_hcS.options.length;_ci++)if(_hcS.options[_ci].value===_cu){_ok=true;break;}if(_ok){_hcS.value=_cu;_hcS.dispatchEvent(new Event('change',{bubbles:true}));}}}}
   var _pq=(location.search.match(/[?&]p=(heat|swap|plan|charts)/)||[])[1]||(/heatmap/i.test(location.hash)?'heat':(/swap/i.test(location.hash)?'swap':''));
   var _coin=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];
   if(_pq){var hb=document.querySelector('.prod[data-prod="'+_pq+'"]');if(hb)hb.click();
@@ -1318,7 +1319,7 @@ window.addEventListener('load', function () {
     try{var _ss=document.querySelector('.scr-sheet.on');if(_ss)_ss.classList.remove('on');}catch(e){} // close the screener action sheet so it doesn't carry over onto the new route
     var hc=document.documentElement;
     hc.className=hc.className.replace(/\s*\broute-(paper|charts|calc|screener)\b/g,'');
-    document.body.classList.remove('paper-page','charts-page','calc-page');
+    document.body.classList.remove('paper-page','charts-page','calc-page','heatmap-page','swap-page');
     _unhideWrap(); // restore marketing sections, then re-hide the default-hidden tool sections (each route shows the one it needs)
     var cs=document.getElementById('chartspace');
     ['chartspace','heatmap','swap','screener'].forEach(function(id){var _e=document.getElementById(id);if(_e)_e.style.display='none';});
@@ -1340,6 +1341,7 @@ window.addEventListener('load', function () {
       if(wp2){Array.prototype.forEach.call(wp2.children,function(ch){if(ch!==cd2&&ch!==tb0&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});}
       if(tb0)tb0.style.display='';if(cd2)cd2.style.display='';
       var ctv=(search.match(/[?&]c=([a-z]+)/)||[])[1]||'liq';var ctb=document.querySelector('.tab[data-tab="'+ctv+'"]')||document.querySelector('.tab[data-tab="liq"]');if(ctb)ctb.click();
+    } else if(/^\/(heatmap|swap)\/?$/.test(path)){ var _pid=/heatmap/.test(path)?'heatmap':'swap',_pd=_pid==='heatmap'?'heat':'swap'; document.body.classList.add(_pid+'-page'); document.body.setAttribute('data-prod',_pd); var _pe=document.querySelector('.prod[data-prod="'+_pd+'"]'); if(_pe)_pe.click(); var _se=document.getElementById(_pid),_we=document.querySelector('.wrap'); if(_se&&_we){Array.prototype.forEach.call(_we.children,function(ch){if(ch!==_se&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_se.style.display='';} var _hc=(search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1]; if(_pid==='heatmap'&&_hc){var _hcS=document.getElementById('heatCoin');if(_hcS){var _cu=_hc.toUpperCase(),_ok=false;for(var _ci=0;_ci<_hcS.options.length;_ci++)if(_hcS.options[_ci].value===_cu){_ok=true;break;}if(_ok){_hcS.value=_cu;_hcS.dispatchEvent(new Event('change',{bubbles:true}));}}}
     } else { // homepage ("/"), optionally with ?p=heat|swap
       document.body.setAttribute('data-prod','calc');
       var pq=(search.match(/[?&]p=(heat|swap|plan|charts)/)||[])[1];
@@ -1363,7 +1365,7 @@ window.addEventListener('load', function () {
     var u;try{u=new URL(a.href,location.href);}catch(e){return;}
     if(u.origin!==location.origin)return;
     var p=u.pathname;
-    if(!(/^\/paper-trade\/?$/.test(p)||/^\/charts\/?$/.test(p)||/^\/calculators\/?$/.test(p)))return; // only intercept in-page switches between the homepage-served TOOLS. '/' (the new bento homepage), screener/rewards/rekt/coins/blog navigate normally.
+    if(!(/^\/paper-trade\/?$/.test(p)||/^\/charts\/?$/.test(p)||/^\/calculators\/?$/.test(p)||/^\/heatmap\/?$/.test(p)||/^\/swap\/?$/.test(p)))return; // only intercept in-page switches between the homepage-served TOOLS. '/' (the new bento homepage), screener/rewards/rekt/coins/blog navigate normally.
     if(p===location.pathname&&u.search===location.search)return;
     ev.preventDefault(); mpGo(u.pathname+u.search);
   });
@@ -1952,10 +1954,10 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     if(t.closest('.browse-x')){close();return;}
     var exp=t.closest('[data-expand]');if(exp){var sub=bp.querySelector('[data-sub="'+exp.getAttribute('data-expand')+'"]');if(sub){var show=sub.hidden;sub.hidden=!show;exp.classList.toggle('expanded',show);}return;}
     var go=t.closest('[data-go]');if(go){var p=go.getAttribute('data-go');
-      var _dest={plan:'/paper-trade',charts:'/charts',calc:'/calculators',heat:'/?p=heat',swap:'/?p=swap'}[p]||('/?p='+p);
+      var _dest={plan:'/paper-trade',charts:'/charts',calc:'/calculators',heat:'/heatmap',swap:'/swap'}[p]||('/?p='+p);
       if(window.mpGo){close();window.mpGo(_dest);return;} // in-page switch (no reload) — works from the homepage or a dedicated page
       if(p==='plan'){location.href='/paper-trade';return;}
-      if(/paper-page|charts-page|calc-page/.test(document.body.className)){location.href='/?p='+p;return;}
+      if(/paper-page|charts-page|calc-page|heatmap-page|swap-page/.test(document.body.className)){location.href=_dest;return;}
       var c=document.querySelector('.prod[data-prod="'+p+'"]');close();setTimeout(function(){if(c)c.click();window.scrollTo({top:0,behavior:'smooth'});},130);return;}
     var cc=t.closest('[data-calc]');if(cc){var _cu='/calculators?c='+cc.getAttribute('data-calc');if(window.mpGo){close();window.mpGo(_cu);}else{location.href=_cu;}return;}
     if(t.closest('a'))close();
