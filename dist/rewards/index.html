@@ -182,7 +182,9 @@
   .pr-item{display:flex;align-items:center;gap:9px;padding:9px 0;border-top:1px solid rgba(255,255,255,.06);font-size:12.5px}
   .pr-item .pl{font-family:'Space Mono',monospace;font-weight:700;flex:0 0 52px}
   .pr-item .u{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dim)}
-  .pr-item .st{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;white-space:nowrap}
+  .pr-item .st{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;white-space:nowrap;flex:0 0 auto}
+  .pr-note{margin:2px 0 8px;padding:8px 11px;background:rgba(255,90,77,.08);border:1px solid rgba(255,90,77,.22);border-radius:9px;font-size:12.5px;line-height:1.5;color:#ffb1a8;overflow-wrap:anywhere}
+  .pr-note b{color:#ff8a80;font-weight:700}
   #ts{margin-top:14px;min-height:0}
   .msg{font-size:13.5px;margin-top:13px;padding:11px 13px;border-radius:10px;display:none}
   .msg.show{display:block}
@@ -367,7 +369,13 @@
   var prPlat='x';
   function prCfg(j){var c=document.getElementById('promoCard');if(!c)return;c.hidden=(j.promoEnabled===false);if(j.promoUsd!=null){var t=(+j.promoUsd)%1===0?String(+j.promoUsd):(+j.promoUsd).toFixed(2);Array.prototype.forEach.call(document.querySelectorAll('.prAmt'),function(e){e.textContent=t;});}}
   function prMsg(t,kind){var e=document.getElementById('prMsg');if(!e)return;e.textContent=t;e.className='pr-msg show '+(kind||'');}
-  function prLoad(){if(!signedIn)return;fetch('/api/reward/promo/mine').then(function(r){return r.json();}).then(function(d){var list=document.getElementById('prList');if(!list)return;var rows=(d&&d.promos)||[];list.innerHTML=rows.map(function(p){var st=p.status==='approved'?'<span class="st" style="color:#41e3a3">+$'+(+p.amount||0).toFixed(2)+' PAID</span>':p.status==='rejected'?'<span class="st" style="color:#ff8a80" title="'+(p.note?String(p.note).replace(/"/g,'&quot;'):'')+'">REJECTED'+(p.note?' — '+String(p.note).replace(/</g,'&lt;').slice(0,60):'')+'</span>':'<span class="st" style="color:#f3d44a">IN REVIEW</span>';return '<div class="pr-item"><span class="pl" style="color:'+(p.platform==='x'?'#e9e7df':'#5ad8e6')+'">'+(p.platform==='x'?'X':'TikTok')+'</span><a class="u" href="'+String(p.url).replace(/"/g,'')+'" target="_blank" rel="noopener">'+String(p.url).replace(/^https?:\/\//,'').replace(/</g,'&lt;')+'</a>'+st+'</div>';}).join('');}).catch(function(){});}
+  function prLoad(){if(!signedIn)return;fetch('/api/reward/promo/mine').then(function(r){return r.json();}).then(function(d){var list=document.getElementById('prList');if(!list)return;var rows=(d&&d.promos)||[];function esc(x){return String(x==null?'':x).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+    list.innerHTML=rows.map(function(p){
+      var st=p.status==='approved'?'<span class="st" style="color:#41e3a3">+$'+(+p.amount||0).toFixed(2)+' PAID</span>':p.status==='rejected'?'<span class="st" style="color:#ff8a80">REJECTED</span>':'<span class="st" style="color:#f3d44a">IN REVIEW</span>';
+      var row='<div class="pr-item"><span class="pl" style="color:'+(p.platform==='x'?'#e9e7df':'#5ad8e6')+'">'+(p.platform==='x'?'X':'TikTok')+'</span><a class="u" href="'+String(p.url).replace(/"/g,'')+'" target="_blank" rel="noopener">'+String(p.url).replace(/^https?:\/\//,'').replace(/</g,'&lt;')+'</a>'+st+'</div>';
+      if(p.status==='rejected'&&p.note)row+='<div class="pr-note"><b>Reason:</b> '+esc(p.note)+'</div>';
+      return row;
+    }).join('');}).catch(function(){});}
   (function(){var seg=document.getElementById('prSeg');if(seg)seg.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;prPlat=b.getAttribute('data-pl');Array.prototype.forEach.call(seg.querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});var inp=document.getElementById('prUrl');if(inp)inp.placeholder=prPlat==='x'?'https://x.com/you/status/…':'https://www.tiktok.com/@you/video/…';});
     var btn=document.getElementById('prSubmit');if(btn)btn.addEventListener('click',function(){
       var inp=document.getElementById('prUrl'),u=(inp&&inp.value||'').trim();
