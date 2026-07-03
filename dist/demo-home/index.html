@@ -286,7 +286,38 @@
   .rw-chip{display:inline-flex;align-items:center;gap:8px;margin-top:14px;background:rgba(194,246,74,.13);border:1px solid rgba(194,246,74,.38);border-radius:99px;padding:8px 14px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;color:var(--lime);position:relative;z-index:2;width:fit-content;}
   .rw-chip .cd{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 9px var(--lime);animation:pulse 1.4s infinite;}
 
-  /* ---------- Leaderboard ---------- */
+  /* ---------- Leaderboard band ---------- */
+  .lb-wrap{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:14px;}
+  @media(max-width:900px){.lb-wrap{grid-template-columns:1fr;}}
+  .lb-card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;display:flex;flex-direction:column;}
+  .lb-info{border-color:rgba(255,215,90,.3);background:linear-gradient(160deg,rgba(255,215,90,.09),rgba(255,215,90,.015) 55%),var(--panel);}
+  .lb-prizes{display:flex;flex-direction:column;gap:9px;margin-top:14px;}
+  .lb-prize{display:flex;align-items:center;gap:11px;font-size:14px;}
+  .lb-prize .m{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;flex:0 0 30px;}
+  .lb-prize.p1 .m{background:rgba(255,215,90,.2);color:var(--amber);}
+  .lb-prize.p2 .m{background:rgba(200,205,215,.15);color:#c8cdd7;}
+  .lb-prize.p3 .m{background:rgba(205,130,74,.17);color:#cd824a;}
+  .lb-prize .l{color:var(--dim);flex:1;}
+  .lb-prize .v{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.01em;}
+  .lb-reset{margin-top:16px;font-family:'Space Mono',monospace;font-size:11.5px;color:var(--faint);}
+  .lb-reset b{color:var(--amber);font-variant-numeric:tabular-nums;}
+  .lb-cta{margin-top:auto;padding-top:18px;}
+  .lb-cta .btn-l{display:inline-block;font-size:14px;padding:12px 20px;}
+  .lb-cta .note{display:block;margin-top:9px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--faint);}
+  .lb-board{display:flex;flex-direction:column;gap:2px;}
+  .lb-r{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;font-size:14px;transition:background .14s;}
+  .lb-r:hover{background:rgba(255,255,255,.03);}
+  .lb-r+.lb-r{border-top:1px solid rgba(255,255,255,.045);}
+  .lb-r.top{background:linear-gradient(90deg,rgba(255,215,90,.10),transparent);}
+  .lb-rank{font-family:'Space Mono',monospace;font-weight:700;font-size:12px;flex:0 0 30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);color:var(--dim);}
+  .lb-rank.m1{background:rgba(255,215,90,.2);color:var(--amber);}
+  .lb-rank.m2{background:rgba(200,205,215,.14);color:#c8cdd7;}
+  .lb-rank.m3{background:rgba(205,130,74,.16);color:#cd824a;}
+  .lb-who{font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .lb-pair{font-family:'Space Mono',monospace;font-size:11px;color:var(--faint);flex:0 0 auto;}
+  .lb-roe{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;color:var(--grn);flex:0 0 auto;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+  .lb-empty{padding:26px 14px;text-align:center;color:var(--faint);font-size:13.5px;}
+  /* ---------- Leaderboard (tile in band 04, legacy) ---------- */
   .lbx-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;margin-top:5px;font-size:13px;position:relative;z-index:2;border:1px solid transparent;}
   .lbx-row.g{background:linear-gradient(90deg,rgba(255,215,90,.11),transparent);border-color:rgba(255,215,90,.26);}
   .lbx-med{font-family:'Space Mono',monospace;font-weight:700;font-size:11px;flex:0 0 23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
@@ -641,11 +672,33 @@
   <div class="exch-disc">Referral links — MarginPad may earn a commission if you open an account, at no cost to you. That is what keeps every tool here free. Trade responsibly: leverage can liquidate your entire margin.</div>
 </section>
 
+<section class="band" style="--glow:rgba(255,215,90,.09);--bandc:#ffd75a">
+  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Weekly leaderboard</h2><span class="band-s">Best single paper-trade ROE each week wins real USDT. Free to enter — just sign in and trade.</span></div>
+  <div class="lb-wrap">
+    <div class="lb-card lb-info">
+      <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> Live · this week</div>
+      <div class="t-title" style="font-size:22px">Trade to the top</div>
+      <div class="t-sub">Your best closed paper trade of the week is auto-submitted. Top 3 ROE take the prizes.</div>
+      <div class="lb-prizes">
+        <div class="lb-prize p1"><span class="m">1</span><span class="l">First place</span><span class="v" id="lbPz1">$30</span></div>
+        <div class="lb-prize p2"><span class="m">2</span><span class="l">Second place</span><span class="v" id="lbPz2">$20</span></div>
+        <div class="lb-prize p3"><span class="m">3</span><span class="l">Third place</span><span class="v" id="lbPz3">$10</span></div>
+      </div>
+      <div class="lb-reset" id="lbReset">Resets Monday 00:00 UTC</div>
+      <div class="lb-cta"><a class="btn-l" href="/paper-trade">Open Paper Trade →</a><span class="note" id="lbYou">Sign in (free) and your best trade enters automatically.</span></div>
+    </div>
+    <div class="lb-card">
+      <div class="t-kick"><span class="dot"></span> Top traders · updates live</div>
+      <div class="lb-board" id="lbBoard" style="margin-top:12px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
+    </div>
+  </div>
+</section>
+
 <section class="band b-learn" style="--glow:rgba(255,215,90,.08);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Learn &amp; earn</h2><span class="band-s">From your first lesson to your first payout — the whole path is free.</span></div>
+  <div class="band-head"><span class="band-idx">05</span><h2 class="band-t">Learn &amp; earn</h2><span class="band-s">From your first lesson to your first payout — the whole path is free.</span></div>
   <div class="bento">
 
-    <a class="tile s3" href="/where-to-start/" style="--ac:#c2f64a">
+    <a class="tile s4" href="/where-to-start/" style="--ac:#c2f64a">
       <div class="t-kick">From zero</div>
       <div class="t-title">Where to Start</div>
       <div class="path">
@@ -656,7 +709,7 @@
       <div class="t-go">Start learning <i>→</i></div>
     </a>
 
-    <a class="tile s3" href="/blog/" style="--ac:#98a1ab">
+    <a class="tile s4" href="/blog/" style="--ac:#98a1ab">
       <div class="t-kick">65+ guides</div>
       <div class="t-title">Blog &amp; Guides</div>
       <div class="blog-q">"Why 90% of crypto futures traders lose money — and how to be the 10%."</div>
@@ -664,19 +717,12 @@
       <div class="t-go">Read the guides <i>→</i></div>
     </a>
 
-    <a class="tile s3 lime" href="/rewards/" style="--ac:#c2f64a">
+    <a class="tile s4 lime" href="/rewards/" style="--ac:#c2f64a">
       <div class="t-kick" style="color:#a9d33f"><span class="dot"></span> Free USDT</div>
       <div class="t-title">Rewards</div>
       <div class="t-sub">Claim free USDT every 5 minutes, earn $1 per post about us, win the weekly league. Withdraw real USDT.</div>
       <div class="rw-chip"><span class="cd"></span> CLAIM EVERY 5 MIN · $1 PER POST</div>
       <div class="t-go">Start earning <i>→</i></div>
-    </a>
-
-    <a class="tile s3" href="/rewards/#league" style="--ac:#ffd75a">
-      <div class="t-kick"><span class="dot"></span> Weekly league · $60 prizes</div>
-      <div class="t-title">Leaderboard</div>
-      <div id="lbx" style="margin-top:8px"><div class="skel" style="width:88%"></div><div class="skel" style="width:70%"></div><div class="skel" style="width:79%"></div></div>
-      <div class="t-go">Compete for $60 <i>→</i></div>
     </a>
 
   </div>
@@ -779,11 +825,20 @@
 
   // ---- leaderboard ----
   fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){
-    var top=((d&&d.top)||[]).slice(0,3);if(!top.length)return;
-    document.getElementById('lbx').innerHTML=top.map(function(t,i){
-      return '<div class="lbx-row'+(i===0?' g':'')+'"><span class="lbx-med m'+(i+1)+'">'+(i+1)+'</span><span class="lbx-who">'+String(t.who||'trader').replace(/</g,'&lt;')+'</span><span class="lbx-roe">+'+Math.round(+t.roe).toLocaleString('en-US')+'%</span></div>';
-    }).join('');
+    var top=((d&&d.top)||[]).slice(0,10);var el=document.getElementById('lbBoard');
+    if(el){el.innerHTML=top.length?top.map(function(t,i){
+      var med=i<3?' m'+(i+1):'';var pair=(t.symbol?String(t.symbol).replace(/</g,'&lt;'):'')+(t.side?' '+t.side:'');
+      return '<div class="lb-r'+(i===0?' top':'')+'"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who">'+String(t.who||'trader').replace(/</g,'&lt;')+'</span><span class="lb-pair">'+pair+'</span><span class="lb-roe">+'+Math.round(+t.roe).toLocaleString('en-US')+'%</span></div>';
+    }).join(''):'<div class="lb-empty">No entries yet this week — be the first. Open a paper trade and close it in profit.</div>';}
+    var pz=(d&&d.prizes)||[30,20,10];
+    ['lbPz1','lbPz2','lbPz3'].forEach(function(id,i){var e=document.getElementById(id);if(e&&pz[i]!=null)e.textContent='$'+pz[i];});
+    // reset countdown to weekEnd (Monday 00:00 UTC)
+    var we=+(d&&d.weekEnd)||0,rs=document.getElementById('lbReset');
+    if(we&&rs){var ms=we-Date.now();if(ms>0){var dd=Math.floor(ms/86400000),hh=Math.floor(ms%86400000/3600000),mm=Math.floor(ms%3600000/60000);rs.innerHTML='Resets Monday 00:00 UTC · ends in <b>'+dd+'d '+hh+'h '+mm+'m</b>';}else rs.textContent='Resetting…';}
   }).catch(function(){});
+  // reflect sign-in state on the leaderboard CTA
+  function lbYou(){var y=document.getElementById('lbYou');if(!y)return;var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();y.textContent=me?('You are in as @'+((me.username||me.email||'you').split('@')[0])+' — close a winning trade to climb.'):'Sign in (free) and your best trade enters automatically.';}
+  window.addEventListener('mp-auth-change',lbYou);setTimeout(lbYou,600);
 
   // ---- defi ----
   fetch('/api/defi/overview').then(function(r){return r.json();}).then(function(d){
