@@ -815,7 +815,7 @@
     savePersist();
   }
   document.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('.cws-tile[data-preset]');if(b){var n=parseInt(b.getAttribute('data-preset'),10);if(n)applyPreset(n);}});
-  function buildInitial(){var saved=loadPersist();if(saved&&saved.length){saved.slice(0,MAXn()).forEach(function(c){addWin(c);});}else showEmpty(true);var sn=loadNotes();if(sn&&sn.length)sn.forEach(function(c){addNote(c);});}
+  function buildInitial(){showEmpty(true);var sn=loadNotes();if(sn&&sn.length)sn.forEach(function(c){addNote(c);});} // opens EMPTY by owner request (no auto-restore); saved named layouts remain in the Layouts menu
   function showMobileNote(){var bd=document.getElementById('cwsBoard');if(!bd)return;showEmpty(false);var d=el('<div class="cws-mobile-note"><div class="cws-mn-ic"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><h3>Charts works best on desktop</h3><p>The multi-window workspace — drag, resize, indicators &amp; drawing — needs more room than a phone offers. Open <b>marginpad.io/charts</b> on your computer for the full experience.</p><button type="button" class="cws-mn-btn" id="cwsMnGo">Continue anyway</button></div>');bd.appendChild(d);var go=d.querySelector('#cwsMnGo');if(go)go.addEventListener('click',function(){if(d.parentNode)d.parentNode.removeChild(d);buildInitial();});}
   function loadMC(){try{return JSON.parse(localStorage.getItem('mp_mchart')||'{}')||{};}catch(e){return {};}}
   function saveMC(o){try{localStorage.setItem('mp_mchart',JSON.stringify(o));}catch(e){}}
@@ -861,7 +861,7 @@
     document.addEventListener('visibilitychange',function(){if(!document.hidden&&mw.candle&&!mw.dead)loadData(mw,false);});
     window.addEventListener('storage',updMT);
   }
-  window.mpCharts={ activate:function(){ if(built)return; built=true; setTimeout(function(){ if(isMobile()){buildMobileChart();return;} buildInitial(); },40); },
+  window.mpCharts={ activate:function(){ if(built)return; built=true; setTimeout(function(){ if(isMobile()){buildMobileChart();return;} buildInitial(); if(/^\/charts\/?$/.test(location.pathname)){setTimeout(function(){try{window.__openBrowse&&window.__openBrowse('aside');}catch(e){}},260);} },40); },
     setTheme:function(m){chTheme=(m==='light')?'light':'dark';try{localStorage.setItem('mp_ch_theme',chTheme);}catch(e){}applyTheme();},
     getTheme:function(){return chTheme;},
     reflow:function(){try{reflowWins();}catch(e){}},
