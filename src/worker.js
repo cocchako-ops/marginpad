@@ -2337,6 +2337,36 @@ async function sendAlertEmail(env, to, sym, dir, target, cur, note) {
   } catch (e) { return { ok: false }; }
 }
 // Cron: evaluate account price-alerts (UserStore DO) and email the ones that trigger. Runs alongside the Telegram alert cron.
+// Auto-credit the weekly Trade League top 3 with their prizes (from LIVE rewardCfg — owner can change the
+// budget from ops Settings and it applies at the next payout). Runs on the */10 cron. Idempotent: a KV flag
+// per week + a (week,acct) PRIMARY KEY in the ledger. Never back-pays weeks that ended before the feature was
+// armed (a `lbpay:since` anchor stamped on the first run), so enabling it won't retroactively pay old weeks.
+async function payWeeklyPrizes(env) {
+  if (!env.STATS || !env.REWARDS || !env.USERS) return;
+  const WK = 604800000, MON = 4 * 86400000, now = Date.now();
+  const thisWeekStart = Math.floor((now - MON) / WK) * WK + MON; // Monday 00:00 UTC anchor (same as /lb)
+  let since = null; try { since = +(await env.STATS.get('lbpay:since')) || null; } catch (e) {}
+  if (!since) { try { await env.STATS.put('lbpay:since', String(thisWeekStart)); } catch (e) {} return; } // first run: arm from this week; the current week pays out once it ends
+  const cfg = await rewardCfg(env);
+  const prizes = [cfg.prize1 || 0, cfg.prize2 || 0, cfg.prize3 || 0]; // USD, live from config/Settings
+  for (let ws = since; ws < thisWeekStart; ws += WK) { // every ENDED week from the anchor up to (not incl.) this week
+    const flag = 'lbpaid:' + ws;
+    let done = false; try { done = !!(await env.STATS.get(flag)); } catch (e) {}
+    if (done) continue;
+    const we = ws + WK;
+    let board = [];
+    try { const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + ws + '&we=' + we + '&limit=10')); const ud = await ur.json(); board = (ud && ud.top) || []; } catch (e) {}
+    const banned = {};
+    try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
+    const top3 = board.filter(x => x && x.uid && !banned[x.uid]).slice(0, 3);
+    const payload = top3.map((x, i) => ({ acct: x.uid, cents: Math.round((prizes[i] || 0) * 100), rank: i + 1 })).filter(p => p.cents > 0);
+    if (payload.length) {
+      try { await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/paywinners', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ week: ws, winners: payload }) })); } catch (e) {}
+    }
+    try { await env.STATS.put(flag, JSON.stringify({ ts: now, n: payload.length })); } catch (e) {} // mark the week paid (even if 0 eligible winners) so we don't retry forever
+  }
+}
+
 async function checkAccountAlerts(env) {
   if (!env || !env.USERS || (!env.RESEND_API_KEY && !env.TELEGRAM_TOKEN)) return;
   let alerts = [];
@@ -3321,6 +3351,7 @@ export default {
   async scheduled(event, env, ctx) {
     ctx.waitUntil(checkAlerts(env));
     ctx.waitUntil(checkAccountAlerts(env));
+    ctx.waitUntil(payWeeklyPrizes(env));
     ctx.waitUntil(checkDigest(env));
     ctx.waitUntil(snapshotDaily(env));
     ctx.waitUntil(checkSignals(env));
@@ -3437,6 +3468,7 @@ export class RewardLedger {
     s.exec('CREATE TABLE IF NOT EXISTS lbban(address TEXT PRIMARY KEY, ts INTEGER)'); // wallets barred from the weekly leaderboard competition
     s.exec("CREATE TABLE IF NOT EXISTS promos(id TEXT PRIMARY KEY, acct TEXT, platform TEXT, url TEXT, ts INTEGER, status TEXT DEFAULT 'pending', note TEXT DEFAULT '', decided_ts INTEGER DEFAULT 0, amount INTEGER DEFAULT 0, ip TEXT, cc TEXT)"); // social promo posts (X/TikTok $1 each, manual review, 24h min live)
     try { s.exec('CREATE INDEX IF NOT EXISTS idx_promos_acct ON promos(acct)'); } catch (e) {}
+    s.exec('CREATE TABLE IF NOT EXISTS lbpayouts(week INTEGER, acct TEXT, rank INTEGER, amount INTEGER, ts INTEGER, PRIMARY KEY(week,acct))'); // weekly leaderboard prize payouts — idempotent (same week+acct never paid twice)
     // Indexes for the admin Rewards tab: /accounts groups by ip, /detail filters by ip, lists sort by created — without these they're full-table scans that grow with signups.
     for (const ix of ['CREATE INDEX IF NOT EXISTS idx_accounts_ip ON accounts(ip)', 'CREATE INDEX IF NOT EXISTS idx_accounts_created ON accounts(created)']) { try { s.exec(ix); } catch (e) {} }
   }
@@ -3640,6 +3672,25 @@ export class RewardLedger {
       const fraud = { riskLevel, flags, sameIp, ipWallets, sameDid, didWallets, ageMs, claimsPerHour: +claimsPerHour.toFixed(2) };
       const payoutAddr = a ? (a.payout_addr || (this.rows('SELECT address FROM withdrawals WHERE acct=? AND address IS NOT NULL ORDER BY ts DESC LIMIT 1', addr)[0] || {}).address || '') : ''; // the BEP20 wallet linked to this account (set at withdrawal)
       return this.j({ address: addr, exists: !!a, payoutAddr, balanceUsd: a ? a.balance / 100 : 0, earnedUsd: a ? a.earned / 100 : 0, claims, cc: a ? (a.cc || '') : '', dev: a ? (a.dev || '') : '', ip: a ? (a.ip || '') : '', created: a ? a.created : 0, lastClaim: a ? a.last_claim : 0, locked: !!lock, banned: !!(a && a.banned), sameIp, note: noteRow ? noteRow.note : '', msg: mrow ? mrow.message : '', msgTs: mrow ? mrow.ts : 0, msgSeen: mrow ? !!mrow.seen : false, withdrawals: wds, lb: lbrow || null, lbBanned, fraud });
+    }
+    if (path === '/paywinners') { // credit weekly leaderboard prizes to the top accounts — idempotent per (week,acct)
+      const week = Math.floor(+body.week || 0);
+      const winners = Array.isArray(body.winners) ? body.winners : [];
+      if (!week || !winners.length) return this.j({ ok: true, paid: 0 });
+      const out = [];
+      for (const w of winners) {
+        const acct = String(w.acct || ''), cents = Math.round(+w.cents || 0), rank = Math.floor(+w.rank || 0);
+        if (!acct || cents <= 0) continue;
+        if (this.rows('SELECT week FROM lbpayouts WHERE week=? AND acct=?', week, acct).length) continue; // already paid this week
+        const arow = this.rows('SELECT address, banned FROM accounts WHERE address=?', acct)[0];
+        if (arow && arow.banned) continue; // never pay a banned account
+        if (!arow) sql.exec('INSERT INTO accounts(address,day,created,balance,earned) VALUES(?,?,?,?,?)', acct, day, now, cents, cents);
+        else sql.exec('UPDATE accounts SET balance=balance+?, earned=earned+? WHERE address=?', cents, cents, acct);
+        sql.exec('INSERT INTO lbpayouts(week,acct,rank,amount,ts) VALUES(?,?,?,?,?)', week, acct, rank, cents, now);
+        this.log('lbprize', acct, '', '', cents);
+        out.push({ acct, rank, amount: cents });
+      }
+      return this.j({ ok: true, paid: out.length, payouts: out });
     }
     // ---- Social promo: $1 per X post + $1 per TikTok post about the site (1/day each, manual review, must stay live 24h) ----
     if (path === '/promo/submit') {

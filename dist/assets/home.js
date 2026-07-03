@@ -449,7 +449,7 @@
       var tf=ageH>72?'1440':ageH>24?'240':ageH>6?'60':ageH>2?'30':'5'; // coarser interval for longer gaps so the returned candles still span the whole period
       fetch('/api/klines?symbol='+encodeURIComponent(e.sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
         if(!kd||!kd.length)return;kd=sanitizeBars(kd);var ivMs=parseInt(tf,10)*60000,cross=null;
-        for(var i=0;i<kd.length;i++){var b=kd[i],bt=b.time*1000;if(bt+ivMs<e.ts)continue; // candle ended before the trade opened — ignore
+        for(var i=0;i<kd.length;i++){var b=kd[i],bt=b.time*1000;if(bt<e.ts)continue; // skip the candle that CONTAINS (or precedes) the open — its high/low can include a pre-open wick that never touched the live position (fixed 2026-07-03: a restored short was falsely liquidated by the pre-open pump wick in its own open candle). Only candles that START after the open can backfill a liquidation; the live tick + 8-min grace own the open candle.
           // require the CLOSE to confirm the cross — a lone wick (often a phantom/bad print, especially after the tab was OFFLINE) must NEVER trigger a liquidation. Real sustained liquidations close beyond the liq price.
           if(lng?(+b.low<=liq&&+b.close<=liq*1.03):(+b.high>=liq&&+b.close>=liq*0.97)){cross=Math.max(bt,e.ts);break;}}
         if(cross==null)return;
