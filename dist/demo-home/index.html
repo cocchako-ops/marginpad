@@ -30,18 +30,27 @@
   .fl-up{animation:flu 1s ease;}
   .fl-dn{animation:fld 1s ease;}
 
-  /* ================= header ================= */
-  header{display:flex;align-items:center;justify-content:space-between;padding:15px var(--pad);position:sticky;top:0;z-index:50;background:rgba(7,8,10,.75);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);border-bottom:1px solid var(--line);}
-  .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;letter-spacing:-.02em;}
-  .brand b{color:var(--lime);}
-  .hnav{display:flex;align-items:center;gap:26px;font-size:13.5px;font-weight:600;color:var(--dim);}
-  .hnav a{transition:color .14s;}
-  .hnav a:hover{color:var(--ink);}
-  .hnav .cta{background:var(--lime);color:#0a0b0d;font-weight:800;border-radius:10px;padding:9px 17px;box-shadow:0 0 0 0 rgba(194,246,74,.4);transition:box-shadow .18s,transform .14s;}
-  .hnav .cta:hover{box-shadow:0 0 26px -6px rgba(194,246,74,.55);transform:translateY(-1px);color:#0a0b0d;}
-  .mburger{display:none;width:42px;height:42px;border:1px solid var(--line2);border-radius:11px;background:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:4.5px;flex:0 0 42px;}
-  .mburger span{display:block;width:17px;height:2px;background:var(--ink);border-radius:2px;}
-  @media(max-width:820px){.hnav a:not(.cta){display:none;}.hnav{gap:10px;}.mburger{display:flex;}}
+  /* ================= header — same as the live homepage ================= */
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px var(--pad);position:sticky;top:0;z-index:50;background:rgba(7,8,10,.78);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);border-bottom:1px solid var(--line);}
+  .brand{display:flex;align-items:baseline;gap:10px;}
+  .brand .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;transition:letter-spacing .25s ease;cursor:pointer;color:var(--ink);text-decoration:none;}
+  .brand .mark:hover{letter-spacing:-.02em;}
+  .brand .mark b{color:#c2f64a;}
+  .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}
+  .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}
+  .hmenu span:nth-child(2){width:13px;}
+  .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}
+  .hnav{display:flex;align-items:center;gap:3px;}
+  .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}
+  .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}
+  .hlink svg{flex-shrink:0;transition:transform .16s cubic-bezier(.2,.7,.2,1);}
+  .hlink:hover svg{transform:scale(1.14);}
+  .hbot{color:#7cc4ff;}
+  .hbot:hover{color:#a8d8ff;background:rgba(124,196,255,.12);}
+  .hrwd{color:#c2f64a;}
+  .hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12);}
+  .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--dim);background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;transition:.15s;max-width:140px;}
+  @media(max-width:720px){.hnav .hbot{display:none;}.hnav .hauth span{display:none;}.hnav .hauth{padding:7px;}}
   .mmenu{position:fixed;inset:0;z-index:95;background:rgba(7,8,10,.97);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);display:none;flex-direction:column;padding:16px 20px calc(24px + env(safe-area-inset-bottom));overflow:auto;}
   .mmenu.on{display:flex;}
   .mmenu-top{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--line);}
@@ -283,6 +292,7 @@
 
   /* ---------- Go live: exchanges (affiliate) ---------- */
   .exch-feat{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .exf-sub{min-height:42px;}
   .exf{--exc:#f7a600;position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.004)),var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;overflow:hidden;transition:transform .18s cubic-bezier(.2,.7,.3,1),border-color .18s,box-shadow .18s;}
   .exf::before{content:'';position:absolute;top:0;left:18px;right:18px;height:1px;background:linear-gradient(90deg,transparent,var(--exc),transparent);opacity:.6;}
   .exf:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--exc) 45%,transparent);box-shadow:0 24px 54px -24px rgba(0,0,0,.85),0 0 34px -16px var(--exc);}
@@ -320,7 +330,7 @@
   /* scroll-reveal */
   .rv{opacity:0;transform:translateY(18px);transition:opacity .65s cubic-bezier(.2,.65,.25,1),transform .65s cubic-bezier(.2,.65,.25,1);transition-delay:calc(var(--i,0)*75ms);}
   .rv.on{opacity:1;transform:none;}
-  @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none;}.tape-in{animation:none;}}
+  @media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none;}}
   /* trust band */
   .trust{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:clamp(20px,2.6vw,34px) var(--pad);background:rgba(255,255,255,.008);}
   .trust b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(22px,2.2vw,32px);letter-spacing:-.02em;font-variant-numeric:tabular-nums;}
@@ -341,16 +351,17 @@
 <body>
 
 <header>
-  <a class="brand" href="/">MARGIN<b>PAD</b></a>
+  <div class="brand">
+    <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+    <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
+  </div>
   <nav class="hnav">
-    <a href="/screener">Screener</a>
-    <a href="/coins/">Markets</a>
-    <a href="/rekt/">Rekt</a>
-    <a href="/tools/">Tools</a>
-    <a href="/where-to-start/">Learn</a>
-    <a href="/rewards/">Earn</a>
-    <a class="cta" href="/paper-trade">Open Paper Trade</a>
-    <button class="mburger" id="mBurger" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
+    <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
+    <a href="/rewards/" class="hlink hrwd" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>
+    <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
+    <select class="lang" id="langSel" aria-label="Language">
+      <option value="/">EN</option><option value="/es/">ES</option><option value="/de/">DE</option><option value="/fr/">FR</option><option value="/it/">IT</option><option value="/pt/">PT</option><option value="/pl/">PL</option><option value="/nl/">NL</option><option value="/tr/">TR</option><option value="/ru/">RU</option><option value="/id/">ID</option><option value="/hi/">HI</option><option value="/vi/">VI</option>
+    </select>
   </nav>
 </header>
 
@@ -574,27 +585,49 @@
   <div class="exch-feat">
     <a class="exf" href="https://www.bybit.com/trade/usdt/BTCUSDT?ref=LZKBERJ" target="_blank" rel="noopener sponsored" data-ex="Bybit" style="--exc:#f7a600">
       <div class="exf-top"><span class="exf-ic" style="color:#0a0b0d">B</span><span class="exf-n">Bybit</span><span class="exf-tag">Most popular</span></div>
-      <div class="exf-sub">The paper-trader's next step — deep USDT-perp liquidity, up to 100× leverage and a terminal that feels like ours.</div>
+      <div class="exf-sub">Deep USDT-perp liquidity, up to 100× and a terminal that feels like ours.</div>
       <div class="exf-cta"><span>Trade on Bybit →</span></div>
     </a>
     <a class="exf" href="https://www.binance.com/en/futures/BTCUSDT?ref=MAOZM9DS" target="_blank" rel="noopener sponsored" data-ex="Binance" style="--exc:#f0b90b">
       <div class="exf-top"><span class="exf-ic" style="color:#181a20">B</span><span class="exf-n">Binance</span><span class="exf-tag">Biggest volume</span></div>
-      <div class="exf-sub">The world's largest exchange — unmatched volume, the tightest spreads and every pair you will ever look for.</div>
+      <div class="exf-sub">The world's largest exchange — the tightest spreads, every pair.</div>
       <div class="exf-cta"><span>Trade on Binance →</span></div>
     </a>
     <a class="exf" href="https://www.okx.com/trade-swap/btc-usdt-swap" target="_blank" rel="noopener sponsored" data-ex="OKX" style="--exc:#cfd3d8">
       <div class="exf-top"><span class="exf-ic" style="color:#0a0b0d">O</span><span class="exf-n">OKX</span><span class="exf-tag">Pro tools</span></div>
-      <div class="exf-sub">Pro-grade derivatives with copy trading, a clean multi-asset account and serious options depth.</div>
+      <div class="exf-sub">Pro-grade derivatives, copy trading and serious options depth.</div>
       <div class="exf-cta"><span>Trade on OKX →</span></div>
     </a>
-  </div>
-  <div class="exch-rest">
-    <a class="exr" href="https://www.bitget.com/futures/usdt/BTCUSDT?clacCode=DSSSQKGK" target="_blank" rel="noopener sponsored" data-ex="Bitget" style="--exc:#00e7d8"><i style="color:#06231d">B</i><b>Bitget</b><span class="ar">→</span></a>
-    <a class="exr" href="https://www.kucoin.com/futures/trade/XBTUSDTM?rcode=VHP8AYKY" target="_blank" rel="noopener sponsored" data-ex="KuCoin" style="--exc:#23af91"><i style="color:#06231d">K</i><b>KuCoin</b><span class="ar">→</span></a>
-    <a class="exr" href="https://www.gate.com/futures/USDT/BTC_USDT?ref=VFIWB10KUG" target="_blank" rel="noopener sponsored" data-ex="Gate" style="--exc:#3361ff"><i style="color:#fff">G</i><b>Gate</b><span class="ar">→</span></a>
-    <a class="exr" href="https://futures.mexc.com/exchange/BTC_USDT?inviteCode=GND4jI97o0" target="_blank" rel="noopener sponsored" data-ex="MEXC" style="--exc:#0ac2d6"><i style="color:#06231d">M</i><b>MEXC</b><span class="ar">→</span></a>
-    <a class="exr" href="https://invite.kraken.com/JDNW/guj2tf28" target="_blank" rel="noopener sponsored" data-ex="Kraken" style="--exc:#7b5cff"><i style="color:#fff">K</i><b>Kraken</b><span class="ar">→</span></a>
-    <a class="exr" href="https://crypto.com/app/sdf5hb6rkv" target="_blank" rel="noopener sponsored" data-ex="Crypto.com" style="--exc:#0b2e7a"><i style="color:#fff">C</i><b>Crypto.com</b><span class="ar">→</span></a>
+    <a class="exf" href="https://www.bitget.com/futures/usdt/BTCUSDT?clacCode=DSSSQKGK" target="_blank" rel="noopener sponsored" data-ex="Bitget" style="--exc:#00e7d8">
+      <div class="exf-top"><span class="exf-ic" style="color:#06231d">B</span><span class="exf-n">Bitget</span><span class="exf-tag">Copy trading</span></div>
+      <div class="exf-sub">Follow the best traders automatically — copy trading done right.</div>
+      <div class="exf-cta"><span>Trade on Bitget →</span></div>
+    </a>
+    <a class="exf" href="https://www.kucoin.com/futures/trade/XBTUSDTM?rcode=VHP8AYKY" target="_blank" rel="noopener sponsored" data-ex="KuCoin" style="--exc:#23af91">
+      <div class="exf-top"><span class="exf-ic" style="color:#06231d">K</span><span class="exf-n">KuCoin</span><span class="exf-tag">Altcoin depth</span></div>
+      <div class="exf-sub">700+ pairs and the altcoins the big exchanges don't list.</div>
+      <div class="exf-cta"><span>Trade on KuCoin →</span></div>
+    </a>
+    <a class="exf" href="https://www.gate.com/futures/USDT/BTC_USDT?ref=VFIWB10KUG" target="_blank" rel="noopener sponsored" data-ex="Gate" style="--exc:#3361ff">
+      <div class="exf-top"><span class="exf-ic" style="color:#fff">G</span><span class="exf-n">Gate</span><span class="exf-tag">Early listings</span></div>
+      <div class="exf-sub">New tokens first — one of the widest altcoin selections anywhere.</div>
+      <div class="exf-cta"><span>Trade on Gate →</span></div>
+    </a>
+    <a class="exf" href="https://futures.mexc.com/exchange/BTC_USDT?inviteCode=GND4jI97o0" target="_blank" rel="noopener sponsored" data-ex="MEXC" style="--exc:#0ac2d6">
+      <div class="exf-top"><span class="exf-ic" style="color:#06231d">M</span><span class="exf-n">MEXC</span><span class="exf-tag">Low fees</span></div>
+      <div class="exf-sub">Rock-bottom futures fees and lightning-fast new listings.</div>
+      <div class="exf-cta"><span>Trade on MEXC →</span></div>
+    </a>
+    <a class="exf" href="https://invite.kraken.com/JDNW/guj2tf28" target="_blank" rel="noopener sponsored" data-ex="Kraken" style="--exc:#7b5cff">
+      <div class="exf-top"><span class="exf-ic" style="color:#fff">K</span><span class="exf-n">Kraken</span><span class="exf-tag">Regulated</span></div>
+      <div class="exf-sub">US-regulated and trusted since 2011 — security first.</div>
+      <div class="exf-cta"><span>Trade on Kraken →</span></div>
+    </a>
+    <a class="exf" href="https://crypto.com/app/sdf5hb6rkv" target="_blank" rel="noopener sponsored" data-ex="Crypto.com" style="--exc:#1a4bc4">
+      <div class="exf-top"><span class="exf-ic" style="color:#fff">C</span><span class="exf-n">Crypto.com</span><span class="exf-tag">All-in-one app</span></div>
+      <div class="exf-sub">Trade, card and earn in one polished app — 100M+ users.</div>
+      <div class="exf-cta"><span>Trade on Crypto.com →</span></div>
+    </a>
   </div>
   <div class="exch-disc">Referral links — MarginPad may earn a commission if you open an account, at no cost to you. That is what keeps every tool here free. Trade responsibly: leverage can liquidate your entire margin.</div>
 </section>
@@ -661,11 +694,22 @@
   var fmt=function(n){n=+n;if(!isFinite(n))return '—';return n>=1000?n.toLocaleString('en-US',{maximumFractionDigits:n>=10000?0:1}):n>=1?n.toFixed(2):n.toPrecision(3);};
   var bil=function(n){n=+n;if(!isFinite(n))return '—';return n>=1e12?'$'+(n/1e12).toFixed(2)+'T':'$'+(n/1e9).toFixed(1)+'B';};
 
-  // ---- live prices: tape + hero terminal + alert target + calc example ----
+  // ---- live prices: tape (>=15 pairs: live majors + screener top-volume) + hero terminal ----
+  var scrX=null; // extra pairs from the screener to widen the tape
+  function buildTape(ps){
+    var seen={},rows=[];
+    ps.forEach(function(p){var sm=p.symbol.replace('USDT','');if(seen[sm])return;seen[sm]=1;rows.push({s:sm,p:+p.price,c:+p.changePct});});
+    (scrX||[]).forEach(function(r){if(seen[r.s]||rows.length>=18)return;seen[r.s]=1;rows.push({s:r.s,p:+r.p,c:+r.chg});});
+    if(rows.length<3)return;
+    var html=rows.map(function(r){return '<span><b>'+r.s+'</b> $'+fmt(r.p)+' <span class="'+(r.c>=0?'up':'dn')+'">'+(r.c>=0?'+':'')+r.c.toFixed(2)+'%</span></span>';}).join('');
+    var el=document.getElementById('tape');el.innerHTML=html+html;
+    el.style.animationDuration=Math.max(28,rows.length*2.4)+'s'; // speed scales with content so it always visibly rolls
+  }
+  fetch('/api/screener').then(function(r){return r.json();}).then(function(d){scrX=((d&&d.rows)||[]).slice(0,14);if(window.__lastPairs)buildTape(window.__lastPairs);}).catch(function(){});
   function prices(){fetch('/api/prices').then(function(r){return r.json();}).then(function(d){
     var ps=(d&&d.pairs)||[];if(!ps.length)return;
-    var html=ps.map(function(p){var s=p.symbol.replace('USDT','');var v=+p.changePct;return '<span><b>'+s+'</b> $'+fmt(p.price)+' <span class="'+(v>=0?'up':'dn')+'">'+(v>=0?'+':'')+v.toFixed(2)+'%</span></span>';}).join('');
-    document.getElementById('tape').innerHTML=html+html;
+    window.__lastPairs=ps;
+    buildTape(ps);
     var btc=ps.filter(function(p){return p.symbol==='BTCUSDT';})[0];
     if(btc){var px=+btc.price;
       var hb=document.getElementById('hBtc');
@@ -782,7 +826,7 @@
   var rsz;window.addEventListener('resize',function(){clearTimeout(rsz);rsz=setTimeout(redraw,180);});
 
   // ---- scroll-reveal (staggered per row group) ----
-  var rvEls=[].slice.call(document.querySelectorAll('.bento .tile, .band-head, .snap>a, .trust>div, .exch-feat>a, .exch-rest>a'));
+  var rvEls=[].slice.call(document.querySelectorAll('.bento .tile, .band-head, .snap>a, .trust>div, .exch-feat>a'));
   rvEls.forEach(function(el){var sib=[].slice.call(el.parentNode.children).filter(function(x){return x.classList&&(x.classList.contains('tile')||x.tagName==='A'||x.tagName==='DIV');});var i=sib.indexOf(el);el.style.setProperty('--i',Math.max(0,i%6));el.classList.add('rv');});
   if('IntersectionObserver' in window){
     var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}});},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
@@ -827,6 +871,9 @@
     document.getElementById('rk24').textContent='24h: −$'+(m.total/1e6).toFixed(0)+'M liquidated · '+sh+'% were shorts';
   }).catch(function(){});
 
+  // ---- language select (navigates to the language homepage, like the live site) ----
+  (function(){var ls=document.getElementById('langSel');if(ls)ls.addEventListener('change',function(){location.href=this.value;});})();
+
   // ---- mobile menu ----
   (function(){var mb=document.getElementById('mBurger'),mm=document.getElementById('mMenu'),mx=document.getElementById('mMenuX');
     if(mb&&mm){mb.addEventListener('click',function(){mm.classList.add('on');document.body.style.overflow='hidden';});
@@ -842,5 +889,6 @@
   window.addEventListener('scroll',function(){if(hd)hd.classList.toggle('sc',window.scrollY>8);},{passive:true});
 })();
 </script>
+<script defer src="/assets/mp-auth.js"></script>
 </body>
 </html>
