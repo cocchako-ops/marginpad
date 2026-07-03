@@ -9,12 +9,13 @@
 <link rel="icon" href="/favicon.ico" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/mp-trade.css">
 <style>
-  :root{--bg:#07080a;--panel:#0c0f13;--panel2:#0f1318;--line:rgba(255,255,255,.065);--line2:rgba(255,255,255,.12);--ink:#edebe3;--dim:#98a1ab;--faint:#5b636d;--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--cyan:#3fd8e6;--blue:#6aa3ff;--amber:#ffd75a;--purp:#9d7bff;--orng:#ff8c5a;--pad:clamp(18px,3vw,64px);}
+  :root{--bg:#0b0d12;--panel:#12161d;--panel2:#171c26;--line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.17);--ink:#f0eee6;--dim:#a6afba;--faint:#707a86;--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--cyan:#3fd8e6;--blue:#6aa3ff;--amber:#ffd75a;--purp:#9d7bff;--orng:#ff8c5a;--pad:clamp(18px,3vw,64px);}
   *{box-sizing:border-box;margin:0;padding:0;}
   html{touch-action:manipulation;overflow-x:hidden;scroll-behavior:smooth;}
   body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;}
-  body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.028;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");}
+  body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:99;opacity:.02;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");}
   a{color:inherit;text-decoration:none;}
   .mono{font-family:'Space Mono',monospace;font-variant-numeric:tabular-nums;}
   ::selection{background:rgba(194,246,74,.28);color:#0a0b0d;}
@@ -44,7 +45,7 @@
   @keyframes au2{from{transform:translate(0,0) scale(1.1);}to{transform:translate(-8vw,-6vh) scale(.96);}}
 
   /* ================= header — same as the live homepage ================= */
-  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px var(--pad);position:sticky;top:0;z-index:50;background:rgba(7,8,10,.78);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);border-bottom:1px solid var(--line);}
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px var(--pad);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.82);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);border-bottom:1px solid var(--line);}
   .brand{display:flex;align-items:baseline;gap:10px;}
   .brand .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;transition:letter-spacing .25s ease;cursor:pointer;color:var(--ink);text-decoration:none;}
   .brand .mark:hover{letter-spacing:-.02em;}
@@ -63,18 +64,10 @@
   .hrwd{color:#c2f64a;}
   .hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12);}
   .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:var(--dim);background:var(--bg);border:1px solid var(--line2);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;transition:.15s;max-width:140px;}
-  @media(max-width:720px){.hnav .hbot{display:none;}.hnav .hauth span{display:none;}.hnav .hauth{padding:7px;}}
-  .mmenu{position:fixed;inset:0;z-index:95;background:rgba(7,8,10,.97);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);display:none;flex-direction:column;padding:16px 20px calc(24px + env(safe-area-inset-bottom));overflow:auto;}
-  .mmenu.on{display:flex;}
-  .mmenu-top{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--line);}
-  .mmenu-x{width:42px;height:42px;border:1px solid var(--line2);border-radius:11px;background:none;color:var(--ink);font-size:17px;cursor:pointer;}
-  .mmenu h6{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.13em;color:var(--faint);margin:22px 0 4px;}
-  .mmenu a.lnk{display:flex;align-items:center;justify-content:space-between;padding:13px 2px;font-size:17px;font-weight:700;border-bottom:1px solid rgba(255,255,255,.05);}
-  .mmenu a.lnk small{font-family:'Space Mono',monospace;font-size:11px;color:var(--faint);font-weight:400;}
-  .mmenu .btn-l{text-align:center;margin-top:26px;}
+  @media(max-width:720px){.hnav .hbot{display:none;}.hnav .hjr{display:none;}.hnav .hauth span{display:none;}.hnav .hauth{padding:7px;}.hnav{gap:2px;}}
 
   /* ================= ticker ================= */
-  .tape{overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--line);background:rgba(255,255,255,.012);-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);}
+  .tape{overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--line);background:rgba(255,255,255,.025);-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);}
   .tape:hover .tape-in{animation-play-state:paused;}
   .tape-in{display:inline-block;padding:8px 0;animation:tape 70s linear infinite;}
   .tape span{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--faint);margin:0 24px;font-variant-numeric:tabular-nums;}
@@ -143,7 +136,7 @@
   @media(min-width:900px){.band-s{display:block;}}
 
   .bento{position:relative;z-index:2;display:grid;grid-template-columns:repeat(12,1fr);gap:14px;}
-  .tile{--ac:#98a1ab;position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,.004)),var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;min-height:170px;transition:transform .18s cubic-bezier(.2,.7,.3,1),border-color .18s,box-shadow .18s;overflow:hidden;}
+  .tile{--ac:#a6afba;position:relative;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;min-height:170px;transition:transform .18s cubic-bezier(.2,.7,.3,1),border-color .18s,box-shadow .18s;overflow:hidden;}
   .tile::after{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(360px circle at var(--mx,50%) var(--my,20%),color-mix(in srgb,var(--ac) 10%,transparent),transparent 62%);opacity:0;transition:opacity .3s;pointer-events:none;z-index:1;}
   .tile:hover::after{opacity:1;}
   a.tile:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--ac) 45%,transparent);box-shadow:0 24px 54px -24px rgba(0,0,0,.85),0 0 34px -16px var(--ac);}
@@ -358,7 +351,25 @@
   .btn-l::after{content:'';position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-18deg);transition:left .5s ease;}
   .btn-l:hover::after{left:120%;}
   header.sc{box-shadow:0 14px 34px -20px rgba(0,0,0,.9);}
-  .demo-note{position:fixed;bottom:14px;left:14px;z-index:60;background:rgba(194,246,74,.92);color:#0a0b0d;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;border-radius:99px;padding:6px 12px;box-shadow:0 8px 26px rgba(0,0,0,.5);}
+  /* the shared Browse drawer (mp-nav.js) is opened by OUR lime burger — hide its own */
+  .mpnav-burger{display:none!important;}
+  header .brand{margin-left:0!important;}
+  /* ---- bottom mobile nav (canonical homepage dims: 56px tall, cyan Browse) ---- */
+  .mobnav{display:none;}
+  @media(max-width:720px){
+    .mobnav{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 9px);z-index:55;display:flex;justify-content:space-around;align-items:center;padding:8px 0 calc(env(safe-area-inset-bottom) + 10px);padding:9px 6px;border-radius:20px;background:rgba(9,13,10,.72);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(56,189,248,.28);box-shadow:0 10px 34px -12px rgba(0,0,0,.75),0 0 20px -8px rgba(56,189,248,.35);}
+    body{padding-bottom:calc(72px + env(safe-area-inset-bottom));}
+    /* MOBILE = only bands 01 Trade -> 03 Go live (owner request) */
+    .tape,.hero,.snap,.trust,.b-learn,.foot{display:none!important;}
+    .band{padding-top:26px;}
+  }
+  .mobnav button,.mobnav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:rgba(255,255,255,.6);font-size:9.5px;font-weight:600;font-family:inherit;cursor:pointer;text-decoration:none;padding:0;}
+  .mobnav button:active,.mobnav a:active{transform:scale(.9);}
+  .mobnav .mn-l{font-size:9.5px;}
+  .mobnav [data-mn="browse"]{color:#38bdf8;}
+  .mobnav [data-mn="browse"] svg{filter:drop-shadow(0 0 5px rgba(56,189,248,.45));}
+  .hjr{color:#c2f64a;}
+  .hjr:hover{color:#d4f87a;background:rgba(194,246,74,.12);}
 </style>
 </head>
 <body>
@@ -373,6 +384,7 @@
   <nav class="hnav">
     <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
     <a href="/rewards/" class="hlink hrwd" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>
+    <button type="button" class="hlink hjr" data-mytrades><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</button>
     <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
     <select class="lang" id="langSel" aria-label="Language">
       <option value="/">EN</option><option value="/es/">ES</option><option value="/de/">DE</option><option value="/fr/">FR</option><option value="/it/">IT</option><option value="/pt/">PT</option><option value="/pl/">PL</option><option value="/nl/">NL</option><option value="/tr/">TR</option><option value="/ru/">RU</option><option value="/id/">ID</option><option value="/hi/">HI</option><option value="/vi/">VI</option>
@@ -380,25 +392,7 @@
   </nav>
 </header>
 
-<div class="mmenu" id="mMenu" role="dialog" aria-label="Menu">
-  <div class="mmenu-top"><a class="brand" href="/">MARGIN<b>PAD</b></a><button class="mmenu-x" id="mMenuX" type="button" aria-label="Close">&#10005;</button></div>
-  <h6>Trade</h6>
-  <a class="lnk" href="/paper-trade">Paper Trade <small>live price · zero risk</small></a>
-  <a class="lnk" href="/screener">Screener <small>200+ pairs</small></a>
-  <a class="lnk" href="/rekt/">Rekt <small>live liquidations</small></a>
-  <a class="lnk" href="/charts">Charts <small>pro workspace</small></a>
-  <a class="lnk" href="/alerts/">Price Alerts <small>email · telegram</small></a>
-  <h6>Analyze</h6>
-  <a class="lnk" href="/calculators">Calculators <small>liq · size · pnl</small></a>
-  <a class="lnk" href="/tools/">Trading Tools <small>5 free tools</small></a>
-  <a class="lnk" href="/trading-api/">Bot API <small>test your bot free</small></a>
-  <a class="lnk" href="/coins/">Markets <small>top 250 coins</small></a>
-  <h6>Learn &amp; earn</h6>
-  <a class="lnk" href="/where-to-start/">Where to Start <small>from zero</small></a>
-  <a class="lnk" href="/blog/">Blog <small>65+ guides</small></a>
-  <a class="lnk" href="/rewards/">Rewards <small>free USDT</small></a>
-  <a class="btn-l" href="/paper-trade">Open Paper Trade →</a>
-</div>
+
 
 <div class="tape"><div class="tape-in" id="tape"></div></div>
 
@@ -434,7 +428,7 @@
   <a href="/defi/"><div class="l">DeFi TVL</div><div class="v" id="snTvl">—</div><div class="s" id="snTvlS"></div></a>
 </div>
 
-<section class="band" id="trade" style="--glow:rgba(46,189,133,.055);--bandc:#2ebd85">
+<section class="band" id="trade" style="--glow:rgba(46,189,133,.10);--bandc:#2ebd85">
   <div class="band-head"><span class="band-idx">01</span><h2 class="band-t">Trade</h2><span class="band-s">Practice on live markets with zero risk — then watch what leverage does to everyone else.</span></div>
   <div class="bento">
 
@@ -516,7 +510,7 @@
   <div><b><em data-cnt="13" data-suf="">0</em></b><span>languages</span></div>
 </div>
 
-<section class="band" style="--glow:rgba(63,216,230,.05);--bandc:#3fd8e6">
+<section class="band" style="--glow:rgba(63,216,230,.09);--bandc:#3fd8e6">
   <div class="band-head"><span class="band-idx">02</span><h2 class="band-t">Analyze</h2><span class="band-s">Know the number before you click — liquidation, size, sentiment, funding, flows.</span></div>
   <div class="bento">
 
@@ -595,7 +589,7 @@
   </div>
 </section>
 
-<section class="band" style="--glow:rgba(247,166,0,.05);--bandc:#f7a600">
+<section class="band" style="--glow:rgba(247,166,0,.09);--bandc:#f7a600">
   <div class="band-head"><span class="band-idx">03</span><h2 class="band-t">Go live</h2><span class="band-s">When paper profits get boring — trade for real. Opening an account through these links supports MarginPad.</span></div>
   <div class="exch-feat">
     <a class="exf" href="https://www.bybit.com/trade/usdt/BTCUSDT?ref=LZKBERJ" target="_blank" rel="noopener sponsored" data-ex="Bybit" style="--exc:#f7a600">
@@ -647,7 +641,7 @@
   <div class="exch-disc">Referral links — MarginPad may earn a commission if you open an account, at no cost to you. That is what keeps every tool here free. Trade responsibly: leverage can liquidate your entire margin.</div>
 </section>
 
-<section class="band" style="--glow:rgba(255,215,90,.045);--bandc:#ffd75a">
+<section class="band b-learn" style="--glow:rgba(255,215,90,.08);--bandc:#ffd75a">
   <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Learn &amp; earn</h2><span class="band-s">From your first lesson to your first payout — the whole path is free.</span></div>
   <div class="bento">
 
@@ -702,7 +696,6 @@
   <div class="foot-bottom"><span>© 2026 MarginPad · Simulated trading only · Not financial advice</span><span><a href="/about/" style="display:inline;padding:0 12px 0 0">About</a><a href="/contact/" style="display:inline;padding:0 12px 0 0">Contact</a><a href="/privacy/" style="display:inline;padding:0">Privacy</a></span></div>
 </footer>
 
-<div class="demo-note">DEMO</div>
 
 <script>
 (function(){
@@ -889,12 +882,15 @@
   // ---- language select (navigates to the language homepage, like the live site) ----
   (function(){var ls=document.getElementById('langSel');if(ls)ls.addEventListener('change',function(){location.href=this.value;});})();
 
-  // ---- mobile menu ----
-  (function(){var mb=document.getElementById('mBurger'),mm=document.getElementById('mMenu'),mx=document.getElementById('mMenuX');
-    if(mb&&mm){mb.addEventListener('click',function(){mm.classList.add('on');document.body.style.overflow='hidden';});
-    var close=function(){mm.classList.remove('on');document.body.style.overflow='';};
-    if(mx)mx.addEventListener('click',close);
-    mm.addEventListener('click',function(e){if(e.target.closest('a'))close();});}})();
+  // ---- the lime burger + mobnav Browse open the SHARED site drawer (mp-nav.js) ----
+  function openBrowse(){var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(openBrowse,150);}
+  (function(){var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',openBrowse);})();
+  document.addEventListener('click',function(e){var b=e.target.closest?e.target.closest('.mobnav [data-mn]'):null;if(!b)return;var a=b.getAttribute('data-mn');
+    if(a==='browse')openBrowse();
+    else if(a==='plan')location.href='/paper-trade';
+    else if(a==='chat'){var f=document.getElementById('chatFab');if(f)f.click();}
+    /* data-mn=journal has data-mytrades — mp-trade.js handles it globally */
+  });
 
   // ---- graceful fallback: if a live tile never loads, clear its skeleton ----
   setTimeout(function(){['movers','mkts','news','lbx'].forEach(function(id){var e=document.getElementById(id);if(e&&e.querySelector('.skel'))e.innerHTML='<div class="t-sub" style="color:var(--faint)">live data is warming up — open the full page</div>';});},9000);
@@ -935,6 +931,37 @@
   window.addEventListener('scroll',function(){if(hd)hd.classList.toggle('sc',window.scrollY>8);},{passive:true});
 })();
 </script>
+
+<aside id="jrDrawer" class="jr-drawer" hidden aria-label="Trade journal">
+  <button class="jr-grab" data-jr-close type="button" aria-label="Back"><span>Back</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</span><a class="jr-stats-lnk" href="/trading-journal/" title="Full trading stats"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>Stats</a><button id="jrClose" class="jr-x" type="button" aria-label="Close">✕</button></div>
+  <div class="jr-stats" id="jrStats"></div>
+  <div class="jr-list" id="jrList"></div>
+  <p class="jr-empty" id="jrEmpty">No tickets yet. Open one from <a href="/paper-trade" style="color:#c2f64a;text-decoration:none">Paper Trade</a>.</p>
+</aside>
+<button id="chatFab" type="button" aria-label="Open trader chat"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span>Chat</span></button>
+<div id="chatBox" hidden>
+  <div class="ct-head"><span class="ct-title">Trader Chat</span><span class="ct-online" id="ctOnline"></span><button class="ct-x" id="ctClose" type="button" aria-label="Close">✕</button></div>
+  <div class="ct-gate" id="ctGate">
+    <p>Sign in to join the chat — it’s free (just an email code). Please don’t post your email in the chat.</p>
+    <button id="ctSignin" type="button">Sign in to chat</button>
+  </div>
+  <div class="ct-msgs" id="ctMsgs" hidden></div>
+  <form class="ct-form" id="ctForm" hidden>
+    <input id="ctInput" maxlength="280" placeholder="Type a message…" autocomplete="off">
+    <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+  </form>
+</div>
+<nav class="mobnav" aria-label="Quick navigation">
+  <button type="button" data-mn="browse" aria-label="Browse"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="mn-l">Browse</span></button>
+  <a href="/" aria-label="Home"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1V10"/></svg><span class="mn-l">Home</span></a>
+  <button type="button" data-mn="plan" aria-label="Paper Trade"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg><span class="mn-l">Practice</span></button>
+  <a href="/rekt/" aria-label="Rekt"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8l4 6-10 13L2 8z"/><path d="M2 8h20"/></svg><span class="mn-l">Rekt</span></a>
+  <button type="button" data-mn="journal" data-mytrades aria-label="My Trades"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span class="mn-l">Trades</span></button>
+  <button type="button" data-mn="chat" aria-label="Chat"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span class="mn-l">Chat</span></button>
+</nav>
+<script defer src="/assets/mp-trade.js"></script>
 <script defer src="/assets/mp-auth.js"></script>
+<script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>
