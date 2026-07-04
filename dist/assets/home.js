@@ -1,6 +1,17 @@
 /* MarginPad homepage bundle — extracted from app/index.html inline blocks (order preserved).
    This file is the SOURCE (edited in place like mp-trade.js); app/index.html references it. */
 
+;/* extreme-leverage warning — non-blocking, throttled once/6h (mterm defaults to 1000×, so a blocking
+   confirm on every open would kill the one-tap flow the terminal is built around). Fires on lev≥500;
+   teaches that the position liquidates ~0.1% from entry (why skyfall/whyme lost big wins instantly). */
+window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.now(),last=+(localStorage.getItem('mp_lev_warned')||0);if(now-last<216e5)return;localStorage.setItem('mp_lev_warned',String(now));
+  var move=(100/lev).toFixed(lev>=500?2:1),T=function(k,d){return (window.mpT&&window.mpT(k))||d;};
+  var d=document.createElement('div');d.className='mp-levwarn';
+  d.style.cssText='position:fixed;left:50%;bottom:86px;transform:translateX(-50%);z-index:400;max-width:340px;width:calc(100% - 32px);background:rgba(22,7,7,.97);border:1px solid #ff5a4d;border-radius:14px;padding:12px 14px;color:#ffd9d4;font:500 12.5px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;box-shadow:0 12px 44px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:3px';
+  d.innerHTML='<b style="color:#ff6258;font-size:13px">⚠ '+T('levWarnT','Extreme leverage')+'</b><span>'+T('levWarnB1','At ')+lev+'× '+T('levWarnB2','a move of only ~')+move+'% '+T('levWarnB3','against you wipes the whole position. Trade small.')+'</span>';
+  document.body.appendChild(d);
+  setTimeout(function(){d.style.transition='opacity .4s,transform .4s';d.style.opacity='0';d.style.transform='translateX(-50%) translateY(8px)';setTimeout(function(){try{d.remove();}catch(e){}},450);},4600);
+}catch(e){}};
 ;/* ══════════ inline block from app/index.html line 2435 ══════════ */
 /* shared token list for the typeable symbol pickers (Paper Trade + Charts) — the screener tokens + common coins. Fills #symTokens too. */
   window.mpLoadTokens=function(cb){if(window.mpTokens){cb&&cb(window.mpTokens);return;}
@@ -614,6 +625,7 @@
     data.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,trail:trail,be:be,hwm:entry,lev:L,rr:isFinite(rr)?rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:feeRate,status:'open',pnl:null});
     if(window.mpLivePrices&&sym)window.mpLivePrices[sym]={p:entry,t:Date.now()}; // start P&L at exactly 0 — kills the phantom -100% / instant-liquidation at open
     store(data); /* shows live in the My Trades drawer — no popup */
+    try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (throttled)
     if(window.mpBuzz)window.mpBuzz([15]); // haptic on open (this IIFE has no local buzz — use the global)
     try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
     var btn=document.getElementById('planSave'),sp=btn&&btn.querySelector('span');
@@ -1635,6 +1647,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     var L=lev,mmr=(window.mpPlanMmr||0.005),notional=amt*L,qty=notional/p,liq=side==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
     var pos={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:side,entry:p,stop:null,tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null};
     var d=jload();d.push(pos);if(window.mpLivePrices)window.mpLivePrices[sym]={p:p,t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();
+    try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (throttled)
     try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
     try{if(navigator.vibrate)navigator.vibrate(14);}catch(e){}
     curPos=pos;updPnl();try{mtRefresh();}catch(e){}

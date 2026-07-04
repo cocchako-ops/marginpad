@@ -4243,10 +4243,26 @@ export class UserStore {
       const opensArr = arr.filter(isOpen);
       let closed = arr.filter((e) => !isOpen(e));
       const CAP = 100;
-      if (opensArr.length + closed.length > CAP) closed = closed.slice(-Math.max(0, CAP - opensArr.length));
+      // NEVER trim the user's best few winning trades. A trade-spam burst once guillotined a +24000%-ROE
+      // win (skyfall's HAMSTER long, 2026-07) because the oldest-first trim didn't consider ROE. Protect the
+      // top-3 positive-ROE closed trades by id so they survive both the row cap AND the 60KB size cap.
+      const roeOf = (e) => { const m = +(e && e.margin), p = +(e && e.pnl); return (isFinite(m) && m > 0 && isFinite(p)) ? p / m : -Infinity; };
+      const protIds = new Set(closed.slice().sort((a, c) => roeOf(c) - roeOf(a)).filter((e) => roeOf(e) > 0).slice(0, 3).map((e) => String(e.id)));
+      const isProt = (e) => protIds.has(String(e && e.id));
+      if (opensArr.length + closed.length > CAP) {
+        const prot = closed.filter(isProt); let rest = closed.filter((e) => !isProt(e));
+        const room = Math.max(0, CAP - opensArr.length - prot.length);
+        if (rest.length > room) rest = rest.slice(-room);            // keep most-recent non-protected
+        closed = prot.concat(rest);
+      }
       arr = opensArr.concat(closed).sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));
       let json = JSON.stringify(arr);
-      while (json.length > 60000 && closed.length > 0) { closed = closed.slice(5); arr = opensArr.concat(closed).sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0))); json = JSON.stringify(arr); }
+      // 60KB size cap: drop oldest NON-protected closed trades 5 at a time (protected best wins are untouchable)
+      while (json.length > 60000 && closed.filter((e) => !isProt(e)).length > 0) {
+        closed = closed.filter(isProt).concat(closed.filter((e) => !isProt(e)).slice(5));
+        arr = opensArr.concat(closed).sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));
+        json = JSON.stringify(arr);
+      }
       let wins = 0, losses = 0, opens = 0, pnl = 0;
       arr.forEach(function (e) { const st = e && e.status; if (st === 'win') wins++; else if (st === 'loss') losses++; else opens++; const p = +(e && e.pnl); if ((st === 'win' || st === 'loss') && isFinite(p)) pnl += p; });
       sql.exec('INSERT INTO utrades(user_id,json,n,wins,losses,opens,pnl,updated) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET json=excluded.json,n=excluded.n,wins=excluded.wins,losses=excluded.losses,opens=excluded.opens,pnl=excluded.pnl,updated=excluded.updated', uid, json, arr.length, wins, losses, opens, pnl, now);
