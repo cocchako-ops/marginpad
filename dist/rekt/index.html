@@ -561,17 +561,17 @@
     // 24h headline stats now come from Coinglass (aggregated across ALL exchanges) via loadLiqStats() — not the partial session feed.
   }
   // accurate, all-exchange 24h liquidation totals from Coinglass (the live ticket feed above is the real-time stream; these are the true aggregates)
-  function loadLiqStats(){fetch('/api/cg/liquidations',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){if(!d||!d.market)return;var m=d.market,coins=d.coins||[];var T=document.getElementById('rkTot');if(T)T.textContent='$'+money(m.total||0);var C=document.getElementById('rkCnt');if(C)C.textContent=(+m.count||0).toLocaleString('en-US');var top=coins[0],B=document.getElementById('rkBig');if(B)B.textContent=top?(top.s+' · $'+money(top.liq)):'—';var l=+m.long||0,s=+m.short||0,sum=l+s||1,lp=Math.round(l/sum*100);var ml=document.getElementById('rkML'),ms=document.getElementById('rkMS');if(ml)ml.style.width=lp+'%';if(ms)ms.style.width=(100-lp)+'%';var mll=document.getElementById('rkMLl');if(mll)mll.textContent='Longs rekt '+(sum>1?lp+'%':'—');var msl=document.getElementById('rkMSl');if(msl)msl.textContent=(sum>1?(100-lp)+'%':'—')+' Shorts rekt';}).catch(function(){});}
+  function loadLiqStats(){if(document.hidden)return;fetch('/api/cg/liquidations',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){if(!d||!d.market)return;var m=d.market,coins=d.coins||[];var T=document.getElementById('rkTot');if(T)T.textContent='$'+money(m.total||0);var C=document.getElementById('rkCnt');if(C)C.textContent=(+m.count||0).toLocaleString('en-US');var top=coins[0],B=document.getElementById('rkBig');if(B)B.textContent=top?(top.s+' · $'+money(top.liq)):'—';var l=+m.long||0,s=+m.short||0,sum=l+s||1,lp=Math.round(l/sum*100);var ml=document.getElementById('rkML'),ms=document.getElementById('rkMS');if(ml)ml.style.width=lp+'%';if(ms)ms.style.width=(100-lp)+'%';var mll=document.getElementById('rkMLl');if(mll)mll.textContent='Longs rekt '+(sum>1?lp+'%':'—');var msl=document.getElementById('rkMSl');if(msl)msl.textContent=(sum>1?(100-lp)+'%':'—')+' Shorts rekt';}).catch(function(){});}
   loadLiqStats();setInterval(loadLiqStats,60000);
   function validSym(s){s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return s.length>=2&&/[A-Z]/.test(s);} // drop context-less junk like a bare "H"
   function setOffline(off){var el=document.getElementById('rkOffline');if(el)el.hidden=!off;}
-  function poll(){fetch('/api/v1/feed?min=1000&limit=80').then(function(r){return r.ok?r.json():null;}).then(function(j){
+  function poll(){if(document.hidden)return;fetch('/api/v1/feed?min=1000&limit=80').then(function(r){return r.ok?r.json():null;}).then(function(j){
     if(!j||!Array.isArray(j.events)){offFails++;if(offFails>=3)setOffline(true);return;}
     offFails=0;setOffline(false);
     var added=false;
     j.events.forEach(function(e){if(!validSym(e.symbol))return;var k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;if(!seen[k]){seen[k]=1;all.push(e);added=true;}});
     all.sort(function(a,b){return b.ts-a.ts;});if(all.length>200)all=all.slice(0,200);
-    if(Object.keys(seen).length>600){seen={};all.forEach(function(e){seen[e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange]=1;});} // prune the dedup map so it can't grow unbounded on long sessions
+    if(Object.keys(seen).length>600){seen={};var _an={};all.forEach(function(e){var _k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;seen[_k]=1;if(animated[_k])_an[_k]=1;});animated=_an;} // prune BOTH dedup maps (animated used to grow unbounded → heap leak on a leave-open page) so they can't grow unbounded on long sessions
     if(added)render();
   }).catch(function(){offFails++;if(offFails>=3)setOffline(true);});}
   document.getElementById('rkFilters').addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;
@@ -584,6 +584,7 @@
   var rkP=document.getElementById('rkPause');
   if(rkP)rkP.addEventListener('click',function(){paused=!paused;rkP.classList.toggle('on',paused);rkP.setAttribute('aria-pressed',paused?'true':'false');rkP.textContent=paused?'▶ Live':'⏸ Pause';if(!paused)render();});
   poll();setInterval(poll,4000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden){poll();loadLiqStats();}}); // returning to the tab → refresh immediately instead of waiting up to 4s (the hidden-guarded polls were paused)
   setInterval(function(){if(document.hidden)return;document.querySelectorAll('.tk-ago[data-ts]').forEach(function(el){var t=+el.getAttribute('data-ts');if(t)el.textContent=ago(t)+' ago';});},1000);
   // ---- share ----
   function toast(msg){var t=document.createElement('div');t.className='rk-toast';t.textContent=msg;document.body.appendChild(t);requestAnimationFrame(function(){t.classList.add('on');});setTimeout(function(){t.classList.remove('on');},1900);setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},2200);}

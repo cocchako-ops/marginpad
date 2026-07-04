@@ -113,11 +113,11 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function pctS(x){return (x>=0?'+':'')+x.toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m '+(s%60)+'s';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function hm(ts){var d=new Date(ts);function z(n){return (n<10?'0':'')+n;}return z(d.getHours())+':'+z(d.getMinutes());}
-  var prices={},posTab='open',notified={},chart=null,candle=null,lastBar=null,chartSym='',chartTf='5',plines=[],inited=false,_plc='',_openLines=[],_openMarks=[],klCache={};
+  var prices={},posTab='open',notified={},chart=null,candle=null,lastBar=null,chartSym='',chartTf='5',plines=[],inited=false,_plc='',_openLines=[],_openMarks=[],klCache={},_linesSig=null;
   var _lgp=0,_rej=0; // spike filter: last accepted price + consecutive-reject count, so one bad print can't ratchet a fake high/low wick
   var _clArm={}; // per-trade auto-close arming: require TWO consecutive live ticks to confirm a liq/SL/TP hit so a lone phantom print can't close a healthy position (the WS/REST live price is NOT spike-filtered before checkClose)
   window.mpLivePrices=prices; // shared with the My Trades drawer so it shows live P&L without double-polling
-  function openSyms(){var s={};load().forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='—')s[e.sym]=1;});if(chartSym)s[chartSym]=1;return Object.keys(s);}
+  function openSyms(){var s={};load().forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='—')s[e.sym]=1;});if(chartSym&&!(document.hidden||document.body.getAttribute('data-prod')!=='plan'))s[chartSym]=1;return Object.keys(s);} // OPEN positions always polled (liq safety); the chart-only symbol is dropped when the Paper Trade chart isn't visible so an idle /calculators or /screener or hidden tab with no positions stops the 3s /api/price poll entirely
   // REST is only a FALLBACK: prices[] is shared with the live WS feed (window.mpLivePrices). Never clobber a
   // fresh WS tick with the slower/edge-cached /api/price value — that mismatch was the ±$1k position flicker.
   function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
@@ -260,7 +260,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     lastBar=bars[bars.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;
     /* seed the forming candle with the live price immediately — the klines tail is edge-cached up to ~20s, so the last candle (and the price-line basis) isn't a few ticks behind the live number */
     try{var _slp=(window.mpPlanLive&&window.mpPlanLive.sym===chartSym&&+window.mpPlanLive.price>0)?+window.mpPlanLive.price:((prices[chartSym]&&prices[chartSym].p)||0);if(_slp>0&&lastBar){var _siv=parseInt(chartTf,10)*60,_snb=Math.floor(Date.now()/1000/_siv)*_siv;if(lastBar.time>=_snb){lastBar.close=_slp;if(_slp>lastBar.high)lastBar.high=_slp;if(_slp<lastBar.low)lastBar.low=_slp;candle.update(lastBar);}}}catch(e){}
-    drawLines();applySignals();hideSkel(); }
+    _linesSig=null;drawLines();applySignals();hideSkel(); } // reset the line-diff so lines are re-asserted after a full setData
   function preloadTfs(sym,curTf){ ['1','5','15','60','240','1440','10080'].forEach(function(tf){ if(tf===curTf)return; var ck=sym+'|'+tf; if(klCache[ck])return; fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(kd&&kd.length)klCache[ck]=kd;}); }); }
   function loadKlines(){var sym=formSym();chartSym=sym;var tf=chartTf;try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){}bars=[];loadingMore=false;noMore=false;
     var ck=sym+'|'+tf,cached=klCache[ck];
@@ -275,7 +275,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function refreshKlinesQuiet(){var sym=chartSym,tf=chartTf;if(!candle||document.hidden)return;
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(sym!==chartSym||tf!==chartTf||!candle||!kd||!kd.length)return;
-      kd=sanitizeBars(kd);klCache[sym+'|'+tf]=kd;bars=kd;try{candle.setData(kd);}catch(e){}try{chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}/* re-assert autoscale: after a big move (e.g. a +15% pump) the price scale can lock/drift so data keeps updating but the chart LOOKS frozen — re-fitting every quiet refresh self-heals it */lastBar=kd[kd.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;try{applySignals();}catch(e){}try{drawLines();}catch(e){}
+      kd=sanitizeBars(kd);klCache[sym+'|'+tf]=kd;bars=kd;try{candle.setData(kd);}catch(e){}try{chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}/* re-assert autoscale: after a big move (e.g. a +15% pump) the price scale can lock/drift so data keeps updating but the chart LOOKS frozen — re-fitting every quiet refresh self-heals it */lastBar=kd[kd.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;_linesSig=null;try{applySignals();}catch(e){}try{drawLines();}catch(e){}
     }); }
   function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=kd.filter(function(b){return b.time<first;});if(!older.length){noMore=true;return;}if(older.length<900)noMore=true;bars=older.concat(bars);try{candle.setData(bars);}catch(e){}applySignals();drawLines();});}
   /* Buy/Sell signals — a Supertrend(10,3) overlay (our own equivalent of TradingView "Buy Sell" indicators;
@@ -381,8 +381,14 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   }
   document.addEventListener('visibilitychange',function(){if(!document.hidden)startSmoothP();});
   function liqOf(e){var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);return e.liq||(long?e.entry*(1-(1-mmr)/lev):e.entry*(1+(1-mmr)/lev));}
-  function drawLines(){if(!candle)return;plines.forEach(function(l){try{candle.removePriceLine(l);}catch(e){}});plines=[];
-    var op=load().filter(function(e){return e.status==='open'&&e.sym===chartSym;});
+  function drawLines(d){if(!candle)return;
+    var op=(d||load()).filter(function(e){return e.status==='open'&&e.sym===chartSym;});
+    // diff: only destroy/recreate the chart price-line objects when the open-position set actually changes. This used
+    // to churn every line EVERY tick (1Hz), and each createPriceLine re-fires the autoscale recompute + a chart redraw.
+    // updateZone still runs so the liq zone/edge pills track scroll/scale. renderKlines/refreshKlinesQuiet reset _linesSig.
+    var sig=op.map(function(e){return e.id+':'+e.entry+':'+e.stop+':'+e.tp+':'+e.side+':'+e.lev+':'+liqOf(e);}).join('|');
+    if(sig===_linesSig){updateZone();return;} _linesSig=sig;
+    plines.forEach(function(l){try{candle.removePriceLine(l);}catch(e){}});plines=[];
     // cache the line prices FIRST so the autoscale provider (which fires the moment a price line is created) already sees them
     _openLines=[];_openMarks=[];op.forEach(function(e){var long=e.side!=='short';_openLines.push(+e.entry,liqOf(e));if(e.tp!=null)_openLines.push(+e.tp);if(e.stop!=null)_openLines.push(+e.stop);
       _openMarks.push({p:+e.entry,label:(long?'LONG':'SHORT'),color:long?'#10b981':'#ef4444'},{p:liqOf(e),label:'LIQ',color:'#ff3b3b'});if(e.tp!=null)_openMarks.push({p:+e.tp,label:'TP',color:'#9aa3ad'});if(e.stop!=null)_openMarks.push({p:+e.stop,label:'SL',color:'#9aa3ad'});});
@@ -436,11 +442,12 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function tick(){ensureChart();var d=load(),changed=false,closedAny=false;d.forEach(function(e){if(e.status==='open'){var m=metrics(e);if(manageStops(e,m))changed=true;if(checkClose(e,m)){changed=true;closedAny=true;}}});if(changed){store(d);if(window.mpJournalRender)window.mpJournalRender();}
     if(closedAny)window._mpSltpHidden=true; // a position hit SL/TP/liq and closed → hide the SL/TP lines (they reappear only when a new trade is set up)
     if(document.documentElement.classList.contains('jr-open')&&window.innerWidth<721)return; // My Trades drawer covers the terminal on mobile — skip the invisible chart/position re-render to keep the main thread free (liquidation checks above still run)
-    liveCandle();chartHeader();renderPos();renderLastLive();mtCount();updateZone();drawLines();/* re-assert every tick so the LIQ/entry lines never go missing (e.g. after a chart scroll/setData) and self-heal */
+    if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return; // the liq/SL/TP protection loop above ALWAYS runs; skip the RENDER work (innerHTML rebuilds, chart price-line churn, layout reads) when the Paper Trade panel isn't the visible product or the tab is hidden — it used to rebuild the whole positions list + recreate every chart line EVERY SECOND on /calculators, /screener, /charts and backgrounded tabs
+    liveCandle();chartHeader();renderPos();renderLastLive();mtCount();drawLines();/* drawLines() ends with updateZone(), so it's no longer called separately here (was running updateZone twice/tick). drawLines is now signature-diffed so it only churns chart price-lines when the open set changes. */
     try{posDragLines();}catch(e){}/* keep the draggable SL/TP lines aligned as the chart scrolls/scales — never let it break the lines above */}
   // real-time chart updates from the WebSocket feed (the forming candle, header price and liq zone follow every tick)
   var _rafC=false;
-  document.addEventListener('mp:price',function(ev){if(!ev.detail||ev.detail.sym!==chartSym)return;if(_rafC)return;_rafC=true;requestAnimationFrame(function(){_rafC=false;liveCandle();chartHeader();updateZone();renderLastLive();});});
+  document.addEventListener('mp:price',function(ev){if(!ev.detail||ev.detail.sym!==chartSym)return;if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return;if(_rafC)return;_rafC=true;requestAnimationFrame(function(){_rafC=false;liveCandle();chartHeader();updateZone();renderLastLive();});});
   pollPrices();setInterval(pollPrices,3000);
   tick();setInterval(tick,1000);
   setInterval(function(){if(document.body.getAttribute('data-prod')==='plan'&&chart&&candle)refreshKlinesQuiet();},30000); // self-heal phantom wicks + any freeze by re-syncing with true klines every 30s

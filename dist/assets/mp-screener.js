@@ -132,6 +132,6 @@
     var b=ev.target.closest('.scr-row');if(!b)return;var sym=b.getAttribute('data-sym'),e=null;for(var i=0;i<DATA.length;i++){if(DATA[i].s===sym){e=DATA[i];break;}}if(e)openSheet(e);});
   document.addEventListener('click',function(ev){var pk=ev.target.closest&&ev.target.closest('[data-pick]');if(!pk)return;var sym=pk.getAttribute('data-pick');for(var i=0;i<DATA.length;i++){if(DATA[i].s===sym){openSheet(DATA[i]);break;}}});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet();});
-  document.addEventListener('mp:price',updLive);
+  var _luT=0;document.addEventListener('mp:price',function(){var n=Date.now();if(n-_luT<450)return;_luT=n;updLive();}); // throttle: emit() fires sub-second per major → this was doing dozens of full row sweeps/sec; the 2s interval below already backstops
   load();loadLogos();setInterval(load,30000);setInterval(updLive,2000);
 })();

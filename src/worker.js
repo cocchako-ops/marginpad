@@ -3372,8 +3372,8 @@ export default {
       const ck = new Request('https://marginpad.io/__price_' + sym);
       try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
       const p = await fetchPrice(sym);
-      const resp = new Response(JSON.stringify(p || { error: 'not found' }), { status: p ? 200 : 404, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': p ? 'public, max-age=5' : 'no-store', ...CORS } });
-      if (p) try { await caches.default.put(ck, resp.clone()); } catch (e) {} // 5s edge cache: repeated polls share one upstream fetch (WS feed is the real-time path)
+      const resp = new Response(JSON.stringify(p || { error: 'not found' }), { status: p ? 200 : 404, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': p ? 'public, max-age=5' : 'public, max-age=30', ...CORS } });
+      try { await caches.default.put(ck, resp.clone()); } catch (e) {} // edge-cache BOTH the hit (5s) AND the miss (30s) — without negative-caching, an unresolvable/delisted symbol re-ran fetchPrice's 5 sequential upstream legs on EVERY poll (5 wasted round-trips + subrequests each time)
       return resp;
     }
     if (url.pathname === '/api/klines') return handleKlines(url);
