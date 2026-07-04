@@ -2812,6 +2812,7 @@ h2{font-size:12px;color:#9aa3ad;margin:26px 0 11px;text-transform:uppercase;lett
 <button data-v="rewards">Rewards &amp; payouts <span class="nb-badge" id="nbWd"></span></button>
 <button data-v="network">Network &amp; IPs <span class="nb-badge" id="nbIp"></span></button>
 <button data-v="activity">Activity <span class="nb-badge" id="nbEv"></span></button>
+<button data-v="messages">Messages <span class="nb-badge" id="nbDm"></span></button>
 <button data-v="controls">Controls</button>
 </nav>
 </aside>
@@ -2849,6 +2850,14 @@ h2{font-size:12px;color:#9aa3ad;margin:26px 0 11px;text-transform:uppercase;lett
 <h2>Click heatmap <span class="muted">(where they clicked · per page)</span></h2><div class="panel"><div class="field" style="margin-top:0"><span class="muted">Page:</span><select class="sel" id="heatPath"></select><span class="muted" id="heatCount"></span></div><div class="heat" id="heat"></div></div>
 </section>
 
+<section class="view" data-view="messages">
+<h2>Direct messages</h2>
+<div class="panel"><div id="dmThread" style="max-height:52vh;overflow:auto;display:flex;flex-direction:column;gap:8px"><div class="empty">loading…</div></div>
+<div style="display:flex;gap:8px;margin-top:12px"><textarea class="in" id="dmIn" rows="2" placeholder="Reply to this user…" style="flex:1;min-width:0;resize:vertical"></textarea><button class="btn good" id="dmSend" style="align-self:stretch">Send</button></div>
+<div class="msg" id="dmMsg" style="font-size:12px;color:#5c656f;margin-top:6px"></div></div>
+<h2>All conversations <span class="muted" id="dmInboxN"></span></h2><div class="panel"><div id="dmInbox"><div class="empty">loading…</div></div></div>
+</section>
+
 <section class="view" data-view="controls">
 <div class="panel" id="ctrlPanel"><h2 style="margin-top:0">Controls</h2><div class="ctrls" id="statusCtrls"></div>
 <div class="field"><label class="chk"><input type="checkbox" id="muteChk"> Muted (can't post in chat)</label></div>
@@ -2873,11 +2882,28 @@ function uDev(ua){return /Mobi|Android|iPhone|iPad|iPod/i.test(ua||'')?'Mobile':
 function verb(t){return t==='exchange'?'clicked an exchange':t==='paper'?'opened Paper Trade':t==='tool'?'opened a tool':t==='tab'?'used a calculator':t==='hotpair'?'traded a pair':t==='pageview'?'viewed':(t||'did');}
 function uarg(){return key?('key='+encodeURIComponent(key)+(email?'&email='+encodeURIComponent(email):'')+(id?'&id='+encodeURIComponent(id):'')+(uname0?'&username='+encodeURIComponent(uname0):'')):'';}
 // ---- sidebar nav ----
-function showView(v){document.querySelectorAll('.view').forEach(function(s){s.classList.toggle('on',s.getAttribute('data-view')===v);});document.querySelectorAll('#navb button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===v);});window.scrollTo(0,0);}
+function showView(v){document.querySelectorAll('.view').forEach(function(s){s.classList.toggle('on',s.getAttribute('data-view')===v);});document.querySelectorAll('#navb button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===v);});if(v==='messages')try{loadDm();}catch(e){}window.scrollTo(0,0);}
 document.getElementById('navb').addEventListener('click',function(e){var b=e.target.closest('button[data-v]');if(b)showView(b.getAttribute('data-v'));});
 (function(){var si=document.getElementById('uSearch');if(si)si.addEventListener('keydown',function(e){if(e.key==='Enter'){var v=si.value.trim();if(v)location.href='/api/admin/user?key='+encodeURIComponent(key)+'&username='+encodeURIComponent(v);}});})();
 function aiWire(){if(!DATA||!DATA.user||!DATA.user.id)return;var uid=DATA.user.id,inp=document.getElementById('aiLimIn'),btn=document.getElementById('saveAiLim'),hint=document.getElementById('aiLimHint');if(!btn)return;fetch('/api/ai/admin?key='+encodeURIComponent(key)+'&uid='+encodeURIComponent(uid)).then(function(r){return r.json();}).then(function(d){if(inp&&d.userLimit!=null&&!inp.value)inp.value=d.userLimit;if(hint)hint.textContent='default '+(d.globalLimit!=null?d.globalLimit:10)+' / day · used '+(d.usedToday||0)+' today';}).catch(function(){});if(btn._w)return;btn._w=1;btn.addEventListener('click',function(){var v=String(inp.value).trim(),body={uid:uid,userLimit:(v===''?null:parseInt(v,10))},m=document.getElementById('cmsg');if(m){m.className='msg';m.textContent='Saving…';}fetch('/api/ai/admin?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){if(m){m.className='msg ok';m.textContent=(body.userLimit===null)?'AI limit reset to default':('AI limit set to '+d.userLimit+'/day');}aiWire();}).catch(function(){if(m){m.className='msg err';m.textContent='Error';}});});}
-function load(){fetch('/api/auth/user?'+uarg()).then(function(r){return r.json();}).then(function(d){DATA=d;render();aiWire();loadReward();}).catch(function(){document.getElementById('title').textContent='Could not load user.';});
+function loadDm(){
+  if(!DATA||!DATA.user||!DATA.user.id)return;var uid=DATA.user.id;
+  fetch('/api/admin/dm?key='+encodeURIComponent(key)+'&uid='+encodeURIComponent(uid)).then(function(r){return r.json();}).then(function(d){
+    var el=document.getElementById('dmThread');if(!el)return;var ms=(d&&d.messages)||[];
+    el.innerHTML=ms.length?ms.map(function(m){var mine=m.dir==='out';return '<div style="max-width:82%;align-self:'+(mine?'flex-end':'flex-start')+';background:'+(mine?'#12241f':'#1a2530')+';border:1px solid '+(mine?'rgba(52,217,154,.35)':'#2f3742')+';border-radius:12px;padding:8px 11px;font-size:13px;line-height:1.45;white-space:pre-wrap;word-break:break-word">'+(mine?'<div style="font-size:10px;font-weight:800;color:#41e3a3;margin-bottom:2px">You · MarginPad</div>':'')+esc(m.body)+'<div class="muted" style="margin-top:3px;font-size:10px">'+dt(m.ts)+'</div></div>';}).join(''):'<div class="empty">No messages with this user yet — send the first one below.</div>';
+    el.scrollTop=el.scrollHeight;
+  }).catch(function(){});
+  fetch('/api/admin/dm?key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(function(d){
+    var el=document.getElementById('dmInbox');if(!el)return;var th=(d&&d.threads)||[];
+    var nb=document.getElementById('nbDm');if(nb)nb.textContent=(d&&d.unread)?d.unread:'';
+    var ic=document.getElementById('dmInboxN');if(ic)ic.textContent=th.length?('('+th.length+')'):'';
+    el.innerHTML=th.length?th.map(function(t){var nm=t.username||t.email||t.uid;var un=+t.unread||0;var pre=esc((t.last_dir==='out'?'You: ':'')+String(t.last_body||'').slice(0,64));
+      return '<div class="row" data-nm="'+esc(nm)+'" style="cursor:pointer"><span style="flex:1;min-width:0"><b>'+esc(nm)+'</b>'+(un?' <span style="background:#ff5a4d;color:#fff;border-radius:8px;padding:0 6px;font-size:10px;font-weight:800">'+un+'</span>':'')+'<div class="muted" style="font-size:11px;margin-top:2px">'+pre+'</div></span><span class="muted" style="width:78px;text-align:right">'+dt(t.last_ts)+'</span></div>';}).join(''):'<div class="empty">no conversations yet</div>';
+    if(!el._w){el._w=1;el.addEventListener('click',function(e){var r=e.target.closest('[data-nm]');if(!r)return;var nm=r.getAttribute('data-nm');location.href='/api/admin/user?key='+encodeURIComponent(key)+'&'+(nm.indexOf('@')>=0?'email':'username')+'='+encodeURIComponent(nm);});}
+  }).catch(function(){});
+  var sb=document.getElementById('dmSend');if(sb&&!sb._w){sb._w=1;sb.addEventListener('click',function(){var inp=document.getElementById('dmIn'),v=(inp.value||'').trim(),msg=document.getElementById('dmMsg');if(!v)return;sb.disabled=true;if(msg)msg.textContent='Sending…';fetch('/api/admin/dm?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:DATA.user.id,body:v})}).then(function(r){return r.json();}).then(function(d){sb.disabled=false;if(d&&d.ok){inp.value='';if(msg)msg.textContent='Sent ✓';loadDm();}else{if(msg)msg.textContent='Failed'+(d&&d.error?': '+d.error:'');}}).catch(function(){sb.disabled=false;if(msg)msg.textContent='Network error';});});}
+}
+function load(){fetch('/api/auth/user?'+uarg()).then(function(r){return r.json();}).then(function(d){DATA=d;render();aiWire();loadReward();loadDm();}).catch(function(){document.getElementById('title').textContent='Could not load user.';});
   fetch('/api/auth/clicks?'+uarg()).then(function(r){return r.json();}).then(function(d){CLICKS=d;renderHeat();}).catch(function(){});
   fetch('/api/prices').then(function(r){return r.json();}).then(function(d){if(d&&d.pairs)d.pairs.forEach(function(x){PRICES[String(x.symbol||'').replace('USDT','')]=+x.price;});if(DATA)renderOpen();}).catch(function(){});}
 function loadReward(){if(!DATA||!DATA.user||!DATA.user.id)return;fetch('/api/reward/detail?key='+encodeURIComponent(key)+'&address=u:'+encodeURIComponent(DATA.user.id)).then(function(r){return r.json();}).then(function(d){RWD=d;renderReward();}).catch(function(){renderReward();});}
@@ -3008,6 +3034,24 @@ async function handleAuth(url, request, env, ctx) {
   const stub = env.USERS.get(env.USERS.idFromName('main'));
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
   const isAdmin = isAdminKey(env, url.searchParams.get('key'));
+
+  if (path === '/dm' || path === '/dm/unread') { // signed-in user's DM thread with the owner (resolve uid server-side from the session cookie)
+    const tok = getCookie(request, SESS_COOKIE);
+    if (!tok) return jr({ error: 'not_signed_in' }, 401);
+    const doPath = path === '/dm/unread' ? '/dm/unread' : '/dm/mine';
+    const payload = { token: tok };
+    const sending = path === '/dm' && request.method === 'POST' && typeof b.body === 'string' && b.body.trim();
+    if (sending) payload.body = b.body;
+    const r = await stub.fetch(new Request('https://do' + doPath, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) }));
+    const out = await r.json();
+    if (sending && env.TELEGRAM_TOKEN && env.TG_ADMIN_CHAT) { // instant owner ping on an inbound user message
+      let who = ''; try { const ur = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); const ud = await ur.json(); if (ud && ud.user) who = ud.user.username || ud.user.email || ud.user.id; } catch (e) {}
+      const safe = s => String(s || '').replace(/[<>&]/g, '');
+      const qp = who.indexOf('@') >= 0 ? 'email=' : 'username=';
+      ctx.waitUntil(tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, parse_mode: 'HTML', disable_web_page_preview: true, text: '💬 <b>New message</b> from ' + safe(who) + '\n' + safe(b.body).slice(0, 400) + '\n\n<a href="https://marginpad.io/api/admin/user?key=' + adminKeyOf(env) + '&' + qp + encodeURIComponent(who) + '">Reply →</a>' }).catch(() => {}));
+    }
+    return jr(out);
+  }
 
   if (path === '/start') {
     const email = String(b.email || '').trim().toLowerCase();
@@ -3337,6 +3381,14 @@ export default {
     if (url.pathname === '/api/announce') return handleAnnounce(url, env, request);
     if (url.pathname === '/api/ai/chart') return handleAiChart(url, request, env);
     if (url.pathname === '/api/ai/admin') return handleAiAdmin(url, request, env);
+    if (url.pathname === '/api/admin/dm' && isAdminKey(env, url.searchParams.get('key'))) { // owner↔user DM: GET = threads (or ?uid= one thread), POST {uid,body} = send
+      const dstub = env.USERS.get(env.USERS.idFromName('main'));
+      const dj = (o) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...CORS } });
+      if (request.method === 'POST') { let bd = {}; try { bd = await request.json(); } catch (e) {} const r = await dstub.fetch(new Request('https://do/dm/send', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: bd.uid, body: bd.body }) })); return dj(await r.json()); }
+      const uid = url.searchParams.get('uid') || '';
+      const r = await dstub.fetch(new Request('https://do' + (uid ? '/dm/thread?uid=' + encodeURIComponent(uid) : '/dm/threads')));
+      return dj(await r.json());
+    }
     if (url.pathname === '/unsubscribe') return handleUnsubscribe(url, env);
     if (url.pathname === '/api/tgclaim') { // import a position opened from Telegram into the site's My Trades
       const tok = (url.searchParams.get('token') || '').replace(/[^a-z0-9]/gi, '').slice(0, 48);
@@ -3986,6 +4038,8 @@ export class UserStore {
     try { s.exec("ALTER TABLE alerts ADD COLUMN channel TEXT DEFAULT 'email'"); } catch (e) {} // delivery channel: 'email' or 'telegram'
     try { s.exec('CREATE INDEX IF NOT EXISTS al_active ON alerts(active)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS al_uid ON alerts(uid)'); } catch (e) {}
+    s.exec('CREATE TABLE IF NOT EXISTS dm(id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT, dir TEXT, body TEXT, ts INTEGER, seen INTEGER DEFAULT 0)'); // 1:1 owner↔user direct messages (dir: in=user→owner, out=owner→user; seen tracks the OTHER party read it)
+    try { s.exec('CREATE INDEX IF NOT EXISTS dm_uid ON dm(uid, ts)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS psubs(endpoint TEXT PRIMARY KEY, uid TEXT, p256dh TEXT, auth TEXT, created INTEGER)'); // web-push subscriptions (one row per browser/device, keyed by its endpoint)
     try { s.exec('CREATE INDEX IF NOT EXISTS ps_uid ON psubs(uid)'); } catch (e) {}
     try { s.exec('CREATE INDEX IF NOT EXISTS uev_user ON uevents(user_id, ts)'); } catch (e) {}
@@ -4272,6 +4326,45 @@ export class UserStore {
       const uid = String(url.searchParams.get('uid') || ''); if (!uid) return this.j({ journal: [] });
       let journal = []; try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) journal = JSON.parse(r.json) || []; } catch (e) {}
       return this.j({ journal: Array.isArray(journal) ? journal : [] });
+    }
+    // ─── 1:1 owner↔user direct messages ────────────────────────────────────────────────
+    if (path === '/dm/unread') { // signed-in user: unread owner-message count for the panel badge (does NOT mark seen)
+      const tok = String((b && b.token) || url.searchParams.get('token') || '');
+      const se = tok ? this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', tok, now)[0] : null;
+      if (!se) return this.j({ unread: 0 });
+      const r = this.rows("SELECT COUNT(*) c FROM dm WHERE uid=? AND dir='out' AND seen=0", se.user_id)[0];
+      return this.j({ unread: (r && r.c) || 0 });
+    }
+    if (path === '/dm/mine') { // signed-in user's own thread: optionally post a message, mark owner replies seen, return the thread
+      const tok = String((b && b.token) || url.searchParams.get('token') || '');
+      const se = tok ? this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', tok, now)[0] : null;
+      if (!se) return this.j({ error: 'not_signed_in' }, 401);
+      const uid = se.user_id;
+      const body = b && typeof b.body === 'string' ? b.body.trim().slice(0, 2000) : '';
+      if (body) sql.exec('INSERT INTO dm(uid,dir,body,ts,seen) VALUES(?,?,?,?,0)', uid, 'in', body, now);
+      sql.exec("UPDATE dm SET seen=1 WHERE uid=? AND dir='out' AND seen=0", uid); // user has the panel open → owner replies read
+      const msgs = this.rows('SELECT id,dir,body,ts,seen FROM dm WHERE uid=? ORDER BY ts ASC LIMIT 200', uid);
+      return this.j({ ok: true, messages: msgs });
+    }
+    if (path === '/dm/threads') { // admin: every conversation, newest activity first, with unread(from-user) counts
+      const rows = this.rows("SELECT d.uid uid, u.email, u.username, MAX(d.ts) last_ts, SUM(CASE WHEN d.dir='in' AND d.seen=0 THEN 1 ELSE 0 END) unread, COUNT(*) n, (SELECT body FROM dm d2 WHERE d2.uid=d.uid ORDER BY d2.ts DESC LIMIT 1) last_body, (SELECT dir FROM dm d3 WHERE d3.uid=d.uid ORDER BY d3.ts DESC LIMIT 1) last_dir FROM dm d LEFT JOIN users u ON u.id=d.uid GROUP BY d.uid ORDER BY last_ts DESC LIMIT 300");
+      const tu = this.rows("SELECT COUNT(*) c FROM dm WHERE dir='in' AND seen=0")[0];
+      return this.j({ threads: rows, unread: (tu && tu.c) || 0 });
+    }
+    if (path === '/dm/thread') { // admin: one user's full thread (opening it marks that user's messages read)
+      const uid = String(url.searchParams.get('uid') || ''); if (!uid) return this.j({ messages: [] });
+      sql.exec("UPDATE dm SET seen=1 WHERE uid=? AND dir='in' AND seen=0", uid);
+      const u = this.rows('SELECT id,email,username,status FROM users WHERE id=?', uid)[0] || {};
+      const msgs = this.rows('SELECT id,dir,body,ts,seen FROM dm WHERE uid=? ORDER BY ts ASC LIMIT 400', uid);
+      return this.j({ user: u, messages: msgs });
+    }
+    if (path === '/dm/send') { // admin: owner sends a message to a user
+      const uid = String((b && b.uid) || ''), body = b && typeof b.body === 'string' ? b.body.trim().slice(0, 2000) : '';
+      if (!uid || !body) return this.j({ ok: false, error: 'missing' });
+      if (!this.rows('SELECT id FROM users WHERE id=?', uid)[0]) return this.j({ ok: false, error: 'no_user' });
+      sql.exec('INSERT INTO dm(uid,dir,body,ts,seen) VALUES(?,?,?,?,0)', uid, 'out', body, now);
+      const r = this.rows('SELECT id,dir,body,ts,seen FROM dm WHERE uid=? ORDER BY ts ASC LIMIT 400', uid);
+      return this.j({ ok: true, messages: r });
     }
     if (path === '/dwell') { // time-on-page accumulator (beacon on hide/unload)
       const uid = String(b.uid || ''); if (!uid) return this.j({ ok: false });
