@@ -196,6 +196,51 @@ async function handleCgCoin(url, env) {
 // ---------- Crypto news (CryptoCompare, free public) + Fear & Greed (alternative.me, free) ----------
 function _rssPick(block, tag) { const m = block.match(new RegExp('<' + tag + '[^>]*>([\\s\\S]*?)</' + tag + '>', 'i')); let v = m ? m[1] : ''; const c = v.match(/<!\[CDATA\[([\s\S]*?)\]\]>/); return (c ? c[1] : v).trim(); }
 function _xmlDec(s) { return String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&apos;/g, "'").replace(/&amp;/g, '&'); }
+// On-site news reader: fetches the source article, has Claude write an ORIGINAL ~300-word brief (our own
+// words, source attributed) so readers get the story WITHOUT leaving the site. Cached per article in KV —
+// each story is summarized once, ever. Domain-whitelisted + globally capped per day to bound API spend.
+async function handleNewsRead(url, env, ctx) {
+  const jr = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': s === 200 ? 'public, max-age=86400' : 'no-store', ...CORS } });
+  const u = String(url.searchParams.get('u') || '').slice(0, 500);
+  let h = '';
+  try { h = new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return jr({ error: 'bad_url' }, 400); }
+  if (!/(^|\.)(cointelegraph\.com|coindesk\.com|decrypt\.co)$/.test(h)) return jr({ error: 'bad_source' }, 400);
+  const key = 'news:rd:' + await sha8(u);
+  try { const hit = await env.STATS.get(key); if (hit) return jr(JSON.parse(hit)); } catch (e) {}
+  if (!env.ANTHROPIC_API_KEY) return jr({ error: 'unavailable' }, 503);
+  // global daily budget so a scraper can't burn the API
+  const day = new Date().toISOString().slice(0, 10), cntKey = 'news:rd:cnt:' + day;
+  let used = 0; try { used = +(await env.STATS.get(cntKey)) || 0; } catch (e) {}
+  if (used >= 500) return jr({ error: 'busy' }, 429);
+  try { await env.STATS.put(cntKey, String(used + 1), { expirationTtl: 172800 }); } catch (e) {}
+  // 1) pull the article and reduce it to readable text (paragraphs only, capped)
+  let text = '', title = '';
+  try {
+    const r = await fetch(u, { headers: { 'user-agent': 'Mozilla/5.0 (compatible; MarginPadReader/1.0)', accept: 'text/html' }, cf: { cacheTtl: 3600 } });
+    if (!r.ok) return jr({ error: 'fetch_failed' }, 502);
+    let html = await r.text();
+    const tm = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i); title = tm ? _xmlDec(tm[1]).replace(/\s*[|\-–].{0,40}$/, '').trim() : '';
+    html = html.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '');
+    const ps = []; const pre = /<p[^>]*>([\s\S]*?)<\/p>/gi; let m;
+    while ((m = pre.exec(html)) && text.length < 7000) { const t = _xmlDec(m[1].replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim(); if (t.length > 60) { ps.push(t); text += t + '\n'; } }
+    if (text.length < 400) return jr({ error: 'no_text' }, 422);
+  } catch (e) { return jr({ error: 'fetch_failed' }, 502); }
+  // 2) Claude writes the brief (original wording — we never republish the source text)
+  try {
+    const ar = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001', max_tokens: 700,
+      system: 'You are a crypto news editor. Using ONLY the provided source text, write an original news brief of 250-380 words in clear, neutral English: 4-6 short paragraphs, lead with the single most important fact, keep every concrete number/name/date from the source that matters, no hype, no advice, and never copy sentences verbatim. Output plain paragraphs only — no headline, no markdown, no preamble.',
+      messages: [{ role: 'user', content: 'Title: ' + title + '\n\nSource text:\n' + text.slice(0, 6500) }],
+    }) });
+    if (!ar.ok) return jr({ error: 'ai_failed' }, 502);
+    const ad = await ar.json();
+    const brief = (ad && ad.content && ad.content[0] && ad.content[0].text || '').trim();
+    if (brief.length < 200) return jr({ error: 'ai_failed' }, 502);
+    const out = { title, brief, url: u, host: h, ts: Date.now() };
+    try { ctx.waitUntil(env.STATS.put(key, JSON.stringify(out), { expirationTtl: 604800 })); } catch (e) {}
+    return jr(out);
+  } catch (e) { return jr({ error: 'ai_failed' }, 502); }
+}
 async function handleNews(env) {
   const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   const ck = new Request('https://marginpad.io/__news2');
@@ -479,6 +524,36 @@ async function handleGeckoCoin(url, env) {
 }
 
 // DefiLlama overview — total DeFi TVL, top chains, top protocols, stablecoin supply. Free, no key. Edge-cached 10 min.
+// Extra DeFi datasets (DefiLlama, free): who actually EARNS (fees + revenue) and where the volume is (DEXs).
+// Upstreams are 1.5-3MB — fetched only on a cold 10-min cache miss, trimmed to the top slices client-side needs.
+async function handleDefiExtra(env) {
+  const ck = new Request('https://marginpad.io/__defi_extra_v1');
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const trim = (arr, n) => (arr || []).filter(p => p && p.name && isFinite(+p.total24h)).sort((a, b) => (+b.total24h) - (+a.total24h)).slice(0, n)
+    .map(p => ({ name: String(p.name).slice(0, 40), cat: String(p.category || '').slice(0, 28), v24: Math.round(+p.total24h), v7: Math.round(+p.total7d || 0), chg: (p.change_1d != null && isFinite(+p.change_1d)) ? +(+p.change_1d).toFixed(1) : null, logo: String(p.logo || '').slice(0, 300), chains: Array.isArray(p.chains) ? p.chains.slice(0, 3) : [] }));
+  let out = null;
+  try {
+    const h = { headers: { accept: 'application/json' }, cf: { cacheTtl: 600 } };
+    const [feesR, revR, dexR] = await Promise.all([
+      fetch('https://api.llama.fi/overview/fees?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true', h),
+      fetch('https://api.llama.fi/overview/fees?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true&dataType=dailyRevenue', h),
+      fetch('https://api.llama.fi/overview/dexs?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true', h),
+    ]);
+    const fees = feesR.ok ? await feesR.json() : null;
+    const rev = revR.ok ? await revR.json() : null;
+    const dex = dexR.ok ? await dexR.json() : null;
+    out = { ts: Date.now(),
+      fees: fees ? trim(fees.protocols, 12) : [],
+      revenue: rev ? trim(rev.protocols, 12) : [],
+      dexs: dex ? trim(dex.protocols, 12) : [],
+      dexTotal24h: dex && isFinite(+dex.total24h) ? Math.round(+dex.total24h) : null,
+      feesTotal24h: fees && isFinite(+fees.total24h) ? Math.round(+fees.total24h) : null };
+  } catch (e) {}
+  if (!out || (!out.fees.length && !out.dexs.length)) return J({ error: 'unavailable' }, 503);
+  const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } });
+  try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
 async function handleDefiOverview(env) {
   const ck = new Request('https://marginpad.io/__defi_overview');
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
@@ -3361,8 +3436,10 @@ export default {
     if (url.pathname === '/api/gecko/trending') return handleGeckoTrending(env);
     if (url.pathname === '/api/gecko/coin') return handleGeckoCoin(url, env);
     if (url.pathname === '/api/defi/overview') return handleDefiOverview(env);
+    if (url.pathname === '/api/defi/extra') return handleDefiExtra(env);
     if (url.pathname === '/api/cg/coin') return handleCgCoin(url, env);
     if (url.pathname === '/api/news') return handleNews(env);
+    if (url.pathname === '/api/news/read') return handleNewsRead(url, env, ctx);
     if (url.pathname === '/api/fng') return handleFng(env);
     if (url.pathname === '/api/cg/pulse') return handleCgPulse(url, env);
     if (url.pathname === '/api/cg/board') return handleCgBoard(url, env);

@@ -34,19 +34,73 @@
   .hauth{background:none;border:1px solid var(--line2);color:var(--ink);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
   h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;margin:6px 0 4px;letter-spacing:-.02em;}
   .sub{color:var(--dim);font-size:14px;margin:0 0 18px;}
-  .n-item{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--line);}
+  /* ===== card grid (mobile = list, desktop = editorial grid) ===== */
+  .n-item{display:flex;gap:13px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer;}
   .n-item:last-child{border-bottom:none;}
   .n-img{width:96px;height:72px;border-radius:11px;object-fit:cover;background:#161a21;flex-shrink:0;}
   .n-b{min-width:0;flex:1;}
-  .n-t{font-size:16px;font-weight:700;line-height:1.32;color:var(--ink);display:block;margin-bottom:5px;}
+  .n-t{font-size:16px;font-weight:700;line-height:1.32;color:var(--ink);display:block;margin-bottom:5px;font-family:'Bricolage Grotesque',sans-serif;}
   .n-item:hover .n-t{color:var(--lime);}
   .n-d{font-size:13px;color:var(--faint);line-height:1.45;margin:0 0 6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
   .n-m{font-size:11.5px;color:var(--dim);font-family:'Space Mono',monospace;display:flex;gap:8px;align-items:center;}
   .n-src{color:var(--lime);font-weight:700;}
+  .n-read{margin-left:auto;color:var(--faint);font-size:10.5px;letter-spacing:.05em;}
+  .n-item:hover .n-read{color:var(--lime);}
   .muted{color:var(--faint);text-align:center;padding:30px 0;font-size:14px;}
   footer{margin-top:24px;text-align:center;color:var(--faint);font-size:12.5px;}
   footer a{color:var(--dim);}
   @media(max-width:520px){.n-img{width:74px;height:60px;}.n-t{font-size:14.5px;}.n-d{display:none;}}
+  /* desktop: full-width editorial grid — featured lead + 3-col cards */
+  @media(min-width:861px){
+    .wrap{max-width:1460px;padding:16px clamp(24px,3vw,52px) 40px;}
+    h1{font-size:44px;letter-spacing:-.03em;margin:10px 0 6px;}
+    .sub{font-size:15.5px;max-width:720px;}
+    .n-eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#8a95a1;margin-top:14px;}
+    .n-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);animation:nblink 1.5s ease-in-out infinite;}
+    #feed{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:stretch;}
+    .n-item{flex-direction:column;gap:0;padding:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:linear-gradient(165deg,#12151c,#0c0e12);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;}
+    .n-item:hover{transform:translateY(-3px);border-color:#3a424c;box-shadow:0 22px 44px -20px rgba(0,0,0,.8);}
+    .n-item:last-child{border-bottom:1px solid var(--line);}
+    .n-img{width:100%;height:170px;border-radius:0;}
+    .n-b{padding:14px 16px 15px;display:flex;flex-direction:column;flex:1;}
+    .n-t{font-size:16.5px;line-height:1.3;}
+    .n-d{display:-webkit-box;font-size:13px;color:var(--dim);}
+    .n-m{margin-top:auto;padding-top:8px;}
+    .n-item.lead{grid-column:span 2;grid-row:span 2;}
+    .n-item.lead .n-img{height:320px;}
+    .n-item.lead .n-t{font-size:26px;line-height:1.22;}
+    .n-item.lead .n-d{-webkit-line-clamp:3;font-size:14px;}
+    .news-ticker{margin-bottom:16px;}
+  }
+  @media(min-width:861px) and (max-width:1180px){#feed{grid-template-columns:repeat(2,1fr);}.n-item.lead{grid-column:span 2;grid-row:span 1;}}
+  @keyframes nblink{0%,100%{opacity:1}50%{opacity:.35}}
+  .n-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(56% 50% at 10% 4%,rgba(194,246,74,.09),transparent 62%),radial-gradient(48% 52% at 92% 30%,rgba(63,216,230,.07),transparent 62%);}
+  .wrap{position:relative;z-index:1;}
+  /* ===== on-site READER — the whole story, without leaving the site ===== */
+  .nr{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-start;justify-content:center;padding:4vh 16px;background:rgba(5,6,9,.78);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);overflow-y:auto;overscroll-behavior:contain;}
+  .nr[hidden]{display:none;}
+  .nr-card{position:relative;width:100%;max-width:780px;background:linear-gradient(180deg,#14181f,#0c0f13);border:1px solid #2b323b;border-radius:20px;padding:0 0 26px;box-shadow:0 40px 120px -30px rgba(0,0,0,.95);animation:nrIn .28s cubic-bezier(.2,.85,.25,1);margin:auto 0;}
+  @keyframes nrIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+  .nr-x{position:absolute;top:14px;right:14px;z-index:3;width:38px;height:38px;border-radius:50%;background:rgba(10,11,13,.7);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.16);color:#e9e7df;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.14s;}
+  .nr-x:hover{border-color:var(--lime);color:var(--lime);}
+  .nr-hero{width:100%;height:300px;object-fit:cover;border-radius:20px 20px 0 0;background:#161a21;display:block;}
+  .nr-body{padding:22px clamp(20px,4vw,42px) 0;}
+  .nr-meta{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);margin-bottom:12px;flex-wrap:wrap;}
+  .nr-meta .src{color:var(--lime);font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
+  .nr-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(22px,3vw,32px);line-height:1.18;letter-spacing:-.02em;margin:0 0 16px;color:#f2f0e9;}
+  .nr-brief{font-size:16px;line-height:1.72;color:#cdd3da;}
+  .nr-brief p{margin:0 0 15px;}
+  .nr-brief p:first-of-type::first-letter{color:var(--lime);font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.5em;line-height:1;}
+  .nr-skel{display:flex;flex-direction:column;gap:11px;padding:6px 0 14px;}
+  .nr-skel i{height:13px;border-radius:6px;background:linear-gradient(90deg,#1a1f27 25%,#232a34 50%,#1a1f27 75%);background-size:200% 100%;animation:nrShimmer 1.2s linear infinite;}
+  .nr-skel i:nth-child(2n){width:92%;}.nr-skel i:nth-child(3n){width:84%;}.nr-skel i:last-child{width:55%;}
+  @keyframes nrShimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+  .nr-note{display:flex;align-items:center;gap:8px;margin:18px 0 0;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--faint);letter-spacing:.03em;}
+  .nr-src-link{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-size:13.5px;font-weight:700;color:var(--lime);border:1px solid rgba(194,246,74,.4);border-radius:11px;padding:10px 16px;transition:.15s;}
+  .nr-src-link:hover{background:rgba(194,246,74,.08);box-shadow:0 0 18px -6px rgba(194,246,74,.5);}
+  .nr-err{padding:26px 0 10px;color:var(--dim);font-size:14.5px;text-align:center;}
+  .nr-err a{font-weight:700;}
+  @media(max-width:640px){.nr{padding:0;}.nr-card{border-radius:0;min-height:100%;}.nr-hero{border-radius:0;height:220px;}}
   .smobnav{display:none;}
   @media(max-width:720px){
     .smobnav{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 9px);z-index:80;display:flex;justify-content:space-around;align-items:center;padding:9px 6px;border-radius:20px;background:rgba(9,13,10,.6);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(194,246,74,.22);box-shadow:0 10px 34px -12px rgba(0,0,0,.75),0 0 20px -8px rgba(194,246,74,.3);}
@@ -75,6 +129,7 @@
 <script defer src="/assets/sentry.js"></script>
 </head>
 <body>
+<div class="n-glow" aria-hidden="true"></div>
 <div class="wrap">
   <header>
     <a class="brand" href="/">MARGIN<b>PAD</b></a>
@@ -85,8 +140,9 @@
     </div>
   </header>
 
+  <div class="n-eyebrow"><i></i>Live · refreshed every few minutes</div>
   <h1>Crypto news</h1>
-  <p class="sub">The latest headlines across Bitcoin, Ethereum, DeFi and markets — refreshed live. <span id="nUpd"></span></p>
+  <p class="sub">Bitcoin, Ethereum, DeFi and markets — and you read the <b style="color:var(--ink)">whole story right here</b>: click any headline and get the full brief without leaving the site. <span id="nUpd"></span></p>
 
   <div class="news-ticker" id="newsTicker"></div>
 
@@ -100,8 +156,21 @@
 
   <footer>
     <a href="/">← MarginPad</a> · <a href="/coins/">Markets</a> · <a href="/screener">Screener</a> · <a href="/alerts/">Alerts</a><br>
-    <span style="color:var(--faint)">Headlines from Cointelegraph, CoinDesk &amp; Decrypt. Not financial advice.</span>
+    <span style="color:var(--faint)">Headlines from Cointelegraph, CoinDesk &amp; Decrypt · briefs written by MarginPad AI. Not financial advice.</span>
   </footer>
+</div>
+
+<!-- on-site reader: the whole story without leaving the site -->
+<div class="nr" id="nr" hidden role="dialog" aria-modal="true" aria-label="Article reader">
+  <div class="nr-card">
+    <button class="nr-x" id="nrX" type="button" aria-label="Close">✕</button>
+    <img class="nr-hero" id="nrImg" alt="" hidden>
+    <div class="nr-body">
+      <div class="nr-meta"><span class="src" id="nrSrc"></span><span>·</span><span id="nrAgo"></span></div>
+      <h2 class="nr-t" id="nrT"></h2>
+      <div id="nrC"></div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -110,17 +179,51 @@
   try{var u='/api/track?t=pageview&p=/news/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon)navigator.sendBeacon(u);}catch(e){}
   function esc(s){return String(s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
   function ago(t){if(!t)return '';var s=Math.round((Date.now()-t)/1000);return s<60?'just now':s<3600?Math.floor(s/60)+'m ago':s<86400?Math.floor(s/3600)+'h ago':Math.floor(s/86400)+'d ago';}
+  var ITEMS=[];
   function render(items){
     if(!items||!items.length){feed.innerHTML='<div class="muted">News feed is busy — refreshing shortly.</div>';return;}
-    feed.innerHTML=items.map(function(n){
+    ITEMS=items;
+    // the first story WITH an image leads the grid on desktop
+    var leadIdx=-1;for(var i=0;i<items.length;i++){if(items[i].img){leadIdx=i;break;}}
+    feed.innerHTML=items.map(function(n,i){
       var img=n.img?'<img class="n-img" src="'+esc(n.img)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'';
-      return '<a class="n-item" href="'+esc(n.url)+'" target="_blank" rel="noopener">'+img+'<div class="n-b"><span class="n-t">'+esc(n.title)+'</span>'+(n.body?'<p class="n-d">'+esc(n.body)+'</p>':'')+'<div class="n-m"><span class="n-src">'+esc(n.src)+'</span><span>·</span><span>'+ago(n.ts)+'</span></div></div></a>';
+      return '<article class="n-item'+(i===leadIdx?' lead':'')+'" data-i="'+i+'" tabindex="0" role="button" aria-label="Read: '+esc(n.title)+'">'+img+'<div class="n-b"><span class="n-t">'+esc(n.title)+'</span>'+(n.body?'<p class="n-d">'+esc(n.body)+'</p>':'')+'<div class="n-m"><span class="n-src">'+esc(n.src)+'</span><span>·</span><span>'+ago(n.ts)+'</span><span class="n-read">READ HERE →</span></div></div></article>';
     }).join('');
     var up=document.getElementById('nUpd');if(up)up.textContent='Updated '+ago(Date.now()-1000);
   }
   function load(){fetch('/api/news').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.items)render(d.items);}).catch(function(){});}
   load();setInterval(load,180000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)load();});
+  /* ===== on-site reader ===== */
+  var nr=document.getElementById('nr'),nrC=document.getElementById('nrC'),_pf={};
+  function readerFetch(u){if(_pf[u])return _pf[u];_pf[u]=fetch('/api/news/read?u='+encodeURIComponent(u)).then(function(r){return r.json().then(function(d){return r.ok?d:Promise.reject(d&&d.error||'failed');});});_pf[u].catch(function(){delete _pf[u];});return _pf[u];}
+  function srcLink(n){return '<a class="nr-src-link" href="'+esc(n.url)+'" target="_blank" rel="noopener">Read the original at '+esc(n.src)+' ↗</a>';}
+  function openReader(n){
+    nr.hidden=false;document.documentElement.style.overflow='hidden';
+    var im=document.getElementById('nrImg');if(n.img){im.hidden=false;im.src=n.img;im.onerror=function(){im.hidden=true;};}else im.hidden=true;
+    document.getElementById('nrSrc').textContent=n.src||'';
+    document.getElementById('nrAgo').textContent=ago(n.ts);
+    document.getElementById('nrT').textContent=n.title||'';
+    nrC.innerHTML='<div class="nr-skel"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
+    try{if(navigator.sendBeacon)navigator.sendBeacon('/api/track?t=event&e=news_read&l='+encodeURIComponent((n.src||'')+':'+(n.title||'').slice(0,60)));}catch(e){}
+    readerFetch(n.url).then(function(d){
+      if(nr.hidden)return;
+      var paras=String(d.brief||'').split(/\n{1,}/).filter(function(p){return p.trim();}).map(function(p){return '<p>'+esc(p.trim())+'</p>';}).join('');
+      nrC.innerHTML='<div class="nr-brief">'+paras+'</div>'
+        +'<div class="nr-note"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.4-1.2 4.1-2.6 5.4-.8.8-1.4 1.9-1.4 3.1v.5h-6v-.5c0-1.2-.6-2.3-1.4-3.1C6.2 13.1 5 11.4 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="22" x2="15" y2="22"/></svg>Brief written by MarginPad AI from the source article — facts belong to '+esc(n.src)+'.</div>'
+        +srcLink(n);
+    }).catch(function(){
+      if(nr.hidden)return;
+      nrC.innerHTML='<div class="nr-err">Couldn’t prepare the brief for this one.<br><br>'+srcLink(n)+'</div>';
+    });
+  }
+  function closeReader(){nr.hidden=true;document.documentElement.style.overflow='';}
+  feed.addEventListener('click',function(ev){var c=ev.target.closest&&ev.target.closest('.n-item');if(!c)return;var n=ITEMS[+c.getAttribute('data-i')];if(n)openReader(n);});
+  feed.addEventListener('keydown',function(ev){if(ev.key!=='Enter')return;var c=ev.target.closest&&ev.target.closest('.n-item');if(!c)return;var n=ITEMS[+c.getAttribute('data-i')];if(n)openReader(n);});
+  feed.addEventListener('mouseover',function(ev){var c=ev.target.closest&&ev.target.closest('.n-item');if(!c)return;var n=ITEMS[+c.getAttribute('data-i')];if(n&&!_pf[n.url])setTimeout(function(){if(c.matches(':hover'))readerFetch(n.url);},350);}); // hover-prefetch → the brief is usually READY before the click
+  document.getElementById('nrX').addEventListener('click',closeReader);
+  nr.addEventListener('click',function(ev){if(ev.target===nr)closeReader();});
+  document.addEventListener('keydown',function(ev){if(ev.key==='Escape'&&!nr.hidden)closeReader();});
   // live market strip above the feed — context next to the headlines
   (function(){var t=document.getElementById('newsTicker');if(!t)return;var WANT=['BTC','ETH','SOL','BNB','XRP','DOGE'];function f(px){return '$'+(+px).toLocaleString('en-US',{maximumFractionDigits:+px>=1?2:5});}function tl(){fetch('/api/prices').then(function(r){return r.ok?r.json():null;}).then(function(d){if(!d||!d.pairs)return;var by={};d.pairs.forEach(function(p){by[(p.symbol||'').replace('USDT','')]=p;});t.innerHTML=WANT.map(function(s){var p=by[s];if(!p)return '';var c=+p.changePct;return '<div class="nt-pill"><span class="nt-sym">'+s+'</span><span class="nt-px">'+f(p.price)+'</span><span class="nt-chg '+(c>=0?'up':'dn')+'">'+(c>=0?'+':'')+c.toFixed(2)+'%</span></div>';}).join('');}).catch(function(){});}tl();setInterval(tl,30000);})();
 })();

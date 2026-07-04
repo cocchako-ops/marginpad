@@ -46,6 +46,32 @@ const CSS = `
   .dfcta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
   .dfcta a.go{background:#c2f64a;color:#0a0b0d;border-color:#c2f64a}
   .dfload{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-faint)}
+  .dfp .rt .v24{font-family:'Space Mono',monospace;font-weight:800;font-size:14px}
+  /* ===== desktop overhaul — full-width terminal treatment (bento design language) ===== */
+  .df-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(56% 50% at 8% 4%,rgba(194,246,74,.08),transparent 62%),radial-gradient(48% 55% at 94% 30%,rgba(63,216,230,.07),transparent 62%)}
+  .wrap{position:relative;z-index:1}
+  .df-eyebrow{display:none}
+  @media(min-width:861px){
+    .wrap{max-width:1460px;padding:0 clamp(24px,3vw,52px)}
+    .df-eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#8a95a1;margin-top:14px}
+    .df-eyebrow i{width:8px;height:8px;border-radius:50%;background:#c2f64a;box-shadow:0 0 10px #c2f64a;animation:dfblink 1.5s ease-in-out infinite}
+    article h1{font-size:44px;letter-spacing:-.03em;margin:10px 0 8px}
+    .lead{font-size:15.5px;max-width:820px}
+    .dfhero{grid-template-columns:repeat(4,1fr);gap:12px;margin:20px 0 8px}
+    .dfbig{border-radius:15px;padding:18px 20px;transition:transform .16s ease,border-color .16s ease}
+    .dfbig:hover{transform:translateY(-2px);border-color:#3a424c}
+    .dfbig .k{font-size:9.5px;letter-spacing:.12em;color:#7f8994}
+    .dfbig .v{font-family:'Bricolage Grotesque',sans-serif;font-size:32px;letter-spacing:-1.5px;font-variant-numeric:tabular-nums}
+    .dfbig .s{color:#8a95a1}
+    .dfh2{font-size:11px;color:#8a95a1;margin:30px 0 12px}
+    .dfpgrid{grid-template-columns:repeat(3,1fr);gap:11px}
+    .dfp{transition:transform .15s ease,border-color .15s ease}
+    .dfp:hover{transform:translateY(-2px);border-color:#3a424c}
+    .dfrow .n{min-width:150px;font-size:15px}
+    .dfrow .t{min-width:90px}
+    .dfsrow .mech{color:#8a95a1}
+  }
+  @keyframes dfblink{0%,100%{opacity:1}50%{opacity:.35}}
   /* mobile (matches the 720px nav breakpoint): stack the hero (a wide "$314.5B" in a half-width card overflowed → page looked zoomed-out) + tighten to the other pages' density */
   @media(max-width:720px){
     .wrap{padding:0 16px}
@@ -110,6 +136,7 @@ let html = `<!DOCTYPE html>
 ${ld}
 </head>
 <body>
+<div class="df-glow" aria-hidden="true"></div>
 <div class="wrap">
   <header>
     <a class="brand" href="/">MARGIN<b style="color:#c2f64a">PAD</b></a>
@@ -117,12 +144,15 @@ ${ld}
   </header>
   <div class="crumb"><a href="/">Home</a> / DeFi</div>
   <article>
+    <div class="df-eyebrow"><i></i>Live · aggregated from DefiLlama</div>
     <h1>DeFi Dashboard</h1>
     <p class="lead">Live decentralized-finance overview — total value locked across every chain, the biggest protocols, top blockchains by TVL and the size of the stablecoin market. Aggregated from DefiLlama, updated continuously. Free, no signup.</p>
 
     <div class="dfhero">
       <div class="dfbig"><div class="k">Total value locked</div><div class="v" id="dfTvl">…</div><div class="s" id="dfTvlS">across all chains</div></div>
       <div class="dfbig"><div class="k">Stablecoin supply</div><div class="v" id="dfStb">…</div><div class="s">total circulating</div></div>
+      <div class="dfbig"><div class="k">DEX volume · 24h</div><div class="v" id="dfDexT">…</div><div class="s">all decentralized exchanges</div></div>
+      <div class="dfbig"><div class="k">Protocol fees · 24h</div><div class="v" id="dfFeeT">…</div><div class="s">paid by users, all protocols</div></div>
     </div>
 
     <div class="dfh2">Top chains by TVL</div>
@@ -133,6 +163,15 @@ ${ld}
 
     <div class="dfh2">Largest stablecoins</div>
     <div class="dfst" id="dfStables"><div class="dfload">Loading stablecoins…</div></div>
+
+    <div class="dfh2">DEX volume leaders · 24h</div>
+    <div class="dfpgrid" id="dfDexs"><div class="dfload">Loading DEX volumes…</div></div>
+
+    <div class="dfh2">Top earners — fees paid by users · 24h</div>
+    <div class="dfpgrid" id="dfFees"><div class="dfload">Loading fees…</div></div>
+
+    <div class="dfh2">Top revenue — what protocols keep · 24h</div>
+    <div class="dfpgrid" id="dfRev"><div class="dfload">Loading revenue…</div></div>
 
     <div class="dfcta">
       <a class="go" href="/screener">Open the screener →</a>
@@ -148,6 +187,9 @@ ${ld}
 
     <h2>Stablecoins — the plumbing of DeFi</h2>
     <p>Stablecoins are the settlement layer of crypto. Total stablecoin supply tracks how much "dry powder" is sitting on-chain ready to deploy — a growing supply is broadly bullish for liquidity, a shrinking one signals capital leaving the system. The list above ranks the largest stablecoins by circulating supply and shows each one's peg mechanism (fiat-backed, crypto-backed or algorithmic).</p>
+
+    <h2>Volume, fees and revenue — who actually earns in DeFi</h2>
+    <p><strong>DEX volume</strong> shows where trading happens on-chain — the busiest decentralized exchanges over the last 24 hours. <strong>Fees</strong> are what users paid to use a protocol (swap fees, borrow interest, gas on an L2); <strong>revenue</strong> is the slice the protocol itself keeps after paying liquidity providers or validators. A protocol with high fees but near-zero revenue passes almost everything to its LPs; one with strong revenue has a real business model behind its token. Comparing all three tells you which apps have genuine, paying users — not just deposited capital.</p>
 
     <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">DeFi data aggregated from DefiLlama. For information only — not financial advice.</p>
   </article>
@@ -180,6 +222,21 @@ ${ld}
     }).join('');
   }
   fetch('/api/defi/overview',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(render).catch(function(){document.getElementById('dfTvl').textContent='—';});
+  // extra datasets: DEX volumes + fees + revenue (who actually earns)
+  function xcard(p,label){
+    var lg=p.logo?('<img class="lg" src="'+esc(p.logo)+'" alt="" loading="lazy" onerror="this.style.visibility=\\'hidden\\'">'):'<div class="lg"></div>';
+    var ch=(p.chains&&p.chains.length)?p.chains.slice(0,2).join(' · '):'';
+    return '<div class="dfp">'+lg+'<div class="mid"><div class="nm">'+esc(p.name)+'</div><div class="ct">'+esc(p.cat)+(ch?' · '+esc(ch):'')+'</div></div><div class="rt"><div class="v24">'+bn(p.v24)+'</div>'+chgHtml(p.chg)+'</div></div>';
+  }
+  function renderExtra(d){
+    if(!d||d.error)return;
+    var dt=document.getElementById('dfDexT');if(dt&&d.dexTotal24h!=null)dt.textContent=bn(d.dexTotal24h);
+    var ft=document.getElementById('dfFeeT');if(ft&&d.feesTotal24h!=null)ft.textContent=bn(d.feesTotal24h);
+    var dx=document.getElementById('dfDexs');if(dx)dx.innerHTML=(d.dexs||[]).map(xcard).join('')||'<div class="dfload">—</div>';
+    var fe=document.getElementById('dfFees');if(fe)fe.innerHTML=(d.fees||[]).map(xcard).join('')||'<div class="dfload">—</div>';
+    var rv=document.getElementById('dfRev');if(rv)rv.innerHTML=(d.revenue||[]).map(xcard).join('')||'<div class="dfload">—</div>';
+  }
+  fetch('/api/defi/extra',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(renderExtra).catch(function(){});
 })();</script>
 </body>
 </html>

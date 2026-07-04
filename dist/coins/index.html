@@ -88,6 +88,37 @@
     .hide-m{display:none!important;}
     .c-spark{height:30px;}
   }
+  /* ===== desktop overhaul — full-width terminal treatment (bento design language) ===== */
+  .m-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(56% 50% at 8% 4%,rgba(194,246,74,.08),transparent 62%),radial-gradient(48% 55% at 94% 30%,rgba(63,216,230,.07),transparent 62%);}
+  .wrap{position:relative;z-index:1;}
+  .m-eyebrow{display:none;}
+  @media(min-width:861px){
+    .wrap{max-width:1460px;padding:16px clamp(24px,3vw,52px) 44px;}
+    .m-eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#8a95a1;margin-top:12px;}
+    .m-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);animation:mblink 1.5s ease-in-out infinite;}
+    h1{font-size:44px;letter-spacing:-.03em;margin:10px 0 6px;}
+    .sub{font-size:15.5px;margin-bottom:20px;}
+    .gstat{grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+    .gs{border-radius:15px;padding:16px 18px;transition:transform .16s ease,border-color .16s ease;}
+    .gs:hover{transform:translateY(-2px);border-color:#3a424c;}
+    .gs .l{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:#7f8994;}
+    .gs .v{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;letter-spacing:-1px;margin-top:6px;font-variant-numeric:tabular-nums;}
+    .trend{margin-bottom:18px;}
+    .th,.tr{grid-template-columns:40px 1.7fr .95fr .62fr .62fr .62fr 120px 1fr;gap:10px;padding:12px 18px 12px 34px;}
+    .c-name img{width:28px;height:28px;}
+    .c-name .nm b{font-size:14.5px;}
+    .c-price{font-size:14.5px;}
+    .c-spark{height:40px;}
+    /* sticky column header — 250 rows deserve a header that follows you */
+    .tbl{overflow:visible;}
+    .th{position:sticky;top:0;z-index:5;background:#12151c;border-radius:14px 14px 0 0;box-shadow:0 8px 18px -12px rgba(0,0,0,.8);}
+    /* % change as heat pills instead of bare text */
+    .c-chg{justify-self:end;border-radius:8px;padding:4px 9px;font-size:12.5px;}
+    .c-chg.up{background:rgba(46,189,133,.1);border:1px solid rgba(46,189,133,.24);}
+    .c-chg.dn{background:rgba(255,98,88,.1);border:1px solid rgba(255,98,88,.24);}
+    .tr:hover{background:rgba(255,255,255,.035);}
+  }
+  @keyframes mblink{0%,100%{opacity:1}50%{opacity:.35}}
   @media(max-width:430px){.th,.tr{grid-template-columns:22px 1.4fr .9fr .8fr;}.tr{padding-left:26px;}.c-star{left:4px;font-size:12px;}.c-spark{display:none;}}
   .smobnav{display:none;}
   @media(max-width:720px){
@@ -109,6 +140,7 @@
 <script defer src="/assets/sentry.js"></script>
 </head>
 <body>
+<div class="m-glow" aria-hidden="true"></div>
 <div class="wrap">
   <header>
     <a class="brand" href="/">MARGIN<b>PAD</b></a>
@@ -119,6 +151,7 @@
     </div>
   </header>
 
+  <div class="m-eyebrow"><i></i>Live · top 250 by market cap</div>
   <h1>Crypto markets</h1>
   <p class="sub">Top 250 coins by market cap — live prices, 7-day charts and market data. Tap a coin to trade it risk-free.</p>
 
