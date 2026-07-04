@@ -2751,17 +2751,37 @@ async function handleUnsubscribe(url, env) {
 function handleUserPage(url, env) {
   if (!isAdminKey(env, url.searchParams.get('key'))) return new Response('Forbidden', { status: 403 });
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>User · MarginPad Admin</title><style>
-*{box-sizing:border-box}body{background:#0a0b0d;color:#e9e7df;font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:920px;margin:0 auto;padding:22px 18px 80px}
-a{color:#c2f64a}.back{font-size:12.5px;color:#9aa3ad;text-decoration:none}.back:hover{color:#c2f64a}
-h1{font-size:21px;margin:10px 0 2px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.email{color:#9aa3ad;font-size:13px;font-family:monospace;margin-bottom:18px;word-break:break-all}
+*{box-sizing:border-box}html,body{margin:0}body{background:#0a0b0d;color:#e9e7df;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+a{color:#c2f64a;text-decoration:none}
+.app{display:flex;min-height:100vh}
+.side{width:236px;flex:0 0 236px;background:#0c0f13;border-right:1px solid #1c2230;position:sticky;top:0;height:100vh;overflow:auto;padding:16px 12px 30px}
+.side .back{font-size:12px;color:#9aa3ad;display:inline-block;margin-bottom:14px}.side .back:hover{color:#c2f64a}
+.srch{display:flex;gap:6px;margin-bottom:16px}
+.srch input{flex:1;min-width:0;background:#0a0c0f;border:1px solid #2f3742;border-radius:9px;padding:9px 11px;color:#e9e7df;font-size:13px}.srch input:focus{outline:none;border-color:#c2f64a}
+.umini{display:flex;align-items:center;gap:10px;padding:12px 10px;background:#111419;border:1px solid #232932;border-radius:12px;margin-bottom:16px}
+.umini .av{width:38px;height:38px;border-radius:10px;background:#1a2029;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;color:#c2f64a;flex:0 0 38px}
+.umini .un{font-weight:800;font-size:14px;line-height:1.2;word-break:break-word}.umini .us{font-size:11px;color:#9aa3ad;margin-top:2px}
+.navb{display:flex;flex-direction:column;gap:2px}
+.navb button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:none;color:#9aa3ad;font-size:13.5px;font-weight:600;padding:10px 12px;border-radius:9px;cursor:pointer;font-family:inherit}
+.navb button:hover{background:rgba(255,255,255,.05);color:#e9e7df}
+.navb button.on{background:rgba(194,246,74,.12);color:#c2f64a}
+.navb button .nb-ic{width:17px;height:17px;flex:0 0 17px}
+.navb button .nb-badge{margin-left:auto;font-family:monospace;font-size:11px;color:#5c656f}
+main{flex:1;min-width:0;padding:22px clamp(16px,2.4vw,34px) 70px}
+.topbar{border-bottom:1px solid #1c2230;padding-bottom:16px;margin-bottom:20px}
+h1{font-size:24px;margin:0 0 3px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.email{color:#9aa3ad;font-size:12.5px;font-family:monospace;word-break:break-all}
 .badge{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;border-radius:6px;padding:3px 9px}
 .b-active{background:rgba(46,189,133,.16);color:#41e3a3}.b-suspended{background:rgba(255,179,71,.16);color:#ffb347}.b-banned{background:rgba(255,98,88,.16);color:#ff8a80}.b-muted{background:rgba(154,163,173,.16);color:#cdd3da}.b-vpn{background:rgba(120,160,255,.16);color:#9ab4ff}
-h2{font-size:12px;color:#9aa3ad;margin:30px 0 11px;text-transform:uppercase;letter-spacing:.12em}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}@media(max-width:640px){.cards{grid-template-columns:repeat(2,1fr)}}
+.qstats{display:flex;flex-wrap:wrap;gap:18px;margin-top:14px}
+.qstats .q{}.qstats .q .qv{font-size:18px;font-weight:800;font-family:monospace;line-height:1}.qstats .q .ql{font-size:10.5px;color:#9aa3ad;text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+.view{display:none}.view.on{display:block;animation:fade .18s ease}@keyframes fade{from{opacity:0}to{opacity:1}}
+h2{font-size:12px;color:#9aa3ad;margin:26px 0 11px;text-transform:uppercase;letter-spacing:.12em}h2:first-child{margin-top:0}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}@media(max-width:820px){.cards{grid-template-columns:repeat(2,1fr)}}
 .card{background:#111419;border:1px solid #232932;border-radius:12px;padding:13px 14px}.card .v{font-size:20px;font-weight:800;color:#c2f64a;line-height:1;font-family:monospace}.card .l{color:#9aa3ad;font-size:10.5px;margin-top:6px;text-transform:uppercase;letter-spacing:.07em}
 .panel{background:#111419;border:1px solid #232932;border-radius:14px;padding:14px 16px}
 .ctrls{display:flex;flex-wrap:wrap;gap:8px}
-.btn{background:#0c0f13;border:1px solid #2f3742;color:#cdd3da;border-radius:9px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer}.btn:hover{border-color:#5c656f;color:#fff}
+.btn{background:#0c0f13;border:1px solid #2f3742;color:#cdd3da;border-radius:9px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}.btn:hover{border-color:#5c656f;color:#fff}
 .btn.warn{color:#ffce8a;border-color:rgba(255,179,71,.4)}.btn.warn:hover{background:rgba(255,179,71,.12)}
 .btn.danger{color:#ff8a80;border-color:rgba(255,98,88,.4)}.btn.danger:hover{background:rgba(255,98,88,.12)}
 .btn.good{color:#41e3a3;border-color:rgba(46,189,133,.4)}.btn.good:hover{background:rgba(46,189,133,.12)}
@@ -2777,11 +2797,60 @@ h2{font-size:12px;color:#9aa3ad;margin:30px 0 11px;text-transform:uppercase;lett
 .heat .dot{position:absolute;width:34px;height:34px;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,90,77,.6),rgba(255,90,77,0) 70%);mix-blend-mode:screen;pointer-events:none}
 .heat .gl{position:absolute;left:0;right:0;height:1px;background:#1a2029}
 .sel{background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:8px 11px;color:#e9e7df;font-size:13px}
-.tl{max-height:300px;overflow:auto}
+.tl{max-height:460px;overflow:auto}
+@media(max-width:800px){.app{flex-direction:column}.side{width:100%;height:auto;position:static;flex:none;border-right:none;border-bottom:1px solid #1c2230}.navb{flex-direction:row;flex-wrap:wrap}.navb button{width:auto}main{padding:16px}}
 </style></head><body>
+<div class="app">
+<aside class="side">
 <a class="back" href="javascript:history.length>1?history.back():window.close()">&larr; back to Users</a>
-<h1 id="title">Loading…</h1><div class="email" id="email"></div>
-<div class="panel" id="ctrlPanel" style="display:none"><h2 style="margin-top:0">Controls</h2><div class="ctrls" id="statusCtrls"></div>
+<div class="srch"><input id="uSearch" placeholder="Jump to username…" autocomplete="off"></div>
+<div class="umini" id="umini"><div class="av" id="uav">·</div><div><div class="un" id="uun">Loading…</div><div class="us" id="uus"></div></div></div>
+<nav class="navb" id="navb">
+<button data-v="overview" class="on">Overview</button>
+<button data-v="sessions">Sessions <span class="nb-badge" id="nbSess"></span></button>
+<button data-v="trades">Trades <span class="nb-badge" id="nbTr"></span></button>
+<button data-v="rewards">Rewards &amp; payouts <span class="nb-badge" id="nbWd"></span></button>
+<button data-v="network">Network &amp; IPs <span class="nb-badge" id="nbIp"></span></button>
+<button data-v="activity">Activity <span class="nb-badge" id="nbEv"></span></button>
+<button data-v="controls">Controls</button>
+</nav>
+</aside>
+<main>
+<div class="topbar"><h1 id="title">Loading…</h1><div class="email" id="email"></div><div class="qstats" id="qstats"></div></div>
+
+<section class="view on" data-view="overview">
+<h2>Overview</h2><div class="cards" id="cards"></div>
+<h2>Security &amp; network</h2><div class="panel" id="sec"></div>
+</section>
+
+<section class="view" data-view="sessions">
+<h2>Sessions <span class="muted" id="sessCount"></span></h2><div class="panel"><div id="sessions"><div class="empty">loading…</div></div></div>
+</section>
+
+<section class="view" data-view="trades">
+<h2>Open positions <span class="muted" id="opCount"></span></h2><div class="panel"><div id="openTrades"><div class="empty">loading…</div></div></div>
+<h2>Trade history <span class="muted" id="trCount"></span></h2><div class="panel"><div id="trades"><div class="empty">loading…</div></div></div>
+<h2>Time on page <span class="muted" id="dwTotal"></span></h2><div class="panel"><div id="dwell"><div class="empty">loading…</div></div></div>
+</section>
+
+<section class="view" data-view="rewards">
+<h2>Reward balance</h2><div class="cards" id="rwdCards"><div class="empty">loading…</div></div>
+<h2>Withdrawals <span class="muted" id="wdCount"></span></h2><div class="panel"><div id="withdrawals"><div class="empty">loading…</div></div></div>
+</section>
+
+<section class="view" data-view="network">
+<h2>Network &amp; VPN</h2><div class="panel" id="netPanel"><div class="empty">loading…</div></div>
+<h2>Accounts sharing this IP <span class="muted" id="sipCount"></span></h2><div class="panel"><div id="sharedIp"><div class="empty">loading…</div></div></div>
+<h2>Session IP addresses</h2><div class="panel"><div id="sessIps"><div class="empty">loading…</div></div></div>
+</section>
+
+<section class="view" data-view="activity">
+<h2>Activity <span class="muted" id="evCount"></span></h2><div class="panel"><div class="tl" id="activity"><div class="empty">loading…</div></div></div>
+<h2>Click heatmap <span class="muted">(where they clicked · per page)</span></h2><div class="panel"><div class="field" style="margin-top:0"><span class="muted">Page:</span><select class="sel" id="heatPath"></select><span class="muted" id="heatCount"></span></div><div class="heat" id="heat"></div></div>
+</section>
+
+<section class="view" data-view="controls">
+<div class="panel" id="ctrlPanel"><h2 style="margin-top:0">Controls</h2><div class="ctrls" id="statusCtrls"></div>
 <div class="field"><label class="chk"><input type="checkbox" id="muteChk"> Muted (can't post in chat)</label></div>
 <div class="field"><span class="muted">Restrictions:</span><label class="chk"><input type="checkbox" data-r="chat"> No chat</label><label class="chk"><input type="checkbox" data-r="rewards"> No rewards</label><label class="chk"><input type="checkbox" data-r="withdraw"> No withdraw</label><button class="btn" id="saveRestr">Save</button></div>
 <div class="field"><input class="in" id="unameIn" placeholder="username" maxlength="20" style="width:180px"><button class="btn" id="saveUname">Set username</button></div>
@@ -2789,17 +2858,12 @@ h2{font-size:12px;color:#9aa3ad;margin:30px 0 11px;text-transform:uppercase;lett
 <div class="field" style="align-items:flex-start"><textarea class="in" id="noteIn" rows="2" placeholder="Private admin note…" style="flex:1;min-width:220px;resize:vertical"></textarea><button class="btn" id="saveNote">Save note</button></div>
 <div class="field"><button class="btn warn" id="logoutAll">Sign out everywhere</button><button class="btn danger" id="delUser">Delete account</button></div>
 <div class="msg" id="cmsg"></div></div>
-<h2>Overview</h2><div class="cards" id="cards"></div>
-<h2>Security &amp; network</h2><div class="panel" id="sec"></div>
-<h2>Sessions <span class="muted" id="sessCount"></span></h2><div class="panel"><div id="sessions"><div class="empty">loading…</div></div></div>
-<h2>Click heatmap <span class="muted">(where they clicked · per page)</span></h2><div class="panel"><div class="field" style="margin-top:0"><span class="muted">Page:</span><select class="sel" id="heatPath"></select><span class="muted" id="heatCount"></span></div><div class="heat" id="heat"></div></div>
-<h2>Open positions <span class="muted" id="opCount"></span></h2><div class="panel"><div id="openTrades"><div class="empty">loading…</div></div></div>
-<h2>Trades <span class="muted" id="trCount"></span></h2><div class="panel"><div id="trades"><div class="empty">loading…</div></div></div>
-<h2>Time on page <span class="muted" id="dwTotal"></span></h2><div class="panel"><div id="dwell"><div class="empty">loading…</div></div></div>
-<h2>Activity <span class="muted" id="evCount"></span></h2><div class="panel"><div class="tl" id="activity"><div class="empty">loading…</div></div></div>
+</section>
+</main>
+</div>
 <script>(function(){
-var qs=new URLSearchParams(location.search),key=qs.get('key')||'',email=qs.get('email')||'',id=qs.get('id')||'';
-var DATA=null,CLICKS=null,PRICES={};
+var qs=new URLSearchParams(location.search),key=qs.get('key')||'',email=qs.get('email')||'',id=qs.get('id')||'',uname0=qs.get('username')||'';
+var DATA=null,CLICKS=null,PRICES={},RWD=null;
 function esc(s){return String(s==null?'':s).replace(/[<>&]/g,function(m){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
 function flag(c){return /^[A-Z]{2}$/.test(c)?String.fromCodePoint(127397+c.charCodeAt(0),127397+c.charCodeAt(1)):'';}
 function ago(t){if(!t)return '—';var s=Math.round((Date.now()-t)/1000);return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';}
@@ -2807,15 +2871,41 @@ function dt(t){if(!t)return '—';var d=new Date(t);return d.toLocaleDateString(
 function fmtDur(s){s=Math.round(s||0);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m '+(s%60)+'s';var h=Math.floor(m/60);return h+'h '+(m%60)+'m';}
 function uDev(ua){return /Mobi|Android|iPhone|iPad|iPod/i.test(ua||'')?'Mobile':'Desktop';}
 function verb(t){return t==='exchange'?'clicked an exchange':t==='paper'?'opened Paper Trade':t==='tool'?'opened a tool':t==='tab'?'used a calculator':t==='hotpair'?'traded a pair':t==='pageview'?'viewed':(t||'did');}
-function uarg(){return key?('key='+encodeURIComponent(key)+(email?'&email='+encodeURIComponent(email):'')+(id?'&id='+encodeURIComponent(id):'')):'';}
+function uarg(){return key?('key='+encodeURIComponent(key)+(email?'&email='+encodeURIComponent(email):'')+(id?'&id='+encodeURIComponent(id):'')+(uname0?'&username='+encodeURIComponent(uname0):'')):'';}
+// ---- sidebar nav ----
+function showView(v){document.querySelectorAll('.view').forEach(function(s){s.classList.toggle('on',s.getAttribute('data-view')===v);});document.querySelectorAll('#navb button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===v);});window.scrollTo(0,0);}
+document.getElementById('navb').addEventListener('click',function(e){var b=e.target.closest('button[data-v]');if(b)showView(b.getAttribute('data-v'));});
+(function(){var si=document.getElementById('uSearch');if(si)si.addEventListener('keydown',function(e){if(e.key==='Enter'){var v=si.value.trim();if(v)location.href='/api/admin/user?key='+encodeURIComponent(key)+'&username='+encodeURIComponent(v);}});})();
 function aiWire(){if(!DATA||!DATA.user||!DATA.user.id)return;var uid=DATA.user.id,inp=document.getElementById('aiLimIn'),btn=document.getElementById('saveAiLim'),hint=document.getElementById('aiLimHint');if(!btn)return;fetch('/api/ai/admin?key='+encodeURIComponent(key)+'&uid='+encodeURIComponent(uid)).then(function(r){return r.json();}).then(function(d){if(inp&&d.userLimit!=null&&!inp.value)inp.value=d.userLimit;if(hint)hint.textContent='default '+(d.globalLimit!=null?d.globalLimit:10)+' / day · used '+(d.usedToday||0)+' today';}).catch(function(){});if(btn._w)return;btn._w=1;btn.addEventListener('click',function(){var v=String(inp.value).trim(),body={uid:uid,userLimit:(v===''?null:parseInt(v,10))},m=document.getElementById('cmsg');if(m){m.className='msg';m.textContent='Saving…';}fetch('/api/ai/admin?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){if(m){m.className='msg ok';m.textContent=(body.userLimit===null)?'AI limit reset to default':('AI limit set to '+d.userLimit+'/day');}aiWire();}).catch(function(){if(m){m.className='msg err';m.textContent='Error';}});});}
-function load(){fetch('/api/auth/user?'+uarg()).then(function(r){return r.json();}).then(function(d){DATA=d;render();aiWire();}).catch(function(){document.getElementById('title').textContent='Could not load user.';});
+function load(){fetch('/api/auth/user?'+uarg()).then(function(r){return r.json();}).then(function(d){DATA=d;render();aiWire();loadReward();}).catch(function(){document.getElementById('title').textContent='Could not load user.';});
   fetch('/api/auth/clicks?'+uarg()).then(function(r){return r.json();}).then(function(d){CLICKS=d;renderHeat();}).catch(function(){});
   fetch('/api/prices').then(function(r){return r.json();}).then(function(d){if(d&&d.pairs)d.pairs.forEach(function(x){PRICES[String(x.symbol||'').replace('USDT','')]=+x.price;});if(DATA)renderOpen();}).catch(function(){});}
+function loadReward(){if(!DATA||!DATA.user||!DATA.user.id)return;fetch('/api/reward/detail?key='+encodeURIComponent(key)+'&address=u:'+encodeURIComponent(DATA.user.id)).then(function(r){return r.json();}).then(function(d){RWD=d;renderReward();}).catch(function(){renderReward();});}
+function renderReward(){
+  var cardsEl=document.getElementById('rwdCards'),wdEl=document.getElementById('withdrawals'),sipEl=document.getElementById('sharedIp');
+  function card(v,l){return '<div class="card"><div class="v">'+v+'</div><div class="l">'+l+'</div></div>';}
+  if(!RWD||RWD.exists===false){if(cardsEl)cardsEl.innerHTML='<div class="empty" style="grid-column:1/-1">no reward account (user never opened Rewards)</div>';if(wdEl)wdEl.innerHTML='<div class="empty">—</div>';if(sipEl)sipEl.innerHTML='<div class="empty">—</div>';return;}
+  if(cardsEl)cardsEl.innerHTML=card('$'+(+RWD.balanceUsd||0).toFixed(2),'Balance')+card('$'+(+RWD.earnedUsd||0).toFixed(2),'Total earned')+card(RWD.claims||0,'Claims')+card((RWD.banned?'BANNED':RWD.locked?'device-locked':'ok'),'Faucet status')+card((RWD.payoutAddr?esc(RWD.payoutAddr.slice(0,6)+'…'+RWD.payoutAddr.slice(-4)):'—'),'Payout wallet')+card(ago(RWD.lastClaim),'Last claim')+card((RWD.fraud&&RWD.fraud.riskLevel?RWD.fraud.riskLevel.toUpperCase():'—'),'Risk')+card((RWD.fraud&&RWD.fraud.claimsPerHour!=null?(+RWD.fraud.claimsPerHour).toFixed(1):'—'),'Claims/hr');
+  var wds=RWD.withdrawals||[];var wc=document.getElementById('wdCount');if(wc)wc.textContent=wds.length?('('+wds.length+')'):'';var nbw=document.getElementById('nbWd');if(nbw)nbw.textContent=wds.length||'';
+  if(wdEl)wdEl.innerHTML=wds.length?wds.map(function(w){var st=w.status||'pending';var col=st==='paid'?'#41e3a3':st==='pending'?'#ffb347':'#9aa3ad';var tx=(w.txid||'').replace(/[^0-9a-fA-Fx]/g,'');return '<div class="row"><span class="mono" style="flex:1;min-width:0;word-break:break-all">'+esc(w.address||'')+'</span><span class="mono" style="width:80px;text-align:right">$'+(+w.amountUsd||+w.amount/100||0).toFixed(2)+'</span><span style="width:70px;text-align:right;color:'+col+';font-weight:700;font-size:12px">'+st+'</span><span class="muted" style="width:110px;text-align:right">'+(tx?'<a href="https://bscscan.com/tx/'+tx+'" target="_blank" rel="noopener">tx</a> · ':'')+dt(w.ts||w.paidTs||0)+'</span></div>';}).join(''):'<div class="empty">no withdrawals</div>';
+  // network panel
+  var f=RWD.fraud||{};var np=document.getElementById('netPanel');
+  if(np&&DATA&&DATA.user){var u=DATA.user;np.innerHTML='<div class="row"><span style="flex:1">Country</span><span class="mono">'+flag(u.cc)+' '+esc(u.cc||'?')+'</span></div>'
+    +'<div class="row"><span style="flex:1">Network (ASN org)</span><span class="mono" style="color:'+(u.vpn?"#9ab4ff":"#cdd3da")+'">'+esc(u.org||'unknown')+(u.asn?' · AS'+u.asn:'')+'</span></div>'
+    +'<div class="row"><span style="flex:1">VPN / proxy / datacenter</span><span class="mono">'+(u.vpn?'<b style="color:#9ab4ff">Likely yes</b>':'No signal')+'</span></div>'
+    +'<div class="row"><span style="flex:1">Last IP (auth)</span><span class="mono">'+esc(u.ip||'?')+'</span></div>'
+    +'<div class="row"><span style="flex:1">Last IP (faucet)</span><span class="mono">'+esc(RWD.ip||'?')+'</span></div>'
+    +'<div class="row"><span style="flex:1">Fraud risk</span><span class="mono" style="color:'+(f.riskLevel==='high'?'#ff8a80':f.riskLevel==='med'?'#ffb347':'#41e3a3')+'">'+esc((f.riskLevel||'low').toUpperCase())+(f.flags&&f.flags.length?' · '+f.flags.join(', '):'')+'</span></div>';}
+  var ipw=f.ipWallets||[];var sc=document.getElementById('sipCount');if(sc)sc.textContent=ipw.length?('('+ipw.length+' on '+(RWD.ip||'this IP')+')'):'';var nbi=document.getElementById('nbIp');if(nbi)nbi.textContent=(f.sameIp||ipw.length)||'';
+  if(sipEl)sipEl.innerHTML=ipw.length?ipw.map(function(w){var a=typeof w==='string'?w:(w.address||w.acct||'');var bn=(w&&w.banned);return '<div class="row"><span class="mono" style="flex:1;word-break:break-all">'+esc(String(a).replace(/^u:/,''))+'</span>'+(bn?'<span class="badge b-banned">banned</span>':'')+'</div>';}).join(''):'<div class="empty">no other accounts on this IP</div>';
+  // session IPs
+  var sess=(DATA&&DATA.sessions)||[];var siEl=document.getElementById('sessIps');
+  if(siEl)siEl.innerHTML=sess.length?sess.map(function(s){return '<div class="row"><span>'+(flag(s.cc)||'·')+'</span><span class="mono" style="flex:1;word-break:break-all">'+esc(s.ip||'?')+'</span><span class="muted" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis">'+esc((s.org||'').slice(0,36))+(s.vpn?' · VPN?':'')+'</span><span class="muted" style="width:90px;text-align:right">'+dt(s.created)+'</span></div>';}).join(''):'<div class="empty">no session IPs</div>';
+}
 function renderOpen(){var el=document.getElementById('openTrades');if(!el)return;var trd=(DATA&&DATA.trades)||[];var op=trd.filter(function(t){return (t.status||'open')==='open';});
   var c=document.getElementById('opCount');if(c)c.textContent=op.length?('('+op.length+')'):'';
   if(!op.length){el.innerHTML='<div class="empty">no open positions right now</div>';return;}
-  el.innerHTML='<div style="max-height:360px;overflow:auto">'+op.slice().reverse().map(function(t){
+  el.innerHTML='<div style="max-height:400px;overflow:auto">'+op.slice().reverse().map(function(t){
     var long=t.side!=='short',dir=long?1:-1,sc=long?'#2ebd85':'#ff6258';
     var live=PRICES[String(t.sym||'').toUpperCase()],hasLive=isFinite(live)&&live>0;
     var entry=+t.entry,margin=+t.margin||0,lev=(+t.lev>0)?+t.lev:1,qty=(t.qty!=null&&isFinite(+t.qty))?+t.qty:((margin&&entry)?margin*lev/entry:0);
@@ -2838,15 +2928,19 @@ function renderOpen(){var el=document.getElementById('openTrades');if(!el)return
       +'</div>'
     +'</div>';
   }).join('')+'</div>';}
-
 function cmsg(t,k){var m=document.getElementById('cmsg');m.textContent=t;m.className='msg '+(k||'');}
 function ctrl(action,extra,done){var body=Object.assign({email:email,id:id,action:action},extra||{});cmsg('Working…','');fetch('/api/auth/control?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(d){if(d.ok){cmsg('Done.','ok');if(done)done();else load();}else{cmsg('Error: '+(d.error||'failed'),'err');}}).catch(function(){cmsg('Network error','err');});}
 function badge(cls,txt){return '<span class="badge '+cls+'">'+txt+'</span>';}
-function render(){if(!DATA||!DATA.exists){document.getElementById('title').textContent='No such user.';return;}var u=DATA.user;
-  var st=u.status||'active';
-  document.getElementById('title').innerHTML=esc(u.username||u.email.split('@')[0])+' '+badge('b-'+st,st)+(u.muted?badge('b-muted','muted'):'')+(u.vpn?badge('b-vpn','VPN?'):'');
+function render(){if(!DATA||!DATA.exists){document.getElementById('title').textContent='No such user.';document.getElementById('uun').textContent='Not found';return;}var u=DATA.user;
+  var st=u.status||'active';var name=u.username||u.email.split('@')[0];
+  document.getElementById('title').innerHTML=esc(name)+' '+badge('b-'+st,st)+(u.muted?badge('b-muted','muted'):'')+(u.vpn?badge('b-vpn','VPN?'):'');
   document.getElementById('email').textContent=u.email+'  ·  id '+(u.id||'').slice(0,12)+'…';
-  document.getElementById('ctrlPanel').style.display='';
+  document.getElementById('uav').textContent=(name[0]||'·').toUpperCase();
+  document.getElementById('uun').textContent=name;document.getElementById('uus').textContent=st+(u.cc?' · '+flag(u.cc)+' '+u.cc:'');
+  // quick stats strip
+  var q=function(v,l){return '<div class="q"><div class="qv">'+v+'</div><div class="ql">'+l+'</div></div>';};
+  var tsum0=DATA.tradeSummary||{n:0,pnl:0};
+  document.getElementById('qstats').innerHTML=q(u.logins||0,'Logins')+q(u.pv||0,'Page views')+q(DATA.activeSessions||0,'Active sessions')+q(tsum0.n||0,'Trades')+q((tsum0.pnl>=0?'+':'')+'$'+(+tsum0.pnl||0).toFixed(0),'Paper P&L')+q(ago(u.last_seen),'Last seen');
   // status controls
   var sc=document.getElementById('statusCtrls');var h='';
   if(st!=='banned')h+='<button class="btn danger" id="banBtn">Ban from site</button>';else h+='<button class="btn good" id="unbanBtn">Unban</button>';
@@ -2860,7 +2954,6 @@ function render(){if(!DATA||!DATA.exists){document.getElementById('title').textC
   var act=document.getElementById('actBtn');if(act)act.onclick=function(){ctrl('activate');};
   var mb=document.getElementById('muteBtn');if(mb)mb.onclick=function(){ctrl(u.muted?'unmute':'mute');};
   document.getElementById('muteChk').checked=!!u.muted;document.getElementById('muteChk').onchange=function(){ctrl(this.checked?'mute':'unmute');};
-  // restrictions
   var rset=(u.restrictions||'').split(',');document.querySelectorAll('[data-r]').forEach(function(c){c.checked=rset.indexOf(c.getAttribute('data-r'))>=0;});
   document.getElementById('saveRestr').onclick=function(){var arr=[];document.querySelectorAll('[data-r]').forEach(function(c){if(c.checked)arr.push(c.getAttribute('data-r'));});ctrl('restrict',{restrictions:arr});};
   document.getElementById('unameIn').value=u.username||'';
@@ -2869,44 +2962,38 @@ function render(){if(!DATA||!DATA.exists){document.getElementById('title').textC
   document.getElementById('saveNote').onclick=function(){ctrl('note',{note:document.getElementById('noteIn').value});};
   document.getElementById('logoutAll').onclick=function(){if(confirm('Sign this user out of all devices?'))ctrl('logout_all');};
   document.getElementById('delUser').onclick=function(){if(confirm('DELETE '+u.email+' and all their data? This cannot be undone.'))ctrl('delete',{},function(){document.body.innerHTML='<p style="padding:40px;color:#9aa3ad">Account deleted. <a href="javascript:window.close()">Close</a></p>';});};
-  // cards
   function card(v,l){return '<div class="card"><div class="v">'+v+'</div><div class="l">'+l+'</div></div>';}
   document.getElementById('cards').innerHTML=card(u.logins||0,'Logins')+card(u.pv||0,'Page views')+card(DATA.evTotal||0,'Events')+card(DATA.activeSessions||0,'Active sessions')+card(ago(u.created),'Joined ago')+card(ago(u.last_seen),'Last seen ago')+card((u.dev||'?'),'Device')+card((u.br||'?'),'Browser');
-  // security
   function ccFull(c){try{return new Intl.DisplayNames(['en'],{type:'region'}).of(c)||c;}catch(e){return c;}}
   document.getElementById('sec').innerHTML='<div class="row"><span style="flex:1">Country</span><span class="mono">'+flag(u.cc)+' '+esc(u.cc?(ccFull(u.cc)+' ('+u.cc+')'):'?')+'</span></div>'
     +'<div class="row"><span style="flex:1">Network (ASN org)</span><span class="mono" style="color:'+(u.vpn?'#9ab4ff':'#cdd3da')+'">'+esc(u.org||'unknown')+(u.asn?' · AS'+u.asn:'')+'</span></div>'
     +'<div class="row"><span style="flex:1">VPN / proxy / datacenter</span><span class="mono">'+(u.vpn?'<b style="color:#9ab4ff">Likely yes</b>':'No signal')+'</span></div>'
     +'<div class="row"><span style="flex:1">Last IP</span><span class="mono">'+esc(u.ip||'?')+'</span></div>'
     +(u.status==='suspended'&&u.susp_until?'<div class="row"><span style="flex:1">Suspended until</span><span class="mono">'+dt(u.susp_until)+'</span></div>':'');
-  // sessions
-  var sess=DATA.sessions||[];document.getElementById('sessCount').textContent='('+sess.length+')';
-  document.getElementById('sessions').innerHTML=sess.length?sess.map(function(s){return '<div class="row"><span>'+(flag(s.cc)||'·')+'</span><span style="flex:1">'+esc(uDev(s.ua))+(s.vpn?' '+badge('b-vpn','VPN?'):'')+(s.active?' <span style="color:#2ebd85">· active</span>':' <span class="muted">· expired</span>')+'<div class="muted">'+esc((s.org||'').slice(0,40))+'</div></span><span class="muted">'+dt(s.created)+'</span><button class="btn" data-rev="'+s.created+'" style="padding:5px 10px;font-size:11px">revoke</button></div>';}).join(''):'<div class="empty">no sessions</div>';
+  var sess=DATA.sessions||[];document.getElementById('sessCount').textContent='('+sess.length+')';var nbs=document.getElementById('nbSess');if(nbs)nbs.textContent=sess.length||'';
+  document.getElementById('sessions').innerHTML=sess.length?sess.map(function(s){return '<div class="row"><span>'+(flag(s.cc)||'·')+'</span><span style="flex:1">'+esc(uDev(s.ua))+(s.vpn?' '+badge('b-vpn','VPN?'):'')+(s.active?' <span style="color:#2ebd85">· active</span>':' <span class="muted">· expired</span>')+'<div class="muted">'+esc((s.ip||'')+' · '+(s.org||'').slice(0,40))+'</div></span><span class="muted">'+dt(s.created)+'</span><button class="btn" data-rev="'+s.created+'" style="padding:5px 10px;font-size:11px">revoke</button></div>';}).join(''):'<div class="empty">no sessions</div>';
   document.querySelectorAll('[data-rev]').forEach(function(btn){btn.onclick=function(){ctrl('revoke',{created:+btn.getAttribute('data-rev')});};});
-  // activity
-  var ev=DATA.events||[];document.getElementById('evCount').textContent='('+(DATA.evTotal||0)+')';
+  var ev=DATA.events||[];document.getElementById('evCount').textContent='('+(DATA.evTotal||0)+')';var nbe=document.getElementById('nbEv');if(nbe)nbe.textContent=DATA.evTotal||'';
   document.getElementById('activity').innerHTML=ev.length?ev.map(function(e){return '<div class="row"><span>'+(flag(e.cc)||'·')+'</span><span style="flex:1;min-width:0">'+esc(verb(e.type))+(e.label?' <b style="color:#c2f64a">'+esc(e.label)+'</b>':'')+(e.path?' <span class="muted">'+esc(e.path)+'</span>':'')+'</span><span class="muted">'+ago(e.ts)+'</span></div>';}).join(''):'<div class="empty">no activity yet (tracked while signed in)</div>';
   renderOpen();
-  // trades
   var tsum=DATA.tradeSummary||{n:0,wins:0,losses:0,opens:0,pnl:0};var trd=DATA.trades||[];
-  document.getElementById('trCount').textContent='('+(tsum.n||0)+(tsum.n?' · '+(tsum.wins||0)+'W/'+(tsum.losses||0)+'L · '+(tsum.pnl>=0?'+':'')+'$'+(+tsum.pnl||0).toFixed(2)+' P&L':'')+')';
-  document.getElementById('trades').innerHTML=trd.length?('<div style="max-height:340px;overflow:auto">'+trd.slice().reverse().map(function(t){var st=t.status||'open';var col=st==='win'?'#2ebd85':st==='loss'?'#ff6258':'#9aa3ad';var pn=+t.pnl;var sd=(t.side==='short'?'SHORT':'LONG');var sc=t.side==='short'?'#ff6258':'#2ebd85';return '<div class="row"><span style="width:56px;color:'+sc+';font-weight:700;font-size:12px">'+sd+'</span><span style="flex:1" class="mono">'+esc(t.sym||'-')+' <span class="muted">'+(t.lev?t.lev+'x':'')+'</span></span><span class="mono muted" style="font-size:11px">@'+(t.entry!=null?(+t.entry).toLocaleString():'?')+(t.exit!=null?' &rarr; '+(+t.exit).toLocaleString():'')+'</span><span style="width:90px;text-align:right;color:'+col+';font-family:monospace">'+(isFinite(pn)&&st!=='open'?((pn>=0?'+':'')+'$'+pn.toFixed(2)):st)+'</span><span class="muted" style="width:44px;text-align:right">'+ago(t.ts)+'</span></div>';}).join('')+'</div>'):'<div class="empty">no trades synced yet (captured when the user paper-trades while signed in)</div>';
-  // time on page
+  document.getElementById('trCount').textContent='('+(tsum.n||0)+(tsum.n?' · '+(tsum.wins||0)+'W/'+(tsum.losses||0)+'L · '+(tsum.pnl>=0?'+':'')+'$'+(+tsum.pnl||0).toFixed(2)+' P&L':'')+')';var nbt=document.getElementById('nbTr');if(nbt)nbt.textContent=tsum.n||'';
+  document.getElementById('trades').innerHTML=trd.length?('<div style="max-height:420px;overflow:auto">'+trd.slice().reverse().map(function(t){var st=t.status||'open';var col=st==='win'?'#2ebd85':st==='loss'?'#ff6258':'#9aa3ad';var pn=+t.pnl;var sd=(t.side==='short'?'SHORT':'LONG');var scc=t.side==='short'?'#ff6258':'#2ebd85';return '<div class="row"><span style="width:56px;color:'+scc+';font-weight:700;font-size:12px">'+sd+'</span><span style="flex:1" class="mono">'+esc(t.sym||'-')+' <span class="muted">'+(t.lev?t.lev+'x':'')+'</span></span><span class="mono muted" style="font-size:11px">@'+(t.entry!=null?(+t.entry).toLocaleString():'?')+(t.exit!=null?' &rarr; '+(+t.exit).toLocaleString():'')+'</span><span style="width:90px;text-align:right;color:'+col+';font-family:monospace">'+(isFinite(pn)&&st!=='open'?((pn>=0?'+':'')+'$'+pn.toFixed(2)):st)+'</span><span class="muted" style="width:44px;text-align:right">'+ago(t.ts)+'</span></div>';}).join('')+'</div>'):'<div class="empty">no trades synced yet (captured when the user paper-trades while signed in)</div>';
   var dw=DATA.dwell||[];var dwt=DATA.dwellTotal||0;
   document.getElementById('dwTotal').textContent=dwt?('· total '+fmtDur(dwt)):'';
   var maxS=dw.reduce(function(m,d){return Math.max(m,d.secs);},1);
   document.getElementById('dwell').innerHTML=dw.length?dw.map(function(d){var w=Math.round(d.secs/maxS*100);return '<div class="row"><span class="mono" style="flex:1;color:#cdd3da;min-width:0;overflow:hidden;text-overflow:ellipsis">'+esc(d.path||'/')+'</span><span style="width:120px"><span style="display:inline-block;height:7px;width:'+Math.max(3,w)+'%;background:#c2f64a;border-radius:5px;vertical-align:middle"></span></span><span class="mono" style="width:74px;text-align:right">'+fmtDur(d.secs)+'</span><span class="muted" style="width:42px;text-align:right">'+(d.hits||0)+'x</span></div>';}).join(''):'<div class="empty">no page-time recorded yet (tracked while signed in)</div>';
 }
 function renderHeat(){if(!CLICKS)return;var sel=document.getElementById('heatPath');var paths=CLICKS.paths||[];
-  if(!sel.options.length){var opts='';if(paths.length){opts=paths.map(function(p){return '<option value="'+esc(p.path)+'">'+esc(p.path)+' ('+p.n+')</option>';}).join('');}else{opts='<option value="">(no clicks yet)</option>';}sel.innerHTML=opts;sel.onchange=drawHeat;}
+  if(sel&&!sel._f){sel._f=1;sel.innerHTML=paths.length?paths.map(function(p){return '<option value="'+esc(p.path)+'">'+esc(p.path)+' ('+p.n+')</option>';}).join(''):'<option>no clicks</option>';sel.onchange=drawHeat;}
   drawHeat();}
-function drawHeat(){var box=document.getElementById('heat');var sel=document.getElementById('heatPath');var path=sel.value;var all=(CLICKS&&CLICKS.clicks)||[];var pts=all.filter(function(c){return c.path===path;});
-  document.getElementById('heatCount').textContent=pts.length?(pts.length+' clicks'):'';
+function drawHeat(){var box=document.getElementById('heat');var sel=document.getElementById('heatPath');if(!box||!CLICKS)return;var pth=sel?sel.value:'';var pts=(CLICKS.points||[]).filter(function(c){return !pth||c.path===pth;});
+  document.getElementById('heatCount').textContent=pts.length?(pts.length+' clicks'):'no clicks on this page';
   var gl='';for(var i=1;i<5;i++)gl+='<div class="gl" style="top:'+(i*20)+'%"></div>';
-  box.innerHTML=gl+pts.map(function(c){return '<div class="dot" style="left:'+c.x+'%;top:'+c.y+'%"></div>';}).join('')+(pts.length?'':'<div class="empty" style="position:absolute;top:50%;left:0;right:0;text-align:center">no clicks recorded for this page yet</div>');}
+  box.innerHTML=gl+pts.map(function(c){return '<div class="dot" style="left:'+c.x+'%;top:'+c.y+'%"></div>';}).join('');}
 load();
 })();</script></body></html>`;
-  return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
+  return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }
 async function handleAuth(url, request, env, ctx) {
   const jr = (o, s = 200, extra = {}) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, ...extra } });
@@ -4186,7 +4273,8 @@ export class UserStore {
     if (path === '/user') {
       const email = String(url.searchParams.get('email') || '').toLowerCase();
       const id0 = String(url.searchParams.get('id') || '');
-      const u = email ? this.rows('SELECT * FROM users WHERE email=?', email)[0] : (id0 ? this.rows('SELECT * FROM users WHERE id=?', id0)[0] : null);
+      const uname = String(url.searchParams.get('username') || '').toLowerCase();
+      const u = email ? this.rows('SELECT * FROM users WHERE email=?', email)[0] : (id0 ? this.rows('SELECT * FROM users WHERE id=?', id0)[0] : (uname ? this.rows('SELECT * FROM users WHERE LOWER(username)=?', uname)[0] : null));
       if (!u) return this.j({ exists: false });
       const sessions = this.rows('SELECT created,expires,ua,ip,cc,asn,org FROM sessions WHERE user_id=? ORDER BY created DESC LIMIT 25', u.id).map(s => ({ created: s.created, active: s.expires > now, ua: s.ua || '', cc: s.cc || '', ip: s.ip || '', asn: s.asn || 0, org: s.org || '', vpn: isVpnOrg(s.org) }));
       const events = this.rows('SELECT ts,type,label,path,cc,dev FROM uevents WHERE user_id=? ORDER BY ts DESC LIMIT 80', u.id);
