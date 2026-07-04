@@ -404,6 +404,18 @@
   .mobnav [data-mn="browse"] svg{filter:drop-shadow(0 0 5px rgba(56,189,248,.45));}
   .hjr{color:#c2f64a;}
   .hjr:hover{color:#d4f87a;background:rgba(194,246,74,.12);}
+
+/* ===== desktop light pass — lift the black theme without breaking it (owner: "osvetli malo") =====
+   Three light sources instead of a flat void: stronger colored aurora, a soft white skylight from the
+   top edge, and surfaces that visibly "catch" the light (top sheen + clearer borders). Inks one step up. */
+@media(min-width:861px){
+  .au1{background:radial-gradient(circle,rgba(194,246,74,.20),transparent 65%);}
+  .au2{background:radial-gradient(circle,rgba(46,189,133,.17),transparent 65%);}
+  .au3{background:radial-gradient(circle,rgba(63,216,230,.12),transparent 65%);}
+  .bgfx::before{content:'';position:absolute;inset:0;background:radial-gradient(62% 44% at 50% -8%,rgba(255,255,255,.085),transparent 70%),radial-gradient(36% 30% at 84% 6%,rgba(106,163,255,.06),transparent 70%);}
+  .tile{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.012)),var(--panel);border-color:rgba(255,255,255,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.08);}
+  body{--dim:#b4bdc8;--faint:#818b98;--line:rgba(255,255,255,.11);}
+}
 </style>
 
 <script defer src="/assets/sentry.js"></script>
