@@ -766,6 +766,7 @@
      histogram for the session. Shares fSide/fMin/fSym/paused with the mobile feed (same filter bar drives both). */
   var tapeEl=document.getElementById('rktTape');
   var sessEx={},sessB=[0,0,0,0],sessBig=null,win10=[],fund={},fundT=0;
+  var dayAll=[],tapeList=[],tapeIdx=0,TCH=150; // the FULL day (backfill + live) — the tape windows over it with infinite scroll so you can scroll back to the morning; `all` stays capped at 200 for the mobile feed only
   function tRow(e,fresh){var lng=e.side==='long_liquidated',n=+e.notional;
     var d=new Date(e.ts),tm=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)+':'+('0'+d.getSeconds()).slice(-2);
     var el=document.createElement('div');el.className='rkt-r'+(n>=1e6?' mega':n>=1e5?' big':'')+(fresh?' fresh':'');
@@ -776,19 +777,28 @@
     sessEx[e.exchange]=(sessEx[e.exchange]||0)+n;
     sessB[n>=1e6?3:n>=1e5?2:n>=1e4?1:0]++;
     if(!sessBig||n>+sessBig.notional)sessBig=e;
+    dayAll.push(e);if(dayAll.length>7000)dayAll=dayAll.slice(-6000); // full-day store for the tape
     win10.push({t:e.ts,n:n,l:e.side==='long_liquidated'});}
   function deskPush(fresh){fresh.forEach(deskAgg);try{sndCheck(fresh);}catch(_e){}if(!deskOn()||!tapeEl)return;if(paused){deskSide();return;}
     var f=fresh.filter(matchF).sort(function(a,b){return a.ts-b.ts;});
     if(f.length){if(tapeEl.querySelector('.rk-empty'))tapeEl.innerHTML='';
       f.forEach(function(e){tapeEl.insertBefore(tRow(e,true),tapeEl.firstChild);});
-      while(tapeEl.children.length>120)tapeEl.removeChild(tapeEl.lastChild);}
+      while(tapeEl.children.length>2000)tapeEl.removeChild(tapeEl.lastChild);} // generous DOM ceiling for a leave-open tab
     deskSide();}
+  function tapeMore(){ // append the next chunk of the day when the user scrolls near the bottom
+    if(tapeIdx>=tapeList.length)return;
+    var end=Math.min(tapeIdx+TCH,tapeList.length),frag=document.createDocumentFragment();
+    for(var i=tapeIdx;i<end;i++)frag.appendChild(tRow(tapeList[i],false));
+    tapeIdx=end;tapeEl.appendChild(frag);
+    if(tapeIdx>=tapeList.length){var fin=document.createElement('div');fin.className='rk-empty';fin.style.padding='18px 0';fin.textContent='— start of the day (UTC) —';tapeEl.appendChild(fin);}}
   function deskRenderAll(){if(!deskOn()||!tapeEl)return;
-    var list=all.filter(matchF).slice(0,120);
+    tapeList=dayAll.filter(matchF).sort(function(a,b){return b.ts-a.ts;});tapeIdx=0;
     tapeEl.innerHTML='';
-    if(!list.length){tapeEl.innerHTML='<div class="rk-empty">No liquidations match this filter yet…</div>';}
-    else list.forEach(function(e){tapeEl.appendChild(tRow(e,false));});
+    if(!tapeList.length){tapeEl.innerHTML='<div class="rk-empty">No liquidations match this filter yet…</div>';}
+    else tapeMore();
+    tapeEl.scrollTop=0;
     deskSide();}
+  if(tapeEl)tapeEl.addEventListener('scroll',function(){if(tapeEl.scrollTop+tapeEl.clientHeight>tapeEl.scrollHeight-500)tapeMore();},{passive:true});
   function deskSide(){var now=Date.now(),cut=now-600000;win10=win10.filter(function(x){return x.t>=cut;});
     var L=0,S=0,c90=0,n90=0;win10.forEach(function(x){if(x.l)L+=x.n;else S+=x.n;if(x.t>=now-90000){c90+=x.n;n90++;}});
     var sum=L+S,lp=sum>0?Math.round(L/sum*100):50;
