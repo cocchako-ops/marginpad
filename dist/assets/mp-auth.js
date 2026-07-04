@@ -256,7 +256,14 @@
     lastJ = j;
     // send the most-recent ~200 trades (the server keeps the recent/best 100 anyway) so the payload stays bounded for heavy traders.
     var send = arr;
-    if (arr.length > 200) { try { send = arr.slice().sort(function (a, b) { return (+a.closeTs || +a.ts || 0) - (+b.closeTs || +b.ts || 0); }).slice(-200); } catch (e) { send = arr.slice(-200); } }
+    if (arr.length > 200) { try {
+      // ALWAYS send every OPEN position — never let the 200-cap slice one out (an old open with a small ts used to be
+      // dropped from the payload under sustained sync failure → the server never got it → it vanished on a device switch).
+      var _isOpen = function (e) { return e && e.status !== 'win' && e.status !== 'loss'; };
+      var _opens = arr.filter(_isOpen);
+      var _closed = arr.filter(function (e) { return !_isOpen(e); }).sort(function (a, b) { return (+a.closeTs || +a.ts || 0) - (+b.closeTs || +b.ts || 0); });
+      send = _opens.concat(_closed.slice(-Math.max(0, 200 - _opens.length)));
+    } catch (e) { send = arr.slice(-200); } }
     // NO keepalive here: keepalive caps the request BODY at 64KB and silently drops a large journal — that is why active traders' recent trades (and big wins) stopped reaching the server. The page is open during the interval sync, so keepalive isn't needed.
     try { fetch('/api/auth/trades', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ journal: send }) }); } catch (_) {}
   }
@@ -267,7 +274,11 @@
       if (!d || !Array.isArray(d.journal) || !d.journal.length) return;
       var local = []; try { local = JSON.parse(localStorage.getItem('mp_journal') || '[]') || []; } catch (e) {} if (!Array.isArray(local)) local = [];
       var byId = {}, order = [];
-      function put(e) { if (!e || typeof e !== 'object') return; var id = String(e.id || ('_a' + order.length)); var prev = byId[id]; if (prev === undefined) { byId[id] = e; order.push(id); return; } var pc = (prev.status === 'win' || prev.status === 'loss'), cc = (e.status === 'win' || e.status === 'loss'); if (cc || !pc) byId[id] = e; }
+      function put(e) { if (!e || typeof e !== 'object') return; var id = String(e.id || ('_a' + order.length)); var prev = byId[id]; if (prev === undefined) { byId[id] = e; order.push(id); return; } var pc = (prev.status === 'win' || prev.status === 'loss'), cc = (e.status === 'win' || e.status === 'loss');
+        if (cc && !pc) { byId[id] = e; return; }                     // a close always beats an open
+        if (!cc && pc) return;                                       // never let a stale server 'open' overwrite a locally-closed trade
+        if (cc && pc) { byId[id] = e; return; }
+        var pq = +prev.qty, cq = +e.qty; if (isFinite(pq) && isFinite(cq) && cq > pq) return; byId[id] = e; } // both open → keep the more-reduced (partial-close safe)
       local.forEach(put); d.journal.forEach(put); // server applied last → wins same-state ties; a stale local 'open' never overwrites a stored close
       var merged = order.map(function (id) { return byId[id]; });
       merged.sort(function (a, b) { return (+a.ts || 0) - (+b.ts || 0); });

@@ -752,12 +752,8 @@ async function fetchPrice(sym) {
     const r = await fetch('https://api.bybit.com/v5/market/tickers?category=linear&symbol=' + pair, { cf: { cacheTtl: 8 } });
     if (r.ok) { const d = await r.json(); const it = d && d.result && d.result.list && d.result.list[0]; if (it) { const p = +it.lastPrice; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: +(parseFloat(it.price24hPcnt) * 100) }; } }
   } catch (e) {}
-  for (const b of ['https://data-api.binance.vision', 'https://api.binance.com']) {
-    try {
-      const r = await fetch(b + '/api/v3/ticker/24hr?symbol=' + pair, { cf: { cacheTtl: 10 } });
-      if (r.ok) { const d = await r.json(); const p = +d.lastPrice; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: +d.priceChangePercent }; }
-    } catch (e) {}
-  }
+  // (Binance is 403-banned on Cloudflare egress — the two Binance legs here were GUARANTEED failures that only added
+  //  latency + burned subrequests before the reachable venues were tried. Removed. Reachable order: Bybit → Gate → OKX → MEXC.)
   // Bybit spot fallback
   try {
     const r = await fetch('https://api.bybit.com/v5/market/tickers?category=spot&symbol=' + pair, { cf: { cacheTtl: 10 } });
@@ -767,6 +763,17 @@ async function fetchPrice(sym) {
   try {
     const r = await fetch('https://api.gateio.ws/api/v4/spot/tickers?currency_pair=' + s + '_USDT', { cf: { cacheTtl: 10 } });
     if (r.ok) { const d = await r.json(); const it = Array.isArray(d) && d[0]; if (it) { const p = +it.last; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: +it.change_percentage }; } }
+  } catch (e) {}
+  // OKX USDT-perp — broad long-tail coverage CF can reach; closes the gap for tokens listed on OKX but not Bybit/Gate
+  // (the screener surfaces 7 venues; without this those tokens returned no price → P&L frozen at entry).
+  try {
+    const r = await fetch('https://www.okx.com/api/v5/market/ticker?instId=' + s + '-USDT-SWAP', { cf: { cacheTtl: 10 } });
+    if (r.ok) { const d = await r.json(); const it = d && d.data && d.data[0]; if (it) { const p = +it.last, o = +it.open24h; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: (isFinite(o) && o > 0) ? (p / o - 1) * 100 : 0 }; } }
+  } catch (e) {}
+  // MEXC spot (Binance-compatible API, reachable from CF) — last-resort long-tail coverage
+  try {
+    const r = await fetch('https://api.mexc.com/api/v3/ticker/24hr?symbol=' + pair, { cf: { cacheTtl: 10 } });
+    if (r.ok) { const d = await r.json(); const p = +d.lastPrice, o = +d.openPrice; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: (isFinite(o) && o > 0) ? (p / o - 1) * 100 : 0 }; }
   } catch (e) {}
   return null;
 }
@@ -800,10 +807,16 @@ async function handleKlines(url) {
     if (r.ok) { const d = await r.json(); // Gate row: [t, quoteVol, close, high, low, open, baseVol, closed]
       if (Array.isArray(d) && d.length) out = d.map(k => ({ time: +k[0], open: +k[5], high: +k[3], low: +k[4], close: +k[2], vol: +k[6] })).sort((a, b) => a.time - b.time); }
   } catch (e) {}
-  // Bybit spot — last resort
+  // Bybit spot — fallback
   if (!out) try {
     const r = await fetch('https://api.bybit.com/v5/market/kline?category=spot&symbol=' + pair + '&interval=' + (byMap[iv] || '60') + '&limit=1000' + (hasEnd ? '&end=' + end : ''), { cf: { cacheTtl: hasEnd ? 600 : 30 } });
     if (r.ok) { const d = await r.json(); const list = d && d.result && d.result.list; if (list && list.length) out = list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4], vol: +k[5] })).sort((a, b) => a.time - b.time); }
+  } catch (e) {}
+  // OKX USDT-perp — last resort so tokens listed on OKX but absent from Bybit+Gate still get a chart (was a "no data" 404 → chart couldn't load)
+  if (!out) try {
+    const okMap = { '1': '1m', '5': '5m', '15': '15m', '60': '1H', '240': '4H', '1440': '1D', '10080': '1W' };
+    const r = await fetch('https://www.okx.com/api/v5/market/candles?instId=' + sym + '-USDT-SWAP&bar=' + (okMap[iv] || '1H') + '&limit=300' + (hasEnd ? '&after=' + end : ''), { cf: { cacheTtl: hasEnd ? 600 : 12 } });
+    if (r.ok) { const d = await r.json(); const list = d && d.data; if (list && list.length) out = list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4], vol: +k[5] })).filter(b => isFinite(b.time) && b.open > 0).sort((a, b) => a.time - b.time); }
   } catch (e) {}
   if (!out) return J({ error: 'no data' }, 404);
   const maxAge = hasEnd ? 600 : 8; // historical pages are effectively immutable; live tail refreshes ~8s (the client also seeds the forming candle from the WS, so the visible price is always live)
@@ -4285,7 +4298,13 @@ export class UserStore {
       const incoming = Array.isArray(b.journal) ? b.journal : [];
       let stored = []; try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) stored = JSON.parse(r.json) || []; } catch (e) {}
       const byId = new Map();
-      const put = (e) => { if (!e || typeof e !== 'object') return; const id = String(e.id || ('_anon' + byId.size)); const prev = byId.get(id); if (!prev) { byId.set(id, e); return; } const prevClosed = prev.status === 'win' || prev.status === 'loss', curClosed = e.status === 'win' || e.status === 'loss'; if (curClosed || !prevClosed) byId.set(id, e); /* a CLOSED result wins over open; never let a stale 'open' overwrite a stored close */ };
+      const put = (e) => { if (!e || typeof e !== 'object') return; const id = String(e.id || ('_anon' + byId.size)); const prev = byId.get(id); if (!prev) { byId.set(id, e); return; } const prevClosed = prev.status === 'win' || prev.status === 'loss', curClosed = e.status === 'win' || e.status === 'loss';
+        if (curClosed && !prevClosed) { byId.set(id, e); return; }   // a CLOSE always beats an open
+        if (!curClosed && prevClosed) return;                        // never let a stale 'open' overwrite a stored close
+        if (curClosed && prevClosed) { byId.set(id, e); return; }    // both closed → idempotent, incoming wins
+        // both OPEN, same id: keep the MORE-reduced copy (partial closes only shrink qty) so a stale device that hasn't
+        // pulled can't roll a partial-close back to full size. Incoming with MORE qty = older state → keep prev.
+        const _pq = +prev.qty, _cq = +e.qty; if (isFinite(_pq) && isFinite(_cq) && _cq > _pq) return; byId.set(id, e); };
       stored.forEach(put); incoming.forEach(put);                  // incoming applied last → wins same-state ties; stored-only trades are kept (anti-clobber)
       let arr = Array.from(byId.values());
       arr.sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));
@@ -4306,7 +4325,7 @@ export class UserStore {
       if (opensArr.length + closed.length > CAP) {
         const prot = closed.filter(isProt); let rest = closed.filter((e) => !isProt(e));
         const room = Math.max(0, CAP - opensArr.length - prot.length);
-        if (rest.length > room) rest = rest.slice(-room);            // keep most-recent non-protected
+        if (room <= 0) rest = []; else if (rest.length > room) rest = rest.slice(-room); // keep most-recent non-protected (guard room=0: rest.slice(-0) would keep EVERYTHING)
         closed = prot.concat(rest);
       }
       arr = opensArr.concat(closed).sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));

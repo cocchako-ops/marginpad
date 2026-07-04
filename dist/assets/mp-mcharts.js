@@ -268,6 +268,12 @@
   // live ticks
   document.addEventListener('mp:price',function(ev){if(!ov||ov.hidden||!ev.detail)return;panes.forEach(function(p){if(p.sym===ev.detail.sym)live(p);});});
   setInterval(function(){if(!ov||ov.hidden)return;panes.forEach(function(p){
+    if(!p.candle)return;
+    // (1) re-assert autoScale ONLY at the realtime edge — a locked/drifted price scale (e.g. the user dragged the
+    //     price axis) makes the chart LOOK frozen even though live() keeps updating; heal it in ~2s like desktop.
+    try{var vr=p.chart.timeScale().getVisibleLogicalRange();if(!vr||!p.bars||!p.bars.length||vr.to>=p.bars.length-2)p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}
+    // (2) newest bar >1.5 intervals behind now → new bars stopped forming; force a klines re-sync (independent of price freshness)
+    try{if(p.lastBar){var _iv=parseInt(p.tf,10)*60,_nb=Math.floor(Date.now()/1000/_iv)*_iv;if(_nb-p.lastBar.time>_iv*1.5&&(!p._gapT||Date.now()-p._gapT>10000)){p._gapT=Date.now();loadKlines(p);return;}}}catch(e){}
     // liveness: if the WS hasn't ticked this symbol for >8s, pull a REST price so the pane can NEVER freeze on a stale value
     var lp=window.mpLivePrices&&window.mpLivePrices[p.sym];
     if(!lp||!lp.t||Date.now()-lp.t>8000){ try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(e){}

@@ -191,6 +191,16 @@
   var _jrPend=null;
   window.mpJournalRender=function(){var d=document.getElementById('jrDrawer');if(d&&!d.hidden){if(Date.now()-_jrTouchT<800){clearTimeout(_jrPend);_jrPend=setTimeout(render,820);}else render();}}; // defer live re-render past a finger-down so it can't destroy a button mid-tap
   window.mpOpenTrades=openJr;
+  /* clamp an ISOLATED outlier wick (a bad exchange print) that sits >3.5% beyond the candle's own body AND both
+     neighbours — so a phantom wick can't trigger a false liquidation. Ported verbatim from home.js (was missing here). */
+  function sanitizeBars(kd){ if(!kd||kd.length<2)return kd; var TH=0.035;
+    for(var i=0;i<kd.length;i++){var b=kd[i];if(!b)continue;var o=+b.open,c=+b.close;if(!(o>0&&c>0))continue;
+      var bodyLo=Math.min(o,c),bodyHi=Math.max(o,c);
+      var pl=i>0?+kd[i-1].low:bodyLo,nl=i<kd.length-1?+kd[i+1].low:bodyLo;
+      var ph=i>0?+kd[i-1].high:bodyHi,nh=i<kd.length-1?+kd[i+1].high:bodyHi;
+      var refLo=Math.min(bodyLo,pl||bodyLo,nl||bodyLo); if(+b.low>0&&+b.low<refLo*(1-TH))b.low=refLo*(1-TH);
+      var refHi=Math.max(bodyHi,ph||bodyHi,nh||bodyHi); if(+b.high>refHi*(1+TH))b.high=refHi*(1+TH);
+    } return kd; }
   /* Overnight realism: liquidate any open trade that blew through its liq level while the tab was closed.
      This page has no live tick that closes trades, so we replay historical candles since each trade opened. */
   function sweepLiq(){var d=load(),open=d.filter(function(e){return e.status==='open'&&e.sym&&e.sym!=='—'&&e.entry>0;});if(!open.length)return;
@@ -198,9 +208,9 @@
       var lng=e.side!=='short',liq=metrics(e).liq,ageH=(Date.now()-e.ts)/3600000;
       var tf=ageH>72?'1440':ageH>24?'240':ageH>6?'60':ageH>2?'30':'5';
       fetch('/api/klines?symbol='+encodeURIComponent(e.sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
-        if(!kd||!kd.length)return;var ivMs=parseInt(tf,10)*60000,cross=null;
-        for(var i=0;i<kd.length;i++){var b=kd[i],bt=b.time*1000;if(bt+ivMs<e.ts)continue;
-          if(lng?(+b.low<=liq):(+b.high>=liq)){cross=Math.max(bt,e.ts);break;}}
+        if(!kd||!kd.length)return;kd=sanitizeBars(kd);var ivMs=parseInt(tf,10)*60000,cross=null;
+        for(var i=0;i<kd.length;i++){var b=kd[i],bt=b.time*1000;if(bt<e.ts)continue; // only candles that START after the open can backfill a liq — the open candle's pre-open wick must never liquidate (matches home.js)
+          if(lng?(+b.low<=liq&&+b.close<=liq*1.03):(+b.high>=liq&&+b.close>=liq*0.97)){cross=Math.max(bt,e.ts);break;}} // require the CLOSE to confirm — a lone wick (phantom/bad print) must never liquidate
         if(cross==null)return;
         var d2=load(),idx=-1;for(var k=0;k<d2.length;k++){if(d2[k].id===e.id){idx=k;break;}}if(idx<0)return;var t=d2[idx];if(t.status!=='open')return;
         var dir=(t.side!=='short')?1:-1;t.status='loss';t.exit=liq;t.liquidated=true;t.pnl=(+t.margin>0)?-(+t.margin):((t.qty!=null&&isFinite(t.qty))?t.qty*(t.exit-t.entry)*dir:null);t.closeTs=cross;

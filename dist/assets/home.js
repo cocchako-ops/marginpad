@@ -115,6 +115,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function hm(ts){var d=new Date(ts);function z(n){return (n<10?'0':'')+n;}return z(d.getHours())+':'+z(d.getMinutes());}
   var prices={},posTab='open',notified={},chart=null,candle=null,lastBar=null,chartSym='',chartTf='5',plines=[],inited=false,_plc='',_openLines=[],_openMarks=[],klCache={};
   var _lgp=0,_rej=0; // spike filter: last accepted price + consecutive-reject count, so one bad print can't ratchet a fake high/low wick
+  var _clArm={}; // per-trade auto-close arming: require TWO consecutive live ticks to confirm a liq/SL/TP hit so a lone phantom print can't close a healthy position (the WS/REST live price is NOT spike-filtered before checkClose)
   window.mpLivePrices=prices; // shared with the My Trades drawer so it shows live P&L without double-polling
   function openSyms(){var s={};load().forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='—')s[e.sym]=1;});if(chartSym)s[chartSym]=1;return Object.keys(s);}
   // REST is only a FALLBACK: prices[] is shared with the live WS feed (window.mpLivePrices). Never clobber a
@@ -126,7 +127,11 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var tp=e.tp!=null&&(m.long?m.live>=e.tp:m.live<=e.tp);
     var sl=e.stop!=null&&(m.long?m.live<=e.stop:m.live>=e.stop);
     var liqHit=m.liq>0&&(m.long?m.live<=m.liq:m.live>=m.liq); // real liquidation: close immediately as a loss
-    if(!(tp||sl||liqHit))return false;
+    if(!(tp||sl||liqHit)){_clArm[e.id]=0;return false;} // no exit condition → disarm
+    // require TWO consecutive live ticks (~1-2s) to confirm ANY auto-exit — a lone phantom/bad print (the live feed
+    // is not spike-filtered before it reaches here) would otherwise instantly liquidate a healthy high-leverage
+    // position (liq ~0.1% away at 1000×). A real move stays through both ticks; a bad print is gone by the next tick.
+    _clArm[e.id]=(_clArm[e.id]||0)+1; if(_clArm[e.id]<2)return false; _clArm[e.id]=0;
     if(tp){e.status='win';e.exit=e.tp;e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*dir:null;}
     else if(sl){e.status='loss';e.exit=e.stop;e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*dir:null;}
     else{e.status='loss';e.exit=m.liq;e.liquidated=true;e.pnl=(+e.margin>0)?-(+e.margin):((e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*dir:null);} // liquidated = lose the full margin
