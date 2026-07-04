@@ -349,15 +349,16 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   var _klReload=0;
   // Re-fetch the candles (throttled). Used to self-heal the chart after the tab was backgrounded / the feed paused
   // for a while — browsers throttle setInterval in hidden tabs, so liveCandle stops rolling new bars and a gap forms.
-  function reloadKlinesThrottled(){var now=Date.now();if(now-_klReload<12000)return;_klReload=now;loadKlines();}
+  function reloadKlinesThrottled(){var now=Date.now();if(now-_klReload<8000)return;_klReload=now;loadKlines();}
   function liveCandle(){var pd=window.mpPlanLive,pdFresh=(pd&&pd.sym===chartSym&&pd.price>0&&pd.t&&Date.now()-pd.t<6000);
     /* the WS-fed form price (window.mpPlanLive) is the real-time truth — but ONLY while it's fresh. If it goes stale (form feed paused/disconnected) fall back to the chart's own /api/price poll so the chart can NEVER freeze on a stale value. */
     var p=0;
     if(pdFresh)p=pd.price;
     else{var _pr=prices[chartSym],_prT=(_pr&&_pr.p>0)?(_pr.t||0):-1,_pdT=(pd&&pd.sym===chartSym&&pd.price>0)?(pd.t||0):-1;
       if(_prT>=0||_pdT>=0)p=(_prT>=_pdT)?_pr.p:pd.price;}/* both sources stale → use the FRESHER one (the old code preferred the poll map even when it was minutes older than the WS value) */
-    if(!candle||!lastBar||!(p>0))return;var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(Date.now()/1000/ivSec)*ivSec;
-    if(nowBar-lastBar.time>ivSec*1.5){reloadKlinesThrottled();return;} // more than one interval missing → refetch real candles instead of leaving a hole
+    if(!candle||!lastBar)return;var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(Date.now()/1000/ivSec)*ivSec;
+    if(nowBar-lastBar.time>ivSec*1.5){reloadKlinesThrottled();return;} // more than one interval missing → refetch real candles instead of leaving a hole. THIS RUNS EVEN WITH NO LIVE PRICE (checked BEFORE the p>0 bail below) — the old order bailed on a stalled feed and never refetched, so new bars stopped forming and the chart "froze" until the 60s re-sync.
+    if(!(p>0))return; // no usable live price this tick → the gap above is already handled; nothing else to update
     if(nowBar>lastBar.time){var _op=lastBar.close,_spk=(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025),_cl=_spk?_op:p;lastBar={time:nowBar,open:_op,high:Math.max(_op,_cl),low:Math.min(_op,_cl),close:_cl};if(!_spk)_lgp=p;_rej=0;/* new candle opens at the prior close (contiguous — no "from the sky" gap) and ignores a spiked first print */try{chart.timeScale().scrollToRealTime();}catch(e){}_dispP=lastBar.close;try{candle.update(lastBar);}catch(e){}}else{if(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025){if(++_rej<3)return;/* reject a lone >2.5% print (a bad tick that would ratchet a fake wick); accept only if 3 in a row confirm it's a real move */}_lgp=p;_rej=0;lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;startSmoothP();}}
   // ease the forming candle's displayed close toward the true price at 60fps so it glides instead of snapping
   var _smP=false,_dispP=null;
@@ -437,7 +438,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   document.addEventListener('mp:price',function(ev){if(!ev.detail||ev.detail.sym!==chartSym)return;if(_rafC)return;_rafC=true;requestAnimationFrame(function(){_rafC=false;liveCandle();chartHeader();updateZone();renderLastLive();});});
   pollPrices();setInterval(pollPrices,3000);
   tick();setInterval(tick,1000);
-  setInterval(function(){if(document.body.getAttribute('data-prod')==='plan'&&chart&&candle)refreshKlinesQuiet();},60000); // self-heal phantom wicks by re-syncing with true klines every 60s
+  setInterval(function(){if(document.body.getAttribute('data-prod')==='plan'&&chart&&candle)refreshKlinesQuiet();},30000); // self-heal phantom wicks + any freeze by re-syncing with true klines every 30s
   /* CHART LIVENESS WATCHDOG — the permanent cure for "the chart stands still" (esp. on higher TFs like 5m where new bars are
      rare, so the per-new-bar autoscale re-assert almost never fires). Every 5s while the Paper Trade chart is visible:
      (1) re-assert autoScale so a locked/drifted price scale (data updating but chart LOOKS frozen) heals within 5s, not 60s;
@@ -450,6 +451,9 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     try{var vr=chart.timeScale().getVisibleLogicalRange();if(!vr||!bars.length||vr.to>=bars.length-2)chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}
     var _pd=window.mpPlanLive,_srcT=Math.max((_pd&&_pd.sym===chartSym&&_pd.t)||0,(prices[chartSym]&&prices[chartSym].t)||0);
     if(!_srcT||Date.now()-_srcT>9000){_lgp=0;_rej=0;try{if(window.mpWS&&chartSym)window.mpWS.sub(chartSym);}catch(e){}try{pollPrices();}catch(e){}reloadKlinesThrottled();try{chart.timeScale().scrollToRealTime();}catch(e){}}
+    // ALSO: catch a stalled CHART even when the price source LOOKS fresh — if the newest bar is more than ~1.5
+    // intervals behind now, new bars stopped forming (the real "chart froze" symptom). Force a fresh klines sync.
+    try{if(lastBar){var _ivS=parseInt(chartTf,10)*60,_nb=Math.floor(Date.now()/1000/_ivS)*_ivS;if(_nb-lastBar.time>_ivS*1.5)refreshKlinesQuiet();}}catch(e){}
   },5000);
   /* Overnight realism: while the tab is closed the live tick can't watch price, so a position left for hours
      never gets liquidated even if it blew through its liq level. On load (and when the tab regains focus) we
@@ -1678,7 +1682,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function mtInit(){if(mtReady||!chartEl)return;mtReady=true;mtLoadKlines();}
   function mtReset(){if(mtTagEl)mtTagEl.textContent='';mtDraw();}
   function mtLoadKlines(){var s=sym;mtChartSym=s;try{if(window.mpWS)window.mpWS.sub(s);}catch(e){}_mReload=Date.now();fetch('/api/klines?symbol='+encodeURIComponent(s)+'&interval=1').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(s!==mtChartSym)return;if(kd&&kd.length){mtBars=kd;_mlgp=+mtBars[mtBars.length-1].close||0;_mrej=0;mtDraw();}});}
-  function mtLive(){var p=price(sym);if(!mtBars.length||!(p>0))return;if(Date.now()-_mReload>45000){mtLoadKlines();return;}if(_mlgp>0&&Math.abs(p-_mlgp)/_mlgp>0.025){if(++_mrej<3)return;}_mlgp=p;_mrej=0;var last=mtBars[mtBars.length-1];last.close=p;if(p>last.high)last.high=p;if(p<last.low)last.low=p;}
+  function mtLive(){var p=price(sym);if(!mtBars.length)return;if(Date.now()-_mReload>45000){mtLoadKlines();return;}if(!(p>0))return;if(_mlgp>0&&Math.abs(p-_mlgp)/_mlgp>0.025){if(++_mrej<3)return;}_mlgp=p;_mrej=0;var last=mtBars[mtBars.length-1];last.close=p;if(p>last.high)last.high=p;if(p<last.low)last.low=p;}
   function mtPos(){var d=jload();for(var i=d.length-1;i>=0;i--){if(d[i]&&d[i].status==='open'&&d[i].sym===sym)return d[i];}return null;}
   function mtLiqOf(e){var long=e.side!=='short',lv=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);return e.liq||(long?e.entry*(1-(1-mmr)/lv):e.entry*(1+(1-mmr)/lv));}
   function mtRefresh(){mtDraw();}

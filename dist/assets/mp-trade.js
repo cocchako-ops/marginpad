@@ -242,6 +242,34 @@
   connect();
 })();
 
+/* ---------- REST price poll for OPEN-position symbols the WS doesn't cover ----------
+   The WS above only streams 8 majors. Any other open position (e.g. TLM and every altcoin) had NO live
+   source on this page, so My Trades P&L sat frozen at $0 on the homepage / Rekt / Rewards until the user
+   opened Paper Trade (which runs its own poller). This polls /api/price for each open symbol that the WS
+   isn't already keeping fresh, updates mpLivePrices, and re-renders the drawer. */
+(function(){
+  window.mpLivePrices=window.mpLivePrices||{};
+  function openSyms(){try{var j=JSON.parse(localStorage.getItem('mp_journal')||'[]');if(!Array.isArray(j))return [];var s={};j.forEach(function(e){if(e&&e.status==='open'&&e.sym&&e.sym!=='—')s[String(e.sym).toUpperCase()]=1;});return Object.keys(s);}catch(e){return [];}}
+  var _busy={};
+  function poll(){
+    var syms=openSyms();if(!syms.length)return;var now=Date.now();
+    syms.forEach(function(sym){
+      var lp=window.mpLivePrices[sym];
+      if(lp&&lp.t&&(now-lp.t)<6000)return;               // WS or a recent poll already fresh → skip
+      if(_busy[sym])return;_busy[sym]=1;
+      fetch('/api/price?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
+        _busy[sym]=0;var p=j&&(+j.price);if(!(p>0))return;
+        var prev=window.mpLivePrices[sym]||{};
+        window.mpLivePrices[sym]={p:p,t:Date.now(),chg:(j&&j.chg!=null&&isFinite(j.chg))?+j.chg:prev.chg};
+        try{document.dispatchEvent(new CustomEvent('mp:price',{detail:{sym:sym,price:p,chg:window.mpLivePrices[sym].chg}}));}catch(_){}
+        if(window.mpJournalRender)window.mpJournalRender();
+      });
+    });
+  }
+  setInterval(poll,4000);poll();
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)poll();}); // instant refresh when the tab returns
+})();
+
 /* ---------- trader chat ---------- */
 (function(){
   var fab=document.getElementById('chatFab'),box=document.getElementById('chatBox'),gate=document.getElementById('ctGate'),

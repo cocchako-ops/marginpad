@@ -113,8 +113,9 @@
       label(p);
     });
   }
-  function live(p){var pr=price(p.sym);if(!p.candle||!p.lastBar||!(pr>0))return;
-    if(Date.now()-p.reload>60000){loadKlines(p);return;}
+  function live(p){var pr=price(p.sym);if(!p.candle||!p.lastBar)return;
+    if(Date.now()-p.reload>60000){loadKlines(p);return;} // periodic re-sync checked BEFORE the pr>0 bail so a stalled feed still refetches (freeze fix)
+    if(!(pr>0))return;
     // spike filter (same as the desktop/paper-trade/heatmap engines): reject a lone tick that jumps >2.5% from the last
     // accepted price — one bad print would otherwise blow out the forming candle's high/low and compress every other candle
     // (the "candles lose their shape / half candle over time" bug). Accept only if 3 in a row confirm a real move.
