@@ -72,6 +72,54 @@ const CSS = `
     .dfsrow .mech{color:#8a95a1}
   }
   @keyframes dfblink{0%,100%{opacity:1}50%{opacity:.35}}
+  /* ===== hero v2: giant TVL + interactive history chart + mini-chart stat cards ===== */
+  .dfhero2{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:14px;margin:18px 0 8px}
+  @media(max-width:900px){.dfhero2{grid-template-columns:1fr}}
+  .dfhero2-l{background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line-bright);border-radius:16px;padding:18px 20px 12px;position:relative;overflow:hidden}
+  .dfhero2-l .k,.dfmini .k{font-family:'Space Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:#7f8994;font-weight:700}
+  .dftvl-big{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(38px,4.6vw,58px);letter-spacing:-2.5px;line-height:1;margin-top:8px;font-variant-numeric:tabular-nums}
+  .dftvl-chgs{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .dftvl-chgs .pill{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;border-radius:8px;padding:4px 9px;font-variant-numeric:tabular-nums}
+  .dftvl-chgs .pill.up{color:#34d99a;background:rgba(46,189,133,.1);border:1px solid rgba(46,189,133,.25)}
+  .dftvl-chgs .pill.dn{color:#ff7b72;background:rgba(255,98,88,.1);border:1px solid rgba(255,98,88,.25)}
+  .dftvl-chgs .s{font-family:'Space Mono',monospace;font-size:10.5px;color:#7f8994}
+  .dfc-ranges{position:absolute;top:16px;right:16px;display:flex;gap:4px;background:rgba(255,255,255,.03);border:1px solid var(--line-bright);border-radius:9px;padding:3px;z-index:3}
+  .dfc-ranges button{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#8a95a1;background:none;border:none;border-radius:6px;padding:5px 10px;cursor:pointer}
+  .dfc-ranges button.on{background:#c2f64a;color:#0a0b0d}
+  .dfchart{position:relative;height:230px;margin:14px -8px 0}
+  .dfchart svg{display:block;width:100%;height:100%}
+  .dfc-tip{position:absolute;pointer-events:none;background:#14181f;border:1px solid #2f3742;border-radius:9px;padding:7px 10px;font-family:'Space Mono',monospace;font-size:11px;color:#e9e7df;white-space:nowrap;transform:translate(-50%,-115%);box-shadow:0 10px 26px -10px rgba(0,0,0,.8);z-index:4;display:none}
+  .dfc-tip small{display:block;color:#7f8994;font-size:9.5px;margin-top:1px}
+  .dfhero2-r{display:flex;flex-direction:column;gap:12px}
+  .dfmini{flex:1;background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line-bright);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;transition:transform .16s ease,border-color .16s ease}
+  .dfmini:hover{transform:translateY(-2px);border-color:#3a424c}
+  .dfmini .v{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;letter-spacing:-1px;margin-top:6px;font-variant-numeric:tabular-nums}
+  .dfmini .s{font-family:'Space Mono',monospace;font-size:10px;color:#7f8994;margin-top:2px}
+  .dfmini-c{height:48px;margin-top:auto;padding-top:8px}
+  .dfmini-c svg{display:block;width:100%;height:100%}
+  .dfdom{display:flex;height:22px;border-radius:11px;overflow:hidden;border:1px solid var(--line-bright);margin:0 0 8px;background:#0a0c10}
+  .dfdom i{display:block;height:100%;min-width:2px}
+  .dfdom-leg{display:flex;flex-wrap:wrap;gap:7px 14px;margin:8px 0 14px}
+  .dfdom-leg span{font-family:'Space Mono',monospace;font-size:10.5px;color:#aab3bd;display:inline-flex;align-items:center;gap:6px;font-variant-numeric:tabular-nums}
+  .dfdom-leg i{width:9px;height:9px;border-radius:3px;display:inline-block}
+  .dfcat{display:flex;flex-direction:column;gap:7px}
+  .dfcat .cr{display:grid;grid-template-columns:150px 1fr 86px;gap:11px;align-items:center;font-size:13.5px}
+  .dfcat .cr .n{font-family:'Familjen Grotesk',sans-serif;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dfcat .cr .bar{height:9px;border-radius:5px;background:#0a0c10;border:1px solid rgba(255,255,255,.05);overflow:hidden}
+  .dfcat .cr .bar i{display:block;height:100%;background:linear-gradient(90deg,#3fd8e6,#c2f64a)}
+  .dfcat .cr .t{font-family:'Space Mono',monospace;font-weight:800;font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
+  .dfgl{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  @media(max-width:700px){.dfgl{grid-template-columns:1fr}}
+  .dfgl .col{background:var(--panel);border:1px solid var(--line-bright);border-radius:13px;padding:12px 14px}
+  .dfgl .col h4{margin:0 0 9px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+  .dfgl .col.gain h4{color:#34d99a}.dfgl .col.lose h4{color:#ff7b72}
+  .dfgl .r{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13.5px}
+  .dfgl .r:last-child{border-bottom:none}
+  .dfgl .r img{width:20px;height:20px;border-radius:6px;background:var(--line)}
+  .dfgl .r .n{font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dfgl .r .c{font-family:'Space Mono',monospace;font-weight:800;font-size:12.5px;font-variant-numeric:tabular-nums}
+  .dfgl .col.gain .c{color:#34d99a}.dfgl .col.lose .c{color:#ff7b72}
+  @media(max-width:720px){.dfchart{height:170px}.dfc-ranges{top:12px;right:12px}.dfcat .cr{grid-template-columns:110px 1fr 74px;font-size:12.5px}}
   /* mobile (matches the 720px nav breakpoint): stack the hero (a wide "$314.5B" in a half-width card overflowed → page looked zoomed-out) + tighten to the other pages' density */
   @media(max-width:720px){
     .wrap{padding:0 16px}
@@ -148,18 +196,34 @@ ${ld}
     <h1>DeFi Dashboard</h1>
     <p class="lead">Live decentralized-finance overview — total value locked across every chain, the biggest protocols, top blockchains by TVL and the size of the stablecoin market. Aggregated from DefiLlama, updated continuously. Free, no signup.</p>
 
-    <div class="dfhero">
-      <div class="dfbig"><div class="k">Total value locked</div><div class="v" id="dfTvl">…</div><div class="s" id="dfTvlS">across all chains</div></div>
-      <div class="dfbig"><div class="k">Stablecoin supply</div><div class="v" id="dfStb">…</div><div class="s">total circulating</div></div>
-      <div class="dfbig"><div class="k">DEX volume · 24h</div><div class="v" id="dfDexT">…</div><div class="s">all decentralized exchanges</div></div>
-      <div class="dfbig"><div class="k">Protocol fees · 24h</div><div class="v" id="dfFeeT">…</div><div class="s">paid by users, all protocols</div></div>
+    <div class="dfhero2">
+      <div class="dfhero2-l">
+        <div class="k">Total value locked</div>
+        <div class="dftvl-big" id="dfTvl">…</div>
+        <div class="dftvl-chgs"><span class="pill" id="dfChg1" hidden></span><span class="pill" id="dfChg7" hidden></span><span class="s" id="dfTvlS">across all chains</span></div>
+        <div class="dfc-ranges" id="dfRanges"><button type="button" data-r="90">90D</button><button type="button" data-r="365" class="on">1Y</button><button type="button" data-r="max">MAX</button></div>
+        <div class="dfchart" id="dfChart"></div>
+      </div>
+      <div class="dfhero2-r">
+        <div class="dfmini"><div class="k">Stablecoin supply</div><div class="v" id="dfStb">…</div><div class="s">total circulating</div><div class="dfmini-c" id="dfStChart"></div></div>
+        <div class="dfmini"><div class="k">DEX volume · 24h</div><div class="v" id="dfDexT">…</div><div class="s">all decentralized exchanges</div><div class="dfmini-c" id="dfDexChart"></div></div>
+        <div class="dfmini"><div class="k">Protocol fees · 24h</div><div class="v" id="dfFeeT">…</div><div class="s" id="dfFeeTop">paid by users, all protocols</div></div>
+      </div>
     </div>
 
     <div class="dfh2">Top chains by TVL</div>
+    <div class="dfdom" id="dfDom" aria-hidden="true"></div>
+    <div class="dfdom-leg" id="dfDomLeg"></div>
     <div class="dfchain" id="dfChains"><div class="dfload">Loading chains…</div></div>
 
     <div class="dfh2">Biggest DeFi protocols</div>
     <div class="dfpgrid" id="dfProtos"><div class="dfload">Loading protocols…</div></div>
+
+    <div class="dfh2">TVL by category</div>
+    <div class="dfcat" id="dfCats"><div class="dfload">Loading categories…</div></div>
+
+    <div class="dfh2">7-day movers — biggest protocols</div>
+    <div class="dfgl" id="dfMovers"><div class="dfload">Loading…</div></div>
 
     <div class="dfh2">Largest stablecoins</div>
     <div class="dfst" id="dfStables"><div class="dfload">Loading stablecoins…</div></div>
@@ -213,18 +277,33 @@ ${ld}
       return '<div class="dfrow"><div class="n">'+esc(c.name)+'</div><div class="dftrk"><i style="width:'+w+'%"></i></div><div class="t">'+bn(c.tvl)+'</div></div>';
     }).join('');
     document.getElementById('dfProtos').innerHTML=d.topProtos.map(function(p){
-      var lg=p.logo?('<img class="lg" src="'+esc(p.logo)+'" alt="" loading="lazy" onerror="this.style.visibility=\\'hidden\\'">'):'<div class="lg"></div>';
+      var lg=p.logo?('<img class="lg" src="'+esc(p.logo)+'" alt="" loading="lazy" onerror="this.remove()">'):'<div class="lg"></div>';
       return '<div class="dfp">'+lg+'<div class="mid"><div class="nm">'+esc(p.name)+'</div><div class="ct">'+esc(p.cat)+(p.chain?' · '+esc(p.chain):'')+'</div></div><div class="rt"><div class="tv">'+bn(p.tvl)+'</div>'+chgHtml(p.chg7d)+'</div></div>';
     }).join('');
     document.getElementById('dfStables').innerHTML=d.topStables.map(function(s){
       var mech=esc(s.mech||'').replace(/-/g,' ');
       return '<div class="dfsrow"><div class="nm">'+esc(s.name)+'<b>'+esc(s.sym)+'</b></div><div class="mech">'+mech+'</div><div class="c">'+bn(s.circ)+'</div></div>';
     }).join('');
+    // chain dominance stacked bar (top 8 + other)
+    var dom=document.getElementById('dfDom'),leg=document.getElementById('dfDomLeg');
+    if(dom&&leg&&d.topChains.length){var tot=d.totalTvl||d.topChains.reduce(function(a,c){return a+c.tvl;},0)||1;
+      var cols=['#c2f64a','#3fd8e6','#9d7bff','#ffd75a','#ff8c5a','#6aa3ff','#2ebd85','#ff6258'];
+      var acc=0,segs='',lg='';
+      d.topChains.slice(0,8).forEach(function(c,i){var pc=c.tvl/tot*100;acc+=pc;segs+='<i style="width:'+pc.toFixed(2)+'%;background:'+cols[i]+'" title="'+esc(c.name)+' '+pc.toFixed(1)+'%"></i>';lg+='<span><i style="background:'+cols[i]+'"></i>'+esc(c.name)+' '+pc.toFixed(1)+'%</span>';});
+      if(acc<99.5){segs+='<i style="width:'+(100-acc).toFixed(2)+'%;background:#2a313b"></i>';lg+='<span><i style="background:#2a313b"></i>Other '+(100-acc).toFixed(1)+'%</span>';}
+      dom.innerHTML=segs;leg.innerHTML=lg;}
+    // 7-day movers among the biggest protocols
+    var mv=document.getElementById('dfMovers');
+    if(mv&&d.topProtos.length){var wp=d.topProtos.filter(function(p){return p.chg7d!=null&&isFinite(p.chg7d);});
+      var up=wp.slice().sort(function(a,b){return b.chg7d-a.chg7d;}).slice(0,5);
+      var dn=wp.slice().sort(function(a,b){return a.chg7d-b.chg7d;}).slice(0,5);
+      var mrow=function(p){var lg2=p.logo?'<img src="'+esc(p.logo)+'" alt="" loading="lazy" onerror="this.remove()">':'<img alt="">';return '<div class="r">'+lg2+'<span class="n">'+esc(p.name)+'</span><span class="c">'+(p.chg7d>=0?'+':'')+(+p.chg7d).toFixed(1)+'%</span></div>';};
+      mv.innerHTML='<div class="col gain"><h4>Gainers · 7d</h4>'+up.map(mrow).join('')+'</div><div class="col lose"><h4>Losers · 7d</h4>'+dn.map(mrow).join('')+'</div>';}
   }
   fetch('/api/defi/overview',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(render).catch(function(){document.getElementById('dfTvl').textContent='—';});
   // extra datasets: DEX volumes + fees + revenue (who actually earns)
   function xcard(p,label){
-    var lg=p.logo?('<img class="lg" src="'+esc(p.logo)+'" alt="" loading="lazy" onerror="this.style.visibility=\\'hidden\\'">'):'<div class="lg"></div>';
+    var lg=p.logo?('<img class="lg" src="'+esc(p.logo)+'" alt="" loading="lazy" onerror="this.remove()">'):'<div class="lg"></div>';
     var ch=(p.chains&&p.chains.length)?p.chains.slice(0,2).join(' · '):'';
     return '<div class="dfp">'+lg+'<div class="mid"><div class="nm">'+esc(p.name)+'</div><div class="ct">'+esc(p.cat)+(ch?' · '+esc(ch):'')+'</div></div><div class="rt"><div class="v24">'+bn(p.v24)+'</div>'+chgHtml(p.chg)+'</div></div>';
   }
@@ -232,11 +311,69 @@ ${ld}
     if(!d||d.error)return;
     var dt=document.getElementById('dfDexT');if(dt&&d.dexTotal24h!=null)dt.textContent=bn(d.dexTotal24h);
     var ft=document.getElementById('dfFeeT');if(ft&&d.feesTotal24h!=null)ft.textContent=bn(d.feesTotal24h);
+    var ftop=document.getElementById('dfFeeTop');if(ftop&&d.fees&&d.fees[0])ftop.textContent='top earner: '+d.fees[0].name;
     var dx=document.getElementById('dfDexs');if(dx)dx.innerHTML=(d.dexs||[]).map(xcard).join('')||'<div class="dfload">—</div>';
     var fe=document.getElementById('dfFees');if(fe)fe.innerHTML=(d.fees||[]).map(xcard).join('')||'<div class="dfload">—</div>';
     var rv=document.getElementById('dfRev');if(rv)rv.innerHTML=(d.revenue||[]).map(xcard).join('')||'<div class="dfload">—</div>';
   }
   fetch('/api/defi/extra',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(renderExtra).catch(function(){});
+  /* ===== charts (hand-rolled SVG — area with hover crosshair + tooltip, bars for volume) ===== */
+  function dShort(t){var d=new Date(t*1000);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:d.getFullYear()!==new Date().getFullYear()?'2-digit':undefined});}
+  function areaChart(host,pts,opt){opt=opt||{};if(!host||!pts||pts.length<2){return;}host.innerHTML='';
+    var W=host.clientWidth||600,H=host.clientHeight||200,P=opt.mini?2:10;
+    var vs=pts.map(function(p){return p[1];}),mn=Math.min.apply(null,vs),mx=Math.max.apply(null,vs);if(mx===mn)mx=mn+1;
+    var X=function(i){return P+(i/(pts.length-1))*(W-2*P);},Y=function(v){return H-P-((v-mn)/(mx-mn))*(H-2*P-(opt.mini?0:14));};
+    var line='',area='M'+X(0)+','+(H-P);
+    for(var i=0;i<pts.length;i++){var x=X(i).toFixed(1),y=Y(pts[i][1]).toFixed(1);line+=(i?'L':'M')+x+','+y;area+='L'+x+','+y;}
+    area+='L'+X(pts.length-1)+','+(H-P)+'Z';
+    var c=opt.color||'#c2f64a',gid='g'+Math.floor(Math.random()*1e6);
+    var svg='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'
+      +'<defs><linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+c+'" stop-opacity=".28"/><stop offset="1" stop-color="'+c+'" stop-opacity="0"/></linearGradient></defs>'
+      +'<path d="'+area+'" fill="url(#'+gid+')"/>'
+      +'<path d="'+line+'" fill="none" stroke="'+c+'" stroke-width="'+(opt.mini?1.6:2.2)+'" stroke-linejoin="round" stroke-linecap="round"/>'
+      +(opt.mini?'':'<line class="xh" x1="0" x2="0" y1="'+P+'" y2="'+(H-P)+'" stroke="rgba(255,255,255,.25)" stroke-dasharray="3 3" visibility="hidden"/><circle class="dot" r="4" fill="'+c+'" stroke="#0b0d12" stroke-width="2" visibility="hidden"/>')
+      +'</svg>';
+    host.innerHTML=svg;
+    if(opt.mini)return;
+    var tip=document.createElement('div');tip.className='dfc-tip';host.appendChild(tip);
+    var sv=host.querySelector('svg'),xh=sv.querySelector('.xh'),dot=sv.querySelector('.dot');
+    function mv(ev){var r=host.getBoundingClientRect();var cx=ev.touches?ev.touches[0].clientX:ev.clientX;var fx=(cx-r.left)/r.width*W;
+      var i=Math.round((fx-P)/(W-2*P)*(pts.length-1));i=Math.max(0,Math.min(pts.length-1,i));
+      var x=X(i),y=Y(pts[i][1]);
+      xh.setAttribute('x1',x);xh.setAttribute('x2',x);xh.setAttribute('visibility','visible');
+      dot.setAttribute('cx',x);dot.setAttribute('cy',y);dot.setAttribute('visibility','visible');
+      tip.style.display='block';tip.style.left=(x/W*100)+'%';tip.style.top=(y/H*100)+'%';
+      tip.innerHTML='<b>'+bn(pts[i][1])+'</b><small>'+dShort(pts[i][0])+'</small>';}
+    function out(){xh.setAttribute('visibility','hidden');dot.setAttribute('visibility','hidden');tip.style.display='none';}
+    host.addEventListener('mousemove',mv);host.addEventListener('touchstart',mv,{passive:true});host.addEventListener('touchmove',mv,{passive:true});
+    host.addEventListener('mouseleave',out);host.addEventListener('touchend',out);}
+  function barChart(host,pts,opt){opt=opt||{};if(!host||!pts||!pts.length)return;host.innerHTML='';
+    var W=host.clientWidth||300,H=host.clientHeight||48;
+    var vs=pts.map(function(p){return p[1];}),mx=Math.max.apply(null,vs)||1;
+    var bw=W/pts.length,c=opt.color||'#3fd8e6',r='';
+    for(var i=0;i<pts.length;i++){var h=Math.max(1,(pts[i][1]/mx)*(H-2));r+='<rect x="'+(i*bw+bw*0.15).toFixed(1)+'" y="'+(H-h).toFixed(1)+'" width="'+(bw*0.7).toFixed(1)+'" height="'+h.toFixed(1)+'" rx="1" fill="'+c+'" opacity=".75"/>';}
+    host.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none">'+r+'</svg>';}
+  var CH=null,rangeSel='365';
+  function drawBig(){if(!CH)return;var pts=rangeSel==='max'?CH.tvlMax:rangeSel==='90'?CH.tvl1y.slice(-90):CH.tvl1y;areaChart(document.getElementById('dfChart'),pts,{color:'#c2f64a'});}
+  function renderCharts(d){CH=d;
+    // change pills from the daily series
+    var a=d.tvl1y;if(a.length>8){var last=a[a.length-1][1],d1=a[a.length-2][1],d7=a[a.length-8][1];
+      var p1=document.getElementById('dfChg1'),p7=document.getElementById('dfChg7');
+      var c1=(last/d1-1)*100,c7=(last/d7-1)*100;
+      if(p1){p1.hidden=false;p1.className='pill '+(c1>=0?'up':'dn');p1.textContent=(c1>=0?'+':'')+c1.toFixed(2)+'% 24h';}
+      if(p7){p7.hidden=false;p7.className='pill '+(c7>=0?'up':'dn');p7.textContent=(c7>=0?'+':'')+c7.toFixed(2)+'% 7d';}}
+    drawBig();
+    areaChart(document.getElementById('dfStChart'),d.st1y.slice(-90),{color:'#3fd8e6',mini:true});
+    barChart(document.getElementById('dfDexChart'),d.dex180.slice(-90),{color:'#9d7bff'});
+    // category bars
+    var cb=document.getElementById('dfCats');
+    if(cb&&d.cats&&d.cats.length){var cmx=d.cats[0].v||1;
+      cb.innerHTML=d.cats.map(function(x){return '<div class="cr"><span class="n">'+esc(x.c)+'</span><span class="bar"><i style="width:'+Math.max(2,Math.round(x.v/cmx*100))+'%"></i></span><span class="t">'+bn(x.v)+'</span></div>';}).join('');}
+  }
+  fetch('/api/defi/charts',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.tvl1y)renderCharts(d);}).catch(function(){});
+  var rg=document.getElementById('dfRanges');
+  if(rg)rg.addEventListener('click',function(ev){var b=ev.target.closest('button[data-r]');if(!b)return;rangeSel=b.getAttribute('data-r');rg.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});drawBig();});
+  var _rzT=null;window.addEventListener('resize',function(){clearTimeout(_rzT);_rzT=setTimeout(function(){drawBig();if(CH){areaChart(document.getElementById('dfStChart'),CH.st1y.slice(-90),{color:'#3fd8e6',mini:true});barChart(document.getElementById('dfDexChart'),CH.dex180.slice(-90),{color:'#9d7bff'});}},220);});
 })();</script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>

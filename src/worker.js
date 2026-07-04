@@ -585,6 +585,44 @@ async function handleOnchain(env) {
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
+// Historical series for the DeFi dashboard charts (DefiLlama, free): total TVL (full history, downsampled),
+// stablecoin supply (1y), DEX volume (180d) + protocol-category TVL breakdown. Heavy upstreams → 1h edge cache.
+async function handleDefiCharts(env) {
+  const ck = new Request('https://marginpad.io/__defi_charts_v1');
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const h = { headers: { accept: 'application/json' }, cf: { cacheTtl: 3600 } };
+  let out = null;
+  try {
+    const [tvlR, stR, dxR, prR] = await Promise.all([
+      fetch('https://api.llama.fi/v2/historicalChainTvl', h),
+      fetch('https://stablecoins.llama.fi/stablecoincharts/all', h),
+      fetch('https://api.llama.fi/overview/dexs?excludeTotalDataChartBreakdown=true', h),
+      fetch('https://api.llama.fi/protocols', h),
+    ]);
+    const tvlRaw = tvlR.ok ? await tvlR.json() : [];
+    const stRaw = stR.ok ? await stR.json() : [];
+    const dxRaw = dxR.ok ? await dxR.json() : null;
+    const prRaw = prR.ok ? await prR.json() : [];
+    // total TVL: last 365 daily + full history downsampled to ~750 points (range chips slice client-side)
+    const tvlAll = (tvlRaw || []).filter(p => p && p.tvl > 0).map(p => [p.date, Math.round(p.tvl)]);
+    const step = Math.max(1, Math.floor(tvlAll.length / 750));
+    const tvlMax = tvlAll.filter((_, i) => i % step === 0 || i === tvlAll.length - 1);
+    const tvl1y = tvlAll.slice(-365);
+    // stablecoins: peggedUSD daily, last 365
+    const st1y = (stRaw || []).slice(-365).map(p => [ +p.date, Math.round(((p.totalCirculating || {}).peggedUSD) || 0) ]).filter(p => p[1] > 0);
+    // DEX volume: last 180 daily
+    const dex180 = ((dxRaw && dxRaw.totalDataChart) || []).slice(-180).map(p => [ +p[0], Math.round(+p[1] || 0) ]);
+    // category TVL breakdown (top 9) from the full protocols list
+    const cats = {};
+    (prRaw || []).forEach(p => { const c = p && p.category; const v = +(p && p.tvl); if (c && isFinite(v) && v > 0 && c !== 'CEX' && c !== 'Chain') cats[c] = (cats[c] || 0) + v; });
+    const catTop = Object.keys(cats).sort((a, b) => cats[b] - cats[a]).slice(0, 9).map(c => ({ c, v: Math.round(cats[c]) }));
+    out = { ts: Date.now(), tvl1y, tvlMax, st1y, dex180, cats: catTop };
+  } catch (e) {}
+  if (!out || !out.tvl1y.length) return J({ error: 'unavailable' }, 503);
+  const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=3600', ...CORS } });
+  try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
 async function handleDefiOverview(env) {
   const ck = new Request('https://marginpad.io/__defi_overview');
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
@@ -3469,6 +3507,7 @@ export default {
     if (url.pathname === '/api/onchain') return handleOnchain(env);
     if (url.pathname === '/api/defi/overview') return handleDefiOverview(env);
     if (url.pathname === '/api/defi/extra') return handleDefiExtra(env);
+    if (url.pathname === '/api/defi/charts') return handleDefiCharts(env);
     if (url.pathname === '/api/cg/coin') return handleCgCoin(url, env);
     if (url.pathname === '/api/news') return handleNews(env);
     if (url.pathname === '/api/news/read') return handleNewsRead(url, env, ctx);
