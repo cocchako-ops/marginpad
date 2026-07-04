@@ -147,6 +147,52 @@
   .rkt-mini .mr{display:grid;grid-template-columns:70px 1fr 62px;gap:8px;align-items:center;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--lqink2);font-variant-numeric:tabular-nums}
   .rkt-mini .mr span:last-child{text-align:right}
   .rkt-mini .mb{height:6px;border-radius:3px;background:linear-gradient(90deg,#3fd8e6,#c2f64a);opacity:.85}
+  .rkt-cascade .cdot{width:9px;height:9px;border-radius:50%;background:#ff5a4d;box-shadow:0 0 12px #ff5a4d;flex-shrink:0;animation:rktBlink .9s ease-in-out infinite}
+  /* ===== desktop page overhaul — full-width layout + hero (bento-homepage design language) ===== */
+  .rkh{display:none;position:relative;margin:30px 0 34px}
+  @media(min-width:861px){
+    .wrap{max-width:1540px;padding:0 clamp(24px,3vw,54px)} /* blog.css caps .wrap at 760px — the terminal deserves the full screen */
+    .rk-stats,.rk-meter,.rk-meter-lbl{display:none} /* the compact stat slips are replaced by the hero */
+    .rkh{display:block}
+    /* readable inks — several terminal labels were near black-on-black */
+    .rkt-cols{color:#7f8994}
+    .rkt-card h3{color:#8a95a1}
+    .rkt-card h3 small{color:#68737f}
+    .rkt-t{color:#77818d}
+    .rkt-rec .sub{color:#8a95a1}
+    .rkt-coin .cf{color:#7f8994}
+    .rkt-coin .cv{color:#aab3bd}
+    .rkt-mini .mr{color:#aab3bd}
+    .rkt-tape .rk-empty{color:#7f8994}
+    .rkt-rate{color:#8a95a1}
+    .rk-filters{margin:0 0 14px}
+    .rk-filters .rk-fg button{padding:9px 16px;font-size:12px}
+    .rk-q{padding:10px 14px;font-size:13.5px;flex:0 1 220px}
+    /* the SEO prose below the terminal keeps a readable measure while the terminal itself goes full-bleed */
+    article>h2,article>p,article>.rk-links,article>ol,article>ul,article>details{max-width:860px}
+  }
+  .rkh-glow{position:absolute;inset:-90px -50px -40px;z-index:-1;pointer-events:none;background:radial-gradient(52% 62% at 12% 18%,rgba(255,90,77,.13),transparent 65%),radial-gradient(46% 60% at 86% 28%,rgba(46,189,133,.09),transparent 65%)}
+  .rkh-eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#8a95a1;margin-bottom:16px}
+  .rkh-eyebrow i{width:8px;height:8px;border-radius:50%;background:#ff5a4d;box-shadow:0 0 12px #ff5a4d;animation:rktBlink 1.3s ease-in-out infinite}
+  .rkh-grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:34px;align-items:end}
+  @media(max-width:1120px) and (min-width:861px){.rkh-grid{grid-template-columns:1fr;gap:20px;align-items:start}}
+  .rkh-tot{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(64px,7.2vw,106px);letter-spacing:-4px;line-height:.9;color:#f4f6f9;font-variant-numeric:tabular-nums;text-shadow:0 0 70px rgba(255,90,77,.28)}
+  .rkh-tot small{font-size:.4em;letter-spacing:-1px;color:#98a1ab;font-weight:700}
+  .rkh-sub{font-family:'Familjen Grotesk',sans-serif;font-size:16.5px;color:#aab3bd;margin:14px 0 0;max-width:560px;line-height:1.55}
+  .rkh-sub b{color:#eceef2}
+  .rkh-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .rkh-tile{background:linear-gradient(165deg,#151922,#0d0f14);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 16px;transition:transform .18s ease,border-color .18s ease}
+  .rkh-tile:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.16)}
+  .rkh-tile .l{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#7f8994;margin-bottom:8px}
+  .rkh-tile .v{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:23px;letter-spacing:-1px;color:#eceef2;font-variant-numeric:tabular-nums;line-height:1.05;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rkh-tile .v small{font-size:12px;color:#98a1ab;font-weight:600}
+  .rkh-tile.pace .v{color:#ffb347;text-shadow:0 0 20px rgba(255,179,71,.3)}
+  .rkh-meter{grid-column:1/-1;background:linear-gradient(165deg,#151922,#0d0f14);border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:14px 16px}
+  .rkh-meter .bar{display:flex;height:16px;border-radius:8px;overflow:hidden;background:#0a0c10;border:1px solid rgba(255,255,255,.07)}
+  .rkh-meter .bar .bl{background:linear-gradient(90deg,#ff5a4d,#ff8a80);box-shadow:0 0 18px rgba(255,90,77,.4);transition:width .7s ease}
+  .rkh-meter .bar .bs{background:linear-gradient(90deg,#41e3a3,#2ebd85);transition:width .7s ease}
+  .rkh-meter .lbl{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:10.5px;margin-top:8px;font-variant-numeric:tabular-nums}
+  .rkh-meter .lbl .ll{color:#ff8a80}.rkh-meter .lbl .ls{color:#41e3a3}
   .rk-off{display:flex;align-items:center;gap:8px;justify-content:center;background:linear-gradient(180deg,rgba(255,90,77,.14),rgba(255,90,77,.06));border:1px solid rgba(255,90,77,.4);color:var(--lqredg);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.03em;padding:11px;border-radius:12px;margin:0 0 14px;animation:rkoff 1.6s ease-in-out infinite}
   .rk-off[hidden]{display:none}
   @keyframes rkoff{0%,100%{opacity:.65}50%{opacity:1}}
@@ -463,6 +509,24 @@
   <article>
     <h1 class="rk-sr">Live Crypto Liquidations</h1>
 
+    <section class="rkh">
+      <div class="rkh-glow" aria-hidden="true"></div>
+      <div class="rkh-eyebrow"><i></i>Live · every major exchange · last 24 hours</div>
+      <div class="rkh-grid">
+        <div>
+          <div class="rkh-tot"><span id="rkhTot">$0</span><small> liquidated</small></div>
+          <p class="rkh-sub">Every forced liquidation, streamed the moment it happens. When leverage runs out of margin, it prints here — <b>watch who's getting rekt, in real time</b>.</p>
+        </div>
+        <div class="rkh-tiles">
+          <div class="rkh-tile"><div class="l">Positions rekt · 24h</div><div class="v" id="rkhCnt">—</div></div>
+          <div class="rkh-tile"><div class="l">Most rekt · 24h</div><div class="v" id="rkhBig">—</div></div>
+          <div class="rkh-tile pace"><div class="l">Pace · right now</div><div class="v" id="rkhPace">—</div></div>
+          <div class="rkh-tile"><div class="l">Biggest hit · session</div><div class="v" id="rkhRec">—</div></div>
+          <div class="rkh-meter"><div class="bar"><i class="bl" id="rkhML" style="width:50%"></i><i class="bs" id="rkhMS" style="width:50%"></i></div><div class="lbl"><span class="ll" id="rkhMLl">Longs —</span><span class="ls" id="rkhMSl">— Shorts</span></div></div>
+        </div>
+      </div>
+    </section>
+
     <div class="rk-stats">
       <div class="rk-stat tot"><div class="l">Liquidated<span class="ls"> · last 24h</span></div><div class="v" id="rkTot">$0</div></div>
       <div class="rk-stat cnt"><div class="l">Positions<span class="ls"> · last 24h</span></div><div class="v" id="rkCnt">0</div></div>
@@ -483,7 +547,7 @@
     <div class="rk-feed" id="rkFeed"><div class="rk-empty">Loading live liquidations…</div></div>
     <div class="rkt" id="rkTerm">
       <div class="rkt-main">
-        <div class="rkt-cascade" id="rktCascade" hidden>⚡ LIQUIDATION CASCADE — <b id="rktCasV">$0</b>&nbsp;wiped in the last 90 seconds</div>
+        <div class="rkt-cascade" id="rktCascade" hidden><i class="cdot" aria-hidden="true"></i>LIQUIDATION CASCADE — <b id="rktCasV">$0</b>&nbsp;wiped in the last 90 seconds</div>
         <div class="rkt-tapebox">
           <div class="rkt-meta"><span class="rkt-live"><i></i>LIVE TAPE</span><span class="rkt-rate" id="rktRate">—</span></div>
           <div class="rkt-cols"><span>Time</span><span>Venue</span><span>Coin</span><span>Side</span><span>Price</span><span class="r">Wiped</span></div>
@@ -624,6 +688,13 @@
   function deskOn(){return window.matchMedia&&matchMedia('(min-width:861px)').matches;}
   // accurate, all-exchange 24h liquidation totals from Coinglass (the live ticket feed above is the real-time stream; these are the true aggregates)
   function loadLiqStats(){if(document.hidden)return;fetch('/api/cg/liquidations',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){if(!d||!d.market)return;var m=d.market,coins=d.coins||[];var T=document.getElementById('rkTot');if(T)T.textContent='$'+money(m.total||0);var C=document.getElementById('rkCnt');if(C)C.textContent=(+m.count||0).toLocaleString('en-US');var top=coins[0],B=document.getElementById('rkBig');if(B)B.textContent=top?(top.s+' · $'+money(top.liq)):'—';var l=+m.long||0,s=+m.short||0,sum=l+s||1,lp=Math.round(l/sum*100);var ml=document.getElementById('rkML'),ms=document.getElementById('rkMS');if(ml)ml.style.width=lp+'%';if(ms)ms.style.width=(100-lp)+'%';var mll=document.getElementById('rkMLl');if(mll)mll.textContent='Longs rekt '+(sum>1?lp+'%':'—');var msl=document.getElementById('rkMSl');if(msl)msl.textContent=(sum>1?(100-lp)+'%':'—')+' Shorts rekt';
+    // desktop hero mirrors the same 24h aggregates at full size
+    var hT=document.getElementById('rkhTot');if(hT)hT.textContent='$'+money(m.total||0);
+    var hC=document.getElementById('rkhCnt');if(hC)hC.textContent=(+m.count||0).toLocaleString('en-US');
+    var hB=document.getElementById('rkhBig');if(hB)hB.innerHTML=top?(esc(top.s)+' <small>$'+money(top.liq)+'</small>'):'—';
+    var hml=document.getElementById('rkhML'),hms=document.getElementById('rkhMS');if(hml)hml.style.width=lp+'%';if(hms)hms.style.width=(100-lp)+'%';
+    var hmll=document.getElementById('rkhMLl');if(hmll)hmll.textContent='Longs rekt '+(sum>1?lp+'% · $'+money(l):'—');
+    var hmsl=document.getElementById('rkhMSl');if(hmsl)hmsl.textContent=(sum>1?(100-lp)+'% · $'+money(s):'—')+' Shorts rekt';
     window.__cgLast=d;try{deskCoins(d);loadFunding();}catch(_e){} // feed the terminal rail's "Most rekt coins" + funding enrichment
   }).catch(function(){});}
   loadLiqStats();setInterval(loadLiqStats,60000);
@@ -688,7 +759,9 @@
     var pl=document.getElementById('rktPL'),ps=document.getElementById('rktPS');if(pl)pl.style.width=lp+'%';if(ps)ps.style.width=(100-lp)+'%';
     var a=document.getElementById('rktPLl'),b=document.getElementById('rktPSl');if(a)a.textContent='Longs $'+money(L);if(b)b.textContent='$'+money(S)+' Shorts';
     var v=document.getElementById('rktPV');if(v)v.textContent=sum<1000?'Quiet — waiting for liquidations…':(lp>=62?'▼ LONGS ARE GETTING REKT':lp<=38?'▲ SHORTS ARE GETTING REKT':'BALANCED PAIN');
-    var rate=document.getElementById('rktRate');if(rate){var c60=0,s60=0;win10.forEach(function(x){if(x.t>=now-60000){c60++;s60+=x.n;}});rate.textContent=c60+' liq/min · $'+money(s60)+'/min';}
+    var rate=document.getElementById('rktRate');if(rate){var c60=0,s60=0;win10.forEach(function(x){if(x.t>=now-60000){c60++;s60+=x.n;}});rate.textContent=c60+' liq/min · $'+money(s60)+'/min';
+      var hp=document.getElementById('rkhPace');if(hp)hp.innerHTML='$'+money(s60)+'<small>/min · '+c60+' liq</small>';}
+    var hr=document.getElementById('rkhRec');if(hr&&sessBig)hr.innerHTML='<span style="color:'+(sessBig.side==='long_liquidated'?'#ff8a80':'#41e3a3')+'">$'+money(sessBig.notional)+'</span> <small>'+esc(sessBig.symbol)+'</small>';
     var cas=document.getElementById('rktCascade');if(cas){var on=c90>=2000000||n90>=25;cas.hidden=!on;if(on){var cv=document.getElementById('rktCasV');if(cv)cv.textContent='$'+money(c90);}}
     var rec=document.getElementById('rktRec');if(rec&&sessBig){var lg=sessBig.side==='long_liquidated';
       rec.innerHTML='<span class="amt" style="color:'+(lg?'#ff8a80':'#41e3a3')+'">$'+money(sessBig.notional)+'</span><span class="sub">'+esc(sessBig.symbol)+' '+(lg?'LONG':'SHORT')+' liquidated @ $'+px(sessBig.price)+'<br>'+esc(String(sessBig.exchange).toUpperCase())+' · '+ago(sessBig.ts)+' ago</span>';}
