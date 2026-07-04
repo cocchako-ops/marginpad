@@ -680,6 +680,7 @@
       var d=jload();d.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:qtSide,entry:p,stop:isFinite(_sl)?_sl:null,tp:isFinite(_tp)?_tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null});
       if(window.mpLivePrices)window.mpLivePrices[sym]={p:p,t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();
       try{window.mpBuzz&&window.mpBuzz([15]);}catch(e){} // haptic on open (chart quick-trade)
+      try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (parity with the terminal's add())
       try{wins.forEach(updateMTBtn);}catch(e){}
       try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
       msg.style.color='#2ebd85';msg.innerHTML=(qtSide==='long'?'Long':'Short')+' '+sym+' '+L+'&times; opened — see it in <b>My Trades</b>.';

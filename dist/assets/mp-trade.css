@@ -147,3 +147,5 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .jr-stats-lnk{margin-left:auto;margin-right:10px;flex:0 0 auto;display:inline-flex;align-items:center;background:rgba(63,216,230,.09);border:1px solid rgba(63,216,230,.4);color:#3fd8e6;text-decoration:none;border-radius:9px;padding:7px 12px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
 .jr-head{display:flex;align-items:center}
 .jr-head .jr-x{flex:0 0 auto}
+/* live numbers: fixed-width digits so in-place ticks don't wobble the layout */
+.pp-live,.pp-meta b,.jr-stat .v{font-variant-numeric:tabular-nums;}

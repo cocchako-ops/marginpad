@@ -128,7 +128,6 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   // REST is only a FALLBACK: prices[] is shared with the live WS feed (window.mpLivePrices). Never clobber a
   // fresh WS tick with the slower/edge-cached /api/price value — that mismatch was the ±$1k position flicker.
   function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
-  function feeOf(e,exit){var fr=(+e.feeRate>0)?+e.feeRate:0;return (e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*(e.entry+exit)*fr:0;}
   function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross;/* fee-free paper P&L: shows pure price move so it isn't negative at entry */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
   function checkClose(e,m){if(e.status!=='open')return false;var dir=m.long?1:-1;
     var px=ccPx(e.sym,m.live);                                 // spike-validated: a lone >2.5% bad print can't fire an exit
@@ -201,9 +200,25 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(window.mpCloseSheet){window.mpCloseSheet(id,function(){renderLast();renderPos();drawLines();mtCount();});return;} /* partial-close sheet (owner task) — the sheet stores + rerenders */
     var m=metrics(e);e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);buzz([22]); // haptic on manual close
     window._mpSltpHidden=true;store(d);renderLast();renderPos();drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();});
-  function renderPos(){var el=document.getElementById('ptPosList');if(!el)return;var d=load();
-    if(posTab==='open'){var o=d.filter(function(e){return e.status==='open';});el.innerHTML=o.length?o.slice().reverse().map(openCard).join(''):'<div class="pp-empty">No open positions — open one above ↑</div>';}
-    else{var c=d.filter(function(e){return e.status==='win'||e.status==='loss';});el.innerHTML=c.length?c.slice().reverse().map(closedCard).join(''):'<div class="pp-empty">No closed trades yet.</div>';}}
+  var _posSig='';
+  function renderPos(d0){var el=document.getElementById('ptPosList');if(!el)return;var d=d0||load();
+    // same pattern as renderLastLive: rebuild the DOM only when the SET of cards changes (open/close/tab switch);
+    // otherwise update the live numbers IN PLACE. The old unconditional innerHTML rebuild every second killed hover
+    // states, restarted CSS transitions and dropped taps that landed mid-rebuild.
+    if(posTab==='open'){var o=d.filter(function(e){return e.status==='open';});
+      var sig='o|'+o.map(function(e){return e.id;}).join(',');
+      if(sig!==_posSig||!o.length){_posSig=sig;el.innerHTML=o.length?o.slice().reverse().map(openCard).join(''):'<div class="pp-empty">No open positions — open one above ↑</div>';return;}
+      if(el.querySelector('button:hover'))return; // leave the DOM alone while a button is hovered → no lost tap
+      o.forEach(function(e){var card=el.querySelector('.pp[data-id="'+e.id+'"]');if(!card)return;var m=metrics(e);
+        var cls='pp '+(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));if(card.className!==cls)card.className=cls;
+        var lv=card.querySelector('.pp-live');if(lv){var lvv=fp(m.live);if(lv.textContent!==lvv)lv.textContent=lvv;}
+        var big=card.querySelector('.big');if(big){var bv=(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));if(big.textContent!==bv)big.textContent=bv;}
+        var roe=card.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
+        var meta=card.querySelector('.pp-meta');if(meta){var mv='Entry <b>'+fp(e.entry)+'</b> · Size <b>'+(e.qty!=null?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:5}):'—')+'</b> · '+(e.lev||1)+'×<br>Notional <b>'+(m.notional!=null?money(m.notional):'—')+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')<br>SL <b>'+(e.stop!=null?fp(e.stop):'—')+'</b> · TP <b>'+(e.tp!=null?fp(e.tp):'—')+'</b> · '+dur(Date.now()-e.ts)+' · '+hm(e.ts);if(meta.innerHTML!==mv)meta.innerHTML=mv;}
+      });return;}
+    var c=d.filter(function(e){return e.status==='win'||e.status==='loss';});
+    var sigC='c|'+c.map(function(e){return e.id;}).join(',');
+    if(sigC!==_posSig){_posSig=sigC;el.innerHTML=c.length?c.slice().reverse().map(closedCard).join(''):'<div class="pp-empty">No closed trades yet.</div>';}}
   var tabsEl=document.getElementById('ptPosTabs');
   if(tabsEl)tabsEl.addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;tabsEl.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');posTab=b.getAttribute('data-pt');renderPos();});
   var listEl=document.getElementById('ptPosList');
@@ -545,7 +560,6 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
-  function feeOf(e,exit){var fr=(+e.feeRate>0)?+e.feeRate:0;return (e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*(e.entry+exit)*fr:0;}
   function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross;/* fee-free paper P&L: shows pure price move so it isn't negative at entry */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,margin:margin};}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e)
@@ -558,7 +572,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
         +'<div><span>'+MT('jValue','Value')+'</span><b>'+((m.margin!=null)?money(m.margin*((+e.lev>0)?+e.lev:1)):'—')+'</b></div>'
         +'<div><span>'+MT('jQty2','Qty')+'</span><b>'+((e.qty!=null&&isFinite(e.qty))?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:6}):'—')+'</b></div>'
         +'<div><span>'+MT('jLiq2','Liq')+'</span><b>'+fp(m.liq)+'</b></div>'
-        +'<div><span>'+MT('jBuffer','Buffer')+'</span><b>'+pctS(m.liqDist)+'</b></div>'
+        +'<div><span>'+MT('jBuffer','Buffer')+'</span><b class="ppb">'+pctS(m.liqDist)+'</b></div>' /* .ppb = updated in place by the live ticker */
         +'<div><span>SL</span><b>'+(e.stop!=null?fp(e.stop):'—')+'</b></div>'
         +'<div><span>TP</span><b>'+(e.tp!=null?fp(e.tp):'—')+'</b></div>'
       +'</div>'
@@ -658,8 +672,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     // opens (this is what made copied / stale screener setups self-close at open with a random-looking result).
     // Drop it — a long's stop must be below entry & target above; a short's the reverse.
     var _long=side==='long';
-    if(isFinite(sl)&&((_long&&sl>=entry)||(!_long&&sl<=entry)))sl=NaN;
-    if(isFinite(tp)&&((_long&&tp<=entry)||(!_long&&tp>=entry)))tp=NaN;
+    var _drop=[];
+    if(isFinite(sl)&&((_long&&sl>=entry)||(!_long&&sl<=entry))){sl=NaN;_drop.push('stop-loss');}
+    if(isFinite(tp)&&((_long&&tp<=entry)||(!_long&&tp>=entry))){tp=NaN;_drop.push('take-profit');}
+    if(_drop.length&&window.mpLimitToast)window.mpLimitToast('Your '+_drop.join(' and ')+' was on the wrong side of the entry price, so it was removed — the position opened WITHOUT it. Set it again from the ticket (Modify).'); // was a SILENT drop: users believed they had a stop that didn't exist
     var notional=amt*L, qty=notional/entry;
     var liq=side==='long'?entry*(1-(1-mmr)/L):entry*(1+(1-mmr)/L);  // always on the correct side of entry, even at extreme leverage
     var stop=isFinite(sl)?sl:null;                          // optional user SL; the position still auto-liquidates at `liq`
@@ -701,7 +717,24 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   // On touch there is NO :hover, so the 1s interval + mp:price re-render rebuilds #jrList innerHTML between touchstart and
   // the synthesized click → the tapped button (Close/Chart) is destroyed mid-tap and the click is lost. Pin the list for
   // ~800ms after any pointer/touch lands on it so a live re-render can't swallow the tap. (Desktop already had the :hover guard.)
-  function renderLive(){var d=document.getElementById('jrDrawer');if(!d||d.hidden)return;if(Date.now()-_jrTouchT<800)return;if(d.querySelector('button:hover,a:hover,[data-act]:hover,[data-jt]:hover'))return;render();}
+  var _jrSig='';
+  function renderLive(){var d=document.getElementById('jrDrawer');if(!d||d.hidden)return;if(Date.now()-_jrTouchT<800)return;if(d.querySelector('button:hover,a:hover,[data-act]:hover,[data-jt]:hover'))return;
+    // structural sig-diff: full innerHTML rebuild ONLY when a card appears/disappears or the tab changes; otherwise
+    // update the price-driven fields in place. The old every-second rebuild flashed the whole drawer + restarted
+    // card transitions the entire time it was open.
+    var data=load(),open=data.filter(function(e){return e.status==='open';});
+    var sig=jrTab+'|'+open.map(function(e){return e.id;}).join(',')+'|'+(data.length-open.length);
+    if(sig!==_jrSig){_jrSig=sig;render();return;}
+    var listEl=document.getElementById('jrList'),statsEl=document.getElementById('jrStats');
+    if(statsEl){var closed=data.filter(function(e){return e.status==='win'||e.status==='loss';});var wins=closed.filter(function(e){return e.status==='win';}).length;var wr=closed.length?Math.round(wins/closed.length*100):null;var realized=closed.reduce(function(s,e){return s+(+e.pnl||0);},0);var unreal=open.reduce(function(s,e){var mm=metrics(e);return s+(mm.pnl||0);},0);
+      var vs=statsEl.querySelectorAll('.jr-stat .v');if(vs.length>=4){vs[1].textContent=(unreal>=0?'+':'−')+money(Math.abs(unreal)).replace('-','');vs[1].style.color=unreal>=0?'#34d99a':'#ff7b72';vs[3].textContent=(realized>=0?'+':'−')+money(Math.abs(realized)).replace('-','');}}
+    if(listEl&&jrTab==='open')open.forEach(function(e){var card=listEl.querySelector('.pp[data-id="'+e.id+'"]');if(!card)return;var m=metrics(e);
+      var cls='pp '+(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));if(card.className!==cls)card.className=cls;
+      var lv=card.querySelector('.pp-live');if(lv){var lvv=(e.lev||1)+'× · '+fp(m.live);if(lv.textContent!==lvv)lv.textContent=lvv;}
+      var big=card.querySelector('.big');if(big){var bv=(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));if(big.textContent!==bv)big.textContent=bv;}
+      var roe=card.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
+      var bb=card.querySelector('.ppb');if(bb){var bbv=pctS(m.liqDist);if(bb.textContent!==bbv)bb.textContent=bbv;}
+    });}
   var _jrScrollY=0,_jrLocked=false;
   function jrLockBody(){if(window.innerWidth<721&&!_jrLocked){_jrScrollY=window.scrollY||window.pageYOffset||0;document.body.style.top=(-_jrScrollY)+'px';document.documentElement.classList.add('jr-lock');_jrLocked=true;}}
   function jrUnlockBody(){if(_jrLocked){document.documentElement.classList.remove('jr-lock');document.body.style.top='';_jrLocked=false;window.scrollTo(0,_jrScrollY);}}
