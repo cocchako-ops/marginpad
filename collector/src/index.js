@@ -71,11 +71,29 @@ async function main() {
   const p2 = startPhase2(storage, okx ? okx.ctVal : {});  // Phase 2 OI poller + cluster model
   const aggTimer = setInterval(aggregateTick, config.aggIntervalMs);
   const pruneTimer = setInterval(pruneTick, config.pruneIntervalMs);
+  // hourly OI snapshot (one Bybit linear tickers call covers every USDT perp) → powers the screener's OI Δ24h
+  async function oiSnapTick() {
+    try {
+      const r = await fetch('https://api.bybit.com/v5/market/tickers?category=linear');
+      if (!r.ok) return;
+      const j = await r.json();
+      const list = (j && j.result && j.result.list) || [];
+      const ts = Date.now(), rows = [];
+      for (const t of list) {
+        if (!/USDT$/.test(t.symbol || '')) continue;
+        const v = parseFloat(t.openInterestValue);
+        if (v > 0) rows.push({ ts, symbol: String(t.symbol).replace(/USDT$/, ''), oi: v });
+      }
+      if (rows.length) { storage.saveOiSnap(rows); log.info('oi snapshot', { n: rows.length }); }
+    } catch (e) { log.error('oi snapshot failed', { e: String(e) }); }
+  }
+  oiSnapTick();
+  const oiSnapTimer = setInterval(oiSnapTick, 3600000);
   const api = createApiServer({ storage, getStatus, bus });
 
   function shutdown(sig) {
     log.info('shutting down', { sig });
-    clearInterval(aggTimer); clearInterval(pruneTimer);
+    clearInterval(aggTimer); clearInterval(pruneTimer); clearInterval(oiSnapTimer);
     try { p2 && p2.stop(); } catch (e) {}
     collectors.forEach((c) => c.shutdown());
     try { aggregateTick(); } catch {}

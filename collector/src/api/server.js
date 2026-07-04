@@ -107,6 +107,15 @@ export function createApiServer({ storage, getStatus, bus }) {
   // (a normal residential/datacenter IP that ISN'T banned) so the site's screener can aggregate them too. Normalized to
   // the screener's shape; cached in-memory ~30s so the upstreams aren't hammered (the Worker also edge-caches this).
   let _perpCache = { ts: 0, data: null };
+  // screener enrichment: per-symbol 24h liquidations (OUR unique dataset) + OI Δ24h from hourly snapshots
+  app.get('/api/v1/screener-extra', (req, res) => {
+    try {
+      const liq = {};
+      storage.liqBySymbol(Date.now() - 86400000).forEach((r) => { liq[r.s] = { liq: Math.round(r.liq), long: Math.round(r.lng), n: r.n }; });
+      res.set('Cache-Control', 'public, max-age=120');
+      res.json({ updatedAt: Date.now(), oi: storage.oi24h(), liq });
+    } catch (e) { log.error('screener-extra failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
+  });
   app.get('/api/v1/perp-tickers', async (req, res) => {
     const now = Date.now();
     if (_perpCache.data && now - _perpCache.ts < 30000) {

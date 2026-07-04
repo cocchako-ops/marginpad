@@ -127,7 +127,31 @@ export function createSqliteStorage(path) {
   function getClusters(symbol) { ensure(); return db.prepare('SELECT price_bucket AS price, side, est_notional FROM clusters WHERE symbol=? AND est_notional>0 ORDER BY price_bucket').all(symbol); }
   function pruneOi(days) { ensure(); return Number(db.prepare('DELETE FROM oi WHERE ts<?').run(Date.now() - days * 86400000).changes); }
 
+  // ---- screener extra: hourly OI snapshots + per-symbol 24h liquidation aggregates ----
+  function saveOiSnap(rows) { ensure();
+    const st = db.prepare('INSERT INTO oi_snap(ts,symbol,oi_usd) VALUES (?,?,?)');
+    const tx = db.transaction((rs) => { for (const r of rs) st.run(r.ts, r.symbol, r.oi); });
+    tx(rows);
+    db.prepare('DELETE FROM oi_snap WHERE ts<?').run(Date.now() - 50 * 3600000); // keep ~2 days
+  }
+  function oi24h() { ensure();
+    const last = db.prepare('SELECT MAX(ts) t FROM oi_snap').get();
+    if (!last || !last.t) return {};
+    const nowRows = db.prepare('SELECT symbol,oi_usd FROM oi_snap WHERE ts=?').all(last.t);
+    const cut = last.t - 24 * 3600000, out = {};
+    const prevStmt = db.prepare('SELECT oi_usd FROM oi_snap WHERE symbol=? AND ts<=? ORDER BY ts DESC LIMIT 1');
+    for (const r of nowRows) {
+      const p = prevStmt.get(r.symbol, cut);
+      out[r.symbol] = { now: Math.round(r.oi_usd), chg: (p && p.oi_usd > 0) ? +(((r.oi_usd / p.oi_usd) - 1) * 100).toFixed(2) : null };
+    }
+    return out;
+  }
+  function liqBySymbol(since) { ensure();
+    return db.prepare("SELECT symbol s, SUM(notional) liq, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) lng, COUNT(*) n FROM liquidations WHERE ts>=? GROUP BY symbol ORDER BY liq DESC LIMIT 300").all(since);
+  }
+
   return { migrate, insert, aggregateNew, histogram, live, feed, prune, stats,
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi,
+    saveOiSnap, oi24h, liqBySymbol,
     close: () => db.close() };
 }
