@@ -70,6 +70,7 @@ run('Normalise viewport (no-zoom)', 'node build/normalize-viewport.js');
 
 // 10) inject the analytics tag into EVERY html (must run LAST so nothing it touched gets regenerated after)
 run('Inject gtag into every page', 'node build/add-gtag.js');
+run('Inject Sentry reporter into every page', 'node build/add-sentry.js');
 
 // 11) warm the fonts.gstatic.com connection on every font-loading page (LCP perf; idempotent)
 run('Inject font preconnect', 'node build/add-preconnect.js');

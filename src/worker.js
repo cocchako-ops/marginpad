@@ -3273,6 +3273,20 @@ async function resolveProfiles(env, acctKeys) {
   } catch (e) { return {}; }
 }
 
+// Report an uncaught Worker exception to Sentry (custom envelope — no SDK/bundler needed). DSN is publishable.
+function sentryWorker(err, request, epath, emethod) {
+  try {
+    var KEY = 'c13516c9f6d90ffb20d7221e089a2d35', HOST = 'o4511677157015552.ingest.de.sentry.io', PROJ = '4511677162717264';
+    var id = (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '') : (Date.now().toString(16) + Math.random().toString(16).slice(2)).slice(0, 32));
+    var ev = { event_id: id, timestamp: Date.now() / 1000, platform: 'node', level: 'error', server_name: 'cf-worker', environment: 'production',
+      transaction: emethod + ' ' + epath, request: { url: (function(){try{return request.url;}catch(e){return '';}})(), method: emethod },
+      exception: { values: [{ type: (err && err.name) || 'Error', value: String((err && err.message) || err).slice(0, 500) }] },
+      extra: { stack: String((err && err.stack) || '').slice(0, 4000) }, tags: { path: epath, method: emethod } };
+    var body = JSON.stringify({ event_id: id, sent_at: new Date().toISOString(), dsn: 'https://' + KEY + '@' + HOST + '/' + PROJ }) + '\n{"type":"event"}\n' + JSON.stringify(ev);
+    return fetch('https://' + HOST + '/api/' + PROJ + '/envelope/?sentry_key=' + KEY + '&sentry_version=7', { method: 'POST', body: body, headers: { 'content-type': 'application/x-sentry-envelope' } }).catch(function(){});
+  } catch (e) { return Promise.resolve(); }
+}
+
 export default {
   async fetch(request, env, ctx) {
    try {
@@ -3475,6 +3489,7 @@ export default {
       const logErr = async () => { try { let lg = []; try { lg = JSON.parse(await env.STATS.get('srverrlog') || '[]'); } catch (e) {} lg.unshift({ p: epath, mth: emethod, m: detail, ts: Date.now() }); await env.STATS.put('srverrlog', JSON.stringify(lg.slice(0, 30)), { expirationTtl: 604800 }); } catch (e) {} };
       ctx.waitUntil(Promise.all([bump('srverr:total'), bump('srverr:day:' + d, 3456000), logErr()]));
     } } catch (e) {}
+    try { ctx.waitUntil(sentryWorker(err, request, epath, emethod)); } catch (e) {} // full stack + request context to Sentry
     return new Response('Server error', { status: 500, headers: { ...CORS } });
    }
   },
