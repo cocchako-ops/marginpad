@@ -23,7 +23,10 @@ function calcLiquidation(p) {
   const side = (p.get('side') || 'long').toLowerCase();
   if (!isFinite(entry) || !isFinite(lev) || lev <= 0) return J({ error: 'Required: entry, leverage (>0). Optional: mmr, side.' }, 400);
   const long = side !== 'short';
-  const liq = long ? entry * (1 - 1 / lev + mmr) : entry * (1 + 1 / lev - mmr);
+  // Formula matches the paper-trade sim (liqOf/metrics/add) so the calculator and the terminal agree, AND it never
+  // inverts: the old `entry*(1-1/lev+mmr)` printed liq AT/ABOVE entry once lev >= 1/mmr (=200× at mmr 0.5%). This form
+  // keeps a long's liq strictly in (0, entry) and a short's above entry for every leverage up to 1000×.
+  const liq = long ? entry * (1 - (1 - mmr) / lev) : entry * (1 + (1 - mmr) / lev);
   return J({ entry, leverage: lev, maintenanceMarginRate: mmr * 100, side: long ? 'long' : 'short', liquidationPrice: round(liq, 2), distancePct: round((liq - entry) / entry * 100, 2) });
 }
 function calcPositionSize(p) {
@@ -1937,7 +1940,7 @@ function tgCommand(text) {
       const entry = n(1), lev = n(2); if (!isFinite(entry) || !isFinite(lev)) return TG_FORMATS.liq;
       const long = (parts[3] || 'long').toLowerCase() !== 'short';
       const mmr = (isFinite(n(4)) ? n(4) : 0.5) / 100;
-      const liq = long ? entry * (1 - 1 / lev + mmr) : entry * (1 + 1 / lev - mmr);
+      const liq = long ? entry * (1 - (1 - mmr) / lev) : entry * (1 + (1 - mmr) / lev); // matches the sim + never inverts at lev>=200× (see calcLiquidation)
       const dist = (liq - entry) / entry * 100;
       return `🔥 <b>Liquidation · ${long ? 'Long' : 'Short'} ${lev}×</b>\n${DIV}\nEntry      <code>$${tgfmt(entry)}</code>\n💥 Liq      <b>$${tgfmt(liq)}</b>\n📐 Distance <code>${dist.toFixed(2)}%</code>`;
     }

@@ -121,6 +121,7 @@
   function add(){
     var pl=window.mpPlanLive, entry=pl&&pl.price;
     var amt=num('planAmt'), lev=num('planLev');
+    if(isFinite(amt)&&amt>100000)amt=100000; // hard cap: max $100k margin per trade (matches home.js; was missing here)
     if(!isFinite(entry)||entry<=0||!isFinite(amt)||amt<=0)return;
     var seg=document.getElementById('planSeg'); var on=seg&&seg.querySelector('button.on'); var side=on?on.getAttribute('data-side'):'long';
     var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
@@ -203,17 +204,31 @@
     } return kd; }
   /* Overnight realism: liquidate any open trade that blew through its liq level while the tab was closed.
      This page has no live tick that closes trades, so we replay historical candles since each trade opened. */
+  // Offline backfill (Rekt/Rewards have no live tick at all): on load/return, replay candles since the trade opened and
+  // close it at the FIRST of {SL, TP, liquidation} the price reached, at that exact level. Mirrors home.js — this copy
+  // previously detected liquidation ONLY, so an SL/TP hit while the user sat here never fired and a stopped-out position
+  // could get wrongly liquidated for the full margin.
   function sweepLiq(){var d=load(),open=d.filter(function(e){return e.status==='open'&&e.sym&&e.sym!=='—'&&e.entry>0;});if(!open.length)return;
     open.forEach(function(e){if((Date.now()-e.ts)<8*60000)return;
       var lng=e.side!=='short',liq=metrics(e).liq,ageH=(Date.now()-e.ts)/3600000;
+      var stop=(e.stop!=null&&isFinite(+e.stop))?+e.stop:null,tp=(e.tp!=null&&isFinite(+e.tp))?+e.tp:null;
+      var lossExit=stop!=null?(lng?Math.max(stop,liq):Math.min(stop,liq)):liq, isLiq=(lossExit===liq); // SL caps the loss only if hit before liq; else liq
       var tf=ageH>72?'1440':ageH>24?'240':ageH>6?'60':ageH>2?'30':'5';
       fetch('/api/klines?symbol='+encodeURIComponent(e.sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
-        if(!kd||!kd.length)return;kd=sanitizeBars(kd);var ivMs=parseInt(tf,10)*60000,cross=null;
-        for(var i=0;i<kd.length;i++){var b=kd[i],bt=b.time*1000;if(bt<e.ts)continue; // only candles that START after the open can backfill a liq — the open candle's pre-open wick must never liquidate (matches home.js)
-          if(lng?(+b.low<=liq&&+b.close<=liq*1.03):(+b.high>=liq&&+b.close>=liq*0.97)){cross=Math.max(bt,e.ts);break;}} // require the CLOSE to confirm — a lone wick (phantom/bad print) must never liquidate
+        if(!kd||!kd.length)return;kd=sanitizeBars(kd);var cross=null,exitPx=null,liab=false;
+        for(var i=0;i<kd.length;i++){var b=kd[i],bt=b.time*1000;if(bt<e.ts)continue; // only candles that START after the open (pre-open wick guard)
+          var lossHit=lng?(isLiq?(+b.low<=liq&&+b.close<=liq*1.03):(+b.low<=lossExit)):(isLiq?(+b.high>=liq&&+b.close>=liq*0.97):(+b.high>=lossExit)); // liq close-confirmed; SL fills on the wick
+          var tpHit=tp!=null&&(lng?+b.high>=tp:+b.low<=tp);
+          if(!(lossHit||tpHit))continue;
+          if(lossHit&&tpHit){var o=+b.open;if(Math.abs(o-lossExit)<=Math.abs(o-tp)){exitPx=lossExit;liab=isLiq;}else{exitPx=tp;liab=false;}}
+          else if(lossHit){exitPx=lossExit;liab=isLiq;}
+          else{exitPx=tp;liab=false;}
+          cross=Math.max(bt,e.ts);break;}
         if(cross==null)return;
         var d2=load(),idx=-1;for(var k=0;k<d2.length;k++){if(d2[k].id===e.id){idx=k;break;}}if(idx<0)return;var t=d2[idx];if(t.status!=='open')return;
-        var dir=(t.side!=='short')?1:-1;t.status='loss';t.exit=liq;t.liquidated=true;t.pnl=(+t.margin>0)?-(+t.margin):((t.qty!=null&&isFinite(t.qty))?t.qty*(t.exit-t.entry)*dir:null);t.closeTs=cross;
+        var dir=(t.side!=='short')?1:-1,pnl=(t.qty!=null&&isFinite(t.qty))?t.qty*(exitPx-t.entry)*dir:null;
+        if(liab){pnl=(+t.margin>0)?-(+t.margin):pnl;t.liquidated=true;} else if(+t.margin>0&&pnl!=null&&pnl<-(+t.margin))pnl=-(+t.margin);
+        t.status=(pnl!=null&&pnl>0)?'win':'loss';t.exit=exitPx;t.pnl=pnl;t.closeTs=cross;
         store(d2);if(window.mpJournalRender)window.mpJournalRender();});});}
   sweepLiq();
   document.addEventListener('visibilitychange',function(){if(!document.hidden)sweepLiq();});

@@ -448,7 +448,8 @@
   // ever EXPANDS the forming bar's high/low, so a transient bad/low print bakes a phantom wick ("a drop that never
   // happened") into the bar — and once it closes it's stuck forever (no other reload on desktop). A periodic refetch of
   // the authoritative klines erases any such phantom. Mirrors the mobile engine's 60s reload.
-  function refreshData(w){ if(w.dead||!w.candle)return; var sym=w.sym,tf=w.tf;
+  function refreshData(w){ if(w.dead||!w.candle||w._lm)return; var sym=w.sym,tf=w.tf; // w._lm: don't race loadMoreW's pagination
+    try{var _vr=w.chart.timeScale().getVisibleLogicalRange();if(_vr&&w.bars&&w.bars.length&&_vr.to<w.bars.length-3)return;}catch(e){} // user scrolled into history → don't setData under them (drops paginated bars)
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(w.dead||w.sym!==sym||w.tf!==tf||!w.candle||!kd||!kd.length)return;
       kd=sanitizeBars(kd);w.bars=kd;try{w.candle.setData(kd);}catch(e){}w.lastBar=kd[kd.length-1];w._lgp=w.lastBar&&w.lastBar.close||0;w._rej=0;w._disp=null;try{applyInds(w);}catch(e){}

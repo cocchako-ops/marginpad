@@ -115,7 +115,14 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function hm(ts){var d=new Date(ts);function z(n){return (n<10?'0':'')+n;}return z(d.getHours())+':'+z(d.getMinutes());}
   var prices={},posTab='open',notified={},chart=null,candle=null,lastBar=null,chartSym='',chartTf='5',plines=[],inited=false,_plc='',_openLines=[],_openMarks=[],klCache={},_linesSig=null;
   var _lgp=0,_rej=0; // spike filter: last accepted price + consecutive-reject count, so one bad print can't ratchet a fake high/low wick
-  var _clArm={}; // per-trade auto-close arming: require TWO consecutive live ticks to confirm a liq/SL/TP hit so a lone phantom print can't close a healthy position (the WS/REST live price is NOT spike-filtered before checkClose)
+  var _clArm={}; // per-trade LIQUIDATION arming: liq needs 2 consecutive ticks (a sub-2.5% phantom can still cross the ~0.1% liq at 1000×). TP/SL fire on first touch of the spike-validated price below.
+  var _vpx={}; // spike-validated close-check price per symbol: a lone >2.5% jump is held for one tick, so a bad print can't trigger a TP/SL/liq. Idempotent per underlying tick (keyed by prices[sym].t) so N positions on one symbol don't double-count.
+  function ccPx(sym, raw){ if(!(raw>0))return raw; var v=_vpx[sym], t=(prices[sym]&&prices[sym].t)||0;
+    if(!v){_vpx[sym]={p:raw,t:t,rej:0};return raw;}
+    if(v.t===t)return v.p;                                    // same underlying price already validated this cycle
+    v.t=t;
+    if(v.p>0&&Math.abs(raw-v.p)/v.p>0.025){v.rej=(v.rej||0)+1;if(v.rej<2)return v.p;} // hold last-good until a 2nd tick confirms the jump
+    v.p=raw;v.rej=0;return raw; }
   window.mpLivePrices=prices; // shared with the My Trades drawer so it shows live P&L without double-polling
   function openSyms(){var s={};load().forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='—')s[e.sym]=1;});if(chartSym&&!(document.hidden||document.body.getAttribute('data-prod')!=='plan'))s[chartSym]=1;return Object.keys(s);} // OPEN positions always polled (liq safety); the chart-only symbol is dropped when the Paper Trade chart isn't visible so an idle /calculators or /screener or hidden tab with no positions stops the 3s /api/price poll entirely
   // REST is only a FALLBACK: prices[] is shared with the live WS feed (window.mpLivePrices). Never clobber a
@@ -124,17 +131,20 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function feeOf(e,exit){var fr=(+e.feeRate>0)?+e.feeRate:0;return (e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*(e.entry+exit)*fr:0;}
   function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross;/* fee-free paper P&L: shows pure price move so it isn't negative at entry */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
   function checkClose(e,m){if(e.status!=='open')return false;var dir=m.long?1:-1;
-    var tp=e.tp!=null&&(m.long?m.live>=e.tp:m.live<=e.tp);
-    var sl=e.stop!=null&&(m.long?m.live<=e.stop:m.live>=e.stop);
-    var liqHit=m.liq>0&&(m.long?m.live<=m.liq:m.live>=m.liq); // real liquidation: close immediately as a loss
-    if(!(tp||sl||liqHit)){_clArm[e.id]=0;return false;} // no exit condition → disarm
-    // require TWO consecutive live ticks (~1-2s) to confirm ANY auto-exit — a lone phantom/bad print (the live feed
-    // is not spike-filtered before it reaches here) would otherwise instantly liquidate a healthy high-leverage
-    // position (liq ~0.1% away at 1000×). A real move stays through both ticks; a bad print is gone by the next tick.
-    _clArm[e.id]=(_clArm[e.id]||0)+1; if(_clArm[e.id]<2)return false; _clArm[e.id]=0;
-    if(tp){e.status='win';e.exit=e.tp;e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*dir:null;}
-    else if(sl){e.status='loss';e.exit=e.stop;e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*dir:null;}
-    else{e.status='loss';e.exit=m.liq;e.liquidated=true;e.pnl=(+e.margin>0)?-(+e.margin):((e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*dir:null);} // liquidated = lose the full margin
+    var px=ccPx(e.sym,m.live);                                 // spike-validated: a lone >2.5% bad print can't fire an exit
+    var clamp=function(p){return (+e.margin>0&&p!=null&&p<-(+e.margin))?-(+e.margin):p;}; // a paper loss can never exceed the isolated margin (an SL set BEYOND liq used to book more than −margin)
+    var pnlAt=function(exit){return (e.qty!=null&&isFinite(e.qty))?e.qty*(exit-e.entry)*dir:null;};
+    var tp=e.tp!=null&&(m.long?px>=e.tp:px<=e.tp);
+    var sl=e.stop!=null&&(m.long?px<=e.stop:px>=e.stop);
+    var liqHit=m.liq>0&&(m.long?px<=m.liq:px>=m.liq);
+    if(!(tp||sl||liqHit)){_clArm[e.id]=0;return false;}        // no exit condition → disarm the liq counter
+    // TP/SL are touch orders → fill at the EXACT level on the FIRST touch of the validated price (the spike filter above
+    // is the phantom protection; a real move fills immediately with no delay). Liquidation additionally needs 2 consecutive
+    // ticks because a small (<2.5%) phantom can still cross the ~0.1% liq distance at 1000× and slip past the spike filter.
+    if(tp){e.status='win';e.exit=e.tp;e.pnl=clamp(pnlAt(e.tp));_clArm[e.id]=0;}
+    else if(sl){var _p=pnlAt(e.stop);e.status=(_p!=null&&_p>0)?'win':'loss';e.exit=e.stop;e.pnl=clamp(_p);_clArm[e.id]=0;} // a trailing/break-even stop can lock PROFIT → count it as a win
+    else{_clArm[e.id]=(_clArm[e.id]||0)+1;if(_clArm[e.id]<2)return false;_clArm[e.id]=0;
+      e.status='loss';e.exit=m.liq;e.liquidated=true;e.pnl=(+e.margin>0)?-(+e.margin):pnlAt(m.liq);} // liquidated = lose the full margin
     e.closeTs=Date.now();notify(e,tp?'tp':(e.liquidated?'liq':'sl'));return true;}
   function buzz(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
   window.mpBuzz=buzz;
@@ -272,7 +282,8 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     }); }
   // quietly re-sync candles with the true exchange OHLC WITHOUT scrolling the view — self-heals a phantom wick a bad live
   // tick baked into a (now closed) candle. renderKlines() scrolls to realtime so it can't be used for a periodic refresh.
-  function refreshKlinesQuiet(){var sym=chartSym,tf=chartTf;if(!candle||document.hidden)return;
+  function refreshKlinesQuiet(){var sym=chartSym,tf=chartTf;if(!candle||document.hidden||loadingMore)return; // don't race loadMore's pagination (setData mid-append → duplicate/non-monotonic bars)
+    try{var _vr=chart.timeScale().getVisibleLogicalRange();if(_vr&&bars.length&&_vr.to<bars.length-3)return;}catch(e){} // user is scrolled into HISTORY → skip the re-sync (setData would drop their paginated bars + the autoScale re-assert would override their zoom). The live edge they're not watching heals on their return.
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(sym!==chartSym||tf!==chartTf||!candle||!kd||!kd.length)return;
       kd=sanitizeBars(kd);klCache[sym+'|'+tf]=kd;bars=kd;try{candle.setData(kd);}catch(e){}try{chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}/* re-assert autoscale: after a big move (e.g. a +15% pump) the price scale can lock/drift so data keeps updating but the chart LOOKS frozen — re-fitting every quiet refresh self-heals it */lastBar=kd[kd.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;_linesSig=null;try{applySignals();}catch(e){}try{drawLines();}catch(e){}
@@ -364,7 +375,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(!candle||!lastBar)return;var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(Date.now()/1000/ivSec)*ivSec;
     if(nowBar-lastBar.time>ivSec*1.5){reloadKlinesThrottled();return;} // more than one interval missing → refetch real candles instead of leaving a hole. THIS RUNS EVEN WITH NO LIVE PRICE (checked BEFORE the p>0 bail below) — the old order bailed on a stalled feed and never refetched, so new bars stopped forming and the chart "froze" until the 60s re-sync.
     if(!(p>0))return; // no usable live price this tick → the gap above is already handled; nothing else to update
-    if(nowBar>lastBar.time){var _op=lastBar.close,_spk=(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025),_cl=_spk?_op:p;lastBar={time:nowBar,open:_op,high:Math.max(_op,_cl),low:Math.min(_op,_cl),close:_cl};if(!_spk)_lgp=p;_rej=0;/* new candle opens at the prior close (contiguous — no "from the sky" gap) and ignores a spiked first print */try{chart.timeScale().scrollToRealTime();}catch(e){}_dispP=lastBar.close;try{candle.update(lastBar);}catch(e){}}else{if(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025){if(++_rej<3)return;/* reject a lone >2.5% print (a bad tick that would ratchet a fake wick); accept only if 3 in a row confirm it's a real move */}_lgp=p;_rej=0;lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;startSmoothP();}}
+    if(nowBar>lastBar.time){var _op=lastBar.close,_spk=(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025),_cl=_spk?_op:p;lastBar={time:nowBar,open:_op,high:Math.max(_op,_cl),low:Math.min(_op,_cl),close:_cl};if(!_spk)_lgp=p;_rej=0;/* new candle opens at the prior close (contiguous — no "from the sky" gap) and ignores a spiked first print */try{var _vr=chart.timeScale().getVisibleLogicalRange();if(!_vr||!bars.length||_vr.to>=bars.length-2)chart.timeScale().scrollToRealTime();}catch(e){}_dispP=lastBar.close;try{candle.update(lastBar);}catch(e){} /* only snap to the live edge if the user is ALREADY there — don't yank them back while they pan history */}else{if(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025){if(++_rej<3)return;/* reject a lone >2.5% print (a bad tick that would ratchet a fake wick); accept only if 3 in a row confirm it's a real move */}_lgp=p;_rej=0;lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;startSmoothP();}}
   // ease the forming candle's displayed close toward the true price at 60fps so it glides instead of snapping
   var _smP=false,_dispP=null;
   function startSmoothP(){ if(!_smP){_smP=true;requestAnimationFrame(smoothLoopP);} }
@@ -470,18 +481,35 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   /* Overnight realism: while the tab is closed the live tick can't watch price, so a position left for hours
      never gets liquidated even if it blew through its liq level. On load (and when the tab regains focus) we
      replay each open trade against historical candles since it opened and liquidate any that crossed liq. */
+  // Offline backfill: while the tab is away, checkClose can't watch price, so on return we replay candles since the
+  // trade opened and close it at the FIRST of {SL, TP, liquidation} that the price reached — at that exact level. This
+  // used to only detect liquidation, so a position that had hit its SL while you were away got wrongly liquidated for
+  // the full margin instead of stopping out at the (smaller) SL loss.
   function sweepLiq(){var d=load(),open=d.filter(function(e){return e.status==='open'&&e.sym&&e.sym!=='—'&&e.entry>0;});if(!open.length)return;
-    open.forEach(function(e){if((Date.now()-e.ts)<8*60000)return; // skip fresh trades — the live tick owns those (and we don't want a phantom insta-liq right after open)
+    open.forEach(function(e){if((Date.now()-e.ts)<8*60000)return; // skip fresh trades — the live tick owns those (and we don't want a phantom insta-close right after open)
       var lng=e.side!=='short',liq=liqOf(e),ageH=(Date.now()-e.ts)/3600000;
+      var stop=(e.stop!=null&&isFinite(+e.stop))?+e.stop:null,tp=(e.tp!=null&&isFinite(+e.tp))?+e.tp:null;
+      // the loss-side exit hit FIRST on an adverse move: for a long the HIGHER of {SL, liq} (price passes it first going
+      // down) — so an SL above liq caps at the SL, an SL below liq (or none) liquidates at liq. Mirror for a short.
+      var lossExit=stop!=null?(lng?Math.max(stop,liq):Math.min(stop,liq)):liq, isLiq=(lossExit===liq);
       var tf=ageH>72?'1440':ageH>24?'240':ageH>6?'60':ageH>2?'30':'5'; // coarser interval for longer gaps so the returned candles still span the whole period
       fetch('/api/klines?symbol='+encodeURIComponent(e.sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
-        if(!kd||!kd.length)return;kd=sanitizeBars(kd);var ivMs=parseInt(tf,10)*60000,cross=null;
-        for(var i=0;i<kd.length;i++){var b=kd[i],bt=b.time*1000;if(bt<e.ts)continue; // skip the candle that CONTAINS (or precedes) the open — its high/low can include a pre-open wick that never touched the live position (fixed 2026-07-03: a restored short was falsely liquidated by the pre-open pump wick in its own open candle). Only candles that START after the open can backfill a liquidation; the live tick + 8-min grace own the open candle.
-          // require the CLOSE to confirm the cross — a lone wick (often a phantom/bad print, especially after the tab was OFFLINE) must NEVER trigger a liquidation. Real sustained liquidations close beyond the liq price.
-          if(lng?(+b.low<=liq&&+b.close<=liq*1.03):(+b.high>=liq&&+b.close>=liq*0.97)){cross=Math.max(bt,e.ts);break;}}
+        if(!kd||!kd.length)return;kd=sanitizeBars(kd);var cross=null,exitPx=null,liab=false;
+        for(var i=0;i<kd.length;i++){var b=kd[i],bt=b.time*1000;if(bt<e.ts)continue; // only candles that START after the open — the open candle's pre-open wick must never close the position (2026-07-03 fix)
+          // liq requires CLOSE-confirmation (a lone wick, esp. after an offline gap, must never liquidate); SL/TP are
+          // touch orders and fill on the wick (sanitizeBars already clamped isolated bad prints).
+          var lossHit=lng?(isLiq?(+b.low<=liq&&+b.close<=liq*1.03):(+b.low<=lossExit)):(isLiq?(+b.high>=liq&&+b.close>=liq*0.97):(+b.high>=lossExit));
+          var tpHit=tp!=null&&(lng?+b.high>=tp:+b.low<=tp);
+          if(!(lossHit||tpHit))continue;
+          if(lossHit&&tpHit){var o=+b.open;if(Math.abs(o-lossExit)<=Math.abs(o-tp)){exitPx=lossExit;liab=isLiq;}else{exitPx=tp;liab=false;}} // both in one candle → the level closest to the open filled first
+          else if(lossHit){exitPx=lossExit;liab=isLiq;}
+          else{exitPx=tp;liab=false;}
+          cross=Math.max(bt,e.ts);break;}
         if(cross==null)return;
         var d2=load(),idx=-1;for(var k=0;k<d2.length;k++){if(d2[k].id===e.id){idx=k;break;}}if(idx<0)return;var t=d2[idx];if(t.status!=='open')return;
-        var dir=(t.side!=='short')?1:-1;t.status='loss';t.exit=liq;t.liquidated=true;t.pnl=(+t.margin>0)?-(+t.margin):((t.qty!=null&&isFinite(t.qty))?t.qty*(t.exit-t.entry)*dir:null);t.closeTs=cross;notified[t.id]=true;
+        var dir=(t.side!=='short')?1:-1,pnl=(t.qty!=null&&isFinite(t.qty))?t.qty*(exitPx-t.entry)*dir:null;
+        if(liab){pnl=(+t.margin>0)?-(+t.margin):pnl;t.liquidated=true;} else if(+t.margin>0&&pnl!=null&&pnl<-(+t.margin))pnl=-(+t.margin); // clamp any loss to −margin
+        t.status=(pnl!=null&&pnl>0)?'win':'loss';t.exit=exitPx;t.pnl=pnl;t.closeTs=cross;notified[t.id]=true;
         store(d2);renderPos();renderLast();drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();});});}
   sweepLiq();
   document.addEventListener('visibilitychange',function(){if(!document.hidden){sweepLiq();if(chart&&candle){try{chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}reloadKlinesThrottled();try{refreshKlinesQuiet();}catch(e){}}}}); // on return from AFK: re-assert autoscale + force a fresh klines sync so a chart that "froze" while hidden recovers immediately (the throttled reload alone could skip)
