@@ -1328,7 +1328,7 @@ async function handleBug(url, request, env) {
   if (!STATS) return new Response(JSON.stringify({ error: 'no_storage' }), { status: 500, headers: jh });
   const bugPass = (await STATS.get('cfg:bugpass2')) || ''; // SHA-256 of the bro's password (set on first login), '' until set
   const cookOk = !!bugPass && adminCookieHash(request, 'mp_badm') === bugPass;
-  const authed = (k) => isStatsKey(env, k) || isStatsKey(env, qkey) || cookOk; // stats/admin key (watcher/recovery) OR the password cookie (browser)
+  const authed = () => cookOk; // the /api/bug password cookie (mp_badm) is the only way in — no ?key= access
   const readBody = async () => { try { return await request.json(); } catch (e) { return {}; } };
   if (request.method === 'POST' && path === '/api/bug/login') return adminDoLogin(request, env, 'cfg:bugpass2', 'mp_badm', '/api/bug', '/api/bug');
   if (request.method === 'POST' && path === '/api/bug/logout') return adminLogout('mp_badm', '/api/bug');
@@ -1503,14 +1503,14 @@ render();setInterval(reload,15000);
 async function handleStats(url, env, request) {
   const qkey = url.searchParams.get('key');
   const cookieOk = await adminCookieOk(request, env);              // password session = full admin, no key in URL
-  if (!isStatsKey(env, qkey) && !cookieOk) {
-    // The ONLY entry point to admin: this password gate. No link or URL carries the key anymore.
+  if (!cookieOk) {
+    // The ONLY entry point to admin: this password gate. A ?key= in the URL is now ignored.
     const _stored = (env.STATS && await env.STATS.get('cfg:statspass')) || '';
     return new Response(adminLoginHTML('Stats dashboard', !_stored, '/api/stats/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
   }
   if (!env || !env.STATS) return new Response('No storage', { status: 500 });
-  const isAdmin = isAdminKey(env, qkey) || cookieOk;
-  const injKey = isAdmin ? adminKeyOf(env) : statsKeyOf(env);      // handed to the dashboard's own JS server-side; NEVER put in the URL
+  const isAdmin = true;                                           // only the password cookie ever reaches here
+  const injKey = '';                                              // nothing baked into the page — the cookie authenticates every fetch
   if (url.searchParams.get('clearerr') && isAdmin) { try { await env.STATS.delete('srverrlog'); await env.STATS.delete('st:cache'); } catch (e) {} return Response.redirect(url.origin + url.pathname + '?nc=1', 302); } // dismiss the resolved error log
   const htmlResp = (h) => new Response(h, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
   // #6 — lightweight live feed for the dashboard's 12s poller. Direct key reads only (NO list) so it never
@@ -2632,7 +2632,7 @@ async function handlePush(url, env, request) {
 async function handleAiAdmin(url, request, env) {
   const J = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
-  if (!isAdminKey(env, url.searchParams.get('key'))) return J({ error: 'forbidden' }, 403);
+  if (!(await adminCookieOk(request, env))) return J({ error: 'forbidden' }, 403);
   const day = new Date().toISOString().slice(0, 10);
   let cfg = {}; try { cfg = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); } catch (e) {}
   const globalLimit = (cfg && Number.isFinite(cfg.limit)) ? cfg.limit : 10;
@@ -2739,7 +2739,7 @@ async function handleBot(url, request, env, ctx) {
     const tok = getCookie(request, SESS_COOKIE);
     const su = await sessionUser(env, tok);
     let kuid = su && su.id;
-    if (!kuid && isAdminKey(env, url.searchParams.get('key'))) kuid = 'owner-admin'; // owner can mint a key from the dashboard without a login session
+    if (!kuid && (await adminCookieOk(request, env))) kuid = 'owner-admin'; // owner can mint a key from the dashboard without a login session
     if (!kuid) return jb({ error: 'login_required', hint: 'Sign in on marginpad.io first, then generate your key on /trading-api/.' }, 401);
     const r = await doCall('/botkey', { uid: kuid, rotate: request.method === 'POST' && !!b.rotate });
     return jb(r || { error: 'unavailable' }, r && r.key ? 200 : 503);
@@ -2833,7 +2833,7 @@ async function handleAnnounce(url, env, request) {
     try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {}
     return new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20', ...CORS } });
   }
-  if (!isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403);
+  if (!(await adminCookieOk(request, env))) return jr({ error: 'forbidden' }, 403);
   let b = {}; try { b = await request.json(); } catch (e) {}
   const level = ['severe', 'blocker', 'fix'].indexOf(b.level) >= 0 ? b.level : '';
   const rec = { msg: level ? String(b.msg || '').slice(0, 300) : '', level: level, ts: Date.now() };
@@ -2913,7 +2913,7 @@ async function handleUnsubscribe(url, env) {
 }
 // Standalone admin profile page for ONE user (opened in a new tab from the Users list). Key-gated; renders client-side.
 async function handleUserPage(url, env, request) {
-  if (!isAdminKey(env, url.searchParams.get('key')) && !(await adminCookieOk(request, env))) return Response.redirect(url.origin + '/api/stats', 302);
+  if (!(await adminCookieOk(request, env))) return Response.redirect(url.origin + '/api/stats', 302);
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>User · MarginPad Admin</title><style>
 *{box-sizing:border-box}html,body{margin:0}body{background:#0a0b0d;color:#e9e7df;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
 a{color:#c2f64a;text-decoration:none}
@@ -3035,7 +3035,7 @@ h2{font-size:12px;color:#9aa3ad;margin:26px 0 11px;text-transform:uppercase;lett
 </main>
 </div>
 <script>(function(){
-var qs=new URLSearchParams(location.search),key=qs.get('key')||${JSON.stringify(adminKeyOf(env))},email=qs.get('email')||'',id=qs.get('id')||'',uname0=qs.get('username')||'';
+var qs=new URLSearchParams(location.search),key=qs.get('key')||'',email=qs.get('email')||'',id=qs.get('id')||'',uname0=qs.get('username')||'';
 var DATA=null,CLICKS=null,PRICES={},RWD=null;
 function esc(s){return String(s==null?'':s).replace(/[<>&]/g,function(m){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
 function flag(c){return /^[A-Z]{2}$/.test(c)?String.fromCodePoint(127397+c.charCodeAt(0),127397+c.charCodeAt(1)):'';}
@@ -3197,7 +3197,7 @@ async function handleAuth(url, request, env, ctx) {
   const asn = (request.cf && request.cf.asn) || 0;
   const stub = env.USERS.get(env.USERS.idFromName('main'));
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
-  const isAdmin = isAdminKey(env, url.searchParams.get('key'));
+  const isAdmin = (await adminCookieOk(request, env));
 
   if (path === '/dm' || path === '/dm/unread') { // signed-in user's DM thread with the owner (resolve uid server-side from the session cookie)
     const tok = getCookie(request, SESS_COOKIE);
@@ -3329,7 +3329,7 @@ async function handleReward(url, request, env) {
   const ua = request.headers.get('user-agent') || '';
   const cc = (request.cf && request.cf.country) || '';
   const vid = await sha8(ip + '|' + ua); // per-device id (same hashing as stats) — used for the one-address-per-device lock
-  const adminOk = isAdminKey(env, url.searchParams.get('key'));
+  const adminOk = (await adminCookieOk(request, env));
   const raw = request.method === 'POST' ? await request.text() : '';
   let b = {}; try { b = JSON.parse(raw || '{}'); } catch (e) {}
   // public address-existence check (the page calls this on Save for instant feedback)
@@ -3534,7 +3534,7 @@ export default {
     if (url.pathname === '/api/klines') return handleKlines(url);
     if (url.pathname.startsWith('/api/v1/')) return handleCollectorProxy(url, request, env);
     if (url.pathname === '/api/track') return handleTrack(url, request, env, ctx);
-    if (url.pathname === '/api/stats/reset' && isAdminKey(env, url.searchParams.get('key'))) return handleStatsReset(env);
+    if (url.pathname === '/api/stats/reset' && (await adminCookieOk(request, env))) return handleStatsReset(env);
     if (url.pathname === '/api/stats/login') return adminDoLogin(request, env, 'cfg:statspass', 'mp_sadm', '/', url.origin + '/api/stats');
     if (url.pathname === '/api/stats/logout') return adminLogout('mp_sadm', '/');
     if (url.pathname === '/api/stats') return handleStats(url, env, request);
@@ -3549,7 +3549,7 @@ export default {
     if (url.pathname === '/api/announce') return handleAnnounce(url, env, request);
     if (url.pathname === '/api/ai/chart') return handleAiChart(url, request, env);
     if (url.pathname === '/api/ai/admin') return handleAiAdmin(url, request, env);
-    if (url.pathname === '/api/admin/dm' && isAdminKey(env, url.searchParams.get('key'))) { // owner↔user DM: GET = threads (or ?uid= one thread), POST {uid,body} = send
+    if (url.pathname === '/api/admin/dm' && (await adminCookieOk(request, env))) { // owner↔user DM: GET = threads (or ?uid= one thread), POST {uid,body} = send
       const dstub = env.USERS.get(env.USERS.idFromName('main'));
       const dj = (o) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...CORS } });
       if (request.method === 'POST') { let bd = {}; try { bd = await request.json(); } catch (e) {} const r = await dstub.fetch(new Request('https://do/dm/send', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: bd.uid, body: bd.body }) })); return dj(await r.json()); }
@@ -3566,7 +3566,7 @@ export default {
       if (!pos) return new Response(JSON.stringify({ error: 'not_found' }), { status: 404, headers: hdr });
       return new Response(JSON.stringify({ ok: true, pos }), { headers: hdr });
     }
-    if (url.pathname === '/api/admin/pingpos' && isAdminKey(env, url.searchParams.get('key'))) { // owner pings a trader: email with their LIVE ROE + a nudge to come manage the open position
+    if (url.pathname === '/api/admin/pingpos' && (await adminCookieOk(request, env))) { // owner pings a trader: email with their LIVE ROE + a nudge to come manage the open position
       const jh = { 'content-type': 'application/json' };
       if (!env.RESEND_API_KEY) return new Response(JSON.stringify({ error: 'email_not_configured' }), { status: 503, headers: jh });
       let pb = {}; try { pb = await request.json(); } catch (e) {}
@@ -3613,7 +3613,7 @@ export default {
       try { await env.STATS.put(cdKey, String(Date.now()), { expirationTtl: 72000 }); } catch (e) {} // 20h cooldown — no accidental spam
       return new Response(JSON.stringify({ ok: true, to: email, positions: rows.length }), { headers: jh });
     }
-    if (url.pathname === '/api/admin/tgsetwebhook' && isAdminKey(env, url.searchParams.get('key'))) { // (re)register the Telegram webhook WITH the anti-forgery secret token (see handleTelegram)
+    if (url.pathname === '/api/admin/tgsetwebhook' && (await adminCookieOk(request, env))) { // (re)register the Telegram webhook WITH the anti-forgery secret token (see handleTelegram)
       const jh = { 'content-type': 'application/json' };
       if (!env.TELEGRAM_TOKEN) return new Response(JSON.stringify({ error: 'no_bot' }), { status: 503, headers: jh });
       if (!env.TG_WEBHOOK_SECRET) return new Response(JSON.stringify({ error: 'no_secret', hint: 'wrangler secret put TG_WEBHOOK_SECRET first' }), { status: 400, headers: jh });
@@ -3624,7 +3624,7 @@ export default {
       } catch (e) { desc = String(e); }
       return new Response(JSON.stringify({ ok, note: desc }), { headers: jh });
     }
-    if (url.pathname === '/api/admin/tgphoto' && isAdminKey(env, url.searchParams.get('key'))) { // set the channel avatar to the MarginPad logo
+    if (url.pathname === '/api/admin/tgphoto' && (await adminCookieOk(request, env))) { // set the channel avatar to the MarginPad logo
       const jh = { 'content-type': 'application/json' };
       if (!env.TELEGRAM_TOKEN) return new Response(JSON.stringify({ error: 'no_bot' }), { status: 503, headers: jh });
       const channel = env.TG_CHANNEL || (env.STATS && await env.STATS.get('tg:channel'));
@@ -3637,7 +3637,7 @@ export default {
       let ok = false, desc = ''; try { const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setChatPhoto', { method: 'POST', body: fd }); const j = await r.json(); ok = !!j.ok; desc = j.description || ''; } catch (e) { desc = String(e); }
       return new Response(JSON.stringify({ ok, error: ok ? undefined : (desc || 'failed') }), { headers: jh });
     }
-    if (url.pathname === '/api/admin/broadcast' && isAdminKey(env, url.searchParams.get('key'))) { // owner posts an announcement to the Telegram channel from the admin panel
+    if (url.pathname === '/api/admin/broadcast' && (await adminCookieOk(request, env))) { // owner posts an announcement to the Telegram channel from the admin panel
       const jh = { 'content-type': 'application/json' };
       if (!env.TELEGRAM_TOKEN) return new Response(JSON.stringify({ error: 'no_bot' }), { status: 503, headers: jh });
       const channel = env.TG_CHANNEL || (env.STATS && await env.STATS.get('tg:channel')); // secret OR auto-captured id
@@ -3656,11 +3656,11 @@ export default {
     }
     if (url.pathname.startsWith('/api/') && url.pathname !== '/api/') return handleApi(url);
     if (url.pathname === '/telegram/webhook') return handleTelegram(request, env);
-    if (url.pathname === '/chat/reset' && isAdminKey(env, url.searchParams.get('key'))) {
+    if (url.pathname === '/chat/reset' && (await adminCookieOk(request, env))) {
       if (!env.CHAT) return new Response('na', { status: 503 });
       return env.CHAT.get(env.CHAT.idFromName('global')).fetch(new Request('https://do/reset'));
     }
-    if (url.pathname.startsWith('/chat/admin/') && isAdminKey(env, url.searchParams.get('key'))) { // dashboard chat moderation: /history /post /delete
+    if (url.pathname.startsWith('/chat/admin/') && (await adminCookieOk(request, env))) { // dashboard chat moderation: /history /post /delete
       if (!env.CHAT) return new Response('na', { status: 503 });
       const sub = url.pathname.slice('/chat/admin'.length); // -> /history /post /delete
       const body = request.method === 'POST' ? await request.text() : undefined;
