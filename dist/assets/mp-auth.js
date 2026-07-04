@@ -43,7 +43,12 @@
     + '.mpa-dm-send{background:#38bdf8;color:#04121c;font-weight:800;border:none;border-radius:11px;padding:0 16px;cursor:pointer}'
     + '.mpa-dm-send:disabled{opacity:.5;cursor:default}'
     + '.mpa-badge{display:inline-block;min-width:16px;height:16px;line-height:16px;padding:0 4px;margin-left:6px;background:#ff5a4d;color:#fff;border-radius:9px;font-size:10px;font-weight:800;text-align:center;vertical-align:middle}'
-    + '.mpa-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff5a4d;margin-left:5px;vertical-align:middle}';
+    + '.mpa-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff5a4d;margin-left:5px;vertical-align:middle}'
+    // glowing notification ping pinned to the account button's corner — an unread message from the MarginPad team
+    // must be impossible to miss (a static inline dot wasn't)
+    + '.mpa-ping{position:absolute;top:-4px;right:-4px;width:11px;height:11px;border-radius:50%;background:#ff5a4d;border:2px solid #0a0b0d;z-index:6;pointer-events:none;animation:mpaPing 1.5s ease-out infinite}'
+    + '@keyframes mpaPing{0%{box-shadow:0 0 0 0 rgba(255,90,77,.75),0 0 8px rgba(255,90,77,.9)}70%{box-shadow:0 0 0 10px rgba(255,90,77,0),0 0 8px rgba(255,90,77,.9)}100%{box-shadow:0 0 0 0 rgba(255,90,77,0),0 0 8px rgba(255,90,77,.9)}}'
+    + '@media(prefers-reduced-motion:reduce){.mpa-ping{animation:none;box-shadow:0 0 8px rgba(255,90,77,.9)}}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   var modal = document.createElement('div'); modal.className = 'mpa-modal'; modal.hidden = true;
@@ -89,11 +94,14 @@
   }
   function updBadge() {
     var mn = bodyEl.querySelector('#mpaMsgN'); if (mn) { if (DM_UNREAD > 0) { mn.textContent = DM_UNREAD; mn.style.display = ''; } else mn.style.display = 'none'; }
-    // a red dot next to every account button (as a SIBLING so reflect()'s textContent reset can't wipe it)
+    // a GLOWING ping pinned to the account button's corner (appended to the closest button/anchor, not the label,
+    // so reflect()'s textContent reset can't wipe it and the dot sits ON the icon instead of inline after the text)
     Array.prototype.forEach.call(document.querySelectorAll('[data-auth-status]'), function (el) {
-      var sib = el.nextElementSibling, has = sib && sib.classList && sib.classList.contains('mpa-dot');
-      if (DM_UNREAD > 0 && ME) { if (!has) { var d = document.createElement('span'); d.className = 'mpa-dot'; el.insertAdjacentElement('afterend', d); } }
-      else if (has) sib.remove();
+      var host = (el.closest && el.closest('button,a')) || el;
+      var ping = host.querySelector && host.querySelector('.mpa-ping');
+      if (DM_UNREAD > 0 && ME) {
+        if (!ping) { try { if (getComputedStyle(host).position === 'static') host.style.position = 'relative'; } catch (e) {} var d = document.createElement('span'); d.className = 'mpa-ping'; d.setAttribute('aria-label', 'New message'); host.appendChild(d); }
+      } else if (ping) ping.remove();
     });
   }
   function checkDm() {
