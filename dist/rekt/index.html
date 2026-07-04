@@ -99,6 +99,13 @@
   .rkt-live i{width:7px;height:7px;border-radius:50%;background:#2ebd85;box-shadow:0 0 9px #2ebd85;animation:rktBlink 1.4s ease-in-out infinite}
   @keyframes rktBlink{0%,100%{opacity:1}50%{opacity:.35}}
   .rkt-rate{font-family:'Space Mono',monospace;font-size:11px;color:var(--lqink3);font-variant-numeric:tabular-nums}
+  .rkt-meta-r{display:inline-flex;align-items:center;gap:12px}
+  .rkt-px3{display:inline-flex;gap:14px;font-family:'Space Mono',monospace;font-size:11px;color:#8a95a1;font-variant-numeric:tabular-nums}
+  .rkt-px3 b{color:#cdd3da;font-weight:700}
+  @media(max-width:1120px){.rkt-px3{display:none}}
+  .rkt-snd{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.04em;color:#8a95a1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 10px;cursor:pointer;transition:.15s}
+  .rkt-snd:hover{color:#cdd3da}
+  .rkt-snd.on{color:#c2f64a;border-color:rgba(194,246,74,.45);background:rgba(194,246,74,.07);box-shadow:0 0 14px -4px rgba(194,246,74,.4)}
   .rkt-cols{display:grid;grid-template-columns:66px 82px minmax(64px,1fr) 100px 104px 118px;gap:8px;align-items:center;padding:8px 14px;border-bottom:1px solid var(--lqline);font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--lqink3)}
   .rkt-cols .r,.rkt-r .rkt-n{text-align:right}
   .rkt-tape{max-height:calc(100vh - 330px);min-height:430px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#2c3540 transparent}
@@ -148,12 +155,12 @@
   .rkt-mini .mr span:last-child{text-align:right}
   .rkt-mini .mb{height:6px;border-radius:3px;background:linear-gradient(90deg,#3fd8e6,#c2f64a);opacity:.85}
   .rkt-cascade .cdot{width:9px;height:9px;border-radius:50%;background:#ff5a4d;box-shadow:0 0 12px #ff5a4d;flex-shrink:0;animation:rktBlink .9s ease-in-out infinite}
-  /* ===== desktop page overhaul — full-width layout + hero (bento-homepage design language) ===== */
-  .rkh{display:none;position:relative;margin:30px 0 34px}
+  /* ===== page overhaul — full-width layout + hero (bento-homepage design language) ===== */
+  .rkh{display:block;position:relative;margin:22px 0 26px}
+  .rk-stats,.rk-meter,.rk-meter-lbl{display:none} /* the old compact stat slips are replaced by the hero on ALL sizes */
   @media(min-width:861px){
     .wrap{max-width:1540px;padding:0 clamp(24px,3vw,54px)} /* blog.css caps .wrap at 760px — the terminal deserves the full screen */
-    .rk-stats,.rk-meter,.rk-meter-lbl{display:none} /* the compact stat slips are replaced by the hero */
-    .rkh{display:block}
+    .rkh{margin:30px 0 34px}
     /* readable inks — several terminal labels were near black-on-black */
     .rkt-cols{color:#7f8994}
     .rkt-card h3{color:#8a95a1}
@@ -171,11 +178,28 @@
     /* the SEO prose below the terminal keeps a readable measure while the terminal itself goes full-bleed */
     article>h2,article>p,article>.rk-links,article>ol,article>ul,article>details{max-width:860px}
   }
-  .rkh-glow{position:absolute;inset:-90px -50px -40px;z-index:-1;pointer-events:none;background:radial-gradient(52% 62% at 12% 18%,rgba(255,90,77,.13),transparent 65%),radial-gradient(46% 60% at 86% 28%,rgba(46,189,133,.09),transparent 65%)}
+  /* full-viewport ambient glow — fixed behind everything, red (longs pain) upper-left, green lower-right; static = cheap */
+  .rkh-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(58% 52% at 8% 6%,rgba(255,90,77,.20),transparent 62%),radial-gradient(50% 55% at 94% 38%,rgba(46,189,133,.14),transparent 62%),radial-gradient(40% 45% at 55% 96%,rgba(255,179,71,.07),transparent 60%)}
+  .rkh-src{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px}
+  .rkh-src .t{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7f8994;margin-right:2px}
+  .rkh-src .chip{display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.03em;color:#aab3bd;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:6px 12px}
+  .rkh-src .chip i{width:6px;height:6px;border-radius:50%;background:#3a424c;flex-shrink:0;transition:.3s}
+  .rkh-src .chip.on{color:#eceef2;border-color:rgba(46,189,133,.4)}
+  .rkh-src .chip.on i{background:#2ebd85;box-shadow:0 0 8px #2ebd85}
   .rkh-eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#8a95a1;margin-bottom:16px}
   .rkh-eyebrow i{width:8px;height:8px;border-radius:50%;background:#ff5a4d;box-shadow:0 0 12px #ff5a4d;animation:rktBlink 1.3s ease-in-out infinite}
-  .rkh-grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:34px;align-items:end}
-  @media(max-width:1120px) and (min-width:861px){.rkh-grid{grid-template-columns:1fr;gap:20px;align-items:start}}
+  .rkh-grid{display:grid;grid-template-columns:1fr;gap:20px;align-items:start}
+  @media(min-width:1121px){.rkh-grid{grid-template-columns:minmax(0,1fr) 400px;gap:34px;align-items:end}}
+  /* mobile hero: same design, compact scale */
+  @media(max-width:860px){
+    .rkh-tot{font-size:clamp(46px,13vw,64px);letter-spacing:-2.5px}
+    .rkh-sub{font-size:14.5px}
+    .rkh-eyebrow{font-size:9.5px;letter-spacing:.16em}
+    .rkh-tiles{gap:8px}
+    .rkh-tile{padding:12px 13px}
+    .rkh-tile .v{font-size:19px}
+    .rkh-src .chip{padding:5px 10px;font-size:10px}
+  }
   .rkh-tot{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(64px,7.2vw,106px);letter-spacing:-4px;line-height:.9;color:#f4f6f9;font-variant-numeric:tabular-nums;text-shadow:0 0 70px rgba(255,90,77,.28)}
   .rkh-tot small{font-size:.4em;letter-spacing:-1px;color:#98a1ab;font-weight:700}
   .rkh-sub{font-family:'Familjen Grotesk',sans-serif;font-size:16.5px;color:#aab3bd;margin:14px 0 0;max-width:560px;line-height:1.55}
@@ -516,6 +540,7 @@
         <div>
           <div class="rkh-tot"><span id="rkhTot">$0</span><small> liquidated</small></div>
           <p class="rkh-sub">Every forced liquidation, streamed the moment it happens. When leverage runs out of margin, it prints here — <b>watch who's getting rekt, in real time</b>.</p>
+          <div class="rkh-src" id="rkhSrc"><span class="t">Streaming live from</span><span class="chip" data-x="bybit"><i></i>Bybit</span><span class="chip" data-x="okx"><i></i>OKX</span><span class="chip" data-x="bitmex"><i></i>BitMEX</span><span class="chip" data-x="deribit"><i></i>Deribit</span><span class="chip" data-x="bitfinex"><i></i>Bitfinex</span></div>
         </div>
         <div class="rkh-tiles">
           <div class="rkh-tile"><div class="l">Positions rekt · 24h</div><div class="v" id="rkhCnt">—</div></div>
@@ -549,7 +574,7 @@
       <div class="rkt-main">
         <div class="rkt-cascade" id="rktCascade" hidden><i class="cdot" aria-hidden="true"></i>LIQUIDATION CASCADE — <b id="rktCasV">$0</b>&nbsp;wiped in the last 90 seconds</div>
         <div class="rkt-tapebox">
-          <div class="rkt-meta"><span class="rkt-live"><i></i>LIVE TAPE</span><span class="rkt-rate" id="rktRate">—</span></div>
+          <div class="rkt-meta"><span class="rkt-live"><i></i>LIVE TAPE</span><span class="rkt-px3" id="rktPx3"></span><span class="rkt-meta-r"><span class="rkt-rate" id="rktRate">—</span><button type="button" class="rkt-snd" id="rktSnd" aria-pressed="false" title="Sound alert on liquidations ≥ $250K"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg><span>Sound</span></button></span></div>
           <div class="rkt-cols"><span>Time</span><span>Venue</span><span>Coin</span><span>Side</span><span>Price</span><span class="r">Wiped</span></div>
           <div class="rkt-tape" id="rktTape"><div class="rk-empty">Loading live liquidations…</div></div>
         </div>
@@ -741,7 +766,7 @@
     sessB[n>=1e6?3:n>=1e5?2:n>=1e4?1:0]++;
     if(!sessBig||n>+sessBig.notional)sessBig=e;
     win10.push({t:e.ts,n:n,l:e.side==='long_liquidated'});}
-  function deskPush(fresh){fresh.forEach(deskAgg);if(!deskOn()||!tapeEl)return;if(paused){deskSide();return;}
+  function deskPush(fresh){fresh.forEach(deskAgg);try{sndCheck(fresh);}catch(_e){}if(!deskOn()||!tapeEl)return;if(paused){deskSide();return;}
     var f=fresh.filter(matchF).sort(function(a,b){return a.ts-b.ts;});
     if(f.length){if(tapeEl.querySelector('.rk-empty'))tapeEl.innerHTML='';
       f.forEach(function(e){tapeEl.insertBefore(tRow(e,true),tapeEl.firstChild);});
@@ -768,8 +793,10 @@
     var ex=document.getElementById('rktEx');if(ex){var ks=Object.keys(sessEx).sort(function(x,y){return sessEx[y]-sessEx[x];}).slice(0,5);var mx=sessEx[ks[0]]||1;
       ex.innerHTML=ks.length?ks.map(function(k){return '<div class="mr"><span>'+esc(k)+'</span><i class="mb" style="width:'+Math.max(4,Math.round(sessEx[k]/mx*100))+'%"></i><span>$'+money(sessEx[k])+'</span></div>';}).join(''):'—';}
     var hs=document.getElementById('rktHist');if(hs){var lbl=['&lt;$10K','$10–100K','$100K–1M','&gt;$1M'],mx2=Math.max.apply(null,sessB.concat([1]));
-      hs.innerHTML=lbl.map(function(l,i){return '<div class="mr"><span>'+l+'</span><i class="mb" style="width:'+Math.max(3,Math.round(sessB[i]/mx2*100))+'%"></i><span>'+sessB[i]+'</span></div>';}).join('');}}
-  setInterval(function(){if(!document.hidden&&deskOn())deskSide();},5000); // rolling windows decay even when the feed is quiet
+      hs.innerHTML=lbl.map(function(l,i){return '<div class="mr"><span>'+l+'</span><i class="mb" style="width:'+Math.max(3,Math.round(sessB[i]/mx2*100))+'%"></i><span>'+sessB[i]+'</span></div>';}).join('');}
+    // hero source chips: a venue lights green the moment it actually prints in the live stream (live proof, not a claim)
+    var srcBox=document.getElementById('rkhSrc');if(srcBox){for(var xk in sessEx){var ch=srcBox.querySelector('.chip[data-x="'+String(xk).toLowerCase()+'"]');if(ch)ch.classList.add('on');}}}
+  setInterval(function(){if(!document.hidden)deskSide();},5000); // rolling windows decay even when quiet; also feeds the hero pace tile + venue chips on MOBILE (rail is display:none there but the writes are cheap)
   function deskCoins(d){var box=document.getElementById('rktCoins');if(!box||!d||!d.coins||!d.coins.length)return;
     box.innerHTML=d.coins.slice(0,8).map(function(c){var t=(+c.long||0)+(+c.short||0)||1,lp2=Math.round((+c.long||0)/t*100);var f=fund[c.s];
       var fh=(f!=null&&isFinite(f))?'<span class="cf'+(Math.abs(f)>=0.05?' hot':'')+'">fund '+(f>0?'+':'')+(+f).toFixed(3)+'%</span>':'';
@@ -781,6 +808,22 @@
     fetch('/api/v1/perp-tickers').then(function(r){return r.ok?r.json():null;}).then(function(j){if(!j)return;
       [].concat(j.binance||[],j.bitget||[]).forEach(function(t){if(t&&t.s&&t.f!=null&&fund[t.s]==null)fund[t.s]=+t.f;});
       if(window.__cgLast)deskCoins(window.__cgLast);}).catch(function(){});}
+  /* ---- sound alert: a short WebAudio thud when a liquidation ≥ $250K prints (opt-in, persisted) ---- */
+  var sndOn=false;try{sndOn=localStorage.getItem('mp_rk_snd')==='1';}catch(_e){}
+  var sndBtn=document.getElementById('rktSnd'),_ac=null;
+  function sndPaint(){if(sndBtn){sndBtn.classList.toggle('on',sndOn);sndBtn.setAttribute('aria-pressed',sndOn?'true':'false');}}
+  function thud(big){try{_ac=_ac||new (window.AudioContext||window.webkitAudioContext)();if(_ac.state==='suspended')_ac.resume();
+    var o=_ac.createOscillator(),g=_ac.createGain(),t=_ac.currentTime;
+    o.type='sine';o.frequency.setValueAtTime(big?110:150,t);o.frequency.exponentialRampToValueAtTime(38,t+0.22);
+    g.gain.setValueAtTime(big?0.24:0.14,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.3);
+    o.connect(g);g.connect(_ac.destination);o.start(t);o.stop(t+0.32);}catch(_e){}}
+  if(sndBtn){sndPaint();sndBtn.addEventListener('click',function(){sndOn=!sndOn;try{localStorage.setItem('mp_rk_snd',sndOn?'1':'0');}catch(_e){}sndPaint();if(sndOn)thud(false);});}
+  function sndCheck(fresh){if(!sndOn)return;var mx=0;fresh.forEach(function(e){if(+e.notional>mx)mx=+e.notional;});if(mx>=250000)thud(mx>=1000000);}
+  /* ---- live BTC/ETH/SOL context strip in the tape header (WS-fed, 1s throttle) ---- */
+  var _px3T=0;
+  document.addEventListener('mp:price',function(){var n=Date.now();if(n-_px3T<1000)return;_px3T=n;
+    var el=document.getElementById('rktPx3'),P=window.mpLivePrices||{};if(!el)return;
+    el.innerHTML=['BTC','ETH','SOL'].map(function(s){var p=P[s]&&P[s].p;return p>0?(s+' <b>$'+px(p)+'</b>'):'';}).filter(Boolean).join('');});
   // ---- share ----
   function toast(msg){var t=document.createElement('div');t.className='rk-toast';t.textContent=msg;document.body.appendChild(t);requestAnimationFrame(function(){t.classList.add('on');});setTimeout(function(){t.classList.remove('on');},1900);setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},2200);}
   // ---- build a shareable ticket IMAGE so X/socials show the actual receipt, not a generic link card ----
