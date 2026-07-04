@@ -73,8 +73,10 @@ export function createApiServer({ storage, getStatus, bus }) {
   // Market-wide recent liquidations (all symbols) — powers the global floating feed on the site.
   app.get('/api/v1/feed', (req, res) => {
     const min = parseFloat(req.query.min) || 0;
-    const limit = Math.min(parseInt(req.query.limit, 10) || 30, 200);
-    try { res.set('Cache-Control', 'public, max-age=2'); res.json({ events: storage.feed(min, limit) }); }
+    const since = parseInt(req.query.since, 10) || 0; // ms timestamp — backfill mode ("everything since UTC midnight")
+    const cap = since > 0 ? 3000 : 200;               // a history pull may span the whole day; the live poll stays small
+    const limit = Math.min(parseInt(req.query.limit, 10) || 30, cap);
+    try { res.set('Cache-Control', since > 0 ? 'public, max-age=30' : 'public, max-age=2'); res.json({ events: storage.feed(min, limit, since) }); }
     catch (e) { log.error('feed failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 

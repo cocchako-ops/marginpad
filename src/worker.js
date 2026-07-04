@@ -838,7 +838,7 @@ async function handleCollectorProxy(url, request, env) {
   // Edge-cache TTL per path: /recent aggregate is slow-moving (45s); the live /feed gets a tiny 3s cache so a
   // crowd of rekt pollers (every ~4s each) collapses to one collector fetch per 3s instead of N — protects the VPS.
   const p = url.pathname;
-  const ttl = p.endsWith('/recent') ? 45 : p.endsWith('/feed') ? 3 : 0;
+  const ttl = p.endsWith('/recent') ? 45 : p.endsWith('/feed') ? (url.searchParams.get('since') ? 60 : 3) : 0; // a since= backfill is a big historical pull — cache it a full minute so page loads share one collector hit
   try {
     const r = await fetch(base + p + url.search, {
       headers: { 'x-api-key': request.headers.get('x-api-key') || '' },

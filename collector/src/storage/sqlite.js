@@ -92,10 +92,13 @@ export function createSqliteStorage(path) {
   }
 
   // Market-wide recent liquidations (all symbols) for the global floating feed.
-  function feed(minNotional = 0, limit = 30) {
+  function feed(minNotional = 0, limit = 30, since = 0) {
     ensure();
+    const cap = since > 0 ? 3000 : 200; // backfill mode (since=ms) may return the whole day; live poll stays small
+    if (since > 0) return db.prepare(`SELECT ts,exchange,symbol,side,price,qty,notional FROM liquidations WHERE notional>=? AND ts>=? ORDER BY ts DESC LIMIT ?`)
+      .all(minNotional, since, Math.min(Number(limit) || 30, cap));
     return db.prepare(`SELECT ts,exchange,symbol,side,price,qty,notional FROM liquidations WHERE notional>=? ORDER BY ts DESC LIMIT ?`)
-      .all(minNotional, Math.min(Number(limit) || 30, 200));
+      .all(minNotional, Math.min(Number(limit) || 30, cap));
   }
 
   function prune(days) {

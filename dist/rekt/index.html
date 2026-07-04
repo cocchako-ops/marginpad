@@ -546,7 +546,7 @@
           <div class="rkh-tile"><div class="l">Positions rekt · 24h</div><div class="v" id="rkhCnt">—</div></div>
           <div class="rkh-tile"><div class="l">Most rekt · 24h</div><div class="v" id="rkhBig">—</div></div>
           <div class="rkh-tile pace"><div class="l">Pace · right now</div><div class="v" id="rkhPace">—</div></div>
-          <div class="rkh-tile"><div class="l">Biggest hit · session</div><div class="v" id="rkhRec">—</div></div>
+          <div class="rkh-tile"><div class="l">Biggest hit · today</div><div class="v" id="rkhRec">—</div></div>
           <div class="rkh-meter"><div class="bar"><i class="bl" id="rkhML" style="width:50%"></i><i class="bs" id="rkhMS" style="width:50%"></i></div><div class="lbl"><span class="ll" id="rkhMLl">Longs —</span><span class="ls" id="rkhMSl">— Shorts</span></div></div>
         </div>
       </div>
@@ -584,10 +584,10 @@
           <div class="rkt-press-bar"><i class="pl" id="rktPL" style="width:50%"></i><i class="ps" id="rktPS" style="width:50%"></i></div>
           <div class="rkt-press-lbl"><span class="l" id="rktPLl">Longs —</span><span class="s" id="rktPSl">— Shorts</span></div>
           <div class="rkt-press-verdict" id="rktPV">Waiting for data…</div></div>
-        <div class="rkt-card"><h3>Biggest hit <small>this session</small></h3><div class="rkt-rec" id="rktRec"><span class="sub">No liquidations yet…</span></div></div>
+        <div class="rkt-card"><h3>Biggest hit <small>today · UTC</small></h3><div class="rkt-rec" id="rktRec"><span class="sub">No liquidations yet…</span></div></div>
         <div class="rkt-card"><h3>Most rekt coins <small>24h · click to filter</small></h3><div id="rktCoins"><span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--lqink3)">Loading…</span></div></div>
-        <div class="rkt-card"><h3>Venue split <small>this session</small></h3><div class="rkt-mini" id="rktEx">—</div></div>
-        <div class="rkt-card"><h3>Size distribution <small>this session</small></h3><div class="rkt-mini" id="rktHist">—</div></div>
+        <div class="rkt-card"><h3>Venue split <small>today · UTC</small></h3><div class="rkt-mini" id="rktEx">—</div></div>
+        <div class="rkt-card"><h3>Size distribution <small>today · UTC</small></h3><div class="rkt-mini" id="rktHist">—</div></div>
       </aside>
     </div>
 
@@ -746,6 +746,17 @@
   if(rkP)rkP.addEventListener('click',function(){paused=!paused;rkP.classList.toggle('on',paused);rkP.setAttribute('aria-pressed',paused?'true':'false');rkP.textContent=paused?'▶ Live':'⏸ Pause';if(!paused){render();try{deskRenderAll();}catch(_e){}}});
   try{matchMedia('(min-width:861px)').addEventListener('change',function(){render();try{deskRenderAll();}catch(_e){}});}catch(_e){} // breakpoint cross → hand the stream to the other renderer
   poll();setInterval(poll,4000);
+  // backfill TODAY (UTC) from the collector's history so the terminal doesn't start from zero on page open —
+  // the live poll only carries the last ~80 events; this seeds the day's aggregates (venue split, size histogram,
+  // biggest hit, source chips) + fills the tape. One 60s-edge-cached pull shared by all visitors.
+  (function backfill(){var mid=new Date();mid.setUTCHours(0,0,0,0);
+    fetch('/api/v1/feed?min=1000&limit=3000&since='+mid.getTime()).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
+      if(!j||!Array.isArray(j.events)||!j.events.length)return;
+      j.events.forEach(function(e){if(!validSym(e.symbol))return;var k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;if(!seen[k]){seen[k]=1;all.push(e);try{deskAgg(e);}catch(_e){}}});
+      all.sort(function(a,b){return b.ts-a.ts;});if(all.length>200)all=all.slice(0,200);
+      firstRender=true; // a thousand backfilled rows must not slam-animate
+      render();try{deskRenderAll();}catch(_e){}
+    });})();
   document.addEventListener('visibilitychange',function(){if(!document.hidden){poll();loadLiqStats();}}); // returning to the tab → refresh immediately instead of waiting up to 4s (the hidden-guarded polls were paused)
   setInterval(function(){if(document.hidden)return;document.querySelectorAll('.tk-ago[data-ts]').forEach(function(el){var t=+el.getAttribute('data-ts');if(t)el.textContent=ago(t)+' ago';});},1000);
   /* ===== DESKTOP LIQUIDATION TERMINAL (≥861px) =====
