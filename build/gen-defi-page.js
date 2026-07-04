@@ -119,6 +119,13 @@ const CSS = `
   .dfgl .r .n{font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .dfgl .r .c{font-family:'Space Mono',monospace;font-weight:800;font-size:12.5px;font-variant-numeric:tabular-nums}
   .dfgl .col.gain .c{color:#34d99a}.dfgl .col.lose .c{color:#ff7b72}
+  /* standard standalone header (same as /coins/ and /news/) — overrides blog.css's mono link row */
+  header.dfhead{display:flex;align-items:center;justify-content:space-between;padding:16px 0 14px;border-bottom:none}
+  .hnav{display:flex;align-items:center;gap:16px}
+  .hnav a{font-family:'Familjen Grotesk',sans-serif;font-size:14px;font-weight:600;color:#9aa3ad;text-decoration:none;text-transform:none;letter-spacing:0;margin:0}
+  .hnav a:hover{color:#e9e7df}
+  .hauth{background:none;border:1px solid #2f3742;color:#e9e7df;border-radius:9px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Familjen Grotesk',sans-serif}
+  @media(max-width:640px){.hide-m{display:none}}
   @media(max-width:720px){.dfchart{height:170px}.dfc-ranges{top:12px;right:12px}.dfcat .cr{grid-template-columns:110px 1fr 74px;font-size:12.5px}}
   /* mobile (matches the 720px nav breakpoint): stack the hero (a wide "$314.5B" in a half-width card overflowed → page looked zoomed-out) + tighten to the other pages' density */
   @media(max-width:720px){
@@ -158,7 +165,7 @@ let html = `<!DOCTYPE html>
 <html lang="en">
 <head>${GTAG}
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>${title} | MarginPad</title>
 <meta name="description" content="${desc}" />
 <meta name="keywords" content="${kw}" />
@@ -176,9 +183,8 @@ let html = `<!DOCTYPE html>
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="manifest" href="/site.webmanifest" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/fonts.css" />
 <link rel="stylesheet" href="/assets/blog.css" />
 <style>${CSS}</style>
 ${ld}
@@ -186,9 +192,9 @@ ${ld}
 <body>
 <div class="df-glow" aria-hidden="true"></div>
 <div class="wrap">
-  <header>
+  <header class="dfhead">
     <a class="brand" href="/">MARGIN<b style="color:#c2f64a">PAD</b></a>
-    <nav class="nav"><a href="/markets/">Markets</a><a href="/liquidations/">Liquidations</a><a href="/funding/">Funding</a><a href="/defi/">DeFi</a><a href="/screener">Screener</a></nav>
+    <div class="hnav"><a href="/coins/">Markets</a><a href="/rekt/">Liquidations</a><a class="hide-m" href="/funding/">Funding</a><a class="hide-m" href="/screener">Screener</a><button class="hauth" type="button" data-auth-open data-auth-status>Sign in</button></div>
   </header>
   <div class="crumb"><a href="/">Home</a> / DeFi</div>
   <article>
@@ -375,6 +381,7 @@ ${ld}
   if(rg)rg.addEventListener('click',function(ev){var b=ev.target.closest('button[data-r]');if(!b)return;rangeSel=b.getAttribute('data-r');rg.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});drawBig();});
   var _rzT=null;window.addEventListener('resize',function(){clearTimeout(_rzT);_rzT=setTimeout(function(){drawBig();if(CH){areaChart(document.getElementById('dfStChart'),CH.st1y.slice(-90),{color:'#3fd8e6',mini:true});barChart(document.getElementById('dfDexChart'),CH.dex180.slice(-90),{color:'#9d7bff'});}},220);});
 })();</script>
+<script defer src="/assets/mp-auth.js"></script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>
