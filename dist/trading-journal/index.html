@@ -160,6 +160,11 @@
     </div>
 
     <h2>All closed trades</h2>
+    <div id="trCtl" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px">
+      <select id="trFsym" style="background:#0c0f13;border:1px solid #2f3742;border-radius:9px;color:#e9e7df;padding:8px 10px;font-size:13px"><option value="">All coins</option></select>
+      <select id="trFside" style="background:#0c0f13;border:1px solid #2f3742;border-radius:9px;color:#e9e7df;padding:8px 10px;font-size:13px"><option value="">Long + Short</option><option value="long">Long only</option><option value="short">Short only</option></select>
+      <button id="trCsv" type="button" style="margin-left:auto;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;color:#c2f64a;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer">⬇ Export CSV</button>
+    </div>
     <div class="tablewrap">
       <div class="tablescroll">
         <table id="trades"></table>
@@ -229,10 +234,11 @@
 
   $('out').hidden=false;
 
-  // edge verdict
+  // edge verdict — below 10 trades a verdict is statistically meaningless (and "you're a loser" at n=1 is just mean)
   var posEdge=exp>0&&pf>1;
   var vEl=$('verdict'),vTxt=$('verdictTxt');
-  if(posEdge){vEl.className='verdict good';vTxt.innerHTML='<b>Positive edge.</b> Your expectancy is '+money(exp)+' per trade and your profit factor is '+(isFinite(pf)?pf.toFixed(2):'∞')+' — over this sample, your trades make money.';}
+  if(all.length<10){vEl.className='verdict flat';vTxt.innerHTML='<b>Too early to tell.</b> '+all.length+' closed trade'+(all.length===1?'':'s')+' isn\'t enough to judge an edge — most metrics need 10+ trades to mean anything. Keep practicing; the verdict unlocks as your sample grows.';}
+  else if(posEdge){vEl.className='verdict good';vTxt.innerHTML='<b>Positive edge.</b> Your expectancy is '+money(exp)+' per trade and your profit factor is '+(isFinite(pf)?pf.toFixed(2):'∞')+' — over this sample, your trades make money.';}
   else if(exp>=0||pf>=1){vEl.className='verdict flat';vTxt.innerHTML='<b>Roughly break-even.</b> Expectancy is '+money(exp)+'/trade and profit factor '+(isFinite(pf)?pf.toFixed(2):'∞')+'. The edge is marginal — tighten your losers or let winners run.';}
   else{vEl.className='verdict bad';vTxt.innerHTML='<b>No edge yet.</b> Expectancy is '+money(exp)+' per trade and profit factor '+pf.toFixed(2)+' — this sample loses money. Review your worst trades below.';}
 
@@ -355,19 +361,39 @@
     $('bySym').innerHTML=rows;
   })();
 
-  // ===== all trades =====
+  // ===== all trades — with date, sortable headers, symbol/side filter and CSV export =====
   (function(){
     function fmtP(x){if(x==null)return '—';x=+x;return x>=1000?x.toLocaleString('en-US',{maximumFractionDigits:2}):(+x).toPrecision(6).replace(/\.?0+$/,'');}
-    var rows='<thead><tr><th>Coin</th><th>Side</th><th>Entry</th><th>Exit</th><th>ROE</th><th>P&amp;L</th></tr></thead><tbody>';
-    all.slice().reverse().forEach(function(e){
-      rows+='<tr><td>'+(e.sym||'?')+'</td>'
-        +'<td><span class="'+(e._long?'lg':'sh')+'">'+(e._long?'LONG':'SHORT')+'</span></td>'
-        +'<td>'+fmtP(e.entry)+'</td><td>'+fmtP(e.exit)+'</td>'
-        +'<td class="'+(e._roe>=0?'pos':'neg')+'">'+pct(e._roe)+'</td>'
-        +'<td class="'+(e._pnl>=0?'pos':'neg')+'">'+money(e._pnl)+'</td></tr>';
+    function tsOf(e){return +e.closeTs||+e.ts||0;}
+    function fmtD(t){if(!t)return '—';var d=new Date(t);return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
+    var COLS=[['date','Date',tsOf],['sym','Coin',function(e){return e.sym||'';}],['side','Side',function(e){return e._long?0:1;}],['entry','Entry',function(e){return +e.entry||0;}],['exit','Exit',function(e){return +e.exit||0;}],['roe','ROE',function(e){return +e._roe||0;}],['pnl','P&L',function(e){return +e._pnl||0;}]];
+    var sortKey='date',sortDir=-1,fSym='',fSide='';
+    // fill the coin filter
+    var syms={};all.forEach(function(e){if(e.sym)syms[e.sym]=1;});
+    var fs=$('trFsym');Object.keys(syms).sort().forEach(function(s){var o=document.createElement('option');o.value=s;o.textContent=s;fs.appendChild(o);});
+    function view(){var v=all.filter(function(e){return (!fSym||e.sym===fSym)&&(!fSide||(fSide==='long')===!!e._long);});
+      var col=COLS.filter(function(c){return c[0]===sortKey;})[0];
+      v.sort(function(a,b){var x=col[2](a),y=col[2](b);return (x<y?-1:x>y?1:0)*sortDir;});return v;}
+    function render(){var v=view();
+      var rows='<thead><tr>'+COLS.map(function(c){return '<th data-k="'+c[0]+'" style="cursor:pointer;user-select:none;white-space:nowrap">'+c[1]+(sortKey===c[0]?(sortDir>0?' ▲':' ▼'):'')+'</th>';}).join('')+'</tr></thead><tbody>';
+      v.forEach(function(e){
+        rows+='<tr><td style="white-space:nowrap;color:#9aa3ad">'+fmtD(tsOf(e))+'</td><td>'+(e.sym||'?')+'</td>'
+          +'<td><span class="'+(e._long?'lg':'sh')+'">'+(e._long?'LONG':'SHORT')+'</span></td>'
+          +'<td>'+fmtP(e.entry)+'</td><td>'+fmtP(e.exit)+'</td>'
+          +'<td class="'+(e._roe>=0?'pos':'neg')+'">'+pct(e._roe)+'</td>'
+          +'<td class="'+(e._pnl>=0?'pos':'neg')+'">'+money(e._pnl)+'</td></tr>';});
+      rows+=(v.length?'':'<tr><td colspan="7" style="color:#5c656f;text-align:center;padding:18px">No trades match this filter.</td></tr>')+'</tbody>';
+      $('trades').innerHTML=rows;
+      Array.prototype.forEach.call($('trades').querySelectorAll('th[data-k]'),function(th){th.addEventListener('click',function(){var k=th.getAttribute('data-k');if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=(k==='date'?-1:1);}render();});});}
+    fs.addEventListener('change',function(){fSym=fs.value;render();});
+    $('trFside').addEventListener('change',function(){fSide=this.value;render();});
+    $('trCsv').addEventListener('click',function(){
+      var v=view(),esc=function(s){s=String(s==null?'':s);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+      var csv='date,coin,side,entry,exit,roe_pct,pnl_usd,margin_usd,leverage,liquidated\n';
+      v.forEach(function(e){csv+=[new Date(tsOf(e)).toISOString(),e.sym||'',e._long?'long':'short',e.entry!=null?e.entry:'',e.exit!=null?e.exit:'',isFinite(e._roe)?(+e._roe).toFixed(4):'',isFinite(e._pnl)?(+e._pnl).toFixed(2):'',+e.margin||'',+e.lev||'',e.liquidated?'yes':''].map(esc).join(',')+'\n';});
+      var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='marginpad-trades.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},400);
     });
-    rows+='</tbody>';
-    $('trades').innerHTML=rows;
+    render();
   })();
 })();
 </script>

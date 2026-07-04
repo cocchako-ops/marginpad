@@ -249,7 +249,7 @@
   .input-line.has-stepper input{padding-right:58px;}
   .input-line.has-stepper .unit{right:37px;}
   .stepper{position:absolute;right:7px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:3px;}
-  .stepper button{width:23px;height:15px;display:flex;align-items:center;justify-content:center;background:var(--panel-2);border:1px solid var(--line-bright);border-radius:5px;color:var(--ink-dim);font-size:8px;line-height:1;cursor:pointer;padding:0;transition:.12s;}
+  .stepper button{width:30px;height:19px;display:flex;align-items:center;justify-content:center;background:var(--panel-2);border:1px solid var(--line-bright);border-radius:5px;color:var(--ink-dim);font-size:8px;line-height:1;cursor:pointer;padding:0;transition:.12s;}
   .stepper button:hover{color:#c2f64a;border-color:#c2f64a;background:rgba(194,246,74,.1);}
   .stepper button:active{transform:scale(.88);}
   [dir="rtl"] .stepper{right:auto;left:7px;}
@@ -1227,7 +1227,7 @@
   .cws-preset{-webkit-appearance:none;appearance:none;padding-right:26px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239aa3ad' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
   .cwin.front{border-color:#3a4654;box-shadow:0 26px 60px -16px rgba(0,0,0,.85),0 0 0 1px rgba(63,216,230,.25);}
   .cwin.dragging{transition:none;will-change:left,top;}
-  .cwin-head{display:flex;align-items:center;gap:6px;padding:7px 8px;background:linear-gradient(180deg,#1b2128,#141a20);border-bottom:1px solid #262d36;cursor:grab;flex-wrap:nowrap;position:relative;}
+  .cwin-head{display:flex;align-items:center;gap:6px;row-gap:4px;padding:7px 8px;background:linear-gradient(180deg,#1b2128,#141a20);border-bottom:1px solid #262d36;cursor:grab;flex-wrap:wrap;position:relative;} /* wrap instead of clipping — a narrow window used to CUT the symbol pill + low-TF buttons out of the header (UX audit) */
   .cwin-head:active{cursor:grabbing;}
   .cwin-grip{flex-shrink:0;color:#5c656f;display:inline-flex;}
   .cwin-sym{flex-shrink:0;background:#0a0d11;border:1px solid #2b323b;border-radius:7px;color:#c2f64a;text-shadow:0 0 9px rgba(194,246,74,.55);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;padding:5px 6px;cursor:pointer;outline:none;}
@@ -2473,3 +2473,12 @@
 
 /* live numbers: fixed-width digits so in-place ticks don't wobble the layout */
 .pp-live,.pp-meta b,.jr-stat .v,.ptl-live b,.ptl-meta b{font-variant-numeric:tabular-nums;}
+
+/* Paper Trade: the plan card's right column runs under the bottom-right corner, so the floating pills were
+   physically covering the CTA and a position card's Close button (real-browser audit: elementFromPoint at
+   CLOSE's center hit #jrFab). Dock them bottom-LEFT on this route — the left column's underside is free. */
+body[data-prod="plan"] #chatFab,body[data-prod="plan"] #jrFab{right:auto;left:20px;}
+body[data-prod="plan"] #chatBox{right:auto;left:20px;}
+/* charts: explicit dark background under the transparent LWC canvas — with no container bg the plot area could
+   render WHITE inside the dark app on some mobile paths (UX audit, mobile paper-trade). */
+#ptChart,.mfc-chart{background:#0a0d11;}

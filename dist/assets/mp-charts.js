@@ -115,13 +115,15 @@
   }catch(e){return orig?orig():null;} }; }
   function importTrades(w){ if(!w.candle)return;
     (w.mtLines||[]).forEach(function(l){try{w.candle.removePriceLine(l);}catch(e){}});w.mtLines=[];w._mtPrices=[];
-    if(w.mtOn){ jload().filter(function(e){return e.status==='open'&&e.sym===w.sym;}).forEach(function(e){var long=e.side!=='short';
-      w._mtPrices.push(+e.entry);if(e.liq)w._mtPrices.push(+e.liq);if(e.tp!=null)w._mtPrices.push(+e.tp);if(e.stop!=null)w._mtPrices.push(+e.stop); // feed the autoscale provider so the lines stay IN VIEW on every timeframe
-      try{w.mtLines.push(w.candle.createPriceLine({price:e.entry,color:long?'#2ebd85':'#ff6258',lineWidth:2,lineStyle:0,axisLabelVisible:true,title:(long?'LONG':'SHORT')+' '+(e.lev||1)+'x'}));}catch(_){}
-      if(e.liq)try{w.mtLines.push(w.candle.createPriceLine({price:e.liq,color:'#ff3b3b',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'LIQ'}));}catch(_){}
-      if(e.tp!=null)try{w.mtLines.push(w.candle.createPriceLine({price:e.tp,color:'#9aa3ad',lineWidth:1,lineStyle:3,axisLabelVisible:true,title:'TP'}));}catch(_){}
-      if(e.stop!=null)try{w.mtLines.push(w.candle.createPriceLine({price:e.stop,color:'#9aa3ad',lineWidth:1,lineStyle:3,axisLabelVisible:true,title:'SL'}));}catch(_){}
-    }); }
+    if(w.mtOn){ var _g={};
+      var _add=function(p,label,color,lw,ls){if(!(p>0))return;w._mtPrices.push(p);var k=label+'@'+p.toPrecision(6);if(_g[k]){_g[k].n++;return;}_g[k]={p:p,t:label,c:color,w:lw,s:ls,n:1};};
+      jload().filter(function(e){return e.status==='open'&&e.sym===w.sym;}).forEach(function(e){var long=e.side!=='short';
+        _add(+e.entry,(long?'LONG':'SHORT')+' '+(e.lev||1)+'x',long?'#2ebd85':'#ff6258',2,0);
+        if(e.liq)_add(+e.liq,'LIQ','#ff3b3b',1,2);
+        if(e.tp!=null)_add(+e.tp,'TP','#9aa3ad',1,3);
+        if(e.stop!=null)_add(+e.stop,'SL','#9aa3ad',1,3);});
+      for(var gk in _g){var g=_g[gk];try{w.mtLines.push(w.candle.createPriceLine({price:g.p,color:g.c,lineWidth:g.w,lineStyle:g.s,axisLabelVisible:true,title:g.t+(g.n>1?' ×'+g.n:'')}));}catch(_){}} // one line per LEVEL (×N) — stacked identical labels were illegible (UX audit)
+    }
     updateMTBtn(w); }
   /* notes pinned to a window (drag a note onto a chart to pin it; per-window Notes button) */
   var winSeq=0;
@@ -770,6 +772,13 @@
     var cw=Math.floor((bw-gap*(cols+1))/cols), chh=Math.floor((bh-gap*(rows+1))/rows);
     for(var i=0;i<n;i++){var r=Math.floor(i/cols),c=i%cols;addWin({x:gap+c*(cw+gap),y:gap+r*(chh+gap),w:cw,h:chh});}
   }
+  // shrink the browser → windows used to pile up / clip off-screen (UX audit at 900px). If any window now overflows
+  // the board, re-tile them. Only fires on real overflow, so a custom layout is never touched by a harmless resize.
+  var _rfT=null;
+  window.addEventListener('resize',function(){if(isMobile()||!wins.length)return;clearTimeout(_rfT);_rfT=setTimeout(function(){
+    var bw=board&&board.clientWidth;if(!bw)return;
+    var over=wins.some(function(w){if(!w.el)return false;var l=parseFloat(w.el.style.left)||0,ww=w.el.offsetWidth||0;return l+ww>bw+6;});
+    if(over)reflowWins();},250);});
   /* re-tile the CURRENT windows (keeps their symbols/data) to fill the board — used when the sidebar collapses so charts reclaim the freed space */
   function reflowWins(){if(isMobile()||!wins.length)return;var bw=board.clientWidth||900,bh=board.clientHeight||600,gap=8,n=wins.length;var g=gridFor(n,bw,bh),cols=g.cols,rows=g.rows;var cw=Math.floor((bw-gap*(cols+1))/cols),chh=Math.floor((bh-gap*(rows+1))/rows);wins.forEach(function(w,i){var r=Math.floor(i/cols),c=i%cols;w.el.style.left=(gap+c*(cw+gap))+'px';w.el.style.top=(gap+r*(chh+gap))+'px';w.el.style.width=cw+'px';w.el.style.height=chh+'px';});try{savePersist();}catch(e){}try{window.dispatchEvent(new Event('resize'));}catch(e){}}
   function openSymbolW(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym||isMobile())return;if(wins.length<MAXn()){addWin({sym:sym,tf:'60'});setTimeout(reflowWins,40);return;}var w=wins[wins.length-1];if(!w)return;w.sym=sym;var inp=w.el.querySelector('.cwin-sym');if(inp)inp.value=sym;loadData(w,true);try{updateMTBtn(w);}catch(e){}bringFront(w);}

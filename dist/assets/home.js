@@ -59,7 +59,8 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function levFill(){if(levR)levR.style.setProperty('--fill',(levR.value/(levR.max||1000)*100).toFixed(1)+'%');}
   function syncLevR(){if(!levR||!levEl)return;var v=parseFloat(levEl.value);if(isFinite(v)&&v>0){levR.value=String(levToPos(v));levFill();}}
   function levRisk(){var l=document.getElementById('planLev'),f=l&&l.closest('.pt2-fields');if(f)f.classList.toggle('risky',num('planLev')>50);}
-  if(levEl)levEl.addEventListener('input',function(){if(parseFloat(levEl.value)>1000)levEl.value='1000';syncLevR();levRisk();});
+  var _levHT=0;
+  if(levEl)levEl.addEventListener('input',function(){if(parseFloat(levEl.value)>1000){levEl.value='1000';var _n=Date.now();if(_n-_levHT>4000){_levHT=_n;if(window.mpLimitToast)window.mpLimitToast('Max leverage is 1000×.');}}syncLevR();levRisk();});
   var _levRaf=false;
   if(levR)levR.addEventListener('input',function(){if(!levEl)return;levEl.value=String(posToLev(parseFloat(levR.value)));levFill();levRisk();if(_levRaf)return;_levRaf=true;requestAnimationFrame(function(){_levRaf=false;calc();});});
   syncLevR();levRisk();
@@ -175,7 +176,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     _lastSig=list.map(function(e){return e.id;}).join(',');
     el.innerHTML=list.map(function(e,idx){var m=metrics(e),long=m.long;
       return '<div class="pt-last '+_tkCls(m)+'" data-tid="'+e.id+'">'
-        +'<div class="ptl-top"><span class="ptl-tag">'+(idx===0?'LAST TRADE':'OPEN')+'</span><span class="ptl-sym">'+esc(e.sym||'—')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b class="ptl-px">'+fp(m.live)+'</b></span></div>'
+        +'<div class="ptl-top"><span class="ptl-tag">'+(idx===0?'OPEN POSITION':'OPEN')+'</span><span class="ptl-sym">'+esc(e.sym||'—')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b class="ptl-px">'+fp(m.live)+'</b></span></div>'
         +'<div class="ptl-pnl"><span class="big">'+_tkPnl(m)+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span><button type="button" class="ptl-close" data-ptl-close="'+e.id+'">Close</button></div>'
         +'<div class="ptl-meta">'+_tkMeta(e,m)+'</div>'
         +'</div>';
@@ -416,9 +417,18 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(sig===_linesSig){updateZone();return;} _linesSig=sig;
     plines.forEach(function(l){try{candle.removePriceLine(l);}catch(e){}});plines=[];
     // cache the line prices FIRST so the autoscale provider (which fires the moment a price line is created) already sees them
-    _openLines=[];_openMarks=[];op.forEach(function(e){var long=e.side!=='short';_openLines.push(+e.entry,liqOf(e));if(e.tp!=null)_openLines.push(+e.tp);if(e.stop!=null)_openLines.push(+e.stop);
-      _openMarks.push({p:+e.entry,label:(long?'LONG':'SHORT'),color:long?'#10b981':'#ef4444'},{p:liqOf(e),label:'LIQ',color:'#ff3b3b'});if(e.tp!=null)_openMarks.push({p:+e.tp,label:'TP',color:'#9aa3ad'});if(e.stop!=null)_openMarks.push({p:+e.stop,label:'SL',color:'#9aa3ad'});});
-    op.forEach(function(e){plines.push(candle.createPriceLine({price:e.entry,color:e.side!=='short'?'#10b981':'#ef4444',lineWidth:1,lineStyle:0,axisLabelVisible:true,title:(e.side!=='short'?'LONG':'SHORT')}));plines.push(candle.createPriceLine({price:liqOf(e),color:'#ff3b3b',lineWidth:2,lineStyle:0,axisLabelVisible:true,title:'LIQ'}));if(e.tp!=null)plines.push(candle.createPriceLine({price:e.tp,color:'#6b7280',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'TP'}));if(e.stop!=null)plines.push(candle.createPriceLine({price:e.stop,color:'#6b7280',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'SL'}));});
+    // GROUP identical levels first — 3 positions at (nearly) the same entry used to stack 3 overlapping LONG/LIQ/TP
+    // labels on the axis + 3 edge pills covering each other (UX audit, mobile). One line/pill per level, titled ×N.
+    _openLines=[];_openMarks=[];var _grp={};
+    function _gAdd(p,label,color,w,style){if(!(p>0))return;_openLines.push(p);var k=label+'@'+p.toPrecision(6);var g=_grp[k];if(g){g.n++;return;}_grp[k]={p:p,label:label,color:color,w:w,style:style,n:1};}
+    op.forEach(function(e){var long=e.side!=='short';
+      _gAdd(+e.entry,(long?'LONG':'SHORT'),long?'#10b981':'#ef4444',1,0);
+      _gAdd(liqOf(e),'LIQ','#ff3b3b',2,0);
+      if(e.tp!=null)_gAdd(+e.tp,'TP','#6b7280',1,2);
+      if(e.stop!=null)_gAdd(+e.stop,'SL','#6b7280',1,2);});
+    for(var gk in _grp){var g=_grp[gk];var t=g.label+(g.n>1?' ×'+g.n:'');
+      _openMarks.push({p:g.p,label:t,color:(g.label==='TP'||g.label==='SL')?'#9aa3ad':g.color});
+      plines.push(candle.createPriceLine({price:g.p,color:g.color,lineWidth:g.w,lineStyle:g.style,axisLabelVisible:true,title:t}));}
     updateZone();}
   // shaded "liquidation zone" beyond the liq line: a translucent red overlay (slight blur) so candles still show through
   var zoneEl=null,edgeEl=null;
@@ -660,8 +670,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(add._busy)return; add._busy=true; setTimeout(function(){add._busy=false;},650); // debounce: one click can't fire two opens (a double-click was creating two near-identical positions)
     var pl=window.mpPlanLive, entry=pl&&pl.price;          // open AT the current live price
     var amt=num('planAmt'), lev=num('planLev');
-    if(isFinite(amt)&&amt>100000){amt=100000;var _ael=document.getElementById('planAmt');if(_ael)_ael.value='100000';} // hard cap: max $100k per trade (owner rule)
-    if(!isFinite(entry)||entry<=0||!isFinite(amt)||amt<=0)return;
+    var _say=function(m){if(window.mpLimitToast)window.mpLimitToast(m);}; // honest micro-feedback: never swallow a click silently (UX audit: "enabled button that does nothing")
+    if(isFinite(amt)&&amt>100000){amt=100000;var _ael=document.getElementById('planAmt');if(_ael)_ael.value='100000';_say('Max trade size is $100,000 — the amount was capped.');} // hard cap: max $100k per trade (owner rule)
+    if(!isFinite(amt)||amt<=0){_say('Enter an amount (USD) above $0 to open a trade.');return;}
+    if(!isFinite(entry)||entry<=0){_say('Waiting for the live price — try again in a second.');return;}
     var seg=document.getElementById('planSeg'); var on=seg&&seg.querySelector('button.on'); var side=on?on.getAttribute('data-side'):'long';
     var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
     var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=(window.mpPlanMmr||0.005);
@@ -672,10 +684,13 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     // opens (this is what made copied / stale screener setups self-close at open with a random-looking result).
     // Drop it — a long's stop must be below entry & target above; a short's the reverse.
     var _long=side==='long';
-    var _drop=[];
-    if(isFinite(sl)&&((_long&&sl>=entry)||(!_long&&sl<=entry))){sl=NaN;_drop.push('stop-loss');}
-    if(isFinite(tp)&&((_long&&tp<=entry)||(!_long&&tp>=entry))){tp=NaN;_drop.push('take-profit');}
-    if(_drop.length&&window.mpLimitToast)window.mpLimitToast('Your '+_drop.join(' and ')+' was on the wrong side of the entry price, so it was removed — the position opened WITHOUT it. Set it again from the ticket (Modify).'); // was a SILENT drop: users believed they had a stop that didn't exist
+    // BLOCK the open while a typed SL/TP is on the wrong side of entry — matching the SL/TP edit modal. The old
+    // behavior (strip it and open WITHOUT the stop) made the user's protective order silently vanish (UX audit
+    // called it "the worst possible message for a risk-education product").
+    var _bad=[];
+    if(isFinite(sl)&&((_long&&sl>=entry)||(!_long&&sl<=entry)))_bad.push('stop-loss');
+    if(isFinite(tp)&&((_long&&tp<=entry)||(!_long&&tp>=entry)))_bad.push('take-profit');
+    if(_bad.length){_say('Your '+_bad.join(' and ')+' is on the wrong side of the entry price — fix it (or clear the field) to open the trade.');try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(e){}return;}
     var notional=amt*L, qty=notional/entry;
     var liq=side==='long'?entry*(1-(1-mmr)/L):entry*(1+(1-mmr)/L);  // always on the correct side of entry, even at extreme leverage
     var stop=isFinite(sl)?sl:null;                          // optional user SL; the position still auto-liquidates at `liq`
@@ -1716,7 +1731,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   // render the latest open position as the same "LAST TRADE" torn ticket used in Paper Trade (with a live price + Close)
   function updPnl(){if(!pnlEl)return;var d=jload(),open=d.filter(function(e){return e.status==='open';});if(!open.length){pnlEl.hidden=true;pnlEl.innerHTML='';pnlEl.className='mtp-pnl';curPos=null;return;}var e=open[open.length-1];curPos=e;var lp=price(e.sym);if(!(lp>0)){return;}var m=mtMet(e),long=m.long,cls=(m.pnl>0?'pf':(m.pnl<0?'ls':'be'));pnlEl.className='pt-last '+cls;pnlEl.hidden=false;
     var _T=function(k,d){return (window.mpT&&window.mpT(k))||d;};
-    pnlEl.innerHTML='<div class="ptl-top"><span class="ptl-tag">'+_T('mtLast','LAST TRADE')+'</span><span class="ptl-sym">'+String(e.sym||'—')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?_T('long','LONG'):_T('short','SHORT'))+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b>'+fmt(m.lp)+'</b></span></div>'
+    pnlEl.innerHTML='<div class="ptl-top"><span class="ptl-tag">'+_T('mtLast','OPEN POSITION')+'</span><span class="ptl-sym">'+String(e.sym||'—')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?_T('long','LONG'):_T('short','SHORT'))+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b>'+fmt(m.lp)+'</b></span></div>'
       +'<div class="ptl-pnl"><span class="big">'+pl(m.pnl)+'</span><span class="roe">ROE '+pc(m.roe)+'</span><button type="button" class="ptl-close ptl-mt" data-mytrades>'+_T('mtMyTrades','My Trades')+'</button></div>'
       +'<div class="ptl-meta">'+_T('jEntry','Entry')+' <b>'+fmt(e.entry)+'</b> · '+_T('mtLiq','Liq')+' <b>'+fmt(m.liq)+'</b> ('+pc(m.liqDist)+')</div>';}
   document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('[data-ptl-close]'))setTimeout(updPnl,0);}); // re-render the ticket after its Close fires (the global handler does the actual close)
@@ -2272,6 +2287,9 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
       d.push(part);
     }
     jstore(d);hide();done();
+    // confirm the close — the card just vanishing left users asking "where did my trade go?" (UX audit)
+    try{var _cp=(f>=1?(+e.pnl||0):pnl)||0,_px=(+m.live).toLocaleString('en-US',{maximumFractionDigits:6});
+      if(window.mpLimitToast)window.mpLimitToast((f>=1?'Closed ':'Closed '+Math.round(f*100)+'% of ')+String(e.sym||'')+' at '+_px+' · '+(_cp>=0?'+$':'−$')+Math.abs(_cp).toFixed(2)+' — saved to My Trades.');}catch(_){}
   }
   window.mpCloseSheet=show;
 })();
@@ -2338,7 +2356,7 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
 })();
 
 ;/* $100k cap directly on the amount input (typing 250000 snaps to 100000; add() re-checks as a backstop) */
-(function(){var MAXT=100000,a=document.getElementById("planAmt");if(!a)return;try{a.max=String(MAXT);}catch(e){}a.addEventListener("input",function(){var v=parseFloat(a.value);if(isFinite(v)&&v>MAXT)a.value=String(MAXT);});})();
+(function(){var MAXT=100000,a=document.getElementById("planAmt"),_hT=0;if(!a)return;try{a.max=String(MAXT);}catch(e){}a.addEventListener("input",function(){var v=parseFloat(a.value);if(isFinite(v)&&v>MAXT){a.value=String(MAXT);var n=Date.now();if(n-_hT>4000){_hT=n;if(window.mpLimitToast)window.mpLimitToast('Max trade size is $100,000.');}}});})(); /* explain the snap instead of changing the number under the user's fingers (UX audit) */
 
 ;/* ══════════ iOS leftover-zoom shield for the Browse panel (owner: "zumirani browse 10-20% posle charts") ══════════
    If the visual viewport is still scaled after a rotation, counter-transform the panel into the real on-screen

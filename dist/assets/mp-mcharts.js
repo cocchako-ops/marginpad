@@ -64,7 +64,8 @@
     Array.prototype.forEach.call(gate.querySelectorAll('[data-gx]'),function(x){x.addEventListener('click',close);});
     ov.addEventListener('click',onBarClick);
     function onR(){if(!ov||ov.hidden)return;if(backWait){if(isPortrait())finishBack();return;}
-      if(isPortrait()){showGate(true);return;} /* landscape is mandatory now — portrait always shows the rotate gate */
+      // portrait no longer walls off the charts — they WORK in portrait (verified by the real-browser UX audit); the
+      // full-screen gate was blocking a functional experience. The inline .mfc-rot hint still nudges toward landscape.
       showGate(false);if(!entered){proceed();return;}
       setTimeout(function(){panes.forEach(function(p){if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();});},140);}
     window.addEventListener('resize',function(){setTimeout(onR,120);});
@@ -170,10 +171,11 @@
   // ---- trade import ----
   function liqOf(e){var long=e.side!=='short',lv=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);return e.liq||(long?e.entry*(1-(1-mmr)/lv):e.entry*(1+(1-mmr)/lv));}
   function drawTrades(p){clearTrades(p);if(!p.candle)return;var d;try{d=JSON.parse(localStorage.getItem('mp_journal')||'[]')||[];}catch(e){d=[];}
+    var _g={};var _add=function(px,label,color,lw){if(!(px>0))return;p._mtPrices.push(px);var k=label+'@'+px.toPrecision(6);if(_g[k]){_g[k].n++;return;}_g[k]={p:px,t:label,c:color,w:lw,n:1};};
     d.filter(function(e){return e.status==='open'&&e.sym===p.sym;}).forEach(function(e){var long=e.side!=='short';
-      p._mtPrices.push(+e.entry,liqOf(e)); // feed the autoscale provider so the lines stay in view on every timeframe
-      try{p.tradeLines.push(p.candle.createPriceLine({price:+e.entry,color:long?'#10b981':'#ef4444',lineWidth:1,lineStyle:0,axisLabelVisible:true,title:(long?'LONG':'SHORT')+' '+(e.lev||1)+'x'}));}catch(_){}
-      try{p.tradeLines.push(p.candle.createPriceLine({price:liqOf(e),color:'#ff3b3b',lineWidth:2,lineStyle:0,axisLabelVisible:true,title:'LIQ'}));}catch(_){}});}
+      _add(+e.entry,(long?'LONG':'SHORT')+' '+(e.lev||1)+'x',long?'#10b981':'#ef4444',1);
+      _add(liqOf(e),'LIQ','#ff3b3b',2);});
+    for(var gk in _g){var g=_g[gk];try{p.tradeLines.push(p.candle.createPriceLine({price:g.p,color:g.c,lineWidth:g.w,lineStyle:0,axisLabelVisible:true,title:g.t+(g.n>1?' ×'+g.n:'')}));}catch(_){}}} // one line per level (×N) — stacked labels covered the candles (UX audit, mobile)
   function clearTrades(p){p.tradeLines.forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p.tradeLines=[];p._mtPrices=[];}
   // ---- drawing: toggles the price-anchored draw engine on the ACTIVE pane (each pane has its own .cwin-tools palette) ----
   function toggleDraw(btn){var p=panes[activeI];if(!p||!p.w||!p.w.dr)return;p.w.dr.on=!p.w.dr.on;p.el.classList.toggle('drawing',p.w.dr.on);btn.classList.toggle('on',p.w.dr.on);}
@@ -255,8 +257,7 @@
   function isPortrait(){return !!(window.matchMedia&&window.matchMedia('(orientation:portrait)').matches);}
   function showGate(on){var g=ov&&ov.querySelector('.mfc-gate');if(g)g.hidden=!on;var bar=ov&&ov.querySelector('.mfc-bar'),st=ov&&ov.querySelector('#mfcStage'),fab=ov&&ov.querySelector('.mfc-ai-fab');[bar,st,fab].forEach(function(x){if(x)x.style.visibility=on?'hidden':'';});}
   function open(){ if(!ov)build(); ov.hidden=false; document.documentElement.style.overflow='hidden';
-    if(isPortrait()){showGate(true);return;}   // landscape required — the gate asks for a rotation every time
-    showGate(false);proceed();
+    showGate(false);proceed(); // portrait works too — the inline .mfc-rot hint nudges toward landscape instead of a full-screen wall (UX audit)
   }
   function proceed(){ entered=true; showGate(false);
     if(!panes.length){var p=mkPane('BTC','60');panes.push(p);ov.querySelector('#mfcStage').appendChild(p.el);setActive(0);loadLib(function(){initChart(p);});}

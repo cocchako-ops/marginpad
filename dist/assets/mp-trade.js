@@ -128,6 +128,11 @@
     var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=0.005;
     var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:0;
     var sl=num('planSlOpt'), tp=num('planTpOpt');
+    // block a wrong-side SL/TP instead of storing it (parity with home.js add() — it would self-trigger instantly)
+    var _lng2=side==='long',_bad2=[];
+    if(isFinite(sl)&&((_lng2&&sl>=entry)||(!_lng2&&sl<=entry)))_bad2.push('stop-loss');
+    if(isFinite(tp)&&((_lng2&&tp<=entry)||(!_lng2&&tp>=entry)))_bad2.push('take-profit');
+    if(_bad2.length){var _bm='Your '+_bad2.join(' and ')+' is on the wrong side of the entry price — fix it (or clear the field) to open the trade.';if(window.mpLimitToast)window.mpLimitToast(_bm);else alert(_bm);return;}
     var notional=amt*L, qty=notional/entry;
     var liq=side==='long'?entry*(1-(1-mmr)/L):entry*(1+(1-mmr)/L);
     var stop=isFinite(sl)?sl:null;
@@ -445,6 +450,9 @@
       d.push(part);
     }
     jstore(d);hide();done();
+    // confirm the close (parity with home.js) — the card just vanishing left users asking "where did my trade go?"
+    try{var _cp=(f>=1?(+e.pnl||0):pnl)||0,_px=(+m.live).toLocaleString('en-US',{maximumFractionDigits:6});
+      if(window.mpLimitToast)window.mpLimitToast((f>=1?'Closed ':'Closed '+Math.round(f*100)+'% of ')+String(e.sym||'')+' at '+_px+' · '+(_cp>=0?'+$':'−$')+Math.abs(_cp).toFixed(2)+' — saved to My Trades.');}catch(_){}
   }
   window.mpCloseSheet=show;
 })();
