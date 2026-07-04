@@ -130,8 +130,9 @@ export function createSqliteStorage(path) {
   // ---- screener extra: hourly OI snapshots + per-symbol 24h liquidation aggregates ----
   function saveOiSnap(rows) { ensure();
     const st = db.prepare('INSERT INTO oi_snap(ts,symbol,oi_usd) VALUES (?,?,?)');
-    const tx = db.transaction((rs) => { for (const r of rs) st.run(r.ts, r.symbol, r.oi); });
-    tx(rows);
+    db.exec('BEGIN');
+    try { for (const r of rows) st.run(r.ts, r.symbol, r.oi); db.exec('COMMIT'); }
+    catch (e) { db.exec('ROLLBACK'); throw e; } // node:sqlite has no .transaction() helper (that's better-sqlite3)
     db.prepare('DELETE FROM oi_snap WHERE ts<?').run(Date.now() - 50 * 3600000); // keep ~2 days
   }
   function oi24h() { ensure();
