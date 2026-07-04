@@ -129,21 +129,23 @@ export function createSqliteStorage(path) {
 
   // ---- screener extra: hourly OI snapshots + per-symbol 24h liquidation aggregates ----
   function saveOiSnap(rows) { ensure();
-    const st = db.prepare('INSERT INTO oi_snap(ts,symbol,oi_usd) VALUES (?,?,?)');
+    const st = db.prepare('INSERT INTO oi_snap(ts,symbol,oi_usd,funding) VALUES (?,?,?,?)');
     db.exec('BEGIN');
-    try { for (const r of rows) st.run(r.ts, r.symbol, r.oi); db.exec('COMMIT'); }
+    try { for (const r of rows) st.run(r.ts, r.symbol, r.oi, (r.f != null && isFinite(r.f)) ? r.f : null); db.exec('COMMIT'); }
     catch (e) { db.exec('ROLLBACK'); throw e; } // node:sqlite has no .transaction() helper (that's better-sqlite3)
     db.prepare('DELETE FROM oi_snap WHERE ts<?').run(Date.now() - 50 * 3600000); // keep ~2 days
   }
   function oi24h() { ensure();
     const last = db.prepare('SELECT MAX(ts) t FROM oi_snap').get();
     if (!last || !last.t) return {};
-    const nowRows = db.prepare('SELECT symbol,oi_usd FROM oi_snap WHERE ts=?').all(last.t);
+    const nowRows = db.prepare('SELECT symbol,oi_usd,funding FROM oi_snap WHERE ts=?').all(last.t);
     const cut = last.t - 24 * 3600000, out = {};
-    const prevStmt = db.prepare('SELECT oi_usd FROM oi_snap WHERE symbol=? AND ts<=? ORDER BY ts DESC LIMIT 1');
+    const prevStmt = db.prepare('SELECT oi_usd,funding FROM oi_snap WHERE symbol=? AND ts<=? ORDER BY ts DESC LIMIT 1');
     for (const r of nowRows) {
       const p = prevStmt.get(r.symbol, cut);
-      out[r.symbol] = { now: Math.round(r.oi_usd), chg: (p && p.oi_usd > 0) ? +(((r.oi_usd / p.oi_usd) - 1) * 100).toFixed(2) : null };
+      out[r.symbol] = { now: Math.round(r.oi_usd), chg: (p && p.oi_usd > 0) ? +(((r.oi_usd / p.oi_usd) - 1) * 100).toFixed(2) : null,
+        f: (r.funding != null) ? +(+r.funding).toFixed(4) : null,
+        fchg: (p && p.funding != null && r.funding != null) ? +((+r.funding) - (+p.funding)).toFixed(4) : null };
     }
     return out;
   }

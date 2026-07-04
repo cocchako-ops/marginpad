@@ -82,7 +82,7 @@ async function main() {
       for (const t of list) {
         if (!/USDT$/.test(t.symbol || '')) continue;
         const v = parseFloat(t.openInterestValue);
-        if (v > 0) rows.push({ ts, symbol: String(t.symbol).replace(/USDT$/, ''), oi: v });
+        if (v > 0) rows.push({ ts, symbol: String(t.symbol).replace(/USDT$/, ''), oi: v, f: parseFloat(t.fundingRate) * 100 }); // funding stored as % (e.g. 0.01)
       }
       if (rows.length) { storage.saveOiSnap(rows); log.info('oi snapshot', { n: rows.length }); }
     } catch (e) { log.error('oi snapshot failed', { e: String(e) }); }

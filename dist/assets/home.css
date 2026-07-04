@@ -2482,3 +2482,27 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 /* charts: explicit dark background under the transparent LWC canvas — with no container bg the plot area could
    render WHITE inside the dark app on some mobile paths (UX audit, mobile paper-trade). */
 #ptChart,.mfc-chart{background:#0a0d11;}
+/* ===== screener: mode switcher (Perp | On-chain) + on-chain pool rows ===== */
+.scr-mode{display:flex;gap:6px;margin:0 0 14px;background:rgba(255,255,255,.03);border:1px solid var(--line-bright,#2f3742);border-radius:12px;padding:4px;width:fit-content}
+.scr-mode button{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.02em;color:#9aa3ad;background:none;border:none;border-radius:9px;padding:9px 16px;cursor:pointer;transition:.14s;display:inline-flex;align-items:center;gap:7px}
+.scr-mode button em{font-style:normal;font-size:8.5px;letter-spacing:.08em;color:#0a0b0d;background:#c2f64a;border-radius:5px;padding:2px 5px}
+.scr-mode button.on{background:#c2f64a;color:#0a0b0d}
+.scr-mode button.on em{background:#0a0b0d;color:#c2f64a}
+.scr-oc-tabs{display:flex;gap:6px;margin:0 0 12px}
+.scr-oc-tabs button{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#9aa3ad;background:#0a0d11;border:1px solid #2f3742;border-radius:9px;padding:9px 14px;cursor:pointer;transition:.13s}
+.scr-oc-tabs button.on{background:#161a21;color:#e9e7df;border-color:#c2f64a}
+.oc-row{display:grid;grid-template-columns:minmax(0,1.4fr) auto;gap:6px 12px;width:100%;text-align:left;background:linear-gradient(180deg,#12151c,#0d0f14);border:1px solid #232932;border-radius:14px;padding:13px 15px;margin-bottom:9px;color:#e9e7df;text-decoration:none;transition:transform .14s ease,border-color .14s ease}
+.oc-row:hover{transform:translateY(-2px);border-color:#3a424c}
+.oc-l1{display:flex;align-items:center;gap:9px;min-width:0}
+.oc-sym{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oc-net{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#3fd8e6;border:1px solid rgba(63,216,230,.35);border-radius:6px;padding:2px 7px;flex-shrink:0}
+.oc-age{font-family:'Space Mono',monospace;font-size:10px;color:#707a86;flex-shrink:0}
+.oc-px{text-align:right;font-family:'Space Mono',monospace;font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.oc-px .chg{display:block;font-size:11.5px;margin-top:2px}
+.oc-px .chg.up{color:#2ebd85}.oc-px .chg.dn{color:#ff6258}
+.oc-boxes{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.oc-box{font-family:'Space Mono',monospace;font-size:10px;color:#9aa3ad;background:rgba(255,255,255,.03);border:1px solid #232932;border-radius:7px;padding:4px 8px}
+.oc-box b{color:#cdd3da;font-weight:700}
+.oc-box .bs-b{color:#2ebd85}.oc-box .bs-s{color:#ff6258}
+.scr-oc-attr{font-family:'Space Mono',monospace;font-size:10.5px;color:#707a86;line-height:1.6;margin:12px 0 0}
+.scr-oc-attr a{color:#9aa3ad}

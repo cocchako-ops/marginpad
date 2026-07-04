@@ -8,6 +8,36 @@
   function wlToggle(s){var a=wlGet(),k=s+'USDT',i=a.indexOf(k);if(i<0&&a.indexOf(s)>=0){k=s;i=a.indexOf(s);}if(i>=0)a.splice(i,1);else a.push(k);try{localStorage.setItem('mp_watchlist',JSON.stringify(a));}catch(e){}}
   function fmtPx(p){p=+p;return '$'+p.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:p>=1?2:6});}
   function fmtBig(n){n=+n;if(n>=1e9)return '$'+(n/1e9).toFixed(2)+'B';if(n>=1e6)return '$'+(n/1e6).toFixed(1)+'M';if(n>=1e3)return '$'+(n/1e3).toFixed(0)+'K';return '$'+(n||0).toFixed(0);}
+  /* ===== On-chain · Memecoins mode (GeckoTerminal trending + new pairs — the DexScreener direction) ===== */
+  var OC=null,ocTab='trending',scrMode='perp';
+  function ocAge(t){if(!t)return '';var h=(Date.now()-t)/3600000;return h<1?Math.max(1,Math.round(h*60))+'m':h<24?Math.round(h)+'h':Math.round(h/24)+'d';}
+  function ocPx(p){p=+p;if(p>=1)return '$'+p.toLocaleString('en-US',{maximumFractionDigits:2});if(p>=0.0001)return '$'+p.toFixed(6).replace(/0+$/,'').replace(/\.$/,'');var s=p.toExponential(2);return '$'+s;}
+  function ocRow(p){var up=p.chg24>=0,bs=p.buys+p.sells>0?Math.round(p.buys/(p.buys+p.sells)*100):null;
+    return '<a class="oc-row" href="'+esc(p.url)+'" target="_blank" rel="noopener">'
+      +'<span class="oc-l1"><span class="oc-sym">'+esc(p.n)+'</span><span class="oc-net">'+esc(p.net)+'</span><span class="oc-age">'+ocAge(p.age)+' old</span></span>'
+      +'<span class="oc-px">'+ocPx(p.px)+'<span class="chg '+(up?'up':'dn')+'">'+(up?'+':'')+(+p.chg24).toFixed(1)+'%</span></span>'
+      +'<span class="oc-boxes">'
+        +'<span class="oc-box">Vol 24h <b>'+fmtBig(p.vol)+'</b></span>'
+        +'<span class="oc-box">Liquidity <b>'+fmtBig(p.liq)+'</b></span>'
+        +(p.fdv>0?'<span class="oc-box">FDV <b>'+fmtBig(p.fdv)+'</b></span>':'')
+        +(bs!=null?'<span class="oc-box">B/S <b class="bs-b">'+p.buys+'</b>/<b class="bs-s">'+p.sells+'</b> ('+bs+'% buys)</span>':'')
+        +(p.chg1!=null?'<span class="oc-box">1h <b class="'+(p.chg1>=0?'bs-b':'bs-s')+'">'+(p.chg1>=0?'+':'')+(+p.chg1).toFixed(1)+'%</b></span>':'')
+      +'</span></a>';}
+  function ocRender(){var el=document.getElementById('scrOcList');if(!el)return;
+    if(!OC){el.innerHTML='<div class="scr-loading">Loading on-chain pools…</div>';return;}
+    var list=(ocTab==='fresh'?OC.fresh:OC.trending)||[];
+    el.innerHTML=list.length?list.map(ocRow).join(''):'<div class="scr-loading">No pools right now — try the other tab.</div>';}
+  function ocLoad(){fetch('/api/onchain').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&(d.trending||d.fresh)){OC=d;ocRender();}}).catch(function(){});}
+  function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
+  (function(){var mode=document.getElementById('scrMode'),oc=document.getElementById('scrOnchain');if(!mode||!oc)return;
+    var perpEls=['scrStats','scrMeta','scrPicks','scrSearch','scrFilters','scrList'].map(function(id){return document.getElementById(id);});
+    mode.addEventListener('click',function(ev){var b=ev.target.closest('button[data-mode]');if(!b)return;
+      scrMode=b.getAttribute('data-mode');mode.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});
+      var on=scrMode==='onchain';oc.hidden=!on;perpEls.forEach(function(e){if(e)e.style.display=on?'none':'';});
+      if(on){if(!OC)ocLoad();try{window.__mpTrack&&window.__mpTrack('screener','onchain');}catch(_e){}}});
+    var tabs=document.getElementById('scrOcTabs');if(tabs)tabs.addEventListener('click',function(ev){var b=ev.target.closest('button[data-oct]');if(!b)return;ocTab=b.getAttribute('data-oct');tabs.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});ocRender();});
+    setInterval(function(){if(scrMode==='onchain'&&!document.hidden)ocLoad();},180000);
+  })();
   // screener enrichment from OUR collector: per-coin 24h liquidations + OI Δ24h — data no free screener shows
   var XTRA={};
   function loadXtra(){fetch('/api/v1/screener-extra').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&(d.liq||d.oi)){XTRA=d;try{render();}catch(_e){}}}).catch(function(){});}
@@ -73,6 +103,7 @@
       var xl=XTRA.liq&&XTRA.liq[e.s],xo=XTRA.oi&&XTRA.oi[e.s];
       if(xl&&xl.liq>0)boxes+='<span class="scr-box"><i>Liq 24h</i><b style="color:#ff8a80">'+fmtBig(xl.liq)+'</b></span>';
       if(xo&&xo.chg!=null)boxes+='<span class="scr-box"><i>OI Δ24h</i><b class="'+(xo.chg>=0?'up':'dn')+'">'+(xo.chg>=0?'+':'')+xo.chg.toFixed(1)+'%</b></span>';
+      if(xo&&xo.fchg!=null&&Math.abs(xo.fchg)>=0.005)boxes+='<span class="scr-box"><i>Fund Δ</i><b class="'+(xo.fchg>=0?'up':'dn')+'">'+(xo.fchg>=0?'+':'')+xo.fchg.toFixed(3)+'pp</b></span>'; // funding trend vs 24h ago — a flip is a squeeze tell
       return '<button type="button" class="scr-row" data-sym="'+e.s+'" data-p="'+e.p+'">'
         +'<span class="scr-score3 sc-'+cls+'"><b>'+(e.score==null?'—':e.score)+'</b><i>score</i></span>'
         +'<span class="scr-main">'

@@ -94,7 +94,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=e99023ff">
+<link rel="stylesheet" href="/assets/home.css?v=69d310a0">
 
 </head>
 <body>
@@ -275,6 +275,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
       <span style="flex:1;min-width:0;line-height:1.32"><b style="display:block;color:#e9e7df;font-size:14.5px;font-weight:700">Free trade signals on Telegram</b><i style="color:#9bb9c9;font-size:12px;font-style:normal">3–5 high-conviction setups a day — entry, stop &amp; targets</i></span>
       <span style="flex:0 0 auto;background:#229ED9;color:#fff;font-weight:700;font-size:13px;padding:9px 17px;border-radius:10px;white-space:nowrap">Join free</span>
     </a>
+    <div class="scr-mode" id="scrMode" role="tablist" aria-label="Screener mode"><button type="button" data-mode="perp" class="on" role="tab">Perp futures</button><button type="button" data-mode="onchain" role="tab">On-chain · Memecoins <em>NEW</em></button></div>
     <div class="scr-stats" id="scrStats"></div>
     <div class="scr-meta" id="scrMeta"></div>
     <div class="scr-picks" id="scrPicks"></div>
@@ -293,6 +294,11 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
       <button type="button" data-filter="watch">★ Watchlist</button>
     </div>
     <div class="scr-list" id="scrList"><div class="scr-loading">Loading live markets…</div></div>
+    <div id="scrOnchain" hidden>
+      <div class="scr-oc-tabs" id="scrOcTabs"><button type="button" data-oct="trending" class="on">🔥 Trending</button><button type="button" data-oct="fresh">🆕 New pairs</button></div>
+      <div class="scr-list" id="scrOcList"><div class="scr-loading">Loading on-chain pools…</div></div>
+      <p class="scr-oc-attr">On-chain DEX data by <a href="https://www.geckoterminal.com" target="_blank" rel="noopener">GeckoTerminal</a> · memecoins are EXTREMELY volatile — most new pairs go to zero. Never trade money you can't lose.</p>
+    </div>
     <p class="scr-foot">Live multi-exchange data (Bybit · OKX · Gate · MEXC · BingX · Binance · Bitget) + Coinglass derivatives · paper trading only, not financial advice.</p>
   </section>
 
@@ -762,7 +768,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=e99023ff"></script>
+<script src="/assets/home.js?v=69d310a0"></script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

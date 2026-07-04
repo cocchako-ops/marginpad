@@ -554,6 +554,37 @@ async function handleDefiExtra(env) {
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
+// On-chain memecoin screener data (GeckoTerminal free API, attribution required): trending pools + freshly
+// created pairs across ALL networks — the DexScreener direction, with zero indexing infra. Edge-cached 3 min.
+async function handleOnchain(env) {
+  const ck = new Request('https://marginpad.io/__onchain_v1');
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const h = { headers: { accept: 'application/json' }, cf: { cacheTtl: 180 } };
+  const mapPools = (d) => ((d && d.data) || []).map(p => { const a = p.attributes || {};
+    const net = (((p.relationships || {}).network || {}).data || {}).id || '';
+    const nm = String(a.name || ''); const base = nm.split(' / ')[0] || nm;
+    const tx = (a.transactions || {}).h24 || {};
+    return { n: base.slice(0, 18), pair: nm.slice(0, 34), net,
+      px: +a.base_token_price_usd || 0,
+      chg1: +(((a.price_change_percentage || {}).h1) || 0), chg24: +(((a.price_change_percentage || {}).h24) || 0),
+      vol: +(((a.volume_usd || {}).h24) || 0), liq: +a.reserve_in_usd || 0, fdv: +a.fdv_usd || 0,
+      buys: +tx.buys || 0, sells: +tx.sells || 0,
+      age: a.pool_created_at ? Date.parse(a.pool_created_at) : null,
+      url: 'https://www.geckoterminal.com/' + net + '/pools/' + (a.address || '') };
+  }).filter(p => p.px > 0);
+  let out = null;
+  try {
+    const [tr, nw] = await Promise.all([
+      fetch('https://api.geckoterminal.com/api/v2/networks/trending_pools?page=1', h),
+      fetch('https://api.geckoterminal.com/api/v2/networks/new_pools?page=1', h),
+    ]);
+    out = { ts: Date.now(), trending: tr.ok ? mapPools(await tr.json()) : [], fresh: nw.ok ? mapPools(await nw.json()) : [] };
+  } catch (e) {}
+  if (!out || (!out.trending.length && !out.fresh.length)) return J({ error: 'unavailable' }, 503);
+  const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=180', ...CORS } });
+  try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
 async function handleDefiOverview(env) {
   const ck = new Request('https://marginpad.io/__defi_overview');
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
@@ -3435,6 +3466,7 @@ export default {
     if (url.pathname === '/api/gecko/global') return handleGeckoGlobal(env);
     if (url.pathname === '/api/gecko/trending') return handleGeckoTrending(env);
     if (url.pathname === '/api/gecko/coin') return handleGeckoCoin(url, env);
+    if (url.pathname === '/api/onchain') return handleOnchain(env);
     if (url.pathname === '/api/defi/overview') return handleDefiOverview(env);
     if (url.pathname === '/api/defi/extra') return handleDefiExtra(env);
     if (url.pathname === '/api/cg/coin') return handleCgCoin(url, env);
