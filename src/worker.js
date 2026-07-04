@@ -273,7 +273,7 @@ async function handleFng(env) {
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const out = { data: [] };
   try {
-    const r = await fetch('https://api.alternative.me/fng/?limit=60&format=json', { headers: { accept: 'application/json' }, cf: { cacheTtl: 1800 } });
+    const r = await fetch('https://api.alternative.me/fng/?limit=365&format=json', { headers: { accept: 'application/json' }, cf: { cacheTtl: 1800 } });
     if (r.ok) { const j = await r.json(); out.data = ((j && j.data) || []).map(d => ({ v: +d.value, c: d.value_classification, ts: (+d.timestamp) * 1000 })); }
   } catch (e) {}
   const resp = jr(out, out.data.length ? 'public, max-age=1800' : 'no-store');
