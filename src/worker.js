@@ -1295,15 +1295,19 @@ async function adminDoLogin(request, env, kvKey, cookieName, pathScope, go) {
   const stored = (env.STATS && await env.STATS.get(kvKey)) || '';
   if (!stored) { if (env.STATS) await env.STATS.put(kvKey, hash); } // first run → whatever he types becomes the password
   else if (hash !== stored) return new Response(JSON.stringify({ error: 'bad_password' }), { status: 401, headers: jh });
-  const cookie = cookieName + '=' + hash + '; HttpOnly; Secure; SameSite=Lax; Path=' + pathScope + '; Max-Age=31536000';
-  return new Response(JSON.stringify({ ok: true, go, firstRun: !stored }), { headers: { ...jh, 'set-cookie': cookie } });
+  const h = new Headers(jh);
+  h.append('set-cookie', cookieName + '=' + hash + '; HttpOnly; Secure; SameSite=Lax; Path=' + pathScope + '; Max-Age=31536000');
+  if (cookieName === 'mp_sadm' && pathScope === '/') h.append('set-cookie', cookieName + '=; HttpOnly; Secure; SameSite=Lax; Path=/api/stats; Max-Age=0'); // kill any legacy path-scoped cookie so the dashboard's cross-path fetches get the new Path=/ one
+  return new Response(JSON.stringify({ ok: true, go, firstRun: !stored }), { headers: h });
 }
 async function adminCookieOk(request, env) { // mp_sadm password session == full admin (no key in URL needed)
   try { const stored = env && env.STATS && await env.STATS.get('cfg:statspass'); return !!stored && adminCookieHash(request, 'mp_sadm') === stored; } catch (e) { return false; }
 }
 function adminLogout(cookieName, pathScope) {
-  const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
-  return new Response(JSON.stringify({ ok: true }), { headers: { ...jh, 'set-cookie': cookieName + '=; HttpOnly; Secure; SameSite=Lax; Path=' + pathScope + '; Max-Age=0' } });
+  const h = new Headers({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
+  h.append('set-cookie', cookieName + '=; HttpOnly; Secure; SameSite=Lax; Path=' + pathScope + '; Max-Age=0');
+  if (cookieName === 'mp_sadm') h.append('set-cookie', cookieName + '=; HttpOnly; Secure; SameSite=Lax; Path=/api/stats; Max-Age=0'); // also clear the legacy path-scoped cookie
+  return new Response(JSON.stringify({ ok: true }), { headers: h });
 }
 function adminLoginHTML(title, firstRun, loginPath) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>${title} · MarginPad</title>
@@ -1501,8 +1505,10 @@ render();setInterval(reload,15000);
 }
 
 async function handleStats(url, env, request) {
-  const qkey = url.searchParams.get('key');
-  const cookieOk = await adminCookieOk(request, env);              // password session = full admin, no key in URL
+  // The ?key= link scheme no longer exists — any non-empty key makes the URL a dead 404 (even for a logged-in
+  // browser), so old bookmarked/shared "?key=" links open NOTHING. The only entry is the bare /api/stats login.
+  if (url.searchParams.get('key')) return new Response('Not found', { status: 404, headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' } });
+  const cookieOk = await adminCookieOk(request, env);              // password session is the only credential
   if (!cookieOk) {
     // The ONLY entry point to admin: this password gate. A ?key= in the URL is now ignored.
     const _stored = (env.STATS && await env.STATS.get('cfg:statspass')) || '';
@@ -2913,6 +2919,7 @@ async function handleUnsubscribe(url, env) {
 }
 // Standalone admin profile page for ONE user (opened in a new tab from the Users list). Key-gated; renders client-side.
 async function handleUserPage(url, env, request) {
+  if (url.searchParams.get('key')) return new Response('Not found', { status: 404, headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' } });
   if (!(await adminCookieOk(request, env))) return Response.redirect(url.origin + '/api/stats', 302);
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>User · MarginPad Admin</title><style>
 *{box-sizing:border-box}html,body{margin:0}body{background:#0a0b0d;color:#e9e7df;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
