@@ -703,12 +703,6 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 </aside>
 <!-- Leaders widget retired: the weekly board now lives in chat (/leaderboard) and on Telegram -->
 
-<nav class="mobnav" aria-label="Quick navigation">
-  <button type="button" data-mn="browse" aria-label="Browse"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="mn-l" data-i18n="mnBrowse">Browse</span></button>
-  <button type="button" data-mn="plan" aria-label="Paper Trade"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg><span class="mn-l" data-i18n="mnPaper">Practice</span></button>
-  <button type="button" data-mn="journal" data-mytrades aria-label="My Trades"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span class="mn-l" data-i18n="mnTrades">Trades</span></button>
-  <button type="button" data-mn="chat" aria-label="Chat"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span class="mn-l" data-i18n="mnChat">Chat</span></button>
-</nav>
 <button id="jrFab" type="button" data-mytrades aria-label="My Trades"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:1px;vertical-align:-2px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>My Trades</span></button>
 <button id="chatFab" type="button" aria-label="Open trader chat"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span data-i18n="chatBtn">Chat</span></button>
 <div id="chatBox" hidden>
@@ -769,5 +763,6 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 <script src="/assets/home.js?v=e99023ff"></script>
+<script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

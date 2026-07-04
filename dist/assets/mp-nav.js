@@ -142,19 +142,25 @@
     var items = [
       ['browse', 'Browse', 'mnBrowse', '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'],
       ['/paper-trade', 'Practice', 'mnPaper', '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>'],
-      ['/paper-trade', 'Trades', 'mnTrades', '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>'],
+      ['/paper-trade?trades=1', 'Trades', 'mnTrades', '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>'],
       ['/', 'Chat', 'mnChat', '<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/>']
     ];
     var path = location.pathname.replace(/\/$/, '') || '/';
+    var keys = { Browse: 'browse', Practice: 'practice', Trades: 'trades', Chat: 'chat' };
     var bn = document.createElement('nav'); bn.className = 'mpbn'; bn.setAttribute('aria-label', 'Quick navigation');
     bn.innerHTML = items.map(function (it) {
       var browse = it[0] === 'browse';
-      var cur = (!browse && (it[0].replace(/\/$/, '') || '/') === path) ? ' cur' : '';
-      return '<a href="' + (browse ? '#' : it[0]) + '"' + (browse ? ' data-mpbn="browse" role="button"' : '') + ' class="mpbn-i' + cur + '" aria-label="' + TR(it[2]) + '"><svg viewBox="0 0 24 24" width="22" height="22" ' + S + '>' + it[3] + '</svg><span class="mpbn-l">' + TR(it[2]) + '</span></a>';
+      var cur = (!browse && (it[0].split('?')[0].replace(/\/$/, '') || '/') === path) ? ' cur' : '';
+      return '<a href="' + (browse ? '#' : it[0]) + '" data-mpbn="' + keys[it[1]] + '"' + (browse ? ' role="button"' : '') + ' class="mpbn-i' + cur + '" aria-label="' + TR(it[2]) + '"><svg viewBox="0 0 24 24" width="22" height="22" ' + S + '>' + it[3] + '</svg><span class="mpbn-l">' + TR(it[2]) + '</span></a>';
     }).join('');
     return bn;
   }
-  function mount() { if (!document.body) return; document.body.appendChild(btn); document.body.appendChild(panel); try { if (!document.querySelector('.smobnav,.mobnav')) document.body.appendChild(bottomBar()); } catch (e) {} wire(); }
+  function mount() { if (!document.body) return; document.body.appendChild(btn); document.body.appendChild(panel);
+    // THE one mobile bar — mp-nav owns it SITE-WIDE. Any legacy inline bar (.mobnav variants on the old
+    // homepage/app-shell/rekt/rewards, .smobnav on hub pages) is removed so every page shows the SAME four
+    // items in the same order. Navigation is habit — it must never differ between pages (owner rule).
+    try { Array.prototype.forEach.call(document.querySelectorAll('.smobnav,.mobnav'), function (n) { n.remove(); }); } catch (e) {}
+    try { document.body.appendChild(bottomBar()); } catch (e) {} wire(); }
   var searchEl, scrollEl, _navY = 0;
   function filter(q) {
     q = (q || '').trim().toLowerCase(); if (!scrollEl) return;
@@ -194,8 +200,20 @@
   function wire() {
     searchEl = panel.querySelector('.mpnav-search'); scrollEl = panel.querySelector('.mpnav-scroll');
     btn.addEventListener('click', open);
-    // any Browse button (bottom bar .mpbn, or a hub page's .smobnav) opens the drawer
-    document.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-mpbn="browse"]'); if (b) { e.preventDefault(); open(); } });
+    // the canonical bar prefers the LIVE in-page feature when the page has it, and falls back to navigation:
+    // Browse → the shared drawer (same everywhere) · Practice → in-page Paper-Trade switch on the app shell ·
+    // Trades → the live My-Trades drawer (mp-trade.js / home.js) · Chat → the page's chat widget.
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('[data-mpbn]'); if (!b) return;
+      var k = b.getAttribute('data-mpbn');
+      if (k === 'browse') { e.preventDefault(); open(); return; }
+      if (k === 'practice') {
+        var pp = document.querySelector('.prod[data-prod="plan"]'); if (pp) { e.preventDefault(); pp.click(); window.scrollTo(0, 0); return; }
+        if ((location.pathname.replace(/\/$/, '') || '/') === '/paper-trade') e.preventDefault(); return;
+      }
+      if (k === 'trades') { if (window.mpOpenTrades) { e.preventDefault(); window.mpOpenTrades(); } return; }
+      if (k === 'chat') { var f = document.getElementById('chatFab'); if (f) { e.preventDefault(); f.click(); } return; }
+    });
     if (searchEl) searchEl.addEventListener('input', function () { filter(searchEl.value); });
     // expandable Calculators row: toggle its sub-links (button, not a link → doesn't close the drawer)
     panel.addEventListener('click', function (e) { var ex = e.target.closest && e.target.closest('[data-mpexpand]'); if (!ex) return; e.preventDefault(); var key = ex.getAttribute('data-mpexpand'); var sub = panel.querySelector('[data-sub="' + key + '"]'); if (sub) { sub.hidden = !sub.hidden; ex.classList.toggle('open', !sub.hidden); } });

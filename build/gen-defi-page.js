@@ -238,6 +238,7 @@ ${ld}
   }
   fetch('/api/defi/extra',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(renderExtra).catch(function(){});
 })();</script>
+<script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>
 `;

@@ -960,12 +960,7 @@
   // ---- the lime burger + mobnav Browse open the SHARED site drawer (mp-nav.js) ----
   function openBrowse(){var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(openBrowse,150);}
   (function(){var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',openBrowse);})();
-  document.addEventListener('click',function(e){var b=e.target.closest?e.target.closest('.mobnav [data-mn]'):null;if(!b)return;var a=b.getAttribute('data-mn');
-    if(a==='browse')openBrowse();
-    else if(a==='plan')location.href='/paper-trade';
-    else if(a==='chat'){var f=document.getElementById('chatFab');if(f)f.click();}
-    /* data-mn=journal has data-mytrades — mp-trade.js handles it globally */
-  });
+  /* the mobile bar is now injected + handled by mp-nav.js (single source of truth site-wide) */
 
   // ---- graceful fallback: if a live tile never loads, clear its skeleton ----
   setTimeout(function(){['movers','mkts','news','lbx'].forEach(function(id){var e=document.getElementById(id);if(e&&e.querySelector('.skel'))e.innerHTML='<div class="t-sub" style="color:var(--faint)">live data is warming up — open the full page</div>';});},9000);
@@ -1027,12 +1022,6 @@
     <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
   </form>
 </div>
-<nav class="mobnav" aria-label="Quick navigation">
-  <button type="button" data-mn="browse" aria-label="Browse"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="mn-l">Browse</span></button>
-  <button type="button" data-mn="plan" aria-label="Paper Trade"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg><span class="mn-l">Practice</span></button>
-  <button type="button" data-mn="journal" data-mytrades aria-label="My Trades"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span class="mn-l">Trades</span></button>
-  <button type="button" data-mn="chat" aria-label="Chat"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span class="mn-l">Chat</span></button>
-</nav>
 <script defer src="/assets/mp-trade.js"></script>
 <script defer src="/assets/mp-auth.js"></script>
 <script defer src="/assets/mp-nav.js"></script>

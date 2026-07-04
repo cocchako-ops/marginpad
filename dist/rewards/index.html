@@ -523,12 +523,6 @@
   if(window.mpAuth&&window.mpAuth.me){ onAuth(window.mpAuth.me()); } else { updateGate(); }
 })();
 </script>
-<nav class="mobnav" aria-label="Quick navigation">
-  <button type="button" data-mn="browse" aria-label="Browse"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="mn-l">Browse</span></button>
-  <button type="button" data-mn="plan" aria-label="Paper Trade"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg><span class="mn-l">Practice</span></button>
-  <button type="button" data-mn="journal" data-mytrades aria-label="My Trades"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span class="mn-l">Trades</span></button>
-  <button type="button" data-mn="chat" aria-label="Chat"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span class="mn-l">Chat</span></button>
-</nav>
 <script>/* sticky-header backdrop fades in once scrolled (same as homepage) */(function(){var on=false;function u(){var s=(window.scrollY||window.pageYOffset||0)>16;if(s!==on){on=s;document.body.classList.toggle('scrolled',s);}}window.addEventListener('scroll',u,{passive:true});u();})();</script>
 <div id="jrBackdrop" class="jr-backdrop" hidden></div>
 <aside id="jrDrawer" class="jr-drawer" hidden aria-label="Trade journal">
