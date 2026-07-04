@@ -3490,6 +3490,18 @@ export default {
       ctx.waitUntil(Promise.all([bump('srverr:total'), bump('srverr:day:' + d, 3456000), logErr()]));
     } } catch (e) {}
     try { ctx.waitUntil(sentryWorker(err, request, epath, emethod)); } catch (e) {} // full stack + request context to Sentry
+    // instant Telegram ping on a NEW server-error signature (deduped 1h) — complements Sentry's grouping
+    try { if (env && env.STATS && env.TELEGRAM_TOKEN && env.TG_ADMIN_CHAT) {
+      ctx.waitUntil((async () => { try {
+        const sig = await sha8((emethod + ' ' + epath + ' ' + detail).slice(0, 160));
+        const sk = 'tgerr:' + sig;
+        if (await env.STATS.get(sk)) return;                       // already pinged this signature within the last hour
+        await env.STATS.put(sk, '1', { expirationTtl: 3600 });
+        const safe = s => String(s || '').replace(/[<>&]/g, '');
+        await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, parse_mode: 'HTML', disable_web_page_preview: true,
+          text: '🚨 <b>Server error</b>\n<code>' + safe(emethod + ' ' + epath) + '</code>\n' + safe(detail).slice(0, 300) + '\n\n<a href="https://marginpad.io/api/stats?key=' + STATS_KEY + '&nc=1">Health</a> · <a href="https://sentry.io/organizations/">Sentry</a>' });
+      } catch (e) {} })());
+    } } catch (e) {}
     return new Response('Server error', { status: 500, headers: { ...CORS } });
    }
   },

@@ -87,6 +87,9 @@ for (const lang of LANGS) {
   // title + description
   html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${escText(SEO[lang].t)}</title>`);
   html = html.replace(/(<meta name="description" content=")[^"]*(")/, `$1${escAttr(SEO[lang].d)}$2`);
+  // localize the social-card title too (og:description/twitter:description are translated by gen-home-i18n)
+  html = html.replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${escAttr(SEO[lang].t)}$2`);
+  html = html.replace(/(<meta name="twitter:title" content=")[^"]*(")/, `$1${escAttr(SEO[lang].t)}$2`);
   // canonical + og:url for this language
   html = html.replace('<link rel="canonical" href="https://marginpad.io/" />', `<link rel="canonical" href="https://marginpad.io/${lang}/" />`);
   html = html.replace('<meta property="og:url" content="https://marginpad.io/" />', `<meta property="og:url" content="https://marginpad.io/${lang}/" />`);

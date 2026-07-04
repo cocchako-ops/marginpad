@@ -13,12 +13,16 @@ function run(label, cmd) {
   execSync(cmd, { cwd: ROOT, stdio: 'inherit' });
 }
 
-// 1) homepage source → dist (the generators + gtag operate on dist/index.html)
-process.stdout.write('▸ copy homepage app/index.html → dist/index.html\n');
-fs.copyFileSync(path.join(ROOT, 'app', 'index.html'), path.join(ROOT, 'dist', 'index.html'));
-
-// 1b) re-stamp the ?v= hash on the extracted homepage bundle (dist/assets/home.css + home.js)
+// 1) tool-route shell — since go-live, app/index.html is NOT the homepage; it's the Paper-Trade/Charts/
+//    Calculators/Screener shell served at /app. Stamp the home.css/home.js ?v= hash on it FIRST, then copy
+//    it to dist/app.html so the shell ships the fresh bundle.
 run('Version-stamp home.css/home.js', 'node build/bump-home-assets.js');
+process.stdout.write('▸ copy tool shell app/index.html → dist/app.html\n');
+fs.copyFileSync(path.join(ROOT, 'app', 'index.html'), path.join(ROOT, 'dist', 'app.html'));
+
+// 1b) live homepage — render the hand-authored bento source (dist/demo-home/index.html) into dist/index.html
+//     (indexable, real SEO head + gtag + JSON-LD). The generators + gtag below operate on this dist/index.html.
+run('Live homepage (bento) from demo-home', 'node build/gen-home-live.js');
 
 // 2) standalone SEO / landing-page generators (independent of each other)
 run('SEO exchange pages', 'node build/gen-seo-pages.js');
@@ -55,6 +59,8 @@ run('i18n assets (slim + packs)', 'node build/gen-i18n-assets.js');
 
 // 5) language homepages — translated copies of dist/index.html (must run AFTER the homepage copy)
 run('Language homepages', 'node build/gen-i18n-pages.js');
+// 5b) translate the bento homepage BODY into each language (post-processes the pages gen-i18n-pages just wrote)
+run('Language homepage body translation', 'node build/gen-home-i18n.js');
 
 // 6) (retired) add-sweepliq.js — the homepage JS now ships as the shared /assets/home.js bundle,
 //    so language homepages can never drift from it; the old string-anchored patcher is obsolete.
