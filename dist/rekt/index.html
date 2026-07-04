@@ -735,6 +735,8 @@
     render();try{deskRenderAll();}catch(_e){}
   });
   var rkQ=document.getElementById('rkQ');
+  // deep-link: /rekt/?coin=SOL pre-filters the tape (the screener's "watch live liquidations" action lands here)
+  try{var _qc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_qc&&rkQ){rkQ.value=_qc.toUpperCase();fSym=rkQ.value;}}catch(_e){}
   if(rkQ)rkQ.addEventListener('input',function(){fSym=(rkQ.value||'').trim().toUpperCase();render();try{deskRenderAll();}catch(_e){}});
   var rkP=document.getElementById('rkPause');
   if(rkP)rkP.addEventListener('click',function(){paused=!paused;rkP.classList.toggle('on',paused);rkP.setAttribute('aria-pressed',paused?'true':'false');rkP.textContent=paused?'▶ Live':'⏸ Pause';if(!paused){render();try{deskRenderAll();}catch(_e){}}});

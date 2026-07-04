@@ -8,6 +8,10 @@
   function wlToggle(s){var a=wlGet(),k=s+'USDT',i=a.indexOf(k);if(i<0&&a.indexOf(s)>=0){k=s;i=a.indexOf(s);}if(i>=0)a.splice(i,1);else a.push(k);try{localStorage.setItem('mp_watchlist',JSON.stringify(a));}catch(e){}}
   function fmtPx(p){p=+p;return '$'+p.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:p>=1?2:6});}
   function fmtBig(n){n=+n;if(n>=1e9)return '$'+(n/1e9).toFixed(2)+'B';if(n>=1e6)return '$'+(n/1e6).toFixed(1)+'M';if(n>=1e3)return '$'+(n/1e3).toFixed(0)+'K';return '$'+(n||0).toFixed(0);}
+  // screener enrichment from OUR collector: per-coin 24h liquidations + OI Δ24h — data no free screener shows
+  var XTRA={};
+  function loadXtra(){fetch('/api/v1/screener-extra').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&(d.liq||d.oi)){XTRA=d;try{render();}catch(_e){}}}).catch(function(){});}
+  loadXtra();setInterval(loadXtra,180000);
   function pct(v){return ((+v)>=0?'+':'')+(+v).toFixed(2)+'%';}
   function live(s,fb){var lp=window.mpLivePrices&&window.mpLivePrices[s];return lp&&lp.p>0?lp.p:fb;}
   function scoreCls(s){return s==null?'neu':s>=75?'bull':s>=60?'bull2':s>=40?'neu':s>=25?'bear2':'bear';}
@@ -65,6 +69,10 @@
         +'<span class="scr-box"><i>OI</i><b>'+fmtBig(e.oi||0)+'</b></span>'
         +'<span class="scr-box"><i>Fund</i><b class="'+fc+'">'+pct(e.f||0)+'</b></span>'
         +(e.rsi!=null?'<span class="scr-box"><i>RSI</i><b>'+e.rsi+'</b></span>':'');
+      // OUR data: 24h liquidations per coin (collector) + OI change vs 24h ago (hourly snapshots)
+      var xl=XTRA.liq&&XTRA.liq[e.s],xo=XTRA.oi&&XTRA.oi[e.s];
+      if(xl&&xl.liq>0)boxes+='<span class="scr-box"><i>Liq 24h</i><b style="color:#ff8a80">'+fmtBig(xl.liq)+'</b></span>';
+      if(xo&&xo.chg!=null)boxes+='<span class="scr-box"><i>OI Δ24h</i><b class="'+(xo.chg>=0?'up':'dn')+'">'+(xo.chg>=0?'+':'')+xo.chg.toFixed(1)+'%</b></span>';
       return '<button type="button" class="scr-row" data-sym="'+e.s+'" data-p="'+e.p+'">'
         +'<span class="scr-score3 sc-'+cls+'"><b>'+(e.score==null?'—':e.score)+'</b><i>score</i></span>'
         +'<span class="scr-main">'
@@ -119,7 +127,9 @@
       +'<div class="scr-ls"><div class="scr-ls-bar"><i class="l" style="width:'+lp+'%"></i><i class="s" style="width:'+sp+'%"></i></div><div class="scr-ls-lbl"><span class="up">Long '+lp+'%</span><span class="dn">'+sp+'% Short</span></div></div>'
       +'</div>';}
   function openSheet(e){if(!sheet)buildSheet();curRow=e;var sym=e.s;document.getElementById('scrSheetSym').textContent=sym;document.getElementById('scrSheetPx').textContent=fmtPx(live(sym,e.p));document.getElementById('scrAn').innerHTML=anHtml(e);
-    var ab=document.getElementById('scrActs');if(ab)ab.innerHTML='<a class="scr-act a-alert" href="/alerts/?coin='+sym+'"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Set a price alert</a><a class="scr-act a-plan" href="/paper-trade?coin='+sym+'"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>Open in Paper Trade (demo)</a>';
+    var _xl=XTRA.liq&&XTRA.liq[sym];
+    var ab=document.getElementById('scrActs');if(ab)ab.innerHTML='<a class="scr-act a-alert" href="/alerts/?coin='+sym+'"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Set a price alert</a><a class="scr-act a-plan" href="/paper-trade?coin='+sym+'"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>Open in Paper Trade (demo)</a>'
+      +(_xl&&_xl.liq>0?'<a class="scr-act" style="color:#ff8a80" href="/rekt/?coin='+sym+'"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>'+fmtBig(_xl.liq)+' liquidated in 24h — watch live →</a>':'');
     // copy-trade prefill is intentionally OFF (owner's choice): just open the coin; the full setup (recommended leverage / SL / TP) stays visible on the screener sheet to read.
     var exb=document.getElementById('scrExch');if(exb)exb.innerHTML=exchHtml(sym);
     var lb=document.getElementById('scrLive');if(lb){lb.innerHTML='<div class="scr-live-load">Loading live derivatives data…</div>';fetch('/api/cg/coin?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(curRow!==e||!lb)return;lb.innerHTML=cgHtml(d);}).catch(function(){if(lb)lb.innerHTML='';});}
