@@ -95,13 +95,29 @@
   function mkPane(sym,tf){
     var el=document.createElement('div');el.className='mfc-pane';
     el.innerHTML='<div class="mfc-chart"></div><canvas class="cwin-draw"></canvas>'+TOOLS+'<div class="mfc-pl"><b class="mfc-pl-s"></b> <span class="mfc-pl-tf"></span> <span class="mfc-pl-p"></span></div>';
-    var p={el:el,host:el.querySelector('.mfc-chart'),sym:sym,tf:tf,bars:[],lastBar:null,chart:null,candle:null,inds:{},indSeries:[],tradeLines:[],reload:0,w:null};
+    var p={el:el,host:el.querySelector('.mfc-chart'),sym:sym,tf:tf,bars:[],lastBar:null,chart:null,candle:null,inds:{},indSeries:[],tradeLines:[],_mtPrices:[],reload:0,w:null};
     el.addEventListener('pointerdown',function(){setActive(panes.indexOf(p));},true);
     return p;
   }
   function initChart(p){ if(p.chart||!window.LightweightCharts||!p.host.clientWidth){return;}
     p.chart=LightweightCharts.createChart(p.host,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.35)'},horzLines:{color:'rgba(35,41,50,.35)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:5,barSpacing:6},crosshair:{mode:0},autoSize:true});
-    p.candle=p.chart.addCandlestickSeries({upColor:'#2ebd85',downColor:'#ff6258',borderVisible:false,wickUpColor:'#2ebd85',wickDownColor:'#ff6258'});
+    p.candle=p.chart.addCandlestickSeries({upColor:'#2ebd85',downColor:'#ff6258',borderVisible:false,wickUpColor:'#2ebd85',wickDownColor:'#ff6258',
+      // extend the auto-fit range to include the imported position's entry/liq lines (capped at 2.4× the candle range)
+      // so a TF switch can't re-fit to candles only and push the lines off-screen — mirrors the desktop engines.
+      autoscaleInfoProvider:function(orig){try{
+        if(!p.bars||!p.bars.length)return orig?orig():null;
+        var vr=null;try{vr=p.chart.timeScale().getVisibleLogicalRange();}catch(e){}
+        var n=p.bars.length,from=vr?Math.max(0,Math.floor(vr.from)):Math.max(0,n-160),to=vr?Math.min(n-1,Math.ceil(vr.to)):n-1;
+        var cLo=Infinity,cHi=-Infinity;for(var i=from;i<=to;i++){var b=p.bars[i];if(!b)continue;if(b.low<cLo)cLo=b.low;if(b.high>cHi)cHi=b.high;}
+        if(p.lastBar){if(p.lastBar.low<cLo)cLo=p.lastBar.low;if(p.lastBar.high>cHi)cHi=p.lastBar.high;}
+        if(!(isFinite(cLo)&&isFinite(cHi)&&cHi>cLo))return orig?orig():null;
+        var cRange=cHi-cLo,lo=cLo,hi=cHi,budget=cRange*2.4,mp=p._mtPrices||[];
+        for(var k=0;k<mp.length;k++){var v=mp[k];if(!(v>0))continue;
+          if(v<cLo){if((cLo-v)<=budget&&v<lo)lo=v;}
+          else if(v>cHi){if((v-cHi)<=budget&&v>hi)hi=v;}}
+        var pad=(hi-lo)*0.06;
+        return {priceRange:{minValue:lo-pad,maxValue:hi+pad}};
+      }catch(e){return orig?orig():null;}}});
     // price-anchored drawing (reuse the desktop engine → trendline/fib/h-line/v-line/pen + colours, and it re-projects on rotation/resize)
     try{if(window.__mpDraw){p.w={chart:p.chart,candle:p.candle,el:p.el,dead:false};window.__mpDraw.setup(p.w,p.el);window.__mpDraw.wire(p.w,null,p.el.querySelector('.cwin-tools'));}}catch(e){}
     loadKlines(p);
@@ -155,9 +171,10 @@
   function liqOf(e){var long=e.side!=='short',lv=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);return e.liq||(long?e.entry*(1-(1-mmr)/lv):e.entry*(1+(1-mmr)/lv));}
   function drawTrades(p){clearTrades(p);if(!p.candle)return;var d;try{d=JSON.parse(localStorage.getItem('mp_journal')||'[]')||[];}catch(e){d=[];}
     d.filter(function(e){return e.status==='open'&&e.sym===p.sym;}).forEach(function(e){var long=e.side!=='short';
+      p._mtPrices.push(+e.entry,liqOf(e)); // feed the autoscale provider so the lines stay in view on every timeframe
       try{p.tradeLines.push(p.candle.createPriceLine({price:+e.entry,color:long?'#10b981':'#ef4444',lineWidth:1,lineStyle:0,axisLabelVisible:true,title:(long?'LONG':'SHORT')+' '+(e.lev||1)+'x'}));}catch(_){}
       try{p.tradeLines.push(p.candle.createPriceLine({price:liqOf(e),color:'#ff3b3b',lineWidth:2,lineStyle:0,axisLabelVisible:true,title:'LIQ'}));}catch(_){}});}
-  function clearTrades(p){p.tradeLines.forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p.tradeLines=[];}
+  function clearTrades(p){p.tradeLines.forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p.tradeLines=[];p._mtPrices=[];}
   // ---- drawing: toggles the price-anchored draw engine on the ACTIVE pane (each pane has its own .cwin-tools palette) ----
   function toggleDraw(btn){var p=panes[activeI];if(!p||!p.w||!p.w.dr)return;p.w.dr.on=!p.w.dr.on;p.el.classList.toggle('drawing',p.w.dr.on);btn.classList.toggle('on',p.w.dr.on);}
   function clearPaneDraw(p){if(p&&p.w&&p.w.dr){p.w.dr.shapes=[];p.w.dr.cur=null;if(p.w.dr.redraw)p.w.dr.redraw();}}
