@@ -119,13 +119,25 @@ const CSS = `
   .dfgl .r .n{font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .dfgl .r .c{font-family:'Space Mono',monospace;font-weight:800;font-size:12.5px;font-variant-numeric:tabular-nums}
   .dfgl .col.gain .c{color:#34d99a}.dfgl .col.lose .c{color:#ff7b72}
-  /* standard standalone header (same as /coins/ and /news/) — overrides blog.css's mono link row */
-  header.dfhead{display:flex;align-items:center;justify-content:space-between;padding:16px 0 14px;border-bottom:none}
-  .hnav{display:flex;align-items:center;gap:16px}
-  .hnav a{font-family:'Familjen Grotesk',sans-serif;font-size:14px;font-weight:600;color:#9aa3ad;text-decoration:none;text-transform:none;letter-spacing:0;margin:0}
-  .hnav a:hover{color:#e9e7df}
-  .hauth{background:none;border:1px solid #2f3742;color:#e9e7df;border-radius:9px;padding:7px 13px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Familjen Grotesk',sans-serif}
-  @media(max-width:640px){.hide-m{display:none}}
+  /* ===== VERBATIM homepage header (bento) — full-bleed sticky blur bar, identical markup + rules ===== */
+  #dfHead{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px clamp(18px,3vw,64px);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.82);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);contain:paint;border-bottom:1px solid rgba(255,255,255,.09);width:100vw;margin-left:calc(50% - 50vw)}
+  #dfHead.sc{box-shadow:0 14px 34px -20px rgba(0,0,0,.9)}
+  #dfHead .brand{display:flex;align-items:baseline;gap:10px;border:none;padding:0;background:none}
+  #dfHead .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;transition:letter-spacing .25s ease;cursor:pointer;color:#f0eee6;text-decoration:none}
+  #dfHead .mark b{color:#c2f64a}
+  .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center}
+  .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s}
+  .hmenu span:nth-child(2){width:13px}
+  .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px}
+  #dfHead .hnav{display:flex;align-items:center;gap:3px}
+  .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#a6afba;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s}
+  .hlink:hover{color:#fff;background:rgba(255,255,255,.07)}
+  .hlink svg{flex-shrink:0;transition:transform .16s cubic-bezier(.2,.7,.2,1)}
+  .hlink:hover svg{transform:scale(1.14)}
+  .hbot{color:#7cc4ff}.hbot:hover{color:#a8d8ff;background:rgba(124,196,255,.12)}
+  .hrwd{color:#c2f64a}.hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12)}
+  .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#a6afba;background:#0b0d12;border:1px solid rgba(255,255,255,.17);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;transition:.15s;max-width:140px}
+  @media(max-width:720px){.hnav .hbot{display:none}.hnav .hjr{display:none}.hnav .hauth span{display:none}.hnav .hauth{padding:7px}#dfHead .hnav{gap:2px}}
   @media(max-width:720px){.dfchart{height:170px}.dfc-ranges{top:12px;right:12px}.dfcat .cr{grid-template-columns:110px 1fr 74px;font-size:12.5px}}
   /* mobile (matches the 720px nav breakpoint): stack the hero (a wide "$314.5B" in a half-width card overflowed → page looked zoomed-out) + tighten to the other pages' density */
   @media(max-width:720px){
@@ -192,9 +204,20 @@ ${ld}
 <body>
 <div class="df-glow" aria-hidden="true"></div>
 <div class="wrap">
-  <header class="dfhead">
-    <a class="brand" href="/">MARGIN<b style="color:#c2f64a">PAD</b></a>
-    <div class="hnav"><a href="/coins/">Markets</a><a href="/rekt/">Liquidations</a><a class="hide-m" href="/funding/">Funding</a><a class="hide-m" href="/screener">Screener</a><button class="hauth" type="button" data-auth-open data-auth-status>Sign in</button></div>
+  <header id="dfHead">
+    <div class="brand">
+      <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
+    </div>
+    <nav class="hnav">
+      <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
+      <a href="/rewards/" class="hlink hrwd" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>
+      <a href="/paper-trade?trades=1" class="hlink hjr"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</a>
+      <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
+      <select class="lang" id="langSel" aria-label="Language">
+        <option value="/defi/">EN</option><option value="/es/defi/">ES</option><option value="/de/defi/">DE</option><option value="/fr/defi/">FR</option><option value="/pt/defi/">PT</option><option value="/nl/defi/">NL</option><option value="/tr/defi/">TR</option><option value="/ru/defi/">RU</option><option value="/zh/defi/">ZH</option><option value="/ja/defi/">JA</option><option value="/ko/defi/">KO</option><option value="/ar/defi/">AR</option><option value="/id/defi/">ID</option>
+      </select>
+    </nav>
   </header>
   <div class="crumb"><a href="/">Home</a> / DeFi</div>
   <article>
@@ -379,6 +402,10 @@ ${ld}
   fetch('/api/defi/charts',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.tvl1y)renderCharts(d);}).catch(function(){});
   var rg=document.getElementById('dfRanges');
   if(rg)rg.addEventListener('click',function(ev){var b=ev.target.closest('button[data-r]');if(!b)return;rangeSel=b.getAttribute('data-r');rg.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});drawBig();});
+  /* homepage-header wiring: burger opens the shared Browse drawer; lang jumps to the language variant; sticky shadow */
+  (function(){var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',function(){function go(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(go,150);}go();});})();
+  (function(){var ls=document.getElementById('langSel');if(!ls)return;var seg=location.pathname.split('/')[1];if(seg&&seg.length===2)ls.value='/'+seg+'/defi/';ls.addEventListener('change',function(){location.href=this.value;});})();
+  (function(){var hd=document.getElementById('dfHead');if(hd)window.addEventListener('scroll',function(){hd.classList.toggle('sc',window.scrollY>8);},{passive:true});})();
   var _rzT=null;window.addEventListener('resize',function(){clearTimeout(_rzT);_rzT=setTimeout(function(){drawBig();if(CH){areaChart(document.getElementById('dfStChart'),CH.st1y.slice(-90),{color:'#3fd8e6',mini:true});barChart(document.getElementById('dfDexChart'),CH.dex180.slice(-90),{color:'#9d7bff'});}},220);});
 })();</script>
 <script defer src="/assets/mp-auth.js"></script>
