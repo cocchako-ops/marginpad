@@ -457,14 +457,16 @@ async function handleCgPulse(url, env) {
 }
 // Big tradable-symbol list for the symbol pickers / dropdowns — every Bybit USDT-perp by 24h volume (~500). Edge-cached 10 min.
 async function handleSymbols() {
-  const ck = new Request('https://marginpad.io/__symbols');
+  const ck = new Request('https://marginpad.io/__symbols_v2');
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   let syms = [];
   try {
     const r = await fetch('https://api.bybit.com/v5/market/tickers?category=linear', { cf: { cacheTtl: 600 } });
     const j = await r.json();
+    // Paper trade is Bybit-only AND liquid-only (owner: ≥ $5M 24h turnover) — thin coins update every 5–10s (few trades),
+    // so we only OFFER the ~top-liquid perps. This drives the pickers, window.mpIsBybit and the screener's paper-trade gate.
     syms = ((j && j.result && j.result.list) || [])
-      .filter(t => /USDT$/.test(t.symbol) && (+t.turnover24h || 0) > 0)
+      .filter(t => /USDT$/.test(t.symbol) && (+t.turnover24h || 0) >= 5e6)
       .sort((a, b) => (+b.turnover24h || 0) - (+a.turnover24h || 0))
       .map(t => t.symbol.replace(/USDT$/, ''))
       .slice(0, 500);
@@ -706,6 +708,7 @@ async function _multiBase(env) {
     if (!m) { m = { s: sym, prices: [], vol: 0, vens: 0, p: 0, chg: null, f: null, oi: 0, hi: 0, lo: 0 }; map.set(sym, m); }
     m.prices.push(price); m.vol += volUsd; m.vens++;
     opt = opt || {};
+    if (opt.byb) { m.byb = true; m.bybVol = volUsd; } // Bybit-specific 24h turnover, for the ≥$5M paper-tradeable filter
     if (opt.primary || m.p === 0) {
       m.p = price;
       if (opt.chg != null && isFinite(opt.chg)) m.chg = opt.chg;
@@ -730,7 +733,7 @@ async function _multiBase(env) {
       const list = j && j.result && Array.isArray(j.result.list) ? j.result.list : [];
       for (const t of list) {
         if (!/^[A-Z0-9]+USDT$/.test(t.symbol)) continue;
-        add(t.symbol.replace(/USDT$/, ''), +t.lastPrice, +t.turnover24h, { primary: true, chg: +t.price24hPcnt * 100, f: +t.fundingRate * 100, oi: +t.openInterestValue, hi: +t.highPrice24h, lo: +t.lowPrice24h });
+        add(t.symbol.replace(/USDT$/, ''), +t.lastPrice, +t.turnover24h, { primary: true, byb: true, chg: +t.price24hPcnt * 100, f: +t.fundingRate * 100, oi: +t.openInterestValue, hi: +t.highPrice24h, lo: +t.lowPrice24h });
       }
     }
   } catch (e) {}
@@ -790,25 +793,25 @@ async function _multiBase(env) {
     const ps = m.prices.slice().sort((a, b) => a - b);
     const med = ps.length % 2 ? ps[(ps.length - 1) / 2] : (ps[ps.length / 2 - 1] + ps[ps.length / 2]) / 2;
     const spread = (med > 0 && ps.length > 1) ? (ps[ps.length - 1] - ps[0]) / med * 100 : 0;
-    out.push({ s: m.s, p: med || m.p, chg: m.chg != null ? m.chg : 0, vol: m.vol, f: m.f != null ? m.f : 0, oi: m.oi, hi: m.hi, lo: m.lo, vens: m.vens, spread: +spread.toFixed(2) });
+    out.push({ s: m.s, p: med || m.p, chg: m.chg != null ? m.chg : 0, vol: m.vol, f: m.f != null ? m.f : 0, oi: m.oi, hi: m.hi, lo: m.lo, vens: m.vens, spread: +spread.toFixed(2), byb: !!m.byb, bybVol: m.bybVol || 0 });
   }
   return out;
 }
 
 async function handleScreener(env) {
   const cache = caches.default;
-  const ck = new Request('https://marginpad.io/__screener_v12');
+  const ck = new Request('https://marginpad.io/__screener_v13');
   try { const hit = await cache.match(ck); if (hit) return hit; } catch (e) {}
   // colo cache missed → fall back to the GLOBAL KV snapshot the cron keeps warm (caches.default is per-colo, so a cold colo
   // otherwise pays the full ~33-subrequest compute → the "top signals take ages to load" lag). KV is global + instant.
-  if (env && env.STATS) { try { const kv = await env.STATS.get('scr:cache5'); if (kv) { const o = JSON.parse(kv); if (o && o.body && (Date.now() - (o.ts || 0) < 900000)) { const r = new Response(o.body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } }); try { await cache.put(ck, r.clone()); } catch (e) {} return r; } } } catch (e) {} }
+  if (env && env.STATS) { try { const kv = await env.STATS.get('scr:cache6'); if (kv) { const o = JSON.parse(kv); if (o && o.body && (Date.now() - (o.ts || 0) < 900000)) { const r = new Response(o.body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } }); try { await cache.put(ck, r.clone()); } catch (e) {} return r; } } } catch (e) {} }
   // Multi-exchange (Bybit + OKX + Gate) USDT-perp universe: aggregated USD volume + venue count + median-price cross-check
   let universe = [];
   try {
     universe = (await _multiBase(env))
-      .filter(t => t.p > 0 && t.vol > 0)
+      .filter(t => t.p > 0 && t.vol > 0 && t.byb && t.bybVol >= 5e6) // owner: screener ranks ONLY the paper-tradeable set — Bybit perps with >=$5M Bybit 24h volume (~top-90), not every thin/non-Bybit ticker
       .sort((a, b) => b.vol - a.vol)
-      .slice(0, 200); // show the top ~200 by aggregated volume (like a real screener) — cheap fields (price/24h%/vol/funding/OI) come for free from the ticker merge
+      .slice(0, 200); // aggregated volume ranking (like a real screener) — cheap fields (price/24h%/vol/funding/OI) come for free from the ticker merge
   } catch (e) {}
   if (!universe.length) return J({ error: 'upstream temporarily unavailable' }, 503);
   // Only the top N get the EXPENSIVE technical score (one 4h-klines fetch each → RSI/MACD/MA/ATR + 0-100 score + setup).
@@ -837,7 +840,7 @@ async function handleScreener(env) {
   });
   try { await cache.put(ck, resp.clone()); } catch (e) {}
   // keep a global KV snapshot so other colos (and the next cold load) serve instantly instead of recomputing
-  if (env && env.STATS) { try { await env.STATS.put('scr:cache5', JSON.stringify({ ts: Date.now(), body }), { expirationTtl: 1800 }); } catch (e) {} }
+  if (env && env.STATS) { try { await env.STATS.put('scr:cache6', JSON.stringify({ ts: Date.now(), body }), { expirationTtl: 1800 }); } catch (e) {} }
   return resp;
 }
 // Telegram channel signals: when a top-30 screener pair scores ≥95 (extremely bullish), auto-post a high-leverage
