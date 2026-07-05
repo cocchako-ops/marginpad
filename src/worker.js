@@ -1333,6 +1333,9 @@ async function handleBug(url, request, env) {
   const bugPass = (await STATS.get('cfg:bugpass2')) || ''; // SHA-256 of the bro's password (set on first login), '' until set
   const cookOk = !!bugPass && adminCookieHash(request, 'mp_badm') === bugPass;
   const authed = () => cookOk; // the /api/bug password cookie (mp_badm) is the only way in — no ?key= access
+  // Read-only machine credential for the local bug-inbox watcher: a dedicated secret sent as a HEADER (never a
+  // shareable URL, independent of the admin key). Gates ONLY /api/bug/list below — no mutating actions.
+  const watchOk = !!env.BUG_WATCH_TOKEN && request.headers.get('x-watch-token') === env.BUG_WATCH_TOKEN;
   const readBody = async () => { try { return await request.json(); } catch (e) { return {}; } };
   if (request.method === 'POST' && path === '/api/bug/login') return adminDoLogin(request, env, 'cfg:bugpass2', 'mp_badm', '/api/bug', '/api/bug');
   if (request.method === 'POST' && path === '/api/bug/logout') return adminLogout('mp_badm', '/api/bug');
@@ -1392,7 +1395,7 @@ async function handleBug(url, request, env) {
     return new Response(JSON.stringify({ ok: true }), { headers: jh });
   }
   if (path === '/api/bug/list') {
-    if (!authed('')) return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: jh });
+    if (!authed('') && !watchOk) return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: jh });
     return new Response(JSON.stringify({ bugs: await listBugs(), ts: Date.now() }), { headers: jh });
   }
   const inj = (v) => JSON.stringify(v).replace(/</g, '\\u003c');

@@ -48,3 +48,6 @@ extension/marginpad-extension.zip
 .dev.vars
 
 restore_tlm_whyme.txt
+
+# local secret files (watcher token, admin key, etc.) — NEVER commit (public repo)
+*.local.txt
