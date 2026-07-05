@@ -14,11 +14,20 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
 }catch(e){}};
 ;/* ══════════ inline block from app/index.html line 2435 ══════════ */
 /* shared token list for the typeable symbol pickers (Paper Trade + Charts) — the screener tokens + common coins. Fills #symTokens too. */
+  // Paper Trade + Charts are BYBIT-ONLY (owner decision): only tokens Bybit lists get a smooth live WS feed, so the
+  // pickers list ONLY Bybit-tradeable symbols and window.mpIsBybit() gates the screener's paper-trade action + free-entry.
   window.mpLoadTokens=function(cb){if(window.mpTokens){cb&&cb(window.mpTokens);return;}
     var base=['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX','LINK','LTC','ENA','TRX','DOT','ATOM','NEAR','ARB','OP','PEPE','SHIB','SUI','APT','INJ','TIA','SEI','WIF','LDO','UNI','AAVE','FIL','RENDER'];
     fetch('/api/symbols').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
-      var set={},out=[];base.forEach(function(s){if(!set[s]){set[s]=1;out.push(s);}});
-      if(j&&j.symbols)j.symbols.forEach(function(s){s=String(s||'').toUpperCase();if(s&&!set[s]){set[s]=1;out.push(s);}});
+      var byb={};                                             // Bybit set: raw (1000PEPE) + de-prefixed clean (PEPE)
+      if(j&&j.symbols)j.symbols.forEach(function(s){s=String(s||'').toUpperCase();if(!s)return;byb[s]=1;byb[s.replace(/^1(0{3,6})(?=[A-Z])/,'')]=1;});
+      var hasSyms=!!(j&&j.symbols&&j.symbols.length);
+      window.mpBybitSet=byb;
+      window.mpIsBybit=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym)return false;if(!hasSyms)return true;return !!(byb[sym]||byb['1000'+sym]||byb['10000'+sym]||byb['1000000'+sym]);};
+      var seen={},out=[];function add(s){s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(s&&!seen[s]&&window.mpIsBybit(s)){seen[s]=1;out.push(s);}}
+      base.forEach(add);                                      // majors first (only those Bybit actually has)
+      if(hasSyms)j.symbols.forEach(function(s){add(String(s||'').toUpperCase().replace(/^1(0{3,6})(?=[A-Z])/,''));}); // then the rest of Bybit, de-prefixed
+      if(!out.length)base.forEach(function(s){if(!seen[s]){seen[s]=1;out.push(s);}}); // /api/symbols failed → don't leave pickers empty
       window.mpTokens=out;
       var dl=document.getElementById('symTokens');if(dl){dl.innerHTML=out.map(function(s){return '<option value="'+s+'">';}).join('');}
       cb&&cb(out);});};
@@ -1558,9 +1567,9 @@ window.addEventListener('load', function () {
     function close(){ panel.hidden=true; trig.classList.remove('open'); if(floating){window.removeEventListener('scroll',place,true);window.removeEventListener('resize',place);} document.removeEventListener('touchmove',onTouchMove,{passive:false}); }
     function useVal(v){ v=String(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,16); if(!v)return; var f=false; for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value.toUpperCase()===v){f=true;break;} } if(!f){ var o=document.createElement('option'); o.value=v; o.textContent=v; sel.appendChild(o); } var ch=sel.value!==v; sel.value=v; sync(); if(ch)sel.dispatchEvent(new Event('change',{bubbles:true})); close(); }
     function filter(q){ q=(q||'').toLowerCase(); var exact=false,o=list.children; for(var i=0;i<o.length;i++){ if(o[i].classList.contains('csel-add'))continue; var t=o[i].textContent.toLowerCase(); o[i].style.display=t.indexOf(q)>=0?'':'none'; if(t===q)exact=true; }
-      if(freeEntry){ var add=list.querySelector('.csel-add'); var qc=(search?search.value:'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(qc&&!exact){ if(!add){ add=document.createElement('button'); add.type='button'; add.className='csel-opt csel-add'; add.addEventListener('click',function(){ useVal(search.value); }); list.appendChild(add); } add.textContent='⊕ Trade '+qc; add.style.display=''; } else if(add){ add.style.display='none'; } } }
+      if(freeEntry){ var add=list.querySelector('.csel-add'); var qc=(search?search.value:'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(qc&&!exact){ var _tok=!window.mpIsBybit||window.mpIsBybit(qc); if(!add){ add=document.createElement('button'); add.type='button'; add.className='csel-opt csel-add'; add.addEventListener('click',function(){ if(add._ok)useVal(add._sym); }); list.appendChild(add); } add._ok=_tok; add._sym=qc; if(_tok){ add.textContent='⊕ Trade '+qc; add.style.opacity=''; } else { add.textContent=qc+' — not on Bybit (paper trade unavailable)'; add.style.opacity='.5'; } add.style.display=''; } else if(add){ add.style.display='none'; } } }
     trig.addEventListener('click',function(e){ e.stopPropagation(); if(panel.hidden){open();}else{close();} });
-    if(search){ search.addEventListener('input',function(){ filter(search.value); }); if(freeEntry)search.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); useVal(search.value); } }); }
+    if(search){ search.addEventListener('input',function(){ filter(search.value); }); if(freeEntry)search.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); var _q=(search.value||'').toUpperCase().replace(/[^A-Z0-9]/g,''); if(!window.mpIsBybit||window.mpIsBybit(_q))useVal(search.value); } }); }
     document.addEventListener('click',function(e){ if(!wrap.contains(e.target)&&!panel.contains(e.target)) close(); });
     document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
     sel.addEventListener('change', sync); sync();
