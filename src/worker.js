@@ -3056,7 +3056,7 @@ function dt(t){if(!t)return '—';var d=new Date(t);return d.toLocaleDateString(
 function fmtDur(s){s=Math.round(s||0);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m '+(s%60)+'s';var h=Math.floor(m/60);return h+'h '+(m%60)+'m';}
 function uDev(ua){return /Mobi|Android|iPhone|iPad|iPod/i.test(ua||'')?'Mobile':'Desktop';}
 function verb(t){return t==='exchange'?'clicked an exchange':t==='paper'?'opened Paper Trade':t==='tool'?'opened a tool':t==='tab'?'used a calculator':t==='hotpair'?'traded a pair':t==='pageview'?'viewed':(t||'did');}
-function uarg(){return key?('key='+encodeURIComponent(key)+(email?'&email='+encodeURIComponent(email):'')+(id?'&id='+encodeURIComponent(id):'')+(uname0?'&username='+encodeURIComponent(uname0):'')):'';}
+function uarg(){return [email?'email='+encodeURIComponent(email):'',id?'id='+encodeURIComponent(id):'',uname0?'username='+encodeURIComponent(uname0):''].filter(Boolean).join('&');}
 // ---- sidebar nav ----
 function showView(v){document.querySelectorAll('.view').forEach(function(s){s.classList.toggle('on',s.getAttribute('data-view')===v);});document.querySelectorAll('#navb button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===v);});if(v==='messages')try{loadDm();}catch(e){}window.scrollTo(0,0);}
 document.getElementById('navb').addEventListener('click',function(e){var b=e.target.closest('button[data-v]');if(b)showView(b.getAttribute('data-v'));});
