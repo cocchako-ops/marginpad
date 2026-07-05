@@ -304,7 +304,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       if(sym!==chartSym||tf!==chartTf||!candle||!kd||!kd.length)return;
       kd=sanitizeBars(kd);klCache[sym+'|'+tf]=kd;bars=kd;try{candle.setData(kd);}catch(e){}try{chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}/* re-assert autoscale: after a big move (e.g. a +15% pump) the price scale can lock/drift so data keeps updating but the chart LOOKS frozen — re-fitting every quiet refresh self-heals it */lastBar=kd[kd.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;_linesSig=null;try{applySignals();}catch(e){}try{drawLines();}catch(e){}
     }); }
-  function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=kd.filter(function(b){return b.time<first;});if(!older.length){noMore=true;return;}if(older.length<900)noMore=true;bars=older.concat(bars);try{candle.setData(bars);}catch(e){}applySignals();drawLines();});}
+  function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;var _lmg=setTimeout(function(){loadingMore=false;},12000);/* a hung (never-settling) fetch would otherwise pin loadingMore=true forever, which permanently disables the 30s refreshKlinesQuiet re-sync (a real freeze) */fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){clearTimeout(_lmg);loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=kd.filter(function(b){return b.time<first;});if(!older.length){noMore=true;return;}if(older.length<900)noMore=true;bars=older.concat(bars);try{candle.setData(bars);}catch(e){}applySignals();drawLines();});}
   /* Buy/Sell signals — a Supertrend(10,3) overlay (our own equivalent of TradingView "Buy Sell" indicators;
      kelfry98's proprietary Pine script can't be embedded here). Toggleable; plots BUY/SELL arrows on trend flips. */
   var inds={};try{inds=JSON.parse(localStorage.getItem('mp_pt_inds')||'null')||{};}catch(e){inds={};}
@@ -498,7 +498,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     // re-assert autoScale ONLY when the realtime edge is in view (don't fight a user who scrolled back / zoomed into history)
     try{var vr=chart.timeScale().getVisibleLogicalRange();if(!vr||!bars.length||vr.to>=bars.length-2)chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}
     var _pd=window.mpPlanLive,_srcT=Math.max((_pd&&_pd.sym===chartSym&&_pd.t)||0,(prices[chartSym]&&prices[chartSym].t)||0);
-    if(!_srcT||Date.now()-_srcT>9000){_lgp=0;_rej=0;try{if(window.mpWS&&chartSym)window.mpWS.sub(chartSym);}catch(e){}try{pollPrices();}catch(e){}reloadKlinesThrottled();try{chart.timeScale().scrollToRealTime();}catch(e){}}
+    if(!_srcT||Date.now()-_srcT>9000){_lgp=0;_rej=0;try{if(window.mpWS&&chartSym)(window.mpWS.resub||window.mpWS.sub)(chartSym);}catch(e){}try{pollPrices();}catch(e){}reloadKlinesThrottled();try{chart.timeScale().scrollToRealTime();}catch(e){}}
     // ALSO: catch a stalled CHART even when the price source LOOKS fresh — if the newest bar is more than ~1.5
     // intervals behind now, new bars stopped forming (the real "chart froze" symptom). Force a fresh klines sync.
     try{if(lastBar){var _ivS=parseInt(chartTf,10)*60,_nb=Math.floor(Date.now()/1000/_ivS)*_ivS;if(_nb-lastBar.time>_ivS*1.5)refreshKlinesQuiet();}}catch(e){}
@@ -808,9 +808,9 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function ensureSub(sym){sym=clean(sym);if(!sym||want[sym])return;want[sym]=1;order.push(sym);
     if(order.length>MAXW){for(var i=0;i<order.length;i++){var os=order[i];if(BASE.indexOf(os)<0){order.splice(i,1);delete want[os];sendOp('unsubscribe',[os]);break;}}} // evict oldest dynamic symbol so we never grow unbounded
     sendOp('subscribe',[sym]);}
-  window.mpWS={sub:ensureSub};
+  window.mpWS={sub:ensureSub,resub:function(sym){sym=clean(sym);if(!sym)return;try{sendOp('unsubscribe',[sym]);}catch(_){}delete want[sym];var i=order.indexOf(sym);if(i>=0)order.splice(i,1);ensureSub(sym);}}; // resub = force a real re-subscribe (ensureSub short-circuits when already subscribed, so it can't recover a topic Bybit silently dropped)
   function pushHist(sym,price){var now=Date.now();if(now-(lastH[sym]||0)<1000)return;lastH[sym]=now;var h=window.mpHist[sym]||(window.mpHist[sym]=[]);h.push(price);if(h.length>46)h.shift();}
-  var lastTick=Date.now();
+  var lastTick=Date.now(), lastWsTick=Date.now(), reT=null, connT=null; // lastWsTick = WS-only freshness (REST bridge must NOT refresh it, or a dead socket looks alive)
   function emit(sym,price,chg){
     lastTick=Date.now();
     var prev=window.mpLivePrices[sym]||{};
@@ -821,29 +821,41 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   // Coalesce: high-volume symbols (BTC/ETH on perp) fire hundreds of trades/sec. Stage the latest price per symbol and
   // flush once per animation frame, so each symbol emits ≤~60×/sec (newest price) instead of flooding the main thread.
   var pend={},pendSched=false;
-  function stage(sym,price,chg){if(!(price>0))return;lastTick=Date.now();pend[sym]={p:price,c:chg};if(!pendSched){pendSched=true;requestAnimationFrame(flushPend);}}
+  function stage(sym,price,chg){if(!(price>0))return;lastTick=Date.now();lastWsTick=Date.now();pend[sym]={p:price,c:chg};if(!pendSched){pendSched=true;requestAnimationFrame(flushPend);}}
   function flushPend(){pendSched=false;var p=pend;pend={};for(var s in p)emit(s,p[s].p,p[s].c);}
   function connect(){
+    if(connT){clearTimeout(connT);connT=null;}
     try{ws=new WebSocket('wss://stream.bybit.com/v5/public/linear');}catch(e){return reconnect();}/* USDT-perp stream: covers TRX & virtually every pair (spot was missing many) + matches futures pricing */
-    ws.onopen=function(){alive=true;retry=0;sendOp('subscribe',order.slice()); // (re)subscribe every wanted symbol (base + dynamic) on connect/reconnect — sendOp chunks at 10/req
+    connT=setTimeout(function(){connT=null;if(!ws||ws.readyState!==1){try{ws&&(ws.onclose=null,ws.close());}catch(_){}reconnect();}},10000); // handshake stuck in CONNECTING (mobile radio hand-off / captive portal) never fires onopen/onclose → force a retry
+    ws.onopen=function(){alive=true;retry=0;lastWsTick=Date.now();if(connT){clearTimeout(connT);connT=null;}sendOp('subscribe',order.slice()); // (re)subscribe every wanted symbol (base + dynamic) on connect/reconnect — sendOp chunks at 10/req
       if(pingT)clearInterval(pingT);pingT=setInterval(function(){try{ws.send(JSON.stringify({op:'ping'}));}catch(_){}},18000);};
     ws.onmessage=function(ev){try{var m=JSON.parse(ev.data);if(!m.topic)return;
       if(m.topic.indexOf('publicTrade.')===0&&Array.isArray(m.data)&&m.data.length){var sym=m.topic.slice(12).replace('USDT','');var p=parseFloat(m.data[m.data.length-1].p);if(isFinite(p))stage(sym,p,chgMap[sym]);} // every trade → staged + coalesced per frame
       else if(m.topic.indexOf('tickers.')===0&&m.data){var sym2=m.topic.slice(8).replace('USDT','');var lp=parseFloat(m.data.lastPrice);var chg=(m.data.price24hPcnt!=null&&m.data.price24hPcnt!=='')?parseFloat(m.data.price24hPcnt)*100:null;if(chg!=null&&isFinite(chg))chgMap[sym2]=chg;if(isFinite(lp))stage(sym2,lp,chgMap[sym2]);} // 24h change %
     }catch(_){}};
-    ws.onclose=function(){alive=false;if(pingT){clearInterval(pingT);pingT=null;}reconnect();};
-    ws.onerror=function(){try{ws.close();}catch(_){}};
+    ws.onclose=function(){alive=false;if(pingT){clearInterval(pingT);pingT=null;}if(connT){clearTimeout(connT);connT=null;}reconnect();};
+    ws.onerror=function(){try{ws.close();}catch(_){}reconnect();}; // some mobile webviews fire onerror WITHOUT a following onclose → reconnect here too (reconnect() is self-guarded against stacking)
   }
-  function reconnect(){retry=Math.min(retry+1,6);setTimeout(connect,Math.min(1200*retry,8000));}
+  function reconnect(){if(reT)return;retry=Math.min(retry+1,6);reT=setTimeout(function(){reT=null;connect();},Math.min(1200*retry,8000));} // guarded: never stack multiple reconnects
+  function kick(){ // force a brand-new socket NOW (dead/stuck one) — used by the watchdog / resume / online
+    try{if(ws){ws.onclose=null;ws.close();}}catch(_){}
+    ws=null;if(reT){clearTimeout(reT);reT=null;}if(connT){clearTimeout(connT);connT=null;}retry=0;connect();
+  }
   connect();
-  // Watchdog: if the socket is "open" but goes silent for >7s while the tab is visible (a stalled feed), force a reconnect
-  // AND bridge with a quick REST poll of the most-recently-viewed symbols (Bybit-perp via /api/price) so prices never freeze.
+  // Watchdog: key off lastWsTick (WS-ONLY freshness — the REST bridge below must NOT mask a dead socket). If the WS itself
+  // has delivered nothing for >8s while visible AND we're not already (re)connecting, force a fresh socket regardless of
+  // readyState (covers CONNECTING/CLOSING/CLOSED that the old readyState===1 check ignored). Then bridge with a REST poll.
   setInterval(function(){
-    if(document.hidden||Date.now()-lastTick<7000)return;
-    try{if(ws&&ws.readyState===1)ws.close();}catch(_){}
-    order.slice(-4).forEach(function(s){fetch('/api/price?symbol='+encodeURIComponent(s),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&+j.price>0)emit(s,+j.price,(j.chg!=null?+j.chg:undefined));}).catch(function(){});});
+    if(document.hidden)return;
+    if(!connT&&!reT&&Date.now()-lastWsTick>8000)kick();
+    if(Date.now()-lastTick>7000){ // prices haven't moved from ANY source in 7s → bridge with REST so the UI never fully freezes while the socket re-establishes
+      order.slice(-4).forEach(function(s){fetch('/api/price?symbol='+encodeURIComponent(s),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&+j.price>0)emit(s,+j.price,(j.chg!=null?+j.chg:undefined));}).catch(function(){});});
+    }
   },3000);
-  document.addEventListener('visibilitychange',function(){if(!document.hidden&&Date.now()-lastTick>5000){try{if(ws&&ws.readyState===1)ws.close();}catch(_){}/* returned to a stale tab → reconnect now */}});
+  function onResume(){if(Date.now()-lastWsTick>5000&&!connT&&!reT)kick();} // returned to a stale tab / bfcache restore → new socket now
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)onResume();});
+  window.addEventListener('pageshow',function(e){if(e&&e.persisted)onResume();}); // iOS bfcache restore doesn't always fire visibilitychange
+  window.addEventListener('online',function(){kick();}); // network restored (sleep/wake, wifi↔cellular) → reconnect immediately
 })();
 
 ;/* ══════════ inline block from app/index.html line 3666 ══════════ */

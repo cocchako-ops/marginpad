@@ -478,8 +478,9 @@
   // load older history when the user scrolls back toward the start (full history to the coin's inception, like Paper Trade)
   function loadMoreW(w){ if(w.dead||w._lm||w._noMore||!w.bars||!w.bars.length||!w.candle)return;
     var sym=w.sym,tf=w.tf,end=w.bars[0].time*1000-1; w._lm=true;
+    var _lmg=setTimeout(function(){w._lm=false;},12000);/* a hung (never-settling) fetch would otherwise pin w._lm=true forever, which permanently disables refreshData — the 60s re-sync that is the last defense against a frozen chart */
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
-      w._lm=false; if(w.dead||sym!==w.sym||tf!==w.tf||!w.candle)return;
+      clearTimeout(_lmg); w._lm=false; if(w.dead||sym!==w.sym||tf!==w.tf||!w.candle)return;
       if(!kd||!kd.length){w._noMore=true;return;}
       var first=w.bars[0].time,older=kd.filter(function(b){return b.time<first;});
       if(!older.length){w._noMore=true;return;}
@@ -625,7 +626,7 @@
       var x=(cfg.x!=null)?cfg.x:Math.min(bw-ww,18+i*30),y=(cfg.y!=null)?cfg.y:Math.min(bh-wh,18+i*30);
       w.el.style.width=ww+'px';w.el.style.height=wh+'px';w.el.style.left=Math.max(0,Math.min(x,bw-ww))+'px';w.el.style.top=Math.max(0,Math.min(y,bh-wh))+'px';}
     board.appendChild(w.el); wins.push(w); renumber(); bringFront(w); wireWin(w); setupDraw(w); buildChart(w);
-    w.poll=setInterval(function(){ if(w.dead)return; if(w._wsT&&Date.now()-w._wsT<30000)return; /* WS feed is the single source of truth — don't let the REST value (a different exchange) clobber a fresh tick and flicker the forming candle */ fetch('/api/price?symbol='+encodeURIComponent(w.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(!j||w.dead)return;var px=+(j.price||j.p||j.last||j.c||0);if(px>0){w._pollT=Date.now();liveTick(w,px);}}); },12000);
+    w.poll=setInterval(function(){ if(w.dead)return; if(w._wsT&&Date.now()-w._wsT<30000&&Date.now()-(w._pollT||0)<45000)return; /* WS feed is the single source of truth — skip REST while WS is fresh, BUT a hard 45s floor guarantees the poll can never be starved: _wsT is stamped on ANY mp:price incl. a stale/bridged value, so without this floor a silently-dead feed would suppress the poll forever (a freeze) */ fetch('/api/price?symbol='+encodeURIComponent(w.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(!j||w.dead)return;var px=+(j.price||j.p||j.last||j.c||0);if(px>0){w._pollT=Date.now();liveTick(w,px);}}); },12000);
     w.refreshT=setInterval(function(){ if(!w.dead&&!document.hidden)refreshData(w); },60000); // self-heal any phantom wick from a bad live tick by re-syncing with the true klines every 60s
     updateCount(); }
   document.addEventListener('mp:price',function(ev){ if(!ev.detail)return; var s=ev.detail.sym,p=+ev.detail.price; if(!(p>0))return;

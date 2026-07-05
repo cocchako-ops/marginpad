@@ -130,9 +130,10 @@
       label(p);
     });
   }
-  function live(p){var pr=price(p.sym);if(!p.candle||!p.lastBar)return;
-    if(Date.now()-p.reload>60000){loadKlines(p);return;} // periodic re-sync checked BEFORE the pr>0 bail so a stalled feed still refetches (freeze fix)
-    if(!(pr>0))return;
+  function live(p){if(!p.candle)return;
+    if(Date.now()-p.reload>(p.lastBar?60000:5000)){loadKlines(p);return;} // cold-start self-heal: if the FIRST klines fetch failed (lastBar still null) retry every 5s instead of a permanently blank chart; otherwise the normal 60s re-sync (checked BEFORE the pr>0 bail so a stalled feed still refetches)
+    if(!p.lastBar)return;
+    var pr=price(p.sym);if(!(pr>0))return;
     // spike filter (same as the desktop/paper-trade/heatmap engines): reject a lone tick that jumps >2.5% from the last
     // accepted price — one bad print would otherwise blow out the forming candle's high/low and compress every other candle
     // (the "candles lose their shape / half candle over time" bug). Accept only if 3 in a row confirm a real move.
@@ -301,6 +302,7 @@
     live(p);});},2000);
   // returning to the tab: the 60s reload gate only fires from live ticks, so force a real klines re-sync immediately
   document.addEventListener('visibilitychange',function(){if(!document.hidden&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)loadKlines(p);});});
+  window.addEventListener('pageshow',function(e){if(e&&e.persisted&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)loadKlines(p);});}); // iOS bfcache restore doesn't reliably fire visibilitychange
   // Browse "Charts" → open full-screen on mobile (intercept before navigation)
   document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-mcharts]');if(!t)return;if(isMob()){e.preventDefault();e.stopPropagation();open();}},true);
   // landing on /charts on a phone → open the full-screen experience automatically
