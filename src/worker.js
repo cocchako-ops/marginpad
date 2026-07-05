@@ -935,7 +935,11 @@ async function handleKlines(url) {
   // Edge-cache the assembled response: identical for every user for a given symbol/interval, so polling clients
   // and chart loads share one upstream fetch instead of hammering Gate/Bybit on every request.
   const cacheKey = new Request('https://marginpad.io/__klines_v2_' + pair + '_' + iv + '_' + (hasEnd ? end : 'live'));
-  try { const hit = await caches.default.match(cacheKey); if (hit) return hit; } catch (e) {}
+  try { const hit = await caches.default.match(cacheKey); if (hit) {
+    if (hasEnd) return hit;                                        // historical candles are immutable → the edge cache (even 4h) is fine
+    const ca = +hit.headers.get('x-mp-cached') || 0;              // LIVE tail: enforce freshness IN THE WORKER so a zone-level Cache-TTL override (Cloudflare was pinning these at 4h) can't serve stale candles — the "chart freezes per-timeframe" bug. Still offloads Bybit within the 10s window.
+    if (Date.now() - ca < 10000) return hit;
+  } } catch (e) {}
   // Binance is hard-blocked (403) from Cloudflare egress, so it's not used. Gate.io is the primary source:
   // reachable from CF, deep history in one call (BTC weekly back to 2013), and supports `to` for back-pagination.
   // Bybit is the fallback (works from CF but only goes back to ~2021 and returns nothing for old `end`).
@@ -967,7 +971,7 @@ async function handleKlines(url) {
   } catch (e) {}
   if (!out) return J({ error: 'no data' }, 404);
   const maxAge = hasEnd ? 600 : 8; // historical pages are effectively immutable; live tail refreshes ~8s (the client also seeds the forming candle from the WS, so the visible price is always live)
-  const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + maxAge, ...CORS } });
+  const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + maxAge, 'x-mp-cached': String(Date.now()), ...CORS } });
   try { await caches.default.put(cacheKey, resp.clone()); } catch (e) {}
   return resp;
 }
@@ -3541,9 +3545,9 @@ export default {
     if (url.pathname === '/api/price') {
       const sym = String(url.searchParams.get('symbol') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
       const ck = new Request('https://marginpad.io/__price_' + sym);
-      try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+      try { const hit = await caches.default.match(ck); if (hit) { const ca = +hit.headers.get('x-mp-cached') || 0; if (Date.now() - ca < 8000) return hit; } } catch (e) {} // enforce freshness in the worker — a zone Cache-TTL override was pinning /api/price at 4h (stale live price)
       const p = await fetchPrice(sym);
-      const resp = new Response(JSON.stringify(p || { error: 'not found' }), { status: p ? 200 : 404, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': p ? 'public, max-age=5' : 'public, max-age=30', ...CORS } });
+      const resp = new Response(JSON.stringify(p || { error: 'not found' }), { status: p ? 200 : 404, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': p ? 'public, max-age=5' : 'public, max-age=30', 'x-mp-cached': String(Date.now()), ...CORS } });
       try { await caches.default.put(ck, resp.clone()); } catch (e) {} // edge-cache BOTH the hit (5s) AND the miss (30s) — without negative-caching, an unresolvable/delisted symbol re-ran fetchPrice's 5 sequential upstream legs on EVERY poll (5 wasted round-trips + subrequests each time)
       return resp;
     }
