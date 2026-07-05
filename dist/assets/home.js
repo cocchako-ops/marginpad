@@ -15,7 +15,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
 ;/* ══════════ inline block from app/index.html line 2435 ══════════ */
 /* shared token list for the typeable symbol pickers (Paper Trade + Charts) — the screener tokens + common coins. Fills #symTokens too. */
   window.mpLoadTokens=function(cb){if(window.mpTokens){cb&&cb(window.mpTokens);return;}
-    var base=['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX','LINK','LTC','TON','TRX','DOT','ATOM','NEAR','ARB','OP','PEPE','SHIB','SUI','APT','INJ','TIA','SEI','WIF','LDO','UNI','AAVE','FIL','RNDR'];
+    var base=['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX','LINK','LTC','ENA','TRX','DOT','ATOM','NEAR','ARB','OP','PEPE','SHIB','SUI','APT','INJ','TIA','SEI','WIF','LDO','UNI','AAVE','FIL','RENDER'];
     fetch('/api/symbols').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
       var set={},out=[];base.forEach(function(s){if(!set[s]){set[s]=1;out.push(s);}});
       if(j&&j.symbols)j.symbols.forEach(function(s){s=String(s||'').toUpperCase();if(s&&!set[s]){set[s]=1;out.push(s);}});
@@ -265,6 +265,8 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   var _skelT=null;
   function showSkel(){if(_skelT)return;_skelT=setTimeout(function(){_skelT=null;var el=document.getElementById('ptChart');if(!el||el.querySelector('.chart-skel'))return;var b='';for(var i=0;i<26;i++){var h=16+Math.round(62*Math.abs(Math.sin(i*0.7)));b+='<i style="height:'+h+'%;animation-delay:'+(i*0.04).toFixed(2)+'s"></i>';}var d=document.createElement('div');d.className='chart-skel';d.innerHTML=b;el.appendChild(d);},220);} // only show the skeleton if the load is actually slow → no blink on fast (cached) symbol/TF switches
   function hideSkel(){if(_skelT){clearTimeout(_skelT);_skelT=null;}var el=document.getElementById('ptChart');if(!el)return;var s=el.querySelector('.chart-skel');if(s&&s.parentNode)s.parentNode.removeChild(s);}
+  function clearNoData(){var el=document.getElementById('ptChart');if(el){var n=el.querySelector('.chart-nodata');if(n&&n.parentNode)n.parentNode.removeChild(n);}}
+  function showNoData(sym){var el=document.getElementById('ptChart');if(!el)return;var s=el.querySelector('.chart-skel');if(s&&s.parentNode)s.parentNode.removeChild(s);if(el.querySelector('.chart-nodata'))return;var d=document.createElement('div');d.className='chart-nodata';d.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;color:#9aa3ad;z-index:6;pointer-events:none;padding:24px';d.innerHTML='<div style="font-size:15px;font-weight:700;color:#e9e7df">No market data for '+String(sym||'').replace(/[^A-Za-z0-9]/g,'')+'</div><small style="font-size:12px;color:#707a86;line-height:1.5;max-width:280px">This coin isn\'t on our live data feed (it may be delisted or renamed on the exchanges). Pick another pair to keep trading.</small>';el.appendChild(d);} // a coin our sources can\'t resolve now shows a message instead of a silent, frozen blank chart
   function formSym(){return (document.getElementById('planSym')||{}).value||'BTC';}
   var bars=[],loadingMore=false,noMore=false;
   // Clamp ISOLATED phantom wicks (bad/transient prints in the exchange klines): a candle whose low/high is an extreme
@@ -293,7 +295,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(cached&&cached.length&&candle)renderKlines(cached); // INSTANT from the preload cache — no flash on a TF/symbol switch
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(sym!==chartSym||tf!==chartTf)return; // user switched again before this resolved → drop the stale response
-      if(kd&&kd.length){klCache[ck]=kd;renderKlines(kd);}else if(!cached){hideSkel();}
+      if(kd&&kd.length){klCache[ck]=kd;clearNoData();renderKlines(kd);}else if(!cached){hideSkel();showNoData(sym);} // empty klines = coin our feed can't resolve → show a message, don't leave a silent blank/frozen chart
       preloadTfs(sym,tf); // warm the other timeframes in the background so the next switch is instant
     }); }
   // quietly re-sync candles with the true exchange OHLC WITHOUT scrolling the view — self-heals a phantom wick a bad live
@@ -1296,7 +1298,7 @@ window.addEventListener('load', function () {
       fetch('/api/v1/liquidations/recent?symbol='+encodeURIComponent(c)+'&minutes='+WIN[win].mins).then(function(r){return r.json();}).catch(function(){return {fallback:true};}),
       fetch('/api/v1/liquidations/live?symbol='+encodeURIComponent(c)+'&limit=400').then(function(r){return r.json();}).catch(function(){return {fallback:true};}),
       fetch('/api/v1/clusters?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return {clusters:[]};}),
-      fetch('/api/price?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return null;})
+      fetch('/api/price?symbol='+encodeURIComponent(c),{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return null;})
     ]).then(function(res){ if(c!==cur.coin)return; var rec=res[0],lv=res[1],cls=res[2],pd=res[3];
       if(pd&&pd.price){cur.price=+pd.price;cur.chg=+pd.chg||0;if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>';liveCandle();}
       if(!rec||rec.fallback||!Array.isArray(rec.buckets)||!lv||lv.fallback){ setFallback(true); return; }
@@ -1322,7 +1324,7 @@ window.addEventListener('load', function () {
     if(rolled){ var _hop=lastBar.close,_hspk=(_hlgp>0&&Math.abs(p-_hlgp)/_hlgp>0.025),_hcl=_hspk?_hop:p; lastBar={time:nowBar,open:_hop,high:Math.max(_hop,_hcl),low:Math.min(_hop,_hcl),close:_hcl}; if(!_hspk)_hlgp=p; _hrej=0; }
     else { if(_hlgp>0 && Math.abs(p-_hlgp)/_hlgp>0.025){ if(++_hrej<3) return; } /* reject a lone >2.5% print that would ratchet a fake wick; accept only if 3 in a row confirm a real move */ _hlgp=p; _hrej=0; lastBar.close=p; if(p>lastBar.high)lastBar.high=p; if(p<lastBar.low)lastBar.low=p; }
     try{ candle.update(lastBar); if(rolled)chart.timeScale().scrollToRealTime(); }catch(e){} }
-  function pricePoll(){ var c=cur.coin; fetch('/api/price?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return null;}).then(function(pd){ if(c!==cur.coin||!pd||!pd.price)return;
+  function pricePoll(){ var c=cur.coin; fetch('/api/price?symbol='+encodeURIComponent(c),{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return null;}).then(function(pd){ if(c!==cur.coin||!pd||!pd.price)return;
     if(_hWsT&&Date.now()-_hWsT<6000){sched();return;} // a fresh WS tick already moved the candle — don't clobber it with the slower (≤10s) cached REST value
     cur.price=+pd.price; cur.chg=+pd.chg||0; if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>'; liveCandle(); sched(); }); }
   function startPoll(){ stopPoll(); fetchLiq(); pollT=setInterval(fetchLiq,8000); pricePoll(); priceT=setInterval(pricePoll,6000); klT=setInterval(function(){ if(loadedKlines)reloadKlines(); },45000); }
@@ -1344,7 +1346,7 @@ window.addEventListener('load', function () {
   function load(coin){ cur.coin=coin; if(pxEl)pxEl.textContent='…';
     ensureLib(function(){ initChart(); ensureOverlay();
       if(!subd){ subd=true; try{chart.timeScale().subscribeVisibleTimeRangeChange(sched); chart.subscribeCrosshairMove(onCross);}catch(e){} }
-      fetch('/api/price?symbol='+encodeURIComponent(coin)).then(function(r){return r.json();}).catch(function(){return null;}).then(function(pd){ if(coin!==cur.coin)return;
+      fetch('/api/price?symbol='+encodeURIComponent(coin),{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return null;}).then(function(pd){ if(coin!==cur.coin)return;
         if(pd&&pd.price){cur.price=+pd.price;cur.chg=+pd.chg||0;if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>';liveCandle();}
         else{cur.price=0;if(pxEl)pxEl.textContent='unavailable';} applyTheo(); });
       reloadKlines(); startPoll();
@@ -1747,7 +1749,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
       +'<div class="ptl-pnl"><span class="big">'+pl(m.pnl)+'</span><span class="roe">ROE '+pc(m.roe)+'</span><button type="button" class="ptl-close ptl-mt" data-mytrades>'+_T('mtMyTrades','My Trades')+'</button></div>'
       +'<div class="ptl-meta">'+_T('jEntry','Entry')+' <b>'+fmt(e.entry)+'</b> · '+_T('mtLiq','Liq')+' <b>'+fmt(m.liq)+'</b> ('+pc(m.liqDist)+')</div>';}
   document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('[data-ptl-close]'))setTimeout(updPnl,0);}); // re-render the ticket after its Close fires (the global handler does the actual close)
-  function openPos(){if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; /* enforce open-trade limits + one-way mode */ var p=price(sym);if(!(p>0)){fetch('/api/price?symbol='+sym).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0){if(window.mpLivePrices)window.mpLivePrices[sym]={p:+j.price,t:Date.now()};openPos();}});return;}
+  function openPos(){if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; /* enforce open-trade limits + one-way mode */ var p=price(sym);if(!(p>0)){fetch('/api/price?symbol='+sym,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0){if(window.mpLivePrices)window.mpLivePrices[sym]={p:+j.price,t:Date.now()};openPos();}});return;}
     var L=lev,mmr=(window.mpPlanMmr||0.005),notional=amt*L,qty=notional/p,liq=side==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
     var pos={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:side,entry:p,stop:null,tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null};
     var d=jload();d.push(pos);if(window.mpLivePrices)window.mpLivePrices[sym]={p:p,t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();
