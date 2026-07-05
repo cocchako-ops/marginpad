@@ -971,7 +971,7 @@ async function handleKlines(url) {
   } catch (e) {}
   if (!out) return J({ error: 'no data' }, 404);
   const maxAge = hasEnd ? 600 : 8; // historical pages are effectively immutable; live tail refreshes ~8s (the client also seeds the forming candle from the WS, so the visible price is always live)
-  const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + maxAge, 'x-mp-cached': String(Date.now()), ...CORS } });
+  const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + maxAge, 'cdn-cache-control': 'max-age=' + maxAge, 'cloudflare-cdn-cache-control': 'max-age=' + maxAge, 'x-mp-cached': String(Date.now()), ...CORS } });
   try { await caches.default.put(cacheKey, resp.clone()); } catch (e) {}
   return resp;
 }
@@ -3547,7 +3547,7 @@ export default {
       const ck = new Request('https://marginpad.io/__price_' + sym);
       try { const hit = await caches.default.match(ck); if (hit) { const ca = +hit.headers.get('x-mp-cached') || 0; if (Date.now() - ca < 8000) return hit; } } catch (e) {} // enforce freshness in the worker — a zone Cache-TTL override was pinning /api/price at 4h (stale live price)
       const p = await fetchPrice(sym);
-      const resp = new Response(JSON.stringify(p || { error: 'not found' }), { status: p ? 200 : 404, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': p ? 'public, max-age=5' : 'public, max-age=30', 'x-mp-cached': String(Date.now()), ...CORS } });
+      const resp = new Response(JSON.stringify(p || { error: 'not found' }), { status: p ? 200 : 404, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': p ? 'public, max-age=5' : 'public, max-age=30', 'cdn-cache-control': p ? 'max-age=5' : 'max-age=30', 'cloudflare-cdn-cache-control': p ? 'max-age=5' : 'max-age=30', 'x-mp-cached': String(Date.now()), ...CORS } });
       try { await caches.default.put(ck, resp.clone()); } catch (e) {} // edge-cache BOTH the hit (5s) AND the miss (30s) — without negative-caching, an unresolvable/delisted symbol re-ran fetchPrice's 5 sequential upstream legs on EVERY poll (5 wasted round-trips + subrequests each time)
       return resp;
     }
