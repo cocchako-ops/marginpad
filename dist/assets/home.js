@@ -20,13 +20,15 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var base=['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX','LINK','LTC','ENA','TRX','DOT','ATOM','NEAR','ARB','OP','PEPE','SHIB','SUI','APT','INJ','TIA','SEI','WIF','LDO','UNI','AAVE','FIL','RENDER'];
     fetch('/api/symbols').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
       var byb={};                                             // Bybit set: raw (1000PEPE) + de-prefixed clean (PEPE)
-      if(j&&j.symbols)j.symbols.forEach(function(s){s=String(s||'').toUpperCase();if(!s)return;byb[s]=1;byb[s.replace(/^1(0{3,6})(?=[A-Z])/,'')]=1;});
+      // Bybit uses a 1000x multiplier as a PREFIX (1000PEPE) on some and a SUFFIX (SHIB1000) on others — normalize BOTH to the clean ticker.
+      function clean(s){return String(s||'').toUpperCase().replace(/^1(0{3,6})(?=[A-Z])/,'').replace(/([A-Z0-9])1(0{3,6})$/,'$1');}
+      if(j&&j.symbols)j.symbols.forEach(function(s){s=String(s||'').toUpperCase();if(!s)return;byb[s]=1;byb[clean(s)]=1;});
       var hasSyms=!!(j&&j.symbols&&j.symbols.length);
       window.mpBybitSet=byb;
-      window.mpIsBybit=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym)return false;if(!hasSyms)return true;return !!(byb[sym]||byb['1000'+sym]||byb['10000'+sym]||byb['1000000'+sym]);};
+      window.mpIsBybit=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym)return false;if(!hasSyms)return true;return !!(byb[sym]||byb['1000'+sym]||byb['10000'+sym]||byb['1000000'+sym]||byb[sym+'1000']||byb[sym+'10000']||byb[sym+'1000000']);};
       var seen={},out=[];function add(s){s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(s&&!seen[s]&&window.mpIsBybit(s)){seen[s]=1;out.push(s);}}
       base.forEach(add);                                      // majors first (only those Bybit actually has)
-      if(hasSyms)j.symbols.forEach(function(s){add(String(s||'').toUpperCase().replace(/^1(0{3,6})(?=[A-Z])/,''));}); // then the rest of Bybit, de-prefixed
+      if(hasSyms)j.symbols.forEach(function(s){add(clean(s));}); // then the rest of Bybit, multiplier stripped to the clean ticker
       if(!out.length)base.forEach(function(s){if(!seen[s]){seen[s]=1;out.push(s);}}); // /api/symbols failed → don't leave pickers empty
       window.mpTokens=out;
       var dl=document.getElementById('symTokens');if(dl){dl.innerHTML=out.map(function(s){return '<option value="'+s+'">';}).join('');}
