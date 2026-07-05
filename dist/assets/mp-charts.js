@@ -461,7 +461,7 @@
       w.legItems=[];var lg=document.createElement('div');lg.className='cwin-leg';host.appendChild(lg);w.legEl=lg;try{w.chart.subscribeCrosshairMove(function(param){cwLeg(w,param);syncCrosshair(w,param);});}catch(_){}try{w.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<12)loadMoreW(w);});}catch(_){} }catch(e){return;}
     loadData(w,true); }); }
   function loadData(w,first){ if(w._ls&&w._ls!==w.sym&&w.chAlerts&&w.chAlerts.length){w.chAlerts.forEach(function(a){if(a.pl&&w.candle)try{w.candle.removePriceLine(a.pl);}catch(e){}});w.chAlerts=[];} /* alert lines are per-symbol — drop them when the window switches coins (the server alert for the old coin stays) */ w._ls=w.sym;w._lt=w.tf;w._noMore=false;w._lm=false;/* restart history pagination for the new symbol/TF */try{aiClearPlan(w);}catch(e){}/* AI-drawn plan lines are a snapshot for the old symbol/TF — clear on switch */showSkel(w,true);try{if(window.mpWS)window.mpWS.sub(w.sym);}catch(e){} // stream this symbol live the moment its chart loads
-    fetch('/api/klines?symbol='+encodeURIComponent(w.sym)+'&interval='+w.tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
+    fetch('/api/klines?symbol='+encodeURIComponent(w.sym)+'&interval='+w.tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(w.dead||w._ls!==w.sym||w._lt!==w.tf||!w.candle)return;
       if(kd&&kd.length){kd=sanitizeBars(kd);w.bars=kd;applyPrec(w.candle,kd[kd.length-1].close);try{w.candle.setData(kd);}catch(e){}w.lastBar=kd[kd.length-1];w._lgp=w.lastBar&&w.lastBar.close||0;w._rej=0;w._disp=null;/* snap eased close to the new symbol */applyInds(w);if(first){try{w.chart.priceScale('right').applyOptions({autoScale:true});w.chart.timeScale().scrollToRealTime();}catch(e){}}}/* re-enable price auto-scale on every symbol/TF change so the chart re-fits to the new range (XRP 1.1 → BTC 63k) instead of staying stuck */
       showSkel(w,false); }); }
@@ -471,7 +471,7 @@
   // the authoritative klines erases any such phantom. Mirrors the mobile engine's 60s reload.
   function refreshData(w){ if(w.dead||!w.candle||w._lm)return; var sym=w.sym,tf=w.tf; // w._lm: don't race loadMoreW's pagination
     try{var _vr=w.chart.timeScale().getVisibleLogicalRange();if(_vr&&w.bars&&w.bars.length&&_vr.to<w.bars.length-3)return;}catch(e){} // user scrolled into history → don't setData under them (drops paginated bars)
-    fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
+    fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(w.dead||w.sym!==sym||w.tf!==tf||!w.candle||!kd||!kd.length)return;
       kd=sanitizeBars(kd);w.bars=kd;try{w.candle.setData(kd);}catch(e){}w.lastBar=kd[kd.length-1];w._lgp=w.lastBar&&w.lastBar.close||0;w._rej=0;w._disp=null;try{applyInds(w);}catch(e){}
     }); }
@@ -479,7 +479,7 @@
   function loadMoreW(w){ if(w.dead||w._lm||w._noMore||!w.bars||!w.bars.length||!w.candle)return;
     var sym=w.sym,tf=w.tf,end=w.bars[0].time*1000-1; w._lm=true;
     var _lmg=setTimeout(function(){w._lm=false;},12000);/* a hung (never-settling) fetch would otherwise pin w._lm=true forever, which permanently disables refreshData — the 60s re-sync that is the last defense against a frozen chart */
-    fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
+    fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       clearTimeout(_lmg); w._lm=false; if(w.dead||sym!==w.sym||tf!==w.tf||!w.candle)return;
       if(!kd||!kd.length){w._noMore=true;return;}
       var first=w.bars[0].time,older=kd.filter(function(b){return b.time<first;});

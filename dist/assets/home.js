@@ -287,11 +287,11 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     /* seed the forming candle with the live price immediately — the klines tail is edge-cached up to ~20s, so the last candle (and the price-line basis) isn't a few ticks behind the live number */
     try{var _slp=(window.mpPlanLive&&window.mpPlanLive.sym===chartSym&&+window.mpPlanLive.price>0)?+window.mpPlanLive.price:((prices[chartSym]&&prices[chartSym].p)||0);if(_slp>0&&lastBar){var _siv=parseInt(chartTf,10)*60,_snb=Math.floor(Date.now()/1000/_siv)*_siv;if(lastBar.time>=_snb){lastBar.close=_slp;if(_slp>lastBar.high)lastBar.high=_slp;if(_slp<lastBar.low)lastBar.low=_slp;candle.update(lastBar);}}}catch(e){}
     _linesSig=null;drawLines();applySignals();hideSkel(); } // reset the line-diff so lines are re-asserted after a full setData
-  function preloadTfs(sym,curTf){ ['1','5','15','60','240','1440','10080'].forEach(function(tf){ if(tf===curTf)return; var ck=sym+'|'+tf; if(klCache[ck])return; fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(kd&&kd.length)klCache[ck]=kd;}); }); }
+  function preloadTfs(sym,curTf){ ['1','5','15','60','240','1440','10080'].forEach(function(tf){ if(tf===curTf)return; var ck=sym+'|'+tf; if(klCache[ck])return; fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(kd&&kd.length)klCache[ck]=kd;}); }); }
   function loadKlines(){var sym=formSym();chartSym=sym;var tf=chartTf;try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){}bars=[];loadingMore=false;noMore=false;
     var ck=sym+'|'+tf,cached=klCache[ck];
     if(cached&&cached.length&&candle)renderKlines(cached); // INSTANT from the preload cache — no flash on a TF/symbol switch
-    fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
+    fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(sym!==chartSym||tf!==chartTf)return; // user switched again before this resolved → drop the stale response
       if(kd&&kd.length){klCache[ck]=kd;renderKlines(kd);}else if(!cached){hideSkel();}
       preloadTfs(sym,tf); // warm the other timeframes in the background so the next switch is instant
@@ -300,11 +300,11 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   // tick baked into a (now closed) candle. renderKlines() scrolls to realtime so it can't be used for a periodic refresh.
   function refreshKlinesQuiet(){var sym=chartSym,tf=chartTf;if(!candle||document.hidden||loadingMore)return; // don't race loadMore's pagination (setData mid-append → duplicate/non-monotonic bars)
     try{var _vr=chart.timeScale().getVisibleLogicalRange();if(_vr&&bars.length&&_vr.to<bars.length-3)return;}catch(e){} // user is scrolled into HISTORY → skip the re-sync (setData would drop their paginated bars + the autoScale re-assert would override their zoom). The live edge they're not watching heals on their return.
-    fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
+    fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(sym!==chartSym||tf!==chartTf||!candle||!kd||!kd.length)return;
       kd=sanitizeBars(kd);klCache[sym+'|'+tf]=kd;bars=kd;try{candle.setData(kd);}catch(e){}try{chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}/* re-assert autoscale: after a big move (e.g. a +15% pump) the price scale can lock/drift so data keeps updating but the chart LOOKS frozen — re-fitting every quiet refresh self-heals it */lastBar=kd[kd.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;_linesSig=null;try{applySignals();}catch(e){}try{drawLines();}catch(e){}
     }); }
-  function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;var _lmg=setTimeout(function(){loadingMore=false;},12000);/* a hung (never-settling) fetch would otherwise pin loadingMore=true forever, which permanently disables the 30s refreshKlinesQuiet re-sync (a real freeze) */fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){clearTimeout(_lmg);loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=kd.filter(function(b){return b.time<first;});if(!older.length){noMore=true;return;}if(older.length<900)noMore=true;bars=older.concat(bars);try{candle.setData(bars);}catch(e){}applySignals();drawLines();});}
+  function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;var _lmg=setTimeout(function(){loadingMore=false;},12000);/* a hung (never-settling) fetch would otherwise pin loadingMore=true forever, which permanently disables the 30s refreshKlinesQuiet re-sync (a real freeze) */fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){clearTimeout(_lmg);loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=kd.filter(function(b){return b.time<first;});if(!older.length){noMore=true;return;}if(older.length<900)noMore=true;bars=older.concat(bars);try{candle.setData(bars);}catch(e){}applySignals();drawLines();});}
   /* Buy/Sell signals — a Supertrend(10,3) overlay (our own equivalent of TradingView "Buy Sell" indicators;
      kelfry98's proprietary Pine script can't be embedded here). Toggleable; plots BUY/SELL arrows on trend flips. */
   var inds={};try{inds=JSON.parse(localStorage.getItem('mp_pt_inds')||'null')||{};}catch(e){inds={};}
@@ -518,7 +518,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       // down) — so an SL above liq caps at the SL, an SL below liq (or none) liquidates at liq. Mirror for a short.
       var lossExit=stop!=null?(lng?Math.max(stop,liq):Math.min(stop,liq)):liq, isLiq=(lossExit===liq);
       var tf=ageH>72?'1440':ageH>24?'240':ageH>6?'60':ageH>2?'30':'5'; // coarser interval for longer gaps so the returned candles still span the whole period
-      fetch('/api/klines?symbol='+encodeURIComponent(e.sym)+'&interval='+tf).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
+      fetch('/api/klines?symbol='+encodeURIComponent(e.sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
         if(!kd||!kd.length)return;kd=sanitizeBars(kd);var cross=null,exitPx=null,liab=false;
         for(var i=0;i<kd.length;i++){var b=kd[i],bt=b.time*1000;if(bt<e.ts)continue; // only candles that START after the open — the open candle's pre-open wick must never close the position (2026-07-03 fix)
           // liq requires CLOSE-confirmation (a lone wick, esp. after an offline gap, must never liquidate); SL/TP are
@@ -1338,7 +1338,7 @@ window.addEventListener('load', function () {
     var sd=ev.target.closest('.heat-side'); if(sd){ var sds=document.querySelectorAll('.heat-side'); for(var s=0;s<sds.length;s++)sds[s].classList.remove('active'); sd.classList.add('active'); sideMode=sd.getAttribute('data-side'); updateStats(); sched(); return; }
     var w=ev.target.closest('.heat-win'); if(w&&w.getAttribute('data-w')){ var ws=document.querySelectorAll('.heat-win[data-w]'); for(var i=0;i<ws.length;i++)ws[i].classList.remove('active'); w.classList.add('active'); win=w.getAttribute('data-w'); if(loadedKlines)reloadKlines(); fetchLiq(); return; } });
   function reloadKlines(){ var c=cur.coin,iv=WIN[win].iv;
-    fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin)return;
+    fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin)return;
       if(kd&&kd.length&&candle){ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; _hlgp=lastBar&&lastBar.close||0; _hrej=0; }
       loadedKlines=true; setTimeout(sched,80); setTimeout(sched,400); }); }
   function load(coin){ cur.coin=coin; if(pxEl)pxEl.textContent='…';
@@ -1781,7 +1781,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     }else if(mtTagEl){mtTagEl.textContent='';}}
   function mtInit(){if(mtReady||!chartEl)return;mtReady=true;mtLoadKlines();}
   function mtReset(){if(mtTagEl)mtTagEl.textContent='';mtDraw();}
-  function mtLoadKlines(){var s=sym;mtChartSym=s;try{if(window.mpWS)window.mpWS.sub(s);}catch(e){}_mReload=Date.now();fetch('/api/klines?symbol='+encodeURIComponent(s)+'&interval=1').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(s!==mtChartSym)return;if(kd&&kd.length){mtBars=kd;_mlgp=+mtBars[mtBars.length-1].close||0;_mrej=0;mtDraw();}});}
+  function mtLoadKlines(){var s=sym;mtChartSym=s;try{if(window.mpWS)window.mpWS.sub(s);}catch(e){}_mReload=Date.now();fetch('/api/klines?symbol='+encodeURIComponent(s)+'&interval=1',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(s!==mtChartSym)return;if(kd&&kd.length){mtBars=kd;_mlgp=+mtBars[mtBars.length-1].close||0;_mrej=0;mtDraw();}});}
   function mtLive(){var p=price(sym);if(!mtBars.length)return;if(Date.now()-_mReload>45000){mtLoadKlines();return;}if(!(p>0))return;if(_mlgp>0&&Math.abs(p-_mlgp)/_mlgp>0.025){if(++_mrej<3)return;}_mlgp=p;_mrej=0;var last=mtBars[mtBars.length-1];last.close=p;if(p>last.high)last.high=p;if(p<last.low)last.low=p;}
   function mtPos(){var d=jload();for(var i=d.length-1;i>=0;i--){if(d[i]&&d[i].status==='open'&&d[i].sym===sym)return d[i];}return null;}
   function mtLiqOf(e){var long=e.side!=='short',lv=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);return e.liq||(long?e.entry*(1-(1-mmr)/lv):e.entry*(1+(1-mmr)/lv));}
