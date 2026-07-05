@@ -1057,6 +1057,7 @@ function browserOf(ua) {
 function isBot(ua) {
   return !ua || /bot\b|crawl|spider|slurp|bingpreview|google(bot|-|\s)|adsbot|mediapartners|yandex|baidu|sogou|duckduckbot|facebookexternalhit|facebot|embedly|skypeuripreview|whatsapp|telegrambot|discordbot|slackbot|twitterbot|linkedinbot|pinterest|redditbot|semrush|ahrefs|mj12|dotbot|petalbot|bytespider|gptbot|oai-searchbot|chatgpt|ccbot|claudebot|claude-web|anthropic|perplexity|applebot|amazonbot|headless|phantomjs|puppeteer|playwright|selenium|python-requests|aiohttp|curl\/|wget|axios\/|node-fetch|got\s|okhttp|go-http-client|java\/|libwww|httpclient|scrapy|masscan|zgrab/i.test(ua);
 }
+const _liveposHits = new Map(); // per-isolate IP throttle for /api/livepos (device-side open-position sync)
 const _trackHits = new Map(); // per-isolate IP throttle for /api/track — a UA-rotating flooder was ~15 KV writes/hit
 async function handleTrack(url, request, env, ctx) {
   // persistent first-party DEVICE id (2y cookie): survives IP/UA changes, links multi-account Rewards abuse
@@ -1955,7 +1956,7 @@ function renderOps(){var el=document.getElementById('opsBody');if(!el)return;
     +card('<span style="color:'+(totP>=0?'#2ebd85':'#ff6258')+'">'+(totP>=0?'+':'&#8722;')+'$'+Math.abs(totP).toFixed(2)+'</span>','Unrealized P&L')
     +card(worst?('<span style="color:'+(worst.d<3?'#ff6258':(worst.d<10?'#ffb347':'#2ebd85'))+'">'+worst.d.toFixed(1)+'%</span>'):'&#8212;',worst?('Nearest liq &middot; '+esc(worst.t.username||(worst.t.email||'').split('@')[0]||'anon')+' ('+esc(worst.t.sym||'')+')'):'Nearest liq')
     +card('<span style="color:'+(dead.length?'#ff6258':'#e9e7df')+'">'+dead.length+'</span>','Liquidated &middot; pending');
-  if(!alive.length&&!dead.length){el.innerHTML='<div class="empty">no open positions right now (signed-in users only)</div>';return;}
+  if(!alive.length&&!dead.length){el.innerHTML='<div class="empty">no open positions right now (signed-in + active guests)</div>';return;}
   // pull live prices for symbols the base /api/prices set doesn't cover, so P&L + liq distance are real for EVERY position
   var t0=Date.now();OPS._miss=OPS._miss||{};var need={};
   OPS.pos.forEach(function(t){var sy=String(t.sym||'').toUpperCase();if(sy&&!(OPS.PR[sy]>0)&&(!OPS._miss[sy]||t0-OPS._miss[sy]>30000))need[sy]=1;});
@@ -3548,6 +3549,19 @@ export default {
     }
     if (url.pathname === '/api/klines') return handleKlines(url);
     if (url.pathname.startsWith('/api/v1/')) return handleCollectorProxy(url, request, env);
+    if (url.pathname === '/api/livepos' && request.method === 'POST') { // anonymous device-side open-position sync → ops Live-trades board
+      const did = getCookie(request, 'mp_did') || '';
+      if (!did || !env.USERS) return J({ ok: false });
+      const lip = request.headers.get('cf-connecting-ip') || '';
+      if (lip) { const t = Date.now(); let h = _liveposHits.get(lip); if (!h || t - h.t > 10000) { h = { t, n: 0 }; _liveposHits.set(lip, h); } if (++h.n > 8) return J({ ok: false, error: 'rate' }, 429); } // 8/10s/IP
+      let body = {}; try { body = await request.json(); } catch (e) {}
+      const cc = (request.cf && request.cf.country) || '';
+      try {
+        const stub = env.USERS.get(env.USERS.idFromName('main'));
+        const r = await stub.fetch(new Request('https://do/livepos', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ did, cc, opens: Array.isArray(body.opens) ? body.opens.slice(0, 40) : [] }) }));
+        return new Response(await r.text(), { headers: { 'content-type': 'application/json', ...CORS } });
+      } catch (e) { return J({ ok: false }); }
+    }
     if (url.pathname === '/api/track') return handleTrack(url, request, env, ctx);
     if (url.pathname === '/api/stats/reset' && (await adminCookieOk(request, env))) return handleStatsReset(env);
     if (url.pathname === '/api/stats/login') return adminDoLogin(request, env, 'cfg:statspass', 'mp_sadm', '/', url.origin + '/api/stats');
@@ -4232,6 +4246,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS botkeys(k TEXT PRIMARY KEY, uid TEXT UNIQUE, created INTEGER, calls INTEGER DEFAULT 0, mn TEXT, mint INTEGER DEFAULT 0)'); // bot-API keys (one per account) + per-minute rate window
     s.exec('CREATE TABLE IF NOT EXISTS botpos(id TEXT PRIMARY KEY, uid TEXT, json TEXT, status TEXT, ts INTEGER)'); // server-side paper positions opened via the bot API
     try { s.exec('CREATE INDEX IF NOT EXISTS bp_uid ON botpos(uid, ts)'); } catch (e) {}
+    s.exec('CREATE TABLE IF NOT EXISTS livepos(did TEXT PRIMARY KEY, json TEXT, cc TEXT, updated INTEGER)'); // anonymous (not-signed-in) open paper positions, keyed by the mp_did device cookie — feeds the ops Live-trades board
   }
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
@@ -4462,6 +4477,16 @@ export class UserStore {
       sql.exec('DELETE FROM uclicks WHERE user_id=? AND ts < (SELECT MIN(ts) FROM (SELECT ts FROM uclicks WHERE user_id=? ORDER BY ts DESC LIMIT 300))', uid, uid);
       return this.j({ ok: true });
     }
+    if (path === '/livepos') { // anonymous open-position snapshot (device-keyed) for the ops Live-trades board — signed-in users go through /trades instead
+      const did = String(b.did || '').replace(/[^a-fA-F0-9]/g, '').slice(0, 40); if (!did) return this.j({ ok: false });
+      let opens = (Array.isArray(b.opens) ? b.opens : []).filter(e => e && e.status !== 'win' && e.status !== 'loss').slice(0, 40)
+        .map(e => ({ sym: String(e.sym || '').slice(0, 12), side: e.side === 'short' ? 'short' : 'long', lev: +e.lev || 1, entry: +e.entry || 0, margin: +e.margin || 0, qty: +e.qty || 0, liq: +e.liq || 0, mmr: +e.mmr || 0, tp: e.tp, stop: e.stop, ts: +e.ts || now, id: String(e.id || '').slice(0, 40) }));
+      if (!opens.length) { sql.exec('DELETE FROM livepos WHERE did=?', did); return this.j({ ok: true, cleared: true }); }
+      const cc = String(b.cc || '').slice(0, 2);
+      sql.exec('INSERT INTO livepos(did,json,cc,updated) VALUES(?,?,?,?) ON CONFLICT(did) DO UPDATE SET json=excluded.json,cc=excluded.cc,updated=excluded.updated', did, JSON.stringify(opens), cc, now);
+      try { sql.exec('DELETE FROM livepos WHERE updated < ?', now - 6 * 3600000); } catch (e) {} // prune sessions idle > 6h
+      return this.j({ ok: true, n: opens.length });
+    }
     if (path === '/trades') { // signed-in user's paper-trade journal sync — MERGE with the stored set (union by trade id) so a stale device/browser can't wipe trades synced from another. A blind full-replace caused leaderboard entries to flicker on/off as two devices took turns overwriting each other.
       const uid = String(b.uid || ''); if (!uid) return this.j({ ok: false });
       if (!this.rows('SELECT id FROM users WHERE id=?', uid)[0]) return this.j({ ok: false });
@@ -4625,7 +4650,24 @@ export class UserStore {
         }
         if (positions.length >= 600) break;
       }
-      return this.j({ positions, traders: rows.length });
+      // + anonymous (not-signed-in) opens captured device-side, active in the last 6h — labeled 'guest·<tag>'
+      let anonTraders = 0;
+      try {
+        const lp = this.rows('SELECT did, json, cc, updated FROM livepos WHERE updated > ? ORDER BY updated DESC LIMIT 200', now - 6 * 3600000);
+        for (const r of lp) {
+          if (positions.length >= 600) break;
+          let arr = []; try { arr = JSON.parse(r.json); } catch (e) {}
+          if (!Array.isArray(arr) || !arr.length) continue;
+          const tag = String(r.did || '').slice(0, 6); let any = false;
+          for (const e of arr) {
+            if (!e || (e.status && e.status !== 'open')) continue;
+            positions.push({ uid: 'd:' + tag, email: '', username: 'guest\u00b7' + tag, cc: r.cc || '', anon: true, synced: r.updated, sym: e.sym, side: e.side, lev: e.lev, entry: e.entry, margin: e.margin, qty: e.qty, liq: e.liq, mmr: e.mmr, tp: e.tp, stop: e.stop, ts: e.ts });
+            any = true; if (positions.length >= 600) break;
+          }
+          if (any) anonTraders++;
+        }
+      } catch (e) {}
+      return this.j({ positions, traders: rows.length + anonTraders });
     }
     if (path === '/leaderboard') { // authoritative weekly Trade League — best CLOSED-trade ROE per signed-in user in [ws,we), straight from the synced journal
       const ws = +url.searchParams.get('ws') || 0, we = +url.searchParams.get('we') || (now + 1);

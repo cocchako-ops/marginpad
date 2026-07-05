@@ -2372,3 +2372,28 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
   }catch(e){}}
   vv.addEventListener('resize',pin);vv.addEventListener('scroll',pin);setInterval(pin,700);
 })();
+
+/* Anonymous open-position sync -> ops Live-trades board. Signed-in users already sync via mp-auth (utrades);
+   guests would otherwise be invisible to the board. Posts ONLY when the open set changes (idle = no writes). */
+(function(){
+  function opens(){ try{ var a=JSON.parse(localStorage.getItem('mp_journal')||'[]'); return Array.isArray(a)?a.filter(function(e){return e&&e.status!=='win'&&e.status!=='loss';}):[]; }catch(e){ return []; } }
+  function signedIn(){ try{ return !!(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()); }catch(e){ return false; } }
+  var lastSig=null;
+  function sync(force){
+    if(signedIn()){ lastSig=null; return; }                       // signed-in -> utrades covers them
+    var o=opens();
+    var sig=JSON.stringify(o.map(function(e){return [e.id,e.qty,e.side,e.status];}));
+    if(!force && sig===lastSig) return;                            // no change -> no write
+    if(lastSig===null && !o.length){ lastSig=sig; return; }        // never sent + nothing open -> skip empty post
+    lastSig=sig;
+    try{
+      var body=JSON.stringify({opens:o.slice(0,40)});
+      if(navigator.sendBeacon){ navigator.sendBeacon('/api/livepos', new Blob([body],{type:'application/json'})); }
+      else { fetch('/api/livepos',{method:'POST',headers:{'content-type':'application/json'},body:body,keepalive:true}); }
+    }catch(e){}
+  }
+  setInterval(function(){ sync(false); }, 8000);
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) sync(false); });
+  window.addEventListener('pagehide', function(){ sync(false); });
+  setTimeout(function(){ sync(true); }, 4000);
+})();
