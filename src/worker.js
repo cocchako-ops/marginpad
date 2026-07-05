@@ -1517,8 +1517,13 @@ async function handleStats(url, env, request) {
   if (!env || !env.STATS) return new Response('No storage', { status: 500 });
   const isAdmin = true;                                           // only the password cookie ever reaches here
   const injKey = '';                                              // nothing baked into the page — the cookie authenticates every fetch
+  // Self-heal the session scope: on every dashboard load, re-issue the cookie at Path=/ and expire any legacy
+  // Path=/api/stats cookie. Fixes dashboards whose cookie was still scoped to /api/stats (so cross-path admin
+  // fetches — /api/auth/*, /api/reward/*, /chat/* — got no cookie and showed "forbidden"/no data). Same value.
+  const _ph = (await env.STATS.get('cfg:statspass')) || '';
+  const _upg = _ph ? ['mp_sadm=' + _ph + '; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=31536000', 'mp_sadm=; HttpOnly; Secure; SameSite=Lax; Path=/api/stats; Max-Age=0'] : [];
   if (url.searchParams.get('clearerr') && isAdmin) { try { await env.STATS.delete('srverrlog'); await env.STATS.delete('st:cache'); } catch (e) {} return Response.redirect(url.origin + url.pathname + '?nc=1', 302); } // dismiss the resolved error log
-  const htmlResp = (h) => new Response(h, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
+  const htmlResp = (h) => { const hd = new Headers({ 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }); _upg.forEach(c => hd.append('set-cookie', c)); return new Response(h, { headers: hd }); };
   // #6 — lightweight live feed for the dashboard's 12s poller. Direct key reads only (NO list) so it never
   // touches the 1000/day list quota. "online" is approximated from recent ring-buffer activity (exact count
   // shows on full page reload). Lets the headline numbers + visitor/activity feeds update live without a reload.
