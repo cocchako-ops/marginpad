@@ -14,12 +14,17 @@ const EX = {
   okx:     { name: 'OKX',     ref: 'https://okx.com/join/96160298',                                                                          lev: 125, mmr: 0.5, maker: 0.02, taker: 0.05,  accent: '#cfd3d8', fg: '#0a0b0d', known: 'a powerful pro interface and a unified account model' },
   kucoin:  { name: 'KuCoin',  ref: 'https://www.kucoin.com/r/rf/VHP8AYKY',                                                                   lev: 100, mmr: 0.5, maker: 0.02, taker: 0.06,  accent: '#23af91', fg: '#06231d', known: 'a huge altcoin futures selection' },
   kraken:  { name: 'Kraken',  ref: 'https://invite.kraken.com/JDNW/guj2tf28',                                                                lev: 50,  mmr: 0.5, maker: 0.02, taker: 0.05,  accent: '#7b5cff', fg: '#ffffff', known: 'security and long-standing trust' },
+  bitget:  { name: 'Bitget',  ref: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK', lev: 125, mmr: 0.5, maker: 0.02, taker: 0.06, accent: '#00e5d0', fg: '#04231f', known: 'copy trading and one of the largest futures order books' },
+  gate:    { name: 'Gate',    ref: 'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103&ut-m_cmp=rXJBDjtJ&activity_id=1778642196063', lev: 100, mmr: 0.5, maker: 0.02, taker: 0.05, accent: '#3361ff', fg: '#ffffff', known: 'the widest selection of altcoin and new-listing futures' }
 };
 
 const PAIRS = [
   ['bybit', 'binance'], ['binance', 'okx'], ['bybit', 'okx'],
   ['binance', 'kucoin'], ['bybit', 'kucoin'], ['kraken', 'binance'],
   ['okx', 'kucoin'], ['bybit', 'kraken'], ['okx', 'kraken'], ['kucoin', 'kraken'],
+  // 2026: Bitget (top-5 futures venue) + Gate (widest altcoin selection) — high-intent commercial queries
+  ['bybit', 'bitget'], ['bitget', 'binance'], ['bitget', 'okx'], ['bitget', 'kucoin'],
+  ['bybit', 'gate'], ['binance', 'gate'], ['bitget', 'gate'], ['gate', 'okx'], ['gate', 'kucoin'],
 ];
 
 const LANG_CODES = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
@@ -47,7 +52,7 @@ const EN = {
   bothEq: 'both equally', both: 'both',
   navCalc: 'Calculators', navBlog: 'Blog', navGloss: 'Glossary', crumbHome: 'Home',
 };
-const EN_KNOWN = { bybit: EX.bybit.known, binance: EX.binance.known, okx: EX.okx.known, kucoin: EX.kucoin.known, kraken: EX.kraken.known };
+const EN_KNOWN = Object.fromEntries(Object.keys(EX).map(k => [k, EX[k].known]));
 
 function fill(str, map) {
   return str.replace(/\{(\w+)\}/g, (m, k) => (k in map ? map[k] : m));
@@ -124,7 +129,7 @@ function comparePage(ak, bk, lang) {
   const map = {
     A: a.name, B: b.name, AT: pct(a.taker), BT: pct(b.taker), AL: a.lev, BL: b.lev,
     MAX: Math.max(a.lev, b.lev), AMR: pct(a.mmr), BMR: pct(b.mmr),
-    LT: lowerTaker, HL: higherLev, AK: ak, BK: bk, AKNOWN: KN[ak], BKNOWN: KN[bk],
+    LT: lowerTaker, HL: higherLev, AK: ak, BK: bk, AKNOWN: KN[ak] || EN_KNOWN[ak], BKNOWN: KN[bk] || EN_KNOWN[bk],
   };
   const F = s => fill(s, map);
   const title = `${a.name} vs ${b.name}${L.titleSuf}`;
@@ -189,3 +194,16 @@ for (const [ak, bk] of PAIRS) {
   console.log('wrote', ak + '-vs-' + bk, '(en + 12)');
 }
 console.log('done:', n, 'comparison pages (' + PAIRS.length + ' × 13 langs)');
+
+// keep sitemap.xml in sync — add any missing EN comparison URLs (lang variants are covered by hreflang)
+try {
+  const smp = path.join(OUT, 'sitemap.xml');
+  let sm = fs.readFileSync(smp, 'utf8');
+  const today = new Date().toISOString().slice(0, 10);
+  let added = 0;
+  for (const [ak, bk] of PAIRS) {
+    const loc = `https://marginpad.io/${ak}-vs-${bk}/`;
+    if (sm.indexOf(loc) === -1) { sm = sm.replace('</urlset>', `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>\n</urlset>`); added++; }
+  }
+  if (added) { fs.writeFileSync(smp, sm); console.log('sitemap: +' + added + ' comparison URLs'); }
+} catch (e) { console.log('sitemap update skipped:', e.message); }

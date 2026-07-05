@@ -17,6 +17,8 @@ const EX = [
     blurb:'Gate lists thousands of tokens and offers perpetual futures across an enormous range of markets, with up to 100x leverage.' },
   { name:'Kraken',  slug:'kraken',  ref:'https://invite.kraken.com/JDNW/guj2tf28',                                                                lev:50,  mmr:0.5, accent:'#7b5cff', fg:'#ffffff',
     blurb:'Kraken is a security-first, long-established exchange. Its futures offer more conservative leverage, favouring risk control.' },
+  { name:'Bitget',  slug:'bitget',  ref:'https://www.bitget.com/referral/register?clacCode=DSSSQKGK',                                             lev:125, mmr:0.5, accent:'#00e5d0', fg:'#04231f',
+    blurb:'Bitget is a top-five futures exchange best known for copy trading — automatically mirror pro traders — with deep USDT-perpetual liquidity and up to 125x leverage.' },
 ];
 
 const esc = s => String(s).replace(/&/g, '&amp;');
@@ -206,3 +208,18 @@ for (const ex of EX) {
   console.log('wrote', ex.slug, '(liquidation + pnl)');
 }
 console.log('done:', n, 'pages');
+
+// keep sitemap.xml in sync — add any missing per-exchange calculator URLs
+try {
+  const smp = path.join(OUT, 'sitemap.xml');
+  let sm = fs.readFileSync(smp, 'utf8');
+  const today = new Date().toISOString().slice(0, 10);
+  let added = 0;
+  for (const ex of EX) {
+    for (const suf of ['liquidation-calculator', 'pnl-calculator']) {
+      const loc = `https://marginpad.io/${ex.slug}-${suf}/`;
+      if (sm.indexOf(loc) === -1) { sm = sm.replace('</urlset>', `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>\n</urlset>`); added++; }
+    }
+  }
+  if (added) { fs.writeFileSync(smp, sm); console.log('sitemap: +' + added + ' calculator URLs'); }
+} catch (e) { console.log('sitemap update skipped:', e.message); }
