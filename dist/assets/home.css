@@ -1940,11 +1940,11 @@
   .browse-sg small{flex:0 0 auto;color:var(--ink-faint);font-family:'Space Mono',monospace;font-size:10px;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   @media(min-width:721px){.browse{display:none!important;}}
   /* hamburger → opens the Browse panel as a left-side drawer (declutters the header) */
-  .hmenu{display:none;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}
+  .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}
   .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}
   .hmenu span:nth-child(2){width:13px;}
   .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}
-  @media(min-width:721px){.hmenu{display:inline-flex;}.browse.aside:not([hidden]){display:block!important;}}
+  @media(min-width:721px){.browse.aside:not([hidden]){display:block!important;}}
   .browse.aside{background:rgba(0,0,0,0);transition:background .3s;}
   .browse.aside.open{background:rgba(0,0,0,.5);}
   .browse.aside .browse-sheet{inset:0 auto 0 0;width:min(372px,86vw);transform:translateX(-100%);box-shadow:0 0 50px rgba(0,0,0,.6);border-right:1px solid var(--line-bright);}
