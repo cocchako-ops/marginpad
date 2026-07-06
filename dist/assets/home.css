@@ -246,10 +246,10 @@
   .tab.on{color:var(--lime);border-color:var(--line-bright);background:linear-gradient(180deg,rgba(194,246,74,.12),transparent);box-shadow:inset 0 1px 0 rgba(194,246,74,.25);}
   .copybtn:active{transform:scale(.92);}
   input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-  .input-line.has-stepper input{padding-right:58px;}
-  .input-line.has-stepper .unit{right:37px;}
-  .stepper{position:absolute;right:7px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:3px;}
-  .stepper button{width:30px;height:19px;display:flex;align-items:center;justify-content:center;background:var(--panel-2);border:1px solid var(--line-bright);border-radius:5px;color:var(--ink-dim);font-size:8px;line-height:1;cursor:pointer;padding:0;transition:.12s;}
+  .input-line.has-stepper input{padding-right:54px;}
+  .input-line.has-stepper .unit{right:36px;}
+  .stepper{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:2px;max-height:calc(100% - 8px);justify-content:center;}
+  .stepper button{width:26px;height:14px;display:flex;align-items:center;justify-content:center;background:var(--panel-2);border:1px solid var(--line-bright);border-radius:4px;color:var(--ink-dim);font-size:7px;line-height:1;cursor:pointer;padding:0;transition:.12s;}
   .stepper button:hover{color:#c2f64a;border-color:#c2f64a;background:rgba(194,246,74,.1);}
   .stepper button:active{transform:scale(.88);}
   [dir="rtl"] .stepper{right:auto;left:7px;}
