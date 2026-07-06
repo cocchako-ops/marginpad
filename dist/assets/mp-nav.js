@@ -223,6 +223,19 @@
     hh.style.marginTop = '';
     var t = hh.getBoundingClientRect().top;
     if (t > 0 && t < 120) hh.style.marginTop = (-t) + 'px';
+    // mobile: full-bleed horizontally — headers inside a padded .wrap render 16-24px narrower than the
+    // screen and read as "cut off" at the left/right edges (alerts/fear-greed/news/coins/blog/...)
+    if (window.innerWidth <= 720) {
+      hh.style.marginLeft = ''; hh.style.marginRight = ''; hh.style.paddingLeft = ''; hh.style.paddingRight = '';
+      var r = hh.getBoundingClientRect();
+      if (r.left > 0.5) {
+        var cs = getComputedStyle(hh);
+        hh.style.paddingLeft = (parseFloat(cs.paddingLeft) + r.left) + 'px';
+        hh.style.paddingRight = (parseFloat(cs.paddingRight) + (window.innerWidth - r.right)) + 'px';
+        hh.style.marginLeft = (-r.left) + 'px';
+        hh.style.marginRight = (r.right - window.innerWidth) + 'px';
+      }
+    }
   } catch (e) {} }
   function mount() { if (!document.body) return;
     normalizeHeader();

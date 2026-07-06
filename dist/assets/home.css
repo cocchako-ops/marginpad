@@ -2294,7 +2294,7 @@
 /* ===== Mobile full-screen Charts (landscape-first) ===== */
   .mfc{position:fixed;inset:0;z-index:1200;background:#070809;display:flex;flex-direction:column;color:#e9e7df;-webkit-user-select:none;user-select:none;}
   .mfc[hidden]{display:none;}
-  .mfc-bar{display:flex;align-items:center;gap:6px;padding:7px 8px calc(7px + env(safe-area-inset-top)) 8px;background:linear-gradient(180deg,#0d0f13,#0a0b0d);border-bottom:1px solid #1c2025;overflow-x:auto;scrollbar-width:none;flex:0 0 auto;}
+  .mfc-bar{display:flex;align-items:center;gap:6px;padding:calc(7px + env(safe-area-inset-top)) calc(8px + env(safe-area-inset-right)) 7px calc(8px + env(safe-area-inset-left));background:linear-gradient(180deg,#0d0f13,#0a0b0d);border-bottom:1px solid #1c2025;overflow-x:auto;scrollbar-width:none;flex:0 0 auto;}
   .mfc-bar::-webkit-scrollbar{display:none;}
   .mfc-b{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;background:#12161c;border:1px solid #232932;border-radius:9px;color:#cfd4da;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;padding:8px 11px;cursor:pointer;white-space:nowrap;transition:.13s;}
   .mfc-b:active{transform:scale(.95);}
