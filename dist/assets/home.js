@@ -154,7 +154,13 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     // ticks because a small (<2.5%) phantom can still cross the ~0.1% liq distance at 1000× and slip past the spike filter.
     if(tp){e.status='win';e.exit=e.tp;e.pnl=clamp(pnlAt(e.tp));_clArm[e.id]=0;}
     else if(sl){var _p=pnlAt(e.stop);e.status=(_p!=null&&_p>0)?'win':'loss';e.exit=e.stop;e.pnl=clamp(_p);_clArm[e.id]=0;} // a trailing/break-even stop can lock PROFIT → count it as a win
-    else{_clArm[e.id]=(_clArm[e.id]||0)+1;if(_clArm[e.id]<2)return false;_clArm[e.id]=0;
+    else{
+      // Liquidation fills on the FIRST validated touch of liq — the candle reaching liq means you're liquidated (that's
+      // real behavior, and it's exactly what the user sees on the chart). EXCEPTION: only at EXTREME leverage, where liq
+      // sits <0.3% from entry (~>300×), a tiny (<2.5%) phantom print can slip past the spike filter and cross liq, so
+      // those still need 2 consecutive ticks to confirm it's a real move (not a lone bad print).
+      if(e.entry>0&&Math.abs(m.liq-e.entry)/e.entry<0.003){_clArm[e.id]=(_clArm[e.id]||0)+1;if(_clArm[e.id]<2)return false;}
+      _clArm[e.id]=0;
       e.status='loss';e.exit=m.liq;e.liquidated=true;e.pnl=(+e.margin>0)?-(+e.margin):pnlAt(m.liq);} // liquidated = lose the full margin
     e.closeTs=Date.now();notify(e,tp?'tp':(e.liquidated?'liq':'sl'));return true;}
   function buzz(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
