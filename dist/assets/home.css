@@ -1021,14 +1021,7 @@
   .hnav .csel-trigger.open{border-color:#34d99a;box-shadow:0 0 0 3px rgba(46,189,133,.18);}
   .hnav .csel-chev{color:#34d99a;}
   /* desktop: make language + sign-in icon-only too (same as mobile — just a globe and a profile icon) */
-  @media(min-width:721px){
-    .hnav .hauth span{display:none;}
-    .hnav .hauth{padding:7px;}
-    .hnav .hauth svg{width:22px;height:22px;}
-    .hnav .csel-val,.hnav .csel-chev{display:none;}
-    .hnav .csel-trigger{padding:0;width:40px;height:40px;justify-content:center;border-radius:11px;}
-    .hnav .csel-trigger::before{position:static;transform:none;left:auto;top:auto;width:22px;height:22px;}
-  }
+  /* desktop header matches the homepage: "Sign in" text + native EN language select (icon-only block removed) */
   .hnav .csel-panel{min-width:170px;right:0;left:auto;}
   @media (prefers-reduced-motion:reduce){*,.aurora::before,.aurora::after{animation:none !important;}header,.hero h1,.hero .sub,.hero .meta,.tabs,.card,.panel.active,.reveal{opacity:1 !important;transform:none !important;}.grain{display:none;}}
   /* MOBILE: kill the live/animated background entirely — static, plain, cheap. Big perf win on phones. */

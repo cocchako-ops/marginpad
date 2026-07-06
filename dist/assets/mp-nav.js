@@ -86,7 +86,9 @@
     + 'header.mpnav-hdr .hlink svg{flex-shrink:0;}'
     + 'header.mpnav-hdr .hbot{color:#7cc4ff;}header.mpnav-hdr .hrwd,header.mpnav-hdr .hjr{color:#c2f64a;}'
     + "header.mpnav-hdr .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}"
-    + '@media(max-width:720px){header.mpnav-hdr .hbot,header.mpnav-hdr .hjr{display:none;}header.mpnav-hdr .hauth span{display:none;}header.mpnav-hdr .hauth{padding:7px;}header.mpnav-hdr .hnav{gap:2px;}header.mpnav-hdr .lang{max-width:64px;}}';
+    + '@media(max-width:720px){header.mpnav-hdr .hbot,header.mpnav-hdr .hjr{display:none;}header.mpnav-hdr .hauth span{display:none;}header.mpnav-hdr .hauth{padding:7px;}header.mpnav-hdr .hnav{gap:2px;}header.mpnav-hdr .lang{max-width:64px;}}'
+    /* desktop: full-bleed sticky bar like the homepage (pages put their header inside a centered .wrap — break out) */
+    + '@media(min-width:721px){html{overflow-x:clip;}header.mpnav-hdr{width:100vw;margin-left:calc(50% - 50vw);padding:15px 28px;box-sizing:border-box;position:sticky;top:0;z-index:50;background:rgba(11,13,18,.82);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.09);}}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   var I = {
@@ -194,9 +196,20 @@
       // only a simple site header (brand + a few nav links) is safe to rebuild — never one carrying a widget
       if (h.querySelector('input,form,canvas,table,.tabs,[role="tablist"]')) return;
       h.classList.add('mpnav-hdr');
-      h.innerHTML = canonHeaderHTML();
-      var mb = h.querySelector('#mBurger'); if (mb) mb.addEventListener('click', open);   // header burger opens the shared drawer (mp-auth handles [data-auth-open] by delegation)
+      h.innerHTML = canonHeaderHTML();   // burger click is bound by wireBurgers() below (mp-auth handles [data-auth-open] by delegation)
       var ls = h.querySelector('#langSel'); if (ls) ls.addEventListener('change', function () { if (ls.value) location.href = ls.value; });
+    } catch (e) {}
+  }
+  // EVERY header burger opens THE shared drawer. Pages' own scripts may also route here (defi, demo-home,
+  // lang homepages) — the open() re-entry guard makes double wiring harmless. Fixes the app shell
+  // (/paper-trade /charts /screener /calculators), whose inline browse IIFE is gated on the removed .mobnav
+  // and so never binds its #hmenuBtn anymore.
+  function wireBurgers() {
+    try {
+      Array.prototype.forEach.call(document.querySelectorAll('header .hmenu, header #mBurger'), function (b) {
+        if (b.__mpNavWired) return; b.__mpNavWired = 1;
+        b.addEventListener('click', function (e) { e.preventDefault(); open(); });
+      });
     } catch (e) {}
   }
   function mount() { if (!document.body) return;
@@ -212,7 +225,7 @@
     // homepage/app-shell/rekt/rewards, .smobnav on hub pages) is removed so every page shows the SAME four
     // items in the same order. Navigation is habit — it must never differ between pages (owner rule).
     try { Array.prototype.forEach.call(document.querySelectorAll('.smobnav,.mobnav'), function (n) { n.remove(); }); } catch (e) {}
-    try { document.body.appendChild(bottomBar()); } catch (e) {} wire(); }
+    try { document.body.appendChild(bottomBar()); } catch (e) {} wire(); wireBurgers(); }
   var searchEl, scrollEl, _navY = 0;
   function filter(q) {
     q = (q || '').trim().toLowerCase(); if (!scrollEl) return;
@@ -246,7 +259,7 @@
     if (!hits.length) { box.hidden = true; box.innerHTML = ''; return; }
     box.innerHTML = '<div class="mpnav-sec">'+TR('brPages')+'</div>' + hits.map(function (h) { return '<a class="mpnav-sg" href="' + h.u + '"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span>' + _esc(h.t) + '</span><small>' + _esc(h.u) + '</small></a>'; }).join('');
     box.hidden = false; }
-  function open() { if (searchEl) { searchEl.value = ''; filter(''); } loadSidx(); panel.hidden = false; _navY = window.scrollY || window.pageYOffset || 0; document.documentElement.style.overflow = 'hidden'; document.body.style.position = 'fixed'; document.body.style.top = (-_navY) + 'px'; document.body.style.left = '0'; document.body.style.right = '0'; document.body.style.width = '100%'; requestAnimationFrame(function () { panel.classList.add('open'); if (searchEl) setTimeout(function () { searchEl.focus(); }, 250); }); }
+  function open() { if (!panel.hidden) return; /* re-entry guard: several pages route their burger here AND get the global wiring — never double-open */ if (searchEl) { searchEl.value = ''; filter(''); } loadSidx(); panel.hidden = false; _navY = window.scrollY || window.pageYOffset || 0; document.documentElement.style.overflow = 'hidden'; document.body.style.position = 'fixed'; document.body.style.top = (-_navY) + 'px'; document.body.style.left = '0'; document.body.style.right = '0'; document.body.style.width = '100%'; requestAnimationFrame(function () { panel.classList.add('open'); if (searchEl) setTimeout(function () { searchEl.focus(); }, 250); }); }
   function close() { panel.classList.remove('open'); document.documentElement.style.overflow = ''; document.body.style.position = ''; document.body.style.top = ''; document.body.style.left = ''; document.body.style.right = ''; document.body.style.width = ''; if (_navY) window.scrollTo(0, _navY); setTimeout(function () { panel.hidden = true; }, 300); }
   try { window.mpNavOpen = open; } catch (e) {}  // let other pages (e.g. Rekt's own nav) open this full, single-source-of-truth Browse drawer
   function wire() {

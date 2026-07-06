@@ -1585,7 +1585,7 @@ window.addEventListener('load', function () {
   function init(){
     enhance(document.getElementById('heatCoin'), true);
     enhance(document.getElementById('planSym'), true, true, true);
-    enhance(document.getElementById('langSel'), false);
+    /* langSel stays a native select — matches the homepage header (EN box, not a globe) */
     (window.requestIdleCallback||function(f){setTimeout(f,1500);})(function(){if(window.mpLoadTokens)window.mpLoadTokens(function(toks){var ps=document.getElementById('planSym');if(!ps)return;var have={};for(var i=0;i<ps.options.length;i++)have[ps.options[i].value.toUpperCase()]=1;toks.forEach(function(s){if(!have[s]){var o=document.createElement('option');o.value=s;o.textContent=s;ps.appendChild(o);}});});});
   }
   if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
