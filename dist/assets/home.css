@@ -2062,6 +2062,30 @@
   .scr-box i{font-style:normal;font-size:8.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint);}
   .scr-box b{font-size:11px;font-weight:700;color:var(--ink);}
   .scr-box b.up{color:var(--up);}.scr-box b.dn{color:var(--red);}
+  .scr-boxes{display:flex;flex-wrap:wrap;gap:6px;}
+  /* ===== mobile screener: a tidy row instead of a chaotic chip-wrap ===== */
+  @media(max-width:640px){
+    .scr-list{gap:8px;}
+    .scr-row{gap:10px;align-items:stretch;}
+    .scr-score3{flex:0 0 44px;width:44px;}
+    .scr-score3 b{font-size:20px;}
+    .scr-main{gap:8px;min-width:0;}
+    .scr-line1{gap:6px;flex-wrap:wrap;}
+    .scr-sym{font-size:15.5px;}
+    .scr-name{flex:1 1 60px;font-size:11px;}
+    .scr-pxw{margin-left:auto;}
+    .scr-px{font-size:13.5px;}
+    .scr-chg{font-size:11px;}
+    .scr-line2{gap:5px;}
+    .scr-vd{font-size:9px;padding:2px 6px;}
+    .scr-tag{font-size:9px;padding:2px 5px;}
+    /* the 7 metric chips become an aligned 3-column grid (label left / value right) — no more ragged wrapping */
+    .scr-boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
+    .scr-box{justify-content:space-between;align-items:center;padding:5px 7px;border-radius:8px;gap:4px;min-width:0;}
+    .scr-box i{font-size:8px;flex:0 0 auto;}
+    .scr-box b{font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  }
+  @media(max-width:380px){ .scr-boxes{grid-template-columns:repeat(2,1fr);} .scr-name{display:none;} }
   .scr-an{margin:2px 0 12px;}
 .scr-live{margin:0 0 12px;border:1px solid var(--line-bright);border-radius:12px;padding:11px 13px;background:linear-gradient(180deg,rgba(46,189,133,.05),transparent);}
 .scr-live-h{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);margin-bottom:9px;font-weight:700;}

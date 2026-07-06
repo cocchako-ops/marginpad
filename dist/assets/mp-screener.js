@@ -110,7 +110,8 @@
         +'<span class="scr-main">'
         +'<span class="scr-line1">'+icHtml(e.s)+'<span class="scr-sym">'+e.s+'</span><span class="scr-star'+(wlHas(e.s)?' on':'')+'" data-star="'+e.s+'" role="button" tabindex="0" aria-label="Watchlist">★</span><span class="scr-name">'+(NAMES[e.s]||'')+'</span>'
         +'<span class="scr-pxw"><b class="scr-px" data-px>'+fmtPx(p)+'</b><span class="scr-chg '+chgCls+'">'+pct(e.chg)+'</span></span></span>'
-        +'<span class="scr-line2">'+(e.verdict?'<span class="scr-vd sc-'+cls+'">'+e.verdict+'</span>':'')+tr+lev+boxes+'</span>'
+        +'<span class="scr-line2">'+(e.verdict?'<span class="scr-vd sc-'+cls+'">'+e.verdict+'</span>':'')+tr+lev+'</span>'
+        +'<span class="scr-boxes">'+boxes+'</span>'
         +'</span></button>';
     }).join('');}
   function updLive(){var rows=listEl.querySelectorAll('.scr-row');for(var i=0;i<rows.length;i++){var s=rows[i].getAttribute('data-sym'),fb=+rows[i].getAttribute('data-p'),pe=rows[i].querySelector('[data-px]');if(pe)pe.textContent=fmtPx(live(s,fb));}}
