@@ -157,9 +157,11 @@
   }
   function mount() { if (!document.body) return;
     // Pages that already have their OWN header burger (homepage / lang homepages / defi / app-shell = .hmenu/#mBurger)
-    // must NOT get a 2nd one — mp-nav still mounts the drawer + exposes window.mpNavOpen, so that page's own burger opens it.
+    // must not SHOW a 2nd one — but their burger opens this drawer by .click()-ing mp-nav's burger, so we still append it
+    // as an INVISIBLE click target (display:none), plus window.mpNavOpen. Removing it entirely broke those pages' openBrowse.
     var hasOwnBurger = document.querySelector('.hmenu, #mBurger');
-    if (!hasOwnBurger) document.body.appendChild(btn);
+    if (hasOwnBurger) btn.style.display = 'none';
+    document.body.appendChild(btn);
     document.body.appendChild(panel);
     // THE one mobile bar — mp-nav owns it SITE-WIDE. Any legacy inline bar (.mobnav variants on the old
     // homepage/app-shell/rekt/rewards, .smobnav on hub pages) is removed so every page shows the SAME four
