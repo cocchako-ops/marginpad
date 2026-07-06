@@ -7,7 +7,10 @@
   var _NL=_mpLang();
   function TR(k){var o=MPI[_NL]||MPI.en;return (o&&o[k]!=null)?o[k]:(MPI.en[k]!=null?MPI.en[k]:k);}
   var css = ''
-    + '@view-transition{navigation:auto;}' /* smooth cross-page crossfade on supported browsers (progressive — others just navigate) */
+    /* cross-page crossfade: DESKTOP-only. On phones the old-page snapshot lingers while the new page renders
+       (reads as "the previous page flashes back" on slow devices) and the snapshot compositing costs GPU on
+       weak phones — so mobile navigates instantly instead. Desktop gets a short .15s fade. */
+    + (window.matchMedia && window.matchMedia('(min-width:721px)').matches ? '@view-transition{navigation:auto;}::view-transition-old(root),::view-transition-new(root){animation-duration:.15s;}' : '')
     + '.mpnav-burger{display:none;position:fixed;top:13px;left:13px;z-index:90;flex-direction:column;justify-content:center;gap:4px;width:38px;height:38px;padding:0 8px;background:rgba(10,11,13,.72);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:10px;cursor:pointer;}'
     + '.mpnav-burger span{display:block;height:2.5px;width:20px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}'
     + '.mpnav-burger span:nth-child(2){width:14px;}'
@@ -212,8 +215,19 @@
       });
     } catch (e) {}
   }
+  // Pin the header to the very top: on pages whose <header> sits inside a padded .wrap, the sticky header
+  // starts 16–22px down and page content peeks above it. Measure the actual offset and pull it up.
+  function pinHeader() { try {
+    if ((window.scrollY || window.pageYOffset || 0) > 2) return;   // only meaningful at the top of the page
+    var hh = document.querySelector('body>.wrap>header, body>header'); if (!hh) return;
+    hh.style.marginTop = '';
+    var t = hh.getBoundingClientRect().top;
+    if (t > 0 && t < 120) hh.style.marginTop = (-t) + 'px';
+  } catch (e) {} }
   function mount() { if (!document.body) return;
     normalizeHeader();
+    pinHeader();
+    window.addEventListener('resize', function () { clearTimeout(window.__mpHdrT); window.__mpHdrT = setTimeout(pinHeader, 150); });
     // Pages that already have their OWN header burger (homepage / lang homepages / defi / app-shell = .hmenu/#mBurger)
     // must not SHOW a 2nd one — but their burger opens this drawer by .click()-ing mp-nav's burger, so we still append it
     // as an INVISIBLE click target (display:none), plus window.mpNavOpen. Removing it entirely broke those pages' openBrowse.
