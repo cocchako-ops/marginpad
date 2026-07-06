@@ -2084,7 +2084,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function open(mode){bp.classList.toggle('aside',mode==='aside');if(searchEl){searchEl.value='';filterBrowse('');}loadSidx();bp.hidden=false;_bsY=window.scrollY||window.pageYOffset||0;document.body.style.top=(-_bsY)+'px';document.documentElement.classList.add('browse-lock');requestAnimationFrame(function(){bp.classList.add('open');if(mode==='aside'&&searchEl)setTimeout(function(){searchEl.focus();},250);});}
   function close(){bp.classList.remove('open');document.documentElement.classList.remove('browse-lock');document.body.style.top='';if(_bsY)window.scrollTo(0,_bsY);setTimeout(function(){bp.hidden=true;},300);}
   window.__openBrowse=open;
-  var hm=document.getElementById('hmenuBtn');if(hm)hm.addEventListener('click',function(){open('aside');});
+  var hm=document.getElementById('hmenuBtn');if(hm)hm.addEventListener('click',function(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}open('aside');});
   bp.addEventListener('click',function(e){var t=e.target;
     if(t===bp){close();return;} // click the dimmed area beside the drawer
     if(t.closest('.browse-x')){close();return;}

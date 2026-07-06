@@ -71,6 +71,22 @@
     + '}';
   // WEAK-PHONE GPU RESCUE: kill backdrop-filter:blur on mobile (old WebViews freeze the compositor on blurred elements). Solid bottom bar for legibility.
   css += '@media(max-width:760px){*{backdrop-filter:none !important;-webkit-backdrop-filter:none !important;}.mpbn{background:#0c1109 !important;}}';
+  // ===== canonical desktop header (homepage-identical) for standalone pages that lack it — applied by normalizeHeader() =====
+  css += 'header.mpnav-hdr{display:flex !important;align-items:center;justify-content:space-between;gap:14px;}'
+    + 'header.mpnav-hdr .brand{display:flex;align-items:baseline;gap:10px;margin-left:0 !important;}'
+    + "header.mpnav-hdr .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;color:#e9e7df;text-decoration:none;cursor:pointer;line-height:1;}"
+    + 'header.mpnav-hdr .mark b{color:#c2f64a;}'
+    + 'header.mpnav-hdr .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center;}'
+    + 'header.mpnav-hdr .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s;}'
+    + 'header.mpnav-hdr .hmenu span:nth-child(2){width:13px;}'
+    + 'header.mpnav-hdr .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px;}'
+    + 'header.mpnav-hdr .hnav{display:flex;align-items:center;gap:3px;}'
+    + "header.mpnav-hdr .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s;}"
+    + 'header.mpnav-hdr .hlink:hover{color:#fff;background:rgba(255,255,255,.07);}'
+    + 'header.mpnav-hdr .hlink svg{flex-shrink:0;}'
+    + 'header.mpnav-hdr .hbot{color:#7cc4ff;}header.mpnav-hdr .hrwd,header.mpnav-hdr .hjr{color:#c2f64a;}'
+    + "header.mpnav-hdr .lang{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.04em;color:#8b95a1;background:#0a0b0d;border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:7px 9px;cursor:pointer;outline:none;max-width:140px;}"
+    + '@media(max-width:720px){header.mpnav-hdr .hbot,header.mpnav-hdr .hjr{display:none;}header.mpnav-hdr .hauth span{display:none;}header.mpnav-hdr .hauth{padding:7px;}header.mpnav-hdr .hnav{gap:2px;}header.mpnav-hdr .lang{max-width:64px;}}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   var I = {
@@ -150,12 +166,41 @@
     var bn = document.createElement('nav'); bn.className = 'mpbn'; bn.setAttribute('aria-label', 'Quick navigation');
     bn.innerHTML = items.map(function (it) {
       var browse = it[0] === 'browse';
-      var cur = (!browse && (it[0].split('?')[0].replace(/\/$/, '') || '/') === path) ? ' cur' : '';
+      // match the FULL href (path + query) — else "/paper-trade" and "/paper-trade?trades=1" both lit up on /paper-trade (Trades glowed wrongly)
+      var iq = it[0].indexOf('?') >= 0 ? it[0].slice(it[0].indexOf('?')) : '';
+      var cur = (!browse && (it[0].split('?')[0].replace(/\/$/, '') || '/') === path && iq === (location.search || '')) ? ' cur' : '';
       return '<a href="' + (browse ? '#' : it[0]) + '" data-mpbn="' + keys[it[1]] + '"' + (browse ? ' role="button"' : '') + ' class="mpbn-i' + cur + '" aria-label="' + TR(it[2]) + '"><svg viewBox="0 0 24 24" width="22" height="22" ' + S + '>' + it[3] + '</svg><span class="mpbn-l">' + TR(it[2]) + '</span></a>';
     }).join('');
     return bn;
   }
+  // ===== give every standalone page the SAME desktop header as the homepage =====
+  function canonHeaderHTML() {
+    var opts = [['/', 'EN'], ['/es/', 'ES'], ['/de/', 'DE'], ['/fr/', 'FR'], ['/it/', 'IT'], ['/pt/', 'PT'], ['/pl/', 'PL'], ['/nl/', 'NL'], ['/tr/', 'TR'], ['/ru/', 'RU'], ['/id/', 'ID'], ['/hi/', 'HI'], ['/vi/', 'VI']];
+    var lo = opts.map(function (o) { var code = o[0] === '/' ? 'en' : o[0].replace(/\//g, ''); return '<option value="' + o[0] + '"' + (code === _NL ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('');
+    return '<div class="brand"><button type="button" class="hmenu" id="mBurger" aria-label="' + TR('navMenu') + '"><span></span><span></span><span></span></button>'
+      + '<a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a></div>'
+      + '<nav class="hnav">'
+      + '<a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>'
+      + '<a href="/rewards/" class="hlink hrwd" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>'
+      + '<a href="/paper-trade?trades=1" class="hlink hjr"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</a>'
+      + '<button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>'
+      + '<select class="lang" id="langSel" aria-label="Language">' + lo + '</select></nav>';
+  }
+  function normalizeHeader() {
+    try {
+      if (document.querySelector('header .hrwd')) return; // already the canonical header (homepage / app-shell / defi / rekt / rewards)
+      var h = document.querySelector('body>header') || document.querySelector('body>.wrap>header');
+      if (!h) return;
+      // only a simple site header (brand + a few nav links) is safe to rebuild — never one carrying a widget
+      if (h.querySelector('input,form,canvas,table,.tabs,[role="tablist"]')) return;
+      h.classList.add('mpnav-hdr');
+      h.innerHTML = canonHeaderHTML();
+      var mb = h.querySelector('#mBurger'); if (mb) mb.addEventListener('click', open);   // header burger opens the shared drawer (mp-auth handles [data-auth-open] by delegation)
+      var ls = h.querySelector('#langSel'); if (ls) ls.addEventListener('change', function () { if (ls.value) location.href = ls.value; });
+    } catch (e) {}
+  }
   function mount() { if (!document.body) return;
+    normalizeHeader();
     // Pages that already have their OWN header burger (homepage / lang homepages / defi / app-shell = .hmenu/#mBurger)
     // must not SHOW a 2nd one — but their burger opens this drawer by .click()-ing mp-nav's burger, so we still append it
     // as an INVISIBLE click target (display:none), plus window.mpNavOpen. Removing it entirely broke those pages' openBrowse.
