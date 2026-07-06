@@ -193,7 +193,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     _lastSig=list.map(function(e){return e.id;}).join(',');
     el.innerHTML=list.map(function(e,idx){var m=metrics(e),long=m.long;
       return '<div class="pt-last '+_tkCls(m)+'" data-tid="'+e.id+'">'
-        +'<div class="ptl-top"><span class="ptl-tag">'+(idx===0?'OPEN POSITION':'OPEN')+'</span><span class="ptl-sym">'+esc(e.sym||'—')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b class="ptl-px">'+fp(m.live)+'</b></span></div>'
+        +'<div class="ptl-top"><span class="ptl-tag">OPEN</span><span class="ptl-sym">'+esc(e.sym||'—')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b class="ptl-px">'+fp(m.live)+'</b></span></div>'
         +'<div class="ptl-pnl"><span class="big">'+_tkPnl(m)+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span><button type="button" class="ptl-close" data-ptl-close="'+e.id+'">Close</button></div>'
         +'<div class="ptl-meta">'+_tkMeta(e,m)+'</div>'
         +'</div>';
