@@ -155,7 +155,12 @@
     }).join('');
     return bn;
   }
-  function mount() { if (!document.body) return; document.body.appendChild(btn); document.body.appendChild(panel);
+  function mount() { if (!document.body) return;
+    // Pages that already have their OWN header burger (homepage / lang homepages / defi / app-shell = .hmenu/#mBurger)
+    // must NOT get a 2nd one — mp-nav still mounts the drawer + exposes window.mpNavOpen, so that page's own burger opens it.
+    var hasOwnBurger = document.querySelector('.hmenu, #mBurger');
+    if (!hasOwnBurger) document.body.appendChild(btn);
+    document.body.appendChild(panel);
     // THE one mobile bar — mp-nav owns it SITE-WIDE. Any legacy inline bar (.mobnav variants on the old
     // homepage/app-shell/rekt/rewards, .smobnav on hub pages) is removed so every page shows the SAME four
     // items in the same order. Navigation is habit — it must never differ between pages (owner rule).
