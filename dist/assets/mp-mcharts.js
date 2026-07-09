@@ -237,60 +237,100 @@
     handle.addEventListener('pointerdown',function(e){if(e.target.closest('[data-fx]'))return;drag=true;var r=panel.getBoundingClientRect();panel.style.left=r.left+'px';panel.style.top=r.top+'px';panel.style.transform='none';sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;try{handle.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();});
     handle.addEventListener('pointermove',function(e){if(!drag)return;panel.style.left=Math.max(4,ox+(e.clientX-sx))+'px';panel.style.top=Math.max(4,oy+(e.clientY-sy))+'px';});
     handle.addEventListener('pointerup',function(){drag=false;});}
-  function openTrade(){closeFloat();var p=panes[activeI];if(!p)return;
-    floatEl=document.createElement('div');floatEl.className='mfc-float mfc-trw';
-    floatEl.innerHTML='<div class="mfc-float-h"><b>'+mcT('mcDemoTrade','Demo trade')+' — <span id="mtrSym">'+p.sym+'</span></b><button class="mfc-float-x" data-fx aria-label="Close">✕</button></div>'
-      +'<div class="mfc-float-b">'
+  // Demo trade — FULL window (owner v2): own coin picker (independent of the chart), the complete
+  // Paper-Trade opener incl. Advanced (exchange margin preset, SL, TP, trailing stop, break-even), big X.
+  function openTrade(){closeFloat();
+    var old=ov.querySelector('.mfc-trfull');if(old){old.remove();return;}
+    var tSym=(panes[activeI]||{}).sym||'BTC',side='long',lev=20,mmr=0.005;
+    var el=document.createElement('div');el.className='mfc-trfull';
+    el.innerHTML='<div class="mfc-trf-h"><b>'+mcT('mcDemoTrade','Demo trade')+'</b><button class="mfc-trf-x" type="button" aria-label="Close">✕</button></div>'
+      +'<div class="mfc-trf-b">'
+      +'<label class="mtr-lbl">'+mcT('mtCoin','Coin')+'</label>'
+      +'<div class="mtr-symrow"><button class="mtr-symcur" id="mtrSymBtn" type="button"><b id="mtrSymCur">'+tSym+'</b><span>▾</span></button><input class="mtr-in mtr-symq" id="mtrSymQ" placeholder="'+mcT('mtSearchTicker','Search any ticker…')+'" inputmode="search" hidden></div>'
+      +'<div class="mfc-sl mtr-syml" id="mtrSymL" hidden></div>'
       +'<div class="mtr-seg" id="mtrSeg"><button class="on" data-side="long" type="button">'+mcT('long','Long')+'</button><button data-side="short" type="button">'+mcT('short','Short')+'</button></div>'
       +'<label class="mtr-lbl">'+mcT('lAmountIn','Amount (USD)')+'</label>'
       +'<input class="mtr-in" id="mtrAmt" type="number" inputmode="decimal" value="100" min="1" max="100000" step="any">'
       +'<label class="mtr-lbl">'+mcT('lLeverage','Leverage')+' <b id="mtrLevV" style="color:#c2f64a">20×</b></label>'
       +'<input class="mtr-sl" id="mtrLev" type="range" min="0" max="1000" value="434" step="1">'
-      +'<div class="mtr-stats"><div><span>'+mcT('lEntry','Entry price')+'</span><b id="mtrPx">…</b></div><div><span>'+mcT('rEstLiq','Est. liquidation')+'</span><b id="mtrLiq">—</b></div><div><span>'+mcT('rPosSize','Position size')+'</span><b id="mtrSz">—</b></div></div>'
+      +'<label class="mtr-adv"><input type="checkbox" id="mtrAdvChk"><span>'+mcT('mtAdvanced','Advanced')+'</span></label>'
+      +'<div class="mtr-advbox" id="mtrAdv" hidden>'
+      +  '<label class="mtr-lbl">'+mcT('lExchangePt','Exchange (sets margin rate)')+'</label>'
+      +  '<select class="mtr-in" id="mtrEx"><option value="0.4">Binance — 0.4%</option><option value="0.5" selected>Bybit — 0.5%</option><option value="0.5">OKX — 0.5%</option><option value="0.5">Bitget — 0.5%</option><option value="0.5">KuCoin — 0.5%</option><option value="0.5">Gate — 0.5%</option><option value="0.6">Kraken — 0.6%</option></select>'
+      +  '<label class="mtr-lbl">'+mcT('lStopOpt','Stop-loss (optional)')+'</label><input class="mtr-in" id="mtrSL" type="number" inputmode="decimal" step="any" placeholder="—">'
+      +  '<label class="mtr-lbl">'+mcT('lTpOpt','Take-profit (optional)')+'</label><input class="mtr-in" id="mtrTP" type="number" inputmode="decimal" step="any" placeholder="—">'
+      +  '<label class="mtr-lbl">'+mcT('lTrail','Trailing stop')+' (%)</label><input class="mtr-in" id="mtrTr" type="number" inputmode="decimal" step="any" min="0" placeholder="off">'
+      +  '<label class="mtr-lbl">'+mcT('lBreakEven','Break-even at ROE')+' (%)</label><input class="mtr-in" id="mtrBE" type="number" inputmode="decimal" step="any" min="0" placeholder="off">'
+      +'</div>'
+      +'<div class="mtr-stats"><div><span>'+mcT('lEntry','Entry price')+'</span><b id="mtrPx">…</b></div><div><span>'+mcT('rEstLiq','Est. liquidation')+'</span><b id="mtrLiq">—</b></div><div><span>'+mcT('rPosSize','Position size')+'</span><b id="mtrSz">—</b></div><div><span>'+mcT('rNotional','Notional value')+'</span><b id="mtrNot">—</b></div></div>'
       +'<button class="mtr-open" id="mtrGo" type="button">'+mcT('mtOpen','Open demo trade')+'</button>'
       +'<div class="mtr-msg" id="mtrMsg"></div>'
       +'</div>';
-    ov.appendChild(floatEl);floatEl.querySelector('[data-fx]').addEventListener('click',closeFloat);
-    dragFloat(floatEl,floatEl.querySelector('.mfc-float-h'));
-    var side='long';
+    ov.appendChild(el);
+    var q=function(id){return el.querySelector('#'+id);};
+    function closeWin(){try{clearInterval(updT);}catch(e){}el.remove();}
+    var xb=el.querySelector('.mfc-trf-x');
+    xb.addEventListener('click',closeWin);
+    xb.addEventListener('pointerup',function(e){e.preventDefault();closeWin();}); // belt & braces — the old float ✕ missed taps on some phones
+    // coin picker (independent of the chart)
+    if(window.mpLoadTokens)try{window.mpLoadTokens(function(){tokens=window.mpTokens||tokens;});}catch(e){}
+    var symQ=q('mtrSymQ'),symL=q('mtrSymL'),symBtn=q('mtrSymBtn');
+    function renderSyms(qs){qs=String(qs||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+      var src=window.mpTokens||tokens;
+      var arr=qs?src.filter(function(t){return t.indexOf(qs)===0;}).concat(src.filter(function(t){return t.indexOf(qs)>0;})):src.slice(0,30);
+      symL.innerHTML=arr.slice(0,40).map(function(t){return '<button type="button" data-pick="'+t+'"'+(t===tSym?' class="on"':'')+'>'+t+'</button>';}).join('');}
+    symBtn.addEventListener('click',function(){var open=symQ.hidden;symQ.hidden=!open;symL.hidden=!open;if(open){renderSyms('');symQ.value='';setTimeout(function(){symQ.focus();},30);}});
+    symQ.addEventListener('input',function(){renderSyms(this.value);});
+    symL.addEventListener('click',function(e){var b=e.target.closest('[data-pick]');if(!b)return;tSym=b.getAttribute('data-pick');q('mtrSymCur').textContent=tSym;symQ.hidden=true;symL.hidden=true;
+      try{if(window.mpWS)window.mpWS.sub(tSym);}catch(_){}
+      upd();});
     var posToLev=function(x){return Math.max(1,Math.min(1000,Math.round(Math.pow(1000,x/1000))));};
-    var lev=posToLev(434);
-    var q=function(id){return floatEl.querySelector('#'+id);};
     q('mtrSeg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;side=b.getAttribute('data-side');
       Array.prototype.forEach.call(q('mtrSeg').querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});
       q('mtrSeg').classList.toggle('short',side==='short');upd();});
     q('mtrLev').addEventListener('input',function(){lev=posToLev(+this.value);q('mtrLevV').textContent=lev+'×';upd();});
     q('mtrAmt').addEventListener('input',function(){if(+this.value>100000)this.value=100000;upd();});
-    function upd(){var px=price(p.sym)||(p.lastBar&&p.lastBar.close)||0;if(!(px>0))return;
-      var amt=+q('mtrAmt').value||0,mmr=0.005;
-      var liq=side==='long'?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
-      q('mtrPx').textContent=fp(px);
-      q('mtrLiq').textContent=fp(liq)+' ('+((1/lev-mmr)*100).toFixed(2)+'%)';
-      q('mtrSz').textContent=fp(amt*lev);
+    q('mtrAdvChk').addEventListener('change',function(){q('mtrAdv').hidden=!this.checked;});
+    q('mtrEx').addEventListener('change',function(){mmr=(+this.value||0.5)/100;upd();});
+    function livePx(){var v=price(tSym);if(v>0)return v;
+      // non-major coin: pull a REST price and seed the shared map so it keeps ticking
+      fetch('/api/price?symbol='+encodeURIComponent(tSym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){var pv=+((d&&(d.price||d.p))||0);if(pv>0&&window.mpLivePrices)window.mpLivePrices[tSym]={p:pv,t:Date.now()};}).catch(function(){});
+      return 0;}
+    function upd(){var px=livePx();var amt=+q('mtrAmt').value||0;
+      if(px>0){var liq=side==='long'?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
+        q('mtrPx').textContent=fp(px);
+        q('mtrLiq').textContent=fp(liq)+' ('+((1/lev-mmr)*100).toFixed(2)+'%)';
+      }else{q('mtrPx').textContent='…';q('mtrLiq').textContent='—';}
+      q('mtrSz').textContent=fp(amt*lev);q('mtrNot').textContent=fp(amt*lev);
       q('mtrGo').classList.toggle('short',side==='short');}
     upd();
-    var updT=setInterval(function(){if(!floatEl||!document.body.contains(floatEl)){clearInterval(updT);return;}if(floatEl.querySelector('#mtrSym'))floatEl.querySelector('#mtrSym').textContent=panes[activeI]?panes[activeI].sym:p.sym;upd();},600);
+    var updT=setInterval(function(){if(!document.body.contains(el)){clearInterval(updT);return;}upd();},600);
     q('mtrGo').addEventListener('click',function(){
-      var pp=panes[activeI]||p,sym=pp.sym,msg=q('mtrMsg');
+      var msg=q('mtrMsg');
       var amt=+q('mtrAmt').value||0;if(amt>100000)amt=100000;
       if(!(amt>0)){msg.style.color='#ff6258';msg.textContent=mcT('mtEnterAmt','Enter an amount.');return;}
-      var px=price(sym)||(pp.lastBar&&pp.lastBar.close)||0;
-      if(!(px>0)){msg.style.color='#ff6258';msg.textContent='No live price yet — try again.';return;}
-      if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return;
-      var mmr=0.005,notional=amt*lev,qty=notional/px,liq=side==='long'?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
+      var px=livePx();
+      if(!(px>0)){msg.style.color='#ff6258';msg.textContent='Waiting for a live price — try again in a second.';return;}
+      if(window.mpTradeGate&&!window.mpTradeGate(tSym,side))return;
+      var long=side==='long';
+      var sl=parseFloat(q('mtrSL').value),tp=parseFloat(q('mtrTP').value);
+      if(isFinite(sl)&&((long&&sl>=px)||(!long&&sl<=px)))sl=NaN; // wrong side — drop so it can't self-trigger
+      if(isFinite(tp)&&((long&&tp<=px)||(!long&&tp>=px)))tp=NaN;
+      var tr=parseFloat(q('mtrTr').value),be=parseFloat(q('mtrBE').value);
+      var notional=amt*lev,qty=notional/px,liq=long?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
       var d;try{d=JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){d=[];}
-      d.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:side,entry:px,stop:null,tp:null,lev:lev,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null});
+      d.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:tSym,side:side,entry:px,stop:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,trail:(isFinite(tr)&&tr>0)?tr:null,be:(isFinite(be)&&be>0)?be:null,hwm:null,lev:lev,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null});
       try{localStorage.setItem('mp_journal',JSON.stringify(d));}catch(e){}
-      if(window.mpLivePrices)window.mpLivePrices[sym]={p:px,t:Date.now()};
+      if(window.mpLivePrices)window.mpLivePrices[tSym]={p:px,t:Date.now()};
       if(window.mpJournalRender)window.mpJournalRender();
       try{window.mpBuzz&&window.mpBuzz([15]);}catch(e){}
       try{if(window.mpLevWarn)window.mpLevWarn(lev);}catch(e){}
       try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
       try{if(typeof updMT==='function')updMT();}catch(e){}
-      msg.style.color='#2ebd85';msg.textContent=mcT('mtOpened','Position opened ✓')+' — '+sym+' '+side+' '+lev+'× · $'+amt;
+      msg.style.color='#2ebd85';msg.textContent=mcT('mtOpened','Position opened ✓')+' — '+tSym+' '+side+' '+lev+'× · $'+amt;
       var g=q('mtrGo');g.textContent=mcT('mtOpened','Position opened ✓');
-      setTimeout(function(){if(g&&document.body.contains(g))g.textContent=mcT('mtOpen','Open demo trade');},1600);
-      panes.forEach(function(px2){if(px2.trades)try{drawTrades(px2);}catch(e){}});
+      setTimeout(function(){if(document.body.contains(g))g.textContent=mcT('mtOpen','Open demo trade');},1600);
+      panes.forEach(function(pn){if(pn.trades)try{drawTrades(pn);}catch(e){}});
     });
   }
   function openSheet(kind){closeSheet();var p=panes[activeI];sheet=document.createElement('div');sheet.className='mfc-sheet';

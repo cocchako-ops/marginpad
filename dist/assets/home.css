@@ -2351,6 +2351,21 @@
   /* Demo-trade floating window (mirrors the paper-trade opener) */
   .mfc-tradebtn{color:#0a0b0d!important;background:#c2f64a!important;border-color:#c2f64a!important;font-weight:800;}
   .mfc-trw{width:min(340px,92vw);}
+  /* v2: full-window demo trade */
+  .mfc-trfull{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;background:linear-gradient(180deg,#111520,#0a0c11);}
+  .mfc-trf-h{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #1e2530;flex:0 0 auto;}
+  .mfc-trf-h b{font-size:15px;font-family:'Bricolage Grotesque',sans-serif;}
+  .mfc-trf-x{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;background:#141a22;border:1px solid #2c3540;border-radius:11px;color:#e9e7df;font-size:16px;cursor:pointer;padding:0;}
+  .mfc-trf-b{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 16px calc(env(safe-area-inset-bottom) + 18px);max-width:520px;width:100%;margin:0 auto;}
+  .mtr-symrow{display:flex;gap:8px;}
+  .mtr-symcur{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;background:#0c0f13;border:1px solid #2b323b;border-radius:10px;padding:10px 14px;color:#e9e7df;font-family:'Space Mono',monospace;font-size:14px;font-weight:800;cursor:pointer;}
+  .mtr-symcur span{color:#8a929c;font-size:10px;}
+  .mtr-symq{flex:1;}
+  .mtr-syml{max-height:180px;overflow-y:auto;margin-top:6px;}
+  .mtr-syml[hidden],.mtr-symq[hidden]{display:none!important;}
+  .mtr-adv{display:flex;align-items:center;gap:8px;margin:12px 2px 4px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#9aa3ad;cursor:pointer;}
+  .mtr-adv input{width:16px;height:16px;accent-color:#c2f64a;}
+  .mtr-advbox{border:1px solid #232932;border-radius:11px;padding:4px 12px 12px;margin-top:6px;background:rgba(255,255,255,.015);}
   .mtr-seg{display:flex;gap:7px;margin-bottom:10px;}
   .mtr-seg button{flex:1;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#9aa3ad;background:#0c0f13;border:1px solid #2b323b;border-radius:10px;padding:10px 0;cursor:pointer;}
   .mtr-seg button.on{color:#06231d;background:#2ebd85;border-color:#2ebd85;}
