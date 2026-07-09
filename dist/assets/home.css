@@ -2348,6 +2348,24 @@
   .mfc-pane.drawing .cwin-tools{display:flex;}
   .mfc-pane.drawing .cwin-draw{pointer-events:auto;cursor:crosshair;}
   .mfc-pane.drawing .mfc-pl{display:none;}
+  /* Demo-trade floating window (mirrors the paper-trade opener) */
+  .mfc-tradebtn{color:#0a0b0d!important;background:#c2f64a!important;border-color:#c2f64a!important;font-weight:800;}
+  .mfc-trw{width:min(340px,92vw);}
+  .mtr-seg{display:flex;gap:7px;margin-bottom:10px;}
+  .mtr-seg button{flex:1;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#9aa3ad;background:#0c0f13;border:1px solid #2b323b;border-radius:10px;padding:10px 0;cursor:pointer;}
+  .mtr-seg button.on{color:#06231d;background:#2ebd85;border-color:#2ebd85;}
+  .mtr-seg.short button.on{color:#fff;background:#ff5a4d;border-color:#ff5a4d;}
+  .mtr-lbl{display:flex;justify-content:space-between;align-items:baseline;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8a929c;margin:9px 2px 5px;}
+  .mtr-in{width:100%;background:#0c0f13;border:1px solid #2b323b;border-radius:10px;padding:11px 12px;color:#e9e7df;font-size:16px;font-family:'Space Mono',monospace;outline:none;}
+  .mtr-in:focus{border-color:#c2f64a;}
+  .mtr-sl{width:100%;accent-color:#c2f64a;margin:2px 0 4px;}
+  .mtr-stats{display:flex;flex-direction:column;gap:6px;background:#0c0f13;border:1px solid #232932;border-radius:11px;padding:10px 12px;margin:10px 0;}
+  .mtr-stats>div{display:flex;justify-content:space-between;font-size:12px;}
+  .mtr-stats span{color:#8a929c;}
+  .mtr-stats b{font-family:'Space Mono',monospace;font-weight:700;}
+  .mtr-open{width:100%;background:#2ebd85;border:none;border-radius:11px;color:#06231d;font-family:'Space Mono',monospace;font-size:13px;font-weight:800;letter-spacing:.03em;padding:13px 0;cursor:pointer;}
+  .mtr-open.short{background:#ff5a4d;color:#fff;}
+  .mtr-msg{font-size:12px;margin-top:8px;min-height:15px;font-family:'Space Mono',monospace;}
   .mfc-pane .cwin-leg{top:34px;left:10px;}
   .mfc-pane.drawing .cwin-leg{display:none!important;}
   /* entry rotate gate (only on open, in portrait) */

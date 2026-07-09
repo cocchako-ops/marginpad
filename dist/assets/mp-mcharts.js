@@ -66,6 +66,7 @@
       +'<button class="mfc-b" data-act="draw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/></svg>'+mcT('mcDraw','Draw')+'</button>'
       +'<button class="mfc-b" data-act="trades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><polyline points="8 7 3 12 8 17"/></svg>'+mcT('mtMyTrades','My trades')+'</button>'
       +'<button class="mfc-b" data-act="calc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="14" x2="8" y2="14"/></svg>'+mcT('mcCalc','Calc')+'</button>'
+      +'<button class="mfc-b mfc-tradebtn" data-act="trade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>'+mcT('mcDemoTrade','Demo trade')+'</button>'
       +'<span class="mfc-grow"></span>'
       +'<button class="mfc-b mfc-ai" data-act="ai" aria-label="Ask AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>'+mcT('mcAi','AI')+'</button>'
       +'</div>'
@@ -107,6 +108,7 @@
     if(a==='tf')return openSheet('tf');
     if(a==='ind')return openSheet('ind');
     if(a==='calc')return openCalc();
+    if(a==='trade')return openTrade();
     if(a==='ai')return openSheet('ai');
   }
   // ---- panes ----
@@ -235,6 +237,62 @@
     handle.addEventListener('pointerdown',function(e){if(e.target.closest('[data-fx]'))return;drag=true;var r=panel.getBoundingClientRect();panel.style.left=r.left+'px';panel.style.top=r.top+'px';panel.style.transform='none';sx=e.clientX;sy=e.clientY;ox=r.left;oy=r.top;try{handle.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();});
     handle.addEventListener('pointermove',function(e){if(!drag)return;panel.style.left=Math.max(4,ox+(e.clientX-sx))+'px';panel.style.top=Math.max(4,oy+(e.clientY-sy))+'px';});
     handle.addEventListener('pointerup',function(){drag=false;});}
+  function openTrade(){closeFloat();var p=panes[activeI];if(!p)return;
+    floatEl=document.createElement('div');floatEl.className='mfc-float mfc-trw';
+    floatEl.innerHTML='<div class="mfc-float-h"><b>'+mcT('mcDemoTrade','Demo trade')+' — <span id="mtrSym">'+p.sym+'</span></b><button class="mfc-float-x" data-fx aria-label="Close">✕</button></div>'
+      +'<div class="mfc-float-b">'
+      +'<div class="mtr-seg" id="mtrSeg"><button class="on" data-side="long" type="button">'+mcT('long','Long')+'</button><button data-side="short" type="button">'+mcT('short','Short')+'</button></div>'
+      +'<label class="mtr-lbl">'+mcT('lAmountIn','Amount (USD)')+'</label>'
+      +'<input class="mtr-in" id="mtrAmt" type="number" inputmode="decimal" value="100" min="1" max="100000" step="any">'
+      +'<label class="mtr-lbl">'+mcT('lLeverage','Leverage')+' <b id="mtrLevV" style="color:#c2f64a">20×</b></label>'
+      +'<input class="mtr-sl" id="mtrLev" type="range" min="0" max="1000" value="434" step="1">'
+      +'<div class="mtr-stats"><div><span>'+mcT('lEntry','Entry price')+'</span><b id="mtrPx">…</b></div><div><span>'+mcT('rEstLiq','Est. liquidation')+'</span><b id="mtrLiq">—</b></div><div><span>'+mcT('rPosSize','Position size')+'</span><b id="mtrSz">—</b></div></div>'
+      +'<button class="mtr-open" id="mtrGo" type="button">'+mcT('mtOpen','Open demo trade')+'</button>'
+      +'<div class="mtr-msg" id="mtrMsg"></div>'
+      +'</div>';
+    ov.appendChild(floatEl);floatEl.querySelector('[data-fx]').addEventListener('click',closeFloat);
+    dragFloat(floatEl,floatEl.querySelector('.mfc-float-h'));
+    var side='long';
+    var posToLev=function(x){return Math.max(1,Math.min(1000,Math.round(Math.pow(1000,x/1000))));};
+    var lev=posToLev(434);
+    var q=function(id){return floatEl.querySelector('#'+id);};
+    q('mtrSeg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;side=b.getAttribute('data-side');
+      Array.prototype.forEach.call(q('mtrSeg').querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});
+      q('mtrSeg').classList.toggle('short',side==='short');upd();});
+    q('mtrLev').addEventListener('input',function(){lev=posToLev(+this.value);q('mtrLevV').textContent=lev+'×';upd();});
+    q('mtrAmt').addEventListener('input',function(){if(+this.value>100000)this.value=100000;upd();});
+    function upd(){var px=price(p.sym)||(p.lastBar&&p.lastBar.close)||0;if(!(px>0))return;
+      var amt=+q('mtrAmt').value||0,mmr=0.005;
+      var liq=side==='long'?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
+      q('mtrPx').textContent=fp(px);
+      q('mtrLiq').textContent=fp(liq)+' ('+((1/lev-mmr)*100).toFixed(2)+'%)';
+      q('mtrSz').textContent=fp(amt*lev);
+      q('mtrGo').classList.toggle('short',side==='short');}
+    upd();
+    var updT=setInterval(function(){if(!floatEl||!document.body.contains(floatEl)){clearInterval(updT);return;}if(floatEl.querySelector('#mtrSym'))floatEl.querySelector('#mtrSym').textContent=panes[activeI]?panes[activeI].sym:p.sym;upd();},600);
+    q('mtrGo').addEventListener('click',function(){
+      var pp=panes[activeI]||p,sym=pp.sym,msg=q('mtrMsg');
+      var amt=+q('mtrAmt').value||0;if(amt>100000)amt=100000;
+      if(!(amt>0)){msg.style.color='#ff6258';msg.textContent=mcT('mtEnterAmt','Enter an amount.');return;}
+      var px=price(sym)||(pp.lastBar&&pp.lastBar.close)||0;
+      if(!(px>0)){msg.style.color='#ff6258';msg.textContent='No live price yet — try again.';return;}
+      if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return;
+      var mmr=0.005,notional=amt*lev,qty=notional/px,liq=side==='long'?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
+      var d;try{d=JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){d=[];}
+      d.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:side,entry:px,stop:null,tp:null,lev:lev,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null});
+      try{localStorage.setItem('mp_journal',JSON.stringify(d));}catch(e){}
+      if(window.mpLivePrices)window.mpLivePrices[sym]={p:px,t:Date.now()};
+      if(window.mpJournalRender)window.mpJournalRender();
+      try{window.mpBuzz&&window.mpBuzz([15]);}catch(e){}
+      try{if(window.mpLevWarn)window.mpLevWarn(lev);}catch(e){}
+      try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
+      try{if(typeof updMT==='function')updMT();}catch(e){}
+      msg.style.color='#2ebd85';msg.textContent=mcT('mtOpened','Position opened ✓')+' — '+sym+' '+side+' '+lev+'× · $'+amt;
+      var g=q('mtrGo');g.textContent=mcT('mtOpened','Position opened ✓');
+      setTimeout(function(){if(g&&document.body.contains(g))g.textContent=mcT('mtOpen','Open demo trade');},1600);
+      panes.forEach(function(px2){if(px2.trades)try{drawTrades(px2);}catch(e){}});
+    });
+  }
   function openSheet(kind){closeSheet();var p=panes[activeI];sheet=document.createElement('div');sheet.className='mfc-sheet';
     var title={sym:mcT('mcChooseCoin','Choose coin'),tf:mcT('mcTimeframe','Timeframe'),ind:mcT('indBtn','Indicators'),calc:mcT('mcCalcTitle','Liquidation calculator'),ai:mcT('mcAiTitle','AI chart assistant')}[kind]||'';
     sheet.innerHTML='<div class="mfc-sheet-h"><b>'+title+'</b><button class="mfc-sheet-x" data-x>✕</button></div><div class="mfc-sheet-b" id="mfcSB"></div>';
