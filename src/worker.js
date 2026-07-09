@@ -676,6 +676,49 @@ function handleCalendar(request) {
   events.sort((a, b) => a.ts - b.ts);
   return J({ gen: now, year: yearMode ? yr : undefined, events });
 }
+// Calendar event reminders: signed-in EMAIL reminders stored in KV `calrem:<uid>:<tsSec>`; Telegram ones register
+// via the bot deep link /start cal_<tsSec>_<type> → KV `calremtg:<chat>:<tsSec>`. The */10 cron (checkCalReminders)
+// lists the shared `calrem` prefix and delivers ~30 min before the event (send window 35min→event), then deletes.
+const CAL_TITLES = { fomc: 'FOMC rate decision', cpi: 'US CPI (inflation) release', nfp: 'US jobs report (NFP)', expiry: 'BTC & ETH options expiry', crypto: 'Crypto event' };
+async function handleCalRemind(request, env) {
+  if (request.method !== 'POST') return J({ error: 'method' }, 405);
+  let b = {}; try { b = await request.json(); } catch (e) {}
+  const tok = getCookie(request, SESS_COOKIE);
+  const su = tok && env.USERS ? await sessionUser(env, tok) : null;
+  if (!su || !su.id) return J({ error: 'login_required' }, 401);
+  const ts = +b.ts;
+  if (!isFinite(ts) || ts < Date.now() + 5 * 60000 || ts > Date.now() + 400 * 86400000) return J({ error: 'bad_time' }, 400);
+  const title = String(b.title || 'Crypto event').slice(0, 90);
+  try { await env.STATS.put('calrem:' + su.id + ':' + Math.floor(ts / 1000), JSON.stringify({ ts, title, uid: su.id }), { expirationTtl: Math.min(Math.max(Math.ceil((ts - Date.now()) / 1000) + 7200, 3600), 400 * 86400) }); } catch (e) { return J({ error: 'store' }, 500); }
+  return J({ ok: true });
+}
+async function checkCalReminders(env) {
+  const now = Date.now();
+  let keys = [];
+  try { const l = await env.STATS.list({ prefix: 'calrem', limit: 1000 }); keys = l.keys || []; } catch (e) { return; }
+  for (const k of keys) {
+    let v = null; try { v = JSON.parse(await env.STATS.get(k.name) || 'null'); } catch (e) {}
+    if (!v || !v.ts) { try { await env.STATS.delete(k.name); } catch (e) {} continue; }
+    if (v.ts - now > 35 * 60000) continue; // not due yet
+    try { await env.STATS.delete(k.name); } catch (e) {} // delete FIRST — a send retry must never double-fire
+    if (v.ts < now - 10 * 60000) continue; // long past (missed window) — just drop
+    const when = new Date(v.ts).toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+    if (k.name.startsWith('calremtg:')) {
+      const title = CAL_TITLES[v.type] || 'Crypto event';
+      try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: v.chat, parse_mode: 'HTML', disable_web_page_preview: true, text: '⏰ <b>' + title + '</b> in ~30 minutes (' + when + ').\n\nVolatility window — mind your leverage.\n\n📅 <a href="https://marginpad.io/calendar/">Calendar</a> · 📈 <a href="https://marginpad.io/paper-trade">Paper Trade</a>' }); } catch (e) {}
+    } else if (env.RESEND_API_KEY) {
+      let email = '';
+      try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/profiles', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids: [v.uid] }) })); const j = await r.json(); email = (j.profiles && j.profiles[v.uid] && j.profiles[v.uid].email) || ''; } catch (e) {}
+      if (!email) continue;
+      const t = String(v.title || 'Crypto event');
+      try { await fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify({
+        from: 'MarginPad Calendar <alerts@marginpad.io>', to: [email], reply_to: 'support@marginpad.io',
+        subject: '⏰ ' + t + ' — in about 30 minutes',
+        text: t + ' is coming up in about 30 minutes (' + when + ').\n\nVolatility window — mind your leverage.\n\nCalendar: https://marginpad.io/calendar/\nPaper Trade: https://marginpad.io/paper-trade\n\n— MarginPad',
+        html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:460px"><p style="font-size:19px;font-weight:800;margin:0 0 6px">⏰ ' + t.replace(/[<>&]/g, '') + '</p><p style="margin:0 0 12px">Coming up in about <b>30 minutes</b> (' + when + '). Volatility window — mind your leverage.</p><p style="margin:0"><a href="https://marginpad.io/calendar/" style="color:#111">Open the calendar →</a></p></div>' }) }); } catch (e) {}
+    }
+  }
+}
 async function handleDefiOverview(env) {
   const ck = new Request('https://marginpad.io/__defi_overview');
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
@@ -2252,6 +2295,16 @@ async function handleTelegram(request, env) {
   await bumpBot(env, cmd.replace(/^\//, '') || 'msg', msg.from && msg.from.id);
   if (cmd === '/start' || cmd === '/help') {
     const payload = msg.text.trim().split(/\s+/)[1] || ''; // deep-link token from t.me/MarginPadBot?start=<token> (account ↔ Telegram link for alerts)
+    // calendar reminder deep link: t.me/MarginPadBot?start=cal_<tsSec>_<type> (from /calendar/ "Remind me → Telegram")
+    const calM = cmd === '/start' && payload.match(/^cal_(\d{9,11})_([a-z]{3,8})$/);
+    if (calM) {
+      const ts = +calM[1] * 1000, type = calM[2], title = CAL_TITLES[type] || 'Crypto event';
+      if (ts < Date.now() + 5 * 60000) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'That event is already past (or under 5 minutes away) — pick the next one at marginpad.io/calendar', ...base }); return new Response('ok'); }
+      try { await env.STATS.put('calremtg:' + msg.chat.id + ':' + calM[1], JSON.stringify({ ts, type, chat: String(msg.chat.id) }), { expirationTtl: Math.min(Math.ceil((ts - Date.now()) / 1000) + 7200, 400 * 86400) }); } catch (e) {}
+      const when = new Date(ts).toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+      await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, parse_mode: 'HTML', disable_web_page_preview: true, text: '✅ <b>Reminder set.</b> I will message you here ~30 minutes before <b>' + title + '</b> (' + when + ').\n\n📅 <a href="https://marginpad.io/calendar/">marginpad.io/calendar</a>' });
+      return new Response('ok');
+    }
     if (cmd === '/start' && /^[0-9a-f]{8,32}$/.test(payload) && env.STATS && env.USERS) {
       let uid = ''; try { uid = await env.STATS.get('tglink:' + payload) || ''; } catch (e) {}
       if (uid) {
@@ -3586,6 +3639,7 @@ export default {
     if (url.pathname === '/api/gecko/coin') return handleGeckoCoin(url, env);
     if (url.pathname === '/api/onchain') return handleOnchain(env);
     if (url.pathname === '/api/calendar') return handleCalendar(request);
+    if (url.pathname === '/api/calendar/remind') return handleCalRemind(request, env);
     if (url.pathname === '/api/defi/overview') return handleDefiOverview(env);
     if (url.pathname === '/api/defi/extra') return handleDefiExtra(env);
     if (url.pathname === '/api/defi/charts') return handleDefiCharts(env);
@@ -3820,6 +3874,7 @@ export default {
     ctx.waitUntil(checkAccountAlerts(env));
     ctx.waitUntil(payWeeklyPrizes(env));
     ctx.waitUntil(checkDigest(env));
+    ctx.waitUntil(checkCalReminders(env));
     ctx.waitUntil(snapshotDaily(env));
     ctx.waitUntil(checkSignals(env));
     ctx.waitUntil(handleScreener(env).catch(() => {})); // keep the global KV screener snapshot warm so /charts "Top signals" loads instantly
