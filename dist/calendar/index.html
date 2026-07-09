@@ -51,9 +51,10 @@
   @keyframes calPulse{0%,100%{opacity:.5}50%{opacity:1}}
   @media(max-width:720px){.wrap{padding:0 16px}article h1{font-size:25px;line-height:1.12;margin:14px 0 8px}}
 
-  /* ═══ the visual calendar — FULL-BLEED on desktop, phone-calendar on mobile ═══ */
-  .calx{position:relative;width:min(96vw,1560px);margin:22px calc(50% - min(48vw,780px)) 10px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;align-items:start}
-  @media(max-width:980px){.calx{grid-template-columns:1fr;width:auto;margin:16px 0 8px}}
+  /* ═══ the visual calendar — the ENTIRE page (owner: no prose, calendar only, as big as possible) ═══ */
+  .sr-h1{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  .calx{position:relative;width:min(97vw,1840px);margin:14px calc(50% - min(48.5vw,920px)) 26px;display:grid;grid-template-columns:minmax(0,1fr) 352px;gap:14px;align-items:start}
+  @media(max-width:980px){.calx{grid-template-columns:1fr;width:auto;margin:12px 0 20px}}
   .calcard{background:linear-gradient(180deg,#12151b,#0d0f13);border:1px solid var(--line-bright);border-radius:18px;padding:14px 16px 16px;box-shadow:0 30px 70px -40px rgba(0,0,0,.9)}
   .calnav{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
   .calnav .mo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(19px,2vw,26px);letter-spacing:-.02em;min-width:150px}
@@ -69,15 +70,15 @@
   .calwd span{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);text-align:center;padding:4px 0}
   .calwd span:nth-child(6),.calwd span:nth-child(7){color:#5c6570}
   .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-  .cald{position:relative;min-height:86px;background:#0c0f13;border:1px solid var(--line);border-radius:11px;padding:7px 8px;cursor:pointer;transition:border-color .13s,transform .13s,box-shadow .13s;display:flex;flex-direction:column;gap:4px;min-width:0;text-align:left}
+  .cald{position:relative;min-height:clamp(92px,calc((100vh - 320px)/6),176px);background:#0c0f13;border:1px solid var(--line);border-radius:11px;padding:8px 9px;cursor:pointer;transition:border-color .13s,transform .13s,box-shadow .13s;display:flex;flex-direction:column;gap:5px;min-width:0;text-align:left}
   .cald:hover{border-color:#3a434f;transform:translateY(-1px)}
   .cald.out{opacity:.32}
   .cald.today{border-color:rgba(194,246,74,.75);box-shadow:0 0 0 1px rgba(194,246,74,.35),0 0 18px -6px rgba(194,246,74,.5)}
   .cald.sel{background:linear-gradient(180deg,rgba(194,246,74,.10),rgba(194,246,74,.02)),#0c0f13;border-color:rgba(194,246,74,.55)}
-  .cald .dn{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#9aa3ad;line-height:1}
+  .cald .dn{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#9aa3ad;line-height:1}
   .cald.today .dn{color:#c2f64a}
   .cald .dn small{font-size:8.5px;color:var(--ink-faint);margin-left:4px;letter-spacing:.05em}
-  .calev{display:flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.04em;border-radius:6px;padding:2.5px 6px;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .calev{display:flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.04em;border-radius:7px;padding:3.5px 7px;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   .calev i{width:5px;height:5px;border-radius:50%;flex:0 0 auto;background:currentColor;box-shadow:0 0 6px currentColor}
   .calmore{font-family:'Space Mono',monospace;font-size:8.5px;color:var(--ink-faint)}
   /* ── sidebar ── */
@@ -147,13 +148,7 @@
       <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
     </nav>
   </header>
-  <div class="crumb"><a href="/">Home</a> / Calendar</div>
-  <article>
-    <div class="df-eyebrow"><i></i>Official Fed &amp; BLS schedules · back to 2023</div>
-    <h1>Crypto Economic Calendar</h1>
-    <p class="lead">Everything that moves crypto, on a real calendar — FOMC decisions, CPI prints, jobs reports, options expiries and the big crypto milestones. Browse any month back to 2023, tap a day for details, and set a reminder so nothing catches you mid-leverage.</p>
-  </article>
-
+  <h1 class="sr-h1">Crypto Economic Calendar — FOMC, CPI, NFP &amp; options expiry dates</h1>
   <div class="calx">
     <div class="calcard">
       <div class="calnav">
@@ -187,16 +182,6 @@
     </div>
   </div>
 
-  <article>
-    <p class="cal-note">Times shown in your local timezone. FOMC dates from the Federal Reserve's published meeting calendar; CPI dates from the BLS release schedule. Jobs report (NFP) is <em>usually</em> the first Friday of the month. Options expiry = last Friday, 08:00 UTC settlement (Deribit). "Remind me" downloads an .ics file that drops the event — with a 30-minute heads-up alarm — into your phone or desktop calendar. Not financial advice.</p>
-
-    <h2 style="margin-top:30px">Why these dates move crypto</h2>
-    <p><strong>FOMC decisions</strong> set the price of money. Cheaper money historically pushes investors toward risk assets like Bitcoin; expensive money pulls them out. The statement lands at 2:00 PM ET and the first minutes afterward are routinely the most volatile of the month — many traders flatten leveraged positions before it.</p>
-    <p><strong>CPI</strong> is the inflation print the Fed reacts to. A single 0.1% surprise in either direction regularly moves BTC 2–5% in minutes, and liquidation cascades on leveraged positions amplify the move. If you trade with leverage, know when CPI drops — check it on our <a href="/liquidations/">liquidations dashboard</a> afterwards.</p>
-    <p><strong>Options expiry</strong> concentrates billions of dollars of open interest into a single settlement moment. Into the quarterly expiries especially, spot price tends to gravitate toward the "max pain" strike, then trades freely again once contracts settle.</p>
-    <p>Scroll back to the <strong>2024 Bitcoin halving</strong> or the <strong>spot-ETF approvals</strong> to study how the market behaved. Practice trading around these events risk-free on our <a href="/paper-trade">paper-trading terminal</a>, or set a <a href="/alerts/">price alert</a> so the market comes to you.</p>
-  </article>
-  <footer>© MarginPad · <a href="/">Tools</a> · <a href="/screener">Screener</a> · <a href="/rekt/">Rekt</a> · <a href="/blog/">Blog</a> · Not financial advice</footer>
 </div>
 <script>
 (function(){
