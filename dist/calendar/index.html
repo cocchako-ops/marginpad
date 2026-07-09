@@ -75,6 +75,11 @@
   .cald.out{opacity:.32}
   .cald.today{border-color:rgba(194,246,74,.75);box-shadow:0 0 0 1px rgba(194,246,74,.35),0 0 18px -6px rgba(194,246,74,.5)}
   .cald.sel{background:linear-gradient(180deg,rgba(194,246,74,.10),rgba(194,246,74,.02)),#0c0f13;border-color:rgba(194,246,74,.55)}
+  /* day-card ring by the day's biggest impact: red = market mover, orange = medium, green = minor (owner request) */
+  .cald.imp1{border-color:rgba(46,189,133,.55);box-shadow:0 0 12px -7px rgba(46,189,133,.4)}
+  .cald.imp2{border-color:rgba(255,159,67,.6);box-shadow:0 0 13px -6px rgba(255,159,67,.45)}
+  .cald.imp3{border-color:rgba(255,90,77,.68);box-shadow:0 0 16px -6px rgba(255,90,77,.55)}
+  .cald.imp1:hover{border-color:#2ebd85}.cald.imp2:hover{border-color:#ff9f43}.cald.imp3:hover{border-color:#ff5a4d}
   .cald .dn{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#9aa3ad;line-height:1}
   .cald.today .dn{color:#c2f64a}
   .cald .dn small{font-size:8.5px;color:var(--ink-faint);margin-left:4px;letter-spacing:.05em}
@@ -183,6 +188,10 @@
         <span style="color:#b48cff"><i></i>Expiry</span>
         <span style="color:#ff9f4d"><i></i>Crypto</span>
         <span style="color:#e9e7df"><i></i>Macro</span>
+        <span style="flex-basis:100%;height:0"></span>
+        <span style="color:#ff5a4d"><i style="border-radius:3px"></i>Big day</span>
+        <span style="color:#ff9f43"><i style="border-radius:3px"></i>Medium</span>
+        <span style="color:#2ebd85"><i style="border-radius:3px"></i>Minor</span>
       </div>
     </div>
   </div>
@@ -250,7 +259,8 @@
       if(evs.length>3)chips+='<span class="calmore">+'+(evs.length-3)+' more</span>';
       var dots='<span class="caldots">'+evs.slice(0,4).map(function(e){var tp=TYPES[e.type]||TYPES.crypto;return '<i style="color:'+tp[1]+'"></i>';}).join('')+'</span>';
       var wd=c.d.getDay();
-      return '<button type="button" class="cald'+(c.out?' out':'')+(k===todayK?' today':'')+(k===selKey?' sel':'')+'" data-k="'+k+'" data-y="'+c.d.getFullYear()+'" data-m="'+c.d.getMonth()+'">'
+      var mx=0;evs.forEach(function(e){if((e.impact||1)>mx)mx=e.impact||1;});
+      return '<button type="button" class="cald'+(c.out?' out':'')+(k===todayK?' today':'')+(k===selKey?' sel':'')+(mx?' imp'+mx:'')+'" data-k="'+k+'" data-y="'+c.d.getFullYear()+'" data-m="'+c.d.getMonth()+'">'
         +'<span class="dn">'+c.d.getDate()+(k===todayK?'<small>TODAY</small>':'')+'</span>'+chips+(evs.length?dots:'')+'</button>';
     }).join('');
   }
