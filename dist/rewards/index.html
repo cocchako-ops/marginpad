@@ -275,10 +275,53 @@
     <div id="wdHistList"></div>
   </div>
 
+  <style>
+    .exs-grid{display:flex;flex-direction:column;margin-top:2px}
+    .exs-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid rgba(255,255,255,.06)}
+    .exs-row:first-child{border-top:none}
+    .exs-m{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex:0 0 auto;font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif}
+    .exs-n{font-weight:700;font-size:14px;flex:0 0 auto}
+    .exs-plus{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#0a0b0d;background:var(--lime);border-radius:7px;padding:3px 8px;flex:0 0 auto}
+    .exs-go{margin-left:auto;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;letter-spacing:.03em;color:var(--lime);text-decoration:none;border:1px solid rgba(194,246,74,.45);border-radius:9px;padding:8px 12px;white-space:nowrap;transition:.13s}
+    .exs-go:hover{background:var(--lime);color:#0a0b0d}
+    .exs-form{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+    .exs-form select{flex:0 0 auto;background:#0c0f13;border:1px solid var(--line2);border-radius:11px;padding:12px 10px;color:var(--ink);font-size:13px;outline:none;cursor:pointer}
+    .exs-form input{flex:1;min-width:150px;background:#0c0f13;border:1px solid var(--line2);border-radius:11px;padding:12px 13px;color:var(--ink);font-size:14px;outline:none}
+    .exs-form input:focus,.exs-form select:focus{border-color:var(--lime)}
+    .exs-form .btn{flex:0 0 auto;background:var(--lime);color:#0a0b0d}
+    .exs-note{font-size:12px;color:#9aa3ad;line-height:1.55;margin-top:9px}
+  </style>
+  <div class="card" id="exsCard" hidden>
+    <div class="lbl">Exchange sign-up bonus</div>
+    <h2 style="margin:0 0 6px;font-size:19px">Create an exchange account — get $<span class="exsAmt">3</span> for each one</h2>
+    <p style="color:#9aa3ad;font-size:13.5px;line-height:1.6;margin:0 0 12px">Open a <b>new account</b> on any exchange below <b>through our button</b>, then paste your <b>UID</b> (your user ID — find it on the exchange under Profile / Account info). We verify the sign-up in our partner dashboard and <b>$<span class="exsAmt">3</span> is added to your balance</b> — once per exchange, for every exchange on the list.</p>
+    <div class="exs-grid" onclick="(function(t){var a=t.target&&t.target.closest&&t.target.closest('.exs-go');if(a){try{window.__mpTrack&&window.__mpTrack('exchange',a.getAttribute('data-ex')||'')}catch(e){}}})(event)">
+      <div class="exs-row"><span class="exs-m" style="background:#f7a600;color:#0a0b0d">B</span><span class="exs-n">Bybit</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><a class="exs-go" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer">Create account →</a></div>
+      <div class="exs-row"><span class="exs-m" style="background:#f0b90b;color:#181a20">B</span><span class="exs-n">Binance</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><a class="exs-go" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer">Create account →</a></div>
+      <div class="exs-row"><span class="exs-m" style="background:#e9e7df;color:#0a0b0d">O</span><span class="exs-n">OKX</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><a class="exs-go" data-ex="OKX" href="https://okx.com/join/96160298" target="_blank" rel="sponsored noopener noreferrer">Create account →</a></div>
+      <div class="exs-row"><span class="exs-m" style="background:#00e7d8;color:#06231d">B</span><span class="exs-n">Bitget</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><a class="exs-go" data-ex="Bitget" href="https://www.bitget.com/referral/register?clacCode=DSSSQKGK&amp;from=%2Fevents%2Freferral-all-program&amp;source=events&amp;utmSource=PremierInviter" target="_blank" rel="sponsored noopener noreferrer">Create account →</a></div>
+      <div class="exs-row"><span class="exs-m" style="background:#23af91;color:#06231d">K</span><span class="exs-n">KuCoin</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><a class="exs-go" data-ex="KuCoin" href="https://www.kucoin.com/r/rf/VHP8AYKY" target="_blank" rel="sponsored noopener noreferrer">Create account →</a></div>
+      <div class="exs-row"><span class="exs-m" style="background:#3361ff;color:#ffffff">G</span><span class="exs-n">Gate</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><a class="exs-go" data-ex="Gate" href="https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&amp;ref_type=103&amp;ut-m_cmp=rXJBDjtJ&amp;activity_id=1778642196063" target="_blank" rel="sponsored noopener noreferrer">Create account →</a></div>
+      <div class="exs-row"><span class="exs-m" style="background:#0ac2d6;color:#06231d">M</span><span class="exs-n">MEXC</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><a class="exs-go" data-ex="MEXC" href="https://promote.mexc.com/r/GND4jI97o0" target="_blank" rel="sponsored noopener noreferrer">Create account →</a></div>
+      <div class="exs-row"><span class="exs-m" style="background:#7b5cff;color:#ffffff">K</span><span class="exs-n">Kraken</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><a class="exs-go" data-ex="Kraken" href="https://invite.kraken.com/JDNW/guj2tf28" target="_blank" rel="sponsored noopener noreferrer">Create account →</a></div>
+      <div class="exs-row"><span class="exs-m" style="background:#0b2e7a;color:#ffffff">C</span><span class="exs-n">Crypto.com</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><a class="exs-go" data-ex="Crypto.com" href="https://crypto.com/app/sdf5hb6rkv" target="_blank" rel="sponsored noopener noreferrer">Create account →</a></div>
+    </div>
+    <div class="exs-form">
+      <select id="exsSel" aria-label="Exchange">
+        <option value="bybit">Bybit</option><option value="binance">Binance</option><option value="okx">OKX</option><option value="bitget">Bitget</option><option value="kucoin">KuCoin</option><option value="gate">Gate</option><option value="mexc">MEXC</option><option value="kraken">Kraken</option><option value="cryptocom">Crypto.com</option>
+      </select>
+      <input id="exsUid" type="text" placeholder="Your UID on that exchange" autocomplete="off" spellcheck="false">
+      <button class="btn" id="exsSubmit" type="button">Submit</button>
+    </div>
+    <div class="pr-msg" id="exsMsg"></div>
+    <div class="exs-note">Must be a <b>new</b> account created through our button (that is how the exchange links it to us — we can only verify those). Each exchange pays once per person; each UID pays once. Review is manual — usually within a day.</div>
+    <div id="exsList"></div>
+  </div>
+
   <div class="card" id="promoCard" hidden>
     <div class="lbl">Promote and earn</div>
-    <h2 style="margin:0 0 6px;font-size:19px">Post about MarginPad — get $<span class="prAmt">1</span> per post</h2>
-    <p style="color:#9aa3ad;font-size:13.5px;line-height:1.6;margin:0 0 12px">Make a post about MarginPad on X or TikTok (mention or link <b>marginpad.io</b>), paste the post link below, and after a quick manual review <b>$<span class="prAmt">1</span> is added to your balance</b>. One X post and one TikTok post per day. The post must <b>stay public for at least 24 hours</b> — we approve after that window, so leave it up.</p>
+    <h2 style="margin:0 0 6px;font-size:19px">Post about MarginPad — get $<span class="prAmt">0.30</span> per post</h2>
+    <p style="color:#9aa3ad;font-size:13.5px;line-height:1.6;margin:0 0 12px">Make a post about MarginPad on X or TikTok (mention or link <b>marginpad.io</b>), paste the post link below, and after a quick manual review <b>$<span class="prAmt">0.30</span> is added to your balance</b>. One X post and one TikTok post per day. The post must <b>stay public for at least 24 hours</b> — we approve after that window, so leave it up.</p>
     <div class="pr-seg" id="prSeg"><button type="button" data-pl="x" class="on">X (Twitter)</button><button type="button" data-pl="tiktok">TikTok</button></div>
     <div class="pr-row"><input id="prUrl" type="url" placeholder="https://x.com/you/status/…" autocomplete="off"><button class="btn" id="prSubmit" type="button">Submit</button></div>
     <div class="pr-msg" id="prMsg"></div>
@@ -373,9 +416,39 @@
   var wdAddrRow=document.getElementById('wdAddrRow'),wdAddr=document.getElementById('wdAddr'),wdConfirm=document.getElementById('wdConfirm');
   function setText(cls,v){var els=document.querySelectorAll('.'+cls);for(var i=0;i<els.length;i++)els[i].textContent=v;}
   function fmtShort(n){return (+n).toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1');}
-  function applyCfg(j){if(j.perDay!=null){perDay=j.perDay;setText('tPer',fmtShort(perDay));}if(j.amount!=null){amount=j.amount;setText('tAmt',(+amount).toFixed(2));}if(j.minWd!=null){minWd=j.minWd;setText('tMin',fmtShort(minWd));}if(j.prize1!=null)setText('tPz1','$'+j.prize1);if(j.prize2!=null)setText('tPz2','$'+j.prize2);if(j.prize3!=null)setText('tPz3','$'+j.prize3);if(j.welcomeAmt!=null){welcomeAmt=+j.welcomeAmt;renderWelcomeHook();}if(j.promoEnabled!=null||j.promoUsd!=null)prCfg(j);}
+  function applyCfg(j){if(j.perDay!=null){perDay=j.perDay;setText('tPer',fmtShort(perDay));}if(j.amount!=null){amount=j.amount;setText('tAmt',(+amount).toFixed(2));}if(j.minWd!=null){minWd=j.minWd;setText('tMin',fmtShort(minWd));}if(j.prize1!=null)setText('tPz1','$'+j.prize1);if(j.prize2!=null)setText('tPz2','$'+j.prize2);if(j.prize3!=null)setText('tPz3','$'+j.prize3);if(j.welcomeAmt!=null){welcomeAmt=+j.welcomeAmt;renderWelcomeHook();}if(j.promoEnabled!=null||j.promoUsd!=null)prCfg(j);if(j.exsignEnabled!=null||j.exsignUsd!=null)exsCfg(j);}
   function renderWelcomeHook(){var wh=document.getElementById('welcomeHook');if(!wh)return;if(welcomeAmt>0){wh.hidden=false;wh.innerHTML='<div style="background:linear-gradient(180deg,rgba(194,246,74,.13),rgba(194,246,74,.04));border:1px solid rgba(194,246,74,.45);border-radius:12px;padding:13px 15px;margin-bottom:12px;text-align:left"><div style="font-size:16px;font-weight:800;color:#d6f78a">Get free USDT, instantly</div><div style="font-size:12.5px;color:#9aa3ad;margin-top:3px;line-height:1.45">Sign in and we drop a USD welcome bonus straight into your balance — then keep claiming free USDT every few minutes.</div></div>';var sb=document.getElementById('signinBtn');if(sb)sb.textContent='Sign in & claim free USDT';}else{wh.hidden=true;}}
   function valid(a){return /^0x[0-9a-fA-F]{40}$/.test(a);}
+  // ---- Exchange sign-up bonus: $3 per new exchange account via our ref link (manual verification against the affiliate dashboard) ----
+  var exsAmtTxt='3';
+  var EXSN={bybit:'Bybit',binance:'Binance',okx:'OKX',bitget:'Bitget',kucoin:'KuCoin',gate:'Gate',mexc:'MEXC',kraken:'Kraken',cryptocom:'Crypto.com'};
+  function exsCfg(j){var c=document.getElementById('exsCard');if(!c)return;if(j.exsignEnabled!=null)c.hidden=(j.exsignEnabled===false);if(j.exsignUsd!=null){exsAmtTxt=(+j.exsignUsd)%1===0?String(+j.exsignUsd):(+j.exsignUsd).toFixed(2);setText('exsAmt',exsAmtTxt);}}
+  function exsMsgF(t,kind){var e=document.getElementById('exsMsg');if(!e)return;e.textContent=t;e.className='pr-msg show '+(kind||'');}
+  function exsLoad(){if(!signedIn)return;fetch('/api/reward/exsign/mine').then(function(r){return r.json();}).then(function(d){var list=document.getElementById('exsList');if(!list)return;var rows=(d&&d.signups)||[];function esc(x){return String(x==null?'':x).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+    list.innerHTML=rows.map(function(p){
+      var st=p.status==='approved'?'<span class="st" style="color:#41e3a3">+$'+(+p.amount||0).toFixed(2)+' PAID</span>':p.status==='rejected'?'<span class="st" style="color:#ff8a80">REJECTED</span>':'<span class="st" style="color:#f3d44a">IN REVIEW</span>';
+      var row='<div class="pr-item"><span class="pl" style="color:#f3d44a;flex:0 0 78px">'+esc(EXSN[p.exchange]||p.exchange)+'</span><span class="u">UID '+esc(p.uid)+'</span>'+st+'</div>';
+      if(p.status==='rejected'&&p.note)row+='<div class="pr-note"><b>Reason:</b> '+esc(p.note)+'</div>';
+      return row;
+    }).join('');}).catch(function(){});}
+  (function(){var btn=document.getElementById('exsSubmit');if(!btn)return;btn.addEventListener('click',function(){
+    var sel=document.getElementById('exsSel'),inp=document.getElementById('exsUid'),u=(inp&&inp.value||'').trim();
+    if(!signedIn){exsMsgF('Sign in first — the bonus lands on your account balance.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
+    if(!u){exsMsgF('Paste your UID from the exchange (Profile → your user ID).','err');return;}
+    btn.disabled=true;btn.textContent='…';
+    fetch('/api/reward/exsign/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({exchange:sel?sel.value:'',uid:u})}).then(function(r){return r.json();}).then(function(d){
+      btn.disabled=false;btn.textContent='Submit';
+      if(d&&d.ok){exsMsgF('Submitted. We verify your sign-up with the exchange — usually within a day — then $'+exsAmtTxt+' lands on your balance.','ok');if(inp)inp.value='';exsLoad();return;}
+      var e=(d&&d.error)||'';
+      if(e==='login_required'){exsMsgF('Sign in first.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}
+      else if(e==='already_submitted')exsMsgF('You already submitted a '+(EXSN[sel&&sel.value]||'account for this exchange')+' account — the bonus is once per exchange.','err');
+      else if(e==='uid_taken')exsMsgF('That UID was already submitted.','err');
+      else if(e==='bad_uid')exsMsgF('That does not look like a UID — copy the user ID from your exchange profile (letters and numbers only).','err');
+      else if(e==='banned')exsMsgF('This account is suspended from rewards.','err');
+      else if(e==='paused')exsMsgF('Exchange bonuses are paused right now.','err');
+      else exsMsgF('Could not submit — try again shortly.','err');
+    }).catch(function(){btn.disabled=false;btn.textContent='Submit';exsMsgF('Network error — try again.','err');});
+  });})();
   // ---- Promote & earn: $1 per X/TikTok post (manual review, 24h min live) ----
   var prPlat='x';
   function prCfg(j){var c=document.getElementById('promoCard');if(!c)return;c.hidden=(j.promoEnabled===false);if(j.promoUsd!=null){var t=(+j.promoUsd)%1===0?String(+j.promoUsd):(+j.promoUsd).toFixed(2);Array.prototype.forEach.call(document.querySelectorAll('.prAmt'),function(e){e.textContent=t;});}}
@@ -445,7 +518,7 @@
 
   function loadWdHistory(){if(!signedIn)return;fetch('/api/reward/wdhistory').then(function(r){return r.json();}).then(function(d){var el=document.getElementById('wdHistList'),card=document.getElementById('wdHistCard');if(!el||!card)return;var w=(d&&d.withdrawals)||[];if(!w.length){card.hidden=true;return;}card.hidden=false;el.innerHTML=w.map(function(x){var paid=x.status==='paid';var txid=(x.txid||'').replace(/[^0-9a-fA-Fx]/g,'');var tx=(paid&&txid)?'<a href="https://bscscan.com/tx/'+txid+'" target="_blank" rel="noopener" class="clink">view tx</a>':'';return '<div class="wdh-row"><span class="wdh-amt">$'+(+x.amountUsd||0).toFixed(2)+'</span><span class="wdh-st '+(paid?'ok':'')+'">'+(paid?'Paid':'Pending')+'</span><span class="wdh-meta">'+new Date(x.ts).toLocaleDateString()+(tx?' · '+tx:'')+'</span></div>';}).join('');}).catch(function(){});}
   function refresh(){ if(!signedIn){dash.hidden=true;return;} dash.hidden=false;
-    fetch('/api/reward/account').then(function(r){return r.json();}).then(render).catch(function(){}); loadWdHistory();prLoad(); }
+    fetch('/api/reward/account').then(function(r){return r.json();}).then(render).catch(function(){}); loadWdHistory();prLoad();exsLoad(); }
 
   // ---- auth gate: claiming requires a signed-in account (not a wallet) ----
   function updateGate(){
@@ -456,7 +529,7 @@
     signedIn=!!user;
     if(user&&whoEmail) whoEmail.textContent=user.username||user.email||'';
     updateGate();
-    if(signedIn){ fetch('/api/reward/me').then(function(r){return r.json();}).then(function(d){ applyCfg(d); if(d.payoutAddr){payoutAddr=d.payoutAddr; try{localStorage.setItem(KEY,payoutAddr);}catch(e){}} if(d.account){render(d);}else{refresh();} loadWdHistory();prLoad(); if(+d.welcomeBonus>0)msg('Welcome bonus of $'+(+d.welcomeBonus).toFixed(2)+' added to your balance. Claim more below.','ok'); }).catch(function(){refresh();}); }
+    if(signedIn){ fetch('/api/reward/me').then(function(r){return r.json();}).then(function(d){ applyCfg(d); if(d.payoutAddr){payoutAddr=d.payoutAddr; try{localStorage.setItem(KEY,payoutAddr);}catch(e){}} if(d.account){render(d);}else{refresh();} loadWdHistory();prLoad();exsLoad(); if(+d.welcomeBonus>0)msg('Welcome bonus of $'+(+d.welcomeBonus).toFixed(2)+' added to your balance. Claim more below.','ok'); }).catch(function(){refresh();}); }
   }
   window.addEventListener('mp-auth-change',function(e){ onAuth(e.detail&&e.detail.user); });
   var signoutLink=document.getElementById('signoutLink');
