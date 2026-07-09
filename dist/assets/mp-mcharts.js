@@ -240,10 +240,10 @@
   // Demo trade — FULL window (owner v2): own coin picker (independent of the chart), the complete
   // Paper-Trade opener incl. Advanced (exchange margin preset, SL, TP, trailing stop, break-even), big X.
   function openTrade(){closeFloat();
-    var old=ov.querySelector('.mfc-trfull');if(old){old.remove();return;}
+    var old=ov.querySelector('.mfc-trbd');if(old){old.remove();return;}
     var tSym=(panes[activeI]||{}).sym||'BTC',side='long',lev=20,mmr=0.005;
-    var el=document.createElement('div');el.className='mfc-trfull';
-    el.innerHTML='<div class="mfc-trf-h"><b>'+mcT('mcDemoTrade','Demo trade')+'</b><button class="mfc-trf-x" type="button" aria-label="Close">✕</button></div>'
+    var el=document.createElement('div');el.className='mfc-trbd';
+    el.innerHTML='<div class="mfc-trwin"><div class="mfc-trf-h"><b>'+mcT('mcDemoTrade','Demo trade')+'</b><button class="mfc-trf-x" type="button" aria-label="Close">✕</button></div>'
       +'<div class="mfc-trf-b">'
       +'<label class="mtr-lbl">'+mcT('mtCoin','Coin')+'</label>'
       +'<div class="mtr-symrow"><button class="mtr-symcur" id="mtrSymBtn" type="button"><b id="mtrSymCur">'+tSym+'</b><span>▾</span></button><input class="mtr-in mtr-symq" id="mtrSymQ" placeholder="'+mcT('mtSearchTicker','Search any ticker…')+'" inputmode="search" hidden></div>'
@@ -265,8 +265,12 @@
       +'<div class="mtr-stats"><div><span>'+mcT('lEntry','Entry price')+'</span><b id="mtrPx">…</b></div><div><span>'+mcT('rEstLiq','Est. liquidation')+'</span><b id="mtrLiq">—</b></div><div><span>'+mcT('rPosSize','Position size')+'</span><b id="mtrSz">—</b></div><div><span>'+mcT('rNotional','Notional value')+'</span><b id="mtrNot">—</b></div></div>'
       +'<button class="mtr-open" id="mtrGo" type="button">'+mcT('mtOpen','Open demo trade')+'</button>'
       +'<div class="mtr-msg" id="mtrMsg"></div>'
-      +'</div>';
+      +'</div></div>';
     ov.appendChild(el);
+    // windowed modal: the dimmed backdrop swallows everything — no scroll/pan bleeding through to the chart
+    el.addEventListener('touchmove',function(e){if(!e.target.closest('.mfc-trf-b'))e.preventDefault();},{passive:false});
+    el.addEventListener('pointerdown',function(e){if(!e.target.closest('.mfc-trwin')){e.preventDefault();e.stopPropagation();}});
+    el.addEventListener('wheel',function(e){if(!e.target.closest('.mfc-trf-b'))e.preventDefault();},{passive:false});
     var q=function(id){return el.querySelector('#'+id);};
     function closeWin(){try{clearInterval(updT);}catch(e){}el.remove();}
     var xb=el.querySelector('.mfc-trf-x');
