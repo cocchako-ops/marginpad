@@ -109,7 +109,25 @@
     if(a==='ai')return openSheet('ai');
   }
   // ---- panes ----
-  var TOOLS='<div class="cwin-tools"><button class="cwin-tool on" data-tool="pen" title="Freehand">✎</button><button class="cwin-tool" data-tool="trend" title="Trend line">╱</button><button class="cwin-tool" data-tool="hline" title="Horizontal">―</button><button class="cwin-tool" data-tool="vline" title="Vertical">│</button><button class="cwin-tool" data-tool="fib" title="Fib retracement">F</button><span class="cwin-color on" data-color="#3fd8e6" style="background:#3fd8e6"></span><span class="cwin-color" data-color="#c2f64a" style="background:#c2f64a"></span><span class="cwin-color" data-color="#ff6258" style="background:#ff6258"></span><span class="cwin-color" data-color="#ffffff" style="background:#fff"></span><button class="cwin-tool cwin-undo" data-undo title="Undo">↶</button><button class="cwin-tool cwin-clear" data-clear title="Clear all">Clear</button></div>';
+  var TOOLS='<div class="cwin-tools">'
+    +'<button class="cwin-tool" data-tool="select" title="Select / move / edit">↖</button>'
+    +'<button class="cwin-tool" data-tool="pen" title="Freehand">✎</button>'
+    +'<button class="cwin-tool on" data-tool="trend" title="Trend line">╱</button>'
+    +'<button class="cwin-tool" data-tool="ray" title="Ray">⇗</button>'
+    +'<button class="cwin-tool" data-tool="arrow" title="Arrow">➔</button>'
+    +'<button class="cwin-tool" data-tool="hline" title="Horizontal level">―</button>'
+    +'<button class="cwin-tool" data-tool="vline" title="Vertical line">│</button>'
+    +'<button class="cwin-tool" data-tool="rect" title="Rectangle / zone">▭</button>'
+    +'<button class="cwin-tool" data-tool="fib" title="Fib retracement">F</button>'
+    +'<button class="cwin-tool" data-tool="text" title="Text label">T</button>'
+    +'<button class="cwin-tool" data-tool="measure" title="Measure — Δ price, %, bars">⇕</button>'
+    +'<span class="cwin-sep"></span>'
+    +'<span class="cwin-color on" data-color="#3fd8e6" style="background:#3fd8e6"></span><span class="cwin-color" data-color="#c2f64a" style="background:#c2f64a"></span><span class="cwin-color" data-color="#ff6258" style="background:#ff6258"></span><span class="cwin-color" data-color="#ff9f4d" style="background:#ff9f4d"></span><span class="cwin-color" data-color="#b48cff" style="background:#b48cff"></span><span class="cwin-color" data-color="#ffffff" style="background:#fff"></span>'
+    +'<span class="cwin-sep"></span>'
+    +'<button class="cwin-tool" data-lw="1" title="Thin" style="font-size:9px">━</button><button class="cwin-tool on" data-lw="2" title="Medium" style="font-size:12px">━</button><button class="cwin-tool" data-lw="3" title="Thick" style="font-size:15px">━</button><button class="cwin-tool" data-dash title="Dashed">┄</button>'
+    +'<span class="cwin-sep"></span>'
+    +'<button class="cwin-tool cwin-del" data-del title="Delete selected">🗑</button><button class="cwin-tool cwin-undo" data-undo title="Undo">↶</button><button class="cwin-tool cwin-clear" data-clear title="Clear all">Clear</button>'
+    +'</div>';
   function mkPane(sym,tf){
     var el=document.createElement('div');el.className='mfc-pane';
     el.innerHTML='<div class="mfc-chart"></div><canvas class="cwin-draw"></canvas>'+TOOLS+'<div class="mfc-pl"><b class="mfc-pl-s"></b> <span class="mfc-pl-tf"></span> <span class="mfc-pl-p"></span></div>';
@@ -137,13 +155,13 @@
         return {priceRange:{minValue:lo-pad,maxValue:hi+pad}};
       }catch(e){return orig?orig():null;}}});
     // price-anchored drawing (reuse the desktop engine → trendline/fib/h-line/v-line/pen + colours, and it re-projects on rotation/resize)
-    try{if(window.__mpDraw){p.w={chart:p.chart,candle:p.candle,el:p.el,dead:false};window.__mpDraw.setup(p.w,p.el);window.__mpDraw.wire(p.w,null,p.el.querySelector('.cwin-tools'));}}catch(e){}
+    try{if(window.__mpDraw){p.w={chart:p.chart,candle:p.candle,el:p.el,sym:p.sym,tf:p.tf,bars:p.bars,dead:false};window.__mpDraw.setup(p.w,p.el);window.__mpDraw.wire(p.w,null,p.el.querySelector('.cwin-tools'));}}catch(e){}
     loadKlines(p);
   }
   function loadKlines(p){ if(!p.candle)return;var sym=p.sym,tf=p.tf;p.reload=Date.now();
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle)return;
-      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);p.chart.priceScale('right').applyOptions({autoScale:true});p.chart.timeScale().scrollToRealTime();}catch(e){}applyInds(p);if(p.trades)drawTrades(p);}
+      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);p.chart.priceScale('right').applyOptions({autoScale:true});p.chart.timeScale().scrollToRealTime();}catch(e){}applyInds(p);if(p.trades)drawTrades(p);try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}}
       label(p);
     });
   }
@@ -200,7 +218,7 @@
   function clearTrades(p){p.tradeLines.forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p.tradeLines=[];p._mtPrices=[];}
   // ---- drawing: toggles the price-anchored draw engine on the ACTIVE pane (each pane has its own .cwin-tools palette) ----
   function toggleDraw(btn){var p=panes[activeI];if(!p||!p.w||!p.w.dr)return;p.w.dr.on=!p.w.dr.on;p.el.classList.toggle('drawing',p.w.dr.on);btn.classList.toggle('on',p.w.dr.on);}
-  function clearPaneDraw(p){if(p&&p.w&&p.w.dr){p.w.dr.shapes=[];p.w.dr.cur=null;if(p.w.dr.redraw)p.w.dr.redraw();}}
+  function clearPaneDraw(p){if(p&&p.w&&p.w.dr){p.w.dr.shapes=[];p.w.dr.cur=null;p.w.dr.sel=null;if(p.w.dr.redraw)p.w.dr.redraw();}}
   function toggleTrades(btn){var on=!btn.classList.contains('on');btn.classList.toggle('on',on);panes.forEach(function(p){p.trades=on;if(on)drawTrades(p);else clearTrades(p);});}
   function setActive(i){if(i<0||i>=panes.length)return;activeI=i;panes.forEach(function(p,k){p.el.classList.toggle('active',k===i);});syncBar();var db=ov&&ov.querySelector('[data-act="draw"]'),ap=panes[activeI];if(db)db.classList.toggle('on',!!(ap&&ap.w&&ap.w.dr&&ap.w.dr.on));}
   function syncBar(){var p=panes[activeI];if(!p||!ov)return;var sL=ov.querySelector('.mfc-symL'),tL=ov.querySelector('.mfc-tfL');if(sL)sL.textContent=p.sym;if(tL)tL.textContent=tfLabel(p.tf);}

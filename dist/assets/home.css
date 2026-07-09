@@ -1349,8 +1349,11 @@
   .cwin-draw-tg{flex-shrink:0;background:#0a0d11;border:1px solid #2b323b;border-radius:7px;color:#8a929c;padding:5px 7px;cursor:pointer;display:inline-flex;align-items:center;}
   .cwin-draw-tg:hover{color:#cfd4da;border-color:#3a434f;}
   .cwin-draw-tg.on{color:#06222a;background:#3fd8e6;border-color:#3fd8e6;}
-  .cwin-tools{position:absolute;top:7px;left:7px;z-index:4;display:none;align-items:center;gap:4px;background:rgba(10,13,17,.92);border:1px solid #2b323b;border-radius:9px;padding:4px 5px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+  .cwin-tools{position:absolute;top:7px;left:7px;z-index:4;display:none;align-items:center;gap:4px;flex-wrap:wrap;max-width:calc(100% - 76px);background:rgba(10,13,17,.92);border:1px solid #2b323b;border-radius:9px;padding:4px 5px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
   .cwin.drawing .cwin-tools{display:flex;}
+  .cwin-sep{width:1px;height:16px;background:#2b323b;margin:0 2px;flex:0 0 auto;}
+  .cwin-del.sel{border-color:#ff6258;color:#ff6258;}
+  .drawing.dr-select .cwin-draw{cursor:default!important;}
   .cwin-tool{background:#11161c;border:1px solid #2b323b;border-radius:6px;color:#cfd4da;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;line-height:1;min-width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0 6px;}
   .cwin-tool.on{background:#3fd8e6;color:#06222a;border-color:#3fd8e6;}
   .cwin-clear{color:#ff8a80;}
