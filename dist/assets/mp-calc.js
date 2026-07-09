@@ -54,7 +54,7 @@
     $(t.dataset.tab).classList.add('active');
   }));
 
-  const sides = { liqSide:'long', pnlSide:'long', tpSide:'long' };
+  const sides = { liqSide:'long', pnlSide:'long', tpSide:'long', crSide:'long' };
   document.querySelectorAll('[data-seg]').forEach(seg => {
     seg.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
       seg.querySelectorAll('button').forEach(x => x.classList.remove('on'));
@@ -72,6 +72,29 @@
     $('liqDist').textContent=fmtPct(dist); $('liqDist').className='v '+(dist<0?'neg':'pos');
     $('liqMove').textContent=Math.abs(dist).toFixed(2)+'% '+(long?'↓':'↑');
     $('liqMargin').textContent=(100/lev).toFixed(2)+'%';
+  }
+  // Cross-margin liquidation (Binance-style): the WHOLE wallet balance backs the position, so liq depends on
+  // balance, not on chosen leverage. Liq when balance + uPnL = maintenance margin:
+  //   long:  P = (qty·entry − balance) / (qty·(1 − mmr))     short: P = (balance + qty·entry) / (qty·(1 + mmr))
+  function calcCross(){
+    const entry=num('crEntry'), qty=num('crQty'), bal=num('crBal'), mmr=num('crMmr')/100, out=$('crOut'), lad=$('crLadder');
+    if(!out)return;
+    const clear=()=>{ muted(out); $('crDist').textContent=$('crEffLev').textContent=$('crNotional').textContent='—'; if(lad)lad.innerHTML=''; };
+    if(!isFinite(entry)||entry<=0||!isFinite(qty)||qty<=0||!isFinite(bal)||bal<0||!isFinite(mmr)){ clear(); return; }
+    const long=sides.crSide==='long';
+    const liqAt=b=>long ? (qty*entry-b)/(qty*(1-mmr)) : (b+qty*entry)/(qty*(1+mmr));
+    const notional=qty*entry, effLev=bal>0?notional/bal:Infinity;
+    const liq=liqAt(bal), covered=long&&liq<=0, dist=(liq-entry)/entry*100;
+    if(covered){ out.className='rvalue pos'; cancelAnimationFrame(out._raf); out.textContent='No liquidation'; out._cur=NaN; }
+    else { out.className='rvalue '+(dist<0?'neg':'pos'); animateNum(out, liq, v=>'$'+fmtUSD(v)); }
+    $('crDist').textContent=covered?'— fully backed':fmtPct(dist); $('crDist').className='v '+((covered||dist<0)?'neg':'pos');
+    $('crEffLev').textContent=isFinite(effLev)?effLev.toFixed(2)+'×':'∞';
+    $('crNotional').textContent='$'+fmtUSD(notional);
+    if(lad){ const steps=[0.25,0.5,1,2].map(f=>bal>0?bal*f:notional*0.02*(f*4)).filter(a=>a>0);
+      lad.innerHTML=steps.map(add=>{
+        const l2=liqAt(bal+add), cov2=long&&l2<=0, d2=(l2-entry)/entry*100;
+        return '<tr><td>+$'+fmtUSD(add)+'</td><td><span class="p">'+(cov2?'no liquidation':'$'+fmtUSD(l2))+'</span></td><td>'+(cov2?'<span class="g">fully backed</span>':fmtPct(d2))+'</td></tr>';
+      }).join(''); }
   }
   function calcSize(){
     const bal=num('szBal'), risk=num('szRisk')/100, entry=num('szEntry'), stop=num('szStop'), lev=num('szLev'), out=$('szOut');
@@ -138,10 +161,14 @@
     $('rrBe').textContent=be.toFixed(2)+'%';
   }
 
-  function calcAll(){ calcLiq(); calcSize(); calcPnl(); calcDca(); calcTp(); calcRr(); }
+  function calcAll(){ calcLiq(); calcCross(); calcSize(); calcPnl(); calcDca(); calcTp(); calcRr(); }
   document.querySelectorAll('input[type=number]').forEach(i => i.addEventListener('input', calcAll));
   // Exchange preset → fills the maintenance-margin rate per venue (rates differ by exchange). Manual edit flips it to "Custom".
   (function(){ const ex=$('liqEx'), mmr=$('liqMmr'); if(!ex||!mmr)return;
+    ex.addEventListener('change', () => { if(ex.value!==''){ mmr.value=ex.value; calcAll(); } });
+    mmr.addEventListener('input', () => { const cu=ex.querySelector('option[value=""]'); if(cu)ex.value=''; });
+  })();
+  (function(){ const ex=$('crEx'), mmr=$('crMmr'); if(!ex||!mmr)return;
     ex.addEventListener('change', () => { if(ex.value!==''){ mmr.value=ex.value; calcAll(); } });
     mmr.addEventListener('input', () => { const cu=ex.querySelector('option[value=""]'); if(cu)ex.value=''; });
   })();

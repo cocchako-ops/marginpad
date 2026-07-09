@@ -2215,7 +2215,7 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
    calculator input persists in localStorage (your setup survives reloads/visits), and on a first-ever
    visit the untouched entry-price fields fill with the LIVE BTC price the moment it arrives. */
 (function(){
-  var PANES=['liq','size','pnl','dca','tp','rr'],K='mp_calc_vals';
+  var PANES=['liq','cross','size','pnl','dca','tp','rr'],K='mp_calc_vals';
   var saved={};try{saved=JSON.parse(localStorage.getItem(K)||'{}')||{};}catch(e){}
   var els=[];PANES.forEach(function(pid){var p=document.getElementById(pid);if(!p)return;els=els.concat(Array.prototype.slice.call(p.querySelectorAll('input[type=number],select')));});
   if(!els.length)return;
@@ -2226,7 +2226,7 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
     el.addEventListener('input',function(){persist(el);});
     el.addEventListener('change',function(){persist(el);});
   });
-  var ENTRY=['liqEntry','szEntry','pnlEntry','tpEntry','rrEntry','dcaP1','dcaCur'];
+  var ENTRY=['liqEntry','crEntry','szEntry','pnlEntry','tpEntry','rrEntry','dcaP1','dcaCur'];
   function prefill(){var lp=window.mpLivePrices&&window.mpLivePrices.BTC,px=lp&&lp.p;if(!(px>0))return false;
     ENTRY.forEach(function(id){ if(saved[id]!=null&&saved[id]!=='')return; var el=document.getElementById(id);if(!el)return;
       var v=+el.value; if(v===60000||v===58000||v===65000){el.value=Math.round(px);try{el.dispatchEvent(new Event('input',{bubbles:true}));}catch(e){}} });

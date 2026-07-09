@@ -94,7 +94,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=3aed48b5">
+<link rel="stylesheet" href="/assets/home.css?v=2c60022e">
 
 </head>
 <body>
@@ -305,6 +305,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
   <nav class="tabs" role="tablist">
     <button class="tab" role="tab" aria-selected="true"  data-tab="liq"  data-i18n="tabLiq">Liquidation</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="cross">Cross Liq</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="size" data-i18n="tabSize">Position Size</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="pnl"  data-i18n="tabPnl">PnL / ROI</button>
     <button class="tab" role="tab" aria-selected="false" data-tab="dca"  data-i18n="tabDca">Average / DCA</button>
@@ -393,6 +394,40 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
         <div class="rrow"><span class="k" data-i18n="rMove">Price move to liq.</span><span class="v" id="liqMove">—</span></div>
         <div class="rrow"><span class="k" data-i18n="rEffMargin">Effective margin</span><span class="v" id="liqMargin">—</span></div>
         <p class="note" data-i18n="nLiq">Estimate for isolated margin. Real liquidation also depends on fees, funding and tiered maintenance margin. Keep a buffer.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="cross">
+      <div class="inputs">
+        <h2><span>Cross Margin Liquidation</span> <small>&mdash; your whole balance backs the trade</small></h2>
+        <div class="field"><label data-i18n="direction">Direction</label>
+          <div class="seg" data-seg="crSide"><button class="on" data-side="long" data-i18n="long">Long</button><button data-side="short" data-i18n="short">Short</button></div>
+        </div>
+        <div class="field"><label data-i18n="lEntry">Entry price</label><div class="input-line"><input type="number" id="crEntry" value="60000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label>Position size</label><div class="input-line"><input type="number" id="crQty" value="0.5" step="any"><span class="unit" data-i18n="uCoin">coin</span></div></div>
+        <div class="field"><label>Futures wallet balance</label><div class="input-line"><input type="number" id="crBal" value="1000" step="any"><span class="unit">USD</span></div></div>
+        <div class="field"><label data-i18n="lExchange">Exchange (sets margin rate)</label><div class="input-line"><select id="crEx" aria-label="Exchange maintenance-margin preset">
+          <option value="0.4">Binance &mdash; 0.4%</option>
+          <option value="0.5" selected>Bybit &mdash; 0.5%</option>
+          <option value="0.5">OKX &mdash; 0.5%</option>
+          <option value="0.5">Bitget &mdash; 0.5%</option>
+          <option value="0.5">KuCoin &mdash; 0.5%</option>
+          <option value="0.5">Gate &mdash; 0.5%</option>
+          <option value="0.6">Kraken &mdash; 0.6%</option>
+          <option value="">Custom</option>
+        </select></div></div>
+        <div class="field"><label data-i18n="lMmr">Maintenance margin rate</label><div class="input-line"><input type="number" id="crMmr" value="0.5" step="any"><span class="unit">%</span></div></div>
+      </div>
+      <div class="results">
+        <div class="result-main"><div class="rlabel" data-i18n="rEstLiq">Estimated liquidation price</div><div class="rvalue" id="crOut">&mdash;</div><button class="copybtn" data-copy="crOut" aria-label="Copy" title="Copy"><svg class="ic-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><svg class="ic-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></button></div>
+        <div class="rrow"><span class="k" data-i18n="rDist">Distance from entry</span><span class="v" id="crDist">&mdash;</span></div>
+        <div class="rrow"><span class="k">Effective leverage</span><span class="v" id="crEffLev">&mdash;</span></div>
+        <div class="rrow"><span class="k" data-i18n="rNotional">Notional value</span><span class="v" id="crNotional">&mdash;</span></div>
+        <table class="ladder">
+          <thead><tr><th>Add to balance</th><th>New liq. price</th><th data-i18n="rDist">Distance from entry</th></tr></thead>
+          <tbody id="crLadder"></tbody>
+        </table>
+        <p class="note">Cross margin: the whole futures balance absorbs losses, so topping it up pushes liquidation further away &mdash; that is the ladder above. A long backed by more than its full position value cannot be liquidated. Estimate for ONE open position; real cross liq also counts your other positions, unrealized PnL, fees and tiered margin.</p>
       </div>
     </section>
 
@@ -769,7 +804,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=3aed48b5"></script>
+<script src="/assets/home.js?v=2c60022e"></script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>
