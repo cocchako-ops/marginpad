@@ -114,13 +114,14 @@
   function TOOLS(){return (window.__mpDrawToolsHtml?window.__mpDrawToolsHtml(false):'<div class="cwin-tools"></div>');}
   function mkPane(sym,tf){
     var el=document.createElement('div');el.className='mfc-pane';
-    el.innerHTML='<div class="mfc-chart"></div><canvas class="cwin-draw"></canvas>'+TOOLS()+'<div class="mfc-pl"><b class="mfc-pl-s"></b> <span class="mfc-pl-tf"></span> <span class="mfc-pl-p"></span></div>';
+    el.innerHTML='<div class="mfc-chart"></div><canvas class="cwin-draw"></canvas>'+TOOLS()+'<div class="mfc-pl"><b class="mfc-pl-s"></b> <span class="mfc-pl-tf"></span> <span class="mfc-pl-p"></span></div><div class="cwin-leg"></div>';
     var p={el:el,host:el.querySelector('.mfc-chart'),sym:sym,tf:tf,bars:[],lastBar:null,chart:null,candle:null,inds:{},indSeries:[],indLines:[],tradeLines:[],_mtPrices:[],reload:0,w:null};
     el.addEventListener('pointerdown',function(){setActive(panes.indexOf(p));},true);
     return p;
   }
   function initChart(p){ if(p.chart||!window.LightweightCharts||!p.host.clientWidth){return;}
     p.chart=LightweightCharts.createChart(p.host,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.35)'},horzLines:{color:'rgba(35,41,50,.35)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:5,barSpacing:6},crosshair:{mode:0},autoSize:true});
+    try{p.chart.subscribeCrosshairMove(function(param){mLeg(p,param);});}catch(e){}
     p.candle=p.chart.addCandlestickSeries({upColor:'#2ebd85',downColor:'#ff6258',borderVisible:false,wickUpColor:'#2ebd85',wickDownColor:'#ff6258',
       // extend the auto-fit range to include the imported position's entry/liq lines (capped at 2.4× the candle range)
       // so a TF switch can't re-fit to candles only and push the lines off-screen — mirrors the desktop engines.
@@ -164,32 +165,41 @@
     try{p.candle.update(p.lastBar);}catch(e){}label(p);
   }
   function label(p){var s=p.el.querySelector('.mfc-pl-s'),t=p.el.querySelector('.mfc-pl-tf'),pe=p.el.querySelector('.mfc-pl-p'),pr=price(p.sym)||(p.lastBar&&p.lastBar.close);if(s)s.textContent=p.sym;if(t)t.textContent=tfLabel(p.tf);if(pe&&pr)pe.textContent=fp(pr);}
+  // ---- indicator value legend (owner request: RSI etc. must SHOW their number) ----
+  function legFmt(v,dec){if(v==null||!isFinite(v))return '\u2014';if(dec===0)return String(Math.round(v));if(dec!=null)return (+v).toFixed(dec);var a=Math.abs(v);return a>=1000?(+v).toLocaleString('en-US',{maximumFractionDigits:2}):a>=1?(+v).toFixed(3):(+v).toFixed(6);}
+  function mLeg(p,param){var el=p.el.querySelector('.cwin-leg');if(!el)return;
+    if(!p.legItems||!p.legItems.length){el.style.display='none';el.innerHTML='';return;}
+    el.style.display='';
+    el.innerHTML=p.legItems.map(function(it){var v=it.last;
+      if(param&&param.seriesData){var sd=param.seriesData.get(it.series);if(sd!=null)v=(typeof sd==='object'?(sd.value!=null?sd.value:sd.close):sd);}
+      return '<span style="color:'+it.color+'">'+it.label+' <b>'+legFmt(v,it.dec)+'</b></span>';}).join('');}
   // ---- indicators ----
   function applyInds(p){ if(!p.chart||!p.candle)return;
-    p.indSeries.forEach(function(s){try{p.chart.removeSeries(s);}catch(e){}});p.indSeries=[];
+    p.indSeries.forEach(function(s){try{p.chart.removeSeries(s);}catch(e){}});p.indSeries=[];p.legItems=[];
     (p.indLines||[]).forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p.indLines=[];
     try{p.candle.setMarkers(p.inds.sig?computeSignals(p.bars):[]);}catch(e){}
     if(p.inds.sr)computeSR(p.bars).forEach(function(L){try{p.indLines.push(p.candle.createPriceLine({price:L.price,color:L.type==='r'?'#ff9f4d':'#3ad29a',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:L.type==='r'?'R':'S'}));}catch(e){}});
     var c=p.bars.map(function(b){return +b.close;}),t=p.bars.map(function(b){return b.time;});
-    function add(vals,opts,scale){var s;try{s=p.chart.addLineSeries(Object.assign({lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},opts));}catch(e){return;}var d=[];for(var i=0;i<vals.length;i++)if(vals[i]!=null&&isFinite(vals[i]))d.push({time:t[i],value:vals[i]});try{s.setData(d);}catch(e){}p.indSeries.push(s);}
+    function add(vals,opts,leg){var s;try{s=p.chart.addLineSeries(Object.assign({lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},opts));}catch(e){return;}var d=[];for(var i=0;i<vals.length;i++)if(vals[i]!=null&&isFinite(vals[i]))d.push({time:t[i],value:vals[i]});try{s.setData(d);}catch(e){}p.indSeries.push(s);if(leg){var last=null;for(var li=d.length-1;li>=0;li--){if(d[li]&&isFinite(d[li].value)){last=d[li].value;break;}}p.legItems.push({label:leg.label,series:s,color:opts.color,dec:leg.dec,last:last});}}
     var MA=[['ema9',9,'e','#7fb6ff'],['ema21',21,'e','#3fd8e6'],['ema50',50,'e','#5fe0a6'],['ema100',100,'e','#c2f64a'],['ema200',200,'e','#ffd75a'],['sma20',20,'s','#ff9f43'],['sma50',50,'s','#ff7b72'],['sma100',100,'s','#e0a0ff'],['sma200',200,'s','#ff5a4d']];
     var oscs=['rsi','macd','stoch','atr','vol','wr','cci'].filter(function(k){return p.inds[k];}),oN=oscs.length;
     try{p.chart.priceScale('right').applyOptions({scaleMargins:{top:0.06,bottom:oN?0.34:0.08}});}catch(e){}
     function band(key){var idx=oscs.indexOf(key),b=0.32/Math.max(1,oN);return {top:0.68+idx*b+0.005,bottom:(oN-1-idx)*b+0.02};}
     function setScale(id){try{p.chart.priceScale(id).applyOptions({scaleMargins:band(id)});}catch(e){}}
-    MA.forEach(function(m){if(p.inds[m[0]])add(m[2]==='e'?ema(c,m[1]):sma(c,m[1]),{color:m[3]});});
+    MA.forEach(function(m){if(p.inds[m[0]])add(m[2]==='e'?ema(c,m[1]):sma(c,m[1]),{color:m[3]},{label:(m[2]==='e'?'EMA ':'SMA ')+m[1],dec:null});});
     if(p.inds.bb){var bb=boll(c,20,2);add(bb.u,{color:'rgba(154,163,173,.7)'});add(bb.m,{color:'rgba(154,163,173,.55)',lineStyle:2});add(bb.l,{color:'rgba(154,163,173,.7)'});}
-    if(p.inds.vwap)add(vwap(p.bars),{color:'#46e0e6',lineWidth:2});
-    if(p.inds.hma)add(hma(c,21),{color:'#ff7bd5'});
-    if(p.inds.rsi){add(rsi(c,14),{color:'#e0a0ff',priceScaleId:'rsi'});add(c.map(function(){return 70;}),{color:'rgba(255,98,88,.25)',lineStyle:2,priceScaleId:'rsi'});add(c.map(function(){return 30;}),{color:'rgba(46,189,133,.25)',lineStyle:2,priceScaleId:'rsi'});setScale('rsi');}
-    if(p.inds.macd){var mc=macd(c);add(mc.macd,{color:'#3fd8e6',priceScaleId:'macd'});add(mc.signal,{color:'#ff9f4d',priceScaleId:'macd'});add(c.map(function(){return 0;}),{color:'rgba(120,130,140,.4)',lineStyle:2,priceScaleId:'macd'});setScale('macd');}
-    if(p.inds.stoch){var st=stoch(p.bars,14,3);add(st.k,{color:'#c2f64a',priceScaleId:'stoch'});add(st.d,{color:'#ff6258',priceScaleId:'stoch'});add(c.map(function(){return 80;}),{color:'rgba(255,159,77,.22)',lineStyle:2,priceScaleId:'stoch'});add(c.map(function(){return 20;}),{color:'rgba(46,189,133,.22)',lineStyle:2,priceScaleId:'stoch'});setScale('stoch');}
-    if(p.inds.atr){add(atr(p.bars,14),{color:'#ffb347',priceScaleId:'atr'});setScale('atr');}
-    if(p.inds.wr){add(willr(p.bars,14),{color:'#ffd75a',priceScaleId:'wr'});add(c.map(function(){return -20;}),{color:'rgba(255,98,88,.3)',lineStyle:2,priceScaleId:'wr'});add(c.map(function(){return -80;}),{color:'rgba(46,189,133,.3)',lineStyle:2,priceScaleId:'wr'});setScale('wr');}
-    if(p.inds.cci){add(cci(p.bars,20),{color:'#7fb6ff',priceScaleId:'cci'});add(c.map(function(){return 100;}),{color:'rgba(255,98,88,.25)',lineStyle:2,priceScaleId:'cci'});add(c.map(function(){return -100;}),{color:'rgba(46,189,133,.25)',lineStyle:2,priceScaleId:'cci'});setScale('cci');}
+    if(p.inds.vwap)add(vwap(p.bars),{color:'#46e0e6',lineWidth:2},{label:'VWAP',dec:null});
+    if(p.inds.hma)add(hma(c,21),{color:'#ff7bd5'},{label:'HMA 21',dec:null});
+    if(p.inds.rsi){add(rsi(c,14),{color:'#e0a0ff',priceScaleId:'rsi'},{label:'RSI 14',dec:0});add(c.map(function(){return 70;}),{color:'rgba(255,98,88,.25)',lineStyle:2,priceScaleId:'rsi'});add(c.map(function(){return 30;}),{color:'rgba(46,189,133,.25)',lineStyle:2,priceScaleId:'rsi'});setScale('rsi');}
+    if(p.inds.macd){var mc=macd(c);add(mc.macd,{color:'#3fd8e6',priceScaleId:'macd'},{label:'MACD',dec:null});add(mc.signal,{color:'#ff9f4d',priceScaleId:'macd'},{label:'Signal',dec:null});add(c.map(function(){return 0;}),{color:'rgba(120,130,140,.4)',lineStyle:2,priceScaleId:'macd'});setScale('macd');}
+    if(p.inds.stoch){var st=stoch(p.bars,14,3);add(st.k,{color:'#c2f64a',priceScaleId:'stoch'},{label:'Stoch %K',dec:0});add(st.d,{color:'#ff6258',priceScaleId:'stoch'},{label:'%D',dec:0});add(c.map(function(){return 80;}),{color:'rgba(255,159,77,.22)',lineStyle:2,priceScaleId:'stoch'});add(c.map(function(){return 20;}),{color:'rgba(46,189,133,.22)',lineStyle:2,priceScaleId:'stoch'});setScale('stoch');}
+    if(p.inds.atr){add(atr(p.bars,14),{color:'#ffb347',priceScaleId:'atr'},{label:'ATR 14',dec:null});setScale('atr');}
+    if(p.inds.wr){add(willr(p.bars,14),{color:'#ffd75a',priceScaleId:'wr'},{label:'%R 14',dec:0});add(c.map(function(){return -20;}),{color:'rgba(255,98,88,.3)',lineStyle:2,priceScaleId:'wr'});add(c.map(function(){return -80;}),{color:'rgba(46,189,133,.3)',lineStyle:2,priceScaleId:'wr'});setScale('wr');}
+    if(p.inds.cci){add(cci(p.bars,20),{color:'#7fb6ff',priceScaleId:'cci'},{label:'CCI 20',dec:0});add(c.map(function(){return 100;}),{color:'rgba(255,98,88,.25)',lineStyle:2,priceScaleId:'cci'});add(c.map(function(){return -100;}),{color:'rgba(46,189,133,.25)',lineStyle:2,priceScaleId:'cci'});setScale('cci');}
     if(p.inds.vol){var vs;try{vs=p.chart.addHistogramSeries({priceFormat:{type:'volume'},priceScaleId:'vol',lastValueVisible:false,priceLineVisible:false});}catch(e){}
       if(vs){var vd=[];for(var vi=0;vi<p.bars.length;vi++){var vb=p.bars[vi],vv=+vb.vol;if(isFinite(vv)&&vv>0)vd.push({time:vb.time,value:vv,color:(+vb.close>=+vb.open)?'rgba(46,189,133,.45)':'rgba(255,98,88,.45)'});}try{vs.setData(vd);}catch(e){}p.indSeries.push(vs);}
       setScale('vol');}
+    mLeg(p);
   }
   // ---- trade import ----
   function liqOf(e){var long=e.side!=='short',lv=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);return e.liq||(long?e.entry*(1-(1-mmr)/lv):e.entry*(1+(1-mmr)/lv));}
