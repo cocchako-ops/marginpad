@@ -625,45 +625,56 @@ async function handleDefiCharts(env) {
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
-// Crypto economic calendar (/calendar/ page): curated FOMC + CPI dates (verified against the Fed/BLS schedules,
-// stored as exact UTC timestamps incl. EDT→EST shifts) + computed NFP (usually first Friday, 08:30 ET) + computed
-// monthly/quarterly Deribit-style options expiry (last Friday, 08:00 UTC). Extend CAL_STATIC when new schedules
-// publish (Fed releases next-year dates each summer; BLS each autumn). Window: today−1d .. +240d, edge-cached 6h.
-function handleCalendar() {
-  const CAL_STATIC = [
-    // FOMC rate decisions 2026 (statement 14:00 ET; press conf 14:30) — Jul/Sep/Oct EDT (UTC-4), Dec EST (UTC-5)
-    { ts: Date.UTC(2026, 6, 29, 18, 0), type: 'fomc', title: 'FOMC rate decision', desc: 'Fed announces interest rates, 2:00 PM ET. The single biggest scheduled market mover for crypto.', impact: 3 },
-    { ts: Date.UTC(2026, 8, 16, 18, 0), type: 'fomc', title: 'FOMC rate decision + dot plot', desc: 'Rate decision PLUS the Summary of Economic Projections (dot plot) — extra volatility.', impact: 3 },
-    { ts: Date.UTC(2026, 9, 28, 18, 0), type: 'fomc', title: 'FOMC rate decision', desc: 'Fed announces interest rates, 2:00 PM ET.', impact: 3 },
-    { ts: Date.UTC(2026, 11, 9, 19, 0), type: 'fomc', title: 'FOMC rate decision + dot plot', desc: 'Last Fed meeting of 2026, with economic projections.', impact: 3 },
-    // US CPI releases (08:30 ET) — BLS schedule; Nov+Dec+Jan are EST (13:30 UTC)
-    { ts: Date.UTC(2026, 6, 14, 12, 30), type: 'cpi', title: 'US CPI — June inflation', desc: 'Consumer Price Index, 8:30 AM ET. Hot print = risk-off, cool print = risk-on.', impact: 3 },
-    { ts: Date.UTC(2026, 7, 12, 12, 30), type: 'cpi', title: 'US CPI — July inflation', desc: 'Consumer Price Index, 8:30 AM ET.', impact: 3 },
-    { ts: Date.UTC(2026, 8, 11, 12, 30), type: 'cpi', title: 'US CPI — August inflation', desc: 'Consumer Price Index, 8:30 AM ET. Last CPI before the September FOMC.', impact: 3 },
-    { ts: Date.UTC(2026, 9, 14, 12, 30), type: 'cpi', title: 'US CPI — September inflation', desc: 'Consumer Price Index, 8:30 AM ET.', impact: 3 },
-    { ts: Date.UTC(2026, 10, 10, 13, 30), type: 'cpi', title: 'US CPI — October inflation', desc: 'Consumer Price Index, 8:30 AM ET.', impact: 3 },
-    { ts: Date.UTC(2026, 11, 10, 13, 30), type: 'cpi', title: 'US CPI — November inflation', desc: 'Consumer Price Index, 8:30 AM ET. Lands the day after the December FOMC.', impact: 3 },
-    { ts: Date.UTC(2027, 0, 13, 13, 30), type: 'cpi', title: 'US CPI — December inflation', desc: 'Consumer Price Index, 8:30 AM ET.', impact: 3 },
+// Crypto economic calendar (/calendar/ page + homepage widget): curated FOMC + CPI dates 2023→now (verified against
+// the Fed/BLS published schedules; UTC hour derived from the month's DST regime) + curated crypto milestones +
+// computed NFP (usually first Friday, 08:30 ET) + monthly/quarterly Deribit-style options expiry (last Friday,
+// 08:00 UTC). No `?year=` → upcoming window (today−1d..+240d); `?year=YYYY` (2023..2027) → that whole year,
+// history included. EXTEND FOMC_D/CPI_D when new schedules publish (Fed each summer, BLS each autumn).
+function handleCalendar(request) {
+  // FOMC decision days (statement 14:00 ET = 18:00 UTC EDT / 19:00 UTC EST). Mar/Jun/Sep/Dec = dot-plot meetings.
+  const FOMC_D = '2023-02-01 2023-03-22 2023-05-03 2023-06-14 2023-07-26 2023-09-20 2023-11-01 2023-12-13 2024-01-31 2024-03-20 2024-05-01 2024-06-12 2024-07-31 2024-09-18 2024-11-07 2024-12-18 2025-01-29 2025-03-19 2025-05-07 2025-06-18 2025-07-30 2025-09-17 2025-10-29 2025-12-10 2026-01-28 2026-03-18 2026-04-29 2026-06-17 2026-07-29 2026-09-16 2026-10-28 2026-12-09'.split(' ');
+  // US CPI release days, 08:30 ET (12:30 UTC EDT / 13:30 EST). 2025 autumn: Sep data delayed to Oct 24 by the
+  // government shutdown; October 2025 data was never published (skipped below).
+  const CPI_D = '2023-01-12 2023-02-14 2023-03-14 2023-04-12 2023-05-10 2023-06-13 2023-07-12 2023-08-10 2023-09-13 2023-10-12 2023-11-14 2023-12-12 2024-01-11 2024-02-13 2024-03-12 2024-04-10 2024-05-15 2024-06-12 2024-07-11 2024-08-14 2024-09-11 2024-10-10 2024-11-13 2024-12-11 2025-01-15 2025-02-12 2025-03-12 2025-04-10 2025-05-13 2025-06-11 2025-07-15 2025-08-12 2025-09-11 2025-10-24 2025-12-18 2026-01-13 2026-02-11 2026-03-11 2026-04-10 2026-05-12 2026-06-10 2026-07-14 2026-08-12 2026-09-11 2026-10-14 2026-11-10 2026-12-10 2027-01-13'.split(' ');
+  const CRYPTO_EV = [
+    ['2024-01-10', 'Spot Bitcoin ETFs approved', 'The SEC approved the first US spot Bitcoin ETFs — the institutional floodgate moment of the cycle.'],
+    ['2024-03-13', 'Ethereum Dencun upgrade', 'Proto-danksharding (EIP-4844) went live — L2 fees dropped ~10-100x overnight.'],
+    ['2024-04-20', 'Bitcoin halving #4', 'Block reward cut from 6.25 to 3.125 BTC. New supply halved — the cycle clock reset.'],
+    ['2024-07-23', 'Spot Ethereum ETFs launch', 'US spot ETH ETFs started trading.'],
+    ['2025-05-07', 'Ethereum Pectra upgrade', 'Account abstraction (EIP-7702) + higher staking limits went live on mainnet.'],
   ];
-  const now = Date.now(), from = now - 86400000, to = now + 240 * 86400000;
-  const events = CAL_STATIC.filter(e => e.ts >= from && e.ts <= to).slice();
-  // NFP (jobs report): usually the first Friday of the month, 08:30 ET (12:30 UTC summer / 13:30 winter)
-  for (let m = 0; m < 9; m++) {
-    const d = new Date(now); const base = Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + m, 1);
-    const day = new Date(base).getUTCDay(); const firstFri = base + ((5 - day + 7) % 7) * 86400000;
-    const mo = new Date(firstFri).getUTCMonth(); const winter = (mo <= 1 || mo >= 10); // rough EST window
-    const ts = firstFri + (winter ? 13.5 : 12.5) * 3600000;
-    if (ts >= from && ts <= to) events.push({ ts, type: 'nfp', title: 'US jobs report (NFP)', desc: 'Non-farm payrolls, 8:30 AM ET — usually the first Friday. Strong jobs = fewer rate cuts.', impact: 2, approx: true });
-  }
+  const WINTER = mo => (mo <= 2 || mo >= 10); // rough US DST regime by month (0-based): Nov–Mar ≈ EST
+  const parse = s => { const p = s.split('-'); return { y: +p[0], mo: +p[1] - 1, d: +p[2] }; };
+  const url = new URL(request.url);
+  const yr = parseInt(url.searchParams.get('year'), 10);
+  const now = Date.now();
+  const yearMode = isFinite(yr) && yr >= 2023 && yr <= 2027;
+  const from = yearMode ? Date.UTC(yr, 0, 1) : now - 86400000;
+  const to = yearMode ? Date.UTC(yr + 1, 0, 1) - 1 : now + 240 * 86400000;
+  const events = [];
+  FOMC_D.forEach(s => { const p = parse(s), ts = Date.UTC(p.y, p.mo, p.d, WINTER(p.mo) ? 19 : 18, 0); if (ts < from || ts > to) return;
+    const dot = (p.mo === 2 || p.mo === 5 || p.mo === 8 || p.mo === 11);
+    events.push({ ts, type: 'fomc', title: 'FOMC rate decision' + (dot ? ' + dot plot' : ''), desc: 'Fed announces interest rates, 2:00 PM ET.' + (dot ? ' Includes the Summary of Economic Projections (dot plot) — extra volatility.' : ' The single biggest scheduled market mover for crypto.'), impact: 3 }); });
+  const MN = ['December', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November'];
+  CPI_D.forEach(s => { const p = parse(s), ts = Date.UTC(p.y, p.mo, p.d, WINTER(p.mo) ? 13 : 12, 30); if (ts < from || ts > to) return;
+    const ref = (s === '2025-10-24') ? 'September' : MN[p.mo]; // shutdown-delayed release
+    events.push({ ts, type: 'cpi', title: 'US CPI — ' + ref + ' inflation', desc: 'Consumer Price Index, 8:30 AM ET. Hot print = risk-off, cool print = risk-on.' + (s === '2025-10-24' ? ' (Delayed by the US government shutdown; the October report was never published.)' : ''), impact: 3 }); });
+  CRYPTO_EV.forEach(c => { const p = parse(c[0]), ts = Date.UTC(p.y, p.mo, p.d, 12, 0); if (ts < from || ts > to) return;
+    events.push({ ts, type: 'crypto', title: c[1], desc: c[2], impact: 3, allday: true }); });
+  // NFP (jobs report): usually the first Friday of the month, 08:30 ET
   // Options expiry: last Friday of the month, 08:00 UTC (Deribit); Mar/Jun/Sep/Dec = the big quarterly
-  for (let m = 0; m < 9; m++) {
-    const d = new Date(now); const nextM = Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + m + 1, 1);
-    let lastFri = nextM - 86400000; while (new Date(lastFri).getUTCDay() !== 5) lastFri -= 86400000;
-    const ts = lastFri + 8 * 3600000; const mo = new Date(ts).getUTCMonth(); const q = (mo === 2 || mo === 5 || mo === 8 || mo === 11);
-    if (ts >= from && ts <= to) events.push({ ts, type: 'expiry', title: q ? 'Quarterly BTC & ETH options expiry' : 'Monthly BTC & ETH options expiry', desc: (q ? 'The big one — billions in quarterly options settle 08:00 UTC (Deribit). ' : 'Monthly options settle 08:00 UTC (Deribit). ') + 'Price often gravitates to "max pain", then moves free.', impact: q ? 2 : 1 });
+  const mFrom = new Date(from), mTo = new Date(to);
+  for (let ym = mFrom.getUTCFullYear() * 12 + mFrom.getUTCMonth(); ym <= mTo.getUTCFullYear() * 12 + mTo.getUTCMonth(); ym++) {
+    const y = Math.floor(ym / 12), mo = ym % 12;
+    const base = Date.UTC(y, mo, 1); const day = new Date(base).getUTCDay();
+    const nfpTs = base + ((5 - day + 7) % 7) * 86400000 + (WINTER(mo) ? 13.5 : 12.5) * 3600000;
+    if (nfpTs >= from && nfpTs <= to) events.push({ ts: nfpTs, type: 'nfp', title: 'US jobs report (NFP)', desc: 'Non-farm payrolls, 8:30 AM ET — usually the first Friday. Strong jobs = fewer rate cuts.', impact: 2, approx: true });
+    let lastFri = Date.UTC(y, mo + 1, 1) - 86400000; while (new Date(lastFri).getUTCDay() !== 5) lastFri -= 86400000;
+    const exTs = lastFri + 8 * 3600000, q = (mo === 2 || mo === 5 || mo === 8 || mo === 11);
+    if (exTs >= from && exTs <= to) events.push({ ts: exTs, type: 'expiry', title: q ? 'Quarterly BTC & ETH options expiry' : 'Monthly BTC & ETH options expiry', desc: (q ? 'The big one — billions in quarterly options settle 08:00 UTC (Deribit). ' : 'Monthly options settle 08:00 UTC (Deribit). ') + 'Price often gravitates to "max pain", then moves free.', impact: q ? 2 : 1 });
   }
   events.sort((a, b) => a.ts - b.ts);
-  return J({ gen: now, events });
+  return J({ gen: now, year: yearMode ? yr : undefined, events });
 }
 async function handleDefiOverview(env) {
   const ck = new Request('https://marginpad.io/__defi_overview');
@@ -3574,7 +3585,7 @@ export default {
     if (url.pathname === '/api/gecko/trending') return handleGeckoTrending(env);
     if (url.pathname === '/api/gecko/coin') return handleGeckoCoin(url, env);
     if (url.pathname === '/api/onchain') return handleOnchain(env);
-    if (url.pathname === '/api/calendar') return handleCalendar();
+    if (url.pathname === '/api/calendar') return handleCalendar(request);
     if (url.pathname === '/api/defi/overview') return handleDefiOverview(env);
     if (url.pathname === '/api/defi/extra') return handleDefiExtra(env);
     if (url.pathname === '/api/defi/charts') return handleDefiCharts(env);

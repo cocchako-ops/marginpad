@@ -286,6 +286,13 @@
 
   /* ---------- Rewards ---------- */
   .tile.lime{border-color:rgba(194,246,74,.4);background:linear-gradient(150deg,rgba(194,246,74,.11),rgba(194,246,74,.02) 55%),var(--panel);}
+  /* Crypto Calendar tile — current month mini-grid with event dots */
+  .mcal{position:relative;z-index:2;display:grid;grid-template-columns:repeat(7,1fr);gap:3px 2px;margin-top:13px;}
+  .mcal b{font-family:'Space Mono',monospace;font-size:8px;font-weight:700;color:var(--faint);text-align:center;letter-spacing:.05em;}
+  .mcal span{position:relative;font-family:'Space Mono',monospace;font-size:10px;color:var(--dim);text-align:center;padding:3px 0 6px;border-radius:6px;line-height:1;}
+  .mcal span.tod{background:rgba(194,246,74,.15);color:#c2f64a;font-weight:700;box-shadow:0 0 0 1px rgba(194,246,74,.45),0 0 12px -4px rgba(194,246,74,.6);}
+  .mcal span i{position:absolute;left:50%;transform:translateX(-50%);bottom:1px;width:4px;height:4px;border-radius:50%;background:currentColor;box-shadow:0 0 5px currentColor;}
+  .mcal-next{position:relative;z-index:2;margin-top:11px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--dim);line-height:1.5;overflow:hidden;text-overflow:ellipsis;}
   .rw-chip{display:inline-flex;align-items:center;gap:8px;margin-top:14px;background:rgba(194,246,74,.13);border:1px solid rgba(194,246,74,.38);border-radius:99px;padding:8px 14px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;color:var(--lime);position:relative;z-index:2;width:fit-content;}
   .rw-chip .cd{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 9px var(--lime);animation:pulse 1.4s infinite;}
 
@@ -602,6 +609,14 @@
       <div class="t-go">Full index + history <i>→</i></div>
     </a>
 
+    <a class="tile s3" href="/calendar/" style="--ac:#ffd75a">
+      <div class="t-kick"><span class="dot"></span> This month · live</div>
+      <div class="t-title">Crypto Calendar</div>
+      <div class="mcal" id="mcalGrid"></div>
+      <div class="mcal-next" id="mcalNext">Loading events…</div>
+      <div class="t-go">FOMC, CPI &amp; every key date <i>→</i></div>
+    </a>
+
     <a class="tile s3" href="/tools/" style="--ac:#46e0e6">
       <div class="t-kick">5 free tools</div>
       <div class="t-title">Trading Tools</div>
@@ -809,6 +824,26 @@
     var sf=document.getElementById('snFng');sf.textContent=v;sf.style.color=col;
     document.getElementById('snFngS').textContent=now.c;
   }).catch(function(){});
+
+  // ---- crypto calendar tile: current month mini-grid, dots on event days, next-event line ----
+  (function(){
+    var g=document.getElementById('mcalGrid'),nx=document.getElementById('mcalNext');if(!g)return;
+    var TC={fomc:'#c2f64a',cpi:'#3fd8e6',nfp:'#ffb347',expiry:'#b48cff',crypto:'#ff9f4d'};
+    var now=new Date(),Y=now.getFullYear(),M=now.getMonth();
+    fetch('/api/calendar?year='+Y).then(function(r){return r.json();}).then(function(d){
+      var ev=((d&&d.events)||[]).filter(function(e){var x=new Date(e.ts);return x.getFullYear()===Y&&x.getMonth()===M;});
+      var byDay={};ev.forEach(function(e){var dd=new Date(e.ts).getDate();(byDay[dd]=byDay[dd]||[]).push(e);});
+      var first=new Date(Y,M,1),off=(first.getDay()+6)%7,dim=new Date(Y,M+1,0).getDate();
+      var h='<b>M</b><b>T</b><b>W</b><b>T</b><b>F</b><b>S</b><b>S</b>',i;
+      for(i=0;i<off;i++)h+='<span class="out"></span>';
+      for(i=1;i<=dim;i++){var evs=byDay[i]||[],top=evs.sort(function(a,b){return (b.impact||1)-(a.impact||1);})[0];
+        h+='<span class="'+(i===now.getDate()?'tod':'')+'">'+i+(top?'<i style="color:'+(TC[top.type]||'#ff9f4d')+'"></i>':'')+'</span>';}
+      g.innerHTML=h;
+      var fut=ev.filter(function(e){return e.ts>Date.now()&&e.impact>=3;})[0]||ev.filter(function(e){return e.ts>Date.now();})[0];
+      if(fut){var days=Math.ceil((fut.ts-Date.now())/86400000);nx.innerHTML='Next: <b style="color:#ffd75a">'+String(fut.title).replace(/</g,'&lt;')+'</b> — '+(days<=1?'tomorrow':'in '+days+' days');}
+      else nx.textContent='Quiet month ahead — see the full calendar.';
+    }).catch(function(){nx.textContent='';});
+  })();
 
   // ---- news ----
   fetch('/api/news').then(function(r){return r.json();}).then(function(d){

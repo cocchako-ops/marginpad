@@ -7,7 +7,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Crypto Economic Calendar — FOMC, CPI, NFP &amp; Options Expiry Dates | MarginPad</title>
-<meta name="description" content="Upcoming dates that move crypto: every FOMC rate decision, US CPI inflation release, jobs report and BTC/ETH options expiry — with live countdowns. Free, no signup." />
+<meta name="description" content="Visual crypto calendar: every FOMC rate decision, US CPI release, jobs report and BTC/ETH options expiry — browsable month by month back to 2023, with live countdowns and reminders. Free, no signup." />
 <meta name="keywords" content="crypto calendar, fomc dates 2026, cpi release dates, crypto economic calendar, bitcoin events, fed meeting crypto, options expiry bitcoin, nfp crypto" />
 <link rel="canonical" href="https://marginpad.io/calendar/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/calendar/" />
@@ -15,13 +15,13 @@
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta name="theme-color" content="#0a0b0d" />
 <meta property="og:title" content="Crypto Economic Calendar — FOMC, CPI &amp; Key Dates" />
-<meta property="og:description" content="Every date that moves crypto — FOMC decisions, CPI releases, jobs reports and options expiries, with live countdowns." />
+<meta property="og:description" content="Visual month-by-month calendar of everything that moves crypto — FOMC, CPI, jobs reports, options expiries. Live countdowns &amp; reminders." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/calendar/" />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Crypto Economic Calendar — FOMC, CPI &amp; Key Dates" />
-<meta name="twitter:description" content="Every date that moves crypto — with live countdowns. Free, no signup." />
+<meta name="twitter:description" content="Visual calendar of everything that moves crypto — with live countdowns and reminders. Free, no signup." />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="manifest" href="/site.webmanifest" />
@@ -34,7 +34,7 @@
   #calHead{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px clamp(18px,3vw,64px);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.82);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);contain:paint;border-bottom:1px solid rgba(255,255,255,.09);width:100vw;margin-left:calc(50% - 50vw)}
   #calHead.sc{box-shadow:0 14px 34px -20px rgba(0,0,0,.9)}
   #calHead .brand{display:flex;align-items:baseline;gap:10px;border:none;padding:0;background:none}
-  #calHead .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;transition:letter-spacing .25s ease;cursor:pointer;color:#f0eee6;text-decoration:none}
+  #calHead .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;cursor:pointer;color:#f0eee6;text-decoration:none}
   #calHead .mark b{color:#c2f64a}
   .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center}
   .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s}
@@ -43,55 +43,95 @@
   #calHead .hnav{display:flex;align-items:center;gap:3px}
   .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#a6afba;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s}
   .hlink:hover{color:#fff;background:rgba(255,255,255,.07)}
-  .hlink svg{flex-shrink:0}
   .hbot{color:#7cc4ff}.hbot:hover{color:#a8d8ff;background:rgba(124,196,255,.12)}
   .hrwd{color:#c2f64a}.hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12)}
   @media(max-width:720px){.hnav .hbot{display:none}.hnav .hjr{display:none}.hnav .hauth span{display:none}.hnav .hauth{padding:7px}#calHead .hnav{gap:2px}}
   .df-eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#8a95a1;margin-top:14px}
   .df-eyebrow i{width:7px;height:7px;border-radius:50%;background:#c2f64a;box-shadow:0 0 9px #c2f64a;animation:calPulse 1.6s ease-in-out infinite}
-  @media(max-width:720px){.wrap{padding:0 16px}article h1{font-size:25px;line-height:1.12;margin:14px 0 8px}}
-  .cal-hero{display:grid;grid-template-columns:1.35fr 1fr;gap:12px;margin:16px 0 6px}
-  @media(max-width:640px){.cal-hero{grid-template-columns:1fr}}
-  .cal-next{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(194,246,74,.09),rgba(194,246,74,.02)),var(--panel);border:1px solid rgba(194,246,74,.4);border-radius:14px;padding:16px 18px}
-  .cal-next .k{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--lime,#c2f64a);font-weight:700;display:flex;align-items:center;gap:7px}
-  .cal-next .k i{width:7px;height:7px;border-radius:50%;background:#c2f64a;box-shadow:0 0 9px #c2f64a;animation:calPulse 1.6s ease-in-out infinite}
   @keyframes calPulse{0%,100%{opacity:.5}50%{opacity:1}}
-  .cal-next .t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;letter-spacing:-.01em;margin-top:8px}
-  .cal-next .cd{font-family:'Space Mono',monospace;font-weight:800;font-size:34px;letter-spacing:-1px;margin-top:6px;color:#c2f64a}
-  .cal-next .s{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin-top:4px}
-  .cal-side{background:var(--panel);border:1px solid var(--line-bright);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;justify-content:center;gap:10px}
-  .cal-side .row{display:flex;align-items:baseline;gap:9px}
-  .cal-side .n{font-family:'Space Mono',monospace;font-weight:800;font-size:22px}
-  .cal-side .l{font-size:12.5px;color:var(--ink-dim)}
-  .cal-mo{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-faint);font-weight:700;margin:26px 0 10px}
-  .cal-list{display:flex;flex-direction:column;gap:8px}
-  .cal-ev{display:flex;align-items:center;gap:13px;background:var(--panel);border:1px solid var(--line-bright);border-radius:12px;padding:11px 14px;min-width:0}
-  .cal-ev.today{border-color:rgba(194,246,74,.55);background:linear-gradient(180deg,rgba(194,246,74,.07),rgba(194,246,74,.015)),var(--panel)}
-  .cal-ev.past{opacity:.42}
-  .cal-d{flex:0 0 46px;text-align:center;background:#0c0f13;border:1px solid var(--line);border-radius:10px;padding:6px 0}
-  .cal-d b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;line-height:1.1}
-  .cal-d span{display:block;font-family:'Space Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint)}
-  .cal-m{flex:1;min-width:0}
-  .cal-t{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .cal-t b{font-family:'Familjen Grotesk',sans-serif;font-weight:700;font-size:14.5px}
-  .cal-badge{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;border-radius:6px;padding:2px 7px;flex:0 0 auto}
-  .cal-desc{font-size:12px;color:var(--ink-dim);line-height:1.5;margin-top:3px;overflow-wrap:anywhere}
-  .cal-in{flex:0 0 auto;text-align:right}
-  .cal-in b{display:block;font-family:'Space Mono',monospace;font-size:13px;font-weight:800}
-  .cal-in span{display:block;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint)}
-  .cal-imp{display:inline-flex;gap:2.5px;margin-left:1px}
-  .cal-imp i{width:5px;height:5px;border-radius:50%;background:var(--line-bright)}
-  .cal-imp i.on{background:#ffb347}
-  .cal-imp.hi i.on{background:#ff6258}
-  @media(max-width:640px){.cal-ev{gap:10px;padding:10px 11px}.cal-in span{display:none}.cal-desc{font-size:11.5px}}
-  .cal-note{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);line-height:1.6;margin-top:16px}
+  @media(max-width:720px){.wrap{padding:0 16px}article h1{font-size:25px;line-height:1.12;margin:14px 0 8px}}
+
+  /* ═══ the visual calendar — FULL-BLEED on desktop, phone-calendar on mobile ═══ */
+  .calx{position:relative;width:min(96vw,1560px);margin:22px calc(50% - min(48vw,780px)) 10px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px;align-items:start}
+  @media(max-width:980px){.calx{grid-template-columns:1fr;width:auto;margin:16px 0 8px}}
+  .calcard{background:linear-gradient(180deg,#12151b,#0d0f13);border:1px solid var(--line-bright);border-radius:18px;padding:14px 16px 16px;box-shadow:0 30px 70px -40px rgba(0,0,0,.9)}
+  .calnav{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .calnav .mo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(19px,2vw,26px);letter-spacing:-.02em;min-width:150px}
+  .calnav .mo b{color:#c2f64a}
+  .calbtn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:#0c0f13;border:1px solid var(--line-bright);border-radius:10px;color:#cfd4da;cursor:pointer;font-size:15px;transition:.14s;padding:0}
+  .calbtn:hover{border-color:#c2f64a;color:#c2f64a;box-shadow:0 0 0 3px rgba(194,246,74,.12)}
+  .calbtn.today{width:auto;padding:0 13px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+  .calyr{margin-left:auto;display:flex;align-items:center;gap:4px}
+  .calyr button{background:#0c0f13;border:1px solid var(--line-bright);border-radius:9px;color:#8a929c;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;padding:7px 11px;cursor:pointer;transition:.13s}
+  .calyr button:hover{color:#cfd4da;border-color:#3a434f}
+  .calyr button.on{color:#0a0b0d;background:#c2f64a;border-color:#c2f64a;box-shadow:0 0 14px -2px rgba(194,246,74,.5)}
+  .calwd{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:5px}
+  .calwd span{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);text-align:center;padding:4px 0}
+  .calwd span:nth-child(6),.calwd span:nth-child(7){color:#5c6570}
+  .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .cald{position:relative;min-height:86px;background:#0c0f13;border:1px solid var(--line);border-radius:11px;padding:7px 8px;cursor:pointer;transition:border-color .13s,transform .13s,box-shadow .13s;display:flex;flex-direction:column;gap:4px;min-width:0;text-align:left}
+  .cald:hover{border-color:#3a434f;transform:translateY(-1px)}
+  .cald.out{opacity:.32}
+  .cald.today{border-color:rgba(194,246,74,.75);box-shadow:0 0 0 1px rgba(194,246,74,.35),0 0 18px -6px rgba(194,246,74,.5)}
+  .cald.sel{background:linear-gradient(180deg,rgba(194,246,74,.10),rgba(194,246,74,.02)),#0c0f13;border-color:rgba(194,246,74,.55)}
+  .cald .dn{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#9aa3ad;line-height:1}
+  .cald.today .dn{color:#c2f64a}
+  .cald .dn small{font-size:8.5px;color:var(--ink-faint);margin-left:4px;letter-spacing:.05em}
+  .calev{display:flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.04em;border-radius:6px;padding:2.5px 6px;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .calev i{width:5px;height:5px;border-radius:50%;flex:0 0 auto;background:currentColor;box-shadow:0 0 6px currentColor}
+  .calmore{font-family:'Space Mono',monospace;font-size:8.5px;color:var(--ink-faint)}
+  /* ── sidebar ── */
+  .calside{display:flex;flex-direction:column;gap:12px;position:sticky;top:76px}
+  @media(max-width:980px){.calside{position:static}}
+  .cs-next{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(194,246,74,.10),rgba(194,246,74,.02)),#0e1116;border:1px solid rgba(194,246,74,.45);border-radius:16px;padding:15px 17px}
+  .cs-next .k{font-family:'Space Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:#c2f64a;font-weight:700;display:flex;align-items:center;gap:7px}
+  .cs-next .k i{width:7px;height:7px;border-radius:50%;background:#c2f64a;box-shadow:0 0 9px #c2f64a;animation:calPulse 1.6s ease-in-out infinite}
+  .cs-next .t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17.5px;margin-top:7px;line-height:1.2}
+  .cs-next .cd{font-family:'Space Mono',monospace;font-weight:800;font-size:29px;letter-spacing:-1px;margin-top:4px;color:#c2f64a;text-shadow:0 0 22px rgba(194,246,74,.45)}
+  .cs-next .s{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);margin-top:3px}
+  .cs-day{background:#0e1116;border:1px solid var(--line-bright);border-radius:16px;padding:14px 16px;min-height:120px}
+  .cs-day .h{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-faint);font-weight:700;margin-bottom:10px}
+  .cs-ev{border-top:1px solid rgba(255,255,255,.06);padding:10px 0}
+  .cs-ev:first-of-type{border-top:none;padding-top:2px}
+  .cs-ev .tt{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .cs-ev .tt b{font-family:'Familjen Grotesk',sans-serif;font-size:14px;font-weight:700}
+  .cs-badge{font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;border-radius:6px;padding:2px 7px;flex:0 0 auto}
+  .cs-ev .ds{font-size:12px;color:var(--ink-dim);line-height:1.55;margin-top:4px}
+  .cs-ev .mt{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+  .cs-ev .tm{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint)}
+  .cs-ev .cdn{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;color:#c2f64a}
+  .cs-ics{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.04em;color:#c2f64a;background:rgba(194,246,74,.08);border:1px solid rgba(194,246,74,.4);border-radius:8px;padding:5px 10px;cursor:pointer;text-decoration:none;transition:.13s}
+  .cs-ics:hover{background:#c2f64a;color:#0a0b0d;box-shadow:0 0 16px -4px rgba(194,246,74,.6)}
+  .cs-empty{font-size:12.5px;color:var(--ink-faint);padding:6px 0}
+  .cs-leg{background:#0e1116;border:1px solid var(--line-bright);border-radius:16px;padding:12px 16px;display:flex;flex-wrap:wrap;gap:9px 14px}
+  .cs-leg span{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-dim)}
+  .cs-leg i{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 7px currentColor}
+  .cal-note{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);line-height:1.6;margin-top:14px}
+  /* ── mobile: phone-calendar look ── */
+  @media(max-width:640px){
+    .calcard{padding:11px 10px 12px;border-radius:16px}
+    .calnav .mo{font-size:18px;min-width:0}
+    .calbtn{width:30px;height:30px;border-radius:9px}
+    .calyr{width:100%;order:9;justify-content:center;margin-left:0;margin-top:2px}
+    .calyr button{padding:6px 10px;font-size:11px}
+    .calgrid,.calwd{gap:3px}
+    .cald{min-height:52px;padding:5px 4px;border-radius:9px;gap:3px;align-items:center}
+    .cald .dn{font-size:11.5px}
+    .cald .dn small{display:none}
+    .calev{display:none}
+    .caldots{display:flex;gap:3px;justify-content:center;flex-wrap:wrap;max-width:100%}
+    .caldots i{width:5.5px;height:5.5px;border-radius:50%;box-shadow:0 0 5px currentColor;background:currentColor}
+    .calmore{display:none}
+  }
+  @media(min-width:641px){.caldots{display:none}}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Crypto Calendar","item":"https://marginpad.io/calendar/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"Why do FOMC meetings move crypto prices?","acceptedAnswer":{"@type":"Answer","text":"The Federal Reserve sets US interest rates. Lower rates make risk assets like Bitcoin more attractive, higher rates pull money out of them — so the moment the FOMC statement drops (2:00 PM ET), crypto often moves violently in both directions."}},
 {"@type":"Question","name":"What time is the US CPI release and why does it matter?","acceptedAnswer":{"@type":"Answer","text":"CPI (inflation) is published at 8:30 AM ET, usually in the second week of the month. Inflation drives what the Fed does with rates, so a hotter- or cooler-than-expected print regularly moves Bitcoin several percent within minutes."}},
 {"@type":"Question","name":"What happens on options expiry days?","acceptedAnswer":{"@type":"Answer","text":"Billions of dollars in BTC and ETH options settle at 08:00 UTC on the last Friday of each month (the quarterly ones in March, June, September and December are the largest). Price often pins near the 'max pain' level into expiry and moves more freely after."}},
-{"@type":"Question","name":"Is this calendar free?","acceptedAnswer":{"@type":"Answer","text":"Yes — like every MarginPad tool it is completely free, with no signup. Dates come from the official Federal Reserve and BLS schedules."}}]}</script>
+{"@type":"Question","name":"Can I browse past events?","acceptedAnswer":{"@type":"Answer","text":"Yes — the calendar goes back to 2023, so you can check what the market did around any past FOMC decision, CPI print, the 2024 Bitcoin halving or the spot-ETF approvals."}},
+{"@type":"Question","name":"Is this calendar free?","acceptedAnswer":{"@type":"Answer","text":"Yes — like every MarginPad tool it is completely free, with no signup. Dates come from the official Federal Reserve and BLS schedules, and you can add any event to your own calendar as a reminder."}}]}</script>
 </head>
 <body>
 <div class="wrap">
@@ -109,70 +149,145 @@
   </header>
   <div class="crumb"><a href="/">Home</a> / Calendar</div>
   <article>
-    <div class="df-eyebrow"><i></i>Auto-updating · official Fed &amp; BLS schedules</div>
+    <div class="df-eyebrow"><i></i>Official Fed &amp; BLS schedules · back to 2023</div>
     <h1>Crypto Economic Calendar</h1>
-    <p class="lead">Every upcoming date that moves crypto — FOMC rate decisions, US inflation (CPI) releases, jobs reports and the big BTC &amp; ETH options expiries — with live countdowns so nothing catches you mid-leverage.</p>
+    <p class="lead">Everything that moves crypto, on a real calendar — FOMC decisions, CPI prints, jobs reports, options expiries and the big crypto milestones. Browse any month back to 2023, tap a day for details, and set a reminder so nothing catches you mid-leverage.</p>
+  </article>
 
-    <div class="cal-hero">
-      <div class="cal-next">
+  <div class="calx">
+    <div class="calcard">
+      <div class="calnav">
+        <button type="button" class="calbtn" id="cPrev" aria-label="Previous month">‹</button>
+        <button type="button" class="calbtn" id="cNext" aria-label="Next month">›</button>
+        <span class="mo" id="cTitle">—</span>
+        <button type="button" class="calbtn today" id="cToday">Today</button>
+        <span class="calyr" id="cYears"></span>
+      </div>
+      <div class="calwd"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      <div class="calgrid" id="cGrid"></div>
+    </div>
+    <div class="calside">
+      <div class="cs-next">
         <div class="k"><i></i>Next big event</div>
         <div class="t" id="cnTitle">Loading…</div>
         <div class="cd" id="cnCd">—</div>
         <div class="s" id="cnWhen"></div>
       </div>
-      <div class="cal-side">
-        <div class="row"><span class="n" id="csWeek">—</span><span class="l">events in the next 7 days</span></div>
-        <div class="row"><span class="n" id="cs30">—</span><span class="l">high-impact events in the next 30 days</span></div>
-        <div class="row"><span class="l" style="font-size:11.5px">Impact: <span class="cal-imp hi" style="vertical-align:middle"><i class="on"></i><i class="on"></i><i class="on"></i></span> market-mover · <span class="cal-imp" style="vertical-align:middle"><i class="on"></i><i class="on"></i><i></i></span> watch it · <span class="cal-imp" style="vertical-align:middle"><i class="on"></i><i></i><i></i></span> background</span></div>
+      <div class="cs-day">
+        <div class="h" id="csDayH">Selected day</div>
+        <div id="csDayB"><div class="cs-empty">Pick a day on the calendar.</div></div>
+      </div>
+      <div class="cs-leg">
+        <span style="color:#c2f64a"><i></i>FOMC</span>
+        <span style="color:#3fd8e6"><i></i>CPI</span>
+        <span style="color:#ffb347"><i></i>Jobs</span>
+        <span style="color:#b48cff"><i></i>Expiry</span>
+        <span style="color:#ff9f4d"><i></i>Crypto</span>
       </div>
     </div>
+  </div>
 
-    <div id="calBody"><div class="cal-mo">Loading events…</div></div>
+  <article>
+    <p class="cal-note">Times shown in your local timezone. FOMC dates from the Federal Reserve's published meeting calendar; CPI dates from the BLS release schedule. Jobs report (NFP) is <em>usually</em> the first Friday of the month. Options expiry = last Friday, 08:00 UTC settlement (Deribit). "Remind me" downloads an .ics file that drops the event — with a 30-minute heads-up alarm — into your phone or desktop calendar. Not financial advice.</p>
 
-    <p class="cal-note">Times shown in your local timezone. FOMC dates from the Federal Reserve's published meeting calendar; CPI dates from the BLS release schedule. Jobs report (NFP) is <em>usually</em> the first Friday of the month — occasionally the BLS shifts it. Options expiry = last Friday, 08:00 UTC settlement (Deribit). This is information, not financial advice.</p>
-
-    <h2 style="margin-top:34px">Why these dates move crypto</h2>
+    <h2 style="margin-top:30px">Why these dates move crypto</h2>
     <p><strong>FOMC decisions</strong> set the price of money. Cheaper money historically pushes investors toward risk assets like Bitcoin; expensive money pulls them out. The statement lands at 2:00 PM ET and the first minutes afterward are routinely the most volatile of the month — many traders flatten leveraged positions before it.</p>
     <p><strong>CPI</strong> is the inflation print the Fed reacts to. A single 0.1% surprise in either direction regularly moves BTC 2–5% in minutes, and liquidation cascades on leveraged positions amplify the move. If you trade with leverage, know when CPI drops — check it on our <a href="/liquidations/">liquidations dashboard</a> afterwards.</p>
     <p><strong>Options expiry</strong> concentrates billions of dollars of open interest into a single settlement moment. Into the quarterly expiries especially, spot price tends to gravitate toward the "max pain" strike, then trades freely again once contracts settle.</p>
-    <p>Practice trading around these events risk-free on our <a href="/paper-trade">paper-trading terminal</a>, or set a <a href="/alerts/">price alert</a> so the market comes to you.</p>
+    <p>Scroll back to the <strong>2024 Bitcoin halving</strong> or the <strong>spot-ETF approvals</strong> to study how the market behaved. Practice trading around these events risk-free on our <a href="/paper-trade">paper-trading terminal</a>, or set a <a href="/alerts/">price alert</a> so the market comes to you.</p>
   </article>
   <footer>© MarginPad · <a href="/">Tools</a> · <a href="/screener">Screener</a> · <a href="/rekt/">Rekt</a> · <a href="/blog/">Blog</a> · Not financial advice</footer>
 </div>
 <script>
 (function(){
   try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u);}catch(e){}
-  var TYPES={fomc:['FOMC','#c2f64a','rgba(194,246,74,.14)'],cpi:['CPI','#3fd8e6','rgba(63,216,230,.13)'],nfp:['JOBS','#ffb347','rgba(255,179,71,.13)'],expiry:['EXPIRY','#b48cff','rgba(180,140,255,.13)'],crypto:['CRYPTO','#ff9f4d','rgba(255,159,77,.13)']};
+  var TYPES={fomc:['FOMC','#c2f64a'],cpi:['CPI','#3fd8e6'],nfp:['JOBS','#ffb347'],expiry:['EXPIRY','#b48cff'],crypto:['CRYPTO','#ff9f4d']};
   var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  var EV=[];
-  function esc(x){return String(x==null?'':x).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+  var YEARS=[2023,2024,2025,2026,2027];
+  var nowD=new Date(), vy=nowD.getFullYear(), vm=nowD.getMonth();
+  var selKey=dayKey(nowD), yearCache={}, nextEv=null;
+  function esc(x){return String(x==null?'':x).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
+  function dayKey(d){return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();}
   function fmtIn(ms){if(ms<=0)return 'now';var d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000),s=Math.floor(ms%60000/1000);
     if(d>0)return d+'d '+h+'h';if(h>0)return h+'h '+m+'m';return m+'m '+s+'s';}
-  function imp(n){var hi=n>=3,o='<span class="cal-imp'+(hi?' hi':'')+'">';for(var i=1;i<=3;i++)o+='<i'+(i<=n?' class="on"':'')+'></i>';return o+'</span>';}
+  function loadYear(y,cb){if(yearCache[y])return cb(yearCache[y]);
+    fetch('/api/calendar?year='+y).then(function(r){return r.json();}).then(function(d){yearCache[y]=(d&&d.events)||[];cb(yearCache[y]);}).catch(function(){cb([]);});}
+  function evOn(events,key){return events.filter(function(e){return dayKey(new Date(e.ts))===key;});}
+  // ---- .ics reminder (30-min alarm) — works with phone + desktop calendars, no backend ----
+  function icsFor(e){var dt=new Date(e.ts);function z(n){return (n<10?'0':'')+n;}
+    function ut(d){return d.getUTCFullYear()+z(d.getUTCMonth()+1)+z(d.getUTCDate())+'T'+z(d.getUTCHours())+z(d.getUTCMinutes())+'00Z';}
+    var ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//MarginPad//Crypto Calendar//EN\r\nBEGIN:VEVENT\r\nUID:mp-'+e.ts+'-'+e.type+'@marginpad.io\r\nDTSTAMP:'+ut(new Date())+'\r\nDTSTART:'+ut(dt)+'\r\nDTEND:'+ut(new Date(e.ts+30*60000))+'\r\nSUMMARY:'+e.title.replace(/[,;]/g,' ')+'\r\nDESCRIPTION:'+(e.desc||'').replace(/[,;]/g,' ')+' — marginpad.io/calendar/\r\nBEGIN:VALARM\r\nTRIGGER:-PT30M\r\nACTION:DISPLAY\r\nDESCRIPTION:'+e.title.replace(/[,;]/g,' ')+' in 30 minutes\r\nEND:VALARM\r\nEND:VEVENT\r\nEND:VCALENDAR';
+    return 'data:text/calendar;charset=utf-8,'+encodeURIComponent(ics);}
+  // ---- month grid ----
   function render(){
-    var now=Date.now(),body=document.getElementById('calBody'),byMo={},order=[];
-    EV.forEach(function(e){var d=new Date(e.ts),k=d.getFullYear()+'-'+d.getMonth();if(!byMo[k]){byMo[k]=[];order.push(k);}byMo[k].push(e);});
-    body.innerHTML=order.map(function(k){var d0=new Date(byMo[k][0].ts);
-      return '<div class="cal-mo">'+MONTHS[d0.getMonth()]+' '+d0.getFullYear()+'</div><div class="cal-list">'+byMo[k].map(function(e){
-        var d=new Date(e.ts),tp=TYPES[e.type]||TYPES.crypto,past=e.ts<now-3*3600000,today=!past&&new Date().toDateString()===d.toDateString();
-        var when=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-        return '<div class="cal-ev'+(past?' past':today?' today':'')+'"><div class="cal-d"><b>'+d.getDate()+'</b><span>'+DAYS[d.getDay()]+'</span></div>'
-          +'<div class="cal-m"><div class="cal-t"><b>'+esc(e.title)+'</b><span class="cal-badge" style="color:'+tp[1]+';background:'+tp[2]+'">'+tp[0]+'</span>'+imp(e.impact)+(e.approx?'<span class="cal-badge" style="color:var(--ink-faint);background:rgba(255,255,255,.05)">usually</span>':'')+'</div>'
-          +'<div class="cal-desc">'+esc(e.desc)+'</div></div>'
-          +'<div class="cal-in"><b data-ts="'+e.ts+'">'+(past?'done':('in '+fmtIn(e.ts-now)))+'</b><span>'+when+'</span></div></div>';
-      }).join('')+'</div>';
-    }).join('');
-    var wk=EV.filter(function(e){return e.ts>=now&&e.ts<=now+7*86400000;}).length;
-    var hi30=EV.filter(function(e){return e.ts>=now&&e.ts<=now+30*86400000&&e.impact>=3;}).length;
-    document.getElementById('csWeek').textContent=wk;document.getElementById('cs30').textContent=hi30;
-    var nxt=EV.filter(function(e){return e.ts>now&&e.impact>=3;})[0]||EV.filter(function(e){return e.ts>now;})[0];
-    if(nxt){document.getElementById('cnTitle').textContent=nxt.title;window.__calNext=nxt;
-      document.getElementById('cnWhen').textContent=new Date(nxt.ts).toLocaleString([],{weekday:'long',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});}
+    document.getElementById('cTitle').innerHTML=MONTHS[vm]+' <b>'+vy+'</b>';
+    var yw=document.getElementById('cYears');
+    yw.innerHTML=YEARS.map(function(y){return '<button type="button" data-y="'+y+'"'+(y===vy?' class="on"':'')+'>'+y+'</button>';}).join('');
+    loadYear(vy,function(events){
+      var prevY=vm===0?vy-1:vy,needPrev=vm===0;
+      var go=function(prevEvents){
+        var all=needPrev?prevEvents.concat(events):events;
+        var nextEvents=[]; var needNext=vm===11;
+        var fin=function(){
+          var all2=all.concat(nextEvents);
+          drawGrid(all2);drawDay(all2);
+        };
+        if(needNext)loadYear(vy+1,function(ne){nextEvents=ne;fin();});else fin();
+      };
+      if(needPrev)loadYear(prevY,go);else go([]);
+    });
   }
-  function tick(){var n=window.__calNext;if(n)document.getElementById('cnCd').textContent=fmtIn(n.ts-Date.now());
-    var now=Date.now();document.querySelectorAll('.cal-in b[data-ts]').forEach(function(b){var ts=+b.getAttribute('data-ts');if(ts>now)b.textContent='in '+fmtIn(ts-now);});}
-  fetch('/api/calendar').then(function(r){return r.json();}).then(function(d){EV=(d&&d.events)||[];render();tick();setInterval(tick,1000);}).catch(function(){document.getElementById('calBody').innerHTML='<div class="cal-mo">Could not load events — refresh to retry.</div>';});
+  function drawGrid(events){
+    var grid=document.getElementById('cGrid'),first=new Date(vy,vm,1);
+    var startOff=(first.getDay()+6)%7; // Monday-first
+    var dim=new Date(vy,vm+1,0).getDate();
+    var cells=[],i;
+    for(i=startOff;i>0;i--){var pd=new Date(vy,vm,1-i);cells.push({d:pd,out:true});}
+    for(i=1;i<=dim;i++)cells.push({d:new Date(vy,vm,i),out:false});
+    while(cells.length%7)cells.push({d:new Date(vy,vm,dim+(cells.length-(startOff+dim))+1),out:true});
+    var todayK=dayKey(new Date());
+    grid.innerHTML=cells.map(function(c){
+      var k=dayKey(c.d),evs=evOn(events,k);
+      evs.sort(function(a,b){return (b.impact||1)-(a.impact||1);});
+      var chips=evs.slice(0,2).map(function(e){var tp=TYPES[e.type]||TYPES.crypto;
+        return '<span class="calev" style="color:'+tp[1]+';background:'+tp[1]+'1c"><i></i>'+tp[0]+'</span>';}).join('');
+      if(evs.length>2)chips+='<span class="calmore">+'+(evs.length-2)+' more</span>';
+      var dots='<span class="caldots">'+evs.slice(0,4).map(function(e){var tp=TYPES[e.type]||TYPES.crypto;return '<i style="color:'+tp[1]+'"></i>';}).join('')+'</span>';
+      var wd=c.d.getDay();
+      return '<button type="button" class="cald'+(c.out?' out':'')+(k===todayK?' today':'')+(k===selKey?' sel':'')+'" data-k="'+k+'" data-y="'+c.d.getFullYear()+'" data-m="'+c.d.getMonth()+'">'
+        +'<span class="dn">'+c.d.getDate()+(k===todayK?'<small>TODAY</small>':'')+'</span>'+chips+(evs.length?dots:'')+'</button>';
+    }).join('');
+  }
+  function drawDay(events){
+    var d=selKey.split('-'),dd=new Date(+d[0],+d[1]-1,+d[2]);
+    document.getElementById('csDayH').textContent=dd.toLocaleDateString([],{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+    var evs=evOn(events,selKey),body=document.getElementById('csDayB'),now=Date.now();
+    if(!evs.length){body.innerHTML='<div class="cs-empty">No scheduled events — clean air. Trade it on <a href="/paper-trade" style="color:#c2f64a">Paper Trade</a>.</div>';return;}
+    body.innerHTML=evs.map(function(e){var tp=TYPES[e.type]||TYPES.crypto,fut=e.ts>now;
+      var tm=e.allday?'all day':new Date(e.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      return '<div class="cs-ev"><div class="tt"><b>'+esc(e.title)+'</b><span class="cs-badge" style="color:'+tp[1]+';background:'+tp[1]+'1c">'+tp[0]+'</span>'+(e.approx?'<span class="cs-badge" style="color:#8a929c;background:rgba(255,255,255,.05)">usually</span>':'')+'</div>'
+        +'<div class="ds">'+esc(e.desc||'')+'</div>'
+        +'<div class="mt"><span class="tm">'+tm+'</span>'+(fut?'<span class="cdn" data-ts="'+e.ts+'">in '+fmtIn(e.ts-now)+'</span><a class="cs-ics" download="marginpad-'+e.type+'.ics" href="'+icsFor(e)+'">🔔 Remind me</a>':'<span class="tm">done</span>')+'</div></div>';
+    }).join('');
+  }
+  // ---- interactions ----
+  document.getElementById('cGrid').addEventListener('click',function(ev){var b=ev.target.closest('.cald');if(!b)return;
+    selKey=b.getAttribute('data-k');var by=+b.getAttribute('data-y'),bm=+b.getAttribute('data-m');
+    if(by!==vy||bm!==vm){vy=by;vm=bm;render();}else{loadYear(vy,function(evts){var extra=[];var f=function(){drawGrid(evts.concat(extra));drawDay(evts.concat(extra));};if(vm===0)loadYear(vy-1,function(pe){extra=pe;f();});else if(vm===11)loadYear(vy+1,function(ne){extra=ne;f();});else f();});}});
+  document.getElementById('cPrev').addEventListener('click',function(){vm--;if(vm<0){vm=11;vy--;}if(vy<YEARS[0]){vy=YEARS[0];vm=0;}render();});
+  document.getElementById('cNext').addEventListener('click',function(){vm++;if(vm>11){vm=0;vy++;}if(vy>YEARS[YEARS.length-1]){vy=YEARS[YEARS.length-1];vm=11;}render();});
+  document.getElementById('cToday').addEventListener('click',function(){var n=new Date();vy=n.getFullYear();vm=n.getMonth();selKey=dayKey(n);render();});
+  document.getElementById('cYears').addEventListener('click',function(ev){var b=ev.target.closest('[data-y]');if(!b)return;vy=+b.getAttribute('data-y');render();});
+  // ---- next-event countdown (upcoming feed) ----
+  fetch('/api/calendar').then(function(r){return r.json();}).then(function(d){var ev=(d&&d.events)||[],now=Date.now();
+    nextEv=ev.filter(function(e){return e.ts>now&&e.impact>=3;})[0]||ev.filter(function(e){return e.ts>now;})[0];
+    if(nextEv){document.getElementById('cnTitle').textContent=nextEv.title;
+      document.getElementById('cnWhen').textContent=new Date(nextEv.ts).toLocaleString([],{weekday:'long',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});}
+  }).catch(function(){});
+  setInterval(function(){var now=Date.now();
+    if(nextEv)document.getElementById('cnCd').textContent=fmtIn(nextEv.ts-now);
+    document.querySelectorAll('.cdn[data-ts]').forEach(function(b){var ts=+b.getAttribute('data-ts');if(ts>now)b.textContent='in '+fmtIn(ts-now);});},1000);
+  render();
   var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',function(){function go(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(go,120);}go();});
   var hd=document.getElementById('calHead');if(hd)window.addEventListener('scroll',function(){hd.classList.toggle('sc',window.scrollY>8);},{passive:true});
 })();
