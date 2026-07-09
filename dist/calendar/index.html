@@ -182,6 +182,7 @@
         <span style="color:#ffb347"><i></i>Jobs</span>
         <span style="color:#b48cff"><i></i>Expiry</span>
         <span style="color:#ff9f4d"><i></i>Crypto</span>
+        <span style="color:#e9e7df"><i></i>Macro</span>
       </div>
     </div>
   </div>
@@ -190,7 +191,7 @@
 <script>
 (function(){
   try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u);}catch(e){}
-  var TYPES={fomc:['FOMC','#c2f64a'],cpi:['CPI','#3fd8e6'],nfp:['JOBS','#ffb347'],expiry:['EXPIRY','#b48cff'],crypto:['CRYPTO','#ff9f4d']};
+  var TYPES={fomc:['FOMC','#c2f64a'],cpi:['CPI','#3fd8e6'],nfp:['JOBS','#ffb347'],expiry:['EXPIRY','#b48cff'],crypto:['CRYPTO','#ff9f4d'],macro:['MACRO','#e9e7df']};
   var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
   var YEARS=[2023,2024,2025,2026,2027];
   var nowD=new Date(), vy=nowD.getFullYear(), vm=nowD.getMonth();
