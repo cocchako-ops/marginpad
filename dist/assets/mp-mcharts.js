@@ -425,10 +425,10 @@
     reallyClose();
     if(backBrowse){backBrowse=false;forceScale1(function(){try{if(window.__openBrowse)window.__openBrowse();}catch(e){}});} /* open Browse only after the zoom is verified back at 1:1 (or the retry window ends) */ }
   function reallyClose(){ if(!ov)return; ov.hidden=true; document.documentElement.style.overflow=''; closeSheet(); closeFloat(); resetViewportHard(); setTimeout(pinBar,80); }
-  function close(){ if(!ov)return;
-    if(!isPortrait()){ /* closing in LANDSCAPE used to dump the user on an 844px-wide page → the DESKTOP homepage flashed and iOS kept a ~25% zoom. Hold a dark "rotate back" panel instead; portrait finishes the close and opens Browse. */
-      backWait=true; backBrowse=true; closeSheet(); closeFloat(); showBack(); return; }
-    reallyClose();
+  function close(){ if(!ov)return; // owner 2026-07-09: closing charts on the phone must land on the HOMEPAGE, no in-between screens
+    try{mfcSave();}catch(e){}
+    try{reallyClose();}catch(e){}
+    try{location.replace('/');}catch(e){location.href='/';}
   }
   window.mpOpenCharts=open;
   // live ticks

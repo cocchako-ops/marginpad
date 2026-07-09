@@ -190,14 +190,18 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(!open.length){el.hidden=true;el.className='pt-tickets';el.innerHTML='';_lastSig='';return;}
     el.className='pt-tickets';el.hidden=false;
     var list=open.slice(-5).reverse(); // up to 5 most recent open positions, newest first
+    var _prevIds=_lastSig?_lastSig.split(','):[];
     _lastSig=list.map(function(e){return e.id;}).join(',');
     el.innerHTML=list.map(function(e,idx){var m=metrics(e),long=m.long;
       return '<div class="pt-last '+_tkCls(m)+'" data-tid="'+e.id+'">'
         +'<div class="ptl-top"><span class="ptl-tag">OPEN</span><span class="ptl-sym">'+esc(e.sym||'—')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b class="ptl-px">'+fp(m.live)+'</b></span></div>'
         +'<div class="ptl-pnl"><span class="big">'+_tkPnl(m)+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span><button type="button" class="ptl-close" data-ptl-close="'+e.id+'">Close</button></div>'
+        +'<div class="ptl-cut"></div>'
         +'<div class="ptl-meta">'+_tkMeta(e,m)+'</div>'
         +'</div>';
-    }).join('');}
+    }).join('');
+    // only the NEW ticket animates in — re-running panelIn on every existing card was the "shake" on spawn
+    Array.prototype.forEach.call(el.querySelectorAll('.pt-last'),function(c){if(_prevIds.indexOf(c.getAttribute('data-tid'))>=0)c.style.animation='none';});}
   // live refresh that NEVER rebuilds the DOM unless the open-set changes — replacing innerHTML every tick re-ran the
   // panelIn animation + reflowed the cards = the "shaking/flicker" on mobile. In-place text updates don't shake.
   function renderLastLive(){var el=document.getElementById('ptLastTrade');if(!el)return;if(el.querySelector('button:hover'))return; // leave the DOM alone while Close is hovered → no lost tap
