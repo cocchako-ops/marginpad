@@ -33,8 +33,25 @@
   function hma(c,p){var half=Math.max(1,Math.round(p/2)),sq=Math.max(1,Math.round(Math.sqrt(p))),w1=wma(c,half),w2=wma(c,p),raw=[],i,j;for(i=0;i<c.length;i++)raw.push((w1[i]!=null&&w2[i]!=null)?2*w1[i]-w2[i]:null);var o=[];for(i=0;i<c.length;i++){if(i<p-2+sq){o.push(null);continue;}var sum=0,ws=0,ok=true;for(j=0;j<sq;j++){var v=raw[i-j];if(v==null){ok=false;break;}var w=sq-j;sum+=v*w;ws+=w;}o.push(ok?sum/ws:null);}return o;}
   function willr(bs,p){var o=[],i,j;for(i=0;i<bs.length;i++){if(i<p-1){o.push(null);continue;}var hh=-Infinity,ll=Infinity;for(j=i-p+1;j<=i;j++){if(bs[j].high>hh)hh=bs[j].high;if(bs[j].low<ll)ll=bs[j].low;}o.push(hh===ll?-50:(hh-bs[i].close)/(hh-ll)*-100);}return o;}
   function cci(bs,p){var tp=bs.map(function(b){return (+b.high+ +b.low+ +b.close)/3;}),o=[],i,j;for(i=0;i<bs.length;i++){if(i<p-1){o.push(null);continue;}var sum=0;for(j=i-p+1;j<=i;j++)sum+=tp[j];var ma=sum/p,md=0;for(j=i-p+1;j<=i;j++)md+=Math.abs(tp[j]-ma);md/=p;o.push(md===0?0:(tp[i]-ma)/(0.015*md));}return o;}
+  /* Supertrend(10,3) buy/sell markers — same engine as the desktop workspace + Paper Trade "Signals" */
+  function computeSignals(d){var n=d?d.length:0,P=10,M=3;if(n<P+3)return [];
+    var tr=[],i;for(i=0;i<n;i++){tr.push(i===0?d[i].high-d[i].low:Math.max(d[i].high-d[i].low,Math.abs(d[i].high-d[i-1].close),Math.abs(d[i].low-d[i-1].close)));}
+    var at=[],seed=0;for(i=0;i<P;i++)seed+=tr[i];var a=seed/P;for(i=0;i<n;i++){if(i<P)at.push(a);else{a=(a*(P-1)+tr[i])/P;at.push(a);}}
+    var fU=[],fL=[],dir=[],mk=[];for(i=0;i<n;i++){var hl2=(d[i].high+d[i].low)/2,bU=hl2+M*at[i],bL=hl2-M*at[i];
+      var pU=i?fU[i-1]:bU,pL=i?fL[i-1]:bL;
+      var cU=(bU<pU||(i&&d[i-1].close>pU))?bU:pU,cL=(bL>pL||(i&&d[i-1].close<pL))?bL:pL;fU.push(cU);fL.push(cL);
+      var pd=i?dir[i-1]:1,cd;if(i===0)cd=1;else if(pd===1)cd=d[i].close<cL?-1:1;else cd=d[i].close>cU?1:-1;dir.push(cd);
+      if(i>P&&cd!==pd)mk.push(cd===1?{time:d[i].time,position:'belowBar',color:'#2ebd85',shape:'arrowUp',text:'BUY'}:{time:d[i].time,position:'aboveBar',color:'#ff6258',shape:'arrowDown',text:'SELL'});}
+    return mk;}
+  /* Support/resistance — recent pivot highs/lows (same as desktop computeSR) */
+  function computeSR(d){var L=6,n=d?d.length:0,lv=[];if(n<2*L+6)return lv;
+    for(var i=L;i<n-L;i++){var hi=d[i].high,lo=d[i].low,ph=true,pl=true;
+      for(var j=i-L;j<=i+L;j++){if(d[j].high>hi)ph=false;if(d[j].low<lo)pl=false;}
+      if(ph)lv.push({price:hi,type:'r'});if(pl)lv.push({price:lo,type:'s'});}
+    var rs=lv.filter(function(x){return x.type==='r';}).slice(-3),ss=lv.filter(function(x){return x.type==='s';}).slice(-3);
+    return rs.concat(ss);}
   var TFS=[['1','1m'],['5','5m'],['15','15m'],['60','1h'],['240','4h'],['1440','1d']];
-  var INDS=[['ema9','EMA 9'],['ema21','EMA 21'],['ema50','EMA 50'],['ema100','EMA 100'],['ema200','EMA 200'],['sma20','SMA 20'],['sma50','SMA 50'],['sma100','SMA 100'],['sma200','SMA 200'],['hma','Hull MA 21'],['vwap','VWAP'],['bb','Bollinger'],['vol','Volume'],['rsi','RSI'],['macd','MACD'],['stoch','Stoch'],['atr','ATR'],['wr','Williams %R'],['cci','CCI']];
+  var INDS=[['sig','Buy / Sell signals'],['sr','Support / Resistance'],['ema9','EMA 9'],['ema21','EMA 21'],['ema50','EMA 50'],['ema100','EMA 100'],['ema200','EMA 200'],['sma20','SMA 20'],['sma50','SMA 50'],['sma100','SMA 100'],['sma200','SMA 200'],['hma','Hull MA 21'],['vwap','VWAP'],['bb','Bollinger'],['vol','Volume'],['rsi','RSI'],['macd','MACD'],['stoch','Stoch'],['atr','ATR'],['wr','Williams %R'],['cci','CCI']];
   function tfLabel(tf){for(var i=0;i<TFS.length;i++)if(TFS[i][0]===tf)return TFS[i][1];return tf;}
   function mcT(k,d){return (window.mpT&&window.mpT(k))||d;}
   // ---- build overlay ----
@@ -96,7 +113,7 @@
   function mkPane(sym,tf){
     var el=document.createElement('div');el.className='mfc-pane';
     el.innerHTML='<div class="mfc-chart"></div><canvas class="cwin-draw"></canvas>'+TOOLS+'<div class="mfc-pl"><b class="mfc-pl-s"></b> <span class="mfc-pl-tf"></span> <span class="mfc-pl-p"></span></div>';
-    var p={el:el,host:el.querySelector('.mfc-chart'),sym:sym,tf:tf,bars:[],lastBar:null,chart:null,candle:null,inds:{},indSeries:[],tradeLines:[],_mtPrices:[],reload:0,w:null};
+    var p={el:el,host:el.querySelector('.mfc-chart'),sym:sym,tf:tf,bars:[],lastBar:null,chart:null,candle:null,inds:{},indSeries:[],indLines:[],tradeLines:[],_mtPrices:[],reload:0,w:null};
     el.addEventListener('pointerdown',function(){setActive(panes.indexOf(p));},true);
     return p;
   }
@@ -148,6 +165,9 @@
   // ---- indicators ----
   function applyInds(p){ if(!p.chart||!p.candle)return;
     p.indSeries.forEach(function(s){try{p.chart.removeSeries(s);}catch(e){}});p.indSeries=[];
+    (p.indLines||[]).forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p.indLines=[];
+    try{p.candle.setMarkers(p.inds.sig?computeSignals(p.bars):[]);}catch(e){}
+    if(p.inds.sr)computeSR(p.bars).forEach(function(L){try{p.indLines.push(p.candle.createPriceLine({price:L.price,color:L.type==='r'?'#ff9f4d':'#3ad29a',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:L.type==='r'?'R':'S'}));}catch(e){}});
     var c=p.bars.map(function(b){return +b.close;}),t=p.bars.map(function(b){return b.time;});
     function add(vals,opts,scale){var s;try{s=p.chart.addLineSeries(Object.assign({lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},opts));}catch(e){return;}var d=[];for(var i=0;i<vals.length;i++)if(vals[i]!=null&&isFinite(vals[i]))d.push({time:t[i],value:vals[i]});try{s.setData(d);}catch(e){}p.indSeries.push(s);}
     var MA=[['ema9',9,'e','#7fb6ff'],['ema21',21,'e','#3fd8e6'],['ema50',50,'e','#5fe0a6'],['ema100',100,'e','#c2f64a'],['ema200',200,'e','#ffd75a'],['sma20',20,'s','#ff9f43'],['sma50',50,'s','#ff7b72'],['sma100',100,'s','#e0a0ff'],['sma200',200,'s','#ff5a4d']];
