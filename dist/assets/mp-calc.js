@@ -166,11 +166,11 @@
   // Exchange preset → fills the maintenance-margin rate per venue (rates differ by exchange). Manual edit flips it to "Custom".
   (function(){ const ex=$('liqEx'), mmr=$('liqMmr'); if(!ex||!mmr)return;
     ex.addEventListener('change', () => { if(ex.value!==''){ mmr.value=ex.value; calcAll(); } });
-    mmr.addEventListener('input', () => { const cu=ex.querySelector('option[value=""]'); if(cu)ex.value=''; });
+    mmr.addEventListener('input', () => { const cu=ex.querySelector('option[value=""]'); if(cu&&ex.value!==''){ ex.value=''; ex.dispatchEvent(new Event('change',{bubbles:true})); } }); // dispatch so the custom-select label flips to "Custom" too
   })();
   (function(){ const ex=$('crEx'), mmr=$('crMmr'); if(!ex||!mmr)return;
     ex.addEventListener('change', () => { if(ex.value!==''){ mmr.value=ex.value; calcAll(); } });
-    mmr.addEventListener('input', () => { const cu=ex.querySelector('option[value=""]'); if(cu)ex.value=''; });
+    mmr.addEventListener('input', () => { const cu=ex.querySelector('option[value=""]'); if(cu&&ex.value!==''){ ex.value=''; ex.dispatchEvent(new Event('change',{bubbles:true})); } }); // dispatch so the custom-select label flips to "Custom" too
   })();
   calcAll();
 

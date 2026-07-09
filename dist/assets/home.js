@@ -1561,13 +1561,14 @@ window.addEventListener('load', function () {
     var search=null;
     if(withSearch){ search=document.createElement('input'); search.className='csel-search'; search.type='text'; search.setAttribute('placeholder','Search…'); panel.appendChild(search); }
     var list=document.createElement('div'); list.className='csel-list'; panel.appendChild(list); if(floating){document.body.appendChild(panel);}else{wrap.appendChild(panel);}
-    function sync(){ var o=sel.options[sel.selectedIndex]; lab.textContent=o?o.textContent:''; }
+    function sync(){ var o=sel.options[sel.selectedIndex]; if(sel._cselDeco&&o){lab.innerHTML=sel._cselDeco(o);}else{lab.textContent=o?o.textContent:'';} }
     function build(){ list.innerHTML='';
-      for(var i=0;i<sel.options.length;i++){(function(o){
-        var it=document.createElement('button'); it.type='button'; it.className='csel-opt'+(o.value===sel.value?' sel':''); it.textContent=o.textContent;
-        it.addEventListener('click',function(){ if(sel.value!==o.value){ sel.value=o.value; sync(); sel.dispatchEvent(new Event('change',{bubbles:true})); } close(); });
+      for(var i=0;i<sel.options.length;i++){(function(o,idx){
+        var it=document.createElement('button'); it.type='button'; it.className='csel-opt'+(idx===sel.selectedIndex?' sel':'');
+        if(sel._cselDeco){it.innerHTML=sel._cselDeco(o);}else{it.textContent=o.textContent;} /* deco: rich option rows (e.g. exchange chips) */
+        it.addEventListener('click',function(){ if(sel.selectedIndex!==idx){ sel.selectedIndex=idx; sync(); sel.dispatchEvent(new Event('change',{bubbles:true})); } close(); }); /* selectedIndex, NOT value — the exchange presets share values (0.5) and value-matching snapped every pick to the first one */
         list.appendChild(it);
-      })(sel.options[i]); }
+      })(sel.options[i],i); }
     }
     function onTouchMove(e){ if(list.contains(e.target))return; e.preventDefault(); } // while the dropdown is open, only the list scrolls — never the page behind it (fixes mobile scroll-chaining / first-touch break-through)
     function place(){ var r=trig.getBoundingClientRect(); panel.style.position='fixed'; panel.style.left=r.left+'px'; panel.style.top=(r.bottom+6)+'px'; panel.style.width=Math.max(r.width,160)+'px'; panel.style.right='auto'; panel.style.zIndex='1000'; } // floating mode: anchor the panel to the trigger and escape the chart card's overflow/stacking so it never hides behind the chart
@@ -1585,6 +1586,13 @@ window.addEventListener('load', function () {
   function init(){
     enhance(document.getElementById('heatCoin'), true);
     enhance(document.getElementById('planSym'), true, true, true);
+    // exchange presets (liq + cross calc + paper-trade advanced) → branded rows instead of the OS default dropdown
+    var EXCOL={'Binance':['#f0b90b','#181a20'],'Bybit':['#f7a600','#0a0b0d'],'OKX':['#e9e7df','#0a0b0d'],'Bitget':['#00e7d8','#06231d'],'KuCoin':['#23af91','#06231d'],'Gate':['#3361ff','#ffffff'],'Kraken':['#7b5cff','#ffffff'],'MEXC':['#0ac2d6','#06231d'],'Crypto.com':['#0b2e7a','#ffffff']};
+    function exDeco(o){var t=o.textContent||'',m=t.split('—'),name=(m[0]||t).trim(),rate=(m[1]||'').trim();
+      if(!rate&&/custom/i.test(name))return '<span class="csel-ex"><i class="cx-m cx-custom">%</i><b>Custom</b><small>type your own rate</small></span>';
+      var c=EXCOL[name]||['#3a4450','#e9e7df'];
+      return '<span class="csel-ex"><i class="cx-m" style="background:'+c[0]+';color:'+c[1]+'">'+name.charAt(0)+'</i><b>'+name+'</b>'+(rate?'<small>'+rate+'</small>':'')+'</span>';}
+    ['liqEx','crEx','planEx'].forEach(function(id){var el=document.getElementById(id);if(el){el._cselDeco=exDeco;enhance(el);}});
     /* langSel stays a native select — matches the homepage header (EN box, not a globe) */
     (window.requestIdleCallback||function(f){setTimeout(f,1500);})(function(){if(window.mpLoadTokens)window.mpLoadTokens(function(toks){var ps=document.getElementById('planSym');if(!ps)return;var have={};for(var i=0;i<ps.options.length;i++)have[ps.options[i].value.toUpperCase()]=1;toks.forEach(function(s){if(!have[s]){var o=document.createElement('option');o.value=s;o.textContent=s;ps.appendChild(o);}});});});
   }
