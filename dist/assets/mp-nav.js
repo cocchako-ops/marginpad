@@ -111,6 +111,7 @@
     tools: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10"/><path d="M18 6h2"/><circle cx="16" cy="6" r="2"/><path d="M4 12h2"/><path d="M10 12h10"/><circle cx="8" cy="12" r="2"/><path d="M4 18h10"/><path d="M18 18h2"/><circle cx="16" cy="18" r="2"/></svg>',
     start: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.4 2.7 2.6 6 2.6s6-1.2 6-2.6v-5"/></svg>',
     bot: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+    cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>',
     chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;color:#5c656f;flex-shrink:0"><path d="M9 18l6-6-6-6"/></svg>'
   };
   function row(tKey, sKey, href, c, ic) { return '<a class="mpnav-row" href="' + href + '"><span class="mpnav-ic" style="color:' + c + ';background:' + c + '22">' + I[ic] + '</span><span class="mpnav-rt"><b>' + TR(tKey) + '</b><small>' + TR(sKey) + '</small></span>' + I.chev + '</a>'; }
@@ -124,6 +125,7 @@
     + '<button type="button" class="mpnav-row mpnav-expand" data-mpexpand="calc"><span class="mpnav-ic" style="color:#c2f64a;background:#c2f64a22">'+I.calc+'</span><span class="mpnav-rt"><b>'+TR('brCalcT')+'</b><small>'+TR('brCalcS')+'</small></span>'+I.chev+'</button>'
     + '<div class="mpnav-sub" data-sub="calc" hidden>'
     +   '<a class="mpnav-subrow" href="/calculators?c=liq">'+TR('subLiq')+'</a>'
+    +   '<a class="mpnav-subrow" href="/calculators?c=cross">Cross margin liquidation</a>'
     +   '<a class="mpnav-subrow" href="/calculators?c=size">'+TR('subSize')+'</a>'
     +   '<a class="mpnav-subrow" href="/calculators?c=pnl">'+TR('subPnl')+'</a>'
     +   '<a class="mpnav-subrow" href="/calculators?c=dca">'+TR('subDca')+'</a>'
@@ -137,6 +139,7 @@
     + row('prodScreener', 'brScrS', '/screener', '#6aa3ff', 'scr')
     + row('brMktsT', 'brMktsS', '/coins/', '#16c2d6', 'mkt')
     + row('brDefiT', 'brDefiS', '/defi/', '#9d7bff', 'defi')
+    + row('Calendar', 'FOMC, CPI & key crypto dates', '/calendar/', '#ffd75a', 'cal')
     + row('brNewsT', 'brNewsS', '/news/', '#ff8c5a', 'news')
     + row('brFngT', 'brFngS', '/fear-greed/', '#7fd957', 'fng')
     + row('prodCharts', 'prodChartsS', '/charts', '#3fd8e6', 'charts')

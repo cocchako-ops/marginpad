@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Crypto Economic Calendar — FOMC, CPI, NFP &amp; Options Expiry Dates | MarginPad</title>
+<meta name="description" content="Upcoming dates that move crypto: every FOMC rate decision, US CPI inflation release, jobs report and BTC/ETH options expiry — with live countdowns. Free, no signup." />
+<meta name="keywords" content="crypto calendar, fomc dates 2026, cpi release dates, crypto economic calendar, bitcoin events, fed meeting crypto, options expiry bitcoin, nfp crypto" />
+<link rel="canonical" href="https://marginpad.io/calendar/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/calendar/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/calendar/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="Crypto Economic Calendar — FOMC, CPI &amp; Key Dates" />
+<meta property="og:description" content="Every date that moves crypto — FOMC decisions, CPI releases, jobs reports and options expiries, with live countdowns." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/calendar/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Crypto Economic Calendar — FOMC, CPI &amp; Key Dates" />
+<meta name="twitter:description" content="Every date that moves crypto — with live countdowns. Free, no signup." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script defer src="/assets/sentry.js"></script>
+<style>
+  /* homepage-style sticky header (same rules as /defi/, scoped to #calHead) */
+  #calHead{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px clamp(18px,3vw,64px);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.82);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);contain:paint;border-bottom:1px solid rgba(255,255,255,.09);width:100vw;margin-left:calc(50% - 50vw)}
+  #calHead.sc{box-shadow:0 14px 34px -20px rgba(0,0,0,.9)}
+  #calHead .brand{display:flex;align-items:baseline;gap:10px;border:none;padding:0;background:none}
+  #calHead .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;transition:letter-spacing .25s ease;cursor:pointer;color:#f0eee6;text-decoration:none}
+  #calHead .mark b{color:#c2f64a}
+  .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center}
+  .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s}
+  .hmenu span:nth-child(2){width:13px}
+  .hmenu:hover span{box-shadow:0 0 10px rgba(194,246,74,.9);width:18px}
+  #calHead .hnav{display:flex;align-items:center;gap:3px}
+  .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#a6afba;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s}
+  .hlink:hover{color:#fff;background:rgba(255,255,255,.07)}
+  .hlink svg{flex-shrink:0}
+  .hbot{color:#7cc4ff}.hbot:hover{color:#a8d8ff;background:rgba(124,196,255,.12)}
+  .hrwd{color:#c2f64a}.hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12)}
+  @media(max-width:720px){.hnav .hbot{display:none}.hnav .hjr{display:none}.hnav .hauth span{display:none}.hnav .hauth{padding:7px}#calHead .hnav{gap:2px}}
+  .df-eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#8a95a1;margin-top:14px}
+  .df-eyebrow i{width:7px;height:7px;border-radius:50%;background:#c2f64a;box-shadow:0 0 9px #c2f64a;animation:calPulse 1.6s ease-in-out infinite}
+  @media(max-width:720px){.wrap{padding:0 16px}article h1{font-size:25px;line-height:1.12;margin:14px 0 8px}}
+  .cal-hero{display:grid;grid-template-columns:1.35fr 1fr;gap:12px;margin:16px 0 6px}
+  @media(max-width:640px){.cal-hero{grid-template-columns:1fr}}
+  .cal-next{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(194,246,74,.09),rgba(194,246,74,.02)),var(--panel);border:1px solid rgba(194,246,74,.4);border-radius:14px;padding:16px 18px}
+  .cal-next .k{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--lime,#c2f64a);font-weight:700;display:flex;align-items:center;gap:7px}
+  .cal-next .k i{width:7px;height:7px;border-radius:50%;background:#c2f64a;box-shadow:0 0 9px #c2f64a;animation:calPulse 1.6s ease-in-out infinite}
+  @keyframes calPulse{0%,100%{opacity:.5}50%{opacity:1}}
+  .cal-next .t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;letter-spacing:-.01em;margin-top:8px}
+  .cal-next .cd{font-family:'Space Mono',monospace;font-weight:800;font-size:34px;letter-spacing:-1px;margin-top:6px;color:#c2f64a}
+  .cal-next .s{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin-top:4px}
+  .cal-side{background:var(--panel);border:1px solid var(--line-bright);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;justify-content:center;gap:10px}
+  .cal-side .row{display:flex;align-items:baseline;gap:9px}
+  .cal-side .n{font-family:'Space Mono',monospace;font-weight:800;font-size:22px}
+  .cal-side .l{font-size:12.5px;color:var(--ink-dim)}
+  .cal-mo{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-faint);font-weight:700;margin:26px 0 10px}
+  .cal-list{display:flex;flex-direction:column;gap:8px}
+  .cal-ev{display:flex;align-items:center;gap:13px;background:var(--panel);border:1px solid var(--line-bright);border-radius:12px;padding:11px 14px;min-width:0}
+  .cal-ev.today{border-color:rgba(194,246,74,.55);background:linear-gradient(180deg,rgba(194,246,74,.07),rgba(194,246,74,.015)),var(--panel)}
+  .cal-ev.past{opacity:.42}
+  .cal-d{flex:0 0 46px;text-align:center;background:#0c0f13;border:1px solid var(--line);border-radius:10px;padding:6px 0}
+  .cal-d b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;line-height:1.1}
+  .cal-d span{display:block;font-family:'Space Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint)}
+  .cal-m{flex:1;min-width:0}
+  .cal-t{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .cal-t b{font-family:'Familjen Grotesk',sans-serif;font-weight:700;font-size:14.5px}
+  .cal-badge{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;border-radius:6px;padding:2px 7px;flex:0 0 auto}
+  .cal-desc{font-size:12px;color:var(--ink-dim);line-height:1.5;margin-top:3px;overflow-wrap:anywhere}
+  .cal-in{flex:0 0 auto;text-align:right}
+  .cal-in b{display:block;font-family:'Space Mono',monospace;font-size:13px;font-weight:800}
+  .cal-in span{display:block;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint)}
+  .cal-imp{display:inline-flex;gap:2.5px;margin-left:1px}
+  .cal-imp i{width:5px;height:5px;border-radius:50%;background:var(--line-bright)}
+  .cal-imp i.on{background:#ffb347}
+  .cal-imp.hi i.on{background:#ff6258}
+  @media(max-width:640px){.cal-ev{gap:10px;padding:10px 11px}.cal-in span{display:none}.cal-desc{font-size:11.5px}}
+  .cal-note{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--ink-faint);line-height:1.6;margin-top:16px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Crypto Calendar","item":"https://marginpad.io/calendar/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Why do FOMC meetings move crypto prices?","acceptedAnswer":{"@type":"Answer","text":"The Federal Reserve sets US interest rates. Lower rates make risk assets like Bitcoin more attractive, higher rates pull money out of them — so the moment the FOMC statement drops (2:00 PM ET), crypto often moves violently in both directions."}},
+{"@type":"Question","name":"What time is the US CPI release and why does it matter?","acceptedAnswer":{"@type":"Answer","text":"CPI (inflation) is published at 8:30 AM ET, usually in the second week of the month. Inflation drives what the Fed does with rates, so a hotter- or cooler-than-expected print regularly moves Bitcoin several percent within minutes."}},
+{"@type":"Question","name":"What happens on options expiry days?","acceptedAnswer":{"@type":"Answer","text":"Billions of dollars in BTC and ETH options settle at 08:00 UTC on the last Friday of each month (the quarterly ones in March, June, September and December are the largest). Price often pins near the 'max pain' level into expiry and moves more freely after."}},
+{"@type":"Question","name":"Is this calendar free?","acceptedAnswer":{"@type":"Answer","text":"Yes — like every MarginPad tool it is completely free, with no signup. Dates come from the official Federal Reserve and BLS schedules."}}]}</script>
+</head>
+<body>
+<div class="wrap">
+  <header id="calHead">
+    <div class="brand">
+      <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
+    </div>
+    <nav class="hnav">
+      <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg><span>Bot</span></a>
+      <a href="/rewards/" class="hlink hrwd" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg><span>Rewards</span></a>
+      <a href="/paper-trade?trades=1" class="hlink hjr"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>My trades</span></a>
+      <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
+    </nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / Calendar</div>
+  <article>
+    <div class="df-eyebrow"><i></i>Auto-updating · official Fed &amp; BLS schedules</div>
+    <h1>Crypto Economic Calendar</h1>
+    <p class="lead">Every upcoming date that moves crypto — FOMC rate decisions, US inflation (CPI) releases, jobs reports and the big BTC &amp; ETH options expiries — with live countdowns so nothing catches you mid-leverage.</p>
+
+    <div class="cal-hero">
+      <div class="cal-next">
+        <div class="k"><i></i>Next big event</div>
+        <div class="t" id="cnTitle">Loading…</div>
+        <div class="cd" id="cnCd">—</div>
+        <div class="s" id="cnWhen"></div>
+      </div>
+      <div class="cal-side">
+        <div class="row"><span class="n" id="csWeek">—</span><span class="l">events in the next 7 days</span></div>
+        <div class="row"><span class="n" id="cs30">—</span><span class="l">high-impact events in the next 30 days</span></div>
+        <div class="row"><span class="l" style="font-size:11.5px">Impact: <span class="cal-imp hi" style="vertical-align:middle"><i class="on"></i><i class="on"></i><i class="on"></i></span> market-mover · <span class="cal-imp" style="vertical-align:middle"><i class="on"></i><i class="on"></i><i></i></span> watch it · <span class="cal-imp" style="vertical-align:middle"><i class="on"></i><i></i><i></i></span> background</span></div>
+      </div>
+    </div>
+
+    <div id="calBody"><div class="cal-mo">Loading events…</div></div>
+
+    <p class="cal-note">Times shown in your local timezone. FOMC dates from the Federal Reserve's published meeting calendar; CPI dates from the BLS release schedule. Jobs report (NFP) is <em>usually</em> the first Friday of the month — occasionally the BLS shifts it. Options expiry = last Friday, 08:00 UTC settlement (Deribit). This is information, not financial advice.</p>
+
+    <h2 style="margin-top:34px">Why these dates move crypto</h2>
+    <p><strong>FOMC decisions</strong> set the price of money. Cheaper money historically pushes investors toward risk assets like Bitcoin; expensive money pulls them out. The statement lands at 2:00 PM ET and the first minutes afterward are routinely the most volatile of the month — many traders flatten leveraged positions before it.</p>
+    <p><strong>CPI</strong> is the inflation print the Fed reacts to. A single 0.1% surprise in either direction regularly moves BTC 2–5% in minutes, and liquidation cascades on leveraged positions amplify the move. If you trade with leverage, know when CPI drops — check it on our <a href="/liquidations/">liquidations dashboard</a> afterwards.</p>
+    <p><strong>Options expiry</strong> concentrates billions of dollars of open interest into a single settlement moment. Into the quarterly expiries especially, spot price tends to gravitate toward the "max pain" strike, then trades freely again once contracts settle.</p>
+    <p>Practice trading around these events risk-free on our <a href="/paper-trade">paper-trading terminal</a>, or set a <a href="/alerts/">price alert</a> so the market comes to you.</p>
+  </article>
+  <footer>© MarginPad · <a href="/">Tools</a> · <a href="/screener">Screener</a> · <a href="/rekt/">Rekt</a> · <a href="/blog/">Blog</a> · Not financial advice</footer>
+</div>
+<script>
+(function(){
+  try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u);}catch(e){}
+  var TYPES={fomc:['FOMC','#c2f64a','rgba(194,246,74,.14)'],cpi:['CPI','#3fd8e6','rgba(63,216,230,.13)'],nfp:['JOBS','#ffb347','rgba(255,179,71,.13)'],expiry:['EXPIRY','#b48cff','rgba(180,140,255,.13)'],crypto:['CRYPTO','#ff9f4d','rgba(255,159,77,.13)']};
+  var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var EV=[];
+  function esc(x){return String(x==null?'':x).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+  function fmtIn(ms){if(ms<=0)return 'now';var d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000),s=Math.floor(ms%60000/1000);
+    if(d>0)return d+'d '+h+'h';if(h>0)return h+'h '+m+'m';return m+'m '+s+'s';}
+  function imp(n){var hi=n>=3,o='<span class="cal-imp'+(hi?' hi':'')+'">';for(var i=1;i<=3;i++)o+='<i'+(i<=n?' class="on"':'')+'></i>';return o+'</span>';}
+  function render(){
+    var now=Date.now(),body=document.getElementById('calBody'),byMo={},order=[];
+    EV.forEach(function(e){var d=new Date(e.ts),k=d.getFullYear()+'-'+d.getMonth();if(!byMo[k]){byMo[k]=[];order.push(k);}byMo[k].push(e);});
+    body.innerHTML=order.map(function(k){var d0=new Date(byMo[k][0].ts);
+      return '<div class="cal-mo">'+MONTHS[d0.getMonth()]+' '+d0.getFullYear()+'</div><div class="cal-list">'+byMo[k].map(function(e){
+        var d=new Date(e.ts),tp=TYPES[e.type]||TYPES.crypto,past=e.ts<now-3*3600000,today=!past&&new Date().toDateString()===d.toDateString();
+        var when=d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        return '<div class="cal-ev'+(past?' past':today?' today':'')+'"><div class="cal-d"><b>'+d.getDate()+'</b><span>'+DAYS[d.getDay()]+'</span></div>'
+          +'<div class="cal-m"><div class="cal-t"><b>'+esc(e.title)+'</b><span class="cal-badge" style="color:'+tp[1]+';background:'+tp[2]+'">'+tp[0]+'</span>'+imp(e.impact)+(e.approx?'<span class="cal-badge" style="color:var(--ink-faint);background:rgba(255,255,255,.05)">usually</span>':'')+'</div>'
+          +'<div class="cal-desc">'+esc(e.desc)+'</div></div>'
+          +'<div class="cal-in"><b data-ts="'+e.ts+'">'+(past?'done':('in '+fmtIn(e.ts-now)))+'</b><span>'+when+'</span></div></div>';
+      }).join('')+'</div>';
+    }).join('');
+    var wk=EV.filter(function(e){return e.ts>=now&&e.ts<=now+7*86400000;}).length;
+    var hi30=EV.filter(function(e){return e.ts>=now&&e.ts<=now+30*86400000&&e.impact>=3;}).length;
+    document.getElementById('csWeek').textContent=wk;document.getElementById('cs30').textContent=hi30;
+    var nxt=EV.filter(function(e){return e.ts>now&&e.impact>=3;})[0]||EV.filter(function(e){return e.ts>now;})[0];
+    if(nxt){document.getElementById('cnTitle').textContent=nxt.title;window.__calNext=nxt;
+      document.getElementById('cnWhen').textContent=new Date(nxt.ts).toLocaleString([],{weekday:'long',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});}
+  }
+  function tick(){var n=window.__calNext;if(n)document.getElementById('cnCd').textContent=fmtIn(n.ts-Date.now());
+    var now=Date.now();document.querySelectorAll('.cal-in b[data-ts]').forEach(function(b){var ts=+b.getAttribute('data-ts');if(ts>now)b.textContent='in '+fmtIn(ts-now);});}
+  fetch('/api/calendar').then(function(r){return r.json();}).then(function(d){EV=(d&&d.events)||[];render();tick();setInterval(tick,1000);}).catch(function(){document.getElementById('calBody').innerHTML='<div class="cal-mo">Could not load events — refresh to retry.</div>';});
+  var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',function(){function go(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(go,120);}go();});
+  var hd=document.getElementById('calHead');if(hd)window.addEventListener('scroll',function(){hd.classList.toggle('sc',window.scrollY>8);},{passive:true});
+})();
+</script>
+<script defer src="/assets/mp-auth.js"></script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>
