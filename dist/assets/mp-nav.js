@@ -134,15 +134,15 @@
     + '</div>'
     + '<div class="mpnav-sec">'+TR('secTrade')+'</div>'
     + row('prodPaper', 'brPaperS', '/paper-trade', '#2ebd85', 'plan')
-    + row('brToolsT', 'brToolsS', '/tools/', '#46e0e6', 'tools')
-    + row('Bot API', 'Test your trading bot free · REST API', '/trading-api/', '#3fd8e6', 'bot')
+    + row('prodCharts', 'prodChartsS', '/charts', '#3fd8e6', 'charts')
     + row('prodScreener', 'brScrS', '/screener', '#6aa3ff', 'scr')
-    + row('brMktsT', 'brMktsS', '/coins/', '#16c2d6', 'mkt')
-    + row('brDefiT', 'brDefiS', '/defi/', '#9d7bff', 'defi')
     + row('Calendar', 'FOMC, CPI & key crypto dates', '/calendar/', '#ffd75a', 'cal')
     + row('brNewsT', 'brNewsS', '/news/', '#ff8c5a', 'news')
+    + row('brToolsT', 'brToolsS', '/tools/', '#46e0e6', 'tools')
+    + row('Bot API', 'Test your trading bot free · REST API', '/trading-api/', '#3fd8e6', 'bot')
+    + row('brMktsT', 'brMktsS', '/coins/', '#16c2d6', 'mkt')
+    + row('brDefiT', 'brDefiS', '/defi/', '#9d7bff', 'defi')
     + row('brFngT', 'brFngS', '/fear-greed/', '#7fd957', 'fng')
-    + row('prodCharts', 'prodChartsS', '/charts', '#3fd8e6', 'charts')
     + '<div class="mpnav-row mpnav-soon"><span class="mpnav-ic" style="color:#ffb347;background:#ffb34722">'+I.heat+'</span><span class="mpnav-rt"><b>'+TR('brHeatT')+' <em class="mpnav-badge">'+TR('brSoon')+'</em></b><small>'+TR('brHeatS')+'</small></span></div>'
     + row('navRekt', 'prodRektS', '/rekt/', '#ff6258', 'rekt')
     + row('brAlertsT', 'brAlertsS', '/alerts/', '#c2f64a', 'alert')
