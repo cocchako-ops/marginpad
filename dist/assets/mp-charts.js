@@ -352,27 +352,35 @@
      Drawings persist per symbol:timeframe in localStorage (times serialized as bar time, restored to logicals). */
   var DRAW_LS='mp_charts_draw';
   function drawStoreAll(){try{return JSON.parse(localStorage.getItem(DRAW_LS)||'{}')||{};}catch(e){return {};}}
-  // shared TradingView-style drawing palette (desktop windows + the mobile-note window; mp-mcharts has its own copy minus the alert tool)
-  var TOOLS_HTML='<div class="cwin-tools">'
-    +'<button class="cwin-tool" data-tool="select" title="Select / move / edit — click a drawing, drag it or its endpoints">↖</button>'
-    +'<button class="cwin-tool" data-tool="pen" title="Freehand">✎</button>'
-    +'<button class="cwin-tool on" data-tool="trend" title="Trend line">╱</button>'
-    +'<button class="cwin-tool" data-tool="ray" title="Ray — trend line extended to the right">⇗</button>'
-    +'<button class="cwin-tool" data-tool="arrow" title="Arrow">➔</button>'
-    +'<button class="cwin-tool" data-tool="hline" title="Horizontal level (shows the price)">―</button>'
-    +'<button class="cwin-tool" data-tool="vline" title="Vertical line">│</button>'
-    +'<button class="cwin-tool" data-tool="rect" title="Rectangle / zone">▭</button>'
-    +'<button class="cwin-tool cwin-tool-fib" data-tool="fib" title="Fib retracement">F</button>'
-    +'<button class="cwin-tool" data-tool="text" title="Text label">T</button>'
-    +'<button class="cwin-tool" data-tool="measure" title="Measure — price change, % and bars">⇕</button>'
-    +'<button class="cwin-tool cwin-tool-alert" data-tool="alert" title="Set price alert at a level">🔔</button>'
-    +'<span class="cwin-sep"></span>'
-    +'<span class="cwin-color on" data-color="#3fd8e6" style="background:#3fd8e6"></span><span class="cwin-color" data-color="#c2f64a" style="background:#c2f64a"></span><span class="cwin-color" data-color="#ff6258" style="background:#ff6258"></span><span class="cwin-color" data-color="#ff9f4d" style="background:#ff9f4d"></span><span class="cwin-color" data-color="#b48cff" style="background:#b48cff"></span><span class="cwin-color" data-color="#ffffff" style="background:#fff"></span>'
-    +'<span class="cwin-sep"></span>'
-    +'<button class="cwin-tool" data-lw="1" title="Thin line" style="font-size:9px">━</button><button class="cwin-tool on" data-lw="2" title="Medium line" style="font-size:12px">━</button><button class="cwin-tool" data-lw="3" title="Thick line" style="font-size:15px">━</button><button class="cwin-tool" data-dash title="Dashed line">┄</button>'
-    +'<span class="cwin-sep"></span>'
-    +'<button class="cwin-tool cwin-del" data-del title="Delete selected drawing">🗑</button><button class="cwin-tool cwin-undo" data-undo title="Undo last">↶</button><button class="cwin-tool cwin-clear" data-clear title="Clear all">Clear</button>'
-    +'</div>';
+  // Shared drawing palette — ONE tidy row that never wraps: [select] [tool▾] [color▾] [style▾] | [delete] [undo] [clear].
+  // Tools/colors/line-styles live in labeled dropdown panels (.cwin-pop) so a first-time visitor reads names, not glyphs.
+  function drawToolsHtml(withAlert){
+    var T=[['trend','╱','Trend line'],['ray','⇗','Ray'],['arrow','➔','Arrow'],['hline','―','Horizontal line'],['vline','│','Vertical line'],['rect','▭','Rectangle'],['fib','F','Fibonacci'],['measure','⇕','Measure'],['pen','✎','Freehand'],['text','T','Text label']];
+    if(withAlert)T.push(['alert','🔔','Price alert']);
+    var items='';for(var i=0;i<T.length;i++)items+='<button class="cpop-it'+(T[i][0]==='trend'?' on':'')+'" data-tool="'+T[i][0]+'" type="button"><i>'+T[i][1]+'</i><span>'+T[i][2]+'</span></button>';
+    var COLS=['#3fd8e6','#c2f64a','#ff6258','#ff9f4d','#b48cff','#ffffff'],cols='';
+    for(var j=0;j<COLS.length;j++)cols+='<span class="cwin-color'+(j===0?' on':'')+'" data-color="'+COLS[j]+'" style="background:'+COLS[j]+'"></span>';
+    return '<div class="cwin-tools">'
+      +'<button class="cwin-tool" data-tool="select" title="Select / move / edit — tap a drawing" type="button">↖</button>'
+      +'<button class="cwin-tool cwin-pick on" data-tpick title="Drawing tool" type="button"><span class="tcur">╱</span><span class="car">▾</span></button>'
+      +'<button class="cwin-tool cwin-pick" data-cpick title="Color" type="button"><span class="cdot" style="background:#3fd8e6"></span><span class="car">▾</span></button>'
+      +'<button class="cwin-tool cwin-pick" data-spick title="Line style" type="button"><span class="scur">━</span><span class="car">▾</span></button>'
+      +'<span class="cwin-sep"></span>'
+      +'<button class="cwin-tool cwin-del" data-del title="Delete selected drawing" type="button">🗑</button>'
+      +'<button class="cwin-tool cwin-undo" data-undo title="Undo last" type="button">↶</button>'
+      +'<button class="cwin-tool cwin-clear" data-clear title="Clear all" type="button">Clear</button>'
+      +'<div class="cwin-pop cwin-pop-tool" data-pop="tool" hidden>'+items+'</div>'
+      +'<div class="cwin-pop cwin-pop-color" data-pop="color" hidden>'+cols+'</div>'
+      +'<div class="cwin-pop cwin-pop-style" data-pop="style" hidden>'
+        +'<button class="cpop-it" data-lw="1" type="button"><i><span class="lwp" style="height:1px"></span></i><span>Thin</span></button>'
+        +'<button class="cpop-it on" data-lw="2" type="button"><i><span class="lwp" style="height:2px"></span></i><span>Medium</span></button>'
+        +'<button class="cpop-it" data-lw="3" type="button"><i><span class="lwp" style="height:4px"></span></i><span>Thick</span></button>'
+        +'<button class="cpop-it" data-dash type="button"><i>┄</i><span>Dashed</span></button>'
+      +'</div>'
+      +'</div>';
+  }
+  var TOOLS_HTML=drawToolsHtml(true);
+  try{window.__mpDrawToolsHtml=drawToolsHtml;}catch(e){} // mp-mcharts builds its palette from this (withAlert=false on mobile)
   function setupDraw(w,bodyEl){
     var body=bodyEl||w.el.querySelector('.cwin-body'), cv=body&&body.querySelector('.cwin-draw');
     if(!body||!cv)return; var ctx=cv.getContext('2d');
@@ -519,22 +527,35 @@
   function wireDrawTools(w,dtg,tools){
     if(dtg)dtg.addEventListener('click',function(e){e.stopPropagation();if(!w.dr)return;w.dr.on=!w.dr.on;w.el.classList.toggle('drawing',w.dr.on);dtg.classList.toggle('on',w.dr.on);if(!w.dr.on){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}});
     if(!tools)return;
+    function closePops(){tools.querySelectorAll('.cwin-pop').forEach(function(x){x.hidden=true;});tools.querySelectorAll('.cwin-pick').forEach(function(x){x.classList.remove('open');});}
+    function togglePop(name,btn){var p=tools.querySelector('[data-pop="'+name+'"]');if(!p)return;var wasHidden=p.hidden;closePops();if(wasHidden){p.hidden=false;if(btn)btn.classList.add('open');}}
+    document.addEventListener('pointerdown',function(e){if(!tools.isConnected)return;if(!tools.contains(e.target))closePops();},true);
+    function setToolUI(tl){
+      tools.querySelectorAll('.cpop-it[data-tool]').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-tool')===tl);});
+      var sb=tools.querySelector('.cwin-tool[data-tool="select"]');if(sb)sb.classList.toggle('on',tl==='select');
+      var tp=tools.querySelector('[data-tpick]');if(tp)tp.classList.toggle('on',tl!=='select');
+      if(tl!=='select'){var it=tools.querySelector('.cpop-it[data-tool="'+tl+'"] i'),cur=tools.querySelector('.tcur');if(it&&cur)cur.textContent=it.textContent;}}
     function syncUI(){if(!w.dr)return;var s=w.dr.sel,col=s?s.color:w.dr.color,lw=s?(s.w||2):w.dr.lw,da=s?!!s.dash:!!w.dr.dash;
       tools.querySelectorAll('.cwin-color').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-color')===col);});
+      var cd=tools.querySelector('.cdot');if(cd)cd.style.background=col;
       tools.querySelectorAll('[data-lw]').forEach(function(x){x.classList.toggle('on',+x.getAttribute('data-lw')===lw);});
       var db=tools.querySelector('[data-dash]');if(db)db.classList.toggle('on',da);
+      var sc=tools.querySelector('.scur');if(sc){sc.textContent=da?'┄':'━';sc.style.fontSize=(lw===1?'9px':(lw===3?'15px':'12px'));}
       var del=tools.querySelector('[data-del]');if(del)del.classList.toggle('sel',!!s);}
     w._drSyncUI=syncUI;
     tools.addEventListener('pointerdown',function(e){e.stopPropagation();});
-    tools.addEventListener('click',function(e){var b=e.target.closest('.cwin-tool,.cwin-color');if(!b||!w.dr)return;e.stopPropagation();
+    tools.addEventListener('click',function(e){var b=e.target.closest('.cwin-tool,.cwin-color,.cpop-it');if(!b||!w.dr)return;e.stopPropagation();
+      if(b.hasAttribute('data-tpick')){togglePop('tool',b);return;}
+      if(b.hasAttribute('data-cpick')){togglePop('color',b);return;}
+      if(b.hasAttribute('data-spick')){togglePop('style',b);return;}
       var sel=w.dr.sel;
-      if(b.hasAttribute('data-undo')){w.dr.shapes.pop();w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();syncUI();return;}
-      if(b.hasAttribute('data-clear')){w.dr.shapes=[];w.dr.cur=null;w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();syncUI();return;}
-      if(b.hasAttribute('data-del')){if(sel){var ix=w.dr.shapes.indexOf(sel);if(ix>=0)w.dr.shapes.splice(ix,1);w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();syncUI();}return;}
+      if(b.hasAttribute('data-undo')){w.dr.shapes.pop();w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();closePops();syncUI();return;}
+      if(b.hasAttribute('data-clear')){w.dr.shapes=[];w.dr.cur=null;w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();closePops();syncUI();return;}
+      if(b.hasAttribute('data-del')){if(sel){var ix=w.dr.shapes.indexOf(sel);if(ix>=0)w.dr.shapes.splice(ix,1);w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();syncUI();}closePops();return;}
       if(b.hasAttribute('data-lw')){var lw=+b.getAttribute('data-lw')||2;if(sel){sel.w=lw;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}else w.dr.lw=lw;syncUI();return;}
       if(b.hasAttribute('data-dash')){if(sel){sel.dash=!sel.dash;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}else w.dr.dash=!w.dr.dash;syncUI();return;}
-      if(b.classList.contains('cwin-color')){var c=b.getAttribute('data-color');if(sel){sel.color=c;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}w.dr.color=c;syncUI();return;}
-      var tl=b.getAttribute('data-tool');if(tl){w.dr.tool=tl;if(tl!=='select'){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}if(w.el&&w.el.classList)w.el.classList.toggle('dr-select',tl==='select');tools.querySelectorAll('.cwin-tool[data-tool]').forEach(function(x){x.classList.remove('on');});b.classList.add('on');syncUI();}});
+      if(b.classList.contains('cwin-color')){var c=b.getAttribute('data-color');if(sel){sel.color=c;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}w.dr.color=c;closePops();syncUI();return;}
+      var tl=b.getAttribute('data-tool');if(tl){w.dr.tool=tl;if(tl!=='select'){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}if(w.el&&w.el.classList)w.el.classList.toggle('dr-select',tl==='select');setToolUI(tl);closePops();syncUI();}});
     syncUI();
   }
   try{window.__mpDraw={setup:setupDraw,wire:wireDrawTools};}catch(e){} // expose the price-anchored draw engine to the mobile full-screen charts module
@@ -993,7 +1014,10 @@
     savePersist();
   }
   document.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('.cws-tile[data-preset]');if(b){var n=parseInt(b.getAttribute('data-preset'),10);if(n)applyPreset(n);}});
-  function buildInitial(){showEmpty(true);var sn=loadNotes();if(sn&&sn.length)sn.forEach(function(c){addNote(c);});} // opens EMPTY by owner request (no auto-restore); saved named layouts remain in the Layouts menu
+  function buildInitial(){var sn=loadNotes();if(sn&&sn.length)sn.forEach(function(c){addNote(c);});
+    var sv=loadPersist(); // auto-restore the last session (owner request 2026-07-09: leaving /charts and coming back must look exactly as left — windows, symbols, TFs, indicators; drawings restore per SYM:TF via w.dr.reload)
+    if(sv&&sv.length){showEmpty(false);sv.slice(0,MAXn()).forEach(function(cfg){try{addWin(cfg);}catch(e){}});if(!wins.length)showEmpty(true);}
+    else showEmpty(true);}
   function showMobileNote(){var bd=document.getElementById('cwsBoard');if(!bd)return;showEmpty(false);var d=el('<div class="cws-mobile-note"><div class="cws-mn-ic"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><h3>Charts works best on desktop</h3><p>The multi-window workspace — drag, resize, indicators &amp; drawing — needs more room than a phone offers. Open <b>marginpad.io/charts</b> on your computer for the full experience.</p><button type="button" class="cws-mn-btn" id="cwsMnGo">Continue anyway</button></div>');bd.appendChild(d);var go=d.querySelector('#cwsMnGo');if(go)go.addEventListener('click',function(){if(d.parentNode)d.parentNode.removeChild(d);buildInitial();});}
   function loadMC(){try{return JSON.parse(localStorage.getItem('mp_mchart')||'{}')||{};}catch(e){return {};}}
   function saveMC(o){try{localStorage.setItem('mp_mchart',JSON.stringify(o));}catch(e){}}

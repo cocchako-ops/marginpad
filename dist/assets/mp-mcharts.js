@@ -70,8 +70,9 @@
       +'<button class="mfc-b mfc-ai" data-act="ai" aria-label="Ask AI"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></svg>'+mcT('mcAi','AI')+'</button>'
       +'</div>'
       +'<div class="mfc-stage" id="mfcStage"></div>'
-      +'<div class="mfc-rot">'+mcT('mcRotate','↻ Rotate your phone for a wider chart')+'</div>';
+      +'<div class="mfc-rot"'+(rotOff()?' hidden':'')+'><span>'+mcT('mcRotate','↻ Rotate your phone for a wider chart')+'</span><button class="mfc-rot-x" type="button" aria-label="Dismiss">✕</button></div>';
     document.body.appendChild(ov);
+    var rx=ov.querySelector('.mfc-rot-x');if(rx)rx.addEventListener('click',function(e){e.stopPropagation();var r=ov.querySelector('.mfc-rot');if(r)r.hidden=true;try{localStorage.setItem('mp_mfc_rot_off','1');}catch(_){}});
     var gate=document.createElement('div');gate.className='mfc-gate';gate.hidden=true;
     gate.innerHTML='<button class="mfc-gate-x" data-gx aria-label="Close">✕</button>'
       +'<svg style="animation:mfcRotPulse 2.2s ease-in-out infinite" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18.5" x2="13" y2="18.5"/></svg>'
@@ -109,28 +110,11 @@
     if(a==='ai')return openSheet('ai');
   }
   // ---- panes ----
-  var TOOLS='<div class="cwin-tools">'
-    +'<button class="cwin-tool" data-tool="select" title="Select / move / edit">↖</button>'
-    +'<button class="cwin-tool" data-tool="pen" title="Freehand">✎</button>'
-    +'<button class="cwin-tool on" data-tool="trend" title="Trend line">╱</button>'
-    +'<button class="cwin-tool" data-tool="ray" title="Ray">⇗</button>'
-    +'<button class="cwin-tool" data-tool="arrow" title="Arrow">➔</button>'
-    +'<button class="cwin-tool" data-tool="hline" title="Horizontal level">―</button>'
-    +'<button class="cwin-tool" data-tool="vline" title="Vertical line">│</button>'
-    +'<button class="cwin-tool" data-tool="rect" title="Rectangle / zone">▭</button>'
-    +'<button class="cwin-tool" data-tool="fib" title="Fib retracement">F</button>'
-    +'<button class="cwin-tool" data-tool="text" title="Text label">T</button>'
-    +'<button class="cwin-tool" data-tool="measure" title="Measure — Δ price, %, bars">⇕</button>'
-    +'<span class="cwin-sep"></span>'
-    +'<span class="cwin-color on" data-color="#3fd8e6" style="background:#3fd8e6"></span><span class="cwin-color" data-color="#c2f64a" style="background:#c2f64a"></span><span class="cwin-color" data-color="#ff6258" style="background:#ff6258"></span><span class="cwin-color" data-color="#ff9f4d" style="background:#ff9f4d"></span><span class="cwin-color" data-color="#b48cff" style="background:#b48cff"></span><span class="cwin-color" data-color="#ffffff" style="background:#fff"></span>'
-    +'<span class="cwin-sep"></span>'
-    +'<button class="cwin-tool" data-lw="1" title="Thin" style="font-size:9px">━</button><button class="cwin-tool on" data-lw="2" title="Medium" style="font-size:12px">━</button><button class="cwin-tool" data-lw="3" title="Thick" style="font-size:15px">━</button><button class="cwin-tool" data-dash title="Dashed">┄</button>'
-    +'<span class="cwin-sep"></span>'
-    +'<button class="cwin-tool cwin-del" data-del title="Delete selected">🗑</button><button class="cwin-tool cwin-undo" data-undo title="Undo">↶</button><button class="cwin-tool cwin-clear" data-clear title="Clear all">Clear</button>'
-    +'</div>';
+  // Drawing palette comes from the shared builder in mp-charts.js (loaded before this module by the home.js loader) — no alert tool on mobile. Evaluated lazily at pane build so load order can't race.
+  function TOOLS(){return (window.__mpDrawToolsHtml?window.__mpDrawToolsHtml(false):'<div class="cwin-tools"></div>');}
   function mkPane(sym,tf){
     var el=document.createElement('div');el.className='mfc-pane';
-    el.innerHTML='<div class="mfc-chart"></div><canvas class="cwin-draw"></canvas>'+TOOLS+'<div class="mfc-pl"><b class="mfc-pl-s"></b> <span class="mfc-pl-tf"></span> <span class="mfc-pl-p"></span></div>';
+    el.innerHTML='<div class="mfc-chart"></div><canvas class="cwin-draw"></canvas>'+TOOLS()+'<div class="mfc-pl"><b class="mfc-pl-s"></b> <span class="mfc-pl-tf"></span> <span class="mfc-pl-p"></span></div>';
     var p={el:el,host:el.querySelector('.mfc-chart'),sym:sym,tf:tf,bars:[],lastBar:null,chart:null,candle:null,inds:{},indSeries:[],indLines:[],tradeLines:[],_mtPrices:[],reload:0,w:null};
     el.addEventListener('pointerdown',function(){setActive(panes.indexOf(p));},true);
     return p;
@@ -220,7 +204,7 @@
   function toggleDraw(btn){var p=panes[activeI];if(!p||!p.w||!p.w.dr)return;p.w.dr.on=!p.w.dr.on;p.el.classList.toggle('drawing',p.w.dr.on);btn.classList.toggle('on',p.w.dr.on);}
   function clearPaneDraw(p){if(p&&p.w&&p.w.dr){p.w.dr.shapes=[];p.w.dr.cur=null;p.w.dr.sel=null;if(p.w.dr.redraw)p.w.dr.redraw();}}
   function toggleTrades(btn){var on=!btn.classList.contains('on');btn.classList.toggle('on',on);panes.forEach(function(p){p.trades=on;if(on)drawTrades(p);else clearTrades(p);});}
-  function setActive(i){if(i<0||i>=panes.length)return;activeI=i;panes.forEach(function(p,k){p.el.classList.toggle('active',k===i);});syncBar();var db=ov&&ov.querySelector('[data-act="draw"]'),ap=panes[activeI];if(db)db.classList.toggle('on',!!(ap&&ap.w&&ap.w.dr&&ap.w.dr.on));}
+  function setActive(i){if(i<0||i>=panes.length)return;activeI=i;panes.forEach(function(p,k){p.el.classList.toggle('active',k===i);});syncBar();var db=ov&&ov.querySelector('[data-act="draw"]'),ap=panes[activeI];if(db)db.classList.toggle('on',!!(ap&&ap.w&&ap.w.dr&&ap.w.dr.on));mfcSave();}
   function syncBar(){var p=panes[activeI];if(!p||!ov)return;var sL=ov.querySelector('.mfc-symL'),tL=ov.querySelector('.mfc-tfL');if(sL)sL.textContent=p.sym;if(tL)tL.textContent=tfLabel(p.tf);}
   // ---- split ----
   function toggleSplit(){split=split===1?2:1;var st=ov.querySelector('#mfcStage'),sL=ov.querySelector('.mfc-splitL');st.classList.toggle('split',split===2);if(sL)sL.textContent=split===2?mcT('mc1chart','1 chart'):mcT('mc2charts','2 charts');
@@ -253,16 +237,16 @@
     else if(kind==='ai')buildAi(body,p);
   }
   function buildTf(body,p){body.innerHTML='<div class="mfc-sl">'+TFS.map(function(t){return '<button class="'+(t[0]===p.tf?'on':'')+'" data-tf="'+t[0]+'">'+t[1]+'</button>';}).join('')+'</div>';
-    body.addEventListener('click',function(e){var b=e.target.closest('[data-tf]');if(!b)return;p.tf=b.getAttribute('data-tf');clearPaneDraw(p);loadKlines(p);syncBar();closeSheet();});}
+    body.addEventListener('click',function(e){var b=e.target.closest('[data-tf]');if(!b)return;p.tf=b.getAttribute('data-tf');clearPaneDraw(p);loadKlines(p);syncBar();closeSheet();mfcSave();});}
   function buildSym(body,p){body.innerHTML='<input class="mfc-ss" placeholder="'+mcT('mtSearchTicker','Search any ticker…')+'" inputmode="search"><div class="mfc-sl" id="mfcSyl"></div>';
     var inp=body.querySelector('.mfc-ss'),list=body.querySelector('#mfcSyl');
     if(window.mpLoadTokens)window.mpLoadTokens(function(){tokens=window.mpTokens||tokens;});
     function render(q){q=String(q||'').toUpperCase().replace(/[^A-Z0-9]/g,'');var arr=q?(window.mpTokens||tokens).filter(function(t){return t.indexOf(q)===0;}).concat((window.mpTokens||tokens).filter(function(t){return t.indexOf(q)>0;})):tokens.slice(0,12);list.innerHTML=arr.slice(0,40).map(function(t){return '<button class="'+(t===p.sym?'on':'')+'" data-pick="'+t+'">'+t+'</button>';}).join('');}
     render('');inp.addEventListener('input',function(){render(this.value);});
-    list.addEventListener('click',function(e){var b=e.target.closest('[data-pick]');if(!b)return;p.sym=b.getAttribute('data-pick');clearPaneDraw(p);try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(_){}loadKlines(p);syncBar();closeSheet();});
+    list.addEventListener('click',function(e){var b=e.target.closest('[data-pick]');if(!b)return;p.sym=b.getAttribute('data-pick');clearPaneDraw(p);try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(_){}loadKlines(p);syncBar();closeSheet();mfcSave();});
     setTimeout(function(){inp.focus();},40);}
   function buildInd(body,p){body.innerHTML='<div class="mfc-indm">'+INDS.map(function(d){return '<button class="'+(p.inds[d[0]]?'on':'')+'" data-ind="'+d[0]+'">'+d[1]+'</button>';}).join('')+'</div><p style="color:#9aa3ad;font-size:11.5px;margin-top:12px">'+mcT('mcIndNote','Same indicator families as the desktop workspace. Applies to the selected chart.')+'</p>';
-    body.addEventListener('click',function(e){var b=e.target.closest('[data-ind]');if(!b)return;var k=b.getAttribute('data-ind');p.inds[k]=!p.inds[k];b.classList.toggle('on',!!p.inds[k]);applyInds(p);});}
+    body.addEventListener('click',function(e){var b=e.target.closest('[data-ind]');if(!b)return;var k=b.getAttribute('data-ind');p.inds[k]=!p.inds[k];b.classList.toggle('on',!!p.inds[k]);applyInds(p);mfcSave();});}
   function buildCalc(body,p){var pr=price(p.sym)||(p.lastBar&&p.lastBar.close)||0;
     body.innerHTML='<div class="mfc-calc-grid"><div class="mfc-calc-seg" id="mfcCs"><button class="on" data-side="long">'+mcT('long','Long')+'</button><button data-side="short">'+mcT('short','Short')+'</button></div>'
       +'<label>'+mcT('lEntry','Entry price')+' (USD)</label><input id="mfcCe" type="number" inputmode="decimal" value="'+(pr||'').toString()+'" step="any">'
@@ -293,13 +277,26 @@
     btn.addEventListener('click',send);inp.addEventListener('keydown',function(e){if(e.key==='Enter')send();});setTimeout(function(){inp.focus();},40);}
   // ---- open / close ----
   var entered=false;
+  function rotOff(){try{return localStorage.getItem('mp_mfc_rot_off')==='1';}catch(e){return false;}}
+  // persist the mobile workspace (split + each pane's sym/tf/indicators) so returning to /charts looks exactly as left
+  function mfcSave(){try{localStorage.setItem('mp_mfc_state',JSON.stringify({split:split,active:activeI,panes:panes.map(function(p){return {sym:p.sym,tf:p.tf,inds:p.inds};})}));}catch(e){}}
+  function mfcLoad(){try{return JSON.parse(localStorage.getItem('mp_mfc_state')||'null');}catch(e){return null;}}
   function isPortrait(){return !!(window.matchMedia&&window.matchMedia('(orientation:portrait)').matches);}
   function showGate(on){var g=ov&&ov.querySelector('.mfc-gate');if(g)g.hidden=!on;var bar=ov&&ov.querySelector('.mfc-bar'),st=ov&&ov.querySelector('#mfcStage'),fab=ov&&ov.querySelector('.mfc-ai-fab');[bar,st,fab].forEach(function(x){if(x)x.style.visibility=on?'hidden':'';});}
   function open(){ if(!ov)build(); ov.hidden=false; document.documentElement.style.overflow='hidden';
     showGate(false);proceed(); // portrait works too — the inline .mfc-rot hint nudges toward landscape instead of a full-screen wall (UX audit)
   }
   function proceed(){ entered=true; showGate(false);
-    if(!panes.length){var p=mkPane('BTC','60');panes.push(p);ov.querySelector('#mfcStage').appendChild(p.el);setActive(0);loadLib(function(){initChart(p);});}
+    if(!panes.length){
+      var sv=mfcLoad(),st=ov.querySelector('#mfcStage');
+      var cfgs=(sv&&sv.panes&&sv.panes.length)?sv.panes.slice(0,2):[{sym:'BTC',tf:'60'},{sym:'ETH',tf:'60'}]; // default = TWO charts (owner request 2026-07-09), portrait included; saved state wins
+      split=cfgs.length>1?2:1;
+      cfgs.forEach(function(c){var p=mkPane(c.sym||'BTC',c.tf||'60');if(c.inds)p.inds=c.inds;panes.push(p);st.appendChild(p.el);});
+      st.classList.toggle('split',split===2);
+      var sL=ov.querySelector('.mfc-splitL');if(sL)sL.textContent=split===2?mcT('mc1chart','1 chart'):mcT('mc2charts','2 charts');
+      setActive((sv&&sv.active>0&&sv.active<panes.length)?sv.active:0);
+      loadLib(function(){panes.forEach(function(p){initChart(p);});});
+    }
     else{panes.forEach(function(p){setTimeout(function(){if(!p.chart)loadLib(function(){initChart(p);});else{loadKlines(p);}},20);});setActive(activeI);}
     setTimeout(function(){panes.forEach(function(p){if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();});},160);
   }
