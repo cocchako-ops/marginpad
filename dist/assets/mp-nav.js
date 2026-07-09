@@ -395,3 +395,20 @@
     }).catch(function(){});
   }
 })();
+
+/* Cookie notice — one-time, dismissible. The site sets cookies (sign-in session, device id for anti-abuse,
+   anonymous stats); this makes that visible. localStorage mp_ck_ok = accepted. */
+(function(){
+  try{if(localStorage.getItem('mp_ck_ok'))return;}catch(e){return;}
+  if(document.getElementById('mpCkBar'))return;
+  function mount(){
+    if(document.getElementById('mpCkBar'))return;
+    var b=document.createElement('div');b.id='mpCkBar';
+    b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 76px);z-index:94;max-width:430px;margin:0 auto;display:flex;align-items:center;gap:11px;background:rgba(13,16,21,.97);border:1px solid #2b323b;border-radius:13px;padding:11px 13px;box-shadow:0 18px 44px -14px rgba(0,0,0,.85);font-family:\'Familjen Grotesk\',system-ui,sans-serif;font-size:12.5px;line-height:1.45;color:#c8cdd4;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)';
+    if(window.matchMedia&&window.matchMedia('(min-width:721px)').matches)b.style.bottom='16px';
+    b.innerHTML='<span style="font-size:16px;flex:0 0 auto">🍪</span><span style="flex:1;min-width:0">We use cookies for sign-in, security (multi-account protection) and anonymous stats. No ad tracking.</span><button type="button" id="mpCkOk" style="flex:0 0 auto;background:#c2f64a;border:none;border-radius:9px;color:#0a0b0d;font-family:\'Space Mono\',monospace;font-size:11px;font-weight:800;letter-spacing:.03em;padding:9px 14px;cursor:pointer">OK</button>';
+    document.body.appendChild(b);
+    document.getElementById('mpCkOk').addEventListener('click',function(){try{localStorage.setItem('mp_ck_ok',String(Date.now()));}catch(e){}b.remove();});
+  }
+  if(document.readyState!=='loading')setTimeout(mount,900);else document.addEventListener('DOMContentLoaded',function(){setTimeout(mount,900);});
+})();
