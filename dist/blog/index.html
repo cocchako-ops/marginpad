@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MarginPad Blog — Crypto Futures Trading Guides & Calculators</title>
+<meta name="description" content="Practical, plain-English guides for crypto futures traders: liquidation, position sizing, leverage, funding, risk management and more." />
+<link rel="canonical" href="https://marginpad.io/blog/" />
+<meta property="og:title" content="MarginPad Blog — Crypto Futures Trading Guides" />
+<meta property="og:description" content="Practical guides for crypto futures traders, with formulas and examples." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/blog/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/blog.css" />
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / Blog</div>
+  <div class="blog-hero">
+    <h1 class="blog-title">The MarginPad Blog</h1>
+    <p class="blog-intro">Plain-English crypto-futures guides — liquidation, leverage, risk, exchanges and the tools to trade them. Every guide is backed by the formula and a worked example.</p>
+  </div>
+  <div class="cat-chips"><button class="chip active" data-cat="all">All</button><button class="chip" data-cat="Guides">Guides</button><button class="chip" data-cat="Basics">Basics</button><button class="chip" data-cat="Risk">Risk</button><button class="chip" data-cat="UK">UK</button><button class="chip" data-cat="USA">USA</button><button class="chip" data-cat="Canada">Canada</button><button class="chip" data-cat="Australia">Australia</button><button class="chip" data-cat="Switzerland">Switzerland</button><button class="chip" data-cat="Singapore">Singapore</button><button class="chip" data-cat="News">News</button><button class="chip" data-cat="Exchanges">Exchanges</button><button class="chip" data-cat="Germany">Germany</button><button class="chip" data-cat="France">France</button><button class="chip" data-cat="Nordics">Nordics</button><button class="chip" data-cat="Italy">Italy</button><button class="chip" data-cat="Spain">Spain</button><button class="chip" data-cat="Poland">Poland</button><button class="chip" data-cat="Europe">Europe</button><button class="chip" data-cat="Netherlands">Netherlands</button><button class="chip" data-cat="US">US</button><button class="chip" data-cat="Liquidation">Liquidation</button><button class="chip" data-cat="Risk management">Risk management</button><button class="chip" data-cat="India">India</button><button class="chip" data-cat="China">China</button></div>
+  <div class="posts">
+    <a class="post-card" data-cat="Guides" href="/blog/how-to-use-ai-to-analyze-crypto-charts/">
+      <span class="tag">Guides</span>
+      <h2>How to Use AI to Analyze Crypto Charts (2026): Free Tools & Prompts That Work</h2>
+      <p>How AI chart analysis actually works, the prompts that get useful answers instead of horoscopes, where AI fails — and a free AI already wired into a live chart.</p>
+    </a>
+    <a class="post-card" data-cat="Guides" href="/blog/crypto-economic-calendar-guide/">
+      <span class="tag">Guides</span>
+      <h2>Crypto Economic Calendar (2026): Why FOMC, CPI & NFP Move Bitcoin</h2>
+      <p>What FOMC, CPI and NFP are, why crypto reacts violently, the liquidation cascades they trigger — and a free live calendar with email & Telegram reminders.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/rsi-indicator-explained/">
+      <span class="tag">Basics</span>
+      <h2>RSI Indicator Explained (2026): How to Use It in Crypto Trading</h2>
+      <p>How the RSI momentum oscillator works, how to read overbought/oversold and divergence, the classic mistake, and how to see it scored on any coin.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/how-to-read-crypto-candlestick-charts/">
+      <span class="tag">Basics</span>
+      <h2>How to Read Crypto Candlestick Charts: A Beginner's Guide (2026)</h2>
+      <p>Read candles from scratch — body, wicks, and the doji/hammer/engulfing patterns that matter — plus how to practise on live charts for free.</p>
+    </a>
+    <a class="post-card" data-cat="Guides" href="/blog/copy-trading-crypto-explained/">
+      <span class="tag">Guides</span>
+      <h2>Copy Trading Crypto Explained (2026): How It Works and Whether It's Worth It</h2>
+      <p>How crypto copy trading works, the drawdown/leverage risks the banners hide, how to pick a leader, and how to build the skill to copy safely — or be copied.</p>
+    </a>
+    <a class="post-card" data-cat="Guides" href="/blog/nodejs-crypto-trading-bot-tutorial/">
+      <span class="tag">Guides</span>
+      <h2>Node.js Crypto Trading Bot Tutorial (2026): Build & Test One Free with JavaScript</h2>
+      <p>Build a crypto trading bot in Node.js and test it on real live prices with fake money — full JavaScript code: price feed, EMA-cross, open/close and the loop. Zero dependencies.</p>
+    </a>
+    <a class="post-card" data-cat="Guides" href="/blog/backtesting-vs-paper-trading-vs-live/">
+      <span class="tag">Guides</span>
+      <h2>Backtesting vs Paper Trading vs Live Trading: The Complete Guide (2026)</h2>
+      <p>Each stage proves something different — what backtesting hides, what paper trading catches, what only live trading reveals, and the exact order to use them.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/crypto-trading-for-beginners/">
+      <span class="tag">Basics</span>
+      <h2>Crypto Trading for Beginners: A Complete 2026 Guide (Start Risk-Free)</h2>
+      <p>The beginner's map — spot vs futures, leverage, liquidation, orders, risk management and fees — plus a free risk-free way to practise all of it before you deposit.</p>
+    </a>
+    <a class="post-card" data-cat="Risk" href="/blog/what-is-a-trading-journal/">
+      <span class="tag">Risk</span>
+      <h2>What Is a Trading Journal? How to Track Trades and Find Your Edge (2026)</h2>
+      <p>A journal turns your trades into hard numbers — win rate, R-multiples, expectancy, drawdown and per-coin stats — and shows whether you actually have an edge.</p>
+    </a>
+    <a class="post-card" data-cat="Guides" href="/blog/grid-trading-bot-explained/">
+      <span class="tag">Guides</span>
+      <h2>Grid Trading Bots Explained (2026): How They Work and How to Test One Free</h2>
+      <p>How a grid bot buys low and sells high across a range, where it wins (chop) and blows up (trending breakouts), and how to forward-test one risk-free.</p>
+    </a>
+    <a class="post-card" data-cat="Guides" href="/blog/ai-crypto-trading-strategies-2026/">
+      <span class="tag">Guides</span>
+      <h2>AI Crypto Trading Strategies for 2026: What Actually Works (and How to Test It Free)</h2>
+      <p>The AI-assisted strategies that actually hold up — signal confirmation, sentiment extremes, mean-reversion scoring and AI sizing — plus how to backtest and paper-trade them risk-free.</p>
+    </a>
+    <a class="post-card" data-cat="Guides" href="/blog/python-crypto-trading-bot-tutorial/">
+      <span class="tag">Guides</span>
+      <h2>Python Crypto Trading Bot Tutorial (2026): Build & Test One Free, No Deposit</h2>
+      <p>Build a working crypto trading bot in Python and test it on real live prices with fake money — full code: price feed, EMA-cross strategy, open/close orders and the loop.</p>
+    </a>
+    <a class="post-card" data-cat="Guides" href="/blog/how-to-test-a-crypto-trading-bot/">
+      <span class="tag">Guides</span>
+      <h2>How to Test a Crypto Trading Bot for Free (2026): Backtest, Paper Trade, Then Go Live</h2>
+      <p>Backtest on historical data, forward-test the real bot on a free paper-trading API with live prices, then go live small — the three-stage workflow that separates working bots from blown accounts.</p>
+    </a>
+    <a class="post-card" data-cat="Guides" href="/blog/how-to-hedge-crypto-with-futures/">
+      <span class="tag">Guides</span>
+      <h2>How to Hedge Crypto with Futures (2026): Protect Your Holdings Without Selling</h2>
+      <p>Use a short futures position to protect your spot bags from a drop — what hedging is, how delta-neutral works, what it costs in funding, and a worked example.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/limit-vs-market-orders/">
+      <span class="tag">Basics</span>
+      <h2>Limit vs Market Orders in Crypto Futures (2026): Which to Use and When</h2>
+      <p>Instant fills and slippage vs price control and lower maker fees — when to use each order type, and how stop and stop-limit orders fit in.</p>
+    </a>
+    <a class="post-card" data-cat="Guides" href="/blog/can-ai-trade-crypto-futures/">
+      <span class="tag">Guides</span>
+      <h2>Can AI Trade Crypto Futures? What AI Signals Can and Can't Do (2026)</h2>
+      <p>A clear-eyed look at AI in trading — what AI signals genuinely help with, where they fail, and how to use AI as a research assistant without handing it your account.</p>
+    </a>
+    <a class="post-card" data-cat="Risk" href="/blog/what-is-a-trailing-stop/">
+      <span class="tag">Risk</span>
+      <h2>What Is a Trailing Stop? How to Lock In Profit as Price Moves (2026)</h2>
+      <p>A trailing stop follows price by a set distance, locking in gains while letting a winner run. How it works, how to set the distance, and the common mistakes.</p>
+    </a>
+    <a class="post-card" data-cat="Risk" href="/blog/why-most-crypto-traders-lose-money/">
+      <span class="tag">Risk</span>
+      <h2>Why 90% of Crypto Futures Traders Lose Money (and How to Be the 10%)</h2>
+      <p>The real reasons most futures traders blow up — over-leverage, no stop, oversizing, revenge trading — and the simple habits that keep the profitable minority alive.</p>
+    </a>
+    <a class="post-card" data-cat="UK" href="/blog/crypto-futures-uk/">
+      <span class="tag">UK</span>
+      <h2>Crypto Futures Trading in the United Kingdom (2026): The FCA Ban, What UK Traders Can Do & Tax</h2>
+      <p>The FCA bans crypto futures and CFDs for UK retail — here's what that means, what UK traders realistically do, how CGT works, and how to practise the mechanics risk-free.</p>
+    </a>
+    <a class="post-card" data-cat="USA" href="/blog/crypto-futures-usa/">
+      <span class="tag">USA</span>
+      <h2>Crypto Futures Trading in the USA (2026): What's Allowed, the Tax Rules & How to Practise</h2>
+      <p>Offshore perpetual exchanges geo-block US persons — here's the legal CFTC-regulated route, the Section 1256 and IRS tax picture, and how to learn the mechanics risk-free.</p>
+    </a>
+    <a class="post-card" data-cat="Canada" href="/blog/crypto-futures-canada/">
+      <span class="tag">Canada</span>
+      <h2>Crypto Futures Trading in Canada (2026): Rules, Tax & Safe Alternatives</h2>
+      <p>Why high-leverage crypto futures are largely off-limits to Canadian retail traders, how the CRA taxes crypto gains, and how to learn the mechanics risk-free.</p>
+    </a>
+    <a class="post-card" data-cat="Australia" href="/blog/crypto-futures-australia/">
+      <span class="tag">Australia</span>
+      <h2>Crypto Futures Trading in Australia (2026): Exchanges, ASIC Rules & Tax</h2>
+      <p>How Australians access crypto perpetuals in 2026 — AUSTRAC-registered exchanges, the ASIC derivatives caveats, ATO tax and the 50% CGT discount, plus risk-free practice.</p>
+    </a>
+    <a class="post-card" data-cat="Switzerland" href="/blog/crypto-futures-switzerland/">
+      <span class="tag">Switzerland</span>
+      <h2>Crypto Futures Trading in Switzerland (2026): Exchanges, Tax & How to Start</h2>
+      <p>How Swiss traders access crypto futures, why private investors pay no capital gains tax but owe wealth tax on holdings, and how to practise before risking real margin.</p>
+    </a>
+    <a class="post-card" data-cat="Singapore" href="/blog/crypto-futures-singapore/">
+      <span class="tag">Singapore</span>
+      <h2>Crypto Futures Trading in Singapore (2026): MAS Rules, Tax & How to Start</h2>
+      <p>What MAS rules mean for leveraged crypto in Singapore, how gains are taxed, and the free, legal way to learn the mechanics first.</p>
+    </a>
+    <a class="post-card" data-cat="News" href="/blog/usdt-mica-eu-2026/">
+      <span class="tag">News</span>
+      <h2>USDT and MiCA: What's Changing for EU Crypto Traders (2026)</h2>
+      <p>Why USDT pairs are vanishing from EU-regulated exchanges, the 1 July 2026 transitional deadline, and what to trade with instead.</p>
+    </a>
+    <a class="post-card" data-cat="News" href="/blog/mica-stablecoins-vs-usdt/">
+      <span class="tag">News</span>
+      <h2>MiCA-Compliant Stablecoins: What EU Traders Can Use Instead of USDT</h2>
+      <p>USDC, EURC and EUR pairs — which stablecoins are MiCA-authorised, how they differ from USDT, and how to switch without losing liquidity.</p>
+    </a>
+    <a class="post-card" data-cat="Exchanges" href="/blog/is-binance-banned-in-europe/">
+      <span class="tag">Exchanges</span>
+      <h2>Is Binance Banned in Europe? Country-by-Country Status & Best Alternatives (2026)</h2>
+      <p>No blanket ban — but Binance was restricted in the Netherlands, Belgium, Germany and the UK. Where it stands, what MiCA changed, and the best alternatives.</p>
+    </a>
+    <a class="post-card" data-cat="Exchanges" href="/blog/binance-alternatives-netherlands/">
+      <span class="tag">Exchanges</span>
+      <h2>Binance Left the Netherlands: Best Alternatives for Dutch Traders (2026)</h2>
+      <p>Binance withdrew from the Dutch market in 2023 after failing to register with DNB. What happened, what MiCA changed, and the best alternative exchanges.</p>
+    </a>
+    <a class="post-card" data-cat="Exchanges" href="/blog/binance-alternatives-belgium/">
+      <span class="tag">Exchanges</span>
+      <h2>Binance Restricted in Belgium: Best Alternatives for Belgian Traders (2026)</h2>
+      <p>Belgium's FSMA ordered Binance to stop certain services in 2023. What happened, what MiCA changed, and the best alternative exchanges for Belgian traders.</p>
+    </a>
+    <a class="post-card" data-cat="Guides" href="/blog/best-crypto-futures-exchanges/">
+      <span class="tag">Guides</span>
+      <h2>Best Crypto Futures Exchanges in 2026: How to Choose</h2>
+      <p>Liquidity, fees, leverage and region — the factors that actually matter, and how Binance, Bybit, OKX and the rest compare.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/how-to-calculate-pnl/">
+      <span class="tag">Basics</span>
+      <h2>How to Calculate PnL in Crypto Futures (with ROE)</h2>
+      <p>The long/short PnL formula with a worked example — and why dollar PnL and ROE are not the same thing.</p>
+    </a>
+    <a class="post-card" data-cat="Risk" href="/blog/how-to-calculate-position-size/">
+      <span class="tag">Risk</span>
+      <h2>How to Calculate Position Size in Crypto Futures (Risk-Based)</h2>
+      <p>The one formula that stops a losing streak from ending your account — size from your risk, not your leverage.</p>
+    </a>
+    <a class="post-card" data-cat="Germany" href="/blog/crypto-futures-germany/">
+      <span class="tag">Germany</span>
+      <h2>Crypto Futures Trading in Germany (2026): Exchanges, Tax & How to Start</h2>
+      <p>Which exchanges work for German traders, how derivatives gains are taxed vs the 1-year spot rule, and how to practice before risking euros.</p>
+    </a>
+    <a class="post-card" data-cat="France" href="/blog/crypto-futures-france/">
+      <span class="tag">France</span>
+      <h2>Crypto Futures Trading in France (2026): Exchanges, the 30% Flat Tax & Rules</h2>
+      <p>How French traders access perpetuals, the 30% PFU flat tax, AMF rules — and the calculators to size every trade.</p>
+    </a>
+    <a class="post-card" data-cat="Nordics" href="/blog/crypto-futures-scandinavia/">
+      <span class="tag">Nordics</span>
+      <h2>Crypto Futures in Scandinavia (2026): Sweden, Norway, Denmark & Finland</h2>
+      <p>Access is easy across the Nordics — the tax is what differs. A country-by-country breakdown plus risk-free practice.</p>
+    </a>
+    <a class="post-card" data-cat="Italy" href="/blog/crypto-futures-italy/">
+      <span class="tag">Italy</span>
+      <h2>Crypto Futures Trading in Italy (2026): Exchanges, the 26% Tax & How to Start</h2>
+      <p>How Italian traders access perpetuals under MiCA, the 26% substitute tax (threshold removed in 2025), and how to practice before risking euros.</p>
+    </a>
+    <a class="post-card" data-cat="Spain" href="/blog/crypto-futures-spain/">
+      <span class="tag">Spain</span>
+      <h2>Crypto Futures Trading in Spain (2026): Exchanges, Savings Tax & How to Start</h2>
+      <p>How Spanish traders access perpetuals, the 19%–28% savings-income tax, Modelo 721 — and the calculators to size every trade.</p>
+    </a>
+    <a class="post-card" data-cat="Poland" href="/blog/crypto-futures-poland/">
+      <span class="tag">Poland</span>
+      <h2>Crypto Futures Trading in Poland (2026): Exchanges, the 19% Tax & How to Start</h2>
+      <p>How Polish traders access perpetuals, the flat 19% tax that only hits on cash-out, and how to practice risk-free first.</p>
+    </a>
+    <a class="post-card" data-cat="Europe" href="/blog/crypto-futures-europe/">
+      <span class="tag">Europe</span>
+      <h2>Crypto Futures Trading in Europe (2026): MiCA, Access & Tax by Country</h2>
+      <p>The EU hub — MiCA access plus the big tax differences country by country, with detailed guides for each.</p>
+    </a>
+    <a class="post-card" data-cat="Netherlands" href="/blog/crypto-futures-netherlands/">
+      <span class="tag">Netherlands</span>
+      <h2>Crypto Futures Trading in the Netherlands (2026): Exchanges, Box 3 Tax & Rules</h2>
+      <p>Access via the usual exchanges — but the Dutch Box 3 system taxes your assets, not each trade. What that means for traders.</p>
+    </a>
+    <a class="post-card" data-cat="US" href="/blog/crypto-futures-taxes-us/">
+      <span class="tag">US</span>
+      <h2>Crypto Futures Taxes in the US (2026): What Traders Actually Owe</h2>
+      <p>Capital gains vs Section 1256, the wash-sale gap, 1099-DA reporting — how the IRS taxes crypto futures and perps for US traders.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/how-much-to-start-crypto-futures/">
+      <span class="tag">Basics</span>
+      <h2>How Much Money Do You Need to Start Trading Crypto Futures?</h2>
+      <p>The technical minimum vs the practical minimum, the 1% risk rule, and what $100, $500 and $1,000 accounts can really do.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/crypto-futures-vs-options/">
+      <span class="tag">Basics</span>
+      <h2>Crypto Futures vs Options: Which Should You Trade?</h2>
+      <p>Payoff shape, liquidation vs premium risk, funding vs theta — and when each one makes sense for leverage traders.</p>
+    </a>
+    <a class="post-card" data-cat="Liquidation" href="/blog/liquidation-clusters-explained/">
+      <span class="tag">Liquidation</span>
+      <h2>Liquidation Clusters Explained: How to Spot Liquidity Magnets</h2>
+      <p>What liquidation clusters are, how stacked leverage forms them, and why they pull price like magnets.</p>
+    </a>
+    <a class="post-card" data-cat="Liquidation" href="/blog/long-vs-short-liquidations/">
+      <span class="tag">Liquidation</span>
+      <h2>Long vs Short Liquidations: What the Balance Tells You</h2>
+      <p>Where long and short liquidations sit, and how the imbalance signals squeeze fuel and cascade risk.</p>
+    </a>
+    <a class="post-card" data-cat="Liquidation" href="/blog/liquidation-cascade-explained/">
+      <span class="tag">Liquidation</span>
+      <h2>Liquidation Cascades Explained (and How to Avoid Getting Caught)</h2>
+      <p>How one liquidation triggers the next, why cascades happen, and how to stay out of the blast radius.</p>
+    </a>
+    <a class="post-card" data-cat="Liquidation" href="/blog/how-to-read-a-liquidation-heatmap/">
+      <span class="tag">Liquidation</span>
+      <h2>How to Read a Liquidation Heatmap (Crypto Guide)</h2>
+      <p>What a liquidation heatmap shows, why high-leverage levels cluster near price, and how to trade the zones.</p>
+    </a>
+    <a class="post-card" data-cat="Risk management" href="/blog/how-to-avoid-liquidation/">
+      <span class="tag">Risk management</span>
+      <h2>How to Avoid Liquidation in Crypto: 8 Rules That Work</h2>
+      <p>Eight practical rules — lower leverage, the 1% rule, stops inside your liquidation, margin buffers and more.</p>
+    </a>
+    <a class="post-card" data-cat="Exchanges" href="/blog/bybit-vs-binance-futures/">
+      <span class="tag">Exchanges</span>
+      <h2>Bybit vs Binance for Futures Trading (2026 Comparison)</h2>
+      <p>Fees, liquidity, leverage, UX and regional access compared — a neutral guide to picking your perpetuals venue.</p>
+    </a>
+    <a class="post-card" data-cat="Guides" href="/blog/how-to-swap-crypto-without-an-account/">
+      <span class="tag">Guides</span>
+      <h2>How to Swap Crypto Without an Account (Non-Custodial)</h2>
+      <p>How no-account, non-custodial swaps work — fees, slippage, safety steps, and how to swap on MarginPad.</p>
+    </a>
+    <a class="post-card" data-cat="US" href="/blog/crypto-futures-legal-in-the-us/">
+      <span class="tag">US</span>
+      <h2>Are Crypto Futures Legal in the US? (2026 Update)</h2>
+      <p>For years US traders were shut out of crypto perps. In 2026 the CFTC opened the door — what changed and where Americans can legally trade.</p>
+    </a>
+    <a class="post-card" data-cat="Risk management" href="/blog/best-leverage-for-beginners/">
+      <span class="tag">Risk management</span>
+      <h2>Best Leverage for Beginners (Why Less Is More)</h2>
+      <p>High leverage feels powerful but liquidates you fast. The simple math on why beginners should start at 2–5x.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/what-is-open-interest/">
+      <span class="tag">Basics</span>
+      <h2>What Is Open Interest in Crypto Futures?</h2>
+      <p>What open interest reveals about momentum, liquidity and the liquidation cascades that move markets.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/mark-price-vs-last-price/">
+      <span class="tag">Basics</span>
+      <h2>Mark Price vs Last Price: Why Liquidations Use Mark Price</h2>
+      <p>Your exchange liquidates on the mark price, not the last trade — and that protects you from manipulation.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/what-is-slippage/">
+      <span class="tag">Basics</span>
+      <h2>What Is Slippage in Crypto Trading?</h2>
+      <p>Why the price you get differs from the price you expected, and five ways to keep slippage small.</p>
+    </a>
+    <a class="post-card" data-cat="News" href="/blog/htx-sanctioned-what-us-traders-should-know/">
+      <span class="tag">News</span>
+      <h2>HTX Sanctioned: What US Traders Need to Know (2026)</h2>
+      <p>HTX was sanctioned by the UK over alleged Russian sanctions evasion — and it already bars US users. The risk, and what to do instead.</p>
+    </a>
+    <a class="post-card" data-cat="News" href="/blog/cardano-ada-breaks-020-support/">
+      <span class="tag">News</span>
+      <h2>Cardano (ADA) Breaks Multi-Year $0.20 Support — Is $0.10 Next?</h2>
+      <p>ADA hit a five-year low below $0.20 amid governance turmoil and ecosystem failures. What happened, and the level traders watch next.</p>
+    </a>
+    <a class="post-card" data-cat="News" href="/blog/zcash-orchard-counterfeiting-bug/">
+      <span class="tag">News</span>
+      <h2>The Zcash Bug That Could Have Minted Unlimited ZEC — Explained</h2>
+      <p>A four-year-old flaw in the Orchard shielded pool could have counterfeited unlimited ZEC. What happened, and the lesson for traders.</p>
+    </a>
+    <a class="post-card" data-cat="News" href="/blog/bitcoin-depot-bankruptcy/">
+      <span class="tag">News</span>
+      <h2>Bitcoin Depot, the Biggest US Crypto ATM Operator, Files for Bankruptcy</h2>
+      <p>Chapter 11, ~9,000 machines going dark, and record ATM scam losses — what the crypto-ATM collapse signals.</p>
+    </a>
+    <a class="post-card" data-cat="Liquidation" href="/blog/how-to-calculate-liquidation-price/">
+      <span class="tag">Liquidation</span>
+      <h2>How to Calculate Liquidation Price (Formula + Examples)</h2>
+      <p>The exact formula exchanges use for isolated margin, why leverage moves your liquidation closer, and three worked examples.</p>
+    </a>
+    <a class="post-card" data-cat="Risk management" href="/blog/crypto-position-sizing-risk-management/">
+      <span class="tag">Risk management</span>
+      <h2>Crypto Position Sizing: The 1% Risk Rule Explained</h2>
+      <p>How professional traders decide how big to trade. The risk-based sizing formula that keeps every loss small.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/what-is-liquidation-in-crypto/">
+      <span class="tag">Basics</span>
+      <h2>What Is Liquidation in Crypto Trading (and How to Avoid It)</h2>
+      <p>Liquidation explained simply — what it is, why it happens, and seven ways to avoid it.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/cross-vs-isolated-margin/">
+      <span class="tag">Basics</span>
+      <h2>Cross vs Isolated Margin: Which Should You Use?</h2>
+      <p>The plain-English difference between the two margin modes and how each handles liquidation.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/crypto-leverage-explained/">
+      <span class="tag">Basics</span>
+      <h2>Crypto Leverage Explained: How Much Is Too Much?</h2>
+      <p>What leverage does to your liquidation distance, and how to choose a sane level.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/what-is-funding-rate/">
+      <span class="tag">Basics</span>
+      <h2>What Is Funding Rate in Crypto Futures?</h2>
+      <p>The small payment between traders every few hours — who pays whom, and how it affects PnL.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/perpetual-futures-explained/">
+      <span class="tag">Basics</span>
+      <h2>What Is a Perpetual Futures Contract? (Simple Guide)</h2>
+      <p>How perps differ from spot and traditional futures, why they never expire, and the role of funding.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/long-vs-short-crypto/">
+      <span class="tag">Basics</span>
+      <h2>Long vs Short in Crypto: What's the Difference?</h2>
+      <p>How profit, loss and liquidation work when you go long versus short.</p>
+    </a>
+    <a class="post-card" data-cat="Risk management" href="/blog/how-to-set-a-stop-loss/">
+      <span class="tag">Risk management</span>
+      <h2>How to Set a Stop-Loss in Crypto (the Right Way)</h2>
+      <p>Where to place your stop, common mistakes, and how it ties into position size.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/roe-vs-roi/">
+      <span class="tag">Basics</span>
+      <h2>ROE vs ROI in Trading: What's the Difference?</h2>
+      <p>Why a 6% move can be a 60% return, and which number reflects your real performance.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/spot-vs-futures-trading/">
+      <span class="tag">Basics</span>
+      <h2>Spot vs Futures Trading in Crypto Explained</h2>
+      <p>Ownership, leverage, shorting and liquidation — and which one beginners should start with.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/maker-vs-taker-fees/">
+      <span class="tag">Basics</span>
+      <h2>Maker vs Taker Fees Explained</h2>
+      <p>What they mean, why takers pay more, and how to pay the lower maker fee.</p>
+    </a>
+    <a class="post-card" data-cat="Basics" href="/blog/what-is-a-margin-call/">
+      <span class="tag">Basics</span>
+      <h2>What Is a Margin Call in Crypto?</h2>
+      <p>What triggers it, how it differs from liquidation, and how to avoid one.</p>
+    </a>
+    <a class="post-card" data-cat="Risk management" href="/blog/risk-reward-ratio-explained/">
+      <span class="tag">Risk management</span>
+      <h2>Risk/Reward Ratio Explained (With Examples)</h2>
+      <p>How to calculate it, what a good ratio looks like, and the win rate you need to break even.</p>
+    </a>
+    <a class="post-card" data-cat="India" href="/blog/crypto-tax-india/">
+      <span class="tag">India</span>
+      <h2>Crypto Tax in India: The 30% Tax & 1% TDS Explained (2026)</h2>
+      <p>The flat 30% tax, the 1% TDS, no loss offset — and what it all means for traders.</p>
+    </a>
+    <a class="post-card" data-cat="India" href="/blog/crypto-exchanges-india/">
+      <span class="tag">India</span>
+      <h2>Trading Crypto from India in 2026: A Practical Guide</h2>
+      <p>INR on-ramps, P2P, KYC and the 1% TDS — how Indian traders actually access crypto.</p>
+    </a>
+    <a class="post-card" data-cat="China" href="/blog/trading-crypto-in-china/">
+      <span class="tag">China</span>
+      <h2>Trading Crypto from Mainland China: The 2026 Reality</h2>
+      <p>The 2021 restrictions, how individuals still access markets, and the risks to understand.</p>
+    </a>
+    <a class="post-card" data-cat="China" href="/blog/crypto-exchanges-for-chinese-traders/">
+      <span class="tag">China</span>
+      <h2>Crypto Exchanges with Chinese (中文) Support in 2026</h2>
+      <p>Which major exchanges offer full Chinese-language interfaces and futures.</p>
+    </a>
+  </div>
+  <p class="no-res" hidden>No guides in this category yet.</p>
+  <script>
+  (function(){
+    var chips=document.querySelectorAll('.chip'),cards=document.querySelectorAll('.post-card'),nores=document.querySelector('.no-res');
+    for(var i=0;i<chips.length;i++){chips[i].addEventListener('click',function(){
+      for(var j=0;j<chips.length;j++)chips[j].classList.remove('active');this.classList.add('active');
+      var c=this.getAttribute('data-cat'),shown=0;
+      for(var k=0;k<cards.length;k++){var ok=(c==='all'||cards[k].getAttribute('data-cat')===c);cards[k].style.display=ok?'':'none';if(ok)shown++;}
+      if(nores)nores.hidden=shown>0;
+    });}
+  })();
+  </script>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

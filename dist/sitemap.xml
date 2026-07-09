@@ -400,4 +400,18 @@
   <url><loc>https://marginpad.io/gate-vs-okx/</loc><lastmod>2026-07-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/gate-vs-kucoin/</loc><lastmod>2026-07-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/calendar/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/liquidations/btc/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/eth/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/sol/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/xrp/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/bnb/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/doge/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/ada/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/avax/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/link/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/trx/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/ltc/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/pepe/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/blog/how-to-use-ai-to-analyze-crypto-charts/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/blog/crypto-economic-calendar-guide/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>

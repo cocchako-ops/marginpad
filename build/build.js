@@ -31,6 +31,7 @@ run('Exchange comparison pages', 'node build/gen-compare-pages.js');
 run('"Best for" pages', 'node build/gen-bestfor-pages.js');
 run('Liquidation-map pages', 'node build/gen-liqmap-pages.js');
 run('Liquidations data page', 'node build/gen-liquidations-page.js');
+run('Per-coin liquidation SEO pages', 'node build/gen-liq-coin-pages.js');
 run('Funding data page', 'node build/gen-funding-page.js');
 run('Long/short data page', 'node build/gen-longshort-page.js');
 run('Open-interest data page', 'node build/gen-openinterest-page.js');

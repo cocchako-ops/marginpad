@@ -1,0 +1,47 @@
+<!DOCTYPE html><html lang="en"><head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crypto Fear &amp; Greed Widget — MarginPad</title>
+<link rel="canonical" href="https://marginpad.io/fear-greed/">
+<meta name="robots" content="noindex,follow">
+<style>
+*{margin:0;box-sizing:border-box}
+body{background:#0b0d12;color:#e9e7df;font-family:'Segoe UI',system-ui,sans-serif;padding:14px 14px 10px;min-height:100vh;display:flex;flex-direction:column}
+.h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.h b{font-size:15px}.h b i{color:#c2f64a;font-style:normal}
+.h span{font-family:Consolas,monospace;font-size:10px;color:#6b7480;text-transform:uppercase;letter-spacing:.08em}
+.row{display:flex;align-items:center;gap:16px;margin:4px 0 2px}
+svg{flex:0 0 auto}
+.v{font-family:Consolas,monospace;font-weight:800;font-size:40px;line-height:1}
+.c{font-family:Consolas,monospace;font-size:12px;font-weight:700;margin-top:3px}
+.hist{font-family:Consolas,monospace;font-size:10px;color:#6b7480;margin-top:6px}
+.ft{margin-top:auto;padding-top:8px;font-family:Consolas,monospace;font-size:9.5px;color:#5c6570}
+.ft a{color:#c2f64a;text-decoration:none;font-weight:700}
+</style>
+<script defer src="/assets/sentry.js"></script>
+</head><body>
+<div class="h"><b>Fear &amp; <i>Greed</i></b><span>crypto · daily</span></div>
+<div class="row">
+  <svg width="120" height="72" viewBox="0 0 120 72">
+    <path d="M10 66 A 50 50 0 0 1 110 66" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10" stroke-linecap="round"/>
+    <path id="arc" d="M10 66 A 50 50 0 0 1 110 66" fill="none" stroke="#f3d44a" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 999"/>
+  </svg>
+  <div><div class="v" id="v">—</div><div class="c" id="c">loading…</div><div class="hist" id="h"></div></div>
+</div>
+<div class="ft">Live index — <a href="https://marginpad.io/fear-greed/?utm_source=widget" target="_blank" rel="noopener">marginpad.io</a></div>
+<script>
+(function(){
+  fetch('https://marginpad.io/api/fng').then(function(r){return r.json();}).then(function(d){
+    var arr=(d&&d.data)||[],now=arr[0];if(!now)return;var v=+now.v;
+    var col=v<25?'#ff5a4d':v<45?'#ff9f43':v<55?'#f3d44a':v<76?'#7fd957':'#2ebd85';
+    var el=document.getElementById('v');el.textContent=v;el.style.color=col;
+    var c=document.getElementById('c');c.textContent=now.c;c.style.color=col;
+    var L=Math.PI*50,arc=document.getElementById('arc');
+    arc.setAttribute('stroke',col);arc.setAttribute('stroke-dasharray',(v/100*L).toFixed(1)+' 999');
+    var y=arr[1],w=arr[7];
+    document.getElementById('h').textContent='yesterday '+(y?y.v:'—')+' · last week '+(w?w.v:'—');
+  }).catch(function(){});
+})();
+</script><script defer src="/assets/mp-nav.js"></script>
+</body></html>
