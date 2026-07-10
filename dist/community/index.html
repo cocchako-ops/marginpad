@@ -579,7 +579,7 @@ document.getElementById('bell').addEventListener('click',function(){
 function widgets(){
   fetch('/api/prices').then(function(r){return r.json();}).then(function(d){
     var btc=((d&&d.pairs)||[]).filter(function(x){return (x.symbol||'').indexOf('BTC')===0;})[0];
-    if(btc){document.getElementById('wBtc').textContent='$'+(+btc.price).toLocaleString('en-US',{maximumFractionDigits:0});var c=document.getElementById('wBtcC'),ch=+btc.change24h||+btc.chg||0;c.textContent=(ch>=0?'+':'')+ch.toFixed(2)+'%';c.style.color=ch>=0?'var(--up)':'var(--red)';}
+    if(btc){document.getElementById('wBtc').textContent='$'+(+btc.price).toLocaleString('en-US',{maximumFractionDigits:0});}
   }).catch(function(){});
   fetch('/api/fng').then(function(r){return r.json();}).then(function(d){
     var now=d&&d.data&&d.data[0];if(!now)return;var v=+now.v;
