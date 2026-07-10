@@ -16,7 +16,7 @@
   function el(h){var d=document.createElement('div');d.innerHTML=h;return d.firstElementChild;}
   function ema(v,p){var k=2/(p+1),o=[],e;for(var i=0;i<v.length;i++){e=i?v[i]*k+o[i-1]*(1-k):v[i];o.push(e);}return o;}
   // clamp ISOLATED phantom wicks (bad/transient prints) so a single bad candle can't draw a giant vertical line
-  function sanitizeBars(kd){if(!kd||kd.length<2)return kd;var TH=0.035;for(var i=0;i<kd.length;i++){var b=kd[i];if(!b)continue;var o=+b.open,c=+b.close;if(!(o>0&&c>0))continue;var bodyLo=Math.min(o,c),bodyHi=Math.max(o,c);var pl=i>0?+kd[i-1].low:bodyLo,nl=i<kd.length-1?+kd[i+1].low:bodyLo;var ph=i>0?+kd[i-1].high:bodyHi,nh=i<kd.length-1?+kd[i+1].high:bodyHi;var refLo=Math.min(bodyLo,pl||bodyLo,nl||bodyLo);if(+b.low>0&&+b.low<refLo*(1-TH))b.low=refLo*(1-TH);var refHi=Math.max(bodyHi,ph||bodyHi,nh||bodyHi);if(+b.high>refHi*(1+TH))b.high=refHi*(1+TH);}return kd;}
+  function sanitizeBars(kd){if(!kd||!kd.length)return kd;var _ok=[];for(var _j=0;_j<kd.length;_j++){var _q=kd[_j];if(!_q)continue;var _t=+_q.time,_o=+_q.open,_h=+_q.high,_l=+_q.low,_c=+_q.close;if(!(_t>0&&_o>0&&_h>0&&_l>0&&_c>0&&isFinite(_t)&&isFinite(_o)&&isFinite(_h)&&isFinite(_l)&&isFinite(_c)))continue;_q.open=_o;_q.high=Math.max(_o,_h,_l,_c);_q.low=Math.min(_o,_h,_l,_c);_q.close=_c;_ok.push(_q);}kd=_ok;/* drop null/NaN bars — they poison the chart's render loop ("Value is null" crash) */if(kd.length<2)return kd;var TH=0.035;for(var i=0;i<kd.length;i++){var b=kd[i];if(!b)continue;var o=+b.open,c=+b.close;if(!(o>0&&c>0))continue;var bodyLo=Math.min(o,c),bodyHi=Math.max(o,c);var pl=i>0?+kd[i-1].low:bodyLo,nl=i<kd.length-1?+kd[i+1].low:bodyLo;var ph=i>0?+kd[i-1].high:bodyHi,nh=i<kd.length-1?+kd[i+1].high:bodyHi;var refLo=Math.min(bodyLo,pl||bodyLo,nl||bodyLo);if(+b.low>0&&+b.low<refLo*(1-TH))b.low=refLo*(1-TH);var refHi=Math.max(bodyHi,ph||bodyHi,nh||bodyHi);if(+b.high>refHi*(1+TH))b.high=refHi*(1+TH);}return kd;}
   /* Supertrend(10,3) buy/sell — same engine as the Paper Trade "Signals" toggle */
   function computeSignals(d){var n=d?d.length:0,P=10,M=3;if(n<P+3)return [];
     var tr=[],i;for(i=0;i<n;i++){tr.push(i===0?d[i].high-d[i].low:Math.max(d[i].high-d[i].low,Math.abs(d[i].high-d[i-1].close),Math.abs(d[i].low-d[i-1].close)));}
@@ -647,7 +647,7 @@
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       clearTimeout(_lmg); w._lm=false; if(w.dead||sym!==w.sym||tf!==w.tf||!w.candle)return;
       if(!kd||!kd.length){w._noMore=true;return;}
-      var first=w.bars[0].time,older=kd.filter(function(b){return b.time<first;});
+      var first=w.bars[0].time,older=sanitizeBars(kd.filter(function(b){return b.time<first;}));
       if(!older.length){w._noMore=true;return;}
       if(older.length<900)w._noMore=true;
       var shift=older.length; w.bars=older.concat(w.bars);

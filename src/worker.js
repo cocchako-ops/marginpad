@@ -1148,7 +1148,10 @@ async function handleKlines(url) {
     const r = await fetch('https://www.okx.com/api/v5/market/candles?instId=' + sym + '-USDT-SWAP&bar=' + (okMap[iv] || '1H') + '&limit=300' + (hasEnd ? '&after=' + end : ''), { cf: { cacheTtl: hasEnd ? 600 : 12 } });
     if (r.ok) { const d = await r.json(); const list = d && d.data; if (list && list.length) out = list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4], vol: +k[5] })).filter(b => isFinite(b.time) && b.open > 0).sort((a, b) => a.time - b.time); }
   } catch (e) {}
-  if (!out) return J({ error: 'no data' }, 404);
+  // never ship a bar with a NaN field — JSON.stringify turns NaN into null, and one null OHLC value permanently
+  // poisons lightweight-charts' render loop client-side ("Value is null" crash on every frame until reload)
+  if (out) out = out.filter(b => b && b.time > 0 && b.open > 0 && b.high > 0 && b.low > 0 && b.close > 0 && isFinite(b.time) && isFinite(b.open) && isFinite(b.high) && isFinite(b.low) && isFinite(b.close));
+  if (!out || !out.length) return J({ error: 'no data' }, 404);
   const maxAge = hasEnd ? 600 : 8; // historical pages are effectively immutable; live tail refreshes ~8s (the client also seeds the forming candle from the WS, so the visible price is always live)
   const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + maxAge, 'cdn-cache-control': 'max-age=' + maxAge, 'cloudflare-cdn-cache-control': 'max-age=' + maxAge, 'x-mp-cached': String(Date.now()), ...CORS } });
   try { await caches.default.put(cacheKey, resp.clone()); } catch (e) {}
@@ -1582,6 +1585,12 @@ async function handleBug(url, request, env) {
     if (!authed('') && !watchOk) return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: jh });
     return new Response(JSON.stringify({ bugs: await listBugs(), ts: Date.now() }), { headers: jh });
   }
+  if (path === '/api/bug/errq') { // read-only diagnostics for the local watcher: recent client JS errors from AE (message + page + country), so "broken pages today" is debuggable
+    if (!authed('') && !watchOk) return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: jh });
+    const hrs = Math.min(168, Math.max(1, parseInt(url.searchParams.get('h') || '24', 10) || 24));
+    const rows = await aeQuery(env, `SELECT timestamp, blob3 AS msg, blob5 AS page, blob4 AS cc FROM marginpad_events WHERE blob1='event' AND blob2='jserr' AND timestamp > NOW() - INTERVAL '${hrs}' HOUR ORDER BY timestamp DESC LIMIT 200`);
+    return new Response(JSON.stringify({ hours: hrs, errors: rows || [], ae: !!rows }), { headers: jh });
+  }
   const inj = (v) => JSON.stringify(v).replace(/</g, '\\u003c');
   if (!authed('')) return new Response(adminLoginHTML('Message Claude', !bugPass, '/api/bug/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
   const bugs = await listBugs();
@@ -1881,7 +1890,13 @@ async function handleStats(url, env, request) {
     + `<div class="feedcap">Each distinct failure, newest first. <b style="color:#41e3a3">✓ Resolved</b> = not seen in 30 min — safe to ignore. <b style="color:#ffb347">⚠ Active</b> = happened in the last 30 min — worth a look.</div>`
     + `<div class="list">${_errGroups.map(g => { const rv = _enow - g.last >= _ERR_RESOLVED_MS; return `<div class="fe" style="${rv ? 'opacity:.7' : ''}"><span class="fe-t">${rv ? '<span style="color:#41e3a3;font-weight:700">✓ Resolved</span>' : '<span style="color:#ffb347;font-weight:700">⚠ Active</span>'} <code style="color:${rv ? '#9aa3ad' : '#ff8c7a'}">${esc(g.mth)} ${esc(g.p)}</code> — ${esc(g.m)}${g.n > 1 ? ` <b style="color:#7f8893">×${g.n}</b>` : ''}</span><span class="fe-a">last ${_eAgo(g.last)} ago</span></div>`; }).join('')}</div>`
   ) : '';
-  const errHtml = `<div class="feedcap">A <b>broken page</b> = a visitor's browser hit a script error, so they may have seen a broken or frozen page. <b>0 is healthy.</b> Server errors = our server failed to answer a request.</div><div class="cards" style="grid-template-columns:repeat(4,1fr)">${kcard(N(errToday), 'Broken pages today', spark(errDays), dpc(errToday, errYd))}${kcard(N(errTotal), 'Broken pages total')}${kcard(N(srvToday), 'Server errors today')}${kcard(N(srvErrTotal), 'Server errors total')}</div>` + srvErrList + ((errMsgs.length || errBrowsers.length) ? `<div class="two"><div><h2 style="font-size:14px;margin-top:14px">Top error messages</h2><div class="list">${barlist(errMsgs)}</div></div><div><h2 style="font-size:14px;margin-top:14px">Crashes by browser</h2><div class="list">${barlist(errBrowsers)}</div></div></div>` : (srvErrList ? '' : `<div class="sl" style="margin-top:8px">No broken pages recorded — every visitor's page has loaded cleanly. ✅</div>`));
+  // exact recent client crashes from Analytics Engine (message + page + when) — the KV counters only say "how many",
+  // this says WHAT broke, so a "broken pages" spike is debuggable without guessing. Note: repeats of one message from
+  // one page usually mean ONE user stuck in a broken state (each page load re-reports), not many users.
+  let jsErrRows = [];
+  try { jsErrRows = (await aeQuery(env, `SELECT timestamp, blob3 AS msg, blob5 AS page, blob4 AS cc FROM marginpad_events WHERE blob1='event' AND blob2='jserr' AND timestamp > NOW() - INTERVAL '7' DAY ORDER BY timestamp DESC LIMIT 40`)) || []; } catch (e) {}
+  const jsErrList = jsErrRows.length ? `<h2 style="font-size:14px;margin-top:14px">Broken pages — exactly what broke <span>(last 7 days, newest first)</span></h2><div class="feedcap">Each client crash with its page and error message. The same message repeating from one page is usually <b>one</b> visitor stuck in a broken state (it re-reports on every page load), not many visitors.</div><div class="list">${jsErrRows.map(r => `<div class="fe"><span class="fe-t">${esc(flag(r.cc) || '')} <code style="color:#ff8c7a">${esc(r.page || '/')}</code> — ${esc(r.msg || '')}</span><span class="fe-a">${esc(String(r.timestamp || '').slice(5, 16))}</span></div>`).join('')}</div>` : '';
+  const errHtml = `<div class="feedcap">A <b>broken page</b> = a visitor's browser hit a script error, so they may have seen a broken or frozen page. <b>0 is healthy.</b> Server errors = our server failed to answer a request.</div><div class="cards" style="grid-template-columns:repeat(4,1fr)">${kcard(N(errToday), 'Broken pages today', spark(errDays), dpc(errToday, errYd))}${kcard(N(errTotal), 'Broken pages total')}${kcard(N(srvToday), 'Server errors today')}${kcard(N(srvErrTotal), 'Server errors total')}</div>` + jsErrList + srvErrList + ((errMsgs.length || errBrowsers.length) ? `<div class="two"><div><h2 style="font-size:14px;margin-top:14px">Top error messages</h2><div class="list">${barlist(errMsgs)}</div></div><div><h2 style="font-size:14px;margin-top:14px">Crashes by browser</h2><div class="list">${barlist(errBrowsers)}</div></div></div>` : (srvErrList ? '' : `<div class="sl" style="margin-top:8px">No broken pages recorded — every visitor's page has loaded cleanly. ✅</div>`));
   // live activity feed (ring buffer) + per-exchange revenue + ordered engagement metrics
   let evlog = []; try { evlog = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
   const ago = ts => { const s = Math.round((Date.now() - ts) / 1000); return s < 60 ? s + 's' : s < 3600 ? Math.floor(s / 60) + 'm' : Math.floor(s / 3600) + 'h'; };

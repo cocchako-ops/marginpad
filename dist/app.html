@@ -6,7 +6,7 @@
 /* ignore noise that isn't our code breaking: browser extensions, Safari autofill, benign warnings, transient network blips */
 var IGN=/_AutofillCallbackHandler|ResizeObserver loop|Non-Error promise rejection|Failed to fetch|Load failed|NetworkError|AbortError|The operation was aborted|^Script error\.?$|view transition|Transition was skipped|Transition was aborted|skipTransition|zaloJSV2|_DumpException|VerifyBeacon|Java exception|globalThis|variable: fetch|window\.webkit|^Rejected$/i;
 function rep(m,ln){if(n>=8)return;m=String(m||'').slice(0,140);if(!m||IGN.test(m))return;var k=m+'@'+(ln||0);if(seen[k])return;seen[k]=1;n++;var lbl=(m+(ln?(' :'+ln):'')).replace(/[^a-zA-Z0-9 #:._/-]/g,' ').replace(/\s+/g,' ').slice(0,80);try{var u='/api/track?t=jserr&e='+encodeURIComponent(lbl)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon){navigator.sendBeacon(u);}else{(new Image()).src=u;}}catch(e){}}
-window.addEventListener('error',function(e){if(!e||!e.message)return;var f=(e.filename||'');if(/-extension:/i.test(f))return;rep(e.message,e.lineno);},true);
+window.addEventListener('error',function(e){if(!e||!e.message)return;var f=(e.filename||'');if(/-extension:/i.test(f))return;var b=f?f.split('/').pop().split('?')[0].slice(0,26):'';rep(e.message+(b?' @'+b:''),e.lineno);},true);
 window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((r&&r.message)||(typeof r==='string'?r:'unhandledrejection'),0);});})();</script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
@@ -94,8 +94,10 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=cb0b0e0a">
+<link rel="stylesheet" href="/assets/home.css?v=ebc97bf9">
 
+
+<script defer src="/assets/sentry.js"></script>
 </head>
 <body>
 <script>
@@ -804,7 +806,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=cb0b0e0a"></script>
+<script src="/assets/home.js?v=ebc97bf9"></script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

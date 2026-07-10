@@ -293,7 +293,14 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   // Clamp ISOLATED phantom wicks (bad/transient prints in the exchange klines): a candle whose low/high is an extreme
   // outlier vs its OWN body AND BOTH neighbouring candles is almost certainly bad data (the "a drop/spike that never
   // happened" candle). Clamp it to a sane bound so it doesn't show as a giant vertical line — or feed a liquidation.
-  function sanitizeBars(kd){ if(!kd||kd.length<2)return kd; var TH=0.035; // >3.5% beyond the corroborated reference = phantom
+  function sanitizeBars(kd){ if(!kd||!kd.length)return kd;
+    /* a bar with a null/NaN OHLC value poisons lightweight-charts' own render loop — every frame throws
+       "Value is null" and the chart is permanently broken until reload. Drop such bars entirely. */
+    var _ok=[];for(var _j=0;_j<kd.length;_j++){var _q=kd[_j];if(!_q)continue;var _t=+_q.time,_o=+_q.open,_h=+_q.high,_l=+_q.low,_c=+_q.close;
+      if(!(_t>0&&_o>0&&_h>0&&_l>0&&_c>0&&isFinite(_t)&&isFinite(_o)&&isFinite(_h)&&isFinite(_l)&&isFinite(_c)))continue;
+      _q.open=_o;_q.high=Math.max(_o,_h,_l,_c);_q.low=Math.min(_o,_h,_l,_c);_q.close=_c;_ok.push(_q);}
+    kd=_ok;
+    if(kd.length<2)return kd; var TH=0.035; // >3.5% beyond the corroborated reference = phantom
     for(var i=0;i<kd.length;i++){var b=kd[i];if(!b)continue;var o=+b.open,c=+b.close;if(!(o>0&&c>0))continue;
       var bodyLo=Math.min(o,c),bodyHi=Math.max(o,c);
       var pl=i>0?+kd[i-1].low:bodyLo,nl=i<kd.length-1?+kd[i+1].low:bodyLo;
@@ -327,7 +334,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       if(sym!==chartSym||tf!==chartTf||!candle||!kd||!kd.length)return;
       kd=sanitizeBars(kd);klCache[sym+'|'+tf]=kd;bars=kd;try{candle.setData(kd);}catch(e){}try{chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}/* re-assert autoscale: after a big move (e.g. a +15% pump) the price scale can lock/drift so data keeps updating but the chart LOOKS frozen — re-fitting every quiet refresh self-heals it */lastBar=kd[kd.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;_linesSig=null;try{applySignals();}catch(e){}try{drawLines();}catch(e){}
     }); }
-  function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;var _lmg=setTimeout(function(){loadingMore=false;},12000);/* a hung (never-settling) fetch would otherwise pin loadingMore=true forever, which permanently disables the 30s refreshKlinesQuiet re-sync (a real freeze) */fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){clearTimeout(_lmg);loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=kd.filter(function(b){return b.time<first;});if(!older.length){noMore=true;return;}if(older.length<900)noMore=true;bars=older.concat(bars);try{candle.setData(bars);}catch(e){}applySignals();drawLines();});}
+  function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;var _lmg=setTimeout(function(){loadingMore=false;},12000);/* a hung (never-settling) fetch would otherwise pin loadingMore=true forever, which permanently disables the 30s refreshKlinesQuiet re-sync (a real freeze) */fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){clearTimeout(_lmg);loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=sanitizeBars(kd.filter(function(b){return b.time<first;}));if(!older.length){noMore=true;return;}if(older.length<900)noMore=true;bars=older.concat(bars);try{candle.setData(bars);}catch(e){}applySignals();drawLines();});}
   /* Buy/Sell signals — a Supertrend(10,3) overlay (our own equivalent of TradingView "Buy Sell" indicators;
      kelfry98's proprietary Pine script can't be embedded here). Toggleable; plots BUY/SELL arrows on trend flips. */
   var inds={};try{inds=JSON.parse(localStorage.getItem('mp_pt_inds')||'null')||{};}catch(e){inds={};}
@@ -451,7 +458,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       if(e.stop!=null)_gAdd(+e.stop,'SL','#6b7280',1,2);});
     for(var gk in _grp){var g=_grp[gk];var t=g.label+(g.n>1?' ×'+g.n:'');
       _openMarks.push({p:g.p,label:t,color:(g.label==='TP'||g.label==='SL')?'#9aa3ad':g.color});
-      plines.push(candle.createPriceLine({price:g.p,color:g.color,lineWidth:g.w,lineStyle:g.style,axisLabelVisible:true,title:t}));}
+      if(isFinite(g.p))try{plines.push(candle.createPriceLine({price:g.p,color:g.color,lineWidth:g.w,lineStyle:g.style,axisLabelVisible:true,title:t}));}catch(e){}}
     updateZone();}
   // shaded "liquidation zone" beyond the liq line: a translucent red overlay (slight blur) so candles still show through
   var zoneEl=null,edgeEl=null;
