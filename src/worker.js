@@ -3565,8 +3565,12 @@ async function handleAuth(url, request, env, ctx) {
   }
   if (path === '/admin') { // dashboard Users tab: paginated/searchable signups + counts
     if (!isAdmin) return jr({ error: 'forbidden' }, 403);
-    const r = await stub.fetch(new Request('https://do/admin' + url.search)); // forwards q / limit / offset
-    return jr(await r.json());
+    // the dashboard polls this every 30s and every deploy resets the DO — a mid-flight reset threw
+    // "internal error; reference = …" as a 500 that lit the Health tab. Retry once, then fail SOFT.
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try { const r = await stub.fetch(new Request('https://do/admin' + url.search)); return jr(await r.json()); } catch (e) {}
+    }
+    return jr({ users: [], total: 0, newToday: 0, activeToday: 0, transient: true });
   }
   if (path === '/user') { // dashboard: one user's record + activity + login history
     if (!isAdmin) return jr({ error: 'forbidden' }, 403);
@@ -3629,8 +3633,8 @@ async function handleReward(url, request, env) {
   if (path === '/support' && request.method === 'GET') {
     if (!adminOk) return jr({ error: 'forbidden' }, 403);
     const sst = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
-    const rr = await sst.fetch(new Request('https://do/support'));
-    let sj = {}; try { sj = await rr.json(); } catch (e) {}
+    let sj = { open: [], closed: [], replies: [], transient: true }; // polled every 30s; a DO reset mid-flight (every deploy) must not 500
+    for (let attempt = 0; attempt < 2; attempt++) { try { const rr = await sst.fetch(new Request('https://do/support')); sj = await rr.json(); break; } catch (e) {} }
     sj.emailReady = !!env.RESEND_API_KEY;
     return jr(sj);
   }
@@ -3953,7 +3957,12 @@ export default {
       if (!env.CHAT) return new Response('na', { status: 503 });
       const sub = url.pathname.slice('/chat/admin'.length); // -> /history /post /delete
       const body = request.method === 'POST' ? await request.text() : undefined;
-      return env.CHAT.get(env.CHAT.idFromName('global')).fetch(new Request('https://do' + sub, { method: request.method, headers: { 'content-type': 'application/json' }, body }));
+      // polled every 30s (badges) + 5s (chat tab); a DO reset mid-flight (every deploy) threw "internal error"
+      // as a 500 → Health-tab noise. Retry once, then fail SOFT with an empty history.
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try { return await env.CHAT.get(env.CHAT.idFromName('global')).fetch(new Request('https://do' + sub, { method: request.method, headers: { 'content-type': 'application/json' }, body })); } catch (e) {}
+      }
+      return new Response(JSON.stringify({ messages: [], transient: true }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/community') return Response.redirect(url.origin + '/community/', 301);
     if (url.pathname.startsWith('/community/') && url.pathname !== '/community/') return commPage(url, request, env); // /community/ itself is the static shell (assets); subroutes get per-post/user/category SEO + SSR
@@ -5259,8 +5268,11 @@ async function handleComm(url, request, env, ctx) {
     headers: { 'content-type': 'application/json', 'x-uid': uid, 'x-author': author, 'x-admin': admin ? '1' : '0' },
     body: rawBody,
   });
-  const r = await stub.fetch(fwd);
-  const txt = await r.text();
+  let r = null, txt = '';
+  for (let attempt = 0; attempt < 2; attempt++) { // a DO reset mid-flight (every deploy) throws "internal error" — retry GETs once, never POSTs (a post/like must not double-fire)
+    try { r = await stub.fetch(fwd.clone ? fwd.clone() : fwd); txt = await r.text(); break; } catch (e) { r = null; if (request.method === 'POST') break; }
+  }
+  if (!r) return jr({ error: 'busy', transient: true }, 503);
   // instant owner visibility: Telegram ping on every published post (owner asked to SEE when someone posts)
   if (path === '/post' && request.method === 'POST' && r.status === 200 && env.TELEGRAM_TOKEN && env.TG_ADMIN_CHAT && ctx) {
     try {
