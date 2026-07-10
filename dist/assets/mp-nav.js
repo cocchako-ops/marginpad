@@ -64,13 +64,13 @@
     /* ===== homepage-style bottom mobile nav bar (mobile only) — gives every standalone page the same nav as the homepage ===== */
     + '.mpbn{display:none;}'
     + '@media(max-width:720px){'
-    +   '.mpbn{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 9px);z-index:55;display:flex;justify-content:space-around;align-items:center;padding:9px 6px;border-radius:20px;background:rgba(9,13,10,.6);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border:1px solid rgba(194,246,74,.22);box-shadow:0 10px 34px -12px rgba(0,0,0,.75),0 0 20px -8px rgba(194,246,74,.3);}'
+    +   '.mpbn{position:fixed;left:0;right:0;bottom:0;z-index:55;display:flex;justify-content:space-around;align-items:center;padding:8px 6px calc(env(safe-area-inset-bottom) + 10px);border-radius:0;background:rgba(9,13,10,.82);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border-top:1px solid rgba(194,246,74,.22);box-shadow:0 -8px 30px -14px rgba(0,0,0,.8);}'
     +   '.mpbn a{flex:1;background:none;border:none;color:rgba(255,255,255,.62);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;padding:2px 0;text-decoration:none;transition:transform .12s,color .12s;-webkit-tap-highlight-color:transparent;}'
     +   '.mpbn a:active{color:#c2f64a;transform:scale(.86);}'
     +   '.mpbn a.cur{color:#c2f64a;}'
     +   '.mpbn svg{width:21px;height:21px;}'
     +   '.mpbn .mpbn-l{font-family:\'Space Mono\',monospace;font-size:9px;letter-spacing:.03em;text-transform:uppercase;line-height:1;}'
-    +   'body{padding-bottom:calc(84px + env(safe-area-inset-bottom)) !important;}'
+    +   'body{padding-bottom:calc(76px + env(safe-area-inset-bottom)) !important;}'
     +   'header .nav{display:none !important;}'   /* the cramped desktop header links are replaced by the drawer + bottom bar on mobile */
     /* fixed, notch-safe top header (the default header sat under the iPhone notch with viewport-fit=cover). Full-bleed via the 100vw trick so the bg spans edge-to-edge regardless of the .wrap padding. */
     +   'body>.wrap>header,body>header{position:sticky;top:0;z-index:50;padding-top:calc(env(safe-area-inset-top) + 14px) !important;padding-bottom:12px !important;background:#0a0b0d;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:6px;}'   /* solid bg (no 100vw / no backdrop-filter — both are iOS WebKit hazards) */
