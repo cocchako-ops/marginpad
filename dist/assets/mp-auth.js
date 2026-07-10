@@ -63,6 +63,44 @@
   function close() { modal.hidden = true; }
   function setMsg(t, kind) { var m = bodyEl.querySelector('.mpa-msg'); if (m) { m.textContent = t; m.className = 'mpa-msg ' + (kind || ''); } }
 
+  // ---- support: the user's own conversation with the team (their tickets + our email replies) ----
+  function renderSup() {
+    bodyEl.innerHTML = '<h3 class="mpa-h">Support</h3><p class="mpa-sub">Loading your conversation\u2026</p>';
+    fetch('/api/reward/support/mine').then(function (r) { return r.json(); }).then(function (d) {
+      var items = (d && d.items) || [], reps = (d && d.replies) || [];
+      if (!items.length && !reps.length) { renderSupNew(true); return; }
+      var msgs = items.map(function (x) { return { ts: x.ts, dir: 'in', body: x.message }; })
+        .concat(reps.map(function (x) { return { ts: x.ts, dir: 'out', body: x.body || x.subject }; }))
+        .sort(function (p, q) { return p.ts - q.ts; });
+      var anyOpen = items.some(function (x) { return !x.closed; });
+      bodyEl.innerHTML = '<h3 class="mpa-h">Support</h3><p class="mpa-sub">' + (anyOpen ? 'You have an open conversation \u2014 our replies also arrive by email.' : 'Your past conversations \u2014 replies arrive by email.') + '</p>'
+        + '<div class="mpa-dm"><div class="mpa-dm-scroll" id="mpaSupScroll">'
+        + msgs.map(function (m) { return '<div class="mpa-bub ' + (m.dir === 'out' ? 'out' : 'in') + '">' + (m.dir === 'out' ? '<span class="mpa-who">MarginPad support</span>' : '') + esc(m.body || '') + '</div>'; }).join('')
+        + '</div></div>'
+        + '<button class="mpa-btn" id="mpaSupNew" type="button" style="margin-top:10px">New conversation</button>'
+        + '<button class="mpa-link" id="mpaSupBack" type="button">\u2190 Back to profile</button>';
+      var sc = bodyEl.querySelector('#mpaSupScroll'); if (sc) sc.scrollTop = sc.scrollHeight;
+      bodyEl.querySelector('#mpaSupNew').addEventListener('click', function () { renderSupNew(false); });
+      bodyEl.querySelector('#mpaSupBack').addEventListener('click', function () { render(); });
+    }).catch(function () { renderSupNew(true); });
+  }
+  function renderSupNew(first) {
+    bodyEl.innerHTML = '<h3 class="mpa-h">Contact support</h3><p class="mpa-sub">Tell us what happened \u2014 we reply to <b>' + esc((ME && ME.email) || 'your email') + '</b>, usually within a day.</p>'
+      + '<textarea class="mpa-in" id="mpaSupMsg" maxlength="1000" rows="5" placeholder="Describe the problem or question\u2026" style="resize:vertical;min-height:110px;height:auto"></textarea>'
+      + '<button class="mpa-btn" id="mpaSupSend" type="button" style="margin-top:10px">Send message</button>'
+      + '<div class="mpa-msg"></div>'
+      + '<button class="mpa-link" id="mpaSupBack2" type="button">\u2190 Back</button>';
+    bodyEl.querySelector('#mpaSupBack2').addEventListener('click', function () { if (first) render(); else renderSup(); });
+    var sb = bodyEl.querySelector('#mpaSupSend');
+    sb.addEventListener('click', function () {
+      var v = (bodyEl.querySelector('#mpaSupMsg').value || '').trim();
+      if (!v) { setMsg('Write something first.', 'err'); return; }
+      sb.disabled = true; setMsg('Sending\u2026', '');
+      fetch('/api/reward/support', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: (ME && ME.email) || '', message: v }) })
+        .then(function (r) { return r.json(); }).then(function (d) { sb.disabled = false; if (d && d.ok) { renderSup(); } else { setMsg('Failed \u2014 try again.', 'err'); } })
+        .catch(function () { sb.disabled = false; setMsg('Network error.', 'err'); });
+    });
+  }
   function render() {
     if (BANNED) {
       bodyEl.innerHTML = '<h3 class="mpa-h">Account suspended</h3><p class="mpa-sub">Your MarginPad account has been suspended. If you believe this is a mistake, contact <b>support@marginpad.io</b>.</p>';
@@ -82,7 +120,7 @@
         + '</div>'
         + (hasU ? '' : '<label style="display:block;font-size:11px;color:#9aa3ad;margin:8px 0 5px">Pick a username <span style="color:#5c656f">(public, permanent)</span></label><input class="mpa-in" id="mpaUname" maxlength="20" autocomplete="off" placeholder="choose a username"><button class="mpa-btn" id="mpaSaveU" type="button">Set username</button><div class="mpa-msg"></div>')
         + (ME.muted ? '<p class="mpa-foot" style="color:#ffb347">You are muted in chat.</p>' : '')
-        + '<button class="mpa-btn" id="mpaPush" type="button" style="margin-top:10px;background:#13241f;color:#34d99a;border:1px solid rgba(52,217,154,.4);display:none">Enable push notifications</button>'
+        + '<button class="mpa-btn" id="mpaSup" type="button" style="margin-top:10px;background:#13241f;color:#34d99a;border:1px solid rgba(52,217,154,.4)">Contact support</button>'
         + '<button class="mpa-btn" style="background:#1a1f27;color:#e9e7df;margin-top:10px" id="mpaLogout" type="button">Sign out</button>'
         + '<button class="mpa-link" id="mpaDone" type="button">Close</button>';
       if (!hasU) {
@@ -109,22 +147,7 @@
       bodyEl.querySelector('#mpaLogout').addEventListener('click', function () {
         fetch('/api/auth/logout', { method: 'POST' }).then(function () { ME = null; reflect(); render(); });
       });
-      var pb = bodyEl.querySelector('#mpaPush');
-      if (pb && window.mpPush) {
-        var setPB = function (st) {
-          pb.disabled = false; pb.style.opacity = '1';
-          if (st === 'unsupported') { pb.style.display = 'none'; return; }
-          pb.style.display = 'block'; pb._st = st;
-          if (st === 'denied') { pb.textContent = 'Notifications blocked in your browser'; pb.disabled = true; pb.style.opacity = '.6'; return; }
-          pb.textContent = st === 'on' ? '🔔 Push on — tap to turn off' : '🔔 Get alerts on this device';
-        };
-        window.mpPush.state().then(setPB);
-        pb.addEventListener('click', function () {
-          if (pb.disabled || pb._busy || pb._st === 'denied') return; pb._busy = 1; var on = pb._st === 'on'; pb.textContent = 'Working…';
-          (on ? window.mpPush.disable() : window.mpPush.enable()).then(function () { pb._busy = 0; setPB(on ? 'off' : 'on'); })
-            .catch(function (err) { pb._busy = 0; setPB(err === 'denied' ? 'denied' : (on ? 'on' : 'off')); });
-        });
-      }
+      var sp = bodyEl.querySelector('#mpaSup'); if (sp) sp.addEventListener('click', function () { renderSup(); });
       return;
     }
     bodyEl.innerHTML = '<h3 class="mpa-h">Sign in or sign up</h3><p class="mpa-sub">Enter your email and we’ll send a 6-digit code. No password.</p>'

@@ -3597,6 +3597,12 @@ async function handleReward(url, request, env) {
   const hasRestr = k => (',' + suRestr + ',').indexOf(',' + k + ',') >= 0;
   if (hasRestr('rewards') && (path === '/claim' || path === '/withdraw' || path === '/promo/submit' || path === '/exsign/submit')) return jr({ error: 'restricted' }, 403);
   if (hasRestr('withdraw') && path === '/withdraw') return jr({ error: 'restricted' }, 403);
+  if (path === '/support/mine') { // signed-in user's own support conversation (their tickets + our email replies), identity resolved server-side
+    const tok = getCookie(request, SESS_COOKIE);
+    const su = tok && env.USERS ? await sessionUser(env, tok) : null;
+    if (!su || !su.id) return jr({ error: 'login_required' }, 401);
+    try { const rr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/support/mine', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + su.id, email: su.email || '' }) })); return jr(await rr.json()); } catch (e) { return jr({ items: [], replies: [] }); }
+  }
   const full = await rewardCfg(env);
   // admin: read/write the live config (Settings tab) — applies instantly, no deploy
   if (path === '/config') {
@@ -4458,6 +4464,16 @@ export class RewardLedger {
         closed: this.rows('SELECT rowid AS id,ts,email,address,message FROM support WHERE closed=1 ORDER BY ts DESC LIMIT 100'),
         replies: this.rows('SELECT ts,email,subject FROM sreply ORDER BY ts DESC LIMIT 100'),
       });
+    }
+    if (path === '/support/mine') { // one user's own history: tickets by account id or email + email replies (matched by email; sreply has no ticket id)
+      const em = String(body.email || '').slice(0, 120), ac = String(body.acct || '');
+      const seen = {}; let items = [];
+      const take = rows => rows.forEach(r => { if (!seen[r.id]) { seen[r.id] = 1; items.push(r); } });
+      if (ac) take(this.rows('SELECT rowid AS id,ts,message,COALESCE(closed,0) closed FROM support WHERE address=? ORDER BY ts ASC LIMIT 60', ac));
+      if (em) take(this.rows('SELECT rowid AS id,ts,message,COALESCE(closed,0) closed FROM support WHERE email=? ORDER BY ts ASC LIMIT 60', em));
+      items.sort((a, b) => a.ts - b.ts);
+      const replies = em ? this.rows('SELECT ts,subject,body FROM sreply WHERE email=? ORDER BY ts ASC LIMIT 60', em) : [];
+      return this.j({ items: items.slice(-60), replies });
     }
     if (path === '/support/close') { // admin: mark a ticket closed (or reopen with {reopen:1}) by rowid
       const id = parseInt(body.id, 10), val = body.reopen ? 0 : 1;
