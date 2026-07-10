@@ -60,54 +60,8 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) close(); });
 
   function open() { modal.hidden = false; render(); }
-  function close() { modal.hidden = true; dmOpen = false; if (dmTimer) { clearInterval(dmTimer); dmTimer = null; } }
+  function close() { modal.hidden = true; }
   function setMsg(t, kind) { var m = bodyEl.querySelector('.mpa-msg'); if (m) { m.textContent = t; m.className = 'mpa-msg ' + (kind || ''); } }
-
-  // ---- owner↔user direct messages (a private chat thread with the MarginPad team) ----
-  var DM_UNREAD = 0, dmOpen = false, dmTimer = null;
-  function renderDm() {
-    dmOpen = true;
-    bodyEl.innerHTML = '<h3 class="mpa-h">Messages</h3><p class="mpa-sub">A private line to the MarginPad team. We usually reply within a day.</p>'
-      + '<div class="mpa-dm"><div class="mpa-dm-scroll" id="mpaDmScroll"><div class="mpa-dm-empty">Loading…</div></div>'
-      + '<div class="mpa-dm-form"><input class="mpa-in" id="mpaDmIn" maxlength="2000" placeholder="Write a message…" autocomplete="off"><button class="mpa-dm-send" id="mpaDmSend" type="button">Send</button></div></div>'
-      + '<button class="mpa-link" id="mpaDmBack" type="button">← Back to profile</button>';
-    var scroll = bodyEl.querySelector('#mpaDmScroll'), inp = bodyEl.querySelector('#mpaDmIn'), sendB = bodyEl.querySelector('#mpaDmSend');
-    bodyEl.querySelector('#mpaDmBack').addEventListener('click', function () { dmOpen = false; if (dmTimer) { clearInterval(dmTimer); dmTimer = null; } render(); });
-    function paint(msgs) {
-      if (!msgs || !msgs.length) { scroll.innerHTML = '<div class="mpa-dm-empty">No messages yet.\nSay hi — questions, bugs, ideas all welcome.</div>'; return; }
-      var atBottom = scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight < 50;
-      scroll.innerHTML = msgs.map(function (m) { return '<div class="mpa-bub ' + (m.dir === 'out' ? 'out' : 'in') + '">' + (m.dir === 'out' ? '<span class="mpa-who">MarginPad</span>' : '') + esc(m.body) + '</div>'; }).join('');
-      if (atBottom) scroll.scrollTop = scroll.scrollHeight;
-    }
-    function load(sendBody) {
-      var opt = { method: 'POST', headers: { 'content-type': 'application/json' } };
-      if (sendBody) opt.body = JSON.stringify({ body: sendBody });
-      fetch('/api/auth/dm', opt).then(function (r) { return r.json(); }).then(function (d) { if (d && d.messages) { paint(d.messages); DM_UNREAD = 0; updBadge(); } }).catch(function () {});
-    }
-    var doSend = function () { var v = (inp.value || '').trim(); if (!v) return; inp.value = ''; load(v); };
-    sendB.addEventListener('click', doSend);
-    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); doSend(); } });
-    load();
-    if (dmTimer) clearInterval(dmTimer);
-    dmTimer = setInterval(function () { if (dmOpen && !modal.hidden) load(); else { clearInterval(dmTimer); dmTimer = null; } }, 8000);
-    setTimeout(function () { scroll.scrollTop = scroll.scrollHeight; try { inp.focus(); } catch (e) {} }, 60);
-  }
-  function updBadge() {
-    var mn = bodyEl.querySelector('#mpaMsgN'); if (mn) { if (DM_UNREAD > 0) { mn.textContent = DM_UNREAD; mn.style.display = ''; } else mn.style.display = 'none'; }
-    // a GLOWING ping pinned to the account button's corner (appended to the closest button/anchor, not the label,
-    // so reflect()'s textContent reset can't wipe it and the dot sits ON the icon instead of inline after the text)
-    Array.prototype.forEach.call(document.querySelectorAll('[data-auth-status]'), function (el) {
-      var host = (el.closest && el.closest('button,a')) || el;
-      var ping = host.querySelector && host.querySelector('.mpa-ping');
-      if (DM_UNREAD > 0 && ME) {
-        if (!ping) { try { if (getComputedStyle(host).position === 'static') host.style.position = 'relative'; } catch (e) {} var d = document.createElement('span'); d.className = 'mpa-ping'; d.setAttribute('aria-label', 'New message'); host.appendChild(d); }
-      } else if (ping) ping.remove();
-    });
-  }
-  function checkDm() {
-    if (!ME) { DM_UNREAD = 0; updBadge(); return; }
-    fetch('/api/auth/dm/unread', { method: 'POST', headers: { 'content-type': 'application/json' } }).then(function (r) { return r.json(); }).then(function (d) { DM_UNREAD = (d && d.unread) || 0; updBadge(); }).catch(function () {});
-  }
 
   function render() {
     if (BANNED) {
@@ -128,7 +82,6 @@
         + '</div>'
         + (hasU ? '' : '<label style="display:block;font-size:11px;color:#9aa3ad;margin:8px 0 5px">Pick a username <span style="color:#5c656f">(public, permanent)</span></label><input class="mpa-in" id="mpaUname" maxlength="20" autocomplete="off" placeholder="choose a username"><button class="mpa-btn" id="mpaSaveU" type="button">Set username</button><div class="mpa-msg"></div>')
         + (ME.muted ? '<p class="mpa-foot" style="color:#ffb347">You are muted in chat.</p>' : '')
-        + '<button class="mpa-btn" id="mpaMsgs" type="button" style="margin-top:10px;background:#101a22;color:#38bdf8;border:1px solid rgba(56,189,248,.4)">Messages<span id="mpaMsgN" class="mpa-badge" style="display:none"></span></button>'
         + '<button class="mpa-btn" id="mpaPush" type="button" style="margin-top:10px;background:#13241f;color:#34d99a;border:1px solid rgba(52,217,154,.4);display:none">Enable push notifications</button>'
         + '<button class="mpa-btn" style="background:#1a1f27;color:#e9e7df;margin-top:10px" id="mpaLogout" type="button">Sign out</button>'
         + '<button class="mpa-link" id="mpaDone" type="button">Close</button>';
@@ -152,7 +105,6 @@
         sv.addEventListener('click', saveU);
         ui.addEventListener('keydown', function (e) { if (e.key === 'Enter') saveU(); });
       }
-      var msb = bodyEl.querySelector('#mpaMsgs'); if (msb) { var mn = bodyEl.querySelector('#mpaMsgN'); if (mn && DM_UNREAD > 0) { mn.textContent = DM_UNREAD; mn.style.display = ''; } msb.addEventListener('click', renderDm); }
       var dn = bodyEl.querySelector('#mpaDone'); if (dn) dn.addEventListener('click', close);
       bodyEl.querySelector('#mpaLogout').addEventListener('click', function () {
         fetch('/api/auth/logout', { method: 'POST' }).then(function () { ME = null; reflect(); render(); });
@@ -233,7 +185,6 @@
     document.body.classList.toggle('mpa-authed', on);
     if (on) { if (!window._mpaPulled) { window._mpaPulled = true; try { pullTrades(); } catch (_) {} } } else { window._mpaPulled = false; } // cross-device: pull the account's journal once per sign-in so trades show on every device
     try { window.dispatchEvent(new CustomEvent('mp-auth-change', { detail: { user: ME, banned: BANNED } })); } catch (_) {} // let pages (e.g. /rewards) react to sign-in/out
-    try { updBadge(); if (on) checkDm(); } catch (_) {} // refresh the DM unread dot on sign-in/out (reflect wipes the status label, so re-apply)
   }
 
   document.addEventListener('click', function (e) {
@@ -337,8 +288,7 @@
     }
   };
 
-  window.mpAuth = { open: open, close: close, me: function () { return ME; }, sync: syncTrades, messages: function () { modal.hidden = false; renderDm(); } };
+  window.mpAuth = { open: open, close: close, me: function () { return ME; }, sync: syncTrades };
 
-  fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (d) { ME = d.user || null; BANNED = !!d.banned; reflect(); if (ME) { dwSince = Date.now(); syncTrades(); checkDm(); } }).catch(function () {});
-  setInterval(checkDm, 45000); // poll for new owner messages → red dot on the account button
+  fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (d) { ME = d.user || null; BANNED = !!d.banned; reflect(); if (ME) { dwSince = Date.now(); syncTrades(); } }).catch(function () {});
 })();
