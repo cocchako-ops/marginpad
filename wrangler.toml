@@ -61,6 +61,14 @@ new_sqlite_classes = ["ChatRoom"]
 tag = "v2"
 new_sqlite_classes = ["RewardLedger"]
 
+[[durable_objects.bindings]]
+name = "COMM"
+class_name = "Community"
+
 [[migrations]]
 tag = "v3"
 new_sqlite_classes = ["UserStore"]
+
+[[migrations]]
+tag = "v4"
+new_sqlite_classes = ["Community"]

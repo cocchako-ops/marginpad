@@ -37,4 +37,5 @@ Allow: /
 User-agent: Bingbot
 Allow: /
 
+Sitemap: https://marginpad.io/community/sitemap.xml
 Sitemap: https://marginpad.io/sitemap.xml

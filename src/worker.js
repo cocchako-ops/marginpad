@@ -3935,6 +3935,7 @@ export default {
       if (!ok && photo) { try { const r2 = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/sendMessage', { method: 'POST', headers: jh, body: JSON.stringify({ chat_id: channel, text, parse_mode: 'HTML', disable_web_page_preview: true }) }); const j2 = await r2.json(); if (j2.ok) { ok = true; desc = 'sent without image (image URL was rejected)'; } } catch (e) {} }
       return new Response(JSON.stringify({ ok, channel: channelName, note: ok ? desc : undefined, error: ok ? undefined : (desc || 'send_failed') }), { headers: jh });
     }
+    if (url.pathname.startsWith('/api/comm/')) return handleComm(url, request, env);
     if (url.pathname.startsWith('/api/') && url.pathname !== '/api/') return handleApi(url);
     if (url.pathname === '/telegram/webhook') return handleTelegram(request, env);
     if (url.pathname === '/chat/reset' && (await adminCookieOk(request, env))) {
@@ -3947,6 +3948,8 @@ export default {
       const body = request.method === 'POST' ? await request.text() : undefined;
       return env.CHAT.get(env.CHAT.idFromName('global')).fetch(new Request('https://do' + sub, { method: request.method, headers: { 'content-type': 'application/json' }, body }));
     }
+    if (url.pathname === '/community') return Response.redirect(url.origin + '/community/', 301);
+    if (url.pathname.startsWith('/community/') && url.pathname !== '/community/') return commPage(url, request, env); // /community/ itself is the static shell (assets); subroutes get per-post/user/category SEO + SSR
     if (url.pathname === '/chat/ws') {
       if (!env.CHAT) return new Response('chat unavailable', { status: 503 });
       // Browsers always send Origin on WebSocket upgrades — reject cross-site embeds/scripts opening our chat.
@@ -4998,4 +5001,306 @@ export class UserStore {
     }
     return this.j({ error: 'not_found' }, 404);
   }
+}
+
+// ---------- Community (the /community/ hub: user posts, comments, likes, follows — its own DO so feed traffic never touches UserStore) ----------
+export class Community {
+  constructor(state, env) {
+    this.state = state; this.env = env;
+    const s = state.storage.sql;
+    s.exec('CREATE TABLE IF NOT EXISTS posts(id TEXT PRIMARY KEY, uid TEXT, author TEXT, ts INTEGER, cat TEXT, title TEXT, body TEXT, syms TEXT, likes INTEGER DEFAULT 0, ncom INTEGER DEFAULT 0, views INTEGER DEFAULT 0, pinned INTEGER DEFAULT 0, del INTEGER DEFAULT 0)');
+    s.exec('CREATE INDEX IF NOT EXISTS p_ts ON posts(ts DESC)');
+    s.exec('CREATE TABLE IF NOT EXISTS comments(id TEXT PRIMARY KEY, pid TEXT, uid TEXT, author TEXT, parent TEXT, ts INTEGER, body TEXT, likes INTEGER DEFAULT 0, del INTEGER DEFAULT 0)');
+    s.exec('CREATE INDEX IF NOT EXISTS c_pid ON comments(pid, ts)');
+    s.exec('CREATE TABLE IF NOT EXISTS likes(k TEXT PRIMARY KEY, uid TEXT, tgt TEXT, ts INTEGER)');
+    s.exec('CREATE TABLE IF NOT EXISTS marks(k TEXT PRIMARY KEY, uid TEXT, pid TEXT, ts INTEGER)');
+    s.exec('CREATE TABLE IF NOT EXISTS follows(k TEXT PRIMARY KEY, uid TEXT, tuid TEXT, tname TEXT, ts INTEGER)');
+    s.exec('CREATE TABLE IF NOT EXISTS notifs(nid INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT, ts INTEGER, body TEXT, link TEXT, seen INTEGER DEFAULT 0)');
+    s.exec('CREATE INDEX IF NOT EXISTS n_uid ON notifs(uid, seen)');
+  }
+  rows(q, ...a) { const out = []; try { for (const r of this.state.storage.sql.exec(q, ...a)) out.push(r); } catch (e) {} return out; }
+  j(o, st) { return new Response(JSON.stringify(o), { status: st || 200, headers: { 'content-type': 'application/json; charset=utf-8' } }); }
+  rid() { try { return crypto.randomUUID().replace(/-/g, '').slice(0, 12); } catch (e) { return Date.now().toString(36) + Math.round(Math.random() * 1e8).toString(36); } }
+  notify(uid, body, link) { if (!uid) return; const sql = this.state.storage.sql; sql.exec('INSERT INTO notifs(uid,ts,body,link,seen) VALUES(?,?,?,?,0)', uid, Date.now(), String(body).slice(0, 200), String(link || '').slice(0, 120)); sql.exec('DELETE FROM notifs WHERE uid=? AND nid NOT IN (SELECT nid FROM notifs WHERE uid=? ORDER BY nid DESC LIMIT 50)', uid, uid); }
+  pub(p) { return { id: p.id, uid: p.uid, author: p.author, ts: p.ts, cat: p.cat, title: p.title, body: p.body, syms: p.syms || '', likes: p.likes || 0, ncom: p.ncom || 0, views: p.views || 0, pinned: !!p.pinned }; }
+  async fetch(request) {
+    const url = new URL(request.url); const path = url.pathname; const sql = this.state.storage.sql; const now = Date.now();
+    let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
+    const uid = String(request.headers.get('x-uid') || ''), author = String(request.headers.get('x-author') || '');
+    const isAdmin = request.headers.get('x-admin') === '1';
+
+    if (path === '/feed') {
+      const sort = url.searchParams.get('sort') || 'trending', cat = String(url.searchParams.get('cat') || '').replace(/[^a-z-]/g, ''), q = String(url.searchParams.get('q') || '').slice(0, 60);
+      const before = parseInt(url.searchParams.get('before') || '0', 10) || 0;
+      const L = 20; let list = [];
+      const W = ['del=0']; const A = [];
+      if (cat) { W.push('cat=?'); A.push(cat); }
+      if (q) { W.push('(title LIKE ? OR syms LIKE ? OR author LIKE ?)'); const like = '%' + q.replace(/[%_]/g, '') + '%'; A.push(like, like, like); }
+      if (sort === 'new') { if (before) { W.push('ts<?'); A.push(before); } list = this.rows('SELECT * FROM posts WHERE ' + W.join(' AND ') + ' ORDER BY ts DESC LIMIT ' + L, ...A); }
+      else if (sort === 'discussed') { W.push('ts>?'); A.push(now - 14 * 86400000); list = this.rows('SELECT * FROM posts WHERE ' + W.join(' AND ') + ' ORDER BY ncom DESC, ts DESC LIMIT ' + L, ...A); }
+      else if (sort === 'liked') { W.push('ts>?'); A.push(now - 30 * 86400000); list = this.rows('SELECT * FROM posts WHERE ' + W.join(' AND ') + ' ORDER BY likes DESC, ts DESC LIMIT ' + L, ...A); }
+      else if (sort === 'picks') { W.push('pinned=1'); list = this.rows('SELECT * FROM posts WHERE ' + W.join(' AND ') + ' ORDER BY ts DESC LIMIT ' + L, ...A); }
+      else if (sort === 'following') {
+        if (!uid) return this.j({ posts: [], needLogin: true });
+        const fl = this.rows('SELECT tuid FROM follows WHERE uid=?', uid).map(x => x.tuid);
+        if (!fl.length) return this.j({ posts: [], noFollows: true });
+        const ph = fl.slice(0, 100).map(() => '?').join(',');
+        if (before) { W.push('ts<?'); A.push(before); }
+        list = this.rows('SELECT * FROM posts WHERE ' + W.join(' AND ') + ' AND uid IN (' + ph + ') ORDER BY ts DESC LIMIT ' + L, ...A, ...fl.slice(0, 100));
+      } else { // trending: engagement-weighted, last 7 days (tops up with newest when quiet)
+        W.push('ts>?'); A.push(now - 7 * 86400000);
+        list = this.rows('SELECT * FROM posts WHERE ' + W.join(' AND ') + ' ORDER BY (likes*3+ncom*4+views/8+pinned*50) DESC, ts DESC LIMIT ' + L, ...A);
+        if (list.length < 6) { const seen = {}; list.forEach(p => { seen[p.id] = 1; }); let extra = cat ? this.rows('SELECT * FROM posts WHERE del=0 AND cat=? ORDER BY ts DESC LIMIT ' + L, cat) : this.rows('SELECT * FROM posts WHERE del=0 ORDER BY ts DESC LIMIT ' + L); list = list.concat(extra.filter(p => !seen[p.id])).slice(0, L); }
+      }
+      let likedSet = {};
+      if (uid && list.length) { const ks = list.map(p => uid + '|p:' + p.id); const ph2 = ks.map(() => '?').join(','); this.rows('SELECT k FROM likes WHERE k IN (' + ph2 + ')', ...ks).forEach(r => { likedSet[r.k.split('|')[1].slice(2)] = 1; }); }
+      return this.j({ posts: list.map(p => { const o = this.pub(p); o.body = String(o.body || '').slice(0, 500); o.liked = !!likedSet[p.id]; return o; }) });
+    }
+    if (path === '/post' && request.method === 'GET') {
+      const id = String(url.searchParams.get('id') || '').replace(/[^a-z0-9]/gi, '');
+      const p = this.rows('SELECT * FROM posts WHERE id=? AND del=0', id)[0];
+      if (!p) return this.j({ error: 'not_found' }, 404);
+      if (url.searchParams.get('view') === '1') sql.exec('UPDATE posts SET views=views+1 WHERE id=?', id);
+      const comments = this.rows('SELECT id,uid,author,parent,ts,body,likes FROM comments WHERE pid=? AND del=0 ORDER BY ts ASC LIMIT 500', id);
+      const out = { post: this.pub(p), comments };
+      if (uid) {
+        out.liked = !!this.rows('SELECT k FROM likes WHERE k=?', uid + '|p:' + id)[0];
+        out.marked = !!this.rows('SELECT k FROM marks WHERE k=?', uid + '|' + id)[0];
+        out.following = !!this.rows('SELECT k FROM follows WHERE k=?', uid + '|' + p.uid)[0];
+        if (comments.length) { const ks = comments.map(c => uid + '|c:' + c.id); const ph = ks.map(() => '?').join(','); out.likedC = {}; this.rows('SELECT k FROM likes WHERE k IN (' + ph + ')', ...ks).forEach(r => { out.likedC[r.k.split('|')[1].slice(2)] = 1; }); }
+      }
+      return this.j(out);
+    }
+    if (path === '/post' && request.method === 'POST') {
+      if (!uid || !author) return this.j({ error: 'login_required' }, 401);
+      const last = this.rows('SELECT ts FROM posts WHERE uid=? ORDER BY ts DESC LIMIT 1', uid)[0];
+      if (last && now - last.ts < 120000) return this.j({ error: 'slow_down' }, 429);
+      const today = this.rows('SELECT COUNT(*) n FROM posts WHERE uid=? AND ts>?', uid, now - 86400000)[0];
+      if (today && today.n >= 12) return this.j({ error: 'daily_cap' }, 429);
+      const title = String(b.title || '').trim().slice(0, 140), body = String(b.body || '').trim().slice(0, 20000);
+      const cat = String(b.cat || 'ideas').replace(/[^a-z-]/g, '').slice(0, 24) || 'ideas';
+      const syms = String(b.syms || '').toUpperCase().replace(/[^A-Z0-9,]/g, '').split(',').filter(Boolean).slice(0, 6).join(',');
+      if (title.length < 6) return this.j({ error: 'title_short' }, 400);
+      if (body.length < 20) return this.j({ error: 'body_short' }, 400);
+      const id = this.rid();
+      sql.exec('INSERT INTO posts(id,uid,author,ts,cat,title,body,syms) VALUES(?,?,?,?,?,?,?,?)', id, uid, author, now, cat, title, body, syms);
+      return this.j({ ok: true, id });
+    }
+    if (path === '/comment' && request.method === 'POST') {
+      if (!uid || !author) return this.j({ error: 'login_required' }, 401);
+      const pid = String(b.pid || '').replace(/[^a-z0-9]/gi, ''), parent = String(b.parent || '').replace(/[^a-z0-9]/gi, '');
+      const cbody = String(b.body || '').trim().slice(0, 3000);
+      if (!cbody) return this.j({ error: 'empty' }, 400);
+      const p = this.rows('SELECT id,uid,author,title FROM posts WHERE id=? AND del=0', pid)[0];
+      if (!p) return this.j({ error: 'not_found' }, 404);
+      const last = this.rows('SELECT ts FROM comments WHERE uid=? ORDER BY ts DESC LIMIT 1', uid)[0];
+      if (last && now - last.ts < 10000) return this.j({ error: 'slow_down' }, 429);
+      const id = this.rid();
+      sql.exec('INSERT INTO comments(id,pid,uid,author,parent,ts,body) VALUES(?,?,?,?,?,?,?)', id, pid, uid, author, parent, now, cbody);
+      sql.exec('UPDATE posts SET ncom=ncom+1 WHERE id=?', pid);
+      const link = '/community/p/' + pid;
+      if (p.uid && p.uid !== uid) this.notify(p.uid, author + ' commented on your post: ' + String(p.title).slice(0, 60), link);
+      if (parent) { const pc = this.rows('SELECT uid FROM comments WHERE id=?', parent)[0]; if (pc && pc.uid && pc.uid !== uid && pc.uid !== p.uid) this.notify(pc.uid, author + ' replied to your comment', link); }
+      return this.j({ ok: true, id, comment: { id, pid, uid, author, parent, ts: now, body: cbody, likes: 0 } });
+    }
+    if (path === '/like' && request.method === 'POST') {
+      if (!uid) return this.j({ error: 'login_required' }, 401);
+      const tgt = String(b.tgt || ''); const m = tgt.match(/^([pc]):([a-z0-9]+)$/i); if (!m) return this.j({ error: 'bad' }, 400);
+      const k = uid + '|' + tgt, table = m[1] === 'p' ? 'posts' : 'comments';
+      const have = this.rows('SELECT k FROM likes WHERE k=?', k)[0];
+      if (have) { sql.exec('DELETE FROM likes WHERE k=?', k); sql.exec('UPDATE ' + table + ' SET likes=MAX(0,likes-1) WHERE id=?', m[2]); return this.j({ ok: true, liked: false }); }
+      sql.exec('INSERT INTO likes(k,uid,tgt,ts) VALUES(?,?,?,?)', k, uid, tgt, now);
+      sql.exec('UPDATE ' + table + ' SET likes=likes+1 WHERE id=?', m[2]);
+      if (m[1] === 'p') { const p = this.rows('SELECT uid,title,likes FROM posts WHERE id=?', m[2])[0]; if (p && p.uid && p.uid !== uid && (p.likes === 1 || p.likes === 5 || p.likes === 25)) this.notify(p.uid, 'Your post reached ' + p.likes + ' like' + (p.likes > 1 ? 's' : '') + ': ' + String(p.title).slice(0, 50), '/community/p/' + m[2]); }
+      return this.j({ ok: true, liked: true });
+    }
+    if (path === '/mark' && request.method === 'POST') {
+      if (!uid) return this.j({ error: 'login_required' }, 401);
+      const pid = String(b.pid || '').replace(/[^a-z0-9]/gi, ''); const k = uid + '|' + pid;
+      const have = this.rows('SELECT k FROM marks WHERE k=?', k)[0];
+      if (have) { sql.exec('DELETE FROM marks WHERE k=?', k); return this.j({ ok: true, marked: false }); }
+      sql.exec('INSERT INTO marks(k,uid,pid,ts) VALUES(?,?,?,?)', k, uid, pid, now);
+      return this.j({ ok: true, marked: true });
+    }
+    if (path === '/marks') {
+      if (!uid) return this.j({ posts: [] });
+      const ids = this.rows('SELECT pid FROM marks WHERE uid=? ORDER BY ts DESC LIMIT 50', uid).map(x => x.pid);
+      if (!ids.length) return this.j({ posts: [] });
+      const ph = ids.map(() => '?').join(',');
+      const posts = this.rows('SELECT * FROM posts WHERE id IN (' + ph + ') AND del=0', ...ids).sort((a, b2) => ids.indexOf(a.id) - ids.indexOf(b2.id));
+      return this.j({ posts: posts.map(p => { const o = this.pub(p); o.body = String(o.body || '').slice(0, 500); return o; }) });
+    }
+    if (path === '/follow' && request.method === 'POST') {
+      if (!uid) return this.j({ error: 'login_required' }, 401);
+      const tuid = String(b.tuid || ''), tname = String(b.tname || '').slice(0, 40);
+      if (!tuid || tuid === uid) return this.j({ error: 'bad' }, 400);
+      const k = uid + '|' + tuid;
+      const have = this.rows('SELECT k FROM follows WHERE k=?', k)[0];
+      if (have) { sql.exec('DELETE FROM follows WHERE k=?', k); return this.j({ ok: true, following: false }); }
+      sql.exec('INSERT INTO follows(k,uid,tuid,tname,ts) VALUES(?,?,?,?,?)', k, uid, tuid, tname, now);
+      this.notify(tuid, author + ' started following you', '/community/u/' + encodeURIComponent(author));
+      return this.j({ ok: true, following: true });
+    }
+    if (path === '/profile') {
+      const name = String(url.searchParams.get('author') || '').slice(0, 40);
+      let tuid = String(url.searchParams.get('uid') || '');
+      if (!tuid && name) { const r = this.rows('SELECT uid FROM posts WHERE author=? ORDER BY ts DESC LIMIT 1', name)[0] || this.rows('SELECT uid FROM comments WHERE author=? ORDER BY ts DESC LIMIT 1', name)[0]; tuid = r ? r.uid : ''; }
+      if (!tuid) return this.j({ error: 'not_found' }, 404);
+      const posts = this.rows('SELECT * FROM posts WHERE uid=? AND del=0 ORDER BY ts DESC LIMIT 30', tuid);
+      const pn = (this.rows('SELECT COUNT(*) n FROM posts WHERE uid=? AND del=0', tuid)[0] || {}).n || 0;
+      const cn = (this.rows('SELECT COUNT(*) n FROM comments WHERE uid=? AND del=0', tuid)[0] || {}).n || 0;
+      const lr = (this.rows('SELECT COALESCE(SUM(likes),0) s FROM posts WHERE uid=? AND del=0', tuid)[0] || {}).s || 0;
+      const lrc = (this.rows('SELECT COALESCE(SUM(likes),0) s FROM comments WHERE uid=? AND del=0', tuid)[0] || {}).s || 0;
+      const fw = (this.rows('SELECT COUNT(*) n FROM follows WHERE tuid=?', tuid)[0] || {}).n || 0;
+      const fg = (this.rows('SELECT COUNT(*) n FROM follows WHERE uid=?', tuid)[0] || {}).n || 0;
+      const joined = (this.rows('SELECT MIN(ts) t FROM posts WHERE uid=?', tuid)[0] || {}).t || 0;
+      const rep = pn * 10 + cn * 2 + (lr + lrc) * 3;
+      const authorName = posts.length ? posts[0].author : name;
+      const out = { uid: tuid, author: authorName, posts: posts.map(p => { const o = this.pub(p); o.body = String(o.body || '').slice(0, 400); return o; }), nPosts: pn, nComments: cn, likesRecv: lr + lrc, followers: fw, following: fg, rep, joined };
+      if (uid) out.youFollow = !!this.rows('SELECT k FROM follows WHERE k=?', uid + '|' + tuid)[0];
+      return this.j(out);
+    }
+    if (path === '/authors') {
+      const rows2 = this.rows('SELECT uid, author, COUNT(*) n, COALESCE(SUM(likes),0) l, COALESCE(SUM(ncom),0) c FROM posts WHERE del=0 AND ts>? GROUP BY uid ORDER BY (l*3+c*4+n*5) DESC LIMIT 8', Date.now() - 30 * 86400000);
+      return this.j({ authors: rows2 });
+    }
+    if (path === '/notifs') {
+      if (!uid) return this.j({ notifs: [], unread: 0 });
+      if (url.searchParams.get('seen') === '1') { sql.exec('UPDATE notifs SET seen=1 WHERE uid=?', uid); return this.j({ ok: true }); }
+      const list = this.rows('SELECT nid,ts,body,link,seen FROM notifs WHERE uid=? ORDER BY nid DESC LIMIT 30', uid);
+      const un = (this.rows('SELECT COUNT(*) n FROM notifs WHERE uid=? AND seen=0', uid)[0] || {}).n || 0;
+      return this.j({ notifs: list, unread: un });
+    }
+    if (path === '/admin' && request.method === 'POST') {
+      if (!isAdmin) return this.j({ error: 'forbidden' }, 403);
+      const act = String(b.act || ''), id = String(b.id || '').replace(/[^a-z0-9]/gi, '');
+      if (act === 'del') sql.exec('UPDATE posts SET del=1 WHERE id=?', id);
+      else if (act === 'delc') { const c = this.rows('SELECT pid FROM comments WHERE id=?', id)[0]; sql.exec('UPDATE comments SET del=1 WHERE id=?', id); if (c) sql.exec('UPDATE posts SET ncom=MAX(0,ncom-1) WHERE id=?', c.pid); }
+      else if (act === 'pin') sql.exec('UPDATE posts SET pinned=1 WHERE id=?', id);
+      else if (act === 'unpin') sql.exec('UPDATE posts SET pinned=0 WHERE id=?', id);
+      else return this.j({ error: 'bad' }, 400);
+      return this.j({ ok: true });
+    }
+    if (path === '/sitemap') { return this.j({ posts: this.rows('SELECT id,ts,title FROM posts WHERE del=0 ORDER BY ts DESC LIMIT 1000') }); }
+    return this.j({ error: 'not_found' }, 404);
+  }
+}
+
+// ---------- Community worker layer: /api/comm/* API + SSR'd /community/* pages ----------
+function escH(x) { return String(x == null ? '' : x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+const COMM_CATS = { ideas: 'Trading Ideas', analysis: 'Technical Analysis', news: 'Market News', education: 'Education', crypto: 'Crypto', forex: 'Forex', stocks: 'Stocks', futures: 'Futures', strategies: 'Strategies', psychology: 'Psychology', risk: 'Risk Management', indicators: 'Indicators', platform: 'Platform Updates' };
+function commSlug(t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70) || 'post'; }
+// markdown-lite -> safe HTML (escape FIRST, then transform). Same rules as the client renderer in dist/community/.
+function commMd(src) {
+  let s = escH(String(src || '').slice(0, 20000));
+  const blocks = [];
+  s = s.replace(/```([\s\S]*?)```/g, (m0, code) => { blocks.push('<pre class="cm-code">' + code.replace(/^\n+|\n+$/g, '') + '</pre>'); return '\u0000B' + (blocks.length - 1) + '\u0000'; });
+  s = s.replace(/\[chart:([A-Za-z0-9]{2,15})(?::([0-9DWM]+))?\]/g, (m0, sym, iv) => '<div class="cm-tv" data-sym="' + sym.toUpperCase() + '" data-iv="' + (iv || '60') + '"><a href="/charts" rel="nofollow">Live ' + sym.toUpperCase() + ' chart</a></div>');
+  s = s.replace(/!\[([^\]]*)\]\((https:\/\/[^\s)]+)\)/g, '<img class="cm-img" src="$2" alt="$1" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=&quot;none&quot;">');
+  s = s.replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g, '<a href="$2" rel="nofollow noopener" target="_blank">$1</a>');
+  s = s.replace(/(^|\s)(https:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{6,20})[^\s]*)/g, (m0, sp, u2, vid) => sp + '<div class="cm-yt"><iframe src="https://www.youtube-nocookie.com/embed/' + vid + '" loading="lazy" allowfullscreen frameborder="0"></iframe></div>');
+  s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+  s = s.replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>');
+  s = s.replace(/(^|\s)\*([^*\n]+)\*/g, '$1<i>$2</i>');
+  s = s.replace(/(^|\s)\$([A-Z]{2,10})\b/g, '$1<span class="cm-sym" data-sym="$2">$$$2</span>');
+  s = s.replace(/(^|\s)@([A-Za-z0-9_]{3,20})\b/g, '$1<a class="cm-men" href="/community/u/$2">@$2</a>');
+  const lines = s.split('\n'); const out = []; let inList = false;
+  for (let ln of lines) {
+    const t = ln.trim();
+    if (/^[-*] /.test(t)) { if (!inList) { out.push('<ul>'); inList = true; } out.push('<li>' + t.slice(2) + '</li>'); continue; }
+    if (inList) { out.push('</ul>'); inList = false; }
+    if (!t) { out.push(''); continue; }
+    if (t.indexOf('### ') === 0) { out.push('<h3>' + t.slice(4) + '</h3>'); continue; }
+    if (t.indexOf('## ') === 0) { out.push('<h2>' + t.slice(3) + '</h2>'); continue; }
+    if (t.indexOf('&gt; ') === 0) { out.push('<blockquote>' + t.slice(5) + '</blockquote>'); continue; }
+    if (t.indexOf('\u0000B') === 0) { out.push(t.replace(/\u0000B(\d+)\u0000/g, (m0, i2) => blocks[+i2] || '')); continue; }
+    out.push('<p>' + ln + '</p>');
+  }
+  if (inList) out.push('</ul>');
+  return out.join('\n').replace(/\u0000B(\d+)\u0000/g, (m0, i2) => blocks[+i2] || '');
+}
+async function handleComm(url, request, env) {
+  const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+  const jr = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: jh });
+  if (!env.COMM) return jr({ error: 'unavailable' }, 503);
+  const path = url.pathname.replace('/api/comm', '') || '/';
+  const stub = env.COMM.get(env.COMM.idFromName('main'));
+  const tok = getCookie(request, SESS_COOKIE);
+  const su = tok && env.USERS ? await sessionUser(env, tok) : null;
+  let uid = su && su.id ? String(su.id) : '';
+  let author = su ? String(su.username || '') : '';
+  if (request.method === 'POST' && (path === '/post' || path === '/comment' || path === '/like' || path === '/mark' || path === '/follow')) {
+    if (!uid) return jr({ error: 'login_required' }, 401);
+    if (su.status && su.status !== 'active') return jr({ error: 'restricted' }, 403);
+    if ((path === '/post' || path === '/comment') && (su.muted || (',' + String(su.restrictions || '') + ',').indexOf(',chat,') >= 0)) return jr({ error: 'restricted' }, 403);
+    if ((path === '/post' || path === '/comment') && !author) return jr({ error: 'need_username' }, 400);
+  }
+  let admin = false;
+  if (path === '/admin') { admin = await adminCookieOk(request, env); if (!admin) return jr({ error: 'forbidden' }, 403); }
+  // anonymous feed reads collapse to one DO hit per colo per 20s (same pattern as the reward leaderboard cache)
+  if (request.method === 'GET' && path === '/feed' && !uid) {
+    const ck = new Request('https://marginpad.io/__comm_feed_v1?' + url.searchParams.toString());
+    try { const hit = await caches.default.match(ck); if (hit) return new Response(hit.body, { headers: jh }); } catch (e) {}
+    const r = await stub.fetch(new Request('https://do/feed?' + url.searchParams.toString()));
+    const txt = await r.text();
+    if (r.status === 200) try { await caches.default.put(ck, new Response(txt, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=20' } })); } catch (e) {}
+    return new Response(txt, { headers: jh });
+  }
+  const fwd = new Request('https://do' + path + (request.method === 'GET' ? url.search : ''), {
+    method: request.method,
+    headers: { 'content-type': 'application/json', 'x-uid': uid, 'x-author': author, 'x-admin': admin ? '1' : '0' },
+    body: request.method === 'POST' ? await request.text() : undefined,
+  });
+  const r = await stub.fetch(fwd);
+  return new Response(await r.text(), { status: r.status, headers: jh });
+}
+async function commPage(url, request, env) {
+  // /community/p|u|c/* : serve the community shell with per-route SEO head; post pages get the article server-rendered for crawlers
+  let shell = '';
+  try { const sr = await env.ASSETS.fetch(new Request(url.origin + '/community/')); shell = await sr.text(); } catch (e) {}
+  if (!shell) return new Response('community unavailable', { status: 503 });
+  let html = shell;
+  const setMeta = (title, desc, canon) => {
+    html = html.replace(/<title>[^<]*<\/title>/, '<title>' + escH(title) + '</title>');
+    html = html.replace(/(<meta name="description" content=")[^"]*(")/, '$1' + escH(desc).replace(/"/g, '&quot;') + '$2');
+    html = html.replace(/(<link rel="canonical" href=")[^"]*(")/, '$1' + canon + '$2');
+    html = html.replace(/(<meta property="og:title" content=")[^"]*(")/, '$1' + escH(title).replace(/"/g, '&quot;') + '$2');
+    html = html.replace(/(<meta property="og:description" content=")[^"]*(")/, '$1' + escH(desc).replace(/"/g, '&quot;') + '$2');
+    html = html.replace(/(<meta property="og:url" content=")[^"]*(")/, '$1' + canon + '$2');
+  };
+  let m;
+  if ((m = url.pathname.match(/^\/community\/p\/([a-z0-9]{6,20})/i))) {
+    try {
+      const r = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/post?id=' + m[1]));
+      const d = await r.json();
+      if (d && d.post) {
+        const p = d.post;
+        const canon = 'https://marginpad.io/community/p/' + p.id + '/' + commSlug(p.title);
+        const desc = String(p.body || '').replace(/[#*`>\[\]]/g, '').replace(/\s+/g, ' ').trim().slice(0, 158);
+        setMeta(p.title + ' — MarginPad Community', desc, canon);
+        const ld = { '@context': 'https://schema.org', '@type': 'SocialMediaPosting', headline: p.title, datePublished: new Date(p.ts).toISOString(), author: { '@type': 'Person', name: p.author, url: 'https://marginpad.io/community/u/' + encodeURIComponent(p.author) }, publisher: { '@type': 'Organization', name: 'MarginPad' }, mainEntityOfPage: canon, commentCount: p.ncom, interactionStatistic: { '@type': 'InteractionCounter', interactionType: 'https://schema.org/LikeAction', userInteractionCount: p.likes } };
+        const crumb = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://marginpad.io/' }, { '@type': 'ListItem', position: 2, name: 'Community', item: 'https://marginpad.io/community/' }, { '@type': 'ListItem', position: 3, name: p.title, item: canon }] };
+        const ssr = '<article class="ssr-post"><div class="pcrumb"><a href="/community/">Community</a> / <a href="/community/c/' + escH(p.cat) + '">' + escH(COMM_CATS[p.cat] || p.cat) + '</a></div><h1>' + escH(p.title) + '</h1><div class="pmeta">by <a href="/community/u/' + encodeURIComponent(p.author) + '">' + escH(p.author) + '</a> · ' + new Date(p.ts).toISOString().slice(0, 10) + ' · ' + (p.likes || 0) + ' likes · ' + (p.ncom || 0) + ' comments</div><div class="pbody">' + commMd(p.body) + '</div></article>'
+          + '<script type="application/ld+json">' + JSON.stringify(ld).replace(/</g, '\\u003c') + '</script>'
+          + '<script type="application/ld+json">' + JSON.stringify(crumb).replace(/</g, '\\u003c') + '</script>';
+        html = html.replace('<!--SSR-->', ssr);
+      } else { setMeta('Post not found — MarginPad Community', 'This community post does not exist or was removed.', 'https://marginpad.io/community/'); }
+    } catch (e) {}
+  } else if ((m = url.pathname.match(/^\/community\/u\/([^\/]{3,40})/))) {
+    const who = decodeURIComponent(m[1]).replace(/[^A-Za-z0-9_.-]/g, '').slice(0, 30);
+    setMeta(who + ' — trader profile | MarginPad Community', who + "'s trading ideas, market analysis and discussions on the MarginPad community.", 'https://marginpad.io/community/u/' + encodeURIComponent(who));
+  } else if ((m = url.pathname.match(/^\/community\/c\/([a-z-]{3,24})/))) {
+    const nm = COMM_CATS[m[1]] || m[1];
+    setMeta(nm + ' — MarginPad Community', 'Latest ' + nm.toLowerCase() + ' posts and discussions from the MarginPad trading community.', 'https://marginpad.io/community/c/' + m[1]);
+  } else if (url.pathname === '/community/sitemap.xml') {
+    let items = [];
+    try { const r = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/sitemap')); const d = await r.json(); items = (d && d.posts) || []; } catch (e) {}
+    const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+      + '  <url><loc>https://marginpad.io/community/</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>\n'
+      + Object.keys(COMM_CATS).map(c => '  <url><loc>https://marginpad.io/community/c/' + c + '</loc><changefreq>daily</changefreq><priority>0.6</priority></url>').join('\n') + '\n'
+      + items.map(p => '  <url><loc>https://marginpad.io/community/p/' + p.id + '/' + commSlug(p.title) + '</loc><lastmod>' + new Date(p.ts).toISOString().slice(0, 10) + '</lastmod></url>').join('\n')
+      + '\n</urlset>';
+    return new Response(xml, { headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600' } });
+  }
+  return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }

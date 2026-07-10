@@ -1185,6 +1185,11 @@ const indexHtml = `<!DOCTYPE html>
     <h1 class="blog-title">The MarginPad Blog</h1>
     <p class="blog-intro">Plain-English crypto-futures guides — liquidation, leverage, risk, exchanges and the tools to trade them. Every guide is backed by the formula and a worked example.</p>
   </div>
+  <a href="/community/" style="display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,rgba(194,246,74,.09),rgba(56,189,248,.06));border:1px solid rgba(194,246,74,.35);border-radius:14px;padding:14px 18px;margin:0 0 18px;text-decoration:none">
+    <span style="font-size:22px">💬</span>
+    <span style="flex:1;min-width:0"><b style="color:#c2f64a">The MarginPad Community is live</b><span style="display:block;color:#9aa3ad;font-size:13px;margin-top:2px">Publish your own trading ideas, embed live charts, discuss markets with other traders — free with an email sign-in.</span></span>
+    <span style="font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#c2f64a;white-space:nowrap">Join →</span>
+  </a>
   <div class="cat-chips">${chips}</div>
   <div class="posts">
 ${cards}
