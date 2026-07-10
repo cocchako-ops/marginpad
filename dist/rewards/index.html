@@ -423,7 +423,7 @@
   var exsAmtTxt='3';
   var EXSN={bybit:'Bybit',binance:'Binance',okx:'OKX',bitget:'Bitget',kucoin:'KuCoin',gate:'Gate',mexc:'MEXC',kraken:'Kraken',cryptocom:'Crypto.com'};
   function exsCfg(j){var c=document.getElementById('exsCard');if(!c)return;if(j.exsignEnabled!=null)c.hidden=(j.exsignEnabled===false);if(j.exsignUsd!=null){exsAmtTxt=(+j.exsignUsd)%1===0?String(+j.exsignUsd):(+j.exsignUsd).toFixed(2);setText('exsAmt',exsAmtTxt);}}
-  function exsMsgF(t,kind){var e=document.getElementById('exsMsg');if(!e)return;e.textContent=t;e.className='pr-msg show '+(kind||'');}
+  function exsMsgF(t,kind){var e=document.getElementById('exsMsg');if(!e)return;e.innerHTML=t;e.className='pr-msg show '+(kind||'');}
   function exsLoad(){if(!signedIn)return;fetch('/api/reward/exsign/mine').then(function(r){return r.json();}).then(function(d){var list=document.getElementById('exsList');if(!list)return;var rows=(d&&d.signups)||[];function esc(x){return String(x==null?'':x).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
     list.innerHTML=rows.map(function(p){
       var st=p.status==='approved'?'<span class="st" style="color:#41e3a3">+$'+(+p.amount||0).toFixed(2)+' PAID</span>':p.status==='rejected'?'<span class="st" style="color:#ff8a80">REJECTED</span>':'<span class="st" style="color:#f3d44a">IN REVIEW</span>';
@@ -445,7 +445,7 @@
       else if(e==='uid_taken')exsMsgF('That UID was already submitted.','err');
       else if(e==='bad_uid')exsMsgF('That does not look like a UID — copy the user ID from your exchange profile (letters and numbers only).','err');
       else if(e==='banned')exsMsgF('This account is suspended from rewards.','err');
-      else if(e==='restricted')exsMsgF('Your account is restricted from rewards. If you believe this is a mistake, contact support (button below).','err');
+      else if(e==='restricted')exsMsgF('Your account is restricted from rewards. If you believe this is a mistake, contact support (<a href="https://marginpad.io/rewards/#" style="color:inherit;font-weight:700;text-decoration:underline" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">here</a>).','err');
       else if(e==='paused')exsMsgF('Exchange bonuses are paused right now.','err');
       else exsMsgF('Could not submit — try again shortly.','err');
     }).catch(function(){btn.disabled=false;btn.textContent='Submit';exsMsgF('Network error — try again.','err');});
@@ -453,7 +453,7 @@
   // ---- Promote & earn: $1 per X/TikTok post (manual review, 24h min live) ----
   var prPlat='x';
   function prCfg(j){var c=document.getElementById('promoCard');if(!c)return;c.hidden=(j.promoEnabled===false);if(j.promoUsd!=null){var t=(+j.promoUsd)%1===0?String(+j.promoUsd):(+j.promoUsd).toFixed(2);Array.prototype.forEach.call(document.querySelectorAll('.prAmt'),function(e){e.textContent=t;});}}
-  function prMsg(t,kind){var e=document.getElementById('prMsg');if(!e)return;e.textContent=t;e.className='pr-msg show '+(kind||'');}
+  function prMsg(t,kind){var e=document.getElementById('prMsg');if(!e)return;e.innerHTML=t;e.className='pr-msg show '+(kind||'');}
   function prLoad(){if(!signedIn)return;fetch('/api/reward/promo/mine').then(function(r){return r.json();}).then(function(d){var list=document.getElementById('prList');if(!list)return;var rows=(d&&d.promos)||[];function esc(x){return String(x==null?'':x).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
     list.innerHTML=rows.map(function(p){
       var st=p.status==='approved'?'<span class="st" style="color:#41e3a3">+$'+(+p.amount||0).toFixed(2)+' PAID</span>':p.status==='rejected'?'<span class="st" style="color:#ff8a80">REJECTED</span>':'<span class="st" style="color:#f3d44a">IN REVIEW</span>';
@@ -476,12 +476,12 @@
         else if(e==='url_taken')prMsg('That post link was already submitted.','err');
         else if(e==='bad_url')prMsg('That does not look like a '+(prPlat==='x'?'post link on X (x.com/…/status/…)':'TikTok video link')+'.','err');
         else if(e==='banned')prMsg('This account is suspended from rewards.','err');
-        else if(e==='restricted')prMsg('Your account is restricted from rewards. If you believe this is a mistake, contact support (button below).','err');
+        else if(e==='restricted')prMsg('Your account is restricted from rewards. If you believe this is a mistake, contact support (<a href="https://marginpad.io/rewards/#" style="color:inherit;font-weight:700;text-decoration:underline" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">here</a>).','err');
         else if(e==='paused')prMsg('Promo rewards are paused right now.','err');
         else prMsg('Could not submit — try again shortly.','err');
       }).catch(function(){btn.disabled=false;btn.textContent='Submit';prMsg('Network error — try again.','err');});
     });})();
-  function msg(t,kind){msgEl.textContent=t;msgEl.className='msg show '+(kind||'');}
+  function msg(t,kind){msgEl.innerHTML=t;msgEl.className='msg show '+(kind||'');}
   function clearMsg(){msgEl.className='msg';}
   function fmt(n){return (+n).toFixed(2);}
   // pageview beacon (so the stats dashboard sees /rewards traffic)
@@ -553,7 +553,7 @@
           else if(e==='ip_limit') msg('Too many new accounts from this connection today.','err');
           else if(e==='paused') msg(j.message||'The faucet is paused right now — check back soon.','err');
           else if(e==='banned'){ bannedAcct=true; if(acct){acct.banned=true;showInbox(acct);} msg('Your account has been suspended from the rewards program.','err'); }
-          else if(e==='restricted') msg('Your account is restricted from rewards. If you believe this is a mistake, contact support (button below).','err');
+          else if(e==='restricted') msg('Your account is restricted from rewards. If you believe this is a mistake, contact support (<a href="https://marginpad.io/rewards/#" style="color:inherit;font-weight:700;text-decoration:underline" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">here</a>).','err');
           else msg('Could not claim right now. Try again in a moment.','err');
           tickCooldown();
         }
@@ -580,7 +580,7 @@
         else if(j.error==='bad_address'){ wdAddr.classList.add('invalid'); msg('Invalid BEP20 address.','err'); }
         else if(j.error==='min_not_met') msg('You need at least $'+fmt(minWd)+' to withdraw.','err');
         else if(j.error==='wd_paused'||j.error==='paused') msg('Withdrawals are paused right now — check back soon.','err');
-        else if(j.error==='restricted') msg('Withdrawals are restricted on your account. If you believe this is a mistake, contact support (button below).','err');
+        else if(j.error==='restricted') msg('Withdrawals are restricted on your account. If you believe this is a mistake, contact support (<a href="https://marginpad.io/rewards/#" style="color:inherit;font-weight:700;text-decoration:underline" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">here</a>).','err');
         else if(j.error==='need_claims') msg('Claim at least '+(j.need||0)+' times before withdrawing (you have '+(j.have||0)+').','err');
         else if(j.error==='banned') msg('Your account has been suspended from rewards.','err');
         else { msg('Could not request withdrawal. Try again.','err'); refresh(); }
@@ -590,7 +590,8 @@
   // contact-support modal (opened from the locked-wallet note)
   var cm=document.getElementById('contactModal'),contactLink=document.getElementById('contactLink'),cmSend=document.getElementById('cmSend'),cmStatus=document.getElementById('cmStatus');
   function closeCm(){if(cm)cm.hidden=true;}
-  if(contactLink)contactLink.addEventListener('click',function(e){e.preventDefault();if(cm)cm.hidden=false;var em=document.getElementById('cmEmail');if(em)setTimeout(function(){em.focus();},30);});
+  window.__mpOpenSupport=function(){if(!cm)return false;cm.hidden=false;var em=document.getElementById('cmEmail');if(em)setTimeout(function(){em.focus();},30);return true;};
+  if(contactLink)contactLink.addEventListener('click',function(e){e.preventDefault();window.__mpOpenSupport();});
   var cmX=document.getElementById('cmClose');if(cmX)cmX.addEventListener('click',closeCm);
   if(cm)cm.addEventListener('click',function(e){if(e.target===cm)closeCm();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeCm();});
