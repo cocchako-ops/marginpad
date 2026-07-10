@@ -192,17 +192,26 @@ svg.ic{width:15px;height:15px;vertical-align:-2.5px;fill:none;stroke:currentColo
 .ssr-post{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:16px}
 @media(max-width:1180px){.cwrap{grid-template-columns:210px minmax(0,1fr)}.rcol{display:none}}
 @media(max-width:880px){
-  .cwrap{grid-template-columns:minmax(0,1fr);padding:12px}
+  .cwrap{grid-template-columns:minmax(0,1fr);padding:8px 12px 12px}
   .lnav{position:static;max-height:none;display:flex;align-items:center;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;min-width:0;max-width:100%}
   #catLinks{display:contents}
   .lnav::-webkit-scrollbar{display:none}
   .lnav .sec{display:none}
   .lnav a{flex:none;background:var(--panel);border:1px solid var(--line2);border-radius:999px;padding:7px 13px;font-size:12px}
   .lnav a.on{border-color:var(--lime)}
-  .chead{gap:9px;padding-left:12px;padding-right:12px}
+  .chead{gap:8px;padding:calc(env(safe-area-inset-top) + 6px) 12px 6px}
+  .chead .brand{font-size:16.5px}
   .chead .brand small{display:none}
+  .hbtn{padding:6px 11px;font-size:12.5px;border-radius:9px}
   .hbtn.go span{display:none}
+  .bell{width:32px;height:32px;border-radius:9px}
   .csearch{max-width:none}
+  .csearch input{padding:7px 11px 7px 31px;font-size:12.5px;border-radius:9px}
+  .csearch svg{width:14px;height:14px;left:10px}
+  .lnav a{padding:6px 12px;font-size:12px}
+  .tabs{padding:2px 0 9px}
+  .tabs button{padding:6px 13px;font-size:12px}
+  .composer-teaser{padding:10px 12px}
   .fab{display:block}
   .pv{padding:16px}
   .pv h1{font-size:21px}
