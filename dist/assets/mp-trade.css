@@ -149,3 +149,5 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .jr-head .jr-x{flex:0 0 auto}
 /* live numbers: fixed-width digits so in-place ticks don't wobble the layout */
 .pp-live,.pp-meta b,.jr-stat .v{font-variant-numeric:tabular-nums;}
+
+.pp-times{margin-top:7px;font-family:'Space Mono',monospace;font-size:9.5px;color:#5c656f;letter-spacing:.02em}
