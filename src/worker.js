@@ -3230,6 +3230,9 @@ h2{font-size:12px;color:#9aa3ad;margin:26px 0 11px;text-transform:uppercase;lett
 .chk{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#cdd3da;cursor:pointer;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:8px 12px}
 .chk input{accent-color:#c2f64a;width:15px;height:15px}
 .field{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.csec{font-family:Consolas,monospace;font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:#5c656f;margin:20px 0 6px;padding-top:14px;border-top:1px solid #1c2230}
+.csec:first-of-type{margin-top:8px;padding-top:0;border-top:none}
+.csec i{font-style:normal;text-transform:none;letter-spacing:0;color:#3f4854;margin-left:8px}
 .msg{font-size:12.5px;color:#9aa3ad;min-height:16px;margin-top:8px}.msg.ok{color:#41e3a3}.msg.err{color:#ff8a80}
 .empty{color:#5c656f;font-size:13px;padding:8px 0}
 .heat{position:relative;width:100%;height:460px;background:linear-gradient(180deg,#0d1014,#0a0c0f);border:1px solid #232932;border-radius:12px;overflow:hidden;margin-top:10px}
@@ -3298,12 +3301,16 @@ h2{font-size:12px;color:#9aa3ad;margin:26px 0 11px;text-transform:uppercase;lett
 </section>
 
 <section class="view" data-view="controls">
-<div class="panel" id="ctrlPanel"><h2 style="margin-top:0">Controls</h2><div class="ctrls" id="statusCtrls"></div>
-<div class="field"><label class="chk"><input type="checkbox" id="muteChk"> Muted (can't post in chat)</label></div>
-<div class="field"><span class="muted">Restrictions:</span><label class="chk"><input type="checkbox" data-r="chat"> No chat</label><label class="chk"><input type="checkbox" data-r="rewards"> No rewards</label><label class="chk"><input type="checkbox" data-r="withdraw"> No withdraw</label><button class="btn" id="saveRestr">Save</button></div>
-<div class="field"><input class="in" id="unameIn" placeholder="username" maxlength="20" style="width:180px"><button class="btn" id="saveUname">Set username</button></div>
-<div class="field"><span class="muted">Ask AI / day:</span><input class="in" id="aiLimIn" type="number" min="0" placeholder="default" style="width:120px"><button class="btn" id="saveAiLim">Set AI limit</button><span class="muted" id="aiLimHint"></span></div>
-<div class="field" style="align-items:flex-start"><textarea class="in" id="noteIn" rows="2" placeholder="Private admin note…" style="flex:1;min-width:220px;resize:vertical"></textarea><button class="btn" id="saveNote">Save note</button></div>
+<div class="panel" id="ctrlPanel"><h2 style="margin-top:0">Controls</h2>
+<div class="csec">Account status <i>ban blocks login entirely · suspend is temporary</i></div>
+<div class="ctrls" id="statusCtrls"></div>
+<div class="csec">Restrictions <i>enforced server-side — a restricted user who tries gets a "contact support" notice</i></div>
+<div class="field"><label class="chk"><input type="checkbox" data-r="chat"> No chat</label><label class="chk"><input type="checkbox" id="muteChk"> Muted <span class="muted" style="font-size:11px">(instant)</span></label><label class="chk"><input type="checkbox" data-r="rewards"> No rewards <span class="muted" style="font-size:11px">(claim · promo · exchange bonus · withdraw)</span></label><label class="chk"><input type="checkbox" data-r="withdraw"> No withdraw only</label><button class="btn" id="saveRestr">Apply restrictions</button></div>
+<div class="csec">Profile</div>
+<div class="field"><input class="in" id="unameIn" placeholder="username" maxlength="20" style="width:180px"><button class="btn" id="saveUname">Set username</button><span class="muted" style="margin:0 6px">·</span><span class="muted">Ask AI / day:</span><input class="in" id="aiLimIn" type="number" min="0" placeholder="default" style="width:110px"><button class="btn" id="saveAiLim">Set</button><span class="muted" id="aiLimHint"></span></div>
+<div class="csec">Private note <i>only you see this</i></div>
+<div class="field" style="align-items:flex-start;margin-top:4px"><textarea class="in" id="noteIn" rows="2" placeholder="Private admin note…" style="flex:1;min-width:220px;resize:vertical"></textarea><button class="btn" id="saveNote">Save note</button></div>
+<div class="csec" style="color:#a05555">Danger zone</div>
 <div class="field"><button class="btn warn" id="logoutAll">Sign out everywhere</button><button class="btn danger" id="delUser">Delete account</button></div>
 <div class="msg" id="cmsg"></div></div>
 </section>
@@ -3610,11 +3617,15 @@ async function handleReward(url, request, env) {
   // public address-existence check (the page calls this on Save for instant feedback)
   if (path === '/check') return jr({ exists: await addressExists(b.address || url.searchParams.get('address')) });
   // The faucet is account-based: resolve the signed-in user from the session cookie → 'u:<uid>'. Only for the account paths (avoids an extra UserStore call on /lb, /check, admin, /config).
-  let acct = null;
+  let acct = null, suRestr = '';
   if (path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || (path === '/lb' && request.method === 'POST')) {
     const tok = getCookie(request, SESS_COOKIE);
-    if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) acct = 'u:' + su.id; }
+    if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); } }
   }
+  // enforce the admin per-user restrictions (profile page Controls): they were only STORED before — the toggles did nothing
+  const hasRestr = k => (',' + suRestr + ',').indexOf(',' + k + ',') >= 0;
+  if (hasRestr('rewards') && (path === '/claim' || path === '/withdraw' || path === '/promo/submit' || path === '/exsign/submit')) return jr({ error: 'restricted' }, 403);
+  if (hasRestr('withdraw') && path === '/withdraw') return jr({ error: 'restricted' }, 403);
   const full = await rewardCfg(env);
   // admin: read/write the live config (Settings tab) — applies instantly, no deploy
   if (path === '/config') {
@@ -3973,6 +3984,8 @@ export default {
       // (Non-browser clients can fake it; this blocks the drive-by case, the DO adds per-IP limits.)
       const org = request.headers.get('origin') || '';
       if (org && !/^https:\/\/(www\.)?marginpad\.io$|^http:\/\/localhost(:\d+)?$/.test(org)) return new Response('forbidden', { status: 403 });
+      // admin restrictions: a muted or chat-restricted user can't even open the socket (the client shows a "contact support" notice)
+      try { const tok = getCookie(request, SESS_COOKIE); if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && (su.muted || (',' + String(su.restrictions || '') + ',').indexOf(',chat,') >= 0)) return new Response('restricted', { status: 403 }); } } catch (e) {}
       return env.CHAT.get(env.CHAT.idFromName('global')).fetch(request);
     }
     if (url.pathname === '/charts' || url.pathname === '/charts/' || url.pathname === '/paper-trade' || url.pathname === '/paper-trade/' || url.pathname === '/calculators' || url.pathname === '/calculators/' || url.pathname === '/screener' || url.pathname === '/screener/' || url.pathname === '/heatmap' || url.pathname === '/heatmap/' || url.pathname === '/swap' || url.pathname === '/swap/') { // dedicated full-screen workspaces (serve the homepage; its JS switches to the right single-tool mode)

@@ -445,6 +445,7 @@
       else if(e==='uid_taken')exsMsgF('That UID was already submitted.','err');
       else if(e==='bad_uid')exsMsgF('That does not look like a UID — copy the user ID from your exchange profile (letters and numbers only).','err');
       else if(e==='banned')exsMsgF('This account is suspended from rewards.','err');
+      else if(e==='restricted')exsMsgF('Your account is restricted from rewards. If you believe this is a mistake, contact support (button below).','err');
       else if(e==='paused')exsMsgF('Exchange bonuses are paused right now.','err');
       else exsMsgF('Could not submit — try again shortly.','err');
     }).catch(function(){btn.disabled=false;btn.textContent='Submit';exsMsgF('Network error — try again.','err');});
@@ -475,6 +476,7 @@
         else if(e==='url_taken')prMsg('That post link was already submitted.','err');
         else if(e==='bad_url')prMsg('That does not look like a '+(prPlat==='x'?'post link on X (x.com/…/status/…)':'TikTok video link')+'.','err');
         else if(e==='banned')prMsg('This account is suspended from rewards.','err');
+        else if(e==='restricted')prMsg('Your account is restricted from rewards. If you believe this is a mistake, contact support (button below).','err');
         else if(e==='paused')prMsg('Promo rewards are paused right now.','err');
         else prMsg('Could not submit — try again shortly.','err');
       }).catch(function(){btn.disabled=false;btn.textContent='Submit';prMsg('Network error — try again.','err');});
@@ -551,6 +553,7 @@
           else if(e==='ip_limit') msg('Too many new accounts from this connection today.','err');
           else if(e==='paused') msg(j.message||'The faucet is paused right now — check back soon.','err');
           else if(e==='banned'){ bannedAcct=true; if(acct){acct.banned=true;showInbox(acct);} msg('Your account has been suspended from the rewards program.','err'); }
+          else if(e==='restricted') msg('Your account is restricted from rewards. If you believe this is a mistake, contact support (button below).','err');
           else msg('Could not claim right now. Try again in a moment.','err');
           tickCooldown();
         }
@@ -577,6 +580,7 @@
         else if(j.error==='bad_address'){ wdAddr.classList.add('invalid'); msg('Invalid BEP20 address.','err'); }
         else if(j.error==='min_not_met') msg('You need at least $'+fmt(minWd)+' to withdraw.','err');
         else if(j.error==='wd_paused'||j.error==='paused') msg('Withdrawals are paused right now — check back soon.','err');
+        else if(j.error==='restricted') msg('Withdrawals are restricted on your account. If you believe this is a mistake, contact support (button below).','err');
         else if(j.error==='need_claims') msg('Claim at least '+(j.need||0)+' times before withdrawing (you have '+(j.have||0)+').','err');
         else if(j.error==='banned') msg('Your account has been suspended from rewards.','err');
         else { msg('Could not request withdrawal. Try again.','err'); refresh(); }
