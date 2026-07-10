@@ -2602,3 +2602,11 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 .scr-oc-attr a{color:#9aa3ad}
 
 .pp-times{margin-top:7px;font-family:'Space Mono',monospace;font-size:9.5px;color:#5c656f;letter-spacing:.02em}
+
+/* ticket legibility pass (owner: faint gray was hard to read) — brighten every faint element on .pp tickets */
+.pp-meta>div span{color:#98a2ae}
+.pp-foot{color:#98a2ae}
+.pp-times{color:#98a2ae;font-size:10px}
+.pp-live{color:#aeb6c0}
+.pp-meta{color:#c6cdd5}
+.pp-empty{color:#98a2ae}
