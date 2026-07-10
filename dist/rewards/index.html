@@ -208,6 +208,19 @@
   .note{font-size:12px;color:var(--faint);text-align:center;margin-top:8px}
   .pill{display:inline-block;font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--lime);background:rgba(194,246,74,.1);border:1px solid rgba(194,246,74,.3);border-radius:999px;padding:5px 11px;margin-bottom:16px}
   footer{margin-top:40px;border-top:1px solid var(--line);padding-top:18px;font-size:12.5px;color:var(--faint);text-align:center}
+
+.msn{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.msn:last-child{border-bottom:none}
+.msn .st{flex:none;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,.18);color:rgba(255,255,255,.35);font-size:13px}
+.msn.done .st{border-color:#c2f64a;color:#c2f64a;background:rgba(194,246,74,.08)}
+.msn .tx{flex:1;min-width:0}
+.msn .t1{font-size:13.5px;font-weight:700;color:#e9e7df}
+.msn .t2{font-size:11.5px;color:#9aa3ad;margin-top:1px}
+.msn .amt{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:#c2f64a;flex:none}
+.msn button{flex:none;background:#c2f64a;border:none;color:#0a0b0d;font-weight:800;font-size:12px;border-radius:9px;padding:8px 14px;cursor:pointer}
+.msn button:disabled{opacity:.5;cursor:default}
+.msn .claimed{flex:none;font-family:'Space Mono',monospace;font-size:11px;color:#c2f64a;font-weight:700}
+.msn.locked .t1{color:#9aa3ad}
 </style>
 
 <script defer src="/assets/sentry.js"></script>
@@ -291,6 +304,12 @@
     .exs-form .btn{flex:0 0 auto;background:var(--lime);color:#0a0b0d}
     .exs-note{font-size:12px;color:#9aa3ad;line-height:1.55;margin-top:9px}
   </style>
+  <div class="card" id="msnCard" hidden>
+    <div class="lbl">Daily missions</div>
+    <p class="sub" style="margin:6px 0 2px">Use the tools, earn extra USDT. Missions verify automatically from your activity and reset at 00:00 UTC<span id="msnReset"></span>.</p>
+    <div id="msnList" style="margin-top:12px"></div>
+    <p class="sub" id="msnFoot" style="margin-top:10px;font-size:11.5px"></p>
+  </div>
   <div class="card" id="exsCard" hidden>
     <div class="lbl">Exchange sign-up bonus</div>
     <h2 style="margin:0 0 6px;font-size:19px">Create an exchange account — get $<span class="exsAmt">3</span> for each one</h2>
@@ -701,5 +720,43 @@
 <script src="/assets/mp-trade.js" defer></script>
 <script defer src="/assets/mp-auth.js"></script>
 <script defer src="/assets/mp-nav.js"></script>
+<script>
+(function(){
+  var card=document.getElementById('msnCard');if(!card)return;
+  function fmt2(c){return '+$'+(c/100).toFixed(2);}
+  function render(d){
+    if(!d||d.enabled===false){card.hidden=true;return;}
+    card.hidden=false;
+    var list=document.getElementById('msnList');
+    if(d.signedIn===false){
+      list.innerHTML=d.missions.map(function(m){return '<div class="msn locked"><span class="st">\u25cb</span><span class="tx"><span class="t1">'+m.title+'</span><span class="t2" style="display:block">'+m.desc+'</span></span><span class="amt">'+fmt2(m.cents)+'</span></div>';}).join('');
+      document.getElementById('msnFoot').innerHTML='<a href="#" data-auth-open style="color:#c2f64a;font-weight:700">Sign in</a> to start completing missions \u2014 they verify automatically.';
+      return;
+    }
+    list.innerHTML=d.missions.map(function(m){
+      var right=m.claimed?'<span class="claimed">CLAIMED \u2713</span>':(m.done?'<button data-msn="'+m.mid+'">Claim '+fmt2(m.cents)+'</button>':'<span class="amt">'+fmt2(m.cents)+'</span>');
+      return '<div class="msn'+(m.done?' done':' locked')+'"><span class="st">'+(m.done?'\u2713':'\u25cb')+'</span><span class="tx"><span class="t1">'+m.title+'</span><span class="t2" style="display:block">'+m.desc+'</span></span>'+right+'</div>';
+    }).join('');
+    var doneN=d.missions.filter(function(m){return m.claimed;}).length;
+    document.getElementById('msnFoot').textContent=doneN===d.missions.length?'All missions done for today \u2014 come back after 00:00 UTC.':'Do the thing anywhere on the site, come back, hit Claim.';
+    if(d.resetInMs){var h=Math.floor(d.resetInMs/3600000),mi=Math.floor(d.resetInMs%3600000/60000);document.getElementById('msnReset').textContent=' (in '+h+'h '+mi+'m)';}
+  }
+  function load(){fetch('/api/missions',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}
+  card.addEventListener('click',function(e){
+    var b=e.target.closest('[data-msn]');if(!b)return;
+    b.disabled=true;b.textContent='\u2026';
+    fetch('/api/missions',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({mid:b.getAttribute('data-msn')})})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d&&d.ok){render({enabled:true,signedIn:true,missions:d.missions,resetInMs:null});
+          try{if(typeof refresh==='function')refresh();}catch(e2){}
+        }else{b.disabled=false;b.textContent='Claim';}
+      }).catch(function(){b.disabled=false;b.textContent='Claim';});
+  });
+  load();
+  window.addEventListener('mp-auth-change',load);
+  setInterval(load,90000);
+})();
+</script>
 </body>
 </html>
