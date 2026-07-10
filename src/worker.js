@@ -2193,7 +2193,7 @@ var opsBodyEl=document.getElementById('opsBody');if(opsBodyEl)opsBodyEl.addEvent
 // Restore where you were: the old <meta refresh> hard-reloaded the whole page every 5 min and dumped you back on
 // the Dashboard tab mid-work. Now the active tab + subtab survive any reload, and the auto-refresh below only fires
 // when it can't interrupt anything.
-try{var _rt=sessionStorage.getItem('adm_tab');if(_rt&&_rt!=='stats')show(_rt);var _rs=sessionStorage.getItem('adm_sub');if(_rs&&_rs!=='overview')showSub(_rs);}catch(e){}
+setTimeout(function(){try{var _rt=sessionStorage.getItem('adm_tab');if(_rt&&_rt!=='stats')show(_rt);var _rs=sessionStorage.getItem('adm_sub');if(_rs&&_rs!=='overview')showSub(_rs);}catch(e){}},0); /* deferred: show() calls tab loaders whose state vars are declared LATER in this script — running restore synchronously hit them before initialization (Users tab stuck on 'loading…' after any reload) */
 setInterval(function(){
   var modal=document.querySelector('.amodal:not([hidden])');
   var ae=document.activeElement,typing=ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA'||ae.tagName==='SELECT');
