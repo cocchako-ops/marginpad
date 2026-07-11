@@ -700,7 +700,9 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(emptyEl)emptyEl.style.display='none';
   }
   function add(){
-    if(add._busy)return; add._busy=true; setTimeout(function(){add._busy=false;},650); // debounce: one click can't fire two opens (a double-click was creating two near-identical positions)
+    if(add._busy){ // 1s cooldown active — nudge the button so a repeat click reads as "just opened, one sec", never as a dead/broken button
+      var _nb=document.getElementById('planSave'); if(_nb){_nb.classList.remove('cd-nudge');void _nb.offsetWidth;_nb.classList.add('cd-nudge');setTimeout(function(){_nb.classList.remove('cd-nudge');},340);} return; }
+    add._busy=true; setTimeout(function(){add._busy=false;},1000); // 1s anti-spam lock (was a silent 650ms debounce) — paired with the visible cooldown bar below
     var pl=window.mpPlanLive, entry=pl&&pl.price;          // open AT the current live price
     var amt=num('planAmt'), lev=num('planLev');
     var _say=function(m){if(window.mpLimitToast)window.mpLimitToast(m);}; // honest micro-feedback: never swallow a click silently (UX audit: "enabled button that does nothing")
@@ -737,7 +739,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(window.mpBuzz)window.mpBuzz([15]); // haptic on open (this IIFE has no local buzz — use the global)
     try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
     var btn=document.getElementById('planSave'),sp=btn&&btn.querySelector('span');
-    if(btn&&sp){var o=sp.textContent;btn.classList.add('saved');sp.textContent=MT('jOpened','Position opened ✓');setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1600);}
+    if(btn&&sp){var o=sp.textContent;btn.classList.add('saved','cooldown');sp.textContent=MT('jOpened','Position opened \u2713');setTimeout(function(){btn.classList.remove('cooldown');},1000);setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1120);}
     try{if(window.__mpTrack){window.__mpTrack('paper',(sym||'?')+' '+side);window.__mpTrack('plev',L<=5?'1-5x':L<=20?'5-20x':L<=50?'20-50x':L<=100?'50-100x':'100x+');}}catch(e){}
     try{drawLines();}catch(e){} // draw the entry/liq lines the instant the position opens (don't wait for the next 1s tick)
   }

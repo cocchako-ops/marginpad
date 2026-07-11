@@ -470,6 +470,12 @@
 .mpcs-tearwrap.tearing .mpcs-top{animation:mpTopFly .6s .18s cubic-bezier(.55,.06,.7,.2) forwards;}
 @keyframes mpStubFall{0%{opacity:1;transform:none}20%{transform:translateY(3px) rotate(-1.5deg)}100%{opacity:0;transform:translateY(64px) rotate(5deg)}}
 @keyframes mpTopFly{0%{opacity:1;transform:none}12%{transform:translateY(-4px) rotate(-1deg)}100%{opacity:0;transform:translate(var(--dx,120px),var(--dy,-120px)) scale(.22) rotate(8deg)}}
+/* open feedback: a 1s cooldown bar drains along the Open button so the anti-spam lock reads as intentional, not frozen */
+.pt2-open.cooldown{cursor:default;}
+.pt2-open.cooldown::after{display:block;content:'';position:absolute;left:0;bottom:0;top:auto;width:100%;height:3px;background:rgba(255,255,255,.6);border-radius:0 0 13px 13px;transform-origin:left center;animation:ptCooldown 1s linear forwards;}
+.pt2-open.cd-nudge{animation:ptNudge .34s ease;}
+@keyframes ptCooldown{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+@keyframes ptNudge{0%,100%{transform:none}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
   .ptl-live{margin-left:auto;color:var(--ink-dim);}
   .ptl-pnl{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;min-width:0;}
   .ptl-pnl .big{font-family:'Space Mono',monospace;font-weight:800;font-size:19px;}
@@ -1043,7 +1049,7 @@
   /* desktop: make language + sign-in icon-only too (same as mobile — just a globe and a profile icon) */
   /* desktop header matches the homepage: "Sign in" text + native EN language select (icon-only block removed) */
   .hnav .csel-panel{min-width:170px;right:0;left:auto;}
-  @media (prefers-reduced-motion:reduce){*,.aurora::before,.aurora::after{animation:none !important;}header,.hero h1,.hero .sub,.hero .meta,.tabs,.card,.panel.active,.reveal{opacity:1 !important;transform:none !important;}.mpcs-tearwrap.tearing .mpcs-bot{animation:mpStubFall .58s cubic-bezier(.45,.02,.75,.35) forwards !important;}.mpcs-tearwrap.tearing .mpcs-top{animation:mpTopFly .6s .18s cubic-bezier(.55,.06,.7,.2) forwards !important;}.grain{display:none;}}
+  @media (prefers-reduced-motion:reduce){*,.aurora::before,.aurora::after{animation:none !important;}header,.hero h1,.hero .sub,.hero .meta,.tabs,.card,.panel.active,.reveal{opacity:1 !important;transform:none !important;}.mpcs-tearwrap.tearing .mpcs-bot{animation:mpStubFall .58s cubic-bezier(.45,.02,.75,.35) forwards !important;}.mpcs-tearwrap.tearing .mpcs-top{animation:mpTopFly .6s .18s cubic-bezier(.55,.06,.7,.2) forwards !important;}.pt-last.justopened{animation:ptOpenPop .36s cubic-bezier(.2,.85,.25,1),ptOpenGlow .95s ease-out !important;}.pt2-open.cooldown::after{animation:ptCooldown 1s linear forwards !important;}.pt2-open.cd-nudge{animation:ptNudge .34s ease !important;}.grain{display:none;}}
   /* MOBILE: kill the live/animated background entirely — static, plain, cheap. Big perf win on phones. */
   @media (max-width:760px){
     /* WEAK-PHONE GPU RESCUE: 32 backdrop-filter:blur + a full-viewport aurora blur overwhelm old WebViews' compositor (Chrome <80 / in-app browsers) and FREEZE the page. Kill every blur on mobile — the #1 cause of "site won't open" on weak phones. */
