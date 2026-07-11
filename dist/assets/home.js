@@ -2359,19 +2359,32 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
       for(var i=0;i<cards.length;i++){if(cards[i].getAttribute('data-tid')===String(id)){card=cards[i];break;}}
       if(!card)return null;
       var r=card.getBoundingClientRect(); if(!(r.width>0&&r.height>0))return null;
-      var clone=card.cloneNode(true);
-      clone.className='pt-last mpcs-ghost'+(/\bpf\b/.test(card.className)?' pf':/\bls\b/.test(card.className)?' ls':' be');
-      clone.style.cssText='position:fixed;left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px;height:'+r.height+'px;margin:0;';
+      var W=r.width,H=r.height,cls=(/\bpf\b/.test(card.className)?' pf':/\bls\b/.test(card.className)?' ls':' be');
+      // the tear runs along the perforation (.ptl-cut); both fragments share the SAME jagged line so they interlock
+      var cutEl=card.querySelector('.ptl-cut'),cutY=cutEl?(cutEl.getBoundingClientRect().top-r.top+1):Math.round(H*0.6);
+      cutY=Math.max(20,Math.min(H-16,cutY));
+      var A=5,TW=11,Z=[],x=0,k=0; // zigzag boundary points, left→right (clip-path needs px units on every coord)
+      for(x=0;x<=W;x+=TW){Z.push(x.toFixed(0)+'px '+((k%2?cutY-A:cutY)).toFixed(0)+'px');k++;}
+      Z.push(W.toFixed(0)+'px '+((k%2?cutY-A:cutY)).toFixed(0)+'px');
+      var topPoly='polygon(0px 0px, '+W.toFixed(0)+'px 0px, '+Z.slice().reverse().join(', ')+')';
+      var botPoly='polygon('+Z.join(', ')+', '+W.toFixed(0)+'px '+H.toFixed(0)+'px, 0px '+H.toFixed(0)+'px)';
       // fly target = the first on-screen "My Trades" trigger; fall back to the top-right corner
       var tgt=null,cand=document.querySelectorAll('[data-mytrades]');
       for(var j=0;j<cand.length;j++){var rr=cand[j].getBoundingClientRect();if(rr.width>0&&rr.height>0&&rr.bottom>0&&rr.top<window.innerHeight){tgt=rr;break;}}
-      var cx=r.left+r.width/2,cy=r.top+r.height/2;
+      var cx=r.left+r.width/2,cy=r.top+cutY/2;
       var tx=tgt?(tgt.left+tgt.width/2):(window.innerWidth-46),ty=tgt?(tgt.top+tgt.height/2):46;
-      clone.style.setProperty('--dx',(tx-cx).toFixed(0)+'px');
-      clone.style.setProperty('--dy',(ty-cy).toFixed(0)+'px');
-      document.body.appendChild(clone);
-      return function(){ void clone.offsetWidth; clone.classList.add('tearing');
-        setTimeout(function(){try{clone.parentNode&&clone.parentNode.removeChild(clone);}catch(_){}} ,1000); };
+      var wrap=document.createElement('div');
+      wrap.className='mpcs-tearwrap';
+      wrap.style.cssText='position:fixed;left:'+r.left+'px;top:'+r.top+'px;width:'+W+'px;height:'+H+'px;margin:0;';
+      function frag(poly,extra){var f=card.cloneNode(true);f.className='pt-last mpcs-frag'+cls+' '+extra;
+        f.style.cssText='position:absolute;left:0;top:0;width:'+W+'px;height:'+H+'px;margin:0;clip-path:'+poly+';-webkit-clip-path:'+poly+';';return f;}
+      var top=frag(topPoly,'mpcs-top'),bot=frag(botPoly,'mpcs-bot');
+      top.style.setProperty('--dx',(tx-cx).toFixed(0)+'px');
+      top.style.setProperty('--dy',(ty-cy).toFixed(0)+'px');
+      wrap.appendChild(bot);wrap.appendChild(top);
+      document.body.appendChild(wrap);
+      return function(){ void wrap.offsetWidth; wrap.classList.add('tearing');
+        setTimeout(function(){try{wrap.parentNode&&wrap.parentNode.removeChild(wrap);}catch(_){}} ,1100); };
     }catch(e){return null;}
   }
   window.mpCloseSheet=show;
