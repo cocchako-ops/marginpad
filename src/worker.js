@@ -1316,7 +1316,17 @@ async function handleTrack(url, request, env, ctx) {
     await inc('ev:' + type + (label ? ':' + label : ''));
     const evIp = request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip') || '';
     const evVid = await sha8(evIp + '|' + (request.headers.get('user-agent') || ''));
-    if (type === 'jserr') { const de = new Date().toISOString().slice(0, 10); await inc('err:total'); await inc('err:day:' + de, 3456000); await inc('ev:jserrbr:' + browserOf(request.headers.get('user-agent') || '')); } // client crash/JS-error beacon: total + daily series + which browser broke
+    if (type === 'jserr') { // client crash/JS-error beacon: total + daily series + which browser broke
+      const de = new Date().toISOString().slice(0, 10);
+      await inc('err:total'); await inc('ev:jserrbr:' + browserOf(request.headers.get('user-agent') || ''));
+      // Dedupe the DAILY "broken pages" counter by visitor+message. One stuck visitor (a corrupt local state, a
+      // translation/extension-injected script) re-fires the SAME error on every reload — the old counter inflated
+      // "9 broken pages today" out of ~1 real broken session. The daily number should count unique broken sessions.
+      try {
+        const dk = 'errseen:' + evVid + ':' + (await sha8(de + '|' + (label || ''))).slice(0, 8);
+        if (!(await env.STATS.get(dk))) { await inc('err:day:' + de, 3456000); await env.STATS.put(dk, '1', { expirationTtl: 93600 }); }
+      } catch (e) { await inc('err:day:' + de, 3456000); } // dedupe path failed → count it anyway (fail toward visibility)
+    }
     try { if (env.AE) env.AE.writeDataPoint({ indexes: [type], blobs: ['event', type, label, (request.cf && request.cf.country) || '', (p.get('p') || '/').slice(0, 90)], doubles: [1] }); } catch (e) {}
     if (type === 'exchange' || type === 'tool') { // affiliate click-outs only (exchange = Bybit/Binance/…, tool = TradingView/Koinly/3Commas). NOT 'hotpair' — Trending now opens Paper Trade, it is not a money click.
       const d2 = new Date().toISOString().slice(0, 10);
