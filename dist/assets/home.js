@@ -2394,11 +2394,13 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
           if(nh)Array.prototype.forEach.call(nh.querySelectorAll('.pt-last'),function(c){
             var tid=c.getAttribute('data-tid'),o=oldTops[tid]; if(o==null)return;
             var dy=o-c.getBoundingClientRect().top; if(Math.abs(dy)<1)return;
+            // HOLD the gap open (pin the survivor at its old spot) while the stub tears off, THEN glide it up.
+            // Sliding immediately made the one below arrive before the tear finished — it read as a hidden position.
             c.style.transition='none'; c.style.transform='translateY('+dy.toFixed(1)+'px)';
-            requestAnimationFrame(function(){requestAnimationFrame(function(){
-              c.style.transition='transform .5s cubic-bezier(.22,.61,.36,1)'; c.style.transform='translateY(0)';
-              setTimeout(function(){c.style.transition='';c.style.transform='';},560);
-            });});
+            setTimeout(function(){
+              c.style.transition='transform .55s cubic-bezier(.22,.61,.36,1)'; c.style.transform='translateY(0)';
+              setTimeout(function(){c.style.transition='';c.style.transform='';},600);
+            },320); // hold ~320ms so the torn stub has visibly fallen away first
           });
         }catch(_){}
         setTimeout(function(){try{wrap.parentNode&&wrap.parentNode.removeChild(wrap);}catch(_){}} ,1100); };
