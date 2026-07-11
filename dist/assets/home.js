@@ -2383,7 +2383,22 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
       top.style.setProperty('--dy',(ty-cy).toFixed(0)+'px');
       wrap.appendChild(bot);wrap.appendChild(top);
       document.body.appendChild(wrap);
+      // remember where the OTHER tickets sit now, so after the list rebuilds we can slide them up smoothly
+      // (FLIP) instead of letting the one below snap into the torn ticket's slot — which read as "a hidden position".
+      var oldTops={};
+      Array.prototype.forEach.call(host.querySelectorAll('.pt-last'),function(c){var tid=c.getAttribute('data-tid');if(tid&&tid!==String(id))oldTops[tid]=c.getBoundingClientRect().top;});
       return function(){ void wrap.offsetWidth; wrap.classList.add('tearing');
+        try{ var nh=document.getElementById('ptLastTrade');
+          if(nh)Array.prototype.forEach.call(nh.querySelectorAll('.pt-last'),function(c){
+            var tid=c.getAttribute('data-tid'),o=oldTops[tid]; if(o==null)return;
+            var dy=o-c.getBoundingClientRect().top; if(Math.abs(dy)<1)return;
+            c.style.transition='none'; c.style.transform='translateY('+dy.toFixed(1)+'px)';
+            requestAnimationFrame(function(){requestAnimationFrame(function(){
+              c.style.transition='transform .5s cubic-bezier(.22,.61,.36,1)'; c.style.transform='translateY(0)';
+              setTimeout(function(){c.style.transition='';c.style.transform='';},560);
+            });});
+          });
+        }catch(_){}
         setTimeout(function(){try{wrap.parentNode&&wrap.parentNode.removeChild(wrap);}catch(_){}} ,1100); };
     }catch(e){return null;}
   }
