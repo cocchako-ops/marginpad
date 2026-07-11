@@ -1045,7 +1045,7 @@
   /* desktop: make language + sign-in icon-only too (same as mobile — just a globe and a profile icon) */
   /* desktop header matches the homepage: "Sign in" text + native EN language select (icon-only block removed) */
   .hnav .csel-panel{min-width:170px;right:0;left:auto;}
-  @media (prefers-reduced-motion:reduce){*,.aurora::before,.aurora::after{animation:none !important;}header,.hero h1,.hero .sub,.hero .meta,.tabs,.card,.panel.active,.reveal{opacity:1 !important;transform:none !important;}.grain{display:none;}}
+  @media (prefers-reduced-motion:reduce){*,.aurora::before,.aurora::after{animation:none !important;}header,.hero h1,.hero .sub,.hero .meta,.tabs,.card,.panel.active,.reveal{opacity:1 !important;transform:none !important;}.mpcs-ghost.tearing{animation:mpCardFly .52s .34s cubic-bezier(.55,.06,.68,.19) forwards !important;}.mpcs-ghost.tearing .ptl-meta{animation:mpMetaTear .40s cubic-bezier(.35,.05,.7,1) both !important;}.mpcs-ghost.tearing .ptl-cut{animation:mpCutOpen .34s ease both !important;}.mpcs-ghost.tearing .ptl-cut::after{animation:mpZig .34s ease .04s forwards !important;}.grain{display:none;}}
   /* MOBILE: kill the live/animated background entirely — static, plain, cheap. Big perf win on phones. */
   @media (max-width:760px){
     /* WEAK-PHONE GPU RESCUE: 32 backdrop-filter:blur + a full-viewport aurora blur overwhelm old WebViews' compositor (Chrome <80 / in-app browsers) and FREEZE the page. Kill every blur on mobile — the #1 cause of "site won't open" on weak phones. */
