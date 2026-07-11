@@ -185,7 +185,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   var _lastSig='';
   function _tkCls(m){return (m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));}
   function _tkPnl(m){return (m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));}
-  function _tkMeta(e,m){return 'Entry <b>'+fp(e.entry)+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')';}
+  function _tkMeta(e,m){return 'Entry <b>'+fp(e.entry)+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+') · Margin <b>'+money((+e.margin||+e.riskAmt||0))+'</b>';}
   function renderLast(){var el=document.getElementById('ptLastTrade');if(!el)return;var open=load().filter(function(e){return e.status==='open';});
     if(!open.length){el.hidden=true;el.className='pt-tickets';el.innerHTML='';_lastSig='';return;}
     el.className='pt-tickets';el.hidden=false;
@@ -194,7 +194,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     _lastSig=list.map(function(e){return e.id;}).join(',');
     el.innerHTML=list.map(function(e,idx){var m=metrics(e),long=m.long;
       return '<div class="pt-last '+_tkCls(m)+'" data-tid="'+e.id+'">'
-        +'<div class="ptl-top"><span class="ptl-tag">OPEN</span><span class="ptl-sym">'+esc(e.sym||'—')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b class="ptl-px">'+fp(m.live)+'</b></span></div>'
+        +'<div class="ptl-top"><span class="ptl-sym">'+esc(e.sym||'—')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b class="ptl-px">'+fp(m.live)+'</b></span></div>'
         +'<div class="ptl-pnl"><span class="big">'+_tkPnl(m)+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span><button type="button" class="ptl-close" data-ptl-close="'+e.id+'">Close</button></div>'
         +'<div class="ptl-cut"></div>'
         +'<div class="ptl-meta">'+_tkMeta(e,m)+'</div>'
@@ -497,7 +497,11 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   var pSym=document.getElementById('planSym');
   if(pSym)pSym.addEventListener('change',function(){setTimeout(loadKlines,30);});
   var sv=document.getElementById('planSave');
-  if(sv)sv.addEventListener('click',function(){setTimeout(function(){renderPos();renderLast();var _lt=document.getElementById('ptLastTrade');if(_lt&&!_lt.hidden){var _f=_lt.querySelector('.pt-last');if(_f){_f.classList.remove('justopened');void _f.offsetWidth;_f.classList.add('justopened');setTimeout(function(){_f.classList.remove('justopened');},1000);}}drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();},140);});
+  if(sv)sv.addEventListener('click',function(){setTimeout(function(){renderPos();renderLast();
+    // ONLY pop the ticket when a NEW position actually opened this click — a blocked/spam click (cooldown, empty
+    // amount, wrong-side SL/TP) must NOT re-shake the last ticket as if it just opened (owner report).
+    if(Date.now()-(window._mpLastOpenTs||0)<500){window._mpLastOpenTs=0; /* consume: pop exactly once per real open, never on a later blocked click */ var _lt=document.getElementById('ptLastTrade');if(_lt&&!_lt.hidden){var _f=_lt.querySelector('.pt-last');if(_f){_f.classList.remove('justopened');void _f.offsetWidth;_f.classList.add('justopened');setTimeout(function(){_f.classList.remove('justopened');},1000);}}}
+    drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();},140);});
   function ensureChart(){var pl=document.getElementById('plan');if(!pl||!pl.classList.contains('active')||!pl.offsetParent)return;if(!inited){inited=true;loadLib(function(){initChart();loadKlines();});}else if(!chart&&window.LightweightCharts){initChart();loadKlines();}}
   function mtCount(){var el=document.getElementById('ptMtCount');if(!el)return;var n=load().filter(function(e){return e.status==='open';}).length;el.textContent=n?String(n):'';}
   // dynamic stop management — trailing stop trails the best price; break-even snaps the stop to entry once ROE hits the trigger
@@ -734,7 +738,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var data=load();
     data.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,trail:trail,be:be,hwm:entry,lev:L,rr:isFinite(rr)?rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:feeRate,status:'open',pnl:null});
     if(window.mpLivePrices&&sym)window.mpLivePrices[sym]={p:entry,t:Date.now()}; // start P&L at exactly 0 — kills the phantom -100% / instant-liquidation at open
-    store(data); /* shows live in the My Trades drawer — no popup */
+    store(data); window._mpLastOpenTs=Date.now(); /* shows live in the My Trades drawer — no popup; stamp the open so the ticket pop only fires for a REAL open */
     try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (throttled)
     if(window.mpBuzz)window.mpBuzz([15]); // haptic on open (this IIFE has no local buzz — use the global)
     try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
