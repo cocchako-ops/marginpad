@@ -2360,6 +2360,7 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
   function mpcsCaptureTear(id){
     try{
       if(window.innerWidth<721)return null; // desktop only (owner scope)
+      var _dr=document.getElementById('jrDrawer'); if(_dr&&!_dr.hidden)return null; // My Trades drawer open -> the mini ticket is hidden behind it; tearing it would bleed a phantom clone over the drawer
       var host=document.getElementById('ptLastTrade'); if(!host)return null;
       var card=null,cards=host.querySelectorAll('.pt-last');
       for(var i=0;i<cards.length;i++){if(cards[i].getAttribute('data-tid')===String(id)){card=cards[i];break;}}
