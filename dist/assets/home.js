@@ -2341,10 +2341,38 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
       part.status=pnl>=0?'win':'loss';part.exit=m.live;part.closeTs=Date.now();part.pnl=pnl;part.partial=Math.round(f*100);
       d.push(part);
     }
-    jstore(d);hide();done();
+    jstore(d);hide();
+    var _tear=(f>=1)?mpcsCaptureTear(curId):null; // desktop full-close receipt tear
+    done();
+    if(_tear)_tear();
     // confirm the close — the card just vanishing left users asking "where did my trade go?" (UX audit)
     try{var _cp=(f>=1?(+e.pnl||0):pnl)||0,_px=(+m.live).toLocaleString('en-US',{maximumFractionDigits:6});
       if(window.mpLimitToast)window.mpLimitToast((f>=1?'Closed ':'Closed '+Math.round(f*100)+'% of ')+String(e.sym||'')+' at '+_px+' · '+(_cp>=0?'+$':'−$')+Math.abs(_cp).toFixed(2)+' — saved to My Trades.');}catch(_){}
+  }
+  // DESKTOP receipt-tear animation: on a FULL close, clone the just-closed ticket, tear off its bottom stub
+  // along the perforation, then fly the top toward My Trades — so the close reads as "filed away", not "vanished".
+  function mpcsCaptureTear(id){
+    try{
+      if(window.innerWidth<721)return null; // desktop only (owner scope)
+      var host=document.getElementById('ptLastTrade'); if(!host)return null;
+      var card=null,cards=host.querySelectorAll('.pt-last');
+      for(var i=0;i<cards.length;i++){if(cards[i].getAttribute('data-tid')===String(id)){card=cards[i];break;}}
+      if(!card)return null;
+      var r=card.getBoundingClientRect(); if(!(r.width>0&&r.height>0))return null;
+      var clone=card.cloneNode(true);
+      clone.className='pt-last mpcs-ghost'+(/\bpf\b/.test(card.className)?' pf':/\bls\b/.test(card.className)?' ls':' be');
+      clone.style.cssText='position:fixed;left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px;height:'+r.height+'px;margin:0;';
+      // fly target = the first on-screen "My Trades" trigger; fall back to the top-right corner
+      var tgt=null,cand=document.querySelectorAll('[data-mytrades]');
+      for(var j=0;j<cand.length;j++){var rr=cand[j].getBoundingClientRect();if(rr.width>0&&rr.height>0&&rr.bottom>0&&rr.top<window.innerHeight){tgt=rr;break;}}
+      var cx=r.left+r.width/2,cy=r.top+r.height/2;
+      var tx=tgt?(tgt.left+tgt.width/2):(window.innerWidth-46),ty=tgt?(tgt.top+tgt.height/2):46;
+      clone.style.setProperty('--dx',(tx-cx).toFixed(0)+'px');
+      clone.style.setProperty('--dy',(ty-cy).toFixed(0)+'px');
+      document.body.appendChild(clone);
+      return function(){ void clone.offsetWidth; clone.classList.add('tearing');
+        setTimeout(function(){try{clone.parentNode&&clone.parentNode.removeChild(clone);}catch(_){}} ,1000); };
+    }catch(e){return null;}
   }
   window.mpCloseSheet=show;
 })();

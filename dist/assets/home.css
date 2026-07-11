@@ -461,6 +461,17 @@
   .ptl-dir{font-size:8.5px;font-weight:700;padding:2px 6px;border-radius:4px;letter-spacing:.04em;}
   .ptl-dir.long{color:#34d99a;background:rgba(46,189,133,.15);}.ptl-dir.short{color:#ff7b72;background:rgba(255,98,88,.15);}
   .ptl-lev{font-size:9.5px;font-weight:800;letter-spacing:.03em;color:#ffd75a;background:rgba(255,215,90,.13);border:1px solid rgba(255,215,90,.35);padding:2px 7px;border-radius:5px;}
+/* desktop receipt-tear on full close: bottom stub tears off along the perforation, then the top flies to My Trades */
+.mpcs-ghost{z-index:120;pointer-events:none;overflow:visible;box-shadow:0 18px 46px rgba(0,0,0,.5);transform-style:preserve-3d;}
+.mpcs-ghost .ptl-close{visibility:hidden;}
+.mpcs-ghost.tearing .ptl-meta{transform-origin:top center;animation:mpMetaTear .40s cubic-bezier(.35,.05,.7,1) both;}
+.mpcs-ghost.tearing .ptl-cut{animation:mpCutOpen .34s ease both;}
+.mpcs-ghost.tearing .ptl-cut::after{content:"";position:absolute;left:-2px;right:-2px;top:-4px;height:7px;background:linear-gradient(-45deg,#0d1117 4px,transparent 0) 0 0,linear-gradient(45deg,#0d1117 4px,transparent 0) 0 0;background-size:9px 9px;background-repeat:repeat-x;opacity:0;animation:mpZig .34s ease .04s forwards;}
+.mpcs-ghost.tearing{animation:mpCardFly .52s .34s cubic-bezier(.55,.06,.68,.19) forwards;}
+@keyframes mpMetaTear{0%{opacity:1;transform:none}55%{opacity:1}100%{opacity:0;transform:translateY(58px) rotateX(88deg) rotate(-3deg)}}
+@keyframes mpCutOpen{0%{opacity:.6}100%{border-top-color:rgba(255,255,255,.02);opacity:1}}
+@keyframes mpZig{to{opacity:1}}
+@keyframes mpCardFly{0%{opacity:1}100%{opacity:0;transform:translate(var(--dx,120px),var(--dy,-120px)) scale(.26) rotate(9deg)}}
   .ptl-live{margin-left:auto;color:var(--ink-dim);}
   .ptl-pnl{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;min-width:0;}
   .ptl-pnl .big{font-family:'Space Mono',monospace;font-weight:800;font-size:19px;}
