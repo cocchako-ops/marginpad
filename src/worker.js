@@ -4695,6 +4695,24 @@ export default {
       const rows = (ur.users || []).map(u => { const a = byUid[u.uid]; return Object.assign({}, u, { vpn: isVpnOrg(u.org || ''), address: a ? a.address : '', claims: a ? (a.claims || 0) : 0, balanceUsd: a ? (+a.balanceUsd || 0) : 0, earnedUsd: a ? (+a.earnedUsd || 0) : 0, banned: a ? !!a.banned : false, sameDid: a ? (a.sameDid || 1) : 1, sameIp: a ? (a.sameIp || 1) : 1 }); });
       return new Response(JSON.stringify({ rows, minWdUsd: (cfg.minWdC || 500) / 100 }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
+    if (url.pathname === '/api/admin/sendmail' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // owner utility: send an email (optional base64 attachment) via Resend
+      const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      if (!env.RESEND_API_KEY) return new Response(JSON.stringify({ error: 'no_resend' }), { status: 500, headers: jh });
+      let bd = null; try { bd = await request.json(); } catch (e) {}
+      const to = String((bd && bd.to) || '').trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) return new Response(JSON.stringify({ error: 'bad_to' }), { status: 400, headers: jh });
+      const payload = {
+        from: 'MarginPad <hello@marginpad.io>', to: [to], reply_to: 'support@marginpad.io',
+        subject: String((bd && bd.subject) || 'From MarginPad').slice(0, 200),
+        html: String((bd && bd.html) || (bd && bd.text) || '').slice(0, 20000) || '<p>(no body)</p>'
+      };
+      if (bd && bd.filename && bd.b64) payload.attachments = [{ filename: String(bd.filename).slice(0, 80), content: String(bd.b64) }];
+      try {
+        const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+        const jj = await r.json().catch(() => ({}));
+        return new Response(JSON.stringify({ ok: r.ok, id: jj.id || null, err: r.ok ? null : jj }), { status: r.ok ? 200 : 502, headers: jh });
+      } catch (e) { return new Response(JSON.stringify({ error: 'send_failed' }), { status: 502, headers: jh }); }
+    }
     if (url.pathname === '/api/admin/pingpos' && (await adminCookieOk(request, env))) { // owner pings a trader: email with their LIVE ROE + a nudge to come manage the open position
       const jh = { 'content-type': 'application/json' };
       if (!env.RESEND_API_KEY) return new Response(JSON.stringify({ error: 'email_not_configured' }), { status: 503, headers: jh });
