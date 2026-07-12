@@ -1501,8 +1501,27 @@ async function checkOpsAlerts(env) {
     if (srv >= 5) await once('alrt:srv:' + today, () => tgAdmin(env, '🔥 <b>' + srv + ' server errora danas</b> — pogledaj Health tab.\n<a href="https://marginpad.io/api/stats">Otvori ops →</a>'));
     const errj = +(await env.STATS.get('err:day:' + today) || 0);
     if (errj >= 12) await once('alrt:err:' + today, () => tgAdmin(env, '🐛 <b>' + errj + ' broken pages danas</b> — pogledaj Health tab.'));
-    try { const h = await collectorHealth(env); if (h && h.exchanges && h.exchanges.length && !h.exchanges.some(e2 => e2.lastEventAt && Date.now() - e2.lastEventAt < 30 * 60000)) await once('alrt:coll:' + today, () => tgAdmin(env, '📡 <b>Collector ne šalje podatke</b> (nijedan exchange u zadnjih 30 min) — proveri VPS.')); } catch (e) {}
+    try { const cs = await collectorStatusInfo(env); if (cs && (cs.state === 'UNREACHABLE' || cs.state === 'DOWN' || cs.state === 'STALLED' || cs.state === 'UNCONFIG')) await once('alrt:coll:' + today, () => tgAdmin(env, '📡 <b>Collector je PAO</b> (' + cs.state + (cs.reason ? ' · ' + cs.reason : '') + ') — Rekt / likvidacije feed je stao.\nRestart na VPS-u: <code>ssh root@62.171.228.208 "pm2 restart marginpad-collector"</code>')); } catch (e) {}
   } catch (e) {}
+}
+// Lightweight collector status probe (object, not HTML) for the down-alert + the ops attention chip.
+// collectorHealth() returns HTML for the dashboard; the old alert checked .exchanges on that STRING so it
+// NEVER fired (a full outage went unnoticed for a day). This returns a real status object.
+async function collectorStatusInfo(env) {
+  const base = (env && env.COLLECTOR_URL || '').replace(/\/$/, '');
+  if (!base) return { state: 'UNCONFIG', reason: 'COLLECTOR_URL not set', anyRecent: false };
+  try {
+    const r = await fetch(base + '/api/v1/status', { cf: { cacheTtl: 0 } });
+    if (!r.ok) return { state: 'UNREACHABLE', reason: 'HTTP ' + r.status, anyRecent: false };
+    const st = await r.json();
+    if (!st || !Array.isArray(st.exchanges)) return { state: 'UNREACHABLE', reason: 'bad status', anyRecent: false };
+    const now = Date.now();
+    const exs = st.exchanges.filter((e) => ['bybit', 'okx', 'bitmex', 'bitfinex'].indexOf((e.name || '').toLowerCase()) >= 0);
+    const conn = exs.filter((e) => e.connected).length, total = exs.length;
+    const anyRecent = exs.some((e) => e.lastEventAt && now - e.lastEventAt < 30 * 60000);
+    const state = conn === 0 ? 'DOWN' : (!anyRecent ? 'STALLED' : (conn < total ? 'DEGRADED' : 'LIVE'));
+    return { state, reason: '', anyRecent, conn, total, uptimeSec: st.uptimeSec || 0 };
+  } catch (e) { return { state: 'UNREACHABLE', reason: 'unreachable', anyRecent: false }; }
 }
 async function collectorHealth(env) {
   const base = (env && env.COLLECTOR_URL || '').replace(/\/$/, '');
@@ -1523,7 +1542,7 @@ async function collectorHealth(env) {
   const exs = st.exchanges.filter((e) => ['bybit', 'okx', 'bitmex', 'bitfinex'].indexOf((e.name || '').toLowerCase()) >= 0); // only the active sources — the rest are deactivated/not working
   const conn = exs.filter((e) => e.connected).length, total = exs.length;
   const anyRecent = exs.some((e) => e.lastEventAt && now - e.lastEventAt < 30 * 60000);
-  const status = conn === 0 ? ['DOWN', 'hp-down'] : conn < total ? ['DEGRADED', 'hp-warn'] : ['LIVE', 'hp-live'];
+  const status = conn === 0 ? ['DOWN', 'hp-down'] : !anyRecent ? ['STALLED', 'hp-down'] : conn < total ? ['DEGRADED', 'hp-warn'] : ['LIVE', 'hp-live']; // STALLED = connected but no liquidation events in 30 min (the feed silently stopped)
   const up = (s) => { const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60); return (h ? h + 'h ' : '') + m + 'm'; };
   const ago = (t) => !t ? 'never' : (now - t < 60000 ? '<1m' : Math.round((now - t) / 60000) + 'm') + ' ago';
   const idleLbl = (e) => e.name === 'binance' ? 'idle (geo-restricted)' : 'connected · awaiting';
@@ -2087,6 +2106,7 @@ async function handleStats(url, env, request) {
   const retPct = uvToday ? Math.round(retT / uvToday * 100) : 0;
   const revTodayEst = Math.round(affTod * 0.45);
   const admSeed = [];
+  try { const _collSt = await collectorStatusInfo(env); if (_collSt && (_collSt.state === 'UNREACHABLE' || _collSt.state === 'DOWN' || _collSt.state === 'STALLED' || _collSt.state === 'UNCONFIG')) admSeed.push({ cls: 'red', sub: '', html: '📡 <b>Collector DOWN</b> (' + _collSt.state + ') — Rekt / liquidations feed stopped · <a href="https://marginpad.io/rekt/" target="_blank" style="color:#ff8a80">check Rekt</a>' }); } catch (e) {}
   if (_errActive) admSeed.push({ cls: 'red', sub: 'health', html: '⚠ <b>' + _errActive + '</b> active server error' + (_errActive > 1 ? 's' : '') });
   if (errToday > 3) admSeed.push({ cls: 'amber', sub: 'health', html: '⚠ <b>' + N(errToday) + '</b> broken pages today' });
   if (commToday > 0) admSeed.push({ cls: 'ok', sub: '', html: '✍️ <b>' + N(commToday) + '</b> community post' + (commToday > 1 ? 's' : '') + ' in 24h · <a href="https://marginpad.io/community/" target="_blank" style="color:inherit;text-decoration:underline">open →</a>' });
