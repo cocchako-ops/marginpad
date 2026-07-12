@@ -217,7 +217,7 @@
   .rkh-meter .bar .bs{background:linear-gradient(90deg,#41e3a3,#2ebd85);transition:width .7s ease}
   .rkh-meter .lbl{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:10.5px;margin-top:8px;font-variant-numeric:tabular-nums}
   .rkh-meter .lbl .ll{color:#ff8a80}.rkh-meter .lbl .ls{color:#41e3a3}
-  .rk-off{display:flex;align-items:center;gap:8px;justify-content:center;background:linear-gradient(180deg,rgba(255,90,77,.14),rgba(255,90,77,.06));border:1px solid rgba(255,90,77,.4);color:var(--lqredg);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.03em;padding:11px;border-radius:12px;margin:0 0 14px;animation:rkoff 1.6s ease-in-out infinite}
+  .rk-maint{margin:8px 0 20px}.rk-maint-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:44px 26px;border:1px solid rgba(255,168,60,.32);border-radius:18px;background:radial-gradient(600px 240px at 50% -40px,rgba(255,168,60,.10),transparent 70%),linear-gradient(180deg,#12100b,#0c0b08)}.rk-maint-ic{width:66px;height:66px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#ffb84d;background:rgba(255,168,60,.10);border:1px solid rgba(255,168,60,.28)}.rk-maint-card h2{margin:0;font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800;color:#ffd9a3;letter-spacing:-.01em}.rk-maint-card p{margin:0;max-width:440px;font-size:14px;line-height:1.55;color:#b8ac97}@media(max-width:600px){.rk-maint-card{padding:34px 18px}.rk-maint-card h2{font-size:21px}.rk-maint-card p{font-size:13px}}.rk-off{display:flex;align-items:center;gap:8px;justify-content:center;background:linear-gradient(180deg,rgba(255,90,77,.14),rgba(255,90,77,.06));border:1px solid rgba(255,90,77,.4);color:var(--lqredg);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.03em;padding:11px;border-radius:12px;margin:0 0 14px;animation:rkoff 1.6s ease-in-out infinite}
   .rk-off[hidden]{display:none}
   @keyframes rkoff{0%,100%{opacity:.65}50%{opacity:1}}
   .rk-empty{color:var(--lqink3);text-align:center;padding:48px 0;font-family:'Space Mono',monospace;letter-spacing:.04em}
@@ -566,6 +566,13 @@
     </div>
 
     <div class="rk-off" id="rkOffline" hidden>⚠ Connection lost — reconnecting to the live feed…</div>
+    <div class="rk-maint" id="rkMaint" hidden>
+      <div class="rk-maint-card">
+        <div class="rk-maint-ic"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+        <h2>Update ongoing</h2>
+        <p>The live liquidations feed is temporarily offline while we upgrade the data pipeline. It'll be back shortly — thanks for your patience.</p>
+      </div>
+    </div>
     <div class="rk-feed" id="rkFeed"><div class="rk-empty">Loading live liquidations…</div></div>
     <div class="rkt" id="rkTerm">
       <div class="rkt-main">
@@ -716,16 +723,19 @@
   loadLiqStats();setInterval(loadLiqStats,60000);
   function validSym(s){s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return s.length>=2&&/[A-Z]/.test(s);} // drop context-less junk like a bare "H"
   function setOffline(off){var el=document.getElementById('rkOffline');if(el)el.hidden=!off;}
-  function poll(){if(document.hidden)return;fetch('/api/v1/feed?min=1000&limit=80').then(function(r){return r.ok?r.json():null;}).then(function(j){
-    if(!j||!Array.isArray(j.events)){offFails++;if(offFails>=3)setOffline(true);return;}
-    offFails=0;setOffline(false);
+  var REKT_MAINT=true;/* VPS/collector down for maintenance (owner 2026-07-12) — set false + redeploy to re-enable the live feed */
+  var maintMode=false,_mTick=0;
+  function setMaint(on){maintMode=on;var m=document.getElementById('rkMaint');if(m)m.hidden=!on;var f=document.getElementById('rkFeed'),t=document.getElementById('rkTerm'),o2=document.getElementById('rkOffline');if(f)f.style.display=on?'none':'';if(t)t.style.display=on?'none':'';if(on&&o2)o2.hidden=true;} // "Update ongoing" state — collector/VPS feed down; self-heals when data returns
+  function poll(){if(document.hidden)return;if(maintMode){_mTick++;if(_mTick%8!==0)return;}fetch('/api/v1/feed?min=1000&limit=80').then(function(r){return r.ok?r.json():null;}).then(function(j){
+    if(!j||!Array.isArray(j.events)){offFails++;if(offFails>=2)setMaint(true);else if(offFails>=3)setOffline(true);return;}
+    offFails=0;setOffline(false);if(maintMode)setMaint(false);
     var added=false,fresh=[];
     j.events.forEach(function(e){if(!validSym(e.symbol))return;var k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;if(!seen[k]){seen[k]=1;all.push(e);fresh.push(e);added=true;}});
     all.sort(function(a,b){return b.ts-a.ts;});if(all.length>200)all=all.slice(0,200);
     if(Object.keys(seen).length>600){seen={};var _an={};all.forEach(function(e){var _k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;seen[_k]=1;if(animated[_k])_an[_k]=1;});animated=_an;} // prune BOTH dedup maps (animated used to grow unbounded → heap leak on a leave-open page) so they can't grow unbounded on long sessions
     if(added)render();
     if(fresh.length)try{deskPush(fresh);}catch(_e){}
-  }).catch(function(){offFails++;if(offFails>=3)setOffline(true);});}
+  }).catch(function(){offFails++;if(offFails>=2)setMaint(true);else if(offFails>=3)setOffline(true);});}
   document.getElementById('rkFilters').addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;
     if(b.hasAttribute('data-f')){fSide=b.getAttribute('data-f');this.querySelectorAll('[data-f]').forEach(function(x){x.classList.remove('on');});b.classList.add('on');}
     if(b.hasAttribute('data-m')){fMin=+b.getAttribute('data-m');this.querySelectorAll('[data-m]').forEach(function(x){x.classList.remove('on');});b.classList.add('on');}
@@ -738,11 +748,11 @@
   var rkP=document.getElementById('rkPause');
   if(rkP)rkP.addEventListener('click',function(){paused=!paused;rkP.classList.toggle('on',paused);rkP.setAttribute('aria-pressed',paused?'true':'false');rkP.textContent=paused?'▶ Live':'⏸ Pause';if(!paused){render();try{deskRenderAll();}catch(_e){}}});
   try{matchMedia('(min-width:861px)').addEventListener('change',function(){render();try{deskRenderAll();}catch(_e){}});}catch(_e){} // breakpoint cross → hand the stream to the other renderer
-  poll();setInterval(poll,4000);
+  if(REKT_MAINT){setMaint(true);}else{poll();setInterval(poll,4000);}
   // backfill TODAY (UTC) from the collector's history so the terminal doesn't start from zero on page open —
   // the live poll only carries the last ~80 events; this seeds the day's aggregates (venue split, size histogram,
   // biggest hit, source chips) + fills the tape. One 60s-edge-cached pull shared by all visitors.
-  (function backfill(){var mid=new Date();mid.setUTCHours(0,0,0,0);
+  (function backfill(){if(REKT_MAINT)return;var mid=new Date();mid.setUTCHours(0,0,0,0);
     fetch('/api/v1/feed?min=1000&limit=3000&since='+mid.getTime()).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
       if(!j||!Array.isArray(j.events)||!j.events.length)return;
       j.events.forEach(function(e){if(!validSym(e.symbol))return;var k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;if(!seen[k]){seen[k]=1;all.push(e);try{deskAgg(e);}catch(_e){}}});
@@ -750,7 +760,7 @@
       firstRender=true; // a thousand backfilled rows must not slam-animate
       render();try{deskRenderAll();}catch(_e){}
     });})();
-  document.addEventListener('visibilitychange',function(){if(!document.hidden){poll();loadLiqStats();}}); // returning to the tab → refresh immediately instead of waiting up to 4s (the hidden-guarded polls were paused)
+  document.addEventListener('visibilitychange',function(){if(!document.hidden){if(!REKT_MAINT)poll();loadLiqStats();}}); // returning to the tab → refresh immediately instead of waiting up to 4s (the hidden-guarded polls were paused)
   setInterval(function(){if(document.hidden)return;document.querySelectorAll('.tk-ago[data-ts]').forEach(function(el){var t=+el.getAttribute('data-ts');if(t)el.textContent=ago(t)+' ago';});},1000);
   /* ===== DESKTOP LIQUIDATION TERMINAL (≥861px) =====
      Live tape (dense table rows, escalating weight ≥$100K amber / ≥$1M red) + an analytics rail computed from the

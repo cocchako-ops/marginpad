@@ -1640,7 +1640,7 @@ window.addEventListener('load', function () {
     while(order.length>600) delete seen[order.shift()];
     var show=(first?fresh.slice(0,2):fresh.slice(0,4)); first=false; show.reverse(); for(var s=0;s<show.length;s++) add(show[s]);
   }).catch(function(){}); }
-  function start(){ if(window.innerWidth<760)return; poll(); setInterval(poll,4500); }
+  function start(){ return; /* live liquidations ticker OFF while the collector/VPS is down (2026-07-12) — delete this return to re-enable */ if(window.innerWidth<760)return; poll(); setInterval(poll,4500); }
   if(document.readyState!=='loading')start(); else document.addEventListener('DOMContentLoaded',start);
 })();
 
