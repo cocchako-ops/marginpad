@@ -374,6 +374,9 @@
   .pp-btns .cl{color:#ff6258;border-color:rgba(255,98,88,.42);}
   .pp-btns .cl:hover{color:#ff8079;border-color:#ff6258;background:rgba(255,98,88,.1);}
   .pp-btns .ch{color:#34d99a;border-color:rgba(46,189,133,.4);}
+.pp-btns .pt{color:#c2f64a;border-color:rgba(194,246,74,.42);}
+.pp-btns .pt:hover{background:rgba(194,246,74,.10);border-color:#c2f64a;}
+.pp-ic-del:hover{color:#ff6258;border-color:rgba(255,98,88,.5);background:rgba(255,98,88,.08);}
   .pp-btns .ch:hover{color:#5fe7b6;border-color:#34d99a;background:rgba(46,189,133,.1);}
   .pp-empty{color:var(--ink-faint);font-size:13px;text-align:center;padding:22px 10px;}
   /* roomier terminal (Moon-style) — bigger right panel, more whitespace */

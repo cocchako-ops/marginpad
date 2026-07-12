@@ -1015,6 +1015,7 @@
   }
   document.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('.cws-tile[data-preset]');if(b){var n=parseInt(b.getAttribute('data-preset'),10);if(n)applyPreset(n);}});
   function buildInitial(){var sn=loadNotes();if(sn&&sn.length)sn.forEach(function(c){addNote(c);});
+    var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}if(_fc){_fc=String(_fc).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_fc){showEmpty(false);try{addWin({sym:_fc,tf:'60'});}catch(e){}if(wins.length)return;}}
     var sv=loadPersist(); // auto-restore the last session (owner request 2026-07-09: leaving /charts and coming back must look exactly as left — windows, symbols, TFs, indicators; drawings restore per SYM:TF via w.dr.reload)
     if(sv&&sv.length){showEmpty(false);sv.slice(0,MAXn()).forEach(function(cfg){try{addWin(cfg);}catch(e){}});if(!wins.length)showEmpty(true);}
     else showEmpty(true);}
@@ -1068,6 +1069,7 @@
     getTheme:function(){return chTheme;},
     reflow:function(){try{reflowWins();}catch(e){}},
     openSymbol:function(sym){try{openSymbolW(sym);}catch(e){}},
+    openOnly:function(sym){try{sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym||isMobile())return;showEmpty(false);wins.slice().forEach(function(w){try{closeWin(w);}catch(e){}});addWin({sym:sym,tf:'60'});setTimeout(function(){try{reflowWins();}catch(e){}},50);}catch(e){}},
     openSetup:function(sym,info){try{openSetupW(sym,info);}catch(e){}} };
   if(/^\/charts\/?$/.test(location.pathname)){try{window.mpCharts.activate();}catch(e){}}
 })();

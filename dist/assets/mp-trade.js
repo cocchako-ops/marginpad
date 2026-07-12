@@ -17,8 +17,9 @@
   var SHARE_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>';
   var COPY_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>';
   var CHART_SVG='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;vertical-align:-1px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>';
+  var TRASH_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>';
   function gotoChart(sym){location.href='/paper-trade'+(sym?'?coin='+encodeURIComponent(sym):'');}
-  function ppActions(e){return '<div class="pp-actions"><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button><button class="pp-ic" data-act="copy" data-id="'+e.id+'" title="'+MT('jCopyLink','Copy link + image')+'" aria-label="'+MT('jCopyLink','Copy link')+'">'+COPY_SVG+'</button></div>';}
+  function ppActions(e){return '<div class="pp-actions"><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button><button class="pp-ic pp-ic-del" data-act="del" data-id="'+e.id+'" title="'+MT('jDelete','Delete')+'" aria-label="'+MT('jDelete','Delete')+'">'+TRASH_SVG+'</button></div>';}
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
@@ -55,7 +56,7 @@
         +'<div><span>'+MT('jSize2','Size')+'</span><b>'+((+e.margin>0)?money(+e.margin)+(e.partial?' ('+e.partial+'%)':''):'—')+'</b></div>'
         +'<div><span>'+MT('jValue','Value')+'</span><b>'+((+e.margin>0)?money(+e.margin*((+e.lev>0)?+e.lev:1)):'—')+'</b></div>'
       +'</div>'
-      +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="cl" data-act="del" data-id="'+e.id+'">'+MT('jDelete','Delete')+'</button></div>'
+      +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button></div>'
       +'<div class="pp-times">'+MT('jOpened','Opened')+' '+tsf(e.ts)+(e.closeTs?(' \u00b7 '+MT('jClosed','Closed')+' '+tsf(e.closeTs)):'')+'</div></div>';}
   function rr(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}
   function buildTicket(e){
@@ -161,7 +162,7 @@
     var data=load(),i=-1; for(var k=0;k<data.length;k++){if(data[k].id===id){i=k;break;}} if(i<0)return; var e=data[i];
     if(act==='share'){shareTicket(e);return;}
     if(act==='copy'){copyTicket(e);return;}
-    if(act==='chart'){gotoChart(e.sym);return;}
+    if(act==='chart'){var _cs=String(e.sym||'').toUpperCase();try{sessionStorage.setItem('mp_force_chart',_cs);}catch(_){}try{closeJr();}catch(_){}if(window.mpGo)window.mpGo('/charts');else location.href='/charts';var _t=0,_iv=setInterval(function(){_t++;var _c=null;try{_c=sessionStorage.getItem('mp_force_chart');}catch(_){}if(!_c){clearInterval(_iv);return;}if(window.mpCharts&&window.mpCharts.openOnly){clearInterval(_iv);try{sessionStorage.removeItem('mp_force_chart');}catch(_){}window.mpCharts.openOnly(_c);}else if(_t>25){clearInterval(_iv);}},120);return;}if(act==='ptrade'){var _pu='/paper-trade?coin='+encodeURIComponent(String(e.sym||'').toUpperCase())+(e.side?'&side='+(e.side==='short'?'short':'long'):'');try{closeJr();}catch(_){}if(window.mpGo)window.mpGo(_pu);else location.href=_pu;return;}
     if(act==='sltp'){if(window.mpSltpSheet)window.mpSltpSheet(id,function(){render();});return;}
     if(act==='del'){ data.splice(i,1); }
     else if(act==='close'){ if(window.mpCloseSheet){window.mpCloseSheet(id,function(){render();});return;} var m=metrics(e); e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss')); e.exit=m.live; e.closeTs=Date.now(); e.pnl=(m.pnl!=null?m.pnl:0); }
