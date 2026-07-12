@@ -41,7 +41,7 @@
         +'<div><span>TP</span><b>'+(e.tp!=null?fp(e.tp):'—')+'</b></div>'
       +'</div>'
       +'<div class="pp-foot">'+dur(Date.now()-e.ts)+' '+MT('jOpenLc','open')+'</div>'
-      +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="ed" data-act="sltp" data-id="'+e.id+'">SL/TP</button><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button></div>'
+      +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button><button class="ed" data-act="sltp" data-id="'+e.id+'">SL/TP</button><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button></div>'
       +'<div class="pp-times">'+MT('jOpened','Opened')+' '+tsf(e.ts)+'</div></div>';}
   function closedCard(e){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e)

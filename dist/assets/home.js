@@ -623,7 +623,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
         +'<div><span>TP</span><b>'+(e.tp!=null?fp(e.tp):'—')+'</b></div>'
       +'</div>'
       +'<div class="pp-foot">'+dur(Date.now()-e.ts)+' '+MT('jOpenLc','open')+'</div>'
-      +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="ed" data-act="sltp" data-id="'+e.id+'">SL/TP</button><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button></div>'
+      +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button><button class="ed" data-act="sltp" data-id="'+e.id+'">SL/TP</button><button class="cl" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button></div>'
       +'<div class="pp-times">'+MT('jOpened','Opened')+' '+tsf(e.ts)+'</div></div>';}
   function closedCard(e){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e)
@@ -757,7 +757,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var data=load(),i=-1; for(var k=0;k<data.length;k++){if(data[k].id===id){i=k;break;}} if(i<0)return; var e=data[i];
     if(act==='share'){shareTicket(e);return;}
     if(act==='copy'){copyTicket(e);return;}
-    if(act==='chart'){var _cs=String(e.sym||'').toUpperCase();try{sessionStorage.setItem('mp_force_chart',_cs);}catch(_){}closeJr();if(window.mpGo)window.mpGo('/charts');else location.href='/charts';var _t=0,_iv=setInterval(function(){_t++;var _c=null;try{_c=sessionStorage.getItem('mp_force_chart');}catch(_){}if(!_c){clearInterval(_iv);return;}if(window.mpCharts&&window.mpCharts.openOnly){clearInterval(_iv);try{sessionStorage.removeItem('mp_force_chart');}catch(_){}window.mpCharts.openOnly(_c);}else if(_t>25){clearInterval(_iv);}},120);return;}    if(act==='ptrade'){var _pu='/paper-trade?coin='+encodeURIComponent(String(e.sym||'').toUpperCase())+(e.side?'&side='+(e.side==='short'?'short':'long'):'');closeJr();if(window.mpGo)window.mpGo(_pu);else location.href=_pu;return;}
+    if(act==='chart'){var _cs=String(e.sym||'').toUpperCase();closeJr();if(window.matchMedia&&window.matchMedia('(max-width:880px)').matches){if(window.mpOpenMobileCharts){window.mpOpenMobileCharts(_cs);}else{try{sessionStorage.setItem('mp_force_chart',_cs);}catch(_){}location.href='/charts';}return;}try{sessionStorage.setItem('mp_force_chart',_cs);}catch(_){}if(window.mpGo)window.mpGo('/charts');else location.href='/charts';var _t=0,_iv=setInterval(function(){_t++;var _c=null;try{_c=sessionStorage.getItem('mp_force_chart');}catch(_){}if(!_c){clearInterval(_iv);return;}if(window.mpCharts&&window.mpCharts.openOnly){clearInterval(_iv);try{sessionStorage.removeItem('mp_force_chart');}catch(_){}window.mpCharts.openOnly(_c);}else if(_t>25){clearInterval(_iv);}},120);return;}    if(act==='ptrade'){var _pu='/paper-trade?coin='+encodeURIComponent(String(e.sym||'').toUpperCase())+(e.side?'&side='+(e.side==='short'?'short':'long'):'');closeJr();if(window.mpGo)window.mpGo(_pu);else location.href=_pu;return;}
     if(act==='sltp'){if(window.mpSltpSheet)window.mpSltpSheet(id,function(){render();if(window.mpDrawLines)window.mpDrawLines();});return;}
     if(act==='del'){ data.splice(i,1); }
     else if(act==='close'){ if(window.mpCloseSheet){window.mpCloseSheet(id,function(){render();if(window.mpDrawLines)window.mpDrawLines();});return;} var m=metrics(e); e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss')); e.exit=m.live; e.closeTs=Date.now(); e.pnl=(m.pnl!=null?m.pnl:0); if(window.mpBuzz)window.mpBuzz([22]); try{if(window.mpHidePlanLines)window.mpHidePlanLines();}catch(_){} }
@@ -2233,7 +2233,8 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
     var t=e.target.closest&&e.target.closest('[data-mcharts]'); if(!t)return;
     if(isMob()){e.preventDefault();e.stopPropagation();ensure(function(){if(window.mpOpenCharts)window.mpOpenCharts();});}
   },true);
-  if(isMob()&&/^\/charts\/?$/.test(location.pathname)){window.addEventListener('load',function(){setTimeout(function(){ensure(function(){if(window.mpOpenCharts)window.mpOpenCharts();});},250);});}
+  window.mpOpenMobileCharts=function(sym){ensure(function(){if(window.mpOpenCharts)window.mpOpenCharts(sym);});};
+  if(isMob()&&/^\/charts\/?$/.test(location.pathname)){window.addEventListener('load',function(){setTimeout(function(){var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}ensure(function(){if(window.mpOpenCharts)window.mpOpenCharts(_fc||undefined);});},250);});}
 })();
 
 ;/* ══════════ service worker registration (added 2026-07) ══════════
