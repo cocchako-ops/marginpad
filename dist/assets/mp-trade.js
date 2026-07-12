@@ -164,7 +164,7 @@
     if(act==='copy'){copyTicket(e);return;}
     if(act==='chart'){var _cs=String(e.sym||'').toUpperCase();try{sessionStorage.setItem('mp_force_chart',_cs);}catch(_){}try{closeJr();}catch(_){}if(window.mpGo)window.mpGo('/charts');else location.href='/charts';var _t=0,_iv=setInterval(function(){_t++;var _c=null;try{_c=sessionStorage.getItem('mp_force_chart');}catch(_){}if(!_c){clearInterval(_iv);return;}if(window.mpCharts&&window.mpCharts.openOnly){clearInterval(_iv);try{sessionStorage.removeItem('mp_force_chart');}catch(_){}window.mpCharts.openOnly(_c);}else if(_t>25){clearInterval(_iv);}},120);return;}if(act==='ptrade'){var _pu='/paper-trade?coin='+encodeURIComponent(String(e.sym||'').toUpperCase())+(e.side?'&side='+(e.side==='short'?'short':'long'):'');try{closeJr();}catch(_){}if(window.mpGo)window.mpGo(_pu);else location.href=_pu;return;}
     if(act==='sltp'){if(window.mpSltpSheet)window.mpSltpSheet(id,function(){render();});return;}
-    if(act==='del'){ data.splice(i,1); }
+    if(act==='del'){ if(!confirm(MT('jDelConfirm','Are you sure you want to delete this trade?')))return; data.splice(i,1); }
     else if(act==='close'){ if(window.mpCloseSheet){window.mpCloseSheet(id,function(){render();});return;} var m=metrics(e); e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss')); e.exit=m.live; e.closeTs=Date.now(); e.pnl=(m.pnl!=null?m.pnl:0); }
     else if(act==='reopen'){ e.status='open'; e.exit=null; e.closeTs=null; e.pnl=null; }
     else if(act==='edit'){ var ns=prompt(MT('jNewSL','New stop-loss price:'),e.stop); if(ns!==null){var v=parseFloat(ns);if(isFinite(v))e.stop=v;} var nt=prompt(MT('jNewTP','New take-profit (blank = none):'),e.tp!=null?e.tp:''); if(nt!==null){var v2=parseFloat(nt);e.tp=isFinite(v2)?v2:null;} }
