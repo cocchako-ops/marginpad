@@ -1,6 +1,6 @@
 /* Mobile full-screen Charts — landscape-first 1/2-pane workspace: same indicator families as desktop, drawing, trade import, an AI chat bubble and a quick liq calculator. Exposed as window.mpOpenCharts(). */
 (function(){
-  var ov=null,panes=[],activeI=0,split=1,drawOn=false,tokens=['BTC','ETH','SOL','BNB','XRP','DOGE','ADA','AVAX','LINK'];
+  var ov=null,panes=[],activeI=0,split=1,drawOn=false,forcePair=null,tokens=['BTC','ETH','SOL','BNB','XRP','DOGE','ADA','AVAX','LINK'];
   function isMob(){return !!(window.matchMedia&&window.matchMedia('(max-width:880px)').matches);}
   // iOS leaves the layout viewport scaled (~2x) after a landscape→portrait rotation when user-scalable=no — re-assert + jiggle the viewport meta to clamp scale back to 1 (kills the "everything is huge" zoom after closing charts)
   function resetViewport(){try{var m=document.querySelector('meta[name="viewport"]');if(!m)return;var c=m.getAttribute('content')||'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';var base=c.replace(/,?\s*minimum-scale=[^,]*/,'');m.setAttribute('content',base+', minimum-scale=1.0');setTimeout(function(){m.setAttribute('content',base);},60);}catch(e){}}
@@ -395,13 +395,14 @@
   function mfcLoad(){try{return JSON.parse(localStorage.getItem('mp_mfc_state')||'null');}catch(e){return null;}}
   function isPortrait(){return !!(window.matchMedia&&window.matchMedia('(orientation:portrait)').matches);}
   function showGate(on){var g=ov&&ov.querySelector('.mfc-gate');if(g)g.hidden=!on;var bar=ov&&ov.querySelector('.mfc-bar'),st=ov&&ov.querySelector('#mfcStage'),fab=ov&&ov.querySelector('.mfc-ai-fab');[bar,st,fab].forEach(function(x){if(x)x.style.visibility=on?'hidden':'';});}
-  function open(){ if(!ov)build(); ov.hidden=false; document.documentElement.style.overflow='hidden';
+  function open(sym){ if(!ov)build(); ov.hidden=false; document.documentElement.style.overflow='hidden';
+    if(sym){var _S=String(sym).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_S){forcePair=_S;if(panes.length){try{var _st=ov.querySelector('#mfcStage');panes.forEach(function(pp){try{if(pp.chart)pp.chart.remove();}catch(e){}});if(_st)_st.innerHTML='';panes=[];activeI=0;}catch(e){}}}}
     showGate(false);proceed(); // portrait works too — the inline .mfc-rot hint nudges toward landscape instead of a full-screen wall (UX audit)
   }
   function proceed(){ entered=true; showGate(false);
     if(!panes.length){
       var sv=mfcLoad(),st=ov.querySelector('#mfcStage');
-      var cfgs=(sv&&sv.panes&&sv.panes.length)?sv.panes.slice(0,2):[{sym:'BTC',tf:'60'},{sym:'ETH',tf:'60'}]; // default = TWO charts (owner request 2026-07-09), portrait included; saved state wins
+      var cfgs=forcePair?[{sym:forcePair,tf:'60'},{sym:forcePair,tf:'240'}]:((sv&&sv.panes&&sv.panes.length)?sv.panes.slice(0,2):[{sym:'BTC',tf:'60'},{sym:'ETH',tf:'60'}]); if(forcePair)forcePair=null; // ticket "Chart" -> same pair in two timeframes (1h + 4h); else default TWO charts / saved state
       split=cfgs.length>1?2:1;
       cfgs.forEach(function(c){var p=mkPane(c.sym||'BTC',c.tf||'60');if(c.inds)p.inds=c.inds;panes.push(p);st.appendChild(p.el);});
       st.classList.toggle('split',split===2);
