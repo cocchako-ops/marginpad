@@ -1479,7 +1479,17 @@ window.addEventListener('load', function () {
     else{if(tabsEl)tabsEl.style.display='';if(cardEl)cardEl.style.display='';var tb=document.querySelector('.tab[data-tab="liq"]');if(tb)tb.click();}
   });}
   if(/^\/charts\/?$/.test(location.pathname)){document.body.classList.add('charts-page');document.body.setAttribute('data-prod','charts');var _cs0=document.getElementById('chartspace');if(_cs0){var _wrap0=_cs0.parentNode;Array.prototype.forEach.call(_wrap0.children,function(ch){if(ch!==_cs0&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_cs0.style.display='';}}
-  if(/^\/paper-trade\/?$/.test(location.pathname)){document.body.classList.add('paper-page');var _pt=document.querySelector('.prod[data-prod="plan"]');if(_pt)_pt.click();var _cd=document.querySelector('.card'),_wp=document.querySelector('.wrap');if(_cd&&_wp){Array.prototype.forEach.call(_wp.children,function(ch){if(ch!==_cd&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_cd.style.display='';}var _pc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_pc){var _ps=document.getElementById('planSym');if(_ps){var _u=_pc.toUpperCase(),_ok=false;for(var _k=0;_k<_ps.options.length;_k++)if(_ps.options[_k].value.toUpperCase()===_u){_ok=true;break;}if(!_ok){var _o=document.createElement('option');_o.value=_u;_o.textContent=_u;_ps.appendChild(_o);}_ps.value=_u;_ps.dispatchEvent(new Event('change',{bubbles:true}));}}
+  /* remember the last Paper Trade symbol across refreshes (owner 2026-07-13: refresh reset the chart to BTC) */
+  document.addEventListener('change',function(ev){var t=ev.target;if(t&&t.id==='planSym'&&t.value)try{localStorage.setItem('mp_pt_sym',String(t.value).toUpperCase());}catch(_){}});
+  window.mpPtRestoreSym=function(){try{
+    if(/[?&]coin=/.test(location.search))return; // an explicit ?coin= link always wins
+    var v=localStorage.getItem('mp_pt_sym');if(!v)return;
+    var ps=document.getElementById('planSym');if(!ps||String(ps.value).toUpperCase()===v)return;
+    var ok=false;for(var i=0;i<ps.options.length;i++)if(ps.options[i].value.toUpperCase()===v){ok=true;break;}
+    if(!ok){var o=document.createElement('option');o.value=v;o.textContent=v;ps.appendChild(o);}
+    ps.value=v;ps.dispatchEvent(new Event('change',{bubbles:true}));
+  }catch(_){}};
+  if(/^\/paper-trade\/?$/.test(location.pathname)){document.body.classList.add('paper-page');var _pt=document.querySelector('.prod[data-prod="plan"]');if(_pt)_pt.click();var _cd=document.querySelector('.card'),_wp=document.querySelector('.wrap');if(_cd&&_wp){Array.prototype.forEach.call(_wp.children,function(ch){if(ch!==_cd&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_cd.style.display='';}var _pc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_pc){var _ps=document.getElementById('planSym');if(_ps){var _u=_pc.toUpperCase(),_ok=false;for(var _k=0;_k<_ps.options.length;_k++)if(_ps.options[_k].value.toUpperCase()===_u){_ok=true;break;}if(!_ok){var _o=document.createElement('option');_o.value=_u;_o.textContent=_u;_ps.appendChild(_o);}_ps.value=_u;_ps.dispatchEvent(new Event('change',{bubbles:true}));}}else{window.mpPtRestoreSym();}
     // copy-trade from the screener: also pre-fill side / leverage / SL / TP from the setup
     setTimeout(function(){var _q=location.search;function _g(k){var m=_q.match(new RegExp('[?&]'+k+'=([^&]+)'));return m?decodeURIComponent(m[1]):'';}
       var _side=_g('side'),_lev=_g('lev'),_sl=_g('sl'),_tp=_g('tp');
@@ -1533,6 +1543,7 @@ window.addEventListener('load', function () {
       if(cd&&wp){Array.prototype.forEach.call(wp.children,function(ch){if(ch!==cd&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});cd.style.display='';}
       var pc=(search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];
       if(pc){var ps=document.getElementById('planSym');if(ps){var u=pc.toUpperCase(),ok=false;for(var k=0;k<ps.options.length;k++)if(ps.options[k].value.toUpperCase()===u){ok=true;break;}if(!ok){var o=document.createElement('option');o.value=u;o.textContent=u;ps.appendChild(o);}ps.value=u;ps.dispatchEvent(new Event('change',{bubbles:true}));}}
+      else{try{window.mpPtRestoreSym();}catch(_){}}
       mpPlanSetup(search); // also apply side / leverage / SL / TP from a screener copy-trade link (SPA navigation)
     } else if(/^\/calculators\/?$/.test(path)){
       document.body.classList.add('calc-page');document.body.setAttribute('data-prod','calc');
