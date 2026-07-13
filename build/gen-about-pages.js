@@ -17,7 +17,7 @@ function hreflang(page) {
     '<link rel="alternate" hreflang="en" href="https://marginpad.io/' + page + '/" />']
     .concat(LANGS.map(l => '<link rel="alternate" hreflang="' + l + '" href="https://marginpad.io/' + l + '/' + page + '/" />')).join('\n');
 }
-function shell(lang, page, urlPath, title, desc, bodyHtml) {
+function shell(lang, page, urlPath, title, desc, bodyHtml, extraHead) {
   const dir = RTL.includes(lang) ? ' dir="rtl"' : '';
   const home = lang === 'en' ? '/' : '/' + lang + '/';
   const otherCrumb = page === 'about' ? ABOUT[lang].aTitle : ABOUT[lang].cTitle;
@@ -26,7 +26,7 @@ function shell(lang, page, urlPath, title, desc, bodyHtml) {
 <head>${GTAG}
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>${escAttr(title)} | MarginPad</title>
+<title>${escAttr(title)}${title.includes('MarginPad') ? '' : ' | MarginPad'}</title>
 <meta name="description" content="${escAttr(desc)}" />
 <link rel="canonical" href="https://marginpad.io${urlPath}" />
 ${hreflang(page)}
@@ -40,7 +40,7 @@ ${hreflang(page)}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/assets/blog.css" />
-</head>
+${extraHead || ''}</head>
 <body>
 <div class="wrap">
   <header>
@@ -61,15 +61,16 @@ ${hreflang(page)}
 function aboutBody(lang) {
   const t = ABOUT[lang], home = lang === 'en' ? '/' : '/' + lang + '/';
   return `
-    <h1>${t.aTitle}</h1>
+    <h1>${t.aH1Page || t.aTitle}</h1>
     <p class="lead">${t.aLead}</p>
     <h2>${t.aH1}</h2>
     <p>${t.aP1}</p>
+    ${t.aExtra || ''}
     <h2>${t.aH2}</h2>
     <p>${t.aP2}</p>
     <h2>${t.aH3}</h2>
     <p>${t.aP3}</p>
-    <div class="endcta"><a class="cta" href="${home}#liq">${t.aCta} →</a></div>
+    <div class="endcta"><a class="cta" href="${t.aCtaHref || (home + '#liq')}">${t.aCta} →</a></div>
   `;
 }
 function contactBody(lang) {
@@ -96,7 +97,7 @@ for (const lang of ALL) {
   let p = base + '/about/';
   let dir = path.join(OUT, base.replace(/^\//, ''), 'about');
   fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'index.html'), shell(lang, 'about', p, ABOUT[lang].aTitle, ABOUT[lang].aLead, aboutBody(lang)));
+  fs.writeFileSync(path.join(dir, 'index.html'), shell(lang, 'about', p, ABOUT[lang].aMetaTitle || ABOUT[lang].aTitle, ABOUT[lang].aMetaDesc || ABOUT[lang].aLead, aboutBody(lang), ABOUT[lang].aHeadLd));
   smap.push(p); n++;
   // contact
   p = base + '/contact/';

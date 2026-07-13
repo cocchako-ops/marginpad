@@ -1,4 +1,4 @@
-/* Generates per-exchange landing pages (liquidation + PnL calculators) into ../dist/.
+﻿/* Generates per-exchange landing pages (liquidation + PnL calculators) into ../dist/.
    Run: node build/gen-seo-pages.js   (from project root) */
 const fs = require('fs');
 const path = require('path');
@@ -88,26 +88,26 @@ var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent
 function relatedLiq(ex) {
   const others = EX.filter(o => o.slug !== ex.slug);
   return `<div class="related">
-      <a href="/#liq">All calculators</a>
+      <a href="/calculators">All calculators</a>
       <a href="/${ex.slug}-pnl-calculator/">${ex.name} PnL</a>
-      <a href="/#size">Position size</a>
+      <a href="/calculators?c=size">Position size</a>
       ${others.map(o => `<a href="/${o.slug}-liquidation-calculator/">${o.name} liquidation</a>`).join('\n      ')}
     </div>`;
 }
 function relatedPnl(ex) {
   const others = EX.filter(o => o.slug !== ex.slug);
   return `<div class="related">
-      <a href="/#pnl">All calculators</a>
+      <a href="/calculators">All calculators</a>
       <a href="/${ex.slug}-liquidation-calculator/">${ex.name} liquidation</a>
-      <a href="/#tp">Take-profit</a>
+      <a href="/calculators?c=tp">Take-profit</a>
       ${others.map(o => `<a href="/${o.slug}-pnl-calculator/">${o.name} PnL</a>`).join('\n      ')}
     </div>`;
 }
 
 function liqPage(ex) {
   const url = `https://marginpad.io/${ex.slug}-liquidation-calculator/`;
-  const title = `${ex.name} Liquidation Calculator — Long & Short, Any Leverage`;
-  const desc = `Free ${ex.name} liquidation price calculator. Find your exact liquidation level for any leverage and position, long or short. Instant, no signup.`;
+  const title = `${ex.name} Liquidation Calculator (2026) — Long & Short, Any Leverage`;
+  const desc = `Free ${ex.name} liquidation price calculator: see your exact liq price at 10x, 25x, 50x or any leverage, long or short, with ${ex.name}'s real maintenance margin. Instant, no signup.`;
   const entry = 60000, lev = 10, mmr = ex.mmr / 100, liq = entry * (1 - 1 / lev + mmr), dist = (1 - liq / entry) * 100;
   const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"${ex.name} Liquidation Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"${url}","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"${desc}"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I calculate my liquidation price on ${ex.name}?","acceptedAnswer":{"@type":"Answer","text":"Enter entry price, leverage and direction. Liquidation = Entry x (1 - 1/Leverage + MMR) for a long and Entry x (1 + 1/Leverage - MMR) for a short."}},{"@type":"Question","name":"What is the maximum leverage on ${ex.name}?","acceptedAnswer":{"@type":"Answer","text":"${ex.name} offers up to ${ex.lev}x leverage on flagship perpetuals. The maximum varies by contract, region and account tier."}}]}</script>`;
@@ -153,8 +153,8 @@ function liqPage(ex) {
 
 function pnlPage(ex) {
   const url = `https://marginpad.io/${ex.slug}-pnl-calculator/`;
-  const title = `${ex.name} PnL Calculator — Profit, ROI & ROE`;
-  const desc = `Free ${ex.name} PnL calculator. Work out profit and loss, ROI and leveraged ROE for any ${ex.name} futures trade, long or short. Instant, no signup.`;
+  const title = `${ex.name} PnL Calculator (2026) — Profit, ROI & ROE`;
+  const desc = `Free ${ex.name} PnL calculator: enter entry, exit and leverage to see profit, ROI and leveraged ROE for any ${ex.name} futures trade in one click, long or short. No signup.`;
   const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"${ex.name} PnL Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"${url}","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"${desc}"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I calculate PnL on ${ex.name}?","acceptedAnswer":{"@type":"Answer","text":"PnL = (exit - entry) x size for a long, or (entry - exit) x size for a short. ROE multiplies the price ROI by your leverage."}},{"@type":"Question","name":"What is ROE on ${ex.name} futures?","acceptedAnswer":{"@type":"Answer","text":"ROE is the return on the margin you posted, amplified by leverage. A 10% move at 10x leverage is roughly a 100% return on margin."}}]}</script>`;
   return head({ title, desc, url, crumb: `${ex.name} PnL calculator`, bcName: `${ex.name} PnL Calculator`, ld,

@@ -4898,6 +4898,8 @@ export default {
    try {
     return await (async () => {
     const url = new URL(request.url);
+    // SEO: http:// must 301 to https:// — GSC was indexing http duplicates (http returned 200)
+    if (url.protocol === 'http:') { url.protocol = 'https:'; return Response.redirect(url.toString(), 301); }
     if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
     if (url.pathname === '/api/prices') return handlePrices();
     if (url.pathname === '/api/screener') return handleScreener(env);

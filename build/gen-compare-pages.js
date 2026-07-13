@@ -32,19 +32,19 @@ const RTL = { ar: 1 };
 
 // English baseline (token templates), so every language uses the same builder.
 const EN = {
-  titleSuf: ': Fees, Leverage & Liquidation Compared (2026)',
-  desc: '{A} vs {B} for crypto futures — max leverage, maker/taker fees, maintenance margin and how each handles liquidation. An honest side-by-side.',
+  titleSuf: ': Which Is Better for Crypto Futures? (2026)',
+  desc: '{A} vs {B} for crypto futures — max leverage, maker/taker fees, maintenance margin and liquidation handling, with a clear verdict on which fits which trader. Honest side-by-side.',
   q1: 'Is {A} or {B} cheaper for futures?',
   q1a: 'On base taker fees, {LT} is cheaper ({A} {AT} vs {B} {BT}). Both offer lower maker fees and tier discounts for higher volume.',
   q2: 'Which has higher leverage, {A} or {B}?',
   q2a: '{HL} offers higher maximum leverage ({A} up to {AL}x, {B} up to {BL}x). Higher leverage means liquidation sits closer to your entry.',
-  lead: 'A no-nonsense side-by-side of <strong>{A}</strong> and <strong>{B}</strong> for crypto futures — leverage, fees, maintenance margin and what each is actually good at. Whichever you pick, plan the trade first with our <a href="/">free calculators</a>.',
+  lead: 'A no-nonsense side-by-side of <strong>{A}</strong> and <strong>{B}</strong> for crypto futures — leverage, fees, maintenance margin and what each is actually good at. Whichever you pick, plan the trade first with our <a href="/calculators">free calculators</a>.',
   thLev: 'Max leverage', thMaker: 'Maker fee (base)', thTaker: 'Taker fee (base)', thMmr: 'Maintenance margin', thKnown: 'Known for',
   open: 'Open {X} →',
   h2fees: 'Fees',
   feesP: 'On base taker fees, <strong>{LT}</strong> is cheaper ({A} {AT} vs {B} {BT}). Both reward makers (resting limit orders) with lower fees and cut rates further as your 30-day volume grows. For most active traders the fee gap is small next to the cost of a single bad liquidation — which is why position sizing matters more than chasing the lowest fee. See <a href="/blog/maker-vs-taker-fees/">maker vs taker fees</a>.',
   h2lev: 'Leverage & liquidation',
-  levP: '{HL} offers the higher cap ({A} up to <strong>{AL}×</strong>, {B} up to <strong>{BL}×</strong>), but the headline number is a trap: at {MAX}× a roughly 1% move liquidates you. The maintenance margin rate (≈{AMR} vs ≈{BMR}) also nudges your liquidation price. Check yours before entering with the <a href="/#liq">liquidation calculator</a>, or the per-exchange pages: <a href="/{AK}-liquidation-calculator/">{A}</a> · <a href="/{BK}-liquidation-calculator/">{B}</a>.',
+  levP: '{HL} offers the higher cap ({A} up to <strong>{AL}×</strong>, {B} up to <strong>{BL}×</strong>), but the headline number is a trap: at {MAX}× a roughly 1% move liquidates you. The maintenance margin rate (≈{AMR} vs ≈{BMR}) also nudges your liquidation price. Check yours before entering with the <a href="/calculators?c=liq">liquidation calculator</a>, or the per-exchange pages: <a href="/{AK}-liquidation-calculator/">{A}</a> · <a href="/{BK}-liquidation-calculator/">{B}</a>.',
   h2pick: 'Which should you pick?',
   pickP: 'If you want {AKNOWN}, go with <strong>{A}</strong>. If {BKNOWN} matters more, <strong>{B}</strong> fits better. Many traders keep accounts on both and route each trade to wherever the liquidity and funding are best on the day. There is no wrong answer — there is only an unplanned trade.',
   relAll: 'All calculators', relLiq: '{X} liquidation', relFunding: 'Funding fee',
@@ -133,7 +133,14 @@ function comparePage(ak, bk, lang) {
   };
   const F = s => fill(s, map);
   const title = `${a.name} vs ${b.name}${L.titleSuf}`;
-  const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":${JSON.stringify(F(L.q1))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q1a))}}},{"@type":"Question","name":${JSON.stringify(F(L.q2))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q2a))}}}]}</script>`;
+  // EN-only: a third "which is better" FAQ + a TL;DR verdict box (translations unchanged)
+  const q3 = lang ? '' : `,{"@type":"Question","name":${JSON.stringify(`Which is better, ${a.name} or ${b.name}?`)},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(`Neither is universally better. Pick ${a.name} for ${EN_KNOWN[ak]}; pick ${b.name} for ${EN_KNOWN[bk]}. ${lowerTaker === L.bothEq ? 'Base taker fees are the same' : lowerTaker + ' has the lower base taker fee'}, and ${higherLev} offers the higher leverage cap. Many traders keep both accounts and route each trade to the better venue that day.`)}}}`;
+  const verdict = lang ? '' : `
+    <div style="border:1px solid var(--line);border-left:4px solid #c2f64a;border-radius:12px;padding:16px 18px;margin:18px 0;background:rgba(194,246,74,.04)">
+      <div style="font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#c2f64a;margin-bottom:8px">TL;DR — our verdict</div>
+      <p style="margin:0;font-size:15px;line-height:1.55">Pick <strong>${a.name}</strong> if you want ${EN_KNOWN[ak]}. Pick <strong>${b.name}</strong> if ${EN_KNOWN[bk]} matters more. ${lowerTaker === L.bothEq ? 'Base taker fees are identical' : `<strong>${lowerTaker}</strong> is cheaper on base taker fees`}; <strong>${higherLev}</strong> has the higher leverage cap. Not sure yet? <a href="/paper-trade">Practice the strategy free</a> before funding either.</p>
+    </div>`;
+  const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":${JSON.stringify(F(L.q1))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q1a))}}},{"@type":"Question","name":${JSON.stringify(F(L.q2))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q2a))}}}${q3}]}</script>`;
   return head({
     lang: code, dir: RTL[lang] ? 1 : 0, title, desc: F(L.desc), url, homeHref, hreflang: hreflang(ak, bk),
     crumb: `${a.name} vs ${b.name}`, bcName: `${a.name} vs ${b.name}`, crumbHome: L.crumbHome, ld,
@@ -143,7 +150,7 @@ function comparePage(ak, bk, lang) {
     + `
     <h1>${a.name} vs ${b.name}</h1>
     <p class="lead">${F(L.lead)}</p>
-
+${verdict}
     <table class="cmp">
       <tr><th>&nbsp;</th><th>${a.name}</th><th>${b.name}</th></tr>
       <tr><td>${L.thLev}</td><td>${a.lev}×</td><td>${b.lev}×</td></tr>
