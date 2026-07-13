@@ -814,7 +814,7 @@
   }).catch(function(){});
 
   // ---- gecko markets → Markets tile with logos ----
-  fetch('/api/gecko/markets').then(function(r){return r.json();}).then(function(d){
+  fetch('/api/gecko/markets?slim=1').then(function(r){return r.json();}).then(function(d){
     if(!Array.isArray(d)||!d.length)return;
     document.getElementById('mkts').innerHTML=d.slice(0,5).map(function(c){var v=+c.price_change_percentage_24h;return '<div class="mk-row"><img src="'+String(c.image||'').replace(/"/g,'')+'" alt="" loading="lazy"><span class="mk-sym">'+String(c.symbol||'').toUpperCase()+'</span><span class="mk-px">$'+fmt(c.current_price)+'</span><span class="mk-chg '+(v>=0?'up':'dn')+'">'+(v>=0?'+':'')+v.toFixed(1)+'%</span></div>';}).join('');
   }).catch(function(){});

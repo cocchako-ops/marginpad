@@ -1,4 +1,4 @@
-  const $ = id => document.getElementById(id);
+﻿  const $ = id => document.getElementById(id);
   const num = id => { const v = parseFloat($(id).value); return isFinite(v) ? v : NaN; };
   const fmtUSD = n => isFinite(n) ? (Math.abs(n) >= 1 ? n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:6})) : '—';
   const fmtPct = n => isFinite(n) ? (n>=0?'+':'') + n.toFixed(2) + '%' : '—';
@@ -196,7 +196,7 @@
     const REF = 'MAOZM9DS', BASE = 'https://www.binance.com/en/futures/';
     const CC = {BTC:'#f7931a',ETH:'#7b8cf0',SOL:'#14f195',BNB:'#f3ba2f',XRP:'#cfd3d8',DOGE:'#c2a633',ADA:'#3468d1',AVAX:'#e84142'};
     const LOGOS = {}; // real coin logos from CoinGecko (progressive enhancement; falls back to the color dot)
-    (window.requestIdleCallback||function(f){setTimeout(f,1700);})(function(){try{fetch('/api/gecko/markets',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(Array.isArray(j)){j.forEach(function(c){if(c&&c.symbol&&c.image)LOGOS[String(c.symbol).toUpperCase()]=c.image;});if(lastPairs)render(lastPairs);}}).catch(function(){});}catch(e){}});
+    (window.requestIdleCallback||function(f){setTimeout(f,1700);})(function(){try{fetch('/api/gecko/markets?slim=1',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(Array.isArray(j)){j.forEach(function(c){if(c&&c.symbol&&c.image)LOGOS[String(c.symbol).toUpperCase()]=c.image;});if(lastPairs)render(lastPairs);}}).catch(function(){});}catch(e){}});
     const fmtP = v => { v=parseFloat(v); return v>=1 ? v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : v>=0.01 ? v.toFixed(4) : v.toFixed(6); }; // ≥ $1 → always 2 decimals (.00)
     let loaded = false; const prevPx={}; let lastPairs=null;
     const STAR='<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><polygon points="12 2 15.1 8.6 22 9.3 17 14.1 18.2 21 12 17.6 5.8 21 7 14.1 2 9.3 8.9 8.6 12 2"/></svg>';

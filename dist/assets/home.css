@@ -2072,7 +2072,7 @@
   .scr-meta .mchip i{font-style:normal;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em;font-size:9.5px;}
   .scr-meta .mchip b{color:#fff;font-weight:700;}
   .scr-meta .mchip b.up{color:var(--up);}.scr-meta .mchip b.dn{color:var(--red);}
-  .scr-list{display:flex;flex-direction:column;gap:9px;}
+  .scr-list{display:flex;flex-direction:column;gap:9px;min-height:82vh;} /* reserve space while rows load — the late fill was a CLS 0.4 layout jump on mobile (perf audit 2026-07-14) */
   .scr-loading{padding:34px;text-align:center;color:var(--ink-faint);font-family:'Space Mono',monospace;font-size:13px;border:1px solid var(--line-bright);border-radius:14px;}
   .scr-row{display:flex;align-items:stretch;gap:11px;width:100%;text-align:left;background:linear-gradient(180deg,var(--panel),var(--bg-grain));border:1px solid var(--line-bright);border-radius:14px;padding:11px;cursor:pointer;transition:transform .12s,border-color .15s,box-shadow .15s;color:var(--ink);}
   .scr-row:hover{border-color:rgba(194,246,74,.4);transform:translateY(-1px);box-shadow:0 12px 26px -16px rgba(0,0,0,.7);}

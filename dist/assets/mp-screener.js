@@ -1,4 +1,4 @@
-/* Market Screener — live USDT-perp table (multi-exchange Bybit+OKX+Gate via /api/screener: aggregated volume, venue count, median-price cross-check), sortable, with a per-coin action sheet. Runs only on /screener. */
+﻿/* Market Screener — live USDT-perp table (multi-exchange Bybit+OKX+Gate via /api/screener: aggregated volume, venue count, median-price cross-check), sortable, with a per-coin action sheet. Runs only on /screener. */
 (function(){
   var listEl=document.getElementById('scrList');if(!listEl)return;
   if(!/^\/screener\/?$/.test(location.pathname))return; // dedicated route only — don't fetch on every homepage load
@@ -49,7 +49,7 @@
   function trendTxt(t){return t==='up'?'↗ Up':t==='down'?'↘ Down':'→ Side';}
   function symColor(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))%360;return 'hsl('+h+',60%,56%)';}
   function icHtml(s){return '<span class="scr-ic" style="--c:'+symColor(s)+'">'+s.charAt(0)+(LOGOS[s]?'<img src="'+LOGOS[s]+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'')+'</span>';}
-  function loadLogos(){fetch('/api/gecko/markets',{cache:'force-cache'}).then(function(r){return r.ok?r.json():null;}).then(function(a){if(!a||!a.length)return;a.forEach(function(c){var sym=(c.symbol||'').toUpperCase();if(sym){if(c.image)LOGOS[sym]=c.image;if(c.name)NAMES[sym]=c.name;}});if(DATA.length)render();}).catch(function(){});}
+  function loadLogos(){fetch('/api/gecko/markets?slim=1',{cache:'force-cache'}).then(function(r){return r.ok?r.json():null;}).then(function(a){if(!a||!a.length)return;a.forEach(function(c){var sym=(c.symbol||'').toUpperCase();if(sym){if(c.image)LOGOS[sym]=c.image;if(c.name)NAMES[sym]=c.name;}});if(DATA.length)render();}).catch(function(){});}
   function anHtml(e){if(e.score==null)return '<div class="scr-an-note">Technical analysis not available for this pair yet.</div>';
     var cls=scoreCls(e.score),h='<div class="scr-an"><div class="scr-an-top sc-'+cls+'"><div class="scr-an-num">'+e.score+'<small>/100</small></div><div class="scr-an-v"><b>'+(e.verdict||'')+'</b><span>technical score · 4h</span></div></div>';
     h+='<div class="scr-an-grid"><div><span>Trend</span><b>'+trendTxt(e.trend)+'</b></div><div><span>RSI</span><b>'+(e.rsi!=null?e.rsi:'—')+'</b></div><div><span>MACD</span><b>'+(e.macd==='bull'?'Bullish':e.macd==='bear'?'Bearish':'—')+'</b></div><div><span>Funding</span><b class="'+((e.f||0)>=0?'up':'dn')+'">'+pct(e.f||0)+'</b></div><div><span>Volatility</span><b>'+(e.atrPct!=null?e.atrPct+'%':'—')+'</b></div><div><span>Open Int.</span><b>'+fmtBig(e.oi||0)+'</b></div></div>';

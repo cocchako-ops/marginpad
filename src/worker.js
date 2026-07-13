@@ -479,7 +479,8 @@ async function handleSymbols() {
 // CoinGecko proxies (demo key bypasses the worker-IP block) — cached server-side so the homepage/coins don't hit per-user CG rate limits.
 async function handleGeckoMarkets(url, env) {
   const cat = (url.searchParams.get('cat') || '').replace(/[^a-z0-9-]/gi, '').slice(0, 40);
-  const ck = new Request('https://marginpad.io/__gecko_markets_' + (cat || 'all'));
+  const slim = url.searchParams.get('slim') === '1'; // logos/prices only, no sparkline — ~400KB -> ~10KB (mobile perf 2026-07-14)
+  const ck = new Request('https://marginpad.io/__gecko_markets_' + (cat || 'all') + (slim ? '_slim' : ''));
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   let data = null;
   try {
@@ -488,7 +489,8 @@ async function handleGeckoMarkets(url, env) {
     const r = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=' + (cat ? 100 : 250) + '&page=1&sparkline=true&price_change_percentage=1h,24h,7d' + (cat ? '&category=' + cat : ''), h);
     if (r.ok) data = await r.json();
   } catch (e) {}
-  const ok = Array.isArray(data) && data.length;
+  let ok = Array.isArray(data) && data.length;
+  if (ok && slim) data = data.map(c => ({ symbol: c.symbol, name: c.name, image: c.image, current_price: c.current_price, price_change_percentage_24h: c.price_change_percentage_24h }));
   const resp = new Response(JSON.stringify(ok ? data : { error: 'unavailable' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': ok ? 'public, max-age=120' : 'no-store', ...CORS } });
   if (ok) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
