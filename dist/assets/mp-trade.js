@@ -37,8 +37,8 @@
         +'<div><span>'+MT('jQty2','Qty')+'</span><b>'+((e.qty!=null&&isFinite(e.qty))?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:6}):'—')+'</b></div>'
         +'<div><span>'+MT('jLiq2','Liq')+'</span><b>'+fp(m.liq)+'</b></div>'
         +'<div><span>'+MT('jBuffer','Buffer')+'</span><b class="ppb">'+pctS(m.liqDist)+'</b></div>' /* .ppb = updated in place by the live ticker */
-        +'<div><span>SL</span><b>'+(e.stop!=null?fp(e.stop):'—')+'</b></div>'
-        +'<div><span>TP</span><b>'+(e.tp!=null?fp(e.tp):'—')+'</b></div>'
+        +'<div><span>SL</span><b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'—'))+'</b></div>'
+        +'<div><span>TP</span><b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'—'))+'</b></div>'
       +'</div>'
       +'<div class="pp-foot">'+dur(Date.now()-e.ts)+' '+MT('jOpenLc','open')+'</div>'
       +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button><button class="ed" data-act="sltp" data-id="'+e.id+'">SL/TP</button></div>'
@@ -461,34 +461,51 @@
   window.mpCloseSheet=show;
 })();
 
-;/* ══════════ SL/TP edit sheet (owner task 2026-07): change stop-loss / take-profit on any OPEN ticket ══════════
-   window.mpSltpSheet(id, onDone). Wrong-side values are rejected with a clear message (a long's SL below live,
-   TP above — otherwise checkClose would fire the instant you saved). Empty field = remove that level. */
+;/* ══════════ SL/TP edit sheet (owner tasks 2026-07 + 2026-07-13 multi-level): edit stop-loss / take-profit
+   LEVELS on any OPEN ticket. window.mpSltpSheet(id, onDone). Up to 3 levels per side, each with a % of the
+   position to close at that price (100% = full close, smaller % = partial, remainder stays open). Every level
+   has an ✕ remove button — no levels = no SL/TP. Wrong-side values are rejected per level. Storage: a single
+   100% level stays in legacy e.stop/e.tp; anything richer goes to e.sls/e.tps=[{p,pct}] with the legacy field
+   mirroring the nearest 100% level (so checkClose/sweepLiq/legacy displays keep working unchanged). */
 (function(){ if(window.mpSltpSheet)return;
   function jload(){try{return JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){return[];}}
   function jstore(a){try{localStorage.setItem('mp_journal',JSON.stringify(a));}catch(e){}}
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
-  var ov=null,curId=null,after=null;
+  if(!window.mpLvlTxt)window.mpLvlTxt=function(e,isTp,fmt){var arr=isTp?e.tps:e.sls,lg=e.side!=='short';
+    if(arr&&arr.length){var a=arr.slice().sort(function(x,y){return (isTp===lg)?(x.p-y.p):(y.p-x.p);});
+      var s=fmt(+a[0].p)+(+a[0].pct<100?' ('+(+a[0].pct)+'%)':'');if(a.length>1)s+=' +'+(a.length-1);return s;}
+    var v=isTp?e.tp:e.stop;return v!=null?fmt(v):'—';};
+  var ov=null,curId=null,after=null,MAXL=3;
+  function rowHtml(p,pct){return '<div class="mpss-row"><input type="number" step="any" inputmode="decimal" class="p" placeholder="price" value="'+(p!=null?p:'')+'"><select class="pc" aria-label="Percent to close">'+[10,25,50,75,100].map(function(v){return '<option value="'+v+'"'+(v===(+pct||100)?' selected':'')+'>'+v+'%</option>';}).join('')+'</select><button type="button" class="rm" aria-label="Remove level">✕</button></div>';}
   function build(){ if(ov)return;
     ov=document.createElement('div');ov.className='mpcs mpss';ov.innerHTML=
       '<div class="mpcs-card" role="dialog" aria-label="Edit SL / TP">'
       +'<div class="mpcs-h"><span class="mpcs-t"></span><button type="button" class="mpcs-x" aria-label="Cancel">✕</button></div>'
       +'<div class="mpss-live"></div>'
-      +'<label class="mpss-f"><span>Stop-loss</span><input type="number" step="any" inputmode="decimal" class="mpss-sl" placeholder="none"></label>'
-      +'<label class="mpss-f"><span>Take-profit</span><input type="number" step="any" inputmode="decimal" class="mpss-tp" placeholder="none"></label>'
-      +'<div class="mpss-hint">Leave a field empty to remove that level.</div>'
+      +'<div class="mpss-sec" data-k="sl"><div class="mpss-lab">Stop-loss levels</div><div class="mpss-rows"></div><button type="button" class="mpss-add">+ Add stop-loss</button></div>'
+      +'<div class="mpss-sec" data-k="tp"><div class="mpss-lab">Take-profit levels</div><div class="mpss-rows"></div><button type="button" class="mpss-add">+ Add take-profit</button></div>'
+      +'<div class="mpss-hint">Each level closes its % of the position when the price touches it — 100% closes everything, a smaller % closes part and the rest stays open. ✕ removes a level; no levels = none.</div>'
       +'<div class="mpss-warn" hidden></div>'
       +'<button type="button" class="mpcs-go up">Save SL / TP</button>'
       +'</div>';
     document.body.appendChild(ov);
-    ov.addEventListener('click',function(e){if(e.target===ov)hide();});
+    ov.addEventListener('click',function(e){ if(e.target===ov){hide();return;}
+      var add=e.target.closest&&e.target.closest('.mpss-add');
+      if(add){var rows=add.parentNode.querySelector('.mpss-rows');if(rows.children.length<MAXL){rows.insertAdjacentHTML('beforeend',rowHtml(null,100));syncAdds();var inp=rows.lastElementChild.querySelector('.p');if(inp)try{inp.focus();}catch(_){}}return;}
+      var rm=e.target.closest&&e.target.closest('.mpss-row .rm');
+      if(rm){var row=rm.closest('.mpss-row');if(row)row.parentNode.removeChild(row);syncAdds();return;}
+    });
     ov.querySelector('.mpcs-x').addEventListener('click',hide);
     document.addEventListener('keydown',function(e){if(e.key==='Escape')hide();});
     ov.querySelector('.mpcs-go').addEventListener('click',save);
   }
+  function syncAdds(){Array.prototype.forEach.call(ov.querySelectorAll('.mpss-sec'),function(sec){var n=sec.querySelector('.mpss-rows').children.length;sec.querySelector('.mpss-add').disabled=n>=MAXL;});}
   function find(){var d=jload();for(var i=0;i<d.length;i++)if(d[i].id===curId)return {d:d,e:d[i]};return null;}
   function live(e){var lp=window.mpLivePrices&&window.mpLivePrices[e.sym];return (lp&&lp.p>0)?lp.p:e.entry;}
+  function levelsOf(e,isTp){var arr=isTp?e.tps:e.sls;
+    if(arr&&arr.length)return arr.map(function(L){return {p:+L.p,pct:+L.pct||100};});
+    var v=isTp?e.tp:e.stop;return v!=null?[{p:+v,pct:100}]:[];}
   function show(id,cb){ curId=id;after=cb||null;
     var r0=find(); if(!r0||r0.e.status!=='open')return; var e=r0.e;
     build();
@@ -496,23 +513,39 @@
     var liq=e.liq||(long?e.entry*(1-(1-mmr)/lev):e.entry*(1+(1-mmr)/lev));
     ov.querySelector('.mpcs-t').innerHTML=esc(e.sym||'—')+' <b class="'+(long?'lg':'sh')+'">'+(long?'LONG':'SHORT')+'</b> '+(e.lev||1)+'×';
     ov.querySelector('.mpss-live').innerHTML='Live <b>'+fp(live(e))+'</b> · Entry <b>'+fp(e.entry)+'</b> · Liq <b class="lq">'+fp(liq)+'</b>';
-    ov.querySelector('.mpss-sl').value=(e.stop!=null?e.stop:'');
-    ov.querySelector('.mpss-tp').value=(e.tp!=null?e.tp:'');
+    Array.prototype.forEach.call(ov.querySelectorAll('.mpss-sec'),function(sec){
+      var isTp=sec.getAttribute('data-k')==='tp',rows=sec.querySelector('.mpss-rows');
+      rows.innerHTML=levelsOf(e,isTp).slice(0,MAXL).map(function(L){return rowHtml(L.p,L.pct);}).join('');
+    });
+    syncAdds();
     var w=ov.querySelector('.mpss-warn');w.hidden=true;w.textContent='';
     ov.classList.add('on');
-    setTimeout(function(){try{ov.querySelector('.mpss-sl').focus();}catch(_){}},120);
   }
   function hide(){if(ov)ov.classList.remove('on');}
   function warn(t){var w=ov.querySelector('.mpss-warn');w.textContent=t;w.hidden=false;}
+  function collect(isTp){var sec=ov.querySelector('.mpss-sec[data-k="'+(isTp?'tp':'sl')+'"]'),out=[];
+    Array.prototype.forEach.call(sec.querySelectorAll('.mpss-row'),function(row){
+      var raw=row.querySelector('.p').value.trim();if(raw==='')return; // empty price row = removed
+      out.push({p:parseFloat(raw),pct:+row.querySelector('.pc').value||100});
+    });return out;}
   function save(){ var r=find(); if(!r||r.e.status!=='open'){hide();return;} var e=r.e;
     var long=e.side!=='short',lv=live(e);
-    var slRaw=ov.querySelector('.mpss-sl').value.trim(),tpRaw=ov.querySelector('.mpss-tp').value.trim();
-    var sl=slRaw===''?null:parseFloat(slRaw),tp=tpRaw===''?null:parseFloat(tpRaw);
-    if(sl!=null&&!isFinite(sl)){warn('Stop-loss is not a number.');return;}
-    if(tp!=null&&!isFinite(tp)){warn('Take-profit is not a number.');return;}
-    if(sl!=null&&(long?sl>=lv:sl<=lv)){warn('For a '+(long?'LONG the stop-loss must be BELOW':'SHORT the stop-loss must be ABOVE')+' the live price ('+fp(lv)+') — otherwise it would trigger instantly.');return;}
-    if(tp!=null&&(long?tp<=lv:tp>=lv)){warn('For a '+(long?'LONG the take-profit must be ABOVE':'SHORT the take-profit must be BELOW')+' the live price ('+fp(lv)+').');return;}
-    e.stop=sl;e.tp=tp;
+    var sls=collect(false),tps=collect(true);
+    for(var i=0;i<sls.length;i++){var s=sls[i];
+      if(!isFinite(s.p)||!(s.p>0)){warn('Stop-loss price is not a number.');return;}
+      if(long?s.p>=lv:s.p<=lv){warn('For a '+(long?'LONG every stop-loss must be BELOW':'SHORT every stop-loss must be ABOVE')+' the live price ('+fp(lv)+') — otherwise it would trigger instantly.');return;}}
+    for(var j=0;j<tps.length;j++){var t=tps[j];
+      if(!isFinite(t.p)||!(t.p>0)){warn('Take-profit price is not a number.');return;}
+      if(long?t.p<=lv:t.p>=lv){warn('For a '+(long?'LONG every take-profit must be ABOVE':'SHORT every take-profit must be BELOW')+' the live price ('+fp(lv)+').');return;}}
+    function put(list,isTp){
+      if(!list.length){ if(isTp){e.tp=null;delete e.tps;} else {e.stop=null;delete e.sls;} return; }
+      if(list.length===1&&+list[0].pct>=100){ if(isTp){e.tp=+list[0].p;delete e.tps;} else {e.stop=+list[0].p;delete e.sls;} return; }
+      if(isTp)e.tps=list;else e.sls=list;
+      var full=list.filter(function(L){return +L.pct>=100;}),v=null;
+      if(full.length){full.sort(function(a,b){return (isTp===long)?(a.p-b.p):(b.p-a.p);});v=+full[0].p;}
+      if(isTp)e.tp=v;else e.stop=v;
+    }
+    put(sls,false);put(tps,true);
     jstore(r.d);hide();
     try{document.dispatchEvent(new CustomEvent('mp:sltp',{detail:{id:e.id}}));}catch(_){}
     try{if(window.mpBuzz)window.mpBuzz([14]);else if(navigator.vibrate)navigator.vibrate(14);}catch(_){}

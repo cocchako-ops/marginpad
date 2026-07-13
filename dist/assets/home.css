@@ -2628,3 +2628,16 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 .pp-live{color:#bcc4cd !important}
 .pp-meta{color:#d3d9df !important}
 .pp-empty{color:#aab4be !important}
+
+/* multi-level SL/TP sheet rows (2026-07-13) */
+.mpss-sec{margin-bottom:12px}
+.mpss-lab{font-family:'Space Mono',monospace;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:#9aa3ad;margin-bottom:8px}
+.mpss-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.mpss-row .p{flex:1;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:11px 12px;color:#e9e7df;font-size:16px;font-family:'Space Mono',monospace;outline:none;min-width:0}
+.mpss-row .p:focus{border-color:#c2f64a}
+.mpss-row .pc{flex:0 0 88px;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:11px 8px;color:#e9e7df;font-size:14px;font-family:'Space Mono',monospace;outline:none}
+.mpss-row .rm{flex:0 0 40px;height:44px;background:none;border:1px solid #2f3742;border-radius:9px;color:#ff7b72;font-size:15px;cursor:pointer}
+.mpss-row .rm:hover{border-color:#ff5a4d;background:rgba(255,90,77,.08)}
+.mpss-add{background:none;border:1px dashed #2f3742;border-radius:9px;color:#9aa3ad;font-family:'Space Mono',monospace;font-size:12px;padding:9px 12px;cursor:pointer;width:100%}
+.mpss-add:hover{color:#c2f64a;border-color:#c2f64a}
+.mpss-add:disabled{opacity:.35;cursor:default}
