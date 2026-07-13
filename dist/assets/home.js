@@ -1073,7 +1073,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     ws.onclose=function(){ws=null;if(joined)setTimeout(connect,3000);};
     ws.onerror=function(){try{ws.close();}catch(e){}};
   }
-  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;connect();try{input.placeholder='Message…  ·  type /leaderboard';}catch(e){}if(!window._mpLbTip){window._mpLbTip=1;setTimeout(function(){sysMsg('💬 Tip: type <b>/leaderboard</b> for the top traders. Full board on Telegram <b>@MarginPadBot</b>.');},400);}setTimeout(function(){input.focus();},50);}
+  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;connect();try{input.placeholder='Message…  ·  type /leaderboard';}catch(e){}setTimeout(function(){input.focus();},50);}
   function showGate(){gate.hidden=false;msgs.hidden=true;form.hidden=true;}
   function openBox(){box.hidden=false;fab.hidden=true;document.body.classList.add('chat-open');var u=meUser();if(u){user=u;showChat();}else{showGate();}}
   fab.addEventListener('click',openBox);
