@@ -837,6 +837,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function jrLockBody(){if(window.innerWidth<721&&!_jrLocked){_jrScrollY=window.scrollY||window.pageYOffset||0;document.body.style.top=(-_jrScrollY)+'px';document.documentElement.classList.add('jr-lock');_jrLocked=true;}}
   function jrUnlockBody(){if(_jrLocked){document.documentElement.classList.remove('jr-lock');document.body.style.top='';_jrLocked=false;window.scrollTo(0,_jrScrollY);}}
   function openJr(){var d=document.getElementById('jrDrawer'),b=document.getElementById('jrBackdrop');if(d)d.hidden=false;if(b)b.hidden=false;document.documentElement.classList.add('jr-open');jrLockBody();render();if(jrTimer)clearInterval(jrTimer);jrTimer=setInterval(renderLive,1000);}
+  window.mpOpenTrades=openJr; // mp-nav's mobile bottom-bar "Trades" prefers this over navigating (mobile white-flash fix 2026-07-13 — mp-trade.js already exported it, the app shell didn't)
   function closeJr(){var d=document.getElementById('jrDrawer'),b=document.getElementById('jrBackdrop');if(d)d.hidden=true;if(b)b.hidden=true;document.documentElement.classList.remove('jr-open');jrUnlockBody();if(jrTimer){clearInterval(jrTimer);jrTimer=null;}}
   // PC: wheel over the drawer must never scroll the page behind it (overscroll-behavior covers scroll-chaining;
   // this also handles a short/empty drawer that isn't scrollable at all).
