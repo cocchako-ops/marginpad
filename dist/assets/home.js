@@ -1795,17 +1795,27 @@ window.addEventListener('load', function () {
     return true;
   };
   var EASE=0.045; // slower, more visible roll (~1.1s to settle) — the price "rolls" gently between ticks instead of snapping
+  /* event-driven since 2026-07-14 (mobile perf): the loop used to rAF forever even with nothing to ease — it now
+     stops when every price has settled and restarts on the next mpSmoothPx() call (pollers/WS keep those coming),
+     plus a visibilitychange kick. Worst case with no new ticks: the last written value stays — correct. */
+  var _smRun=false;
   function tick(){
+    var busy=false,now=Date.now();
     if(!document.hidden){
       for(var k in states){var s=states[k];if(!s.el||!(s.target>0))continue;
+        if(s.visT===undefined||now-s.visT>1000){s.vis=!!s.el.offsetParent;s.visT=now;} // hidden elements (hp-grid etc. on route pages) don't deserve 60fps formatting — re-check 1x/s
+        if(!s.vis){if(s.cur!==s.target){s.cur=s.target;s.el.textContent=fmt(s.cur,s.dp);}continue;}
         var d=s.target-s.cur, eps=Math.max(1e-9,Math.abs(s.target)*5e-7);
-        if(Math.abs(d)>eps){s.cur+=d*EASE;s.el.textContent=fmt(s.cur,s.dp);}
+        if(Math.abs(d)>eps){s.cur+=d*EASE;s.el.textContent=fmt(s.cur,s.dp);busy=true;}
         else if(s.cur!==s.target){s.cur=s.target;s.el.textContent=fmt(s.cur,s.dp);}
       }
     }
-    requestAnimationFrame(tick);
+    if(busy)requestAnimationFrame(tick);else _smRun=false;
   }
-  requestAnimationFrame(tick);
+  function kick(){if(!_smRun){_smRun=true;requestAnimationFrame(tick);}}
+  var _reg=window.mpSmoothPx;
+  window.mpSmoothPx=function(el,value,key){var r=_reg(el,value,key);if(r)kick();return r;};
+  try{document.addEventListener('visibilitychange',function(){if(!document.hidden)kick();});}catch(_){}
 })();
 
 ;/* ══════════ inline block from app/index.html line 4547 ══════════ */
@@ -1922,8 +1932,9 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   if(levChips)levChips.addEventListener('click',function(e){var b=e.target.closest('[data-lev]');if(!b)return;lev=+b.getAttribute('data-lev');if(levVal)levVal.textContent=lev+'×';if(levSl)levSl.value=levToPos(lev);hiChips(lev);mtDrawLiq();});
   if(levSl)levSl.value=levToPos(lev);if(levVal)levVal.textContent=lev+'×';hiChips(lev); // sync slider/display/chips to the default leverage on load
   goEl.addEventListener('click',openPos);
-  document.addEventListener('mp:price',function(ev){if(!ev.detail)return;var s=ev.detail.sym;if(TICK.indexOf(s)>=0)updTick(s);if(s===sym){updPanel();mtTick();}if(curPos&&curPos.sym===s)updPnl();});
-  setInterval(function(){updTickAll();updPanel();updPnl();mtTick();},3000);
+  function mtVis(){return !document.hidden&&term.offsetParent!==null;} // mterm is CSS-hidden on route pages + open products — its per-tick tweens/canvas draws used to burn CPU there anyway (mobile perf 2026-07-14)
+  document.addEventListener('mp:price',function(ev){if(!ev.detail||!mtVis())return;var s=ev.detail.sym;if(TICK.indexOf(s)>=0)updTick(s);if(s===sym){updPanel();mtTick();}if(curPos&&curPos.sym===s)updPnl();});
+  setInterval(function(){if(!mtVis())return;updTickAll();updPanel();updPnl();mtTick();},3000);
 })();
 
 ;/* ══════════ inline block from app/index.html line 4662 ══════════ */

@@ -114,7 +114,7 @@
         +'<span class="scr-boxes">'+boxes+'</span>'
         +'</span></button>';
     }).join('');}
-  function updLive(){var rows=listEl.querySelectorAll('.scr-row');for(var i=0;i<rows.length;i++){var s=rows[i].getAttribute('data-sym'),fb=+rows[i].getAttribute('data-p'),pe=rows[i].querySelector('[data-px]');if(pe)pe.textContent=fmtPx(live(s,fb));}}
+  function updLive(){if(document.hidden)return;var rows=listEl.querySelectorAll('.scr-row');for(var i=0;i<rows.length;i++){var s=rows[i].getAttribute('data-sym'),fb=+rows[i].getAttribute('data-p'),pe=rows[i].querySelector('[data-px]');if(!pe)continue;var t=fmtPx(live(s,fb));if(pe._t!==t){pe._t=t;pe.textContent=t;}}}
   function load(){Promise.all([
       fetch('/api/screener',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
       fetch('/api/cg/funding',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
