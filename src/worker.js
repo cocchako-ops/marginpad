@@ -5156,6 +5156,14 @@ async function handleAuth(url, request, env, ctx) {
     h.append('set-cookie', 'mp_un=' + String(d.user.username || (d.user.email || '').split('@')[0] || '').replace(/[^a-zA-Z0-9_.-]/g, '').slice(0, 24) + opts); // display name so the admin logs show the username instead of just a country
     return new Response(JSON.stringify({ ok: true, user: d.user, isNew: d.isNew }), { status: 200, headers: h });
   }
+  if (path === '/xp') { // self: own xp/level/streak + recent log, for the XP toasts + level-up celebration
+    const tok = getCookie(request, SESS_COOKIE);
+    if (!tok) return jr({ signedIn: false });
+    let sd = null; try { const sr = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); sd = await sr.json(); } catch (e) { return jr({ signedIn: false, transient: true }); }
+    if (!sd || !sd.user || !sd.user.id) return jr({ signedIn: false });
+    let log = []; try { const r = await stub.fetch(new Request('https://do/xplog?uid=' + encodeURIComponent(sd.user.id))); const d = await r.json(); log = (d.log || []).slice(0, 12); } catch (e) {}
+    return jr({ signedIn: true, xp: sd.user.xp || 0, streak: sd.user.streak || 0, level: sd.user.level || null, log });
+  }
   if (path === '/me') {
     const tok = getCookie(request, SESS_COOKIE);
     if (!tok) return jr({ user: null });

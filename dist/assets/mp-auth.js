@@ -337,5 +337,72 @@
 
   window.mpAuth = { open: open, close: close, me: function () { return ME; }, sync: syncTrades };
 
+  /* ===== XP toasts + level-up celebration (2026-07-15) ===== */
+  (function () {
+    var SRCN = { trade_win: 'Profitable trade', trade: 'Trade closed', checkin: 'Daily check-in', streak: 'Streak bonus', mission: 'Mission complete', faucet: 'Faucet claim', promo: 'Promo post approved', exsign: 'Exchange sign-up', lbprize: 'Competition prize', username: 'Username set', academy: 'Academy', admin: 'Bonus', backfill: 'Loyalty bonus' };
+    var ICON = { bronze: '', silver: '', gold: '', platinum: '', diamond: '' };
+    var xpCss = '#mpxpT{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:flex;flex-direction:column;gap:8px;pointer-events:none}'
+      + '.mpxp{display:flex;align-items:center;gap:9px;background:#12151d;border:1px solid #2a3550;border-left:3px solid var(--xc,#c2f64a);border-radius:12px;padding:9px 13px;box-shadow:0 12px 34px rgba(0,0,0,.5);font-family:ui-monospace,Consolas,monospace;color:#e9e7df;transform:translateX(120%);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .4s;max-width:260px}'
+      + '.mpxp.on{transform:none;opacity:1}'
+      + '.mpxp b{color:var(--xc,#c2f64a);font-size:15px;font-weight:800}.mpxp span{font-size:11.5px;color:#9aa3ad;line-height:1.2}'
+      + '#mpxpLv{position:fixed;inset:0;z-index:2147483001;display:flex;align-items:center;justify-content:center;background:rgba(4,6,10,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .4s;pointer-events:none}'
+      + '#mpxpLv.on{opacity:1;pointer-events:auto}'
+      + '.mpxp-card{position:relative;background:radial-gradient(120% 90% at 50% 0,var(--lc)18,#0a0d13 60%);border:1px solid var(--lc);border-radius:22px;padding:34px 40px;text-align:center;max-width:360px;transform:scale(.8);transition:transform .5s cubic-bezier(.2,.9,.3,1.4);box-shadow:0 0 80px -20px var(--lc)}'
+      + '#mpxpLv.on .mpxp-card{transform:none}'
+      + '.mpxp-badge{width:96px;height:96px;margin:0 auto 14px;filter:drop-shadow(0 0 22px var(--lc))}'
+      + '.mpxp-up{font-family:ui-monospace,Consolas,monospace;font-size:11px;letter-spacing:.28em;color:var(--lc);text-transform:uppercase}'
+      + '.mpxp-nm{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:34px;color:var(--lc);margin:4px 0 6px;letter-spacing:-.02em}'
+      + '.mpxp-sub{color:#c7ccd4;font-size:14px;line-height:1.5}.mpxp-sub b{color:#fff}'
+      + '.mpxp-x{margin-top:18px;background:var(--lc);color:#0a0b0d;border:none;border-radius:11px;padding:11px 26px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit}'
+      + '.mpxp-cf{position:absolute;top:0;width:9px;height:14px;border-radius:2px;opacity:.9;animation:mpxpFall linear forwards}'
+      + '@keyframes mpxpFall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:.2}}'
+      + '@media(max-width:560px){.mpxp-card{padding:28px 26px;max-width:88vw}.mpxp-nm{font-size:28px}}';
+    var st = document.createElement('style'); st.textContent = xpCss; document.head.appendChild(st);
+    var seenKey = null, lastXp = null, lastIdx = null, watching = false;
+    function key(uid) { return 'mp_xp_seen_' + uid; }
+    function toast(amt, src, col) {
+      var host = document.getElementById('mpxpT'); if (!host) { host = document.createElement('div'); host.id = 'mpxpT'; document.body.appendChild(host); }
+      var el = document.createElement('div'); el.className = 'mpxp'; el.style.setProperty('--xc', col || '#c2f64a');
+      el.innerHTML = '<b>+' + amt + '</b><span>XP<br>' + (SRCN[src] || src) + '</span>';
+      host.appendChild(el); requestAnimationFrame(function () { el.classList.add('on'); });
+      setTimeout(function () { el.classList.remove('on'); setTimeout(function () { el.remove(); }, 450); }, 3600);
+    }
+    function celebrate(lv) {
+      var ov = document.getElementById('mpxpLv'); if (!ov) { ov = document.createElement('div'); ov.id = 'mpxpLv'; document.body.appendChild(ov); }
+      var col = lv.col || '#c2f64a';
+      var conf = ''; for (var n = 0; n < 60; n++) { var cx = Math.floor(Math.random() * 100), d = (1.4 + Math.random() * 1.6).toFixed(2), dl = (Math.random() * 0.5).toFixed(2), cc = ['#c2f64a', col, '#ffd75a', '#38bdf8', '#ff6a3d'][n % 5]; conf += '<i class="mpxp-cf" style="left:' + cx + '%;background:' + cc + ';animation-duration:' + d + 's;animation-delay:' + dl + 's"></i>'; }
+      ov.style.setProperty('--lc', col);
+      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + (window.mpLvlSvg ? window.mpLvlSvg(lv.k, col) : '') + '</div><div class="mpxp-up">Level up</div><div class="mpxp-nm">' + esc(lv.name || '') + '</div><div class="mpxp-sub">You reached <b>' + esc(lv.name || '') + '</b>.' + (lv.next ? ' Next: ' + esc(lv.next) + ' at ' + (lv.nextMin || 0).toLocaleString() + ' XP.' : ' You hit the top tier!') + '</div><button class="mpxp-x" type="button">Nice</button></div>';
+      requestAnimationFrame(function () { ov.classList.add('on'); });
+      var close9 = function () { ov.classList.remove('on'); };
+      ov.querySelector('.mpxp-x').addEventListener('click', close9);
+      ov.addEventListener('click', function (e) { if (e.target === ov) close9(); });
+      try { if (navigator.vibrate) navigator.vibrate([20, 40, 20]); } catch (e) {}
+    }
+    function check() {
+      if (!ME) return;
+      fetch('/api/auth/xp').then(function (r) { return r.json(); }).then(function (d) {
+        if (!d || !d.signedIn || !d.level) return;
+        var uid = ME.id; var stored = null;
+        try { stored = JSON.parse(localStorage.getItem(key(uid)) || 'null'); } catch (e) {}
+        if (!stored) { // first observation for this device: seed silently (no toast flood)
+          try { localStorage.setItem(key(uid), JSON.stringify({ xp: d.xp, idx: d.level.idx, ts: (d.log[0] || {}).ts || 0 })); } catch (e) {}
+          lastXp = d.xp; lastIdx = d.level.idx; return;
+        }
+        // toast every log entry newer than the last seen ts (positive only), oldest-first
+        var fresh = (d.log || []).filter(function (e) { return e.ts > (stored.ts || 0) && (+e.amt) > 0; }).sort(function (a, b) { return a.ts - b.ts; });
+        fresh.slice(-4).forEach(function (e, ix) { setTimeout(function () { toast(+e.amt, e.src, d.level.col); }, ix * 550); });
+        if (d.level.idx > (stored.idx != null ? stored.idx : d.level.idx)) setTimeout(function () { celebrate(d.level); }, fresh.length ? 700 : 0);
+        try { localStorage.setItem(key(uid), JSON.stringify({ xp: d.xp, idx: d.level.idx, ts: (d.log[0] || {}).ts || stored.ts })); } catch (e) {}
+        lastXp = d.xp; lastIdx = d.level.idx;
+      }).catch(function () {});
+    }
+    function startWatch() { if (watching || !ME) return; watching = true; setTimeout(check, 1500); setInterval(function () { if (!document.hidden) check(); }, 60000); document.addEventListener('visibilitychange', function () { if (!document.hidden) check(); }); }
+    window.mpXpCheck = check; // let other flows (after a trade/claim) nudge an immediate check
+    window.addEventListener('mp-auth-change', function () { if (ME) startWatch(); });
+    var _iv = setInterval(function () { if (ME) { startWatch(); clearInterval(_iv); } }, 800);
+    setTimeout(function () { clearInterval(_iv); }, 20000);
+  })();
+
   fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (d) { ME = d.user || null; BANNED = !!d.banned; reflect(); if (ME) { dwSince = Date.now(); syncTrades(); } }).catch(function () {});
 })();
