@@ -5795,15 +5795,18 @@ export default {
       if (!ok && photo) { try { const r2 = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/sendMessage', { method: 'POST', headers: jh, body: JSON.stringify({ chat_id: channel, text, parse_mode: 'HTML', disable_web_page_preview: true }) }); const j2 = await r2.json(); if (j2.ok) { ok = true; desc = 'sent without image (image URL was rejected)'; } } catch (e) {} }
       return new Response(JSON.stringify({ ok, channel: channelName, note: ok ? desc : undefined, error: ok ? undefined : (desc || 'send_failed') }), { headers: jh });
     }
-    if (url.pathname === '/api/levels/top' && request.method === 'GET') { // public XP leaderboard (Top clanovi), edge-cached 60s
+    if (url.pathname === '/api/levels/top' && request.method === 'GET') { // public XP leaderboard (Top clanovi)
       const lim = Math.min(50, Math.max(1, +url.searchParams.get('limit') || 20));
-      const ck = new Request('https://marginpad.io/__lvl_top_' + lim);
-      try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
-      let body = '{"top":[]}';
-      if (env.USERS) { try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/xp/top?limit=' + lim)); body = await r.text(); } catch (e) {} }
-      const resp = new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
-      try { await caches.default.put(ck, resp.clone()); } catch (e) {}
-      return resp;
+      const ck = new Request('https://marginpad.io/__lvl_top_v2_' + lim);
+      let body = null;
+      try { const hit = await caches.default.match(ck); if (hit) body = await hit.text(); } catch (e) {}
+      if (body == null) { // miss → recompute from the DO + repopulate the ≤30s edge cache
+        body = '{"top":[]}';
+        if (env.USERS) { try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/xp/top?limit=' + lim)); body = await r.text(); } catch (e) {} }
+        try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=30' } })); } catch (e) {}
+      }
+      // browser/CDN get no-store so a refresh ALWAYS re-hits the worker (fresh ≤30s) — the public max-age was being extended to 4h by the CF CDN, freezing the board
+      return new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
     }
     if (url.pathname === '/api/levels' && request.method === 'POST') { // public batch level-badge resolver (uid[]/username[] -> {k,col,name})
       let lvBody = {}; try { lvBody = await request.json(); } catch (e) {}

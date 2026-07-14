@@ -228,7 +228,7 @@ footer a{color:var(--dim)}
     setTimeout(function(){bar.style.width=(lv.pct!=null?lv.pct:100)+'%';},120);
   }
   fetch('/api/auth/me').then(function(r){return r.json();}).then(function(d){if(d&&d.user)paint(d.user);}).catch(function(){});
-  fetch('/api/levels/top?limit=15').then(function(r){return r.json();}).then(function(d){
+  fetch('/api/levels/top?limit=15&_='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
     var t=(d&&d.top)||[];if(!t.length)return;
     document.getElementById('tmList').innerHTML=t.map(function(x){
       return '<li class="tm-row'+(x.rank<=3?' top':'')+'"><span class="tm-rank">'+x.rank+'</span><span class="tm-gem">'+lvlSvg(x.k,x.col)+'</span><span class="tm-who"><span class="tm-nm">'+esc(x.username)+'</span> <span class="tm-tier" style="color:'+esc(x.col)+'">'+esc(x.name)+'</span></span><span class="tm-xp">'+(x.xp||0).toLocaleString()+' XP</span></li>';
