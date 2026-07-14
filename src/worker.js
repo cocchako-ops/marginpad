@@ -5460,6 +5460,7 @@ export default {
     // SEO: http:// must 301 to https:// — GSC was indexing http duplicates (http returned 200)
     if (url.protocol === 'http:') { url.protocol = 'https:'; return Response.redirect(url.toString(), 301); }
     if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
+    if (url.pathname === '/api/geo') return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // visitor country for geo-aware exchange cards (US/CA see US-legal venues first)
     if (url.pathname === '/api/prices') return handlePrices();
     if (url.pathname === '/api/screener') return handleScreener(env);
     if (url.pathname === '/api/symbols') return handleSymbols();
