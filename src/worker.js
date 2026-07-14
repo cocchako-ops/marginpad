@@ -3345,7 +3345,7 @@ function loadSeo(){if(document.hidden)return;
     document.getElementById('seoPages').innerHTML=(d.pages7||[]).slice(0,26).map(function(x){return seoRow(esc(String(x.p||'/')),N(x.n),seoDelta(+x.n,pp[x.p]),Math.max(2,(+x.n)/mxp*100),'#38bdf8');}).join('')||'<div class="empty">no data</div>';
     var blog=(d.pages7||[]).filter(function(x){return String(x.p||'').indexOf('/blog/')===0;});
     var mxb=0;blog.forEach(function(x){if(+x.n>mxb)mxb=+x.n;});
-    document.getElementById('seoBlog').innerHTML=blog.slice(0,10).map(function(x){return seoRow(esc(String(x.p).replace('/blog/','').replace(/\/$/,'')),N(x.n),seoDelta(+x.n,pp[x.p]),Math.max(2,(+x.n)/(mxb||1)*100),'#c2f64a');}).join('')||'<div class="empty">no blog traffic this week</div>';
+    document.getElementById('seoBlog').innerHTML=blog.slice(0,10).map(function(x){return seoRow(esc(String(x.p).replace('/blog/','').replace(/\\/$/,'')),N(x.n),seoDelta(+x.n,pp[x.p]),Math.max(2,(+x.n)/(mxb||1)*100),'#c2f64a');}).join('')||'<div class="empty">no blog traffic this week</div>';
     var mxm=0;(d.clicksPage7||[]).forEach(function(x){if(+x.n>mxm)mxm=+x.n;});
     document.getElementById('seoMoney').innerHTML=(d.clicksPage7||[]).slice(0,10).map(function(x){return seoRow(esc(String(x.p||'/')),N(x.n),'<span style="color:#ffd75a">$</span>',Math.max(2,(+x.n)/(mxm||1)*100),'#ffd75a');}).join('')||'<div class="empty">no exchange clicks this week</div>';
     var mxs=0;(d.src7||[]).forEach(function(x){if(+x.n>mxs)mxs=+x.n;});
