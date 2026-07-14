@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://marginpad.io/</loc><lastmod>2026-06-10</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://marginpad.io/paper-trade</loc><lastmod>2026-06-19</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
@@ -416,4 +416,11 @@
   <url><loc>https://marginpad.io/blog/crypto-economic-calendar-guide/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://marginpad.io/community/</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>
   <url><loc>https://marginpad.io/blog/new-crypto-futures-exchanges-2026/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/blog/fomc-july-2026-bitcoin/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/blog/cpi-week-crypto-playbook/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/blog/long-short-ratio-explained/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/blog/funding-rate-arbitrage/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/blog/crypto-options-expiry-btc/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/blog/btc-dominance-altcoin-season/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/levels/</loc><lastmod>2026-07-15</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>MarginPad Level System — Bronze to Diamond XP Progression &amp; Rewards</title>
+<meta name="description" content="Earn XP for real activity on MarginPad — trading, daily streaks, missions and competitions — and climb from Bronze to Diamond. Higher levels unlock bigger faucet rewards, exclusive badges and a Diamond withdrawal bonus. A slow, loyalty-first progression." />
+<link rel="canonical" href="https://marginpad.io/levels/" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta property="og:title" content="MarginPad Level System — Bronze to Diamond" />
+<meta property="og:description" content="Level up by using the platform. Bigger faucet rewards, badges, exclusive events and a Diamond withdrawal bonus reward long-term loyalty." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/levels/" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"How do I earn XP on MarginPad?","acceptedAnswer":{"@type":"Answer","text":"You earn XP for real activity: closing profitable paper trades, daily check-ins and streaks, completing daily missions, claiming from the faucet, promoting the platform, and placing in weekly competitions. Every source has a daily cap so it can't be farmed."}},
+{"@type":"Question","name":"How long does it take to reach Diamond?","acceptedAnswer":{"@type":"Answer","text":"Deliberately long. Diamond sits at 50,000 XP and even a highly active daily user peaks around 150 XP/day, so Diamond takes close to a year of consistent activity. It is meant to be rare."}},
+{"@type":"Question","name":"Can I skip levels by finishing the Academy?","acceptedAnswer":{"@type":"Answer","text":"No. Academy XP is capped so it can only help a new user reach the early tiers. Even after completing every lesson you'll still be far from Diamond — the long-term progression can only be earned through consistent use."}},
+{"@type":"Question","name":"What do higher levels unlock?","acceptedAnswer":{"@type":"Answer","text":"Bigger faucet claim rewards (up to +50% at Diamond), higher daily limits, exclusive profile badges and cosmetics, access to special competitions, and a 10% withdrawal bonus for Diamond members."}},
+{"@type":"Question","name":"Do I lose XP if I stop being active?","acceptedAnswer":{"@type":"Answer","text":"No — your XP and level are permanent. But your daily streak resets if you miss a day, so consistency is rewarded."}}
+]}</script>
+<style>
+:root{--bg:#0a0b0d;--panel:#11151c;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--bronze:#c97f4a;--silver:#b7c2d0;--gold:#ffcf3f;--plat:#7ee0ff;--diamond:#8b5cff;}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--lime);text-decoration:none}
+.glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(60% 40% at 15% 0%,rgba(139,92,255,.12),transparent 60%),radial-gradient(50% 40% at 90% 10%,rgba(194,246,74,.08),transparent 60%)}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:18px 16px calc(60px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 22px}
+.brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);letter-spacing:-.02em}
+.brand b{color:var(--lime)}
+.hnav a{color:var(--dim);font-size:14px;font-weight:600;margin-left:16px}.hnav a:hover{color:var(--ink)}
+.hero{text-align:center;padding:14px 0 26px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--diamond);border:1px solid rgba(139,92,255,.3);background:rgba(139,92,255,.07);padding:6px 14px;border-radius:999px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,7vw,46px);letter-spacing:-.03em;line-height:1.03;margin:16px 0 10px}
+h1 .g{background:linear-gradient(100deg,var(--bronze),var(--silver),var(--gold),var(--plat),var(--diamond));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lead{color:var(--dim);font-size:16px;max-width:620px;margin:0 auto;line-height:1.5}
+/* your progress (signed-in) */
+#myLvl{display:none;margin:22px 0;background:linear-gradient(160deg,#12151d,#0a0d11);border:1px solid var(--line2);border-radius:16px;padding:18px}
+#myLvl.on{display:block}
+.ml-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.ml-badge{width:52px;height:52px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:28px;flex:none;box-shadow:0 0 26px -6px var(--c)}
+.ml-nm{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;color:var(--c)}
+.ml-xp{font-family:'Space Mono',monospace;font-size:12px;color:var(--dim);margin-top:2px}
+.ml-next{margin-left:auto;text-align:right;font-family:'Space Mono',monospace;font-size:11px;color:var(--faint)}
+.ml-bar{height:11px;border-radius:6px;background:#1a2027;overflow:hidden;margin-top:14px}
+.ml-bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--c),#fff8);transition:width .8s ease}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.02em;margin:38px 0 6px}
+.sub{color:var(--dim);font-size:14px;margin-bottom:16px}
+/* tiers */
+.tiers{display:flex;flex-direction:column;gap:12px}
+.tier{border:1px solid var(--line);border-radius:16px;padding:16px 18px;background:var(--panel);position:relative;overflow:hidden}
+.tier::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+.tier-h{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.tier-badge{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--c)1a;box-shadow:0 0 16px -4px var(--c)}
+.tier-nm{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;color:var(--c)}
+.tier-xp{margin-left:auto;font-family:'Space Mono',monospace;font-size:12px;color:var(--dim)}
+.tier-xp b{color:var(--ink)}
+.tier ul{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+.tier li{font-size:13.5px;color:#c7ccd4;padding-left:20px;position:relative;line-height:1.4}
+.tier li::before{content:'✦';position:absolute;left:0;color:var(--c)}
+@media(max-width:560px){.tier ul{grid-template-columns:1fr}}
+/* xp sources */
+.xps{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.xps{grid-template-columns:1fr}}
+.xp{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel);display:flex;align-items:center;gap:11px}
+.xp .ic{font-size:20px;flex:none}
+.xp .t{font-weight:700;font-size:14px}
+.xp .d{font-size:11.5px;color:var(--faint);font-family:'Space Mono',monospace}
+.xp .v{margin-left:auto;font-family:'Space Mono',monospace;font-weight:700;color:var(--lime);font-size:13px;white-space:nowrap}
+/* philosophy */
+.phil{border:1px solid rgba(139,92,255,.28);background:rgba(139,92,255,.05);border-radius:16px;padding:18px 20px;line-height:1.6;font-size:14.5px;color:#cbd0d8}
+.phil b{color:var(--ink)}
+/* faq */
+.faq{border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:8px;overflow:hidden}
+.faq summary{padding:14px 16px;font-weight:700;font-size:14.5px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';color:var(--dim)}
+.faq[open] summary::after{content:'−'}
+.faq p{padding:0 16px 14px;color:var(--dim);font-size:14px;line-height:1.55}
+.cta{display:block;text-align:center;margin:30px 0 6px;background:var(--lime);color:#0a0b0d;font-family:'Space Mono',monospace;font-weight:700;font-size:15px;padding:16px;border-radius:14px}
+.cta:hover{box-shadow:0 0 40px -8px var(--lime)}
+footer{text-align:center;color:var(--faint);font-size:12px;margin-top:34px;line-height:1.9}
+footer a{color:var(--dim)}
+.discl{color:var(--faint);font-size:12px;text-align:center;margin-top:18px}
+</style>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="glow"></div>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">Margin<b>Pad</b></a>
+    <nav class="hnav"><a href="/paper-trade">Paper Trade</a><a href="/rewards/">Rewards</a></nav>
+  </header>
+
+  <section class="hero">
+    <span class="eyebrow">◆ Progression System</span>
+    <h1>Level up from <span class="g">Bronze to Diamond</span></h1>
+    <p class="lead">Every meaningful thing you do on MarginPad earns XP. Climb five tiers, unlock bigger rewards, and prove your loyalty. This is a marathon, not a sprint — Diamond is for the few who stay.</p>
+  </section>
+
+  <div id="myLvl">
+    <div class="ml-top">
+      <div class="ml-badge" id="mlBadge">🥉</div>
+      <div><div class="ml-nm" id="mlName">Bronze</div><div class="ml-xp" id="mlXp">0 XP</div></div>
+      <div class="ml-next" id="mlNext"></div>
+    </div>
+    <div class="ml-bar"><i id="mlBar" style="width:0%"></i></div>
+  </div>
+
+  <h2>The five tiers</h2>
+  <p class="sub">Each tier unlocks more. Reaching the next one takes progressively longer.</p>
+  <div class="tiers">
+    <div class="tier" style="--c:#c97f4a">
+      <div class="tier-h"><div class="tier-badge">🥉</div><div class="tier-nm">Bronze</div><div class="tier-xp"><b>0</b> XP · everyone starts here</div></div>
+      <ul><li>Standard faucet rewards</li><li>Bronze profile badge</li><li>Access to all free tools</li><li>Daily missions &amp; streaks</li></ul>
+    </div>
+    <div class="tier" style="--c:#b7c2d0">
+      <div class="tier-h"><div class="tier-badge">🥈</div><div class="tier-nm">Silver</div><div class="tier-xp"><b>2,000</b> XP</div></div>
+      <ul><li><b>+10%</b> faucet claim rewards</li><li>Silver profile badge</li><li>Streak bonus multiplier</li><li>Priority support replies</li></ul>
+    </div>
+    <div class="tier" style="--c:#ffcf3f">
+      <div class="tier-h"><div class="tier-badge">🥇</div><div class="tier-nm">Gold</div><div class="tier-xp"><b>10,000</b> XP</div></div>
+      <ul><li><b>+20%</b> faucet claim rewards</li><li>Higher daily claim limit</li><li>Gold badge + profile accent colour</li><li>Entry to Gold-only competitions</li></ul>
+    </div>
+    <div class="tier" style="--c:#7ee0ff">
+      <div class="tier-h"><div class="tier-badge">💠</div><div class="tier-nm">Platinum</div><div class="tier-xp"><b>25,000</b> XP</div></div>
+      <ul><li><b>+35%</b> faucet claim rewards</li><li>Even higher daily limits</li><li>Exclusive Platinum badge + cosmetics</li><li>Priority seeding in competitions</li></ul>
+    </div>
+    <div class="tier" style="--c:#8b5cff">
+      <div class="tier-h"><div class="tier-badge">💎</div><div class="tier-nm">Diamond</div><div class="tier-xp"><b>50,000</b> XP</div></div>
+      <ul><li><b>+50%</b> faucet claim rewards</li><li><b>+10% withdrawal bonus</b> — the house pays extra</li><li>Rarest badge + full cosmetic set</li><li>Invite-only Diamond events</li></ul>
+    </div>
+  </div>
+
+  <h2>How you earn XP</h2>
+  <p class="sub">Real activity only. Every source is capped per day so nothing can be farmed.</p>
+  <div class="xps">
+    <div class="xp"><span class="ic">📈</span><div><div class="t">Close a profitable trade</div><div class="d">up to 4/day</div></div><span class="v">+15</span></div>
+    <div class="xp"><span class="ic">🎯</span><div><div class="t">Complete a daily mission</div><div class="d">up to 5/day</div></div><span class="v">+12</span></div>
+    <div class="xp"><span class="ic">📅</span><div><div class="t">Daily check-in</div><div class="d">once per day</div></div><span class="v">+20</span></div>
+    <div class="xp"><span class="ic">🔥</span><div><div class="t">Streak bonus</div><div class="d">grows with your streak</div></div><span class="v">+2–40</span></div>
+    <div class="xp"><span class="ic">🎁</span><div><div class="t">Claim from the faucet</div><div class="d">up to 10/day</div></div><span class="v">+2</span></div>
+    <div class="xp"><span class="ic">📣</span><div><div class="t">Approved promo post</div><div class="d">X or TikTok</div></div><span class="v">+40</span></div>
+    <div class="xp"><span class="ic">🏦</span><div><div class="t">Verified exchange sign-up</div><div class="d">one-off, big</div></div><span class="v">+200</span></div>
+    <div class="xp"><span class="ic">🏆</span><div><div class="t">Weekly competition top 3</div><div class="d">by placement</div></div><span class="v">+100–300</span></div>
+    <div class="xp"><span class="ic">🎓</span><div><div class="t">Academy lessons</div><div class="d">capped — early tiers only</div></div><span class="v">soon</span></div>
+    <div class="xp"><span class="ic">✍️</span><div><div class="t">Set your username</div><div class="d">one-time milestone</div></div><span class="v">+50</span></div>
+  </div>
+
+  <h2>The philosophy</h2>
+  <div class="phil">
+    <p>This system rewards <b>loyalty and consistency</b> — not quick bursts. Daily caps mean you can't grind Diamond in a weekend; the only path is showing up over months. A hardcore daily user peaks around 150 XP/day, so <b>Diamond (50,000 XP) takes close to a year</b> of steady activity. That's on purpose: a Diamond badge should mean something.</p>
+    <p style="margin-top:10px">Finishing the entire Academy helps a <b>new</b> trader find their feet early, but its XP is capped so it can never skip the long game. Whether you start today or you've been here for months, the climb is earned the same way — one honest action at a time.</p>
+  </div>
+
+  <h2>FAQ</h2>
+  <details class="faq"><summary>How do I earn XP?</summary><p>Closing profitable paper trades, daily check-ins and streaks, daily missions, faucet claims, promoting the platform, and placing in weekly competitions. Every source has a daily cap so it can't be farmed.</p></details>
+  <details class="faq"><summary>How long does Diamond take?</summary><p>Close to a year of consistent daily activity. Diamond is 50,000 XP and even the most active users earn ~150 XP/day. It is meant to be rare.</p></details>
+  <details class="faq"><summary>Can the Academy skip the grind?</summary><p>No. Academy XP is capped so it can only carry a new user to the early tiers. Even after every lesson you'll still be far from Diamond.</p></details>
+  <details class="faq"><summary>What do higher levels unlock?</summary><p>Bigger faucet rewards (up to +50% at Diamond), higher daily limits, exclusive badges and cosmetics, special competitions, and a 10% withdrawal bonus for Diamond.</p></details>
+  <details class="faq"><summary>Do I lose XP if I go inactive?</summary><p>Never — XP and level are permanent. Only your daily streak resets if you miss a day, so consistency pays off.</p></details>
+
+  <a class="cta" href="/paper-trade">Start earning XP — open a free paper trade →</a>
+  <p class="discl">Rewards are a perk for active members and may be adjusted to protect the platform. Not financial advice.</p>
+
+  <footer>
+    <span><a href="/">MarginPad</a> · <a href="/rewards/">Rewards</a> · <a href="/paper-trade">Paper Trade</a> · <a href="/community/">Community</a></span><br>
+    <span>© 2026 MarginPad · Level up by staying.</span>
+  </footer>
+</div>
+
+<script defer src="/assets/mp-auth.js"></script>
+<script>
+(function(){
+  try{var u='/api/track?t=pageview&p=/levels/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon)navigator.sendBeacon(u);}catch(e){}
+  var ICON={bronze:'🥉',silver:'🥈',gold:'🥇',platinum:'💠',diamond:'💎'};
+  function paint(me){
+    if(!me||!me.level)return;var lv=me.level;
+    var box=document.getElementById('myLvl');box.classList.add('on');box.style.setProperty('--c',lv.col||'#c97f4a');
+    document.getElementById('mlBadge').textContent=ICON[lv.k]||'🎖';
+    document.getElementById('mlName').textContent=lv.name||'Bronze';
+    document.getElementById('mlName').style.color=lv.col||'#c97f4a';
+    document.getElementById('mlXp').textContent=(lv.xp||0).toLocaleString()+' XP'+(me.streak?' · 🔥 '+me.streak+'-day streak':'');
+    document.getElementById('mlNext').innerHTML=lv.next?((lv.toNext||0).toLocaleString()+' XP to '+lv.next):'MAX tier reached';
+    var bar=document.getElementById('mlBar');bar.style.background='linear-gradient(90deg,'+(lv.col||'#c97f4a')+',#fff8)';
+    setTimeout(function(){bar.style.width=(lv.pct!=null?lv.pct:100)+'%';},120);
+  }
+  fetch('/api/auth/me').then(function(r){return r.json();}).then(function(d){if(d&&d.user)paint(d.user);}).catch(function(){});
+})();
+</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

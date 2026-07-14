@@ -30,6 +30,16 @@
     + '.mpa-prow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #1a2027;font-size:13.5px}'
     + '.mpa-prow:last-child{border-bottom:none}'
     + '.mpa-prow span{color:#9aa3ad}.mpa-prow b{color:#f2f0e9;font-weight:700;max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}'
+    + '.mpa-lvl{background:linear-gradient(160deg,#12151d,#0a0d11);border:1px solid #2a3140;border-radius:14px;padding:14px 15px;margin:8px 0 4px;position:relative;overflow:hidden}'
+    + '.mpa-lvl-top{display:flex;align-items:center;gap:11px}'
+    + '.mpa-lvl-badge{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;box-shadow:0 0 18px -4px var(--lc)}'
+    + '.mpa-lvl-nm{font-weight:800;font-size:16px;color:var(--lc)}'
+    + '.mpa-lvl-xp{font-size:11.5px;color:#8a93a0;font-family:ui-monospace,Consolas,monospace;margin-top:1px}'
+    + '.mpa-lvl-next{margin-left:auto;text-align:right;font-size:10.5px;color:#5c656f;font-family:ui-monospace,Consolas,monospace}'
+    + '.mpa-lvl-bar{height:8px;border-radius:5px;background:#1a2027;overflow:hidden;margin-top:11px}'
+    + '.mpa-lvl-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--lc),#ffffff88);transition:width .6s ease}'
+    + '.mpa-lvl-link{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:9px;font-size:12px;font-weight:700;color:#c2f64a;text-decoration:none;padding:8px;border:1px solid rgba(194,246,74,.25);border-radius:9px}'
+    + '.mpa-lvl-link:hover{background:rgba(194,246,74,.08)}'
     + '.mpa-uname-set{display:flex;align-items:center;gap:8px;background:#0a0d11;border:1px solid #2f3742;border-radius:11px;padding:13px 14px;color:#f2f0e9;font-size:15px;font-weight:700}'
     + '.mpa-uname-set .mpa-lock{margin-left:auto;font-size:12px;font-weight:600;color:#5c656f}'
     + '.mpa-dm{display:flex;flex-direction:column;height:min(60vh,440px)}'
@@ -110,7 +120,17 @@
       var hasU = !!ME.username; // once set, a username is permanent — no edit option
       var fmtDate = function (ts) { if (!ts) return '—'; try { return new Date(ts).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); } catch (e) { return '—'; } };
       var tradeCount = function () { try { var j = JSON.parse(localStorage.getItem('mp_journal') || '[]'); return Array.isArray(j) ? j.length : 0; } catch (e) { return 0; } };
+      var lvlIcon = { bronze: '🥉', silver: '🥈', gold: '🥇', platinum: '💠', diamond: '💎' };
+      var lv = ME.level || { k: 'bronze', name: 'Bronze', col: '#c97f4a', xp: ME.xp || 0, pct: 0, next: 'Silver', toNext: 2000 };
+      var lvlHtml = '<div class="mpa-lvl" style="--lc:' + (lv.col || '#c97f4a') + '">'
+        + '<div class="mpa-lvl-top"><div class="mpa-lvl-badge" style="background:' + (lv.col || '#c97f4a') + '22">' + (lvlIcon[lv.k] || '🎖') + '</div>'
+        + '<div><div class="mpa-lvl-nm">' + esc(lv.name || 'Bronze') + '</div><div class="mpa-lvl-xp">' + (lv.xp || 0).toLocaleString() + ' XP' + (ME.streak ? ' · 🔥 ' + ME.streak + '-day streak' : '') + '</div></div>'
+        + (lv.next ? '<div class="mpa-lvl-next">' + (lv.toNext || 0).toLocaleString() + ' XP<br>to ' + esc(lv.next) + '</div>' : '<div class="mpa-lvl-next" style="color:' + (lv.col || '#8b5cff') + '">MAX<br>tier</div>') + '</div>'
+        + '<div class="mpa-lvl-bar"><i style="width:' + (lv.pct != null ? lv.pct : 100) + '%"></i></div>'
+        + '<a class="mpa-lvl-link" href="/levels/">⭐ Level System — how it works & rewards →</a>'
+        + '</div>';
       bodyEl.innerHTML = '<h3 class="mpa-h">Your profile</h3>'
+        + lvlHtml
         + '<div class="mpa-prof">'
           + (hasU ? '<div class="mpa-prow"><span>Username</span><b>' + esc(ME.username) + '</b></div>' : '')
           + '<div class="mpa-prow"><span>Email</span><b>' + esc(ME.email) + '</b></div>'
