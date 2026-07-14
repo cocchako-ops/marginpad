@@ -5997,20 +5997,7 @@ export class RewardLedger {
   }
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
-  _grantXp(uid, src, amt, o) { // o: {dayCap, lifeCap, once, note}. Returns granted (clamped). Anti-abuse via xpday.
-    o = o || {}; amt = Math.max(0, Math.round(+amt || 0)); if (!uid || !amt) return 0;
-    const sql = this.state.storage.sql; const now = Date.now();
-    if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return 0;
-    if (o.once && this.rows('SELECT 1 FROM xplog WHERE user_id=? AND src=? LIMIT 1', uid, src)[0]) return 0;
-    if (o.lifeCap) { const t = (this.rows('SELECT COALESCE(SUM(amt),0) s FROM xplog WHERE user_id=? AND src=? AND amt>0', uid, src)[0] || { s: 0 }).s; if (t >= o.lifeCap) return 0; amt = Math.min(amt, o.lifeCap - t); }
-    if (o.dayCap) { const day = new Date().toISOString().slice(0, 10); const got = (this.rows('SELECT n FROM xpday WHERE user_id=? AND day=? AND src=?', uid, day, src)[0] || { n: 0 }).n; if (got >= o.dayCap) return 0; amt = Math.min(amt, o.dayCap - got); if (amt <= 0) return 0; sql.exec('INSERT INTO xpday(user_id,day,src,n) VALUES(?,?,?,?) ON CONFLICT(user_id,day,src) DO UPDATE SET n=n+?', uid, day, src, amt, amt); }
-    if (amt <= 0) return 0;
-    sql.exec('UPDATE users SET xp=MAX(0,COALESCE(xp,0)+?) WHERE id=?', amt, uid);
-    sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, now, src, amt, String(o.note || '').slice(0, 120));
-    const cnt = (this.rows('SELECT COUNT(*) n FROM xplog WHERE user_id=?', uid)[0] || { n: 0 }).n;
-    if (cnt > 160) sql.exec('DELETE FROM xplog WHERE rowid IN (SELECT rowid FROM xplog WHERE user_id=? ORDER BY ts ASC LIMIT ?)', uid, cnt - 150);
-    return amt;
-  }
+
   log(type, address, cc, dev, amount) { const s = this.state.storage.sql; try { s.exec('INSERT INTO log(ts,type,address,cc,dev,amount) VALUES(?,?,?,?,?,?)', Date.now(), type, address || '', cc || '', dev || '', amount || 0); s.exec('DELETE FROM log WHERE rowid NOT IN (SELECT rowid FROM log ORDER BY ts DESC LIMIT 200)'); } catch (e) {} }
   // One-time sign-up bonus: credit the configured welcome amount to a new account the first time it's seen. Idempotent (welcome flag) + respects the global daily budget. Returns the granted USD amount (0 if not granted).
   grantWelcome(acct, cfg) {
@@ -6479,6 +6466,20 @@ export class UserStore {
   }
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
+  _grantXp(uid, src, amt, o) { // o: {dayCap, lifeCap, once, note}. Returns granted (clamped). Anti-abuse via xpday.
+    o = o || {}; amt = Math.max(0, Math.round(+amt || 0)); if (!uid || !amt) return 0;
+    const sql = this.state.storage.sql; const now = Date.now();
+    if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return 0;
+    if (o.once && this.rows('SELECT 1 FROM xplog WHERE user_id=? AND src=? LIMIT 1', uid, src)[0]) return 0;
+    if (o.lifeCap) { const t = (this.rows('SELECT COALESCE(SUM(amt),0) s FROM xplog WHERE user_id=? AND src=? AND amt>0', uid, src)[0] || { s: 0 }).s; if (t >= o.lifeCap) return 0; amt = Math.min(amt, o.lifeCap - t); }
+    if (o.dayCap) { const day = new Date().toISOString().slice(0, 10); const got = (this.rows('SELECT n FROM xpday WHERE user_id=? AND day=? AND src=?', uid, day, src)[0] || { n: 0 }).n; if (got >= o.dayCap) return 0; amt = Math.min(amt, o.dayCap - got); if (amt <= 0) return 0; sql.exec('INSERT INTO xpday(user_id,day,src,n) VALUES(?,?,?,?) ON CONFLICT(user_id,day,src) DO UPDATE SET n=n+?', uid, day, src, amt, amt); }
+    if (amt <= 0) return 0;
+    sql.exec('UPDATE users SET xp=MAX(0,COALESCE(xp,0)+?) WHERE id=?', amt, uid);
+    sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, now, src, amt, String(o.note || '').slice(0, 120));
+    const cnt = (this.rows('SELECT COUNT(*) n FROM xplog WHERE user_id=?', uid)[0] || { n: 0 }).n;
+    if (cnt > 160) sql.exec('DELETE FROM xplog WHERE rowid IN (SELECT rowid FROM xplog WHERE user_id=? ORDER BY ts ASC LIMIT ?)', uid, cnt - 150);
+    return amt;
+  }
   rid() { const a = new Uint8Array(16); crypto.getRandomValues(a); return Array.from(a).map(x => x.toString(16).padStart(2, '0')).join(''); }
   async fetch(request) {
     const url = new URL(request.url), path = url.pathname, sql = this.state.storage.sql, now = Date.now();
