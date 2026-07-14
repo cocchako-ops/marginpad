@@ -5,6 +5,11 @@
   if (window.mpAuth) return;
   var ME = null, BANNED = false;
   function esc(s) { return String(s).replace(/[<>&]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]; }); }
+  /* shared tier insignia (SVG, no emoji): faceted gem for Diamond, hexagon+star medal otherwise */
+  window.mpLvlSvg = window.mpLvlSvg || function (k, col) { col = col || '#c97f4a';
+    if (k === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" style="display:block"><path d="M5 9h14l-7 11z" fill="' + col + '30"/><path d="M5 9l3-4h8l3 4M5 9h14M5 9l7 11 7-11M9 5 8 9M15 5l1 4M8 9l4 11M16 9l-4 11" stroke="' + col + '" stroke-width="1.25" stroke-linejoin="round"/></svg>';
+    return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" style="display:block"><path d="M12 2.5 20 7v10L12 21.5 4 17V7z" fill="' + col + '22" stroke="' + col + '" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 7l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.6 8.9 16.1l.6-3.3L7.1 10.5l3.3-.5z" fill="' + col + '"/></svg>'; };
+  window.mpFlameSvg = window.mpFlameSvg || function (col) { return '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" style="vertical-align:-1px"><path d="M12 3c1 3-2 4-2 7a2 2 0 0 0 4 0c0-1 0-1 .5-2 1 1.5 2.5 3 2.5 5a5 5 0 0 1-10 0c0-4 5-6 5-10z" fill="' + (col || '#ff6a3d') + '" opacity=".85"/></svg>'; };
   function emailOk(v) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v); }
 
   var css = '.mpa-modal{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(4,6,9,.7);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}'
@@ -120,14 +125,13 @@
       var hasU = !!ME.username; // once set, a username is permanent — no edit option
       var fmtDate = function (ts) { if (!ts) return '—'; try { return new Date(ts).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }); } catch (e) { return '—'; } };
       var tradeCount = function () { try { var j = JSON.parse(localStorage.getItem('mp_journal') || '[]'); return Array.isArray(j) ? j.length : 0; } catch (e) { return 0; } };
-      var lvlIcon = { bronze: '🥉', silver: '🥈', gold: '🥇', platinum: '💠', diamond: '💎' };
       var lv = ME.level || { k: 'bronze', name: 'Bronze', col: '#c97f4a', xp: ME.xp || 0, pct: 0, next: 'Silver', toNext: 2000 };
       var lvlHtml = '<div class="mpa-lvl" style="--lc:' + (lv.col || '#c97f4a') + '">'
-        + '<div class="mpa-lvl-top"><div class="mpa-lvl-badge" style="background:' + (lv.col || '#c97f4a') + '22">' + (lvlIcon[lv.k] || '🎖') + '</div>'
-        + '<div><div class="mpa-lvl-nm">' + esc(lv.name || 'Bronze') + '</div><div class="mpa-lvl-xp">' + (lv.xp || 0).toLocaleString() + ' XP' + (ME.streak ? ' · 🔥 ' + ME.streak + '-day streak' : '') + '</div></div>'
+        + '<div class="mpa-lvl-top"><div class="mpa-lvl-badge" style="background:transparent;padding:4px">' + window.mpLvlSvg(lv.k, lv.col || '#c97f4a') + '</div>'
+        + '<div><div class="mpa-lvl-nm">' + esc(lv.name || 'Bronze') + '</div><div class="mpa-lvl-xp">' + (lv.xp || 0).toLocaleString() + ' XP' + (ME.streak ? ' · ' + window.mpFlameSvg() + ' ' + ME.streak + '-day streak' : '') + '</div></div>'
         + (lv.next ? '<div class="mpa-lvl-next">' + (lv.toNext || 0).toLocaleString() + ' XP<br>to ' + esc(lv.next) + '</div>' : '<div class="mpa-lvl-next" style="color:' + (lv.col || '#8b5cff') + '">MAX<br>tier</div>') + '</div>'
         + '<div class="mpa-lvl-bar"><i style="width:' + (lv.pct != null ? lv.pct : 100) + '%"></i></div>'
-        + '<a class="mpa-lvl-link" href="/levels/">⭐ Level System — how it works & rewards →</a>'
+        + '<a class="mpa-lvl-link" href="/levels/">Level System — how it works &amp; rewards →</a>'
         + '</div>';
       bodyEl.innerHTML = '<h3 class="mpa-h">Your profile</h3>'
         + lvlHtml

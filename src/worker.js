@@ -3492,7 +3492,7 @@ function u360(email,uname){
       return '<div class="ovv-row"><span style="width:70px;color:#8fa3c4">'+(w9.ts?ago(w9.ts)+' ago':'')+'</span><b style="color:#c2f64a">$'+(+(w9.amountUsd||w9.usd||0)).toFixed(2)+'</b><span style="flex:1"></span><b style="color:'+(w9.status==='paid'?'#2ebd85':'#ffb347')+'">'+esc(String(w9.status||'').toUpperCase())+'</b></div>';}).join('')||'<div class="empty">no withdrawals</div>';
     var fl=fraud&&fraud.flags&&fraud.flags.length?fraud.flags.map(function(f9){return '<div class="ovv-row"><span style="color:#ffb347">&#9888;</span><span style="flex:1;color:#dbe4f5">'+esc(String(f9))+'</span></div>';}).join(''):'<div class="empty">no fraud flags</div>';
     function u3LvlPanel(d,xpd){
-      var LI={bronze:'🥉',silver:'🥈',gold:'🥇',platinum:'💠',diamond:'💎'};
+      
       var lv=(xpd&&xpd.level)||{k:'bronze',name:'Bronze',col:'#c97f4a',xp:0,pct:0,next:'Silver',toNext:2000};
       var log=(xpd&&xpd.log)||[],bySrc=(xpd&&xpd.bySrc)||[];
       var SRCN={trade_win:'Profitable trades',trade:'Closed trades',checkin:'Daily check-in',streak:'Streak bonus',mission:'Missions',faucet:'Faucet claims',promo:'Promo posts',exsign:'Exchange sign-ups',lbprize:'Competitions',username:'Username',academy:'Academy',admin:'Admin adjust'};
@@ -3501,8 +3501,8 @@ function u360(email,uname){
       return '<div class="ovv-p" style="grid-column:1/-1;margin-top:12px" data-u3lvl>'
         +'<div class="ovv-ph">Level &amp; XP <a class="ovv-more" href="/levels/" target="_blank">/levels/ &rarr;</a></div>'
         +'<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px">'
-        +'<div style="width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:24px;background:'+(lv.col||'#c97f4a')+'22;flex:none">'+(LI[lv.k]||'🎖')+'</div>'
-        +'<div><div style="font-weight:800;font-size:17px;color:'+(lv.col||'#c97f4a')+'">'+esc(lv.name||'Bronze')+'</div><div style="font-family:Consolas,monospace;font-size:11.5px;color:#8fa3c4">'+(lv.xp||0).toLocaleString()+' XP'+((xpd&&xpd.streak)?' &middot; 🔥 '+xpd.streak+'d':'')+'</div></div>'
+        +'<div style="width:44px;height:44px;flex:none;padding:3px">'+lvlSvgS(lv.k,lv.col||'#c97f4a')+'</div>'
+        +'<div><div style="font-weight:800;font-size:17px;color:'+(lv.col||'#c97f4a')+'">'+esc(lv.name||'Bronze')+'</div><div style="font-family:Consolas,monospace;font-size:11.5px;color:#8fa3c4">'+(lv.xp||0).toLocaleString()+' XP'+((xpd&&xpd.streak)?' &middot; <svg viewBox="0 0 24 24" width="10" height="10" fill="#ff6a3d" style="vertical-align:-1px"><path d="M12 3c1 3-2 4-2 7a2 2 0 0 0 4 0c0-1 0-1 .5-2 1 1.5 2.5 3 2.5 5a5 5 0 0 1-10 0c0-4 5-6 5-10z"/></svg> '+xpd.streak+'d':'')+'</div></div>'
         +'<div style="margin-left:auto;font-family:Consolas,monospace;font-size:11px;color:#5c6b84;text-align:right">'+(lv.next?((lv.toNext||0).toLocaleString()+' XP<br>to '+esc(lv.next)):'MAX tier')+'</div>'
         +'</div>'
         +'<div style="height:8px;border-radius:5px;background:#141b29;overflow:hidden;margin-bottom:12px"><i style="display:block;height:100%;width:'+(lv.pct!=null?lv.pct:100)+'%;border-radius:5px;background:linear-gradient(90deg,'+(lv.col||'#c97f4a')+',#ffffff66)"></i></div>'
@@ -3692,7 +3692,7 @@ function renderWd(){var el=document.getElementById('wdList');if(!el)return;
       +'<span style="min-width:110px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#dbe4f5"'+(w.email?' title="'+esc(w.email)+'"':'')+'>'+whoTxt+(w.banned?' <b style="color:#ff6258">BAN</b>':'')+'</span>'
       +'<span style="width:34px">'+flag(w.cc)+'</span>'
       +'<span style="width:44px;color:#8fa3c4" title="claims">'+(w.claims||0)+'cl</span>'
-      +'<b style="width:64px;text-align:right;color:#c2f64a">$'+(+w.usd).toFixed(2)+(w.bonusUsd>0?'<br><span style="color:#8b5cff;font-size:9.5px">+$'+(+w.bonusUsd).toFixed(2)+' 💎</span>':'')+'</b>'
+      +'<b style="width:64px;text-align:right;color:#c2f64a">$'+(+w.usd).toFixed(2)+(w.bonusUsd>0?'<br><span style="color:#8b5cff;font-size:9.5px">+$'+(+w.bonusUsd).toFixed(2)+' <svg viewBox="0 0 24 24" width="9" height="9" fill="none" style="vertical-align:0"><path d="M5 9h14l-7 11z" fill="#8b5cff55"/><path d="M5 9l7 11 7-11M5 9l3-4h8l3 4H5" stroke="#8b5cff" stroke-width="1.4" stroke-linejoin="round"/></svg></span>':'')+'</b>'
       +'<span style="width:62px;text-align:center">'+st+'</span>'
       +'<span style="width:96px;color:#8fa3c4" title="paid at">'+(w.paidTs?wdFmtD(w.paidTs):'&#8212;')+'</span>'
       +'<span style="width:44px;text-align:center">'+txLink+'</span>'
@@ -6428,7 +6428,8 @@ const XP_LEVELS = [
   { k: 'diamond', name: 'Diamond', min: 50000, col: '#8b5cff' },
 ];
 const LEVEL_CLAIM_MULT = { bronze: 1.0, silver: 1.10, gold: 1.20, platinum: 1.35, diamond: 1.50 }; // faucet claim size by level
-const LEVEL_WD_BONUS = { diamond: 0.10 }; // Diamond gets +10% on withdrawals (the house pays it)
+const LEVEL_WD_BONUS = { diamond: 0.10 };
+function lvlSvgS(k, col) { col = col || '#c97f4a'; if (k === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M5 9h14l-7 11z" fill="' + col + '30"/><path d="M5 9l3-4h8l3 4M5 9h14M5 9l7 11 7-11M9 5 8 9M15 5l1 4M8 9l4 11M16 9l-4 11" stroke="' + col + '" stroke-width="1.25" stroke-linejoin="round"/></svg>'; return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M12 2.5 20 7v10L12 21.5 4 17V7z" fill="' + col + '22" stroke="' + col + '" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 7l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.6 8.9 16.1l.6-3.3L7.1 10.5l3.3-.5z" fill="' + col + '"/></svg>'; } // Diamond gets +10% on withdrawals (the house pays it)
 function xpLevelOf(xp) {
   xp = Math.max(0, +xp || 0);
   let i = 0; for (let n = 0; n < XP_LEVELS.length; n++) if (xp >= XP_LEVELS[n].min) i = n;
