@@ -54,6 +54,19 @@ h1 .g{background:linear-gradient(100deg,var(--bronze),var(--silver),var(--gold),
 .ml-bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--c),#fff8);transition:width .8s ease}
 h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.02em;margin:38px 0 6px}
 .sub{color:var(--dim);font-size:14px;margin-bottom:16px}
+/* top members (XP leaderboard) */
+.topmem{margin:30px 0 8px}
+.tm-list{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:8px}
+.tm-row{display:flex;align-items:center;gap:12px;padding:11px 14px;background:linear-gradient(160deg,#12151d,#0a0d11);border:1px solid var(--line);border-radius:12px}
+.tm-row.top{border-color:rgba(255,207,63,.35)}
+.tm-rank{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;width:26px;text-align:center;color:var(--faint);flex:none}
+.tm-row.top .tm-rank{color:#ffcf3f}
+.tm-gem{width:22px;height:22px;flex:none;display:flex;align-items:center;justify-content:center}
+.tm-gem svg{width:100%;height:100%;display:block}
+.tm-who{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tm-nm{font-weight:700;font-size:14.5px;color:var(--ink)}
+.tm-tier{font-size:11.5px;font-weight:600}
+.tm-xp{margin-left:auto;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;color:var(--lime,#c2f64a);flex:none}
 /* tiers */
 .tiers{display:flex;flex-direction:column;gap:12px}
 .tier{border:1px solid var(--line);border-radius:16px;padding:16px 18px;background:var(--panel);position:relative;overflow:hidden}
@@ -119,6 +132,12 @@ footer a{color:var(--dim)}
     <div class="ml-bar"><i id="mlBar" style="width:0%"></i></div>
   </div>
 
+  <div id="topMembers" class="topmem" hidden>
+    <h2>Top members</h2>
+    <p class="sub">The highest-XP traders on MarginPad. Every tier here was earned the slow way — climb to join them.</p>
+    <ol id="tmList" class="tm-list"></ol>
+  </div>
+
   <h2>The five tiers</h2>
   <p class="sub">Each tier unlocks more. Reaching the next one takes progressively longer.</p>
   <div class="tiers">
@@ -171,6 +190,7 @@ footer a{color:var(--dim)}
   <details class="faq"><summary>Can the Academy skip the grind?</summary><p>No. Academy XP is capped so it can only carry a new user to the early tiers. Even after every lesson you'll still be far from Diamond.</p></details>
   <details class="faq"><summary>What do higher levels unlock?</summary><p>Bigger faucet rewards (up to +50% at Diamond), higher daily limits, exclusive badges and cosmetics, special competitions, and a 10% withdrawal bonus for Diamond.</p></details>
   <details class="faq"><summary>Do I lose XP if I go inactive?</summary><p>Never — XP and level are permanent. Only your daily streak resets if you miss a day, so consistency pays off.</p></details>
+  <details class="faq"><summary>What is a streak freeze?</summary><p>A safety net for your streak. You bank one freeze for every 7 consecutive days (up to 3 saved). If you miss a day, a freeze is spent automatically to keep your streak alive — so one busy day won't wipe out weeks of consistency.</p></details>
 
   <a class="cta" href="/paper-trade">Start earning XP — open a free paper trade →</a>
   <p class="discl">Rewards are a perk for active members and may be adjusted to protect the platform. Not financial advice.</p>
@@ -192,6 +212,8 @@ footer a{color:var(--dim)}
     if(k==='diamond')return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M5 9h14l-7 11z" fill="'+col+'30"/><path d="M5 9l3-4h8l3 4M5 9h14M5 9l7 11 7-11M9 5 8 9M15 5l1 4M8 9l4 11M16 9l-4 11" stroke="'+col+'" stroke-width="1.25" stroke-linejoin="round"/></svg>';
     return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M12 2.5 20 7v10L12 21.5 4 17V7z" fill="'+col+'22" stroke="'+col+'" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 7l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.6 8.9 16.1l.6-3.3L7.1 10.5l3.3-.5z" fill="'+col+'"/></svg>';}
   function flame(){return window.mpFlameSvg?window.mpFlameSvg():'<svg viewBox="0 0 24 24" width="11" height="11" fill="#ff6a3d" style="vertical-align:-1px"><path d="M12 3c1 3-2 4-2 7a2 2 0 0 0 4 0c0-1 0-1 .5-2 1 1.5 2.5 3 2.5 5a5 5 0 0 1-10 0c0-4 5-6 5-10z"/></svg>';}
+  function snow(){return '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#7ee0ff" stroke-width="1.5" stroke-linecap="round" style="vertical-align:-2px"><path d="M12 2v20M3.4 7l17.2 10M20.6 7L3.4 17M12 2l-2 2M12 2l2 2M12 22l-2-2M12 22l2-2M3.4 7l.2 2.8M3.4 7l2.8-.2M20.6 17l-.2-2.8M20.6 17l-2.8.2M20.6 7l-2.8.2M20.6 7l-.2 2.8M3.4 17l2.8-.2M3.4 17l.2-2.8"/></svg>';}
+  function esc(s){return String(s==null?'':s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   Array.prototype.forEach.call(document.querySelectorAll('[data-tb]'),function(el){var k=el.getAttribute('data-tb');el.innerHTML=lvlSvg(k,TCOL[k]);});
   function paint(me){
     if(!me||!me.level)return;var lv=me.level;
@@ -199,12 +221,19 @@ footer a{color:var(--dim)}
     document.getElementById('mlBadge').innerHTML=lvlSvg(lv.k,lv.col||'#c97f4a');
     document.getElementById('mlName').textContent=lv.name||'Bronze';
     document.getElementById('mlName').style.color=lv.col||'#c97f4a';
-    document.getElementById('mlXp').innerHTML=(lv.xp||0).toLocaleString()+' XP'+(me.streak?' · '+flame()+' '+me.streak+'-day streak':'');
+    document.getElementById('mlXp').innerHTML=(lv.xp||0).toLocaleString()+' XP'+(me.streak?' · '+flame()+' '+me.streak+'-day streak':'')+(me.freezes?' · '+snow()+' '+me.freezes+' freeze'+(me.freezes>1?'s':''):'');
     document.getElementById('mlNext').innerHTML=lv.next?((lv.toNext||0).toLocaleString()+' XP to '+lv.next):'MAX tier reached';
     var bar=document.getElementById('mlBar');bar.style.background='linear-gradient(90deg,'+(lv.col||'#c97f4a')+',#fff8)';
     setTimeout(function(){bar.style.width=(lv.pct!=null?lv.pct:100)+'%';},120);
   }
   fetch('/api/auth/me').then(function(r){return r.json();}).then(function(d){if(d&&d.user)paint(d.user);}).catch(function(){});
+  fetch('/api/levels/top?limit=15').then(function(r){return r.json();}).then(function(d){
+    var t=(d&&d.top)||[];if(!t.length)return;
+    document.getElementById('tmList').innerHTML=t.map(function(x){
+      return '<li class="tm-row'+(x.rank<=3?' top':'')+'"><span class="tm-rank">'+x.rank+'</span><span class="tm-gem">'+lvlSvg(x.k,x.col)+'</span><span class="tm-who"><span class="tm-nm">'+esc(x.username)+'</span> <span class="tm-tier" style="color:'+esc(x.col)+'">'+esc(x.name)+'</span></span><span class="tm-xp">'+(x.xp||0).toLocaleString()+' XP</span></li>';
+    }).join('');
+    document.getElementById('topMembers').hidden=false;
+  }).catch(function(){});
 })();
 </script>
 <script defer src="/assets/mp-nav.js"></script>

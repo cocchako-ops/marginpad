@@ -5162,7 +5162,7 @@ async function handleAuth(url, request, env, ctx) {
     let sd = null; try { const sr = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); sd = await sr.json(); } catch (e) { return jr({ signedIn: false, transient: true }); }
     if (!sd || !sd.user || !sd.user.id) return jr({ signedIn: false });
     let log = []; try { const r = await stub.fetch(new Request('https://do/xplog?uid=' + encodeURIComponent(sd.user.id))); const d = await r.json(); log = (d.log || []).slice(0, 12); } catch (e) {}
-    return jr({ signedIn: true, xp: sd.user.xp || 0, streak: sd.user.streak || 0, level: sd.user.level || null, log });
+    return jr({ signedIn: true, xp: sd.user.xp || 0, streak: sd.user.streak || 0, freezes: sd.user.freezes || 0, level: sd.user.level || null, log });
   }
   if (path === '/me') {
     const tok = getCookie(request, SESS_COOKIE);
@@ -5791,6 +5791,16 @@ export default {
       // photo URL Telegram couldn't fetch → retry as text so the post still goes out
       if (!ok && photo) { try { const r2 = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/sendMessage', { method: 'POST', headers: jh, body: JSON.stringify({ chat_id: channel, text, parse_mode: 'HTML', disable_web_page_preview: true }) }); const j2 = await r2.json(); if (j2.ok) { ok = true; desc = 'sent without image (image URL was rejected)'; } } catch (e) {} }
       return new Response(JSON.stringify({ ok, channel: channelName, note: ok ? desc : undefined, error: ok ? undefined : (desc || 'send_failed') }), { headers: jh });
+    }
+    if (url.pathname === '/api/levels/top' && request.method === 'GET') { // public XP leaderboard (Top clanovi), edge-cached 60s
+      const lim = Math.min(50, Math.max(1, +url.searchParams.get('limit') || 20));
+      const ck = new Request('https://marginpad.io/__lvl_top_' + lim);
+      try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+      let body = '{"top":[]}';
+      if (env.USERS) { try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/xp/top?limit=' + lim)); body = await r.text(); } catch (e) {} }
+      const resp = new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+      try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+      return resp;
     }
     if (url.pathname === '/api/levels' && request.method === 'POST') { // public batch level-badge resolver (uid[]/username[] -> {k,col,name})
       let lvBody = {}; try { lvBody = await request.json(); } catch (e) {}
@@ -6448,7 +6458,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS otp(email TEXT PRIMARY KEY, code TEXT, expires INTEGER, attempts INTEGER DEFAULT 0, sent INTEGER, sends INTEGER DEFAULT 0, day TEXT)'); // one active code per email; rate-limited
     s.exec('CREATE TABLE IF NOT EXISTS otpip(k TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)'); // per-IP-per-day OTP send cap, so one source can't email-bomb many addresses
     for (const col of ['dev TEXT', 'br TEXT', 'last_seen INTEGER', 'pv INTEGER DEFAULT 0', 'username TEXT', "status TEXT DEFAULT 'active'", 'susp_until INTEGER DEFAULT 0', 'muted INTEGER DEFAULT 0', 'restrictions TEXT', 'note TEXT', 'asn INTEGER', 'org TEXT', 'digest INTEGER DEFAULT 1', 'tg_chat TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} }
-    for (const col of ['xp INTEGER DEFAULT 0', 'streak INTEGER DEFAULT 0', 'streak_day TEXT', 'lvl_seen TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // XP & level system
+    for (const col of ['xp INTEGER DEFAULT 0', 'streak INTEGER DEFAULT 0', 'streak_day TEXT', 'lvl_seen TEXT', 'freezes INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // XP & level system (+freezes = streak-freeze anti-churn buffer)
     s.exec('CREATE TABLE IF NOT EXISTS xplog(user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)'); // XP earn/adjust history (ring-buffered ~150/user)
     s.exec('CREATE TABLE IF NOT EXISTS xpday(user_id TEXT, day TEXT, src TEXT, n INTEGER DEFAULT 0, PRIMARY KEY(user_id,day,src))'); // per-source per-UTC-day earned, for anti-abuse caps
     try { s.exec('CREATE INDEX IF NOT EXISTS xplog_u ON xplog(user_id,ts)'); } catch (e) {} // device/browser, activity rollups, moderation, digest opt-in, linked Telegram chat
@@ -6640,8 +6650,19 @@ export class UserStore {
       const type = String(b.type || '').slice(0, 24), label = String(b.label || '').slice(0, 64), pth = String(b.path || '').slice(0, 60), cc = String(b.cc || '').slice(0, 4), dev = String(b.dev || '').slice(0, 12);
       sql.exec('INSERT INTO uevents(user_id,ts,type,label,path,cc,dev) VALUES(?,?,?,?,?,?,?)', uid, now, type, label, pth, cc, dev);
       sql.exec('UPDATE users SET last_seen=?, pv=pv+? WHERE id=?', now, type === 'pageview' ? 1 : 0, uid);
-          try { const today9 = new Date().toISOString().slice(0, 10); const ur = this.rows('SELECT streak_day, streak FROM users WHERE id=?', uid)[0];
-            if (ur && ur.streak_day !== today9) { const yd = new Date(Date.now() - 86400000).toISOString().slice(0, 10); const st = (ur.streak_day === yd) ? ((+ur.streak || 0) + 1) : 1; sql.exec('UPDATE users SET streak_day=?, streak=? WHERE id=?', today9, st, uid); this._grantXp(uid, 'checkin', 20, { note: 'daily check-in' }); this._grantXp(uid, 'streak', Math.min(40, st * 2), { note: st + '-day streak' }); } } catch (ce) {}
+          try { const today9 = new Date().toISOString().slice(0, 10); const ur = this.rows('SELECT streak_day, streak, freezes FROM users WHERE id=?', uid)[0];
+            if (ur && ur.streak_day !== today9) {
+              const fz = +ur.freezes || 0; let st, usedFreeze = 0;
+              if (!ur.streak_day) { st = 1; }
+              else { const diff = Math.round((Date.parse(today9) - Date.parse(ur.streak_day)) / 86400000);
+                if (diff <= 1) st = (+ur.streak || 0) + 1; // consecutive day (or clock skew) → continue
+                else { const missed = diff - 1; if (fz >= missed) { st = (+ur.streak || 0) + 1; usedFreeze = missed; } else st = 1; } } // freeze(s) cover the gap, else streak resets
+              let newFz = fz - usedFreeze; if (st > 0 && st % 7 === 0) newFz = Math.min(3, newFz + 1); // earn 1 freeze each 7-day milestone, banked cap 3
+              sql.exec('UPDATE users SET streak_day=?, streak=?, freezes=? WHERE id=?', today9, st, newFz, uid);
+              this._grantXp(uid, 'checkin', 20, { note: 'daily check-in' });
+              this._grantXp(uid, 'streak', Math.min(40, st * 2), { note: st + '-day streak' });
+              if (usedFreeze) this._grantXp(uid, 'streak', 5, { note: 'streak freeze saved your ' + st + '-day streak' }); // small reward + shows as a toast so the save is visible
+            } } catch (ce) {}
       sql.exec('DELETE FROM uevents WHERE user_id=? AND ts < (SELECT MIN(ts) FROM (SELECT ts FROM uevents WHERE user_id=? ORDER BY ts DESC LIMIT 500))', uid, uid); // keep newest ~500/user — the Journey Map user-search needs real history depth
       return this.j({ ok: true });
     }
@@ -6649,10 +6670,10 @@ export class UserStore {
       const token = url.searchParams.get('token') || '';
       const s = this.rows('SELECT * FROM sessions WHERE token=?', token)[0];
       if (!s || now > s.expires) return this.j({ user: null });
-      const u = this.rows('SELECT id,email,username,created,status,muted,restrictions,xp,streak FROM users WHERE id=?', s.user_id)[0];
+      const u = this.rows('SELECT id,email,username,created,status,muted,restrictions,xp,streak,freezes FROM users WHERE id=?', s.user_id)[0];
       if (!u) return this.j({ user: null });
       if (u.status === 'banned') return this.j({ user: null, banned: true });
-      return this.j({ user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '', xp: u.xp || 0, streak: u.streak || 0, level: xpLevelOf(u.xp) } });
+      return this.j({ user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '', xp: u.xp || 0, streak: u.streak || 0, freezes: u.freezes || 0, level: xpLevelOf(u.xp) } });
     }
     if (path === '/profiles') { // internal: batch account-id → {username,email} for the admin reward views
       const ids = (Array.isArray(b && b.ids) ? b.ids : []).map(x => String(x)).filter(Boolean).slice(0, 600);
@@ -6711,10 +6732,16 @@ export class UserStore {
       sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, now, 'admin', add, String(b.note || ('set to ' + L.name)).slice(0, 120));
       return this.j({ ok: true, xp: L.min, level: xpLevelOf(L.min) });
     }
-    if (path === '/xplog') { const uid = String(url.searchParams.get('uid') || ''); const u = this.rows('SELECT xp,streak FROM users WHERE id=?', uid)[0];
+    if (path === '/xplog') { const uid = String(url.searchParams.get('uid') || ''); const u = this.rows('SELECT xp,streak,freezes FROM users WHERE id=?', uid)[0];
       const log = this.rows('SELECT ts,src,amt,note FROM xplog WHERE user_id=? ORDER BY ts DESC LIMIT 80', uid);
       const bySrc = this.rows('SELECT src, COALESCE(SUM(amt),0) tot FROM xplog WHERE user_id=? AND amt>0 GROUP BY src ORDER BY tot DESC', uid);
-      return this.j({ xp: u ? (u.xp || 0) : 0, streak: u ? (u.streak || 0) : 0, level: xpLevelOf(u ? u.xp : 0), log, bySrc });
+      return this.j({ xp: u ? (u.xp || 0) : 0, streak: u ? (u.streak || 0) : 0, freezes: u ? (u.freezes || 0) : 0, level: xpLevelOf(u ? u.xp : 0), log, bySrc });
+    }
+    if (path === '/xp/top') { // public: top members by XP (Top clanovi leaderboard) — named, non-banned, xp>0
+      const lim = Math.min(50, Math.max(1, +url.searchParams.get('limit') || 20));
+      const rows = this.rows("SELECT username, xp FROM users WHERE username IS NOT NULL AND username != '' AND xp > 0 AND (status IS NULL OR status != 'banned') ORDER BY xp DESC LIMIT ?", lim);
+      const top = rows.map((r, i) => { const L = xpLevelOf(r.xp || 0); return { rank: i + 1, username: r.username, xp: r.xp || 0, k: L.k, name: L.name, col: L.col }; });
+      return this.j({ top });
     }
     if (path === '/missions/claim') { // atomic claim marker (the credit happens in the worker AFTER this returns fresh:true)
       const uid = String(b.uid || ''), day = String(b.day || ''), mid = String(b.mid || '').replace(/[^a-z0-9]/gi, '');
