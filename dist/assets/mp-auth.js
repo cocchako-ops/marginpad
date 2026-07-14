@@ -7,7 +7,7 @@
   function esc(s) { return String(s).replace(/[<>&]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]; }); }
   /* shared tier insignia (SVG, no emoji): faceted gem for Diamond, hexagon+star medal otherwise */
   window.mpLvlSvg = window.mpLvlSvg || function (k, col) { col = col || '#c97f4a';
-    if (k === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" style="display:block"><path d="M5 9h14l-7 11z" fill="' + col + '30"/><path d="M5 9l3-4h8l3 4M5 9h14M5 9l7 11 7-11M9 5 8 9M15 5l1 4M8 9l4 11M16 9l-4 11" stroke="' + col + '" stroke-width="1.25" stroke-linejoin="round"/></svg>';
+    if (k === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" style="display:block"><path d="M8 5H16L20 10L12 19L4 10Z" fill="' + col + '30"/><path d="M8 5H16L20 10L12 19L4 10ZM4 10H20M8 5L10 10M16 5L14 10M10 10L12 19M14 10L12 19" stroke="' + col + '" stroke-width="1.25" stroke-linejoin="round"/></svg>';
     return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" style="display:block"><path d="M12 2.5 20 7v10L12 21.5 4 17V7z" fill="' + col + '22" stroke="' + col + '" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 7l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.6 8.9 16.1l.6-3.3L7.1 10.5l3.3-.5z" fill="' + col + '"/></svg>'; };
   window.mpFlameSvg = window.mpFlameSvg || function (col) { return '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" style="vertical-align:-1px"><path d="M12 3c1 3-2 4-2 7a2 2 0 0 0 4 0c0-1 0-1 .5-2 1 1.5 2.5 3 2.5 5a5 5 0 0 1-10 0c0-4 5-6 5-10z" fill="' + (col || '#ff6a3d') + '" opacity=".85"/></svg>'; };
   /* batch level-badge decorator: fills any <span data-lvln="username"> or <span data-lvlu="uid"> with the tier gem */

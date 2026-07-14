@@ -335,7 +335,7 @@
   function colorFor(u){var h=0;for(var i=0;i<u.length;i++)h=(h*31+u.charCodeAt(i))%360;return 'hsl('+h+',65%,70%)';}
   var MP_BADGE='<svg viewBox="0 0 24 24" width="12" height="12" style="vertical-align:-2px;margin-left:3px"><circle cx="12" cy="12" r="11" fill="#c2f64a"/><path d="M7 12.5l3.2 3.2L17 8.5" fill="none" stroke="#0a0b0d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var who=m.admin?'<b style="color:#e9e7df;font-weight:800">Margin<span style="color:#c2f64a">Pad</span>'+MP_BADGE+'</b>':'<b style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b><span data-lvln="'+esc(m.u)+'"></span>';d.innerHTML=who+' '+esc(m.t);msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();}
-  function setOnline(n){if(n!=null)onlineEl.textContent=n+(n===1?' online':' online');}
+  function setOnline(n){/* online count removed per owner */}
   function sysMsg(html){var d=document.createElement('div');d.className='ct-msg ct-sys';d.innerHTML=html;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
   function showLeaderboard(){var lbMsg=sysMsg('<b style="color:#c2f64a">🏆 Weekly leaderboard</b><br><span style="color:#9aa3ad">loading…</span>');
     fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){var t=(d&&d.top)||[],medal=['🥇','🥈','🥉'];
