@@ -5792,6 +5792,12 @@ export default {
       if (!ok && photo) { try { const r2 = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/sendMessage', { method: 'POST', headers: jh, body: JSON.stringify({ chat_id: channel, text, parse_mode: 'HTML', disable_web_page_preview: true }) }); const j2 = await r2.json(); if (j2.ok) { ok = true; desc = 'sent without image (image URL was rejected)'; } } catch (e) {} }
       return new Response(JSON.stringify({ ok, channel: channelName, note: ok ? desc : undefined, error: ok ? undefined : (desc || 'send_failed') }), { headers: jh });
     }
+    if (url.pathname === '/api/levels' && request.method === 'POST') { // public batch level-badge resolver (uid[]/username[] -> {k,col,name})
+      let lvBody = {}; try { lvBody = await request.json(); } catch (e) {}
+      if (!env.USERS) return new Response('{"byId":{},"byName":{}}', { headers: { 'content-type': 'application/json', ...CORS } });
+      try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/levels', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(lvBody) })); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=30', ...CORS } }); }
+      catch (e) { return new Response('{"byId":{},"byName":{}}', { headers: { 'content-type': 'application/json', ...CORS } }); }
+    }
     if (url.pathname === '/api/missions') return handleMissions(url, request, env);
     if (url.pathname.startsWith('/api/comm/')) return handleComm(url, request, env, ctx);
     if (url.pathname.startsWith('/api/') && url.pathname !== '/api/') return handleApi(url);
@@ -6653,6 +6659,14 @@ export class UserStore {
       const out = {};
       if (ids.length) { const ph = ids.map(() => '?').join(','); try { this.rows('SELECT id,email,username,tg_chat FROM users WHERE id IN (' + ph + ')', ...ids).forEach(u => { out[u.id] = { username: u.username || '', email: u.email || '', tg: !!u.tg_chat }; }); } catch (e) {} }
       return this.j({ profiles: out });
+    }
+    if (path === '/levels') { // public batch: uid[] + username[] -> {k,col,name} level badge (chat/community/leaderboard)
+      const ids = (Array.isArray(b && b.ids) ? b.ids : []).map(x => String(x).replace(/^u:/, '')).filter(Boolean).slice(0, 80);
+      const names = (Array.isArray(b && b.names) ? b.names : []).map(x => String(x).slice(0, 24)).filter(Boolean).slice(0, 80);
+      const byId = {}, byName = {};
+      if (ids.length) { const ph = ids.map(() => '?').join(','); try { this.rows('SELECT id,xp FROM users WHERE id IN (' + ph + ')', ...ids).forEach(u => { const L = xpLevelOf(u.xp || 0); byId[u.id] = { k: L.k, col: L.col, name: L.name }; }); } catch (e) {} }
+      if (names.length) { const ph = names.map(() => '?').join(','); try { this.rows('SELECT username,xp FROM users WHERE username COLLATE NOCASE IN (' + ph + ')', ...names).forEach(u => { if (!u.username) return; const L = xpLevelOf(u.xp || 0); byName[String(u.username).toLowerCase()] = { k: L.k, col: L.col, name: L.name }; }); } catch (e) {} }
+      return this.j({ byId, byName });
     }
     if (path === '/security') { // internal: behavioral profile per user for the ops Security tab — how much of their time is spent on /rewards, do they trade at all, VPN org. Joined with RewardLedger accounts in the worker.
       const dw = {}; try { this.rows("SELECT user_id uid, SUM(secs) tot, SUM(CASE WHEN path LIKE '/rewards%' THEN secs ELSE 0 END) rw, COUNT(DISTINCT path) np FROM udwell GROUP BY user_id").forEach(r => { dw[r.uid] = r; }); } catch (e) {}

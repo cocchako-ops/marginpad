@@ -1085,18 +1085,18 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   function colorFor(u){var h=0;for(var i=0;i<u.length;i++)h=(h*31+u.charCodeAt(i))%360;return 'hsl('+h+',65%,70%)';}
   var MP_BADGE='<svg viewBox="0 0 24 24" width="12" height="12" style="vertical-align:-2px;margin-left:3px"><circle cx="12" cy="12" r="11" fill="#c2f64a"/><path d="M7 12.5l3.2 3.2L17 8.5" fill="none" stroke="#0a0b0d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var who=m.admin?'<b style="color:#e9e7df;font-weight:800">Margin<span style="color:#c2f64a">Pad</span>'+MP_BADGE+'</b>':'<b style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b>';d.innerHTML=who+' '+esc(m.t);msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;}
+  function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var who=m.admin?'<b style="color:#e9e7df;font-weight:800">Margin<span style="color:#c2f64a">Pad</span>'+MP_BADGE+'</b>':'<b style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b><span data-lvln="'+esc(m.u)+'"></span>';d.innerHTML=who+' '+esc(m.t);msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();}
   function setOnline(n){if(n!=null)onlineEl.textContent=n+(n===1?' online':' online');}
   function sysMsg(html){var d=document.createElement('div');d.className='ct-msg ct-sys';d.innerHTML=html;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
   function showLeaderboard(){var lbMsg=sysMsg('<b style="color:#c2f64a">🏆 Weekly leaderboard</b><br><span style="color:#9aa3ad">loading…</span>');
     fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){var t=(d&&d.top)||[],medal=['🥇','🥈','🥉'];
       var html='<b style="color:#c2f64a">🏆 Weekly leaderboard</b><br>';
       if(!t.length)html+='<span style="color:#9aa3ad">No trades yet this week — be the first! Open Paper Trade and close a winner.</span>';
-      else html+=t.slice(0,10).map(function(x,i){return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+' — <b style="color:'+((+x.roe)>=0?'#2ebd85':'#ff6258')+'">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</b>';}).join('<br>');
+      else html+=t.slice(0,10).map(function(x,i){return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span> — <b style="color:'+((+x.roe)>=0?'#2ebd85':'#ff6258')+'">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</b>';}).join('<br>');
       var _we=d&&d.weekEnd,_es='';if(_we){var _ms=_we-Date.now();if(_ms>0){var _d=Math.floor(_ms/86400000),_h=Math.floor(_ms%86400000/3600000);_es=(_d>0?_d+'d ':'')+_h+'h';}}
       html+='<br><span style="color:#ffce8a;font-size:11.5px">⏳ Runs Mon → Sun (UTC)'+(_es?' · ends in '+_es:'')+'</span>';
       html+='<br><span style="color:#7f8893;font-size:11.5px">Members only — sign in (free) to join · prizes paid weekly in USDT · full board on Telegram @MarginPadBot</span>';
-      lbMsg.innerHTML=html;msgs.scrollTop=msgs.scrollHeight;
+      lbMsg.innerHTML=html;msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();
     }).catch(function(){lbMsg.innerHTML='<span style="color:#ff6258">Could not load the leaderboard. Try again.</span>';});
   }
   function connect(){
@@ -1960,7 +1960,8 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     try{var sub=document.querySelector('.lg-sub');if(sub&&pz.length>=3){var k=0;sub.innerHTML=sub.innerHTML.replace(/\$\d+/g,function(m){k++;return k<=3?('$'+pz[k-1]):m;});}}catch(e){}
     if(!t.length){board.innerHTML='<div class="lg-empty">'+LT('lgEmpty','No trades yet this week — be the first. Open Paper Trade, close a winner, and you are on the board.')+'</div>'+ends;return;}
     board.innerHTML='<div class="lg-board-h">'+LT('lgTopWeek','This week\u2019s top traders')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+t.slice(0,5).map(function(x,i){var rk=i+1,roe=+x.roe,prize=(pz[i]!=null&&+pz[i]>0)?('$'+pz[i]):'';
-      return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who">'+esc(x.who||'anon')+'</span>'+(x.symbol?'<span class="lg-tr">'+esc(x.symbol)+' '+esc(x.side||'')+'</span>':'')+'<span class="lg-roe '+(roe>=0?'up':'dn')+'">'+(roe>=0?'+':'')+roe.toFixed(0)+'%</span>'+(prize?'<span class="lg-prize">'+prize+'</span>':'')+'</div>';}).join('')+ends;
+      return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who">'+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span></span>'+(x.symbol?'<span class="lg-tr">'+esc(x.symbol)+' '+esc(x.side||'')+'</span>':'')+'<span class="lg-roe '+(roe>=0?'up':'dn')+'">'+(roe>=0?'+':'')+roe.toFixed(0)+'%</span>'+(prize?'<span class="lg-prize">'+prize+'</span>':'')+'</div>';}).join('')+ends;
+    if(window.mpLvlDecorate)window.mpLvlDecorate();
   }).catch(function(){});}
   function renderYou(){if(!you)return;var d;try{d=JSON.parse(localStorage.getItem('mp_journal')||'[]')||[];}catch(e){d=[];}
     var closed=d.filter(function(e){return e.status==='win'||e.status==='loss';}),wins=closed.filter(function(e){return e.status==='win';}).length,total=d.length,wr=closed.length?Math.round(wins/closed.length*100):0,bestRoe=0,streak=0;

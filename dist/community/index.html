@@ -360,7 +360,7 @@ function cardHtml(p){
   var syms=(p.syms||'').split(',').filter(Boolean).map(function(s2){return '<span class="sym" data-sym="'+esc(s2)+'">'+esc(s2)+'</span>';}).join('');
   var snip=String(p.body||'').replace(/```[\s\S]*?```/g,' ').replace(/\[chart:[^\]]*\]/g,' ').replace(/!\[[^\]]*\]\([^)]*\)/g,' ').replace(/[#*`>\[\]]/g,'').replace(/\s+/g,' ').trim().slice(0,180);
   return '<a class="pc" href="'+url+'" data-id="'+p.id+'">'
-    +'<div class="top">'+avatar(p.author)+'<div><div class="who">'+esc(p.author)+'</div><div class="sub">'+ago(p.ts)+' ago · '+(p.views||0)+' views</div></div><span style="margin-left:auto"></span>'+(p.pinned?'<span class="chip pin">'+ic('star')+' pick</span> ':'')+'<span class="chip">'+esc(CATS[p.cat]||p.cat)+'</span></div>'
+    +'<div class="top">'+avatar(p.author)+'<div><div class="who">'+esc(p.author)+'<span data-lvlu="'+esc(p.uid||'')+'"></span></div><div class="sub">'+ago(p.ts)+' ago · '+(p.views||0)+' views</div></div><span style="margin-left:auto"></span>'+(p.pinned?'<span class="chip pin">'+ic('star')+' pick</span> ':'')+'<span class="chip">'+esc(CATS[p.cat]||p.cat)+'</span></div>'
     +'<h3>'+esc(p.title)+'</h3>'
     +(snip?'<div class="snip">'+esc(snip)+'</div>':'')
     +(syms?'<div class="syms">'+syms+'</div>':'')
@@ -399,7 +399,7 @@ function loadFeed(more){
     FEED.posts=more?FEED.posts.concat(ps):ps;
     list.insertAdjacentHTML('beforeend',ps.map(cardHtml).join(''));
     if(ps.length<20||(FEED.sort!=='new'&&FEED.sort!=='following'))FEED.done=true;
-    wireLikes(list);
+    wireLikes(list);if(window.mpLvlDecorate)window.mpLvlDecorate();
   }).catch(function(){FEED.busy=false;if(hint)hint.hidden=true;});
 }
 var sentObs=new IntersectionObserver(function(en){if(en[0]&&en[0].isIntersecting)loadFeed(true);},{rootMargin:'600px'});
@@ -427,7 +427,7 @@ function postView(id){
     VIEW.innerHTML='<article class="pv">'
       +'<div class="pcrumb"><a href="/community/">Community</a> / <a href="/community/c/'+esc(p.cat)+'">'+esc(CATS[p.cat]||p.cat)+'</a></div>'
       +'<h1>'+esc(p.title)+'</h1>'
-      +'<div class="pmeta"><a href="/community/u/'+encodeURIComponent(p.author)+'" style="display:inline-flex;align-items:center;gap:8px">'+avatar(p.author,1)+'<span class="who">'+esc(p.author)+'</span></a>'
+      +'<div class="pmeta"><a href="/community/u/'+encodeURIComponent(p.author)+'" style="display:inline-flex;align-items:center;gap:8px">'+avatar(p.author,1)+'<span class="who">'+esc(p.author)+'</span></a><span data-lvlu="'+esc(p.uid||'')+'"></span>'
       +'<button class="followb'+(d.following?' on':'')+'" id="pvFollow" type="button">'+(d.following?'Following ✓':'+ Follow')+'</button>'
       +'<span>'+ago(p.ts)+' ago</span><span>'+(p.views||0)+' views</span><span>'+readMin(p.body)+' min read</span>'+(syms?'<span>'+syms+'</span>':'')+'</div>'
       +'<div class="pbody">'+md(p.body)+'</div>'
@@ -441,7 +441,7 @@ function postView(id){
       +'<div class="cbox">'+avatar((me()&&me().username)||'?',1)+'<textarea id="cmtIn" maxlength="3000" placeholder="'+(me()?'Add a comment…':'Sign in to comment')+'"></textarea><button id="cmtGo" type="button">Send</button></div>'
       +'<div id="cmtList"></div></div>'
       +'<div class="cmts" id="related" hidden><h3>Related posts</h3><div id="relList"></div></div>';
-    renderComments(d);hydrateTv(VIEW);
+    renderComments(d);hydrateTv(VIEW);if(window.mpLvlDecorate)window.mpLvlDecorate();
     // like / save / share / follow
     document.getElementById('pvLike').addEventListener('click',function(){var b=this;if(!me()){window.mpAuth&&window.mpAuth.open();return;}api('/like',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({tgt:'p:'+p.id})}).then(function(x){if(x&&x.ok){b.classList.toggle('on',x.liked);var n=b.querySelector('span');n.textContent=(+n.textContent||0)+(x.liked?1:-1);}});});
     document.getElementById('pvMark').addEventListener('click',function(){var b=this;if(!me()){window.mpAuth&&window.mpAuth.open();return;}api('/mark',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pid:p.id})}).then(function(x){if(x&&x.ok){b.classList.toggle('on',x.marked);b.innerHTML=ic('bookmark')+' '+(x.marked?'Saved':'Save');}});});
@@ -460,11 +460,12 @@ function postView(id){
       var tops=cs.filter(function(c){return !c.parent;}),byParent={};
       cs.filter(function(c){return c.parent;}).forEach(function(c){(byParent[c.parent]=byParent[c.parent]||[]).push(c);});
       function one(c,reply){return '<div class="cmt'+(reply?' reply':'')+'" data-cid="'+c.id+'">'+avatar(c.author,1)
-        +'<div class="b"><div class="h"><a class="who" href="/community/u/'+encodeURIComponent(c.author)+'">'+esc(c.author)+'</a><span class="t">'+ago(c.ts)+' ago</span></div>'
+        +'<div class="b"><div class="h"><a class="who" href="/community/u/'+encodeURIComponent(c.author)+'">'+esc(c.author)+'</a><span data-lvln="'+esc(c.author||'')+'"></span><span class="t">'+ago(c.ts)+' ago</span></div>'
         +'<div class="tx">'+esc(c.body)+'</div>'
         +'<div class="ft"><button class="act heart'+(likedC[c.id]?' on':'')+'" data-clike="'+c.id+'" type="button">'+ic('heart')+' <span>'+(c.likes||0)+'</span></button>'+(reply?'':'<button class="act" data-reply="'+c.id+'" type="button">Reply</button>')+'</div>'
         +'<div class="rbox" data-rbox="'+c.id+'"></div></div></div>';}
       list.innerHTML=tops.length?tops.map(function(c){return one(c,false)+((byParent[c.id]||[]).map(function(r){return one(r,true);}).join(''));}).join(''):'<div class="empty" style="padding:14px">No comments yet — start the discussion.</div>';
+      if(window.mpLvlDecorate)window.mpLvlDecorate();
       Array.prototype.forEach.call(list.querySelectorAll('[data-clike]'),function(b){b.addEventListener('click',function(){if(!me()){window.mpAuth&&window.mpAuth.open();return;}api('/like',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({tgt:'c:'+b.getAttribute('data-clike')})}).then(function(x){if(x&&x.ok){b.classList.toggle('on',x.liked);var n=b.querySelector('span');n.textContent=(+n.textContent||0)+(x.liked?1:-1);}});});});
       Array.prototype.forEach.call(list.querySelectorAll('[data-reply]'),function(b){b.addEventListener('click',function(){
         var host=list.querySelector('[data-rbox="'+b.getAttribute('data-reply')+'"]');if(!host)return;
@@ -499,12 +500,12 @@ function profileView(name){
     document.title=d.author+' — MarginPad Community';
     VIEW.innerHTML='<div class="prof">'
       +'<span class="av" style="background:'+avColor(d.author)+'">'+esc(d.author.charAt(0).toUpperCase())+'</span>'
-      +'<div style="flex:1;min-width:220px"><h1>'+esc(d.author)+'<span class="badge">'+badge(d.rep)+'</span></h1>'
+      +'<div style="flex:1;min-width:220px"><h1>'+esc(d.author)+'<span data-lvlu="'+esc(d.uid||'')+'"></span><span class="badge">'+badge(d.rep)+'</span></h1>'
       +'<div class="mono" style="color:var(--faint);font-size:12px;margin-top:3px">joined '+(d.joined?new Date(d.joined).toISOString().slice(0,10):'—')+'</div>'
       +'<div class="pstats"><span><b>'+d.rep+'</b>reputation</span><span><b>'+d.nPosts+'</b>posts</span><span><b>'+d.nComments+'</b>comments</span><span><b>'+d.likesRecv+'</b>likes received</span><span><b>'+d.followers+'</b>followers</span><span><b>'+d.following+'</b>following</span></div></div>'
       +'<button class="followb'+(d.youFollow?' on':'')+'" id="profFollow" type="button" style="font-size:14px;padding:9px 20px">'+(d.youFollow?'Following ✓':'+ Follow')+'</button>'
       +'</div><h2 style="font-size:16px;margin:4px 0 12px">Posts</h2><div id="profList">'+((d.posts||[]).map(cardHtml).join('')||'<div class="empty">no posts yet</div>')+'</div>';
-    wireLikes(document.getElementById('profList'));
+    wireLikes(document.getElementById('profList'));if(window.mpLvlDecorate)window.mpLvlDecorate();
     document.getElementById('profFollow').addEventListener('click',function(){var b=this;if(!me()){window.mpAuth&&window.mpAuth.open();return;}api('/follow',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({tuid:d.uid,tname:d.author})}).then(function(x){if(x&&x.ok){b.classList.toggle('on',x.following);b.textContent=x.following?'Following ✓':'+ Follow';}});});
   });
 }
@@ -613,7 +614,7 @@ function widgets(){
   }).catch(function(){});
   api('/authors').then(function(d){
     var a=(d&&d.authors)||[];if(!a.length)return;
-    document.getElementById('wAuth').innerHTML=a.map(function(x){return '<a class="row" href="/community/u/'+encodeURIComponent(x.author)+'">'+avatar(x.author,1)+'<span style="font-weight:600;font-size:12.5px">'+esc(x.author)+'</span><span class="r" style="color:var(--faint)">'+x.n+' posts</span></a>';}).join('');
+    document.getElementById('wAuth').innerHTML=a.map(function(x){return '<a class="row" href="/community/u/'+encodeURIComponent(x.author)+'">'+avatar(x.author,1)+'<span style="font-weight:600;font-size:12.5px">'+esc(x.author)+'</span><span data-lvln="'+esc(x.author||'')+'"></span><span class="r" style="color:var(--faint)">'+x.n+' posts</span></a>';}).join('');if(window.mpLvlDecorate)window.mpLvlDecorate();
   });
   api('/feed?sort=discussed').then(function(d){
     var ps=((d&&d.posts)||[]).slice(0,5);if(!ps.length)return;

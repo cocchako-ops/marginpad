@@ -10,6 +10,35 @@
     if (k === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" style="display:block"><path d="M5 9h14l-7 11z" fill="' + col + '30"/><path d="M5 9l3-4h8l3 4M5 9h14M5 9l7 11 7-11M9 5 8 9M15 5l1 4M8 9l4 11M16 9l-4 11" stroke="' + col + '" stroke-width="1.25" stroke-linejoin="round"/></svg>';
     return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" style="display:block"><path d="M12 2.5 20 7v10L12 21.5 4 17V7z" fill="' + col + '22" stroke="' + col + '" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 7l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.6 8.9 16.1l.6-3.3L7.1 10.5l3.3-.5z" fill="' + col + '"/></svg>'; };
   window.mpFlameSvg = window.mpFlameSvg || function (col) { return '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" style="vertical-align:-1px"><path d="M12 3c1 3-2 4-2 7a2 2 0 0 0 4 0c0-1 0-1 .5-2 1 1.5 2.5 3 2.5 5a5 5 0 0 1-10 0c0-4 5-6 5-10z" fill="' + (col || '#ff6a3d') + '" opacity=".85"/></svg>'; };
+  /* batch level-badge decorator: fills any <span data-lvln="username"> or <span data-lvlu="uid"> with the tier gem */
+  window.mpLvlDecorate = window.mpLvlDecorate || (function () {
+    var cache = { byName: {}, byId: {} }, pend = null, MISS = '\u0000';
+    function ensureCss() { if (document.getElementById('mplvb-css')) return; var st = document.createElement('style'); st.id = 'mplvb-css'; st.textContent = '.mplvb{display:inline-block;width:13px;height:13px;vertical-align:-2px;margin:0 3px 0 4px;line-height:0}'; (document.head || document.documentElement).appendChild(st); }
+    function fill(el) {
+      var nm = el.getAttribute('data-lvln'), ui = el.getAttribute('data-lvlu'), L;
+      if (ui) L = cache.byId[String(ui).replace(/^u:/, '')]; else if (nm) L = cache.byName[String(nm).toLowerCase()]; else { el.setAttribute('data-lvldone', '1'); return true; }
+      if (L === undefined) return false;
+      el.setAttribute('data-lvldone', '1');
+      if (!L || L === MISS) { el.innerHTML = ''; return true; }
+      el.innerHTML = '<span class="mplvb" title="' + esc(L.name || '') + '">' + window.mpLvlSvg(L.k, L.col) + '</span>';
+      return true;
+    }
+    function run() {
+      pend = null; ensureCss();
+      var els = document.querySelectorAll('[data-lvln]:not([data-lvldone]),[data-lvlu]:not([data-lvldone])');
+      if (!els.length) return;
+      var needIds = {}, needNames = {}, waiting = [];
+      for (var i = 0; i < els.length; i++) { var el = els[i]; if (fill(el)) continue; var ui = el.getAttribute('data-lvlu'), nm = el.getAttribute('data-lvln'); if (ui) needIds[String(ui).replace(/^u:/, '')] = 1; else if (nm) needNames[String(nm).toLowerCase()] = 1; waiting.push(el); }
+      var ids = Object.keys(needIds), names = Object.keys(needNames);
+      if (!ids.length && !names.length) return;
+      fetch('/api/levels', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids: ids.slice(0, 80), names: names.slice(0, 80) }) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) { d = d || {}; var bi = d.byId || {}, bn = d.byName || {}; ids.forEach(function (id) { cache.byId[id] = bi[id] || MISS; }); names.forEach(function (n) { cache.byName[n] = bn[n] || MISS; }); waiting.forEach(fill); })
+        .catch(function () {});
+    }
+    return function () { if (pend) return; pend = setTimeout(run, 220); };
+  })();
+
   function emailOk(v) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v); }
 
   var css = '.mpa-modal{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(4,6,9,.7);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}'
