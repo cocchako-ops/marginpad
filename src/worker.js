@@ -4468,7 +4468,7 @@ async function payWeeklyPrizes(env) {
       const byAcct = {}; top3.forEach(x => { byAcct[x.uid] = x; });
       for (const p of paidOut) {
         const u = prof[String(p.acct).replace(/^u:/, '')]; const x = byAcct[p.acct] || {};
-        if (u && u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, roe: +x.roe || 0, symbol: x.symbol || '', side: x.side || '', username: u.username || x.name || '' }); } catch (e) {} }
+        if (u && u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, roe: +x.roe || 0, symbol: x.symbol || '', side: x.side || '', username: u.username || x.name || '' }); } catch (e) {} } try { for (const po of paidOut) { const xp = po.rank === 1 ? 300 : po.rank === 2 ? 200 : 100; await grantXp(env, po.acct, 'lbprize', xp, { note: 'weekly leaderboard #' + po.rank }); } } catch (xe) {}
       }
     }
     try { await env.STATS.put(flag, JSON.stringify({ ts: now, n: payload.length })); } catch (e) {} // mark the week paid (even if 0 eligible winners) so we don't retry forever
@@ -5194,7 +5194,9 @@ async function handleAuth(url, request, env, ctx) {
     }
     return jr({ users: [], total: 0, newToday: 0, activeToday: 0, transient: true });
   }
-  if (path === '/user') { // dashboard: one user's record + activity + login history
+  if (path === '/xplog') { if (!isAdmin) return jr({ error: 'forbidden' }, 403); const r = await stub.fetch(new Request('https://do/xplog' + url.search)); return jr(await r.json()); }
+      if ((path === '/xp/adjust' || path === '/xp/setlevel') && request.method === 'POST') { if (!isAdmin) return jr({ error: 'forbidden' }, 403); const r = await stub.fetch(new Request('https://do' + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b || {}) })); return jr(await r.json()); }
+      if (path === '/user') { // dashboard: one user's record + activity + login history
     if (!isAdmin) return jr({ error: 'forbidden' }, 403);
     const r = await stub.fetch(new Request('https://do/user' + url.search));
     return jr(await r.json());
@@ -5210,6 +5212,12 @@ async function handleAuth(url, request, env, ctx) {
     return jr(await r.json());
   }
   return jr({ error: 'not_found' }, 404);
+}
+// Best-effort XP grant from the worker (money/reward events happen here or in RewardLedger). Fire-and-return.
+async function grantXp(env, uid, xsrc, amt, opts) {
+  try { if (!env.USERS || !uid) return; uid = String(uid).replace(/^u:/, '');
+    await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/xp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.assign({ uid, src: xsrc, amt }, opts || {})) }));
+  } catch (e) {}
 }
 async function handleReward(url, request, env) {
   const jr = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
@@ -5357,6 +5365,11 @@ async function handleReward(url, request, env) {
   let r, txt;
   try { r = await stub.fetch(fwd); txt = await r.text(); }
   catch (e) { return jr({ error: 'busy' }, 503); } // transient DO overload/reset — fail soft instead of a hard 500
+    if (r.status === 200 && acct) { try { const _rd = JSON.parse(txt);
+      if (path === '/claim' && (_rd.balance != null || _rd.credited != null || _rd.ok)) await grantXp(env, acct, 'faucet', 2, { dayCap: 20, note: 'faucet claim' });
+      else if (path === '/promo/review' && _rd.status === 'approved') await grantXp(env, _rd.acct || acct, 'promo', 40, { note: 'promo post approved' });
+      else if (path === '/exsign/review' && _rd.status === 'approved') await grantXp(env, _rd.acct || acct, 'exsign', 200, { note: 'exchange sign-up approved' });
+    } catch (xe) {} }
   // Admin views: faucet accounts are keyed by 'u:<uid>'. Resolve those to the real username/email from UserStore so the dashboard shows who claimed.
   if (r.status === 200 && (path === '/log' || path === '/accounts' || path === '/detail' || path === '/promo/list' || path === '/exsign/list')) {
     try {
@@ -5952,6 +5965,20 @@ export class RewardLedger {
   }
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
+  _grantXp(uid, src, amt, o) { // o: {dayCap, lifeCap, once, note}. Returns granted (clamped). Anti-abuse via xpday.
+    o = o || {}; amt = Math.max(0, Math.round(+amt || 0)); if (!uid || !amt) return 0;
+    const sql = this.state.storage.sql; const now = Date.now();
+    if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return 0;
+    if (o.once && this.rows('SELECT 1 FROM xplog WHERE user_id=? AND src=? LIMIT 1', uid, src)[0]) return 0;
+    if (o.lifeCap) { const t = (this.rows('SELECT COALESCE(SUM(amt),0) s FROM xplog WHERE user_id=? AND src=? AND amt>0', uid, src)[0] || { s: 0 }).s; if (t >= o.lifeCap) return 0; amt = Math.min(amt, o.lifeCap - t); }
+    if (o.dayCap) { const day = new Date().toISOString().slice(0, 10); const got = (this.rows('SELECT n FROM xpday WHERE user_id=? AND day=? AND src=?', uid, day, src)[0] || { n: 0 }).n; if (got >= o.dayCap) return 0; amt = Math.min(amt, o.dayCap - got); if (amt <= 0) return 0; sql.exec('INSERT INTO xpday(user_id,day,src,n) VALUES(?,?,?,?) ON CONFLICT(user_id,day,src) DO UPDATE SET n=n+?', uid, day, src, amt, amt); }
+    if (amt <= 0) return 0;
+    sql.exec('UPDATE users SET xp=MAX(0,COALESCE(xp,0)+?) WHERE id=?', amt, uid);
+    sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, now, src, amt, String(o.note || '').slice(0, 120));
+    const cnt = (this.rows('SELECT COUNT(*) n FROM xplog WHERE user_id=?', uid)[0] || { n: 0 }).n;
+    if (cnt > 160) sql.exec('DELETE FROM xplog WHERE rowid IN (SELECT rowid FROM xplog WHERE user_id=? ORDER BY ts ASC LIMIT ?)', uid, cnt - 150);
+    return amt;
+  }
   log(type, address, cc, dev, amount) { const s = this.state.storage.sql; try { s.exec('INSERT INTO log(ts,type,address,cc,dev,amount) VALUES(?,?,?,?,?,?)', Date.now(), type, address || '', cc || '', dev || '', amount || 0); s.exec('DELETE FROM log WHERE rowid NOT IN (SELECT rowid FROM log ORDER BY ts DESC LIMIT 200)'); } catch (e) {} }
   // One-time sign-up bonus: credit the configured welcome amount to a new account the first time it's seen. Idempotent (welcome flag) + respects the global daily budget. Returns the granted USD amount (0 if not granted).
   grantWelcome(acct, cfg) {
@@ -6234,7 +6261,7 @@ export class RewardLedger {
       sql.exec('INSERT INTO daily(day,dispensed) VALUES(?,?) ON CONFLICT(day) DO UPDATE SET dispensed=dispensed+?', day, amt, amt); // counts in the Dispensed-today tile (visibility, not a gate - approval is the gate)
       sql.exec("UPDATE promos SET status='approved', amount=?, note=?, decided_ts=? WHERE id=?", amt, String(body.note || '').slice(0, 200), now, id);
       this.log('promo_paid', p.acct, p.cc || '', '', amt);
-      return this.j({ ok: true, status: 'approved', amount: amt / 100 });
+      return this.j({ ok: true, status: 'approved', amount: amt / 100, acct: p.acct });
     }
     // ---- Exchange sign-up bonus: $3 for opening a real exchange account via our ref link. User submits their exchange UID; owner verifies it in the affiliate dashboard and approves (that manual check is the gate). One bonus per exchange per account, UID unique per exchange across all accounts. ----
     if (path === '/exsign/submit') {
@@ -6279,7 +6306,7 @@ export class RewardLedger {
       sql.exec('INSERT INTO daily(day,dispensed) VALUES(?,?) ON CONFLICT(day) DO UPDATE SET dispensed=dispensed+?', day, amt, amt); // counts in the Dispensed-today tile (visibility, not a gate - manual approval is the gate)
       sql.exec("UPDATE exsign SET status='approved', amount=?, note=?, decided_ts=? WHERE id=?", amt, String(body.note || '').slice(0, 200), now, id);
       this.log('exsign_paid', p.acct, p.cc || '', '', amt);
-      return this.j({ ok: true, status: 'approved', amount: amt / 100 });
+      return this.j({ ok: true, status: 'approved', amount: amt / 100, acct: p.acct });
     }
     if (path === '/support') {
       if (request.method === 'POST') {
@@ -6360,6 +6387,22 @@ export class RewardLedger {
 
 // Optional accounts (passwordless email sign-in). Single instance idFromName('main').
 // Anonymous use stays the default; this only backs the optional "Sign in" flow (email capture for MVP).
+// ===== XP & Level system (2026-07-15) — retention progression; Diamond ~10 months of active use =====
+const XP_LEVELS = [
+  { k: 'bronze', name: 'Bronze', min: 0, col: '#c97f4a' },
+  { k: 'silver', name: 'Silver', min: 2000, col: '#b7c2d0' },
+  { k: 'gold', name: 'Gold', min: 10000, col: '#ffcf3f' },
+  { k: 'platinum', name: 'Platinum', min: 25000, col: '#7ee0ff' },
+  { k: 'diamond', name: 'Diamond', min: 50000, col: '#8b5cff' },
+];
+function xpLevelOf(xp) {
+  xp = Math.max(0, +xp || 0);
+  let i = 0; for (let n = 0; n < XP_LEVELS.length; n++) if (xp >= XP_LEVELS[n].min) i = n;
+  const cur = XP_LEVELS[i], next = XP_LEVELS[i + 1] || null;
+  const pct = next ? Math.min(100, Math.round((xp - cur.min) / (next.min - cur.min) * 100)) : 100;
+  return { idx: i, k: cur.k, name: cur.name, col: cur.col, min: cur.min, xp, next: next ? next.name : null, nextMin: next ? next.min : null, toNext: next ? Math.max(0, next.min - xp) : 0, pct };
+}
+
 export class UserStore {
   constructor(state, env) {
     this.state = state; this.env = env;
@@ -6368,7 +6411,11 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY, user_id TEXT, created INTEGER, expires INTEGER, ua TEXT)');
     s.exec('CREATE TABLE IF NOT EXISTS otp(email TEXT PRIMARY KEY, code TEXT, expires INTEGER, attempts INTEGER DEFAULT 0, sent INTEGER, sends INTEGER DEFAULT 0, day TEXT)'); // one active code per email; rate-limited
     s.exec('CREATE TABLE IF NOT EXISTS otpip(k TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)'); // per-IP-per-day OTP send cap, so one source can't email-bomb many addresses
-    for (const col of ['dev TEXT', 'br TEXT', 'last_seen INTEGER', 'pv INTEGER DEFAULT 0', 'username TEXT', "status TEXT DEFAULT 'active'", 'susp_until INTEGER DEFAULT 0', 'muted INTEGER DEFAULT 0', 'restrictions TEXT', 'note TEXT', 'asn INTEGER', 'org TEXT', 'digest INTEGER DEFAULT 1', 'tg_chat TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // device/browser, activity rollups, moderation, digest opt-in, linked Telegram chat
+    for (const col of ['dev TEXT', 'br TEXT', 'last_seen INTEGER', 'pv INTEGER DEFAULT 0', 'username TEXT', "status TEXT DEFAULT 'active'", 'susp_until INTEGER DEFAULT 0', 'muted INTEGER DEFAULT 0', 'restrictions TEXT', 'note TEXT', 'asn INTEGER', 'org TEXT', 'digest INTEGER DEFAULT 1', 'tg_chat TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} }
+    for (const col of ['xp INTEGER DEFAULT 0', 'streak INTEGER DEFAULT 0', 'streak_day TEXT', 'lvl_seen TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // XP & level system
+    s.exec('CREATE TABLE IF NOT EXISTS xplog(user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)'); // XP earn/adjust history (ring-buffered ~150/user)
+    s.exec('CREATE TABLE IF NOT EXISTS xpday(user_id TEXT, day TEXT, src TEXT, n INTEGER DEFAULT 0, PRIMARY KEY(user_id,day,src))'); // per-source per-UTC-day earned, for anti-abuse caps
+    try { s.exec('CREATE INDEX IF NOT EXISTS xplog_u ON xplog(user_id,ts)'); } catch (e) {} // device/browser, activity rollups, moderation, digest opt-in, linked Telegram chat
     for (const col of ['ip TEXT', 'cc TEXT', 'asn INTEGER', 'org TEXT']) { try { s.exec('ALTER TABLE sessions ADD COLUMN ' + col); } catch (e) {} } // per-login location + ASN for the session/VPN view
     s.exec('CREATE TABLE IF NOT EXISTS uevents(user_id TEXT, ts INTEGER, type TEXT, label TEXT, path TEXT, cc TEXT, dev TEXT)'); // per-user activity trail (ring-buffered)
     s.exec('CREATE TABLE IF NOT EXISTS uclicks(user_id TEXT, ts INTEGER, x INTEGER, y INTEGER, path TEXT)'); // per-user click heatmap (normalized x/y %, ring-buffered ~300)
@@ -6543,6 +6590,8 @@ export class UserStore {
       const type = String(b.type || '').slice(0, 24), label = String(b.label || '').slice(0, 64), pth = String(b.path || '').slice(0, 60), cc = String(b.cc || '').slice(0, 4), dev = String(b.dev || '').slice(0, 12);
       sql.exec('INSERT INTO uevents(user_id,ts,type,label,path,cc,dev) VALUES(?,?,?,?,?,?,?)', uid, now, type, label, pth, cc, dev);
       sql.exec('UPDATE users SET last_seen=?, pv=pv+? WHERE id=?', now, type === 'pageview' ? 1 : 0, uid);
+          try { const today9 = new Date().toISOString().slice(0, 10); const ur = this.rows('SELECT streak_day, streak FROM users WHERE id=?', uid)[0];
+            if (ur && ur.streak_day !== today9) { const yd = new Date(Date.now() - 86400000).toISOString().slice(0, 10); const st = (ur.streak_day === yd) ? ((+ur.streak || 0) + 1) : 1; sql.exec('UPDATE users SET streak_day=?, streak=? WHERE id=?', today9, st, uid); this._grantXp(uid, 'checkin', 20, { note: 'daily check-in' }); this._grantXp(uid, 'streak', Math.min(40, st * 2), { note: st + '-day streak' }); } } catch (ce) {}
       sql.exec('DELETE FROM uevents WHERE user_id=? AND ts < (SELECT MIN(ts) FROM (SELECT ts FROM uevents WHERE user_id=? ORDER BY ts DESC LIMIT 500))', uid, uid); // keep newest ~500/user — the Journey Map user-search needs real history depth
       return this.j({ ok: true });
     }
@@ -6550,10 +6599,10 @@ export class UserStore {
       const token = url.searchParams.get('token') || '';
       const s = this.rows('SELECT * FROM sessions WHERE token=?', token)[0];
       if (!s || now > s.expires) return this.j({ user: null });
-      const u = this.rows('SELECT id,email,username,created,status,muted,restrictions FROM users WHERE id=?', s.user_id)[0];
+      const u = this.rows('SELECT id,email,username,created,status,muted,restrictions,xp,streak FROM users WHERE id=?', s.user_id)[0];
       if (!u) return this.j({ user: null });
       if (u.status === 'banned') return this.j({ user: null, banned: true });
-      return this.j({ user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '' } });
+      return this.j({ user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '', xp: u.xp || 0, streak: u.streak || 0, level: xpLevelOf(u.xp) } });
     }
     if (path === '/profiles') { // internal: batch account-id → {username,email} for the admin reward views
       const ids = (Array.isArray(b && b.ids) ? b.ids : []).map(x => String(x)).filter(Boolean).slice(0, 600);
@@ -6583,11 +6632,37 @@ export class UserStore {
       this.rows('SELECT mid FROM missions WHERE user_id=? AND day=?', uid, day).forEach(r => { claimed[r.mid] = true; });
       return this.j({ done, claimed });
     }
+    if (path === '/xp') { // internal DO->DO grant (worker calls this after money/reward events); never publicly routed
+      const g = this._grantXp(String(b.uid || ''), String(b.src || 'misc').slice(0, 24), +b.amt || 0, { dayCap: +b.dayCap || 0, lifeCap: +b.lifeCap || 0, once: !!b.once, note: b.note });
+      const u = this.rows('SELECT xp FROM users WHERE id=?', String(b.uid || ''))[0];
+      return this.j({ granted: g, xp: u ? (u.xp || 0) : 0, level: xpLevelOf(u ? u.xp : 0) });
+    }
+    if (path === '/xp/adjust') { // admin manual adjust (can be negative); note required for the log
+      const uid = String(b.uid || ''); const u = this.rows('SELECT xp FROM users WHERE id=?', uid)[0]; if (!u) return this.j({ error: 'no_user' }, 404);
+      const amt = Math.round(+b.amt || 0); if (!amt) return this.j({ error: 'zero' }, 400);
+      sql.exec('UPDATE users SET xp=MAX(0,COALESCE(xp,0)+?) WHERE id=?', amt, uid);
+      sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, now, 'admin', amt, String(b.note || 'manual adjust').slice(0, 120));
+      const u2 = this.rows('SELECT xp FROM users WHERE id=?', uid)[0];
+      return this.j({ ok: true, xp: u2.xp || 0, level: xpLevelOf(u2.xp) });
+    }
+    if (path === '/xp/setlevel') { // admin: top XP up to a level threshold (never lowers below current)
+      const uid = String(b.uid || ''); const u = this.rows('SELECT xp FROM users WHERE id=?', uid)[0]; if (!u) return this.j({ error: 'no_user' }, 404);
+      const L = XP_LEVELS.find(x => x.k === String(b.level || '')); if (!L) return this.j({ error: 'bad_level' }, 400);
+      const cur = +u.xp || 0; if (cur >= L.min) return this.j({ ok: true, xp: cur, level: xpLevelOf(cur), note: 'already at or above' });
+      const add = L.min - cur; sql.exec('UPDATE users SET xp=? WHERE id=?', L.min, uid);
+      sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, now, 'admin', add, String(b.note || ('set to ' + L.name)).slice(0, 120));
+      return this.j({ ok: true, xp: L.min, level: xpLevelOf(L.min) });
+    }
+    if (path === '/xplog') { const uid = String(url.searchParams.get('uid') || ''); const u = this.rows('SELECT xp,streak FROM users WHERE id=?', uid)[0];
+      const log = this.rows('SELECT ts,src,amt,note FROM xplog WHERE user_id=? ORDER BY ts DESC LIMIT 80', uid);
+      const bySrc = this.rows('SELECT src, COALESCE(SUM(amt),0) tot FROM xplog WHERE user_id=? AND amt>0 GROUP BY src ORDER BY tot DESC', uid);
+      return this.j({ xp: u ? (u.xp || 0) : 0, streak: u ? (u.streak || 0) : 0, level: xpLevelOf(u ? u.xp : 0), log, bySrc });
+    }
     if (path === '/missions/claim') { // atomic claim marker (the credit happens in the worker AFTER this returns fresh:true)
       const uid = String(b.uid || ''), day = String(b.day || ''), mid = String(b.mid || '').replace(/[^a-z0-9]/gi, '');
       if (!uid || !day || !mid) return this.j({ error: 'bad' }, 400);
       if (this.rows('SELECT 1 FROM missions WHERE user_id=? AND day=? AND mid=?', uid, day, mid)[0]) return this.j({ ok: true, fresh: false });
-      sql.exec('INSERT INTO missions(user_id,day,mid,ts) VALUES(?,?,?,?)', uid, day, mid, now);
+      sql.exec('INSERT INTO missions(user_id,day,mid,ts) VALUES(?,?,?,?)', uid, day, mid, now); try { this._grantXp(uid, 'mission', 12, { dayCap: 60, note: 'mission ' + mid }); } catch (me) {}
       return this.j({ ok: true, fresh: true });
     }
     if (path === '/journey') { // Journey Map user search: find a user by username/email/id, return their event trail in a window
@@ -6677,7 +6752,7 @@ export class UserStore {
       if (cur && cur.username) return this.j({ error: 'already_set', username: cur.username }); // usernames are permanent once chosen (admin can still override via /control)
       if (!/^[a-zA-Z0-9_]{3,20}$/.test(uname)) return this.j({ error: 'bad_username' });
       if (this.rows('SELECT id FROM users WHERE LOWER(username)=LOWER(?) AND id!=?', uname, s.user_id)[0]) return this.j({ error: 'taken' });
-      sql.exec('UPDATE users SET username=? WHERE id=?', uname, s.user_id);
+      sql.exec('UPDATE users SET username=? WHERE id=?', uname, s.user_id); try { this._grantXp(String(s.user_id), 'username', 50, { once: true, note: 'set a username' }); } catch (ue) {}
       return this.j({ ok: true, username: uname });
     }
     if (path === '/control') { // admin moderation actions
@@ -6784,7 +6859,7 @@ export class UserStore {
           const roe = (pv != null && m > 0) ? pv / m * 100 : null;
           const liq9 = (kind === 'close' && pv != null && pv <= -m * 0.985) ? 1 : 0;
           sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq) VALUES(?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9);
-          nIns++;
+          nIns++; try { if (kind === 'close') { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym||'') + ' closed' }); if (pv != null && pv > 0) this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym||'') + ' +$' + pv.toFixed(2) }); } } catch (xe) {}
         }
         if (nIns) sql.exec('DELETE FROM tradeev WHERE ts < ?', now - 14 * 86400000);
       } catch (e9) {}
