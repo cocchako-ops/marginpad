@@ -5236,6 +5236,7 @@ async function handleAuth(url, request, env, ctx) {
   }
   if (path === '/xplog') { if (!isAdmin) return jr({ error: 'forbidden' }, 403); const r = await stub.fetch(new Request('https://do/xplog' + url.search)); return jr(await r.json()); }
       if ((path === '/xp/adjust' || path === '/xp/setlevel') && request.method === 'POST') { if (!isAdmin) return jr({ error: 'forbidden' }, 403); const r = await stub.fetch(new Request('https://do' + path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b || {}) })); return jr(await r.json()); }
+  if (path === '/xp/backfill' && request.method === 'POST') { if (!isAdmin) return jr({ error: 'forbidden' }, 403); const r = await stub.fetch(new Request('https://do/xp/backfill', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ apply: !!(b && b.apply) }) })); return jr(await r.json()); } // one-time retroactive XP grant for pre-XP-system activity (idempotent)
       if (path === '/user') { // dashboard: one user's record + activity + login history
     if (!isAdmin) return jr({ error: 'forbidden' }, 403);
     const r = await stub.fetch(new Request('https://do/user' + url.search));
@@ -6742,6 +6743,23 @@ export class UserStore {
       const rows = this.rows("SELECT username, xp FROM users WHERE username IS NOT NULL AND username != '' AND xp > 0 AND (status IS NULL OR status != 'banned') ORDER BY xp DESC LIMIT ?", lim);
       const top = rows.map((r, i) => { const L = xpLevelOf(r.xp || 0); return { rank: i + 1, username: r.username, xp: r.xp || 0, k: L.k, name: L.name, col: L.col }; });
       return this.j({ top });
+    }
+    if (path === '/xp/backfill') { // one-time retroactive XP for activity that predates the XP system; idempotent via an src='backfill' xplog marker
+      const apply = !!b.apply;
+      const done = {}; this.rows("SELECT DISTINCT user_id uid FROM xplog WHERE src='backfill'").forEach(r => { done[r.uid] = 1; });
+      const rows = this.rows("SELECT u.id, u.username, u.xp, u.logins, COALESCE(t.n,0) tn, COALESCE(t.wins,0) tw FROM users u LEFT JOIN utrades t ON t.user_id=u.id WHERE u.username IS NOT NULL AND u.username != '' AND (u.status IS NULL OR u.status != 'banned')");
+      let eligible = 0, totalXp = 0, applied = 0; const preview = [];
+      for (const u of rows) {
+        if (done[u.id]) continue; // already backfilled → never double-grant
+        const tn = +u.tn || 0, tw = +u.tw || 0, lg = +u.logins || 0;
+        let amt = Math.min(200, tn) * 3 + Math.min(100, tw) * 12 + Math.min(60, lg) * 20; // closed trades + wins + logins(check-in proxy)
+        amt = Math.min(6000, amt); // cap below Gold (10k) so backfill never leapfrogs the slow climb
+        if (amt <= 0) continue;
+        eligible++; totalXp += amt; preview.push({ username: u.username, trades: tn, wins: tw, logins: lg, would: amt });
+        if (apply) { sql.exec('UPDATE users SET xp=COALESCE(xp,0)+? WHERE id=?', amt, u.id); sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', u.id, now, 'backfill', amt, 'retroactive pre-XP activity'); applied++; }
+      }
+      preview.sort((a, b2) => b2.would - a.would);
+      return this.j({ apply, eligible, totalXp, applied, alreadyDone: Object.keys(done).length, sample: preview.slice(0, 40) });
     }
     if (path === '/missions/claim') { // atomic claim marker (the credit happens in the worker AFTER this returns fresh:true)
       const uid = String(b.uid || ''), day = String(b.day || ''), mid = String(b.mid || '').replace(/[^a-z0-9]/gi, '');
