@@ -3449,12 +3449,12 @@ function u360(email,uname){
   fetch('/api/auth/user?'+q+'&key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(function(d){
     if(!d||d.exists===false||!d.user){u3El.innerHTML='<div class="u3-card"><button class="u3-x">&#10005;</button><div class="empty" style="padding:30px">user not found</div></div>';wireX();return;}
     var rw=null;
-    fetch('/api/reward/detail?address='+encodeURIComponent('u:'+d.user.id)+'&key='+encodeURIComponent(key)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(rwd){rw=rwd;draw(d,rw);});
+    Promise.all([fetch('/api/reward/detail?address='+encodeURIComponent('u:'+d.user.id)+'&key='+encodeURIComponent(key)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),fetch('/api/auth/xplog?uid='+encodeURIComponent(d.user.id)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})]).then(function(rr){rw=rr[0];draw(d,rr[0],rr[1]);});
   }).catch(function(){});
   function wireX(){var x=u3El.querySelector('.u3-x');if(x)x.addEventListener('click',function(){u3El.hidden=true;});}
   function ctl(action,extra){var u=u3El._u;if(!u)return;var body={email:u.email,action:action};if(extra)for(var k9 in extra)body[k9]=extra[k9];
     fetch('/api/auth/control?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(){u360(u.email);});}
-  function draw(d,rw){
+  function draw(d,rw,xpd){
     var u=d.user;u3El._u=u;
     var name=u.username?('@'+esc(u.username)):esc((u.email||'').split('@')[0]);
     var st=String(u.status||'active');
@@ -3491,6 +3491,36 @@ function u360(email,uname){
     var wds=(rw&&rw.withdrawals||[]).slice(0,6).map(function(w9){
       return '<div class="ovv-row"><span style="width:70px;color:#8fa3c4">'+(w9.ts?ago(w9.ts)+' ago':'')+'</span><b style="color:#c2f64a">$'+(+(w9.amountUsd||w9.usd||0)).toFixed(2)+'</b><span style="flex:1"></span><b style="color:'+(w9.status==='paid'?'#2ebd85':'#ffb347')+'">'+esc(String(w9.status||'').toUpperCase())+'</b></div>';}).join('')||'<div class="empty">no withdrawals</div>';
     var fl=fraud&&fraud.flags&&fraud.flags.length?fraud.flags.map(function(f9){return '<div class="ovv-row"><span style="color:#ffb347">&#9888;</span><span style="flex:1;color:#dbe4f5">'+esc(String(f9))+'</span></div>';}).join(''):'<div class="empty">no fraud flags</div>';
+    function u3LvlPanel(d,xpd){
+      var LI={bronze:'🥉',silver:'🥈',gold:'🥇',platinum:'💠',diamond:'💎'};
+      var lv=(xpd&&xpd.level)||{k:'bronze',name:'Bronze',col:'#c97f4a',xp:0,pct:0,next:'Silver',toNext:2000};
+      var log=(xpd&&xpd.log)||[],bySrc=(xpd&&xpd.bySrc)||[];
+      var SRCN={trade_win:'Profitable trades',trade:'Closed trades',checkin:'Daily check-in',streak:'Streak bonus',mission:'Missions',faucet:'Faucet claims',promo:'Promo posts',exsign:'Exchange sign-ups',lbprize:'Competitions',username:'Username',academy:'Academy',admin:'Admin adjust'};
+      var srcRows=bySrc.slice(0,8).map(function(s){return '<div class="ovv-row"><span style="flex:1;color:#8fa3c4">'+esc(SRCN[s.src]||s.src)+'</span><b style="color:#c2f64a">+'+(+s.tot).toLocaleString()+'</b></div>';}).join('')||'<div class="empty">no XP yet</div>';
+      var logRows=log.slice(0,12).map(function(e9){var neg=(+e9.amt)<0;return '<div class="ovv-row"><span style="width:52px;color:#5c6b84">'+ago(e9.ts)+'</span><span style="flex:1;color:#dbe4f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(SRCN[e9.src]||e9.src)+(e9.note?' <small style="color:#5c6b84">'+esc(String(e9.note).slice(0,30))+'</small>':'')+'</span><b style="color:'+(neg?'#ff6258':'#2ebd85')+'">'+(neg?'':'+')+(+e9.amt).toLocaleString()+'</b></div>';}).join('')||'<div class="empty">no history</div>';
+      return '<div class="ovv-p" style="grid-column:1/-1;margin-top:12px" data-u3lvl>'
+        +'<div class="ovv-ph">Level &amp; XP <a class="ovv-more" href="/levels/" target="_blank">/levels/ &rarr;</a></div>'
+        +'<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px">'
+        +'<div style="width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:24px;background:'+(lv.col||'#c97f4a')+'22;flex:none">'+(LI[lv.k]||'🎖')+'</div>'
+        +'<div><div style="font-weight:800;font-size:17px;color:'+(lv.col||'#c97f4a')+'">'+esc(lv.name||'Bronze')+'</div><div style="font-family:Consolas,monospace;font-size:11.5px;color:#8fa3c4">'+(lv.xp||0).toLocaleString()+' XP'+((xpd&&xpd.streak)?' &middot; 🔥 '+xpd.streak+'d':'')+'</div></div>'
+        +'<div style="margin-left:auto;font-family:Consolas,monospace;font-size:11px;color:#5c6b84;text-align:right">'+(lv.next?((lv.toNext||0).toLocaleString()+' XP<br>to '+esc(lv.next)):'MAX tier')+'</div>'
+        +'</div>'
+        +'<div style="height:8px;border-radius:5px;background:#141b29;overflow:hidden;margin-bottom:12px"><i style="display:block;height:100%;width:'+(lv.pct!=null?lv.pct:100)+'%;border-radius:5px;background:linear-gradient(90deg,'+(lv.col||'#c97f4a')+',#ffffff66)"></i></div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
+        +'<div><div style="font:700 10px Consolas,monospace;text-transform:uppercase;letter-spacing:.1em;color:#8fa3c4;margin-bottom:6px">XP by source</div>'+srcRows+'</div>'
+        +'<div><div style="font:700 10px Consolas,monospace;text-transform:uppercase;letter-spacing:.1em;color:#8fa3c4;margin-bottom:6px">Recent XP</div>'+logRows+'</div>'
+        +'</div>'
+        +'<div style="border-top:1px solid #1a2336;margin-top:12px;padding-top:12px">'
+        +'<div style="font:700 10px Consolas,monospace;text-transform:uppercase;letter-spacing:.1em;color:#8fa3c4;margin-bottom:8px">Admin — manual adjust</div>'
+        +'<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'
+        +'<input class="u3xamt" type="number" placeholder="&plusmn; XP" style="width:90px;background:#0c0f13;border:1px solid #2f3742;border-radius:8px;padding:7px 9px;color:#e9e7df;font:600 12px Consolas,monospace">'
+        +'<input class="u3xnote" type="text" placeholder="reason (logged)" style="flex:1;min-width:130px;background:#0c0f13;border:1px solid #2f3742;border-radius:8px;padding:7px 9px;color:#e9e7df;font:600 12px Consolas,monospace">'
+        +'<button type="button" class="pay u3xadj">Apply XP</button>'
+        +'</div>'
+        +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><span style="font:600 10px Consolas,monospace;color:#5c6b84;align-self:center">Set level:</span>'
+        +['bronze','silver','gold','platinum','diamond'].map(function(k){return '<button type="button" class="pay u3xset" data-lvl="'+k+'" style="padding:5px 10px;font-size:11px">'+k.charAt(0).toUpperCase()+k.slice(1)+'</button>';}).join('')
+        +'</div></div></div>';
+    }
     u3El.innerHTML='<div class="u3-card"><button class="u3-x" type="button">&#10005;</button>'
       +'<div class="u3-hero"><div class="u3-av">'+esc(name.replace('@','').charAt(0).toUpperCase())+'</div>'
       +'<div><div class="u3-nm">'+name+'</div>'
@@ -3516,9 +3546,11 @@ function u360(email,uname){
       +'<div class="ovv-ph" style="margin-top:12px">Fraud signals</div>'+fl
       +'<div class="ovv-ph" style="margin-top:12px">Sessions</div>'+sess
       +'<div class="ovv-ph" style="margin-top:12px">Time on pages</div>'+dwlRows
-      +'</div></div></div>';
+      +'</div>'+u3LvlPanel(d,xpd)+'</div></div>';
     wireX();
     Array.prototype.forEach.call(u3El.querySelectorAll('[data-u3a]'),function(b9){b9.addEventListener('click',function(){var a9=b9.getAttribute('data-u3a');if(a9==='ban'&&!confirm('Ban '+name+'?'))return;ctl(a9,a9==='suspend'?{days:7}:null);});});
+    var adjB=u3El.querySelector('.u3xadj');if(adjB)adjB.addEventListener('click',function(){var amt=+((u3El.querySelector('.u3xamt')||{}).value)||0;var note=((u3El.querySelector('.u3xnote')||{}).value||'').trim();if(!amt){alert('Enter a non-zero XP amount');return;}if(!note){alert('A reason is required for the log');return;}adjB.textContent='…';fetch('/api/auth/xp/adjust?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:u.id,amt:amt,note:note})}).then(function(r){return r.json();}).then(function(){u360(u.email);});});
+    Array.prototype.forEach.call(u3El.querySelectorAll('.u3xset'),function(b9){b9.addEventListener('click',function(){var lvl=b9.getAttribute('data-lvl');var note=((u3El.querySelector('.u3xnote')||{}).value||'set level').trim();if(!confirm('Set '+name+' to '+lvl+'? (tops XP up to that tier, never lowers)'))return;fetch('/api/auth/xp/setlevel?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:u.id,level:lvl,note:note})}).then(function(r){return r.json();}).then(function(){u360(u.email);});});});
   }
 }
 (function(){
@@ -3660,7 +3692,7 @@ function renderWd(){var el=document.getElementById('wdList');if(!el)return;
       +'<span style="min-width:110px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#dbe4f5"'+(w.email?' title="'+esc(w.email)+'"':'')+'>'+whoTxt+(w.banned?' <b style="color:#ff6258">BAN</b>':'')+'</span>'
       +'<span style="width:34px">'+flag(w.cc)+'</span>'
       +'<span style="width:44px;color:#8fa3c4" title="claims">'+(w.claims||0)+'cl</span>'
-      +'<b style="width:64px;text-align:right;color:#c2f64a">$'+(+w.usd).toFixed(2)+'</b>'
+      +'<b style="width:64px;text-align:right;color:#c2f64a">$'+(+w.usd).toFixed(2)+(w.bonusUsd>0?'<br><span style="color:#8b5cff;font-size:9.5px">+$'+(+w.bonusUsd).toFixed(2)+' 💎</span>':'')+'</b>'
       +'<span style="width:62px;text-align:center">'+st+'</span>'
       +'<span style="width:96px;color:#8fa3c4" title="paid at">'+(w.paidTs?wdFmtD(w.paidTs):'&#8212;')+'</span>'
       +'<span style="width:44px;text-align:center">'+txLink+'</span>'
