@@ -138,6 +138,9 @@
     +   '<a class="mpnav-subrow" href="/calculators?c=tp">'+TR('subTp')+'</a>'
     +   '<a class="mpnav-subrow" href="/calculators?c=rr">'+TR('subRr')+'</a>'
     + '</div>'
+    + '<div class="mpnav-sec">Taxes</div>'
+    + row('Crypto Tax Calculator', 'US/CA/UK capital-gains estimator', '/crypto-tax-calculator/', '#e0b341', 'calc')
+    + row('Cost Basis Calculator', 'FIFO / LIFO cost basis & gains', '/crypto-cost-basis-calculator/', '#e0b341', 'calc')
     + '<div class="mpnav-sec">'+TR('secTrade')+'</div>'
     + row('prodPaper', 'brPaperS', '/paper-trade', '#2ebd85', 'plan')
     + row('prodCharts', 'prodChartsS', '/charts', '#3fd8e6', 'charts')

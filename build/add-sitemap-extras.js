@@ -6,6 +6,7 @@ const EXTRAS = [
   ['https://marginpad.io/trading-api/', '0.8'],
   ['https://marginpad.io/calendar/', '0.8'],
   ['https://marginpad.io/crypto-tax-calculator/', '0.8'],
+  ['https://marginpad.io/crypto-cost-basis-calculator/', '0.8'],
 ];
 let xml = fs.readFileSync(SP, 'utf8');
 let n = 0;

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Crypto Cost Basis Calculator (FIFO, LIFO, HIFO) — Free | MarginPad</title>
+<meta name="description" content="Free crypto cost basis calculator. Enter your buy lots and a sale, pick FIFO, LIFO or HIFO, and get your cost basis, capital gain, and the short-term vs long-term split for taxes. An estimate, not tax advice." />
+<meta name="keywords" content="crypto cost basis calculator, fifo crypto calculator, lifo crypto, hifo crypto, cost basis crypto tax, crypto capital gains, how to calculate crypto cost basis, bitcoin cost basis" />
+<link rel="canonical" href="https://marginpad.io/crypto-cost-basis-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-cost-basis-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-cost-basis-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/crypto-cost-basis-calculator/" />
+<meta property="og:title" content="Crypto Cost Basis Calculator (FIFO, LIFO, HIFO) — Free | MarginPad" />
+<meta property="og:description" content="Enter your buy lots and a sale, pick FIFO, LIFO or HIFO, and get your cost basis, capital gain and the short-term vs long-term split." />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta property="og:site_name" content="MarginPad" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Crypto Cost Basis Calculator (FIFO, LIFO, HIFO)" />
+<meta name="twitter:description" content="Cost basis, capital gain and short-term vs long-term split from your buy lots and a sale. Free." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/lab.css" />
+<style>
+  .verdict{font-size:13.5px;color:var(--ink2);line-height:1.65;margin-top:16px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:12px;padding:14px 16px}
+  .content{max-width:760px;margin-top:8px}
+  .content p{color:var(--ink2);font-size:14.5px;line-height:1.7;margin:0 0 14px}
+  .disc{font-size:12.5px;color:var(--ink3,#7a8494);line-height:1.6;margin-top:14px;border:1px dashed var(--line);border-radius:12px;padding:12px 14px;background:var(--bg2)}
+  .lots{margin-top:12px;border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+  .lots table{width:100%;border-collapse:collapse;font-size:13px;min-width:440px}
+  .lots th,.lots td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);color:var(--ink2)}
+  .lots th{color:var(--ink);font-weight:700;background:var(--panel);font-size:12px}
+  .lots input{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:7px;color:var(--ink);padding:6px 8px;font-size:13px;font-family:'Space Mono',monospace}
+  .lots td.n{font-family:'Space Mono',monospace;text-align:right}
+  .lots .rm{background:none;border:none;color:#ff6258;cursor:pointer;font-size:16px;padding:0 4px}
+  .lotbtn{background:none;border:1px solid var(--line);color:var(--ink2);border-radius:8px;padding:7px 12px;font-size:12.5px;font-weight:600;cursor:pointer;margin-top:8px}
+  .lotbtn:hover{border-color:var(--cyan);color:var(--ink)}
+  .brk{margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+  .brk table{width:100%;border-collapse:collapse;font-size:13px;min-width:440px}
+  .brk th,.brk td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);color:var(--ink2)}
+  .brk th{color:var(--ink);font-weight:700;background:var(--panel)}
+  .brk td.n{font-family:'Space Mono',monospace;text-align:right}
+  .brk .lt{color:var(--lime)}.brk .st{color:#ffb64a}
+  .faq{margin-top:10px}
+  .faq details{border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--panel),var(--bg2));margin-bottom:10px;overflow:hidden}
+  .faq summary{cursor:pointer;padding:15px 18px;font-weight:700;font-size:15px;color:var(--ink);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:'+';color:var(--cyan);font-family:'Space Mono',monospace;font-size:18px;font-weight:700}
+  .faq details[open] summary::after{content:'\2212'}
+  .faq details[open] summary{border-bottom:1px solid var(--line)}
+  .faq .a{padding:14px 18px 17px;color:var(--ink2);font-size:14px;line-height:1.7}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Cost Basis Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Web","url":"https://marginpad.io/crypto-cost-basis-calculator/","description":"Free crypto cost basis calculator with FIFO, LIFO and HIFO — cost basis, capital gain and short-term vs long-term split from your buy lots and a sale.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Crypto Cost Basis Calculator","item":"https://marginpad.io/crypto-cost-basis-calculator/"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is cost basis in crypto?","acceptedAnswer":{"@type":"Answer","text":"Cost basis is what you originally paid for the crypto you sold, including fees. Your capital gain is the sale proceeds minus the cost basis. Because you usually buy the same coin at many different prices, which purchase 'lots' you match to a sale changes your cost basis — and your tax."}},{"@type":"Question","name":"What is the difference between FIFO, LIFO and HIFO?","acceptedAnswer":{"@type":"Answer","text":"They are methods for choosing which buy lots a sale draws from. FIFO (first-in, first-out) sells your oldest coins first. LIFO (last-in, first-out) sells your newest first. HIFO (highest-in, first-out) sells your most expensive coins first, which minimizes the taxable gain. The IRS default is FIFO; other methods generally require specific identification and good records."}},{"@type":"Question","name":"Does cost basis method change how much tax I owe?","acceptedAnswer":{"@type":"Answer","text":"Yes. Selling higher-cost lots first (HIFO) lowers the reported gain and the tax on that sale, while FIFO often realizes older, lower-cost lots that produce a larger gain but may qualify for lower long-term rates. The best choice depends on your lots and holding periods — and the records you can support."}},{"@type":"Question","name":"Is this cost basis calculator tax advice?","acceptedAnswer":{"@type":"Answer","text":"No. It is a free estimator to help you understand your gain and holding-period split. It excludes fees you don't enter, wash-sale considerations and the specific-identification rules some methods require. Confirm with a qualified tax professional or official software before filing."}}]}
+</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/">MARGIN<b>PAD</b></a><nav class="tool-switch"><a href="/tools/">All tools</a><a href="/crypto-backtester/">Backtester</a><a href="/trading-journal/">Journal</a><a href="/crypto-tax-calculator/">Tax</a><a href="/crypto-cost-basis-calculator/" class="on">Cost basis</a><a href="/pivot-point-calculator/">Pivots</a><a href="/risk-of-ruin-calculator/">Risk</a></nav><a class="home" href="/">← marginpad.io</a></header>
+
+<div class="wrap">
+  <section class="hero">
+    <span class="eyebrow">Tax</span>
+    <h1>Crypto Cost Basis Calculator</h1>
+    <p class="sub">Buy the same coin at ten different prices, then sell some — which lots count? Enter your purchases and a sale, choose FIFO, LIFO or HIFO, and get your cost basis, capital gain, and the short-term vs long-term split you need for taxes. An estimate to plan with, not tax advice.</p>
+  </section>
+
+  <div class="toolbar">
+    <div class="row">
+      <label class="f">Cost-basis method<select id="method" style="width:230px"><option value="FIFO">FIFO — oldest first (IRS default)</option><option value="LIFO">LIFO — newest first</option><option value="HIFO">HIFO — highest cost first (min gain)</option></select></label>
+      <button class="btn" id="run">Calculate</button>
+    </div>
+    <h2 style="margin:14px 0 0">Your buy lots</h2>
+    <div class="lots"><table id="buyT"><thead><tr><th>Buy date</th><th>Quantity (coin)</th><th>Price / coin</th><th></th></tr></thead><tbody id="buyB"></tbody></table></div>
+    <button class="lotbtn" id="addLot" type="button">+ Add buy lot</button>
+    <h2 style="margin:16px 0 0">The sale</h2>
+    <div class="row">
+      <label class="f">Sell date<input id="sd" type="date" style="width:170px"></label>
+      <label class="f">Quantity sold<input id="sq" type="number" value="1" step="any" style="width:130px"></label>
+      <label class="f">Sell price / coin<input id="sp" type="number" value="60000" step="any" style="width:150px"></label>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div id="out" hidden>
+    <h2>Result <span class="muted" id="methL">(FIFO)</span></h2>
+    <div class="kpis" id="kMain"></div>
+
+    <h2>Which lots were sold</h2>
+    <div class="brk"><table id="brkT"></table></div>
+
+    <div class="verdict" id="verdict"></div>
+    <div class="disc">Estimate only. Uses the prices and dates you enter and a one-year long-term threshold; it excludes trading fees you don't include in price, wash-sale rules, and the specific-identification records that LIFO/HIFO generally require. This is general information, not tax advice — confirm with a professional or official software before filing.</div>
+  </div>
+
+  <section class="content">
+    <h2>How cost basis decides your crypto tax</h2>
+    <p>When you sell crypto, your taxable gain is the sale proceeds minus your <b>cost basis</b> — what you paid for the coins you sold. The catch is that you rarely buy at one price. Ten purchases at ten prices means the sale has to draw from specific <i>lots</i>, and which lots it draws from changes both your gain and whether that gain is short-term or long-term. <b>FIFO</b> sells your oldest coins first (the IRS default). <b>LIFO</b> sells your newest first. <b>HIFO</b> sells your most expensive coins first, which produces the smallest gain on that sale — but LIFO and HIFO generally require specific identification and clean records to defend. This tool applies the method you pick, matches the sale against your lots, and shows the cost basis, the gain, and how much of it is short-term (held one year or less, taxed at your ordinary rate) versus long-term (held over a year, taxed at the lower capital-gains rate). Once you know the split, drop the numbers into the <a href="/crypto-tax-calculator/">crypto tax calculator</a> to estimate the actual tax, and keep every buy and sell logged in the free <a href="/trading-journal/">trading journal</a> so filing is never a guess.</p>
+  </section>
+
+  <section class="content faq">
+    <h2>FAQ</h2>
+    <details><summary>What is cost basis in crypto?</summary><div class="a">Cost basis is what you originally paid for the crypto you sold, including fees. Your capital gain is the sale proceeds minus the cost basis. Because you usually buy the same coin at many prices, which purchase lots you match to a sale changes your cost basis — and your tax.</div></details>
+    <details><summary>FIFO vs LIFO vs HIFO — what's the difference?</summary><div class="a">They choose which buy lots a sale draws from. FIFO sells your oldest coins first (the IRS default), LIFO sells your newest first, and HIFO sells your most expensive coins first to minimize the taxable gain. LIFO and HIFO generally require specific identification and good records.</div></details>
+    <details><summary>Does the method change how much tax I owe?</summary><div class="a">Yes. HIFO usually lowers the gain on a given sale; FIFO often realizes older, cheaper lots — a bigger gain, but one that may qualify for lower long-term rates. The best choice depends on your lots, holding periods and the records you can support.</div></details>
+    <details><summary>Is this tax advice?</summary><div class="a">No — it's a free estimator to understand your gain and holding-period split. It excludes fees you don't enter, wash-sale rules and specific-identification requirements. Confirm with a professional or official software before filing.</div></details>
+  </section>
+</div>
+
+<div class="wrap" style="padding-bottom:0">
+<footer class="toolfoot"><div class="cols"><div><a class="brand" href="/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">Free crypto futures tools — calculators, a live charts workspace, a paper-trading terminal and a real-time liquidation feed. No signup.</p></div><div><h4>Tools</h4><a href="/crypto-tax-calculator/">Tax Calculator</a><a href="/crypto-cost-basis-calculator/">Cost Basis Calculator</a><a href="/trading-journal/">Trading Journal</a><a href="/crypto-backtester/">Strategy Backtester</a><a href="/risk-of-ruin-calculator/">Risk of Ruin</a></div><div><h4>MarginPad</h4><a href="/paper-trade">Paper Trade</a><a href="/charts">Charts</a><a href="/calculators">Calculators</a><a href="/screener">Screener</a><a href="/rekt/">Liquidations</a></div></div><div class="bottom">© 2026 MarginPad · Free crypto trading tools · Not financial or tax advice</div></footer>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  function money(x){var n=+x||0;var s=(n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:2});return s;}
+  var buys=[{date:'2023-01-15',qty:0.5,price:21000},{date:'2024-03-10',qty:0.5,price:52000}];
+
+  function renderBuys(){
+    $('buyB').innerHTML=buys.map(function(b,i){
+      return '<tr data-i="'+i+'"><td><input type="date" data-k="date" value="'+b.date+'"></td>'
+        +'<td><input type="number" step="any" data-k="qty" value="'+b.qty+'"></td>'
+        +'<td><input type="number" step="any" data-k="price" value="'+b.price+'"></td>'
+        +'<td><button class="rm" data-rm="'+i+'" type="button" title="Remove">&times;</button></td></tr>';
+    }).join('');
+  }
+  function readBuys(){
+    Array.prototype.forEach.call($('buyB').querySelectorAll('tr'),function(tr){
+      var i=+tr.getAttribute('data-i');
+      tr.querySelectorAll('input').forEach(function(inp){var k=inp.getAttribute('data-k');buys[i][k]=k==='date'?inp.value:(+inp.value||0);});
+    });
+  }
+  var YR=365*86400000;
+  function calc(){
+    readBuys();
+    var method=$('method').value, sq=+$('sq').value||0, sp=+$('sp').value||0, sd=$('sd').value||new Date().toISOString().slice(0,10);
+    $('methL').textContent='('+method+')';
+    var sdT=Date.parse(sd);
+    // build a working copy with remaining qty; order by method
+    var lots=buys.filter(function(b){return b.qty>0;}).map(function(b){return {date:b.date,t:Date.parse(b.date),qty:b.qty,price:b.price,rem:b.qty};});
+    if(method==='FIFO') lots.sort(function(a,b){return a.t-b.t;});
+    else if(method==='LIFO') lots.sort(function(a,b){return b.t-a.t;});
+    else lots.sort(function(a,b){return b.price-a.price;}); // HIFO
+    var need=sq, proceeds=sq*sp, basis=0, stGain=0, ltGain=0, used=[], available=lots.reduce(function(a,l){return a+l.rem;},0);
+    if(sq>available+1e-9){ $('status').textContent='You are selling '+sq+' coins but your lots only total '+available.toFixed(6)+'. Add more buy lots or lower the sale quantity.'; $('out').hidden=true; return; }
+    for(var i=0;i<lots.length && need>1e-12;i++){
+      var l=lots[i], take=Math.min(l.rem,need); if(take<=0)continue;
+      var costPortion=take*l.price, gainPortion=take*(sp-l.price);
+      basis+=costPortion; need-=take;
+      var longTerm=(sdT-l.t)>YR;
+      if(longTerm) ltGain+=gainPortion; else stGain+=gainPortion;
+      used.push({date:l.date,qty:take,price:l.price,gain:gainPortion,lt:longTerm});
+    }
+    var gain=proceeds-basis;
+    function kpi(v,l,cls){return '<div class="kpi"><div class="v '+(cls||'')+'">'+v+'</div><div class="l">'+l+'</div></div>';}
+    $('kMain').innerHTML=kpi(money(proceeds),'Sale proceeds','')
+      +kpi(money(basis),'Cost basis','')
+      +kpi(money(gain),(gain>=0?'Capital gain':'Capital loss'),gain>=0?'pos':'neg')
+      +kpi(money(stGain),'Short-term portion',stGain>=0?'':'neg')
+      +kpi(money(ltGain),'Long-term portion','lt');
+    $('brkT').innerHTML='<tr><th>Lot bought</th><th>Qty sold</th><th>Buy price</th><th>Gain</th><th>Term</th></tr>'
+      +used.map(function(u){return '<tr><td>'+u.date+'</td><td class="n">'+u.qty.toLocaleString('en-US',{maximumFractionDigits:8})+'</td><td class="n">'+money(u.price)+'</td><td class="n">'+money(u.gain)+'</td><td>'+(u.lt?'<span class="lt">Long</span>':'<span class="st">Short</span>')+'</td></tr>';}).join('');
+    var v;
+    if(gain<0) v='This sale is a capital loss of '+money(-gain)+'. Losses can offset other capital gains and may carry forward — a reason to log every trade. See the tax calculator for how gains and losses net out.';
+    else if(ltGain>0 && stGain>0) v='Mixed holding periods: '+money(ltGain)+' is long-term (lower rate) and '+money(stGain)+' is short-term (your ordinary rate). Selling the longer-held lots first can move more of the gain into the lower bracket.';
+    else if(ltGain>0) v='All long-term — this gain qualifies for the lower long-term capital-gains rate. Holding past one year did its job.';
+    else v='All short-term — taxed at your ordinary income rate. Holding lots past one year would move them to the lower long-term rate.';
+    $('verdict').textContent=v;
+    $('out').hidden=false; $('status').textContent='';
+  }
+
+  $('addLot').addEventListener('click',function(){readBuys();buys.push({date:new Date().toISOString().slice(0,10),qty:0,price:0});renderBuys();});
+  $('buyB').addEventListener('click',function(e){var b=e.target.closest('[data-rm]');if(!b)return;readBuys();buys.splice(+b.getAttribute('data-rm'),1);if(!buys.length)buys.push({date:'2024-01-01',qty:0,price:0});renderBuys();});
+  $('method').addEventListener('change',calc);
+  $('run').addEventListener('click',calc);
+  // default sell date = today
+  $('sd').value=new Date().toISOString().slice(0,10);
+  renderBuys(); calc();
+})();
+</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>
