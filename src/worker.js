@@ -2892,13 +2892,23 @@ function renderOpsViz(){
   if(!tot){host.innerHTML='<div class="empty">no live positions under the cap right now</div>';return;}
   var now=Date.now();
   if(!OPS.hist.length||now-OPS.hist[OPS.hist.length-1].t>10000){OPS.hist.push({t:now,v:tot,p:totPnl});if(OPS.hist.length>90)OPS.hist.shift();}
+  // ---- derived extras (2026-07-14): imminent-liq danger list, ROE race, leverage buckets ----
+  var danger=feed.filter(function(x){return !x.c.dead&&x.c.liqDist!=null&&x.c.liqDist>0&&x.c.liqDist<1.5;}).sort(function(a,b){return a.c.liqDist-b.c.liqDist;});
+  var alive9=feed.filter(function(x){return !x.c.dead&&x.c.roe!=null;});
+  var raceUp=alive9.slice().sort(function(a,b){return b.c.roe-a.c.roe;}).slice(0,3).filter(function(x){return x.c.roe>0;});
+  var raceDn=alive9.slice().sort(function(a,b){return a.c.roe-b.c.roe;}).slice(0,3).filter(function(x){return x.c.roe<0;});
+  var levB=[0,0,0,0,0],levLbl=['1-10x','11-25x','26-50x','51-100x','100x+'];
+  feed.forEach(function(x){var lv=x.c.lev;levB[lv<=10?0:lv<=25?1:lv<=50?2:lv<=100?3:4]++;});
+  var levMax=Math.max.apply(null,levB.concat([1]));
   // ---- left: money flow by coin ----
   var coins=Object.keys(by).sort(function(a,b){return by[b].m-by[a].m;});
   var topC=coins.slice(0,6);var restC=coins.slice(6);
   if(restC.length){var o2={m:0,l:0,s:0,d:0,n:0};restC.forEach(function(sy){var b=by[sy];o2.m+=b.m;o2.l+=b.l;o2.s+=b.s;o2.d+=b.d;o2.n+=b.n;});by['OTHERS']=o2;topC.push('OTHERS');}
   var left='<div class="ovz-h">Live money flow <span style="float:right;color:#8fa3c4">'+ovzMoney(tot)+'</span></div>'
     +topC.map(function(sy){var b=by[sy];var pc=b.m/tot*100;var col=sy==='OTHERS'?'#5c6b84':ovzCoinCol(sy);
-      return '<div class="ovz-coin'+(OPS.coinF===sy?' on':'')+'"'+(sy==='OTHERS'?'':' data-ovc="'+esc(sy)+'" title="Click to filter the lists below by '+esc(sy)+'"')+'><span class="ovz-dot" style="background:'+col+'">'+esc(sy.slice(0,3))+'</span><span style="flex:1;min-width:0"><span style="display:flex;justify-content:space-between;font-size:12px"><b style="color:#e9edf7">'+esc(sy)+'</b><b style="color:#c2f64a;font-family:Consolas,monospace">'+ovzMoney(b.m)+'</b></span><span style="display:flex;justify-content:space-between;font-family:Consolas,monospace;font-size:10px;color:#8fa3c4"><span>'+b.n+' pos</span><span>'+pc.toFixed(1)+'%</span></span><span class="ovz-bar"><i style="width:'+Math.max(2,pc)+'%;background:'+col+'"></i></span></span></div>';}).join('');
+      var av9=b.l+b.s,lw9=av9>0?b.l/av9*100:0; // long/short skew of the ALIVE margin in this coin — "how crowded is one side"
+      var skewTxt=av9>0?('<span style="color:'+(lw9>=50?'#2ebd85':'#ff6258')+'">'+(lw9>=50?'L '+Math.round(lw9):'S '+Math.round(100-lw9))+'%</span>'):'';
+      return '<div class="ovz-coin'+(OPS.coinF===sy?' on':'')+'"'+(sy==='OTHERS'?'':' data-ovc="'+esc(sy)+'" title="Click to filter the lists below by '+esc(sy)+'"')+'><span class="ovz-dot" style="background:'+col+'">'+esc(sy.slice(0,3))+'</span><span style="flex:1;min-width:0"><span style="display:flex;justify-content:space-between;font-size:12px"><b style="color:#e9edf7">'+esc(sy)+'</b><b style="color:#c2f64a;font-family:Consolas,monospace">'+ovzMoney(b.m)+'</b></span><span style="display:flex;justify-content:space-between;font-family:Consolas,monospace;font-size:10px;color:#8fa3c4"><span>'+b.n+' pos &middot; '+skewTxt+'</span><span>'+pc.toFixed(1)+'%</span></span><span style="display:flex;height:4px;border-radius:3px;overflow:hidden;background:#141b29;margin-top:4px">'+(av9>0?'<i style="display:block;width:'+lw9.toFixed(1)+'%;background:#2ebd85"></i><i style="display:block;width:'+(100-lw9).toFixed(1)+'%;background:#ff6258"></i>':'<i style="display:block;width:100%;background:#5c6b84"></i>')+'</span></span></div>';}).join('');
   // ---- right: donut + spark + top pairs ----
   var alv=L+S;var lpct=alv>0?L/alv*100:0;
   var R=34,CF=2*Math.PI*R,dl=CF*lpct/100;
@@ -2932,6 +2942,12 @@ function renderOpsViz(){
     +'<span>Avg lev <b style="color:#dbe4f5">'+(nPos?Math.round(sumLev/nPos):0)+'x</b></span></div>'
     +(bw&&bw.c.pnl>0?'<div class="ovz-bwl"><span style="color:#2ebd85">&#9650;</span> top winner &middot; @'+esc(bw.who.slice(0,12))+' '+esc(bw.sy)+' <b style="color:#2ebd85">+$'+Math.abs(Math.round(bw.c.pnl)).toLocaleString('en-US')+'</b></div>':'')
     +(bl&&bl.c.pnl<0?'<div class="ovz-bwl"><span style="color:#ff6258">&#9660;</span> top loser &middot; @'+esc(bl.who.slice(0,12))+' '+esc(bl.sy)+' <b style="color:#ff6258">&#8722;$'+Math.abs(Math.round(bl.c.pnl)).toLocaleString('en-US')+'</b></div>':'')
+    +((raceUp.length||raceDn.length)?'<div class="ovz-h" style="margin-top:14px">ROE race (live)</div>'
+      +raceUp.map(function(x){return '<div class="ovz-bwl" style="cursor:pointer;display:flex;gap:6px;align-items:center" data-ovt="'+esc(x.who)+'"><span style="color:#2ebd85">&#9650;</span><span style="overflow:hidden;text-overflow:ellipsis">@'+esc(x.who.slice(0,12))+' '+esc(x.sy)+' <small style="color:#5c6b84">'+x.c.lev+'x</small></span><b style="color:#2ebd85;margin-left:auto">+'+x.c.roe.toFixed(0)+'%</b></div>';}).join('')
+      +raceDn.map(function(x){return '<div class="ovz-bwl" style="cursor:pointer;display:flex;gap:6px;align-items:center" data-ovt="'+esc(x.who)+'"><span style="color:#ff6258">&#9660;</span><span style="overflow:hidden;text-overflow:ellipsis">@'+esc(x.who.slice(0,12))+' '+esc(x.sy)+' <small style="color:#5c6b84">'+x.c.lev+'x</small></span><b style="color:#ff6258;margin-left:auto">&#8722;'+Math.abs(x.c.roe).toFixed(0)+'%</b></div>';}).join(''):'')
+    +'<div class="ovz-h" style="margin-top:14px">Leverage in play</div>'
+    +levLbl.map(function(lb,i9){var n9=levB[i9];var w9=n9/levMax*100;var lc=i9<2?'#2ebd85':i9<3?'#ffb347':'#ff6258';
+      return '<div style="display:flex;gap:8px;align-items:center;font-family:Consolas,monospace;font-size:10px;padding:2px 0"><span style="width:52px;color:#8fa3c4">'+lb+'</span><span style="flex:1;height:5px;border-radius:3px;background:#141b29;overflow:hidden"><i style="display:block;height:100%;width:'+Math.max(n9?3:0,w9).toFixed(0)+'%;background:'+lc+'"></i></span><b style="width:22px;text-align:right;color:#dbe4f5">'+n9+'</b></div>';}).join('')
     +'<div class="ovz-h" style="margin-top:14px">Margin at work (live)</div>'+spark
     +(spark2?'<div class="ovz-h" style="margin-top:14px">Unrealized P&amp;L (live)</div>'+spark2:'')
     +(pulse?'<div class="ovz-h" style="margin-top:14px">Trade activity &middot; 48h <span style="text-transform:none;letter-spacing:0;color:#31405c">opens &#9650; closes &#9660;</span></div>'+pulse:'')
@@ -2940,7 +2956,8 @@ function renderOpsViz(){
   // ---- shell (built ONCE — in-place per-section updates keep the page scroll stable) ----
   function upd9(id,html){var el9=document.getElementById(id);if(!el9)return;if(el9._h9===html)return;el9._h9=html;el9.innerHTML=html;}
   if(!host.querySelector('.ovz-grid')){
-    host.innerHTML='<div class="ovz-grid"><div class="ovz-p" id="ovzLeft"></div><div class="ovz-p" id="ovzMid"><div class="ovz-h"><span class="ovz-lv"><i></i>LIVE</span>Coins → direction → traders · ribbon = margin · hover a node to isolate its flows</div><div id="ovzSvg"></div></div><div class="ovz-p" id="ovzRight"></div></div>'
+    host.innerHTML='<div id="ovzDanger"></div>'
+      +'<div class="ovz-grid"><div class="ovz-p" id="ovzLeft"></div><div class="ovz-p" id="ovzMid"><div class="ovz-h"><span class="ovz-lv"><i></i>LIVE</span>Coins → direction → traders · ribbon = margin · hover a node to isolate its flows</div><div id="ovzSvg"></div></div><div class="ovz-p" id="ovzRight"></div></div>'
       +'<div class="ovz-today" id="ovzToday"></div>'
       +'<div class="ovz-bot"><div class="ovz-p"><div class="ovz-h">Live trades feed <span id="ovzFeedHd"></span></div><div id="ovzFeed"></div></div>'
       +'<div class="ovz-p"><div class="ovz-h">Trade tape <span style="color:#31405c;text-transform:none;letter-spacing:0">&middot; last 48h &middot; closes carry the trader&#39;s REAL P&amp;L</span><button type="button" class="ovz-chip" id="ovzSnd" style="float:right" title="Sound ping on new trades / liquidations"></button></div><div id="ovzTape"></div></div>'
@@ -2956,6 +2973,19 @@ function renderOpsViz(){
     sndLbl();}
   upd9('ovzLeft',left);
   upd9('ovzRight',right);
+  // ---- imminent-liquidation strip (2026-07-14): pulsing banner + one-shot beep when a position ENTERS <1.5% ----
+  OPS._dng=OPS._dng||{};
+  var dngNew=false;
+  danger.forEach(function(x){var k9=opsKey(x.t);if(!OPS._dng[k9]){OPS._dng[k9]=1;dngNew=true;}});
+  for(var dk in OPS._dng){if(!danger.some(function(x){return opsKey(x.t)===dk;}))delete OPS._dng[dk];} // left the zone → re-arm
+  if(dngNew)try{opsBeep(true);}catch(e9){}
+  upd9('ovzDanger',danger.length?('<style>@keyframes ovzDngA{0%,100%{box-shadow:0 0 0 0 rgba(255,98,88,.3)}50%{box-shadow:0 0 16px 3px rgba(255,98,88,.5)}}</style>'
+    +'<div style="border:1px solid rgba(255,98,88,.55);background:rgba(255,98,88,.07);border-radius:13px;padding:10px 14px;margin-bottom:12px;animation:ovzDngA 1.6s ease-in-out infinite">'
+    +'<div style="font-family:Consolas,monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#ff6258;margin-bottom:6px">&#9888; liquidation imminent &middot; '+danger.length+' position'+(danger.length>1?'s':'')+' within 1.5%</div>'
+    +danger.slice(0,4).map(function(x){var lg9=x.c.long;
+      return '<div class="ovz-bwl" style="cursor:pointer;display:flex;gap:8px;align-items:center;margin-top:3px" data-ovt="'+esc(x.who)+'"><b style="color:#e9edf7">@'+esc(x.who.slice(0,14))+'</b><span>'+esc(x.sy)+'</span><span style="color:'+(lg9?'#2ebd85':'#ff6258')+'">'+(lg9?'LONG':'SHORT')+' '+x.c.lev+'x</span><span style="color:#8fa3c4">'+ovzMoney(x.m)+' margin</span><b style="color:#ff6258;margin-left:auto">'+x.c.liqDist.toFixed(2)+'% from liq</b></div>';}).join('')
+    +(danger.length>4?'<div style="font-family:Consolas,monospace;font-size:10px;color:#8fa3c4;margin-top:4px">&hellip;and '+(danger.length-4)+' more in the Risk radar below</div>':'')
+    +'</div>'):'');
   var cfChip9=OPS.coinF?'<span class="ovz-cf" data-ovc="'+esc(OPS.coinF)+'" title="Clear filter">'+esc(OPS.coinF)+' &#10005;</span> ':'';
   upd9('ovzFeedHd',cfChip9+'<span class="ovz-chips">'+['all','long','short'].map(function(f){return '<button type="button" class="ovz-chip'+(OPS.feedF===f?' on':'')+'" data-ovf="'+f+'">'+f.charAt(0).toUpperCase()+f.slice(1)+'</button>';}).join('')+'</span>');
   upd9('ovzBigHd',cfChip9);
