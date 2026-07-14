@@ -464,18 +464,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     updateZone();}
   // shaded "liquidation zone" beyond the liq line: a translucent red overlay (slight blur) so candles still show through
   var zoneEl=null,edgeEl=null;
-  // off-screen position lines (entry/liq/tp/sl outside the visible price range) → pinned edge markers, so they're never invisible on 1m/5m
-  function updateEdges(){var host=document.getElementById('ptChart');if(!host||!candle)return;
-    if(!edgeEl){edgeEl=document.createElement('div');edgeEl.className='ptt-edges';host.appendChild(edgeEl);}
-    if(!_openMarks||!_openMarks.length){if(edgeEl.childNodes.length)edgeEl.innerHTML='';return;}
-    var H=host.clientHeight||0,html='',tN=0,bN=0;
-    var ax=0;try{ax=chart.priceScale('right').width()||0;}catch(_){} // keep the pills left of the price axis
-    _openMarks.forEach(function(m){if(!(m.p>0))return;var y;try{y=candle.priceToCoordinate(m.p);}catch(_){y=null;}var top;
-      if(y!=null&&isFinite(y)){if(y>=0&&y<=H)return;top=(y<0);} // on-screen → the real price line already shows it
-      else{var cp=lastBar?+lastBar.close:0;if(!(cp>0))return;top=(m.p>cp);}
-      var off=(top?tN++:bN++)*23;
-      html+='<div class="ptt-edge" style="'+(top?'top:':'bottom:')+(6+off)+'px;right:'+(ax+8)+'px;color:'+m.color+'">'+(top?'▲':'▼')+' '+m.label+' '+fmtDl(m.p)+'</div>';});
-    edgeEl.innerHTML=html;}
+  /* Edge pills RETIRED (owner 2026-07-14): the ▲/▼ LIQ/LONG markers duplicated the axis labels and read as
+     phantom extra liquidations (bug screenshot: 7 stacked pills next to visible lines). Only the price lines +
+     their right-axis labels remain. Kept as a cleaner so any previously rendered pills disappear. */
+  function updateEdges(){if(edgeEl&&edgeEl.childNodes.length)edgeEl.innerHTML='';}
   function updateZone(){var host=document.getElementById('ptChart');if(!host||!candle){return;}
     updateEdges();
     if(!zoneEl){zoneEl=document.createElement('div');zoneEl.className='ptt-zones';host.appendChild(zoneEl);}
