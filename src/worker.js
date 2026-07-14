@@ -4290,7 +4290,7 @@ async function addressExists(addr) {
 // Effective faucet config = KV overrides (`rwd:cfg`, set live from the Settings tab) layered over env-var defaults.
 async function rewardCfg(env) {
   const num = (v, d) => { const n = +v; return isFinite(n) ? n : d; };
-  const base = { enabled: env.REWARD_ENABLED === '1', wdEnabled: env.REWARD_WD_ENABLED !== '0', requireOnchain: env.REWARD_REQUIRE_ONCHAIN !== '0', minClaimsToWd: num(env.REWARD_MIN_CLAIMS_WD, 0), pauseMsg: env.REWARD_PAUSE_MSG || '', amountUsd: num(env.REWARD_AMOUNT, 0.1), perDayUsd: num(env.REWARD_PER_DAY, 5), minWdUsd: num(env.REWARD_MIN_WD, 5), capUsd: num(env.REWARD_DAILY_CAP, 10), cooldownS: num(env.REWARD_COOLDOWN, 300), ipCap: num(env.REWARD_IP_CAP, 3), welcomeUsd: num(env.REWARD_WELCOME, 0.5), promoUsd: num(env.REWARD_PROMO_USD, 0.3), promoEnabled: env.REWARD_PROMO_ENABLED !== '0', exsignUsd: num(env.REWARD_EXSIGN_USD, 3), exsignEnabled: env.REWARD_EXSIGN_ENABLED !== '0', prize1: num(env.REWARD_PRIZE1, 30), prize2: num(env.REWARD_PRIZE2, 20), prize3: num(env.REWARD_PRIZE3, 10) };
+  const base = { enabled: env.REWARD_ENABLED === '1', wdEnabled: env.REWARD_WD_ENABLED !== '0', requireOnchain: env.REWARD_REQUIRE_ONCHAIN !== '0', minClaimsToWd: num(env.REWARD_MIN_CLAIMS_WD, 0), pauseMsg: env.REWARD_PAUSE_MSG || '', amountUsd: num(env.REWARD_AMOUNT, 0.1), perDayUsd: num(env.REWARD_PER_DAY, 5), minWdUsd: num(env.REWARD_MIN_WD, 5), capUsd: num(env.REWARD_DAILY_CAP, 10), cooldownS: num(env.REWARD_COOLDOWN, 300), ipCap: num(env.REWARD_IP_CAP, 3), welcomeUsd: num(env.REWARD_WELCOME, 0.5), promoUsd: num(env.REWARD_PROMO_USD, 0.3), promoEnabled: env.REWARD_PROMO_ENABLED !== '0', exsignUsd: num(env.REWARD_EXSIGN_USD, 3), exsignEnabled: env.REWARD_EXSIGN_ENABLED !== '0', prize1: num(env.REWARD_PRIZE1, 30), prize2: num(env.REWARD_PRIZE2, 20), prize3: num(env.REWARD_PRIZE3, 10), levelsEnabled: env.REWARD_LEVELS_ENABLED !== '0' };
   let ov = {}; try { ov = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) {}
   const m = { ...base, ...ov }; const c = x => Math.round((+x) * 100);
   return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), raw: m };
@@ -5234,10 +5234,10 @@ async function handleReward(url, request, env) {
   // public address-existence check (the page calls this on Save for instant feedback)
   if (path === '/check') return jr({ exists: await addressExists(b.address || url.searchParams.get('address')) });
   // The faucet is account-based: resolve the signed-in user from the session cookie → 'u:<uid>'. Only for the account paths (avoids an extra UserStore call on /lb, /check, admin, /config).
-  let acct = null, suRestr = '';
+  let acct = null, suRestr = '', suLevelK = 'bronze';
   if (path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || (path === '/lb' && request.method === 'POST')) {
     const tok = getCookie(request, SESS_COOKIE);
-    if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); } }
+    if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; } }
   }
   // enforce the admin per-user restrictions (profile page Controls): they were only STORED before — the toggles did nothing
   const hasRestr = k => (',' + suRestr + ',').indexOf(',' + k + ',') >= 0;
@@ -5256,7 +5256,7 @@ async function handleReward(url, request, env) {
     if (request.method === 'POST') {
       let cur = {}; try { cur = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) {}
       const next = { ...cur };
-      for (const k of ['enabled', 'wdEnabled', 'requireOnchain', 'promoEnabled', 'exsignEnabled', 'missionsEnabled']) if (k in b) next[k] = !!b[k];
+      for (const k of ['enabled', 'wdEnabled', 'requireOnchain', 'promoEnabled', 'exsignEnabled', 'missionsEnabled', 'levelsEnabled']) if (k in b) next[k] = !!b[k];
       for (const k of ['amountUsd', 'perDayUsd', 'minWdUsd', 'capUsd', 'cooldownS', 'ipCap', 'minClaimsToWd', 'welcomeUsd', 'promoUsd', 'exsignUsd', 'prize1', 'prize2', 'prize3']) if (k in b) next[k] = +b[k];
       if ('pauseMsg' in b) next.pauseMsg = String(b.pauseMsg || '').slice(0, 300);
       await env.STATS.put('rwd:cfg', JSON.stringify(next));
@@ -5359,7 +5359,7 @@ async function handleReward(url, request, env) {
   }
   const stub = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
   const fwd = new Request('https://do' + path + (request.method === 'GET' ? url.search : ''), {
-    method: request.method, headers: { 'content-type': 'application/json', 'x-cfg': JSON.stringify(cfg), 'x-ip': ip, 'x-cc': cc, 'x-dev': deviceOf(ua), 'x-vid': vid, 'x-did': (getCookie(request, 'mp_did') || '').slice(0, 40), 'x-acct': acct || '' },
+    method: request.method, headers: { 'content-type': 'application/json', 'x-cfg': JSON.stringify(cfg), 'x-ip': ip, 'x-cc': cc, 'x-dev': deviceOf(ua), 'x-vid': vid, 'x-did': (getCookie(request, 'mp_did') || '').slice(0, 40), 'x-acct': acct || '', 'x-lvl': (cfg.levelsEnabled !== false ? suLevelK : ''), 'x-claimx': String(cfg.levelsEnabled !== false ? (LEVEL_CLAIM_MULT[suLevelK] || 1) : 1) },
     body: request.method === 'POST' ? raw : undefined,
   });
   let r, txt;
@@ -5940,7 +5940,7 @@ export class RewardLedger {
     this.state = state; this.env = env;
     const s = state.storage.sql;
     s.exec('CREATE TABLE IF NOT EXISTS accounts(address TEXT PRIMARY KEY, balance INTEGER NOT NULL DEFAULT 0, earned INTEGER NOT NULL DEFAULT 0, day TEXT, day_amt INTEGER NOT NULL DEFAULT 0, last_claim INTEGER NOT NULL DEFAULT 0, ip TEXT, created INTEGER NOT NULL DEFAULT 0)');
-    s.exec("CREATE TABLE IF NOT EXISTS withdrawals(id TEXT PRIMARY KEY, address TEXT, amount INTEGER, status TEXT, ts INTEGER, paid_ts INTEGER DEFAULT 0, txid TEXT DEFAULT '')");
+    s.exec("CREATE TABLE IF NOT EXISTS withdrawals(id TEXT PRIMARY KEY, address TEXT, amount INTEGER, status TEXT, ts INTEGER, paid_ts INTEGER DEFAULT 0, txid TEXT DEFAULT '')"); try { s.exec('ALTER TABLE withdrawals ADD COLUMN bonus INTEGER DEFAULT 0'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS daily(day TEXT PRIMARY KEY, dispensed INTEGER NOT NULL DEFAULT 0)');
     s.exec('CREATE TABLE IF NOT EXISTS ipday(k TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)');
     for (const col of ['cc TEXT', 'dev TEXT', 'claims INTEGER DEFAULT 0', 'banned INTEGER DEFAULT 0', 'payout_addr TEXT', 'welcome INTEGER DEFAULT 0', 'did TEXT']) { try { s.exec('ALTER TABLE accounts ADD COLUMN ' + col); } catch (e) {} } // idempotent migration. accounts keyed by account id ('u:<uid>'); payout_addr = withdrawal wallet; welcome = one-time sign-up bonus granted
@@ -5998,7 +5998,7 @@ export class RewardLedger {
     const url = new URL(request.url), path = url.pathname, sql = this.state.storage.sql;
     const cfg = JSON.parse(request.headers.get('x-cfg') || '{}');
     const ip = request.headers.get('x-ip') || '';
-    const cc = request.headers.get('x-cc') || '', dev = request.headers.get('x-dev') || '', vid = request.headers.get('x-vid') || '', did = request.headers.get('x-did') || '';
+    const cc = request.headers.get('x-cc') || '', dev = request.headers.get('x-dev') || '', vid = request.headers.get('x-vid') || '', did = request.headers.get('x-did') || ''; const xLvl = request.headers.get('x-lvl') || ''; const xClaimX = Math.max(1, Math.min(2, +request.headers.get('x-claimx') || 1));
     const day = new Date().toISOString().slice(0, 10), now = Date.now();
     let body = {}; if (request.method === 'POST') { try { body = await request.json(); } catch (e) {} }
     const addr = String(body.address || url.searchParams.get('address') || '').toLowerCase();
@@ -6032,12 +6032,12 @@ export class RewardLedger {
       if (did && r.did !== did) { try { sql.exec('UPDATE accounts SET did=? WHERE address=?', did, acct); } catch (e) {} } // keep the freshest device-cookie binding
       if (now - r.last_claim < cfg.cooldown) return this.j({ error: 'cooldown', left: cfg.cooldown - (now - r.last_claim) }, 429);
       const dayAmt = r.day === day ? r.day_amt : 0;
-      if (dayAmt + cfg.amountC > cfg.perDayC) return this.j({ error: 'daily_cap' }, 429);
-      sql.exec('UPDATE accounts SET balance=balance+?,earned=earned+?,day=?,day_amt=?,last_claim=?,claims=COALESCE(claims,0)+1 WHERE address=?', cfg.amountC, cfg.amountC, day, dayAmt + cfg.amountC, now, acct);
-      sql.exec('INSERT INTO daily(day,dispensed) VALUES(?,?) ON CONFLICT(day) DO UPDATE SET dispensed=dispensed+?', day, cfg.amountC, cfg.amountC);
+      const credC = Math.round(cfg.amountC * xClaimX); if (dayAmt + credC > cfg.perDayC) return this.j({ error: 'daily_cap' }, 429);
+      sql.exec('UPDATE accounts SET balance=balance+?,earned=earned+?,day=?,day_amt=?,last_claim=?,claims=COALESCE(claims,0)+1 WHERE address=?', credC, credC, day, dayAmt + credC, now, acct);
+      sql.exec('INSERT INTO daily(day,dispensed) VALUES(?,?) ON CONFLICT(day) DO UPDATE SET dispensed=dispensed+?', day, credC, credC);
       const n = this.rows('SELECT balance,day_amt FROM accounts WHERE address=?', acct)[0];
-      this.log('claim', acct, cc, dev, cfg.amountC);
-      return this.j({ ok: true, credited: cfg.amountC / 100, balance: n.balance / 100, dayAmt: n.day_amt / 100, nextClaim: now + cfg.cooldown, cooldown: cfg.cooldown, canWithdraw: n.balance >= cfg.minWdC });
+      this.log('claim', acct, cc, dev, credC);
+      return this.j({ ok: true, credited: credC / 100, mult: xClaimX, level: xLvl, balance: n.balance / 100, dayAmt: n.day_amt / 100, nextClaim: now + cfg.cooldown, cooldown: cfg.cooldown, canWithdraw: n.balance >= cfg.minWdC });
     }
     if (path === '/withdraw') {
       if (!acct) return this.j({ error: 'login_required' }, 401);
@@ -6046,15 +6046,15 @@ export class RewardLedger {
       if (r && r.banned) return this.j({ error: 'banned' }, 403); // banned accounts can't cash out either
       if (!r || r.balance < cfg.minWdC) return this.j({ error: 'min_not_met', minWd: cfg.minWdC / 100 }, 400);
       if ((r.claims || 0) < (cfg.minClaimsToWd || 0)) return this.j({ error: 'need_claims', need: cfg.minClaimsToWd, have: r.claims || 0 }, 400);
-      const amt = r.balance, id = day + '-' + acct.slice(-8) + '-' + now;
-      sql.exec("INSERT INTO withdrawals(id,address,acct,amount,status,ts) VALUES(?,?,?,?,'pending',?)", id, addr, acct, amt, now); // address = payout wallet, acct = the account it belongs to
+      const bonusPct = LEVEL_WD_BONUS[xLvl] || 0; const bonusC = Math.round(r.balance * bonusPct); const amt = r.balance, id = day + '-' + acct.slice(-8) + '-' + now;
+      sql.exec("INSERT INTO withdrawals(id,address,acct,amount,bonus,status,ts) VALUES(?,?,?,?,?,'pending',?)", id, addr, acct, amt, bonusC, now); // address = payout wallet, acct = the account it belongs to
       sql.exec('UPDATE accounts SET balance=0, payout_addr=? WHERE address=?', addr, acct); // move credit to the pending payout queue; remember the wallet
-      this.log('withdraw', acct, cc, dev, amt);
-      return this.j({ ok: true, amount: amt / 100, id, status: 'pending' });
+      this.log('withdraw', acct, cc, dev, amt + bonusC);
+      return this.j({ ok: true, amount: amt / 100, bonus: bonusC / 100, total: (amt + bonusC) / 100, level: xLvl, id, status: 'pending' });
     }
     if (path === '/wdlist') { // Withdrawals tab: every withdrawal enriched with the owning account's ip/cc/dev/claims/balance
-      const rows = this.rows("SELECT w.id,w.address,w.acct,w.amount,w.status,w.ts,w.paid_ts,w.txid,a.ip,a.cc,a.dev,a.claims,a.balance,a.banned FROM withdrawals w LEFT JOIN accounts a ON a.address=COALESCE(w.acct,w.address) ORDER BY w.ts DESC LIMIT 500");
-      return this.j({ wds: rows.map(w => ({ id: w.id, wallet: w.address, acct: w.acct || w.address, usd: w.amount / 100, status: w.status, ts: w.ts, paidTs: w.paid_ts || 0, txid: w.txid || '', ip: w.ip || '', cc: w.cc || '', dev: w.dev || '', claims: w.claims || 0, balUsd: (w.balance || 0) / 100, banned: !!w.banned })) });
+      const rows = this.rows("SELECT w.id,w.address,w.acct,w.amount,w.bonus,w.status,w.ts,w.paid_ts,w.txid,a.ip,a.cc,a.dev,a.claims,a.balance,a.banned FROM withdrawals w LEFT JOIN accounts a ON a.address=COALESCE(w.acct,w.address) ORDER BY w.ts DESC LIMIT 500");
+      return this.j({ wds: rows.map(w => ({ id: w.id, wallet: w.address, acct: w.acct || w.address, usd: w.amount / 100, bonusUsd: (w.bonus || 0) / 100, status: w.status, ts: w.ts, paidTs: w.paid_ts || 0, txid: w.txid || '', ip: w.ip || '', cc: w.cc || '', dev: w.dev || '', claims: w.claims || 0, balUsd: (w.balance || 0) / 100, banned: !!w.banned })) });
     }
     if (path === '/admin') {
       const pending = this.rows("SELECT id,address,amount,ts FROM withdrawals WHERE status='pending' ORDER BY ts ASC").map(w => ({ ...w, amountUsd: w.amount / 100 }));
@@ -6395,6 +6395,8 @@ const XP_LEVELS = [
   { k: 'platinum', name: 'Platinum', min: 25000, col: '#7ee0ff' },
   { k: 'diamond', name: 'Diamond', min: 50000, col: '#8b5cff' },
 ];
+const LEVEL_CLAIM_MULT = { bronze: 1.0, silver: 1.10, gold: 1.20, platinum: 1.35, diamond: 1.50 }; // faucet claim size by level
+const LEVEL_WD_BONUS = { diamond: 0.10 }; // Diamond gets +10% on withdrawals (the house pays it)
 function xpLevelOf(xp) {
   xp = Math.max(0, +xp || 0);
   let i = 0; for (let n = 0; n < XP_LEVELS.length; n++) if (xp >= XP_LEVELS[n].min) i = n;
