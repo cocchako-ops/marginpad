@@ -595,7 +595,7 @@
     fetch('/api/reward/claim',{method:'POST',headers:{'content-type':'application/json'},body:'{}'})
       .then(function(r){return r.json();})
       .then(function(j){ busy=false;
-        if(j.ok){ msg('+'+fmt(j.credited)+' USDT credited. Balance: $'+fmt(j.balance),'ok'); render(Object.assign({},acct||{},{balance:j.balance,dayAmt:j.dayAmt,canWithdraw:j.canWithdraw,cooldownLeft:(j.cooldown!=null?j.cooldown:Math.max(0,j.nextClaim-Date.now()))})); }
+        if(j.ok){ msg('+'+fmt(j.credited)+' USDT credited. Balance: $'+fmt(j.balance),'ok'); render(Object.assign({},acct||{},{balance:j.balance,dayAmt:j.dayAmt,canWithdraw:j.canWithdraw,cooldownLeft:(j.cooldown!=null?j.cooldown:Math.max(0,j.nextClaim-Date.now()))})); if(window.mpXpCheck)setTimeout(window.mpXpCheck,400); }
         else { var e=j.error;
           if(e==='login_required'){ signedIn=false; updateGate(); if(window.mpAuth)window.mpAuth.open(); msg('Please sign in to claim.','err'); }
           else if(e==='cooldown'){ nextClaim=Date.now()+(j.left||0); msg('Easy — come back when the timer hits zero.','err'); }
@@ -782,6 +782,7 @@
       .then(function(d){
         if(d&&d.ok){render({enabled:true,signedIn:true,missions:d.missions,resetInMs:null});
           try{if(typeof refresh==='function')refresh();}catch(e2){}
+          if(window.mpXpCheck)setTimeout(window.mpXpCheck,400);
         }else{b.disabled=false;b.textContent='Claim';}
       }).catch(function(){b.disabled=false;b.textContent='Claim';});
   });

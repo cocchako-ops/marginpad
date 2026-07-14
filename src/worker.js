@@ -5406,10 +5406,11 @@ async function handleReward(url, request, env) {
   let r, txt;
   try { r = await stub.fetch(fwd); txt = await r.text(); }
   catch (e) { return jr({ error: 'busy' }, 503); } // transient DO overload/reset — fail soft instead of a hard 500
-    if (r.status === 200 && acct) { try { const _rd = JSON.parse(txt);
-      if (path === '/claim' && (_rd.balance != null || _rd.credited != null || _rd.ok)) await grantXp(env, acct, 'faucet', 2, { dayCap: 20, note: 'faucet claim' });
-      else if (path === '/promo/review' && _rd.status === 'approved') await grantXp(env, _rd.acct || acct, 'promo', 40, { note: 'promo post approved' });
-      else if (path === '/exsign/review' && _rd.status === 'approved') await grantXp(env, _rd.acct || acct, 'exsign', 200, { note: 'exchange sign-up approved' });
+    if (r.status === 200) { try { const _rd = JSON.parse(txt);
+      // /claim credits the CLAIMER (their own session acct); reviews credit the RECIPIENT (_rd.acct) regardless of who approved — admin reviews carry no reward session, so this must NOT depend on the reviewer's acct
+      if (path === '/claim' && acct && (_rd.balance != null || _rd.credited != null || _rd.ok)) await grantXp(env, acct, 'faucet', 2, { dayCap: 20, note: 'faucet claim' });
+      else if (path === '/promo/review' && _rd.status === 'approved' && _rd.acct) await grantXp(env, _rd.acct, 'promo', 40, { note: 'promo post approved' });
+      else if (path === '/exsign/review' && _rd.status === 'approved' && _rd.acct) await grantXp(env, _rd.acct, 'exsign', 200, { note: 'exchange sign-up approved' });
     } catch (xe) {} }
   // Admin views: faucet accounts are keyed by 'u:<uid>'. Resolve those to the real username/email from UserStore so the dashboard shows who claimed.
   if (r.status === 200 && (path === '/log' || path === '/accounts' || path === '/detail' || path === '/promo/list' || path === '/exsign/list')) {
