@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Risk of Ruin Calculator &amp; Kelly Criterion — Crypto | MarginPad</title>
+<meta name="description" content="See what your edge really does over many trades: risk of ruin via Monte-Carlo simulation, the Kelly fraction, expectancy and an equity fan from your win rate and reward-to-risk. A free position-sizing and risk-management tool." />
+<meta name="keywords" content="risk of ruin calculator, kelly criterion calculator, position sizing, expectancy calculator, monte carlo trading, risk management crypto" />
+<link rel="canonical" href="https://marginpad.io/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/risk-of-ruin-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/risk-of-ruin-calculator/" />
+<meta property="og:title" content="Risk of Ruin Calculator &amp; Kelly Criterion — Crypto | MarginPad" />
+<meta property="og:description" content="See what your edge really does over many trades: risk of ruin via Monte-Carlo simulation, the Kelly fraction, expectancy and an equity fan from your win rate and reward-to-risk." />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta property="og:site_name" content="MarginPad" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Risk of Ruin Calculator &amp; Kelly Criterion — Crypto | MarginPad" />
+<meta name="twitter:description" content="See what your edge really does over many trades: risk of ruin via Monte-Carlo simulation, the Kelly fraction, expectancy and an equity fan from your win rate and reward-to-risk." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/lab.css" />
+<style>
+  .fan{width:100%;height:260px;background:#0a0c10;border:1px solid var(--line);border-radius:14px;margin-top:8px;display:block}
+  .verdict{font-size:13.5px;color:var(--ink2);line-height:1.65;margin-top:16px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:12px;padding:14px 16px}
+  .content{max-width:760px;margin-top:8px}
+  .content p{color:var(--ink2);font-size:14.5px;line-height:1.7;margin:0 0 14px}
+  .faq{margin-top:10px}
+  .faq details{border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--panel),var(--bg2));margin-bottom:10px;overflow:hidden}
+  .faq summary{cursor:pointer;padding:15px 18px;font-weight:700;font-size:15px;color:var(--ink);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:'+';color:var(--cyan);font-family:'Space Mono',monospace;font-size:18px;font-weight:700}
+  .faq details[open] summary::after{content:'\2212'}
+  .faq details[open] summary{border-bottom:1px solid var(--line)}
+  .faq .a{padding:14px 18px 17px;color:var(--ink2);font-size:14px;line-height:1.7}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Risk of Ruin Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Web","url":"https://marginpad.io/risk-of-ruin-calculator/","description":"Risk of ruin via Monte-Carlo simulation, the Kelly fraction, expectancy and an equity fan from your win rate and reward-to-risk.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Risk of Ruin Calculator","item":"https://marginpad.io/risk-of-ruin-calculator/"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is risk of ruin?","acceptedAnswer":{"@type":"Answer","text":"Risk of ruin is the probability that your account falls to a chosen failure level — here a 50% drawdown — at some point over a series of trades. Even a positive edge can hit ruin if you risk too much per trade, because losing streaks are inevitable. We estimate it by Monte-Carlo: running thousands of simulated sequences from your win rate and reward-to-risk and counting how often equity crosses that line."}},{"@type":"Question","name":"What is the Kelly criterion?","acceptedAnswer":{"@type":"Answer","text":"The Kelly criterion is a formula for the bet size that maximizes the long-run growth rate of your capital. For a trade with win probability p and reward-to-risk R, the Kelly fraction is (p·R − (1−p)) / R, which is the share of capital to risk per trade. A negative result means there is no edge to bet on."}},{"@type":"Question","name":"Why is full Kelly risky?","acceptedAnswer":{"@type":"Answer","text":"Full Kelly maximizes growth but produces large drawdowns, so most traders use a fraction like half-Kelly. It assumes your win rate and reward-to-risk are known exactly; real edges drift, and at full Kelly a normal losing streak can cut the account in half. Sizing at half-Kelly keeps most of the growth with far smaller swings."}}]}
+</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/">MARGIN<b>PAD</b></a><nav class="tool-switch"><a href="/tools/">All tools</a><a href="/crypto-backtester/">Backtester</a><a href="/trading-journal/">Journal</a><a href="/crypto-tax-calculator/">Tax</a><a href="/pivot-point-calculator/">Pivots</a><a href="/risk-of-ruin-calculator/" class="on">Risk</a><a href="/crypto-correlation-matrix/">Correlation</a></nav><a class="home" href="/">← marginpad.io</a></header>
+
+<div class="wrap">
+  <section class="hero">
+    <span class="eyebrow">Risk</span>
+    <h1>Risk of Ruin Calculator</h1>
+    <p class="sub">Feed in your edge — win rate, reward-to-risk and how much you risk per trade — and see what the math really does to an account over many trades. Monte-Carlo risk of ruin, Kelly sizing and an equity fan.</p>
+  </section>
+
+  <div class="toolbar">
+    <div class="row">
+      <label class="f">Win rate %<input id="wr" type="number" value="45" min="1" max="99" style="width:96px"></label>
+      <label class="f">Reward : Risk<input id="rr" type="number" value="2" step="0.1" min="0.1" style="width:96px"></label>
+      <label class="f">Risk / trade %<input id="risk" type="number" value="2" step="0.5" min="0.1" max="100" style="width:108px"></label>
+      <label class="f">Trades<input id="n" type="number" value="100" min="10" max="1000" style="width:96px"></label>
+      <button class="btn" id="run">Simulate</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div id="out" hidden>
+    <h2>The edge</h2>
+    <div class="kpis" id="kEdge"></div>
+
+    <h2>Over <span id="nL">100</span> trades <span class="muted">(2,000 simulations)</span></h2>
+    <div class="kpis" id="kSim"></div>
+
+    <h2>Equity fan</h2>
+    <svg class="fan" id="fan" viewBox="0 0 600 230" preserveAspectRatio="none"></svg>
+    <div class="legend"><span><i style="background:rgba(70,224,230,.15);height:9px;border-radius:2px"></i>5–95% range</span><span><i style="background:rgba(70,224,230,.3);height:9px;border-radius:2px"></i>25–75% range</span><span><i style="background:var(--lime)"></i>Median</span><span><i style="background:var(--red)"></i>Start</span></div>
+
+    <div class="verdict" id="verdict"></div>
+  </div>
+
+  <section class="content">
+    <h2>How to size like a desk</h2>
+    <p>A trading edge only matters over many trades, and the bet size you choose decides whether that edge compounds or ruins you. Start with your real numbers: how often you win, your average reward-to-risk, and the percentage of capital you put at risk per trade. Expectancy tells you the average outcome of a single trade; if it is negative, no position size can save the account. The Kelly fraction gives the mathematically optimal risk for maximum growth — but real desks rarely use it in full. Because edges drift and drawdowns compound, professionals size at a fraction of Kelly, often half, and keep per-trade risk small enough that a normal losing streak never threatens the account. Run the simulation, watch the equity fan, and choose risk by the drawdown you can survive — not the upside you imagine.</p>
+  </section>
+
+  <section class="content faq">
+    <h2>FAQ</h2>
+    <details>
+      <summary>What is risk of ruin?</summary>
+      <div class="a">Risk of ruin is the probability that your account falls to a chosen failure level — here a 50% drawdown — at some point over a series of trades. Even a positive edge can hit ruin if you risk too much per trade, because losing streaks are inevitable. We estimate it by Monte-Carlo: running thousands of simulated sequences from your win rate and reward-to-risk and counting how often equity crosses that line.</div>
+    </details>
+    <details>
+      <summary>What is the Kelly criterion?</summary>
+      <div class="a">The Kelly criterion is a formula for the bet size that maximizes the long-run growth rate of your capital. For a trade with win probability p and reward-to-risk R, the Kelly fraction is (p·R − (1−p)) / R, which is the share of capital to risk per trade. A negative result means there is no edge to bet on.</div>
+    </details>
+    <details>
+      <summary>Why is full Kelly risky?</summary>
+      <div class="a">Full Kelly maximizes growth but produces large drawdowns, so most traders use a fraction like half-Kelly. It assumes your win rate and reward-to-risk are known exactly; real edges drift, and at full Kelly a normal losing streak can cut the account in half. Sizing at half-Kelly keeps most of the growth with far smaller swings.</div>
+    </details>
+  </section>
+</div>
+
+<div class="wrap" style="padding-bottom:0">
+<footer class="toolfoot"><div class="cols"><div><a class="brand" href="/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">Free crypto futures tools — calculators, a live charts workspace, a paper-trading terminal and a real-time liquidation feed. No signup.</p></div><div><h4>Tools</h4><a href="/crypto-backtester/">Strategy Backtester</a><a href="/trading-journal/">Trading Journal</a><a href="/pivot-point-calculator/">Pivot Points</a><a href="/risk-of-ruin-calculator/">Risk of Ruin</a><a href="/crypto-correlation-matrix/">Correlation Matrix</a></div><div><h4>MarginPad</h4><a href="/paper-trade">Paper Trade</a><a href="/charts">Charts</a><a href="/calculators">Calculators</a><a href="/screener">Screener</a><a href="/rekt/">Liquidations</a></div></div><div class="bottom">© 2026 MarginPad · Free crypto trading tools · Not financial advice</div></footer>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  function pc(x){return (+x).toFixed(1)+'%';}
+  function run(){
+    var wr=Math.min(99,Math.max(1,+$('wr').value||45))/100, R=Math.max(0.1,+$('rr').value||2), risk=Math.min(100,Math.max(0.1,+$('risk').value||2))/100, N=Math.min(1000,Math.max(10,+$('n').value||100));
+    $('nL').textContent=N;
+    var expR=wr*R-(1-wr);
+    var expPct=expR*risk*100;
+    var kelly=(wr*R-(1-wr))/R;
+    function kpi(v,l,cls){return '<div class="kpi"><div class="v '+(cls||'')+'">'+v+'</div><div class="l">'+l+'</div></div>';}
+    $('kEdge').innerHTML=kpi((expR>=0?'+':'')+expR.toFixed(2)+'R',"Expectancy / trade",expR>=0?'pos':'neg')
+      +kpi((expPct>=0?'+':'')+expPct.toFixed(2)+'%',"Avg gain / trade",expPct>=0?'pos':'neg')
+      +kpi(kelly>0?pc(kelly*100):'0%',"Full Kelly (risk %)",kelly>0?'pos':'neg')
+      +kpi(kelly>0?pc(kelly*50):'0%',"Half Kelly (safer)",kelly>0?'pos':'neg');
+    var S=2000, finals=[], ruin50=0, ruin0=0, steps=[];for(var s=0;s<=N;s++)steps.push([]);
+    for(var sim=0;sim<S;sim++){
+      var eq=1, minEq=1, path=[1];
+      for(var t=0;t<N;t++){ eq*= (Math.random()<wr)?(1+R*risk):(1-risk); if(eq<minEq)minEq=eq; path.push(eq);}
+      finals.push(eq);
+      if(minEq<=0.5)ruin50++; if(eq<1)ruin0++;
+      for(var st=0;st<=N;st++)steps[st].push(path[st]);
+    }
+    finals.sort(function(a,b){return a-b;});
+    function q(arr,p){var a=arr.slice().sort(function(x,y){return x-y;});return a[Math.min(a.length-1,Math.floor(p*a.length))];}
+    var med=finals[Math.floor(S*0.5)], p5=finals[Math.floor(S*0.05)], p95=finals[Math.floor(S*0.95)];
+    $('kSim').innerHTML=kpi('×'+med.toFixed(2),"Median outcome",med>=1?'pos':'neg')
+      +kpi(pc((1-ruin0/S)*100),"Chance of profit",(1-ruin0/S)>=0.5?'pos':'neg')
+      +kpi(pc(ruin50/S*100),"Risk of ruin (−50%)",ruin50/S>0.1?'neg':'pos')
+      +kpi('×'+p95.toFixed(2),"Best case (p95)",'pos')
+      +kpi('×'+p5.toFixed(2),"Worst case (p5)",'neg');
+    var W=600,H=230,pad=8;var qs={p5:[],p25:[],p50:[],p75:[],p95:[]};
+    steps.forEach(function(col){qs.p5.push(q(col,0.05));qs.p25.push(q(col,0.25));qs.p50.push(q(col,0.5));qs.p75.push(q(col,0.75));qs.p95.push(q(col,0.95));});
+    var mx=Math.max.apply(null,qs.p95),mn=Math.min.apply(null,qs.p5);mx=Math.max(mx,1.05);mn=Math.min(mn,0.95);
+    function X(i){return pad+i/N*(W-2*pad);}function Y(v){return H-pad-((v-mn)/((mx-mn)||1))*(H-2*pad);}
+    function band(lo,hi){var d='';for(var i=0;i<=N;i++)d+=(i?'L':'M')+X(i).toFixed(1)+' '+Y(qs[hi][i]).toFixed(1);for(var j=N;j>=0;j--)d+='L'+X(j).toFixed(1)+' '+Y(qs[lo][j]).toFixed(1);return d+'Z';}
+    function line(k,col,w){var d='';for(var i=0;i<=N;i++)d+=(i?'L':'M')+X(i).toFixed(1)+' '+Y(qs[k][i]).toFixed(1);return '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="'+w+'"/>';}
+    var oneY=Y(1).toFixed(1);
+    $('fan').innerHTML='<path d="'+band('p5','p95')+'" fill="rgba(70,224,230,.13)"/><path d="'+band('p25','p75')+'" fill="rgba(70,224,230,.28)"/><line x1="'+pad+'" y1="'+oneY+'" x2="'+(W-pad)+'" y2="'+oneY+'" stroke="#ff6258" stroke-dasharray="3 3"/>'+line('p50','#c2f64a',2);
+    var v;if(expR<=0)v="⚠ Negative expectancy — over time this loses money no matter the position size. Improve win rate or reward:risk first.";
+    else if(ruin50/S>0.2)v="Your edge is positive, but risking {risk}% per trade gives a {ror} chance of a −50% drawdown. Consider sizing nearer half-Kelly ({hk}).".replace('{risk}',(risk*100).toFixed(1)).replace('{ror}',pc(ruin50/S*100)).replace('{hk}',pc(kelly*50));
+    else v="Positive edge with controlled risk. Median outcome ×{med} over {n} trades, {ror} chance of a −50% drawdown.".replace('{med}',med.toFixed(2)).replace('{n}',N).replace('{ror}',pc(ruin50/S*100));
+    $('verdict').textContent=v;
+    $('out').hidden=false;$('status').textContent='';
+  }
+  $('run').addEventListener('click',run);run();
+})();
+</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>
