@@ -1531,10 +1531,12 @@ async function collectorHealth(env) {
   if (!base) return fail('COLLECTOR_URL not configured');
   let st, cl;
   try {
+    const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 2000); // fast-fail: a DOWN collector VPS must not hang the whole dashboard render for seconds
     const [r1, r2] = await Promise.all([
-      fetch(base + '/api/v1/status', { cf: { cacheTtl: 0 } }),
-      fetch(base + '/api/v1/clusters?symbol=BTC', { cf: { cacheTtl: 0 } }).catch(() => null),
+      fetch(base + '/api/v1/status', { cf: { cacheTtl: 0 }, signal: ctl.signal }),
+      fetch(base + '/api/v1/clusters?symbol=BTC', { cf: { cacheTtl: 0 }, signal: ctl.signal }).catch(() => null),
     ]);
+    clearTimeout(tm);
     if (!r1.ok) return fail('collector unreachable (HTTP ' + r1.status + ')');
     st = await r1.json();
     cl = r2 && r2.ok ? await r2.json() : null;
@@ -1827,7 +1829,7 @@ render();setInterval(reload,15000);
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }
 
-async function handleStats(url, env, request) {
+async function handleStats(url, env, request, ctx) {
   // The ?key= link scheme no longer exists — any non-empty key makes the URL a dead 404 (even for a logged-in
   // browser), so old bookmarked/shared "?key=" links open NOTHING. The only entry is the bare /api/stats login.
   if (url.searchParams.get('key')) return new Response('Not found', { status: 404, headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' } });
@@ -1866,7 +1868,22 @@ async function handleStats(url, env, request) {
   // 1000 lists/day — so without this, auto-refresh (every 60s) + manual reloads blow the quota by midday. The
   // cache (5-min TTL) caps fresh renders to a few per hour regardless of how often the dashboard refreshes.
   const noCache = url.searchParams.get('nc') === '1'; // ?nc=1 forces a fresh render (skips the short cache)
-  if (!noCache) { try { const hot = await env.STATS.get('st:cache'); if (hot) return htmlResp(hot); } catch (e) {} }
+  const bgOnly = url.searchParams.get('_bg') === '1'; // internal: a background warm-the-cache render (must NOT itself serve-stale, or it recurses)
+  const CK_FRESH = new Request('https://marginpad.io/__st_render');   // per-colo render cache (caches.default = instant + strongly consistent, unlike KV)
+  const CK_LAST = new Request('https://marginpad.io/__st_render_last'); // per-colo last-good render (24h)
+  if (!noCache && !bgOnly) {
+    try { const hit = await caches.default.match(CK_FRESH); if (hit) return htmlResp(await hit.text()); } catch (e) {}
+    // STALE-WHILE-REVALIDATE: the full render (KV list + AE queries + collector fetch) takes several seconds, so on a
+    // cache miss serve the last-good render INSTANTLY and recompute in the background — the dashboard load is always fast.
+    let lastHtml = null;
+    try { const l = await caches.default.match(CK_LAST); if (l) lastHtml = await l.text(); } catch (e) {}
+    if (!lastHtml) { try { lastHtml = await env.STATS.get('st:cache:last'); } catch (e) {} } // cross-colo fallback (first hit on a fresh colo)
+    if (lastHtml && ctx && ctx.waitUntil) {
+      const bgUrl = new URL(url); bgUrl.searchParams.set('nc', '1'); bgUrl.searchParams.set('_bg', '1');
+      ctx.waitUntil(handleStats(bgUrl, env, request, null).catch(() => {})); // recompute + rewrite the cache for the next load; ctx=null prevents recursion
+      return htmlResp(lastHtml);
+    }
+  }
   const all = []; let cursor, pg = 0;
   try {
     do {
@@ -3928,7 +3945,11 @@ setTimeout(function(){try{
 }catch(e3){try{fetch('/api/admin/diag',{method:'POST',body:'beacon failed: '+e3.message});}catch(e4){}}},2500);
 })();</script></body></html>`;
   const htmlOut = html;
-  try { await env.STATS.put('st:cache', htmlOut, { expirationTtl: 25 }); await env.STATS.put('st:cache:last', htmlOut, { expirationTtl: 86400 }); } catch (e) {}
+  try {
+    await caches.default.put(CK_FRESH, new Response(htmlOut, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=60' } }));
+    await caches.default.put(CK_LAST, new Response(htmlOut, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=86400' } }));
+    await env.STATS.put('st:cache:last', htmlOut, { expirationTtl: 86400 }); // cross-colo last-good fallback for the SWR
+  } catch (e) {}
   return htmlResp(htmlOut);
 }
 
@@ -5513,7 +5534,7 @@ export default {
     if (url.pathname === '/api/stats/reset' && (await adminCookieOk(request, env))) return handleStatsReset(env);
     if (url.pathname === '/api/stats/login') return adminDoLogin(request, env, 'cfg:statspass', 'mp_sadm', '/', url.origin + '/api/stats');
     if (url.pathname === '/api/stats/logout') return adminLogout('mp_sadm', '/');
-    if (url.pathname === '/api/stats') return handleStats(url, env, request);
+    if (url.pathname === '/api/stats') return handleStats(url, env, request, ctx);
     if (url.pathname === '/api/bug' || url.pathname.startsWith('/api/bug/')) return handleBug(url, request, env);
     if (url.pathname === '/api/comments') return handleComments(url, request, env);
     if (url.pathname.startsWith('/api/reward/')) return handleReward(url, request, env);
