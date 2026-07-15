@@ -5643,7 +5643,7 @@ export default {
     }
     if (url.pathname === '/api/admin/funnel' && (await adminCookieOk(request, env))) { // Funnel tab: 14d daily uv/pv (KV snapshots + today live) x actions (AE events by day/type); edge-cached 300s
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
-      const ck = new Request('https://marginpad.io/__adm_funnel_v4');
+      const ck = new Request('https://marginpad.io/__adm_funnel_v5');
       try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
       const gc = async k => { try { const r = await env.STATS.getWithMetadata(k); return (r && r.metadata) || null; } catch (e) { return null; } };
       const days = []; const today = new Date();
