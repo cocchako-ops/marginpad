@@ -3753,7 +3753,7 @@ function loadFunnel(){if(document.hidden)return;
   fetch('/api/admin/funnel').then(function(r){return r.json();}).then(function(d){
     if(!d)return;
     var by={};(d.evByDay||[]).forEach(function(x){var dy=String(x.d).slice(0,10);if(!by[dy])by[dy]={};by[dy][String(x.ty)]=(by[dy][String(x.ty)]||0)+(+x.n);});
-    var rows=(d.snaps||[]).map(function(s){var e=by[s.day]||{};return {day:s.day,uv:+s.uv||0,pv:+s.pv||0,paper:+(e.paper||0),ex:+(e.exchange||0),claim:+(e.claim||0),signup:+(e.signup||0)+(+(e.auth||0))};});
+    var rows=(d.snaps||[]).map(function(s){var e=by[s.day]||{};return {day:s.day,uv:+s.uv||0,pv:+s.pv||0,paper:+(e.paper||0),ex:+(e.exchange||0),claim:+(s.claim||0),signup:+(s.signup||0)};});
     if(!rows.length)return;
     var t9=rows[rows.length-1],l7=rows.slice(-8,-1);
     function avg(f){if(!l7.length)return 0;var s=0;l7.forEach(function(r){s+=f(r);});return s/l7.length;}
@@ -5643,7 +5643,7 @@ export default {
     }
     if (url.pathname === '/api/admin/funnel' && (await adminCookieOk(request, env))) { // Funnel tab: 14d daily uv/pv (KV snapshots + today live) x actions (AE events by day/type); edge-cached 300s
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
-      const ck = new Request('https://marginpad.io/__adm_funnel_v1');
+      const ck = new Request('https://marginpad.io/__adm_funnel_v4');
       try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
       const gc = async k => { try { const r = await env.STATS.getWithMetadata(k); return (r && r.metadata) || null; } catch (e) { return null; } };
       const days = []; const today = new Date();
@@ -5657,6 +5657,13 @@ export default {
       const gcc = async k => { try { const r = await env.STATS.getWithMetadata(k); return (r && r.metadata && r.metadata.c) || (r && r.value ? parseInt(r.value, 10) : 0) || 0; } catch (e) { return 0; } };
       const [uvT, pvT, affT, nwT, rtT] = await Promise.all([gcc('uv:day:' + day), gcc('pv:day:' + day), gcc('aff:day:' + day), gcc('uv:new:' + day), gcc('uv:ret:' + day)]);
       const snaps = days.map((d, i) => ({ day: d, ...(d === day ? { uv: uvT, pv: pvT, aff: affT, nw: nwT, rt: rtT } : (snapMeta[i] || {})) }));
+      // claims + signups per day from the DOs (they are NOT /api/track events, so AE has no 'claim'/'signup' type)
+      let claimsBy = {}, signupsBy = {};
+      await Promise.all([
+        (async () => { try { if (env.REWARDS) { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/claimsdaily')); claimsBy = ((await r.json()) || {}).by || {}; } } catch (e) {} })(),
+        (async () => { try { if (env.USERS) { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/signupsdaily')); signupsBy = ((await r.json()) || {}).by || {}; } } catch (e) {} })(),
+      ]);
+      snaps.forEach(s => { s.claim = claimsBy[s.day] || 0; s.signup = signupsBy[s.day] || 0; });
       const body = JSON.stringify({ ae: !!evByDay, snaps, evByDay: evByDay || [] });
       const resp = new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } });
       if (evByDay) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
@@ -6005,6 +6012,7 @@ export class RewardLedger {
     s.exec('CREATE TABLE IF NOT EXISTS accounts(address TEXT PRIMARY KEY, balance INTEGER NOT NULL DEFAULT 0, earned INTEGER NOT NULL DEFAULT 0, day TEXT, day_amt INTEGER NOT NULL DEFAULT 0, last_claim INTEGER NOT NULL DEFAULT 0, ip TEXT, created INTEGER NOT NULL DEFAULT 0)');
     s.exec("CREATE TABLE IF NOT EXISTS withdrawals(id TEXT PRIMARY KEY, address TEXT, amount INTEGER, status TEXT, ts INTEGER, paid_ts INTEGER DEFAULT 0, txid TEXT DEFAULT '')"); try { s.exec('ALTER TABLE withdrawals ADD COLUMN bonus INTEGER DEFAULT 0'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS daily(day TEXT PRIMARY KEY, dispensed INTEGER NOT NULL DEFAULT 0)');
+    s.exec('CREATE TABLE IF NOT EXISTS claimday(day TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)'); // persisted per-day faucet-claim COUNT for the Funnel tab (the log ring-buffer keeps only 200 rows)
     s.exec('CREATE TABLE IF NOT EXISTS ipday(k TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)');
     for (const col of ['cc TEXT', 'dev TEXT', 'claims INTEGER DEFAULT 0', 'banned INTEGER DEFAULT 0', 'payout_addr TEXT', 'welcome INTEGER DEFAULT 0', 'did TEXT']) { try { s.exec('ALTER TABLE accounts ADD COLUMN ' + col); } catch (e) {} } // idempotent migration. accounts keyed by account id ('u:<uid>'); payout_addr = withdrawal wallet; welcome = one-time sign-up bonus granted
     try { s.exec('ALTER TABLE withdrawals ADD COLUMN acct TEXT'); } catch (e) {} // which account a withdrawal belongs to (withdrawals.address now holds the payout wallet)
@@ -6085,6 +6093,7 @@ export class RewardLedger {
       const credC = Math.round(cfg.amountC * xClaimX); if (dayAmt + credC > cfg.perDayC) return this.j({ error: 'daily_cap' }, 429);
       sql.exec('UPDATE accounts SET balance=balance+?,earned=earned+?,day=?,day_amt=?,last_claim=?,claims=COALESCE(claims,0)+1 WHERE address=?', credC, credC, day, dayAmt + credC, now, acct);
       sql.exec('INSERT INTO daily(day,dispensed) VALUES(?,?) ON CONFLICT(day) DO UPDATE SET dispensed=dispensed+?', day, credC, credC);
+      sql.exec('INSERT INTO claimday(day,n) VALUES(?,1) ON CONFLICT(day) DO UPDATE SET n=n+1', day); // persisted claim count for the Funnel tab
       const n = this.rows('SELECT balance,day_amt FROM accounts WHERE address=?', acct)[0];
       this.log('claim', acct, cc, dev, credC);
       return this.j({ ok: true, credited: credC / 100, mult: xClaimX, level: xLvl, balance: n.balance / 100, dayAmt: n.day_amt / 100, nextClaim: now + cfg.cooldown, cooldown: cfg.cooldown, canWithdraw: n.balance >= cfg.minWdC });
@@ -6116,6 +6125,16 @@ export class RewardLedger {
       const activeToday = (this.rows('SELECT COUNT(*) n FROM accounts WHERE day=?', day)[0] || { n: 0 }).n; // wallets that claimed today
       const newToday = (this.rows('SELECT COUNT(*) n FROM accounts WHERE created>=?', new Date(day).getTime())[0] || { n: 0 }).n; // accounts created today (UTC)
       return this.j({ pending, paidHistory, accounts: st.c, totalEarnedUsd: st.e / 100, dispensedTodayUsd: disp / 100, dailyCapUsd: cfg.capC / 100, totalPaidUsd: paid / 100, claimsToday, activeToday, newToday });
+    }
+    if (path === '/claimsdaily') { // Funnel tab: faucet-claim COUNT per UTC day (claims aren't /api/track events so the funnel can't read them from AE)
+      const cd = {}, lc = {};
+      try { this.rows('SELECT day, n FROM claimday').forEach(r => { cd[r.day] = r.n; }); } catch (e) {} // persisted counter — authoritative going forward
+      const since = now - 15 * 86400000;
+      try { this.rows("SELECT ts FROM log WHERE ts >= ? AND type='claim'", since).forEach(r => { const d = new Date(r.ts).toISOString().slice(0, 10); lc[d] = (lc[d] || 0) + 1; }); } catch (e) {} // log ring-buffer — accurate for the last ~200 events (recent days)
+      const by = {};
+      Object.keys(cd).forEach(d => { by[d] = cd[d]; });
+      Object.keys(lc).forEach(d => { by[d] = Math.max(by[d] || 0, lc[d]); }); // take the larger per day: counter long-term, log for the transition days before the counter existed
+      return this.j({ by });
     }
     if (path === '/admin/paid') {
       sql.exec("UPDATE withdrawals SET status='paid',paid_ts=?,txid=? WHERE id=?", now, String(body.txid || ''), String(body.id || ''));
@@ -6695,6 +6714,12 @@ export class UserStore {
       if (ids.length) { const ph = ids.map(() => '?').join(','); try { this.rows('SELECT id,xp FROM users WHERE id IN (' + ph + ')', ...ids).forEach(u => { const L = xpLevelOf(u.xp || 0); byId[u.id] = { k: L.k, col: L.col, name: L.name }; }); } catch (e) {} }
       if (names.length) { const ph = names.map(() => '?').join(','); try { this.rows('SELECT username,xp FROM users WHERE username COLLATE NOCASE IN (' + ph + ')', ...names).forEach(u => { if (!u.username) return; const L = xpLevelOf(u.xp || 0); byName[String(u.username).toLowerCase()] = { k: L.k, col: L.col, name: L.name }; }); } catch (e) {} }
       return this.j({ byId, byName });
+    }
+    if (path === '/signupsdaily') { // Funnel tab: new-account COUNT per UTC day, last 15 days (signups happen via /api/auth/verify, not /api/track, so the funnel can't read them from AE)
+      const since = now - 15 * 86400000;
+      const by = {};
+      try { this.rows('SELECT created FROM users WHERE created >= ?', since).forEach(r => { const d = new Date(r.created).toISOString().slice(0, 10); by[d] = (by[d] || 0) + 1; }); } catch (e) {}
+      return this.j({ by });
     }
     if (path === '/security') { // internal: behavioral profile per user for the ops Security tab — how much of their time is spent on /rewards, do they trade at all, VPN org. Joined with RewardLedger accounts in the worker.
       const dw = {}; try { this.rows("SELECT user_id uid, SUM(secs) tot, SUM(CASE WHEN path LIKE '/rewards%' THEN secs ELSE 0 END) rw, COUNT(DISTINCT path) np FROM udwell GROUP BY user_id").forEach(r => { dw[r.uid] = r; }); } catch (e) {}
