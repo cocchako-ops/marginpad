@@ -7,20 +7,20 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>MarginPad Academy — Learn Crypto Trading Free, Lesson by Lesson</title>
-<meta name="description" content="A free, interactive crypto trading course: 22 bite-size lessons across 4 courses — crypto basics, leverage &amp; liquidation, risk management and reading the market. Quizzes, XP rewards and hands-on practice in a paper-trading terminal. No signup needed to start." />
+<meta name="description" content="A free, interactive crypto trading course: 22 bite-size lessons across 4 courses — crypto basics, leverage &amp; liquidation, risk management and reading the market. Animated visuals, hands-on exercises, quizzes, XP rewards and real practice in a paper-trading terminal. No signup needed to start." />
 <meta name="keywords" content="learn crypto trading, crypto trading course free, crypto academy, how to trade crypto for beginners, leverage trading course, crypto futures lessons, trading for beginners" />
 <link rel="canonical" href="https://marginpad.io/academy/" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta name="theme-color" content="#0a0b0d" />
 <meta property="og:title" content="MarginPad Academy — Learn Crypto Trading Free" />
-<meta property="og:description" content="22 bite-size interactive lessons: basics, leverage, risk management and market reading. Quizzes + XP + real practice on live prices." />
+<meta property="og:description" content="22 bite-size interactive lessons: basics, leverage, risk management and market reading. Animated visuals + hands-on exercises + XP + real practice on live prices." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/academy/" />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="/assets/fonts.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Course","name":"MarginPad Academy — Crypto Trading from Zero","description":"A free interactive crypto trading course: 22 lessons across crypto basics, leverage and liquidation, risk management and reading the market, with quizzes and hands-on paper-trading practice.","provider":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"isAccessibleForFree":true,"hasCourseInstance":{"@type":"CourseInstance","courseMode":"online","courseWorkload":"PT3H"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Course","name":"MarginPad Academy — Crypto Trading from Zero","description":"A free interactive crypto trading course: 22 lessons across crypto basics, leverage and liquidation, risk management and reading the market, with animated visuals, hands-on exercises, quizzes and paper-trading practice.","provider":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"isAccessibleForFree":true,"hasCourseInstance":{"@type":"CourseInstance","courseMode":"online","courseWorkload":"PT3H"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Academy","item":"https://marginpad.io/academy/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"Is the MarginPad Academy free?","acceptedAnswer":{"@type":"Answer","text":"Yes — all 22 lessons, quizzes and the paper-trading practice are completely free, with no payment and no deposit. You can start without an account; signing in (free, email only) saves your progress across devices and earns you XP toward your MarginPad level."}},
@@ -43,7 +43,6 @@ header{display:flex;align-items:center;justify-content:space-between;padding:6px
 h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(28px,6.5vw,42px);letter-spacing:-.03em;line-height:1.05;margin:14px 0 8px}
 h1 .g{color:var(--lime)}
 .lead{color:var(--dim);font-size:15.5px;max-width:540px;margin:0 auto;line-height:1.55}
-/* progress card */
 .prog{margin:18px 0 8px;background:linear-gradient(160deg,#12151d,#0a0d11);border:1px solid var(--line2);border-radius:16px;padding:15px 17px}
 .prog-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-family:'Space Mono',monospace}
 .prog-n{font-size:19px;font-weight:800;color:var(--lime)}
@@ -53,7 +52,6 @@ h1 .g{color:var(--lime)}
 .prog-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--green),var(--lime));transition:width .7s ease;width:0}
 .prog-note{margin-top:10px;font-size:12.5px;color:var(--faint);line-height:1.5}
 .prog-note button{background:none;border:none;color:var(--lime);font-weight:700;cursor:pointer;font-size:12.5px;padding:0}
-/* course path */
 .course{margin:30px 0 6px}
 .crs-h{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--cc,#2ebd85),transparent 220%);border-radius:15px;padding:15px 17px;color:#06110b}
 .crs-h .ic{width:38px;height:38px;flex:none;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border-radius:11px}
@@ -74,7 +72,6 @@ h1 .g{color:var(--lime)}
 .node.locked{cursor:not-allowed;opacity:.45}
 .node.locked .dot svg{width:16px;height:16px}
 .node .xpb{margin-left:auto;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;color:var(--gold);flex:none}
-/* lesson player overlay */
 .lp{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;flex-direction:column}
 .lp.on{display:flex}
 .lp-top{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;max-width:680px;margin:0 auto;width:100%}
@@ -84,8 +81,8 @@ h1 .g{color:var(--lime)}
 .lp-bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--green),var(--lime));transition:width .35s ease;width:0}
 .lp-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 16px 20px;max-width:680px;margin:0 auto;width:100%}
 .lp-kicker{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--cc,#2ebd85);margin-bottom:8px}
-.lp-h{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.02em;line-height:1.15;margin-bottom:14px}
-.lp-p{font-size:16px;line-height:1.65;color:var(--ink);margin-bottom:14px}
+.lp-h{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:23px;letter-spacing:-.02em;line-height:1.15;margin-bottom:12px}
+.lp-p{font-size:15.5px;line-height:1.62;color:var(--ink);margin-bottom:14px}
 .lp-p b{color:var(--lime)}
 .lp-q{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;line-height:1.25;margin:6px 0 18px}
 .lp-opt{display:block;width:100%;text-align:left;background:var(--panel);border:1.5px solid var(--line2);border-radius:13px;color:var(--ink);font-size:15px;font-weight:600;font-family:inherit;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:.12s}
@@ -97,7 +94,6 @@ h1 .g{color:var(--lime)}
 .lp-go{width:100%;border:none;border-radius:13px;padding:15px 0;font-family:'Space Mono',monospace;font-size:14.5px;font-weight:800;cursor:pointer;background:var(--lime);color:#0a0b0d;transition:.12s}
 .lp-go:disabled{opacity:.35;cursor:not-allowed}
 .lp-go:active{transform:scale(.985)}
-/* completion screen */
 .lp-done{text-align:center;padding:36px 10px 10px}
 .lp-done .big{font-size:52px;line-height:1}
 .lp-done h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;margin:14px 0 8px}
@@ -114,6 +110,41 @@ h1 .g{color:var(--lime)}
 .allDone p{color:var(--dim);font-size:14px;line-height:1.6}
 footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;color:var(--faint);font-size:12.5px}
 footer a{color:var(--dim)}
+/* visuals */
+.vz{margin:4px 0 16px;background:linear-gradient(160deg,#10141b,#0b0e12);border:1px solid var(--line2);border-radius:15px;padding:14px 14px 12px;overflow:hidden}
+.vz svg{display:block;width:100%;height:auto}
+.vz .cap{font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);text-align:center;margin-top:9px;line-height:1.5}
+.vz .cap b{color:var(--lime)}
+.vz-ctl{display:flex;gap:8px;align-items:center;margin-top:11px;flex-wrap:wrap}
+.vz-ctl input[type=range]{flex:1;accent-color:#c2f64a;height:26px;min-width:120px}
+.vz-ctl .rv{font-family:'Space Mono',monospace;font-weight:800;font-size:14px;color:var(--lime);min-width:52px;text-align:right}
+.vz-tg{background:var(--panel);border:1.5px solid var(--line2);color:var(--dim);border-radius:9px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
+.vz-tg.on{border-color:var(--lime);color:var(--lime);background:rgba(194,246,74,.07)}
+.vz-goal{margin-top:11px;font-size:13px;line-height:1.5;border:1px dashed var(--line2);border-radius:10px;padding:9px 12px;color:var(--dim)}
+.vz-goal.hit{border-color:var(--green);color:#7ce8bd;border-style:solid;background:rgba(46,189,133,.07)}
+.vz-goal b{color:var(--gold)}
+.vzdraw{stroke-dasharray:600;stroke-dashoffset:600;animation:vzdraw 1.4s ease forwards}
+@keyframes vzdraw{to{stroke-dashoffset:0}}
+.vzgrow{transform-origin:center bottom;animation:vzgrow .8s cubic-bezier(.2,.9,.3,1.2) forwards;transform:scaleY(0)}
+@keyframes vzgrow{to{transform:scaleY(1)}}
+.vzfade{opacity:0;animation:vzfade .5s ease forwards}
+@keyframes vzfade{to{opacity:1}}
+.vzpulse{animation:vzpulse 1.6s infinite}
+@keyframes vzpulse{0%,100%{opacity:1}50%{opacity:.35}}
+.vzflow{animation:vzflow 2.2s linear infinite}
+@keyframes vzflow{0%{transform:translateX(0);opacity:0}12%{opacity:1}82%{opacity:1}100%{transform:translateX(112px);opacity:0}}
+.vzflowR{animation:vzflowR 2.2s linear infinite}
+@keyframes vzflowR{0%{transform:translateX(0);opacity:0}12%{opacity:1}82%{opacity:1}100%{transform:translateX(-112px);opacity:0}}
+.vzpop{animation:vzpop .45s cubic-bezier(.2,.9,.3,1.4) forwards;transform:scale(0);transform-origin:center}
+@keyframes vzpop{to{transform:scale(1)}}
+.vzdrop{animation:vzdrop .5s ease forwards;opacity:0}
+@keyframes vzdrop{from{transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes vzspin{to{transform:rotate(360deg)}}
+@keyframes vzgrowX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.hitzone{cursor:pointer}
+.hitzone:hover{opacity:.85}
+.hit-ok{fill:rgba(46,189,133,.3)!important;stroke:#2ebd85!important}
+.hit-bad{fill:rgba(255,98,88,.28)!important;stroke:#ff6258!important;animation:shake .3s}
 @media(max-width:480px){.hnav a{margin-left:11px;font-size:13px}}
 </style>
 <script defer src="/assets/sentry.js"></script>
@@ -129,7 +160,7 @@ footer a{color:var(--dim)}
   <section class="hero">
     <span class="eyebrow">◆ Free interactive course</span>
     <h1>Learn trading, <span class="g">one lesson at a time</span></h1>
-    <p class="lead">22 bite-size lessons from absolute zero to reading real market data. Short theory, a quick quiz, then hands-on practice with fake money on live prices. Free forever — this is education, not financial advice.</p>
+    <p class="lead">22 bite-size lessons from absolute zero to reading real market data. Animated visuals, hands-on exercises, a quick quiz — then real practice with fake money on live prices. Free forever — this is education, not financial advice.</p>
   </section>
 
   <div class="prog">
@@ -151,7 +182,6 @@ footer a{color:var(--dim)}
   </footer>
 </div>
 
-<!-- lesson player -->
 <div class="lp" id="lp">
   <div class="lp-top"><button class="lp-x" id="lpX" aria-label="Close">✕</button><div class="lp-bar"><i id="lpBar"></i></div></div>
   <div class="lp-body" id="lpBody"></div>
@@ -162,42 +192,43 @@ footer a{color:var(--dim)}
 {"courses":[
 {"id":"basics","name":"Crypto Basics","sub":"What you are actually trading","color":"#2ebd85","icon":"coin","lessons":[
 {"id":"b1","t":"What is crypto, really?","cards":[
-{"h":"Money without a middleman","p":"Bitcoin was created in 2009 as money that no bank or government controls. Instead of a bank keeping the ledger of who owns what, thousands of computers around the world keep identical copies of it — that shared ledger is called a blockchain."},
-{"h":"Why it never sleeps","p":"Stock markets open and close. Crypto trades 24 hours a day, 7 days a week, everywhere on Earth at once. That means prices can move violently at 3 AM on a Sunday — which is exactly why traders use tools like alerts and stop-losses instead of watching charts all day."},
-{"h":"Thousands of coins, a few that matter","p":"Bitcoin (BTC) is the largest and moves the whole market. Ethereum (ETH) is second. Beyond the top handful, thousands of smaller coins ('altcoins') exist — most are far riskier and less liquid. As a beginner, everything you need to learn can be learned on BTC and ETH."}],
+{"h":"Money without a middleman","v":"ledger","p":"Bitcoin was created in 2009 as money that no bank or government controls. Instead of one bank keeping the ledger of who owns what, thousands of computers around the world keep identical copies of it — that shared ledger is called a blockchain."},
+{"h":"Why it never sleeps","v":"clock","p":"Stock markets open and close. Crypto trades 24 hours a day, 7 days a week, everywhere on Earth at once. Prices can move violently at 3 AM on a Sunday — which is exactly why traders use alerts and stop-losses instead of watching charts all day."},
+{"h":"Thousands of coins, a few that matter","p":"Bitcoin (BTC) is the largest and moves the whole market. Ethereum (ETH) is second. Beyond the top handful, thousands of smaller coins (altcoins) exist — most are far riskier and less liquid. As a beginner, everything you need to learn can be learned on BTC and ETH."}],
 "quiz":[
 {"q":"What keeps track of who owns which crypto?","o":["A central bank","A shared ledger copied across thousands of computers (blockchain)","Each exchange privately","The government"],"a":1},
 {"q":"When does the crypto market close?","o":["At 5 PM New York time","On weekends","Never — it trades 24/7","During holidays"],"a":2},
 {"q":"As a beginner, which coins are the sensible place to learn?","o":["Brand-new coins with huge % gains","BTC and ETH — the largest and most liquid","Whatever is trending on social media","The cheapest coin per unit"],"a":1}],
 "try":{"p":"See live prices right now — open the free terminal and just watch BTC move for a minute.","label":"Open Paper Trade →","href":"/paper-trade"}},
-{"id":"b2","t":"Exchanges, wallets and what 'buying' means","cards":[
-{"h":"Where trading happens","p":"An exchange is a marketplace that matches buyers and sellers — Binance, Coinbase, Kraken and Bybit are exchanges. When you 'buy Bitcoin' there, the exchange updates its internal ledger; the coins sit in the exchange's custody until you withdraw them."},
-{"h":"Spot vs derivatives","p":"Buying the actual coin is called spot trading — you own it, and your maximum loss is what you paid. Derivatives (like the futures you will meet in Course 2) are contracts that track the price without owning the coin — they allow leverage, which cuts both ways."},
-{"h":"Not your keys, not your coins","p":"A wallet is where crypto lives when it is truly yours — controlled by a secret key only you hold. Coins left on an exchange are an IOU from that exchange. That is fine for active trading amounts, but history (Mt. Gox, FTX) shows why large holdings belong in your own wallet."}],
+{"id":"b2","t":"Exchanges, wallets and what buying means","cards":[
+{"h":"Where trading happens","p":"An exchange is a marketplace that matches buyers and sellers — Binance, Coinbase, Kraken and Bybit are exchanges. When you buy Bitcoin there, the exchange updates its internal ledger; the coins sit in the exchange custody until you withdraw them."},
+{"h":"Spot vs derivatives","v":"spotderiv","p":"Buying the actual coin is called spot trading — you own it, and your maximum loss is what you paid. Derivatives (like the futures you will meet in Course 2) are contracts that track the price without owning the coin — they allow leverage, which cuts both ways."},
+{"h":"Not your keys, not your coins","v":"custody","p":"A wallet is where crypto lives when it is truly yours — controlled by a secret key only you hold. Coins left on an exchange are an IOU from that exchange. That is fine for active trading amounts, but history (Mt. Gox, FTX) shows why large holdings belong in your own wallet."}],
 "quiz":[
 {"q":"What is spot trading?","o":["Betting on price with borrowed money","Buying the actual coin — you own it","A type of wallet","Trading only at specific times"],"a":1},
 {"q":"Coins sitting on an exchange are…","o":["Always perfectly safe","In your personal wallet","Effectively an IOU from the exchange","Impossible to withdraw"],"a":2},
 {"q":"What is the maximum you can lose buying spot with $100?","o":["$100 — what you paid","More than $100","Nothing, spot is risk-free","Depends on leverage"],"a":0}]},
 {"id":"b3","t":"Reading a price chart","cards":[
-{"h":"The candlestick","p":"Each candle summarises price over a period: where it opened, closed, and the highest and lowest points touched. A green candle closed higher than it opened; a red one closed lower. The thin lines ('wicks') show the extremes price briefly touched."},
-{"h":"Timeframes change the story","p":"The same market looks different on different timeframes. A 1-minute chart shows noise; a daily chart shows the trend. A common beginner mistake is panicking over a scary 5-minute candle that is invisible on the daily chart. Zoom out first, always."},
-{"h":"Volume is the lie detector","p":"Volume shows how much was actually traded. A price move on high volume means real participation; the same move on thin volume is fragile and often reverses. Price tells you what happened — volume tells you how much to believe it."}],
+{"h":"The candlestick","v":"candle","p":"Each candle summarises price over a period: where it opened, closed, and the highest and lowest points touched. A green candle closed higher than it opened; a red one closed lower. The thin lines (wicks) show the extremes price briefly touched."},
+{"h":"Find it yourself","act":{"kind":"tap","viz":"tapcandle","prompt":"Tap the UPPER WICK of the candle — the line showing the highest price touched."},"p":"Before moving on, prove it to your eyes. One tap."},
+{"h":"Timeframes change the story","v":"tfcompare","p":"The same market looks different on different timeframes. A 1-minute chart shows noise; a daily chart shows the trend. A common beginner mistake is panicking over a scary 5-minute candle that is invisible on the daily chart. Zoom out first, always."},
+{"h":"Volume is the lie detector","v":"volbars","p":"Volume shows how much was actually traded. A price move on high volume means real participation; the same move on thin volume is fragile and often reverses. Price tells you what happened — volume tells you how much to believe it."}],
 "quiz":[
 {"q":"A red candle means…","o":["Price closed lower than it opened","Trading was halted","Volume was low","Price will keep falling"],"a":0},
-{"q":"What do the candle 'wicks' show?","o":["Predicted future price","The highest and lowest prices touched in that period","The trading fee","The number of traders"],"a":1},
+{"q":"What do the candle wicks show?","o":["Predicted future price","The highest and lowest prices touched in that period","The trading fee","The number of traders"],"a":1},
 {"q":"A big price move on very low volume is…","o":["The strongest possible signal","Fragile — fewer participants, often reverses","Impossible","Always the start of a trend"],"a":1}],
 "try":{"p":"Open the multi-chart workspace and flip one chart between 15m and 1D — watch how the story changes.","label":"Open Charts →","href":"/charts"}},
 {"id":"b4","t":"Market cap, liquidity and why price alone lies","cards":[
-{"h":"Price per coin means nothing by itself","p":"A coin costing $0.001 is not 'cheaper' than Bitcoin in any meaningful way. What matters is market cap: price × circulating supply. A $0.001 coin with 100 billion tokens is a $100M project. 'It only needs to reach $1!' is the oldest trap in crypto."},
-{"h":"Liquidity: can you actually get out?","p":"Liquidity is how much you can buy or sell without moving the price. BTC absorbs millions of dollars per second; a small altcoin might crash 10% from a single large sell. Illiquid coins are easy to enter and brutal to exit — exactly when you most need to."},
-{"h":"Slippage","p":"When you buy 'at market', you pay whatever sellers are asking right now. In a thin market, your own order pushes the price — the difference between the price you saw and the price you got is slippage. It is a real cost, and it grows with position size and shrinks with liquidity."}],
+{"h":"Price per coin means nothing by itself","v":"mcap","p":"A coin costing $0.001 is not cheaper than Bitcoin in any meaningful way. What matters is market cap: price × circulating supply. A $0.001 coin with 100 billion tokens is a $100M project. It only needs to reach $1 is the oldest trap in crypto."},
+{"h":"Liquidity: can you actually get out?","v":"depth","p":"Liquidity is how much you can buy or sell without moving the price. BTC absorbs millions of dollars per second; a small altcoin might crash 10% from a single large sell. Illiquid coins are easy to enter and brutal to exit — exactly when you most need to."},
+{"h":"Slippage","p":"When you buy at market, you pay whatever sellers are asking right now. In a thin market, your own order pushes the price — the difference between the price you saw and the price you got is slippage. It is a real cost, and it grows with position size and shrinks with liquidity."}],
 "quiz":[
 {"q":"What determines a coin's real size?","o":["Price per coin","Market cap — price × circulating supply","How new it is","Its ranking on social media"],"a":1},
 {"q":"Liquidity measures…","o":["How fast the blockchain is","How much you can trade without moving the price","The number of coins in supply","How volatile a coin is"],"a":1},
 {"q":"Slippage is…","o":["A trading fee set by the exchange","The gap between the price you saw and the price your market order filled at","A chart pattern","A type of wallet"],"a":1}],
 "try":{"p":"Open the screener and compare 24h volume on BTC vs a coin near the bottom of the list.","label":"Open Screener →","href":"/screener"}},
 {"id":"b5","t":"Why crypto moves so violently","cards":[
-{"h":"A small boat on a big ocean","p":"Crypto's total market is tiny compared with stocks or bonds, and much of it trades with leverage. The same wave of money that barely moves the S&P 500 can move Bitcoin several percent — and smaller coins several times more."},
+{"h":"A small boat on a big ocean","v":"market","p":"Crypto's total market is tiny compared with stocks or bonds, and much of it trades with leverage. The same wave of money that barely moves the S&P 500 can move Bitcoin several percent — and smaller coins several times more."},
 {"h":"News, liquidity and forced sellers","p":"Big moves usually combine three things: a trigger (news, a macro number), thin liquidity (nights, weekends), and forced selling from leveraged traders being liquidated. That third ingredient — which you will study in Course 2 — is why crypto crashes are so fast and so deep."},
 {"h":"Volatility is the whole game","p":"Volatility is not a bug — it is why traders are here. But it is symmetric: the same 10% move that doubles a leveraged account also erases one. Every lesson after this one is really about surviving volatility long enough to benefit from it."}],
 "quiz":[
@@ -206,68 +237,69 @@ footer a{color:var(--dim)}
 {"q":"Volatility for a trader is…","o":["Pure risk to be avoided entirely","The opportunity AND the risk — survival is the skill","Only a problem for beginners","Illegal on regulated exchanges"],"a":1}]}]},
 {"id":"leverage","name":"Leverage & Liquidation","sub":"The machinery that wipes accounts","color":"#ffcf3f","icon":"bolt","lessons":[
 {"id":"l1","t":"What is a futures contract?","cards":[
-{"h":"Trading price without owning coins","p":"A futures contract is an agreement that tracks a coin's price. You never own the Bitcoin — you hold a position that gains or loses exactly as the price moves. Crypto's favourite version is the perpetual future ('perp'), which has no expiry date: you can hold it as long as your margin survives."},
-{"h":"Long and short","p":"With futures you can profit in both directions: going long means you gain when price rises; going short means you gain when price falls. This is why futures traders never 'wait for the bull market' — there is a trade in both directions, and both can be wrong."},
+{"h":"Trading price without owning coins","p":"A futures contract is an agreement that tracks a coin's price. You never own the Bitcoin — you hold a position that gains or loses exactly as the price moves. Crypto's favourite version is the perpetual future (perp), which has no expiry date: you can hold it as long as your margin survives."},
+{"h":"Long and short","v":"longshort","p":"With futures you can profit in both directions: going long means you gain when price rises; going short means you gain when price falls. Tap the buttons below and watch the same price move flip from profit to loss."},
 {"h":"Why perps dominate crypto","p":"Perpetual futures are the most traded product in crypto — daily perp volume dwarfs spot. They are popular for exactly the two features that make them dangerous: leverage, and the ability to short. Everything in this course exists because of what you will learn in the next two lessons."}],
 "quiz":[
 {"q":"When you buy a perpetual future, you own…","o":["The actual coins","A position that tracks the price — no coins","A share of the exchange","A wallet"],"a":1},
 {"q":"A short position profits when…","o":["Price rises","Price falls","Price stays flat","Volume rises"],"a":1},
-{"q":"What makes a perpetual future 'perpetual'?","o":["It never loses money","It has no expiry date","It has no fees","It only goes up"],"a":1}]},
+{"q":"What makes a perpetual future perpetual?","o":["It never loses money","It has no expiry date","It has no fees","It only goes up"],"a":1}]},
 {"id":"l2","t":"Leverage: trading with borrowed size","cards":[
-{"h":"Margin and multiplier","p":"Leverage lets you control a position bigger than your money. Put down $100 of margin at 10× leverage and you control a $1,000 position. Every 1% the price moves, your position gains or loses $10 — which is 10% of YOUR money. The multiplier applies to losses exactly as it does to gains."},
-{"h":"Notional vs margin","p":"Your margin is what you deposited ($100). The notional is the full position size ($1,000). Fees and price moves are calculated on the notional — one reason high leverage quietly burns accounts even when the trader is 'mostly right'."},
+{"h":"Margin and multiplier","v":"notional","p":"Leverage lets you control a position bigger than your money. Put down $100 of margin at 10× leverage and you control a $1,000 position. Every 1% the price moves, your position gains or loses $10 — which is 10% of YOUR money. The multiplier applies to losses exactly as it does to gains."},
+{"h":"Feel it: drag the leverage","act":{"kind":"lev","goal":"wipe1","prompt":"Drag the slider until a routine 1% move against you would wipe 100% of your margin."},"p":"The red marker is your liquidation. Watch what leverage does to it."},
 {"h":"The honest math of 100×","p":"At 100× leverage, a 1% move against you wipes 100% of your margin. Bitcoin moves 1% routinely — several times a day. That is not a market crash; it is background noise. High leverage does not make a strategy better, it just compresses the time until a normal wiggle takes you out."}],
 "quiz":[
 {"q":"You open $100 at 10× leverage. Price moves 1% in your favour. Your profit is about…","o":["$1 (1%)","$10 (10% of your margin)","$100","Nothing until you close"],"a":1},
-{"q":"The 'notional' of a $100 position at 20× is…","o":["$100","$20","$2,000","$100 plus fees"],"a":2},
+{"q":"The notional of a $100 position at 20× is…","o":["$100","$20","$2,000","$100 plus fees"],"a":2},
 {"q":"At 100× leverage, what price move against you erases your whole margin?","o":["About 1%","About 10%","About 50%","100%"],"a":0}],
 "try":{"p":"Open the position size calculator and see how notional and risk change as you slide leverage from 5× to 100×.","label":"Position Size Calculator →","href":"/#size"}},
 {"id":"l3","t":"Liquidation: the point of no return","cards":[
-{"h":"What liquidation is","p":"When a leveraged position loses almost all its margin, the exchange force-closes it to protect itself — that is liquidation. Your position is gone, your margin is gone, and no recovery is possible even if price bounces one second later. It is the single most important price on your screen."},
-{"h":"Where the liquidation price sits","p":"The higher your leverage, the closer the liquidation price hugs your entry. Roughly: at 10× it sits about 10% away, at 50× about 2%, at 100× about 1%. A maintenance margin buffer pulls it slightly closer still. You should never open a position without knowing this number exactly."},
-{"h":"Why 'it will bounce back' does not apply","p":"A spot holder can ride a 30% dip and wait years. A liquidated futures trader cannot — the position no longer exists. This asymmetry is THE difference between spot and leverage: spot punishes patience-free traders slowly, leverage executes them instantly."}],
+{"h":"What liquidation is","v":"liqladder","p":"When a leveraged position loses almost all its margin, the exchange force-closes it to protect itself — that is liquidation. Your position is gone, your margin is gone, and no recovery is possible even if price bounces one second later. It is the single most important price on your screen."},
+{"h":"Your turn: make it safe","act":{"kind":"lev","goal":"safe10","prompt":"Now do the opposite: drag the leverage DOWN until your liquidation sits at least 10% away from entry."},"p":"This is the exact decision you will make on every real trade."},
+{"h":"Why it will bounce back does not apply","p":"A spot holder can ride a 30% dip and wait years. A liquidated futures trader cannot — the position no longer exists. This asymmetry is THE difference between spot and leverage: spot punishes patience-free traders slowly, leverage executes them instantly."}],
 "quiz":[
 {"q":"After liquidation, if the price immediately recovers, you…","o":["Get your position back","Get half your margin back","Get nothing — the position is gone","Owe the exchange money"],"a":2},
 {"q":"At roughly what adverse move does a 50× position liquidate?","o":["About 50%","About 25%","About 2%","About 0.1%"],"a":2},
 {"q":"The first thing to know before opening any leveraged trade is…","o":["Today's news","Your exact liquidation price","What influencers say","The exchange's founding year"],"a":1}],
 "try":{"p":"Compute a real liquidation price: entry, leverage, side — see exactly where the position dies.","label":"Liquidation Calculator →","href":"/#liq"}},
 {"id":"l4","t":"Longs, shorts and how P&L actually works","cards":[
-{"h":"The P&L formula in plain words","p":"Your profit or loss = position size × the percentage the price moved (in your direction, positive; against you, negative). ROE — return on equity — is that P&L measured against your margin. A +50% ROE at 10× means price moved just 5% your way."},
-{"h":"Shorting is not evil, it is a tool","p":"Shorting — profiting from falls — feels unnatural at first. But markets fall faster than they rise ('down the elevator, up the stairs'), and a trader who can only long is blind in half the market. In a paper account, practise both until neither feels special."},
-{"h":"Fees and funding nibble constantly","p":"Every open and close pays a fee on the notional, and perpetuals exchange periodic 'funding' payments between longs and shorts (Course 4 covers reading it). At high leverage these small costs compound into a meaningful headwind — another quiet reason overtraders lose."}],
+{"h":"The P&L formula in plain words","v":"pnlmeter","p":"Your profit or loss = position size × the percentage the price moved. ROE — return on equity — is that P&L measured against your margin. Drag the price move below and watch both numbers react at 10× leverage on a $100 margin."},
+{"h":"Shorting is not evil, it is a tool","p":"Shorting — profiting from falls — feels unnatural at first. But markets fall faster than they rise (down the elevator, up the stairs), and a trader who can only long is blind in half the market. In a paper account, practise both until neither feels special."},
+{"h":"Fees and funding nibble constantly","p":"Every open and close pays a fee on the notional, and perpetuals exchange periodic funding payments between longs and shorts (next lesson). At high leverage these small costs compound into a meaningful headwind — another quiet reason overtraders lose."}],
 "quiz":[
 {"q":"You are long $1,000 notional and price rises 3%. Your P&L is…","o":["+$3","+$30","+$300","Depends on the coin"],"a":1},
-{"q":"'Down the elevator, up the stairs' means…","o":["Markets fall faster than they rise","Markets rise faster than they fall","Price always returns to entry","Shorting is banned"],"a":0},
+{"q":"Down the elevator, up the stairs means…","o":["Markets fall faster than they rise","Markets rise faster than they fall","Price always returns to entry","Shorting is banned"],"a":0},
 {"q":"Trading fees on futures are charged on…","o":["Your margin only","The full notional position size","Your profit only","Nothing — futures are free"],"a":1}]},
 {"id":"l5","t":"Funding: the invisible cash flow","cards":[
-{"h":"How perps stay glued to the real price","p":"With no expiry, a perpetual could drift away from the actual coin price. Funding prevents that: every few hours, one side pays the other a small percentage. When perps trade above spot (crowd is long), longs pay shorts; below spot, shorts pay longs."},
+{"h":"How perps stay glued to the real price","v":"funding","p":"With no expiry, a perpetual could drift away from the actual coin price. Funding prevents that: every few hours, one side pays the other a small percentage. Toggle below: when perps trade ABOVE spot (crowd is long), longs pay shorts; BELOW spot, shorts pay longs."},
 {"h":"Funding as a crowd thermometer","p":"Extreme positive funding means the crowd is heavily long AND paying for the privilege — historically a warning sign, because crowded trades unwind violently. Extreme negative funding marks crowded shorts, fuel for a short squeeze."},
-{"h":"It compounds","p":"Funding of 0.01% per 8 hours sounds like nothing — but that is ~11% per year on your notional, and at 10× leverage it is a triple-digit annualised drag on margin. Position holders who ignore funding find their P&L quietly leaking."}],
+{"h":"It compounds","p":"Funding of 0.01% per 8 hours sounds like nothing — but that is about 11% per year on your notional, and at 10× leverage it is a triple-digit annualised drag on margin. Position holders who ignore funding find their P&L quietly leaking."}],
 "quiz":[
 {"q":"When the perp trades above the spot price, who pays funding?","o":["Shorts pay longs","Longs pay shorts","The exchange pays everyone","Nobody"],"a":1},
 {"q":"Extremely positive funding usually signals…","o":["A guaranteed rally","A heavily crowded long side — squeeze risk","Low volatility ahead","An exchange outage"],"a":1},
 {"q":"Why does small funding matter at high leverage?","o":["It doesn't","It compounds into a large annualised drag on your margin","It only applies to shorts","It is refunded at close"],"a":1}],
 "try":{"p":"Look at live funding across 160+ pairs — find the most extreme rate right now.","label":"Funding Rates →","href":"/funding/"}},
 {"id":"l6","t":"Order types: market, limit, stop","cards":[
-{"h":"Market orders: speed for a price","p":"A market order fills instantly at whatever the book offers — you pay the spread and any slippage. Use it when getting IN or OUT right now matters more than the exact price. During violent moves, slippage on market orders is at its worst."},
-{"h":"Limit orders: price for patience","p":"A limit order names your price and waits. You may never get filled — but when you do, it is at your price or better, usually with lower fees. Professional entries are mostly limits; panicked exits are mostly markets. Plan to be in the first group."},
-{"h":"Stops: automation that saves accounts","p":"A stop order triggers when price crosses a level — the foundation of the stop-loss (Course 3). It executes your plan when you are asleep, at work, or emotionally compromised. The trader who 'watches the chart instead' is the trader who freezes at the worst moment."}],
+{"h":"Three tools, three jobs","v":"orderbook","p":"A market order fills instantly at whatever the book offers — you pay the spread and any slippage. A limit order names your price and waits. A stop order triggers when price crosses a level. The picture below shows all three living on the order book."},
+{"h":"Market: speed for a price. Limit: price for patience.","p":"Use market orders when getting in or out RIGHT NOW matters more than the exact price — knowing slippage is worst during violent moves. Professional entries are mostly limits: you may never get filled, but when you do it is at your price or better, usually with lower fees."},
+{"h":"Stops: automation that saves accounts","p":"The stop order is the foundation of the stop-loss (Course 3). It executes your plan when you are asleep, at work, or emotionally compromised. The trader who watches the chart instead is the trader who freezes at the worst moment."}],
 "quiz":[
 {"q":"The guaranteed-fill, price-uncertain order is…","o":["Limit","Market","Stop","Iceberg"],"a":1},
 {"q":"A limit order guarantees…","o":["It will definitely fill","Your price or better, IF it fills","No fees","Instant execution"],"a":1},
 {"q":"The main purpose of a stop order is…","o":["Getting a better entry price","Executing your exit plan automatically when a level breaks","Avoiding all losses","Doubling the position"],"a":1}]}]},
 {"id":"risk","name":"Risk Management","sub":"The only edge beginners can actually have","color":"#ff6258","icon":"shield","lessons":[
 {"id":"r1","t":"Position sizing: the #1 skill","cards":[
-{"h":"Risk a slice, never the pie","p":"Professionals size positions so one losing trade costs a fixed small share of the account — commonly 1–2%. With 1% risk you can be wrong 20 times in a row and still have 80% of your capital. With 20% risk, five mistakes end you. Same strategy, different sizing, opposite outcomes."},
-{"h":"Size from the stop, not from greed","p":"The correct order: choose where the trade is wrong (your stop-loss level), measure the distance from entry to stop, then size the position so that distance equals your 1–2% risk. Size is an OUTPUT of the calculation — never the starting point."},
-{"h":"Leverage is a tool, size is the decision","p":"Leverage only determines how much margin you post for a given size; the risk comes from the size itself. A properly-sized 10× trade risks less than an oversized 2× trade. Stop asking 'what leverage should I use' and start asking 'what size keeps my risk at 1%'."}],
+{"h":"Risk a slice, never the pie","act":{"kind":"risk","prompt":"Drag your risk-per-trade down until you could survive at least 30 losses in a row."},"p":"Professionals size positions so one losing trade costs a fixed small share of the account — commonly 1-2%. Watch what your risk setting does to survival."},
+{"h":"Size from the stop, not from greed","v":"stopsize","p":"The correct order: choose where the trade is wrong (your stop-loss level), measure the distance from entry to stop, then size the position so that distance equals your 1-2% risk. Size is an OUTPUT of the calculation — never the starting point."},
+{"h":"Leverage is a tool, size is the decision","p":"Leverage only determines how much margin you post for a given size; the risk comes from the size itself. A properly-sized 10× trade risks less than an oversized 2× trade. Stop asking what leverage should I use and start asking what size keeps my risk at 1%."}],
 "quiz":[
 {"q":"With 1% risk per trade, how many straight losses leave you 80% intact?","o":["About 5","About 20","About 50","One"],"a":1},
 {"q":"What is the correct FIRST step of sizing a trade?","o":["Choosing leverage","Deciding where the trade is wrong (the stop level)","Picking a profit target","Maximising position size"],"a":1},
 {"q":"Risk ultimately comes from…","o":["Leverage alone","Position size relative to your stop distance","The coin you pick","The time of day"],"a":1}],
 "try":{"p":"Size a real trade: account, risk %, entry and stop — the calculator returns the exact position size.","label":"Position Size Calculator →","href":"/#size"}},
 {"id":"r2","t":"Stop-loss and take-profit, placed like a pro","cards":[
-{"h":"The stop goes where the idea dies","p":"A stop-loss belongs at the price where your trade thesis is proven wrong — below the support you bought, beyond the level that invalidates the setup. Placing it at 'the most pain I can tolerate' is backwards: the market does not know or care about your pain threshold."},
+{"h":"The stop goes where the idea dies","v":"stopplace","p":"A stop-loss belongs at the price where your trade thesis is proven wrong — below the support you bought, beyond the level that invalidates the setup. Placing it at the most pain I can tolerate is backwards: the market does not know or care about your pain threshold."},
+{"h":"Prove it: place the stop","act":{"kind":"tap","viz":"tapstop","prompt":"You bought at the green line because of the support zone. Tap where the stop-loss belongs."},"p":"One of these three spots is right. Two of them are how beginners lose."},
 {"h":"Stop-hunting is real, panic about it is not","p":"Price often wicks through obvious levels, triggers clustered stops, then reverses. The fix is not removing your stop (that converts a small loss into a liquidation) — it is placing stops beyond obvious round numbers and sizing so a stop-out is boring, not devastating."},
 {"h":"Take-profit: decide while you are sane","p":"A take-profit order banks the win automatically. Decide the exit before entering, while you are objective — because after entry you become the least objective person watching that chart. Partial take-profits (closing, say, half at the first target) are a legitimate compromise."}],
 "quiz":[
@@ -276,7 +308,7 @@ footer a{color:var(--dim)}
 {"q":"When should the exit plan be decided?","o":["After the trade is in profit","Before entering, while you are objective","Only when losing","Never"],"a":1}],
 "try":{"p":"Open a paper position and attach a real SL and TP to it — practise the full ritual with zero risk.","label":"Paper Trade →","href":"/paper-trade"}},
 {"id":"r3","t":"Risk:reward — being wrong profitably","cards":[
-{"h":"The ratio that forgives mistakes","p":"Risk:reward compares what you risk with what you aim to win. Risking $50 to make $150 is 1:3. At 1:3, winning just 3 trades out of 10 leaves you profitable. The ratio buys you the right to be wrong most of the time — an enormous psychological luxury."},
+{"h":"The ratio that forgives mistakes","v":"rrbars","p":"Risk:reward compares what you risk with what you aim to win. Risking $50 to make $150 is 1:3. At 1:3, winning just 3 trades out of 10 leaves you profitable — the picture below is those ten trades. The ratio buys you the right to be wrong most of the time."},
 {"h":"Win rate and R:R trade off","p":"High win-rate strategies usually have small wins; high R:R strategies lose often but win big. Both work; neither works with a bad combination (low win rate AND low R:R — the default state of an impulsive beginner). Know which game your strategy plays."},
 {"h":"Expectancy: the only number that decides","p":"Expectancy = (win rate × average win) − (loss rate × average loss). Positive means the approach makes money over many trades; negative means no position sizing can save it. One trade means nothing — expectancy is measured across dozens."}],
 "quiz":[
@@ -285,17 +317,17 @@ footer a{color:var(--dim)}
 {"q":"How many trades does it take to judge a strategy?","o":["One good one","Dozens — expectancy is statistical","Two","It cannot be measured"],"a":1}],
 "try":{"p":"Feed your win rate and R:R into the Risk of Ruin calculator — see what the math says about your survival odds.","label":"Risk of Ruin Calculator →","href":"/risk-of-ruin-calculator/"}},
 {"id":"r4","t":"The brutal math of drawdowns","cards":[
-{"h":"Losses are heavier than gains","p":"Lose 10% and you need 11% to recover. Lose 50% and you need +100%. Lose 90% and you need +900%. This asymmetry is not motivational-poster material — it is arithmetic, and it is the reason capital preservation beats profit-chasing for anyone who wants to still be trading next year."},
+{"h":"Losses are heavier than gains","act":{"kind":"dd","prompt":"Drag the loss deeper and watch what recovery requires. Find the loss where you need +100% just to get back."},"p":"Lose 10% and you need 11% to recover. This asymmetry is not motivational-poster material — it is arithmetic, and it is the reason capital preservation beats profit-chasing."},
 {"h":"Streaks are normal, ruin is optional","p":"Even a strategy that wins 60% of the time will hit 5-loss streaks regularly — that is probability, not failure. Whether a normal streak becomes account-ending depends entirely on the size you risked per trade. Sizing turns variance into noise; oversizing turns it into ruin."},
-{"h":"The comeback trap","p":"After a loss, the urge is to size UP to 'win it back fast'. That is exactly backwards: bigger size after losses means your worst decisions get your largest bets. Professionals do the opposite — size down in drawdowns, back up when performing."}],
+{"h":"The comeback trap","p":"After a loss, the urge is to size UP to win it back fast. That is exactly backwards: bigger size after losses means your worst decisions get your largest bets. Professionals do the opposite — size down in drawdowns, back up when performing."}],
 "quiz":[
 {"q":"After losing 50% of an account, recovery requires…","o":["+50%","+75%","+100%","+25%"],"a":2},
 {"q":"A 5-loss streak on a good strategy is…","o":["Proof the strategy is broken","Statistically normal — sizing decides if it matters","Impossible","A reason to double size"],"a":1},
 {"q":"After a losing streak, professionals typically…","o":["Increase size to recover faster","Reduce size until performance returns","Remove stop-losses","Switch to 100× leverage"],"a":1}]},
 {"id":"r5","t":"Psychology: the enemy in the mirror","cards":[
 {"h":"Revenge trading","p":"The most expensive trade in any beginner's history is the one placed 90 seconds after a painful loss — oversized, unplanned, driven by the need to be made whole. Name the pattern now, and adopt the professional rule: after a stop-out, no new trade until a written plan exists."},
-{"h":"FOMO buys the top","p":"A coin already up 30% today feels safest to buy — everyone agrees, the chart 'confirms' it. But entering on a vertical move means your stop is far away, your R:R is terrible, and you are exit liquidity for earlier buyers. Great trades usually feel uncomfortable at entry, not obvious."},
-{"h":"The journal is a mirror","p":"A trading journal — every entry, exit, size and reason — converts vague feelings into visible patterns: 'my Sunday-night trades all lose', 'I always cut winners early'. It is unglamorous and it is the fastest self-improvement tool trading has. Fake-money trades count too."}],
+{"h":"FOMO buys the top","v":"fomo","p":"A coin already up 30% today feels safest to buy — everyone agrees, the chart confirms it. But entering on a vertical move means your stop is far away, your R:R is terrible, and you are exit liquidity for earlier buyers. Great trades usually feel uncomfortable at entry, not obvious."},
+{"h":"The journal is a mirror","p":"A trading journal — every entry, exit, size and reason — converts vague feelings into visible patterns: my Sunday-night trades all lose, I always cut winners early. It is unglamorous and it is the fastest self-improvement tool trading has. Fake-money trades count too."}],
 "quiz":[
 {"q":"The classic revenge trade happens…","o":["After careful planning","Minutes after a painful loss, oversized","Only in bull markets","When following a journal"],"a":1},
 {"q":"Buying a coin that is already up 30% today usually means…","o":["The safest possible entry","Terrible risk:reward — the comfortable-looking entry","A guaranteed continuation","Low volatility"],"a":1},
@@ -303,42 +335,42 @@ footer a{color:var(--dim)}
 "try":{"p":"Your paper trades already feed a free analytics journal — see your win rate, streaks and habits.","label":"Trading Journal →","href":"/trading-journal/"}}]},
 {"id":"market","name":"Reading the Market","sub":"Data instead of vibes","color":"#3fd8e6","icon":"chart","lessons":[
 {"id":"m1","t":"Trend, support and resistance","cards":[
-{"h":"Trade with the current, not against it","p":"A trend is a sequence of higher highs and higher lows (up) or lower highs and lower lows (down). Trading against a strong trend because something 'looks too high' or 'too cheap' is a donation. The trend is not always right — but it is right more often than your feelings about it."},
-{"h":"Support and resistance","p":"Support is a price area where buying has repeatedly appeared; resistance is where selling has. They are zones, not exact lines — and each time a level is tested it weakens. The most useful behaviour: broken resistance often becomes new support (and vice versa)."},
+{"h":"Trade with the current, not against it","v":"trend","p":"A trend is a sequence of higher highs and higher lows (up) or lower highs and lower lows (down). Trading against a strong trend because something looks too high or too cheap is a donation. The trend is not always right — but it is right more often than your feelings about it."},
+{"h":"Spot the demand zone","act":{"kind":"tap","viz":"tapsupport","prompt":"Buyers stepped in at the same area three times. Tap that zone."},"p":"Support and resistance are zones, not exact lines. Train your eye on this chart."},
 {"h":"Confluence beats any single signal","p":"One level means little. A level that coincides with a trend line, a round number and a prior high is confluence — several independent reasons pointing at the same zone. Professionals wait for confluence; beginners act on the first line they draw."}],
 "quiz":[
 {"q":"An uptrend is defined by…","o":["Green candles only","Higher highs and higher lows","High volume","Positive news"],"a":1},
 {"q":"When resistance breaks, it often…","o":["Disappears forever","Becomes new support","Guarantees a crash","Means nothing"],"a":1},
-{"q":"'Confluence' means…","o":["A type of order","Several independent signals pointing at the same zone","A crypto conference","Trading multiple coins at once"],"a":1}],
+{"q":"Confluence means…","o":["A type of order","Several independent signals pointing at the same zone","A crypto conference","Trading multiple coins at once"],"a":1}],
 "try":{"p":"Draw your first levels: open a chart, mark the most recent obvious support and resistance zones.","label":"Open Charts →","href":"/charts"}},
 {"id":"m2","t":"Moving averages: the trend, smoothed","cards":[
-{"h":"What an MA actually shows","p":"A moving average draws the average closing price of the last N candles — the market's recent memory as one smooth line. Price above a rising MA is trend-healthy; price chopping through a flat MA means no trend exists and trend tools will just generate noise."},
+{"h":"What an MA actually shows","v":"machart","p":"A moving average draws the average closing price of the last N candles — the market's recent memory as one smooth line. Price above a rising MA is trend-healthy; price chopping through a flat MA means no trend exists and trend tools will just generate noise."},
 {"h":"EMA vs SMA, and the famous pairs","p":"The simple MA (SMA) weights every candle equally; the exponential MA (EMA) reacts faster to recent prices. Watched-by-everyone settings: EMA 9/21 for short-term momentum, SMA 50/200 for the big picture. They work partly BECAUSE everyone watches them — self-fulfilling zones."},
-{"h":"Crosses: signal and lag","p":"When the 50 crosses above the 200 ('golden cross'), it confirms an uptrend is established; the reverse ('death cross') confirms a downtrend. Note the word confirms — MAs are lagging by construction. They tell you which side to trade FROM, not the exact moment to click."}],
+{"h":"Crosses: signal and lag","p":"When the 50 crosses above the 200 (golden cross), it confirms an uptrend is established; the reverse (death cross) confirms a downtrend. Note the word confirms — MAs are lagging by construction. They tell you which side to trade FROM, not the exact moment to click."}],
 "quiz":[
 {"q":"A moving average shows…","o":["Future price","The average of recent closes — the trend smoothed","Trading volume","Exchange reserves"],"a":1},
 {"q":"Which MA reacts faster to fresh price moves?","o":["SMA","EMA","They are identical","Neither moves"],"a":1},
 {"q":"A golden cross (50 over 200) is best used as…","o":["A precise entry timer","Confirmation of an established uptrend","A sell signal","A liquidation warning"],"a":1}]},
 {"id":"m3","t":"RSI and momentum","cards":[
-{"h":"What RSI measures","p":"RSI compresses the last 14 candles of gains vs losses into a 0–100 scale. Above 70 the market is called overbought, below 30 oversold. It measures the SPEED of the move, not its correctness — a market can be 'overbought' and keep rising for weeks."},
+{"h":"What RSI measures","v":"rsigauge","p":"RSI compresses the last 14 candles of gains vs losses into a 0-100 scale. Above 70 the market is called overbought, below 30 oversold. It measures the SPEED of the move, not its correctness — a market can be overbought and keep rising for weeks."},
 {"h":"The beginner mistake","p":"Selling just because RSI touched 70 is one of the most reliable ways to short a raging bull trend. In strong trends, RSI stays pinned in extreme territory. The overbought/oversold reading only becomes interesting when the trend is ALREADY weakening or at major levels."},
-{"h":"Divergence: the useful trick","p":"When price makes a new high but RSI makes a lower high, momentum is fading under the surface — that is bearish divergence, an early caution flag (not a sell button). The reverse at lows is bullish divergence. Divergence plus a key level plus confluence — now it is a setup."}],
+{"h":"Divergence: the useful trick","v":"diverge","p":"When price makes a new high but RSI makes a lower high, momentum is fading under the surface — that is bearish divergence, an early caution flag (not a sell button). The reverse at lows is bullish divergence. Divergence plus a key level plus confluence — now it is a setup."}],
 "quiz":[
 {"q":"RSI above 70 means…","o":["Guaranteed reversal — sell now","The recent move has been fast; in strong trends it can stay there","The exchange will halt trading","Volume is fake"],"a":1},
 {"q":"Bearish divergence is…","o":["Price new high, RSI lower high — momentum fading","Price and RSI both rising","RSI below 30","A candle pattern"],"a":0},
 {"q":"On its own, a single indicator reading is…","o":["A complete strategy","Weak — it needs confluence with levels and trend","Illegal to trade","Only for professionals"],"a":1}]},
 {"id":"m4","t":"Open interest and crowd positioning","cards":[
 {"h":"Open interest: money in the game","p":"Open interest (OI) counts the total value of futures positions currently open. Rising OI with rising price = new money buying the move (healthy). Rising price with FALLING OI = shorts closing, not new demand — a move likely to stall. OI tells you WHO is powering a move."},
-{"h":"The long/short ratio","p":"The long/short ratio shows which side the crowd is on. Extreme readings are contrarian: when nearly everyone is already long, few buyers remain — but a huge pool of liquidation prices sits below, ready to fuel the opposite move."},
+{"h":"The long/short ratio","v":"crowd","p":"The long/short ratio shows which side the crowd is on. Extreme readings are contrarian: when nearly everyone is already long, few buyers remain — but a huge pool of liquidation prices sits below, ready to fuel the opposite move."},
 {"h":"The three-signal stack","p":"The high-conviction derivative setup stacks three things: one-sided long/short ratio + rising OI + funding paying the crowded side. That is a crowd that is leveraged, growing, and paying to stay — a loaded spring. Any one signal alone is weak; together they are the market's tell."}],
 "quiz":[
 {"q":"Price rising while open interest falls usually means…","o":["Strong new buying","Shorts covering — the move may lack fuel","A guaranteed breakout","Nothing"],"a":1},
 {"q":"An extremely one-sided long/short ratio is…","o":["A signal to join the majority","A contrarian warning — the crowded side is the fuel","Proof of a healthy market","Random noise"],"a":1},
-{"q":"The 'loaded spring' setup combines…","o":["RSI, MACD and volume","Crowded ratio + rising OI + funding paying that side","Three green candles","News and social media"],"a":1}],
+{"q":"The loaded spring setup combines…","o":["RSI, MACD and volume","Crowded ratio + rising OI + funding paying that side","Three green candles","News and social media"],"a":1}],
 "try":{"p":"Check the live long/short ratio and open interest — which side is crowded right now?","label":"Long/Short Ratio →","href":"/long-short/"}},
 {"id":"m5","t":"Liquidation cascades: why crashes overshoot","cards":[
-{"h":"The domino mechanism","p":"When price hits a leveraged trader's liquidation level, the exchange force-sells the position at market. That sell pushes price down — into the NEXT cluster of liquidation prices, triggering more forced sells. This chain reaction is a liquidation cascade, and it is why crypto drops overshoot in minutes."},
-{"h":"Why price 'hunts' certain levels","p":"Liquidation prices cluster at predictable places — just beyond round numbers and obvious support, where crowds of similar traders opened similar positions. Large players can see these clusters. A wick that spikes through a level, triggers the cluster and instantly reverses is that mechanism working."},
+{"h":"The domino mechanism","v":"cascade","p":"When price hits a leveraged trader's liquidation level, the exchange force-sells the position at market. That sell pushes price down — into the NEXT cluster of liquidation prices, triggering more forced sells. Watch the dominoes below: one trigger, a chain of forced exits."},
+{"h":"Why price hunts certain levels","p":"Liquidation prices cluster at predictable places — just beyond round numbers and obvious support, where crowds of similar traders opened similar positions. Large players can see these clusters. A wick that spikes through a level, triggers the cluster and instantly reverses is that mechanism working."},
 {"h":"Watching the fuel","p":"Live liquidation feeds show cascades as they happen — a burst of forced longs marks capitulation lows more reliably than most indicators. For your own trades the lesson is defensive: put your liquidation price where a routine hunt cannot reach it, or better, size so liquidation is impossible."}],
 "quiz":[
 {"q":"A liquidation cascade is…","o":["A planned exchange event","Forced sells triggering more forced sells in a chain","A type of staking reward","A chart pattern"],"a":1},
@@ -347,8 +379,8 @@ footer a{color:var(--dim)}
 "try":{"p":"Watch forced liquidations stream in live on Rekt — see the cascade mechanism with your own eyes.","label":"Open Rekt →","href":"/rekt/"}},
 {"id":"m6","t":"Macro: the tide under every trade","cards":[
 {"h":"Crypto trades the dollar and rates","p":"Bitcoin is a liquidity-sensitive risk asset: when rates look set to fall, money flows toward risk and crypto rises; higher-for-longer does the opposite. This is why a US inflation number can move Bitcoin within one second — algorithms reprice the entire rate path instantly."},
-{"h":"The events that matter","p":"A handful of scheduled releases drive the biggest hours in crypto: the Fed's FOMC rate decision, CPI and PCE inflation prints, and the NFP jobs report. They are on the calendar weeks ahead — being surprised by one is a choice."},
-{"h":"Event risk is a sizing problem","p":"You cannot predict the number, but you can survive it: know the release time, and size so a 2–3% instant wick cannot liquidate you. The first candle after a release is frequently a fake-out — professionals let it play out rather than market-chasing at the worst spread of the day."}],
+{"h":"The events that matter","v":"eventspike","p":"A handful of scheduled releases drive the biggest hours in crypto: the Fed's FOMC rate decision, CPI and PCE inflation prints, and the NFP jobs report. They are on the calendar weeks ahead — being surprised by one is a choice. Below: what 12:30 UTC on CPI day looks like."},
+{"h":"Event risk is a sizing problem","p":"You cannot predict the number, but you can survive it: know the release time, and size so a 2-3% instant wick cannot liquidate you. The first candle after a release is frequently a fake-out — professionals let it play out rather than market-chasing at the worst spread of the day."}],
 "quiz":[
 {"q":"Why does a US inflation print move Bitcoin in seconds?","o":["Coincidence","Algorithms instantly reprice rate expectations — crypto is a liquidity asset","Miners sell on news","It does not"],"a":1},
 {"q":"FOMC, CPI and NFP release times are…","o":["Secret","Random","Scheduled and public weeks in advance","Only for stock traders"],"a":2},
@@ -365,7 +397,234 @@ footer a{color:var(--dim)}
   var TOTAL=ALL.length;
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   var ICONS={coin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M9.5 9.8c0-1 1.1-1.8 2.5-1.8s2.5.8 2.5 1.8-1 1.6-2.5 1.9-2.5.9-2.5 1.9 1.1 1.8 2.5 1.8 2.5-.8 2.5-1.8"/></svg>',bolt:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4.5 13.5H11L9.5 22 18 10.5h-6.5z"/></svg>',shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5.2c0 4.4-3 7.2-7 8.8-4-1.6-7-4.4-7-8.8V6z"/><path d="M9 12l2 2 4-4.2"/></svg>',chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 19V5M4 19h16"/><path d="M8 15l3.2-4 2.8 2.2L18 8"/></svg>',lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'};
-  /* ---- state: localStorage always; server merge when signed in ---- */
+
+  /* ===== visuals engine ===== */
+  var VIZ={};
+  function svgWrap(inner,vb,cap){return '<div class="vz"><svg viewBox="'+(vb||'0 0 340 150')+'">'+inner+'</svg>'+(cap?'<div class="cap">'+cap+'</div>':'')+'</div>';}
+  var GRID='<g stroke="#1b212b" stroke-width="1"><line x1="0" y1="38" x2="340" y2="38"/><line x1="0" y1="75" x2="340" y2="75"/><line x1="0" y1="112" x2="340" y2="112"/></g>';
+
+  VIZ.ledger=function(h){var nodes='';var pos=[[60,40],[170,26],[280,40],[60,110],[170,124],[280,110]];
+    pos.forEach(function(p,i){nodes+='<g class="vzfade" style="animation-delay:'+(i*0.15)+'s"><rect x="'+(p[0]-26)+'" y="'+(p[1]-17)+'" width="52" height="34" rx="7" fill="#151b24" stroke="#2f3742"/><rect x="'+(p[0]-17)+'" y="'+(p[1]-8)+'" width="34" height="5" rx="2" fill="#2ebd85"/><rect x="'+(p[0]-17)+'" y="'+(p[1]+1)+'" width="34" height="5" rx="2" fill="#2ebd85" opacity=".55"/></g>';});
+    var links='<g stroke="#26506088" stroke-width="1.4"><line x1="86" y1="45" x2="144" y2="32"/><line x1="196" y1="32" x2="254" y2="45"/><line x1="60" y1="57" x2="60" y2="93"/><line x1="280" y1="57" x2="280" y2="93"/><line x1="86" y1="112" x2="144" y2="122"/><line x1="196" y1="122" x2="254" y2="112"/><line x1="86" y1="52" x2="254" y2="105"/><line x1="254" y1="52" x2="86" y2="105"/></g>';
+    h.innerHTML=svgWrap(links+nodes,'0 0 340 150','Six computers, <b>one identical ledger</b> — change one copy and the others reject it.');};
+
+  VIZ.clock=function(h){var ticks='';for(var i=0;i<12;i++){var a=i*30*Math.PI/180;ticks+='<line x1="'+(170+52*Math.sin(a))+'" y1="'+(75-52*Math.cos(a))+'" x2="'+(170+58*Math.sin(a))+'" y2="'+(75-58*Math.cos(a))+'" stroke="#3a4552" stroke-width="2"/>';}
+    h.innerHTML=svgWrap('<circle cx="170" cy="75" r="60" fill="#12161d" stroke="#2f3742" stroke-width="2"/>'+ticks+'<g style="transform-origin:170px 75px;animation:vzspin 6s linear infinite"><line x1="170" y1="75" x2="170" y2="34" stroke="#c2f64a" stroke-width="3" stroke-linecap="round"/></g><g style="transform-origin:170px 75px;animation:vzspin 72s linear infinite"><line x1="170" y1="75" x2="196" y2="75" stroke="#3fd8e6" stroke-width="3" stroke-linecap="round"/></g><circle cx="170" cy="75" r="4" fill="#c2f64a"/>','0 0 340 150','<b>24/7/365.</b> No opening bell, no weekend pause — the market moves while you sleep.');};
+
+  VIZ.spotderiv=function(h){h.innerHTML=svgWrap(
+    '<g class="vzfade"><rect x="18" y="26" width="140" height="98" rx="12" fill="#12261e" stroke="#2ebd85"/><text x="88" y="52" text-anchor="middle" fill="#7ce8bd" font-size="13" font-weight="700" font-family="monospace">SPOT</text><circle cx="88" cy="82" r="16" fill="none" stroke="#ffcf3f" stroke-width="2.5"/><text x="88" y="87" text-anchor="middle" fill="#ffcf3f" font-size="13" font-weight="800">B</text><text x="88" y="114" text-anchor="middle" fill="#9aa3ad" font-size="9.5">you OWN the coin</text></g>'+
+    '<g class="vzfade" style="animation-delay:.25s"><rect x="182" y="26" width="140" height="98" rx="12" fill="#241d12" stroke="#ffcf3f"/><text x="252" y="52" text-anchor="middle" fill="#ffcf3f" font-size="13" font-weight="700" font-family="monospace">FUTURES</text><rect x="228" y="68" width="48" height="26" rx="5" fill="none" stroke="#ffcf3f" stroke-width="2" stroke-dasharray="5 4"/><text x="252" y="85" text-anchor="middle" fill="#ffcf3f" font-size="10" font-family="monospace">x10</text><text x="252" y="114" text-anchor="middle" fill="#9aa3ad" font-size="9.5">a CONTRACT tracks price</text></g>','0 0 340 150','Spot = the asset. Futures = a bet on its price, <b>with leverage</b>.');};
+
+  VIZ.custody=function(h){h.innerHTML=svgWrap(
+    '<g class="vzfade"><rect x="18" y="26" width="140" height="98" rx="12" fill="#181420" stroke="#8b5cff"/><text x="88" y="50" text-anchor="middle" fill="#c4b5fd" font-size="12" font-weight="700" font-family="monospace">EXCHANGE</text><rect x="52" y="62" width="72" height="40" rx="6" fill="#221a33" stroke="#8b5cff" stroke-dasharray="4 3"/><text x="88" y="80" text-anchor="middle" fill="#c4b5fd" font-size="10" font-family="monospace">IOU</text><text x="88" y="94" text-anchor="middle" fill="#8b8494" font-size="8.5">their promise</text></g>'+
+    '<g class="vzfade" style="animation-delay:.25s"><rect x="182" y="26" width="140" height="98" rx="12" fill="#12261e" stroke="#2ebd85"/><text x="252" y="50" text-anchor="middle" fill="#7ce8bd" font-size="12" font-weight="700" font-family="monospace">YOUR WALLET</text><g transform="translate(238,64)"><circle cx="10" cy="12" r="9" fill="none" stroke="#c2f64a" stroke-width="2.5"/><path d="M18 12h14M26 12v8M32 12v5" stroke="#c2f64a" stroke-width="2.5" stroke-linecap="round"/></g><text x="252" y="108" text-anchor="middle" fill="#9aa3ad" font-size="8.5">your key = your coins</text></g>','0 0 340 150','On an exchange you hold <b>a promise</b>. In your wallet you hold <b>the asset</b>.');};
+
+  VIZ.candle=function(h){h.innerHTML=svgWrap(
+    '<line x1="110" y1="18" x2="110" y2="132" stroke="#2ebd85" stroke-width="3" class="vzdraw"/><rect x="92" y="48" width="36" height="56" rx="3" fill="#2ebd85" class="vzgrow" style="animation-delay:.3s"/>'+
+    '<g class="vzfade" style="animation-delay:.9s" font-family="monospace" font-size="10"><text x="140" y="23" fill="#9aa3ad">High — top of upper wick</text><text x="140" y="52" fill="#7ce8bd">Close (green: closed higher)</text><text x="140" y="106" fill="#7ce8bd">Open</text><text x="140" y="133" fill="#9aa3ad">Low — bottom of lower wick</text></g>'+
+    '<line x1="250" y1="30" x2="250" y2="120" stroke="#ff6258" stroke-width="3" class="vzdraw" style="animation-delay:.5s"/><rect x="236" y="52" width="28" height="42" rx="3" fill="#ff6258" class="vzgrow" style="animation-delay:.8s"/><text x="250" y="145" text-anchor="middle" fill="#ff9d96" font-size="9.5" font-family="monospace" class="vzfade" style="animation-delay:1.2s">red = closed lower</text>','0 0 340 152','One candle = <b>open, close, high, low</b> for one time period.');};
+
+  VIZ.tfcompare=function(h){
+    var noisy='',x=20,y=75;for(var i=0;i<26;i++){var ny=Math.max(38,Math.min(120,y+(Math.sin(i*2.7)*16+Math.sin(i*1.3)*10)));noisy+=(i?'L':'M')+(20+i*5.2).toFixed(0)+' '+ny.toFixed(0)+' ';y=ny;}
+    h.innerHTML=svgWrap(
+    '<g><rect x="10" y="14" width="150" height="120" rx="10" fill="#12161d" stroke="#2f3742"/><text x="85" y="32" text-anchor="middle" fill="#9aa3ad" font-size="10" font-family="monospace">1-MINUTE</text><path d="'+noisy+'" fill="none" stroke="#ff9d5c" stroke-width="2" class="vzdraw"/></g>'+
+    '<g><rect x="180" y="14" width="150" height="120" rx="10" fill="#12161d" stroke="#2f3742"/><text x="255" y="32" text-anchor="middle" fill="#9aa3ad" font-size="10" font-family="monospace">1-DAY</text><path d="M192 116 C 220 108, 232 84, 252 76 S 296 52, 318 40" fill="none" stroke="#2ebd85" stroke-width="2.6" class="vzdraw" style="animation-delay:.4s"/></g>','0 0 340 145','Same market, same moment. Noise on the left, <b>the actual trend</b> on the right.');};
+
+  VIZ.volbars=function(h){var bars='';var vols=[18,14,22,16,46,52,20,15];var px=[86,82,78,74,58,44,40,38];
+    var line='';vols.forEach(function(v,i){var x=30+i*36;bars+='<rect x="'+x+'" y="'+(128-v)+'" width="22" height="'+v+'" rx="3" fill="'+(i===4||i===5?'#2ebd85':'#3a4552')+'" class="vzgrow" style="animation-delay:'+(i*0.1)+'s"/>';line+=(i?'L':'M')+(x+11)+' '+px[i]+' ';});
+    h.innerHTML=svgWrap('<path d="'+line+'" fill="none" stroke="#e9e7df" stroke-width="2" class="vzdraw"/>'+bars,'0 0 340 140','The breakout candles came with <b>real volume</b> — that move has believers behind it.');};
+
+  VIZ.mcap=function(h){h.innerHTML=svgWrap(
+    '<g class="vzpop"><circle cx="95" cy="72" r="46" fill="rgba(255,207,63,.12)" stroke="#ffcf3f" stroke-width="2"/><text x="95" y="64" text-anchor="middle" fill="#ffcf3f" font-size="13" font-weight="800" font-family="monospace">$0.001</text><text x="95" y="82" text-anchor="middle" fill="#9aa3ad" font-size="9" font-family="monospace">x100B coins</text><text x="95" y="132" text-anchor="middle" fill="#e9e7df" font-size="11" font-weight="700" font-family="monospace">= $100M</text></g>'+
+    '<text x="170" y="78" text-anchor="middle" fill="#5c656f" font-size="16">=</text>'+
+    '<g class="vzpop" style="animation-delay:.25s"><circle cx="245" cy="72" r="46" fill="rgba(63,216,230,.10)" stroke="#3fd8e6" stroke-width="2"/><text x="245" y="64" text-anchor="middle" fill="#3fd8e6" font-size="13" font-weight="800" font-family="monospace">$100</text><text x="245" y="82" text-anchor="middle" fill="#9aa3ad" font-size="9" font-family="monospace">x1M coins</text><text x="245" y="132" text-anchor="middle" fill="#e9e7df" font-size="11" font-weight="700" font-family="monospace">= $100M</text></g>','0 0 340 145','Different price per coin, <b>identical project size</b>. Cheap per unit is not cheap.');};
+
+  VIZ.depth=function(h){var thick='',thin='';for(var i=0;i<7;i++){thick+='<rect x="'+(88-i*11)+'" y="'+(34+i*13)+'" width="'+(70+i*22)+'" height="9" rx="3" fill="rgba(46,189,133,.5)" class="vzfade" style="animation-delay:'+(i*0.07)+'s"/>';}
+    for(var j=0;j<7;j++){thin+='<rect x="'+(252-j*3)+'" y="'+(34+j*13)+'" width="'+(10+j*6)+'" height="9" rx="3" fill="rgba(255,98,88,.5)" class="vzfade" style="animation-delay:'+(j*0.07)+'s"/>';}
+    h.innerHTML=svgWrap('<text x="88" y="24" text-anchor="middle" fill="#7ce8bd" font-size="10.5" font-family="monospace" font-weight="700">BTC — deep book</text>'+thick+'<text x="255" y="24" text-anchor="middle" fill="#ff9d96" font-size="10.5" font-family="monospace" font-weight="700">small alt — thin</text>'+thin,'0 0 340 138','A big sell barely dents the left book. The same sell <b>craters</b> the right one.');};
+
+  VIZ.market=function(h){h.innerHTML=svgWrap(
+    '<circle cx="105" cy="75" r="58" fill="rgba(63,216,230,.08)" stroke="#3fd8e6" stroke-width="1.6" class="vzpop"/><text x="105" y="70" text-anchor="middle" fill="#3fd8e6" font-size="12" font-family="monospace" font-weight="700">STOCKS</text><text x="105" y="87" text-anchor="middle" fill="#9aa3ad" font-size="9.5" font-family="monospace">~$120T</text>'+
+    '<circle cx="240" cy="90" r="17" fill="rgba(255,207,63,.14)" stroke="#ffcf3f" stroke-width="2" class="vzpop" style="animation-delay:.3s"/><text x="240" y="87" text-anchor="middle" fill="#ffcf3f" font-size="8.5" font-family="monospace" font-weight="700">CRYPTO</text><text x="240" y="97" text-anchor="middle" fill="#9aa3ad" font-size="7.5" font-family="monospace">~$3T</text>'+
+    '<text x="240" y="126" text-anchor="middle" fill="#ff9d96" font-size="8.5" font-family="monospace" class="vzfade" style="animation-delay:.7s">same $$ wave → far bigger splash</text>','0 0 340 150','The same money wave that is a ripple for stocks is <b>a storm</b> for crypto.');};
+
+  VIZ.longshort=function(h){
+    h.innerHTML='<div class="vz"><div class="vz-ctl" style="margin:0 0 10px"><button type="button" class="vz-tg on" data-s="long">LONG ↑</button><button type="button" class="vz-tg" data-s="short">SHORT ↓</button></div><div class="ls-stage"></div><div class="cap ls-cap"></div></div>';
+    var stage=h.querySelector('.ls-stage'),cap=h.querySelector('.ls-cap');
+    function draw(side){var long=side==='long';
+      stage.innerHTML='<svg viewBox="0 0 340 130">'+GRID+'<path d="M20 100 C 80 92, 120 60, 180 52 S 280 30, 320 24" fill="none" stroke="#e9e7df" stroke-width="2.4" class="vzdraw"/><circle cx="20" cy="100" r="5" fill="'+(long?'#2ebd85':'#ff6258')+'"/><text x="30" y="118" fill="#9aa3ad" font-size="9.5" font-family="monospace">you '+(long?'BUY (long)':'SELL (short)')+' here</text><circle cx="320" cy="24" r="5" fill="'+(long?'#2ebd85':'#ff6258')+'" class="vzpulse"/><text x="312" y="14" text-anchor="end" fill="'+(long?'#7ce8bd':'#ff9d96')+'" font-size="11" font-weight="800" font-family="monospace">price +8% → '+(long?'you +8%':'you −8%')+'</text></svg>';
+      cap.innerHTML=long?'Long: price up = <b>profit</b>. Price down = loss.':'Short: the SAME rise is now a <b>loss</b> — shorts profit when price falls.';}
+    draw('long');
+    Array.prototype.forEach.call(h.querySelectorAll('.vz-tg'),function(b){b.addEventListener('click',function(){Array.prototype.forEach.call(h.querySelectorAll('.vz-tg'),function(x){x.classList.remove('on');});b.classList.add('on');draw(b.getAttribute('data-s'));});});};
+
+  function levSvg(lev){var dist=Math.max(0.8,99/lev);var px=Math.min(132,dist*6.5);
+    var lx=170-px;var danger=dist<3;
+    return '<svg viewBox="0 0 340 118"><rect x="12" y="52" width="316" height="12" rx="6" fill="#1a2027"/><rect x="'+lx+'" y="52" width="'+(170-lx)+'" height="12" fill="rgba(255,98,88,.28)"/><line x1="170" y1="36" x2="170" y2="80" stroke="#e9e7df" stroke-width="2.5"/><text x="170" y="28" text-anchor="middle" fill="#e9e7df" font-size="10.5" font-family="monospace">ENTRY</text><line x1="'+lx+'" y1="36" x2="'+lx+'" y2="80" stroke="#ff6258" stroke-width="2.5" class="'+(danger?'vzpulse':'')+'"/><text x="'+lx+'" y="98" text-anchor="middle" fill="#ff9d96" font-size="10.5" font-weight="800" font-family="monospace">LIQ</text><text x="'+((lx+170)/2)+'" y="112" text-anchor="middle" fill="'+(danger?'#ff6258':'#9aa3ad')+'" font-size="10" font-family="monospace">'+dist.toFixed(1)+'% away</text></svg>';}
+  VIZ.levact=function(h,done,goal){
+    h.innerHTML='<div class="vz"><div class="lev-stage"></div><div class="vz-ctl"><span style="font-family:monospace;font-size:11px;color:#9aa3ad">1x</span><input type="range" min="1" max="100" step="1" value="'+(goal==='safe10'?100:5)+'"><span style="font-family:monospace;font-size:11px;color:#9aa3ad">100x</span><span class="rv"></span></div><div class="vz-goal"></div></div>';
+    var stage=h.querySelector('.lev-stage'),rng=h.querySelector('input'),rv=h.querySelector('.rv'),g=h.querySelector('.vz-goal');
+    var hitOnce=false;
+    function upd(){var lev=+rng.value;stage.innerHTML=levSvg(lev);rv.textContent=lev+'x';var dist=99/lev;
+      var ok=goal==='wipe1'?lev>=95:dist>=10;
+      if(goal==='wipe1')g.innerHTML=ok?'<b>100x → liquidation ~1% away.</b> One routine wiggle and the account is gone. Lesson seen.':'Goal: find the leverage where liquidation sits about <b>1%</b> from entry.';
+      else g.innerHTML=ok?'<b>Safe.</b> At '+lev+'x the market needs a real move ('+dist.toFixed(0)+'%) to reach you — not a random wick.':'Goal: get the liquidation at least <b>10%</b> away from entry.';
+      g.classList.toggle('hit',ok);
+      if(ok&&!hitOnce){hitOnce=true;if(done)done();try{if(navigator.vibrate)navigator.vibrate(15);}catch(e){}}}
+    rng.addEventListener('input',upd);upd();};
+
+  VIZ.notional=function(h){h.innerHTML=svgWrap(
+    '<text x="20" y="30" fill="#9aa3ad" font-size="10.5" font-family="monospace">YOUR MARGIN</text><rect x="20" y="38" width="30" height="20" rx="4" fill="#c2f64a" class="vzgrow"/><text x="58" y="53" fill="#c2f64a" font-size="11" font-weight="800" font-family="monospace">$100</text>'+
+    '<text x="20" y="92" fill="#9aa3ad" font-size="10.5" font-family="monospace">POSITION AT 10x</text><rect x="20" y="100" width="300" height="20" rx="4" fill="rgba(255,207,63,.75)" class="vzgrow" style="animation-delay:.35s"/><text x="170" y="115" text-anchor="middle" fill="#0a0b0d" font-size="11" font-weight="800" font-family="monospace">$1,000 notional</text>','0 0 340 135','A 1% move on the <b>big bar</b> = $10 = <b>10%</b> of the small bar. Both ways.');};
+
+  VIZ.liqladder=function(h){h.innerHTML=svgWrap(
+    '<defs><linearGradient id="lqz" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(255,98,88,0)"/><stop offset="1" stop-color="rgba(255,98,88,.4)"/></linearGradient></defs>'+
+    '<rect x="40" y="14" width="12" height="118" rx="6" fill="#1a2027"/>'+
+    '<rect x="20" y="88" width="300" height="46" fill="url(#lqz)"/>'+
+    '<line x1="20" y1="44" x2="320" y2="44" stroke="#e9e7df" stroke-width="2"/><text x="66" y="39" fill="#e9e7df" font-size="10.5" font-family="monospace">ENTRY $60,000 · LONG 20x</text>'+
+    '<line x1="20" y1="88" x2="320" y2="88" stroke="#ff6258" stroke-width="2.5" class="vzpulse"/><text x="66" y="105" fill="#ff9d96" font-size="10.5" font-weight="800" font-family="monospace">LIQUIDATION $57,150 (−4.75%)</text>'+
+    '<text x="66" y="126" fill="#7a4a46" font-size="9" font-family="monospace">below this line: position erased, margin gone</text>','0 0 340 142','Everything below the red line is <b>non-existence</b>. Know this number before you click.');};
+
+  VIZ.pnlmeter=function(h){
+    h.innerHTML='<div class="vz"><div class="pm-stage"></div><div class="vz-ctl"><span style="font-family:monospace;font-size:11px;color:#ff9d96">−5%</span><input type="range" min="-5" max="5" step="0.5" value="1"><span style="font-family:monospace;font-size:11px;color:#7ce8bd">+5%</span></div><div class="cap">$100 margin · 10x leverage · $1,000 notional</div></div>';
+    var stage=h.querySelector('.pm-stage'),rng=h.querySelector('input');
+    function upd(){var mv=+rng.value,pnl=mv*10,roe=mv*10;var up=pnl>=0;var w=Math.min(150,Math.abs(pnl)*1.5);
+      stage.innerHTML='<svg viewBox="0 0 340 96"><line x1="170" y1="12" x2="170" y2="66" stroke="#3a4552" stroke-width="1.5"/><rect x="'+(up?170:170-w)+'" y="22" width="'+Math.max(2,w)+'" height="34" rx="6" fill="'+(up?'rgba(46,189,133,.7)':'rgba(255,98,88,.7)')+'"/><text x="170" y="86" text-anchor="middle" fill="'+(up?'#7ce8bd':'#ff9d96')+'" font-size="15" font-weight="800" font-family="monospace">'+(up?'+':'')+'$'+pnl.toFixed(0)+' · ROE '+(up?'+':'')+roe.toFixed(0)+'%</text><text x="170" y="10" text-anchor="middle" fill="#9aa3ad" font-size="9.5" font-family="monospace">price move: '+(mv>=0?'+':'')+mv.toFixed(1)+'%</text></svg>';}
+    rng.addEventListener('input',upd);upd();};
+
+  VIZ.funding=function(h){
+    h.innerHTML='<div class="vz"><div class="vz-ctl" style="margin:0 0 10px"><button type="button" class="vz-tg on" data-m="above">Perp ABOVE spot</button><button type="button" class="vz-tg" data-m="below">Perp BELOW spot</button></div><div class="fd-stage"></div><div class="cap fd-cap"></div></div>';
+    var stage=h.querySelector('.fd-stage'),cap=h.querySelector('.fd-cap');
+    function draw(mode){var above=mode==='above';var dots='';for(var i=0;i<4;i++){dots+='<circle cx="'+(above?112:228)+'" cy="58" r="5" fill="#ffcf3f" class="'+(above?'vzflow':'vzflowR')+'" style="animation-delay:'+(i*0.55)+'s"/>';}
+      stage.innerHTML='<svg viewBox="0 0 340 116"><rect x="22" y="30" width="90" height="56" rx="10" fill="rgba(46,189,133,.12)" stroke="#2ebd85"/><text x="67" y="62" text-anchor="middle" fill="#7ce8bd" font-size="12" font-weight="800" font-family="monospace">LONGS</text><rect x="228" y="30" width="90" height="56" rx="10" fill="rgba(255,98,88,.10)" stroke="#ff6258"/><text x="273" y="62" text-anchor="middle" fill="#ff9d96" font-size="12" font-weight="800" font-family="monospace">SHORTS</text><line x1="118" y1="58" x2="222" y2="58" stroke="#3a4552" stroke-width="1.5" stroke-dasharray="4 4"/>'+dots+'<text x="170" y="106" text-anchor="middle" fill="#ffcf3f" font-size="9.5" font-family="monospace">funding every 8h</text></svg>';
+      cap.innerHTML=above?'Crowd is long, perp premium → <b>longs pay shorts</b> to hold.':'Crowd is short, perp discount → <b>shorts pay longs</b>.';}
+    draw('above');
+    Array.prototype.forEach.call(h.querySelectorAll('.vz-tg'),function(b){b.addEventListener('click',function(){Array.prototype.forEach.call(h.querySelectorAll('.vz-tg'),function(x){x.classList.remove('on');});b.classList.add('on');draw(b.getAttribute('data-m'));});});};
+
+  VIZ.orderbook=function(h){var asks='',bids='';for(var i=0;i<4;i++){asks+='<rect x="180" y="'+(20+i*13)+'" width="'+(46+i*18)+'" height="9" rx="3" fill="rgba(255,98,88,.45)"/>';bids+='<rect x="'+(160-(46+i*18))+'" y="'+(84+i*13)+'" width="'+(46+i*18)+'" height="9" rx="3" fill="rgba(46,189,133,.45)"/>';}
+    h.innerHTML=svgWrap(asks+bids+
+    '<line x1="20" y1="72" x2="320" y2="72" stroke="#3a4552" stroke-width="1" stroke-dasharray="3 3"/>'+
+    '<g class="vzfade" style="animation-delay:.3s"><line x1="120" y1="30" x2="172" y2="30" stroke="#ffcf3f" stroke-width="2.2"/><circle cx="176" cy="30" r="4" fill="#ffcf3f"/><text x="114" y="34" text-anchor="end" fill="#ffcf3f" font-size="9.5" font-family="monospace">MARKET buy → hits asks now</text></g>'+
+    '<g class="vzfade" style="animation-delay:.6s"><line x1="20" y1="97" x2="150" y2="97" stroke="#3fd8e6" stroke-width="2.2"/><text x="24" y="110" fill="#3fd8e6" font-size="9.5" font-family="monospace">LIMIT buy → rests, waits</text></g>'+
+    '<g class="vzfade" style="animation-delay:.9s"><line x1="200" y1="126" x2="320" y2="126" stroke="#ff9d5c" stroke-width="2.2" stroke-dasharray="5 4"/><text x="316" y="139" text-anchor="end" fill="#ff9d5c" font-size="9.5" font-family="monospace">STOP → triggers if crossed</text></g>','0 0 340 148','Red = sellers (asks), green = buyers (bids). Three order types, three behaviours.');};
+
+  VIZ.riskact=function(h,done){
+    h.innerHTML='<div class="vz"><div class="rk-stage"></div><div class="vz-ctl"><span style="font-family:monospace;font-size:11px;color:#9aa3ad">1%</span><input type="range" min="1" max="25" step="1" value="20"><span style="font-family:monospace;font-size:11px;color:#9aa3ad">25%</span><span class="rv"></span></div><div class="vz-goal"></div></div>';
+    var stage=h.querySelector('.rk-stage'),rng=h.querySelector('input'),rv=h.querySelector('.rv'),g=h.querySelector('.vz-goal');var hit=false;
+    function upd(){var r=+rng.value;rv.textContent=r+'%';
+      var n=Math.floor(Math.log(0.5)/Math.log(1-r/100));
+      var shown=Math.min(n,40),dots='';
+      for(var i=0;i<shown;i++){dots+='<circle cx="'+(18+(i%20)*16)+'" cy="'+(26+Math.floor(i/20)*22)+'" r="6" fill="#ff6258" opacity=".8"/>';}
+      stage.innerHTML='<svg viewBox="0 0 340 78">'+dots+'<text x="330" y="70" text-anchor="end" fill="#e9e7df" font-size="11.5" font-weight="700" font-family="monospace">'+n+' losses in a row → −50%</text></svg>';
+      var ok=n>=30;
+      g.innerHTML=ok?'<b>That is professional sizing.</b> At '+r+'% risk you survive '+n+' straight losses before losing half — variance becomes noise.':'Goal: set risk so you can eat at least <b>30 consecutive losses</b> before −50%. (Hint: pros use 1-2%.)';
+      g.classList.toggle('hit',ok);
+      if(ok&&!hit){hit=true;if(done)done();try{if(navigator.vibrate)navigator.vibrate(15);}catch(e){}}}
+    rng.addEventListener('input',upd);upd();};
+
+  VIZ.stopsize=function(h){h.innerHTML=svgWrap(
+    GRID+'<path d="M20 46 C 70 42, 110 60, 150 58 S 250 40, 320 34" fill="none" stroke="#e9e7df" stroke-width="2" class="vzdraw"/>'+
+    '<line x1="150" y1="58" x2="320" y2="58" stroke="#2ebd85" stroke-width="1.8" stroke-dasharray="4 3"/><text x="316" y="53" text-anchor="end" fill="#7ce8bd" font-size="10" font-family="monospace">ENTRY</text>'+
+    '<line x1="150" y1="96" x2="320" y2="96" stroke="#ff6258" stroke-width="1.8" stroke-dasharray="4 3"/><text x="316" y="110" text-anchor="end" fill="#ff9d96" font-size="10" font-family="monospace">STOP (idea is wrong)</text>'+
+    '<path d="M136 58 L136 96" stroke="#ffcf3f" stroke-width="2"/><path d="M131 62 L136 58 L141 62 M131 92 L136 96 L141 92" stroke="#ffcf3f" stroke-width="2" fill="none"/><text x="126" y="80" text-anchor="end" fill="#ffcf3f" font-size="10" font-family="monospace">distance → sets SIZE</text>','0 0 340 128','Stop first, distance second, <b>size = risk ÷ distance</b> last. Never the other way.');};
+
+  VIZ.stopplace=function(h){h.innerHTML=svgWrap(
+    GRID+'<rect x="20" y="96" width="300" height="20" fill="rgba(46,189,133,.13)"/><text x="26" y="110" fill="#5f8f7c" font-size="9" font-family="monospace">support zone</text>'+
+    '<path d="M20 108 C 60 100, 90 70, 130 66 S 200 88, 240 80 S 300 60, 320 56" fill="none" stroke="#e9e7df" stroke-width="2" class="vzdraw"/>'+
+    '<line x1="130" y1="66" x2="320" y2="66" stroke="#2ebd85" stroke-width="1.6" stroke-dasharray="4 3"/><text x="316" y="61" text-anchor="end" fill="#7ce8bd" font-size="9.5" font-family="monospace">entry (bought the support)</text>'+
+    '<line x1="20" y1="124" x2="320" y2="124" stroke="#ff6258" stroke-width="2" class="vzfade" style="animation-delay:.8s"/><text x="316" y="138" text-anchor="end" fill="#ff9d96" font-size="9.5" font-weight="800" font-family="monospace">STOP — below the zone, where the idea dies</text>','0 0 340 148','The stop is not about pain tolerance — it marks <b>where the thesis is wrong</b>.');};
+
+  VIZ.tapstop=function(h,done){
+    h.innerHTML='<div class="vz"><svg viewBox="0 0 340 150">'+GRID+
+    '<rect x="20" y="96" width="300" height="20" fill="rgba(46,189,133,.13)"/><text x="26" y="110" fill="#5f8f7c" font-size="9" font-family="monospace">support zone</text>'+
+    '<path d="M20 108 C 60 100, 90 70, 130 66 S 200 88, 240 80 S 300 60, 320 56" fill="none" stroke="#e9e7df" stroke-width="2"/>'+
+    '<line x1="130" y1="66" x2="320" y2="66" stroke="#2ebd85" stroke-width="1.6" stroke-dasharray="4 3"/><text x="316" y="61" text-anchor="end" fill="#7ce8bd" font-size="9.5" font-family="monospace">your entry</text>'+
+    '<g class="hitzone" data-hit="no"><rect x="130" y="34" width="180" height="16" rx="4" fill="rgba(58,69,82,.35)" stroke="#3a4552"/><text x="220" y="45" text-anchor="middle" fill="#9aa3ad" font-size="9" font-family="monospace">A · above entry</text></g>'+
+    '<g class="hitzone" data-hit="no"><rect x="130" y="74" width="180" height="16" rx="4" fill="rgba(58,69,82,.35)" stroke="#3a4552"/><text x="220" y="85" text-anchor="middle" fill="#9aa3ad" font-size="9" font-family="monospace">B · random spot just under entry</text></g>'+
+    '<g class="hitzone" data-hit="ok"><rect x="130" y="126" width="180" height="16" rx="4" fill="rgba(58,69,82,.35)" stroke="#3a4552"/><text x="220" y="137" text-anchor="middle" fill="#9aa3ad" font-size="9" font-family="monospace">C · below the support zone</text></g>'+
+    '</svg><div class="cap">If support breaks, the idea is dead — <b>that</b> is where the stop lives.</div></div>';
+    wireTap(h,done);};
+
+  VIZ.tapcandle=function(h,done){
+    h.innerHTML='<div class="vz"><svg viewBox="0 0 340 150">'+
+    '<g class="hitzone" data-hit="ok"><rect x="150" y="8" width="40" height="36" fill="rgba(58,69,82,.12)" stroke="#3a4552" stroke-dasharray="3 3" rx="4"/><line x1="170" y1="14" x2="170" y2="44" stroke="#2ebd85" stroke-width="3"/></g>'+
+    '<g class="hitzone" data-hit="no"><rect x="152" y="44" width="36" height="62" rx="3" fill="#2ebd85"/></g>'+
+    '<g class="hitzone" data-hit="no"><rect x="150" y="106" width="40" height="36" fill="rgba(58,69,82,.12)" stroke="#3a4552" stroke-dasharray="3 3" rx="4"/><line x1="170" y1="112" x2="170" y2="136" stroke="#2ebd85" stroke-width="3"/></g>'+
+    '<text x="240" y="30" fill="#5c656f" font-size="9.5" font-family="monospace">← top section</text><text x="240" y="78" fill="#5c656f" font-size="9.5" font-family="monospace">← the body</text><text x="240" y="124" fill="#5c656f" font-size="9.5" font-family="monospace">← bottom section</text></svg><div class="cap">Wicks are the extremes price <b>touched</b> — the body is open→close.</div></div>';
+    wireTap(h,done);};
+
+  VIZ.tapsupport=function(h,done){
+    h.innerHTML='<div class="vz"><svg viewBox="0 0 340 150">'+GRID+
+    '<path d="M20 40 C 45 60, 60 98, 85 104 S 120 70, 145 62 C 165 84 175 100 195 104 S 240 66 260 58 C 280 82 290 100 310 104" fill="none" stroke="#e9e7df" stroke-width="2" class="vzdraw"/>'+
+    '<g class="hitzone" data-hit="no"><rect x="20" y="30" width="300" height="24" rx="5" fill="rgba(58,69,82,.25)" stroke="#3a4552" stroke-dasharray="4 3"/></g>'+
+    '<g class="hitzone" data-hit="no"><rect x="20" y="62" width="300" height="24" rx="5" fill="rgba(58,69,82,.25)" stroke="#3a4552" stroke-dasharray="4 3"/></g>'+
+    '<g class="hitzone" data-hit="ok"><rect x="20" y="94" width="300" height="24" rx="5" fill="rgba(58,69,82,.25)" stroke="#3a4552" stroke-dasharray="4 3"/></g>'+
+    '</svg><div class="cap">Three separate dips <b>stopped at the same floor</b> — that repeated reaction IS the zone.</div></div>';
+    wireTap(h,done);};
+
+  function wireTap(h,done){var got=false;
+    Array.prototype.forEach.call(h.querySelectorAll('.hitzone'),function(z){
+      z.addEventListener('click',function(){if(got)return;
+        var r=z.querySelector('rect');
+        if(z.getAttribute('data-hit')==='ok'){got=true;if(r)r.classList.add('hit-ok');if(done)done();try{if(navigator.vibrate)navigator.vibrate(15);}catch(e){}}
+        else{if(r){r.classList.add('hit-bad');setTimeout(function(){r.classList.remove('hit-bad');},600);}try{if(navigator.vibrate)navigator.vibrate([35]);}catch(e){}}});});}
+
+  VIZ.rrbars=function(h){var dots='';var outc=[1,0,0,1,0,0,0,1,0,0];
+    outc.forEach(function(w,i){dots+='<g class="vzpop" style="animation-delay:'+(i*0.09)+'s"><rect x="'+(22+i*30)+'" y="'+(w?26:66)+'" width="20" height="'+(w?54:18)+'" rx="4" fill="'+(w?'rgba(46,189,133,.75)':'rgba(255,98,88,.6)')+'"/><text x="'+(32+i*30)+'" y="'+(w?20:62)+'" text-anchor="middle" fill="'+(w?'#7ce8bd':'#ff9d96')+'" font-size="9" font-family="monospace">'+(w?'+3R':'−1R')+'</text></g>';});
+    h.innerHTML=svgWrap(dots+'<line x1="14" y1="88" x2="326" y2="88" stroke="#3a4552"/><text x="170" y="112" text-anchor="middle" fill="#e9e7df" font-size="12" font-weight="800" font-family="monospace">3 wins − 7 losses = <tspan fill="#7ce8bd">+2R profit</tspan></text>','0 0 340 122','Ten trades, <b>only 30% right</b> — and the month is green. That is what R:R buys.');};
+
+  VIZ.ddact=function(h,done){
+    h.innerHTML='<div class="vz"><div class="dd-stage"></div><div class="vz-ctl"><span style="font-family:monospace;font-size:11px;color:#9aa3ad">−10%</span><input type="range" min="10" max="90" step="5" value="20"><span style="font-family:monospace;font-size:11px;color:#9aa3ad">−90%</span></div><div class="vz-goal"></div></div>';
+    var stage=h.querySelector('.dd-stage'),rng=h.querySelector('input'),g=h.querySelector('.vz-goal');var hit=false;
+    function upd(){var l=+rng.value,need=l/(100-l)*100;
+      var lw=l*1.5,nw=Math.min(300,need*1.5);
+      stage.innerHTML='<svg viewBox="0 0 340 92"><text x="20" y="24" fill="#ff9d96" font-size="10" font-family="monospace">you lose −'+l+'%</text><rect x="20" y="30" width="'+lw+'" height="16" rx="4" fill="rgba(255,98,88,.65)"/><text x="20" y="66" fill="#7ce8bd" font-size="10" font-family="monospace">recovery needs +'+need.toFixed(0)+'%</text><rect x="20" y="72" width="'+nw+'" height="16" rx="4" fill="rgba(46,189,133,.65)"/></svg>';
+      var ok=l>=50;
+      g.innerHTML=ok?'<b>−50% needs +100%.</b> Deeper than that and the hole grows faster than the ladder. This is why pros defend capital first.':'Drag deeper — find where the required recovery hits <b>+100%</b>.';
+      g.classList.toggle('hit',ok);
+      if(ok&&!hit){hit=true;if(done)done();try{if(navigator.vibrate)navigator.vibrate(15);}catch(e){}}}
+    rng.addEventListener('input',upd);upd();};
+
+  VIZ.fomo=function(h){h.innerHTML=svgWrap(
+    GRID+'<path d="M20 118 C 90 114, 150 108, 200 96 C 240 86 260 60 280 34 L 298 16" fill="none" stroke="#2ebd85" stroke-width="2.4" class="vzdraw"/>'+
+    '<circle cx="292" cy="22" r="6" fill="#ff6258" class="vzpop" style="animation-delay:1s"/><text x="284" y="12" text-anchor="end" fill="#ff9d96" font-size="10" font-weight="800" font-family="monospace">you buy HERE (+30% day)</text>'+
+    '<circle cx="205" cy="94" r="5" fill="#3fd8e6" class="vzpop" style="animation-delay:1.3s"/><text x="205" y="112" text-anchor="middle" fill="#3fd8e6" font-size="9.5" font-family="monospace">the boring entry was here</text>','0 0 340 132','The vertical part <b>feels</b> safest and <b>is</b> the worst R:R on the chart.');};
+
+  VIZ.trend=function(h){h.innerHTML=svgWrap(
+    GRID+'<rect x="20" y="98" width="300" height="18" fill="rgba(46,189,133,.10)"/><text x="26" y="111" fill="#5f8f7c" font-size="8.5" font-family="monospace">support</text>'+
+    '<rect x="20" y="22" width="300" height="16" fill="rgba(255,98,88,.08)"/><text x="26" y="33" fill="#8f5f5c" font-size="8.5" font-family="monospace">resistance</text>'+
+    '<path d="M24 108 L70 74 L100 92 L150 56 L185 76 L240 42 L270 60 L316 30" fill="none" stroke="#e9e7df" stroke-width="2.2" class="vzdraw"/>'+
+    '<g class="vzfade" style="animation-delay:1.1s" font-family="monospace" font-size="8.5"><text x="70" y="66" fill="#7ce8bd">HH</text><text x="100" y="104" fill="#3fd8e6">HL</text><text x="150" y="48" fill="#7ce8bd">HH</text><text x="185" y="88" fill="#3fd8e6">HL</text><text x="240" y="34" fill="#7ce8bd">HH</text></g>','0 0 340 130','Higher highs + higher lows = <b>uptrend</b>. Zones above and below are where battles repeat.');};
+
+  VIZ.machart=function(h){
+    var jag='M20 96 L38 84 L52 98 L70 76 L88 88 L106 66 L124 78 L142 58 L160 70 L178 50 L196 62 L214 44 L232 56 L250 38 L268 50 L286 32 L304 44 L320 28';
+    h.innerHTML=svgWrap(GRID+'<path d="'+jag+'" fill="none" stroke="#5c8ba8" stroke-width="1.6" class="vzdraw"/><path d="M20 100 C 90 88, 160 68, 230 52 S 300 36, 320 32" fill="none" stroke="#ffcf3f" stroke-width="2.6" class="vzdraw" style="animation-delay:.5s"/><text x="316" y="18" text-anchor="end" fill="#ffcf3f" font-size="10" font-family="monospace" class="vzfade" style="animation-delay:1.4s">MA — the smoothed memory</text>','0 0 340 122','Price is jagged; the MA is its <b>average memory</b>. Above a rising MA = healthy trend.');};
+
+  VIZ.rsigauge=function(h){h.innerHTML=svgWrap(
+    '<rect x="20" y="56" width="300" height="18" rx="9" fill="#1a2027"/><rect x="20" y="56" width="90" height="18" rx="9" fill="rgba(46,189,133,.25)"/><rect x="230" y="56" width="90" height="18" rx="9" fill="rgba(255,98,88,.22)"/>'+
+    '<text x="65" y="48" text-anchor="middle" fill="#7ce8bd" font-size="9.5" font-family="monospace">oversold &lt;30</text><text x="275" y="48" text-anchor="middle" fill="#ff9d96" font-size="9.5" font-family="monospace">overbought &gt;70</text>'+
+    '<g style="animation:rsiN 4s ease-in-out infinite alternate"><circle cx="258" cy="65" r="9" fill="#e9e7df"/></g><style>@keyframes rsiN{0%{transform:translateX(0)}45%{transform:translateX(24px)}100%{transform:translateX(-10px)}}</style>'+
+    '<text x="170" y="104" text-anchor="middle" fill="#9aa3ad" font-size="10" font-family="monospace" class="vzfade" style="animation-delay:.8s">…and it can LIVE up here for weeks in a strong trend</text>','0 0 340 116','RSI measures <b>speed</b>, not correctness. Extreme does not equal reversal.');};
+
+  VIZ.diverge=function(h){h.innerHTML=svgWrap(
+    '<text x="24" y="22" fill="#9aa3ad" font-size="9" font-family="monospace">PRICE</text><path d="M24 62 L90 34 L150 54 L230 24" fill="none" stroke="#e9e7df" stroke-width="2" class="vzdraw"/><circle cx="90" cy="34" r="4" fill="#7ce8bd"/><circle cx="230" cy="24" r="4" fill="#7ce8bd"/><line x1="90" y1="34" x2="230" y2="24" stroke="#2ebd85" stroke-width="1.4" stroke-dasharray="4 3"/><text x="238" y="26" fill="#7ce8bd" font-size="8.5" font-family="monospace">higher high</text>'+
+    '<text x="24" y="92" fill="#9aa3ad" font-size="9" font-family="monospace">RSI</text><path d="M24 128 L90 100 L150 122 L230 110" fill="none" stroke="#ffcf3f" stroke-width="2" class="vzdraw" style="animation-delay:.4s"/><circle cx="90" cy="100" r="4" fill="#ffcf3f"/><circle cx="230" cy="110" r="4" fill="#ffcf3f"/><line x1="90" y1="100" x2="230" y2="110" stroke="#ff6258" stroke-width="1.4" stroke-dasharray="4 3"/><text x="238" y="112" fill="#ff9d96" font-size="8.5" font-family="monospace">LOWER high</text>','0 0 340 142','Price up, momentum down — <b>bearish divergence</b>. A caution flag, not a sell button.');};
+
+  VIZ.crowd=function(h){h.innerHTML=svgWrap(
+    '<rect x="20" y="46" width="300" height="22" rx="11" fill="#1a2027"/><g style="transform-origin:20px 57px;animation:vzgrowX .9s ease forwards;transform:scaleX(0)"><rect x="20" y="46" width="234" height="22" rx="11" fill="rgba(46,189,133,.5)"/></g>'+
+    '<text x="30" y="61" fill="#eafff3" font-size="11" font-weight="800" font-family="monospace">78% LONG</text><text x="312" y="61" text-anchor="end" fill="#ff9d96" font-size="10" font-family="monospace">22%</text>'+
+    '<text x="170" y="96" text-anchor="middle" fill="#ffcf3f" font-size="10" font-family="monospace" class="vzfade" style="animation-delay:.8s">few buyers left above… a lake of liquidations below</text>','0 0 340 112','When <b>everyone</b> is already long, who is left to buy? Extremes are contrarian.');};
+
+  VIZ.cascade=function(h){var rows='';var lv=[40,62,84,106];
+    lv.forEach(function(y,i){rows+='<g class="vzdrop" style="animation-delay:'+(0.5+i*0.5)+'s"><line x1="30" y1="'+y+'" x2="310" y2="'+y+'" stroke="#ff6258" stroke-width="1.4" stroke-dasharray="4 3" opacity=".55"/><circle cx="'+(70+i*54)+'" cy="'+y+'" r="7" fill="#ff6258"/><text x="'+(84+i*54)+'" y="'+(y+4)+'" fill="#ff9d96" font-size="8.5" font-family="monospace">liq cluster '+(i+1)+' → forced SELL</text></g>';});
+    h.innerHTML=svgWrap('<path d="M20 24 L60 30 L100 44 L150 66 L200 88 L250 108 L310 122" fill="none" stroke="#e9e7df" stroke-width="2.2" class="vzdraw" style="animation-duration:2.6s"/>'+rows,'0 0 340 136','Each forced sell <b>pushes price into the next cluster</b>. One trigger, four dominoes.');};
+
+  VIZ.eventspike=function(h){h.innerHTML=svgWrap(
+    GRID+'<line x1="170" y1="14" x2="170" y2="120" stroke="#ffcf3f" stroke-width="1.6" stroke-dasharray="5 4"/><text x="170" y="134" text-anchor="middle" fill="#ffcf3f" font-size="9.5" font-family="monospace">CPI · 12:30 UTC</text>'+
+    '<path d="M20 70 L80 68 L140 71 L168 70" fill="none" stroke="#9aa3ad" stroke-width="2" class="vzdraw"/>'+
+    '<path d="M170 70 L176 30 L182 96 L192 44 L204 78 L230 60 L280 52 L320 44" fill="none" stroke="#e9e7df" stroke-width="2.2" class="vzdraw" style="animation-delay:.8s"/>'+
+    '<text x="196" y="24" fill="#ff9d96" font-size="8.5" font-family="monospace" class="vzfade" style="animation-delay:1.6s">1-second whipsaw both ways</text>','0 0 340 145','Flat for hours, then <b>violence in one second</b>. Survive it with size, not prediction.');};
+
+  /* ===== state ===== */
   var st={done:{}};
   try{var raw=JSON.parse(localStorage.getItem('mp_academy')||'{}');(raw.done||[]).forEach(function(x){st.done[x]=1;});}catch(e){}
   var signedIn=false,serverDone=null,syncing=false;
@@ -373,7 +632,6 @@ footer a{color:var(--dim)}
   function doneCount(){var n=0;ALL.forEach(function(x){if(st.done[x.l.id])n++;});return n;}
   function nextLesson(){for(var i=0;i<ALL.length;i++)if(!st.done[ALL[i].l.id])return ALL[i].l.id;return null;}
   function unlocked(id){var i=ALL.findIndex(function(x){return x.l.id===id;});if(i<=0)return true;return !!st.done[ALL[i-1].l.id]||!!st.done[id];}
-  /* ---- render path ---- */
   function render(){
     var n=doneCount();
     document.getElementById('pgN').textContent=n+'/'+TOTAL;
@@ -390,7 +648,8 @@ footer a{color:var(--dim)}
       html+='<section class="course" style="--cc:'+c.color+'"><div class="crs-h"><span class="ic">'+ICONS[c.icon]+'</span><div><div class="crs-t">'+esc(c.name)+'</div><div class="crs-s">'+esc(c.sub)+'</div></div><span class="crs-done">'+cd+'/'+c.lessons.length+'</span></div><div class="path">';
       c.lessons.forEach(function(L,i){
         var d=!!st.done[L.id],u=unlocked(L.id),cls=d?'done':(L.id===nxt?'next':(u?'':'locked'));
-        html+='<button type="button" class="node '+cls+'" data-lesson="'+L.id+'" '+(u?'':'disabled')+'><span class="dot">'+(d?ICONS.check:(u?String(i+1):ICONS.lock))+'</span><span><span class="nt">'+esc(L.t)+'</span><span class="ns">'+L.cards.length+' cards · '+L.quiz.length+' questions</span></span><span class="xpb">+25 XP</span></button>';
+        var nInter=L.cards.filter(function(x){return x.act;}).length;
+        html+='<button type="button" class="node '+cls+'" data-lesson="'+L.id+'" '+(u?'':'disabled')+'><span class="dot">'+(d?ICONS.check:(u?String(i+1):ICONS.lock))+'</span><span><span class="nt">'+esc(L.t)+'</span><span class="ns">'+L.cards.length+' steps · '+L.quiz.length+' questions'+(nInter?' · hands-on':'')+'</span></span><span class="xpb">+25 XP</span></button>';
       });
       html+='</div></section>';
     });
@@ -402,26 +661,42 @@ footer a{color:var(--dim)}
     var b=e.target.closest('.node');if(!b||b.disabled)return;
     openLesson(b.getAttribute('data-lesson'));
   });
-  /* ---- lesson player ---- */
+  /* ===== player ===== */
   var lp=document.getElementById('lp'),lpBody=document.getElementById('lpBody'),lpBar=document.getElementById('lpBar'),lpGo=document.getElementById('lpGo');
-  var cur=null,step=0,steps=0,quizIdx=0,answered=false;
+  var cur=null,step=0,steps=0,answered=false;
   function openLesson(id){
     var x=ALL.find(function(y){return y.l.id===id;});if(!x)return;
-    cur=x;step=0;steps=x.l.cards.length+x.l.quiz.length+1; // cards + quiz + done screen
+    cur=x;step=0;steps=x.l.cards.length+x.l.quiz.length+1;
     lp.classList.add('on');document.body.style.overflow='hidden';
     show();
     try{navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=event&type=academy&l='+encodeURIComponent(id)+'&p=/academy/');}catch(e){}
   }
   function closeLp(){lp.classList.remove('on');document.body.style.overflow='';render();}
   document.getElementById('lpX').addEventListener('click',closeLp);
+  function actDone(){lpGo.disabled=false;lpGo.textContent='Continue';}
   function show(){
     lpBar.style.width=(step/(steps-1)*100)+'%';
     var L=cur.l,c=cur.c;
-    if(step<L.cards.length){ // theory card
+    if(step<L.cards.length){
       var card=L.cards[step];
-      lpBody.innerHTML='<div class="lp-kicker" style="--cc:'+c.color+'">'+esc(c.name)+' · '+esc(L.t)+'</div><div class="lp-h">'+esc(card.h)+'</div><p class="lp-p">'+esc(card.p)+'</p>';
-      lpGo.textContent='Continue';lpGo.disabled=false;lpGo.hidden=false;
-    } else if(step<L.cards.length+L.quiz.length){ // quiz question
+      lpBody.innerHTML='<div class="lp-kicker" style="--cc:'+c.color+'">'+esc(c.name)+' · '+esc(L.t)+'</div><div class="lp-h">'+esc(card.h)+'</div><div class="vzhost"></div><p class="lp-p">'+esc(card.p)+'</p>';
+      var host=lpBody.querySelector('.vzhost');
+      lpGo.hidden=false;
+      if(card.act){
+        lpGo.disabled=true;lpGo.textContent='Complete the exercise above';
+        var a=card.act;
+        lpBody.querySelector('.lp-p').insertAdjacentHTML('beforebegin','<p class="lp-p" style="color:var(--gold);font-size:14px"><b style="color:var(--gold)">▸ '+esc(a.prompt)+'</b></p>');
+        if(a.kind==='tap'&&VIZ[a.viz])VIZ[a.viz](host,actDone);
+        else if(a.kind==='lev')VIZ.levact(host,actDone,a.goal);
+        else if(a.kind==='risk')VIZ.riskact(host,actDone);
+        else if(a.kind==='dd')VIZ.ddact(host,actDone);
+        else actDone();
+      } else {
+        lpGo.disabled=false;lpGo.textContent='Continue';
+        if(card.v&&VIZ[card.v])VIZ[card.v](host);
+      }
+      lpBody.scrollTop=0;
+    } else if(step<L.cards.length+L.quiz.length){
       var q=L.quiz[step-L.cards.length];answered=false;
       lpBody.innerHTML='<div class="lp-kicker" style="--cc:'+c.color+'">Question '+(step-L.cards.length+1)+' of '+L.quiz.length+'</div><div class="lp-q">'+esc(q.q)+'</div>'+q.o.map(function(o,i){return '<button type="button" class="lp-opt" data-i="'+i+'">'+esc(o)+'</button>';}).join('');
       lpGo.hidden=true;
@@ -434,23 +709,21 @@ footer a{color:var(--dim)}
           else{btn.classList.add('bad');btn.disabled=true;try{if(navigator.vibrate)navigator.vibrate([35]);}catch(e){}}
         });
       });
-    } else { // completion
-      finish();
-    }
+      lpBody.scrollTop=0;
+    } else { finish(); }
   }
-  lpGo.addEventListener('click',function(){if(step<steps-1){step++;show();}else closeLp();});
+  lpGo.addEventListener('click',function(){if(lpGo.disabled)return;if(step<steps-1){step++;show();}else closeLp();});
   function finish(){
     var L=cur.l,wasNew=!st.done[L.id];
     st.done[L.id]=1;saveLocal();
     lpBar.style.width='100%';
     var xpHtml=signedIn?'<div class="xp" id="lpXp">'+(wasNew?'+25 XP':'Already completed — no extra XP')+'</div>':'';
     var nudge=!signedIn?'<div class="nudge">Progress saved on this device. <b>Sign in free</b> (email only) to bank <b style="color:var(--gold)">+25 XP</b> for this lesson and every one you finish.<br><button type="button" data-auth-open>Sign in &amp; claim XP</button></div>':'';
-    var tryB=L['try']?'<div class="lp-try"><div class="tl">Try it for real (fake money)</div><p>'+esc(L['try'].p)+'</p><a href="'+L['try'].href+'">'+esc(L['try'].label)+'</a></div>':'';
-    lpBody.innerHTML='<div class="lp-done"><div class="big">✦</div><h2>Lesson complete</h2>'+xpHtml+nudge+'<p>'+esc(L.t)+' — done. '+(nextLesson()?'The next lesson is unlocked.':'That was the last one — you finished the whole Academy.')+'</p>'+tryB+'</div>';
+    var tb=L['try']?'<div class="lp-try"><div class="tl">Try it for real (fake money)</div><p>'+esc(L['try'].p)+'</p><a href="'+L['try'].href+'">'+esc(L['try'].label)+'</a></div>':'';
+    lpBody.innerHTML='<div class="lp-done"><div class="big">✦</div><h2>Lesson complete</h2>'+xpHtml+nudge+'<p>'+esc(L.t)+' — done. '+(nextLesson()?'The next lesson is unlocked.':'That was the last one — you finished the whole Academy.')+'</p>'+tb+'</div>';
     lpGo.textContent=nextLesson()?'Back to the path':'Finish';lpGo.hidden=false;lpGo.disabled=false;
     if(wasNew&&signedIn)postComplete(L.id);
   }
-  /* ---- server sync ---- */
   function postComplete(id){
     fetch('/api/academy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({lesson:id})})
       .then(function(r){return r.json();})
