@@ -73,7 +73,7 @@ h1 .g{color:var(--lime)}
 .node.done .nt{color:var(--dim)}
 .node.next{position:relative}
 .node.next .dot{background:var(--lime);color:#0a0b0d;box-shadow:0 5px 0 #7fae1f,inset 0 -4px 0 rgba(0,0,0,.18),0 0 26px -4px rgba(194,246,74,.55);animation:npulse 2.2s infinite}
-.node.next::before{content:'START';position:absolute;left:14px;top:-15px;z-index:2;background:var(--lime);color:#0a0b0d;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:800;letter-spacing:.1em;padding:4px 10px;border-radius:8px;animation:sbounce 1.4s ease-in-out infinite}
+.node.next::before{content:attr(data-start);position:absolute;left:14px;top:-15px;z-index:2;background:var(--lime);color:#0a0b0d;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:800;letter-spacing:.1em;padding:4px 10px;border-radius:8px;animation:sbounce 1.4s ease-in-out infinite}
 .node.next::after{content:'';position:absolute;left:32px;top:6px;z-index:2;border:5px solid transparent;border-top-color:var(--lime);animation:sbounce 1.4s ease-in-out infinite}
 @keyframes sbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 @keyframes npulse{0%,100%{box-shadow:0 5px 0 #7fae1f,inset 0 -4px 0 rgba(0,0,0,.18),0 0 22px -4px rgba(194,246,74,.5)}50%{box-shadow:0 5px 0 #7fae1f,inset 0 -4px 0 rgba(0,0,0,.18),0 0 30px -2px rgba(194,246,74,.75)}}
@@ -167,6 +167,24 @@ footer a{color:var(--dim)}
 .hitzone:hover{opacity:.85}
 .hit-ok{fill:rgba(46,189,133,.3)!important;stroke:#2ebd85!important}
 .hit-bad{fill:rgba(255,98,88,.28)!important;stroke:#ff6258!important;animation:shake .3s}
+.lpick-row{display:flex;justify-content:flex-end;margin:0 0 -4px}
+.lpick{position:relative}
+.lpick-b{display:inline-flex;align-items:center;gap:6px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.4);color:var(--lime);border-radius:999px;padding:7px 12px;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:800;cursor:pointer;letter-spacing:.05em;transition:.15s;box-shadow:0 0 14px -6px rgba(194,246,74,.5)}
+.lpick-b:hover{background:rgba(194,246,74,.12)}
+.lpick-b i{font-style:normal;font-size:9px;opacity:.7}
+.lpick-m{position:absolute;right:0;top:calc(100% + 8px);z-index:120;background:#12161d;border:1px solid var(--line2);border-radius:14px;padding:6px;min-width:172px;box-shadow:0 18px 50px -12px rgba(0,0,0,.8);max-height:62vh;overflow-y:auto}
+.lpick-m button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;border:none;color:var(--ink);font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 11px;border-radius:9px;cursor:pointer}
+.lpick-m button:hover{background:rgba(194,246,74,.08)}
+.lpick-m button.on{color:var(--lime)}
+.lpick-m button small{margin-left:auto;color:var(--faint);font-family:'Space Mono',monospace;font-size:10px}
+/* long-word safety: DE/NL compounds, RU etc. must never overflow */
+.lp-h,.lp-p,.lp-q,.lp-opt,.node .nt,.node .ns,.crs-t,.crs-s,.vz-goal,.lp-done p,.lp-done .nudge,.lp-try p{overflow-wrap:break-word;word-break:break-word;min-width:0}
+.node>span:nth-child(2){min-width:0;flex:1}
+.hero-cta{max-width:100%;white-space:normal;line-height:1.3}
+html[dir="rtl"] .lpick-m{right:auto;left:0}
+html[dir="rtl"] .node{text-align:right}
+.enote{margin:10px 0 0;font-size:12px;color:var(--faint);border:1px dashed var(--line2);border-radius:10px;padding:8px 12px;display:none}
+.enote.on{display:block}
 @media(max-width:480px){.hnav a{margin-left:11px;font-size:13px}}
 </style>
 <script defer src="/assets/sentry.js"></script>
@@ -176,8 +194,10 @@ footer a{color:var(--dim)}
 <div class="wrap">
   <header>
     <a class="brand" href="/">MARGIN<b>PAD</b></a>
-    <nav class="hnav"><a href="/paper-trade">Practice</a><a href="/levels/">Levels</a><a href="/rewards/">Rewards</a></nav>
+    <nav class="hnav"><a href="/paper-trade">Practice</a><a href="/levels/">Levels</a></nav>
   </header>
+  <div class="lpick-row"><div class="lpick"><button class="lpick-b" id="lpickBtn" type="button" aria-label="Language"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21M12 3c-2.5 2.6-3.8 5.7-3.8 9s1.3 6.4 3.8 9"/></svg><b id="lpickCur">EN</b><i>▾</i></button>
+  <div class="lpick-m" id="lpickMenu" hidden></div></div></div>
 
   <section class="hero">
     <span class="eyebrow">◆ MarginPad Academy</span>
@@ -190,6 +210,7 @@ footer a{color:var(--dim)}
     <div class="prog-top"><span class="prog-n" id="pgN">0/65</span><span class="prog-l">lessons complete</span><span class="prog-xp" id="pgXp"></span></div>
     <div class="prog-bar"><i id="pgBar"></i></div>
     <div class="prog-note" id="pgNote"></div>
+    <div class="enote" id="enote"></div>
   </div>
 
   <div id="courses"></div>
@@ -218,7 +239,64 @@ footer a{color:var(--dim)}
 <script>
 (function(){
   var DATA=JSON.parse(document.getElementById('acadData').textContent);
+  var BASE=JSON.parse(JSON.stringify(DATA)); // pristine EN copy for re-merging
   var COURSES=DATA.courses;
+  /* ---------- i18n ---------- */
+  var LANGS=[['en','English'],['es','Español'],['de','Deutsch'],['fr','Français'],['pt','Português'],['nl','Nederlands'],['ru','Русский'],['tr','Türkçe'],['id','Bahasa Indonesia'],['zh','中文'],['ja','日本語'],['ko','한국어'],['ar','العربية']];
+  var UI={
+  en:{h:'From zero to <span class="g">trader</span>',les:'lessons',crs:'courses',xp:'XP rewards',fr:'free',start:'Start learning',cont:'Continue · lesson {n}/{t}',done:'Academy complete',pdone:'lessons complete',anon:'No account needed to start. <button type="button" data-auth-open>Sign in free</button> to earn <b style="color:var(--gold)">+25 XP per lesson</b> toward your level.',anonp:'Progress is saved on this device. <button type="button" data-auth-open>Sign in free</button> to save it to your account and earn <b style="color:var(--gold)">+25 XP per lesson</b>.',sin:'Signed in — every lesson earns +25 XP, each finished course +50 bonus.',locked:'LOCKED',lockm:'Finish the previous course to unlock.',steps:'steps',qs:'questions',ho:'hands-on',sb:'START',contb:'Continue',exb:'Complete the exercise above',qof:'Question {i} of {n}',lc:'Lesson complete',al:'Already completed — no extra XP',nx:'The next lesson is unlocked.',la:'That was the last one — you finished the whole Academy.',nud:'Progress saved on this device. <b>Sign in free</b> (email only) to bank <b style="color:var(--gold)">+25 XP</b> for this lesson and every one you finish.',nudb:'Sign in & claim XP',tryt:'Try it for real (fake money)',back:'Back to the path',fin:'Finish',oh:'Out of hearts',ohp:'Five mistakes — that is the limit. No speed-running: the lesson restarts from the top so the ideas actually land.',rst:'Restart lesson',cb:'Course bonus',enote:''},
+  es:{h:'De cero a <span class="g">trader</span>',les:'lecciones',crs:'cursos',xp:'recompensas XP',fr:'gratis',start:'Empezar a aprender',cont:'Continuar · lección {n}/{t}',done:'Academia completada',pdone:'lecciones completadas',anon:'No necesitas cuenta para empezar. <button type="button" data-auth-open>Regístrate gratis</button> y gana <b style="color:var(--gold)">+25 XP por lección</b> para tu nivel.',anonp:'El progreso se guarda en este dispositivo. <button type="button" data-auth-open>Regístrate gratis</button> para guardarlo en tu cuenta y ganar <b style="color:var(--gold)">+25 XP por lección</b>.',sin:'Sesión iniciada — cada lección da +25 XP y cada curso terminado +50 de bonus.',locked:'BLOQUEADO',lockm:'Termina el curso anterior para desbloquear.',steps:'pasos',qs:'preguntas',ho:'práctico',sb:'EMPIEZA',contb:'Continuar',exb:'Completa el ejercicio de arriba',qof:'Pregunta {i} de {n}',lc:'Lección completada',al:'Ya completada — sin XP extra',nx:'La siguiente lección está desbloqueada.',la:'Era la última — ¡terminaste toda la Academia!',nud:'Progreso guardado en este dispositivo. <b>Regístrate gratis</b> (solo email) para cobrar <b style="color:var(--gold)">+25 XP</b> por esta lección y cada una que termines.',nudb:'Registrarme y cobrar XP',tryt:'Pruébalo de verdad (dinero ficticio)',back:'Volver al camino',fin:'Terminar',oh:'Sin corazones',ohp:'Cinco errores — ese es el límite. Nada de correr: la lección vuelve a empezar para que las ideas de verdad se queden.',rst:'Reiniciar lección',cb:'Bonus de curso',enote:'Las lecciones están en inglés por ahora — la traducción llega pronto.'},
+  de:{h:'Von null zum <span class="g">Trader</span>',les:'Lektionen',crs:'Kurse',xp:'XP-Belohnungen',fr:'kostenlos',start:'Jetzt lernen',cont:'Weiter · Lektion {n}/{t}',done:'Akademie abgeschlossen',pdone:'Lektionen geschafft',anon:'Kein Konto nötig. <button type="button" data-auth-open>Gratis anmelden</button> und <b style="color:var(--gold)">+25 XP pro Lektion</b> für dein Level sichern.',anonp:'Fortschritt wird auf diesem Gerät gespeichert. <button type="button" data-auth-open>Gratis anmelden</button>, um ihn im Konto zu sichern und <b style="color:var(--gold)">+25 XP pro Lektion</b> zu erhalten.',sin:'Angemeldet — jede Lektion bringt +25 XP, jeder Kurs +50 Bonus.',locked:'GESPERRT',lockm:'Schließe zuerst den vorherigen Kurs ab.',steps:'Schritte',qs:'Fragen',ho:'praktisch',sb:'START',contb:'Weiter',exb:'Erst die Übung oben abschließen',qof:'Frage {i} von {n}',lc:'Lektion geschafft',al:'Bereits abgeschlossen — kein extra XP',nx:'Die nächste Lektion ist freigeschaltet.',la:'Das war die letzte — du hast die ganze Akademie geschafft!',nud:'Fortschritt auf diesem Gerät gespeichert. <b>Gratis anmelden</b> (nur E-Mail) und <b style="color:var(--gold)">+25 XP</b> für jede Lektion sichern.',nudb:'Anmelden & XP sichern',tryt:'Probiere es echt aus (Spielgeld)',back:'Zurück zum Pfad',fin:'Fertig',oh:'Keine Herzen mehr',ohp:'Fünf Fehler — das ist das Limit. Kein Durchrasen: die Lektion beginnt von vorn, damit es wirklich sitzt.',rst:'Lektion neu starten',cb:'Kurs-Bonus',enote:'Die Lektionen sind vorerst auf Englisch — Übersetzung folgt bald.'},
+  fr:{h:'De zéro à <span class="g">trader</span>',les:'leçons',crs:'cours',xp:'récompenses XP',fr:'gratuit',start:'Commencer',cont:'Continuer · leçon {n}/{t}',done:'Académie terminée',pdone:'leçons terminées',anon:'Aucun compte requis. <button type="button" data-auth-open>Inscris-toi gratuitement</button> et gagne <b style="color:var(--gold)">+25 XP par leçon</b> pour ton niveau.',anonp:'Progression sauvegardée sur cet appareil. <button type="button" data-auth-open>Inscris-toi gratuitement</button> pour la lier à ton compte et gagner <b style="color:var(--gold)">+25 XP par leçon</b>.',sin:'Connecté — chaque leçon rapporte +25 XP, chaque cours fini +50 de bonus.',locked:'VERROUILLÉ',lockm:'Termine le cours précédent pour débloquer.',steps:'étapes',qs:'questions',ho:'pratique',sb:'GO',contb:'Continuer',exb:'Termine l’exercice ci-dessus',qof:'Question {i} sur {n}',lc:'Leçon terminée',al:'Déjà terminée — pas d’XP en plus',nx:'La leçon suivante est débloquée.',la:'C’était la dernière — tu as fini toute l’Académie !',nud:'Progression sauvegardée sur cet appareil. <b>Inscris-toi gratuitement</b> (email seulement) pour encaisser <b style="color:var(--gold)">+25 XP</b> par leçon.',nudb:'S’inscrire et gagner l’XP',tryt:'Essaie en vrai (argent fictif)',back:'Retour au parcours',fin:'Terminer',oh:'Plus de cœurs',ohp:'Cinq erreurs — c’est la limite. Pas de speed-run : la leçon recommence pour que les idées restent.',rst:'Recommencer la leçon',cb:'Bonus de cours',enote:'Les leçons sont en anglais pour l’instant — traduction bientôt.'},
+  pt:{h:'Do zero a <span class="g">trader</span>',les:'lições',crs:'cursos',xp:'recompensas XP',fr:'grátis',start:'Começar a aprender',cont:'Continuar · lição {n}/{t}',done:'Academia concluída',pdone:'lições concluídas',anon:'Não precisa de conta para começar. <button type="button" data-auth-open>Cadastre-se grátis</button> e ganhe <b style="color:var(--gold)">+25 XP por lição</b> para o seu nível.',anonp:'Progresso salvo neste dispositivo. <button type="button" data-auth-open>Cadastre-se grátis</button> para salvá-lo na conta e ganhar <b style="color:var(--gold)">+25 XP por lição</b>.',sin:'Conectado — cada lição vale +25 XP e cada curso concluído +50 de bônus.',locked:'BLOQUEADO',lockm:'Conclua o curso anterior para desbloquear.',steps:'passos',qs:'perguntas',ho:'prático',sb:'COMEÇAR',contb:'Continuar',exb:'Complete o exercício acima',qof:'Pergunta {i} de {n}',lc:'Lição concluída',al:'Já concluída — sem XP extra',nx:'A próxima lição está desbloqueada.',la:'Era a última — você terminou toda a Academia!',nud:'Progresso salvo neste dispositivo. <b>Cadastre-se grátis</b> (só email) para garantir <b style="color:var(--gold)">+25 XP</b> por cada lição.',nudb:'Cadastrar e resgatar XP',tryt:'Experimente de verdade (dinheiro fictício)',back:'Voltar à trilha',fin:'Concluir',oh:'Sem corações',ohp:'Cinco erros — esse é o limite. Nada de correria: a lição recomeça do início para as ideias fixarem.',rst:'Reiniciar lição',cb:'Bônus de curso',enote:'As lições estão em inglês por enquanto — tradução em breve.'},
+  nl:{h:'Van nul naar <span class="g">trader</span>',les:'lessen',crs:'cursussen',xp:'XP-beloningen',fr:'gratis',start:'Begin met leren',cont:'Verder · les {n}/{t}',done:'Academy voltooid',pdone:'lessen voltooid',anon:'Geen account nodig om te starten. <button type="button" data-auth-open>Meld je gratis aan</button> en verdien <b style="color:var(--gold)">+25 XP per les</b> voor je level.',anonp:'Voortgang wordt op dit apparaat bewaard. <button type="button" data-auth-open>Meld je gratis aan</button> om het aan je account te koppelen en <b style="color:var(--gold)">+25 XP per les</b> te verdienen.',sin:'Ingelogd — elke les levert +25 XP op, elke afgeronde cursus +50 bonus.',locked:'VERGRENDELD',lockm:'Rond eerst de vorige cursus af.',steps:'stappen',qs:'vragen',ho:'hands-on',sb:'START',contb:'Verder',exb:'Maak eerst de oefening hierboven af',qof:'Vraag {i} van {n}',lc:'Les voltooid',al:'Al voltooid — geen extra XP',nx:'De volgende les is ontgrendeld.',la:'Dat was de laatste — je hebt de hele Academy afgerond!',nud:'Voortgang op dit apparaat bewaard. <b>Meld je gratis aan</b> (alleen e-mail) en verzilver <b style="color:var(--gold)">+25 XP</b> per les.',nudb:'Aanmelden & XP claimen',tryt:'Probeer het echt (nepgeld)',back:'Terug naar het pad',fin:'Klaar',oh:'Geen hartjes meer',ohp:'Vijf fouten — dat is de limiet. Geen speedruns: de les begint opnieuw zodat het echt blijft hangen.',rst:'Les opnieuw starten',cb:'Cursusbonus',enote:'De lessen zijn voorlopig in het Engels — vertaling volgt snel.'},
+  ru:{h:'С нуля до <span class="g">трейдера</span>',les:'уроков',crs:'курсов',xp:'награды XP',fr:'бесплатно',start:'Начать обучение',cont:'Продолжить · урок {n}/{t}',done:'Академия пройдена',pdone:'уроков пройдено',anon:'Аккаунт не нужен, чтобы начать. <button type="button" data-auth-open>Войдите бесплатно</button> и получайте <b style="color:var(--gold)">+25 XP за урок</b> к вашему уровню.',anonp:'Прогресс сохраняется на этом устройстве. <button type="button" data-auth-open>Войдите бесплатно</button>, чтобы привязать его к аккаунту и получать <b style="color:var(--gold)">+25 XP за урок</b>.',sin:'Вы вошли — каждый урок даёт +25 XP, каждый завершённый курс +50 бонусом.',locked:'ЗАКРЫТО',lockm:'Завершите предыдущий курс, чтобы открыть.',steps:'шагов',qs:'вопросов',ho:'практика',sb:'СТАРТ',contb:'Далее',exb:'Сначала выполните упражнение выше',qof:'Вопрос {i} из {n}',lc:'Урок пройден',al:'Уже пройден — без доп. XP',nx:'Следующий урок открыт.',la:'Это был последний — вы прошли всю Академию!',nud:'Прогресс сохранён на этом устройстве. <b>Войдите бесплатно</b> (только email), чтобы получить <b style="color:var(--gold)">+25 XP</b> за каждый пройденный урок.',nudb:'Войти и забрать XP',tryt:'Попробуйте по-настоящему (виртуальные деньги)',back:'Назад к пути',fin:'Готово',oh:'Сердца закончились',ohp:'Пять ошибок — это лимит. Никакого спидрана: урок начнётся заново, чтобы материал действительно усвоился.',rst:'Начать урок заново',cb:'Бонус за курс',enote:'Уроки пока на английском — перевод скоро появится.'},
+  tr:{h:'Sıfırdan <span class="g">trader</span> ol',les:'ders',crs:'kurs',xp:'XP ödülleri',fr:'ücretsiz',start:'Öğrenmeye başla',cont:'Devam · ders {n}/{t}',done:'Akademi tamamlandı',pdone:'ders tamamlandı',anon:'Başlamak için hesap gerekmez. <button type="button" data-auth-open>Ücretsiz kaydol</button>, her ders için <b style="color:var(--gold)">+25 XP</b> kazan.',anonp:'İlerleme bu cihazda saklanıyor. <button type="button" data-auth-open>Ücretsiz kaydol</button>, hesabına kaydet ve <b style="color:var(--gold)">ders başına +25 XP</b> kazan.',sin:'Giriş yapıldı — her ders +25 XP, biten her kurs +50 bonus verir.',locked:'KİLİTLİ',lockm:'Açmak için önceki kursu bitir.',steps:'adım',qs:'soru',ho:'uygulamalı',sb:'BAŞLA',contb:'Devam',exb:'Önce yukarıdaki alıştırmayı tamamla',qof:'Soru {i}/{n}',lc:'Ders tamamlandı',al:'Zaten tamamlandı — ekstra XP yok',nx:'Sıradaki ders açıldı.',la:'Bu sonuncuydu — tüm Akademiyi bitirdin!',nud:'İlerleme bu cihazda kayıtlı. <b>Ücretsiz kaydol</b> (sadece e-posta) ve her biten ders için <b style="color:var(--gold)">+25 XP</b> topla.',nudb:'Kaydol ve XP al',tryt:'Gerçekten dene (sanal para)',back:'Yola dön',fin:'Bitir',oh:'Kalp kalmadı',ohp:'Beş hata — sınır bu. Hız koşusu yok: ders baştan başlar ki fikirler gerçekten otursun.',rst:'Dersi yeniden başlat',cb:'Kurs bonusu',enote:'Dersler şimdilik İngilizce — çeviri çok yakında.'},
+  id:{h:'Dari nol jadi <span class="g">trader</span>',les:'pelajaran',crs:'kursus',xp:'hadiah XP',fr:'gratis',start:'Mulai belajar',cont:'Lanjut · pelajaran {n}/{t}',done:'Akademi selesai',pdone:'pelajaran selesai',anon:'Tidak perlu akun untuk mulai. <button type="button" data-auth-open>Daftar gratis</button> dan dapatkan <b style="color:var(--gold)">+25 XP per pelajaran</b> untuk levelmu.',anonp:'Progres tersimpan di perangkat ini. <button type="button" data-auth-open>Daftar gratis</button> untuk menyimpannya ke akun dan mendapat <b style="color:var(--gold)">+25 XP per pelajaran</b>.',sin:'Sudah masuk — tiap pelajaran memberi +25 XP, tiap kursus selesai +50 bonus.',locked:'TERKUNCI',lockm:'Selesaikan kursus sebelumnya untuk membuka.',steps:'langkah',qs:'pertanyaan',ho:'praktik',sb:'MULAI',contb:'Lanjut',exb:'Selesaikan latihan di atas dulu',qof:'Pertanyaan {i} dari {n}',lc:'Pelajaran selesai',al:'Sudah selesai — tanpa XP tambahan',nx:'Pelajaran berikutnya terbuka.',la:'Itu yang terakhir — kamu menyelesaikan seluruh Akademi!',nud:'Progres tersimpan di perangkat ini. <b>Daftar gratis</b> (cukup email) untuk mengklaim <b style="color:var(--gold)">+25 XP</b> per pelajaran.',nudb:'Daftar & klaim XP',tryt:'Coba sungguhan (uang virtual)',back:'Kembali ke jalur',fin:'Selesai',oh:'Nyawa habis',ohp:'Lima kesalahan — itu batasnya. Tidak ada speed-run: pelajaran diulang dari awal supaya benar-benar paham.',rst:'Ulangi pelajaran',cb:'Bonus kursus',enote:'Pelajaran masih dalam bahasa Inggris — terjemahan segera hadir.'},
+  zh:{h:'从零到<span class="g">交易者</span>',les:'节课程',crs:'个课程',xp:'XP 奖励',fr:'免费',start:'开始学习',cont:'继续 · 第 {n}/{t} 课',done:'学院已完成',pdone:'课程已完成',anon:'无需账号即可开始。<button type="button" data-auth-open>免费注册</button>，每完成一课可获得 <b style="color:var(--gold)">+25 XP</b>。',anonp:'进度保存在本设备上。<button type="button" data-auth-open>免费注册</button>即可绑定账号并获得<b style="color:var(--gold)">每课 +25 XP</b>。',sin:'已登录 — 每节课 +25 XP，每完成一个课程 +50 奖励。',locked:'未解锁',lockm:'完成上一个课程后解锁。',steps:'步',qs:'题',ho:'实操',sb:'开始',contb:'继续',exb:'请先完成上面的练习',qof:'第 {i} 题，共 {n} 题',lc:'本课完成',al:'已完成 — 不再重复给 XP',nx:'下一课已解锁。',la:'这是最后一课 — 你完成了整个学院！',nud:'进度已保存在本设备。<b>免费注册</b>（仅需邮箱）即可领取每课 <b style="color:var(--gold)">+25 XP</b>。',nudb:'注册并领取 XP',tryt:'真实体验一下（虚拟资金）',back:'返回学习路径',fin:'完成',oh:'红心用完了',ohp:'五次错误就是上限。不能刷课：本课将从头开始，让知识真正记住。',rst:'重新开始本课',cb:'课程奖励',enote:'课程内容暂为英文 — 翻译即将上线。'},
+  ja:{h:'ゼロから<span class="g">トレーダー</span>へ',les:'レッスン',crs:'コース',xp:'XP報酬',fr:'無料',start:'学習を始める',cont:'続ける · レッスン {n}/{t}',done:'アカデミー修了',pdone:'レッスン完了',anon:'アカウント不要で始められます。<button type="button" data-auth-open>無料登録</button>すると1レッスンごとに<b style="color:var(--gold)">+25 XP</b>を獲得。',anonp:'進捗はこの端末に保存されています。<button type="button" data-auth-open>無料登録</button>でアカウントに保存し、<b style="color:var(--gold)">レッスンごとに+25 XP</b>を獲得。',sin:'ログイン中 — 各レッスン+25 XP、コース修了ごとに+50ボーナス。',locked:'ロック中',lockm:'前のコースを修了すると解除されます。',steps:'ステップ',qs:'問題',ho:'実践',sb:'スタート',contb:'次へ',exb:'まず上の演習を完了してください',qof:'問題 {i} / {n}',lc:'レッスン完了',al:'完了済み — 追加XPはありません',nx:'次のレッスンが解放されました。',la:'これが最後 — アカデミーを全て修了しました！',nud:'進捗はこの端末に保存済み。<b>無料登録</b>（メールのみ）で各レッスンの<b style="color:var(--gold)">+25 XP</b>を受け取れます。',nudb:'登録してXPを受け取る',tryt:'実際に試す（仮想資金）',back:'パスに戻る',fin:'完了',oh:'ハートがなくなりました',ohp:'ミスは5回まで。早解き禁止：レッスンは最初からやり直しです。しっかり身につけましょう。',rst:'レッスンをやり直す',cb:'コースボーナス',enote:'レッスンは現在英語です — 翻訳は近日公開。'},
+  ko:{h:'제로에서 <span class="g">트레이더</span>까지',les:'레슨',crs:'코스',xp:'XP 보상',fr:'무료',start:'학습 시작',cont:'계속 · 레슨 {n}/{t}',done:'아카데미 완료',pdone:'레슨 완료',anon:'계정 없이 시작할 수 있어요. <button type="button" data-auth-open>무료 가입</button>하면 레슨마다 <b style="color:var(--gold)">+25 XP</b>를 획득합니다.',anonp:'진행 상황은 이 기기에 저장됩니다. <button type="button" data-auth-open>무료 가입</button>으로 계정에 저장하고 <b style="color:var(--gold)">레슨당 +25 XP</b>를 받으세요.',sin:'로그인됨 — 레슨마다 +25 XP, 코스 완료 시 +50 보너스.',locked:'잠김',lockm:'이전 코스를 완료하면 열립니다.',steps:'단계',qs:'문제',ho:'실습',sb:'시작',contb:'계속',exb:'위의 연습을 먼저 완료하세요',qof:'문제 {i} / {n}',lc:'레슨 완료',al:'이미 완료됨 — 추가 XP 없음',nx:'다음 레슨이 열렸습니다.',la:'마지막 레슨이었어요 — 아카데미 전체를 끝냈습니다!',nud:'진행 상황이 이 기기에 저장되었습니다. <b>무료 가입</b>(이메일만)으로 레슨마다 <b style="color:var(--gold)">+25 XP</b>를 받으세요.',nudb:'가입하고 XP 받기',tryt:'실전처럼 해보기 (가상 자금)',back:'경로로 돌아가기',fin:'완료',oh:'하트가 다 떨어졌어요',ohp:'실수는 5번까지. 스피드런 금지: 레슨을 처음부터 다시 시작해 확실히 익힙니다.',rst:'레슨 다시 시작',cb:'코스 보너스',enote:'레슨은 아직 영어입니다 — 번역이 곧 제공됩니다.'},
+  ar:{h:'من الصفر إلى <span class="g">متداول</span>',les:'درسًا',crs:'دورات',xp:'مكافآت XP',fr:'مجاني',start:'ابدأ التعلّم',cont:'متابعة · الدرس {n}/{t}',done:'أكملت الأكاديمية',pdone:'دروس مكتملة',anon:'لا تحتاج حسابًا للبدء. <button type="button" data-auth-open>سجّل مجانًا</button> واكسب <b style="color:var(--gold)">+25 XP لكل درس</b> لمستواك.',anonp:'يُحفظ التقدّم على هذا الجهاز. <button type="button" data-auth-open>سجّل مجانًا</button> لحفظه في حسابك وكسب <b style="color:var(--gold)">+25 XP لكل درس</b>.',sin:'تم تسجيل الدخول — كل درس يمنح +25 XP وكل دورة مكتملة +50 مكافأة.',locked:'مقفل',lockm:'أكمل الدورة السابقة للفتح.',steps:'خطوات',qs:'أسئلة',ho:'تطبيق عملي',sb:'ابدأ',contb:'متابعة',exb:'أكمل التمرين أعلاه أولًا',qof:'السؤال {i} من {n}',lc:'اكتمل الدرس',al:'مكتمل مسبقًا — لا XP إضافي',nx:'فُتح الدرس التالي.',la:'كان هذا الأخير — أنهيت الأكاديمية كاملة!',nud:'التقدّم محفوظ على هذا الجهاز. <b>سجّل مجانًا</b> (بريد فقط) لتحصيل <b style="color:var(--gold)">+25 XP</b> عن كل درس.',nudb:'سجّل واحصل على XP',tryt:'جرّبها فعليًا (أموال افتراضية)',back:'العودة إلى المسار',fin:'إنهاء',oh:'نفدت القلوب',ohp:'خمسة أخطاء — هذا الحد. لا تسرّع: يبدأ الدرس من جديد لتترسّخ الأفكار فعلًا.',rst:'أعد الدرس',cb:'مكافأة الدورة',enote:'الدروس بالإنجليزية حاليًا — الترجمة قريبًا.'}
+  };
+  var lang='en';
+  try{lang=localStorage.getItem('mp_acad_lang')||localStorage.getItem('mp_lang')||((navigator.language||'en').slice(0,2));}catch(e){}
+  if(!UI[lang])lang='en';
+  function U(k){return (UI[lang]&&UI[lang][k])||UI.en[k]||'';}
+  function fmt(str,map){return str.replace(/\{(\w+)\}/g,function(m,k){return map[k]!=null?map[k]:m;});}
+  var packLoaded=false;
+  function applyPack(pack){ // merge translated text onto the pristine EN structure (mechanics: v/act/a stay from EN)
+    var fresh=JSON.parse(JSON.stringify(BASE));
+    if(pack&&pack.courses){var pc={};pack.courses.forEach(function(c){pc[c.id]=c;});
+      fresh.courses.forEach(function(c){var t=pc[c.id];if(!t)return;
+        if(t.name)c.name=t.name;if(t.sub)c.sub=t.sub;
+        var pl={};(t.lessons||[]).forEach(function(L){pl[L.id]=L;});
+        c.lessons.forEach(function(L){var tl=pl[L.id];if(!tl)return;
+          if(tl.t)L.t=tl.t;
+          if(tl.cards&&tl.cards.length===L.cards.length)L.cards.forEach(function(cd,i){if(tl.cards[i].h)cd.h=tl.cards[i].h;if(tl.cards[i].p)cd.p=tl.cards[i].p;if(cd.act&&tl.cards[i].prompt)cd.act.prompt=tl.cards[i].prompt;});
+          if(tl.quiz&&tl.quiz.length===L.quiz.length)L.quiz.forEach(function(q,i){if(tl.quiz[i].q)q.q=tl.quiz[i].q;if(tl.quiz[i].o&&tl.quiz[i].o.length===q.o.length)q.o=tl.quiz[i].o;});
+          if(L['try']&&tl['try']){if(tl['try'].p)L['try'].p=tl['try'].p;if(tl['try'].label)L['try'].label=tl['try'].label;}
+        });
+      });
+      packLoaded=true;
+    } else packLoaded=(lang==='en');
+    DATA=fresh;COURSES=DATA.courses;
+    ALL=[];COURSES.forEach(function(c){c.lessons.forEach(function(L){ALL.push({c:c,l:L});});});
+  }
+  function setLang(l){ if(!UI[l])l='en'; lang=l;
+    try{localStorage.setItem('mp_acad_lang',l);}catch(e){}
+    document.documentElement.setAttribute('dir',l==='ar'?'rtl':'ltr');
+    document.getElementById('lpickCur').textContent=l.toUpperCase();
+    applyStatic();
+    if(l==='en'){applyPack(null);render();return;}
+    fetch('/academy/i18n/'+l+'.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();})
+      .then(function(p){applyPack(p);applyStatic();render();})
+      .catch(function(){applyPack(null);applyStatic();render();});
+  }
+  function applyStatic(){
+    var hd=document.querySelector('.hero h1');if(hd)hd.innerHTML=U('h');
+    var st=document.querySelector('.hero-stats');if(st)st.innerHTML='<span>65 '+U('les')+'</span><i></i><span>7 '+U('crs')+'</span><i></i><span>'+U('xp')+'</span><i></i><span>'+U('fr')+'</span>';
+    var en=document.getElementById('enote');if(en){en.textContent=U('enote');en.classList.toggle('on',lang!=='en'&&!packLoaded&&!!U('enote'));}
+  }
   var ALL=[];COURSES.forEach(function(c){c.lessons.forEach(function(L){ALL.push({c:c,l:L});});});
   var TOTAL=ALL.length;
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
@@ -559,12 +637,13 @@ footer a{color:var(--dim)}
   function render(){
     var n=doneCount();
     document.getElementById('pgN').textContent=n+'/'+TOTAL;
+    var pl=document.querySelector('.prog-l');if(pl)pl.textContent=U('pdone');
     document.getElementById('pgBar').style.width=(n/TOTAL*100)+'%';
     document.getElementById('pgXp').textContent=n>0?('~'+(n*25)+' XP'):'';
     var note=document.getElementById('pgNote');
-    if(!signedIn&&n>0)note.innerHTML='Progress is saved on this device. <button type="button" data-auth-open>Sign in free</button> to save it to your account and earn <b style="color:var(--gold)">+25 XP per lesson</b>.';
-    else if(!signedIn)note.innerHTML='No account needed to start. <button type="button" data-auth-open>Sign in free</button> to earn <b style="color:var(--gold)">+25 XP per lesson</b> toward your level.';
-    else note.textContent='Signed in — every lesson earns +25 XP, each finished course +50 bonus.';
+    if(!signedIn&&n>0)note.innerHTML=U('anonp');
+    else if(!signedIn)note.innerHTML=U('anon');
+    else note.textContent=U('sin');
     var host=document.getElementById('courses'),html='';
     var nxt=nextLesson();
     var prevDone=true; // course locks: a course opens only when every lesson of the previous course is complete
@@ -574,20 +653,20 @@ footer a{color:var(--dim)}
       var isCur=!lockedC&&c.lessons.some(function(L){return L.id===nxt;});
       var open=openCourses[c.id]!=null?openCourses[c.id]:isCur;
       if(lockedC)open=false;
-      html+='<section class="course'+(open?' open':'')+(lockedC?' lockedc':'')+'" data-cid="'+c.id+'" style="--cc:'+c.color+'"><div class="crs-h" data-ctoggle="'+c.id+'"><span class="ic">'+(lockedC?ICONS.lock:ICONS[c.icon])+'</span><div><div class="crs-t">'+esc(c.name)+'</div><div class="crs-s">'+esc(c.sub)+'</div></div><span class="crs-done">'+(lockedC?'LOCKED':cd+'/'+c.lessons.length)+'</span><span class="crs-chev">\u25B6</span></div>'+(lockedC?'<div class="lockmsg">Finish the previous course to unlock.</div>':'')+'<div class="path">';
+      html+='<section class="course'+(open?' open':'')+(lockedC?' lockedc':'')+'" data-cid="'+c.id+'" style="--cc:'+c.color+'"><div class="crs-h" data-ctoggle="'+c.id+'"><span class="ic">'+(lockedC?ICONS.lock:ICONS[c.icon])+'</span><div><div class="crs-t">'+esc(c.name)+'</div><div class="crs-s">'+esc(c.sub)+'</div></div><span class="crs-done">'+(lockedC?esc(U('locked')):cd+'/'+c.lessons.length)+'</span><span class="crs-chev">\u25B6</span></div>'+(lockedC?'<div class="lockmsg">'+esc(U('lockm'))+'</div>':'')+'<div class="path">';
       prevDone=prevDone&&(cd===c.lessons.length);
       c.lessons.forEach(function(L,i){
         var d=!!st.done[L.id],u=unlocked(L.id),cls=d?'done':(L.id===nxt?'next':(u?'':'locked'));
         var nInter=L.cards.filter(function(x){return x.act;}).length;
-        html+='<button type="button" class="node '+cls+'" data-lesson="'+L.id+'" '+(u?'':'disabled')+'><span class="dot">'+(d?ICONS.check:(u?String(i+1):ICONS.lock))+'</span><span><span class="nt">'+esc(L.t)+'</span><span class="ns">'+L.cards.length+' steps · '+L.quiz.length+' questions'+(nInter?' · hands-on':'')+'</span></span><span class="xpb">+25 XP</span></button>';
+        html+='<button type="button" class="node '+cls+'" data-start="'+esc(U('sb'))+'" data-lesson="'+L.id+'" '+(u?'':'disabled')+'><span class="dot">'+(d?ICONS.check:(u?String(i+1):ICONS.lock))+'</span><span><span class="nt">'+esc(L.t)+'</span><span class="ns">'+L.cards.length+' '+esc(U('steps'))+' · '+L.quiz.length+' '+esc(U('qs'))+(nInter?' · '+esc(U('ho')):'')+'</span></span><span class="xpb">+25 XP</span></button>';
       });
       html+='</div></section>';
     });
     host.innerHTML=html;
     document.getElementById('allDone').hidden=n<TOTAL;
     var hg=document.getElementById('heroGo');
-    if(hg){ if(n>=TOTAL){hg.textContent='\u2713\u00A0 Academy complete';}
-      else hg.innerHTML='\u25B6&nbsp; '+(n>0?('Continue \u00B7 lesson '+(n+1)+'/'+TOTAL):'Start learning'); }
+    if(hg){ if(n>=TOTAL){hg.textContent='\u2713\u00A0 '+U('done');}
+      else hg.innerHTML='\u25B6&nbsp; '+(n>0?esc(fmt(U('cont'),{n:n+1,t:TOTAL})):esc(U('start'))); }
     if(window.mpLvlDecorate)window.mpLvlDecorate();
   }
   document.getElementById('heroGo').addEventListener('click',function(){
@@ -612,8 +691,8 @@ footer a{color:var(--dim)}
   function renderHearts(){var el=document.getElementById('lpHearts');if(!el)return;var out='';for(var i=0;i<5;i++)out+=i<hearts?HEART_FULL:HEART_EMPTY;el.innerHTML=out;el.classList.toggle('low',hearts<=2);}
   function loseHeart(){hearts--;renderHearts();try{if(navigator.vibrate)navigator.vibrate([35]);}catch(e){}if(hearts<=0)failLesson();}
   function failLesson(){
-    lpBody.innerHTML='<div class="lp-done"><div class="big"><svg viewBox="0 0 24 24" width="66" height="66" style="display:inline-block;filter:drop-shadow(0 0 14px rgba(255,98,88,.4))"><path d="M12 21s-6.8-4.4-9.4-8.2C.7 9.9 2 5.9 5.6 4.9c2.3-.6 4.5.5 6.4 2.7 1.9-2.2 4.1-3.3 6.4-2.7 3.6 1 4.9 5 2.9 7.9C18.8 16.6 12 21 12 21z" fill="#2a1512" stroke="#ff6258" stroke-width="1.3"/><path d="M12 7.6 10 11l3 2.4-2.2 3.6" fill="none" stroke="#ff6258" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h2>Out of hearts</h2><p>Five mistakes — that is the limit. No speed-running: the lesson restarts from the top so the ideas actually land.</p></div>';
-    lpGo.hidden=false;lpGo.disabled=false;lpGo.textContent='Restart lesson';lpGo.setAttribute('data-fail','1');
+    lpBody.innerHTML='<div class="lp-done"><div class="big"><svg viewBox="0 0 24 24" width="66" height="66" style="display:inline-block;filter:drop-shadow(0 0 14px rgba(255,98,88,.4))"><path d="M12 21s-6.8-4.4-9.4-8.2C.7 9.9 2 5.9 5.6 4.9c2.3-.6 4.5.5 6.4 2.7 1.9-2.2 4.1-3.3 6.4-2.7 3.6 1 4.9 5 2.9 7.9C18.8 16.6 12 21 12 21z" fill="#2a1512" stroke="#ff6258" stroke-width="1.3"/><path d="M12 7.6 10 11l3 2.4-2.2 3.6" fill="none" stroke="#ff6258" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h2>'+esc(U('oh'))+'</h2><p>'+esc(U('ohp'))+'</p></div>';
+    lpGo.hidden=false;lpGo.disabled=false;lpGo.textContent=U('rst');lpGo.setAttribute('data-fail','1');
   }
   function openLesson(id){
     var x=ALL.find(function(y){return y.l.id===id;});if(!x)return;
@@ -624,7 +703,7 @@ footer a{color:var(--dim)}
   }
   function closeLp(){lp.classList.remove('on');document.body.style.overflow='';render();}
   document.getElementById('lpX').addEventListener('click',closeLp);
-  function actDone(){lpGo.disabled=false;lpGo.textContent='Continue';}
+  function actDone(){lpGo.disabled=false;lpGo.textContent=U('contb');}
   function show(){
     lpBar.style.width=(step/(steps-1)*100)+'%';
     var L=cur.l,c=cur.c;
@@ -634,7 +713,7 @@ footer a{color:var(--dim)}
       var host=lpBody.querySelector('.vzhost');
       lpGo.hidden=false;
       if(card.act){
-        lpGo.disabled=true;lpGo.textContent='Complete the exercise above';
+        lpGo.disabled=true;lpGo.textContent=U('exb');
         var a=card.act;
         lpBody.querySelector('.lp-p').insertAdjacentHTML('beforebegin','<p class="lp-p" style="color:var(--gold);font-size:14px"><b style="color:var(--gold)">▸ '+esc(a.prompt)+'</b></p>');
         if(a.kind==='tap'&&VIZ[a.viz])VIZ[a.viz](host,actDone);
@@ -645,7 +724,7 @@ footer a{color:var(--dim)}
       } else {
         if(card.v&&VIZ[card.v])VIZ[card.v](host);
         // anti speed-run: Continue unlocks after a minimum read time scaled by text length
-        lpGo.disabled=true;lpGo.textContent='Continue';
+        lpGo.disabled=true;lpGo.textContent=U('contb');
         if(readT)clearTimeout(readT);
         var wait=Math.min(4500,Math.max(1500,900+(card.p||'').length*9));
         (function(myStep){readT=setTimeout(function(){if(step===myStep&&!lpGo.hidden&&!lpGo.getAttribute('data-fail'))lpGo.disabled=false;},wait);})(step);
@@ -653,7 +732,7 @@ footer a{color:var(--dim)}
       lpBody.scrollTop=0;
     } else if(step<L.cards.length+L.quiz.length){
       var q=L.quiz[step-L.cards.length];answered=false;
-      lpBody.innerHTML='<div class="lp-kicker" style="--cc:'+c.color+'">Question '+(step-L.cards.length+1)+' of '+L.quiz.length+'</div><div class="lp-q">'+esc(q.q)+'</div>'+q.o.map(function(o,i){return '<button type="button" class="lp-opt" data-i="'+i+'">'+esc(o)+'</button>';}).join('');
+      lpBody.innerHTML='<div class="lp-kicker" style="--cc:'+c.color+'">'+esc(fmt(U('qof'),{i:step-L.cards.length+1,n:L.quiz.length}))+'</div><div class="lp-q">'+esc(q.q)+'</div>'+q.o.map(function(o,i){return '<button type="button" class="lp-opt" data-i="'+i+'">'+esc(o)+'</button>';}).join('');
       lpGo.hidden=true;
       Array.prototype.forEach.call(lpBody.querySelectorAll('.lp-opt'),function(btn){
         btn.addEventListener('click',function(){
@@ -674,11 +753,11 @@ footer a{color:var(--dim)}
     var L=cur.l,wasNew=!st.done[L.id];
     st.done[L.id]=1;saveLocal();
     lpBar.style.width='100%';
-    var xpHtml=signedIn?'<div class="xp" id="lpXp">'+(wasNew?'+25 XP':'Already completed — no extra XP')+'</div>':'';
-    var nudge=!signedIn?'<div class="nudge">Progress saved on this device. <b>Sign in free</b> (email only) to bank <b style="color:var(--gold)">+25 XP</b> for this lesson and every one you finish.<br><button type="button" data-auth-open>Sign in &amp; claim XP</button></div>':'';
-    var tb=L['try']?'<div class="lp-try"><div class="tl">Try it for real (fake money)</div><p>'+esc(L['try'].p)+'</p><a href="'+L['try'].href+'">'+esc(L['try'].label)+'</a></div>':'';
-    lpBody.innerHTML='<div class="lp-done"><div class="big">✦</div><h2>Lesson complete</h2>'+xpHtml+nudge+'<p>'+esc(L.t)+' — done. '+(nextLesson()?'The next lesson is unlocked.':'That was the last one — you finished the whole Academy.')+'</p>'+tb+'</div>';
-    lpGo.textContent=nextLesson()?'Back to the path':'Finish';lpGo.hidden=false;lpGo.disabled=false;
+    var xpHtml=signedIn?'<div class="xp" id="lpXp">'+(wasNew?'+25 XP':esc(U('al')))+'</div>':'';
+    var nudge=!signedIn?'<div class="nudge">'+U('nud')+'<br><button type="button" data-auth-open>'+esc(U('nudb'))+'</button></div>':'';
+    var tb=L['try']?'<div class="lp-try"><div class="tl">'+esc(U('tryt'))+'</div><p>'+esc(L['try'].p)+'</p><a href="'+L['try'].href+'">'+esc(L['try'].label)+'</a></div>':'';
+    lpBody.innerHTML='<div class="lp-done"><div class="big">✦</div><h2>'+esc(U('lc'))+'</h2>'+xpHtml+nudge+'<p>'+esc(L.t)+' — '+(nextLesson()?esc(U('nx')):esc(U('la')))+'</p>'+tb+'</div>';
+    lpGo.textContent=nextLesson()?U('back'):U('fin');lpGo.hidden=false;lpGo.disabled=false;
     if(wasNew&&signedIn)postComplete(L.id);
   }
   function postComplete(id){
@@ -687,7 +766,7 @@ footer a{color:var(--dim)}
       .then(function(d){
         if(d&&d.ok){
           var el=document.getElementById('lpXp');
-          if(el&&d.fresh){el.textContent='+'+(d.granted||25)+' XP'+(d.bonus?(' · Course bonus +'+d.bonus+' XP'):'');}
+          if(el&&d.fresh){el.textContent='+'+(d.granted||25)+' XP'+(d.bonus?(' · '+U('cb')+' +'+d.bonus+' XP'):'');}
           if(window.mpXpCheck)setTimeout(window.mpXpCheck,500);
         }
       }).catch(function(){});
@@ -713,7 +792,17 @@ footer a{color:var(--dim)}
     }).catch(function(){render();});
   }
   window.addEventListener('mp-auth-change',function(){setTimeout(loadServer,400);});
-  render();loadServer();
+  (function(){
+    var btn=document.getElementById('lpickBtn'),menu=document.getElementById('lpickMenu');
+    menu.innerHTML=LANGS.map(function(x){return '<button type="button" data-lg="'+x[0]+'" class="'+(x[0]===lang?'on':'')+'">'+x[1]+'<small>'+x[0].toUpperCase()+'</small></button>';}).join('');
+    btn.addEventListener('click',function(e){e.stopPropagation();menu.hidden=!menu.hidden;});
+    menu.addEventListener('click',function(e){var b=e.target.closest('[data-lg]');if(!b)return;menu.hidden=true;
+      Array.prototype.forEach.call(menu.querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});
+      var wasOpen=lp.classList.contains('on');if(wasOpen)closeLp();
+      setLang(b.getAttribute('data-lg'));});
+    document.addEventListener('click',function(){menu.hidden=true;});
+  })();
+  setLang(lang);loadServer();
   try{var pv='/api/track?t=pageview&p=/academy/';if(document.referrer)pv+='&r='+encodeURIComponent(document.referrer);navigator.sendBeacon&&navigator.sendBeacon(pv);}catch(e){}
 })();
 </script>
