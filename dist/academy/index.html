@@ -167,21 +167,10 @@ footer a{color:var(--dim)}
 .hitzone:hover{opacity:.85}
 .hit-ok{fill:rgba(46,189,133,.3)!important;stroke:#2ebd85!important}
 .hit-bad{fill:rgba(255,98,88,.28)!important;stroke:#ff6258!important;animation:shake .3s}
-.lpick-row{display:flex;justify-content:flex-end;margin:0 0 -4px}
-.lpick{position:relative}
-.lpick-b{display:inline-flex;align-items:center;gap:6px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.4);color:var(--lime);border-radius:999px;padding:7px 12px;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:800;cursor:pointer;letter-spacing:.05em;transition:.15s;box-shadow:0 0 14px -6px rgba(194,246,74,.5)}
-.lpick-b:hover{background:rgba(194,246,74,.12)}
-.lpick-b i{font-style:normal;font-size:9px;opacity:.7}
-.lpick-m{position:absolute;right:0;top:calc(100% + 8px);z-index:120;background:#12161d;border:1px solid var(--line2);border-radius:14px;padding:6px;min-width:172px;box-shadow:0 18px 50px -12px rgba(0,0,0,.8);max-height:62vh;overflow-y:auto}
-.lpick-m button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;border:none;color:var(--ink);font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 11px;border-radius:9px;cursor:pointer}
-.lpick-m button:hover{background:rgba(194,246,74,.08)}
-.lpick-m button.on{color:var(--lime)}
-.lpick-m button small{margin-left:auto;color:var(--faint);font-family:'Space Mono',monospace;font-size:10px}
 /* long-word safety: DE/NL compounds, RU etc. must never overflow */
 .lp-h,.lp-p,.lp-q,.lp-opt,.node .nt,.node .ns,.crs-t,.crs-s,.vz-goal,.lp-done p,.lp-done .nudge,.lp-try p{overflow-wrap:break-word;word-break:break-word;min-width:0}
 .node>span:nth-child(2){min-width:0;flex:1}
 .hero-cta{max-width:100%;white-space:normal;line-height:1.3}
-html[dir="rtl"] .lpick-m{right:auto;left:0}
 html[dir="rtl"] .node{text-align:right}
 .enote{margin:10px 0 0;font-size:12px;color:var(--faint);border:1px dashed var(--line2);border-radius:10px;padding:8px 12px;display:none}
 .enote.on{display:block}
@@ -196,8 +185,7 @@ html[dir="rtl"] .node{text-align:right}
     <a class="brand" href="/">MARGIN<b>PAD</b></a>
     <nav class="hnav"><a href="/paper-trade">Practice</a><a href="/levels/">Levels</a></nav>
   </header>
-  <div class="lpick-row"><div class="lpick"><button class="lpick-b" id="lpickBtn" type="button" aria-label="Language"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21M12 3c-2.5 2.6-3.8 5.7-3.8 9s1.3 6.4 3.8 9"/></svg><b id="lpickCur">EN</b><i>▾</i></button>
-  <div class="lpick-m" id="lpickMenu" hidden></div></div></div>
+  
 
   <section class="hero">
     <span class="eyebrow">◆ MarginPad Academy</span>
@@ -259,7 +247,7 @@ html[dir="rtl"] .node{text-align:right}
   ar:{h:'من الصفر إلى <span class="g">متداول</span>',les:'درسًا',crs:'دورات',xp:'مكافآت XP',fr:'مجاني',start:'ابدأ التعلّم',cont:'متابعة · الدرس {n}/{t}',done:'أكملت الأكاديمية',pdone:'دروس مكتملة',anon:'لا تحتاج حسابًا للبدء. <button type="button" data-auth-open>سجّل مجانًا</button> واكسب <b style="color:var(--gold)">+25 XP لكل درس</b> لمستواك.',anonp:'يُحفظ التقدّم على هذا الجهاز. <button type="button" data-auth-open>سجّل مجانًا</button> لحفظه في حسابك وكسب <b style="color:var(--gold)">+25 XP لكل درس</b>.',sin:'تم تسجيل الدخول — كل درس يمنح +25 XP وكل دورة مكتملة +50 مكافأة.',locked:'مقفل',lockm:'أكمل الدورة السابقة للفتح.',steps:'خطوات',qs:'أسئلة',ho:'تطبيق عملي',sb:'ابدأ',contb:'متابعة',exb:'أكمل التمرين أعلاه أولًا',qof:'السؤال {i} من {n}',lc:'اكتمل الدرس',al:'مكتمل مسبقًا — لا XP إضافي',nx:'فُتح الدرس التالي.',la:'كان هذا الأخير — أنهيت الأكاديمية كاملة!',nud:'التقدّم محفوظ على هذا الجهاز. <b>سجّل مجانًا</b> (بريد فقط) لتحصيل <b style="color:var(--gold)">+25 XP</b> عن كل درس.',nudb:'سجّل واحصل على XP',tryt:'جرّبها فعليًا (أموال افتراضية)',back:'العودة إلى المسار',fin:'إنهاء',oh:'نفدت القلوب',ohp:'خمسة أخطاء — هذا الحد. لا تسرّع: يبدأ الدرس من جديد لتترسّخ الأفكار فعلًا.',rst:'أعد الدرس',cb:'مكافأة الدورة',enote:'الدروس بالإنجليزية حاليًا — الترجمة قريبًا.'}
   };
   var lang='en';
-  try{lang=localStorage.getItem('mp_acad_lang')||localStorage.getItem('mp_lang')||((navigator.language||'en').slice(0,2));}catch(e){}
+  try{lang=localStorage.getItem('mp_lang')||((navigator.language||'en').slice(0,2));}catch(e){}
   if(!UI[lang])lang='en';
   function U(k){return (UI[lang]&&UI[lang][k])||UI.en[k]||'';}
   function fmt(str,map){return str.replace(/\{(\w+)\}/g,function(m,k){return map[k]!=null?map[k]:m;});}
@@ -283,9 +271,7 @@ html[dir="rtl"] .node{text-align:right}
     ALL=[];COURSES.forEach(function(c){c.lessons.forEach(function(L){ALL.push({c:c,l:L});});});
   }
   function setLang(l){ if(!UI[l])l='en'; lang=l;
-    try{localStorage.setItem('mp_acad_lang',l);}catch(e){}
     document.documentElement.setAttribute('dir',l==='ar'?'rtl':'ltr');
-    document.getElementById('lpickCur').textContent=l.toUpperCase();
     applyStatic();
     if(l==='en'){applyPack(null);render();return;}
     fetch('/academy/i18n/'+l+'.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json();})
@@ -822,17 +808,8 @@ html[dir="rtl"] .node{text-align:right}
     }).catch(function(){render();});
   }
   window.addEventListener('mp-auth-change',function(){setTimeout(loadServer,400);});
-  (function(){
-    var btn=document.getElementById('lpickBtn'),menu=document.getElementById('lpickMenu');
-    menu.innerHTML=LANGS.map(function(x){return '<button type="button" data-lg="'+x[0]+'" class="'+(x[0]===lang?'on':'')+'">'+x[1]+'<small>'+x[0].toUpperCase()+'</small></button>';}).join('');
-    btn.addEventListener('click',function(e){e.stopPropagation();menu.hidden=!menu.hidden;});
-    menu.addEventListener('click',function(e){var b=e.target.closest('[data-lg]');if(!b)return;menu.hidden=true;
-      Array.prototype.forEach.call(menu.querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});
-      var wasOpen=lp.classList.contains('on');if(wasOpen)closeLp();
-      setLang(b.getAttribute('data-lg'));});
-    document.addEventListener('click',function(){menu.hidden=true;});
-  })();
   setLang(lang);loadServer();
+
   try{var pv='/api/track?t=pageview&p=/academy/';if(document.referrer)pv+='&r='+encodeURIComponent(document.referrer);navigator.sendBeacon&&navigator.sendBeacon(pv);}catch(e){}
 })();
 </script>
