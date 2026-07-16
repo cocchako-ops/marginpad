@@ -126,7 +126,7 @@
     + '<div class="mpnav-scroll">'
     + '<div class="mpnav-sugg" id="mpnavSugg" hidden></div>'
     + '<div class="mpnav-sec">'+TR('secNew')+'</div>'
-    + row('brWtsT', 'brWtsS', '/where-to-start/', '#c2f64a', 'start')
+    + row('Academy', 'Learn trading from zero · 22 free lessons + XP', '/academy/', '#c2f64a', 'start')
     + '<div class="mpnav-sec">'+TR('secCalc')+'</div>'
     + '<button type="button" class="mpnav-row mpnav-expand" data-mpexpand="calc"><span class="mpnav-ic" style="color:#c2f64a;background:#c2f64a22">'+I.calc+'</span><span class="mpnav-rt"><b>'+TR('brCalcT')+'</b><small>'+TR('brCalcS')+'</small></span>'+I.chev+'</button>'
     + '<div class="mpnav-sub" data-sub="calc" hidden>'

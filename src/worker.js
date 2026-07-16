@@ -5843,6 +5843,7 @@ export default {
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/levels', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(lvBody) })); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=30', ...CORS } }); }
       catch (e) { return new Response('{"byId":{},"byName":{}}', { headers: { 'content-type': 'application/json', ...CORS } }); }
     }
+    if (url.pathname === '/api/academy') return handleAcademy(url, request, env);
     if (url.pathname === '/api/missions') return handleMissions(url, request, env);
     if (url.pathname.startsWith('/api/comm/')) return handleComm(url, request, env, ctx);
     if (url.pathname.startsWith('/api/') && url.pathname !== '/api/') return handleApi(url);
@@ -6508,6 +6509,7 @@ export class UserStore {
     for (const col of ['xp INTEGER DEFAULT 0', 'streak INTEGER DEFAULT 0', 'streak_day TEXT', 'lvl_seen TEXT', 'freezes INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // XP & level system (+freezes = streak-freeze anti-churn buffer)
     s.exec('CREATE TABLE IF NOT EXISTS xplog(user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)'); // XP earn/adjust history (ring-buffered ~150/user)
     s.exec('CREATE TABLE IF NOT EXISTS xpday(user_id TEXT, day TEXT, src TEXT, n INTEGER DEFAULT 0, PRIMARY KEY(user_id,day,src))'); // per-source per-UTC-day earned, for anti-abuse caps
+    s.exec('CREATE TABLE IF NOT EXISTS academy(user_id TEXT, lesson TEXT, ts INTEGER, PRIMARY KEY(user_id,lesson))'); // completed Academy lessons (+ "course:<id>" bonus markers); XP via _grantXp src=academy lifeCap 800
     try { s.exec('CREATE INDEX IF NOT EXISTS xplog_u ON xplog(user_id,ts)'); } catch (e) {} // device/browser, activity rollups, moderation, digest opt-in, linked Telegram chat
     for (const col of ['ip TEXT', 'cc TEXT', 'asn INTEGER', 'org TEXT']) { try { s.exec('ALTER TABLE sessions ADD COLUMN ' + col); } catch (e) {} } // per-login location + ASN for the session/VPN view
     s.exec('CREATE TABLE IF NOT EXISTS uevents(user_id TEXT, ts INTEGER, type TEXT, label TEXT, path TEXT, cc TEXT, dev TEXT)'); // per-user activity trail (ring-buffered)
@@ -6795,6 +6797,33 @@ export class UserStore {
       const rows = this.rows("SELECT username, xp FROM users WHERE username IS NOT NULL AND username != '' AND xp > 0 AND (status IS NULL OR status != 'banned') ORDER BY xp DESC LIMIT ?", lim);
       const top = rows.map((r, i) => { const L = xpLevelOf(r.xp || 0); return { rank: i + 1, username: r.username, xp: r.xp || 0, k: L.k, name: L.name, col: L.col }; });
       return this.j({ top });
+    }
+    if (path === '/academy/state') { // Academy: which lessons this user has completed (incl. course:<id> bonus markers)
+      const uid = String(url.searchParams.get('uid') || '');
+      const done = uid ? this.rows('SELECT lesson FROM academy WHERE user_id=?', uid).map(r => r.lesson) : [];
+      return this.j({ done });
+    }
+    if (path === '/academy/complete') { // Academy: idempotent lesson-complete marker -> +25 XP (lifeCap 800); +50 course bonus when a whole course is done
+      const uid = String(b.uid || ''), lesson = String(b.lesson || '').replace(/[^a-z0-9]/gi, '').slice(0, 12);
+      const course = String(b.course || '').replace(/[^a-z0-9]/gi, '').slice(0, 16);
+      const courseLessons = (Array.isArray(b.courseLessons) ? b.courseLessons : []).map(x => String(x)).slice(0, 20); // trusted: the worker sends its own map, never the client
+      if (!uid || !lesson) return this.j({ error: 'bad' }, 400);
+      if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return this.j({ error: 'no_user' }, 404);
+      let fresh = false, granted = 0, bonus = 0;
+      if (!this.rows('SELECT 1 FROM academy WHERE user_id=? AND lesson=?', uid, lesson)[0]) {
+        sql.exec('INSERT INTO academy(user_id,lesson,ts) VALUES(?,?,?)', uid, lesson, now); fresh = true;
+        granted = this._grantXp(uid, 'academy', 25, { lifeCap: 800, note: 'lesson ' + lesson });
+      }
+      if (course && courseLessons.length) {
+        const doneSet = {}; this.rows('SELECT lesson FROM academy WHERE user_id=?', uid).forEach(r => { doneSet[r.lesson] = 1; });
+        const mk = 'course:' + course;
+        if (!doneSet[mk] && courseLessons.every(l => doneSet[l])) {
+          sql.exec('INSERT INTO academy(user_id,lesson,ts) VALUES(?,?,?)', uid, mk, now);
+          bonus = this._grantXp(uid, 'academy', 50, { lifeCap: 800, note: 'course ' + course + ' complete' });
+        }
+      }
+      const u = this.rows('SELECT xp FROM users WHERE id=?', uid)[0];
+      return this.j({ ok: true, fresh, granted, bonus, xp: u ? (u.xp || 0) : 0, level: xpLevelOf(u ? u.xp : 0) });
     }
     if (path === '/xp/backfill') { // one-time retroactive XP for activity that predates the XP system; idempotent via an src='backfill' xplog marker
       const apply = !!b.apply;
@@ -7439,6 +7468,35 @@ function missionsForDay(day) { // deterministic daily set: always one trade miss
   for (let i = 0; i < rest.length && out.length < 4; i++) { const pick = rest[(seed * 7 + i * 3) % rest.length]; if (!out.some(x => x.mid === pick.mid)) out.push(pick); }
   for (let i = 0; out.length < 4 && i < rest.length; i++) { if (!out.some(x => x.mid === rest[i].mid)) out.push(rest[i]); }
   return out;
+}
+// ---------- Academy: Duolingo-style lesson path (content lives on /academy/; server = progress + XP) ----------
+const ACAD_COURSES = { basics: ['b1', 'b2', 'b3', 'b4', 'b5'], leverage: ['l1', 'l2', 'l3', 'l4', 'l5', 'l6'], risk: ['r1', 'r2', 'r3', 'r4', 'r5'], market: ['m1', 'm2', 'm3', 'm4', 'm5', 'm6'] };
+async function handleAcademy(url, request, env) {
+  const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
+  const jr = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: jh });
+  let uid = '', xp = 0, level = null;
+  const tok = getCookie(request, SESS_COOKIE);
+  if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { uid = su.id; xp = su.xp || 0; level = su.level || null; } }
+  const adminUid = url.searchParams.get('uid'); // owner preview/testing: act as a user (admin cookie only, same pattern as missions)
+  if (adminUid && (await adminCookieOk(request, env))) uid = adminUid;
+  const stub = env.USERS ? env.USERS.get(env.USERS.idFromName('main')) : null;
+  if (request.method === 'GET') {
+    if (!uid || !stub) return jr({ signedIn: false, done: [] });
+    let done = []; try { const r = await stub.fetch(new Request('https://do/academy/state?uid=' + encodeURIComponent(uid))); done = ((await r.json()) || {}).done || []; } catch (e) {}
+    return jr({ signedIn: true, done, xp, level });
+  }
+  if (request.method === 'POST') {
+    if (!uid || !stub) return jr({ error: 'login_required' }, 401);
+    let b = {}; try { b = await request.json(); } catch (e) {}
+    const lesson = String(b.lesson || '').replace(/[^a-z0-9]/gi, '').slice(0, 12);
+    let course = null; for (const c in ACAD_COURSES) if (ACAD_COURSES[c].indexOf(lesson) >= 0) { course = c; break; }
+    if (!course) return jr({ error: 'bad_lesson' }, 400);
+    try {
+      const r = await stub.fetch(new Request('https://do/academy/complete', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, lesson, course, courseLessons: ACAD_COURSES[course] }) }));
+      return jr(await r.json());
+    } catch (e) { return jr({ error: 'busy' }, 503); }
+  }
+  return jr({ error: 'method' }, 405);
 }
 async function handleMissions(url, request, env) {
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };

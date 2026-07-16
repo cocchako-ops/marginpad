@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>MarginPad Academy — Learn Crypto Trading Free, Lesson by Lesson</title>
+<meta name="description" content="A free, interactive crypto trading course: 22 bite-size lessons across 4 courses — crypto basics, leverage &amp; liquidation, risk management and reading the market. Quizzes, XP rewards and hands-on practice in a paper-trading terminal. No signup needed to start." />
+<meta name="keywords" content="learn crypto trading, crypto trading course free, crypto academy, how to trade crypto for beginners, leverage trading course, crypto futures lessons, trading for beginners" />
+<link rel="canonical" href="https://marginpad.io/academy/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="MarginPad Academy — Learn Crypto Trading Free" />
+<meta property="og:description" content="22 bite-size interactive lessons: basics, leverage, risk management and market reading. Quizzes + XP + real practice on live prices." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/academy/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Course","name":"MarginPad Academy — Crypto Trading from Zero","description":"A free interactive crypto trading course: 22 lessons across crypto basics, leverage and liquidation, risk management and reading the market, with quizzes and hands-on paper-trading practice.","provider":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"isAccessibleForFree":true,"hasCourseInstance":{"@type":"CourseInstance","courseMode":"online","courseWorkload":"PT3H"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Academy","item":"https://marginpad.io/academy/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Is the MarginPad Academy free?","acceptedAnswer":{"@type":"Answer","text":"Yes — all 22 lessons, quizzes and the paper-trading practice are completely free, with no payment and no deposit. You can start without an account; signing in (free, email only) saves your progress across devices and earns you XP toward your MarginPad level."}},
+{"@type":"Question","name":"Do I need any trading experience?","acceptedAnswer":{"@type":"Answer","text":"No. The course starts from absolute zero — what crypto is, how a price chart works — and builds up to leverage, liquidation, risk management and reading market data. Each lesson takes 3-5 minutes."}},
+{"@type":"Question","name":"Do Academy lessons earn XP?","acceptedAnswer":{"@type":"Answer","text":"Yes — each completed lesson earns 25 XP and finishing a whole course earns a 50 XP bonus, when you are signed in. Academy XP is capped so it can help a new trader reach the early tiers but never skip the long-term progression."}},
+{"@type":"Question","name":"Will this course make me profitable?","acceptedAnswer":{"@type":"Answer","text":"No course can promise that, and you should distrust any that does. What this course does is teach the mechanics — especially leverage, liquidation and position sizing — so your first mistakes happen in a free paper-trading account instead of with real money. Educational only, not financial advice."}}]}</script>
+<style>
+:root{--bg:#0a0b0d;--panel:#11151c;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--green:#2ebd85;--red:#ff6258;--cyan:#3fd8e6;--gold:#ffcf3f;--purp:#8b5cff}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--lime);text-decoration:none}
+.glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(60% 40% at 12% 0%,rgba(46,189,133,.10),transparent 60%),radial-gradient(50% 40% at 90% 8%,rgba(194,246,74,.07),transparent 60%)}
+.wrap{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:18px 16px calc(70px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;padding:6px 0 20px}
+.brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;color:var(--ink);letter-spacing:-.02em}
+.brand b{color:var(--lime)}
+.hnav a{color:var(--dim);font-size:14px;font-weight:600;margin-left:16px}.hnav a:hover{color:var(--ink)}
+.hero{text-align:center;padding:8px 0 20px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--green);border:1px solid rgba(46,189,133,.3);background:rgba(46,189,133,.07);padding:6px 14px;border-radius:999px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(28px,6.5vw,42px);letter-spacing:-.03em;line-height:1.05;margin:14px 0 8px}
+h1 .g{color:var(--lime)}
+.lead{color:var(--dim);font-size:15.5px;max-width:540px;margin:0 auto;line-height:1.55}
+/* progress card */
+.prog{margin:18px 0 8px;background:linear-gradient(160deg,#12151d,#0a0d11);border:1px solid var(--line2);border-radius:16px;padding:15px 17px}
+.prog-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-family:'Space Mono',monospace}
+.prog-n{font-size:19px;font-weight:800;color:var(--lime)}
+.prog-l{font-size:12px;color:var(--dim)}
+.prog-xp{margin-left:auto;font-size:12px;color:var(--gold);font-weight:700}
+.prog-bar{height:9px;border-radius:5px;background:#1a2027;overflow:hidden;margin-top:11px}
+.prog-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--green),var(--lime));transition:width .7s ease;width:0}
+.prog-note{margin-top:10px;font-size:12.5px;color:var(--faint);line-height:1.5}
+.prog-note button{background:none;border:none;color:var(--lime);font-weight:700;cursor:pointer;font-size:12.5px;padding:0}
+/* course path */
+.course{margin:30px 0 6px}
+.crs-h{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--cc,#2ebd85),transparent 220%);border-radius:15px;padding:15px 17px;color:#06110b}
+.crs-h .ic{width:38px;height:38px;flex:none;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);border-radius:11px}
+.crs-h .ic svg{width:22px;height:22px}
+.crs-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17.5px;letter-spacing:-.01em}
+.crs-s{font-size:12px;opacity:.75;font-weight:600}
+.crs-done{margin-left:auto;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;background:rgba(0,0,0,.2);padding:4px 10px;border-radius:999px}
+.path{position:relative;padding:6px 0 2px 10px}
+.path::before{content:'';position:absolute;left:33px;top:0;bottom:0;width:3px;background:var(--line);border-radius:2px}
+.node{position:relative;display:flex;align-items:center;gap:14px;padding:9px 0;cursor:pointer;border:none;background:none;width:100%;text-align:left;color:var(--ink);font-family:inherit}
+.node .dot{position:relative;z-index:1;width:48px;height:48px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-weight:800;font-size:15px;background:#151a22;border:2.5px solid var(--line2);color:var(--faint);transition:.15s}
+.node .nt{font-weight:700;font-size:15px}
+.node .ns{font-size:12px;color:var(--faint);margin-top:1px}
+.node.done .dot{background:var(--cc,#2ebd85);border-color:var(--cc,#2ebd85);color:#06110b}
+.node.done .nt{color:var(--dim)}
+.node.next .dot{border-color:var(--lime);color:var(--lime);box-shadow:0 0 0 5px rgba(194,246,74,.09),0 0 22px -4px rgba(194,246,74,.5);animation:npulse 2.2s infinite}
+@keyframes npulse{0%,100%{box-shadow:0 0 0 5px rgba(194,246,74,.09),0 0 22px -4px rgba(194,246,74,.5)}50%{box-shadow:0 0 0 8px rgba(194,246,74,.05),0 0 26px -2px rgba(194,246,74,.65)}}
+.node.locked{cursor:not-allowed;opacity:.45}
+.node.locked .dot svg{width:16px;height:16px}
+.node .xpb{margin-left:auto;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;color:var(--gold);flex:none}
+/* lesson player overlay */
+.lp{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;flex-direction:column}
+.lp.on{display:flex}
+.lp-top{display:flex;align-items:center;gap:12px;padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;max-width:680px;margin:0 auto;width:100%}
+.lp-x{background:none;border:none;color:var(--faint);font-size:22px;cursor:pointer;padding:4px 8px;line-height:1}
+.lp-x:hover{color:var(--ink)}
+.lp-bar{flex:1;height:10px;border-radius:6px;background:#1a2027;overflow:hidden}
+.lp-bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--green),var(--lime));transition:width .35s ease;width:0}
+.lp-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 16px 20px;max-width:680px;margin:0 auto;width:100%}
+.lp-kicker{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--cc,#2ebd85);margin-bottom:8px}
+.lp-h{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.02em;line-height:1.15;margin-bottom:14px}
+.lp-p{font-size:16px;line-height:1.65;color:var(--ink);margin-bottom:14px}
+.lp-p b{color:var(--lime)}
+.lp-q{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;line-height:1.25;margin:6px 0 18px}
+.lp-opt{display:block;width:100%;text-align:left;background:var(--panel);border:1.5px solid var(--line2);border-radius:13px;color:var(--ink);font-size:15px;font-weight:600;font-family:inherit;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:.12s}
+.lp-opt:hover{border-color:var(--faint)}
+.lp-opt.ok{background:rgba(46,189,133,.14);border-color:var(--green);color:#7ce8bd}
+.lp-opt.bad{background:rgba(255,98,88,.10);border-color:var(--red);color:#ff9d96;animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.lp-foot{padding:12px 16px calc(env(safe-area-inset-bottom) + 16px);max-width:680px;margin:0 auto;width:100%}
+.lp-go{width:100%;border:none;border-radius:13px;padding:15px 0;font-family:'Space Mono',monospace;font-size:14.5px;font-weight:800;cursor:pointer;background:var(--lime);color:#0a0b0d;transition:.12s}
+.lp-go:disabled{opacity:.35;cursor:not-allowed}
+.lp-go:active{transform:scale(.985)}
+/* completion screen */
+.lp-done{text-align:center;padding:36px 10px 10px}
+.lp-done .big{font-size:52px;line-height:1}
+.lp-done h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;margin:14px 0 8px}
+.lp-done .xp{font-family:'Space Mono',monospace;font-weight:800;font-size:17px;color:var(--gold)}
+.lp-done p{color:var(--dim);font-size:14.5px;line-height:1.6;max-width:430px;margin:10px auto 0}
+.lp-done .nudge{margin:16px auto 0;max-width:430px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.3);border-radius:13px;padding:13px 15px;font-size:13.5px;line-height:1.55;color:var(--ink)}
+.lp-done .nudge button{background:var(--lime);border:none;color:#0a0b0d;font-weight:800;font-family:'Space Mono',monospace;font-size:12.5px;border-radius:9px;padding:9px 16px;margin-top:9px;cursor:pointer}
+.lp-try{margin:18px auto 0;max-width:430px;background:var(--panel);border:1px solid var(--line2);border-radius:13px;padding:13px 15px;text-align:left}
+.lp-try .tl{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--cyan);margin-bottom:6px}
+.lp-try p{font-size:13.5px;color:var(--ink);margin:0 0 10px;line-height:1.5}
+.lp-try a{display:inline-block;background:rgba(63,216,230,.1);border:1px solid rgba(63,216,230,.4);color:var(--cyan);font-weight:700;font-size:13px;border-radius:9px;padding:8px 14px}
+.allDone{margin:26px 0 0;background:linear-gradient(160deg,rgba(194,246,74,.08),transparent);border:1px solid rgba(194,246,74,.35);border-radius:16px;padding:20px;text-align:center}
+.allDone h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;margin-bottom:6px}
+.allDone p{color:var(--dim);font-size:14px;line-height:1.6}
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;color:var(--faint);font-size:12.5px}
+footer a{color:var(--dim)}
+@media(max-width:480px){.hnav a{margin-left:11px;font-size:13px}}
+</style>
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="glow"></div>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="hnav"><a href="/paper-trade">Practice</a><a href="/levels/">Levels</a><a href="/rewards/">Rewards</a></nav>
+  </header>
+
+  <section class="hero">
+    <span class="eyebrow">◆ Free interactive course</span>
+    <h1>Learn trading, <span class="g">one lesson at a time</span></h1>
+    <p class="lead">22 bite-size lessons from absolute zero to reading real market data. Short theory, a quick quiz, then hands-on practice with fake money on live prices. Free forever — this is education, not financial advice.</p>
+  </section>
+
+  <div class="prog">
+    <div class="prog-top"><span class="prog-n" id="pgN">0/22</span><span class="prog-l">lessons complete</span><span class="prog-xp" id="pgXp"></span></div>
+    <div class="prog-bar"><i id="pgBar"></i></div>
+    <div class="prog-note" id="pgNote"></div>
+  </div>
+
+  <div id="courses"></div>
+
+  <div class="allDone" id="allDone" hidden>
+    <h3>You finished the Academy.</h3>
+    <p>Every mechanic that wipes beginner accounts — leverage, liquidation, sizing — you now understand. Keep the streak alive: practise daily in <a href="/paper-trade">Paper Trade</a>, follow the <a href="/calendar/">economic calendar</a>, and climb the <a href="/levels/">levels</a> the slow, honest way.</p>
+  </div>
+
+  <footer>
+    <span>© 2026 MarginPad · Educational only — not financial advice</span>
+    <span><a href="/paper-trade">Paper Trade</a> · <a href="/levels/">Levels</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+
+<!-- lesson player -->
+<div class="lp" id="lp">
+  <div class="lp-top"><button class="lp-x" id="lpX" aria-label="Close">✕</button><div class="lp-bar"><i id="lpBar"></i></div></div>
+  <div class="lp-body" id="lpBody"></div>
+  <div class="lp-foot"><button class="lp-go" id="lpGo">Continue</button></div>
+</div>
+
+<script type="application/json" id="acadData">
+{"courses":[
+{"id":"basics","name":"Crypto Basics","sub":"What you are actually trading","color":"#2ebd85","icon":"coin","lessons":[
+{"id":"b1","t":"What is crypto, really?","cards":[
+{"h":"Money without a middleman","p":"Bitcoin was created in 2009 as money that no bank or government controls. Instead of a bank keeping the ledger of who owns what, thousands of computers around the world keep identical copies of it — that shared ledger is called a blockchain."},
+{"h":"Why it never sleeps","p":"Stock markets open and close. Crypto trades 24 hours a day, 7 days a week, everywhere on Earth at once. That means prices can move violently at 3 AM on a Sunday — which is exactly why traders use tools like alerts and stop-losses instead of watching charts all day."},
+{"h":"Thousands of coins, a few that matter","p":"Bitcoin (BTC) is the largest and moves the whole market. Ethereum (ETH) is second. Beyond the top handful, thousands of smaller coins ('altcoins') exist — most are far riskier and less liquid. As a beginner, everything you need to learn can be learned on BTC and ETH."}],
+"quiz":[
+{"q":"What keeps track of who owns which crypto?","o":["A central bank","A shared ledger copied across thousands of computers (blockchain)","Each exchange privately","The government"],"a":1},
+{"q":"When does the crypto market close?","o":["At 5 PM New York time","On weekends","Never — it trades 24/7","During holidays"],"a":2},
+{"q":"As a beginner, which coins are the sensible place to learn?","o":["Brand-new coins with huge % gains","BTC and ETH — the largest and most liquid","Whatever is trending on social media","The cheapest coin per unit"],"a":1}],
+"try":{"p":"See live prices right now — open the free terminal and just watch BTC move for a minute.","label":"Open Paper Trade →","href":"/paper-trade"}},
+{"id":"b2","t":"Exchanges, wallets and what 'buying' means","cards":[
+{"h":"Where trading happens","p":"An exchange is a marketplace that matches buyers and sellers — Binance, Coinbase, Kraken and Bybit are exchanges. When you 'buy Bitcoin' there, the exchange updates its internal ledger; the coins sit in the exchange's custody until you withdraw them."},
+{"h":"Spot vs derivatives","p":"Buying the actual coin is called spot trading — you own it, and your maximum loss is what you paid. Derivatives (like the futures you will meet in Course 2) are contracts that track the price without owning the coin — they allow leverage, which cuts both ways."},
+{"h":"Not your keys, not your coins","p":"A wallet is where crypto lives when it is truly yours — controlled by a secret key only you hold. Coins left on an exchange are an IOU from that exchange. That is fine for active trading amounts, but history (Mt. Gox, FTX) shows why large holdings belong in your own wallet."}],
+"quiz":[
+{"q":"What is spot trading?","o":["Betting on price with borrowed money","Buying the actual coin — you own it","A type of wallet","Trading only at specific times"],"a":1},
+{"q":"Coins sitting on an exchange are…","o":["Always perfectly safe","In your personal wallet","Effectively an IOU from the exchange","Impossible to withdraw"],"a":2},
+{"q":"What is the maximum you can lose buying spot with $100?","o":["$100 — what you paid","More than $100","Nothing, spot is risk-free","Depends on leverage"],"a":0}]},
+{"id":"b3","t":"Reading a price chart","cards":[
+{"h":"The candlestick","p":"Each candle summarises price over a period: where it opened, closed, and the highest and lowest points touched. A green candle closed higher than it opened; a red one closed lower. The thin lines ('wicks') show the extremes price briefly touched."},
+{"h":"Timeframes change the story","p":"The same market looks different on different timeframes. A 1-minute chart shows noise; a daily chart shows the trend. A common beginner mistake is panicking over a scary 5-minute candle that is invisible on the daily chart. Zoom out first, always."},
+{"h":"Volume is the lie detector","p":"Volume shows how much was actually traded. A price move on high volume means real participation; the same move on thin volume is fragile and often reverses. Price tells you what happened — volume tells you how much to believe it."}],
+"quiz":[
+{"q":"A red candle means…","o":["Price closed lower than it opened","Trading was halted","Volume was low","Price will keep falling"],"a":0},
+{"q":"What do the candle 'wicks' show?","o":["Predicted future price","The highest and lowest prices touched in that period","The trading fee","The number of traders"],"a":1},
+{"q":"A big price move on very low volume is…","o":["The strongest possible signal","Fragile — fewer participants, often reverses","Impossible","Always the start of a trend"],"a":1}],
+"try":{"p":"Open the multi-chart workspace and flip one chart between 15m and 1D — watch how the story changes.","label":"Open Charts →","href":"/charts"}},
+{"id":"b4","t":"Market cap, liquidity and why price alone lies","cards":[
+{"h":"Price per coin means nothing by itself","p":"A coin costing $0.001 is not 'cheaper' than Bitcoin in any meaningful way. What matters is market cap: price × circulating supply. A $0.001 coin with 100 billion tokens is a $100M project. 'It only needs to reach $1!' is the oldest trap in crypto."},
+{"h":"Liquidity: can you actually get out?","p":"Liquidity is how much you can buy or sell without moving the price. BTC absorbs millions of dollars per second; a small altcoin might crash 10% from a single large sell. Illiquid coins are easy to enter and brutal to exit — exactly when you most need to."},
+{"h":"Slippage","p":"When you buy 'at market', you pay whatever sellers are asking right now. In a thin market, your own order pushes the price — the difference between the price you saw and the price you got is slippage. It is a real cost, and it grows with position size and shrinks with liquidity."}],
+"quiz":[
+{"q":"What determines a coin's real size?","o":["Price per coin","Market cap — price × circulating supply","How new it is","Its ranking on social media"],"a":1},
+{"q":"Liquidity measures…","o":["How fast the blockchain is","How much you can trade without moving the price","The number of coins in supply","How volatile a coin is"],"a":1},
+{"q":"Slippage is…","o":["A trading fee set by the exchange","The gap between the price you saw and the price your market order filled at","A chart pattern","A type of wallet"],"a":1}],
+"try":{"p":"Open the screener and compare 24h volume on BTC vs a coin near the bottom of the list.","label":"Open Screener →","href":"/screener"}},
+{"id":"b5","t":"Why crypto moves so violently","cards":[
+{"h":"A small boat on a big ocean","p":"Crypto's total market is tiny compared with stocks or bonds, and much of it trades with leverage. The same wave of money that barely moves the S&P 500 can move Bitcoin several percent — and smaller coins several times more."},
+{"h":"News, liquidity and forced sellers","p":"Big moves usually combine three things: a trigger (news, a macro number), thin liquidity (nights, weekends), and forced selling from leveraged traders being liquidated. That third ingredient — which you will study in Course 2 — is why crypto crashes are so fast and so deep."},
+{"h":"Volatility is the whole game","p":"Volatility is not a bug — it is why traders are here. But it is symmetric: the same 10% move that doubles a leveraged account also erases one. Every lesson after this one is really about surviving volatility long enough to benefit from it."}],
+"quiz":[
+{"q":"Why does the same amount of money move crypto more than stocks?","o":["Crypto is manipulated","The crypto market is much smaller and more leveraged","Stocks have no volatility","Crypto trades slower"],"a":1},
+{"q":"Which ingredient makes crypto crashes especially fast and deep?","o":["Bank holidays","Forced selling from liquidated leveraged traders","Low internet speeds","Mining difficulty"],"a":1},
+{"q":"Volatility for a trader is…","o":["Pure risk to be avoided entirely","The opportunity AND the risk — survival is the skill","Only a problem for beginners","Illegal on regulated exchanges"],"a":1}]}]},
+{"id":"leverage","name":"Leverage & Liquidation","sub":"The machinery that wipes accounts","color":"#ffcf3f","icon":"bolt","lessons":[
+{"id":"l1","t":"What is a futures contract?","cards":[
+{"h":"Trading price without owning coins","p":"A futures contract is an agreement that tracks a coin's price. You never own the Bitcoin — you hold a position that gains or loses exactly as the price moves. Crypto's favourite version is the perpetual future ('perp'), which has no expiry date: you can hold it as long as your margin survives."},
+{"h":"Long and short","p":"With futures you can profit in both directions: going long means you gain when price rises; going short means you gain when price falls. This is why futures traders never 'wait for the bull market' — there is a trade in both directions, and both can be wrong."},
+{"h":"Why perps dominate crypto","p":"Perpetual futures are the most traded product in crypto — daily perp volume dwarfs spot. They are popular for exactly the two features that make them dangerous: leverage, and the ability to short. Everything in this course exists because of what you will learn in the next two lessons."}],
+"quiz":[
+{"q":"When you buy a perpetual future, you own…","o":["The actual coins","A position that tracks the price — no coins","A share of the exchange","A wallet"],"a":1},
+{"q":"A short position profits when…","o":["Price rises","Price falls","Price stays flat","Volume rises"],"a":1},
+{"q":"What makes a perpetual future 'perpetual'?","o":["It never loses money","It has no expiry date","It has no fees","It only goes up"],"a":1}]},
+{"id":"l2","t":"Leverage: trading with borrowed size","cards":[
+{"h":"Margin and multiplier","p":"Leverage lets you control a position bigger than your money. Put down $100 of margin at 10× leverage and you control a $1,000 position. Every 1% the price moves, your position gains or loses $10 — which is 10% of YOUR money. The multiplier applies to losses exactly as it does to gains."},
+{"h":"Notional vs margin","p":"Your margin is what you deposited ($100). The notional is the full position size ($1,000). Fees and price moves are calculated on the notional — one reason high leverage quietly burns accounts even when the trader is 'mostly right'."},
+{"h":"The honest math of 100×","p":"At 100× leverage, a 1% move against you wipes 100% of your margin. Bitcoin moves 1% routinely — several times a day. That is not a market crash; it is background noise. High leverage does not make a strategy better, it just compresses the time until a normal wiggle takes you out."}],
+"quiz":[
+{"q":"You open $100 at 10× leverage. Price moves 1% in your favour. Your profit is about…","o":["$1 (1%)","$10 (10% of your margin)","$100","Nothing until you close"],"a":1},
+{"q":"The 'notional' of a $100 position at 20× is…","o":["$100","$20","$2,000","$100 plus fees"],"a":2},
+{"q":"At 100× leverage, what price move against you erases your whole margin?","o":["About 1%","About 10%","About 50%","100%"],"a":0}],
+"try":{"p":"Open the position size calculator and see how notional and risk change as you slide leverage from 5× to 100×.","label":"Position Size Calculator →","href":"/#size"}},
+{"id":"l3","t":"Liquidation: the point of no return","cards":[
+{"h":"What liquidation is","p":"When a leveraged position loses almost all its margin, the exchange force-closes it to protect itself — that is liquidation. Your position is gone, your margin is gone, and no recovery is possible even if price bounces one second later. It is the single most important price on your screen."},
+{"h":"Where the liquidation price sits","p":"The higher your leverage, the closer the liquidation price hugs your entry. Roughly: at 10× it sits about 10% away, at 50× about 2%, at 100× about 1%. A maintenance margin buffer pulls it slightly closer still. You should never open a position without knowing this number exactly."},
+{"h":"Why 'it will bounce back' does not apply","p":"A spot holder can ride a 30% dip and wait years. A liquidated futures trader cannot — the position no longer exists. This asymmetry is THE difference between spot and leverage: spot punishes patience-free traders slowly, leverage executes them instantly."}],
+"quiz":[
+{"q":"After liquidation, if the price immediately recovers, you…","o":["Get your position back","Get half your margin back","Get nothing — the position is gone","Owe the exchange money"],"a":2},
+{"q":"At roughly what adverse move does a 50× position liquidate?","o":["About 50%","About 25%","About 2%","About 0.1%"],"a":2},
+{"q":"The first thing to know before opening any leveraged trade is…","o":["Today's news","Your exact liquidation price","What influencers say","The exchange's founding year"],"a":1}],
+"try":{"p":"Compute a real liquidation price: entry, leverage, side — see exactly where the position dies.","label":"Liquidation Calculator →","href":"/#liq"}},
+{"id":"l4","t":"Longs, shorts and how P&L actually works","cards":[
+{"h":"The P&L formula in plain words","p":"Your profit or loss = position size × the percentage the price moved (in your direction, positive; against you, negative). ROE — return on equity — is that P&L measured against your margin. A +50% ROE at 10× means price moved just 5% your way."},
+{"h":"Shorting is not evil, it is a tool","p":"Shorting — profiting from falls — feels unnatural at first. But markets fall faster than they rise ('down the elevator, up the stairs'), and a trader who can only long is blind in half the market. In a paper account, practise both until neither feels special."},
+{"h":"Fees and funding nibble constantly","p":"Every open and close pays a fee on the notional, and perpetuals exchange periodic 'funding' payments between longs and shorts (Course 4 covers reading it). At high leverage these small costs compound into a meaningful headwind — another quiet reason overtraders lose."}],
+"quiz":[
+{"q":"You are long $1,000 notional and price rises 3%. Your P&L is…","o":["+$3","+$30","+$300","Depends on the coin"],"a":1},
+{"q":"'Down the elevator, up the stairs' means…","o":["Markets fall faster than they rise","Markets rise faster than they fall","Price always returns to entry","Shorting is banned"],"a":0},
+{"q":"Trading fees on futures are charged on…","o":["Your margin only","The full notional position size","Your profit only","Nothing — futures are free"],"a":1}]},
+{"id":"l5","t":"Funding: the invisible cash flow","cards":[
+{"h":"How perps stay glued to the real price","p":"With no expiry, a perpetual could drift away from the actual coin price. Funding prevents that: every few hours, one side pays the other a small percentage. When perps trade above spot (crowd is long), longs pay shorts; below spot, shorts pay longs."},
+{"h":"Funding as a crowd thermometer","p":"Extreme positive funding means the crowd is heavily long AND paying for the privilege — historically a warning sign, because crowded trades unwind violently. Extreme negative funding marks crowded shorts, fuel for a short squeeze."},
+{"h":"It compounds","p":"Funding of 0.01% per 8 hours sounds like nothing — but that is ~11% per year on your notional, and at 10× leverage it is a triple-digit annualised drag on margin. Position holders who ignore funding find their P&L quietly leaking."}],
+"quiz":[
+{"q":"When the perp trades above the spot price, who pays funding?","o":["Shorts pay longs","Longs pay shorts","The exchange pays everyone","Nobody"],"a":1},
+{"q":"Extremely positive funding usually signals…","o":["A guaranteed rally","A heavily crowded long side — squeeze risk","Low volatility ahead","An exchange outage"],"a":1},
+{"q":"Why does small funding matter at high leverage?","o":["It doesn't","It compounds into a large annualised drag on your margin","It only applies to shorts","It is refunded at close"],"a":1}],
+"try":{"p":"Look at live funding across 160+ pairs — find the most extreme rate right now.","label":"Funding Rates →","href":"/funding/"}},
+{"id":"l6","t":"Order types: market, limit, stop","cards":[
+{"h":"Market orders: speed for a price","p":"A market order fills instantly at whatever the book offers — you pay the spread and any slippage. Use it when getting IN or OUT right now matters more than the exact price. During violent moves, slippage on market orders is at its worst."},
+{"h":"Limit orders: price for patience","p":"A limit order names your price and waits. You may never get filled — but when you do, it is at your price or better, usually with lower fees. Professional entries are mostly limits; panicked exits are mostly markets. Plan to be in the first group."},
+{"h":"Stops: automation that saves accounts","p":"A stop order triggers when price crosses a level — the foundation of the stop-loss (Course 3). It executes your plan when you are asleep, at work, or emotionally compromised. The trader who 'watches the chart instead' is the trader who freezes at the worst moment."}],
+"quiz":[
+{"q":"The guaranteed-fill, price-uncertain order is…","o":["Limit","Market","Stop","Iceberg"],"a":1},
+{"q":"A limit order guarantees…","o":["It will definitely fill","Your price or better, IF it fills","No fees","Instant execution"],"a":1},
+{"q":"The main purpose of a stop order is…","o":["Getting a better entry price","Executing your exit plan automatically when a level breaks","Avoiding all losses","Doubling the position"],"a":1}]}]},
+{"id":"risk","name":"Risk Management","sub":"The only edge beginners can actually have","color":"#ff6258","icon":"shield","lessons":[
+{"id":"r1","t":"Position sizing: the #1 skill","cards":[
+{"h":"Risk a slice, never the pie","p":"Professionals size positions so one losing trade costs a fixed small share of the account — commonly 1–2%. With 1% risk you can be wrong 20 times in a row and still have 80% of your capital. With 20% risk, five mistakes end you. Same strategy, different sizing, opposite outcomes."},
+{"h":"Size from the stop, not from greed","p":"The correct order: choose where the trade is wrong (your stop-loss level), measure the distance from entry to stop, then size the position so that distance equals your 1–2% risk. Size is an OUTPUT of the calculation — never the starting point."},
+{"h":"Leverage is a tool, size is the decision","p":"Leverage only determines how much margin you post for a given size; the risk comes from the size itself. A properly-sized 10× trade risks less than an oversized 2× trade. Stop asking 'what leverage should I use' and start asking 'what size keeps my risk at 1%'."}],
+"quiz":[
+{"q":"With 1% risk per trade, how many straight losses leave you 80% intact?","o":["About 5","About 20","About 50","One"],"a":1},
+{"q":"What is the correct FIRST step of sizing a trade?","o":["Choosing leverage","Deciding where the trade is wrong (the stop level)","Picking a profit target","Maximising position size"],"a":1},
+{"q":"Risk ultimately comes from…","o":["Leverage alone","Position size relative to your stop distance","The coin you pick","The time of day"],"a":1}],
+"try":{"p":"Size a real trade: account, risk %, entry and stop — the calculator returns the exact position size.","label":"Position Size Calculator →","href":"/#size"}},
+{"id":"r2","t":"Stop-loss and take-profit, placed like a pro","cards":[
+{"h":"The stop goes where the idea dies","p":"A stop-loss belongs at the price where your trade thesis is proven wrong — below the support you bought, beyond the level that invalidates the setup. Placing it at 'the most pain I can tolerate' is backwards: the market does not know or care about your pain threshold."},
+{"h":"Stop-hunting is real, panic about it is not","p":"Price often wicks through obvious levels, triggers clustered stops, then reverses. The fix is not removing your stop (that converts a small loss into a liquidation) — it is placing stops beyond obvious round numbers and sizing so a stop-out is boring, not devastating."},
+{"h":"Take-profit: decide while you are sane","p":"A take-profit order banks the win automatically. Decide the exit before entering, while you are objective — because after entry you become the least objective person watching that chart. Partial take-profits (closing, say, half at the first target) are a legitimate compromise."}],
+"quiz":[
+{"q":"The best place for a stop-loss is…","o":["Where losing would hurt too much","Where the trade idea is proven wrong","As close to entry as possible","Nowhere — stops are for cowards"],"a":1},
+{"q":"When price hunts stops through an obvious level, the right response is…","o":["Never use stops again","Place stops beyond obvious levels and size so a stop-out is tolerable","Double the position","Switch coins"],"a":1},
+{"q":"When should the exit plan be decided?","o":["After the trade is in profit","Before entering, while you are objective","Only when losing","Never"],"a":1}],
+"try":{"p":"Open a paper position and attach a real SL and TP to it — practise the full ritual with zero risk.","label":"Paper Trade →","href":"/paper-trade"}},
+{"id":"r3","t":"Risk:reward — being wrong profitably","cards":[
+{"h":"The ratio that forgives mistakes","p":"Risk:reward compares what you risk with what you aim to win. Risking $50 to make $150 is 1:3. At 1:3, winning just 3 trades out of 10 leaves you profitable. The ratio buys you the right to be wrong most of the time — an enormous psychological luxury."},
+{"h":"Win rate and R:R trade off","p":"High win-rate strategies usually have small wins; high R:R strategies lose often but win big. Both work; neither works with a bad combination (low win rate AND low R:R — the default state of an impulsive beginner). Know which game your strategy plays."},
+{"h":"Expectancy: the only number that decides","p":"Expectancy = (win rate × average win) − (loss rate × average loss). Positive means the approach makes money over many trades; negative means no position sizing can save it. One trade means nothing — expectancy is measured across dozens."}],
+"quiz":[
+{"q":"At 1:3 risk:reward, what win rate is roughly break-even?","o":["75%","50%","25%","90%"],"a":2},
+{"q":"A strategy with negative expectancy…","o":["Works with smaller size","Works with more leverage","Loses money over time no matter the sizing","Just needs one big win"],"a":2},
+{"q":"How many trades does it take to judge a strategy?","o":["One good one","Dozens — expectancy is statistical","Two","It cannot be measured"],"a":1}],
+"try":{"p":"Feed your win rate and R:R into the Risk of Ruin calculator — see what the math says about your survival odds.","label":"Risk of Ruin Calculator →","href":"/risk-of-ruin-calculator/"}},
+{"id":"r4","t":"The brutal math of drawdowns","cards":[
+{"h":"Losses are heavier than gains","p":"Lose 10% and you need 11% to recover. Lose 50% and you need +100%. Lose 90% and you need +900%. This asymmetry is not motivational-poster material — it is arithmetic, and it is the reason capital preservation beats profit-chasing for anyone who wants to still be trading next year."},
+{"h":"Streaks are normal, ruin is optional","p":"Even a strategy that wins 60% of the time will hit 5-loss streaks regularly — that is probability, not failure. Whether a normal streak becomes account-ending depends entirely on the size you risked per trade. Sizing turns variance into noise; oversizing turns it into ruin."},
+{"h":"The comeback trap","p":"After a loss, the urge is to size UP to 'win it back fast'. That is exactly backwards: bigger size after losses means your worst decisions get your largest bets. Professionals do the opposite — size down in drawdowns, back up when performing."}],
+"quiz":[
+{"q":"After losing 50% of an account, recovery requires…","o":["+50%","+75%","+100%","+25%"],"a":2},
+{"q":"A 5-loss streak on a good strategy is…","o":["Proof the strategy is broken","Statistically normal — sizing decides if it matters","Impossible","A reason to double size"],"a":1},
+{"q":"After a losing streak, professionals typically…","o":["Increase size to recover faster","Reduce size until performance returns","Remove stop-losses","Switch to 100× leverage"],"a":1}]},
+{"id":"r5","t":"Psychology: the enemy in the mirror","cards":[
+{"h":"Revenge trading","p":"The most expensive trade in any beginner's history is the one placed 90 seconds after a painful loss — oversized, unplanned, driven by the need to be made whole. Name the pattern now, and adopt the professional rule: after a stop-out, no new trade until a written plan exists."},
+{"h":"FOMO buys the top","p":"A coin already up 30% today feels safest to buy — everyone agrees, the chart 'confirms' it. But entering on a vertical move means your stop is far away, your R:R is terrible, and you are exit liquidity for earlier buyers. Great trades usually feel uncomfortable at entry, not obvious."},
+{"h":"The journal is a mirror","p":"A trading journal — every entry, exit, size and reason — converts vague feelings into visible patterns: 'my Sunday-night trades all lose', 'I always cut winners early'. It is unglamorous and it is the fastest self-improvement tool trading has. Fake-money trades count too."}],
+"quiz":[
+{"q":"The classic revenge trade happens…","o":["After careful planning","Minutes after a painful loss, oversized","Only in bull markets","When following a journal"],"a":1},
+{"q":"Buying a coin that is already up 30% today usually means…","o":["The safest possible entry","Terrible risk:reward — the comfortable-looking entry","A guaranteed continuation","Low volatility"],"a":1},
+{"q":"The main purpose of a trading journal is…","o":["Tax paperwork only","Making your patterns visible so you can fix them","Impressing other traders","Predicting the market"],"a":1}],
+"try":{"p":"Your paper trades already feed a free analytics journal — see your win rate, streaks and habits.","label":"Trading Journal →","href":"/trading-journal/"}}]},
+{"id":"market","name":"Reading the Market","sub":"Data instead of vibes","color":"#3fd8e6","icon":"chart","lessons":[
+{"id":"m1","t":"Trend, support and resistance","cards":[
+{"h":"Trade with the current, not against it","p":"A trend is a sequence of higher highs and higher lows (up) or lower highs and lower lows (down). Trading against a strong trend because something 'looks too high' or 'too cheap' is a donation. The trend is not always right — but it is right more often than your feelings about it."},
+{"h":"Support and resistance","p":"Support is a price area where buying has repeatedly appeared; resistance is where selling has. They are zones, not exact lines — and each time a level is tested it weakens. The most useful behaviour: broken resistance often becomes new support (and vice versa)."},
+{"h":"Confluence beats any single signal","p":"One level means little. A level that coincides with a trend line, a round number and a prior high is confluence — several independent reasons pointing at the same zone. Professionals wait for confluence; beginners act on the first line they draw."}],
+"quiz":[
+{"q":"An uptrend is defined by…","o":["Green candles only","Higher highs and higher lows","High volume","Positive news"],"a":1},
+{"q":"When resistance breaks, it often…","o":["Disappears forever","Becomes new support","Guarantees a crash","Means nothing"],"a":1},
+{"q":"'Confluence' means…","o":["A type of order","Several independent signals pointing at the same zone","A crypto conference","Trading multiple coins at once"],"a":1}],
+"try":{"p":"Draw your first levels: open a chart, mark the most recent obvious support and resistance zones.","label":"Open Charts →","href":"/charts"}},
+{"id":"m2","t":"Moving averages: the trend, smoothed","cards":[
+{"h":"What an MA actually shows","p":"A moving average draws the average closing price of the last N candles — the market's recent memory as one smooth line. Price above a rising MA is trend-healthy; price chopping through a flat MA means no trend exists and trend tools will just generate noise."},
+{"h":"EMA vs SMA, and the famous pairs","p":"The simple MA (SMA) weights every candle equally; the exponential MA (EMA) reacts faster to recent prices. Watched-by-everyone settings: EMA 9/21 for short-term momentum, SMA 50/200 for the big picture. They work partly BECAUSE everyone watches them — self-fulfilling zones."},
+{"h":"Crosses: signal and lag","p":"When the 50 crosses above the 200 ('golden cross'), it confirms an uptrend is established; the reverse ('death cross') confirms a downtrend. Note the word confirms — MAs are lagging by construction. They tell you which side to trade FROM, not the exact moment to click."}],
+"quiz":[
+{"q":"A moving average shows…","o":["Future price","The average of recent closes — the trend smoothed","Trading volume","Exchange reserves"],"a":1},
+{"q":"Which MA reacts faster to fresh price moves?","o":["SMA","EMA","They are identical","Neither moves"],"a":1},
+{"q":"A golden cross (50 over 200) is best used as…","o":["A precise entry timer","Confirmation of an established uptrend","A sell signal","A liquidation warning"],"a":1}]},
+{"id":"m3","t":"RSI and momentum","cards":[
+{"h":"What RSI measures","p":"RSI compresses the last 14 candles of gains vs losses into a 0–100 scale. Above 70 the market is called overbought, below 30 oversold. It measures the SPEED of the move, not its correctness — a market can be 'overbought' and keep rising for weeks."},
+{"h":"The beginner mistake","p":"Selling just because RSI touched 70 is one of the most reliable ways to short a raging bull trend. In strong trends, RSI stays pinned in extreme territory. The overbought/oversold reading only becomes interesting when the trend is ALREADY weakening or at major levels."},
+{"h":"Divergence: the useful trick","p":"When price makes a new high but RSI makes a lower high, momentum is fading under the surface — that is bearish divergence, an early caution flag (not a sell button). The reverse at lows is bullish divergence. Divergence plus a key level plus confluence — now it is a setup."}],
+"quiz":[
+{"q":"RSI above 70 means…","o":["Guaranteed reversal — sell now","The recent move has been fast; in strong trends it can stay there","The exchange will halt trading","Volume is fake"],"a":1},
+{"q":"Bearish divergence is…","o":["Price new high, RSI lower high — momentum fading","Price and RSI both rising","RSI below 30","A candle pattern"],"a":0},
+{"q":"On its own, a single indicator reading is…","o":["A complete strategy","Weak — it needs confluence with levels and trend","Illegal to trade","Only for professionals"],"a":1}]},
+{"id":"m4","t":"Open interest and crowd positioning","cards":[
+{"h":"Open interest: money in the game","p":"Open interest (OI) counts the total value of futures positions currently open. Rising OI with rising price = new money buying the move (healthy). Rising price with FALLING OI = shorts closing, not new demand — a move likely to stall. OI tells you WHO is powering a move."},
+{"h":"The long/short ratio","p":"The long/short ratio shows which side the crowd is on. Extreme readings are contrarian: when nearly everyone is already long, few buyers remain — but a huge pool of liquidation prices sits below, ready to fuel the opposite move."},
+{"h":"The three-signal stack","p":"The high-conviction derivative setup stacks three things: one-sided long/short ratio + rising OI + funding paying the crowded side. That is a crowd that is leveraged, growing, and paying to stay — a loaded spring. Any one signal alone is weak; together they are the market's tell."}],
+"quiz":[
+{"q":"Price rising while open interest falls usually means…","o":["Strong new buying","Shorts covering — the move may lack fuel","A guaranteed breakout","Nothing"],"a":1},
+{"q":"An extremely one-sided long/short ratio is…","o":["A signal to join the majority","A contrarian warning — the crowded side is the fuel","Proof of a healthy market","Random noise"],"a":1},
+{"q":"The 'loaded spring' setup combines…","o":["RSI, MACD and volume","Crowded ratio + rising OI + funding paying that side","Three green candles","News and social media"],"a":1}],
+"try":{"p":"Check the live long/short ratio and open interest — which side is crowded right now?","label":"Long/Short Ratio →","href":"/long-short/"}},
+{"id":"m5","t":"Liquidation cascades: why crashes overshoot","cards":[
+{"h":"The domino mechanism","p":"When price hits a leveraged trader's liquidation level, the exchange force-sells the position at market. That sell pushes price down — into the NEXT cluster of liquidation prices, triggering more forced sells. This chain reaction is a liquidation cascade, and it is why crypto drops overshoot in minutes."},
+{"h":"Why price 'hunts' certain levels","p":"Liquidation prices cluster at predictable places — just beyond round numbers and obvious support, where crowds of similar traders opened similar positions. Large players can see these clusters. A wick that spikes through a level, triggers the cluster and instantly reverses is that mechanism working."},
+{"h":"Watching the fuel","p":"Live liquidation feeds show cascades as they happen — a burst of forced longs marks capitulation lows more reliably than most indicators. For your own trades the lesson is defensive: put your liquidation price where a routine hunt cannot reach it, or better, size so liquidation is impossible."}],
+"quiz":[
+{"q":"A liquidation cascade is…","o":["A planned exchange event","Forced sells triggering more forced sells in a chain","A type of staking reward","A chart pattern"],"a":1},
+{"q":"Liquidation clusters form…","o":["Randomly","Just beyond round numbers and obvious levels where crowds positioned alike","Only on weekends","Only on small coins"],"a":1},
+{"q":"The defensive lesson for your own trades is…","o":["Use maximum leverage","Keep your liquidation out of routine wick range — or size so it cannot exist","Remove stop-losses","Trade only at night"],"a":1}],
+"try":{"p":"Watch forced liquidations stream in live on Rekt — see the cascade mechanism with your own eyes.","label":"Open Rekt →","href":"/rekt/"}},
+{"id":"m6","t":"Macro: the tide under every trade","cards":[
+{"h":"Crypto trades the dollar and rates","p":"Bitcoin is a liquidity-sensitive risk asset: when rates look set to fall, money flows toward risk and crypto rises; higher-for-longer does the opposite. This is why a US inflation number can move Bitcoin within one second — algorithms reprice the entire rate path instantly."},
+{"h":"The events that matter","p":"A handful of scheduled releases drive the biggest hours in crypto: the Fed's FOMC rate decision, CPI and PCE inflation prints, and the NFP jobs report. They are on the calendar weeks ahead — being surprised by one is a choice."},
+{"h":"Event risk is a sizing problem","p":"You cannot predict the number, but you can survive it: know the release time, and size so a 2–3% instant wick cannot liquidate you. The first candle after a release is frequently a fake-out — professionals let it play out rather than market-chasing at the worst spread of the day."}],
+"quiz":[
+{"q":"Why does a US inflation print move Bitcoin in seconds?","o":["Coincidence","Algorithms instantly reprice rate expectations — crypto is a liquidity asset","Miners sell on news","It does not"],"a":1},
+{"q":"FOMC, CPI and NFP release times are…","o":["Secret","Random","Scheduled and public weeks in advance","Only for stock traders"],"a":2},
+{"q":"The professional approach to a big scheduled release is…","o":["Max leverage right before it","Size so an instant 2-3% wick cannot liquidate you","Market-buy the first candle","Ignore it"],"a":1},
+{"q":"You finished the course. The single most important idea across all 22 lessons was…","o":["Finding perfect entries","Surviving: sizing and risk control keep you in the game long enough to learn","Trading more often","Higher leverage"],"a":1}],
+"try":{"p":"Open the economic calendar and find the next FOMC or CPI date — set a reminder before it hits.","label":"Economic Calendar →","href":"/calendar/"}}]}]}
+</script>
+
+<script>
+(function(){
+  var DATA=JSON.parse(document.getElementById('acadData').textContent);
+  var COURSES=DATA.courses;
+  var ALL=[];COURSES.forEach(function(c){c.lessons.forEach(function(L){ALL.push({c:c,l:L});});});
+  var TOTAL=ALL.length;
+  function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+  var ICONS={coin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v9M9.5 9.8c0-1 1.1-1.8 2.5-1.8s2.5.8 2.5 1.8-1 1.6-2.5 1.9-2.5.9-2.5 1.9 1.1 1.8 2.5 1.8 2.5-.8 2.5-1.8"/></svg>',bolt:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4.5 13.5H11L9.5 22 18 10.5h-6.5z"/></svg>',shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5.2c0 4.4-3 7.2-7 8.8-4-1.6-7-4.4-7-8.8V6z"/><path d="M9 12l2 2 4-4.2"/></svg>',chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 19V5M4 19h16"/><path d="M8 15l3.2-4 2.8 2.2L18 8"/></svg>',lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'};
+  /* ---- state: localStorage always; server merge when signed in ---- */
+  var st={done:{}};
+  try{var raw=JSON.parse(localStorage.getItem('mp_academy')||'{}');(raw.done||[]).forEach(function(x){st.done[x]=1;});}catch(e){}
+  var signedIn=false,serverDone=null,syncing=false;
+  function saveLocal(){try{localStorage.setItem('mp_academy',JSON.stringify({done:Object.keys(st.done)}));}catch(e){}}
+  function doneCount(){var n=0;ALL.forEach(function(x){if(st.done[x.l.id])n++;});return n;}
+  function nextLesson(){for(var i=0;i<ALL.length;i++)if(!st.done[ALL[i].l.id])return ALL[i].l.id;return null;}
+  function unlocked(id){var i=ALL.findIndex(function(x){return x.l.id===id;});if(i<=0)return true;return !!st.done[ALL[i-1].l.id]||!!st.done[id];}
+  /* ---- render path ---- */
+  function render(){
+    var n=doneCount();
+    document.getElementById('pgN').textContent=n+'/'+TOTAL;
+    document.getElementById('pgBar').style.width=(n/TOTAL*100)+'%';
+    document.getElementById('pgXp').textContent=n>0?('~'+(n*25)+' XP'):'';
+    var note=document.getElementById('pgNote');
+    if(!signedIn&&n>0)note.innerHTML='Progress is saved on this device. <button type="button" data-auth-open>Sign in free</button> to save it to your account and earn <b style="color:var(--gold)">+25 XP per lesson</b>.';
+    else if(!signedIn)note.innerHTML='No account needed to start. <button type="button" data-auth-open>Sign in free</button> to earn <b style="color:var(--gold)">+25 XP per lesson</b> toward your level.';
+    else note.textContent='Signed in — every lesson earns +25 XP, each finished course +50 bonus.';
+    var host=document.getElementById('courses'),html='';
+    var nxt=nextLesson();
+    COURSES.forEach(function(c){
+      var cd=c.lessons.filter(function(L){return st.done[L.id];}).length;
+      html+='<section class="course" style="--cc:'+c.color+'"><div class="crs-h"><span class="ic">'+ICONS[c.icon]+'</span><div><div class="crs-t">'+esc(c.name)+'</div><div class="crs-s">'+esc(c.sub)+'</div></div><span class="crs-done">'+cd+'/'+c.lessons.length+'</span></div><div class="path">';
+      c.lessons.forEach(function(L,i){
+        var d=!!st.done[L.id],u=unlocked(L.id),cls=d?'done':(L.id===nxt?'next':(u?'':'locked'));
+        html+='<button type="button" class="node '+cls+'" data-lesson="'+L.id+'" '+(u?'':'disabled')+'><span class="dot">'+(d?ICONS.check:(u?String(i+1):ICONS.lock))+'</span><span><span class="nt">'+esc(L.t)+'</span><span class="ns">'+L.cards.length+' cards · '+L.quiz.length+' questions</span></span><span class="xpb">+25 XP</span></button>';
+      });
+      html+='</div></section>';
+    });
+    host.innerHTML=html;
+    document.getElementById('allDone').hidden=n<TOTAL;
+    if(window.mpLvlDecorate)window.mpLvlDecorate();
+  }
+  document.getElementById('courses').addEventListener('click',function(e){
+    var b=e.target.closest('.node');if(!b||b.disabled)return;
+    openLesson(b.getAttribute('data-lesson'));
+  });
+  /* ---- lesson player ---- */
+  var lp=document.getElementById('lp'),lpBody=document.getElementById('lpBody'),lpBar=document.getElementById('lpBar'),lpGo=document.getElementById('lpGo');
+  var cur=null,step=0,steps=0,quizIdx=0,answered=false;
+  function openLesson(id){
+    var x=ALL.find(function(y){return y.l.id===id;});if(!x)return;
+    cur=x;step=0;steps=x.l.cards.length+x.l.quiz.length+1; // cards + quiz + done screen
+    lp.classList.add('on');document.body.style.overflow='hidden';
+    show();
+    try{navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=event&type=academy&l='+encodeURIComponent(id)+'&p=/academy/');}catch(e){}
+  }
+  function closeLp(){lp.classList.remove('on');document.body.style.overflow='';render();}
+  document.getElementById('lpX').addEventListener('click',closeLp);
+  function show(){
+    lpBar.style.width=(step/(steps-1)*100)+'%';
+    var L=cur.l,c=cur.c;
+    if(step<L.cards.length){ // theory card
+      var card=L.cards[step];
+      lpBody.innerHTML='<div class="lp-kicker" style="--cc:'+c.color+'">'+esc(c.name)+' · '+esc(L.t)+'</div><div class="lp-h">'+esc(card.h)+'</div><p class="lp-p">'+esc(card.p)+'</p>';
+      lpGo.textContent='Continue';lpGo.disabled=false;lpGo.hidden=false;
+    } else if(step<L.cards.length+L.quiz.length){ // quiz question
+      var q=L.quiz[step-L.cards.length];answered=false;
+      lpBody.innerHTML='<div class="lp-kicker" style="--cc:'+c.color+'">Question '+(step-L.cards.length+1)+' of '+L.quiz.length+'</div><div class="lp-q">'+esc(q.q)+'</div>'+q.o.map(function(o,i){return '<button type="button" class="lp-opt" data-i="'+i+'">'+esc(o)+'</button>';}).join('');
+      lpGo.hidden=true;
+      Array.prototype.forEach.call(lpBody.querySelectorAll('.lp-opt'),function(btn){
+        btn.addEventListener('click',function(){
+          if(answered)return;
+          var i=+btn.getAttribute('data-i');
+          if(i===q.a){answered=true;btn.classList.add('ok');try{if(navigator.vibrate)navigator.vibrate(12);}catch(e){}
+            setTimeout(function(){step++;show();},650);}
+          else{btn.classList.add('bad');btn.disabled=true;try{if(navigator.vibrate)navigator.vibrate([35]);}catch(e){}}
+        });
+      });
+    } else { // completion
+      finish();
+    }
+  }
+  lpGo.addEventListener('click',function(){if(step<steps-1){step++;show();}else closeLp();});
+  function finish(){
+    var L=cur.l,wasNew=!st.done[L.id];
+    st.done[L.id]=1;saveLocal();
+    lpBar.style.width='100%';
+    var xpHtml=signedIn?'<div class="xp" id="lpXp">'+(wasNew?'+25 XP':'Already completed — no extra XP')+'</div>':'';
+    var nudge=!signedIn?'<div class="nudge">Progress saved on this device. <b>Sign in free</b> (email only) to bank <b style="color:var(--gold)">+25 XP</b> for this lesson and every one you finish.<br><button type="button" data-auth-open>Sign in &amp; claim XP</button></div>':'';
+    var tryB=L['try']?'<div class="lp-try"><div class="tl">Try it for real (fake money)</div><p>'+esc(L['try'].p)+'</p><a href="'+L['try'].href+'">'+esc(L['try'].label)+'</a></div>':'';
+    lpBody.innerHTML='<div class="lp-done"><div class="big">✦</div><h2>Lesson complete</h2>'+xpHtml+nudge+'<p>'+esc(L.t)+' — done. '+(nextLesson()?'The next lesson is unlocked.':'That was the last one — you finished the whole Academy.')+'</p>'+tryB+'</div>';
+    lpGo.textContent=nextLesson()?'Back to the path':'Finish';lpGo.hidden=false;lpGo.disabled=false;
+    if(wasNew&&signedIn)postComplete(L.id);
+  }
+  /* ---- server sync ---- */
+  function postComplete(id){
+    fetch('/api/academy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({lesson:id})})
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(d&&d.ok){
+          var el=document.getElementById('lpXp');
+          if(el&&d.fresh){el.textContent='+'+(d.granted||25)+' XP'+(d.bonus?(' · Course bonus +'+d.bonus+' XP'):'');}
+          if(window.mpXpCheck)setTimeout(window.mpXpCheck,500);
+        }
+      }).catch(function(){});
+  }
+  function syncLocalToServer(){
+    if(syncing||!signedIn||!serverDone)return;syncing=true;
+    var pending=Object.keys(st.done).filter(function(id){return serverDone.indexOf(id)<0;});
+    (function next(){
+      var id=pending.shift();
+      if(!id){syncing=false;if(window.mpXpCheck)setTimeout(window.mpXpCheck,500);return;}
+      fetch('/api/academy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({lesson:id})}).then(function(){setTimeout(next,250);}).catch(function(){syncing=false;});
+    })();
+  }
+  function loadServer(){
+    fetch('/api/academy',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+      if(!d)return;
+      signedIn=!!d.signedIn;
+      if(signedIn){serverDone=(d.done||[]).filter(function(x){return x.indexOf('course:')!==0;});
+        serverDone.forEach(function(id){st.done[id]=1;});saveLocal();
+        syncLocalToServer();
+      }
+      render();
+    }).catch(function(){render();});
+  }
+  window.addEventListener('mp-auth-change',function(){setTimeout(loadServer,400);});
+  render();loadServer();
+  try{var pv='/api/track?t=pageview&p=/academy/';if(document.referrer)pv+='&r='+encodeURIComponent(document.referrer);navigator.sendBeacon&&navigator.sendBeacon(pv);}catch(e){}
+})();
+</script>
+<script defer src="/assets/mp-auth.js"></script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>
