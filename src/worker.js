@@ -5850,7 +5850,7 @@ export default {
     if (url.pathname === '/telegram/webhook') return handleTelegram(request, env);
     if (url.pathname === '/chat/reset' && (await adminCookieOk(request, env))) {
       if (!env.CHAT) return new Response('na', { status: 503 });
-      return env.CHAT.get(env.CHAT.idFromName('global')).fetch(new Request('https://do/reset'));
+      return env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/reset'));
     }
     if (url.pathname.startsWith('/chat/admin/') && (await adminCookieOk(request, env))) { // dashboard chat moderation: /history /post /delete
       if (!env.CHAT) return new Response('na', { status: 503 });
@@ -5859,7 +5859,7 @@ export default {
       // polled every 30s (badges) + 5s (chat tab); a DO reset mid-flight (every deploy) threw "internal error"
       // as a 500 → Health-tab noise. Retry once, then fail SOFT with an empty history.
       for (let attempt = 0; attempt < 2; attempt++) {
-        try { return await env.CHAT.get(env.CHAT.idFromName('global')).fetch(new Request('https://do' + sub, { method: request.method, headers: { 'content-type': 'application/json' }, body })); } catch (e) {}
+        try { return await env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do' + sub, { method: request.method, headers: { 'content-type': 'application/json' }, body })); } catch (e) {}
       }
       return new Response(JSON.stringify({ messages: [], transient: true }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
@@ -5873,7 +5873,7 @@ export default {
       if (org && !/^https:\/\/(www\.)?marginpad\.io$|^http:\/\/localhost(:\d+)?$/.test(org)) return new Response('forbidden', { status: 403 });
       // admin restrictions: a muted or chat-restricted user can't even open the socket (the client shows a "contact support" notice)
       try { const tok = getCookie(request, SESS_COOKIE); if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && (su.muted || (',' + String(su.restrictions || '') + ',').indexOf(',chat,') >= 0)) return new Response('restricted', { status: 403 }); } } catch (e) {}
-      return env.CHAT.get(env.CHAT.idFromName('global')).fetch(request);
+      return env.CHAT.get(env.CHAT.idFromName('global2')).fetch(request);
     }
     if (url.pathname === '/charts' || url.pathname === '/charts/' || url.pathname === '/paper-trade' || url.pathname === '/paper-trade/' || url.pathname === '/calculators' || url.pathname === '/calculators/' || url.pathname === '/screener' || url.pathname === '/screener/' || url.pathname === '/heatmap' || url.pathname === '/heatmap/' || url.pathname === '/swap' || url.pathname === '/swap/') { // dedicated full-screen workspaces (serve the homepage; its JS switches to the right single-tool mode)
       const r = await env.ASSETS.fetch(new Request(url.origin + '/app', request)); // fetch the APP SHELL (was '/'; the homepage `/` is now the demo-home router since go-live 2026-07-03) — this is the full paper-trade/charts/calc/screener single-file app the SPA JS switches on
@@ -5968,60 +5968,54 @@ function extractEmailText(raw) {
 
 // ---------- live chat (Durable Object + WebSocket hibernation) ----------
 export class ChatRoom {
-  constructor(state, env) { this.state = state; }
+  // CLASSIC WebSocket mode (2026-07-16): the hibernation API's acceptWebSocket() upgrade path started failing
+  // platform-side with "internal error; reference=..." while every non-WS fetch to the same DO worked. This tiny
+  // room doesn't need hibernation — sessions live in memory; a DO restart just drops sockets (clients reconnect).
+  constructor(state, env) { this.state = state; this.sessions = []; this.ipLast = new Map(); }
   broadcast(obj) {
     const out = JSON.stringify(obj);
-    for (const s of this.state.getWebSockets()) { try { s.send(out); } catch (e) {} }
+    this.sessions = this.sessions.filter(x => { try { x.ws.send(out); return true; } catch (e) { return false; } });
   }
+  online() { return this.sessions.length; }
   async fetch(request) {
     const cp = new URL(request.url).pathname, cj = o => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json' } });
     if (cp.endsWith('/reset')) { await this.state.storage.put('hist', []); this.broadcast({ type: 'history', messages: [] }); return new Response('cleared'); }
     if (cp.endsWith('/history')) { return cj({ messages: (await this.state.storage.get('hist')) || [] }); }
-    if (cp.endsWith('/post')) { let b = {}; try { b = await request.json(); } catch (e) {} const text = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, 280); if (!text) return cj({ error: 'empty' }); const m = { u: 'MarginPad', t: text, ts: Date.now(), admin: true }; let hist = (await this.state.storage.get('hist')) || []; hist.push(m); if (hist.length > 60) hist = hist.slice(-60); await this.state.storage.put('hist', hist); this.broadcast({ type: 'msg', message: m, online: this.state.getWebSockets().length }); return cj({ ok: true }); }
+    if (cp.endsWith('/post')) { let b = {}; try { b = await request.json(); } catch (e) {} const text = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, 280); if (!text) return cj({ error: 'empty' }); const m = { u: 'MarginPad', t: text, ts: Date.now(), admin: true }; let hist = (await this.state.storage.get('hist')) || []; hist.push(m); if (hist.length > 60) hist = hist.slice(-60); await this.state.storage.put('hist', hist); this.broadcast({ type: 'msg', message: m, online: this.online() }); return cj({ ok: true }); }
     if (cp.endsWith('/delete')) { let b = {}; try { b = await request.json(); } catch (e) {} const ts = +b.ts; let hist = (await this.state.storage.get('hist')) || []; hist = hist.filter(x => x.ts !== ts); await this.state.storage.put('hist', hist); this.broadcast({ type: 'history', messages: hist }); return cj({ ok: true }); }
     if (request.headers.get('Upgrade') !== 'websocket') return new Response('expected websocket', { status: 426 });
-    // Per-IP connection cap: N sockets from one IP is a flood/scrape, not a chat user. The IP rides in the
-    // socket attachment (survives hibernation) so the count works across DO restarts.
     const ip = request.headers.get('cf-connecting-ip') || '';
-    if (ip) {
-      let same = 0;
-      for (const s of this.state.getWebSockets()) { try { const a = s.deserializeAttachment(); if (a && typeof a === 'object' && a.ip === ip) same++; } catch (e) {} }
-      if (same >= 4) return new Response('too many connections', { status: 429 });
-    }
+    if (ip && this.sessions.filter(x => x.ip === ip).length >= 4) return new Response('too many connections', { status: 429 }); // per-IP flood cap
     const pair = new WebSocketPair();
     const client = pair[0], server = pair[1];
-    this.state.acceptWebSocket(server);
-    try { server.serializeAttachment({ ip, last: 0 }); } catch (e) {}
+    server.accept();
+    const sess = { ws: server, ip, last: 0 };
+    this.sessions.push(sess);
+    const self = this;
+    server.addEventListener('message', async (ev) => {
+      let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+      if (!m || m.type !== 'msg') return;
+      const text = String(m.t || '').replace(/\s+/g, ' ').trim().slice(0, 280);
+      const user = String(m.u || 'anon').replace(/[<>&]/g, '').trim().slice(0, 20) || 'anon';
+      if (!text) return;
+      const now = Date.now();
+      if (now - sess.last < 1200) return; // 1 msg / 1.2s per connection
+      if (sess.ip) { const pl = self.ipLast.get(sess.ip) || 0; if (now - pl < 1200) return; self.ipLast.set(sess.ip, now); if (self.ipLast.size > 500) self.ipLast.clear(); }
+      sess.last = now;
+      const msg = { u: user, t: text, ts: now };
+      let hist = (await self.state.storage.get('hist')) || [];
+      hist.push(msg); if (hist.length > 60) hist = hist.slice(-60);
+      await self.state.storage.put('hist', hist);
+      self.broadcast({ type: 'msg', message: msg, online: self.online() });
+    });
+    const drop = () => { self.sessions = self.sessions.filter(x => x !== sess); try { server.close(); } catch (e) {} self.broadcast({ type: 'presence', online: self.online() }); };
+    server.addEventListener('close', drop);
+    server.addEventListener('error', drop);
     const hist = (await this.state.storage.get('hist')) || [];
-    try { server.send(JSON.stringify({ type: 'history', messages: hist, online: this.state.getWebSockets().length })); } catch (e) {}
-    this.broadcast({ type: 'presence', online: this.state.getWebSockets().length });
+    try { server.send(JSON.stringify({ type: 'history', messages: hist, online: this.online() })); } catch (e) {}
+    this.broadcast({ type: 'presence', online: this.online() });
     return new Response(null, { status: 101, webSocket: client });
   }
-  async webSocketMessage(ws, message) {
-    let m; try { m = JSON.parse(message); } catch (e) { return; }
-    if (!m || m.type !== 'msg') return;
-    const text = String(m.t || '').replace(/\s+/g, ' ').trim().slice(0, 280);
-    const user = String(m.u || 'anon').replace(/[<>&]/g, '').trim().slice(0, 20) || 'anon';
-    if (!text) return;
-    const now = Date.now();
-    let att = null; try { att = ws.deserializeAttachment(); } catch (e) {}
-    if (typeof att === 'number') att = { ip: '', last: att }; // pre-upgrade sockets stored a bare timestamp
-    if (!att || typeof att !== 'object') att = { ip: '', last: 0 };
-    if (now - (att.last || 0) < 1200) return; // 1 message / 1.2s per connection
-    // …and 1 / 1.2s per IP across ALL its connections (in-memory; resets on hibernation — best-effort).
-    if (att.ip) { if (!this.ipLast) this.ipLast = new Map(); const pl = this.ipLast.get(att.ip) || 0; if (now - pl < 1200) return; this.ipLast.set(att.ip, now); if (this.ipLast.size > 500) this.ipLast.clear(); }
-    try { ws.serializeAttachment({ ip: att.ip || '', last: now }); } catch (e) {}
-    const msg = { u: user, t: text, ts: now };
-    let hist = (await this.state.storage.get('hist')) || [];
-    hist.push(msg); if (hist.length > 60) hist = hist.slice(-60);
-    await this.state.storage.put('hist', hist);
-    this.broadcast({ type: 'msg', message: msg, online: this.state.getWebSockets().length });
-  }
-  async webSocketClose(ws, code, reason) {
-    try { ws.close(code, reason); } catch (e) {}
-    this.broadcast({ type: 'presence', online: this.state.getWebSockets().length });
-  }
-  async webSocketError(ws) { try { ws.close(); } catch (e) {} }
 }
 
 // ---------- reward faucet ledger (Durable Object, SQLite) ----------
