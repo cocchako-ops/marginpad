@@ -5854,12 +5854,13 @@ export default {
     }
     if (url.pathname.startsWith('/chat/admin/') && (await adminCookieOk(request, env))) { // dashboard chat moderation: /history /post /delete
       if (!env.CHAT) return new Response('na', { status: 503 });
-      const sub = url.pathname.slice('/chat/admin'.length); // -> /history /post /delete
+      const sub = url.pathname.slice('/chat/admin'.length); // -> /history /post /delete /import
       const body = request.method === 'POST' ? await request.text() : undefined;
+      const inst = url.searchParams.get('inst') === 'old' ? 'global' : 'global2'; // ?inst=old = the pre-2026-07-16 wedged instance (recovery reads)
       // polled every 30s (badges) + 5s (chat tab); a DO reset mid-flight (every deploy) threw "internal error"
       // as a 500 → Health-tab noise. Retry once, then fail SOFT with an empty history.
       for (let attempt = 0; attempt < 2; attempt++) {
-        try { return await env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do' + sub, { method: request.method, headers: { 'content-type': 'application/json' }, body })); } catch (e) {}
+        try { return await env.CHAT.get(env.CHAT.idFromName(inst)).fetch(new Request('https://do' + sub, { method: request.method, headers: { 'content-type': 'application/json' }, body })); } catch (e) {}
       }
       return new Response(JSON.stringify({ messages: [], transient: true }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
@@ -5983,6 +5984,17 @@ export class ChatRoom {
     if (cp.endsWith('/history')) { return cj({ messages: (await this.state.storage.get('hist')) || [] }); }
     if (cp.endsWith('/post')) { let b = {}; try { b = await request.json(); } catch (e) {} const text = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, 280); if (!text) return cj({ error: 'empty' }); const m = { u: 'MarginPad', t: text, ts: Date.now(), admin: true }; let hist = (await this.state.storage.get('hist')) || []; hist.push(m); if (hist.length > 60) hist = hist.slice(-60); await this.state.storage.put('hist', hist); this.broadcast({ type: 'msg', message: m, online: this.online() }); return cj({ ok: true }); }
     if (cp.endsWith('/delete')) { let b = {}; try { b = await request.json(); } catch (e) {} const ts = +b.ts; let hist = (await this.state.storage.get('hist')) || []; hist = hist.filter(x => x.ts !== ts); await this.state.storage.put('hist', hist); this.broadcast({ type: 'history', messages: hist }); return cj({ ok: true }); }
+    if (cp.endsWith('/import')) { // recovery: merge a messages[] payload into hist (dedupe by ts+u, sort, cap 60)
+      let b = {}; try { b = await request.json(); } catch (e) {}
+      const inc = Array.isArray(b.messages) ? b.messages.filter(x => x && x.t && x.ts).slice(0, 120) : [];
+      let hist = (await this.state.storage.get('hist')) || [];
+      const seen = new Set(hist.map(x => x.ts + '|' + x.u));
+      inc.forEach(x => { const k = x.ts + '|' + x.u; if (!seen.has(k)) { seen.add(k); hist.push({ u: String(x.u || 'anon').slice(0, 20), t: String(x.t).slice(0, 280), ts: +x.ts, ...(x.admin ? { admin: true } : {}) }); } });
+      hist.sort((a, b2) => a.ts - b2.ts); if (hist.length > 60) hist = hist.slice(-60);
+      await this.state.storage.put('hist', hist);
+      this.broadcast({ type: 'history', messages: hist });
+      return cj({ ok: true, count: hist.length });
+    }
     if (request.headers.get('Upgrade') !== 'websocket') return new Response('expected websocket', { status: 426 });
     const ip = request.headers.get('cf-connecting-ip') || '';
     if (ip && this.sessions.filter(x => x.ip === ip).length >= 4) return new Response('too many connections', { status: 429 }); // per-IP flood cap
