@@ -11,7 +11,7 @@
   var DSN = 'https://' + KEY + '@' + HOST + '/' + PROJ;
   var URL = 'https://' + HOST + '/api/' + PROJ + '/envelope/?sentry_key=' + KEY + '&sentry_version=7';
   // ignore noise that isn't our code breaking (browser extensions, autofill, transient network) — mirrors the site's error beacon
-  var IGN = /_AutofillCallbackHandler|ResizeObserver loop|Non-Error promise rejection|Failed to fetch|Load failed|NetworkError|AbortError|The operation was aborted|^Script error\.?$|view transition|Transition was skipped|Transition was aborted|skipTransition|zaloJSV2|_DumpException|VerifyBeacon|Java exception|globalThis|variable: fetch|window\.webkit|^Rejected$/i;
+  var IGN = /_AutofillCallbackHandler|ResizeObserver loop|Non-Error promise rejection|Failed to fetch|Load failed|NetworkError|AbortError|The operation was aborted|^Script error\.?$|view transition|Transition was skipped|Transition was aborted|skipTransition|zaloJSV2|_DumpException|VerifyBeacon|Java exception|globalThis|variable: fetch|window.webkit|^Rejected$|MetaMask|^.{1,3}$/i;
   var sent = 0, seen = {};
   function hex() { try { return crypto.randomUUID().replace(/-/g, ''); } catch (e) {} var s = ''; for (var i = 0; i < 32; i++) s += (Math.floor(Math.random() * 16)).toString(16); return s; }
   function send(type, value, stack) {
