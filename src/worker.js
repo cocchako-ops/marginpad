@@ -5937,6 +5937,7 @@ export default {
     ctx.waitUntil(checkSignals(env));
     ctx.waitUntil(checkMorningBrief(env));
     ctx.waitUntil(checkOpsAlerts(env));
+    ctx.waitUntil(checkIndexNow(env));
     ctx.waitUntil(handleScreener(env).catch(() => {})); // keep the global KV screener snapshot warm so /charts "Top signals" loads instantly
   },
   // Inbound email (Cloudflare Email Routing → "Send to Worker"): store messages sent to support@marginpad.io in the admin Support tab.
@@ -7544,6 +7545,39 @@ async function handleMissions(url, request, env) {
   }
   return jr({ enabled: true, signedIn: true, missions, day, resetInMs: (dayStart + 86400000) - Date.now() });
 }
+// ---------- IndexNow (Bing/Yandex/Seznam/Naver instant indexing) ----------
+const INDEXNOW_KEY = '9f3c7e21b84d4a6fae0c5d2178b6e093'; // public by protocol design — the key file at /<key>.txt proves ownership
+async function indexNowPing(urls) {
+  if (!urls || !urls.length) return;
+  try {
+    await fetch('https://api.indexnow.org/indexnow', {
+      method: 'POST', headers: { 'content-type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ host: 'marginpad.io', key: INDEXNOW_KEY, keyLocation: 'https://marginpad.io/' + INDEXNOW_KEY + '.txt', urlList: urls.slice(0, 10000) })
+    });
+  } catch (e) {}
+}
+// Daily cron: diff the sitemaps against the last-seen URL set and ping only NEW urls (new blog posts,
+// new pages after a build+deploy — anything that lands in a sitemap gets announced within a day).
+async function checkIndexNow(env) {
+  try {
+    const day = new Date().toISOString().slice(0, 10);
+    if ((await env.STATS.get('inow:day')) === day) return; // once per UTC day
+    await env.STATS.put('inow:day', day);
+    let urls = [];
+    for (const sm of ['https://marginpad.io/sitemap.xml', 'https://marginpad.io/community/sitemap.xml']) {
+      try { const t = await (await fetch(sm)).text(); urls = urls.concat([...t.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim())); } catch (e) {}
+    }
+    urls = [...new Set(urls)].filter(u => u.startsWith('https://marginpad.io'));
+    if (!urls.length) return;
+    const seenRaw = await env.STATS.get('inow:seen');
+    if (!seenRaw) { await env.STATS.put('inow:seen', JSON.stringify(urls)); return; } // first run seeds only (full set was submitted manually 2026-07-16)
+    const seen = new Set(JSON.parse(seenRaw));
+    const fresh = urls.filter(u => !seen.has(u));
+    if (fresh.length) await indexNowPing(fresh);
+    await env.STATS.put('inow:seen', JSON.stringify(urls));
+  } catch (e) {}
+}
+
 async function handleComm(url, request, env, ctx) {
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
   const jr = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: jh });
@@ -7589,6 +7623,7 @@ async function handleComm(url, request, env, ctx) {
       if (d && d.ok && d.id) {
         const safe = x => String(x || '').replace(/[<>&]/g, '');
         ctx.waitUntil(tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, parse_mode: 'HTML', disable_web_page_preview: true, text: '\u270d\ufe0f <b>New community post</b> by ' + safe(author) + '\n' + safe(pb.title).slice(0, 120) + '\n\nhttps://marginpad.io/community/p/' + d.id }).catch(() => {}));
+        ctx.waitUntil(indexNowPing(['https://marginpad.io/community/p/' + d.id + '/' + commSlug(pb.title)])); // search engines learn about the post immediately
       }
     } catch (e) {}
   }
