@@ -6479,16 +6479,17 @@ export class RewardLedger {
 // Optional accounts (passwordless email sign-in). Single instance idFromName('main').
 // Anonymous use stays the default; this only backs the optional "Sign in" flow (email capture for MVP).
 // ===== XP & Level system (2026-07-15) — retention progression; Diamond ~10 months of active use =====
-const XP_LEVELS = [
+const XP_LEVELS = [ // pragovi podignuti 2026-07-16 (Academy nosi ~1975 XP pa je pomerala distribuciju) + novi Legendary tier
   { k: 'bronze', name: 'Bronze', min: 0, col: '#c97f4a' },
-  { k: 'silver', name: 'Silver', min: 2000, col: '#b7c2d0' },
-  { k: 'gold', name: 'Gold', min: 10000, col: '#ffcf3f' },
-  { k: 'platinum', name: 'Platinum', min: 25000, col: '#7ee0ff' },
-  { k: 'diamond', name: 'Diamond', min: 50000, col: '#8b5cff' },
+  { k: 'silver', name: 'Silver', min: 3000, col: '#b7c2d0' },
+  { k: 'gold', name: 'Gold', min: 12000, col: '#ffcf3f' },
+  { k: 'platinum', name: 'Platinum', min: 30000, col: '#7ee0ff' },
+  { k: 'diamond', name: 'Diamond', min: 60000, col: '#8b5cff' },
+  { k: 'legendary', name: 'Legendary', min: 120000, col: '#ff7a1a' },
 ];
-const LEVEL_CLAIM_MULT = { bronze: 1.0, silver: 1.10, gold: 1.20, platinum: 1.35, diamond: 1.50 }; // faucet claim size by level
-const LEVEL_WD_BONUS = { diamond: 0.10 };
-function lvlSvgS(k, col) { col = col || '#c97f4a'; if (k === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M8 5H16L20 10L12 19L4 10Z" fill="' + col + '30"/><path d="M8 5H16L20 10L12 19L4 10ZM4 10H20M8 5L10 10M16 5L14 10M10 10L12 19M14 10L12 19" stroke="' + col + '" stroke-width="1.25" stroke-linejoin="round"/></svg>'; return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M12 2.5 20 7v10L12 21.5 4 17V7z" fill="' + col + '22" stroke="' + col + '" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 7l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.6 8.9 16.1l.6-3.3L7.1 10.5l3.3-.5z" fill="' + col + '"/></svg>'; } // Diamond gets +10% on withdrawals (the house pays it)
+const LEVEL_CLAIM_MULT = { bronze: 1.0, silver: 1.10, gold: 1.20, platinum: 1.35, diamond: 1.50, legendary: 1.75 }; // faucet claim size by level
+const LEVEL_WD_BONUS = { diamond: 0.10, legendary: 0.15 };
+function lvlSvgS(k, col) { col = col || '#c97f4a'; if (k === 'legendary') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z" fill="' + col + '30"/><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3zM4 17l.6 2.5h14.8L20 17" stroke="' + col + '" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12" cy="13.4" r="1.5" fill="' + col + '"/></svg>'; if (k === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M8 5H16L20 10L12 19L4 10Z" fill="' + col + '30"/><path d="M8 5H16L20 10L12 19L4 10ZM4 10H20M8 5L10 10M16 5L14 10M10 10L12 19M14 10L12 19" stroke="' + col + '" stroke-width="1.25" stroke-linejoin="round"/></svg>'; return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M12 2.5 20 7v10L12 21.5 4 17V7z" fill="' + col + '22" stroke="' + col + '" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 7l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.6 8.9 16.1l.6-3.3L7.1 10.5l3.3-.5z" fill="' + col + '"/></svg>'; } // Diamond gets +10% on withdrawals (the house pays it)
 function xpLevelOf(xp) {
   xp = Math.max(0, +xp || 0);
   let i = 0; for (let n = 0; n < XP_LEVELS.length; n++) if (xp >= XP_LEVELS[n].min) i = n;
