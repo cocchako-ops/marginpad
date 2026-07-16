@@ -7471,7 +7471,7 @@ function missionsForDay(day) { // deterministic daily set: always one trade miss
   return out;
 }
 // ---------- Academy: Duolingo-style lesson path (content lives on /academy/; server = progress + XP) ----------
-const ACAD_COURSES = { basics: ['b1','b2','b3','b4','b5','b6','b7','b8','b9'], leverage: ['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'], risk: ['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12'], market: ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12'], going: ['g1','g2','g3','g4','g5'] };
+const ACAD_COURSES = { basics: ['b1','b2','b3','b4','b5','b6','b7','b8','b9'], candles: ['c1','c2','c3','c4','c5','c6','c7','c8'], leverage: ['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'], risk: ['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12'], market: ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12'], going: ['g1','g2','g3','g4','g5'] };
 async function handleAcademy(url, request, env) {
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
   const jr = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: jh });

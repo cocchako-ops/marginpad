@@ -35,7 +35,7 @@
     + '.mpnav-scroll::-webkit-scrollbar-thumb:hover{background:#2c3540;}'
     + ".mpnav-sec{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#5c656f;margin:18px 6px 9px;}"
     + '.mpnav-row{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:#111419;border:1px solid #232932;border-radius:14px;padding:14px 16px;margin-bottom:9px;color:#e9e7df;text-decoration:none;transition:transform .12s,background .12s;}'
-    + '.mpnav-row:hover{background:#161a20;}.mpnav-row:active{transform:scale(.985);}'
+    + '.mpnav-hot{border:1px solid rgba(194,246,74,.4)!important;border-radius:12px;animation:mphot 2.4s ease-in-out infinite}.mpnav-hot .mpnav-ic{animation:mphotIc 2.4s ease-in-out infinite}.mpnav-hotb{font-style:normal;font-family:monospace;font-size:8.5px;font-weight:800;letter-spacing:.08em;background:#c2f64a;color:#0a0b0d;border-radius:5px;padding:1.5px 5px;vertical-align:2px;margin-left:5px}@keyframes mphot{0%,100%{box-shadow:0 0 0 0 rgba(194,246,74,.0),0 0 14px -6px rgba(194,246,74,.45)}50%{box-shadow:0 0 0 1px rgba(194,246,74,.25),0 0 22px -4px rgba(194,246,74,.7)}}@keyframes mphotIc{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}.mpnav-row:hover{background:#161a20;}.mpnav-row:active{transform:scale(.985);}'
     + '.mpnav-ic{flex-shrink:0;width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;}.mpnav-ic svg{width:21px;height:21px;display:block;}'
     + '.mpnav-rt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}'
     + ".mpnav-rt b{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15.5px;}"
@@ -126,7 +126,7 @@
     + '<div class="mpnav-scroll">'
     + '<div class="mpnav-sugg" id="mpnavSugg" hidden></div>'
     + '<div class="mpnav-sec">'+TR('secNew')+'</div>'
-    + row('Academy', 'Learn trading from zero · 22 free lessons + XP', '/academy/', '#c2f64a', 'start')
+    + '<a class="mpnav-row mpnav-hot" href="/academy/"><span class="mpnav-ic" style="color:#c2f64a;background:#c2f64a22">'+I.start+'</span><span class="mpnav-rt"><b>Academy <i class="mpnav-hotb">HOT</i></b><small>Learn trading · earn XP</small></span>'+I.chev+'</a>'
     + '<div class="mpnav-sec">'+TR('secCalc')+'</div>'
     + '<button type="button" class="mpnav-row mpnav-expand" data-mpexpand="calc"><span class="mpnav-ic" style="color:#c2f64a;background:#c2f64a22">'+I.calc+'</span><span class="mpnav-rt"><b>'+TR('brCalcT')+'</b><small>'+TR('brCalcS')+'</small></span>'+I.chev+'</button>'
     + '<div class="mpnav-sub" data-sub="calc" hidden>'
