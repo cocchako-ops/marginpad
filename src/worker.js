@@ -1688,7 +1688,7 @@ async function handleBug(url, request, env) {
   }
   if (request.method === 'POST' && path === '/api/bug/reply') {
     const b = await readBody();
-    if (!authed(b.key)) return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: jh });
+    if (!authed(b.key) && !(watchOk && b.from === 'claude')) return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: jh }); // the watcher may reply, but only as 'claude'
     const id = String(b.id || '').replace(/[^a-z0-9]/gi, '').slice(0, 40);
     const text = String(b.text || '').trim().slice(0, 4000);
     if (!text) return new Response(JSON.stringify({ error: 'empty' }), { status: 400, headers: jh });
