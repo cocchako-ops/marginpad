@@ -29,6 +29,12 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
   .jr-grab{display:none!important;}                          /* no Back bar — a green ✕ in the corner closes it */
   .jr-x{display:block;font-size:25px;line-height:1;color:#34d99a;padding:3px 7px;border-radius:9px;}
   .jr-x:active{background:rgba(46,189,133,.14);}
+  /* mobile smoothness (PC is fine): promote the scroll container to its own GPU layer so momentum scroll is smooth,
+     and give each live-updating ticket layout/paint containment so the per-second value refresh only repaints that
+     one card instead of reflowing/repainting the whole list. No layout/behaviour change. */
+  .jr-drawer{transform:translateZ(0);backface-visibility:hidden;will-change:scroll-position;}
+  #jrList .pp,.jr-list .pp{contain:layout style;}
+  #jrList .pp .big,#jrList .pp .roe,#jrList .pp .pp-live{transition:color .16s ease;will-change:contents;}
 }
 .jr-drawer .jr-stats{grid-template-columns:1fr 1fr;}
 .jr-tabs{display:inline-flex;gap:3px;background:#0a0c0f;border:1px solid var(--line-bright);border-radius:9px;padding:3px;margin:4px 0 14px;}
