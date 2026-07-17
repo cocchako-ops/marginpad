@@ -170,6 +170,7 @@
           + '<div class="mpa-prow"><span>Email</span><b>' + esc(ME.email) + '</b></div>'
           + '<div class="mpa-prow"><span>Member since</span><b>' + fmtDate(ME.created) + '</b></div>'
           + '<div class="mpa-prow"><span>Paper trades</span><b>' + tradeCount() + '</b></div>'
+          + (hasU ? '<div class="mpa-prow"><span>Followers</span><b id="mpaFollowers">…</b></div>' : '')
           + (ME.status && ME.status !== 'active' ? '<div class="mpa-prow"><span>Status</span><b style="color:#ffb347;text-transform:capitalize">' + esc(ME.status) + '</b></div>' : '')
         + '</div>'
         + (hasU ? '' : '<label style="display:block;font-size:11px;color:#9aa3ad;margin:8px 0 5px">Pick a username <span style="color:#5c656f">(public, permanent)</span></label><input class="mpa-in" id="mpaUname" maxlength="20" autocomplete="off" placeholder="choose a username"><button class="mpa-btn" id="mpaSaveU" type="button">Set username</button><div class="mpa-msg"></div>')
@@ -177,6 +178,7 @@
         + '<button class="mpa-btn" id="mpaSup" type="button" style="margin-top:10px;background:#13241f;color:#34d99a;border:1px solid rgba(52,217,154,.4)">Contact support</button>'
         + '<button class="mpa-btn" style="background:#1a1f27;color:#e9e7df;margin-top:10px" id="mpaLogout" type="button">Sign out</button>'
         + '<button class="mpa-link" id="mpaDone" type="button">Close</button>';
+      if (hasU) { try { fetch('/api/lb/user?name=' + encodeURIComponent(ME.username)).then(function (r) { return r.json(); }).then(function (d) { var fe = bodyEl.querySelector('#mpaFollowers'); if (fe) fe.textContent = (d && typeof d.followers === 'number') ? d.followers : '0'; }).catch(function () { var fe = bodyEl.querySelector('#mpaFollowers'); if (fe) fe.textContent = '0'; }); } catch (e) {} }
       if (!hasU) {
         var sv = bodyEl.querySelector('#mpaSaveU'), ui = bodyEl.querySelector('#mpaUname');
         var saveU = function () {
