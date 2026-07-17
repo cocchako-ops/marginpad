@@ -427,7 +427,9 @@
     var scr = document.querySelectorAll('script:not([src])');
     for (var i = 0; i < scr.length; i++) { if ((scr[i].textContent || '').indexOf('t=pageview') > -1) { window.__mpPv = 1; return; } }
     window.__mpPv = 1;
-    var q = '/api/track?t=pageview&p=' + encodeURIComponent(location.pathname) + (document.referrer ? '&r=' + encodeURIComponent(document.referrer) : '');
+    // entry source (gclid/utm/fbclid/ref → then referrer host), session-cached — same as the homepage beacon
+    var esrc = ''; try { var s = sessionStorage.getItem('mp_src'); if (s !== null) esrc = s; else { var p2 = new URLSearchParams(location.search || ''); if (p2.get('gclid') || p2.get('gbraid') || p2.get('wbraid')) esrc = 'google-ads'; else if (p2.get('msclkid')) esrc = 'bing-ads'; else if (p2.get('utm_source')) esrc = p2.get('utm_source') + (p2.get('utm_medium') ? ' / ' + p2.get('utm_medium') : ''); else if (p2.get('fbclid')) esrc = 'facebook'; else if (p2.get('twclid')) esrc = 'twitter'; else if (p2.get('ttclid')) esrc = 'tiktok'; else if (p2.get('ref')) esrc = p2.get('ref'); if (!esrc && document.referrer) { try { var h = new URL(document.referrer).hostname.replace(/^www\./, ''); if (h && h !== 'marginpad.io') esrc = h; } catch (e2) {} } esrc = (esrc || '').slice(0, 40); try { sessionStorage.setItem('mp_src', esrc); } catch (e3) {} } } catch (e4) {}
+    var q = '/api/track?t=pageview&p=' + encodeURIComponent(location.pathname) + (document.referrer ? '&r=' + encodeURIComponent(document.referrer) : '') + (esrc ? '&src=' + encodeURIComponent(esrc) : '');
     if (navigator.sendBeacon) { navigator.sendBeacon(q); } else { (new Image()).src = q; }
   } catch (e) {}
 })();

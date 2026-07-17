@@ -178,7 +178,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       +'<div class="pp-meta">Entry <b>'+fp(e.entry)+'</b> · Size <b>'+(e.qty!=null?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:5}):'—')+'</b> · '+(e.lev||1)+'×<br>Notional <b>'+(m.notional!=null?money(m.notional):'—')+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')<br>SL <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'—'))+'</b> · TP <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'—'))+'</b> · '+dur(Date.now()-e.ts)+' · '+hm(e.ts)+'</div>'
       +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+'">Close</button><button data-act="edit" data-id="'+e.id+'">Modify</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
   function closedCard(e){var win=e.status==='win',cls=win?'pf':'ls';
-    return '<div class="pp '+cls+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.liquidated?'LIQ':(win?'WIN':'LOSS'))+'</span></div>'
+    return '<div class="pp '+cls+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span><span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?((+e.pnl>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span></div>'
       +'<div class="pp-meta">'+fp(e.entry)+' → '+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+((+e.margin>0)?' · Size <b>'+money(+e.margin)+'</b>':'')+(e.partial?' · <b>'+e.partial+'%</b>':'')+(e.closeTs?' · '+dur(e.closeTs-e.ts):'')+'</div>'
       +'<div class="pp-btns"><button data-act="reopen" data-id="'+e.id+'">Reopen</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
@@ -663,7 +663,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       +'<div class="pp-times">'+MT('jOpened','Opened')+' '+tsf(e.ts)+'</div></div>';}
   function closedCard(e){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.liquidated?'LIQ':(win?'WIN':'LOSS'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?(((+e.pnl)>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span>'+((e.margin&&e.pnl!=null)?'<span class="roe">ROE '+pctS(((+e.pnl)/(+e.margin||1))*100)+'</span>':'')+'</div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
@@ -956,11 +956,36 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   var CLARITY_ID = ''; // set to a Microsoft Clarity project ID for visual click heatmaps + recordings
   var ADS_CONV_LABEL = ''; // Google Ads conversion label for affiliate clicks — paste the label from your conversion action (e.g. 'abCdEf1gH'); leave '' until created
   if (CLARITY_ID) { (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src='https://www.clarity.ms/tag/'+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,'clarity','script',CLARITY_ID); }
+  // Accurate traffic source: referrer alone is empty for most real traffic (app webviews, referrer-policy stripping,
+  // typed/bookmark, PWA, and paid ad clicks). Compute the ENTRY source once per session from URL campaign params
+  // (gclid = Google Ads, utm_source, fbclid, ref) FIRST, then the external referrer host — persisted so internal hops keep it.
+  function mpEntrySrc(){
+    try{
+      var s=sessionStorage.getItem('mp_src'); if(s!==null)return s;
+      var q; try{q=new URLSearchParams(location.search||'');}catch(_){q=null;}
+      var src='';
+      if(q){
+        if(q.get('gclid')||q.get('gbraid')||q.get('wbraid'))src='google-ads';
+        else if(q.get('msclkid'))src='bing-ads';
+        else if(q.get('utm_source')){src=q.get('utm_source')+(q.get('utm_medium')?' / '+q.get('utm_medium'):'');}
+        else if(q.get('fbclid'))src='facebook';
+        else if(q.get('twclid'))src='twitter';
+        else if(q.get('ttclid'))src='tiktok';
+        else if(q.get('ref'))src=q.get('ref');
+      }
+      if(!src&&document.referrer){try{var h=new URL(document.referrer).hostname.replace(/^www\./,'');if(h&&h!=='marginpad.io')src=h;}catch(_){}}
+      src=(src||'').slice(0,40);
+      try{sessionStorage.setItem('mp_src',src);}catch(_){}
+      return src;
+    }catch(_){return '';}
+  }
+  window.mpEntrySrc=mpEntrySrc;
   function send(t,e){
     try{
       var u='/api/track?t='+encodeURIComponent(t)+(e?'&e='+encodeURIComponent(e):'')+'&p='+encodeURIComponent(location.pathname);
       if(t==='pageview'){
         if(document.referrer){u+='&r='+encodeURIComponent(document.referrer);}
+        try{var _es=mpEntrySrc();if(_es)u+='&src='+encodeURIComponent(_es);}catch(_){}
         try{var lp=sessionStorage.getItem('mp_lastpath');if(lp&&lp!==location.pathname)u+='&f='+encodeURIComponent(lp);sessionStorage.setItem('mp_lastpath',location.pathname);}catch(_){}
       }
       if(navigator.sendBeacon){navigator.sendBeacon(u);}else{fetch(u,{keepalive:true});}

@@ -397,6 +397,14 @@
       host.appendChild(el); requestAnimationFrame(function () { el.classList.add('on'); });
       setTimeout(function () { el.classList.remove('on'); setTimeout(function () { el.remove(); }, 450); }, 3600);
     }
+    function followToast(name) {
+      var host = document.getElementById('mpxpT'); if (!host) { host = document.createElement('div'); host.id = 'mpxpT'; document.body.appendChild(host); }
+      var el = document.createElement('div'); el.className = 'mpxp'; el.style.setProperty('--xc', '#38bdf8');
+      el.innerHTML = '<b style="font-size:17px">★</b><span>New follower<br>' + (name ? '@' + esc(String(name).slice(0, 20)) : 'Someone followed you') + '</span>';
+      host.appendChild(el); requestAnimationFrame(function () { el.classList.add('on'); });
+      setTimeout(function () { el.classList.remove('on'); setTimeout(function () { el.remove(); }, 450); }, 4600);
+      try { if (navigator.vibrate) navigator.vibrate([15, 40, 15]); } catch (e) {}
+    }
     function celebrate(lv) {
       var ov = document.getElementById('mpxpLv'); if (!ov) { ov = document.createElement('div'); ov.id = 'mpxpLv'; document.body.appendChild(ov); }
       var col = lv.col || '#c2f64a';
@@ -425,6 +433,13 @@
         if (d.level.idx > (stored.idx != null ? stored.idx : d.level.idx)) setTimeout(function () { celebrate(d.level); }, fresh.length ? 700 : 0);
         try { localStorage.setItem(key(uid), JSON.stringify({ xp: d.xp, idx: d.level.idx, ts: (d.log[0] || {}).ts || stored.ts })); } catch (e) {}
         lastXp = d.xp; lastIdx = d.level.idx;
+        // new-follower toast (same channel as XP): compare the follower count to what this device last saw
+        if (typeof d.followers === 'number') { try {
+          var fk = 'mp_foll_' + uid, fseen = null; try { fseen = JSON.parse(localStorage.getItem(fk)); } catch (e) {}
+          if (fseen === null || typeof fseen !== 'number') { localStorage.setItem(fk, JSON.stringify(d.followers)); } // seed silently
+          else if (d.followers > fseen) { var nm = d.lastFollower && d.lastFollower.name, dn = d.followers - fseen; setTimeout(function () { followToast(dn === 1 ? nm : (dn + ' new followers')); }, fresh.length ? 900 : 300); localStorage.setItem(fk, JSON.stringify(d.followers)); }
+          else if (d.followers !== fseen) { localStorage.setItem(fk, JSON.stringify(d.followers)); } // unfollow → keep in sync, no toast
+        } catch (e) {} }
       }).catch(function () {});
     }
     function startWatch() { if (watching || !ME) return; watching = true; setTimeout(check, 1500); setInterval(function () { if (!document.hidden) check(); }, 60000); document.addEventListener('visibilitychange', function () { if (!document.hidden) check(); }); }

@@ -972,13 +972,13 @@
       var wt=((d&&d.topWr)||[]).slice(0,10);
       el.innerHTML=wt.length?wt.map(function(t,i){return lbRow(i,t.who,(+t.w||0)+'W-'+(+t.l||0)+'L',Math.round(+t.wr||0)+'%');}).join('')
         :'<div class="lb-empty">No one has 20 closed trades yet this week — close 20+ and claim the win-rate crown.</div>';
-      return;
+      lbAfter(el);return;
     }
     if(lbMode==='pnl'){
       var pt=((d&&d.topPnl)||[]).slice(0,10);
       el.innerHTML=pt.length?pt.map(function(t,i){var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');return lbRow(i,t.who,pair,lbMoney(t.pnl),(+t.pnl>=0?'up':'dn'));}).join('')
         :'<div class="lb-empty">No winning trades yet this week — close one in profit and top the PnL board.</div>';
-      return;
+      lbAfter(el);return;
     }
     var top=((d&&d.top)||[]).slice(0,10);
     el.innerHTML=top.length?top.map(function(t,i){var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');return lbRow(i,t.who,pair,'+'+Math.round(+t.roe).toLocaleString('en-US')+'%');}).join('')
@@ -1174,7 +1174,10 @@
   })();
 
   // ---- tracking: pageview + affiliate click-outs (same /api/track events as the live site) ----
-  try{var pv='/api/track?t=pageview&p=/';if(document.referrer)pv+='&r='+encodeURIComponent(document.referrer);navigator.sendBeacon&&navigator.sendBeacon(pv);}catch(e){}
+  try{var pv='/api/track?t=pageview&p=/';if(document.referrer)pv+='&r='+encodeURIComponent(document.referrer);
+    var _es='';try{var _s=sessionStorage.getItem('mp_src');if(_s!==null)_es=_s;else{var _q=new URLSearchParams(location.search||'');if(_q.get('gclid')||_q.get('gbraid')||_q.get('wbraid'))_es='google-ads';else if(_q.get('msclkid'))_es='bing-ads';else if(_q.get('utm_source'))_es=_q.get('utm_source')+(_q.get('utm_medium')?' / '+_q.get('utm_medium'):'');else if(_q.get('fbclid'))_es='facebook';else if(_q.get('twclid'))_es='twitter';else if(_q.get('ttclid'))_es='tiktok';else if(_q.get('ref'))_es=_q.get('ref');if(!_es&&document.referrer){try{var _h=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h&&_h!=='marginpad.io')_es=_h;}catch(e2){}}_es=(_es||'').slice(0,40);try{sessionStorage.setItem('mp_src',_es);}catch(e3){}}}catch(e4){}
+    if(_es)pv+='&src='+encodeURIComponent(_es);
+    navigator.sendBeacon&&navigator.sendBeacon(pv);}catch(e){}
   document.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a[data-ex]'):null;if(!a)return;
     try{navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=exchange&e='+encodeURIComponent(a.getAttribute('data-ex'))+'&p=/demo-home/');}catch(_){}},true);
 

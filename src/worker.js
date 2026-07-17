@@ -1313,7 +1313,12 @@ async function handleTrack(url, request, env, ctx) {
     const ua = request.headers.get('user-agent') || '';
     const cc = (request.cf && request.cf.country) || '';
     let src = 'direct';
-    { const ref = p.get('r'); if (ref) { try { const h = new URL(ref).hostname.replace(/^www\./, ''); if (h && h !== 'marginpad.io') src = h.slice(0, 40); } catch (e) {} } }
+    { // client-computed entry source (gclid=Google Ads, utm_source, fbclid, ref) wins — it survives referrer stripping;
+      // fall back to the external referrer host. Only truly source-less hits stay 'direct'.
+      const cs = (p.get('src') || '').replace(/[^a-zA-Z0-9 ._/+-]/g, '').trim().slice(0, 40);
+      if (cs) src = cs;
+      else { const ref = p.get('r'); if (ref) { try { const h = new URL(ref).hostname.replace(/^www\./, ''); if (h && h !== 'marginpad.io') src = h.slice(0, 40); } catch (e) {} } }
+    }
     // Analytics Engine — one cheap, non-blocking data point per pageview (no KV quota, captures full dimensions).
     try { if (env.AE) env.AE.writeDataPoint({ indexes: [cc || 'XX'], blobs: ['pageview', cc, pth0.slice(0, 90), src, deviceOf(ua), browserOf(ua), (lm ? lm[1] : 'en')], doubles: [1] }); } catch (e) {}
     // Visitor identity: prefer the 2-year mp_did cookie (survives IP rotation + browser updates); fall back to
@@ -5259,7 +5264,8 @@ async function handleAuth(url, request, env, ctx) {
     let sd = null; try { const sr = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); sd = await sr.json(); } catch (e) { return jr({ signedIn: false, transient: true }); }
     if (!sd || !sd.user || !sd.user.id) return jr({ signedIn: false });
     let log = []; try { const r = await stub.fetch(new Request('https://do/xplog?uid=' + encodeURIComponent(sd.user.id))); const d = await r.json(); log = (d.log || []).slice(0, 12); } catch (e) {}
-    return jr({ signedIn: true, xp: sd.user.xp || 0, streak: sd.user.streak || 0, freezes: sd.user.freezes || 0, level: sd.user.level || null, log });
+    let followers = 0, lastFollower = null; try { const fr = await stub.fetch(new Request('https://do/myfollowers?uid=' + encodeURIComponent(sd.user.id))); const fd = await fr.json(); followers = fd.count || 0; lastFollower = fd.last || null; } catch (e) {}
+    return jr({ signedIn: true, xp: sd.user.xp || 0, streak: sd.user.streak || 0, freezes: sd.user.freezes || 0, level: sd.user.level || null, log, followers, lastFollower });
   }
   if (path === '/me') {
     const tok = getCookie(request, SESS_COOKIE);
@@ -7350,6 +7356,12 @@ export class UserStore {
       }
       best.sort((a, b) => b.roe - a.roe);
       return this.j({ top: best.slice(0, limit) });
+    }
+    if (path === '/myfollowers') { // signed-in user's own follower count + most-recent follower (for the "new follower" toast)
+      const uid = String(url.searchParams.get('uid') || ''); if (!uid) return this.j({ count: 0, last: null });
+      const count = (this.rows('SELECT COUNT(*) c FROM ufollows WHERE tuid = ?', uid)[0] || { c: 0 }).c;
+      const last = this.rows('SELECT f.uid fid, u.username, f.ts FROM ufollows f LEFT JOIN users u ON u.id = f.uid WHERE f.tuid = ? ORDER BY f.ts DESC LIMIT 1', uid)[0];
+      return this.j({ count, last: last ? { name: last.username || '', ts: last.ts || 0 } : null });
     }
     if (path === '/lbuser') { // public profile card for a leaderboard name: level + all-time & this-week trade stats
       const name = String(url.searchParams.get('name') || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
