@@ -1090,10 +1090,16 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   /* unread signal: glow the chat FAB (desktop) + a dot on the bottom-nav Chat button (mobile) when a new message lands while the chat is closed */
   function chatAlert(on){try{
     if(fab){fab.classList.toggle('ct-alert',on);var fd=fab.querySelector('.ctfab-dot');if(on&&!fd){fd=document.createElement('span');fd.className='ctfab-dot';fab.appendChild(fd);}else if(!on&&fd){fd.remove();}}
-    var mnc=document.querySelector('.mobnav [data-mn="chat"]');if(mnc){mnc.classList.toggle('ct-alert',on);var md=mnc.querySelector('.mn-chat-dot');if(on&&!md){md=document.createElement('span');md.className='mn-chat-dot';mnc.appendChild(md);}else if(!on&&md){md.remove();}}
+    var navs=document.querySelectorAll('.mobnav [data-mn="chat"], .mpbn [data-mpbn="chat"]');for(var _i=0;_i<navs.length;_i++){var el=navs[_i];el.classList.toggle('ct-alert',on);el.style.color=on?'#38bdf8':'';if(on){el.style.position='relative';if(!el.querySelector('.mn-chat-dot')){var md=document.createElement('span');md.className='mn-chat-dot';md.style.cssText='position:absolute;top:1px;left:calc(50% + 7px);width:8px;height:8px;border-radius:50%;background:#38bdf8;box-shadow:0 0 8px #38bdf8;pointer-events:none;animation:ctDotPulse 1.3s ease-in-out infinite;z-index:2;';el.appendChild(md);}}else{var md2=el.querySelector('.mn-chat-dot');if(md2)md2.remove();}}
     if(on&&window.mpBuzz)try{window.mpBuzz([12]);}catch(e){}
   }catch(e){}}
   window.mpChatAlert=chatAlert;
+  /* "new messages" glow that works WITHOUT the WS (every visitor): poll the latest message ts, glow if newer than last-opened (and recent). */
+  function chatSeenTs(){try{return +localStorage.getItem('mp_chat_seen')||0;}catch(e){return 0;}}
+  function markChatSeen(){try{localStorage.setItem('mp_chat_seen',String(Date.now()));}catch(e){}}
+  function pollChatLast(){try{if(!box.hidden)return;fetch('/chat/last',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.ts&&d.ts>chatSeenTs()&&d.ts>Date.now()-259200000)chatAlert(true);}).catch(function(){});}catch(e){}}
+  setTimeout(pollChatLast,2500);setInterval(pollChatLast,45000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)pollChatLast();});
   function sysMsg(html){var d=document.createElement('div');d.className='ct-msg ct-sys';d.innerHTML=html;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
   function showLeaderboard(){var lbMsg=sysMsg('<b style="color:#c2f64a">🏆 Weekly leaderboard</b><br><span style="color:#9aa3ad">loading…</span>');
     fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){var t=(d&&d.top)||[],medal=['🥇','🥈','🥉'];
@@ -1111,14 +1117,14 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     try{ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host+'/chat/ws');}catch(e){return;}
     ws.onmessage=function(ev){var d;try{d=JSON.parse(ev.data);}catch(e){return;}
       if(d.type==='history'){msgs.innerHTML='';(d.messages||[]).forEach(addMsg);setOnline(d.online);}
-      else if(d.type==='msg'){addMsg(d.message);setOnline(d.online);if(box.hidden&&d.message&&d.message.u!==user)chatAlert(true);}
+      else if(d.type==='msg'){addMsg(d.message);setOnline(d.online);if(d.message&&d.message.u===user){markChatSeen();}else if(box.hidden&&d.message){chatAlert(true);}}
       else if(d.type==='presence'){setOnline(d.online);}};
     ws.onclose=function(){ws=null;if(joined)setTimeout(connect,3000);};
     ws.onerror=function(){try{ws.close();}catch(e){}};
   }
   function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;connect();try{input.placeholder='Message…  ·  type /leaderboard';}catch(e){}setTimeout(function(){input.focus();},50);}
   function showGate(){gate.hidden=false;msgs.hidden=true;form.hidden=true;}
-  function openBox(){chatAlert(false);box.hidden=false;fab.hidden=true;document.body.classList.add('chat-open');var u=meUser();if(u){user=u;showChat();}else{showGate();}}
+  function openBox(){chatAlert(false);markChatSeen();box.hidden=false;fab.hidden=true;document.body.classList.add('chat-open');var u=meUser();if(u){user=u;showChat();}else{showGate();}}
   fab.addEventListener('click',openBox);
   var hOpen=document.getElementById('chatOpen');if(hOpen)hOpen.addEventListener('click',openBox);
   if(/[?&]chat=1/.test(location.search)){try{openBox();}catch(e){}}

@@ -5978,6 +5978,16 @@ export default {
     }
     if (url.pathname === '/community') return Response.redirect(url.origin + '/community/', 301);
     if (url.pathname.startsWith('/community/') && url.pathname !== '/community/') return commPage(url, request, env); // /community/ itself is the static shell (assets); subroutes get per-post/user/category SEO + SSR
+    if (url.pathname === '/chat/last') { // public: latest chat message ts (+count) → the client "new messages" glow. Edge-cached so a crowd of pollers collapses to one DO hit per window.
+      if (!env.CHAT) return new Response('{"ts":0,"n":0}', { headers: { 'content-type': 'application/json; charset=utf-8', ...CORS } });
+      const ck = new Request('https://marginpad.io/__chat_last_v1');
+      try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+      let body = '{"ts":0,"n":0}';
+      try { const r = await env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/last')); body = await r.text(); } catch (e) {}
+      const resp = new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=12', ...CORS } });
+      try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+      return resp;
+    }
     if (url.pathname === '/chat/ws') {
       if (!env.CHAT) return new Response('chat unavailable', { status: 503 });
       // Browsers always send Origin on WebSocket upgrades — reject cross-site embeds/scripts opening our chat.
@@ -6095,6 +6105,7 @@ export class ChatRoom {
     const cp = new URL(request.url).pathname, cj = o => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json' } });
     if (cp.endsWith('/reset')) { await this.state.storage.put('hist', []); this.broadcast({ type: 'history', messages: [] }); return new Response('cleared'); }
     if (cp.endsWith('/history')) { return cj({ messages: (await this.state.storage.get('hist')) || [] }); }
+    if (cp.endsWith('/last')) { const h = (await this.state.storage.get('hist')) || []; const l = h.length ? h[h.length - 1] : null; return cj({ ts: l ? +l.ts || 0 : 0, n: h.length }); } // public: latest message ts + count → drives the "new messages" glow (no content)
     if (cp.endsWith('/post')) { let b = {}; try { b = await request.json(); } catch (e) {} const text = String(b.text || '').replace(/\s+/g, ' ').trim().slice(0, 280); if (!text) return cj({ error: 'empty' }); const m = { u: 'MarginPad', t: text, ts: Date.now(), admin: true }; let hist = (await this.state.storage.get('hist')) || []; hist.push(m); if (hist.length > 60) hist = hist.slice(-60); await this.state.storage.put('hist', hist); this.broadcast({ type: 'msg', message: m, online: this.online() }); return cj({ ok: true }); }
     if (cp.endsWith('/delete')) { let b = {}; try { b = await request.json(); } catch (e) {} const ts = +b.ts; let hist = (await this.state.storage.get('hist')) || []; hist = hist.filter(x => x.ts !== ts); await this.state.storage.put('hist', hist); this.broadcast({ type: 'history', messages: hist }); return cj({ ok: true }); }
     if (cp.endsWith('/import')) { // recovery: merge a messages[] payload into hist (dedupe by ts+u, sort, cap 60)
@@ -6958,14 +6969,14 @@ export class UserStore {
       let fresh = false, granted = 0, bonus = 0;
       if (!this.rows('SELECT 1 FROM academy WHERE user_id=? AND lesson=?', uid, lesson)[0]) {
         sql.exec('INSERT INTO academy(user_id,lesson,ts) VALUES(?,?,?)', uid, lesson, now); fresh = true;
-        granted = this._grantXp(uid, 'academy', 25, { lifeCap: 1600, note: 'lesson ' + lesson });
+        granted = this._grantXp(uid, 'academy', 25, { lifeCap: 2300, note: 'lesson ' + lesson });
       }
       if (course && courseLessons.length) {
         const doneSet = {}; this.rows('SELECT lesson FROM academy WHERE user_id=?', uid).forEach(r => { doneSet[r.lesson] = 1; });
         const mk = 'course:' + course;
         if (!doneSet[mk] && courseLessons.every(l => doneSet[l])) {
           sql.exec('INSERT INTO academy(user_id,lesson,ts) VALUES(?,?,?)', uid, mk, now);
-          bonus = this._grantXp(uid, 'academy', 50, { lifeCap: 1600, note: 'course ' + course + ' complete' });
+          bonus = this._grantXp(uid, 'academy', 50, { lifeCap: 2300, note: 'course ' + course + ' complete' });
         }
       }
       const u = this.rows('SELECT xp FROM users WHERE id=?', uid)[0];
@@ -7681,7 +7692,7 @@ function missionsForDay(day) { // deterministic daily set: always one trade miss
   return out;
 }
 // ---------- Academy: Duolingo-style lesson path (content lives on /academy/; server = progress + XP) ----------
-const ACAD_COURSES = { basics: ['b1','b2','b3','b4','b5','b6','b7','b8','b9'], candles: ['c1','c2','c3','c4','c5','c6','c7','c8'], leverage: ['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'], risk: ['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12'], market: ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12'], going: ['g1','g2','g3','g4','g5'] };
+const ACAD_COURSES = { basics: ['b1','b2','b3','b4','b5','b6','b7','b8','b9'], candles: ['c1','c2','c3','c4','c5','c6','c7','c8'], leverage: ['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'], risk: ['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12'], market: ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12'], structure: ['a1','a2','a3','a4','a5','a6','a7','a8'], systems: ['s1','s2','s3','s4','s5','s6','s7'], going: ['g1','g2','g3','g4','g5'] }; // MUST match dist/academy #acadData course/lesson ids (8 courses, 73 lessons)
 async function handleAcademy(url, request, env) {
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
   const jr = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: jh });
