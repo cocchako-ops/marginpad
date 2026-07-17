@@ -766,7 +766,7 @@
           <div class="hh-sub">Every day · <b>18:00–19:00 UTC</b></div>
         </div>
         <div class="hh-card hh-what">
-          <div class="hh-big"><b class="hh-xp" id="hhXpRange">100–200 XP</b> per trade</div>
+          <div class="hh-big"><b class="hh-xp" id="hhXpRange">150 XP</b> per trade</div>
           <div class="hh-sub">for a <b>winning trade over <span id="hhRoe">200</span>% ROE</b> · max <b><span id="hhLev">100</span>× leverage</b></div>
         </div>
       </div>
@@ -1062,7 +1062,7 @@
     }
     fetch('/api/happyhour').then(function(r){return r.json();}).then(function(d){
       if(d&&typeof d.hourUTC==='number'){cfg=d;if(d.now)off=d.now-Date.now();}
-      var xr=document.getElementById('hhXpRange');if(xr)xr.textContent=cfg.xpMin+'–'+cfg.xpMax+' XP';
+      var xr=document.getElementById('hhXpRange');if(xr)xr.textContent=(cfg.xp||150)+' XP';
       var rr=document.getElementById('hhRoe');if(rr)rr.textContent=cfg.roeMin;
       var lv=document.getElementById('hhLev');if(lv)lv.textContent=cfg.levMax;
       tick();
