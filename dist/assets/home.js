@@ -1998,7 +1998,8 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function count(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]).length;}catch(e){return 0;}}
   var EX=[{n:'Bybit',h:'https://www.bybit.com/invite?ref=LZKBERJ',c:'#f7a600',fg:'#0a0b0d',l:'B',t:'100x · deep liquidity'},
           {n:'Binance',h:'https://www.binance.com/register?ref=MAOZM9DS',c:'#f0b90b',fg:'#181a20',l:'B',t:'125x · most pairs'},
-          {n:'OKX',h:'https://okx.com/join/96160298',c:'#e9e7df',fg:'#0a0b0d',l:'O',t:'125x · pro tools'}];
+          {n:'OKX',h:'https://okx.com/join/96160298',c:'#e9e7df',fg:'#0a0b0d',l:'O',t:'125x · pro tools'},
+          {n:'Coinbase',h:'https://base.app/invite/chakko/FHSFNY5H',c:'#0052ff',fg:'#fff',l:'C',t:'US-regulated · beginner-friendly'}];
   var elm=null;
   function build(){ elm=document.createElement('div'); elm.className='grad-modal'; elm.hidden=true;
     elm.innerHTML='<div class="grad-panel"><button class="grad-x" type="button" aria-label="Close">&#10005;</button><div class="grad-badge">5 trades practiced</div><h3>Ready to trade for real?</h3><p>You have opened 5 paper trades — the mechanics are second nature now. Put it to work on a real futures account (new sign-ups often get fee discounts and bonuses).</p><div class="grad-ex">'+EX.map(function(x){return '<a class="grad-card" href="'+x.h+'" target="_blank" rel="sponsored noopener noreferrer" data-ex="'+x.n+'"><span class="grad-mark" style="background:'+x.c+';color:'+x.fg+'">'+x.l+'</span><span class="grad-cn"><b>'+x.n+'</b><small>'+x.t+'</small></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>';}).join('')+'</div><button class="grad-later" type="button">Keep practicing</button></div>';
