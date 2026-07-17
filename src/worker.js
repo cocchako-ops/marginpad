@@ -2894,41 +2894,75 @@ h2 span{color:#6b7480;font-size:12.5px;font-weight:400;letter-spacing:0}
      from the poll we already make. Marquee pauses on hover; money clicks glow gold. ---- */
   /* (live ticker tape removed 2026-07-14 per owner — SITE PULSE below stays) */
   /* ---- SITE PULSE — EKG heartbeat above the Today grid: every pageview/event in the last 60s is a beat. ---- */
-  var pEv=[],pCv=null,pT=null;
+  var pEv=[],pCv=null,pRaf=0;
+  var P_COL={pv:'#39c2ff',ev:'#7d92b8',srv:'#c2f64a',money:'#ffd75a',err:'#ff6258'};
+  var P_HGT={pv:0.34,ev:0.48,srv:0.74,money:0.88,err:0.62};
+  function pKind(t){if(t==='exchange')return 'money';if(t==='signup'||t==='login'||t==='claim'||t==='withdraw'||t==='mission'||t==='academy'||t==='post')return 'srv';if(t==='jserr')return 'err';return 'ev';}
   function pulseFeed(d){
-    var seen={};pEv.forEach(function(x){seen[x]=1;});
-    (d.visitors||[]).forEach(function(v){if(v.ts&&!seen[v.ts]){pEv.push(v.ts);seen[v.ts]=1;}});
-    (d.feed||[]).forEach(function(x){if(x.ts&&!seen[x.ts]){pEv.push(x.ts);seen[x.ts]=1;}});
-    var cut=Date.now()-95000;pEv=pEv.filter(function(ts){return ts>cut;}).sort();
+    var seen={};pEv.forEach(function(x){seen[x.id]=1;});
+    var born=Date.now();
+    (d.visitors||[]).forEach(function(v){var id='p'+v.ts+(v.v||'');if(v.ts&&!seen[id]){pEv.push({id:id,ts:v.ts,k:'pv',b:born});seen[id]=1;}});
+    (d.feed||[]).forEach(function(x){var id='e'+x.ts+(x.t||'')+(x.e||'').slice(0,6);if(x.ts&&!seen[id]){pEv.push({id:id,ts:x.ts,k:pKind(x.t),b:born});seen[id]=1;}});
+    var cut=Date.now()-100000;pEv=pEv.filter(function(x){return x.ts>cut;});
     if(!pCv){
       var anchor=document.getElementById('tUv');if(!anchor)return;
       var grid=anchor.closest('.cards')||anchor.parentNode;if(!grid||!grid.parentNode)return;
       var wrap=document.createElement('div');wrap.id='admPulse';wrap.style.cssText='position:relative;margin:0 0 12px;border:1px solid #1c2230;border-radius:13px;background:#0b0e13;overflow:hidden';
-      wrap.innerHTML='<canvas style="display:block;width:100%;height:56px"></canvas><div id="admBpm" style="position:absolute;top:6px;right:12px;font:700 10px Consolas,monospace;color:#2ee6a8;letter-spacing:.12em"></div><div style="position:absolute;top:6px;left:12px;font:700 9.5px Consolas,monospace;color:#31405c;letter-spacing:.14em;text-transform:uppercase">site pulse &middot; last 60s</div>';
+      wrap.innerHTML='<canvas style="display:block;width:100%;height:64px"></canvas>'
+        +'<div id="admBpm" style="position:absolute;top:6px;right:12px;font:700 10px Consolas,monospace;color:#2ee6a8;letter-spacing:.12em"></div>'
+        +'<div style="position:absolute;top:6px;left:12px;font:700 9.5px Consolas,monospace;color:#31405c;letter-spacing:.14em;text-transform:uppercase">site pulse &middot; last 75s</div>'
+        +'<div id="admPLeg" style="position:absolute;bottom:5px;left:12px;font:600 9px Consolas,monospace;color:#4a5872;letter-spacing:.06em"></div>';
       grid.parentNode.insertBefore(wrap,grid);
       pCv=wrap.querySelector('canvas');
-      pT=setInterval(drawPulse,500);
+      if(!pRaf)pRaf=requestAnimationFrame(pulseLoop);
     }
-    drawPulse();
   }
+  function pulseLoop(){
+    if(pCv&&!document.hidden&&pCv.offsetParent){try{drawPulse();}catch(e){}}
+    pRaf=requestAnimationFrame(pulseLoop);
+  }
+  function easeOB(t){var c=1.70158;t=t-1;return t*t*((c+1)*t+c)+1;} // ease-out-back: mali overshoot pri rodjenju spike-a
   function drawPulse(){
-    if(!pCv||document.hidden||!pCv.offsetParent)return; // draws only while the Overview is actually on screen
-    var W=pCv.clientWidth||600,H=56,dpr=Math.min(2,window.devicePixelRatio||1);
-    if(pCv.width!==W*dpr){pCv.width=W*dpr;pCv.height=H*dpr;}
+    var W=pCv.clientWidth||600,H=64,dpr=Math.min(2,window.devicePixelRatio||1);
+    if(pCv.width!==Math.round(W*dpr)){pCv.width=Math.round(W*dpr);pCv.height=H*dpr;}
     var g=pCv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,H);
-    var now9=Date.now(),win=60000,base=H*0.62;
-    g.strokeStyle='#123726';g.lineWidth=1;g.beginPath();g.moveTo(0,base);g.lineTo(W,base);g.stroke();
-    g.strokeStyle='#2ee6a8';g.lineWidth=1.6;g.shadowColor='rgba(46,230,168,.5)';g.shadowBlur=6;g.beginPath();g.moveTo(0,base);
-    var beats=pEv.filter(function(ts){return now9-ts<win;}).map(function(ts){return W-(now9-ts)/win*W;}).sort(function(a,b){return a-b;});
-    var x=0;
-    beats.forEach(function(bx){
-      if(bx-14>x){g.lineTo(bx-14,base);}
-      g.lineTo(Math.max(x,bx-10),base);g.lineTo(bx-6,base-4);g.lineTo(bx-3,base+7);g.lineTo(bx,base-H*0.42);g.lineTo(bx+3,base+9);g.lineTo(bx+6,base-2);g.lineTo(bx+10,base);
-      x=bx+10;});
-    g.lineTo(W,base);g.stroke();g.shadowBlur=0;
-    var bpm=document.getElementById('admBpm');if(bpm)bpm.textContent=beats.length+' events/min';
+    var now9=Date.now(),win=75000,base=H-14;
+    // vremenska mreza koja KLIZI svaki frejm (15s razmak) — daje osecaj zivog toka i kad nema dogadjaja
+    g.strokeStyle='rgba(49,64,92,.28)';g.lineWidth=1;
+    var step=15000,off=now9%step;
+    for(var gx=off;gx<win;gx+=step){var xg=W-(gx/win)*W;g.beginPath();g.moveTo(xg,10);g.lineTo(xg,base+6);g.stroke();}
+    g.strokeStyle='#16202f';g.lineWidth=1.4;g.beginPath();g.moveTo(0,base);g.lineTo(W,base);g.stroke();
+    // "now" ivica desno — puls tacka koja tiho dise
+    var breathe=0.5+0.5*Math.sin(now9/700);
+    g.fillStyle='rgba(46,230,168,'+(0.35+0.4*breathe)+')';
+    g.beginPath();g.arc(W-6,base,2.5+1.5*breathe,0,6.2832);g.fill();
+    var c60=0,kc={pv:0,ev:0,srv:0,money:0,err:0};
+    pEv.forEach(function(evt){
+      var age=now9-evt.ts;if(age>win||age<0)return;
+      var x=W-(age/win)*W;
+      if(age<60000){c60++;kc[evt.k]=(kc[evt.k]||0)+1;}
+      var sp=Math.min(1,(now9-evt.b)/450);           // spawn animacija 450ms
+      var scale=sp<1?easeOB(sp):1;
+      var alpha=0.28+0.72*(x/W);                      // stariji (levlje) = bledji
+      var h=(H-24)*P_HGT[evt.k]*scale;
+      var col=P_COL[evt.k];
+      g.globalAlpha=alpha;
+      g.strokeStyle=col;g.lineWidth=evt.k==='money'||evt.k==='srv'?2.2:1.6;
+      g.shadowColor=col;g.shadowBlur=evt.k==='money'?10:(evt.k==='srv'?8:4);
+      g.beginPath();g.moveTo(x,base);g.lineTo(x,base-h);g.stroke();
+      g.fillStyle=col;g.beginPath();g.arc(x,base-h,evt.k==='money'?3:2.2,0,6.2832);g.fill();
+      var ring=now9-evt.b;                            // spawn prsten za money/srv (prvih 750ms)
+      if(ring<750&&(evt.k==='money'||evt.k==='srv')){
+        var rp=ring/750;g.globalAlpha=(1-rp)*0.8;g.lineWidth=1.5;
+        g.beginPath();g.arc(x,base-h,4+rp*14,0,6.2832);g.stroke();
+      }
+      g.shadowBlur=0;g.globalAlpha=1;
+    });
+    var bpm=document.getElementById('admBpm');if(bpm)bpm.textContent=c60+'/min';
+    var leg=document.getElementById('admPLeg');
+    if(leg)leg.innerHTML='<span style="color:'+P_COL.pv+'">&#9679; '+kc.pv+' views</span> &nbsp;<span style="color:'+P_COL.ev+'">&#9679; '+kc.ev+' clicks</span> &nbsp;<span style="color:'+P_COL.money+'">&#9679; '+kc.money+' money</span> &nbsp;<span style="color:'+P_COL.srv+'">&#9679; '+kc.srv+' actions</span>'+(kc.err?' &nbsp;<span style="color:'+P_COL.err+'">&#9679; '+kc.err+' errors</span>':'');
   }
-  poll();setInterval(poll,12000);
+  poll();setInterval(poll,8000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)poll();});
 })();</script><script>window.JMAP_SEED=${JSON.stringify({ hours, uvToday, uvY, pvTod, pvY })};</script><script>window.ADM_SEED=${JSON.stringify(admSeed)};(function(){var key=${JSON.stringify(injKey)};function flag(c){return /^[A-Z]{2}$/.test(c)?String.fromCodePoint(127397+c.charCodeAt(0),127397+c.charCodeAt(1)):'🌐';}function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}function N(x){return (+x||0).toLocaleString('en-US');}function ago(t){var s=Math.round((Date.now()-t)/1000);return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';}function card(v,l){return '<div class="card"><div class="cv">'+v+'</div><div class="cl">'+l+'</div></div>';}function addrColor(a){if(!a)return '#9aa3ad';var h=0;for(var i=2;i<a.length;i++)h=(h*31+a.charCodeAt(i))>>>0;return 'hsl('+(h%360)+',75%,66%)';}var tabs=document.querySelectorAll('.tab'),loaded={},rwdTimer=null,chatTimer=null,opsTimer=null,opsPrT=null,opsEvT=null,statsTimer=null;function show(t){curTab=t;try{sessionStorage.setItem('adm_tab',t);}catch(e){}try{markSeen(t);}catch(e){}tabs.forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tab')===t);});['stats','settings','rewards','users','support','chat','security','ops','api','revenue','seo','funnel','wd','retention','community','jmap'].forEach(function(x){var el=document.getElementById('tab-'+x);if(el)el.hidden=(x!==t);});document.body.classList.toggle('jm-full',t!=='stats');if(t==='jmap')setTimeout(function(){if(window.renderJmap)window.renderJmap(1);},60);if(t==='support')loadSupport();if(t==='api')loadApi();if(t==='revenue')loadRevenue();if(t==='seo')loadSeo();if(t==='funnel')loadFunnel();if(t==='stats'){try{loadOverview();}catch(e){}if(!statsTimer)statsTimer=setInterval(function(){if(curTab==='stats'&&!document.hidden)loadOverview();},30000);}else if(statsTimer){clearInterval(statsTimer);statsTimer=null;}setTimeout(function(){panelize(t);},80);if(t==='wd')loadWd();if(t==='retention')loadRetention();if(t==='community')loadCommunity();if(t==='jmap'&&window.renderJmap)window.renderJmap(1);if(t==='security')loadSecurity();if(t==='users'){usersState.offset=0;usersState.end=false;loadUsers(true);}if(t==='settings'&&!loaded.settings){loadSettings();loaded.settings=1;}if(t==='rewards'){loadRewards();if(!rwdTimer)rwdTimer=setInterval(loadRewards,6000);}else if(rwdTimer){clearInterval(rwdTimer);rwdTimer=null;}if(t==='chat'){loadChat();if(!chatTimer)chatTimer=setInterval(loadChat,5000);}else if(chatTimer){clearInterval(chatTimer);chatTimer=null;}if(t==='ops'){loadOps();loadTradeev();if(!opsTimer)opsTimer=setInterval(loadOps,12000);if(!opsPrT)opsPrT=setInterval(opsPrices,6000);if(!opsEvT)opsEvT=setInterval(loadTradeev,60000);}else{if(opsTimer){clearInterval(opsTimer);opsTimer=null;}if(opsPrT){clearInterval(opsPrT);opsPrT=null;}if(opsEvT){clearInterval(opsEvT);opsEvT=null;}}}var PZ_TABS={settings:1,rewards:1,users:1,support:1,chat:1,security:1,api:1,revenue:1,retention:1,community:1,seo:1,funnel:1,wd:1};function panelize(t){try{if(!PZ_TABS[t])return;var el=document.getElementById('tab-'+t);if(!el||el._pz)return;var kids=Array.prototype.slice.call(el.children);var hasH2=false;for(var i=0;i<kids.length;i++)if(kids[i].tagName==='H2'){hasH2=true;break;}if(!hasH2)return;el._pz=1;var grid=document.createElement('div');grid.className='pz-grid';var cur=null;kids.forEach(function(k){if(k.tagName==='H2'){cur=document.createElement('div');cur.className='ovv-p pz-p';grid.appendChild(cur);cur.appendChild(k);}else if(cur){cur.appendChild(k);}});el.appendChild(grid);Array.prototype.forEach.call(grid.children,function(p){if(p.querySelector('table,.chart,.list,canvas,.feed,.two,.heatrow,.funnel,.rwd-accts,.wd-row,#wdList,#usersList,#fnTable,#seoPages'))p.classList.add('pz-w');});}catch(e){}}tabs.forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-tab'));});});var curTab='stats';document.addEventListener('click',function(e){var g=e.target.closest&&e.target.closest('[data-goto]');if(!g)return;try{show(g.getAttribute('data-goto'));window.scrollTo(0,0);}catch(e2){}});try{loadOverview();if(!statsTimer)statsTimer=setInterval(function(){if(curTab==='stats'&&!document.hidden)loadOverview();},30000);}catch(e){}document.addEventListener('visibilitychange',function(){if(document.hidden){window.__admHidT=Date.now();return;}var away=Date.now()-(window.__admHidT||Date.now());if(away>420000){var md9=document.querySelector('.amodal:not([hidden])');var ae9=document.activeElement,ty9=ae9&&(ae9.tagName==='INPUT'||ae9.tagName==='TEXTAREA'||ae9.tagName==='SELECT');if(!md9&&!ty9){location.reload();return;}}try{if(curTab==='ops'){loadOps();opsPrices();}else if(curTab==='chat'){loadChat();}else if(curTab==='rewards'){loadRewards();}else if(curTab==='stats'){loadOverview();}}catch(e9){}});
 var OPS={pos:[],PR:{},traders:0,sort:'pnl'};
