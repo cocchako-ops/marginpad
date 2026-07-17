@@ -417,3 +417,17 @@
   }
   if(document.readyState!=='loading')setTimeout(mount,900);else document.addEventListener('DOMContentLoaded',function(){setTimeout(mount,900);});
 })();
+
+/* Universal pageview beacon (2026-07-17): mp-nav.js loads on EVERY standalone page, so this closes the
+   tracking hole where blog/rekt/tools/funding/... pages never hit /api/track (GA saw them, our stats didn't).
+   Skips pages that already send their own pageview (inline snippet containing t=pageview) to avoid doubles. */
+(function () {
+  try {
+    if (window.__mpPv) return;
+    var scr = document.querySelectorAll('script:not([src])');
+    for (var i = 0; i < scr.length; i++) { if ((scr[i].textContent || '').indexOf('t=pageview') > -1) { window.__mpPv = 1; return; } }
+    window.__mpPv = 1;
+    var q = '/api/track?t=pageview&p=' + encodeURIComponent(location.pathname) + (document.referrer ? '&r=' + encodeURIComponent(document.referrer) : '');
+    if (navigator.sendBeacon) { navigator.sendBeacon(q); } else { (new Image()).src = q; }
+  } catch (e) {}
+})();

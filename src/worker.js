@@ -1247,6 +1247,21 @@ function isBot(ua) {
 }
 const _liveposHits = new Map(); // per-isolate IP throttle for /api/livepos (device-side open-position sync)
 const _trackHits = new Map(); // per-isolate IP throttle for /api/track — a UA-rotating flooder was ~15 KV writes/hit
+// Server-side event -> the same evlog ring the ops "Live activity" feed reads. Signups, faucet claims,
+// withdrawals, missions, academy completes and community posts happen in handlers/DOs, never through
+// /api/track — without this they were invisible in the live feed.
+async function evPush(env, request, type, label, pg) {
+  try {
+    const cc = (request && request.cf && request.cf.country) || '';
+    const u = request ? (getCookie(request, 'mp_un') || '').slice(0, 24) : '';
+    let log = []; try { log = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
+    log.unshift({ t: type, e: String(label || '').slice(0, 48), cc, v: 'srv', u, p: pg || '', ts: Date.now() });
+    if (log.length > 80) log = log.slice(0, 80);
+    await env.STATS.put('evlog', JSON.stringify(log), { expirationTtl: 86400 });
+    try { const k = 'ev:' + type; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1)); } catch (e) {}
+    try { if (env.AE) env.AE.writeDataPoint({ indexes: [type], blobs: ['event', type, String(label || '').slice(0, 90), cc, pg || ''], doubles: [1] }); } catch (e) {}
+  } catch (e) {}
+}
 async function handleTrack(url, request, env, ctx) {
   // persistent first-party DEVICE id (2y cookie): survives IP/UA changes, links multi-account Rewards abuse
   const okHeaders = { ...CORS };
@@ -2371,7 +2386,7 @@ h2 span{color:#6b7480;font-size:12.5px;font-weight:400;letter-spacing:0}
   function srcName(s){if(!s||s==='direct')return 'Direct (typed the URL or bookmark)';if(/syndicatedsearch|googlesyndication|googleadservices|doubleclick/.test(s))return 'Google Ads / search partner';if(/google\\./.test(s))return 'Google search';if(/bing\\./.test(s))return 'Bing';if(/yahoo/.test(s))return 'Yahoo';if(/yandex/.test(s))return 'Yandex';if(/duckduckgo/.test(s))return 'DuckDuckGo';if(/ecosia/.test(s))return 'Ecosia';if(/brave/.test(s))return 'Brave Search';if(/t\\.co|twitter|x\\.com/.test(s))return 'X / Twitter';if(/reddit/.test(s))return 'Reddit';if(/youtu/.test(s))return 'YouTube';if(/facebook|fb\\./.test(s))return 'Facebook';if(/instagram/.test(s))return 'Instagram';if(/tiktok/.test(s))return 'TikTok';if(/linkedin/.test(s))return 'LinkedIn';if(/t\\.me|telegram/.test(s))return 'Telegram';if(/discord/.test(s))return 'Discord';return s;}
   function pageShort(pth){var s=String(pth||'').replace(/^\\/[a-z]{2}\\//,'/');if(s==='/'||s==='')return 'the homepage';var m;if((m=s.match(/^\\/coin\\/([a-z0-9]+)\\/?$/i)))return m[1].toUpperCase()+' coin page';var M={'/funding/':'the Funding page','/liquidations/':'the Liquidations page','/long-short/':'the Long/Short page','/open-interest/':'the Open Interest page','/screener':'the Screener','/screener/':'the Screener','/paper-trade':'Paper Trade','/paper-trade/':'Paper Trade','/charts':'Charts','/charts/':'Charts','/rekt/':'the Rekt feed','/rewards/':'Rewards','/calculators':'Calculators','/calculators/':'Calculators','/blog/':'the Blog'};if(M[s])return M[s];if((m=s.match(/^\\/([a-z0-9-]+)\\/?$/i)))return m[1].replace(/-/g,' ')+' page';return s;}
   function verb(t){return t==='tab'?'used a calculator':(t==='nav'||t==='el')?'clicked a link':('did '+t);}
-  function evLine(x){var where=x.p?' <span class="fe-on">on '+esc(pageShort(x.p))+'</span>':'';var tg=x.e?esc(x.e):'';if(x.t==='exchange')return 'clicked through to <b class="fe-ex">'+(tg||'an exchange')+'</b>'+where+' <span class="fe-rev">💰 money click</span>';if(x.t==='paper')return 'opened a paper trade'+(tg?' <b>'+tg+'</b>':'');if(x.t==='hotpair')return 'opened <b>'+tg+'</b> from Trending';if(x.t==='tool')return 'opened '+(tg?'<b>'+tg+'</b> ':'a ')+'tool'+where;return verb(x.t)+(tg?' <b>'+tg+'</b>':'')+where;}
+  function evLine(x){var where=x.p?' <span class="fe-on">on '+esc(pageShort(x.p))+'</span>':'';var tg=x.e?esc(x.e):'';if(x.t==='exchange')return 'clicked through to <b class="fe-ex">'+(tg||'an exchange')+'</b>'+where+' <span class="fe-rev">💰 money click</span>';if(x.t==='paper')return 'opened a paper trade'+(tg?' <b>'+tg+'</b>':'');if(x.t==='hotpair')return 'opened <b>'+tg+'</b> from Trending';if(x.t==='tool')return 'opened '+(tg?'<b>'+tg+'</b> ':'a ')+'tool'+where;if(x.t==='signup')return '<span class="fe-rev">created an account</span>'+(tg?' <b>@'+tg+'</b>':'');if(x.t==='login')return 'signed in'+(tg?' as <b>@'+tg+'</b>':'');if(x.t==='claim')return 'claimed <b>'+tg+'</b> from the faucet';if(x.t==='withdraw')return '<span class="fe-rev">requested a withdrawal</span> of <b>'+tg+'</b>';if(x.t==='mission')return 'completed daily mission <b>'+tg+'</b>';if(x.t==='academy')return 'finished Academy lesson <b>'+tg+'</b>';if(x.t==='post')return 'published a community post'+(tg?' (<b>@'+tg+'</b>)':'');return verb(x.t)+(tg?' <b>'+tg+'</b>':'')+where;}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   function N(x){x=+x||0;var a=Math.abs(x),sg=x<0?'-':'';return sg+(a>=1e12?(a/1e12).toFixed(2)+'T':a>=1e9?(a/1e9).toFixed(2)+'B':a>=1e6?(a/1e6).toFixed(2)+'M':a>=1e3?(a/1e3).toFixed(1)+'K':(a%1===0?String(a):a.toFixed(2)));}
   function dev(d){d=String(d||'').toLowerCase();return d==='mobile'?'📱':d==='tablet'?'📲':'🖥';}
@@ -5183,6 +5198,7 @@ async function handleAuth(url, request, env, ctx) {
     h.append('set-cookie', SESS_COOKIE + '=' + d.token + opts);
     h.append('set-cookie', 'mp_uid=' + d.user.id + opts); // non-auth attribution id so /api/track can credit activity without a DO read
     h.append('set-cookie', 'mp_un=' + String(d.user.username || (d.user.email || '').split('@')[0] || '').replace(/[^a-zA-Z0-9_.-]/g, '').slice(0, 24) + opts); // display name so the admin logs show the username instead of just a country
+    try { const un = (d.user && (d.user.username || String(d.user.email || '').split('@')[0])) || ''; const pr = evPush(env, request, d.isNew ? 'signup' : 'login', un, '/'); if (ctx && ctx.waitUntil) ctx.waitUntil(pr); else await pr; } catch (e) {}
     return new Response(JSON.stringify({ ok: true, user: d.user, isNew: d.isNew }), { status: 200, headers: h });
   }
   if (path === '/xp') { // self: own xp/level/streak + recent log, for the XP toasts + level-up celebration
@@ -5440,6 +5456,8 @@ async function handleReward(url, request, env) {
       if (path === '/claim' && acct && (_rd.balance != null || _rd.credited != null || _rd.ok)) await grantXp(env, acct, 'faucet', 2, { dayCap: 20, note: 'faucet claim' });
       else if (path === '/promo/review' && _rd.status === 'approved' && _rd.acct) await grantXp(env, _rd.acct, 'promo', 40, { note: 'promo post approved' });
       else if (path === '/exsign/review' && _rd.status === 'approved' && _rd.acct) await grantXp(env, _rd.acct, 'exsign', 200, { note: 'exchange sign-up approved' });
+      if (path === '/claim' && _rd.ok) await evPush(env, request, 'claim', '+$' + (+_rd.credited || 0).toFixed(2), '/rewards/');
+      if (path === '/withdraw' && _rd.ok) await evPush(env, request, 'withdraw', '$' + (+(_rd.total != null ? _rd.total : _rd.amount) || 0).toFixed(2), '/rewards/');
     } catch (xe) {} }
   // Admin views: faucet accounts are keyed by 'u:<uid>'. Resolve those to the real username/email from UserStore so the dashboard shows who claimed.
   if (r.status === 200 && (path === '/log' || path === '/accounts' || path === '/detail' || path === '/promo/list' || path === '/exsign/list')) {
@@ -7521,7 +7539,9 @@ async function handleAcademy(url, request, env) {
     if (!course) return jr({ error: 'bad_lesson' }, 400);
     try {
       const r = await stub.fetch(new Request('https://do/academy/complete', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, lesson, course, courseLessons: ACAD_COURSES[course] }) }));
-      return jr(await r.json());
+      const rd = await r.json();
+      if (rd && !rd.error) { try { await evPush(env, request, 'academy', lesson, '/academy/'); } catch (e) {} }
+      return jr(rd);
     } catch (e) { return jr({ error: 'busy' }, 503); }
   }
   return jr({ error: 'method' }, 405);
@@ -7560,6 +7580,7 @@ async function handleMissions(url, request, env) {
     if (!fresh) return jr({ error: 'already_claimed' }, 400);
     let balanceUsd = null;
     try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + uid, cents: m.cents, mid }) })); const d = await r.json(); if (d.error) return jr({ error: d.error }, 403); balanceUsd = d.balanceUsd; } catch (e) {}
+    try { await evPush(env, request, 'mission', mid + ' +$' + (m.cents / 100).toFixed(2), '/rewards/'); } catch (e) {}
     const upd = missions.map(x => x.mid === mid ? { ...x, claimed: true } : x);
     return jr({ ok: true, credited: m.cents / 100, balanceUsd, missions: upd, day });
   }
@@ -7647,6 +7668,7 @@ async function handleComm(url, request, env, ctx) {
       }
     } catch (e) {}
   }
+  if (request.method === 'POST' && path === '/post' && r && r.status === 200) { try { const _pd = JSON.parse(txt); if (_pd && !_pd.error) { const pr2 = evPush(env, request, 'post', author, '/community/'); if (ctx && ctx.waitUntil) ctx.waitUntil(pr2); else await pr2; } } catch (e) {} }
   return new Response(txt, { status: r.status, headers: jh });
 }
 async function commPage(url, request, env) {
