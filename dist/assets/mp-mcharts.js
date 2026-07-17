@@ -296,8 +296,15 @@
     q('mtrAmt').addEventListener('input',function(){if(+this.value>100000)this.value=100000;upd();});
     q('mtrAdvChk').addEventListener('change',function(){q('mtrAdv').hidden=!this.checked;});
     q('mtrEx').addEventListener('change',function(){mmr=(+this.value||0.5)/100;upd();});
-    function livePx(){var v=price(tSym);if(v>0)return v;
-      // non-major coin: pull a REST price and seed the shared map so it keeps ticking
+    function livePx(){
+      // FRESH price only — a stale window.mpLivePrices[sym] (e.g. seeded long ago by another open position on the same
+      // coin and never updated because the coin isn't in the live WS feed) must NEVER become a new trade's entry: it
+      // gave a wrong entry → wrong liq → the trade "instantly liquidated / vanished". So prefer the LIVE chart for this
+      // symbol (REST-resynced ≤60s + live ticks — exactly the price the user sees), then mpLivePrices ONLY if <15s old.
+      for(var i=0;i<panes.length;i++){var pp=panes[i];if(pp&&pp.sym===tSym&&pp.lastBar&&+pp.lastBar.close>0)return +pp.lastBar.close;}
+      var lp=window.mpLivePrices&&window.mpLivePrices[tSym];
+      if(lp&&lp.p>0&&lp.t&&(Date.now()-lp.t)<15000)return +lp.p;
+      // nothing fresh → pull a REST price + seed the map, return 0 so the opener asks the user to retry (never opens stale)
       fetch('/api/price?symbol='+encodeURIComponent(tSym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){var pv=+((d&&(d.price||d.p))||0);if(pv>0&&window.mpLivePrices)window.mpLivePrices[tSym]={p:pv,t:Date.now()};}).catch(function(){});
       return 0;}
     function upd(){var px=livePx();var amt=+q('mtrAmt').value||0;

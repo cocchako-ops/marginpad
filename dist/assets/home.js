@@ -142,6 +142,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
   function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross;/* fee-free paper P&L: shows pure price move so it isn't negative at entry */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
   function checkClose(e,m){if(e.status!=='open')return false;var dir=m.long?1:-1;
+    var _spx=prices[e.sym]; if(_spx&&_spx.seed)return false; // NEVER liquidate against a SEED price (a trade entry seeded by pullTrades for display before a real feed tick) — with 2+ open trades on one symbol the seed = the OLDEST entry, far from a newer trade → phantom liquidation. Wait for a real pollPrices/WS price.
     var px=ccPx(e.sym,m.live);                                 // spike-validated: a lone >2.5% bad print can't fire an exit
     var clamp=function(p){return (+e.margin>0&&p!=null&&p<-(+e.margin))?-(+e.margin):p;}; // a paper loss can never exceed the isolated margin (an SL set BEYOND liq used to book more than −margin)
     var pnlAt=function(exit){return (e.qty!=null&&isFinite(e.qty))?e.qty*(exit-e.entry)*dir:null;};
@@ -751,6 +752,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(!isFinite(entry)||entry<=0){_say('Waiting for the live price — try again in a second.');return;}
     var seg=document.getElementById('planSeg'); var on=seg&&seg.querySelector('button.on'); var side=on?on.getAttribute('data-side'):'long';
     var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
+    // the live price MUST be a fresh reading for THIS exact symbol — a stale mpPlanLive, or one still holding the
+    // previously-selected coin's price, would set a wrong entry → wrong liq → the trade "instantly liquidates / vanishes".
+    if(!pl||pl.sym!==sym||!(+pl.price>0)||!pl.t||(Date.now()-pl.t)>15000){_say('Waiting for the live price for '+(sym||'this coin')+' — try again in a second.');add._busy=false;return;}
+    entry=+pl.price;
     var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=(window.mpPlanMmr||0.005);
     var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:0;
     var sl=num('planSlOpt'), tp=num('planTpOpt'), trail=num('planTrail'), be=num('planBE');
@@ -1865,7 +1870,11 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
       +'<div class="ptl-pnl"><span class="big">'+pl(m.pnl)+'</span><span class="roe">ROE '+pc(m.roe)+'</span><button type="button" class="ptl-close ptl-mt" data-mytrades>'+_T('mtMyTrades','My Trades')+'</button></div>'
       +'<div class="ptl-meta">'+_T('jEntry','Entry')+' <b>'+fmt(e.entry)+'</b> · '+_T('mtLiq','Liq')+' <b>'+fmt(m.liq)+'</b> ('+pc(m.liqDist)+')</div>';}
   document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('[data-ptl-close]'))setTimeout(updPnl,0);}); // re-render the ticket after its Close fires (the global handler does the actual close)
-  function openPos(){if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; /* enforce open-trade limits + one-way mode */ var p=price(sym);if(!(p>0)){fetch('/api/price?symbol='+sym,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0){if(window.mpLivePrices)window.mpLivePrices[sym]={p:+j.price,t:Date.now()};openPos();}});return;}
+  function openPos(){if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; /* enforce open-trade limits + one-way mode */
+    // FRESH price only: a stale mpLivePrices[sym] (seeded long ago by another open position on the same coin, never
+    // updated because the coin isn't in the live feed) must never be the entry → wrong liq → phantom "instant liquidation".
+    var _lp=window.mpLivePrices&&window.mpLivePrices[sym],p=(_lp&&_lp.p>0&&_lp.t&&(Date.now()-_lp.t)<15000)?+_lp.p:0;
+    if(!(p>0)){fetch('/api/price?symbol='+sym,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0){if(window.mpLivePrices)window.mpLivePrices[sym]={p:+j.price,t:Date.now()};openPos();}});return;}
     var L=lev,mmr=(window.mpPlanMmr||0.005),notional=amt*L,qty=notional/p,liq=side==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
     var pos={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:side,entry:p,stop:null,tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null};
     var d=jload();d.push(pos);if(window.mpLivePrices)window.mpLivePrices[sym]={p:p,t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();

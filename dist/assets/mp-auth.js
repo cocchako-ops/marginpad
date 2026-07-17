@@ -321,7 +321,7 @@
       if (JSON.stringify(merged) === JSON.stringify(local)) return; // nothing new on this device
       try { localStorage.setItem('mp_journal', JSON.stringify(merged)); } catch (e) {}
       lastJ = ''; // force the next push so the server gets this device's union too
-      try { window.mpLivePrices = window.mpLivePrices || {}; merged.forEach(function (e) { if (e && (e.status === 'open' || !e.status) && e.sym && +e.entry > 0 && !(window.mpLivePrices[e.sym] && window.mpLivePrices[e.sym].p > 0)) window.mpLivePrices[e.sym] = { p: +e.entry, t: Date.now() }; }); } catch (e) {} // seed entry price so pulled positions start at 0 P&L, not a phantom -100%
+      try { window.mpLivePrices = window.mpLivePrices || {}; merged.forEach(function (e) { if (e && (e.status === 'open' || !e.status) && e.sym && +e.entry > 0 && !(window.mpLivePrices[e.sym] && window.mpLivePrices[e.sym].p > 0)) window.mpLivePrices[e.sym] = { p: +e.entry, t: Date.now(), seed: true }; }); } catch (e) {} // seed entry price so pulled positions start at 0 P&L, not a phantom -100%. seed:true = NOT a real feed price → the terminal must NEVER liquidate against it (with 2+ open trades on one symbol the seed is the OLDEST trade's entry, which can be far from a newer trade → phantom liquidation before the real price loads).
       try { if (window.mpJournalRender) window.mpJournalRender(); } catch (e) {}
     }).catch(function () {});
   }
