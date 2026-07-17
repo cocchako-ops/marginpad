@@ -373,9 +373,9 @@
   .lbm-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden;margin-bottom:15px}
   .lbm-bar i{display:block;height:100%;border-radius:3px}
   .lbm-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:15px}
-  .lbm-s{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:10px 8px;text-align:center}
-  .lbm-sv{font-family:'Space Mono',monospace;font-weight:700;font-size:15px;color:#fff}
-  .lbm-sl{font-size:9.5px;color:#7a8592;text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+  .lbm-s{min-width:0;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:10px 6px;text-align:center;overflow:hidden}
+  .lbm-sv{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;color:#fff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lbm-sl{font-size:9px;color:#7a8592;text-transform:uppercase;letter-spacing:.03em;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .lbm-foot{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .lbm-fol{font-size:12px;color:#8b97a5}
   .lbm-self{font-size:12px;color:#c2f64a;font-weight:700}
@@ -931,6 +931,8 @@
   var lbMode='roe',lbData=null;
   function lbEsc(x){return String(x).replace(/</g,'&lt;');}
   function lbMoney(x){x=+x||0;var s=x<0?'-':'+';x=Math.abs(x);return s+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
+  function lbMoneyC(x){x=+x||0;var s=x<0?'-':'+';var a=Math.abs(x),u='',d=a;if(a>=1e9){d=a/1e9;u='B';}else if(a>=1e6){d=a/1e6;u='M';}else if(a>=1e3){d=a/1e3;u='K';}var str=u?(d>=100?Math.round(d):d.toFixed(1))+u:(a>=1?Math.round(a).toString():a.toFixed(2));return s+'$'+str;}
+  function lbPctC(x){x=+x||0;var s=x<0?'-':'+';var a=Math.abs(x),u='',d=a;if(a>=1e6){d=a/1e6;u='M';}else if(a>=1e3){d=a/1e3;u='K';}var str=u?(d>=100?Math.round(d):d.toFixed(1))+u:Math.round(a).toString();return s+str+'%';}
   function lbRow(i,who,mid,val,cls){var med=i<3?' m'+(i+1):'';return '<div class="lb-r'+(i===0?' top':'')+'" data-lbu="'+lbEsc(who||'')+'" role="button" tabindex="0"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who">'+lbEsc(who||'trader')+'<span data-lvln="'+lbEsc(who||'')+'"></span></span><span class="lb-pair">'+mid+'</span><span class="lb-roe '+(cls||'')+'">'+val+'</span></div>';}
   function lbRender(){
     var d=lbData,el=document.getElementById('lbBoard'),note=document.getElementById('lbNote');if(!el)return;
@@ -971,7 +973,7 @@
       if(!f.length){el.innerHTML='<div class="lb-empty">You are not following anyone yet. Tap a trader on the board and hit <b>Follow</b>.</div>';return;}
       el.innerHTML=f.map(function(x){
         var lc=(x.level&&x.level.col)||'#c97f4a';
-        var wk=x.weekTrades>0?(lbMoney(x.weekPnl)+' · '+x.weekTrades+' this wk'):'no trades this week';
+        var wk=x.weekTrades>0?(lbMoneyC(x.weekPnl)+' · '+x.weekTrades+' wk'):'no trades this week';
         return '<div class="lb-r lb-fr" data-lbu="'+lbEsc(x.name)+'" role="button" tabindex="0" style="--lc:'+lc+'"><span class="lb-fdot" style="background:'+lc+'"></span><span class="lb-who">'+lbEsc(x.name)+'<span data-lvln="'+lbEsc(x.name)+'"></span></span><span class="lb-pair">'+(x.closed||0)+' trades · '+(x.winRate||0)+'%</span><span class="lb-roe '+((+x.weekPnl>=0)?'up':'dn')+'">'+wk+'</span></div>';
       }).join('');
       lbAfter(el);
@@ -1002,10 +1004,10 @@
         +'<div class="lbm-grid">'
           +stat((st.trades||0),'Trades')
           +stat((st.winRate||0)+'%','Win rate',st.winRate>=50?'#34d99a':'')
-          +stat((st.bestRoe==null?'—':'+'+st.bestRoe+'%'),'Best ROE',st.bestRoe>0?'#34d99a':'')
-          +stat((st.bestPnl==null?'—':lbMoney(st.bestPnl)),'Best trade',st.bestPnl>0?'#34d99a':'')
-          +stat(lbMoney(st.realized||0),'Realized P&L',(st.realized>=0?'#34d99a':'#ff6c5c'))
-          +stat((st.weekTrades||0)+' · '+lbMoney(st.weekPnl||0),'This week',(st.weekPnl>=0?'#34d99a':'#ff6c5c'))
+          +stat((st.bestRoe==null?'—':lbPctC(st.bestRoe)),'Best ROE',st.bestRoe>0?'#34d99a':'')
+          +stat((st.bestPnl==null?'—':lbMoneyC(st.bestPnl)),'Best trade',st.bestPnl>0?'#34d99a':'')
+          +stat(lbMoneyC(st.realized||0),'Realized P&L',(st.realized>=0?'#34d99a':'#ff6c5c'))
+          +stat(lbMoneyC(st.weekPnl||0),(st.weekTrades||0)+' trades · wk',(st.weekPnl>=0?'#34d99a':'#ff6c5c'))
         +'</div>'
         +'<div class="lbm-foot"><span class="lbm-fol">'+(d.followers||0)+' follower'+((d.followers===1)?'':'s')+'</span>'+mBtn+'</div>';
     }).catch(function(){body.innerHTML='<div class="lbm-load">Could not load this trader.</div>';});
