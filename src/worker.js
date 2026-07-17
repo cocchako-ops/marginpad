@@ -5436,7 +5436,7 @@ async function handleReward(url, request, env) {
   if ((path === '/admin' || path === '/admin/paid' || path === '/accounts' || path === '/log' || path === '/unlock' || path === '/remove' || path === '/detail' || path === '/note' || path === '/ban' || path === '/unban' || path === '/adjust' || path === '/lbban' || path === '/lbtop' || path === '/lbhistory' || path === '/message' || path === '/support/close' || path === '/support/new' || path === '/promo/list' || path === '/promo/review' || path === '/exsign/list' || path === '/exsign/review' || (path === '/support' && request.method === 'GET')) && !adminOk) return jr({ error: 'forbidden' }, 403);
   // The leaderboard board (GET /lb) is polled by EVERY homepage visitor and only changes on a new submission — edge-cache it 20s so the flood collapses to ~one hit per colo per window. This is what was overloading the single `ledger` DO (all reward traffic shares it) and tripping the "storage operation exceeded timeout" reset.
   if (path === '/lb' && request.method === 'GET') {
-    const lbCk = new Request('https://marginpad.io/__reward_lb_v2'); // v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
+    const lbCk = new Request('https://marginpad.io/__reward_lb_v3'); // v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
     let bodyText = null;
     try { const hit = await caches.default.match(lbCk); if (hit) bodyText = await hit.text(); } catch (e) {}
     if (bodyText == null) {
@@ -5452,7 +5452,12 @@ async function handleReward(url, request, env) {
         try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
         const mask = a => !a ? '' : (a.slice(0, 2) === 'u:' ? 'Trader' : a.slice(0, 6) + '…' + a.slice(-4));
         const top = board.filter(x => !banned[x.uid]).slice(0, 10).map((x, i) => ({ rank: i + 1, who: x.name || mask(x.uid), roe: x.roe, pnl: x.pnl, symbol: x.symbol, side: x.side }));
-        bodyText = JSON.stringify({ week, weekStart, weekEnd, top });
+        // Best-win-rate board (no prizes): min 5 closed trades this week, sorted by WR% then by games played
+        const topWr = board.filter(x => !banned[x.uid] && ((+x.w || 0) + (+x.l || 0)) >= 5)
+          .map(x => { const w = +x.w || 0, l = +x.l || 0; return { who: x.name || mask(x.uid), w, l, wr: +(w / (w + l) * 100).toFixed(1) }; })
+          .sort((a, b) => (b.wr - a.wr) || ((b.w + b.l) - (a.w + a.l)))
+          .slice(0, 10).map((x, i) => ({ rank: i + 1, ...x }));
+        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
       } catch (e) { bodyText = '{"top":[],"week":' + week + ',"weekStart":' + weekStart + ',"weekEnd":' + weekEnd + ',"busy":true}'; } // fail soft, never a 500
     }
@@ -7268,16 +7273,17 @@ export class UserStore {
       for (const r of rows) {
         let arr = []; try { arr = JSON.parse(r.json); } catch (e) {}
         if (!Array.isArray(arr)) continue;
-        let top = null;
+        let top = null, wWk = 0, lWk = 0;
         for (const e of arr) {
           if (!e || (e.status !== 'win' && e.status !== 'loss')) continue;
           const ct = +e.closeTs; if (!isFinite(ct) || ct < ws || ct >= we) continue; // only trades CLOSED this week count
+          if (e.status === 'win') wWk++; else lWk++; // win-rate board input (no prizes — bragging rights)
           const margin = +e.margin, pnl = +e.pnl; if (!(margin > 0) || !isFinite(pnl)) continue;
           let roe = pnl / margin * 100; if (!isFinite(roe)) continue;
           roe = Math.max(-100, Math.min(roe, 1000000)); // clamp absurd margins/pnl like the legacy path
           if (!top || roe > top.roe) top = { roe, pnl, symbol: String(e.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10), side: e.side === 'short' ? 'short' : 'long' };
         }
-        if (top) best.push({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), roe: top.roe, pnl: top.pnl, symbol: top.symbol, side: top.side });
+        if (top) best.push({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), roe: top.roe, pnl: top.pnl, symbol: top.symbol, side: top.side, w: wWk, l: lWk });
       }
       best.sort((a, b) => b.roe - a.roe);
       return this.j({ top: best.slice(0, limit) });

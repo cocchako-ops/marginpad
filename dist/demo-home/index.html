@@ -323,6 +323,10 @@
   .lb-cta .btn-l{display:inline-block;font-size:14px;padding:12px 20px;}
   .lb-cta .note{display:block;margin-top:9px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--faint);}
   .lb-board{display:flex;flex-direction:column;gap:2px;}
+  .lb-tabs{display:flex;gap:8px;margin:12px 0 6px}
+  .lb-tab{flex:1;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#95a1b0;font:700 11px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:.15s}
+  .lb-tab.on{background:rgba(194,246,74,.13);border-color:rgba(194,246,74,.55);color:#c2f64a}
+  .lb-tab:not(.on):hover{border-color:rgba(255,255,255,.3);color:#d3dbe4}
   .lb-r{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;font-size:14px;transition:background .14s;}
   .lb-r:hover{background:rgba(255,255,255,.03);}
   .lb-r+.lb-r{border-top:1px solid rgba(255,255,255,.045);}
@@ -705,6 +709,7 @@
     </div>
     <div class="lb-card">
       <div class="t-kick"><span class="dot"></span> Top traders · updates live</div>
+      <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="wr">Best win rate</button></div>
       <div class="lb-board" id="lbBoard" style="margin-top:12px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
     </div>
   </div>
@@ -864,16 +869,30 @@
     document.getElementById('news').innerHTML=it.map(function(n,i){return '<span class="news-row"><span class="n">0'+(i+1)+'</span><span>'+String(n.title||'').replace(/</g,'&lt;')+'</span></span>';}).join('');
   }).catch(function(){});
 
-  // ---- leaderboard ----
+  // ---- leaderboard (Top ROE + Best win rate switcher) ----
+  var lbMode='roe',lbData=null;
+  function lbEsc(x){return String(x).replace(/</g,'&lt;');}
+  function lbRender(){
+    var d=lbData,el=document.getElementById('lbBoard');if(!el)return;
+    if(lbMode==='wr'){
+      var wt=((d&&d.topWr)||[]).slice(0,10);
+      el.innerHTML=wt.length?wt.map(function(t,i){
+        var med=i<3?' m'+(i+1):'';
+        return '<div class="lb-r'+(i===0?' top':'')+'"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who">'+lbEsc(t.who||'trader')+'</span><span class="lb-pair">'+(+t.w||0)+'W-'+(+t.l||0)+'L</span><span class="lb-roe">'+Math.round(+t.wr||0)+'%</span></div>';
+      }).join(''):'<div class="lb-empty">No one has 5 closed trades yet this week — close 5+ and claim the win-rate crown. (No prizes — pure bragging rights.)</div>';
+      return;
+    }
+    var top=((d&&d.top)||[]).slice(0,10);
+    el.innerHTML=top.length?top.map(function(t,i){
+      var med=i<3?' m'+(i+1):'';var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');
+      return '<div class="lb-r'+(i===0?' top':'')+'"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who">'+lbEsc(t.who||'trader')+'</span><span class="lb-pair">'+pair+'</span><span class="lb-roe">+'+Math.round(+t.roe).toLocaleString('en-US')+'%</span></div>';
+    }).join(''):'<div class="lb-empty">No entries yet this week — be the first. Open a paper trade and close it in profit.</div>';
+  }
+  document.querySelectorAll('[data-lbm]').forEach(function(b){b.addEventListener('click',function(){lbMode=b.getAttribute('data-lbm');document.querySelectorAll('[data-lbm]').forEach(function(x){x.classList.toggle('on',x===b);});lbRender();});});
   fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){
-    var top=((d&&d.top)||[]).slice(0,10);var el=document.getElementById('lbBoard');
-    if(el){el.innerHTML=top.length?top.map(function(t,i){
-      var med=i<3?' m'+(i+1):'';var pair=(t.symbol?String(t.symbol).replace(/</g,'&lt;'):'')+(t.side?' '+t.side:'');
-      return '<div class="lb-r'+(i===0?' top':'')+'"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who">'+String(t.who||'trader').replace(/</g,'&lt;')+'</span><span class="lb-pair">'+pair+'</span><span class="lb-roe">+'+Math.round(+t.roe).toLocaleString('en-US')+'%</span></div>';
-    }).join(''):'<div class="lb-empty">No entries yet this week — be the first. Open a paper trade and close it in profit.</div>';}
+    lbData=d;lbRender();
     var pz=(d&&d.prizes)||[30,20,10];
     ['lbPz1','lbPz2','lbPz3'].forEach(function(id,i){var e=document.getElementById(id);if(e&&pz[i]!=null)e.textContent='$'+pz[i];});
-    // reset countdown to weekEnd (Monday 00:00 UTC)
     var we=+(d&&d.weekEnd)||0,rs=document.getElementById('lbReset');
     if(we&&rs){var ms=we-Date.now();if(ms>0){var dd=Math.floor(ms/86400000),hh=Math.floor(ms%86400000/3600000),mm=Math.floor(ms%3600000/60000);rs.innerHTML='Resets Monday 00:00 UTC · ends in <b>'+dd+'d '+hh+'h '+mm+'m</b>';}else rs.textContent='Resetting…';}
   }).catch(function(){});
