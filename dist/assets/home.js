@@ -636,7 +636,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(side){var seg=document.getElementById('planSeg');if(seg){var sb=seg.querySelector('[data-side="'+side+'"]');if(sb&&!sb.classList.contains('on'))sb.click();}}
     setTimeout(function(){var card=document.querySelector('.card');if(card&&card.scrollIntoView)card.scrollIntoView({behavior:'smooth',block:'start'});},170);
   }
-  function ppActions(e,close){return '<div class="pp-actions"><div class="pp-icons"><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button><button class="pp-ic pp-ic-del" data-act="del" data-id="'+e.id+'" title="'+MT('jDelete','Delete')+'" aria-label="'+MT('jDelete','Delete')+'">'+TRASH_SVG+'</button></div>'+(close?'<button class="pp-close" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button>':'')+'</div>';}
+  function ppActions(e,close){return '<div class="pp-actions"><div class="pp-icons"><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button></div>'+(close?'<button class="pp-close" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button>':'')+'</div>';}
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
@@ -1956,20 +1956,28 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     gate.className='lg-gate ok';gate.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#41e3a3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M20 6L9 17l-5-5"/></svg>'+LT('lgInAs','You are in the league as')+' <b>'+esc(me.username||(me.email?me.email.split('@')[0]:'you'))+'</b> '+LT('lgClimb','— close winning trades to climb.');}
   function lbEnds(weekEnd){if(!weekEnd)return '';var ms=weekEnd-Date.now();if(ms<=0)return '';var d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000);var t=(d>0?d+'d ':'')+((d>0||h>0)?h+'h ':'')+m+'m';return '<div class="lg-ends">⏳ '+LT('lgReset','Resets')+' <b>'+LT('lgMonUtc','Monday 00:00 UTC')+'</b> · '+LT('lgEndsIn','ends in')+' <b>'+t+'</b></div>';}
   var lgMode='roe',lgLast=null;
-  function lgPills(){return '<div class="lg-pills"><button type="button" class="lg-pill'+(lgMode==='roe'?' on':'')+'" data-lgm="roe">'+LT('lgTopRoe','Top ROE')+'</button><button type="button" class="lg-pill'+(lgMode==='wr'?' on':'')+'" data-lgm="wr">'+LT('lgBestWr','Best win rate')+'</button></div>';}
+  function lgPills(){return '<div class="lg-pills"><button type="button" class="lg-pill'+(lgMode==='roe'?' on':'')+'" data-lgm="roe">'+LT('lgTopRoe','Top ROE')+'</button><button type="button" class="lg-pill'+(lgMode==='pnl'?' on':'')+'" data-lgm="pnl">'+LT('lgTopPnl','Top PnL')+'</button><button type="button" class="lg-pill'+(lgMode==='wr'?' on':'')+'" data-lgm="wr">'+LT('lgBestWr','Best win rate')+'</button></div>';}
+  function lgNote(){return lgMode==='roe'?'<div class="lg-wr-note pay">'+LT('lgPayRoe','Top ROE pays the weekly prizes — the other boards start paying soon.')+'</div>':'<div class="lg-wr-note">'+LT('lgPaySoon','No prizes yet — this board starts paying out soon.')+'</div>';}
+  function lgMoneyH(x){x=+x||0;var sg=x<0?'-':'+';x=Math.abs(x);return sg+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
   function lgDraw(){var d=lgLast;if(!d)return;var ends=lbEnds(d&&d.weekEnd);
     if(lgMode==='wr'){
       var wt=(d&&d.topWr)||[];
-      if(!wt.length){board.innerHTML=lgPills()+'<div class="lg-empty">'+LT('lgWrEmpty','No one has 5 closed trades this week yet — close 5+ trades and claim the win-rate crown.')+'</div>'+ends;wireLgPills();return;}
-      board.innerHTML=lgPills()+'<div class="lg-board-h">'+LT('lgWrHead','Best win rate this week')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+wt.slice(0,5).map(function(x,i){var rk=i+1;
+      if(!wt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgWrEmpty','No one has 20 closed trades this week yet — close 20+ trades and claim the win-rate crown.')+'</div>'+ends;wireLgPills();return;}
+      board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgWrHead','Best win rate this week')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+wt.slice(0,5).map(function(x,i){var rk=i+1;
         return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who">'+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span></span><span class="lg-tr">'+(+x.w||0)+'W-'+(+x.l||0)+'L</span><span class="lg-roe up">'+(+x.wr||0).toFixed(0)+'%</span></div>';}).join('')
-        +'<div class="lg-wr-note">'+LT('lgWrNote','Min 5 closed trades · no prizes, pure bragging rights')+'</div>'+ends;
+        +ends;
+      if(window.mpLvlDecorate)window.mpLvlDecorate();wireLgPills();return;}
+    if(lgMode==='pnl'){
+      var pt=(d&&d.topPnl)||[];
+      if(!pt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgPnlEmpty','No winning trades yet this week — close one in profit to top the PnL board.')+'</div>'+ends;wireLgPills();return;}
+      board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgPnlHead','Top PnL this week')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+pt.slice(0,5).map(function(x,i){var rk=i+1,p=+x.pnl;
+        return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who">'+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span></span>'+(x.symbol?'<span class="lg-tr">'+esc(x.symbol)+' '+esc(x.side||'')+'</span>':'')+'<span class="lg-roe '+(p>=0?'up':'dn')+'">'+lgMoneyH(p)+'</span></div>';}).join('')+ends;
       if(window.mpLvlDecorate)window.mpLvlDecorate();wireLgPills();return;}
     var t=(d&&d.top)||[];
     var pz=(d&&d.prizes)||[30,20,10];
     try{var sub=document.querySelector('.lg-sub');if(sub&&pz.length>=3){var k=0;sub.innerHTML=sub.innerHTML.replace(/\$\d+/g,function(m){k++;return k<=3?('$'+pz[k-1]):m;});}}catch(e){}
-    if(!t.length){board.innerHTML=lgPills()+'<div class="lg-empty">'+LT('lgEmpty','No trades yet this week — be the first. Open Paper Trade, close a winner, and you are on the board.')+'</div>'+ends;wireLgPills();return;}
-    board.innerHTML=lgPills()+'<div class="lg-board-h">'+LT('lgTopWeek','This week’s top traders')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+t.slice(0,5).map(function(x,i){var rk=i+1,roe=+x.roe,prize=(pz[i]!=null&&+pz[i]>0)?('$'+pz[i]):'';
+    if(!t.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgEmpty','No trades yet this week — be the first. Open Paper Trade, close a winner, and you are on the board.')+'</div>'+ends;wireLgPills();return;}
+    board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgTopWeek','This week’s top traders')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+t.slice(0,5).map(function(x,i){var rk=i+1,roe=+x.roe,prize=(pz[i]!=null&&+pz[i]>0)?('$'+pz[i]):'';
       return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who">'+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span></span>'+(x.symbol?'<span class="lg-tr">'+esc(x.symbol)+' '+esc(x.side||'')+'</span>':'')+'<span class="lg-roe '+(roe>=0?'up':'dn')+'">'+(roe>=0?'+':'')+roe.toFixed(0)+'%</span>'+(prize?'<span class="lg-prize">'+prize+'</span>':'')+'</div>';}).join('')+ends;
     if(window.mpLvlDecorate)window.mpLvlDecorate();wireLgPills();}
   function wireLgPills(){board.querySelectorAll('[data-lgm]').forEach(function(b){b.addEventListener('click',function(){lgMode=b.getAttribute('data-lgm');lgDraw();});});}

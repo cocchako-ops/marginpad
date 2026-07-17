@@ -2648,3 +2648,5 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 .lg-pill.on{background:rgba(194,246,74,.12);border-color:rgba(194,246,74,.55);color:#c2f64a}
 .lg-pill:not(.on):hover{border-color:rgba(255,255,255,.3);color:#cdd6df}
 .lg-wr-note{margin-top:8px;font-size:10.5px;color:#5c656f}
+.lg-wr-note.pay{color:#a8d666}
+.lg-pills .lg-pill{font-size:10px;padding:6px 8px}

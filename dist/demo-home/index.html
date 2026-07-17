@@ -327,6 +327,10 @@
   .lb-tab{flex:1;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#95a1b0;font:700 11px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:.15s}
   .lb-tab.on{background:rgba(194,246,74,.13);border-color:rgba(194,246,74,.55);color:#c2f64a}
   .lb-tab:not(.on):hover{border-color:rgba(255,255,255,.3);color:#d3dbe4}
+  .lb-note{margin:0 0 4px;padding:8px 11px;border-radius:9px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);font-size:11.5px;line-height:1.45;color:#9aa6b3}
+  .lb-note.pay{background:rgba(194,246,74,.07);border-color:rgba(194,246,74,.28);color:#cfe6a8}
+  .lb-note b{color:#e8eef4;font-weight:700}.lb-note.pay b{color:#c2f64a}
+  .lb-roe.dn{color:#ff6c5c}
   .lb-r{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;font-size:14px;transition:background .14s;}
   .lb-r:hover{background:rgba(255,255,255,.03);}
   .lb-r+.lb-r{border-top:1px solid rgba(255,255,255,.045);}
@@ -350,8 +354,8 @@
   .lbx-roe{font-family:'Space Mono',monospace;font-weight:700;color:var(--grn);font-size:12.5px;font-variant-numeric:tabular-nums;}
 
   /* ---------- Go live: one BIG "coming soon" slot + compact exchange tiles ---------- */
-  .exch-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.15fr repeat(3,1fr);grid-auto-rows:1fr;gap:12px;}
-  .exbig{grid-row:span 3;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:12px;padding:28px;border-radius:20px;overflow:hidden;
+  .exch-grid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:auto;gap:12px;}
+  .exbig{grid-column:1/-1;grid-row:auto;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:12px;padding:28px;border-radius:20px;overflow:hidden;
     background:linear-gradient(160deg,rgba(194,246,74,.05),rgba(255,255,255,.01)),var(--panel);border:1.5px dashed rgba(194,246,74,.35);transition:border-color .2s ease,box-shadow .2s ease;}
   .exbig:hover{border-color:rgba(194,246,74,.6);box-shadow:0 0 44px -18px rgba(194,246,74,.5);}
   .exbig::after{content:'SOON';position:absolute;right:-14px;bottom:-30px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:104px;letter-spacing:-6px;color:rgba(194,246,74,.06);pointer-events:none;}
@@ -362,7 +366,8 @@
   .exbig-s{color:var(--dim);font-size:14px;line-height:1.6;max-width:340px;}
   .exs{--exc:#f7a600;position:relative;display:flex;align-items:center;gap:11px;padding:13px 15px;border-radius:15px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.005)),var(--panel);border:1px solid var(--line);text-decoration:none;color:var(--ink);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;min-width:0;}
   .exs:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--exc) 45%,transparent);box-shadow:0 14px 30px -16px rgba(0,0,0,.7),0 0 22px -12px var(--exc);}
-  .exs-ic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;background:var(--exc);flex-shrink:0;}
+  .exs-ic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;background:#fff;color:#0a0b0d;flex-shrink:0;overflow:hidden;}
+.exs-ic img{width:100%;height:100%;object-fit:contain;display:block;}
   .exs-n{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .exs-tag{margin-left:auto;font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--exc);white-space:nowrap;opacity:.9;}
   .exs-go{color:var(--faint);font-size:13px;flex-shrink:0;transition:transform .16s ease,color .16s ease;}
@@ -679,16 +684,16 @@
       <div class="exbig-t">Something big<br>launches here.</div>
       <div class="exbig-s">A brand-new trading platform is about to go live — and MarginPad will be its first partner. This spot is reserved. Watch it.</div>
     </div>
-    <a class="exs" href="https://www.bybit.com/trade/usdt/BTCUSDT?ref=LZKBERJ" target="_blank" rel="noopener sponsored" data-ex="Bybit" style="--exc:#f7a600"><span class="exs-ic" style="color:#0a0b0d">B</span><span class="exs-n">Bybit</span><span class="exs-tag">Most popular</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://www.binance.com/en/futures/BTCUSDT?ref=MAOZM9DS" target="_blank" rel="noopener sponsored" data-ex="Binance" style="--exc:#f0b90b"><span class="exs-ic" style="color:#181a20">B</span><span class="exs-n">Binance</span><span class="exs-tag">Biggest volume</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://www.okx.com/trade-swap/btc-usdt-swap" target="_blank" rel="noopener sponsored" data-ex="OKX" style="--exc:#cfd3d8"><span class="exs-ic" style="color:#0a0b0d">O</span><span class="exs-n">OKX</span><span class="exs-tag">Pro tools</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://www.bitget.com/futures/usdt/BTCUSDT?clacCode=DSSSQKGK" target="_blank" rel="noopener sponsored" data-ex="Bitget" style="--exc:#00e7d8"><span class="exs-ic" style="color:#06231d">B</span><span class="exs-n">Bitget</span><span class="exs-tag">Copy trading</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://www.kucoin.com/futures/trade/XBTUSDTM?rcode=VHP8AYKY" target="_blank" rel="noopener sponsored" data-ex="KuCoin" style="--exc:#23af91"><span class="exs-ic" style="color:#06231d">K</span><span class="exs-n">KuCoin</span><span class="exs-tag">Altcoin depth</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://www.gate.com/futures/USDT/BTC_USDT?ref=VFIWB10KUG" target="_blank" rel="noopener sponsored" data-ex="Gate" style="--exc:#3361ff"><span class="exs-ic" style="color:#fff">G</span><span class="exs-n">Gate</span><span class="exs-tag">Early listings</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://futures.mexc.com/exchange/BTC_USDT?inviteCode=GND4jI97o0" target="_blank" rel="noopener sponsored" data-ex="MEXC" style="--exc:#0ac2d6"><span class="exs-ic" style="color:#06231d">M</span><span class="exs-n">MEXC</span><span class="exs-tag">Low fees</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://invite.kraken.com/JDNW/guj2tf28" target="_blank" rel="noopener sponsored" data-ex="Kraken" style="--exc:#7b5cff"><span class="exs-ic" style="color:#fff">K</span><span class="exs-n">Kraken</span><span class="exs-tag">Regulated</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://crypto.com/app/sdf5hb6rkv" target="_blank" rel="noopener sponsored" data-ex="Crypto.com" style="--exc:#1a4bc4"><span class="exs-ic" style="color:#fff">C</span><span class="exs-n">Crypto.com</span><span class="exs-tag">All-in-one</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://base.app/invite/chakko/FHSFNY5H" target="_blank" rel="noopener sponsored" data-ex="Coinbase" style="--exc:#0052ff"><span class="exs-ic" style="color:#fff">C</span><span class="exs-n">Coinbase</span><span class="exs-tag">US-regulated</span><span class="exs-go">→</span></a>
+    <a class="exs" href="https://www.bybit.com/trade/usdt/BTCUSDT?ref=LZKBERJ" target="_blank" rel="noopener sponsored" data-ex="Bybit" style="--exc:#f7a600"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/521.png" alt="Bybit" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bybit</span><span class="exs-tag">Most popular</span><span class="exs-go">→</span></a>
+    <a class="exs" href="https://www.binance.com/en/futures/BTCUSDT?ref=MAOZM9DS" target="_blank" rel="noopener sponsored" data-ex="Binance" style="--exc:#f0b90b"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/270.png" alt="Binance" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Binance</span><span class="exs-tag">Biggest volume</span><span class="exs-go">→</span></a>
+    <a class="exs" href="https://www.okx.com/trade-swap/btc-usdt-swap" target="_blank" rel="noopener sponsored" data-ex="OKX" style="--exc:#cfd3d8"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/294.png" alt="OKX" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='O'"></span><span class="exs-n">OKX</span><span class="exs-tag">Pro tools</span><span class="exs-go">→</span></a>
+    <a class="exs" href="https://www.bitget.com/futures/usdt/BTCUSDT?clacCode=DSSSQKGK" target="_blank" rel="noopener sponsored" data-ex="Bitget" style="--exc:#00e7d8"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/513.png" alt="Bitget" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bitget</span><span class="exs-tag">Copy trading</span><span class="exs-go">→</span></a>
+    <a class="exs" href="https://www.kucoin.com/futures/trade/XBTUSDTM?rcode=VHP8AYKY" target="_blank" rel="noopener sponsored" data-ex="KuCoin" style="--exc:#23af91"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/311.png" alt="KuCoin" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='K'"></span><span class="exs-n">KuCoin</span><span class="exs-tag">Altcoin depth</span><span class="exs-go">→</span></a>
+    <a class="exs" href="https://www.gate.com/futures/USDT/BTC_USDT?ref=VFIWB10KUG" target="_blank" rel="noopener sponsored" data-ex="Gate" style="--exc:#3361ff"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/302.png" alt="Gate" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='G'"></span><span class="exs-n">Gate</span><span class="exs-tag">Early listings</span><span class="exs-go">→</span></a>
+    <a class="exs" href="https://futures.mexc.com/exchange/BTC_USDT?inviteCode=GND4jI97o0" target="_blank" rel="noopener sponsored" data-ex="MEXC" style="--exc:#0ac2d6"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/544.png" alt="MEXC" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='M'"></span><span class="exs-n">MEXC</span><span class="exs-tag">Low fees</span><span class="exs-go">→</span></a>
+    <a class="exs" href="https://invite.kraken.com/JDNW/guj2tf28" target="_blank" rel="noopener sponsored" data-ex="Kraken" style="--exc:#7b5cff"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/24.png" alt="Kraken" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='K'"></span><span class="exs-n">Kraken</span><span class="exs-tag">Regulated</span><span class="exs-go">→</span></a>
+    <a class="exs" href="https://crypto.com/app/sdf5hb6rkv" target="_blank" rel="noopener sponsored" data-ex="Crypto.com" style="--exc:#1a4bc4"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/1149.png" alt="Crypto.com" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='C'"></span><span class="exs-n">Crypto.com</span><span class="exs-tag">All-in-one</span><span class="exs-go">→</span></a>
+    <a class="exs" href="https://base.app/invite/chakko/FHSFNY5H" target="_blank" rel="noopener sponsored" data-ex="Coinbase" style="--exc:#0052ff"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/89.png" alt="Coinbase" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='C'"></span><span class="exs-n">Coinbase</span><span class="exs-tag">US-regulated</span><span class="exs-go">→</span></a>
   </div>
   <div class="exch-disc">Referral links — MarginPad may earn a commission if you open an account, at no cost to you. That is what keeps every tool here free. Trade responsibly: leverage can liquidate your entire margin.</div>
 </section>
@@ -709,9 +714,9 @@
       <div class="lb-cta"><a class="btn-l" href="/paper-trade">Open Paper Trade →</a><span class="note" id="lbYou">Sign in (free) and your best trade enters automatically.</span></div>
     </div>
     <div class="lb-card">
-      <div class="t-kick"><span class="dot"></span> Top traders · updates live</div>
-      <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="wr">Best win rate</button></div>
-      <div class="lb-board" id="lbBoard" style="margin-top:12px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
+      <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="pnl">Top PnL</button><button type="button" class="lb-tab" data-lbm="wr">Best win rate</button></div>
+      <div class="lb-note" id="lbNote">💰 <b>Top ROE</b> wins the weekly prizes for now — <b>Top PnL</b> and <b>Best win rate</b> will start paying out soon too.</div>
+      <div class="lb-board" id="lbBoard" style="margin-top:10px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
     </div>
   </div>
 </section>
@@ -873,21 +878,29 @@
   // ---- leaderboard (Top ROE + Best win rate switcher) ----
   var lbMode='roe',lbData=null;
   function lbEsc(x){return String(x).replace(/</g,'&lt;');}
+  function lbMoney(x){x=+x||0;var s=x<0?'-':'+';x=Math.abs(x);return s+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
+  function lbRow(i,who,mid,val,cls){var med=i<3?' m'+(i+1):'';return '<div class="lb-r'+(i===0?' top':'')+'"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who">'+lbEsc(who||'trader')+'</span><span class="lb-pair">'+mid+'</span><span class="lb-roe '+(cls||'')+'">'+val+'</span></div>';}
   function lbRender(){
-    var d=lbData,el=document.getElementById('lbBoard');if(!el)return;
+    var d=lbData,el=document.getElementById('lbBoard'),note=document.getElementById('lbNote');if(!el)return;
+    if(note){note.className='lb-note'+(lbMode==='roe'?' pay':'');
+      note.innerHTML=lbMode==='roe'
+        ? '💰 <b>Top ROE</b> is the only board paying weekly prizes right now — climb it to earn real USDT.'
+        : '🏆 <b>'+(lbMode==='pnl'?'Top PnL':'Best win rate')+'</b> is bragging rights for now — prizes for this board are coming soon.';}
     if(lbMode==='wr'){
       var wt=((d&&d.topWr)||[]).slice(0,10);
-      el.innerHTML=wt.length?wt.map(function(t,i){
-        var med=i<3?' m'+(i+1):'';
-        return '<div class="lb-r'+(i===0?' top':'')+'"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who">'+lbEsc(t.who||'trader')+'</span><span class="lb-pair">'+(+t.w||0)+'W-'+(+t.l||0)+'L</span><span class="lb-roe">'+Math.round(+t.wr||0)+'%</span></div>';
-      }).join(''):'<div class="lb-empty">No one has 5 closed trades yet this week — close 5+ and claim the win-rate crown. (No prizes — pure bragging rights.)</div>';
+      el.innerHTML=wt.length?wt.map(function(t,i){return lbRow(i,t.who,(+t.w||0)+'W-'+(+t.l||0)+'L',Math.round(+t.wr||0)+'%');}).join('')
+        :'<div class="lb-empty">No one has 20 closed trades yet this week — close 20+ and claim the win-rate crown.</div>';
+      return;
+    }
+    if(lbMode==='pnl'){
+      var pt=((d&&d.topPnl)||[]).slice(0,10);
+      el.innerHTML=pt.length?pt.map(function(t,i){var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');return lbRow(i,t.who,pair,lbMoney(t.pnl),(+t.pnl>=0?'up':'dn'));}).join('')
+        :'<div class="lb-empty">No winning trades yet this week — close one in profit and top the PnL board.</div>';
       return;
     }
     var top=((d&&d.top)||[]).slice(0,10);
-    el.innerHTML=top.length?top.map(function(t,i){
-      var med=i<3?' m'+(i+1):'';var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');
-      return '<div class="lb-r'+(i===0?' top':'')+'"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who">'+lbEsc(t.who||'trader')+'</span><span class="lb-pair">'+pair+'</span><span class="lb-roe">+'+Math.round(+t.roe).toLocaleString('en-US')+'%</span></div>';
-    }).join(''):'<div class="lb-empty">No entries yet this week — be the first. Open a paper trade and close it in profit.</div>';
+    el.innerHTML=top.length?top.map(function(t,i){var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');return lbRow(i,t.who,pair,'+'+Math.round(+t.roe).toLocaleString('en-US')+'%');}).join('')
+      :'<div class="lb-empty">No entries yet this week — be the first. Open a paper trade and close it in profit.</div>';
   }
   document.querySelectorAll('[data-lbm]').forEach(function(b){b.addEventListener('click',function(){lbMode=b.getAttribute('data-lbm');document.querySelectorAll('[data-lbm]').forEach(function(x){x.classList.toggle('on',x===b);});lbRender();});});
   fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){
