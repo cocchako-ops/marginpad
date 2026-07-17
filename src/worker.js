@@ -5577,6 +5577,7 @@ export default {
     if (url.pathname === '/api/gecko/trending') return handleGeckoTrending(env);
     if (url.pathname === '/api/gecko/coin') return handleGeckoCoin(url, env);
     if (url.pathname === '/api/onchain') return handleOnchain(env);
+    if (url.pathname === '/api/happyhour') return handleHappyHour();
     if (url.pathname === '/api/calendar') return handleCalendar(request, env);
     if (url.pathname === '/api/calendar/remind') return handleCalRemind(request, env);
     if (url.pathname === '/api/calendar/admin') return handleCalAdmin(request, env);
@@ -6621,6 +6622,19 @@ const XP_LEVELS = [ // pragovi podignuti 2026-07-16 (Academy nosi ~1975 XP pa je
 const LEVEL_CLAIM_MULT = { bronze: 1.0, silver: 1.10, gold: 1.20, platinum: 1.35, diamond: 1.50, legendary: 1.75 }; // faucet claim size by level
 const LEVEL_WD_BONUS = { diamond: 0.10, legendary: 0.15 };
 function lvlSvgS(k, col) { col = col || '#c97f4a'; if (k === 'legendary') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z" fill="' + col + '30"/><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3zM4 17l.6 2.5h14.8L20 17" stroke="' + col + '" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12" cy="13.4" r="1.5" fill="' + col + '"/></svg>'; if (k === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M8 5H16L20 10L12 19L4 10Z" fill="' + col + '30"/><path d="M8 5H16L20 10L12 19L4 10ZM4 10H20M8 5L10 10M16 5L14 10M10 10L12 19M14 10L12 19" stroke="' + col + '" stroke-width="1.25" stroke-linejoin="round"/></svg>'; return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M12 2.5 20 7v10L12 21.5 4 17V7z" fill="' + col + '22" stroke="' + col + '" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 7l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.6 8.9 16.1l.6-3.3L7.1 10.5l3.3-.5z" fill="' + col + '"/></svg>'; } // Diamond gets +10% on withdrawals (the house pays it)
+// ── XP Happy Hour ── bigger XP for winning paper trades with 200%+ ROE, opened at ≤100× leverage, CLOSED during the daily window.
+// hourUTC is the single source of truth: the DO grant (hhActiveAt) and the /api/happyhour card both read it → keep in sync if you retune.
+const HH = { enabled: true, hourUTC: 18, durMin: 60, roeMin: 200, levMax: 100, xpMin: 100, xpMax: 200 };
+function hhActiveAt(ts) { if (!HH.enabled || !isFinite(+ts)) return false; const d = new Date(+ts); const cur = d.getUTCHours() * 60 + d.getUTCMinutes(), start = HH.hourUTC * 60; return cur >= start && cur < start + HH.durMin; }
+function hhXpFor(roe) { const r = +roe || 0; return Math.max(HH.xpMin, Math.min(HH.xpMax, Math.round(HH.xpMin + (r - HH.roeMin) / 200 * (HH.xpMax - HH.xpMin)))); } // 200% ROE → xpMin, 400%+ → xpMax
+function handleHappyHour() {
+  const now = Date.now(), d = new Date(now);
+  const todayStart = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), HH.hourUTC, 0, 0);
+  const dur = HH.durMin * 60000;
+  const active = now >= todayStart && now < todayStart + dur;
+  const nextStartMs = now < todayStart ? todayStart : todayStart + 86400000;
+  return new Response(JSON.stringify({ enabled: HH.enabled, hourUTC: HH.hourUTC, durMin: HH.durMin, roeMin: HH.roeMin, levMax: HH.levMax, xpMin: HH.xpMin, xpMax: HH.xpMax, active, nextStartMs, endMs: active ? todayStart + dur : null, now }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=30', ...CORS } });
+}
 function xpLevelOf(xp) {
   xp = Math.max(0, +xp || 0);
   let i = 0; for (let n = 0; n < XP_LEVELS.length; n++) if (xp >= XP_LEVELS[n].min) i = n;
@@ -7176,7 +7190,7 @@ export class UserStore {
           const roe = (pv != null && m > 0) ? pv / m * 100 : null;
           const liq9 = (kind === 'close' && pv != null && pv <= -m * 0.985) ? 1 : 0;
           sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq) VALUES(?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9);
-          nIns++; try { if (kind === 'close') { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym||'') + ' closed' }); if (pv != null && pv > 0) this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym||'') + ' +$' + pv.toFixed(2) }); } } catch (xe) {}
+          nIns++; try { if (kind === 'close') { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym||'') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym||'') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9)) this._grantXp(uid, 'trade_hh', hhXpFor(roe), { dayCap: 800, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); } } } catch (xe) {}
         }
         if (nIns) sql.exec('DELETE FROM tradeev WHERE ts < ?', now - 14 * 86400000);
       } catch (e9) {}
