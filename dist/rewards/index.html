@@ -609,6 +609,7 @@
           else if(e==='daily_cap') msg('You’ve hit today’s $'+fmt(perDay)+' cap. Come back tomorrow.','err');
           else if(e==='pool_empty') msg('Today’s reward pool is empty — try again tomorrow. (Tip: earlier = better.)','err');
           else if(e==='ip_limit') msg('Too many new accounts from this connection today.','err');
+          else if(e==='device_multi') msg('This device already has the maximum number of reward accounts.','err');
           else if(e==='paused') msg(j.message||'The faucet is paused right now — check back soon.','err');
           else if(e==='banned'){ bannedAcct=true; if(acct){acct.banned=true;showInbox(acct);} msg('Your account has been suspended from the rewards program.','err'); }
           else if(e==='restricted') msg('Your account is restricted from rewards. If you believe this is a mistake, contact support (<a href="https://marginpad.io/rewards/#" style="color:inherit;font-weight:700;text-decoration:underline" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">here</a>).','err');
