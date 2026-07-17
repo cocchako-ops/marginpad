@@ -1,0 +1,387 @@
+{
+ "id": "structure",
+ "name": "İleri Piyasa Yapısı",
+ "sub": "Emirler nerede yaşar ve fiyat oraya neden gider",
+ "lessons": [
+  {
+   "id": "a1",
+   "t": "Likidite: emirler gerçekte nerede",
+   "cards": [
+    {
+     "h": "Fiyat emirlere doğru hareket eder",
+     "p": "Büyük oyuncular defterin boş olduğu yerde büyük pozisyon dolduramaz — karşısında işlem yapacak bekleyen emirlere ihtiyaçları var. Stop-loss ve likidasyon kümeleri İŞTE o bekleyen emirlerdir. Bu yüzden fiyat sıkça bariz bir seviyeyi deler, orada dolar ve geri döner: alışverişe gitmişti."
+    },
+    {
+     "h": "Senin stopun başkasının girişidir",
+     "p": "Desteğin altındaki stop-loss'un, gerçekleşmeyi bekleyen bir satış emridir. Bin trader'ın aynı bariz noktaya koyması, garantili satıcılardan bir havuz oluşturur — büyük bir alıcının emmesi için mükemmel yer. Bu komplo değil; büyük boyut basitçe böyle dolar."
+    },
+    {
+     "h": "Korkmak değil, işlemek",
+     "p": "Oyundan kaçamazsın ama en kolay hedef olmayı bırakabilirsin: geçersizleşme noktalarını bariz havuzların ötesine koy, temiz seviyelerde süpür-ve-dön hareketini bekle, ve bir seviyeyi delip anında geri alan fitili bilgi olarak gör — az önce biri dolduruldu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Fiyat neden sık sık bariz seviyeleri delip geri döner?",
+     "o": [
+      "Şans eseri",
+      "Büyükler oradaki kümeli stop emirlerine karşı dolar",
+      "Borsa hataları",
+      "Önemli haberlerin yayınlanma zamanlaması"
+     ]
+    },
+    {
+     "q": "Desteğin altındaki stop-loss kümesi fiilen…",
+     "o": [
+      "Traderlar için ücretsiz korumadır",
+      "Garantili satış emirleri havuzudur",
+      "Hiçbir şeydir",
+      "Bir hatadır"
+     ]
+    },
+    {
+     "q": "Bir seviyeyi delip anında geri alan fitil şunu düşündürür…",
+     "o": [
+      "Seviye sonsuza dek bozuldu",
+      "Likidite süpürmesi",
+      "Panik zamanı",
+      "Düşük hacim"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a2",
+   "t": "Yataylar: birikim ve dağıtım",
+   "cards": [
+    {
+     "h": "Hikaye yatayda yazılır",
+     "p": "Trendler sonuçtur; yataylar sebep. Yatayda büyük oyuncular fiyatı kendilerine karşı hareket ettirmeden sessizce pozisyon toplar (birikim) veya boşaltır (dağıtım). Kırılım yönü genelde gerçekleşmeden çok önce — yatayın içinde — belirlenmiştir."
+    },
+    {
+     "h": "Yatayı okumak",
+     "p": "Fiyatın yatayın kenarlarındaki davranışını izle: dibi delip hızla toparlanan tekrarlı denemeler (talebe süpürmeler) birikime işaret eder; tepede daralan hacimle başarısız yükselişler dağıtıma işaret eder. Yatayın ortası gürültüdür — ipucu kenarlardadır."
+    },
+    {
+     "h": "Spring ve tuzak",
+     "p": "Klasik final: gerçek yönün TERSİNE sahte kırılım — spring — stopları süpürür, büyük oyuncunun son boyutunu doldurur ve gerçek harekete döner. Tuzağı beklemeyi öğrenirsen, tuzak çıkışın değil girişin olur."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Büyük pozisyonlar tipik olarak nerede toplanır…",
+     "o": [
+      "Dikey trendlerin ortasında",
+      "Yatayların içinde, sessizce",
+      "Tam tepede",
+      "Hafta sonları"
+     ]
+    },
+    {
+     "q": "Yatayın en bilgilendirici kısmı…",
+     "o": [
+      "Ortası",
+      "Kenarlarındaki davranış",
+      "İçindeki mumların rengi",
+      "Süresi"
+     ]
+    },
+    {
+     "q": "Spring nedir…",
+     "o": [
+      "Bir mevsim",
+      "Gerçek yönün tersine sahte kırılım",
+      "Bir komisyon türü",
+      "Herkesin izlediği bir hareketli ortalama"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a3",
+   "t": "Dengesizlikler: fiyat çok hızlı gidince",
+   "cards": [
+    {
+     "h": "Müzayededeki boşluklar",
+     "p": "Fiyat bir yönde şiddetle hareket edince seviyeleri atlar — orada neredeyse hiç işlem olmamıştır. O ince bölge bir dengesizliktir (sıkça fair value gap denir). Piyasalar bu bölgeleri sonradan sık sık yeniden ziyaret eder, çünkü işlem görmemiş fiyatlar müzayedenin yarım kalmış işidir."
+    },
+    {
+     "h": "Yeniden ziyaretler neden olur",
+     "p": "Mistik bir şey yok: Hareketi kaçıranlar atlanan bölgeye emir bırakır ve spike'a satış yapan piyasa yapıcılar hacmin ince olduğu yerden geri almak ister. Bölge mıknatıs gibi davranır — sihirden değil, orada emirler biriktiği için."
+    },
+    {
+     "h": "Dengesizlikleri dürüstçe kullanmak",
+     "p": "Dengesizlik, trend yönünde girişler için ADAY bölgedir — asla garanti değil. Yapıyla birleştir: bir destek seviyesi ve üst zaman dilimi trendiyle örtüşen dengesizlik gerçek bir kurulumdur; 1 dakikalık grafikte yalnız bir gap, süslü isimli gürültüdür."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Dengesizlik (fair value gap) nedir…",
+     "o": [
+      "Mum verileri eksik bozuk bir grafik",
+      "Fiyatın neredeyse işlemsiz atladığı bölge",
+      "Bir emir türü",
+      "Borsa hatası"
+     ]
+    },
+    {
+     "q": "Fiyat dengesizlikleri sık sık yeniden ziyaret eder çünkü…",
+     "o": [
+      "Sihir",
+      "Kaçırılan emirler ince bölgede birikir",
+      "Düzenleyiciler borsalara bunu şart koşar",
+      "Asla etmez"
+     ]
+    },
+    {
+     "q": "Dengesizlik ne zaman gerçek kurulum olur…",
+     "o": [
+      "Var olduğu anda",
+      "Yapıyla ve üst trend ile örtüştüğünde",
+      "1 dakikalık grafikte olduğunda",
+      "Biri paylaştığında"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a4",
+   "t": "Hacim profili: piyasanın hafızası",
+   "cards": [
+    {
+     "h": "Zamana değil, FİYATA göre hacim",
+     "p": "Grafiğinin altındaki hacim çubukları zaman dilimi başına hacmi gösterir. Hacim profili onları yana çevirir: her FİYATTA ne kadar işlem oldu. Yüksek hacimli düğümler piyasanın uzun süre kabul ettiği fiyatlardır; düşük hacimli düğümler hızla reddettiği fiyatlar."
+    },
+    {
+     "h": "Kabul ve ret",
+     "p": "Yüksek hacimli düğüme giren fiyat genelde yavaşlar ve testere yapar — orada çok iş yapılmıştı ve yine işlem çeker. Düşük hacimli düğüme giren fiyat genelde hızla keser geçer — orada daha önce kimse işlem yapmak istemedi, şimdi de istemiyor. Bu, birçok hızlı hareketi her indikatörden iyi açıklar."
+    },
+    {
+     "h": "Pratik kullanım",
+     "p": "Son yatayın en yüksek hacimli düğümünü işaretle (point of control). Üstündeyken içine düşüşler sık sık alıcı bulur; altındayken içine yükselişler sık sık satıcı bulur. m1'deki seviyelerinle birleştir — hacim düğümü ile yapısal seviye anlaşınca gerçek bir bölge bulmuşsundur."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Hacim profili hacmi şöyle gösterir…",
+     "o": [
+      "Saat başına",
+      "Her fiyat seviyesinde",
+      "Borsa başına",
+      "Her bir trader başına"
+     ]
+    },
+    {
+     "q": "DÜŞÜK hacimli düğümden geçen fiyat genelde…",
+     "o": [
+      "Yavaşlar",
+      "Hızla keser geçer",
+      "Her zaman döner",
+      "Durur"
+     ]
+    },
+    {
+     "q": "Point of control nedir…",
+     "o": [
+      "Bir stop-loss",
+      "Yataydaki en yüksek hacimli fiyat",
+      "Bugünün günlük açılış fiyatı",
+      "Bir mum formasyonu"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a5",
+   "t": "Fibonacci: matematik mi ayna mı?",
+   "cards": [
+    {
+     "h": "Fib seviyeleri nedir",
+     "p": "Fibonacci düzeltmeleri önceki hareketin sabit oranlarını işaretler — %38,2, %50, %61,8. Fiyatı onlara saygı göstermeye zorlayan fiziksel bir yasa yok. Yine de sıkça saygı görürler. Neden? Çünkü milyonlarca trader aynı seviyeleri çizip onlara göre hareket eder — kendini gerçekleştiren bir ayna."
+    },
+    {
+     "h": "Dürüst kullanım şekli",
+     "p": "Fibleri yerçekimi olarak değil, diğer traderların tepki beklediği yerlerin HARİTASI olarak gör. Yükseliş trendinde %61,8 düzeltmesi popüler bir alım bölgesidir — bu da onu gerçek bir bölge yapar, matematik hakkında ne düşünürsen düşün. Kendini gerçekleştiren yine de gerçekleşir."
+    },
+    {
+     "h": "Yine kesişim",
+     "p": "Tek başına fib seviyesi, matematik kılığında yazı turadır. Hacim düğümüne, eski desteğe ve üst zaman dilimi trend çizgisine denk gelen fib seviyesi, önemli olması için birden çok bağımsız nedeni olan bölgedir. Artık kalıbı biliyorsun: hiçbir şey tek başına çalışmaz; yığınlar çalışır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Fibonacci seviyeleri sık sık işe yarar çünkü…",
+     "o": [
+      "Doğa kanunu",
+      "Yeterince trader aynı seviyelerde harekete geçer",
+      "Borsalar sistemlerinde bunları dayatır",
+      "Asla işe yaramaz"
+     ]
+    },
+    {
+     "q": "Fib düzeltmesinin dürüst kullanımı…",
+     "o": [
+      "Her seferinde %61,8'de körlemesine giriş",
+      "Kalabalığın tepki beklediği yerlerin haritası",
+      "Kesin tepe tahmini",
+      "Stopların yerine geçmesi"
+     ]
+    },
+    {
+     "q": "Başka kesişimi olmayan fib seviyesi…",
+     "o": [
+      "Ders kitabı gibi bir A+ kurulum",
+      "Kabaca şık kıyafetli yazı tura",
+      "Garantili",
+      "Yasadışı"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a6",
+   "t": "Göreceli güç: en güçlü atı seç",
+   "cards": [
+    {
+     "h": "Her yeşil eşit değildir",
+     "p": "Piyasa sıçrayınca bazı coinler yeni zirvelere toparlanır, bazıları diplerinden zar zor kalkar. Bu fark — göreceli güç — tradingdeki en dayanıklı avantajlardan biridir: Fırtınada düşmeyi reddeden, genelde toparlanmayı yönetir."
+    },
+    {
+     "h": "Basitçe ölçmek",
+     "p": "İndikatör gerekmez: BTC %5 düştüğünde senin adayın ne yaptı? %2 düşen coinin onu savunan alıcıları var; %12 düşenin yok. Aynı pencerede bir avuç grafiği BTC'yle karşılaştır, liderler kendini gösterir."
+    },
+    {
+     "h": "Akıntıyla birlikte güçlü",
+     "p": "m9 ile birleştir: dominansın düştüğü risk-iştahlı piyasada göreceli en güçlü altları long'lamak, balığın olduğu yerde avlanmaktır — trend, akıntı ve güç hizalı. En zayıf coini ucuz diye long'lamaksa indirim etiketli tam ters işlemdir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Göreceli güç şunu karşılaştırır…",
+     "o": [
+      "Coinin fiyatını sadece kendi geçmişiyle",
+      "Coinin aynı pencerede piyasaya",
+      "Hacmi komisyonlarla",
+      "Borsaları"
+     ]
+    },
+    {
+     "q": "Piyasa düşüşünde en az düşen coinin muhtemelen…",
+     "o": [
+      "Alıcısı yok",
+      "Onu savunan alıcıları var",
+      "Bir hatası var",
+      "Sadece likiditesi düşük"
+     ]
+    },
+    {
+     "q": "Ucuz göründüğü için EN ZAYIF coini almak…",
+     "o": [
+      "Profesyonellerin gözde hamlesi",
+      "Göreceli güç mantığının tam tersi",
+      "Risksiz",
+      "Zorunlu"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a7",
+   "t": "Volatilite rejimleri: sükunet ve fırtına",
+   "cards": [
+    {
+     "h": "Volatilite kümelenir",
+     "p": "Piyasalar rejimler arasında gidip gelir: uzun süren dar, sakin yataylar ve şiddetli genişleme patlamaları. Volatilite kümelenir — sükunet sükuneti, fırtına fırtınayı izler — rejim kırılana dek. Aynı strateji iki dünyaya aynı davranamaz."
+    },
+    {
+     "h": "Boyutu ve stopları uyarlamak",
+     "p": "Fırtına rejiminde geçen hafta mantıklı olan stop artık gürültünün içindedir — ve riski sabit tutmak için boyutun küçülmelidir (daha büyük stop mesafesi × daha küçük boyut = aynı %1 risk). Ölü sakin rejimlerde kırılım işlemleri tekrar tekrar ölürken ortalamaya dönüş serpilir."
+    },
+    {
+     "h": "Rejim kontrolü",
+     "p": "Kontrol listene bir soru ekle: Hangi rejimdeyim? Son mum boyutlarına bir bakış veya bir ATR değeri cevaplar. Açıklanamayan çoğu kayıp serisi, bir rejim için kurulmuş stratejinin diğerinde çalıştırılmasıdır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Volatilite şuna eğilimlidir…",
+     "o": [
+      "Her gün tamamen rastgele davranmaya",
+      "Kümelenmeye — sükunet sükuneti izler",
+      "Sadece yükselmeye",
+      "Sadece düşmeye"
+     ]
+    },
+    {
+     "q": "Yüksek volatilite rejiminde riski sabit tutmak demek…",
+     "o": [
+      "Aynı stop, aynı boyut",
+      "Daha geniş stop ve DAHA KÜÇÜK boyut",
+      "Daha dar stop ve daha büyük boyut",
+      "Stopsuz"
+     ]
+    },
+    {
+     "q": "Birçok kayıp serisi aslında…",
+     "o": [
+      "Şanssızlık",
+      "Stratejinin yanlış rejimde çalışması",
+      "Büyük paranın bilinçli manipülasyonu",
+      "Komisyonlar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a8",
+   "t": "Kesişim sistemleri: kanıt yığmak",
+   "cards": [
+    {
+     "h": "Araçlardan sisteme",
+     "p": "Artık elinde çok mercek var: yapı, likidite, yataylar, dengesizlikler, hacim düğümleri, fibler, göreceli güç, rejimler — artı 1-4. kurslardaki her şey. Profesyonel hepsini her yerde kullanmaz; işlem var olmadan önce hizalanması gereken sabit bir YIĞIN tanımlar."
+    },
+    {
+     "h": "Yığınını kur",
+     "p": "Örnek yığın: üst zaman dilimi trendi + yapısal seviye + onaylayan hacim düğümü + sana karşı kalabalık olmayan pozisyonlanma + pencerede kırmızı takvim etkinliği yok. Beş kontrol. Senin yığının farklı olabilir — önemli olan YAZILI ve sabit olması, ki her işlem günlükte karşılaştırılabilsin."
+    },
+    {
+     "h": "Daha az, daha ağır işlemler",
+     "p": "Gerçek bir yığın acımasızca filtreler: Çoğu gün hiçbir şey üretmez ve tasarım tam da budur. Geçen işlemler birden çok bağımsız neden taşır — R:R'lerini dürüst yapan tam da bu. Bilgiden avantaja köprü budur."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kesişim sistemi nedir…",
+     "o": [
+      "Her indikatörü aynı anda kullanmak",
+      "Sabit, yazılı koşullar yığını",
+      "Bir sohbet grubu",
+      "Bir borsa özelliği"
+     ]
+    },
+    {
+     "q": "Düzgün bir yığın şunu üretir…",
+     "o": [
+      "Her gün süren kesintisiz işlem akışı",
+      "Birden çok bağımsız nedeni olan az işlem",
+      "Günlük kâr",
+      "Sıfır kayıp"
+     ]
+    },
+    {
+     "q": "Yığın yazılmalı ki…",
+     "o": [
+      "Profesyonel görünsün",
+      "Her işlem günlükte karşılaştırılabilir olsun",
+      "Düzenleyiciler resmen onaylasın diye",
+      "Satılabilsin"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Grafik çalışma alanını aç ve herhangi bir coinde BİR tam yığın işaretle: trend, seviye, hacim düğümü ve pozisyonlanmayı kontrol et. İşlem gerekmez — sadece okuma.",
+    "label": "Grafikleri Aç →"
+   }
+  }
+ ]
+}

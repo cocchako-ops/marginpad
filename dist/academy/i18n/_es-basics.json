@@ -1,0 +1,439 @@
+{
+ "id": "basics",
+ "name": "Fundamentos de Cripto",
+ "sub": "Qué es lo que realmente estás tradeando",
+ "lessons": [
+  {
+   "id": "b1",
+   "t": "¿Qué es cripto, en realidad?",
+   "cards": [
+    {
+     "h": "Dinero sin intermediarios",
+     "p": "Bitcoin nació en 2009 como dinero que ningún banco ni gobierno controla. En lugar de un banco llevando el registro de quién posee qué, miles de ordenadores en todo el mundo guardan copias idénticas de ese registro — ese libro contable compartido se llama blockchain."
+    },
+    {
+     "h": "Por qué nunca duerme",
+     "p": "Las bolsas abren y cierran. Cripto se opera 24 horas al día, 7 días a la semana, en todo el planeta a la vez. Los precios pueden moverse con violencia un domingo a las 3 de la madrugada — y justo por eso los traders usan alertas y stop-loss en vez de mirar gráficos todo el día."
+    },
+    {
+     "h": "Miles de monedas, pocas que importan",
+     "p": "Bitcoin (BTC) es la más grande y mueve todo el mercado. Ethereum (ETH) es la segunda. Más allá del puñado de arriba existen miles de monedas menores (altcoins) — la mayoría mucho más arriesgadas y menos líquidas. Como principiante, todo lo que necesitas aprender se puede aprender con BTC y ETH."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Qué lleva el registro de quién posee cada cripto?",
+     "o": [
+      "Un banco central",
+      "Un libro contable compartido copiado en miles de ordenadores (blockchain)",
+      "Una lista privada de cada exchange, sin compartir con nadie",
+      "El gobierno"
+     ]
+    },
+    {
+     "q": "¿Cuándo cierra el mercado cripto?",
+     "o": [
+      "A las 5 PM hora de Nueva York",
+      "Los fines de semana",
+      "Nunca — opera 24/7",
+      "En festivos"
+     ]
+    },
+    {
+     "q": "Como principiante, ¿con qué monedas tiene sentido aprender?",
+     "o": [
+      "Monedas recién lanzadas con subidas enormes en %",
+      "BTC y ETH — las más grandes y líquidas",
+      "Lo que sea tendencia en redes sociales",
+      "La moneda más barata por unidad"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b2",
+   "t": "Exchanges, wallets y qué significa comprar",
+   "cards": [
+    {
+     "h": "Dónde ocurre el trading",
+     "p": "Un exchange es un mercado que empareja compradores y vendedores — Binance, Coinbase, Kraken y Bybit son exchanges. Cuando compras Bitcoin ahí, el exchange actualiza su registro interno; las monedas quedan bajo custodia del exchange hasta que las retiras."
+    },
+    {
+     "h": "Spot vs derivados",
+     "p": "Comprar la moneda de verdad se llama trading spot — es tuya, y tu pérdida máxima es lo que pagaste. Los derivados (como los futuros que verás en el Curso 2) son contratos que siguen el precio sin poseer la moneda — permiten apalancamiento, que corta en ambos sentidos."
+    },
+    {
+     "h": "Si no son tus llaves, no son tus monedas",
+     "p": "Una wallet es donde vive la cripto cuando es realmente tuya — controlada por una clave secreta que solo tú tienes. Las monedas dejadas en un exchange son un pagaré de ese exchange. Eso está bien para el capital de trading activo, pero la historia (Mt. Gox, FTX) demuestra por qué las cantidades grandes deben estar en tu propia wallet."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Qué es el trading spot?",
+     "o": [
+      "Apostar al precio con dinero prestado",
+      "Comprar la moneda de verdad — es tuya",
+      "Un tipo de wallet",
+      "Operar solo a ciertas horas"
+     ]
+    },
+    {
+     "q": "Las monedas que están en un exchange son…",
+     "o": [
+      "Siempre perfectamente seguras",
+      "Parte de tu wallet personal",
+      "En la práctica",
+      "Imposibles de retirar"
+     ]
+    },
+    {
+     "q": "¿Cuánto es lo máximo que puedes perder comprando spot con $100?",
+     "o": [
+      "$100 — lo que pagaste",
+      "Más de $100",
+      "Nada, el spot no tiene riesgo",
+      "Depende del apalancamiento"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b3",
+   "t": "Cómo leer un gráfico de precios",
+   "cards": [
+    {
+     "h": "La vela",
+     "p": "Cada vela resume el precio de un período: dónde abrió, dónde cerró, y los puntos más alto y más bajo que tocó. Una vela verde cerró por encima de donde abrió; una roja cerró por debajo. Las líneas finas (mechas) muestran los extremos que el precio tocó brevemente."
+    },
+    {
+     "h": "Encuéntralo tú mismo",
+     "prompt": "Toca la MECHA SUPERIOR de la vela — la línea que muestra el precio más alto tocado.",
+     "p": "Antes de seguir, demuéstraselo a tus ojos. Un solo toque."
+    },
+    {
+     "h": "El marco temporal cambia la historia",
+     "p": "El mismo mercado se ve distinto según el marco temporal. Un gráfico de 1 minuto muestra ruido; uno diario muestra la tendencia. Un error clásico de principiante es entrar en pánico por una vela de 5 minutos aterradora que es invisible en el gráfico diario. Aleja el zoom primero, siempre."
+    },
+    {
+     "h": "El volumen es el detector de mentiras",
+     "p": "El volumen muestra cuánto se negoció realmente. Un movimiento de precio con volumen alto significa participación real; el mismo movimiento con volumen escaso es frágil y suele revertirse. El precio te dice qué pasó — el volumen te dice cuánto creértelo."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Una vela roja significa…",
+     "o": [
+      "El precio cerró por debajo de donde abrió",
+      "Se detuvo la negociación",
+      "El volumen fue bajo",
+      "El precio está garantizado a seguir cayendo todo el día"
+     ]
+    },
+    {
+     "q": "¿Qué muestran las mechas de una vela?",
+     "o": [
+      "El precio que el mercado prevé para el siguiente período",
+      "Los precios más alto y más bajo tocados en ese período",
+      "La comisión de trading",
+      "El número de traders"
+     ]
+    },
+    {
+     "q": "Un movimiento grande de precio con volumen muy bajo es…",
+     "o": [
+      "La señal más fuerte posible",
+      "Frágil — pocos participantes",
+      "Imposible",
+      "Siempre el inicio de una tendencia"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b4",
+   "t": "Market cap, liquidez y por qué el precio solo miente",
+   "cards": [
+    {
+     "h": "El precio por moneda no dice nada por sí solo",
+     "p": "Una moneda que cuesta $0.001 no es más barata que Bitcoin en ningún sentido relevante. Lo que importa es el market cap: precio × oferta en circulación. Una moneda de $0.001 con 100 mil millones de tokens es un proyecto de $100M. El «solo tiene que llegar a $1» es la trampa más vieja de cripto."
+    },
+    {
+     "h": "Liquidez: ¿puedes salir de verdad?",
+     "p": "La liquidez es cuánto puedes comprar o vender sin mover el precio. BTC absorbe millones de dólares por segundo; una altcoin pequeña puede desplomarse un 10% por una sola venta grande. En las monedas ilíquidas es fácil entrar y brutal salir — justo cuando más lo necesitas."
+    },
+    {
+     "h": "Slippage",
+     "p": "Cuando compras a mercado, pagas lo que los vendedores pidan en ese momento. En un mercado poco profundo, tu propia orden empuja el precio — la diferencia entre el precio que viste y el precio que obtuviste es el slippage. Es un coste real: crece con el tamaño de la posición y se reduce con la liquidez."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Qué determina el tamaño real de una moneda?",
+     "o": [
+      "El precio por moneda",
+      "El market cap",
+      "Lo nueva que es",
+      "Su ranking en redes sociales"
+     ]
+    },
+    {
+     "q": "La liquidez mide…",
+     "o": [
+      "La velocidad de la blockchain",
+      "Cuánto puedes operar sin mover el precio",
+      "El número de monedas en circulación",
+      "Lo volátil que es una moneda"
+     ]
+    },
+    {
+     "q": "El slippage es…",
+     "o": [
+      "Una comisión fija establecida de antemano por el exchange",
+      "La diferencia entre el precio visto y el precio ejecutado",
+      "Un patrón de gráfico",
+      "Un tipo de wallet"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b5",
+   "t": "Por qué cripto se mueve con tanta violencia",
+   "cards": [
+    {
+     "h": "Un barco pequeño en un océano grande",
+     "p": "El mercado cripto total es minúsculo comparado con las acciones o los bonos, y buena parte se opera con apalancamiento. La misma ola de dinero que apenas mueve el S&P 500 puede mover Bitcoin varios puntos porcentuales — y las monedas pequeñas, varias veces más."
+    },
+    {
+     "h": "Noticias, liquidez y vendedores forzados",
+     "p": "Los grandes movimientos suelen combinar tres cosas: un detonante (una noticia, un dato macro), liquidez escasa (noches, fines de semana) y ventas forzadas de traders apalancados siendo liquidados. Ese tercer ingrediente — que estudiarás en el Curso 2 — es la razón de que los cracks de cripto sean tan rápidos y tan profundos."
+    },
+    {
+     "h": "La volatilidad es todo el juego",
+     "p": "La volatilidad no es un defecto — es la razón de que los traders estén aquí. Pero es simétrica: el mismo movimiento del 10% que duplica una cuenta apalancada también la borra. Cada lección a partir de esta trata, en el fondo, de sobrevivir a la volatilidad el tiempo suficiente para aprovecharla."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Por qué la misma cantidad de dinero mueve más a cripto que a las acciones?",
+     "o": [
+      "Cripto está manipulado",
+      "El mercado cripto es mucho más pequeño y está más apalancado",
+      "Las acciones no tienen volatilidad alguna comparada con cripto",
+      "Cripto opera más lento"
+     ]
+    },
+    {
+     "q": "¿Qué ingrediente hace que los cracks de cripto sean especialmente rápidos y profundos?",
+     "o": [
+      "Los festivos bancarios",
+      "Las ventas forzadas de traders apalancados liquidados",
+      "La baja velocidad de internet",
+      "Un salto repentino en la dificultad de minado de la red"
+     ]
+    },
+    {
+     "q": "Para un trader, la volatilidad es…",
+     "o": [
+      "Puro riesgo que hay que evitar por completo",
+      "La oportunidad Y el riesgo",
+      "Solo un problema para principiantes",
+      "Ilegal en exchanges regulados"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b6",
+   "t": "Stablecoins y pares de trading",
+   "cards": [
+    {
+     "h": "El dólar que vive on-chain",
+     "p": "Una stablecoin es un token cripto diseñado para valer exactamente $1 — USDT y USDC son los gigantes. Existen para que los traders puedan tener dólares dentro de cripto: aparcar beneficios, escapar de la volatilidad y poner precio a todo lo demás en una unidad estable."
+    },
+    {
+     "h": "Qué significa realmente BTC/USDT",
+     "p": "Cada mercado es un PAR: lo que operas y aquello en lo que lo valoras. BTC/USDT significa Bitcoin cotizado en dólares Tether. Cuando vendes BTC en ese par recibes USDT, no dólares de banco. Casi todos los futuros que operarás son pares con margen en USDT."
+    },
+    {
+     "h": "Estable no significa sin riesgo",
+     "p": "Una stablecoin vale lo que valga su respaldo. Los depegs han ocurrido — el más famoso, el colapso a cero de Terra UST en 2022. Para saldos de trading los grandes emisores han aguantado, pero sé consciente de lo que tienes: un token canjeable por dólares, no dólares en sí."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Para qué está diseñada una stablecoin?",
+     "o": [
+      "Para crecer un 10% al año",
+      "Para valer exactamente $1",
+      "Para seguir a Bitcoin",
+      "Para reemplazar a los bancos"
+     ]
+    },
+    {
+     "q": "En el par BTC/USDT, ¿qué recibes al vender BTC?",
+     "o": [
+      "Dólares de banco",
+      "USDT",
+      "ETH",
+      "Nada hasta el retiro"
+     ]
+    },
+    {
+     "q": "Las stablecoins son…",
+     "o": [
+      "Literalmente dólares",
+      "Sin riesgo por definición",
+      "Tokens respaldados por reservas",
+      "Garantizadas por gobiernos"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b7",
+   "t": "Comisiones: el impuesto silencioso de cada trade",
+   "cards": [
+    {
+     "h": "Maker, taker, spread",
+     "p": "Cada trade paga. La comisión taker (cruzar el spread al instante, órdenes a mercado) es más alta; la maker (órdenes límite en reposo que añaden liquidez) es más baja — a veces incluso un reembolso. El propio spread — la distancia entre el mejor bid y el mejor ask — también es un coste."
+    },
+    {
+     "h": "Por qué las comisiones duelen más en futuros",
+     "p": "En futuros las comisiones se cobran sobre el NOCIONAL, no sobre tu margen. Con apalancamiento 20x, una comisión taker del 0.055% es el 1.1% de tu margen por lado — más del 2% ida y vuelta. Diez trades al día a ese ritmo es una factura de comisiones que pocas estrategias pueden superar."
+    },
+    {
+     "h": "La espiral de muerte del sobretrading",
+     "p": "La mayoría de los principiantes que pierden no pierden por equivocarse de dirección — se desangran en comisiones y spread por operar demasiado. Menos trades y mejores, con entradas límite, no es solo un consejo de disciplina; es aritmética. Cuenta tus comisiones cada semana en tu diario y trátalas como una posición en tu contra."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Qué tipo de orden suele pagar la comisión MÁS baja?",
+     "o": [
+      "Mercado (taker)",
+      "Límite en reposo",
+      "Orden stop",
+      "Son idénticas"
+     ]
+    },
+    {
+     "q": "En futuros, las comisiones se cobran sobre…",
+     "o": [
+      "Tu margen",
+      "La posición nocional completa",
+      "Solo el beneficio de la operación",
+      "Solo los retiros"
+     ]
+    },
+    {
+     "q": "Con apalancamiento 20x, una comisión taker del 0.055% cuesta aproximadamente qué parte de tu margen por lado?",
+     "o": [
+      "0.055%",
+      "0.5%",
+      "1.1%",
+      "11%"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b8",
+   "t": "Ciclos de mercado y narrativas",
+   "cards": [
+    {
+     "h": "Las cuatro estaciones de cripto",
+     "p": "Cripto se ha movido en ciclos dramáticos: acumulación (silencio, a nadie le importa), impulso alcista (el bull run al que todos se suman tarde), distribución (el dinero inteligente vende en plena euforia) y caída (el mercado bajista que convence a todos de que se acabó). Cada ciclo parece inédito; las emociones son idénticas."
+    },
+    {
+     "h": "Las narrativas rotan, la codicia es constante",
+     "p": "Cada ciclo corona historias nuevas — ICOs, DeFi, NFTs, monedas de IA. La historia cambia; el patrón no: una innovación real, un frenesí especulativo que la desborda, un colapso que mata a los proyectos débiles, y una base para el siguiente ciclo construida con los supervivientes."
+    },
+    {
+     "h": "Dónde se cruzan los ciclos con tu trading",
+     "p": "No puedes cronometrar los ciclos con precisión, pero sí ubicarte a grandes rasgos: ¿la codicia es extrema, tu barbero recomienda monedas, las memecoins de 100x superan a todo lo demás? Las condiciones de final de ciclo son cuando más importa reducir el riesgo — justo cuando menos necesario parece."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿En qué fase suele VENDER el dinero inteligente?",
+     "o": [
+      "Acumulación",
+      "Caída",
+      "Distribución",
+      "Nunca"
+     ]
+    },
+    {
+     "q": "¿Qué se repite en todos los ciclos de cripto?",
+     "o": [
+      "Ganan las mismas monedas",
+      "El patrón emocional",
+      "Los niveles de precio exactos",
+      "Las mismas narrativas"
+     ]
+    },
+    {
+     "q": "¿Cuándo importa más reducir el riesgo?",
+     "o": [
+      "Cuando todos tienen miedo",
+      "En la euforia de final de ciclo",
+      "Nunca — riesgo máximo siempre",
+      "Solo en mercados bajistas"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b9",
+   "t": "Estafas y autodefensa",
+   "cards": [
+    {
+     "h": "Si promete rendimientos, el producto eres tú",
+     "p": "Un 2% diario garantizado. Un bot de trading sin meses en pérdidas. Un desconocido que se ofrece a gestionar tus fondos. Todo eso es una estafa, siempre, sin excepción — el trading real tiene rachas perdedoras, y nadie con una máquina de imprimir dinero la comparte con extraños."
+    },
+    {
+     "h": "Los clásicos: rug pulls y phishing",
+     "p": "Un rug pull es un token cuyos creadores vacían la liquidez en cuanto los compradores se amontonan — endémico entre los micro-caps recién nacidos. El phishing es una web falsa de exchange o wallet que cosecha tu login o tu frase semilla. Guarda los sitios reales en marcadores; nunca hagas clic en enlaces de login que lleguen por mensaje."
+    },
+    {
+     "h": "La higiene básica que frena el 95%",
+     "p": "Usa 2FA (una app de autenticación, no SMS) en cada exchange. Nunca compartas la frase semilla con nadie, jamás — ningún agente de soporte la necesita. Sé paranoico con los mensajes directos: las plataformas reales no te escriben primero. Reglas aburridas, y son todo el juego."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Un servicio garantiza un 2% de rendimiento diario. Es…",
+     "o": [
+      "Una gran oportunidad",
+      "Posiblemente legítimo si está auditado",
+      "Una estafa, siempre",
+      "Aceptable para cantidades pequeñas"
+     ]
+    },
+    {
+     "q": "¿Quién necesita legítimamente tu frase semilla?",
+     "o": [
+      "El soporte del exchange",
+      "Los desarrolladores de la wallet",
+      "Nadie, nunca",
+      "Hacienda"
+     ]
+    },
+    {
+     "q": "El mejor método de 2FA es…",
+     "o": [
+      "Códigos por SMS",
+      "Una app de autenticación",
+      "Enlaces por email",
+      "Tu fecha de nacimiento"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Has terminado Fundamentos de Cripto — el curso completo. AHORA abre el terminal de paper trading: mira los precios en vivo y, cuando te sientas listo, abre tu primer trade con dinero ficticio.",
+    "label": "Abrir Paper Trade →"
+   }
+  }
+ ]
+}

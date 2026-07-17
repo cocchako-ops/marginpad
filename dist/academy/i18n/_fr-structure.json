@@ -1,0 +1,387 @@
+{
+ "id": "structure",
+ "name": "Structure de marché avancée",
+ "sub": "Où vivent les ordres et pourquoi le prix va les chercher",
+ "lessons": [
+  {
+   "id": "a1",
+   "t": "Liquidité : là où vivent vraiment les ordres",
+   "cards": [
+    {
+     "h": "Le prix va vers les ordres",
+     "p": "Les gros acteurs ne peuvent pas remplir de grosses positions là où le carnet est vide — il leur faut des ordres en attente contre lesquels trader. Les clusters de stop-loss et de liquidations SONT ces ordres en attente. C'est pour ça que le prix transperce si souvent un niveau évident, s'y remplit, puis fait demi-tour : il est allé faire ses courses."
+    },
+    {
+     "h": "Ton stop est l'entrée de quelqu'un d'autre",
+     "p": "Ton stop-loss sous le support est un ordre de vente en attente de se déclencher. Mille traders qui le placent au même endroit évident créent une poche de vendeurs garantis — l'endroit parfait pour qu'un gros acheteur absorbe. Ce n'est pas un complot ; c'est simplement comme ça que les grosses tailles se remplissent."
+    },
+    {
+     "h": "Le trader, pas le craindre",
+     "p": "Tu ne peux pas éviter le jeu, mais tu peux arrêter d'être la cible la plus facile : place tes invalidations au-delà des poches évidentes, attends-toi au sweep-puis-retournement sur les niveaux propres, et considère une mèche qui traverse un niveau puis le reprend instantanément comme une information — quelqu'un vient de se remplir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Pourquoi le prix transperce-t-il souvent les niveaux évidents avant de se retourner ?",
+     "o": [
+      "Pur hasard",
+      "Les gros se remplissent contre les stops regroupés là",
+      "Des bugs de l'exchange",
+      "Le timing de publication des news importantes"
+     ]
+    },
+    {
+     "q": "Un cluster de stop-loss sous un support, c'est en réalité…",
+     "o": [
+      "Une protection gratuite pour les traders",
+      "Une poche d'ordres de vente garantis",
+      "Rien du tout",
+      "Un bug"
+     ]
+    },
+    {
+     "q": "Une mèche qui traverse un niveau et le reprend instantanément suggère…",
+     "o": [
+      "Que le niveau est mort pour toujours",
+      "Un sweep de liquidité",
+      "Qu'il faut paniquer",
+      "Un volume faible"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a2",
+   "t": "Ranges : accumulation et distribution",
+   "cards": [
+    {
+     "h": "C'est dans le latéral que l'histoire s'écrit",
+     "p": "Les tendances sont le résultat ; les ranges sont la cause. Dans un range, les gros acteurs construisent (accumulent) ou déchargent (distribuent) discrètement leurs positions sans faire bouger le prix contre eux. La direction du breakout est généralement décidée bien avant qu'il se produise — à l'intérieur du range."
+    },
+    {
+     "h": "Lire le range",
+     "p": "Observe comment le prix se comporte aux bords du range : des incursions répétées sous le bas qui se récupèrent vite (des sweeps dans la demande) suggèrent de l'accumulation ; des rallyes qui échouent sur le haut avec un volume qui s'assèche suggèrent de la distribution. Le milieu du range, c'est du bruit — ce sont les bords qui parlent."
+    },
+    {
+     "h": "Le spring et le piège",
+     "p": "La fin classique : un faux breakout CONTRE la vraie direction — le spring — qui balaie les stops, remplit la dernière tranche du gros acteur, et se retourne dans le vrai mouvement. Si tu apprends à attendre le piège, le piège devient ton entrée au lieu de ta sortie."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Les grosses positions se construisent généralement…",
+     "o": [
+      "Pendant les tendances verticales",
+      "À l'intérieur des ranges",
+      "Pile au sommet",
+      "Le week-end"
+     ]
+    },
+    {
+     "q": "La partie la plus instructive d'un range, c'est…",
+     "o": [
+      "Le milieu",
+      "Le comportement à ses bords",
+      "La couleur des bougies",
+      "Sa durée"
+     ]
+    },
+    {
+     "q": "Un spring, c'est…",
+     "o": [
+      "Une saison",
+      "Un faux breakout contre la vraie direction",
+      "Un type de frais",
+      "Une moyenne mobile que tout le monde surveille"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a3",
+   "t": "Imbalances : quand le prix va trop vite",
+   "cards": [
+    {
+     "h": "Des trous dans l'enchère",
+     "p": "Quand le prix bouge violemment dans une direction, il saute des niveaux — presque aucun échange n'y a eu lieu. Cette zone fine est une imbalance (souvent appelée fair value gap). Les marchés reviennent fréquemment visiter ces zones plus tard, parce que des prix non tradés sont une affaire inachevée pour l'enchère."
+    },
+    {
+     "h": "Pourquoi ces retours arrivent",
+     "p": "Rien de mystique : les participants qui ont raté le mouvement laissent des ordres dans la zone sautée, et les market makers qui ont vendu dans le spike cherchent à racheter là où le volume était fin. La zone agit comme un aimant non pas par magie, mais parce que des ordres s'y accumulent."
+    },
+    {
+     "h": "Utiliser les imbalances honnêtement",
+     "p": "Une imbalance est une zone CANDIDATE pour des entrées dans le sens de la tendance — jamais une garantie. Empile-la avec la structure : une imbalance qui chevauche un support et la tendance de l'unité de temps supérieure est un vrai setup ; un gap isolé sur un graphique 1 minute, c'est du bruit avec un nom sophistiqué."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Une imbalance (fair value gap), c'est…",
+     "o": [
+      "Un graphique cassé auquel il manque des bougies",
+      "Une zone sautée par le prix presque sans échanges",
+      "Un type d'ordre",
+      "Une erreur de l'exchange"
+     ]
+    },
+    {
+     "q": "Le prix revient souvent visiter les imbalances parce que…",
+     "o": [
+      "C'est magique",
+      "Les ordres ratés s'accumulent dans la zone fine",
+      "Parce que les régulateurs l'exigent des exchanges",
+      "Il ne le fait jamais"
+     ]
+    },
+    {
+     "q": "Une imbalance devient un vrai setup quand…",
+     "o": [
+      "Elle existe, tout simplement",
+      "Elle chevauche la structure et la tendance supérieure",
+      "Elle apparaît sur le graphique 1 minute, c'est tout",
+      "Quelqu'un la poste"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a4",
+   "t": "Volume profile : la mémoire du marché",
+   "cards": [
+    {
+     "h": "Le volume par PRIX, pas par temps",
+     "p": "Les barres de volume sous ton graphique montrent le volume par période de temps. Un volume profile les tourne sur le côté : combien s'est échangé à chaque PRIX. Les nœuds à fort volume sont des prix que le marché a acceptés longtemps ; les nœuds à faible volume sont des prix qu'il a rejetés rapidement."
+    },
+    {
+     "h": "Acceptation et rejet",
+     "p": "Un prix qui entre dans un nœud à fort volume a tendance à ralentir et à osciller — beaucoup d'affaires s'y sont faites, et il attire de nouveau les échanges. Un prix qui entre dans un nœud à faible volume a tendance à le traverser vite — personne ne voulait y trader avant, et personne ne veut maintenant. Ça explique beaucoup de mouvements rapides mieux que n'importe quel indicateur."
+    },
+    {
+     "h": "Usage pratique",
+     "p": "Marque le nœud au plus fort volume du range récent (le point of control). Au-dessus, les replis vers lui trouvent souvent des acheteurs ; en dessous, les rallyes vers lui trouvent souvent des vendeurs. Combine avec tes niveaux de m1 — quand un nœud de volume et un niveau structurel sont d'accord, tu as trouvé une vraie zone."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Un volume profile montre le volume…",
+     "o": [
+      "Par heure",
+      "À chaque niveau de prix",
+      "Pour chaque exchange séparément",
+      "Par trader"
+     ]
+    },
+    {
+     "q": "Un prix qui traverse un nœud à FAIBLE volume, en général…",
+     "o": [
+      "Ralentit",
+      "Le tranche rapidement",
+      "Se retourne toujours",
+      "S'arrête"
+     ]
+    },
+    {
+     "q": "Le point of control, c'est…",
+     "o": [
+      "Un stop-loss",
+      "Le prix au plus gros volume échangé du range",
+      "Le prix d'ouverture de la journée en cours",
+      "Une figure de bougie"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a5",
+   "t": "Fibonacci : maths ou miroir ?",
+   "cards": [
+    {
+     "h": "Ce que sont les niveaux de fib",
+     "p": "Les retracements de Fibonacci marquent des fractions fixes d'un mouvement précédent — 38.2%, 50%, 61.8%. Aucune loi physique n'oblige le prix à les respecter. Et pourtant, ils sont souvent respectés. Pourquoi ? Parce que des millions de traders tracent les mêmes niveaux et agissent dessus — un miroir auto-réalisateur."
+    },
+    {
+     "h": "La façon honnête de les utiliser",
+     "p": "Considère les fibs comme une CARTE des endroits où les autres traders attendent des réactions, pas comme la gravité. Le retracement à 61.8% dans une tendance haussière est une zone d'achat populaire — ce qui en fait une vraie zone, quoi que tu penses des maths. Auto-réalisateur, ça reste réalisé."
+    },
+    {
+     "h": "Confluence, encore",
+     "p": "Un niveau de fib seul, c'est un pile ou face déguisé en mathématiques. Un niveau de fib qui tombe sur un nœud de volume, un ancien support et la ligne de tendance de l'unité de temps supérieure, c'est une zone avec plusieurs raisons indépendantes de compter. Tu connais maintenant le schéma : rien ne marche seul ; les empilements marchent."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Les niveaux de Fibonacci marchent souvent parce que…",
+     "o": [
+      "C'est une loi de la nature",
+      "Assez de traders agissent sur les mêmes niveaux",
+      "Les exchanges les imposent dans leurs systèmes",
+      "Ils ne marchent jamais"
+     ]
+    },
+    {
+     "q": "L'usage honnête d'un retracement de fib, c'est…",
+     "o": [
+      "Des entrées aveugles à 61.8% à chaque fois",
+      "Une carte des zones où la foule attend des réactions",
+      "Prédire les sommets exacts",
+      "Remplacer les stops"
+     ]
+    },
+    {
+     "q": "Un niveau de fib sans aucune autre confluence, c'est…",
+     "o": [
+      "Un setup A+ digne d'un manuel",
+      "Un pile ou face en habits de luxe",
+      "Une garantie",
+      "Illégal"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a6",
+   "t": "Force relative : choisis le cheval le plus fort",
+   "cards": [
+    {
+     "h": "Tout le vert ne se vaut pas",
+     "p": "Quand le marché rebondit, certains coins remontent vers de nouveaux sommets pendant que d'autres décollent à peine de leurs bas. Cette différence — la force relative — est l'un des edges les plus durables du trading : ce qui a refusé de tomber dans la tempête mène généralement la reprise."
+    },
+    {
+     "h": "La mesurer simplement",
+     "p": "Pas besoin d'indicateur : quand BTC a corrigé de 5%, qu'a fait ton candidat ? Le coin qui a perdu 2% a des acheteurs qui le défendent ; celui qui a perdu 12%, non. Compare une poignée de graphiques face à BTC sur la même fenêtre et les leaders se révèlent d'eux-mêmes."
+    },
+    {
+     "h": "Fort, avec la marée",
+     "p": "Combine avec m9 : dans un marché risk-on avec une dominance qui baisse, longer les alts relativement les plus forts, c'est pêcher là où sont les poissons — tendance, marée et force alignées. Longer le coin le plus faible parce qu'il n'est pas cher, c'est exactement le trade inverse avec une étiquette de soldes."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "La force relative compare…",
+     "o": [
+      "Le prix d'un coin à son seul historique",
+      "La performance d'un coin face au marché",
+      "Le volume aux frais",
+      "Les exchanges"
+     ]
+    },
+    {
+     "q": "Dans une baisse du marché, le coin qui a le moins chuté a probablement…",
+     "o": [
+      "Aucun acheteur",
+      "Des acheteurs qui le défendent",
+      "Un bug",
+      "Juste une faible liquidité"
+     ]
+    },
+    {
+     "q": "Acheter le coin le plus FAIBLE parce qu'il a l'air pas cher, c'est…",
+     "o": [
+      "Le move préféré des professionnels",
+      "L'inverse de la logique de force relative",
+      "Sans risque",
+      "Obligatoire"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a7",
+   "t": "Régimes de volatilité : le calme et la tempête",
+   "cards": [
+    {
+     "h": "La volatilité se regroupe",
+     "p": "Les marchés alternent entre régimes : de longues périodes de ranges serrés et calmes, puis des explosions d'expansion violente. La volatilité se regroupe — le calme suit le calme, la tempête suit la tempête — jusqu'à ce que le régime casse. Une même stratégie ne peut pas traiter les deux mondes de la même façon."
+    },
+    {
+     "h": "Adapter la taille et les stops",
+     "p": "En régime de tempête, un stop qui était raisonnable la semaine dernière se retrouve dans le bruit — et ta taille doit diminuer pour garder un risque constant (distance de stop plus grande × taille plus petite = le même 1% de risque). En régime de calme plat, les trades de breakout meurent en boucle pendant que le retour à la moyenne prospère."
+    },
+    {
+     "h": "Le check de régime",
+     "p": "Ajoute une question à ta checklist : dans quel régime suis-je ? Un coup d'œil aux tailles de bougies récentes ou à une lecture de l'ATR y répond. La plupart des séries de pertes inexplicables sont une stratégie construite pour un régime qui tourne dans l'autre."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "La volatilité a tendance à…",
+     "o": [
+      "Être aléatoire chaque jour",
+      "Se regrouper",
+      "Seulement monter",
+      "Seulement baisser"
+     ]
+    },
+    {
+     "q": "En régime de forte volatilité, garder un risque constant veut dire…",
+     "o": [
+      "Même stop, même taille",
+      "Un stop plus large et une taille PLUS PETITE",
+      "Un stop plus serré et une taille plus grosse",
+      "Pas de stops"
+     ]
+    },
+    {
+     "q": "Beaucoup de séries de pertes sont en réalité…",
+     "o": [
+      "De la pure malchance, rien de plus",
+      "Une stratégie d'un régime qui tourne dans l'autre",
+      "De la manipulation orchestrée par les gros capitaux",
+      "Des frais"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a8",
+   "t": "Systèmes de confluence : empiler les preuves",
+   "cards": [
+    {
+     "h": "Des outils à un système",
+     "p": "Tu as maintenant plein de lentilles : structure, liquidité, ranges, imbalances, nœuds de volume, fibs, force relative, régimes — plus tout ce qui vient des cours 1-4. Un professionnel ne les utilise pas toutes partout ; il définit un EMPILEMENT fixe qui doit s'aligner avant qu'un trade existe."
+    },
+    {
+     "h": "Construis ton empilement",
+     "p": "Exemple d'empilement : tendance de l'unité de temps supérieure + un niveau structurel + un nœud de volume qui confirme + un positionnement pas surchargé contre toi + aucun événement rouge au calendrier dans la fenêtre. Cinq checks. Le tien peut différer — ce qui compte, c'est qu'il soit ÉCRIT et fixe, pour que chaque trade soit comparable dans le journal."
+    },
+    {
+     "h": "Moins de trades, plus lourds",
+     "p": "Un vrai empilement filtre brutalement : la plupart des jours ne produisent rien, et c'est voulu. Les trades qui passent portent plusieurs raisons indépendantes — c'est exactement ce qui rend leur R:R honnête. C'est le pont entre savoir des choses et avoir un edge."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Un système de confluence, c'est…",
+     "o": [
+      "Utiliser tous les indicateurs en même temps",
+      "Un empilement de conditions fixe et écrit",
+      "Un groupe de chat",
+      "Une fonctionnalité d'exchange"
+     ]
+    },
+    {
+     "q": "Un empilement bien fait produit…",
+     "o": [
+      "Un flux continu de trades quotidiens",
+      "Peu de trades, plusieurs raisons indépendantes",
+      "Des profits quotidiens",
+      "Aucune perte"
+     ]
+    },
+    {
+     "q": "L'empilement doit être écrit pour que…",
+     "o": [
+      "Ça fasse professionnel",
+      "Chaque trade soit comparable dans le journal",
+      "Les régulateurs approuvent formellement",
+      "Il puisse être vendu"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Ouvre l'espace de charts et marque UN empilement complet sur n'importe quel coin : tendance, niveau, nœud de volume, et vérifie le positionnement. Pas besoin de trader — juste la lecture.",
+    "label": "Ouvrir les charts →"
+   }
+  }
+ ]
+}

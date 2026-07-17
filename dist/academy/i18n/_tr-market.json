@@ -1,0 +1,614 @@
+{
+ "id": "market",
+ "name": "Piyasayı Okumak",
+ "sub": "His yerine veri",
+ "lessons": [
+  {
+   "id": "m1",
+   "t": "Trend, destek ve direnç",
+   "cards": [
+    {
+     "h": "Akıntıyla işlem yap, akıntıya karşı değil",
+     "p": "Trend, daha yüksek tepeler ve daha yüksek dipler (yukarı) veya daha alçak tepeler ve daha alçak dipler (aşağı) dizisidir. Bir şey \"çok yüksek\" veya \"çok ucuz\" göründü diye güçlü trende karşı işlem yapmak bağıştır. Trend her zaman haklı değildir — ama senin onun hakkındaki hislerinden daha sık haklıdır."
+    },
+    {
+     "h": "Talep bölgesini bul",
+     "prompt": "Alıcılar üç kez aynı bölgede devreye girdi. O bölgeye dokun.",
+     "p": "Destek ve direnç bölgelerdir, kesin çizgiler değil. Gözünü bu grafikte eğit."
+    },
+    {
+     "h": "Kesişim her tekil sinyali yener",
+     "p": "Tek seviye az şey ifade eder. Trend çizgisi, yuvarlak sayı ve eski tepeyle çakışan seviye kesişimdir — aynı bölgeyi gösteren birden çok bağımsız neden. Profesyoneller kesişimi bekler; yeni başlayanlar çizdikleri ilk çizgiyle harekete geçer."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Yükseliş trendi şöyle tanımlanır…",
+     "o": [
+      "Sadece yeşil mumlar",
+      "Daha yüksek tepeler ve daha yüksek dipler",
+      "Yüksek hacim",
+      "Arka arkaya gelen olumlu haberler"
+     ]
+    },
+    {
+     "q": "Direnç kırıldığında çoğu zaman…",
+     "o": [
+      "Sonsuza dek kaybolur",
+      "Yeni destek olur",
+      "Çöküşü garantiler",
+      "Hiçbir anlamı yok"
+     ]
+    },
+    {
+     "q": "Kesişim demek…",
+     "o": [
+      "Bir emir türü",
+      "Aynı bölgeyi gösteren birden çok bağımsız sinyal",
+      "Bir kripto konferansı",
+      "Aynı anda birden çok farklı coin işlemek"
+     ]
+    }
+   ],
+   "try": {
+    "p": "İlk seviyelerini çiz: Bir grafik aç, en son bariz destek ve direnç bölgelerini işaretle.",
+    "label": "Grafikleri Aç →"
+   }
+  },
+  {
+   "id": "m2",
+   "t": "Hareketli ortalamalar: yumuşatılmış trend",
+   "cards": [
+    {
+     "h": "MA gerçekte ne gösterir",
+     "p": "Hareketli ortalama, son N mumun ortalama kapanış fiyatını çizer — piyasanın yakın hafızası tek pürüzsüz çizgi halinde. Yükselen MA üstündeki fiyat trend açısından sağlıklıdır; düz MA'nın içinden testere yapan fiyat, trend yok demektir ve trend araçları sadece gürültü üretir."
+    },
+    {
+     "h": "EMA vs SMA ve ünlü çiftler",
+     "p": "Basit MA (SMA) her mumu eşit tartar; üstel MA (EMA) yakın fiyatlara daha hızlı tepki verir. Herkesin izlediği ayarlar: kısa vadeli momentum için EMA 9/21, büyük resim için SMA 50/200. Kısmen herkes izlediği İÇİN çalışırlar — kendini gerçekleştiren bölgeler."
+    },
+    {
+     "h": "Kesişimler: sinyal ve gecikme",
+     "p": "50, 200'ün üstüne geçince (golden cross) yükseliş trendinin oturduğunu onaylar; tersi (death cross) düşüş trendini onaylar. \"Onaylar\" kelimesine dikkat — MA'lar yapıları gereği gecikmelidir. Sana hangi taraftan işlem yapacağını söylerler, tıklayacağın anı değil."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Hareketli ortalama şunu gösterir…",
+     "o": [
+      "Gelecek fiyatı",
+      "Yakın kapanışların ortalamasını",
+      "İşlem hacmini",
+      "Borsaların tuttuğu rezervleri"
+     ]
+    },
+    {
+     "q": "Taze fiyat hareketlerine hangi MA daha hızlı tepki verir?",
+     "o": [
+      "SMA",
+      "EMA",
+      "Aynıdırlar",
+      "İkisi de hareket etmez"
+     ]
+    },
+    {
+     "q": "Golden cross (50, 200 üstüne) en iyi şöyle kullanılır…",
+     "o": [
+      "Hassas giriş zamanlayıcısı",
+      "Oturmuş yükseliş trendinin onayı",
+      "Satış sinyali",
+      "Likidasyon uyarısı"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m3",
+   "t": "RSI ve momentum",
+   "cards": [
+    {
+     "h": "RSI neyi ölçer",
+     "p": "RSI, son 14 mumun kazanç/kayıplarını 0-100 ölçeğine sıkıştırır. 70 üstünde piyasa \"aşırı alım\", 30 altında \"aşırı satım\" denir. Hareketin HIZINI ölçer, doğruluğunu değil — piyasa aşırı alımda olup haftalarca yükselmeye devam edebilir."
+    },
+    {
+     "h": "Yeni başlayan hatası",
+     "p": "RSI 70'e dokundu diye satmak, kükreyen bir boğa trendini shortlamanın en güvenilir yollarından biridir. Güçlü trendlerde RSI ekstrem bölgeye çakılı kalır. Aşırı alım/satım okuması ancak trend ZATEN zayıflıyorken veya majör seviyelerde ilginçleşir."
+    },
+    {
+     "h": "Uyumsuzluk: işe yarayan numara",
+     "p": "Fiyat yeni tepe yaparken RSI daha alçak tepe yaparsa, momentum yüzeyin altında sönüyor demektir — bu ayı uyumsuzluğu, erken bir dikkat bayrağıdır (satış düğmesi değil). Diplerde tersi boğa uyumsuzluğu. Uyumsuzluk + kilit seviye + kesişim — işte şimdi kurulum."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "RSI 70 üstünde demek…",
+     "o": [
+      "Garantili dönüş — hemen sat",
+      "Son hareket hızlıydı",
+      "Borsa işlemi durduracak",
+      "Hacim sahte"
+     ]
+    },
+    {
+     "q": "Ayı uyumsuzluğu nedir…",
+     "o": [
+      "Fiyat yeni tepe",
+      "Fiyat ve RSI birlikte yükseliyor",
+      "RSI 30 altında",
+      "Bir mum formasyonu"
+     ]
+    },
+    {
+     "q": "Tek başına bir indikatör okuması…",
+     "o": [
+      "Komple strateji",
+      "Zayıf — kesişime ihtiyacı var",
+      "İşlem yapması yasadışı",
+      "Sadece profesyoneller için"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m4",
+   "t": "Open interest ve kalabalığın pozisyonlanması",
+   "cards": [
+    {
+     "h": "Open interest: oyundaki para",
+     "p": "Open interest (OI), şu an açık vadeli pozisyonların toplam değerini sayar. Yükselen OI + yükselen fiyat = harekete yeni para giriyor (sağlıklı). Yükselen fiyat + DÜŞEN OI = shortlar kapanıyor, yeni talep yok — muhtemelen tıkanacak hareket. OI sana hareketi KİMİN sürdüğünü söyler."
+    },
+    {
+     "h": "Long/short oranı",
+     "p": "Long/short oranı kalabalığın hangi tarafta olduğunu gösterir. Ekstrem değerler kontraryendir: Neredeyse herkes zaten long'ken az alıcı kalır — ama altta dev bir likidasyon fiyatı havuzu, ters hareketi beslemeye hazır bekler."
+    },
+    {
+     "h": "Üç sinyalli yığın",
+     "p": "Yüksek güvenli türev kurulumu üç şeyi yığar: tek taraflı long/short oranı + yükselen OI + kalabalık tarafın ödediği funding. Bu kaldıraçlı, büyüyen ve kalmak için ödeyen bir kalabalıktır — kurulu yay. Tek sinyal zayıftır; birlikte piyasanın açık kartıdır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Open interest düşerken fiyatın yükselmesi genelde demek ki…",
+     "o": [
+      "Güçlü yeni alım",
+      "Shortlar kapanıyor",
+      "Garantili kırılım",
+      "Hiçbir şey"
+     ]
+    },
+    {
+     "q": "Aşırı tek taraflı long/short oranı…",
+     "o": [
+      "Çoğunluğa katılma sinyali",
+      "Kontraryen uyarı",
+      "Sağlıklı piyasa kanıtı",
+      "Rastgele gürültü"
+     ]
+    },
+    {
+     "q": "Kurulu yay kurulumu şunları birleştirir…",
+     "o": [
+      "RSI, MACD ve hacim",
+      "Kalabalık oran + yükselen OI + o tarafın fundingi",
+      "Üç yeşil mum",
+      "Haberler ve sosyal medya gürültüsü birlikte"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Canlı long/short oranını ve open interest'i kontrol et — şu an hangi taraf kalabalık?",
+    "label": "Long/Short Oranı →"
+   }
+  },
+  {
+   "id": "m5",
+   "t": "Likidasyon kaskadları: çöküşler neden aşırıya kaçar",
+   "cards": [
+    {
+     "h": "Domino mekanizması",
+     "p": "Fiyat kaldıraçlı bir trader'ın likidasyon seviyesine çarpınca borsa pozisyonu piyasadan zorla satar. O satış fiyatı aşağı iter — SONRAKİ likidasyon fiyatı kümesine, daha çok zorunlu satış tetikler. Aşağıdaki dominolara bak: bir tetik, zincirleme zorunlu çıkışlar."
+    },
+    {
+     "h": "Fiyat neden belirli seviyeleri avlar",
+     "p": "Likidasyon fiyatları öngörülebilir yerlerde kümelenir — yuvarlak sayıların ve bariz desteklerin hemen ötesinde, benzer traderların benzer pozisyonlar açtığı yerde. Büyük oyuncular bu kümeleri görebilir. Seviyeyi delip kümeyi tetikleyen ve anında dönen fitil, işte o mekanizmadır."
+    },
+    {
+     "h": "Yakıtı izlemek",
+     "p": "Canlı likidasyon akışları kaskadları olurken gösterir — zorla kapanan long patlaması, kapitülasyon diplerini çoğu indikatörden güvenilir işaretler. Kendi işlemlerin için ders savunmadır: Likidasyon fiyatını rutin bir avın ulaşamayacağı yere koy, ya da daha iyisi, likidasyon imkansız olacak şekilde boyutlandır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Likidasyon kaskadı nedir…",
+     "o": [
+      "Borsanın önceden planladığı temizlik etkinliği",
+      "Zincirleme zorunlu satış tetikleyen zorunlu satışlar",
+      "Bir staking ödülü türü",
+      "Bir grafik formasyonu"
+     ]
+    },
+    {
+     "q": "Likidasyon kümeleri şurada oluşur…",
+     "o": [
+      "Rastgele",
+      "Yuvarlak sayıların ve bariz seviyelerin hemen ötesinde",
+      "Sadece hafta sonları",
+      "Yalnızca likiditesi çok düşük küçük coinlerde"
+     ]
+    },
+    {
+     "q": "Kendi işlemlerin için savunma dersi…",
+     "o": [
+      "Kendine güvendiğinde maksimum kaldıraç kullan",
+      "Likidasyonunu rutin fitil menzilinin dışında tut",
+      "Stop-loss'ları kaldır",
+      "Sadece gece işlem yap"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Zorunlu likidasyonların Rekt'te canlı akışını izle — kaskad mekanizmasını kendi gözlerinle gör.",
+    "label": "Rekt'i Aç →"
+   }
+  },
+  {
+   "id": "m6",
+   "t": "Makro: her işlemin altındaki akıntı",
+   "cards": [
+    {
+     "h": "Kripto, doları ve faizleri işler",
+     "p": "Bitcoin likiditeye duyarlı bir risk varlığıdır: Faizler düşecek gibi görününce para riske akar ve kripto yükselir; \"daha uzun süre yüksek\" tersini yapar. ABD enflasyon verisinin Bitcoin'i bir saniyede oynatabilmesinin nedeni bu — algoritmalar tüm faiz patikasını anında yeniden fiyatlar."
+    },
+    {
+     "h": "Önemli olan etkinlikler",
+     "p": "Bir avuç planlı veri kriptodaki en büyük saatleri sürer: Fed'in FOMC faiz kararı, CPI ve PCE enflasyon verileri ve NFP istihdam raporu. Haftalar öncesinden takvimdedirler — birine şaşırmak bir tercihtir. Aşağıda: CPI günü 12:30 UTC nasıl görünür."
+    },
+    {
+     "h": "Etkinlik riski bir boyutlandırma sorunudur",
+     "p": "Sayıyı tahmin edemezsin ama atlatabilirsin: Açıklama saatini bil ve anlık %2-3 fitil seni likide edemeyecek şekilde boyutlandır. Açıklamadan sonraki ilk mum sıklıkla aldatmacadır — profesyoneller günün en kötü spread'inde kovalamak yerine oynamasına izin verir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "ABD enflasyon verisi Bitcoin'i neden saniyeler içinde oynatır?",
+     "o": [
+      "Tesadüf",
+      "Algoritmalar faiz beklentilerini anında yeniden fiyatlar",
+      "Madenciler haberi görür görmez topluca satışa geçer",
+      "Oynatmaz"
+     ]
+    },
+    {
+     "q": "FOMC, CPI ve NFP açıklama saatleri…",
+     "o": [
+      "Gizli",
+      "Rastgele",
+      "Haftalar öncesinden planlı ve halka açık",
+      "Sadece hisse senedi traderlarını ilgilendirir"
+     ]
+    },
+    {
+     "q": "Büyük planlı açıklamaya profesyonel yaklaşım…",
+     "o": [
+      "Veriden hemen önce maksimum kaldıraca geçmek",
+      "Anlık %2-3 fitil seni likide edemesin diye boyutlandır",
+      "İlk mumu piyasadan almak",
+      "Görmezden gelmek"
+     ]
+    },
+    {
+     "q": "Bu kursta şimdiye kadarki en önemli fikir…",
+     "o": [
+      "Her bir işlemde kusursuz giriş noktaları bulmak",
+      "Hayatta kalmak: risk kontrolü öğrenme süresi kazandırır",
+      "Daha sık işlem yapmak",
+      "Daha yüksek kaldıraç"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Ekonomik takvimi aç ve bir sonraki FOMC veya CPI tarihini bul — vurmadan önce hatırlatıcı kur.",
+    "label": "Ekonomik Takvim →"
+   }
+  },
+  {
+   "id": "m7",
+   "t": "Grafik formasyonları: sıkışma ve genişleme",
+   "cards": [
+    {
+     "h": "Formasyonlar gerçekte nedir",
+     "p": "Üçgenler, bayraklar, yataylar — her isimli formasyonun altında tek fiziksel gerçek var: Alıcılar ve satıcılar geçici anlaşmaya varırken volatilite SIKIŞIR, bir taraf kazanınca GENİŞLER. İsim, sıkışmayı tanımaktan daha az önemlidir, çünkü genişleme onu izler."
+    },
+    {
+     "h": "Formasyonlar olasılıktır, vaat değil",
+     "p": "Üçgen hangi yöne kıracağını bilmez. Formasyonlar olasılıkları hafifçe eğer ve — daha faydalısı — sana temiz geçersizleşme seviyeleri verir: kırılımda gir, stop karşı tarafın ötesine. Gerçek hediye R:R yapısıdır, tahmin değil."
+    },
+    {
+     "h": "Tuzak: formasyon halüsinasyonu",
+     "p": "Yeterince uzun bak, her grafik bulutların yüz büyütmesi gibi formasyon büyütür. Formasyonları zaten elindeki bağlama demirle — trend, kilit seviyeler, kırılımdaki hacim. Üst zaman dilimi trendine karşı, hiçbir seviyede olmayan kitap gibi bayrak, sadece bir şekildir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Her grafik formasyonunun altında…",
+     "o": [
+      "Sihir",
+      "Sıkışan, sonra genişleyen volatilite",
+      "Büyüklerin içeriden ticareti",
+      "Yuvarlak sayılar"
+     ]
+    },
+    {
+     "q": "Formasyonun sana verdiği en faydalı şey…",
+     "o": [
+      "Garantili yön",
+      "R:R yapısı için temiz geçersizleşme seviyesi",
+      "İnternette hava atmak için paylaşılacak isim",
+      "Hacim"
+     ]
+    },
+    {
+     "q": "Üst zaman dilimi trendine karşı, hiçbir seviyede olmayan kusursuz bayrak…",
+     "o": [
+      "A+ kurulum",
+      "Bağlamsız sadece bir şekil",
+      "Güvenilir bir short sinyali",
+      "Alım sinyali"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m8",
+   "t": "Çoklu zaman dilimi analizi",
+   "cards": [
+    {
+     "h": "Tek bölgenin üç haritası",
+     "p": "Günlük grafik HAVAYI belirler (trend ve kilit seviyeler), 4 saatlik KURULUMU (o seviyelerde oluşan yapı), 15 dakikalık TETİĞİ (hassas giriş ve stop). Tek piyasa, üç irtifa — kafa karışıklığı, havasız tetik işlediğinde olur."
+    },
+    {
+     "h": "Yukarıdan aşağı ritüeli",
+     "p": "Her zaman bu sırayla: önce günlük (hangi tarafta işlem yapmama izin var?), sonra 4H (önemli bir seviyede kurulum oluşuyor mu?), sonra alt dilim (kesin giriş, kesin geçersizleşme). Sırayı ters çevirmek — heyecanlı bir 5 dakikalık bulup hikaye uydurmak — trend karşıtı bağışlar böyle olur."
+    },
+    {
+     "h": "Çelişkiler YUKARI çözülür",
+     "p": "Zaman dilimleri anlaşamayınca üstteki kazanır. Ayı günlüğün içindeki boğa 15 dakikalık, satılacak bir sıçramadır, evlenilecek bir dönüş değil. Yapı kırılımları yukarı yavaş yayılır — büyük harita gerçekten değişene dek ona saygı duy."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Doğru analiz sırası…",
+     "o": [
+      "15dk → 4S → günlük",
+      "Günlük → 4S → 15dk",
+      "Herhangi bir sıra",
+      "Tek zaman dilimi"
+     ]
+    },
+    {
+     "q": "Zaman dilimleri çelişince öncelik…",
+     "o": [
+      "En düşükte",
+      "Üst zaman diliminde",
+      "En oynak olanda",
+      "En güzelinde"
+     ]
+    },
+    {
+     "q": "Ayı günlüğün içindeki boğa 15dk genelde…",
+     "o": [
+      "Tutulacak trend dönüşü",
+      "Düşüş trendi içinde sıçrama",
+      "İmkansız",
+      "Al-ve-tut sinyali"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m9",
+   "t": "Bitcoin dominansı ve rotasyon",
+   "cards": [
+    {
+     "h": "Piyasanın içindekiler tablosu",
+     "p": "Bitcoin dominansı (BTC.D), Bitcoin'in toplam kripto piyasa değerindeki payıdır. Yükselen dominans: para BTC'yi tercih ediyor — altlar yeşil piyasalarda bile kanar. Yükselen fiyatlarla düşen dominans: risk iştahı dışa taşıyor — klasik altseason imzası."
+    },
+    {
+     "h": "Rotasyon döngüsü",
+     "p": "Likidite tipik olarak kademelenir: önce BTC'ye, sonra ETH'ye, sonra büyüklere, sonra küçük altların uzun kuyruğuna — her dalga öncekinden riskli. Mikro-caplar dikey gittiğinde döngü geç demektir. Dominans grafikleri hangi bölümde olduğunu gösterir."
+    },
+    {
+     "h": "Sadece tekneyi değil, akıntıyı işle",
+     "p": "Altcoin long'u aslında iki bahistir: coin VE dominans akıntısı. Yükselen BTC.D'ye karşı güçlü alt kurulumu akıntıya karşı yüzmektir. İşlemden önce akıntıyı kontrol et — fazladan tek grafik ve her şeyi yeniden çerçeveler."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Yükselen BTC dominansı demek…",
+     "o": [
+      "Altlar iyi performans gösterir",
+      "Para Bitcoin'i tercih ediyor",
+      "Hiçbir şey",
+      "Stablecoinler batıyor"
+     ]
+    },
+    {
+     "q": "Klasik likidite rotasyonu şöyle akar…",
+     "o": [
+      "Küçükler → büyükler → BTC",
+      "BTC → ETH → büyükler → küçükler",
+      "Rastgele",
+      "ETH en son"
+     ]
+    },
+    {
+     "q": "Yükselen dominans sırasında altcoin long'u…",
+     "o": [
+      "Yönü aynı iki hizalı bahis",
+      "Akıntıya karşı yüzmek",
+      "Risksiz",
+      "Standart oyun"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m10",
+   "t": "ETF akışları: kurumsal ayak izleri",
+   "cards": [
+    {
+     "h": "Wall Street'in günlük makbuzu",
+     "p": "ABD spot Bitcoin ETF'leri 2024'te başladığından beri kurumsal talep ölçülebilir oldu: Her giriş fonu gerçek BTC almaya zorlar, her çıkış satmaya — günlük raporlanır. Kriptonun büyük, yavaş paraya açılan en net penceresi."
+    },
+    {
+     "h": "Spot talep vs kaldıraç köpüğü",
+     "p": "ETF girişleriyle beslenen ralli piyasadan gerçek coin çeker — dayanıklı yakıt. Çıkışlar ve fırlayan funding'le yükselen ralli, kendi ağırlığını kaldıran kaldıraçtır — kaskad yapan tür (m5). Akışlar hangi rallide durduğunu söyler."
+    },
+    {
+     "h": "Trend, tik değil",
+     "p": "Tek kırmızı akış günü az şey ifade eder; çok haftalık seri bir rejimdir. Akış trendini funding ve open interest ile birleştir, kimin sürdüğünün tam resmi için — m4'te öğrendiğin üç sinyal düşüncesi, şimdi kurumsal katmanla."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "ETF girişi ihraççıyı şuna zorlar…",
+     "o": [
+      "BTC satmaya",
+      "Yeni payları desteklemek için gerçek BTC almaya",
+      "Hiç BTC almadan yoktan yeni pay basmaya",
+      "Temettü ödemeye"
+     ]
+    },
+    {
+     "q": "ETF çıkışları ve fırlayan funding'le yükselen ralliyi süren…",
+     "o": [
+      "Wall Street'in büyük kurumları",
+      "Kaldıraç — kaskada meyilli köpük",
+      "Madenciler",
+      "Hükümetler"
+     ]
+    },
+    {
+     "q": "Akışlar en çok şu halde önemlidir…",
+     "o": [
+      "Tek günlük tikler",
+      "Funding ve OI ile birlikte çok haftalık trendler",
+      "Saatlik gürültü",
+      "Diğer tüm analizlerin yerine geçen tek şey"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m11",
+   "t": "Duyarlılık: korku ve açgözlülük",
+   "cards": [
+    {
+     "h": "Kalabalığın nabzını ölçmek",
+     "p": "Fear & Greed endeksi gibi duyarlılık ölçerler; volatiliteyi, momentumu, sosyal medya gürültüsünü ve dominansı tek sayıya sıkıştırır. Duygu termometresidir — tam da kalabalıklar duygusal uçlarında en çok yanıldığı için faydalı."
+    },
+    {
+     "h": "Uçlar sinyaldir, orta gürültü",
+     "p": "55 okuması sana hiçbir şey söylemez. Aşırı açgözlülük, geç gelenlerin kaldıraçla yığıldığını söyler — onay için funding'i ve long/short oranını kontrol et. Aşırı korku, zorunlu satıcıların bitip sabırlı alıcıların başladığı kapitülasyon bölgelerini işaretler."
+    },
+    {
+     "h": "Motor değil, fren olarak kullan",
+     "p": "Duyarlılık giriş üretmez; boyutu ve agresifliği ayarlar. Aşırı açgözlülükte, grafik hâlâ kusursuz görünse bile long riskini sık. Aşırı korkuda çukura panik satışına direnç göster. Veri kostümü giymiş bir disiplin aracıdır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Duyarlılık endeksleri en faydalı olduğu yer…",
+     "o": [
+      "Nötr değerler",
+      "Duygusal uçlar",
+      "Tam 50",
+      "Hafta sonları"
+     ]
+    },
+    {
+     "q": "Aşırı açgözlülük + yüksek funding şunu düşündürür…",
+     "o": [
+      "Nispeten güvenli bir giriş",
+      "Geç kaldıraçlı longlar",
+      "Düşük risk",
+      "Daha çok al"
+     ]
+    },
+    {
+     "q": "Duyarlılık en iyi şöyle çalışır…",
+     "o": [
+      "Giriş üreteci",
+      "Boyut ve agresiflik freni",
+      "Grafiklerin yerine geçen şey",
+      "Fiyat kahini"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Piyasanın duyguları şu an nerede duruyor bak — geçmişiyle canlı Fear & Greed.",
+    "label": "Fear & Greed Endeksi →"
+   }
+  },
+  {
+   "id": "m12",
+   "t": "Komple işlem tezi kurmak",
+   "cards": [
+    {
+     "h": "Tek sayfa, her katman",
+     "p": "Tez, bu kursun öğrettiği her şeyi tek paragrafa yığar: üst zaman dilimi trendi ve seviyesi (m1, m8), formasyon veya yapı (m7), türev pozisyonlanması — funding, OI, long/short (m4, l5), makro takvim (m6) ve rejim katmanı olarak akışlar veya duyarlılık (m10, m11)."
+    },
+    {
+     "h": "Sonra risk yarısı",
+     "p": "İkinci yarı Kurs 3'tür: kesin geçersizleşme, en az 2 R:R, %1-2 kuralından boyut, planlı kısmi satışlar ve etkinlik kontrolü. Risk yarısı olmayan tez bir piyasa görüşüdür — görüşler bedavadır ve en pahalıya mal olur."
+    },
+    {
+     "h": "Yaz, uygula, notlandır",
+     "p": "Tezi girişten ÖNCE yaz, yazıldığı gibi uygula, sonra günlüğünde SÜRECİ notlandır — sonucu değil. Kusursuz uygulanmış kayıp iyi bir işlemdir; şanslı, plan bozan kazanç, faturayı sonra kesen kötü bir işlem. Bu döngü, tekrarlandığında, zanaatın tamamıdır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Komple tez şunları içerir…",
+     "o": [
+      "Sadece bir grafik formasyonu",
+      "Trend, seviye, makro ve tam risk planı",
+      "Fiyat tahmini",
+      "Sosyal medyadaki çoğunluk konsensüsü"
+     ]
+    },
+    {
+     "q": "Geçersizleşmesi ve boyutu olmayan tez…",
+     "o": [
+      "Verimli",
+      "Sadece görüş",
+      "Standart profesyonel yaklaşım",
+      "Eksiksiz"
+     ]
+    },
+    {
+     "q": "İşlemlerini şuna göre notlandırmalısın…",
+     "o": [
+      "Sadece sonuca",
+      "Sürece — plan izlendi mi?",
+      "Kazanç ekran görüntülerine",
+      "Hislere"
+     ]
+    },
+    {
+     "q": "Bu kursun tamamında en önemli fikir…",
+     "o": [
+      "Kusursuz girişler",
+      "Hayatta kalmak: risk kontrolü öğrenme süresi kazandırır",
+      "Grafiğe daha çok karmaşık indikatör eklemek",
+      "Daha yüksek kaldıraç"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Herhangi bir coin için tam bir tez yaz ve kağıt işlem olarak uygula — komple döngü, sıfır risk.",
+    "label": "Paper Trade →"
+   }
+  }
+ ]
+}

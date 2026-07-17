@@ -1,0 +1,614 @@
+{
+ "id": "market",
+ "name": "Den Markt Lesen",
+ "sub": "Daten statt Bauchgefühl",
+ "lessons": [
+  {
+   "id": "m1",
+   "t": "Trend, Support und Widerstand",
+   "cards": [
+    {
+     "h": "Handle mit der Strömung, nicht gegen sie",
+     "p": "Ein Trend ist eine Folge höherer Hochs und höherer Tiefs (aufwärts) oder tieferer Hochs und tieferer Tiefs (abwärts). Gegen einen starken Trend zu handeln, weil etwas zu hoch oder zu billig aussieht, ist eine Spende. Der Trend hat nicht immer recht — aber öfter als deine Gefühle über ihn."
+    },
+    {
+     "h": "Finde die Nachfragezone",
+     "prompt": "Käufer sind dreimal im selben Bereich eingestiegen. Tippe auf diese Zone.",
+     "p": "Support und Widerstand sind Zonen, keine exakten Linien. Trainiere dein Auge an diesem Chart."
+    },
+    {
+     "h": "Konfluenz schlägt jedes Einzelsignal",
+     "p": "Ein Level allein bedeutet wenig. Ein Level, das mit einer Trendlinie, einer runden Zahl und einem früheren Hoch zusammenfällt, ist Konfluenz — mehrere unabhängige Gründe, die auf dieselbe Zone zeigen. Profis warten auf Konfluenz; Anfänger handeln auf die erste Linie, die sie zeichnen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ein Aufwärtstrend ist definiert durch…",
+     "o": [
+      "Nur grüne Kerzen",
+      "Höhere Hochs und höhere Tiefs",
+      "Hohes Volumen",
+      "Eine Serie positiver News"
+     ]
+    },
+    {
+     "q": "Wenn ein Widerstand bricht, wird er oft…",
+     "o": [
+      "Verschwindet für immer",
+      "Zum neuen Support",
+      "Garantiert einen Crash",
+      "Bedeutet nichts"
+     ]
+    },
+    {
+     "q": "Konfluenz bedeutet…",
+     "o": [
+      "Eine Orderart",
+      "Mehrere unabhängige Signale",
+      "Eine Krypto-Konferenz",
+      "Mehrere Coins gleichzeitig handeln"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Zeichne deine ersten Levels: Öffne einen Chart und markiere die jüngsten offensichtlichen Support- und Widerstandszonen.",
+    "label": "Charts öffnen →"
+   }
+  },
+  {
+   "id": "m2",
+   "t": "Gleitende Durchschnitte: der Trend, geglättet",
+   "cards": [
+    {
+     "h": "Was ein MA wirklich zeigt",
+     "p": "Ein gleitender Durchschnitt zeichnet den durchschnittlichen Schlusskurs der letzten N Kerzen — das jüngste Gedächtnis des Marktes als eine glatte Linie. Kurs über einem steigenden MA ist trendgesund; Kurs, der durch einen flachen MA hackt, heißt: Es gibt keinen Trend, und Trendwerkzeuge erzeugen nur Rauschen."
+    },
+    {
+     "h": "EMA vs. SMA, und die berühmten Paare",
+     "p": "Der einfache MA (SMA) gewichtet jede Kerze gleich; der exponentielle MA (EMA) reagiert schneller auf jüngste Kurse. Von allen beobachtete Einstellungen: EMA 9/21 für kurzfristiges Momentum, SMA 50/200 fürs große Bild. Sie funktionieren teils, WEIL alle sie beobachten — selbsterfüllende Zonen."
+    },
+    {
+     "h": "Kreuzungen: Signal und Verzögerung",
+     "p": "Kreuzt die 50 über die 200 (Golden Cross), bestätigt das einen etablierten Aufwärtstrend; das Umgekehrte (Death Cross) bestätigt einen Abwärtstrend. Beachte das Wort „bestätigt“ — MAs sind konstruktionsbedingt nachlaufend. Sie sagen dir, von welcher Seite du handeln sollst, nicht den exakten Moment zum Klicken."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ein gleitender Durchschnitt zeigt…",
+     "o": [
+      "Den zukünftigen Kurs",
+      "Den Durchschnitt der jüngsten Schlusskurse",
+      "Handelsvolumen",
+      "Die Reserven, die die Börse gerade hält"
+     ]
+    },
+    {
+     "q": "Welcher MA reagiert schneller auf frische Kursbewegungen?",
+     "o": [
+      "SMA",
+      "EMA",
+      "Sie sind identisch",
+      "Keiner bewegt sich"
+     ]
+    },
+    {
+     "q": "Ein Golden Cross (50 über 200) nutzt man am besten als…",
+     "o": [
+      "Einen sekundengenauen präzisen Einstiegs-Timer",
+      "Bestätigung eines etablierten Aufwärtstrends",
+      "Ein Verkaufssignal",
+      "Eine Liquidationswarnung"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m3",
+   "t": "RSI und Momentum",
+   "cards": [
+    {
+     "h": "Was der RSI misst",
+     "p": "Der RSI komprimiert die letzten 14 Kerzen aus Gewinnen vs. Verlusten in eine 0-100-Skala. Über 70 gilt der Markt als überkauft, unter 30 als überverkauft. Er misst die GESCHWINDIGKEIT der Bewegung, nicht ihre Richtigkeit — ein Markt kann überkauft sein und wochenlang weiter steigen."
+    },
+    {
+     "h": "Der Anfängerfehler",
+     "p": "Zu verkaufen, nur weil der RSI 70 berührt hat, ist einer der zuverlässigsten Wege, einen tobenden Bullentrend zu shorten. In starken Trends bleibt der RSI im Extrembereich festgenagelt. Die Überkauft/Überverkauft-Anzeige wird erst interessant, wenn der Trend BEREITS schwächelt oder an wichtigen Levels."
+    },
+    {
+     "h": "Divergenz: der nützliche Trick",
+     "p": "Macht der Kurs ein neues Hoch, aber der RSI ein tieferes Hoch, schwindet das Momentum unter der Oberfläche — das ist bärische Divergenz, eine frühe Warnflagge (kein Verkaufsknopf). Das Umgekehrte an Tiefs ist bullische Divergenz. Divergenz plus Schlüssellevel plus Konfluenz — jetzt ist es ein Setup."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "RSI über 70 bedeutet…",
+     "o": [
+      "Garantierte Umkehr — sofort verkaufen",
+      "Die jüngste Bewegung war schnell",
+      "Die Börse stoppt den Handel",
+      "Das Volumen ist gefälscht"
+     ]
+    },
+    {
+     "q": "Bärische Divergenz ist…",
+     "o": [
+      "Kurs neues Hoch",
+      "Kurs und RSI steigen beide",
+      "RSI unter 30",
+      "Ein Kerzenmuster"
+     ]
+    },
+    {
+     "q": "Für sich allein ist ein einzelner Indikatorwert…",
+     "o": [
+      "Eine komplette Strategie",
+      "Schwach — er braucht Konfluenz",
+      "Illegal zu handeln",
+      "Nur für Profis"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m4",
+   "t": "Open Interest und die Positionierung der Masse",
+   "cards": [
+    {
+     "h": "Open Interest: Geld im Spiel",
+     "p": "Open Interest (OI) zählt den Gesamtwert der aktuell offenen Futures-Positionen. Steigendes OI bei steigendem Kurs = neues Geld kauft die Bewegung (gesund). Steigender Kurs bei FALLENDEM OI = Shorts schließen, keine neue Nachfrage — eine Bewegung, die wahrscheinlich ins Stocken gerät. OI sagt dir, WER eine Bewegung antreibt."
+    },
+    {
+     "h": "Die Long/Short-Ratio",
+     "p": "Die Long/Short-Ratio zeigt, auf welcher Seite die Masse steht. Extremwerte sind konträr: Wenn fast alle schon long sind, bleiben wenige Käufer übrig — aber ein riesiger Pool an Liquidationspreisen liegt darunter, bereit, die Gegenbewegung zu befeuern."
+    },
+    {
+     "h": "Der Drei-Signal-Stapel",
+     "p": "Das Derivate-Setup mit hoher Überzeugung stapelt drei Dinge: einseitige Long/Short-Ratio + steigendes OI + Funding, das die überfüllte Seite zahlt. Das ist eine Masse, die gehebelt ist, wächst und fürs Bleiben zahlt — eine gespannte Feder. Jedes Signal allein ist schwach; zusammen sind sie das Tell des Marktes."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Steigender Kurs bei fallendem Open Interest bedeutet meist…",
+     "o": [
+      "Starkes neues Kaufen",
+      "Shorts decken sich ein",
+      "Ein garantierter Ausbruch",
+      "Nichts"
+     ]
+    },
+    {
+     "q": "Eine extrem einseitige Long/Short-Ratio ist…",
+     "o": [
+      "Ein Signal, sich der Mehrheit anzuschließen",
+      "Eine konträre Warnung",
+      "Beweis eines gesunden Marktes",
+      "Zufallsrauschen"
+     ]
+    },
+    {
+     "q": "Das Gespannte-Feder-Setup kombiniert…",
+     "o": [
+      "RSI, MACD und Volumen",
+      "Überfüllte Ratio + steigendes OI + Funding dieser Seite",
+      "Drei grüne Kerzen",
+      "Die News zusammen mit dem Lärm der sozialen Medien"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Prüfe die Live-Long/Short-Ratio und das Open Interest — welche Seite ist gerade überfüllt?",
+    "label": "Long/Short-Ratio →"
+   }
+  },
+  {
+   "id": "m5",
+   "t": "Liquidationskaskaden: warum Crashes überschießen",
+   "cards": [
+    {
+     "h": "Der Domino-Mechanismus",
+     "p": "Trifft der Kurs das Liquidationslevel eines gehebelten Traders, zwangsverkauft die Börse die Position zum Marktpreis. Dieser Verkauf drückt den Kurs — in den NÄCHSTEN Cluster von Liquidationspreisen, was weitere Zwangsverkäufe auslöst. Sieh dir die Dominosteine unten an: ein Auslöser, eine Kette erzwungener Exits."
+    },
+    {
+     "h": "Warum der Kurs bestimmte Levels jagt",
+     "p": "Liquidationspreise clustern an vorhersehbaren Stellen — knapp jenseits runder Zahlen und offensichtlicher Supports, wo Massen ähnlicher Trader ähnliche Positionen eröffnet haben. Große Spieler können diese Cluster sehen. Ein Docht, der durch ein Level sticht, den Cluster auslöst und sofort dreht, ist genau dieser Mechanismus bei der Arbeit."
+    },
+    {
+     "h": "Den Treibstoff beobachten",
+     "p": "Live-Liquidations-Feeds zeigen Kaskaden in Echtzeit — ein Schub zwangsverkaufter Longs markiert Kapitulationstiefs zuverlässiger als die meisten Indikatoren. Für deine eigenen Trades ist die Lektion defensiv: Leg deinen Liquidationspreis dorthin, wo eine Routine-Jagd ihn nicht erreicht, oder besser, bemesse so, dass Liquidation unmöglich ist."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Eine Liquidationskaskade ist…",
+     "o": [
+      "Ein geplantes Börsenereignis",
+      "Zwangsverkäufe",
+      "Eine Art Staking-Belohnung",
+      "Ein Chartmuster"
+     ]
+    },
+    {
+     "q": "Liquidationscluster bilden sich…",
+     "o": [
+      "Zufällig",
+      "Knapp jenseits runder Zahlen und offensichtlicher Levels",
+      "Nur am Wochenende",
+      "Nur bei kleinen Coins mit sehr wenig Liquidität"
+     ]
+    },
+    {
+     "q": "Die defensive Lektion für deine eigenen Trades ist…",
+     "o": [
+      "Bei großer Überzeugung den maximalen Hebel benutzen",
+      "Halte deine Liquidation außer Reichweite der Routine-Dochte",
+      "Stop-Losses entfernen",
+      "Nur nachts handeln"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Sieh zu, wie erzwungene Liquidationen live auf Rekt hereinströmen — beobachte den Kaskaden-Mechanismus mit eigenen Augen.",
+    "label": "Rekt öffnen →"
+   }
+  },
+  {
+   "id": "m6",
+   "t": "Makro: die Flut unter jedem Trade",
+   "cards": [
+    {
+     "h": "Krypto handelt den Dollar und die Zinsen",
+     "p": "Bitcoin ist ein liquiditätssensibles Risiko-Asset: Sieht es nach fallenden Zinsen aus, fließt Geld Richtung Risiko und Krypto steigt; höher-für-länger bewirkt das Gegenteil. Deshalb kann eine US-Inflationszahl Bitcoin innerhalb einer Sekunde bewegen — Algorithmen preisen den gesamten Zinspfad sofort neu ein."
+    },
+    {
+     "h": "Die Events, die zählen",
+     "p": "Eine Handvoll geplanter Veröffentlichungen treibt die größten Stunden in Krypto: die FOMC-Zinsentscheidung der Fed, die CPI- und PCE-Inflationszahlen und der NFP-Arbeitsmarktbericht. Sie stehen Wochen vorher im Kalender — von einer überrascht zu werden, ist eine Entscheidung. Unten: wie 12:30 UTC am CPI-Tag aussieht."
+    },
+    {
+     "h": "Event-Risiko ist ein Größenproblem",
+     "p": "Du kannst die Zahl nicht vorhersagen, aber du kannst sie überleben: Kenn die Veröffentlichungszeit und bemesse so, dass ein sofortiger 2-3%-Docht dich nicht liquidieren kann. Die erste Kerze nach einer Veröffentlichung ist häufig ein Fake-out — Profis lassen sie ausspielen, statt beim schlechtesten Spread des Tages hinterherzujagen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Warum bewegt eine US-Inflationszahl Bitcoin in Sekunden?",
+     "o": [
+      "Zufall",
+      "Algorithmen preisen Zinserwartungen sofort neu",
+      "Die Miner verkaufen massenhaft auf die News",
+      "Tut sie nicht"
+     ]
+    },
+    {
+     "q": "FOMC-, CPI- und NFP-Veröffentlichungszeiten sind…",
+     "o": [
+      "Geheim",
+      "Zufällig",
+      "Geplant und Wochen im Voraus öffentlich",
+      "Nur für Aktienhändler von Bedeutung"
+     ]
+    },
+    {
+     "q": "Der Profi-Ansatz für eine große geplante Veröffentlichung ist…",
+     "o": [
+      "Maximaler Hebel direkt davor",
+      "So bemessen, dass ein 2-3%-Docht dich nicht liquidiert",
+      "Die erste Kerze nach den Zahlen market-kaufen",
+      "Sie ignorieren"
+     ]
+    },
+    {
+     "q": "Die wichtigste Idee dieses Kurses bisher war…",
+     "o": [
+      "In jedem Trade perfekte Einstiege finden",
+      "Überleben: Risikokontrolle gibt dir Zeit zum Lernen",
+      "Öfter handeln",
+      "Höherer Hebel"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Öffne den Wirtschaftskalender und finde das nächste FOMC- oder CPI-Datum — stell eine Erinnerung, bevor es zuschlägt.",
+    "label": "Wirtschaftskalender →"
+   }
+  },
+  {
+   "id": "m7",
+   "t": "Chartmuster: Kompression und Expansion",
+   "cards": [
+    {
+     "h": "Was Muster wirklich sind",
+     "p": "Dreiecke, Flaggen, Ranges — unter jedem benannten Muster liegt eine physische Tatsache: Volatilität KOMPRIMIERT, während Käufer und Verkäufer eine vorübergehende Einigung erreichen, dann EXPANDIERT sie, wenn eine Seite gewinnt. Der Name zählt weniger als das Erkennen der Kompression, denn die Expansion folgt ihr."
+    },
+    {
+     "h": "Muster sind Wahrscheinlichkeiten, keine Versprechen",
+     "p": "Ein Dreieck weiß nicht, in welche Richtung es bricht. Muster verschieben die Chancen leicht und — nützlicher — geben dir saubere Invalidierungslevels: Einstieg beim Bruch, Stop jenseits der Gegenseite. Die R:R-Struktur ist das wahre Geschenk, nicht die Vorhersage."
+    },
+    {
+     "h": "Die Falle: Muster-Halluzination",
+     "p": "Starre lange genug, und jeder Chart wächst Muster wie Wolken Gesichter. Verankere Muster im Kontext, den du schon hast — Trend, Schlüssellevels, Volumen beim Bruch. Eine Bilderbuch-Flagge gegen den Trend des höheren Timeframes an keinem Level ist nur eine Form."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Unter jedem Chartmuster liegt…",
+     "o": [
+      "Magie",
+      "Volatilität, die komprimiert und expandiert",
+      "Der Insiderhandel der ganz großen Spieler",
+      "Runde Zahlen"
+     ]
+    },
+    {
+     "q": "Das Nützlichste, was dir ein Muster gibt, ist…",
+     "o": [
+      "Eine garantierte Richtung",
+      "Ein sauberes Invalidierungslevel fürs R:R",
+      "Einen hübschen Namen zum Online-Posten",
+      "Volumen"
+     ]
+    },
+    {
+     "q": "Eine perfekte Flagge gegen den Trend des höheren Timeframes an keinem Level ist…",
+     "o": [
+      "Ein A+-Setup",
+      "Nur eine Form ohne Kontext",
+      "Ein verlässliches Short-Signal",
+      "Ein Kaufsignal"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m8",
+   "t": "Multi-Timeframe-Analyse",
+   "cards": [
+    {
+     "h": "Drei Karten eines Territoriums",
+     "p": "Der Tageschart bestimmt das WETTER (Trend und Schlüssellevels), der 4-Stunden-Chart das SETUP (Struktur, die sich an diesen Levels bildet), der 15-Minuten-Chart den AUSLÖSER (präziser Einstieg und Stop). Ein Markt, drei Höhenlagen — Verwirrung entsteht, wenn du einen Auslöser ohne Wetter handelst."
+    },
+    {
+     "h": "Das Top-Down-Ritual",
+     "p": "Immer in dieser Reihenfolge: zuerst der Tageschart (welche Seite darf ich handeln?), dann 4H (bildet sich ein Setup an einem wichtigen Level?), dann der niedrige Timeframe (exakter Einstieg, exakte Invalidierung). Die Reihenfolge umzukehren — einen aufregenden 5-Minuten-Chart zu finden und eine Geschichte zu erfinden — ist, wie Gegen-Trend-Spenden passieren."
+    },
+    {
+     "h": "Konflikte lösen sich nach OBEN",
+     "p": "Wenn Timeframes sich widersprechen, gewinnt der höhere. Ein bullischer 15-Minuten-Chart in einem bärischen Tageschart ist ein Bounce zum Verkaufen, keine Umkehr zum Heiraten. Strukturbrüche breiten sich langsam nach oben aus — respektiere die große Karte, bis sie sich wirklich ändert."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Die richtige Analyse-Reihenfolge ist…",
+     "o": [
+      "15m → 4H → Tageschart",
+      "Tageschart → 4H → 15m",
+      "Beliebige Reihenfolge",
+      "Nur ein Timeframe"
+     ]
+    },
+    {
+     "q": "Bei widersprüchlichen Timeframes hat Vorrang…",
+     "o": [
+      "Der niedrigste",
+      "Der höhere Timeframe",
+      "Der gerade volatilste",
+      "Der schönste"
+     ]
+    },
+    {
+     "q": "Ein bullischer 15m in einem bärischen Tageschart ist meist…",
+     "o": [
+      "Eine echte Trendumkehr zum langen Halten",
+      "Ein Bounce innerhalb eines Abwärtstrends",
+      "Unmöglich",
+      "Ein Buy-and-Hold-Signal"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m9",
+   "t": "Bitcoin-Dominanz und Rotation",
+   "cards": [
+    {
+     "h": "Das Inhaltsverzeichnis des Marktes",
+     "p": "Die Bitcoin-Dominanz (BTC.D) ist Bitcoins Anteil an der gesamten Krypto-Marktkapitalisierung. Steigende Dominanz: Geld bevorzugt BTC — Alts bluten selbst in grünen Märkten. Fallende Dominanz bei steigenden Kursen: Risikoappetit schwappt nach außen — die klassische Altseason-Signatur."
+    },
+    {
+     "h": "Der Rotationszyklus",
+     "p": "Liquidität kaskadiert typischerweise: zuerst in BTC, dann ETH, dann Large Caps, dann der lange Schwanz kleiner Alts — jede Welle riskanter als die vorige. Wenn Micro-Caps vertikal gehen, ist der Zyklus spät. Dominanz-Charts zeigen dir, in welchem Kapitel du dich befindest."
+    },
+    {
+     "h": "Die Flut handeln, nicht nur das Boot",
+     "p": "Ein Altcoin-Long ist in Wahrheit zwei Wetten: der Coin UND die Dominanz-Flut. Ein starkes Alt-Setup gegen steigende BTC.D ist Schwimmen gegen den Strom. Prüf die Flut vor dem Trade — es ist ein Chart mehr und es rahmt alles neu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Steigende BTC-Dominanz bedeutet…",
+     "o": [
+      "Alts outperformen",
+      "Geld bevorzugt Bitcoin",
+      "Nichts",
+      "Stablecoins versagen"
+     ]
+    },
+    {
+     "q": "Die klassische Liquiditätsrotation läuft…",
+     "o": [
+      "Small Caps → Large Caps → BTC",
+      "BTC → ETH → Large Caps → Small Caps",
+      "Zufällig",
+      "ETH zuletzt"
+     ]
+    },
+    {
+     "q": "Ein Altcoin-Long bei steigender Dominanz ist…",
+     "o": [
+      "Zwei gleichgerichtete Wetten",
+      "Schwimmen gegen den Strom",
+      "Risikofrei",
+      "Der Standard-Move"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m10",
+   "t": "ETF-Flows: institutionelle Fußabdrücke",
+   "cards": [
+    {
+     "h": "Die tägliche Quittung der Wall Street",
+     "p": "Seit dem Start der US-Spot-Bitcoin-ETFs 2024 wurde institutionelle Nachfrage messbar: Jeder Zufluss zwingt den Fonds, echtes BTC zu kaufen, jeder Abfluss zwingt zum Verkaufen — täglich gemeldet. Es ist das klarste Fenster, das Krypto je in großes, langsames Geld hatte."
+    },
+    {
+     "h": "Spot-Nachfrage vs. Hebel-Schaum",
+     "p": "Eine Rally, die von ETF-Zuflüssen getragen wird, nimmt echte Coins vom Markt — haltbarer Treibstoff. Eine Rally mit Abflüssen und explodierendem Funding ist Hebel, der sein eigenes Gewicht stemmt — die Sorte, die kaskadiert (m5). Flows sagen dir, in welcher Rally du stehst."
+    },
+    {
+     "h": "Trend, nicht Tick",
+     "p": "Ein roter Flow-Tag bedeutet wenig; eine mehrwöchige Serie ist ein Regime. Kombiniere den Flow-Trend mit Funding und Open Interest für das volle Bild, wer treibt — dasselbe Drei-Signal-Denken aus m4, jetzt mit institutioneller Ebene."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ein ETF-Zufluss zwingt den Emittenten…",
+     "o": [
+      "BTC zu verkaufen",
+      "Echtes BTC zu kaufen",
+      "Anteile aus dem Nichts zu drucken",
+      "Dividenden zu zahlen"
+     ]
+    },
+    {
+     "q": "Eine Rally mit ETF-Abflüssen und explodierendem Funding wird getragen von…",
+     "o": [
+      "Die großen Wall-Street-Institutionen",
+      "Hebel — Schaum, der kaskadiert",
+      "Minern",
+      "Regierungen"
+     ]
+    },
+    {
+     "q": "Flows zählen am meisten als…",
+     "o": [
+      "Einzeltages-Ticks",
+      "Mehrwöchige Trends neben Funding und OI",
+      "Stündliches Rauschen",
+      "Ein kompletter Ersatz für jede andere Analyse"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m11",
+   "t": "Sentiment: Angst und Gier",
+   "cards": [
+    {
+     "h": "Den Puls der Masse messen",
+     "p": "Sentiment-Messer wie der Fear & Greed Index komprimieren Volatilität, Momentum, Social Buzz und Dominanz in eine Zahl. Er ist ein Thermometer für Emotion — nützlich genau deshalb, weil Massen an ihren emotionalen Extremen am falschesten liegen."
+    },
+    {
+     "h": "Extreme sind Signale, die Mitte ist Rauschen",
+     "p": "Ein Wert von 55 sagt dir nichts. Extreme Gier heißt: Nachzügler stapeln sich mit Hebel hinein — prüf Funding und die Long/Short-Ratio zur Bestätigung. Extreme Angst markiert die Kapitulationszonen, wo Zwangsverkäufer fertig werden und geduldige Käufer beginnen."
+    },
+    {
+     "h": "Nutze es als Bremse, nicht als Motor",
+     "p": "Sentiment erzeugt keine Einstiege; es moderiert Größe und Aggression. Bei extremer Gier straffe das Risiko auf Longs, selbst wenn der Chart noch perfekt aussieht. Bei extremer Angst widersteh dem Panikverkauf ins Loch. Es ist ein Disziplin-Werkzeug im Daten-Kostüm."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Sentiment-Indizes sind am nützlichsten bei…",
+     "o": [
+      "Neutralen Werten",
+      "Emotionalen Extremen",
+      "Genau 50",
+      "Wochenenden"
+     ]
+    },
+    {
+     "q": "Extreme Gier kombiniert mit hohem Funding deutet auf…",
+     "o": [
+      "Einen sicheren Einstieg",
+      "Späte gehebelte Longs",
+      "Niedriges Risiko",
+      "Mehr kaufen"
+     ]
+    },
+    {
+     "q": "Sentiment funktioniert am besten als…",
+     "o": [
+      "Ein automatischer Einstiegs-Generator",
+      "Bremse für Größe und Aggression",
+      "Ersatz für Charts",
+      "Kurs-Prophet"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Prüf, wo die Emotionen des Marktes gerade stehen — live Fear & Greed mit Historie.",
+    "label": "Fear & Greed Index →"
+   }
+  },
+  {
+   "id": "m12",
+   "t": "Eine komplette Trade-These bauen",
+   "cards": [
+    {
+     "h": "Eine Seite, jede Ebene",
+     "p": "Eine These stapelt alles, was dieser Kurs gelehrt hat, in einen Absatz: Trend und Level des höheren Timeframes (m1, m8), Muster oder Struktur (m7), Derivate-Positionierung — Funding, OI, Long/Short (m4, l5), der Makro-Kalender (m6), und Flows oder Sentiment als Regime-Ebene (m10, m11)."
+    },
+    {
+     "h": "Dann die Risiko-Hälfte",
+     "p": "Die zweite Hälfte ist Kurs 3: exakte Invalidierung, R:R von mindestens 2, Größe aus der 1-2%-Regel, geplante Teilmitnahmen und der Event-Check. Eine These ohne die Risiko-Hälfte ist eine Marktmeinung — Meinungen sind gratis und kosten am meisten."
+    },
+    {
+     "h": "Schreib sie, handle sie, benote sie",
+     "p": "Schreib die These VOR dem Einstieg, führe sie wie geschrieben aus, dann benote den PROZESS in deinem Journal — nicht das Ergebnis. Ein perfekt ausgeführter Verlust ist ein guter Trade; ein glücklicher, planbrechender Gewinn ist ein schlechter, der dir später die Rechnung schickt. Diese Schleife, wiederholt, ist das ganze Handwerk."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Eine komplette These umfasst…",
+     "o": [
+      "Nur ein Chartmuster",
+      "Trend, Level, Makro und den vollen Risikoplan",
+      "Eine Kursvorhersage",
+      "Einen Mehrheits-Konsens der sozialen Medien"
+     ]
+    },
+    {
+     "q": "Eine These ohne Invalidierung und Größe ist…",
+     "o": [
+      "Effizient",
+      "Nur eine Meinung",
+      "Die professionelle Standardpraxis",
+      "Vollständig"
+     ]
+    },
+    {
+     "q": "Du solltest deine Trades benoten nach…",
+     "o": [
+      "Nur dem endgültigen Ergebnis des Trades",
+      "Dem Prozess — wurde der Plan befolgt?",
+      "Screenshots",
+      "Gefühlen"
+     ]
+    },
+    {
+     "q": "Über diesen ganzen Kurs hinweg ist die wichtigste Idee…",
+     "o": [
+      "Perfekte Einstiege",
+      "Überleben: Risikokontrolle gibt dir Zeit zum Lernen",
+      "Noch mehr komplexe Indikatoren auf dem Chart",
+      "Höherer Hebel"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Schreib eine volle These zu irgendeinem Coin und führe sie als Paper Trade aus — die komplette Schleife, null Risiko.",
+    "label": "Paper Trade →"
+   }
+  }
+ ]
+}

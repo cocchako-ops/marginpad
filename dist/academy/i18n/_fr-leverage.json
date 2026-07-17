@@ -1,0 +1,589 @@
+{
+ "id": "leverage",
+ "name": "Levier & Liquidation",
+ "sub": "La mécanique qui vide les comptes",
+ "lessons": [
+  {
+   "id": "l1",
+   "t": "C'est quoi un contrat futures ?",
+   "cards": [
+    {
+     "h": "Trader le prix sans détenir les coins",
+     "p": "Un contrat futures est un accord qui suit le prix d'un coin. Tu ne possèdes jamais le Bitcoin — tu détiens une position qui gagne ou perd exactement comme le prix bouge. La version préférée de la crypto, c'est le futures perpétuel (perp), sans date d'expiration : tu peux le garder tant que ta marge survit."
+    },
+    {
+     "h": "Long et short",
+     "p": "Avec les futures, tu peux gagner dans les deux sens : être long signifie que tu gagnes quand le prix monte ; être short signifie que tu gagnes quand le prix baisse. Appuie sur les boutons ci-dessous et regarde le même mouvement de prix passer du profit à la perte."
+    },
+    {
+     "h": "Pourquoi les perps dominent la crypto",
+     "p": "Les futures perpétuels sont le produit le plus tradé en crypto — le volume quotidien des perps écrase celui du spot. Ils sont populaires précisément pour les deux caractéristiques qui les rendent dangereux : le levier, et la possibilité de shorter. Tout ce cours existe à cause de ce que tu vas apprendre dans les deux prochaines leçons."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Quand tu achètes un futures perpétuel, tu possèdes…",
+     "o": [
+      "Les coins eux-mêmes",
+      "Une position qui suit le prix",
+      "Une part au capital de l'exchange",
+      "Un wallet"
+     ]
+    },
+    {
+     "q": "Une position short gagne quand…",
+     "o": [
+      "Le prix monte",
+      "Le prix baisse",
+      "Le prix reste stable",
+      "Le volume monte"
+     ]
+    },
+    {
+     "q": "Qu'est-ce qui rend un futures perpétuel… perpétuel ?",
+     "o": [
+      "Il ne perd jamais d'argent",
+      "Il n'a pas de date d'expiration",
+      "Il n'a pas de frais",
+      "Il ne fait que monter"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l2",
+   "t": "Le levier : trader avec une taille empruntée",
+   "cards": [
+    {
+     "h": "Marge et multiplicateur",
+     "p": "Le levier te permet de contrôler une position plus grosse que ton argent. Dépose 100 $ de marge avec un levier 10× et tu contrôles une position de 1 000 $. Chaque 1 % de mouvement du prix, ta position gagne ou perd 10 $ — soit 10 % de TON argent. Le multiplicateur s'applique aux pertes exactement comme aux gains."
+    },
+    {
+     "h": "Ressens-le : fais glisser le levier",
+     "p": "Le repère rouge, c'est ta liquidation. Regarde ce que le levier lui fait.",
+     "prompt": "Fais glisser le curseur jusqu'à ce qu'un mouvement banal de 1 % contre toi efface 100 % de ta marge."
+    },
+    {
+     "h": "Les maths honnêtes du 100×",
+     "p": "À un levier de 100×, un mouvement de 1 % contre toi efface 100 % de ta marge. Le Bitcoin bouge de 1 % en routine — plusieurs fois par jour. Ce n'est pas un krach ; c'est du bruit de fond. Un levier élevé ne rend pas une stratégie meilleure, il compresse juste le temps avant qu'une oscillation normale ne te sorte."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Tu ouvres 100 $ à un levier 10×. Le prix bouge de 1 % en ta faveur. Ton profit est d'environ…",
+     "o": [
+      "1 $ (1%)",
+      "10 $ (10 % de ta marge)",
+      "100 $",
+      "Rien tant que tu ne fermes pas"
+     ]
+    },
+    {
+     "q": "Le notionnel d'une position de 100 $ à 20× est…",
+     "o": [
+      "100 $",
+      "20 $",
+      "2 000 $",
+      "100 $ plus les frais"
+     ]
+    },
+    {
+     "q": "À un levier 100×, quel mouvement de prix contre toi efface toute ta marge ?",
+     "o": [
+      "Environ 1%",
+      "Environ 10%",
+      "Environ 50%",
+      "100%"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Ouvre le calculateur de taille de position et regarde comment le notionnel et le risque changent quand tu fais glisser le levier de 5× à 100×.",
+    "label": "Calculateur de taille de position →"
+   }
+  },
+  {
+   "id": "l3",
+   "t": "La liquidation : le point de non-retour",
+   "cards": [
+    {
+     "h": "Ce qu'est la liquidation",
+     "p": "Quand une position à levier perd presque toute sa marge, l'exchange la ferme de force pour se protéger — c'est la liquidation. Ta position a disparu, ta marge a disparu, et aucune récupération n'est possible même si le prix rebondit une seconde plus tard. C'est le prix le plus important de ton écran."
+    },
+    {
+     "h": "À toi : rends-la sûre",
+     "p": "C'est exactement la décision que tu prendras sur chaque trade réel.",
+     "prompt": "Maintenant fais l'inverse : baisse le levier jusqu'à ce que ta liquidation se trouve à au moins 10 % de ton entrée."
+    },
+    {
+     "h": "Le « ça va remonter » ne s'applique pas",
+     "p": "Un détenteur spot peut encaisser une chute de 30 % et attendre des années. Un trader futures liquidé ne peut pas — la position n'existe plus. Cette asymétrie est LA différence entre spot et levier : le spot punit lentement les traders impatients, le levier les exécute instantanément."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Après une liquidation, si le prix remonte immédiatement, tu…",
+     "o": [
+      "Récupères ta position",
+      "Récupères la moitié de ta marge",
+      "Ne récupères rien",
+      "Dois de l'argent à l'exchange"
+     ]
+    },
+    {
+     "q": "À quel mouvement adverse, environ, une position 50× se fait-elle liquider ?",
+     "o": [
+      "Environ 50%",
+      "Environ 25%",
+      "Environ 2%",
+      "Environ 0.1%"
+     ]
+    },
+    {
+     "q": "La première chose à connaître avant d'ouvrir n'importe quel trade à levier, c'est…",
+     "o": [
+      "Les news du jour",
+      "Ton prix de liquidation exact",
+      "Ce que disent les influenceurs",
+      "L'année de création de l'exchange"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Calcule un vrai prix de liquidation : entrée, levier, sens — vois exactement où la position meurt.",
+    "label": "Calculateur de liquidation →"
+   }
+  },
+  {
+   "id": "l4",
+   "t": "Longs, shorts et comment le P&L marche vraiment",
+   "cards": [
+    {
+     "h": "La formule du P&L en mots simples",
+     "p": "Ton profit ou ta perte = taille de la position × le pourcentage de mouvement du prix. Le ROE — return on equity — c'est ce P&L mesuré par rapport à ta marge. Fais glisser le mouvement de prix ci-dessous et regarde les deux chiffres réagir avec un levier 10× sur 100 $ de marge."
+    },
+    {
+     "h": "Shorter n'est pas le mal, c'est un outil",
+     "p": "Shorter — profiter des baisses — semble contre-nature au début. Mais les marchés chutent plus vite qu'ils ne montent (l'ascenseur pour descendre, l'escalier pour monter), et un trader qui ne sait que longer est aveugle sur la moitié du marché. En compte démo, pratique les deux jusqu'à ce qu'aucun ne te semble spécial."
+    },
+    {
+     "h": "Les frais et le funding grignotent en permanence",
+     "p": "Chaque ouverture et fermeture paie des frais sur le notionnel, et les perpétuels échangent des paiements de funding périodiques entre longs et shorts (prochaine leçon). À fort levier, ces petits coûts se cumulent en un vent contraire significatif — une autre raison discrète pour laquelle les overtraders perdent."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Tu es long avec 1 000 $ de notionnel et le prix monte de 3 %. Ton P&L est de…",
+     "o": [
+      "+3 $",
+      "+30 $",
+      "+300 $",
+      "Ça dépend du coin"
+     ]
+    },
+    {
+     "q": "« L'ascenseur pour descendre, l'escalier pour monter » signifie…",
+     "o": [
+      "Les marchés chutent plus vite qu'ils ne montent",
+      "Les marchés montent plus vite qu'ils ne chutent",
+      "Le prix revient toujours à l'entrée",
+      "Le short est interdit"
+     ]
+    },
+    {
+     "q": "Les frais de trading sur les futures sont facturés sur…",
+     "o": [
+      "Ta marge uniquement",
+      "La taille notionnelle complète de la position",
+      "Ton profit uniquement",
+      "Rien du tout — les futures sont gratuits"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l5",
+   "t": "Le funding : le flux d'argent invisible",
+   "cards": [
+    {
+     "h": "Comment les perps restent collés au vrai prix",
+     "p": "Sans expiration, un perpétuel pourrait dériver loin du prix réel du coin. Le funding l'en empêche : toutes les quelques heures, un camp paie à l'autre un petit pourcentage. Bascule ci-dessous : quand les perps tradent AU-DESSUS du spot (la foule est long), les longs paient les shorts ; EN DESSOUS du spot, les shorts paient les longs."
+    },
+    {
+     "h": "Le funding comme thermomètre de la foule",
+     "p": "Un funding très positif signifie que la foule est massivement long ET paie pour ce privilège — historiquement un signal d'alerte, car les trades surchargés se dénouent violemment. Un funding très négatif marque des shorts surchargés, du carburant pour un short squeeze."
+    },
+    {
+     "h": "Ça se cumule",
+     "p": "Un funding de 0.01% toutes les 8 heures a l'air de rien — mais ça fait environ 11% par an sur ton notionnel, et à un levier 10× c'est un frein annualisé à trois chiffres sur ta marge. Ceux qui gardent des positions en ignorant le funding voient leur P&L fuir en silence."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Quand le perp trade au-dessus du prix spot, qui paie le funding ?",
+     "o": [
+      "Les shorts paient les longs",
+      "Les longs paient les shorts",
+      "L'exchange paie tout le monde",
+      "Personne"
+     ]
+    },
+    {
+     "q": "Un funding extrêmement positif signale en général…",
+     "o": [
+      "Un rallye garanti",
+      "Un côté long massivement surchargé",
+      "Une faible volatilité à venir",
+      "Une panne de l'exchange"
+     ]
+    },
+    {
+     "q": "Pourquoi un petit funding compte-t-il à fort levier ?",
+     "o": [
+      "Il ne compte pas",
+      "Il se cumule en un gros frein annualisé sur ta marge",
+      "Il ne s'applique qu'aux shorts",
+      "Il est intégralement remboursé à la fermeture"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Regarde le funding en direct sur plus de 160 paires — trouve le taux le plus extrême en ce moment.",
+    "label": "Taux de funding →"
+   }
+  },
+  {
+   "id": "l6",
+   "t": "Types d'ordres : market, limit, stop",
+   "cards": [
+    {
+     "h": "Trois outils, trois métiers",
+     "p": "Un ordre market s'exécute instantanément au prix qu'offre le carnet — tu paies le spread et l'éventuel slippage. Un ordre limit fixe ton prix et attend. Un ordre stop se déclenche quand le prix franchit un niveau. L'image ci-dessous montre les trois vivant dans le carnet d'ordres."
+    },
+    {
+     "h": "Market : la vitesse contre un prix. Limit : le prix contre de la patience.",
+     "p": "Utilise les ordres market quand entrer ou sortir MAINTENANT compte plus que le prix exact — en sachant que le slippage est pire pendant les mouvements violents. Les entrées des pros sont surtout des limits : tu peux ne jamais être exécuté, mais quand tu l'es, c'est à ton prix ou mieux, généralement avec des frais plus bas."
+    },
+    {
+     "h": "Les stops : l'automatisation qui sauve des comptes",
+     "p": "L'ordre stop est le fondement du stop-loss (Cours 3). Il exécute ton plan pendant que tu dors, que tu bosses, ou que tes émotions te lâchent. Le trader qui fixe le graphique à la place est celui qui se fige au pire moment."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "L'ordre à exécution garantie mais à prix incertain, c'est…",
+     "o": [
+      "Limit",
+      "Market",
+      "Stop",
+      "Iceberg"
+     ]
+    },
+    {
+     "q": "Un ordre limit garantit…",
+     "o": [
+      "Qu'il sera forcément exécuté",
+      "Ton prix ou mieux",
+      "Zéro frais",
+      "Une exécution instantanée"
+     ]
+    },
+    {
+     "q": "Le but principal d'un ordre stop est…",
+     "o": [
+      "Obtenir un meilleur prix d'entrée sur un repli",
+      "Exécuter automatiquement ton plan de sortie",
+      "Éviter toutes les pertes",
+      "Doubler la position"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l7",
+   "t": "Marge isolée vs cross",
+   "cards": [
+    {
+     "h": "Deux façons d'adosser une position",
+     "p": "La marge isolée cloisonne un montant fixe pour une seule position — si elle est liquidée, tu ne perds que ce montant. La marge cross laisse TOUT ton solde futures adosser chaque position — plus de marge avant liquidation, mais un blowup peut emporter tout le compte avec lui."
+    },
+    {
+     "h": "Quand chacune a du sens",
+     "p": "L'isolée est le choix par défaut du débutant et le choix honnête pour les trades risqués : les dégâts sont prédéfinis. La cross convient aux portefeuilles hedgés et aux traders expérimentés qui gèrent activement leur marge. Utiliser la cross pour survivre plus longtemps à un mauvais trade n'est pas une stratégie — c'est un plus gros enterrement."
+    },
+    {
+     "h": "Vérifie avant de cliquer",
+     "p": "Les exchanges ont des réglages par défaut différents, et le mode de marge change radicalement ton prix de liquidation. Ça fait partie du rituel pré-trade : sens, taille, levier, mode de marge, prix de liquidation. À chaque fois, sans exception."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "En marge isolée, une liquidation te coûte…",
+     "o": [
+      "L'intégralité de ton compte de trading",
+      "Seulement la marge cloisonnée pour cette position",
+      "Rien",
+      "Toutes tes autres positions ouvertes"
+     ]
+    },
+    {
+     "q": "La marge cross signifie…",
+     "o": [
+      "Une seule position autorisée à la fois",
+      "Tout ton solde adosse chaque position",
+      "Pas de liquidations",
+      "Des frais plus bas"
+     ]
+    },
+    {
+     "q": "Utiliser la marge cross pour retarder un trade perdant, c'est…",
+     "o": [
+      "De la gestion du risque professionnelle",
+      "Un plus gros enterrement en préparation",
+      "Exigé par les exchanges",
+      "Gratuit"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l8",
+   "t": "Mark price vs last price",
+   "cards": [
+    {
+     "h": "Deux prix sur le même écran",
+     "p": "Le last price est la dernière transaction sur TON exchange. Le mark price est une juste valeur mélangeant plusieurs exchanges plus l'indice spot. Ils diffèrent de quelques centimes en marché calme — et de façon significative dans les marchés violents ou sur les plateformes peu liquides."
+    },
+    {
+     "h": "Les liquidations utilisent le mark price",
+     "p": "Les exchanges liquident sur le MARK, pas sur le last. Ça te protège : une seule mèche manipulée sur une plateforme ne peut pas liquider les positions partout. Ça explique aussi la confusion classique — tu peux être liquidé alors que la mèche sur ton graphique n'a jamais touché ton niveau, parce que le mark y est allé."
+    },
+    {
+     "h": "Lequel surveiller",
+     "p": "Décisions de trade : le last price (c'est là que tes ordres s'exécutent). Maths de survie : le mark price (c'est lui qu'utilisent la liquidation et le P&L latent). Les plateformes sérieuses affichent les deux — apprends où la tienne montre le mark, et mets tes alarmes dessus, pas sur la mèche de la bougie."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Les liquidations sont déclenchées par…",
+     "o": [
+      "Le dernier prix tradé sur ton exchange",
+      "Le mark price — une juste valeur multi-exchanges",
+      "Ton prix d'entrée",
+      "L'ouverture journalière"
+     ]
+    },
+    {
+     "q": "Pourquoi les exchanges utilisent-ils le mark price pour les liquidations ?",
+     "o": [
+      "C'est moins cher pour la plateforme",
+      "Une mèche manipulée ne peut pas liquider tout le monde",
+      "C'est plus rapide",
+      "Les régulateurs financiers du monde entier l'exigent"
+     ]
+    },
+    {
+     "q": "Ta position a été liquidée mais la mèche du graphique n'a jamais touché ton niveau de liq. Le plus probable…",
+     "o": [
+      "L'exchange te l'a volée en douce",
+      "Le mark price a atteint le niveau",
+      "Un bug",
+      "Impossible"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l9",
+   "t": "Marge de maintenance : le vrai calcul de liq",
+   "cards": [
+    {
+     "h": "Pourquoi la liq n'est pas exactement 100 ÷ levier",
+     "p": "L'exchange exige un coussin de sécurité — la marge de maintenance (souvent autour de 0.5% du notionnel) — mis de côté en permanence. La liquidation se déclenche quand ton capital tombe À ce coussin, pas à zéro. Donc un long 10x est liquidé vers −9.5%, pas exactement à −10%."
+    },
+    {
+     "h": "Positions plus grosses, coussins plus gros",
+     "p": "La marge de maintenance est par paliers : les positions énormes exigent un pourcentage plus élevé, parce que les fermer de force fait bouger le marché. C'est une des raisons pour lesquelles les niveaux de liquidation des whales sont plus proches de l'entrée que ne le suggère la formule simple."
+    },
+    {
+     "h": "La liquidation partielle",
+     "p": "Sur les grosses positions, beaucoup d'exchanges liquident par tranches — fermant une partie de la position pour ramener la marge au-dessus de la maintenance, plutôt que de tout détruire d'un coup. Utile, mais ne compte pas dessus : quand la liquidation partielle est en train de te sauver, le trade a déjà échoué."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Un long 10x est liquidé à environ…",
+     "o": [
+      "Exactement −10%",
+      "Vers −9.5%",
+      "−5%",
+      "−20%"
+     ]
+    },
+    {
+     "q": "La marge de maintenance est…",
+     "o": [
+      "Des frais uniques",
+      "Un coussin de sécurité exigé en permanence",
+      "Optionnelle",
+      "Ton objectif de profit sur l'opération"
+     ]
+    },
+    {
+     "q": "La liquidation partielle signifie…",
+     "o": [
+      "Tu perds la moitié de ton compte",
+      "L'exchange ferme des tranches d'une grosse position",
+      "Une réduction sur les frais",
+      "Une liquidation qui n'arrive que le week-end"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l10",
+   "t": "Gérer une position en cours",
+   "cards": [
+    {
+     "h": "Le trade commence après l'entrée",
+     "p": "Les débutants sont obsédés par les entrées ; les pros gèrent ce qui vient après. Une position en cours est une série de décisions : la thèse est-elle toujours valide, l'invalidation a-t-elle bougé, la taille est-elle toujours la bonne ? Gérer, ce n'est pas tripoter — c'est exécuter le plan écrit avant l'entrée."
+    },
+    {
+     "h": "La fermeture partielle : se payer soi-même",
+     "p": "Fermer une partie d'un trade gagnant au premier objectif encaisse du profit réel pendant que le reste continue. Ça convertit un gain sur papier en gain certain, ça calme l'esprit, et ça te garde dans la tendance. La structure classique : prendre une portion à 1R, déplacer le stop, laisser le reste travailler."
+    },
+    {
+     "h": "Le stop à breakeven : des trades gratuits, à manier avec soin",
+     "p": "Après un mouvement significatif en ta faveur, déplacer le stop à l'entrée rend le trade sans risque — psychologiquement inestimable. Fais-le trop tôt et le bruit normal te sort d'un bon trade. Laisse de la place : breakeven APRÈS le premier objectif, pas à la première minute verte."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Une fermeture partielle au premier objectif…",
+     "o": [
+      "C'est avouer sa faiblesse devant le marché",
+      "Encaisse un profit certain, le reste continue",
+      "Double tes frais pour rien du tout",
+      "Annule le stop-loss"
+     ]
+    },
+    {
+     "q": "Déplacer ton stop à breakeven rend le trade…",
+     "o": [
+      "Sans risque (hors gaps)",
+      "Garanti profitable",
+      "Illégal",
+      "Plus leveragé"
+     ]
+    },
+    {
+     "q": "Le bon moment pour gérer une position, c'est…",
+     "o": [
+      "Jamais — toujours set and forget",
+      "Selon le plan écrit AVANT l'entrée",
+      "Dès que ça fait peur",
+      "Toutes les 30 secondes"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l11",
+   "t": "Les mythes du levier",
+   "cards": [
+    {
+     "h": "Mythe : plus de levier = plus de profit",
+     "p": "Le profit vient de la TAILLE de la position multipliée par le mouvement du prix. Le levier décide seulement combien de marge tu déposes pour cette taille. Une position de 1 000 $ gagne les mêmes 30 $ sur un mouvement de 3 % qu'elle soit en 2x ou en 50x — la version 50x est juste liquidée 25 fois plus tôt."
+    },
+    {
+     "h": "Mythe : les pros utilisent le levier max",
+     "p": "Les desks professionnels tournent en routine à un levier effectif à un chiffre. Le bouton 100x existe parce qu'il est rentable pour les exchanges, pas pour les utilisateurs. Le levier élevé est un outil d'efficacité de liquidité pour les hedgers et les scalpeurs qui comptent en secondes — pas une machine à richesse."
+    },
+    {
+     "h": "L'usage honnête du levier",
+     "p": "Le levier te permet de garder moins de capital sur un exchange (piratable, gelable) pour la même exposition — c'est de l'efficacité du capital. Utilisé avec de toutes petites tailles de position, c'est légitime. Utilisé pour maximiser la taille, il convertit la volatilité normale en ruine certaine, avec un compte à rebours."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Deux traders tiennent la même position de 1 000 $ ; l'un en 2x, l'autre en 50x. Un mouvement favorable de 3 % paie…",
+     "o": [
+      "Le trader 50x 25 fois plus",
+      "Les deux les mêmes ~30 $",
+      "Le trader 2x plus",
+      "Rien en 2x"
+     ]
+    },
+    {
+     "q": "L'option 100x existe surtout parce que…",
+     "o": [
+      "Les pros professionnels l'exigent",
+      "Elle est rentable pour les exchanges",
+      "Elle est plus sûre",
+      "Les régulateurs l'exigent"
+     ]
+    },
+    {
+     "q": "Le bénéfice légitime du levier est…",
+     "o": [
+      "Des profits garantis plus gros",
+      "Garder moins de capital sur l'exchange",
+      "Éviter les frais",
+      "Impressionner les autres"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l12",
+   "t": "Lire un ticket de futures",
+   "cards": [
+    {
+     "h": "Chaque chiffre, décodé",
+     "p": "Un ticket de position affiche : sens et levier (LONG 10x), prix d'entrée, mark price, taille ou notionnel, marge, prix de liquidation, P&L latent et ROE. Tu connais désormais chacun de ces éléments. Si un chiffre sur un ticket réel te déroute, n'ajoute pas de taille — décode-le d'abord."
+    },
+    {
+     "h": "Les deux chiffres qui comptent le plus",
+     "p": "Le prix de liquidation (à quelle distance est la mort ?) et la taille de position (combien je perds par mouvement de 1 % ?). Le P&L et le ROE sont des résultats — ils découlent des deux entrées. Les traders qui ne regardent que le chiffre vert/rouge gèrent des émotions ; ceux qui regardent la distance de liq et la taille gèrent du risque."
+    },
+    {
+     "h": "Exercice de fin de cours",
+     "p": "Ouvre une position démo et lis tout le ticket à voix haute : sens, levier, entrée, taille, marge, liquidation et sa distance, stop, objectif. Quand ça te prend dix secondes et zéro confusion, le Cours 2 a fait son travail."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Les deux chiffres les plus importants sur un ticket en cours sont…",
+     "o": [
+      "Le P&L et le ROE",
+      "La distance de liquidation et la taille de position",
+      "L'heure exacte d'entrée et le logo du coin",
+      "Les frais et le funding"
+     ]
+    },
+    {
+     "q": "Le ROE sur un ticket mesure le P&L par rapport à…",
+     "o": [
+      "Le notionnel",
+      "Ta marge",
+      "Le prix du coin",
+      "Le volume quotidien"
+     ]
+    },
+    {
+     "q": "Si un chiffre sur ton ticket te déroute, tu devrais…",
+     "o": [
+      "Ajouter de la taille quand même",
+      "Le décoder avant de toucher à la position",
+      "Fermer les yeux",
+      "Demander dans le chat et continuer à trader"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Ouvre une position démo et lis chaque champ du ticket — entrée, taille, marge, liq, distance. Dix secondes, zéro confusion.",
+    "label": "Paper Trade →"
+   }
+  }
+ ]
+}

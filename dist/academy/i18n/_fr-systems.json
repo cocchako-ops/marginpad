@@ -1,0 +1,348 @@
+{
+ "id": "systems",
+ "name": "Systèmes et automatisation",
+ "sub": "Transformer des règles en machines",
+ "lessons": [
+  {
+   "id": "s1",
+   "t": "Pourquoi un système bat le feeling",
+   "cards": [
+    {
+     "h": "La taxe du discrétionnaire",
+     "p": "Chaque décision discrétionnaire est une porte ouverte au tilt, au FOMO et au biais rétrospectif. Un système — des règles fixes pour le setup, l'entrée, la sortie et la taille — supprime la décision au moment où l'émotion est à son maximum. La plupart des traders n'ont pas besoin d'un meilleur instinct : ils ont besoin de moins d'occasions de s'en servir."
+    },
+    {
+     "h": "Des règles rendent les résultats mesurables",
+     "p": "Si tes entrées sont des humeurs, tes revues de journal relèvent de l'astrologie. Si tes entrées sont des règles, chaque trade devient une donnée : CE setup, pris de CETTE façon, produit CETTE espérance de gain. Seul le trading basé sur des règles peut réellement s'améliorer, parce que lui seul peut se mesurer."
+    },
+    {
+     "h": "Le jugement a sa place — à la table de conception",
+     "p": "La compétence ne disparaît pas, elle se déplace. Tu utilises ton jugement pour CONCEVOIR et RÉVISER les règles — chaque semaine, au calme, loin des prix en direct. La machine (ou la checklist) exécute. Le jugement au bureau, la discipline au moment de cliquer."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Le principal avantage d'un système basé sur des règles, c'est…",
+     "o": [
+      "Un profit garanti sur chaque trade",
+      "Supprimer les décisions au pic de l'émotion",
+      "Un levier plus élevé",
+      "Moins de travail"
+     ]
+    },
+    {
+     "q": "Des entrées basées sur l'humeur rendent ton journal…",
+     "o": [
+      "Bien plus amusant à relire",
+      "Impossible à mesurer, donc à améliorer",
+      "Plus court",
+      "Parfait et sans le moindre défaut"
+     ]
+    },
+    {
+     "q": "Dans le trading systématique, le jugement humain a sa place…",
+     "o": [
+      "Au moment de cliquer en live",
+      "À la table de conception",
+      "Nulle part",
+      "Dans les salons de chat"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "t": "Le backtest : interroger le passé",
+   "cards": [
+    {
+     "h": "La question la moins chère du trading",
+     "p": "Avant de risquer un centime — ou même du temps en paper trading — tu peux interroger l'histoire : si j'avais tradé exactement ces règles sur l'année écoulée, que se serait-il passé ? C'est ça, un backtest. Il ne promet rien sur l'avenir, mais il exécute les règles sans biais rétrospectif et sans pitié."
+    },
+    {
+     "h": "Ce qu'un backtest te dit vraiment",
+     "p": "Pas « ça va rapporter » — plutôt : le PROFIL de la stratégie. Taux de réussite, R moyen, pire série de pertes, drawdown maximal, nombre de trades par mois. Tu sais déjà depuis r10 que ces chiffres, combinés au sizing, décident de ta survie. Le backtest te les donne en quelques minutes."
+    },
+    {
+     "h": "Respecte ses limites",
+     "p": "Un backtest suppose des exécutions aux prix historiques — le spread réel, le slippage et le funding seront pires. Considère les résultats de backtest comme le plafond OPTIMISTE, soustrais mentalement les coûts, et ne fais confiance qu'aux profils qui survivent à cette décote avec de la marge."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Un backtest te dit…",
+     "o": [
+      "L'avenir",
+      "Le profil historique de tes règles exactes",
+      "Quel coin va pumper la semaine prochaine",
+      "Rien"
+     ]
+    },
+    {
+     "q": "Les résultats de backtest comparés aux résultats en live sont généralement…",
+     "o": [
+      "Identiques",
+      "Optimistes — les coûts réels dégradent le live",
+      "Pessimistes — le live est toujours meilleur",
+      "Aléatoires"
+     ]
+    },
+    {
+     "q": "La bonne façon de lire un backtest, c'est…",
+     "o": [
+      "Comme une promesse",
+      "Comme un plafond optimiste après décote des coûts",
+      "Comme un pur divertissement statistique",
+      "À l'envers"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Lance ton premier vrai backtest — croisement d'EMA ou règles RSI sur des données de qualité live, en un clic, avec les stats complètes.",
+    "label": "Backtester de stratégies →"
+   }
+  },
+  {
+   "id": "s3",
+   "t": "L'overfitting : le tueur silencieux",
+   "cards": [
+    {
+     "h": "Le backtest parfait qui ne marche jamais",
+     "p": "Ajuste les paramètres d'une stratégie assez longtemps et elle collera PARFAITEMENT au passé — parce qu'elle a mémorisé le bruit, pas appris le signal. C'est ça, l'overfitting : plus la courbe de backtest est belle après un réglage intensif, plus tu dois te méfier."
+    },
+    {
+     "h": "Les symptômes",
+     "p": "Signaux d'alerte : beaucoup de paramètres finement réglés (pourquoi 13.5 et pas 14 ?), une performance qui s'effondre quand tu décales la fenêtre de test d'un mois, un edge qui n'existe que sur un seul coin et une seule unité de temps. Les edges robustes sont généralement simples, un peu moches, et fonctionnent partout."
+    },
+    {
+     "h": "Le remède : moins de boutons",
+     "p": "Chaque paramètre ajouté est une façon de plus de mémoriser le passé. Préfère les stratégies à 2-3 réglages plutôt que 10. Si de petits changements de paramètres provoquent de gros changements de résultats, tu as ajusté du bruit. Un backtest médiocre mais STABLE bat un backtest spectaculaire mais fragile."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "L'overfitting, c'est…",
+     "o": [
+      "Trader beaucoup trop souvent dans la même journée",
+      "Régler les règles jusqu'à mémoriser le bruit du passé",
+      "Utiliser du levier sur chaque position",
+      "Une figure chartiste"
+     ]
+    },
+    {
+     "q": "Un signe suspect d'overfitting, c'est…",
+     "o": [
+      "Des règles simples",
+      "Une performance qui s'effondre au décalage de fenêtre",
+      "Peu de paramètres",
+      "Fonctionner sur beaucoup de coins et d'unités de temps"
+     ]
+    },
+    {
+     "q": "Entre un backtest médiocre mais stable et un spectaculaire mais fragile, choisis…",
+     "o": [
+      "Le spectaculaire",
+      "Le stable",
+      "Aucun des deux",
+      "Les deux"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s4",
+   "t": "Out-of-sample : le test d'honnêteté",
+   "cards": [
+    {
+     "h": "Ne note jamais sur les données d'entraînement",
+     "p": "Le remède à l'overfitting, c'est la discipline dans les tests : conçois et règle tes règles sur UNE tranche d'historique (in-sample), puis fais-les tourner SANS Y TOUCHER sur une tranche qu'elles n'ont jamais vue (out-of-sample). Seul le résultat out-of-sample compte — c'est ce qui se rapproche le plus de l'avenir que tu puisses acheter."
+    },
+    {
+     "h": "Walk-forward : répéter l'honnêteté",
+     "p": "Le test walk-forward répète ça sur une fenêtre glissante : règle sur les mois 1 à 6, teste sur le mois 7 ; décale ; recommence. Une stratégie qui continue de performer sur des données jamais vues a gagné un peu de confiance. Une qui ne brille qu'en in-sample n'en a gagné aucune."
+    },
+    {
+     "h": "Le paper trading est l'ultime out-of-sample",
+     "p": "Après les tests, fais tourner le système sur les prix en direct avec de l'argent fictif — le seul jeu de données impossible à espionner : le présent. Si le backtest, l'out-of-sample ET le paper trading concordent, tu tiens quelque chose. S'ils divergent, crois le plus proche du live."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Le test out-of-sample, c'est…",
+     "o": [
+      "Tester sur les données qui ont servi au réglage",
+      "Tester sur des données que les règles n'ont jamais vues",
+      "Sauter les tests",
+      "Tester seulement le week-end"
+     ]
+    },
+    {
+     "q": "Quel résultat mérite le plus de confiance ?",
+     "o": [
+      "L'in-sample",
+      "L'out-of-sample et le paper trading live",
+      "Celui à la plus jolie courbe de capital",
+      "Le plus ancien"
+     ]
+    },
+    {
+     "q": "Le paper trading sert de…",
+     "o": [
+      "Une pure perte de temps",
+      "Le test out-of-sample final",
+      "Marketing",
+      "Niche fiscale"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s5",
+   "t": "Des règles au robot",
+   "cards": [
+    {
+     "h": "L'automatisation est un spectre",
+     "p": "On ne passe pas du clic manuel au pilote automatique intégral d'un coup. L'échelle : checklist écrite → alertes qui te préviennent quand les conditions s'alignent → semi-automatisation (la machine propose, tu confirmes) → bot complet. Chaque barreau élimine un mode de défaillance humain ; ne grimpe qu'à mesure que tes règles prouvent leur stabilité."
+    },
+    {
+     "h": "Ce qu'un bot attend de toi",
+     "p": "Un bot, ce sont tes règles, figées. Il lui faut des conditions SANS AMBIGUÏTÉ (pas de « ça a l'air fort »), un sizing exact, des sorties exactes, et des instructions pour les cas moches : exécutions partielles, déconnexions, gaps. Les écrire noir sur blanc révèle souvent que ton « système » tenait grâce à de la colle humaine."
+    },
+    {
+     "h": "Teste la machine comme une stratégie",
+     "p": "Un bot peut perdre de l'argent de deux façons : mauvaises règles ou mauvais code. Teste-les séparément — les règles dans le backtester, le code contre une API de paper trading où un bug ne coûte rien. Ce n'est qu'une fois les deux validés que l'argent réel entre en jeu, petit d'abord."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "L'échelle d'automatisation raisonnable commence par…",
+     "o": [
+      "Un bot complet dès le premier jour",
+      "Une checklist écrite",
+      "Du code emprunté",
+      "La taille maximale"
+     ]
+    },
+    {
+     "q": "Un bot exige des règles…",
+     "o": [
+      "Au feeling",
+      "Sans ambiguïté",
+      "Secrètes",
+      "Flexibles sur le moment"
+     ]
+    },
+    {
+     "q": "Un bot de trading doit d'abord tourner contre…",
+     "o": [
+      "Un compte réel avec les économies de ta vie",
+      "Une API de paper trading où les bugs sont gratuits",
+      "Le compte d'un ami",
+      "Rien"
+     ]
+    }
+   ],
+   "try": {
+    "p": "MarginPad propose une API REST de paper trading gratuite conçue exactement pour ça — teste un bot avec zéro risque.",
+    "label": "Docs API Bot →"
+   }
+  },
+  {
+   "id": "s6",
+   "t": "Surveillance et coupe-circuits",
+   "cards": [
+    {
+     "h": "Automatiser n'est pas abandonner",
+     "p": "Un système en marche a besoin d'un tableau de bord et d'une laisse : des vérifications quotidiennes que les exécutions correspondent aux intentions, que le risque par trade est celui que tu as fixé, que le régime de marché ressemble encore à celui pour lequel il a été construit. La dérive silencieuse — dans les coûts, la volatilité, ton propre respect des règles — tue lentement."
+    },
+    {
+     "h": "Définis la mort à l'avance",
+     "p": "Avant de déployer, écris les critères d'arrêt : un drawdown maximal (disons 15%), une série de pertes au-delà du pire du backtest, ou une rupture de régime. L'un d'eux est atteint et le système S'ARRÊTE — pas de renégociation avec l'espoir. Tu as appris ça pour toi-même en r6 ; les machines méritent la même discipline."
+    },
+    {
+     "h": "Les incidents arriveront",
+     "p": "Les exchanges tombent, les API expirent, une config fat-finger double ta taille. Pars du principe qu'il y aura des incidents, pour qu'ils ne te surprennent qu'à moitié : des plafonds de position au niveau de l'exchange, des alertes sur chaque exécution, et un bouton OFF manuel accessible depuis ton téléphone. L'ingénierie ennuyeuse, c'est ça la sécurité."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Les critères d'arrêt doivent être définis…",
+     "o": [
+      "Après le drawdown",
+      "Avant le déploiement",
+      "Jamais",
+      "Par l'exchange"
+     ]
+    },
+    {
+     "q": "Un système en marche a besoin…",
+     "o": [
+      "D'aucune attention — il tourne tout seul",
+      "Des vérifications quotidiennes du comportement",
+      "De plus de levier",
+      "De secret"
+     ]
+    },
+    {
+     "q": "Une protection saine contre les incidents inclut…",
+     "o": [
+      "L'optimisme",
+      "Des plafonds, des alertes et un OFF manuel",
+      "Une taille toujours plus grosse à chaque fois",
+      "Les ignorer"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s7",
+   "t": "Un portefeuille d'edges",
+   "cards": [
+    {
+     "h": "Les edges sont saisonniers",
+     "p": "Aucun système ne fonctionne éternellement — les tendances se terminent, les régimes de volatilité basculent, la foule s'adapte. Les professionnels font tourner un petit PORTEFEUILLE de systèmes décorrélés : un suiveur de tendance, un retour à la moyenne, peut-être un récolteur de funding. Quand l'un dort, un autre mange généralement."
+    },
+    {
+     "h": "Mettre un système à la retraite",
+     "p": "La compétence la plus dure : éteindre une stratégie que tu aimes. Les critères sont les mêmes règles d'arrêt qu'en s6, plus un — si la raison structurelle qui la faisait marcher a disparu (un changement de frais, un changement de régime, tout le monde s'y met), retire-la tant qu'elle a encore sa dignité. Un track record, c'est de l'histoire, pas un droit acquis."
+    },
+    {
+     "h": "Le métier, au complet",
+     "p": "Regarde le parcours : la mécanique (cours 1-2), la survie (3), la lecture du marché (4-5)… et maintenant un process qui tourne sans tes humeurs. Que tu automatises ou restes manuel, la destination est la même : un edge écrit, mesuré, révisé — et un trader assez calme pour le suivre."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Les professionnels font tourner plusieurs systèmes parce que…",
+     "o": [
+      "Plus, c'est plus classe",
+      "Les edges sont saisonniers",
+      "Les exchanges l'exigent",
+      "Les bots se sentent seuls"
+     ]
+    },
+    {
+     "q": "Un système doit être retiré quand…",
+     "o": [
+      "Il traverse une seule semaine dans le rouge",
+      "Les règles d'arrêt touchées ou sa raison disparue",
+      "Jamais",
+      "Quelqu'un s'en moque"
+     ]
+    },
+    {
+     "q": "L'aboutissement de tout ce cours, c'est…",
+     "o": [
+      "Zéro perte",
+      "Un edge écrit, mesuré, suivi avec calme",
+      "Un indicateur secret que personne ne connaît",
+      "Le levier maximal"
+     ]
+    }
+   ],
+   "try": {
+    "p": "La boucle complète est à toi maintenant — fais-la tourner là où les erreurs sont gratuites, et laisse les niveaux suivre la route.",
+    "label": "Paper Trade →"
+   }
+  }
+ ]
+}

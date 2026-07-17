@@ -1,0 +1,606 @@
+{
+ "id": "risk",
+ "name": "Risikomanagement",
+ "sub": "Der einzige Vorteil, den Anfänger wirklich haben können",
+ "lessons": [
+  {
+   "id": "r1",
+   "t": "Positionsgröße: die Fähigkeit Nr. 1",
+   "cards": [
+    {
+     "h": "Riskiere eine Scheibe, nie den ganzen Kuchen",
+     "prompt": "Zieh dein Risiko pro Trade so weit runter, dass du mindestens 30 Verluste in Folge überleben könntest.",
+     "p": "Profis bemessen Positionen so, dass ein Verlusttrade einen festen kleinen Anteil des Kontos kostet — üblich sind 1-2%. Beobachte, was deine Risikoeinstellung mit dem Überleben macht."
+    },
+    {
+     "h": "Größe aus dem Stop, nicht aus der Gier",
+     "p": "Die richtige Reihenfolge: Wähle, wo der Trade falsch ist (dein Stop-Loss-Level), miss die Distanz von Einstieg zu Stop, dann bemesse die Position so, dass diese Distanz deinem 1-2%-Risiko entspricht. Die Größe ist ein ERGEBNIS der Rechnung — nie der Ausgangspunkt."
+    },
+    {
+     "h": "Hebel ist ein Werkzeug, Größe ist die Entscheidung",
+     "p": "Der Hebel bestimmt nur, wie viel Margin du für eine gegebene Größe hinterlegst; das Risiko kommt aus der Größe selbst. Ein richtig bemessener 10×-Trade riskiert weniger als ein überdimensionierter 2×-Trade. Hör auf zu fragen, welchen Hebel du nehmen sollst, und fang an zu fragen, welche Größe dein Risiko bei 1% hält."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Mit 1% Risiko pro Trade — wie viele Verluste in Folge lassen dich zu 80% intakt?",
+     "o": [
+      "Etwa 5",
+      "Etwa 20",
+      "Etwa 50",
+      "Einer"
+     ]
+    },
+    {
+     "q": "Was ist der richtige ERSTE Schritt beim Bemessen eines Trades?",
+     "o": [
+      "Den Hebel wählen",
+      "Entscheiden, wo der Trade falsch ist",
+      "Ein Gewinnziel aussuchen",
+      "Die Positionsgröße maximieren"
+     ]
+    },
+    {
+     "q": "Risiko kommt letztlich aus…",
+     "o": [
+      "Dem Hebel allein",
+      "Der Positionsgröße relativ zum Stop",
+      "Dem Coin, den du dir aussuchst",
+      "Der Tageszeit"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Bemesse einen echten Trade: Konto, Risiko-%, Einstieg und Stop — der Rechner liefert die exakte Positionsgröße.",
+    "label": "Positionsgrößen-Rechner →"
+   }
+  },
+  {
+   "id": "r2",
+   "t": "Stop-Loss und Take-Profit, platziert wie ein Profi",
+   "cards": [
+    {
+     "h": "Der Stop gehört dorthin, wo die Idee stirbt",
+     "p": "Ein Stop-Loss gehört an den Preis, an dem deine Trade-These widerlegt ist — unter den Support, den du gekauft hast, jenseits des Levels, das das Setup entwertet. Ihn dort zu platzieren, wo der Schmerz gerade noch erträglich ist, ist verkehrt herum: Der Markt kennt deine Schmerzgrenze nicht und schert sich nicht darum."
+    },
+    {
+     "h": "Beweis es: platziere den Stop",
+     "prompt": "Du hast an der grünen Linie wegen der Support-Zone gekauft. Tippe dorthin, wo der Stop-Loss hingehört.",
+     "p": "Einer dieser drei Punkte ist richtig. Die anderen zwei sind der Weg, wie Anfänger verlieren."
+    },
+    {
+     "h": "Stop-Hunting ist real, Panik davor nicht",
+     "p": "Der Kurs sticht oft durch offensichtliche Levels, löst geclusterte Stops aus und dreht dann. Die Lösung ist nicht, deinen Stop zu entfernen (das verwandelt einen kleinen Verlust in eine Liquidation) — sondern Stops jenseits offensichtlicher runder Zahlen zu platzieren und so zu bemessen, dass ein Stop-out langweilig ist, nicht verheerend."
+    },
+    {
+     "h": "Take-Profit: entscheide, solange du klar denkst",
+     "p": "Eine Take-Profit-Order sichert den Gewinn automatisch. Entscheide den Ausstieg vor dem Einstieg, solange du objektiv bist — denn nach dem Einstieg bist du die am wenigsten objektive Person vor diesem Chart. Teilweise Gewinnmitnahmen (etwa die Hälfte am ersten Ziel schließen) sind ein legitimer Kompromiss."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Der beste Platz für einen Stop-Loss ist…",
+     "o": [
+      "Wo der Verlust zu sehr wehtun würde",
+      "Wo die Trade-Idee widerlegt ist",
+      "So nah am Einstieg wie möglich",
+      "Nirgendwo — Stops sind für Feiglinge"
+     ]
+    },
+    {
+     "q": "Wenn der Kurs Stops durch ein offensichtliches Level jagt, ist die richtige Antwort…",
+     "o": [
+      "Nie wieder in irgendeinem Trade Stops benutzen",
+      "Stops jenseits offensichtlicher Levels, tragbare Größe",
+      "Die Position verdoppeln",
+      "Den Coin wechseln"
+     ]
+    },
+    {
+     "q": "Wann sollte der Ausstiegsplan entschieden werden?",
+     "o": [
+      "Nachdem der Trade im Gewinn ist",
+      "Vor dem Einstieg",
+      "Nur beim Verlieren",
+      "Nie"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Eröffne eine Paper-Position und hänge einen echten SL und TP daran — übe das volle Ritual mit null Risiko.",
+    "label": "Paper Trade →"
+   }
+  },
+  {
+   "id": "r3",
+   "t": "Risk:Reward — profitabel falsch liegen",
+   "cards": [
+    {
+     "h": "Das Verhältnis, das Fehler verzeiht",
+     "p": "Risk:Reward vergleicht, was du riskierst, mit dem, was du gewinnen willst. $50 riskieren, um $150 zu machen, ist 1:3. Bei 1:3 bleibst du profitabel, wenn du nur 3 von 10 Trades gewinnst — das Bild unten sind diese zehn Trades. Das Verhältnis erkauft dir das Recht, meistens falsch zu liegen."
+    },
+    {
+     "h": "Trefferquote und R:R tauschen sich aus",
+     "p": "Strategien mit hoher Trefferquote haben meist kleine Gewinne; Strategien mit hohem R:R verlieren oft, gewinnen aber groß. Beides funktioniert; nichts funktioniert mit einer schlechten Kombination (niedrige Trefferquote UND niedriges R:R — der Standardzustand eines impulsiven Anfängers). Wisse, welches Spiel deine Strategie spielt."
+    },
+    {
+     "h": "Erwartungswert: die einzige Zahl, die entscheidet",
+     "p": "Erwartungswert = (Trefferquote × durchschnittlicher Gewinn) − (Verlustquote × durchschnittlicher Verlust). Positiv heißt, der Ansatz verdient über viele Trades Geld; negativ heißt, keine Positionsgröße kann ihn retten. Ein Trade bedeutet nichts — Erwartungswert wird über Dutzende gemessen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bei 1:3 Risk:Reward — welche Trefferquote ist ungefähr Break-even?",
+     "o": [
+      "75%",
+      "50%",
+      "25%",
+      "90%"
+     ]
+    },
+    {
+     "q": "Eine Strategie mit negativem Erwartungswert…",
+     "o": [
+      "Funktioniert mit kleinerer Größe",
+      "Funktioniert mit mehr Hebel",
+      "Verliert über die Zeit Geld",
+      "Braucht nur einen großen Gewinn"
+     ]
+    },
+    {
+     "q": "Wie viele Trades braucht es, um eine Strategie zu beurteilen?",
+     "o": [
+      "Einen guten",
+      "Dutzende — Erwartungswert ist Statistik",
+      "Zwei",
+      "Es lässt sich überhaupt nicht messen"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Füttere deine Trefferquote und dein R:R in den Risk-of-Ruin-Rechner — sieh, was die Mathematik über deine Überlebenschancen sagt.",
+    "label": "Risk-of-Ruin-Rechner →"
+   }
+  },
+  {
+   "id": "r4",
+   "t": "Die brutale Mathematik der Drawdowns",
+   "cards": [
+    {
+     "h": "Verluste wiegen schwerer als Gewinne",
+     "prompt": "Zieh den Verlust tiefer und beobachte, was die Erholung erfordert. Finde den Verlust, bei dem du +100% brauchst, nur um zurückzukommen.",
+     "p": "Verlier 10%, und du brauchst 11% zur Erholung. Diese Asymmetrie ist kein Motivationsposter-Material — sie ist Arithmetik, und sie ist der Grund, warum Kapitalerhalt das Gewinnjagen schlägt."
+    },
+    {
+     "h": "Serien sind normal, Ruin ist optional",
+     "p": "Selbst eine Strategie, die 60% der Zeit gewinnt, trifft regelmäßig 5er-Verlustserien — das ist Wahrscheinlichkeit, kein Versagen. Ob eine normale Serie zum Konto-Ende wird, hängt allein von der Größe ab, die du pro Trade riskiert hast. Richtige Größe macht Varianz zu Rauschen; Übergröße macht sie zu Ruin."
+    },
+    {
+     "h": "Die Comeback-Falle",
+     "p": "Nach einem Verlust drängt es dich, GRÖSSER zu setzen, um es schnell zurückzuholen. Das ist exakt verkehrt: größere Positionen nach Verlusten heißt, deine schlechtesten Entscheidungen bekommen deine größten Einsätze. Profis machen das Gegenteil — kleiner im Drawdown, wieder größer, wenn es läuft."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Nach dem Verlust von 50% eines Kontos erfordert die Erholung…",
+     "o": [
+      "+50%",
+      "+75%",
+      "+100%",
+      "+25%"
+     ]
+    },
+    {
+     "q": "Eine 5er-Verlustserie bei einer guten Strategie ist…",
+     "o": [
+      "Beweis, dass die Strategie kaputt ist",
+      "Statistisch normal",
+      "Unmöglich",
+      "Ein Grund, die Größe zu verdoppeln"
+     ]
+    },
+    {
+     "q": "Nach einer Verlustserie machen Profis typischerweise…",
+     "o": [
+      "Größe erhöhen, um schneller zurückzukommen",
+      "Größe reduzieren",
+      "Stop-Losses entfernen",
+      "Auf 100×-Hebel wechseln"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r5",
+   "t": "Psychologie: der Feind im Spiegel",
+   "cards": [
+    {
+     "h": "Revenge Trading",
+     "p": "Der teuerste Trade in der Geschichte jedes Anfängers ist der, der 90 Sekunden nach einem schmerzhaften Verlust platziert wird — überdimensioniert, ungeplant, getrieben vom Bedürfnis, wieder heil zu sein. Benenn das Muster jetzt und übernimm die Profi-Regel: Nach einem Stop-out kein neuer Trade, bis ein geschriebener Plan existiert."
+    },
+    {
+     "h": "FOMO kauft das Top",
+     "p": "Ein Coin, der heute schon 30% im Plus ist, fühlt sich am sichersten an — alle sind sich einig, der Chart bestätigt es. Aber in eine vertikale Bewegung einzusteigen heißt: Dein Stop ist weit weg, dein R:R ist furchtbar, und du bist die Exit-Liquidität für frühere Käufer. Großartige Trades fühlen sich beim Einstieg meist unbequem an, nicht offensichtlich."
+    },
+    {
+     "h": "Das Journal ist ein Spiegel",
+     "p": "Ein Trading-Journal — jeder Einstieg, Ausstieg, jede Größe und jeder Grund — verwandelt vage Gefühle in sichtbare Muster: Meine Sonntagabend-Trades verlieren alle, ich schließe Gewinner immer zu früh. Es ist unglamourös und das schnellste Selbstverbesserungs-Werkzeug, das Trading hat. Spielgeld-Trades zählen auch."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Der klassische Revenge Trade passiert…",
+     "o": [
+      "Nach tagelanger sorgfältiger Planung",
+      "Minuten nach einem schmerzhaften Verlust",
+      "Nur in Bullenmärkten",
+      "Beim Führen eines Journals"
+     ]
+    },
+    {
+     "q": "Einen Coin zu kaufen, der heute schon 30% im Plus ist, bedeutet meist…",
+     "o": [
+      "Den sichersten Einstieg überhaupt",
+      "Furchtbares Risk:Reward",
+      "Eine garantierte Fortsetzung",
+      "Niedrige Volatilität"
+     ]
+    },
+    {
+     "q": "Der Hauptzweck eines Trading-Journals ist…",
+     "o": [
+      "Nur Steuerunterlagen",
+      "Deine Muster sichtbar machen",
+      "Andere Trader beeindrucken",
+      "Den Markt vorhersagen"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Deine Paper Trades speisen bereits ein kostenloses Analyse-Journal — sieh deine Trefferquote, Serien und Gewohnheiten.",
+    "label": "Trading-Journal →"
+   }
+  },
+  {
+   "id": "r6",
+   "t": "Das Tagesverlustlimit und Tilt",
+   "cards": [
+    {
+     "h": "Tilt: traden im beeinträchtigten Zustand",
+     "p": "Nach zwei oder drei Verlusten verändert sich deine Gehirnchemie — das Bedürfnis, es zurückzuholen, übersteuert den Plan. Pokerspieler nennen es Tilt, und sie managen es strukturell, nicht mit Willenskraft: Ist ein Limit erreicht, endet die Session. Keine Ausnahmen, kein „nur noch ein Trade“."
+    },
+    {
+     "h": "Das Tagesverlustlimit",
+     "p": "Entscheide im Voraus: Verlierst du X% des Kontos an einem Tag (üblich 2-3R), bist du fertig bis morgen. Der Markt öffnet jeden Tag neu; deine Disziplin regeneriert sich nicht mitten im Tilt. Der beste Trade an einem schlechten Tag ist, den Laptop zuzuklappen."
+    },
+    {
+     "h": "Mach es mechanisch",
+     "p": "Eine Regel, an die du dich im Tilt erinnern musst, wird scheitern. Schreib das Limit ins Journal, sag es jemandem, stell einen Alarm — alles, was das Aufhören zum Standard macht statt zur Wahl. Konsequenz hier ist mehr wert als jeder Indikator, den du je lernen wirst."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Tilt ist…",
+     "o": [
+      "Ein bekanntes Chartmuster für Umkehrungen",
+      "Der beeinträchtigte Zustand nach Verlusten",
+      "Eine Orderart",
+      "Profitabel"
+     ]
+    },
+    {
+     "q": "Ein Tagesverlustlimit funktioniert, weil…",
+     "o": [
+      "Es den Markt vorhersagt",
+      "Es die Session beendet",
+      "Börsen es durchsetzen",
+      "Es den Hebel erhöht"
+     ]
+    },
+    {
+     "q": "Die beste Verteidigung gegen Tilt ist…",
+     "o": [
+      "Willenskraft im Moment",
+      "Ein mechanisches",
+      "Mehr Kaffee",
+      "Größere Positionen zur Erholung"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r7",
+   "t": "Korrelation: die versteckte Doppelwette",
+   "cards": [
+    {
+     "h": "Drei Positionen, ein Trade",
+     "p": "Long BTC, long ETH und long SOL fühlt sich diversifiziert an. Ist es nicht: Im Stress gehen Krypto-Korrelationen gegen 1 — alles fällt zusammen. Du hältst nicht drei Trades; du hältst einen Trade in dreifacher Größe, mit dreifacher Liquidationsfläche."
+    },
+    {
+     "h": "Echte Diversifikation ist in Krypto selten",
+     "p": "Innerhalb von Krypto ist fast alles eine gehebelte Wette auf dieselbe Flut (Bitcoin und globale Liquidität). Manche Paare dekorrelieren in ruhigen Zeiten — und rekorrelieren genau dann, wenn es wehtut. Nimm in deiner Risikorechnung Korrelation = 1 an, und du wirst nie überrascht."
+    },
+    {
+     "h": "Zähl dein GESAMTES Exposure",
+     "p": "Deine Risiko-pro-Trade-Regel muss für die SUMME korrelierter Positionen gelten. Drei 1%-Risiko-Longs auf Majors sind eine 3%-Wette auf ein Ergebnis. Entweder bemesse jede kleiner, oder akzeptiere und benenne die Konzentration — aber nenn sie nie Diversifikation."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Long BTC + long ETH + long SOL verhält sich im Crash wie…",
+     "o": [
+      "Drei unabhängige Trades",
+      "Ein Trade in dreifacher Größe",
+      "Ein Hedge",
+      "Cash"
+     ]
+    },
+    {
+     "q": "Im Marktstress gehen Krypto-Korrelationen typischerweise…",
+     "o": [
+      "Auf null oder nahe daran fallen",
+      "Gegen 1 — alles bewegt sich zusammen",
+      "Ins Negative",
+      "Verschwinden"
+     ]
+    },
+    {
+     "q": "Deine 1%-Risikoregel sollte gelten für…",
+     "o": [
+      "Jede Position einzeln, immer",
+      "Die Summe korrelierter Positionen",
+      "Nur Bitcoin",
+      "Nur Verluste"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Sieh, wie eng sich die Majors wirklich zusammen bewegen — die Live-Korrelationsmatrix macht es greifbar.",
+    "label": "Korrelationsmatrix →"
+   }
+  },
+  {
+   "id": "r8",
+   "t": "A+-Setups: die Kunst des Auslassens",
+   "cards": [
+    {
+     "h": "Dein Vorteil lebt in wenigen Trades",
+     "p": "Werte irgendein profitables Journal aus, und ein Muster erscheint: Der Großteil des Gewinns kam aus einer Minderheit hochwertiger Setups, und der Großteil der Verluste aus Füllmaterial — Langeweile-Trades, Fast-Setups, Rache-Einstiege. Das schnellste Performance-Upgrade ist, das Füllmaterial zu streichen."
+    },
+    {
+     "h": "Definiere A+ bevor du den Chart siehst",
+     "p": "Schreib auf, wie dein bestes Setup aussieht: Trend im Einklang, Schlüssellevel, Konfluenz, saubere Invalidierung, R:R mindestens 2. Wenn ein Trade die Liste nicht abhakt, existiert er nicht. Vage Standards werden in Echtzeit weggehandelt; geschriebene überleben."
+    },
+    {
+     "h": "Langeweile ist teuer",
+     "p": "Der Markt bestraft das Bedürfnis nach Action. Flat ist eine Position — oft die beste. Profis beschreiben ihren Job als Warten; Amateure beschreiben ihn als Traden. Der Unterschied zeigt sich direkt in der Erwartungswert-Mathematik aus r3."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "In den meisten profitablen Journals kommt der Großteil des Gewinns aus…",
+     "o": [
+      "Jedem einzelnen Trade zu gleichen Teilen",
+      "Einer Minderheit hochwertiger Setups",
+      "Langeweile-Trades",
+      "Wochenend-Trading"
+     ]
+    },
+    {
+     "q": "Ein A+-Setup sollte definiert werden…",
+     "o": [
+      "Beim Starren auf einen Live-Chart",
+      "Schriftlich, bevor du den Chart siehst",
+      "Nach dem Trade",
+      "Von jemandem in sozialen Medien"
+     ]
+    },
+    {
+     "q": "Flat zu sein (keine Position) ist…",
+     "o": [
+      "Reine verschwendete Zeit für Trader",
+      "Eine Position",
+      "Nur für Anfänger",
+      "Unmöglich"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r9",
+   "t": "Ein- und Ausskalieren",
+   "cards": [
+    {
+     "h": "Einstiege müssen nicht alles-oder-nichts sein",
+     "p": "Einskalieren heißt, eine Position in Teilen aufzubauen — ein Drittel zum Marktpreis, ein Drittel an einem besseren Level, ein Drittel bei Bestätigung. Du tauschst etwas Durchschnittspreis-Präzision gegen Flexibilität, und keine einzelne Ausführung entscheidet den Trade."
+    },
+    {
+     "h": "Die Martingale-Falle",
+     "p": "In eine GEWINNENDE These an geplanten Levels einzuskalieren ist eine Strategie. In einen VERLIERENDEN Trade zu verdoppeln, um den Durchschnitt zu senken — Martingale — ist, wie Konten sterben: Deine Größe ist am größten, genau wenn du am falschesten liegst. Der Unterschied ist, ob die Nachkäufe vor dem Einstieg geplant waren."
+    },
+    {
+     "h": "Ausskalieren spiegelt das Einskalieren",
+     "p": "Einen Gewinner in Teilen zu verkaufen glättet den Ausstieg auf dieselbe Art. Die Regel, die all das ehrlich hält: Jeder Nachkauf und jede Teilmitnahme stand im Plan, BEVOR die Position existierte. Improvisierte Nachkäufe sind Tilt im Strategie-Kostüm."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Der Unterschied zwischen Einskalieren und Martingale ist…",
+     "o": [
+      "Der Coin",
+      "Ob die Nachkäufe vor dem Einstieg geplant waren",
+      "Die Börse",
+      "Es gibt zwischen beiden gar keinen Unterschied"
+     ]
+    },
+    {
+     "q": "Martingale-Sizing heißt, deine größte Position kommt…",
+     "o": [
+      "Genau dann, wenn du am richtigsten liegst",
+      "Genau dann, wenn du am falschesten liegst",
+      "Zufällig",
+      "Nie"
+     ]
+    },
+    {
+     "q": "Improvisierte Nachkäufe mitten im Trade sind meist…",
+     "o": [
+      "Geniale spontane Improvisation",
+      "Tilt im Strategie-Kostüm",
+      "Pflicht",
+      "Gebührenfrei"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r10",
+   "t": "Risk of Ruin: die Mathematik des Überlebens",
+   "cards": [
+    {
+     "h": "Ruin ist eine berechenbare Wahrscheinlichkeit",
+     "p": "Gegeben eine Trefferquote, ein R:R und ein Risiko pro Trade, ist die Chance, dass dein Konto je einen fatalen Drawdown trifft, berechenbar — das heißt Risk of Ruin. Die brutale Erkenntnis: Bei hohem Risiko pro Trade trägt selbst eine wirklich profitable Strategie eine HOHE Ruin-Chance, bevor der Vorteil sich auszahlt."
+    },
+    {
+     "h": "Gleicher Vorteil, verschiedene Schicksale",
+     "p": "Eine 50%-Trefferquote-1:2-Strategie bei 2% Risiko hat eine Ruin-Wahrscheinlichkeit nahe null. Die identische Strategie bei 15% Risiko trifft mit hoher Wahrscheinlichkeit irgendwann eine tödliche Serie. Die Strategie hat sich nicht geändert — nur die Einsatzgröße. Überleben ist eine Eigenschaft der Positionsgröße, nicht des Könnens."
+    },
+    {
+     "h": "Rechne deine eigenen Zahlen",
+     "p": "Glaub das nicht einfach: Gib deine Paper-Trading-Trefferquote und dein R:R in einen Risk-of-Ruin-Rechner ein und beweg den Risiko-Regler. Zuzusehen, wie deine eigenen Überlebenschancen einbrechen, wenn das Risiko über 5% steigt, lehrt Positionsgrößen besser als jeder Absatz."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Risk of Ruin hängt ab von…",
+     "o": [
+      "Trefferquote, R:R und Risiko pro Trade",
+      "Nur dem Coin",
+      "Der Börse",
+      "Nur Glück und die Marktstimmung"
+     ]
+    },
+    {
+     "q": "Eine profitable Strategie bei 15% Risiko pro Trade…",
+     "o": [
+      "Kann nicht scheitern",
+      "Trägt trotzdem eine hohe Ruin-Chance",
+      "Ist optimal",
+      "Erlebt niemals nennenswerte Drawdowns"
+     ]
+    },
+    {
+     "q": "Überleben ist primär eine Eigenschaft von…",
+     "o": [
+      "Können",
+      "Einsatzgröße",
+      "News-Lesen",
+      "Handelszeiten"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Gib deine echte Trefferquote und dein R:R in den Rechner ein und zieh den Risiko-Regler — sieh zu, wie sich deine Ruin-Chancen bewegen.",
+    "label": "Risk-of-Ruin-Rechner →"
+   }
+  },
+  {
+   "id": "r11",
+   "t": "Die Pre-Trade-Checkliste",
+   "cards": [
+    {
+     "h": "Piloten vertrauen nicht dem Gedächtnis. Du solltest auch nicht.",
+     "p": "Unter Stress überspringen Menschen Schritte — deshalb läuft die Luftfahrt auf Checklisten. Eine Pre-Trade-Checkliste externalisiert deine Disziplin: fünf Fragen, schriftlich beantwortet vor jedem Einstieg, jedes Mal, besonders wenn sich das Setup dringend anfühlt."
+    },
+    {
+     "h": "Die fünf Fragen",
+     "p": "1) Ist der Trade MIT dem Trend des höheren Timeframes? 2) Ist er an einem Level, mit Konfluenz? 3) Wo genau ist die Invalidierung (Stop), und ist das R:R mindestens 2? 4) Ist die Größe korrekt für 1-2% Risiko? 5) Gibt es ein geplantes Event (CPI, FOMC) im Trade-Fenster?"
+    },
+    {
+     "h": "Dringlichkeit ist der Feind der Liste",
+     "p": "Die Trades, die die Checkliste am nötigsten haben, sind die, die sich zu dringend dafür anfühlen — der vertikale Ausbruch, das Rache-Setup. Wenn ein Trade nicht sechzig Sekunden auf fünf Fragen warten kann, ist es kein Trade; es ist ein Impuls mit angehängtem Chart."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Checklisten existieren, weil…",
+     "o": [
+      "Trader dumm sind",
+      "Menschen unter Stress Schritte überspringen",
+      "Börsen sie verlangen",
+      "Sie den Kursverlauf zuverlässig vorhersagen"
+     ]
+    },
+    {
+     "q": "Welche gehört NICHT zu den fünf Prüfungen?",
+     "o": [
+      "Trend des höheren Timeframes",
+      "Invalidierung und R:R",
+      "Korrekte Größe",
+      "Was soziale Medien denken"
+     ]
+    },
+    {
+     "q": "Ein Trade, der keine 60 Sekunden auf die Checkliste warten kann, ist…",
+     "o": [
+      "Die beste Sorte",
+      "Ein Impuls mit angehängtem Chart",
+      "Ein praktisch garantierter Gewinn",
+      "Selten"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r12",
+   "t": "Werte dein Journal aus wie ein Coach",
+   "cards": [
+    {
+     "h": "Das Wochenritual",
+     "p": "Einmal pro Woche lies jeden Trade wie ein Coach, der Spielaufnahmen auswertet: War der Einstieg nach Plan? Der Ausstieg? Welche Regel wurde gebrochen, und was hat der Bruch gekostet? Das Ziel ist keine Selbstgeißelung — es ist, das EINE wiederholte Leck zu finden, das am meisten kostet."
+    },
+    {
+     "h": "Zerlege die Daten",
+     "p": "Gruppiere deine Trades: nach Setup-Typ, Wochentag, Session, Coin, nach emotionalem Zustand, wenn du ihn festhältst. Lecks verstecken sich in Summen und springen aus Scheiben heraus — Sonntagabend-Trades verlieren, ein Setup trägt alles, Longs schlagen Shorts 3 zu 1."
+    },
+    {
+     "h": "Stopfe ein Leck pro Woche",
+     "p": "Behebe nicht alles auf einmal. Wähl das eine teuerste Muster, schreib eine Regel dagegen, und prüf nächste Woche, ob sie gehalten hat. Winzige Prozessverbesserungen zu verzinsen ist genau wie Kapital zu verzinsen — langsam, langweilig und unverschämt mächtig."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Der Zweck der Wochenauswertung ist…",
+     "o": [
+      "Sich schlecht fühlen",
+      "Das eine teuerste wiederholte Leck finden",
+      "Gewinne zählen",
+      "Screenshots der Gewinne mit allen teilen"
+     ]
+    },
+    {
+     "q": "Lecks findet man am leichtesten durch…",
+     "o": [
+      "Aufs Gesamt-P&L starren",
+      "Trades nach Setup",
+      "Freunde fragen",
+      "Intuition"
+     ]
+    },
+    {
+     "q": "Der beste Verbesserungsrhythmus ist…",
+     "o": [
+      "Alles auf einmal beheben",
+      "Ein Leck, eine Regel, eine Woche nach der anderen",
+      "Nichts ändern",
+      "Jede Woche eine komplett neue Strategie"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Deine Paper Trades speisen bereits das Analyse-Journal — öffne es und finde dein teuerstes Muster.",
+    "label": "Trading-Journal →"
+   }
+  }
+ ]
+}

@@ -1,0 +1,246 @@
+{
+ "id": "going",
+ "name": "Gerçeğe Geçiş",
+ "sub": "Kağıttan gerçek paraya, batmadan",
+ "lessons": [
+  {
+   "id": "g1",
+   "t": "Hazır mısın? Dürüst ölçütler",
+   "cards": [
+    {
+     "h": "Hazırlık ölçülebilir",
+     "p": "Gerçeğe geçmek bir his değil — bir kontrol listesidir: en az 100 kağıt işlem, üst üste 3 ay pozitif beklenti, gerçekten tuttuğun bir günlük, tanımlı A+ kurulumları olan yazılı bir strateji ve son bir ayda sıfır intikam işlemi."
+    },
+    {
+     "h": "Kağıt ile gerçek arasındaki fark",
+     "p": "Başlangıçta canlı performansının kağıttakinden KÖTÜ olacağını varsay — işlem açarken tereddüt, duygusal müdahale, neredeyse fark etmediğin spread ve komisyonlar. Kağıttaki avantajın inceyse, gerçek koşullar onu siler. Rakamlarda güvenlik payı istersin, yazı tura değil."
+    },
+    {
+     "h": "Son tarih yok",
+     "p": "Erken canlıya geçene kimse madalya vermez ve piyasa seneye de burada olacak. Disiplinli her kağıt ayı ucuz bir okul ücretidir; her erken canlı ay ise aynı ders için pahalı bir okul ücreti. Sabırlı yol ile hızlı yol aynı yerde biter — biri sadece daha pahalıya mal olur."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Makul bir hazırlık çıtası şunları içerir…",
+     "o": [
+      "10 şanslı işlem",
+      "100+ işlem ve 3 ay pozitif beklenti",
+      "Bütün hafta süren sıcak seri",
+      "Bir arkadaşın onayı"
+     ]
+    },
+    {
+     "q": "İlk canlı ayların muhtemelen şöyle geçer…",
+     "o": [
+      "Kağıttan daha iyi",
+      "Kağıttan daha kötü",
+      "Birebir aynı",
+      "Kusursuz"
+     ]
+    },
+    {
+     "q": "Erken canlıya geçmek sana şunu kazandırır…",
+     "o": [
+      "Madalya",
+      "Hiçbir şey — sadece daha pahalı okul",
+      "Borsada daha iyi komisyon oranları",
+      "Bir avantaj"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g2",
+   "t": "Borsa seçimi",
+   "cards": [
+    {
+     "h": "Önemli olan dört soru",
+     "p": "1) SENİN ülkende yasal ve erişilebilir mi — regülasyon geri kalan her şeyi belirler. 2) İşlem yaptığın paritelerde likit mi — sığ defterler kârı yer. 3) Senin büyüklüğünde GERÇEK komisyonlar ne, funding dahil. 4) Güvenlik ve ödeme gücü geçmişi nasıl — hiç çekimleri dondurdu mu?"
+    },
+    {
+     "h": "İlk günden emanet disiplini",
+     "p": "Borsa hesabı bir işlem yeridir, tasarruf hesabı değil. Orada sadece aktif işlem sermayesi tut; kârları düzenli çek. Her güvenlik özelliğini — uygulamalı 2FA, çekim beyaz listeleri, anti-phishing kodları — ilk yatırımdan ÖNCE aç, ilk korkudan sonra değil."
+    },
+    {
+     "h": "Korunduğun yerden başla",
+     "p": "Kendi ülkende regüle bir platform ve makul kaldıraç, 100x düğmeli bir offshore kumarhaneyi yener — artık biliyorsun ki ödül 100x düğmesi değil, hayatta kalmak. Az yatır ve önce tüm döngüyü (yatır → işlem → çek) küçücük bir tutarla doğrula."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Borsa seçerken İLK soru…",
+     "o": [
+      "Maksimum kaldıraç",
+      "Ülkende yasal ve erişilebilir mi",
+      "Logo tasarımı",
+      "Yeni üyelere verilen kayıt bonusları"
+     ]
+    },
+    {
+     "q": "Borsa hesabında ne kadar durmalı?",
+     "o": [
+      "Her şey",
+      "Sadece aktif işlem sermayesi",
+      "Tüm hayat birikimlerin",
+      "Borç para"
+     ]
+    },
+    {
+     "q": "Gerçek büyüklükten önce, ilk olarak…",
+     "o": [
+      "Döngüyü küçücük bir tutarla doğrulamalısın",
+      "Kaldıracı maksimuma çekmelisin",
+      "Hız için 2FA'yı geçici olarak kapatmalısın",
+      "Her şeyi yatırmalısın"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g3",
+   "t": "İlk gerçek işlemin",
+   "cards": [
+    {
+     "h": "Onda bir boyut, tam süreç",
+     "p": "İlk canlı işlemlerin normal kağıt riskinin yaklaşık ONDA BİRİNİ riske etmeli — sonucun önemsiz olacağı kadar küçük. Amaç kâr değil; gerçek duygular ilk kez ateşlenirken tam sürecini (kontrol listesi, giriş, stop, günlük) uygulamak."
+    },
+    {
+     "h": "Hedef sıkıcılıktır",
+     "p": "İlk haftada başarı şudur: kağıt işlemlerinin tıpatıp aynısı, sadece daha küçük işlemler. Aynı kurulumlar, aynı boyut hesabı, aynı çıkışlar. Canlı işlemlerin hemen kağıttakinden farklı görünüyorsa — daha çok işlem, daha büyük boyut, stopsuz — dur ve kağıda geri dön."
+    },
+    {
+     "h": "Takvimle büyüt, özgüvenle değil",
+     "p": "Boyutu bir programa göre artır (örneğin aylık) ve sadece ay disiplinli geçtiyse — asla haftanın ortasında, kendini formda hissettiğin için değil. Yenilmezlik hissi, kazanma serisinin gecikmeli göstergesi ve geri verme döneminin öncü göstergesidir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "İlk canlı işlemler şu kadar risk almalı…",
+     "o": [
+      "Normal boyut",
+      "Normalin yaklaşık onda biri",
+      "İki katı, değsin diye",
+      "Her şey"
+     ]
+    },
+    {
+     "q": "İlk canlı haftandaki başarı şöyle görünür…",
+     "o": [
+      "Dev kârlar",
+      "Kağıt işlemlerinle birebir aynı, daha küçük",
+      "Birçok farklı paritede sürekli hareket",
+      "Stopsuz"
+     ]
+    },
+    {
+     "q": "Boyut şöyle artmalı…",
+     "o": [
+      "Kendini formda ve şanslı hissettiğin her an",
+      "Programa göre, disiplinli aylardan sonra",
+      "Her gün",
+      "Asla"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g4",
+   "t": "Gerçek para psikolojisi",
+   "cards": [
+    {
+     "h": "Aynı işlem farklı hissettirir",
+     "p": "Kağıt kayıpları bilgidir; gerçek kayıplar acıdır. Kazananları erken kapatmayı, girişlerde tereddüt etmeyi ve zihinsel stopları genişletmeyi bekle — başta herkes yapar. Bu bir karakter kusuru değil; beyninin parayı hayatta kalma meselesi olarak görmesidir. Adını koymak çözümün yarısıdır."
+    },
+    {
+     "h": "Uyku rahatlayana kadar küçült",
+     "p": "Profesyonel kuralı: Bir pozisyon uykunu, ruh halini veya ilişkilerini etkiliyorsa çok büyüktür — risk matematiği ne derse desin. Her tekil sonuca tam kayıtsızlıkla planı izleyebileceğin bir boyutta işlem yap. Kayıtsızlık avantajın kendisidir."
+    },
+    {
+     "h": "Süreci ateş altında koru",
+     "p": "Gerçek baskı altında sürecin, bildiğin değil, pratiğini yaptığın şeydir. Kağıt ayları bu yüzden önemliydi: kontrol listesi, günlük, kayıp limitleri — otomatik pilota binene kadar tekrarlanmış. Duygular fırladığında uçağı otomatik pilot uçurur."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Canlıya geçerken kazananları erken kapatmak…",
+     "o": [
+      "Nadirdir",
+      "Gerçek paraya neredeyse evrensel ilk tepkidir",
+      "Profesyonellerin bilinçli stratejisidir",
+      "Kârlıdır"
+     ]
+    },
+    {
+     "q": "Bir pozisyon uykunu etkiliyorsa…",
+     "o": [
+      "Heyecan vericidir",
+      "Matematik ne derse desin, çok büyüktür",
+      "Normaldir",
+      "Mesleğe gerçek bağlılık işaretidir"
+     ]
+    },
+    {
+     "q": "Baskı altında yaptığın şey…",
+     "o": [
+      "Bildiğindir",
+      "Otomatikleşene kadar pratiğini yaptığındır",
+      "Adrenalin sayesinde her zamankinden iyidir",
+      "Rastgeledir"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g5",
+   "t": "Uzun oyun",
+   "cards": [
+    {
+     "h": "Önce hayatta kal, sonra birleşik büyü",
+     "p": "Bu akademideki her ders tek cümleye iner: Oyunda kal. Avantajlar bulunur, kaybedilir ve yeniden bulunur; piyasalar rejim değiştirir; stratejiler eskir. Ayakta kalan trader — sermayesi sağlam, süreci sağlam, merakı sağlam — gelecekteki her fırsatı bedavaya alır."
+    },
+    {
+     "h": "Döngüyü çalışır tut",
+     "p": "Öğrenme döngüsü asla bitmez: planı uygula, her şeyi günlüğe yaz, haftalık gözden geçir, bir sızıntıyı kapat, tekrarla. Araçları yerlerini hak ettikçe ekle — etkinlikler için takvim, pozisyonlanma için funding ve OI, adaylar için tarayıcı. Karmaşıklık kazanılır, asla sonradan vidalanmaz."
+    },
+    {
+     "h": "Artık çoğu insandan fazlasını biliyorsun",
+     "p": "Kaldıraç matematiği, likidasyon mekaniği, boyutlandırma, R:R, beklenti, tilt kontrolü, piyasa yapısı, pozisyonlanma verisi, makro etkinlikler — bu, vadeli hesap açan insanların çoğunun öğrendiğinden gerçekten fazlası. Hataların bedava olduğu yerde pratik yapmaya devam et ve seviyeler yolu işaretlesin."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Tüm akademinin tek cümlelik özeti…",
+     "o": [
+      "Her bir işlemde kusursuz girişler bul",
+      "Oyunda kal — hayatta kalmak her fırsatı verir",
+      "Daha çok işlem yap",
+      "Fenomenlere güven"
+     ]
+    },
+    {
+     "q": "Öğrenme döngüsü…",
+     "o": [
+      "Bu kurstan sonra biter",
+      "İşlem → günlük → gözden geçirme → tekrarla",
+      "İsteğe bağlıdır",
+      "Sadece yeni başlayan traderlar içindir"
+     ]
+    },
+    {
+     "q": "İşlem sürecinde karmaşıklık şöyle olmalı…",
+     "o": [
+      "Motivasyon varken hemen eklenmeli",
+      "Kazanılmalı — her araç yerini kanıtlamalı",
+      "Sonsuza dek kaçınılmalı",
+      "Rastgele"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Akademi bitti — pratik asla bitmez. Serini canlı tut ve XP seviyeleri yolu izlesin.",
+    "label": "Seviyelerin →"
+   }
+  }
+ ]
+}

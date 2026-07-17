@@ -1,0 +1,246 @@
+{
+ "id": "going",
+ "name": "Pasar a Real",
+ "sub": "Del paper al dinero real, sin morir en el intento",
+ "lessons": [
+  {
+   "id": "g1",
+   "t": "¿Estás listo? Las métricas honestas",
+   "cards": [
+    {
+     "h": "La preparación se mide",
+     "p": "Pasar a real no es una sensación — es una checklist: al menos 100 trades en paper, expectativa positiva durante 3 meses consecutivos, un diario que de verdad mantienes, una estrategia escrita con setups A+ definidos, y cero episodios de revenge trading en el último mes."
+    },
+    {
+     "h": "La brecha entre paper y real",
+     "p": "Asume que tu rendimiento en real será PEOR que en paper al principio — dudas al ejecutar, interferencia emocional, spread y comisiones que apenas notabas. Si tu ventaja en paper es fina, las condiciones reales la borrarán. Quieres un margen de seguridad en los números, no un cara o cruz."
+    },
+    {
+     "h": "No hay fecha límite",
+     "p": "Nadie reparte medallas por pasar a real antes de tiempo, y el mercado seguirá aquí el año que viene. Cada mes de paper trading disciplinado es matrícula barata; cada mes prematuro en real es matrícula cara por la misma lección. El camino paciente y el rápido terminan en el mismo sitio — uno simplemente cuesta más."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Un listón de preparación razonable incluye…",
+     "o": [
+      "10 trades con suerte",
+      "100+ trades y 3 meses de expectativa positiva",
+      "Una buena racha caliente durante toda esta semana",
+      "La aprobación de un amigo"
+     ]
+    },
+    {
+     "q": "Tus primeros meses en real probablemente rendirán…",
+     "o": [
+      "Mejor que en paper",
+      "Peor que en paper",
+      "Igual",
+      "Perfectamente"
+     ]
+    },
+    {
+     "q": "Pasar a real antes de tiempo te gana…",
+     "o": [
+      "Medallas",
+      "Nada — solo matrícula más cara",
+      "Mejores comisiones en el exchange",
+      "Una ventaja"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g2",
+   "t": "Elegir un exchange",
+   "cards": [
+    {
+     "h": "Las cuatro preguntas que importan",
+     "p": "1) ¿Es legal y está disponible en TU país? — la regulación decide todo lo demás. 2) ¿Tiene liquidez en los pares que operas? — los libros finos se comen las ganancias. 3) ¿Cuáles son las comisiones REALES a tu tamaño, incluido el funding? 4) ¿Cuál es su historial de seguridad y solvencia — ha congelado retiros alguna vez?"
+    },
+    {
+     "h": "Disciplina de custodia desde el día uno",
+     "p": "Una cuenta de exchange es un lugar para operar, no una cuenta de ahorros. Mantén ahí solo el capital de trading activo; retira las ganancias con regularidad. Activa todas las funciones de seguridad — 2FA con app, listas blancas de retiro, códigos anti-phishing — antes del primer depósito, no después del primer susto."
+    },
+    {
+     "h": "Empieza donde estés protegido",
+     "p": "Una plataforma regulada en tu jurisdicción con apalancamiento moderado gana a un casino offshore con un botón de 100x — ya sabes que el botón de 100x no es el premio, sobrevivir lo es. Deposita poco y verifica el ciclo completo (depositar → operar → retirar) con una cantidad mínima primero."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "La PRIMERA pregunta al elegir un exchange es…",
+     "o": [
+      "El apalancamiento máximo disponible",
+      "Si es legal y está disponible en tu país",
+      "El diseño del logo",
+      "Los bonos de registro"
+     ]
+    },
+    {
+     "q": "¿Cuánto debería vivir en la cuenta del exchange?",
+     "o": [
+      "Todo",
+      "Solo el capital de trading activo",
+      "Tus ahorros",
+      "Dinero prestado de otras personas"
+     ]
+    },
+    {
+     "q": "Antes de operar con tamaño real, deberías primero…",
+     "o": [
+      "Verificar todo el ciclo con una cantidad mínima",
+      "Maximizar el apalancamiento",
+      "Desactivar temporalmente el 2FA por rapidez",
+      "Depositarlo todo"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g3",
+   "t": "Tu primer trade real",
+   "cards": [
+    {
+     "h": "Un décimo del tamaño, el proceso completo",
+     "p": "Tus primeros trades reales deberían arriesgar aproximadamente una DÉCIMA parte de tu riesgo normal en paper — tan poco que el resultado sea irrelevante. El objetivo no es la ganancia; es ejecutar tu proceso completo (checklist, entrada, stop, diario) mientras las emociones reales se disparan por primera vez."
+    },
+    {
+     "h": "El objetivo es el aburrimiento",
+     "p": "El éxito en la primera semana es: trades que se ven exactamente como tus trades en paper, solo más pequeños. Mismos setups, misma matemática de tamaño, mismas salidas. Si tu trading real se ve inmediatamente distinto del paper — más trades, más tamaño, sin stops — para y vuelve al paper."
+    },
+    {
+     "h": "Escala por calendario, no por confianza",
+     "p": "Aumenta el tamaño según un calendario (por ejemplo, mensual) y solo si el mes fue disciplinado — nunca a mitad de semana porque te sientes en racha. La sensación de invencibilidad es un indicador retrasado de una racha ganadora y un indicador adelantado de la devolución."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Los primeros trades reales deberían arriesgar…",
+     "o": [
+      "El tamaño normal",
+      "Alrededor de un décimo de lo normal",
+      "El doble de lo normal, para que el resultado cuente",
+      "Todo"
+     ]
+    },
+    {
+     "q": "El éxito en tu primera semana real se ve como…",
+     "o": [
+      "Ganancias enormes",
+      "Trades idénticos a los de paper, más pequeños",
+      "Acción constante en muchos pares distintos",
+      "Sin stops"
+     ]
+    },
+    {
+     "q": "El tamaño debería aumentar…",
+     "o": [
+      "Cuando te sientes en racha",
+      "Según un calendario",
+      "A diario",
+      "Nunca"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g4",
+   "t": "Psicología del dinero real",
+   "cards": [
+    {
+     "h": "El mismo trade se siente distinto",
+     "p": "Las pérdidas en paper son información; las pérdidas reales son dolor. Espera cortar ganadores antes de tiempo, dudar en las entradas y ampliar stops mentales — a todos les pasa al principio. No es un defecto de carácter; es tu cerebro tratando el dinero como supervivencia. Ponerle nombre es la mitad de la solución."
+    },
+    {
+     "h": "Reduce hasta que duermas tranquilo",
+     "p": "La heurística profesional: si una posición afecta tu sueño, tu humor o tus relaciones, es demasiado grande — sin importar lo que permita la matemática del riesgo. Opera un tamaño con el que puedas seguir el plan con total indiferencia ante cualquier resultado individual. La indiferencia es la ventaja."
+    },
+    {
+     "h": "Protege el proceso bajo fuego",
+     "p": "Bajo presión real, tu proceso es lo que practicaste, no lo que sabes. Por eso importaron los meses de paper: checklist, diario, límites de pérdida — repetidos hasta funcionar en piloto automático. Cuando las emociones se disparan, el piloto automático vuela el avión."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Cortar ganadores antes de tiempo al pasar a real es…",
+     "o": [
+      "Raro",
+      "Una reacción casi universal al dinero real",
+      "Una estrategia deliberada de profesionales",
+      "Rentable"
+     ]
+    },
+    {
+     "q": "Si una posición afecta tu sueño, es…",
+     "o": [
+      "Emocionante",
+      "Demasiado grande",
+      "Normal",
+      "Señal de compromiso"
+     ]
+    },
+    {
+     "q": "Bajo presión, ejecutas…",
+     "o": [
+      "Lo que sabes",
+      "Lo que practicaste hasta que fue automático",
+      "Mejor que de costumbre gracias a la adrenalina",
+      "Al azar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g5",
+   "t": "El juego largo",
+   "cards": [
+    {
+     "h": "Primero sobrevive, luego compón",
+     "p": "Cada lección de esta academia se reduce a una frase: mantente en el juego. Las ventajas se encuentran, se pierden y se reencuentran; los mercados cambian de régimen; las estrategias decaen. El trader que sigue en pie — capital intacto, proceso intacto, curiosidad intacta — recibe gratis todas las oportunidades futuras."
+    },
+    {
+     "h": "Mantén el ciclo en marcha",
+     "p": "El ciclo de aprendizaje nunca termina: opera el plan, anota todo en el diario, revisa cada semana, elimina una fuga, repite. Añade herramientas cuando se ganen su lugar — el calendario para eventos, funding y OI para el posicionamiento, el screener para candidatos. La complejidad se gana, nunca se atornilla."
+    },
+    {
+     "h": "Ahora sabes más que la mayoría",
+     "p": "Matemática del apalancamiento, mecánica de liquidación, tamaño de posición, R:R, expectativa, control del tilt, estructura de mercado, datos de posicionamiento, eventos macro — esto es genuinamente más de lo que la mayoría de quienes fondean una cuenta de futuros llega a aprender. Sigue practicándolo donde los errores son gratis, y deja que los niveles marquen el camino."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "El resumen de toda la academia en una frase es…",
+     "o": [
+      "Encuentra entradas perfectas",
+      "Mantente en el juego",
+      "Opera más",
+      "Confía en influencers"
+     ]
+    },
+    {
+     "q": "El ciclo de aprendizaje es…",
+     "o": [
+      "Un ciclo terminado tras acabar este curso final",
+      "Operar → diario → revisión → repetir, para siempre",
+      "Opcional",
+      "Solo para principiantes"
+     ]
+    },
+    {
+     "q": "La complejidad en un proceso de trading debería ser…",
+     "o": [
+      "Añadida de inmediato mientras dura la motivación",
+      "Ganada — cada herramienta debe demostrar su lugar",
+      "Evitada para siempre",
+      "Aleatoria"
+     ]
+    }
+   ],
+   "try": {
+    "p": "La Academia termina — la práctica nunca. Mantén viva la racha y deja que los niveles de XP marquen el camino.",
+    "label": "Tus Niveles →"
+   }
+  }
+ ]
+}

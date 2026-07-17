@@ -1,0 +1,614 @@
+{
+ "id": "market",
+ "name": "Leer el mercado",
+ "sub": "Datos en lugar de sensaciones",
+ "lessons": [
+  {
+   "id": "m1",
+   "t": "Tendencia, soporte y resistencia",
+   "cards": [
+    {
+     "h": "Opera con la corriente, no contra ella",
+     "p": "Una tendencia es una secuencia de máximos y mínimos crecientes (alcista) o de máximos y mínimos decrecientes (bajista). Operar contra una tendencia fuerte porque algo parece demasiado caro o demasiado barato es una donación. La tendencia no siempre tiene razón, pero acierta más veces que tus sensaciones sobre ella."
+    },
+    {
+     "h": "Detecta la zona de demanda",
+     "p": "Los soportes y las resistencias son zonas, no líneas exactas. Entrena el ojo con este gráfico.",
+     "prompt": "Los compradores entraron en la misma zona tres veces. Toca esa zona."
+    },
+    {
+     "h": "La confluencia vale más que cualquier señal aislada",
+     "p": "Un nivel por sí solo significa poco. Un nivel que coincide con una línea de tendencia, un número redondo y un máximo previo es confluencia: varias razones independientes apuntando a la misma zona. Los profesionales esperan la confluencia; los principiantes actúan con la primera línea que dibujan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Una tendencia alcista se define por…",
+     "o": [
+      "Solo velas verdes",
+      "Máximos crecientes y mínimos crecientes",
+      "Volumen alto",
+      "Una racha continua de noticias positivas"
+     ]
+    },
+    {
+     "q": "Cuando una resistencia se rompe, a menudo…",
+     "o": [
+      "Desaparece para siempre",
+      "Se convierte en nuevo soporte",
+      "Garantiza un crash",
+      "No significa nada"
+     ]
+    },
+    {
+     "q": "Confluencia significa…",
+     "o": [
+      "Un tipo de orden",
+      "Varias señales independientes apuntando a la misma zona",
+      "Una conferencia de cripto",
+      "Operar varias monedas diferentes al mismo tiempo"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Dibuja tus primeros niveles: abre un gráfico y marca las zonas de soporte y resistencia más evidentes recientes.",
+    "label": "Abrir Charts →"
+   }
+  },
+  {
+   "id": "m2",
+   "t": "Medias móviles: la tendencia, suavizada",
+   "cards": [
+    {
+     "h": "Qué muestra realmente una MA",
+     "p": "Una media móvil dibuja el precio medio de cierre de las últimas N velas: la memoria reciente del mercado en una sola línea suave. Precio por encima de una MA ascendente es señal de tendencia sana; precio cruzando una y otra vez una MA plana significa que no hay tendencia, y las herramientas de tendencia solo generarán ruido."
+    },
+    {
+     "h": "EMA vs SMA, y los pares famosos",
+     "p": "La media simple (SMA) pondera todas las velas por igual; la exponencial (EMA) reacciona más rápido a los precios recientes. Los ajustes que mira todo el mundo: EMA 9/21 para el momentum de corto plazo, SMA 50/200 para la foto grande. Funcionan en parte PORQUE todos las miran: zonas autocumplidas."
+    },
+    {
+     "h": "Cruces: señal y retraso",
+     "p": "Cuando la 50 cruza por encima de la 200 (cruce dorado), confirma que hay una tendencia alcista establecida; lo contrario (cruce de la muerte) confirma una bajista. Fíjate en la palabra confirma: las MA van retrasadas por construcción. Te dicen desde qué lado operar, no el momento exacto de hacer clic."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Una media móvil muestra…",
+     "o": [
+      "El precio futuro",
+      "La media de los cierres recientes",
+      "El volumen de trading",
+      "Las reservas que guarda el exchange"
+     ]
+    },
+    {
+     "q": "¿Qué MA reacciona más rápido a los movimientos recientes del precio?",
+     "o": [
+      "La SMA",
+      "La EMA",
+      "Son idénticas",
+      "Ninguna se mueve"
+     ]
+    },
+    {
+     "q": "Un cruce dorado (50 sobre 200) se usa mejor como…",
+     "o": [
+      "Un temporizador de entrada preciso al segundo",
+      "Confirmación de una tendencia alcista establecida",
+      "Una señal de venta",
+      "Un aviso de liquidación"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m3",
+   "t": "RSI y momentum",
+   "cards": [
+    {
+     "h": "Qué mide el RSI",
+     "p": "El RSI comprime las ganancias frente a las pérdidas de las últimas 14 velas en una escala de 0 a 100. Por encima de 70 se dice que el mercado está sobrecomprado; por debajo de 30, sobrevendido. Mide la VELOCIDAD del movimiento, no si es correcto: un mercado puede estar sobrecomprado y seguir subiendo durante semanas."
+    },
+    {
+     "h": "El error del principiante",
+     "p": "Vender solo porque el RSI tocó 70 es una de las formas más fiables de ponerse en short contra una tendencia alcista desbocada. En tendencias fuertes, el RSI se queda clavado en territorio extremo. La lectura de sobrecompra/sobreventa solo se vuelve interesante cuando la tendencia YA se está debilitando o en niveles importantes."
+    },
+    {
+     "h": "Divergencia: el truco útil",
+     "p": "Cuando el precio marca un nuevo máximo pero el RSI marca un máximo más bajo, el momentum se está apagando bajo la superficie: eso es divergencia bajista, una bandera de precaución temprana (no un botón de venta). Lo contrario en los mínimos es divergencia alcista. Divergencia más un nivel clave más confluencia: eso ya es un setup."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Un RSI por encima de 70 significa…",
+     "o": [
+      "Reversión garantizada: vende ya",
+      "El movimiento reciente ha sido rápido",
+      "El exchange va a detener el trading",
+      "El volumen es falso"
+     ]
+    },
+    {
+     "q": "La divergencia bajista es…",
+     "o": [
+      "Precio en nuevo máximo",
+      "Precio y RSI subiendo juntos",
+      "RSI por debajo de 30",
+      "Un patrón de velas"
+     ]
+    },
+    {
+     "q": "Por sí sola, la lectura de un único indicador es…",
+     "o": [
+      "Una estrategia completa",
+      "Débil: necesita confluencia con niveles y tendencia",
+      "Ilegal para operar",
+      "Una herramienta reservada solo para profesionales"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m4",
+   "t": "Open interest y posicionamiento de la masa",
+   "cards": [
+    {
+     "h": "Open interest: dinero en juego",
+     "p": "El open interest (OI) cuenta el valor total de las posiciones de futuros abiertas en ese momento. OI subiendo con precio subiendo = dinero nuevo comprando el movimiento (sano). Precio subiendo con OI BAJANDO = shorts cerrando, no demanda nueva: un movimiento que probablemente se estanque. El OI te dice QUIÉN impulsa un movimiento."
+    },
+    {
+     "h": "El ratio long/short",
+     "p": "El ratio long/short muestra de qué lado está la masa. Las lecturas extremas son contrarias: cuando casi todos ya están en long, quedan pocos compradores, pero debajo hay un enorme charco de precios de liquidación listo para alimentar el movimiento contrario."
+    },
+    {
+     "h": "La pila de tres señales",
+     "p": "El setup de derivados de alta convicción apila tres cosas: ratio long/short muy cargado a un lado + OI subiendo + funding pagado por el lado saturado. Eso es una masa apalancada, creciente y que paga por quedarse: un resorte cargado. Cada señal por separado es débil; juntas son la carta marcada del mercado."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Precio subiendo mientras el open interest baja suele significar…",
+     "o": [
+      "Compra nueva fuerte",
+      "Shorts cerrando",
+      "Una ruptura garantizada",
+      "Nada"
+     ]
+    },
+    {
+     "q": "Un ratio long/short extremadamente cargado a un lado es…",
+     "o": [
+      "Una señal para unirse a la mayoría",
+      "Una advertencia contraria",
+      "Prueba de un mercado sano",
+      "Ruido aleatorio"
+     ]
+    },
+    {
+     "q": "El setup del resorte cargado combina…",
+     "o": [
+      "RSI, MACD y volumen",
+      "Ratio saturado + OI subiendo + funding pagado por ese lado",
+      "Tres velas verdes",
+      "Las noticias junto al ruido de las redes sociales"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Mira el ratio long/short y el open interest en vivo: ¿qué lado está saturado ahora mismo?",
+    "label": "Ratio Long/Short →"
+   }
+  },
+  {
+   "id": "m5",
+   "t": "Cascadas de liquidación: por qué los crashes se pasan de frenada",
+   "cards": [
+    {
+     "h": "El mecanismo dominó",
+     "p": "Cuando el precio alcanza el nivel de liquidación de un trader apalancado, el exchange vende su posición a mercado de forma forzosa. Esa venta empuja el precio hacia abajo, hacia el SIGUIENTE grupo de precios de liquidación, disparando más ventas forzosas. Mira las fichas de dominó de abajo: un detonante, una cadena de salidas forzadas."
+    },
+    {
+     "h": "Por qué el precio caza ciertos niveles",
+     "p": "Los precios de liquidación se agrupan en lugares predecibles: justo más allá de los números redondos y de los soportes evidentes, donde multitudes de traders parecidos abrieron posiciones parecidas. Los jugadores grandes pueden ver esos grupos. Una mecha que atraviesa un nivel, dispara el grupo y revierte al instante es ese mecanismo en acción."
+    },
+    {
+     "h": "Vigilar el combustible",
+     "p": "Los feeds de liquidaciones en vivo muestran las cascadas mientras ocurren: una ráfaga de longs liquidados a la fuerza marca los mínimos de capitulación con más fiabilidad que la mayoría de los indicadores. Para tus propios trades la lección es defensiva: pon tu precio de liquidación donde una caza rutinaria no lo alcance o, mejor, dimensiona para que la liquidación sea imposible."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Una cascada de liquidación es…",
+     "o": [
+      "Un evento de limpieza planificado por el exchange",
+      "Ventas forzosas que disparan más ventas forzosas en cadena",
+      "Un tipo de recompensa de staking",
+      "Un patrón de gráfico"
+     ]
+    },
+    {
+     "q": "Los grupos de liquidaciones se forman…",
+     "o": [
+      "Al azar",
+      "Justo más allá de números redondos y niveles evidentes",
+      "Solo los fines de semana",
+      "Únicamente en monedas pequeñas con muy poca liquidez"
+     ]
+    },
+    {
+     "q": "La lección defensiva para tus propios trades es…",
+     "o": [
+      "Usar el apalancamiento máximo cuando tengas confianza",
+      "Mantener tu liquidación fuera del alcance de las mechas",
+      "Quitar los stop-loss",
+      "Operar solo de noche"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Mira las liquidaciones forzosas entrar en vivo en Rekt: observa el mecanismo de la cascada con tus propios ojos.",
+    "label": "Abrir Rekt →"
+   }
+  },
+  {
+   "id": "m6",
+   "t": "Macro: la marea bajo cada trade",
+   "cards": [
+    {
+     "h": "Cripto opera el dólar y las tasas",
+     "p": "Bitcoin es un activo de riesgo sensible a la liquidez: cuando parece que las tasas van a bajar, el dinero fluye hacia el riesgo y cripto sube; un escenario de tasas altas por más tiempo hace lo contrario. Por eso un dato de inflación de EE. UU. puede mover Bitcoin en un segundo: los algoritmos reprecian al instante toda la trayectoria de tasas."
+    },
+    {
+     "h": "Los eventos que importan",
+     "p": "Un puñado de publicaciones programadas provoca las horas más grandes de cripto: la decisión de tasas del FOMC de la Fed, los datos de inflación CPI y PCE, y el informe de empleo NFP. Están en el calendario con semanas de antelación: que uno te pille por sorpresa es una elección. Abajo: cómo se ven las 12:30 UTC en un día de CPI."
+    },
+    {
+     "h": "El riesgo de evento es un problema de tamaño",
+     "p": "No puedes predecir el dato, pero puedes sobrevivirlo: conoce la hora de publicación y dimensiona para que una mecha instantánea del 2-3% no pueda liquidarte. La primera vela tras una publicación suele ser un engaño: los profesionales dejan que se desarrolle en lugar de perseguir el mercado con el peor spread del día."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Por qué un dato de inflación de EE. UU. mueve Bitcoin en segundos?",
+     "o": [
+      "Casualidad",
+      "Los algoritmos reprecian al instante las expectativas de tasas",
+      "Los mineros venden en masa en cuanto leen las noticias",
+      "No lo mueve"
+     ]
+    },
+    {
+     "q": "Las horas de publicación de FOMC, CPI y NFP son…",
+     "o": [
+      "Secretas",
+      "Aleatorias",
+      "Programadas y públicas con semanas de antelación",
+      "Relevantes solo para los traders de acciones"
+     ]
+    },
+    {
+     "q": "El enfoque profesional ante una gran publicación programada es…",
+     "o": [
+      "Apalancamiento máximo justo antes",
+      "Dimensionar para que una mecha del 2-3% no te liquide",
+      "Comprar a mercado la primera vela tras el dato",
+      "Ignorarla"
+     ]
+    },
+    {
+     "q": "La idea más importante de este curso hasta ahora fue…",
+     "o": [
+      "Encontrar entradas perfectas en cada una de tus operaciones",
+      "Sobrevivir: el control del riesgo te da tiempo para aprender",
+      "Operar más a menudo",
+      "Más apalancamiento"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Abre el calendario económico y busca la próxima fecha de FOMC o CPI: pon un recordatorio antes de que llegue.",
+    "label": "Calendario económico →"
+   }
+  },
+  {
+   "id": "m7",
+   "t": "Patrones de gráfico: compresión y expansión",
+   "cards": [
+    {
+     "h": "Qué son realmente los patrones",
+     "p": "Triángulos, banderas, rangos: bajo cada patrón con nombre hay un solo hecho físico: la volatilidad se COMPRIME cuando compradores y vendedores llegan a un acuerdo temporal, y luego se EXPANDE cuando un lado gana. El nombre importa menos que reconocer la compresión, porque la expansión viene después."
+    },
+    {
+     "h": "Los patrones son probabilidades, no promesas",
+     "p": "Un triángulo no sabe hacia dónde va a romper. Los patrones inclinan las probabilidades ligeramente y, más útil aún, te dan niveles de invalidación limpios: entra en la ruptura, stop más allá del lado opuesto. La estructura de R:R es el verdadero regalo, no la predicción."
+    },
+    {
+     "h": "La trampa: alucinar patrones",
+     "p": "Mira fijamente el tiempo suficiente y cualquier gráfico cría patrones como las nubes crían caras. Ancla los patrones al contexto que ya tienes: tendencia, niveles clave, volumen en la ruptura. Una bandera de libro contra la tendencia del marco temporal superior y sin nivel es solo una forma."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Debajo de cada patrón de gráfico hay…",
+     "o": [
+      "Magia",
+      "Volatilidad que se comprime y luego se expande",
+      "Trading con información privilegiada",
+      "Números redondos"
+     ]
+    },
+    {
+     "q": "Lo más útil que te da un patrón es…",
+     "o": [
+      "Una dirección garantizada",
+      "Un nivel de invalidación limpio para la estructura de R:R",
+      "Un nombre vistoso para publicar en redes sociales",
+      "Volumen"
+     ]
+    },
+    {
+     "q": "Una bandera perfecta contra la tendencia del marco superior y sin nivel es…",
+     "o": [
+      "Un setup de sobresaliente",
+      "Solo una forma sin contexto",
+      "Una señal de short",
+      "Una señal de compra"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m8",
+   "t": "Análisis multi-timeframe",
+   "cards": [
+    {
+     "h": "Tres mapas de un mismo territorio",
+     "p": "El gráfico diario marca el CLIMA (tendencia y niveles clave), el de 4 horas marca el SETUP (estructura formándose en esos niveles), el de 15 minutos marca el GATILLO (entrada y stop precisos). Un mercado, tres altitudes: la confusión aparece cuando operas un gatillo sin clima."
+    },
+    {
+     "h": "El ritual de arriba hacia abajo",
+     "p": "Siempre en este orden: primero el diario (¿de qué lado tengo permiso para operar?), luego el 4H (¿se está formando un setup en un nivel que importa?), luego el marco bajo (entrada exacta, invalidación exacta). Invertir el orden — encontrar un gráfico de 5 minutos emocionante e inventarle una historia — es como nacen las donaciones contra tendencia."
+    },
+    {
+     "h": "Los conflictos se resuelven hacia ARRIBA",
+     "p": "Cuando los marcos temporales no coinciden, gana el superior. Un 15 minutos alcista dentro de un diario bajista es un rebote para vender, no una reversión con la que casarse. Las rupturas de estructura se propagan hacia arriba lentamente: respeta el mapa grande hasta que cambie de verdad."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "El orden correcto de análisis es…",
+     "o": [
+      "15m → 4H → diario",
+      "Diario → 4H → 15m",
+      "Cualquier orden",
+      "Un solo marco temporal"
+     ]
+    },
+    {
+     "q": "Cuando los marcos temporales entran en conflicto, la prioridad es para…",
+     "o": [
+      "El más bajo",
+      "El marco temporal superior",
+      "El marco más volátil del momento",
+      "El más bonito"
+     ]
+    },
+    {
+     "q": "Un 15m alcista dentro de un diario bajista suele ser…",
+     "o": [
+      "Una reversión de tendencia para mantener",
+      "Un rebote dentro de una tendencia bajista",
+      "Imposible",
+      "Una señal de comprar y mantener"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m9",
+   "t": "Dominancia de Bitcoin y rotación",
+   "cards": [
+    {
+     "h": "El índice del mercado",
+     "p": "La dominancia de Bitcoin (BTC.D) es la cuota de Bitcoin dentro de la capitalización total de cripto. Dominancia subiendo: el dinero favorece a BTC y las alts sangran incluso en mercados verdes. Dominancia bajando con precios subiendo: el apetito por el riesgo se derrama hacia fuera — la firma clásica de la alt season."
+    },
+    {
+     "h": "El ciclo de rotación",
+     "p": "La liquidez suele caer en cascada: primero a BTC, luego a ETH, luego a las grandes capitalizaciones y por último a la larga cola de alts pequeñas, cada ola más arriesgada que la anterior. Para cuando las micro-caps se ponen verticales, el ciclo va tarde. Los gráficos de dominancia te dejan ver en qué capítulo estás."
+    },
+    {
+     "h": "Operar la marea, no solo el barco",
+     "p": "Un long en una altcoin son en realidad dos apuestas: la moneda Y la marea de la dominancia. Un setup fuerte en una alt contra una BTC.D subiendo es nadar contra corriente. Revisa la marea antes del trade: es un gráfico extra y lo replantea todo."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Una dominancia de BTC subiendo significa…",
+     "o": [
+      "Las alts rinden mejor",
+      "El dinero favorece a Bitcoin",
+      "Nada",
+      "Las stablecoins están fallando"
+     ]
+    },
+    {
+     "q": "La rotación clásica de liquidez va…",
+     "o": [
+      "De las small caps a las grandes y de ahí a BTC",
+      "BTC → ETH → grandes capitalizaciones → small caps",
+      "Al azar",
+      "ETH al final"
+     ]
+    },
+    {
+     "q": "Un long en una altcoin con la dominancia subiendo es…",
+     "o": [
+      "Dos apuestas alineadas",
+      "Nadar contra corriente",
+      "Libre de riesgo",
+      "La jugada estándar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m10",
+   "t": "Flujos de ETF: las huellas institucionales",
+   "cards": [
+    {
+     "h": "El recibo diario de Wall Street",
+     "p": "Desde que los ETF spot de Bitcoin de EE. UU. se lanzaron en 2024, la demanda institucional se volvió medible: cada entrada obliga al fondo a comprar BTC real y cada salida lo obliga a vender — y se reporta a diario. Es la ventana más clara que cripto ha tenido jamás hacia el dinero grande y lento."
+    },
+    {
+     "h": "Demanda spot vs espuma de apalancamiento",
+     "p": "Un rally impulsado por entradas en los ETF retira monedas reales del mercado: combustible duradero. Un rally con salidas y funding disparado es apalancamiento levantando su propio peso, del tipo que termina en cascada (m5). Los flujos te dicen en qué clase de rally estás parado."
+    },
+    {
+     "h": "Tendencia, no tick",
+     "p": "Un día rojo de flujos significa poco; una racha de varias semanas es un régimen. Combina la tendencia de los flujos con el funding y el open interest para la foto completa de quién conduce — el mismo razonamiento de tres señales que aprendiste en m4, ahora con una capa institucional."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Una entrada en un ETF obliga al emisor a…",
+     "o": [
+      "Vender BTC",
+      "Comprar BTC real para respaldar las nuevas participaciones",
+      "Imprimir participaciones de la nada sin comprar BTC",
+      "Pagar dividendos"
+     ]
+    },
+    {
+     "q": "Un rally con salidas de los ETF y funding disparado está impulsado por…",
+     "o": [
+      "Instituciones",
+      "Apalancamiento",
+      "Mineros",
+      "Gobiernos"
+     ]
+    },
+    {
+     "q": "Los flujos importan sobre todo como…",
+     "o": [
+      "Ticks de un solo día",
+      "Tendencias de varias semanas junto al funding y el OI",
+      "Ruido horario",
+      "Un sustituto completo de todo el resto del análisis"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m11",
+   "t": "Sentimiento: miedo y codicia",
+   "cards": [
+    {
+     "h": "Medir el pulso de la masa",
+     "p": "Los medidores de sentimiento como el índice Fear & Greed comprimen volatilidad, momentum, ruido social y dominancia en un solo número. Es un termómetro de la emoción, útil precisamente porque las masas se equivocan más en sus extremos emocionales."
+    },
+    {
+     "h": "Los extremos son señales, el medio es ruido",
+     "p": "Una lectura de 55 no te dice nada. La codicia extrema dice que los rezagados están entrando en masa con apalancamiento: confirma con el funding y el ratio long/short. El miedo extremo marca las zonas de capitulación donde los vendedores forzados terminan y los compradores pacientes empiezan."
+    },
+    {
+     "h": "Úsalo como freno, no como motor",
+     "p": "El sentimiento no genera entradas; modera el tamaño y la agresividad. En codicia extrema, ajusta el riesgo de tus longs aunque el gráfico siga pareciendo perfecto. En miedo extremo, resiste la venta por pánico en el fondo del hoyo. Es una herramienta de disciplina disfrazada de dato."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Los índices de sentimiento son más útiles en…",
+     "o": [
+      "Lecturas neutras",
+      "Los extremos emocionales",
+      "Exactamente 50",
+      "Los fines de semana"
+     ]
+    },
+    {
+     "q": "Codicia extrema combinada con funding alto sugiere…",
+     "o": [
+      "Una entrada relativamente segura",
+      "Longs apalancados tardíos",
+      "Riesgo bajo",
+      "Comprar más"
+     ]
+    },
+    {
+     "q": "El sentimiento funciona mejor como…",
+     "o": [
+      "Un generador automático de entradas",
+      "Un freno sobre el tamaño y la agresividad",
+      "Un sustituto de los gráficos",
+      "Un predictor de precios"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Mira dónde están las emociones del mercado ahora mismo: Fear & Greed en vivo con historial.",
+    "label": "Índice Fear & Greed →"
+   }
+  },
+  {
+   "id": "m12",
+   "t": "Construir una tesis de trade completa",
+   "cards": [
+    {
+     "h": "Una página, todas las capas",
+     "p": "Una tesis apila todo lo que enseñó este curso en un solo párrafo: tendencia y nivel del marco temporal superior (m1, m8), patrón o estructura (m7), posicionamiento en derivados — funding, OI, long/short (m4, l5), el calendario macro (m6), y flujos o sentimiento como capa de régimen (m10, m11)."
+    },
+    {
+     "h": "Luego, la mitad del riesgo",
+     "p": "La segunda mitad es el Curso 3: invalidación exacta, R:R de al menos 2, tamaño según la regla del 1-2%, parciales planificados y la revisión de eventos. Una tesis sin la mitad del riesgo es una opinión de mercado, y las opiniones son gratis pero son lo que más cuesta."
+    },
+    {
+     "h": "Escríbela, opérala, califícala",
+     "p": "Escribe la tesis ANTES de entrar, ejecútala tal como está escrita y luego califica el PROCESO en tu diario, no el resultado. Una pérdida ejecutada a la perfección es un buen trade; una ganancia con suerte y rompiendo el plan es uno malo que te pasará factura después. Este ciclo, repetido, es todo el oficio."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Una tesis completa incluye…",
+     "o": [
+      "Solo un patrón de gráfico",
+      "Tendencia, nivel, macro y el plan de riesgo completo",
+      "Una predicción de precio",
+      "El consenso mayoritario de las redes sociales"
+     ]
+    },
+    {
+     "q": "Una tesis sin invalidación ni tamaño es…",
+     "o": [
+      "Eficiente",
+      "Solo una opinión, de las caras",
+      "La práctica estándar profesional",
+      "Completa"
+     ]
+    },
+    {
+     "q": "Debes calificar tus trades por…",
+     "o": [
+      "Solo el resultado",
+      "El proceso: ¿se siguió el plan?",
+      "Las capturas de pantalla de tus ganancias",
+      "Sensaciones"
+     ]
+    },
+    {
+     "q": "En todo este curso, la idea más importante es…",
+     "o": [
+      "Entradas perfectas",
+      "Sobrevivir: el control del riesgo te da tiempo para aprender",
+      "Añadir muchos más indicadores complejos al gráfico",
+      "Más apalancamiento"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Escribe una tesis completa sobre cualquier moneda y ejecútala como paper trade: el ciclo completo, con riesgo cero.",
+    "label": "Paper Trade →"
+   }
+  }
+ ]
+}

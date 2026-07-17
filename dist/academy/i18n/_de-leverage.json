@@ -1,0 +1,589 @@
+{
+ "id": "leverage",
+ "name": "Hebel & Liquidierung",
+ "sub": "Die Maschinerie, die Konten auslöscht",
+ "lessons": [
+  {
+   "id": "l1",
+   "t": "Was ist ein Futures-Kontrakt?",
+   "cards": [
+    {
+     "h": "Den Preis traden, ohne Coins zu besitzen",
+     "p": "Ein Futures-Kontrakt ist eine Vereinbarung, die den Preis eines Coins abbildet. Du besitzt nie das Bitcoin — du hältst eine Position, die genau so gewinnt oder verliert, wie sich der Preis bewegt. Die Lieblingsvariante in Krypto ist der Perpetual Future (Perp), der kein Ablaufdatum hat: Du kannst ihn halten, solange deine Margin überlebt."
+    },
+    {
+     "h": "Long und Short",
+     "p": "Mit Futures kannst du in beide Richtungen profitieren: Long gehen heißt, du gewinnst bei steigendem Preis; Short gehen heißt, du gewinnst bei fallendem Preis. Tippe unten auf die Buttons und sieh, wie dieselbe Preisbewegung von Gewinn zu Verlust kippt."
+    },
+    {
+     "h": "Warum Perps Krypto dominieren",
+     "p": "Perpetual Futures sind das meistgehandelte Produkt in Krypto — das tägliche Perp-Volumen stellt Spot in den Schatten. Beliebt sind sie genau wegen der zwei Features, die sie gefährlich machen: Hebel und die Möglichkeit zu shorten. Alles in diesem Kurs existiert wegen dem, was du in den nächsten zwei Lektionen lernst."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wenn du einen Perpetual Future kaufst, besitzt du…",
+     "o": [
+      "Die echten Coins",
+      "Eine Position, die den Preis abbildet",
+      "Einen Aktienanteil an der Börse selbst",
+      "Eine Wallet"
+     ]
+    },
+    {
+     "q": "Eine Short-Position profitiert, wenn…",
+     "o": [
+      "Der Preis steigt",
+      "Der Preis fällt",
+      "Der Preis seitwärts läuft",
+      "Das Volumen steigt"
+     ]
+    },
+    {
+     "q": "Was macht einen Perpetual Future perpetual?",
+     "o": [
+      "Er verliert nie Geld",
+      "Er hat kein Ablaufdatum",
+      "Er hat keine Gebühren",
+      "Er steigt nur"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l2",
+   "t": "Hebel: Traden mit geliehener Größe",
+   "cards": [
+    {
+     "h": "Margin und Multiplikator",
+     "p": "Mit Hebel kontrollierst du eine Position, die größer ist als dein Geld. Hinterlege $100 Margin bei 10× Hebel und du kontrollierst eine $1.000-Position. Für jedes 1%, das sich der Preis bewegt, gewinnt oder verliert deine Position $10 — das sind 10% DEINES Geldes. Der Multiplikator gilt für Verluste genauso wie für Gewinne."
+    },
+    {
+     "h": "Spür es: zieh am Hebel",
+     "p": "Die rote Markierung ist deine Liquidierung. Schau, was der Hebel mit ihr macht.",
+     "prompt": "Zieh den Slider, bis eine ganz normale 1%-Bewegung gegen dich 100% deiner Margin auslöschen würde."
+    },
+    {
+     "h": "Die ehrliche Mathematik von 100×",
+     "p": "Bei 100× Hebel löscht eine 1%-Bewegung gegen dich 100% deiner Margin aus. Bitcoin bewegt sich routinemäßig 1% — mehrmals am Tag. Das ist kein Crash, das ist Hintergrundrauschen. Hoher Hebel macht keine Strategie besser, er verkürzt nur die Zeit, bis dich ein normaler Zucker rauswirft."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Du öffnest $100 mit 10× Hebel. Der Preis bewegt sich 1% zu deinen Gunsten. Dein Gewinn ist etwa…",
+     "o": [
+      "$1 (1%)",
+      "$10 (10% deiner Margin)",
+      "$100",
+      "Nichts, bis du schließt"
+     ]
+    },
+    {
+     "q": "Das Notional einer $100-Position bei 20× ist…",
+     "o": [
+      "$100",
+      "$20",
+      "$2.000",
+      "$100 plus Gebühren"
+     ]
+    },
+    {
+     "q": "Bei 100× Hebel — welche Preisbewegung gegen dich löscht deine ganze Margin aus?",
+     "o": [
+      "Etwa 1%",
+      "Etwa 10%",
+      "Etwa 50%",
+      "100%"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Öffne den Positionsgrößen-Rechner und sieh, wie sich Notional und Risiko ändern, wenn du den Hebel von 5× auf 100× schiebst.",
+    "label": "Positionsgrößen-Rechner →"
+   }
+  },
+  {
+   "id": "l3",
+   "t": "Liquidierung: der Punkt ohne Wiederkehr",
+   "cards": [
+    {
+     "h": "Was Liquidierung ist",
+     "p": "Wenn eine gehebelte Position fast ihre ganze Margin verliert, schließt die Börse sie zwangsweise, um sich selbst zu schützen — das ist Liquidierung. Deine Position ist weg, deine Margin ist weg, und es gibt keine Rettung, selbst wenn der Preis eine Sekunde später zurückspringt. Es ist der wichtigste Preis auf deinem Bildschirm."
+    },
+    {
+     "h": "Du bist dran: mach es sicher",
+     "p": "Genau diese Entscheidung triffst du bei jedem echten Trade.",
+     "prompt": "Jetzt das Gegenteil: zieh den Hebel RUNTER, bis deine Liquidierung mindestens 10% vom Entry entfernt liegt."
+    },
+    {
+     "h": "Warum 'das erholt sich wieder' hier nicht gilt",
+     "p": "Ein Spot-Holder kann einen 30%-Dip aussitzen und Jahre warten. Ein liquidierter Futures-Trader kann das nicht — die Position existiert nicht mehr. Diese Asymmetrie ist DER Unterschied zwischen Spot und Hebel: Spot bestraft ungeduldige Trader langsam, Hebel exekutiert sie sofort."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wenn sich der Preis nach der Liquidierung sofort erholt, bekommst du…",
+     "o": [
+      "Deine Position zurück",
+      "Die Hälfte deiner Margin zurück",
+      "Nichts — die Position ist weg",
+      "Schulden bei der Börse"
+     ]
+    },
+    {
+     "q": "Bei ungefähr welcher Gegenbewegung wird eine 50×-Position liquidiert?",
+     "o": [
+      "Etwa 50%",
+      "Etwa 25%",
+      "Etwa 2%",
+      "Etwa 0,1%"
+     ]
+    },
+    {
+     "q": "Das Erste, was du vor jedem gehebelten Trade wissen musst, ist…",
+     "o": [
+      "Die News von heute",
+      "Deinen exakten Liquidierungspreis",
+      "Was Influencer sagen",
+      "Das Gründungsjahr der Börse"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Berechne einen echten Liquidierungspreis: Entry, Hebel, Richtung — sieh genau, wo die Position stirbt.",
+    "label": "Liquidierungs-Rechner →"
+   }
+  },
+  {
+   "id": "l4",
+   "t": "Longs, Shorts und wie P&L wirklich funktioniert",
+   "cards": [
+    {
+     "h": "Die P&L-Formel in einfachen Worten",
+     "p": "Dein Gewinn oder Verlust = Positionsgröße × Prozentbewegung des Preises. ROE — Return on Equity — ist dieser P&L gemessen an deiner Margin. Zieh unten an der Preisbewegung und sieh, wie beide Zahlen bei 10× Hebel auf $100 Margin reagieren."
+    },
+    {
+     "h": "Shorten ist nicht böse, es ist ein Werkzeug",
+     "p": "Shorten — von fallenden Kursen profitieren — fühlt sich anfangs unnatürlich an. Aber Märkte fallen schneller als sie steigen (mit dem Aufzug runter, die Treppe rauf), und ein Trader, der nur long kann, ist in der Hälfte des Marktes blind. Übe im Paper-Konto beide Richtungen, bis sich keine mehr besonders anfühlt."
+    },
+    {
+     "h": "Gebühren und Funding knabbern ständig",
+     "p": "Jedes Öffnen und Schließen kostet eine Gebühr auf das Notional, und Perpetuals tauschen regelmäßig Funding-Zahlungen zwischen Longs und Shorts aus (nächste Lektion). Bei hohem Hebel summieren sich diese kleinen Kosten zu spürbarem Gegenwind — ein weiterer stiller Grund, warum Overtrader verlieren."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Du bist long mit $1.000 Notional und der Preis steigt 3%. Dein P&L ist…",
+     "o": [
+      "+$3",
+      "+$30",
+      "+$300",
+      "Hängt vom Coin ab"
+     ]
+    },
+    {
+     "q": "'Mit dem Aufzug runter, die Treppe rauf' bedeutet…",
+     "o": [
+      "Märkte fallen schneller als sie steigen",
+      "Märkte steigen schneller als sie fallen",
+      "Der Preis kehrt immer zum Entry zurück",
+      "Shorten ist verboten"
+     ]
+    },
+    {
+     "q": "Trading-Gebühren auf Futures werden berechnet auf…",
+     "o": [
+      "Nur deine Margin",
+      "Die volle Notional-Positionsgröße",
+      "Nur deinen Gewinn",
+      "Nichts — Futures sind gratis"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l5",
+   "t": "Funding: der unsichtbare Geldfluss",
+   "cards": [
+    {
+     "h": "Wie Perps am echten Preis kleben bleiben",
+     "p": "Ohne Ablaufdatum könnte ein Perpetual vom echten Coin-Preis wegdriften. Funding verhindert das: Alle paar Stunden zahlt eine Seite der anderen einen kleinen Prozentsatz. Schalte unten um: Handelt der Perp ÜBER Spot (die Masse ist long), zahlen Longs an Shorts; UNTER Spot zahlen Shorts an Longs."
+    },
+    {
+     "h": "Funding als Stimmungsthermometer",
+     "p": "Extrem positives Funding heißt: Die Masse ist massiv long UND zahlt für das Privileg — historisch ein Warnsignal, denn überfüllte Trades lösen sich gewaltsam auf. Extrem negatives Funding markiert überfüllte Shorts — Treibstoff für einen Short Squeeze."
+    },
+    {
+     "h": "Es summiert sich",
+     "p": "Funding von 0,01% pro 8 Stunden klingt nach nichts — aber das sind rund 11% pro Jahr auf dein Notional, und bei 10× Hebel ist es eine dreistellige jährliche Belastung deiner Margin. Wer Funding ignoriert, dem sickert der P&L leise weg."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wenn der Perp über dem Spot-Preis handelt, wer zahlt Funding?",
+     "o": [
+      "Shorts zahlen an Longs",
+      "Longs zahlen an Shorts",
+      "Die Börse zahlt an alle",
+      "Niemand"
+     ]
+    },
+    {
+     "q": "Extrem positives Funding signalisiert meist…",
+     "o": [
+      "Eine garantierte Rally",
+      "Eine massiv überfüllte Long-Seite",
+      "Eine Phase mit wenig Volatilität voraus",
+      "Einen Börsen-Ausfall"
+     ]
+    },
+    {
+     "q": "Warum zählt kleines Funding bei hohem Hebel?",
+     "o": [
+      "Tut es nicht",
+      "Es summiert sich zu einer großen Belastung der Margin",
+      "Es gilt nur für Shorts",
+      "Es wird beim Schließen der Position voll erstattet"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Sieh dir Live-Funding auf über 160 Paaren an — finde die extremste Rate gerade jetzt.",
+    "label": "Funding Rates →"
+   }
+  },
+  {
+   "id": "l6",
+   "t": "Ordertypen: Market, Limit, Stop",
+   "cards": [
+    {
+     "h": "Drei Werkzeuge, drei Jobs",
+     "p": "Eine Market-Order wird sofort zu dem gefüllt, was das Orderbuch hergibt — du zahlst Spread und eventuelle Slippage. Eine Limit-Order nennt deinen Preis und wartet. Eine Stop-Order löst aus, wenn der Preis ein Level kreuzt. Das Bild unten zeigt alle drei im Orderbuch."
+    },
+    {
+     "h": "Market: Tempo gegen Preis. Limit: Preis gegen Geduld.",
+     "p": "Nutze Market-Orders, wenn SOFORT rein oder raus wichtiger ist als der exakte Preis — und wisse: Slippage ist bei heftigen Bewegungen am schlimmsten. Profi-Entries sind meist Limits: Du wirst vielleicht nie gefüllt, aber wenn, dann zu deinem Preis oder besser, meist mit niedrigeren Gebühren."
+    },
+    {
+     "h": "Stops: Automatisierung, die Konten rettet",
+     "p": "Die Stop-Order ist das Fundament des Stop-Loss (Kurs 3). Sie führt deinen Plan aus, während du schläfst, arbeitest oder emotional neben dir stehst. Der Trader, der stattdessen den Chart anstarrt, ist der Trader, der im schlimmsten Moment einfriert."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Die Order mit garantierter Ausführung, aber unsicherem Preis ist…",
+     "o": [
+      "Limit",
+      "Market",
+      "Stop",
+      "Iceberg"
+     ]
+    },
+    {
+     "q": "Eine Limit-Order garantiert…",
+     "o": [
+      "Sie wird in jedem Markt sicher gefüllt",
+      "Deinen Preis oder besser, WENN sie gefüllt wird",
+      "Keine Gebühren",
+      "Sofortige Ausführung"
+     ]
+    },
+    {
+     "q": "Der Hauptzweck einer Stop-Order ist…",
+     "o": [
+      "Einen besseren Entry-Preis bekommen",
+      "Deinen Exit-Plan automatisch ausführen",
+      "Alle Verluste vermeiden",
+      "Die Position verdoppeln"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l7",
+   "t": "Isolated vs. Cross Margin",
+   "cards": [
+    {
+     "h": "Zwei Arten, eine Position zu decken",
+     "p": "Isolated Margin mauert einen festen Betrag für eine Position ein — wird sie liquidiert, verlierst du nur diese Mauer. Bei Cross Margin deckt dein GESAMTES Futures-Guthaben jede Position — mehr Luft bis zur Liquidierung, aber ein Blowup kann das ganze Konto mitnehmen."
+    },
+    {
+     "h": "Wann was Sinn ergibt",
+     "p": "Isolated ist der Anfänger-Standard und die ehrliche Wahl für riskante Trades: Der Schaden ist vordefiniert. Cross passt zu gehedgten Büchern und erfahrenen Tradern, die Margin aktiv managen. Cross zu nutzen, um einen schlechten Trade länger zu überleben, ist keine Strategie — es ist nur eine größere Beerdigung."
+    },
+    {
+     "h": "Prüfen, bevor du klickst",
+     "p": "Börsen haben unterschiedliche Standardeinstellungen, und der Margin-Modus verändert deinen Liquidierungspreis dramatisch. Es gehört zum Ritual vor jedem Trade: Richtung, Größe, Hebel, Margin-Modus, Liquidierungspreis. Jedes Mal, ohne Ausnahme."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bei Isolated Margin kostet dich eine Liquidierung…",
+     "o": [
+      "Dein ganzes Konto",
+      "Nur die eingemauerte Margin dieser Position",
+      "Nichts",
+      "Alle deine anderen offenen Positionen"
+     ]
+    },
+    {
+     "q": "Cross Margin bedeutet…",
+     "o": [
+      "Es ist nur eine einzige Position gleichzeitig erlaubt",
+      "Dein gesamtes Guthaben deckt jede Position",
+      "Keine Liquidierungen",
+      "Niedrigere Gebühren"
+     ]
+    },
+    {
+     "q": "Cross Margin zu nutzen, um einen Verlust-Trade hinauszuzögern, ist…",
+     "o": [
+      "Professionelles Risikomanagement",
+      "Eine größere Beerdigung auf Raten",
+      "Von Börsen vorgeschrieben",
+      "Gratis"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l8",
+   "t": "Mark Price vs. Last Price",
+   "cards": [
+    {
+     "h": "Zwei Preise auf demselben Bildschirm",
+     "p": "Der Last Price ist der letzte Trade auf DEINER Börse. Der Mark Price ist ein Fair-Value-Mix aus mehreren Börsen plus dem Spot-Index. In ruhigen Märkten unterscheiden sie sich um Cents — in heftigen Bewegungen oder auf dünnen Börsen deutlich."
+    },
+    {
+     "h": "Liquidierungen laufen über den Mark Price",
+     "p": "Börsen liquidieren nach MARK, nicht nach Last. Das schützt dich: Ein einzelner manipulierter Docht auf einer Börse kann nicht überall Positionen liquidieren. Es erklärt auch die klassische Verwirrung — du kannst liquidiert werden, obwohl der Chart-Docht auf deinem Bildschirm dein Level nie berührt hat, weil der Mark dort war."
+    },
+    {
+     "h": "Welchen du beobachten solltest",
+     "p": "Trade-Entscheidungen: Last Price (dort werden deine Orders gefüllt). Überlebensmathematik: Mark Price (den nutzen Liquidierung und unrealisierter P&L). Seriöse Plattformen zeigen beide — finde heraus, wo deine den Mark anzeigt, und setze Alarme darauf, nicht auf den Kerzendocht."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Liquidierungen werden ausgelöst durch…",
+     "o": [
+      "Den letzten gehandelten Preis auf deiner Börse",
+      "Den Mark Price",
+      "Deinen Entry-Preis",
+      "Das Daily Open"
+     ]
+    },
+    {
+     "q": "Warum nutzen Börsen den Mark Price für Liquidierungen?",
+     "o": [
+      "Es ist billiger",
+      "Ein manipulierter Docht kann nicht alle liquidieren",
+      "Es ist schneller",
+      "Die Finanz-Regulierer weltweit verlangen es genau so"
+     ]
+    },
+    {
+     "q": "Deine Position wurde liquidiert, aber der Chart-Docht hat dein Liq-Level nie berührt. Am wahrscheinlichsten…",
+     "o": [
+      "Die Börse hat sie dir heimlich gestohlen",
+      "Der Mark Price hat das Level erreicht",
+      "Ein Bug",
+      "Unmöglich"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l9",
+   "t": "Maintenance Margin: die echte Liq-Mathematik",
+   "cards": [
+    {
+     "h": "Warum Liq nicht exakt 100 ÷ Hebel ist",
+     "p": "Die Börse verlangt einen Sicherheitspuffer — die Maintenance Margin (oft rund 0,5% des Notionals) — der jederzeit vorgehalten wird. Die Liquidierung feuert, wenn dein Equity AUF diesen Puffer fällt, nicht auf null. Ein 10x Long wird also bei etwa −9,5% liquidiert, nicht exakt bei −10%."
+    },
+    {
+     "h": "Größere Positionen, größere Puffer",
+     "p": "Die Maintenance Margin ist gestaffelt: Riesige Positionen brauchen einen höheren Prozentsatz, weil ihr Zwangsverkauf den Markt bewegt. Das ist ein Grund, warum die Liquidierungslevels von Whales näher am Entry liegen, als die einfache Formel vermuten lässt."
+    },
+    {
+     "h": "Teilweise Liquidierung",
+     "p": "Bei großen Positionen liquidieren viele Börsen in Scheiben — sie schließen einen Teil der Position, um die Margin wieder über die Maintenance zu heben, statt alles auf einmal zu sprengen. Hilfreich, aber verlass dich nicht darauf: Wenn dich die Teil-Liquidierung retten muss, ist der Trade längst gescheitert."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ein 10x Long wird liquidiert bei etwa…",
+     "o": [
+      "Ganz exakt bei −10%, wie die Formel sagt",
+      "Rund −9,5%, wegen der Maintenance Margin",
+      "−5%",
+      "−20%"
+     ]
+    },
+    {
+     "q": "Maintenance Margin ist…",
+     "o": [
+      "Eine einmalige Gebühr",
+      "Ein Sicherheitspuffer",
+      "Optional",
+      "Dein Gewinnziel"
+     ]
+    },
+    {
+     "q": "Teilweise Liquidierung bedeutet…",
+     "o": [
+      "Du verlierst dein halbes Konto",
+      "Die Börse schließt Scheiben einer großen Position",
+      "Einen Rabatt auf Gebühren",
+      "Eine Liquidierung, die nur am Wochenende passiert"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l10",
+   "t": "Eine offene Position managen",
+   "cards": [
+    {
+     "h": "Der Trade beginnt nach dem Entry",
+     "p": "Anfänger sind besessen von Entries; Profis managen, was danach passiert. Eine offene Position ist eine Kette von Entscheidungen: Gilt die These noch, hat sich die Invalidierung verschoben, stimmt die Größe noch? Managen ist kein Herumfummeln — es ist das Ausführen des Plans, den du VOR dem Entry geschrieben hast."
+    },
+    {
+     "h": "Teilverkauf: dich selbst bezahlen",
+     "p": "Einen Teil eines Gewinners am ersten Ziel zu schließen, sichert echten Gewinn, während der Rest weiterläuft. Es verwandelt einen Papiergewinn in einen sicheren, beruhigt den Kopf und hält dich im Trend. Die klassische Struktur: einen Teil bei 1R mitnehmen, den Stop nachziehen, den Rest arbeiten lassen."
+    },
+    {
+     "h": "Breakeven-Stops: Gratis-Trades, mit Vorsicht",
+     "p": "Wenn der Preis deutlich in deine Richtung gelaufen ist, macht ein Stop auf Entry den Trade risikofrei — psychologisch unbezahlbar. Machst du es zu früh, wirft dich normales Rauschen aus einem guten Trade. Gib ihm Raum: Breakeven NACH dem ersten Ziel, nicht in der ersten grünen Minute."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ein Teilverkauf am ersten Ziel…",
+     "o": [
+      "Ist ein Eingeständnis von Schwäche",
+      "Sichert Gewinn",
+      "Verdoppelt sinnlos deine Gebühren",
+      "Löscht den Stop-Loss"
+     ]
+    },
+    {
+     "q": "Den Stop auf Breakeven zu ziehen macht den Trade…",
+     "o": [
+      "Risikofrei (Gaps ausgenommen)",
+      "Garantiert und immer profitabel",
+      "Illegal",
+      "Stärker gehebelt"
+     ]
+    },
+    {
+     "q": "Der richtige Zeitpunkt, eine Position zu managen, ist…",
+     "o": [
+      "Nie — immer set and forget",
+      "Nach dem Plan, der VOR dem Entry geschrieben wurde",
+      "Immer wenn es sich beängstigend anfühlt",
+      "Alle 30 Sekunden"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l11",
+   "t": "Die Hebel-Mythen",
+   "cards": [
+    {
+     "h": "Mythos: mehr Hebel = mehr Gewinn",
+     "p": "Gewinn kommt aus PositionsGRÖSSE mal Preisbewegung. Der Hebel entscheidet nur, wie viel Margin du für diese Größe hinterlegst. Eine $1.000-Position macht bei einer 3%-Bewegung dieselben $30, ob mit 2x oder 50x — die 50x-Version wird nur 25-mal früher liquidiert."
+    },
+    {
+     "h": "Mythos: Profis nutzen maximalen Hebel",
+     "p": "Professionelle Desks fahren routinemäßig einstelligen effektiven Hebel. Der 100x-Button existiert, weil er für Börsen profitabel ist, nicht für Nutzer. Hoher Hebel ist ein Liquiditäts-Werkzeug für Hedger und Scalper, die in Sekunden denken — keine Reichtumsmaschine."
+    },
+    {
+     "h": "Der ehrliche Nutzen von Hebel",
+     "p": "Hebel lässt dich weniger Kapital auf einer (hackbaren, einfrierbaren) Börse halten für dieselbe Exposure — das ist Kapitaleffizienz. Mit winzigen Positionsgrößen genutzt ist er legitim. Genutzt, um die Größe zu maximieren, verwandelt er normale Volatilität in sicheren Ruin — mit Timer."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Zwei Trader halten dieselbe $1.000-Position; einer mit 2x, einer mit 50x. Eine günstige 3%-Bewegung zahlt…",
+     "o": [
+      "Dem 50x-Trader 25-mal mehr",
+      "Beiden dieselben ~$30",
+      "Dem 2x-Trader mehr",
+      "Nichts bei 2x"
+     ]
+    },
+    {
+     "q": "Die 100x-Option existiert vor allem, weil…",
+     "o": [
+      "Profis sie verlangen",
+      "Sie für Börsen profitabel ist",
+      "Sie sicherer ist",
+      "Regulierer sie verlangen"
+     ]
+    },
+    {
+     "q": "Der legitime Vorteil von Hebel ist…",
+     "o": [
+      "Größere garantierte Gewinne",
+      "Weniger Kapital auf der Börse",
+      "Gebühren vermeiden",
+      "Andere beeindrucken"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l12",
+   "t": "Ein Futures-Ticket lesen",
+   "cards": [
+    {
+     "h": "Jede Zahl, entschlüsselt",
+     "p": "Ein Positions-Ticket zeigt: Richtung und Hebel (LONG 10x), Entry-Preis, Mark Price, Größe oder Notional, Margin, Liquidierungspreis, unrealisierten P&L und ROE. Du kennst jetzt jede dieser Zahlen. Wenn dich eine Zahl auf einem echten Ticket verwirrt, erhöhe nicht die Größe — entschlüssle sie zuerst."
+    },
+    {
+     "h": "Die zwei wichtigsten Zahlen",
+     "p": "Liquidierungspreis (wie weit ist der Tod entfernt?) und Positionsgröße (wie viel verliere ich pro 1%-Bewegung?). P&L und ROE sind Outputs — sie folgen aus den zwei Inputs. Trader, die nur auf die grün-rote Zahl schauen, managen Gefühle; Trader, die Liq-Distanz und Größe beobachten, managen Risiko."
+    },
+    {
+     "h": "Abschlussübung",
+     "p": "Öffne eine Paper-Position und lies das ganze Ticket laut vor: Richtung, Hebel, Entry, Größe, Margin, Liquidierung und ihre Distanz, Stop, Ziel. Wenn das zehn Sekunden dauert und null Verwirrung stiftet, hat Kurs 2 seinen Job gemacht."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Die zwei wichtigsten Zahlen auf einem offenen Ticket sind…",
+     "o": [
+      "P&L und ROE",
+      "Liq-Distanz und Positionsgröße",
+      "Entry-Zeit und Coin-Logo",
+      "Gebühren und Funding"
+     ]
+    },
+    {
+     "q": "ROE auf einem Ticket misst den P&L gegen…",
+     "o": [
+      "Das Notional",
+      "Deine Margin",
+      "Den Coin-Preis",
+      "Das Tagesvolumen"
+     ]
+    },
+    {
+     "q": "Wenn dich eine Zahl auf deinem Ticket verwirrt, solltest du…",
+     "o": [
+      "Trotzdem Größe nachlegen",
+      "Sie entschlüsseln",
+      "Die Augen schließen",
+      "Im Chat fragen und weitertraden"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Öffne eine Paper-Position und lies jedes Feld auf dem Ticket — Entry, Größe, Margin, Liq, Distanz. Zehn Sekunden, null Verwirrung.",
+    "label": "Paper Trade →"
+   }
+  }
+ ]
+}

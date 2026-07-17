@@ -1,0 +1,387 @@
+{
+ "id": "structure",
+ "name": "Fortgeschrittene Marktstruktur",
+ "sub": "Wo Orders liegen und warum der Kurs dorthin geht",
+ "lessons": [
+  {
+   "id": "a1",
+   "t": "Liquidität: wo die Orders wirklich liegen",
+   "cards": [
+    {
+     "h": "Der Kurs bewegt sich zu den Orders",
+     "p": "Große Spieler können große Positionen nicht füllen, wo das Orderbuch leer ist — sie brauchen ruhende Orders als Gegenseite. Cluster aus Stop-Losses und Liquidationen SIND diese ruhenden Orders. Deshalb sticht der Kurs so oft durch ein offensichtliches Level, füllt dort und dreht: Er war einkaufen."
+    },
+    {
+     "h": "Dein Stop ist der Einstieg eines anderen",
+     "p": "Dein Stop-Loss unter dem Support ist eine Verkaufsorder in Wartestellung. Tausend Trader, die ihn an derselben offensichtlichen Stelle platzieren, erzeugen einen Pool garantierter Verkäufer — der perfekte Ort für einen großen Käufer zum Absorbieren. Das ist keine Verschwörung; so wird große Größe schlicht gefüllt."
+    },
+    {
+     "h": "Es handeln, nicht fürchten",
+     "p": "Du kannst dem Spiel nicht entkommen, aber du kannst aufhören, das leichteste Ziel zu sein: Leg Invalidierungen jenseits der offensichtlichen Pools, erwarte den Sweep-and-Reverse an sauberen Levels, und behandle einen Docht durch ein Level, das sofort zurückerobert wird, als Information — jemand wurde gerade gefüllt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Warum sticht der Kurs oft durch offensichtliche Levels und dreht dann?",
+     "o": [
+      "Reiner Zufall",
+      "Große Spieler füllen gegen die geclusterten Stops",
+      "Börsen-Bugs",
+      "Das Timing wichtiger News-Veröffentlichungen"
+     ]
+    },
+    {
+     "q": "Ein Cluster von Stop-Losses unter dem Support ist effektiv…",
+     "o": [
+      "Ein kostenloser Schutz für Trader",
+      "Ein Pool garantierter Verkaufsorders",
+      "Nichts",
+      "Ein Bug"
+     ]
+    },
+    {
+     "q": "Ein Docht durch ein Level, das sofort zurückerobert wird, deutet auf…",
+     "o": [
+      "Das Level ist für immer gebrochen",
+      "Einen Liquiditäts-Sweep",
+      "Zeit zur Panik",
+      "Niedriges Volumen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a2",
+   "t": "Ranges: Akkumulation und Distribution",
+   "cards": [
+    {
+     "h": "Seitwärts wird die Geschichte geschrieben",
+     "p": "Trends sind das Ergebnis; Ranges sind die Ursache. In einer Range bauen große Spieler leise Positionen auf (Akkumulation) oder laden sie ab (Distribution), ohne den Kurs gegen sich zu bewegen. Die Ausbruchsrichtung wird meist lange vorher entschieden — innerhalb der Range."
+    },
+    {
+     "h": "Die Range lesen",
+     "p": "Beobachte, wie sich der Kurs an den Rändern verhält: wiederholte Vorstöße unter das Tief, die sich schnell erholen (Sweeps in Nachfrage), deuten auf Akkumulation; scheiternde Rallys am Hoch bei schrumpfendem Volumen deuten auf Distribution. Die Mitte der Range ist Rauschen — die Ränder sind der Hinweis."
+    },
+    {
+     "h": "Der Spring und die Falle",
+     "p": "Das klassische Ende: ein falscher Ausbruch GEGEN die echte Richtung — der Spring — der Stops abräumt, die letzte Größe des großen Spielers füllt und in die wahre Bewegung dreht. Lernst du, die Falle zu erwarten, wird die Falle dein Einstieg statt dein Ausstieg."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Große Positionen werden typischerweise aufgebaut…",
+     "o": [
+      "In vertikalen Trends",
+      "Innerhalb von Ranges",
+      "Genau am Top",
+      "Am Wochenende"
+     ]
+    },
+    {
+     "q": "Der informativste Teil einer Range ist…",
+     "o": [
+      "Die Mitte",
+      "Das Verhalten an ihren Rändern",
+      "Die Farbe der Kerzen in der Range",
+      "Ihre Dauer"
+     ]
+    },
+    {
+     "q": "Ein Spring ist…",
+     "o": [
+      "Eine Jahreszeit",
+      "Ein falscher Ausbruch gegen die echte Richtung",
+      "Eine Gebührenart",
+      "Ein gleitender Durchschnitt, den alle beobachten"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a3",
+   "t": "Imbalances: wenn der Kurs zu schnell läuft",
+   "cards": [
+    {
+     "h": "Lücken in der Auktion",
+     "p": "Wenn der Kurs heftig in eine Richtung läuft, überspringt er Levels — dort fand kaum Handel statt. Diese dünne Zone ist eine Imbalance (oft Fair Value Gap genannt). Märkte besuchen diese Zonen später häufig wieder, denn ungehandelte Preise sind unerledigte Geschäfte der Auktion."
+    },
+    {
+     "h": "Warum es Wiederbesuche gibt",
+     "p": "Nichts Mystisches: Teilnehmer, die die Bewegung verpasst haben, legen Orders in die übersprungene Zone, und Market Maker, die in den Spike verkauft haben, wollen dort zurückkaufen, wo das Volumen dünn war. Die Zone wirkt wie ein Magnet — nicht wegen Magie, sondern weil sich dort Orders sammeln."
+    },
+    {
+     "h": "Imbalances ehrlich nutzen",
+     "p": "Eine Imbalance ist eine KANDIDATEN-Zone für Einstiege in Trendrichtung — nie eine Garantie. Stapel sie mit Struktur: Eine Imbalance, die sich mit einem Support-Level und dem Trend des höheren Timeframes überlappt, ist ein echtes Setup; eine einsame Lücke auf dem 1-Minuten-Chart ist Rauschen mit schickem Namen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Eine Imbalance (Fair Value Gap) ist…",
+     "o": [
+      "Ein kaputter Chart, dem Kerzendaten fehlen",
+      "Eine Zone, die der Kurs fast ohne Handel übersprang",
+      "Eine Orderart",
+      "Ein Börsenfehler"
+     ]
+    },
+    {
+     "q": "Der Kurs besucht Imbalances oft wieder, weil…",
+     "o": [
+      "Magie",
+      "Verpasste Orders sammeln sich in der dünnen Zone",
+      "Die Regulierer es von den Börsen verlangen",
+      "Tut er nie"
+     ]
+    },
+    {
+     "q": "Eine Imbalance wird zum echten Setup, wenn…",
+     "o": [
+      "Sie überhaupt existiert",
+      "Sie sich mit Struktur und höherem Trend überlappt",
+      "Sie überhaupt auf dem 1-Minuten-Chart erscheint",
+      "Jemand sie postet"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a4",
+   "t": "Volume Profile: das Gedächtnis des Marktes",
+   "cards": [
+    {
+     "h": "Volumen nach PREIS, nicht nach Zeit",
+     "p": "Die Volumenbalken unter deinem Chart zeigen Volumen pro Zeitabschnitt. Ein Volume Profile dreht sie zur Seite: wie viel bei jedem PREIS gehandelt wurde. High-Volume-Nodes sind Preise, die der Markt lange akzeptiert hat; Low-Volume-Nodes sind Preise, die er schnell abgelehnt hat."
+    },
+    {
+     "h": "Akzeptanz und Ablehnung",
+     "p": "Läuft der Kurs in einen High-Volume-Node, wird er meist langsamer und hackt — dort wurde viel Geschäft gemacht, und es zieht wieder Handel an. Läuft er in einen Low-Volume-Node, schneidet er meist schnell durch — dort wollte vorher niemand handeln, und jetzt auch nicht. Das erklärt viele schnelle Bewegungen besser als jeder Indikator."
+    },
+    {
+     "h": "Praktische Anwendung",
+     "p": "Markiere den volumenstärksten Node der jüngsten Range (den Point of Control). Darüber finden Dips hinein oft Käufer; darunter finden Rallys hinein oft Verkäufer. Kombiniere mit deinen Levels aus m1 — wenn ein Volumen-Node und ein strukturelles Level übereinstimmen, hast du eine echte Zone gefunden."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ein Volume Profile zeigt Volumen…",
+     "o": [
+      "Pro Stunde",
+      "Auf jedem Preisniveau",
+      "Pro einzelner Börse",
+      "Pro Trader"
+     ]
+    },
+    {
+     "q": "Der Kurs, der durch einen LOW-Volume-Node läuft, wird meist…",
+     "o": [
+      "Deutlich langsamer werden",
+      "Schnell durchschneiden",
+      "Immer drehen",
+      "Anhalten"
+     ]
+    },
+    {
+     "q": "Der Point of Control ist…",
+     "o": [
+      "Ein Stop-Loss",
+      "Der Preis mit dem höchsten Volumen der Range",
+      "Der Eröffnungspreis des heutigen Tages",
+      "Ein Kerzenmuster"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a5",
+   "t": "Fibonacci: Mathematik oder Spiegel?",
+   "cards": [
+    {
+     "h": "Was Fib-Levels sind",
+     "p": "Fibonacci-Retracements markieren feste Bruchteile einer vorherigen Bewegung — 38,2%, 50%, 61,8%. Kein physikalisches Gesetz zwingt den Kurs, sie zu respektieren. Und doch werden sie oft respektiert. Warum? Weil Millionen Trader dieselben Levels zeichnen und danach handeln — ein selbsterfüllender Spiegel."
+    },
+    {
+     "h": "Die ehrliche Anwendung",
+     "p": "Behandle Fibs als KARTE davon, wo andere Trader Reaktionen erwarten, nicht als Schwerkraft. Das 61,8%-Retracement in einem Aufwärtstrend ist eine beliebte Kaufzone — was sie zu einer echten Zone macht, egal was du über die Mathematik glaubst. Selbsterfüllend ist trotzdem erfüllend."
+    },
+    {
+     "h": "Konfluenz, schon wieder",
+     "p": "Ein Fib-Level allein ist ein Münzwurf im Mathematik-Kostüm. Ein Fib-Level, das auf einem Volumen-Node, einem früheren Support und der Trendlinie des höheren Timeframes landet, ist eine Zone mit mehreren unabhängigen Gründen. Inzwischen kennst du das Muster: Nichts funktioniert allein; Stapel funktionieren."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Fibonacci-Levels funktionieren oft, weil…",
+     "o": [
+      "Ein Naturgesetz",
+      "Genug Trader handeln auf denselben Levels",
+      "Die Börsen setzen sie in ihren Systemen durch",
+      "Sie funktionieren nie"
+     ]
+    },
+    {
+     "q": "Die ehrliche Nutzung eines Fib-Retracements ist…",
+     "o": [
+      "Jedes Mal blinde Einstiege bei 61,8%",
+      "Eine Karte, wo die Masse Reaktionen erwartet",
+      "Exakte Tops vorhersagen",
+      "Stops ersetzen"
+     ]
+    },
+    {
+     "q": "Ein Fib-Level ohne weitere Konfluenz ist…",
+     "o": [
+      "Ein lehrbuchreifes A+-Setup",
+      "Ein Münzwurf in schicker Kleidung",
+      "Garantiert",
+      "Illegal"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a6",
+   "t": "Relative Stärke: setz auf das stärkste Pferd",
+   "cards": [
+    {
+     "h": "Nicht alles Grün ist gleich",
+     "p": "Wenn der Markt abprallt, erholen sich manche Coins auf neue Hochs, während andere kaum von ihren Tiefs abheben. Dieser Unterschied — relative Stärke — ist einer der haltbarsten Vorteile im Trading: Was sich im Sturm geweigert hat zu fallen, führt meist die Erholung an."
+    },
+    {
+     "h": "Einfach messen",
+     "p": "Kein Indikator nötig: Als BTC 5% fiel, was hat dein Kandidat gemacht? Der Coin, der 2% fiel, hat Käufer, die ihn verteidigen; der, der 12% fiel, nicht. Vergleiche eine Handvoll Charts gegen BTC im selben Fenster, und die Anführer zeigen sich von selbst."
+    },
+    {
+     "h": "Stark mit der Flut",
+     "p": "Kombiniere mit m9: In einem Risk-on-Markt mit fallender Dominanz die relativ stärksten Alts zu longen heißt fischen, wo die Fische sind — Trend, Flut und Stärke im Einklang. Den schwächsten Coin zu longen, weil er billig ist, ist der exakt gegenteilige Trade mit Rabatt-Aufkleber."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Relative Stärke vergleicht…",
+     "o": [
+      "Den Preis eines Coins nur mit seiner eigenen Geschichte",
+      "Wie ein Coin gegenüber dem Markt",
+      "Volumen mit Gebühren",
+      "Börsen"
+     ]
+    },
+    {
+     "q": "Im Markt-Dip hat der Coin, der am wenigsten fiel, wahrscheinlich…",
+     "o": [
+      "Keine Käufer",
+      "Käufer, die ihn verteidigen",
+      "Einen Bug",
+      "Bloß eine geringe Liquidität"
+     ]
+    },
+    {
+     "q": "Den SCHWÄCHSTEN Coin zu kaufen, weil er billig aussieht, ist…",
+     "o": [
+      "Der absolute Lieblings-Move der Profis",
+      "Das Gegenteil der Relative-Stärke-Logik",
+      "Risikofrei",
+      "Pflicht"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a7",
+   "t": "Volatilitätsregime: Ruhe und Sturm",
+   "cards": [
+    {
+     "h": "Volatilität clustert",
+     "p": "Märkte wechseln zwischen Regimen: lange Strecken enger, ruhiger Ranges und Ausbrüche heftiger Expansion. Volatilität clustert — Ruhe folgt auf Ruhe, Sturm auf Sturm — bis das Regime bricht. Dieselbe Strategie kann beide Welten nicht identisch behandeln."
+    },
+    {
+     "h": "Größe und Stops anpassen",
+     "p": "Im Sturmregime sitzt ein Stop, der letzte Woche vernünftig war, jetzt mitten im Rauschen — und deine Größe muss schrumpfen, um das Risiko konstant zu halten (größerer Stop-Abstand × kleinere Größe = dasselbe 1%-Risiko). In toten Ruheregimen sterben Ausbruchstrades wiederholt, während Mean-Reversion gedeiht."
+    },
+    {
+     "h": "Der Regime-Check",
+     "p": "Füge deiner Checkliste eine Frage hinzu: In welchem Regime bin ich? Ein Blick auf die jüngsten Kerzengrößen oder ein ATR-Wert beantwortet sie. Die meisten unerklärlichen Verlustserien sind eine Strategie, die für ein Regime gebaut wurde und im anderen läuft."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Volatilität neigt dazu…",
+     "o": [
+      "Jeden Tag zufällig zu sein",
+      "Zu clustern — Ruhe folgt auf Ruhe",
+      "Nur zu steigen",
+      "Nur zu fallen"
+     ]
+    },
+    {
+     "q": "Im Hochvolatilitätsregime bedeutet konstantes Risiko…",
+     "o": [
+      "Gleicher Stop, gleiche Größe",
+      "Weiterer Stop und KLEINERE Größe",
+      "Engerer Stop und größere Größe",
+      "Keine Stops"
+     ]
+    },
+    {
+     "q": "Viele Verlustserien sind in Wahrheit…",
+     "o": [
+      "Pech",
+      "Eine Strategie im falschen Regime",
+      "Manipulation durch das große Geld",
+      "Gebühren"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a8",
+   "t": "Konfluenz-Systeme: Belege stapeln",
+   "cards": [
+    {
+     "h": "Von Werkzeugen zum System",
+     "p": "Du hältst jetzt viele Linsen: Struktur, Liquidität, Ranges, Imbalances, Volumen-Nodes, Fibs, relative Stärke, Regime — plus alles aus den Kursen 1-4. Ein Profi benutzt nicht alle überall; er definiert einen festen STAPEL, der übereinstimmen muss, bevor ein Trade existiert."
+    },
+    {
+     "h": "Bau deinen Stapel",
+     "p": "Beispiel-Stapel: Trend des höheren Timeframes + ein strukturelles Level + ein zustimmender Volumen-Node + Positionierung nicht überfüllt gegen dich + kein rotes Kalender-Event im Fenster. Fünf Checks. Dein Stapel darf anders sein — wichtig ist, dass er GESCHRIEBEN und fest ist, damit jeder Trade im Journal vergleichbar ist."
+    },
+    {
+     "h": "Weniger, schwerere Trades",
+     "p": "Ein echter Stapel filtert brutal: Die meisten Tage liefern nichts, und genau das ist das Design. Die Trades, die durchkommen, tragen mehrere unabhängige Gründe — genau das macht ihr R:R ehrlich. Das ist die Brücke vom Dinge-Wissen zum Vorteil-Haben."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ein Konfluenz-System ist…",
+     "o": [
+      "Jeden verfügbaren Indikator gleichzeitig benutzen",
+      "Ein fester, geschriebener Stapel von Bedingungen",
+      "Eine Chatgruppe",
+      "Ein Börsen-Feature"
+     ]
+    },
+    {
+     "q": "Ein richtiger Stapel erzeugt…",
+     "o": [
+      "Einen ständigen Strom täglicher Trades",
+      "Wenige Trades mit mehreren unabhängigen Gründen",
+      "Tägliche Gewinne",
+      "Keine Verluste"
+     ]
+    },
+    {
+     "q": "Der Stapel muss aufgeschrieben werden, damit…",
+     "o": [
+      "Er nach außen professionell aussieht",
+      "Jeder Trade im Journal vergleichbar ist",
+      "Regulierer zustimmen",
+      "Man ihn verkaufen kann"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Öffne den Charts-Arbeitsbereich und markiere EINEN kompletten Stapel auf irgendeinem Coin: Trend, Level, Volumen-Node, und prüfe die Positionierung. Kein Trade nötig — nur die Analyse.",
+    "label": "Charts öffnen →"
+   }
+  }
+ ]
+}

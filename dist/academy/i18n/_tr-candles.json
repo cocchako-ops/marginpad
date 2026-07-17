@@ -1,0 +1,388 @@
+{
+ "id": "candles",
+ "name": "Mum Formasyonları",
+ "sub": "Savaşı mum mum okumak",
+ "lessons": [
+  {
+   "id": "c1",
+   "t": "Doji: piyasa omuz silker",
+   "cards": [
+    {
+     "h": "Kimse kazanmayınca",
+     "p": "Doji, neredeyse açıldığı yerde kapanan mumdur — alıcılarla satıcılar arasında berabere biten uzun bir kavga. Tek başına kararsızlık demektir. Anlamını KONUMU verir: Uzun trendden sonra gelen doji, kazanan tarafın inancının tükendiğini söyler."
+    },
+    {
+     "h": "Bağlam her şeydir",
+     "p": "Yatayın ortasındaki doji gürültüdür — kararsızlık içinde kararsızlık. Beş yeşil mumdan sonra kilit dirençteki doji gerçek sinyaldir: Fiyatı yukarı iten alıcılar az önce daha ileri itmeyi başaramadı. Aynı mum, bambaşka mesaj."
+    },
+    {
+     "h": "Dojiyi asla tek başına işleme",
+     "p": "Doji soru işaretidir, cevap değil. Sorar: Trend yoruldu mu? Cevap SONRAKİ mumdan ve gerçekleştiği seviyeden gelir. Dirençte doji + kırmızı onay mumu = bir hikaye. Tek başına doji = süslü isimli yazı tura."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Doji sana şunu söyler…",
+     "o": [
+      "Alıcılar kesin kazandı",
+      "Satıcılar kesin kazandı",
+      "Seans berabere bitti",
+      "Hacim sıfırdı"
+     ]
+    },
+    {
+     "q": "Doji gerçekte nerede ÖNEMLİDİR?",
+     "o": [
+      "Her yerde",
+      "Yatayın ortasında",
+      "Uzun trendden sonra",
+      "Sadece pazar günleri"
+     ]
+    },
+    {
+     "q": "Dojiye göre hareket etmenin doğru yolu…",
+     "o": [
+      "Hemen gir",
+      "Seviyede sonraki mumun onayını bekle",
+      "Pozisyonu ikiye katla",
+      "Grafikleri sonsuza dek yok say"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "t": "Yutan mum: bir taraf devralır",
+   "cards": [
+    {
+     "h": "Devralma mumu",
+     "p": "Boğa yutan formasyonu; kırmızı mumun ardından gövdesini tamamen yutan yeşil mumdur. O kırmızı mumda satan herkes şimdi zararda — ve mesaj nettir: Alıcılar bu fiyatta az önce kontrolü aldı."
+    },
+    {
+     "h": "Yutan neden çalışır",
+     "p": "Sihir değil, kapana kısılmış trader mekaniği. Yutulan mumun satıcılarının pozisyonları zararda; çıkışları (geri alımları) yeni yöne yakıt ekler. Yutulan mum ne kadar büyük ve seviye ne kadar önemliyse, o kadar çok kapana kısılmış trader — ve o kadar güçlü sinyal."
+    },
+    {
+     "h": "Gerçek yutanın kontrol listesi",
+     "p": "Üç şart: Bir SEVİYEDE olur (boğa için destek, ayı için direnç), yutan gövde önceki gövdeyi tamamen kaplar ve yutan mumda hacim artar. Üçü de yoksa iki rastgele muma bakıyorsun demektir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Boğa yutan formasyonu nedir…",
+     "o": [
+      "Aynı seviyede kapanan iki özdeş yeşil mum",
+      "Önceki kırmızı gövdeyi tamamen yutan yeşil gövde",
+      "Yukarı gap",
+      "Doji çifti"
+     ]
+    },
+    {
+     "q": "Yutan formasyonların çalışmasının mekanik nedeni…",
+     "o": [
+      "Şans",
+      "Kapana kısılan traderlar çıkarken dönüşe yakıt olur",
+      "Borsanın yeni alıcı çekmek için yaptığı promosyonlar",
+      "Astroloji"
+     ]
+    },
+    {
+     "q": "Gerçek bir yutan şunları ister…",
+     "o": [
+      "Herhangi iki mum",
+      "Seviye + tam gövde kaplaması + artan hacim",
+      "Bir hafta sonu",
+      "Büyük bir fenomenin Twitter'daki onayı"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "t": "Çekiç ve kayan yıldız: ret fitilleri",
+   "cards": [
+    {
+     "h": "Çekiç",
+     "p": "Çekiç düşüşten sonra belirir: üstte küçük gövde, altta uzun fitil — en az gövdenin iki katı. Hikaye: Satıcılar seans içinde fiyatı epey aşağı itti ve alıcılar hepsini geri çarptı. O uzun fitil, tek muma yazılmış başarısız bir kırılmadır."
+    },
+    {
+     "h": "Kendin bul",
+     "prompt": "Bu üç mumdan biri çekiç. Ona dokun.",
+     "p": "Hatırla: üstte küçük gövde, altta uzun fitil, düşüşten sonra."
+    },
+    {
+     "h": "Kayan yıldız — aynı hikaye, baş aşağı",
+     "p": "Kayan yıldız, rallinin tepesindeki ayna görüntüsüdür: uzun ÜST fitil, altta küçük gövde. Alıcılar ralliye devam etmeyi denedi, sert reddedildi ve mum dibine yakın kapandı. Dirençte, mumların basabileceği en temiz short kurulumlarından biridir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Çekicin uzun alt fitili şunu gösterir…",
+     "o": [
+      "Hiçbir şey",
+      "Satıcılar aşağı itti ve alıcılar tüm hareketi reddetti",
+      "Seans ortasında tetiklenen bir işlem durması",
+      "Yüksek komisyonlar"
+     ]
+    },
+    {
+     "q": "Çekiç en çok nerede önemlidir…",
+     "o": [
+      "Testerenin ortasında",
+      "Düşüşten sonra, destekte",
+      "Tüm zamanların zirvesinde",
+      "Asla"
+     ]
+    },
+    {
+     "q": "Kayan yıldız nedir…",
+     "o": [
+      "Uzun düşüşün dibindeki çekicin diğer adı",
+      "Rallinin tepesinde uzun üst fitilli ret",
+      "Bir gap",
+      "Hacim patlaması"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c4",
+   "t": "Sabah yıldızı ve akşam yıldızı",
+   "cards": [
+    {
+     "h": "Üç mum, tek dönüş",
+     "p": "Sabah yıldızı dipte üç perdelik dönüştür: güçlü kırmızı mum (satıcılar kontrolde), minik gövdeli mum (kavga duraksar — çoğu zaman doji), sonra ilkinin derinine kapanan güçlü yeşil mum (alıcılar devralır). Akşam yıldızı aynı formasyonun tepede ters çevrilmişidir."
+    },
+    {
+     "h": "Üç neden birden iyidir",
+     "p": "Tek mum gürültü olabilir; tutarlı tek hikaye anlatan üç ardışık mumu taklit etmek zordur. Ortadaki mum menteşedir — momentumun öldüğü an. Üçüncü mum kanıttır. Güçlü üçüncü kapanış olmadan elinde dönüş değil duraksama var."
+    },
+    {
+     "h": "Yıldızı notlandırmak",
+     "p": "Şu durumlarda güçlüdür: Ortadaki mum gap yapar veya net ayrı durur, üçüncü mum ilkinin orta noktasını geçerek kapanır ve tüm formasyon haritandaki bir seviyede oturur. Her zamanki gibi — formasyon tetiği ve geçersizleşmeyi verir (yıldızın ucunun ötesi), seviye nedeni verir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Sabah yıldızının ortadaki mumu neyi temsil eder…",
+     "o": [
+      "Trend yönünde ani bir hızlanma",
+      "Momentumun duraksadığı an",
+      "Bir tatil",
+      "Hacim"
+     ]
+    },
+    {
+     "q": "Dönüş şununla onaylanır…",
+     "o": [
+      "Devamı olmadan sadece ortadaki mumla",
+      "İlkinin derinine kapanan güçlü üçüncü mumla",
+      "Herhangi bir yeşil mumla",
+      "Haberle"
+     ]
+    },
+    {
+     "q": "Yıldız formasyonunun stopu nereye konur…",
+     "o": [
+      "Hiçbir yere",
+      "Formasyonun uç noktasının ötesine",
+      "Girişe",
+      "Her zaman girişten tam %1 uzağa"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c5",
+   "t": "Inside bar ve sıkışma",
+   "cards": [
+    {
+     "h": "Sarmal mum",
+     "p": "Inside bar tamamen önceki mumun aralığı içinde oturur — daha alçak tepe, daha yüksek dip. Piyasa sıkışıyor: Aralıklar daralır, iki taraf da bekler. m7'den sıkışmanın neyi vaat ettiğini biliyorsun: genişleme. Inside bar kümesi kurulmakta olan bir yaydır."
+    },
+    {
+     "h": "Kırılım oyunu",
+     "p": "Klasik kurulum: Ana mumun tepesini ve dibini işaretle. Bir tarafın hacimle kırılması tetiktir; karşı taraf doğal geçersizleşmedir. Tradingdeki en dar risk-ödül yapılarından biridir, çünkü stop mesafesi sarmalın genişliğidir."
+    },
+    {
+     "h": "Saygı duyulacak tuzak",
+     "p": "Sıkışma kırılımları SIK başarısız olur — ilk hareket çoğu zaman sahtedir (bunu a2'nin spring'inden biliyorsun). Korun: Üst zaman dilimi trendi yönündeki kırılımları tercih et, hacim iste ve ana mumun içine anında dönen kırılımı asla kovalama — o geri giriş, başarısızlık sinyalinin TA KENDİSİDİR."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Inside bar nedir…",
+     "o": [
+      "Öncekinden belirgin şekilde büyük bir mum",
+      "Tamamen önceki mumun aralığı içindeki mum",
+      "Bir doji",
+      "Bir gap"
+     ]
+    },
+    {
+     "q": "Inside bar kırılımının doğal stopu…",
+     "o": [
+      "Ana mumun karşı tarafı",
+      "Kırılım fiyatından sabit %10 uzakta",
+      "Girişte",
+      "Yoktur"
+     ]
+    },
+    {
+     "q": "Ana mumun içine anında dönen kırılım…",
+     "o": [
+      "Bir onaydır",
+      "Başarısızlık sinyalidir",
+      "Güvenilir bir alım sinyalidir",
+      "İmkansızdır"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c6",
+   "t": "Fitil hikayeleri: emme ve tükenme",
+   "cards": [
+    {
+     "h": "Fitilleri ayak izi gibi okumak",
+     "p": "Fitiller reddedilmiş fiyatlardır — konumları kimin reddedildiğini söyler. Bir bölgede tekrarlanan uzun alt fitiller, birinin orada satışı emdiğini gösterir: Her düşüş alınıyor. Bir bölgede tekrarlanan üst fitiller, üstte arz olduğunu ve her rallinin satıldığını gösterir."
+    },
+    {
+     "h": "Tükenme fitilleri",
+     "p": "Uzamış hareketten sonra gelen DEV fitil — son mumlardan çok daha büyük — sık sık tükenmeyi işaretler: Trendin son atılımı karşı emirlerden bir duvara çarptı (bu, m5'teki likidasyon kaskadı fitilinin yakından hali). Trend + doruk hacmi + dev fitil = hareket muhtemelen şimdilik bitti."
+    },
+    {
+     "h": "Fitil kümeleri seviyelerini senin yerine çizer",
+     "p": "Hisle çizgi çizmeyi unut: Birden çok fitilin dürtüp reddedildiği bölgeler, piyasanın KENDİ destek ve direncidir. Bölgeyi fitil uçları boyunca çiz, sonra tüm alet çantasını — trend, hacim düğümü, pozisyonlanma — o bölgeye uygula."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bir bölgede tekrarlanan uzun alt fitiller şunu düşündürür…",
+     "o": [
+      "Hiçbir şey",
+      "Biri satışı emiyor",
+      "Satıcılar kazanıyor",
+      "Ölü piyasa"
+     ]
+    },
+    {
+     "q": "Uzamış trendden sonraki dev fitil sık sık şunu işaretler…",
+     "o": [
+      "Trendin daha güçlü devamı",
+      "Tükenme — doruk duvara çarptı",
+      "Düşük hacim",
+      "Bir hata"
+     ]
+    },
+    {
+     "q": "En iyi destek/direnç bölgeleri şuradan çizilir…",
+     "o": [
+      "Sadece yuvarlak sayılardan",
+      "Ret fitili kümelerinden",
+      "Dünün haberlerinden",
+      "Sadece hareketli ortalamalardan"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c7",
+   "t": "Formasyonlar yalan söyler: başarısızlık işlemi",
+   "cards": [
+    {
+     "h": "Her formasyonun başarısızlık oranı var",
+     "p": "Çekiçler ezilir. Yutanlar yutulur. Kriptonun stop avı ortamında (a1) kitap formasyonları SÜREKLİ başarısız olur — çünkü herkes onları görür ve görünen emirler yemdir. Bunu kabullenmek, formasyon kullanıcısı ile formasyon kurbanı arasındaki farktır."
+    },
+    {
+     "h": "Başarısız formasyon da BİR formasyondur",
+     "p": "İşte profesyonel sırrı: BAŞARISIZ sinyal çoğu zaman daha iyi sinyaldir. Destekte kırılan boğa çekici, her çekiç alıcısının artık kapana kısıldığı demektir — stopları aşağı hareketi besler. Başarısızlığı işlemek (kapana kısılmış kalabalık yakıt olarak) çoğu zaman kitabı işlemekten temizdir."
+    },
+    {
+     "h": "İki hikayeye de pozisyonlan",
+     "p": "Pratik kural: Formasyonu neyin geçersiz kıldığını ve başarısızlık işleminin neye benzeyeceğini önceden bil. Çekiç dibi kırılırsa sadece çıkar mısın — yoksa ters mi dönersin? Bunu girişten önce kararlaştırmak, formasyonu duadan iki dallı plana çevirir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kriptoda kitap formasyonları sık başarısız olur çünkü…",
+     "o": [
+      "Grafikler bozuk",
+      "Herkes görüyor",
+      "Formasyonlar yasadışı",
+      "Komisyonlar"
+     ]
+    },
+    {
+     "q": "Başarısız boğa formasyonu çoğu zaman şuna dönüşür…",
+     "o": [
+      "Hiçbir şeye",
+      "Güçlü ayı sinyaline",
+      "Daha da güçlü bir alım sinyaline",
+      "Dojiye"
+     ]
+    },
+    {
+     "q": "Formasyon işlemine girmeden önce bilmen gereken…",
+     "o": [
+      "Sadece hedef",
+      "Neyin geçersiz kıldığı ve başarısızlık planı",
+      "Kullandığın borsanın tam kuruluş yılı",
+      "Hiçbir şey"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c8",
+   "t": "Mumları yerlerine koymak",
+   "cards": [
+    {
+     "h": "Mumlar son %10'dur",
+     "p": "Mum formasyonu TETİKTİR, asla neden değil. Neden öğrendiğin diğer her şeyden gelir: trend (m1), seviye (m1/a4), pozisyonlanma (m4), rejim (a7). Mum sadece son soruyu cevaplar: Bu seviyede harekete geçme anı ŞİMDİ mi?"
+    },
+    {
+     "h": "Tam sıralama",
+     "p": "Yukarıdan aşağı: Günlük trend yöne izin verir → 4S bir seviyede kurulum gösterir → pozisyonlanma sana karşı kalabalık değil → İŞTE O ZAMAN yakınlaştırıp mumu beklersin — yutan, çekiç, yıldız — yerleşik geçersizleşmesiyle giriş tetiğin olarak. O yığın olmadan mumlar, fazladan adımlı kumardır."
+    },
+    {
+     "h": "Gözü eğit, sonra sürece güven",
+     "p": "Formasyon tanıma tekrarla gelişen bir beceridir — ve kağıt işlem sana bedava sınırsız tekrar verir. Formasyonu bul, iki dallı planı yaz, uygula, günlüğe kaydet. Yüz kayıtlı formasyon sonra hangilerinin SANA ödediğini BİLECEKSİN — kendi piyasanda, kendi zaman diliminde."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Eksiksiz bir işlemde mum formasyonu…",
+     "o": [
+      "Stratejinin tamamı, başka şey gerekmez",
+      "Son tetik — trend ve seviyenin üstündeki son %10",
+      "İsteğe bağlı süs",
+      "Stop-loss"
+     ]
+    },
+    {
+     "q": "Doğru sıralama mumla biter çünkü…",
+     "o": [
+      "Mumlar üst zaman dilimindeki her şeyi tahmin eder",
+      "Zaten nedenleri olan seviyede girişi zamanlar",
+      "En güzeli o",
+      "Hacim öyle diyor"
+     ]
+    },
+    {
+     "q": "Hangi formasyonların SANA ödediğini öğrenmenin yolu…",
+     "o": [
+      "Fenomenlere güvenmek",
+      "Kağıt işlemde yüz kayıtlı tekrar + günlük",
+      "Bir şanslı işlem",
+      "Tüm formasyonların isimlerini ezberlemek"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Formasyon avına çık: Grafik aç, gerçek bir seviyede bir yutan ya da çekiç bul ve iki dallı planı kağıt işlem olarak kaydet.",
+    "label": "Paper Trade'i Aç →"
+   }
+  }
+ ]
+}

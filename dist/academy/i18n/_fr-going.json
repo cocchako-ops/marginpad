@@ -1,0 +1,246 @@
+{
+ "id": "going",
+ "name": "Passer en Réel",
+ "sub": "Du paper au réel, sans y laisser sa peau",
+ "lessons": [
+  {
+   "id": "g1",
+   "t": "Es-tu prêt ? Les métriques honnêtes",
+   "cards": [
+    {
+     "h": "La préparation se mesure",
+     "p": "Passer en réel n'est pas un ressenti — c'est une checklist : au moins 100 trades en paper, une espérance positive sur 3 mois consécutifs, un journal que tu tiens vraiment, une stratégie écrite avec des setups A+ définis, et zéro épisode de revenge trading le mois dernier."
+    },
+    {
+     "h": "L'écart entre paper et réel",
+     "p": "Pars du principe que ta performance en réel sera PIRE qu'en paper au début — hésitation à l'exécution, interférences émotionnelles, spread et frais que tu remarquais à peine. Si ton avantage en paper est mince, les conditions réelles l'effaceront. Il te faut une marge de sécurité dans les chiffres, pas un pile ou face."
+    },
+    {
+     "h": "Il n'y a pas de date limite",
+     "p": "Personne ne distribue de médailles pour être passé en réel tôt, et le marché sera encore là l'année prochaine. Chaque mois de paper trading discipliné est un apprentissage bon marché ; chaque mois prématuré en réel est un apprentissage coûteux pour la même leçon. Le chemin patient et le chemin rapide mènent au même endroit — l'un coûte juste plus cher."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Un seuil de préparation raisonnable inclut…",
+     "o": [
+      "10 trades chanceux",
+      "100+ trades et 3 mois d'espérance positive",
+      "Une bonne série bien chaude toute cette semaine",
+      "L'approbation d'un ami"
+     ]
+    },
+    {
+     "q": "Tes premiers mois en réel performeront probablement…",
+     "o": [
+      "Mieux qu'en paper grâce à la vraie motivation",
+      "Moins bien qu'en paper",
+      "À l'identique",
+      "Parfaitement"
+     ]
+    },
+    {
+     "q": "Passer en réel trop tôt te rapporte…",
+     "o": [
+      "Des médailles",
+      "Rien — juste un apprentissage plus coûteux",
+      "De meilleurs frais sur l'exchange",
+      "Un avantage"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g2",
+   "t": "Choisir un exchange",
+   "cards": [
+    {
+     "h": "Les quatre questions qui comptent",
+     "p": "1) Est-il légal et disponible dans TON pays — la régulation décide de tout le reste. 2) Est-il liquide sur les paires que tu trades — les carnets fins mangent les profits. 3) Quels sont les VRAIS frais à ta taille, funding compris. 4) Quel est son historique de sécurité et de solvabilité — a-t-il déjà gelé des retraits ?"
+    },
+    {
+     "h": "Discipline de garde dès le premier jour",
+     "p": "Un compte d'exchange est un lieu de trading, pas un compte d'épargne. N'y garde que le capital de trading actif ; retire les profits régulièrement. Active toutes les protections — 2FA par application, listes blanches de retrait, codes anti-phishing — avant le premier dépôt, pas après la première frayeur."
+    },
+    {
+     "h": "Commence là où tu es protégé",
+     "p": "Une plateforme régulée dans ta juridiction avec un levier modéré bat un casino offshore avec un bouton 100x — tu sais maintenant que le bouton 100x n'est pas le prix, la survie l'est. Dépose peu et vérifie d'abord le cycle complet (dépôt → trade → retrait) avec un montant dérisoire."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "La PREMIÈRE question pour choisir un exchange est…",
+     "o": [
+      "Le levier maximum disponible",
+      "Est-il légal et disponible dans ton pays",
+      "Le design du logo",
+      "La taille des bonus d'inscription offerts"
+     ]
+    },
+    {
+     "q": "Combien devrait vivre sur un compte d'exchange ?",
+     "o": [
+      "Tout",
+      "Uniquement le capital de trading actif",
+      "Tes économies",
+      "De l'argent emprunté à d'autres personnes"
+     ]
+    },
+    {
+     "q": "Avant de trader en vraie taille, tu devrais d'abord…",
+     "o": [
+      "Vérifier tout le cycle avec un montant dérisoire",
+      "Maximiser le levier",
+      "Désactiver temporairement le 2FA pour aller plus vite",
+      "Tout déposer"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g3",
+   "t": "Ton premier trade réel",
+   "cards": [
+    {
+     "h": "Un dixième de la taille, tout le processus",
+     "p": "Tes premiers trades réels devraient risquer environ un DIXIÈME de ton risque normal en paper — assez petit pour que le résultat soit sans importance. Le but n'est pas le profit ; c'est d'exécuter ton processus complet (checklist, entrée, stop, journal) pendant que les vraies émotions se déclenchent pour la première fois."
+    },
+    {
+     "h": "Le but, c'est l'ennui",
+     "p": "Le succès de la première semaine : des trades qui ressemblent exactement à tes trades en paper, juste plus petits. Mêmes setups, même calcul de taille, mêmes sorties. Si ton trading réel diffère immédiatement de ton paper — plus de trades, plus de taille, pas de stops — arrête et retourne en paper."
+    },
+    {
+     "h": "Augmente selon le calendrier, pas selon la confiance",
+     "p": "Augmente la taille selon un calendrier (par exemple, mensuel) et seulement si le mois a été discipliné — jamais en milieu de semaine parce que tu te sens en forme. Le sentiment d'invincibilité est un indicateur retardé d'une série gagnante et un indicateur avancé de la restitution."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Les premiers trades réels devraient risquer…",
+     "o": [
+      "La taille normale",
+      "Environ un dixième du normal",
+      "Le double, pour que ça compte",
+      "Tout"
+     ]
+    },
+    {
+     "q": "Le succès de ta première semaine en réel ressemble à…",
+     "o": [
+      "D'énormes profits",
+      "Des trades identiques au paper, juste plus petits",
+      "De l'action en continu sur plein de paires",
+      "Pas de stops"
+     ]
+    },
+    {
+     "q": "La taille devrait augmenter…",
+     "o": [
+      "Quand tu te sens en forme",
+      "Selon un calendrier",
+      "Chaque jour",
+      "Jamais"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g4",
+   "t": "La psychologie de l'argent réel",
+   "cards": [
+    {
+     "h": "Le même trade ne se ressent pas pareil",
+     "p": "Les pertes en paper sont de l'information ; les pertes réelles sont de la douleur. Attends-toi à couper tes gagnants trop tôt, à hésiter sur les entrées et à élargir tes stops mentaux — tout le monde le fait au début. Ce n'est pas un défaut de caractère ; c'est ton cerveau qui traite l'argent comme une question de survie. Le nommer, c'est déjà la moitié du remède."
+    },
+    {
+     "h": "Réduis jusqu'à dormir tranquille",
+     "p": "L'heuristique des pros : si une position affecte ton sommeil, ton humeur ou tes relations, elle est trop grosse — peu importe ce que la math du risque autorise. Trade une taille qui te permet de suivre le plan avec une indifférence totale à chaque résultat individuel. L'indifférence est l'avantage."
+    },
+    {
+     "h": "Protège le processus sous le feu",
+     "p": "Sous vraie pression, ton processus est ce que tu as pratiqué, pas ce que tu sais. C'est pour ça que les mois de paper comptaient : checklist, journal, limites de perte — répétés jusqu'au pilote automatique. Quand les émotions montent, le pilote automatique pilote l'avion."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Couper ses gagnants trop tôt en passant en réel est…",
+     "o": [
+      "Rare",
+      "Une réaction quasi universelle à l'argent réel",
+      "Une stratégie délibérée des professionnels",
+      "Rentable"
+     ]
+    },
+    {
+     "q": "Si une position affecte ton sommeil, elle est…",
+     "o": [
+      "Excitante",
+      "Trop grosse, peu importe la math",
+      "Normale",
+      "Un signe d'engagement dans le métier"
+     ]
+    },
+    {
+     "q": "Sous pression, tu exécutes…",
+     "o": [
+      "Ce que tu sais",
+      "Ce que tu as pratiqué jusqu'à l'automatisme",
+      "Mieux que d'habitude grâce à l'adrénaline",
+      "Au hasard"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g5",
+   "t": "Le jeu de longue haleine",
+   "cards": [
+    {
+     "h": "Survivre d'abord, composer ensuite",
+     "p": "Chaque leçon de cette académie se résume en une phrase : reste dans le jeu. Les avantages se trouvent, se perdent et se retrouvent ; les marchés changent de régime ; les stratégies s'usent. Le trader encore debout — capital intact, processus intact, curiosité intacte — reçoit gratuitement toutes les opportunités futures."
+    },
+    {
+     "h": "Fais tourner la boucle",
+     "p": "La boucle d'apprentissage ne s'arrête jamais : trade le plan, journalise tout, revois chaque semaine, élimine une fuite, recommence. Ajoute des outils quand ils méritent leur place — le calendrier pour les événements, funding et OI pour le positionnement, le screener pour les candidats. La complexité se mérite, elle ne se boulonne pas."
+    },
+    {
+     "h": "Tu en sais maintenant plus que la plupart",
+     "p": "Math du levier, mécanique de liquidation, taille de position, R:R, espérance, contrôle du tilt, structure de marché, données de positionnement, événements macro — c'est réellement plus que ce que la majorité des gens qui financent un compte futures n'apprendront jamais. Continue à pratiquer là où les erreurs sont gratuites, et laisse les niveaux baliser la route."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Le résumé de toute l'académie en une phrase est…",
+     "o": [
+      "Trouver des entrées parfaites",
+      "Rester dans le jeu",
+      "Trader plus",
+      "Faire confiance aux influenceurs"
+     ]
+    },
+    {
+     "q": "La boucle d'apprentissage est…",
+     "o": [
+      "Une boucle terminée après ce dernier cours",
+      "Trade → journal → revue → recommencer, pour toujours",
+      "Optionnelle",
+      "Réservée aux débutants"
+     ]
+    },
+    {
+     "q": "La complexité dans un processus de trading devrait être…",
+     "o": [
+      "Ajoutée immédiatement tant que la motivation est là",
+      "Méritée — chaque outil doit prouver sa place",
+      "Évitée pour toujours",
+      "Aléatoire"
+     ]
+    }
+   ],
+   "try": {
+    "p": "L'Académie se termine — la pratique, jamais. Garde ta série en vie et laisse les niveaux d'XP baliser la route.",
+    "label": "Tes Niveaux →"
+   }
+  }
+ ]
+}

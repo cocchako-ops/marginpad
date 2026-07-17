@@ -1,0 +1,606 @@
+{
+ "id": "risk",
+ "name": "Risk Yönetimi",
+ "sub": "Yeni başlayanların sahip olabileceği tek gerçek avantaj",
+ "lessons": [
+  {
+   "id": "r1",
+   "t": "Pozisyon boyutu: 1 numaralı beceri",
+   "cards": [
+    {
+     "h": "Bir dilim riske et, asla bütün pastayı değil",
+     "prompt": "İşlem başına riskini, üst üste en az 30 kaybı atlatabileceğin seviyeye kadar düşür.",
+     "p": "Profesyoneller pozisyonları öyle boyutlandırır ki bir kayıp, hesabın sabit küçük bir payına mal olur — genelde %1-2. Risk ayarının hayatta kalmaya ne yaptığını izle."
+    },
+    {
+     "h": "Boyut stoptan gelir, açgözlülükten değil",
+     "p": "Doğru sıra: İşlemin nerede yanlış olduğunu seç (stop-loss seviyen), girişten stopa mesafeyi ölç, sonra pozisyonu o mesafe %1-2 riskine denk gelecek şekilde boyutlandır. Boyut hesabın ÇIKTISIDIR — asla başlangıç noktası değil."
+    },
+    {
+     "h": "Kaldıraç araçtır, boyut karardır",
+     "p": "Kaldıraç sadece belirli bir boyut için ne kadar teminat yatıracağını belirler; risk boyutun kendisinden gelir. Doğru boyutlandırılmış 10× işlem, aşırı büyük 2× işlemden az risk taşır. \"Hangi kaldıracı kullanayım\" diye sormayı bırak, \"hangi boyut riskimi %1'de tutar\" diye sormaya başla."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "İşlem başına %1 riskle, kaç ardışık kayıp seni %80 sağlam bırakır?",
+     "o": [
+      "Yaklaşık 5",
+      "Yaklaşık 20",
+      "Yaklaşık 50",
+      "Bir"
+     ]
+    },
+    {
+     "q": "İşlem boyutlandırmanın doğru İLK adımı nedir?",
+     "o": [
+      "Kaldıraç seçmek",
+      "İşlemin nerede yanlış olduğuna karar vermek",
+      "Kâr hedefi seçmek",
+      "Pozisyon boyutunu maksimuma çekmek"
+     ]
+    },
+    {
+     "q": "Risk nihayetinde şuradan gelir…",
+     "o": [
+      "Sadece kaldıraçtan",
+      "Stop mesafene göre pozisyon boyutundan",
+      "Seçtiğin coinden",
+      "İşlem yapmayı seçtiğin günün saatinden"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Gerçek bir işlemi boyutlandır: hesap, risk %, giriş ve stop — hesaplayıcı kesin pozisyon boyutunu verir.",
+    "label": "Pozisyon Boyutu Hesaplayıcı →"
+   }
+  },
+  {
+   "id": "r2",
+   "t": "Stop-loss ve take-profit, profesyonel gibi",
+   "cards": [
+    {
+     "h": "Stop, fikrin öldüğü yere konur",
+     "p": "Stop-loss, işlem tezinin yanlışlandığı fiyata aittir — aldığın desteğin altına, kurulumu geçersiz kılan seviyenin ötesine. \"Katlanabileceğim en büyük acı\" noktasına koymak terstir: Piyasa senin acı eşiğini bilmez ve umursamaz."
+    },
+    {
+     "h": "Kanıtla: stopu yerleştir",
+     "prompt": "Destek bölgesi yüzünden yeşil çizgiden aldın. Stop-loss'un ait olduğu yere dokun.",
+     "p": "Bu üç noktadan biri doğru. Diğer ikisi, yeni başlayanların kaybetme şekli."
+    },
+    {
+     "h": "Stop avı gerçek, paniklemek değil",
+     "p": "Fiyat sık sık bariz seviyeleri fitiller, kümelenmiş stopları tetikler, sonra döner. Çözüm stopunu kaldırmak değil (bu küçük kaybı likidasyona çevirir) — stopları bariz yuvarlak sayıların ötesine koymak ve stop yemek yıkıcı değil sıkıcı olsun diye boyutlandırmaktır."
+    },
+    {
+     "h": "Take-profit: aklın başındayken karar ver",
+     "p": "Take-profit emri kazancı otomatik cebe atar. Çıkışı girmeden önce, objektifken belirle — çünkü girişten sonra o grafiğe bakan en az objektif kişi sen olursun. Kısmi kâr alma (mesela ilk hedefte yarısını kapatmak) meşru bir orta yoldur."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Stop-loss için en iyi yer…",
+     "o": [
+      "Kaybın canını çok yakacağı yer",
+      "İşlem fikrinin yanlışlandığı yer",
+      "Girişe olabildiğince yakın",
+      "Hiçbir yer — stoplar korkaklar için"
+     ]
+    },
+    {
+     "q": "Fiyat bariz bir seviyede stop avına çıktığında doğru tepki…",
+     "o": [
+      "Hiçbir işlemde bir daha asla stop kullanmamak",
+      "Stopları bariz seviyelerin ötesine, boyutu katlanılır yap",
+      "Pozisyonu ikiye katlamak",
+      "Coin değiştirmek"
+     ]
+    },
+    {
+     "q": "Çıkış planı ne zaman belirlenmeli?",
+     "o": [
+      "İşlem kâra geçtikten sonra",
+      "Girmeden önce, objektifken",
+      "Sadece kaybederken",
+      "Asla"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Bir kağıt pozisyon aç ve ona gerçek SL ve TP bağla — tam ritüeli sıfır riskle çalış.",
+    "label": "Paper Trade →"
+   }
+  },
+  {
+   "id": "r3",
+   "t": "Risk:ödül — kârlı şekilde yanılmak",
+   "cards": [
+    {
+     "h": "Hataları affeden oran",
+     "p": "Risk:ödül, riske ettiğinle kazanmayı hedeflediğini karşılaştırır. $150 kazanmak için $50 riske etmek 1:3'tür. 1:3'te 10 işlemden sadece 3'ünü kazanmak seni kârda bırakır — aşağıdaki resim o on işlem. Oran, çoğu zaman yanılma hakkını satın alır."
+    },
+    {
+     "h": "Kazanma oranı ile R:R takas halindedir",
+     "p": "Yüksek kazanma oranlı stratejilerin kazançları genelde küçüktür; yüksek R:R'li stratejiler sık kaybeder ama büyük kazanır. İkisi de çalışır; kötü kombinasyonla hiçbiri çalışmaz (düşük kazanma oranı VE düşük R:R — dürtüsel yeni başlayanın varsayılan hali). Stratejinin hangi oyunu oynadığını bil."
+    },
+    {
+     "h": "Beklenti: karar veren tek sayı",
+     "p": "Beklenti = (kazanma oranı × ortalama kazanç) − (kayıp oranı × ortalama kayıp). Pozitifse yaklaşım çok işlemde para kazandırır; negatifse hiçbir boyutlandırma onu kurtaramaz. Tek işlem hiçbir şey ifade etmez — beklenti düzinelerce işlemde ölçülür."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "1:3 risk:ödülde başabaş kazanma oranı kabaca nedir?",
+     "o": [
+      "%75",
+      "%50",
+      "%25",
+      "%90"
+     ]
+    },
+    {
+     "q": "Negatif beklentili bir strateji…",
+     "o": [
+      "Daha küçük boyutla çalışır",
+      "Daha çok kaldıraçla çalışır",
+      "Boyut ne olursa olsun zamanla para kaybeder",
+      "Sadece bir büyük kazanca ihtiyacı var"
+     ]
+    },
+    {
+     "q": "Bir stratejiyi yargılamak kaç işlem ister?",
+     "o": [
+      "Bir tane iyi giden işlem yeterli",
+      "Düzinelerce — beklenti istatistikseldir",
+      "İki",
+      "Ölçülemez"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Kazanma oranını ve R:R'ni Risk of Ruin hesaplayıcısına gir — matematik hayatta kalma şansın hakkında ne diyor gör.",
+    "label": "Risk of Ruin Hesaplayıcı →"
+   }
+  },
+  {
+   "id": "r4",
+   "t": "Drawdown'ların acımasız matematiği",
+   "cards": [
+    {
+     "h": "Kayıplar kazançlardan ağırdır",
+     "prompt": "Kaybı derinleştir ve toparlanmanın ne gerektirdiğini izle. Sadece başa dönmek için +%100 gereken kaybı bul.",
+     "p": "%10 kaybet, toparlanmak için %11 gerekir. Bu asimetri motivasyon posteri malzemesi değil — aritmetik, ve sermaye korumanın kâr kovalamayı yenmesinin nedeni."
+    },
+    {
+     "h": "Seriler normaldir, iflas seçimdir",
+     "p": "Zamanın %60'ını kazanan strateji bile düzenli olarak 5'li kayıp serilerine çarpar — bu olasılıktır, başarısızlık değil. Normal bir serinin hesabı bitirip bitirmeyeceği tamamen işlem başına riske ettiğin boyuta bağlıdır. Doğru boyut varyansı gürültüye çevirir; aşırı boyut iflasa."
+    },
+    {
+     "h": "Geri dönüş tuzağı",
+     "p": "Kayıptan sonra dürtü, hızlı geri kazanmak için boyutu BÜYÜTMEKTİR. Bu tam tersidir: kayıplardan sonra büyük boyut, en kötü kararlarına en büyük bahisleri vermek demektir. Profesyoneller tersini yapar — drawdown'da küçült, performans dönünce büyüt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Hesabın %50'sini kaybettikten sonra toparlanma şunu ister…",
+     "o": [
+      "+%50",
+      "+%75",
+      "+%100",
+      "+%25"
+     ]
+    },
+    {
+     "q": "İyi bir stratejide 5'li kayıp serisi…",
+     "o": [
+      "Stratejinin bozuk olduğunun kanıtı",
+      "İstatistiksel olarak normal",
+      "İmkansız",
+      "Boyutu ikiye katlama nedeni"
+     ]
+    },
+    {
+     "q": "Kayıp serisinden sonra profesyoneller tipik olarak…",
+     "o": [
+      "Hızlı toparlanmak için boyutu artırır",
+      "Performans dönene kadar boyutu küçültür",
+      "Stop-loss'ları kaldırır",
+      "100× kaldıraca geçer"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r5",
+   "t": "Psikoloji: aynadaki düşman",
+   "cards": [
+    {
+     "h": "İntikam işlemi",
+     "p": "Her yeni başlayanın tarihindeki en pahalı işlem, acı bir kayıptan 90 saniye sonra açılandır — aşırı büyük, plansız, \"telafi etme\" ihtiyacıyla. Kalıba şimdi ad koy ve profesyonel kuralı benimse: Stop yedikten sonra yazılı bir plan olmadan yeni işlem yok."
+    },
+    {
+     "h": "FOMO tepeyi satın alır",
+     "p": "Bugün %30 yükselmiş bir coini almak en güvenlisi gibi gelir — herkes hemfikir, grafik onaylıyor. Ama dikey harekette girmek demek: stopun uzakta, R:R'in berbat ve önceki alıcıların çıkış likiditesisin. Harika işlemler girişte genelde rahatsız hissettirir, bariz değil."
+    },
+    {
+     "h": "Günlük bir aynadır",
+     "p": "İşlem günlüğü — her giriş, çıkış, boyut ve neden — belirsiz hisleri görünür kalıplara çevirir: Pazar gecesi işlemlerim hep kaybediyor, kazananları hep erken kapatıyorum. Gösterişsizdir ve tradingin sahip olduğu en hızlı kendini geliştirme aracıdır. Sahte para işlemleri de sayılır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Klasik intikam işlemi ne zaman olur…",
+     "o": [
+      "Günlerce süren dikkatli planlamadan sonra",
+      "Acı bir kayıptan dakikalar sonra, aşırı büyük",
+      "Sadece boğa piyasalarında",
+      "Günlük tutarken"
+     ]
+    },
+    {
+     "q": "Bugün %30 yükselmiş bir coini almak genelde demek ki…",
+     "o": [
+      "Mümkün olan en güvenli giriş",
+      "Berbat risk:ödül",
+      "Garantili devam",
+      "Düşük volatilite"
+     ]
+    },
+    {
+     "q": "İşlem günlüğünün ana amacı…",
+     "o": [
+      "Sadece vergi evrakları",
+      "Kalıplarını görünür kılmak ki düzeltebilesin",
+      "Sonuçlarınla diğer traderları etkilemek",
+      "Piyasayı tahmin etmek"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Kağıt işlemlerin zaten ücretsiz bir analitik günlüğü besliyor — kazanma oranını, serilerini ve alışkanlıklarını gör.",
+    "label": "İşlem Günlüğü →"
+   }
+  },
+  {
+   "id": "r6",
+   "t": "Günlük kayıp limiti ve tilt",
+   "cards": [
+    {
+     "h": "Tilt: bozulmuş halde işlem yapmak",
+     "p": "İki üç kayıptan sonra beyin kimyan değişir — geri kazanma ihtiyacı planı ezer. Pokerciler buna tilt der ve iradeyle değil yapısal olarak yönetirler: Limit dolunca seans biter. İstisna yok, \"bir işlem daha\" yok."
+    },
+    {
+     "h": "Günlük kayıp limiti",
+     "p": "Önceden karar ver: Bir günde hesabın %X'ini kaybedersen (genelde 2-3R) yarına kadar bitti. Piyasa her gün yeniden açılır; disiplinin tilt ortasında yenilenmez. Kötü bir günde yapacağın en iyi işlem laptopı kapatmaktır."
+    },
+    {
+     "h": "Mekanikleştir",
+     "p": "Tiltteyken hatırlaman gereken kural başarısız olur. Limiti günlüğüne yaz, birine söyle, alarm kur — durmayı seçim yerine varsayılan yapan her şey. Buradaki tutarlılık öğreneceğin her indikatörden değerlidir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Tilt nedir…",
+     "o": [
+      "Dönüş sinyali veren bir grafik formasyonu",
+      "Kayıplardan sonraki bozulmuş hal",
+      "Bir emir türü",
+      "Kârlı"
+     ]
+    },
+    {
+     "q": "Günlük kayıp limiti işe yarar çünkü…",
+     "o": [
+      "Piyasayı tahmin eder",
+      "Tilt zarar vermeden önce seansı bitirir",
+      "Tüm büyük borsalar kural olarak dayatır",
+      "Kaldıracı artırır"
+     ]
+    },
+    {
+     "q": "Tilte karşı en iyi savunma…",
+     "o": [
+      "Anlık irade",
+      "Mekanik, önceden kararlaştırılmış seans sonu",
+      "Daha çok kahve",
+      "Hızla toparlanmak için çok daha büyük boyut"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r7",
+   "t": "Korelasyon: gizli çifte bahis",
+   "cards": [
+    {
+     "h": "Üç pozisyon, bir işlem",
+     "p": "Long BTC, long ETH ve long SOL çeşitlendirilmiş gibi hisseder. Değildir: Streste kripto korelasyonları neredeyse 1'e gider — her şey birlikte düşer. Üç işlem tutmuyorsun; üç kat likidasyon yüzeyiyle, üç kat boyutta tek işlem tutuyorsun."
+    },
+    {
+     "h": "Kriptoda gerçek çeşitlendirme nadirdir",
+     "p": "Kripto içinde neredeyse her şey aynı akıntıya (Bitcoin ve küresel likidite) kaldıraçlı bahistir. Bazı pariteler sakin zamanlarda ayrışır — ve tam canın yandığında yeniden korelasyona girer. Risk matematiğinde korelasyon = 1 varsay, asla şaşırmazsın."
+    },
+    {
+     "h": "TOPLAM maruziyetini say",
+     "p": "İşlem başına risk kuralın, korele pozisyonların TOPLAMINA uygulanmalı. Majörlerde üç %1 risk long, tek sonuca %3 bahistir. Ya her birini küçült ya da yoğunlaşmayı kabul edip adını koy — ama asla çeşitlendirme deme."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Çöküşte long BTC + long ETH + long SOL şöyle davranır…",
+     "o": [
+      "Birbirinden tamamen bağımsız üç işlem",
+      "Üç kat boyutta tek işlem",
+      "Hedge",
+      "Nakit"
+     ]
+    },
+    {
+     "q": "Piyasa stresinde kripto korelasyonları tipik olarak…",
+     "o": [
+      "Sıfıra düşer",
+      "Neredeyse 1'e gider",
+      "Tamamen negatife döner",
+      "Kaybolur"
+     ]
+    },
+    {
+     "q": "%1 risk kuralın şuna uygulanmalı…",
+     "o": [
+      "Her pozisyona ayrı ayrı, her zaman",
+      "Korele pozisyonların toplamına",
+      "Sadece Bitcoin'e",
+      "Sadece kayıplara"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Majörlerin gerçekte ne kadar sıkı birlikte hareket ettiğini gör — canlı korelasyon matrisi bunu somutlaştırır.",
+    "label": "Korelasyon Matrisi →"
+   }
+  },
+  {
+   "id": "r8",
+   "t": "A+ kurulumlar: atlama becerisi",
+   "cards": [
+    {
+     "h": "Avantajın birkaç işlemde yaşar",
+     "p": "Kârlı herhangi bir günlüğü incele, kalıp ortaya çıkar: Kârın çoğu azınlıktaki yüksek kaliteli kurulumlardan geldi, kayıpların çoğu dolgudan — can sıkıntısı işlemleri, kurulumumsular, intikam girişleri. En hızlı performans artışı dolguyu silmektir."
+    },
+    {
+     "h": "A+'yı grafiği görmeden tanımla",
+     "p": "En iyi kurulumunun neye benzediğini yaz: trend hizalı, kilit seviye, kesişim, temiz geçersizleşme, R:R en az 2. Bir işlem listeyi tiklemiyor mu, o işlem yok demektir. Belirsiz standartlar gerçek zamanda pazarlıkla erir; yazılı olanlar hayatta kalır."
+    },
+    {
+     "h": "Can sıkıntısı pahalıdır",
+     "p": "Piyasa hareket etme ihtiyacını cezalandırır. Boşta olmak bir pozisyondur — çoğu zaman en iyisi. Profesyoneller işlerini bekleme olarak tanımlar; amatörler işlem yapma olarak. Fark, r3'te öğrendiğin beklenti matematiğinde doğrudan görünür."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Çoğu kârlı günlükte kârın büyük kısmı şuradan gelir…",
+     "o": [
+      "Her bir işlemden eşit miktarda gelir",
+      "Azınlıktaki yüksek kaliteli kurulumlardan",
+      "Can sıkıntısı işlemlerinden",
+      "Hafta sonu tradinginden"
+     ]
+    },
+    {
+     "q": "A+ kurulum ne zaman tanımlanmalı…",
+     "o": [
+      "Canlı grafiğe bakarken",
+      "Yazılı olarak, grafiği görmeden önce",
+      "İşlemden sonra",
+      "Sosyal medyadaki biri tarafından"
+     ]
+    },
+    {
+     "q": "Boşta olmak (pozisyonsuz)…",
+     "o": [
+      "Boşa zaman",
+      "Bir pozisyondur",
+      "Sadece yeni başlayanlar için",
+      "İmkansız"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r9",
+   "t": "Kademeli giriş ve çıkış",
+   "cards": [
+    {
+     "h": "Girişler ya hep ya hiç olmak zorunda değil",
+     "p": "Kademeli giriş, pozisyonu parçalarla kurmaktır — üçte biri piyasadan, üçte biri daha iyi seviyeden, üçte biri onayla. Biraz ortalama fiyat hassasiyetini esneklikle takas edersin ve hiçbir tekil gerçekleşme işlemi belirlemez."
+    },
+    {
+     "h": "Martingale tuzağı",
+     "p": "KAZANAN teze planlı seviyelerde kademeli girmek stratejidir. KAYBEDEN işleme ortalama düşürmek için katlamak — martingale — hesapların ölme şeklidir: En yanlış olduğun anda boyutun en büyüktür. Fark, eklemelerin girişten önce planlanıp planlanmadığıdır."
+    },
+    {
+     "h": "Kademeli çıkış girişin aynasıdır",
+     "p": "Kazananı parçalarla satmak çıkışı aynı şekilde yumuşatır. Hepsini dürüst tutan kural: Her ekleme ve her kısmi satış, pozisyon var olmadan ÖNCE planda yazılıydı. Doğaçlama eklemeler strateji kostümü giymiş tilttir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kademeli giriş ile martingale arasındaki fark…",
+     "o": [
+      "Coin",
+      "Eklemelerin girişten önce planlanıp planlanmadığı",
+      "Borsa",
+      "İkisi arasında hiçbir fark yoktur aslında"
+     ]
+    },
+    {
+     "q": "Martingale boyutlandırma demek, en büyük boyutun şu anda gelir…",
+     "o": [
+      "Analizinde en haklı olduğun anda",
+      "Tam olarak en yanlış olduğunda",
+      "Rastgele",
+      "Asla"
+     ]
+    },
+    {
+     "q": "İşlem ortasında doğaçlama eklemeler genelde…",
+     "o": [
+      "Dahice bir anlık doğaçlama",
+      "Strateji kostümü giymiş tilt",
+      "Zorunlu",
+      "Komisyonsuz"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r10",
+   "t": "Risk of ruin: hayatta kalma matematiği",
+   "cards": [
+    {
+     "h": "İflas hesaplanabilir bir olasılıktır",
+     "p": "Kazanma oranı, R:R ve işlem başına risk verildiğinde, hesabının ölümcül drawdown'a çarpma ihtimali hesaplanabilir — buna risk of ruin denir. Acımasız içgörü: Yüksek işlem başına riskte, gerçekten kârlı bir strateji bile avantaj ödemeden önce YÜKSEK iflas ihtimali taşır."
+    },
+    {
+     "h": "Aynı avantaj, farklı kaderler",
+     "p": "%50 kazanma oranlı, 1:2'lik strateji %2 riskte neredeyse sıfır iflas olasılığı taşır. Aynı strateji %15 riskte, yüksek olasılıkla eninde sonunda öldürücü bir seriye çarpar. Strateji değişmedi — sadece bahis boyutu. Hayatta kalma boyutlandırma özelliğidir, beceri özelliği değil."
+    },
+    {
+     "h": "Kendi sayılarını çalıştır",
+     "p": "Buna körü körüne inanma: Kağıt işlem kazanma oranını ve R:R'ni bir risk-of-ruin hesaplayıcısına koy ve risk kaydırıcısını oynat. Risk %5'i aşarken kendi hayatta kalma şansının çöküşünü izlemek, boyutlandırmayı her paragraftan iyi öğretir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Risk of ruin şuna bağlıdır…",
+     "o": [
+      "Kazanma oranı, R:R ve işlem başına risk",
+      "Sadece coin",
+      "Borsa",
+      "Sadece şans ve piyasanın genel havası"
+     ]
+    },
+    {
+     "q": "İşlem başına %15 riskle kârlı bir strateji…",
+     "o": [
+      "Başarısız olamaz",
+      "Hâlâ yüksek iflas ihtimali taşır",
+      "Optimaldir",
+      "Kayda değer drawdown yaşamaz"
+     ]
+    },
+    {
+     "q": "Hayatta kalma öncelikle şunun özelliğidir…",
+     "o": [
+      "Beceri",
+      "Bahis boyutu",
+      "Haber okuma",
+      "İşlem saatleri"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Gerçek kazanma oranını ve R:R'ni hesaplayıcıya gir ve risk kaydırıcısını çek — iflas ihtimalinin nasıl oynadığını izle.",
+    "label": "Risk of Ruin Hesaplayıcı →"
+   }
+  },
+  {
+   "id": "r11",
+   "t": "İşlem öncesi kontrol listesi",
+   "cards": [
+    {
+     "h": "Pilotlar hafızaya güvenmez. Sen de güvenme.",
+     "p": "Stres altında insanlar adım atlar — havacılığın kontrol listeleriyle yürümesinin nedeni bu. İşlem öncesi kontrol listesi disiplinini dışsallaştırır: her girişten önce yazılı cevaplanan beş soru, her seferinde, özellikle kurulum acil hissettirdiğinde."
+    },
+    {
+     "h": "Beş soru",
+     "p": "1) İşlem üst zaman dilimi trendi İLE mi? 2) Bir seviyede mi, kesişimli mi? 3) Geçersizleşme (stop) tam nerede ve R:R en az 2 mi? 4) Boyut %1-2 risk için doğru mu? 5) İşlem penceresinde planlı etkinlik (CPI, FOMC) var mı?"
+    },
+    {
+     "h": "Acele, listenin düşmanıdır",
+     "p": "Kontrol listesine en çok ihtiyaç duyan işlemler, ona zamanı yokmuş gibi hissettirenlerdir — dikey kırılım, intikam kurulumu. Bir işlem beş soru için altmış saniye bekleyemiyorsa işlem değildir; grafiği eklenmiş bir dürtüdür."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kontrol listeleri var çünkü…",
+     "o": [
+      "Traderlar aptal",
+      "Stres altında insanlar adım atlar",
+      "Borsalar şart koşar",
+      "Fiyatın yönünü tahmin etmeye yararlar"
+     ]
+    },
+    {
+     "q": "Hangisi beş kontrolden BİRİ DEĞİL?",
+     "o": [
+      "Üst zaman dilimi trendi",
+      "Geçersizleşme ve R:R",
+      "Doğru boyut",
+      "Sosyal medyanın düşüncesi"
+     ]
+    },
+    {
+     "q": "Kontrol listesi için 60 saniye bekleyemeyen işlem…",
+     "o": [
+      "En iyi tür",
+      "Grafiği eklenmiş bir dürtü",
+      "Neredeyse garantili bir kâr",
+      "Nadir"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r12",
+   "t": "Günlüğünü koç gibi incele",
+   "cards": [
+    {
+     "h": "Haftalık ritüel",
+     "p": "Haftada bir, her işlemi maç kaydı izleyen koç gibi oku: Giriş plana göre miydi? Çıkış? Hangi kural bozuldu ve bozmak neye mal oldu? Amaç kendini kırbaçlamak değil — en pahalıya mal olan TEK tekrarlanan sızıntıyı bulmak."
+    },
+    {
+     "h": "Veriyi dilimle",
+     "p": "İşlemlerini grupla: kurulum türüne, haftanın gününe, seansa, coine, kaydediyorsan duygusal duruma göre. Sızıntılar toplamda saklanır, dilimlerden fırlar — Pazar gecesi işlemleri kaybediyor, tek kurulum her şeyi taşıyor, longlar shortları 3'e 1 yeniyor."
+    },
+    {
+     "h": "Haftada bir sızıntı kapat",
+     "p": "Her şeyi bir anda düzeltme. En pahalı tek kalıbı seç, ona karşı bir kural yaz ve gelecek hafta tutup tutmadığını kontrol et. Küçücük süreç iyileştirmelerini birleştirmek, tıpkı sermayeyi birleştirmek gibidir — yavaş, sıkıcı ve mantıksız derecede güçlü."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Haftalık incelemenin amacı…",
+     "o": [
+      "Kötü hissetmek",
+      "En pahalı tek tekrarlanan sızıntıyı bulmak",
+      "Kâr saymak",
+      "Kâr ekran görüntülerini herkesle paylaşmak"
+     ]
+    },
+    {
+     "q": "Sızıntılar en kolay şöyle bulunur…",
+     "o": [
+      "Toplam K/Z'ye bakarak",
+      "İşlemleri kurulum",
+      "Arkadaşlara sorarak",
+      "Sezgiyle"
+     ]
+    },
+    {
+     "q": "En iyi gelişim temposu…",
+     "o": [
+      "Her şeyi bir anda düzelt",
+      "Bir sızıntı, bir kural, bir hafta",
+      "Hiçbir şeyi değiştirme",
+      "Her hafta yepyeni bir strateji benimsemek"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Kağıt işlemlerin zaten analitik günlüğü besliyor — aç ve en pahalı kalıbını bul.",
+    "label": "İşlem Günlüğü →"
+   }
+  }
+ ]
+}

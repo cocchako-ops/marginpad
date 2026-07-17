@@ -1,0 +1,246 @@
+{
+ "id": "going",
+ "name": "Der Schritt ins Echte",
+ "sub": "Vom Paper Trading zum echten Geld — ohne unterzugehen",
+ "lessons": [
+  {
+   "id": "g1",
+   "t": "Bist du bereit? Die ehrlichen Kennzahlen",
+   "cards": [
+    {
+     "h": "Bereitschaft ist messbar",
+     "p": "Der Schritt ins Echte ist kein Gefühl — es ist eine Checkliste: mindestens 100 Paper Trades, positiver Erwartungswert über 3 aufeinanderfolgende Monate, ein Journal, das du wirklich führst, eine schriftliche Strategie mit definierten A+-Setups und null Revenge-Trading-Vorfälle im letzten Monat."
+    },
+    {
+     "h": "Die Lücke zwischen Paper und Echt",
+     "p": "Geh davon aus, dass deine Live-Performance anfangs SCHLECHTER sein wird als im Paper Trading — Zögern bei der Ausführung, emotionale Störungen, Spread und Gebühren, die du kaum bemerkt hast. Ist dein Vorteil im Paper Trading dünn, werden echte Bedingungen ihn auslöschen. Du willst eine Sicherheitsmarge in den Zahlen, keinen Münzwurf."
+    },
+    {
+     "h": "Es gibt keine Deadline",
+     "p": "Niemand verteilt Medaillen für einen frühen Live-Start, und der Markt ist nächstes Jahr immer noch da. Jeder Monat diszipliniertes Paper Trading ist günstiges Lehrgeld; jeder verfrühte Live-Monat ist teures Lehrgeld für dieselbe Lektion. Der geduldige Weg und der schnelle Weg enden am selben Ort — einer kostet nur mehr."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Eine vernünftige Bereitschafts-Messlatte umfasst…",
+     "o": [
+      "10 Glückstrades",
+      "100+ Trades und 3 Monate positiver Erwartungswert",
+      "Eine richtig heiße Serie über diese ganze Woche",
+      "Die Zustimmung eines Freundes"
+     ]
+    },
+    {
+     "q": "Deine ersten Live-Monate laufen wahrscheinlich…",
+     "o": [
+      "Besser als im Paper Trading dank echter Motivation",
+      "Schlechter als im Paper Trading",
+      "Identisch",
+      "Perfekt"
+     ]
+    },
+    {
+     "q": "Ein früher Live-Start bringt dir…",
+     "o": [
+      "Medaillen",
+      "Nichts — nur teureres Lehrgeld",
+      "Bessere Gebühren auf der Börse",
+      "Einen Vorteil"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g2",
+   "t": "Die Wahl der Börse",
+   "cards": [
+    {
+     "h": "Die vier Fragen, die zählen",
+     "p": "1) Ist sie in DEINEM Land legal und verfügbar — die Regulierung entscheidet alles Weitere. 2) Ist sie liquide in den Paaren, die du handelst — dünne Orderbücher fressen Gewinne. 3) Wie hoch sind die ECHTEN Gebühren bei deiner Größe, inklusive Funding. 4) Wie sieht ihre Sicherheits- und Solvenz-Historie aus — hat sie je Auszahlungen eingefroren?"
+    },
+    {
+     "h": "Verwahrungsdisziplin ab Tag eins",
+     "p": "Ein Börsenkonto ist ein Handelsplatz, kein Sparkonto. Halte dort nur aktives Handelskapital; zieh Gewinne nach Plan ab. Aktiviere jede Sicherheitsfunktion — Authenticator-2FA, Auszahlungs-Whitelists, Anti-Phishing-Codes — vor der ersten Einzahlung, nicht nach dem ersten Schreck."
+    },
+    {
+     "h": "Starte dort, wo du geschützt bist",
+     "p": "Eine regulierte Plattform in deiner Jurisdiktion mit moderatem Hebel schlägt ein Offshore-Casino mit 100x-Knopf — du weißt inzwischen, dass der 100x-Knopf nicht der Preis ist, das Überleben ist es. Zahl wenig ein und prüfe zuerst den kompletten Kreislauf (Einzahlung → Trade → Auszahlung) mit einem winzigen Betrag."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Die ERSTE Frage bei der Börsenwahl ist…",
+     "o": [
+      "Maximaler Hebel",
+      "Ist sie in deinem Land legal und verfügbar",
+      "Logo-Design",
+      "Die Höhe der Anmeldeboni für Neue"
+     ]
+    },
+    {
+     "q": "Wie viel sollte auf einem Börsenkonto liegen?",
+     "o": [
+      "Alles",
+      "Nur aktives Handelskapital",
+      "Deine Ersparnisse",
+      "Von anderen geliehenes Geld"
+     ]
+    },
+    {
+     "q": "Vor echter Größe solltest du zuerst…",
+     "o": [
+      "Den ganzen Kreislauf mit einem winzigen Betrag prüfen",
+      "Den Hebel maximieren",
+      "2FA vorübergehend deaktivieren, um schneller zu sein",
+      "Alles einzahlen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g3",
+   "t": "Dein erster echter Trade",
+   "cards": [
+    {
+     "h": "Ein Zehntel der Größe, der volle Prozess",
+     "p": "Deine ersten Live-Trades sollten etwa ein ZEHNTEL deines normalen Paper-Risikos riskieren — so klein, dass das Ergebnis egal ist. Das Ziel ist nicht Profit; es ist, deinen kompletten Prozess auszuführen (Checkliste, Einstieg, Stop, Journal), während echte Gefühle zum ersten Mal feuern."
+    },
+    {
+     "h": "Das Ziel ist Langeweile",
+     "p": "Erfolg in Woche eins heißt: Trades, die exakt wie deine Paper Trades aussehen, nur kleiner. Gleiche Setups, gleiche Größenberechnung, gleiche Ausstiege. Sieht dein Live-Trading sofort anders aus als dein Paper Trading — mehr Trades, größere Positionen, keine Stops — halt an und geh zurück ins Paper Trading."
+    },
+    {
+     "h": "Skaliere nach Kalender, nicht nach Selbstvertrauen",
+     "p": "Erhöhe die Größe nach Plan (zum Beispiel monatlich) und nur, wenn der Monat diszipliniert war — nie mitten in der Woche, weil du dich heiß fühlst. Das Gefühl der Unbesiegbarkeit ist ein nachlaufender Indikator einer Gewinnserie und ein vorlaufender Indikator der Rückgabe."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Die ersten Live-Trades sollten riskieren…",
+     "o": [
+      "Normale Größe",
+      "Etwa ein Zehntel des Normalen",
+      "Das Doppelte, damit es zählt",
+      "Alles"
+     ]
+    },
+    {
+     "q": "Erfolg in deiner ersten Live-Woche sieht aus wie…",
+     "o": [
+      "Riesige Gewinne",
+      "Trades identisch zu deinen Paper Trades",
+      "Ständige Action auf vielen Paaren",
+      "Keine Stops"
+     ]
+    },
+    {
+     "q": "Die Größe sollte steigen…",
+     "o": [
+      "Immer wenn du dich heiß und unbesiegbar fühlst",
+      "Nach Plan, nach disziplinierten Monaten",
+      "Täglich",
+      "Nie"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g4",
+   "t": "Die Psychologie echten Geldes",
+   "cards": [
+    {
+     "h": "Derselbe Trade fühlt sich anders an",
+     "p": "Paper-Verluste sind Information; echte Verluste sind Schmerz. Erwarte, Gewinner zu früh zu schließen, bei Einstiegen zu zögern und mentale Stops zu weiten — das macht anfangs jeder. Das ist kein Charakterfehler; dein Gehirn behandelt Geld als Überleben. Es zu benennen ist die halbe Lösung."
+    },
+    {
+     "h": "Verkleinere, bis der Schlaf leicht fällt",
+     "p": "Die Profi-Heuristik: Wenn eine Position deinen Schlaf, deine Stimmung oder deine Beziehungen beeinflusst, ist sie zu groß — egal, was die Risiko-Mathematik erlaubt. Handle eine Größe, bei der du dem Plan mit völliger Gleichgültigkeit gegenüber jedem einzelnen Ergebnis folgen kannst. Gleichgültigkeit ist der Vorteil."
+    },
+    {
+     "h": "Schütze den Prozess unter Beschuss",
+     "p": "Unter echtem Druck ist dein Prozess das, was du geübt hast, nicht das, was du weißt. Deshalb zählten die Paper-Monate: Checkliste, Journal, Verlustlimits — gedrillt, bis sie auf Autopilot laufen. Wenn die Emotionen hochschießen, fliegt der Autopilot das Flugzeug."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Gewinner zu früh zu schließen ist beim Live-Start…",
+     "o": [
+      "Selten",
+      "Eine fast universelle Reaktion auf echtes Geld",
+      "Eine ganz bewusste Strategie der Profis",
+      "Profitabel"
+     ]
+    },
+    {
+     "q": "Wenn eine Position deinen Schlaf beeinflusst, ist sie…",
+     "o": [
+      "Aufregend",
+      "Zu groß, egal was die Mathematik sagt",
+      "Normal",
+      "Ein gesundes Zeichen von echtem Engagement"
+     ]
+    },
+    {
+     "q": "Unter Druck lieferst du…",
+     "o": [
+      "Was du weißt",
+      "Was du bis zum Automatismus geübt hast",
+      "Besser als sonst dank Adrenalin",
+      "Zufällig"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "g5",
+   "t": "Das lange Spiel",
+   "cards": [
+    {
+     "h": "Erst überleben, dann verzinsen",
+     "p": "Jede Lektion dieser Akademie läuft auf einen Satz hinaus: Bleib im Spiel. Vorteile werden gefunden, verloren und wiedergefunden; Märkte wechseln Regime; Strategien verfallen. Der Trader, der noch steht — Kapital intakt, Prozess intakt, Neugier intakt — bekommt jede künftige Gelegenheit gratis."
+    },
+    {
+     "h": "Halte die Schleife am Laufen",
+     "p": "Die Lernschleife endet nie: den Plan handeln, alles ins Journal, wöchentlich auswerten, ein Leck stopfen, wiederholen. Füge Werkzeuge hinzu, wenn sie sich ihren Platz verdienen — den Kalender für Events, Funding und OI für die Positionierung, den Screener für Kandidaten. Komplexität wird verdient, nie angeschraubt."
+    },
+    {
+     "h": "Du weißt jetzt mehr als die meisten",
+     "p": "Hebel-Mathematik, Liquidationsmechanik, Positionsgrößen, R:R, Erwartungswert, Tilt-Kontrolle, Marktstruktur, Positionierungsdaten, Makro-Events — das ist wirklich mehr, als die Mehrheit derer, die ein Futures-Konto aufladen, je lernt. Übe es weiter dort, wo Fehler gratis sind, und lass die Level den Weg markieren."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Die Zusammenfassung der ganzen Akademie in einem Satz ist…",
+     "o": [
+      "Perfekte Einstiege finden",
+      "Bleib im Spiel",
+      "Mehr traden",
+      "Influencern vertrauen"
+     ]
+    },
+    {
+     "q": "Die Lernschleife ist…",
+     "o": [
+      "Eine nach diesem letzten Kurs beendete Schleife",
+      "Traden → Journal → Auswertung → wiederholen, für immer",
+      "Optional",
+      "Nur für Anfänger"
+     ]
+    },
+    {
+     "q": "Komplexität in einem Trading-Prozess sollte…",
+     "o": [
+      "Sofort hinzugefügt werden",
+      "Verdient werden",
+      "Für immer vermieden werden",
+      "Zufällig sein"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Die Akademie ist geschafft — die Praxis nie. Halte deine Serie am Leben und lass die XP-Level den Weg markieren.",
+    "label": "Deine Level →"
+   }
+  }
+ ]
+}

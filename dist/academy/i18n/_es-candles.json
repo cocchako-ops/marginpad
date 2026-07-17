@@ -1,0 +1,388 @@
+{
+ "id": "candles",
+ "name": "Patrones de velas",
+ "sub": "Leyendo la batalla, vela a vela",
+ "lessons": [
+  {
+   "id": "c1",
+   "t": "Doji: el mercado se encoge de hombros",
+   "cards": [
+    {
+     "h": "Cuando nadie gana",
+     "p": "Un doji es una vela que cierra casi exactamente donde abrió — una larga pelea entre compradores y vendedores que terminó en empate. Por sí solo significa indecisión. Su POSICIÓN es lo que le da sentido: un doji tras una tendencia larga dice que al bando ganador se le está acabando la convicción."
+    },
+    {
+     "h": "El contexto lo es todo",
+     "p": "Un doji en medio de un rango es ruido — indecisión dentro de la indecisión. Un doji en una resistencia clave tras cinco velas verdes es una señal real: los compradores que empujaron el precio hacia arriba acaban de fallar en empujarlo más. La misma vela, un mensaje completamente distinto."
+    },
+    {
+     "h": "Nunca operes el doji solo",
+     "p": "Un doji es un signo de interrogación, no una respuesta. Pregunta: ¿la tendencia está cansada? La respuesta viene de la SIGUIENTE vela y del nivel donde ocurre. Doji en resistencia + vela roja de confirmación = una historia. Doji solo = un cara o cruz con nombre elegante."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Un doji te dice que…",
+     "o": [
+      "Los compradores ganaron con claridad",
+      "Los vendedores ganaron con claridad",
+      "La sesión terminó en empate",
+      "El volumen fue cero"
+     ]
+    },
+    {
+     "q": "¿Dónde IMPORTA de verdad un doji?",
+     "o": [
+      "En cualquier parte",
+      "En medio de un rango lateral donde ambos lados dudan",
+      "Tras una tendencia larga, en un nivel clave",
+      "Solo los domingos"
+     ]
+    },
+    {
+     "q": "La forma correcta de actuar ante un doji es…",
+     "o": [
+      "Entrar de inmediato antes de que desaparezca la oportunidad",
+      "Esperar a que la siguiente vela confirme en el nivel",
+      "Duplicar tu posición",
+      "Ignorar los gráficos para siempre"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "t": "Envolvente: un bando toma el control",
+   "cards": [
+    {
+     "h": "La vela de la toma de control",
+     "p": "Un patrón envolvente alcista es una vela roja seguida de una verde cuyo cuerpo se la traga por completo. Todos los que vendieron durante esa vela roja ahora están en pérdidas — y el mensaje es directo: los compradores acaban de tomar el control a este precio."
+    },
+    {
+     "h": "Por qué funciona la envolvente",
+     "p": "Es mecánica de traders atrapados, no magia. Los vendedores de la vela envuelta tienen posiciones perdedoras; sus salidas (recompras) añaden combustible a la nueva dirección. Cuanto más grande es la vela envuelta y más importante el nivel, más traders atrapados — y más fuerte la señal."
+    },
+    {
+     "h": "La checklist de una envolvente real",
+     "p": "Tres requisitos: ocurre EN un nivel (soporte para la alcista, resistencia para la bajista), el cuerpo envolvente cubre por completo el cuerpo anterior, y el volumen sube en la vela envolvente. ¿No cumple ninguno de los tres? Estás mirando dos velas al azar."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Una envolvente alcista es…",
+     "o": [
+      "Dos velas verdes idénticas cerrando en el mismo nivel",
+      "Un cuerpo verde que traga por completo el cuerpo rojo",
+      "Un gap al alza",
+      "Un par de dojis"
+     ]
+    },
+    {
+     "q": "La razón mecánica por la que funcionan los patrones envolventes es…",
+     "o": [
+      "La suerte",
+      "Los traders atrapados de la vela envuelta alimentan la reversión al salir",
+      "Promociones de los exchanges para atraer nuevos compradores",
+      "La astrología"
+     ]
+    },
+    {
+     "q": "Una envolvente real necesita…",
+     "o": [
+      "Dos velas cualesquiera",
+      "Nivel + cobertura total del cuerpo + volumen creciente",
+      "Un fin de semana",
+      "La confirmación de un influencer grande en Twitter"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "t": "Martillo y estrella fugaz: las mechas de rechazo",
+   "cards": [
+    {
+     "h": "El martillo",
+     "p": "Un martillo aparece tras una caída: un cuerpo pequeño arriba con una mecha inferior larga — al menos el doble del cuerpo. La historia: los vendedores empujaron el precio muy abajo durante la sesión, y los compradores lo devolvieron de golpe hasta arriba. Esa mecha larga es una ruptura bajista fallida, escrita en una sola vela."
+    },
+    {
+     "h": "Encuéntralo tú mismo",
+     "p": "Recuerda: cuerpo pequeño arriba, mecha inferior larga, después de una caída.",
+     "prompt": "Una de estas tres velas es un martillo. Tócala."
+    },
+    {
+     "h": "La estrella fugaz — la misma historia, al revés",
+     "p": "Una estrella fugaz es la imagen en espejo en la cima de un rally: mecha SUPERIOR larga, cuerpo pequeño abajo. Los compradores intentaron continuar el rally, fueron rechazados con fuerza, y la vela cerró cerca de su mínimo. En resistencia, es uno de los setups de short más limpios que pueden imprimir las velas."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "La mecha inferior larga de un martillo muestra…",
+     "o": [
+      "Nada",
+      "Los compradores rechazaron todo el movimiento a la baja",
+      "Una suspensión del trading activada durante la sesión",
+      "Comisiones altas"
+     ]
+    },
+    {
+     "q": "Un martillo importa sobre todo…",
+     "o": [
+      "En medio del ruido lateral",
+      "Tras una caída, en soporte",
+      "En máximos históricos",
+      "Nunca"
+     ]
+    },
+    {
+     "q": "Una estrella fugaz es…",
+     "o": [
+      "Otro nombre para un martillo en el fondo de una caída larga",
+      "Un rechazo con mecha superior larga en la cima de un rally",
+      "Un gap",
+      "Un pico de volumen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c4",
+   "t": "Estrella de la mañana y estrella del atardecer",
+   "cards": [
+    {
+     "h": "Tres velas, una reversión",
+     "p": "La estrella de la mañana es una reversión en tres actos en el fondo: una vela roja fuerte (los vendedores al mando), una vela de cuerpo diminuto (la pelea se estanca — a menudo un doji), y luego una vela verde fuerte que cierra bien adentro de la primera (los compradores toman el control). La estrella del atardecer es el mismo patrón invertido, en la cima."
+    },
+    {
+     "h": "Por qué tres valen más que una",
+     "p": "Una sola vela puede ser ruido; tres velas consecutivas contando una misma historia coherente son más difíciles de falsear. La vela del medio es la bisagra — el momento en que murió el momentum. La tercera vela es la prueba. Sin ese tercer cierre fuerte, tienes un estancamiento, no una reversión."
+    },
+    {
+     "h": "Calificando la estrella",
+     "p": "Es más fuerte cuando: la vela del medio deja un gap o queda claramente separada, la tercera vela cierra más allá del punto medio de la primera, y todo el patrón se asienta en un nivel de tu mapa. Como siempre — el patrón da el gatillo y la invalidación (más allá del extremo de la estrella), el nivel da la razón."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "La vela del medio de la estrella de la mañana representa…",
+     "o": [
+      "Una aceleración repentina en la dirección de la tendencia",
+      "El momento en que el momentum se estanca",
+      "Un día festivo",
+      "El volumen"
+     ]
+    },
+    {
+     "q": "La reversión se confirma con…",
+     "o": [
+      "La vela del medio por sí sola, sin ninguna continuación",
+      "Una tercera vela fuerte que cierra bien adentro de la primera",
+      "Cualquier vela verde",
+      "Las noticias"
+     ]
+    },
+    {
+     "q": "El stop de un patrón de estrella va…",
+     "o": [
+      "En ninguna parte — no hace falta stop",
+      "Más allá del punto extremo del patrón",
+      "En la entrada",
+      "Siempre a un 1%"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c5",
+   "t": "Velas internas y compresión",
+   "cards": [
+    {
+     "h": "La vela que se enrosca",
+     "p": "Una vela interna queda entera dentro del rango de la vela anterior — máximo más bajo, mínimo más alto. El mercado se está comprimiendo: los rangos se encogen, ambos bandos esperan. Ya sabes por m7 lo que promete la compresión: expansión. Un grupo de velas internas es un resorte que se está tensando."
+    },
+    {
+     "h": "La jugada del breakout",
+     "p": "El setup clásico: marca el máximo y el mínimo de la vela madre. La ruptura de un lado con volumen es el gatillo; el lado opuesto es la invalidación natural. Es una de las estructuras de riesgo-beneficio más ajustadas del trading, porque la distancia del stop es el ancho del resorte."
+    },
+    {
+     "h": "La trampa que hay que respetar",
+     "p": "Las rupturas de compresión FALLAN a menudo — el primer movimiento suele ser el falso (lo sabes por el resorte de a2). Protégete: prefiere rupturas en la dirección de la tendencia de la temporalidad mayor, exige volumen, y nunca persigas una ruptura que vuelve al instante dentro de la vela madre — esa reentrada ES la señal de fallo."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Una vela interna es…",
+     "o": [
+      "Una vela claramente más grande que la vela anterior",
+      "Una vela entera dentro del rango de la vela anterior",
+      "Un doji",
+      "Un gap"
+     ]
+    },
+    {
+     "q": "El stop natural para un breakout de vela interna es…",
+     "o": [
+      "El lado opuesto de la vela madre",
+      "A un 10% fijo del precio de ruptura",
+      "En la entrada",
+      "No existe"
+     ]
+    },
+    {
+     "q": "Una ruptura que vuelve al instante dentro de la vela madre es…",
+     "o": [
+      "Una confirmación",
+      "La señal de fallo",
+      "Una señal de compra",
+      "Imposible"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c6",
+   "t": "Historias de mechas: absorción y agotamiento",
+   "cards": [
+    {
+     "h": "Leer las mechas como huellas",
+     "p": "Las mechas son precios rechazados — y su ubicación te dice a quién están rechazando. Mechas inferiores largas repetidas en una misma zona significan que alguien está absorbiendo la venta ahí: cada caída se compra. Mechas superiores repetidas en una zona significan que la oferta está arriba y cada subida se vende."
+    },
+    {
+     "h": "Mechas de agotamiento",
+     "p": "Una mecha ENORME tras un movimiento extendido — mucho mayor que las velas recientes — suele marcar agotamiento: el estallido final de la tendencia chocó con un muro de órdenes contrarias (es la mecha de la cascada de liquidaciones de m5 vista de cerca). Tendencia + volumen de clímax + mecha gigante = el movimiento probablemente terminó por ahora."
+    },
+    {
+     "h": "Los grupos de mechas dibujan tus niveles por ti",
+     "p": "Olvídate de trazar líneas a ojo: las zonas donde varias mechas asoman y son rechazadas SON el soporte y la resistencia propios del mercado. Dibuja la zona sobre las puntas de las mechas y luego aplica ahí todo el arsenal — tendencia, nodo de volumen, posicionamiento."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Mechas inferiores largas repetidas en una misma zona sugieren…",
+     "o": [
+      "Nada",
+      "Alguien está absorbiendo la venta",
+      "Los vendedores están ganando",
+      "Un mercado muerto"
+     ]
+    },
+    {
+     "q": "Una mecha gigante tras una tendencia extendida suele marcar…",
+     "o": [
+      "Continuación",
+      "Agotamiento — el clímax chocó con un muro",
+      "Un volumen de negociación muy bajo",
+      "Un bug"
+     ]
+    },
+    {
+     "q": "Las mejores zonas de soporte/resistencia se dibujan a partir de…",
+     "o": [
+      "Solo números redondos",
+      "Grupos de mechas de rechazo",
+      "Las noticias de ayer",
+      "Solo medias móviles"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c7",
+   "t": "Los patrones mienten: operar el fallo",
+   "cards": [
+    {
+     "h": "Todo patrón tiene una tasa de fallo",
+     "p": "A los martillos los atropellan. A las envolventes las envuelven. En el entorno de caza de stops de las cripto (a1), los patrones de manual fallan CONSTANTEMENTE — porque todos los ven, y las órdenes visibles son comida. Aceptar esto es la diferencia entre un usuario de patrones y una víctima de patrones."
+    },
+    {
+     "h": "El patrón fallido ES un patrón",
+     "p": "Aquí va el secreto profesional: una señal FALLIDA suele ser una señal mejor. Un martillo alcista en soporte que se rompe hacia abajo significa que todos los que compraron el martillo están ahora atrapados — sus stops alimentan el movimiento a la baja. Operar el fallo (con la masa atrapada como combustible) suele ser más limpio que operar el manual."
+    },
+    {
+     "h": "Posiciónate para las dos historias",
+     "p": "Regla práctica: sabe de antemano qué invalida el patrón y cómo sería el trade del fallo. Si el mínimo del martillo se rompe, ¿solo sales — o inviertes la posición? Decidir esto antes de entrar convierte un patrón de una plegaria en un plan con dos ramas."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Los patrones de manual fallan a menudo en cripto porque…",
+     "o": [
+      "Los gráficos están rotos",
+      "Todos los ven",
+      "Los patrones son ilegales",
+      "Las comisiones"
+     ]
+    },
+    {
+     "q": "Un patrón alcista fallido suele convertirse en…",
+     "o": [
+      "Nada",
+      "Una señal bajista fuerte",
+      "Una señal de compra",
+      "Un doji"
+     ]
+    },
+    {
+     "q": "Antes de entrar en un trade por patrón deberías saber…",
+     "o": [
+      "Solo el objetivo",
+      "Qué lo invalida y cómo sería el trade del fallo",
+      "El año exacto de fundación del exchange donde operas",
+      "Nada"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c8",
+   "t": "Poniendo las velas en su lugar",
+   "cards": [
+    {
+     "h": "Las velas son el último 10%",
+     "p": "Un patrón de velas es un GATILLO, nunca una razón. La razón viene de todo lo demás que has aprendido: tendencia (m1), nivel (m1/a4), posicionamiento (m4), régimen (a7). La vela solo responde la pregunta final: ¿es AHORA el momento de actuar en este nivel?"
+    },
+    {
+     "h": "La secuencia completa",
+     "p": "De arriba hacia abajo: la tendencia diaria permite la dirección → el 4H muestra un setup en un nivel → el posicionamiento no está masificado en tu contra → ENTONCES haces zoom y esperas la vela — la envolvente, el martillo, la estrella — como tu gatillo de entrada con invalidación incorporada. Las velas sin ese conjunto son apostar con pasos extra."
+    },
+    {
+     "h": "Entrena el ojo, luego confía en el proceso",
+     "p": "Reconocer patrones es una habilidad que se construye con repeticiones — y el paper trading te da repeticiones ilimitadas gratis. Detecta un patrón, escribe el plan de dos ramas, ejecútalo, regístralo en el diario. Cien patrones registrados después, SABRÁS cuáles te pagan — en tu mercado, en tu temporalidad."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "En un trade completo, un patrón de velas es…",
+     "o": [
+      "Toda la estrategia",
+      "El gatillo final",
+      "Decoración opcional",
+      "El stop-loss"
+     ]
+    },
+    {
+     "q": "La secuencia correcta termina con la vela porque…",
+     "o": [
+      "Las velas predicen todo lo que pasa en marcos superiores",
+      "Marca el momento de entrada en un nivel que ya tenía razones",
+      "Es la más bonita",
+      "Lo dice el volumen"
+     ]
+    },
+    {
+     "q": "La forma de aprender qué patrones TE pagan es…",
+     "o": [
+      "Confiar en influencers",
+      "Cien repeticiones registradas en paper trading + el diario",
+      "Un trade con suerte",
+      "Memorizar los nombres y formas de todos los patrones"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Sal a cazar patrones: abre un gráfico, encuentra una envolvente o un martillo en un nivel real, y registra el plan de dos ramas como un paper trade.",
+    "label": "Abrir Paper Trade →"
+   }
+  }
+ ]
+}

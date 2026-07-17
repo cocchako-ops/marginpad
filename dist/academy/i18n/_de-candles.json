@@ -1,0 +1,388 @@
+{
+ "id": "candles",
+ "name": "Candlestick-Muster",
+ "sub": "Den Kampf lesen, Kerze für Kerze",
+ "lessons": [
+  {
+   "id": "c1",
+   "t": "Doji: der Markt zuckt mit den Schultern",
+   "cards": [
+    {
+     "h": "Wenn keiner gewinnt",
+     "p": "Ein Doji ist eine Kerze, die fast genau da schließt, wo sie eröffnet hat — ein langer Kampf zwischen Käufern und Verkäufern, der unentschieden endete. Allein bedeutet er Unentschlossenheit. Erst seine POSITION gibt ihm Bedeutung: Ein Doji nach einem langen Trend sagt, dass der gewinnenden Seite die Überzeugung ausgeht."
+    },
+    {
+     "h": "Kontext ist alles",
+     "p": "Ein Doji mitten in einer Range ist Rauschen — Unentschlossenheit in der Unentschlossenheit. Ein Doji an einem wichtigen Widerstand nach fünf grünen Kerzen ist ein echtes Signal: Die Käufer, die den Preis hochgedrückt haben, sind gerade daran gescheitert, weiterzukommen. Gleiche Kerze, komplett andere Botschaft."
+    },
+    {
+     "h": "Trade nie den Doji allein",
+     "p": "Ein Doji ist ein Fragezeichen, keine Antwort. Er fragt: Ist der Trend müde? Die Antwort kommt von der NÄCHSTEN Kerze und dem Level, an dem es passiert. Doji am Widerstand + rote Bestätigungskerze = eine Story. Doji allein = ein Münzwurf mit schickem Namen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ein Doji sagt dir…",
+     "o": [
+      "Die Käufer haben klar gewonnen",
+      "Die Verkäufer haben klar gewonnen",
+      "Die Session endete unentschieden",
+      "Das Volumen war null"
+     ]
+    },
+    {
+     "q": "Wo ist ein Doji wirklich RELEVANT?",
+     "o": [
+      "Überall",
+      "Mitten in einer Range, wo beide Seiten zögern",
+      "Nach einem langen Trend an einem wichtigen Level",
+      "Nur sonntags"
+     ]
+    },
+    {
+     "q": "Der richtige Umgang mit einem Doji ist…",
+     "o": [
+      "Sofort einsteigen, bevor die Chance verschwindet",
+      "Auf die nächste Kerze warten, die am Level bestätigt",
+      "Die Position verdoppeln",
+      "Charts für immer ignorieren"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "t": "Engulfing: eine Seite übernimmt",
+   "cards": [
+    {
+     "h": "Die Übernahme-Kerze",
+     "p": "Ein bullisches Engulfing ist eine rote Kerze, gefolgt von einer grünen, deren Körper sie komplett verschluckt. Jeder, der während der roten Kerze verkauft hat, ist jetzt im Minus — und die Botschaft ist unmissverständlich: Die Käufer haben auf diesem Preisniveau gerade die Kontrolle übernommen."
+    },
+    {
+     "h": "Warum das Engulfing funktioniert",
+     "p": "Das ist die Mechanik gefangener Trader, keine Magie. Die Verkäufer aus der verschluckten Kerze sitzen auf Verlustpositionen; ihre Exits (Rückkäufe) geben der neuen Richtung zusätzlichen Treibstoff. Je größer die verschluckte Kerze und je wichtiger das Level, desto mehr gefangene Trader — und desto stärker das Signal."
+    },
+    {
+     "h": "Die Checkliste für ein echtes Engulfing",
+     "p": "Drei Bedingungen: Es passiert AN einem Level (Support für bullisch, Widerstand für bärisch), der Engulfing-Körper deckt den vorherigen Körper vollständig ab, und das Volumen steigt auf der Engulfing-Kerze. Fehlen alle drei? Dann schaust du auf zwei zufällige Kerzen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ein bullisches Engulfing ist…",
+     "o": [
+      "Zwei grüne Kerzen",
+      "Ein grüner Körper",
+      "Ein Gap nach oben",
+      "Ein Doji-Paar"
+     ]
+    },
+    {
+     "q": "Der mechanische Grund, warum Engulfing-Muster funktionieren, ist…",
+     "o": [
+      "Glück",
+      "Gefangene Trader der verschluckten Kerze befeuern die Umkehr",
+      "Werbeaktionen der Börse, um neue Käufer anzulocken",
+      "Astrologie"
+     ]
+    },
+    {
+     "q": "Ein echtes Engulfing braucht…",
+     "o": [
+      "Irgendwelche zwei Kerzen",
+      "Level + volle Körperabdeckung + steigendes Volumen",
+      "Ein Wochenende",
+      "Die Bestätigung eines großen Influencers auf Twitter"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "t": "Hammer und Shooting Star: die Rejection-Dochte",
+   "cards": [
+    {
+     "h": "Der Hammer",
+     "p": "Ein Hammer erscheint nach einem Abverkauf: kleiner Körper oben mit langem unterem Docht — mindestens doppelt so lang wie der Körper. Die Story: Die Verkäufer haben den Preis in der Session weit runtergedrückt, und die Käufer haben ihn komplett zurückgeholt. Dieser lange Docht ist ein gescheiterter Breakdown, in einer Kerze geschrieben."
+    },
+    {
+     "h": "Finde ihn selbst",
+     "prompt": "Eine dieser drei Kerzen ist ein Hammer. Tippe sie an.",
+     "p": "Merke dir: kleiner Körper oben, langer unterer Docht, nach einem Abverkauf."
+    },
+    {
+     "h": "Der Shooting Star — die gleiche Story, auf den Kopf gestellt",
+     "p": "Ein Shooting Star ist das Spiegelbild am Top einer Rally: langer OBERER Docht, kleiner Körper unten. Die Käufer wollten die Rally fortsetzen, wurden hart abgewiesen, und die Kerze schloss nahe ihrem Tief. Am Widerstand ist er eines der saubersten Short-Setups, die Kerzen liefern können."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Der lange untere Docht eines Hammers zeigt…",
+     "o": [
+      "Nichts",
+      "Käufer haben die ganze Abwärtsbewegung abgewiesen",
+      "Eine mitten in der Sitzung ausgelöste Handelsunterbrechung",
+      "Hohe Gebühren"
+     ]
+    },
+    {
+     "q": "Ein Hammer zählt am meisten…",
+     "o": [
+      "Mitten im seitwärts laufenden Chop",
+      "Nach einem Abverkauf, am Support",
+      "Am Allzeithoch",
+      "Nie"
+     ]
+    },
+    {
+     "q": "Ein Shooting Star ist…",
+     "o": [
+      "Ein anderer Name für einen Hammer am Boden eines Abverkaufs",
+      "Eine Rejection mit langem oberem Docht am Top einer Rally",
+      "Ein Gap",
+      "Ein Volumen-Spike"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c4",
+   "t": "Morning Star und Evening Star",
+   "cards": [
+    {
+     "h": "Drei Kerzen, eine Umkehr",
+     "p": "Der Morning Star ist eine Umkehr in drei Akten am Boden: eine starke rote Kerze (Verkäufer haben die Kontrolle), eine Kerze mit winzigem Körper (der Kampf stockt — oft ein Doji), dann eine starke grüne Kerze, die tief in die erste hineinschließt (Käufer übernehmen). Der Evening Star ist das gleiche Muster gespiegelt, am Top."
+    },
+    {
+     "h": "Warum drei besser sind als eine",
+     "p": "Eine einzelne Kerze kann Rauschen sein; drei aufeinanderfolgende Kerzen, die eine schlüssige Story erzählen, sind schwerer zu faken. Die mittlere Kerze ist das Scharnier — der Moment, in dem das Momentum starb. Die dritte Kerze ist der Beweis. Ohne den starken dritten Schlusskurs hast du eine Pause, keine Umkehr."
+    },
+    {
+     "h": "Den Star bewerten",
+     "p": "Stärker, wenn: die mittlere Kerze ein Gap bildet oder klar abgesetzt steht, die dritte Kerze über der Mitte der ersten schließt, und das ganze Muster an einem Level aus deiner Karte liegt. Wie immer — das Muster liefert den Trigger und die Invalidierung (jenseits des Extrempunkts des Stars), das Level liefert den Grund."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Die mittlere Kerze des Morning Star steht für…",
+     "o": [
+      "Eine plötzliche Beschleunigung in Trendrichtung",
+      "Den Moment, in dem das Momentum stockt",
+      "Einen Feiertag",
+      "Volumen"
+     ]
+    },
+    {
+     "q": "Die Umkehr wird bestätigt durch…",
+     "o": [
+      "Die mittlere Kerze allein",
+      "Eine starke dritte Kerze",
+      "Irgendeine grüne Kerze",
+      "News"
+     ]
+    },
+    {
+     "q": "Der Stop für ein Star-Muster gehört…",
+     "o": [
+      "Nirgendwohin",
+      "Jenseits des Extrempunkts des Musters",
+      "Auf den Einstieg",
+      "Immer genau 1% vom Einstieg entfernt"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c5",
+   "t": "Inside Bars und Kompression",
+   "cards": [
+    {
+     "h": "Die Kerze, die sich aufspannt",
+     "p": "Eine Inside Bar liegt komplett innerhalb der Range der vorherigen Kerze — tieferes Hoch, höheres Tief. Der Markt komprimiert: Die Ranges schrumpfen, beide Seiten warten. Du weißt aus m7, was Kompression verspricht: Expansion. Ein Cluster aus Inside Bars ist eine Feder, die gespannt wird."
+    },
+    {
+     "h": "Der Breakout-Play",
+     "p": "Das klassische Setup: Markiere Hoch und Tief der Mother Bar. Ein Bruch einer Seite mit Volumen ist der Trigger; die Gegenseite ist die natürliche Invalidierung. Es ist eine der engsten Risk-Reward-Strukturen im Trading, weil die Stop-Distanz die Breite der Feder ist."
+    },
+    {
+     "h": "Die Falle, die du respektieren musst",
+     "p": "Kompressions-Ausbrüche SCHEITERN oft — die erste Bewegung ist häufig der Fake (das kennst du aus a2 mit der Feder). Schütze dich: Bevorzuge Ausbrüche in Richtung des übergeordneten Trends, verlange Volumen, und jage nie einem Ausbruch hinterher, der sofort zurück in die Mother Bar fällt — genau dieses Zurückkehren IST das Fehlsignal."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Eine Inside Bar ist…",
+     "o": [
+      "Eine Kerze, die deutlich größer ist als die letzte davor",
+      "Eine Kerze komplett innerhalb der Range der vorherigen Kerze",
+      "Ein Doji",
+      "Ein Gap"
+     ]
+    },
+    {
+     "q": "Der natürliche Stop für einen Inside-Bar-Breakout ist…",
+     "o": [
+      "Die Gegenseite der Mother Bar",
+      "Fixe 10% vom Ausbruchspreis entfernt",
+      "Am Einstieg",
+      "Es gibt keinen"
+     ]
+    },
+    {
+     "q": "Ein Ausbruch, der sofort zurück in die Mother Bar fällt, ist…",
+     "o": [
+      "Eine Bestätigung",
+      "Das Fehlsignal",
+      "Ein Kaufsignal",
+      "Unmöglich"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c6",
+   "t": "Docht-Stories: Absorption und Erschöpfung",
+   "cards": [
+    {
+     "h": "Dochte lesen wie Fußspuren",
+     "p": "Dochte sind abgelehnte Preise — und ihre Lage verrät dir, wer abgewiesen wird. Wiederholte lange untere Dochte in einer Zone bedeuten, dass dort jemand den Verkaufsdruck absorbiert: Jeder Dip wird gekauft. Wiederholte obere Dochte in einer Zone bedeuten, dass darüber Angebot sitzt und jede Rally verkauft wird."
+    },
+    {
+     "h": "Erschöpfungs-Dochte",
+     "p": "Ein RIESIGER Docht nach einer ausgedehnten Bewegung — viel größer als die letzten Kerzen — markiert oft Erschöpfung: Der letzte Schub des Trends traf auf eine Wand aus Gegenorders (das ist der Liquidations-Kaskaden-Docht aus m5 aus der Nähe). Trend + Klimax-Volumen + Riesen-Docht = die Bewegung ist wahrscheinlich erstmal vorbei."
+    },
+    {
+     "h": "Docht-Cluster zeichnen deine Levels für dich",
+     "p": "Vergiss Linien nach Gefühl: Zonen, in die mehrere Dochte hineinstechen und abgewiesen werden, SIND die eigenen Support- und Widerstandszonen des Marktes. Zieh die Zone über die Dochtspitzen und wende dann den kompletten Werkzeugkasten an — Trend, Volumen-Node, Positionierung — genau an dieser Zone."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wiederholte lange untere Dochte in einer Zone deuten auf…",
+     "o": [
+      "Nichts",
+      "Jemand absorbiert den Verkaufsdruck",
+      "Die Verkäufer gewinnen und drücken die Zone weiter",
+      "Einen toten Markt"
+     ]
+    },
+    {
+     "q": "Ein riesiger Docht nach einem ausgedehnten Trend markiert oft…",
+     "o": [
+      "Eine noch stärkere Fortsetzung des Trends",
+      "Erschöpfung — der Klimax traf eine Orderwand",
+      "Niedriges Volumen",
+      "Einen Bug"
+     ]
+    },
+    {
+     "q": "Die besten Support/Widerstand-Zonen zeichnest du aus…",
+     "o": [
+      "Nur runden Zahlen",
+      "Clustern aus Rejection-Dochten",
+      "Den News von gestern",
+      "Nur gleitenden Durchschnitten"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c7",
+   "t": "Muster lügen: der Failure-Trade",
+   "cards": [
+    {
+     "h": "Jedes Muster hat eine Fehlerquote",
+     "p": "Hammer werden überrollt. Engulfings werden selbst verschluckt. In Cryptos Stop-Hunting-Umfeld (a1) scheitern Lehrbuch-Muster STÄNDIG — weil alle sie sehen, und sichtbare Orders sind Futter. Das zu akzeptieren ist der Unterschied zwischen einem Muster-Nutzer und einem Muster-Opfer."
+    },
+    {
+     "h": "Das gescheiterte Muster IST ein Muster",
+     "p": "Hier das Profi-Geheimnis: Ein GESCHEITERTES Signal ist oft ein besseres Signal. Ein bullischer Hammer am Support, der nach unten bricht, bedeutet: Jeder Hammer-Käufer ist jetzt gefangen — ihre Stops befeuern die Abwärtsbewegung. Das Scheitern zu traden (mit der gefangenen Masse als Treibstoff) ist oft sauberer als das Lehrbuch zu traden."
+    },
+    {
+     "h": "Stell dich auf beide Storys ein",
+     "p": "Praxisregel: Wisse im Voraus, was das Muster invalidiert und wie der Failure-Trade aussehen würde. Wenn das Hammer-Tief bricht — steigst du nur aus, oder drehst du die Position? Das VOR dem Einstieg zu entscheiden macht aus einem Muster ein Plan mit zwei Ästen statt einem Gebet."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Lehrbuch-Muster scheitern in Crypto oft, weil…",
+     "o": [
+      "Die Charts kaputt sind",
+      "Alle sie sehen",
+      "Muster illegal sind",
+      "Gebühren"
+     ]
+    },
+    {
+     "q": "Ein gescheitertes bullisches Muster wird oft zu…",
+     "o": [
+      "Nichts",
+      "Einem starken bärischen Signal",
+      "Einem noch stärkeren Kaufsignal für Geduldige",
+      "Einem Doji"
+     ]
+    },
+    {
+     "q": "Bevor du einen Muster-Trade eingehst, solltest du wissen…",
+     "o": [
+      "Nur das Ziel",
+      "Was es invalidiert und wie der Failure-Trade aussieht",
+      "Das exakte Gründungsjahr der Börse, die du nutzt",
+      "Nichts"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c8",
+   "t": "Kerzen an ihren Platz setzen",
+   "cards": [
+    {
+     "h": "Kerzen sind die letzten 10%",
+     "p": "Ein Kerzenmuster ist ein TRIGGER, nie ein Grund. Der Grund kommt aus allem anderen, was du gelernt hast: Trend (m1), Level (m1/a4), Positionierung (m4), Regime (a7). Die Kerze beantwortet nur die letzte Frage: Ist JETZT der Moment, an diesem Level zu handeln?"
+    },
+    {
+     "h": "Die komplette Sequenz",
+     "p": "Top-down: Der Daily-Trend erlaubt die Richtung → der 4H zeigt ein Setup an einem Level → die Positionierung ist nicht überfüllt gegen dich → DANN zoomst du rein und wartest auf die Kerze — das Engulfing, den Hammer, den Star — als Einstiegs-Trigger mit eingebauter Invalidierung. Kerzen ohne diesen Stack sind Glücksspiel mit Extraschritten."
+    },
+    {
+     "h": "Das Auge trainieren, dann dem Prozess vertrauen",
+     "p": "Mustererkennung ist eine Fähigkeit, die mit Wiederholungen wächst — und Paper Trading gibt dir unbegrenzte Wiederholungen gratis. Muster erkennen, den Zwei-Äste-Plan aufschreiben, ausführen, ins Journal eintragen. Hundert protokollierte Muster später WEISST du, welche dich bezahlen — in deinem Markt, auf deinem Timeframe."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "In einem kompletten Trade ist ein Kerzenmuster…",
+     "o": [
+      "Die ganze Strategie",
+      "Der finale Trigger",
+      "Optionale Deko",
+      "Der Stop-Loss"
+     ]
+    },
+    {
+     "q": "Die richtige Sequenz endet mit der Kerze, weil…",
+     "o": [
+      "Kerzen alles auf höheren Timeframes vorhersagen",
+      "Sie den Einstieg an einem Level timt, das schon Gründe hatte",
+      "Sie am hübschesten ist",
+      "Das Volumen es sagt"
+     ]
+    },
+    {
+     "q": "So lernst du, welche Muster DICH bezahlen…",
+     "o": [
+      "Influencern vertrauen",
+      "Hundert protokollierte Wiederholungen + Journal",
+      "Ein Glückstreffer",
+      "Die Namen und Formen aller Muster auswendig lernen"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Geh auf Muster-Jagd: Öffne einen Chart, finde ein Engulfing oder einen Hammer an einem echten Level und protokolliere den Zwei-Äste-Plan als Paper Trade.",
+    "label": "Paper Trade öffnen →"
+   }
+  }
+ ]
+}

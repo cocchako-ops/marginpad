@@ -1,0 +1,388 @@
+{
+ "id": "candles",
+ "name": "Figures de chandeliers",
+ "sub": "Lire la bataille, bougie par bougie",
+ "lessons": [
+  {
+   "id": "c1",
+   "t": "Le doji : le marché hausse les épaules",
+   "cards": [
+    {
+     "h": "Quand personne ne gagne",
+     "p": "Un doji est une bougie qui clôture quasiment là où elle a ouvert — un long combat entre acheteurs et vendeurs qui se termine par un match nul. Seul, il signifie indécision. C'est sa POSITION qui lui donne du sens : un doji après une longue tendance dit que le camp gagnant est à court de conviction."
+    },
+    {
+     "h": "Le contexte fait tout",
+     "p": "Un doji au milieu d'un range, c'est du bruit — de l'indécision dans l'indécision. Un doji sur une résistance clé après cinq bougies vertes, c'est un vrai signal : les acheteurs qui poussaient le prix vers le haut viennent d'échouer à aller plus loin. Même bougie, message complètement différent."
+    },
+    {
+     "h": "Ne trade jamais le doji seul",
+     "p": "Un doji est un point d'interrogation, pas une réponse. Il demande : la tendance est-elle fatiguée ? La réponse vient de la bougie SUIVANTE et du niveau où ça se passe. Doji sur résistance + bougie rouge de confirmation = une histoire. Doji seul = un pile ou face avec un nom sophistiqué."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Un doji te dit que…",
+     "o": [
+      "Les acheteurs ont gagné nettement",
+      "Les vendeurs ont gagné nettement",
+      "La séance s'est finie sur un match nul",
+      "Le volume était à zéro"
+     ]
+    },
+    {
+     "q": "Où un doji COMPTE-t-il vraiment ?",
+     "o": [
+      "N'importe où",
+      "Au milieu d'un range où les deux camps hésitent",
+      "Après une longue tendance, sur un niveau clé",
+      "Seulement le dimanche"
+     ]
+    },
+    {
+     "q": "La bonne façon d'agir sur un doji, c'est…",
+     "o": [
+      "Entrer immédiatement avant que l'occasion ne disparaisse",
+      "Attendre que la bougie suivante confirme sur le niveau",
+      "Doubler ta position",
+      "Ignorer les graphiques à jamais"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "t": "L'engulfing : un camp prend le contrôle",
+   "cards": [
+    {
+     "h": "La bougie de prise de pouvoir",
+     "p": "Un engulfing haussier, c'est une bougie rouge suivie d'une verte dont le corps l'avale entièrement. Tous ceux qui ont vendu pendant cette bougie rouge sont maintenant en perte — et le message est brutal : les acheteurs viennent de prendre le contrôle à ce prix."
+    },
+    {
+     "h": "Pourquoi l'engulfing fonctionne",
+     "p": "C'est de la mécanique de traders piégés, pas de la magie. Les vendeurs de la bougie avalée ont des positions perdantes ; leurs sorties (des rachats) ajoutent du carburant à la nouvelle direction. Plus la bougie avalée est grosse et plus le niveau est important, plus il y a de traders piégés — et plus le signal est fort."
+    },
+    {
+     "h": "La checklist d'un vrai engulfing",
+     "p": "Trois conditions : il se produit SUR un niveau (support pour le haussier, résistance pour le baissier), le corps englobant couvre entièrement le corps précédent, et le volume monte sur la bougie d'engulfing. Aucune des trois ? Tu regardes juste deux bougies au hasard."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Un engulfing haussier, c'est…",
+     "o": [
+      "Deux bougies vertes identiques clôturant au même niveau",
+      "Un corps vert qui avale entièrement le corps rouge",
+      "Un gap haussier",
+      "Une paire de dojis"
+     ]
+    },
+    {
+     "q": "La raison mécanique pour laquelle les engulfings fonctionnent, c'est…",
+     "o": [
+      "La chance",
+      "Les traders piégés de la bougie avalée alimentent le retournement",
+      "Les promos des exchanges pour attirer de nouveaux acheteurs",
+      "L'astrologie"
+     ]
+    },
+    {
+     "q": "Un vrai engulfing exige…",
+     "o": [
+      "N'importe quelles deux bougies",
+      "Niveau + corps entièrement couvert + volume en hausse",
+      "Un week-end",
+      "Une confirmation postée par un influenceur sur Twitter"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "t": "Marteau et étoile filante : les mèches de rejet",
+   "cards": [
+    {
+     "h": "Le marteau",
+     "p": "Un marteau apparaît après une baisse : un petit corps en haut avec une longue mèche basse — au moins deux fois le corps. L'histoire : les vendeurs ont poussé le prix loin vers le bas pendant la séance, et les acheteurs l'ont ramené d'un coup. Cette longue mèche, c'est une cassure baissière ratée, écrite en une seule bougie."
+    },
+    {
+     "h": "Trouve-le toi-même",
+     "p": "Retiens : petit corps en haut, longue mèche basse, après une baisse.",
+     "prompt": "Une de ces trois bougies est un marteau. Touche-la."
+    },
+    {
+     "h": "L'étoile filante — la même histoire, à l'envers",
+     "p": "Une étoile filante est l'image miroir au sommet d'un rallye : longue mèche HAUTE, petit corps en bas. Les acheteurs ont tenté de prolonger le rallye, se sont fait rejeter violemment, et la bougie a clôturé près de son plus bas. Sur une résistance, c'est un des setups short les plus propres que les bougies puissent imprimer."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "La longue mèche basse d'un marteau montre que…",
+     "o": [
+      "Rien",
+      "Les acheteurs ont rejeté tout le mouvement baissier",
+      "Une suspension du trading déclenchée en pleine séance",
+      "Les frais sont élevés"
+     ]
+    },
+    {
+     "q": "Un marteau compte surtout…",
+     "o": [
+      "Au milieu d'un marché hésitant",
+      "Après une baisse",
+      "Sur les plus hauts historiques",
+      "Jamais"
+     ]
+    },
+    {
+     "q": "Une étoile filante, c'est…",
+     "o": [
+      "Un autre nom pour un marteau au plus bas d'une longue baisse",
+      "Un rejet avec longue mèche haute au sommet d'un rallye",
+      "Un gap",
+      "Un pic de volume"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c4",
+   "t": "Étoile du matin et étoile du soir",
+   "cards": [
+    {
+     "h": "Trois bougies, un retournement",
+     "p": "L'étoile du matin est un retournement en trois actes au plus bas : une forte bougie rouge (les vendeurs contrôlent), une bougie au corps minuscule (le combat cale — souvent un doji), puis une forte bougie verte qui clôture profondément dans la première (les acheteurs prennent le relais). L'étoile du soir est le même schéma inversé, au sommet."
+    },
+    {
+     "h": "Pourquoi trois valent mieux qu'une",
+     "p": "Une seule bougie peut être du bruit ; trois bougies consécutives qui racontent une histoire cohérente, c'est plus dur à truquer. La bougie du milieu est le pivot — le moment où le momentum est mort. La troisième bougie est la preuve. Sans cette forte clôture de la troisième, tu as une pause, pas un retournement."
+    },
+    {
+     "h": "Noter la qualité de l'étoile",
+     "p": "Plus forte quand : la bougie du milieu fait un gap ou se détache clairement, la troisième clôture au-delà du milieu de la première, et l'ensemble se trouve sur un niveau de ta carte. Comme toujours — la figure donne le déclencheur et l'invalidation (au-delà de l'extrême de l'étoile), le niveau donne la raison."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "La bougie du milieu de l'étoile du matin représente…",
+     "o": [
+      "Une accélération soudaine dans le sens de la tendance",
+      "Le moment où le momentum cale — le pivot",
+      "Un jour férié",
+      "Le volume"
+     ]
+    },
+    {
+     "q": "Le retournement est confirmé par…",
+     "o": [
+      "La bougie du milieu toute seule, sans avoir besoin d'aucune suite",
+      "Une troisième bougie forte qui clôture profondément dans la première",
+      "N'importe quelle bougie verte",
+      "Les news"
+     ]
+    },
+    {
+     "q": "Le stop d'une figure en étoile se place…",
+     "o": [
+      "Nulle part — pas besoin de stop",
+      "Au-delà du point extrême de la figure",
+      "Sur l'entrée",
+      "Toujours à 1%"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c5",
+   "t": "Inside bars et compression",
+   "cards": [
+    {
+     "h": "La bougie qui s'enroule",
+     "p": "Une inside bar tient entièrement dans le range de la bougie précédente — plus haut plus bas, plus bas plus haut. Le marché se comprime : les ranges rétrécissent, les deux camps attendent. Tu sais déjà depuis m7 ce que promet la compression : l'expansion. Un groupe d'inside bars, c'est un ressort qu'on remonte."
+    },
+    {
+     "h": "Le trade de cassure",
+     "p": "Le setup classique : marque le plus haut et le plus bas de la bougie mère. La cassure d'un côté avec du volume est le déclencheur ; le côté opposé est l'invalidation naturelle. C'est une des structures au risque-rendement les plus serrées du trading, parce que la distance du stop égale la largeur du ressort."
+    },
+    {
+     "h": "Le piège à respecter",
+     "p": "Les cassures de compression ÉCHOUENT souvent — le premier mouvement est fréquemment le faux (tu le sais depuis le spring de a2). Protège-toi : privilégie les cassures dans le sens de la tendance de l'unité de temps supérieure, exige du volume, et ne cours jamais après une cassure qui revient aussitôt dans la bougie mère — ce retour à l'intérieur EST le signal d'échec."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Une inside bar, c'est…",
+     "o": [
+      "Une bougie nettement plus grosse que la précédente",
+      "Une bougie entièrement contenue dans le range précédent",
+      "Un doji",
+      "Un gap"
+     ]
+    },
+    {
+     "q": "Le stop naturel d'une cassure d'inside bar est…",
+     "o": [
+      "Le côté opposé de la bougie mère",
+      "À 10% fixes du prix de cassure",
+      "Sur l'entrée",
+      "Il n'y en a pas"
+     ]
+    },
+    {
+     "q": "Une cassure qui revient aussitôt dans la bougie mère est…",
+     "o": [
+      "Une confirmation",
+      "Le signal d'échec",
+      "Un signal d'achat",
+      "Impossible"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c6",
+   "t": "Ce que racontent les mèches : absorption et épuisement",
+   "cards": [
+    {
+     "h": "Lire les mèches comme des empreintes",
+     "p": "Les mèches sont des prix rejetés — et leur emplacement te dit qui se fait rejeter. Des longues mèches basses répétées sur une même zone signifient que quelqu'un y absorbe la vente : chaque creux est acheté. Des mèches hautes répétées sur une zone signifient que l'offre est au-dessus et que chaque rallye est vendu."
+    },
+    {
+     "h": "Les mèches d'épuisement",
+     "p": "Une ÉNORME mèche après un mouvement prolongé — bien plus grande que les bougies récentes — marque souvent l'épuisement : le dernier sursaut de la tendance a rencontré un mur d'ordres opposés (c'est la mèche de cascade de liquidations de m5, vue de près). Tendance + volume climax + mèche géante = le mouvement est probablement terminé pour l'instant."
+    },
+    {
+     "h": "Les grappes de mèches dessinent tes niveaux pour toi",
+     "p": "Oublie les lignes tracées au feeling : les zones où plusieurs mèches piquent et se font rejeter SONT les supports et résistances du marché lui-même. Trace la zone sur les pointes des mèches, puis applique toute la boîte à outils — tendance, nœud de volume, positionnement — sur cette zone."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Des longues mèches basses répétées sur une même zone suggèrent que…",
+     "o": [
+      "Rien",
+      "Quelqu'un absorbe la vente",
+      "Les vendeurs gagnent",
+      "Le marché est complètement mort"
+     ]
+    },
+    {
+     "q": "Une mèche géante après une tendance prolongée marque souvent…",
+     "o": [
+      "Une continuation",
+      "L'épuisement",
+      "Un volume faible",
+      "Un bug"
+     ]
+    },
+    {
+     "q": "Les meilleures zones de support/résistance se tracent à partir de…",
+     "o": [
+      "Chiffres ronds uniquement",
+      "Grappes de mèches de rejet",
+      "News d'hier",
+      "Moyennes mobiles uniquement"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c7",
+   "t": "Les figures mentent : trader l'échec",
+   "cards": [
+    {
+     "h": "Toute figure a un taux d'échec",
+     "p": "Les marteaux se font écraser. Les engulfings se font avaler. Dans l'environnement de chasse aux stops de la crypto (a1), les figures de manuel échouent EN PERMANENCE — parce que tout le monde les voit, et les ordres visibles sont de la nourriture. Accepter ça, c'est la différence entre un utilisateur de figures et une victime de figures."
+    },
+    {
+     "h": "La figure ratée EST une figure",
+     "p": "Voici le secret des pros : un signal RATÉ est souvent un meilleur signal. Un marteau haussier sur support qui casse vers le bas signifie que tous les acheteurs du marteau sont piégés — leurs stops alimentent le mouvement baissier. Trader l'échec (avec la foule piégée comme carburant) est souvent plus propre que trader le manuel."
+    },
+    {
+     "h": "Prépare-toi aux deux scénarios",
+     "p": "Règle pratique : sache à l'avance ce qui invalide la figure, et à quoi ressemblerait le trade d'échec. Si le plus bas du marteau casse, tu sors seulement — ou tu inverses ? Décider ça avant l'entrée transforme une figure d'une prière en un plan à deux branches."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Les figures de manuel échouent souvent en crypto parce que…",
+     "o": [
+      "Les graphiques sont cassés",
+      "Tout le monde les voit",
+      "Les figures sont illégales",
+      "Les frais"
+     ]
+    },
+    {
+     "q": "Une figure haussière ratée devient souvent…",
+     "o": [
+      "Rien",
+      "Un fort signal baissier",
+      "Un signal d'achat encore plus fort",
+      "Un doji"
+     ]
+    },
+    {
+     "q": "Avant d'entrer sur un trade de figure, tu dois savoir…",
+     "o": [
+      "Seulement l'objectif",
+      "Ce qui l'invalide et à quoi ressemble le trade d'échec",
+      "L'année exacte de création de l'exchange que tu utilises",
+      "Rien"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c8",
+   "t": "Remettre les bougies à leur place",
+   "cards": [
+    {
+     "h": "Les bougies sont les derniers 10%",
+     "p": "Une figure de chandelier est un DÉCLENCHEUR, jamais une raison. La raison vient de tout ce que tu as appris par ailleurs : tendance (m1), niveau (m1/a4), positionnement (m4), régime (a7). La bougie répond seulement à la dernière question : est-ce MAINTENANT le moment d'agir sur ce niveau ?"
+    },
+    {
+     "h": "La séquence complète",
+     "p": "Du haut vers le bas : la tendance daily autorise la direction → le 4H montre un setup sur un niveau → le positionnement n'est pas saturé contre toi → ALORS tu zoomes et tu attends la bougie — l'engulfing, le marteau, l'étoile — comme déclencheur d'entrée avec invalidation intégrée. Les bougies sans cet empilement, c'est du jeu de hasard avec des étapes en plus."
+    },
+    {
+     "h": "Entraîne l'œil, puis fais confiance au process",
+     "p": "La reconnaissance de figures est une compétence qui se construit avec les répétitions — et le paper trading t'offre des répétitions illimitées gratuitement. Repère une figure, écris le plan à deux branches, exécute, note-le dans ton journal. Cent figures consignées plus tard, tu SAURAS lesquelles te paient — sur ton marché, sur ton unité de temps."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Dans un trade complet, une figure de chandelier est…",
+     "o": [
+      "Toute la stratégie",
+      "Le déclencheur final",
+      "Une décoration optionnelle",
+      "Le stop-loss"
+     ]
+    },
+    {
+     "q": "La bonne séquence se termine par la bougie parce que…",
+     "o": [
+      "Les bougies prédisent tout ce qui arrive au-dessus",
+      "Elle synchronise l'entrée sur un niveau qui a déjà des raisons",
+      "C'est la plus jolie",
+      "Le volume le dit"
+     ]
+    },
+    {
+     "q": "La façon d'apprendre quelles figures TE paient, c'est…",
+     "o": [
+      "Faire confiance aux influenceurs",
+      "Cent répétitions consignées en paper trading + le journal",
+      "Un trade chanceux",
+      "Mémoriser les noms et formes de toutes les figures"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Pars à la chasse aux figures : ouvre un graphique, trouve un engulfing ou un marteau sur un vrai niveau, et consigne le plan à deux branches en paper trade.",
+    "label": "Ouvrir le Paper Trade →"
+   }
+  }
+ ]
+}

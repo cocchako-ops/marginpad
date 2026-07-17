@@ -1,0 +1,439 @@
+{
+ "id": "basics",
+ "name": "Kripto Temelleri",
+ "sub": "Aslında neyle işlem yapıyorsun",
+ "lessons": [
+  {
+   "id": "b1",
+   "t": "Kripto gerçekte nedir?",
+   "cards": [
+    {
+     "h": "Aracısız para",
+     "p": "Bitcoin, 2009 yılında hiçbir bankanın veya devletin kontrol etmediği bir para olarak yaratıldı. Kimin neye sahip olduğunu tek bir bankanın defterde tutması yerine, dünyanın dört bir yanındaki binlerce bilgisayar bu defterin birebir kopyalarını tutar — bu ortak deftere blockchain denir."
+    },
+    {
+     "h": "Neden hiç uyumaz",
+     "p": "Borsalar açılır ve kapanır. Kripto ise günde 24 saat, haftada 7 gün, dünyanın her yerinde aynı anda işlem görür. Fiyatlar pazar gecesi saat 3'te bile sert hareket edebilir — trader'ların bütün gün grafik izlemek yerine alarm ve stop-loss kullanmasının nedeni tam olarak budur."
+    },
+    {
+     "h": "Binlerce coin, önemli olan birkaç tane",
+     "p": "Bitcoin (BTC) en büyüğüdür ve tüm piyasayı hareket ettirir. Ethereum (ETH) ikinci sırada. En üstteki birkaç coinin dışında binlerce küçük coin (altcoin) vardır — çoğu çok daha riskli ve çok daha az likittir. Yeni başlayan biri olarak öğrenmen gereken her şeyi BTC ve ETH üzerinde öğrenebilirsin."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kimin hangi kriptoya sahip olduğunu ne takip eder?",
+     "o": [
+      "Bir merkez bankası",
+      "Binlerce bilgisayara kopyalanmış ortak bir defter (blockchain)",
+      "Her borsanın kimseyle paylaşmadığı kendi özel listesi",
+      "Devlet"
+     ]
+    },
+    {
+     "q": "Kripto piyasası ne zaman kapanır?",
+     "o": [
+      "New York saatiyle 17:00'de",
+      "Hafta sonları",
+      "Asla — 7/24 işlem görür",
+      "Tatillerde"
+     ]
+    },
+    {
+     "q": "Yeni başlayan biri için öğrenmeye en mantıklı coinler hangileri?",
+     "o": [
+      "Devasa yüzde kazançlı yepyeni coinler",
+      "BTC ve ETH — en büyük ve en likit olanlar",
+      "Sosyal medyada trend olan her ne varsa",
+      "Birim fiyatı en ucuz olan coin"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b2",
+   "t": "Borsalar, cüzdanlar ve satın almanın anlamı",
+   "cards": [
+    {
+     "h": "İşlemler nerede gerçekleşir",
+     "p": "Borsa, alıcılarla satıcıları eşleştiren bir pazar yeridir — Binance, Coinbase, Kraken ve Bybit birer borsadır. Orada Bitcoin aldığında borsa kendi iç defterini günceller; sen çekene kadar coinler borsanın emanetinde durur."
+    },
+    {
+     "h": "Spot vs türevler",
+     "p": "Coinin kendisini satın almaya spot işlem denir — coin senindir ve maksimum kaybın ödediğin tutardır. Türevler (2. Kurs'ta tanışacağın vadeli işlemler gibi) coine sahip olmadan fiyatı takip eden sözleşmelerdir — kaldıraç kullanmana izin verirler, ama kaldıraç iki tarafa da keser."
+    },
+    {
+     "h": "Anahtarlar senin değilse coinler de senin değil",
+     "p": "Cüzdan, kriptonun gerçekten sana ait olduğunda yaşadığı yerdir — yalnızca senin elinde olan gizli bir anahtarla kontrol edilir. Borsada bırakılan coinler o borsanın sana borç senedidir. Aktif işlem tutarları için sorun değil, ama tarih (Mt. Gox, FTX) büyük varlıkların neden kendi cüzdanında durması gerektiğini gösteriyor."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Spot işlem nedir?",
+     "o": [
+      "Borç parayla fiyat üzerine bahis oynamak",
+      "Coinin kendisini satın almak",
+      "Bir cüzdan türü",
+      "Sadece belirli saatlerde işlem yapmak"
+     ]
+    },
+    {
+     "q": "Borsada duran coinler…",
+     "o": [
+      "Her zaman tamamen güvendedir",
+      "Kişisel cüzdanındadır",
+      "Fiilen borsanın sana borç senedidir",
+      "Çekilmesi imkansızdır"
+     ]
+    },
+    {
+     "q": "100$ ile spot alım yaparken kaybedebileceğin maksimum nedir?",
+     "o": [
+      "100$ — ödediğin tutar",
+      "100$'dan fazlası",
+      "Hiçbir şey, spot risksizdir",
+      "Kaldıraca bağlıdır"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b3",
+   "t": "Fiyat grafiği okumak",
+   "cards": [
+    {
+     "h": "Mum çubuğu",
+     "p": "Her mum, bir zaman dilimindeki fiyatı özetler: nerede açıldı, nerede kapandı ve dokunulan en yüksek ile en düşük noktalar. Yeşil mum açıldığından daha yüksekte kapanmıştır; kırmızı mum daha düşükte. İnce çizgiler (fitiller) fiyatın kısa süreliğine dokunduğu uç noktaları gösterir."
+    },
+    {
+     "h": "Kendin bul",
+     "prompt": "Mumun ÜST FİTİLİNE dokun — dokunulan en yüksek fiyatı gösteren çizgi.",
+     "p": "Devam etmeden önce bunu gözlerinle kanıtla. Tek bir dokunuş."
+    },
+    {
+     "h": "Zaman dilimleri hikayeyi değiştirir",
+     "p": "Aynı piyasa farklı zaman dilimlerinde farklı görünür. 1 dakikalık grafik gürültü gösterir; günlük grafik trendi gösterir. Yaygın bir acemi hatası, günlük grafikte görünmeyen korkutucu bir 5 dakikalık mum yüzünden paniğe kapılmaktır. Önce uzaklaş, her zaman."
+    },
+    {
+     "h": "Hacim yalan makinesidir",
+     "p": "Hacim, gerçekte ne kadar işlem yapıldığını gösterir. Yüksek hacimli bir fiyat hareketi gerçek katılım demektir; aynı hareket düşük hacimde kırılgandır ve genellikle geri döner. Fiyat ne olduğunu söyler — hacim ise ona ne kadar inanman gerektiğini."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kırmızı mum ne anlama gelir…",
+     "o": [
+      "Fiyat açıldığından daha düşükte kapandı",
+      "İşlemler durduruldu",
+      "Hacim düşüktü",
+      "Fiyatın gün boyu düşmeye devam etmesi garanti"
+     ]
+    },
+    {
+     "q": "Mum fitilleri neyi gösterir?",
+     "o": [
+      "Piyasanın bir sonraki dönem için tahmin ettiği fiyatı",
+      "O dönemde dokunulan en yüksek ve en düşük fiyatları",
+      "İşlem ücretini",
+      "Trader sayısını"
+     ]
+    },
+    {
+     "q": "Çok düşük hacimde büyük bir fiyat hareketi…",
+     "o": [
+      "Mümkün olan en güçlü sinyaldir",
+      "Kırılgandır — genellikle geri döner",
+      "İmkansızdır",
+      "Her zaman bir trendin başlangıcıdır"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b4",
+   "t": "Piyasa değeri, likidite ve fiyatın tek başına neden yalan söylediği",
+   "cards": [
+    {
+     "h": "Coin başına fiyat tek başına hiçbir şey ifade etmez",
+     "p": "0.001$ değerindeki bir coin, anlamlı hiçbir açıdan Bitcoin'den ucuz değildir. Önemli olan piyasa değeridir: fiyat × dolaşımdaki arz. 100 milyar tokeni olan 0.001$'lık bir coin, 100M$'lık bir projedir. Sadece 1$'a ulaşması yeter lafı kriptonun en eski tuzağıdır."
+    },
+    {
+     "h": "Likidite: gerçekten çıkabilir misin?",
+     "p": "Likidite, fiyatı hareket ettirmeden ne kadar alıp satabileceğindir. BTC saniyede milyonlarca doları emer; küçük bir altcoin tek bir büyük satışla %10 çökebilir. Likit olmayan coinlere girmek kolay, çıkmak acımasızdır — tam da en çok ihtiyacın olduğu anda."
+    },
+    {
+     "h": "Slipaj",
+     "p": "Piyasa fiyatından alım yaptığında, satıcıların o an istediği fiyatı ödersin. İnce bir piyasada kendi emrin fiyatı iter — gördüğün fiyat ile aldığın fiyat arasındaki fark slipajdır. Gerçek bir maliyettir; pozisyon büyüdükçe artar, likidite arttıkça azalır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bir coinin gerçek büyüklüğünü ne belirler?",
+     "o": [
+      "Coin başına fiyat",
+      "Piyasa değeri",
+      "Ne kadar yeni olduğu",
+      "Sosyal medyadaki popülerlik sıralaması"
+     ]
+    },
+    {
+     "q": "Likidite neyi ölçer…",
+     "o": [
+      "Blockchainin ne kadar hızlı olduğunu",
+      "Fiyatı hareket ettirmeden ne kadar işlem yapabileceğini",
+      "Arzdaki coin sayısını",
+      "Bir coinin fiyatının ne kadar volatil olduğunu"
+     ]
+    },
+    {
+     "q": "Slipaj nedir…",
+     "o": [
+      "Borsanın her emir için önceden belirlediği işlem ücreti",
+      "Gördüğün fiyat ile gerçekleşen fiyat arasındaki fark",
+      "Bir grafik formasyonu",
+      "Bir cüzdan türü"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b5",
+   "t": "Kripto neden bu kadar sert hareket eder",
+   "cards": [
+    {
+     "h": "Büyük okyanusta küçük bir tekne",
+     "p": "Kriptonun toplam piyasası, hisse senetleri veya tahvillerle karşılaştırıldığında minicik kalır ve büyük kısmı kaldıraçla işlem görür. S&P 500'ü zar zor kıpırdatan aynı para dalgası Bitcoin'i yüzde birkaç oynatabilir — daha küçük coinleri ise bunun birkaç katı kadar."
+    },
+    {
+     "h": "Haberler, likidite ve zorunlu satıcılar",
+     "p": "Büyük hareketler genellikle üç şeyi birleştirir: bir tetikleyici (haber, bir makro veri), ince likidite (geceler, hafta sonları) ve likide olan kaldıraçlı trader'lardan gelen zorunlu satışlar. Bu üçüncü bileşen — 2. Kurs'ta inceleyeceksin — kripto çöküşlerinin bu kadar hızlı ve derin olmasının nedenidir."
+    },
+    {
+     "h": "Volatilite oyunun ta kendisidir",
+     "p": "Volatilite bir hata değildir — trader'ların burada olma sebebidir. Ama simetriktir: kaldıraçlı bir hesabı ikiye katlayan aynı %10'luk hareket, bir başkasını siler. Bundan sonraki her ders aslında volatiliteden faydalanacak kadar uzun süre hayatta kalmakla ilgilidir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Aynı miktar para kriptoyu neden hisse senetlerinden daha çok hareket ettirir?",
+     "o": [
+      "Kripto manipüle edilir",
+      "Kripto piyasası çok daha küçük ve çok daha kaldıraçlıdır",
+      "Hisse senetlerinde kriptoya kıyasla hiç volatilite yoktur",
+      "Kripto daha yavaş işlem görür"
+     ]
+    },
+    {
+     "q": "Hangi bileşen kripto çöküşlerini özellikle hızlı ve derin yapar?",
+     "o": [
+      "Banka tatilleri",
+      "Likide olan kaldıraçlı traderların zorunlu satışları",
+      "Düşük internet hızları",
+      "Ağın madencilik zorluğundaki ani büyük sıçrama"
+     ]
+    },
+    {
+     "q": "Bir trader için volatilite…",
+     "o": [
+      "Tamamen kaçınılması gereken saf risktir",
+      "Hem fırsat HEM risktir",
+      "Sadece yeni başlayanlar için sorundur",
+      "Düzenlenmiş borsalarda yasaktır"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b6",
+   "t": "Stablecoinler ve işlem çiftleri",
+   "cards": [
+    {
+     "h": "Zincir üstünde yaşayan dolar",
+     "p": "Stablecoin, tam olarak 1$ değerinde kalmak üzere tasarlanmış bir kripto tokendir — USDT ve USDC devlerdir. Trader'ların kripto içinde dolar tutabilmesi için varlar: kârı park etmek, volatiliteden kaçmak ve diğer her şeyi sabit bir birime göre fiyatlamak."
+    },
+    {
+     "h": "BTC/USDT gerçekte ne anlama gelir",
+     "p": "Her piyasa bir ÇİFTTİR: işlem yaptığın şey ve onu fiyatladığın şey. BTC/USDT, Tether doları cinsinden fiyatlanmış Bitcoin demektir. O çiftte BTC sattığında banka doları değil USDT alırsın. İşlem yapacağın vadeli işlemlerin neredeyse tamamı USDT teminatlı çiftlerdir."
+    },
+    {
+     "h": "Sabit demek risksiz demek değildir",
+     "p": "Bir stablecoin ancak arkasındaki teminat kadar sağlamdır. Depegler yaşandı — en ünlüsü 2022'de Terra UST'nin sıfıra çökmesi. İşlem bakiyeleri için büyük ihraççılar şimdiye dek ayakta kaldı, ama elinde ne tuttuğunu bil: dolara çevrilebilir bir token, doların kendisi değil."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bir stablecoin ne yapmak için tasarlanmıştır?",
+     "o": [
+      "Yılda %10 büyümek",
+      "Tam olarak 1$ değerinde kalmak",
+      "Bitcoin'i takip etmek",
+      "Bankaların yerini tamamen almak"
+     ]
+    },
+    {
+     "q": "BTC/USDT çiftinde BTC sattığında ne alırsın?",
+     "o": [
+      "Banka doları",
+      "USDT",
+      "ETH",
+      "Para çekene kadar hiçbir şey"
+     ]
+    },
+    {
+     "q": "Stablecoinler…",
+     "o": [
+      "Kelimenin tam anlamıyla dolardır",
+      "Tanım gereği risksizdir",
+      "Rezervlerle desteklenen tokenlerdir",
+      "Devletler tarafından garanti edilir"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b7",
+   "t": "Komisyonlar: her işlemdeki sessiz vergi",
+   "cards": [
+    {
+     "h": "Maker, taker, spread",
+     "p": "Her işlem bedel öder. Taker komisyonu (spread'i anında geçmek, piyasa emirleri) daha yüksektir; maker komisyonu (likidite ekleyen bekleyen limit emirleri) daha düşüktür — bazen iade bile olur. Spread'in kendisi — en iyi alış ile satış arasındaki fark — da bir maliyettir."
+    },
+    {
+     "h": "Komisyonlar vadeli işlemleri neden daha çok vurur",
+     "p": "Vadeli işlem komisyonları teminatın üzerinden değil, NOSYONEL üzerinden alınır. 20x kaldıraçta %0.055'lik taker komisyonu, tek yönde teminatının %1.1'idir — gidiş dönüş %2'nin üzerinde. Bu oranda günde on işlem, çok az stratejinin altından kalkabileceği bir komisyon faturasıdır."
+    },
+    {
+     "h": "Aşırı işlem yapmanın ölüm sarmalı",
+     "p": "Kaybeden acemilerin çoğu yanlış yön yüzünden kaybetmez — çok sık işlem yapmaktan komisyona ve spread'e kan kaybederler. Limit girişlerle daha az ama daha iyi işlem sadece bir disiplin tavsiyesi değil; düpedüz aritmetiktir. Komisyonlarını her hafta günlüğünde say ve onlara aleyhine açılmış bir pozisyon gibi davran."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Hangi emir türü genellikle DAHA DÜŞÜK komisyon öder?",
+     "o": [
+      "Piyasa (taker)",
+      "Bekleyen limit",
+      "Stop emri",
+      "İkisi de aynıdır"
+     ]
+    },
+    {
+     "q": "Vadeli işlem komisyonları neyin üzerinden alınır…",
+     "o": [
+      "Teminatının",
+      "Tam nosyonel pozisyonun",
+      "Sadece kârın",
+      "Sadece para çekimlerinin"
+     ]
+    },
+    {
+     "q": "20x kaldıraçta %0.055'lik taker komisyonu tek yönde teminatının kabaca ne kadarına mal olur?",
+     "o": [
+      "%0.055",
+      "%0.5",
+      "%1.1",
+      "%11"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b8",
+   "t": "Piyasa döngüleri ve anlatılar",
+   "cards": [
+    {
+     "h": "Kriptonun dört mevsimi",
+     "p": "Kripto çarpıcı döngülerle hareket etti: birikim (sessizlik, kimsenin umurunda değil), yükseliş (herkesin geç katıldığı boğa koşusu), dağıtım (akıllı para coşkuya satar) ve düşüş (herkesi her şeyin bittiğine ikna eden ayı). Her döngü eşi benzeri görülmemiş hissettirir; duygular birebir aynıdır."
+    },
+    {
+     "h": "Anlatılar döner, açgözlülük sabittir",
+     "p": "Her döngü yeni hikayeler taçlandırır — ICO'lar, DeFi, NFT'ler, AI coinleri. Hikaye değişir; kalıp değişmez: gerçek bir yenilik, onun çok ötesine geçen spekülatif bir çılgınlık, zayıf projeleri öldüren bir çöküş ve hayatta kalanlardan inşa edilen bir sonraki döngünün tabanı."
+    },
+    {
+     "h": "Döngüler senin işlemlerinle nerede kesişir",
+     "p": "Döngüleri hassas biçimde zamanlayamazsın, ama kendini kabaca konumlandırabilirsin: açgözlülük aşırı mı, berberin coin mi öneriyor, 100x memecoinler her şeyden iyi performans mı gösteriyor? Döngü sonu koşulları, riski azaltmanın en çok önemli olduğu zamandır — tam da en gereksiz hissettirdiği anda."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Akıllı para tipik olarak hangi aşamada SATAR?",
+     "o": [
+      "Kimse bakmazken, birikim aşamasında",
+      "Düşüş",
+      "Dağıtım — geç coşkunun içine",
+      "Asla"
+     ]
+    },
+    {
+     "q": "Her kripto döngüsünde tekrarlayan nedir?",
+     "o": [
+      "Aynı coinler kazanır",
+      "Duygusal kalıp: inançsızlık",
+      "Birebir aynı fiyat seviyeleri",
+      "Aynı anlatılar"
+     ]
+    },
+    {
+     "q": "Riski azaltmak en çok ne zaman önemlidir?",
+     "o": [
+      "Herkes korku içindeyken",
+      "Döngü sonu coşkusunda",
+      "Asla — her zaman maksimum risk",
+      "Sadece ayı piyasalarında"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b9",
+   "t": "Dolandırıcılıklar ve kendini koruma",
+   "cards": [
+    {
+     "h": "Getiri vadediyorsa, ürün sensin",
+     "p": "Garantili günlük %2. Hiç kaybeden ayı olmayan bir trading botu. Paranı yönetmeyi teklif eden bir yabancı. Bunların her biri, her zaman, istisnasız dolandırıcılıktır — gerçek trading'de kayıp dönemleri vardır ve elinde para basma makinesi olan hiç kimse onu yabancılarla paylaşmaz."
+    },
+    {
+     "h": "Klasikler: rug pull ve oltalama",
+     "p": "Rug pull, alıcılar üşüştükten sonra yaratıcılarının likiditeyi boşalttığı bir tokendir — taze mikro-cap coinler arasında salgın gibidir. Oltalama (phishing) ise giriş bilgilerini veya seed cümleni toplayan sahte bir borsa ya da cüzdan sitesidir. Gerçek siteleri yer imlerine ekle; mesajlardan gelen giriş linklerine asla tıklama."
+    },
+    {
+     "h": "Bunun %95'ini durduran temel hijyen",
+     "p": "Her borsada 2FA kullan (SMS değil, bir doğrulayıcı uygulama). Seed cümleni asla, hiç kimseyle paylaşma — hiçbir destek görevlisinin ona ihtiyacı yoktur. Özel mesajlara karşı paranoyak ol: gerçek platformlar sana önce DM atmaz. Sıkıcı kurallar, ama oyunun tamamı bunlar."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bir servis günlük %2 getiri garanti ediyor. Bu…",
+     "o": [
+      "Harika bir fırsattır",
+      "Denetlenmişse belki meşrudur",
+      "Her zaman dolandırıcılıktır",
+      "Küçük tutarlar için sorun yoktur"
+     ]
+    },
+    {
+     "q": "Seed cümlene meşru olarak kimin ihtiyacı vardır?",
+     "o": [
+      "Borsa desteğinin",
+      "Cüzdan geliştiricilerinin",
+      "Hiç kimsenin, asla",
+      "Vergi dairelerinin"
+     ]
+    },
+    {
+     "q": "En iyi 2FA yöntemi…",
+     "o": [
+      "Numarana gelen SMS kodları",
+      "Bir doğrulayıcı uygulama",
+      "E-posta linkleri",
+      "Doğum günün"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Kripto Temelleri'ni bitirdin — kursun tamamını. ŞİMDİ paper-trading terminalini aç: canlı fiyatları izle ve hazır hissettiğinde sahte parayla ilk işlemini yap.",
+    "label": "Paper Trade'i Aç →"
+   }
+  }
+ ]
+}

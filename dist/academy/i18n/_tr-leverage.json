@@ -1,0 +1,589 @@
+{
+ "id": "leverage",
+ "name": "Kaldıraç ve Likidasyon",
+ "sub": "Hesapları silen makine",
+ "lessons": [
+  {
+   "id": "l1",
+   "t": "Vadeli kontrat nedir?",
+   "cards": [
+    {
+     "h": "Coin sahibi olmadan fiyat işlemek",
+     "p": "Vadeli kontrat, bir coinin fiyatını izleyen anlaşmadır. Bitcoin'e asla sahip olmazsın — fiyat hareket ettikçe birebir kazanan veya kaybeden bir pozisyon tutarsın. Kriptonun favori versiyonu, vade tarihi olmayan perpetual future'dır (perp): Teminatın hayatta kaldığı sürece tutabilirsin."
+    },
+    {
+     "h": "Long ve short",
+     "p": "Vadeli işlemlerle iki yönde de kazanabilirsin: Long, fiyat yükselince kazanırsın demek; short, fiyat düşünce kazanırsın demek. Aşağıdaki düğmelere dokun ve aynı fiyat hareketinin kârdan zarara dönüşünü izle."
+    },
+    {
+     "h": "Perpler kriptoda neden hakim",
+     "p": "Perpetual future'lar kriptoda en çok işlem gören üründür — günlük perp hacmi spotu cüceleştirir. Tam da onları tehlikeli yapan iki özellik yüzünden popülerler: kaldıraç ve short atabilme. Bu kurstaki her şey, sonraki iki derste öğreneceklerin yüzünden var."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Perpetual future aldığında sahip olduğun…",
+     "o": [
+      "Gerçek coinler",
+      "Fiyatı izleyen bir pozisyon",
+      "Borsanın kendi hissesinden bir pay",
+      "Bir cüzdan"
+     ]
+    },
+    {
+     "q": "Short pozisyon ne zaman kazanır…",
+     "o": [
+      "Fiyat yükselince",
+      "Fiyat düşünce",
+      "Fiyat sabit kalınca",
+      "Hacim yükselince"
+     ]
+    },
+    {
+     "q": "Perpetual future'ı perpetual yapan nedir?",
+     "o": [
+      "Asla para kaybetmemesi",
+      "Vade tarihinin olmaması",
+      "Komisyonsuz olması",
+      "Sadece yükselmesi"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l2",
+   "t": "Kaldıraç: ödünç boyutla işlem",
+   "cards": [
+    {
+     "h": "Teminat ve çarpan",
+     "p": "Kaldıraç, parandan büyük pozisyon kontrol etmeni sağlar. 10× kaldıraçla $100 teminat yatır, $1.000'lık pozisyon kontrol edersin. Fiyat her %1 oynadığında pozisyonun $10 kazanır ya da kaybeder — bu SENİN paranın %10'u. Çarpan, kazançlara uygulandığı gibi kayıplara da birebir uygulanır."
+    },
+    {
+     "h": "Hisset: kaldıracı sürükle",
+     "prompt": "Kaydırıcıyı, sana karşı sıradan bir %1 hareketin teminatının %100'ünü silesiye kadar sürükle.",
+     "p": "Kırmızı işaret likidasyonun. Kaldıracın ona ne yaptığını izle."
+    },
+    {
+     "h": "100×'in dürüst matematiği",
+     "p": "100× kaldıraçta sana karşı %1 hareket teminatının %100'ünü siler. Bitcoin %1'i rutin oynar — günde birkaç kez. Bu piyasa çöküşü değil; arka plan gürültüsü. Yüksek kaldıraç stratejiyi iyileştirmez, sadece normal bir kıpırdanmanın seni oyundan almasına kalan süreyi kısaltır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "10× kaldıraçla $100 açtın. Fiyat lehine %1 oynadı. Kârın yaklaşık…",
+     "o": [
+      "$1 (%1)",
+      "$10 (teminatının %10'u)",
+      "$100",
+      "Kapatana kadar hiçbir şey"
+     ]
+    },
+    {
+     "q": "20×'te $100 pozisyonun kavramsal büyüklüğü (notional)…",
+     "o": [
+      "$100",
+      "$20",
+      "$2.000",
+      "$100 artı komisyonlar"
+     ]
+    },
+    {
+     "q": "100× kaldıraçta sana karşı hangi hareket tüm teminatını siler?",
+     "o": [
+      "Yaklaşık %1",
+      "Yaklaşık %10",
+      "Yaklaşık %50",
+      "%100"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Pozisyon boyutu hesaplayıcısını aç ve kaldıracı 5×'ten 100×'e kaydırırken notional ile riskin nasıl değiştiğini gör.",
+    "label": "Pozisyon Boyutu Hesaplayıcı →"
+   }
+  },
+  {
+   "id": "l3",
+   "t": "Likidasyon: dönüşü olmayan nokta",
+   "cards": [
+    {
+     "h": "Likidasyon nedir",
+     "p": "Kaldıraçlı pozisyon teminatının neredeyse tamamını kaybedince borsa kendini korumak için zorla kapatır — likidasyon budur. Pozisyonun gitti, teminatın gitti ve fiyat bir saniye sonra sıçrasa bile geri dönüş yok. Ekranındaki en önemli fiyat odur."
+    },
+    {
+     "h": "Sıra sende: güvenli yap",
+     "prompt": "Şimdi tersini yap: Kaldıracı, likidasyonun girişten en az %10 uzakta oturana kadar AŞAĞI çek.",
+     "p": "Her gerçek işlemde vereceğin karar tam olarak bu."
+    },
+    {
+     "h": "\"Nasılsa geri döner\" burada geçerli değil",
+     "p": "Spot tutan %30 düşüşe binip yıllarca bekleyebilir. Likide olan vadeli trader'ı bekleyemez — pozisyon artık yok. Bu asimetri, spot ile kaldıraç arasındaki ASIL farktır: Spot sabırsızları yavaş cezalandırır, kaldıraç anında infaz eder."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Likidasyondan sonra fiyat hemen toparlarsa…",
+     "o": [
+      "Pozisyonunu geri alırsın",
+      "Teminatının yarısını geri alırsın",
+      "Hiçbir şey alamazsın",
+      "Borsaya borçlanırsın"
+     ]
+    },
+    {
+     "q": "50× pozisyon kabaca hangi ters harekette likide olur?",
+     "o": [
+      "Yaklaşık %50",
+      "Yaklaşık %25",
+      "Yaklaşık %2",
+      "Yaklaşık %0,1"
+     ]
+    },
+    {
+     "q": "Kaldıraçlı işlem açmadan önce bilinecek ilk şey…",
+     "o": [
+      "Bugünün haberleri",
+      "Kesin likidasyon fiyatın",
+      "Fenomenlerin dedikleri",
+      "Borsanın kuruluş yılı"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Gerçek bir likidasyon fiyatı hesapla: giriş, kaldıraç, yön — pozisyonun tam nerede öldüğünü gör.",
+    "label": "Likidasyon Hesaplayıcı →"
+   }
+  },
+  {
+   "id": "l4",
+   "t": "Long, short ve K/Z gerçekte nasıl çalışır",
+   "cards": [
+    {
+     "h": "K/Z formülü sade sözlerle",
+     "p": "Kârın veya zararın = pozisyon boyutu × fiyatın oynadığı yüzde. ROE — özkaynak getirisi — o K/Z'nin teminatına oranıdır. Aşağıda fiyat hareketini sürükle ve $100 teminatlı 10× kaldıraçta iki sayının da tepkisini izle."
+    },
+    {
+     "h": "Short kötülük değil, araçtır",
+     "p": "Short atmak — düşüşten kazanmak — başta doğal gelmez. Ama piyasalar yükseldiğinden hızlı düşer (asansörle aşağı, merdivenle yukarı) ve sadece long atabilen trader piyasanın yarısında kördür. Kağıt hesapta ikisini de hiçbiri özel gelmeyene dek çalış."
+    },
+    {
+     "h": "Komisyonlar ve funding durmadan kemirir",
+     "p": "Her açılış ve kapanış notional üzerinden komisyon öder ve perpetual'lar long'larla short'lar arasında periyodik funding ödemeleri takas eder (sonraki ders). Yüksek kaldıraçta bu küçük maliyetler anlamlı bir karşı rüzgara birleşir — aşırı işlem yapanların kaybetmesinin bir başka sessiz nedeni."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "$1.000 notional long'sun ve fiyat %3 yükseldi. K/Z'in…",
+     "o": [
+      "+$3",
+      "+$30",
+      "+$300",
+      "Coine bağlı"
+     ]
+    },
+    {
+     "q": "\"Asansörle aşağı, merdivenle yukarı\" demek…",
+     "o": [
+      "Piyasalar yükseldiğinden hızlı düşer",
+      "Piyasalar düştüğünden hızlı yükselir",
+      "Fiyat her zaman girişe döner",
+      "Short yasak"
+     ]
+    },
+    {
+     "q": "Vadeli işlem komisyonları şunun üzerinden alınır…",
+     "o": [
+      "Sadece teminatın",
+      "Tam notional pozisyon boyutu",
+      "Sadece kârın",
+      "Hiçbir şey — vadeli bedava"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l5",
+   "t": "Funding: görünmez nakit akışı",
+   "cards": [
+    {
+     "h": "Perpler gerçek fiyata nasıl yapışık kalır",
+     "p": "Vadesi olmayınca perpetual, gerçek coin fiyatından uzaklaşabilirdi. Funding bunu önler: Birkaç saatte bir, taraflardan biri diğerine küçük bir yüzde öder. Aşağıda değiştir: Perpler spotun ÜSTÜNDE işlem görünce (kalabalık long) long'lar short'lara öder; ALTINDA, short'lar long'lara."
+    },
+    {
+     "h": "Kalabalık termometresi olarak funding",
+     "p": "Aşırı pozitif funding, kalabalığın ağır long olduğu VE bu ayrıcalık için ödediği demektir — tarihsel olarak uyarı işareti, çünkü kalabalık işlemler şiddetle çözülür. Aşırı negatif funding kalabalık short'ları işaretler, short squeeze yakıtı."
+    },
+    {
+     "h": "Birikir",
+     "p": "8 saatte %0,01 funding hiç gibi gelir — ama notional üzerinden yılda yaklaşık %11 eder ve 10× kaldıraçta teminata yıllık üç haneli bir yük olur. Funding'i yok sayan pozisyon sahipleri K/Z'lerinin sessizce sızdığını görür."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Perp spot fiyatın üstünde işlem görürken funding'i kim öder?",
+     "o": [
+      "Short'lar long'lara",
+      "Long'lar short'lara",
+      "Borsa herkese",
+      "Kimse"
+     ]
+    },
+    {
+     "q": "Aşırı pozitif funding genelde şunu işaret eder…",
+     "o": [
+      "Garantili ralli",
+      "Ağır kalabalık long taraf",
+      "Önümüzde düşük volatilite",
+      "Borsa kesintisi"
+     ]
+    },
+    {
+     "q": "Küçük funding yüksek kaldıraçta neden önemli?",
+     "o": [
+      "Değil",
+      "Teminatına yıllık büyük bir yüke birikir",
+      "Sadece short'lara uygulanır",
+      "Pozisyon kapanınca tamamı iade edilir"
+     ]
+    }
+   ],
+   "try": {
+    "p": "160+ paritede canlı funding'e bak — şu anki en uç oranı bul.",
+    "label": "Funding Oranları →"
+   }
+  },
+  {
+   "id": "l6",
+   "t": "Emir türleri: piyasa, limit, stop",
+   "cards": [
+    {
+     "h": "Üç araç, üç iş",
+     "p": "Piyasa emri, defterin sunduğu fiyattan anında dolar — spread'i ve kaymayı ödersin. Limit emri fiyatını söyler ve bekler. Stop emri, fiyat bir seviyeyi geçince tetiklenir. Aşağıdaki resim üçünü de emir defterinde gösterir."
+    },
+    {
+     "h": "Piyasa: fiyat karşılığı hız. Limit: sabır karşılığı fiyat.",
+     "p": "ŞU AN girmek ya da çıkmak kesin fiyattan önemliyse piyasa emri kullan — kaymanın şiddetli hareketlerde en kötü olduğunu bilerek. Profesyonel girişler çoğunlukla limittir: Hiç dolmayabilirsin, ama dolunca senin fiyatından ya da daha iyisinden, genelde daha düşük komisyonla."
+    },
+    {
+     "h": "Stoplar: hesap kurtaran otomasyon",
+     "p": "Stop emri, stop-loss'un temelidir (Kurs 3). Sen uyurken, işteyken veya duygusal olarak bozulmuşken planını uygular. Onun yerine grafiği izleyen trader, en kötü anda donan trader'dır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Dolumu garantili, fiyatı belirsiz emir…",
+     "o": [
+      "Limit",
+      "Piyasa",
+      "Stop",
+      "Iceberg"
+     ]
+    },
+    {
+     "q": "Limit emri şunu garantiler…",
+     "o": [
+      "Her koşulda kesinlikle dolacağını",
+      "Dolarsa senin fiyatın ya da daha iyisi",
+      "Komisyonsuzluk",
+      "Anında gerçekleşme"
+     ]
+    },
+    {
+     "q": "Stop emrinin ana amacı…",
+     "o": [
+      "Geri çekilmede daha iyi giriş fiyatı almak",
+      "Seviye kırılınca çıkış planını otomatik uygulamak",
+      "Tüm kayıplardan kaçınmak",
+      "Pozisyonu ikiye katlamak"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l7",
+   "t": "Isolated vs cross teminat",
+   "cards": [
+    {
+     "h": "Pozisyonu desteklemenin iki yolu",
+     "p": "Isolated teminat, tek pozisyon için sabit bir miktarı duvarla ayırır — likide olursa sadece o duvarı kaybedersin. Cross teminat, TÜM vadeli bakiyenin her pozisyonu desteklemesine izin verir — likidasyona kadar daha çok alan, ama bir patlama tüm hesabı götürebilir."
+    },
+    {
+     "h": "Hangisi ne zaman mantıklı",
+     "p": "Isolated yeni başlayan varsayılanı ve riskli işlemler için dürüst seçimdir: Hasar önceden tanımlı. Cross, hedge'li defterlere ve teminatı aktif yöneten deneyimli traderlara uyar. Cross'u kötü bir işlemi daha uzun yaşatmak için kullanmak strateji değildir — daha büyük bir cenazedir."
+    },
+    {
+     "h": "Tıklamadan önce kontrol et",
+     "p": "Borsaların varsayılanları farklıdır ve teminat modu likidasyon fiyatını çarpıcı biçimde değiştirir. İşlem öncesi ritüelin parçası: yön, boyut, kaldıraç, teminat modu, likidasyon fiyatı. Her seferinde, istisnasız."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Isolated teminatta likidasyon sana neye mal olur…",
+     "o": [
+      "Tüm hesabına",
+      "Sadece o pozisyon için ayrılan teminata",
+      "Hiçbir şeye",
+      "Hesabındaki diğer tüm açık pozisyonlarına"
+     ]
+    },
+    {
+     "q": "Cross teminat demek…",
+     "o": [
+      "Aynı anda sadece tek pozisyona izin verilir",
+      "Tüm bakiyen her pozisyonu destekler",
+      "Likidasyon yok",
+      "Daha düşük komisyon"
+     ]
+    },
+    {
+     "q": "Kaybeden işlemi geciktirmek için cross kullanmak…",
+     "o": [
+      "Profesyonel risk yönetimi",
+      "Bekleyen daha büyük bir cenaze",
+      "Borsaların şartı",
+      "Bedava"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l8",
+   "t": "Mark fiyatı vs son fiyat",
+   "cards": [
+    {
+     "h": "Aynı ekranda iki fiyat",
+     "p": "Son fiyat, SENİN borsandaki en son işlemdir. Mark fiyatı, birkaç borsanın ve spot endeksin adil değer karışımıdır. Sakin piyasalarda kuruşla ayrışırlar — şiddetli piyasalarda veya sığ platformlarda anlamlı şekilde."
+    },
+    {
+     "h": "Likidasyonlar mark fiyatını kullanır",
+     "p": "Borsalar SON fiyattan değil, MARK'tan likide eder. Bu seni korur: Tek platformdaki manipüle bir fitil her yerdeki pozisyonları likide edemez. Klasik kafa karışıklığını da açıklar — ekranındaki grafik fitili seviyene hiç dokunmadan likide olabilirsin, çünkü mark oraya vardı."
+    },
+    {
+     "h": "Hangisini izlemeli",
+     "p": "İşlem kararları: son fiyat (emirlerin orada dolar). Hayatta kalma matematiği: mark fiyatı (likidasyon ve gerçekleşmemiş K/Z onu kullanır). Ciddi platformlar ikisini de gösterir — seninkinin mark'ı nerede gösterdiğini öğren ve alarmları mum fitiline değil ona kur."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Likidasyonları tetikleyen…",
+     "o": [
+      "Kendi borsandaki en son işlem fiyatı",
+      "Mark fiyatı — çoklu borsa adil değeri",
+      "Giriş fiyatın",
+      "Günlük açılış"
+     ]
+    },
+    {
+     "q": "Borsalar likidasyon için neden mark fiyatı kullanır?",
+     "o": [
+      "Daha ucuz",
+      "Manipüle fitil herkesi likide edemesin diye",
+      "Daha hızlı",
+      "Dünyadaki tüm düzenleyiciler böyle istiyor"
+     ]
+    },
+    {
+     "q": "Pozisyonun likide oldu ama grafik fitili liq seviyene hiç dokunmadı. Büyük ihtimalle…",
+     "o": [
+      "Borsa pozisyonu gizlice çaldı",
+      "Mark fiyatı seviyeye ulaştı",
+      "Bir hata",
+      "İmkansız"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l9",
+   "t": "Sürdürme teminatı: gerçek liq matematiği",
+   "cards": [
+    {
+     "h": "Liq neden tam 100 ÷ kaldıraç değil",
+     "p": "Borsa bir güvenlik tamponu ister — sürdürme teminatı (genelde notional'ın %0,5'i civarı) — her an kenarda tutulur. Likidasyon, özkaynağın sıfıra değil O tampona düşünce ateşlenir. Yani 10x long tam −%10'da değil, −%9,5 civarında likide olur."
+    },
+    {
+     "h": "Büyük pozisyonlar, büyük tamponlar",
+     "p": "Sürdürme teminatı kademelidir: Devasa pozisyonlar daha yüksek yüzde ister, çünkü onları zorla kapatmak piyasayı oynatır. Balina likidasyon seviyelerinin basit formülün önerdiğinden girişe daha yakın oturmasının bir nedeni bu."
+    },
+    {
+     "h": "Kısmi likidasyon",
+     "p": "Büyük pozisyonlarda çoğu borsa dilim dilim likide eder — hepsini bir anda uçurmak yerine, teminatı sürdürme seviyesinin üstüne çıkarmak için pozisyonun bir kısmını kapatır. Faydalı, ama güvenme: Kısmi likidasyon seni kurtarıyorsa işlem çoktan başarısız olmuştur."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "10x long kabaca nerede likide olur…",
+     "o": [
+      "Formülün söylediği gibi tam olarak −%10",
+      "−%9,5 civarı, sürdürme teminatı yüzünden",
+      "−%5",
+      "−%20"
+     ]
+    },
+    {
+     "q": "Sürdürme teminatı nedir…",
+     "o": [
+      "Pozisyon açarken ödenen tek seferlik ücret",
+      "Borsanın her an istediği güvenlik tamponu",
+      "İsteğe bağlı",
+      "Kâr hedefin"
+     ]
+    },
+    {
+     "q": "Kısmi likidasyon demek…",
+     "o": [
+      "Hesabının yarısını kaybedersin",
+      "Borsa büyük pozisyonun dilimlerini kapatır",
+      "Komisyon indirimi",
+      "Sadece hafta sonları yaşanan likidasyon"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l10",
+   "t": "Canlı pozisyonu yönetmek",
+   "cards": [
+    {
+     "h": "İşlem girişten sonra başlar",
+     "p": "Yeni başlayanlar girişlere takar; profesyoneller sonrasını yönetir. Canlı pozisyon bir kararlar dizisidir: Tez hâlâ geçerli mi, geçersizleşme kaydı mı, boyut hâlâ doğru mu? Yönetmek kurcalamak değildir — girişten önce yazdığın planı uygulamaktır."
+    },
+    {
+     "h": "Kısmi kapanış: kendine ödemek",
+     "p": "Kazananın bir kısmını ilk hedefte kapatmak gerçek kârı cebe atar, kalan sürmeye devam eder. Kağıt kazancı kesin kazanca çevirir, zihni sakinleştirir ve seni trendde tutar. Klasik yapı: 1R'de bir kısmı al, stopu taşı, kalanı bırak çalışsın."
+    },
+    {
+     "h": "Başabaş stopları: dikkatle kullanılan bedava işlemler",
+     "p": "Fiyat lehine anlamlı hareket edince stopu girişe taşımak işlemi risksiz yapar — psikolojik olarak paha biçilmez. Çok erken yaparsan normal gürültü seni iyi işlemden atar. Yer bırak: Başabaş, ilk yeşil dakikada değil, ilk hedeften SONRA."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "İlk hedefte kısmi kapanış…",
+     "o": [
+      "Zayıflığı kabullenmektir",
+      "Kesin kârı cebe atar",
+      "Komisyonları boşuna ikiye katlar",
+      "Stop-loss'u iptal eder"
+     ]
+    },
+    {
+     "q": "Stopu başabaşa taşımak işlemi şöyle yapar…",
+     "o": [
+      "Risksiz (gap'ler hariç)",
+      "Yüzde yüz garantili kârlı",
+      "Yasadışı",
+      "Daha kaldıraçlı"
+     ]
+    },
+    {
+     "q": "Pozisyonu yönetmenin doğru zamanı…",
+     "o": [
+      "Asla — her zaman kur ve unut",
+      "Girişten ÖNCE yazılan plana göre",
+      "Ne zaman korkutucu hissederse",
+      "Her 30 saniyede"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l11",
+   "t": "Kaldıraç mitleri",
+   "cards": [
+    {
+     "h": "Mit: yüksek kaldıraç = yüksek kâr",
+     "p": "Kâr, pozisyon BOYUTU çarpı fiyat hareketinden gelir. Kaldıraç sadece o boyut için ne kadar teminat yatıracağını belirler. $1.000'lık pozisyon %3 harekette aynı $30'ı kazanır, ister 2x ister 50x olsun — 50x versiyonu sadece 25 kat erken likide olur."
+    },
+    {
+     "h": "Mit: profesyoneller maksimum kaldıraç kullanır",
+     "p": "Profesyonel masalar rutin olarak tek haneli efektif kaldıraçla çalışır. 100x düğmesi kullanıcılar için değil, borsalar için kârlı olduğu için var. Yüksek kaldıraç, hedge'ciler ve saniyelerle ölçülen scalper'lar için bir likidite-verimlilik aracıdır — servet makinesi değil."
+    },
+    {
+     "h": "Kaldıracın dürüst kullanımı",
+     "p": "Kaldıraç, aynı maruziyet için (hacklenebilir, dondurulabilir) borsada daha az sermaye tutmanı sağlar — bu sermaye verimliliğidir. Minicik pozisyon boyutlarıyla kullanılırsa meşrudur. Boyutu maksimuma çekmek için kullanılırsa, normal volatiliteyi zamanlayıcılı kesin iflasa çevirir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "İki trader aynı $1.000 pozisyonu tutuyor; biri 2x, biri 50x. Lehte %3 hareket kime ne öder…",
+     "o": [
+      "50x trader'a 25 kat fazla",
+      "İkisine de aynı ~$30",
+      "2x trader'a daha fazla",
+      "2x'te hiçbir şey"
+     ]
+    },
+    {
+     "q": "100x seçeneği esasen şu yüzden var…",
+     "o": [
+      "Profesyoneller istiyor",
+      "Borsalar için kârlı",
+      "Daha güvenli",
+      "Düzenleyiciler istiyor"
+     ]
+    },
+    {
+     "q": "Kaldıracın meşru faydası…",
+     "o": [
+      "Daha büyük garantili kârlar",
+      "Borsada daha az sermaye tutmak",
+      "Komisyonlardan kaçınmak",
+      "Başkalarını etkilemek"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l12",
+   "t": "Vadeli işlem fişini okumak",
+   "cards": [
+    {
+     "h": "Her sayı, çözülmüş",
+     "p": "Pozisyon fişi şunları gösterir: yön ve kaldıraç (LONG 10x), giriş fiyatı, mark fiyatı, boyut veya notional, teminat, likidasyon fiyatı, gerçekleşmemiş K/Z ve ROE. Artık hepsini biliyorsun. Canlı fişteki herhangi bir sayı kafanı karıştırıyorsa boyut ekleme — önce onu çöz."
+    },
+    {
+     "h": "En önemli iki sayı",
+     "p": "Likidasyon fiyatı (ölüm ne kadar uzakta?) ve pozisyon boyutu (%1 harekette ne kaybederim?). K/Z ve ROE çıktılardır — iki girdiden türerler. Sadece yeşil/kırmızı sayıyı izleyenler duygu yönetir; liq mesafesini ve boyutu izleyenler risk yönetir."
+    },
+    {
+     "h": "Mezuniyet alıştırması",
+     "p": "Kağıt pozisyon aç ve tüm fişi yüksek sesle oku: yön, kaldıraç, giriş, boyut, teminat, likidasyon ve mesafesi, stop, hedef. Bu sana on saniyeye ve sıfır kafa karışıklığına mal olduğunda, Kurs 2 işini yapmış demektir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Canlı fişteki en önemli iki sayı…",
+     "o": [
+      "K/Z ve ROE",
+      "Likidasyon mesafesi ve pozisyon boyutu",
+      "Tam giriş saati ve coinin logo tasarımı",
+      "Komisyonlar ve funding"
+     ]
+    },
+    {
+     "q": "Fişteki ROE, K/Z'yi şuna göre ölçer…",
+     "o": [
+      "Notional",
+      "Teminatın",
+      "Coin fiyatı",
+      "Günlük hacim"
+     ]
+    },
+    {
+     "q": "Fişindeki bir sayı kafanı karıştırıyorsa…",
+     "o": [
+      "Yine de boyut ekle",
+      "Pozisyona dokunmadan önce onu çöz",
+      "Gözlerini kapat",
+      "Sohbette sor ve işlem yapmaya devam et"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Kağıt pozisyon aç ve fişteki her alanı oku — giriş, boyut, teminat, liq, mesafe. On saniye, sıfır kafa karışıklığı.",
+    "label": "Paper Trade →"
+   }
+  }
+ ]
+}

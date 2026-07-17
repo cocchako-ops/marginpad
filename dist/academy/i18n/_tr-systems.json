@@ -1,0 +1,348 @@
+{
+ "id": "systems",
+ "name": "Sistemler ve Otomasyon",
+ "sub": "Kuralları makineye dönüştürmek",
+ "lessons": [
+  {
+   "id": "s1",
+   "t": "Sistemler neden hisleri yener",
+   "cards": [
+    {
+     "h": "Keyfiyet vergisi",
+     "p": "Her keyfi karar; tilt, FOMO ve geriye dönük yorumun sızması için bir fırsattır. Bir sistem — kurulum, giriş, çıkış ve boyut için sabit kurallar — kararı, duygunun en yoğun olduğu anda ortadan kaldırır. Çoğu trader'ın daha iyi içgüdülere değil, onları kullanmak için daha az fırsata ihtiyacı var."
+    },
+    {
+     "h": "Kurallar sonuçları ölçülebilir yapar",
+     "p": "Girişlerin ruh haliyse, günlük incelemelerin astrolojidir. Girişlerin kuralsa, her işlem bir veri noktasıdır: BU kurulum, BÖYLE alındığında, ŞU beklentiyi üretir. Sadece kural temelli işlem gerçekten geliştirilebilir, çünkü sadece o ölçülebilir."
+    },
+    {
+     "h": "Keyfiyetin yeri var — tasarım masasında",
+     "p": "Beceri kaybolmaz; taşınır. Muhakemeni kuralları TASARLAMAK ve GÖZDEN GEÇİRMEK için kullanırsın — haftalık, sakin kafayla, canlı fiyatlardan uzakta. Makine (ya da kontrol listesi) uygular. Masada muhakeme, tetikte disiplin."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kural temelli bir sistemin ana avantajı…",
+     "o": [
+      "Açtığın her işlemde garantili kâr",
+      "Duygunun zirvesinde kararları kaldırmak",
+      "Daha yüksek kaldıraç",
+      "Daha az iş"
+     ]
+    },
+    {
+     "q": "Ruh haline dayalı girişler günlüğünü…",
+     "o": [
+      "Daha eğlenceli yapar",
+      "Ölçülemez yapar",
+      "Kısaltır",
+      "Kusursuz yapar"
+     ]
+    },
+    {
+     "q": "Sistematik işlemde insan muhakemesinin yeri…",
+     "o": [
+      "Canlı tetikte",
+      "Tasarım masasında",
+      "Hiçbir yerde",
+      "Sohbet odalarında"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "t": "Backtest: geçmişi sorguya çekmek",
+   "cards": [
+    {
+     "h": "Tradingdeki en ucuz soru",
+     "p": "Tek kuruş — hatta kağıt zamanı bile — riske etmeden geçmişe sorabilirsin: Bu kuralları tam olarak geçen yıl uygulasaydım ne olurdu? Bu bir backtest. Geleceği vaat etmez ama kuralları sıfır geriye dönük yorumla ve sıfır merhametle uygular."
+    },
+    {
+     "h": "Backtest sana gerçekte ne söyler",
+     "p": "\"Bu para kazandırır\" değil — stratejinin PROFİLİNİ: kazanma oranı, ortalama R, en kötü kayıp serisi, en derin drawdown, ayda kaç işlem. r10'dan biliyorsun ki bu sayılar, boyutlandırmayla birlikte, hayatta kalmayı belirler. Backtest onları dakikalar içinde eline verir."
+    },
+    {
+     "h": "Sınırlarına saygı duy",
+     "p": "Backtestler tarihsel fiyatlardan gerçekleşme varsayar — gerçek spread, kayma ve funding daha kötü olacaktır. Backtest sonuçlarını İYİMSER tavan olarak gör, maliyetleri zihinsel olarak düş ve sadece bu kesintiyi bol payla atlatan profillere güven."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Backtest sana şunu söyler…",
+     "o": [
+      "Geleceği",
+      "Kurallarının tarihsel profilini",
+      "Önümüzdeki hafta hangi coin'in uçacağını",
+      "Hiçbir şey"
+     ]
+    },
+    {
+     "q": "Backtest sonuçları canlı sonuçlara göre genellikle…",
+     "o": [
+      "Aynıdır",
+      "İyimserdir — gerçek maliyetler canlıyı kötüleştirir",
+      "Kötümserdir — canlı sonuç hep daha iyi çıkar",
+      "Rastgeledir"
+     ]
+    },
+    {
+     "q": "Backtesti okumanın doğru yolu…",
+     "o": [
+      "Gelecek kârların kesin sözü olarak",
+      "Maliyet sonrası iyimser bir tavan olarak",
+      "Eğlence olarak",
+      "Ters çevirerek"
+     ]
+    }
+   ],
+   "try": {
+    "p": "İlk gerçek backtestini çalıştır — canlı kalitede veri üzerinde EMA kesişimi veya RSI kuralları, tek tık, tam istatistik.",
+    "label": "Strateji Backtester →"
+   }
+  },
+  {
+   "id": "s3",
+   "t": "Overfitting: sessiz katil",
+   "cards": [
+    {
+     "h": "Asla çalışmayan kusursuz backtest",
+     "p": "Bir stratejinin parametrelerini yeterince kurcala, geçmişe KUSURSUZ uyar — çünkü sinyali öğrenmek yerine gürültüyü ezberlemiştir. Overfitting budur: ağır ince ayardan sonra backtest eğrisi ne kadar güzelse, o kadar şüphelenmelisin."
+    },
+    {
+     "h": "Belirtiler",
+     "p": "Uyarı işaretleri: çok sayıda ince ayarlı parametre (neden 13,5 de 14 değil?), test penceresini bir ay kaydırınca çöken performans, sadece tek coin ve tek zaman diliminde var olan avantaj. Sağlam avantajlar genelde basittir, biraz çirkindir ve geniş çalışır."
+    },
+    {
+     "h": "Çare: daha az düğme",
+     "p": "Eklediğin her parametre geçmişi ezberlemenin bir başka yoludur. 10 yerine 2-3 düğmeli stratejileri tercih et. Küçük parametre değişimleri büyük sonuç değişimlerine yol açıyorsa, gürültü fit etmişsin demektir. STABİL vasat bir backtest, kırılgan muhteşem olanı yener."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Overfitting demek…",
+     "o": [
+      "Aynı işlem günü içinde çok fazla işlem yapmak",
+      "Kuralları geçmiş gürültüyü ezberleyene kadar kurcalamak",
+      "Kaldıraç kullanmak",
+      "Bir grafik formasyonu"
+     ]
+    },
+    {
+     "q": "Overfitting'in şüpheli bir işareti…",
+     "o": [
+      "Basit kurallar",
+      "Pencere kayınca performansın çökmesi",
+      "Az parametre",
+      "Birçok coin ve zaman diliminde çalışmak"
+     ]
+    },
+    {
+     "q": "Stabil vasat bir backtest ile kırılgan muhteşem olan arasında seçimin…",
+     "o": [
+      "Muhteşem olan",
+      "Stabil olan",
+      "Hiçbiri",
+      "İkisi de"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s4",
+   "t": "Out-of-sample: dürüstlük testi",
+   "cards": [
+    {
+     "h": "Asla eğitim verisiyle not verme",
+     "p": "Overfitting'in çaresi test disiplinidir: Kurallarını geçmişin BİR diliminde tasarla ve ayarla (in-sample), sonra hiç görmedikleri bir dilimde DOKUNMADAN çalıştır (out-of-sample). Sadece out-of-sample sonucu sayılır — satın alabileceğin geleceğe en yakın şey odur."
+    },
+    {
+     "h": "Walk-forward: dürüstlüğü tekrarla",
+     "p": "Walk-forward testi bunu kayan pencerede tekrarlar: 1-6. aylarda ayarla, 7. ayda test et; kaydır; tekrarla. Hiç görmediği veride performans göstermeye devam eden strateji biraz güven hak etmiştir. Sadece in-sample parlayan hiç hak etmemiştir."
+    },
+    {
+     "h": "Kağıt işlem son out-of-sample'dır",
+     "p": "Testlerden sonra sistemi canlı fiyatlarda sahte parayla çalıştır — içine bakılamayan tek veri seti: şimdiki zaman. Backtest, out-of-sample VE kağıt aynı fikirdeyse elinde bir şey var demektir. Anlaşamıyorlarsa en canlı olana inan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Out-of-sample test demek…",
+     "o": [
+      "Parametre ayarı yaptığın veride test etmek",
+      "Kuralların hiç görmediği veride test etmek",
+      "Testleri atlamak",
+      "Sadece hafta sonları test etmek"
+     ]
+    },
+    {
+     "q": "En çok güveni hangi sonuç hak eder?",
+     "o": [
+      "In-sample",
+      "Out-of-sample ve canlı kağıt",
+      "En güzel sermaye eğrisine sahip olan",
+      "En eski"
+     ]
+    },
+    {
+     "q": "Kağıt işlem şu görevi görür…",
+     "o": [
+      "Tam bir zaman kaybı",
+      "Son out-of-sample test",
+      "Pazarlama",
+      "Vergi kalkanı"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s5",
+   "t": "Kurallardan robota",
+   "cards": [
+    {
+     "h": "Otomasyon bir yelpazedir",
+     "p": "Düğmelere tıklamaktan tam otomatik pilota atlamazsın. Merdiven: yazılı kontrol listesi → koşullar oluştuğunda seni dürten alarmlar → yarı otomasyon (makine önerir, sen onaylarsın) → tam bot. Her basamak bir insan hata modunu kaldırır; sadece kuralların stabil olduğu kanıtlandıkça tırman."
+    },
+    {
+     "h": "Botun senden ihtiyacı olan",
+     "p": "Bot, dondurulmuş kurallarındır. NET koşullara ihtiyacı var (\"güçlü görünüyor\" olmaz), kesin pozisyon boyutu, kesin çıkışlar ve çirkin durumlar için talimatlar: kısmi gerçekleşmeler, bağlantı kopmaları, gap'ler. Bunları yazmak çoğu zaman \"sistemini\" insan yapıştırıcısının ayakta tuttuğunu ortaya çıkarır."
+    },
+    {
+     "h": "Makineyi strateji gibi test et",
+     "p": "Bot iki şekilde para kaybedebilir: kötü kurallar veya kötü kod. Ayrı ayrı test et — kuralları backtester'da, kodu bir hatanın hiçbir şeye mal olmadığı kağıt işlem API'sine karşı. İkisi de hayatta kaldıktan sonra gerçek para devreye girer — önce küçük."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Mantıklı otomasyon merdiveni şununla başlar…",
+     "o": [
+      "İlk günden tam otomatik bot çalıştırmak",
+      "Yazılı kontrol listesi, alarmlar, yarı otomasyon",
+      "Ödünç kod",
+      "Maksimum boyut"
+     ]
+    },
+    {
+     "q": "Bot şöyle kurallar ister…",
+     "o": [
+      "His ve izlenim temelli",
+      "Net; hata durumları dahil",
+      "Gizli",
+      "Anlık esnek"
+     ]
+    },
+    {
+     "q": "Bir trading botu önce şuna karşı çalışmalı…",
+     "o": [
+      "Hayat birikiminin durduğu gerçek hesap",
+      "Hataların bedava olduğu kağıt işlem API'si",
+      "Bir arkadaşın hesabı",
+      "Hiçbir şey"
+     ]
+    }
+   ],
+   "try": {
+    "p": "MarginPad'de tam bunun için ücretsiz bir kağıt işlem REST API'si var — botunu sıfır riskle test et.",
+    "label": "Bot API Dokümanları →"
+   }
+  },
+  {
+   "id": "s6",
+   "t": "İzleme ve acil durdurma",
+   "cards": [
+    {
+     "h": "Otomasyon terk etmek değildir",
+     "p": "Çalışan bir sistemin panele ve tasmaya ihtiyacı var: gerçekleşmelerin niyetlerle eşleştiğini, işlem başına riskin ayarladığın gibi olduğunu, piyasa rejiminin hâlâ inşa edildiği rejime benzediğini günlük kontrol et. Sessiz sapma — maliyetlerde, volatilitede, kendi kural takibinde — yavaş yavaş öldürür."
+    },
+    {
+     "h": "Ölümü önceden tanımla",
+     "p": "Devreye almadan önce durdurma kriterlerini yaz: maksimum drawdown (mesela %15), backtest'in en kötüsünü aşan kayıp serisi veya rejim kırılması. Herhangi birine çarpınca sistem DURUR — umutla pazarlık yok. Bunu r6'da bizzat öğrendin; makineler aynı disiplini hak ediyor."
+    },
+    {
+     "h": "Kazalar olacak",
+     "p": "Borsalar çöker, API'ler zaman aşımına uğrar, yanlış bir config boyutunu ikiye katlar. Kazaları varsay ki seni sadece hafifçe şaşırtsınlar: borsa seviyesinde pozisyon limitleri, her gerçekleşmede alarm ve telefondan basabileceğin manuel ana KAPAT. Sıkıcı mühendislik — güvenlik böyle görünür."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Durdurma kriterleri ne zaman tanımlanmalı…",
+     "o": [
+      "İlk büyük drawdown yaşandıktan sonra",
+      "Devreye almadan önce, pazarlıksız",
+      "Asla",
+      "Borsa tarafından"
+     ]
+    },
+    {
+     "q": "Çalışan bir sistemin ihtiyacı…",
+     "o": [
+      "Hiç ilgi yok",
+      "Niyetle eşleşmenin günlük kontrolü",
+      "Daha çok kaldıraçla çalıştırmak",
+      "Gizlilik"
+     ]
+    },
+    {
+     "q": "Kazalara karşı sağlam koruma şunları içerir…",
+     "o": [
+      "İyimserlik",
+      "Pozisyon limitleri, alarmlar ve manuel KAPAT",
+      "Her seferinde daha büyük boyut kullanmak",
+      "Görmezden gelmek"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s7",
+   "t": "Avantajlardan bir portföy",
+   "cards": [
+    {
+     "h": "Avantajlar mevsimseldir",
+     "p": "Hiçbir sistem sonsuza dek çalışmaz — trendler biter, volatilite rejimleri döner, kalabalık adapte olur. Profesyoneller korelasyonsuz sistemlerden küçük bir PORTFÖY işletir: bir trend takipçisi, bir ortalamaya dönücü, belki bir funding hasatçısı. Biri uyurken genelde diğeri yer."
+    },
+    {
+     "h": "Bir sistemi emekliye ayırmak",
+     "p": "En zor beceri: sevdiğin bir stratejiyi kapatmak. Kriterler s6'daki aynı durdurma kuralları, artı bir tane — çalışmasının yapısal nedeni kaybolduysa (komisyon değişikliği, rejim kayması, herkesin yapması) onurunu koruyarak emekliye ayır. Geçmiş performans tarihtir, hak değil."
+    },
+    {
+     "h": "Zanaat, tamamlandı",
+     "p": "Yaya bak: mekanik (kurs 1-2), hayatta kalma (3), piyasayı okuma (4-5)… ve şimdi ruh halin olmadan çalışan süreç. Otomatikleştirsen de manuel kalsan da varış noktası aynı: yazılı, ölçülmüş, gözden geçirilmiş bir avantaj — ve onu izleyecek kadar sakin bir trader."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Profesyoneller birden çok sistem işletir çünkü…",
+     "o": [
+      "Fazlası daha havalı",
+      "Avantajlar mevsimseldir",
+      "Borsalar şart koşar",
+      "Botlar yalnız kalır"
+     ]
+    },
+    {
+     "q": "Bir sistem şu durumda emekliye ayrılmalı…",
+     "o": [
+      "Sadece tek bir kırmızı kayıp haftası geçirince",
+      "Durdurma kuralları tetiklenince veya neden kaybolunca",
+      "Asla",
+      "Biri onunla dalga geçince"
+     ]
+    },
+    {
+     "q": "Bu kursun tamamının varış noktası…",
+     "o": [
+      "Sıfır kayıp",
+      "Sakin izlenen yazılı, ölçülmüş bir avantaj",
+      "Kimsenin bilmediği gizli bir indikatör",
+      "Maksimum kaldıraç"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Tam döngü artık senin — hataların bedava olduğu yerde çalıştır ve seviyeler yolu izlesin.",
+    "label": "Paper Trade →"
+   }
+  }
+ ]
+}
