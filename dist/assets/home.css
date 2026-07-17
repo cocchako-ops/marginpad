@@ -357,13 +357,13 @@
   .pp-ic:hover{color:#fff;border-color:var(--ink-faint);}
   .mp-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);background:#11151b;border:1px solid var(--line-bright);color:#fff;font-size:13px;font-weight:600;padding:11px 18px;border-radius:11px;box-shadow:0 14px 40px rgba(0,0,0,.55);z-index:90;opacity:0;pointer-events:none;transition:.22s;}
   .mp-toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
-  .pp-h{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:13px;margin-bottom:9px;flex-wrap:wrap;padding-right:70px;}
-  .pp-sym{font-weight:700;}
-  .pp-dir{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.04em;}
+  .pp-h{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:13px;margin-bottom:9px;flex-wrap:nowrap;padding-right:70px;}
+  .pp-sym{font-weight:700;flex-shrink:0;}
+  .pp-dir{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.04em;flex-shrink:0;}
   .pp-dir.long{color:#34d99a;background:rgba(46,189,133,.15);}.pp-dir.short{color:#ff7b72;background:rgba(255,98,88,.15);}
   .pp-live{margin-left:auto;font-size:12px;font-weight:600;color:var(--ink-dim);}
-  /* open ticket: "100× · price" always on its OWN line so a long price (e.g. $1,836.89) can't wrap differently than a short one ($74.91) — consistent layout regardless of value length. Closed cards keep the result pill (.pp-res) inline. */
-  .pp-live:not(.pp-res){flex-basis:100%;margin-left:0;margin-top:2px;}
+  /* open ticket: leverage · price sits in the TOP row right after LONG/SHORT, at a FIXED position (never right-aligned/wrapped), so it doesn't shift between tickets regardless of price length. Closed cards keep the result pill (.pp-res) right-aligned. */
+  .pp-live:not(.pp-res){margin-left:0;white-space:nowrap;flex-shrink:0;}
   .pp-pnl{display:flex;flex-direction:row;align-items:baseline;gap:16px;margin-bottom:9px;flex-wrap:wrap;}
   .pp-res{padding:3px 11px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.01em;}
   .pp-res.win{color:#2ebd85;background:rgba(46,189,133,.12);border:1px solid rgba(46,189,133,.4);}

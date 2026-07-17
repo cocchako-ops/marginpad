@@ -42,12 +42,12 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .pp-actions{position:absolute;top:11px;right:11px;display:flex;flex-direction:column;gap:8px;align-items:flex-end;z-index:2;}.pp-icons{display:flex;justify-content:flex-end;gap:6px;}.pp-close{min-width:106px;padding:11px 14px;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#ff6258;background:rgba(255,98,88,.07);border:1px solid rgba(255,98,88,.5);border-radius:10px;cursor:pointer;transition:.12s;text-align:center;letter-spacing:.04em;}.pp-close:hover{background:rgba(255,98,88,.15);border-color:#ff6258;}.pp .pp-h,.pp .pp-pnl{padding-right:44px;}.pp:has(.pp-close) .pp-h,.pp:has(.pp-close) .pp-pnl{padding-right:124px;}
 .pp-ic{width:29px;height:29px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line-bright);background:var(--bg);color:var(--ink-dim);border-radius:8px;cursor:pointer;transition:.12s;padding:0;}
 .pp-ic:hover{color:#fff;border-color:var(--ink-faint);}
-.pp-h{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:14px;margin-bottom:12px;flex-wrap:wrap;padding-right:70px;}
-.pp-sym{font-weight:700;color:var(--ink);}
-.pp-dir{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.04em;}
+.pp-h{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:14px;margin-bottom:12px;flex-wrap:nowrap;padding-right:70px;}
+.pp-sym{font-weight:700;color:var(--ink);flex-shrink:0;}
+.pp-dir{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.04em;flex-shrink:0;}
 .pp-dir.long{color:#34d99a;background:rgba(46,189,133,.15);}.pp-dir.short{color:#ff7b72;background:rgba(255,98,88,.15);}
 .pp-live{margin-left:auto;font-size:12px;font-weight:600;color:var(--ink-dim);}
-.pp-live:not(.pp-res){flex-basis:100%;margin-left:0;margin-top:2px;}
+.pp-live:not(.pp-res){margin-left:0;white-space:nowrap;flex-shrink:0;}
 .pp-pnl{display:flex;flex-direction:row;align-items:baseline;gap:16px;margin-bottom:12px;flex-wrap:wrap;}
 .pp-res{padding:3px 11px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.01em;}
 .pp-res.win{color:#2ebd85;background:rgba(46,189,133,.12);border:1px solid rgba(46,189,133,.4);}
