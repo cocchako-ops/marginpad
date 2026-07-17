@@ -142,24 +142,34 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
   function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross;/* fee-free paper P&L: shows pure price move so it isn't negative at entry */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
   function checkClose(e,m){if(e.status!=='open')return false;var dir=m.long?1:-1;
-    var _spx=prices[e.sym]; if(_spx&&_spx.seed)return false; // NEVER liquidate against a SEED price (a trade entry seeded by pullTrades for display before a real feed tick) — with 2+ open trades on one symbol the seed = the OLDEST entry, far from a newer trade → phantom liquidation. Wait for a real pollPrices/WS price.
+    // ROOT-CAUSE GUARD (proven from [LIQ-DECISION] logs): only decide an exit when there is a REAL market price for the
+    // symbol. When prices[sym] is unset/seed, metrics() falls back to EACH trade's OWN entry — so two open trades on the
+    // same coin feed DIFFERENT "live" values into the per-symbol spike filter ccPx()/_vpx[sym]; ccPx sees the newer entry
+    // as a >2.5% "spike" off the older one and RETURNS THE OLDER ENTRY → the newer 100× trade is measured against the old
+    // 1000× entry (e.g. 0.0465 vs 0.0237) → −49% → phantom liquidation. Display P&L can use the entry fallback; liquidation must NOT.
+    var _spx=prices[e.sym]; if(!_spx||!(+_spx.p>0)||_spx.seed)return false;
     var px=ccPx(e.sym,m.live);                                 // spike-validated: a lone >2.5% bad print can't fire an exit
+    try{var _tb=window.__mpTicks||(window.__mpTicks={});var _ta=_tb[e.sym]||(_tb[e.sym]=[]);_ta.push({t:Date.now(),rawLive:+m.live,px:+px,priceMap:(prices[e.sym]?+prices[e.sym].p:null),seed:(prices[e.sym]&&prices[e.sym].seed)||false});if(_ta.length>25)_ta.shift();}catch(_){} // DIAG: per-symbol tick trail
     var clamp=function(p){return (+e.margin>0&&p!=null&&p<-(+e.margin))?-(+e.margin):p;}; // a paper loss can never exceed the isolated margin (an SL set BEYOND liq used to book more than −margin)
     var pnlAt=function(exit){return (e.qty!=null&&isFinite(e.qty))?e.qty*(exit-e.entry)*dir:null;};
     var tp=e.tp!=null&&(m.long?px>=e.tp:px<=e.tp);
     var sl=e.stop!=null&&(m.long?px<=e.stop:px>=e.stop);
     var liqHit=m.liq>0&&(m.long?px<=m.liq:px>=m.liq);
     if(!(tp||sl||liqHit)){_clArm[e.id]=0;return false;}        // no exit condition → disarm the liq counter
+    try{ // DIAG: log EVERY exit decision with full context so we can prove the root cause from the browser console
+      var _reason=tp?'TP':sl?'SL':'LIQ';
+      var _rec={ts:new Date().toISOString(),id:e.id,sym:e.sym,side:e.side,reason:_reason,lev:+e.lev,entry:+e.entry,liqPrice:+m.liq,rawLive:+m.live,validatedPx:+px,priceMap:(prices[e.sym]?+prices[e.sym].p:null),priceMapSeed:(prices[e.sym]&&prices[e.sym].seed)||false,priceMapAgeMs:(prices[e.sym]&&prices[e.sym].t)?(Date.now()-prices[e.sym].t):null,qty:+e.qty,margin:+e.margin,notional:+e.notional,unrealPnl:(m.pnl!=null?+m.pnl.toFixed(4):null),liqHit:!!liqHit,slHit:!!sl,tpHit:!!tp,pctFromEntry:+(((px-e.entry)/e.entry)*100).toFixed(3),last20:((window.__mpTicks&&window.__mpTicks[e.sym])||[]).slice(-20)};
+      var _lg=window.__mpLiqLog||(window.__mpLiqLog=[]);_lg.unshift(_rec);if(_lg.length>40)_lg.length=40;
+      if(_reason==='LIQ'&&window.console)console.warn('[LIQ-DECISION]',JSON.stringify(_rec));
+    }catch(_){}
     // TP/SL are touch orders → fill at the EXACT level on the FIRST touch of the validated price (the spike filter above
     // is the phantom protection; a real move fills immediately with no delay). Liquidation additionally needs 2 consecutive
     // ticks because a small (<2.5%) phantom can still cross the ~0.1% liq distance at 1000× and slip past the spike filter.
     if(tp){e.status='win';e.exit=e.tp;e.pnl=clamp(pnlAt(e.tp));_clArm[e.id]=0;}
     else if(sl){var _p=pnlAt(e.stop);e.status=(_p!=null&&_p>0)?'win':'loss';e.exit=e.stop;e.pnl=clamp(_p);_clArm[e.id]=0;} // a trailing/break-even stop can lock PROFIT → count it as a win
     else{
-      // Liquidation fills on the FIRST validated touch of liq — the candle reaching liq means you're liquidated (that's
-      // real behavior, and it's exactly what the user sees on the chart). EXCEPTION: only at EXTREME leverage, where liq
-      // sits <0.3% from entry (~>300×), a tiny (<2.5%) phantom print can slip past the spike filter and cross liq, so
-      // those still need 2 consecutive ticks to confirm it's a real move (not a lone bad print).
+      // Liquidation fills on the FIRST validated touch of liq. EXCEPTION: only at EXTREME leverage (liq <0.3% from entry,
+      // ~>300×) require 2 ticks so a sub-2.5% phantom print can't cross the razor-thin liq.
       if(e.entry>0&&Math.abs(m.liq-e.entry)/e.entry<0.003){_clArm[e.id]=(_clArm[e.id]||0)+1;if(_clArm[e.id]<2)return false;}
       _clArm[e.id]=0;
       e.status='loss';e.exit=m.liq;e.liquidated=true;e.pnl=(+e.margin>0)?-(+e.margin):pnlAt(m.liq);} // liquidated = lose the full margin
@@ -545,7 +555,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     e.tps=proc(e.tps,true);e.sls=proc(e.sls,false);
     if(changed)lvlSync(e);
     return changed;}
-  function tick(){ensureChart();var d=load(),changed=false,closedAny=false;d.forEach(function(e){if(e.status==='open'){var m=metrics(e);if(!(e.sls&&e.sls.length)&&manageStops(e,m))changed=true;if(lvlHit(d,e,m))changed=true;if(checkClose(e,m)){changed=true;closedAny=true;}}});if(changed){store(d);if(window.mpJournalRender)window.mpJournalRender();}
+  function tick(){ensureChart();var d=load(),changed=false,closedAny=false;d.forEach(function(e){if(e.status==='open'){var _rp=prices[e.sym];if(!_rp||!(+_rp.p>0)||_rp.seed)return; /* ROOT FIX: no REAL feed price for this symbol → skip stops/levels/liquidation entirely. metrics() falls back to THIS trade's own entry, so 2 open trades on one coin push different values into the per-symbol spike filter ccPx()/_vpx and it returns the wrong (older) entry → phantom liquidation. Display P&L still uses the fallback; only decisions are gated. */var m=metrics(e);if(!(e.sls&&e.sls.length)&&manageStops(e,m))changed=true;if(lvlHit(d,e,m))changed=true;if(checkClose(e,m)){changed=true;closedAny=true;}}});if(changed){store(d);if(window.mpJournalRender)window.mpJournalRender();}
     if(closedAny)window._mpSltpHidden=true; // a position hit SL/TP/liq and closed → hide the SL/TP lines (they reappear only when a new trade is set up)
     if(document.documentElement.classList.contains('jr-open')&&window.innerWidth<721)return; // My Trades drawer covers the terminal on mobile — skip the invisible chart/position re-render to keep the main thread free (liquidation checks above still run)
     if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return; // the liq/SL/TP protection loop above ALWAYS runs; skip the RENDER work (innerHTML rebuilds, chart price-line churn, layout reads) when the Paper Trade panel isn't the visible product or the tab is hidden — it used to rebuild the whole positions list + recreate every chart line EVERY SECOND on /calculators, /screener, /charts and backgrounded tabs
@@ -754,7 +764,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
     // the live price MUST be a fresh reading for THIS exact symbol — a stale mpPlanLive, or one still holding the
     // previously-selected coin's price, would set a wrong entry → wrong liq → the trade "instantly liquidates / vanishes".
-    if(!pl||pl.sym!==sym||!(+pl.price>0)||!pl.t||(Date.now()-pl.t)>15000){_say('Waiting for the live price for '+(sym||'this coin')+' — try again in a second.');add._busy=false;return;}
+    if(!pl||pl.sym!==sym||!(+pl.price>0)||!pl.t||(Date.now()-pl.t)>3000){_say('Waiting for the live price for '+(sym||'this coin')+' — try again in a second.');add._busy=false;return;}
     entry=+pl.price;
     var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=(window.mpPlanMmr||0.005);
     var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:0;
@@ -1898,7 +1908,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function openPos(){if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; /* enforce open-trade limits + one-way mode */
     // FRESH price only: a stale mpLivePrices[sym] (seeded long ago by another open position on the same coin, never
     // updated because the coin isn't in the live feed) must never be the entry → wrong liq → phantom "instant liquidation".
-    var _lp=window.mpLivePrices&&window.mpLivePrices[sym],p=(_lp&&_lp.p>0&&_lp.t&&(Date.now()-_lp.t)<15000)?+_lp.p:0;
+    var _lp=window.mpLivePrices&&window.mpLivePrices[sym],p=(_lp&&_lp.p>0&&_lp.t&&(Date.now()-_lp.t)<2000)?+_lp.p:0; // 2s window: majors (WS, sub-second) use the cache; a polled altcoin (US) forces a fresh fetch so the entry matches the live market to the second (else it opens past its 100× liq → instant liquidation)
     if(!(p>0)){fetch('/api/price?symbol='+sym,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0){if(window.mpLivePrices)window.mpLivePrices[sym]={p:+j.price,t:Date.now()};openPos();}});return;}
     var L=lev,mmr=(window.mpPlanMmr||0.005),notional=amt*L,qty=notional/p,liq=side==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
     var pos={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:side,entry:p,stop:null,tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null};

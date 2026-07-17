@@ -362,6 +362,8 @@
   .pp-dir{font-size:9px;padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.04em;}
   .pp-dir.long{color:#34d99a;background:rgba(46,189,133,.15);}.pp-dir.short{color:#ff7b72;background:rgba(255,98,88,.15);}
   .pp-live{margin-left:auto;font-size:12px;font-weight:600;color:var(--ink-dim);}
+  /* open ticket: "100× · price" always on its OWN line so a long price (e.g. $1,836.89) can't wrap differently than a short one ($74.91) — consistent layout regardless of value length. Closed cards keep the result pill (.pp-res) inline. */
+  .pp-live:not(.pp-res){flex-basis:100%;margin-left:0;margin-top:2px;}
   .pp-pnl{display:flex;flex-direction:row;align-items:baseline;gap:16px;margin-bottom:9px;flex-wrap:wrap;}
   .pp-res{padding:3px 11px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.01em;}
   .pp-res.win{color:#2ebd85;background:rgba(46,189,133,.12);border:1px solid rgba(46,189,133,.4);}

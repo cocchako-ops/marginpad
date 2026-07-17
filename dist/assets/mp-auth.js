@@ -323,7 +323,11 @@
       if (JSON.stringify(merged) === JSON.stringify(local)) return; // nothing new on this device
       try { localStorage.setItem('mp_journal', JSON.stringify(merged)); } catch (e) {}
       lastJ = ''; // force the next push so the server gets this device's union too
-      try { window.mpLivePrices = window.mpLivePrices || {}; merged.forEach(function (e) { if (e && (e.status === 'open' || !e.status) && e.sym && +e.entry > 0 && !(window.mpLivePrices[e.sym] && window.mpLivePrices[e.sym].p > 0)) window.mpLivePrices[e.sym] = { p: +e.entry, t: Date.now(), seed: true }; }); } catch (e) {} // seed entry price so pulled positions start at 0 P&L, not a phantom -100%. seed:true = NOT a real feed price → the terminal must NEVER liquidate against it (with 2+ open trades on one symbol the seed is the OLDEST trade's entry, which can be far from a newer trade → phantom liquidation before the real price loads).
+      // NOTE: we deliberately DO NOT seed window.mpLivePrices[sym] from a trade's entry here. metrics() already falls back
+      // to each trade's OWN entry when there is no live price (→ P&L 0, no phantom -100%), so the seed was unnecessary — and
+      // HARMFUL: it wrote ONE trade's entry as the shared "live" price for the whole symbol, so with 2+ open trades on the
+      // same coin (e.g. an old 1000× US at $0.0237 + a new 100× US at $0.047) the newer trade was measured against the older
+      // trade's entry → −49% → instant liquidation. Real prices come from pollPrices/WS within ~3s; until then P&L just shows 0.
       try { if (window.mpJournalRender) window.mpJournalRender(); } catch (e) {}
     }).catch(function () {});
   }

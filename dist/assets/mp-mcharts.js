@@ -320,28 +320,33 @@
       var msg=q('mtrMsg');
       var amt=+q('mtrAmt').value||0;if(amt>100000)amt=100000;
       if(!(amt>0)){msg.style.color='#ff6258';msg.textContent=mcT('mtEnterAmt','Enter an amount.');return;}
-      var px=livePx();
-      if(!(px>0)){msg.style.color='#ff6258';msg.textContent='Waiting for a live price — try again in a second.';return;}
       if(window.mpTradeGate&&!window.mpTradeGate(tSym,side))return;
-      var long=side==='long';
-      var sl=parseFloat(q('mtrSL').value),tp=parseFloat(q('mtrTP').value);
-      if(isFinite(sl)&&((long&&sl>=px)||(!long&&sl<=px)))sl=NaN; // wrong side — drop so it can't self-trigger
-      if(isFinite(tp)&&((long&&tp<=px)||(!long&&tp>=px)))tp=NaN;
-      var tr=parseFloat(q('mtrTr').value),be=parseFloat(q('mtrBE').value);
-      var notional=amt*lev,qty=notional/px,liq=long?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
-      var d;try{d=JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){d=[];}
-      d.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:tSym,side:side,entry:px,stop:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,trail:(isFinite(tr)&&tr>0)?tr:null,be:(isFinite(be)&&be>0)?be:null,hwm:null,lev:lev,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null});
-      try{localStorage.setItem('mp_journal',JSON.stringify(d));}catch(e){}
-      if(window.mpLivePrices)window.mpLivePrices[tSym]={p:px,t:Date.now()};
-      if(window.mpJournalRender)window.mpJournalRender();
-      try{window.mpBuzz&&window.mpBuzz([15]);}catch(e){}
-      try{if(window.mpLevWarn)window.mpLevWarn(lev);}catch(e){}
-      try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
-      try{if(typeof updMT==='function')updMT();}catch(e){}
-      msg.style.color='#2ebd85';msg.textContent=mcT('mtOpened','Position opened ✓')+' — '+tSym+' '+side+' '+lev+'× · $'+amt;
-      var g=q('mtrGo');g.textContent=mcT('mtOpened','Position opened ✓');
-      setTimeout(function(){if(document.body.contains(g))g.textContent=mcT('mtOpen','Open demo trade');},1600);
-      panes.forEach(function(pn){if(pn.trades)try{drawTrades(pn);}catch(e){}});
+      // ALWAYS open at a FRESHLY-fetched price. A cached price even a few seconds old opens a volatile coin (US moves >1%/sec)
+      // already past its 100× liq distance → the trade "instantly liquidates" the moment the real price loads. Fetch at click.
+      msg.style.color='#9aa3ad';msg.textContent=mcT('mtGetPx','Getting live price…');
+      fetch('/api/price?symbol='+encodeURIComponent(tSym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
+        var px=j&&+(j.price||j.p||0);if(!(px>0))px=livePx();
+        if(!(px>0)){msg.style.color='#ff6258';msg.textContent='Waiting for a live price — try again in a second.';return;}
+        var long=side==='long';
+        var sl=parseFloat(q('mtrSL').value),tp=parseFloat(q('mtrTP').value);
+        if(isFinite(sl)&&((long&&sl>=px)||(!long&&sl<=px)))sl=NaN; // wrong side — drop so it can't self-trigger
+        if(isFinite(tp)&&((long&&tp<=px)||(!long&&tp>=px)))tp=NaN;
+        var tr=parseFloat(q('mtrTr').value),be=parseFloat(q('mtrBE').value);
+        var notional=amt*lev,qty=notional/px,liq=long?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
+        var d;try{d=JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){d=[];}
+        d.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:tSym,side:side,entry:px,stop:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,trail:(isFinite(tr)&&tr>0)?tr:null,be:(isFinite(be)&&be>0)?be:null,hwm:null,lev:lev,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null});
+        try{localStorage.setItem('mp_journal',JSON.stringify(d));}catch(e){}
+        if(window.mpLivePrices)window.mpLivePrices[tSym]={p:px,t:Date.now()};
+        if(window.mpJournalRender)window.mpJournalRender();
+        try{window.mpBuzz&&window.mpBuzz([15]);}catch(e){}
+        try{if(window.mpLevWarn)window.mpLevWarn(lev);}catch(e){}
+        try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
+        try{if(typeof updMT==='function')updMT();}catch(e){}
+        msg.style.color='#2ebd85';msg.textContent=mcT('mtOpened','Position opened ✓')+' — '+tSym+' '+side+' '+lev+'× · $'+amt;
+        var g=q('mtrGo');g.textContent=mcT('mtOpened','Position opened ✓');
+        setTimeout(function(){if(document.body.contains(g))g.textContent=mcT('mtOpen','Open demo trade');},1600);
+        panes.forEach(function(pn){if(pn.trades)try{drawTrades(pn);}catch(e){}});
+      });
     });
   }
   function openSheet(kind){closeSheet();var p=panes[activeI];sheet=document.createElement('div');sheet.className='mfc-sheet';
