@@ -5930,6 +5930,30 @@ export default {
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/levels', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(lvBody) })); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=30', ...CORS } }); }
       catch (e) { return new Response('{"byId":{},"byName":{}}', { headers: { 'content-type': 'application/json', ...CORS } }); }
     }
+    if (url.pathname.startsWith('/api/lb/')) { // leaderboard profile card + follow system
+      const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
+      if (!env.USERS) return new Response('{"error":"unavailable"}', { status: 503, headers: jh });
+      const stub = env.USERS.get(env.USERS.idFromName('main'));
+      const sub = url.pathname.slice('/api/lb/'.length);
+      if (sub === 'user') { // public profile card (by ?name=)
+        try { const r = await stub.fetch(new Request('https://do/lbuser?name=' + encodeURIComponent(url.searchParams.get('name') || ''))); return new Response(await r.text(), { headers: { ...jh, 'cache-control': 'public, max-age=15' } }); }
+        catch (e) { return new Response('{"exists":false}', { headers: jh }); }
+      }
+      // follow + following require sign-in
+      const tok = getCookie(request, SESS_COOKIE); const su = tok ? await sessionUser(env, tok) : null;
+      if (!su || !su.id) return new Response('{"error":"login_required"}', { status: 401, headers: jh });
+      if (sub === 'follow' && request.method === 'POST') {
+        if (su.status && su.status !== 'active') return new Response('{"error":"restricted"}', { status: 403, headers: jh });
+        let bd = {}; try { bd = await request.json(); } catch (e) {}
+        try { const r = await stub.fetch(new Request('https://do/lbfollow', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: su.id, tuid: bd.tuid, tname: bd.tname }) })); return new Response(await r.text(), { status: r.status, headers: jh }); }
+        catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); }
+      }
+      if (sub === 'following') {
+        try { const r = await stub.fetch(new Request('https://do/lbfollowing?uid=' + encodeURIComponent(su.id))); return new Response(await r.text(), { headers: jh }); }
+        catch (e) { return new Response('{"following":[]}', { headers: jh }); }
+      }
+      return new Response('{"error":"not_found"}', { status: 404, headers: jh });
+    }
     if (url.pathname === '/api/academy') return handleAcademy(url, request, env);
     if (url.pathname === '/api/missions') return handleMissions(url, request, env);
     if (url.pathname.startsWith('/api/comm/')) return handleComm(url, request, env, ctx);
@@ -6623,6 +6647,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS uevents(user_id TEXT, ts INTEGER, type TEXT, label TEXT, path TEXT, cc TEXT, dev TEXT)'); // per-user activity trail (ring-buffered)
     s.exec('CREATE TABLE IF NOT EXISTS uclicks(user_id TEXT, ts INTEGER, x INTEGER, y INTEGER, path TEXT)'); // per-user click heatmap (normalized x/y %, ring-buffered ~300)
     s.exec('CREATE TABLE IF NOT EXISTS utrades(user_id TEXT PRIMARY KEY, json TEXT, n INTEGER, wins INTEGER, losses INTEGER, opens INTEGER, pnl REAL, updated INTEGER)'); // synced paper-trade journal + summary
+    s.exec('CREATE TABLE IF NOT EXISTS ufollows(k TEXT PRIMARY KEY, uid TEXT, tuid TEXT, tname TEXT, ts INTEGER)'); // leaderboard follow (k = follower|target)
     s.exec('CREATE TABLE IF NOT EXISTS udwell(user_id TEXT, path TEXT, secs INTEGER DEFAULT 0, hits INTEGER DEFAULT 0, last INTEGER, PRIMARY KEY(user_id, path))'); // accumulated time-on-page per path
     s.exec('CREATE TABLE IF NOT EXISTS alerts(id TEXT PRIMARY KEY, uid TEXT, email TEXT, sym TEXT, dir TEXT, target REAL, note TEXT, active INTEGER DEFAULT 1, created INTEGER, fired_ts INTEGER DEFAULT 0)'); // price alerts (account-based)
     try { s.exec("ALTER TABLE alerts ADD COLUMN channel TEXT DEFAULT 'email'"); } catch (e) {} // delivery channel: 'email' or 'telegram'
@@ -7295,6 +7320,67 @@ export class UserStore {
       }
       best.sort((a, b) => b.roe - a.roe);
       return this.j({ top: best.slice(0, limit) });
+    }
+    if (path === '/lbuser') { // public profile card for a leaderboard name: level + all-time & this-week trade stats
+      const name = String(url.searchParams.get('name') || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
+      if (!name) return this.j({ error: 'no_name' }, 400);
+      const u = this.rows('SELECT id, username, xp, created FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0];
+      if (!u) return this.j({ exists: false });
+      const L = xpLevelOf(u.xp || 0);
+      const t = this.rows('SELECT json, n, wins, losses, pnl FROM utrades WHERE user_id = ?', u.id)[0] || {};
+      const WK = 604800000, MON = 4 * 86400000; const weekStart = Math.floor((now - MON) / WK) * WK + MON;
+      let bestRoe = null, bestPnl = null, weekPnl = 0, weekN = 0, weekW = 0;
+      try { const arr = JSON.parse(t.json || '[]'); if (Array.isArray(arr)) for (const e of arr) {
+        if (!e || (e.status !== 'win' && e.status !== 'loss')) continue;
+        const m = +e.margin, p = +e.pnl; if (!(m > 0) || !isFinite(p)) continue;
+        const roe = Math.max(-100, Math.min(p / m * 100, 1000000));
+        if (bestRoe == null || roe > bestRoe) bestRoe = roe;
+        if (bestPnl == null || p > bestPnl) bestPnl = p;
+        const ct = +e.closeTs; if (isFinite(ct) && ct >= weekStart) { weekN++; weekPnl += p; if (e.status === 'win') weekW++; }
+      } } catch (e) {}
+      const closed = (t.wins || 0) + (t.losses || 0);
+      const followers = (this.rows('SELECT COUNT(*) c FROM ufollows WHERE tuid = ?', u.id)[0] || { c: 0 }).c;
+      return this.j({ exists: true, uid: 'u:' + u.id, name: u.username, level: { k: L.k, name: L.name, col: L.col, pct: L.pct, next: L.next, toNext: L.toNext, xp: L.xp },
+        stats: { trades: t.n || 0, closed, wins: t.wins || 0, winRate: closed ? Math.round((t.wins || 0) / closed * 100) : 0,
+          realized: +(t.pnl || 0).toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
+          weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2) },
+        followers });
+    }
+    if (path === '/lbfollow') { // toggle follow (uid follows tuid). uid from worker (session); tuid+tname in body
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const tuid = String((b && b.tuid) || '').replace(/^u:/, '');
+      const tname = String((b && b.tname) || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
+      if (!uid || !tuid) return this.j({ error: 'bad' }, 400);
+      if (uid === tuid) return this.j({ error: 'self' }, 400);
+      const k = uid + '|' + tuid;
+      if (this.rows('SELECT 1 FROM ufollows WHERE k = ?', k)[0]) { sql.exec('DELETE FROM ufollows WHERE k = ?', k); return this.j({ ok: true, following: false }); }
+      if ((this.rows('SELECT COUNT(*) c FROM ufollows WHERE uid = ?', uid)[0] || { c: 0 }).c >= 200) return this.j({ error: 'too_many' }, 429);
+      sql.exec('INSERT INTO ufollows(k, uid, tuid, tname, ts) VALUES(?,?,?,?,?)', k, uid, tuid, tname, now);
+      return this.j({ ok: true, following: true });
+    }
+    if (path === '/lbfollowing') { // list accounts the signed-in user follows, with each target's trade stats + level
+      const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, '');
+      if (!uid) return this.j({ following: [] });
+      const rows = this.rows('SELECT tuid, tname, ts FROM ufollows WHERE uid = ? ORDER BY ts DESC LIMIT 200', uid);
+      const WK = 604800000, MON = 4 * 86400000; const weekStart = Math.floor((now - MON) / WK) * WK + MON;
+      const out = [];
+      for (const f of rows) {
+        const tu = String(f.tuid).replace(/^u:/, '');
+        const u = this.rows('SELECT username, xp FROM users WHERE id = ?', tu)[0];
+        const t = this.rows('SELECT json, n, wins, losses, pnl FROM utrades WHERE user_id = ?', tu)[0] || {};
+        const L = xpLevelOf((u && u.xp) || 0);
+        let weekPnl = 0, weekN = 0, bestRoe = null;
+        try { const arr = JSON.parse(t.json || '[]'); if (Array.isArray(arr)) for (const e of arr) {
+          if (!e || (e.status !== 'win' && e.status !== 'loss')) continue; const m = +e.margin, p = +e.pnl; if (!(m > 0) || !isFinite(p)) continue;
+          const roe = p / m * 100; if (bestRoe == null || roe > bestRoe) bestRoe = roe;
+          const ct = +e.closeTs; if (isFinite(ct) && ct >= weekStart) { weekN++; weekPnl += p; }
+        } } catch (e) {}
+        const closed = (t.wins || 0) + (t.losses || 0);
+        out.push({ uid: 'u:' + tu, name: (u && u.username) || f.tname || 'trader', level: { k: L.k, name: L.name, col: L.col },
+          closed, winRate: closed ? Math.round((t.wins || 0) / closed * 100) : 0, realized: +(t.pnl || 0).toFixed(2),
+          bestRoe: bestRoe == null ? null : Math.round(bestRoe), weekTrades: weekN, weekPnl: +weekPnl.toFixed(2), ts: f.ts });
+      }
+      return this.j({ following: out });
     }
     if (path === '/lbhist') { // past N weeks of winners, reconstructed from the synced journals (each closed trade's closeTs buckets it into its week)
       const WK = 604800000, MON = 4 * 86400000;

@@ -331,6 +331,40 @@
   .lb-note.pay{background:rgba(194,246,74,.07);border-color:rgba(194,246,74,.28);color:#cfe6a8}
   .lb-note b{color:#e8eef4;font-weight:700}.lb-note.pay b{color:#c2f64a}
   .lb-roe.dn{color:#ff6c5c}
+  .lb-r{cursor:pointer}
+  .lb-r:hover{background:rgba(255,255,255,.045)}
+  .lb-r:focus-visible{outline:2px solid rgba(194,246,74,.5);outline-offset:1px}
+  .lb-tab-f{color:#ffcf3f}
+  .lb-tab-f.on{background:rgba(255,207,63,.12);border-color:rgba(255,207,63,.5);color:#ffcf3f}
+  .lb-fr{--lc:#c97f4a}
+  .lb-fdot{width:8px;height:8px;border-radius:50%;flex:none;box-shadow:0 0 8px currentColor}
+  .lb-signin{margin-left:6px;background:rgba(194,246,74,.14);border:1px solid rgba(194,246,74,.5);color:#c2f64a;border-radius:8px;padding:5px 12px;font:700 11px 'Space Mono',monospace;cursor:pointer}
+  /* trader profile modal */
+  .lbm{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(4,6,9,.72);opacity:0;transition:opacity .18s}
+  .lbm.on{opacity:1}
+  .lbm-card{--lc:#c97f4a;position:relative;width:100%;max-width:380px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01)),#0c1017;border:1px solid var(--lc);border-radius:18px;padding:20px 20px 18px;box-shadow:0 30px 80px -30px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.03),0 0 46px -22px var(--lc);transform:translateY(10px) scale(.98);transition:transform .2s}
+  .lbm.on .lbm-card{transform:translateY(0) scale(1)}
+  .lbm-card::before{content:'';position:absolute;left:0;right:0;top:0;height:3px;border-radius:18px 18px 0 0;background:linear-gradient(90deg,transparent,var(--lc),transparent);opacity:.9}
+  .lbm-x{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#8b97a5;font-size:13px;cursor:pointer;line-height:1}
+  .lbm-x:hover{color:#fff;background:rgba(255,255,255,.1)}
+  .lbm-load{padding:34px 10px;text-align:center;color:#8b97a5;font-size:13px}
+  .lbm-head{display:flex;align-items:center;gap:13px;margin-bottom:12px}
+  .lbm-badge{width:46px;height:46px;flex:none;padding:2px}
+  .lbm-name{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:#fff;line-height:1.1}
+  .lbm-lvl{font:700 11px 'Space Mono',monospace;letter-spacing:.04em;text-transform:uppercase;margin-top:3px}
+  .lbm-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden;margin-bottom:15px}
+  .lbm-bar i{display:block;height:100%;border-radius:3px}
+  .lbm-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:15px}
+  .lbm-s{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:10px 8px;text-align:center}
+  .lbm-sv{font-family:'Space Mono',monospace;font-weight:700;font-size:15px;color:#fff}
+  .lbm-sl{font-size:9.5px;color:#7a8592;text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+  .lbm-foot{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .lbm-fol{font-size:12px;color:#8b97a5}
+  .lbm-self{font-size:12px;color:#c2f64a;font-weight:700}
+  .lbm-follow{background:var(--lc);color:#0a0b0d;border:0;border-radius:10px;padding:9px 18px;font:800 12px 'Space Mono',monospace;letter-spacing:.03em;cursor:pointer;transition:filter .15s}
+  .lbm-follow:hover{filter:brightness(1.1)}
+  .lbm-follow.on{background:transparent;color:var(--lc);border:1px solid var(--lc)}
+
   .lb-r{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;font-size:14px;transition:background .14s;}
   .lb-r:hover{background:rgba(255,255,255,.03);}
   .lb-r+.lb-r{border-top:1px solid rgba(255,255,255,.045);}
@@ -714,7 +748,7 @@
       <div class="lb-cta"><a class="btn-l" href="/paper-trade">Open Paper Trade →</a><span class="note" id="lbYou">Sign in (free) and your best trade enters automatically.</span></div>
     </div>
     <div class="lb-card">
-      <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="pnl">Top PnL</button><button type="button" class="lb-tab" data-lbm="wr">Best win rate</button></div>
+      <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="pnl">Top PnL</button><button type="button" class="lb-tab" data-lbm="wr">Win rate</button><button type="button" class="lb-tab lb-tab-f" data-lbm="following">★ Following</button></div>
       <div class="lb-note" id="lbNote">💰 <b>Top ROE</b> wins the weekly prizes for now — <b>Top PnL</b> and <b>Best win rate</b> will start paying out soon too.</div>
       <div class="lb-board" id="lbBoard" style="margin-top:10px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
     </div>
@@ -879,13 +913,16 @@
   var lbMode='roe',lbData=null;
   function lbEsc(x){return String(x).replace(/</g,'&lt;');}
   function lbMoney(x){x=+x||0;var s=x<0?'-':'+';x=Math.abs(x);return s+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
-  function lbRow(i,who,mid,val,cls){var med=i<3?' m'+(i+1):'';return '<div class="lb-r'+(i===0?' top':'')+'"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who">'+lbEsc(who||'trader')+'</span><span class="lb-pair">'+mid+'</span><span class="lb-roe '+(cls||'')+'">'+val+'</span></div>';}
+  function lbRow(i,who,mid,val,cls){var med=i<3?' m'+(i+1):'';return '<div class="lb-r'+(i===0?' top':'')+'" data-lbu="'+lbEsc(who||'')+'" role="button" tabindex="0"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who">'+lbEsc(who||'trader')+'<span data-lvln="'+lbEsc(who||'')+'"></span></span><span class="lb-pair">'+mid+'</span><span class="lb-roe '+(cls||'')+'">'+val+'</span></div>';}
   function lbRender(){
     var d=lbData,el=document.getElementById('lbBoard'),note=document.getElementById('lbNote');if(!el)return;
-    if(note){note.className='lb-note'+(lbMode==='roe'?' pay':'');
-      note.innerHTML=lbMode==='roe'
-        ? '💰 <b>Top ROE</b> is the only board paying weekly prizes right now — climb it to earn real USDT.'
-        : '🏆 <b>'+(lbMode==='pnl'?'Top PnL':'Best win rate')+'</b> is bragging rights for now — prizes for this board are coming soon.';}
+    if(note){
+      if(lbMode==='following'){note.className='lb-note';note.innerHTML='★ Accounts you follow. Tap any trader to see their card. Sign in to follow players from the board.';}
+      else{note.className='lb-note'+(lbMode==='roe'?' pay':'');
+        note.innerHTML=lbMode==='roe'
+          ? '💰 <b>Top ROE</b> is the only board paying weekly prizes right now — climb it to earn real USDT.'
+          : '🏆 <b>'+(lbMode==='pnl'?'Top PnL':'Best win rate')+'</b> is bragging rights for now — prizes for this board are coming soon.';}}
+    if(lbMode==='following'){ lbRenderFollowing(el); return; }
     if(lbMode==='wr'){
       var wt=((d&&d.topWr)||[]).slice(0,10);
       el.innerHTML=wt.length?wt.map(function(t,i){return lbRow(i,t.who,(+t.w||0)+'W-'+(+t.l||0)+'L',Math.round(+t.wr||0)+'%');}).join('')
@@ -901,7 +938,74 @@
     var top=((d&&d.top)||[]).slice(0,10);
     el.innerHTML=top.length?top.map(function(t,i){var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');return lbRow(i,t.who,pair,'+'+Math.round(+t.roe).toLocaleString('en-US')+'%');}).join('')
       :'<div class="lb-empty">No entries yet this week — be the first. Open a paper trade and close it in profit.</div>';
+    lbAfter(el);
   }
+  function lbAfter(el){ if(window.mpLvlDecorate)try{window.mpLvlDecorate();}catch(e){} }
+  function lbSignedIn(){return !!((window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()));}
+  function lbFollowSet(){try{return JSON.parse(localStorage.getItem('mp_lb_following')||'[]');}catch(e){return [];}}
+  function lbSetFollowSet(a){try{localStorage.setItem('mp_lb_following',JSON.stringify(a));}catch(e){}}
+  function lbRenderFollowing(el){
+    if(!lbSignedIn()){el.innerHTML='<div class="lb-empty">Sign in (free) to follow players and see them here. <button type="button" class="lb-signin" data-auth-open>Sign in</button></div>';return;}
+    el.innerHTML='<div class="lb-empty">Loading…</div>';
+    fetch('/api/lb/following').then(function(r){return r.json();}).then(function(d){
+      var f=(d&&d.following)||[];
+      lbSetFollowSet(f.map(function(x){return x.name;}));
+      if(!f.length){el.innerHTML='<div class="lb-empty">You are not following anyone yet. Tap a trader on the board and hit <b>Follow</b>.</div>';return;}
+      el.innerHTML=f.map(function(x){
+        var lc=(x.level&&x.level.col)||'#c97f4a';
+        var wk=x.weekTrades>0?(lbMoney(x.weekPnl)+' · '+x.weekTrades+' this wk'):'no trades this week';
+        return '<div class="lb-r lb-fr" data-lbu="'+lbEsc(x.name)+'" role="button" tabindex="0" style="--lc:'+lc+'"><span class="lb-fdot" style="background:'+lc+'"></span><span class="lb-who">'+lbEsc(x.name)+'<span data-lvln="'+lbEsc(x.name)+'"></span></span><span class="lb-pair">'+(x.closed||0)+' trades · '+(x.winRate||0)+'%</span><span class="lb-roe '+((+x.weekPnl>=0)?'up':'dn')+'">'+wk+'</span></div>';
+      }).join('');
+      lbAfter(el);
+    }).catch(function(){el.innerHTML='<div class="lb-empty">Could not load your following list.</div>';});
+  }
+  var lbModal=null;
+  function lbCloseModal(){if(lbModal){lbModal.classList.remove('on');setTimeout(function(){if(lbModal&&!lbModal.classList.contains('on'))lbModal.style.display='none';},200);}}
+  function lbOpenProfile(name){
+    if(!name)return;
+    if(!lbModal){lbModal=document.createElement('div');lbModal.className='lbm';lbModal.innerHTML='<div class="lbm-card"><button type="button" class="lbm-x" aria-label="Close">✕</button><div class="lbm-body"></div></div>';document.body.appendChild(lbModal);
+      lbModal.addEventListener('click',function(e){if(e.target===lbModal||e.target.closest('.lbm-x'))lbCloseModal();});}
+    var body=lbModal.querySelector('.lbm-body'),card=lbModal.querySelector('.lbm-card');
+    body.innerHTML='<div class="lbm-load">Loading trader…</div>';card.style.setProperty('--lc','#c97f4a');card.className='lbm-card';
+    lbModal.style.display='flex';requestAnimationFrame(function(){lbModal.classList.add('on');});
+    fetch('/api/lb/user?name='+encodeURIComponent(name)).then(function(r){return r.json();}).then(function(d){
+      if(!d||!d.exists){body.innerHTML='<div class="lbm-load">No public profile for this trader yet.</div>';return;}
+      var L=d.level||{k:'bronze',name:'Bronze',col:'#c97f4a'},st=d.stats||{},lc=L.col||'#c97f4a';
+      card.style.setProperty('--lc',lc);card.className='lbm-card lvl-'+(L.k||'bronze');
+      var svg=(window.mpLvlSvg?window.mpLvlSvg(L.k,lc):'');
+      var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
+      var isSelf=me&&(me.username&&me.username.toLowerCase()===String(d.name).toLowerCase());
+      var following=lbFollowSet().map(function(x){return String(x).toLowerCase();}).indexOf(String(d.name).toLowerCase())>=0;
+      function stat(v,l,c){return '<div class="lbm-s"><div class="lbm-sv"'+(c?' style="color:'+c+'"':'')+'>'+v+'</div><div class="lbm-sl">'+l+'</div></div>';}
+      var mBtn=isSelf?'<div class="lbm-self">This is you</div>':(lbSignedIn()?'<button type="button" class="lbm-follow'+(following?' on':'')+'" data-lbfollow="'+lbEsc(d.name)+'" data-tuid="'+lbEsc(d.uid)+'">'+(following?'✓ Following':'+ Follow')+'</button>':'<button type="button" class="lbm-follow" data-auth-open>Sign in to follow</button>');
+      body.innerHTML=
+        '<div class="lbm-head"><div class="lbm-badge">'+svg+'</div><div class="lbm-id"><div class="lbm-name">'+lbEsc(d.name)+'</div><div class="lbm-lvl" style="color:'+lc+'">'+lbEsc(L.name||'Bronze')+(L.next?' · '+(L.pct||0)+'% to '+lbEsc(L.next):' · max tier')+'</div></div></div>'
+        +'<div class="lbm-bar"><i style="width:'+(L.pct||0)+'%;background:'+lc+'"></i></div>'
+        +'<div class="lbm-grid">'
+          +stat((st.trades||0),'Trades')
+          +stat((st.winRate||0)+'%','Win rate',st.winRate>=50?'#34d99a':'')
+          +stat((st.bestRoe==null?'—':'+'+st.bestRoe+'%'),'Best ROE',st.bestRoe>0?'#34d99a':'')
+          +stat((st.bestPnl==null?'—':lbMoney(st.bestPnl)),'Best trade',st.bestPnl>0?'#34d99a':'')
+          +stat(lbMoney(st.realized||0),'Realized P&L',(st.realized>=0?'#34d99a':'#ff6c5c'))
+          +stat((st.weekTrades||0)+' · '+lbMoney(st.weekPnl||0),'This week',(st.weekPnl>=0?'#34d99a':'#ff6c5c'))
+        +'</div>'
+        +'<div class="lbm-foot"><span class="lbm-fol">'+(d.followers||0)+' follower'+((d.followers===1)?'':'s')+'</span>'+mBtn+'</div>';
+    }).catch(function(){body.innerHTML='<div class="lbm-load">Could not load this trader.</div>';});
+  }
+  document.addEventListener('click',function(e){
+    var fb=e.target.closest&&e.target.closest('[data-lbfollow]');
+    if(fb){var name=fb.getAttribute('data-lbfollow'),tuid=fb.getAttribute('data-tuid');fb.disabled=true;
+      fetch('/api/lb/follow',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({tuid:tuid,tname:name})}).then(function(r){return r.json();}).then(function(j){
+        fb.disabled=false;
+        if(j&&j.error==='login_required'){if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
+        var on=!!(j&&j.following);fb.classList.toggle('on',on);fb.textContent=on?'✓ Following':'+ Follow';
+        var set=lbFollowSet().filter(function(x){return String(x).toLowerCase()!==String(name).toLowerCase();});if(on)set.push(name);lbSetFollowSet(set);
+      }).catch(function(){fb.disabled=false;});
+      return;}
+    var row=e.target.closest&&e.target.closest('[data-lbu]');
+    if(row&&!e.target.closest('[data-auth-open]')){lbOpenProfile(row.getAttribute('data-lbu'));}
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')lbCloseModal();});
   document.querySelectorAll('[data-lbm]').forEach(function(b){b.addEventListener('click',function(){lbMode=b.getAttribute('data-lbm');document.querySelectorAll('[data-lbm]').forEach(function(x){x.classList.toggle('on',x===b);});lbRender();});});
   fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){
     lbData=d;lbRender();
