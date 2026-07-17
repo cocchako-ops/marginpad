@@ -58,7 +58,10 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;l
 /* top members (XP leaderboard) */
 .topmem{margin:30px 0 8px}
 .tm-list{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-direction:column;gap:8px}
-.tm-row{display:flex;align-items:center;gap:12px;padding:11px 14px;background:linear-gradient(160deg,#12151d,#0a0d11);border:1px solid var(--line);border-radius:12px}
+.tm-row{display:flex;align-items:center;gap:12px;padding:11px 14px;background:linear-gradient(160deg,#12151d,#0a0d11);border:1px solid var(--line);border-radius:12px;cursor:pointer;transition:border-color .15s,transform .1s}
+.tm-row:hover{border-color:rgba(255,255,255,.22)}
+.tm-row:active{transform:scale(.995)}
+.tm-row:focus-visible{outline:2px solid rgba(194,246,74,.5);outline-offset:1px}
 .tm-row.top{border-color:rgba(255,207,63,.35)}
 .tm-rank{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;width:26px;text-align:center;color:var(--faint);flex:none}
 .tm-row.top .tm-rank{color:#ffcf3f}
@@ -236,12 +239,13 @@ footer a{color:var(--dim)}
   fetch('/api/levels/top?limit=15&_='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
     var t=(d&&d.top)||[];if(!t.length)return;
     document.getElementById('tmList').innerHTML=t.map(function(x){
-      return '<li class="tm-row'+(x.rank<=3?' top':'')+'"><span class="tm-rank">'+x.rank+'</span><span class="tm-gem">'+lvlSvg(x.k,x.col)+'</span><span class="tm-who"><span class="tm-nm">'+esc(x.username)+'</span> <span class="tm-tier" style="color:'+esc(x.col)+'">'+esc(x.name)+'</span></span><span class="tm-xp">'+(x.xp||0).toLocaleString()+' XP</span></li>';
+      return '<li class="tm-row'+(x.rank<=3?' top':'')+'" data-lbu="'+esc(x.username)+'" role="button" tabindex="0"><span class="tm-rank">'+x.rank+'</span><span class="tm-gem">'+lvlSvg(x.k,x.col)+'</span><span class="tm-who"><span class="tm-nm">'+esc(x.username)+'</span> <span class="tm-tier" style="color:'+esc(x.col)+'">'+esc(x.name)+'</span></span><span class="tm-xp">'+(x.xp||0).toLocaleString()+' XP</span></li>';
     }).join('');
     document.getElementById('topMembers').hidden=false;
   }).catch(function(){});
 })();
 </script>
+<script defer src="/assets/mp-profile.js"></script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>
