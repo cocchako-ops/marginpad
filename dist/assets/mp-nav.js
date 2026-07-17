@@ -431,3 +431,14 @@
     if (navigator.sendBeacon) { navigator.sendBeacon(q); } else { (new Image()).src = q; }
   } catch (e) {}
 })();
+
+/* Presence heartbeat (2026-07-17): svakih 60s dok je tab vidljiv -> t=hb, da "online now" na ops-u
+   broji i ljude koji drze stranicu otvorenu bez navigacije. Ne broji se kao pageview ni event. */
+(function () {
+  try {
+    if (window.__mpHb) return; window.__mpHb = 1;
+    function hb() { try { if (document.hidden) return; var u = '/api/track?t=hb&p=' + encodeURIComponent(location.pathname); if (navigator.sendBeacon) { navigator.sendBeacon(u); } else { (new Image()).src = u; } } catch (e) {} }
+    setInterval(hb, 60000);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) hb(); });
+  } catch (e) {}
+})();

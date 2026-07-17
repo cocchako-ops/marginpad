@@ -1288,6 +1288,22 @@ async function handleTrack(url, request, env, ctx) {
     if (type === 'pageview') { await inc('botf:total'); await inc('botf:day:' + new Date().toISOString().slice(0, 10), 3456000); }
     return ok;
   }
+  if (type === 'hb') { // presence heartbeat (60s, samo vidljiv tab) — osvezava "online now" BEZ brojanja kao pageview/event
+    try {
+      const hIp = request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip') || '';
+      const hUa = request.headers.get('user-agent') || '';
+      const hDid = getCookie(request, 'mp_did');
+      const hVid = hDid ? await sha8('d|' + hDid) : await sha8(hIp + '|' + hUa);
+      if (hVid) {
+        await env.STATS.put('on:' + hVid, '1', { expirationTtl: 180 });
+        let om = {}; try { om = JSON.parse(await env.STATS.get('onlog') || '{}'); } catch (e) {}
+        om[hVid.slice(0, 6)] = Date.now();
+        const hCut = Date.now() - 240000; for (const hk in om) if (om[hk] < hCut) delete om[hk];
+        await env.STATS.put('onlog', JSON.stringify(om), { expirationTtl: 900 });
+      }
+    } catch (e) {}
+    return ok;
+  }
   if (type === 'pageview') {
     const day = new Date().toISOString().slice(0, 10);
     await inc('pv:total'); // raw page views (every load)
@@ -1307,6 +1323,7 @@ async function handleTrack(url, request, env, ctx) {
     const vid = did0 ? await sha8('d|' + did0) : await sha8(ip + '|' + ua);
     if (vid) {
       try { await env.STATS.put('on:' + vid, '1', { expirationTtl: 180 }); } catch (e) {} // "online now" presence (3-min window)
+      try { let om = JSON.parse(await env.STATS.get('onlog') || '{}'); om[vid.slice(0, 6)] = Date.now(); const oCut = Date.now() - 240000; for (const ok2 in om) if (om[ok2] < oCut) delete om[ok2]; await env.STATS.put('onlog', JSON.stringify(om), { expirationTtl: 900 }); } catch (e) {}
       const seen = await env.STATS.get('uvd:' + day + ':' + vid);
       if (!seen) { // first visit today from this person — the per-visit counters live here so repeat pageviews stay cheap
         await env.STATS.put('uvd:' + day + ':' + vid, '1', { expirationTtl: 172800 });
@@ -1880,10 +1897,11 @@ async function handleStats(url, env, request, ctx) {
     const [uvTod, uvTot, pvTot, affTot, affTod, botTod, pvTod2, newTod, retTod] = await Promise.all([gc('uv:day:' + day), gc('uv:total'), gc('pv:total'), gc('aff:total'), gc('aff:day:' + day), gc('botf:day:' + day), gc('pv:day:' + day), gc('uv:new:' + day), gc('uv:ret:' + day)]);
     let pvl = [], evl = []; try { pvl = JSON.parse(await env.STATS.get('pvlog') || '[]'); } catch (e) {} try { evl = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
     const now = Date.now(), recent = new Set();
-    // "online" = DISTINCT visitors (by short vid) active in the last 5 min. Was keyed by event timestamp, which
-    // counted pageviews+events (not people) — one active visitor or an event burst spiked it to a fake number.
-    // evlog has no visitor id, so it's excluded from the count (it only inflated it).
-    pvl.forEach(v => { if (v && v.v && now - v.ts < 300000) recent.add(v.v); });
+    // "online" = DISTINCT posetioci sa OTVORENIM tabom u zadnjih 150s. Izvor = onlog mapa (vid6 -> lastSeen),
+    // koju pune pageview + hb heartbeat (60s dok je tab vidljiv). Time se broje i ljudi koji 20 min gledaju
+    // chart bez ijednog novog pageview-a (stari 5-min pvlog metod ih je gubio, a bounce-ove drzao predugo).
+    try { const om = JSON.parse(await env.STATS.get('onlog') || '{}'); for (const ok3 in om) if (now - om[ok3] < 150000) recent.add(ok3); } catch (e) {}
+    pvl.forEach(v => { if (v && v.v && now - v.ts < 150000) recent.add(v.v); });
     return new Response(JSON.stringify({ online: recent.size, uvToday: uvTod, uvTotal: uvTot, pv: pvTot, aff: affTot, revToday: Math.round(affTod * 0.45), botToday: botTod, pvToday: pvTod2, newToday: newTod, retToday: retTod, affToday: affTod, visitors: pvl.slice(0, 120), feed: evl.slice(0, 80), ts: now }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
   }
   // Serve a recent cached render. Each full render does a paginated KV `list`, and the free tier allows only
