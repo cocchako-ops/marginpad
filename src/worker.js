@@ -5990,13 +5990,19 @@ export default {
     }
     if (url.pathname === '/chat/ws') {
       if (!env.CHAT) return new Response('chat unavailable', { status: 503 });
+      // Only a real WebSocket upgrade may reach the DO. A plain GET (bot, link-prefetch, uptime check) gets a clean 426
+      // here instead of being handed to the DO's upgrade path — where it surfaced as a CF "internal error" in the log.
+      if ((request.headers.get('Upgrade') || '').toLowerCase() !== 'websocket') return new Response('expected websocket', { status: 426 });
       // Browsers always send Origin on WebSocket upgrades — reject cross-site embeds/scripts opening our chat.
       // (Non-browser clients can fake it; this blocks the drive-by case, the DO adds per-IP limits.)
       const org = request.headers.get('origin') || '';
       if (org && !/^https:\/\/(www\.)?marginpad\.io$|^http:\/\/localhost(:\d+)?$/.test(org)) return new Response('forbidden', { status: 403 });
       // admin restrictions: a muted or chat-restricted user can't even open the socket (the client shows a "contact support" notice)
       try { const tok = getCookie(request, SESS_COOKIE); if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && (su.muted || (',' + String(su.restrictions || '') + ',').indexOf(',chat,') >= 0)) return new Response('restricted', { status: 403 }); } } catch (e) {}
-      return env.CHAT.get(env.CHAT.idFromName('global2')).fetch(request);
+      // A DO reset/migration mid-upgrade surfaces as a transient CF "internal error; reference=…" — catch it and return a
+      // clean 503 so the client's ws.onclose just reconnects (3s) instead of the error hitting srverrlog/Sentry.
+      try { return await env.CHAT.get(env.CHAT.idFromName('global2')).fetch(request); }
+      catch (e) { return new Response('chat reconnecting', { status: 503 }); }
     }
     if (url.pathname === '/charts' || url.pathname === '/charts/' || url.pathname === '/paper-trade' || url.pathname === '/paper-trade/' || url.pathname === '/calculators' || url.pathname === '/calculators/' || url.pathname === '/screener' || url.pathname === '/screener/' || url.pathname === '/heatmap' || url.pathname === '/heatmap/' || url.pathname === '/swap' || url.pathname === '/swap/') { // dedicated full-screen workspaces (serve the homepage; its JS switches to the right single-tool mode)
       const r = await env.ASSETS.fetch(new Request(url.origin + '/app', request)); // fetch the APP SHELL (was '/'; the homepage `/` is now the demo-home router since go-live 2026-07-03) — this is the full paper-trade/charts/calc/screener single-file app the SPA JS switches on
