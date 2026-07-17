@@ -373,7 +373,9 @@
   .lbm-sv{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;color:#fff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .lbm-sl{font-size:9px;color:#7a8592;text-transform:uppercase;letter-spacing:.03em;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .lbm-foot{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .lbm-fol{font-size:12px;color:#8b97a5}
+  .lbm-fol{font-size:13.5px;color:#c7cdd4;display:flex;align-items:center;gap:7px}
+  .lbm-fol b{color:#fff;font-weight:800;font-size:16px;font-family:'Space Mono',monospace}
+  .lbm-fol svg{color:#8b97a5}
   .lbm-self{font-size:12px;color:#c2f64a;font-weight:700}
   .lbm-follow{background:var(--lc);color:#0a0b0d;border:0;border-radius:10px;padding:9px 18px;font:800 12px 'Space Mono',monospace;letter-spacing:.03em;cursor:pointer;transition:filter .15s}
   .lbm-follow:hover{filter:brightness(1.1)}
@@ -1016,7 +1018,7 @@
           +stat(lbMoneyC(st.realized||0),'Realized P&L',(st.realized>=0?'#34d99a':'#ff6c5c'))
           +stat(lbMoneyC(st.weekPnl||0),(st.weekTrades||0)+' trades · wk',(st.weekPnl>=0?'#34d99a':'#ff6c5c'))
         +'</div>'
-        +'<div class="lbm-foot"><span class="lbm-fol">'+(d.followers||0)+' follower'+((d.followers===1)?'':'s')+'</span>'+mBtn+'</div>';
+        +'<div class="lbm-foot"><span class="lbm-fol"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M15 3.13a4 4 0 0 1 0 7.75"/></svg><b>'+(d.followers||0)+'</b> follower'+((d.followers===1)?'':'s')+'</span>'+mBtn+'</div>';
     }).catch(function(){body.innerHTML='<div class="lbm-load">Could not load this trader.</div>';});
   }
   document.addEventListener('click',function(e){
