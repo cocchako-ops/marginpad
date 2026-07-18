@@ -40,6 +40,7 @@
   window.mpCloseProfile = closeModal;
   window.mpOpenProfile = function (name) {
     if (!name) return;
+    try { window.__mpTrack && window.__mpTrack('profile', String(name).slice(0, 24)); } catch (e) {}
     if (!modal) { modal = document.createElement('div'); modal.className = 'lbm'; modal.innerHTML = '<div class="lbm-card"><button type="button" class="lbm-x" aria-label="Close">✕</button><div class="lbm-body"></div></div>'; document.body.appendChild(modal); modal.addEventListener('click', function (e) { if (e.target === modal || e.target.closest('.lbm-x')) closeModal(); }); }
     var body = modal.querySelector('.lbm-body'), card = modal.querySelector('.lbm-card');
     body.innerHTML = '<div class="lbm-load">Loading trader…</div>'; card.style.setProperty('--lc', '#c97f4a'); card.className = 'lbm-card';

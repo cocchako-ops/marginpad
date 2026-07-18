@@ -172,7 +172,7 @@
   function closeSheet(){if(sheet){sheet.classList.remove('on');curRow=null;}}
   listEl.addEventListener('click',function(ev){
     var st=ev.target.closest&&ev.target.closest('[data-star]');
-    if(st){ev.stopPropagation();wlToggle(st.getAttribute('data-star'));st.classList.toggle('on');if(filterKey==='watch')render();return;}
+    if(st){ev.stopPropagation();wlToggle(st.getAttribute('data-star'));st.classList.toggle('on');if(st.classList.contains('on')){try{window.__mpTrack&&window.__mpTrack('watch',(st.getAttribute('data-star')||'').toUpperCase());}catch(_){}}if(filterKey==='watch')render();return;}
     var b=ev.target.closest('.scr-row');if(!b)return;var sym=b.getAttribute('data-sym'),e=null;for(var i=0;i<DATA.length;i++){if(DATA[i].s===sym){e=DATA[i];break;}}if(e)openSheet(e);});
   document.addEventListener('click',function(ev){var pk=ev.target.closest&&ev.target.closest('[data-pick]');if(!pk)return;var sym=pk.getAttribute('data-pick');for(var i=0;i<DATA.length;i++){if(DATA[i].s===sym){openSheet(DATA[i]);break;}}});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet();});

@@ -1012,6 +1012,7 @@
   function lbCloseModal(){if(lbModal){lbModal.classList.remove('on');setTimeout(function(){if(lbModal&&!lbModal.classList.contains('on'))lbModal.style.display='none';},200);}}
   function lbOpenProfile(name){
     if(!name)return;
+    try{window.__mpTrack&&window.__mpTrack('profile',String(name).slice(0,24));}catch(_){}
     if(!lbModal){lbModal=document.createElement('div');lbModal.className='lbm';lbModal.innerHTML='<div class="lbm-card"><button type="button" class="lbm-x" aria-label="Close">✕</button><div class="lbm-body"></div></div>';document.body.appendChild(lbModal);
       lbModal.addEventListener('click',function(e){if(e.target===lbModal||e.target.closest('.lbm-x'))lbCloseModal();});}
     var body=lbModal.querySelector('.lbm-body'),card=lbModal.querySelector('.lbm-card');

@@ -167,7 +167,7 @@
     indMenuEl.addEventListener('click',function(e){
       var per=e.target.closest&&e.target.closest('.cwin-ind-pers b[data-pp]');
       if(per&&indMenuW){var row=per.parentNode,pk=row.getAttribute('data-p'),pp=+per.getAttribute('data-pp');var list=pk==='ema'?(indMenuW.emaList=indMenuW.emaList||(indMenuW.emaP?[indMenuW.emaP]:[21])):(indMenuW.smaList=indMenuW.smaList||(indMenuW.smaP?[indMenuW.smaP]:[50]));var ix=list.indexOf(pp);if(ix>=0){if(list.length>1)list.splice(ix,1);}else{if(list.length>=3)list.shift();list.push(pp);}list.sort(function(a,b){return a-b;});Array.prototype.forEach.call(row.querySelectorAll('b'),function(x){x.classList.toggle('on',list.indexOf(+x.getAttribute('data-pp'))>=0);});if(!indMenuW.inds[pk]){indMenuW.inds[pk]=true;var itm=indMenuEl.querySelector('.cwin-ind-item[data-ind="'+pk+'"]');if(itm)itm.classList.add('on');}applyInds(indMenuW);updateIndN(indMenuW);savePersist();return;}
-      var b=e.target.closest&&e.target.closest('.cwin-ind-item');if(!b||!indMenuW)return;var k=b.getAttribute('data-ind');indMenuW.inds[k]=!indMenuW.inds[k];b.classList.toggle('on',!!indMenuW.inds[k]);applyInds(indMenuW);updateIndN(indMenuW);savePersist();
+      var b=e.target.closest&&e.target.closest('.cwin-ind-item');if(!b||!indMenuW)return;var k=b.getAttribute('data-ind');indMenuW.inds[k]=!indMenuW.inds[k];b.classList.toggle('on',!!indMenuW.inds[k]);if(indMenuW.inds[k]){try{var _il=(b.querySelector('.cwin-ind-it-lbl')||{}).textContent||k;window.__mpTrack&&window.__mpTrack('ind',_il);}catch(_){}}applyInds(indMenuW);updateIndN(indMenuW);savePersist();
     });
     document.addEventListener('pointerdown',function(e){if(indMenuEl&&!indMenuEl.hidden&&!(e.target.closest&&(e.target.closest('.cwin-ind-menu')||e.target.closest('.cwin-ind-btn'))))indMenuEl.hidden=true;},true);
     window.addEventListener('scroll',function(e){if(indMenuEl&&!indMenuEl.hidden&&!(e.target&&e.target.closest&&e.target.closest('.cwin-ind-menu')))indMenuEl.hidden=true;},true);/* scrolling inside the indicator list must not close it */
@@ -305,6 +305,7 @@
     var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
     if(!me){aiShowGate();return;}
     var w=aiW,q=String(question||'').trim();if(!q)q='Give me a sharp, practical read on this chart right now.';
+    try{window.__mpTrack&&window.__mpTrack('ai',(w&&w.sym)||'');}catch(_){}
     var hist=aiHistLoad(w);hist.push({role:'user',text:q,ts:Date.now()});aiHistSave(w,hist);
     var payloadHist=hist.slice(0,-1).map(function(m){return {role:m.role==='user'?'user':'assistant',text:m.text};});
     aiBusy=true;aiRenderBody(w);
@@ -542,7 +543,7 @@
   function mpDrawT(s){return s;}
   // shared draw toggle + toolbar wiring (used by desktop windows and the mobile chart)
   function wireDrawTools(w,dtg,tools){
-    if(dtg)dtg.addEventListener('click',function(e){e.stopPropagation();if(!w.dr)return;w.dr.on=!w.dr.on;w.el.classList.toggle('drawing',w.dr.on);dtg.classList.toggle('on',w.dr.on);if(!w.dr.on){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}});
+    if(dtg)dtg.addEventListener('click',function(e){e.stopPropagation();if(!w.dr)return;w.dr.on=!w.dr.on;w.el.classList.toggle('drawing',w.dr.on);dtg.classList.toggle('on',w.dr.on);if(w.dr.on){try{window.__mpTrack&&window.__mpTrack('draw',(w&&w.sym)||'');}catch(_){}}if(!w.dr.on){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}});
     if(!tools)return;
     function closePops(){tools.querySelectorAll('.cwin-pop').forEach(function(x){x.hidden=true;});tools.querySelectorAll('.cwin-pick').forEach(function(x){x.classList.remove('open');});}
     function togglePop(name,btn){var p=tools.querySelector('[data-pop="'+name+'"]');if(!p)return;var wasHidden=p.hidden;closePops();if(wasHidden){p.hidden=false;if(btn)btn.classList.add('open');}}

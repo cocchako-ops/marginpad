@@ -213,7 +213,7 @@
       if (h.querySelector('input,form,canvas,table,.tabs,[role="tablist"]')) return;
       h.classList.add('mpnav-hdr');
       h.innerHTML = canonHeaderHTML();   // burger click is bound by wireBurgers() below (mp-auth handles [data-auth-open] by delegation)
-      var ls = h.querySelector('#langSel'); if (ls) ls.addEventListener('change', function () { if (ls.value) location.href = ls.value; });
+      var ls = h.querySelector('#langSel'); if (ls) ls.addEventListener('change', function () { if (ls.value) { try { var _ln = (ls.options[ls.selectedIndex] || {}).textContent || ls.value; window.__mpTrack && window.__mpTrack('lang', _ln); } catch (e) {} location.href = ls.value; } });
     } catch (e) {}
   }
   // EVERY header burger opens THE shared drawer. Pages' own scripts may also route here (defi, demo-home,
