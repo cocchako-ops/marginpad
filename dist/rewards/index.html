@@ -331,6 +331,10 @@
     <div class="lbl">Exchange sign-up bonus</div>
     <h2 style="margin:0 0 6px;font-size:19px">Create an exchange account — get $<span class="exsAmt">3</span> for each one</h2>
     <p style="color:#9aa3ad;font-size:13.5px;line-height:1.6;margin:0 0 12px">Open a <b>new account</b> on any exchange below <b>through our button</b>, then paste your <b>UID</b> (your user ID — find it on the exchange under Profile / Account info). We verify the sign-up in our partner dashboard and <b>$<span class="exsAmt">3</span> is added to your balance</b> — once per exchange, for every exchange on the list.</p>
+    <div style="display:flex;gap:9px;align-items:flex-start;font-size:12.5px;color:#ffd694;line-height:1.55;background:rgba(255,176,32,.09);border:1px solid rgba(255,176,32,.32);border-radius:10px;padding:11px 13px;margin:0 0 12px">
+      <span style="flex:0 0 auto;font-size:15px;line-height:1.2">&#9888;&#65039;</span>
+      <span><b>KYC is required.</b> You must complete <b>identity verification (KYC)</b> on the exchange <b>before you request a payout</b>. The $<span class="exsAmt">3</span> bonus is only credited once your referred account is <b>KYC-verified</b> in our partner dashboard — sign-ups without completed KYC are rejected.</span>
+    </div>
     <div class="exs-grid" onclick="(function(t){var a=t.target&&t.target.closest&&t.target.closest('.exs-row');if(a){try{window.__mpTrack&&window.__mpTrack('exchange',a.getAttribute('data-ex')||'')}catch(e){}}})(event)">
       <a class="exs-row" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer"><span class="exs-m exs-m--light" style="--exc:#f7a600"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/521.png" alt="" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bybit</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><span class="exs-arrow">→</span></a>
       <a class="exs-row" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer"><span class="exs-m" style="--exc:#f0b90b"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/270.png" alt="" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Binance</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><span class="exs-arrow">→</span></a>
@@ -350,6 +354,10 @@
       <input id="exsUid" type="text" placeholder="Your UID on that exchange" autocomplete="off" spellcheck="false">
       <button class="btn" id="exsSubmit" type="button">Submit</button>
     </div>
+    <label for="exsKyc" style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:#cdd3da;margin:10px 0 0;cursor:pointer;line-height:1.5">
+      <input type="checkbox" id="exsKyc" style="margin-top:2px;flex:0 0 auto;width:16px;height:16px;accent-color:#c2f64a;cursor:pointer">
+      <span>I have completed <b>KYC (identity verification)</b> on this exchange, and I understand the $<span class="exsAmt">3</span> is only paid after KYC is verified.</span>
+    </label>
     <div id="exsHint" style="display:none;font-size:12px;color:#57c7f7;margin:8px 0 0;line-height:1.5;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:9px;padding:9px 11px"></div>
     <div class="pr-msg" id="exsMsg"></div>
     <div class="exs-note">Must be a <b>new</b> account created through our button (that is how the exchange links it to us — we can only verify those). Each exchange pays once per person; each UID pays once. Review is manual — usually within a day.</div>
@@ -491,10 +499,11 @@
     var sel=document.getElementById('exsSel'),inp=document.getElementById('exsUid'),u=(inp&&inp.value||'').trim();
     if(!signedIn){exsMsgF('Sign in first — the bonus lands on your account balance.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
     if(!u){exsMsgF((sel&&sel.value==='coinbase')?'Paste your Coinbase account name (or wallet / .base) — that is what shows in our referral list.':'Paste your UID from the exchange (Profile → your user ID).','err');return;}
+    var kyc=document.getElementById('exsKyc');if(kyc&&!kyc.checked){exsMsgF('Please confirm you have completed KYC (identity verification) on the exchange — the bonus is only paid after KYC.','err');try{kyc.focus();}catch(_){}return;}
     btn.disabled=true;btn.textContent='…';
     fetch('/api/reward/exsign/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({exchange:sel?sel.value:'',uid:u})}).then(function(r){return r.json();}).then(function(d){
       btn.disabled=false;btn.textContent='Submit';
-      if(d&&d.ok){exsMsgF('Submitted. We verify your sign-up with the exchange — usually within a day — then $'+exsAmtTxt+' lands on your balance.','ok');if(inp)inp.value='';exsLoad();return;}
+      if(d&&d.ok){exsMsgF('Submitted. Once your account is <b>KYC-verified</b> we confirm the referral — usually within a day — then $'+exsAmtTxt+' lands on your balance.','ok');if(inp)inp.value='';var _k=document.getElementById('exsKyc');if(_k)_k.checked=false;exsLoad();return;}
       var e=(d&&d.error)||'';
       if(e==='login_required'){exsMsgF('Sign in first.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}
       else if(e==='already_submitted')exsMsgF('You already submitted a '+(EXSN[sel&&sel.value]||'account for this exchange')+' account — the bonus is once per exchange.','err');
