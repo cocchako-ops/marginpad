@@ -341,14 +341,16 @@
       <a class="exs-row" data-ex="MEXC" href="https://promote.mexc.com/r/GND4jI97o0" target="_blank" rel="sponsored noopener noreferrer"><span class="exs-m exs-m--light" style="--exc:#0ac2d6"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/544.png" alt="" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='M'"></span><span class="exs-n">MEXC</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><span class="exs-arrow">→</span></a>
       <a class="exs-row" data-ex="Kraken" href="https://invite.kraken.com/JDNW/guj2tf28" target="_blank" rel="sponsored noopener noreferrer"><span class="exs-m" style="--exc:#7b5cff"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/24.png" alt="" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='K'"></span><span class="exs-n">Kraken</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><span class="exs-arrow">→</span></a>
       <a class="exs-row" data-ex="Crypto.com" href="https://crypto.com/app/sdf5hb6rkv" target="_blank" rel="sponsored noopener noreferrer"><span class="exs-m" style="--exc:#0b2e7a"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/1149.png" alt="" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='C'"></span><span class="exs-n">Crypto.com</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><span class="exs-arrow">→</span></a>
+      <a class="exs-row" data-ex="Coinbase" href="https://base.app/invite/chakko/FHSFNY5H" target="_blank" rel="sponsored noopener noreferrer"><span class="exs-m" style="--exc:#0052ff"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/89.png" alt="" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='C'"></span><span class="exs-n">Coinbase</span><span class="exs-plus">+$<span class="exsAmt">3</span></span><span class="exs-arrow">→</span></a>
     </div>
     <div class="exs-form">
       <select id="exsSel" aria-label="Exchange">
-        <option value="bybit">Bybit</option><option value="binance">Binance</option><option value="okx">OKX</option><option value="bitget">Bitget</option><option value="kucoin">KuCoin</option><option value="gate">Gate</option><option value="mexc">MEXC</option><option value="kraken">Kraken</option><option value="cryptocom">Crypto.com</option>
+        <option value="bybit">Bybit</option><option value="binance">Binance</option><option value="okx">OKX</option><option value="bitget">Bitget</option><option value="kucoin">KuCoin</option><option value="gate">Gate</option><option value="mexc">MEXC</option><option value="kraken">Kraken</option><option value="cryptocom">Crypto.com</option><option value="coinbase">Coinbase</option>
       </select>
       <input id="exsUid" type="text" placeholder="Your UID on that exchange" autocomplete="off" spellcheck="false">
       <button class="btn" id="exsSubmit" type="button">Submit</button>
     </div>
+    <div id="exsHint" style="display:none;font-size:12px;color:#57c7f7;margin:8px 0 0;line-height:1.5;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.25);border-radius:9px;padding:9px 11px"></div>
     <div class="pr-msg" id="exsMsg"></div>
     <div class="exs-note">Must be a <b>new</b> account created through our button (that is how the exchange links it to us — we can only verify those). Each exchange pays once per person; each UID pays once. Review is manual — usually within a day.</div>
     <div id="exsList"></div>
@@ -467,7 +469,7 @@
   function exsLoad(){if(!signedIn)return;fetch('/api/reward/exsign/mine').then(function(r){return r.json();}).then(function(d){var list=document.getElementById('exsList');if(!list)return;var rows=(d&&d.signups)||[];function esc(x){return String(x==null?'':x).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
     list.innerHTML=rows.map(function(p){
       var st=p.status==='approved'?'<span class="st" style="color:#41e3a3">+$'+(+p.amount||0).toFixed(2)+' PAID</span>':p.status==='rejected'?'<span class="st" style="color:#ff8a80">REJECTED</span>':'<span class="st" style="color:#f3d44a">IN REVIEW</span>';
-      var row='<div class="pr-item"><span class="pl" style="color:#f3d44a;flex:0 0 78px">'+esc(EXSN[p.exchange]||p.exchange)+'</span><span class="u">UID '+esc(p.uid)+'</span>'+st+'</div>';
+      var row='<div class="pr-item"><span class="pl" style="color:#f3d44a;flex:0 0 78px">'+esc(EXSN[p.exchange]||p.exchange)+'</span><span class="u">'+(p.exchange==='coinbase'?'':'UID ')+esc(p.uid)+'</span>'+st+'</div>';
       if(p.status==='rejected')row+='<div class="pr-note">'+(p.note?'<b>Reason:</b> '+esc(p.note)+' ':'')+'<button type="button" class="exs-resub" data-resub="'+esc(p.exchange)+'" style="background:none;border:none;color:#38bdf8;font:inherit;font-weight:700;cursor:pointer;padding:0;text-decoration:underline">Upload again for review &rarr;</button></div>';
       return row;
     }).join('');
@@ -488,7 +490,7 @@
   (function(){var btn=document.getElementById('exsSubmit');if(!btn)return;btn.addEventListener('click',function(){
     var sel=document.getElementById('exsSel'),inp=document.getElementById('exsUid'),u=(inp&&inp.value||'').trim();
     if(!signedIn){exsMsgF('Sign in first — the bonus lands on your account balance.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
-    if(!u){exsMsgF('Paste your UID from the exchange (Profile → your user ID).','err');return;}
+    if(!u){exsMsgF((sel&&sel.value==='coinbase')?'Paste your Coinbase account name (or wallet / .base) — that is what shows in our referral list.':'Paste your UID from the exchange (Profile → your user ID).','err');return;}
     btn.disabled=true;btn.textContent='…';
     fetch('/api/reward/exsign/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({exchange:sel?sel.value:'',uid:u})}).then(function(r){return r.json();}).then(function(d){
       btn.disabled=false;btn.textContent='Submit';
@@ -497,13 +499,17 @@
       if(e==='login_required'){exsMsgF('Sign in first.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}
       else if(e==='already_submitted')exsMsgF('You already submitted a '+(EXSN[sel&&sel.value]||'account for this exchange')+' account — the bonus is once per exchange.','err');
       else if(e==='uid_taken')exsMsgF('That UID was already submitted.','err');
-      else if(e==='bad_uid')exsMsgF('That does not look like a UID — copy the user ID from your exchange profile (letters and numbers only).','err');
+      else if(e==='bad_uid')exsMsgF((sel&&sel.value==='coinbase')?'Paste your Coinbase account name, wallet address, or .base handle.':'That does not look like a UID — copy the user ID from your exchange profile (letters and numbers only).','err');
       else if(e==='banned')exsMsgF('This account is suspended from rewards.','err');
       else if(e==='restricted')exsMsgF('Your account is restricted from rewards. If you believe this is a mistake, contact support (<a href="https://marginpad.io/rewards/#" style="color:inherit;font-weight:700;text-decoration:underline" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">here</a>).','err');
       else if(e==='paused')exsMsgF('Exchange bonuses are paused right now.','err');
       else exsMsgF('Could not submit — try again shortly.','err');
     }).catch(function(){btn.disabled=false;btn.textContent='Submit';exsMsgF('Network error — try again.','err');});
   });})();
+  (function(){var sel=document.getElementById('exsSel'),inp=document.getElementById('exsUid'),hint=document.getElementById('exsHint');if(!sel)return;
+    function sync(){var cb=sel.value==='coinbase';if(inp)inp.placeholder=cb?'Your Coinbase account name / wallet / .base':'Your UID on that exchange';if(hint){hint.style.display=cb?'':'none';if(cb)hint.innerHTML='<b>Coinbase:</b> there is no numeric UID we can see — send your <b>account name</b> (or the <b>wallet address</b> / <b>.base</b> handle shown on your Coinbase / Base profile) so we can match you in our referral list.';}}
+    sel.addEventListener('change',sync);sync();
+  })();
   // ---- Promote & earn: $1 per X/TikTok post (manual review, 24h min live) ----
   var prPlat='x';
   function prCfg(j){var c=document.getElementById('promoCard');if(!c)return;c.hidden=(j.promoEnabled===false);if(j.promoUsd!=null){var t=(+j.promoUsd)%1===0?String(+j.promoUsd):(+j.promoUsd).toFixed(2);Array.prototype.forEach.call(document.querySelectorAll('.prAmt'),function(e){e.textContent=t;});}}
