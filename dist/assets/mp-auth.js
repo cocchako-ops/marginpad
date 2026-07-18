@@ -87,6 +87,19 @@
     + '.mpa-dm-form{display:flex;gap:8px;margin-top:8px}.mpa-dm-form .mpa-in{flex:1}'
     + '.mpa-dm-send{background:#38bdf8;color:#04121c;font-weight:800;border:none;border-radius:11px;padding:0 16px;cursor:pointer}'
     + '.mpa-dm-send:disabled{opacity:.5;cursor:default}'
+    + '.mpa-xp-tot{font-family:ui-monospace,Consolas,monospace;font-size:13px;color:#9aa3ad;margin:2px 0 10px}.mpa-xp-tot b{color:#c9a5ff;font-size:16px}'
+    + '.mpa-xp-sum{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 11px}.mpa-xp-chip{font-family:ui-monospace,Consolas,monospace;font-size:11px;font-weight:700;color:#c9a5ff;background:rgba(180,140,255,.1);border:1px solid rgba(180,140,255,.28);border-radius:20px;padding:4px 10px}.mpa-xp-chip b{color:#e6d8ff}'
+    + '.mpa-xp-list{display:flex;flex-direction:column;max-height:min(50vh,400px);overflow-y:auto;background:#0a0d11;border:1px solid #2f3742;border-radius:12px;padding:2px 12px}'
+    + '.mpa-xp-r{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid #1a2027}.mpa-xp-r:last-child{border-bottom:none}'
+    + '.mpa-xp-amt{flex:0 0 auto;min-width:46px;font-family:ui-monospace,Consolas,monospace;font-weight:800;font-size:13.5px}.mpa-xp-amt.pos{color:#c9a5ff}.mpa-xp-amt.neg{color:#ff8a80}'
+    + '.mpa-xp-b{flex:1;min-width:0}.mpa-xp-lbl{display:block;font-size:13px;font-weight:700;color:#f2f0e9}.mpa-xp-note{display:block;font-size:11px;color:#7f8893;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}'
+    + '.mpa-xp-ago{flex:0 0 auto;font-size:10.5px;color:#5c656f;font-family:ui-monospace,Consolas,monospace;white-space:nowrap}'
+    + '.mpa-xp-empty{color:#5c656f;font-size:13px;text-align:center;padding:22px 8px;line-height:1.6}'
+    + '.mpa-xp-list,.mpa-dm-scroll{scrollbar-width:thin;scrollbar-color:#232a33 #0a0d11}'
+    + '.mpa-xp-list::-webkit-scrollbar,.mpa-dm-scroll::-webkit-scrollbar{width:9px;height:9px}'
+    + '.mpa-xp-list::-webkit-scrollbar-track,.mpa-dm-scroll::-webkit-scrollbar-track{background:#0a0d11;border-radius:8px}'
+    + '.mpa-xp-list::-webkit-scrollbar-thumb,.mpa-dm-scroll::-webkit-scrollbar-thumb{background:#232a33;border:2px solid #0a0d11;border-radius:8px}'
+    + '.mpa-xp-list::-webkit-scrollbar-thumb:hover,.mpa-dm-scroll::-webkit-scrollbar-thumb:hover{background:#333d4a}'
     + '.mpa-badge{display:inline-block;min-width:16px;height:16px;line-height:16px;padding:0 4px;margin-left:6px;background:#ff5a4d;color:#fff;border-radius:9px;font-size:10px;font-weight:800;text-align:center;vertical-align:middle}'
     + '.mpa-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff5a4d;margin-left:5px;vertical-align:middle}'
     // glowing notification ping pinned to the account button's corner — an unread message from the MarginPad team
@@ -146,6 +159,26 @@
         .catch(function () { sb.disabled = false; setMsg('Network error.', 'err'); });
     });
   }
+  // ---- XP history (header profile → what XP you earned, when and why) ----
+  var XPN = { trade: 'Trade closed', trade_win: 'Winning trade', trade_hh: 'XP Happy Hour', trade_promo: 'XP promo', checkin: 'Daily check-in', streak: 'Streak bonus', mission: 'Daily mission', faucet: 'Faucet claim', promo: 'Promo post', exsign: 'Exchange sign-up', lbprize: 'Competition prize', username: 'Username set', academy: 'Academy lesson', admin: 'Manual adjustment', backfill: 'Loyalty bonus', signup: 'Signed up' };
+  function xpAgo(ts) { var s = Math.round((Date.now() - ts) / 1000); if (s < 60) return s + 's ago'; var m = Math.floor(s / 60); if (m < 60) return m + 'm ago'; var h = Math.floor(m / 60); if (h < 24) return h + 'h ago'; var d = Math.floor(h / 24); if (d < 30) return d + 'd ago'; try { return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); } catch (e) { return d + 'd ago'; } }
+  function renderXpHistory() {
+    bodyEl.innerHTML = '<h3 class="mpa-h">XP history</h3>'
+      + '<div class="mpa-xp-tot" id="mpaXpTot">…</div>'
+      + '<div class="mpa-xp-sum" id="mpaXpSum"></div>'
+      + '<div class="mpa-xp-list" id="mpaXpList"><div class="mpa-xp-empty">Loading…</div></div>'
+      + '<button class="mpa-link" id="mpaXpBack" type="button">← Back to profile</button>';
+    var bk = bodyEl.querySelector('#mpaXpBack'); if (bk) bk.addEventListener('click', render);
+    fetch('/api/auth/xphistory').then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || d.signedIn === false) { var l0 = bodyEl.querySelector('#mpaXpList'); if (l0) l0.innerHTML = '<div class="mpa-xp-empty">Please sign in again.</div>'; return; }
+      var tot = bodyEl.querySelector('#mpaXpTot'); if (tot) tot.innerHTML = '<b>' + (+d.xp || 0).toLocaleString() + '</b> total XP earned';
+      var sum = bodyEl.querySelector('#mpaXpSum'); if (sum) { var bs = (d.bySrc || []).slice(0, 4); sum.innerHTML = bs.map(function (x) { return '<span class="mpa-xp-chip">' + esc(XPN[x.src] || x.src) + ' <b>+' + (+x.tot || 0).toLocaleString() + '</b></span>'; }).join(''); }
+      var list = bodyEl.querySelector('#mpaXpList'); if (!list) return;
+      var log = (d.log || []);
+      if (!log.length) { list.innerHTML = '<div class="mpa-xp-empty">No XP yet — close a winning paper trade, finish an Academy lesson, keep a daily streak or claim a reward to start earning.</div>'; return; }
+      list.innerHTML = log.map(function (e) { var amt = +e.amt || 0, pos = amt >= 0; var lbl = XPN[e.src] || e.src || 'XP'; return '<div class="mpa-xp-r"><span class="mpa-xp-amt ' + (pos ? 'pos' : 'neg') + '">' + (pos ? '+' : '') + amt + '</span><span class="mpa-xp-b"><span class="mpa-xp-lbl">' + esc(lbl) + '</span>' + (e.note ? '<span class="mpa-xp-note">' + esc(e.note) + '</span>' : '') + '</span><span class="mpa-xp-ago">' + xpAgo(e.ts) + '</span></div>'; }).join('');
+    }).catch(function () { var l = bodyEl.querySelector('#mpaXpList'); if (l) l.innerHTML = '<div class="mpa-xp-empty">Could not load your XP history — try again.</div>'; });
+  }
   function render() {
     if (BANNED) {
       bodyEl.innerHTML = '<h3 class="mpa-h">Account suspended</h3><p class="mpa-sub">Your MarginPad account has been suspended. If you believe this is a mistake, contact <b>support@marginpad.io</b>.</p>';
@@ -175,6 +208,7 @@
         + '</div>'
         + (hasU ? '' : '<label style="display:block;font-size:11px;color:#9aa3ad;margin:8px 0 5px">Pick a username <span style="color:#5c656f">(public, permanent)</span></label><input class="mpa-in" id="mpaUname" maxlength="20" autocomplete="off" placeholder="choose a username"><button class="mpa-btn" id="mpaSaveU" type="button">Set username</button><div class="mpa-msg"></div>')
         + (ME.muted ? '<p class="mpa-foot" style="color:#ffb347">You are muted in chat.</p>' : '')
+        + '<button class="mpa-btn" id="mpaXp" type="button" style="margin-top:10px;background:#181428;color:#c9a5ff;border:1px solid rgba(180,140,255,.4)">✨ XP history</button>'
         + '<button class="mpa-btn" id="mpaSup" type="button" style="margin-top:10px;background:#13241f;color:#34d99a;border:1px solid rgba(52,217,154,.4)">Contact support</button>'
         + '<button class="mpa-btn" style="background:#1a1f27;color:#e9e7df;margin-top:10px" id="mpaLogout" type="button">Sign out</button>'
         + '<button class="mpa-link" id="mpaDone" type="button">Close</button>';
@@ -204,6 +238,7 @@
         fetch('/api/auth/logout', { method: 'POST' }).then(function () { ME = null; reflect(); render(); });
       });
       var sp = bodyEl.querySelector('#mpaSup'); if (sp) sp.addEventListener('click', function () { renderSup(); });
+      var xpB = bodyEl.querySelector('#mpaXp'); if (xpB) xpB.addEventListener('click', function () { renderXpHistory(); });
       return;
     }
     bodyEl.innerHTML = '<h3 class="mpa-h">Sign in or sign up</h3><p class="mpa-sub">Enter your email and we’ll send a 6-digit code. No password.</p>'

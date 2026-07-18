@@ -5410,6 +5410,13 @@ async function handleAuth(url, request, env, ctx) {
     let followers = 0, lastFollower = null; try { const fr = await stub.fetch(new Request('https://do/myfollowers?uid=' + encodeURIComponent(sd.user.id))); const fd = await fr.json(); followers = fd.count || 0; lastFollower = fd.last || null; } catch (e) {}
     return jr({ signedIn: true, xp: sd.user.xp || 0, streak: sd.user.streak || 0, freezes: sd.user.freezes || 0, level: sd.user.level || null, log, followers, lastFollower });
   }
+  if (path === '/xphistory') { // self: the signed-in user's full XP earn/adjust history (for the header profile → XP history)
+    const tok = getCookie(request, SESS_COOKIE);
+    if (!tok) return jr({ signedIn: false });
+    let sd = null; try { const sr = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); sd = await sr.json(); } catch (e) { return jr({ signedIn: false, transient: true }); }
+    if (!sd || !sd.user || !sd.user.id) return jr({ signedIn: false });
+    try { const r = await stub.fetch(new Request('https://do/xplog?uid=' + encodeURIComponent(sd.user.id))); const d = await r.json(); return jr({ signedIn: true, xp: sd.user.xp || 0, log: d.log || [], bySrc: d.bySrc || [] }); } catch (e) { return jr({ signedIn: true, xp: sd.user.xp || 0, log: [], bySrc: [] }); }
+  }
   if (path === '/me') {
     const tok = getCookie(request, SESS_COOKIE);
     if (!tok) return jr({ user: null });
