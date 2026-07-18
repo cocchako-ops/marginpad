@@ -71,6 +71,13 @@
   .prose{max-width:760px;color:var(--ink2);font-size:15px;line-height:1.7}
   .prose p{margin:0 0 14px}
   .ctarow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:22px}
+  .jperiod{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:0 0 18px}
+  .jperiod .jp-lbl{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-right:4px}
+  .jperiod button{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;color:var(--dim);background:rgba(8,9,11,.5);border:1px solid var(--line2);border-radius:20px;padding:7px 15px;cursor:pointer;transition:border-color .14s,color .14s,background .14s}
+  .jperiod button:hover{color:var(--ink);border-color:var(--ink-faint,#3a4657)}
+  .jperiod button.on{background:#37d398;color:#04140d;border-color:transparent;box-shadow:0 4px 16px -6px rgba(55,211,152,.7)}
+  .jp-count{font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);margin-left:auto}
+  @media(max-width:560px){.jp-count{margin-left:0;width:100%;margin-top:2px}}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Trading Journal","applicationCategory":"FinanceApplication","operatingSystem":"Web","url":"https://marginpad.io/trading-journal/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
@@ -104,6 +111,16 @@
   </div>
 
   <div id="out" hidden>
+    <div id="jPeriod" class="jperiod">
+      <span class="jp-lbl">Show</span>
+      <button type="button" data-p="day">Today</button>
+      <button type="button" data-p="week">This week</button>
+      <button type="button" data-p="month">This month</button>
+      <button type="button" data-p="year">This year</button>
+      <button type="button" data-p="all" class="on">All time</button>
+      <span class="jp-count" id="jpCount"></span>
+    </div>
+
     <div id="verdict" class="verdict"><span class="dot"></span><span id="verdictTxt"></span></div>
 
     <div class="kpis" id="kpis"></div>
@@ -209,10 +226,28 @@
   function pct(x){return (x>=0?'+':'')+x.toFixed(0)+'%';}
   function load(){try{return JSON.parse(localStorage.getItem('mp_journal')||'[]');}catch(e){return [];}}
 
-  var all=load().filter(function(e){return e&&(e.status==='win'||e.status==='loss');});
-  if(!all.length){$('empty').hidden=false;return;}
-  all.sort(function(a,b){return (a.closedTs||a.ts||0)-(b.closedTs||b.ts||0);});
-  all.forEach(function(e){e._pnl=+e.pnl||0;e._roe=(+e.margin>0)?e._pnl/(+e.margin)*100:0;e._long=(e.side!=='short');});
+  var master=load().filter(function(e){return e&&(e.status==='win'||e.status==='loss');});
+  if(!master.length){$('empty').hidden=false;return;}
+  master.sort(function(a,b){return (a.closeTs||a.closedTs||a.ts||0)-(b.closeTs||b.closedTs||b.ts||0);});
+  master.forEach(function(e){e._pnl=+e.pnl||0;e._roe=(+e.margin>0)?e._pnl/(+e.margin)*100:0;e._long=(e.side!=='short');e._ts=(+e.closeTs||+e.closedTs||+e.ts||0);});
+  $('out').hidden=false;
+  var period='all';
+  function periodStart(p){var d=new Date();
+    if(p==='day'){d.setHours(0,0,0,0);return d.getTime();}
+    if(p==='week'){var wd=(d.getDay()+6)%7;d.setHours(0,0,0,0);return d.getTime()-wd*86400000;}
+    if(p==='month'){return new Date(d.getFullYear(),d.getMonth(),1).getTime();}
+    if(p==='year'){return new Date(d.getFullYear(),0,1).getTime();}
+    return 0;}
+  function rebuild(){
+  var all=master.filter(function(e){return e._ts>=periodStart(period);});
+  var _c=$('jpCount');if(_c)_c.textContent=all.length+' of '+master.length+' closed trade'+(master.length===1?'':'s');
+  if(!all.length){
+    $('kpis').innerHTML='<div class="kpi" style="grid-column:1/-1;text-align:center"><div class="l" style="font-size:13px;padding:12px 8px">No closed trades in this period — pick a wider range.</div></div>';
+    $('verdict').className='verdict flat';$('verdictTxt').innerHTML='<b>No trades in the selected period.</b> Choose a wider range above.';
+    ['eq','hist','dd','bySide','form','bySym','trades'].forEach(function(_id){var _e=$(_id);if(_e)_e.innerHTML='';});
+    var _ev=$('eqVal');if(_ev)_ev.innerHTML='';var _dl=$('ddLegend');if(_dl)_dl.innerHTML='';
+    return;
+  }
 
   var wins=all.filter(function(e){return e._pnl>0;});
   var losses=all.filter(function(e){return e._pnl<=0;});
@@ -370,7 +405,7 @@
     var sortKey='date',sortDir=-1,fSym='',fSide='';
     // fill the coin filter
     var syms={};all.forEach(function(e){if(e.sym)syms[e.sym]=1;});
-    var fs=$('trFsym');Object.keys(syms).sort().forEach(function(s){var o=document.createElement('option');o.value=s;o.textContent=s;fs.appendChild(o);});
+    var fs=$('trFsym');fs.innerHTML='<option value="">All coins</option>';Object.keys(syms).sort().forEach(function(s){var o=document.createElement('option');o.value=s;o.textContent=s;fs.appendChild(o);});
     function view(){var v=all.filter(function(e){return (!fSym||e.sym===fSym)&&(!fSide||(fSide==='long')===!!e._long);});
       var col=COLS.filter(function(c){return c[0]===sortKey;})[0];
       v.sort(function(a,b){var x=col[2](a),y=col[2](b);return (x<y?-1:x>y?1:0)*sortDir;});return v;}
@@ -385,16 +420,19 @@
       rows+=(v.length?'':'<tr><td colspan="7" style="color:#5c656f;text-align:center;padding:18px">No trades match this filter.</td></tr>')+'</tbody>';
       $('trades').innerHTML=rows;
       Array.prototype.forEach.call($('trades').querySelectorAll('th[data-k]'),function(th){th.addEventListener('click',function(){var k=th.getAttribute('data-k');if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=(k==='date'?-1:1);}render();});});}
-    fs.addEventListener('change',function(){fSym=fs.value;render();});
-    $('trFside').addEventListener('change',function(){fSide=this.value;render();});
-    $('trCsv').addEventListener('click',function(){
+    fs.onchange=function(){fSym=fs.value;render();};
+    $('trFside').onchange=function(){fSide=this.value;render();};
+    $('trCsv').onclick=function(){
       var v=view(),esc=function(s){s=String(s==null?'':s);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
       var csv='date,coin,side,entry,exit,roe_pct,pnl_usd,margin_usd,leverage,liquidated\n';
       v.forEach(function(e){csv+=[new Date(tsOf(e)).toISOString(),e.sym||'',e._long?'long':'short',e.entry!=null?e.entry:'',e.exit!=null?e.exit:'',isFinite(e._roe)?(+e._roe).toFixed(4):'',isFinite(e._pnl)?(+e._pnl).toFixed(2):'',+e.margin||'',+e.lev||'',e.liquidated?'yes':''].map(esc).join(',')+'\n';});
       var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='marginpad-trades.csv';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},400);
-    });
+    };
     render();
   })();
+  } // end rebuild()
+  var _jp=$('jPeriod');if(_jp)_jp.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button[data-p]');if(!b)return;period=b.getAttribute('data-p');Array.prototype.forEach.call(_jp.querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});rebuild();});
+  rebuild();
 })();
 </script>
 <script defer src="/assets/mp-nav.js"></script>
