@@ -462,16 +462,24 @@
   function valid(a){return /^0x[0-9a-fA-F]{40}$/.test(a);}
   // ---- Exchange sign-up bonus: $3 per new exchange account via our ref link (manual verification against the affiliate dashboard) ----
   var exsAmtTxt='3';
-  var EXSN={bybit:'Bybit',binance:'Binance',okx:'OKX',bitget:'Bitget',kucoin:'KuCoin',gate:'Gate',mexc:'MEXC',kraken:'Kraken',cryptocom:'Crypto.com'};
+  var EXSN={bybit:'Bybit',binance:'Binance',okx:'OKX',bitget:'Bitget',kucoin:'KuCoin',gate:'Gate',mexc:'MEXC',kraken:'Kraken',cryptocom:'Crypto.com',coinbase:'Coinbase'};
   function exsCfg(j){var c=document.getElementById('exsCard');if(!c)return;if(j.exsignEnabled!=null)c.hidden=(j.exsignEnabled===false);if(j.exsignUsd!=null){exsAmtTxt=(+j.exsignUsd)%1===0?String(+j.exsignUsd):(+j.exsignUsd).toFixed(2);setText('exsAmt',exsAmtTxt);}}
   function exsMsgF(t,kind){var e=document.getElementById('exsMsg');if(!e)return;e.innerHTML=t;e.className='pr-msg show '+(kind||'');}
   function exsLoad(){if(!signedIn)return;fetch('/api/reward/exsign/mine').then(function(r){return r.json();}).then(function(d){var list=document.getElementById('exsList');if(!list)return;var rows=(d&&d.signups)||[];function esc(x){return String(x==null?'':x).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
     list.innerHTML=rows.map(function(p){
       var st=p.status==='approved'?'<span class="st" style="color:#41e3a3">+$'+(+p.amount||0).toFixed(2)+' PAID</span>':p.status==='rejected'?'<span class="st" style="color:#ff8a80">REJECTED</span>':'<span class="st" style="color:#f3d44a">IN REVIEW</span>';
       var row='<div class="pr-item"><span class="pl" style="color:#f3d44a;flex:0 0 78px">'+esc(EXSN[p.exchange]||p.exchange)+'</span><span class="u">UID '+esc(p.uid)+'</span>'+st+'</div>';
-      if(p.status==='rejected'&&p.note)row+='<div class="pr-note"><b>Reason:</b> '+esc(p.note)+'</div>';
+      if(p.status==='rejected')row+='<div class="pr-note">'+(p.note?'<b>Reason:</b> '+esc(p.note)+' ':'')+'<button type="button" class="exs-resub" data-resub="'+esc(p.exchange)+'" style="background:none;border:none;color:#38bdf8;font:inherit;font-weight:700;cursor:pointer;padding:0;text-decoration:underline">Upload again for review &rarr;</button></div>';
       return row;
     }).join('');
+    Array.prototype.forEach.call(list.querySelectorAll('.exs-resub'),function(b){b.addEventListener('click',function(){var ex=b.getAttribute('data-resub'),sel=document.getElementById('exsSel');
+      if(sel){var has=false;Array.prototype.slice.call(sel.options).forEach(function(o){if(o.value===ex)has=true;});if(!has){var o=document.createElement('option');o.value=ex;o.textContent=EXSN[ex]||ex;sel.appendChild(o);}sel.value=ex;sel.style.display='';}
+      var b9=document.getElementById('exsSubmit');if(b9){b9.disabled=false;b9.textContent='Submit';}
+      var inp=document.getElementById('exsUid');if(inp){inp.style.display='';inp.value='';}
+      var form=document.querySelector('.exs-form');if(form)form.scrollIntoView({behavior:'smooth',block:'center'});
+      if(inp)setTimeout(function(){inp.focus();},250);
+      exsMsgF('Enter your UID for '+(EXSN[ex]||ex)+' and submit again — we&rsquo;ll re-review it.','ok');
+    });});
     try{var takenEx={};rows.forEach(function(p){if(p.status!=='rejected')takenEx[p.exchange]=1;});
       var sel9=document.getElementById('exsSel');
       if(sel9){Array.prototype.slice.call(sel9.options).forEach(function(o){if(takenEx[o.value])o.remove();});
