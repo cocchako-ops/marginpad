@@ -940,6 +940,8 @@
   #jrFab{display:none;position:fixed;bottom:20px;right:20px;z-index:50;align-items:center;gap:7px;background:#0a0b0d;color:#fff;border:1px solid var(--line-bright);border-radius:999px;padding:12px 18px;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.45);transition:transform .15s;}
   #jrFab:hover{transform:translateY(-2px);border-color:var(--lime,#c2f64a);}
   @media(min-width:721px){#jrFab{display:inline-flex;}.brand .hjr{display:none!important;}}
+  /* on the /charts workspace the corner Chat + My Trades pills crowd the board — hide them there only (My Trades stays in the header) */
+  body.charts-page #jrFab,body.charts-page #chatFab{display:none!important;}
   #chatFab:hover{transform:translateY(-2px);}
   /* new-message signal (chat closed) */
   #chatFab.ct-alert{animation:ctFabGlow 1.5s ease-in-out infinite;}
@@ -1268,11 +1270,13 @@
   .cws-preset{-webkit-appearance:none;appearance:none;padding-right:26px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239aa3ad' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
   .cwin.front{border-color:#3a4654;box-shadow:0 26px 60px -16px rgba(0,0,0,.85),0 0 0 1px rgba(63,216,230,.25);}
   .cwin.dragging{transition:none;will-change:left,top;}
-  .cwin-head{display:flex;align-items:center;gap:6px;row-gap:4px;padding:7px 8px;background:linear-gradient(180deg,#1b2128,#141a20);border-bottom:1px solid #262d36;cursor:grab;flex-wrap:wrap;position:relative;} /* wrap instead of clipping — a narrow window used to CUT the symbol pill + low-TF buttons out of the header (UX audit) */
+  .cwin-head{display:flex;align-items:center;gap:7px;row-gap:5px;padding:8px 9px;background:linear-gradient(180deg,#1e252e,#151b22);border-bottom:1px solid #232b35;cursor:grab;flex-wrap:wrap;position:relative;box-shadow:inset 0 1px 0 rgba(255,255,255,.035);} /* wrap instead of clipping — a narrow window used to CUT the symbol pill + low-TF buttons out of the header (UX audit) */
   .cwin-head:active{cursor:grabbing;}
   .cwin-grip{flex-shrink:0;color:#5c656f;display:inline-flex;}
-  .cwin-sym{flex-shrink:0;background:#0a0d11;border:1px solid #2b323b;border-radius:7px;color:#c2f64a;text-shadow:0 0 9px rgba(194,246,74,.55);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;padding:5px 6px;cursor:pointer;outline:none;}
-  .cwin-sym{text-transform:uppercase;width:66px;cursor:pointer;}
+  .cwin-sym{flex-shrink:0;border:1px solid #2f3742;border-radius:8px;color:#c2f64a;text-shadow:0 0 10px rgba(194,246,74,.45);font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;letter-spacing:.05em;padding:6px 21px 6px 11px;cursor:pointer;outline:none;transition:border-color .14s,box-shadow .14s,background .14s;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23c2f64a' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center/9px,linear-gradient(180deg,#141a21,#0b0e13);}
+  .cwin-sym{text-transform:uppercase;width:80px!important;cursor:pointer;}
+  .cwin-sym:hover{border-color:#3f4b5a;box-shadow:0 0 0 1px rgba(194,246,74,.16),0 5px 16px -7px rgba(194,246,74,.5);}
+  .cwin-sym:focus{border-color:#c2f64a;box-shadow:0 0 0 1px rgba(194,246,74,.35);}
   .cwin-sym-menu{position:fixed;z-index:1100;background:#0d1014;border:1px solid #2b323b;border-radius:10px;padding:6px;box-shadow:0 24px 60px -20px rgba(0,0,0,.92);display:flex;flex-direction:column;gap:5px;}
   .cwin-sym-menu[hidden]{display:none;}
   .cwin-sym-search{background:#0a0d11;border:1px solid #2f3742;border-radius:7px;padding:8px 10px;color:#e9e7df;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;text-transform:uppercase;outline:none;width:100%;box-sizing:border-box;}
@@ -1284,10 +1288,11 @@
   .cwin-sym-opt.on{color:#c2f64a;}
   .cwin-sym-add{color:#c2f64a;}
   .cwin-sym-empty{color:#5c656f;font-size:12px;padding:8px 11px;font-family:'Space Mono',monospace;}
-  .cwin-tf{display:inline-flex;background:#0a0d11;border:1px solid #2b323b;border-radius:7px;overflow:hidden;flex-shrink:0;}
-  .cwin-tf button{background:none;border:none;color:#7f8893;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:5px 7px;cursor:pointer;}
-  .cwin-tf button.on{background:#3fd8e6;color:#06222a;}
-  .cwin-ind-btn{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;background:#0a0d11;border:1px solid #2b323b;border-radius:7px;color:#9aa3ad;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.02em;padding:5px 9px;cursor:pointer;transition:.13s;white-space:nowrap;}
+  .cwin-tf{display:inline-flex;background:#0a0d11;border:1px solid #2f3742;border-radius:8px;padding:2px;gap:1px;flex-shrink:0;}
+  .cwin-tf button{background:none;border:none;color:#8b95a3;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:5px 8px;border-radius:6px;cursor:pointer;transition:color .12s,background .12s;}
+  .cwin-tf button:hover{color:#e2e7ee;background:rgba(255,255,255,.06);}
+  .cwin-tf button.on{background:linear-gradient(180deg,#45e2ef,#28b7c7);color:#052a31;box-shadow:0 2px 9px -2px rgba(63,216,230,.65),inset 0 1px 0 rgba(255,255,255,.28);}
+  .cwin-ind-btn{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;background:linear-gradient(180deg,#141a21,#0b0e13);border:1px solid #2f3742;border-radius:8px;color:#9aa3ad;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.02em;padding:6px 10px;cursor:pointer;transition:.13s;white-space:nowrap;}
   .cwin-ind-btn:hover{color:#cfd4da;border-color:#3a434f;}
   .cwin-ind-btn.active{color:#06222a;background:#3fd8e6;border-color:#3fd8e6;}
   .cwin-ind-n{display:inline-flex;align-items:center;justify-content:center;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:rgba(0,0,0,.28);font-size:9.5px;}
@@ -1297,7 +1302,7 @@
   .cwin-ind-menu[hidden]{display:none;}
   .cwin-ind-menu-h{font-family:'Space Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:#5c656f;padding:5px 8px 7px;}
   .cwin-ind-menu-list{display:flex;flex-direction:column;gap:2px;}
-  .cwin-ai{flex-shrink:0;display:inline-flex;align-items:center;gap:4px;background:linear-gradient(180deg,#1c2638,#131a28);border:1px solid #34425a;border-radius:7px;color:#9bd6ff;padding:5px 8px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;box-shadow:0 0 0 1px rgba(120,180,255,.08);}
+  .cwin-ai{flex-shrink:0;display:inline-flex;align-items:center;gap:4px;background:linear-gradient(180deg,#1c2638,#131a28);border:1px solid #34425a;border-radius:8px;color:#9bd6ff;padding:6px 9px;cursor:pointer;font-size:11px;font-weight:700;font-family:inherit;box-shadow:0 0 0 1px rgba(120,180,255,.08);}
   .cwin-ai:hover{color:#dff0ff;border-color:#4a6088;box-shadow:0 0 10px -2px rgba(120,180,255,.5);}
   .cwin-ai svg{color:#7fb6ff;flex-shrink:0;}
   .cwin-ai-panel{position:fixed;z-index:140;width:360px;max-width:94vw;height:min(76vh,560px);display:flex;flex-direction:column;background:linear-gradient(180deg,#151b28,#0c1019);border:1px solid #2c3645;border-radius:15px;box-shadow:0 36px 80px -22px rgba(0,0,0,.92),0 0 0 1px rgba(120,180,255,.14);overflow:hidden;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
