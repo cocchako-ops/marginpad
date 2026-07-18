@@ -378,6 +378,9 @@
   document.addEventListener('visibilitychange', function () { dwAccrue(); dwVis = document.visibilityState === 'visible'; dwSince = Date.now(); if (!dwVis) { dwFlush(); syncTrades(); } });
   window.addEventListener('pagehide', dwFlush);
   setInterval(syncTrades, 12000);
+  // pull the server journal periodically so trades opened elsewhere — cross-device AND via the Bot API — appear LIVE in My Trades
+  setInterval(function () { if (ME && document.visibilityState === 'visible') { try { pullTrades(); } catch (_) {} } }, 14000);
+  document.addEventListener('visibilitychange', function () { if (ME && document.visibilityState === 'visible') { try { pullTrades(); } catch (_) {} } });
 
   // ---- Web push (browser notifications for price alerts) ----
   var PUSH_KEY = 'BKdr8PcbZQWGE0c8QuauG1FHf0yEoHs4fm0ise_rm9kNftX_ABmg0oJyqK8GFw-rRW9MmGsQWjNOvVg9lEX9Bcg';

@@ -4946,6 +4946,7 @@ async function handleBot(url, request, env, ctx) {
   if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: '120 requests / minute' }, 429);
   const uid = auth.uid;
 
+  let promos = []; try { promos = await xpPromos(env); } catch (e) {} // so a bot's winning close earns XP promos too
   const priceMap = async (syms) => { const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPrice(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
   const openSymsOf = async () => { const r = await doCall('/botpositions', { uid, prices: {} }); return r && r.positions ? Array.from(new Set(r.positions.filter(p => p.status === 'open').map(p => p.symbol))) : []; };
 
@@ -4963,36 +4964,37 @@ async function handleBot(url, request, env, ctx) {
     const sl = (b.sl != null && isFinite(+b.sl)) ? +b.sl : null, tp = (b.tp != null && isFinite(+b.tp)) ? +b.tp : null;
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jb({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jb({ error: 'tp_wrong_side', live: entry }, 400);
-    const pos = { id: 'bp' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), symbol: sym, side, entry_price: entry, margin_usd: margin, leverage: lev, qty: margin * lev / entry, liq_price: Math.round(liq * 1e6) / 1e6, sl, tp, status: 'open', opened_ts: Date.now() };
-    const r = await doCall('/botopen', { uid, pos });
+    // journal-shaped trade so it lands in My Trades exactly like a manual open (src:'bot' marks its origin)
+    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: 0, status: 'open', pnl: null, src: 'bot' };
+    const r = await doCall('/botopen', { uid, t, promos });
     if (r && r.error) return jb(r, 400);
     try { if (env.AE) env.AE.writeDataPoint({ indexes: ['botapi'], blobs: ['event', 'botapi', 'open ' + sym], doubles: [1] }); } catch (e) {}
-    return jb({ ok: true, position: pos });
+    return jb(r && r.position ? { ok: true, position: r.position } : { ok: true }, 200);
   }
   if (path === '/v1/close' && request.method === 'POST') {
     if (!b.id) return jb({ error: 'id_required' }, 400);
     const syms = await openSymsOf();
     const prices = await priceMap(syms);
-    const r = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices });
+    const r = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices, promos });
     if (!r) return jb({ error: 'unavailable' }, 503);
     return jb(r, r.error ? 400 : 200);
   }
   if (path === '/v1/positions') {
     const syms = await openSymsOf();
     const prices = await priceMap(syms);
-    const r = await doCall('/botpositions', { uid, prices });
+    const r = await doCall('/botpositions', { uid, prices, promos });
     return jb(r || { error: 'unavailable' }, r ? 200 : 503);
   }
   if (path === '/v1/close_all' && request.method === 'POST') {
     const syms = await openSymsOf();
     const prices = await priceMap(syms);
-    const r = await doCall('/botcloseall', { uid, prices });
+    const r = await doCall('/botcloseall', { uid, prices, promos });
     return jb(r || { error: 'unavailable' }, r ? 200 : 503);
   }
   if (path === '/v1/account') {
     const syms = await openSymsOf();
     const prices = await priceMap(syms);
-    const r = await doCall('/botpositions', { uid, prices });
+    const r = await doCall('/botpositions', { uid, prices, promos });
     if (!r || !r.positions) return jb({ error: 'unavailable' }, 503);
     let openN = 0, marginUse = 0, upnl = 0, realized = 0, wins = 0, losses = 0;
     r.positions.forEach(p => { if (p.status === 'open') { openN++; marginUse += p.margin_usd; upnl += (p.unrealized_pnl_usd || 0); } else { realized += (p.pnl_usd || 0); if ((p.pnl_usd || 0) >= 0) wins++; else losses++; } });
@@ -6936,6 +6938,70 @@ export class UserStore {
     return amt;
   }
   rid() { const a = new Uint8Array(16); crypto.getRandomValues(a); return Array.from(a).map(x => x.toString(16).padStart(2, '0')).join(''); }
+  // ── shared journal store (single source of truth for BOTH the site's My Trades and the Bot API) ──
+  _loadJournal(uid) { try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) { const a = JSON.parse(r.json); return Array.isArray(a) ? a : []; } } catch (e) {} return []; }
+  _j2bot(t, live) { // journal trade -> Bot API response shape
+    const long = t.side !== 'short', open = t.status !== 'win' && t.status !== 'loss';
+    const o = { id: t.id, symbol: t.sym, side: long ? 'long' : 'short', entry_price: +t.entry || 0, margin_usd: +t.margin || 0, leverage: +t.lev || 1, qty: +t.qty || 0, liq_price: +t.liq || 0, sl: (t.stop != null ? +t.stop : null), tp: (t.tp != null ? +t.tp : null), status: open ? 'open' : (t.liquidated ? 'liquidated' : 'closed'), opened_ts: +t.ts || 0, source: t.src === 'bot' ? 'bot' : 'app' };
+    if (open) { if (live > 0) { const dir = long ? 1 : -1; let pnl = (+t.qty || 0) * (live - (+t.entry || 0)) * dir; if (pnl < -(+t.margin || 0)) pnl = -(+t.margin || 0); o.mark_price = live; o.unrealized_pnl_usd = Math.round(pnl * 100) / 100; } }
+    else { o.exit_price = (t.exit != null ? +t.exit : null); o.pnl_usd = (t.pnl != null ? +t.pnl : null); o.closed_ts = (t.closeTs != null ? +t.closeTs : null); if (t.partial) o.partial_pct = +t.partial; }
+    return o;
+  }
+  // Merge `incoming` trades into the user's stored journal (union by id, close beats open, trim opens-safe) and persist,
+  // plus the trade-event log + XP grants. Extracted from the /trades handler so the Bot API writes THROUGH the exact same
+  // path as the browser → bot trades appear in My Trades, earn XP, hit the leaderboard and the ops trade feed. Returns the merged array.
+  _syncJournal(uid, incoming, promos) {
+    const sql = this.state.storage.sql, now = Date.now();
+    incoming = Array.isArray(incoming) ? incoming : [];
+    let stored = this._loadJournal(uid);
+    const byId = new Map();
+    const put = (e) => { if (!e || typeof e !== 'object') return; const id = String(e.id || ('_anon' + byId.size)); const prev = byId.get(id); if (!prev) { byId.set(id, e); return; } const prevClosed = prev.status === 'win' || prev.status === 'loss', curClosed = e.status === 'win' || e.status === 'loss';
+      if (curClosed && !prevClosed) { byId.set(id, e); return; }
+      if (!curClosed && prevClosed) return;
+      if (curClosed && prevClosed) { byId.set(id, e); return; }
+      const _pq = +prev.qty, _cq = +e.qty; if (isFinite(_pq) && isFinite(_cq) && _cq > _pq) return; byId.set(id, e); };
+    stored.forEach(put); incoming.forEach(put);
+    let arr = Array.from(byId.values());
+    arr.sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));
+    const isOpen = (e) => e && e.status !== 'win' && e.status !== 'loss';
+    const opensArr = arr.filter(isOpen);
+    let closed = arr.filter((e) => !isOpen(e));
+    const CAP = 100;
+    const roeOf = (e) => { const m = +(e && e.margin), p = +(e && e.pnl); return (isFinite(m) && m > 0 && isFinite(p)) ? p / m : -Infinity; };
+    const protIds = new Set(closed.slice().sort((a, c) => roeOf(c) - roeOf(a)).filter((e) => roeOf(e) > 0).slice(0, 3).map((e) => String(e.id)));
+    const isProt = (e) => protIds.has(String(e && e.id));
+    if (opensArr.length + closed.length > CAP) { const prot = closed.filter(isProt); let rest = closed.filter((e) => !isProt(e)); const room = Math.max(0, CAP - opensArr.length - prot.length); if (room <= 0) rest = []; else if (rest.length > room) rest = rest.slice(-room); closed = prot.concat(rest); }
+    arr = opensArr.concat(closed).sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));
+    let json = JSON.stringify(arr);
+    while (json.length > 60000 && closed.filter((e) => !isProt(e)).length > 0) { closed = closed.filter(isProt).concat(closed.filter((e) => !isProt(e)).slice(5)); arr = opensArr.concat(closed).sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0))); json = JSON.stringify(arr); }
+    let wins = 0, losses = 0, opens = 0, pnl = 0;
+    arr.forEach(function (e) { const st = e && e.status; if (st === 'win') wins++; else if (st === 'loss') losses++; else opens++; const p = +(e && e.pnl); if ((st === 'win' || st === 'loss') && isFinite(p)) pnl += p; });
+    try {
+      const oldBy = new Map(); stored.forEach((e) => { if (e && e.id != null) oldBy.set(String(e.id), e); });
+      const isCl = (e) => e && (e.status === 'win' || e.status === 'loss');
+      const evs = [];
+      for (const e of arr) { if (!e || e.id == null) continue; const o9 = oldBy.get(String(e.id));
+        if (!o9) { if (isCl(e)) evs.push(['close', e, +e.closeTs || now]); else evs.push(['open', e, +e.ts || now]); }
+        else if (!isCl(o9) && isCl(e)) evs.push(['close', e, +e.closeTs || now]);
+        else if (!isCl(o9) && !isCl(e)) { const q0 = +o9.qty, q1 = +e.qty; if (isFinite(q0) && isFinite(q1) && q1 < q0 * 0.99) evs.push(['trim', e, now]); } }
+      const cut = now - 7 * 86400000; let nIns = 0;
+      for (const ev9 of evs) { const kind = ev9[0], e = ev9[1], ts9 = ev9[2];
+        if (ts9 < cut || nIns >= 20) continue;
+        const m = +e.margin || 0; if (!(m > 0) || m > 100000) continue;
+        const pv = (kind !== 'open' && isFinite(+e.pnl)) ? +e.pnl : null;
+        const roe = (pv != null && m > 0) ? pv / m * 100 : null;
+        const liq9 = (kind === 'close' && pv != null && pv <= -m * 0.985) ? 1 : 0;
+        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq) VALUES(?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9);
+        nIns++; try { if (kind === 'close') { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9)) this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 750, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); }
+          if (roe != null) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
+            for (var _pi = 0; _pi < _pl.length; _pi++) { var _p = _pl[_pi]; if (!_p || _p.enabled === false) continue; if (!(ts9 >= _p.startMs && ts9 < _p.endMs && _p.endMs > _p.startMs)) continue; if (_p.coins && _p.coins.length && _p.coins.indexOf(_symU) < 0) continue; if (_lv > (+_p.levMax || 1000)) continue; if (roe < (+_p.roeMin || 0)) continue; if (_p.winOnly !== false && !(pv > 0)) continue; if (!_best || (+_p.xp || 0) > (+_best.xp || 0)) _best = _p; }
+            if (_best) this._grantXp(uid, 'trade_promo', +_best.xp || 0, { dayCap: (+_best.dayCap || 700), note: (String(_best.title || 'XP Promo')).slice(0, 30) + ' · ' + _symU + ' ' + Math.round(roe) + '% ROE' }); } } } catch (xe) {}
+      }
+      if (nIns) sql.exec('DELETE FROM tradeev WHERE ts < ?', now - 14 * 86400000);
+    } catch (e9) {}
+    sql.exec('INSERT INTO utrades(user_id,json,n,wins,losses,opens,pnl,updated) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET json=excluded.json,n=excluded.n,wins=excluded.wins,losses=excluded.losses,opens=excluded.opens,pnl=excluded.pnl,updated=excluded.updated', uid, json, arr.length, wins, losses, opens, pnl, now);
+    return arr;
+  }
   async fetch(request) {
     const url = new URL(request.url), path = url.pathname, sql = this.state.storage.sql, now = Date.now();
     const day = new Date().toISOString().slice(0, 10);
@@ -7015,65 +7081,54 @@ export class UserStore {
       const today = new Date().toISOString().slice(0, 10);
       const keys = this.rows('SELECT bk.uid, bk.created, bk.calls, u.username, u.email FROM botkeys bk LEFT JOIN users u ON u.id=bk.uid ORDER BY bk.calls DESC LIMIT 200');
       const use = this.rows('SELECT uid, day, ep, n, last FROM botuse WHERE day>=? ORDER BY day DESC', cutoff);
-      const openPos = this.rows("SELECT uid, COUNT(*) n FROM botpos WHERE status='open' GROUP BY uid");
+      const openPos = keys.map(k => { const jn = this._loadJournal(k.uid); const n = jn.filter(t => t && t.src === 'bot' && t.status !== 'win' && t.status !== 'loss').length; return { uid: k.uid, n }; }).filter(x => x.n > 0); // bot-opened positions live in the account journal now
       const byEp = this.rows('SELECT ep, COALESCE(SUM(n),0) n FROM botuse WHERE day>=? GROUP BY ep ORDER BY n DESC', cutoff);
       const todayTotal = (this.rows('SELECT COALESCE(SUM(n),0) t FROM botuse WHERE day=?', today)[0] || {}).t || 0;
       const activeToday = (this.rows('SELECT COUNT(DISTINCT uid) c FROM botuse WHERE day=?', today)[0] || {}).c || 0;
       return this.j({ keys, use, openPos, byEp, todayTotal, activeToday, today });
     }
-    if (path === '/botopen') {
-      const uid = String(b.uid || ''), pos = b.pos || {};
-      const openN = this.rows("SELECT COUNT(*) AS n FROM botpos WHERE uid=? AND status='open'", uid)[0];
-      if (openN && openN.n >= 50) return this.j({ error: 'too_many_open', max: 50 });
-      sql.exec('INSERT INTO botpos(id,uid,json,status,ts) VALUES(?,?,?,?,?)', pos.id, uid, JSON.stringify(pos), 'open', now);
-      return this.j({ ok: true, position: pos });
+    if (path === '/botopen') { // Bot API open → written straight into the account's journal (My Trades), same as a manual open
+      const uid = String(b.uid || ''), t = b.t || {};
+      const jn = this._loadJournal(uid);
+      const openN = jn.filter(x => x && x.src === 'bot' && x.status !== 'win' && x.status !== 'loss').length;
+      if (openN >= 50) return this.j({ error: 'too_many_open', max: 50 });
+      this._syncJournal(uid, [t], b.promos);
+      return this.j({ ok: true, position: this._j2bot(t, null) });
     }
     if (path === '/botpositions' || path === '/botclose' || path === '/botcloseall') {
       const uid = String(b.uid || ''), PR = b.prices || {};
-      const liqSweep = (p) => { const live = PR[p.symbol]; if (!(live > 0) || p.status !== 'open') return p;
-        const long = p.side === 'long', dir = long ? 1 : -1;
-        const settle = (px, st) => { let pnl = p.qty * (px - p.entry_price) * dir; if (pnl < -p.margin_usd) pnl = -p.margin_usd; p.status = st; p.exit_price = px; p.pnl_usd = Math.round(pnl * 100) / 100; p.closed_ts = Date.now(); };
-        if (long ? live <= p.liq_price : live >= p.liq_price) { p.status = 'liquidated'; p.exit_price = p.liq_price; p.pnl_usd = -p.margin_usd; p.closed_ts = Date.now(); return p; }
-        if (p.sl != null && (long ? live <= p.sl : live >= p.sl)) { settle(p.sl, 'closed_sl'); return p; }
-        if (p.tp != null && (long ? live >= p.tp : live <= p.tp)) { settle(p.tp, 'closed_tp'); return p; }
-        return p; };
-      const mark = (p) => { const live = PR[p.symbol]; if (p.status === 'open' && live > 0) { const dir = p.side === 'long' ? 1 : -1; let pnl = p.qty * (live - p.entry_price) * dir; if (pnl < -p.margin_usd) pnl = -p.margin_usd; p.mark_price = live; p.unrealized_pnl_usd = Math.round(pnl * 100) / 100; } return p; };
+      const isOpen = (t) => t && t.status !== 'win' && t.status !== 'loss';
+      // server-side SL/TP/liq sweep for BOT-opened trades (bots aren't always online). Returns a CLOSED copy, or null. App trades are handled by the UI.
+      const sweep = (t) => { if (!isOpen(t) || t.src !== 'bot') return null; const live = PR[t.sym]; if (!(live > 0)) return null;
+        const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0, qty = +t.qty || 0, entry = +t.entry || 0;
+        if (long ? live <= (+t.liq || 0) : live >= (+t.liq || 0)) return Object.assign({}, t, { status: 'loss', exit: +t.liq || 0, pnl: -margin, closeTs: Date.now(), liquidated: true });
+        const close = (px) => { let pnl = qty * (px - entry) * dir; if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: px, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); };
+        if (t.stop != null && (long ? live <= +t.stop : live >= +t.stop)) return close(+t.stop);
+        if (t.tp != null && (long ? live >= +t.tp : live <= +t.tp)) return close(+t.tp);
+        return null; };
+      const autoClosed = this._loadJournal(uid).map(sweep).filter(Boolean);
+      if (autoClosed.length) this._syncJournal(uid, autoClosed, b.promos);
+      const cur = this._loadJournal(uid);
       if (path === '/botcloseall') {
-        const rows = this.rows("SELECT * FROM botpos WHERE uid=? AND status='open'", uid);
-        const out = [];
-        for (const row of rows) { let p = {}; try { p = JSON.parse(row.json); } catch (e) {}
-          p = liqSweep(p);
-          if (p.status === 'open') { const live = PR[p.symbol]; if (live > 0) { const dir = p.side === 'long' ? 1 : -1; let pnl = p.qty * (live - p.entry_price) * dir; if (pnl < -p.margin_usd) pnl = -p.margin_usd; p.status = 'closed'; p.exit_price = live; p.pnl_usd = Math.round(pnl * 100) / 100; p.closed_ts = Date.now(); } }
-          sql.exec('UPDATE botpos SET json=?, status=? WHERE id=?', JSON.stringify(p), p.status, p.id); out.push(p); }
-        return this.j({ ok: true, closed: out.filter(p => p.status !== 'open').length, positions: out });
+        const closes = cur.filter(t => isOpen(t) && t.src === 'bot').map(t => { const live = PR[t.sym]; if (!(live > 0)) return null; const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0; let pnl = (+t.qty || 0) * (live - (+t.entry || 0)) * dir; if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); }).filter(Boolean);
+        if (closes.length) this._syncJournal(uid, closes, b.promos);
+        return this.j({ ok: true, closed: closes.length, positions: closes.map(t => this._j2bot(t, null)) });
       }
       if (path === '/botclose') {
-        const row = this.rows('SELECT * FROM botpos WHERE id=? AND uid=?', String(b.id || ''), uid)[0];
-        if (!row) return this.j({ error: 'not_found' });
-        let p = {}; try { p = JSON.parse(row.json); } catch (e) {}
-        p = liqSweep(p);
-        if (p.status !== 'open') { sql.exec('UPDATE botpos SET json=?, status=? WHERE id=?', JSON.stringify(p), p.status, p.id); return this.j({ error: 'already_closed', position: p }); }
-        const live = PR[p.symbol]; if (!(live > 0)) return this.j({ error: 'no_price' });
-        const pct = Math.min(100, Math.max(1, +b.pct || 100)) / 100, dir = p.side === 'long' ? 1 : -1;
-        if (pct >= 1) {
-          let pnl = p.qty * (live - p.entry_price) * dir; if (pnl < -p.margin_usd) pnl = -p.margin_usd;
-          p.status = 'closed'; p.exit_price = live; p.pnl_usd = Math.round(pnl * 100) / 100; p.closed_ts = Date.now();
-          sql.exec('UPDATE botpos SET json=?, status=? WHERE id=?', JSON.stringify(p), 'closed', p.id);
-          return this.j({ ok: true, position: p });
-        }
-        const part = JSON.parse(JSON.stringify(p));
-        part.id = p.id + 'p' + Date.now().toString(36);
-        part.qty = p.qty * pct; part.margin_usd = Math.round(p.margin_usd * pct * 100) / 100; part.partial_pct = Math.round(pct * 100);
-        let ppnl = part.qty * (live - p.entry_price) * dir; if (ppnl < -part.margin_usd) ppnl = -part.margin_usd;
-        part.status = 'closed'; part.exit_price = live; part.pnl_usd = Math.round(ppnl * 100) / 100; part.closed_ts = Date.now();
-        p.qty = p.qty * (1 - pct); p.margin_usd = Math.round(p.margin_usd * (1 - pct) * 100) / 100;
-        sql.exec('UPDATE botpos SET json=? WHERE id=?', JSON.stringify(p), p.id);
-        sql.exec('INSERT INTO botpos(id,uid,json,status,ts) VALUES(?,?,?,?,?)', part.id, uid, JSON.stringify(part), 'closed', now);
-        return this.j({ ok: true, closed: part, remaining: p });
+        const t = cur.filter(x => String(x.id) === String(b.id || ''))[0];
+        if (!t) return this.j({ error: 'not_found' });
+        if (!isOpen(t)) return this.j({ error: 'already_closed', position: this._j2bot(t, null) });
+        const live = PR[t.sym]; if (!(live > 0)) return this.j({ error: 'no_price' });
+        const pct = Math.min(100, Math.max(1, +b.pct || 100)) / 100, long = t.side !== 'short', dir = long ? 1 : -1, entry = +t.entry || 0;
+        if (pct >= 1) { let pnl = (+t.qty || 0) * (live - entry) * dir; const margin = +t.margin || 0; if (pnl < -margin) pnl = -margin; const closed = Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); this._syncJournal(uid, [closed], b.promos); return this.j({ ok: true, position: this._j2bot(closed, null) }); }
+        const part = Object.assign({}, t); part.id = t.id + 'p' + Date.now().toString(36); part.qty = (+t.qty || 0) * pct; part.margin = Math.round((+t.margin || 0) * pct * 100) / 100; part.partial = Math.round(pct * 100);
+        let ppnl = part.qty * (live - entry) * dir; if (ppnl < -part.margin) ppnl = -part.margin; part.status = ppnl >= 0 ? 'win' : 'loss'; part.exit = live; part.pnl = Math.round(ppnl * 100) / 100; part.closeTs = Date.now();
+        const rem = Object.assign({}, t, { qty: (+t.qty || 0) * (1 - pct), margin: Math.round((+t.margin || 0) * (1 - pct) * 100) / 100 });
+        this._syncJournal(uid, [rem, part], b.promos);
+        return this.j({ ok: true, closed: this._j2bot(part, null), remaining: this._j2bot(rem, live) });
       }
-      const rows = this.rows('SELECT * FROM botpos WHERE uid=? ORDER BY ts DESC LIMIT 100', uid);
-      const out = rows.map(r => { let p = {}; try { p = JSON.parse(r.json); } catch (e) {} const before = p.status; p = liqSweep(p); if (p.status !== before) sql.exec('UPDATE botpos SET json=?, status=? WHERE id=?', JSON.stringify(p), p.status, p.id); return mark(p); });
-      return this.j({ positions: out });
+      cur.sort((a, c) => ((+c.closeTs || +c.ts || 0) - (+a.closeTs || +a.ts || 0)));
+      return this.j({ positions: cur.slice(0, 100).map(t => this._j2bot(t, PR[t.sym])) });
     }
     if (path === '/track') { // worker forwards a signed-in user's pageview/event here (best-effort)
       const uid = String(b.uid || ''); if (!uid) return this.j({ ok: false });
@@ -7361,79 +7416,7 @@ export class UserStore {
     if (path === '/trades') { // signed-in user's paper-trade journal sync — MERGE with the stored set (union by trade id) so a stale device/browser can't wipe trades synced from another. A blind full-replace caused leaderboard entries to flicker on/off as two devices took turns overwriting each other.
       const uid = String(b.uid || ''); if (!uid) return this.j({ ok: false });
       if (!this.rows('SELECT id FROM users WHERE id=?', uid)[0]) return this.j({ ok: false });
-      const incoming = Array.isArray(b.journal) ? b.journal : [];
-      let stored = []; try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) stored = JSON.parse(r.json) || []; } catch (e) {}
-      const byId = new Map();
-      const put = (e) => { if (!e || typeof e !== 'object') return; const id = String(e.id || ('_anon' + byId.size)); const prev = byId.get(id); if (!prev) { byId.set(id, e); return; } const prevClosed = prev.status === 'win' || prev.status === 'loss', curClosed = e.status === 'win' || e.status === 'loss';
-        if (curClosed && !prevClosed) { byId.set(id, e); return; }   // a CLOSE always beats an open
-        if (!curClosed && prevClosed) return;                        // never let a stale 'open' overwrite a stored close
-        if (curClosed && prevClosed) { byId.set(id, e); return; }    // both closed → idempotent, incoming wins
-        // both OPEN, same id: keep the MORE-reduced copy (partial closes only shrink qty) so a stale device that hasn't
-        // pulled can't roll a partial-close back to full size. Incoming with MORE qty = older state → keep prev.
-        const _pq = +prev.qty, _cq = +e.qty; if (isFinite(_pq) && isFinite(_cq) && _cq > _pq) return; byId.set(id, e); };
-      stored.forEach(put); incoming.forEach(put);                  // incoming applied last → wins same-state ties; stored-only trades are kept (anti-clobber)
-      let arr = Array.from(byId.values());
-      arr.sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));
-      // Trim NEVER touches OPEN positions. The old oldest-first trim sorted opens by their open-ts,
-      // so a burst of new trades silently guillotined week-old OPEN positions out of the blob
-      // (2026-07-03: 5 open AIGENSYN shorts vanished this way after a 23-trade burst). Now: opens are
-      // always kept; only CLOSED trades compete for the 100-row / 60KB budget, oldest dropped first.
-      const isOpen = (e) => e && e.status !== 'win' && e.status !== 'loss';
-      const opensArr = arr.filter(isOpen);
-      let closed = arr.filter((e) => !isOpen(e));
-      const CAP = 100;
-      // NEVER trim the user's best few winning trades. A trade-spam burst once guillotined a +24000%-ROE
-      // win (skyfall's HAMSTER long, 2026-07) because the oldest-first trim didn't consider ROE. Protect the
-      // top-3 positive-ROE closed trades by id so they survive both the row cap AND the 60KB size cap.
-      const roeOf = (e) => { const m = +(e && e.margin), p = +(e && e.pnl); return (isFinite(m) && m > 0 && isFinite(p)) ? p / m : -Infinity; };
-      const protIds = new Set(closed.slice().sort((a, c) => roeOf(c) - roeOf(a)).filter((e) => roeOf(e) > 0).slice(0, 3).map((e) => String(e.id)));
-      const isProt = (e) => protIds.has(String(e && e.id));
-      if (opensArr.length + closed.length > CAP) {
-        const prot = closed.filter(isProt); let rest = closed.filter((e) => !isProt(e));
-        const room = Math.max(0, CAP - opensArr.length - prot.length);
-        if (room <= 0) rest = []; else if (rest.length > room) rest = rest.slice(-room); // keep most-recent non-protected (guard room=0: rest.slice(-0) would keep EVERYTHING)
-        closed = prot.concat(rest);
-      }
-      arr = opensArr.concat(closed).sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));
-      let json = JSON.stringify(arr);
-      // 60KB size cap: drop oldest NON-protected closed trades 5 at a time (protected best wins are untouchable)
-      while (json.length > 60000 && closed.filter((e) => !isProt(e)).length > 0) {
-        closed = closed.filter(isProt).concat(closed.filter((e) => !isProt(e)).slice(5));
-        arr = opensArr.concat(closed).sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));
-        json = JSON.stringify(arr);
-      }
-      let wins = 0, losses = 0, opens = 0, pnl = 0;
-      arr.forEach(function (e) { const st = e && e.status; if (st === 'win') wins++; else if (st === 'loss') losses++; else opens++; const p = +(e && e.pnl); if ((st === 'win' || st === 'loss') && isFinite(p)) pnl += p; });
-      // ── trade event log: diff the stored blob vs the merged result → persistent open/close events with REAL pnl
-      try {
-        const oldBy = new Map(); stored.forEach((e) => { if (e && e.id != null) oldBy.set(String(e.id), e); });
-        const isCl = (e) => e && (e.status === 'win' || e.status === 'loss');
-        const evs = [];
-        for (const e of arr) {
-          if (!e || e.id == null) continue;
-          const o9 = oldBy.get(String(e.id));
-          if (!o9) { if (isCl(e)) evs.push(['close', e, +e.closeTs || now]); else evs.push(['open', e, +e.ts || now]); }
-          else if (!isCl(o9) && isCl(e)) evs.push(['close', e, +e.closeTs || now]);
-          else if (!isCl(o9) && !isCl(e)) { const q0 = +o9.qty, q1 = +e.qty; if (isFinite(q0) && isFinite(q1) && q1 < q0 * 0.99) evs.push(['trim', e, now]); }
-        }
-        const cut = now - 7 * 86400000; let nIns = 0;
-        for (const ev9 of evs) {
-          const kind = ev9[0], e = ev9[1], ts9 = ev9[2];
-          if (ts9 < cut || nIns >= 20) continue;
-          const m = +e.margin || 0; if (!(m > 0) || m > 100000) continue;
-          const pv = (kind !== 'open' && isFinite(+e.pnl)) ? +e.pnl : null;
-          const roe = (pv != null && m > 0) ? pv / m * 100 : null;
-          const liq9 = (kind === 'close' && pv != null && pv <= -m * 0.985) ? 1 : 0;
-          sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq) VALUES(?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9);
-          nIns++; try { if (kind === 'close') { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym||'') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym||'') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9)) this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 750, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); }
-            // owner-defined coin promos (passed in from the worker): evaluated at this trade's CLOSE time; best-matching promo grants its XP (winOnly promos require a profit)
-            if (roe != null) { var _pl = Array.isArray(b.promos) ? b.promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
-              for (var _pi = 0; _pi < _pl.length; _pi++) { var _p = _pl[_pi]; if (!_p || _p.enabled === false) continue; if (!(ts9 >= _p.startMs && ts9 < _p.endMs && _p.endMs > _p.startMs)) continue; if (_p.coins && _p.coins.length && _p.coins.indexOf(_symU) < 0) continue; if (_lv > (+_p.levMax || 1000)) continue; if (roe < (+_p.roeMin || 0)) continue; if (_p.winOnly !== false && !(pv > 0)) continue; if (!_best || (+_p.xp || 0) > (+_best.xp || 0)) _best = _p; }
-              if (_best) this._grantXp(uid, 'trade_promo', +_best.xp || 0, { dayCap: (+_best.dayCap || 700), note: (String(_best.title || 'XP Promo')).slice(0, 30) + ' · ' + _symU + ' ' + Math.round(roe) + '% ROE' }); } } } catch (xe) {}
-        }
-        if (nIns) sql.exec('DELETE FROM tradeev WHERE ts < ?', now - 14 * 86400000);
-      } catch (e9) {}
-      sql.exec('INSERT INTO utrades(user_id,json,n,wins,losses,opens,pnl,updated) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET json=excluded.json,n=excluded.n,wins=excluded.wins,losses=excluded.losses,opens=excluded.opens,pnl=excluded.pnl,updated=excluded.updated', uid, json, arr.length, wins, losses, opens, pnl, now);
+      this._syncJournal(uid, Array.isArray(b.journal) ? b.journal : [], b.promos);
       return this.j({ ok: true });
     }
     if (path === '/gettrades') { // signed-in user's stored journal → a new device pulls it and merges into its local journal (cross-device sync)
