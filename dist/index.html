@@ -351,6 +351,40 @@
   .hh-sub b{color:#e9e7df;}
   .hh-big{font-size:14px;color:#e9e7df;font-weight:700;margin-bottom:2px;}
   .hh-xp{color:#ffb020;font-weight:800;}
+  /* clickable cards */
+  button.hh-card{display:block;width:100%;text-align:left;cursor:pointer;font:inherit;transition:border-color .14s,box-shadow .14s,transform .1s;}
+  button.hh-card:hover{border-color:rgba(255,176,32,.6);box-shadow:0 6px 22px -12px rgba(255,176,32,.6);}
+  button.hh-card:active{transform:translateY(1px);}
+  .hh-more{margin-left:6px;font-size:9px;font-weight:700;letter-spacing:.04em;color:#ffb020;opacity:.85;}
+  /* owner-defined promo cards — cyan theme so they read as distinct campaigns */
+  .hh-promo{border-color:rgba(56,189,248,.32);background:linear-gradient(180deg,rgba(56,189,248,.10),rgba(56,189,248,.02));}
+  .hh-promo .hh-top{color:#57c7f7;}
+  .hh-promo .hh-ic{filter:drop-shadow(0 0 5px rgba(56,189,248,.6));}
+  .hh-promo .hh-state{background:#38bdf8;color:#04121c;}
+  .hh-promo .hh-xp{color:#57c7f7;}
+  .hh-promo.live{border-color:rgba(56,189,248,.75);box-shadow:0 0 26px -10px rgba(56,189,248,.7);}
+  button.hh-promo:hover{border-color:rgba(56,189,248,.7);box-shadow:0 6px 22px -12px rgba(56,189,248,.6);}
+  .hh-promo .hh-more{color:#57c7f7;}
+  /* details modal */
+  .hhm{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(5,7,10,.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+  .hhm[hidden]{display:none;}
+  .hhm-card{position:relative;width:100%;max-width:400px;background:linear-gradient(180deg,#12161d,#0b0e13);border:1px solid #2a3340;border-radius:16px;padding:20px 20px 22px;box-shadow:0 40px 90px -30px rgba(0,0,0,.92);--hc:#ffb020;border-top:3px solid var(--hc);}
+  .hhm-x{position:absolute;top:12px;right:13px;background:none;border:none;color:#6b7480;font-size:19px;line-height:1;cursor:pointer;padding:3px 6px;}
+  .hhm-x:hover{color:#e9e7df;}
+  .hhm-h{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-weight:800;font-size:16px;color:var(--hc);letter-spacing:.01em;}
+  .hhm-badge{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:.08em;color:#04121c;background:var(--hc);border-radius:20px;padding:2px 9px;}
+  .hhm-count{font-family:'Space Mono',monospace;font-weight:800;font-size:15px;color:#fff;margin:11px 0 3px;font-variant-numeric:tabular-nums;}
+  .hhm-count small{color:var(--dim);font-weight:600;font-size:11px;}
+  .hhm-rows{margin:14px 0 4px;display:flex;flex-direction:column;gap:1px;border:1px solid #232a34;border-radius:11px;overflow:hidden;}
+  .hhm-row{display:flex;align-items:center;gap:10px;padding:10px 13px;background:rgba(255,255,255,.015);font-size:12.5px;}
+  .hhm-row .k{color:var(--dim);flex:0 0 92px;}
+  .hhm-row .v{color:#e9e7df;font-weight:700;font-family:'Space Mono',monospace;}
+  .hhm-note{font-size:11.5px;color:var(--dim);line-height:1.5;margin:12px 0 15px;}
+  .hhm-note b{color:#e9e7df;}
+  .hhm-cta{display:block;text-align:center;background:var(--hc);color:#04121c;font-family:'Space Mono',monospace;font-weight:800;font-size:13px;text-decoration:none;border-radius:11px;padding:12px;letter-spacing:.02em;}
+  .hhm-cta:hover{filter:brightness(1.08);}
+  .hhm-chips{display:flex;flex-wrap:wrap;gap:5px;}
+  .hhm-chips span{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#e9e7df;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:3px 8px;}
   .lb-cta{margin-top:auto;padding-top:18px;}
   .lb-cta .btn-l{display:inline-block;font-size:14px;padding:12px 20px;}
   .lb-cta .note{display:block;margin-top:9px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--faint);}
@@ -782,15 +816,12 @@
       </div>
       <div class="lb-reset" id="lbReset">Resets Monday 00:00 UTC</div>
       <div class="hh-wrap" id="hhWrap" hidden>
-        <div class="hh-card hh-when" id="hhWhenCard">
-          <div class="hh-top"><span class="hh-ic">⚡</span>XP Happy Hour<span class="hh-state" id="hhState">DAILY</span></div>
+        <button type="button" class="hh-card hh-when" id="hhWhenCard" aria-haspopup="dialog">
+          <div class="hh-top"><span class="hh-ic">⚡</span>XP Happy Hour<span class="hh-state" id="hhState">DAILY</span><span class="hh-more">Details ›</span></div>
           <div class="hh-count" id="hhCount">—</div>
-          <div class="hh-sub">Every day · <b>18:00–19:00 UTC</b></div>
-        </div>
-        <div class="hh-card hh-what">
-          <div class="hh-big"><b class="hh-xp" id="hhXpRange">150 XP</b> per trade</div>
-          <div class="hh-sub">for a <b>winning trade over <span id="hhRoe">200</span>% ROE</b> · max <b><span id="hhLev">100</span>× leverage</b></div>
-        </div>
+          <div class="hh-sub">Every day · <b>18:00–19:00 UTC</b> · tap for details</div>
+        </button>
+        <div id="hhPromos"></div>
       </div>
       <div class="lb-cta"><a class="btn-l" href="/paper-trade">Open Paper Trade →</a><span class="note" id="lbYou">Sign in (free) and your best trade enters automatically.</span></div>
     </div>
@@ -1068,27 +1099,56 @@
   function lbYou(){var y=document.getElementById('lbYou');if(!y)return;var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();y.textContent=me?('You are in as @'+((me.username||me.email||'you').split('@')[0])+' — close a winning trade to climb.'):'Sign in (free) and your best trade enters automatically.';}
   window.addEventListener('mp-auth-change',lbYou);setTimeout(lbYou,600);
 
-  // ---- XP Happy Hour card + countdown ----
+  // ---- XP Happy Hour + owner-defined XP promos (cards + countdowns + details modal) ----
   (function(){
     var wrap=document.getElementById('hhWrap');if(!wrap)return;
-    var cnt=document.getElementById('hhCount'),state=document.getElementById('hhState'),whenCard=document.getElementById('hhWhenCard');
-    var cfg={enabled:true,hourUTC:18,durMin:60,roeMin:200,levMax:100,xpMin:100,xpMax:200},off=0;
+    var cnt=document.getElementById('hhCount'),state=document.getElementById('hhState'),whenCard=document.getElementById('hhWhenCard'),promosEl=document.getElementById('hhPromos');
+    var cfg={enabled:true,hourUTC:18,durMin:60,roeMin:200,levMax:100,xp:150},promos=[],off=0;
+    function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
     function fmt(ms){if(ms<0)ms=0;var s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),ss=s%60;return (h>0?h+'h ':'')+m+'m '+ss+'s';}
+    function coinsTxt(c){return (c&&c.length)?c.join(' · '):'Any coin';}
+    // ---- details modal ----
+    var modal=null;
+    function ensureModal(){if(modal)return modal;modal=document.createElement('div');modal.className='hhm';modal.hidden=true;modal.innerHTML='<div class="hhm-card"><button type="button" class="hhm-x" aria-label="Close">✕</button><div class="hhm-body"></div></div>';document.body.appendChild(modal);modal.addEventListener('click',function(e){if(e.target===modal||e.target.closest('.hhm-x'))closeModal();});document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});return modal;}
+    function closeModal(){if(modal)modal.hidden=true;}
+    function row(k,v){return '<div class="hhm-row"><span class="k">'+k+'</span><span class="v">'+v+'</span></div>';}
+    function openHH(){ensureModal();var now=Date.now()+off,d=new Date(now);var ts=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),cfg.hourUTC,0,0),dur=(cfg.durMin||60)*60000;var live=now>=ts&&now<ts+dur;var count=live?('Live now · ends in '+fmt(ts+dur-now)):('Starts in '+fmt((now<ts?ts:ts+86400000)-now));
+      var h2=String(cfg.hourUTC).padStart(2,'0')+':00', e2=String((cfg.hourUTC+Math.floor((cfg.durMin||60)/60))%24).padStart(2,'0')+':'+String((cfg.durMin||60)%60).padStart(2,'0');
+      modal.querySelector('.hhm-card').style.setProperty('--hc','#ffb020');
+      modal.querySelector('.hhm-body').innerHTML='<div class="hhm-h"><span>⚡</span>XP Happy Hour<span class="hhm-badge">'+(live?'LIVE':'DAILY')+'</span></div>'
+        +'<div class="hhm-count">'+count+'</div>'
+        +'<div class="hhm-rows">'+row('When','Every day · '+h2+'–'+e2+' UTC')+row('Reward','+'+(cfg.xp||150)+' XP / trade')+row('Condition','Winning trade ≥ '+cfg.roeMin+'% ROE')+row('Max leverage',(cfg.levMax||100)+'×')+'</div>'
+        +'<div class="hhm-note">Close a <b>winning paper trade</b> with at least <b>'+cfg.roeMin+'% ROE</b> at <b>'+(cfg.levMax||100)+'× leverage or less</b> during the daily window and you earn <b>+'+(cfg.xp||150)+' bonus XP</b> on top of the usual trade XP. Bonus applies to the trade’s <b>close time</b>.</div>'
+        +'<a class="hhm-cta" href="/paper-trade">Open Paper Trade →</a>';
+      modal.hidden=false;}
+    function openPromo(p){ensureModal();var now=Date.now()+off;var live=now>=p.startMs&&now<p.endMs;var count=live?('Live now · ends in '+fmt(p.endMs-now)):('Starts in '+fmt(p.startMs-now));
+      var endD=new Date(p.endMs);var endTxt=endD.toISOString().slice(5,16).replace('T',' ')+' UTC';
+      modal.querySelector('.hhm-card').style.setProperty('--hc','#38bdf8');
+      modal.querySelector('.hhm-body').innerHTML='<div class="hhm-h"><span>⚡</span>'+esc(p.title)+'<span class="hhm-badge">'+(live?'LIVE':'SOON')+'</span></div>'
+        +'<div class="hhm-count">'+count+' <small>· ends '+endTxt+'</small></div>'
+        +'<div class="hhm-rows">'+row('Coins',(p.coins&&p.coins.length)?'<span class="hhm-chips">'+p.coins.map(function(c){return '<span>'+esc(c)+'</span>';}).join('')+'</span>':'Any coin')+row('Reward','+'+p.xp+' XP / trade')+row('Condition',(p.winOnly!==false?'Winning trade':'Any trade')+' ≥ '+p.roeMin+'% ROE')+row('Max leverage',p.levMax+'×')+'</div>'
+        +'<div class="hhm-note">Close a '+(p.winOnly!==false?'<b>winning</b> ':'')+'paper trade on <b>'+coinsTxt(p.coins)+'</b> with at least <b>'+p.roeMin+'% ROE</b> at <b>'+p.levMax+'× leverage or less</b> before it ends, and earn <b>+'+p.xp+' bonus XP</b> per qualifying trade.</div>'
+        +'<a class="hhm-cta" href="/paper-trade">Open Paper Trade →</a>';
+      modal.hidden=false;}
+    if(whenCard)whenCard.addEventListener('click',openHH);
+    // ---- render promo cards ----
+    function renderPromos(){if(!promosEl)return;promosEl.innerHTML=promos.map(function(p){return '<button type="button" class="hh-card hh-promo" data-pid="'+esc(p.id)+'"><div class="hh-top"><span class="hh-ic">⚡</span>'+esc(p.title)+'<span class="hh-state">'+(p.active?'LIVE':'SOON')+'</span><span class="hh-more">Details ›</span></div><div class="hh-count promo-count">—</div><div class="hh-sub">'+esc(coinsTxt(p.coins))+' · '+(p.winOnly!==false?'WIN ':'')+'over <b>'+p.roeMin+'% ROE</b> · max <b>'+p.levMax+'×</b> · <b>+'+p.xp+' XP</b></div></button>';}).join('');
+      Array.prototype.forEach.call(promosEl.querySelectorAll('[data-pid]'),function(btn){btn.addEventListener('click',function(){var p=promos.filter(function(x){return x.id===btn.getAttribute('data-pid');})[0];if(p)openPromo(p);});});}
     function tick(){
-      if(!cfg||!cfg.enabled){wrap.hidden=true;return;}
+      var anyHH=cfg&&cfg.enabled, now=Date.now()+off;
+      // hide the whole block only if neither HH nor any promo is showable
+      var shownPromos=promos.filter(function(p){return p.endMs>now;});
+      if(!anyHH&&!shownPromos.length){wrap.hidden=true;return;}
       wrap.hidden=false;
-      var now=Date.now()+off,d=new Date(now);
-      var todayStart=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),cfg.hourUTC,0,0),dur=cfg.durMin*60000;
-      var live=now>=todayStart&&now<todayStart+dur,nextStart=now<todayStart?todayStart:todayStart+86400000;
-      if(live){whenCard.classList.add('live');if(state)state.textContent='LIVE';cnt.textContent='Live · ends in '+fmt(todayStart+dur-now);}
-      else{whenCard.classList.remove('live');if(state)state.textContent='DAILY';cnt.textContent='Starts in '+fmt(nextStart-now);}
+      // HH card
+      if(whenCard){whenCard.style.display=anyHH?'':'none';if(anyHH){var d=new Date(now),ts=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),cfg.hourUTC,0,0),dur=(cfg.durMin||60)*60000;var live=now>=ts&&now<ts+dur,nextStart=now<ts?ts:ts+86400000;if(live){whenCard.classList.add('live');if(state)state.textContent='LIVE';cnt.textContent='Live · ends in '+fmt(ts+dur-now);}else{whenCard.classList.remove('live');if(state)state.textContent='DAILY';cnt.textContent='Starts in '+fmt(nextStart-now);}}}
+      // promo card countdowns
+      if(promosEl){Array.prototype.forEach.call(promosEl.querySelectorAll('.hh-promo'),function(card){var pid=card.getAttribute('data-pid'),p=promos.filter(function(x){return x.id===pid;})[0];if(!p)return;var cc=card.querySelector('.promo-count'),st=card.querySelector('.hh-state');var pl=now>=p.startMs&&now<p.endMs;if(now>=p.endMs){card.style.display='none';return;}card.style.display='';if(pl){card.classList.add('live');if(st)st.textContent='LIVE';if(cc)cc.textContent='+'+p.xp+' XP · ends in '+fmt(p.endMs-now);}else{card.classList.remove('live');if(st)st.textContent='SOON';if(cc)cc.textContent='+'+p.xp+' XP · starts in '+fmt(p.startMs-now);}});}
     }
     fetch('/api/happyhour').then(function(r){return r.json();}).then(function(d){
       if(d&&typeof d.hourUTC==='number'){cfg=d;if(d.now)off=d.now-Date.now();}
-      var xr=document.getElementById('hhXpRange');if(xr)xr.textContent=(cfg.xp||150)+' XP';
-      var rr=document.getElementById('hhRoe');if(rr)rr.textContent=cfg.roeMin;
-      var lv=document.getElementById('hhLev');if(lv)lv.textContent=cfg.levMax;
-      tick();
+      promos=(d&&Array.isArray(d.promos))?d.promos:[];
+      renderPromos();tick();
     }).catch(function(){tick();});
     setInterval(tick,1000);
   })();
