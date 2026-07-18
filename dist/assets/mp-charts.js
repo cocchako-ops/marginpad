@@ -773,7 +773,7 @@
     var _si=w.el.querySelector('.cwin-sym');
     _si.addEventListener('change',function(){var v=String(this.value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!v){this.value=w.sym;return;}this.value=v;if(v===w.sym)return;w.sym=v;w.mtOn=false;clearDraw();importTrades(w);updateMTBtn(w);updateNotesBtn(w);loadData(w,true);savePersist();});
     _si.addEventListener('mousedown',function(e){e.stopPropagation();});
-    _si.addEventListener('click',function(e){e.stopPropagation();openSymMenu(this,w);});
+    _si.addEventListener('click',function(e){e.stopPropagation();if(symMenuEl&&!symMenuEl.hidden&&symMenuInput===this){symMenuEl.hidden=true;return;}openSymMenu(this,w);}); // click the picker again to close it (toggle)
     if(window.mpLoadTokens)window.mpLoadTokens(function(){if(symMenuEl&&!symMenuEl.hidden)renderSymList();});
     w.el.querySelector('.cwin-tf').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;this.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');w.tf=b.getAttribute('data-tf');clearDraw();loadData(w,true);savePersist();});
     var indBtn=w.el.querySelector('.cwin-ind-btn');if(indBtn)indBtn.addEventListener('click',function(e){e.stopPropagation();openIndMenu(w,indBtn);});updateIndN(w);
@@ -1067,7 +1067,7 @@
       try{var dcv=document.createElement('canvas');dcv.className='cwin-draw';host.appendChild(dcv);var tw=el(toolsHtml);if(tw)host.appendChild(tw);setupDraw(mw,host);wireDrawTools(mw,wrap.querySelector('.cwin-draw-tg'),tw);}catch(e){}
       loadData(mw,true); indN_(); updMT();
     });
-    symInput.addEventListener('click',function(){openSymMenu(symInput,mw);});
+    symInput.addEventListener('click',function(){if(symMenuEl&&!symMenuEl.hidden&&symMenuInput===symInput){symMenuEl.hidden=true;return;}openSymMenu(symInput,mw);}); // toggle: same click closes it
     function clearDrawMW(){if(mw.dr){mw.dr.shapes=[];mw.dr.cur=null;mw.dr.sel=null;if(mw.dr.redraw)mw.dr.redraw();}}
     symInput.addEventListener('change',function(){var v=String(symInput.value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!v)return;mw.sym=v;symInput.value=v;tradeBtn.textContent='Trade '+v+' →';mw.mtOn=false;clearDrawMW();loadData(mw,true);try{importTrades(mw);}catch(e){}updMT();persist();});
     tfWrap.addEventListener('click',function(e){var b=e.target.closest('[data-mtf]');if(!b)return;Array.prototype.forEach.call(tfWrap.querySelectorAll('button'),function(x){x.classList.remove('on');});b.classList.add('on');mw.tf=b.getAttribute('data-mtf');clearDrawMW();loadData(mw,true);persist();});
