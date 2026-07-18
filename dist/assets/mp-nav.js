@@ -444,3 +444,19 @@
     document.addEventListener('visibilitychange', function () { if (!document.hidden) hb(); });
   } catch (e) {}
 })();
+
+/* Universal event tracker (2026-07-18): home.js defines a richer window.__mpTrack on the app-shell pages, but the
+   bento homepage + every standalone page (which load mp-nav.js, NOT home.js) had no __mpTrack — so meaningful
+   actions there (chat, sign-in, community, search…) never reached the live activity feed. This lightweight
+   fallback closes that hole. Only defines if home.js hasn't already. */
+(function () {
+  try {
+    if (window.__mpTrack) return;
+    window.__mpTrack = function (t, e) {
+      try {
+        var u = '/api/track?t=' + encodeURIComponent(t) + (e ? '&e=' + encodeURIComponent(String(e).slice(0, 48)) : '') + '&p=' + encodeURIComponent(location.pathname);
+        if (navigator.sendBeacon) navigator.sendBeacon(u); else (new Image()).src = u;
+      } catch (x) {}
+    };
+  } catch (e) {}
+})();

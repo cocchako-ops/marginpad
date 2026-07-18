@@ -181,7 +181,8 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var sym=(e.sym||'Trade'),side=String(e.side||'').toUpperCase();
     buzz(kind==='liq'?[50,45,50,45,95]:(kind==='tp'?[18,55,18]:[35]));   // distinct haptic per outcome (liq = strongest)
     var pnl=(e.pnl!=null&&isFinite(e.pnl))?((e.pnl>=0?'+$':'−$')+Math.abs(e.pnl).toFixed(2)):'';
-    try{if('Notification'in window&&Notification.permission==='granted')new Notification(sym+' '+side+' — '+t,{body:'Closed at '+fp(e.exit)+(pnl?' · PnL '+pnl:''),tag:'mp-'+e.id});}catch(_){}}
+    try{if('Notification'in window&&Notification.permission==='granted')new Notification(sym+' '+side+' — '+t,{body:'Closed at '+fp(e.exit)+(pnl?' · PnL '+pnl:''),tag:'mp-'+e.id});}catch(_){}
+    try{window.__mpTrack&&window.__mpTrack('close',sym+(kind==='liq'?' — liquidated':kind==='tp'?' — take-profit':' — stop-loss')+(pnl?' '+pnl:''));}catch(_){}}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
@@ -1171,7 +1172,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   closeBtn.addEventListener('click',function(){box.hidden=true;fab.hidden=false;document.body.classList.remove('chat-open');});
   if(signinBtn)signinBtn.addEventListener('click',function(){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}});
   window.addEventListener('mp-auth-change',function(){if(!box.hidden&&!joined){var u=meUser();if(u){user=u;showChat();}}});
-  form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;if(/^\/(leaderboard|lb|leaders)\b/i.test(t)){input.value='';showLeaderboard();return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));input.value='';});
+  form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;if(/^\/(leaderboard|lb|leaders)\b/i.test(t)){input.value='';showLeaderboard();return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));try{window.__mpTrack&&window.__mpTrack('chat','sent');}catch(_){}input.value='';});
 })();
 
 ;/* ══════════ inline block from app/index.html line 3884 ══════════ */
@@ -2425,7 +2426,7 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
   function fm(x){x=+x||0;var n=x<0;x=Math.abs(x);return (n?'-$':'$')+x.toLocaleString('en-US',{maximumFractionDigits:2});}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   var ov=null,pct=100,curId=null,after=null,syncT=null;
-  function fullClose(e,m){e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);window._mpSltpHidden=true;try{if(window.mpHidePlanLines)window.mpHidePlanLines();}catch(_){}}
+  function fullClose(e,m){e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);window._mpSltpHidden=true;try{if(window.mpHidePlanLines)window.mpHidePlanLines();}catch(_){}try{var _pn=(e.pnl!=null&&isFinite(e.pnl))?((e.pnl>=0?' +$':' −$')+Math.abs(e.pnl).toFixed(2)):'';window.__mpTrack&&window.__mpTrack('close',(e.sym||'trade')+' — '+(e.status==='win'?'win':'loss')+_pn);}catch(_){}}
   function build(){ if(ov)return;
     ov=document.createElement('div');ov.className='mpcs';ov.innerHTML=
       '<div class="mpcs-card" role="dialog" aria-label="Close position">'
@@ -2484,6 +2485,7 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
       if(m.pnl!=null)pnl=m.pnl*f;
       part.status=pnl>=0?'win':'loss';part.exit=m.live;part.closeTs=Date.now();part.pnl=pnl;part.partial=Math.round(f*100);
       d.push(part);
+      try{window.__mpTrack&&window.__mpTrack('close',(e.sym||'trade')+' — closed '+part.partial+'% '+(pnl>=0?'+$':'−$')+Math.abs(pnl).toFixed(2));}catch(_){}
     }
     jstore(d);hide();
     var _tear=(f>=1)?mpcsCaptureTear(curId):null; // desktop full-close receipt tear

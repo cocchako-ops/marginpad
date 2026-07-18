@@ -104,7 +104,7 @@
   modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) close(); });
 
-  function open() { modal.hidden = false; render(); }
+  function open() { modal.hidden = false; render(); if (!ME) { try { window.__mpTrack && window.__mpTrack('signin', 'opened'); } catch (e) {} } }
   function close() { modal.hidden = true; }
   function setMsg(t, kind) { var m = bodyEl.querySelector('.mpa-msg'); if (m) { m.textContent = t; m.className = 'mpa-msg ' + (kind || ''); } }
 

@@ -129,7 +129,8 @@
     if(f){var k=f.getAttribute('data-filter');filterKey=(filterKey===k)?'all':k;this.querySelectorAll('[data-filter]').forEach(function(x){x.classList.toggle('on',x===f&&filterKey!=='all');});render();return;}
     var b=e.target.closest('[data-sort]');if(!b)return;sortKey=b.getAttribute('data-sort');this.querySelectorAll('[data-sort]').forEach(function(x){x.classList.toggle('on',x===b);});render();});
   var sIn=document.getElementById('scrSearch');
-  if(sIn)sIn.addEventListener('input',function(){query=(sIn.value||'').trim().toUpperCase();render();});
+  if(sIn)sIn.addEventListener('input',function(){query=(sIn.value||'').trim().toUpperCase();render();
+    clearTimeout(window.__scrSrchT);window.__scrSrchT=setTimeout(function(){if(query&&query.length>=2){try{window.__mpTrack&&window.__mpTrack('search',query+' (screener)');}catch(_){}}},1300);});
   function buildSheet(){sheet=document.createElement('div');sheet.className='scr-sheet';
     sheet.innerHTML='<div class="scr-sheet-bd"></div><div class="scr-sheet-card"><button type="button" class="scr-sheet-x" aria-label="Close">✕</button><div class="scr-sheet-h"><b id="scrSheetSym">—</b><span id="scrSheetPx"></span></div><div id="scrAn"></div><div id="scrLive"></div><div id="scrActs" style="margin:12px 0"></div>'
       +'<div class="scr-exch" id="scrExch"></div></div>';
