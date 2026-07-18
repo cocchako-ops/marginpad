@@ -1256,7 +1256,7 @@ async function evPush(env, request, type, label, pg) {
     const u = request ? (getCookie(request, 'mp_un') || '').slice(0, 24) : '';
     let log = []; try { log = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
     log.unshift({ t: type, e: String(label || '').slice(0, 48), cc, v: 'srv', u, p: pg || '', d: deviceOf((request && request.headers.get('user-agent')) || ''), ts: Date.now() });
-    if (log.length > 80) log = log.slice(0, 80);
+    { const _cut = Date.now() - 10800000; log = log.filter(e => (e.ts || 0) > _cut).slice(0, 600); } // keep ~3h (cap 600), matches handleTrack
     await env.STATS.put('evlog', JSON.stringify(log), { expirationTtl: 86400 });
     try { const k = 'ev:' + type; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1)); } catch (e) {}
     try { if (env.AE) env.AE.writeDataPoint({ indexes: [type], blobs: ['event', type, String(label || '').slice(0, 90), cc, pg || ''], doubles: [1] }); } catch (e) {}
@@ -1354,7 +1354,7 @@ async function handleTrack(url, request, env, ctx) {
         const fromPath = (p.get('f') || '').replace(/[^a-zA-Z0-9/_?=&#:. -]/g, '').slice(0, 44);
         let vlog = []; try { vlog = JSON.parse(await env.STATS.get('pvlog') || '[]'); } catch (e) {}
         vlog.unshift({ v: vid.slice(0, 6), cc: cc || '', u: (getCookie(request, 'mp_un') || '').slice(0, 24), s: src, p: pth0.slice(0, 44), f: fromPath, d: deviceOf(ua), ts: Date.now() });
-        if (vlog.length > 150) vlog = vlog.slice(0, 150);
+        { const _cut = Date.now() - 10800000; vlog = vlog.filter(e => (e.ts || 0) > _cut).slice(0, 400); } // keep ~3h of pageviews (cap 400) to match the activity ring
         await env.STATS.put('pvlog', JSON.stringify(vlog), { expirationTtl: 86400 });
       } catch (e) {}
     }
@@ -1384,7 +1384,7 @@ async function handleTrack(url, request, env, ctx) {
         const cc = (request.cf && request.cf.country) || '';
         let log = []; try { log = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
         log.unshift({ t: type, e: label, cc: cc, v: evVid.slice(0, 6), u: (getCookie(request, 'mp_un') || '').slice(0, 24), p: (p.get('p') || '').slice(0, 48), d: deviceOf(request.headers.get('user-agent') || ''), ts: Date.now() });
-        if (log.length > 80) log = log.slice(0, 80);
+        { const _cut = Date.now() - 10800000; log = log.filter(e => (e.ts || 0) > _cut).slice(0, 600); } // keep ~3h of activity (cap 600) so the feed + journeys span hours, not minutes
         await env.STATS.put('evlog', JSON.stringify(log), { expirationTtl: 86400 });
         if (type === 'exchange') { // money clicks get their OWN ring (no TTL) so the Revenue tab keeps the last 50 regardless of event noise
           try { let mc = []; try { mc = JSON.parse(await env.STATS.get('mclog') || '[]'); } catch (e) {}
@@ -1907,7 +1907,7 @@ async function handleStats(url, env, request, ctx) {
     // chart bez ijednog novog pageview-a (stari 5-min pvlog metod ih je gubio, a bounce-ove drzao predugo).
     try { const om = JSON.parse(await env.STATS.get('onlog') || '{}'); for (const ok3 in om) if (now - om[ok3] < 150000) recent.add(ok3); } catch (e) {}
     pvl.forEach(v => { if (v && v.v && now - v.ts < 150000) recent.add(v.v); });
-    return new Response(JSON.stringify({ online: recent.size, uvToday: uvTod, uvTotal: uvTot, pv: pvTot, aff: affTot, revToday: Math.round(affTod * 0.45), botToday: botTod, pvToday: pvTod2, newToday: newTod, retToday: retTod, affToday: affTod, visitors: pvl.slice(0, 120), feed: evl.slice(0, 80), ts: now }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    return new Response(JSON.stringify({ online: recent.size, uvToday: uvTod, uvTotal: uvTot, pv: pvTot, aff: affTot, revToday: Math.round(affTod * 0.45), botToday: botTod, pvToday: pvTod2, newToday: newTod, retToday: retTod, affToday: affTod, visitors: pvl.slice(0, 300), feed: evl.slice(0, 400), ts: now }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
   }
   // Serve a recent cached render. Each full render does a paginated KV `list`, and the free tier allows only
   // 1000 lists/day — so without this, auto-refresh (every 60s) + manual reloads blow the quota by midday. The
@@ -2100,7 +2100,7 @@ async function handleStats(url, env, request, ctx) {
   const pageShort = pth => { const s = String(pth || '').replace(/^\/[a-z]{2}\//, '/'); if (s === '/' || s === '') return 'the homepage'; let m; if ((m = s.match(/^\/coin\/([a-z0-9]+)\/?$/i))) return m[1].toUpperCase() + ' coin page'; const M = { '/funding/': 'the Funding page', '/liquidations/': 'the Liquidations page', '/long-short/': 'the Long/Short page', '/open-interest/': 'the Open Interest page', '/screener': 'the Screener', '/screener/': 'the Screener', '/paper-trade': 'Paper Trade', '/paper-trade/': 'Paper Trade', '/charts': 'Charts', '/charts/': 'Charts', '/rekt/': 'the Rekt feed', '/rewards/': 'Rewards', '/calculators': 'Calculators', '/calculators/': 'Calculators', '/blog/': 'the Blog' }; if (M[s]) return M[s]; if ((m = s.match(/^\/([a-z0-9-]+)\/?$/i))) return m[1].replace(/-/g, ' ') + ' page'; return s; };
   // turn a raw event into a clear sentence: WHAT they did + WHERE
   const evLine = x => { const where = x.p ? ` <span class="fe-on">on ${esc(pageShort(x.p))}</span>` : ''; const tg = esc(x.e || ''); if (x.t === 'exchange') return `clicked through to <b class="fe-ex">${tg || 'an exchange'}</b>${where} <span class="fe-rev">💰 money click</span>`; if (x.t === 'paper') return `opened a paper trade${tg ? ' <b>' + tg + '</b>' : ''}`; if (x.t === 'close') return `closed a trade <b>${tg || ''}</b>${where}`; if (x.t === 'hotpair') return `opened <b>${tg}</b> from Trending`; if (x.t === 'tool') return `opened ${tg ? '<b>' + tg + '</b> ' : 'a '}tool${where}`; if (x.t === 'chat') return `sent a chat message`; if (x.t === 'signin') return `opened the sign-in form${where}`; if (x.t === 'search') return `searched ${tg ? '<b>' + tg + '</b>' : 'something'}${where}`; if (x.t === 'watch') return `added <b>${tg}</b> to the watchlist`; if (x.t === 'like') return `liked ${tg ? '<b>' + tg + '</b>' : 'a post'}`; if (x.t === 'comment') return `commented on ${tg ? '<b>' + tg + '</b>' : 'a post'}`; if (x.t === 'follow') return `followed ${tg ? '<b>@' + tg + '</b>' : 'a trader'}`; if (x.t === 'save') return `saved ${tg ? '<b>' + tg + '</b>' : 'a post'}`; if (x.t === 'profile') return `viewed ${tg ? '<b>@' + tg + '</b>' : "a trader"}'s profile`; if (x.t === 'ind') return `toggled the <b>${tg || 'chart'}</b> indicator${where}`; if (x.t === 'draw') return `drew on ${tg ? 'the <b>' + tg + '</b> chart' : 'a chart'}`; if (x.t === 'ai') return `asked the AI${tg ? ' about <b>' + tg + '</b>' : ''}`; if (x.t === 'coin') return `opened the <b>${tg || 'coin'}</b> market`; if (x.t === 'sltp') return `set SL/TP on <b>${tg || 'a trade'}</b>`; if (x.t === 'share') return `shared ${tg ? '<b>' + tg + '</b>' : 'something'}`; if (x.t === 'lang') return `switched language to <b>${tg || '?'}</b>`; if (x.t === 'alert') return `set a price alert${tg ? ' on <b>' + tg + '</b>' : ''}`; if (x.t === 'promo') return `submitted a promo post${tg ? ' <b>' + tg + '</b>' : ''}`; if (x.t === 'exsign') return `submitted an exchange sign-up${tg ? ' <b>' + tg + '</b>' : ''}`; if (x.t === 'support') return `sent a support message`; if (x.t === 'push') return `enabled push notifications`; return `${verb(x.t)}${tg ? ' <b>' + tg + '</b>' : ''}${where}`; };
-  const feed = evlog.length ? evlog.map(x => `<div class="fe"><span class="fe-f">${x.u ? '👤' : (flag(x.cc) || '🌐')}</span><span class="fe-t">${x.u ? ('<b>@' + esc(x.u) + '</b> ') : 'A visitor '}${evLine(x)}</span><span class="fe-a">${ago(x.ts)} ago</span></div>`).join('') : '<div class="empty">no activity in the last few minutes</div>';
+  const feed = evlog.length ? evlog.slice(0, 120).map(x => `<div class="fe"><span class="fe-f">${x.u ? '👤' : (flag(x.cc) || '🌐')}</span><span class="fe-t">${x.u ? ('<b>@' + esc(x.u) + '</b> ') : 'A visitor '}${evLine(x)}</span><span class="fe-a">${ago(x.ts)} ago</span></div>`).join('') : '<div class="empty">no activity in the last few minutes</div>';
   // last visitors — who (country) + from which source (referrer), most recent 5
   let pvlog = []; try { pvlog = JSON.parse(await env.STATS.get('pvlog') || '[]'); } catch (e) {}
   const ccName = { US: 'United States', GB: 'UK', DE: 'Germany', FR: 'France', RS: 'Serbia', ES: 'Spain', BR: 'Brazil', RU: 'Russia', TR: 'Turkey', IN: 'India', CN: 'China', JP: 'Japan', KR: 'Korea', NL: 'Netherlands', CA: 'Canada', AU: 'Australia', IT: 'Italy', PL: 'Poland', UA: 'Ukraine', ID: 'Indonesia', VN: 'Vietnam', PH: 'Philippines', NG: 'Nigeria', MX: 'Mexico', AR: 'Argentina', PT: 'Portugal' };
@@ -2211,6 +2211,7 @@ async function handleStats(url, env, request, ctx) {
 .evchips button{font:700 10.5px Consolas,monospace;color:#8fa3c4;background:#0d1017;border:1px solid #232b37;border-radius:20px;padding:4px 11px;cursor:pointer;letter-spacing:.03em;transition:.12s}
 .evchips button:hover{border-color:#3a4657;color:#c9d4e3}.evchips button.on{background:#c2f64a;color:#0a0b0d;border-color:#c2f64a}
 .ev-mini{display:inline-flex;gap:9px;align-items:center;font:700 9.5px Consolas,monospace;letter-spacing:.04em;color:#4a5872}.ev-mini b{color:#8fa3c4}.ev-mini .evm-money b{color:#ffd75a}.ev-mini .evm-on b{color:#2ee6a8}
+#evFeed{max-height:540px}
 .feedcap{font-size:11.5px;color:#5c656f;margin:2px 0 9px;line-height:1.5}.feedcap b{color:#9aa3ad;font-weight:700}.lv{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #232932}.lv:last-child{border-bottom:none}.lv-f{font-size:21px;flex-shrink:0}.lv-b{flex:1;min-width:0}.lv-1{font-size:13.5px;color:#e9e7df;font-weight:600}.lv-dev{font-size:11px;margin-left:3px}.lv-2{font-size:12.5px;color:#9aa3ad;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lv-2 b{color:#c2f64a;font-weight:600}.lv-p{font-family:monospace;color:#c2f64a;font-weight:600}.lv-from{font-family:monospace;color:#9aa3ad}.lv-arr{color:#5c656f;font-weight:700;margin:0 2px}.lv-vid{width:8px;height:8px;border-radius:50%;flex-shrink:0;box-shadow:0 0 6px -1px currentColor}.lv-a{font-family:monospace;color:#5c656f;font-size:11px;white-space:nowrap;flex-shrink:0}.csv{color:#9aa3ad;text-decoration:none;border:1px solid #232932;border-radius:7px;padding:4px 9px}.csv:hover{color:#c2f64a;border-color:#c2f64a}.geotree{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#111419;border:1px solid #232932;border-radius:14px;padding:16px}.gt{display:inline-flex;align-items:center;gap:5px;border:1px solid #2a313b;border-radius:10px;padding:7px 11px;line-height:1;color:#e9e7df}.gt b{font-family:monospace}.gt small{color:#9aa3ad;font-size:.62em}.rangebar{display:inline-flex;gap:4px;background:#0d0f12;border:1px solid #232932;border-radius:10px;padding:3px;margin-bottom:12px}.rbtn{font-size:12px;color:#9aa3ad;text-decoration:none;padding:6px 13px;border-radius:7px}.rbtn.on{background:#c2f64a;color:#0a0b0d;font-weight:700}@media(max-width:620px){body{padding:18px 12px 50px}h1{font-size:19px}.hourchart{gap:1px;height:100px}.fe{font-size:12px;gap:8px}.topbar{flex-direction:column;align-items:flex-start;gap:8px}}.tabbar{display:flex;gap:4px;margin:6px 0 22px;border-bottom:1px solid #232932;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}.tabbar::-webkit-scrollbar{display:none}.tab{font-size:13px;font-weight:700;color:#9aa3ad;background:none;border:none;border-bottom:2px solid transparent;padding:11px 15px;cursor:pointer;margin-bottom:-1px;white-space:nowrap;flex:0 0 auto}.tab.on{color:#c2f64a;border-bottom-color:#c2f64a}
 .tab{position:relative}
 .noti-dot{position:absolute;top:4px;right:5px;width:8px;height:8px;border-radius:50%;background:#39ff14;box-shadow:0 0 5px #39ff14,0 0 11px rgba(57,255,20,.75);display:none;animation:notiPulse 1.5s ease-in-out infinite}
@@ -2426,14 +2427,14 @@ h2 span{color:#6b7480;font-size:12.5px;font-weight:400;letter-spacing:0}
   function N(x){x=+x||0;var a=Math.abs(x),sg=x<0?'-':'';return sg+(a>=1e12?(a/1e12).toFixed(2)+'T':a>=1e9?(a/1e9).toFixed(2)+'B':a>=1e6?(a/1e6).toFixed(2)+'M':a>=1e3?(a/1e3).toFixed(1)+'K':(a%1===0?String(a):a.toFixed(2)));}
   /* Real-time activity feed — merge CLICK/server events (feed) with PAGEVIEWS (visitors) into one live, color-coded,
      device-aware, filterable stream. All client-side from the data the 12s poll already ships. */
-  var EV={f:${JSON.stringify(evlog.slice(0, 80))},v:${JSON.stringify(pvlog.slice(0, 60))},filt:'all',on:null,money:null};
+  var EV={f:${JSON.stringify(evlog.slice(0, 400))},v:${JSON.stringify(pvlog.slice(0, 300))},filt:'all',on:null,money:null};
   function evKindOf(t){if(t==='exchange')return 'money';if(t==='paper'||t==='hotpair'||t==='close'||t==='sltp')return 'trade';if(t==='chat'||t==='like'||t==='comment'||t==='follow'||t==='post'||t==='save'||t==='profile'||t==='share')return 'social';if(t==='signup'||t==='login'||t==='claim'||t==='withdraw'||t==='mission'||t==='academy'||t==='signin'||t==='alert'||t==='promo'||t==='exsign'||t==='support'||t==='push')return 'acct';if(t==='tool'||t==='ind'||t==='draw'||t==='ai')return 'tool';if(t==='pv')return 'page';return 'other';}
   function evPageLine(x){var pg=esc(pageShort(x.p||'/'));if(x.f)return 'moved to <b>'+pg+'</b> <span class="fe-via">from '+esc(pageShort(x.f))+'</span>';if(x.s&&x.s!=='direct')return 'arrived on <b>'+pg+'</b> <span class="fe-via">via '+esc(srcName(x.s))+'</span>';return 'landed on <b>'+pg+'</b>';}
   function evIcon(x){if(x.u)return '👤';if(x.d)return dev(x.d);return flag(x.cc)||'🌐';}
   function evRowHtml(x){var k=evKindOf(x._pg?'pv':x.t);var nw=(Date.now()-x.ts)<12000?' fe-new':'';var who=x.u?('<b>@'+esc(x.u)+'</b> '):'A visitor ';var body=x._pg?evPageLine(x):evLine(x);return '<div class="fe k-'+k+nw+'"><span class="fe-f">'+evIcon(x)+'</span><span class="fe-t">'+who+body+'</span><span class="fe-a">'+ago(x.ts)+' ago</span></div>';}
   function evMerged(){var rows=[];(EV.f||[]).forEach(function(x){rows.push(x);});(EV.v||[]).forEach(function(v){rows.push({_pg:1,cc:v.cc,d:v.d,u:v.u,p:v.p,f:v.f,s:v.s,ts:v.ts});});rows.sort(function(a,b){return b.ts-a.ts;});return rows;}
   function evPass(x){var k=evKindOf(x._pg?'pv':x.t),f=EV.filt;if(f==='all')return true;if(f==='money')return k==='money';if(f==='trade')return k==='trade';if(f==='social')return k==='social';if(f==='acct')return k==='acct';if(f==='page')return k==='page';return true;}
-  function evRender(){var host=document.getElementById('evFeed');if(!host)return;var all=evMerged(),rows=all.filter(evPass).slice(0,46);host.innerHTML=rows.length?rows.map(evRowHtml).join(''):'<div class="empty">no '+(EV.filt==='all'?'activity':EV.filt+' activity')+' in the last few minutes</div>';
+  function evRender(){var host=document.getElementById('evFeed');if(!host)return;var all=evMerged(),rows=all.filter(evPass).slice(0,220);host.innerHTML=rows.length?rows.map(evRowHtml).join(''):'<div class="empty">no '+(EV.filt==='all'?'activity':EV.filt+' activity')+' in the last few hours</div>';
     var cut=Date.now()-60000,rate=0;for(var i=0;i<all.length;i++)if(all[i].ts>cut)rate++;var er=document.getElementById('evRate');if(er)er.textContent=rate;var eo=document.getElementById('evOn');if(eo&&EV.on!=null)eo.textContent=EV.on;var em=document.getElementById('evMoney');if(em&&EV.money!=null)em.textContent=EV.money;}
   (function(){var cw=document.getElementById('evChips');if(cw)cw.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button[data-evf]');if(!b)return;EV.filt=b.getAttribute('data-evf');cw.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});evRender();});try{evRender();}catch(e){}})();
   function dev(d){d=String(d||'').toLowerCase();return d==='mobile'?'📱':d==='tablet'?'📲':'🖥';}
@@ -2559,6 +2560,35 @@ h2 span{color:#6b7480;font-size:12.5px;font-weight:400;letter-spacing:0}
     if(e.indexOf('Empty space')===0)return null;
     if(t==='exchange')return{txt:'Clicked out to '+(e||'an exchange'),kind:'gold',pr:1};
     if(t==='paper')return{txt:'Opened a trade'+(e?' ('+e+')':''),kind:'green',pr:2};
+    if(t==='close')return{txt:'Closed a trade'+(e?' ('+e+')':''),kind:'green',pr:3};
+    if(t==='sltp')return{txt:'Set SL/TP'+(e?' on '+e:''),kind:'green',pr:4};
+    if(t==='chat')return{txt:'Sent a chat message',kind:'',pr:4};
+    if(t==='signin')return{txt:'Opened the sign-in form',kind:'',pr:3};
+    if(t==='search')return{txt:'Searched'+(e?' "'+e+'"':''),kind:'',pr:5};
+    if(t==='watch')return{txt:'Added '+(e||'a coin')+' to watchlist',kind:'',pr:5};
+    if(t==='ind')return{txt:'Toggled '+(e||'an')+' indicator',kind:'',pr:7};
+    if(t==='draw')return{txt:'Drew on '+(e?e+' chart':'a chart'),kind:'',pr:7};
+    if(t==='ai')return{txt:'Asked the AI'+(e?' about '+e:''),kind:'',pr:4};
+    if(t==='profile')return{txt:'Viewed @'+(e||'a trader')+' profile',kind:'',pr:5};
+    if(t==='coin')return{txt:'Opened '+(e||'a coin')+' market',kind:'',pr:5};
+    if(t==='lang')return{txt:'Switched language to '+(e||'?'),kind:'',pr:9};
+    if(t==='share')return{txt:'Shared '+(e||'something'),kind:'',pr:4};
+    if(t==='alert')return{txt:'Set a price alert'+(e?' on '+e:''),kind:'gold',pr:3};
+    if(t==='like')return{txt:'Liked a post',kind:'',pr:6};
+    if(t==='comment')return{txt:'Commented on a post',kind:'',pr:4};
+    if(t==='follow')return{txt:'Followed '+(e?'@'+e:'a trader'),kind:'',pr:4};
+    if(t==='save')return{txt:'Saved a post',kind:'',pr:5};
+    if(t==='post')return{txt:'Published a community post',kind:'',pr:2};
+    if(t==='claim')return{txt:'Claimed '+(e||'a faucet reward'),kind:'gold',pr:3};
+    if(t==='withdraw')return{txt:'Requested a withdrawal'+(e?' '+e:''),kind:'gold',pr:2};
+    if(t==='promo')return{txt:'Submitted a promo post'+(e?' '+e:''),kind:'gold',pr:3};
+    if(t==='exsign')return{txt:'Submitted an exchange sign-up'+(e?' '+e:''),kind:'gold',pr:3};
+    if(t==='support')return{txt:'Sent a support message',kind:'',pr:3};
+    if(t==='push')return{txt:'Enabled push notifications',kind:'',pr:4};
+    if(t==='mission')return{txt:'Completed a daily mission',kind:'',pr:4};
+    if(t==='academy')return{txt:'Finished an Academy lesson',kind:'',pr:4};
+    if(t==='signup')return{txt:'Created an account',kind:'gold',pr:1};
+    if(t==='login')return{txt:'Signed in'+(e?' as @'+e:''),kind:'',pr:3};
     if(e.indexOf('Open position')===0)return{txt:'Opened a position',kind:'green',pr:2};
     if(e.indexOf('Button: Close')===0||e==='Close position')return{txt:'Closed a position',kind:'green',pr:3};
     if(e.indexOf('Long / Short')===0||e.indexOf('Long/Short toggle')>=0)return{txt:'Switched Long/Short',kind:'',pr:6};
@@ -2916,7 +2946,7 @@ h2 span{color:#6b7480;font-size:12.5px;font-weight:400;letter-spacing:0}
     for(var oi=0;oi<order.length;oi++){by[order[oi]].items.sort(function(a,b){return a.ts-b.ts;});}
     try{renderVjMap(by,order);}catch(e){}
     window.__vjBy={by:by,order:order};var _jt=document.getElementById('tab-jmap');if(_jt&&!_jt.hidden&&JM.mode!=='user'){try{renderJmap();}catch(e){}}
-    function ckLbl(it){var e=String(it.e||'');if(it.t==='tab')return 'calc: '+e;if(it.t==='exchange')return '💰 '+e;if(it.t==='paper')return 'trade '+e;if(it.t==='tool')return 'tool: '+e;if(it.t==='hotpair')return 'trending '+e;if(it.t==='prod')return 'open '+e;return e;}
+    function ckLbl(it){var e=String(it.e||'');var t=it.t;if(t==='tab')return 'calc: '+e;if(t==='exchange')return '💰 '+e;if(t==='paper')return 'trade '+e;if(t==='close')return 'close '+e;if(t==='sltp')return 'SL/TP '+e;if(t==='tool')return 'tool: '+e;if(t==='hotpair')return 'trending '+e;if(t==='prod')return 'open '+e;if(t==='chat')return '💬 chat';if(t==='ai')return '✨ AI'+(e?' '+e:'');if(t==='search')return '🔍 '+e;if(t==='watch')return '★ '+e;if(t==='ind')return 'ind: '+e;if(t==='draw')return '✏️ draw';if(t==='profile')return '@'+e;if(t==='coin')return e+' mkt';if(t==='signin')return 'sign-in';if(t==='share')return '↗ share';if(t==='lang')return '🌐 '+e;if(t==='alert')return '🔔 '+e;if(t==='like')return '❤ like';if(t==='comment')return '💬 comment';if(t==='follow')return '+follow';if(t==='save')return '🔖 save';if(t==='post')return '✍ post';if(t==='claim')return '🎁 '+e;if(t==='withdraw')return '💸 '+e;if(t==='promo')return 'promo '+e;if(t==='exsign')return 'exsign '+e;if(t==='mission')return 'mission';if(t==='academy')return '🎓 lesson';if(t==='signup')return '🆕 signup';if(t==='login')return 'login';return e;}
     function jcard(g){var its=g.items.slice(-16);var path=its.map(function(it){return it.k==='pg'?'<span class="vj-pg">'+esc(pageShort(it.p))+'</span>':'<span class="vj-ck'+(it.t==='exchange'?' money':'')+'">'+esc(ckLbl(it))+'</span>';}).join('<span class="vj-arr">›</span>');var src=g.f?('from '+esc(pageShort(g.f))):('via '+esc(srcName(g.s)||'direct'));return '<div class="vj"><div class="vj-top"><span class="vj-dot" style="background:'+vidColor(g.v)+'"></span><span class="vj-cc">'+(g.u?('👤 @'+esc(g.u)):((flag(g.cc)||'🌐')+' '+(g.cc?esc(CC[g.cc]||g.cc):'Unknown')))+'</span><span class="vj-src">'+src+'</span><span class="vj-a">'+ago(g.last)+' ago</span></div><div class="vj-path">'+path+'</div></div>';}
     var rows=order.map(function(id){return by[id];}).sort(function(a,b){return b.last-a.last;});var dk=rows.filter(function(g){var x=g.d.toLowerCase();return x!=='mobile'&&x!=='tablet';}),mb=rows.filter(function(g){var x=g.d.toLowerCase();return x==='mobile'||x==='tablet';});var dn=document.getElementById('vjDeskN'),mn=document.getElementById('vjMobN');if(dn)dn.textContent='· '+dk.length;if(mn)mn.textContent='· '+mb.length;if(de)de.innerHTML=dk.length?dk.slice(0,25).map(jcard).join(''):'<div class="empty">no desktop visits yet</div>';if(mo)mo.innerHTML=mb.length?mb.slice(0,25).map(jcard).join(''):'<div class="empty">no mobile visits yet</div>';}
   function cv(sel,i,val){var e=document.querySelectorAll(sel);if(e[i])e[i].textContent=val;}
