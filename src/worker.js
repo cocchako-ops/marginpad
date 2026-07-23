@@ -7585,6 +7585,9 @@ export default {
       const fprices = {}; fprices[fsym] = +fpd.price; const frates = {}; frates[fsym] = frate;
       return J(await usersDO(env, '/tradesweepall', { prices: fprices, rates: frates, force: true, onlyUid: fu }));
     }
+    if (url.pathname === '/api/admin/mktestuser' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // E2E suites: ensure an 'e2e-' users row exists (DO enforces the prefix)
+      return J(await usersDO(env, '/mktestuser', { uid: url.searchParams.get('uid') || '' }));
+    }
     if (url.pathname === '/api/admin/perf' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // MarginPad Health data: per-group latency percentiles + presence + errors/hr
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       let ring = []; try { ring = JSON.parse(await env.STATS.get('perf:ring') || '[]'); } catch (e) {}
@@ -9446,6 +9449,11 @@ export class UserStore {
       sql.exec('INSERT INTO livepos(did,json,cc,updated) VALUES(?,?,?,?) ON CONFLICT(did) DO UPDATE SET json=excluded.json,cc=excluded.cc,updated=excluded.updated', did, JSON.stringify(opens), cc, now);
       try { sql.exec('DELETE FROM livepos WHERE updated < ?', now - 6 * 3600000); } catch (e) {} // prune sessions idle > 6h
       return this.j({ ok: true, n: opens.length });
+    }
+    if (path === '/mktestuser') { // admin tooling for the E2E suites (test-multidevice/test-trading): /trades sync + tradeev feeds are guarded on a real users row. HARD-limited to 'e2e-' ids so it can never touch a real account.
+      const tu = String(b.uid || ''); if (!/^e2e-[a-z0-9-]{2,40}$/.test(tu)) return this.j({ error: 'bad_uid' });
+      try { sql.exec('INSERT OR IGNORE INTO users(id,email,created,last_login,logins) VALUES(?,?,?,?,0)', tu, tu + '@e2e.local', now, now); } catch (e) { return this.j({ error: String(e).slice(0, 80) }); }
+      return this.j({ ok: true });
     }
     if (path === '/trades') { // signed-in user's paper-trade journal sync — MERGE with the stored set (union by trade id) so a stale device/browser can't wipe trades synced from another. A blind full-replace caused leaderboard entries to flicker on/off as two devices took turns overwriting each other.
       const uid = String(b.uid || ''); if (!uid) return this.j({ ok: false });
