@@ -30,7 +30,21 @@ const GTAG = `<!-- Google tag (gtag.js) -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>`;
 
 const JSONLD = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":${JSON.stringify(DESC)}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"MarginPad","url":"https://marginpad.io/","logo":"https://marginpad.io/assets/og.png","sameAs":["https://t.me/MarginPadBot"]}</script>`;
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"MarginPad","url":"https://marginpad.io/","logo":"https://marginpad.io/assets/og.png","sameAs":["https://t.me/MarginPadBot"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","alternateName":"MarginPad — Free Crypto Futures Tools","url":"https://marginpad.io/","inLanguage":"en"}</script>`;
+
+// hreflang alternates — connect the 13 language homepages so Google/Yandex/Bing treat them as one site's translations
+// (huge for international + Yandex-RU targeting). Must stay in sync with build/gen-i18n-pages.js LANGS.
+const HREFLANG_LANGS = ['es', 'pt', 'fr', 'de', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id', 'nl'];
+const HREFLANG = ['<link rel="alternate" hreflang="x-default" href="https://marginpad.io/" />',
+  '<link rel="alternate" hreflang="en" href="https://marginpad.io/" />']
+  .concat(HREFLANG_LANGS.map(l => `<link rel="alternate" hreflang="${l}" href="https://marginpad.io/${l}/" />`)).join('\n');
+
+// Yandex.Metrica (counter 110941944) — on the homepage too so quick gen-home-live deploys never drop it (build/add-metrica.js covers the rest of the site).
+const METRICA = `<!-- Yandex.Metrika counter -->
+<script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944','ym');ym(110941944,'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",accurateTrackBounce:true,trackLinks:true});</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute;left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->`;
 
 // 1) indexable
 h = h.replace('<meta name="robots" content="noindex,nofollow" />',
@@ -41,9 +55,12 @@ h = h.replace('<title>MarginPad — Demo homepage (full-width)</title>',
 // 3) inject SEO head (description, canonical, OG, twitter, JSON-LD) + gtag right after <head>
 const headExtra = `
 ${GTAG}
+<meta name="google-site-verification" content="7zzuR9GCpGKpdBsHoh1c4CzwY1G55I5yovmJ6WDfZPw" />
+${METRICA}
 <meta name="description" content="${DESC}" />
 <meta name="keywords" content="crypto futures, paper trading, crypto futures simulator, liquidation calculator, crypto screener, liquidations feed, trading bot api, free crypto tools" />
 <link rel="canonical" href="${CANON}" />
+${HREFLANG}
 <meta property="og:type" content="website" />
 <meta property="og:url" content="${CANON}" />
 <meta property="og:title" content="${TITLE}" />

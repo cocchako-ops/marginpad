@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
@@ -188,6 +201,7 @@
         <span style="color:#b48cff"><i></i>Expiry</span>
         <span style="color:#ff9f4d"><i></i>Crypto</span>
         <span style="color:#e9e7df"><i></i>Macro</span>
+        <span style="color:#ff8ad8"><i></i>Token unlock</span>
         <span style="flex-basis:100%;height:0"></span>
         <span style="color:#ff5a4d"><i style="border-radius:3px"></i>Big day</span>
         <span style="color:#ff9f43"><i style="border-radius:3px"></i>Medium</span>
@@ -200,7 +214,7 @@
 <script>
 (function(){
   try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u);}catch(e){}
-  var TYPES={fomc:['FOMC','#c2f64a'],cpi:['CPI','#3fd8e6'],nfp:['JOBS','#ffb347'],expiry:['EXPIRY','#b48cff'],crypto:['CRYPTO','#ff9f4d'],macro:['MACRO','#e9e7df']};
+  var TYPES={fomc:['FOMC','#c2f64a'],cpi:['CPI','#3fd8e6'],nfp:['JOBS','#ffb347'],expiry:['EXPIRY','#b48cff'],crypto:['CRYPTO','#ff9f4d'],macro:['MACRO','#e9e7df'],unlock:['UNLOCK','#ff8ad8']};
   var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
   var YEARS=[2023,2024,2025,2026,2027];
   var nowD=new Date(), vy=nowD.getFullYear(), vm=nowD.getMonth();
@@ -254,7 +268,7 @@
       var k=dayKey(c.d),evs=evOn(events,k);
       evs.sort(function(a,b){return (b.impact||1)-(a.impact||1);});
       var chips=evs.slice(0,3).map(function(e){var tp=TYPES[e.type]||TYPES.crypto;
-        var short=String(e.title).replace(/^US /,'').replace(/ — .*$/,'').replace(/Monthly BTC & ETH options expiry/,'Options expiry').replace(/Quarterly BTC & ETH options expiry/,'Quarterly expiry').replace(/jobs report \(NFP\)/,'Jobs report (NFP)');
+        var short=String(e.title).replace(/^US /,'').replace(/ token unlock · .*$/,' unlock').replace(/ — .*$/,'').replace(/Monthly BTC & ETH options expiry/,'Options expiry').replace(/Quarterly BTC & ETH options expiry/,'Quarterly expiry').replace(/jobs report \(NFP\)/,'Jobs report (NFP)');
         return '<span class="calev" style="color:'+tp[1]+';background:'+tp[1]+'1c" title="'+esc(e.title)+'"><i></i>'+esc(short)+'</span>';}).join('');
       if(evs.length>3)chips+='<span class="calmore">+'+(evs.length-3)+' more</span>';
       var dots='<span class="caldots">'+evs.slice(0,4).map(function(e){var tp=TYPES[e.type]||TYPES.crypto;return '<i style="color:'+tp[1]+'"></i>';}).join('')+'</span>';

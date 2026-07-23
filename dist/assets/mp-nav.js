@@ -152,6 +152,10 @@
     + row('brMktsT', 'brMktsS', '/coins/', '#16c2d6', 'mkt')
     + row('brDefiT', 'brDefiS', '/defi/', '#9d7bff', 'defi')
     + row('brFngT', 'brFngS', '/fear-greed/', '#7fd957', 'fng')
+    + row('Bitcoin cycle', 'Pi Cycle, Rainbow & top signals', '/bitcoin-cycle/', '#f7a600', 'charts')
+    + row('ETF flows', 'Spot BTC & ETH ETF inflows', '/etf-flows/', '#8a92ff', 'defi')
+    + row('Whale tracker', 'Biggest Hyperliquid whale positions', '/hyperliquid-whales/', '#5ec6ff', 'mkt')
+    + row('Compare exchanges', 'Fees, leverage, liquidity &amp; trust', '/exchanges/', '#c2f64a', 'mkt')
     + '<div class="mpnav-row mpnav-soon"><span class="mpnav-ic" style="color:#ffb347;background:#ffb34722">'+I.heat+'</span><span class="mpnav-rt"><b>'+TR('brHeatT')+' <em class="mpnav-badge">'+TR('brSoon')+'</em></b><small>'+TR('brHeatS')+'</small></span></div>'
     + row('navRekt', 'prodRektS', '/rekt/', '#ff6258', 'rekt')
     + row('brAlertsT', 'brAlertsS', '/alerts/', '#c2f64a', 'alert')

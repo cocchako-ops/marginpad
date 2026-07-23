@@ -37,6 +37,10 @@ run('Long/short data page', 'node build/gen-longshort-page.js');
 run('Open-interest data page', 'node build/gen-openinterest-page.js');
 run('Per-coin dashboards', 'node build/gen-coin-dashboard-pages.js');
 run('DeFi dashboard', 'node build/gen-defi-page.js');
+run('Bitcoin cycle', 'node build/gen-cycle-page.js');
+run('ETF flows', 'node build/gen-etf-page.js');
+run('Hyperliquid whales', 'node build/gen-whales-page.js');
+run('Exchange comparison', 'node build/gen-exchanges-page.js');
 run('Markets hub', 'node build/gen-markets-hub.js');
 run('How-to guides', 'node build/gen-guides-pages.js');
 run('Where-to-start beginner academy', 'node build/gen-where-to-start.js');
@@ -78,6 +82,7 @@ run('Normalise viewport (no-zoom)', 'node build/normalize-viewport.js');
 // 10) inject the analytics tag into EVERY html (must run LAST so nothing it touched gets regenerated after)
 run('Inject gtag into every page', 'node build/add-gtag.js');
 run('Inject Sentry reporter into every page', 'node build/add-sentry.js');
+run('Inject Yandex.Metrica into every page', 'node build/add-metrica.js');
 
 // 11) warm the fonts.gstatic.com connection on every font-loading page (LCP perf; idempotent)
 run('Inject font preconnect', 'node build/add-preconnect.js');

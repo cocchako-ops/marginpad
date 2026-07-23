@@ -16,6 +16,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
 /* shared token list for the typeable symbol pickers (Paper Trade + Charts) — the screener tokens + common coins. Fills #symTokens too. */
   // Paper Trade + Charts are BYBIT-ONLY (owner decision): only tokens Bybit lists get a smooth live WS feed, so the
   // pickers list ONLY Bybit-tradeable symbols and window.mpIsBybit() gates the screener's paper-trade action + free-entry.
+  window.mpMarketName=function(s){return ({XAU:'Gold',XAG:'Silver',SPX500:'S&P 500',NAS100:'Nasdaq 100',US30:'Dow Jones',GER40:'DAX 40',EURUSD:'EUR/USD',GBPUSD:'GBP/USD'})[String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'')]||'';};
   window.mpLoadTokens=function(cb){if(window.mpTokens){cb&&cb(window.mpTokens);return;}
     var base=['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX','LINK','LTC','ENA','TRX','DOT','ATOM','NEAR','ARB','OP','PEPE','SHIB','SUI','APT','INJ','TIA','SEI','WIF','LDO','UNI','AAVE','FIL','RENDER'];
     fetch('/api/symbols').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
@@ -25,13 +26,17 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       if(j&&j.symbols)j.symbols.forEach(function(s){s=String(s||'').toUpperCase();if(!s)return;byb[s]=1;byb[clean(s)]=1;});
       var hasSyms=!!(j&&j.symbols&&j.symbols.length);
       window.mpBybitSet=byb;
-      window.mpIsBybit=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym)return false;if(!hasSyms)return true;return !!(byb[sym]||byb['1000'+sym]||byb['10000'+sym]||byb['1000000'+sym]||byb[sym+'1000']||byb[sym+'10000']||byb[sym+'1000000']);};
+      var _byb0=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym)return false;if(!hasSyms)return true;return !!(byb[sym]||byb['1000'+sym]||byb['10000'+sym]||byb['1000000'+sym]||byb[sym+'1000']||byb[sym+'10000']||byb[sym+'1000000']);};
+      // non-crypto markets: metals (Bybit linear XAUUSDT/XAGUSDT) + indices/forex (Gate futures) — always tradeable regardless of the Bybit-only gate; price/klines resolve via the worker fallback chain (REST poll, no WS — fine for slower-moving assets)
+      var MKT={XAU:1,XAG:1,SPX500:1,NAS100:1,US30:1,GER40:1,EURUSD:1,GBPUSD:1};
+      window.mpIsBybit=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return MKT[sym]?true:_byb0(sym);};
       var seen={},out=[];function add(s){s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(s&&!seen[s]&&window.mpIsBybit(s)){seen[s]=1;out.push(s);}}
-      base.forEach(add);                                      // majors first (only those Bybit actually has)
+      Object.keys(MKT).forEach(add);                          // gold / silver / indices / forex group first
+      base.forEach(add);                                      // then crypto majors (only those Bybit actually has)
       if(hasSyms)j.symbols.forEach(function(s){add(clean(s));}); // then the rest of Bybit, multiplier stripped to the clean ticker
       if(!out.length)base.forEach(function(s){if(!seen[s]){seen[s]=1;out.push(s);}}); // /api/symbols failed → don't leave pickers empty
       window.mpTokens=out;
-      var dl=document.getElementById('symTokens');if(dl){dl.innerHTML=out.map(function(s){return '<option value="'+s+'">';}).join('');}
+      var dl=document.getElementById('symTokens');if(dl){dl.innerHTML=out.map(function(s){var nm=window.mpMarketName(s);return '<option value="'+s+'">'+(nm||'')+'</option>';}).join('');}
       cb&&cb(out);});};
 
 ;/* ══════════ inline block from app/index.html line 2762 ══════════ */
@@ -1123,11 +1128,37 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       closeBtn=document.getElementById('ctClose');
   if(!fab)return;
   var ws=null,user='',joined=false;
+  /* per-coin chat rooms: All + a few majors. 'global' = the original shared room (history preserved). */
+  var ROOMS=['global','BTC','ETH','SOL','BNB','XRP','DOGE'],room='global',roomBar=null;
+  function roomLabel(r){return r==='global'?'All':r;}
+  var CT_CARET='<svg class="ct-rcaret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+  var CT_CHECK='<svg class="ct-ri-ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>';
+  var CT_COIN={BTC:1,ETH:1027,SOL:5426,BNB:1839,XRP:52,DOGE:74};
+  var CT_ALL='<svg class="ct-ric ct-ricall" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3.2 9.5h17.6M3.2 14.5h17.6M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>';
+  function roomIcon(r){if(r==='global')return CT_ALL;var id=CT_COIN[r];if(id)return '<img class="ct-ricimg" data-coin="'+r+'" src="https://s2.coinmarketcap.com/static/img/coins/64x64/'+id+'.png" alt="">';return '<span class="ct-ricl">'+r.charAt(0)+'</span>';}
+  function ctImgFallback(root){if(!root)return;Array.prototype.forEach.call(root.querySelectorAll('.ct-ricimg'),function(img){img.addEventListener('error',function(){var s=document.createElement('span');s.className='ct-ricl';s.textContent=(img.getAttribute('data-coin')||'?').charAt(0);if(img.parentNode)img.parentNode.replaceChild(s,img);});});}
+  function buildRoomBar(){
+    if(roomBar||!box)return;var head=box.querySelector('.ct-head');if(!head)return;
+    roomBar=document.createElement('div');roomBar.className='ct-roomsel';
+    roomBar.innerHTML='<button type="button" class="ct-roombtn" aria-haspopup="true"><span class="ct-ricw">'+roomIcon(room)+'</span><span class="ct-roomcur">'+roomLabel(room)+'</span>'+CT_CARET+'</button>'
+      +'<div class="ct-roommenu" hidden>'+ROOMS.map(function(r){return '<button type="button" class="ct-roomitem'+(r===room?' on':'')+'" data-room="'+r+'"><span class="ct-riw">'+roomIcon(r)+'</span><span class="ct-ri-l">'+roomLabel(r)+'</span>'+CT_CHECK+'</button>';}).join('')+'</div>';
+    var title=head.querySelector('.ct-title');if(title&&title.nextSibling)head.insertBefore(roomBar,title.nextSibling);else head.appendChild(roomBar);
+    ctImgFallback(roomBar);
+    var btn=roomBar.querySelector('.ct-roombtn'),menu=roomBar.querySelector('.ct-roommenu');
+    btn.addEventListener('click',function(e){e.stopPropagation();var open=menu.hidden;menu.hidden=!open;btn.classList.toggle('open',open);});
+    menu.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-room]');if(b){switchRoom(b.getAttribute('data-room'));menu.hidden=true;btn.classList.remove('open');}});
+    document.addEventListener('click',function(){if(menu&&!menu.hidden){menu.hidden=true;btn.classList.remove('open');}});
+  }
+  function markRoomPills(){if(!roomBar)return;var cur=roomBar.querySelector('.ct-roomcur');if(cur)cur.textContent=roomLabel(room);var iw=roomBar.querySelector('.ct-roombtn .ct-ricw');if(iw){iw.innerHTML=roomIcon(room);ctImgFallback(iw);}var its=roomBar.querySelectorAll('[data-room]');for(var i=0;i<its.length;i++)its[i].classList.toggle('on',its[i].getAttribute('data-room')===room);}
+  function switchRoom(r){if(r===room||ROOMS.indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':'Message '+room+' room…')+'  ·  type /leaderboard';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
   function meUser(){var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me)return '';return String(me.username||(me.email||'').split('@')[0]||'trader').replace(/[<>&]/g,'').slice(0,20);}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   function colorFor(u){var h=0;for(var i=0;i<u.length;i++)h=(h*31+u.charCodeAt(i))%360;return 'hsl('+h+',65%,70%)';}
   var MP_BADGE='<svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-3px;margin-right:4px;filter:drop-shadow(0 0 3px rgba(194,246,74,.55))"><path d="M12 1L14.83 3.3L18.47 3.1L19.4 6.62L22.46 8.6L21.15 12L22.46 15.4L19.4 17.38L18.47 20.9L14.83 20.7L12 23L9.17 20.7L5.53 20.9L4.6 17.38L1.54 15.4L2.85 12L1.54 8.6L4.6 6.62L5.53 3.1L9.17 3.3Z" fill="#c2f64a"/><path d="M7.7 12.3l2.9 2.9L16.4 9.3" fill="none" stroke="#0a0b0d" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var who=m.admin?'<b style="color:#e9e7df;font-weight:800">'+MP_BADGE+'Margin<span style="color:#c2f64a">Pad</span></b>':'<span data-lvln="'+esc(m.u)+'"></span><b style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b>';d.innerHTML=who+' '+esc(m.t);msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();}
+  function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var who=m.admin?'<b style="color:#e9e7df;font-weight:800">'+MP_BADGE+'Margin<span style="color:#c2f64a">Pad</span></b>':'<span data-lvln="'+esc(m.u)+'"></span><b class="ct-user" data-lbu="'+esc(m.u)+'" role="button" tabindex="0" style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b>';d.innerHTML=who+' '+esc(m.t);msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();}
+  /* click a username in chat → open that trader's profile card */
+  function openTraderCard(n){n=String(n||'').replace(/[^a-zA-Z0-9_]/g,'');if(!n)return;if(window.mpOpenProfile){try{window.mpOpenProfile(n);}catch(_){}}}
+  if(msgs)msgs.addEventListener('click',function(e){var el=e.target.closest&&e.target.closest('.ct-user[data-lbu]');if(el){e.stopPropagation();openTraderCard(el.getAttribute('data-lbu'));}});
   function setOnline(n){/* online count removed per owner */}
   /* unread signal: glow the chat FAB (desktop) + a dot on the bottom-nav Chat button (mobile) when a new message lands while the chat is closed */
   function chatAlert(on){try{
@@ -1139,24 +1170,30 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   /* "new messages" glow that works WITHOUT the WS (every visitor): poll the latest message ts, glow if newer than last-opened (and recent). */
   function chatSeenTs(){try{return +localStorage.getItem('mp_chat_seen')||0;}catch(e){return 0;}}
   function markChatSeen(){try{localStorage.setItem('mp_chat_seen',String(Date.now()));}catch(e){}}
-  function pollChatLast(){try{if(!box.hidden)return;fetch('/chat/last',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.ts&&d.ts>chatSeenTs()&&d.ts>Date.now()-259200000)chatAlert(true);}).catch(function(){});}catch(e){}}
+  function pollChatLast(){try{if(!box.hidden)return;fetch('/chat/last?room='+encodeURIComponent(room),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){if(d&&d.ts&&d.ts>chatSeenTs()&&d.ts>Date.now()-259200000)chatAlert(true);}).catch(function(){});}catch(e){}}
   setTimeout(pollChatLast,2500);setInterval(pollChatLast,45000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)pollChatLast();});
   function sysMsg(html){var d=document.createElement('div');d.className='ct-msg ct-sys';d.innerHTML=html;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
-  function showLeaderboard(){var lbMsg=sysMsg('<b style="color:#c2f64a">🏆 Weekly leaderboard</b><br><span style="color:#9aa3ad">loading…</span>');
-    fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){var t=(d&&d.top)||[],medal=['🥇','🥈','🥉'];
-      var html='<b style="color:#c2f64a">🏆 Weekly leaderboard</b><br>';
-      if(!t.length)html+='<span style="color:#9aa3ad">No trades yet this week — be the first! Open Paper Trade and close a winner.</span>';
-      else html+=t.slice(0,10).map(function(x,i){return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span> — <b style="color:'+((+x.roe)>=0?'#2ebd85':'#ff6258')+'">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</b>';}).join('<br>');
+  var LB_META={1:{t:'🏆 Top ROE',k:'top'},2:{t:'🎯 Best win rate',k:'topWr'},3:{t:'✨ Weekly XP',k:'topXp'}};
+  function showLeaderboard(board){board=(board===2||board===3)?board:1;var meta=LB_META[board];
+    var lbMsg=sysMsg('<b style="color:#c2f64a">'+meta.t+'</b><br><span style="color:#9aa3ad">loading…</span>');
+    fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){var t=(d&&d[meta.k])||[],medal=['🥇','🥈','🥉'];
+      var html='<b style="color:#c2f64a">'+meta.t+' · this week</b><br>';
+      if(!t.length)html+='<span style="color:#9aa3ad">No one on this board yet — be the first!</span>';
+      else html+=t.slice(0,10).map(function(x,i){var val;
+        if(board===2)val='<b style="color:#c2f64a">'+(+x.wr).toFixed(0)+'%</b> <span style="color:#7f8893">('+(+x.w||0)+'W-'+(+x.l||0)+'L)</span>';
+        else if(board===3)val='<b style="color:#c2f64a">'+(+x.xp||0).toLocaleString()+' XP</b>';
+        else val='<b style="color:'+((+x.roe)>=0?'#2ebd85':'#ff6258')+'">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</b>';
+        return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span> — '+val;}).join('<br>');
       var _we=d&&d.weekEnd,_es='';if(_we){var _ms=_we-Date.now();if(_ms>0){var _d=Math.floor(_ms/86400000),_h=Math.floor(_ms%86400000/3600000);_es=(_d>0?_d+'d ':'')+_h+'h';}}
       html+='<br><span style="color:#ffce8a;font-size:11.5px">⏳ Runs Mon → Sun (UTC)'+(_es?' · ends in '+_es:'')+'</span>';
-      html+='<br><span style="color:#7f8893;font-size:11.5px">Members only — sign in (free) to join · prizes paid weekly in USDT · full board on Telegram @MarginPadBot</span>';
+      html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> ROE · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · members only, prizes paid weekly in USDT</span>';
       lbMsg.innerHTML=html;msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();
     }).catch(function(){lbMsg.innerHTML='<span style="color:#ff6258">Could not load the leaderboard. Try again.</span>';});
   }
   function connect(){
     if(ws)return;
-    try{ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host+'/chat/ws');}catch(e){return;}
+    try{ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host+'/chat/ws?room='+encodeURIComponent(room));}catch(e){return;}
     ws.onmessage=function(ev){var d;try{d=JSON.parse(ev.data);}catch(e){return;}
       if(d.type==='history'){msgs.innerHTML='';(d.messages||[]).forEach(addMsg);setOnline(d.online);}
       else if(d.type==='msg'){addMsg(d.message);setOnline(d.online);if(d.message&&d.message.u===user){markChatSeen();}else if(box.hidden&&d.message){chatAlert(true);}}
@@ -1164,8 +1201,8 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     ws.onclose=function(){ws=null;if(joined)setTimeout(connect,3000);};
     ws.onerror=function(){try{ws.close();}catch(e){}};
   }
-  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;connect();try{input.placeholder='Message…  ·  type /leaderboard';}catch(e){}setTimeout(function(){input.focus();},50);}
-  function showGate(){gate.hidden=false;msgs.hidden=true;form.hidden=true;}
+  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;buildRoomBar();if(roomBar)roomBar.hidden=false;connect();try{input.placeholder=(room==='global'?'Message…':'Message '+room+' room…')+'  ·  type /leaderboard';}catch(e){}setTimeout(function(){input.focus();},50);}
+  function showGate(){gate.hidden=false;msgs.hidden=true;form.hidden=true;if(roomBar)roomBar.hidden=true;}
   function openBox(){chatAlert(false);markChatSeen();box.hidden=false;fab.hidden=true;document.body.classList.add('chat-open');var u=meUser();if(u){user=u;showChat();}else{showGate();}}
   fab.addEventListener('click',openBox);
   var hOpen=document.getElementById('chatOpen');if(hOpen)hOpen.addEventListener('click',openBox);
@@ -1173,7 +1210,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   closeBtn.addEventListener('click',function(){box.hidden=true;fab.hidden=false;document.body.classList.remove('chat-open');});
   if(signinBtn)signinBtn.addEventListener('click',function(){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}});
   window.addEventListener('mp-auth-change',function(){if(!box.hidden&&!joined){var u=meUser();if(u){user=u;showChat();}}});
-  form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;if(/^\/(leaderboard|lb|leaders)\b/i.test(t)){input.value='';showLeaderboard();return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));try{window.__mpTrack&&window.__mpTrack('chat','sent');}catch(_){}input.value='';});
+  form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;var _lbm=t.match(/^\/(leaderboard|lb|leaders)\s*([123])?\b/i);if(_lbm){input.value='';showLeaderboard(+_lbm[2]||1);return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));try{window.__mpTrack&&window.__mpTrack('chat','sent');}catch(_){}input.value='';});
 })();
 
 ;/* ══════════ inline block from app/index.html line 3884 ══════════ */
@@ -1527,6 +1564,11 @@ window.addEventListener('load', function () {
     else{if(tabsEl)tabsEl.style.display='';if(cardEl)cardEl.style.display='';var tb=document.querySelector('.tab[data-tab="liq"]');if(tb)tb.click();}
   });}
   if(/^\/charts\/?$/.test(location.pathname)){document.body.classList.add('charts-page');document.body.setAttribute('data-prod','charts');var _cs0=document.getElementById('chartspace');if(_cs0){var _wrap0=_cs0.parentNode;Array.prototype.forEach.call(_wrap0.children,function(ch){if(ch!==_cs0&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_cs0.style.display='';}}
+  /* Reward XP for genuinely using the charts workspace: first real interaction on the board per session → +25 XP
+     (server grants once/day via dayCap, so it can't be farmed). Signed-in only; toast comes from the /api/auth/xp poll. */
+  (function(){var done=false;function fire(){if(done)return;var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me());if(!me||!me.id)return;done=true;try{fetch('/api/auth/chartxp',{method:'POST',credentials:'same-origin'}).catch(function(){});}catch(_){}}
+    document.addEventListener('pointerdown',function(e){if(done)return;if(!document.body.classList.contains('charts-page'))return;if(e.target&&e.target.closest&&e.target.closest('#chartspace'))fire();},true);
+    window.mpChartXp=fire;})();
   /* remember the last Paper Trade symbol across refreshes (owner 2026-07-13: refresh reset the chart to BTC) */
   document.addEventListener('change',function(ev){var t=ev.target;if(t&&t.id==='planSym'&&t.value)try{localStorage.setItem('mp_pt_sym',String(t.value).toUpperCase());}catch(_){}});
   window.mpPtRestoreSym=function(){try{

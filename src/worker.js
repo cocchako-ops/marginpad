@@ -26,7 +26,7 @@ function calcLiquidation(p) {
   // Formula matches the paper-trade sim (liqOf/metrics/add) so the calculator and the terminal agree, AND it never
   // inverts: the old `entry*(1-1/lev+mmr)` printed liq AT/ABOVE entry once lev >= 1/mmr (=200× at mmr 0.5%). This form
   // keeps a long's liq strictly in (0, entry) and a short's above entry for every leverage up to 1000×.
-  const liq = long ? entry * (1 - (1 - mmr) / lev) : entry * (1 + (1 - mmr) / lev);
+  const liq = mpcLiq(entry, lev, mmr, long);
   return J({ entry, leverage: lev, maintenanceMarginRate: mmr * 100, side: long ? 'long' : 'short', liquidationPrice: round(liq, 2), distancePct: round((liq - entry) / entry * 100, 2) });
 }
 function calcPositionSize(p) {
@@ -60,6 +60,9 @@ function calcTakeProfit(p) {
   const exit = long ? entry * (1 + roe / 100 / lev) : entry * (1 - roe / 100 / lev);
   return J({ entry, leverage: lev, targetRoePct: roe, side: long ? 'long' : 'short', targetExitPrice: round(exit, 2), priceMovePct: round(roe / lev * (long ? 1 : -1), 2) });
 }
+// P1 mp-core (worker side): THE liquidation formula — every server fill path calls this one function.
+// Client copies of the same formula are drift-guarded by build/check-formulas.js (verbatim literal asserts).
+function mpcLiq(entry, lev, mmr, long) { return long ? entry * (1 - (1 - mmr) / lev) : entry * (1 + (1 - mmr) / lev); }
 function handleApi(url) {
   const p = url.searchParams;
   switch (url.pathname) {
@@ -74,11 +77,18 @@ function handleApi(url) {
 
 // ---------- live prices (proxied + cached + fallback) ----------
 const PRICE_SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT', 'DOGEUSDT', 'ADAUSDT', 'AVAXUSDT'];
-async function handlePrices() {
+async function handlePrices(env, ctx) {
   const cache = caches.default;
   const cacheKey = new Request('https://marginpad.io/__prices_cache_v1');
   const hit = await cache.match(cacheKey);
-  if (hit) return hit;
+  if (hit) { try { globalThis.__pricesLast = { t: Date.now(), body: await hit.clone().text() }; } catch (e) {} return hit; }
+  // stale-while-revalidate: a cache MISS used to cost the unlucky poller 1-2s of upstream fetches (measured).
+  // Serve the isolate's last-good copy instantly (<60s old) and refresh the edge cache in the background.
+  const last = globalThis.__pricesLast;
+  if (last && Date.now() - last.t < 60000 && ctx) {
+    ctx.waitUntil((async () => { try { await handlePrices(env); } catch (e) {} })()); // background refresh repopulates the edge cache
+    return new Response(last.body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'max-age=5', 'x-mp-swr': '1', ...CORS } });
+  }
   const qs = '?symbols=' + encodeURIComponent(JSON.stringify(PRICE_SYMBOLS));
   const sources = [
     'https://data-api.binance.vision/api/v3/ticker/24hr' + qs,
@@ -267,6 +277,39 @@ async function handleNews(env) {
   if (out.items.length) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
+// Auto-post fresh crypto news (with image) to the @marginpadnews channel → each links to our on-site reader.
+async function checkNewsPost(env) {
+  if (!env.TELEGRAM_TOKEN || !env.STATS) return;
+  if ((await env.STATS.get('news:tg:on')) === '0') return; // kill switch
+  const chan = (await env.STATS.get('csig:chat:news')) || '@marginpadnews'; if (!chan) return; // news channel is fixed @marginpadnews (fallback in case the KV read is cold)
+  let items = []; try { const r = await handleNews(env); const j = await r.json(); items = j.items || []; } catch (e) { return; }
+  if (!items.length) return;
+  let seen = []; try { seen = JSON.parse(await env.STATS.get('news:tg:seen') || '[]'); } catch (e) {}
+  const seenSet = new Set(seen);
+  const withH = [];
+  for (const it of items) { if (it && it.url) withH.push({ ...it, h: await sha8(it.url) }); }
+  const fresh = withH.filter(it => !seenSet.has(it.h));
+  if ((await env.STATS.get('news:tg:init')) !== '1') { // first ever run: seed all current as seen, post nothing (never backfill old news)
+    await env.STATS.put('news:tg:seen', JSON.stringify(withH.map(it => it.h).concat(seen).slice(0, 400)));
+    await env.STATS.put('news:tg:init', '1');
+    return;
+  }
+  const now = Date.now();
+  const toPost = fresh.filter(it => it.ts && it.ts > now - 12 * 3600000).sort((a, b) => a.ts - b.ts).slice(-2); // up to 2 newest recent, chronological
+  const stale = fresh.filter(it => !it.ts || it.ts <= now - 12 * 3600000); // age these out without posting
+  const markSeen = new Set(seen);
+  for (const it of toPost) {
+    const readUrl = 'https://marginpad.io/news/?read=' + encodeURIComponent(it.url) + '&t=' + encodeURIComponent((it.title || '').slice(0, 160)) + '&s=' + encodeURIComponent(it.src || '');
+    const cap = ('📰 <b>' + esc(it.title) + '</b>\n\n' + (it.body ? esc(it.body) + '\n\n' : '') + '📖 <a href="' + readUrl + '">Read the full story on MarginPad →</a>').slice(0, 1024);
+    let ok = false;
+    if (it.img && /^https:\/\//.test(it.img)) { try { const r = await tgApi(env.TELEGRAM_TOKEN, 'sendPhoto', { chat_id: chan, photo: it.img, caption: cap, parse_mode: 'HTML' }); ok = !!(r && r.ok); } catch (e) {} }
+    if (!ok) { try { const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chan, parse_mode: 'HTML', text: cap }); ok = !!(r && r.ok); } catch (e) {} }
+    if (ok) { markSeen.add(it.h); await env.STATS.put('news:tg:last', String(Date.now())); }
+    await new Promise(r => setTimeout(r, 500));
+  }
+  stale.forEach(it => markSeen.add(it.h)); // never post stale items (older than 12h) — just remember them
+  await env.STATS.put('news:tg:seen', JSON.stringify([...markSeen].slice(-400)));
+}
 async function handleFng(env) {
   const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   const ck = new Request('https://marginpad.io/__fng1');
@@ -427,6 +470,106 @@ async function handleCgOpenInterest(url, env) {
   return resp;
 }
 // Market Pulse: market-wide 24h liquidations (long/short) + Fear & Greed + most-liquidated coins. Edge-cached 5 min.
+// Market-cycle dashboard feed — Coinglass /api/index/* cycle & valuation models (Pi Cycle, Rainbow, Puell, S2F,
+// Golden Ratio, AHR999, 2Y/200W MA, Altcoin Season, BTC Dominance, Fear & Greed). Shape-independent: passes through
+// the latest point + a downsampled series per model; `active:false` while the Coinglass plan hasn't activated yet.
+async function handleCgCycle(url, env) {
+  const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
+  const ck = new Request('https://marginpad.io/__cg_cycle_v1');
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const H = { headers: { 'CG-API-KEY': env.COINGLASS_API_KEY } };
+  const IND = [
+    { k: 'pi', slug: 'index/pi-cycle-indicator' },
+    { k: 'rainbow', slug: 'index/bitcoin/rainbow-chart' },
+    { k: 'puell', slug: 'index/puell-multiple' },
+    { k: 'golden', slug: 'index/golden-ratio-multiplier' },
+    { k: 'ahr999', slug: 'index/ahr999' },
+    { k: 'ma2y', slug: 'index/2-year-ma-multiplier' },
+    { k: 'ma200w', slug: 'index/200-week-moving-average-heatmap' },
+    { k: 'altseason', slug: 'index/altcoin-season' },
+    { k: 'dominance', slug: 'index/bitcoin-dominance' },
+    { k: 'feargreed', slug: 'index/fear-greed-history' },
+  ];
+  const ds = (arr, n) => { // downsample to ~n points, always keep the last
+    if (!Array.isArray(arr) || arr.length <= n) return arr || [];
+    const step = Math.ceil(arr.length / n), out = [];
+    for (let i = 0; i < arr.length; i += step) out.push(arr[i]);
+    if (out[out.length - 1] !== arr[arr.length - 1]) out.push(arr[arr.length - 1]);
+    return out;
+  };
+  async function one(ind) {
+    try {
+      const r = await fetch('https://open-api-v4.coinglass.com/api/' + ind.slug, H);
+      const j = await r.json();
+      if (j && j.code == 0) {
+        let arr = Array.isArray(j.data) ? j.data : (j.data && Array.isArray(j.data.data_list) ? j.data.data_list.map(v => ({ value: +v })) : null); // fear-greed returns data.data_list (numbers)
+        if (arr && arr.length) return { k: ind.k, last: arr[arr.length - 1], series: ds(arr, 220) };
+      }
+      return { k: ind.k, err: (j && j.msg) || 'no_data' };
+    } catch (e) { return { k: ind.k, err: 'fetch' }; }
+  }
+  const out = { ts: Date.now(), ind: {}, active: false };
+  if (env.COINGLASS_API_KEY) { try { (await Promise.all(IND.map(one))).forEach(x => { out.ind[x.k] = x; if (x.last) out.active = true; }); } catch (e) {} }
+  const resp = jr(out, out.active ? 'public, max-age=600' : 'no-store'); // 10-min edge cache once live; keep retrying while the plan is still activating
+  if (out.active) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
+// Hyperliquid whale tracker — biggest current whale positions + recent whale actions (Coinglass /api/hyperliquid/*).
+async function handleCgHyper(url, env) {
+  const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
+  const ck = new Request('https://marginpad.io/__cg_hyper_v1');
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const H = { headers: { 'CG-API-KEY': env.COINGLASS_API_KEY } };
+  const out = { ts: Date.now(), active: false };
+  try {
+    const [posR, alR] = await Promise.all([
+      fetch('https://open-api-v4.coinglass.com/api/hyperliquid/whale-position', H).then(r => r.json()).catch(() => null),
+      fetch('https://open-api-v4.coinglass.com/api/hyperliquid/whale-alert', H).then(r => r.json()).catch(() => null),
+    ]);
+    if (posR && posR.code == 0 && Array.isArray(posR.data)) {
+      let longUsd = 0, shortUsd = 0, upnl = 0;
+      const rows = posR.data.map(x => {
+        const sz = +x.position_size || 0, val = Math.abs(+x.position_value_usd || 0), long = sz >= 0;
+        if (long) longUsd += val; else shortUsd += val; upnl += (+x.unrealized_pnl || 0);
+        return { user: String(x.user || ''), sym: String(x.symbol || '').toUpperCase(), long, val, lev: +x.leverage || 0, entry: +x.entry_price || 0, mark: +x.mark_price || 0, liq: +x.liq_price || 0, pnl: +x.unrealized_pnl || 0, mode: x.margin_mode || '' };
+      }).filter(r => r.val > 0).sort((a, b) => b.val - a.val);
+      out.positions = rows.slice(0, 40);
+      out.agg = { longUsd, shortUsd, upnl, count: rows.length };
+      out.active = true;
+    }
+    if (alR && alR.code == 0 && Array.isArray(alR.data)) {
+      out.alerts = alR.data.map(x => { const sz = +x.position_size || 0; return { user: String(x.user || ''), sym: String(x.symbol || '').toUpperCase(), long: sz >= 0, val: Math.abs(+x.position_value_usd || 0), entry: +x.entry_price || 0, liq: +x.liq_price || 0, action: String(x.position_action || ''), ts: +x.create_time || 0 }; }).slice(0, 40);
+    }
+  } catch (e) {}
+  const resp = jr(out, out.active ? 'public, max-age=60' : 'no-store'); // 60s edge cache — whale positions move fast
+  if (out.active) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
+// Spot ETF flows dashboard — Bitcoin & Ethereum spot-ETF daily net flows + per-fund AUM (Coinglass /api/etf/*).
+async function handleCgEtf(url, env) {
+  const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
+  const ck = new Request('https://marginpad.io/__cg_etf_v3');
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const H = { headers: { 'CG-API-KEY': env.COINGLASS_API_KEY } };
+  const ds = (arr, n) => { if (!Array.isArray(arr) || arr.length <= n) return arr || []; const step = Math.ceil(arr.length / n), o = []; for (let i = 0; i < arr.length; i += step) o.push(arr[i]); if (o[o.length - 1] !== arr[arr.length - 1]) o.push(arr[arr.length - 1]); return o; };
+  async function asset(a) {
+    let list = [], flows = [];
+    try { const r = await fetch('https://open-api-v4.coinglass.com/api/etf/' + a + '/list', H); const j = await r.json(); if (j && j.code == 0 && Array.isArray(j.data)) list = j.data.map(x => ({ ticker: x.ticker, name: x.fund_name, aum: +x.aum_usd || 0, vol: +x.volume_usd || 0, price: +x.price_usd || 0, status: x.market_status || '' })).filter(x => x.ticker).sort((p, q) => q.aum - p.aum); } catch (e) {}
+    try { const r = await fetch('https://open-api-v4.coinglass.com/api/etf/' + a + '/flow-history', H); const j = await r.json(); if (j && j.code == 0 && Array.isArray(j.data)) flows = j.data.map(x => ({ t: +x.timestamp || 0, flow: +x.flow_usd || 0, price: +x.price_usd || 0, per: Array.isArray(x.etf_flows) ? x.etf_flows : null })); } catch (e) {}
+    const totalAum = list.reduce((s, x) => s + x.aum, 0);
+    // latest settled day = last row with a non-zero flow (today is often 0/unsettled); per-fund breakdown from it
+    let latest = null; for (let i = flows.length - 1; i >= 0 && i > flows.length - 6; i--) { if (flows[i] && flows[i].flow) { latest = flows[i]; break; } }
+    if (!latest && flows.length) latest = flows[flows.length - 1];
+    const series = ds(flows.map(x => ({ t: x.t, flow: x.flow })), 140);
+    const lastPx = flows.length ? (flows[flows.length - 1].price || (latest ? latest.price : 0)) : 0;
+    return { list: list.slice(0, 14), totalAum, latestFlow: latest ? latest.flow : 0, latestTs: latest ? latest.t : 0, latestPrice: lastPx, latestPer: latest && latest.per ? latest.per : null, series };
+  }
+  const out = { ts: Date.now(), active: false };
+  if (env.COINGLASS_API_KEY) { try { const [btc, eth] = await Promise.all([asset('bitcoin'), asset('ethereum')]); out.btc = btc; out.eth = eth; out.active = !!(btc.series.length || eth.series.length); } catch (e) {} }
+  const resp = jr(out, out.active ? 'public, max-age=900' : 'no-store'); // 15-min edge cache (ETF flows update daily)
+  if (out.active) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
 async function handleCgPulse(url, env) {
   const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (!env.COINGLASS_API_KEY) return jr({ error: 'not_configured' }, 'no-store');
@@ -687,6 +830,11 @@ async function handleCalendar(request, env) {
       const kt = k + ':' + e.title; if (have[kt]) return; have[kt] = 1;
       events.push(e); });
   } catch (e) {}
+  // Token unlocks (Coinglass) — scheduled supply cliffs that can move price. All-day (dated at 00:00 UTC).
+  try {
+    const unlocks = await fetchTokenUnlocks(env);
+    unlocks.forEach(e => { if (e.ts >= from && e.ts <= to) events.push({ ...e, allday: true }); });
+  } catch (e) {}
   // Owner-added one-off events (conferences, upgrades, listings…) — KV cal:extra, edited from ops Settings.
   try {
     const extra = JSON.parse(await env.STATS.get('cal:extra') || '[]') || [];
@@ -715,7 +863,7 @@ async function handleCalAdmin(request, env) {
 // Calendar event reminders: signed-in EMAIL reminders stored in KV `calrem:<uid>:<tsSec>`; Telegram ones register
 // via the bot deep link /start cal_<tsSec>_<type> → KV `calremtg:<chat>:<tsSec>`. The */10 cron (checkCalReminders)
 // lists the shared `calrem` prefix and delivers ~30 min before the event (send window 35min→event), then deletes.
-const CAL_TITLES = { fomc: 'FOMC rate decision', cpi: 'US CPI (inflation) release', nfp: 'US jobs report (NFP)', expiry: 'BTC & ETH options expiry', crypto: 'Crypto event', macro: 'US macro release' };
+const CAL_TITLES = { fomc: 'FOMC rate decision', cpi: 'US CPI (inflation) release', nfp: 'US jobs report (NFP)', expiry: 'BTC & ETH options expiry', crypto: 'Crypto event', macro: 'US macro release', unlock: 'Token unlock' };
 // LIVE macro feed: TradingView's economic-calendar JSON (primary — long range, rich importance data; unofficial so
 // treat as best-effort) with the free ForexFactory weekly feed as fallback if TV blocks CF egress IPs. Edge-cached
 // 45 min → newly scheduled events (Fed speeches, schedule shifts, new releases) appear on the calendar by themselves.
@@ -763,6 +911,48 @@ async function fetchLiveMacro() {
   out.forEach(e => { e.desc = DESCS[e.title] || 'US macro release — dollar liquidity moves crypto.'; });
   try { await caches.default.put(ck, new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=2700' } })); } catch (e) {}
   return out;
+}
+// Token unlocks → calendar events. Coinglass `coin/unlock-list` next_unlock_date is BROKEN (always "today"), so the
+// real forward dates come from the per-coin `coin/vesting?symbol=X` endpoint (next_unlock.date + token_amount; price
+// derived from market_cap/circulating_supply). That endpoint is rate-limited (~429 after a few rapid calls), so the
+// whole basket is refreshed by the CRON (checkTokenUnlocks, ~once/12h, 700ms-spaced) into KV `cal:unlocks`; this
+// reader just returns that KV blob so handleCalendar stays instant.
+const UNLOCK_BASKET = 'ARB SUI APT SEI TIA W STRK PYTH JTO ENA ZK MANTA ALT DYM ETHFI AEVO ONDO ZRO SAGA EIGEN OP IMX'.split(' ');
+async function fetchTokenUnlocks(env) {
+  try { return JSON.parse(await env.STATS.get('cal:unlocks') || '[]') || []; } catch (e) { return []; }
+}
+// Cron: refresh the token-unlock calendar from Coinglass /api/coin/vesting (rate-limited → 700ms spaced). Guarded to
+// run ~once per 12h. Builds events from each coin's real next_unlock, price = market_cap/circulating_supply.
+async function checkTokenUnlocks(env) {
+  if (!env.COINGLASS_API_KEY) return;
+  let last = 0; try { last = +(await env.STATS.get('cal:unlocks:ts')) || 0; } catch (e) {}
+  if (Date.now() - last < 12 * 3600000) return; // already fresh
+  try { await env.STATS.put('cal:unlocks:ts', String(Date.now())); } catch (e) {} // stamp FIRST so a crash can't hammer the API
+  const H = { headers: { 'CG-API-KEY': env.COINGLASS_API_KEY } };
+  const now = Date.now(), out = [];
+  for (let i = 0; i < UNLOCK_BASKET.length; i++) {
+    if (i) await new Promise(r => setTimeout(r, 700));
+    const sym = UNLOCK_BASKET[i];
+    try {
+      const r = await fetch('https://open-api-v4.coinglass.com/api/coin/vesting?symbol=' + sym, H);
+      const j = await r.json();
+      const d = j && j.data, nu = d && d.next_unlock;
+      if (!d || !nu || !nu.date) continue;
+      const ts = +nu.date; if (ts < now - 2 * 86400000 || ts > now + 400 * 86400000) continue;
+      const circ = +d.circulating_supply || 0, mcap = +d.market_cap || 0, amt = +nu.next_unlock_token_amount || 0;
+      if (!circ || !amt) continue;
+      const price = mcap / circ, usd = amt * price;
+      if (usd < 3e6) continue; // skip tiny unlocks
+      const ofc = circ ? (amt / circ * 100) : 0;
+      const usdS = usd >= 1e9 ? '$' + (usd / 1e9).toFixed(2) + 'B' : '$' + (usd / 1e6).toFixed(1) + 'M';
+      out.push({ ts, type: 'unlock', sym, usd, ofCirc: ofc, tokens: amt,
+        title: sym + ' token unlock · ' + usdS,
+        desc: sym + ' unlocks ' + usdS + ' of new tokens' + (ofc ? ' — about ' + ofc.toFixed(2) + '% of circulating supply' : '') + '. Large scheduled unlocks add sell-side pressure; watch for volatility around the date.',
+        impact: (usd >= 75e6 || ofc >= 2) ? 2 : 1 });
+    } catch (e) {}
+  }
+  out.sort((a, b) => a.ts - b.ts);
+  try { await env.STATS.put('cal:unlocks', JSON.stringify(out)); } catch (e) {}
 }
 async function handleCalRemind(request, env) {
   if (request.method !== 'POST') return J({ error: 'method' }, 405);
@@ -1070,7 +1260,377 @@ async function checkSignals(env) {
     }
   } catch (e) {}
 }
+// Supertrend(period,mult) over a bar array → {dir[], atr[]} (dir: 1 up / -1 down). Standard ATR-band flip rule.
+// Clamp isolated phantom wicks (bad ticks) BEFORE any Supertrend calc — same idea as the chart engines' sanitizeBars,
+// so the signal sees exactly what the (sanitized) chart shows and a lone bad print can't flip Supertrend. A wick is
+// "phantom" only if it pokes >1.5% past the candle body AND past BOTH neighbours (a real move is corroborated → left alone).
+function _sanitizeSigBars(bars) {
+  const n = bars.length; if (n < 3) return bars;
+  for (let i = 1; i < n; i++) {
+    const b = bars[i], p = bars[i - 1], nx = (i < n - 1) ? bars[i + 1] : p; // forming (last) bar compares to the previous bar on both sides
+    const bLo = Math.min(b.open, b.close), bHi = Math.max(b.open, b.close);
+    const nLo = Math.min(p.low, nx.low), nHi = Math.max(p.high, nx.high);
+    if (b.low < nLo && (nLo - b.low) / nLo > 0.015 && b.low < bLo * 0.985) b.low = Math.min(bLo, nLo);
+    if (b.high > nHi && (b.high - nHi) / nHi > 0.015 && b.high > bHi * 1.015) b.high = Math.max(bHi, nHi);
+  }
+  return bars;
+}
+function _supertrend(bars, period, mult) {
+  const n = bars.length; if (n < period + 2) return null;
+  const tr = new Array(n); for (let i = 0; i < n; i++) { const h = bars[i].high, l = bars[i].low, pc = i ? bars[i - 1].close : bars[i].close; tr[i] = Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc)); }
+  const atr = new Array(n).fill(null); let a = 0; for (let i = 0; i < period; i++) a += tr[i]; atr[period - 1] = a / period; for (let i = period; i < n; i++) { a = (a * (period - 1) + tr[i]) / period; atr[i] = a; }
+  const fu = new Array(n).fill(null), fl = new Array(n).fill(null), dir = new Array(n).fill(null);
+  for (let i = period - 1; i < n; i++) {
+    const hl2 = (bars[i].high + bars[i].low) / 2, bu = hl2 + mult * atr[i], bl = hl2 - mult * atr[i];
+    fu[i] = (fu[i - 1] != null) ? ((bu < fu[i - 1] || bars[i - 1].close > fu[i - 1]) ? bu : fu[i - 1]) : bu;
+    fl[i] = (fl[i - 1] != null) ? ((bl > fl[i - 1] || bars[i - 1].close < fl[i - 1]) ? bl : fl[i - 1]) : bl;
+    const prev = dir[i - 1];
+    if (prev == null) dir[i] = bars[i].close >= hl2 ? 1 : -1;
+    else if (prev === 1) dir[i] = bars[i].close < fl[i] ? -1 : 1;
+    else dir[i] = bars[i].close > fu[i] ? 1 : -1;
+  }
+  return { dir, atr };
+}
+// Last ADX(period) over a bar array (Wilder). Trend-strength gate — ADX<20 ≈ chop (skip). Null if too few bars.
+function _adxLast(bars, p) {
+  const n = bars.length; if (n < 2 * p + 2) return null;
+  const tr = new Array(n), pdm = new Array(n), ndm = new Array(n);
+  for (let i = 0; i < n; i++) { if (!i) { tr[i] = pdm[i] = ndm[i] = 0; continue; } const up = bars[i].high - bars[i - 1].high, dn = bars[i - 1].low - bars[i].low; pdm[i] = (up > dn && up > 0) ? up : 0; ndm[i] = (dn > up && dn > 0) ? dn : 0; const pc = bars[i - 1].close; tr[i] = Math.max(bars[i].high - bars[i].low, Math.abs(bars[i].high - pc), Math.abs(bars[i].low - pc)); }
+  let atr = 0, ap = 0, an = 0; for (let i = 1; i <= p; i++) { atr += tr[i]; ap += pdm[i]; an += ndm[i]; }
+  const dx = []; for (let i = p + 1; i < n; i++) { atr = atr - atr / p + tr[i]; ap = ap - ap / p + pdm[i]; an = an - an / p + ndm[i]; const pdi = 100 * ap / atr, ndi = 100 * an / atr; dx.push(100 * Math.abs(pdi - ndi) / ((pdi + ndi) || 1)); }
+  if (dx.length < p) return null;
+  let adx = 0; for (let i = 0; i < p; i++) adx += dx[i]; adx /= p;
+  for (let i = p; i < dx.length; i++) adx = (adx * (p - 1) + dx[i]) / p;
+  return adx;
+}
+// fetch closed bars for a symbol/interval (reuses handleKlines' fallback+cache), dropping the still-forming last candle
+async function sigKlines(sym, ivMin) {
+  let bars = [];
+  try { const r = await handleKlines(new URL('https://marginpad.io/api/klines?symbol=' + sym + '&interval=' + ivMin)); bars = await r.json(); } catch (e) { return null; }
+  if (!Array.isArray(bars) || !bars.length) return null;
+  _sanitizeSigBars(bars); // strip phantom wicks so our Supertrend matches the sanitized chart (no bad-tick flips)
+  const periodSec = ivMin * 60, curStart = Math.floor(Date.now() / 1000 / periodSec) * periodSec;
+  const last = bars[bars.length - 1];
+  const closed = (last && last.time >= curStart) ? bars.slice(0, -1) : bars;
+  return { bars, closed };
+}
+// 1h Supertrend(10,3) BUY/SELL signals for the top-10 coins (+ HYPE) → Telegram, with TP/SL-hit follow-ups.
+// Watchlist: KV `csig:coins` (space-sep) else a default majors set + HYPE. Chat: KV `csig:chat` else TG_ADMIN_CHAT
+// (so it lands in the owner's DM until a public channel is set). Kill-switch KV `csig:on`='0'. Per-symbol state in
+// KV `csig:st:<SYM>`={dir,bar,entry,tp,sl,done}. TP=entry±3·ATR (2R), SL=entry∓1.5·ATR (1R) — same as the charts.
+// `force` (test): re-sends BTC's current setup regardless of flip/dedup. Runs each */10 cron (flips detect at hour close).
+// Ring-log each confirmed signal's outcome (TP1 hit = win, SL before TP1 = loss) for the weekly performance report.
+async function logSigResult(env, sym, r) {
+  try { await evPush(env, null, 'sigresult', sym + ' ' + r, ''); } catch (e) {}
+  try { let a = []; try { a = JSON.parse(await env.STATS.get('csig:results') || '[]'); } catch (e) {} a.unshift({ sym, r, ts: Date.now() }); await env.STATS.put('csig:results', JSON.stringify(a.slice(0, 400)), { expirationTtl: 90 * 86400 }); } catch (e) {}
+}
+// Weekly signal performance report → posted to every signal channel (Mon ≥09:00 UTC, once). Builds trust + justifies the paid tiers.
+async function postSignalReport(env) {
+  if (!env.STATS || !env.TELEGRAM_TOKEN) return;
+  const now = new Date();
+  if (now.getUTCDay() !== 1 || now.getUTCHours() < 9) return; // Monday, from 09:00 UTC
+  const wk = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString().slice(0, 10);
+  if (await env.STATS.get('csig:report:' + wk)) return; // once per week
+  await env.STATS.put('csig:report:' + wk, '1', { expirationTtl: 14 * 86400 });
+  let a = []; try { a = JSON.parse(await env.STATS.get('csig:results') || '[]'); } catch (e) {}
+  const wkRes = a.filter(x => x.ts >= Date.now() - 7 * 86400000);
+  if (wkRes.length < 3) return; // too few to report on
+  const n = wkRes.length, wins = wkRes.filter(x => x.r === 'win').length, wr = Math.round(wins / n * 100);
+  const expR = (wins * 1.5 - (n - wins)) / n; // TP1 = +1.5R, SL = −1R
+  const bySym = {}; wkRes.forEach(x => { (bySym[x.sym] = bySym[x.sym] || { w: 0, n: 0 }).n++; if (x.r === 'win') bySym[x.sym].w++; });
+  const best = Object.keys(bySym).map(s => ({ s, ...bySym[s] })).filter(x => x.n >= 2).sort((a, b) => (b.w / b.n) - (a.w / a.n) || b.n - a.n)[0];
+  const text = '📊 <b>Weekly signal report</b>\n' + DIV + '\n🎯 Signals fired: <b>' + n + '</b>\n✅ Hit target (TP1+): <b>' + wins + '</b>\n📈 Win rate: <b>' + wr + '%</b>\n💹 Expectancy: <b>' + (expR >= 0 ? '+' : '') + expR.toFixed(2) + 'R</b> / signal' + (best ? '\n⭐ Best coin: <b>' + best.s + '</b> (' + best.w + '/' + best.n + ')' : '') + '\n\n<i>1h Supertrend · TP1 = 1.5R, SL = 1R. Educational — past results ≠ future.</i>';
+  for (const t of ['fast', 'balanced', 'premium', 'free']) { const c = await env.STATS.get('csig:chat:' + t); if (c) { try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: c, parse_mode: 'HTML', disable_web_page_preview: true, text }); } catch (e) {} await new Promise(r => setTimeout(r, 300)); } }
+}
+// Funding-rate map (coin → % per 8h) from Bybit linear tickers, edge-cached 2 min.
+async function fundingMap(env) {
+  const ck = new Request('https://marginpad.io/__fundmap');
+  try { const h = await caches.default.match(ck); if (h) return await h.json(); } catch (e) {}
+  const out = {};
+  try { const r = await fetch('https://api.bybit.com/v5/market/tickers?category=linear', { cf: { cacheTtl: 120 } }); const j = await r.json(); ((j && j.result && j.result.list) || []).forEach(t => { if (/USDT$/.test(t.symbol)) { const s = t.symbol.replace(/USDT$/, ''), f = parseFloat(t.fundingRate); if (isFinite(f)) out[s] = f * 100; } }); } catch (e) {}
+  try { await caches.default.put(ck, new Response(JSON.stringify(out), { headers: { 'cache-control': 'public, max-age=120', 'content-type': 'application/json' } })); } catch (e) {}
+  return out;
+}
+// Funding-rate extreme alerts (per-user, KV fal:<chat>:<sym>) — fire when |funding| ≥ threshold, re-arm after 6h / when it normalizes.
+async function checkFundingAlerts(env) {
+  if (!env.STATS || !env.TELEGRAM_TOKEN) return;
+  let keys = []; try { const l = await env.STATS.list({ prefix: 'fal:', limit: 1000 }); keys = (l.keys || []).filter(k => k.name !== 'fal:on'); } catch (e) { return; }
+  if (!keys.length) return;
+  const fm = await fundingMap(env), now = Date.now();
+  for (const k of keys) {
+    let a = null; try { a = JSON.parse(await env.STATS.get(k.name) || 'null'); } catch (e) {}
+    if (!a || !a.sym) continue;
+    const f = fm[a.sym]; if (f == null) continue;
+    const hit = Math.abs(f) >= a.thr, chat = k.name.split(':')[1];
+    if (hit && (!a.fired || now - a.fired > 6 * 3600000)) {
+      a.fired = now; try { await env.STATS.put(k.name, JSON.stringify(a)); } catch (e) {}
+      try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', text: '💸 <b>Funding alert · ' + a.sym + '</b>\nFunding is <b>' + (f >= 0 ? '+' : '') + f.toFixed(3) + '%</b> — ' + (f > 0 ? 'crowded LONGS (longs pay shorts)' : 'crowded SHORTS (shorts pay longs)') + '.\n<i>Extreme funding often precedes a squeeze.</i> · /alerts' }); } catch (e) {}
+    } else if (!hit && a.fired) { a.fired = 0; try { await env.STATS.put(k.name, JSON.stringify(a)); } catch (e) {} }
+  }
+}
+async function checkChartSignals(env, force) {
+  try {
+    if (!env || !env.STATS || !env.TELEGRAM_TOKEN) return { err: 'no-env' };
+    if (!force && (await env.STATS.get('csig:on')) === '0') return { err: 'off' };
+    const chans = {
+      fast: (await env.STATS.get('csig:chat:fast')) || '',
+      balanced: (await env.STATS.get('csig:chat:balanced')) || '',
+      premium: (await env.STATS.get('csig:chat:premium')) || (await env.STATS.get('csig:chat')) || env.TG_ADMIN_CHAT || '',
+    };
+    if (!chans.fast && !chans.balanced && !chans.premium) return { err: 'no-chat' };
+    const token = env.TELEGRAM_TOKEN;
+    const TIER_NOTE = { fast: '⚡ <i>Fast — 1h flip, confirmed ~3min (matches the chart)</i>', balanced: '⚖️ <i>Balanced — 4h trend + volume confirmed</i>', premium: '💎 <i>Premium — 4h trend + ADX + volume confirmed</i>', free: '🆓 <i>Free pick — top-conviction setup, self-managed. Paid groups get live entries + TP1/TP2/SL alerts: /premium</i>' };
+    const listRaw = (await env.STATS.get('csig:coins') || 'BTC ETH SOL BNB XRP DOGE ADA AVAX LINK SUI HYPE').trim();
+    const coins = listRaw.split(/\s+/).map(s => s.toUpperCase().replace(/[^A-Z0-9]/g, '')).filter(Boolean).slice(0, 14);
+    const adxMin = +(await env.STATS.get('csig:adx') || 20);
+    const volMul = +(await env.STATS.get('csig:volmul') || 1.2);
+    const htfOn = (await env.STATS.get('csig:htf')) !== '0';
+    const evGuardOn = (await env.STATS.get('csig:evguard')) !== '0';
+    const liveCool = (+(await env.STATS.get('csig:livecool') || 12)) * 60000; // per-symbol cooldown between live Fast signals (min) — stops intrabar flip-flop spam
+    const fpx = v => { v = +v; return '$' + v.toLocaleString('en-US', { maximumFractionDigits: v >= 100 ? 2 : v >= 1 ? 4 : 6 }); };
+    const pct = (a, b) => Math.abs((a - b) / b * 100).toFixed(1);
+    const levOf = (e, sl) => { const p = Math.abs((sl - e) / e * 100) || 1; return Math.max(3, Math.min(20, Math.floor((100 / p) / 2.5))); };
+    // shared message builders
+    const DISC = '\n\n<i>Educational only — not financial advice.</i>';
+    const ticket = (long, sym, e, tp1, tp2, sl, tag) => (long ? '🟢 <b>BUY signal</b>' : '🔴 <b>SELL signal</b>') + ' · ' + sym + '/USDT · <b>1h</b>' + (tag || '') + '\n' + DIV + '\n'
+      + '🎯 Entry  <code>' + fpx(e) + '</code>\n'
+      + '🥇 TP1    <code>' + fpx(tp1) + '</code>  (+' + pct(tp1, e) + '%)  · take ~half\n'
+      + '🏁 TP2    <code>' + fpx(tp2) + '</code>  (+' + pct(tp2, e) + '%)\n'
+      + '🛑 SL     <code>' + fpx(sl) + '</code>  (−' + pct(sl, e) + '%)\n'
+      + '⚙️ Max lev <b>~' + levOf(e, sl) + '×</b>  · more risks liquidation before TP\n\n';
+    const mStop = (sym, long, e, sl) => '🛑 <b>STOP LOSS HIT</b> · ' + sym + ' ' + (long ? 'LONG' : 'SHORT') + '\n' + DIV + '\nEntry <code>' + fpx(e) + '</code> → <code>' + fpx(sl) + '</code>\n❌ <b>−' + pct(sl, e) + '%</b> — stopped out.';
+    const mTp1 = (sym, long, e, tp1, tp2) => '✅ <b>TP1 HIT</b> · ' + sym + ' ' + (long ? 'LONG' : 'SHORT') + '  <b>+' + pct(tp1, e) + '%</b>\n' + DIV + '\nTake partial profit and move your stop to entry <code>' + fpx(e) + '</code> — the rest is now <b>risk-free</b>.\n🏁 Next target TP2 <code>' + fpx(tp2) + '</code>.';
+    const mBe = (sym, long, e, tp1) => '⚖️ <b>BREAKEVEN</b> · ' + sym + ' ' + (long ? 'LONG' : 'SHORT') + '\n' + DIV + '\nPrice returned to entry after TP1 — runner closed at breakeven. You still banked <b>TP1 (+' + pct(tp1, e) + '%)</b>.';
+    const mTp2 = (sym, long, e, tp2) => '🏁 <b>TP2 HIT</b> · ' + sym + ' ' + (long ? 'LONG' : 'SHORT') + '  <b>+' + pct(tp2, e) + '%</b>\n' + DIV + '\nFull target reached — great trade. 🎉';
+    const send = async (chat, text, replyTo) => { const b = { chat_id: chat, text: text + DISC, parse_mode: 'HTML', disable_web_page_preview: true }; if (replyTo) { b.reply_to_message_id = replyTo; b.allow_sending_without_reply = true; } const r = await tgApi(token, 'sendMessage', b); return (r && r.result && r.result.message_id) || 0; }; // returns the sent message_id so TP/SL follow-ups can reply to the original signal (threaded)
+    // Event guard (once): skip NEW confirmed signals within ~2h before a high-impact macro event (FOMC/CPI).
+    let eventSoon = false;
+    if (evGuardOn && !force) {
+      try { const cr = await handleCalendar(new Request('https://marginpad.io/api/calendar'), env); const cj = await cr.json(); const now = Date.now();
+        eventSoon = (cj.events || []).some(e => e.impact >= 3 && e.type !== 'unlock' && e.type !== 'crypto' && e.ts >= now - 15 * 60000 && e.ts <= now + 2 * 3600000); } catch (e) {}
+    }
+    const report = { chans, sent: [], scanned: 0, eventSoon };
+    // decision-trace log (owner request): every arm/cancel/resync/FIRE with closed-vs-live context → KV csig:log
+    // ring (300, 7d), batched into ONE write per run. Read via /api/admin/csig?state=1. Format per entry:
+    // {t, s:'ETH', ev:'FIRE-live', sig:'SELL', closed:'LONG', live:'SHORT', hold:182, bar:'2026-07-23T13:00', px}
+    const slog = [];
+    const DIRN = d => (d === 1 ? 'LONG' : 'SHORT');
+    const BART = b => { try { return new Date(b * 1000).toISOString().slice(0, 16); } catch (e) { return String(b); } };
+    const sl = o => { try { slog.push({ t: Date.now(), ...o }); } catch (e) {} };
+    for (const sym of coins) {
+      try {
+        const kd = await sigKlines(sym, 60); if (!kd || kd.bars.length < 40) continue;
+        const bars = kd.bars, closed = kd.closed; if (closed.length < 30) continue;
+        report.scanned++;
+        const now = Date.now();
+
+        // ========= LIVE (Fast channel): forming-candle Supertrend → fires ~3min after a flip appears (not ~30min at
+        // candle close). Matches the chart because: (1) sigKlines now SANITIZES phantom wicks (same as the chart) so a
+        // bad tick can't flip it; (2) the flip must HOLD ≥3 cron cycles (~3min) before firing — a wick that reverts
+        // never sends; (3) at most ONE Fast signal per 1h candle (no buy+sell in the same candle). Owner: "few min ok". =========
+        if (chans.fast && !force) {
+          const stL = _supertrend(bars, 10, 3);
+          const stCL = _supertrend(closed, 10, 3); const cDir = stCL ? stCL.dir[stCL.dir.length - 1] : null; // the CLOSED-bar direction = what the chart's markers show
+          const iL = bars.length - 1, lDir = stL.dir[iL], lAtr = stL.atr[iL], lPx = bars[iL].close, curBar = bars[iL].time;
+          if (lDir != null && cDir != null && isFinite(lAtr) && lAtr > 0) {
+            let ls = null; try { ls = JSON.parse(await env.STATS.get('csig:live:' + sym) || 'null'); } catch (e) {}
+            if (!ls) { await env.STATS.put('csig:live:' + sym, JSON.stringify({ sigDir: cDir, done: true, seed: 1 })); } // seed with the CLOSED dir (never the forming one — seeding mid-wobble poisoned sigDir and later fired a phantom "return to trend" signal)
+            else {
+              // (a) track an open live signal on the live price (running peaks; no candle-wick false triggers)
+              if (!ls.done && ls.tp1 != null && ls.sigDir === lDir) {
+                const long = ls.sigDir === 1;
+                ls.peakHi = Math.max(ls.peakHi || ls.entry, lPx); ls.peakLo = Math.min(ls.peakLo || ls.entry, lPx);
+                let m = null;
+                if (ls.phase === 0) {
+                  if (long ? ls.peakLo <= ls.sl : ls.peakHi >= ls.sl) { m = mStop(sym, long, ls.entry, ls.sl); ls.done = true; }
+                  else if (long ? ls.peakHi >= ls.tp1 : ls.peakLo <= ls.tp1) { m = mTp1(sym, long, ls.entry, ls.tp1, ls.tp2); ls.phase = 1; ls.sl = ls.entry; ls.peakHi = ls.peakLo = ls.entry; }
+                } else {
+                  if (long ? ls.peakLo <= ls.sl : ls.peakHi >= ls.sl) { m = mBe(sym, long, ls.entry, ls.tp1); ls.done = true; }
+                  else if (long ? ls.peakHi >= ls.tp2 : ls.peakLo <= ls.tp2) { m = mTp2(sym, long, ls.entry, ls.tp2); ls.done = true; }
+                }
+                if (m) { await send(chans.fast, m + (ls.sigId ? '\n🆔 <code>#' + ls.sigId + '</code>' : ''), ls.msgId); report.sent.push(sym + ' fast-' + (ls.done ? 'exit' : 'tp1')); }
+                await env.STATS.put('csig:live:' + sym, JSON.stringify(ls)); // always persist so running peaks accumulate across minutes
+              }
+              // (b) NEW live flip → arm it, and only FIRE once it has held for a full cron cycle (kills forming-candle wicks).
+              // A live "flip" is ONLY when the forming dir differs from the CLOSED-bar dir (= the marker the chart would
+              // print if the candle closed now). Comparing to ls.sigDir alone fired phantom "return to trend" signals:
+              // live wobbles SHORT (sigDir=-1), recovers to the standing LONG → old code saw "flip to LONG" and sent a
+              // BUY that never appeared on the chart (ETH 2026-07-23). lDir!==ls.sigDir stays as a same-direction dedupe.
+              if (lDir !== cDir && lDir !== ls.sigDir) {
+                if (ls.firedBar === curBar) { /* already fired once this 1h candle → never a second (opposite) signal in the same candle */ }
+                else if (ls.pendDir !== lDir || !ls.pendTs) { ls.pendDir = lDir; ls.pendTs = now; await env.STATS.put('csig:live:' + sym, JSON.stringify(ls)); sl({ s: sym, ev: 'arm', closed: DIRN(cDir), live: DIRN(lDir), bar: BART(curBar) }); } // arm — do NOT fire yet
+                else if (now - ls.pendTs >= 170000 && now >= (ls.cool || 0)) { // held ≥~3 cron cycles (~3min) → a real, sticking flip, fire it
+                  const long = lDir === 1, e = lPx, risk = 1.5 * lAtr;
+                  const tp1 = long ? e + 1.5 * risk : e - 1.5 * risk, tp2 = long ? e + 3 * risk : e - 3 * risk, sl = long ? e - risk : e + risk;
+                  const sigId = sym + 'L' + (Math.floor(now / 60000) % 46656).toString(36).toUpperCase();
+                  const mid = await send(chans.fast, ticket(long, sym, e, tp1, tp2, sl, ' ⚡<i>live</i>') + '🆔 <code>#' + sigId + '</code>');
+                  await env.STATS.put('csig:live:' + sym, JSON.stringify({ sigDir: lDir, entry: e, risk, tp1, tp2, sl, phase: 0, peakHi: e, peakLo: e, cool: now + liveCool, ts: now, done: false, msgId: mid, sigId, firedBar: curBar }));
+                  try { const dk = 'csig:sentd:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + 1), { expirationTtl: 3 * 86400 }); } catch (e) {} // daily sent counter → digest + morning brief
+                  sl({ s: sym, ev: 'FIRE-live', sig: long ? 'BUY' : 'SELL', closed: DIRN(cDir), live: DIRN(lDir), hold: Math.round((now - ls.pendTs) / 1000), bar: BART(curBar), px: e, atr: Number(lAtr.toPrecision(5)), c3: closed.slice(-3).map(b => b.close) }); // atr + last-3 closed closes = data fingerprint — a data-source phantom becomes provable by diffing c3 vs the chart's candles
+                  report.sent.push(sym + ' LIVE ' + (long ? 'BUY' : 'SELL'));
+                  try { await evPush(env, null, 'signal', sym + ' ' + (long ? 'BUY' : 'SELL') + ' live', ''); } catch (e) {}
+                }
+              } else {
+                let dirty = false;
+                if (ls.pendDir != null) { sl({ s: sym, ev: 'cancel', closed: DIRN(cDir), live: DIRN(lDir), hold: ls.pendTs ? Math.round((now - ls.pendTs) / 1000) : 0, bar: BART(curBar) }); ls.pendDir = null; ls.pendTs = 0; dirty = true; } // forming dir snapped back before holding → it was a wick, cancel
+                if (ls.done && lDir === cDir && ls.sigDir !== cDir) { ls.sigDir = cDir; dirty = true; sl({ s: sym, ev: 'resync', closed: DIRN(cDir), bar: BART(curBar) }); } // wobble over / candle closed → re-sync to the closed trend so the NEXT genuine flip fires exactly once
+                if (dirty) await env.STATS.put('csig:live:' + sym, JSON.stringify(ls));
+              }
+            }
+          }
+        }
+
+        // ========= CONFIRMED (Balanced + Premium): on CLOSED candles, with the backtested filters =========
+        const st = _supertrend(closed, 10, 3); if (!st) continue;
+        const li = closed.length - 1;
+        const dNow = st.dir[li], dPrev = st.dir[li - 1], atr = st.atr[li];
+        if (dNow == null || dPrev == null || !isFinite(atr) || atr <= 0) continue;
+        const bar = closed[li].time, entry = closed[li].close;
+        let state = null; try { state = JSON.parse(await env.STATS.get('csig:st:' + sym) || 'null'); } catch (e) {}
+        let flip = dNow !== dPrev;
+        if (force && sym === 'BTC') { flip = true; state = null; }
+        if (flip && (!state || state.bar !== bar || force)) {
+          const long = dNow === 1;
+          const risk = 1.5 * atr, tp1 = long ? entry + 1.5 * risk : entry - 1.5 * risk, tp2 = long ? entry + 3 * risk : entry - 3 * risk, sl = long ? entry - risk : entry + risk;
+          const sigId = sym + (bar % 46656).toString(36).toUpperCase(); // short, stable per-signal tag e.g. BTC3F2
+          // ---- confluence metrics (gate Premium + enrich its message) ----
+          const cl = closed.map(b => b.close);
+          const adxV = _adxLast(closed, 14), rsiV = _rsi(cl, 14);
+          const ema200 = cl.length >= 200 ? _emaSeries(cl, 200)[cl.length - 1] : null;
+          const _v20 = closed.slice(-20), _vavg = _v20.reduce((s, b) => s + (+b.vol || 0), 0) / (_v20.length || 1);
+          const volR = _vavg > 0 ? (+closed[li].vol || 0) / _vavg : 0;
+          let tiers;
+          if (force) { tiers = ['premium']; }
+          else {
+            const evOk = !eventSoon;
+            const volOk = volMul <= 0 || (_vavg > 0 && (+closed[li].vol || 0) >= volMul * _vavg);
+            let htfOk = true;
+            if (htfOn) { const h = await sigKlines(sym, 240); const hc = h && h.closed; const hst = hc && hc.length >= 30 ? _supertrend(hc, 10, 3) : null; const hdir = hst ? hst.dir[hc.length - 1] : null; htfOk = hdir === dNow; }
+            // Premium = highest conviction: 4h trend aligned + strong ADX + aligned with the 200-EMA macro trend + not exhausted (RSI). Balanced = 4h + volume only.
+            const pAdxOk = adxV != null && adxV >= Math.max(adxMin || 0, 25);
+            const pRsiOk = rsiV == null || (long ? rsiV <= 74 : rsiV >= 26); // don't buy blow-off tops / sell capitulation lows
+            const pEmaOk = ema200 == null || (long ? entry >= ema200 * 0.995 : entry <= ema200 * 1.005);
+            tiers = []; // Fast fires from the LIVE forming-candle path above (sanitized + 3min hold); these are the confirmed closed-candle tiers
+            if (evOk && htfOk && volOk) tiers.push('balanced');
+            if (evOk && htfOk && volOk && pAdxOk && pRsiOk && pEmaOk) tiers.push('premium');
+          }
+          const postTiers = tiers.filter(t => chans[t]);
+          if (!postTiers.length) { if (!force) await env.STATS.put('csig:st:' + sym, JSON.stringify({ bar, done: true })); continue; }
+          const isPrem = tiers.includes('premium');
+          const text = ticket(long, sym, entry, tp1, tp2, sl, force ? ' <i>(test)</i>' : '') + 'Supertrend flipped ' + (long ? 'bullish 📈' : 'bearish 📉') + ' on the 1h (candle closed).\n🆔 <code>#' + sigId + '</code>\n';
+          // ---- enriched PREMIUM message: confluence readout + trade plan + hold / time-stop guidance ----
+          const cfl = [];
+          if (ema200 != null) cfl.push(long ? 'price &gt; 200-EMA 📈' : 'price &lt; 200-EMA 📉');
+          cfl.push('4h trend aligned ✅');
+          if (adxV != null) cfl.push('ADX ' + Math.round(adxV) + (adxV >= 30 ? ' <b>strong</b>' : ''));
+          if (rsiV != null) cfl.push('RSI ' + Math.round(rsiV));
+          if (volR) cfl.push('Vol ' + volR.toFixed(1) + '×');
+          const premText = ticket(long, sym, entry, tp1, tp2, sl, ' 💎') + '<b>Confirmed 1h ' + (long ? 'LONG 📈' : 'SHORT 📉') + '</b> — Supertrend flip on candle close.\n'
+            + '✅ <b>Why:</b> ' + cfl.join(' · ') + '\n'
+            + '📋 <b>Plan:</b> enter now, take ~50% at TP1, move stop to breakeven, trail the runner to TP2.\n'
+            + '⏳ <b>Hold ~1–4h</b> (until TP1/TP2 or the 1h Supertrend flips back). If TP1 isn’t tagged within ~3h and price stalls, momentum failed — I’ll ping a time-check.\n'
+            + '🆔 <code>#' + sigId + '</code>';
+          const msgIds = {}; let sentOk = 0;
+          // one channel failing must NEVER abort the others or state persistence — an unsaved state re-fires next minute and DUPLICATES the signal in every channel that already got it
+          for (const t of postTiers) { const bd = t === 'premium' ? premText : (text + TIER_NOTE[t]); try { msgIds[t] = await send(chans[t], bd); sentOk++; } catch (e) {} await new Promise(r => setTimeout(r, 90)); }
+          // FREE channel: gets the top-conviction (premium-grade) setup as a taste — NO follow-up management (live entries + TP/SL alerts are the paid perk)
+          if (!force && chans.free && isPrem) { try { await send(chans.free, text + TIER_NOTE.free); } catch (e) {} await new Promise(r => setTimeout(r, 90)); }
+          if (!force && sentOk) await env.STATS.put('csig:st:' + sym, JSON.stringify({ dir: dNow, bar, entry, risk, tp1, tp2, sl, phase: 0, tiers: postTiers, premium: isPrem, msgIds, sigId, ts: Date.now(), done: false })); // zero deliveries (TG fully down) → don't persist → clean retry next minute
+          if (!force && sentOk) { try { const dk = 'csig:sentd:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + 1), { expirationTtl: 3 * 86400 }); } catch (e) {} }
+          if (!force && sentOk) { try { await evPush(env, null, 'signal', sym + ' ' + (long ? 'BUY' : 'SELL') + ' ' + postTiers.join('/'), ''); } catch (e) {} }
+          if (!force && sentOk) sl({ s: sym, ev: 'FIRE-confirmed', sig: long ? 'BUY' : 'SELL', flip: (dPrev === 1 ? 'LONG' : 'SHORT') + '->' + (dNow === 1 ? 'LONG' : 'SHORT'), bar: BART(bar), tiers: postTiers.join('/'), px: entry, atr: Number(atr.toPrecision(5)), c3: closed.slice(-3).map(b => b.close) });
+          report.sent.push(sym + ' ' + (long ? 'BUY' : 'SELL') + ' [' + postTiers.join('/') + ']');
+          continue;
+        }
+        // confirmed TP/SL tracking — only price AFTER the entry candle counts (the flip candle's own pre-entry wick must NOT trigger)
+        if (state && !state.done && state.dir === dNow && state.tp1 != null) {
+          const long = state.dir === 1; let msg = null;
+          if (state.phase === 0) {
+            const post = bars.filter(b => b.time > state.bar);
+            if (post.length) { const hi = Math.max(...post.map(b => b.high)), lo = Math.min(...post.map(b => b.low));
+              if (long ? lo <= state.sl : hi >= state.sl) { msg = mStop(sym, long, state.entry, state.sl); state.done = true; await logSigResult(env, sym, 'loss'); } // SL before TP1 = loss
+              else if (long ? hi >= state.tp1 : lo <= state.tp1) { msg = mTp1(sym, long, state.entry, state.tp1, state.tp2); state.phase = 1; state.sl = state.entry; state.tp1bar = bars[bars.length - 1].time; await logSigResult(env, sym, 'win'); } // reached TP1 = win (banked, now risk-free)
+            }
+          } else {
+            const post = bars.filter(b => b.time > (state.tp1bar || state.bar));
+            if (post.length) { const hi = Math.max(...post.map(b => b.high)), lo = Math.min(...post.map(b => b.low));
+              if (long ? lo <= state.sl : hi >= state.sl) { msg = mBe(sym, long, state.entry, state.tp1); state.done = true; }
+              else if (long ? hi >= state.tp2 : lo <= state.tp2) { msg = mTp2(sym, long, state.entry, state.tp2); state.done = true; }
+            }
+          }
+          // Premium time-stop: no TP1 in ~4h → momentum stalled (one-time ping, threaded under the signal)
+          if (!msg && state.premium && state.phase === 0 && !state.stalled && (Date.now() - (state.ts || 0)) > 4 * 3600000) {
+            state.stalled = true;
+            const c = chans.premium;
+            if (c) { await send(c, '⏳ <b>Time-check</b> · ' + sym + ' ' + (state.dir === 1 ? 'LONG' : 'SHORT') + '\n' + DIV + '\n~4h in and TP1 isn’t tagged — momentum has stalled. Consider closing near entry (breakeven) or tightening your stop.\n🆔 <code>#' + state.sigId + '</code>', state.msgIds && state.msgIds.premium); }
+            await env.STATS.put('csig:st:' + sym, JSON.stringify(state));
+          }
+          if (msg) {
+            const tagged = msg + (state.sigId ? '\n🆔 <code>#' + state.sigId + '</code>' : '');
+            for (const t of (state.tiers || ['premium'])) { const c = chans[t]; if (c) { try { await send(c, tagged, state.msgIds && state.msgIds[t]); } catch (e) {} await new Promise(r => setTimeout(r, 90)); } } // reply to the original signal per channel (threaded); per-channel try/catch — a missed follow-up in one channel beats duplicate spam in all of them
+            await env.STATS.put('csig:st:' + sym, JSON.stringify(state));
+            report.sent.push(sym + (state.done ? (state.phase === 1 ? ' TP2/BE' : ' SL') : ' TP1'));
+          }
+        }
+      } catch (e) {}
+      await new Promise(r => setTimeout(r, 80));
+    }
+    if (slog.length) { try { let lg = []; try { lg = JSON.parse(await env.STATS.get('csig:log') || '[]'); } catch (e) {} lg.unshift(...slog.reverse()); await env.STATS.put('csig:log', JSON.stringify(lg.slice(0, 300)), { expirationTtl: 7 * 86400 }); } catch (e) {} } // one batched write per run
+    try { await env.STATS.put('csig:dbg', JSON.stringify({ ts: Date.now(), ok: 1, scanned: report.scanned, coins: coins.length, sent: report.sent }), { expirationTtl: 3600 }); } catch (e) {}
+    return report;
+  } catch (e) { try { await env.STATS.put('csig:dbg', JSON.stringify({ ts: Date.now(), err: String((e && e.stack) || e).slice(0, 300) }), { expirationTtl: 3600 }); } catch (_) {} return { err: String(e).slice(0, 120) }; }
+}
+// Daily status post to the signal channels — makes SILENCE visibly different from BREAKAGE. A quiet market can
+// go 24h+ without a single 1h Supertrend flip; without this, subscribers (and the owner) can't tell "no setups"
+// from "bot died". One compact message per day (default 18:00 UTC; KV csig:digesthour to change, csig:digest='0' to disable).
+async function postSignalDigest(env) {
+  try {
+    if (!env || !env.STATS || !env.TELEGRAM_TOKEN) return;
+    if ((await env.STATS.get('csig:on')) === '0') return;
+    if ((await env.STATS.get('csig:digest')) === '0') return;
+    const now = new Date(); if (now.getUTCHours() < (+(await env.STATS.get('csig:digesthour')) || 18)) return;
+    const day = now.toISOString().slice(0, 10);
+    if (await env.STATS.get('csig:digest:' + day)) return;
+    await env.STATS.put('csig:digest:' + day, '1', { expirationTtl: 2 * 86400 }); // stamp FIRST — never double-post
+    const coins = ((await env.STATS.get('csig:coins')) || 'BTC ETH SOL BNB XRP DOGE ADA AVAX LINK SUI HYPE').trim().split(/\s+/).map(s => s.toUpperCase().replace(/[^A-Z0-9]/g, '')).filter(Boolean).slice(0, 14);
+    const rows = [];
+    for (const sym of coins) {
+      try { const kd = await sigKlines(sym, 60); if (!kd || kd.closed.length < 30) continue;
+        const st = _supertrend(kd.closed, 10, 3); const d = st.dir[st.dir.length - 1];
+        if (d != null) rows.push(sym + ' ' + (d === 1 ? '📈' : '📉'));
+      } catch (e) {}
+      await new Promise(r => setTimeout(r, 60));
+    }
+    const sentToday = +(await env.STATS.get('csig:sentd:' + day)) || 0;
+    const text = '📡 <b>Daily check-in</b> — scanning ' + coins.length + ' coins every minute, around the clock.\n'
+      + '🎯 Signals today: <b>' + sentToday + '</b>' + (sentToday ? '' : ' — no confirmed 1h flips today. No flip = no trade; we don’t invent signals.') + '\n'
+      + '🧭 1h Supertrend stance: ' + rows.join(' · ') + '\n'
+      + '💬 Talk trades with the floor: t.me/Marginpadgroup\n'
+      + '<i>Standing by — the next flip posts here the minute it confirms.</i>';
+    for (const t of ['fast', 'balanced', 'premium', 'free']) {
+      const c = await env.STATS.get('csig:chat:' + t); if (!c) continue;
+      try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: c, parse_mode: 'HTML', disable_web_page_preview: true, text }); } catch (e) {}
+      await new Promise(r => setTimeout(r, 200));
+    }
+    try { await evPush(env, null, 'digest', sentToday + ' signals today', ''); } catch (e) {}
+  } catch (e) {}
+}
 // single-symbol live price (for the Telegram bot price/alert features)
+// A4 scale fix: server fills + sweeps used to call the exchanges directly on EVERY request — at scale that's
+// an upstream fan-out (and exchange IP bans; Binance already blocks CF IPs). This wrapper reuses the same edge
+// cache the /api/price route maintains (5s TTL), so a burst of fills costs ONE upstream fetch per symbol/5s.
+async function fetchPriceCached(sym) {
+  const s2 = String(sym || '').toUpperCase().replace(/USDT$/, '').replace(/[^A-Z0-9]/g, '');
+  if (!s2) return null;
+  try {
+    const ck = new Request('https://marginpad.io/__price_' + s2);
+    const hit = await caches.default.match(ck);
+    if (hit) { const j2 = await hit.json(); if (j2 && +j2.price > 0) return j2; }
+  } catch (e) {}
+  const pd = await fetchPrice(s2);
+  if (pd && +pd.price > 0) { try { await caches.default.put(new Request('https://marginpad.io/__price_' + s2), new Response(JSON.stringify(pd), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=5' } })); } catch (e) {} }
+  return pd;
+}
 async function fetchPrice(sym) {
   const s = String(sym || '').toUpperCase().replace(/USDT$/, '').replace(/[^A-Z0-9]/g, '');
   if (!s) return null;
@@ -1090,6 +1650,11 @@ async function fetchPrice(sym) {
   // Gate.io fallback — same source as the screener/klines, so anything the screener lists resolves a live price
   try {
     const r = await fetch('https://api.gateio.ws/api/v4/spot/tickers?currency_pair=' + s + '_USDT', { cf: { cacheTtl: 10 } });
+    if (r.ok) { const d = await r.json(); const it = Array.isArray(d) && d[0]; if (it) { const p = +it.last; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: +it.change_percentage }; } }
+  } catch (e) {}
+  // Gate.io USDT-PERP futures — metals/indices/forex (gold XAU, silver XAG, NAS100, US30, SPX500, GBPUSD…) live on Gate FUTURES, not spot
+  try {
+    const r = await fetch('https://api.gateio.ws/api/v4/futures/usdt/tickers?contract=' + s + '_USDT', { cf: { cacheTtl: 10 } });
     if (r.ok) { const d = await r.json(); const it = Array.isArray(d) && d[0]; if (it) { const p = +it.last; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: +it.change_percentage }; } }
   } catch (e) {}
   // OKX USDT-perp — broad long-tail coverage CF can reach; closes the gap for tokens listed on OKX but not Bybit/Gate
@@ -1138,6 +1703,12 @@ async function handleKlines(url) {
     const r = await fetch(g, { cf: { cacheTtl: hasEnd ? 600 : 20 } });
     if (r.ok) { const d = await r.json(); // Gate row: [t, quoteVol, close, high, low, open, baseVol, closed]
       if (Array.isArray(d) && d.length) out = d.map(k => ({ time: +k[0], open: +k[5], high: +k[3], low: +k[4], close: +k[2], vol: +k[6] })).sort((a, b) => a.time - b.time); }
+  } catch (e) {}
+  // Gate.io USDT-PERP futures — candles for metals/indices/forex (these live on Gate futures, not spot). Row = {t,o,h,l,c,v}
+  if (!out) try {
+    const g = 'https://api.gateio.ws/api/v4/futures/usdt/candlesticks?contract=' + sym + '_USDT&interval=' + (gMap[iv] || '1h') + '&limit=1000' + (hasEnd ? '&to=' + Math.floor(end / 1000) : '');
+    const r = await fetch(g, { cf: { cacheTtl: hasEnd ? 600 : 20 } });
+    if (r.ok) { const d = await r.json(); if (Array.isArray(d) && d.length) out = d.map(k => ({ time: +k.t, open: +k.o, high: +k.h, low: +k.l, close: +k.c, vol: +k.v })).sort((a, b) => a.time - b.time); }
   } catch (e) {}
   // Bybit spot — fallback
   if (!out) try {
@@ -1294,11 +1865,32 @@ async function evPush(env, request, type, label, pg) {
     const u = request ? (getCookie(request, 'mp_un') || '').slice(0, 24) : '';
     let log = []; try { log = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
     log.unshift({ t: type, e: String(label || '').slice(0, 48), cc, v: 'srv', u, p: pg || '', d: deviceOf((request && request.headers.get('user-agent')) || ''), ts: Date.now() });
-    { const _cut = Date.now() - 10800000; log = log.filter(e => (e.ts || 0) > _cut).slice(0, 600); } // keep ~3h (cap 600), matches handleTrack
+    { const _cut = Date.now() - 10800000; log = log.filter(e => (e.ts || 0) > _cut).slice(0, 800); } // keep ~3h (cap 800) — the Activity tab shows the full ring
     await env.STATS.put('evlog', JSON.stringify(log), { expirationTtl: 86400 });
     try { const k = 'ev:' + type; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1)); } catch (e) {}
     try { if (env.AE) env.AE.writeDataPoint({ indexes: [type], blobs: ['event', type, String(label || '').slice(0, 90), cc, pg || ''], doubles: [1] }); } catch (e) {}
   } catch (e) {}
+}
+// ---- A5: per-isolate KV write batching (447k writes/day -> target <100k). Same key formats; counters
+// approximate-by-design (AE holds exact analytics); an isolate evict loses at most one tiny batch. ----
+async function kvIncFlush(env, batch) {
+  for (const [k, e] of batch) {
+    try { const c = await env.STATS.getWithMetadata(k); const v = ((c && c.metadata && c.metadata.c) || 0) + e.d; const o = { metadata: { c: v } }; if (e.ttl) o.expirationTtl = e.ttl; await env.STATS.put(k, String(v), o); } catch (e2) {}
+  }
+}
+async function kvRingFlush(env, key, items, cap, cutMs, ttl) {
+  try { let log = []; try { log = JSON.parse(await env.STATS.get(key) || '[]'); } catch (e) {} log.unshift(...items.reverse()); if (cutMs) { const c = Date.now() - cutMs; log = log.filter(x => x && (x.ts || 0) > c); } await env.STATS.put(key, JSON.stringify(log.slice(0, cap)), { expirationTtl: ttl || 86400 }); } catch (e) {}
+}
+function kvRingPush(env, ctx, key, entry, cap, cutMs) {
+  try { const B = globalThis.__ringB = globalThis.__ringB || {}; const b = B[key] = B[key] || { a: [], t: Date.now() }; b.a.push(entry);
+    if (b.a.length >= 8 || Date.now() - b.t > 15000) { const items = b.a; B[key] = { a: [], t: Date.now() }; if (ctx) ctx.waitUntil(kvRingFlush(env, key, items, cap, cutMs)); } } catch (e) {}
+}
+async function onlogFlush(env, mm) {
+  try { let om = {}; try { om = JSON.parse(await env.STATS.get('onlog') || '{}'); } catch (e) {} Object.assign(om, mm); const cut = Date.now() - 240000; for (const k in om) if (om[k] < cut) delete om[k]; await env.STATS.put('onlog', JSON.stringify(om), { expirationTtl: 900 }); } catch (e) {}
+}
+function onlogMark(env, ctx, vid6) {
+  try { const B = globalThis.__onB = globalThis.__onB || { m: {}, t: Date.now() }; B.m[vid6] = Date.now();
+    if (Object.keys(B.m).length >= 10 || Date.now() - B.t > 30000) { const mm = B.m; globalThis.__onB = { m: {}, t: Date.now() }; if (ctx) ctx.waitUntil(onlogFlush(env, mm)); } } catch (e) {}
 }
 async function handleTrack(url, request, env, ctx) {
   // persistent first-party DEVICE id (2y cookie): survives IP/UA changes, links multi-account Rewards abuse
@@ -1319,7 +1911,18 @@ async function handleTrack(url, request, env, ctx) {
   const p = url.searchParams;
   const type = (p.get('t') || 'event').replace(/[^a-z0-9_-]/gi, '').slice(0, 24);
   const label = (p.get('e') || '').replace(/[^a-zA-Z0-9 #:._/-]/g, '').slice(0, 48);
-  const inc = async (k, ttl) => { try { const c = await env.STATS.getWithMetadata(k); const v = ((c && c.metadata && c.metadata.c) || 0) + 1; const o = { metadata: { c: v } }; if (ttl) o.expirationTtl = ttl; await env.STATS.put(k, String(v), o); } catch (e) {} };
+  const inc = (k, ttl) => { try { const B = globalThis.__incB = globalThis.__incB || { m: new Map(), t: Date.now() }; const e = B.m.get(k) || { d: 0, ttl }; e.d++; if (ttl) e.ttl = ttl; B.m.set(k, e); if (B.m.size >= 12 || Date.now() - B.t > 20000) { const batch = B.m; globalThis.__incB = { m: new Map(), t: Date.now() }; if (ctx) ctx.waitUntil(kvIncFlush(env, batch)); } } catch (e) {} }; // A5: batched — one KV RMW per key per ~12 events/20s instead of per event
+  // A SIGNED-IN user is a real person (they logged in with email) → always record their per-user activity (powers the
+  // admin activity trail AND daily-mission verification), even if their UA looks bot-like. In-app browsers (WhatsApp,
+  // some Android okhttp webviews) trip the isBot filter below, which was silently dropping their pageviews so pv-based
+  // missions (e.g. "check the XP leaderboard") could never complete. The bot gate still keeps them out of public STATS.
+  try {
+    const _uid = getCookie(request, 'mp_uid');
+    if (_uid && env.USERS && ctx) {
+      const _ua = request.headers.get('user-agent') || '';
+      ctx.waitUntil(env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/track', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: _uid, type, label, path: (p.get('p') || '/').slice(0, 60), cc: (request.cf && request.cf.country) || '', dev: deviceOf(_ua) }) })).catch(() => {}));
+    }
+  } catch (e) {}
   // Bot/crawler filtering — keep them out of the visitor numbers so CTR/bounce/countries stay honest.
   // We still tally how many we filtered (botf:*) so the dashboard can show "X bots filtered today".
   if (isBot(request.headers.get('user-agent') || '')) {
@@ -1332,13 +1935,7 @@ async function handleTrack(url, request, env, ctx) {
       const hUa = request.headers.get('user-agent') || '';
       const hDid = getCookie(request, 'mp_did');
       const hVid = hDid ? await sha8('d|' + hDid) : await sha8(hIp + '|' + hUa);
-      if (hVid) {
-        await env.STATS.put('on:' + hVid, '1', { expirationTtl: 180 });
-        let om = {}; try { om = JSON.parse(await env.STATS.get('onlog') || '{}'); } catch (e) {}
-        om[hVid.slice(0, 6)] = Date.now();
-        const hCut = Date.now() - 240000; for (const hk in om) if (om[hk] < hCut) delete om[hk];
-        await env.STATS.put('onlog', JSON.stringify(om), { expirationTtl: 900 });
-      }
+      if (hVid) onlogMark(env, ctx, hVid.slice(0, 6)); // A5 batched presence (per-hit on:<vid> put dropped — onlog is what the online counter reads)
     } catch (e) {}
     return ok;
   }
@@ -1365,8 +1962,7 @@ async function handleTrack(url, request, env, ctx) {
     const did0 = getCookie(request, 'mp_did');
     const vid = did0 ? await sha8('d|' + did0) : await sha8(ip + '|' + ua);
     if (vid) {
-      try { await env.STATS.put('on:' + vid, '1', { expirationTtl: 180 }); } catch (e) {} // "online now" presence (3-min window)
-      try { let om = JSON.parse(await env.STATS.get('onlog') || '{}'); om[vid.slice(0, 6)] = Date.now(); const oCut = Date.now() - 240000; for (const ok2 in om) if (om[ok2] < oCut) delete om[ok2]; await env.STATS.put('onlog', JSON.stringify(om), { expirationTtl: 900 }); } catch (e) {}
+      onlogMark(env, ctx, vid.slice(0, 6)); // A5 batched presence
       const seen = await env.STATS.get('uvd:' + day + ':' + vid);
       if (!seen) { // first visit today from this person — the per-visit counters live here so repeat pageviews stay cheap
         await env.STATS.put('uvd:' + day + ':' + vid, '1', { expirationTtl: 172800 });
@@ -1390,10 +1986,9 @@ async function handleTrack(url, request, env, ctx) {
       // session, sent by the client as &f, or the external referrer on the first hit).
       try {
         const fromPath = (p.get('f') || '').replace(/[^a-zA-Z0-9/_?=&#:. -]/g, '').slice(0, 44);
-        let vlog = []; try { vlog = JSON.parse(await env.STATS.get('pvlog') || '[]'); } catch (e) {}
-        vlog.unshift({ v: vid.slice(0, 6), cc: cc || '', u: (getCookie(request, 'mp_un') || '').slice(0, 24), s: src, p: pth0.slice(0, 44), f: fromPath, d: deviceOf(ua), ts: Date.now() });
-        { const _cut = Date.now() - 10800000; vlog = vlog.filter(e => (e.ts || 0) > _cut).slice(0, 400); } // keep ~3h of pageviews (cap 400) to match the activity ring
-        await env.STATS.put('pvlog', JSON.stringify(vlog), { expirationTtl: 86400 });
+        kvRingPush(env, ctx, 'pvlog', { v: vid.slice(0, 6), cc: cc || '', u: (getCookie(request, 'mp_un') || '').slice(0, 24), s: src, p: pth0.slice(0, 44), f: fromPath, d: deviceOf(ua), ts: Date.now() }, 400, 10800000); // A5 batched
+        void 0; // (old inline RMW removed)
+        if (false) await env.STATS.put('pvlog', JSON.stringify(vlog), { expirationTtl: 86400 });
       } catch (e) {}
     }
   } else {
@@ -1403,6 +1998,7 @@ async function handleTrack(url, request, env, ctx) {
     if (type === 'jserr') { // client crash/JS-error beacon: total + daily series + which browser broke
       const de = new Date().toISOString().slice(0, 10);
       await inc('err:total'); await inc('ev:jserrbr:' + browserOf(request.headers.get('user-agent') || ''));
+      try { const hk = 'err:hr:' + new Date().toISOString().slice(0, 13); await env.STATS.put(hk, String((+(await env.STATS.get(hk)) || 0) + 1), { expirationTtl: 7200 }); } catch (e) {}
       // Dedupe the DAILY "broken pages" counter by visitor+message. One stuck visitor (a corrupt local state, a
       // translation/extension-injected script) re-fires the SAME error on every reload — the old counter inflated
       // "9 broken pages today" out of ~1 real broken session. The daily number should count unique broken sessions.
@@ -1420,10 +2016,7 @@ async function handleTrack(url, request, env, ctx) {
     if (type === 'exchange' || type === 'paper' || type === 'hotpair' || type === 'tool' || type === 'tab' || type === 'el' || type === 'nav' || type === 'prod' || type === 'close' || type === 'chat' || type === 'signin' || type === 'search' || type === 'watch' || type === 'ind' || type === 'draw' || type === 'ai' || type === 'profile' || type === 'coin' || type === 'lang' || type === 'share' || type === 'sltp') { // live activity ring buffer — every meaningful CLICK + key actions (trade close/SL-TP, chat, sign-in, search, watchlist, chart indicator/drawing/AI, profile view, coin open, language, share) with a visitor id so the journeys view can show WHAT each person does, not just where they go
       try {
         const cc = (request.cf && request.cf.country) || '';
-        let log = []; try { log = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
-        log.unshift({ t: type, e: label, cc: cc, v: evVid.slice(0, 6), u: (getCookie(request, 'mp_un') || '').slice(0, 24), p: (p.get('p') || '').slice(0, 48), d: deviceOf(request.headers.get('user-agent') || ''), ts: Date.now() });
-        { const _cut = Date.now() - 10800000; log = log.filter(e => (e.ts || 0) > _cut).slice(0, 600); } // keep ~3h of activity (cap 600) so the feed + journeys span hours, not minutes
-        await env.STATS.put('evlog', JSON.stringify(log), { expirationTtl: 86400 });
+        kvRingPush(env, ctx, 'evlog', { t: type, e: label, cc: cc, v: evVid.slice(0, 6), u: (getCookie(request, 'mp_un') || '').slice(0, 24), p: (p.get('p') || '').slice(0, 48), d: deviceOf(request.headers.get('user-agent') || ''), ts: Date.now() }, 800, 10800000); // A5 batched (cap aligned with evPush 800)
         if (type === 'exchange') { // money clicks get their OWN ring (no TTL) so the Revenue tab keeps the last 50 regardless of event noise
           try { let mc = []; try { mc = JSON.parse(await env.STATS.get('mclog') || '[]'); } catch (e) {}
             mc.unshift({ ts: Date.now(), e: label, p: (p.get('p') || '').slice(0, 60), cc: cc, u: (getCookie(request, 'mp_un') || '').slice(0, 24) });
@@ -1433,15 +2026,7 @@ async function handleTrack(url, request, env, ctx) {
       } catch (e) {}
     }
   }
-  // attribute this hit to a signed-in user (best-effort, off the hot path) → powers the admin Users activity trail
-  try {
-    const uid = getCookie(request, 'mp_uid');
-    if (uid && env.USERS && ctx) {
-      const ua3 = request.headers.get('user-agent') || '';
-      const ev = { uid, type, label, path: (p.get('p') || '/').slice(0, 60), cc: (request.cf && request.cf.country) || '', dev: deviceOf(ua3) };
-      ctx.waitUntil(env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/track', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(ev) })).catch(() => {}));
-    }
-  } catch (e) {}
+  // (signed-in per-user attribution now happens ABOVE, before the bot gate, so in-app-browser users still get credit)
   return ok;
 }
 // ---------- blog comments (KV-backed, basic anti-spam) ----------
@@ -1499,7 +2084,73 @@ async function handleStatsReset(env) {
 }
 // Live health of the liquidation collector (its own VPS), rendered into the stats dashboard.
 async function opsCfg(env) { let c = {}; try { c = JSON.parse(await env.STATS.get('ops:cfg') || '{}'); } catch (e) {} return { brief: c.brief !== false, briefHour: (Number.isFinite(+c.briefHour) && +c.briefHour >= 0 && +c.briefHour <= 23) ? +c.briefHour : 8, alerts: c.alerts !== false, bigTrade: (Number.isFinite(+c.bigTrade) && +c.bigTrade >= 0) ? +c.bigTrade : 5000 }; }
+// ---- Performance sampling (MarginPad Health): per-isolate buffer -> KV ring perf:ring (cap 1200, 4h). ----
+async function perfFlush(env) { const b = globalThis.__perfBuf; if (!b || !b.length) return; globalThis.__perfBuf = []; try { let r = []; try { r = JSON.parse(await env.STATS.get('perf:ring') || '[]'); } catch (e) {} r.unshift(...b); const cut = Date.now() - 4 * 3600000; r = r.filter(x => x && x.t > cut).slice(0, 1200); await env.STATS.put('perf:ring', JSON.stringify(r), { expirationTtl: 14400 }); } catch (e) {} }
+function perfPush(env, ctx, g, ms, ok) { try { const b = globalThis.__perfBuf = globalThis.__perfBuf || []; b.push({ g, ms: Math.round(+ms) || 0, t: Date.now(), ok: ok === false ? 0 : 1 }); if (b.length >= 10 && ctx) ctx.waitUntil(perfFlush(env)); } catch (e) {} }
+async function perfWrap(env, ctx, g, samp, fn) { // samp = 1-in-N sampling (1 = every request)
+  if (samp > 1 && Math.floor(Math.random() * samp) !== 0) return fn();
+  const t0 = Date.now(); const r = await fn();
+  try { perfPush(env, ctx, g, Date.now() - t0, !(r && r.status >= 500)); } catch (e) {}
+  return r;
+}
 async function tgAdmin(env, text) { if (!env.TELEGRAM_TOKEN || !env.TG_ADMIN_CHAT) return false; try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, parse_mode: 'HTML', disable_web_page_preview: true, text }); return true; } catch (e) { return false; } }
+// P0 — server-side position sweep: enforce SL/TP/liq for server/bot-filled trades even with every browser closed.
+async function sweepServerPositions(env) {
+  try {
+    if (!env.USERS) return;
+    const os = await usersDO(env, '/tradeopensyms', {});
+    const syms = (os && os.syms) || [];
+    if (!syms.length) return;
+    const prices = {};
+    for (const sym of syms.slice(0, 40)) {
+      try { const pd = await fetchPriceCached(sym); if (pd && +pd.price > 0) { const k = sym.replace(/USDT$/, ''); prices[k] = +pd.price; prices[k + 'USDT'] = +pd.price; } } catch (e) {}
+      await new Promise(r => setTimeout(r, 50));
+    }
+    let rates = null;
+    try { // real funding rates (Bybit linear tickers, one call, edge-cached 5 min) — only for the syms we hold
+      const rr = await fetch('https://api.bybit.com/v5/market/tickers?category=linear', { cf: { cacheTtl: 300, cacheEverything: true } });
+      const rj = await rr.json(); const list = rj && rj.result && rj.result.list;
+      if (Array.isArray(list)) { rates = {}; for (const it of list) { const sy = String(it.symbol || '').replace(/USDT$/, ''); if (prices[sy] != null) { const fr = +it.fundingRate; if (isFinite(fr)) rates[sy] = fr; } } }
+    } catch (e) {}
+    if (Object.keys(prices).length) await usersDO(env, '/tradesweepall', { prices, rates });
+  } catch (e) {}
+}
+// P0.5 — nightly backup of the two single-instance DOs into KV (separate failure domain; the ChatRoom DO
+// once storage-wedged beyond recovery, and these two hold ALL users + ALL balances with no other copy).
+// Rotation: 7 day-of-week slots + a 'latest' pointer per store → always the last 7 days, zero retention logic.
+// Prefers R2 (env.BACKUP) automatically once the owner enables R2 and the binding is added.
+async function nightlyBackup(env) {
+  try {
+    if (!env.STATS || !env.USERS || !env.REWARDS) return;
+    const day = new Date().toISOString().slice(0, 10);
+    if (await env.STATS.get('bkp:done:' + day)) return;
+    await env.STATS.put('bkp:done:' + day, '1', { expirationTtl: 172800 }); // stamp first — no double-runs; deleted below on failure so the next */10 retries
+    const dow = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'][new Date().getUTCDay()];
+    const jobs = [
+      ['users', env.USERS.get(env.USERS.idFromName('main'))],
+      ['rewards', env.REWARDS.get(env.REWARDS.idFromName('ledger'))],
+    ];
+    const sizes = [];
+    for (const [name, stub] of jobs) {
+      const r = await stub.fetch(new Request('https://do/export'));
+      const txt = await r.text();
+      if (!r.ok || txt.length < 50) throw new Error(name + ' export bad (' + r.status + ', ' + txt.length + 'b)');
+      if (env.BACKUP) { // R2 when available
+        await env.BACKUP.put('backup/' + name + '-' + dow + '.json', txt);
+        await env.BACKUP.put('backup/' + name + '-latest.json', txt);
+      } else { // KV fallback (25MB/value cap — alert loudly if we ever approach it)
+        if (txt.length > 20000000) throw new Error(name + ' dump ' + Math.round(txt.length / 1e6) + 'MB nears the 25MB KV cap — enable R2 now');
+        await env.STATS.put('bkp:' + name + ':' + dow, txt);
+        await env.STATS.put('bkp:' + name + ':latest', txt);
+      }
+      sizes.push(name + ' ' + Math.round(txt.length / 1024) + 'KB');
+    }
+    try { await evPush(env, null, 'backup', sizes.join(' · '), ''); } catch (e) {}
+  } catch (e) {
+    try { await env.STATS.delete('bkp:done:' + new Date().toISOString().slice(0, 10)); } catch (e2) {}
+    try { await tgAdmin(env, '🚨 <b>NIGHTLY BACKUP FAILED</b> — ' + String(e).slice(0, 180) + '\nUser/balance data currently has NO second copy. Check /api/admin/backup?run=1'); } catch (e3) {}
+  }
+}
 // Phase 5: one Telegram message every morning with everything that matters — so checking ops becomes optional.
 async function checkMorningBrief(env) {
   try {
@@ -1529,16 +2180,44 @@ async function checkMorningBrief(env) {
       '🚰 Faucet danas: $' + (+rw.dispensedTodayUsd || 0).toFixed(2) + ' / $' + (+rw.dailyCapUsd || 0).toFixed(0) + (pend ? ' · <b>⚠ ' + pend + ' isplata na čekanju ($' + pendUsd.toFixed(2) + ')</b>' : ' · nema isplata na čekanju'),
       '💬 Community: ' + posts24 + ' post' + (posts24 === 1 ? '' : 'a') + ' u 24h',
       (errY || srvY) ? ('🐛 Juče: ' + errY + ' broken pages · ' + srvY + ' server errors') : '✅ Juče bez grešaka',
+      await (async () => { // signal-engine daily proof-of-life for the owner (heartbeat + how many went out yesterday)
+        try { const sdbg = JSON.parse(await env.STATS.get('csig:dbg') || 'null'); const yd = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+          const sy = +(await env.STATS.get('csig:sentd:' + yd)) || 0; const ageM = sdbg && sdbg.ts ? Math.round((Date.now() - sdbg.ts) / 60000) : -1;
+          return (ageM >= 0 && ageM <= 15) ? ('📡 Signali: engine OK (skenirao pre ' + ageM + ' min) · juče poslato: ' + sy) : '📡 Signali: <b>⚠ heartbeat star ' + (ageM < 0 ? '?' : ageM) + ' min — proveri!</b>'; } catch (e) { return '📡 Signali: (ne mogu da pročitam stanje)'; }
+      })(),
       '',
       '<a href="https://marginpad.io/api/stats">Otvori ops →</a>',
     ];
     await tgAdmin(env, lines.join('\n'));
   } catch (e) {}
 }
+// Friend duels: settle every active duel whose 7-day window has ended → decide winner + grant XP (idempotent in the DO).
+async function settleDuels(env) {
+  try { if (!env.USERS) return; const stub = env.USERS.get(env.USERS.idFromName('main'));
+    await stub.fetch(new Request('https://do/duel/settle-due', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }));
+  } catch (e) {}
+}
 // Phase 5: anomaly pings — only things that need ACTION, each at most once per day (withdrawals: once per new request)
 async function checkOpsAlerts(env) {
   try {
     if (!env.STATS || !env.TELEGRAM_TOKEN || !env.TG_ADMIN_CHAT) return;
+    // SIGNAL-ENGINE WATCHDOG — sits BEFORE the alerts master switch on purpose: signals are the revenue
+    // product, this alarm must never be mutable. checkChartSignals writes csig:dbg every 1-min run; no
+    // heartbeat >15 min (or a stored error) while the engine isn't intentionally off = channels are getting
+    // NOTHING → page the owner, re-alert every 6h until fixed, and announce recovery once it's back.
+    try {
+      if ((await env.STATS.get('csig:on')) !== '0') {
+        let sdbg = null; try { sdbg = JSON.parse(await env.STATS.get('csig:dbg') || 'null'); } catch (e) {}
+        const ageMin = sdbg && sdbg.ts ? Math.round((Date.now() - sdbg.ts) / 60000) : -1;
+        if (!sdbg || ageMin > 15 || sdbg.err) {
+          const last = +(await env.STATS.get('alrt:csig') || 0);
+          if (Date.now() - last > 6 * 3600000) {
+            await env.STATS.put('alrt:csig', String(Date.now()), { expirationTtl: 172800 });
+            await tgAdmin(env, '🚨 <b>SIGNAL ENGINE DOWN</b> — ' + (sdbg && sdbg.err ? 'error: <code>' + String(sdbg.err).slice(0, 160) + '</code>' : (sdbg ? 'no heartbeat for ' + ageMin + ' min' : 'no heartbeat at all')) + '\nSignal channels are getting NOTHING. Check <code>/api/admin/csig?state=1</code>.');
+          }
+        } else if (+(await env.STATS.get('alrt:csig') || 0)) { await env.STATS.delete('alrt:csig'); await tgAdmin(env, '✅ <b>Signal engine recovered</b> — heartbeat ' + ageMin + ' min ago, scanning ' + (sdbg.scanned || 0) + ' coins.'); }
+      }
+    } catch (e) {}
     const cfg = await opsCfg(env); if (!cfg.alerts) return;
     const today = new Date().toISOString().slice(0, 10);
     const once = async (key, fn) => { if (await env.STATS.get(key)) return; const sent = await fn(); if (sent) await env.STATS.put(key, '1', { expirationTtl: 172800 }); };
@@ -1995,7 +2674,7 @@ async function handleStats(url, env, request, ctx) {
   }
   let pvTotal = 0, uvTotal = 0, botMsg = 0, botUsers = 0, cmtTotal = 0;
   const pages = [], geo = [], refs = [], uvDays = {}, grid = {}, devices = [], browsers = [], newD = {}, retD = {};
-  const ex = [], tools = [], tabs = [], els = [], other = [], botCmds = [], cmtPosts = [];
+  const ex = [], tools = [], tabs = [], els = [], other = [], botCmds = [], cmtPosts = [], botUserList = [];
   const pvDays = {}, affDays = {}, hours = {}, langs = [], paperSym = [], paperLev = [], scrollD = [], timeD = []; let online = 0;
   const snaps = [], xPaths = []; const botfDays = {}; let botfTotal = 0;
   const errMsgs = [], errBrowsers = []; const errDays = {}, srvErrDays = {}; let errTotal = 0, srvErrTotal = 0;
@@ -2008,6 +2687,7 @@ async function handleStats(url, env, request, ctx) {
     else if (n === 'bot:msg') botMsg = c;
     else if (n === 'bot:users') botUsers = c;
     else if (n.indexOf('bot:cmd:') === 0) botCmds.push([n.slice(8), c]);
+    else if (n.indexOf('botu:') === 0) { const m = k.m || {}; botUserList.push({ id: n.slice(5), u: m.u || '', f: m.f || '', n: m.n || 0, ts: m.ts || 0, lc: m.lc || '', linked: m.lk ? 1 : 0 }); }
     else if (n.indexOf('uv:day:') === 0) uvDays[n.slice(7)] = c;
     else if (n.indexOf('uv:new:') === 0) newD[n.slice(7)] = c;
     else if (n.indexOf('uv:ret:') === 0) retD[n.slice(7)] = c;
@@ -2137,8 +2817,16 @@ async function handleStats(url, env, request, ctx) {
   // friendly, plain-English page name for inline sentences (e.g. "BTC coin page", "the homepage")
   const pageShort = pth => { const s = String(pth || '').replace(/^\/[a-z]{2}\//, '/'); if (s === '/' || s === '') return 'the homepage'; let m; if ((m = s.match(/^\/coin\/([a-z0-9]+)\/?$/i))) return m[1].toUpperCase() + ' coin page'; const M = { '/funding/': 'the Funding page', '/liquidations/': 'the Liquidations page', '/long-short/': 'the Long/Short page', '/open-interest/': 'the Open Interest page', '/screener': 'the Screener', '/screener/': 'the Screener', '/paper-trade': 'Paper Trade', '/paper-trade/': 'Paper Trade', '/charts': 'Charts', '/charts/': 'Charts', '/rekt/': 'the Rekt feed', '/rewards/': 'Rewards', '/calculators': 'Calculators', '/calculators/': 'Calculators', '/blog/': 'the Blog' }; if (M[s]) return M[s]; if ((m = s.match(/^\/([a-z0-9-]+)\/?$/i))) return m[1].replace(/-/g, ' ') + ' page'; return s; };
   // turn a raw event into a clear sentence: WHAT they did + WHERE
-  const evLine = x => { const where = x.p ? ` <span class="fe-on">on ${esc(pageShort(x.p))}</span>` : ''; const tg = esc(x.e || ''); if (x.t === 'exchange') return `clicked through to <b class="fe-ex">${tg || 'an exchange'}</b>${where} <span class="fe-rev">💰 money click</span>`; if (x.t === 'paper') return `opened a paper trade${tg ? ' <b>' + tg + '</b>' : ''}`; if (x.t === 'close') return `closed a trade <b>${tg || ''}</b>${where}`; if (x.t === 'hotpair') return `opened <b>${tg}</b> from Trending`; if (x.t === 'tool') return `opened ${tg ? '<b>' + tg + '</b> ' : 'a '}tool${where}`; if (x.t === 'chat') return `sent a chat message`; if (x.t === 'signin') return `opened the sign-in form${where}`; if (x.t === 'search') return `searched ${tg ? '<b>' + tg + '</b>' : 'something'}${where}`; if (x.t === 'watch') return `added <b>${tg}</b> to the watchlist`; if (x.t === 'like') return `liked ${tg ? '<b>' + tg + '</b>' : 'a post'}`; if (x.t === 'comment') return `commented on ${tg ? '<b>' + tg + '</b>' : 'a post'}`; if (x.t === 'follow') return `followed ${tg ? '<b>@' + tg + '</b>' : 'a trader'}`; if (x.t === 'save') return `saved ${tg ? '<b>' + tg + '</b>' : 'a post'}`; if (x.t === 'profile') return `viewed ${tg ? '<b>@' + tg + '</b>' : "a trader"}'s profile`; if (x.t === 'ind') return `toggled the <b>${tg || 'chart'}</b> indicator${where}`; if (x.t === 'draw') return `drew on ${tg ? 'the <b>' + tg + '</b> chart' : 'a chart'}`; if (x.t === 'ai') return `asked the AI${tg ? ' about <b>' + tg + '</b>' : ''}`; if (x.t === 'coin') return `opened the <b>${tg || 'coin'}</b> market`; if (x.t === 'sltp') return `set SL/TP on <b>${tg || 'a trade'}</b>`; if (x.t === 'share') return `shared ${tg ? '<b>' + tg + '</b>' : 'something'}`; if (x.t === 'lang') return `switched language to <b>${tg || '?'}</b>`; if (x.t === 'alert') return `set a price alert${tg ? ' on <b>' + tg + '</b>' : ''}`; if (x.t === 'promo') return `submitted a promo post${tg ? ' <b>' + tg + '</b>' : ''}`; if (x.t === 'exsign') return `submitted an exchange sign-up${tg ? ' <b>' + tg + '</b>' : ''}`; if (x.t === 'support') return `sent a support message`; if (x.t === 'push') return `enabled push notifications`; return `${verb(x.t)}${tg ? ' <b>' + tg + '</b>' : ''}${where}`; };
+  const evLine = x => { const where = x.p ? ` <span class="fe-on">on ${esc(pageShort(x.p))}</span>` : ''; const tg = esc(x.e || ''); if (x.t === 'bot') return x.e === 'request' ? `<span class="fe-rev">🔔 requested premium signals access</span> via the bot` : `used <code>/${tg}</code> on the Telegram bot`; if (x.t === 'exchange') return `clicked through to <b class="fe-ex">${tg || 'an exchange'}</b>${where} <span class="fe-rev">💰 money click</span>`; if (x.t === 'paper') return `opened a paper trade${tg ? ' <b>' + tg + '</b>' : ''}`; if (x.t === 'close') return `closed a trade <b>${tg || ''}</b>${where}`; if (x.t === 'hotpair') return `opened <b>${tg}</b> from Trending`; if (x.t === 'tool') return `opened ${tg ? '<b>' + tg + '</b> ' : 'a '}tool${where}`; if (x.t === 'chat') return `sent a chat message`; if (x.t === 'signin') return `opened the sign-in form${where}`; if (x.t === 'search') return `searched ${tg ? '<b>' + tg + '</b>' : 'something'}${where}`; if (x.t === 'watch') return `added <b>${tg}</b> to the watchlist`; if (x.t === 'like') return `liked ${tg ? '<b>' + tg + '</b>' : 'a post'}`; if (x.t === 'comment') return `commented on ${tg ? '<b>' + tg + '</b>' : 'a post'}`; if (x.t === 'follow') return `followed ${tg ? '<b>@' + tg + '</b>' : 'a trader'}`; if (x.t === 'save') return `saved ${tg ? '<b>' + tg + '</b>' : 'a post'}`; if (x.t === 'profile') return `viewed ${tg ? '<b>@' + tg + '</b>' : "a trader"}'s profile`; if (x.t === 'ind') return `toggled the <b>${tg || 'chart'}</b> indicator${where}`; if (x.t === 'draw') return `drew on ${tg ? 'the <b>' + tg + '</b> chart' : 'a chart'}`; if (x.t === 'ai') return `asked the AI${tg ? ' about <b>' + tg + '</b>' : ''}`; if (x.t === 'coin') return `opened the <b>${tg || 'coin'}</b> market`; if (x.t === 'sltp') return `set SL/TP on <b>${tg || 'a trade'}</b>`; if (x.t === 'share') return `shared ${tg ? '<b>' + tg + '</b>' : 'something'}`; if (x.t === 'lang') return `switched language to <b>${tg || '?'}</b>`; if (x.t === 'alert') return `set a price alert${tg ? ' on <b>' + tg + '</b>' : ''}`; if (x.t === 'promo') return `submitted a promo post${tg ? ' <b>' + tg + '</b>' : ''}`; if (x.t === 'exsign') return `submitted an exchange sign-up${tg ? ' <b>' + tg + '</b>' : ''}`; if (x.t === 'support') return `sent a support message`; if (x.t === 'push') return `enabled push notifications`; if (x.t === 'sale') return `<span class="fe-rev">💎 bought <b>${tg || 'premium'}</b> signals</span>`; if (x.t === 'refpaid') return `<span class="fe-rev">🎁 earned a referral reward</span>${tg ? ' ' + tg : ''}`; if (x.t === 'promopaid') return `<span class="fe-rev">✅ promo post approved</span>${tg ? ' ' + tg : ''}`; if (x.t === 'exsignpaid') return `<span class="fe-rev">✅ exchange sign-up approved</span>${tg ? ' <b>' + tg + '</b>' : ''}`; if (x.t === 'signal') return `<span class="fe-sig">📡 sent signal <b>${tg}</b></span> to Telegram`; if (x.t === 'sigresult') return `📊 signal result: <b>${tg}</b>`; if (x.t === 'digest') return `📡 daily check-in posted to the signal channels (${tg})`; if (x.t === 'lbpaid') return `<span class="fe-rev">🏆 weekly prize paid</span> to <b>${tg}</b>`; if (x.t === 'wdpaid') return `<span class="fe-rev">💸 withdrawal marked PAID</span>`; if (x.t === 'alertfired') return `🔔 price alert fired <b>${tg}</b> → email sent`; if (x.t === 'newspost') return `📰 auto-posted news to Telegram`; if (x.t === 'subkick') return `⛔ premium expired — member removed (${tg})`; if (x.t === 'academyfin') return `🎓 finished the whole <b>${tg}</b> course`; if (x.t === 'chatmsg') return `💬 chat: ${tg}`; return `${verb(x.t)}${tg ? ' <b>' + tg + '</b>' : ''}${where}`; };
   const feed = evlog.length ? evlog.slice(0, 120).map(x => `<div class="fe"><span class="fe-f">${x.u ? '👤' : (flag(x.cc) || '🌐')}</span><span class="fe-t">${x.u ? ('<b>@' + esc(x.u) + '</b> ') : 'A visitor '}${evLine(x)}</span><span class="fe-a">${ago(x.ts)} ago</span></div>`).join('') : '<div class="empty">no activity in the last few minutes</div>';
+  botUserList.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+  const botUsersHtml = botUserList.length
+    ? '<h2>Bot users <span>(who uses the Telegram bot · ' + botUserList.length + ')</span></h2><div class="feed" style="max-height:360px;overflow:auto">' + botUserList.slice(0, 80).map(u => {
+        const nm = u.u ? '@' + esc(u.u) : (esc(u.f) || ('id ' + esc(u.id)));
+        const link = u.u ? 'https://t.me/' + esc(u.u) : '';
+        return '<div class="fe"><span class="fe-f">✈️</span><span class="fe-t">' + (link ? '<a href="' + link + '" target="_blank" rel="noopener" style="color:#e9e7df;text-decoration:none"><b>' + nm + '</b></a>' : '<b>' + nm + '</b>') + (u.lc ? ' <span style="color:#5c656f">last: /' + esc(u.lc) + '</span>' : '') + ' <span style="color:#5c656f">· ' + u.n + ' msg</span></span><span class="fe-a">' + (u.ts ? ago(u.ts) + ' ago' : '') + '</span></div>';
+      }).join('') + '</div>' + (botUserList.length > 80 ? '<div class="cap">showing 80 of ' + botUserList.length + '</div>' : '')
+    : '';
   // last visitors — who (country) + from which source (referrer), most recent 5
   let pvlog = []; try { pvlog = JSON.parse(await env.STATS.get('pvlog') || '[]'); } catch (e) {}
   const ccName = { US: 'United States', GB: 'UK', DE: 'Germany', FR: 'France', RS: 'Serbia', ES: 'Spain', BR: 'Brazil', RU: 'Russia', TR: 'Turkey', IN: 'India', CN: 'China', JP: 'Japan', KR: 'Korea', NL: 'Netherlands', CA: 'Canada', AU: 'Australia', IT: 'Italy', PL: 'Poland', UA: 'Ukraine', ID: 'Indonesia', VN: 'Vietnam', PH: 'Philippines', NG: 'Nigeria', MX: 'Mexico', AR: 'Argentina', PT: 'Portugal' };
@@ -2239,7 +2927,7 @@ async function handleStats(url, env, request, ctx) {
 .fe-rev{display:inline-block;color:#0a0b0d;background:#c2f64a;font-size:9px;font-weight:700;padding:1px 6px;border-radius:5px;letter-spacing:.03em;white-space:nowrap;vertical-align:middle}
 /* real-time activity — per-kind left accent, source, device, fresh flash + filter chips */
 .feed .fe{padding-left:11px;border-left:3px solid transparent;border-radius:0 5px 5px 0}
-.fe.k-money{border-left-color:#ffd75a}.fe.k-trade{border-left-color:#2ebd85}.fe.k-acct{border-left-color:#c2f64a}.fe.k-social{border-left-color:#b98cff}.fe.k-tool{border-left-color:#38bdf8}.fe.k-page{border-left-color:#2c384e}.fe.k-other{border-left-color:#39445a}
+.fe.k-money{border-left-color:#ffd75a}.fe.k-signal{border-left-color:#3fd8e6}.fe-sig{color:#3fd8e6;font-weight:700}.fe.k-trade{border-left-color:#2ebd85}.fe.k-acct{border-left-color:#c2f64a}.fe.k-social{border-left-color:#b98cff}.fe.k-tool{border-left-color:#38bdf8}.fe.k-page{border-left-color:#2c384e}.fe.k-other{border-left-color:#39445a}
 .fe.fe-new{animation:feNew 1.5s ease-out}@keyframes feNew{0%{background:rgba(56,189,248,.13)}100%{background:transparent}}
 .fe.k-money.fe-new{animation:feNewM 1.7s ease-out}@keyframes feNewM{0%{background:rgba(255,215,90,.2)}45%{background:rgba(255,215,90,.12)}100%{background:transparent}}
 .fe.k-trade.fe-new{animation:feNewT 1.6s ease-out}@keyframes feNewT{0%{background:rgba(46,189,133,.16)}100%{background:transparent}}
@@ -2293,7 +2981,7 @@ async function handleStats(url, env, request, ctx) {
   .tab:hover:not(.on){background:#12161d;color:#e9e7df}
   .tab .noti-dot{top:13px;right:10px}
 }
-@keyframes notiPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.6);opacity:.5}}.subbar{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 20px}.subtab{font-size:12px;font-weight:700;color:#9aa3ad;background:#111419;border:1px solid #232932;border-radius:9px;padding:8px 14px;cursor:pointer}.subtab.on{color:#0a0b0d;background:#c2f64a;border-color:#c2f64a}.subtab:hover:not(.on){border-color:#3a434f;color:#cdd3da}.setwrap{background:#111419;border:1px solid #232932;border-radius:14px;padding:6px 18px;max-width:540px}.setrow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid #232932}.setrow:last-child{border-bottom:none}.setrow label{font-size:13.5px;color:#cdd3da}.setrow input[type=number]{width:120px;background:#0c0f13;border:1px solid #2f3742;border-radius:8px;padding:9px 11px;color:#e9e7df;font-family:monospace;font-size:14px;text-align:right}.sw{position:relative;width:46px;height:26px;flex-shrink:0}.sw input{opacity:0;width:0;height:0}.sw>span{position:absolute;inset:0;background:#2a313b;border-radius:999px;transition:.2s;cursor:pointer}.sw>span::before{content:'';position:absolute;height:20px;width:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}.sw input:checked+span{background:#2ebd85}.sw input:checked+span::before{transform:translateX(20px)}.sbtn{background:#c2f64a;color:#0a0b0d;font-weight:700;border:none;border-radius:9px;padding:11px 20px;cursor:pointer;font-size:13px}.smsg{font-size:12.5px;color:#9aa3ad;margin-left:12px}.rwd-accts,.rwd-wd{background:#111419;border:1px solid #232932;border-radius:14px;padding:4px 16px;max-height:400px;overflow-y:auto}.rwd-a,.wd-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #232932;font-size:13px}.rwd-a:last-child,.wd-row:last-child{border-bottom:none}.mono{font-family:monospace}.rwd-a .addr,.wd-row .addr{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#cdd3da;font-size:12px}.rwd-a .bal,.wd-row .bal{color:#c2f64a;font-family:monospace;white-space:nowrap}.rwd-a .meta{color:#5c656f;font-family:monospace;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.wd-row .pay{background:#0c0f13;border:1px solid #2f3742;color:#c2f64a;border-radius:7px;padding:6px 11px;font-size:11px;font-family:monospace;cursor:pointer}.chatpost{display:flex;gap:8px;margin-top:12px}.chatpost input{flex:1;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:11px 13px;color:#e9e7df;font-size:14px}.chatpost input:focus{outline:none;border-color:#c2f64a}.rwd-a{cursor:pointer}.rwd-a:hover{background:rgba(255,255,255,.03)}.amodal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.65);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}.amodal[hidden]{display:none}.amod-panel{width:100%;max-width:440px;max-height:88vh;overflow-y:auto;background:linear-gradient(180deg,#13171d,#0d1014);border:1px solid #2f3742;border-radius:16px;padding:18px 20px;box-shadow:0 30px 80px -20px rgba(0,0,0,.9)}.amod-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.amod-addr{font-family:monospace;font-size:12px;color:#cdd3da;word-break:break-all}.amod-x{background:none;border:none;color:#5c656f;font-size:18px;cursor:pointer;flex-shrink:0;padding:2px 6px}.amod-x:hover{color:#e9e7df}.amod-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.amod-cell{background:#0c0f13;border:1px solid #232932;border-radius:10px;padding:10px 12px}.amod-cell .k{font-family:monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:#5c656f;margin-bottom:4px}.amod-cell .v{font-size:13.5px;color:#e9e7df;font-family:monospace;word-break:break-all}.amod-sec{font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#5c656f;margin:15px 0 8px}.amod-actions{display:flex;gap:8px;margin-top:16px}.amod-btn{flex:1;background:#0c0f13;border:1px solid #2f3742;color:#cdd3da;border-radius:9px;padding:11px;font-size:13px;font-weight:700;cursor:pointer}.amod-btn:hover{border-color:#5c656f;color:#fff}.amod-btn.danger{color:#ff8a80;border-color:rgba(255,98,88,.4)}.amod-btn.danger:hover{background:rgba(255,98,88,.12);border-color:#ff6258}.amod-msg{font-size:12.5px;color:#9aa3ad;margin-top:10px;text-align:center;min-height:16px}.amod-ta{width:100%;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:10px 12px;color:#e9e7df;font-size:13px;font-family:inherit;resize:vertical;min-height:62px;box-sizing:border-box}.amod-ta:focus{outline:none;border-color:#c2f64a}.sup-item{background:#111419;border:1px solid #232932;border-radius:12px;padding:13px 15px;margin-bottom:10px}.sup-h{display:flex;align-items:center;gap:8px}.sup-email{color:#cdd3da;font-size:13.5px;font-weight:700;word-break:break-all}.sup-addr{color:#7f8893;font-family:monospace;font-size:11px;margin-top:3px;word-break:break-all}.sup-msg{color:#9aa3ad;font-size:13px;margin:8px 0 11px;white-space:pre-wrap;line-height:1.5}.sup-reply{border-top:1px solid #232932;padding-top:11px;display:flex;flex-direction:column;gap:8px}.sup-subj,.sup-body{background:#0c0f13;border:1px solid #2f3742;border-radius:8px;padding:9px 11px;color:#e9e7df;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box}.sup-body{min-height:72px;resize:vertical}.sup-subj:focus,.sup-body:focus{outline:none;border-color:#c2f64a}.sup-rbtn{display:flex;align-items:center;gap:10px}.sup-badge{color:#2ebd85;font-family:monospace;font-size:11px}
+@keyframes notiPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.6);opacity:.5}}.subbar{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 20px}.subtab{font-size:12px;font-weight:700;color:#9aa3ad;background:#111419;border:1px solid #232932;border-radius:9px;padding:8px 14px;cursor:pointer}.subtab.on{color:#0a0b0d;background:#c2f64a;border-color:#c2f64a}.subtab:hover:not(.on){border-color:#3a434f;color:#cdd3da}.setwrap{background:#111419;border:1px solid #232932;border-radius:14px;padding:6px 18px;max-width:540px}.setrow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid #232932}.setrow:last-child{border-bottom:none}.setrow label{font-size:13.5px;color:#cdd3da}.setrow input[type=number]{width:120px;background:#0c0f13;border:1px solid #2f3742;border-radius:8px;padding:9px 11px;color:#e9e7df;font-family:monospace;font-size:14px;text-align:right}.sw{position:relative;width:46px;height:26px;flex-shrink:0}.sw input{opacity:0;width:0;height:0}.sw>span{position:absolute;inset:0;background:#2a313b;border-radius:999px;transition:.2s;cursor:pointer}.sw>span::before{content:'';position:absolute;height:20px;width:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}.sw input:checked+span{background:#2ebd85}.sw input:checked+span::before{transform:translateX(20px)}.sbtn{background:#c2f64a;color:#0a0b0d;font-weight:700;border:none;border-radius:9px;padding:11px 20px;cursor:pointer;font-size:13px}.smsg{font-size:12.5px;color:#9aa3ad;margin-left:12px}.rwd-accts,.rwd-wd{background:#111419;border:1px solid #232932;border-radius:14px;padding:4px 16px;max-height:400px;overflow-y:auto}.rwd-a,.wd-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #232932;font-size:13px}.rwd-a:last-child,.wd-row:last-child{border-bottom:none}.mono{font-family:monospace}.rwd-a .addr,.wd-row .addr{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#cdd3da;font-size:12px}.rwd-a .bal,.wd-row .bal{color:#c2f64a;font-family:monospace;white-space:nowrap}.rwd-a .meta{color:#5c656f;font-family:monospace;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.wd-row .pay{background:#0c0f13;border:1px solid #2f3742;color:#c2f64a;border-radius:7px;padding:6px 11px;font-size:11px;font-family:monospace;cursor:pointer}.chatpost{display:flex;gap:8px;margin-top:12px}.chatpost input{flex:1;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:11px 13px;color:#e9e7df;font-size:14px}.chatpost input:focus{outline:none;border-color:#c2f64a}.rwd-a{cursor:pointer}.rwd-a:hover{background:rgba(255,255,255,.03)}.amodal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.65);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}.amodal[hidden]{display:none}.amod-panel{width:100%;max-width:440px;max-height:88vh;overflow-y:auto;background:linear-gradient(180deg,#13171d,#0d1014);border:1px solid #2f3742;border-radius:16px;padding:18px 20px;box-shadow:0 30px 80px -20px rgba(0,0,0,.9)}.amod-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.amod-addr{font-family:monospace;font-size:12px;color:#cdd3da;word-break:break-all}.amod-x{background:none;border:none;color:#5c656f;font-size:18px;cursor:pointer;flex-shrink:0;padding:2px 6px}.amod-x:hover{color:#e9e7df}.amod-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.amod-cell{background:#0c0f13;border:1px solid #232932;border-radius:10px;padding:10px 12px}.amod-cell .k{font-family:monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:#5c656f;margin-bottom:4px}.amod-cell .v{font-size:13.5px;color:#e9e7df;font-family:monospace;word-break:break-all}.amod-sec{font-family:monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#5c656f;margin:15px 0 8px}.ern-sum{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.ern-chip{font-family:monospace;font-size:11px;color:#cdd3da;background:#0c0f13;border:1px solid var(--c,#2f3742);border-left-width:3px;border-radius:8px;padding:5px 9px}.ern-chip b{color:var(--c,#e9e7df)}.ern-list{display:flex;flex-direction:column;gap:7px;max-height:320px;overflow-y:auto}.ern-row{display:flex;align-items:flex-start;gap:10px;background:#0c0f13;border:1px solid #232932;border-radius:10px;padding:9px 11px}.ern-tag{flex:none;font-family:monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.03em;font-weight:700;color:#0a0b0d;background:var(--c,#8b97a5);border-radius:6px;padding:3px 7px;margin-top:2px}.ern-mid{flex:1;min-width:0}.ern-amt{font-family:monospace;font-size:14px;font-weight:800;color:#2ebd85}.ern-d{font-size:12px;color:#9aa3ad;margin-top:2px;line-height:1.45;word-break:break-word}.ern-d b{color:#e9e7df}.ern-uid{font-family:monospace;color:#ffd75a;background:rgba(255,215,90,.1);border-radius:4px;padding:1px 5px}.ern-note{color:#7f8893;font-style:italic}.ern-ago{flex:none;font-family:monospace;font-size:10.5px;color:#5c656f;white-space:nowrap;margin-top:3px}.ern-foot{font-family:monospace;font-size:11px;color:#5c656f;margin-top:9px;padding-top:8px;border-top:1px solid #232932}.amod-actions{display:flex;gap:8px;margin-top:16px}.amod-btn{flex:1;background:#0c0f13;border:1px solid #2f3742;color:#cdd3da;border-radius:9px;padding:11px;font-size:13px;font-weight:700;cursor:pointer}.amod-btn:hover{border-color:#5c656f;color:#fff}.amod-btn.danger{color:#ff8a80;border-color:rgba(255,98,88,.4)}.amod-btn.danger:hover{background:rgba(255,98,88,.12);border-color:#ff6258}.amod-msg{font-size:12.5px;color:#9aa3ad;margin-top:10px;text-align:center;min-height:16px}.amod-ta{width:100%;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:10px 12px;color:#e9e7df;font-size:13px;font-family:inherit;resize:vertical;min-height:62px;box-sizing:border-box}.amod-ta:focus{outline:none;border-color:#c2f64a}.sup-item{background:#111419;border:1px solid #232932;border-radius:12px;padding:13px 15px;margin-bottom:10px}.sup-h{display:flex;align-items:center;gap:8px}.sup-email{color:#cdd3da;font-size:13.5px;font-weight:700;word-break:break-all}.sup-addr{color:#7f8893;font-family:monospace;font-size:11px;margin-top:3px;word-break:break-all}.sup-msg{color:#9aa3ad;font-size:13px;margin:8px 0 11px;white-space:pre-wrap;line-height:1.5}.sup-reply{border-top:1px solid #232932;padding-top:11px;display:flex;flex-direction:column;gap:8px}.sup-subj,.sup-body{background:#0c0f13;border:1px solid #2f3742;border-radius:8px;padding:9px 11px;color:#e9e7df;font-family:inherit;font-size:13px;width:100%;box-sizing:border-box}.sup-body{min-height:72px;resize:vertical}.sup-subj:focus,.sup-body:focus{outline:none;border-color:#c2f64a}.sup-rbtn{display:flex;align-items:center;gap:10px}.sup-badge{color:#2ebd85;font-family:monospace;font-size:11px}
 .sup-bar{display:flex;align-items:center;gap:8px;margin:0 0 12px}
 .sup-tab{background:#111419;border:1px solid #232932;border-radius:8px;color:#9aa3ad;font:inherit;font-size:13px;font-weight:700;padding:7px 14px;cursor:pointer}
 .sup-tab.on{background:#1c2330;border-color:#2f72ff;color:#e9eef7}
@@ -2435,9 +3123,40 @@ h2 span{color:#6b7480;font-size:12.5px;font-weight:400;letter-spacing:0}
 .skl{height:76px;border-radius:10px;background:linear-gradient(100deg,#0e1320 40%,#141b2c 50%,#0e1320 60%);background-size:200% 100%;animation:sklA 1.2s linear infinite}
 @keyframes sklA{0%{background-position:130% 0}100%{background-position:-30% 0}}
 @media(max-width:900px){.ovv-g21,.ovv-g3{grid-template-columns:1fr}.ovv-kpi{grid-template-columns:repeat(2,1fr)}}
-.gsr-h{font-family:Consolas,monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.11em;color:#5c656f;padding:8px 11px 4px}.gsr-r{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:9px;cursor:pointer;font-size:13px;color:#cdd3da}.gsr-r:hover{background:rgba(255,255,255,.05)}.gsr-r b{color:#e9e7df}.gsr-r .m{margin-left:auto;font-family:Consolas,monospace;font-size:11px;color:#7f8893;white-space:nowrap}.gsr-empty{color:#5c656f;font-size:12.5px;text-align:center;padding:14px}@media(max-width:740px){.gsr{max-width:none;order:3;flex-basis:100%}}.cohwrap{background:#111419;border:1px solid #232932;border-radius:14px;padding:6px 10px;overflow-x:auto}.coh{width:100%;border-collapse:collapse;font-family:Consolas,monospace;font-size:12.5px}.coh th{text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#5c656f;padding:9px 10px;border-bottom:1px solid #232932}.coh th:first-child{text-align:left}.coh td{text-align:right;padding:8px 10px;border-bottom:1px solid #1a2029;color:#cdd3da;white-space:nowrap}.coh td:first-child{text-align:left;color:#9aa3ad}.coh tr:last-child td{border-bottom:none}.coh .pc{display:inline-block;min-width:44px;padding:3px 7px;border-radius:7px;font-weight:700}.vjmap-wrap{background:linear-gradient(180deg,#0d1016,#0a0d12);border:1px solid #1c2230;border-radius:13px;padding:13px 12px 9px;margin:0 0 12px;overflow-x:auto}.vjm-h{font-family:Consolas,monospace;font-size:11.5px;font-weight:700;color:#cdd3da;margin:0 2px 10px}.vjm-h span{color:#5c656f;font-weight:400}#vjMap svg{display:block}.vjm-leg{display:flex;flex-wrap:wrap;gap:12px;margin:9px 2px 2px;font-size:11px;color:#9aa3ad;font-family:Consolas,monospace}.vjm-leg span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}.vjm-dot{width:8px;height:8px;border-radius:50%;flex:none}.jm-top{display:flex;align-items:center;gap:14px;margin:0 0 12px;flex-wrap:wrap}.jm-live{display:inline-flex;align-items:center;gap:7px;background:rgba(46,230,168,.1);border:1px solid rgba(46,230,168,.4);color:#2ee6a8;border-radius:10px;padding:8px 13px;font-family:Consolas,monospace;font-size:11px;font-weight:700;letter-spacing:.08em}.jm-live i{width:7px;height:7px;border-radius:50%;background:#2ee6a8;box-shadow:0 0 8px #2ee6a8;animation:hpp 1.8s infinite}.jm-title{font-size:19px;font-weight:800;letter-spacing:-.01em}.jm-sub{color:#5c6b84;font-size:11.5px;font-family:Consolas,monospace;margin-top:2px}.jm-filters{margin-left:auto;display:flex;gap:6px}.jm-filters button{background:#0e1322;border:1px solid #22304e;color:#8fa3c4;border-radius:9px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer}.jm-filters button.on{background:rgba(91,140,255,.16);border-color:#5b8cff;color:#9db9ff}.jm-grid{display:grid;grid-template-columns:212px minmax(0,1fr);gap:12px;margin-bottom:12px}.jm-card{background:linear-gradient(180deg,#0d1220,#0a0e18);border:1px solid #1d2740;border-radius:14px;padding:13px 14px}.jm-rail{display:flex;flex-direction:column;gap:12px}.jm-k{font-family:Consolas,monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#5c6b84;margin-bottom:8px}.jm-k span{text-transform:none;letter-spacing:0}.jm-big{font-family:Consolas,monospace;font-weight:800;font-size:30px;letter-spacing:-1px;color:#e9edf7}.jm-delta{font-family:Consolas,monospace;font-size:11px;margin:3px 0 6px;color:#2ee6a8}.jm-tp{margin-bottom:9px}.jm-tp .r1{display:flex;justify-content:space-between;font-size:11.5px;color:#c6d2e6;margin-bottom:4px}.jm-tp .r1 b{color:#8fa3c4;font-family:Consolas,monospace;font-weight:400}.jm-tp .bar{height:4px;border-radius:3px;background:#141b2c;overflow:hidden}.jm-tp .bar i{display:block;height:100%;border-radius:3px}.jm-canvas{position:relative;background:radial-gradient(900px 420px at 62% -10%,#111a30,#090d16 70%);border:1px solid #1d2740;border-radius:16px;padding:16px 14px;overflow-x:auto;min-height:300px}.jm-band{margin-bottom:6px}.jm-vcard{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(160,107,255,.13),rgba(91,140,255,.07));border:1px solid rgba(160,107,255,.4);border-radius:13px;padding:9px 14px;margin:2px 0 4px;box-shadow:0 0 24px -8px rgba(160,107,255,.35)}.jm-av{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#0a0b0d}.jm-vn{font-size:13px;font-weight:700;color:#e9edf7}.jm-vm{font-family:Consolas,monospace;font-size:10px;color:#8fa3c4;margin-top:1px}.jm-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.jm-kpi{background:linear-gradient(180deg,#0d1220,#0a0e18);border:1px solid #1d2740;border-radius:13px;padding:12px 14px}.jm-kpi .l{display:flex;align-items:center;gap:6px;font-family:Consolas,monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:#5c6b84}.jm-kpi .v{font-family:Consolas,monospace;font-weight:800;font-size:23px;color:#e9edf7;margin-top:5px}.jm-kpi .d{font-family:Consolas,monospace;font-size:11px;margin-top:3px}.jm-bottom{display:grid;grid-template-columns:1.15fr 1fr .95fr;gap:12px}.jm-path-r{display:flex;align-items:center;gap:9px;font-size:11.5px;color:#c6d2e6;padding:6px 0;border-bottom:1px solid #141b2c}.jm-path-r:last-child{border-bottom:none}.jm-path-r i{width:14px;height:3px;border-radius:2px;flex:none}.jm-path-r b{margin-left:auto;font-family:Consolas,monospace;font-weight:700;color:#8fa3c4}.jm-path-r .pt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@keyframes jmflow{to{stroke-dashoffset:-26}}.jm-canvas path.flow{stroke-dasharray:7 6;animation:jmflow 1.1s linear infinite}@media(max-width:1100px){.jm-bottom{grid-template-columns:1fr 1fr}}@media(max-width:740px){.jm-grid{grid-template-columns:1fr}.jm-rail{flex-direction:row}.jm-rail .jm-card{flex:1}.jm-bottom{grid-template-columns:1fr}.jm-kpis{grid-template-columns:repeat(2,1fr)}.jm-filters{margin-left:0}}body.jm-full>h1{display:none}body.jm-full .topbar{display:none}body.jm-full{max-width:none!important}@media(min-width:861px){body.jm-full{padding:14px 18px 22px 230px!important}}@media(max-width:860px){body.jm-full{padding-top:6px}}.jm-userbar{display:flex;gap:7px;align-items:center}.jm-userbar input{background:#0e1322;border:1px solid #22304e;border-radius:9px;padding:8px 12px;color:#e9edf7;font-size:12.5px;outline:none;width:190px;font-family:inherit}.jm-userbar input:focus{border-color:#a06bff;box-shadow:0 0 0 3px rgba(160,107,255,.1)}.jm-userbar select{background:#0e1322;border:1px solid #22304e;border-radius:9px;padding:8px 9px;color:#8fa3c4;font-size:12px;cursor:pointer}.jm-userbar button{background:rgba(160,107,255,.15);border:1px solid #a06bff;color:#c9b3ff;border-radius:9px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer}#jmLiveB{background:rgba(46,230,168,.1);border-color:rgba(46,230,168,.5);color:#7fe7bd}#jmDetail{position:fixed;right:22px;top:110px;z-index:85;width:308px;max-height:70vh;overflow:auto;background:linear-gradient(180deg,#12182a,#0d1120);border:1px solid #2b3b63;border-radius:15px;padding:15px 16px;box-shadow:0 30px 80px -18px rgba(0,0,0,.9),0 0 40px -14px rgba(91,140,255,.35)}.jmd-x{position:absolute;top:9px;right:11px;background:none;border:none;color:#5c6b84;font-size:14px;cursor:pointer}.jmd-x:hover{color:#e9edf7}.jmd-t{font-size:15px;font-weight:800;color:#e9edf7;margin:0 18px 2px 0}.jmd-m{font-family:Consolas,monospace;font-size:10.5px;color:#8fa3c4;margin-bottom:10px}.jmd-k{font-family:Consolas,monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:#5c6b84;margin:12px 0 6px}.jmd-a{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid #1a2138;font-size:12px;color:#c6d2e6}.jmd-a:last-child{border-bottom:none}.jmd-a b{font-family:Consolas,monospace;color:#8fa3c4;font-weight:400;margin-left:auto;white-space:nowrap}.jmd-a.gold{color:#ffd75a}.jmd-a.green{color:#7fe7bd}.jmd-empty{color:#5c6b84;font-size:12px;padding:6px 0}.jm-uinfo{display:flex;align-items:center;gap:13px;background:linear-gradient(135deg,rgba(91,140,255,.12),rgba(160,107,255,.06));border:1px solid rgba(91,140,255,.4);border-radius:14px;padding:12px 16px;margin-bottom:12px;flex-wrap:wrap}.jm-uinfo .jm-av{width:38px;height:38px;font-size:16px}.jm-uinfo .un{font-size:15px;font-weight:800;color:#e9edf7}.jm-uinfo .um{font-family:Consolas,monospace;font-size:10.5px;color:#8fa3c4;margin-top:2px}.jm-uinfo .ust{margin-left:auto;display:flex;gap:16px;flex-wrap:wrap}.jm-uinfo .ust span{font-family:Consolas,monospace;font-size:10px;color:#5c6b84;text-align:right}.jm-uinfo .ust b{display:block;font-size:15px;color:#e9edf7}.jm-uinfo a{color:#9db9ff;font-size:11.5px;font-family:Consolas,monospace;text-decoration:underline}.jm-sess{font-family:Consolas,monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#5c6b84;margin:14px 0 4px;display:flex;align-items:center;gap:9px}.jm-sess::after{content:"";flex:1;height:1px;background:#1a2138}body.jm-user .jm-rail{display:none}body.jm-user .jm-grid{grid-template-columns:1fr}body.jm-user .jm-bottom{display:none}body.jm-user #jmFilt{display:none}.jm-canvas g[data-jn]{cursor:pointer}.jm-canvas path.fresh{animation:jmflow .45s linear infinite,jmpulse 1.2s ease-in-out infinite}@keyframes jmpulse{0%,100%{stroke-opacity:.95}50%{stroke-opacity:.45}}.jmd-sum{background:rgba(91,140,255,.08);border:1px solid rgba(91,140,255,.28);border-radius:10px;padding:9px 11px;font-size:12.5px;line-height:1.55;color:#dbe4f5}.jm-on{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ee6a8;margin-left:7px;box-shadow:0 0 8px #2ee6a8;animation:hpp 1.6s infinite;vertical-align:1px}.jm-vcard[data-jmu]{cursor:pointer;transition:border-color .15s}.jm-vcard[data-jmu]:hover{border-color:#a06bff}.jm-rc{background:#0e1322;border:1px solid #22304e;color:#8fa3c4;border-radius:999px;padding:5px 11px;font-size:11px;font-family:Consolas,monospace;cursor:pointer;margin-left:5px}.jm-rc:hover{color:#c9b3ff;border-color:#a06bff}.jm-legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:10px;padding-top:10px;border-top:1px solid #141b2c;font-family:Consolas,monospace;font-size:10px;color:#5c6b84}.jm-legend span{display:inline-flex;align-items:center;gap:6px}.jm-legend i{font-style:normal}.jm-legend span>i:first-child{display:inline-block;width:9px;height:9px;border-radius:3px}.jm-legend .lg-badge{width:15px;height:15px;border-radius:50%;border:1px solid #a06bff;color:#a06bff;display:inline-flex;align-items:center;justify-content:center;font-size:8.5px;background:#0d1120}.jm-legend .lg-line{width:20px;height:2px;border-radius:2px;background:#eaf2ff;box-shadow:0 0 6px #eaf2ff}.jm-legend .lg-dot{width:9px;height:9px;border-radius:50%;background:#5b8cff;box-shadow:0 0 8px #5b8cff}@media(max-width:740px){.jm-userbar{flex-wrap:wrap;width:100%}.jm-userbar input{flex:1;min-width:150px;width:auto}#jmDetail{left:10px;right:10px;top:auto;bottom:76px;width:auto;max-height:52vh}.jm-uinfo .ust{margin-left:0;gap:12px}.jm-tt{min-width:0}}.jm-views{display:flex;gap:0;border:1px solid #22304e;border-radius:11px;overflow:hidden}.jm-views button{background:#0e1322;border:none;color:#8fa3c4;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;border-right:1px solid #22304e}.jm-views button:last-child{border-right:none}.jm-views button.on{background:rgba(91,140,255,.18);color:#9db9ff}.jm-flowh{font-family:Consolas,monospace;font-size:10.5px;color:#5c6b84;margin-bottom:8px;letter-spacing:.02em}.jm-goldpulse{filter:drop-shadow(0 0 5px #ffd75a)}@media(max-width:740px){.jm-views{width:100%}.jm-views button{flex:1}}.pay{background:#0c0f13;border:1px solid #2f3742;color:#c2f64a;border-radius:7px;padding:6px 11px;font-size:11px;font-family:Consolas,monospace;cursor:pointer}.pay:hover{border-color:#c2f64a}button.opsu-ping{color:#3fd8e6;border-color:rgba(63,216,230,.45)}button.opsu-ping:hover{border-color:#3fd8e6}*{scrollbar-width:thin;scrollbar-color:#242e42 transparent}::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#242e42;border-radius:8px;border:2px solid #0b0e13}::-webkit-scrollbar-thumb:hover{background:#31405c}::-webkit-scrollbar-corner{background:transparent}.tabbar .gsr{display:none}.adm-onln{display:none}@media(min-width:861px){.tabbar .gsr{display:block;flex:none;margin:0 0 10px;min-width:0;max-width:none}.tabbar .gsr input{font-size:12.5px;padding:9px 11px 9px 33px;border-radius:10px}.tabbar .gsr svg{left:11px;width:14px;height:14px}.tabbar .gsr-drop{position:fixed;left:216px;top:14px;right:auto;width:440px;max-height:70vh;overflow-y:auto}.adm-onln{display:flex;align-items:center;gap:8px;margin-top:auto;padding:14px 10px 4px;border-top:1px solid #141a26;font-family:Consolas,monospace;font-size:11px;color:#8fa3c4}.adm-onln b{color:#2ee6a8;font-size:12px}.adm-onln .od2{width:8px;height:8px;border-radius:50%;background:#2ee6a8;box-shadow:0 0 8px #2ee6a8;flex:none;animation:hpp 1.6s infinite}}.jm-av.live{box-shadow:0 0 0 2px #0b0e13,0 0 0 2.5px #2ee6a8,0 0 12px 3px rgba(46,230,168,.5)}.jm-legend .lg-ring{width:11px;height:11px;border-radius:50%;background:#31405c;box-shadow:0 0 0 1.5px #0b0e13,0 0 0 2px #2ee6a8,0 0 7px 2px rgba(46,230,168,.5);display:inline-block}.ovz-tgl{display:flex;gap:0;border:1px solid #22304e;border-radius:10px;overflow:hidden;margin-right:10px}.ovz-tgl button{background:#0e1322;border:none;color:#8fa3c4;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;border-right:1px solid #22304e}.ovz-tgl button:last-child{border-right:none}.ovz-tgl button.on{background:rgba(46,230,168,.13);color:#2ee6a8}.ovz-grid{display:grid;grid-template-columns:250px minmax(0,1fr) 268px;gap:12px;align-items:start}.ovz-p{border:1px solid #1c2230;border-radius:13px;background:#0b0e13;padding:12px 14px;min-width:0}.ovz-h{font-family:Consolas,monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#5c6b84;margin-bottom:10px}.ovz-coin{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #10151f}.ovz-coin:last-child{border-bottom:none}.ovz-dot{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:9px;color:#0a0b0d;flex:none;font-family:Consolas,monospace}.ovz-bar{display:block;height:3px;border-radius:2px;background:#141a26;margin-top:5px;overflow:hidden}.ovz-bar i{display:block;height:100%;border-radius:2px}.ovz-sw{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:-1px}.ovz-bot{display:grid;grid-template-columns:1.45fr 1fr;gap:12px;margin-top:12px}.ovz-feedrow{display:flex;gap:9px;font-family:Consolas,monospace;font-size:11px;padding:6.5px 0;border-bottom:1px solid #10151f;align-items:center}.ovz-feedrow:last-child{border-bottom:none}.ovz-chips{float:right;display:inline-flex;gap:4px}.ovz-chip{background:#0e1322;border:1px solid #22304e;color:#8fa3c4;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:700;cursor:pointer;text-transform:none;letter-spacing:0}.ovz-chip.on{border-color:#2ee6a8;color:#2ee6a8}#ovzSvg{overflow-x:auto}@media(max-width:1100px){.ovz-grid{grid-template-columns:1fr 1fr}.ovz-grid .ovz-p:nth-child(2){grid-column:1/-1;order:-1}}@media(max-width:740px){.ovz-grid,.ovz-bot{grid-template-columns:1fr}.ovz-tgl{width:100%;margin:0 0 8px}.ovz-tgl button{flex:1}}#ovzToasts{position:fixed;top:74px;right:22px;z-index:230;display:flex;flex-direction:column;gap:8px;pointer-events:none}.ovz-toast{background:#0c1118;border:1px solid rgba(46,230,168,.55);border-radius:12px;padding:10px 14px;font-family:Consolas,monospace;font-size:12px;color:#dbe4f5;box-shadow:0 8px 30px rgba(0,0,0,.5),0 0 18px rgba(46,230,168,.25);animation:ovzIn .3s ease-out;max-width:360px}.ovz-toast.liq{border-color:rgba(160,107,255,.6);box-shadow:0 8px 30px rgba(0,0,0,.5),0 0 18px rgba(160,107,255,.3)}.ovz-toast.out{opacity:0;transform:translateX(14px);transition:.35s}@keyframes ovzIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}.ovz-newrow{animation:ovzNew 2.2s ease-out 4}@keyframes ovzNew{0%{background:rgba(46,230,168,.2)}100%{background:transparent}}.ovz-newpill{font-style:normal;background:rgba(46,230,168,.14);border:1px solid rgba(46,230,168,.55);color:#2ee6a8;border-radius:6px;font-size:8px;font-weight:800;padding:1px 5px;letter-spacing:.06em;flex:none}.ovz-coin[data-ovc]{cursor:pointer;border-radius:9px;padding-left:5px;padding-right:5px;margin:0 -5px}.ovz-coin[data-ovc]:hover{background:rgba(255,255,255,.03)}.ovz-coin.on{background:rgba(194,246,74,.06);outline:1px solid rgba(194,246,74,.35)}.ovz-cf{background:rgba(194,246,74,.1);border:1px solid rgba(194,246,74,.5);color:#c2f64a;border-radius:999px;padding:2px 9px;font-size:9.5px;font-weight:800;cursor:pointer;text-transform:none;letter-spacing:.02em}.ovz-nowst{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;font-family:Consolas,monospace;font-size:11px;color:#8fa3c4}.ovz-bwl{font-family:Consolas,monospace;font-size:11px;color:#8fa3c4;margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.jm-nowstrip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 12px;margin-bottom:12px;border:1px solid #1a2334;border-radius:12px;background:#0b0e15}.jm-nowk{font-family:Consolas,monospace;font-size:9.5px;letter-spacing:.12em;color:#2ee6a8;display:inline-flex;align-items:center;gap:7px;margin-right:4px}.jm-nowk i{width:7px;height:7px;border-radius:50%;background:#2ee6a8;box-shadow:0 0 8px #2ee6a8;animation:hpp 1.6s infinite}.jm-nowchip{display:inline-flex;align-items:center;gap:7px;background:#0e1322;border:1px solid #22304e;border-radius:999px;padding:4px 11px 4px 5px;font-family:Consolas,monospace;font-size:11px;color:#dbe4f5}.jm-nowchip[data-jmu]{cursor:pointer}.jm-nowchip[data-jmu]:hover{border-color:#a06bff}.jm-nowchip .av{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#0a0b0d;font-style:normal;box-shadow:0 0 0 1.5px #0b0e13,0 0 0 2px #2ee6a8}.jm-nowchip b{color:#9db9ff;font-weight:700}.jm-nowchip em{font-style:normal;color:#5c6b84;font-size:10px}.jm-nowempty{font-family:Consolas,monospace;font-size:11px;color:#5c6b84}.jm-samp{font-family:Consolas,monospace;font-size:10.5px;color:#5c6b84;margin-top:8px}.jm-samp b{color:#8fa3c4}.jm-act{display:flex;align-items:center;gap:8px;padding:5.5px 0;border-bottom:1px solid #10151f;font-family:Consolas,monospace;font-size:10.5px;color:#8fa3c4}.jm-act:last-child{border-bottom:none}.jm-act i{width:7px;height:7px;border-radius:50%;flex:none}.jm-act .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#b9c4d8}.jm-act em{font-style:normal;color:#5c6b84;font-size:9.5px;flex:none}.jm-act.fr .t{color:#eaf2ff}.jm-act.fr{animation:ovzNew 2.2s ease-out 2}.jm-fresh{animation:jmFr 2.6s ease-out 2}@keyframes jmFr{0%{box-shadow:0 0 0 1px rgba(46,230,168,.7),0 0 22px rgba(46,230,168,.25)}100%{box-shadow:none}}.ovz-today{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:12px;padding:10px 14px;border:1px solid #1c2230;border-radius:12px;background:#0b0e13;font-family:Consolas,monospace;font-size:11.5px;color:#8fa3c4}.ovz-today .tk{font-size:9.5px;letter-spacing:.12em;color:#5c6b84}.ovz-today b{color:#dbe4f5}.ovz-rz{display:grid;grid-template-columns:1fr 1fr;gap:4px 26px}.ovz-rzh{font-family:Consolas,monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;margin:2px 0 4px}@media(max-width:740px){.ovz-rz{grid-template-columns:1fr}}[data-ovt]{cursor:pointer}span[data-ovt]:hover,i[data-ovt]:hover{color:#c9b3ff!important;text-decoration:underline}#ovzModal{position:fixed;inset:0;z-index:240;background:rgba(5,7,11,.7);backdrop-filter:blur(3px);display:flex;align-items:flex-start;justify-content:center;padding:60px 16px 30px;overflow-y:auto}#ovzModal[hidden]{display:none}.ovzm{position:relative;width:min(720px,96vw);background:#0c0f15;border:1px solid #242e42;border-radius:16px;padding:20px 22px;box-shadow:0 30px 90px rgba(0,0,0,.6)}.ovzm-x{position:absolute;top:12px;right:12px;background:none;border:1px solid #2a3550;color:#8fa3c4;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:13px}.ovzm-x:hover{color:#e9e7df;border-color:#8fa3c4}.ovzm-h{font-size:17px;font-weight:800;color:#e9edf7;margin-bottom:14px}.ovzm-h .em{font-size:12px;font-weight:400;color:#5c6b84;margin-left:10px;font-family:Consolas,monospace}.ovzm-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.ovzm-k{border:1px solid #1a2334;border-radius:11px;background:#0b0e13;padding:10px 12px}.ovzm-k b{display:block;font-size:16px;font-family:Consolas,monospace}.ovzm-k span{display:block;font-family:Consolas,monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#5c6b84;margin-top:3px}.ovzm-act{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}.ovzm-act .pay{padding:8px 14px;font-size:12px}@media(max-width:640px){.ovzm-kpis{grid-template-columns:repeat(2,1fr)}}.ovz-flow{stroke-dasharray:8 16;animation:ovzFlowA 1.4s linear infinite}@keyframes ovzFlowA{to{stroke-dashoffset:-24}}#ovzSvg path.dim{stroke-opacity:.05!important}#ovzSvg path.hl{stroke-opacity:.95!important}#ovzSvg path.hl.ovz-flow{stroke-opacity:1!important}.ovz-lv{display:inline-flex;align-items:center;gap:6px;color:#2ee6a8;margin-right:8px}.ovz-lv i{width:7px;height:7px;border-radius:50%;background:#2ee6a8;box-shadow:0 0 8px #2ee6a8;animation:hpp 1.6s infinite}.ovz-nflash rect{animation:ovzNf 1.1s ease-out 4}@keyframes ovzNf{0%{stroke:#2ee6a8;stroke-opacity:1;stroke-width:2.4}100%{}}.jm-act[data-jmu]:hover .t{color:#c9b3ff}#ovzWorld,#jmWorld{width:100%;display:block;border-radius:10px;background:radial-gradient(900px 300px at 50% 0,#0d1220 0,#090c12 70%)}#ovzSnd.on{border-color:#2ee6a8;color:#2ee6a8}/* ops v3 — unified look outside the dashboard */div[id^="tab-"]:not(#tab-stats) h2{font-family:Consolas,monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#5c6b84;font-weight:700;border:none;padding-left:0}div[id^="tab-"]:not(#tab-stats) h2::before{display:none}div[id^="tab-"]:not(#tab-stats) h2 span{text-transform:none;letter-spacing:.02em;font-size:10.5px;color:#3f4b63;font-family:Consolas,monospace}div[id^="tab-"]:not(#tab-stats) .feed,div[id^="tab-"]:not(#tab-stats) .list,div[id^="tab-"]:not(#tab-stats) .funnel,div[id^="tab-"]:not(#tab-stats) .chart,div[id^="tab-"]:not(#tab-stats) .hourchart,div[id^="tab-"]:not(#tab-stats) .geotree,div[id^="tab-"]:not(#tab-stats) .rwd-accts,div[id^="tab-"]:not(#tab-stats) .rwd-wd,div[id^="tab-"]:not(#tab-stats) .setwrap,div[id^="tab-"]:not(#tab-stats) .goal,div[id^="tab-"]:not(#tab-stats) .hp,div[id^="tab-"]:not(#tab-stats) .rwd-risk,div[id^="tab-"]:not(#tab-stats) .sup-item,div[id^="tab-"]:not(#tab-stats) .sup-compose{background:#0b0e13;border:1px solid #1c2230;border-radius:13px}div[id^="tab-"]:not(#tab-stats) .card{background:#0b0e13;border:1px solid #1a2334;border-radius:11px}div[id^="tab-"]:not(#tab-stats) .cv{font-family:Consolas,monospace}div[id^="tab-"]:not(#tab-stats) .cl{font-family:Consolas,monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#5c6b84}div[id^="tab-"]:not(#tab-stats) .fe,div[id^="tab-"]:not(#tab-stats) .lv,div[id^="tab-"]:not(#tab-stats) .wd-row,div[id^="tab-"]:not(#tab-stats) .rwd-a,div[id^="tab-"]:not(#tab-stats) .row{border-color:#10151f}div[id^="tab-"]:not(#tab-stats) .subtab{background:#0e1322;border:1px solid #22304e;border-radius:999px;color:#8fa3c4}div[id^="tab-"]:not(#tab-stats) .subtab.on{background:rgba(91,140,255,.18);color:#9db9ff;border-color:#22304e}#rvWorld,#usrWorld{width:100%;display:block;border-radius:12px;background:radial-gradient(900px 300px at 50% 0,#0d1220 0,#090c12 70%);border:1px solid #1c2230;margin:4px 0 14px}</style></head><body><div class="adm-top"><div><h1>MarginPad — Admin</h1><div class="muted">Private · hashed IDs, no cookies, no raw IP · live data</div></div><div class="rt"><div class="u3s"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg><input id="u3q" type="text" placeholder="Search user &rarr; full profile" autocomplete="off" spellcheck="false"><div id="u3drop" hidden></div></div><span class="onln"><span class="od"></span><span id="onln">${online}</span> online now</span><span class="fresh" id="fresh">updated just now</span><a class="csv" href="/api/bug" target="_blank">💬 Message Claude</a><a class="csv" href="?format=csv">⬇ CSV</a></div></div><nav class="tabbar"><div class="adm-brand">MARGIN<b>PAD</b> · ops</div><div class="gsr"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg><input id="gsIn" type="text" placeholder="Search users, wallets, posts…  ( / )" autocomplete="off" spellcheck="false"><div class="gsr-drop" id="gsDrop" hidden></div></div><button class="tab on" data-tab="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></button><button class="tab" data-tab="jmap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.6"/><circle cx="19" cy="6" r="2.6"/><circle cx="12" cy="18" r="2.6"/><path d="M7.4 7.4 10 15.5"/><path d="M16.6 7.4 14 15.5"/></svg><span>Journey Map</span></button><div class="adm-group">Operations</div><button class="tab" data-tab="rewards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg><span>Faucet &amp; Rewards</span><span class="noti-dot"></span></button><button class="tab" data-tab="users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg><span>Users</span><span class="noti-dot"></span></button><button class="tab" data-tab="ops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Live trades</span></button><button class="tab" data-tab="api"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg><span>Bot API</span></button><button class="tab" data-tab="revenue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Revenue</span></button><button class="tab" data-tab="seo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/><path d="M8 11h6M11 8v6"/></svg><span>SEO</span></button><button class="tab" data-tab="funnel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg><span>Funnel</span></button><button class="tab" data-tab="wd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 10h.01M18 14h.01"/></svg><span>Withdrawals</span></button><button class="tab" data-tab="retention"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg><span>Retention</span></button><button class="tab" data-tab="community"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Community</span></button><button class="tab" data-tab="support"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span>Support</span><span class="noti-dot"></span></button><button class="tab" data-tab="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg><span>Chat</span><span class="noti-dot"></span></button><div class="adm-group">Security</div><button class="tab" data-tab="security"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v5.5c0 4.5-3.2 7.7-8 9.5-4.8-1.8-8-5-8-9.5V6z"/><path d="M9 12l2 2 4-4.2"/></svg><span>Security</span></button><div class="adm-group">Configure</div><button class="tab" data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button><div class="adm-onln"><span class="od2"></span><b id="onln2">${online}</b>&nbsp;online now</div></nav><div id="tab-stats"><div id="admAlert" class="adm-alert"></div><div class="subbar"><button class="subtab on" data-sub="overview">Overview</button><button class="subtab" data-sub="traffic">Traffic</button><button class="subtab" data-sub="behavior">Behavior</button><button class="subtab" data-sub="pages">Pages</button><button class="subtab" data-sub="channels">Channels</button><button class="subtab" data-sub="health">Health</button></div><div class="substat" data-sub="overview">
+.gsr-h{font-family:Consolas,monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.11em;color:#5c656f;padding:8px 11px 4px}.gsr-r{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:9px;cursor:pointer;font-size:13px;color:#cdd3da}.gsr-r:hover{background:rgba(255,255,255,.05)}.gsr-r b{color:#e9e7df}.gsr-r .m{margin-left:auto;font-family:Consolas,monospace;font-size:11px;color:#7f8893;white-space:nowrap}.gsr-empty{color:#5c656f;font-size:12.5px;text-align:center;padding:14px}@media(max-width:740px){.gsr{max-width:none;order:3;flex-basis:100%}}.cohwrap{background:#111419;border:1px solid #232932;border-radius:14px;padding:6px 10px;overflow-x:auto}.coh{width:100%;border-collapse:collapse;font-family:Consolas,monospace;font-size:12.5px}.coh th{text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#5c656f;padding:9px 10px;border-bottom:1px solid #232932}.coh th:first-child{text-align:left}.coh td{text-align:right;padding:8px 10px;border-bottom:1px solid #1a2029;color:#cdd3da;white-space:nowrap}.coh td:first-child{text-align:left;color:#9aa3ad}.coh tr:last-child td{border-bottom:none}.coh .pc{display:inline-block;min-width:44px;padding:3px 7px;border-radius:7px;font-weight:700}.vjmap-wrap{background:linear-gradient(180deg,#0d1016,#0a0d12);border:1px solid #1c2230;border-radius:13px;padding:13px 12px 9px;margin:0 0 12px;overflow-x:auto}.vjm-h{font-family:Consolas,monospace;font-size:11.5px;font-weight:700;color:#cdd3da;margin:0 2px 10px}.vjm-h span{color:#5c656f;font-weight:400}#vjMap svg{display:block}.vjm-leg{display:flex;flex-wrap:wrap;gap:12px;margin:9px 2px 2px;font-size:11px;color:#9aa3ad;font-family:Consolas,monospace}.vjm-leg span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}.vjm-dot{width:8px;height:8px;border-radius:50%;flex:none}.jm-top{display:flex;align-items:center;gap:14px;margin:0 0 12px;flex-wrap:wrap}.jm-live{display:inline-flex;align-items:center;gap:7px;background:rgba(46,230,168,.1);border:1px solid rgba(46,230,168,.4);color:#2ee6a8;border-radius:10px;padding:8px 13px;font-family:Consolas,monospace;font-size:11px;font-weight:700;letter-spacing:.08em}.jm-live i{width:7px;height:7px;border-radius:50%;background:#2ee6a8;box-shadow:0 0 8px #2ee6a8;animation:hpp 1.8s infinite}.jm-title{font-size:19px;font-weight:800;letter-spacing:-.01em}.jm-sub{color:#5c6b84;font-size:11.5px;font-family:Consolas,monospace;margin-top:2px}.jm-filters{margin-left:auto;display:flex;gap:6px}.jm-filters button{background:#0e1322;border:1px solid #22304e;color:#8fa3c4;border-radius:9px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer}.jm-filters button.on{background:rgba(91,140,255,.16);border-color:#5b8cff;color:#9db9ff}.jm-grid{display:grid;grid-template-columns:212px minmax(0,1fr);gap:12px;margin-bottom:12px}.jm-card{background:linear-gradient(180deg,#0d1220,#0a0e18);border:1px solid #1d2740;border-radius:14px;padding:13px 14px}.jm-rail{display:flex;flex-direction:column;gap:12px}.jm-k{font-family:Consolas,monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#5c6b84;margin-bottom:8px}.jm-k span{text-transform:none;letter-spacing:0}.jm-big{font-family:Consolas,monospace;font-weight:800;font-size:30px;letter-spacing:-1px;color:#e9edf7}.jm-delta{font-family:Consolas,monospace;font-size:11px;margin:3px 0 6px;color:#2ee6a8}.jm-tp{margin-bottom:9px}.jm-tp .r1{display:flex;justify-content:space-between;font-size:11.5px;color:#c6d2e6;margin-bottom:4px}.jm-tp .r1 b{color:#8fa3c4;font-family:Consolas,monospace;font-weight:400}.jm-tp .bar{height:4px;border-radius:3px;background:#141b2c;overflow:hidden}.jm-tp .bar i{display:block;height:100%;border-radius:3px}.jm-canvas{position:relative;background:radial-gradient(900px 420px at 62% -10%,#111a30,#090d16 70%);border:1px solid #1d2740;border-radius:16px;padding:16px 14px;overflow-x:auto;min-height:300px}.jm-band{margin-bottom:6px}.jm-vcard{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,rgba(160,107,255,.13),rgba(91,140,255,.07));border:1px solid rgba(160,107,255,.4);border-radius:13px;padding:9px 14px;margin:2px 0 4px;box-shadow:0 0 24px -8px rgba(160,107,255,.35)}.jm-av{width:30px;height:30px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#0a0b0d}.jm-vn{font-size:13px;font-weight:700;color:#e9edf7}.jm-vm{font-family:Consolas,monospace;font-size:10px;color:#8fa3c4;margin-top:1px}.jm-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.jm-kpi{background:linear-gradient(180deg,#0d1220,#0a0e18);border:1px solid #1d2740;border-radius:13px;padding:12px 14px}.jm-kpi .l{display:flex;align-items:center;gap:6px;font-family:Consolas,monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:#5c6b84}.jm-kpi .v{font-family:Consolas,monospace;font-weight:800;font-size:23px;color:#e9edf7;margin-top:5px}.jm-kpi .d{font-family:Consolas,monospace;font-size:11px;margin-top:3px}.jm-bottom{display:grid;grid-template-columns:1.15fr 1fr .95fr;gap:12px}.jm-path-r{display:flex;align-items:center;gap:9px;font-size:11.5px;color:#c6d2e6;padding:6px 0;border-bottom:1px solid #141b2c}.jm-path-r:last-child{border-bottom:none}.jm-path-r i{width:14px;height:3px;border-radius:2px;flex:none}.jm-path-r b{margin-left:auto;font-family:Consolas,monospace;font-weight:700;color:#8fa3c4}.jm-path-r .pt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@keyframes jmflow{to{stroke-dashoffset:-26}}.jm-canvas path.flow{stroke-dasharray:7 6;animation:jmflow 1.1s linear infinite}@media(max-width:1100px){.jm-bottom{grid-template-columns:1fr 1fr}}@media(max-width:740px){.jm-grid{grid-template-columns:1fr}.jm-rail{flex-direction:row}.jm-rail .jm-card{flex:1}.jm-bottom{grid-template-columns:1fr}.jm-kpis{grid-template-columns:repeat(2,1fr)}.jm-filters{margin-left:0}}body.jm-full>h1{display:none}body.jm-full .topbar{display:none}body.jm-full{max-width:none!important}@media(min-width:861px){body.jm-full{padding:14px 18px 22px 230px!important}}@media(max-width:860px){body.jm-full{padding-top:6px}}.jm-userbar{display:flex;gap:7px;align-items:center}.jm-userbar input{background:#0e1322;border:1px solid #22304e;border-radius:9px;padding:8px 12px;color:#e9edf7;font-size:12.5px;outline:none;width:190px;font-family:inherit}.jm-userbar input:focus{border-color:#a06bff;box-shadow:0 0 0 3px rgba(160,107,255,.1)}.jm-userbar select{background:#0e1322;border:1px solid #22304e;border-radius:9px;padding:8px 9px;color:#8fa3c4;font-size:12px;cursor:pointer}.jm-userbar button{background:rgba(160,107,255,.15);border:1px solid #a06bff;color:#c9b3ff;border-radius:9px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer}#jmLiveB{background:rgba(46,230,168,.1);border-color:rgba(46,230,168,.5);color:#7fe7bd}#jmDetail{position:fixed;right:22px;top:110px;z-index:85;width:308px;max-height:70vh;overflow:auto;background:linear-gradient(180deg,#12182a,#0d1120);border:1px solid #2b3b63;border-radius:15px;padding:15px 16px;box-shadow:0 30px 80px -18px rgba(0,0,0,.9),0 0 40px -14px rgba(91,140,255,.35)}.jmd-x{position:absolute;top:9px;right:11px;background:none;border:none;color:#5c6b84;font-size:14px;cursor:pointer}.jmd-x:hover{color:#e9edf7}.jmd-t{font-size:15px;font-weight:800;color:#e9edf7;margin:0 18px 2px 0}.jmd-m{font-family:Consolas,monospace;font-size:10.5px;color:#8fa3c4;margin-bottom:10px}.jmd-k{font-family:Consolas,monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.1em;color:#5c6b84;margin:12px 0 6px}.jmd-a{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid #1a2138;font-size:12px;color:#c6d2e6}.jmd-a:last-child{border-bottom:none}.jmd-a b{font-family:Consolas,monospace;color:#8fa3c4;font-weight:400;margin-left:auto;white-space:nowrap}.jmd-a.gold{color:#ffd75a}.jmd-a.green{color:#7fe7bd}.jmd-empty{color:#5c6b84;font-size:12px;padding:6px 0}.jm-uinfo{display:flex;align-items:center;gap:13px;background:linear-gradient(135deg,rgba(91,140,255,.12),rgba(160,107,255,.06));border:1px solid rgba(91,140,255,.4);border-radius:14px;padding:12px 16px;margin-bottom:12px;flex-wrap:wrap}.jm-uinfo .jm-av{width:38px;height:38px;font-size:16px}.jm-uinfo .un{font-size:15px;font-weight:800;color:#e9edf7}.jm-uinfo .um{font-family:Consolas,monospace;font-size:10.5px;color:#8fa3c4;margin-top:2px}.jm-uinfo .ust{margin-left:auto;display:flex;gap:16px;flex-wrap:wrap}.jm-uinfo .ust span{font-family:Consolas,monospace;font-size:10px;color:#5c6b84;text-align:right}.jm-uinfo .ust b{display:block;font-size:15px;color:#e9edf7}.jm-uinfo a{color:#9db9ff;font-size:11.5px;font-family:Consolas,monospace;text-decoration:underline}.jm-sess{font-family:Consolas,monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#5c6b84;margin:14px 0 4px;display:flex;align-items:center;gap:9px}.jm-sess::after{content:"";flex:1;height:1px;background:#1a2138}body.jm-user .jm-rail{display:none}body.jm-user .jm-grid{grid-template-columns:1fr}body.jm-user .jm-bottom{display:none}body.jm-user #jmFilt{display:none}.jm-canvas g[data-jn]{cursor:pointer}.jm-canvas path.fresh{animation:jmflow .45s linear infinite,jmpulse 1.2s ease-in-out infinite}@keyframes jmpulse{0%,100%{stroke-opacity:.95}50%{stroke-opacity:.45}}.jmd-sum{background:rgba(91,140,255,.08);border:1px solid rgba(91,140,255,.28);border-radius:10px;padding:9px 11px;font-size:12.5px;line-height:1.55;color:#dbe4f5}.jm-on{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ee6a8;margin-left:7px;box-shadow:0 0 8px #2ee6a8;animation:hpp 1.6s infinite;vertical-align:1px}.jm-vcard[data-jmu]{cursor:pointer;transition:border-color .15s}.jm-vcard[data-jmu]:hover{border-color:#a06bff}.jm-rc{background:#0e1322;border:1px solid #22304e;color:#8fa3c4;border-radius:999px;padding:5px 11px;font-size:11px;font-family:Consolas,monospace;cursor:pointer;margin-left:5px}.jm-rc:hover{color:#c9b3ff;border-color:#a06bff}.jm-legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:10px;padding-top:10px;border-top:1px solid #141b2c;font-family:Consolas,monospace;font-size:10px;color:#5c6b84}.jm-legend span{display:inline-flex;align-items:center;gap:6px}.jm-legend i{font-style:normal}.jm-legend span>i:first-child{display:inline-block;width:9px;height:9px;border-radius:3px}.jm-legend .lg-badge{width:15px;height:15px;border-radius:50%;border:1px solid #a06bff;color:#a06bff;display:inline-flex;align-items:center;justify-content:center;font-size:8.5px;background:#0d1120}.jm-legend .lg-line{width:20px;height:2px;border-radius:2px;background:#eaf2ff;box-shadow:0 0 6px #eaf2ff}.jm-legend .lg-dot{width:9px;height:9px;border-radius:50%;background:#5b8cff;box-shadow:0 0 8px #5b8cff}@media(max-width:740px){.jm-userbar{flex-wrap:wrap;width:100%}.jm-userbar input{flex:1;min-width:150px;width:auto}#jmDetail{left:10px;right:10px;top:auto;bottom:76px;width:auto;max-height:52vh}.jm-uinfo .ust{margin-left:0;gap:12px}.jm-tt{min-width:0}}.jm-views{display:flex;gap:0;border:1px solid #22304e;border-radius:11px;overflow:hidden}.jm-views button{background:#0e1322;border:none;color:#8fa3c4;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;border-right:1px solid #22304e}.jm-views button:last-child{border-right:none}.jm-views button.on{background:rgba(91,140,255,.18);color:#9db9ff}.jm-flowh{font-family:Consolas,monospace;font-size:10.5px;color:#5c6b84;margin-bottom:8px;letter-spacing:.02em}.jm-goldpulse{filter:drop-shadow(0 0 5px #ffd75a)}@media(max-width:740px){.jm-views{width:100%}.jm-views button{flex:1}}.pay{background:#0c0f13;border:1px solid #2f3742;color:#c2f64a;border-radius:7px;padding:6px 11px;font-size:11px;font-family:Consolas,monospace;cursor:pointer}.pay:hover{border-color:#c2f64a}button.opsu-ping{color:#3fd8e6;border-color:rgba(63,216,230,.45)}button.opsu-ping:hover{border-color:#3fd8e6}*{scrollbar-width:thin;scrollbar-color:#242e42 transparent}::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#242e42;border-radius:8px;border:2px solid #0b0e13}::-webkit-scrollbar-thumb:hover{background:#31405c}::-webkit-scrollbar-corner{background:transparent}.tabbar .gsr{display:none}.adm-onln{display:none}@media(min-width:861px){.tabbar .gsr{display:block;flex:none;margin:0 0 10px;min-width:0;max-width:none}.tabbar .gsr input{font-size:12.5px;padding:9px 11px 9px 33px;border-radius:10px}.tabbar .gsr svg{left:11px;width:14px;height:14px}.tabbar .gsr-drop{position:fixed;left:216px;top:14px;right:auto;width:440px;max-height:70vh;overflow-y:auto}.adm-onln{display:flex;align-items:center;gap:8px;margin-top:auto;padding:14px 10px 4px;border-top:1px solid #141a26;font-family:Consolas,monospace;font-size:11px;color:#8fa3c4}.adm-onln b{color:#2ee6a8;font-size:12px}.adm-onln .od2{width:8px;height:8px;border-radius:50%;background:#2ee6a8;box-shadow:0 0 8px #2ee6a8;flex:none;animation:hpp 1.6s infinite}}.jm-av.live{box-shadow:0 0 0 2px #0b0e13,0 0 0 2.5px #2ee6a8,0 0 12px 3px rgba(46,230,168,.5)}.jm-legend .lg-ring{width:11px;height:11px;border-radius:50%;background:#31405c;box-shadow:0 0 0 1.5px #0b0e13,0 0 0 2px #2ee6a8,0 0 7px 2px rgba(46,230,168,.5);display:inline-block}.ovz-tgl{display:flex;gap:0;border:1px solid #22304e;border-radius:10px;overflow:hidden;margin-right:10px}.ovz-tgl button{background:#0e1322;border:none;color:#8fa3c4;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;border-right:1px solid #22304e}.ovz-tgl button:last-child{border-right:none}.ovz-tgl button.on{background:rgba(46,230,168,.13);color:#2ee6a8}.ovz-grid{display:grid;grid-template-columns:250px minmax(0,1fr) 268px;gap:12px;align-items:start}.ovz-p{border:1px solid #1c2230;border-radius:13px;background:#0b0e13;padding:12px 14px;min-width:0}.ovz-h{font-family:Consolas,monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#5c6b84;margin-bottom:10px}.ovz-coin{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #10151f}.ovz-coin:last-child{border-bottom:none}.ovz-dot{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:9px;color:#0a0b0d;flex:none;font-family:Consolas,monospace}.ovz-bar{display:block;height:3px;border-radius:2px;background:#141a26;margin-top:5px;overflow:hidden}.ovz-bar i{display:block;height:100%;border-radius:2px}.ovz-sw{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:-1px}.ovz-bot{display:grid;grid-template-columns:1.45fr 1fr;gap:12px;margin-top:12px}.ovz-feedrow{display:flex;gap:9px;font-family:Consolas,monospace;font-size:11px;padding:6.5px 0;border-bottom:1px solid #10151f;align-items:center}.ovz-feedrow:last-child{border-bottom:none}.ovz-chips{float:right;display:inline-flex;gap:4px}.ovz-chip{background:#0e1322;border:1px solid #22304e;color:#8fa3c4;border-radius:999px;padding:3px 10px;font-size:10px;font-weight:700;cursor:pointer;text-transform:none;letter-spacing:0}.ovz-chip.on{border-color:#2ee6a8;color:#2ee6a8}#ovzSvg{overflow-x:auto}@media(max-width:1100px){.ovz-grid{grid-template-columns:1fr 1fr}.ovz-grid .ovz-p:nth-child(2){grid-column:1/-1;order:-1}}@media(max-width:740px){.ovz-grid,.ovz-bot{grid-template-columns:1fr}.ovz-tgl{width:100%;margin:0 0 8px}.ovz-tgl button{flex:1}}#ovzToasts{position:fixed;top:74px;right:22px;z-index:230;display:flex;flex-direction:column;gap:8px;pointer-events:none}.ovz-toast{background:#0c1118;border:1px solid rgba(46,230,168,.55);border-radius:12px;padding:10px 14px;font-family:Consolas,monospace;font-size:12px;color:#dbe4f5;box-shadow:0 8px 30px rgba(0,0,0,.5),0 0 18px rgba(46,230,168,.25);animation:ovzIn .3s ease-out;max-width:360px}.ovz-toast.liq{border-color:rgba(160,107,255,.6);box-shadow:0 8px 30px rgba(0,0,0,.5),0 0 18px rgba(160,107,255,.3)}.ovz-toast.out{opacity:0;transform:translateX(14px);transition:.35s}@keyframes ovzIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}.ovz-newrow{animation:ovzNew 2.2s ease-out 4}@keyframes ovzNew{0%{background:rgba(46,230,168,.2)}100%{background:transparent}}.ovz-newpill{font-style:normal;background:rgba(46,230,168,.14);border:1px solid rgba(46,230,168,.55);color:#2ee6a8;border-radius:6px;font-size:8px;font-weight:800;padding:1px 5px;letter-spacing:.06em;flex:none}.ovz-coin[data-ovc]{cursor:pointer;border-radius:9px;padding-left:5px;padding-right:5px;margin:0 -5px}.ovz-coin[data-ovc]:hover{background:rgba(255,255,255,.03)}.ovz-coin.on{background:rgba(194,246,74,.06);outline:1px solid rgba(194,246,74,.35)}.ovz-cf{background:rgba(194,246,74,.1);border:1px solid rgba(194,246,74,.5);color:#c2f64a;border-radius:999px;padding:2px 9px;font-size:9.5px;font-weight:800;cursor:pointer;text-transform:none;letter-spacing:.02em}.ovz-nowst{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;font-family:Consolas,monospace;font-size:11px;color:#8fa3c4}.ovz-bwl{font-family:Consolas,monospace;font-size:11px;color:#8fa3c4;margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.jm-nowstrip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 12px;margin-bottom:12px;border:1px solid #1a2334;border-radius:12px;background:#0b0e15}.jm-nowk{font-family:Consolas,monospace;font-size:9.5px;letter-spacing:.12em;color:#2ee6a8;display:inline-flex;align-items:center;gap:7px;margin-right:4px}.jm-nowk i{width:7px;height:7px;border-radius:50%;background:#2ee6a8;box-shadow:0 0 8px #2ee6a8;animation:hpp 1.6s infinite}.jm-nowchip{display:inline-flex;align-items:center;gap:7px;background:#0e1322;border:1px solid #22304e;border-radius:999px;padding:4px 11px 4px 5px;font-family:Consolas,monospace;font-size:11px;color:#dbe4f5}.jm-nowchip[data-jmu]{cursor:pointer}.jm-nowchip[data-jmu]:hover{border-color:#a06bff}.jm-nowchip .av{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;color:#0a0b0d;font-style:normal;box-shadow:0 0 0 1.5px #0b0e13,0 0 0 2px #2ee6a8}.jm-nowchip b{color:#9db9ff;font-weight:700}.jm-nowchip em{font-style:normal;color:#5c6b84;font-size:10px}.jm-nowempty{font-family:Consolas,monospace;font-size:11px;color:#5c6b84}.jm-samp{font-family:Consolas,monospace;font-size:10.5px;color:#5c6b84;margin-top:8px}.jm-samp b{color:#8fa3c4}.jm-act{display:flex;align-items:center;gap:8px;padding:5.5px 0;border-bottom:1px solid #10151f;font-family:Consolas,monospace;font-size:10.5px;color:#8fa3c4}.jm-act:last-child{border-bottom:none}.jm-act i{width:7px;height:7px;border-radius:50%;flex:none}.jm-act .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#b9c4d8}.jm-act em{font-style:normal;color:#5c6b84;font-size:9.5px;flex:none}.jm-act.fr .t{color:#eaf2ff}.jm-act.fr{animation:ovzNew 2.2s ease-out 2}.jm-fresh{animation:jmFr 2.6s ease-out 2}@keyframes jmFr{0%{box-shadow:0 0 0 1px rgba(46,230,168,.7),0 0 22px rgba(46,230,168,.25)}100%{box-shadow:none}}.ovz-today{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:12px;padding:10px 14px;border:1px solid #1c2230;border-radius:12px;background:#0b0e13;font-family:Consolas,monospace;font-size:11.5px;color:#8fa3c4}.ovz-today .tk{font-size:9.5px;letter-spacing:.12em;color:#5c6b84}.ovz-today b{color:#dbe4f5}.ovz-rz{display:grid;grid-template-columns:1fr 1fr;gap:4px 26px}.ovz-rzh{font-family:Consolas,monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;margin:2px 0 4px}@media(max-width:740px){.ovz-rz{grid-template-columns:1fr}}[data-ovt]{cursor:pointer}span[data-ovt]:hover,i[data-ovt]:hover{color:#c9b3ff!important;text-decoration:underline}#ovzModal{position:fixed;inset:0;z-index:240;background:rgba(5,7,11,.7);backdrop-filter:blur(3px);display:flex;align-items:flex-start;justify-content:center;padding:60px 16px 30px;overflow-y:auto}#ovzModal[hidden]{display:none}.ovzm{position:relative;width:min(720px,96vw);background:#0c0f15;border:1px solid #242e42;border-radius:16px;padding:20px 22px;box-shadow:0 30px 90px rgba(0,0,0,.6)}.ovzm-x{position:absolute;top:12px;right:12px;background:none;border:1px solid #2a3550;color:#8fa3c4;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:13px}.ovzm-x:hover{color:#e9e7df;border-color:#8fa3c4}.ovzm-h{font-size:17px;font-weight:800;color:#e9edf7;margin-bottom:14px}.ovzm-h .em{font-size:12px;font-weight:400;color:#5c6b84;margin-left:10px;font-family:Consolas,monospace}.ovzm-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.ovzm-k{border:1px solid #1a2334;border-radius:11px;background:#0b0e13;padding:10px 12px}.ovzm-k b{display:block;font-size:16px;font-family:Consolas,monospace}.ovzm-k span{display:block;font-family:Consolas,monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#5c6b84;margin-top:3px}.ovzm-act{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}.ovzm-act .pay{padding:8px 14px;font-size:12px}@media(max-width:640px){.ovzm-kpis{grid-template-columns:repeat(2,1fr)}}.ovz-flow{stroke-dasharray:8 16;animation:ovzFlowA 1.4s linear infinite}@keyframes ovzFlowA{to{stroke-dashoffset:-24}}#ovzSvg path.dim{stroke-opacity:.05!important}#ovzSvg path.hl{stroke-opacity:.95!important}#ovzSvg path.hl.ovz-flow{stroke-opacity:1!important}.ovz-lv{display:inline-flex;align-items:center;gap:6px;color:#2ee6a8;margin-right:8px}.ovz-lv i{width:7px;height:7px;border-radius:50%;background:#2ee6a8;box-shadow:0 0 8px #2ee6a8;animation:hpp 1.6s infinite}.ovz-nflash rect{animation:ovzNf 1.1s ease-out 4}@keyframes ovzNf{0%{stroke:#2ee6a8;stroke-opacity:1;stroke-width:2.4}100%{}}.jm-act[data-jmu]:hover .t{color:#c9b3ff}#ovzWorld,#jmWorld{width:100%;display:block;border-radius:10px;background:radial-gradient(900px 300px at 50% 0,#0d1220 0,#090c12 70%)}#ovzSnd.on{border-color:#2ee6a8;color:#2ee6a8}/* ops v3 — unified look outside the dashboard */div[id^="tab-"]:not(#tab-stats) h2{font-family:Consolas,monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#5c6b84;font-weight:700;border:none;padding-left:0}div[id^="tab-"]:not(#tab-stats) h2::before{display:none}div[id^="tab-"]:not(#tab-stats) h2 span{text-transform:none;letter-spacing:.02em;font-size:10.5px;color:#3f4b63;font-family:Consolas,monospace}div[id^="tab-"]:not(#tab-stats) .feed,div[id^="tab-"]:not(#tab-stats) .list,div[id^="tab-"]:not(#tab-stats) .funnel,div[id^="tab-"]:not(#tab-stats) .chart,div[id^="tab-"]:not(#tab-stats) .hourchart,div[id^="tab-"]:not(#tab-stats) .geotree,div[id^="tab-"]:not(#tab-stats) .rwd-accts,div[id^="tab-"]:not(#tab-stats) .rwd-wd,div[id^="tab-"]:not(#tab-stats) .setwrap,div[id^="tab-"]:not(#tab-stats) .goal,div[id^="tab-"]:not(#tab-stats) .hp,div[id^="tab-"]:not(#tab-stats) .rwd-risk,div[id^="tab-"]:not(#tab-stats) .sup-item,div[id^="tab-"]:not(#tab-stats) .sup-compose{background:#0b0e13;border:1px solid #1c2230;border-radius:13px}div[id^="tab-"]:not(#tab-stats) .card{background:#0b0e13;border:1px solid #1a2334;border-radius:11px}div[id^="tab-"]:not(#tab-stats) .cv{font-family:Consolas,monospace}div[id^="tab-"]:not(#tab-stats) .cl{font-family:Consolas,monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#5c6b84}div[id^="tab-"]:not(#tab-stats) .fe,div[id^="tab-"]:not(#tab-stats) .lv,div[id^="tab-"]:not(#tab-stats) .wd-row,div[id^="tab-"]:not(#tab-stats) .rwd-a,div[id^="tab-"]:not(#tab-stats) .row{border-color:#10151f}div[id^="tab-"]:not(#tab-stats) .subtab{background:#0e1322;border:1px solid #22304e;border-radius:999px;color:#8fa3c4}div[id^="tab-"]:not(#tab-stats) .subtab.on{background:rgba(91,140,255,.18);color:#9db9ff;border-color:#22304e}#rvWorld,#usrWorld{width:100%;display:block;border-radius:12px;background:radial-gradient(900px 300px at 50% 0,#0d1220 0,#090c12 70%);border:1px solid #1c2230;margin:4px 0 14px}.tgch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(206px,1fr));gap:11px;margin-bottom:14px}.tgch{position:relative;overflow:hidden;background:linear-gradient(180deg,#0d1524,#0a0e18);border:1px solid #1d3350;border-radius:14px;padding:14px 15px;transition:border-color .15s}.tgch[data-tgurl]{cursor:pointer}.tgch[data-tgurl]:hover{border-color:#38bdf8}.tgch.off{opacity:.62}.tgch-t{font-size:14.5px;font-weight:800;color:#e9edf7}.tgch-nm{font-family:Consolas,monospace;font-size:11px;color:#8fa3c4;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tgch-m{font-family:Consolas,monospace;font-weight:800;font-size:27px;color:#38bdf8;margin-top:10px;letter-spacing:-1px;line-height:1}.tgch-m small{font-size:10px;color:#5c6b84;font-weight:400;letter-spacing:0;margin-left:3px}.tgch-s{position:absolute;top:12px;right:12px;font-family:Consolas,monospace;font-size:8.5px;letter-spacing:.08em;padding:3px 8px;border-radius:999px}.tgch-s.on{background:rgba(46,230,168,.13);color:#2ee6a8;border:1px solid rgba(46,230,168,.4)}.tgch-s.no{background:rgba(255,98,88,.12);color:#ff6258;border:1px solid rgba(255,98,88,.4)}.tgcfg{display:flex;flex-wrap:wrap;gap:8px 22px;padding:11px 15px;margin:0 0 14px;border:1px solid #1c2230;border-radius:12px;background:#0b0e13;font-family:Consolas,monospace;font-size:11.5px;color:#8fa3c4}.tgcfg b{color:#dbe4f5}.tg-userbar{display:flex;gap:9px;margin:0 0 10px;flex-wrap:wrap}.tg-userbar input{flex:1;min-width:200px;background:#0e1116;border:1px solid #2a323d;border-radius:10px;padding:9px 13px;color:#e9e7df;font-size:13px;outline:none;font-family:inherit;box-sizing:border-box}.tg-userbar input:focus{border-color:#38bdf8}.tg-userbar select{background:#12161d;color:#e9e7df;border:1px solid #242b34;border-radius:10px;padding:9px 11px;font-size:12px;cursor:pointer;font-weight:600}
+.scv-sec{font-family:Consolas,monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#5c6b84;margin:14px 2px 8px}.scv-sec .sup-ct{background:#1a2334;color:#8fa3c4;border-radius:999px;padding:1px 7px;font-size:10px;margin-left:5px}
+.scv-card{display:flex;align-items:center;gap:12px;background:#0b0e13;border:1px solid #1c2230;border-radius:12px;padding:11px 13px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}.scv-card:hover{border-color:#38bdf8}.scv-card.closed{opacity:.55}
+.scv-cav{flex:none;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#38bdf8,#2b6ef6);color:#04121f;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
+.scv-ci{flex:1;min-width:0}.scv-cn{font-size:13.5px;font-weight:700;color:#e9edf7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.scv-cm{font-size:12px;color:#8fa3c4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
+.scv-cmeta{flex:none;font-family:Consolas,monospace;font-size:10px;color:#5c6b84;text-align:right;line-height:1.5}
+.scv-cdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ee6a8;box-shadow:0 0 7px #2ee6a8;vertical-align:1px;margin-left:3px}
+.scv-cbadge{background:#1a2334;color:#5c6b84;border-radius:6px;font-size:9px;padding:1px 6px;font-weight:700;text-transform:uppercase}
+.scv{background:#0b0e13;border:1px solid #1c2230;border-radius:14px;overflow:hidden}
+.scv-top{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid #1a2230;background:#0d1119}.scv-email{font-size:13.5px;font-weight:700;color:#e9edf7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.scv-status{font-family:Consolas,monospace;font-size:9px;font-weight:800;letter-spacing:.06em;padding:3px 8px;border-radius:999px;margin-left:auto}.scv-status.open{background:rgba(46,230,168,.13);color:#2ee6a8;border:1px solid rgba(46,230,168,.4)}.scv-status.closed{background:rgba(140,150,165,.12);color:#8fa3c4;border:1px solid #2a3340}
+.scv-msgs{max-height:min(56vh,520px);overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:10px}
+.scv-row{display:flex;flex-direction:column;max-width:80%}.scv-row.in{align-self:flex-start;align-items:flex-start}.scv-row.out{align-self:flex-end;align-items:flex-end}
+.scv-b{padding:9px 13px;border-radius:14px;font-size:13.5px;line-height:1.5;word-break:break-word;white-space:pre-wrap}.scv-row.in .scv-b{background:#161c26;color:#e3e8ef;border-bottom-left-radius:5px}.scv-row.out .scv-b{background:linear-gradient(135deg,#2b6ef6,#1e5ad6);color:#fff;border-bottom-right-radius:5px}
+.scv-t{font-family:Consolas,monospace;font-size:9.5px;color:#5c6b84;margin-top:3px;padding:0 4px}
+.scv-img{max-width:220px;max-height:260px;border-radius:9px;display:block;margin-bottom:4px}
+.scv-reply{border-top:1px solid #1a2230;padding:11px 14px}.scv-body{width:100%;box-sizing:border-box;background:#0e1116;border:1px solid #2a323d;border-radius:10px;padding:10px 12px;color:#e9e7df;font-size:13px;font-family:inherit;resize:vertical;min-height:64px;outline:none}.scv-body:focus{border-color:#38bdf8}.scv-rb{display:flex;align-items:center;gap:10px;margin-top:8px}
+.scv-arch{padding:14px;text-align:center;font-size:12.5px;color:#8fa3c4;border-top:1px solid #1a2230;font-family:Consolas,monospace}
+.sbtn.danger{color:#ff8a80;border-color:rgba(255,98,88,.5)}.sbtn.danger:hover{border-color:#ff6258}
+.af-userbar{display:flex;gap:9px;margin:0 0 10px;flex-wrap:wrap}.af-userbar input{flex:1;min-width:200px;background:#0e1116;border:1px solid #2a323d;border-radius:10px;padding:9px 13px;color:#e9e7df;font-size:13px;outline:none;font-family:inherit;box-sizing:border-box}.af-userbar input:focus{border-color:#38bdf8}.af-userbar select{background:#12161d;color:#e9e7df;border:1px solid #242b34;border-radius:10px;padding:9px 11px;font-size:12px;cursor:pointer;font-weight:600}
+.af-row{background:#0b0e13;border:1px solid #1c2230;border-radius:11px;padding:10px 13px;margin-bottom:8px}
+.af-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.af-who{font-size:13.5px;font-weight:700;color:#e9edf7}.af-link{font-family:Consolas,monospace;font-size:11px;color:#5c6b84;background:#12161d;border:1px solid #1c2230;border-radius:6px;padding:1px 7px}.af-nums{margin-left:auto;font-family:Consolas,monospace;font-size:11.5px;color:#8fa3c4}
+.af-chips{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:8px}.af-lbl{font-family:Consolas,monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#5c6b84;margin-right:2px}.af-chip{font-family:Consolas,monospace;font-size:10.5px;color:#9db9ff;background:rgba(91,140,255,.1);border:1px solid rgba(91,140,255,.28);border-radius:999px;padding:2px 9px}.af-chip.src{color:#7fe7bd;background:rgba(46,230,168,.08);border-color:rgba(46,230,168,.28)}.af-chip.dim{color:#5c6b84;background:none;border-color:#242b34}.af-chip b{font-weight:800}
+.af-post{font-family:Consolas,monospace;font-size:10.5px;color:#ffd75a;background:rgba(255,215,90,.08);border:1px solid rgba(255,215,90,.3);border-radius:8px;padding:2px 9px;text-decoration:none;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle}.af-post:hover{border-color:#ffd75a;background:rgba(255,215,90,.14)}.af-post b{color:#e9e7df;font-weight:800}.af-warn{color:#ff8c42;cursor:help}
+.af-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}.af-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}.af-main{grid-template-columns:1.55fr 1fr}@media(max-width:900px){.af-2col,.af-3col,.af-main{grid-template-columns:1fr}}
+.af-panel{background:#0b0e13;border:1px solid #1c2230;border-radius:13px;padding:13px 14px}.af-ph{font-family:Consolas,monospace;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#8fa3c4;margin-bottom:12px;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.af-ph span{font-size:9px;color:#5c6b84;text-transform:none;letter-spacing:0}
+.af-fn{display:flex;flex-direction:column;gap:11px}.af-fn-meta{display:flex;justify-content:space-between;font-family:Consolas,monospace;font-size:10px;color:#8fa3c4;margin-bottom:3px}.af-fn-cv{color:#c2f64a;font-weight:700}.af-fn-bar{height:34px;border-radius:8px;display:flex;align-items:center;padding:0 12px;font-weight:800;font-size:13px;color:#04120b;min-width:52px;transition:width .5s;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.af-bars{display:flex;flex-direction:column;gap:7px}.af-bar-r{display:flex;align-items:center;gap:9px}.af-bar-k{font-size:11.5px;color:#cdd8ea;width:112px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none}.af-bar-t{flex:1;background:#12161d;border-radius:5px;height:16px;overflow:hidden}.af-bar-f{height:100%;border-radius:5px;transition:width .4s}.af-bar-n{font-family:Consolas,monospace;font-size:11px;color:#8fa3c4;width:36px;text-align:right;flex:none}
+.af-ch{display:flex;align-items:flex-end;gap:4px;height:118px;padding-top:6px}.af-ch-c{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%}.af-ch-b{border-radius:2px 2px 0 0;min-height:1px;flex:1}.af-ch-x{font-family:Consolas,monospace;font-size:8px;color:#5c6b84;text-align:center;margin-top:4px;height:10px}.af-ch-leg{display:flex;gap:14px;font-family:Consolas,monospace;font-size:10px;color:#8fa3c4;margin-top:9px}.af-ch-leg i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:middle}
+.af-row{cursor:pointer;transition:border-color .15s}.af-row:hover{border-color:#2a3550}.af-row.op{border-color:#38546e;background:#0d1119}
+.af-det{margin-top:10px;border-top:1px dashed #242b34;padding-top:8px}.af-iu{display:flex;align-items:center;gap:10px;padding:5px 2px;font-size:12px;border-bottom:1px solid #12161d}.af-iu:last-child{border-bottom:none}.af-iu-w{color:#cdd8ea;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.af-iu-p{width:58px;height:6px;background:#12161d;border-radius:4px;overflow:hidden;flex:none}.af-iu-pf{height:100%;background:#38bdf8;border-radius:4px}.af-iu-tr{font-family:Consolas,monospace;font-size:10.5px;color:#8fa3c4;flex:none}.af-iu-st{font-family:Consolas,monospace;font-size:9px;font-weight:800;padding:1px 7px;border-radius:999px;flex:none}.af-iu-st.q{color:#04120b;background:#c2f64a}.af-iu-st.p{color:#ffb020;border:1px solid rgba(255,176,32,.4)}
+.af-rec{display:flex;align-items:center;gap:9px;padding:8px 2px;border-bottom:1px solid #12161d;font-size:12px}.af-rec:last-child{border-bottom:none}.af-rec-i{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex:none;font-size:10px;font-weight:800;font-family:Consolas,monospace}.af-rec-t{flex:1;color:#b9c4d6;overflow:hidden;min-width:0}.af-rec-t b{color:#e9edf7}.af-rec-a{font-family:Consolas,monospace;font-size:9.5px;color:#5c6b84;flex:none}.af-rec-i.click{background:rgba(56,189,248,.15);color:#38bdf8}.af-rec-i.signup{background:rgba(91,140,255,.15);color:#9db9ff}.af-rec-i.qualified{background:rgba(194,246,74,.15);color:#c2f64a}
+.sm-sec{font-family:Consolas,monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#8fa3c4;margin:16px 2px 8px}.sm-c{background:#0b0e13;border:1px solid #1c2230;border-radius:12px;padding:11px 13px;margin-bottom:9px}.sm-c.hot{border-color:rgba(255,140,66,.5);box-shadow:0 0 0 1px rgba(255,140,66,.15)}.sm-h{font-size:13px;color:#dbe4f5;margin-bottom:8px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}.sm-h code{font-family:Consolas,monospace;font-size:11px;color:#9db9ff;background:#12161d;border:1px solid #1c2230;border-radius:5px;padding:1px 6px}.sm-rec{margin-left:auto;font-family:Consolas,monospace;font-size:10px;font-weight:700;color:#ff8c42;background:rgba(255,140,66,.12);border:1px solid rgba(255,140,66,.4);border-radius:999px;padding:2px 9px}.sm-vpn{font-family:Consolas,monospace;font-size:9px;font-weight:800;color:#c9a5ff;border:1px solid #b48cff;border-radius:5px;padding:1px 6px}.act-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:0 0 10px}.act-top input{flex:1;min-width:180px;background:#0e1116;border:1px solid #2a323d;border-radius:9px;padding:8px 12px;color:#e9e7df;font-size:12.5px;outline:none;font-family:inherit}.act-top input:focus{border-color:#38bdf8}.act-meta{font-family:Consolas,monospace;font-size:11px;color:#8fa3c4;margin-left:auto;white-space:nowrap}.feed-xl{max-height:calc(100vh - 235px);min-height:420px;overflow:auto}#tab-activity .fe{padding:7px 10px}.opu-top{display:flex;align-items:center;gap:10px;margin:0 0 10px}.opu-top input{flex:0 1 260px;background:#0e1116;border:1px solid #2a323d;border-radius:9px;padding:8px 12px;color:#e9e7df;font-size:12.5px;outline:none;font-family:inherit}.opu-top input:focus{border-color:#38bdf8}.opu-n{font-family:Consolas,monospace;font-size:11px;color:#8fa3c4}.opu{border:1px solid #1c2230;border-radius:12px;background:#0b0e13;margin-bottom:8px;overflow:hidden}.opu.on{border-color:#2a3550}.opu-h{display:flex;align-items:center;gap:9px;padding:10px 13px;cursor:pointer;flex-wrap:wrap}.opu-h:hover{background:rgba(255,255,255,.025)}.opu-fl{flex:none}.opu-nm{font-size:13.5px;color:#e9edf7}.opu-t{font-family:Consolas,monospace;font-size:11px;color:#8fa3c4;background:#12161d;border:1px solid #1c2230;border-radius:999px;padding:2px 9px;white-space:nowrap}.opu-t.opu-live{color:#2ee6a8;border-color:rgba(46,230,168,.35)}.opu-ago{margin-left:auto;font-family:Consolas,monospace;font-size:10.5px;color:#5c6b84;white-space:nowrap}.opu-chev{color:#5c6b84;font-size:11px;flex:none}.opu-b{border-top:1px solid #161d2a;padding:8px 13px 11px}.opu-sec{font-family:Consolas,monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#5c6b84;margin:9px 0 5px}.opu-r{display:flex;align-items:center;gap:10px;padding:5px 2px;border-bottom:1px solid #10151f;font-size:12.5px;flex-wrap:wrap}.opu-r:last-child{border-bottom:none}.opu-r b{color:#e9edf7}.opu-r .opu-ago{margin-left:0;min-width:58px}.opu-m{font-family:Consolas,monospace;font-size:11.5px;color:#8fa3c4}.opu-side{font-family:Consolas,monospace;font-size:10px;font-weight:800;border-radius:5px;padding:1px 7px}.olg{color:#04120b;background:#2ebd85}.osh{color:#fff;background:#ff6258}.opu-vo{color:#38bdf8;font-weight:700;font-size:11.5px}.opu-vw{color:#2ebd85;font-weight:700;font-size:11.5px}.opu-vx{color:#ff6258;font-weight:700;font-size:11.5px}.opu-vl{color:#b48cff;font-weight:800;font-size:11.5px}.opu-act{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.pf-t{width:100%;border-collapse:collapse;font-family:Consolas,monospace;font-size:12px}.pf-t th{text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#5c656f;padding:8px 10px;border-bottom:1px solid #232932}.pf-t th:first-child,.pf-t td:first-child{text-align:left}.pf-t td{text-align:right;padding:7px 10px;border-bottom:1px solid #1a2029;color:#cdd3da;white-space:nowrap}</style></head><body><div class="adm-top"><div><h1>MarginPad — Admin</h1><div class="muted">Private · hashed IDs, no cookies, no raw IP · live data</div></div><div class="rt"><div class="u3s"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg><input id="u3q" type="text" placeholder="Search user &rarr; full profile" autocomplete="off" spellcheck="false"><div id="u3drop" hidden></div></div><span class="onln"><span class="od"></span><span id="onln">${online}</span> online now</span><span class="fresh" id="fresh">updated just now</span><a class="csv" href="/api/bug" target="_blank">💬 Message Claude</a><a class="csv" href="?format=csv">⬇ CSV</a></div></div><nav class="tabbar"><div class="adm-brand">MARGIN<b>PAD</b> · ops</div><div class="gsr"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg><input id="gsIn" type="text" placeholder="Search users, wallets, posts…  ( / )" autocomplete="off" spellcheck="false"><div class="gsr-drop" id="gsDrop" hidden></div></div><button class="tab on" data-tab="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></button><button class="tab" data-tab="jmap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.6"/><circle cx="19" cy="6" r="2.6"/><circle cx="12" cy="18" r="2.6"/><path d="M7.4 7.4 10 15.5"/><path d="M16.6 7.4 14 15.5"/></svg><span>Journey Map</span></button><button class="tab" data-tab="activity"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/></svg><span>Activity</span></button><button class="tab" data-tab="perf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg><span>Performance</span></button><div class="adm-group">Operations</div><button class="tab" data-tab="rewards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg><span>Faucet &amp; Rewards</span><span class="noti-dot"></span></button><button class="tab" data-tab="users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg><span>Users</span><span class="noti-dot"></span></button><button class="tab" data-tab="ops"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Live trades</span></button><button class="tab" data-tab="api"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg><span>Bot API</span></button><button class="tab" data-tab="tgbot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 4.5 2.5 11.8l6.2 2.1M21.5 4.5 18 20l-4.6-4.1M21.5 4.5 8.7 13.9m0 0v4.8l3.4-3.7"/></svg><span>Telegram Bot</span></button><button class="tab" data-tab="affiliate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></svg><span>Affiliate</span></button><button class="tab" data-tab="revenue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Revenue</span></button><button class="tab" data-tab="seo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/><path d="M8 11h6M11 8v6"/></svg><span>SEO</span></button><button class="tab" data-tab="funnel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h18l-7 8v6l-4 2v-8L3 4z"/></svg><span>Funnel</span></button><button class="tab" data-tab="wd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 10h.01M18 14h.01"/></svg><span>Withdrawals</span></button><button class="tab" data-tab="retention"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg><span>Retention</span></button><button class="tab" data-tab="community"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Community</span></button><button class="tab" data-tab="support"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/></svg><span>Support</span><span class="noti-dot"></span></button><button class="tab" data-tab="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg><span>Chat</span><span class="noti-dot"></span></button><div class="adm-group">Security</div><button class="tab" data-tab="security"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v5.5c0 4.5-3.2 7.7-8 9.5-4.8-1.8-8-5-8-9.5V6z"/><path d="M9 12l2 2 4-4.2"/></svg><span>Security</span></button><div class="adm-group">Configure</div><button class="tab" data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button><div class="adm-onln"><span class="od2"></span><b id="onln2">${online}</b>&nbsp;online now</div></nav><div id="tab-stats"><div id="admAlert" class="adm-alert"></div><div class="subbar"><button class="subtab on" data-sub="overview">Overview</button><button class="subtab" data-sub="traffic">Traffic</button><button class="subtab" data-sub="behavior">Behavior</button><button class="subtab" data-sub="pages">Pages</button><button class="subtab" data-sub="channels">Channels</button><button class="subtab" data-sub="health">Health</button></div><div class="substat" data-sub="overview">
 <div class="ovv-head"><div><div class="ovv-t">Overview</div><div class="ovv-s">Real-time performance of marginpad.io</div></div><div class="ovv-liv"><i></i><b id="onln3">&hellip;</b>&nbsp;online now</div></div>
-<div class="cards ovv-kpi" id="topCards">${tile('tUv', N(uvToday), 'Visitors today', spark(uvDays), dpc(uvToday, uvY))}${tile('tRet', N(retT) + ' <small class="cvsub">' + retPct + '%</small>', 'Returning today', spark(retD), dpc(retT, retY))}${tile('tAff', N(affTod), 'Affiliate clicks today', spark(affDays), dpc(affTod, affY))}${tile('tRev', '$' + N(revTodayEst), 'Est. revenue today', '', '', 'rev')}${tile('tPv', N(pvTod), 'Pageviews today', spark(pvDays), dpc(pvTod, pvY))}${tile('tSign', '&hellip;', 'Signups today')}${tile('tFauc', '&hellip;', 'Faucet dispensed today')}${tile('botf', N(botToday), 'Bots filtered today')}</div>
+<div class="cards ovv-kpi" id="topCards">${tile('tUv', N(uvToday), 'Visitors today', spark(uvDays), dpc(uvToday, uvY))}${tile('tRet', N(retT) + ' <small class="cvsub">' + retPct + '%</small>', 'Returning today', spark(retD), dpc(retT, retY))}${tile('tAff', N(affTod), 'Affiliate clicks today', spark(affDays), dpc(affTod, affY))}${tile('tRev', '$' + N(revTodayEst), 'Est. revenue today', '', '', 'rev')}${tile('tPv', N(pvTod), 'Pageviews today', spark(pvDays), dpc(pvTod, pvY))}${tile('tSign', '&hellip;', 'Signups today')}${tile('tFauc', '&hellip;', 'Faucet dispensed today')}${tile('botf', N(botToday), 'Bots filtered today')}${tile('tDwell', '&hellip;', 'Avg time on site / user')}</div>
 <div class="feedcap" style="margin:6px 0 0">Every tile is <b>today only</b> (UTC), &#9650;&#9660; vs yesterday. <b>Est. revenue</b> = clicks &times; ~$0.45 — a rough guess, NOT real commission. All-time: <b id="tUvTot">${N(uvTotal)}</b> visitors &middot; <b id="tPvTot">${N(pvTotal)}</b> pageviews &middot; <b id="tAffTot">${N(affiliate)}</b> affiliate clicks.</div>
 <div class="ovv-g ovv-g21">
   <div class="ovv-p"><div class="ovv-ph">Traffic overview <span>last 14 days</span><span class="ovv-leg"><i style="background:#8b7bff"></i>visitors<i style="background:#2ee6a8"></i>pageviews</span></div><div id="ovTraffic" class="ovv-ch"><div class="skl"></div></div></div>
@@ -2449,32 +3168,37 @@ h2 span{color:#6b7480;font-size:12.5px;font-weight:400;letter-spacing:0}
   <div class="ovv-p"><div class="ovv-ph">User distribution <span>7d</span></div><canvas id="ovWorld" style="width:100%;height:132px;display:block"></canvas><div id="ovCcList"></div></div>
 </div>
 <div class="ovv-g ovv-g21">
-  <div class="ovv-p"><div class="ovv-ph">Real-time activity <span class="ev-mini" id="evMini"><span class="evm-on">&#9679; <b id="evOn">&mdash;</b> online</span><span>&middot; <b id="evRate">&mdash;</b>/min</span><span class="evm-money">&middot; &#128176; <b id="evMoney">&mdash;</b> today</span></span><a class="ovv-more" data-goto="jmap">view all &rarr;</a></div><div class="evchips" id="evChips"><button data-evf="all" class="on">All</button><button data-evf="money">&#128176; Money</button><button data-evf="trade">Trades</button><button data-evf="social">Social</button><button data-evf="acct">Accounts</button><button data-evf="page">Pages</button></div><div class="feed" id="evFeed">${feed}</div></div>
+  <div class="ovv-p"><div class="ovv-ph">Real-time activity <span class="ev-mini" id="evMini"><span class="evm-on">&#9679; <b id="evOn">&mdash;</b> online</span><span>&middot; <b id="evRate">&mdash;</b>/min</span><span class="evm-money">&middot; &#128176; <b id="evMoney">&mdash;</b> today</span></span><a class="ovv-more" data-goto="jmap">view all &rarr;</a></div><div class="evchips" id="evChips"><button data-evf="all" class="on">All</button><button data-evf="money">&#128176; Money</button><button class="evf" data-evf="signal">📡 Signals</button><button data-evf="trade">Trades</button><button data-evf="social">Social</button><button data-evf="acct">Accounts</button><button data-evf="page">Pages</button></div><div class="feed" id="evFeed">${feed}</div></div>
   <div class="ovv-p"><div class="ovv-ph">Recent payouts <span>faucet withdrawals</span><a class="ovv-more" data-goto="wd">view all &rarr;</a></div><div id="ovWds"><div class="skl"></div></div><div class="ovv-ph" style="margin-top:14px">System health</div><div id="ovHealth"><div class="skl" style="height:52px"></div></div><div class="ovv-ph" style="margin-top:14px">Data feed <span>collector + market data</span></div>${healthHtml}</div>
 </div>
 <div class="ovv-p" style="margin-top:12px"><div class="ovv-ph">Community <span>latest posts &middot; you also get a Telegram ping per post</span></div><div class="list">${commList}</div></div>
-</div><div class="substat" data-sub="traffic" hidden><h2>Date range</h2>${rangeBar}<div class="cards">${card(N(uvR), 'Visitors')}</div><h2>Unique visitors — last 14 days</h2><div class="chart">${daychart}</div>${histHtml}<h2>Conversion funnel <span>(all-time)</span></h2><div class="funnel">${funnel}</div><div class="sl"><b>${ppv.toFixed(1)}</b> pages per visitor · <b>${ctr.toFixed(1)}%</b> ever clicked an exchange · <b>${bounce.toFixed(0)}%</b> left after one page (all-time)</div></div><div class="substat" data-sub="behavior" hidden><h2>Where people click <span>(what they tap, most → least)</span></h2><div class="heatrow"><div><div class="heat">${hcells}</div><div class="cap">page heatmap · top = page top · brighter = more clicks</div></div><div><div class="list">${barlist(elsPretty)}</div></div></div><h2>Exchanges clicked <span>(clicks · est. $)</span></h2><div class="list">${exRevList}</div><h2>Exchange link-outs by page <span>(which page drives the money clicks)</span></h2><div class="list">${xPageList}</div><div class="two"><div><h2>Tools clicked</h2><div class="list">${barlist(tools)}</div></div><div><h2>Calculators used</h2><div class="list">${barlist(tabs)}</div></div></div><div class="two"><div><h2>Paper Trade — symbols</h2><div class="list">${barlist(paperSym)}</div></div><div><h2>Paper Trade — leverage</h2><div class="list">${barlist(levO)}</div></div></div><div class="two"><div><h2>Scroll depth <span>(% reached)</span></h2><div class="list">${barlist(scrollO)}</div></div><div><h2>Time on page</h2><div class="list">${barlist(timeO)}</div></div></div></div><div class="substat" data-sub="pages" hidden>${aeSection}<h2>Top pages <span>(unique visitors)</span></h2><div class="list">${barlist(pages)}</div><h2>Countries <span>(box size = share of visitors)</span></h2><div class="geotree">${geoTree}</div><h2>Traffic sources</h2><div class="list">${barlist(refD)}</div></div><div class="substat" data-sub="channels" hidden><h2>Blog comments <span>(engagement)</span></h2><div class="cards" style="margin-bottom:14px">${card(cmtTotal.toLocaleString('en-US'), 'Total comments')}</div>${cmtPosts.length ? '<div class="list">' + barlist(cmtPosts) + '</div>' : '<div class="empty" style="padding:0 0 4px">no comments yet</div>'}<h2>Telegram bot</h2><div class="cards" style="margin-bottom:14px">${card(botMsg.toLocaleString('en-US'), 'Bot messages')}${card(botUsers.toLocaleString('en-US'), 'Bot users')}</div>${botCmds.length ? '<div class="list">' + barlist(botCmds) + '</div>' : '<div class="empty" style="padding:0 0 4px">no bot activity yet</div>'}${other.length ? '<h2>Other events</h2><div class="list">' + barlist(other) + '</div>' : ''}</div><div class="substat" data-sub="health" hidden><h2 style="margin-top:0">Site health <span>(client crashes + server errors)</span></h2>${errHtml}</div></div><div id="tab-jmap" hidden><div class="jm-top"><span class="jm-live"><i></i>LIVE</span><div class="jm-tt"><div class="jm-title">User Journey Map</div><div class="jm-sub">Real-time &middot; last ~200 pageviews &middot; refreshes every 12s</div></div><div class="jm-views" id="jmViews"><button data-jmv="journeys" class="on">Journeys</button><button data-jmv="flows">Flows</button><button data-jmv="money">Money paths</button></div><div class="jm-userbar"><input id="jmU" placeholder="@username or email&hellip;" autocomplete="off"><select id="jmRange"><option value="6">6h</option><option value="24" selected>24h</option><option value="72">3 days</option><option value="168">7 days</option><option value="720">30 days</option></select><button id="jmGo" type="button">Trace user</button><button id="jmLiveB" type="button" hidden>&larr; Back to live</button><span id="jmRecent"></span></div><div class="jm-filters" id="jmFilt"><button data-jmf="all" class="on">All</button><button data-jmf="desktop">Desktop</button><button data-jmf="mobile">Mobile</button></div></div><div class="jm-grid"><div class="jm-rail"><div class="jm-card"><div class="jm-k">Live Users</div><div class="jm-big" id="jmLive">&mdash;</div><div class="jm-delta" id="jmLiveD"></div><div id="jmSpark"></div></div><div class="jm-card"><div class="jm-k">Top Pages</div><div id="jmTop"><div class="empty">&hellip;</div></div></div><div class="jm-card"><div class="jm-k">Live actions</div><div id="jmActs"><div class="empty">&hellip;</div></div></div></div><div class="jm-canvas" id="jmCanvas"><div class="empty">waiting for live journeys&hellip;</div></div><div id="jmDetail" hidden><button class="jmd-x" id="jmdX" type="button">&#10005;</button><div id="jmdBody"></div></div></div><div class="jm-bottom"><div class="jm-card" style="grid-column:1/-1"><div class="jm-k">Global visitors <span>(live sample &middot; dot = country &middot; gold arc = money click, last 10 min)</span></div><canvas id="jmWorld"></canvas></div><div class="jm-card"><div class="jm-k">Journey Timeline <span>(pageviews per hour &middot; UTC)</span></div><div id="jmTimeline"></div></div><div class="jm-kpis" id="jmKpis"></div><div class="jm-card"><div class="jm-k">Top User Paths</div><div id="jmPaths"><div class="empty">&hellip;</div></div></div></div></div><div id="tab-settings" hidden><h2>Master switches <span>(applies instantly — no deploy)</span></h2><div class="setwrap"><div class="setrow"><label for="sEnabled">Faucet enabled<small>users can claim</small></label><label class="sw"><input type="checkbox" id="sEnabled"><span></span></label></div><div class="setrow"><label for="sWdEnabled">Withdrawals enabled<small>users can cash out</small></label><label class="sw"><input type="checkbox" id="sWdEnabled"><span></span></label></div><div class="setrow"><label for="sPromoEnabled">Promo posts enabled<small>the earn-per-post panel on /rewards</small></label><label class="sw"><input type="checkbox" id="sPromoEnabled"><span></span></label></div><div class="setrow"><label for="sExsignEnabled">Exchange sign-up bonus enabled<small>the $-per-exchange-account panel on /rewards</small></label><label class="sw"><input type="checkbox" id="sExsignEnabled"><span></span></label></div><div class="setrow"><label for="sMissions">Daily missions enabled<small>earn cents by USING the product (paper trades, screener, community&hellip;) &mdash; verified from activity logs</small></label><label class="sw"><input type="checkbox" id="sMissions"><span></span></label></div></div><h2>Claim economics</h2><div class="setwrap"><div class="setrow"><label for="sAmount">Amount per claim ($)</label><input type="number" id="sAmount" step="0.01" min="0"></div><div class="setrow"><label for="sCooldown">Cooldown (seconds)</label><input type="number" id="sCooldown" step="30" min="0"></div><div class="setrow"><label for="sPerDay">Daily cap per address ($)</label><input type="number" id="sPerDay" step="0.5" min="0"></div><div class="setrow"><label for="sCap">Global daily budget ($)</label><input type="number" id="sCap" step="1" min="0"></div><div class="setrow"><label for="sWelcome">Sign-up welcome bonus ($)<small>one-time, credited on registration · 0 = off</small></label><input type="number" id="sWelcome" step="0.05" min="0"></div><div class="setrow"><label for="sPromo">Promo post reward ($)<small>per approved X / TikTok post · manual review on the Rewards tab</small></label><input type="number" id="sPromo" step="0.1" min="0"></div><div class="setrow"><label for="sExsign">Exchange sign-up bonus ($)<small>per verified exchange account via our ref link · manual review on the Rewards tab</small></label><input type="number" id="sExsign" step="0.5" min="0"></div></div><div class="shintbox" id="sHints"></div><h2>Withdrawals</h2><div class="setwrap"><div class="setrow"><label for="sMinWd">Minimum withdrawal ($)</label><input type="number" id="sMinWd" step="0.5" min="0"></div><div class="setrow"><label for="sMinClaimsWd">Min claims before withdrawal<small>0 = no requirement</small></label><input type="number" id="sMinClaimsWd" step="1" min="0"></div></div><h2>Anti-abuse</h2><div class="setwrap"><div class="setrow"><label for="sIpCap">Max new wallets / IP / day</label><input type="number" id="sIpCap" step="1" min="0"></div><div class="setrow"><label for="sDidCap">Max accounts / device<small>mp_did cookie · 0 = off (only flagged, not blocked)</small></label><input type="number" id="sDidCap" step="1" min="0"></div><div class="setrow"><label for="sRequireOnchain">Require on-chain wallet<small>must have BNB-chain activity</small></label><label class="sw"><input type="checkbox" id="sRequireOnchain"><span></span></label></div></div><h2>Pause message <span>(shown to users when claims are off · optional)</span></h2><div class="setwrap" style="padding:14px 18px"><textarea id="sPauseMsg" class="amod-ta" rows="2" maxlength="300" placeholder="e.g. Back tomorrow at 09:00 UTC — the daily budget refills then." style="max-width:none"></textarea></div><h2>Site announcement <span>(banner shown to every visitor · for outages / issues)</span></h2><div class="setwrap" style="padding:14px 18px"><div class="setrow" style="border:none;padding:0 0 8px"><label for="sAnnLevel">Severity</label><select id="sAnnLevel" style="background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:8px 10px;color:#e9e7df;font-family:inherit"><option value="">Off — no banner</option><option value="fix">Fix / small bug — green</option><option value="blocker">Blocker — orange</option><option value="severe">Severe — red</option></select></div><textarea id="sAnnMsg" class="amod-ta" rows="2" maxlength="300" placeholder="e.g. We are aware of an issue with withdrawals and are fixing it now." style="max-width:none"></textarea><div class="setrow" style="border:none;padding:8px 0 0"><button class="sbtn" id="sAnnBtn" type="button">Publish banner</button><span id="sAnnSt" class="smsg"></span></div></div><h2>AI assistant <span>(Ask AI on Charts · daily questions per user)</span></h2><div class="setwrap"><div class="setrow"><label for="sAiLimit">Default questions / user / day<small>everyone without a per-user override</small></label><input type="number" id="sAiLimit" step="1" min="0" style="width:120px"></div><div class="setrow" style="border:none;padding:10px 0 4px"><button class="sbtn" id="sAiSave" type="button">Save AI limit</button><span id="sAiSt" class="smsg"></span><span class="smsg" style="margin-left:auto">Per-user limits: set on a user's profile (Users tab)</span></div></div><h2>Crypto calendar <span>(custom events &mdash; show on /calendar/ + the homepage widget instantly)</span></h2><div class="setwrap" style="padding:14px 18px"><textarea id="sCalEv" class="amod-ta" rows="5" placeholder="One event per line:  YYYY-MM-DD | Title | description (optional) | impact 1-3 (optional)&#10;2026-10-01 | Token2049 Singapore | Biggest crypto conference of the autumn | 2" style="max-width:none"></textarea><div class="setrow" style="border:none;padding:8px 0 0"><button class="sbtn" id="sCalSave" type="button">Save events</button><span id="sCalSt" class="smsg"></span></div></div><h2>Ops automation <span>(Telegram &mdash; morning brief &amp; alerts to your admin chat)</span></h2><div class="setwrap"><div class="setrow"><label for="sBrief">Morning brief<small>one summary message per day (visitors, clicks, signups, faucet, community, errors)</small></label><label class="sw"><input type="checkbox" id="sBrief"><span></span></label></div><div class="setrow"><label for="sBriefHour">Brief hour (UTC)<small>sent on the first cron tick after this hour</small></label><input type="number" id="sBriefHour" step="1" min="0" max="23" style="width:90px"></div><div class="setrow"><label for="sAlerts">Anomaly alerts<small>new withdrawal &middot; faucet at 85% of budget &middot; error spikes &middot; collector down</small></label><label class="sw"><input type="checkbox" id="sAlerts"><span></span></label></div><div class="setrow"><label for="sBigTrade">Big-trade ping ($ margin)<small>Telegram ping when a paper trade opens with margin &ge; this &middot; 0 = off &middot; liq closes always ping</small></label><input type="number" id="sBigTrade" step="100" min="0" style="width:110px"></div><div class="setrow" style="border:none;padding:10px 0 4px"><button class="sbtn" id="sOpsSave" type="button">Save automation</button><span id="sOpsSt" class="smsg"></span></div></div><h2>XP promos <span>(bonus XP for qualifying paper trades — shows on the homepage instantly)</span></h2><div class="setwrap" style="padding:14px 16px"><div id="xpPromoList"><div class="empty" style="padding:8px 2px">loading…</div></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center"><button class="sbtn" id="xpAddBtn" type="button" style="background:#1a1f27;color:#e9e7df">+ Add promo</button><button class="sbtn" id="xpSaveBtn" type="button">Save promos</button><span id="xpSt" class="smsg"></span></div><div class="feedcap" style="margin-top:9px">Each promo grants <b>bonus XP</b> when a user CLOSES a qualifying trade in its window. Pick coins (blank = any), XP, max leverage, min ROE %, and a duration; hit <b>Start / Restart</b> to run it for that many hours from now. Toggle a promo off to pause it. Changes reach the homepage within ~15s.</div></div><h2>Leaderboard prizes <span>(weekly · shown on /rewards &amp; Telegram)</span></h2><div class="setwrap"><div class="setrow"><label for="sPrize1">🥇 1st place ($)</label><input type="number" id="sPrize1" step="1" min="0"></div><div class="setrow"><label for="sPrize2">🥈 2nd place ($)</label><input type="number" id="sPrize2" step="1" min="0"></div><div class="setrow"><label for="sPrize3">🥉 3rd place ($)</label><input type="number" id="sPrize3" step="1" min="0"></div></div><div class="setrow" style="max-width:540px;border:none;margin-top:14px"><button class="sbtn" id="sSave">Save all settings</button><span id="sMsg" class="smsg"></span></div></div><div id="tab-rewards" hidden><div class="cards" id="rwdCards" style="margin-bottom:8px"></div><div id="rwdRisk" class="rwd-risk"></div><h2>Needs attention <span>(possible multi-accounting / abuse · click to inspect)</span></h2><div class="rwd-accts" id="rwdFlagged" style="max-height:300px"><div class="empty">loading…</div></div><h2>Pending withdrawals <span>(send USDT on BSC, then mark paid)</span></h2><div class="rwd-wd" id="rwdWd"><div class="empty">loading…</div></div><h2>Promo posts <span>(X / TikTok · $ per approved post · open the link, check it mentions the site, approve only after 24h live)</span></h2><div class="promo-rej" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 10px;flex-wrap:wrap"><textarea id="promoRejMsg" rows="2" maxlength="200" placeholder="Saved reject reason — e.g. 'Post must mention marginpad.io and stay public 24h.' Reused for every reject." style="flex:1;min-width:240px;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:9px 11px;color:#e9e7df;font-size:12.5px;font-family:inherit;resize:vertical"></textarea><button class="sbtn" id="promoRejSave" type="button" style="flex:0 0 auto">Save reason</button><span id="promoRejSt" class="smsg"></span></div><div class="rwd-wd" id="rwdPromo"><div class="empty">loading…</div></div><h2>Exchange sign-ups <span>(who opened an account where · verify the UID in that exchange's affiliate dashboard, then approve)</span></h2><div class="rwd-wd" id="rwdExsign"><div class="empty">loading…</div></div><h2>Leaderboard — this week <span>(top ROE · eject anyone abusing it)</span></h2><div class="rwd-wd" id="rwdLb"><div class="empty">loading…</div></div><h2>Leaderboard history <span>(past weekly winners)</span></h2><div style="margin:0 0 9px"><select id="rwdLbHistSel" style="background:#12161d;color:#e9e7df;border:1px solid #242b34;border-radius:8px;padding:8px 11px;font-size:13px;font-weight:600;cursor:pointer;width:100%;max-width:360px"></select></div><div class="rwd-wd" id="rwdLbHist"><div class="empty">loading…</div></div><h2>All accounts <span id="rwdAcctCount">(loading…)</span></h2><div class="rwd-controls"><input id="rwdSearch" type="text" placeholder="Search username, email or country…" autocomplete="off"><select id="rwdSort"><option value="new">Newest</option><option value="claims">Most claims</option><option value="bal">Highest balance</option><option value="risk">Highest risk</option></select></div><div class="rwd-chips" id="rwdFilters"><button type="button" data-f="all" class="on">All</button><button type="button" data-f="flagged">Flagged</button><button type="button" data-f="banned">Banned</button><button type="button" data-f="balance">Has balance</button></div><div class="rwd-accts" id="rwdAccts"><div class="empty">loading…</div></div><div class="two" style="margin-top:8px"><div><h2>Live claims <span>(latest · every 6s)</span></h2><div class="rwd-wd" id="rwdLog"><div class="empty">loading…</div></div></div><div><h2>Paid withdrawals <span>(with tx hash)</span></h2><div class="rwd-wd" id="rwdPaid"><div class="empty">loading…</div></div></div></div></div><div id="tab-security" hidden><h2 style="margin-top:0">Reward-farming radar <span>(signed-in users by BEHAVIOR — who is here only for the faucet · click to inspect)</span></h2><div class="cards" id="secBCards" style="margin-bottom:8px"></div><div class="rwd-chips" id="secBFilt"><button type="button" data-f="all" class="on">All flagged</button><button type="button" data-f="only">Rewards-only</button><button type="button" data-f="major">Rewards-majority</button><button type="button" data-f="notrade">Claim, never trade</button><button type="button" data-f="run">Farm &amp; leave</button><button type="button" data-f="payout">Close to payout</button><button type="button" data-f="vpn">VPN / datacenter</button><button type="button" data-f="email">Look-alike email</button><button type="button" data-f="hungry">New &amp; hungry</button><button type="button" data-f="dev">Multi-device</button></div><div class="feedcap"><b>Time share</b> comes from real on-page seconds of signed-in users. <b>Rewards-only</b> = 95%+ of ALL their time on the site is on /rewards. <b>Farm &amp; leave</b> = many claims, almost zero time on site (comes → claims → leaves). <b>Close to payout</b> = balance ≥80% of the min withdrawal — review these BEFORE they cash out. Signals, not verdicts — click and inspect before banning.</div><div class="rwd-accts" id="secBList" style="max-height:440px"><div class="empty">loading…</div></div><h2>Faucet risk overview</h2><div class="cards" id="secCards" style="margin-bottom:8px"></div><h2>Look-alike / duplicate emails <span>(the same real inbox re-registered: Gmail dot/+tag tricks, or john / john1 / j.o.h.n variants · click a member to inspect)</span></h2><div id="secEmail"><div class="empty">loading…</div></div><h2>VPN / proxy users <span>(connecting from a datacenter/VPN network, not a home ISP · high = known VPN/DC ASN, likely = hosting keyword)</span></h2><div id="secVpn"><div class="empty">loading…</div></div><h2>Multi-account clusters — same DEVICE <span>(mp_did cookie · the strongest signal: several accounts on ONE phone/PC · click an account to inspect/ban)</span></h2><div id="secDev"><div class="empty">loading…</div></div><h2>Multi-account clusters — same IP <span>(weaker signal — shared home/office networks exist; damning when combined with the device signal)</span></h2><div id="secIp"><div class="empty">loading…</div></div><h2>Risk-ranked accounts <span>(0–100 score · everything ≥20 · click to inspect)</span></h2><div class="rwd-accts" id="secList"><div class="empty">loading…</div></div></div><div id="tab-support" hidden><h2>Support inbox <span>(messages from the contact form · reply by email)</span></h2><div class="smsg" id="supSetup" style="margin:0 0 12px"></div><div class="sup-bar"><button class="sup-tab on" id="supTabActive">Active</button><button class="sup-tab" id="supTabClosed">Closed</button><button class="sbtn sup-new-btn" id="supNewBtn" style="margin-left:auto">+ New ticket</button></div><div id="supCompose" hidden class="sup-item sup-compose"><div class="sup-h"><span class="sup-email">New ticket — reach a user by email</span></div><input class="sup-nemail" placeholder="user@email.com" autocomplete="off"><input class="sup-subj sup-nsubj" value="MarginPad Support" style="margin-top:8px"><textarea class="sup-body sup-nbody" placeholder="Write your message — sent from support@marginpad.io"></textarea><div class="sup-rbtn"><button class="sbtn sup-nsend">Send &amp; open ticket</button><button class="sbtn ghost sup-ncancel">Cancel</button><span class="smsg sup-nst"></span></div></div><div id="supList"><div class="empty">loading…</div></div></div><div id="tab-chat" hidden><h2>Trader chat <span>(live — moderate, post as MarginPad)</span></h2><div class="rwd-wd" id="chatMsgs" style="max-height:440px"><div class="empty">loading…</div></div><div class="chatpost"><input id="chatPostIn" type="text" placeholder="Post as MarginPad…" maxlength="280"><button class="sbtn" id="chatPostBtn">Send</button></div><button class="pay" id="chatClearBtn" style="margin-top:12px">Clear all messages</button><h2 style="margin-top:26px">📢 Telegram channel <span>(broadcast an announcement to your channel)</span></h2><div class="setrow" style="border:none;padding:2px 0 8px;max-width:540px;flex-wrap:wrap;gap:8px"><button class="sbtn" id="tgNewsBtn" type="button" style="background:#1a1f27;color:#e9e7df">📰 Insert a news article…</button><button class="sbtn" id="tgTplBtn" type="button" style="background:#1a1f27;color:#e9e7df">+ MarginPad footer</button><span id="tgNewsMsg" class="smsg"></span></div><div id="tgNewsList" hidden style="max-height:300px;overflow:auto;margin:0 0 10px"></div><div class="setwrap" style="padding:14px 18px"><textarea id="tgBcIn" class="amod-ta" rows="4" maxlength="1000" placeholder="Write an announcement — posts to your Telegram channel. Basic HTML (&lt;b&gt;, &lt;a href&gt;) works." style="max-width:none"></textarea></div><div class="setrow" style="max-width:540px;border:none;padding:8px 0 0"><input id="tgBcImg" type="text" autocomplete="off" placeholder="Image URL (optional) — attaches a small photo above the post" style="width:100%;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:9px 12px;color:#e9e7df;font-size:12.5px;font-family:inherit"></div><div class="setrow" style="max-width:540px;border:none;margin-top:10px"><button class="sbtn" id="tgBcBtn">Post to channel</button><span id="tgBcMsg" class="smsg"></span></div></div><div id="tab-ops" hidden><div class="cards" id="opsKpis" style="margin-bottom:12px"></div><div style="border:1px solid #1c2230;border-radius:14px;background:#0e1116;padding:14px 16px"><div class="row" style="margin-bottom:12px;align-items:center"><h2 style="margin:0;flex:1;font-size:16px">Live trades <span class="muted" style="font-weight:400;font-size:12px">· signed-in users' open positions · auto-refresh 12s</span></h2><div class="ovz-tgl"><button id="opsVzB" class="on" type="button">Flow view</button><button id="opsLsB" type="button">Live trades list</button></div><select id="opsSort" style="background:#12161d;color:#e9e7df;border:1px solid #242b34;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:600;cursor:pointer"><option value="pnl">Sort: P&amp;L</option><option value="liq">Sort: Closest to liq</option><option value="age">Sort: Newest</option><option value="margin">Sort: Margin</option></select></div><div id="opsViz" style="display:none"></div><div id="opsBody"><div class="empty">loading…</div></div></div></div><div id="tab-community" hidden><div class="cards" id="cmCards" style="margin-bottom:10px"></div><h2>Activity — last 14 days <span>(posts + comments per day)</span></h2><div class="chart" id="cmChart" style="height:100px"><div class="empty" style="margin:auto">loading&hellip;</div></div><h2>Latest posts <span>(moderate without leaving ops &middot; title opens the post)</span></h2><div class="rwd-wd" id="cmPosts" style="max-height:420px"><div class="empty">loading&hellip;</div></div><div class="two" style="margin-top:12px"><div><h2>Latest comments</h2><div class="rwd-wd" id="cmCom" style="max-height:380px"><div class="empty">loading&hellip;</div></div></div><div><h2>Top authors <span>(30 days)</span></h2><div class="list" id="cmTops"><div class="empty">loading&hellip;</div></div></div></div></div><div id="tab-retention" hidden><div class="cards" id="rtCards" style="margin-bottom:10px"></div><h2>Weekly cohorts <span>(of users who signed up that week, how many came BACK at least 1 / 7 / 30 days later &middot; the north-star table)</span></h2><div class="cohwrap"><table class="coh"><thead><tr><th>Cohort (week of)</th><th>Users</th><th>D1</th><th>D7</th><th>D30</th></tr></thead><tbody id="rtCoh"><tr><td colspan="5" class="empty">loading&hellip;</td></tr></tbody></table></div><div class="feedcap">How to read: D7 = share of that week&rsquo;s signups seen again 7+ days after signing up. &ldquo;&mdash;&rdquo; = cohort too young to measure. Green = better. If D7 climbs week over week, retention features are working.</div><div class="two" style="margin-top:12px"><div><h2>Power users <span>(most active, seen this week &middot; click &rarr; profile)</span></h2><div class="rwd-accts" id="rtPower" style="max-height:340px"><div class="empty">loading&hellip;</div></div></div><div><h2>Slipping away <span>(were engaged, not seen in 14&ndash;60 days &mdash; worth a ping)</span></h2><div class="rwd-accts" id="rtChurn" style="max-height:340px"><div class="empty">loading&hellip;</div></div></div></div></div><div id="tab-wd" hidden><div class="cards" id="wdCards" style="margin-bottom:10px"></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px"><span class="ovz-chips" id="wdChips"><button type="button" class="ovz-chip on" data-wdf="all">All</button><button type="button" class="ovz-chip" data-wdf="pending">Pending</button><button type="button" class="ovz-chip" data-wdf="paid">Paid</button></span><input id="wdSearch" type="text" placeholder="Search user / wallet / IP…" style="flex:1;min-width:180px;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:8px 11px;color:#e9e7df;font:600 12px Consolas,monospace;outline:none"><button type="button" class="pay" id="wdCsv">&#11123; CSV export</button></div><h2>Withdrawals <span>(every request &middot; who, full wallet, dates &middot; TXID opens BscScan &middot; Pay marks it paid)</span></h2><div id="wdList"><div class="empty">loading&hellip;</div></div></div><div id="tab-seo" hidden><div class="cards" id="seoCards" style="margin-bottom:10px"></div><h2>Pageviews — last 14 days <span>(Analytics Engine &middot; refreshed every 5 min)</span></h2><div class="chart" id="seoTrend" style="height:110px"><div class="empty" style="margin:auto">loading&hellip;</div></div><div class="two" style="margin-top:10px"><div><h2>Top pages — 7d vs prior 7d <span>(&Delta; = week-over-week)</span></h2><div id="seoPages"><div class="empty">loading&hellip;</div></div></div><div><h2>Blog — 7d <span>(only /blog/ pages)</span></h2><div id="seoBlog"></div><h2 style="margin-top:16px">Pages that print money <span>(exchange clicks by page &middot; 7d)</span></h2><div id="seoMoney"></div></div></div><div class="two" style="margin-top:10px"><div><h2>Traffic sources — 7d <span>(&Delta; vs prior week)</span></h2><div id="seoSrc"></div></div><div><h2>Countries — 7d</h2><div id="seoCc"></div></div></div></div><div id="tab-funnel" hidden><div class="cards" id="fnCards" style="margin-bottom:10px"></div><h2>Daily funnel — last 14 days <span>(visitors &rarr; practice trades &rarr; money clicks &middot; uv/pv from daily snapshots, actions from Analytics Engine)</span></h2><div class="chart" id="fnChart" style="height:130px"><div class="empty" style="margin:auto">loading&hellip;</div></div><div id="fnTable" style="margin-top:10px"><div class="empty">loading&hellip;</div></div></div><div id="tab-revenue" hidden><div class="cards" id="rvCards" style="margin-bottom:10px"></div><h2>Affiliate clicks — last 14 days <span>(the money clicks &middot; est. $ is clicks &times; ~$0.45, NOT real commission)</span></h2><div class="chart" id="rvChart" style="height:120px"><div class="empty" style="margin:auto">loading&hellip;</div></div><div class="two" style="margin-top:10px"><div><h2>By exchange <span>(30 days)</span></h2><div class="list" id="rvEx"><div class="empty">loading&hellip;</div></div></div><div><h2>By page <span>(which page drives the clicks &middot; 30 days)</span></h2><div class="list" id="rvPage"><div class="empty">loading&hellip;</div></div></div></div><h2>Money map <span>(exchange click-outs by country &middot; 30 days &middot; gold = where the money comes from)</span></h2><canvas id="rvWorld"></canvas><h2>Latest money clicks <span>(who clicked out to which exchange, from which page &middot; live)</span></h2><div class="rwd-wd" id="rvClicks" style="max-height:340px"><div class="empty">loading&hellip;</div></div><h2>Exchange sign-ups <span>(submitted UIDs from the $3 rewards program &middot; review on the Rewards tab)</span></h2><div class="rwd-wd" id="rvExsign" style="max-height:300px"><div class="empty">loading&hellip;</div></div><div class="feedcap" style="margin-top:10px">Data: Analytics Engine, cached 2 min. Real commission lives in each exchange&rsquo;s affiliate dashboard &mdash; this page shows which exchanges and pages EARN the clicks.</div></div><div id="tab-api" hidden><div class="cards" id="apiCards" style="margin-bottom:10px"></div><h2>What the API is used for <span>(calls per endpoint, last 14 days &middot; price/klines are keyless and not attributed)</span></h2><div class="list" id="apiEp"><div class="empty">loading&hellip;</div></div><h2>API users <span>(who calls it &middot; click opens the user profile)</span></h2><div class="rwd-accts" id="apiUsers" style="max-height:460px"><div class="empty">loading&hellip;</div></div><div class="feedcap" style="margin-top:10px">Docs: <a href="https://marginpad.io/trading-api/" target="_blank" style="color:#c2f64a">/trading-api/</a> &middot; limits: 120 calls/min/key &middot; 50 open positions &middot; usage tracking started 2026-07-10 (older calls only show in the all-time total).</div></div><div id="tab-users" hidden><div class="cards" id="uCards" style="margin-bottom:10px"></div><h2>User base map <span>(registered accounts by country)</span></h2><canvas id="usrWorld"></canvas><h2 style="margin-top:14px">Signups — last 14 days</h2><div class="chart" id="uChart" style="height:96px"></div><div class="two" style="margin-top:6px"><div><h2>Top countries</h2><div class="list" id="uCc"><div class="empty">loading…</div></div></div><div><h2>Devices</h2><div class="list" id="uDev"><div class="empty">loading…</div></div></div></div><h2>Registered users <span>(click a user for the full profile &amp; controls)</span></h2><div class="usr-bar"><div class="usrch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg><input id="uSearch" type="text" placeholder="Search email or username…" autocomplete="off"></div><select id="uSort" class="usel"><option value="new">Newest</option><option value="seen">Last seen</option><option value="pv">Most pageviews</option><option value="trades">Most trades</option><option value="logins">Most logins</option></select></div><div class="rwd-chips" id="uFilt"><button type="button" data-f="" class="on">All</button><button type="button" data-f="active">Active today</button><button type="button" data-f="new7">New 7d</button><button type="button" data-f="traders">Traders</button><button type="button" data-f="flagged">Flagged</button></div><div class="rwd-accts" id="uList" style="max-height:66vh"><div class="empty">loading…</div></div><button class="sbtn" id="uMore" style="margin-top:12px;background:#1a1f27;color:#e9e7df;display:none">Load more</button></div><div class="amodal" id="acctModal" hidden><div class="amod-panel"><div class="amod-head"><span class="amod-addr" id="amAddr"></span><button class="amod-x" id="amClose" type="button">✕</button></div><div id="amBody"><div class="amod-msg">loading…</div></div><div class="amod-sec">Adjust balance</div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input id="amAdjAmt" type="number" step="0.01" min="0" placeholder="USD amount" style="flex:1;min-width:110px;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:9px 12px;color:#e9e7df;font-size:14px;outline:none"><button class="amod-btn" id="amAdjAdd" type="button" style="flex:none;width:auto;padding:9px 16px;color:#2ebd85;border-color:rgba(46,189,133,.5)">+ Add</button><button class="amod-btn danger" id="amAdjSub" type="button" style="flex:none;width:auto;padding:9px 16px">− Subtract</button></div><div style="font-size:11px;color:#7f8893;margin:5px 0 2px">Add or remove USD on this user's balance (tournament / claim corrections). Clamps at \$0, logged for audit.</div><div class="amod-sec">Private note (only you see this)</div><textarea id="amNote" class="amod-ta" placeholder="Notes about this address…" rows="3"></textarea><button class="amod-btn" id="amNoteSave" type="button" style="margin-top:8px;flex:none;width:auto;padding:9px 16px">Save note</button><div class="amod-sec">Message to user <span style="text-transform:none;letter-spacing:0;color:#7f8893">(shows as a banner on /rewards)</span></div><textarea id="amUserMsg" class="amod-ta" placeholder="Write a message this user will see when they open /rewards…" rows="3"></textarea><div style="display:flex;align-items:center;gap:10px;margin-top:8px"><button class="amod-btn" id="amMsgSend" type="button" style="flex:none;width:auto;padding:9px 16px">Send message</button><span class="amod-msg" id="amMsgState" style="margin:0;text-align:left;flex:1;min-width:0"></span></div><div class="amod-actions"><button class="amod-btn" id="amUnlock" type="button">Unlock device</button><button class="amod-btn danger" id="amBan" type="button">Ban from faucet</button><button class="amod-btn danger" id="amLbBan" type="button">Remove from leaderboard</button><button class="amod-btn danger" id="amRemove" type="button">Remove account</button></div><div class="amod-msg" id="amMsg"></div></div></div><div class="amodal" id="userModal" hidden><div class="amod-panel"><div class="amod-head"><span class="amod-addr" id="umEmail"></span><button class="amod-x" id="umClose" type="button">✕</button></div><div id="umBody"><div class="amod-msg">loading…</div></div></div></div><script>window.__opsErrs=[];window.addEventListener('error',function(e){try{window.__opsErrs.push(String(e.message).slice(0,120)+' @'+String(e.filename||'').split('/').pop().slice(0,20)+':'+e.lineno);}catch(x){}});</script><script>(function(){
+</div><div class="substat" data-sub="traffic" hidden><h2>Date range</h2>${rangeBar}<div class="cards">${card(N(uvR), 'Visitors')}</div><h2>Unique visitors — last 14 days</h2><div class="chart">${daychart}</div>${histHtml}<h2>Conversion funnel <span>(all-time)</span></h2><div class="funnel">${funnel}</div><div class="sl"><b>${ppv.toFixed(1)}</b> pages per visitor · <b>${ctr.toFixed(1)}%</b> ever clicked an exchange · <b>${bounce.toFixed(0)}%</b> left after one page (all-time)</div></div><div class="substat" data-sub="behavior" hidden><h2>Where people click <span>(what they tap, most → least)</span></h2><div class="heatrow"><div><div class="heat">${hcells}</div><div class="cap">page heatmap · top = page top · brighter = more clicks</div></div><div><div class="list">${barlist(elsPretty)}</div></div></div><h2>Exchanges clicked <span>(clicks · est. $)</span></h2><div class="list">${exRevList}</div><h2>Exchange link-outs by page <span>(which page drives the money clicks)</span></h2><div class="list">${xPageList}</div><div class="two"><div><h2>Tools clicked</h2><div class="list">${barlist(tools)}</div></div><div><h2>Calculators used</h2><div class="list">${barlist(tabs)}</div></div></div><div class="two"><div><h2>Paper Trade — symbols</h2><div class="list">${barlist(paperSym)}</div></div><div><h2>Paper Trade — leverage</h2><div class="list">${barlist(levO)}</div></div></div><div class="two"><div><h2>Scroll depth <span>(% reached)</span></h2><div class="list">${barlist(scrollO)}</div></div><div><h2>Time on page</h2><div class="list">${barlist(timeO)}</div></div></div></div><div class="substat" data-sub="pages" hidden>${aeSection}<h2>Top pages <span>(unique visitors)</span></h2><div class="list">${barlist(pages)}</div><h2>Countries <span>(box size = share of visitors)</span></h2><div class="geotree">${geoTree}</div><h2>Traffic sources</h2><div class="list">${barlist(refD)}</div></div><div class="substat" data-sub="channels" hidden><h2>Blog comments <span>(engagement)</span></h2><div class="cards" style="margin-bottom:14px">${card(cmtTotal.toLocaleString('en-US'), 'Total comments')}</div>${cmtPosts.length ? '<div class="list">' + barlist(cmtPosts) + '</div>' : '<div class="empty" style="padding:0 0 4px">no comments yet</div>'}<h2>Telegram bot</h2><div class="cards" style="margin-bottom:14px">${card(botMsg.toLocaleString('en-US'), 'Bot messages')}${card(botUsers.toLocaleString('en-US'), 'Bot users')}</div>${botCmds.length ? '<div class="list">' + barlist(botCmds) + '</div>' : '<div class="empty" style="padding:0 0 4px">no bot activity yet</div>'}${botUsersHtml}${other.length ? '<h2>Other events</h2><div class="list">' + barlist(other) + '</div>' : ''}</div><div class="substat" data-sub="health" hidden><h2 style="margin-top:0">Site health <span>(client crashes + server errors)</span></h2>${errHtml}</div></div><div id="tab-jmap" hidden><div class="jm-top"><span class="jm-live"><i></i>LIVE</span><div class="jm-tt"><div class="jm-title">User Journey Map</div><div class="jm-sub">Real-time &middot; last ~200 pageviews &middot; refreshes every 12s</div></div><div class="jm-views" id="jmViews"><button data-jmv="journeys" class="on">Journeys</button><button data-jmv="flows">Flows</button><button data-jmv="money">Money paths</button></div><div class="jm-userbar"><input id="jmU" placeholder="@username or email&hellip;" autocomplete="off"><select id="jmRange"><option value="6">6h</option><option value="24" selected>24h</option><option value="72">3 days</option><option value="168">7 days</option><option value="720">30 days</option></select><button id="jmGo" type="button">Trace user</button><button id="jmLiveB" type="button" hidden>&larr; Back to live</button><span id="jmRecent"></span></div><div class="jm-filters" id="jmFilt"><button data-jmf="all" class="on">All</button><button data-jmf="desktop">Desktop</button><button data-jmf="mobile">Mobile</button></div></div><div class="jm-grid"><div class="jm-rail"><div class="jm-card"><div class="jm-k">Live Users</div><div class="jm-big" id="jmLive">&mdash;</div><div class="jm-delta" id="jmLiveD"></div><div id="jmSpark"></div></div><div class="jm-card"><div class="jm-k">Top Pages</div><div id="jmTop"><div class="empty">&hellip;</div></div></div><div class="jm-card"><div class="jm-k">Live actions</div><div id="jmActs"><div class="empty">&hellip;</div></div></div></div><div class="jm-canvas" id="jmCanvas"><div class="empty">waiting for live journeys&hellip;</div></div><div id="jmDetail" hidden><button class="jmd-x" id="jmdX" type="button">&#10005;</button><div id="jmdBody"></div></div></div><div class="jm-bottom"><div class="jm-card" style="grid-column:1/-1"><div class="jm-k">Global visitors <span>(live sample &middot; dot = country &middot; gold arc = money click, last 10 min)</span></div><canvas id="jmWorld"></canvas></div><div class="jm-card"><div class="jm-k">Journey Timeline <span>(pageviews per hour &middot; UTC)</span></div><div id="jmTimeline"></div></div><div class="jm-kpis" id="jmKpis"></div><div class="jm-card"><div class="jm-k">Top User Paths</div><div id="jmPaths"><div class="empty">&hellip;</div></div></div></div></div><div id="tab-settings" hidden><h2>Master switches <span>(applies instantly — no deploy)</span></h2><div class="setwrap"><div class="setrow"><label for="sEnabled">Faucet enabled<small>users can claim</small></label><label class="sw"><input type="checkbox" id="sEnabled"><span></span></label></div><div class="setrow"><label for="sWdEnabled">Withdrawals enabled<small>users can cash out</small></label><label class="sw"><input type="checkbox" id="sWdEnabled"><span></span></label></div><div class="setrow"><label for="sPromoEnabled">Promo posts enabled<small>the earn-per-post panel on /rewards</small></label><label class="sw"><input type="checkbox" id="sPromoEnabled"><span></span></label></div><div class="setrow"><label for="sExsignEnabled">Exchange sign-up bonus enabled<small>the $-per-exchange-account panel on /rewards</small></label><label class="sw"><input type="checkbox" id="sExsignEnabled"><span></span></label></div><div class="setrow"><label for="sMissions">Daily missions enabled<small>earn cents by USING the product (paper trades, screener, community&hellip;) &mdash; verified from activity logs</small></label><label class="sw"><input type="checkbox" id="sMissions"><span></span></label></div></div><h2>Claim economics</h2><div class="setwrap"><div class="setrow"><label for="sAmount">Amount per claim ($)</label><input type="number" id="sAmount" step="0.01" min="0"></div><div class="setrow"><label for="sCooldown">Cooldown (seconds)</label><input type="number" id="sCooldown" step="30" min="0"></div><div class="setrow"><label for="sPerDay">Daily cap per address ($)</label><input type="number" id="sPerDay" step="0.5" min="0"></div><div class="setrow"><label for="sCap">Global daily budget ($)</label><input type="number" id="sCap" step="1" min="0"></div><div class="setrow"><label for="sWelcome">Sign-up welcome bonus ($)<small>one-time, credited on registration · 0 = off</small></label><input type="number" id="sWelcome" step="0.05" min="0"></div><div class="setrow"><label for="sPromo">Promo post reward ($)<small>per approved X / TikTok post · manual review on the Rewards tab</small></label><input type="number" id="sPromo" step="0.1" min="0"></div><div class="setrow"><label for="sExsign">Exchange sign-up bonus ($)<small>per verified exchange account via our ref link · manual review on the Rewards tab</small></label><input type="number" id="sExsign" step="0.5" min="0"></div></div><div class="shintbox" id="sHints"></div><h2>Withdrawals</h2><div class="setwrap"><div class="setrow"><label for="sMinWd">Minimum withdrawal ($)</label><input type="number" id="sMinWd" step="0.5" min="0"></div><div class="setrow"><label for="sMinClaimsWd">Min claims before withdrawal<small>0 = no requirement</small></label><input type="number" id="sMinClaimsWd" step="1" min="0"></div></div><h2>Anti-abuse</h2><div class="setwrap"><div class="setrow"><label for="sIpCap">Max new wallets / IP / day</label><input type="number" id="sIpCap" step="1" min="0"></div><div class="setrow"><label for="sDidCap">Max accounts / device<small>mp_did cookie · 0 = off (only flagged, not blocked)</small></label><input type="number" id="sDidCap" step="1" min="0"></div><div class="setrow"><label for="sRequireOnchain">Require on-chain wallet<small>must have BNB-chain activity</small></label><label class="sw"><input type="checkbox" id="sRequireOnchain"><span></span></label></div></div><h2>Pause message <span>(shown to users when claims are off · optional)</span></h2><div class="setwrap" style="padding:14px 18px"><textarea id="sPauseMsg" class="amod-ta" rows="2" maxlength="300" placeholder="e.g. Back tomorrow at 09:00 UTC — the daily budget refills then." style="max-width:none"></textarea></div><h2>Site announcement <span>(banner shown to every visitor · for outages / issues)</span></h2><div class="setwrap" style="padding:14px 18px"><div class="setrow" style="border:none;padding:0 0 8px"><label for="sAnnLevel">Severity</label><select id="sAnnLevel" style="background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:8px 10px;color:#e9e7df;font-family:inherit"><option value="">Off — no banner</option><option value="fix">Fix / small bug — green</option><option value="blocker">Blocker — orange</option><option value="severe">Severe — red</option></select></div><textarea id="sAnnMsg" class="amod-ta" rows="2" maxlength="300" placeholder="e.g. We are aware of an issue with withdrawals and are fixing it now." style="max-width:none"></textarea><div class="setrow" style="border:none;padding:8px 0 0"><button class="sbtn" id="sAnnBtn" type="button">Publish banner</button><span id="sAnnSt" class="smsg"></span></div></div><h2>AI assistant <span>(Ask AI on Charts · daily questions per user)</span></h2><div class="setwrap"><div class="setrow"><label for="sAiLimit">Default questions / user / day<small>everyone without a per-user override</small></label><input type="number" id="sAiLimit" step="1" min="0" style="width:120px"></div><div class="setrow" style="border:none;padding:10px 0 4px"><button class="sbtn" id="sAiSave" type="button">Save AI limit</button><span id="sAiSt" class="smsg"></span><span class="smsg" style="margin-left:auto">Per-user limits: set on a user's profile (Users tab)</span></div></div><h2>Crypto calendar <span>(custom events &mdash; show on /calendar/ + the homepage widget instantly)</span></h2><div class="setwrap" style="padding:14px 18px"><textarea id="sCalEv" class="amod-ta" rows="5" placeholder="One event per line:  YYYY-MM-DD | Title | description (optional) | impact 1-3 (optional)&#10;2026-10-01 | Token2049 Singapore | Biggest crypto conference of the autumn | 2" style="max-width:none"></textarea><div class="setrow" style="border:none;padding:8px 0 0"><button class="sbtn" id="sCalSave" type="button">Save events</button><span id="sCalSt" class="smsg"></span></div></div><h2>Ops automation <span>(Telegram &mdash; morning brief &amp; alerts to your admin chat)</span></h2><div class="setwrap"><div class="setrow"><label for="sBrief">Morning brief<small>one summary message per day (visitors, clicks, signups, faucet, community, errors)</small></label><label class="sw"><input type="checkbox" id="sBrief"><span></span></label></div><div class="setrow"><label for="sBriefHour">Brief hour (UTC)<small>sent on the first cron tick after this hour</small></label><input type="number" id="sBriefHour" step="1" min="0" max="23" style="width:90px"></div><div class="setrow"><label for="sAlerts">Anomaly alerts<small>new withdrawal &middot; faucet at 85% of budget &middot; error spikes &middot; collector down</small></label><label class="sw"><input type="checkbox" id="sAlerts"><span></span></label></div><div class="setrow"><label for="sBigTrade">Big-trade ping ($ margin)<small>Telegram ping when a paper trade opens with margin &ge; this &middot; 0 = off &middot; liq closes always ping</small></label><input type="number" id="sBigTrade" step="100" min="0" style="width:110px"></div><div class="setrow" style="border:none;padding:10px 0 4px"><button class="sbtn" id="sOpsSave" type="button">Save automation</button><span id="sOpsSt" class="smsg"></span></div></div><h2>XP promos <span>(bonus XP for qualifying paper trades — shows on the homepage instantly)</span></h2><div class="setwrap" style="padding:14px 16px"><div id="xpPromoList"><div class="empty" style="padding:8px 2px">loading…</div></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center"><button class="sbtn" id="xpAddBtn" type="button" style="background:#1a1f27;color:#e9e7df">+ Add promo</button><button class="sbtn" id="xpSaveBtn" type="button">Save promos</button><span id="xpSt" class="smsg"></span></div><div class="feedcap" style="margin-top:9px">Each promo grants <b>bonus XP</b> when a user CLOSES a qualifying trade in its window. Pick coins (blank = any), XP, max leverage, min ROE %, and a duration; hit <b>Start / Restart</b> to run it for that many hours from now. Toggle a promo off to pause it. Changes reach the homepage within ~15s.</div></div><h2>Leaderboard prizes <span>(weekly · shown on /rewards &amp; Telegram)</span></h2><div class="setwrap"><div class="setrow"><label for="sPrize1">🥇 1st place ($)</label><input type="number" id="sPrize1" step="1" min="0"></div><div class="setrow"><label for="sPrize2">🥈 2nd place ($)</label><input type="number" id="sPrize2" step="1" min="0"></div><div class="setrow"><label for="sPrize3">🥉 3rd place ($)</label><input type="number" id="sPrize3" step="1" min="0"></div></div><h2 style="margin-top:16px">New 3-board prizes <span>(top 5 each · live from Mon 2026-07-20 · one account can win several boards)</span></h2><div class="setwrap"><div class="setrow"><label>Highest ROE · 1→5 ($)</label><span style="display:flex;gap:5px;flex-wrap:wrap"><input type="number" min="0" step="1" id="sRoe1" style="width:54px"><input type="number" min="0" step="1" id="sRoe2" style="width:54px"><input type="number" min="0" step="1" id="sRoe3" style="width:54px"><input type="number" min="0" step="1" id="sRoe4" style="width:54px"><input type="number" min="0" step="1" id="sRoe5" style="width:54px"></span></div><div class="setrow"><label>Best win rate · 1→5 ($)</label><span style="display:flex;gap:5px;flex-wrap:wrap"><input type="number" min="0" step="1" id="sWr1" style="width:54px"><input type="number" min="0" step="1" id="sWr2" style="width:54px"><input type="number" min="0" step="1" id="sWr3" style="width:54px"><input type="number" min="0" step="1" id="sWr4" style="width:54px"><input type="number" min="0" step="1" id="sWr5" style="width:54px"></span></div><div class="setrow"><label>Weekly XP · 1→5 ($)</label><span style="display:flex;gap:5px;flex-wrap:wrap"><input type="number" min="0" step="1" id="sXp1" style="width:54px"><input type="number" min="0" step="1" id="sXp2" style="width:54px"><input type="number" min="0" step="1" id="sXp3" style="width:54px"><input type="number" min="0" step="1" id="sXp4" style="width:54px"><input type="number" min="0" step="1" id="sXp5" style="width:54px"></span></div></div><div class="setrow" style="max-width:540px;border:none;margin-top:14px"><button class="sbtn" id="sSave">Save all settings</button><span id="sMsg" class="smsg"></span></div></div><div id="tab-rewards" hidden><div class="cards" id="rwdCards" style="margin-bottom:8px"></div><div id="rwdRisk" class="rwd-risk"></div><h2>Needs attention <span>(possible multi-accounting / abuse · click to inspect)</span></h2><div class="rwd-accts" id="rwdFlagged" style="max-height:300px"><div class="empty">loading…</div></div><h2>Pending withdrawals <span>(send USDT on BSC, then mark paid)</span></h2><div class="rwd-wd" id="rwdWd"><div class="empty">loading…</div></div><h2>Promo posts <span>(X / TikTok · $ per approved post · open the link, check it mentions the site, approve only after 24h live)</span></h2><div class="promo-rej" style="display:flex;gap:8px;align-items:flex-start;margin:0 0 10px;flex-wrap:wrap"><textarea id="promoRejMsg" rows="2" maxlength="200" placeholder="Saved reject reason — e.g. 'Post must mention marginpad.io and stay public 24h.' Reused for every reject." style="flex:1;min-width:240px;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:9px 11px;color:#e9e7df;font-size:12.5px;font-family:inherit;resize:vertical"></textarea><button class="sbtn" id="promoRejSave" type="button" style="flex:0 0 auto">Save reason</button><span id="promoRejSt" class="smsg"></span></div><div class="rwd-wd" id="rwdPromo"><div class="empty">loading…</div></div><h2>Exchange sign-ups <span>(who opened an account where · verify the UID in that exchange's affiliate dashboard, then approve)</span></h2><div class="rwd-wd" id="rwdExsign"><div class="empty">loading…</div></div><h2>Leaderboard — this week <span>(top ROE · eject anyone abusing it)</span></h2><div class="rwd-wd" id="rwdLb"><div class="empty">loading…</div></div><h2>Leaderboard history <span>(past weekly winners)</span></h2><div style="margin:0 0 9px"><select id="rwdLbHistSel" style="background:#12161d;color:#e9e7df;border:1px solid #242b34;border-radius:8px;padding:8px 11px;font-size:13px;font-weight:600;cursor:pointer;width:100%;max-width:360px"></select></div><div class="rwd-wd" id="rwdLbHist"><div class="empty">loading…</div></div><h2>All accounts <span id="rwdAcctCount">(loading…)</span></h2><div class="rwd-controls"><input id="rwdSearch" type="text" placeholder="Search username, email or country…" autocomplete="off"><select id="rwdSort"><option value="new">Newest</option><option value="claims">Most claims</option><option value="bal">Highest balance</option><option value="risk">Highest risk</option></select></div><div class="rwd-chips" id="rwdFilters"><button type="button" data-f="all" class="on">All</button><button type="button" data-f="flagged">Flagged</button><button type="button" data-f="banned">Banned</button><button type="button" data-f="balance">Has balance</button></div><div class="rwd-accts" id="rwdAccts"><div class="empty">loading…</div></div><div class="two" style="margin-top:8px"><div><h2>Live claims <span>(latest · every 6s)</span></h2><div class="rwd-wd" id="rwdLog"><div class="empty">loading…</div></div></div><div><h2>Paid withdrawals <span>(with tx hash)</span></h2><div class="rwd-wd" id="rwdPaid"><div class="empty">loading…</div></div></div></div></div><div id="tab-security" hidden><h2 style="margin-top:0">Multi-account clusters <span>(accounts sharing a login IP or device &middot; recent = last hour &middot; catches sign-up multi-accounting even without a faucet claim)</span></h2><div id="secMulti"><div class="empty">loading&hellip;</div></div><h2>Reward-farming radar <span>(signed-in users by BEHAVIOR — who is here only for the faucet · click to inspect)</span></h2><div class="cards" id="secBCards" style="margin-bottom:8px"></div><div class="rwd-chips" id="secBFilt"><button type="button" data-f="all" class="on">All flagged</button><button type="button" data-f="only">Rewards-only</button><button type="button" data-f="major">Rewards-majority</button><button type="button" data-f="notrade">Claim, never trade</button><button type="button" data-f="run">Farm &amp; leave</button><button type="button" data-f="payout">Close to payout</button><button type="button" data-f="vpn">VPN / datacenter</button><button type="button" data-f="email">Look-alike email</button><button type="button" data-f="hungry">New &amp; hungry</button><button type="button" data-f="dev">Multi-device</button></div><div class="feedcap"><b>Time share</b> comes from real on-page seconds of signed-in users. <b>Rewards-only</b> = 95%+ of ALL their time on the site is on /rewards. <b>Farm &amp; leave</b> = many claims, almost zero time on site (comes → claims → leaves). <b>Close to payout</b> = balance ≥80% of the min withdrawal — review these BEFORE they cash out. Signals, not verdicts — click and inspect before banning.</div><div class="rwd-accts" id="secBList" style="max-height:440px"><div class="empty">loading…</div></div><h2>Faucet risk overview</h2><div class="cards" id="secCards" style="margin-bottom:8px"></div><h2>Look-alike / duplicate emails <span>(the same real inbox re-registered: Gmail dot/+tag tricks, or john / john1 / j.o.h.n variants · click a member to inspect)</span></h2><div id="secEmail"><div class="empty">loading…</div></div><h2>VPN / proxy users <span>(connecting from a datacenter/VPN network, not a home ISP · high = known VPN/DC ASN, likely = hosting keyword)</span></h2><div id="secVpn"><div class="empty">loading…</div></div><h2>Multi-account clusters — same DEVICE <span>(mp_did cookie · the strongest signal: several accounts on ONE phone/PC · click an account to inspect/ban)</span></h2><div id="secDev"><div class="empty">loading…</div></div><h2>Multi-account clusters — same IP <span>(weaker signal — shared home/office networks exist; damning when combined with the device signal)</span></h2><div id="secIp"><div class="empty">loading…</div></div><h2>Risk-ranked accounts <span>(0–100 score · everything ≥20 · click to inspect)</span></h2><div class="rwd-accts" id="secList"><div class="empty">loading…</div></div></div><div id="tab-support" hidden><h2>Support inbox <span>(messages from the contact form · reply by email)</span></h2><div class="smsg" id="supSetup" style="margin:0 0 12px"></div><div class="sup-bar"><button class="sup-tab on" id="supTabActive">Active</button><button class="sup-tab" id="supTabClosed">Closed</button><button class="sbtn sup-new-btn" id="supNewBtn" style="margin-left:auto">+ New ticket</button></div><div id="supCompose" hidden class="sup-item sup-compose"><div class="sup-h"><span class="sup-email">New ticket — reach a user by email</span></div><input class="sup-nemail" placeholder="user@email.com" autocomplete="off"><input class="sup-subj sup-nsubj" value="MarginPad Support" style="margin-top:8px"><textarea class="sup-body sup-nbody" placeholder="Write your message — sent from support@marginpad.io"></textarea><div class="sup-rbtn"><button class="sbtn sup-nsend">Send &amp; open ticket</button><button class="sbtn ghost sup-ncancel">Cancel</button><span class="smsg sup-nst"></span></div></div><div id="supList"><div class="empty">loading…</div></div></div><div id="tab-chat" hidden><h2>Trader chat <span>(live — moderate, post as MarginPad)</span></h2><div class="rwd-wd" id="chatMsgs" style="max-height:440px"><div class="empty">loading…</div></div><div class="chatpost"><input id="chatPostIn" type="text" placeholder="Post as MarginPad…" maxlength="280"><button class="sbtn" id="chatPostBtn">Send</button></div><button class="pay" id="chatClearBtn" style="margin-top:12px">Clear all messages</button><h2 style="margin-top:26px">📢 Telegram channel <span>(broadcast an announcement to your channel)</span></h2><div class="setrow" style="border:none;padding:2px 0 8px;max-width:540px;flex-wrap:wrap;gap:8px"><button class="sbtn" id="tgNewsBtn" type="button" style="background:#1a1f27;color:#e9e7df">📰 Insert a news article…</button><button class="sbtn" id="tgTplBtn" type="button" style="background:#1a1f27;color:#e9e7df">+ MarginPad footer</button><span id="tgNewsMsg" class="smsg"></span></div><div id="tgNewsList" hidden style="max-height:300px;overflow:auto;margin:0 0 10px"></div><div class="setwrap" style="padding:14px 18px"><textarea id="tgBcIn" class="amod-ta" rows="4" maxlength="1000" placeholder="Write an announcement — posts to your Telegram channel. Basic HTML (&lt;b&gt;, &lt;a href&gt;) works." style="max-width:none"></textarea></div><div class="setrow" style="max-width:540px;border:none;padding:8px 0 0"><input id="tgBcImg" type="text" autocomplete="off" placeholder="Image URL (optional) — attaches a small photo above the post" style="width:100%;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:9px 12px;color:#e9e7df;font-size:12.5px;font-family:inherit"></div><div class="setrow" style="max-width:540px;border:none;margin-top:10px"><button class="sbtn" id="tgBcBtn">Post to channel</button><span id="tgBcMsg" class="smsg"></span></div></div><div id="tab-ops" hidden><div class="cards" id="opsKpis" style="margin-bottom:12px"></div><div style="border:1px solid #1c2230;border-radius:14px;background:#0e1116;padding:14px 16px"><div class="row" style="margin-bottom:12px;align-items:center"><h2 style="margin:0;flex:1;font-size:16px">Live trades <span class="muted" style="font-weight:400;font-size:12px">· signed-in users' open positions · auto-refresh 12s</span></h2><div class="ovz-tgl"><button id="opsUsB" class="on" type="button">Traders</button><button id="opsVzB" type="button">Flow view</button><button id="opsLsB" type="button">Raw list</button></div><select id="opsSort" style="background:#12161d;color:#e9e7df;border:1px solid #242b34;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:600;cursor:pointer"><option value="pnl">Sort: P&amp;L</option><option value="liq">Sort: Closest to liq</option><option value="age">Sort: Newest</option><option value="margin">Sort: Margin</option></select></div><div id="opsUsers"></div><div id="opsViz" style="display:none"></div><div id="opsBody" style="display:none"><div class="empty">loading…</div></div></div></div><div id="tab-community" hidden><div class="cards" id="cmCards" style="margin-bottom:10px"></div><h2>Activity — last 14 days <span>(posts + comments per day)</span></h2><div class="chart" id="cmChart" style="height:100px"><div class="empty" style="margin:auto">loading&hellip;</div></div><h2>Latest posts <span>(moderate without leaving ops &middot; title opens the post)</span></h2><div class="rwd-wd" id="cmPosts" style="max-height:420px"><div class="empty">loading&hellip;</div></div><div class="two" style="margin-top:12px"><div><h2>Latest comments</h2><div class="rwd-wd" id="cmCom" style="max-height:380px"><div class="empty">loading&hellip;</div></div></div><div><h2>Top authors <span>(30 days)</span></h2><div class="list" id="cmTops"><div class="empty">loading&hellip;</div></div></div></div></div><div id="tab-retention" hidden><div class="cards" id="rtCards" style="margin-bottom:10px"></div><h2>Weekly cohorts <span>(of users who signed up that week, how many came BACK at least 1 / 7 / 30 days later &middot; the north-star table)</span></h2><div class="cohwrap"><table class="coh"><thead><tr><th>Cohort (week of)</th><th>Users</th><th>D1</th><th>D7</th><th>D30</th></tr></thead><tbody id="rtCoh"><tr><td colspan="5" class="empty">loading&hellip;</td></tr></tbody></table></div><div class="feedcap">How to read: D7 = share of that week&rsquo;s signups seen again 7+ days after signing up. &ldquo;&mdash;&rdquo; = cohort too young to measure. Green = better. If D7 climbs week over week, retention features are working.</div><div class="two" style="margin-top:12px"><div><h2>Power users <span>(most active, seen this week &middot; click &rarr; profile)</span></h2><div class="rwd-accts" id="rtPower" style="max-height:340px"><div class="empty">loading&hellip;</div></div></div><div><h2>Slipping away <span>(were engaged, not seen in 14&ndash;60 days &mdash; worth a ping)</span></h2><div class="rwd-accts" id="rtChurn" style="max-height:340px"><div class="empty">loading&hellip;</div></div></div></div></div><div id="tab-wd" hidden><div class="cards" id="wdCards" style="margin-bottom:10px"></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px"><span class="ovz-chips" id="wdChips"><button type="button" class="ovz-chip on" data-wdf="all">All</button><button type="button" class="ovz-chip" data-wdf="pending">Pending</button><button type="button" class="ovz-chip" data-wdf="paid">Paid</button></span><input id="wdSearch" type="text" placeholder="Search user / wallet / IP…" style="flex:1;min-width:180px;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:8px 11px;color:#e9e7df;font:600 12px Consolas,monospace;outline:none"><button type="button" class="pay" id="wdCsv">&#11123; CSV export</button></div><h2>Withdrawals <span>(every request &middot; who, full wallet, dates &middot; TXID opens BscScan &middot; Pay marks it paid)</span></h2><div id="wdList"><div class="empty">loading&hellip;</div></div></div><div id="tab-seo" hidden><div class="cards" id="seoCards" style="margin-bottom:10px"></div><h2>Pageviews — last 14 days <span>(Analytics Engine &middot; refreshed every 5 min)</span></h2><div class="chart" id="seoTrend" style="height:110px"><div class="empty" style="margin:auto">loading&hellip;</div></div><div class="two" style="margin-top:10px"><div><h2>Top pages — 7d vs prior 7d <span>(&Delta; = week-over-week)</span></h2><div id="seoPages"><div class="empty">loading&hellip;</div></div></div><div><h2>Blog — 7d <span>(only /blog/ pages)</span></h2><div id="seoBlog"></div><h2 style="margin-top:16px">Pages that print money <span>(exchange clicks by page &middot; 7d)</span></h2><div id="seoMoney"></div></div></div><div class="two" style="margin-top:10px"><div><h2>Traffic sources — 7d <span>(&Delta; vs prior week)</span></h2><div id="seoSrc"></div></div><div><h2>Countries — 7d</h2><div id="seoCc"></div></div></div></div><div id="tab-funnel" hidden><div class="cards" id="fnCards" style="margin-bottom:10px"></div><h2>Daily funnel — last 14 days <span>(visitors &rarr; practice trades &rarr; money clicks &middot; uv/pv from daily snapshots, actions from Analytics Engine)</span></h2><div class="chart" id="fnChart" style="height:130px"><div class="empty" style="margin:auto">loading&hellip;</div></div><div id="fnTable" style="margin-top:10px"><div class="empty">loading&hellip;</div></div></div><div id="tab-revenue" hidden><div class="cards" id="rvCards" style="margin-bottom:10px"></div><h2>Affiliate clicks — last 14 days <span>(the money clicks &middot; est. $ is clicks &times; ~$0.45, NOT real commission)</span></h2><div class="chart" id="rvChart" style="height:120px"><div class="empty" style="margin:auto">loading&hellip;</div></div><div class="two" style="margin-top:10px"><div><h2>By exchange <span>(30 days)</span></h2><div class="list" id="rvEx"><div class="empty">loading&hellip;</div></div></div><div><h2>By page <span>(which page drives the clicks &middot; 30 days)</span></h2><div class="list" id="rvPage"><div class="empty">loading&hellip;</div></div></div></div><h2>Money map <span>(exchange click-outs by country &middot; 30 days &middot; gold = where the money comes from)</span></h2><canvas id="rvWorld"></canvas><h2>Latest money clicks <span>(who clicked out to which exchange, from which page &middot; live)</span></h2><div class="rwd-wd" id="rvClicks" style="max-height:340px"><div class="empty">loading&hellip;</div></div><h2>Exchange sign-ups <span>(submitted UIDs from the $3 rewards program &middot; review on the Rewards tab)</span></h2><div class="rwd-wd" id="rvExsign" style="max-height:300px"><div class="empty">loading&hellip;</div></div><div class="feedcap" style="margin-top:10px">Data: Analytics Engine, cached 2 min. Real commission lives in each exchange&rsquo;s affiliate dashboard &mdash; this page shows which exchanges and pages EARN the clicks.</div></div><div id="tab-api" hidden><div class="cards" id="apiCards" style="margin-bottom:10px"></div><h2>What the API is used for <span>(calls per endpoint, last 14 days &middot; price/klines are keyless and not attributed)</span></h2><div class="list" id="apiEp"><div class="empty">loading&hellip;</div></div><h2>API users <span>(who calls it &middot; click opens the user profile)</span></h2><div class="rwd-accts" id="apiUsers" style="max-height:460px"><div class="empty">loading&hellip;</div></div><div class="feedcap" style="margin-top:10px">Docs: <a href="https://marginpad.io/trading-api/" target="_blank" style="color:#c2f64a">/trading-api/</a> &middot; limits: 120 calls/min/key &middot; 50 open positions &middot; usage tracking started 2026-07-10 (older calls only show in the all-time total).</div></div><div id="tab-tgbot" hidden><div class="cards" id="tgCards" style="margin-bottom:10px"></div><h2>Signal &amp; news channels <span>(live member counts &middot; click a card to open)</span></h2><div class="tgch-grid" id="tgChans"><div class="empty">loading&hellip;</div></div><div class="tgcfg" id="tgCfg"></div><h2>Bot users <span>(everyone who uses the bot &middot; sortable &middot; click opens their Telegram)</span></h2><div class="tg-userbar"><input id="tgSearch" type="text" placeholder="Search @username / name" autocomplete="off" spellcheck="false"><select id="tgSort"><option value="ts">Last active</option><option value="first">Newest</option><option value="n">Most messages</option><option value="old">First to join</option></select></div><div class="rwd-accts" id="tgUsers" style="max-height:520px"><div class="empty">loading&hellip;</div></div><div class="two" style="margin-top:8px"><div><h2>Commands used <span>(all-time)</span></h2><div class="list" id="tgCmds"></div></div><div><h2>Recent bot activity <span>(live)</span></h2><div class="feed" id="tgAct" style="max-height:360px;overflow:auto"></div></div></div><h2>Premium access requests <span>(via /request)</span></h2><div class="list" id="tgPrem"></div></div><div id="tab-perf" hidden><h2>MarginPad Health <span>(live latency, rendering and error pulse — 60-minute window, auto-refresh 10s)</span></h2><div class="cards" id="pfCards" style="margin-bottom:12px"></div><h2>API latency by endpoint <span>(sampled server-side)</span></h2><div class="tablewrap"><table class="pf-t" id="pfTable"><thead><tr><th>Endpoint</th><th>Samples</th><th>p50</th><th>p95</th><th>max</th><th>avg</th></tr></thead><tbody><tr><td colspan="6" class="empty">collecting…</td></tr></tbody></table></div><div class="feedcap" style="margin-top:8px">WS latency + Chart FPS come from real visitor beacons (1 per 5 min per client, Bybit exchange-timestamp delta + rAF). Trade fills are timed on every request; other endpoints are sampled.</div></div><div id="tab-activity" hidden><h2>Real-time activity <span>(everything users, bots and crons do — live, ~3h window)</span></h2><div class="act-top" id="actBar"><button class="evf on" data-af2="all">All</button><button class="evf" data-af2="money">💰 Money</button><button class="evf" data-af2="signal">📡 Signals</button><button class="evf" data-af2="trade">📈 Trades</button><button class="evf" data-af2="social">💬 Social</button><button class="evf" data-af2="acct">👤 Account</button><button class="evf" data-af2="tool">🛠 Tools</button><button class="evf" data-af2="page">📄 Pages</button><input id="actQ" type="text" placeholder="Filter: @user, coin, country, page…" autocomplete="off" spellcheck="false"><span class="act-meta" id="actMeta"></span></div><div class="feed feed-xl" id="actFeed"><div class="empty">loading…</div></div></div><div id="tab-affiliate" hidden><div class="cards" id="afCards" style="margin-bottom:12px"></div><div class="af-2col"><div class="af-panel"><div class="af-ph">Conversion funnel <span>clicks &rarr; signups &rarr; active</span></div><div id="afFunnel"></div></div><div class="af-panel"><div class="af-ph">Last 14 days <span>clicks &middot; signups &middot; active</span></div><div id="afChart"></div></div></div><div class="af-3col"><div class="af-panel"><div class="af-ph">Traffic sources <span>where links get posted</span></div><div id="afSources"></div></div><div class="af-panel"><div class="af-ph">Campaigns <span>&amp;c= tags</span></div><div id="afCampaigns"></div></div><div class="af-panel"><div class="af-ph">Referred countries</div><div id="afCountries"></div></div></div><div class="af-2col af-main"><div class="af-panel"><div class="af-ph">Affiliates <span>click a row &rarr; each invited friend &amp; their trade progress</span></div><div class="af-userbar"><input id="afSearch" type="text" placeholder="Search @username / email" autocomplete="off" spellcheck="false"><select id="afSort"><option value="score">Top performers</option><option value="clicks">Most clicks</option><option value="qualified">Most active</option><option value="recent">Recent</option></select></div><div class="rwd-accts" id="afList" style="max-height:620px"><div class="empty">loading&hellip;</div></div></div><div class="af-panel"><div class="af-ph">Recent activity <span>live</span></div><div id="afRecent" style="max-height:660px;overflow:auto"></div></div></div><div class="feedcap" style="margin-top:8px">Anyone shares <code>marginpad.io/?ref=&lt;their-id&gt;</code>. Add <code>&amp;c=reddit</code> (or any tag) to track a campaign; the referrer host shows where the link was posted. Payout ($<span id="afPayAmt">0.20</span>) triggers when a referred friend makes 3 paper trades.</div></div><div id="tab-users" hidden><div class="cards" id="uCards" style="margin-bottom:10px"></div><h2>User base map <span>(registered accounts by country)</span></h2><canvas id="usrWorld"></canvas><h2 style="margin-top:14px">Signups — last 14 days</h2><div class="chart" id="uChart" style="height:96px"></div><div class="two" style="margin-top:6px"><div><h2>Top countries</h2><div class="list" id="uCc"><div class="empty">loading…</div></div></div><div><h2>Devices</h2><div class="list" id="uDev"><div class="empty">loading…</div></div></div></div><h2>Registered users <span>(click a user for the full profile &amp; controls)</span></h2><div class="usr-bar"><div class="usrch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg><input id="uSearch" type="text" placeholder="Search email or username…" autocomplete="off"></div><select id="uSort" class="usel"><option value="new">Newest</option><option value="seen">Last seen</option><option value="pv">Most pageviews</option><option value="trades">Most trades</option><option value="logins">Most logins</option></select></div><div class="rwd-chips" id="uFilt"><button type="button" data-f="" class="on">All</button><button type="button" data-f="active">Active today</button><button type="button" data-f="new7">New 7d</button><button type="button" data-f="traders">Traders</button><button type="button" data-f="flagged">Flagged</button></div><div class="rwd-accts" id="uList" style="max-height:66vh"><div class="empty">loading…</div></div><button class="sbtn" id="uMore" style="margin-top:12px;background:#1a1f27;color:#e9e7df;display:none">Load more</button></div><div class="amodal" id="acctModal" hidden><div class="amod-panel"><div class="amod-head"><span class="amod-addr" id="amAddr"></span><button class="amod-x" id="amClose" type="button">✕</button></div><div id="amBody"><div class="amod-msg">loading…</div></div><div class="amod-sec">Adjust balance</div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input id="amAdjAmt" type="number" step="0.01" min="0" placeholder="USD amount" style="flex:1;min-width:110px;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;padding:9px 12px;color:#e9e7df;font-size:14px;outline:none"><button class="amod-btn" id="amAdjAdd" type="button" style="flex:none;width:auto;padding:9px 16px;color:#2ebd85;border-color:rgba(46,189,133,.5)">+ Add</button><button class="amod-btn danger" id="amAdjSub" type="button" style="flex:none;width:auto;padding:9px 16px">− Subtract</button></div><div style="font-size:11px;color:#7f8893;margin:5px 0 2px">Add or remove USD on this user's balance (tournament / claim corrections). Clamps at \$0, logged for audit.</div><div class="amod-sec">Private note (only you see this)</div><textarea id="amNote" class="amod-ta" placeholder="Notes about this address…" rows="3"></textarea><button class="amod-btn" id="amNoteSave" type="button" style="margin-top:8px;flex:none;width:auto;padding:9px 16px">Save note</button><div class="amod-sec">Message to user <span style="text-transform:none;letter-spacing:0;color:#7f8893">(shows as a banner on /rewards)</span></div><textarea id="amUserMsg" class="amod-ta" placeholder="Write a message this user will see when they open /rewards…" rows="3"></textarea><div style="display:flex;align-items:center;gap:10px;margin-top:8px"><button class="amod-btn" id="amMsgSend" type="button" style="flex:none;width:auto;padding:9px 16px">Send message</button><span class="amod-msg" id="amMsgState" style="margin:0;text-align:left;flex:1;min-width:0"></span></div><div class="amod-actions"><button class="amod-btn" id="amUnlock" type="button">Unlock device</button><button class="amod-btn danger" id="amBan" type="button">Ban from faucet</button><button class="amod-btn danger" id="amLbBan" type="button">Remove from leaderboard</button><button class="amod-btn danger" id="amRemove" type="button">Remove account</button></div><div class="amod-msg" id="amMsg"></div></div></div><div class="amodal" id="userModal" hidden><div class="amod-panel"><div class="amod-head"><span class="amod-addr" id="umEmail"></span><button class="amod-x" id="umClose" type="button">✕</button></div><div id="umBody"><div class="amod-msg">loading…</div></div></div></div><script>window.__opsErrs=[];window.addEventListener('error',function(e){try{window.__opsErrs.push(String(e.message).slice(0,120)+' @'+String(e.filename||'').split('/').pop().slice(0,20)+':'+e.lineno);}catch(x){}});</script><script>(function(){
   var key=${JSON.stringify(injKey)},t=Date.now(),CC=${JSON.stringify(ccName)};
   function ago(ts){var s=Math.round((Date.now()-ts)/1000);return s<60?s+'s':s<3600?Math.floor(s/60)+'m':Math.floor(s/3600)+'h';}
   function flag(cc){return /^[A-Z]{2}$/.test(cc)?String.fromCodePoint(127397+cc.charCodeAt(0),127397+cc.charCodeAt(1)):'';}
   function srcName(s){if(!s||s==='direct')return 'Direct (typed the URL or bookmark)';if(/syndicatedsearch|googlesyndication|googleadservices|doubleclick/.test(s))return 'Google Ads / search partner';if(/google\\./.test(s))return 'Google search';if(/bing\\./.test(s))return 'Bing';if(/yahoo/.test(s))return 'Yahoo';if(/yandex/.test(s))return 'Yandex';if(/duckduckgo/.test(s))return 'DuckDuckGo';if(/ecosia/.test(s))return 'Ecosia';if(/brave/.test(s))return 'Brave Search';if(/t\\.co|twitter|x\\.com/.test(s))return 'X / Twitter';if(/reddit/.test(s))return 'Reddit';if(/youtu/.test(s))return 'YouTube';if(/facebook|fb\\./.test(s))return 'Facebook';if(/instagram/.test(s))return 'Instagram';if(/tiktok/.test(s))return 'TikTok';if(/linkedin/.test(s))return 'LinkedIn';if(/t\\.me|telegram/.test(s))return 'Telegram';if(/discord/.test(s))return 'Discord';return s;}
   function pageShort(pth){var s=String(pth||'').replace(/^\\/[a-z]{2}\\//,'/');if(s==='/'||s==='')return 'the homepage';var m;if((m=s.match(/^\\/coin\\/([a-z0-9]+)\\/?$/i)))return m[1].toUpperCase()+' coin page';var M={'/funding/':'the Funding page','/liquidations/':'the Liquidations page','/long-short/':'the Long/Short page','/open-interest/':'the Open Interest page','/screener':'the Screener','/screener/':'the Screener','/paper-trade':'Paper Trade','/paper-trade/':'Paper Trade','/charts':'Charts','/charts/':'Charts','/rekt/':'the Rekt feed','/rewards/':'Rewards','/calculators':'Calculators','/calculators/':'Calculators','/blog/':'the Blog'};if(M[s])return M[s];if((m=s.match(/^\\/([a-z0-9-]+)\\/?$/i)))return m[1].replace(/-/g,' ')+' page';return s;}
   function verb(t){return t==='tab'?'used a calculator':(t==='nav'||t==='el')?'clicked a link':('did '+t);}
-  function evLine(x){var where=x.p?' <span class="fe-on">on '+esc(pageShort(x.p))+'</span>':'';var tg=x.e?esc(x.e):'';if(x.t==='exchange')return 'clicked through to <b class="fe-ex">'+(tg||'an exchange')+'</b>'+where+' <span class="fe-rev">💰 money click</span>';if(x.t==='paper')return 'opened a paper trade'+(tg?' <b>'+tg+'</b>':'');if(x.t==='close')return 'closed a trade <b>'+(tg||'')+'</b>'+where;if(x.t==='hotpair')return 'opened <b>'+tg+'</b> from Trending';if(x.t==='tool')return 'opened '+(tg?'<b>'+tg+'</b> ':'a ')+'tool'+where;if(x.t==='chat')return 'sent a chat message';if(x.t==='signin')return 'opened the sign-in form'+where;if(x.t==='search')return 'searched '+(tg?'<b>'+tg+'</b>':'something')+where;if(x.t==='watch')return 'added <b>'+tg+'</b> to the watchlist';if(x.t==='like')return 'liked '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='comment')return 'commented on '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='follow')return 'followed '+(tg?'<b>@'+tg+'</b>':'a trader');if(x.t==='save')return 'saved '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='profile')return 'viewed '+(tg?'<b>@'+tg+'</b>':'a trader')+"'s profile";if(x.t==='ind')return 'toggled the <b>'+(tg||'chart')+'</b> indicator'+where;if(x.t==='draw')return 'drew on '+(tg?'the <b>'+tg+'</b> chart':'a chart');if(x.t==='ai')return 'asked the AI'+(tg?' about <b>'+tg+'</b>':'');if(x.t==='coin')return 'opened the <b>'+(tg||'coin')+'</b> market';if(x.t==='sltp')return 'set SL/TP on <b>'+(tg||'a trade')+'</b>';if(x.t==='share')return 'shared '+(tg?'<b>'+tg+'</b>':'something');if(x.t==='lang')return 'switched language to <b>'+(tg||'?')+'</b>';if(x.t==='alert')return 'set a price alert'+(tg?' on <b>'+tg+'</b>':'');if(x.t==='promo')return 'submitted a promo post'+(tg?' <b>'+tg+'</b>':'');if(x.t==='exsign')return 'submitted an exchange sign-up'+(tg?' <b>'+tg+'</b>':'');if(x.t==='support')return 'sent a support message';if(x.t==='push')return 'enabled push notifications';if(x.t==='signup')return '<span class="fe-rev">created an account</span>'+(tg?' <b>@'+tg+'</b>':'');if(x.t==='login')return 'signed in'+(tg?' as <b>@'+tg+'</b>':'');if(x.t==='claim')return 'claimed <b>'+tg+'</b> from the faucet';if(x.t==='withdraw')return '<span class="fe-rev">requested a withdrawal</span> of <b>'+tg+'</b>';if(x.t==='mission')return 'completed daily mission <b>'+tg+'</b>';if(x.t==='academy')return 'finished Academy lesson <b>'+tg+'</b>';if(x.t==='post')return 'published a community post'+(tg?' (<b>@'+tg+'</b>)':'');return verb(x.t)+(tg?' <b>'+tg+'</b>':'')+where;}
+  function evLine(x){var where=x.p?' <span class="fe-on">on '+esc(pageShort(x.p))+'</span>':'';var tg=x.e?esc(x.e):'';if(x.t==='bot'){if(x.e==='request')return '<span class="fe-rev">🔔 requested premium signals access</span> via the bot';return 'used <code>/'+tg+'</code> on the Telegram bot';}if(x.t==='exchange')return 'clicked through to <b class="fe-ex">'+(tg||'an exchange')+'</b>'+where+' <span class="fe-rev">💰 money click</span>';if(x.t==='paper')return 'opened a paper trade'+(tg?' <b>'+tg+'</b>':'');if(x.t==='close')return 'closed a trade <b>'+(tg||'')+'</b>'+where;if(x.t==='hotpair')return 'opened <b>'+tg+'</b> from Trending';if(x.t==='tool')return 'opened '+(tg?'<b>'+tg+'</b> ':'a ')+'tool'+where;if(x.t==='chat')return 'sent a chat message';if(x.t==='signin')return 'opened the sign-in form'+where;if(x.t==='search')return 'searched '+(tg?'<b>'+tg+'</b>':'something')+where;if(x.t==='watch')return 'added <b>'+tg+'</b> to the watchlist';if(x.t==='like')return 'liked '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='comment')return 'commented on '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='follow')return 'followed '+(tg?'<b>@'+tg+'</b>':'a trader');if(x.t==='dm')return 'sent a private message to '+(tg?'<b>@'+tg+'</b>':'a trader');if(x.t==='duel')return 'challenged '+(tg?'<b>@'+tg+'</b>':'a trader')+' to a duel';if(x.t==='mention')return 'mentioned '+(tg?'<b>@'+tg+'</b>':'someone')+' in chat';if(x.t==='save')return 'saved '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='profile')return 'viewed '+(tg?'<b>@'+tg+'</b>':'a trader')+"'s profile";if(x.t==='ind')return 'toggled the <b>'+(tg||'chart')+'</b> indicator'+where;if(x.t==='draw')return 'drew on '+(tg?'the <b>'+tg+'</b> chart':'a chart');if(x.t==='ai')return 'asked the AI'+(tg?' about <b>'+tg+'</b>':'');if(x.t==='coin')return 'opened the <b>'+(tg||'coin')+'</b> market';if(x.t==='sltp')return 'set SL/TP on <b>'+(tg||'a trade')+'</b>';if(x.t==='share')return 'shared '+(tg?'<b>'+tg+'</b>':'something');if(x.t==='lang')return 'switched language to <b>'+(tg||'?')+'</b>';if(x.t==='alert')return 'set a price alert'+(tg?' on <b>'+tg+'</b>':'');if(x.t==='promo')return 'submitted a promo post'+(tg?' <b>'+tg+'</b>':'');if(x.t==='exsign')return 'submitted an exchange sign-up'+(tg?' <b>'+tg+'</b>':'');if(x.t==='support')return 'sent a support message';if(x.t==='push')return 'enabled push notifications';if(x.t==='signup')return '<span class="fe-rev">created an account</span>'+(tg?' <b>@'+tg+'</b>':'');if(x.t==='login')return 'signed in'+(tg?' as <b>@'+tg+'</b>':'');if(x.t==='claim')return 'claimed <b>'+tg+'</b> from the faucet';if(x.t==='withdraw')return '<span class="fe-rev">requested a withdrawal</span> of <b>'+tg+'</b>';if(x.t==='mission')return 'completed daily mission <b>'+tg+'</b>';if(x.t==='academy')return 'finished Academy lesson <b>'+tg+'</b>';if(x.t==='post')return 'published a community post'+(tg?' (<b>@'+tg+'</b>)':'');if(x.t==='sale')return '<span class="fe-rev">💎 bought <b>'+(tg||'premium')+'</b> signals</span>';if(x.t==='refpaid')return '<span class="fe-rev">🎁 earned a referral reward</span>'+(tg?' '+tg:'');if(x.t==='refclick')return 'shared a referral link'+(tg?' &middot; clicked from <b>'+tg+'</b>':'');if(x.t==='promopaid')return '<span class="fe-rev">✅ promo post approved</span>'+(tg?' '+tg:'');if(x.t==='exsignpaid')return '<span class="fe-rev">✅ exchange sign-up approved</span>'+(tg?' <b>'+tg+'</b>':'');if(x.t==='duelwon')return '🏆 won a duel'+(tg?' vs <b>@'+tg+'</b>':'');if(x.t==='levelup')return '⭐ reached <b>'+(tg||'a new level')+'</b>';if(x.t==='signal')return '<span class="fe-sig">📡 sent signal <b>'+tg+'</b></span> to Telegram';if(x.t==='sigresult')return '📊 signal result: <b>'+tg+'</b>';if(x.t==='digest')return '📡 daily check-in posted to the signal channels ('+tg+')';if(x.t==='lbpaid')return '<span class="fe-rev">🏆 weekly prize paid</span> to <b>'+tg+'</b>';if(x.t==='wdpaid')return '<span class="fe-rev">💸 withdrawal marked PAID</span>';if(x.t==='alertfired')return '🔔 price alert fired <b>'+tg+'</b> → email sent';if(x.t==='newspost')return '📰 auto-posted news to Telegram';if(x.t==='subkick')return '⛔ premium expired — member removed ('+tg+')';if(x.t==='academyfin')return '🎓 finished the whole <b>'+tg+'</b> course';if(x.t==='chatmsg')return '💬 chat: '+tg;return verb(x.t)+(tg?' <b>'+tg+'</b>':'')+where;}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   function N(x){x=+x||0;var a=Math.abs(x),sg=x<0?'-':'';return sg+(a>=1e12?(a/1e12).toFixed(2)+'T':a>=1e9?(a/1e9).toFixed(2)+'B':a>=1e6?(a/1e6).toFixed(2)+'M':a>=1e3?(a/1e3).toFixed(1)+'K':(a%1===0?String(a):a.toFixed(2)));}
   /* Real-time activity feed — merge CLICK/server events (feed) with PAGEVIEWS (visitors) into one live, color-coded,
      device-aware, filterable stream. All client-side from the data the 12s poll already ships. */
   var EV={f:${JSON.stringify(evlog.slice(0, 400))},v:${JSON.stringify(pvlog.slice(0, 300))},filt:'all',on:null,money:null};
-  function evKindOf(t){if(t==='exchange')return 'money';if(t==='paper'||t==='hotpair'||t==='close'||t==='sltp')return 'trade';if(t==='chat'||t==='like'||t==='comment'||t==='follow'||t==='post'||t==='save'||t==='profile'||t==='share')return 'social';if(t==='signup'||t==='login'||t==='claim'||t==='withdraw'||t==='mission'||t==='academy'||t==='signin'||t==='alert'||t==='promo'||t==='exsign'||t==='support'||t==='push')return 'acct';if(t==='tool'||t==='ind'||t==='draw'||t==='ai')return 'tool';if(t==='pv')return 'page';return 'other';}
+  function evKindOf(t){if(t==='signal'||t==='sigresult'||t==='digest')return 'signal';if(t==='lbpaid'||t==='wdpaid')return 'money';if(t==='alertfired'||t==='academyfin'||t==='subkick')return 'acct';if(t==='chatmsg')return 'social';if(t==='newspost')return 'other';if(t==='bot')return 'acct';if(t==='exchange'||t==='sale'||t==='refpaid'||t==='promopaid'||t==='exsignpaid')return 'money';if(t==='refclick'||t==='duelwon'||t==='levelup')return 'social';if(t==='paper'||t==='hotpair'||t==='close'||t==='sltp')return 'trade';if(t==='chat'||t==='like'||t==='comment'||t==='follow'||t==='post'||t==='save'||t==='profile'||t==='share'||t==='dm'||t==='duel'||t==='mention')return 'social';if(t==='signup'||t==='login'||t==='claim'||t==='withdraw'||t==='mission'||t==='academy'||t==='signin'||t==='alert'||t==='promo'||t==='exsign'||t==='support'||t==='push')return 'acct';if(t==='tool'||t==='ind'||t==='draw'||t==='ai')return 'tool';if(t==='pv')return 'page';return 'other';}
   function evPageLine(x){var pg=esc(pageShort(x.p||'/'));if(x.f)return 'moved to <b>'+pg+'</b> <span class="fe-via">from '+esc(pageShort(x.f))+'</span>';if(x.s&&x.s!=='direct')return 'arrived on <b>'+pg+'</b> <span class="fe-via">via '+esc(srcName(x.s))+'</span>';return 'landed on <b>'+pg+'</b>';}
   function evIcon(x){if(x.u)return '👤';if(x.d)return dev(x.d);return flag(x.cc)||'🌐';}
   function evRowHtml(x){var k=evKindOf(x._pg?'pv':x.t);var nw=(Date.now()-x.ts)<12000?' fe-new':'';var who=x.u?('<b>@'+esc(x.u)+'</b> '):'A visitor ';var body=x._pg?evPageLine(x):evLine(x);return '<div class="fe k-'+k+nw+'"><span class="fe-f">'+evIcon(x)+'</span><span class="fe-t">'+who+body+'</span><span class="fe-a">'+ago(x.ts)+' ago</span></div>';}
   function evMerged(){var rows=[];(EV.f||[]).forEach(function(x){rows.push(x);});(EV.v||[]).forEach(function(v){rows.push({_pg:1,cc:v.cc,d:v.d,u:v.u,p:v.p,f:v.f,s:v.s,ts:v.ts});});rows.sort(function(a,b){return b.ts-a.ts;});return rows;}
-  function evPass(x){var k=evKindOf(x._pg?'pv':x.t),f=EV.filt;if(f==='all')return true;if(f==='money')return k==='money';if(f==='trade')return k==='trade';if(f==='social')return k==='social';if(f==='acct')return k==='acct';if(f==='page')return k==='page';return true;}
+  function evPass(x){var k=evKindOf(x._pg?'pv':x.t),f=EV.filt;if(f==='all')return true;if(f==='money')return k==='money';if(f==='signal')return k==='signal';if(f==='trade')return k==='trade';if(f==='social')return k==='social';if(f==='acct')return k==='acct';if(f==='page')return k==='page';return true;}
   function evRender(){var host=document.getElementById('evFeed');if(!host)return;var all=evMerged(),rows=all.filter(evPass).slice(0,220);host.innerHTML=rows.length?rows.map(evRowHtml).join(''):'<div class="empty">no '+(EV.filt==='all'?'activity':EV.filt+' activity')+' in the last few hours</div>';
     var cut=Date.now()-60000,rate=0;for(var i=0;i<all.length;i++)if(all[i].ts>cut)rate++;var er=document.getElementById('evRate');if(er)er.textContent=rate;var eo=document.getElementById('evOn');if(eo&&EV.on!=null)eo.textContent=EV.on;var em=document.getElementById('evMoney');if(em&&EV.money!=null)em.textContent=EV.money;}
   (function(){var cw=document.getElementById('evChips');if(cw)cw.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button[data-evf]');if(!b)return;EV.filt=b.getAttribute('data-evf');cw.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});evRender();});try{evRender();}catch(e){}})();
+  var ACT={f:'all',q:''};
+  function actPass(x){var k=evKindOf(x._pg?'pv':x.t);if(ACT.f!=='all'&&k!==ACT.f)return false;if(ACT.q){var hay=((x.u||'')+' '+(x.t||'')+' '+(x.e||'')+' '+(x.cc||'')+' '+(x.p||'')).toLowerCase();if(hay.indexOf(ACT.q)<0)return false;}return true;}
+  function renderActivity(){var host=document.getElementById('actFeed');if(!host)return;var tb=document.getElementById('tab-activity');if(tb&&tb.hidden)return;var all=evMerged();var rows=all.filter(actPass).slice(0,500);var meta=document.getElementById('actMeta');if(meta){var mny=0,sig=0;all.forEach(function(x){var k=evKindOf(x._pg?'pv':x.t);if(k==='money')mny++;if(k==='signal')sig++;});meta.innerHTML='<b>'+all.length+'</b> events · <b style="color:#ffd75a">'+mny+'</b> money · <b style="color:#3fd8e6">'+sig+'</b> signals'+(EV.on!=null?' · <b style="color:#2ebd85">'+EV.on+'</b> online':'');}host.innerHTML=rows.length?rows.map(evRowHtml).join(''):'<div class="empty">nothing matches this filter</div>';}
+  window.renderActivity=renderActivity;
+  (function(){var bar=document.getElementById('actBar');if(bar)bar.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-af2]');if(!b)return;ACT.f=b.getAttribute('data-af2');Array.prototype.forEach.call(bar.querySelectorAll('[data-af2]'),function(x){x.classList.toggle('on',x===b);});renderActivity();});var q=document.getElementById('actQ');if(q)q.addEventListener('input',function(){ACT.q=q.value.toLowerCase().trim();renderActivity();});})();
   function dev(d){d=String(d||'').toLowerCase();return d==='mobile'?'📱':d==='tablet'?'📲':'🖥';}
   function vidColor(v){var h=0,s=String(v||'');for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return 'hsl('+(h%360)+',70%,62%)';}
   var VJ_STN=[['home','Home'],['plan','Paper Trade'],['charts','Charts'],['calc','Calculators'],['scr','Screener'],['mkt','Markets'],['rekt','Rekt'],['comm','Community'],['cal','Calendar'],['rwd','Rewards'],['blog','Blog'],['api','Bot API'],['other','Other']];
@@ -3002,7 +3726,7 @@ h2 span{color:#6b7480;font-size:12.5px;font-weight:400;letter-spacing:0}
     if(d.pvToday!=null)sid('tPv',N(d.pvToday));
     sid('botf',N(d.botToday));sid('tUvTot',N(d.uvTotal));sid('tPvTot',N(d.pv));sid('tAffTot',N(d.aff));
     renderJourneys(d.visitors,d.feed);
-    if(d.feed)EV.f=d.feed;if(d.visitors)EV.v=d.visitors;EV.on=d.online;if(d.affToday!=null)EV.money=N(d.affToday);try{evRender();}catch(e8){}
+    if(d.feed)EV.f=d.feed;if(d.visitors)EV.v=d.visitors;EV.on=d.online;if(d.affToday!=null)EV.money=N(d.affToday);try{evRender();}catch(e8){}try{window.renderActivity&&window.renderActivity();}catch(e9){}
     try{pulseFeed(d);}catch(e9){}
   }).catch(function(){});}
   /* ---- LIVE TICKER TAPE (2026-07-14): stock-ticker strip across the top of every tab — pageviews + events
@@ -3079,7 +3803,7 @@ h2 span{color:#6b7480;font-size:12.5px;font-weight:400;letter-spacing:0}
   }
   poll();setInterval(poll,8000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)poll();});
-})();</script><script>window.JMAP_SEED=${JSON.stringify({ hours, uvToday, uvY, pvTod, pvY })};</script><script>window.ADM_SEED=${JSON.stringify(admSeed)};(function(){var key=${JSON.stringify(injKey)};function flag(c){return /^[A-Z]{2}$/.test(c)?String.fromCodePoint(127397+c.charCodeAt(0),127397+c.charCodeAt(1)):'🌐';}function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}function N(x){return (+x||0).toLocaleString('en-US');}function ago(t){var s=Math.round((Date.now()-t)/1000);return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';}function card(v,l){return '<div class="card"><div class="cv">'+v+'</div><div class="cl">'+l+'</div></div>';}function addrColor(a){if(!a)return '#9aa3ad';var h=0;for(var i=2;i<a.length;i++)h=(h*31+a.charCodeAt(i))>>>0;return 'hsl('+(h%360)+',75%,66%)';}var tabs=document.querySelectorAll('.tab'),loaded={},rwdTimer=null,chatTimer=null,opsTimer=null,opsPrT=null,opsEvT=null,statsTimer=null;function show(t){curTab=t;try{sessionStorage.setItem('adm_tab',t);}catch(e){}try{markSeen(t);}catch(e){}tabs.forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tab')===t);});['stats','settings','rewards','users','support','chat','security','ops','api','revenue','seo','funnel','wd','retention','community','jmap'].forEach(function(x){var el=document.getElementById('tab-'+x);if(el)el.hidden=(x!==t);});document.body.classList.toggle('jm-full',t!=='stats');if(t==='jmap')setTimeout(function(){if(window.renderJmap)window.renderJmap(1);},60);if(t==='support')loadSupport();if(t==='api')loadApi();if(t==='revenue')loadRevenue();if(t==='seo')loadSeo();if(t==='funnel')loadFunnel();if(t==='stats'){try{loadOverview();}catch(e){}if(!statsTimer)statsTimer=setInterval(function(){if(curTab==='stats'&&!document.hidden)loadOverview();},30000);}else if(statsTimer){clearInterval(statsTimer);statsTimer=null;}setTimeout(function(){panelize(t);},80);if(t==='wd')loadWd();if(t==='retention')loadRetention();if(t==='community')loadCommunity();if(t==='jmap'&&window.renderJmap)window.renderJmap(1);if(t==='security')loadSecurity();if(t==='users'){usersState.offset=0;usersState.end=false;loadUsers(true);}if(t==='settings'&&!loaded.settings){loadSettings();try{loadXpPromos();}catch(e){}loaded.settings=1;}if(t==='rewards'){loadRewards();if(!rwdTimer)rwdTimer=setInterval(loadRewards,6000);}else if(rwdTimer){clearInterval(rwdTimer);rwdTimer=null;}if(t==='chat'){loadChat();if(!chatTimer)chatTimer=setInterval(loadChat,5000);}else if(chatTimer){clearInterval(chatTimer);chatTimer=null;}if(t==='ops'){loadOps();loadTradeev();if(!opsTimer)opsTimer=setInterval(loadOps,12000);if(!opsPrT)opsPrT=setInterval(opsPrices,6000);if(!opsEvT)opsEvT=setInterval(loadTradeev,60000);}else{if(opsTimer){clearInterval(opsTimer);opsTimer=null;}if(opsPrT){clearInterval(opsPrT);opsPrT=null;}if(opsEvT){clearInterval(opsEvT);opsEvT=null;}}}var PZ_TABS={settings:1,rewards:1,users:1,support:1,chat:1,security:1,api:1,revenue:1,retention:1,community:1,seo:1,funnel:1,wd:1};function panelize(t){try{if(!PZ_TABS[t])return;var el=document.getElementById('tab-'+t);if(!el||el._pz)return;var kids=Array.prototype.slice.call(el.children);var hasH2=false;for(var i=0;i<kids.length;i++)if(kids[i].tagName==='H2'){hasH2=true;break;}if(!hasH2)return;el._pz=1;var grid=document.createElement('div');grid.className='pz-grid';var cur=null;kids.forEach(function(k){if(k.tagName==='H2'){cur=document.createElement('div');cur.className='ovv-p pz-p';grid.appendChild(cur);cur.appendChild(k);}else if(cur){cur.appendChild(k);}});el.appendChild(grid);Array.prototype.forEach.call(grid.children,function(p){if(p.querySelector('table,.chart,.list,canvas,.feed,.two,.heatrow,.funnel,.rwd-accts,.wd-row,#wdList,#usersList,#fnTable,#seoPages'))p.classList.add('pz-w');});}catch(e){}}tabs.forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-tab'));});});var curTab='stats';document.addEventListener('click',function(e){var g=e.target.closest&&e.target.closest('[data-goto]');if(!g)return;try{show(g.getAttribute('data-goto'));window.scrollTo(0,0);}catch(e2){}});try{loadOverview();if(!statsTimer)statsTimer=setInterval(function(){if(curTab==='stats'&&!document.hidden)loadOverview();},30000);}catch(e){}document.addEventListener('visibilitychange',function(){if(document.hidden){window.__admHidT=Date.now();return;}var away=Date.now()-(window.__admHidT||Date.now());if(away>420000){var md9=document.querySelector('.amodal:not([hidden])');var ae9=document.activeElement,ty9=ae9&&(ae9.tagName==='INPUT'||ae9.tagName==='TEXTAREA'||ae9.tagName==='SELECT');if(!md9&&!ty9){location.reload();return;}}try{if(curTab==='ops'){loadOps();opsPrices();}else if(curTab==='chat'){loadChat();}else if(curTab==='rewards'){loadRewards();}else if(curTab==='stats'){loadOverview();}}catch(e9){}});
+})();</script><script>window.JMAP_SEED=${JSON.stringify({ hours, uvToday, uvY, pvTod, pvY })};</script><script>window.ADM_SEED=${JSON.stringify(admSeed)};(function(){var key=${JSON.stringify(injKey)};function flag(c){return /^[A-Z]{2}$/.test(c)?String.fromCodePoint(127397+c.charCodeAt(0),127397+c.charCodeAt(1)):'🌐';}function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}function N(x){return (+x||0).toLocaleString('en-US');}function ago(t){var s=Math.round((Date.now()-t)/1000);return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';}function card(v,l){return '<div class="card"><div class="cv">'+v+'</div><div class="cl">'+l+'</div></div>';}function addrColor(a){if(!a)return '#9aa3ad';var h=0;for(var i=2;i<a.length;i++)h=(h*31+a.charCodeAt(i))>>>0;return 'hsl('+(h%360)+',75%,66%)';}var tabs=document.querySelectorAll('.tab'),loaded={},rwdTimer=null,chatTimer=null,opsTimer=null,opsPrT=null,opsEvT=null,statsTimer=null,perfTimer=null;function show(t){curTab=t;try{sessionStorage.setItem('adm_tab',t);}catch(e){}try{markSeen(t);}catch(e){}tabs.forEach(function(b){b.classList.toggle('on',b.getAttribute('data-tab')===t);});['stats','settings','rewards','users','support','chat','security','ops','api','tgbot','affiliate','revenue','seo','funnel','wd','retention','community','jmap','activity','perf'].forEach(function(x){var el=document.getElementById('tab-'+x);if(el)el.hidden=(x!==t);});document.body.classList.toggle('jm-full',t!=='stats');if(t==='jmap')setTimeout(function(){if(window.renderJmap)window.renderJmap(1);},60);if(t==='activity'){try{window.renderActivity&&window.renderActivity();}catch(e0){}}if(t==='perf'){loadPerf();if(!perfTimer)perfTimer=setInterval(function(){if(curTab==='perf'&&!document.hidden)loadPerf();},10000);}else if(perfTimer){clearInterval(perfTimer);perfTimer=null;}if(t==='support')loadSupport();if(t==='api')loadApi();if(t==='tgbot')loadTgbot();if(t==='affiliate')loadAffiliate();if(t==='revenue')loadRevenue();if(t==='seo')loadSeo();if(t==='funnel')loadFunnel();if(t==='stats'){try{loadOverview();}catch(e){}if(!statsTimer)statsTimer=setInterval(function(){if(curTab==='stats'&&!document.hidden)loadOverview();},30000);}else if(statsTimer){clearInterval(statsTimer);statsTimer=null;}setTimeout(function(){panelize(t);},80);if(t==='wd')loadWd();if(t==='retention')loadRetention();if(t==='community')loadCommunity();if(t==='jmap'&&window.renderJmap)window.renderJmap(1);if(t==='security')loadSecurity();if(t==='users'){usersState.offset=0;usersState.end=false;loadUsers(true);}if(t==='settings'&&!loaded.settings){loadSettings();try{loadXpPromos();}catch(e){}loaded.settings=1;}if(t==='rewards'){loadRewards();if(!rwdTimer)rwdTimer=setInterval(loadRewards,6000);}else if(rwdTimer){clearInterval(rwdTimer);rwdTimer=null;}if(t==='chat'){loadChat();if(!chatTimer)chatTimer=setInterval(loadChat,5000);}else if(chatTimer){clearInterval(chatTimer);chatTimer=null;}if(t==='ops'){loadOps();loadTradeev();if(!opsTimer)opsTimer=setInterval(loadOps,12000);if(!opsPrT)opsPrT=setInterval(opsPrices,6000);if(!opsEvT)opsEvT=setInterval(loadTradeev,60000);}else{if(opsTimer){clearInterval(opsTimer);opsTimer=null;}if(opsPrT){clearInterval(opsPrT);opsPrT=null;}if(opsEvT){clearInterval(opsEvT);opsEvT=null;}}}var PZ_TABS={settings:1,rewards:1,users:1,support:1,chat:1,security:1,api:1,revenue:1,retention:1,community:1,seo:1,funnel:1,wd:1};function panelize(t){try{if(!PZ_TABS[t])return;var el=document.getElementById('tab-'+t);if(!el||el._pz)return;var kids=Array.prototype.slice.call(el.children);var hasH2=false;for(var i=0;i<kids.length;i++)if(kids[i].tagName==='H2'){hasH2=true;break;}if(!hasH2)return;el._pz=1;var grid=document.createElement('div');grid.className='pz-grid';var cur=null;kids.forEach(function(k){if(k.tagName==='H2'){cur=document.createElement('div');cur.className='ovv-p pz-p';grid.appendChild(cur);cur.appendChild(k);}else if(cur){cur.appendChild(k);}});el.appendChild(grid);Array.prototype.forEach.call(grid.children,function(p){if(p.querySelector('table,.chart,.list,canvas,.feed,.two,.heatrow,.funnel,.rwd-accts,.wd-row,#wdList,#usersList,#fnTable,#seoPages'))p.classList.add('pz-w');});}catch(e){}}tabs.forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-tab'));});});var curTab='stats';document.addEventListener('click',function(e){var g=e.target.closest&&e.target.closest('[data-goto]');if(!g)return;try{show(g.getAttribute('data-goto'));window.scrollTo(0,0);}catch(e2){}});try{loadOverview();if(!statsTimer)statsTimer=setInterval(function(){if(curTab==='stats'&&!document.hidden)loadOverview();},30000);}catch(e){}document.addEventListener('visibilitychange',function(){if(document.hidden){window.__admHidT=Date.now();return;}var away=Date.now()-(window.__admHidT||Date.now());if(away>420000){var md9=document.querySelector('.amodal:not([hidden])');var ae9=document.activeElement,ty9=ae9&&(ae9.tagName==='INPUT'||ae9.tagName==='TEXTAREA'||ae9.tagName==='SELECT');if(!md9&&!ty9){location.reload();return;}}try{if(curTab==='ops'){loadOps();opsPrices();}else if(curTab==='chat'){loadChat();}else if(curTab==='rewards'){loadRewards();}else if(curTab==='stats'){loadOverview();}}catch(e9){}});
 var OPS={pos:[],PR:{},traders:0,sort:'pnl'};
 function opsPrices(){if(document.hidden)return;fetch('/api/prices').then(function(r){return r.json();}).then(function(d){if(d&&d.pairs)d.pairs.forEach(function(x){OPS.PR[String(x.symbol||'').replace('USDT','').toUpperCase()]=+x.price;});renderOps();}).catch(function(){});}
 window.__landGrid={c:240,r:85,top:72,bot:-56,b64:'A4AAAED8A/P/AOD//wEAAAAAADjg/v///z//HwCAAPj/A0/8X4PwB/D//wAAAOA/AADh/v///////wM+A/7///8Pw56BB+D/DwAAAPz/Y+zf/f//////////N/D///////+Bf/D/AQAAAP7/x////v//////////GP7//////7/wJ+AfAH4AAD9++P//////////////AOD//////88GH8AfAAwAwJ////////////////9/APz//////wNxDIAPAAAA8M///////////////98/APzf/////wHwAwAGAAAA+M///////////////+ADAPAB+P///wHwMwAAAAAA8A//////////////ZBgAAIACgP///wPgfwAAAAAQABf///////////8fAA4AACAAAP///z/gfwAAAAAwYMf///////////8PAB8AAAQAAP7////5/wMAAABoQOj///////////8DAA8AAAAAgPz////5/wcAAADs+P////////////9/AAcAAAAAAPj////7/wMAAADg+f////////////9/AAEAAAAAAPj/////zwAAAAAw/v////////////+/AAAAAAAAAPD/////Gw4AAACg//////////////8fAAAAAAAAAOD/////HxAAAADA//////////////8fAAAAAAAAAOD//////wAAAACA//9P/vj///////8PAAAAAAAAAOD/////EwAAAACA//wHfPz////////HAAAAAAAAAOD/////AQAAAAD8g/EH8Pj////////gAAAAAAAAAOD/////AAAAAAD8Aebn+fH//////z8AAAAAAAAAAOD///9/AAAAAAD8AGT8//H//////xpgAAAAAAAAAMD///8/AAAAAAD8AMT8//H/////fzggAAAAAAAAAID///8fAAAAAABwdAD8/////////zE4AAAAAAAAAID///8fAAAAAACwfwBD/////////zA/AAAAAAAAAAD+//8PAAAAAAD4fwAA/////////wAHAAAAAAAAAAD8//8DAAAAAAD8/2OA/////////4EAAAAAAAAAAADg//8DAAAAAAD8/+///////////wEAAAAAAAAAAADo/wkCAAAAAAD+//////z//////wEAAAAAAAAAAADYfwACAAAAAID///8///n//////wEAAAAAAAAAAACgfwAWAAAAAMD///9//+H//////wAAAAAAAAAAAAAgfwAAAAAAAMD///9//jPg////fwAAAAAAAAAAAAAAfgAAAAAAAOD//////H/A////PwEAAAAAAAAAAAAAfAAIAAAAAOD//////f/A/+f/BwAAAAAAAAAAAAAAfDBwAAAAAOD/////+X8A/sN/AAAAAAAAAAAAAAAA+DgAAwAAAOD/////+T8A/oB/AwAAAAAAAAAAAAAA4B8AAAAAAOD/////8x8AfoB/AAMAAAAAAAAAAAAAgPwAAAAAAOD/////8wcAPoD+AAEAAAAAAAAAAAAAAPgBAAAAAOD/////7wEAHAD+AQEAAAAAAAAAAAAAAMAAAAAAAOD/////PwAAHAD8AQQAAAAAAAAAAAAAAICAAgAAAMD/////HwMAGADgAAoAAAAAAAAAAAAAAADBfgAAAID//////wMAGABAAAAAAAAAAAAAAAAAAADy/wAAAID//////wEAIAAGAAwAAAAAAAAAAAAAAADw/wEAAAD//////wEAIAAIAAgAAAAAAAAAAAAAAADw/x8AAAD8+P///wAAAAAZYAAAAAAAAAAAAAAAAADg/z8AAAAAwP///wAAAAAbMAAAAAAAAAAAAAAAAADw/z8AAAAAwP//fwAAAAAWfAAAAAAAAAAAAAAAAAD4/38AAAAAwP//HwAAAAAcficAAAAAAAAAAAAAAAD8//8BAAAAwP//DwAAAAAYPiABAAAAAAAAAAAAAAD8//8DAAAAwP//BwAAAAA4vgEaAAAAAAAAAAAAAAD8//8/AAAAgP//BwAAAABwEBL+AAAAAAAAAAAAAAD8////AAAAAP//AwAAAABgAADwAQAAAAAAAAAAAAD8////AQAAAP//AwAAAADABADyAwEAAAAAAAAAAAD4////AQAAAP7/AwAAAAAAHADwBgQAAAAAAAAAAADw////AAAAAP7/BwAAAAAAAAQADAAAAAAAAAAAAADw//9/AAAAAP7/BwAAAAAAAAAAAAAAAAAAAAAAAADg//9/AAAAAP7/BwAAAAAAAICHAAAAAAAAAAAAAADg//8/AAAAAP//BwEAAAAAANDHAAAAAAAAAAAAAADA//8/AAAAAP//hwMAAAAAAPjHAQAAAAAAAAAAAAAA//8/AAAAAP//4QEAAAAAAPzfAQAAAAAAAAAAAAAA/v8/AAAAAP//4AEAAAAAAP7/AwAAAAAAAAAAAAAA/v8fAAAAAP5/wAAAAAAAgP//ByAAAAAAAAAAAAAA/v8fAAAAAP7/4AAAAAAA4P//D0AAAAAAAAAAAAAA/v8HAAAAAPz/4AAAAAAA8P//HwAAAAAAAAAAAAAA/v8AAAAAAPx/YAAAAAAA8P//PwAAAAAAAAAAAAAA/v8AAAAAAPw/AAAAAAAA8P//PwAAAAAAAAAAAAAA/v8AAAAAAPw/AAAAAAAA8P//PwAAAAAAAAAAAAAA/38AAAAAAPgfAAAAAAAA4P//PwAAAAAAAAAAAAAA/z8AAAAAAPAPAAAAAAAA4P//PwAAAAAAAAAAAAAA/x8AAAAAAPAHAAAAAAAA4B/+PwAAAAAAAAAAAAAA/w8AAAAAAPABAAAAAAAA4Af0HwAAAAAAAAAAAAAA/wMAAAAAAAAAAAAAAAAAAADwDwAIAAAAAAAAAACA/wMAAAAAAAAAAAAAAAAAAADgDwAQAAAAAAAAAACA/wEAAAAAAAAAAAAAAAAAAADAAgBwAAAAAAAAAACAfwAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAACAHwAAAAAAAAAAAAAAAAAAAAAABgAQAAAAAAAAAACAHwAAAAAAAAAAAAAAAAAAAAAABgAMAAAAAAAAAADADwAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAADABwAAAAAAAAAAAAAAAAAAAAAAAIADAAAAAAAAAADADwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAgwEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHwAAAAAAAAAAAAAAAAAAAAAAAAAA'};
@@ -3125,7 +3849,7 @@ window.mpWorldMap=function(cv,hubLabel){
   return {update:function(list,md){items=list||[];mode=md||'dots';if(mode==='choro'){choroCv=null;if(rafId){cancelAnimationFrame(rafId);rafId=null;}drawStatic();var _rs;window.addEventListener('resize',function(){clearTimeout(_rs);_rs=setTimeout(function(){if(mode==='choro'){choroCv=null;drawStatic();}},200);});return;}if(!rafId)rafId=requestAnimationFrame(frame);}};
 };
 OPS.srv=[];
-function loadTradeev(){if(document.hidden)return;fetch('/api/auth/tradeev?key='+encodeURIComponent(key)+'&since='+(Date.now()-172800000)).then(function(r){return r.json();}).then(function(d){OPS.srv=(d&&d.events)||[];try{renderOpsViz();}catch(e7){}}).catch(function(){});}
+function loadTradeev(){if(document.hidden)return;fetch('/api/auth/tradeev?key='+encodeURIComponent(key)+'&since='+(Date.now()-604800000)).then(function(r){return r.json();}).then(function(d){OPS.srv=(d&&d.events)||[];try{renderOpsViz();}catch(e7){}try{renderOpsUsers();}catch(e8){}}).catch(function(){});}
 function loadOps(){if(document.hidden)return;fetch('/api/auth/opentrades?key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(function(d){var np9=(d&&d.positions)||[];try{opsDiff(OPS.pos,np9);}catch(e8){}OPS.pos=np9;OPS.traders=(d&&d.traders)||0;renderOps();}).catch(function(){var el=document.getElementById('opsBody');if(el&&!OPS.pos.length)el.innerHTML='<div class="empty">could not load</div>';});}
 function opsCalc(t){var long=t.side!=='short',dir=long?1:-1;var live=OPS.PR[String(t.sym||'').toUpperCase()],hasLive=isFinite(live)&&live>0;var entry=+t.entry,margin=+t.margin||0,lev=(+t.lev>0)?+t.lev:1;var qty=(t.qty!=null&&isFinite(+t.qty))?+t.qty:((margin&&entry)?margin*lev/entry:0);var pnl=hasLive?qty*(live-entry)*dir:null;if(pnl!=null&&margin>0&&pnl<-margin)pnl=-margin;var roe=(pnl!=null&&margin>0)?pnl/margin*100:null;var liq=+t.liq||(long?entry*(1-(1-(t.mmr||0.005))/lev):entry*(1+(1-(t.mmr||0.005))/lev));var liqDist=hasLive&&live>0?(live-liq)/live*100*dir:null;var dead=hasLive&&isFinite(liq)&&(long?live<=liq:live>=liq);return {long:long,live:live,hasLive:hasLive,entry:entry,margin:margin,lev:lev,pnl:pnl,roe:roe,liq:liq,liqDist:liqDist,dead:dead};}
 function opsPosRow(t,dead){var c=opsCalc(t);var sc=c.long?'#2ebd85':'#ff6258';var pcol=c.pnl==null?'#9aa3ad':(c.pnl>=0?'#2ebd85':'#ff6258');
@@ -3141,7 +3865,7 @@ function opsPosRow(t,dead){var c=opsCalc(t);var sc=c.long?'#2ebd85':'#ff6258';va
     +'<span class="ops-liq" title="distance to liquidation"><span class="ops-meter"><i style="width:'+bw+'%;background:'+bcol+'"></i></span><span style="color:'+bcol+'">'+(buf!=null?buf.toFixed(buf<10?1:0)+'%':'&#8212;')+'</span></span>'
     +'<span class="age">'+(t.ts?ago(t.ts):'')+'</span>'
   +'</div>';}
-function renderOps(){var el=document.getElementById('opsBody');if(!el)return;try{renderOpsViz();}catch(e9){}
+function renderOps(){var el=document.getElementById('opsBody');if(!el)return;try{renderOpsViz();}catch(e9){}try{renderOpsUsers();}catch(e10){}
   var alive=[],dead=[];OPS.pos.forEach(function(t){(opsCalc(t).dead?dead:alive).push(t);}); // crossed-liq = effectively liquidated (client-side close pending)
   var totM=0,totP=0,nl=0,ns=0,worst=null,nOver=0;
   alive.forEach(function(t){var c=opsCalc(t);var over=c.margin>100000;if(over)nOver++;else{totM+=c.margin;if(c.pnl!=null)totP+=c.pnl;}if(c.long)nl++;else ns++;if(!over&&c.liqDist!=null&&(worst==null||c.liqDist<worst.d))worst={d:c.liqDist,t:t};});
@@ -3172,7 +3896,7 @@ function renderOps(){var el=document.getElementById('opsBody');if(!el)return;try
   var html=alive.length?grouped(alive):'<div class="empty">no genuinely-live positions right now</div>';
   if(dead.length){html+='<div style="margin:16px 0 9px;font-size:11.5px;color:#ff8a80;line-height:1.45;border-top:1px solid #1c2230;padding-top:12px"><b style="color:#ff6258">'+dead.length+' liquidated &middot; owner offline.</b> Price has already crossed liq, but the trade is still open because paper-trade liquidation runs in the user&#39;s browser &#8212; it closes to a loss the next time they visit.</div><div style="opacity:.55">'+grouped(dead)+'</div>';}
   el.innerHTML=html;}
-OPS.view='viz';OPS.hist=[];OPS.feedF='all';OPS.tape=[];window.__ops={o:OPS,diff:function(a,b){opsDiff(a,b);},render:function(){renderOps();}};OPS._new={};OPS._wasDead={};OPS._base=false;OPS.coinF=null;
+OPS.view='users';OPS.hist=[];OPS.feedF='all';OPS.tape=[];window.__ops={o:OPS,diff:function(a,b){opsDiff(a,b);},render:function(){renderOps();}};OPS._new={};OPS._wasDead={};OPS._base=false;OPS.coinF=null;
 function opsKey(t){return String(t.uid||t.email||'g')+'|'+String(t.sym||'').toUpperCase()+'|'+(t.side||'')+'|'+(t.ts||0);}
 function opsWho(t){return String(t.username||(t.email||'').split('@')[0]||'guest');}
 function opsDiff(oldA,newA){
@@ -3218,9 +3942,10 @@ function ovzMoney(v){return '$'+Math.round(+v||0).toLocaleString('en-US');}
 function ovzCoinCol(sy){var M={BTC:'#f7931a',ETH:'#627eea',SOL:'#14f195',XRP:'#8c9dad',BNB:'#f3ba2f',DOGE:'#c2a633',SUI:'#4da2ff',AVAX:'#e84142',LINK:'#2a5ada',ADA:'#2f6fd0',LAB:'#c2f64a',PEPE:'#3d8130',TON:'#0098ea'};if(M[sy])return M[sy];var h=0;for(var i=0;i<sy.length;i++)h=(h*31+sy.charCodeAt(i))>>>0;return 'hsl('+(h%360)+',62%,56%)';}
 function renderOpsViz(){
   var host=document.getElementById('opsViz');if(!host)return;
-  var vz=OPS.view!=='list';
-  var lp=document.getElementById('opsBody');if(lp)lp.style.display=vz?'none':'';
-  var ss=document.getElementById('opsSort');if(ss)ss.style.display=vz?'none':'';
+  var vz=OPS.view==='viz',us=OPS.view==='users';
+  var lp=document.getElementById('opsBody');if(lp)lp.style.display=(vz||us)?'none':'';
+  var ss=document.getElementById('opsSort');if(ss)ss.style.display=(vz||us)?'none':'';
+  var uh=document.getElementById('opsUsers');if(uh)uh.style.display=us?'':'none';
   host.style.display=vz?'':'none';
   if(!vz)return;
   if(!OPS.pos.length){host.innerHTML='<div class="empty">no open positions right now</div>';return;}
@@ -3502,11 +4227,63 @@ function ovzTrader(who){
     +(email?'<a class="pay" style="text-decoration:none" href="/api/admin/user?email='+encodeURIComponent(email)+'" target="_blank" rel="noopener">Full profile &nearr;</a>':'')
     +'</div></div>';
 }
+OPS.uOpen={};OPS.uq='';
+function renderOpsUsers(){var host=document.getElementById('opsUsers');if(!host)return;if(OPS.view!=='users'){host.style.display='none';return;}host.style.display='';
+  if(!host._built){host._built=1;host.innerHTML='<div class="opu-top"><input id="opsUq" type="text" placeholder="Find trader\u2026" autocomplete="off" spellcheck="false"><span id="opsUn" class="opu-n"></span></div><div id="opsUlist"><div class="empty">loading\u2026</div></div>';
+    var qi=document.getElementById('opsUq');if(qi)qi.addEventListener('input',function(){OPS.uq=qi.value.toLowerCase().trim();renderOpsUsersList();});
+    host.addEventListener('click',function(e){
+      var pg=e.target.closest&&e.target.closest('.opsu-ping');if(pg){var uid=pg.getAttribute('data-uid');if(uid){pg.textContent='\u2026';fetch('/api/admin/pingpos?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:uid})}).then(function(r){return r.json();}).then(function(d){pg.textContent=d&&d.ok?'sent \u2713':(d&&d.error==='cooldown'?'cooldown':'failed');}).catch(function(){pg.textContent='failed';});}return;}
+      var tv=e.target.closest&&e.target.closest('[data-ovt]');if(tv){try{ovzTrader(tv.getAttribute('data-ovt'));}catch(e2){}return;}
+      if(e.target.closest&&e.target.closest('a'))return;
+      var h=e.target.closest&&e.target.closest('.opu-h');if(!h)return;var k=h.getAttribute('data-opu');OPS.uOpen[k]=!OPS.uOpen[k];renderOpsUsersList();});
+  }
+  renderOpsUsersList();}
+function renderOpsUsersList(){var list=document.getElementById('opsUlist');if(!list)return;
+  var by={};
+  function ent(k){if(!by[k])by[k]={key:k,name:'',email:'',cc:'',uid:'',open:[],ev:[],last:0};return by[k];}
+  (OPS.pos||[]).forEach(function(t){var k=String(t.uid||t.email||t.username||'?');var g=ent(k);if(!g.name)g.name=t.username||(t.email||'').split('@')[0]||'anon';if(!g.email)g.email=t.email||'';if(!g.cc)g.cc=t.cc||'';if(!g.uid)g.uid=t.uid||'';g.open.push(t);if((t.ts||0)>g.last)g.last=t.ts||0;});
+  (OPS.srv||[]).forEach(function(ev){var k=String(ev.user_id||ev.email||ev.username||'?');var g=ent(k);if(!g.name)g.name=ev.username||(ev.email||'').split('@')[0]||'anon';if(!g.email)g.email=ev.email||'';if(!g.cc)g.cc=ev.cc||'';if(!g.uid)g.uid=ev.user_id||'';g.ev.push(ev);if((ev.ts||0)>g.last)g.last=ev.ts||0;});
+  var users=Object.keys(by).map(function(k){return by[k];});
+  users.forEach(function(g){var m=0,up=0,hasP=false;g.open.forEach(function(t){var c=opsCalc(t);if(c.margin>100000)return;m+=c.margin;if(c.pnl!=null){up+=c.pnl;hasP=true;}});g.margin=m;g.unreal=hasP?up:null;
+    var rp=0,w=0,l=0,lq=0;g.ev.forEach(function(ev){if(ev.kind==='close'){rp+=(+ev.pnl||0);if((+ev.pnl||0)>0)w++;else l++;if(ev.liq)lq++;}});g.realized=rp;g.wins=w;g.losses=l;g.liqs=lq;});
+  users.sort(function(a,b){return b.last-a.last;});
+  if(OPS.uq)users=users.filter(function(g){return (g.name+' '+g.email).toLowerCase().indexOf(OPS.uq)>=0;});
+  var un=document.getElementById('opsUn');if(un)un.textContent=users.length+' traders \u00b7 click a row for full history';
+  var html=users.slice(0,80).map(function(g){
+    var open=!!OPS.uOpen[g.key];var wrT=(g.wins+g.losses)?Math.round(g.wins/(g.wins+g.losses)*100):null;
+    var head='<div class="opu-h" data-opu="'+esc(g.key)+'"><span class="opu-fl">'+(flag(g.cc)||'\u00b7')+'</span><b class="opu-nm">@'+esc(g.name)+'</b>'
+      +(g.open.length?'<span class="opu-t opu-live">'+g.open.length+' open \u00b7 $'+N(Math.round(g.margin))+'</span>':'<span class="opu-t">flat</span>')
+      +(g.unreal!=null?'<span class="opu-t" style="color:'+(g.unreal>=0?'#2ebd85':'#ff6258')+'">live '+(g.unreal>=0?'+':'')+'$'+g.unreal.toFixed(0)+'</span>':'')
+      +'<span class="opu-t" style="color:'+(g.realized>=0?'#2ebd85':'#ff6258')+'">7d '+(g.realized>=0?'+':'')+'$'+g.realized.toFixed(0)+'</span>'
+      +(wrT!=null?'<span class="opu-t">WR '+wrT+'% \u00b7 '+g.wins+'W-'+g.losses+'L</span>':'')
+      +(g.liqs?'<span class="opu-t" style="color:#b48cff">'+g.liqs+' liq</span>':'')
+      +'<span class="opu-ago">'+ago(g.last)+' ago</span><span class="opu-chev">'+(open?'\u25be':'\u25b8')+'</span></div>';
+    var body='';
+    if(open){
+      var rowsO=g.open.map(function(t){var c=opsCalc(t);
+        return '<div class="opu-r"><span class="opu-side '+(c.long?'olg':'osh')+'">'+(c.long?'LONG':'SHORT')+'</span><b>'+esc(String(t.sym||''))+'</b><span class="opu-m">'+(+t.lev||1)+'\u00d7</span><span class="opu-m">$'+N(Math.round(c.margin))+'</span>'
+        +(c.pnl!=null?'<span style="color:'+(c.pnl>=0?'#2ebd85':'#ff6258')+';font-weight:700">'+(c.pnl>=0?'+':'')+'$'+c.pnl.toFixed(2)+' ('+(c.roe>=0?'+':'')+(c.roe||0).toFixed(0)+'%)</span>':'<span class="opu-m">\u2014</span>')
+        +(c.liqDist!=null?'<span class="opu-m">liq '+c.liqDist.toFixed(1)+'%</span>':'')+'<span class="opu-ago">'+ago(t.ts||0)+' ago</span></div>';}).join('');
+      var evs=g.ev.slice().sort(function(a,b){return (b.ts||0)-(a.ts||0);}).slice(0,40).map(function(ev){
+        var pnl=+ev.pnl||0;
+        var verb=ev.kind==='open'?'<span class="opu-vo">opened</span>':(ev.liq?'<span class="opu-vl">LIQUIDATED</span>':(ev.kind==='close'?(pnl>=0?'<span class="opu-vw">closed WIN</span>':'<span class="opu-vx">closed LOSS</span>'):'<span class="opu-m">'+esc(String(ev.kind||''))+'</span>'));
+        return '<div class="opu-r"><span class="opu-ago">'+ago(ev.ts)+' ago</span>'+verb+'<span class="opu-side '+(ev.side!=='short'?'olg':'osh')+'">'+(ev.side!=='short'?'LONG':'SHORT')+'</span><b>'+esc(String(ev.sym||''))+'</b><span class="opu-m">'+(+ev.lev||1)+'\u00d7</span><span class="opu-m">$'+N(Math.round(+ev.margin||0))+'</span>'
+        +(ev.kind==='close'?'<span style="color:'+(pnl>=0?'#2ebd85':'#ff6258')+';font-weight:700">'+(pnl>=0?'+':'')+'$'+pnl.toFixed(2)+(ev.roe!=null?' ('+((+ev.roe||0)>=0?'+':'')+(+ev.roe||0).toFixed(0)+'% ROE)':'')+'</span>':'')+'</div>';}).join('');
+      body='<div class="opu-b">'+(rowsO?'<div class="opu-sec">Open now</div>'+rowsO:'')
+        +'<div class="opu-sec">History \u00b7 last 7 days</div>'+(evs||'<div class="opu-m" style="padding:6px 2px">no recorded trade events yet</div>')
+        +'<div class="opu-act">'+(g.uid&&g.email?'<button class="pay opsu-ping" data-uid="'+esc(g.uid)+'" type="button">\u2709 Ping</button>':'')
+        +'<button class="pay" data-ovt="'+esc(g.name)+'" type="button">Stats card</button>'
+        +(g.email?'<a class="pay" style="text-decoration:none" href="/api/admin/user?email='+encodeURIComponent(g.email)+'" target="_blank" rel="noopener">Full profile \u2197</a>':'')+'</div></div>';
+    }
+    return '<div class="opu'+(open?' on':'')+'">'+head+body+'</div>';}).join('');
+  list.innerHTML=html||'<div class="empty">no traders in the last 7 days</div>';}
 (function(){
-  var vb=document.getElementById('opsVzB'),lb=document.getElementById('opsLsB');
-  function setView(v){OPS.view=v;if(vb)vb.classList.toggle('on',v==='viz');if(lb)lb.classList.toggle('on',v==='list');renderOps();}
+  var vb=document.getElementById('opsVzB'),lb=document.getElementById('opsLsB'),ub=document.getElementById('opsUsB');
+  function setView(v){OPS.view=v;try{localStorage.setItem('mp_ops_vmode',v);}catch(e){}if(ub)ub.classList.toggle('on',v==='users');if(vb)vb.classList.toggle('on',v==='viz');if(lb)lb.classList.toggle('on',v==='list');renderOps();}
+  if(ub)ub.addEventListener('click',function(){setView('users');});
   if(vb)vb.addEventListener('click',function(){setView('viz');});
   if(lb)lb.addEventListener('click',function(){setView('list');});
+  try{var sv=localStorage.getItem('mp_ops_vmode');if(sv==='viz'||sv==='list'||sv==='users')OPS.view=sv;}catch(e){}
   var hv=document.getElementById('opsViz');
   if(hv)hv.addEventListener('click',function(e){var tv=e.target.closest&&e.target.closest('[data-ovt]');if(tv){ovzTrader(tv.getAttribute('data-ovt'));return;}var c2=e.target.closest&&e.target.closest('[data-ovc]');if(c2){var sy2=c2.getAttribute('data-ovc');OPS.coinF=OPS.coinF===sy2?null:sy2;renderOpsViz();return;}var c=e.target.closest&&e.target.closest('[data-ovf]');if(!c)return;OPS.feedF=c.getAttribute('data-ovf');renderOpsViz();});
   var rt=null;window.addEventListener('resize',function(){if(rt)return;rt=setTimeout(function(){rt=null;if(OPS.view!=='list'&&document.getElementById('opsViz'))try{renderOpsViz();}catch(e2){}},400);});
@@ -3535,7 +4312,8 @@ setInterval(function(){
   function tgNewsDraft(it){function e(s){return String(s||'').replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}var t=e(it.title);var body=e((it.body||'').replace(/\\s+/g,' ').trim());if(body.length>220)body=body.slice(0,217).replace(/\\s+\\S*$/,'')+'…';return '<b>'+t+'</b>\\n\\n'+(body?body+'\\n\\n':'')+'<i>via '+e(it.src)+'</i>\\n\\n'+MP_SIG;}
   var tgNewsLoaded=false,tnb=document.getElementById('tgNewsBtn');
   if(tnb)tnb.addEventListener('click',function(){var list=document.getElementById('tgNewsList'),nmsg=document.getElementById('tgNewsMsg');if(!list)return;if(!list.hidden){list.hidden=true;if(nmsg)nmsg.textContent='';return;}list.hidden=false;if(tgNewsLoaded)return;list.innerHTML='<div class="empty" style="padding:8px">loading…</div>';fetch('/api/news').then(function(r){return r.json();}).then(function(d){var items=(d&&d.items)||[];if(!items.length){list.innerHTML='<div class="empty" style="padding:8px">no news right now</div>';return;}tgNewsLoaded=true;window.__tgNews=items;list.innerHTML=items.slice(0,30).map(function(it,i){return '<div class="tgnews-row" data-i="'+i+'" style="padding:9px 11px;border:1px solid #2f3742;border-radius:9px;margin-bottom:6px;cursor:pointer;background:#0c0f13"><div style="font-size:13px;color:#e9e7df;font-weight:600;line-height:1.35">'+esc(it.title)+'</div><div style="font-size:11px;color:#7f8893;margin-top:3px">'+esc(it.src)+(it.ts?' · '+ago(it.ts):'')+'</div></div>';}).join('');Array.prototype.forEach.call(list.querySelectorAll('.tgnews-row'),function(row){row.addEventListener('click',function(){var it=window.__tgNews[+row.getAttribute('data-i')];if(!it)return;var ta=document.getElementById('tgBcIn');if(ta){ta.value=tgNewsDraft(it);ta.focus();}var im=document.getElementById('tgBcImg');if(im)im.value=it.img||'';list.hidden=true;if(nmsg)nmsg.textContent='Draft loaded'+(it.img?' (with image)':'')+' — review, edit, then Post.';if(ta&&ta.scrollIntoView)ta.scrollIntoView({behavior:'smooth',block:'center'});});});}).catch(function(){list.innerHTML='<div class="empty" style="padding:8px">could not load news</div>';});});
-  var ttb=document.getElementById('tgTplBtn');if(ttb)ttb.addEventListener('click',function(){var ta=document.getElementById('tgBcIn');if(!ta)return;var v=ta.value.replace(/\\s+$/,'');ta.value=v+(v?'\\n\\n':'')+MP_SIG;ta.focus();var nm=document.getElementById('tgNewsMsg');if(nm)nm.textContent='MarginPad footer added.';});function cell(k,v){return '<div class="amod-cell"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>';}function renderAcct(d){var b=document.getElementById('amBody');if(!b)return;var banBtn=document.getElementById('amBan'),um0=document.getElementById('amUserMsg'),ms0=document.getElementById('amMsgState');var lbBtn=document.getElementById('amLbBan');if(lbBtn){lbBtn.style.display='';lbBtn.textContent=d.lbBanned?'Reinstate to leaderboard':'Remove from leaderboard';lbBtn.setAttribute('data-lbban',d.lbBanned?'1':'0');lbBtn.classList.toggle('danger',!d.lbBanned);}if(!d.exists){b.innerHTML='<div class="amod-msg">No account for this address (already removed?).</div>';if(banBtn)banBtn.style.display='none';if(um0)um0.value='';if(ms0)ms0.textContent='';return;}var _ttl=document.getElementById('amAddr');if(_ttl)_ttl.textContent=d.username?('@'+d.username):(d.email||d.address);var rc={high:'#ff6258',med:'#ffb347',low:'#2ebd85'},fr=d.fraud||{flags:[],riskLevel:'low',ipWallets:[]},rcol=rc[fr.riskLevel]||'#2ebd85';var h='';if(d.banned)h+='<div style="background:rgba(255,98,88,.12);border:1px solid rgba(255,98,88,.5);color:#ff8a80;border-radius:9px;padding:8px 12px;font-size:12.5px;font-weight:700;margin-bottom:12px">This wallet is BANNED — its claims are blocked.</div>';h+='<div class="amod-grid">'+cell('User',d.username?('@'+esc(d.username)):(d.email?esc(d.email):'—'))+cell('Linked wallet',d.payoutAddr?('<span style="font-family:monospace;font-size:10.5px;word-break:break-all">'+esc(d.payoutAddr)+'</span>'):'<span style="color:#5c656f">none linked yet</span>')+cell('Email',d.email?esc(d.email):'—')+cell('Telegram',d.tgLinked?'linked':'—')+cell('Balance','$'+(+d.balanceUsd||0).toFixed(2))+cell('Earned','$'+(+d.earnedUsd||0).toFixed(2))+cell('Claims',d.claims||0)+cell('Device lock',d.locked?'locked':'free')+cell('From',(flag(d.cc)||'')+' '+(d.cc||'?')+' · '+(d.dev||'?'))+cell('IP',(d.ip||'?')+(d.sameIp>1?' · '+d.sameIp+' wallets':''))+cell('Created',d.created?ago(d.created)+' ago':'—')+cell('Last claim',d.lastClaim?ago(d.lastClaim)+' ago':'never')+'</div>';h+='<div class="amod-sec">Fraud signals — risk <span style="color:'+rcol+';font-weight:800">'+(fr.riskLevel||'low').toUpperCase()+'</span></div>';if(fr.flags&&fr.flags.length){h+='<div style="display:flex;flex-direction:column;gap:6px">'+fr.flags.map(function(f){return '<div style="background:#0c0f13;border:1px solid #2f3742;border-left:3px solid '+rcol+';border-radius:8px;padding:7px 11px;font-size:12px;color:#e3c7a0">'+esc(f)+'</div>';}).join('')+'</div>';}else{h+='<div class="amod-msg" style="text-align:left;margin-top:0">No risk signals — looks clean.</div>';}if(fr.didWallets&&fr.didWallets.length){h+='<div class="amod-sec" style="color:#ff8a80">Same DEVICE — other wallets ('+fr.didWallets.length+')</div>'+fr.didWallets.map(function(w){return '<div class="wd-row" data-acct="'+esc(w.address)+'" style="cursor:pointer"><span class="addr mono" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;color:#ffb3ac;font-size:11px">'+esc(w.address)+'</span><span class="meta">'+w.claims+'×</span>'+(w.banned?'<span style="color:#ff6258;font-size:10px;font-family:monospace">BANNED</span>':'')+'<span class="bal" style="color:#c2f64a;font-family:monospace">$'+(+w.balanceUsd||0).toFixed(2)+'</span></div>';}).join('');}if(fr.ipWallets&&fr.ipWallets.length){h+='<div class="amod-sec">Other wallets on this IP ('+fr.ipWallets.length+')</div>'+fr.ipWallets.map(function(w){return '<div class="wd-row" data-acct="'+esc(w.address)+'" style="cursor:pointer"><span class="addr mono" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;color:#cdd3da;font-size:11px">'+esc(w.address)+'</span><span class="meta" style="color:#5c656f;font-family:monospace;font-size:11px">'+w.claims+'×</span>'+(w.banned?'<span style="color:#ff6258;font-size:10px;font-family:monospace">BANNED</span>':'')+'<span class="bal" style="color:#c2f64a;font-family:monospace">$'+(+w.balanceUsd||0).toFixed(2)+'</span></div>';}).join('');}if(d.lb){h+='<div class="amod-sec">Best trade this week</div>'+cell('ROE',((+d.lb.roe)>=0?'+':'')+(+d.lb.roe).toFixed(0)+'% on '+(d.lb.symbol||'?')+' '+(d.lb.side||''));}if(d.withdrawals&&d.withdrawals.length){h+='<div class="amod-sec">Withdrawals</div>'+d.withdrawals.map(function(w){var txid=(w.txid||'').replace(/[^0-9a-fA-Fx]/g,'');var c=w.status==='paid'?'#2ebd85':'#ffb347';return '<div class="wd-row"><span class="bal">$'+(+w.amountUsd||0).toFixed(2)+'</span><span style="font-family:monospace;font-size:11px;color:'+c+'">'+w.status+'</span>'+(txid?'<a href="https://bscscan.com/tx/'+txid+'" target="_blank" rel="noopener" style="margin-left:auto;color:#c2f64a">tx</a>':'<span class="meta" style="margin-left:auto">'+ago(w.ts)+'</span>')+'</div>';}).join('');}b.innerHTML=h;Array.prototype.forEach.call(b.querySelectorAll('[data-acct]'),function(row){row.addEventListener('click',function(){openAcct(row.getAttribute('data-acct'));});});var nt=document.getElementById('amNote');if(nt)nt.value=d.note||'';if(um0)um0.value=d.msg||'';if(ms0)ms0.textContent=d.msg?('Message active'+(d.msgSeen?' · read by user':' · not read yet')):'No message set';if(banBtn){banBtn.style.display='';banBtn.textContent=d.banned?'Unban wallet':'Ban from faucet';banBtn.setAttribute('data-banned',d.banned?'1':'0');banBtn.classList.toggle('danger',!d.banned);}}function openAcct(a){var mo=document.getElementById('acctModal');if(!mo)return;mo.setAttribute('data-a',a);document.getElementById('amAddr').textContent=a;document.getElementById('amMsg').textContent='';document.getElementById('amBody').innerHTML='<div class="amod-msg">loading…</div>';mo.hidden=false;fetch('/api/reward/detail?address='+a+'&key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(renderAcct).catch(function(){document.getElementById('amBody').innerHTML='<div class="amod-msg">Could not load.</div>';});}function closeAcct(){var mo=document.getElementById('acctModal');if(mo)mo.hidden=true;}var amClose=document.getElementById('amClose');if(amClose)amClose.addEventListener('click',closeAcct);var amModal=document.getElementById('acctModal');if(amModal)amModal.addEventListener('click',function(e){if(e.target===amModal)closeAcct();});var amUnlock=document.getElementById('amUnlock');if(amUnlock)amUnlock.addEventListener('click',function(){var a=document.getElementById('acctModal').getAttribute('data-a');document.getElementById('amMsg').textContent='Unlocking…';fetch('/api/reward/unlock?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a})}).then(function(){document.getElementById('amMsg').textContent='Device unlocked.';loadRewards();});});var amRemove=document.getElementById('amRemove');if(amRemove)amRemove.addEventListener('click',function(){var a=document.getElementById('acctModal').getAttribute('data-a');if(!confirm('Remove '+a+'? Deletes the account, its device lock and leaderboard entry.'))return;document.getElementById('amMsg').textContent='Removing…';fetch('/api/reward/remove?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a})}).then(function(){closeAcct();loadRewards();});});function amAdjust(sign){var a=document.getElementById('acctModal').getAttribute('data-a');var amt=parseFloat((document.getElementById('amAdjAmt')||{}).value);if(!(amt>0)){document.getElementById('amMsg').textContent='Enter a USD amount.';return;}if(sign<0&&!confirm('Subtract $'+amt.toFixed(2)+' from this balance?'))return;document.getElementById('amMsg').textContent=sign>0?'Adding…':'Subtracting…';fetch('/api/reward/adjust?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a,deltaUsd:sign*amt})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){var inp=document.getElementById('amAdjAmt');if(inp)inp.value='';openAcct(a);loadRewards();}else{document.getElementById('amMsg').textContent='Failed: '+((d&&d.error)||'error');}});}var amAdjAdd=document.getElementById('amAdjAdd');if(amAdjAdd)amAdjAdd.addEventListener('click',function(){amAdjust(1);});var amAdjSub=document.getElementById('amAdjSub');if(amAdjSub)amAdjSub.addEventListener('click',function(){amAdjust(-1);});var amNoteSave=document.getElementById('amNoteSave');if(amNoteSave)amNoteSave.addEventListener('click',function(){var a=document.getElementById('acctModal').getAttribute('data-a'),nt=document.getElementById('amNote').value;document.getElementById('amMsg').textContent='Saving note…';fetch('/api/reward/note?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a,note:nt})}).then(function(){document.getElementById('amMsg').textContent='Note saved.';});});var amMsgSend=document.getElementById('amMsgSend');if(amMsgSend)amMsgSend.addEventListener('click',function(){var a=document.getElementById('acctModal').getAttribute('data-a'),m=document.getElementById('amUserMsg').value;document.getElementById('amMsg').textContent='Sending…';fetch('/api/reward/message?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a,message:m})}).then(function(){document.getElementById('amMsg').textContent=m.trim()?'Message sent — the user sees it on /rewards.':'Message cleared.';var ms=document.getElementById('amMsgState');if(ms)ms.textContent=m.trim()?'Message active · not read yet':'No message set';});});var amBan=document.getElementById('amBan');if(amBan)amBan.addEventListener('click',function(){var a=document.getElementById('acctModal').getAttribute('data-a'),banned=amBan.getAttribute('data-banned')==='1';if(!banned&&!confirm('Ban '+a+' from the faucet? Future claims are blocked (balance is kept for review).'))return;document.getElementById('amMsg').textContent=banned?'Lifting ban…':'Banning…';fetch('/api/reward/'+(banned?'unban':'ban')+'?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a})}).then(function(){document.getElementById('amMsg').textContent=banned?'Ban lifted.':'Wallet banned.';openAcct(a);loadRewards();});});var amLbBan=document.getElementById('amLbBan');if(amLbBan)amLbBan.addEventListener('click',function(){var a=document.getElementById('acctModal').getAttribute('data-a'),lbb=amLbBan.getAttribute('data-lbban')==='1';if(!lbb&&!confirm('Remove '+a+' from the leaderboard? Their entries are wiped and they can no longer compete.'))return;document.getElementById('amMsg').textContent=lbb?'Reinstating…':'Removing from leaderboard…';fetch('/api/reward/lbban?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a,unban:lbb?1:0})}).then(function(){document.getElementById('amMsg').textContent=lbb?'Reinstated to leaderboard.':'Removed from leaderboard.';openAcct(a);loadRewards();});});function set(id,v){var e=document.getElementById(id);if(e&&v!=null)e.value=v;}function val(id){return +document.getElementById(id).value;}function recalcHints(){var hb=document.getElementById('sHints');if(!hb)return;var amt=val('sAmount')||0,per=val('sPerDay')||0,cap=val('sCap')||0,cd=val('sCooldown')||0;var maxPerWallet=amt>0?Math.floor(per/amt):0;var budgetClaims=amt>0?Math.floor(cap/amt):0;var cdMin=cd/60;hb.innerHTML='Each wallet: up to <b>'+maxPerWallet+'</b> claims/day (= $'+per.toFixed(2)+').  Global budget <b>$'+cap.toFixed(0)+'</b> &asymp; <b>'+budgetClaims+'</b> claims/day total ('+(maxPerWallet>0?'&ge; '+Math.ceil(budgetClaims/maxPerWallet):'?')+' wallets).  Cooldown &asymp; <b>'+(cdMin%1===0?cdMin:cdMin.toFixed(1))+'</b> min between claims.';}
+  var ttb=document.getElementById('tgTplBtn');if(ttb)ttb.addEventListener('click',function(){var ta=document.getElementById('tgBcIn');if(!ta)return;var v=ta.value.replace(/\\s+$/,'');ta.value=v+(v?'\\n\\n':'')+MP_SIG;ta.focus();var nm=document.getElementById('tgNewsMsg');if(nm)nm.textContent='MarginPad footer added.';});function cell(k,v){return '<div class="amod-cell"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>';}function loadEarnings(addr){var el=document.getElementById('amEarn');if(!el)return;fetch('/api/reward/earnings?key='+encodeURIComponent(key)+'&address='+encodeURIComponent(addr)).then(function(r){return r.ok?r.json():null;}).then(function(d){if(!d||!d.exists){el.innerHTML='<div class="amod-msg">No account on record.</div>';return;}var items=d.items||[];var TL={exsign:'Exchange sign-up',promo:'Promo post',lbprize:'Leaderboard prize',welcome:'Welcome bonus',mission:'Daily mission',claim:'Faucet claim'};var TC={exsign:'#2ebd85',promo:'#7fd6ff',lbprize:'#ffd75a',welcome:'#c2f64a',mission:'#c9a5ff',claim:'#8b97a5'};var sm=d.summary||{},chips='';for(var k in sm){chips+='<span class="ern-chip" style="--c:'+(TC[k]||'#8b97a5')+'">'+(TL[k]||k)+' &middot; <b>'+sm[k].n+'</b> &middot; $'+(+sm[k].usd).toFixed(2)+'</span>';}var rows=items.map(function(it){var det='';if(it.type==='exsign'){det='<div class="ern-d"><b>'+esc(it.exchange||'?')+'</b> &middot; UID <span class="ern-uid">'+esc(it.uid||'—')+'</span>'+(it.note?' &middot; <span class="ern-note">'+esc(it.note)+'</span>':'')+(it.cc?' &middot; '+(flag(it.cc)||'')+esc(it.cc):'')+(it.submittedTs&&it.submittedTs!==it.ts?' &middot; submitted '+ago(it.submittedTs)+' ago':'')+'</div>';}else if(it.type==='promo'){det='<div class="ern-d"><b>'+esc(it.platform||'?')+'</b> &middot; <a href="'+esc(it.url||'#')+'" target="_blank" rel="noopener" style="color:#7fd6ff;word-break:break-all">'+esc((it.url||'').slice(0,64))+'</a></div>';}else if(it.type==='lbprize'){det='<div class="ern-d">Week '+esc(String(it.week||''))+' &middot; placed <b>#'+(it.rank||'?')+'</b></div>';}else if(it.type==='mission'){det='<div class="ern-d">'+esc(it.title||it.mid||'')+'</div>';}else if(it.type==='welcome'){det='<div class="ern-d">One-time sign-up bonus'+(it.approx?' (approx)':'')+'</div>';}return '<div class="ern-row"><span class="ern-tag" style="--c:'+(TC[it.type]||'#8b97a5')+'">'+(TL[it.type]||it.type)+'</span><div class="ern-mid"><div class="ern-amt">+$'+(+it.usd||0).toFixed(2)+'</div>'+det+'</div><span class="ern-ago">'+(it.ts?ago(it.ts)+' ago':'')+'</span></div>';}).join('');el.innerHTML=(chips?'<div class="ern-sum">'+chips+'</div>':'')+(rows?'<div class="ern-list">'+rows+'</div>':'<div class="amod-msg">No itemized earnings yet.</div>')+(d.claimTotalUsd?'<div class="ern-foot">Faucet claims total &asymp; $'+(+d.claimTotalUsd).toFixed(2)+' ('+(d.claims||0)+' claims &middot; only the most recent are itemized above)</div>':'');}).catch(function(){var e2=document.getElementById('amEarn');if(e2)e2.innerHTML='<div class="amod-msg">Could not load earnings.</div>';});}
+function renderAcct(d){var b=document.getElementById('amBody');if(!b)return;var banBtn=document.getElementById('amBan'),um0=document.getElementById('amUserMsg'),ms0=document.getElementById('amMsgState');var lbBtn=document.getElementById('amLbBan');if(lbBtn){lbBtn.style.display='';lbBtn.textContent=d.lbBanned?'Reinstate to leaderboard':'Remove from leaderboard';lbBtn.setAttribute('data-lbban',d.lbBanned?'1':'0');lbBtn.classList.toggle('danger',!d.lbBanned);}if(!d.exists){b.innerHTML='<div class="amod-msg">No account for this address (already removed?).</div>';if(banBtn)banBtn.style.display='none';if(um0)um0.value='';if(ms0)ms0.textContent='';return;}var _ttl=document.getElementById('amAddr');if(_ttl)_ttl.textContent=d.username?('@'+d.username):(d.email||d.address);var rc={high:'#ff6258',med:'#ffb347',low:'#2ebd85'},fr=d.fraud||{flags:[],riskLevel:'low',ipWallets:[]},rcol=rc[fr.riskLevel]||'#2ebd85';var h='';if(d.banned)h+='<div style="background:rgba(255,98,88,.12);border:1px solid rgba(255,98,88,.5);color:#ff8a80;border-radius:9px;padding:8px 12px;font-size:12.5px;font-weight:700;margin-bottom:12px">This wallet is BANNED — its claims are blocked.</div>';h+='<div class="amod-grid">'+cell('User',d.username?('@'+esc(d.username)):(d.email?esc(d.email):'—'))+cell('Linked wallet',d.payoutAddr?('<span style="font-family:monospace;font-size:10.5px;word-break:break-all">'+esc(d.payoutAddr)+'</span>'):'<span style="color:#5c656f">none linked yet</span>')+cell('Email',d.email?esc(d.email):'—')+cell('Telegram',d.tgLinked?'linked':'—')+cell('Balance','$'+(+d.balanceUsd||0).toFixed(2))+cell('Earned','$'+(+d.earnedUsd||0).toFixed(2))+cell('Claims',d.claims||0)+cell('Device lock',d.locked?'locked':'free')+cell('From',(flag(d.cc)||'')+' '+(d.cc||'?')+' · '+(d.dev||'?'))+cell('IP',(d.ip||'?')+(d.sameIp>1?' · '+d.sameIp+' wallets':''))+cell('Created',d.created?ago(d.created)+' ago':'—')+cell('Last claim',d.lastClaim?ago(d.lastClaim)+' ago':'never')+'</div>';h+='<div class="amod-sec">Earnings breakdown — where the money came from</div><div id="amEarn"><div class="amod-msg">Loading earnings…</div></div>';h+='<div class="amod-sec">Fraud signals — risk <span style="color:'+rcol+';font-weight:800">'+(fr.riskLevel||'low').toUpperCase()+'</span></div>';if(fr.flags&&fr.flags.length){h+='<div style="display:flex;flex-direction:column;gap:6px">'+fr.flags.map(function(f){return '<div style="background:#0c0f13;border:1px solid #2f3742;border-left:3px solid '+rcol+';border-radius:8px;padding:7px 11px;font-size:12px;color:#e3c7a0">'+esc(f)+'</div>';}).join('')+'</div>';}else{h+='<div class="amod-msg" style="text-align:left;margin-top:0">No risk signals — looks clean.</div>';}if(fr.didWallets&&fr.didWallets.length){h+='<div class="amod-sec" style="color:#ff8a80">Same DEVICE — other wallets ('+fr.didWallets.length+')</div>'+fr.didWallets.map(function(w){return '<div class="wd-row" data-acct="'+esc(w.address)+'" style="cursor:pointer"><span class="addr mono" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;color:#ffb3ac;font-size:11px">'+esc(w.address)+'</span><span class="meta">'+w.claims+'×</span>'+(w.banned?'<span style="color:#ff6258;font-size:10px;font-family:monospace">BANNED</span>':'')+'<span class="bal" style="color:#c2f64a;font-family:monospace">$'+(+w.balanceUsd||0).toFixed(2)+'</span></div>';}).join('');}if(fr.ipWallets&&fr.ipWallets.length){h+='<div class="amod-sec">Other wallets on this IP ('+fr.ipWallets.length+')</div>'+fr.ipWallets.map(function(w){return '<div class="wd-row" data-acct="'+esc(w.address)+'" style="cursor:pointer"><span class="addr mono" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;color:#cdd3da;font-size:11px">'+esc(w.address)+'</span><span class="meta" style="color:#5c656f;font-family:monospace;font-size:11px">'+w.claims+'×</span>'+(w.banned?'<span style="color:#ff6258;font-size:10px;font-family:monospace">BANNED</span>':'')+'<span class="bal" style="color:#c2f64a;font-family:monospace">$'+(+w.balanceUsd||0).toFixed(2)+'</span></div>';}).join('');}if(d.lb){h+='<div class="amod-sec">Best trade this week</div>'+cell('ROE',((+d.lb.roe)>=0?'+':'')+(+d.lb.roe).toFixed(0)+'% on '+(d.lb.symbol||'?')+' '+(d.lb.side||''));}if(d.withdrawals&&d.withdrawals.length){h+='<div class="amod-sec">Withdrawals</div>'+d.withdrawals.map(function(w){var txid=(w.txid||'').replace(/[^0-9a-fA-Fx]/g,'');var c=w.status==='paid'?'#2ebd85':'#ffb347';return '<div class="wd-row"><span class="bal">$'+(+w.amountUsd||0).toFixed(2)+'</span><span style="font-family:monospace;font-size:11px;color:'+c+'">'+w.status+'</span>'+(txid?'<a href="https://bscscan.com/tx/'+txid+'" target="_blank" rel="noopener" style="margin-left:auto;color:#c2f64a">tx</a>':'<span class="meta" style="margin-left:auto">'+ago(w.ts)+'</span>')+'</div>';}).join('');}b.innerHTML=h;loadEarnings(d.address);Array.prototype.forEach.call(b.querySelectorAll('[data-acct]'),function(row){row.addEventListener('click',function(){openAcct(row.getAttribute('data-acct'));});});var nt=document.getElementById('amNote');if(nt)nt.value=d.note||'';if(um0)um0.value=d.msg||'';if(ms0)ms0.textContent=d.msg?('Message active'+(d.msgSeen?' · read by user':' · not read yet')):'No message set';if(banBtn){banBtn.style.display='';banBtn.textContent=d.banned?'Unban wallet':'Ban from faucet';banBtn.setAttribute('data-banned',d.banned?'1':'0');banBtn.classList.toggle('danger',!d.banned);}}function openAcct(a){var mo=document.getElementById('acctModal');if(!mo)return;mo.setAttribute('data-a',a);document.getElementById('amAddr').textContent=a;document.getElementById('amMsg').textContent='';document.getElementById('amBody').innerHTML='<div class="amod-msg">loading…</div>';mo.hidden=false;fetch('/api/reward/detail?address='+a+'&key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(renderAcct).catch(function(){document.getElementById('amBody').innerHTML='<div class="amod-msg">Could not load.</div>';});}function closeAcct(){var mo=document.getElementById('acctModal');if(mo)mo.hidden=true;}var amClose=document.getElementById('amClose');if(amClose)amClose.addEventListener('click',closeAcct);var amModal=document.getElementById('acctModal');if(amModal)amModal.addEventListener('click',function(e){if(e.target===amModal)closeAcct();});var amUnlock=document.getElementById('amUnlock');if(amUnlock)amUnlock.addEventListener('click',function(){var a=document.getElementById('acctModal').getAttribute('data-a');document.getElementById('amMsg').textContent='Unlocking…';fetch('/api/reward/unlock?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a})}).then(function(){document.getElementById('amMsg').textContent='Device unlocked.';loadRewards();});});var amRemove=document.getElementById('amRemove');if(amRemove)amRemove.addEventListener('click',function(){var a=document.getElementById('acctModal').getAttribute('data-a');if(!confirm('Remove '+a+'? Deletes the account, its device lock and leaderboard entry.'))return;document.getElementById('amMsg').textContent='Removing…';fetch('/api/reward/remove?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a})}).then(function(){closeAcct();loadRewards();});});function amAdjust(sign){var a=document.getElementById('acctModal').getAttribute('data-a');var amt=parseFloat((document.getElementById('amAdjAmt')||{}).value);if(!(amt>0)){document.getElementById('amMsg').textContent='Enter a USD amount.';return;}if(sign<0&&!confirm('Subtract $'+amt.toFixed(2)+' from this balance?'))return;document.getElementById('amMsg').textContent=sign>0?'Adding…':'Subtracting…';fetch('/api/reward/adjust?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a,deltaUsd:sign*amt})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){var inp=document.getElementById('amAdjAmt');if(inp)inp.value='';openAcct(a);loadRewards();}else{document.getElementById('amMsg').textContent='Failed: '+((d&&d.error)||'error');}});}var amAdjAdd=document.getElementById('amAdjAdd');if(amAdjAdd)amAdjAdd.addEventListener('click',function(){amAdjust(1);});var amAdjSub=document.getElementById('amAdjSub');if(amAdjSub)amAdjSub.addEventListener('click',function(){amAdjust(-1);});var amNoteSave=document.getElementById('amNoteSave');if(amNoteSave)amNoteSave.addEventListener('click',function(){var a=document.getElementById('acctModal').getAttribute('data-a'),nt=document.getElementById('amNote').value;document.getElementById('amMsg').textContent='Saving note…';fetch('/api/reward/note?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a,note:nt})}).then(function(){document.getElementById('amMsg').textContent='Note saved.';});});var amMsgSend=document.getElementById('amMsgSend');if(amMsgSend)amMsgSend.addEventListener('click',function(){var a=document.getElementById('acctModal').getAttribute('data-a'),m=document.getElementById('amUserMsg').value;document.getElementById('amMsg').textContent='Sending…';fetch('/api/reward/message?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a,message:m})}).then(function(){document.getElementById('amMsg').textContent=m.trim()?'Message sent — the user sees it on /rewards.':'Message cleared.';var ms=document.getElementById('amMsgState');if(ms)ms.textContent=m.trim()?'Message active · not read yet':'No message set';});});var amBan=document.getElementById('amBan');if(amBan)amBan.addEventListener('click',function(){var a=document.getElementById('acctModal').getAttribute('data-a'),banned=amBan.getAttribute('data-banned')==='1';if(!banned&&!confirm('Ban '+a+' from the faucet? Future claims are blocked (balance is kept for review).'))return;document.getElementById('amMsg').textContent=banned?'Lifting ban…':'Banning…';fetch('/api/reward/'+(banned?'unban':'ban')+'?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a})}).then(function(){document.getElementById('amMsg').textContent=banned?'Ban lifted.':'Wallet banned.';openAcct(a);loadRewards();});});var amLbBan=document.getElementById('amLbBan');if(amLbBan)amLbBan.addEventListener('click',function(){var a=document.getElementById('acctModal').getAttribute('data-a'),lbb=amLbBan.getAttribute('data-lbban')==='1';if(!lbb&&!confirm('Remove '+a+' from the leaderboard? Their entries are wiped and they can no longer compete.'))return;document.getElementById('amMsg').textContent=lbb?'Reinstating…':'Removing from leaderboard…';fetch('/api/reward/lbban?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a,unban:lbb?1:0})}).then(function(){document.getElementById('amMsg').textContent=lbb?'Reinstated to leaderboard.':'Removed from leaderboard.';openAcct(a);loadRewards();});});function set(id,v){var e=document.getElementById(id);if(e&&v!=null)e.value=v;}function val(id){return +document.getElementById(id).value;}function recalcHints(){var hb=document.getElementById('sHints');if(!hb)return;var amt=val('sAmount')||0,per=val('sPerDay')||0,cap=val('sCap')||0,cd=val('sCooldown')||0;var maxPerWallet=amt>0?Math.floor(per/amt):0;var budgetClaims=amt>0?Math.floor(cap/amt):0;var cdMin=cd/60;hb.innerHTML='Each wallet: up to <b>'+maxPerWallet+'</b> claims/day (= $'+per.toFixed(2)+').  Global budget <b>$'+cap.toFixed(0)+'</b> &asymp; <b>'+budgetClaims+'</b> claims/day total ('+(maxPerWallet>0?'&ge; '+Math.ceil(budgetClaims/maxPerWallet):'?')+' wallets).  Cooldown &asymp; <b>'+(cdMin%1===0?cdMin:cdMin.toFixed(1))+'</b> min between claims.';}
 function loadXpPromos(){var list=document.getElementById('xpPromoList');if(!list||list._init)return;list._init=1;var PR=[],xoff=0;/* xoff = server clock offset so windows are correct regardless of this machine's clock */
   function xnow(){return Date.now()+xoff;}
   function xesc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
@@ -3568,12 +4346,17 @@ function loadXpPromos(){var list=document.getElementById('xpPromoList');if(!list
     var b=e.target.closest('[data-act]');if(!b)return;var card=b.closest('.xp-promo'),i=+card.getAttribute('data-i'),act=b.getAttribute('data-act'),p=PR[i];
     if(act==='del'){PR.splice(i,1);draw();}else if(act==='start'&&p){p.startMs=xnow();p.endMs=xnow()+(p._hours||24)*3600000;p.enabled=true;var en=card.querySelector('[data-f="enabled"]');if(en)en.checked=true;var ss=card.querySelector('.xp-status');if(ss)ss.innerHTML=statusHtml(p);}});
   var addB=document.getElementById('xpAddBtn');if(addB)addB.onclick=function(){PR.push({id:'p'+Math.random().toString(36).slice(2,9),enabled:true,title:'Coin XP boost',coins:['BTC','ETH','SOL','XRP','HYPE'],xp:70,levMax:20,roeMin:50,winOnly:true,startMs:xnow(),endMs:xnow()+86400000,_hours:24});draw();};
-  var saveB=document.getElementById('xpSaveBtn');if(saveB)saveB.onclick=function(){var st=document.getElementById('xpSt');if(st)st.textContent='Saving…';var out=PR.map(function(p){return {id:p.id,enabled:!!p.enabled,title:p.title||'XP Promo',coins:p.coins||[],xp:+p.xp||0,levMax:+p.levMax||20,roeMin:+p.roeMin||0,winOnly:p.winOnly!==false,startMs:+p.startMs||0,endMs:+p.endMs||0,dayCap:700};});fetch('/api/admin/xppromos',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({promos:out})}).then(function(r){return r.json();}).then(function(d){if(st){st.textContent=d.ok?'Saved ✓ — live on homepage in ~15s':'Error';setTimeout(function(){st.textContent='';},3500);}}).catch(function(){if(st)st.textContent='Network error';});};
+  var saveB=document.getElementById('xpSaveBtn');if(saveB)saveB.onclick=function(){var st=document.getElementById('xpSt');if(st)st.textContent='Saving…';var out=PR.map(function(p){var ss=+p.startMs||0,ee=+p.endMs||0;if(p.enabled&&ee<=xnow()){ss=xnow();ee=xnow()+(p._hours||24)*3600000;p.startMs=ss;p.endMs=ee;}return {id:p.id,enabled:!!p.enabled,title:p.title||'XP Promo',coins:p.coins||[],xp:+p.xp||0,levMax:+p.levMax||20,roeMin:+p.roeMin||0,winOnly:p.winOnly!==false,startMs:ss,endMs:ee,dayCap:700};});fetch('/api/admin/xppromos',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({promos:out})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok)draw();if(st){st.textContent=d.ok?'Saved ✓ — live on homepage in ~15s':'Error';setTimeout(function(){st.textContent='';},3500);}}).catch(function(){if(st)st.textContent='Network error';});};
   fetch('/api/admin/xppromos').then(function(r){return r.json();}).then(function(d){if(d&&d.now)xoff=d.now-Date.now();PR=(d&&d.promos)||[];PR.forEach(function(p){p._hours=(p.startMs&&p.endMs&&p.endMs>p.startMs)?Math.max(1,Math.round((p.endMs-p.startMs)/3600000)):24;});draw();}).catch(function(){draw();});
   setInterval(function(){var tab=document.getElementById('tab-settings');if(!tab||tab.hidden)return;Array.prototype.forEach.call(list.querySelectorAll('.xp-promo'),function(card){var i=+card.getAttribute('data-i'),p=PR[i];if(!p)return;var ss=card.querySelector('.xp-status');if(ss)ss.innerHTML=statusHtml(p);});},1000);}
-function loadSettings(){fetch('/api/reward/config?key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(function(d){var c=d.config||{};document.getElementById('sEnabled').checked=!!c.enabled;var we=document.getElementById('sWdEnabled');if(we)we.checked=(c.wdEnabled!==false);var pe=document.getElementById('sPromoEnabled');if(pe)pe.checked=(c.promoEnabled!==false);set('sPromo',c.promoUsd!=null?c.promoUsd:0.3);var xe=document.getElementById('sExsignEnabled');if(xe)xe.checked=(c.exsignEnabled!==false);var ms=document.getElementById('sMissions');if(ms)ms.checked=(c.missionsEnabled!==false);set('sExsign',c.exsignUsd!=null?c.exsignUsd:3);var ro=document.getElementById('sRequireOnchain');if(ro)ro.checked=(c.requireOnchain!==false);set('sCap',c.capUsd);set('sAmount',c.amountUsd);set('sPerDay',c.perDayUsd);set('sMinWd',c.minWdUsd);set('sCooldown',c.cooldownS);set('sIpCap',c.ipCap);set('sDidCap',c.didCap||0);set('sMinClaimsWd',c.minClaimsToWd||0);set('sWelcome',c.welcomeUsd!=null?c.welcomeUsd:0.5);var pm=document.getElementById('sPauseMsg');if(pm)pm.value=c.pauseMsg||'';set('sPrize1',c.prize1);set('sPrize2',c.prize2);set('sPrize3',c.prize3);recalcHints();['sAmount','sPerDay','sCap','sCooldown'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',recalcHints);});});}var sSave=document.getElementById('sSave');if(sSave)sSave.addEventListener('click',function(){var b={enabled:document.getElementById('sEnabled').checked,wdEnabled:document.getElementById('sWdEnabled').checked,requireOnchain:document.getElementById('sRequireOnchain').checked,capUsd:val('sCap'),amountUsd:val('sAmount'),perDayUsd:val('sPerDay'),minWdUsd:val('sMinWd'),cooldownS:val('sCooldown'),ipCap:val('sIpCap'),didCap:val('sDidCap'),minClaimsToWd:val('sMinClaimsWd'),welcomeUsd:val('sWelcome'),promoUsd:val('sPromo'),promoEnabled:!document.getElementById('sPromoEnabled')||document.getElementById('sPromoEnabled').checked,exsignUsd:val('sExsign'),exsignEnabled:!document.getElementById('sExsignEnabled')||document.getElementById('sExsignEnabled').checked,missionsEnabled:!document.getElementById('sMissions')||document.getElementById('sMissions').checked,pauseMsg:document.getElementById('sPauseMsg').value,prize1:val('sPrize1'),prize2:val('sPrize2'),prize3:val('sPrize3')};var m=document.getElementById('sMsg');m.textContent='Saving…';fetch('/api/reward/config?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)}).then(function(r){return r.json();}).then(function(d){m.textContent=d.ok?'Saved ✓':'Error';setTimeout(function(){m.textContent='';},2500);});});var annL=document.getElementById('sAnnLevel'),annM=document.getElementById('sAnnMsg'),annB=document.getElementById('sAnnBtn'),annS=document.getElementById('sAnnSt');if(annB){fetch('/api/announce').then(function(r){return r.json();}).then(function(a){if(annL)annL.value=a.level||'';if(annM)annM.value=a.msg||'';}).catch(function(){});annB.addEventListener('click',function(){var bb={level:annL.value,msg:annM.value};annS.textContent='Saving…';fetch('/api/announce?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(bb)}).then(function(r){return r.json();}).then(function(d){annS.textContent=d.ok?(bb.level?'Live ✓':'Cleared ✓'):'Error';setTimeout(function(){annS.textContent='';},2500);}).catch(function(){annS.textContent='Network error';});});}var aiL=document.getElementById('sAiLimit'),aiB=document.getElementById('sAiSave'),aiSt=document.getElementById('sAiSt');if(aiB){fetch('/api/ai/admin?key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(function(d){if(aiL)aiL.value=(d&&d.globalLimit!=null)?d.globalLimit:10;}).catch(function(){});aiB.addEventListener('click',function(){if(aiSt)aiSt.textContent='Saving...';fetch('/api/ai/admin?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({globalLimit:+aiL.value})}).then(function(r){return r.json();}).then(function(d){if(aiSt){aiSt.textContent=d.ok?'Saved':'Error';setTimeout(function(){aiSt.textContent='';},2500);}}).catch(function(){if(aiSt)aiSt.textContent='Network error';});});}var opsB=document.getElementById('sOpsSave'),opsSt=document.getElementById('sOpsSt');if(opsB){fetch('/api/admin/opscfg?_='+Date.now()).then(function(r){return r.json();}).then(function(c){var e1=document.getElementById('sBrief');if(e1)e1.checked=(c.brief!==false);var e2=document.getElementById('sBriefHour');if(e2)e2.value=(c.briefHour!=null?c.briefHour:8);var e3=document.getElementById('sAlerts');if(e3)e3.checked=(c.alerts!==false);var e4=document.getElementById('sBigTrade');if(e4)e4.value=(c.bigTrade!=null?c.bigTrade:5000);}).catch(function(){});opsB.addEventListener('click',function(){if(opsSt)opsSt.textContent='Saving...';fetch('/api/admin/opscfg',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({brief:document.getElementById('sBrief').checked,briefHour:+document.getElementById('sBriefHour').value,alerts:document.getElementById('sAlerts').checked,bigTrade:+document.getElementById('sBigTrade').value})}).then(function(r){return r.json();}).then(function(d){if(opsSt){opsSt.textContent=d.ok?'Saved':'Error';setTimeout(function(){opsSt.textContent='';},2500);}}).catch(function(){if(opsSt)opsSt.textContent='Network error';});});}
+function loadSettings(){fetch('/api/reward/config?key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(function(d){var c=d.config||{};document.getElementById('sEnabled').checked=!!c.enabled;var we=document.getElementById('sWdEnabled');if(we)we.checked=(c.wdEnabled!==false);var pe=document.getElementById('sPromoEnabled');if(pe)pe.checked=(c.promoEnabled!==false);set('sPromo',c.promoUsd!=null?c.promoUsd:0.3);var xe=document.getElementById('sExsignEnabled');if(xe)xe.checked=(c.exsignEnabled!==false);var ms=document.getElementById('sMissions');if(ms)ms.checked=(c.missionsEnabled!==false);set('sExsign',c.exsignUsd!=null?c.exsignUsd:3);var ro=document.getElementById('sRequireOnchain');if(ro)ro.checked=(c.requireOnchain!==false);set('sCap',c.capUsd);set('sAmount',c.amountUsd);set('sPerDay',c.perDayUsd);set('sMinWd',c.minWdUsd);set('sCooldown',c.cooldownS);set('sIpCap',c.ipCap);set('sDidCap',c.didCap||0);set('sMinClaimsWd',c.minClaimsToWd||0);set('sWelcome',c.welcomeUsd!=null?c.welcomeUsd:0.5);var pm=document.getElementById('sPauseMsg');if(pm)pm.value=c.pauseMsg||'';set('sPrize1',c.prize1);set('sPrize2',c.prize2);set('sPrize3',c.prize3);var LBP={roe:c.lbRoe||[10,6,4,3,2],wr:c.lbWr||[35,18,10,7,5],xp:c.lbXp||[10,8,6,4,2]};[['roe','sRoe'],['wr','sWr'],['xp','sXp']].forEach(function(p){for(var i=0;i<5;i++)set(p[1]+(i+1),LBP[p[0]][i]);});recalcHints();['sAmount','sPerDay','sCap','sCooldown'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',recalcHints);});});}var sSave=document.getElementById('sSave');if(sSave)sSave.addEventListener('click',function(){var b={enabled:document.getElementById('sEnabled').checked,wdEnabled:document.getElementById('sWdEnabled').checked,requireOnchain:document.getElementById('sRequireOnchain').checked,capUsd:val('sCap'),amountUsd:val('sAmount'),perDayUsd:val('sPerDay'),minWdUsd:val('sMinWd'),cooldownS:val('sCooldown'),ipCap:val('sIpCap'),didCap:val('sDidCap'),minClaimsToWd:val('sMinClaimsWd'),welcomeUsd:val('sWelcome'),promoUsd:val('sPromo'),promoEnabled:!document.getElementById('sPromoEnabled')||document.getElementById('sPromoEnabled').checked,exsignUsd:val('sExsign'),exsignEnabled:!document.getElementById('sExsignEnabled')||document.getElementById('sExsignEnabled').checked,missionsEnabled:!document.getElementById('sMissions')||document.getElementById('sMissions').checked,pauseMsg:document.getElementById('sPauseMsg').value,prize1:val('sPrize1'),prize2:val('sPrize2'),prize3:val('sPrize3'),lbRoe:[val('sRoe1'),val('sRoe2'),val('sRoe3'),val('sRoe4'),val('sRoe5')],lbWr:[val('sWr1'),val('sWr2'),val('sWr3'),val('sWr4'),val('sWr5')],lbXp:[val('sXp1'),val('sXp2'),val('sXp3'),val('sXp4'),val('sXp5')]};var m=document.getElementById('sMsg');m.textContent='Saving…';fetch('/api/reward/config?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)}).then(function(r){return r.json();}).then(function(d){m.textContent=d.ok?'Saved ✓':'Error';setTimeout(function(){m.textContent='';},2500);});});var annL=document.getElementById('sAnnLevel'),annM=document.getElementById('sAnnMsg'),annB=document.getElementById('sAnnBtn'),annS=document.getElementById('sAnnSt');if(annB){fetch('/api/announce').then(function(r){return r.json();}).then(function(a){if(annL)annL.value=a.level||'';if(annM)annM.value=a.msg||'';}).catch(function(){});annB.addEventListener('click',function(){var bb={level:annL.value,msg:annM.value};annS.textContent='Saving…';fetch('/api/announce?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(bb)}).then(function(r){return r.json();}).then(function(d){annS.textContent=d.ok?(bb.level?'Live ✓':'Cleared ✓'):'Error';setTimeout(function(){annS.textContent='';},2500);}).catch(function(){annS.textContent='Network error';});});}var aiL=document.getElementById('sAiLimit'),aiB=document.getElementById('sAiSave'),aiSt=document.getElementById('sAiSt');if(aiB){fetch('/api/ai/admin?key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(function(d){if(aiL)aiL.value=(d&&d.globalLimit!=null)?d.globalLimit:10;}).catch(function(){});aiB.addEventListener('click',function(){if(aiSt)aiSt.textContent='Saving...';fetch('/api/ai/admin?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({globalLimit:+aiL.value})}).then(function(r){return r.json();}).then(function(d){if(aiSt){aiSt.textContent=d.ok?'Saved':'Error';setTimeout(function(){aiSt.textContent='';},2500);}}).catch(function(){if(aiSt)aiSt.textContent='Network error';});});}var opsB=document.getElementById('sOpsSave'),opsSt=document.getElementById('sOpsSt');if(opsB){fetch('/api/admin/opscfg?_='+Date.now()).then(function(r){return r.json();}).then(function(c){var e1=document.getElementById('sBrief');if(e1)e1.checked=(c.brief!==false);var e2=document.getElementById('sBriefHour');if(e2)e2.value=(c.briefHour!=null?c.briefHour:8);var e3=document.getElementById('sAlerts');if(e3)e3.checked=(c.alerts!==false);var e4=document.getElementById('sBigTrade');if(e4)e4.value=(c.bigTrade!=null?c.bigTrade:5000);}).catch(function(){});opsB.addEventListener('click',function(){if(opsSt)opsSt.textContent='Saving...';fetch('/api/admin/opscfg',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({brief:document.getElementById('sBrief').checked,briefHour:+document.getElementById('sBriefHour').value,alerts:document.getElementById('sAlerts').checked,bigTrade:+document.getElementById('sBigTrade').value})}).then(function(r){return r.json();}).then(function(d){if(opsSt){opsSt.textContent=d.ok?'Saved':'Error';setTimeout(function(){opsSt.textContent='';},2500);}}).catch(function(){if(opsSt)opsSt.textContent='Network error';});});}
 var calT=document.getElementById('sCalEv'),calB=document.getElementById('sCalSave'),calS=document.getElementById('sCalSt');if(calB&&calT){var NL=String.fromCharCode(10);fetch('/api/calendar/admin').then(function(r){return r.json();}).then(function(d){if(d&&d.events&&d.events.length)calT.value=d.events.map(function(e){return e.d+' | '+e.title+(e.desc?' | '+e.desc:'')+((+e.impact&&+e.impact!==2)?' | '+e.impact:'');}).join(NL);}).catch(function(){});calB.addEventListener('click',function(){var evs=(calT.value||'').split(NL).map(function(l){var p=l.split('|').map(function(x){return x.trim();});if(!p[0]||!p[1])return null;return {d:p[0],title:p[1],desc:p[2]||'',impact:+(p[3]||2)||2};}).filter(Boolean);if(calS)calS.textContent='Saving...';fetch('/api/calendar/admin',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({events:evs})}).then(function(r){return r.json();}).then(function(d){if(calS){calS.textContent=d.ok?('Saved '+d.count+' ✓'):'Error';setTimeout(function(){calS.textContent='';},2500);}}).catch(function(){if(calS)calS.textContent='Network error';});});}
-  var supTab='active';function renderSup(d){var el=document.getElementById('supList');if(!el)return;var open=d.open||[],closed=d.closed||[],rp=d.replies||[];var setup=document.getElementById('supSetup');if(setup)setup.innerHTML=d.emailReady?'<span style="color:#2ebd85">Replies are sent from <b>support@marginpad.io</b> &#10003;</span>':'<span style="color:#ffb347">Email replies not set up yet — add the <b>RESEND_API_KEY</b> secret to send mail (see CLAUDE.md). Messages still arrive here.</span>';var ta=document.getElementById('supTabActive'),tc=document.getElementById('supTabClosed');if(ta){ta.innerHTML='Active <span class="sup-ct">'+open.length+'</span>';ta.classList.toggle('on',supTab==='active');ta.onclick=function(){supTab='active';renderSup(d);};}if(tc){tc.innerHTML='Closed <span class="sup-ct">'+closed.length+'</span>';tc.classList.toggle('on',supTab==='closed');tc.onclick=function(){supTab='closed';renderSup(d);};}var nb=document.getElementById('supNewBtn'),cp=document.getElementById('supCompose');if(nb&&cp){nb.onclick=function(){cp.hidden=!cp.hidden;if(!cp.hidden)cp.querySelector('.sup-nemail').focus();};cp.querySelector('.sup-ncancel').onclick=function(){cp.hidden=true;};cp.querySelector('.sup-nsend').onclick=function(){var to=cp.querySelector('.sup-nemail').value.trim(),subj=cp.querySelector('.sup-nsubj').value,bd=cp.querySelector('.sup-nbody').value,st=cp.querySelector('.sup-nst');if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)){st.style.color='#ff6258';st.textContent='Enter a valid email';return;}if(!bd.trim()){st.style.color='#ff6258';st.textContent='Write a message first';return;}st.style.color='#9aa3ad';st.textContent='Sending…';fetch('/api/reward/reply?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({to:to,subject:subj,message:bd})}).then(function(r){return r.json();}).then(function(j){if(!j.ok){st.style.color=j.error==='email_not_configured'?'#ffb347':'#ff6258';st.textContent=j.error==='email_not_configured'?'Set RESEND_API_KEY first':('Failed: '+(j.error||j.detail||'error'));return;}fetch('/api/reward/support/new?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:to,message:bd})}).then(function(){st.style.color='#2ebd85';st.textContent='Sent ✓';cp.querySelector('.sup-nbody').value='';cp.querySelector('.sup-nemail').value='';supTab='active';cp.hidden=true;setTimeout(loadSupport,900);});}).catch(function(){st.style.color='#ff6258';st.textContent='Network error';});};}var list=supTab==='active'?open:closed;el.innerHTML=list.length?list.map(function(s){var rep=rp.filter(function(r){return r.email===s.email&&r.ts>=s.ts;}).sort(function(a,b){return b.ts-a.ts;})[0];var badge=rep?'<span class="sup-badge">&#10003; replied '+ago(rep.ts)+' ago</span>':'';var mine=s.address==='admin';var act=supTab==='active'?'<div class="sup-reply"><input class="sup-subj" value="Re: your message to MarginPad"><textarea class="sup-body" placeholder="Write your reply — sent from support@marginpad.io"></textarea><div class="sup-rbtn"><button class="sbtn sup-send" data-to="'+esc(s.email||'')+'">Send reply</button><button class="sbtn ghost sup-close" data-id="'+s.id+'">Close ticket</button><span class="smsg sup-st"></span>'+badge+'</div></div>':'<div class="sup-rbtn" style="margin-top:10px"><button class="sbtn ghost sup-reopen" data-id="'+s.id+'">Reopen</button>'+badge+'</div>';return '<div class="sup-item'+(supTab==='closed'?' sup-done':'')+'"><div class="sup-h"><span class="sup-email">'+esc(s.email||'(no email left)')+'</span>'+(mine?'<span class="sup-mine">you started</span>':'')+'<span class="meta" style="margin-left:auto">'+ago(s.ts)+' ago</span></div>'+(mine?'':(s.address?'<div class="sup-addr">'+esc(s.address)+'</div>':''))+'<div class="sup-msg">'+esc(s.message||'')+'</div>'+act+'</div>';}).join(''):'<div class="empty">'+(supTab==='active'?'no open tickets — all caught up':'no closed tickets')+'</div>';Array.prototype.forEach.call(el.querySelectorAll('.sup-send'),function(btn){btn.addEventListener('click',function(){var item=btn.closest('.sup-item'),to=btn.getAttribute('data-to'),subj=item.querySelector('.sup-subj').value,bd=item.querySelector('.sup-body').value,st=item.querySelector('.sup-st');if(!to){st.style.color='#ff6258';st.textContent='No email on file';return;}if(!bd.trim()){st.style.color='#ff6258';st.textContent='Write a message first';return;}btn.disabled=true;st.style.color='#9aa3ad';st.textContent='Sending…';fetch('/api/reward/reply?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({to:to,subject:subj,message:bd})}).then(function(r){return r.json();}).then(function(j){btn.disabled=false;if(j.ok){st.style.color='#2ebd85';st.textContent='Sent ✓';item.querySelector('.sup-body').value='';setTimeout(loadSupport,1300);}else if(j.error==='email_not_configured'){st.style.color='#ffb347';st.textContent='Set RESEND_API_KEY first';}else{st.style.color='#ff6258';st.textContent='Failed: '+(j.error||j.detail||'error');}}).catch(function(){btn.disabled=false;st.style.color='#ff6258';st.textContent='Network error';});});});Array.prototype.forEach.call(el.querySelectorAll('.sup-close'),function(btn){btn.addEventListener('click',function(){btn.disabled=true;fetch('/api/reward/support/close?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:btn.getAttribute('data-id')})}).then(function(r){return r.json();}).then(function(){loadSupport();});});});Array.prototype.forEach.call(el.querySelectorAll('.sup-reopen'),function(btn){btn.addEventListener('click',function(){btn.disabled=true;fetch('/api/reward/support/close?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:btn.getAttribute('data-id'),reopen:1})}).then(function(r){return r.json();}).then(function(){loadSupport();});});});}function loadSupport(){fetch('/api/reward/support?key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(renderSup).catch(function(){});}
+  var supTab='active';function renderSup(d){var el=document.getElementById('supList');if(!el)return;var open=d.open||[],closed=d.closed||[],rp=d.replies||[];var setup=document.getElementById('supSetup');if(setup)setup.innerHTML=d.emailReady?'<span style="color:#2ebd85">Replies are sent from <b>support@marginpad.io</b> &#10003;</span>':'<span style="color:#ffb347">Email replies not set up yet — add the <b>RESEND_API_KEY</b> secret to send mail (see CLAUDE.md). Messages still arrive here.</span>';var ta=document.getElementById('supTabActive'),tc=document.getElementById('supTabClosed');if(ta){ta.innerHTML='Active <span class="sup-ct">'+open.length+'</span>';ta.classList.toggle('on',supTab==='active');ta.onclick=function(){supTab='active';renderSup(d);};}if(tc){tc.innerHTML='Closed <span class="sup-ct">'+closed.length+'</span>';tc.classList.toggle('on',supTab==='closed');tc.onclick=function(){supTab='closed';renderSup(d);};}var nb=document.getElementById('supNewBtn'),cp=document.getElementById('supCompose');if(nb&&cp){nb.onclick=function(){cp.hidden=!cp.hidden;if(!cp.hidden)cp.querySelector('.sup-nemail').focus();};cp.querySelector('.sup-ncancel').onclick=function(){cp.hidden=true;};cp.querySelector('.sup-nsend').onclick=function(){var to=cp.querySelector('.sup-nemail').value.trim(),subj=cp.querySelector('.sup-nsubj').value,bd=cp.querySelector('.sup-nbody').value,st=cp.querySelector('.sup-nst');if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)){st.style.color='#ff6258';st.textContent='Enter a valid email';return;}if(!bd.trim()){st.style.color='#ff6258';st.textContent='Write a message first';return;}st.style.color='#9aa3ad';st.textContent='Sending…';fetch('/api/reward/reply?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({to:to,subject:subj,message:bd})}).then(function(r){return r.json();}).then(function(j){if(!j.ok){st.style.color=j.error==='email_not_configured'?'#ffb347':'#ff6258';st.textContent=j.error==='email_not_configured'?'Set RESEND_API_KEY first':('Failed: '+(j.error||j.detail||'error'));return;}fetch('/api/reward/support/new?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:to,message:bd})}).then(function(){st.style.color='#2ebd85';st.textContent='Sent ✓';cp.querySelector('.sup-nbody').value='';cp.querySelector('.sup-nemail').value='';supTab='active';cp.hidden=true;setTimeout(loadSupport,900);});}).catch(function(){st.style.color='#ff6258';st.textContent='Network error';});};}var list=supTab==='active'?open:closed;el.innerHTML=list.length?list.map(function(s){var rep=rp.filter(function(r){return r.email===s.email&&r.ts>=s.ts;}).sort(function(a,b){return b.ts-a.ts;})[0];var badge=rep?'<span class="sup-badge">&#10003; replied '+ago(rep.ts)+' ago</span>':'';var mine=s.address==='admin';var act=supTab==='active'?'<div class="sup-reply"><input class="sup-subj" value="Re: your message to MarginPad"><textarea class="sup-body" placeholder="Write your reply — sent from support@marginpad.io"></textarea><div class="sup-rbtn"><button class="sbtn sup-send" data-to="'+esc(s.email||'')+'">Send reply</button><button class="sbtn ghost sup-close" data-id="'+s.id+'">Close ticket</button><span class="smsg sup-st"></span>'+badge+'</div></div>':'<div class="sup-rbtn" style="margin-top:10px"><button class="sbtn ghost sup-reopen" data-id="'+s.id+'">Reopen</button>'+badge+'</div>';return '<div class="sup-item'+(supTab==='closed'?' sup-done':'')+'"><div class="sup-h"><span class="sup-email">'+esc(s.email||'(no email left)')+'</span>'+(mine?'<span class="sup-mine">you started</span>':'')+'<span class="meta" style="margin-left:auto">'+ago(s.ts)+' ago</span></div>'+(mine?'':(s.address?'<div class="sup-addr">'+esc(s.address)+'</div>':''))+'<div class="sup-msg">'+esc(s.message||'')+'</div>'+act+'</div>';}).join(''):'<div class="empty">'+(supTab==='active'?'no open tickets — all caught up':'no closed tickets')+'</div>';Array.prototype.forEach.call(el.querySelectorAll('.sup-send'),function(btn){btn.addEventListener('click',function(){var item=btn.closest('.sup-item'),to=btn.getAttribute('data-to'),subj=item.querySelector('.sup-subj').value,bd=item.querySelector('.sup-body').value,st=item.querySelector('.sup-st');if(!to){st.style.color='#ff6258';st.textContent='No email on file';return;}if(!bd.trim()){st.style.color='#ff6258';st.textContent='Write a message first';return;}btn.disabled=true;st.style.color='#9aa3ad';st.textContent='Sending…';fetch('/api/reward/reply?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({to:to,subject:subj,message:bd})}).then(function(r){return r.json();}).then(function(j){btn.disabled=false;if(j.ok){st.style.color='#2ebd85';st.textContent='Sent ✓';item.querySelector('.sup-body').value='';setTimeout(loadSupport,1300);}else if(j.error==='email_not_configured'){st.style.color='#ffb347';st.textContent='Set RESEND_API_KEY first';}else{st.style.color='#ff6258';st.textContent='Failed: '+(j.error||j.detail||'error');}}).catch(function(){btn.disabled=false;st.style.color='#ff6258';st.textContent='Network error';});});});Array.prototype.forEach.call(el.querySelectorAll('.sup-close'),function(btn){btn.addEventListener('click',function(){btn.disabled=true;fetch('/api/reward/support/close?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:btn.getAttribute('data-id')})}).then(function(r){return r.json();}).then(function(){loadSupport();});});});Array.prototype.forEach.call(el.querySelectorAll('.sup-reopen'),function(btn){btn.addEventListener('click',function(){btn.disabled=true;fetch('/api/reward/support/close?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:btn.getAttribute('data-id'),reopen:1})}).then(function(r){return r.json();}).then(function(){loadSupport();});});});}var supView=null,supData=null;
+function loadSupport(){fetch('/api/reward/support/convs?key='+encodeURIComponent(key)+'&_='+Date.now()).then(function(r){return r.json();}).then(function(d){supData=d;renderSup2();}).catch(function(){});}
+function supBubble(m){var mine=m.dir==='out';var body=(m.img?'<img src="'+esc(m.img)+'" class="scv-img">':'')+(m.body?'<div>'+esc(m.body)+'</div>':'');return '<div class="scv-row '+(mine?'out':'in')+'"><div class="scv-b">'+body+'</div><div class="scv-t">'+(mine?'You':'User')+' &middot; '+ago(m.ts)+' ago</div></div>';}
+function supClose(c,reopen){fetch('/api/reward/support/close?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({conv:c.conv,reopen:reopen})}).then(function(r){return r.json();}).then(function(){if(!reopen)supView=null;loadSupport();});}
+function wireSupCompose(){var nb=document.getElementById('supNewBtn'),cp=document.getElementById('supCompose');if(!nb||!cp||nb._w)return;nb._w=1;nb.onclick=function(){cp.hidden=!cp.hidden;if(!cp.hidden){var e=cp.querySelector('.sup-nemail');if(e)e.focus();}};var cc=cp.querySelector('.sup-ncancel');if(cc)cc.onclick=function(){cp.hidden=true;};var sn=cp.querySelector('.sup-nsend');if(sn)sn.onclick=function(){var to=cp.querySelector('.sup-nemail').value.trim(),subj=cp.querySelector('.sup-nsubj').value,bd=cp.querySelector('.sup-nbody').value,st=cp.querySelector('.sup-nst');if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)){st.style.color='#ff6258';st.textContent='Enter a valid email';return;}if(!bd.trim()){st.style.color='#ff6258';st.textContent='Write a message first';return;}st.style.color='#9aa3ad';st.textContent='Sending…';fetch('/api/reward/reply?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({to:to,subject:subj,message:bd})}).then(function(r){return r.json();}).then(function(j){if(!j.ok){st.style.color=j.error==='email_not_configured'?'#ffb347':'#ff6258';st.textContent=j.error==='email_not_configured'?'Set RESEND_API_KEY first':('Failed: '+(j.error||j.detail||'error'));return;}fetch('/api/reward/support/new?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:to,message:bd})}).then(function(){st.style.color='#2ebd85';st.textContent='Sent ✓';cp.querySelector('.sup-nbody').value='';cp.querySelector('.sup-nemail').value='';cp.hidden=true;setTimeout(loadSupport,900);});}).catch(function(){st.style.color='#ff6258';st.textContent='Network error';});};}
+function renderSup2(){var el=document.getElementById('supList');if(!el||!supData)return;var convs=supData.conversations||[];var setup=document.getElementById('supSetup');if(setup)setup.innerHTML=supData.emailReady?'<span style="color:#2ebd85">Replies are sent from <b>support@marginpad.io</b> &#10003;</span>':'<span style="color:#ffb347">Email replies not set up — add the <b>RESEND_API_KEY</b> secret. Messages still arrive here.</span>';var ta=document.getElementById('supTabActive'),tc=document.getElementById('supTabClosed');if(ta)ta.style.display='none';if(tc)tc.style.display='none';wireSupCompose();if(supView){var c=convs.filter(function(x){return x.conv===supView;})[0];if(!c){supView=null;renderSup2();return;}var bubbles=c.messages.map(supBubble).join('');el.innerHTML='<div class="scv"><div class="scv-top"><button class="sbtn ghost scv-back">&larr; All tickets</button><span class="scv-email">'+esc(c.email||'(no email left)')+'</span><span class="scv-status '+(c.closed?'closed':'open')+'">'+(c.closed?'CLOSED':'OPEN')+'</span>'+(c.closed?'<button class="sbtn ghost scv-reopen">Reopen</button>':'<button class="sbtn ghost danger scv-close">Close ticket</button>')+'</div><div class="scv-msgs">'+(bubbles||'<div class="empty">no messages</div>')+'</div>'+(c.closed?'<div class="scv-arch">&#128274; This ticket is closed — the user can only view it now.</div>':(c.email?'<div class="scv-reply"><textarea class="scv-body" placeholder="Type your reply — sent by email from support@marginpad.io"></textarea><div class="scv-rb"><button class="sbtn scv-send">Send reply</button><span class="smsg scv-st"></span></div></div>':'<div class="scv-arch">No email on file — can&#39;t reply here.</div>'))+'</div>';var bk=el.querySelector('.scv-back');if(bk)bk.onclick=function(){supView=null;renderSup2();};var cl=el.querySelector('.scv-close');if(cl)cl.onclick=function(){cl.disabled=true;supClose(c,0);};var ro=el.querySelector('.scv-reopen');if(ro)ro.onclick=function(){ro.disabled=true;supClose(c,1);};var sd=el.querySelector('.scv-send');if(sd)sd.onclick=function(){var bd=el.querySelector('.scv-body').value,st=el.querySelector('.scv-st');if(!bd.trim()){st.style.color='#ff6258';st.textContent='Write a reply first';return;}sd.disabled=true;st.style.color='#9aa3ad';st.textContent='Sending…';fetch('/api/reward/reply?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({to:c.email,subject:'Re: your message to MarginPad',message:bd,conv:c.conv})}).then(function(r){return r.json();}).then(function(j){sd.disabled=false;if(j.ok){st.style.color='#2ebd85';st.textContent='Sent &#10003;';setTimeout(loadSupport,1000);}else{st.style.color=j.error==='email_not_configured'?'#ffb347':'#ff6258';st.textContent=j.error==='email_not_configured'?'Set RESEND_API_KEY first':('Failed: '+(j.error||j.detail||'error'));}}).catch(function(){sd.disabled=false;st.style.color='#ff6258';st.textContent='Network error';});};var mm=el.querySelector('.scv-msgs');if(mm)mm.scrollTop=mm.scrollHeight;return;}var open=convs.filter(function(c){return !c.closed;}),closed=convs.filter(function(c){return c.closed;});function cardHtml(c){var av=((c.email||'?').replace(/[^a-zA-Z0-9]/g,'').slice(0,1)||'?').toUpperCase();var un=c.messages.length&&c.messages[c.messages.length-1].dir==='in'&&!c.closed;return '<div class="scv-card'+(c.closed?' closed':'')+'" data-conv="'+esc(c.conv)+'"><div class="scv-cav">'+esc(av)+'</div><div class="scv-ci"><div class="scv-cn">'+esc(c.email||'(no email left)')+(un?' <span class="scv-cdot" title="new user message"></span>':'')+'</div><div class="scv-cm">'+esc(c.title||'')+'</div></div><div class="scv-cmeta">'+c.messages.length+' msg<br>'+ago(c.lastTs)+' ago</div></div>';}el.innerHTML=(open.length?'<div class="scv-sec">Open tickets <span class="sup-ct">'+open.length+'</span></div>'+open.map(cardHtml).join(''):'<div class="empty">no open tickets — all caught up &#10003;</div>')+(closed.length?'<div class="scv-sec">Closed <span class="sup-ct">'+closed.length+'</span></div>'+closed.map(cardHtml).join(''):'');Array.prototype.forEach.call(el.querySelectorAll('[data-conv]'),function(card){card.addEventListener('click',function(){supView=card.getAttribute('data-conv');renderSup2();});});}
   var rwdAccounts=[],rwdQuery='',rwdSort='new',rwdFilter='all',rwdWired=false;
   function rwdRisk(x){var s=0;if(x.banned)s+=100;if(x.sameDid>1)s+=55;if(x.sameIp>2)s+=40;else if(x.sameIp>1)s+=20;var ageH=x.created?(Date.now()-x.created)/3600000:999;if(ageH<1&&x.claims>=5)s+=30;var cph=ageH>0.05?x.claims/ageH:x.claims;if(cph>9)s+=25;return s;}
   function rwdFlagsArr(x){var f=[];if(x.banned)f.push('banned');if(x.sameDid>1)f.push(x.sameDid+'@DEV');if(x.sameIp>1)f.push(x.sameIp+'@IP');var ageH=x.created?(Date.now()-x.created)/3600000:999;if(ageH<1&&x.claims>=5)f.push('new·'+x.claims+'×');var cph=ageH>0.05?x.claims/ageH:x.claims;if(cph>9)f.push(cph.toFixed(0)+'/hr');return f;}
@@ -3586,7 +4369,7 @@ var calT=document.getElementById('sCalEv'),calB=document.getElementById('sCalSav
   function loadLbHist(){var sel=document.getElementById('rwdLbHistSel'),box=document.getElementById('rwdLbHist');if(!sel||!box)return;fetch('/api/reward/lbhistory?key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(function(d){var weeks=(d&&d.weeks)||[];if(!weeks.length){box.innerHTML='<div class="empty">no leaderboard history yet</div>';return;}var O={month:'short',day:'numeric'};function lbl(w){var s=new Date(w.weekStart),e=new Date(w.weekEnd-1);return (w.current?'This week · ':'')+s.toLocaleDateString('en-US',O)+' – '+e.toLocaleDateString('en-US',O)+' ('+w.entries+')';}sel.innerHTML=weeks.map(function(w,i){return '<option value="'+i+'">'+lbl(w)+'</option>';}).join('');function renderWk(i){var w=weeks[i];if(!w){box.innerHTML='';return;}var medal=['🥇','🥈','🥉'];box.innerHTML=w.top.length?w.top.map(function(r,k){var who=r.who||'anon';var pre=/…$/.test(who)?'':'@';return '<div class="wd-row"><span style="width:34px;flex:0 0 auto">'+(medal[k]||((k+1)+'.'))+'</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis">'+pre+esc(who)+'</span><span class="mono" style="color:'+((+r.roe>=0)?'#2ebd85':'#ff6258')+';font-weight:700">'+((+r.roe>=0?'+':'')+(+r.roe).toFixed(0))+'%</span><span class="muted" style="margin-left:10px;flex:0 0 auto">'+esc(r.symbol||'')+' '+(r.side||'')+'</span></div>';}).join(''):'<div class="empty">no entries this week</div>';}renderWk(0);sel.onchange=function(){renderWk(+this.value);};}).catch(function(){box.innerHTML='<div class="empty">could not load history</div>';});}
 var PROMO_REJ_KEY='mp_promo_reject';
   (function(){var ta=document.getElementById('promoRejMsg'),bt=document.getElementById('promoRejSave'),st=document.getElementById('promoRejSt');if(!ta||ta._wired)return;ta._wired=1;try{ta.value=localStorage.getItem(PROMO_REJ_KEY)||'';}catch(e){}if(bt)bt.addEventListener('click',function(){try{localStorage.setItem(PROMO_REJ_KEY,ta.value||'');}catch(e){}if(st){st.textContent='Saved — used for every reject';st.style.color='#2ebd85';setTimeout(function(){st.textContent='';},2500);}});})();
-  function loadPromo(){var el=document.getElementById('rwdPromo');if(!el)return;fetch('/api/reward/promo/list?key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(function(d){var pend=(d&&d.pending)||[],dec=(d&&d.decided)||[];var amt=(+((d&&d.promoUsd)||1)).toFixed(2);if(!pend.length&&!dec.length){el.innerHTML='<div class="empty">no promo submissions yet</div>';return;}var nowT=Date.now();function who(p){return p.username?('@'+esc(p.username)):(p.email?esc(p.email):esc(String(p.address||'').replace(/^u:/,'').slice(0,10)));}function plat(p){return p.platform==='x'?'<span style="font-weight:700;color:#e9e7df;flex:0 0 46px">X</span>':'<span style="font-weight:700;color:#5ad8e6;flex:0 0 46px">TikTok</span>';}function lnk(p){return '<a href="'+esc(p.url)+'" target="_blank" rel="noopener" style="color:#9fe0ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0">'+esc(String(p.url||'').replace(/^https?:\\/\\//,''))+'</a>';}var html=pend.map(function(p){var age=nowT-p.ts,h=Math.floor(age/3600000),ready=age>=86400000;var abtn=ready?'<button class="pay" data-pra="'+esc(p.id)+'" title="Approve · $'+amt+'" style="color:#41e3a3;border-color:rgba(65,227,163,.5);width:36px;padding:7px 0;font-size:16px;font-weight:800;line-height:1;flex:0 0 auto">\u2713</button>':'<button class="pay" data-pra="'+esc(p.id)+'" data-force="1" title="Approve now (under 24h live) · $'+amt+'" style="color:#ffb347;border-color:rgba(255,179,71,.5);width:36px;padding:7px 0;font-size:16px;font-weight:800;line-height:1;flex:0 0 auto">\u2713</button>';return '<div class="wd-row">'+plat(p)+'<span class="addr mono" style="color:'+addrColor(p.address)+';flex:0 1 280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+who(p)+'</span>'+lnk(p)+'<span class="meta">'+(h<1?'now':h+'h ago')+'</span>'+abtn+'<button class="pay" data-prr="'+esc(p.id)+'" title="Reject" style="color:#ff8a80;border-color:rgba(255,98,88,.5);width:36px;padding:7px 0;font-size:16px;font-weight:800;line-height:1;flex:0 0 auto">\u2715</button></div>';}).join('');html+=dec.slice(0,8).map(function(p){var st=p.status==='approved'?'<span class="meta" style="color:#2ebd85">approved +$'+(+p.amount||0).toFixed(2)+'</span>':'<span class="meta" style="color:#ff8a80">rejected'+(p.note?' · '+esc(p.note):'')+'</span>';return '<div class="wd-row" style="opacity:.55">'+plat(p)+'<span class="addr mono" style="flex:0 1 280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+who(p)+'</span>'+lnk(p)+st+'</div>';}).join('');el.innerHTML=html;Array.prototype.forEach.call(el.querySelectorAll('[data-pra]'),function(b){b.addEventListener('click',function(){var force=b.getAttribute('data-force')==='1';if(!confirm((force?'Approve NOW (post is under 24h live)? ':'Approve? ')+'$'+amt+' lands on their balance. Did you open the post and check it mentions MarginPad?'))return;b.textContent='…';fetch('/api/reward/promo/review?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:b.getAttribute('data-pra'),action:'approve',force:force})}).then(function(r){return r.json();}).then(function(j){if(j&&j.error)alert(j.error==='too_early'?'Less than 24h old — use the amber approve-now button.':j.error);loadPromo();});});});Array.prototype.forEach.call(el.querySelectorAll('[data-prr]'),function(b){b.addEventListener('click',function(){var saved='';try{saved=localStorage.getItem(PROMO_REJ_KEY)||'';}catch(e){}var note=prompt('Reject reason (the user sees this — edit if needed, or save a default above):',saved);if(note===null)return;b.textContent='…';fetch('/api/reward/promo/review?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:b.getAttribute('data-prr'),action:'reject',note:note})}).then(function(){loadPromo();});});});}).catch(function(){});}
+  function loadPromo(){var el=document.getElementById('rwdPromo');if(!el)return;fetch('/api/reward/promo/list?key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(function(d){var pend=(d&&d.pending)||[],dec=(d&&d.decided)||[];var amt=(+((d&&d.promoUsd)||1)).toFixed(2);if(!pend.length&&!dec.length){el.innerHTML='<div class="empty">no promo submissions yet</div>';return;}var nowT=Date.now();function who(p){return p.username?('@'+esc(p.username)):(p.email?esc(p.email):esc(String(p.address||'').replace(/^u:/,'').slice(0,10)));}function plat(p){return p.platform==='x'?'<span style="font-weight:700;color:#e9e7df;flex:0 0 46px">X</span>':'<span style="font-weight:700;color:#5ad8e6;flex:0 0 46px">TikTok</span>';}function lnk(p){return '<a href="'+esc(p.url)+'" target="_blank" rel="noopener" style="color:#9fe0ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0">'+esc(String(p.url||'').replace(/^https?:\\/\\//,''))+'</a>';}var html=pend.map(function(p){var age=nowT-p.ts,h=Math.floor(age/3600000),ready=age>=86400000;var abtn=ready?'<button class="pay" data-pra="'+esc(p.id)+'" data-plat="'+esc(p.platform)+'" title="Approve · $'+amt+'" style="color:#41e3a3;border-color:rgba(65,227,163,.5);width:36px;padding:7px 0;font-size:16px;font-weight:800;line-height:1;flex:0 0 auto">\u2713</button>':'<button class="pay" data-pra="'+esc(p.id)+'" data-plat="'+esc(p.platform)+'" data-force="1" title="Approve now (under 24h live) · $'+amt+'" style="color:#ffb347;border-color:rgba(255,179,71,.5);width:36px;padding:7px 0;font-size:16px;font-weight:800;line-height:1;flex:0 0 auto">\u2713</button>';return '<div class="wd-row">'+plat(p)+'<span class="addr mono" style="color:'+addrColor(p.address)+';flex:0 1 280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+who(p)+'</span>'+lnk(p)+'<span class="meta">'+(h<1?'now':h+'h ago')+'</span>'+abtn+'<button class="pay" data-prr="'+esc(p.id)+'" title="Reject" style="color:#ff8a80;border-color:rgba(255,98,88,.5);width:36px;padding:7px 0;font-size:16px;font-weight:800;line-height:1;flex:0 0 auto">\u2715</button></div>';}).join('');html+=dec.slice(0,8).map(function(p){var st=p.status==='approved'?'<span class="meta" style="color:#2ebd85">approved +$'+(+p.amount||0).toFixed(2)+'</span>':'<span class="meta" style="color:#ff8a80">rejected'+(p.note?' · '+esc(p.note):'')+'</span>';return '<div class="wd-row" style="opacity:.55">'+plat(p)+'<span class="addr mono" style="flex:0 1 280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+who(p)+'</span>'+lnk(p)+st+'</div>';}).join('');el.innerHTML=html;Array.prototype.forEach.call(el.querySelectorAll('[data-pra]'),function(b){b.addEventListener('click',function(){var force=b.getAttribute('data-force')==='1',plat=b.getAttribute('data-plat'),body={id:b.getAttribute('data-pra'),action:'approve',force:force};if(plat==='tiktok'){var v=prompt('TikTok views on this post? (pays $'+(d.promoTtRate||2)+' per 1000 views, max $'+(d.promoTtMax||1000)+')');if(v===null)return;v=Math.floor(+String(v).replace(/[^0-9]/g,''));if(!(v>0)){alert('Enter a view count.');return;}var pay=Math.min(v/1000*(d.promoTtRate||2),d.promoTtMax||1000);if(!confirm('Approve TikTok post — '+v.toLocaleString()+' views = $'+pay.toFixed(2)+'? Did you verify the post + view count?'))return;body.views=v;}else{if(!confirm((force?'Approve NOW (under 24h live)? ':'Approve? ')+'$'+(+(d.promoXUsd||0.15)).toFixed(2)+' lands on their balance. Did you check the post mentions MarginPad?'))return;}b.textContent='…';fetch('/api/reward/promo/review?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(j){if(j&&j.error)alert(j.error==='too_early'?'Less than 24h old — use the amber approve-now button.':j.error==='need_views'?'Enter the view count.':j.error);loadPromo();});});});Array.prototype.forEach.call(el.querySelectorAll('[data-prr]'),function(b){b.addEventListener('click',function(){var saved='';try{saved=localStorage.getItem(PROMO_REJ_KEY)||'';}catch(e){}var note=prompt('Reject reason (the user sees this — edit if needed, or save a default above):',saved);if(note===null)return;b.textContent='…';fetch('/api/reward/promo/review?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:b.getAttribute('data-prr'),action:'reject',note:note})}).then(function(){loadPromo();});});});}).catch(function(){});}
   var EXNAMES={bybit:'Bybit',binance:'Binance',okx:'OKX',bitget:'Bitget',kucoin:'KuCoin',gate:'Gate',mexc:'MEXC',kraken:'Kraken',cryptocom:'Crypto.com',coinbase:'Coinbase'};
   function loadExsign(){var el=document.getElementById('rwdExsign');if(!el)return;fetch('/api/reward/exsign/list?key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(function(d){var pend=(d&&d.pending)||[],dec=(d&&d.decided)||[];var amt=(+((d&&d.exsignUsd)||3)).toFixed(2);if(!pend.length&&!dec.length){el.innerHTML='<div class="empty">no exchange sign-ups yet</div>';return;}var nowT=Date.now();function who(p){return p.username?('@'+esc(p.username)):(p.email?esc(p.email):esc(String(p.address||'').replace(/^u:/,'').slice(0,10)));}function exn(p){return '<span style="font-weight:700;color:#f3d44a;flex:0 0 84px">'+esc(EXNAMES[p.exchange]||p.exchange)+'</span>';}function uidc(p){var lbl=p.exchange==='coinbase'?'NAME':'UID';return '<div style="display:flex;align-items:center;gap:8px;background:#0a0d11;border:1px solid #2b323b;border-radius:8px;padding:7px 10px;margin-top:8px"><span style="color:#7f8893;font-size:10px;font-family:Consolas,monospace;flex:0 0 auto;letter-spacing:.1em">'+lbl+'</span><span class="mono" style="color:#9fe0ff;font-size:14px;font-weight:700;flex:1;min-width:0;word-break:break-all;user-select:all;-webkit-user-select:all" title="'+(p.exchange==='coinbase'?'Coinbase account name / wallet / .base — match it in the Base referral list':'Exchange UID — check it in the affiliate dashboard')+'">'+esc(p.uid||'')+'</span><button class="pay xscopy" type="button" data-copy="'+esc(p.uid||'')+'" style="flex:0 0 auto;padding:4px 10px;font-size:11px;color:#9fe0ff;border-color:rgba(159,224,255,.4)">copy</button></div>';}var html=pend.map(function(p){var age=nowT-p.ts,h=Math.floor(age/3600000);return '<div style="border:1px solid #263041;border-radius:11px;padding:11px 12px;margin-bottom:9px;background:#0e1116"><div style="display:flex;align-items:center;gap:8px">'+exn(p)+'<span class="addr mono" style="color:'+addrColor(p.address)+';flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+who(p)+'</span><span class="meta" style="flex:0 0 auto">'+(h<1?'now':h+'h ago')+'</span><button class="pay" data-xsa="'+esc(p.id)+'" title="Approve · $'+amt+'" style="color:#41e3a3;border-color:rgba(65,227,163,.5);width:34px;padding:7px 0;font-size:16px;font-weight:800;line-height:1;flex:0 0 auto">✓</button><button class="pay" data-xsr="'+esc(p.id)+'" title="Reject" style="color:#ff8a80;border-color:rgba(255,98,88,.5);width:34px;padding:7px 0;font-size:16px;font-weight:800;line-height:1;flex:0 0 auto">✕</button></div>'+uidc(p)+'</div>';}).join('');html+=dec.slice(0,8).map(function(p){var ap=p.status==='approved';var st=ap?'<span style="flex:0 0 auto;font:800 11px Consolas,monospace;color:#04160e;background:#2ee6a8;border-radius:20px;padding:4px 12px;letter-spacing:.04em">&#10003; APPROVED +$'+(+p.amount||0).toFixed(2)+'</span>':'<span style="flex:0 0 auto;font:800 11px Consolas,monospace;color:#2a0b0b;background:#ff6b6b;border-radius:20px;padding:4px 12px;letter-spacing:.04em">&#10005; REJECTED</span>';var tint=ap?'border-color:rgba(46,230,168,.42);background:linear-gradient(180deg,rgba(46,230,168,.08),#0b0f0d)':'border-color:rgba(255,107,107,.4);background:linear-gradient(180deg,rgba(255,107,107,.07),#0f0b0b)';return '<div style="border:1px solid;'+tint+';border-radius:11px;padding:11px 12px;margin-bottom:9px"><div style="display:flex;align-items:center;gap:8px">'+exn(p)+'<span class="addr mono" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+who(p)+'</span>'+st+'</div>'+uidc(p)+(p.status==='rejected'&&p.note?'<div style="font-size:11px;color:#ff8a80;margin-top:6px">Reason: '+esc(p.note)+'</div>':'')+'</div>';}).join('');el.innerHTML=html;Array.prototype.forEach.call(el.querySelectorAll('[data-xsa]'),function(b){b.addEventListener('click',function(){if(!confirm('Approve? $'+amt+' lands on their balance. Did you find this UID as YOUR referral in the exchange affiliate dashboard?'))return;b.textContent='…';fetch('/api/reward/exsign/review?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:b.getAttribute('data-xsa'),action:'approve'})}).then(function(r){return r.json();}).then(function(j){if(j&&j.error)alert(j.error);loadExsign();});});});Array.prototype.forEach.call(el.querySelectorAll('[data-xsr]'),function(b){b.addEventListener('click',function(){var note=prompt('Reject reason (the user sees this):','We could not find this UID among our referrals. Make sure you registered through the link on marginpad.io/rewards.');if(note===null)return;b.textContent='…';fetch('/api/reward/exsign/review?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:b.getAttribute('data-xsr'),action:'reject',note:note})}).then(function(){loadExsign();});});});Array.prototype.forEach.call(el.querySelectorAll('.xscopy'),function(b){b.addEventListener('click',function(){var v=b.getAttribute('data-copy')||'';if(navigator.clipboard&&v){navigator.clipboard.writeText(v).then(function(){var o=b.textContent;b.textContent='copied ✓';setTimeout(function(){b.textContent=o;},1200);}).catch(function(){});}});});}).catch(function(){});}
   function loadRewards(){if(document.hidden)return;wireRwd();loadLb();loadPromo();loadExsign();if(!window.__lbHistDone){window.__lbHistDone=1;try{loadLbHist();}catch(e){}}Promise.all([fetch('/api/reward/accounts?key='+encodeURIComponent(key)).then(function(r){return r.json();}),fetch('/api/reward/admin?key='+encodeURIComponent(key)).then(function(r){return r.json();}),fetch('/api/reward/log?key='+encodeURIComponent(key)).then(function(r){return r.json();})]).then(function(res){var a=res[0]||{},ad=res[1]||{},lg=res[2]||{};rwdAccounts=a.accounts||[];var lf=document.getElementById('rwdLog');if(lf){var cl=(lg.log||[]).filter(function(e){return e.type==='claim';});lf.innerHTML=cl.length?cl.map(function(e){var who=e.username?('@'+esc(e.username)):(e.email?esc(e.email):(e.address?esc(String(e.address).replace(/^u:/,'')):'(anon)'));return '<div class="wd-row" data-acct="'+esc(e.address||'')+'" style="cursor:pointer"><span>'+flag(e.cc)+'</span><span class="addr mono" style="color:'+addrColor(e.address)+'">'+who+'</span><span class="meta">+$'+(+e.amountUsd||0).toFixed(2)+'</span><span class="meta" style="margin-left:auto">'+ago(e.ts)+'</span></div>';}).join(''):'<div class="empty">no claims yet</div>';bindAccts(lf);}var pend=ad.pending||[];var pendSum=pend.reduce(function(s,w){return s+(+w.amountUsd||0);},0);var flagged=rwdAccounts.filter(function(x){return rwdRisk(x)>0;}).length;var banned=(a.bannedCount!=null?a.bannedCount:rwdAccounts.filter(function(x){return x.banned;}).length);var cards=document.getElementById('rwdCards');if(cards)cards.innerHTML=card(N(a.count),'Addresses')+card(N(ad.newToday||0),'New today')+card(N(ad.activeToday||0),'Active today')+card(N(ad.claimsToday||0),'Claims today')+card('$'+N(ad.dispensedTodayUsd)+' / $'+N(ad.dailyCapUsd),'Dispensed today')+card('$'+N(a.totalBalanceUsd),'Unpaid balance')+card(N(pend.length)+(pend.length?' · $'+pendSum.toFixed(2):''),'Pending payouts')+card('$'+N(ad.totalPaidUsd),'Total paid');var rs=document.getElementById('rwdRisk');if(rs)rs.innerHTML='Flagged <b style="color:#ffb347">'+flagged+'</b>  ·  Banned <b style="color:#ff6258">'+banned+'</b>  ·  Distinct IPs <b>'+(a.ipDistinct!=null?a.ipDistinct:'—')+'</b>  ·  Wallets sharing an IP <b style="color:#ffb347">'+(a.sharedIpWallets!=null?a.sharedIpWallets:'—')+'</b>';var fl2=rwdAccounts.filter(function(x){return rwdRisk(x)>0;}).sort(function(a2,b2){return rwdRisk(b2)-rwdRisk(a2);}).slice(0,15);var fe=document.getElementById('rwdFlagged');if(fe){fe.innerHTML=fl2.length?fl2.map(acctRow).join(''):'<div class="empty">nothing flagged — all clean</div>';bindAccts(fe);}var wd=document.getElementById('rwdWd');if(wd){wd.innerHTML=pend.length?pend.map(function(w){return '<div style="border:1px solid #263041;border-radius:11px;padding:11px 12px;margin-bottom:9px;background:#0e1116"><div style="display:flex;align-items:center;gap:10px"><span class="bal" style="flex:0 0 auto;font-size:15px">$'+(+w.amountUsd||0).toFixed(2)+'</span>'+((+w.sharedWallet||0)>0?'<span style="color:#ff6258;font-family:monospace;font-size:10px;font-weight:700" title="This payout wallet is used by other accounts too — classic farm cash-out">'+w.sharedWallet+'@WALLET</span>':'')+'<button class="pay" data-id="'+esc(w.id)+'" style="margin-left:auto;flex:0 0 auto">mark paid</button></div><div style="display:flex;align-items:center;gap:8px;background:#0a0d11;border:1px solid #2b323b;border-radius:8px;padding:7px 10px;margin-top:8px"><span style="color:#7f8893;font-size:10px;font-family:Consolas,monospace;flex:0 0 auto;letter-spacing:.06em">BEP20</span><span class="mono" style="color:'+addrColor(w.address)+';font-size:13px;font-weight:700;flex:1;min-width:0;word-break:break-all;user-select:all;-webkit-user-select:all" title="payout wallet — send USDT here">'+esc(w.address)+'</span><button class="pay wdcopy" type="button" data-copy="'+esc(w.address)+'" style="flex:0 0 auto;padding:4px 10px;font-size:11px;color:#9fe0ff;border-color:rgba(159,224,255,.4)">copy</button></div></div>';}).join(''):'<div class="empty">no pending withdrawals</div>';Array.prototype.forEach.call(wd.querySelectorAll('[data-id]'),function(btn){btn.addEventListener('click',function(){var id=btn.getAttribute('data-id'),tx=prompt('Tx hash (optional):')||'';btn.textContent='…';fetch('/api/reward/admin/paid?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:id,txid:tx})}).then(function(){loadRewards();});});});Array.prototype.forEach.call(wd.querySelectorAll('.wdcopy'),function(b){b.addEventListener('click',function(){var v=b.getAttribute('data-copy')||'';if(navigator.clipboard&&v){navigator.clipboard.writeText(v).then(function(){var o=b.textContent;b.textContent='copied ✓';setTimeout(function(){b.textContent=o;},1200);}).catch(function(){});}});});}var pd=document.getElementById('rwdPaid');if(pd)pd.innerHTML=(ad.paidHistory&&ad.paidHistory.length)?ad.paidHistory.map(function(w){var txid=(w.txid||'').replace(/[^0-9a-fA-Fx]/g,'');var tx=txid?'<a href="https://bscscan.com/tx/'+txid+'" target="_blank" rel="noopener" style="color:#c2f64a">tx</a>':'(no hash)';return '<div class="wd-row"><span class="addr mono">'+esc(w.address)+'</span><span class="bal">$'+(+w.amountUsd||0).toFixed(2)+'</span><span class="meta" style="margin-left:auto">'+tx+' · '+ago(w.paidTs||w.ts||Date.now())+'</span></div>';}).join(''):'<div class="empty">no payouts yet</div>';renderAccts();});}var usersState={q:'',offset:0,limit:50,loading:false,end:false,wired:false,sort:'new',f:''};
@@ -3869,14 +4652,18 @@ function ovExch(d){var el=document.getElementById('ovEx');if(!el||!d||!d.byEx)re
   el.innerHTML=(d.byEx||[]).slice(0,7).map(function(x){var w=mx?Math.max(3,(+x.n)/mx*100):0;
     return '<div class="ovv-row"><span style="width:74px;color:#dbe4f5;overflow:hidden;text-overflow:ellipsis">'+esc(String(x.ex||'?'))+'</span><span style="flex:1"><span style="display:block;height:5px;border-radius:3px;background:#141b29;overflow:hidden"><i style="display:block;height:100%;width:'+w.toFixed(0)+'%;background:#ffd75a"></i></span></span><b style="width:44px;text-align:right;color:#e9edf7">'+N(x.n)+'</b><b style="width:52px;text-align:right;color:#c2f64a">'+ovMoney((d.usdPerClick||0.45)*x.n)+'</b></div>';}).join('')||'<div class="empty">no clicks yet</div>';}
 function ovHealth(d){var el=document.getElementById('ovHealth');if(!el||!d)return;
+  function fmtD(s){s=+s||0;if(s<=0)return '—';var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return h?(h+'h '+m+'m'):(m?(m+'m '+ss+'s'):(ss+'s'));}
   function row(lbl,ok,txt,warn){var col=ok?(warn?'#ffb347':'#2ebd85'):'#ff6258';
     return '<div class="ovv-row"><i style="width:8px;height:8px;border-radius:50%;background:'+col+';box-shadow:0 0 7px '+col+';flex:none"></i><span style="flex:1;color:#dbe4f5">'+lbl+'</span><b style="color:'+col+'">'+txt+'</b></div>';}
+  function metric(lbl,val,sub){return '<div class="ovv-row"><i style="width:8px;height:8px;border-radius:50%;background:#38bdf8;box-shadow:0 0 7px #38bdf8;flex:none"></i><span style="flex:1;color:#dbe4f5">'+lbl+'</span><b style="color:#38bdf8">'+val+(sub?' <span style="color:#5c656f;font-weight:400">'+sub+'</span>':'')+'</b></div>';}
   var cs=String((d.coll||{}).state||'UNKNOWN');var cOk=cs==='LIVE'||cs==='DEGRADED';
   el.innerHTML=row('Liquidation collector',cOk,cs,cs==='DEGRADED')
     +row('Analytics Engine',!!(d.ae&&d.ae.ok),(d.ae&&d.ae.ok)?('OK · '+(d.ae.evHour||0)+' ev/h'):'DOWN')
     +row('KV storage',!!(d.kv&&d.kv.ok),(d.kv&&d.kv.ok)?'OK':'DOWN')
     +row('User store (DO)',!!(d.users&&d.users.ok),(d.users&&d.users.ok)?('OK · '+(d.users.active24||0)+' active 24h'):'DOWN')
-    +row('JS errors today',true,String((d.kv&&d.kv.errToday)||0),((d.kv&&d.kv.errToday)||0)>5);}
+    +row('JS errors today',true,String((d.kv&&d.kv.errToday)||0),((d.kv&&d.kv.errToday)||0)>5)
+    +metric('Avg time on site / user',fmtD(d.avgDwellSec),d.dwellUsers?('('+d.dwellUsers+' users)'):'');
+  try{var td=document.getElementById('tDwell');if(td)td.innerHTML=fmtD(d.avgDwellSec)+(d.dwellUsers?' <small class="cvsub">'+d.dwellUsers+' users</small>':'');}catch(e){}}
 function ovPayouts(d){var el=document.getElementById('ovWds');if(!el||!d||!d.wds)return;
   el.innerHTML=(d.wds||[]).slice(0,6).map(function(w){var st=w.status==='paid'?'<b style="color:#2ebd85">PAID</b>':'<b style="color:#ffb347">PEND</b>';
     return '<div class="ovv-row"><span style="width:70px;color:#8fa3c4">'+wdFmtD(w.ts).slice(5,16)+'</span><span style="flex:1;color:#dbe4f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(w.who?('@'+esc(w.who)):esc(String(w.wallet||'').slice(0,10))+'&hellip;')+'</span><b style="color:#c2f64a">$'+(+w.usd).toFixed(2)+'</b><span style="width:44px;text-align:right">'+st+'</span></div>';}).join('')||'<div class="empty">no withdrawals yet</div>';}
@@ -4058,6 +4845,74 @@ function loadApi(){
     if(usEl&&!usEl._w){usEl._w=1;usEl.addEventListener('click',function(e){var r2=e.target.closest('[data-em]');if(!r2)return;var em=r2.getAttribute('data-em'),un=r2.getAttribute('data-un');if(em||un)window.open('/api/admin/user?'+(em?('email='+encodeURIComponent(em)):('username='+encodeURIComponent(un))),'_blank');});}
   }).catch(function(){if(usEl)usEl.innerHTML='<div class="empty">could not load</div>';});
 }
+var tgData=null,tgSort='ts';
+function loadTgbot(){
+  fetch('/api/admin/tgbot?_='+Date.now()).then(function(r){return r.json();}).then(function(d){
+    tgData=d;
+    var c=document.getElementById('tgCards');
+    if(c)c.innerHTML=card(N((d.users||[]).length),'Bot users')+card('<span style="color:#38bdf8">'+N(d.activeToday||0)+'</span>','Active today')+card(N(d.newToday||0),'New today')+card(N(d.botMsg||0),'Messages handled');
+    var ch=document.getElementById('tgChans');
+    if(ch)ch.innerHTML=(d.channels||[]).map(function(x){
+      var bound=!!x.chat,url=x.username?('https://t.me/'+x.username):'';
+      return '<div class="tgch'+((!bound)?' off':'')+'"'+(url?' data-tgurl="'+esc(url)+'"':'')+'><span class="tgch-s '+(bound?'on':'no')+'">'+(bound?'BOUND':'NOT SET')+'</span><div class="tgch-t">'+x.label+'</div><div class="tgch-nm">'+(x.title?esc(x.title):(x.chat?esc(x.chat):'—'))+(x.username?' · @'+esc(x.username):'')+'</div><div class="tgch-m">'+(x.members!=null?N(x.members):'—')+'<small>members</small></div></div>';
+    }).join('');
+    var cf=document.getElementById('tgCfg');
+    if(cf)cf.innerHTML='Signals <b>'+(d.on?'ON':'OFF')+'</b>  ·  News auto-post <b>'+(d.newsOn?'ON':'OFF')+'</b>  ·  Watchlist <b>'+esc(d.coins||'')+'</b>';
+    var cm=document.getElementById('tgCmds'),cmds=d.commands||[],mx=Math.max.apply(null,cmds.map(function(x){return x[1];}).concat([1]));
+    if(cm)cm.innerHTML=cmds.length?cmds.slice(0,18).map(function(x){return '<div class="row"><span class="lbl">/'+esc(x[0])+'</span><div class="track"><div class="fill" style="width:'+Math.max(3,x[1]/mx*100).toFixed(1)+'%"></div></div><span class="cnt">'+N(x[1])+'</span></div>';}).join(''):'<div class="empty">no commands yet</div>';
+    var ac=document.getElementById('tgAct');
+    if(ac)ac.innerHTML=(d.activity||[]).length?d.activity.map(function(x){return '<div class="fe"><span class="fe-f">✈️</span><span class="fe-t">'+(x.u?'<b>@'+esc(x.u)+'</b> ':'someone ')+'used <b>/'+esc(x.e)+'</b></span><span class="fe-a">'+ago(x.ts)+' ago</span></div>';}).join(''):'<div class="empty">no recent bot activity</div>';
+    var pr=document.getElementById('tgPrem');
+    if(pr)pr.innerHTML=(d.premReqs||[]).length?d.premReqs.map(function(x){return '<div class="row"><span class="lbl">'+esc(x.name||('chat '+x.chat))+(x.un?' <span style="color:#5c6b84">@'+esc(x.un)+'</span>':'')+'</span><span class="cnt" style="color:#8fa3c4;font-weight:400">'+(x.ts?ago(x.ts)+' ago':'')+'</span></div>';}).join(''):'<div class="empty">no premium requests yet</div>';
+    renderTgUsers();
+  }).catch(function(){var u=document.getElementById('tgUsers');if(u)u.innerHTML='<div class="empty">could not load</div>';});
+}
+function renderTgUsers(){
+  var el=document.getElementById('tgUsers');if(!el||!tgData)return;
+  var q=((document.getElementById('tgSearch')||{}).value||'').toLowerCase().replace(/^@/,'');
+  var rows=(tgData.users||[]).slice();
+  if(q)rows=rows.filter(function(r){return (r.u||'').toLowerCase().indexOf(q)>=0||(r.f||'').toLowerCase().indexOf(q)>=0;});
+  rows.sort(function(a,b){if(tgSort==='n')return b.n-a.n;if(tgSort==='first')return (b.first||0)-(a.first||0);if(tgSort==='old')return (a.first||0)-(b.first||0);return (b.ts||0)-(a.ts||0);});
+  el.innerHTML=rows.length?rows.slice(0,150).map(function(r){
+    var who=r.u?('@'+esc(r.u)):(esc(r.f)||('id '+esc(r.uid))),url=r.u?('https://t.me/'+esc(r.u)):'';
+    return '<div class="rwd-a"'+(url?' data-tgurl="'+url+'" style="cursor:pointer"':'')+'><span class="addr mono" style="flex:0 1 auto;min-width:130px">'+who+'</span><span class="meta" style="flex:1">'+(r.lc?'last: /'+esc(r.lc):'')+'</span><span class="meta">first '+(r.first?ago(r.first)+' ago':'—')+'</span><span class="meta">seen '+(r.ts?ago(r.ts)+' ago':'—')+'</span><span class="bal">'+N(r.n)+' msg</span></div>';
+  }).join(''):'<div class="empty">'+(q?'no match':'no bot users yet')+'</div>';
+}
+(function(){var s=document.getElementById('tgSearch');if(s)s.addEventListener('input',renderTgUsers);var so=document.getElementById('tgSort');if(so)so.addEventListener('change',function(){tgSort=so.value;renderTgUsers();});document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-tgurl]');if(t)window.open(t.getAttribute('data-tgurl'),'_blank','noopener');});})();
+var afData=null,afSort='score',afOpen={};
+function afAgo(t){if(!t)return '';var s=Math.round((Date.now()-t)/1000);return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';}
+function afFlag(c){c=String(c||'');return /^[A-Z]{2}$/.test(c)?String.fromCodePoint(127397+c.charCodeAt(0),127397+c.charCodeAt(1)):'';}
+function afBarList(arr,color){if(!arr||!arr.length)return '<div class="empty" style="padding:14px">no data yet</div>';var mx=arr.reduce(function(m,x){return Math.max(m,x.n);},1);return arr.map(function(x){var w=Math.max(3,Math.round(x.n/mx*100));return '<div class="af-bar-r"><span class="af-bar-k" title="'+esc(x.k)+'">'+esc(x.k)+'</span><span class="af-bar-t"><span class="af-bar-f" style="width:'+w+'%;background:'+color+'"></span></span><span class="af-bar-n">'+N(x.n)+'</span></div>';}).join('');}
+function loadPerf(){fetch('/api/admin/perf?_='+Date.now()).then(function(r){return r.json();}).then(function(d){
+  var c=document.getElementById('pfCards');if(!c)return;
+  var g=d.groups||{};var ws=g.ws||{},fps=g.fps||{},to=g['trade-open']||{};
+  function v(x,suf,warn,bad){if(x==null)return '<span class="muted">—</span>';var col=(bad!=null&&x>=bad)?'#ff6258':(warn!=null&&x>=warn)?'#ffb020':'#2ebd85';return '<span style="color:'+col+'">'+N(x)+(suf||'')+'</span>';}
+  c.innerHTML=card(v(ws.p50,'ms',150,400),'WebSocket latency')
+    +card(fps.p50!=null?('<span style="color:'+(fps.p50>=50?'#2ebd85':fps.p50>=30?'#ffb020':'#ff6258')+'">'+fps.p50+'</span>'):'<span class="muted">—</span>','Chart FPS (median)')
+    +card(v(d.apiP95,'ms',400,900),'API p95 <small class="cvsub">'+N(d.apiN||0)+' samples</small>')
+    +card(v(to.avg,'ms',400,900),'Open trade <small class="cvsub">'+N(to.n||0)+' fills</small>')
+    +card('<span style="color:#38bdf8">'+N(d.online||0)+'</span>','Active connections')
+    +card(((d.errHr||0)+(d.srvErrHr||0))===0?'<span style="color:#2ebd85">0</span>':'<span style="color:#ff6258">'+N((d.errHr||0)+(d.srvErrHr||0))+'</span>','Errors last hour <small class="cvsub">'+N(d.errHr||0)+' js · '+N(d.srvErrHr||0)+' srv</small>');
+  var tb=document.querySelector('#pfTable tbody');if(!tb)return;
+  var NAMES={price:'/api/price',prices:'/api/prices',klines:'/api/klines',screener:'/api/screener','trade-open':'/api/trade/open (fill)','trade-other':'/api/trade/*'};
+  var rows=[];for(var k in g){if(k==='ws'||k==='fps')continue;var x=g[k];rows.push({k:k,x:x});}
+  rows.sort(function(a,b){return (b.x.p95||0)-(a.x.p95||0);});
+  tb.innerHTML=rows.length?rows.map(function(r2){var x=r2.x;var hot=(x.p95||0)>=900?' style="color:#ff6258"':(x.p95||0)>=400?' style="color:#ffb020"':'';
+    return '<tr><td>'+(NAMES[r2.k]||r2.k)+'</td><td>'+N(x.n)+'</td><td>'+N(x.p50)+'ms</td><td'+hot+'>'+N(x.p95)+'ms</td><td>'+N(x.max)+'ms</td><td>'+N(x.avg)+'ms</td></tr>';}).join(''):'<tr><td colspan="6" class="empty">no samples yet — traffic fills this within minutes</td></tr>';
+}).catch(function(){});}
+function loadAffiliate(){fetch('/api/admin/affiliate?_='+Date.now()).then(function(r){return r.json();}).then(function(d){afData=d;renderAf();}).catch(function(){var el=document.getElementById('afList');if(el)el.innerHTML='<div class="empty">could not load</div>';});}
+function renderAf(){if(!afData)return;var t=afData.totals||{},refUsd=+afData.referralUsd||0.2;var pa=document.getElementById('afPayAmt');if(pa)pa.textContent=refUsd.toFixed(2);
+  var c=document.getElementById('afCards');if(c)c.innerHTML=card(N(t.referrers||0),'People sharing')+card('<span style="color:#38bdf8">'+N(t.clicks||0)+'</span>','Link clicks')+card(N(t.invited||0),'Signups referred')+card('<span style="color:#c2f64a">'+N(t.qualified||0)+'</span>','Active (3+ trades)')+card('<span style="color:#c2f64a">$'+((t.qualified||0)*refUsd).toFixed(2)+'</span>','Paid to affiliates')+card('<span style="color:#ffb020">'+N(t.pending||0)+'</span>','Pending activation');
+  var fn=document.getElementById('afFunnel');if(fn){var cl=t.clicks||0,sg=t.invited||0,qu=t.qualified||0,mx=Math.max(cl,sg,qu,1);var fr=function(lbl,v,prev,col){var w=Math.max(6,Math.round(v/mx*100));var cv=(prev>0)?('<span class="af-fn-cv">'+Math.round(v/prev*100)+'%</span> of above'):'&nbsp;';return '<div><div class="af-fn-meta"><span>'+lbl+'</span><span>'+cv+'</span></div><div class="af-fn-bar" style="width:'+w+'%;background:'+col+'">'+N(v)+'</div></div>';};fn.innerHTML='<div class="af-fn">'+fr('Clicks',cl,0,'#38bdf8')+fr('Signups',sg,cl,'#5b8cff')+fr('Active traders',qu,sg,'#c2f64a')+'</div>';}
+  var ch=document.getElementById('afChart'),ser=afData.series||[];if(ch){var gm=1;ser.forEach(function(d){gm=Math.max(gm,d.clicks,d.signups,d.qualified);});var bars=ser.map(function(d,i){var h=function(v){return Math.max(0,Math.round((v||0)/gm*100));};var dt=new Date(d.day);var lbl=(i%2===0)?(''+dt.getUTCDate()):'';return '<div class="af-ch-c" title="'+(dt.getUTCMonth()+1)+'/'+dt.getUTCDate()+' &middot; '+d.clicks+' clicks / '+d.signups+' signups / '+d.qualified+' active"><div style="display:flex;gap:2px;align-items:flex-end;height:100%;width:100%"><div class="af-ch-b" style="height:'+h(d.clicks)+'%;background:#38bdf8"></div><div class="af-ch-b" style="height:'+h(d.signups)+'%;background:#5b8cff"></div><div class="af-ch-b" style="height:'+h(d.qualified)+'%;background:#c2f64a"></div></div><div class="af-ch-x">'+lbl+'</div></div>';}).join('');ch.innerHTML='<div class="af-ch">'+bars+'</div><div class="af-ch-leg"><span><i style="background:#38bdf8"></i>Clicks</span><span><i style="background:#5b8cff"></i>Signups</span><span><i style="background:#c2f64a"></i>Active</span></div>';}
+  var so=document.getElementById('afSources');if(so)so.innerHTML='<div class="af-bars">'+afBarList(afData.sources,'#7fe7bd')+'</div>';
+  var ca=document.getElementById('afCampaigns');if(ca)ca.innerHTML='<div class="af-bars">'+afBarList(afData.campaigns,'#9db9ff')+'</div>';
+  var co=document.getElementById('afCountries');if(co){var cc=(afData.countries||[]).map(function(x){return {k:(afFlag(x.k)?afFlag(x.k)+' ':'')+x.k,n:x.n};});co.innerHTML='<div class="af-bars">'+afBarList(cc,'#ffd75a')+'</div>';}
+  var el=document.getElementById('afList');if(el){var q=((document.getElementById('afSearch')||{}).value||'').toLowerCase().replace(/^@/,'');var rows=(afData.affiliates||[]).slice();if(q)rows=rows.filter(function(r){return (r.username||'').toLowerCase().indexOf(q)>=0||(r.email||'').toLowerCase().indexOf(q)>=0;});rows.sort(function(a,b){if(afSort==='clicks')return b.clicks-a.clicks;if(afSort==='qualified')return b.qualified-a.qualified;if(afSort==='recent')return (b.lastTs||0)-(a.lastTs||0);return (b.clicks+b.invited*20+b.qualified*50)-(a.clicks+a.invited*20+a.qualified*50);});
+  el.innerHTML=rows.length?rows.slice(0,200).map(function(r){var who=r.username?('@'+esc(r.username)):(esc(r.email)||('id '+esc(r.uid)));var camp=(r.campaigns||[]).slice(0,5).map(function(x){return '<span class="af-chip">'+esc(x.k)+' <b>'+x.n+'</b></span>';}).join('');var src=(r.sources||[]).slice(0,5).map(function(x){return '<span class="af-chip src">'+esc(x.k)+' <b>'+x.n+'</b></span>';}).join('');var posts=(r.posts||[]).slice(0,6).map(function(x){var u=String(x.k),sh=u,pi=u.indexOf('://');if(pi>=0)sh=u.slice(pi+3);if(sh.slice(0,4)==='www.')sh=sh.slice(4);return '<a class="af-post" href="'+esc(u)+'" target="_blank" rel="noopener" title="'+esc(u)+'">'+esc(sh.slice(0,46))+(sh.length>46?'&hellip;':'')+' <b>'+x.n+'</b></a>';}).join('');var warn=(r.invited>=4&&r.qualified===0)?' <span class="af-warn" title="many signups, none active yet — check for fake signups">&#9888;</span>':'';var earned=((r.qualified||0)*refUsd);var open=afOpen[r.uid];var det='';if(open){var ius=r.invitedUsers||[];det='<div class="af-det">'+(ius.length?ius.map(function(iu){var pf=Math.min(100,Math.round((iu.trades||0)/3*100));var st=iu.status==='qualified'?'<span class="af-iu-st q">PAID</span>':(iu.status==='capped'?'<span class="af-iu-st p">CAPPED</span>':'<span class="af-iu-st p">'+(iu.trades||0)+'/3</span>');return '<div class="af-iu"><span class="af-iu-w">'+(afFlag(iu.cc)?afFlag(iu.cc)+' ':'')+esc(iu.who)+'</span><span class="af-iu-p"><span class="af-iu-pf" style="width:'+pf+'%"></span></span><span class="af-iu-tr">'+(iu.trades||0)+' trades</span>'+st+'<span class="af-iu-tr">'+afAgo(iu.ts)+'</span></div>';}).join(''):'<div class="empty" style="padding:8px">no signups captured yet</div>')+'</div>';}
+  return '<div class="af-row'+(open?' op':'')+'" data-afu="'+esc(r.uid)+'"><div class="af-top"><span class="af-who">'+who+warn+'</span><span class="af-link">?ref='+esc(r.uid)+'</span><span class="af-nums"><b style="color:#38bdf8">'+N(r.clicks)+'</b> clicks &middot; <b>'+N(r.invited)+'</b> signups &middot; <b style="color:#c2f64a">'+N(r.qualified)+'</b> active &middot; <b style="color:#c2f64a">$'+earned.toFixed(2)+'</b> &middot; '+(r.conv||0)+'% conv</span></div>'+((camp||src)?'<div class="af-chips"><span class="af-lbl">campaigns</span>'+(camp||'<span class="af-chip dim">none</span>')+'<span class="af-lbl">posted on</span>'+(src||'<span class="af-chip dim">&mdash;</span>')+'</div>':'')+(posts?'<div class="af-chips"><span class="af-lbl">exact posts</span>'+posts+'</div>':'')+det+'</div>';}).join(''):'<div class="empty">no referral-link activity yet</div>';}
+  var rc=document.getElementById('afRecent'),ev=afData.recent||[];if(rc)rc.innerHTML=ev.length?ev.map(function(e){var cls=e.t,ic,txt;if(e.t==='click'){ic='C';txt='<b>@'+esc(e.who)+'</b> link click <span style="color:#8fa3c4">&middot; '+esc(e.src||'direct')+'</span>';}else if(e.t==='signup'){ic='S';txt='<b>'+esc(e.inv||'a friend')+'</b> signed up via <b>@'+esc(e.who)+'</b>'+(afFlag(e.cc)?' '+afFlag(e.cc):'');}else{ic='$';txt='<b>@'+esc(e.who)+'</b> earned a referral reward';}return '<div class="af-rec"><span class="af-rec-i '+cls+'">'+ic+'</span><span class="af-rec-t">'+txt+'</span><span class="af-rec-a">'+afAgo(e.ts)+'</span></div>';}).join(''):'<div class="empty" style="padding:16px">no activity yet</div>';}
+(function(){var s=document.getElementById('afSearch');if(s)s.addEventListener('input',renderAf);var so=document.getElementById('afSort');if(so)so.addEventListener('change',function(){afSort=so.value;renderAf();});var lst=document.getElementById('afList');if(lst)lst.addEventListener('click',function(e){if(e.target.closest('a'))return;var row=e.target.closest('.af-row');if(!row)return;var u=row.getAttribute('data-afu');if(!u)return;afOpen[u]=!afOpen[u];renderAf();});})();
 var secBRows=null,secBF='all';
 function secBTime(s){s=+s||0;if(s<60)return s+'s';if(s<3600)return Math.round(s/60)+'m';return (s/3600).toFixed(1)+'h';}
 function secBFlags(r,minWd){var f=[],tot=+r.dwellTotal||0,share=tot>0?(+r.dwellRewards||0)/tot:0;
@@ -4095,7 +4950,8 @@ function renderSecVpn(){var el=document.getElementById('secVpn');if(!el)return;v
     return '<div class="wd-row" data-secu="'+esc(r.email)+'" style="cursor:pointer"><span>'+flag(r.cc)+'</span><span class="mono" style="color:#e9e7df;font-size:12px;flex:0 1 190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(r.username||r.email)+'</span><span class="rbadge" style="color:'+(hi?'#c9a5ff':'#9c85c8')+';border:1px solid '+(hi?'#b48cff':'#5a4b78')+';flex:0 0 auto">'+(hi?'VPN':'VPN?')+'</span><span class="meta mono" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(r.org||'unknown')+(r.asn?' · AS'+r.asn:'')+'</span><span class="meta" style="flex:0 0 auto">'+(r.claims||0)+'×</span><span class="bal">$'+(+r.balanceUsd||0).toFixed(2)+'</span></div>';
   }).join(''):'<div class="empty">no VPN / datacenter connections detected — everyone is on a home ISP ✓</div>';
   Array.prototype.forEach.call(el.querySelectorAll('[data-secu]'),function(row){row.addEventListener('click',function(){openUser(row.getAttribute('data-secu'));});});}
-function loadSecB(){fetch('/api/admin/security?_='+Date.now()).then(function(r){return r.json();}).then(function(d){window._secMinWd=+d.minWdUsd||5;window._secEmailClusters=d.emailClusters||[];window._secVpnCount=+d.vpnCount||0;window._secAllRows=d.rows||[];secBRows=(d.rows||[]).filter(function(r){return (r.claims||0)>0||(+r.balanceUsd||0)>0||(+r.dwellRewards||0)>0;});renderSecB();try{renderSecEmail();renderSecVpn();}catch(e){}}).catch(function(){var el=document.getElementById('secBList');if(el)el.innerHTML='<div class="empty">could not load</div>';});}
+function renderSecMulti(){var el=document.getElementById('secMulti');if(!el)return;var ip=window._secIpClusters||[],dd=window._secDidClusters||[];function grp(c,icon){var recent=c.recent>0?'<span class="sm-rec">'+c.recent+' in last hour</span>':'';var head='<div class="sm-h">'+icon+' <b>'+c.count+' accounts</b> '+(c.kind==='ip'?'on IP <code>'+esc(c.key)+'</code>':'on the SAME device')+(c.cc?' '+flag(c.cc):'')+(c.vpn?' <span class="sm-vpn">VPN</span>':'')+recent+'</div>';var mem=c.members.slice(0,12).map(function(m){var nm=m.username?('@'+m.username):m.email;return '<div class="wd-row" data-secu="'+esc(m.email)+'" style="cursor:pointer"><span>'+flag(m.cc)+'</span><span class="mono" style="color:#e9e7df;font-size:11.5px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'+(m.banned?';text-decoration:line-through;opacity:.6':'')+'">'+esc(nm)+'</span><span class="meta">'+(m.dev||'?')+' &middot; '+ago(m.created)+' ago</span><span class="meta">'+(m.trades||0)+'t</span><span class="bal">'+(m.claims||0)+'&times;</span></div>';}).join('');return '<div class="sm-c'+(c.recent>0?' hot':'')+'">'+head+mem+(c.members.length>12?'<div class="meta" style="padding:6px 2px 0">+'+(c.members.length-12)+' more</div>':'')+'</div>';}var html='';if(dd.length)html+='<div class="sm-sec">Same DEVICE — one person, multiple accounts ('+dd.length+')</div>'+dd.map(function(c){return grp(c,'📱');}).join('');if(ip.length)html+='<div class="sm-sec">Same IP ('+ip.length+') <span style="color:#5c6b84;font-weight:400">— can be a shared network (family/office/uni) OR one person</span></div>'+ip.map(function(c){return grp(c,'🌐');}).join('');el.innerHTML=html||'<div class="empty">no shared-IP or shared-device account clusters — looks clean &#10003;</div>';Array.prototype.forEach.call(el.querySelectorAll('[data-secu]'),function(row){row.addEventListener('click',function(){openUser(row.getAttribute('data-secu'));});});}
+function loadSecB(){fetch('/api/admin/security?_='+Date.now()).then(function(r){return r.json();}).then(function(d){window._secMinWd=+d.minWdUsd||5;window._secEmailClusters=d.emailClusters||[];window._secVpnCount=+d.vpnCount||0;window._secAllRows=d.rows||[];window._secIpClusters=d.ipClusters||[];window._secDidClusters=d.didClusters||[];secBRows=(d.rows||[]).filter(function(r){return (r.claims||0)>0||(+r.balanceUsd||0)>0||(+r.dwellRewards||0)>0;});try{renderSecMulti();}catch(e){}renderSecB();try{renderSecEmail();renderSecVpn();}catch(e){}}).catch(function(){var el=document.getElementById('secBList');if(el)el.innerHTML='<div class="empty">could not load</div>';});}
 var secBFEl=document.getElementById('secBFilt');if(secBFEl)secBFEl.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;secBF=b.getAttribute('data-f');secBFEl.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});renderSecB();});
 function secScore(x){return Math.min(100,rwdRisk(x));}function secCol(s){return s>=70?'#ff6258':s>=40?'#ff8c42':s>=20?'#ffd75a':'#2ebd85';}function secRow(x){var s=secScore(x),col=secCol(s),fl=rwdFlagsArr(x);return '<div class="rwd-a" data-acct="'+esc(x.address)+'"><span class="rbadge" style="color:'+col+';border:1px solid '+col+';min-width:26px;text-align:center;font-weight:800">'+s+'</span><span class="addr mono"'+(x.banned?' style="text-decoration:line-through;opacity:.65"':'')+'>'+esc(acctName(x))+'</span><span class="meta">'+flag(x.cc)+' '+(x.dev||'?')+' · '+x.claims+'×</span>'+(fl.length?'<span class="badges">'+fl.map(function(f){return '<span class="rbadge" style="color:#ffb347;border:1px solid #ffb347">'+esc(f)+'</span>';}).join('')+'</span>':'')+'<span class="bal">$'+(+x.balanceUsd||0).toFixed(2)+'</span></div>';}function loadSecurity(){loadSecB();var lst=document.getElementById('secList');if(lst)lst.innerHTML='<div class="empty">loading…</div>';fetch('/api/reward/accounts?key='+encodeURIComponent(key)).then(function(r){return r.json();}).then(function(d){var a=d.accounts||[];
   var red=0,orange=0,yellow=0,banned=0;a.forEach(function(x){var sc=secScore(x);if(x.banned)banned++;if(sc>=70)red++;else if(sc>=40)orange++;else if(sc>=20)yellow++;});
@@ -4176,7 +5032,7 @@ setTimeout(function(){try{
 
 // ---------- telegram bot ----------
 const DIV = '━━━━━━━━━━━';
-const TG_HELP =
+const TG_HELP_OLD =
   '👋 <b>MarginPad</b>\n<i>Crypto futures calculators, right in your chat.</i>\n\n' +
   '<b>📋 Commands</b>\n' +
   '🔥 <code>/liq</code> entry leverage [long|short]\n' +
@@ -4195,17 +5051,50 @@ const TG_HELP =
   '<code>/rekt</code> — 24h liquidations\n' +
   '<code>/funding</code> — funding extremes\n' +
   '<code>/sentiment</code> — Fear &amp; Greed\n\n' +
-  '<b>🏆 Paper Trade Leaderboard — win USDT weekly</b>\n' +
-  '<code>/leaderboard</code> — this week’s top traders\n' +
-  'Members only — sign up free at marginpad.io · 🥇 $30  🥈 $20  🥉 $10\n\n' +
+  '<b>🏆 Weekly Trade League — win USDT</b>\n' +
+  '<code>/leaderboard</code> — all 3 boards (ROE · win rate · XP)\n' +
+  'Members only — sign up free at marginpad.io\n\n' +
+  '<b>📡 Signals</b>\n' +
+  '<code>/premium</code> — free &amp; premium signal groups\n\n' +
   '💡 <b>Try:</b> <code>/liq 60000 10 long</code>\n\n' +
   'Tap a button below 👇';
+const TG_HELP =
+  '👋 <b>MarginPad</b> — your crypto-futures cockpit in Telegram.\n' +
+  '<i>Live data, calculators, paper trading, alerts &amp; signals. All free.</i>\n\n' +
+  '<b>📟 Calculators</b>\n' +
+  '<code>/liq</code> entry lev [long|short] — liquidation price\n' +
+  '<code>/pnl</code> entry exit size [lev] [side] — profit &amp; ROI\n' +
+  '<code>/size</code> balance risk% entry stop — position size\n' +
+  '<code>/rr</code> entry stop tp — risk/reward\n\n' +
+  '<b>📈 Paper trade</b> <i>(connect your account first)</i>\n' +
+  '<code>/open</code> BTC 100 x20 — open a demo position\n' +
+  '<code>/positions</code> — live P&amp;L on your positions\n' +
+  '<code>/close</code> BTC — close a position\n\n' +
+  '<b>💲 Prices &amp; alerts</b>\n' +
+  '<code>/price</code> BTC — live price\n' +
+  '<code>/alert</code> BTC 70000 — ping me at a price\n' +
+  '<code>/whale</code> BTC short 200 — whale alert (whales load shorts &gt; $200M)\n' +
+  '<code>/alerts</code> — your alerts · <code>/clearalerts</code>\n\n' +
+  '<b>📊 Live market data</b>\n' +
+  '<code>/rekt</code> — 24h liquidations · <code>/funding</code> — funding extremes · <code>/sentiment</code> — Fear &amp; Greed\n' +
+  '<code>/fundalert</code> BTC 0.1 — ping me on extreme funding\n\n' +
+  '<b>🏆 Competition</b>\n' +
+  '<code>/leaderboard</code> — weekly boards (ROE · win rate · XP)\n\n' +
+  '<b>📡 Signals, news &amp; community</b>\n' +
+  '<code>/premium</code> — free &amp; premium signal groups\n' +
+  '<code>/community</code> — 💬 join the open traders chat (@Marginpadgroup)\n' +
+  '📰 <b>Crypto news channel:</b> @marginpadnews — top stories + full read on our site\n\n' +
+  '<b>🔗 Account</b>\n' +
+  '<code>/connect</code> — link your MarginPad account · <code>/me</code> — status\n\n' +
+  '💡 <b>Try:</b> <code>/liq 60000 10 long</code>  ·  🌐 <a href="https://marginpad.io">marginpad.io</a>';
 const TG_KB = {
   inline_keyboard: [
     [{ text: '🔥 Liquidation', callback_data: 'liq' }, { text: '📊 PnL / ROI', callback_data: 'pnl' }],
     [{ text: '📏 Position size', callback_data: 'size' }, { text: '⚖️ Risk / Reward', callback_data: 'rr' }],
-    [{ text: '💲 Price & alerts', callback_data: 'price' }, { text: '🏆 Leaderboard', callback_data: 'lb' }],
-    [{ text: '📈 Paper trade', callback_data: 'paper' }],
+    [{ text: '📈 Paper trade', callback_data: 'paper' }, { text: '🔔 Alerts', callback_data: 'alerts' }],
+    [{ text: '🐋 Whale alerts', callback_data: 'whale' }, { text: '🏆 Leaderboard', callback_data: 'lb' }],
+    [{ text: '📡 Signals', callback_data: 'signals' }, { text: '🔗 Connect', callback_data: 'connect' }],
+    [{ text: '💬 Community chat', url: 'https://t.me/Marginpadgroup' }, { text: '📰 News', url: 'https://t.me/marginpadnews' }],
     [{ text: '🌐 Open MarginPad.io', url: 'https://marginpad.io' }],
   ],
 };
@@ -4256,7 +5145,7 @@ function tgCommand(text) {
       const entry = n(1), lev = n(2); if (!isFinite(entry) || !isFinite(lev)) return TG_FORMATS.liq;
       const long = (parts[3] || 'long').toLowerCase() !== 'short';
       const mmr = (isFinite(n(4)) ? n(4) : 0.5) / 100;
-      const liq = long ? entry * (1 - (1 - mmr) / lev) : entry * (1 + (1 - mmr) / lev); // matches the sim + never inverts at lev>=200× (see calcLiquidation)
+      const liq = mpcLiq(entry, lev, mmr, long); // matches the sim + never inverts at lev>=200× (see calcLiquidation)
       const dist = (liq - entry) / entry * 100;
       return `🔥 <b>Liquidation · ${long ? 'Long' : 'Short'} ${lev}×</b>\n${DIV}\nEntry      <code>$${tgfmt(entry)}</code>\n💥 Liq      <b>$${tgfmt(liq)}</b>\n📐 Distance <code>${dist.toFixed(2)}%</code>`;
     }
@@ -4282,29 +5171,321 @@ function tgCommand(text) {
 }
 
 async function tgApi(token, method, body) {
-  try { await fetch('https://api.telegram.org/bot' + token + '/' + method, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }); } catch (e) {}
+  try { const r = await fetch('https://api.telegram.org/bot' + token + '/' + method, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }); return await r.json(); } catch (e) { return null; } // returns {ok,result} — callers that want the message_id read result.message_id; others ignore it
 }
-async function bumpBot(env, cmd, userId) {
+async function bumpBot(env, cmd, from) {
   if (!env || !env.STATS) return;
   const inc = async k => { try { const cur = await env.STATS.getWithMetadata(k); const c = ((cur && cur.metadata && cur.metadata.c) || 0) + 1; await env.STATS.put(k, String(c), { metadata: { c } }); } catch (e) {} };
   await inc('bot:msg');
   if (cmd) await inc('bot:cmd:' + cmd.slice(0, 24));
-  if (userId) { try { const seen = await env.STATS.get('bu:' + userId); if (!seen) { await env.STATS.put('bu:' + userId, '1'); await inc('bot:users'); } } catch (e) {} }
+  const userId = from && (typeof from === 'object' ? from.id : from);
+  if (!userId) return;
+  try { const seen = await env.STATS.get('bu:' + userId); if (!seen) { await env.STATS.put('bu:' + userId, '1'); await inc('bot:users'); } } catch (e) {}
+  // per-user record for the ops "Bot users" list (all in metadata → readable from the dashboard's KV list, no extra gets)
+  if (typeof from === 'object') {
+    try {
+      let m = {}; try { const r = await env.STATS.getWithMetadata('botu:' + userId); m = (r && r.metadata) || {}; } catch (e) {}
+      m.u = (from.username || '').slice(0, 32);
+      m.f = ((from.first_name || '') + (from.last_name ? ' ' + from.last_name : '')).trim().slice(0, 48);
+      m.n = (m.n || 0) + 1;
+      m.first = m.first || Date.now();
+      m.ts = Date.now();
+      if (cmd) m.lc = cmd.slice(0, 24);
+      await env.STATS.put('botu:' + userId, '1', { metadata: m });
+    } catch (e) {}
+  }
 }
+// Push a bot command into the ops Real-time activity feed (evlog), tagged with the Telegram user. /request is highlighted.
+async function botLog(env, cmd, from) {
+  try {
+    if (!env.STATS || !cmd || cmd === 'msg') return;
+    const u = String((from && (from.username || from.first_name)) || '').replace(/[^a-zA-Z0-9_ ]/g, '').slice(0, 24);
+    let log = []; try { log = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
+    log.unshift({ t: 'bot', e: cmd.slice(0, 24), cc: '', v: 'srv', u, p: '', d: 'Telegram', ts: Date.now() });
+    const cut = Date.now() - 10800000; log = log.filter(e => (e.ts || 0) > cut).slice(0, 600);
+    await env.STATS.put('evlog', JSON.stringify(log), { expirationTtl: 86400 });
+  } catch (e) {}
+}
+// ---- Leaderboard v2 (3 boards, top-15, prizes for top-5) launches this Monday ----
+const LB_V2_START = Date.UTC(2026, 6, 20); // 2026-07-20 00:00 UTC — the Monday the 3-board format goes live; rules below apply only from this week on
+const SRV_LB_START = Date.UTC(2026, 6, 27); // P0 phase 3: first Monday when ONLY server-filled+server-closed (src:'srv' + sc) trades count on the paid board
+const WR_MIN_WIN_ROE = 5; // Best-win-rate board: a win only counts once the trade cleared ≥ +5% ROE (kills dust-scalp padding). Applies from LB_V2_START.
+const WR_MIN_MOVE = 0.2; // …AND the win must reflect a ≥0.2% favorable PRICE move (roe/lev). Kills the "1000× on a low-vol pair = guaranteed safe win" exploit — leverage-independent, so it can't be farmed with extreme leverage on ANY symbol.
+// Symbols barred from the leaderboards (ROE + win-rate + duels): forex, metals, indices and stablecoins — low-volatility / mean-reverting instruments that let high leverage farm "safe" wins. Crypto only competes.
+const LB_EXCL_SET = new Set('EURUSD EURUSDT GBPUSD GBPUSDT USDJPY USDJPYT AUDUSD AUDUSDT USDCAD USDCHF NZDUSD EURGBP EURJPY GBPJPY XAU XAUUSD XAUUSDT XAG XAGUSD XAGUSDT SPX500 SPX US500 NAS100 NAS US30 DJI30 GER40 DAX40 UK100 JP225 FR40 USDC USDCUSDT DAI DAIUSDT TUSD FDUSD USDD USDP GUSD EURC PYUSD USDE SUSD'.split(' '));
+const LB_EXCL_SQL = "'" + [...LB_EXCL_SET].join("','") + "'"; // static list (no user input) → safe to inline into `UPPER(sym) NOT IN (…)`
+function lbExcluded(sym) { return LB_EXCL_SET.has(String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '')); }
 // ---- Trade League (weekly leaderboard, stored in KV) ----
 async function leaderboard(env) {
-  if (!env.REWARDS) return 'Leaderboard temporarily unavailable.';
-  const pz = await rewardCfg(env);
-  let top = [], weekEnd = 0;
-  try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lb')); const j = await r.json(); top = (j && j.top) || []; weekEnd = (j && j.weekEnd) || 0; } catch (e) {}
-  let endStr = ''; if (weekEnd) { const ms = weekEnd - Date.now(); if (ms > 0) { const d = Math.floor(ms / 86400000), h = Math.floor(ms % 86400000 / 3600000); endStr = (d > 0 ? d + 'd ' : '') + h + 'h'; } }
+  if (!env.USERS) return 'Leaderboard temporarily unavailable.';
+  const MON = 4 * 86400000, WK = 7 * 86400000, nowMs = Date.now();
+  const weekStart = Math.floor((nowMs - MON) / WK) * WK + MON, weekEnd = weekStart + WK;
+  let board = [], xpBoard = [];
+  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=40')); const j = await r.json(); board = (j && j.top) || []; xpBoard = (j && j.xp) || []; } catch (e) {}
+  const banned = {};
+  try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
+  const mask = a => !a ? 'Trader' : (String(a).slice(0, 2) === 'u:' ? 'Trader' : String(a).slice(0, 6) + '…' + String(a).slice(-4));
+  const top = board.filter(x => !banned[x.uid] && (+x.roe > 0)).slice(0, 5).map(x => ({ who: x.name || mask(x.uid), roe: x.roe }));
+  const topWr = board.filter(x => !banned[x.uid] && ((+x.w || 0) + (+x.l || 0)) >= 20).map(x => { const w = +x.w || 0, l = +x.l || 0; return { who: x.name || mask(x.uid), w, l, wr: w / (w + l) * 100 }; }).sort((a, b) => (b.wr - a.wr) || ((b.w + b.l) - (a.w + a.l))).slice(0, 5);
+  const topXp = xpBoard.filter(x => !banned[x.uid] && (+x.xp || 0) > 0).slice(0, 5).map(x => ({ who: x.name || mask(x.uid), xp: +x.xp || 0 }));
+  const ms = weekEnd - nowMs, endStr = ms > 0 ? ((Math.floor(ms / 86400000) > 0 ? Math.floor(ms / 86400000) + 'd ' : '') + Math.floor(ms % 86400000 / 3600000) + 'h') : '';
   const medal = ['🥇', '🥈', '🥉'];
-  let out = '🏆 <b>Paper Trade Leaderboard — this week</b>\n' + DIV + '\n';
-  if (!top.length) out += 'No trades on the board yet. Be the first!\n';
-  else top.forEach((x, i) => { out += (medal[i] || (i + 1) + '. ') + ' <code>' + x.who + '</code> — <b>' + ((+x.roe) >= 0 ? '+' : '') + (+x.roe).toFixed(0) + '%</b> on ' + (x.symbol || '?') + ' ' + (x.side || '') + '\n'; });
-  out += '\n⏳ Runs <b>Mon → Sun (UTC)</b>' + (endStr ? ' — ends in <b>' + endStr + '</b>' : '') + '. Winners paid Monday.\n';
-  out += '\n🥇 $' + pz.prize1 + '  🥈 $' + pz.prize2 + '  🥉 $' + pz.prize3 + ' — paid in USDT every week.\n🔒 <b>Members only</b> — sign up free (email) at <a href="https://marginpad.io">marginpad.io</a>, close winning <a href="https://marginpad.io/?p=plan">Paper Trades</a>, and add a wallet on <a href="https://marginpad.io/rewards/">/rewards</a> to collect prizes.';
+  const row = (x, i, val) => (medal[i] || (i + 1) + '.') + ' <code>' + x.who + '</code> — ' + val + '\n';
+  let out = '🏆 <b>Weekly Trade League — 3 boards</b>\n' + DIV + '\n';
+  out += '<b>🏆 Top ROE</b>\n' + (top.length ? top.map((x, i) => row(x, i, '<b>' + ((+x.roe) >= 0 ? '+' : '') + (+x.roe).toFixed(0) + '%</b>')).join('') : '<i>no one yet</i>\n');
+  out += '\n<b>🎯 Best win rate</b> <i>(min 20 trades)</i>\n' + (topWr.length ? topWr.map((x, i) => row(x, i, '<b>' + x.wr.toFixed(0) + '%</b> (' + x.w + 'W-' + x.l + 'L)')).join('') : '<i>no one yet</i>\n');
+  out += '\n<b>✨ Weekly XP</b>\n' + (topXp.length ? topXp.map((x, i) => row(x, i, '<b>' + x.xp.toLocaleString('en-US') + ' XP</b>')).join('') : '<i>no one yet</i>\n');
+  out += '\n⏳ Runs <b>Mon → Sun (UTC)</b>' + (endStr ? ' — ends in <b>' + endStr + '</b>' : '') + '. Winners paid weekly in USDT.\n';
+  out += '🔒 <b>Members only</b> — sign up free at <a href="https://marginpad.io">marginpad.io</a> and close winning <a href="https://marginpad.io/paper-trade">Paper Trades</a> to rank.';
   return out;
+}
+// Premium signal groups — informational (owner monetization). Group links + prices are KV-tunable (tg:prem:*); inquiry
+// via /request pings the owner. BEP20 USDT deposit address shown for those who want to pay. Kept low-key by design.
+const PREM_ADDR = '0x33e7d035B80767b0d7Dc2910668E54E47129eFf2';
+async function premiumInfo(env) {
+  const freeLink = (env.STATS && await env.STATS.get('tg:prem:free')) || '';
+  let out = '📡 <b>MarginPad signal groups</b>\n' + DIV + '\n';
+  out += '🆓 <b>Free signals</b> — screener picks' + (freeLink ? ': <a href="' + freeLink + '">👉 join the free group</a>' : ' <i>(coming soon)</i>') + '.\n\n';
+  out += '• ⚡ <b>Fast</b> — every flip, live (raw &amp; fastest) · <b>$14.99/mo</b>\n';
+  out += '• ⚖️ <b>Balanced</b> — 4h-trend + volume confirmed · <b>$24.99/mo</b>\n';
+  out += '• 💎 <b>Premium</b> — highest-conviction (all filters) · <b>$39.99/mo</b>\n\n';
+  const auto = env && env.NOWPAY_API_KEY;
+  if (auto) {
+    out += '💳 <b>Pay by crypto for instant access</b> — send:\n';
+    out += '<code>/buy fast</code> · <code>/buy balanced</code> · <code>/buy premium</code>\n';
+    out += 'You’ll get a secure payment link (pay any coin); the group invite is sent automatically once it confirms.\n';
+    out += 'Prefer manual? Send <code>/request</code>.\n';
+  } else {
+    out += '💬 To join a premium group, send <code>/request</code> — we’ll message you the invite + how to pay.\n';
+    out += '💳 Pay in <b>USDT (BEP20 / BSC)</b>:\n<code>' + PREM_ADDR + '</code>\n';
+  }
+  out += '📰 <b>Free crypto news:</b> @marginpadnews\n';
+  out += '💬 <b>Community chat:</b> @Marginpadgroup — /community\n';
+  out += '<i>Prices are informational. Not financial advice.</i>';
+  return out;
+}
+// ---- NOWPayments (crypto checkout) — unique invoice per user, auto-settled to the owner's wallet ----
+const NOWPAY_TIERS = { fast: 14.99, balanced: 24.99, premium: 39.99 };
+const NOWPAY_TIER_LINK = { fast: 'p1', balanced: 'p2', premium: 'p3', free: 'free' }; // tier → tg:prem:<key> invite link
+function nowpaySortObj(o) { // NOWPayments signs HMAC-SHA512 over the JSON with keys sorted (recursively)
+  if (Array.isArray(o)) return o.map(nowpaySortObj);
+  if (o && typeof o === 'object') return Object.keys(o).sort().reduce((r, k) => { r[k] = nowpaySortObj(o[k]); return r; }, {});
+  return o;
+}
+async function hmacSha512Hex(secret, msg) {
+  const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-512' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', k, new TextEncoder().encode(msg));
+  return [...new Uint8Array(sig)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+// Create a hosted NOWPayments invoice for a Telegram user + tier → returns { invoice_url } or null
+async function nowpayCreate(env, chat, tier) {
+  const key = env.NOWPAY_API_KEY; const amt = NOWPAY_TIERS[tier];
+  if (!key || !amt) return null;
+  const body = {
+    price_amount: amt, price_currency: 'usd',
+    order_id: 'tg_' + chat + '_' + tier,
+    order_description: 'MarginPad ' + tier[0].toUpperCase() + tier.slice(1) + ' signals — 1 month',
+    ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn',
+    success_url: 'https://marginpad.io/rewards', cancel_url: 'https://marginpad.io/'
+  };
+  try {
+    const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': key, 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    const j = await r.json();
+    return (j && j.invoice_url) ? j : null;
+  } catch (e) { return null; }
+}
+// IPN webhook — NOWPayments posts payment status updates here; verified by HMAC-SHA512(sorted body, IPN secret)
+async function handleNowpayIpn(request, env) {
+  const secret = env.NOWPAY_IPN_SECRET;
+  const raw = await request.text();
+  if (!secret) return new Response('unconfigured', { status: 500 });
+  let data; try { data = JSON.parse(raw); } catch (e) { return new Response('bad json', { status: 400 }); }
+  const got = (request.headers.get('x-nowpayments-sig') || '').toLowerCase();
+  const want = await hmacSha512Hex(secret, JSON.stringify(nowpaySortObj(data)));
+  if (!got || got !== want) return new Response('bad sig', { status: 401 });
+  const status = String(data.payment_status || '');
+  const orderId = String(data.order_id || '');
+  try { await env.STATS.put('nowpay:' + (data.payment_id || data.id || Date.now()), JSON.stringify({ status, orderId, usd: data.price_amount, paid: data.actually_paid, cur: data.pay_currency, ts: Date.now() }), { expirationTtl: 7776000 }); } catch (e) {}
+  if (status === 'finished' || status === 'confirmed') {
+    const m = /^tg_(-?\d+)_(fast|balanced|premium|free)$/.exec(orderId);
+    if (m && env.TELEGRAM_TOKEN) {
+      const chat = m[1], tier = m[2];
+      const payId = String(data.payment_id || data.id || '');
+      const dup = payId ? await env.STATS.get('np:done:' + payId) : null; // dedup by PAYMENT (so renewals re-process, unlike the old per-tier lock)
+      if (!dup) {
+        if (payId) await env.STATS.put('np:done:' + payId, '1', { expirationTtl: 7776000 });
+        const chanId = await env.STATS.get('csig:chat:' + tier); // the channel to admit them to
+        let base = Date.now(); try { const cur = JSON.parse(await env.STATS.get('tgsub:' + chat + ':' + tier) || 'null'); if (cur && cur.expiry > base) base = cur.expiry; } catch (e) {} // renewal → extend from current expiry
+        const expiry = base + 30 * 86400000;
+        let invite = (await env.STATS.get('tg:prem:' + (NOWPAY_TIER_LINK[tier] || 'free'))) || '';
+        if (chanId) { try { const r = await tgApi(env.TELEGRAM_TOKEN, 'createChatInviteLink', { chat_id: chanId, member_limit: 1, name: 'sub ' + chat }); if (r && r.ok && r.result && r.result.invite_link) invite = r.result.invite_link; } catch (e) {} } // one-time link → can't be shared
+        await env.STATS.put('tgsub:' + chat + ':' + tier, JSON.stringify({ tier, chan: chanId || '', expiry, ts: Date.now(), reminded: 0 }), { expirationTtl: Math.ceil((expiry - Date.now()) / 1000) + 5 * 86400 });
+        try { await evPush(env, null, 'sale', tier + ' ($' + data.price_amount + ')', ''); } catch (e) {} // premium purchase → Live activity
+        await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', disable_web_page_preview: true, text: '✅ <b>Payment confirmed!</b> Welcome to <b>' + tier + '</b> signals 🎉' + (invite ? '\n\n👉 <b>Join now:</b> ' + invite : '\n\nWe’ll add you shortly.') + '\n\n🗓 Access runs <b>30 days</b> (until ' + new Date(expiry).toISOString().slice(0, 10) + '). I’ll remind you before it ends. Status: /mysub' });
+        await tgAdmin(env, '💰 <b>NOWPayments — paid</b>\nTier: <b>' + tier + '</b> ($' + data.price_amount + ')\nUser chat: <code>' + chat + '</code> · until ' + new Date(expiry).toISOString().slice(0, 10) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
+      }
+    } else {
+      await tgAdmin(env, '💰 <b>NOWPayments</b> ' + status + ' — order <code>' + orderId + '</code> $' + (data.price_amount || '?'));
+    }
+  } else if (status === 'partially_paid' || status === 'failed' || status === 'expired') {
+    await tgAdmin(env, 'ℹ️ NOWPayments ' + status + ' — order <code>' + orderId + '</code>');
+  }
+  return new Response('ok');
+}
+// ---- Bot ↔ site account connection + unified alerts ----
+async function tgLinkedUser(env, chat) { // returns the site account linked to this Telegram chat, or null
+  if (!env.USERS || !chat) return null;
+  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/tglink/of?chat=' + encodeURIComponent(String(chat)))); const j = await r.json(); return (j && j.linked) ? j : null; } catch (e) { return null; }
+}
+// Call the UserStore DO (bot paper-trades live in the account journal → sync to My Trades on the web, same as the REST Bot API)
+async function usersDO(env, p, body) {
+  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) })); return await r.json(); } catch (e) { return null; }
+}
+async function connectText(env, chat) {
+  const lu = await tgLinkedUser(env, chat);
+  if (lu) return '🔗 <b>Account connected</b> ✅\nSigned in as <b>' + ((lu.username || (lu.email || '').split('@')[0] || 'trader')).replace(/[<>&]/g, '') + '</b>' + (lu.level && lu.level.name ? ' · ' + lu.level.name : '') + '.\nYour paper trades, alerts and leaderboard rank are linked. To disconnect, use the site → Profile.';
+  return '🔗 <b>Connect your MarginPad account</b>\n' + DIV + '\nLinking lets you paper-trade, rank on the leaderboard and manage alerts from here.\n\n<b>How:</b>\n1️⃣ Open <a href="https://marginpad.io/alerts/">marginpad.io/alerts</a> and sign in (free · just an email).\n2️⃣ Tap <b>“Connect Telegram”</b> — it opens me with a one-time link and you’re done.';
+}
+const WHALE_HELP = '🐋 <b>Whale alerts</b>\n' + DIV + '\nGet pinged when big money piles into one side on Hyperliquid.\n\n<code>/whale BTC short 200</code> — alert me when whales hold &gt; <b>$200M SHORT</b> on BTC\n<code>/whale ETH long 100</code> — &gt; $100M LONG on ETH\n<code>/whale BTC</code> — show current whale long/short on BTC now\n\nManage: <code>/alerts</code> · remove all: <code>/clearalerts</code>';
+async function alertsText(env, chat) {
+  const price = [], whale = []; let cal = 0;
+  try { const l = await env.STATS.list({ prefix: 'al:' + chat + ':' }); for (const k of l.keys) { const a = JSON.parse(await env.STATS.get(k.name) || 'null'); if (a) price.push(a); } } catch (e) {}
+  try { const l = await env.STATS.list({ prefix: 'wal:' + chat + ':' }); for (const k of l.keys) { const a = JSON.parse(await env.STATS.get(k.name) || 'null'); if (a) whale.push(a); } } catch (e) {}
+  try { const l = await env.STATS.list({ prefix: 'calremtg:' + chat + ':' }); cal = (l.keys || []).length; } catch (e) {}
+  let out = '🔔 <b>Your alerts</b>\n' + DIV + '\n';
+  out += '<b>💲 Price</b>\n' + (price.length ? price.map(a => '• ' + a.sym + ' ' + (a.dir === 'up' ? '≥' : '≤') + ' $' + tgfmt(a.target)).join('\n') : '<i>none · <code>/alert BTC 70000</code></i>') + '\n\n';
+  out += '<b>🐋 Whale</b>\n' + (whale.length ? whale.map(a => '• ' + a.sym + ' ' + a.side + ' &gt; $' + a.thr + 'M').join('\n') : '<i>none · <code>/whale BTC short 200</code></i>') + '\n\n';
+  out += '<b>📅 Calendar</b>\n' + (cal ? cal + ' reminder' + (cal > 1 ? 's' : '') + ' set (from marginpad.io/calendar)' : '<i>none · set on <a href="https://marginpad.io/calendar/">marginpad.io/calendar</a></i>') + '\n\n';
+  out += 'Remove all price + whale alerts: <code>/clearalerts</code>';
+  return out;
+}
+// Per-symbol whale long/short aggregate (USD) from Coinglass Hyperliquid whale positions. Cached 60s (same as /api/cg/hyper).
+async function whaleBySymbol(env) {
+  const ck = new Request('https://marginpad.io/__whale_bysym_v1');
+  try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
+  const out = {};
+  try {
+    const r = await fetch('https://open-api-v4.coinglass.com/api/hyperliquid/whale-position', { headers: { 'CG-API-KEY': env.COINGLASS_API_KEY } });
+    const j = await r.json();
+    if (j && j.code == 0 && Array.isArray(j.data)) {
+      j.data.forEach(x => { const sym = String(x.symbol || '').toUpperCase(); if (!sym) return; const val = Math.abs(+x.position_value_usd || 0), long = (+x.position_size || 0) >= 0; if (!out[sym]) out[sym] = { long: 0, short: 0 }; out[sym][long ? 'long' : 'short'] += val; });
+    }
+  } catch (e) {}
+  try { await caches.default.put(ck, new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=60' } })); } catch (e) {}
+  return out;
+}
+// Cron: fire whale alerts when a symbol's aggregate Hyperliquid whale long/short USD crosses the user's threshold.
+// Hysteresis (re-arm at 90% below) stops repeat pings while it hovers around the level.
+async function checkWhaleAlerts(env) {
+  try {
+    if (!env.STATS || !env.TELEGRAM_TOKEN || !env.COINGLASS_API_KEY) return;
+    if (!(await env.STATS.get('wal:on'))) return;
+    let keys = [];
+    try { const l = await env.STATS.list({ prefix: 'wal:', limit: 1000 }); keys = (l.keys || []).map(k => k.name).filter(n => n !== 'wal:on'); } catch (e) { return; }
+    if (!keys.length) return;
+    const by = await whaleBySymbol(env);
+    const fm = v => v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + 'B' : '$' + (v / 1e6).toFixed(0) + 'M';
+    for (const key of keys) {
+      let a = null; try { a = JSON.parse(await env.STATS.get(key) || 'null'); } catch (e) {}
+      if (!a || !a.chat || !a.side) continue;
+      const cur = (by[a.sym] || {})[a.side] || 0, thrUsd = (+a.thr || 0) * 1e6;
+      if (cur >= thrUsd && !a.fired) {
+        a.fired = 1; try { await env.STATS.put(key, JSON.stringify(a)); } catch (e) {}
+        try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: a.chat, parse_mode: 'HTML', disable_web_page_preview: true, text: '🐋 <b>Whale ' + a.side.toUpperCase() + ' alert — ' + a.sym + '</b>\n' + DIV + '\nHyperliquid whales now hold <b>' + fm(cur) + ' ' + a.side.toUpperCase() + '</b> on ' + a.sym + ' (your alert: &gt; $' + a.thr + 'M).\n\n🐋 <a href="https://marginpad.io/hyperliquid-whales/">Whale board</a> · 🧪 <a href="https://marginpad.io/paper-trade?coin=' + a.sym + '">Trade ' + a.sym + '</a>' }); } catch (e) {}
+      } else if (a.fired && cur < thrUsd * 0.9) {
+        a.fired = 0; try { await env.STATS.put(key, JSON.stringify(a)); } catch (e) {}
+      }
+    }
+  } catch (e) {}
+}
+// Invite-a-friend: pay the referrer once their referred friend gets active (≥3 paper trades). Anti-abuse in /refpending + /refqualify.
+async function checkReferrals(env) {
+  if (!env.USERS || !env.REWARDS) return;
+  let pend = []; try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/refpending')); const j = await r.json(); pend = j.pending || []; } catch (e) { return; }
+  if (!pend.length) return;
+  const cfg = await rewardCfg(env), refUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 0.2;
+  const cents = Math.max(1, Math.min(50, Math.round(refUsd * 100))), MIN_TRADES = 3;
+  const ledger = env.REWARDS.get(env.REWARDS.idFromName('ledger')), users = env.USERS.get(env.USERS.idFromName('main'));
+  for (const p of pend) {
+    if ((p.trades || 0) < MIN_TRADES) continue; // referred friend not active enough yet
+    try {
+      // Qualify FIRST (idempotent gate): once marked 'qualified' the referral leaves /refpending, so a failure
+      // AFTER this point can never re-pay. (Old order paid then marked → a failed mark re-paid every 10min = double-pay.)
+      const qr = await users.fetch(new Request('https://do/refqualify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ referred: p.referred }) }));
+      const qj = await qr.json();
+      if (!qj || !qj.ok) continue; // capped (>=100) or not found → don't pay
+      const cr = await ledger.fetch(new Request('https://do/mission', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + p.referrer, cents, mid: 'referral' }) }));
+      const cj = await cr.json();
+      if (cj && !cj.error) { try { await evPush(env, null, 'refpaid', '+$' + refUsd.toFixed(2), '/rewards/'); } catch (e) {} }
+      // If the credit failed here the referral is 'qualified' but unpaid (rare DO-to-DO failure) — recoverable via manual /adjust; chosen over unbounded double-pay.
+    } catch (e) {}
+  }
+}
+// DM linked Telegram users when they enter the top 10 or hit a podium spot on the XP leaderboard (rare → no spam).
+async function checkLbNotify(env) {
+  if (!env.USERS || !env.TELEGRAM_TOKEN) return;
+  let ranks = []; try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/tgranks')); const j = await r.json(); ranks = j.ranks || []; } catch (e) { return; }
+  for (const u of ranks) {
+    if (!u.tg) continue; // only DM users who linked their Telegram
+    let prev = 0; try { prev = +(await env.STATS.get('tglbr:' + u.uid)) || 0; } catch (e) {}
+    if (prev !== u.rank) { try { await env.STATS.put('tglbr:' + u.uid, String(u.rank), { expirationTtl: 45 * 86400 }); } catch (e) {} }
+    if (!prev) continue; // first time we see them → just record, don't ping
+    const enteredTop10 = prev > 10 && u.rank <= 10, podium = u.rank <= 3 && prev > u.rank;
+    if (enteredTop10 || podium) {
+      const medal = u.rank === 1 ? '🥇' : u.rank === 2 ? '🥈' : u.rank === 3 ? '🥉' : '🏆';
+      try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: u.tg, parse_mode: 'HTML', disable_web_page_preview: true, text: medal + ' You’re now <b>#' + u.rank + '</b> on the MarginPad leaderboard! ' + (podium ? 'On the podium 🔥' : 'Top 10 🎉') + '\nDefend your spot: marginpad.io/levels' }); } catch (e) {}
+    }
+  }
+}
+// Premium subscription lifecycle: DM a reminder ≤3 days before expiry, and remove from the channel + notify on expiry.
+async function checkSubscriptions(env) {
+  if (!env.STATS || !env.TELEGRAM_TOKEN) return;
+  let keys = []; try { const l = await env.STATS.list({ prefix: 'tgsub:', limit: 1000 }); keys = l.keys || []; } catch (e) { return; }
+  const now = Date.now();
+  for (const k of keys) {
+    let s = null; try { s = JSON.parse(await env.STATS.get(k.name) || 'null'); } catch (e) {}
+    if (!s || !s.expiry) continue;
+    const parts = k.name.split(':'), chat = parts[1], tier = parts[2];
+    if (s.expiry <= now) { // expired → remove from the channel (ban+unban = kick, can rejoin after re-paying) + notify + drop the record
+      if (s.chan) { try { await tgApi(env.TELEGRAM_TOKEN, 'banChatMember', { chat_id: s.chan, user_id: +chat, until_date: Math.floor(now / 1000) + 45 }); await tgApi(env.TELEGRAM_TOKEN, 'unbanChatMember', { chat_id: s.chan, user_id: +chat, only_if_banned: true }); } catch (e) {} try { await evPush(env, null, 'subkick', String(s.tier || 'premium'), ''); } catch (e) {} }
+      try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', text: '⌛ Your <b>' + tier + '</b> signals subscription has ended. Renew to keep the signals coming: <code>/buy ' + tier + '</code>' }); } catch (e) {}
+      try { await env.STATS.delete(k.name); } catch (e) {}
+    } else if (s.expiry - now <= 3 * 86400000 && !s.reminded) { // ≤3 days left → one-time renewal reminder
+      s.reminded = 1; try { await env.STATS.put(k.name, JSON.stringify(s), { expirationTtl: Math.ceil((s.expiry - now) / 1000) + 5 * 86400 }); } catch (e) {}
+      const d = Math.ceil((s.expiry - now) / 86400000);
+      try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', text: '⏳ Your <b>' + tier + '</b> signals subscription ends in <b>' + d + ' day' + (d !== 1 ? 's' : '') + '</b>. Renew now to keep your access: <code>/buy ' + tier + '</code>' }); } catch (e) {}
+    }
+  }
+}
+// mp-ops "Telegram Bot" tab: everyone who uses the bot (from botu:* KV metadata), command breakdown, the signal/news
+// channels with live member counts, recent bot activity, premium-access requests, and the signal config.
+async function handleTgbotStats(env) {
+  const J = o => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+  if (!env.STATS) return J({ error: 'no-kv' });
+  const day = new Date().toISOString().slice(0, 10), dayStart = new Date(day).getTime();
+  const users = [];
+  try { let cursor; do { const l = await env.STATS.list({ prefix: 'botu:', cursor, limit: 1000 }); (l.keys || []).forEach(k => { const m = k.metadata || {}; users.push({ uid: k.name.slice(5), u: m.u || '', f: m.f || '', n: m.n || 0, first: m.first || 0, ts: m.ts || 0, lc: m.lc || '' }); }); cursor = l.list_complete ? null : l.cursor; } while (cursor); } catch (e) {}
+  users.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+  const activeToday = users.filter(u => u.ts >= dayStart).length, newToday = users.filter(u => u.first >= dayStart).length;
+  const commands = [];
+  try { const l = await env.STATS.list({ prefix: 'bot:cmd:', limit: 1000 }); (l.keys || []).forEach(k => commands.push([k.name.slice(8), (k.metadata && k.metadata.c) || 0])); } catch (e) {}
+  commands.sort((a, b) => b[1] - a[1]);
+  const gc = async k => { try { const r = await env.STATS.getWithMetadata(k); return (r && r.metadata && r.metadata.c) || (r && r.value ? +r.value : 0) || 0; } catch (e) { return 0; } };
+  const botMsg = await gc('bot:msg'), botUsers = await gc('bot:users');
+  let premReqs = []; try { premReqs = JSON.parse(await env.STATS.get('tg:premreq') || '[]'); } catch (e) {}
+  let activity = []; try { activity = (JSON.parse(await env.STATS.get('evlog') || '[]')).filter(e => e.t === 'bot').slice(0, 40).map(e => ({ e: e.e, u: e.u || '', ts: e.ts })); } catch (e) {}
+  const TIERS = [['fast', '⚡ Fast'], ['balanced', '⚖️ Balanced'], ['premium', '💎 Premium'], ['free', '🆓 Free'], ['news', '📰 News']];
+  const channels = [];
+  for (const [tier, label] of TIERS) {
+    const chat = (await env.STATS.get('csig:chat:' + tier)) || (tier === 'news' ? '@marginpadnews' : '');
+    const row = { tier, label, chat: chat || '', title: '', members: null, username: '' };
+    if (chat && env.TELEGRAM_TOKEN) {
+      try { const r = await tgApi(env.TELEGRAM_TOKEN, 'getChat', { chat_id: chat }); if (r && r.ok && r.result) { row.title = r.result.title || ''; row.username = r.result.username || ''; } } catch (e) {}
+      try { const r = await tgApi(env.TELEGRAM_TOKEN, 'getChatMemberCount', { chat_id: chat }); if (r && r.ok) row.members = r.result; } catch (e) {}
+    }
+    channels.push(row);
+  }
+  return J({ day, botMsg, botUsers, activeToday, newToday, users, commands, premReqs, activity, channels, coins: (await env.STATS.get('csig:coins')) || '(default majors)', on: (await env.STATS.get('csig:on')) !== '0', newsOn: (await env.STATS.get('news:tg:on')) !== '0' });
 }
 async function handleTelegram(request, env) {
   if (!env || !env.TELEGRAM_TOKEN) return new Response('ok');
@@ -4323,26 +5504,54 @@ async function handleTelegram(request, env) {
     || (update.my_chat_member && update.my_chat_member.chat) || (update.chat_member && update.chat_member.chat);
   const chChat = (update.channel_post || update.edited_channel_post) ? (update.channel_post || update.edited_channel_post).chat : chEv;
   if (chChat && chChat.type === 'channel' && env.STATS) {
+    // Owner posts "/bind fast|balanced|premium|free" INSIDE a channel → map that channel to a signal tier (only channel admins can post, so it's safe)
+    const cpText = (((update.channel_post || update.edited_channel_post) || {}).text || '').trim();
+    const bm = /^\/bind(?:@\w+)?\s+(fast|balanced|premium|free)\b/i.exec(cpText);
+    if (bm) {
+      const tier = bm[1].toLowerCase();
+      try { await env.STATS.put('csig:chat:' + tier, String(chChat.id)); } catch (e) {}
+      try { await tgApi(token, 'sendMessage', { chat_id: chChat.id, parse_mode: 'HTML', text: '✅ Bound <b>' + tier + '</b> signals to this channel (<code>' + chChat.id + '</code>). Signals will post here.' }); } catch (e) {}
+      return new Response('ok');
+    }
     try {
       await env.STATS.put('tg:channel', String(chChat.id));
       await env.STATS.put('tg:channel_name', chChat.username ? '@' + chChat.username : (chChat.title || String(chChat.id)));
+      // also keep a rolling list of recently-seen channels so multiple can be mapped to signal tiers
+      let list = []; try { list = JSON.parse(await env.STATS.get('tg:seenchans') || '[]') || []; } catch (e) {}
+      list = list.filter(x => x.id !== chChat.id); list.unshift({ id: chChat.id, title: chChat.title || '', un: chChat.username || '', ts: Date.now() });
+      await env.STATS.put('tg:seenchans', JSON.stringify(list.slice(0, 10)));
     } catch (e) {}
     return new Response('ok');
   }
 
+  if (update.inline_query) { // @MarginPadBot <coin> in ANY chat → live price card (viral). Enable inline in @BotFather first.
+    const q = update.inline_query, query = String(q.query || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+    const results = [];
+    if (query) { const p = await fetchPrice(query); if (p) results.push({ type: 'article', id: 'p_' + query, title: p.sym + ' — $' + tgfmt(p.price), description: (p.chg >= 0 ? '🟢 +' : '🔴 ') + (+p.chg).toFixed(2) + '% (24h) · tap to send', input_message_content: { message_text: '💲 <b>' + p.sym + '/USDT</b>\nPrice <b>$' + tgfmt(p.price) + '</b>\n24h ' + (p.chg >= 0 ? '🟢 +' : '🔴 ') + (+p.chg).toFixed(2) + '%\n\n📈 Free crypto paper trading, charts &amp; signals — marginpad.io', parse_mode: 'HTML', disable_web_page_preview: true }, reply_markup: { inline_keyboard: [[{ text: '📈 Trade ' + p.sym + ' on MarginPad', url: 'https://marginpad.io/paper-trade?coin=' + query }]] } }); }
+    if (!results.length) results.push({ type: 'article', id: 'help', title: query ? 'No price for “' + query + '”' : 'Type a coin — e.g. BTC', description: 'Get its live price to share in any chat', input_message_content: { message_text: '📈 <b>MarginPad</b> — free crypto paper trading, charts, calculators &amp; 1h signals: marginpad.io', parse_mode: 'HTML' } });
+    try { await tgApi(token, 'answerInlineQuery', { inline_query_id: q.id, results, cache_time: 20 }); } catch (e) {}
+    return new Response('ok');
+  }
   if (update.callback_query) {
     const cq = update.callback_query;
-    await bumpBot(env, 'btn-' + cq.data, cq.from && cq.from.id);
+    await bumpBot(env, 'btn-' + cq.data, cq.from);
     await tgApi(token, 'answerCallbackQuery', { callback_query_id: cq.id });
-    const cbText = cq.data === 'lb' ? await leaderboard(env) : (TG_FORMATS[cq.data] || TG_HELP);
     const cbChat = cq.message && cq.message.chat && cq.message.chat.id; // Telegram can deliver a callback_query without `message` (old/inline) — guard so it doesn't throw → 500 → webhook retry storm
+    let cbText;
+    if (cq.data === 'lb') cbText = await leaderboard(env);
+    else if (cq.data === 'signals') cbText = await premiumInfo(env);
+    else if (cq.data === 'connect') cbText = await connectText(env, cbChat);
+    else if (cq.data === 'whale') cbText = WHALE_HELP;
+    else if (cq.data === 'alerts') cbText = cbChat ? await alertsText(env, cbChat) : WHALE_HELP;
+    else cbText = TG_FORMATS[cq.data] || TG_HELP;
     if (cbChat) await tgApi(token, 'sendMessage', { chat_id: cbChat, text: cbText, ...base });
     return new Response('ok');
   }
   const msg = update.message || update.edited_message;
   if (!msg || !msg.text) return new Response('ok');
   const cmd = msg.text.trim().split(/\s+/)[0].toLowerCase().replace(/@.*$/, '');
-  await bumpBot(env, cmd.replace(/^\//, '') || 'msg', msg.from && msg.from.id);
+  await bumpBot(env, cmd.replace(/^\//, '') || 'msg', msg.from);
+  if (cmd.charAt(0) === '/') await botLog(env, cmd.replace(/^\//, ''), msg.from); // → ops Real-time activity, tagged with the Telegram user
   if (cmd === '/start' || cmd === '/help') {
     const payload = msg.text.trim().split(/\s+/)[1] || ''; // deep-link token from t.me/MarginPadBot?start=<token> (account ↔ Telegram link for alerts)
     // calendar reminder deep link: t.me/MarginPadBot?start=cal_<tsSec>_<type> (from /calendar/ "Remind me → Telegram")
@@ -4367,12 +5576,103 @@ async function handleTelegram(request, env) {
     await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: TG_HELP, ...base, reply_markup: TG_KB });
     return new Response('ok');
   }
-  if (cmd === '/trade' || cmd === '/me') {
-    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'The leaderboard now ranks your real <b>paper trades</b> — no manual entry.\n\n📈 Trade free at <a href="https://marginpad.io/?p=plan">MarginPad Paper Trade</a>, add your wallet at <a href="https://marginpad.io/rewards/">marginpad.io/rewards</a>, and your best trade of the week ranks automatically.\n\nStandings: /leaderboard', ...base });
+  if (cmd === '/trade' || cmd === '/me' || cmd === '/whoami') {
+    const lu = await tgLinkedUser(env, msg.chat.id);
+    let openN = 0; try { const l = await env.STATS.list({ prefix: 'pos:' + msg.chat.id + ':' }); openN = (l.keys || []).length; } catch (e) {}
+    let alN = 0; try { const a1 = await env.STATS.list({ prefix: 'al:' + msg.chat.id + ':' }); const a2 = await env.STATS.list({ prefix: 'wal:' + msg.chat.id + ':' }); alN = (a1.keys || []).length + (a2.keys || []).length; } catch (e) {}
+    let out;
+    if (lu) {
+      out = '👤 <b>Your MarginPad</b>\n' + DIV + '\n🔗 Connected as <b>' + ((lu.username || (lu.email || '').split('@')[0] || 'trader')).replace(/[<>&]/g, '') + '</b>' + (lu.level && lu.level.name ? ' · ' + lu.level.name + ' (' + (lu.xp || 0).toLocaleString('en-US') + ' XP)' : '') + '\n📈 Open positions: <b>' + openN + '</b>' + (openN ? ' — /positions' : '') + '\n🔔 Active alerts: <b>' + alN + '</b>' + (alN ? ' — /alerts' : '') + '\n\n🏆 /leaderboard · 📡 /premium · 🌐 <a href="https://marginpad.io">marginpad.io</a>';
+    } else {
+      out = '👤 <b>Not connected yet</b>\n' + DIV + '\nConnect your MarginPad account to paper-trade from the bot and rank on the leaderboard.\n\nUse <code>/connect</code> — takes 20 seconds.';
+    }
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: out, ...base });
     return new Response('ok');
   }
-  if (cmd === '/leaderboard' || cmd === '/lb') {
+  if (cmd === '/leaderboard' || cmd === '/lb' || cmd === '/leaderboard1' || cmd === '/leaderboard2' || cmd === '/leaderboard3') {
     await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: await leaderboard(env), ...base });
+    return new Response('ok');
+  }
+  if (cmd === '/premium' || cmd === '/signals' || cmd === '/vip') {
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: await premiumInfo(env), ...base });
+    return new Response('ok');
+  }
+  if (cmd === '/community' || cmd === '/chat' || cmd === '/group') {
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, parse_mode: 'HTML', disable_web_page_preview: true, reply_markup: { inline_keyboard: [[{ text: '💬 Join the community', url: 'https://t.me/Marginpadgroup' }]] }, text: '💬 <b>MarginPad Community</b>\n' + DIV + '\nOur open chat for crypto traders — share setups, ask questions, and post your trades (<code>/share</code>). Everyone welcome 👇' });
+    return new Response('ok');
+  }
+  if (cmd === '/funding' || cmd === '/fund') {
+    const fm = await fundingMap(env);
+    const arr = Object.keys(fm).map(s => ({ s, f: fm[s] })).filter(x => isFinite(x.f));
+    if (!arr.length) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '💸 Funding data unavailable right now — try again shortly.', ...base }); return new Response('ok'); }
+    const fmt = x => x.s + ' <b>' + (x.f >= 0 ? '+' : '') + x.f.toFixed(3) + '%</b>';
+    const pos = arr.slice().sort((a, b) => b.f - a.f).slice(0, 6), neg = arr.slice().sort((a, b) => a.f - b.f).slice(0, 6);
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '💸 <b>Funding extremes</b> <i>(per 8h)</i>\n' + DIV + '\n🟢 <b>Crowded longs</b> (longs pay):\n' + pos.map(fmt).join(' · ') + '\n\n🔴 <b>Crowded shorts</b> (shorts pay):\n' + neg.map(fmt).join(' · ') + '\n\nAlert me: <code>/fundalert BTC 0.1</code>', ...base });
+    return new Response('ok');
+  }
+  if (cmd === '/fundalert' || cmd === '/fundingalert') {
+    const parts = msg.text.trim().split(/\s+/), sym = String(parts[1] || '').toUpperCase().replace(/[^A-Z0-9]/g, ''), thr = parseFloat(parts[2]);
+    if (!sym || !isFinite(thr) || thr <= 0) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '💸 <b>Funding alert</b>\nPing me when a coin’s funding gets extreme:\n<code>/fundalert BTC 0.1</code>\n<i>(fires when |funding| ≥ 0.1% per 8h)</i>', ...base }); return new Response('ok'); }
+    let n = 0; try { const l = await env.STATS.list({ prefix: 'fal:' + msg.chat.id + ':' }); n = (l.keys || []).length; } catch (e) {}
+    if (n >= 15) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '⚠️ Max 15 funding alerts. Clear some: /clearalerts', ...base }); return new Response('ok'); }
+    try { await env.STATS.put('fal:' + msg.chat.id + ':' + sym, JSON.stringify({ sym, thr, chat: String(msg.chat.id) })); await env.STATS.put('fal:on', '1'); } catch (e) {}
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '💸 <b>Funding alert set</b> ✅\nI’ll ping you when <b>' + sym + '</b> funding crosses <b>±' + thr + '%</b> (per 8h). · /alerts', ...base });
+    return new Response('ok');
+  }
+  if (cmd === '/connect' || cmd === '/link') {
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: await connectText(env, msg.chat.id), ...base });
+    return new Response('ok');
+  }
+  if (cmd === '/whale' || cmd === '/whales' || cmd === '/whalealert') {
+    const parts = msg.text.trim().split(/\s+/);
+    const sym = String(parts[1] || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!sym) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: WHALE_HELP, ...base }); return new Response('ok'); }
+    const side = /short/i.test(parts[2]) ? 'short' : /long/i.test(parts[2]) ? 'long' : '';
+    const thr = parseFloat(String(parts[3] || '').replace(/[,$mM]/g, ''));
+    const by = await whaleBySymbol(env); const cur = by[sym] || { long: 0, short: 0 };
+    const fm = v => v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + 'B' : '$' + (v / 1e6).toFixed(0) + 'M';
+    if (!side || !isFinite(thr) || thr <= 0) { // no valid subscription args → show the current whale positioning for that coin
+      await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '🐋 <b>' + sym + ' whale positioning</b> <i>(Hyperliquid, live)</i>\n' + DIV + '\n🟢 Long  <b>' + fm(cur.long) + '</b>\n🔴 Short <b>' + fm(cur.short) + '</b>\n\nSet an alert: <code>/whale ' + sym + ' short 200</code>', ...base }); return new Response('ok');
+    }
+    let n = 0; try { const l = await env.STATS.list({ prefix: 'wal:' + msg.chat.id + ':' }); n = (l.keys || []).length; } catch (e) {}
+    if (n >= 20) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '⚠️ Max 20 whale alerts. Clear some: /clearalerts', ...base }); return new Response('ok'); }
+    const key = 'wal:' + msg.chat.id + ':' + sym + ':' + side;
+    try { await env.STATS.put(key, JSON.stringify({ sym, side, thr: Math.round(thr), chat: String(msg.chat.id) })); await env.STATS.put('wal:on', '1'); } catch (e) {}
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '🐋 <b>Whale alert set</b> ✅\nI’ll ping you when Hyperliquid whales hold <b>&gt; $' + Math.round(thr) + 'M ' + side.toUpperCase() + '</b> on <b>' + sym + '</b>.\n<i>Now: ' + side + ' ' + fm(cur[side]) + '.</i> · /alerts', ...base });
+    return new Response('ok');
+  }
+  if (cmd === '/request') { // signal-group access inquiry → ping the owner + log to KV (survives no TG_ADMIN_CHAT), confirm to the user
+    const u = msg.from || {}, uname = u.username ? '@' + u.username : ((u.first_name || '') + ' ' + (u.last_name || '')).trim() || ('id ' + (u.id || '?'));
+    try { if (env.STATS) { let l = []; try { l = JSON.parse(await env.STATS.get('tg:premreq') || '[]'); } catch (e) {} l.unshift({ name: uname.slice(0, 60), chat: msg.chat.id, un: u.username || '', ts: msg.date ? msg.date * 1000 : 0 }); await env.STATS.put('tg:premreq', JSON.stringify(l.slice(0, 100))); } } catch (e) {}
+    try { await tgAdmin(env, '📨 <b>Premium signals request</b>\nFrom: <b>' + uname.replace(/[<>]/g, '') + '</b> (chat <code>' + msg.chat.id + '</code>)\nReply to them in Telegram to arrange access.'); } catch (e) {}
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '✅ <b>Request received.</b>\nWe’ll message you here with access details soon.' + (env.NOWPAY_API_KEY ? '\nTo pay now &amp; get instant access, send <code>/buy fast</code> (or balanced/premium).' : '\nTo pay in advance, send <b>USDT (BEP20)</b> to:\n<code>' + PREM_ADDR + '</code>\nThen reply here with your TX hash.') + ' Thanks!', ...base });
+    return new Response('ok');
+  }
+  if (cmd === '/buy') { // NOWPayments crypto checkout → unique invoice per user; access auto-granted on confirmation
+    const tier = (msg.text.trim().split(/\s+/)[1] || '').toLowerCase();
+    if (!NOWPAY_TIERS[tier]) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '💎 <b>Buy premium signals</b>\n' + DIV + '\n<code>/buy fast</code> — $14.99/mo\n<code>/buy balanced</code> — $24.99/mo\n<code>/buy premium</code> — $39.99/mo\n\nYou’ll get a secure payment link; the group invite is sent here automatically once it confirms.', ...base }); return new Response('ok'); }
+    if (!env.NOWPAY_API_KEY) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Crypto checkout isn’t enabled yet — send /request instead.', ...base }); return new Response('ok'); }
+    const inv = await nowpayCreate(env, msg.chat.id, tier);
+    if (!inv) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '⚠️ Couldn’t create the invoice right now. Try again shortly or send /request.', ...base }); return new Response('ok'); }
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, parse_mode: 'HTML', disable_web_page_preview: true, reply_markup: { inline_keyboard: [[{ text: '💳 Pay $' + NOWPAY_TIERS[tier] + ' — ' + tier + ' signals', url: inv.invoice_url }]] }, text: '💎 <b>' + tier[0].toUpperCase() + tier.slice(1) + ' signals</b> — $' + NOWPAY_TIERS[tier] + '/mo\n' + DIV + '\nTap below to pay with any crypto. The moment payment confirms, I’ll send your group invite here automatically. ✅\n<i>The link is unique to you.</i>' });
+    return new Response('ok');
+  }
+  if (cmd === '/bind') { // run inside a GROUP to map it to a signal tier (channels use /bind in a channel post)
+    let allowed = String(msg.from && msg.from.id) === String(env.TG_ADMIN_CHAT);
+    if (!allowed && msg.from) { try { const gm = await tgApi(token, 'getChatMember', { chat_id: msg.chat.id, user_id: msg.from.id }); const st = gm && gm.result && gm.result.status; allowed = st === 'creator' || st === 'administrator'; } catch (e) {} } // any admin of this group can bind it
+    if (!allowed) return new Response('ok'); // silent for non-admins
+    const tier = (msg.text.trim().split(/\s+/)[1] || '').toLowerCase();
+    if (!/^(fast|balanced|premium|free)$/.test(tier)) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Run inside the target group: <code>/bind fast|balanced|premium|free</code>', ...base }); return new Response('ok'); }
+    try { await env.STATS.put('csig:chat:' + tier, String(msg.chat.id)); } catch (e) {}
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '✅ Bound <b>' + tier + '</b> signals to this chat (<code>' + msg.chat.id + '</code>). Signals will post here.', ...base });
+    return new Response('ok');
+  }
+  if (cmd === '/bindgroup') { // run inside the community group → captures its NUMERIC id (public @username often can't be resolved by the bot API)
+    let allowed = String(msg.from && msg.from.id) === String(env.TG_ADMIN_CHAT);
+    if (!allowed && msg.from) { try { const gm = await tgApi(token, 'getChatMember', { chat_id: msg.chat.id, user_id: msg.from.id }); const st = gm && gm.result && gm.result.status; allowed = st === 'creator' || st === 'administrator'; } catch (e) {} }
+    if (!allowed) return new Response('ok');
+    try { await env.STATS.put('tg:chat:group', String(msg.chat.id)); } catch (e) {}
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '✅ Bound this group as the MarginPad <b>community group</b> (<code>' + msg.chat.id + '</code>). <code>/share</code> posts here now.', ...base });
     return new Response('ok');
   }
   if (cmd === '/price' || cmd === '/p') {
@@ -4441,19 +5741,21 @@ async function handleTelegram(request, env) {
     return new Response('ok');
   }
   if (cmd === '/alerts') {
-    const items = [];
-    try { const l = await env.STATS.list({ prefix: 'al:' + msg.chat.id + ':' }); for (const k of l.keys) { const a = JSON.parse(await env.STATS.get(k.name)); if (a) items.push(a); } } catch (e) {}
-    const text = items.length ? '🔔 <b>Your alerts</b>\n' + DIV + '\n' + items.map(a => `${a.sym} ${a.dir === 'up' ? '≥' : '≤'} $${tgfmt(a.target)}`).join('\n') + '\n\nClear all: /clearalerts' : 'No alerts yet. Set one: <code>/alert BTC 70000</code>';
-    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text, ...base });
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: await alertsText(env, msg.chat.id), ...base });
     return new Response('ok');
   }
   if (cmd === '/clearalerts') {
-    let n = 0; try { const l = await env.STATS.list({ prefix: 'al:' + msg.chat.id + ':' }); for (const k of l.keys) { await env.STATS.delete(k.name); n++; } } catch (e) {}
-    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '🗑 Cleared ' + n + ' alert(s).', ...base });
+    let n = 0;
+    try { const l = await env.STATS.list({ prefix: 'al:' + msg.chat.id + ':' }); for (const k of l.keys) { await env.STATS.delete(k.name); n++; } } catch (e) {}
+    try { const l = await env.STATS.list({ prefix: 'wal:' + msg.chat.id + ':' }); for (const k of l.keys) { await env.STATS.delete(k.name); n++; } } catch (e) {}
+    try { const l = await env.STATS.list({ prefix: 'fal:' + msg.chat.id + ':' }); for (const k of l.keys) { await env.STATS.delete(k.name); n++; } } catch (e) {}
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '🗑 Cleared ' + n + ' alert(s) (price + whale + funding).', ...base });
     return new Response('ok');
   }
   // ---- paper positions from Telegram: /open, /positions, /close ----
   if (cmd === '/open') {
+    const _lu = await tgLinkedUser(env, msg.chat.id); // connection required — bot trades must belong to a real account (so they rank + sync)
+    if (!_lu) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '🔗 <b>Connect your account to trade.</b>\n' + DIV + '\nPaper trades from the bot need a linked MarginPad account — so they count on the leaderboard and sync to your journal.\n\n1️⃣ Open <a href="https://marginpad.io/alerts/">marginpad.io/alerts</a>, sign in (free).\n2️⃣ Tap <b>Connect Telegram</b>.\n\nThen send <code>/open</code> again. (Check status: /connect)', ...base }); return new Response('ok'); }
     const o = parseOpen(msg.text);
     if (!o) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '📈 <b>Open a paper position</b>\nSend: <code>/open BTC 100 x300</code>\n<i>coin · margin in $ · leverage</i>\n\nGoing short? <code>/open ETH 50 x20 short</code>', ...base }); return new Response('ok'); }
     const p = await fetchPrice(o.sym);
@@ -4461,43 +5763,69 @@ async function handleTelegram(request, env) {
     let cnt = 0, pairCnt = 0; try { const l = await env.STATS.list({ prefix: 'pos:' + msg.chat.id + ':' }); cnt = l.keys.length; if (cnt < 50) for (const k of l.keys) { try { const v = JSON.parse(await env.STATS.get(k.name) || 'null'); if (v && v.sym === p.sym) pairCnt++; } catch (e) {} } } catch (e) {}
     if (cnt >= 50) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '⚠️ Limit reached — 50 open positions is the max. Close some first (/positions).', ...base }); return new Response('ok'); }
     if (pairCnt >= 10) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '⚠️ Limit reached — max 10 open ' + p.sym + ' positions. Close one first (<code>/close ' + p.sym + '</code>).', ...base }); return new Response('ok'); }
-    const id = Date.now().toString(36).slice(-5) + Math.floor(Math.random() * 1296).toString(36);
-    const pos = { id, sym: p.sym, side: o.side, margin: o.margin, lev: o.lev, entry: p.price, ts: Date.now() };
-    // claim token → lets the user open this exact position in My Trades on the website (web or mobile), idempotent import
-    const claimTok = (Date.now().toString(36) + Math.random().toString(36).slice(2, 12)).replace(/[^a-z0-9]/g, '');
-    pos.claim = claimTok;
-    try { await env.STATS.put('pos:' + msg.chat.id + ':' + id, JSON.stringify(pos)); } catch (e) {}
-    try { await env.STATS.put('tgclaim:' + claimTok, JSON.stringify({ sym: pos.sym, side: pos.side, margin: pos.margin, lev: pos.lev, entry: pos.entry, ts: pos.ts }), { expirationTtl: 2592000 }); } catch (e) {}
-    const c = posCalc(pos, p.price);
-    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: (o.side === 'long' ? '🟢' : '🔴') + ' <b>Opened ' + o.side.toUpperCase() + ' ' + p.sym + '</b>\n' + DIV + '\nMargin  <b>$' + tgfmt(o.margin) + '</b>\nLeverage  <b>' + o.lev + '×</b>\nSize  <b>$' + tgfmt(c.size) + '</b>\nEntry  <b>$' + tgfmt(p.price) + '</b>\nLiq.  ~$' + tgfmt(c.liq) + '\n\n🔗 <a href="https://marginpad.io/paper-trade?claim=' + claimTok + '">Open &amp; track it on MarginPad →</a>\n\n📊 In chat: /positions · close with <code>/close ' + id + '</code>', ...base });
+    // Write the trade STRAIGHT into the linked account's journal (My Trades) — same store as the web/REST bot, so it
+    // auto-syncs to the website within ~14s (pullTrades). No claim link needed; opening here = opening on the web.
+    const long = o.side === 'long', mmr = 0.005, entry = p.price, lev = o.lev, margin = o.margin;
+    const liq = mpcLiq(entry, lev, mmr, long);
+    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: p.sym, side: o.side, entry, stop: null, tp: null, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: 0, status: 'open', pnl: null, src: 'bot' };
+    let promos = []; try { promos = await xpPromos(env); } catch (e) {}
+    const r = await usersDO(env, '/botopen', { uid: _lu.uid, t, promos });
+    if (!r || r.error) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '⚠️ ' + (r && r.error === 'too_many_open' ? 'Max 50 open positions — close some first (/positions).' : 'Couldn’t open the trade — try again in a moment.'), ...base }); return new Response('ok'); }
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: (long ? '🟢' : '🔴') + ' <b>Opened ' + o.side.toUpperCase() + ' ' + p.sym + '</b>\n' + DIV + '\nMargin  <b>$' + tgfmt(margin) + '</b>\nLeverage  <b>' + lev + '×</b>\nSize  <b>$' + tgfmt(margin * lev) + '</b>\nEntry  <b>$' + tgfmt(entry) + '</b>\nLiq.  ~$' + tgfmt(liq) + '\n\n✅ <b>Synced to your account</b> — it’s already in <a href="https://marginpad.io/paper-trade">My Trades</a> on the web.\n\n📊 /positions · close with <code>/close ' + p.sym + '</code>', ...base });
     return new Response('ok');
   }
   if (cmd === '/positions' || cmd === '/pos' || cmd === '/positon') {
-    const poss = [];
-    try { const l = await env.STATS.list({ prefix: 'pos:' + msg.chat.id + ':' }); for (const k of l.keys) { const v = JSON.parse(await env.STATS.get(k.name) || 'null'); if (v) poss.push(v); } } catch (e) {}
+    const _lu = await tgLinkedUser(env, msg.chat.id);
+    if (!_lu) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '🔗 Connect your account first to see your positions: /connect', ...base }); return new Response('ok'); }
+    const seed = await usersDO(env, '/botpositions', { uid: _lu.uid, prices: {} }); // read the account journal (same as My Trades on the web)
+    const syms = Array.from(new Set(((seed && seed.positions) || []).filter(x => x.status === 'open').map(x => x.symbol)));
+    const prices = {}; await Promise.all(syms.map(async s => { try { const pp = await fetchPrice(s); if (pp) prices[s] = pp.price; } catch (e) {} }));
+    const r = await usersDO(env, '/botpositions', { uid: _lu.uid, prices });
+    const poss = ((r && r.positions) || []).filter(x => x.status === 'open').sort((a, b) => (a.opened_ts || 0) - (b.opened_ts || 0));
     if (!poss.length) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '📊 No open positions yet.\nOpen one: <code>/open BTC 100 x300</code>', ...base }); return new Response('ok'); }
-    const syms = {}; poss.forEach(x => { syms[x.sym] = 1; });
-    const prices = {}; await Promise.all(Object.keys(syms).map(async s => { try { const pp = await fetchPrice(s); if (pp) prices[s] = pp.price; } catch (e) {} }));
     let tot = 0;
-    const lines = poss.sort((a, b) => a.ts - b.ts).map(x => {
-      const cur = prices[x.sym];
-      if (!cur) return '• <b>' + x.sym + '</b> ' + x.side + ' — price unavailable  <code>' + x.id + '</code>';
-      const c = posCalc(x, cur); tot += c.pnl;
-      return (c.roe >= 0 ? '🟢' : '🔴') + ' <b>' + x.sym + '</b> ' + x.side + ' ' + x.lev + '×  <code>' + x.id + '</code>\n   Entry $' + tgfmt(x.entry) + ' → Now $' + tgfmt(cur) + '\n   PnL <b>' + (c.pnl >= 0 ? '+' : '') + '$' + tgfmt(c.pnl) + '</b> (' + (c.roe >= 0 ? '+' : '') + c.roe.toFixed(0) + '% ROE) · Liq ~$' + tgfmt(c.liq) + (x.claim ? '\n   🔗 <a href="https://marginpad.io/paper-trade?claim=' + x.claim + '">View on MarginPad</a>' : '');
+    const lines = poss.map(x => {
+      const pnl = +x.unrealized_pnl_usd || 0, roe = x.margin_usd ? pnl / x.margin_usd * 100 : 0; tot += pnl;
+      return (pnl >= 0 ? '🟢' : '🔴') + ' <b>' + x.symbol + '</b> ' + x.side + ' ' + x.leverage + '×  <code>' + x.id + '</code>\n   Entry $' + tgfmt(x.entry_price) + (x.mark_price ? ' → Now $' + tgfmt(x.mark_price) : '') + '\n   PnL <b>' + (pnl >= 0 ? '+' : '') + '$' + tgfmt(pnl) + '</b> (' + (roe >= 0 ? '+' : '') + roe.toFixed(0) + '% ROE) · Liq ~$' + tgfmt(x.liq_price);
     });
-    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '📊 <b>Your paper positions</b>\n' + DIV + '\n' + lines.join('\n\n') + '\n' + DIV + '\nTotal PnL  <b>' + (tot >= 0 ? '+' : '') + '$' + tgfmt(tot) + '</b>\n\nClose one: <code>/close ' + poss[0].id + '</code> (or <code>/close ' + poss[0].sym + '</code>)', ...base });
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '📊 <b>Your paper positions</b> <i>(synced with My Trades on the web)</i>\n' + DIV + '\n' + lines.join('\n\n') + '\n' + DIV + '\nTotal PnL  <b>' + (tot >= 0 ? '+' : '') + '$' + tgfmt(tot) + '</b>\n\nClose one: <code>/close ' + poss[0].id + '</code> (or <code>/close ' + poss[0].symbol + '</code>)', ...base });
     return new Response('ok');
   }
   if (cmd === '/close') {
     const arg = (msg.text.trim().split(/\s+/)[1] || '').trim();
     if (!arg) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Close a position: <code>/close &lt;id&gt;</code> or <code>/close BTC</code>\nSee /positions for IDs.', ...base }); return new Response('ok'); }
-    let match = null, matchKey = '';
-    try { const l = await env.STATS.list({ prefix: 'pos:' + msg.chat.id + ':' }); for (const k of l.keys) { const v = JSON.parse(await env.STATS.get(k.name) || 'null'); if (v && (v.id === arg || v.sym === arg.toUpperCase())) { match = v; matchKey = k.name; break; } } } catch (e) {}
-    if (!match) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '❓ No matching position. See /positions.', ...base }); return new Response('ok'); }
-    const pp = await fetchPrice(match.sym); const cur = pp ? pp.price : match.entry;
-    const c = posCalc(match, cur);
-    try { await env.STATS.delete(matchKey); } catch (e) {}
-    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: (c.pnl >= 0 ? '✅' : '❌') + ' <b>Closed ' + match.side.toUpperCase() + ' ' + match.sym + '</b>\n' + DIV + '\nEntry $' + tgfmt(match.entry) + ' → Exit $' + tgfmt(cur) + '\nPnL  <b>' + (c.pnl >= 0 ? '+' : '') + '$' + tgfmt(c.pnl) + '</b> (' + (c.roe >= 0 ? '+' : '') + c.roe.toFixed(0) + '% ROE)\n\n📈 Open another: <code>/open BTC 100 x300</code>', ...base });
+    const _lu = await tgLinkedUser(env, msg.chat.id);
+    if (!_lu) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '🔗 Connect your account first: /connect', ...base }); return new Response('ok'); }
+    const seed = await usersDO(env, '/botpositions', { uid: _lu.uid, prices: {} });
+    const opens = ((seed && seed.positions) || []).filter(x => x.status === 'open');
+    const match = opens.filter(x => String(x.id) === arg || x.symbol === arg.toUpperCase())[0];
+    if (!match) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '❓ No matching open position. See /positions.', ...base }); return new Response('ok'); }
+    const prices = {}; try { const pp = await fetchPrice(match.symbol); if (pp) prices[match.symbol] = pp.price; } catch (e) {}
+    let promos = []; try { promos = await xpPromos(env); } catch (e) {}
+    const r = await usersDO(env, '/botclose', { uid: _lu.uid, id: match.id, prices, promos }); // closes it in the account journal → also closes in My Trades on the web
+    if (!r || r.error) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '⚠️ ' + (r && r.error === 'no_price' ? 'Price unavailable right now — try again in a moment.' : 'Couldn’t close it — see /positions.'), ...base }); return new Response('ok'); }
+    const cp = r.position || {}, pnl = +cp.pnl_usd || 0, roe = cp.margin_usd ? pnl / cp.margin_usd * 100 : 0;
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: (pnl >= 0 ? '✅' : '❌') + ' <b>Closed ' + String(cp.side || match.side).toUpperCase() + ' ' + (cp.symbol || match.symbol) + '</b>\n' + DIV + '\nEntry $' + tgfmt(cp.entry_price || match.entry_price) + ' → Exit $' + tgfmt(cp.exit_price) + '\nPnL  <b>' + (pnl >= 0 ? '+' : '') + '$' + tgfmt(pnl) + '</b> (' + (roe >= 0 ? '+' : '') + roe.toFixed(0) + '% ROE)\n\n✅ Also closed in <b>My Trades</b> on the web.\n\n📈 Open another: <code>/open BTC 100 x300</code>', ...base });
+    return new Response('ok');
+  }
+  if (cmd === '/mysub' || cmd === '/subscription' || cmd === '/sub') {
+    const lines = [];
+    for (const t of ['fast', 'balanced', 'premium']) { try { const s = JSON.parse(await env.STATS.get('tgsub:' + msg.chat.id + ':' + t) || 'null'); if (s && s.expiry > Date.now()) { const d = Math.ceil((s.expiry - Date.now()) / 86400000); lines.push('💎 <b>' + t + '</b> — <b>' + d + ' day' + (d !== 1 ? 's' : '') + '</b> left (until ' + new Date(s.expiry).toISOString().slice(0, 10) + ')'); } } catch (e) {} }
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: lines.length ? '🗓 <b>Your premium subscriptions</b>\n' + DIV + '\n' + lines.join('\n') + '\n\nRenew or add a tier: <code>/buy</code>' : 'You don’t have an active premium subscription.\nSee the groups: /premium', ...base });
+    return new Response('ok');
+  }
+  if (cmd === '/share') { // post the user's last closed paper trade as a card to the open community group
+    const _lu = await tgLinkedUser(env, msg.chat.id);
+    if (!_lu) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '🔗 Connect your account first to share your trades: /connect', ...base }); return new Response('ok'); }
+    let journal = []; try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/gettrades?uid=' + encodeURIComponent(_lu.uid))); const j = await r.json(); journal = j.journal || []; } catch (e) {}
+    const closed = journal.filter(t => t && (t.status === 'win' || t.status === 'loss')).sort((a, b) => (b.closeTs || b.ts || 0) - (a.closeTs || a.ts || 0));
+    const t = closed[0];
+    if (!t) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'No closed trades yet to share. Open one (<code>/open BTC 100 x300</code>), close it, then <code>/share</code>.', ...base }); return new Response('ok'); }
+    const grp = (await env.STATS.get('tg:chat:group')) || '@Marginpadgroup';
+    const long = t.side !== 'short', win = (+t.pnl || 0) >= 0, roe = (+t.margin) ? (+t.pnl / +t.margin * 100) : 0, who = _lu.username ? '@' + _lu.username : 'A trader';
+    const card = (win ? '🟢' : '🔴') + ' <b>' + esc(who) + '</b> just closed a paper trade\n' + DIV + '\n' + (long ? 'LONG 📈' : 'SHORT 📉') + ' <b>' + esc(t.sym) + '</b> ' + (+t.lev || 1) + '×\nEntry $' + tgfmt(+t.entry) + ' → Exit $' + tgfmt(+t.exit) + '\n💰 P&amp;L <b>' + (win ? '+' : '') + '$' + tgfmt(+t.pnl) + '</b> (' + (roe >= 0 ? '+' : '') + roe.toFixed(0) + '% ROE)\n\n📈 Practice free on marginpad.io';
+    let ok = false; try { const r = await tgApi(token, 'sendMessage', { chat_id: grp, parse_mode: 'HTML', disable_web_page_preview: true, text: card, reply_markup: { inline_keyboard: [[{ text: '📈 Try it free', url: 'https://marginpad.io/paper-trade?coin=' + encodeURIComponent(t.sym) }]] } }); ok = !!(r && r.ok); } catch (e) {}
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ok ? '✅ Shared to the community group! 🎉' : '⚠️ Couldn’t post to the group — make sure the bot is an admin there.', ...base });
     return new Response('ok');
   }
   if (cmd === '/whoami' || cmd === '/chatid') {
@@ -4565,10 +5893,12 @@ async function addressExists(addr) {
 // Effective faucet config = KV overrides (`rwd:cfg`, set live from the Settings tab) layered over env-var defaults.
 async function rewardCfg(env) {
   const num = (v, d) => { const n = +v; return isFinite(n) ? n : d; };
-  const base = { enabled: env.REWARD_ENABLED === '1', wdEnabled: env.REWARD_WD_ENABLED !== '0', requireOnchain: env.REWARD_REQUIRE_ONCHAIN !== '0', minClaimsToWd: num(env.REWARD_MIN_CLAIMS_WD, 0), pauseMsg: env.REWARD_PAUSE_MSG || '', amountUsd: num(env.REWARD_AMOUNT, 0.1), perDayUsd: num(env.REWARD_PER_DAY, 5), minWdUsd: num(env.REWARD_MIN_WD, 5), capUsd: num(env.REWARD_DAILY_CAP, 10), cooldownS: num(env.REWARD_COOLDOWN, 300), ipCap: num(env.REWARD_IP_CAP, 3), didCap: num(env.REWARD_DID_CAP, 0), welcomeUsd: num(env.REWARD_WELCOME, 0.5), promoUsd: num(env.REWARD_PROMO_USD, 0.3), promoEnabled: env.REWARD_PROMO_ENABLED !== '0', exsignUsd: num(env.REWARD_EXSIGN_USD, 3), exsignEnabled: env.REWARD_EXSIGN_ENABLED !== '0', prize1: num(env.REWARD_PRIZE1, 30), prize2: num(env.REWARD_PRIZE2, 20), prize3: num(env.REWARD_PRIZE3, 10), levelsEnabled: env.REWARD_LEVELS_ENABLED !== '0' };
+  const base = { enabled: env.REWARD_ENABLED === '1', wdEnabled: env.REWARD_WD_ENABLED !== '0', requireOnchain: env.REWARD_REQUIRE_ONCHAIN !== '0', minClaimsToWd: num(env.REWARD_MIN_CLAIMS_WD, 0), pauseMsg: env.REWARD_PAUSE_MSG || '', amountUsd: num(env.REWARD_AMOUNT, 0.1), perDayUsd: num(env.REWARD_PER_DAY, 5), minWdUsd: num(env.REWARD_MIN_WD, 5), capUsd: num(env.REWARD_DAILY_CAP, 10), cooldownS: num(env.REWARD_COOLDOWN, 300), ipCap: num(env.REWARD_IP_CAP, 3), didCap: num(env.REWARD_DID_CAP, 0), welcomeUsd: num(env.REWARD_WELCOME, 0.5), promoUsd: num(env.REWARD_PROMO_USD, 0.3), promoXUsd: num(env.REWARD_PROMO_X_USD, 0.15), promoTtRate: num(env.REWARD_PROMO_TT_RATE, 2), promoTtMax: num(env.REWARD_PROMO_TT_MAX, 1000), promoEnabled: env.REWARD_PROMO_ENABLED !== '0', exsignUsd: num(env.REWARD_EXSIGN_USD, 3), exsignEnabled: env.REWARD_EXSIGN_ENABLED !== '0', prize1: num(env.REWARD_PRIZE1, 30), prize2: num(env.REWARD_PRIZE2, 20), prize3: num(env.REWARD_PRIZE3, 10), levelsEnabled: env.REWARD_LEVELS_ENABLED !== '0' };
   let ov = {}; try { ov = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) {}
   const m = { ...base, ...ov }; const c = x => Math.round((+x) * 100);
-  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), raw: m };
+  const arr5 = (v, d) => { const a = Array.isArray(v) ? v : d; return [0, 1, 2, 3, 4].map(i => Math.max(0, num(a[i], d[i]))); }; // 3-board prizes (top-5), USD, owner-tunable in Settings
+  const lbRoe = arr5(m.lbRoe, [10, 6, 4, 3, 2]), lbWr = arr5(m.lbWr, [35, 18, 10, 7, 5]), lbXp = arr5(m.lbXp, [10, 8, 6, 4, 2]);
+  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.15)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, raw: m };
 }
 // Send a support reply email FROM support@marginpad.io via Resend (resend.com).
 // Requires the RESEND_API_KEY secret + marginpad.io verified in Resend (SPF/DKIM DNS records).
@@ -4683,23 +6013,28 @@ async function sendAlertEmail(env, to, sym, dir, target, cur, note) {
 async function sendLeaderboardEmail(env, to, info) {
   if (!env.RESEND_API_KEY || !to) return { ok: false };
   const medal = info.rank === 1 ? '\uD83E\uDD47' : info.rank === 2 ? '\uD83E\uDD48' : '\uD83E\uDD49';
-  const place = info.rank === 1 ? '1st' : info.rank === 2 ? '2nd' : '3rd';
+  const ord = n => n + (n === 1 ? 'st' : n === 2 ? 'nd' : n === 3 ? 'rd' : 'th');
+  const place = ord(info.rank || 1);
   const prize = '$' + (Math.round(info.prizeUsd * 100) / 100).toFixed(2);
-  const roe = (info.roe >= 0 ? '+' : '') + Math.round(info.roe).toLocaleString('en-US') + '%';
-  const trade = (info.symbol ? String(info.symbol) : '') + (info.side ? ' ' + String(info.side) : '');
   const esc = x => String(x == null ? '' : x).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
+  const board = info.board || 'roe';
+  const boardName = board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Weekly XP' : 'Highest ROE';
+  const roe = (info.roe >= 0 ? '+' : '') + Math.round(info.roe || 0).toLocaleString('en-US') + '%';
+  const trade = (info.symbol ? String(info.symbol) : '') + (info.side ? ' ' + String(info.side) : '');
+  const achieve = board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this week') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this week') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
+  const achieveTxt = board === 'wr' ? ('a win rate of ' + (info.wr != null ? info.wr : 0) + '%') : board === 'xp' ? (Math.round(info.xp || 0).toLocaleString('en-US') + ' XP') : ('a best trade of ' + roe + (trade ? ' on ' + trade : ''));
   const hi = info.username ? ('@' + esc(info.username)) : 'trader';
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
       body: JSON.stringify({
         from: 'MarginPad <hello@marginpad.io>', to: [to], reply_to: 'support@marginpad.io',
-        subject: medal + ' You finished ' + place + ' on the MarginPad leaderboard — ' + prize + ' is yours',
-        text: 'Congrats ' + hi + '!\n\nYou finished ' + place + ' place in this week\'s Trade League with a best trade of ' + roe + (trade ? ' on ' + trade : '') + '.\n\n' + prize + ' USDT has been credited to your Rewards balance. Withdraw it at https://marginpad.io/rewards/\n\nThe board just reset \u2014 defend your spot: https://marginpad.io/paper-trade\n\n\u2014 MarginPad',
+        subject: medal + ' You finished ' + place + ' on the ' + boardName + ' leaderboard — ' + prize + ' is yours',
+        text: 'Congrats ' + hi + '!\n\nYou finished ' + place + ' place on this week\'s ' + boardName + ' board with ' + achieveTxt + '.\n\n' + prize + ' USDT has been credited to your Rewards balance. Withdraw it at https://marginpad.io/rewards/\n\nThe board just reset \u2014 defend your spot: https://marginpad.io/paper-trade\n\n\u2014 MarginPad',
         html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:480px">'
           + '<p style="font-size:40px;margin:0 0 4px">' + medal + '</p>'
           + '<p style="font-size:22px;font-weight:800;margin:0 0 10px">You finished ' + place + ' place!</p>'
-          + '<p style="margin:0 0 14px">Congrats ' + hi + ' \u2014 your best paper trade this week was <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : '') + ', good enough for <b>' + place + '</b> on the weekly Trade League.</p>'
+          + '<p style="margin:0 0 14px">Congrats ' + hi + ' \u2014 you took <b>' + place + '</b> on the weekly <b>' + boardName + '</b> board with ' + achieve + '.</p>'
           + '<p style="margin:0 0 16px;background:#f2fbdf;border:1px solid #c2f64a;border-radius:12px;padding:14px 16px"><b style="font-size:18px">' + prize + ' USDT</b> has been credited to your Rewards balance.</p>'
           + '<p style="margin:0 0 18px"><a href="https://marginpad.io/rewards/" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-weight:800;padding:11px 20px;border-radius:10px">Withdraw your prize &rarr;</a></p>'
           + '<p style="margin:0 0 4px;color:#444">The board just reset for a new week.</p>'
@@ -4721,29 +6056,44 @@ async function payWeeklyPrizes(env) {
   let since = null; try { since = +(await env.STATS.get('lbpay:since')) || null; } catch (e) {}
   if (!since) { try { await env.STATS.put('lbpay:since', String(thisWeekStart)); } catch (e) {} return; } // first run: arm from this week; the current week pays out once it ends
   const cfg = await rewardCfg(env);
-  const prizes = [cfg.prize1 || 0, cfg.prize2 || 0, cfg.prize3 || 0]; // USD, live from config/Settings
+  const legacyPrizes = [cfg.prize1 || 0, cfg.prize2 || 0, cfg.prize3 || 0]; // pre-v2 weeks: ROE top-3 (unchanged)
   for (let ws = since; ws < thisWeekStart; ws += WK) { // every ENDED week from the anchor up to (not incl.) this week
     const flag = 'lbpaid:' + ws;
     let done = false; try { done = !!(await env.STATS.get(flag)); } catch (e) {}
     if (done) continue;
     const we = ws + WK;
-    let board = [];
-    try { const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + ws + '&we=' + we + '&limit=10')); const ud = await ur.json(); board = (ud && ud.top) || []; } catch (e) {}
+    let ud = {};
+    try { const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + ws + '&we=' + we + '&limit=40')); ud = await ur.json(); } catch (e) {}
+    const board = (ud && ud.top) || [], xpBoard = (ud && ud.xp) || [];
     const banned = {};
     try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
-    const top3 = board.filter(x => x && x.uid && !banned[x.uid]).slice(0, 3);
-    const payload = top3.map((x, i) => ({ acct: x.uid, cents: Math.round((prizes[i] || 0) * 100), rank: i + 1 })).filter(p => p.cents > 0);
+    const notB = x => x && x.uid && !banned[x.uid];
+    const payload = [], ctx = {}; // ctx[acct|board] = { roe, symbol, side, name, xp, wr } for the congrats email
+    if (ws < LB_V2_START) {
+      // LEGACY (weeks before the 3-board launch, e.g. the week ending this Monday): ROE top-3 from prize1/2/3 — unchanged
+      board.filter(notB).slice(0, 3).forEach((x, i) => { const cents = Math.round((legacyPrizes[i] || 0) * 100); if (cents > 0) { payload.push({ acct: x.uid, cents, rank: i + 1, board: 'roe' }); ctx[x.uid + '|roe'] = { roe: +x.roe || 0, symbol: x.symbol || '', side: x.side || '', name: x.name || '' }; } });
+    } else {
+      // 3 boards, top-5 each, from the owner-tunable config (Settings). One account can win several boards.
+      const roeTop = board.filter(x => notB(x) && (+x.roe > 0)).slice(0, 5); // only pay a positive best-trade ROE (no prize for a losing/liquidated "best")
+      const wrTop = board.filter(x => notB(x) && ((+x.w || 0) + (+x.l || 0)) >= 20).map(x => { const w = +x.w || 0, l = +x.l || 0; return { uid: x.uid, name: x.name, w, l, wr: w / (w + l) }; }).sort((a, b) => (b.wr - a.wr) || ((b.w + b.l) - (a.w + a.l))).slice(0, 5);
+      const xpTop = xpBoard.filter(x => notB(x) && (+x.xp || 0) > 0).slice(0, 5);
+      const push = (list, prizes, key, mk) => list.forEach((x, i) => { const cents = Math.round((prizes[i] || 0) * 100); if (cents > 0) { payload.push({ acct: x.uid, cents, rank: i + 1, board: key }); ctx[x.uid + '|' + key] = mk(x); } });
+      push(roeTop, cfg.lbRoe, 'roe', x => ({ roe: +x.roe || 0, symbol: x.symbol || '', side: x.side || '', name: x.name || '' }));
+      push(wrTop, cfg.lbWr, 'wr', x => ({ name: x.name || '', wr: Math.round(x.wr * 100) }));
+      push(xpTop, cfg.lbXp, 'xp', x => ({ name: x.name || '', xp: +x.xp || 0 }));
+    }
     let paidOut = [];
     if (payload.length) {
       try { const pr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/paywinners', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ week: ws, winners: payload }) })); const pj = await pr.json(); paidOut = (pj && pj.payouts) || []; } catch (e) {}
     }
-    // email the winners who were JUST paid (idempotent — re-runs return no fresh payouts, so no duplicate emails)
+    // email + XP-bonus the winners who were JUST paid (idempotent — re-runs return no fresh payouts, so no duplicate emails/XP)
     if (paidOut.length) {
-      const prof = await resolveProfiles(env, paidOut.map(p => p.acct));
-      const byAcct = {}; top3.forEach(x => { byAcct[x.uid] = x; });
+      const prof = await resolveProfiles(env, [...new Set(paidOut.map(p => p.acct))]);
       for (const p of paidOut) {
-        const u = prof[String(p.acct).replace(/^u:/, '')]; const x = byAcct[p.acct] || {};
-        if (u && u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, roe: +x.roe || 0, symbol: x.symbol || '', side: x.side || '', username: u.username || x.name || '' }); } catch (e) {} } try { for (const po of paidOut) { const xp = po.rank === 1 ? 300 : po.rank === 2 ? 200 : 100; await grantXp(env, po.acct, 'lbprize', xp, { note: 'weekly leaderboard #' + po.rank }); } } catch (xe) {}
+        const u = prof[String(p.acct).replace(/^u:/, '')]; const cx = ctx[p.acct + '|' + (p.board || 'roe')] || {};
+        try { await evPush(env, null, 'lbpaid', ((u && u.username) || String(p.acct || '').replace('u:', '').slice(0, 10)) + ' $' + ((p.amount || 0) / 100).toFixed(2) + ' (#' + p.rank + ' ' + (p.board || 'roe') + ')', ''); } catch (e) {}
+        if (u && u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, roe: cx.roe || 0, symbol: cx.symbol || '', side: cx.side || '', username: u.username || cx.name || '', board: p.board || 'roe', xp: cx.xp || 0, wr: cx.wr }); } catch (e) {} }
+        try { const xp = p.rank === 1 ? 300 : p.rank === 2 ? 200 : p.rank === 3 ? 100 : 50; await grantXp(env, p.acct, 'lbprize', xp, { note: 'weekly ' + (p.board || 'roe') + ' leaderboard #' + p.rank }); } catch (xe) {}
       }
     }
     try { await env.STATS.put(flag, JSON.stringify({ ts: now, n: payload.length })); } catch (e) {} // mark the week paid (even if 0 eligible winners) so we don't retry forever
@@ -4768,6 +6118,7 @@ async function checkAccountAlerts(env) {
         try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: a.tg_chat, text: '<b>' + a.sym + ' alert</b>\n' + a.sym + ' is now <b>$' + tgfmt(cur) + '</b> (' + (a.dir === 'up' ? '≥' : '≤') + ' $' + tgfmt(a.target) + ')' + (a.note ? '\n<i>' + String(a.note).replace(/[<>&]/g, '') + '</i>' : '') + '\n\n<a href="https://marginpad.io/paper-trade?coin=' + a.sym + '">Trade ' + a.sym + ' on MarginPad</a>', parse_mode: 'HTML', disable_web_page_preview: true }); } catch (e) {}
       } else if (a.email && env.RESEND_API_KEY) {
         try { await sendAlertEmail(env, a.email, a.sym, a.dir, a.target, tgfmt(cur), a.note); } catch (e) {}
+        try { await evPush(env, null, 'alertfired', a.sym + ' ' + a.dir + ' ' + a.target, ''); } catch (e) {}
       }
       fired.push(a.id);
     }
@@ -4903,6 +6254,75 @@ async function handleAiChart(url, request, env) {
 // ---------- Bot trading API — free paper-trading endpoints so people can TEST THEIR TRADING BOT for free ----------
 // Auth: X-API-Key header (create one signed-in via POST /api/bot/key). Simulator semantics: entry/exit at the live
 // price, isolated margin, pnl clamped at -margin, liquidation swept lazily against the live price. Docs: /trading-api/.
+// P0 — server-side trading for the WEB user (session-cookie auth). The server takes the live price, fills,
+// and writes journal-shaped trades (src:'srv') through the same UserStore journal every existing surface reads
+// (My Trades, tradeev, XP, leaderboards, multi-device pull) — so nothing downstream needs migrating.
+async function handleTrade(url, request, env) {
+  const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
+  const jt = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: jh });
+  let uid = '';
+  const tok = getCookie(request, SESS_COOKIE);
+  if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) uid = su.id; }
+  const adminUid = url.searchParams.get('uid'); // owner testing hook, same pattern as missions/academy
+  if (adminUid && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) uid = adminUid;
+  if (!uid) return jt({ error: 'login_required' }, 401);
+  const path = url.pathname.slice('/api/trade'.length) || '/';
+  let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
+  if (path === '/open' && request.method === 'POST') {
+    // light per-user rate limit: 20 opens/min
+    try { const rk = 'trl:' + uid + ':' + Math.floor(Date.now() / 60000); const n = +(await env.STATS.get(rk)) || 0; if (n >= 20) return jt({ error: 'rate_limited' }, 429); await env.STATS.put(rk, String(n + 1), { expirationTtl: 120 }); } catch (e) {}
+    const sym = String(b.sym || b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
+    const side = b.side === 'short' ? 'short' : 'long';
+    const margin = +b.margin || 0, lev = Math.min(1000, Math.max(1, +b.lev || 1));
+    if (!sym) return jt({ error: 'symbol_required' }, 400);
+    if (!(margin >= 1)) return jt({ error: 'margin_min_1' }, 400);
+    if (margin > 100000) return jt({ error: 'margin_max_100000' }, 400);
+    const pd = await fetchPriceCached(sym);
+    if (!pd || !(+pd.price > 0)) return jt({ error: 'unknown_symbol', symbol: sym }, 404);
+    // P1 realism: slippage against the trader — perfect last-price fills teach bad habits. Majors 0.01%, thinner books 0.05%.
+    const SLIP_MAJORS = { BTC: 1, ETH: 1, SOL: 1, BNB: 1, XRP: 1, DOGE: 1, ADA: 1, LINK: 1, AVAX: 1, LTC: 1 };
+    const slip = SLIP_MAJORS[sym] ? 0.0001 : 0.0005;
+    const long = side === 'long';
+    const entry = +pd.price * (long ? 1 + slip : 1 - slip), mmr = 0.005;
+    const liq = mpcLiq(entry, lev, mmr, long);
+    const sl = (b.sl != null && b.sl !== '' && isFinite(+b.sl)) ? +b.sl : null, tp = (b.tp != null && b.tp !== '' && isFinite(+b.tp)) ? +b.tp : null;
+    if (sl != null && (long ? sl >= entry : sl <= entry)) return jt({ error: 'sl_wrong_side', live: entry }, 400);
+    if (tp != null && (long ? tp <= entry : tp >= entry)) return jt({ error: 'tp_wrong_side', live: entry }, 400);
+    const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: 0.00055, status: 'open', pnl: null, src: 'srv' }; // taker 0.055%/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
+    const r = await usersDO(env, '/botopen', { uid, t });
+    if (r && r.error) return jt(r, 400);
+    return jt({ ok: true, position: t });
+  }
+  if (path === '/close' && request.method === 'POST') {
+    if (!b.id) return jt({ error: 'id_required' }, 400);
+    const seed = await usersDO(env, '/botpositions', { uid, prices: {} });
+    const match = seed && seed.positions ? seed.positions.filter(p => String(p.id) === String(b.id))[0] : null;
+    if (!match) return jt({ error: 'not_found' }, 404);
+    const symC = String(match.symbol || match.sym || '').toUpperCase();
+    const pd = await fetchPriceCached(symC);
+    if (!pd || !(+pd.price > 0)) return jt({ error: 'no_price' }, 503);
+    const prices = {}; prices[symC.replace(/USDT$/, '')] = +pd.price; prices[symC] = +pd.price;
+    const r = await usersDO(env, '/botclose', { uid, id: String(b.id), pct: b.pct, pid: b.pid, prices });
+    if (r && r.error) return jt(r, 400);
+    return jt(r);
+  }
+  if (path === '/sltp' && request.method === 'POST') {
+    if (!b.id) return jt({ error: 'id_required' }, 400);
+    const r = await usersDO(env, '/tradesltp', { uid, id: String(b.id), sl: b.sl, tp: b.tp });
+    if (r && r.error) return jt(r, 400);
+    return jt(r);
+  }
+  if (path === '/positions') {
+    const seed = await usersDO(env, '/botpositions', { uid, prices: {} });
+    const open = seed && seed.positions ? seed.positions.filter(p => p.status === 'open') : [];
+    const syms = Array.from(new Set(open.map(p => String(p.symbol || '').toUpperCase().replace(/USDT$/, '')))).slice(0, 20);
+    const prices = {};
+    for (const sym2 of syms) { try { const pd2 = await fetchPriceCached(sym2); if (pd2 && +pd2.price > 0) { prices[sym2] = +pd2.price; prices[sym2 + 'USDT'] = +pd2.price; } } catch (e) {} }
+    const r = await usersDO(env, '/botpositions', { uid, prices }); // second call sweeps SL/TP/liq with fresh prices
+    return jt(r || { positions: [] });
+  }
+  return jt({ error: 'not_found' }, 404);
+}
 async function handleBot(url, request, env, ctx) {
   const jb = (o, s = 200) => new Response(JSON.stringify(o, null, 1), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key', 'access-control-allow-methods': 'GET, POST, OPTIONS' } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: { ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key', 'access-control-allow-methods': 'GET, POST, OPTIONS' } });
@@ -4960,7 +6380,7 @@ async function handleBot(url, request, env, ctx) {
     const pd = await fetchPrice(sym);
     if (!pd || !(+pd.price > 0)) return jb({ error: 'unknown_symbol', symbol: sym }, 404);
     const entry = +pd.price, mmr = 0.005, long = side === 'long';
-    const liq = long ? entry * (1 - (1 - mmr) / lev) : entry * (1 + (1 - mmr) / lev);
+    const liq = mpcLiq(entry, lev, mmr, long);
     const sl = (b.sl != null && isFinite(+b.sl)) ? +b.sl : null, tp = (b.tp != null && isFinite(+b.tp)) ? +b.tp : null;
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jb({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jb({ error: 'tp_wrong_side', live: entry }, 400);
@@ -5392,7 +6812,7 @@ async function handleAuth(url, request, env, ctx) {
     const email = String(b.email || '').trim().toLowerCase();
     const code = String(b.code || '').replace(/\D/g, '').slice(0, 6);
     if (!email || code.length !== 6) return jr({ error: 'bad_input' }, 400);
-    const r = await stub.fetch(new Request('https://do/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email, code, ip, cc, ua, org, asn, dev: deviceOf(ua), br: browserOf(ua) }) }));
+    const r = await stub.fetch(new Request('https://do/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email, code, ip, cc, ua, org, asn, dev: deviceOf(ua), br: browserOf(ua), did: getCookie(request, 'mp_did') || '' }) }));
     const d = await r.json();
     if (d.error) return jr(d, (d.error === 'expired' || d.error === 'no_code') ? 410 : (d.error === 'banned' || d.error === 'suspended') ? 403 : 400);
     const opts = '; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=' + SESS_MAXAGE;
@@ -5401,16 +6821,34 @@ async function handleAuth(url, request, env, ctx) {
     h.append('set-cookie', 'mp_uid=' + d.user.id + opts); // non-auth attribution id so /api/track can credit activity without a DO read
     h.append('set-cookie', 'mp_un=' + String(d.user.username || (d.user.email || '').split('@')[0] || '').replace(/[^a-zA-Z0-9_.-]/g, '').slice(0, 24) + opts); // display name so the admin logs show the username instead of just a country
     try { const un = (d.user && (d.user.username || String(d.user.email || '').split('@')[0])) || ''; const pr = evPush(env, request, d.isNew ? 'signup' : 'login', un, '/'); if (ctx && ctx.waitUntil) ctx.waitUntil(pr); else await pr; } catch (e) {}
+    if (d.isNew) { try { const ref = String(b.ref || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 40); if (ref && ref !== d.user.id) { const did = getCookie(request, 'mp_did') || ''; const rp = stub.fetch(new Request('https://do/refrecord', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ referrer: ref, referred: d.user.id, did }) })).catch(() => {}); if (ctx && ctx.waitUntil) ctx.waitUntil(rp); else await rp; } } catch (e) {} } // invite-a-friend: log who referred this new signup
     return new Response(JSON.stringify({ ok: true, user: d.user, isNew: d.isNew }), { status: 200, headers: h });
   }
-  if (path === '/xp') { // self: own xp/level/streak + recent log, for the XP toasts + level-up celebration
+  if (path === '/referral') { // self: referral link + stats for the /rewards "invite a friend" card
     const tok = getCookie(request, SESS_COOKIE);
     if (!tok) return jr({ signedIn: false });
     let sd = null; try { const sr = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); sd = await sr.json(); } catch (e) { return jr({ signedIn: false, transient: true }); }
     if (!sd || !sd.user || !sd.user.id) return jr({ signedIn: false });
+    let st = { invited: 0, qualified: 0, pending: 0 }; try { const r = await stub.fetch(new Request('https://do/refstats?uid=' + encodeURIComponent(sd.user.id))); st = await r.json(); } catch (e) {}
+    const cfg = await rewardCfg(env); const refUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 0.2;
+    return jr({ signedIn: true, code: sd.user.id, link: 'https://marginpad.io/?ref=' + sd.user.id, rewardUsd: refUsd, invited: st.invited || 0, qualified: st.qualified || 0, pending: st.pending || 0, earnedUsd: Math.round((st.qualified || 0) * refUsd * 100) / 100 });
+  }
+  if (path === '/xp') { // self: own xp/level/streak + recent log, for the XP toasts + level-up celebration
+    const tok = getCookie(request, SESS_COOKIE);
+    if (!tok) return jr({ signedIn: false });
+    // A2 scale fix: this is polled every 60s by EVERY signed-in tab — cache per-isolate 45s so repeat polls
+    // (and multiple tabs of the same user) stop hammering the single UserStore DO. Badge staleness ≤45s.
+    { const xc = globalThis.__xpC = globalThis.__xpC || new Map(); const hitc = xc.get(tok); if (hitc && Date.now() - hitc.t < 45000) return jr(hitc.d); }
+    let sd = null; try { const sr = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); sd = await sr.json(); } catch (e) { return jr({ signedIn: false, transient: true }); }
+    if (!sd || !sd.user || !sd.user.id) return jr({ signedIn: false });
     let log = []; try { const r = await stub.fetch(new Request('https://do/xplog?uid=' + encodeURIComponent(sd.user.id))); const d = await r.json(); log = (d.log || []).slice(0, 12); } catch (e) {}
     let followers = 0, lastFollower = null; try { const fr = await stub.fetch(new Request('https://do/myfollowers?uid=' + encodeURIComponent(sd.user.id))); const fd = await fr.json(); followers = fd.count || 0; lastFollower = fd.last || null; } catch (e) {}
-    return jr({ signedIn: true, xp: sd.user.xp || 0, streak: sd.user.streak || 0, freezes: sd.user.freezes || 0, level: sd.user.level || null, log, followers, lastFollower });
+    let dmUnread = 0; try { const dr = await stub.fetch(new Request('https://do/dm/unread?uid=' + encodeURIComponent(sd.user.id))); const dd = await dr.json(); dmUnread = dd.unread || 0; } catch (e) {}
+    let duelPending = 0; try { const pr = await stub.fetch(new Request('https://do/duel/pending?uid=' + encodeURIComponent(sd.user.id))); const pd = await pr.json(); duelPending = pd.pending || 0; } catch (e) {}
+    let notifUnread = 0; try { const nr = await stub.fetch(new Request('https://do/unotifs?uid=' + encodeURIComponent(sd.user.id))); const nd = await nr.json(); notifUnread = nd.unread || 0; } catch (e) {}
+    const xpOut = { signedIn: true, xp: sd.user.xp || 0, streak: sd.user.streak || 0, freezes: sd.user.freezes || 0, level: sd.user.level || null, log, followers, lastFollower, dmUnread, duelPending, notifUnread };
+    try { const xc2 = globalThis.__xpC = globalThis.__xpC || new Map(); xc2.set(tok, { t: Date.now(), d: xpOut }); if (xc2.size > 500) xc2.delete(xc2.keys().next().value); } catch (e) {}
+    return jr(xpOut);
   }
   if (path === '/xphistory') { // self: the signed-in user's full XP earn/adjust history (for the header profile → XP history)
     const tok = getCookie(request, SESS_COOKIE);
@@ -5442,6 +6880,20 @@ async function handleAuth(url, request, env, ctx) {
     const d = await r.json();
     return jr(d, d.error ? (d.error === 'taken' ? 409 : 400) : 200);
   }
+  if (path === '/profile') { // user edits their own public profile personalization
+    const tok = getCookie(request, SESS_COOKIE);
+    if (!tok) return jr({ error: 'not_signed_in' }, 401);
+    const r = await stub.fetch(new Request('https://do/setprofile', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok, bio: b.bio, avatar: b.avatar, accent: b.accent, coins: b.coins }) }));
+    return jr(await r.json(), 200);
+  }
+  if (path === '/notifs') { // signed-in user's social notifications (list, or ?seen=1 to mark read)
+    const tok = getCookie(request, SESS_COOKIE);
+    if (!tok) return jr({ notifs: [], unread: 0 });
+    let sd = null; try { const sr = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); sd = await sr.json(); } catch (e) { return jr({ notifs: [], unread: 0 }); }
+    if (!sd || !sd.user || !sd.user.id) return jr({ notifs: [], unread: 0 });
+    const seen = url.searchParams.get('seen') === '1' ? '&seen=1' : '';
+    try { const r = await stub.fetch(new Request('https://do/unotifs?uid=' + encodeURIComponent(sd.user.id) + seen)); return jr(await r.json()); } catch (e) { return jr({ notifs: [], unread: 0 }); }
+  }
   if (path === '/click') { // signed-in user click → per-user heatmap (best-effort, off the hot path)
     const uid = getCookie(request, 'mp_uid');
     if (uid && ctx) ctx.waitUntil(stub.fetch(new Request('https://do/click', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, x: +b.x || 0, y: +b.y || 0, path: String(b.path || '/') }) })).catch(() => {}));
@@ -5451,7 +6903,8 @@ async function handleAuth(url, request, env, ctx) {
     const uid = getCookie(request, 'mp_uid');
     if (!uid) return jr(request.method === 'GET' ? { journal: [] } : { ok: false });
     if (request.method === 'GET') {
-      const r = await stub.fetch(new Request('https://do/gettrades?uid=' + encodeURIComponent(uid)));
+      const hq = url.searchParams.get('h') || '';
+      const r = await stub.fetch(new Request('https://do/gettrades?uid=' + encodeURIComponent(uid) + (hq ? '&h=' + encodeURIComponent(hq) : '')));
       return jr(await r.json());
     }
     let _promos = []; try { _promos = await xpPromos(env); } catch (e) {} // owner-defined XP promos → the DO grants bonus XP for qualifying closes (evaluated at each trade's close time)
@@ -5461,6 +6914,13 @@ async function handleAuth(url, request, env, ctx) {
   if (path === '/dwell') { // time-on-page beacon (sendBeacon → application/json)
     const uid = getCookie(request, 'mp_uid');
     if (uid && ctx) ctx.waitUntil(stub.fetch(new Request('https://do/dwell', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, path: String(b.path || '/'), secs: +b.secs || 0 }) })).catch(() => {}));
+    return jr({ ok: true });
+  }
+  if (path === '/chartxp') { // signed-in: reward genuinely using the charts workspace. dayCap = once/day → farm-proof.
+    const tok = getCookie(request, SESS_COOKIE);
+    const su = tok && env.USERS ? await sessionUser(env, tok) : null;
+    if (!su || !su.id) return jr({ ok: false, granted: 0 });
+    await grantXp(env, su.id, 'charts', 25, { dayCap: 25, note: 'Analyzed a chart' });
     return jr({ ok: true });
   }
   if (path === '/control') { // admin moderation actions
@@ -5521,6 +6981,7 @@ async function handleReward(url, request, env) {
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
   if (!env.REWARDS) return jr({ error: 'unavailable' }, 503);
   const path = url.pathname.slice('/api/reward'.length) || '/';            // /claim /account /withdraw /admin /admin/paid /accounts /config
+    if (path === '/admin/paid' && request.method === 'POST') { try { await evPush(env, request, 'wdpaid', '', ''); } catch (e) {} } // ops feed: owner marked a withdrawal as paid
   const ip = request.headers.get('cf-connecting-ip') || '';
   const ua = request.headers.get('user-agent') || '';
   const cc = (request.cf && request.cf.country) || '';
@@ -5554,12 +7015,13 @@ async function handleReward(url, request, env) {
       let cur = {}; try { cur = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) {}
       const next = { ...cur };
       for (const k of ['enabled', 'wdEnabled', 'requireOnchain', 'promoEnabled', 'exsignEnabled', 'missionsEnabled', 'levelsEnabled']) if (k in b) next[k] = !!b[k];
-      for (const k of ['amountUsd', 'perDayUsd', 'minWdUsd', 'capUsd', 'cooldownS', 'ipCap', 'didCap', 'minClaimsToWd', 'welcomeUsd', 'promoUsd', 'exsignUsd', 'prize1', 'prize2', 'prize3']) if (k in b) next[k] = +b[k];
+      for (const k of ['amountUsd', 'perDayUsd', 'minWdUsd', 'capUsd', 'cooldownS', 'ipCap', 'didCap', 'minClaimsToWd', 'welcomeUsd', 'promoUsd', 'promoXUsd', 'promoTtRate', 'promoTtMax', 'referralUsd', 'exsignUsd', 'prize1', 'prize2', 'prize3']) if (k in b) next[k] = +b[k];
+      for (const k of ['lbRoe', 'lbWr', 'lbXp']) if (k in b && Array.isArray(b[k])) next[k] = b[k].slice(0, 5).map(x => Math.max(0, Math.round((+x || 0) * 100) / 100)); // 3-board top-5 prizes (USD)
       if ('pauseMsg' in b) next.pauseMsg = String(b.pauseMsg || '').slice(0, 300);
       await env.STATS.put('rwd:cfg', JSON.stringify(next));
-      return jr({ ok: true, config: { ...full.raw, ...next } });
+      return jr({ ok: true, config: { ...full.raw, ...next, lbRoe: (next.lbRoe || full.lbRoe), lbWr: (next.lbWr || full.lbWr), lbXp: (next.lbXp || full.lbXp) } });
     }
-    return jr({ config: full.raw });
+    return jr({ config: { ...full.raw, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp } });
   }
   // admin: support inbox (+ reply history) with an email-config flag injected at the Worker (DO can't see secrets)
   if (path === '/support' && request.method === 'GET') {
@@ -5567,6 +7029,14 @@ async function handleReward(url, request, env) {
     const sst = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
     let sj = { open: [], closed: [], replies: [], transient: true }; // polled every 30s; a DO reset mid-flight (every deploy) must not 500
     for (let attempt = 0; attempt < 2; attempt++) { try { const rr = await sst.fetch(new Request('https://do/support')); sj = await rr.json(); break; } catch (e) {} }
+    sj.emailReady = !!env.RESEND_API_KEY;
+    return jr(sj);
+  }
+  if (path === '/support/convs' && request.method === 'GET') { // admin: support threads grouped into conversations (chat view)
+    if (!adminOk) return jr({ error: 'forbidden' }, 403);
+    const sst = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
+    let sj = { conversations: [], transient: true };
+    for (let attempt = 0; attempt < 2; attempt++) { try { const rr = await sst.fetch(new Request('https://do/support/convs')); sj = await rr.json(); break; } catch (e) {} }
     sj.emailReady = !!env.RESEND_API_KEY;
     return jr(sj);
   }
@@ -5581,10 +7051,10 @@ async function handleReward(url, request, env) {
     if (!env.RESEND_API_KEY) return jr({ error: 'email_not_configured' }, 503);
     const sent = await sendSupportEmail(env, to, subject, message);
     if (!sent.ok) return jr({ error: 'send_failed', detail: sent.detail }, 502);
-    try { const rst = env.REWARDS.get(env.REWARDS.idFromName('ledger')); await rst.fetch(new Request('https://do/reply', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to, subject, message }) })); } catch (e) {}
+    try { const rst = env.REWARDS.get(env.REWARDS.idFromName('ledger')); await rst.fetch(new Request('https://do/reply', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to, subject, message, conv: String(b.conv || '') }) })); } catch (e) {}
     return jr({ ok: true });
   }
-  const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, exsignC: full.exsignC, exsignEnabled: full.exsignEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3 };
+  const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, exsignC: full.exsignC, exsignEnabled: full.exsignEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp };
   if (path === '/claim' && !full.enabled) return jr({ error: 'paused', message: full.pauseMsg || '' }, 503);
   if (path === '/withdraw' && !full.wdEnabled) return jr({ error: 'wd_paused' }, 503);
   if ((path === '/claim' || path === '/withdraw') && !acct) return jr({ error: 'login_required' }, 401); // must be signed in (account-based faucet)
@@ -5592,7 +7062,7 @@ async function handleReward(url, request, env) {
     if (!(await verifyTurnstile(env, b.token, ip))) return jr({ error: 'captcha' }, 403);
     // no on-chain wallet check at claim anymore — there is no wallet here; the BEP20 address is validated at /withdraw (full.requireOnchain still gates the payout address there if you wire it later)
   }
-  if ((path === '/admin' || path === '/admin/paid' || path === '/accounts' || path === '/log' || path === '/unlock' || path === '/remove' || path === '/detail' || path === '/note' || path === '/ban' || path === '/unban' || path === '/adjust' || path === '/lbban' || path === '/lbtop' || path === '/lbhistory' || path === '/message' || path === '/support/close' || path === '/support/new' || path === '/promo/list' || path === '/promo/review' || path === '/exsign/list' || path === '/exsign/review' || (path === '/support' && request.method === 'GET')) && !adminOk) return jr({ error: 'forbidden' }, 403);
+  if ((path === '/admin' || path === '/admin/paid' || path === '/accounts' || path === '/log' || path === '/unlock' || path === '/remove' || path === '/detail' || path === '/earnings' || path === '/note' || path === '/ban' || path === '/unban' || path === '/adjust' || path === '/lbban' || path === '/lbtop' || path === '/lbhistory' || path === '/message' || path === '/support/close' || path === '/support/new' || path === '/promo/list' || path === '/promo/review' || path === '/exsign/list' || path === '/exsign/review' || (path === '/support' && request.method === 'GET')) && !adminOk) return jr({ error: 'forbidden' }, 403);
   // The leaderboard board (GET /lb) is polled by EVERY homepage visitor and only changes on a new submission — edge-cache it 20s so the flood collapses to ~one hit per colo per window. This is what was overloading the single `ledger` DO (all reward traffic shares it) and tripping the "storage operation exceeded timeout" reset.
   if (path === '/lb' && request.method === 'GET') {
     const lbCk = new Request('https://marginpad.io/__reward_lb_v5'); // v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
@@ -5602,31 +7072,29 @@ async function handleReward(url, request, env) {
       const WK = 604800000, MON = 4 * 86400000, nowMs = Date.now();
       const weekStart = Math.floor((nowMs - MON) / WK) * WK + MON, weekEnd = weekStart + WK, week = weekStart; // Monday 00:00 UTC anchor
       try {
-        let board = [];
+        let board = [], xpBoard = [];
         if (env.USERS) {
           const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=40'));
-          const ud = await ur.json(); board = (ud && ud.top) || [];
+          const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || [];
         }
         const banned = {};
         try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
         const mask = a => !a ? '' : (a.slice(0, 2) === 'u:' ? 'Trader' : a.slice(0, 6) + '…' + a.slice(-4));
-        const top = board.filter(x => !banned[x.uid]).slice(0, 10).map((x, i) => ({ rank: i + 1, who: x.name || mask(x.uid), roe: x.roe, pnl: x.pnl, symbol: x.symbol, side: x.side }));
-        // Best-win-rate board (no prizes): min 5 closed trades this week, sorted by WR% then by games played
+        const top = board.filter(x => !banned[x.uid] && (+x.roe > 0)).slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name || mask(x.uid), roe: x.roe, pnl: x.pnl, symbol: x.symbol, side: x.side })); // Highest-ROE board shows only real gains (a losing/liquidated best trade isn't a contender)
+        // Best-win-rate board: min 20 closed trades this week, sorted by WR% then by games played (wins already ≥5%-ROE gated in the DO from v2)
         const topWr = board.filter(x => !banned[x.uid] && ((+x.w || 0) + (+x.l || 0)) >= 20)
           .map(x => { const w = +x.w || 0, l = +x.l || 0; return { who: x.name || mask(x.uid), w, l, wr: +(w / (w + l) * 100).toFixed(1) }; })
           .sort((a, b) => (b.wr - a.wr) || ((b.w + b.l) - (a.w + a.l)))
-          .slice(0, 10).map((x, i) => ({ rank: i + 1, ...x }));
-        // Top PnL board (no prizes yet): biggest single winning trade this week, in $
-        const topPnl = board.filter(x => !banned[x.uid] && (+x.bp || 0) > 0)
-          .map(x => ({ who: x.name || mask(x.uid), pnl: +x.bp || 0, symbol: x.bpSym || '', side: x.bpSide || '' }))
-          .sort((a, b) => b.pnl - a.pnl)
-          .slice(0, 10).map((x, i) => ({ rank: i + 1, ...x }));
-        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topPnl });
+          .slice(0, 15).map((x, i) => ({ rank: i + 1, ...x }));
+        // Weekly XP board: total XP earned this week (trading + Academy + missions + Happy Hour). Replaces PnL — can't be gamed by size.
+        const topXp = xpBoard.filter(x => !banned[x.uid] && (+x.xp || 0) > 0)
+          .slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name || mask(x.uid), xp: +x.xp || 0 }));
+        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
       } catch (e) { bodyText = '{"top":[],"week":' + week + ',"weekStart":' + weekStart + ',"weekEnd":' + weekEnd + ',"busy":true}'; } // fail soft, never a 500
     }
     let out = bodyText;
-    try { const o = JSON.parse(bodyText); o.prizes = [cfg.prize1, cfg.prize2, cfg.prize3]; out = JSON.stringify(o); } catch (e) {} // prizes from live config (cfg already built above) — admin changes reflect immediately even though the board itself is edge-cached
+    try { const o = JSON.parse(bodyText); o.prizes = [cfg.prize1, cfg.prize2, cfg.prize3]; o.boardPrizes = { roe: cfg.lbRoe, wr: cfg.lbWr, xp: cfg.lbXp }; out = JSON.stringify(o); } catch (e) {} // prizes from live config (cfg already built above) — admin changes reflect immediately even though the board itself is edge-cached
     return new Response(out, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // browser always re-requests but is served the ≤20s-cached board — DO stays protected, leaderboard stays fresh
   }
   if (path === '/lbtop') { // admin eject panel — same authoritative board as /lb (UserStore-derived) but with real account ids + ban state
@@ -5675,8 +7143,8 @@ async function handleReward(url, request, env) {
     if (r.status === 200) { try { const _rd = JSON.parse(txt);
       // /claim credits the CLAIMER (their own session acct); reviews credit the RECIPIENT (_rd.acct) regardless of who approved — admin reviews carry no reward session, so this must NOT depend on the reviewer's acct
       if (path === '/claim' && acct && (_rd.balance != null || _rd.credited != null || _rd.ok)) await grantXp(env, acct, 'faucet', 2, { dayCap: 20, note: 'faucet claim' });
-      else if (path === '/promo/review' && _rd.status === 'approved' && _rd.acct) await grantXp(env, _rd.acct, 'promo', 40, { note: 'promo post approved' });
-      else if (path === '/exsign/review' && _rd.status === 'approved' && _rd.acct) await grantXp(env, _rd.acct, 'exsign', 200, { note: 'exchange sign-up approved' });
+      else if (path === '/promo/review' && _rd.status === 'approved' && _rd.acct) { await grantXp(env, _rd.acct, 'promo', 40, { note: 'promo post approved' }); try { await evPush(env, null, 'promopaid', '+$' + (+_rd.amount || 0).toFixed(2), '/rewards/'); } catch (e) {} }
+      else if (path === '/exsign/review' && _rd.status === 'approved' && _rd.acct) { await grantXp(env, _rd.acct, 'exsign', 200, { note: 'exchange sign-up approved' }); try { await evPush(env, null, 'exsignpaid', String((JSON.parse(raw || '{}').exchange) || ''), '/rewards/'); } catch (e) {} }
       if (path === '/claim' && _rd.ok) await evPush(env, request, 'claim', '+$' + (+_rd.credited || 0).toFixed(2), '/rewards/');
       if (path === '/withdraw' && _rd.ok) await evPush(env, request, 'withdraw', '$' + (+(_rd.total != null ? _rd.total : _rd.amount) || 0).toFixed(2), '/rewards/');
       if (path === '/promo/submit' && _rd.ok) { let _pl = ''; try { _pl = String((JSON.parse(raw || '{}').platform) || '').toUpperCase(); } catch (e) {} await evPush(env, request, 'promo', _pl === 'X' ? 'on X' : _pl === 'TIKTOK' ? 'on TikTok' : '', '/rewards/'); }
@@ -5695,6 +7163,30 @@ async function handleReward(url, request, env) {
       }
     } catch (e) {}
   }
+  // Earnings breakdown: resolve who the account is + fold in the COMPLETE daily-mission earning history from UserStore
+  // (RewardLedger only keeps a recent global log ring; UserStore's `missions` table is the durable per-user record).
+  if (r.status === 200 && path === '/earnings') {
+    try {
+      const data = JSON.parse(txt);
+      const uidRaw = String(data.address || '').replace(/^u:/, '');
+      if (data.address && String(data.address).startsWith('u:')) {
+        const prof = await resolveProfiles(env, [data.address]);
+        const p = prof[uidRaw]; if (p) { data.username = p.username || ''; data.email = p.email || ''; }
+        if (env.USERS) { try {
+          const mr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/history?uid=' + encodeURIComponent(uidRaw)));
+          const md = await mr.json(); const rows = (md && md.rows) || [];
+          const byId = {}; MISSION_POOL.forEach(m => { byId[m.mid] = m; });
+          data.items = data.items || [];
+          for (const row of rows) { const def = byId[row.mid]; data.items.push({ type: 'mission', usd: (def ? def.cents : 0) / 100, ts: row.ts || (row.day ? new Date(row.day).getTime() : 0), mid: row.mid, title: def ? def.title : row.mid }); }
+          data.items.sort((x, y) => (y.ts || 0) - (x.ts || 0));
+          const summary = data.summary || {};
+          for (const it of data.items) if (it.type === 'mission') { (summary.mission = summary.mission || { n: 0, usd: 0 }); summary.mission.n++; summary.mission.usd = +(summary.mission.usd + it.usd).toFixed(2); }
+          data.summary = summary;
+        } catch (e) {} }
+      }
+      txt = JSON.stringify(data);
+    } catch (e) {}
+  }
   return new Response(txt, { status: r.status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
 }
 // account id ('u:<uid>') → {username,email} via UserStore, batched
@@ -5709,6 +7201,7 @@ async function resolveProfiles(env, acctKeys) {
 }
 
 // Report an uncaught Worker exception to Sentry (custom envelope — no SDK/bundler needed). DSN is publishable.
+    try { const hk = 'srverr:hr:' + new Date().toISOString().slice(0, 13); ctx && ctx.waitUntil ? ctx.waitUntil(env.STATS.put(hk, String((+(await env.STATS.get(hk)) || 0) + 1), { expirationTtl: 7200 })) : null; } catch (e2) {}
 function sentryWorker(err, request, epath, emethod) {
   try {
     var KEY = 'c13516c9f6d90ffb20d7221e089a2d35', HOST = 'o4511677157015552.ingest.de.sentry.io', PROJ = '4511677162717264';
@@ -5731,8 +7224,8 @@ export default {
     if (url.protocol === 'http:') { url.protocol = 'https:'; return Response.redirect(url.toString(), 301); }
     if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
     if (url.pathname === '/api/geo') return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // visitor country for geo-aware exchange cards (US/CA see US-legal venues first)
-    if (url.pathname === '/api/prices') return handlePrices();
-    if (url.pathname === '/api/screener') return handleScreener(env);
+    if (url.pathname === '/api/prices') return perfWrap(env, ctx, 'prices', 10, () => handlePrices(env, ctx));
+    if (url.pathname === '/api/screener') return perfWrap(env, ctx, 'screener', 3, () => handleScreener(env));
     if (url.pathname === '/api/symbols') return handleSymbols();
     if (url.pathname === '/api/gecko/markets') return handleGeckoMarkets(url, env);
     if (url.pathname === '/api/gecko/global') return handleGeckoGlobal(env);
@@ -5756,6 +7249,9 @@ export default {
     if (url.pathname === '/api/cg/funding') return handleCgFunding(url, env);
     if (url.pathname === '/api/cg/longshort') return handleCgLongShort(url, env);
     if (url.pathname === '/api/cg/openinterest') return handleCgOpenInterest(url, env);
+    if (url.pathname === '/api/cg/cycle') return handleCgCycle(url, env);
+    if (url.pathname === '/api/cg/etf') return handleCgEtf(url, env);
+    if (url.pathname === '/api/cg/hyper') return handleCgHyper(url, env);
     if (url.pathname === '/api/price') {
       const sym = String(url.searchParams.get('symbol') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
       const ck = new Request('https://marginpad.io/__price_' + sym);
@@ -5765,7 +7261,7 @@ export default {
       try { await caches.default.put(ck, resp.clone()); } catch (e) {} // edge-cache BOTH the hit (5s) AND the miss (30s) — without negative-caching, an unresolvable/delisted symbol re-ran fetchPrice's 5 sequential upstream legs on EVERY poll (5 wasted round-trips + subrequests each time)
       return resp;
     }
-    if (url.pathname === '/api/klines') return handleKlines(url);
+    if (url.pathname === '/api/klines') return perfWrap(env, ctx, 'klines', 10, () => handleKlines(url));
     if (url.pathname.startsWith('/api/v1/')) return handleCollectorProxy(url, request, env);
     if (url.pathname === '/api/livepos' && request.method === 'POST') { // anonymous device-side open-position sync → ops Live-trades board
       const did = getCookie(request, 'mp_did') || '';
@@ -5781,6 +7277,24 @@ export default {
       } catch (e) { return J({ ok: false }); }
     }
     if (url.pathname === '/api/track') return handleTrack(url, request, env, ctx);
+    if (url.pathname === '/api/reftrack') { // referral-link visit → record who came, via which campaign, from where (the exact post)
+      const ref = (url.searchParams.get('ref') || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 40);
+      if (ref && env.USERS && env.STATS && !isBot(request.headers.get('user-agent') || '')) {
+        const c = (url.searchParams.get('c') || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 24);
+        let src = '', fullUrl = ''; try { const u2 = new URL(url.searchParams.get('r') || ''); src = u2.hostname.replace(/^www\./, '').slice(0, 40); fullUrl = (u2.origin + u2.pathname + u2.search).slice(0, 200); } catch (e) {}
+        if (!src) src = 'direct';
+        // ANTI-ABUSE: count at most ONE click per referrer per IP per day — kills refresh/bot inflation of the click stats
+        const ip = request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip') || '';
+        const seenKey = 'rhseen:' + ref + ':' + (await sha8(ip + '|' + ref)).slice(0, 12) + ':' + new Date().toISOString().slice(0, 10);
+        let dup = false; try { dup = !!(await env.STATS.get(seenKey)); } catch (e) {}
+        if (!dup) {
+          try { await env.STATS.put(seenKey, '1', { expirationTtl: 90000 }); } catch (e) {}
+          ctx.waitUntil(env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/refhit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ referrer: ref, campaign: c, src, url: fullUrl }) })).catch(() => {}));
+          ctx.waitUntil(evPush(env, request, 'refclick', src, '').catch(() => {}));
+        }
+      }
+      return new Response('', { status: 204, headers: CORS });
+    }
     if (url.pathname === '/api/stats/reset' && (await adminCookieOk(request, env))) return handleStatsReset(env);
     if (url.pathname === '/api/stats/login') return adminDoLogin(request, env, 'cfg:statspass', 'mp_sadm', '/', url.origin + '/api/stats');
     if (url.pathname === '/api/stats/logout') return adminLogout('mp_sadm', '/');
@@ -5788,11 +7302,13 @@ export default {
     if (url.pathname === '/api/bug' || url.pathname.startsWith('/api/bug/')) return handleBug(url, request, env);
     if (url.pathname === '/api/comments') return handleComments(url, request, env);
     if (url.pathname.startsWith('/api/reward/')) return handleReward(url, request, env);
+    if ((url.pathname === '/api/nowpayments/ipn' || url.pathname === '/api/nowpay/ipn') && request.method === 'POST') return handleNowpayIpn(request, env);
     if (url.pathname === '/api/admin/user') return handleUserPage(url, env, request);
     if (url.pathname.startsWith('/api/auth/')) return handleAuth(url, request, env, ctx);
     if (url.pathname === '/api/alerts' || url.pathname.startsWith('/api/alerts/')) return handleAlerts(url, env, request);
     if (url.pathname === '/api/push' || url.pathname.startsWith('/api/push/')) return handlePush(url, env, request);
     if (url.pathname === '/api/bot' || url.pathname.startsWith('/api/bot/')) return handleBot(url, request, env, ctx);
+    if (url.pathname.startsWith('/api/trade/')) return perfWrap(env, ctx, url.pathname.indexOf('/open') > 0 ? 'trade-open' : 'trade-other', 1, () => handleTrade(url, request, env)); // P0 server-side trading (session auth) — every fill is timed for MarginPad Health
     if (url.pathname === '/api/announce') return handleAnnounce(url, env, request);
     if (url.pathname === '/api/ai/chart') return handleAiChart(url, request, env);
     if (url.pathname === '/api/ai/admin') return handleAiAdmin(url, request, env);
@@ -5898,6 +7414,7 @@ export default {
         ae: ae ? { ok: true, evHour: Math.round(+((ae[0] || {}).n) || 0) } : { ok: false },
         kv: { ok: kvErr != null, errToday: kvErr || 0 },
         users: du ? { ok: true, total: du.total || 0, active24: du.active24 || 0 } : { ok: false },
+        avgDwellSec: du ? (du.avgDwellSec || 0) : 0, dwellUsers: du ? (du.dwellUsers || 0) : 0,
       });
       const resp = new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=60' } });
       try { await caches.default.put(ck, resp.clone()); } catch (e) {}
@@ -5966,10 +7483,17 @@ export default {
       const posts = ((cr && cr.posts) || []).slice(0, 6).map(x => ({ id: x.id, title: x.title, author: x.author, ncom: x.ncom || 0, likes: x.likes || 0 }));
       return new Response(JSON.stringify({ users, accounts, posts }), { headers: jh2 });
     }
+    if (url.pathname === '/api/admin/tgbot' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) return handleTgbotStats(env); // ops Telegram Bot tab
+    if (url.pathname === '/api/admin/affiliate' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // ops Affiliate tab: referral-link performance per user
+      let sj = { affiliates: [], totals: {} };
+      try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/affiliate')); sj = await rr.json(); } catch (e) {}
+      try { const cfg = await rewardCfg(env); sj.referralUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 0.2; } catch (e) { sj.referralUsd = 0.2; }
+      return new Response(JSON.stringify(sj), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/apistats' && (await adminCookieOk(request, env))) { // ops API tab: bot-API usage per user + per endpoint
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/botstats', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); } catch (e) { return new Response(JSON.stringify({ keys: [], use: [], byEp: [], transient: true }), { headers: { 'content-type': 'application/json' } }); }
     }
-    if (url.pathname === '/api/admin/security' && (await adminCookieOk(request, env))) { // Security tab "farming radar": every registered user's behavior (time on /rewards vs the rest, trades) joined with their faucet account (claims/balance/device) — finds people who are here ONLY for the faucet
+    if (url.pathname === '/api/admin/security' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // Security tab "farming radar": every registered user's behavior (time on /rewards vs the rest, trades) joined with their faucet account (claims/balance/device) — finds people who are here ONLY for the faucet
       const [ur, ar, cfg] = await Promise.all([
         env.USERS ? env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/security')).then(r => r.json()).catch(() => ({ users: [] })) : { users: [] },
         env.REWARDS ? env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/accounts')).then(r => r.json()).catch(() => ({ accounts: [] })) : { accounts: [] },
@@ -5986,8 +7510,115 @@ export default {
       clusters.sort((a, b) => (b.exact - a.exact) || (b.members.length - a.members.length));
       // annotate each row with how many OTHER accounts share its email identity (for the per-user flag)
       rows.forEach(r => { const nDup = (byNorm[r._norm] || []).length - 1; const bSim = r._base ? ((byBase[r._base] || []).length - 1) : 0; r.emailDup = Math.max(0, nDup); r.emailSim = Math.max(0, bSim); delete r._norm; delete r._base; });
+      // ---- multi-account clusters by LOGIN IP + DEVICE (independent of the faucet — catches signup multi-accounting, incl. accounts that never claimed) ----
+      const byIp = {}, byDid = {};
+      rows.forEach(r => { if (r.ip) (byIp[r.ip] = byIp[r.ip] || []).push(r); if (r.did) (byDid[r.did] = byDid[r.did] || []).push(r); });
+      rows.forEach(r => { r.sameIpUsers = r.ip ? (byIp[r.ip] || []).length : 1; r.sameDidUsers = r.did ? (byDid[r.did] || []).length : 1; });
+      const mkCluster = (map, kind) => Object.keys(map).map(k => map[k]).filter(g => g.length >= 2).map(g => { const gs = g.slice().sort((x, y) => (y.created || 0) - (x.created || 0)); return { kind, key: kind === 'ip' ? (gs[0].ip || '') : 'device', count: gs.length, lastTs: gs[0].created || 0, recent: gs.filter(x => Date.now() - (x.created || 0) < 3600000).length, cc: gs[0].cc || '', vpn: !!gs[0].vpn, members: gs.map(x => ({ uid: x.uid, email: x.email, username: x.username, created: x.created, cc: x.cc, dev: x.dev, vpn: x.vpn, trades: x.trades, claims: x.claims, balanceUsd: x.balanceUsd, banned: x.banned })) }; });
+      const ipClusters = mkCluster(byIp, 'ip').sort((a, b) => (b.recent - a.recent) || (b.count - a.count)).slice(0, 40);
+      const didClusters = mkCluster(byDid, 'device').sort((a, b) => (b.recent - a.recent) || (b.count - a.count)).slice(0, 40);
       const vpnCount = rows.filter(r => r.vpn).length;
-      return new Response(JSON.stringify({ rows, emailClusters: clusters.slice(0, 60), vpnCount, minWdUsd: (cfg.minWdC || 500) / 100 }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+      return new Response(JSON.stringify({ rows, emailClusters: clusters.slice(0, 60), ipClusters, didClusters, vpnCount, minWdUsd: (cfg.minWdC || 500) / 100 }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/indexnow' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // force IndexNow submit (Bing/Yandex/Seznam/Naver): ?urls=a,b,c pings those, else re-diffs the sitemaps now
+      const raw = url.searchParams.get('urls');
+      if (raw) { const list = raw.split(',').map(s => s.trim()).filter(u => /^https:\/\/marginpad\.io\//.test(u)).slice(0, 1000); await indexNowPing(list); return J({ ok: true, pinged: list.length, urls: list }); }
+      await checkIndexNow(env, true); return J({ ok: true, mode: 'sitemap-diff' });
+    }
+    if (url.pathname === '/api/admin/setchatphoto' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // set a Telegram chat/channel photo via the bot (bot must be admin with "change info"). POST the raw image bytes, or ?path=/assets/... (read via ASSETS binding to avoid a self-fetch loop)
+      const chat = url.searchParams.get('chat') || (await env.STATS.get('csig:chat'));
+      if (!chat) return J({ error: 'need chat' }, 400);
+      try {
+        let bytes;
+        if (request.method === 'POST') { bytes = await request.arrayBuffer(); }
+        else { const path = url.searchParams.get('path') || '/assets/mp-signals-avatar.png'; const ir = await env.ASSETS.fetch(new Request('https://marginpad.io' + path)); if (!ir.ok) return J({ error: 'asset', status: ir.status }, 502); bytes = await ir.arrayBuffer(); }
+        if (!bytes || bytes.byteLength < 100) return J({ error: 'no_image' }, 400);
+        const fd = new FormData(); fd.append('chat_id', String(chat)); fd.append('photo', new Blob([bytes], { type: 'image/png' }), 'avatar.png');
+        const tr = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setChatPhoto', { method: 'POST', body: fd });
+        return J(await tr.json());
+      } catch (e) { return J({ error: String(e).slice(0, 120) }, 500); }
+    }
+    if (url.pathname === '/api/admin/csig' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // 1h chart-signal config: ?chat= (channel @username or numeric id) ?coins= ?on=0|1 ?test=1
+      const q = url.searchParams;
+      if (q.get('chat') != null) await env.STATS.put('csig:chat', q.get('chat').trim());
+      if (q.get('coins') != null) await env.STATS.put('csig:coins', q.get('coins').trim().toUpperCase());
+      if (q.get('on') != null) await env.STATS.put('csig:on', q.get('on') === '0' ? '0' : '1');
+      for (const k of ['adx', 'volmul', 'htf', 'evguard']) if (q.get(k) != null) await env.STATS.put('csig:' + k, q.get(k).trim());
+      for (const t of ['fast', 'balanced', 'premium']) if (q.get('chat' + t) != null) await env.STATS.put('csig:chat:' + t, q.get('chat' + t).trim());
+      for (const t of ['free', 'p1', 'p2', 'p3']) if (q.get('prem' + t) != null) await env.STATS.put('tg:prem:' + t, q.get('prem' + t).trim()); // /premium signal-group invite links
+      if (q.get('seen') === '1') { let l = []; try { l = JSON.parse(await env.STATS.get('tg:seenchans') || '[]'); } catch (e) {} return J({ seenChannels: l }); }
+      if (q.get('reset') != null) { // full signal-state wipe: kills ALL TP/SL follow-up tracking (confirmed + live Fast) so orphaned follow-ups for never-delivered signals can't fire; engine re-seeds silently next minute
+        const c = ((await env.STATS.get('csig:coins')) || 'BTC ETH SOL BNB XRP DOGE ADA AVAX LINK SUI HYPE').split(/\s+/);
+        for (const s of c) { const sy = s.toUpperCase(); try { await env.STATS.delete('csig:st:' + sy); } catch (e) {} try { await env.STATS.delete('csig:live:' + sy); } catch (e) {} }
+        if (q.get('reset') === 'all') { try { await env.STATS.delete('csig:results'); } catch (e) {} } // also drop the outcome log (weekly report) — for wiping a broken period
+        return J({ ok: true, cleared: c.length, resultsCleared: q.get('reset') === 'all' });
+      }
+      if (q.get('usechannel') === '1') { const c = await env.STATS.get('tg:channel'); if (c) await env.STATS.put('csig:chat', c); } // copy the auto-captured channel id into csig:chat
+      if (q.get('test') === '1') return J(await checkChartSignals(env, true));
+      if (q.get('state') === '1') { // READ-ONLY diag: per-symbol signal state via the worker's env.STATS (reliable) — does NOT send
+        const cl = ((await env.STATS.get('csig:coins')) || 'BTC ETH SOL BNB XRP DOGE ADA AVAX LINK SUI HYPE').split(/\s+/).filter(Boolean);
+        const st = {};
+        for (const s of cl) { const sy = s.toUpperCase(); st[sy] = { live: await env.STATS.get('csig:live:' + sy), conf: await env.STATS.get('csig:st:' + sy) }; }
+        return J({ dbg: await env.STATS.get('csig:dbg'), results: await env.STATS.get('csig:results'), log: await env.STATS.get('csig:log'), lastFast: await env.STATS.get('csig:lastfast'), state: st });
+      }
+      return J({ coins: (await env.STATS.get('csig:coins')) || '(default majors + HYPE)', on: (await env.STATS.get('csig:on')) !== '0', adx: +(await env.STATS.get('csig:adx') || 20), volmul: +(await env.STATS.get('csig:volmul') || 1.2), htf: (await env.STATS.get('csig:htf')) !== '0', evguard: (await env.STATS.get('csig:evguard')) !== '0', channels: { fast: (await env.STATS.get('csig:chat:fast')) || '(unset)', balanced: (await env.STATS.get('csig:chat:balanced')) || '(unset)', premium: (await env.STATS.get('csig:chat:premium')) || (await env.STATS.get('csig:chat')) || '(unset)' } });
+    }
+    if (url.pathname === '/api/perf' && request.method === 'POST') { // client health beacon: real WS latency (Bybit msg.ts delta) + chart FPS; sampled ~1/5min per client
+      try {
+        if (isBot(request.headers.get('user-agent') || '')) return new Response('{}', { headers: { 'content-type': 'application/json', ...CORS } });
+        const tb = globalThis.__perfThr = globalThis.__perfThr || { t: 0, n: 0 };
+        const nowT = Date.now(); if (nowT - tb.t > 10000) { tb.t = nowT; tb.n = 0; }
+        if (++tb.n <= 40) {
+          let pb = {}; try { pb = await request.json(); } catch (e) {}
+          const wsv = +pb.ws, fpv = +pb.fps;
+          if (isFinite(wsv) && wsv >= 0 && wsv < 30000) perfPush(env, ctx, 'ws', wsv, true);
+          if (isFinite(fpv) && fpv >= 1 && fpv <= 120) perfPush(env, ctx, 'fps', fpv, true);
+          ctx.waitUntil(perfFlush(env));
+        }
+      } catch (e) {}
+      return new Response('{}', { headers: { 'content-type': 'application/json', ...CORS } });
+    }
+    if (url.pathname === '/api/admin/fundtest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // P1 funding E2E: force-apply a rate to ONE uid's open srv trades (never touches real users)
+      const fu = url.searchParams.get('uid') || ''; if (!fu) return J({ error: 'uid_required' }, 400);
+      const frate = +(url.searchParams.get('rate') || 0.0001); const fsym = (url.searchParams.get('sym') || 'BTC').toUpperCase();
+      const fpd = await fetchPrice(fsym); if (!fpd || !(+fpd.price > 0)) return J({ error: 'no_price' }, 503);
+      const fprices = {}; fprices[fsym] = +fpd.price; const frates = {}; frates[fsym] = frate;
+      return J(await usersDO(env, '/tradesweepall', { prices: fprices, rates: frates, force: true, onlyUid: fu }));
+    }
+    if (url.pathname === '/api/admin/perf' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // MarginPad Health data: per-group latency percentiles + presence + errors/hr
+      const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      let ring = []; try { ring = JSON.parse(await env.STATS.get('perf:ring') || '[]'); } catch (e) {}
+      const cut = Date.now() - 3600000;
+      const by = {};
+      for (const x of ring) { if (!x || x.t < cut) continue; (by[x.g] = by[x.g] || []).push(x.ms); }
+      const pct = (arr, p) => { if (!arr.length) return null; const a = arr.slice().sort((q, w) => q - w); return a[Math.min(a.length - 1, Math.floor(a.length * p))]; };
+      const groups = {};
+      for (const g in by) { const a = by[g]; groups[g] = { n: a.length, p50: pct(a, 0.5), p95: pct(a, 0.95), max: Math.max(...a), avg: Math.round(a.reduce((t2, v) => t2 + v, 0) / a.length) }; }
+      // combined server-side API p95 (excludes the client-reported ws/fps groups)
+      const srvAll = []; for (const g in by) if (g !== 'ws' && g !== 'fps') srvAll.push(...by[g]);
+      const hk = new Date().toISOString().slice(0, 13);
+      const errHr = (+(await env.STATS.get('err:hr:' + hk)) || 0), srvErrHr = (+(await env.STATS.get('srverr:hr:' + hk)) || 0);
+      let online = 0; try { const om = JSON.parse(await env.STATS.get('onlog') || '{}'); const oc = Date.now() - 150000; for (const k in om) if (om[k] > oc) online++; } catch (e) {}
+      return new Response(JSON.stringify({ groups, apiP95: pct(srvAll, 0.95), apiP50: pct(srvAll, 0.5), apiN: srvAll.length, errHr, srvErrHr, online, at: Date.now() }), { headers: jh });
+    }
+    if (url.pathname === '/api/admin/backup' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // P0.5: ?run=1 force a backup now · ?get=users|rewards download the latest dump
+      const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const getW = url.searchParams.get('get');
+      if (getW === 'users' || getW === 'rewards') {
+        let txt = null;
+        if (env.BACKUP) { const o = await env.BACKUP.get('backup/' + getW + '-latest.json'); txt = o ? await o.text() : null; }
+        if (txt == null) txt = await env.STATS.get('bkp:' + getW + ':latest');
+        if (txt == null) return new Response(JSON.stringify({ error: 'no_backup_yet' }), { status: 404, headers: jh });
+        return new Response(txt, { headers: { 'content-type': 'application/json; charset=utf-8', 'content-disposition': 'attachment; filename="marginpad-' + getW + '-backup.json"' } });
+      }
+      if (url.searchParams.get('run') === '1') {
+        try { await env.STATS.delete('bkp:done:' + new Date().toISOString().slice(0, 10)); } catch (e) {}
+        await nightlyBackup(env);
+        const u = await env.STATS.get('bkp:users:latest'), rr = await env.STATS.get('bkp:rewards:latest');
+        return new Response(JSON.stringify({ ok: true, store: env.BACKUP ? 'r2' : 'kv', usersKB: u ? Math.round(u.length / 1024) : null, rewardsKB: rr ? Math.round(rr.length / 1024) : null }), { headers: jh });
+      }
+      const u = await env.STATS.get('bkp:users:latest'), rr = await env.STATS.get('bkp:rewards:latest');
+      return new Response(JSON.stringify({ store: env.BACKUP ? 'r2' : 'kv', hasUsers: !!u, hasRewards: !!rr, usersKB: u ? Math.round(u.length / 1024) : 0, rewardsKB: rr ? Math.round(rr.length / 1024) : 0, note: 'daily @ first */10 cron after midnight UTC; 7-day rotation bkp:<store>:<dow>' }), { headers: jh });
     }
     if (url.pathname === '/api/admin/sendmail' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // owner utility: send an email (optional base64 attachment) via Resend
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -6054,16 +7685,92 @@ export default {
       try { await env.STATS.put(cdKey, String(Date.now()), { expirationTtl: 72000 }); } catch (e) {} // 20h cooldown — no accidental spam
       return new Response(JSON.stringify({ ok: true, to: email, positions: rows.length }), { headers: jh });
     }
-    if (url.pathname === '/api/admin/tgsetwebhook' && (await adminCookieOk(request, env))) { // (re)register the Telegram webhook WITH the anti-forgery secret token (see handleTelegram)
+    if (url.pathname === '/api/admin/tgsetwebhook' && ((await adminCookieOk(request, env)) || isAdminKey(env, url.searchParams.get('key')))) { // (re)register the Telegram webhook WITH the anti-forgery secret token (see handleTelegram)
       const jh = { 'content-type': 'application/json' };
       if (!env.TELEGRAM_TOKEN) return new Response(JSON.stringify({ error: 'no_bot' }), { status: 503, headers: jh });
+      if (url.searchParams.get('info') === '1') { // ?info=1 → read current webhook state (allowed_updates, pending, last error) without re-registering
+        try { const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/getWebhookInfo'); const j = await r.json(); return new Response(JSON.stringify(j.result || j), { headers: jh }); } catch (e) { return new Response(JSON.stringify({ error: String(e) }), { headers: jh }); }
+      }
+      const clr = url.searchParams.get('clearchan'); // ?clearchan=fast|balanced|premium|free|all → delete all bot-visible messages in that channel
+      if (clr) {
+        const tiers = clr === 'all' ? ['fast', 'balanced', 'premium', 'free'] : [clr];
+        const out = {};
+        for (const t of tiers) {
+          const c = await env.STATS.get('csig:chat:' + t);
+          if (!c) { out[t] = 'not_bound'; continue; }
+          const probe = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: c, disable_notification: true, text: '🧹' }); // its id = current max message id
+          const maxId = (probe && probe.result && probe.result.message_id) || 0;
+          let deleted = 0;
+          for (let id = maxId; id >= 1 && (maxId - id) < 400; id--) { try { const d = await tgApi(env.TELEGRAM_TOKEN, 'deleteMessage', { chat_id: c, message_id: id }); if (d && d.ok) deleted++; } catch (e) {} }
+          out[t] = { chat: c, maxId, deleted };
+        }
+        return new Response(JSON.stringify(out), { headers: jh });
+      }
+      if (url.searchParams.get('newstest') === '1') { // ?newstest=1 → post the single newest news item to @marginpadnews now (demo); cron then seeds + flows new ones
+        const chan = (await env.STATS.get('csig:chat:news')) || '@marginpadnews';
+        let items = []; try { const r = await handleNews(env); const j = await r.json(); items = j.items || []; } catch (e) {}
+        const it = items[0]; if (!it) return new Response(JSON.stringify({ error: 'no_news' }), { headers: jh });
+        const readUrl = 'https://marginpad.io/news/?read=' + encodeURIComponent(it.url) + '&t=' + encodeURIComponent((it.title || '').slice(0, 160)) + '&s=' + encodeURIComponent(it.src || '');
+        const cap = ('📰 <b>' + it.title.replace(/[<>&]/g, '') + '</b>\n\n' + (it.body ? it.body.replace(/[<>&]/g, '') + '\n\n' : '') + '📖 <a href="' + readUrl + '">Read the full story on MarginPad →</a>').slice(0, 1024);
+        let r2 = null;
+        if (it.img && /^https:\/\//.test(it.img)) { try { r2 = await tgApi(env.TELEGRAM_TOKEN, 'sendPhoto', { chat_id: chan, photo: it.img, caption: cap, parse_mode: 'HTML' }); } catch (e) {} }
+        if (!r2 || !r2.ok) { try { r2 = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chan, parse_mode: 'HTML', text: cap }); } catch (e) {} }
+        return new Response(JSON.stringify({ posted: !!(r2 && r2.ok), title: it.title, hadImg: !!it.img, err: (r2 && r2.description) || '' }), { headers: jh });
+      }
+      if (url.searchParams.get('chandesc')) { // ?chandesc=1 → set the description ("About") on every signal channel + the news channel
+        const DESCS = {
+          fast: '⚡ MarginPad Fast — live 1h Supertrend BUY/SELL the instant they flip: entry, TP1, TP2 & SL + hit alerts. Free tools & bot: @MarginPadBot · marginpad.io',
+          balanced: '⚖️ MarginPad Balanced — confirmed 1h setups (4h trend + volume): entry, TP1/TP2/SL + follow-up alerts. @MarginPadBot · marginpad.io',
+          premium: '💎 MarginPad Premium — highest-conviction 1h setups (trend + ADX + volume) with full TP/SL management. @MarginPadBot · marginpad.io',
+          free: '🆓 MarginPad Free — a taste of our top-conviction crypto setups. Live entries + TP/SL alerts in the paid groups. Start: @MarginPadBot',
+          news: '📰 MarginPad News — fast crypto news, full story on marginpad.io. Free paper trading, charts, calculators & signals — start with @MarginPadBot',
+        };
+        const out = {};
+        for (const t of ['fast', 'balanced', 'premium', 'free', 'news']) {
+          const c = t === 'news' ? ((await env.STATS.get('csig:chat:news')) || '@marginpadnews') : await env.STATS.get('csig:chat:' + t);
+          if (!c) { out[t] = 'not_bound'; continue; }
+          try { const r = await tgApi(env.TELEGRAM_TOKEN, 'setChatDescription', { chat_id: c, description: DESCS[t] }); out[t] = (r && r.ok) ? 'ok' : ((r && r.description) || 'fail'); } catch (e) { out[t] = String(e).slice(0, 60); }
+          await new Promise(r => setTimeout(r, 200));
+        }
+        try { const g = (await env.STATS.get('tg:chat:group')) || '@Marginpadgroup'; const r = await tgApi(env.TELEGRAM_TOKEN, 'setChatDescription', { chat_id: g, description: '💬 MarginPad Community — the open chat for crypto traders. Share setups, ask questions, post your trades (/share via @MarginPadBot). Free paper trading, charts, signals & 1h alerts: marginpad.io' }); out.group = (r && r.ok) ? 'ok' : ((r && r.description) || 'fail'); } catch (e) { out.group = String(e).slice(0, 60); }
+        return new Response(JSON.stringify(out), { headers: jh });
+      }
+      const rtTier = url.searchParams.get('replytest'); // ?replytest=fast → post a mock signal + a threaded follow-up, prove reply_to works in that channel
+      if (rtTier) {
+        const chat = await env.STATS.get('csig:chat:' + rtTier);
+        if (!chat) return new Response(JSON.stringify({ error: 'not_bound', tier: rtTier }), { headers: jh });
+        const s1 = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', disable_web_page_preview: true, text: '🧪 <b>Reply test</b> — mock signal (ignore/delete)\n🆔 <code>#TEST1</code>' });
+        const mid = s1 && s1.result && s1.result.message_id;
+        const s2 = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', reply_to_message_id: mid, allow_sending_without_reply: true, text: '✅ <b>TP1 HIT</b> (mock) — this must appear as a REPLY to the signal above. 🆔 <code>#TEST1</code>' });
+        return new Response(JSON.stringify({ tier: rtTier, chat, signalMsgId: mid || null, replySent: !!(s2 && s2.ok), threadedAsReply: !!(s2 && s2.result && s2.result.reply_to_message), followupMsgId: (s2 && s2.result && s2.result.message_id) || null, err: (s1 && s1.ok ? '' : (s1 && s1.description) || '') || (s2 && s2.ok ? '' : (s2 && s2.description) || '') }), { headers: jh });
+      }
       if (!env.TG_WEBHOOK_SECRET) return new Response(JSON.stringify({ error: 'no_secret', hint: 'wrangler secret put TG_WEBHOOK_SECRET first' }), { status: 400, headers: jh });
       let ok = false, desc = '';
       try {
-        const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setWebhook', { method: 'POST', headers: jh, body: JSON.stringify({ url: url.origin + '/telegram/webhook', secret_token: env.TG_WEBHOOK_SECRET, allowed_updates: ['message', 'callback_query', 'channel_post', 'my_chat_member', 'chat_member'] }) });
+        const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setWebhook', { method: 'POST', headers: jh, body: JSON.stringify({ url: url.origin + '/telegram/webhook', secret_token: env.TG_WEBHOOK_SECRET, allowed_updates: ['message', 'callback_query', 'inline_query', 'channel_post', 'my_chat_member', 'chat_member'] }) });
         const j = await r.json(); ok = !!j.ok; desc = j.description || '';
+        // also register the command menu (the ≡ list users see in the Telegram UI)
+        const cmds = [
+          { command: 'open', description: 'Open a paper trade (syncs to the web)' },
+          { command: 'positions', description: 'Your open positions + live P&L' },
+          { command: 'close', description: 'Close a position (also on the web)' },
+          { command: 'share', description: 'Share your last trade to the group' },
+          { command: 'price', description: 'Live price of a coin' },
+          { command: 'signals', description: 'Free & premium signal groups' },
+          { command: 'community', description: 'Join the traders community chat' },
+          { command: 'funding', description: 'Funding-rate extremes' },
+          { command: 'buy', description: 'Buy premium signals (crypto)' },
+          { command: 'mysub', description: 'Your premium subscription status' },
+          { command: 'leaderboard', description: 'Weekly trading leaderboard' },
+          { command: 'alert', description: 'Set a price alert' },
+          { command: 'whale', description: 'Whale-position alerts' },
+          { command: 'connect', description: 'Link your MarginPad account' },
+          { command: 'me', description: 'Your account status' },
+          { command: 'help', description: 'All commands' },
+        ];
+        try { await fetch('https://api.telegram.org/bot' + env.TELEGRAM_TOKEN + '/setMyCommands', { method: 'POST', headers: jh, body: JSON.stringify({ commands: cmds }) }); } catch (e) {}
       } catch (e) { desc = String(e); }
-      return new Response(JSON.stringify({ ok, note: desc }), { headers: jh });
+      return new Response(JSON.stringify({ ok, note: desc, commandsSet: true }), { headers: jh });
     }
     if (url.pathname === '/api/admin/tgphoto' && (await adminCookieOk(request, env))) { // set the channel avatar to the MarginPad logo
       const jh = { 'content-type': 'application/json' };
@@ -6119,8 +7826,10 @@ export default {
       if (!env.USERS) return new Response('{"error":"unavailable"}', { status: 503, headers: jh });
       const stub = env.USERS.get(env.USERS.idFromName('main'));
       const sub = url.pathname.slice('/api/lb/'.length);
-      if (sub === 'user') { // public profile card (by ?name=)
-        try { const r = await stub.fetch(new Request('https://do/lbuser?name=' + encodeURIComponent(url.searchParams.get('name') || ''))); return new Response(await r.text(), { headers: { ...jh, 'cache-control': 'public, max-age=15' } }); }
+      if (sub === 'user') { // public profile card (by ?name=); if the viewer is signed in, add mutual-follow ("friend") flags — uncached
+        const tok = getCookie(request, SESS_COOKIE); const vu = tok ? await sessionUser(env, tok) : null;
+        const q = 'https://do/lbuser?name=' + encodeURIComponent(url.searchParams.get('name') || '') + (vu && vu.id ? '&viewer=' + encodeURIComponent(vu.id) : '');
+        try { const r = await stub.fetch(new Request(q)); return new Response(await r.text(), { headers: { ...jh, 'cache-control': vu && vu.id ? 'no-store' : 'public, max-age=15' } }); }
         catch (e) { return new Response('{"exists":false}', { headers: jh }); }
       }
       // follow + following require sign-in
@@ -6129,13 +7838,52 @@ export default {
       if (sub === 'follow' && request.method === 'POST') {
         if (su.status && su.status !== 'active') return new Response('{"error":"restricted"}', { status: 403, headers: jh });
         let bd = {}; try { bd = await request.json(); } catch (e) {}
-        try { const r = await stub.fetch(new Request('https://do/lbfollow', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: su.id, tuid: bd.tuid, tname: bd.tname }) })); return new Response(await r.text(), { status: r.status, headers: jh }); }
+        try { const r = await stub.fetch(new Request('https://do/lbfollow', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: su.id, tuid: bd.tuid, tname: bd.tname }) })); const txt = await r.text();
+          try { const jd = JSON.parse(txt); if (jd && jd.following) { const rn = String(bd.tname || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20); ctx.waitUntil(evPush(env, request, 'follow', rn, '')); } } catch (e) {}
+          return new Response(txt, { status: r.status, headers: jh }); }
         catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); }
       }
       if (sub === 'following') {
         try { const r = await stub.fetch(new Request('https://do/lbfollowing?uid=' + encodeURIComponent(su.id))); return new Response(await r.text(), { headers: jh }); }
         catch (e) { return new Response('{"following":[]}', { headers: jh }); }
       }
+      if (sub === 'feed') {
+        try { const r = await stub.fetch(new Request('https://do/followfeed?uid=' + encodeURIComponent(su.id))); return new Response(await r.text(), { headers: jh }); }
+        catch (e) { return new Response('{"feed":[]}', { headers: jh }); }
+      }
+      return new Response('{"error":"not_found"}', { status: 404, headers: jh });
+    }
+    if (url.pathname.startsWith('/api/dm/')) { // user↔user direct messages (all session-authed)
+      const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
+      if (!env.USERS) return new Response('{"error":"unavailable"}', { status: 503, headers: jh });
+      const stub = env.USERS.get(env.USERS.idFromName('main'));
+      const sub = url.pathname.slice('/api/dm/'.length);
+      const tok = getCookie(request, SESS_COOKIE); const su = tok ? await sessionUser(env, tok) : null;
+      if (!su || !su.id) return new Response('{"error":"login_required"}', { status: 401, headers: jh });
+      const call = async (p, body) => { try { const r = await stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })); return new Response(await r.text(), { status: r.status, headers: jh }); } catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); } };
+      if (sub === 'send' && request.method === 'POST') { let bd = {}; try { bd = await request.json(); } catch (e) {}
+        const resp = await call('/dm/send', { from: su.id, toName: bd.to, txt: bd.text });
+        try { const jd = await resp.clone().json(); if (jd && jd.ok) { const rn = String(bd.to || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20); ctx.waitUntil(evPush(env, request, 'dm', rn, '')); } } catch (e) {}
+        return resp; }
+      if (sub === 'thread') return call('/dm/thread', { uid: su.id, withName: url.searchParams.get('with') || '' });
+      if (sub === 'inbox') return call('/dm/inbox', { uid: su.id });
+      if (sub === 'unread') return call('/dm/unread', { uid: su.id });
+      return new Response('{"error":"not_found"}', { status: 404, headers: jh });
+    }
+    if (url.pathname.startsWith('/api/duel/')) { // friend duels (weekly stat challenges, all session-authed)
+      const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
+      if (!env.USERS) return new Response('{"error":"unavailable"}', { status: 503, headers: jh });
+      const stub = env.USERS.get(env.USERS.idFromName('main'));
+      const sub = url.pathname.slice('/api/duel/'.length);
+      const tok = getCookie(request, SESS_COOKIE); const su = tok ? await sessionUser(env, tok) : null;
+      if (!su || !su.id) return new Response('{"error":"login_required"}', { status: 401, headers: jh });
+      const call = async (p, body) => { try { const r = await stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })); return new Response(await r.text(), { status: r.status, headers: jh }); } catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); } };
+      if (sub === 'challenge' && request.method === 'POST') { let bd = {}; try { bd = await request.json(); } catch (e) {}
+        const resp = await call('/duel/challenge', { from: su.id, toName: bd.to, metric: bd.metric });
+        try { const jd = await resp.clone().json(); if (jd && jd.ok) { const rn = String(bd.to || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20); ctx.waitUntil(evPush(env, request, 'duel', rn, '')); } } catch (e) {}
+        return resp; }
+      if (sub === 'respond' && request.method === 'POST') { let bd = {}; try { bd = await request.json(); } catch (e) {} return call('/duel/respond', { uid: su.id, id: bd.id, action: bd.action }); }
+      if (sub === 'mine') return call('/duel/mine', { uid: su.id });
       return new Response('{"error":"not_found"}', { status: 404, headers: jh });
     }
     if (url.pathname === '/api/academy') return handleAcademy(url, request, env);
@@ -6151,7 +7899,7 @@ export default {
       if (!env.CHAT) return new Response('na', { status: 503 });
       const sub = url.pathname.slice('/chat/admin'.length); // -> /history /post /delete /import
       const body = request.method === 'POST' ? await request.text() : undefined;
-      const inst = url.searchParams.get('inst') === 'old' ? 'global' : 'global2'; // ?inst=old = the pre-2026-07-16 wedged instance (recovery reads)
+      const inst = url.searchParams.get('inst') === 'old' ? 'global' : (url.searchParams.get('room') ? chatInstOf(url) : 'global2'); // ?inst=old = the pre-2026-07-16 wedged instance (recovery reads); ?room=<COIN> = a per-coin room
       // polled every 30s (badges) + 5s (chat tab); a DO reset mid-flight (every deploy) threw "internal error"
       // as a 500 → Health-tab noise. Retry once, then fail SOFT with an empty history.
       for (let attempt = 0; attempt < 2; attempt++) {
@@ -6163,10 +7911,11 @@ export default {
     if (url.pathname.startsWith('/community/') && url.pathname !== '/community/') return commPage(url, request, env); // /community/ itself is the static shell (assets); subroutes get per-post/user/category SEO + SSR
     if (url.pathname === '/chat/last') { // public: latest chat message ts (+count) → the client "new messages" glow. Edge-cached so a crowd of pollers collapses to one DO hit per window.
       if (!env.CHAT) return new Response('{"ts":0,"n":0}', { headers: { 'content-type': 'application/json; charset=utf-8', ...CORS } });
-      const ck = new Request('https://marginpad.io/__chat_last_v1');
+      const inst = chatInstOf(url);
+      const ck = new Request('https://marginpad.io/__chat_last_v1_' + inst);
       try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
       let body = '{"ts":0,"n":0}';
-      try { const r = await env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/last')); body = await r.text(); } catch (e) {}
+      try { const r = await env.CHAT.get(env.CHAT.idFromName(inst)).fetch(new Request('https://do/last')); body = await r.text(); } catch (e) {}
       const resp = new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=12', ...CORS } });
       try { await caches.default.put(ck, resp.clone()); } catch (e) {}
       return resp;
@@ -6184,7 +7933,7 @@ export default {
       try { const tok = getCookie(request, SESS_COOKIE); if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && (su.muted || (',' + String(su.restrictions || '') + ',').indexOf(',chat,') >= 0)) return new Response('restricted', { status: 403 }); } } catch (e) {}
       // A DO reset/migration mid-upgrade surfaces as a transient CF "internal error; reference=…" — catch it and return a
       // clean 503 so the client's ws.onclose just reconnects (3s) instead of the error hitting srverrlog/Sentry.
-      try { return await env.CHAT.get(env.CHAT.idFromName('global2')).fetch(request); }
+      try { return await env.CHAT.get(env.CHAT.idFromName(chatInstOf(url))).fetch(request); }
       catch (e) { return new Response('chat reconnecting', { status: 503 }); }
     }
     if (url.pathname === '/charts' || url.pathname === '/charts/' || url.pathname === '/paper-trade' || url.pathname === '/paper-trade/' || url.pathname === '/calculators' || url.pathname === '/calculators/' || url.pathname === '/screener' || url.pathname === '/screener/' || url.pathname === '/heatmap' || url.pathname === '/heatmap/' || url.pathname === '/swap' || url.pathname === '/swap/') { // dedicated full-screen workspaces (serve the homepage; its JS switches to the right single-tool mode)
@@ -6239,15 +7988,35 @@ export default {
    }
   },
   async scheduled(event, env, ctx) {
+    // 1-minute trigger runs ONLY the 1h chart-signal engine (live Fast flips fire near-instant; Balanced/Premium
+    // still fire on candle close but detected within ~1 min instead of ~10). Everything else stays on */10.
+    if (event.cron === '* * * * *') { ctx.waitUntil(checkChartSignals(env)); return; }
+    // signal-engine BACKSTOP: if the 1-min cron silently died (heartbeat stale >5 min), this */10 cron takes over
+    // running the engine — signals degrade to ≤10-min latency instead of stopping. Skips entirely while healthy (no race).
+    ctx.waitUntil((async () => { try { const sdbg = JSON.parse(await env.STATS.get('csig:dbg') || 'null'); if (!sdbg || Date.now() - (sdbg.ts || 0) > 5 * 60000) await checkChartSignals(env); } catch (e) {} })());
+    ctx.waitUntil(postSignalDigest(env)); // daily 18:00-UTC liveness digest to the signal channels
+    ctx.waitUntil(nightlyBackup(env)); // P0.5 — once per UTC day (stamped), retries on failure each */10
+    ctx.waitUntil(sweepServerPositions(env)); // P0 — server-side SL/TP/liq sweep for srv/bot trades
     ctx.waitUntil(checkAlerts(env));
     ctx.waitUntil(checkAccountAlerts(env));
     ctx.waitUntil(payWeeklyPrizes(env));
     ctx.waitUntil(checkDigest(env));
     ctx.waitUntil(checkCalReminders(env));
+    ctx.waitUntil(checkWhaleAlerts(env));
+    ctx.waitUntil(checkTokenUnlocks(env));
+    ctx.waitUntil(checkNewsPost(env)); // auto-post fresh crypto news (with image) to @marginpadnews
+    ctx.waitUntil(checkSubscriptions(env)); // premium-sub reminders + kick on expiry
+    ctx.waitUntil(checkLbNotify(env)); // DM leaderboard rank changes to linked users
+    ctx.waitUntil(checkReferrals(env)); // pay referrers once their friend gets active
+    ctx.waitUntil(postSignalReport(env)); // weekly signal performance report → channels (Mon 09:00 UTC)
+    ctx.waitUntil(checkFundingAlerts(env)); // funding-rate extreme alerts
     ctx.waitUntil(snapshotDaily(env));
-    ctx.waitUntil(checkSignals(env));
+    // checkSignals (old screener-based signal system) REMOVED 2026-07-22 — it posted screener top-30 tokens (e.g. BEAT)
+    // to tg:channel, which had auto-captured one of our signal channels. The curated 3-tier checkChartSignals (1-min
+    // cron) is the only signal system now. Re-enable only if you want the separate screener-score signal product back.
     ctx.waitUntil(checkMorningBrief(env));
     ctx.waitUntil(checkOpsAlerts(env));
+    ctx.waitUntil(settleDuels(env));
     ctx.waitUntil(checkIndexNow(env));
     ctx.waitUntil(handleScreener(env).catch(() => {})); // keep the global KV screener snapshot warm so /charts "Top signals" loads instantly
   },
@@ -6280,11 +8049,15 @@ function extractEmailText(raw) {
 }
 
 // ---------- live chat (Durable Object + WebSocket hibernation) ----------
+// Per-coin chat rooms: 'global' (All) stays on the original 'global2' instance (preserves history); a coin room
+// like BTC/ETH/SOL gets its own DO instance 'room_<COIN>'. Sanitized to a short A-Z0-9 token so a bad ?room can't
+// spawn junk instances beyond the shape the client offers.
+function chatInstOf(url) { const r = String((url.searchParams && url.searchParams.get('room')) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); return (!r || r === 'GLOBAL' || r === 'ALL') ? 'global2' : 'room_' + r; }
 export class ChatRoom {
   // CLASSIC WebSocket mode (2026-07-16): the hibernation API's acceptWebSocket() upgrade path started failing
   // platform-side with "internal error; reference=..." while every non-WS fetch to the same DO worked. This tiny
   // room doesn't need hibernation — sessions live in memory; a DO restart just drops sockets (clients reconnect).
-  constructor(state, env) { this.state = state; this.sessions = []; this.ipLast = new Map(); }
+  constructor(state, env) { this.state = state; this.env = env; this.sessions = []; this.ipLast = new Map(); }
   broadcast(obj) {
     const out = JSON.stringify(obj);
     this.sessions = this.sessions.filter(x => { try { x.ws.send(out); return true; } catch (e) { return false; } });
@@ -6331,7 +8104,11 @@ export class ChatRoom {
       let hist = (await self.state.storage.get('hist')) || [];
       hist.push(msg); if (hist.length > 60) hist = hist.slice(-60);
       await self.state.storage.put('hist', hist);
-      self.broadcast({ type: 'msg', message: msg, online: self.online() });
+      self.broadcast({ type: 'msg', message: msg, online: self.online() }); try { evPush(self.env, null, 'chatmsg', String((msg.u || '?')).slice(0, 20) + ': ' + String(msg.t || '').slice(0, 36), '').catch(function () {}); } catch (e) {}
+      // @mention → notify the mentioned users (fire-and-forget via UserStore)
+      try { const names = (text.match(/@([a-zA-Z0-9_]{3,20})/g) || []).map(x => x.slice(1)).filter(n => n.toLowerCase() !== user.toLowerCase()).slice(0, 4);
+        if (names.length && self.env && self.env.USERS) { const st = self.env.USERS.get(self.env.USERS.idFromName('main'));
+          st.fetch(new Request('https://do/mentionnotify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ from: user, names, text }) })).catch(() => {}); } } catch (e) {}
     });
     const drop = () => { self.sessions = self.sessions.filter(x => x !== sess); try { server.close(); } catch (e) {} self.broadcast({ type: 'presence', online: self.online() }); };
     server.addEventListener('close', drop);
@@ -6362,7 +8139,10 @@ export class RewardLedger {
     s.exec('CREATE TABLE IF NOT EXISTS vidlock(vid TEXT PRIMARY KEY, address TEXT, ts INTEGER)'); // one address per device; admin can unlock
     s.exec('CREATE TABLE IF NOT EXISTS support(ts INTEGER, email TEXT, address TEXT, message TEXT)'); // contact-us submissions from the rewards page
     try { s.exec('ALTER TABLE support ADD COLUMN closed INTEGER NOT NULL DEFAULT 0'); } catch (e) {} // open vs closed ticket state for the admin Support tab
+    try { s.exec('ALTER TABLE support ADD COLUMN conv TEXT'); } catch (e) {} // conversation id — groups a user's messages into separate threads (reply vs new conversation)
+    try { s.exec('ALTER TABLE support ADD COLUMN img TEXT'); } catch (e) {} // optional screenshot (data:image URI, client-resized, ~≤60KB)
     s.exec('CREATE TABLE IF NOT EXISTS sreply(ts INTEGER, email TEXT, subject TEXT, body TEXT)'); // email replies sent from the admin Support tab
+    try { s.exec('ALTER TABLE sreply ADD COLUMN conv TEXT'); } catch (e) {} // conversation id for admin replies (usually derived by timestamp for legacy)
     s.exec('CREATE TABLE IF NOT EXISTS lb(week INTEGER, address TEXT, roe REAL, pnl REAL, symbol TEXT, side TEXT, ts INTEGER, PRIMARY KEY(week,address))'); // weekly paper-trade leaderboard (best single-trade ROE per wallet)
     try { s.exec('ALTER TABLE lb ADD COLUMN name TEXT'); } catch (e) {} // registered-user display name (username) — league is members-only
     s.exec('CREATE TABLE IF NOT EXISTS notes(address TEXT PRIMARY KEY, note TEXT, ts INTEGER)'); // private admin notes per address
@@ -6371,7 +8151,8 @@ export class RewardLedger {
     try { s.exec('CREATE INDEX IF NOT EXISTS idx_promos_acct ON promos(acct)'); } catch (e) {}
     s.exec("CREATE TABLE IF NOT EXISTS exsign(id TEXT PRIMARY KEY, acct TEXT, exchange TEXT, uid TEXT, ts INTEGER, status TEXT DEFAULT 'pending', note TEXT DEFAULT '', decided_ts INTEGER DEFAULT 0, amount INTEGER DEFAULT 0, ip TEXT, cc TEXT)"); // exchange sign-up bonus claims ($3 per exchange account via our ref link, manual review against the affiliate dashboard)
     try { s.exec('CREATE INDEX IF NOT EXISTS idx_exsign_acct ON exsign(acct)'); } catch (e) {}
-    s.exec('CREATE TABLE IF NOT EXISTS lbpayouts(week INTEGER, acct TEXT, rank INTEGER, amount INTEGER, ts INTEGER, PRIMARY KEY(week,acct))'); // weekly leaderboard prize payouts — idempotent (same week+acct never paid twice)
+    s.exec('CREATE TABLE IF NOT EXISTS lbpayouts(week INTEGER, acct TEXT, rank INTEGER, amount INTEGER, ts INTEGER, PRIMARY KEY(week,acct))'); // legacy single-board (ROE top-3) payouts — kept for history
+    s.exec('CREATE TABLE IF NOT EXISTS lbpay(week INTEGER, board TEXT, acct TEXT, rank INTEGER, amount INTEGER, ts INTEGER, PRIMARY KEY(week,board,acct))'); // 3-board weekly payouts — idempotent per (week,board,acct) so one account CAN win several boards the same week
     // Indexes for the admin Rewards tab: /accounts groups by ip, /detail filters by ip, lists sort by created — without these they're full-table scans that grow with signups.
     for (const ix of ['CREATE INDEX IF NOT EXISTS idx_accounts_ip ON accounts(ip)', 'CREATE INDEX IF NOT EXISTS idx_accounts_created ON accounts(created)']) { try { s.exec(ix); } catch (e) {} }
   }
@@ -6401,10 +8182,11 @@ export class RewardLedger {
     const day = new Date().toISOString().slice(0, 10), now = Date.now();
     let body = {}; if (request.method === 'POST') { try { body = await request.json(); } catch (e) {} }
     const addr = String(body.address || url.searchParams.get('address') || '').toLowerCase();
-    const validAddr = /^0x[0-9a-f]{40}$/.test(addr); // the BEP20 payout wallet — only required at withdrawal now
+    const validAddr = /^0x[0-9a-f]{40}$/.test(addr); // legacy BEP20 wallet — still used for account identity + admin lookups of old accounts
+    const validUid = /^[0-9]{5,15}$/.test(addr); // Bybit UID (numeric) — the payout target entered at withdrawal (replaced the BEP20 wallet 2026-07)
     const validAcct = validAddr || /^u:[0-9a-z]{8,40}$/.test(addr); // admin endpoints address an account by its key ('u:<uid>') OR a legacy 0x wallet
     const acct = String(request.headers.get('x-acct') || ''); // logged-in account identity ('u:<uid>'), resolved server-side from the session; this is the faucet account key (replaces the wallet)
-    const meta = { amount: cfg.amountC / 100, perDay: cfg.perDayC / 100, minWd: cfg.minWdC / 100, minClaimsToWd: cfg.minClaimsToWd || 0, welcomeAmt: (cfg.welcomeC || 0) / 100, promoUsd: (cfg.promoC == null ? 0.3 : cfg.promoC / 100), promoEnabled: cfg.promoEnabled !== false, exsignUsd: (cfg.exsignC == null ? 3 : cfg.exsignC / 100), exsignEnabled: cfg.exsignEnabled !== false, pauseMsg: cfg.pauseMsg || '', prize1: cfg.prize1, prize2: cfg.prize2, prize3: cfg.prize3 };
+    const meta = { amount: cfg.amountC / 100, perDay: cfg.perDayC / 100, minWd: cfg.minWdC / 100, minClaimsToWd: cfg.minClaimsToWd || 0, welcomeAmt: (cfg.welcomeC || 0) / 100, promoUsd: (cfg.promoC == null ? 0.3 : cfg.promoC / 100), promoXUsd: (cfg.promoXC != null ? cfg.promoXC / 100 : 0.15), promoTtRate: cfg.promoTtRate || 2, promoTtMax: cfg.promoTtMax || 1000, promoEnabled: cfg.promoEnabled !== false, exsignUsd: (cfg.exsignC == null ? 3 : cfg.exsignC / 100), exsignEnabled: cfg.exsignEnabled !== false, pauseMsg: cfg.pauseMsg || '', prize1: cfg.prize1, prize2: cfg.prize2, prize3: cfg.prize3 };
 
     if (path === '/account') {
       const welcomeBonus = acct ? this.grantWelcome(acct, cfg) : 0; // one-time sign-up bonus on first account read
@@ -6445,7 +8227,7 @@ export class RewardLedger {
     }
     if (path === '/withdraw') {
       if (!acct) return this.j({ error: 'login_required' }, 401);
-      if (!validAddr) return this.j({ error: 'bad_address' }, 400); // the BEP20 payout wallet is entered HERE, at withdrawal time
+      if (!validUid) return this.j({ error: 'bad_address' }, 400); // the Bybit UID payout target is entered HERE, at withdrawal time
       const r = this.rows('SELECT * FROM accounts WHERE address=?', acct)[0];
       if (r && r.banned) return this.j({ error: 'banned' }, 403); // banned accounts can't cash out either
       if (!r || r.balance < cfg.minWdC) return this.j({ error: 'min_not_met', minWd: cfg.minWdC / 100 }, 400);
@@ -6459,6 +8241,13 @@ export class RewardLedger {
     if (path === '/wdlist') { // Withdrawals tab: every withdrawal enriched with the owning account's ip/cc/dev/claims/balance
       const rows = this.rows("SELECT w.id,w.address,w.acct,w.amount,w.bonus,w.status,w.ts,w.paid_ts,w.txid,a.ip,a.cc,a.dev,a.claims,a.balance,a.banned FROM withdrawals w LEFT JOIN accounts a ON a.address=COALESCE(w.acct,w.address) ORDER BY w.ts DESC LIMIT 500");
       return this.j({ wds: rows.map(w => ({ id: w.id, wallet: w.address, acct: w.acct || w.address, usd: w.amount / 100, bonusUsd: (w.bonus || 0) / 100, status: w.status, ts: w.ts, paidTs: w.paid_ts || 0, txid: w.txid || '', ip: w.ip || '', cc: w.cc || '', dev: w.dev || '', claims: w.claims || 0, balUsd: (w.balance || 0) / 100, banned: !!w.banned })) });
+    }
+    if (path === '/export') { // nightly backup dump — every balance-bearing table (accounts = user money!)
+      const out = { at: Date.now(), tables: {} };
+      for (const t of ['accounts', 'withdrawals', 'promos', 'exsign', 'lbpayouts', 'lb', 'lbban', 'msgs', 'notes', 'vidlock', 'log', 'support', 'sreply']) {
+        try { out.tables[t] = this.rows('SELECT * FROM ' + t + ' LIMIT 200000'); } catch (e) { out.tables[t] = { _err: String(e).slice(0, 120) }; }
+      }
+      return this.j(out);
     }
     if (path === '/admin') {
       const pending = this.rows("SELECT id,address,acct,amount,ts FROM withdrawals WHERE status='pending' ORDER BY ts ASC").map(w => {
@@ -6617,22 +8406,47 @@ export class RewardLedger {
       }
       return this.j({ address: addr, exists: !!a, payoutAddr, balanceUsd: a ? a.balance / 100 : 0, earnedUsd: a ? a.earned / 100 : 0, claims, cc: a ? (a.cc || '') : '', dev: a ? (a.dev || '') : '', ip: a ? (a.ip || '') : '', created: a ? a.created : 0, lastClaim: a ? a.last_claim : 0, locked: !!lock, banned: !!(a && a.banned), sameIp, note: noteRow ? noteRow.note : '', msg: mrow ? mrow.message : '', msgTs: mrow ? mrow.ts : 0, msgSeen: mrow ? !!mrow.seen : false, withdrawals: wds, lb: lbrow || null, lbBanned, fraud });
     }
+    if (path === '/earnings') { // admin: full itemized earnings breakdown for one account — WHERE the money came from + all the detail
+      if (!validAcct) return this.j({ error: 'bad_address' }, 400);
+      const a = this.rows('SELECT balance, earned, claims, welcome, created FROM accounts WHERE address=?', addr)[0];
+      if (!a) return this.j({ address: addr, exists: false, items: [], summary: {}, earnedUsd: 0 });
+      const items = [];
+      // exchange sign-up bonuses (approved) — carries the exchange + the UID the owner needs to cross-check
+      this.rows("SELECT exchange, uid, amount, decided_ts, ts, note, cc, ip FROM exsign WHERE acct=? AND status='approved' ORDER BY COALESCE(decided_ts,ts) DESC", addr)
+        .forEach(r => items.push({ type: 'exsign', usd: (r.amount || 0) / 100, ts: r.decided_ts || r.ts, submittedTs: r.ts, exchange: r.exchange || '', uid: r.uid || '', note: r.note || '', cc: r.cc || '', ip: r.ip || '' }));
+      // promo posts (approved) — platform + the exact post URL
+      this.rows("SELECT platform, url, amount, decided_ts, ts, note FROM promos WHERE acct=? AND status='approved' ORDER BY COALESCE(decided_ts,ts) DESC", addr)
+        .forEach(r => items.push({ type: 'promo', usd: (r.amount || 0) / 100, ts: r.decided_ts || r.ts, submittedTs: r.ts, platform: r.platform || '', url: r.url || '', note: r.note || '' }));
+      // weekly leaderboard prizes (week + board + finishing place) — union legacy lbpayouts + new 3-board lbpay
+      this.rows("SELECT week, rank, amount, ts, board FROM lbpay WHERE acct=? UNION ALL SELECT week, rank, amount, ts, 'roe' board FROM lbpayouts WHERE acct=? ORDER BY ts DESC", addr, addr)
+        .forEach(r => items.push({ type: 'lbprize', usd: (r.amount || 0) / 100, ts: r.ts, week: r.week, rank: r.rank, board: r.board || 'roe' }));
+      // sign-up welcome bonus (one-time)
+      if (a.welcome) items.push({ type: 'welcome', usd: (cfg.welcomeC || 0) / 100, ts: a.created, approx: true });
+      // recent faucet claims (the log ring itemizes only the most recent ~200 events globally → recent only)
+      this.rows("SELECT ts, type, amount FROM log WHERE address=? AND type='claim' ORDER BY ts DESC LIMIT 40", addr)
+        .forEach(r => items.push({ type: 'claim', usd: (r.amount || 0) / 100, ts: r.ts, recent: true }));
+      items.sort((x, y) => (y.ts || 0) - (x.ts || 0));
+      const summary = {};
+      for (const it of items) { const k = it.type; (summary[k] = summary[k] || { n: 0, usd: 0 }); summary[k].n++; summary[k].usd = +(summary[k].usd + it.usd).toFixed(2); }
+      const claimTotalUsd = +(((a.claims || 0) * (cfg.amountC || 0)) / 100).toFixed(2); // approx: claim count × current per-claim amount
+      return this.j({ address: addr, exists: true, earnedUsd: (a.earned || 0) / 100, balanceUsd: (a.balance || 0) / 100, claims: a.claims || 0, claimTotalUsd, items, summary });
+    }
     if (path === '/paywinners') { // credit weekly leaderboard prizes to the top accounts — idempotent per (week,acct)
       const week = Math.floor(+body.week || 0);
       const winners = Array.isArray(body.winners) ? body.winners : [];
       if (!week || !winners.length) return this.j({ ok: true, paid: 0 });
       const out = [];
       for (const w of winners) {
-        const acct = String(w.acct || ''), cents = Math.round(+w.cents || 0), rank = Math.floor(+w.rank || 0);
+        const acct = String(w.acct || ''), cents = Math.round(+w.cents || 0), rank = Math.floor(+w.rank || 0), board = String(w.board || 'roe').slice(0, 8);
         if (!acct || cents <= 0) continue;
-        if (this.rows('SELECT week FROM lbpayouts WHERE week=? AND acct=?', week, acct).length) continue; // already paid this week
+        if (this.rows('SELECT week FROM lbpay WHERE week=? AND board=? AND acct=?', week, board, acct).length) continue; // already paid THIS board this week (an account can still win other boards)
         const arow = this.rows('SELECT address, banned FROM accounts WHERE address=?', acct)[0];
         if (arow && arow.banned) continue; // never pay a banned account
         if (!arow) sql.exec('INSERT INTO accounts(address,day,created,balance,earned) VALUES(?,?,?,?,?)', acct, day, now, cents, cents);
         else sql.exec('UPDATE accounts SET balance=balance+?, earned=earned+? WHERE address=?', cents, cents, acct);
-        sql.exec('INSERT INTO lbpayouts(week,acct,rank,amount,ts) VALUES(?,?,?,?,?)', week, acct, rank, cents, now);
-        this.log('lbprize', acct, '', '', cents);
-        out.push({ acct, rank, amount: cents });
+        sql.exec('INSERT INTO lbpay(week,board,acct,rank,amount,ts) VALUES(?,?,?,?,?,?)', week, board, acct, rank, cents, now);
+        this.log('lbprize', acct, board, '', cents);
+        out.push({ acct, rank, amount: cents, board });
       }
       return this.j({ ok: true, paid: out.length, payouts: out });
     }
@@ -6666,7 +8480,7 @@ export class RewardLedger {
     if (path === '/promo/list') { // admin: review queue + recent decisions
       const pending = this.rows("SELECT id,acct AS address,platform,url,ts,ip,cc FROM promos WHERE status='pending' ORDER BY ts ASC LIMIT 100");
       const decided = this.rows("SELECT id,acct AS address,platform,url,ts,status,note,amount,decided_ts FROM promos WHERE status!='pending' ORDER BY decided_ts DESC LIMIT 30");
-      return this.j({ pending, decided: decided.map(r => ({ ...r, amount: (r.amount || 0) / 100 })), promoUsd: (cfg.promoC == null ? 0.3 : cfg.promoC / 100), minAgeMs: 86400000 });
+      return this.j({ pending, decided: decided.map(r => ({ ...r, amount: (r.amount || 0) / 100 })), promoUsd: (cfg.promoC == null ? 0.3 : cfg.promoC / 100), promoXUsd: (cfg.promoXC != null ? cfg.promoXC / 100 : 0.15), promoTtRate: cfg.promoTtRate || 2, promoTtMax: cfg.promoTtMax || 1000, minAgeMs: 86400000 });
     }
     if (path === '/promo/review') { // admin: approve (credits the balance) or reject (with a note the user sees)
       const id = String(body.id || ''), action = String(body.action || '');
@@ -6676,13 +8490,21 @@ export class RewardLedger {
       if (action === 'reject') { sql.exec("UPDATE promos SET status='rejected', note=?, decided_ts=? WHERE id=?", String(body.note || '').slice(0, 200), now, id); return this.j({ ok: true, status: 'rejected' }); }
       if (action !== 'approve') return this.j({ error: 'bad_action' }, 400);
       if (!body.force && now - p.ts < 86400000) return this.j({ error: 'too_early', waitMs: 86400000 - (now - p.ts) }, 400); // 24h-live gate — admin can bypass with force
-      const amt = (cfg.promoC == null ? 30 : cfg.promoC);
+      let amt, revNote = String(body.note || '').slice(0, 200);
+      if (p.platform === 'tiktok') { // TikTok pays per views: $ttRate per 1000 views, capped at $ttMax
+        const views = Math.max(0, Math.floor(+body.views || 0));
+        if (views <= 0) return this.j({ error: 'need_views' }, 400); // admin must enter the view count on approval
+        amt = Math.min(Math.round(views / 1000 * (cfg.promoTtRate || 2) * 100), Math.round((cfg.promoTtMax || 1000) * 100));
+        if (!revNote) revNote = (views >= 1000 ? (views / 1000).toFixed(1).replace(/\.0$/, '') + 'K' : views) + ' views';
+      } else { // X pays a flat amount
+        amt = (cfg.promoXC != null ? cfg.promoXC : (cfg.promoC == null ? 15 : cfg.promoC));
+      }
       const acctRow = this.rows('SELECT address,banned FROM accounts WHERE address=?', p.acct)[0];
       if (acctRow && acctRow.banned) return this.j({ error: 'banned' }, 403);
       if (!acctRow) sql.exec('INSERT INTO accounts(address,day,created,balance,earned) VALUES(?,?,?,?,?)', p.acct, day, now, amt, amt);
       else sql.exec('UPDATE accounts SET balance=balance+?, earned=earned+? WHERE address=?', amt, amt, p.acct);
       sql.exec('INSERT INTO daily(day,dispensed) VALUES(?,?) ON CONFLICT(day) DO UPDATE SET dispensed=dispensed+?', day, amt, amt); // counts in the Dispensed-today tile (visibility, not a gate - approval is the gate)
-      sql.exec("UPDATE promos SET status='approved', amount=?, note=?, decided_ts=? WHERE id=?", amt, String(body.note || '').slice(0, 200), now, id);
+      sql.exec("UPDATE promos SET status='approved', amount=?, note=?, decided_ts=? WHERE id=?", amt, revNote, now, id);
       this.log('promo_paid', p.acct, p.cc || '', '', amt);
       return this.j({ ok: true, status: 'approved', amount: amt / 100, acct: p.acct });
     }
@@ -6736,10 +8558,15 @@ export class RewardLedger {
     if (path === '/support') {
       if (request.method === 'POST') {
         const email = String(body.email || '').slice(0, 120), message = String(body.message || '').slice(0, 1000);
-        if (!message.trim()) return this.j({ error: 'empty' }, 400);
-        sql.exec('INSERT INTO support(ts,email,address,message) VALUES(?,?,?,?)', now, email, addr || '', message);
+        let img = String(body.img || ''); if (img && !/^data:image\/(png|jpe?g|webp);base64,/.test(img)) img = ''; if (img.length > 90000) img = '';
+        if (!message.trim() && !img) return this.j({ error: 'empty' }, 400);
+        let conv = String(body.conv || '').replace(/[^a-z0-9]/gi, '').slice(0, 24);
+        const reply = !!conv; // conv passed → replying to an existing conversation; else start a new one
+        if (!conv) conv = (now.toString(36) + Math.random().toString(36).slice(2, 8)); // fresh conversation id
+        sql.exec('INSERT INTO support(ts,email,address,message,conv,closed,img) VALUES(?,?,?,?,?,0,?)', now, email, addr || '', message, conv, img);
+        if (reply) sql.exec('UPDATE support SET closed=0 WHERE conv=?', conv); // a user reply reopens the whole thread
         sql.exec('DELETE FROM support WHERE rowid NOT IN (SELECT rowid FROM support ORDER BY ts DESC LIMIT 200)');
-        return this.j({ ok: true });
+        return this.j({ ok: true, conv });
       }
       return this.j({
         open: this.rows('SELECT rowid AS id,ts,email,address,message FROM support WHERE closed=0 ORDER BY ts DESC LIMIT 100'),
@@ -6747,19 +8574,30 @@ export class RewardLedger {
         replies: this.rows('SELECT ts,email,subject FROM sreply ORDER BY ts DESC LIMIT 100'),
       });
     }
-    if (path === '/support/mine') { // one user's own history: tickets by account id or email + email replies (matched by email; sreply has no ticket id)
+    if (path === '/support/mine') { // one user's history, grouped into CONVERSATIONS (each conv = a thread of user msgs + our replies)
       const em = String(body.email || '').slice(0, 120), ac = String(body.acct || '');
-      const seen = {}; let items = [];
-      const take = rows => rows.forEach(r => { if (!seen[r.id]) { seen[r.id] = 1; items.push(r); } });
-      if (ac) take(this.rows('SELECT rowid AS id,ts,message,COALESCE(closed,0) closed FROM support WHERE address=? ORDER BY ts ASC LIMIT 60', ac));
-      if (em) take(this.rows('SELECT rowid AS id,ts,message,COALESCE(closed,0) closed FROM support WHERE email=? ORDER BY ts ASC LIMIT 60', em));
-      items.sort((a, b) => a.ts - b.ts);
-      const replies = em ? this.rows('SELECT ts,subject,body FROM sreply WHERE email=? ORDER BY ts ASC LIMIT 60', em) : [];
-      return this.j({ items: items.slice(-60), replies });
+      const seen = {}; let rows = [];
+      const take = rs => rs.forEach(r => { if (!seen['s' + r.id]) { seen['s' + r.id] = 1; rows.push(r); } });
+      if (ac) take(this.rows('SELECT rowid AS id,ts,message,conv,address,img,COALESCE(closed,0) closed FROM support WHERE address=? ORDER BY ts ASC LIMIT 150', ac));
+      if (em) take(this.rows('SELECT rowid AS id,ts,message,conv,address,img,COALESCE(closed,0) closed FROM support WHERE email=? ORDER BY ts ASC LIMIT 150', em));
+      rows.sort((a, b) => a.ts - b.ts);
+      const reps = em ? this.rows('SELECT ts,subject,body,conv FROM sreply WHERE email=? ORDER BY ts ASC LIMIT 150', em) : [];
+      const LEG = '_legacy'; const convs = {}; const order = [];
+      const ensure = cid => { if (!convs[cid]) { convs[cid] = { conv: cid, messages: [], lastTs: 0, closed: true, title: '' }; order.push(cid); } return convs[cid]; };
+      rows.forEach(r => { const c = ensure(r.conv || LEG); c.messages.push({ ts: r.ts, dir: 'in', body: r.message, img: r.img || '', byAdmin: r.address === 'admin' }); if (r.ts > c.lastTs) c.lastTs = r.ts; if (!r.closed) c.closed = false; if (!c.title) c.title = String(r.message || '').replace(/\s+/g, ' ').slice(0, 60); });
+      reps.forEach(rp => { let cid = rp.conv && convs[rp.conv] ? rp.conv : '';
+        if (!cid) { let best = '', bestTs = -1; order.forEach(id => { let lt = -1; convs[id].messages.forEach(m => { if (m.dir === 'in' && m.ts <= rp.ts && m.ts > lt) lt = m.ts; }); if (lt > bestTs) { bestTs = lt; best = id; } }); cid = best || order[order.length - 1] || LEG; }
+        const c = ensure(cid); c.messages.push({ ts: rp.ts, dir: 'out', body: rp.body || rp.subject }); if (rp.ts > c.lastTs) c.lastTs = rp.ts; });
+      const list = order.map(id => convs[id]); list.forEach(c => { c.messages.sort((a, b) => a.ts - b.ts); if (!c.title) c.title = 'Conversation'; });
+      list.sort((a, b) => b.lastTs - a.lastTs);
+      return this.j({ conversations: list });
     }
-    if (path === '/support/close') { // admin: mark a ticket closed (or reopen with {reopen:1}) by rowid
-      const id = parseInt(body.id, 10), val = body.reopen ? 0 : 1;
-      if (id) sql.exec('UPDATE support SET closed=? WHERE rowid=?', val, id);
+    if (path === '/support/close') { // admin: mark a ticket closed (or reopen) — closes/reopens the WHOLE conversation
+      const conv = String(body.conv || '').replace(/[^a-z0-9]/gi, '').slice(0, 24), val = body.reopen ? 0 : 1;
+      if (conv) { sql.exec('UPDATE support SET closed=? WHERE conv=?', val, conv); return this.j({ ok: true }); }
+      const id = parseInt(body.id, 10);
+      if (id) { const row = this.rows('SELECT conv FROM support WHERE rowid=?', id)[0];
+        if (row && row.conv) sql.exec('UPDATE support SET closed=? WHERE conv=?', val, row.conv); else sql.exec('UPDATE support SET closed=? WHERE rowid=?', val, id); }
       return this.j({ ok: true });
     }
     if (path === '/support/new') { // admin-initiated ticket (address='admin' marks "you started this"); the email is sent from the Worker
@@ -6770,10 +8608,24 @@ export class RewardLedger {
       return this.j({ ok: true });
     }
     if (path === '/reply') { // admin: record an email reply we sent (the email itself is sent in the Worker)
-      const to = String(body.to || '').slice(0, 120), subject = String(body.subject || '').slice(0, 200), msg = String(body.message || '').slice(0, 4000);
-      sql.exec('INSERT INTO sreply(ts,email,subject,body) VALUES(?,?,?,?)', now, to, subject, msg);
+      const to = String(body.to || '').slice(0, 120), subject = String(body.subject || '').slice(0, 200), msg = String(body.message || '').slice(0, 4000), conv = String(body.conv || '').replace(/[^a-z0-9]/gi, '').slice(0, 24);
+      sql.exec('INSERT INTO sreply(ts,email,subject,body,conv) VALUES(?,?,?,?,?)', now, to, subject, msg, conv);
       sql.exec('DELETE FROM sreply WHERE rowid NOT IN (SELECT rowid FROM sreply ORDER BY ts DESC LIMIT 300)');
       return this.j({ ok: true });
+    }
+    if (path === '/support/convs') { // admin: ALL support threads grouped into conversations (chat view)
+      const rows = this.rows('SELECT rowid AS id,ts,email,address,message,conv,img,COALESCE(closed,0) closed FROM support ORDER BY ts ASC LIMIT 400');
+      const reps = this.rows('SELECT ts,subject,body,email,conv FROM sreply ORDER BY ts ASC LIMIT 400');
+      const LEG = '_legacy', convs = {}, order = [];
+      const ensure = (cid, email) => { if (!convs[cid]) { convs[cid] = { conv: cid, email: email || '', messages: [], lastTs: 0, lastInTs: 0, closed: true, title: '' }; order.push(cid); } const c = convs[cid]; if (!c.email && email) c.email = email; return c; };
+      rows.forEach(r => { const c = ensure(r.conv || LEG, r.email); const isAdmin = r.address === 'admin'; c.messages.push({ ts: r.ts, dir: isAdmin ? 'out' : 'in', body: r.message, img: r.img || '' }); if (r.ts > c.lastTs) c.lastTs = r.ts; if (!isAdmin && r.ts > c.lastInTs) c.lastInTs = r.ts; if (!r.closed) c.closed = false; if (!c.title) c.title = String(r.message || '').replace(/\s+/g, ' ').slice(0, 70); });
+      reps.forEach(rp => { let cid = rp.conv && convs[rp.conv] ? rp.conv : '';
+        if (!cid) { let best = '', bestTs = -1; order.forEach(id => { if (rp.email && convs[id].email && convs[id].email !== rp.email) return; let lt = -1; convs[id].messages.forEach(m => { if (m.dir === 'in' && m.ts <= rp.ts && m.ts > lt) lt = m.ts; }); if (lt > bestTs) { bestTs = lt; best = id; } }); cid = best; }
+        if (!cid) return; const c = convs[cid]; c.messages.push({ ts: rp.ts, dir: 'out', body: rp.body || rp.subject }); if (rp.ts > c.lastTs) c.lastTs = rp.ts; });
+      const list = order.map(id => convs[id]).filter(c => c.messages.length);
+      list.forEach(c => { c.messages.sort((a, b) => a.ts - b.ts); if (!c.title) c.title = 'Conversation'; });
+      list.sort((a, b) => b.lastTs - a.lastTs);
+      return this.j({ conversations: list });
     }
     if (path === '/lb') { // weekly paper-trade leaderboard — Monday 00:00 UTC → Sunday 23:59 UTC
       const WK = 604800000, MON = 4 * 86400000; // anchor weeks to Monday 00:00 UTC (epoch 1970-01-01 was Thursday, +4d = Monday)
@@ -6890,6 +8742,8 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS otpip(k TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)'); // per-IP-per-day OTP send cap, so one source can't email-bomb many addresses
     for (const col of ['dev TEXT', 'br TEXT', 'last_seen INTEGER', 'pv INTEGER DEFAULT 0', 'username TEXT', "status TEXT DEFAULT 'active'", 'susp_until INTEGER DEFAULT 0', 'muted INTEGER DEFAULT 0', 'restrictions TEXT', 'note TEXT', 'asn INTEGER', 'org TEXT', 'digest INTEGER DEFAULT 1', 'tg_chat TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} }
     for (const col of ['xp INTEGER DEFAULT 0', 'streak INTEGER DEFAULT 0', 'streak_day TEXT', 'lvl_seen TEXT', 'freezes INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // XP & level system (+freezes = streak-freeze anti-churn buffer)
+    try { s.exec('ALTER TABLE users ADD COLUMN did TEXT'); } catch (e) {} // device fingerprint (mp_did cookie) captured at login → same-device multi-account detection for the Security tab
+    for (const col of ['bio TEXT', 'avatar TEXT', 'accent TEXT', 'coins TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // public profile personalization: bio, avatar emoji, accent colour, favourite coins (csv)
     s.exec('CREATE TABLE IF NOT EXISTS xplog(user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)'); // XP earn/adjust history (ring-buffered ~150/user)
     s.exec('CREATE TABLE IF NOT EXISTS xpday(user_id TEXT, day TEXT, src TEXT, n INTEGER DEFAULT 0, PRIMARY KEY(user_id,day,src))'); // per-source per-UTC-day earned, for anti-abuse caps
     s.exec('CREATE TABLE IF NOT EXISTS academy(user_id TEXT, lesson TEXT, ts INTEGER, PRIMARY KEY(user_id,lesson))'); // completed Academy lessons (+ "course:<id>" bonus markers); XP via _grantXp src=academy lifeCap 800
@@ -6898,7 +8752,15 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS uevents(user_id TEXT, ts INTEGER, type TEXT, label TEXT, path TEXT, cc TEXT, dev TEXT)'); // per-user activity trail (ring-buffered)
     s.exec('CREATE TABLE IF NOT EXISTS uclicks(user_id TEXT, ts INTEGER, x INTEGER, y INTEGER, path TEXT)'); // per-user click heatmap (normalized x/y %, ring-buffered ~300)
     s.exec('CREATE TABLE IF NOT EXISTS utrades(user_id TEXT PRIMARY KEY, json TEXT, n INTEGER, wins INTEGER, losses INTEGER, opens INTEGER, pnl REAL, updated INTEGER)'); // synced paper-trade journal + summary
+    s.exec("CREATE TABLE IF NOT EXISTS referrals(referrer TEXT, referred TEXT PRIMARY KEY, ts INTEGER, status TEXT DEFAULT 'pending', qual_ts INTEGER, did TEXT)"); // invite-a-friend: one row per referred user, paid when they get active
+    s.exec('CREATE TABLE IF NOT EXISTS refhit(referrer TEXT, campaign TEXT, src TEXT, ts INTEGER, url TEXT)'); // referral-link visits (clicks) for the Affiliate tab: who came, via which campaign, from where (host + exact post URL)
+    try { s.exec('ALTER TABLE refhit ADD COLUMN url TEXT'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS ufollows(k TEXT PRIMARY KEY, uid TEXT, tuid TEXT, tname TEXT, ts INTEGER)'); // leaderboard follow (k = follower|target)
+    s.exec('CREATE TABLE IF NOT EXISTS dms(id INTEGER PRIMARY KEY AUTOINCREMENT, pair TEXT, from_uid TEXT, to_uid TEXT, txt TEXT, ts INTEGER, seen INTEGER DEFAULT 0)'); // user↔user direct messages (pair = the two uids sorted, joined by |)
+    try { s.exec('CREATE INDEX IF NOT EXISTS dms_pair ON dms(pair, ts)'); } catch (e) {}
+    try { s.exec('CREATE INDEX IF NOT EXISTS dms_to ON dms(to_uid, seen)'); } catch (e) {}
+    s.exec('CREATE TABLE IF NOT EXISTS unotifs(nid INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT, ts INTEGER, kind TEXT, body TEXT, link TEXT, seen INTEGER DEFAULT 0)'); // social notifications (follow/mention/duel/dm), ring-buffered ~40/user
+    try { s.exec('CREATE INDEX IF NOT EXISTS unotifs_uid ON unotifs(uid, seen)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS udwell(user_id TEXT, path TEXT, secs INTEGER DEFAULT 0, hits INTEGER DEFAULT 0, last INTEGER, PRIMARY KEY(user_id, path))'); // accumulated time-on-page per path
     s.exec('CREATE TABLE IF NOT EXISTS alerts(id TEXT PRIMARY KEY, uid TEXT, email TEXT, sym TEXT, dir TEXT, target REAL, note TEXT, active INTEGER DEFAULT 1, created INTEGER, fired_ts INTEGER DEFAULT 0)'); // price alerts (account-based)
     try { s.exec("ALTER TABLE alerts ADD COLUMN channel TEXT DEFAULT 'email'"); } catch (e) {} // delivery channel: 'email' or 'telegram'
@@ -6918,6 +8780,8 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS missions(user_id TEXT, day TEXT, mid TEXT, ts INTEGER, PRIMARY KEY(user_id,day,mid))');
     s.exec('CREATE TABLE IF NOT EXISTS tradeev(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, ts INTEGER, kind TEXT, sym TEXT, side TEXT, lev REAL, margin REAL, pnl REAL, roe REAL, liq INTEGER DEFAULT 0)'); // persistent open/close trade events (diffed on journal sync — real pnl on closes)
     s.exec('CREATE INDEX IF NOT EXISTS tradeev_ts ON tradeev(ts)'); // claimed daily missions (verification runs against uevents) // per-user per-endpoint daily API usage (the ops API tab reads this)
+    try { s.exec('CREATE INDEX IF NOT EXISTS tradeev_uid ON tradeev(user_id, ts)'); } catch (e) {} // for per-user window stats (duels)
+    s.exec('CREATE TABLE IF NOT EXISTS duels(id TEXT PRIMARY KEY, a_uid TEXT, b_uid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0)'); // friend duels (weekly stat challenges). status: pending/active/declined/done/expired
     try { s.exec('CREATE INDEX IF NOT EXISTS bp_uid ON botpos(uid, ts)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS livepos(did TEXT PRIMARY KEY, json TEXT, cc TEXT, updated INTEGER)'); // anonymous (not-signed-in) open paper positions, keyed by the mp_did device cookie — feeds the ops Live-trades board
   }
@@ -6940,6 +8804,34 @@ export class UserStore {
   rid() { const a = new Uint8Array(16); crypto.getRandomValues(a); return Array.from(a).map(x => x.toString(16).padStart(2, '0')).join(''); }
   // ── shared journal store (single source of truth for BOTH the site's My Trades and the Bot API) ──
   _loadJournal(uid) { try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) { const a = JSON.parse(r.json); return Array.isArray(a) ? a : []; } } catch (e) {} return []; }
+  // can `a` DM `b`? Yes if either follows the other, OR a conversation already exists (so a reply is always allowed). Keeps DMs to your social circle → no spam-to-strangers.
+  _canDm(a, b) { if (this.rows('SELECT 1 FROM ufollows WHERE k=?', a + '|' + b)[0]) return true; if (this.rows('SELECT 1 FROM ufollows WHERE k=?', b + '|' + a)[0]) return true; if (this.rows('SELECT 1 FROM dms WHERE pair=? LIMIT 1', [a, b].sort().join('|'))[0]) return true; return false; }
+  _pushNotif(uid, kind, body, link) { // social notification (ring-buffered ~40/user)
+    uid = String(uid || '').replace(/^u:/, ''); if (!uid) return; const sql = this.state.storage.sql;
+    try { sql.exec('INSERT INTO unotifs(uid,ts,kind,body,link,seen) VALUES(?,?,?,?,?,0)', uid, Date.now(), String(kind || '').slice(0, 24), String(body || '').slice(0, 200), String(link || '').slice(0, 120));
+      sql.exec('DELETE FROM unotifs WHERE uid=? AND nid NOT IN (SELECT nid FROM unotifs WHERE uid=? ORDER BY nid DESC LIMIT 40)', uid, uid); } catch (e) {}
+  }
+  _windowStats(uid, from, to) { // closed-trade stats over [from,to) from the tradeev log: best ROE, win rate, biggest win $
+    uid = String(uid).replace(/^u:/, '');
+    const r = this.rows('SELECT pnl, roe, lev, sym FROM tradeev WHERE user_id=? AND kind=? AND ts>=? AND ts<?', uid, 'close', from, to);
+    let bestRoe = null, bestWin = null, wins = 0, n = 0;
+    for (const e of r) { const p = +e.pnl, ro = +e.roe, lv = +e.lev || 0; if (!isFinite(p) || lbExcluded(e.sym)) continue; // exclude forex/metals/indices/stablecoins (farmable at high leverage)
+      n++; const realMove = lv > 0 && isFinite(ro) && (ro / lv) >= WR_MIN_MOVE; if (p > 0 && ro >= WR_MIN_WIN_ROE && realMove) { wins++; if (bestWin == null || p > bestWin) bestWin = p; } if (isFinite(ro) && (bestRoe == null || ro > bestRoe)) bestRoe = ro; }
+    return { roe: bestRoe == null ? null : Math.round(bestRoe), win: bestWin == null ? null : +bestWin.toFixed(2), wr: n ? Math.round(wins / n * 100) : 0, n, wins };
+  }
+  _duelScore(d, side) { const uid = side === 'a' ? d.a_uid : d.b_uid; const s = this._windowStats(uid, d.start_ts, d.end_ts); return d.metric === 'wr' ? (s.n >= 3 ? s.wr : -1) : d.metric === 'win' ? (s.win == null ? -1 : s.win) : (s.roe == null ? -1 : s.roe); }
+  _duelSettle(d) { // compute both scores, decide winner, grant XP once. Returns the updated row.
+    const sa = this._duelScore(d, 'a'), sb = this._duelScore(d, 'b');
+    let winner = ''; if (sa > sb) winner = d.a_uid; else if (sb > sa) winner = d.b_uid; // tie → no winner, no XP
+    this.state.storage.sql.exec('UPDATE duels SET status=?, winner=?, a_score=?, b_score=?, settled=1 WHERE id=?', 'done', winner, sa, sb, d.id);
+    const ml = d.metric === 'wr' ? 'win-rate' : d.metric === 'win' ? 'biggest-win' : 'ROE';
+    if (winner) { try { this._grantXp(winner, 'duel', 250, { note: 'Won a ' + ml + ' duel' }); } catch (e) {}
+      const loser = String(winner) === String(d.a_uid) ? d.b_uid : d.a_uid, wName = String(winner) === String(d.a_uid) ? d.a_name : d.b_name, lName = String(winner) === String(d.a_uid) ? d.b_name : d.a_name;
+      this._pushNotif(winner, 'duel', '🏆 Duel won — you beat @' + lName + ' on ' + ml + '. +250 XP banked. The tape doesn’t lie.', 'duel');
+      this._pushNotif(loser, 'duel', '@' + wName + ' took the ' + ml + ' duel. Losses are tuition — rematch and collect?', 'duel');
+    } else { this._pushNotif(d.a_uid, 'duel', 'Dead heat vs @' + d.b_name + ' on ' + ml + '. Nobody blinked — run it back?', 'duel'); this._pushNotif(d.b_uid, 'duel', 'Dead heat vs @' + d.a_name + ' on ' + ml + '. Nobody blinked — run it back?', 'duel'); }
+    return Object.assign({}, d, { status: 'done', winner, a_score: sa, b_score: sb, settled: 1 });
+  }
   _j2bot(t, live) { // journal trade -> Bot API response shape
     const long = t.side !== 'short', open = t.status !== 'win' && t.status !== 'loss';
     const o = { id: t.id, symbol: t.sym, side: long ? 'long' : 'short', entry_price: +t.entry || 0, margin_usd: +t.margin || 0, leverage: +t.lev || 1, qty: +t.qty || 0, liq_price: +t.liq || 0, sl: (t.stop != null ? +t.stop : null), tp: (t.tp != null ? +t.tp : null), status: open ? 'open' : (t.liquidated ? 'liquidated' : 'closed'), opened_ts: +t.ts || 0, source: t.src === 'bot' ? 'bot' : 'app' };
@@ -6950,10 +8842,33 @@ export class UserStore {
   // Merge `incoming` trades into the user's stored journal (union by id, close beats open, trim opens-safe) and persist,
   // plus the trade-event log + XP grants. Extracted from the /trades handler so the Bot API writes THROUGH the exact same
   // path as the browser → bot trades appear in My Trades, earn XP, hit the leaderboard and the ops trade feed. Returns the merged array.
-  _syncJournal(uid, incoming, promos) {
+  _syncJournal(uid, incoming, promos, srvAuth) {
     const sql = this.state.storage.sql, now = Date.now();
+    try { sql.exec('CREATE TABLE IF NOT EXISTS active_srv(user_id TEXT PRIMARY KEY, ts INTEGER)'); } catch (e) {} // A3: index of users with OPEN srv/bot trades — sweeps iterate THIS, not every journal
     incoming = Array.isArray(incoming) ? incoming : [];
     let stored = this._loadJournal(uid);
+    // P0 phase 3 — SERVER AUTHORITY over server-filled trades ('srv' ids). Client syncs (srvAuth falsy) cannot:
+    // fabricate an srv trade (server mints those ids), modify a server-closed one (sc:1 = final), alter the core
+    // fill fields of an open one, or claim an arbitrary pnl on a close (pnl is recomputed from server-held
+    // qty/entry/margin against the client's exit). Risk-management fields (stop/tp/trail/be/hwm) stay editable.
+    if (!srvAuth) {
+      const curById = new Map();
+      stored.forEach(e => { if (e && e.id != null) curById.set(String(e.id), e); });
+      incoming = incoming.filter(t => t && typeof t === 'object').map(t => { const c = Object.assign({}, t); delete c.sc; return c; }).filter(t => {
+        if (String(t.id || '').slice(0, 3) !== 'srv') return true;      // legacy/local trades: unchanged rules
+        const cur = curById.get(String(t.id));
+        if (!cur) return false;                                          // fabrication — server never issued this id
+        if (cur.sc) return false;                                        // server-closed is FINAL
+        for (const k of ['sym', 'side', 'entry', 'margin', 'lev', 'qty', 'notional', 'liq', 'mmr', 'ts', 'src', 'fund', 'fundTs']) if (cur[k] != null) t[k] = cur[k];
+        if ((t.status === 'win' || t.status === 'loss') && cur.status !== 'win' && cur.status !== 'loss') {
+          const long = t.side !== 'short', dir = long ? 1 : -1, exit = +t.exit, margin = +t.margin || 0, qty = +t.qty || 0, entry = +t.entry || 0;
+          if (!isFinite(exit) || exit <= 0) return false;
+          let pnl = qty * (exit - entry) * dir - qty * (entry + exit) * (+t.feeRate || 0) - (+t.fund || 0); if (pnl < -margin) pnl = -margin;
+          t.pnl = Math.round(pnl * 100) / 100; t.status = t.pnl >= 0 ? 'win' : 'loss';
+        }
+        return true;
+      });
+    }
     const byId = new Map();
     const put = (e) => { if (!e || typeof e !== 'object') return; const id = String(e.id || ('_anon' + byId.size)); const prev = byId.get(id); if (!prev) { byId.set(id, e); return; } const prevClosed = prev.status === 'win' || prev.status === 'loss', curClosed = e.status === 'win' || e.status === 'loss';
       if (curClosed && !prevClosed) { byId.set(id, e); return; }
@@ -6986,13 +8901,14 @@ export class UserStore {
         else if (!isCl(o9) && !isCl(e)) { const q0 = +o9.qty, q1 = +e.qty; if (isFinite(q0) && isFinite(q1) && q1 < q0 * 0.99) evs.push(['trim', e, now]); } }
       const cut = now - 7 * 86400000; let nIns = 0;
       for (const ev9 of evs) { const kind = ev9[0], e = ev9[1], ts9 = ev9[2];
-        if (ts9 < cut || nIns >= 20) continue;
+        if (ts9 < cut) continue;
         const m = +e.margin || 0; if (!(m > 0) || m > 100000) continue;
         const pv = (kind !== 'open' && isFinite(+e.pnl)) ? +e.pnl : null;
+        if (nIns >= 60 && !(kind === 'close' && pv != null && pv <= 0)) continue; // per-sync cap (20→60); a LOSING close is ALWAYS logged so a heavy trader can't shed losses from the win-rate log in a burst
         const roe = (pv != null && m > 0) ? pv / m * 100 : null;
         const liq9 = (kind === 'close' && pv != null && pv <= -m * 0.985) ? 1 : 0;
         sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq) VALUES(?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9);
-        nIns++; try { if (kind === 'close') { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9)) this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 750, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); }
+        nIns++; try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9)) this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 750, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); }
           if (roe != null) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
             for (var _pi = 0; _pi < _pl.length; _pi++) { var _p = _pl[_pi]; if (!_p || _p.enabled === false) continue; if (!(ts9 >= _p.startMs && ts9 < _p.endMs && _p.endMs > _p.startMs)) continue; if (_p.coins && _p.coins.length && _p.coins.indexOf(_symU) < 0) continue; if (_lv > (+_p.levMax || 1000)) continue; if (roe < (+_p.roeMin || 0)) continue; if (_p.winOnly !== false && !(pv > 0)) continue; if (!_best || (+_p.xp || 0) > (+_best.xp || 0)) _best = _p; }
             if (_best) this._grantXp(uid, 'trade_promo', +_best.xp || 0, { dayCap: (+_best.dayCap || 700), note: (String(_best.title || 'XP Promo')).slice(0, 30) + ' · ' + _symU + ' ' + Math.round(roe) + '% ROE' }); } } } catch (xe) {}
@@ -7000,6 +8916,7 @@ export class UserStore {
       if (nIns) sql.exec('DELETE FROM tradeev WHERE ts < ?', now - 14 * 86400000);
     } catch (e9) {}
     sql.exec('INSERT INTO utrades(user_id,json,n,wins,losses,opens,pnl,updated) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET json=excluded.json,n=excluded.n,wins=excluded.wins,losses=excluded.losses,opens=excluded.opens,pnl=excluded.pnl,updated=excluded.updated', uid, json, arr.length, wins, losses, opens, pnl, now);
+    try { const hasSrv = opensArr.some(e => e && (e.src === 'srv' || e.src === 'bot')); if (hasSrv) sql.exec('INSERT INTO active_srv(user_id,ts) VALUES(?,?) ON CONFLICT(user_id) DO UPDATE SET ts=excluded.ts', uid, now); else sql.exec('DELETE FROM active_srv WHERE user_id=?', uid); } catch (e) {}
     return arr;
   }
   async fetch(request) {
@@ -7039,6 +8956,7 @@ export class UserStore {
       const dev = String(b.dev || ''), br = String(b.br || ''), org = String(b.org || ''), asn = +b.asn || 0;
       if (!u) { const id = this.rid(); sql.exec('INSERT INTO users(id,email,created,last_login,ip,cc,dev,br,last_seen,logins,org,asn,status) VALUES(?,?,?,?,?,?,?,?,?,1,?,?,?)', id, email, now, now, String(b.ip || ''), String(b.cc || ''), dev, br, now, org, asn, 'active'); u = this.rows('SELECT * FROM users WHERE id=?', id)[0]; isNew = true; }
       else sql.exec('UPDATE users SET last_login=?,logins=logins+1,last_seen=?,dev=?,br=?,org=?,asn=? WHERE id=?', now, now, dev, br, org, asn, u.id);
+      if (b.did) { try { sql.exec('UPDATE users SET did=? WHERE id=?', String(b.did).slice(0, 64), u.id); } catch (e) {} } // record the device fingerprint on every login
       const token = this.rid() + this.rid();
       sql.exec('INSERT INTO sessions(token,user_id,created,expires,ua,ip,cc,asn,org) VALUES(?,?,?,?,?,?,?,?,?)', token, u.id, now, now + 2592000000, String(b.ua || '').slice(0, 200), String(b.ip || ''), String(b.cc || ''), asn, org);
       if (Math.random() < 0.02) sql.exec('DELETE FROM sessions WHERE expires<?', now); // occasional cleanup of expired sessions
@@ -7092,26 +9010,26 @@ export class UserStore {
       const jn = this._loadJournal(uid);
       const openN = jn.filter(x => x && x.src === 'bot' && x.status !== 'win' && x.status !== 'loss').length;
       if (openN >= 50) return this.j({ error: 'too_many_open', max: 50 });
-      this._syncJournal(uid, [t], b.promos);
+      this._syncJournal(uid, [t], b.promos, true);
       return this.j({ ok: true, position: this._j2bot(t, null) });
     }
     if (path === '/botpositions' || path === '/botclose' || path === '/botcloseall') {
       const uid = String(b.uid || ''), PR = b.prices || {};
       const isOpen = (t) => t && t.status !== 'win' && t.status !== 'loss';
       // server-side SL/TP/liq sweep for BOT-opened trades (bots aren't always online). Returns a CLOSED copy, or null. App trades are handled by the UI.
-      const sweep = (t) => { if (!isOpen(t) || t.src !== 'bot') return null; const live = PR[t.sym]; if (!(live > 0)) return null;
+      const sweep = (t) => { if (!isOpen(t) || (t.src !== 'bot' && t.src !== 'srv')) return null; const live = PR[t.sym]; if (!(live > 0)) return null;
         const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0, qty = +t.qty || 0, entry = +t.entry || 0;
         if (long ? live <= (+t.liq || 0) : live >= (+t.liq || 0)) return Object.assign({}, t, { status: 'loss', exit: +t.liq || 0, pnl: -margin, closeTs: Date.now(), liquidated: true });
-        const close = (px) => { let pnl = qty * (px - entry) * dir; if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: px, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); };
+        const close = (px) => { let pnl = qty * (px - entry) * dir - qty * (entry + px) * (+t.feeRate || 0) - (+t.fund || 0); if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: px, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); };
         if (t.stop != null && (long ? live <= +t.stop : live >= +t.stop)) return close(+t.stop);
         if (t.tp != null && (long ? live >= +t.tp : live <= +t.tp)) return close(+t.tp);
         return null; };
       const autoClosed = this._loadJournal(uid).map(sweep).filter(Boolean);
-      if (autoClosed.length) this._syncJournal(uid, autoClosed, b.promos);
+      if (autoClosed.length) { autoClosed.forEach(x => { x.sc = 1; }); this._syncJournal(uid, autoClosed, b.promos, true); } // sc = server-executed close (prize-eligible)
       const cur = this._loadJournal(uid);
       if (path === '/botcloseall') {
         const closes = cur.filter(t => isOpen(t) && t.src === 'bot').map(t => { const live = PR[t.sym]; if (!(live > 0)) return null; const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0; let pnl = (+t.qty || 0) * (live - (+t.entry || 0)) * dir; if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); }).filter(Boolean);
-        if (closes.length) this._syncJournal(uid, closes, b.promos);
+        if (closes.length) { closes.forEach(x => { x.sc = 1; }); this._syncJournal(uid, closes, b.promos, true); }
         return this.j({ ok: true, closed: closes.length, positions: closes.map(t => this._j2bot(t, null)) });
       }
       if (path === '/botclose') {
@@ -7120,11 +9038,14 @@ export class UserStore {
         if (!isOpen(t)) return this.j({ error: 'already_closed', position: this._j2bot(t, null) });
         const live = PR[t.sym]; if (!(live > 0)) return this.j({ error: 'no_price' });
         const pct = Math.min(100, Math.max(1, +b.pct || 100)) / 100, long = t.side !== 'short', dir = long ? 1 : -1, entry = +t.entry || 0;
-        if (pct >= 1) { let pnl = (+t.qty || 0) * (live - entry) * dir; const margin = +t.margin || 0; if (pnl < -margin) pnl = -margin; const closed = Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); this._syncJournal(uid, [closed], b.promos); return this.j({ ok: true, position: this._j2bot(closed, null) }); }
-        const part = Object.assign({}, t); part.id = t.id + 'p' + Date.now().toString(36); part.qty = (+t.qty || 0) * pct; part.margin = Math.round((+t.margin || 0) * pct * 100) / 100; part.partial = Math.round(pct * 100);
-        let ppnl = part.qty * (live - entry) * dir; if (ppnl < -part.margin) ppnl = -part.margin; part.status = ppnl >= 0 ? 'win' : 'loss'; part.exit = live; part.pnl = Math.round(ppnl * 100) / 100; part.closeTs = Date.now();
-        const rem = Object.assign({}, t, { qty: (+t.qty || 0) * (1 - pct), margin: Math.round((+t.margin || 0) * (1 - pct) * 100) / 100 });
-        this._syncJournal(uid, [rem, part], b.promos);
+        if (pct >= 1) { let pnl = (+t.qty || 0) * (live - entry) * dir - (+t.qty || 0) * (entry + live) * (+t.feeRate || 0) - (+t.fund || 0); const margin = +t.margin || 0; if (pnl < -margin) pnl = -margin; const closed = Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now(), sc: 1 }); this._syncJournal(uid, [closed], b.promos, true); return this.j({ ok: true, position: this._j2bot(closed, null) }); }
+        const part = Object.assign({}, t); part.id = (b.pid && /^[A-Za-z0-9_-]{4,60}$/.test(String(b.pid))) ? String(b.pid) : (t.id + 'p' + Date.now().toString(36)); // pid: client-proposed part id so the optimistic local split and the server split converge on ONE row
+        part.qty = (+t.qty || 0) * pct; part.margin = Math.round((+t.margin || 0) * pct * 100) / 100; part.partial = Math.round(pct * 100); part.notional = Math.round(((+t.notional || 0) * pct) * 100) / 100;
+        part.fund = Math.round(((+t.fund || 0) * pct) * 1e6) / 1e6;
+        let ppnl = part.qty * (live - entry) * dir - part.qty * (entry + live) * (+t.feeRate || 0) - (+part.fund || 0); if (ppnl < -part.margin) ppnl = -part.margin; part.status = ppnl >= 0 ? 'win' : 'loss'; part.exit = live; part.pnl = Math.round(ppnl * 100) / 100; part.closeTs = Date.now();
+        const rem = Object.assign({}, t, { qty: (+t.qty || 0) * (1 - pct), margin: Math.round((+t.margin || 0) * (1 - pct) * 100) / 100, notional: Math.round(((+t.notional || 0) * (1 - pct)) * 100) / 100, fund: Math.round(((+t.fund || 0) * (1 - pct)) * 1e6) / 1e6 });
+        part.sc = 1;
+        this._syncJournal(uid, [rem, part], b.promos, true);
         return this.j({ ok: true, closed: this._j2bot(part, null), remaining: this._j2bot(rem, live) });
       }
       cur.sort((a, c) => ((+c.closeTs || +c.ts || 0) - (+a.closeTs || +a.ts || 0)));
@@ -7156,10 +9077,10 @@ export class UserStore {
       const token = url.searchParams.get('token') || '';
       const s = this.rows('SELECT * FROM sessions WHERE token=?', token)[0];
       if (!s || now > s.expires) return this.j({ user: null });
-      const u = this.rows('SELECT id,email,username,created,status,muted,restrictions,xp,streak,freezes FROM users WHERE id=?', s.user_id)[0];
+      const u = this.rows('SELECT id,email,username,created,status,muted,restrictions,xp,streak,freezes,bio,avatar,accent,coins FROM users WHERE id=?', s.user_id)[0];
       if (!u) return this.j({ user: null });
       if (u.status === 'banned') return this.j({ user: null, banned: true });
-      return this.j({ user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '', xp: u.xp || 0, streak: u.streak || 0, freezes: u.freezes || 0, level: xpLevelOf(u.xp) } });
+      return this.j({ user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '', xp: u.xp || 0, streak: u.streak || 0, freezes: u.freezes || 0, level: xpLevelOf(u.xp), bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins || '' } });
     }
     if (path === '/profiles') { // internal: batch account-id → {username,email} for the admin reward views
       const ids = (Array.isArray(b && b.ids) ? b.ids : []).map(x => String(x)).filter(Boolean).slice(0, 600);
@@ -7184,7 +9105,7 @@ export class UserStore {
     if (path === '/security') { // internal: behavioral profile per user for the ops Security tab — how much of their time is spent on /rewards, do they trade at all, VPN org. Joined with RewardLedger accounts in the worker.
       const dw = {}; try { this.rows("SELECT user_id uid, SUM(secs) tot, SUM(CASE WHEN path LIKE '/rewards%' THEN secs ELSE 0 END) rw, COUNT(DISTINCT path) np FROM udwell GROUP BY user_id").forEach(r => { dw[r.uid] = r; }); } catch (e) {}
       const tr = {}; try { this.rows('SELECT user_id uid, COALESCE(n,0) n, COALESCE(opens,0) opens FROM utrades').forEach(r => { tr[r.uid] = r; }); } catch (e) {}
-      const users = this.rows("SELECT id,email,username,created,last_seen,pv,cc,dev,org,asn,ip,status FROM users ORDER BY created DESC LIMIT 3000").map(u => { const d = dw[u.id] || {}, t = tr[u.id] || {}; return { uid: u.id, email: u.email || '', username: u.username || '', created: u.created || 0, lastSeen: u.last_seen || 0, pv: u.pv || 0, cc: u.cc || '', dev: u.dev || '', org: u.org || '', asn: u.asn || 0, ip: u.ip || '', status: u.status || 'active', dwellTotal: +d.tot || 0, dwellRewards: +d.rw || 0, paths: +d.np || 0, trades: +t.n || 0, opens: +t.opens || 0 }; });
+      const users = this.rows("SELECT id,email,username,created,last_seen,pv,cc,dev,org,asn,ip,did,status FROM users ORDER BY created DESC LIMIT 3000").map(u => { const d = dw[u.id] || {}, t = tr[u.id] || {}; return { uid: u.id, email: u.email || '', username: u.username || '', created: u.created || 0, lastSeen: u.last_seen || 0, pv: u.pv || 0, cc: u.cc || '', dev: u.dev || '', org: u.org || '', asn: u.asn || 0, ip: u.ip || '', did: u.did || '', status: u.status || 'active', dwellTotal: +d.tot || 0, dwellRewards: +d.rw || 0, paths: +d.np || 0, trades: +t.n || 0, opens: +t.opens || 0 }; });
       return this.j({ users });
     }
     if (path === '/missions/state') { // Daily Missions: verify completion against the user's own event log + return what's already claimed
@@ -7196,6 +9117,13 @@ export class UserStore {
         try {
           if (d.vt === 'ev') c = (this.rows('SELECT COUNT(*) n FROM uevents WHERE user_id=? AND ts>=? AND type=?', uid, dayStart, String(d.va))[0] || {}).n || 0;
           else if (d.vt === 'pv') c = (this.rows("SELECT COUNT(*) n FROM uevents WHERE user_id=? AND ts>=? AND type='pageview' AND path LIKE ?", uid, dayStart, String(d.va) + '%')[0] || {}).n || 0;
+          // social/academy missions — verified against the real tables (not client-trusted); uid stored without the 'u:' prefix
+          else if (d.vt === 'follow') c = (this.rows('SELECT COUNT(*) n FROM ufollows WHERE uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'dm') c = (this.rows('SELECT COUNT(*) n FROM dms WHERE from_uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'duel') c = (this.rows('SELECT COUNT(*) n FROM duels WHERE a_uid=? AND created>=?', uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'follower') c = (this.rows('SELECT COUNT(*) n FROM ufollows WHERE tuid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'win') c = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND ts>=?", uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'academy') c = (this.rows("SELECT COUNT(*) n FROM academy WHERE user_id=? AND ts>=? AND lesson NOT LIKE 'course:%'", uid, dayStart)[0] || {}).n || 0;
         } catch (e) {}
         done[d.mid] = c >= (d.n || 1);
       }
@@ -7249,14 +9177,14 @@ export class UserStore {
       let fresh = false, granted = 0, bonus = 0;
       if (!this.rows('SELECT 1 FROM academy WHERE user_id=? AND lesson=?', uid, lesson)[0]) {
         sql.exec('INSERT INTO academy(user_id,lesson,ts) VALUES(?,?,?)', uid, lesson, now); fresh = true;
-        granted = this._grantXp(uid, 'academy', 25, { lifeCap: 2300, note: 'lesson ' + lesson });
+        granted = this._grantXp(uid, 'academy', 25, { lifeCap: 3000, note: 'lesson ' + lesson });
       }
       if (course && courseLessons.length) {
         const doneSet = {}; this.rows('SELECT lesson FROM academy WHERE user_id=?', uid).forEach(r => { doneSet[r.lesson] = 1; });
         const mk = 'course:' + course;
         if (!doneSet[mk] && courseLessons.every(l => doneSet[l])) {
           sql.exec('INSERT INTO academy(user_id,lesson,ts) VALUES(?,?,?)', uid, mk, now);
-          bonus = this._grantXp(uid, 'academy', 50, { lifeCap: 2300, note: 'course ' + course + ' complete' });
+          bonus = this._grantXp(uid, 'academy', 50, { lifeCap: 3000, note: 'course ' + course + ' complete' });
         }
       }
       const u = this.rows('SELECT xp FROM users WHERE id=?', uid)[0];
@@ -7286,6 +9214,11 @@ export class UserStore {
       sql.exec('INSERT INTO missions(user_id,day,mid,ts) VALUES(?,?,?,?)', uid, day, mid, now); try { this._grantXp(uid, 'mission', 12, { dayCap: 60, note: 'mission ' + mid }); } catch (me) {}
       return this.j({ ok: true, fresh: true });
     }
+    if (path === '/missions/history') { // admin earnings view: every daily mission this user has claimed (mid+day+ts); cents mapped in the worker
+      const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, '');
+      if (!uid) return this.j({ rows: [] });
+      return this.j({ rows: this.rows('SELECT mid, day, ts FROM missions WHERE user_id=? ORDER BY ts DESC LIMIT 300', uid) });
+    }
     if (path === '/journey') { // Journey Map user search: find a user by username/email/id, return their event trail in a window
       const q = String((b && b.q) || '').trim().replace(/^@/, '').toLowerCase().slice(0, 80);
       if (!q) return this.j({ error: 'empty' }, 400);
@@ -7299,13 +9232,93 @@ export class UserStore {
       const dwell = this.rows('SELECT path, secs FROM udwell WHERE user_id=? ORDER BY secs DESC LIMIT 20', u.id);
       return this.j({ user: u, events, evTotal, oldest, dwell });
     }
+    if (path === '/tradesltp') { // server-side SL/TP edit for a journal trade (side-checked against entry)
+      const uid = String(b.uid || ''), id = String(b.id || '');
+      const jn = this._loadJournal(uid);
+      const t = jn.filter(x => x && String(x.id) === id)[0];
+      if (!t) return this.j({ error: 'not_found' });
+      if (t.status === 'win' || t.status === 'loss') return this.j({ error: 'already_closed' });
+      const long = t.side !== 'short', entry = +t.entry || 0;
+      const sl = (b.sl != null && b.sl !== '' && isFinite(+b.sl)) ? +b.sl : null;
+      const tp = (b.tp != null && b.tp !== '' && isFinite(+b.tp)) ? +b.tp : null;
+      if (sl != null && (long ? sl >= entry : sl <= entry)) return this.j({ error: 'sl_wrong_side' });
+      if (tp != null && (long ? tp <= entry : tp >= entry)) return this.j({ error: 'tp_wrong_side' });
+      const upd = Object.assign({}, t, { stop: sl, tp: tp });
+      this._syncJournal(uid, [upd], null, true);
+      return this.j({ ok: true, position: upd });
+    }
+    if (path === '/tradeopensyms') { // cron sweep support: distinct symbols of ALL open server/bot-filled trades across every journal
+      const syms = new Set(); let owners = 0;
+      try { sql.exec('CREATE TABLE IF NOT EXISTS active_srv(user_id TEXT PRIMARY KEY, ts INTEGER)'); } catch (e) {}
+      // A3 self-heal: empty index but journals exist → one-time backfill walk (covers pre-index open trades; SL/TP must never silently stop)
+      try {
+        const cnt = (this.rows('SELECT COUNT(*) n FROM active_srv')[0] || {}).n || 0;
+        if (!cnt) {
+          for (const r of this.rows('SELECT user_id FROM utrades LIMIT 5000')) {
+            const jn0 = this._loadJournal(r.user_id);
+            if (jn0.some(x => x && (x.src === 'srv' || x.src === 'bot') && x.status !== 'win' && x.status !== 'loss')) { try { sql.exec('INSERT INTO active_srv(user_id,ts) VALUES(?,?) ON CONFLICT(user_id) DO UPDATE SET ts=excluded.ts', r.user_id, Date.now()); } catch (e2) {} }
+          }
+        }
+      } catch (e) {}
+      try {
+        for (const r of this.rows("SELECT user_id FROM active_srv LIMIT 5000")) { // A3: only users indexed as holding open srv/bot trades
+          const jn = this._loadJournal(r.user_id);
+          const open = jn.filter(x => x && (x.src === 'srv' || x.src === 'bot') && x.status !== 'win' && x.status !== 'loss');
+          if (open.length) { owners++; open.forEach(x => syms.add(String(x.sym || '').toUpperCase())); }
+        }
+      } catch (e) {}
+      return this.j({ syms: Array.from(syms).slice(0, 60), owners });
+    }
+    if (path === '/tradesweepall') { // cron sweep: SL/TP/liq + 8h FUNDING for server/bot-filled trades even when nobody is looking
+      const PR = b.prices || {}, RT = b.rates || null, FORCE = !!b.force, ONLY = b.onlyUid ? String(b.onlyUid) : null;
+      let swept = 0, checked = 0, funded = 0;
+      try {
+        for (const r of this.rows("SELECT user_id FROM active_srv LIMIT 5000")) { // A3: indexed active traders only
+          const uid = r.user_id; if (ONLY && uid !== ONLY) continue;
+          const jn = this._loadJournal(uid);
+          const closes = [], upds = [];
+          for (const t of jn) {
+            if (!t || (t.src !== 'srv' && t.src !== 'bot') || t.status === 'win' || t.status === 'loss') continue;
+            checked++;
+            const live = PR[String(t.sym || '').toUpperCase()]; if (!(live > 0)) continue;
+            const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0, qty = +t.qty || 0, entry = +t.entry || 0;
+            // FUNDING (P1 realism): once per 8h UTC slot, fund += notional × rate × dir (long pays positive rates,
+            // short receives; negative rates flip). Accumulates on the OPEN trade; settled into pnl at close.
+            if (RT) {
+              const rate = +RT[String(t.sym || '').toUpperCase()];
+              const slot = Math.floor(Date.now() / 28800000) * 28800000;
+              if (isFinite(rate) && rate !== 0 && (FORCE || (+(t.fundTs || t.ts || 0)) < slot)) {
+                t.fund = Math.round(((+t.fund || 0) + qty * live * rate * dir) * 1e6) / 1e6;
+                t.fundTs = Date.now(); upds.push(t); funded++;
+              }
+            }
+            if (long ? live <= (+t.liq || 0) : live >= (+t.liq || 0)) { closes.push(Object.assign({}, t, { status: 'loss', exit: +t.liq || 0, pnl: -margin, closeTs: Date.now(), liquidated: true })); continue; }
+            const closeAt = (px) => { let pnl = qty * (px - entry) * dir - qty * (entry + px) * (+t.feeRate || 0) - (+t.fund || 0); if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: px, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); };
+            if (t.stop != null && (long ? live <= +t.stop : live >= +t.stop)) { closes.push(closeAt(+t.stop)); continue; }
+            if (t.tp != null && (long ? live >= +t.tp : live <= +t.tp)) { closes.push(closeAt(+t.tp)); }
+          }
+          if (closes.length || upds.length) { closes.forEach(x => { x.sc = 1; }); this._syncJournal(uid, upds.concat(closes), null, true); swept += closes.length; }
+        }
+      } catch (e) {}
+      return this.j({ ok: true, swept, checked, funded });
+    }
+    if (path === '/export') { // nightly backup dump — identity, money-adjacent progress and social state. Ephemeral/analytics tables (sessions, otp, uevents, uclicks, udwell) are deliberately excluded.
+      const out = { at: Date.now(), tables: {} };
+      for (const t of ['users', 'utrades', 'academy', 'missions', 'referrals', 'ufollows', 'dms', 'duels', 'tradeev', 'botkeys', 'botpos', 'alerts']) {
+        try { out.tables[t] = this.rows('SELECT * FROM ' + t + ' LIMIT 200000'); } catch (e) { out.tables[t] = { _err: String(e).slice(0, 120) }; }
+      }
+      return this.j(out);
+    }
     if (path === '/briefstats') { // morning-brief cron: signups + actives over the last 24h/48h
       const d24 = now - 86400000, d48 = now - 2 * 86400000;
+      // average time-on-site per REGISTERED user who has any tracked dwell (avg of per-user total dwell seconds)
+      const dwAgg = this.rows('SELECT COUNT(DISTINCT user_id) u, COALESCE(SUM(secs),0) s FROM udwell')[0] || { u: 0, s: 0 };
       return this.j({
         signups24: (this.rows('SELECT COUNT(*) n FROM users WHERE created>=?', d24)[0] || {}).n || 0,
         signupsPrev: (this.rows('SELECT COUNT(*) n FROM users WHERE created>=? AND created<?', d48, d24)[0] || {}).n || 0,
         active24: (this.rows('SELECT COUNT(*) n FROM users WHERE last_seen>=?', d24)[0] || {}).n || 0,
         total: (this.rows('SELECT COUNT(*) n FROM users')[0] || {}).n || 0,
+        avgDwellSec: dwAgg.u ? Math.round(dwAgg.s / dwAgg.u) : 0, dwellUsers: dwAgg.u || 0,
       });
     }
     if (path === '/retention') { // ops Retention tab: weekly cohorts (came back >=N days after signup — last_seen proxy), stickiness, power users, churned
@@ -7333,6 +9346,7 @@ export class UserStore {
     // ---- price alerts (account-based) ----
     if (path === '/alerts/active') { return this.j({ alerts: this.rows("SELECT a.id,a.uid,a.email,a.sym,a.dir,a.target,a.note,COALESCE(a.channel,'email') channel,u.tg_chat FROM alerts a LEFT JOIN users u ON u.id=a.uid WHERE a.active=1 LIMIT 5000") }); } // internal: cron reads every active alert (+ delivery channel & linked Telegram chat)
     if (path === '/tglink/set') { const uid = String((b && b.uid) || ''), chat = String((b && b.chat) || ''); if (uid && chat) sql.exec('UPDATE users SET tg_chat=? WHERE id=?', chat, uid); return this.j({ ok: true }); } // bot links a Telegram chat to an account
+    if (path === '/tglink/of') { const chat = String(url.searchParams.get('chat') || ''); if (!chat) return this.j({ linked: false }); const u = this.rows("SELECT id,username,email,xp FROM users WHERE tg_chat=? AND (status IS NULL OR status='active') LIMIT 1", chat)[0]; return this.j(u ? { linked: true, uid: u.id, username: u.username || '', email: u.email || '', xp: u.xp || 0, level: xpLevelOf(u.xp || 0) } : { linked: false }); } // bot: is this Telegram chat linked to an account?
     if (path === '/alerts/tginfo') { const aTok = String((b && b.token) || url.searchParams.get('token') || ''); const aS = aTok ? this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', aTok, now)[0] : null; if (!aS) return this.j({ error: 'not_signed_in' }, 401); const u = this.rows('SELECT id,tg_chat FROM users WHERE id=?', aS.user_id)[0]; return this.j({ uid: u ? u.id : '', linked: !!(u && u.tg_chat) }); }
     if (path === '/alerts/fire') { const ids = Array.isArray(b.ids) ? b.ids : []; for (const id of ids) { try { sql.exec('UPDATE alerts SET active=0, fired_ts=? WHERE id=?', now, String(id)); } catch (e) {} } return this.j({ ok: true }); } // internal: cron marks fired
     if (path === '/alerts/list' || path === '/alerts/create' || path === '/alerts/delete' || path === '/alerts/tgunlink') {
@@ -7375,6 +9389,22 @@ export class UserStore {
       if (this.rows('SELECT id FROM users WHERE LOWER(username)=LOWER(?) AND id!=?', uname, s.user_id)[0]) return this.j({ error: 'taken' });
       sql.exec('UPDATE users SET username=? WHERE id=?', uname, s.user_id); try { this._grantXp(String(s.user_id), 'username', 50, { once: true, note: 'set a username' }); } catch (ue) {}
       return this.j({ ok: true, username: uname });
+    }
+    if (path === '/setprofile') { // user edits their own public profile personalization (bio/avatar/accent/coins)
+      const token = String(b.token || '');
+      const s = this.rows('SELECT user_id FROM sessions WHERE token=? AND expires>?', token, now)[0];
+      if (!s) return this.j({ error: 'not_signed_in' }, 401);
+      const uid = String(s.user_id);
+      const bio = String(b.bio == null ? '' : b.bio).replace(/\s+/g, ' ').trim().slice(0, 160);
+      // avatar = either an uploaded image (small base64 data URI, client-resized) OR a single emoji fallback.
+      let avatar = String(b.avatar == null ? '' : b.avatar);
+      if (/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(avatar)) { if (avatar.length > 60000) avatar = ''; } // ~45KB decoded cap; oversized → drop
+      else { avatar = avatar.replace(/[<>&"'`]/g, '').replace(/[a-zA-Z0-9]/g, '').trim().slice(0, 8); } // emoji fallback
+      const ACC = ['#c2f64a', '#38bdf8', '#ff9640', '#c78bff', '#34d99a', '#ff6c5c', '#ffd75a', '#f472b6'];
+      let accent = String(b.accent || '').toLowerCase(); if (ACC.indexOf(accent) < 0) accent = '';
+      const coins = String(b.coins == null ? '' : b.coins).toUpperCase().replace(/[^A-Z0-9, ]/g, '').split(/[, ]+/).filter(Boolean).slice(0, 6).join(',');
+      sql.exec('UPDATE users SET bio=?, avatar=?, accent=?, coins=? WHERE id=?', bio, avatar, accent, coins, uid);
+      return this.j({ ok: true, bio, avatar, accent, coins });
     }
     if (path === '/control') { // admin moderation actions
       const email = String(b.email || '').toLowerCase(), id0 = String(b.id || '');
@@ -7421,8 +9451,89 @@ export class UserStore {
     }
     if (path === '/gettrades') { // signed-in user's stored journal → a new device pulls it and merges into its local journal (cross-device sync)
       const uid = String(url.searchParams.get('uid') || ''); if (!uid) return this.j({ journal: [] });
-      let journal = []; try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) journal = JSON.parse(r.json) || []; } catch (e) {}
-      return this.j({ journal: Array.isArray(journal) ? journal : [] });
+      // A1 scale fix: the 14s pull from EVERY open tab was parsing + shipping the full ~60KB blob each time.
+      // Hash the RAW string (FNV-1a, no JSON.parse) — when the client's last-seen hash matches, answer {same:1}
+      // with zero parse and zero payload. Cuts the dominant CPU+bandwidth cost of this DO's hottest read.
+      const wantH = String(url.searchParams.get('h') || '');
+      let js = '[]'; try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) js = r.json; } catch (e) {}
+      let fh = 0x811c9dc5; for (let i = 0; i < js.length; i++) { fh ^= js.charCodeAt(i); fh = (fh * 0x01000193) >>> 0; }
+      const jh = fh.toString(36);
+      if (wantH && wantH === jh) return this.j({ same: 1, h: jh });
+      let journal = []; try { journal = JSON.parse(js) || []; } catch (e) {}
+      return this.j({ journal: Array.isArray(journal) ? journal : [], h: jh });
+    }
+    if (path === '/refrecord') { // record a pending referral on signup (guards: real referrer, self-referral, one-per-referred)
+      const referrer = String(b.referrer || ''), referred = String(b.referred || ''), did = String(b.did || '');
+      if (!referrer || !referred || referrer === referred) return this.j({ ok: false });
+      if (!this.rows('SELECT id FROM users WHERE id=?', referrer)[0]) return this.j({ ok: false });
+      if (this.rows('SELECT referred FROM referrals WHERE referred=?', referred)[0]) return this.j({ ok: false });
+      try { sql.exec("INSERT INTO referrals(referrer,referred,ts,status,did) VALUES(?,?,?,'pending',?)", referrer, referred, now, did); } catch (e) {}
+      return this.j({ ok: true });
+    }
+    if (path === '/refhit') { // record a referral-link visit
+      const referrer = String(b.referrer || ''), campaign = String(b.campaign || '').slice(0, 24), src = String(b.src || '').slice(0, 40), refurl = String(b.url || '').slice(0, 200);
+      if (!referrer) return this.j({ ok: false });
+      try { sql.exec('CREATE TABLE IF NOT EXISTS refhit(referrer TEXT, campaign TEXT, src TEXT, ts INTEGER)'); } catch (e) {} // the migration runs in the constructor (not on deploy) → ensure the table exists on the first write after a code push
+      try { sql.exec('ALTER TABLE refhit ADD COLUMN url TEXT'); } catch (e) {} // the exact post/page the link was clicked from (when the referrer isn't stripped)
+      sql.exec('INSERT INTO refhit(referrer,campaign,src,ts,url) VALUES(?,?,?,?,?)', referrer, campaign, src, now, refurl);
+      sql.exec('DELETE FROM refhit WHERE rowid NOT IN (SELECT rowid FROM refhit ORDER BY ts DESC LIMIT 6000)');
+      return this.j({ ok: true });
+    }
+    if (path === '/affiliate') { // ops Affiliate tab: per-referrer link performance (clicks, campaigns, sources, signups, per-invited trade progress, funnel, 14d series, activity feed)
+      const agg = {};
+      const ens = id => (agg[id] = agg[id] || { uid: id, username: '', email: '', clicks: 0, campaigns: {}, sources: {}, posts: {}, invited: 0, qualified: 0, lastTs: 0, firstTs: 0, invitedUsers: [] });
+      try { this.rows("SELECT h.referrer, h.campaign, h.src, MAX(h.ts) lastTs, COUNT(*) n, u.username, u.email FROM refhit h LEFT JOIN users u ON u.id=h.referrer GROUP BY h.referrer, h.campaign, h.src").forEach(r => { const a = ens(r.referrer); a.clicks += r.n; if (r.username) a.username = r.username; if (r.email) a.email = r.email; if (r.lastTs > a.lastTs) a.lastTs = r.lastTs; const c = r.campaign || '(no campaign)'; a.campaigns[c] = (a.campaigns[c] || 0) + r.n; const s = r.src || 'direct'; a.sources[s] = (a.sources[s] || 0) + r.n; }); } catch (e) {}
+      try { this.rows("SELECT referrer, url, COUNT(*) n FROM refhit WHERE url IS NOT NULL AND url != '' GROUP BY referrer, url").forEach(r => { const u = String(r.url); const np = u.indexOf('://') >= 0 ? u.slice(u.indexOf('://') + 3) : u; const sl = np.indexOf('/'); if (sl < 0 || sl >= np.length - 1) return; const a = ens(r.referrer); a.posts[u] = (a.posts[u] || 0) + r.n; }); } catch (e) {} // ONLY real posts (URL has a path beyond the host) — big platforms strip the referrer to a bare host, which isn't a real link
+      // per-invited detail (each referred friend + their trade progress → shows WHY they did/didn't qualify) + accurate invited/qualified counts
+      try { this.rows("SELECT r.referrer, r.referred, r.status, r.ts, r.qual_ts, COALESCE(t.n,0) trades, u.username, u.email, u.cc FROM referrals r LEFT JOIN utrades t ON t.user_id=r.referred LEFT JOIN users u ON u.id=r.referred ORDER BY r.ts DESC").forEach(r => { const a = ens(r.referrer); a.invited++; if (r.status === 'qualified') a.qualified++; if (a.invitedUsers.length < 30) a.invitedUsers.push({ who: r.username || (r.email ? r.email.split('@')[0] : ('id ' + String(r.referred).slice(0, 6))), trades: r.trades || 0, status: r.status || 'pending', ts: r.ts || 0, qualTs: r.qual_ts || 0, cc: r.cc || '' }); }); } catch (e) {}
+      const top = o => Object.keys(o).map(k => ({ k, n: o[k] })).sort((a, b) => b.n - a.n);
+      const list = Object.keys(agg).map(id => { const a = agg[id]; return { uid: id, username: a.username, email: a.email, clicks: a.clicks, invited: a.invited, qualified: a.qualified, pending: Math.max(0, a.invited - a.qualified), conv: a.clicks ? Math.round(a.invited / a.clicks * 100) : 0, lastTs: a.lastTs, firstTs: a.firstTs, campaigns: top(a.campaigns), sources: top(a.sources), posts: top(a.posts).slice(0, 8), invitedUsers: a.invitedUsers }; });
+      list.sort((a, b) => (b.clicks + b.invited * 20 + b.qualified * 50) - (a.clicks + a.invited * 20 + a.qualified * 50));
+      // global roll-ups: where clicks come from (sources), which campaign tags perform, which countries the signups are from
+      const gsrc = {}, gcamp = {}, gcc = {};
+      list.forEach(a => { a.sources.forEach(s => { if (s.k !== 'direct') gsrc[s.k] = (gsrc[s.k] || 0) + s.n; }); a.campaigns.forEach(c => { if (c.k !== '(no campaign)') gcamp[c.k] = (gcamp[c.k] || 0) + c.n; }); });
+      try { this.rows("SELECT u.cc, COUNT(*) n FROM referrals r LEFT JOIN users u ON u.id=r.referred WHERE u.cc IS NOT NULL AND u.cc!='' GROUP BY u.cc").forEach(r => { gcc[r.cc] = (gcc[r.cc] || 0) + (r.n || 0); }); } catch (e) {}
+      // 14-day time series (clicks / signups / qualified per UTC day)
+      const DAY = 86400000, todayD = Math.floor(now / DAY) * DAY, series = [], dayIdx = {};
+      for (let i = 13; i >= 0; i--) { const d = todayD - i * DAY; dayIdx[d] = series.length; series.push({ day: d, clicks: 0, signups: 0, qualified: 0 }); }
+      try { this.rows("SELECT ts FROM refhit WHERE ts>=?", todayD - 13 * DAY).forEach(r => { const i = dayIdx[Math.floor(r.ts / DAY) * DAY]; if (i != null) series[i].clicks++; }); } catch (e) {}
+      try { this.rows("SELECT ts FROM referrals WHERE ts>=?", todayD - 13 * DAY).forEach(r => { const i = dayIdx[Math.floor(r.ts / DAY) * DAY]; if (i != null) series[i].signups++; }); } catch (e) {}
+      try { this.rows("SELECT qual_ts FROM referrals WHERE status='qualified' AND qual_ts>=?", todayD - 13 * DAY).forEach(r => { const i = dayIdx[Math.floor(r.qual_ts / DAY) * DAY]; if (i != null) series[i].qualified++; }); } catch (e) {}
+      // recent activity feed (clicks + signups + reward payouts, newest first)
+      const recent = [];
+      try { this.rows("SELECT h.referrer, h.src, h.ts, u.username FROM refhit h LEFT JOIN users u ON u.id=h.referrer ORDER BY h.ts DESC LIMIT 14").forEach(r => recent.push({ t: 'click', who: r.username || ('id ' + String(r.referrer).slice(0, 6)), src: r.src || 'direct', ts: r.ts })); } catch (e) {}
+      try { this.rows("SELECT r.ts, ru.username ref_un, u.username inv_un, u.email inv_em, u.cc FROM referrals r LEFT JOIN users ru ON ru.id=r.referrer LEFT JOIN users u ON u.id=r.referred ORDER BY r.ts DESC LIMIT 14").forEach(r => recent.push({ t: 'signup', who: r.ref_un || 'someone', inv: r.inv_un || (r.inv_em ? r.inv_em.split('@')[0] : 'a friend'), cc: r.cc || '', ts: r.ts })); } catch (e) {}
+      try { this.rows("SELECT r.qual_ts ts, ru.username ref_un FROM referrals r LEFT JOIN users ru ON ru.id=r.referrer WHERE r.status='qualified' AND r.qual_ts>0 ORDER BY r.qual_ts DESC LIMIT 10").forEach(r => recent.push({ t: 'qualified', who: r.ref_un || 'someone', ts: r.ts })); } catch (e) {}
+      recent.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      const totals = { referrers: list.length, clicks: list.reduce((s, x) => s + x.clicks, 0), invited: list.reduce((s, x) => s + x.invited, 0), qualified: list.reduce((s, x) => s + x.qualified, 0) };
+      totals.pending = Math.max(0, totals.invited - totals.qualified);
+      totals.convCS = totals.clicks ? Math.round(totals.invited / totals.clicks * 100) : 0;
+      totals.convSQ = totals.invited ? Math.round(totals.qualified / totals.invited * 100) : 0;
+      return this.j({ affiliates: list.slice(0, 300), totals, sources: top(gsrc).slice(0, 10), campaigns: top(gcamp).slice(0, 10), countries: top(gcc).slice(0, 8), series, recent: recent.slice(0, 26) });
+    }
+    if (path === '/refstats') { // a user's own referral summary (for the /rewards card)
+      const uid = String(url.searchParams.get('uid') || ''); if (!uid) return this.j({ invited: 0, qualified: 0, pending: 0 });
+      const inv = (this.rows('SELECT COUNT(*) n FROM referrals WHERE referrer=?', uid)[0] || {}).n || 0;
+      const q = (this.rows("SELECT COUNT(*) n FROM referrals WHERE referrer=? AND status='qualified'", uid)[0] || {}).n || 0;
+      return this.j({ invited: inv, qualified: q, pending: inv - q });
+    }
+    if (path === '/refpending') { // pending referrals + the referred user's trade count → the cron qualifies + pays
+      const rows = this.rows("SELECT r.referrer, r.referred, r.did, COALESCE(t.n,0) trades FROM referrals r LEFT JOIN utrades t ON t.user_id=r.referred WHERE r.status='pending' LIMIT 500");
+      const out = rows.filter(r => { if (!r.did) return true; return !this.rows("SELECT 1 FROM referrals WHERE referrer=? AND did=? AND status='qualified' LIMIT 1", r.referrer, r.did)[0]; }); // skip same-device farming
+      return this.j({ pending: out });
+    }
+    if (path === '/refqualify') { // mark a referral paid (cap the referrer at 100 to bound abuse)
+      const referred = String(b.referred || ''); if (!referred) return this.j({ ok: false });
+      const row = this.rows('SELECT referrer FROM referrals WHERE referred=?', referred)[0]; if (!row) return this.j({ ok: false });
+      const paid = (this.rows("SELECT COUNT(*) n FROM referrals WHERE referrer=? AND status='qualified'", row.referrer)[0] || {}).n || 0;
+      if (paid >= 100) { sql.exec("UPDATE referrals SET status='capped' WHERE referred=?", referred); return this.j({ ok: false, capped: true }); }
+      sql.exec("UPDATE referrals SET status='qualified', qual_ts=? WHERE referred=?", now, referred);
+      return this.j({ ok: true });
+    }
+    if (path === '/tgranks') { // top XP members (+ their linked Telegram chat, if any) → leaderboard-rank DMs
+      let rows = [];
+      try { rows = this.rows("SELECT id, username, tg_chat, COALESCE(xp,0) xp FROM users WHERE username IS NOT NULL AND username != '' AND (status IS NULL OR status != 'banned') ORDER BY xp DESC LIMIT 60"); } catch (e) {}
+      return this.j({ ranks: rows.map((r, i) => ({ uid: r.id, username: r.username, tg: r.tg_chat || '', xp: r.xp, rank: i + 1 })) });
     }
     // ─── 1:1 owner↔user direct messages ────────────────────────────────────────────────
     if (path === '/dwell') { // time-on-page accumulator (beacon on hide/unload)
@@ -7536,6 +9647,12 @@ export class UserStore {
       const limit = Math.min(50, Math.max(1, +url.searchParams.get('limit') || 30));
       const rows = this.rows("SELECT u.id uid, u.username, t.json FROM utrades t JOIN users u ON u.id=t.user_id WHERE t.n>0 AND (u.status IS NULL OR u.status='active') ORDER BY t.updated DESC LIMIT 1000");
       const best = [];
+      const v2 = ws >= LB_V2_START; // from the 3-board launch: a win must clear +5% ROE to count on the win-rate board
+      // Weekly win/loss comes from the tradeev log, NOT the utrades blob: the blob is capped at 100 closed trades (oldest
+      // trimmed), so a heavy trader's earlier losses vanish from it and inflate their win rate. tradeev keeps every close (14d).
+      const tev = {};
+      const mvP = v2 ? WR_MIN_MOVE : -1e9; // v2: a win must also clear a ≥0.2% real price move (roe/lev); excluded low-vol/forex symbols never count
+      try { this.rows("SELECT user_id uid, SUM(CASE WHEN pnl>0 AND roe>=? AND (? <= -1e8 OR (lev>0 AND roe/lev >= ?)) THEN 1 ELSE 0 END) w, SUM(CASE WHEN pnl<=0 THEN 1 ELSE 0 END) l FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") GROUP BY user_id", v2 ? WR_MIN_WIN_ROE : -1e9, mvP, mvP, ws, we).forEach(x => { tev[String(x.uid)] = { w: +x.w || 0, l: +x.l || 0 }; }); } catch (e) {}
       for (const r of rows) {
         let arr = []; try { arr = JSON.parse(r.json); } catch (e) {}
         if (!Array.isArray(arr)) continue;
@@ -7543,19 +9660,34 @@ export class UserStore {
         for (const e of arr) {
           if (!e || (e.status !== 'win' && e.status !== 'loss')) continue;
           const ct = +e.closeTs; if (!isFinite(ct) || ct < ws || ct >= we) continue; // only trades CLOSED this week count
-          if (e.status === 'win') wWk++; else lWk++; // win-rate board input (no prizes — bragging rights)
-          const margin = +e.margin, pnl = +e.pnl; if (!(margin > 0) || !isFinite(pnl)) continue;
-          let roe = pnl / margin * 100; if (!isFinite(roe)) continue;
-          roe = Math.max(-100, Math.min(roe, 1000000)); // clamp absurd margins/pnl like the legacy path
+          if (v2 && !(+e.ts >= ws)) continue; // v2: the trade must ALSO be OPENED this week — no farming an old position by (partial-)closing it into this week's board (partial closes keep the original open ts)
+          if (lbExcluded(e.sym)) continue; // forex/metals/indices/stablecoins never count toward any board (low-vol → farmable at high leverage)
+          if (ws >= SRV_LB_START && !(e.src === 'srv' && e.sc)) continue; // P0 phase 3: from 2026-07-27 the paid board counts ONLY server-filled AND server-closed trades — client-fabricated numbers can't reach the money
+          const margin = +e.margin, pnl = +e.pnl, lev = +e.lev || 0;
+          let roe = (margin > 0 && isFinite(pnl)) ? pnl / margin * 100 : NaN;
+          if (isFinite(roe)) roe = Math.max(-100, Math.min(roe, 1000000)); // clamp absurd margins/pnl like the legacy path
+          const realMove = (lev > 0 && isFinite(roe)) ? (roe / lev) >= WR_MIN_MOVE : false; // the win must reflect a ≥0.2% real price move
+          // win-rate board input: losses always count; from v2 a win only counts at ≥ +5% ROE AND a real ≥0.2% move (sub-threshold = neither)
+          if (v2) { if (e.status === 'loss') lWk++; else if (isFinite(roe) && roe >= WR_MIN_WIN_ROE && realMove) wWk++; }
+          else { if (e.status === 'win') wWk++; else lWk++; }
+          if (!(margin > 0) || !isFinite(pnl) || !isFinite(roe)) continue;
           const cp = Math.max(-1e12, Math.min(pnl, 1e12));
           const sym = String(e.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10), side = e.side === 'short' ? 'short' : 'long';
           if (!top || roe > top.roe) top = { roe, pnl, symbol: sym, side };
           if (!bestPnl || cp > bestPnl.pnl) bestPnl = { pnl: cp, symbol: sym, side }; // PnL board: biggest single winning trade this week
         }
-        if (top) best.push({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), roe: top.roe, pnl: top.pnl, symbol: top.symbol, side: top.side, w: wWk, l: lWk, bp: bestPnl ? bestPnl.pnl : 0, bpSym: bestPnl ? bestPnl.symbol : '', bpSide: bestPnl ? bestPnl.side : '' });
+        const tw = tev[String(r.uid)]; // accurate weekly w/l from tradeev; fall back to the blob only if the user has no tradeev rows yet
+        if (top) best.push({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), roe: top.roe, pnl: top.pnl, symbol: top.symbol, side: top.side, w: tw ? tw.w : wWk, l: tw ? tw.l : lWk, bp: bestPnl ? bestPnl.pnl : 0, bpSym: bestPnl ? bestPnl.symbol : '', bpSide: bestPnl ? bestPnl.side : '' });
       }
       best.sort((a, b) => b.roe - a.roe);
-      return this.j({ top: best.slice(0, limit) });
+      // Weekly XP board — total XP earned in [ws,we) per user (from xplog: trades, Academy, missions, Happy Hour…).
+      // Includes non-traders (learners/mission-doers), can't be gamed by position size. Replaces the PnL board.
+      let xp = [];
+      try {
+        xp = this.rows("SELECT x.user_id uid, u.username, SUM(x.amt) xp FROM xplog x JOIN users u ON u.id=x.user_id WHERE x.ts>=? AND x.ts<? AND x.amt>0 AND x.src<>'lbprize' AND (u.status IS NULL OR u.status='active') GROUP BY x.user_id ORDER BY xp DESC LIMIT ?", ws, we, limit)
+          .map(r => ({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), xp: +r.xp || 0 }));
+      } catch (e) {}
+      return this.j({ top: best.slice(0, limit), xp });
     }
     if (path === '/myfollowers') { // signed-in user's own follower count + most-recent follower (for the "new follower" toast)
       const uid = String(url.searchParams.get('uid') || ''); if (!uid) return this.j({ count: 0, last: null });
@@ -7566,7 +9698,7 @@ export class UserStore {
     if (path === '/lbuser') { // public profile card for a leaderboard name: level + all-time & this-week trade stats
       const name = String(url.searchParams.get('name') || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
       if (!name) return this.j({ error: 'no_name' }, 400);
-      const u = this.rows('SELECT id, username, xp, created FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0];
+      const u = this.rows('SELECT id, username, xp, created, bio, avatar, accent, coins FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0];
       if (!u) return this.j({ exists: false });
       const L = xpLevelOf(u.xp || 0);
       const t = this.rows('SELECT json, n, wins, losses, pnl FROM utrades WHERE user_id = ?', u.id)[0] || {};
@@ -7578,11 +9710,23 @@ export class UserStore {
         const roe = Math.max(-100, Math.min(p / m * 100, 1000000));
         if (bestRoe == null || roe > bestRoe) bestRoe = roe;
         if (bestPnl == null || p > bestPnl) bestPnl = p;
-        const ct = +e.closeTs; if (isFinite(ct) && ct >= weekStart) { weekN++; weekPnl += p; if (e.status === 'win') weekW++; }
+        const ct = +e.closeTs; if (isFinite(ct) && ct >= weekStart) { weekPnl += p; }
       } } catch (e) {}
+      // weekly win/loss from tradeev (the blob is 100-capped so a heavy trader's old losses get trimmed → inflated WR); v2: win needs ≥5% ROE
+      try { const v2w = weekStart >= LB_V2_START; const mvW = v2w ? WR_MIN_MOVE : -1e9; const wr = this.rows("SELECT SUM(CASE WHEN pnl>0 AND roe>=? AND (? <= -1e8 OR (lev>0 AND roe/lev >= ?)) THEN 1 ELSE 0 END) w, SUM(CASE WHEN pnl<=0 THEN 1 ELSE 0 END) l FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ")", v2w ? WR_MIN_WIN_ROE : -1e9, mvW, mvW, u.id, weekStart)[0]; if (wr) { weekW = +wr.w || 0; weekN = weekW + (+wr.l || 0); } } catch (e) {}
       const closed = (t.wins || 0) + (t.losses || 0);
       const followers = (this.rows('SELECT COUNT(*) c FROM ufollows WHERE tuid = ?', u.id)[0] || { c: 0 }).c;
+      // viewer-relative relationship (mutual follow = "friends") — only when a signed-in viewer is passed
+      const viewer = String(url.searchParams.get('viewer') || '').replace(/^u:/, '');
+      let iFollow = false, followsMe = false, mutual = false;
+      if (viewer && viewer !== String(u.id)) {
+        iFollow = !!this.rows('SELECT 1 FROM ufollows WHERE k=?', viewer + '|' + u.id)[0];
+        followsMe = !!this.rows('SELECT 1 FROM ufollows WHERE k=?', u.id + '|' + viewer)[0];
+        mutual = iFollow && followsMe;
+      }
       return this.j({ exists: true, uid: 'u:' + u.id, name: u.username, level: { k: L.k, name: L.name, col: L.col, pct: L.pct, next: L.next, toNext: L.toNext, xp: L.xp },
+        iFollow, followsMe, mutual,
+        bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [],
         stats: { trades: t.n || 0, closed, wins: t.wins || 0, winRate: closed ? Math.round((t.wins || 0) / closed * 100) : 0,
           realized: +(t.pnl || 0).toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
           weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2) },
@@ -7598,6 +9742,10 @@ export class UserStore {
       if (this.rows('SELECT 1 FROM ufollows WHERE k = ?', k)[0]) { sql.exec('DELETE FROM ufollows WHERE k = ?', k); return this.j({ ok: true, following: false }); }
       if ((this.rows('SELECT COUNT(*) c FROM ufollows WHERE uid = ?', uid)[0] || { c: 0 }).c >= 200) return this.j({ error: 'too_many' }, 429);
       sql.exec('INSERT INTO ufollows(k, uid, tuid, tname, ts) VALUES(?,?,?,?,?)', k, uid, tuid, tname, now);
+      const fu = this.rows('SELECT username FROM users WHERE id=?', uid)[0];
+      const fn = (fu && fu.username) || 'A trader';
+      const nowMutual = !!this.rows('SELECT 1 FROM ufollows WHERE k=?', tuid + '|' + uid)[0];
+      this._pushNotif(tuid, 'follow', nowMutual ? '@' + fn + ' followed you back — you’re now friends! ★' : '@' + fn + ' started following you', fu && fu.username ? 'profile:' + fu.username : '');
       return this.j({ ok: true, following: true });
     }
     if (path === '/lbfollowing') { // list accounts the signed-in user follows, with each target's trade stats + level
@@ -7624,6 +9772,145 @@ export class UserStore {
       }
       return this.j({ following: out });
     }
+    if (path === '/followfeed') { // activity feed: recent trade events from the accounts the user follows
+      const uid = String((b && b.uid) || url.searchParams.get('uid') || '').replace(/^u:/, '');
+      if (!uid) return this.j({ feed: [], follows: 0 });
+      const fr = this.rows('SELECT tuid FROM ufollows WHERE uid = ? LIMIT 200', uid);
+      const ids = fr.map(r => String(r.tuid).replace(/^u:/, '')).filter(Boolean);
+      if (!ids.length) return this.j({ feed: [], follows: 0 });
+      const ph = ids.map(() => '?').join(',');
+      // trade events (opens/closes) from followed accounts, newest first
+      const rows = this.rows('SELECT e.ts,e.kind,e.sym,e.side,e.lev,e.margin,e.pnl,e.roe,e.liq,u.username,u.xp FROM tradeev e JOIN users u ON u.id=e.user_id WHERE e.user_id IN (' + ph + ') ORDER BY e.ts DESC LIMIT 60', ...ids);
+      const feed = rows.filter(r => r.username).map(r => { const L = xpLevelOf(r.xp || 0); return {
+        name: r.username, level: { k: L.k, name: L.name, col: L.col }, ts: r.ts, kind: r.kind,
+        sym: r.sym, side: r.side, lev: r.lev, margin: r.margin, pnl: r.pnl, roe: r.roe, liq: r.liq }; });
+      return this.j({ feed, follows: ids.length });
+    }
+    if (path === '/duel/challenge') { // a challenges b to a weekly stat duel. from=uid, toName=username, metric
+      const from = String((b && b.from) || '').replace(/^u:/, '');
+      const toName = String((b && b.toName) || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
+      const metric = ['roe', 'wr', 'win'].indexOf(String((b && b.metric) || '')) >= 0 ? b.metric : 'roe';
+      if (!from || !toName) return this.j({ error: 'bad' }, 400);
+      const me = this.rows('SELECT username, status, muted, restrictions FROM users WHERE id=?', from)[0];
+      if (!me) return this.j({ error: 'no_user' }, 400);
+      if (!me.username) return this.j({ error: 'need_username' }, 400);
+      if ((me.status && me.status !== 'active') || me.muted) return this.j({ error: 'restricted' }, 403);
+      const to = this.rows('SELECT id, username FROM users WHERE username=? COLLATE NOCASE', toName)[0];
+      if (!to) return this.j({ error: 'no_recipient' }, 404);
+      const toId = String(to.id); if (toId === from) return this.j({ error: 'self' }, 400);
+      if (!this._canDm(from, toId)) return this.j({ error: 'not_connected' }, 403);
+      // one active/pending duel per pair at a time
+      if (this.rows("SELECT 1 FROM duels WHERE ((a_uid=? AND b_uid=?) OR (a_uid=? AND b_uid=?)) AND status IN ('pending','active') LIMIT 1", from, toId, toId, from)[0]) return this.j({ error: 'exists' }, 409);
+      if ((this.rows("SELECT COUNT(*) c FROM duels WHERE a_uid=? AND status='pending'", from)[0] || { c: 0 }).c >= 5) return this.j({ error: 'too_many' }, 429);
+      const id = (now.toString(36) + Math.abs((from + toId).split('').reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)).toString(36)).slice(0, 16);
+      sql.exec('INSERT INTO duels(id,a_uid,b_uid,a_name,b_name,metric,created,start_ts,end_ts,status,winner,a_score,b_score,settled) VALUES(?,?,?,?,?,?,?,0,0,?,?,0,0,0)', id, from, toId, me.username, to.username, metric, now, 'pending', '');
+      this._pushNotif(toId, 'duel', '@' + me.username + ' wants your head — a 7-day ' + (metric === 'wr' ? 'win-rate' : metric === 'win' ? 'biggest-win' : 'ROE') + ' duel. Accept?', 'duel');
+      return this.j({ ok: true, id });
+    }
+    if (path === '/duel/respond') { // b accepts/declines a pending duel
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''); const id = String((b && b.id) || ''); const action = String((b && b.action) || '');
+      if (!uid || !id) return this.j({ error: 'bad' }, 400);
+      const d = this.rows('SELECT * FROM duels WHERE id=?', id)[0];
+      if (!d) return this.j({ error: 'not_found' }, 404);
+      if (String(d.b_uid) !== uid || d.status !== 'pending') return this.j({ error: 'bad_state' }, 400);
+      if (action === 'accept') { const WK = 604800000; sql.exec('UPDATE duels SET status=?, start_ts=?, end_ts=? WHERE id=?', 'active', now, now + WK, id); this._pushNotif(d.a_uid, 'duel', '@' + d.b_name + ' accepted. It’s on — 7 days, best stat takes the crown.', 'duel'); return this.j({ ok: true, status: 'active' }); }
+      sql.exec('UPDATE duels SET status=? WHERE id=?', 'declined', id); this._pushNotif(d.a_uid, 'duel', '@' + d.b_name + ' declined the duel. Some charts are scarier than others.', 'duel'); return this.j({ ok: true, status: 'declined' });
+    }
+    if (path === '/duel/mine') { // all of a user's duels: incoming pending, active (live scores), recent results
+      const uid = String((b && b.uid) || url.searchParams.get('uid') || '').replace(/^u:/, '');
+      if (!uid) return this.j({ duels: [] });
+      // settle any of this user's active duels whose window has ended (lazy settlement, cron also does it)
+      for (const d of this.rows("SELECT * FROM duels WHERE (a_uid=? OR b_uid=?) AND status='active' AND end_ts<=? AND end_ts>0", uid, uid, now)) this._duelSettle(d);
+      const rows = this.rows("SELECT * FROM duels WHERE (a_uid=? OR b_uid=?) AND status IN ('pending','active','done') ORDER BY created DESC LIMIT 40", uid, uid);
+      const out = rows.map(d => { const meA = String(d.a_uid) === uid; const oppName = meA ? d.b_name : d.a_name;
+        let myScore = null, oppScore = null;
+        if (d.status === 'active') { const sMe = this._duelScore(d, meA ? 'a' : 'b'), sOp = this._duelScore(d, meA ? 'b' : 'a'); myScore = sMe < 0 ? null : sMe; oppScore = sOp < 0 ? null : sOp; }
+        else if (d.status === 'done') { myScore = meA ? d.a_score : d.b_score; oppScore = meA ? d.b_score : d.a_score; if (myScore < 0) myScore = null; if (oppScore < 0) oppScore = null; }
+        return { id: d.id, metric: d.metric, status: d.status, opp: oppName, iAmChallenger: meA, incoming: (!meA && d.status === 'pending'),
+          start: d.start_ts, end: d.end_ts, myScore, oppScore, won: d.status === 'done' ? (d.winner ? String(d.winner) === uid : null) : null }; });
+      return this.j({ duels: out });
+    }
+    if (path === '/duel/pending') { const uid = String((b && b.uid) || url.searchParams.get('uid') || '').replace(/^u:/, ''); if (!uid) return this.j({ pending: 0 }); return this.j({ pending: (this.rows("SELECT COUNT(*) c FROM duels WHERE b_uid=? AND status='pending'", uid)[0] || { c: 0 }).c }); }
+    if (path === '/mentionnotify') { // chat @mention → notify each mentioned registered user (deduped per sender per 60s)
+      const from = String((b && b.from) || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20);
+      const names = (Array.isArray(b && b.names) ? b.names : []).slice(0, 4);
+      const preview = String((b && b.text) || '').slice(0, 80);
+      let n = 0;
+      for (const nm of names) { const clean = String(nm).replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20); if (!clean) continue;
+        const u = this.rows('SELECT id FROM users WHERE username=? COLLATE NOCASE', clean)[0]; if (!u) continue;
+        if (from && String(u.id) === from) continue;
+        // dedupe: skip if we already notified this user of a mention in the last 60s
+        if (this.rows("SELECT 1 FROM unotifs WHERE uid=? AND kind='mention' AND ts>? LIMIT 1", String(u.id), now - 60000)[0]) continue;
+        this._pushNotif(u.id, 'mention', '@' + (from || 'Someone') + ' mentioned you in chat: “' + preview + '”', 'chat'); n++;
+      }
+      return this.j({ ok: true, notified: n });
+    }
+    if (path === '/unotifs') { // the signed-in user's social notifications (list + unread; ?seen=1 marks all read)
+      const uid = String((b && b.uid) || url.searchParams.get('uid') || '').replace(/^u:/, '');
+      if (!uid) return this.j({ notifs: [], unread: 0 });
+      if (url.searchParams.get('seen') === '1' || (b && b.seen)) { sql.exec('UPDATE unotifs SET seen=1 WHERE uid=? AND seen=0', uid); return this.j({ ok: true }); }
+      const list = this.rows('SELECT nid,ts,kind,body,link,seen FROM unotifs WHERE uid=? ORDER BY nid DESC LIMIT 30', uid);
+      const unread = (this.rows('SELECT COUNT(*) c FROM unotifs WHERE uid=? AND seen=0', uid)[0] || { c: 0 }).c;
+      return this.j({ notifs: list, unread });
+    }
+    if (path === '/duel/settle-due') { // cron: settle every active duel whose window ended
+      const due = this.rows("SELECT * FROM duels WHERE status='active' AND end_ts<=? AND end_ts>0 LIMIT 200", now);
+      let n = 0; const winners = [];
+      for (const d of due) { const r = this._duelSettle(d); n++; if (r.winner) winners.push({ id: d.id, winner: r.winner, metric: d.metric, aName: d.a_name, bName: d.b_name }); }
+      return this.j({ settled: n, winners });
+    }
+    if (path === '/dm/send') { // user↔user DM. from = sender uid (session), toName = recipient username, txt = message
+      const from = String((b && b.from) || '').replace(/^u:/, '');
+      const toName = String((b && b.toName) || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
+      const txt = String((b && b.txt) || '').replace(/\s+$/g, '').slice(0, 1000).trim();
+      if (!from || !toName || !txt) return this.j({ error: 'bad' }, 400);
+      const me = this.rows('SELECT id, username, status, muted, restrictions FROM users WHERE id=?', from)[0];
+      if (!me) return this.j({ error: 'no_user' }, 400);
+      if (!me.username) return this.j({ error: 'need_username' }, 400);
+      if ((me.status && me.status !== 'active') || me.muted || (',' + String(me.restrictions || '') + ',').indexOf(',chat,') >= 0) return this.j({ error: 'restricted' }, 403);
+      const to = this.rows('SELECT id FROM users WHERE username=? COLLATE NOCASE', toName)[0];
+      if (!to) return this.j({ error: 'no_recipient' }, 404);
+      const toId = String(to.id);
+      if (toId === from) return this.j({ error: 'self' }, 400);
+      if (!this._canDm(from, toId)) return this.j({ error: 'not_connected' }, 403);
+      if (this.rows('SELECT 1 FROM dms WHERE from_uid=? AND ts>? LIMIT 1', from, now - 2000)[0]) return this.j({ error: 'rate_limit' }, 429);
+      if ((this.rows('SELECT COUNT(*) c FROM dms WHERE from_uid=? AND ts>?', from, now - 86400000)[0] || { c: 0 }).c >= 200) return this.j({ error: 'daily_limit' }, 429);
+      sql.exec('INSERT INTO dms(pair,from_uid,to_uid,txt,ts,seen) VALUES(?,?,?,?,?,0)', [from, toId].sort().join('|'), from, toId, txt, now);
+      // only notify on the FIRST unseen message of a burst (avoid a notif per line) — the DM unread badge covers the rest
+      if (!this.rows('SELECT 1 FROM dms WHERE to_uid=? AND from_uid=? AND seen=0 AND ts<? LIMIT 1', toId, from, now)[0]) this._pushNotif(toId, 'dm', '@' + me.username + ' sent you a message', 'dm:' + me.username);
+      return this.j({ ok: true, msg: { me: true, txt, ts: now } });
+    }
+    if (path === '/dm/thread') { // messages between uid and the user named withName (marks uid's incoming as seen)
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      const withName = String((b && b.withName) || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
+      if (!uid || !withName) return this.j({ error: 'bad' }, 400);
+      const ou = this.rows('SELECT id, username, xp FROM users WHERE username=? COLLATE NOCASE', withName)[0];
+      if (!ou) return this.j({ error: 'no_recipient' }, 404);
+      const other = String(ou.id); if (other === uid) return this.j({ error: 'self' }, 400);
+      const pair = [uid, other].sort().join('|');
+      const rows = this.rows('SELECT from_uid, txt, ts FROM dms WHERE pair=? ORDER BY ts ASC LIMIT 200', pair);
+      sql.exec('UPDATE dms SET seen=1 WHERE pair=? AND to_uid=? AND seen=0', pair, uid);
+      const L = xpLevelOf(ou.xp || 0);
+      return this.j({ ok: true, other: { name: ou.username, level: { k: L.k, name: L.name, col: L.col } }, canDm: this._canDm(uid, other), messages: rows.map(r => ({ me: String(r.from_uid) === uid, txt: r.txt, ts: r.ts })) });
+    }
+    if (path === '/dm/inbox') { // the user's conversation list: other party, last message, unread count
+      const uid = String((b && b.uid) || '').replace(/^u:/, '');
+      if (!uid) return this.j({ threads: [] });
+      const unreadRows = this.rows('SELECT pair, COUNT(*) c FROM dms WHERE to_uid=? AND seen=0 GROUP BY pair', uid);
+      const unreadByPair = {}; unreadRows.forEach(r => { unreadByPair[r.pair] = r.c; });
+      const rows = this.rows('SELECT pair, from_uid, to_uid, txt, ts FROM dms WHERE from_uid=? OR to_uid=? ORDER BY ts DESC LIMIT 500', uid, uid);
+      const done = {}; const threads = [];
+      for (const r of rows) {
+        if (done[r.pair]) continue; done[r.pair] = 1;
+        const otherId = String(r.from_uid) === uid ? String(r.to_uid) : String(r.from_uid);
+        const ou = this.rows('SELECT username, xp FROM users WHERE id=?', otherId)[0];
+        if (!ou || !ou.username) continue;
+        const L = xpLevelOf(ou.xp || 0);
+        threads.push({ name: ou.username, level: { k: L.k, name: L.name, col: L.col }, last: r.txt, ts: r.ts, fromMe: String(r.from_uid) === uid, unread: unreadByPair[r.pair] || 0 });
+      }
+      return this.j({ threads });
+    }
+    if (path === '/dm/unread') { const uid = String((b && b.uid) || url.searchParams.get('uid') || '').replace(/^u:/, ''); if (!uid) return this.j({ unread: 0 }); return this.j({ unread: (this.rows('SELECT COUNT(*) c FROM dms WHERE to_uid=? AND seen=0', uid)[0] || { c: 0 }).c }); }
     if (path === '/lbhist') { // past N weeks of winners, reconstructed from the synced journals (each closed trade's closeTs buckets it into its week)
       const WK = 604800000, MON = 4 * 86400000;
       const curWeek = Math.floor((now - MON) / WK) * WK + MON;
@@ -7729,8 +10016,8 @@ export class Community {
       const title = String(b.title || '').trim().slice(0, 140), body = String(b.body || '').trim().slice(0, 20000);
       const cat = String(b.cat || 'ideas').replace(/[^a-z-]/g, '').slice(0, 24) || 'ideas';
       const syms = String(b.syms || '').toUpperCase().replace(/[^A-Z0-9,]/g, '').split(',').filter(Boolean).slice(0, 6).join(',');
-      if (title.length < 6) return this.j({ error: 'title_short' }, 400);
-      if (body.length < 20) return this.j({ error: 'body_short' }, 400);
+      if (title.length < 15) return this.j({ error: 'title_short' }, 400); // SEO floor: a real headline, not "gm"
+      if (body.length < 500) return this.j({ error: 'body_short' }, 400); // SEO floor (~100 words) — posts are SSR'd public pages; AI-assisted writing is fine
       const id = this.rid();
       sql.exec('INSERT INTO posts(id,uid,author,ts,cat,title,body,syms) VALUES(?,?,?,?,?,?,?,?)', id, uid, author, now, cat, title, body, syms);
       return this.j({ ok: true, id });
@@ -7890,27 +10177,76 @@ function commMd(src) {
 }
 // ---------- Daily Missions: earn cents by USING the product (verified from the per-user event log — turns reward farmers into traders) ----------
 const MISSION_POOL = [
-  { mid: 'trade1', title: 'Open a paper trade', desc: 'Any coin, any size — practice one trade today', cents: 3, vt: 'ev', va: 'paper', n: 1 },
-  { mid: 'trade3', title: 'Open 3 paper trades', desc: 'Three practice positions today', cents: 5, vt: 'ev', va: 'paper', n: 3 },
-  { mid: 'screener', title: 'Check the Screener', desc: 'See the scored market overview', cents: 2, vt: 'pv', va: '/screener', n: 1 },
-  { mid: 'calc', title: 'Use any calculator', desc: 'Liquidation, PnL, size — any of them', cents: 2, vt: 'ev', va: 'tab', n: 1 },
-  { mid: 'charts', title: 'Open the Charts workspace', desc: 'Multi-chart board with indicators', cents: 2, vt: 'pv', va: '/charts', n: 1 },
-  { mid: 'calendar', title: 'Check the economic calendar', desc: 'Know when FOMC/CPI can hit your trade', cents: 2, vt: 'pv', va: '/calendar', n: 1 },
-  { mid: 'community', title: 'Visit the Community', desc: 'See what other traders are posting', cents: 2, vt: 'pv', va: '/community', n: 1 },
-  { mid: 'compost', title: 'Post or comment in the Community', desc: 'Share an idea or join a discussion', cents: 6, vt: 'comm', va: '', n: 1 },
-  { mid: 'rekt', title: 'Watch the Rekt feed', desc: 'Live liquidations across exchanges', cents: 2, vt: 'pv', va: '/rekt', n: 1 },
+  // trade missions are always index 0/1 (missionsForDay picks one) — DO NOT reorder these two. cat = per-day category quota (see missionsForDay CAPS).
+  { mid: 'trade1', title: 'Open a paper trade', desc: 'One trade, zero risk. In here, the market can’t hurt you', cents: 3, vt: 'ev', va: 'paper', n: 1, cat: 'core' },
+  { mid: 'trade3', title: 'Open 3 paper trades', desc: 'Three reps today — repetition is how instinct gets built', cents: 5, vt: 'ev', va: 'paper', n: 3, cat: 'core' },
+  // growth: the Telegram trader group — forced into EVERY day's set (community growth push)
+  { mid: 'tggroup', title: 'Drop by our Telegram trader group', desc: 'Real traders, real time — hop in and say gm', cents: 3, vt: 'ev', va: 'tg', n: 1, cat: 'promo', url: 'https://t.me/Marginpadgroup' },
+  // trade quality (verified against the trade-event log / event trail)
+  { mid: 'win', title: 'Close a winning trade', desc: 'Get one into the green and actually take it. Banked beats brilliant', cents: 5, vt: 'win', va: '', n: 1, cat: 'trade' },
+  { mid: 'sltp', title: 'Set a stop-loss or take-profit', desc: 'Pick your exit before the market picks one for you', cents: 3, vt: 'ev', va: 'sltp', n: 1, cat: 'trade' },
+  { mid: 'watch', title: 'Add a coin to your watchlist', desc: 'Star it now, thank yourself on the breakout', cents: 2, vt: 'ev', va: 'watch', n: 1, cat: 'market' },
+  { mid: 'trade5', title: 'Open 5 paper trades', desc: 'Five reps. Around the fifth one, the panic goes quiet', cents: 5, vt: 'ev', va: 'paper', n: 5, cat: 'trade' },
+  { mid: 'win2', title: 'Close 2 winning trades', desc: 'Two green closes. Winners are decisions, not luck', cents: 5, vt: 'win', va: '', n: 2, cat: 'trade' },
+  { mid: 'sltp2', title: 'Set SL/TP on 2 trades', desc: 'Two planned trades. Hope is not an exit strategy', cents: 5, vt: 'ev', va: 'sltp', n: 2, cat: 'trade' },
+  // chat / social / community
+  { mid: 'chat3', title: 'Send 3 chat messages', desc: 'Three messages — the floor is better when you talk', cents: 5, vt: 'ev', va: 'chat', n: 3, cat: 'chat' },
+  { mid: 'chat', title: 'Post in the trader chat', desc: 'Say something on the floor. Lurking earns nothing', cents: 2, vt: 'ev', va: 'chat', n: 1, cat: 'chat' },
+  { mid: 'follow', title: 'Follow a trader', desc: 'Scout the board — follow someone worth studying', cents: 3, vt: 'follow', va: '', n: 1, cat: 'social' },
+  { mid: 'dm', title: 'Message a trader', desc: 'Slide into a trader’s DMs. Strictly charts', cents: 4, vt: 'dm', va: '', n: 1, cat: 'social' },
+  { mid: 'duel', title: 'Challenge a trader to a duel', desc: 'Seven days, best stats win. Pick your opponent', cents: 5, vt: 'duel', va: '', n: 1, cat: 'social' },
+  { mid: 'follower', title: 'Get a new follower', desc: 'Trade, post, talk — be worth following today', cents: 3, vt: 'follower', va: '', n: 1, cat: 'social' },
+  { mid: 'profile', title: "Check out a trader's profile", desc: 'Open a trader card — see how the ranked ones do it', cents: 2, vt: 'ev', va: 'profile', n: 1, cat: 'social' },
+  { mid: 'share', title: 'Share a trade card', desc: 'Show the floor your win — or your tuition', cents: 3, vt: 'ev', va: 'share', n: 1, cat: 'social' },
+  { mid: 'compost', title: 'Post or comment in the Community', desc: 'Share a setup or roast one — the floor decides', cents: 6, vt: 'comm', va: '', n: 1, cat: 'community' },
+  { mid: 'community', title: 'Visit the Community', desc: 'See what the floor is posting today', cents: 2, vt: 'pv', va: '/community', n: 1, cat: 'community' },
+  { mid: 'like', title: 'Like a community post', desc: 'Someone wrote something decent — tell them', cents: 2, vt: 'ev', va: 'like', n: 1, cat: 'community' },
+  // academy (verified against the completed-lessons table) — CAPPED AT ONE PER DAY by missionsForDay
+  { mid: 'academy', title: 'Finish an Academy lesson', desc: 'One lesson closer to knowing why you win', cents: 4, vt: 'academy', va: '', n: 1, cat: 'academy' },
+  { mid: 'academy3', title: 'Finish 3 Academy lessons', desc: 'Three lessons in one day — a proper study session', cents: 6, vt: 'academy', va: '', n: 3, cat: 'academy' },
+  { mid: 'academy2', title: 'Finish 2 Academy lessons', desc: 'Two lessons. Your future entries will thank you', cents: 5, vt: 'academy', va: '', n: 2, cat: 'academy' },
+  { mid: 'academyvisit', title: 'Open the Academy', desc: 'Your path is where you left it. It waited', cents: 2, vt: 'pv', va: '/academy', n: 1, cat: 'academy' },
+  // markets / tools discovery
+  { mid: 'coins', title: 'Browse the coins market', desc: 'Scan the top of the market — know the terrain', cents: 2, vt: 'pv', va: '/coins', n: 1, cat: 'market' },
+  { mid: 'news', title: 'Read the crypto news', desc: 'Read the headlines before they read your P&L', cents: 2, vt: 'pv', va: '/news', n: 1, cat: 'market' },
+  { mid: 'screener', title: 'Scan the market screener', desc: 'Find out who’s pumping and who’s bleeding right now', cents: 3, vt: 'pv', va: '/screener', n: 1, cat: 'market' },
+  { mid: 'calendar', title: 'Check the economic calendar', desc: 'Know when the market has chaos scheduled this week', cents: 2, vt: 'pv', va: '/calendar', n: 1, cat: 'market' },
+  { mid: 'funding', title: 'Check funding rates', desc: 'See which side of the boat is overloaded', cents: 2, vt: 'pv', va: '/funding', n: 1, cat: 'market' },
+  { mid: 'feargreed', title: 'Check the Fear & Greed index', desc: 'Check the market’s mood ring', cents: 2, vt: 'pv', va: '/fear-greed', n: 1, cat: 'market' },
+  { mid: 'calc', title: 'Use a trading calculator', desc: 'Do the math before the market does it to you', cents: 3, vt: 'pv', va: '/calculators', n: 1, cat: 'market' },
+  { mid: 'charts', title: 'Open the charts workspace', desc: 'Chart something — indicators, drawings, the works', cents: 4, vt: 'pv', va: '/charts', n: 1, cat: 'market' },
+  { mid: 'levels', title: 'Check the XP leaderboard', desc: 'See where you rank. Then go fix it', cents: 2, vt: 'pv', va: '/levels', n: 1, cat: 'market' },
+  { mid: 'defi', title: 'Explore DeFi TVL', desc: 'See which chains actually hold the money', cents: 2, vt: 'pv', va: '/defi', n: 1, cat: 'market' },
+  { mid: 'longshort', title: 'Check the long/short ratio', desc: 'Longs vs shorts — see which crowd is braver', cents: 2, vt: 'pv', va: '/long-short', n: 1, cat: 'market' },
+  { mid: 'alert', title: 'Set a price alert', desc: 'Pick your level and let the site watch the chart for you', cents: 3, vt: 'ev', va: 'alert', n: 1, cat: 'market' },
+  { mid: 'ai', title: 'Ask the AI about a chart', desc: 'Get a second opinion before you click', cents: 3, vt: 'ev', va: 'ai', n: 1, cat: 'market' },
+  { mid: 'draw', title: 'Draw on a chart', desc: 'Mark a level — trade lines, not vibes', cents: 2, vt: 'ev', va: 'draw', n: 1, cat: 'market' },
 ];
-function missionsForDay(day) { // deterministic daily set: always one trade mission + 3 rotating others
+// mulberry32 — tiny deterministic PRNG so a day's missions are STABLE within that day (claims re-derive the set)
+// but well-shuffled and different day-to-day (feels random). Seeded from the UTC date.
+function _missionRng(seed) { let s = (seed ^ 0x9e3779b9) >>> 0; return function () { s = (s + 0x6d2b79f5) >>> 0; let t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function missionsForDay(day, opts) { // daily set: 1 trade mission + the Telegram-group mission + 6 category-capped picks, seeded by the date.
+  // CAPS fix the "3 academy missions in one day" problem: a plain shuffle could stack one category; now each day is a designed mix.
+  opts = opts || {};
   const seed = parseInt(String(day).replace(/-/g, ''), 10) || 0;
-  const tradeM = MISSION_POOL[seed % 2]; // trade1 or trade3
-  const rest = MISSION_POOL.filter(m => m.mid !== 'trade1' && m.mid !== 'trade3');
-  const out = [tradeM];
-  for (let i = 0; i < rest.length && out.length < 4; i++) { const pick = rest[(seed * 7 + i * 3) % rest.length]; if (!out.some(x => x.mid === pick.mid)) out.push(pick); }
-  for (let i = 0; out.length < 4 && i < rest.length; i++) { if (!out.some(x => x.mid === rest[i].mid)) out.push(rest[i]); }
-  return out;
+  const rnd = _missionRng(seed);
+  const tradeM = MISSION_POOL[rnd() < 0.5 ? 0 : 1]; // trade1 or trade3 (random per day)
+  const promoM = MISSION_POOL.find(m => m.mid === 'tggroup'); // Telegram-group growth push — in EVERY day's set
+  const rest = MISSION_POOL.filter(m => m.cat !== 'core' && m.mid !== 'tggroup');
+  for (let i = rest.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = rest[i]; rest[i] = rest[j]; rest[j] = t; } // Fisher–Yates
+  const skip = opts.academyDone ? (m => m.vt === 'academy') : (() => false); // finished-Academy users can't complete lesson missions
+  const CAPS = { academy: 1, chat: 1, community: 1, social: 2, trade: 2, market: 3 }; // per-day category quotas
+  const used = {}; const pick = [];
+  for (let i = 0; i < rest.length && pick.length < 6; i++) {
+    const m = rest[i]; if (skip(m)) continue;
+    const c = m.cat || 'market'; if ((used[c] || 0) >= (CAPS[c] != null ? CAPS[c] : 2)) continue;
+    used[c] = (used[c] || 0) + 1; pick.push(m);
+  }
+  for (let i = 0; i < rest.length && pick.length < 6; i++) { const m = rest[i]; if (skip(m) || pick.indexOf(m) >= 0) continue; pick.push(m); } // cap-relaxed fallback — never under-fill the day
+  return [tradeM, promoM, ...pick].filter(Boolean);
 }
 // ---------- Academy: Duolingo-style lesson path (content lives on /academy/; server = progress + XP) ----------
-const ACAD_COURSES = { basics: ['b1','b2','b3','b4','b5','b6','b7','b8','b9'], candles: ['c1','c2','c3','c4','c5','c6','c7','c8'], leverage: ['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'], risk: ['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12'], market: ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12'], structure: ['a1','a2','a3','a4','a5','a6','a7','a8'], systems: ['s1','s2','s3','s4','s5','s6','s7'], going: ['g1','g2','g3','g4','g5'] }; // MUST match dist/academy #acadData course/lesson ids (8 courses, 73 lessons)
+const ACAD_COURSES = { basics: ['b1','b2','b3','b4','b5','b6','b7','b8','b9'], candles: ['c1','c2','c3','c4','c5','c6','c7','c8'], leverage: ['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'], risk: ['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12'], market: ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12'], structure: ['a1','a2','a3','a4','a5','a6','a7','a8'], systems: ['s1','s2','s3','s4','s5','s6','s7'], going: ['g1','g2','g3','g4','g5'], stories: ['st1','st2','st3','st4','st5','st6','st7','st8'], psychology: ['py1','py2','py3','py4','py5','py6','py7','py8'], mastery: ['mm1','mm2','mm3','mm4','mm5','mm6','mm7'] }; // MUST match dist/academy #acadData course/lesson ids (9 courses, 81 lessons; 'stories' is free:true = always unlocked, outside the lock chain)
 async function handleAcademy(url, request, env) {
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
   const jr = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: jh });
@@ -7953,15 +10289,22 @@ async function handleMissions(url, request, env) {
   const adminUid = url.searchParams.get('uid'); // owner preview/testing: act as a user (admin cookie only)
   if (adminUid && (await adminCookieOk(request, env))) uid = adminUid;
   if (!enabled) return jr({ enabled: false, missions: [] });
-  if (!uid) return jr({ enabled: true, signedIn: false, missions: missionsForDay(day).map(m => ({ mid: m.mid, title: m.title, desc: m.desc, cents: m.cents, done: false, claimed: false })), day });
-  const defs = missionsForDay(day);
+  if (!uid) return jr({ enabled: true, signedIn: false, missions: [], day }); // missions are NOT available to logged-out users — don't expose the list, just prompt sign-in on the client
+  let defs = missionsForDay(day);
+  // Owner rule: a user who FINISHED the whole Academy must not get lesson-completion missions (impossible for them) →
+  // swap them out for the next mission. Only fetch the completion count on days those missions actually appear.
+  if (defs.some(m => m.vt === 'academy')) {
+    let academyDone = false;
+    try { const ar = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/academy/state?uid=' + encodeURIComponent(uid))); const done = ((await ar.json()) || {}).done || []; academyDone = done.filter(x => !String(x).startsWith('course:')).length >= 96; } catch (e) {}
+    if (academyDone) defs = missionsForDay(day, { academyDone: true });
+  }
   const evDefs = defs.filter(m => m.vt !== 'comm').map(m => ({ mid: m.mid, vt: m.vt, va: m.va, n: m.n }));
   let st = { done: {}, claimed: {} };
   try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/state', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, day, dayStart, defs: evDefs }) })); st = await r.json(); } catch (e) {}
   for (const m of defs) if (m.vt === 'comm') {
     try { const r = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/activity', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, fromTs: dayStart }) })); const d = await r.json(); st.done[m.mid] = ((d.posts || 0) + (d.comments || 0)) >= (m.n || 1); } catch (e) { st.done[m.mid] = false; }
   }
-  const missions = defs.map(m => ({ mid: m.mid, title: m.title, desc: m.desc, cents: m.cents, done: !!(st.done && st.done[m.mid]), claimed: !!(st.claimed && st.claimed[m.mid]) }));
+  const missions = defs.map(m => ({ mid: m.mid, title: m.title, desc: m.desc, cents: m.cents, url: m.url || undefined, done: !!(st.done && st.done[m.mid]), claimed: !!(st.claimed && st.claimed[m.mid]) }));
   if (request.method === 'POST') {
     let b = {}; try { b = await request.json(); } catch (e) {}
     const mid = String(b.mid || '');
@@ -7993,10 +10336,10 @@ async function indexNowPing(urls) {
 }
 // Daily cron: diff the sitemaps against the last-seen URL set and ping only NEW urls (new blog posts,
 // new pages after a build+deploy — anything that lands in a sitemap gets announced within a day).
-async function checkIndexNow(env) {
+async function checkIndexNow(env, force) {
   try {
     const day = new Date().toISOString().slice(0, 10);
-    if ((await env.STATS.get('inow:day')) === day) return; // once per UTC day
+    if (!force && (await env.STATS.get('inow:day')) === day) return; // once per UTC day (force bypasses)
     await env.STATS.put('inow:day', day);
     let urls = [];
     for (const sm of ['https://marginpad.io/sitemap.xml', 'https://marginpad.io/community/sitemap.xml']) {

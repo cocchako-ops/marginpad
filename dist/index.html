@@ -4,9 +4,28 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="google-site-verification" content="7zzuR9GCpGKpdBsHoh1c4CzwY1G55I5yovmJ6WDfZPw" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944','ym');ym(110941944,'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",accurateTrackBounce:true,trackLinks:true});</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute;left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <meta name="description" content="Practice crypto futures with real live prices and zero risk: paper-trading terminal, live screener, real-time liquidations feed, charts, calculators and a bot API. Free — no deposit, no KYC." />
 <meta name="keywords" content="crypto futures, paper trading, crypto futures simulator, liquidation calculator, crypto screener, liquidations feed, trading bot api, free crypto tools" />
 <link rel="canonical" href="https://marginpad.io/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/" />
 <meta property="og:title" content="MarginPad — Free Crypto Futures Terminal, Paper Trade & Liquidations" />
@@ -19,6 +38,7 @@
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Practice crypto futures with real live prices and zero risk: paper-trading terminal, live screener, real-time liquidations feed, charts, calculators and a bot API. Free — no deposit, no KYC."}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"MarginPad","url":"https://marginpad.io/","logo":"https://marginpad.io/assets/og.png","sameAs":["https://t.me/MarginPadBot"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","alternateName":"MarginPad — Free Crypto Futures Tools","url":"https://marginpad.io/","inLanguage":"en"}</script>
 <meta name="color-scheme" content="dark" />
 <style>html{background:#0a0b0d;color-scheme:dark}</style>
 <!-- Google tag (gtag.js) -->
@@ -29,7 +49,11 @@
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#07080a" />
 <title>MarginPad — Free Crypto Futures Terminal, Paper Trade & Liquidations</title>
-<link rel="icon" href="/favicon.ico" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png" />
+<link rel="shortcut icon" href="/favicon.ico" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/mp-trade.css">
@@ -337,6 +361,32 @@
   .lb-prize .v{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.01em;}
   .lb-reset{margin-top:16px;font-family:'Space Mono',monospace;font-size:11.5px;color:var(--faint);}
   .lb-reset b{color:var(--amber);font-variant-numeric:tabular-nums;}
+  /* ---- switchable 3-board prize showcase (locked preview of next week) ---- */
+  .lbpz{margin-top:15px;}
+  .lbpz-tabs{display:flex;gap:5px;background:rgba(0,0,0,.28);border:1px solid rgba(255,215,90,.16);border-radius:12px;padding:4px;}
+  .lbpz-tab{flex:1;padding:8px 4px;border:none;border-radius:9px;background:none;color:#b9a86a;font:700 10.5px/1.15 'Space Mono',ui-monospace,monospace;letter-spacing:.02em;text-transform:uppercase;cursor:pointer;transition:.16s;white-space:nowrap;}
+  .lbpz-tab:hover{color:#ffd75a;}
+  .lbpz-tab.on{background:linear-gradient(180deg,#ffdf7a,#ffc13c);color:#2a1e00;box-shadow:0 4px 14px -6px rgba(255,215,90,.75);}
+  .lbpz-panel{margin-top:14px;animation:lbpzIn .28s ease;}
+  @keyframes lbpzIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .lbpz-name{display:flex;align-items:center;gap:9px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;letter-spacing:-.01em;color:#e9e7df;margin-bottom:11px;}
+  .lbpz-lockbadge{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#ffb020;background:rgba(255,176,32,.1);border:1px solid rgba(255,176,32,.34);border-radius:20px;padding:4px 9px;white-space:nowrap;}
+  .lbpz-livebadge{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#c2f64a;background:rgba(194,246,74,.1);border:1px solid rgba(194,246,74,.4);border-radius:20px;padding:4px 9px;white-space:nowrap;box-shadow:0 0 16px -6px rgba(194,246,74,.7);}
+  .lbpz-pool{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:34px;line-height:.95;color:#ffd75a;text-shadow:0 0 24px rgba(255,215,90,.4);}
+  .lbpz-pool small{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin-left:9px;vertical-align:middle;}
+  .lbpz-desc{font-size:12.5px;color:var(--dim);line-height:1.55;margin:10px 0 13px;}
+  .lbpz-rows{display:flex;flex-direction:column;gap:6px;}
+  .lbpz-row{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:9px 12px;transition:border-color .14s,transform .14s;}
+  .lbpz-row:hover{border-color:rgba(255,215,90,.32);transform:translateX(2px);}
+  .lbpz-row .m{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:12.5px;flex:0 0 26px;background:rgba(255,255,255,.06);color:#8a93a0;}
+  .lbpz-row.p1 .m{background:rgba(255,215,90,.22);color:#ffd75a;box-shadow:0 0 14px -3px rgba(255,215,90,.65);}
+  .lbpz-row.p2 .m{background:rgba(200,205,215,.16);color:#c8cdd7;}
+  .lbpz-row.p3 .m{background:rgba(205,130,74,.19);color:#cd824a;}
+  .lbpz-row .l{flex:1;color:var(--dim);font-size:13px;}
+  .lbpz-row .v{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;letter-spacing:-.01em;color:#e9e7df;}
+  .lbpz-row.p1 .v{color:#ffd75a;}
+  .lbpz-count{margin-top:12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--faint);}
+  .lbpz-count b{color:#ffb020;font-variant-numeric:tabular-nums;}
   /* XP Happy Hour cards (distinct amber theme so they don't blend with the prizes above) */
   .hh-wrap{display:flex;flex-direction:column;gap:9px;margin:14px 0 2px;}
   .hh-card{border:1px solid rgba(255,176,32,.30);background:linear-gradient(180deg,rgba(255,176,32,.09),rgba(255,176,32,.015));border-radius:12px;padding:11px 13px;}
@@ -388,7 +438,10 @@
   .lb-cta{margin-top:auto;padding-top:18px;}
   .lb-cta .btn-l{display:inline-block;font-size:14px;padding:12px 20px;}
   .lb-cta .note{display:block;margin-top:9px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--faint);}
-  .lb-board{display:flex;flex-direction:column;gap:2px;}
+  .lb-board{display:flex;flex-direction:column;gap:2px;flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#2a3140 transparent;}
+  .lb-board::-webkit-scrollbar{width:7px;}
+  .lb-board::-webkit-scrollbar-thumb{background:#2a3140;border-radius:6px;}
+  .lb-board::-webkit-scrollbar-track{background:transparent;}
   .lb-tabs{display:flex;gap:8px;margin:12px 0 6px}
   .lb-tab{flex:1;padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#95a1b0;font:700 11px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:.15s}
   .lb-tab.on{background:rgba(194,246,74,.13);border-color:rgba(194,246,74,.55);color:#c2f64a}
@@ -432,6 +485,16 @@
   .lbm-follow{background:var(--lc);color:#0a0b0d;border:0;border-radius:10px;padding:9px 18px;font:800 12px 'Space Mono',monospace;letter-spacing:.03em;cursor:pointer;transition:filter .15s}
   .lbm-follow:hover{filter:brightness(1.1)}
   .lbm-follow.on{background:transparent;color:var(--lc);border:1px solid var(--lc)}
+  .lbm-acts{display:flex;align-items:center;gap:8px}
+  .lbm-dm{background:transparent;color:#38bdf8;border:1px solid rgba(56,189,248,.5);border-radius:10px;padding:9px 12px;font:800 13px 'Space Mono',monospace;letter-spacing:.02em;cursor:pointer;transition:background .15s}
+  .lbm-dm:hover{background:rgba(56,189,248,.12)}
+  .lbm-duel{color:#ff9640;border-color:rgba(255,150,64,.5)}.lbm-duel:hover{background:rgba(255,150,64,.12)}
+  .lbm-friend{display:inline-block;margin-left:8px;vertical-align:middle;font-size:10.5px;font-weight:800;letter-spacing:.03em;color:#0a0b0d;background:#c2f64a;border-radius:20px;padding:3px 9px}
+  .lbm-fw{display:inline-block;margin-left:8px;vertical-align:middle;font-size:10px;font-weight:700;letter-spacing:.03em;color:#8b97a5;border:1px solid #2f3742;border-radius:20px;padding:2px 8px}
+  .lbm-av{margin-right:7px;font-size:19px;vertical-align:-2px}
+  .lbm-av-img{width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:-8px}
+  .lbm-bio{margin:12px 0 0;padding:10px 13px;background:rgba(255,255,255,.03);border:1px solid #2a323c;border-left-width:3px;border-radius:10px;font-size:13px;line-height:1.5;color:#d3d8de}
+  .lbm-coins{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}.lbm-coin{font:800 11px 'Space Mono',monospace;color:#9aa3ad;border:1px solid #2f3742;border-radius:7px;padding:3px 8px}
 
   .lb-r{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;font-size:14px;transition:background .14s;}
   .lb-r:hover{background:rgba(255,255,255,.03);}
@@ -456,7 +519,7 @@
   .lbx-roe{font-family:'Space Mono',monospace;font-weight:700;color:var(--grn);font-size:12.5px;font-variant-numeric:tabular-nums;}
 
   /* ---------- Go live: one BIG "coming soon" slot + compact exchange tiles ---------- */
-  .exch-grid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(5,1fr);grid-auto-rows:auto;gap:12px;}
+  .exch-grid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:auto;gap:12px;}
   .exbig{grid-column:1/-1;grid-row:auto;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:12px;padding:28px;border-radius:20px;overflow:hidden;
     background:linear-gradient(160deg,rgba(194,246,74,.05),rgba(255,255,255,.01)),var(--panel);border:1.5px dashed rgba(194,246,74,.35);transition:border-color .2s ease,box-shadow .2s ease;}
   .exbig:hover{border-color:rgba(194,246,74,.6);box-shadow:0 0 44px -18px rgba(194,246,74,.5);}
@@ -466,7 +529,9 @@
   @keyframes exsoon{0%,100%{opacity:1}50%{opacity:.3}}
   .exbig-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(22px,2vw,30px);letter-spacing:-.02em;line-height:1.12;color:var(--ink);}
   .exbig-s{color:var(--dim);font-size:14px;line-height:1.6;max-width:340px;}
-  .exs{--exc:#f7a600;position:relative;display:flex;align-items:center;gap:11px;padding:13px 15px;border-radius:15px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.005)),var(--panel);border:1px solid var(--line);text-decoration:none;color:var(--ink);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;min-width:0;}
+  .exs{--exc:#f7a600;position:relative;display:flex;flex-direction:column;align-items:stretch;gap:9px;padding:13px 15px;border-radius:15px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.005)),var(--panel);border:1px solid var(--line);text-decoration:none;color:var(--ink);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;min-width:0;}
+  .exs-top{display:flex;align-items:center;gap:11px;min-width:0;}
+  .exs-perk{font-family:'Familjen Grotesk',sans-serif;font-size:11.5px;line-height:1.4;color:var(--dim);}
   .exs:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--exc) 45%,transparent);box-shadow:0 14px 30px -16px rgba(0,0,0,.7),0 0 22px -12px var(--exc);}
   .exs-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;background:linear-gradient(160deg,#1a2029,#11151c);color:#e9e7df;flex-shrink:0;overflow:hidden;padding:3px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 0 16px -7px var(--exc,#c2f64a);}
 .exs-ic img{width:100%;height:100%;object-fit:contain;display:block;}
@@ -479,7 +544,9 @@
   @media(max-width:1100px){.exch-grid{grid-template-columns:1fr 1fr;}.exbig{grid-column:1/-1;grid-row:auto;min-height:170px;}}
   @media(max-width:640px){.exch-grid{grid-template-columns:1fr 1fr;grid-auto-rows:auto;gap:8px;} /* auto rows — 1fr stretched every pill to the tall Coming-soon card's height */
   /* compact single-line exchange pills on phones — the tall stacked cards read as oversized (owner, 2026-07-09) */
-  .exs{flex-direction:row;align-items:center;gap:8px;padding:10px 11px;min-height:0;border-radius:12px;}
+  .exs{gap:8px;padding:10px 11px;min-height:0;border-radius:12px;}
+  .exs-top{gap:8px;}
+  .exs-perk{display:none;}
   .exs-ic{width:24px;height:24px;border-radius:7px;font-size:12.5px;}
   .exs-n{font-size:13.5px;}
   .exs-tag{display:none;}
@@ -751,7 +818,7 @@
       <div class="t-go">Open the toolkit <i>→</i></div>
     </a>
 
-    <a class="tile s4" href="/trading-api/" style="--ac:#2ebd85">
+    <a class="tile s3" href="/trading-api/" style="--ac:#2ebd85">
       <div class="t-kick">For builders</div>
       <div class="t-title">Trading Bot API</div>
       <div class="t-sub">Point your bot at a free paper-trading API — real live prices, simulated dollars.</div>
@@ -762,7 +829,7 @@
       <div class="t-go">Get a free API key <i>→</i></div>
     </a>
 
-    <a class="tile s4" href="/defi/" style="--ac:#9d7bff">
+    <a class="tile s3" href="/defi/" style="--ac:#9d7bff">
       <div class="t-kick"><span class="dot"></span> DeFi overview</div>
       <div class="t-title">DeFi TVL</div>
       <div class="defi-tvl" id="tvl">—</div>
@@ -770,7 +837,7 @@
       <div class="t-go">Explore DeFi <i>→</i></div>
     </a>
 
-    <a class="tile s4" href="/news/" style="--ac:#ff8c5a">
+    <a class="tile s3" href="/news/" style="--ac:#ff8c5a">
       <div class="t-kick"><span class="dot"></span> Headlines · live</div>
       <div class="t-title">Crypto News</div>
       <div id="news" style="margin-top:8px"><div class="skel" style="width:88%"></div><div class="skel" style="width:70%"></div><div class="skel" style="width:79%"></div></div>
@@ -788,33 +855,33 @@
       <div class="exbig-t">Something big<br>launches here.</div>
       <div class="exbig-s">A brand-new trading platform is about to go live — and MarginPad will be its first partner. This spot is reserved. Watch it.</div>
     </div>
-    <a class="exs" href="https://www.bybit.com/trade/usdt/BTCUSDT?ref=LZKBERJ" target="_blank" rel="noopener sponsored" data-ex="Bybit" style="--exc:#f7a600"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/521.png" alt="Bybit" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bybit</span><span class="exs-tag">Most popular</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://www.binance.com/en/futures/BTCUSDT?ref=MAOZM9DS" target="_blank" rel="noopener sponsored" data-ex="Binance" style="--exc:#f0b90b"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/270.png" alt="Binance" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Binance</span><span class="exs-tag">Biggest volume</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://www.okx.com/trade-swap/btc-usdt-swap" target="_blank" rel="noopener sponsored" data-ex="OKX" style="--exc:#cfd3d8"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/294.png" alt="OKX" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='O'"></span><span class="exs-n">OKX</span><span class="exs-tag">Pro tools</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://www.bitget.com/futures/usdt/BTCUSDT?clacCode=DSSSQKGK" target="_blank" rel="noopener sponsored" data-ex="Bitget" style="--exc:#00e7d8"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/513.png" alt="Bitget" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bitget</span><span class="exs-tag">Copy trading</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://www.kucoin.com/futures/trade/XBTUSDTM?rcode=VHP8AYKY" target="_blank" rel="noopener sponsored" data-ex="KuCoin" style="--exc:#23af91"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/311.png" alt="KuCoin" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='K'"></span><span class="exs-n">KuCoin</span><span class="exs-tag">Altcoin depth</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://www.gate.com/futures/USDT/BTC_USDT?ref=VFIWB10KUG" target="_blank" rel="noopener sponsored" data-ex="Gate" style="--exc:#3361ff"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/302.png" alt="Gate" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='G'"></span><span class="exs-n">Gate</span><span class="exs-tag">Early listings</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://futures.mexc.com/exchange/BTC_USDT?inviteCode=GND4jI97o0" target="_blank" rel="noopener sponsored" data-ex="MEXC" style="--exc:#0ac2d6"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/544.png" alt="MEXC" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='M'"></span><span class="exs-n">MEXC</span><span class="exs-tag">Low fees</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://invite.kraken.com/JDNW/guj2tf28" target="_blank" rel="noopener sponsored" data-ex="Kraken" style="--exc:#7b5cff"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/24.png" alt="Kraken" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='K'"></span><span class="exs-n">Kraken</span><span class="exs-tag">Regulated</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://crypto.com/app/sdf5hb6rkv" target="_blank" rel="noopener sponsored" data-ex="Crypto.com" style="--exc:#1a4bc4"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/1149.png" alt="Crypto.com" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='C'"></span><span class="exs-n">Crypto.com</span><span class="exs-tag">All-in-one</span><span class="exs-go">→</span></a>
-    <a class="exs" href="https://base.app/invite/chakko/FHSFNY5H" target="_blank" rel="noopener sponsored" data-ex="Coinbase" style="--exc:#0052ff"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/89.png" alt="Coinbase" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='C'"></span><span class="exs-n">Coinbase</span><span class="exs-tag">US-regulated</span><span class="exs-go">→</span></a>
+    <a class="exs" href="https://www.bybit.com/trade/usdt/BTCUSDT?ref=LZKBERJ" target="_blank" rel="noopener sponsored" data-ex="Bybit" style="--exc:#f7a600"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/521.png" alt="Bybit" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bybit</span><span class="exs-tag">Most popular</span><span class="exs-go">→</span></span><span class="exs-perk">Trading-fee discount + new-user welcome bonus</span></a>
+    <a class="exs" href="https://www.binance.com/en/futures/BTCUSDT?ref=MAOZM9DS" target="_blank" rel="noopener sponsored" data-ex="Binance" style="--exc:#f0b90b"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/270.png" alt="Binance" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Binance</span><span class="exs-tag">Biggest volume</span><span class="exs-go">→</span></span><span class="exs-perk">Up to 20% off trading fees for life</span></a>
+    <a class="exs" href="https://www.okx.com/trade-swap/btc-usdt-swap" target="_blank" rel="noopener sponsored" data-ex="OKX" style="--exc:#cfd3d8"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/294.png" alt="OKX" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='O'"></span><span class="exs-n">OKX</span><span class="exs-tag">Pro tools</span><span class="exs-go">→</span></span><span class="exs-perk">Fee rebate + sign-up reward in the app</span></a>
+    <a class="exs" href="https://www.bitget.com/futures/usdt/BTCUSDT?clacCode=DSSSQKGK" target="_blank" rel="noopener sponsored" data-ex="Bitget" style="--exc:#00e7d8"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/513.png" alt="Bitget" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bitget</span><span class="exs-tag">Copy trading</span><span class="exs-go">→</span></span><span class="exs-perk">Fee discount + copy top traders 1-click</span></a>
+    <a class="exs" href="https://www.gate.com/futures/USDT/BTC_USDT?ref=VFIWB10KUG" target="_blank" rel="noopener sponsored" data-ex="Gate" style="--exc:#3361ff"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/302.png" alt="Gate" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='G'"></span><span class="exs-n">Gate</span><span class="exs-tag">Early listings</span><span class="exs-go">→</span></span><span class="exs-perk">Fee rebate + earliest new-token access</span></a>
+    <a class="exs" href="https://futures.mexc.com/exchange/BTC_USDT?inviteCode=GND4jI97o0" target="_blank" rel="noopener sponsored" data-ex="MEXC" style="--exc:#0ac2d6"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/544.png" alt="MEXC" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='M'"></span><span class="exs-n">MEXC</span><span class="exs-tag">Low fees</span><span class="exs-go">→</span></span><span class="exs-perk">Ultra-low fees + regular airdrop events</span></a>
+    <a class="exs" href="https://invite.kraken.com/JDNW/guj2tf28" target="_blank" rel="noopener sponsored" data-ex="Kraken" style="--exc:#7b5cff"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/24.png" alt="Kraken" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='K'"></span><span class="exs-n">Kraken</span><span class="exs-tag">Regulated</span><span class="exs-go">→</span></span><span class="exs-perk">Low fees on a fully-regulated exchange</span></a>
+    <a class="exs" href="https://base.app/invite/chakko/FHSFNY5H" target="_blank" rel="noopener sponsored" data-ex="Coinbase" style="--exc:#0052ff"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/89.png" alt="Coinbase" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='C'"></span><span class="exs-n">Coinbase</span><span class="exs-tag">US-regulated</span><span class="exs-go">→</span></span><span class="exs-perk">Beginner-friendly + new-user sign-up bonus</span></a>
   </div>
   <div class="exch-disc">Referral links — MarginPad may earn a commission if you open an account, at no cost to you. That is what keeps every tool here free. Trade responsibly: leverage can liquidate your entire margin.</div>
 </section>
 
 <section class="band" style="--glow:rgba(255,215,90,.09);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Weekly leaderboard</h2><span class="band-s">Best single paper-trade ROE each week wins real USDT. Free to enter — just sign in and trade.</span></div>
+  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Weekly leaderboard</h2><span class="band-s">Three weekly boards — ROE, win rate and XP — each pays the top 5 in real USDT. Free to enter — just sign in and trade.</span></div>
   <div class="lb-wrap">
     <div class="lb-card lb-info">
-      <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> Live · this week</div>
-      <div class="t-title" style="font-size:22px">Trade to the top</div>
-      <div class="t-sub">Your best closed paper trade of the week is auto-submitted. Top 3 ROE take the prizes.</div>
-      <div class="lb-prizes">
-        <div class="lb-prize p1"><span class="m">1</span><span class="l">First place</span><span class="v" id="lbPz1">$30</span></div>
-        <div class="lb-prize p2"><span class="m">2</span><span class="l">Second place</span><span class="v" id="lbPz2">$20</span></div>
-        <div class="lb-prize p3"><span class="m">3</span><span class="l">Third place</span><span class="v" id="lbPz3">$10</span></div>
+      <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> 3 boards · win real USDT</div>
+      <div class="t-title" style="font-size:22px">Three boards, bigger prizes</div>
+      <div class="t-sub">Three weekly boards — <b>Highest ROE</b>, <b>Best win rate</b> and <b>Weekly XP</b> — each pays the <b>top 5</b> in real USDT, every Monday. Pick your game:</div>
+      <div class="lbpz">
+        <div class="lbpz-tabs" id="lbpzTabs">
+          <button type="button" class="lbpz-tab on" data-pz="roe">Highest ROE</button>
+          <button type="button" class="lbpz-tab" data-pz="wr">Win rate</button>
+          <button type="button" class="lbpz-tab" data-pz="xp">Weekly XP</button>
+        </div>
+        <div class="lbpz-panel" id="lbpzPanel"></div>
       </div>
-      <div class="lb-reset" id="lbReset">Resets Monday 00:00 UTC</div>
       <div class="hh-wrap" id="hhWrap" hidden>
         <button type="button" class="hh-card hh-when" id="hhWhenCard" aria-haspopup="dialog">
           <div class="hh-top"><span class="hh-ic">⚡</span>XP Happy Hour<span class="hh-state" id="hhState">DAILY</span><span class="hh-more">Details ›</span></div>
@@ -826,7 +893,7 @@
       <div class="lb-cta"><a class="btn-l" href="/paper-trade">Open Paper Trade →</a><span class="note" id="lbYou">Sign in (free) and your best trade enters automatically.</span></div>
     </div>
     <div class="lb-card">
-      <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="pnl">Top PnL</button><button type="button" class="lb-tab" data-lbm="wr">Win rate</button><button type="button" class="lb-tab lb-tab-f" data-lbm="following">★ Following</button></div>
+      <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="wr">Win rate</button><button type="button" class="lb-tab" data-lbm="xp">Top XP</button><button type="button" class="lb-tab lb-tab-f" data-lbm="following">★ Following</button></div>
       <div class="lb-note" id="lbNote">💰 <b>Top ROE</b> wins the weekly prizes for now — <b>Top PnL</b> and <b>Best win rate</b> will start paying out soon too.</div>
       <div class="lb-board" id="lbBoard" style="margin-top:10px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
     </div>
@@ -959,7 +1026,7 @@
   // ---- crypto calendar tile: current month mini-grid, dots on event days, next-event line ----
   (function(){
     var g=document.getElementById('mcalGrid'),nx=document.getElementById('mcalNext');if(!g)return;
-    var TC={fomc:'#c2f64a',cpi:'#3fd8e6',nfp:'#ffb347',expiry:'#b48cff',crypto:'#ff9f4d',macro:'#e9e7df'};
+    var TC={fomc:'#c2f64a',cpi:'#3fd8e6',nfp:'#ffb347',expiry:'#b48cff',crypto:'#ff9f4d',macro:'#e9e7df',unlock:'#ff8ad8'};
     var now=new Date(),Y=now.getFullYear(),M=now.getMonth();
     fetch('/api/calendar?year='+Y).then(function(r){return r.json();}).then(function(d){
       var ev=((d&&d.events)||[]).filter(function(e){var x=new Date(e.ts);return x.getFullYear()===Y&&x.getMonth()===M;});
@@ -999,25 +1066,23 @@
     if(note){
       if(lbMode==='following'){note.className='lb-note';note.innerHTML='★ Accounts you follow. Tap any trader to see their card. Sign in to follow players from the board.';}
       else{note.className='lb-note'+(lbMode==='roe'?' pay':'');
-        note.innerHTML=lbMode==='roe'
-          ? '💰 <b>Top ROE</b> is the only board paying weekly prizes right now — climb it to earn real USDT.'
-          : '🏆 <b>'+(lbMode==='pnl'?'Top PnL':'Best win rate')+'</b> is bragging rights for now — prizes for this board are coming soon.';}}
+        note.innerHTML='💰 <b>'+(lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every week — climb it. Prizes drop every Monday.';}}
     if(lbMode==='following'){ lbRenderFollowing(el); return; }
     if(lbMode==='wr'){
-      var wt=((d&&d.topWr)||[]).slice(0,10);
+      var wt=((d&&d.topWr)||[]).slice(0,15);
       el.innerHTML=wt.length?wt.map(function(t,i){return lbRow(i,t.who,(+t.w||0)+'W-'+(+t.l||0)+'L',Math.round(+t.wr||0)+'%');}).join('')
         :'<div class="lb-empty">No one has 20 closed trades yet this week — close 20+ and claim the win-rate crown.</div>';
       lbAfter(el);return;
     }
-    if(lbMode==='pnl'){
-      var pt=((d&&d.topPnl)||[]).slice(0,10);
-      el.innerHTML=pt.length?pt.map(function(t,i){var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');return lbRow(i,t.who,pair,lbMoney(t.pnl),(+t.pnl>=0?'up':'dn'));}).join('')
-        :'<div class="lb-empty">No winning trades yet this week — close one in profit and top the PnL board.</div>';
+    if(lbMode==='xp'){
+      var xt=((d&&d.topXp)||[]).slice(0,15);
+      el.innerHTML=xt.length?xt.map(function(t,i){return lbRow(i,t.who,'this week',(+t.xp||0).toLocaleString('en-US')+' XP','up');}).join('')
+        :'<div class="lb-empty">No XP earned yet this week — trade, learn in the Academy, and complete missions to climb.</div>';
       lbAfter(el);return;
     }
-    var top=((d&&d.top)||[]).slice(0,10);
-    el.innerHTML=top.length?top.map(function(t,i){var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');return lbRow(i,t.who,pair,'+'+Math.round(+t.roe).toLocaleString('en-US')+'%');}).join('')
-      :'<div class="lb-empty">No entries yet this week — be the first. Open a paper trade and close it in profit.</div>';
+    var top=((d&&d.top)||[]).filter(function(t){return +t.roe>0;}).slice(0,15);
+    el.innerHTML=top.length?top.map(function(t,i){var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');return lbRow(i,t.who,pair,'+'+Math.round(+t.roe).toLocaleString('en-US')+'%','up');}).join('')
+      :'<div class="lb-empty">No winning trades yet this week — open a paper trade and close it in profit to top the board.</div>';
     lbAfter(el);
   }
   function lbAfter(el){ if(window.mpLvlDecorate)try{window.mpLvlDecorate();}catch(e){} }
@@ -1058,9 +1123,15 @@
       var isSelf=me&&(me.username&&me.username.toLowerCase()===String(d.name).toLowerCase());
       var following=lbFollowSet().map(function(x){return String(x).toLowerCase();}).indexOf(String(d.name).toLowerCase())>=0;
       function stat(v,l,c){return '<div class="lbm-s"><div class="lbm-sv"'+(c?' style="color:'+c+'"':'')+'>'+v+'</div><div class="lbm-sl">'+l+'</div></div>';}
-      var mBtn=isSelf?'<div class="lbm-self">This is you</div>':(lbSignedIn()?'<button type="button" class="lbm-follow'+(following?' on':'')+'" data-lbfollow="'+lbEsc(d.name)+'" data-tuid="'+lbEsc(d.uid)+'">'+(following?'✓ Following':'+ Follow')+'</button>':'<button type="button" class="lbm-follow" data-auth-open>Sign in to follow</button>');
+      var dmBtn=(!isSelf&&lbSignedIn())?'<button type="button" class="lbm-dm" data-lbdm="'+lbEsc(d.name)+'">💬</button><button type="button" class="lbm-dm lbm-duel" data-lbduel="'+lbEsc(d.name)+'" title="Challenge to a duel">⚔️</button>':'';
+      var mBtn='<div class="lbm-acts">'+(isSelf?'<div class="lbm-self">This is you</div>':(lbSignedIn()?'<button type="button" class="lbm-follow'+(following?' on':'')+'" data-lbfollow="'+lbEsc(d.name)+'" data-tuid="'+lbEsc(d.uid)+'">'+(following?'✓ Following':'+ Follow')+'</button>':'<button type="button" class="lbm-follow" data-auth-open>Sign in to follow</button>'))+dmBtn+'</div>';
+      var av=d.avatar?(/^data:image\//.test(d.avatar)?'<img class="lbm-av lbm-av-img" src="'+lbEsc(d.avatar)+'" alt="">':'<span class="lbm-av">'+lbEsc(d.avatar)+'</span>'):'';
+      var acc=d.accent||'';
+      var bioHtml=d.bio?'<div class="lbm-bio"'+(acc?' style="border-color:'+acc+'55"':'')+'>'+lbEsc(d.bio)+'</div>':'';
+      var coinsHtml=(d.coins&&d.coins.length)?'<div class="lbm-coins">'+d.coins.map(function(c){return '<span class="lbm-coin"'+(acc?' style="color:'+acc+';border-color:'+acc+'44"':'')+'>'+lbEsc(c)+'</span>';}).join('')+'</div>':'';
       body.innerHTML=
-        '<div class="lbm-head"><div class="lbm-badge">'+svg+'</div><div class="lbm-id"><div class="lbm-name">'+lbEsc(d.name)+'</div><div class="lbm-lvl" style="color:'+lc+'">'+lbEsc(L.name||'Bronze')+(L.next?' · '+(L.pct||0)+'% to '+lbEsc(L.next):' · max tier')+'</div></div></div>'
+        '<div class="lbm-head"><div class="lbm-badge">'+svg+'</div><div class="lbm-id"><div class="lbm-name">'+av+lbEsc(d.name)+(d.mutual?'<span class="lbm-friend" title="You follow each other">★ Friends</span>':(d.followsMe?'<span class="lbm-fw" title="Follows you">Follows you</span>':''))+'</div><div class="lbm-lvl" style="color:'+lc+'">'+lbEsc(L.name||'Bronze')+(L.next?' · '+(L.pct||0)+'% to '+lbEsc(L.next):' · max tier')+'</div></div></div>'
+        +bioHtml+coinsHtml
         +'<div class="lbm-bar"><i style="width:'+(L.pct||0)+'%;background:'+lc+'"></i></div>'
         +'<div class="lbm-grid">'
           +stat((st.trades||0),'Trades')
@@ -1083,21 +1154,58 @@
         var set=lbFollowSet().filter(function(x){return String(x).toLowerCase()!==String(name).toLowerCase();});if(on)set.push(name);lbSetFollowSet(set);
       }).catch(function(){fb.disabled=false;});
       return;}
+    var du=e.target.closest&&e.target.closest('[data-lbduel]');
+    if(du){var un=du.getAttribute('data-lbduel');lbCloseModal();if(window.mpAuth&&window.mpAuth.duel)window.mpAuth.duel(un);else if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
+    var db=e.target.closest&&e.target.closest('[data-lbdm]');
+    if(db){var dn=db.getAttribute('data-lbdm');lbCloseModal();if(window.mpAuth&&window.mpAuth.dm)window.mpAuth.dm(dn);else if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
     var row=e.target.closest&&e.target.closest('[data-lbu]');
     if(row&&!e.target.closest('[data-auth-open]')){lbOpenProfile(row.getAttribute('data-lbu'));}
   });
+  window.mpOpenProfile=lbOpenProfile; // expose so the chat (mp-trade.js) can open a trader's profile on username click
   document.addEventListener('keydown',function(e){if(e.key==='Escape')lbCloseModal();});
   document.querySelectorAll('[data-lbm]').forEach(function(b){b.addEventListener('click',function(){lbMode=b.getAttribute('data-lbm');document.querySelectorAll('[data-lbm]').forEach(function(x){x.classList.toggle('on',x===b);});lbRender();});});
   fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){
     lbData=d;lbRender();
-    var pz=(d&&d.prizes)||[30,20,10];
+    var pz=(d&&d.prizes)||[35,20,10];
     ['lbPz1','lbPz2','lbPz3'].forEach(function(id,i){var e=document.getElementById(id);if(e&&pz[i]!=null)e.textContent='$'+pz[i];});
+    if(window.mpLbpzSetPrizes)window.mpLbpzSetPrizes(d&&d.boardPrizes);
     var we=+(d&&d.weekEnd)||0,rs=document.getElementById('lbReset');
     if(we&&rs){var ms=we-Date.now();if(ms>0){var dd=Math.floor(ms/86400000),hh=Math.floor(ms%86400000/3600000),mm=Math.floor(ms%3600000/60000);rs.innerHTML='Resets Monday 00:00 UTC · ends in <b>'+dd+'d '+hh+'h '+mm+'m</b>';}else rs.textContent='Resetting…';}
   }).catch(function(){});
   // reflect sign-in state on the leaderboard CTA
   function lbYou(){var y=document.getElementById('lbYou');if(!y)return;var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();y.textContent=me?('You are in as @'+((me.username||me.email||'you').split('@')[0])+' — close a winning trade to climb.'):'Sign in (free) and your best trade enters automatically.';}
   window.addEventListener('mp-auth-change',lbYou);setTimeout(lbYou,600);
+
+  // ---- 3-board prize showcase (switchable, locked preview of next week's leaderboards) ----
+  (function(){
+    var panel=document.getElementById('lbpzPanel'),tabs=document.getElementById('lbpzTabs');
+    if(!panel||!tabs)return;
+    var PZ={
+      roe:{name:'Highest ROE',pool:25,p:[10,6,4,3,2],live:true,desc:"Your single best trade's return on equity (profit ÷ margin) for the week. One well-timed, high-leverage call can top it — any account size."},
+      wr:{name:'Best win rate',pool:75,p:[35,18,10,7,5],live:true,desc:"The highest share of winning trades over the week (minimum 20 closed trades). Only wins of at least +5% ROE count — tiny scalps don't pad your rate. Rewards steady, consistent trading, not one lucky shot."},
+      xp:{name:'Weekly XP',pool:30,p:[10,8,6,4,2],live:true,desc:"Total XP you earn this week — from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size."}
+    };
+    function nextMonday(){var n=new Date();var d=Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate());var dow=new Date(d).getUTCDay();var add=(8-dow)%7;if(add===0)add=7;return d+add*864e5;}
+    var START=nextMonday();
+    function ctd(){var ms=START-Date.now();if(ms<=0)return'any moment now';var m=Math.floor(ms/6e4),dd=Math.floor(m/1440),h=Math.floor(m%1440/60),mm=m%60;return'in '+(dd>0?dd+'d ':'')+h+'h '+mm+'m';}
+    var cur='roe';
+    function render(){
+      var b=PZ[cur],rows='';
+      for(var i=0;i<b.p.length;i++){var r=i+1,lbl=r+(r===1?'st':r===2?'nd':r===3?'rd':'th');rows+='<div class="lbpz-row p'+r+'"><span class="m">'+r+'</span><span class="l">'+lbl+' place</span><span class="v">$'+b.p[i]+'</span></div>';}
+      var badge=b.live?'<span class="lbpz-livebadge">● Live now</span>':'<span class="lbpz-lockbadge">🔒 Next week</span>';
+      var foot=b.live?('Running this week · pays out Monday 00:00 UTC · <b>'+ctd()+'</b>'):('Unlocks Monday 00:00 UTC · <b>'+ctd()+'</b>');
+      panel.innerHTML='<div class="lbpz-name">'+b.name+badge+'</div>'
+        +'<div class="lbpz-pool">$'+b.pool+'<small>weekly prize pool</small></div>'
+        +'<div class="lbpz-desc">'+b.desc+'</div>'
+        +'<div class="lbpz-rows">'+rows+'</div>'
+        +'<div class="lbpz-count">'+foot+'</div>';
+    }
+    tabs.addEventListener('click',function(e){var t=e.target.closest('.lbpz-tab');if(!t)return;cur=t.getAttribute('data-pz');for(var i=0;i<tabs.children.length;i++)tabs.children[i].classList.toggle('on',tabs.children[i]===t);render();});
+    // keep all 3 boards' prizes in sync with the LIVE reward config (owner tunes them in mp-ops Settings) — set from /api/reward/lb below
+    function setArr(bk,pz){if(!Array.isArray(pz))return;var a=pz.map(function(x){return Math.round(+x||0);});while(a.length&&a[a.length-1]===0)a.pop();if(!a.length)return;PZ[bk].p=a;PZ[bk].pool=a.reduce(function(s,x){return s+x;},0);}
+    window.mpLbpzSetPrizes=function(bp){if(!bp)return;setArr('roe',bp.roe);setArr('wr',bp.wr);setArr('xp',bp.xp);render();};
+    render();setInterval(render,60000);
+  })();
 
   // ---- XP Happy Hour + owner-defined XP promos (cards + countdowns + details modal) ----
   (function(){
@@ -1140,8 +1248,10 @@
       var shownPromos=promos.filter(function(p){return p.endMs>now;});
       if(!anyHH&&!shownPromos.length){wrap.hidden=true;return;}
       wrap.hidden=false;
+      // a currently-LIVE promo takes the Happy Hour card's spot while Happy Hour itself hasn't started; reverts when the promo ends
+      var promoLive=shownPromos.some(function(p){return now>=p.startMs&&now<p.endMs;});
       // HH card
-      if(whenCard){whenCard.style.display=anyHH?'':'none';if(anyHH){var d=new Date(now),ts=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),cfg.hourUTC,0,0),dur=(cfg.durMin||60)*60000;var live=now>=ts&&now<ts+dur,nextStart=now<ts?ts:ts+86400000;if(live){whenCard.classList.add('live');if(state)state.textContent='LIVE';cnt.textContent='Live · ends in '+fmt(ts+dur-now);}else{whenCard.classList.remove('live');if(state)state.textContent='DAILY';cnt.textContent='Starts in '+fmt(nextStart-now);}}}
+      if(whenCard){var d=new Date(now),ts=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),cfg.hourUTC,0,0),dur=(cfg.durMin||60)*60000;var hhLive=anyHH&&now>=ts&&now<ts+dur;var showHH=anyHH&&!(promoLive&&!hhLive);whenCard.style.display=showHH?'':'none';if(showHH){var nextStart=now<ts?ts:ts+86400000;if(hhLive){whenCard.classList.add('live');if(state)state.textContent='LIVE';cnt.textContent='Live · ends in '+fmt(ts+dur-now);}else{whenCard.classList.remove('live');if(state)state.textContent='DAILY';cnt.textContent='Starts in '+fmt(nextStart-now);}}}
       // promo card countdowns
       if(promosEl){Array.prototype.forEach.call(promosEl.querySelectorAll('.hh-promo'),function(card){var pid=card.getAttribute('data-pid'),p=promos.filter(function(x){return x.id===pid;})[0];if(!p)return;var cc=card.querySelector('.promo-count'),st=card.querySelector('.hh-state');var pl=now>=p.startMs&&now<p.endMs;if(now>=p.endMs){card.style.display='none';return;}card.style.display='';if(pl){card.classList.add('live');if(st)st.textContent='LIVE';if(cc)cc.textContent='+'+p.xp+' XP · ends in '+fmt(p.endMs-now);}else{card.classList.remove('live');if(st)st.textContent='SOON';if(cc)cc.textContent='+'+p.xp+' XP · starts in '+fmt(p.startMs-now);}});}
     }
@@ -1250,7 +1360,7 @@
   try{fetch('/api/geo').then(function(r){return r.json();}).then(function(g){
     var cc=(g&&g.cc)||'';var RESTRICT={US:1,CA:1};if(!RESTRICT[cc])return;
     var grid=document.querySelector('.exch-grid');if(!grid)return;
-    var LEGAL={Kraken:1,'Crypto.com':1};var region=cc==='CA'?'Canada':'the US';
+    var LEGAL={Kraken:1,Coinbase:1};var region=cc==='CA'?'Canada':'the US';
     Array.prototype.forEach.call(grid.querySelectorAll('a.exs'),function(a){
       var ex=a.getAttribute('data-ex');var tag=a.querySelector('.exs-tag');
       if(LEGAL[ex]){a.style.order='-1';a.style.boxShadow='0 0 0 1.5px var(--exc), 0 0 22px -7px var(--exc)';if(tag){tag.textContent='Available in '+region;tag.style.color='var(--exc)';}}

@@ -9,7 +9,7 @@ directory = "./dist"
 binding = "ASSETS"
 
 [triggers]
-crons = ["*/10 * * * *"]
+crons = ["*/10 * * * *", "* * * * *"]
 
 # Persisted, searchable logs (Workers Logs) so console.error('srverr', …) is queryable in the
 # Cloudflare dashboard after the fact — not just in a live `wrangler tail`. head_sampling_rate=1 = keep all.

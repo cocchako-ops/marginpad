@@ -442,4 +442,12 @@
   <url><loc>https://marginpad.io/crypto-trading-usa/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://marginpad.io/crypto-trading-canada/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://marginpad.io/academy/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://marginpad.io/bitcoin-cycle/</loc><lastmod>2026-07-20</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/etf-flows/</loc><lastmod>2026-07-20</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/hyperliquid-whales/</loc><lastmod>2026-07-20</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/exchanges/</loc><lastmod>2026-07-21</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://marginpad.io/blog/is-kucoin-safe-2026/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/blog/bybit-vs-binance/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/blog/how-to-avoid-liquidation-crypto/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/blog/what-leverage-to-use-crypto/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>

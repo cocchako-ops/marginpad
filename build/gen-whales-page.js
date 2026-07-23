@@ -1,0 +1,274 @@
+/* /hyperliquid-whales/ — biggest Hyperliquid whale positions + recent whale actions via /api/cg/hyper (Coinglass /api/hyperliquid/*). */
+const fs = require('fs');
+const path = require('path');
+const OUT = path.join(__dirname, '..', 'dist', 'hyperliquid-whales');
+
+const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
+
+const url = 'https://marginpad.io/hyperliquid-whales/';
+const title = 'Hyperliquid Whale Tracker — Biggest Whale Positions Live';
+const desc = 'Track the biggest Hyperliquid whale positions in real time: long vs short exposure, leverage, entry, liquidation price, and live unrealized P&L for every whale. Free, no signup.';
+const kw = 'hyperliquid whale tracker, hyperliquid whales, whale positions, crypto whale tracker, hyperliquid liquidation, whale long short, biggest crypto positions, whale alert';
+
+const HEADER_CSS = `
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px clamp(18px,3vw,52px);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.82);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.06)}
+  .brand{display:flex;align-items:baseline;gap:10px;border:none;padding:0;background:none}
+  header .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;cursor:pointer;color:#f0eee6;text-decoration:none}
+  header .mark b{color:#c2f64a}
+  .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center}
+  .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s}
+  .hmenu span:nth-child(2){width:13px}
+  header .hnav{display:flex;align-items:center;gap:3px}
+  .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#a6afba;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s}
+  .hlink:hover{color:#fff;background:rgba(255,255,255,.07)}
+  .hlink svg{flex-shrink:0}
+  .hbot{color:#7cc4ff}.hbot:hover{color:#a8d8ff;background:rgba(124,196,255,.12)}
+  .hrwd{color:#c2f64a}.hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12)}
+  @media(max-width:720px){header .hnav .hbot,header .hnav .hjr{display:none}header .hnav .hauth span{display:none}header .hnav .hauth{padding:7px}}
+`;
+const CSS = HEADER_CSS + `
+  :root{--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--amber:#ffb020;--cyan:#3fd8e6;--wh:#5ec6ff}
+  .wl-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(56% 50% at 6% 0%,rgba(94,198,255,.08),transparent 60%),radial-gradient(48% 55% at 96% 22%,rgba(46,189,133,.06),transparent 60%)}
+  .wrap{position:relative;z-index:1}
+  .wl-eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#8a95a1;margin-top:14px}
+  .wl-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--wh);box-shadow:0 0 10px var(--wh);animation:wlblink 1.6s ease-in-out infinite}
+  @keyframes wlblink{0%,100%{opacity:1}50%{opacity:.35}}
+  .wl-wait{margin:14px 0 2px;display:flex;align-items:center;gap:11px;background:rgba(255,176,32,.08);border:1px solid rgba(255,176,32,.3);border-radius:13px;padding:13px 15px;font-size:13px;color:#ffcf80;line-height:1.5}
+  /* dominance hero */
+  .wl-hero{background:linear-gradient(168deg,rgba(255,255,255,.035),rgba(255,255,255,.006)),var(--panel);border:1px solid var(--line-bright);border-radius:20px;padding:20px 22px;margin:18px 0 10px;overflow:hidden;position:relative}
+  .wl-htop{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap}
+  .wl-side{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1}
+  .wl-side .lab{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);margin-bottom:6px;letter-spacing:.08em}
+  .wl-side .v{font-size:clamp(22px,3.4vw,30px)}
+  .wl-side.l .v{color:var(--grn)}.wl-side.s{text-align:right}.wl-side.s .v{color:var(--red)}
+  .wl-bar{height:16px;border-radius:8px;overflow:hidden;display:flex;margin:14px 0 4px;background:#12161c;border:1px solid var(--line-bright)}
+  .wl-bar .lg{background:linear-gradient(90deg,#1f7a58,#2ebd85)}.wl-bar .sh{background:linear-gradient(90deg,#ff5a4d,#b83227)}
+  .wl-pct{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;font-weight:700}
+  .wl-pct .l{color:var(--grn)}.wl-pct .s{color:var(--red)}
+  .wl-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+  .wl-tile{background:rgba(0,0,0,.22);border:1px solid var(--line-bright);border-radius:13px;padding:12px 13px}
+  .wl-tile .k{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint)}
+  .wl-tile .v{font-family:'Space Mono',monospace;font-weight:800;font-size:clamp(15px,2.4vw,19px);margin-top:5px;color:var(--ink)}
+  .wl-tile .v.up{color:var(--grn)}.wl-tile .v.dn{color:var(--red)}
+  /* layout */
+  .wl-cols{display:grid;grid-template-columns:1fr;gap:16px;margin-top:8px}
+  @media(min-width:960px){.wl-cols{grid-template-columns:1.7fr 1fr}}
+  .wl-h2{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);font-weight:700;margin:8px 0 11px;display:flex;align-items:center;gap:10px}
+  .wl-h2 .n{color:var(--wh)}
+  /* positions table */
+  .wl-tbl{display:flex;flex-direction:column;gap:6px}
+  .wl-thd,.wl-pr{display:grid;grid-template-columns:20px 1.3fr 64px 88px 92px 96px;gap:8px;align-items:center}
+  .wl-thd{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint);padding:0 12px 2px}
+  .wl-thd .r{text-align:right}
+  .wl-pr{background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:10px 12px;transition:.15s}
+  .wl-pr:hover{border-color:rgba(94,198,255,.35);background:rgba(94,198,255,.04)}
+  .wl-rk{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);font-weight:700}
+  .wl-who{min-width:0}
+  .wl-adr{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+  .wl-adr:hover{color:var(--wh)}
+  .wl-adr .sy{display:inline-block;margin-top:2px}
+  .wl-sym{font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-dim);margin-top:3px;display:flex;align-items:center;gap:6px}
+  .wl-pill{display:inline-block;font-family:'Space Mono',monospace;font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px;letter-spacing:.04em}
+  .wl-pill.l{background:rgba(46,189,133,.16);color:var(--grn)}.wl-pill.s{background:rgba(255,90,77,.16);color:var(--red)}
+  .wl-lev{font-family:'Space Mono',monospace;font-size:11px;color:var(--amber);text-align:center;font-weight:700}
+  .wl-val{font-family:'Space Mono',monospace;font-size:13px;font-weight:800;color:var(--ink);text-align:right}
+  .wl-liq{font-family:'Space Mono',monospace;font-size:11px;text-align:right;color:var(--ink-dim)}
+  .wl-liq small{display:block;font-size:9px;color:var(--ink-faint)}
+  .wl-liq.near small{color:var(--red)}
+  .wl-pnl{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:800;text-align:right}
+  .wl-pnl.up{color:var(--grn)}.wl-pnl.dn{color:var(--red)}
+  /* alerts feed */
+  .wl-feed{display:flex;flex-direction:column;gap:6px}
+  .wl-al{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:9px 12px}
+  .wl-al .ic{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .wl-al.l .ic{background:rgba(46,189,133,.14);color:var(--grn)}.wl-al.s .ic{background:rgba(255,90,77,.14);color:var(--red)}
+  .wl-al .mid{flex:1;min-width:0}
+  .wl-al .t1{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .wl-al .t1 b{color:var(--ink)}
+  .wl-al .t2{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:2px}
+  .wl-al .rt{font-family:'Space Mono',monospace;font-size:12px;font-weight:800;text-align:right;flex:0 0 auto}
+  .wl-al.l .rt{color:var(--grn)}.wl-al.s .rt{color:var(--red)}
+  .wl-cta{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 8px}
+  .wl-cta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
+  .wl-cta a.go{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
+  @media(max-width:560px){.wl-thd,.wl-pr{grid-template-columns:16px 1.2fr 74px 88px}.wl-thd .cl,.wl-pr .cl{display:none}.wl-tiles{grid-template-columns:1fr}}
+  @media(min-width:861px){.wrap{max-width:1280px;padding:0 clamp(24px,3vw,52px)}article h1{font-size:40px;letter-spacing:-.03em;margin:10px 0 8px}.lead{font-size:15.5px;max-width:860px}}
+`;
+
+const ld = `<script type="application/ld+json">${JSON.stringify({
+  '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+    { '@type': 'Question', name: 'What is a Hyperliquid whale tracker?', acceptedAnswer: { '@type': 'Answer', text: 'Hyperliquid is a decentralized perpetuals exchange where every position is on-chain and public. A whale tracker surfaces the largest open positions — their size, direction, leverage, entry, liquidation price and live unrealized profit or loss — so you can see exactly what the biggest traders are betting on in real time.' } },
+    { '@type': 'Question', name: 'Why watch whale positions?', acceptedAnswer: { '@type': 'Answer', text: 'Large positions can move markets and their liquidation levels often act as magnets for price. Watching whether whales are net long or net short, and where their liquidation prices cluster, gives context that funding rates and open interest alone do not.' } },
+    { '@type': 'Question', name: 'Is the whale data live?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Positions and recent whale actions are aggregated from Coinglass and refresh about once a minute. Because Hyperliquid is on-chain, the sizes, leverage and liquidation prices are the real values, not estimates.' } }
+  ]
+})}</script>`;
+
+let html = `<!DOCTYPE html>
+<html lang="en">
+<head>${GTAG}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>${title} | MarginPad</title>
+<meta name="description" content="${desc}" />
+<meta name="keywords" content="${kw}" />
+<link rel="canonical" href="${url}" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="${title}" />
+<meta property="og:description" content="${desc}" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="${url}" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="${title}" />
+<meta name="twitter:description" content="${desc}" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>${CSS}</style>
+${ld}
+</head>
+<body>
+<div class="wl-glow" aria-hidden="true"></div>
+<div class="wrap">
+  <header id="wlHead">
+    <div class="brand">
+      <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
+    </div>
+    <nav class="hnav">
+      <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
+      <a href="/rewards/" class="hlink hrwd" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>
+      <a href="/paper-trade?trades=1" class="hlink hjr"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</a>
+      <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
+    </nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / Hyperliquid whales</div>
+  <article>
+    <div class="wl-eyebrow"><i></i>Live · Hyperliquid on-chain</div>
+    <h1>Hyperliquid Whale Tracker</h1>
+    <p class="lead">See what the biggest traders are actually betting on. Because Hyperliquid is a fully on-chain perp exchange, every whale position is public — real size, real leverage, real liquidation price. Below: net long vs short exposure, the largest open positions with live P&amp;L, and a feed of the latest whale moves. Free, no signup.</p>
+
+    <div class="wl-wait" id="wlWait" hidden><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Whale data is <b>refreshing</b> — one moment.</span></div>
+
+    <div class="wl-hero" id="wlHero">
+      <div class="wl-htop">
+        <div class="wl-side l"><div class="lab">Whales long</div><div class="v" id="wlLongV">—</div></div>
+        <div class="wl-side s"><div class="lab">Whales short</div><div class="v" id="wlShortV">—</div></div>
+      </div>
+      <div class="wl-bar"><div class="lg" id="wlBarL" style="width:50%"></div><div class="sh" id="wlBarS" style="width:50%"></div></div>
+      <div class="wl-pct"><span class="l" id="wlPctL">—</span><span class="s" id="wlPctS">—</span></div>
+      <div class="wl-tiles">
+        <div class="wl-tile"><div class="k">Tracked whales</div><div class="v" id="wlCount">—</div></div>
+        <div class="wl-tile"><div class="k">Net exposure</div><div class="v" id="wlNet">—</div></div>
+        <div class="wl-tile"><div class="k">Aggregate unrealized P&amp;L</div><div class="v" id="wlUpnl">—</div></div>
+      </div>
+    </div>
+
+    <div class="wl-cols">
+      <div>
+        <div class="wl-h2">Biggest open positions <span class="n" id="wlPosN"></span></div>
+        <div class="wl-tbl">
+          <div class="wl-thd"><span></span><span>Whale / market</span><span class="cl" style="text-align:center">Lev</span><span class="r">Size</span><span class="cl r">Liq price</span><span class="r">uPnL</span></div>
+          <div id="wlPos"><div class="wl-al" style="justify-content:center;color:var(--ink-faint)">Loading positions…</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="wl-h2">Latest whale moves</div>
+        <div class="wl-feed" id="wlFeed"><div class="wl-al" style="justify-content:center;color:var(--ink-faint)">Loading…</div></div>
+      </div>
+    </div>
+
+    <div class="wl-cta">
+      <a class="go" href="/paper-trade">Practice trading — free, no signup →</a>
+      <a href="/liquidations/">Liquidations</a>
+      <a href="/open-interest/">Open interest</a>
+      <a href="/long-short/">Long/short ratio</a>
+    </div>
+
+    <h2>How to read the whale board</h2>
+    <p><strong>Hyperliquid</strong> settles every perpetual position on-chain, which means the exact size, leverage and liquidation price of the largest traders is public data — no estimates. The dominance bar at the top shows whether the biggest wallets are collectively <span style="color:var(--grn)">net long</span> or <span style="color:var(--red)">net short</span> by notional value. The positions table ranks the single biggest bets: a whale running high leverage with its <strong>liquidation price</strong> sitting close to the mark is fragile — if price reaches that level the position is force-closed, and clusters of nearby liquidations often accelerate a move.</p>
+    <h2>Whales are context, not a signal</h2>
+    <p>A big position is a bet, not a guarantee — whales get liquidated too (watch the aggregate unrealized P&amp;L). Use this board the way you would <a href="/open-interest/">open interest</a> and <a href="/funding/">funding</a>: to understand positioning and where the pain points are, not as a reason to blindly copy. When many large shorts sit just above price, an upward squeeze becomes more likely; when big longs pile in with tight liquidations below, a flush can cascade.</p>
+
+    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Whale data aggregated from Coinglass / Hyperliquid. For information only — not financial advice.</p>
+  </article>
+
+  <footer class="site-foot"><div class="foot-bar"><span>© MarginPad · <a href="/">marginpad.io</a> · Not financial advice</span></div></footer>
+</div>
+
+<script>
+(function(){
+  var esc=function(s){return String(s==null?'':s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});};
+  function usd(v){var s=v<0?'-':'';var a=Math.abs(+v||0);if(a>=1e9)return s+'$'+(a/1e9).toFixed(2)+'B';if(a>=1e6)return s+'$'+(a/1e6).toFixed(1)+'M';if(a>=1e3)return s+'$'+(a/1e3).toFixed(0)+'K';return s+'$'+Math.round(a);}
+  function spnl(v){var s=v>=0?'+':'-';var a=Math.abs(+v||0);if(a>=1e9)return s+'$'+(a/1e9).toFixed(2)+'B';if(a>=1e6)return s+'$'+(a/1e6).toFixed(1)+'M';if(a>=1e3)return s+'$'+(a/1e3).toFixed(0)+'K';return s+'$'+Math.round(a);}
+  function px(v){var a=+v||0;if(!a)return '—';if(a>=1000)return '$'+a.toLocaleString('en-US',{maximumFractionDigits:0});if(a>=1)return '$'+a.toFixed(2);return '$'+a.toPrecision(4);}
+  function shorta(a){a=String(a||'');return a.length>10?a.slice(0,6)+'…'+a.slice(-4):a;}
+  function ago(ts){if(!ts)return '';var s=Math.max(0,(Date.now()-ts)/1000);if(s<60)return Math.floor(s)+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
+  var HL='https://hypurrscan.io/address/';
+  function paint(d){
+    var w=document.getElementById('wlWait');if(w)w.hidden=!!(d&&d.active);
+    if(!d||!d.active){var pe=document.getElementById('wlPos');if(pe&&!pe.dataset.done)pe.innerHTML='<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">Whale feed is refreshing…</div>';return;}
+    var g=d.agg||{};
+    var lo=+g.longUsd||0,sh=+g.shortUsd||0,tot=lo+sh||1;
+    document.getElementById('wlLongV').textContent=usd(lo);
+    document.getElementById('wlShortV').textContent=usd(sh);
+    var lp=lo/tot*100;
+    document.getElementById('wlBarL').style.width=lp.toFixed(1)+'%';
+    document.getElementById('wlBarS').style.width=(100-lp).toFixed(1)+'%';
+    document.getElementById('wlPctL').textContent='Long '+lp.toFixed(1)+'%';
+    document.getElementById('wlPctS').textContent=(100-lp).toFixed(1)+'% Short';
+    document.getElementById('wlCount').textContent=(g.count||0).toLocaleString('en-US');
+    var net=lo-sh;var netEl=document.getElementById('wlNet');netEl.textContent=(net>=0?'+':'')+usd(net).replace('-','')+' '+(net>=0?'long':'short');netEl.className='v '+(net>=0?'up':'dn');
+    var up=+g.upnl||0;var upEl=document.getElementById('wlUpnl');upEl.textContent=spnl(up);upEl.className='v '+(up>=0?'up':'dn');
+    // positions
+    var pos=d.positions||[];
+    document.getElementById('wlPosN').textContent=pos.length?('· top '+pos.length):'';
+    var pe=document.getElementById('wlPos');pe.dataset.done='1';
+    pe.innerHTML=pos.map(function(p,i){
+      var liqD=(p.mark&&p.liq)?Math.abs(p.mark-p.liq)/p.mark*100:null;
+      var near=(liqD!=null&&liqD<8);
+      return '<div class="wl-pr">'+
+        '<span class="wl-rk">'+(i+1)+'</span>'+
+        '<span class="wl-who"><a class="wl-adr" href="'+HL+esc(p.user)+'" target="_blank" rel="noopener">'+esc(shorta(p.user))+'</a>'+
+          '<span class="wl-sym"><span class="wl-pill '+(p.long?'l':'s')+'">'+(p.long?'LONG':'SHORT')+'</span>'+esc(p.sym)+'</span></span>'+
+        '<span class="wl-lev cl">'+(p.lev?p.lev+'×':'—')+'</span>'+
+        '<span class="wl-val">'+usd(p.val)+'</span>'+
+        '<span class="wl-liq cl '+(near?'near':'')+'">'+px(p.liq)+(liqD!=null?'<small>'+liqD.toFixed(1)+'% away</small>':'')+'</span>'+
+        '<span class="wl-pnl '+(p.pnl>=0?'up':'dn')+'">'+spnl(p.pnl)+'</span>'+
+      '</div>';
+    }).join('')||'<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">No positions.</div>';
+    // feed
+    var al=d.alerts||[];var fe=document.getElementById('wlFeed');
+    fe.innerHTML=al.slice(0,22).map(function(a){
+      var arrow=a.long?'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>':'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>';
+      return '<div class="wl-al '+(a.long?'l':'s')+'"><span class="ic">'+arrow+'</span>'+
+        '<span class="mid"><span class="t1"><b>'+esc(a.sym)+'</b> '+(a.long?'long':'short')+' · '+esc(shorta(a.user))+'</span>'+
+          '<span class="t2">liq '+px(a.liq)+' · '+ago(a.ts)+'</span></span>'+
+        '<span class="rt">'+usd(a.val)+'</span></div>';
+    }).join('')||'<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">No recent moves.</div>';
+  }
+  function load(){fetch('/api/cg/hyper',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){paint(d||{});}).catch(function(){var w=document.getElementById('wlWait');if(w)w.hidden=false;});}
+  load();setInterval(load,60000);
+  (function(){var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',function(){function go(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(go,150);}go();});})();
+})();
+</script>
+<script defer src="/assets/mp-auth.js"></script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>
+`;
+
+fs.mkdirSync(OUT, { recursive: true });
+fs.writeFileSync(path.join(OUT, 'index.html'), html);
+console.log('wrote dist/hyperliquid-whales/index.html');
+
+try {
+  const smp = path.join(__dirname, '..', 'dist', 'sitemap.xml');
+  let sm = fs.readFileSync(smp, 'utf8');
+  const today = new Date().toISOString().slice(0, 10);
+  if (sm.indexOf(url) === -1) { sm = sm.replace('</urlset>', `  <url><loc>${url}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>\n</urlset>`); fs.writeFileSync(smp, sm); console.log('sitemap: +/hyperliquid-whales/'); }
+} catch (e) { console.log('sitemap update skipped:', e.message); }

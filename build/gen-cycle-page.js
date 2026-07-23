@@ -1,0 +1,277 @@
+/* /bitcoin-cycle/ — Bitcoin market-cycle dashboard (Pi Cycle, Rainbow, Puell, Golden Ratio, AHR999,
+   2Y/200W MA, Altcoin Season, BTC Dominance, Fear & Greed) via /api/cg/cycle (Coinglass /api/index/*). */
+const fs = require('fs');
+const path = require('path');
+const OUT = path.join(__dirname, '..', 'dist', 'bitcoin-cycle');
+
+const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
+
+const url = 'https://marginpad.io/bitcoin-cycle/';
+const title = 'Bitcoin Market Cycle — Pi Cycle Top, Rainbow, Puell & Cycle Indicators';
+const desc = 'Live Bitcoin cycle dashboard: Pi Cycle Top, Rainbow Chart band, Puell Multiple, Golden Ratio, AHR999, 2-year & 200-week moving averages, Altcoin Season Index, BTC dominance and Fear & Greed — one screen answering "are we near the top?". Free, no signup.';
+const kw = 'bitcoin cycle, pi cycle top, bitcoin rainbow chart, puell multiple, is bitcoin at the top, bitcoin market cycle, altcoin season index, bitcoin dominance, 200 week moving average, cycle top indicator';
+
+const HEADER_CSS = `
+  header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px clamp(18px,3vw,52px);position:sticky;top:0;z-index:50;background:rgba(11,13,18,.82);-webkit-backdrop-filter:blur(10px) saturate(1.2);backdrop-filter:blur(10px) saturate(1.2);border-bottom:1px solid rgba(255,255,255,.06)}
+  .brand{display:flex;align-items:baseline;gap:10px;border:none;padding:0;background:none}
+  header .mark{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.04em;cursor:pointer;color:#f0eee6;text-decoration:none}
+  header .mark b{color:#c2f64a}
+  .hmenu{display:inline-flex;flex-direction:column;justify-content:center;gap:4px;width:30px;height:30px;padding:0 6px;background:none;border:none;cursor:pointer;align-self:center}
+  .hmenu span{display:block;height:2.5px;width:18px;border-radius:2px;background:#c2f64a;box-shadow:0 0 6px rgba(194,246,74,.5);transition:.2s}
+  .hmenu span:nth-child(2){width:13px}
+  header .hnav{display:flex;align-items:center;gap:3px}
+  .hlink{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#a6afba;text-decoration:none;background:transparent;border:none;cursor:pointer;padding:7px 9px;border-radius:9px;transition:.15s}
+  .hlink:hover{color:#fff;background:rgba(255,255,255,.07)}
+  .hlink svg{flex-shrink:0}
+  .hbot{color:#7cc4ff}.hbot:hover{color:#a8d8ff;background:rgba(124,196,255,.12)}
+  .hrwd{color:#c2f64a}.hrwd:hover{color:#d4f87a;background:rgba(194,246,74,.12)}
+  @media(max-width:720px){header .hnav .hbot,header .hnav .hjr{display:none}header .hnav .hauth span{display:none}header .hnav .hauth{padding:7px}}
+`;
+const CSS = HEADER_CSS + `
+  :root{--lime:#c2f64a;--grn:#2ebd85;--red:#ff5a4d;--amber:#ffb020;--cyan:#3fd8e6}
+  .bc-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(56% 50% at 8% 2%,rgba(194,246,74,.08),transparent 62%),radial-gradient(48% 55% at 94% 26%,rgba(63,216,230,.07),transparent 60%)}
+  .wrap{position:relative;z-index:1}
+  .bc-eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#8a95a1;margin-top:14px}
+  .bc-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px var(--lime);animation:bcblink 1.6s ease-in-out infinite}
+  @keyframes bcblink{0%,100%{opacity:1}50%{opacity:.35}}
+  .bc-hero{display:grid;grid-template-columns:1fr;gap:16px;margin:18px 0 8px;background:linear-gradient(168deg,rgba(255,255,255,.035),rgba(255,255,255,.006)),var(--panel);border:1px solid var(--line-bright);border-radius:20px;padding:22px}
+  @media(min-width:760px){.bc-hero{grid-template-columns:300px 1fr;gap:30px;align-items:center;padding:26px 30px}}
+  .bc-gauge{position:relative;width:100%;max-width:300px;margin:0 auto}
+  .bc-gauge svg{width:100%;height:auto;display:block}
+  .bc-gc{position:absolute;left:0;right:0;top:50%;text-align:center}
+  .bc-gc .n{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;font-size:46px;line-height:1;letter-spacing:-.02em}
+  .bc-gc .l{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin-top:6px}
+  .bc-hero-r .k{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+  .bc-verdict{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;font-size:clamp(22px,3vw,30px);letter-spacing:-.01em;line-height:1.15;margin:6px 0 8px}
+  .bc-hero-r p{color:var(--ink-dim);font-size:14px;line-height:1.6;margin:0 0 12px}
+  .bc-chips{display:flex;flex-wrap:wrap;gap:7px}
+  .bc-chip{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:5px 10px;border-radius:20px;border:1px solid var(--line-bright);color:var(--ink-dim)}
+  .bc-chip b{color:var(--ink)}
+  .bc-wait{margin:14px 0 2px;display:flex;align-items:center;gap:11px;background:rgba(255,176,32,.08);border:1px solid rgba(255,176,32,.3);border-radius:13px;padding:13px 15px;font-size:13px;color:#ffcf80;line-height:1.5}
+  .bc-wait svg{flex:0 0 auto}
+  .bc-h2{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);font-weight:700;margin:26px 0 12px}
+  .bc-grid{display:grid;grid-template-columns:1fr;gap:11px}
+  @media(min-width:560px){.bc-grid{grid-template-columns:1fr 1fr}}
+  @media(min-width:980px){.bc-grid{grid-template-columns:1fr 1fr 1fr}}
+  .bc-card{position:relative;background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,.004)),var(--panel);border:1px solid var(--line-bright);border-radius:15px;padding:15px 16px;overflow:hidden;transition:border-color .15s,transform .15s}
+  .bc-card:hover{border-color:color-mix(in srgb,var(--lime) 40%,transparent);transform:translateY(-2px)}
+  .bc-card .top{display:flex;align-items:flex-start;gap:8px}
+  .bc-card .nm{font-family:'Familjen Grotesk',sans-serif;font-weight:800;font-size:15px;letter-spacing:-.01em;color:var(--ink)}
+  .bc-card .sub{font-family:'Space Mono',monospace;font-size:9.5px;color:var(--ink-faint);margin-top:2px;letter-spacing:.03em}
+  .bc-pill{margin-left:auto;flex:0 0 auto;font-family:'Space Mono',monospace;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:4px 8px;border-radius:20px;white-space:nowrap}
+  .bc-pill.lo{color:#0a0b0d;background:var(--grn)}
+  .bc-pill.mid{color:#0a0b0d;background:var(--amber)}
+  .bc-pill.hi{color:#0a0b0d;background:var(--red)}
+  .bc-pill.na{color:var(--ink-faint);background:rgba(255,255,255,.06)}
+  .bc-val{font-family:'Bricolage Grotesque','Familjen Grotesk',sans-serif;font-weight:800;font-size:30px;letter-spacing:-.02em;line-height:1;margin:12px 0 3px}
+  .bc-val small{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--ink-faint);letter-spacing:0}
+  .bc-note{font-size:12px;color:var(--ink-dim);line-height:1.5;min-height:34px}
+  .bc-spark{margin-top:10px;height:40px}
+  .bc-spark svg{width:100%;height:40px;display:block}
+  .bc-x{background:var(--panel);border:1px solid var(--line-bright);border-radius:13px;padding:14px 16px;margin-bottom:9px}
+  .bc-x h3{font-family:'Familjen Grotesk',sans-serif;font-size:15px;font-weight:800;margin:0 0 4px;color:var(--ink)}
+  .bc-x p{color:var(--ink-dim);font-size:13.5px;line-height:1.6;margin:0}
+  .bc-cta{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 8px}
+  .bc-cta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
+  .bc-cta a.go{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
+  @media(min-width:861px){.wrap{max-width:1320px;padding:0 clamp(24px,3vw,52px)}article h1{font-size:40px;letter-spacing:-.03em;margin:10px 0 8px}.lead{font-size:15.5px;max-width:840px}}
+`;
+
+const ld = `<script type="application/ld+json">${JSON.stringify({
+  '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+    { '@type': 'Question', name: 'Is Bitcoin near a cycle top?', acceptedAnswer: { '@type': 'Answer', text: 'No single indicator calls the top. This dashboard combines proven cycle models — Pi Cycle Top, the Rainbow Chart band, Puell Multiple, Golden Ratio, AHR999, the 2-year and 200-week moving averages, Altcoin Season Index and Fear & Greed — into one cycle-risk read so you can see when several models flash "overheated" at once.' } },
+    { '@type': 'Question', name: 'What is the Pi Cycle Top indicator?', acceptedAnswer: { '@type': 'Answer', text: 'The Pi Cycle Top uses the 111-day moving average and 2× the 350-day moving average. When the 111DMA crosses above the 2×350DMA it has historically marked Bitcoin cycle tops within a few days.' } },
+    { '@type': 'Question', name: 'What is the Bitcoin Rainbow Chart?', acceptedAnswer: { '@type': 'Answer', text: 'The Rainbow Chart plots price against a log-regression band coloured from "fire sale / accumulate" (blue) up to "maximum bubble / sell" (red). It is a long-term sentiment gauge, not a timing tool.' } },
+    { '@type': 'Question', name: 'What is Altcoin Season?', acceptedAnswer: { '@type': 'Answer', text: 'The Altcoin Season Index measures whether most large-cap altcoins are outperforming Bitcoin over the last 90 days. A high reading (75+) means it is altcoin season; a low reading means Bitcoin is leading.' } }
+  ]
+})}</script>`;
+
+let html = `<!DOCTYPE html>
+<html lang="en">
+<head>${GTAG}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>${title} | MarginPad</title>
+<meta name="description" content="${desc}" />
+<meta name="keywords" content="${kw}" />
+<link rel="canonical" href="${url}" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="${title}" />
+<meta property="og:description" content="${desc}" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="${url}" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="${title}" />
+<meta name="twitter:description" content="${desc}" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>${CSS}</style>
+${ld}
+</head>
+<body>
+<div class="bc-glow" aria-hidden="true"></div>
+<div class="wrap">
+  <header id="bcHead">
+    <div class="brand">
+      <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
+    </div>
+    <nav class="hnav">
+      <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
+      <a href="/rewards/" class="hlink hrwd" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>
+      <a href="/paper-trade?trades=1" class="hlink hjr"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</a>
+      <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
+    </nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / Bitcoin cycle</div>
+  <article>
+    <div class="bc-eyebrow"><i></i>Live · aggregated cycle models</div>
+    <h1>Bitcoin Market Cycle</h1>
+    <p class="lead">One screen that answers "are we near the top?". We combine the most-watched Bitcoin cycle and valuation models — Pi Cycle Top, the Rainbow band, Puell Multiple, Golden Ratio, AHR999, the 2-year and 200-week moving averages, Altcoin Season and Fear &amp; Greed — into a single cycle-risk read. No single line calls the top; the edge is seeing several flash red at once. Free, no signup.</p>
+
+    <div class="bc-wait" id="bcWait" hidden>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <span>Cycle models are <b>refreshing</b> — one moment.</span>
+    </div>
+
+    <div class="bc-hero">
+      <div class="bc-gauge" id="bcGauge">
+        <svg viewBox="0 0 200 120" aria-hidden="true">
+          <path d="M14 112 A86 86 0 0 1 186 112" fill="none" stroke="#1c222c" stroke-width="15" stroke-linecap="round"/>
+          <path id="bcArc" d="M14 112 A86 86 0 0 1 186 112" fill="none" stroke="url(#bcg)" stroke-width="15" stroke-linecap="round" stroke-dasharray="270" stroke-dashoffset="270" style="transition:stroke-dashoffset 1s ease"/>
+          <defs><linearGradient id="bcg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2ebd85"/><stop offset=".55" stop-color="#ffb020"/><stop offset="1" stop-color="#ff5a4d"/></linearGradient></defs>
+        </svg>
+        <div class="bc-gc"><div class="n" id="bcRisk">—</div><div class="l">Cycle top risk</div></div>
+      </div>
+      <div class="bc-hero-r">
+        <div class="k">Where we are in the cycle</div>
+        <div class="bc-verdict" id="bcVerdict">Reading the models…</div>
+        <p id="bcVerdictP">The cycle-risk score blends the valuation models below into a 0–100 gauge. Low = accumulation / early cycle. High = euphoria / distribution zone where tops historically form.</p>
+        <div class="bc-chips" id="bcChips"></div>
+      </div>
+    </div>
+
+    <div class="bc-h2">Cycle &amp; valuation models</div>
+    <div class="bc-grid" id="bcGrid"></div>
+
+    <div class="bc-cta">
+      <a class="go" href="/paper-trade">Trade the setup — free paper trading →</a>
+      <a href="/fear-greed/">Fear &amp; Greed</a>
+      <a href="/liquidations/">Liquidations</a>
+      <a href="/funding/">Funding rates</a>
+    </div>
+
+    <h2>How to read this dashboard</h2>
+    <div class="bc-x"><h3>Pi Cycle Top</h3><p>Uses the 111-day MA and 2× the 350-day MA. When the fast line crosses above the slow one it has pinpointed Bitcoin cycle tops within days, historically. The card shows how close the two lines are — the closer, the hotter.</p></div>
+    <div class="bc-x"><h3>Rainbow Chart band</h3><p>Price against a log-regression rainbow, from "fire sale / accumulate" (blue) up to "maximum bubble / sell" (red). A long-horizon sentiment gauge, not a timing tool — but the top red bands have only ever printed near cycle peaks.</p></div>
+    <div class="bc-x"><h3>Puell Multiple &amp; AHR999</h3><p>Puell compares daily miner revenue to its 1-year average — high = late-cycle euphoria, low (green) = generational bottoms. AHR999 blends price with the 200-day cost basis to flag the dollar-cost-average buy zone (below 1.2) versus overvaluation (above 4).</p></div>
+    <div class="bc-x"><h3>Golden Ratio, 2-Year MA &amp; 200-Week MA</h3><p>Three long-term reference lines. Price at 1.6–2× the 350-day MA (Golden Ratio) or 5× the 2-year MA has marked tops; touching the 200-week MA has marked cycle bottoms. The cards show price as a multiple of each line.</p></div>
+    <div class="bc-x"><h3>Altcoin Season &amp; BTC Dominance</h3><p>Altcoin Season Index tells you if capital has rotated out of Bitcoin into alts (75+ = altseason). Rising dominance = Bitcoin leading; falling dominance late in a cycle often precedes the blow-off alt phase.</p></div>
+    <div class="bc-x"><h3>Fear &amp; Greed</h3><p>Crowd sentiment from 0 (extreme fear) to 100 (extreme greed). Extreme greed clusters near local tops; extreme fear near bottoms. Best used to confirm the slower models above.</p></div>
+
+    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Cycle models aggregated from Coinglass. For information only — not financial advice. No indicator predicts the future.</p>
+  </article>
+
+  <footer class="site-foot">
+    <div class="foot-bar"><span>© MarginPad · <a href="/">marginpad.io</a> · Not financial advice</span></div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var esc=function(s){return String(s==null?'':s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});};
+  function clamp(v){return Math.max(0,Math.min(100,v));}
+  function NA(t){return {disp:'—',note:'',risk:null,pill:['na',t||'—'],spark:null};}
+  function spark(el,data,col){if(!el)return;var d=(data||[]).filter(function(v){return v!=null&&isFinite(v);});if(d.length<2){el.innerHTML='';return;}var w=el.clientWidth||280,h=40,mn=Math.min.apply(null,d),mx=Math.max.apply(null,d),rg=(mx-mn)||1;var pts=d.map(function(v,i){return (i/(d.length-1)*w).toFixed(1)+','+(h-2-((v-mn)/rg)*(h-6)).toFixed(1);}).join(' ');var last=d[d.length-1],lx=w,ly=h-2-((last-mn)/rg)*(h-6);el.innerHTML='<svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none"><polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><circle cx="'+lx.toFixed(1)+'" cy="'+ly.toFixed(1)+'" r="2.5" fill="'+col+'"/></svg>';}
+  var mapf=function(arr,fn){return (arr||[]).map(fn);};
+
+  // id, nm, sub, col, dn(default note), it(last, series, price)->{disp,note,risk,pill,spark}
+  var IND=[
+    {id:'pi',nm:'Pi Cycle Top',sub:'111DMA vs 2×350DMA',col:'#ff5a4d',dn:'A cross of the 111DMA above the 2×350DMA has marked cycle tops.',
+     it:function(l,s,px){var a=+l.ma_110,b=+l.ma_350_mu_2;if(!isFinite(a)||!isFinite(b)||!b)return NA('Cross watch');var r=a/b;var pill=r>=0.98?['hi','Top imminent']:r>=0.8?['mid','Heating up']:['lo','Far from top'];return {disp:(r*100).toFixed(0)+'<small>% to top line</small>',note:'The 111DMA is at '+(r*100).toFixed(0)+'% of the 2×350DMA top line.',risk:clamp(r*100),pill:pill,spark:mapf(s,function(x){return (+x.ma_110)/(+x.ma_350_mu_2||1);})};}},
+    {id:'rainbow',nm:'Rainbow band',sub:'log-regression zone',col:'#c2f64a',dn:'From fire-sale (blue) to maximum bubble (red).',
+     it:function(l,s,px){if(!Array.isArray(l)||!isFinite(px))return NA('—');var bands=l.slice(1,11).map(Number).filter(isFinite);var bi=0;for(var i=0;i<bands.length;i++)if(px>=bands[i])bi++;var zones=['Fire sale','Accumulate','Still cheap','Cheap','Neutral','Warm','FOMO rising','Bubble forming','Sell zone','Max bubble','Max bubble'];var pill=bi>=8?['hi','Sell zone']:bi>=5?['mid','Neutral']:['lo','Accumulate'];return {disp:'Band '+bi+'<small>/10 · '+(zones[bi]||'—')+'</small>',note:(zones[bi]||'—')+' — where price sits on the log-regression rainbow.',risk:clamp(bi/10*100),pill:pill,spark:null};}},
+    {id:'puell',nm:'Puell Multiple',sub:'miner revenue vs 1Y',col:'#ffb020',dn:'>4 = late-cycle euphoria · <0.5 = generational bottoms.',
+     it:function(l,s,px){var v=+l.puell_multiple;if(!isFinite(v))return NA('—');var pill=v>=4?['hi','Overheated']:v<=0.5?['lo','Bottom zone']:v>=2?['mid','Elevated']:['mid','Neutral'];return {disp:v.toFixed(2),note:'Daily miner revenue vs its 1-year average.',risk:clamp(v/4*100),pill:pill,spark:mapf(s,function(x){return +x.puell_multiple;})};}},
+    {id:'golden',nm:'Golden Ratio',sub:'price vs 350DMA × Fib',col:'#3fd8e6',dn:'Price at 1.6×–2× the 350DMA has marked tops.',
+     it:function(l,s,px){var p=+l.price,ma=+l.ma_350;if(!isFinite(p)||!isFinite(ma)||!ma)return NA('—');var m=p/ma;var pill=m>=1.6?['hi','Distribution']:m>=1?['mid','Above 350DMA']:['lo','Below 350DMA'];return {disp:m.toFixed(2)+'<small>× 350DMA</small>',note:'Price as a multiple of the 350-day moving average.',risk:clamp(m/2*100),pill:pill,spark:mapf(s,function(x){return (+x.price)/(+x.ma_350||1);})};}},
+    {id:'ahr999',nm:'AHR999',sub:'DCA / value index',col:'#c2f64a',dn:'<0.45 = bottom · 0.45–1.2 = DCA zone · >4 = overvalued.',
+     it:function(l,s,px){var v=+l.ahr999_value;if(!isFinite(v))return NA('—');var pill=v>=4?['hi','Overvalued']:v<0.45?['lo','Bottom zone']:v<=1.2?['lo','DCA zone']:['mid','Fair value'];return {disp:v.toFixed(2),note:'Blends price with the 200-day cost basis.',risk:clamp(v/5*100),pill:pill,spark:mapf(s,function(x){return +x.ahr999_value;})};}},
+    {id:'ma2y',nm:'2-Year MA multiplier',sub:'long-term floor/ceiling',col:'#ffb020',dn:'5× the 2Y MA has marked tops; below it = value.',
+     it:function(l,s,px){var p=+l.price,ma=+l.moving_average_730;if(!isFinite(p)||!isFinite(ma)||!ma)return NA('—');var m=p/ma;var pill=m>=4?['hi','Overheated']:m>=2?['mid','Elevated']:m<1?['lo','Below 2Y MA']:['mid','Neutral'];return {disp:m.toFixed(2)+'<small>× 2Y MA</small>',note:'Price as a multiple of the 2-year moving average.',risk:clamp((m-1)/4*100),pill:pill,spark:mapf(s,function(x){return (+x.price)/(+x.moving_average_730||1);})};}},
+    {id:'ma200w',nm:'200-Week MA',sub:'cycle-bottom line',col:'#3fd8e6',dn:'Touching the 200W MA has marked cycle bottoms.',
+     it:function(l,s,px){var p=+l.price,ma=+l.moving_average_1440;if(!isFinite(p)||!isFinite(ma)||!ma)return NA('—');var m=p/ma;var pill=m>=3?['hi','Extended']:m>=1.5?['mid','Mid-cycle']:['lo','Near bottom line'];return {disp:m.toFixed(2)+'<small>× 200W MA</small>',note:'Price as a multiple of the 200-week moving average.',risk:clamp((m-1)/2.5*100),pill:pill,spark:mapf(s,function(x){return (+x.price)/(+x.moving_average_1440||1);})};}},
+    {id:'altseason',nm:'Altcoin Season',sub:'alts vs BTC · 90d',col:'#9d7bff',dn:'75+ = altseason (capital in alts). ≤25 = Bitcoin leading.',
+     it:function(l,s,px){var v=+l.altcoin_index;if(!isFinite(v))return NA('—');var pill=v>=75?['mid','Altseason']:v<=25?['mid','Bitcoin season']:['na','Mixed'];return {disp:v.toFixed(0)+'<small>/100</small>',note:'Share of top alts outperforming BTC over 90 days.',risk:null,pill:pill,spark:mapf(s,function(x){return +x.altcoin_index;})};}},
+    {id:'dominance',nm:'BTC Dominance',sub:'BTC share of mcap',col:'#f7a600',dn:'Rising = Bitcoin leading; falling late-cycle precedes the alt blow-off.',
+     it:function(l,s,px){var v=+l.bitcoin_dominance;if(!isFinite(v))return NA('—');return {disp:v.toFixed(1)+'<small>%</small>',note:'Bitcoin\\'s share of total crypto market cap.',risk:null,pill:['na','Share'],spark:mapf(s,function(x){return +x.bitcoin_dominance;})};}},
+    {id:'feargreed',nm:'Fear & Greed',sub:'crowd sentiment 0–100',col:'#ff5a4d',dn:'Extreme greed clusters near local tops; extreme fear near bottoms.',
+     it:function(l,s,px){var v=+l.value;if(!isFinite(v))return NA('—');var pill=v>=75?['hi','Extreme greed']:v>=55?['mid','Greed']:v<=24?['lo','Extreme fear']:v<=44?['lo','Fear']:['mid','Neutral'];return {disp:v.toFixed(0)+'<small>/100</small>',note:'Aggregate crypto market sentiment.',risk:v,pill:pill,spark:mapf(s,function(x){return +x.value;})};}}
+  ];
+  function card(cfg){return '<div class="bc-card" id="bcc_'+cfg.id+'"><div class="top"><div><div class="nm">'+esc(cfg.nm)+'</div><div class="sub">'+esc(cfg.sub)+'</div></div><span class="bc-pill na" id="bcp_'+cfg.id+'">—</span></div><div class="bc-val" id="bcv_'+cfg.id+'">—</div><div class="bc-note" id="bcn_'+cfg.id+'">'+esc(cfg.dn)+'</div><div class="bc-spark" id="bcs_'+cfg.id+'"></div></div>';}
+  var grid=document.getElementById('bcGrid');
+  if(grid)grid.innerHTML=IND.map(card).join('');
+
+  function currentPrice(ind){var keys=['puell','ma200w','ma2y','golden'];for(var i=0;i<keys.length;i++){var d=ind[keys[i]];if(d&&d.last&&isFinite(+d.last.price))return +d.last.price;}return NaN;}
+  function paint(data){
+    var ind=(data&&data.ind)||{};var px=currentPrice(ind);var risks=[];
+    IND.forEach(function(cfg){
+      var d=ind[cfg.id]||{};var r=(d.last!=null)?cfg.it(d.last,d.series||[],px):NA('—');
+      var vEl=document.getElementById('bcv_'+cfg.id);if(vEl)vEl.innerHTML=r.disp;
+      var pEl=document.getElementById('bcp_'+cfg.id);if(pEl){pEl.className='bc-pill '+(r.pill?r.pill[0]:'na');pEl.textContent=r.pill?r.pill[1]:'—';}
+      var nEl=document.getElementById('bcn_'+cfg.id);if(nEl&&r.note)nEl.textContent=r.note;
+      spark(document.getElementById('bcs_'+cfg.id),r.spark,cfg.col);
+      if(r.risk!=null&&isFinite(r.risk))risks.push(r.risk);
+    });
+    var gEl=document.getElementById('bcRisk'),vEl=document.getElementById('bcVerdict'),pEl=document.getElementById('bcVerdictP'),arc=document.getElementById('bcArc'),chips=document.getElementById('bcChips');
+    if(risks.length){
+      var risk=Math.round(risks.reduce(function(a,b){return a+b;},0)/risks.length);
+      if(gEl){gEl.textContent=risk;gEl.style.color=risk>=70?'#ff5a4d':risk>=45?'#ffb020':'#2ebd85';}
+      if(arc)arc.style.strokeDashoffset=(270-(risk/100*270)).toFixed(1);
+      var verd=risk>=78?'Euphoria — historic top zone':risk>=60?'Heating up — late cycle':risk>=42?'Mid-cycle — no extreme yet':risk>=25?'Early cycle — room to run':'Deep value — accumulation zone';
+      if(vEl)vEl.textContent=verd;
+      if(pEl)pEl.textContent=risk>=60?'Several models are stretched. This is the zone where cycle tops historically form — manage risk, not FOMO.':'Models are not at an extreme yet. The blend below is your early-warning system as they heat up.';
+      if(chips){var pxTxt=isFinite(px)?'$'+Math.round(px).toLocaleString('en-US'):'—';chips.innerHTML='<span class="bc-chip">Models live <b>'+risks.length+'/'+IND.length+'</b></span><span class="bc-chip">Blended risk <b>'+risk+'/100</b></span><span class="bc-chip">BTC ref <b>'+pxTxt+'</b></span>';}
+    } else {
+      if(vEl)vEl.textContent='Waiting for the data feed';
+      if(chips)chips.innerHTML='<span class="bc-chip">Refreshing…</span>';
+    }
+  }
+  function load(){
+    fetch('/api/cg/cycle',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){
+      var w=document.getElementById('bcWait');if(w)w.hidden=!!(d&&d.active);
+      paint(d||{});
+    }).catch(function(){paint({});});
+  }
+  load();setInterval(load,300000);
+  (function(){var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',function(){function go(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(go,150);}go();});})();
+  (function(){var hd=document.getElementById('bcHead');if(hd)window.addEventListener('scroll',function(){hd.classList.toggle('sc',window.scrollY>8);},{passive:true});})();
+})();
+</script>
+<script defer src="/assets/mp-auth.js"></script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>
+`;
+
+fs.mkdirSync(OUT, { recursive: true });
+fs.writeFileSync(path.join(OUT, 'index.html'), html);
+console.log('wrote dist/bitcoin-cycle/index.html');
+
+// sitemap
+try {
+  const smp = path.join(__dirname, '..', 'dist', 'sitemap.xml');
+  let sm = fs.readFileSync(smp, 'utf8');
+  const today = new Date().toISOString().slice(0, 10);
+  if (sm.indexOf(url) === -1) {
+    sm = sm.replace('</urlset>', `  <url><loc>${url}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>\n</urlset>`);
+    fs.writeFileSync(smp, sm);
+    console.log('sitemap: +/bitcoin-cycle/');
+  }
+} catch (e) { console.log('sitemap update skipped:', e.message); }
