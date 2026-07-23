@@ -35,6 +35,11 @@ REWARD_PER_DAY = "1"
 binding = "STATS"
 id = "0bf59a5bf3d148cd9af4b2d3741c1077"
 
+# R2 — nightly DO backups (7-day rotation + latest). nightlyBackup prefers this over the KV fallback.
+[[r2_buckets]]
+binding = "BACKUP"
+bucket_name = "marginpad-backup"
+
 # Analytics Engine — scale-safe event capture (no KV write-quota, no read-modify-write races).
 # Written alongside KV for now; the dashboard can migrate to query this once an account API token is set.
 [[analytics_engine_datasets]]

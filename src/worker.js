@@ -7585,6 +7585,23 @@ export default {
       const fprices = {}; fprices[fsym] = +fpd.price; const frates = {}; frates[fsym] = frate;
       return J(await usersDO(env, '/tradesweepall', { prices: fprices, rates: frates, force: true, onlyUid: fu }));
     }
+    if (url.pathname === '/api/admin/restoretest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // E1: prove the backup is restorable — load users-latest into the 'bkp-restore-test' DO sandbox and diff row counts vs the dump
+      const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const which = url.searchParams.get('which') === 'rewards' ? 'rewards' : 'users';
+      let txt = null;
+      try { if (env.BACKUP) { const o = await env.BACKUP.get('backup/' + which + '-latest.json'); txt = o ? await o.text() : null; } } catch (e) {}
+      if (!txt) { try { txt = await env.STATS.get('bkp:' + which + ':latest'); } catch (e) {} }
+      if (!txt) return new Response('{"error":"no_backup"}', { status: 404, headers: jh });
+      let dump = null; try { dump = JSON.parse(txt); } catch (e) { return new Response('{"error":"bad_dump"}', { status: 500, headers: jh }); }
+      const src = {}; for (const tn of Object.keys(dump.tables || {})) src[tn] = Array.isArray(dump.tables[tn]) ? dump.tables[tn].length : null;
+      const stub = which === 'rewards' ? env.REWARDS.get(env.REWARDS.idFromName('bkp-restore-test')) : env.USERS.get(env.USERS.idFromName('bkp-restore-test'));
+      let res = null;
+      try { const r = await stub.fetch(new Request('https://do/import', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tables: dump.tables }) })); res = await r.json(); } catch (e) { return new Response(JSON.stringify({ error: 'import_failed', detail: String(e).slice(0, 160) }), { status: 500, headers: jh }); }
+      if (!res || res.error) return new Response(JSON.stringify({ error: 'import_refused', detail: res }), { status: 500, headers: jh });
+      const tables = {}; let allOk = true;
+      for (const tn of Object.keys(src)) { const a = src[tn], b2 = res.counts ? res.counts[tn] : null; tables[tn] = { dump: a, restored: b2, match: a === b2 }; if (a !== b2) allOk = false; }
+      return new Response(JSON.stringify({ ok: allOk, backupAt: dump.at, ageHours: dump.at ? Math.round((Date.now() - dump.at) / 3600000 * 10) / 10 : null, store: env.BACKUP ? 'r2' : 'kv', tables }, null, 1), { headers: jh });
+    }
     if (url.pathname === '/api/admin/mktestuser' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // E2E suites: ensure an 'e2e-' users row exists (DO enforces the prefix)
       return J(await usersDO(env, '/mktestuser', { uid: url.searchParams.get('uid') || '' }));
     }
@@ -8244,6 +8261,30 @@ export class RewardLedger {
     if (path === '/wdlist') { // Withdrawals tab: every withdrawal enriched with the owning account's ip/cc/dev/claims/balance
       const rows = this.rows("SELECT w.id,w.address,w.acct,w.amount,w.bonus,w.status,w.ts,w.paid_ts,w.txid,a.ip,a.cc,a.dev,a.claims,a.balance,a.banned FROM withdrawals w LEFT JOIN accounts a ON a.address=COALESCE(w.acct,w.address) ORDER BY w.ts DESC LIMIT 500");
       return this.j({ wds: rows.map(w => ({ id: w.id, wallet: w.address, acct: w.acct || w.address, usd: w.amount / 100, bonusUsd: (w.bonus || 0) / 100, status: w.status, ts: w.ts, paidTs: w.paid_ts || 0, txid: w.txid || '', ip: w.ip || '', cc: w.cc || '', dev: w.dev || '', claims: w.claims || 0, balUsd: (w.balance || 0) / 100, banned: !!w.banned })) });
+    }
+    if (path === '/import') { // E1 restore test (mirror of UserStore /import): only ever routed to the 'bkp-restore-test'
+      // instance; a marker table + refuse-if-populated guard means the live 'ledger' (real balances) can never be wiped.
+      const marked = !!this.rows("SELECT name FROM sqlite_master WHERE type='table' AND name='restore_marker'")[0];
+      if (!marked) {
+        let realN = 0; try { realN = (this.rows('SELECT COUNT(*) n FROM accounts')[0] || {}).n || 0; } catch (e) {}
+        if (realN > 0) return this.j({ error: 'refused_real_instance', accounts: realN });
+        try { this.state.storage.sql.exec('CREATE TABLE restore_marker(x INTEGER)'); } catch (e) {}
+      }
+      const sqlI = this.state.storage.sql, counts = {};
+      for (const tn of Object.keys(body.tables || {})) {
+        if (!/^[a-z_]{2,24}$/.test(tn)) continue;
+        const rows2 = body.tables[tn];
+        if (!Array.isArray(rows2)) { counts[tn] = null; continue; }
+        try { sqlI.exec('DELETE FROM ' + tn); } catch (e) { counts[tn] = null; continue; }
+        for (const r2 of rows2.slice(0, 200000)) {
+          if (!r2 || typeof r2 !== 'object') continue;
+          const cols = Object.keys(r2).filter(c => /^[A-Za-z_][A-Za-z0-9_]{0,30}$/.test(c));
+          if (!cols.length) continue;
+          try { sqlI.exec('INSERT INTO ' + tn + '(' + cols.join(',') + ') VALUES(' + cols.map(() => '?').join(',') + ')', ...cols.map(c => (r2[c] === undefined ? null : r2[c]))); } catch (e) {}
+        }
+        try { counts[tn] = (this.rows('SELECT COUNT(*) n FROM ' + tn)[0] || {}).n || 0; } catch (e) { counts[tn] = null; }
+      }
+      return this.j({ ok: true, counts });
     }
     if (path === '/export') { // nightly backup dump — every balance-bearing table (accounts = user money!)
       const out = { at: Date.now(), tables: {} };
@@ -9449,6 +9490,32 @@ export class UserStore {
       sql.exec('INSERT INTO livepos(did,json,cc,updated) VALUES(?,?,?,?) ON CONFLICT(did) DO UPDATE SET json=excluded.json,cc=excluded.cc,updated=excluded.updated', did, JSON.stringify(opens), cc, now);
       try { sql.exec('DELETE FROM livepos WHERE updated < ?', now - 6 * 3600000); } catch (e) {} // prune sessions idle > 6h
       return this.j({ ok: true, n: opens.length });
+    }
+    if (path === '/import') { // E1 restore test: load a backup dump into THIS instance. HARD GUARD: refuses on any
+      // instance holding real users unless it is already marked as the restore sandbox (restore_marker table) —
+      // the worker only ever calls this on idFromName('bkp-restore-test'), and even a bug routing it to 'main'
+      // bounces off the guard because 'main' has real accounts and no marker.
+      const marked = !!this.rows("SELECT name FROM sqlite_master WHERE type='table' AND name='restore_marker'")[0];
+      if (!marked) {
+        let realN = 0; try { realN = (this.rows("SELECT COUNT(*) n FROM users WHERE email NOT LIKE '%@e2e.local' AND email NOT LIKE '%@restore.local'")[0] || {}).n || 0; } catch (e) {}
+        if (realN > 0) return this.j({ error: 'refused_real_instance', realUsers: realN });
+        try { sql.exec('CREATE TABLE restore_marker(x INTEGER)'); } catch (e) {}
+      }
+      const counts = {};
+      for (const tn of Object.keys(b.tables || {})) {
+        if (!/^[a-z_]{2,24}$/.test(tn)) continue;
+        const rows2 = b.tables[tn];
+        if (!Array.isArray(rows2)) { counts[tn] = null; continue; }
+        try { sql.exec('DELETE FROM ' + tn); } catch (e) { counts[tn] = null; continue; }
+        for (const r2 of rows2.slice(0, 200000)) {
+          if (!r2 || typeof r2 !== 'object') continue;
+          const cols = Object.keys(r2).filter(c => /^[A-Za-z_][A-Za-z0-9_]{0,30}$/.test(c));
+          if (!cols.length) continue;
+          try { sql.exec('INSERT INTO ' + tn + '(' + cols.join(',') + ') VALUES(' + cols.map(() => '?').join(',') + ')', ...cols.map(c => (r2[c] === undefined ? null : r2[c]))); } catch (e) {}
+        }
+        try { counts[tn] = (this.rows('SELECT COUNT(*) n FROM ' + tn)[0] || {}).n || 0; } catch (e) { counts[tn] = null; }
+      }
+      return this.j({ ok: true, counts });
     }
     if (path === '/mktestuser') { // admin tooling for the E2E suites (test-multidevice/test-trading): /trades sync + tradeev feeds are guarded on a real users row. HARD-limited to 'e2e-' ids so it can never touch a real account.
       const tu = String(b.uid || ''); if (!/^e2e-[a-z0-9-]{2,40}$/.test(tu)) return this.j({ error: 'bad_uid' });
