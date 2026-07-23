@@ -77,30 +77,56 @@ function handleApi(url) {
 
 // ---------- live prices (proxied + cached + fallback) ----------
 const PRICE_SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT', 'DOGEUSDT', 'ADAUSDT', 'AVAXUSDT'];
-async function handlePrices(env, ctx) {
+async function handlePrices(env, ctx, prof) {
+  // prof: 1 = report branch + per-stage Server-Timing on the natural path; 2 = force the COLD path (skip edge cache + SWR) to measure upstream
+  const T0 = Date.now(), marks = [];
+  const mk = (n, t) => marks.push(n + ';dur=' + (Date.now() - t));
+  const withProf = (resp, branch) => { if (!prof) return resp; const h = new Headers(resp.headers); h.set('x-mp-branch', branch); h.set('server-timing', marks.join(', ') + ', total;dur=' + (Date.now() - T0)); return new Response(resp.body, { status: resp.status, headers: h }); };
   const cache = caches.default;
   const cacheKey = new Request('https://marginpad.io/__prices_cache_v1');
-  const hit = await cache.match(cacheKey);
-  if (hit) { try { globalThis.__pricesLast = { t: Date.now(), body: await hit.clone().text() }; } catch (e) {} return hit; }
-  // stale-while-revalidate: a cache MISS used to cost the unlucky poller 1-2s of upstream fetches (measured).
-  // Serve the isolate's last-good copy instantly (<60s old) and refresh the edge cache in the background.
-  const last = globalThis.__pricesLast;
-  if (last && Date.now() - last.t < 60000 && ctx) {
-    ctx.waitUntil((async () => { try { await handlePrices(env); } catch (e) {} })()); // background refresh repopulates the edge cache
-    return new Response(last.body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'max-age=5', 'x-mp-swr': '1', ...CORS } });
+  if (prof !== 2) {
+    const tC = Date.now();
+    const hit = await cache.match(cacheKey);
+    mk('edge_cache', tC);
+    if (hit) { try { globalThis.__pricesLast = { t: Date.now(), body: await hit.clone().text() }; } catch (e) {} return withProf(hit, 'hit'); }
+    // stale-while-revalidate: a cache MISS used to cost the unlucky poller 1-2s of upstream fetches (measured).
+    // Serve the isolate's last-good copy instantly (<60s old) and refresh the edge cache in the background.
+    const last = globalThis.__pricesLast;
+    if (last && Date.now() - last.t < 60000 && ctx) {
+      ctx.waitUntil((async () => { try { await handlePrices(env); } catch (e) {} })()); // background refresh repopulates the edge cache
+      return withProf(new Response(last.body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'max-age=5', 'x-mp-swr': '1', ...CORS } }), 'swr');
+    }
+  }
+  // Global floor before touching upstream: the cron writes a fresh copy to KV every minute, so a cold
+  // colo serves that (~10-50ms) instead of paying live upstream RTTs. Profiled 2026-07-24: the old cold
+  // path cost up to ~1.5s — ~970ms of it on the two Binance sources that ALWAYS 403 from CF worker IPs.
+  if (prof !== 2) {
+    const tK = Date.now();
+    try { const kvp = await env.STATS.get('prices:last'); mk('kv_floor', tK);
+      if (kvp) { const o = JSON.parse(kvp); if (o && Date.now() - (+o.ts || 0) < 90000) {
+        try { globalThis.__pricesLast = { t: Date.now(), body: kvp }; } catch (e) {}
+        if (ctx) ctx.waitUntil((async () => { try { await handlePrices(env, null, 2); } catch (e) {} })()); // repopulate the edge cache in the background
+        return withProf(new Response(kvp, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'max-age=5', 'x-mp-kv': '1', ...CORS } }), 'kv');
+      } }
+    } catch (e) { mk('kv_floor_err', tK); }
   }
   const qs = '?symbols=' + encodeURIComponent(JSON.stringify(PRICE_SYMBOLS));
+  // Bybit FIRST — it is the only source that actually answers from Cloudflare egress (Binance has 403-blocked
+  // CF worker IPs for years; keep both only as fallbacks in case that ever flips).
   const sources = [
+    'https://api.bybit.com/v5/market/tickers?category=spot',
     'https://data-api.binance.vision/api/v3/ticker/24hr' + qs,
     'https://api.binance.com/api/v3/ticker/24hr' + qs,
-    'https://api.bybit.com/v5/market/tickers?category=spot',
   ];
   let pairs = null;
   for (const u of sources) {
+    const tU = Date.now();
+    const srcName = 'up_' + (u.indexOf('vision') > 0 ? 'bnc_vision' : (u.indexOf('bybit') > 0 ? 'bybit' : 'bnc_com'));
     try {
       const r = await fetch(u, { cf: { cacheTtl: 15, cacheEverything: true } });
-      if (!r.ok) continue;
+      if (!r.ok) { mk(srcName + '_' + r.status, tU); continue; }
       const data = await r.json();
+      mk(srcName, tU);
       if (Array.isArray(data)) {
         pairs = data.map(d => ({ symbol: d.symbol, price: d.lastPrice, changePct: d.priceChangePercent }));
       } else if (data && data.result && Array.isArray(data.result.list)) {
@@ -108,14 +134,19 @@ async function handlePrices(env, ctx) {
         pairs = data.result.list.filter(d => want.has(d.symbol)).map(d => ({ symbol: d.symbol, price: d.lastPrice, changePct: (parseFloat(d.price24hPcnt) * 100).toFixed(2) }));
       }
       if (pairs && pairs.length) break;
-    } catch (e) {}
+    } catch (e) { mk(srcName + '_err', tU); }
   }
   if (!pairs || !pairs.length) return J({ error: 'upstream temporarily unavailable' }, 503);
   const resp = new Response(JSON.stringify({ pairs, ts: Date.now() }), {
     headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=15', ...CORS },
   });
+  const tP = Date.now();
   try { await cache.put(cacheKey, resp.clone()); } catch (e) {}
-  return resp;
+  mk('cache_put', tP);
+  return withProf(resp, 'cold');
+}
+async function pricesKvWarm(env) { // every-minute cron: refresh the KV floor copy cold colos serve instantly (≤1440 KV writes/day — negligible vs the A5 diet)
+  try { const r = await handlePrices(env, null, 2); if (r && r.ok) { const txt = await r.text(); if (txt && txt.length > 50) await env.STATS.put('prices:last', txt, { expirationTtl: 300 }); } } catch (e) {}
 }
 // market screener: a curated set of top USDT markets with 24h move + best-effort funding (edge-cached 30s)
 // ---------- screener technical analysis (operates on close/high/low/volume arrays from 4h candles) ----------
@@ -7224,7 +7255,7 @@ export default {
     if (url.protocol === 'http:') { url.protocol = 'https:'; return Response.redirect(url.toString(), 301); }
     if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
     if (url.pathname === '/api/geo') return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // visitor country for geo-aware exchange cards (US/CA see US-legal venues first)
-    if (url.pathname === '/api/prices') return perfWrap(env, ctx, 'prices', 10, () => handlePrices(env, ctx));
+    if (url.pathname === '/api/prices') return perfWrap(env, ctx, 'prices', 10, () => handlePrices(env, ctx, +url.searchParams.get('prof') || 0));
     if (url.pathname === '/api/screener') return perfWrap(env, ctx, 'screener', 3, () => handleScreener(env));
     if (url.pathname === '/api/symbols') return handleSymbols();
     if (url.pathname === '/api/gecko/markets') return handleGeckoMarkets(url, env);
@@ -7571,7 +7602,7 @@ export default {
         if (++tb.n <= 40) {
           let pb = {}; try { pb = await request.json(); } catch (e) {}
           const wsv = +pb.ws, fpv = +pb.fps;
-          if (isFinite(wsv) && wsv >= 0 && wsv < 30000) perfPush(env, ctx, 'ws', wsv, true);
+          if (isFinite(wsv) && wsv >= 0 && wsv < 5000) perfPush(env, ctx, 'ws', wsv, true); // >5s = client clock skew / stale-tab tick, not real WS latency (a 21.6s "sample" polluted the ring 2026-07-24)
           if (isFinite(fpv) && fpv >= 1 && fpv <= 120) perfPush(env, ctx, 'fps', fpv, true);
           ctx.waitUntil(perfFlush(env));
         }
@@ -8010,7 +8041,7 @@ export default {
   async scheduled(event, env, ctx) {
     // 1-minute trigger runs ONLY the 1h chart-signal engine (live Fast flips fire near-instant; Balanced/Premium
     // still fire on candle close but detected within ~1 min instead of ~10). Everything else stays on */10.
-    if (event.cron === '* * * * *') { ctx.waitUntil(checkChartSignals(env)); return; }
+    if (event.cron === '* * * * *') { ctx.waitUntil(checkChartSignals(env)); ctx.waitUntil(pricesKvWarm(env)); return; }
     // signal-engine BACKSTOP: if the 1-min cron silently died (heartbeat stale >5 min), this */10 cron takes over
     // running the engine — signals degrade to ≤10-min latency instead of stopping. Skips entirely while healthy (no race).
     ctx.waitUntil((async () => { try { const sdbg = JSON.parse(await env.STATS.get('csig:dbg') || 'null'); if (!sdbg || Date.now() - (sdbg.ts || 0) > 5 * 60000) await checkChartSignals(env); } catch (e) {} })());
