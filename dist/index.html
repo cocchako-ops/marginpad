@@ -39,12 +39,25 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Practice crypto futures with real live prices and zero risk: paper-trading terminal, live screener, real-time liquidations feed, charts, calculators and a bot API. Free — no deposit, no KYC."}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"MarginPad","url":"https://marginpad.io/","logo":"https://marginpad.io/assets/og.png","sameAs":["https://t.me/MarginPadBot"]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","alternateName":"MarginPad — Free Crypto Futures Tools","url":"https://marginpad.io/","inLanguage":"en"}</script>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <meta name="color-scheme" content="dark" />
 <style>html{background:#0a0b0d;color-scheme:dark}</style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#07080a" />
@@ -615,7 +628,14 @@
   .au2{background:radial-gradient(circle,rgba(46,189,133,.17),transparent 65%);}
   .au3{background:radial-gradient(circle,rgba(63,216,230,.12),transparent 65%);}
   .bgfx::before{content:'';position:absolute;inset:0;background:radial-gradient(62% 44% at 50% -8%,rgba(255,255,255,.085),transparent 70%),radial-gradient(36% 30% at 84% 6%,rgba(106,163,255,.06),transparent 70%);}
-  .tile{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.012)),var(--panel);border-color:rgba(255,255,255,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.08);}
+  .tile{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02) 10%,transparent 26%),linear-gradient(165deg,#17191f,#0b0c10 46%,#070809);border-color:rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -30px 50px rgba(0,0,0,.4),0 12px 30px rgba(0,0,0,.5);}
+  /* glossy-black on the remaining cards (hero chart, leaderboard + info neighbor, exchanges, lime accents) — same deep-black body, accent tints kept */
+  .hterm{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015) 12%,transparent 30%),linear-gradient(165deg,#17191f,#0b0c10 46%,#070809);box-shadow:0 40px 90px -40px rgba(0,0,0,.9),0 0 60px -30px rgba(194,246,74,.22),inset 0 1px 0 rgba(255,255,255,.11);}
+  .lb-card{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.02) 10%,transparent 26%),linear-gradient(165deg,#17191f,#0b0c10 46%,#070809);border-color:rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -30px 50px rgba(0,0,0,.4),0 12px 30px rgba(0,0,0,.5);}
+  .lb-info{background:linear-gradient(160deg,rgba(255,215,90,.10),rgba(255,215,90,.02) 55%),linear-gradient(165deg,#17191f,#0b0c10 46%,#070809);border-color:rgba(255,215,90,.24);box-shadow:inset 0 1px 0 rgba(255,255,255,.10),inset 0 -30px 50px rgba(0,0,0,.4),0 12px 30px rgba(0,0,0,.5);}
+  .pt-hero{background:linear-gradient(115deg,rgba(194,246,74,.07),transparent 40%),linear-gradient(165deg,#17191f,#0b0c10 46%,#070809);border-color:rgba(194,246,74,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 12px 30px rgba(0,0,0,.5);}
+  .tile.lime{background:linear-gradient(150deg,rgba(194,246,74,.12),rgba(194,246,74,.02) 55%),linear-gradient(165deg,#17191f,#0b0c10 46%,#070809);}
+  .exs{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.015) 14%,transparent 34%),linear-gradient(165deg,#15171c,#0b0c10 50%,#080809);box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 6px 16px rgba(0,0,0,.4);}
   body{--dim:#b4bdc8;--faint:#818b98;--line:rgba(255,255,255,.11);}
 }
 </style>

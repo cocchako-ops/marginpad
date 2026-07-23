@@ -852,7 +852,7 @@ async function handleCalendar(request, env) {
   // LIVE feed (TradingView/ForexFactory, 45-min cache) — auto-adds newly scheduled releases + Fed speeches.
   // Curated wins on collisions (same UTC day + same type) since it carries the nicer titles/dot-plot flags.
   try {
-    const live = await fetchLiveMacro();
+    const live = await fetchLiveMacro(env);
     const dayOf = t => new Date(t).toISOString().slice(0, 10);
     const have = {}; events.forEach(e => { have[dayOf(e.ts) + ':' + e.type] = 1; });
     live.forEach(e => { if (e.ts < from || e.ts > to) return;
@@ -898,9 +898,12 @@ const CAL_TITLES = { fomc: 'FOMC rate decision', cpi: 'US CPI (inflation) releas
 // LIVE macro feed: TradingView's economic-calendar JSON (primary — long range, rich importance data; unofficial so
 // treat as best-effort) with the free ForexFactory weekly feed as fallback if TV blocks CF egress IPs. Edge-cached
 // 45 min → newly scheduled events (Fed speeches, schedule shifts, new releases) appear on the calendar by themselves.
-async function fetchLiveMacro() {
+async function fetchLiveMacro(env) {
   const ck = new Request('https://marginpad.io/__cal_live_v1');
   try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
+  // KV floor (profiled 2026-07-24: a cold colo paid ~550ms for the TradingView fetch on /api/calendar) —
+  // macro events are day-granular, so a ≤2h-old copy is as good as live and costs ~10-30ms.
+  if (env) { try { const kv = await env.STATS.get('cal:live'); if (kv) { const o = JSON.parse(kv); if (o && Date.now() - (+o.t || 0) < 7200000 && Array.isArray(o.ev) && o.ev.length) return o.ev; } } catch (e) {} }
   const kindOf = t => { t = String(t).toLowerCase();
     if (/interest rate decision/.test(t)) return ['fomc', 'FOMC rate decision', 3];
     if (/fomc minutes/.test(t)) return ['macro', 'FOMC meeting minutes', 2];
@@ -941,6 +944,7 @@ async function fetchLiveMacro() {
   const DESCS = { 'FOMC meeting minutes': 'Detailed notes from the last Fed meeting, 2:00 PM ET — markets parse every word for rate hints.', "US Core PCE — the Fed's inflation gauge": "The inflation measure the Fed actually targets. 8:30 AM ET.", 'US PPI — producer prices': 'Wholesale inflation — a leading signal for CPI. 8:30 AM ET.', 'US GDP': 'US growth print — strong = fewer rate cuts, weak = recession talk.', 'US retail sales': 'The US consumer in one number. 8:30 AM ET.', 'Fed Chair speech': 'Live remarks from the Fed Chair — headlines can hit mid-speech.', 'US CPI — inflation': 'Consumer Price Index, 8:30 AM ET. Hot print = risk-off, cool print = risk-on.', 'FOMC rate decision': 'Fed announces interest rates, 2:00 PM ET. The single biggest scheduled market mover for crypto.', 'US jobs report (NFP)': 'Non-farm payrolls, 8:30 AM ET. Strong jobs = fewer rate cuts.' };
   out.forEach(e => { e.desc = DESCS[e.title] || 'US macro release — dollar liquidity moves crypto.'; });
   try { await caches.default.put(ck, new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=2700' } })); } catch (e) {}
+  try { if (out.length && env) await env.STATS.put('cal:live', JSON.stringify({ t: Date.now(), ev: out }), { expirationTtl: 10800 }); } catch (e) {} // refresh the KV floor (≤ ~1 write/45min/colo)
   return out;
 }
 // Token unlocks → calendar events. Coinglass `coin/unlock-list` next_unlock_date is BROKEN (always "today"), so the
@@ -2248,6 +2252,19 @@ async function checkOpsAlerts(env) {
           }
         } else if (+(await env.STATS.get('alrt:csig') || 0)) { await env.STATS.delete('alrt:csig'); await tgAdmin(env, '✅ <b>Signal engine recovered</b> — heartbeat ' + ageMin + ' min ago, scanning ' + (sdbg.scanned || 0) + ' coins.'); }
       }
+    } catch (e) {}
+    // PERFORMANCE BUDGETS (owner, 2026-07-24) — p95 over the last hour vs hard budgets; breach = TG alarm,
+    // max 1/day per metric. Needs ≥6 samples so one bad probe can't page. Groups come from perf:ring
+    // (server timings via perfWrap + client UX beacons via /api/perf).
+    try {
+      const BUDGET = { 'prices': 300, 'klines': 300, 'screener': 300, 'trade-other': 300, 'trade-open': 250, 'ws': 500, 'price-age': 500, 'ws-recon': 1000, 'ux-modal': 50, 'ux-chart': 100, 'ux-nav': 150 };
+      let ring = []; try { ring = JSON.parse(await env.STATS.get('perf:ring') || '[]'); } catch (e) {}
+      const cutP = Date.now() - 3600000, dayP = new Date().toISOString().slice(0, 10);
+      const byG = {}; for (const it of ring) { if (!it || (it.t || 0) < cutP) continue; (byG[it.g] = byG[it.g] || []).push(+it.ms || 0); }
+      const breaches = [];
+      for (const g in BUDGET) { const a = byG[g]; if (!a || a.length < 6) continue; a.sort((x, y) => x - y); const p95 = a[Math.min(a.length - 1, Math.floor(a.length * 0.95))];
+        if (p95 > BUDGET[g] && !(await env.STATS.get('alrt:perf:' + g + ':' + dayP))) { await env.STATS.put('alrt:perf:' + g + ':' + dayP, '1', { expirationTtl: 100000 }); breaches.push(g + ' p95=' + p95 + 'ms (budget ' + BUDGET[g] + ', n=' + a.length + ')'); } }
+      if (breaches.length) await tgAdmin(env, '📉 <b>PERFORMANCE BUDGET BREACH</b>\n' + breaches.map(x => '· ' + x).join('\n') + '\nDetail: ops → Performance tab.');
     } catch (e) {}
     const cfg = await opsCfg(env); if (!cfg.alerts) return;
     const today = new Date().toISOString().slice(0, 10);
@@ -6288,27 +6305,35 @@ async function handleAiChart(url, request, env) {
 // P0 — server-side trading for the WEB user (session-cookie auth). The server takes the live price, fills,
 // and writes journal-shaped trades (src:'srv') through the same UserStore journal every existing surface reads
 // (My Trades, tradeev, XP, leaderboards, multi-device pull) — so nothing downstream needs migrating.
-async function handleTrade(url, request, env) {
+async function handleTrade(url, request, env, ctx) {
+  const T0 = Date.now(), marks = [];
+  const mk = (n, t) => marks.push(n + ';dur=' + (Date.now() - t));
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS };
-  const jt = (o, st) => new Response(JSON.stringify(o), { status: st || 200, headers: jh });
+  const jt = (o, st) => { const h = { ...jh }; if (marks.length) h['server-timing'] = marks.join(', ') + ', total;dur=' + (Date.now() - T0); return new Response(JSON.stringify(o), { status: st || 200, headers: h }); };
   let uid = '';
   const tok = getCookie(request, SESS_COOKIE);
+  const tS = Date.now();
   if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) uid = su.id; }
+  mk('session', tS);
   const adminUid = url.searchParams.get('uid'); // owner testing hook, same pattern as missions/academy
   if (adminUid && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) uid = adminUid;
   if (!uid) return jt({ error: 'login_required' }, 401);
   const path = url.pathname.slice('/api/trade'.length) || '/';
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
   if (path === '/open' && request.method === 'POST') {
-    // light per-user rate limit: 20 opens/min
-    try { const rk = 'trl:' + uid + ':' + Math.floor(Date.now() / 60000); const n = +(await env.STATS.get(rk)) || 0; if (n >= 20) return jt({ error: 'rate_limited' }, 429); await env.STATS.put(rk, String(n + 1), { expirationTtl: 120 }); } catch (e) {}
+    // light per-user rate limit: 20 opens/min (the count write is non-blocking — profiled 2026-07-24, the fill path pays only the read)
+    const tR = Date.now();
+    try { const rk = 'trl:' + uid + ':' + Math.floor(Date.now() / 60000); const n = +(await env.STATS.get(rk)) || 0; if (n >= 20) return jt({ error: 'rate_limited' }, 429); const putP = env.STATS.put(rk, String(n + 1), { expirationTtl: 120 }); if (ctx) ctx.waitUntil(putP.catch(() => {})); else await putP; } catch (e) {}
+    mk('ratelimit', tR);
     const sym = String(b.sym || b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
     const side = b.side === 'short' ? 'short' : 'long';
     const margin = +b.margin || 0, lev = Math.min(1000, Math.max(1, +b.lev || 1));
     if (!sym) return jt({ error: 'symbol_required' }, 400);
     if (!(margin >= 1)) return jt({ error: 'margin_min_1' }, 400);
     if (margin > 100000) return jt({ error: 'margin_max_100000' }, 400);
+    const tP = Date.now();
     const pd = await fetchPriceCached(sym);
+    mk('price', tP);
     if (!pd || !(+pd.price > 0)) return jt({ error: 'unknown_symbol', symbol: sym }, 404);
     // P1 realism: slippage against the trader — perfect last-price fills teach bad habits. Majors 0.01%, thinner books 0.05%.
     const SLIP_MAJORS = { BTC: 1, ETH: 1, SOL: 1, BNB: 1, XRP: 1, DOGE: 1, ADA: 1, LINK: 1, AVAX: 1, LTC: 1 };
@@ -6320,7 +6345,9 @@ async function handleTrade(url, request, env) {
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jt({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jt({ error: 'tp_wrong_side', live: entry }, 400);
     const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: 0.00055, status: 'open', pnl: null, src: 'srv' }; // taker 0.055%/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
+    const tD = Date.now();
     const r = await usersDO(env, '/botopen', { uid, t, via: 'site' });
+    mk('do_fill', tD);
     if (r && r.error) return jt(r, 400);
     return jt({ ok: true, position: t });
   }
@@ -7339,7 +7366,7 @@ export default {
     if (url.pathname === '/api/alerts' || url.pathname.startsWith('/api/alerts/')) return handleAlerts(url, env, request);
     if (url.pathname === '/api/push' || url.pathname.startsWith('/api/push/')) return handlePush(url, env, request);
     if (url.pathname === '/api/bot' || url.pathname.startsWith('/api/bot/')) return handleBot(url, request, env, ctx);
-    if (url.pathname.startsWith('/api/trade/')) return perfWrap(env, ctx, url.pathname.indexOf('/open') > 0 ? 'trade-open' : 'trade-other', 1, () => handleTrade(url, request, env)); // P0 server-side trading (session auth) — every fill is timed for MarginPad Health
+    if (url.pathname.startsWith('/api/trade/')) return perfWrap(env, ctx, url.pathname.indexOf('/open') > 0 ? 'trade-open' : 'trade-other', 1, () => handleTrade(url, request, env, ctx)); // P0 server-side trading (session auth) — every fill is timed for MarginPad Health
     if (url.pathname === '/api/announce') return handleAnnounce(url, env, request);
     if (url.pathname === '/api/ai/chart') return handleAiChart(url, request, env);
     if (url.pathname === '/api/ai/admin') return handleAiAdmin(url, request, env);
@@ -7604,6 +7631,9 @@ export default {
           const wsv = +pb.ws, fpv = +pb.fps;
           if (isFinite(wsv) && wsv >= 0 && wsv < 5000) perfPush(env, ctx, 'ws', wsv, true); // >5s = client clock skew / stale-tab tick, not real WS latency (a 21.6s "sample" polluted the ring 2026-07-24)
           if (isFinite(fpv) && fpv >= 1 && fpv <= 120) perfPush(env, ctx, 'fps', fpv, true);
+          // UX budget metrics (worst observed per 5-min client window): mo=modal open, cs=chart TF switch, nav=SPA transition, pa=live price age, rc=WS reconnect
+          const UXC = { mo: ['ux-modal', 10000], cs: ['ux-chart', 30000], nav: ['ux-nav', 30000], pa: ['price-age', 120000], rc: ['ws-recon', 60000] };
+          for (const uk in UXC) { const uv = +pb[uk]; if (isFinite(uv) && uv >= 0 && uv < UXC[uk][1]) perfPush(env, ctx, UXC[uk][0], uv, true); }
           ctx.waitUntil(perfFlush(env));
         }
       } catch (e) {}

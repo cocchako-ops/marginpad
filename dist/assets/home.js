@@ -145,7 +145,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   // REST is only a FALLBACK: prices[] is shared with the live WS feed (window.mpLivePrices). Never clobber a
   // fresh WS tick with the slower/edge-cached /api/price value — that mismatch was the ±$1k position flicker.
   function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
-  function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross;/* fee-free paper P&L: shows pure price move so it isn't negative at entry */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
+  function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-((+e.qty||0)*(e.entry+live)*(+e.feeRate||0))-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L — legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
   function checkClose(e,m){if(e.status!=='open')return false;var dir=m.long?1:-1;
     // ROOT-CAUSE GUARD (proven from [LIQ-DECISION] logs): only decide an exit when there is a REAL market price for the
     // symbol. When prices[sym] is unset/seed, metrics() falls back to EACH trade's OWN entry — so two open trades on the
@@ -156,7 +156,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var px=ccPx(e.sym,m.live);                                 // spike-validated: a lone >2.5% bad print can't fire an exit
     try{var _tb=window.__mpTicks||(window.__mpTicks={});var _ta=_tb[e.sym]||(_tb[e.sym]=[]);_ta.push({t:Date.now(),rawLive:+m.live,px:+px,priceMap:(prices[e.sym]?+prices[e.sym].p:null),seed:(prices[e.sym]&&prices[e.sym].seed)||false});if(_ta.length>25)_ta.shift();}catch(_){} // DIAG: per-symbol tick trail
     var clamp=function(p){return (+e.margin>0&&p!=null&&p<-(+e.margin))?-(+e.margin):p;}; // a paper loss can never exceed the isolated margin (an SL set BEYOND liq used to book more than −margin)
-    var pnlAt=function(exit){return (e.qty!=null&&isFinite(e.qty))?e.qty*(exit-e.entry)*dir:null;};
+    var pnlAt=function(exit){return (e.qty!=null&&isFinite(e.qty))?e.qty*(exit-e.entry)*dir-((+e.qty||0)*(e.entry+exit)*(+e.feeRate||0))-(+e.fund||0):null;};
     var tp=e.tp!=null&&(m.long?px>=e.tp:px<=e.tp);
     var sl=e.stop!=null&&(m.long?px<=e.stop:px>=e.stop);
     var liqHit=m.liq>0&&(m.long?px<=m.liq:px>=m.liq);
@@ -336,11 +336,11 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     _linesSig=null;drawLines();applySignals();hideSkel(); } // reset the line-diff so lines are re-asserted after a full setData
   function preloadTfs(sym,curTf){ if(window.innerWidth<721)return; /* mobile: skip the 6-TF prewarm (~150KB/symbol) — TF switches just fetch on demand (edge-cached); desktop keeps instant switching */ ['1','5','15','60','240','1440','10080'].forEach(function(tf){ if(tf===curTf)return; var ck=sym+'|'+tf; if(klCache[ck])return; fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(kd&&kd.length)klCache[ck]=kd;}); }); }
   function loadKlines(){var sym=formSym();chartSym=sym;var tf=chartTf;try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){}bars=[];loadingMore=false;noMore=false;
-    var ck=sym+'|'+tf,cached=klCache[ck];
-    if(cached&&cached.length&&candle)renderKlines(cached); // INSTANT from the preload cache — no flash on a TF/symbol switch
+    var ck=sym+'|'+tf,cached=klCache[ck],_csT=performance.now(); // UX budget: TF/symbol switch → candles painted
+    if(cached&&cached.length&&candle){renderKlines(cached);try{window.__mpUxm&&window.__mpUxm('cs',performance.now()-_csT);}catch(e){}} // INSTANT from the preload cache — no flash on a TF/symbol switch
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(sym!==chartSym||tf!==chartTf)return; // user switched again before this resolved → drop the stale response
-      if(kd&&kd.length){klCache[ck]=kd;clearNoData();renderKlines(kd);}else if(!cached){hideSkel();showNoData(sym);} // empty klines = coin our feed can't resolve → show a message, don't leave a silent blank/frozen chart
+      if(kd&&kd.length){klCache[ck]=kd;clearNoData();renderKlines(kd);if(!(cached&&cached.length))try{window.__mpUxm&&window.__mpUxm('cs',performance.now()-_csT);}catch(e){}}else if(!cached){hideSkel();showNoData(sym);} // empty klines = coin our feed can't resolve → show a message, don't leave a silent blank/frozen chart
       preloadTfs(sym,tf); // warm the other timeframes in the background so the next switch is instant
     }); }
   // quietly re-sync candles with the true exchange OHLC WITHOUT scrolling the view — self-heals a phantom wick a bad live
@@ -546,6 +546,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       if(e.qty!=null&&isFinite(e.qty)){part.qty=e.qty*f;e.qty=e.qty*(1-f);}
       if(+e.margin>0){part.margin=+e.margin*f;e.margin=+e.margin*(1-f);}
       if(+e.notional>0){part.notional=+e.notional*f;e.notional=+e.notional*(1-f);}
+      if(+e.fund){part.fund=+e.fund*f;e.fund=+e.fund*(1-f);}
       var pnl=(part.qty!=null&&isFinite(part.qty))?part.qty*(exitPx-e.entry)*dir:0;
       if(+part.margin>0&&pnl<-(+part.margin))pnl=-(+part.margin);
       part.status=pnl>=0?'win':'loss';part.exit=exitPx;part.closeTs=Date.now();part.pnl=pnl;part.partial=Math.round(f*100);
@@ -658,7 +659,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function tsf(t){if(!t)return '';var d=new Date(t),MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return d.getDate()+' '+MO[d.getMonth()]+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
-  function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=gross;/* fee-free paper P&L: shows pure price move so it isn't negative at entry */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,margin:margin};}
+  function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-((+e.qty||0)*(e.entry+live)*(+e.feeRate||0))-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L — legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,margin:margin};}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e,true)
       +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
@@ -677,6 +678,39 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       +'<div class="pp-foot">'+dur(Date.now()-e.ts)+' '+MT('jOpenLc','open')+'</div>'
       +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button><button class="ed" data-act="sltp" data-id="'+e.id+'">SL/TP</button></div>'
       +'<div class="pp-times">'+MT('jOpened','Opened')+' '+tsf(e.ts)+'</div></div>';}
+  
+  /* fee breakdown (P1 realism): itemize what this closed trade actually cost */
+  function feeBrk(e){var qty=+e.qty||0,fr=+e.feeRate||0,entry=+e.entry||0,exit=(e.exit!=null?+e.exit:entry);
+    var fo=qty*entry*fr,fc=qty*exit*fr,fu=+e.fund||0;
+    var MJ={BTC:1,ETH:1,SOL:1,BNB:1,XRP:1,DOGE:1,ADA:1,LINK:1,AVAX:1,LTC:1};
+    var slip=(e.src==='srv')?qty*entry*(MJ[String(e.sym||'').toUpperCase()]?0.0001:0.0005):null;
+    return {fo:fo,fc:fc,fu:fu,slip:slip,total:fo+fc+fu};}
+  function feeF(v){v=Math.abs(v);return '$'+(v>=0.005?v.toFixed(2):v.toFixed(4));}
+  function feeHas(e){return (e.status==='win'||e.status==='loss')&&((+e.feeRate>0)||(+e.fund));}
+  function feeLbl(e){var b=feeBrk(e);return (b.total<0?'+':'\u2212')+feeF(b.total);}
+  function feeBdHtml(e){var b=feeBrk(e);
+    return '<div class="pp-feebd" data-fbwrap><div class="fb-h">'+MT('jFeeBd','What this trade cost')+'<span class="fb-x" data-fbx role="button" aria-label="Close">\u2715</span></div>'
+      +'<div class="fb-r"><span>'+MT('jFeeOpen','Open fee')+' <i>(0.055%)</i></span><b>\u2212'+feeF(b.fo)+'</b></div>'
+      +'<div class="fb-r"><span>'+MT('jFeeClose','Close fee')+' <i>(0.055%)</i></span><b>\u2212'+feeF(b.fc)+'</b></div>'
+      +(b.fu?'<div class="fb-r"><span>'+MT('jFeeFund','Funding')+' <i>(8h)</i></span><b'+(b.fu<0?' class="fb-rec"':'')+'>'+(b.fu<0?'+'+feeF(b.fu)+' '+MT('jFeeRec','received'):'\u2212'+feeF(b.fu))+'</b></div>':'')
+      +((b.slip!=null&&b.slip>0)?'<div class="fb-r fb-dim"><span>'+MT('jFeeSlip','Entry slippage')+'</span><b>\u2248 \u2212'+feeF(b.slip)+' <i>'+MT('jFeeSlipN','(in the fill price)')+'</i></b></div>':'')
+      +'<div class="fb-t"><span>'+MT('jFeeTot','Total costs')+'</span><b'+(b.total<0?' class="fb-rec"':'')+'>'+(b.total<0?'+':'\u2212')+feeF(b.total)+'</b></div>'
+      +'<div class="fb-n">'+MT('jFeeNote','Already settled into this P&L \u2014 the same costs a real exchange charges.')+'</div></div>';}
+  if(!window._mpFeeWired){window._mpFeeWired=1;
+    document.addEventListener('click',function(ev){
+      var x=ev.target.closest&&ev.target.closest('[data-fbx]');
+      if(x){var w=x.closest('.pp-feebd');if(w)w.classList.remove('on');ev.stopPropagation();ev.preventDefault();return;}
+      var f=ev.target.closest&&ev.target.closest('.pp-fee');
+      if(f){ev.stopPropagation();ev.preventDefault();
+        var card=f.closest('.pp');if(!card)return;
+        var bd=card.querySelector('.pp-feebd');if(!bd)return;
+        var was=bd.classList.contains('on');
+        try{document.querySelectorAll('.pp-feebd.on').forEach(function(o){o.classList.remove('on');});}catch(_){}
+        if(!was)bd.classList.add('on');
+        return;}
+      try{document.querySelectorAll('.pp-feebd.on').forEach(function(o){if(!o.contains(ev.target))o.classList.remove('on');});}catch(_){}
+    },true);}
+
   function closedCard(e){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e)
       +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
@@ -689,7 +723,9 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
         +'<div><span>'+MT('jHeld','Held')+'</span><b>'+(e.closeTs?dur(e.closeTs-e.ts):'—')+'</b></div>'
         +'<div><span>'+MT('jSize2','Size')+'</span><b>'+((+e.margin>0)?money(+e.margin)+(e.partial?' ('+e.partial+'%)':''):'—')+'</b></div>'
         +'<div><span>'+MT('jValue','Value')+'</span><b>'+((+e.margin>0)?money(+e.margin*((+e.lev>0)?+e.lev:1)):'—')+'</b></div>'
+        +(feeHas(e)?'<div><span>'+MT('jFees','Fees')+'</span><b class="pp-fee" role="button" tabindex="0" title="'+MT('jFeeTip','Tap for the fee breakdown')+'">'+feeLbl(e)+'</b></div>':'')
       +'</div>'
+      +(feeHas(e)?feeBdHtml(e):'')
       +'<div class="pp-btns"><button class="ch" data-act="chart" data-id="'+e.id+'">'+CHART_SVG+MT('jChart','Chart')+'</button><button class="pt" data-act="ptrade" data-id="'+e.id+'">'+MT('jPaperTrade','Paper Trade')+'</button></div>'
       +'<div class="pp-times">'+MT('jOpened','Opened')+' '+tsf(e.ts)+(e.closeTs?(' \u00b7 '+MT('jClosed','Closed')+' '+tsf(e.closeTs)):'')+'</div></div>';}
   function rr(x,X,Y,w,h,r){x.beginPath();x.moveTo(X+r,Y);x.arcTo(X+w,Y,X+w,Y+h,r);x.arcTo(X+w,Y+h,X,Y+h,r);x.arcTo(X,Y+h,X,Y,r);x.arcTo(X,Y,X+w,Y,r);x.closePath();}
@@ -793,16 +829,36 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var stop=isFinite(sl)?sl:null;                          // optional user SL; the position still auto-liquidates at `liq`
     var rr=(isFinite(tp)&&isFinite(sl))?Math.abs(tp-entry)/Math.abs(entry-sl):NaN;
     if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; // enforce open-trade limits + one-way mode (no long+short hedge)
-    var data=load();
-    data.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,trail:trail,be:be,hwm:entry,lev:L,rr:isFinite(rr)?rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:feeRate,status:'open',pnl:null});
-    if(window.mpLivePrices&&sym)window.mpLivePrices[sym]={p:entry,t:Date.now()}; // start P&L at exactly 0 — kills the phantom -100% / instant-liquidation at open
-    store(data); window._mpLastOpenTs=Date.now(); /* shows live in the My Trades drawer — no popup; stamp the open so the ticket pop only fires for a REAL open */
+    /* P0 dual-write: signed-in opens are SERVER-FILLED (/api/trade/open) — the server takes its own live
+       price and writes the trade into the account journal (src:'srv'). We insert the SERVER position (same
+       id!) locally so the UI is instant and the 12s sync/pull merge is idempotent. Timeout or any error →
+       the classic local open below, so trading never blocks on the network. Anonymous users: local as always. */
+    var _tLocal={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,trail:trail,be:be,hwm:entry,lev:L,rr:isFinite(rr)?rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:feeRate,status:'open',pnl:null};
+    var _finishOpen=function(t){
+      var data=load();
+      data.push(t);
+      if(window.mpLivePrices&&sym)window.mpLivePrices[sym]={p:t.entry,t:Date.now()}; // start P&L at exactly 0 — kills the phantom -100% / instant-liquidation at open
+      store(data); window._mpLastOpenTs=Date.now(); /* shows live in the My Trades drawer — no popup; stamp the open so the ticket pop only fires for a REAL open */
     try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (throttled)
     if(window.mpBuzz)window.mpBuzz([15]); // haptic on open (this IIFE has no local buzz — use the global)
     try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
     var btn=document.getElementById('planSave'),sp=btn&&btn.querySelector('span');
     if(btn&&sp){var o=sp.textContent;btn.classList.add('saved','cooldown');sp.textContent=MT('jOpened','Position opened \u2713');setTimeout(function(){btn.classList.remove('cooldown');},1000);setTimeout(function(){sp.textContent=o;btn.classList.remove('saved');},1120);}
     try{if(window.__mpTrack){window.__mpTrack('paper',(sym||'?')+' '+side);window.__mpTrack('plev',L<=5?'1-5x':L<=20?'5-20x':L<=50?'20-50x':L<=100?'50-100x':'100x+');}}catch(e){}
+      try{drawLines();}catch(e){} // async server path finishes after add() returns — draw lines here too
+    };
+    var _me=null;try{_me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(_){ }
+    if(_me&&window.fetch){
+      var _ac=(typeof AbortController!=='undefined')?new AbortController():null;
+      var _to=setTimeout(function(){try{if(_ac)_ac.abort();}catch(_){}},1400);
+      fetch('/api/trade/open',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',signal:_ac?_ac.signal:undefined,body:JSON.stringify({sym:sym,side:side,lev:L,margin:amt,sl:stop,tp:isFinite(tp)?tp:null})})
+        .then(function(r){return r.json();})
+        .then(function(d2){clearTimeout(_to);
+          if(d2&&d2.ok&&d2.position&&d2.position.id){var t=d2.position;t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.rr=isFinite(rr)?rr:null;_finishOpen(t);}
+          else{_finishOpen(_tLocal);}
+        })
+        .catch(function(){clearTimeout(_to);_finishOpen(_tLocal);});
+    }else{_finishOpen(_tLocal);}
     try{drawLines();}catch(e){} // draw the entry/liq lines the instant the position opens (don't wait for the next 1s tick)
   }
   var saveBtn=document.getElementById('planSave'); if(saveBtn)saveBtn.addEventListener('click',add);
@@ -925,13 +981,13 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(connT){clearTimeout(connT);connT=null;}
     try{ws=new WebSocket('wss://stream.bybit.com/v5/public/linear');}catch(e){return reconnect();}/* USDT-perp stream: covers TRX & virtually every pair (spot was missing many) + matches futures pricing */
     connT=setTimeout(function(){connT=null;if(!ws||ws.readyState!==1){try{ws&&(ws.onclose=null,ws.close());}catch(_){}reconnect();}},10000); // handshake stuck in CONNECTING (mobile radio hand-off / captive portal) never fires onopen/onclose → force a retry
-    ws.onopen=function(){alive=true;retry=0;lastWsTick=Date.now();if(connT){clearTimeout(connT);connT=null;}sendOp('subscribe',order.slice()); // (re)subscribe every wanted symbol (base + dynamic) on connect/reconnect — sendOp chunks at 10/req
+    ws.onopen=function(){alive=true;retry=0;lastWsTick=Date.now();if(connT){clearTimeout(connT);connT=null;}try{if(window.__mpWsDownT){window.__mpUxm&&window.__mpUxm('rc',Date.now()-window.__mpWsDownT);window.__mpWsDownT=0;}}catch(e){}sendOp('subscribe',order.slice()); // (re)subscribe every wanted symbol (base + dynamic) on connect/reconnect — sendOp chunks at 10/req
       if(pingT)clearInterval(pingT);pingT=setInterval(function(){try{ws.send(JSON.stringify({op:'ping'}));}catch(_){}},18000);};
-    ws.onmessage=function(ev){try{var m=JSON.parse(ev.data);if(!m.topic)return;
+    ws.onmessage=function(ev){try{var m=JSON.parse(ev.data);if(m.ts&&isFinite(+m.ts)){var _wl=Date.now()-(+m.ts);if(_wl>-2000&&_wl<30000){var _ww=window.__mpWsLatW;if(!_ww||Date.now()-_ww.t>60000){window.__mpWsLatW={t:Date.now(),v:_wl};}else if(_wl<_ww.v){_ww.v=_wl;}window.__mpWsLat=(window.__mpWsLatW||{}).v;}}if(!m.topic)return;
       if(m.topic.indexOf('publicTrade.')===0&&Array.isArray(m.data)&&m.data.length){var sym=m.topic.slice(12).replace('USDT','');var p=parseFloat(m.data[m.data.length-1].p);if(isFinite(p))stage(sym,p,chgMap[sym]);} // every trade → staged + coalesced per frame
       else if(m.topic.indexOf('tickers.')===0&&m.data){var sym2=m.topic.slice(8).replace('USDT','');var lp=parseFloat(m.data.lastPrice);var chg=(m.data.price24hPcnt!=null&&m.data.price24hPcnt!=='')?parseFloat(m.data.price24hPcnt)*100:null;if(chg!=null&&isFinite(chg))chgMap[sym2]=chg;if(isFinite(lp))stage(sym2,lp,chgMap[sym2]);} // 24h change %
     }catch(_){}};
-    ws.onclose=function(){alive=false;if(pingT){clearInterval(pingT);pingT=null;}if(connT){clearTimeout(connT);connT=null;}reconnect();};
+    ws.onclose=function(){alive=false;try{if(!window.__mpWsDownT)window.__mpWsDownT=Date.now();}catch(e){}if(pingT){clearInterval(pingT);pingT=null;}if(connT){clearTimeout(connT);connT=null;}reconnect();};
     ws.onerror=function(){try{ws.close();}catch(_){}reconnect();}; // some mobile webviews fire onerror WITHOUT a following onclose → reconnect here too (reconnect() is self-guarded against stacking)
   }
   function reconnect(){if(reT)return;retry=Math.min(retry+1,6);reT=setTimeout(function(){reT=null;connect();},Math.min(1200*retry,8000));} // guarded: never stack multiple reconnects
@@ -1615,6 +1671,7 @@ window.addEventListener('load', function () {
   }
   window.mpPlanSetup=mpPlanSetup;
   function applyRoute(path,search){ search=search||'';
+    try{var _uxT=performance.now();requestAnimationFrame(function(){try{window.__mpUxm&&window.__mpUxm('nav',performance.now()-_uxT);}catch(e){}});}catch(e){} // UX budget: SPA transition → next paint
     try{var _ss=document.querySelector('.scr-sheet.on');if(_ss)_ss.classList.remove('on');}catch(e){} // close the screener action sheet so it doesn't carry over onto the new route
     var hc=document.documentElement;
     hc.className=hc.className.replace(/\s*\broute-(paper|charts|calc|screener)\b/g,'');
@@ -1939,7 +1996,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function updTick(s){var row=tickEl.querySelector('.mtk[data-tk="'+s+'"]');if(!row)return;var p=price(s),c=chgv(s),pe=row.querySelector('[data-p]'),ce=row.querySelector('[data-c]');if(p>0){var old=pe._v;pe.textContent=fmt(p);if(old!=null&&p!==old){pe.style.color=p>old?'var(--up)':'var(--red)';setTimeout(function(){pe.style.color='';},260);}pe._v=p;}if(c!=null){ce.textContent=(c>=0?'+':'')+c.toFixed(2)+'%';ce.className='mtk-c '+(c>=0?'up':'dn');}}
   function updTickAll(){TICK.forEach(updTick);}
   function updPanel(){var p=price(sym),c=chgv(sym);if(pxEl&&p>0)rollPx(pxEl,p);if(pxEl&&c!=null){pxEl.classList.toggle('up',c>=0);pxEl.classList.toggle('down',c<0);}if(chgEl&&c!=null){chgEl.textContent=(c>=0?'↑ +':'↓ ')+Math.abs(c).toFixed(2)+'%';chgEl.className='mtp-chg '+(c>=0?'up':'dn');}}/* the open button stays "Open demo trade" — no live price/coin in it */
-  function mtMet(e){var lp=price(e.sym)||e.entry,long=e.side!=='short',lv=+e.lev||1;var move=(lp-e.entry)/e.entry*(long?1:-1);var pnl=e.qty*(lp-e.entry)*(long?1:-1);if(e.margin>0&&pnl<-e.margin)pnl=-e.margin;var roe=e.margin>0?pnl/e.margin*100:move*lv*100;var liq=e.liq||(long?e.entry*(1-(1-0.005)/lv):e.entry*(1+(1-0.005)/lv));var liqDist=(lp-liq)/lp*100*(long?1:-1);return {lp:lp,long:long,pnl:pnl,roe:roe,liq:liq,liqDist:liqDist,move:move};}
+  function mtMet(e){var lp=price(e.sym)||e.entry,long=e.side!=='short',lv=+e.lev||1;var move=(lp-e.entry)/e.entry*(long?1:-1);var pnl=e.qty*(lp-e.entry)*(long?1:-1)-((+e.qty||0)*(e.entry+lp)*(+e.feeRate||0))-(+e.fund||0);if(e.margin>0&&pnl<-e.margin)pnl=-e.margin;var roe=e.margin>0?pnl/e.margin*100:move*lv*100;var liq=e.liq||(long?e.entry*(1-(1-0.005)/lv):e.entry*(1+(1-0.005)/lv));var liqDist=(lp-liq)/lp*100*(long?1:-1);return {lp:lp,long:long,pnl:pnl,roe:roe,liq:liq,liqDist:liqDist,move:move};}
   function pl(v){var a=Math.abs(v),m=a>=1e9?(a/1e9).toFixed(2)+'B':a>=1e6?(a/1e6).toFixed(2)+'M':a.toLocaleString('en-US',{maximumFractionDigits:2});return (v>=0?'+':'−')+'$'+m;}
   function pc(v){return (v>=0?'+':'')+v.toFixed(2)+'%';}
   // render the latest open position as the same "LAST TRADE" torn ticket used in Paper Trade (with a live price + Close)
@@ -1956,14 +2013,15 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     if(!(p>0)){fetch('/api/price?symbol='+sym,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0){if(window.mpLivePrices)window.mpLivePrices[sym]={p:+j.price,t:Date.now()};openPos();}});return;}
     var L=lev,mmr=(window.mpPlanMmr||0.005),notional=amt*L,qty=notional/p,liq=side==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
     var pos={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:side,entry:p,stop:null,tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null};
-    var d=jload();d.push(pos);if(window.mpLivePrices)window.mpLivePrices[sym]={p:p,t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();
+    var _finMt=function(P){var d=jload();d.push(P);if(window.mpLivePrices)window.mpLivePrices[sym]={p:+P.entry,t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();
     try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (throttled)
     try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
     try{if(navigator.vibrate)navigator.vibrate(14);}catch(e){}
-    curPos=pos;updPnl();try{mtRefresh();}catch(e){}
+    curPos=P;updPnl();try{mtRefresh();}catch(e){}
     try{if(window.__mpTrack)window.__mpTrack('paper',sym+' '+side+' '+lev+'x');}catch(e){} /* every open shows in ops Live activity (this quick-tap path was silent) */
     if(goEl){goEl.textContent=(window.mpT&&window.mpT('mtOpened'))||'Position opened ✓';setTimeout(function(){goEl.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';},1300);}
-    try{var _pp=document.getElementById('mtpPnl');if(_pp){var _pr=_pp.getBoundingClientRect();if(_pr.bottom>window.innerHeight-76||_pr.top<0)setTimeout(function(){_pp.scrollIntoView({behavior:'smooth',block:'center'});},380);}}catch(e){}/* UX: bring the live P&L pill into view right after opening — the payoff moment was below the fold */}
+    try{var _pp=document.getElementById('mtpPnl');if(_pp){var _pr=_pp.getBoundingClientRect();if(_pr.bottom>window.innerHeight-76||_pr.top<0)setTimeout(function(){_pp.scrollIntoView({behavior:'smooth',block:'center'});},380);}}catch(e){}/* UX: bring the live P&L pill into view right after opening — the payoff moment was below the fold */};
+    if(window.mpSrvOpen){window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt},function(t){_finMt(t);},function(){_finMt(pos);});}else{_finMt(pos);}}
   // ---- mini chart: Paper-Trade candlestick engine + a live LIQ preview (thin lines, tiny tag, blurred see-through red/green zone) ----
   var chartEl=document.getElementById('mtpChart'),mtCv=null,mtCtx2=null,mtBars=[],mtChartSym=null,mtTagEl=null,_mlgp=0,_mrej=0,_mReload=0,mtReady=false;
   function sizeChart(){if(!chartEl||!term)return;var mtp=term.querySelector('.mtp');if(mtp&&mtp.offsetHeight>120)chartEl.style.height=Math.round(mtp.offsetHeight*1.2)+'px';}
@@ -2318,6 +2376,18 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
 if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('script');_ss.src='/assets/mp-screener.js';_ss.defer=true;document.head.appendChild(_ss);}
 
 ;/* ══════════ inline block from app/index.html line 4935 ══════════ */
+/* P0 dual-write shared helper: server-first open for ANY opener. Signed-in -> POST /api/trade/open
+   (1.4s abort) -> ok(serverPosition) ; anon/timeout/error -> fail() = the caller's classic local open. */
+window.mpSrvOpen=function(payload,ok,fail){
+  var me=null;try{me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();}catch(e){}
+  if(!me||!window.fetch){fail();return;}
+  var ac=(typeof AbortController!=='undefined')?new AbortController():null;
+  var to=setTimeout(function(){try{if(ac)ac.abort();}catch(e){}},1400);
+  fetch('/api/trade/open',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',signal:ac?ac.signal:undefined,body:JSON.stringify(payload)})
+    .then(function(r){return r.json();})
+    .then(function(d){clearTimeout(to);if(d&&d.ok&&d.position&&d.position.id)ok(d.position);else fail();})
+    .catch(function(){clearTimeout(to);fail();});
+};
 /* Daily-visit streak + comeback hook — pure client (localStorage), reaches every visitor. Builds a daily-return habit; window.mpStreak is exposed for the faucet/league to read. */
 (function(){try{
   var K='mp_streak';
@@ -2328,7 +2398,13 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
   window.mpStreak=s;
   if(!returning)return; // only nudge on a real return visit (new day), never on first-ever visit or same-day reloads
   var n=s.d||1,el=document.getElementById('mpStreak');if(!el)return;
-  var sub=n>=2?('Day '+n+' in a row — don’t break it. Set a price alert so you never miss a move.'):'Welcome back! Come back daily to build a streak.';
+  var line;
+  if(n>=30)line='A month straight. At this point the market checks on YOU.';
+  else if(n>=14)line='Two weeks deep — this is what discipline looks like.';
+  else if(n>=7)line='A full week. Most people quit by Wednesday.';
+  else if(n>=3)line='Day '+n+'. Habits beat hunches — keep stacking.';
+  else line='Back-to-back days. The chart noticed.';
+  var sub=n>=2?(line+' Set a price alert so you never miss a move.'):'Welcome back. Show up tomorrow and this becomes a streak.';
   el.innerHTML='<span class="fr">🔥</span><div style="flex:1"><b>'+n+'-day streak</b><small>'+sub+'</small>'+(n>=2?'<a class="mps-cta" href="/alerts/">Set a price alert →</a>':'')+'</div><span class="mps-x">×</span>';
   function hide(){el.classList.remove('show');setTimeout(function(){el.hidden=true;},400);}
   // Only the explicit CTA link navigates. Tapping anywhere else on the toast just dismisses it — it must NEVER hijack a tap meant for the page underneath (e.g. the trade button) and send it to /alerts.
@@ -2465,7 +2541,7 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
 (function(){ if(window.mpCloseSheet)return;
   function jload(){try{return JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){return[];}}
   function jstore(a){try{localStorage.setItem('mp_journal',JSON.stringify(a));}catch(e){}}
-  function mx(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);if(margin>0&&pnl!=null&&pnl<-margin)pnl=-margin;var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;return{live:live,long:long,move:move,pnl:pnl,margin:margin,roe:roe};}
+  function mx(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1)-((+e.qty||0)*(e.entry+live)*(+e.feeRate||0))-(+e.fund||0):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);if(margin>0&&pnl!=null&&pnl<-margin)pnl=-margin;var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;return{live:live,long:long,move:move,pnl:pnl,margin:margin,roe:roe};}
   function fm(x){x=+x||0;var n=x<0;x=Math.abs(x);return (n?'-$':'$')+x.toLocaleString('en-US',{maximumFractionDigits:2});}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   var ov=null,pct=100,curId=null,after=null,syncT=null;
@@ -2517,13 +2593,23 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
   function go(){ var d=jload(),e=null;for(var i=0;i<d.length;i++)if(d[i].id===curId){e=d[i];break;}
     if(!e||e.status!=='open'){hide();return;}
     var m=mx(e),f=Math.min(100,Math.max(5,pct))/100;
+    /* P0 dual-write: server-filled trades (src:'srv') also close ON THE SERVER (fire-and-forget) so it
+       learns instantly; the local apply below stays for instant UX and the regular journal sync converges
+       both sides. Failure = exactly today's behavior. */
+    var _pid9=null;
+    try{var _me9=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();
+      if(_me9&&e.src==='srv'&&window.fetch){
+        if(f<1)_pid9=String(e.id)+'p'+Date.now().toString(36)+Math.floor(Math.random()*1e3); // shared part id → local split and server split converge on ONE row
+        fetch('/api/trade/close',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',keepalive:true,body:JSON.stringify({id:e.id,pct:Math.round(f*100),pid:_pid9})}).catch(function(){});}
+    }catch(_){}
     if(f>=1){ fullClose(e,m); }
     else{
       var part={};for(var k in e)if(Object.prototype.hasOwnProperty.call(e,k))part[k]=e[k];
-      part.id=String(e.id)+'p'+Date.now().toString(36)+Math.floor(Math.random()*1e3);
+      part.id=_pid9||(String(e.id)+'p'+Date.now().toString(36)+Math.floor(Math.random()*1e3));
       if(e.qty!=null&&isFinite(e.qty)){part.qty=e.qty*f;e.qty=e.qty*(1-f);}
       if(+e.margin>0){part.margin=+e.margin*f;e.margin=+e.margin*(1-f);}
       if(+e.notional>0){part.notional=+e.notional*f;e.notional=+e.notional*(1-f);}
+      if(+e.fund){part.fund=+e.fund*f;e.fund=+e.fund*(1-f);}
       var pnl=(m.pnl!=null?m.pnl:(m.move*(+part.margin>0?(part.margin*(+e.lev>0?+e.lev:1)):0)))||0;
       if(m.pnl!=null)pnl=m.pnl*f;
       part.status=pnl>=0?'win':'loss';part.exit=m.live;part.closeTs=Date.now();part.pnl=pnl;part.partial=Math.round(f*100);
@@ -2594,7 +2680,7 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
         setTimeout(function(){try{wrap.parentNode&&wrap.parentNode.removeChild(wrap);}catch(_){}} ,1100); };
     }catch(e){return null;}
   }
-  window.mpCloseSheet=show;
+  window.mpCloseSheet=function(id,cb){var _t0=performance.now();var r=show(id,cb);try{requestAnimationFrame(function(){try{window.__mpUxm&&window.__mpUxm('mo',performance.now()-_t0);}catch(e){}});}catch(e){}return r;}; // UX budget: modal open → next paint
 })();
 
 ;/* ══════════ SL/TP edit sheet (owner tasks 2026-07 + 2026-07-13 multi-level): edit stop-loss / take-profit
@@ -2745,3 +2831,24 @@ if(/^\/screener\/?$/.test(location.pathname)){var _ss=document.createElement('sc
     document.addEventListener('visibilitychange', function () { if (!document.hidden) hb(); });
   } catch (e) {}
 })();
+
+/* MarginPad Health probe: once per ~5 min per client, beacon real WS latency (Bybit msg.ts delta) + chart FPS. */
+(function(){try{
+  if(!window.fetch||!navigator.sendBeacon)return;
+  window.__mpUx={};window.__mpUxm=function(k,v){try{if(!isFinite(v)||v<0)return;var u=window.__mpUx;if(u[k]==null||v>u[k])u[k]=v;}catch(e){}};
+  function fps(cb){var n=0,t0=performance.now();function f(){n++;if(performance.now()-t0<2000)requestAnimationFrame(f);else cb(Math.round(n/((performance.now()-t0)/1000)));}requestAnimationFrame(f);}
+  function probe(){
+    if(document.hidden)return;
+    var last=0;try{last=+localStorage.getItem('mp_perf_ts')||0;}catch(e){}
+    if(Date.now()-last<300000)return;
+    try{localStorage.setItem('mp_perf_ts',String(Date.now()));}catch(e){}
+    fps(function(f2){
+      var ws=(window.__mpWsLat!=null&&window.__mpWsLat>=0)?Math.round(window.__mpWsLat):null;
+      var payload={};if(ws!=null)payload.ws=ws;payload.fps=f2;
+      try{var u=window.__mpUx||{};for(var k in u){payload[k]=Math.round(u[k]);}window.__mpUx={};}catch(e){}
+      try{var pr=window.mpLivePrices||{},best=1/0,n2=Date.now();for(var s in pr){if(pr[s]&&pr[s].t&&!pr[s].seed)best=Math.min(best,n2-pr[s].t);}if(isFinite(best))payload.pa=Math.max(0,Math.round(best));}catch(e){}
+      try{navigator.sendBeacon('/api/perf',new Blob([JSON.stringify(payload)],{type:'application/json'}));}catch(e){}
+    });
+  }
+  setTimeout(probe,15000);setInterval(probe,320000);
+}catch(e){}})();
