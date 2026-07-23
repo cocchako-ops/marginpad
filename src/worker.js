@@ -4122,13 +4122,13 @@ function renderOpsViz(){
   function pnlCell(x){return '<b style="width:74px;text-align:right;color:'+(x.c.pnl==null?'#5c6b84':(x.c.pnl>=0?'#2ebd85':'#ff6258'))+'">'+(x.c.pnl!=null?((x.c.pnl>=0?'+':'&#8722;')+'$'+Math.round(Math.abs(x.c.pnl)).toLocaleString('en-US')):'&#8212;')+'</b>';}
   upd9('ovzFeed',ff.slice(0,12).map(function(x){
     return '<div class="ovz-feedrow'+(isNew(x)?' ovz-newrow':'')+'"><span style="color:#5c6b84;width:40px">'+tfmt(x.t.ts)+'</span><span class="ovz-dot" style="width:15px;height:15px;font-size:6.5px;background:'+ovzCoinCol(x.sy)+'">'+esc(x.sy.slice(0,2))+'</span><span style="width:72px;color:#dbe4f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(x.sy)+' '+x.c.lev+'x</span>'+(isNew(x)?'<i class="ovz-newpill">NEW</i>':'')+'<span style="width:44px;font-weight:800;color:'+(x.c.dead?'#a06bff':(x.c.long?'#2ebd85':'#ff6258'))+'">'+(x.c.dead?'LIQ':(x.c.long?'Long':'Short'))+'</span><b style="width:74px;text-align:right;color:#c2f64a">'+ovzMoney(x.m)+'</b>'+pnlCell(x)+'<span style="flex:1;text-align:right;color:#8fa3c4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" data-ovt="'+esc(x.who)+'">@'+esc(x.who.slice(0,12))+'</span></div>';}).join('')||'<div class="empty" style="padding:12px 0">nothing matches this filter</div>');
-  var mergedTape=(OPS.srv||[]).map(function(ev){return {at:+ev.ts,kind:ev.kind==='close'?(ev.liq?'liqclose':'close'):ev.kind,srv:1,pnl:(ev.pnl!=null?+ev.pnl:null),t:{sym:ev.sym,side:ev.side,lev:ev.lev,margin:ev.margin,username:ev.username,email:ev.email,cc:ev.cc}};});
+  var mergedTape=(OPS.srv||[]).map(function(ev){return {at:+ev.ts,kind:ev.kind==='close'?(ev.liq?'liqclose':'close'):ev.kind,srv:1,via:ev.via||'',pnl:(ev.pnl!=null?+ev.pnl:null),t:{sym:ev.sym,side:ev.side,lev:ev.lev,margin:ev.margin,username:ev.username,email:ev.email,cc:ev.cc}};});
   (OPS.tape||[]).forEach(function(lv){var dup=mergedTape.some(function(sv){return sv.kind===lv.kind&&String(sv.t.sym||'').toUpperCase()===String(lv.t.sym||'').toUpperCase()&&sv.t.side===lv.t.side&&opsWho(sv.t)===opsWho(lv.t)&&Math.abs(sv.at-lv.at)<120000;});if(!dup)mergedTape.push(lv);});
   mergedTape.sort(function(a,b){return b.at-a.at;});
   try{var t9=mergedTape[0];if(t9&&Date.now()-t9.at<20000){var fg9=document.querySelector('#ovzSvg g[data-fk="C:'+String(t9.t.sym||'').toUpperCase()+'"]');if(fg9)fg9.classList.add('ovz-nflash');}}catch(e6){}
   upd9('ovzTape',mergedTape.slice(0,12).map(function(x){var t=x.t,lg=t.side!=='short';var lbl,col;
-    if(x.kind==='open'){lbl='OPENED';col='#2ee6a8';}else if(x.kind==='trim'){lbl='PARTIAL CLOSE';col='#ffb347';}else if(x.kind==='liqhit'){lbl='HIT LIQ';col='#a06bff';}else if(x.kind==='liqclose'){lbl='LIQUIDATED';col='#a06bff';}else{lbl='CLOSED';col='#8fa3c4';}
-    return '<div class="ovz-feedrow"><span style="color:#5c6b84;width:44px">'+ago(x.at)+'</span><b style="width:98px;color:'+col+'">'+lbl+'</b><span style="width:44px;font-weight:800;color:'+(lg?'#2ebd85':'#ff6258')+'">'+(lg?'Long':'Short')+'</span><span style="width:70px;color:#dbe4f5;overflow:hidden;white-space:nowrap">'+esc(String(t.sym||'').toUpperCase())+' '+((+t.lev||1))+'x</span><b style="width:70px;text-align:right;color:#c2f64a">'+ovzMoney(+t.margin||0)+'</b><span style="flex:1;text-align:right;color:#8fa3c4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(x.pnl!=null?'<b style="color:'+(x.pnl>=0?'#2ebd85':'#ff6258')+'">'+(x.pnl>=0?'+':'&#8722;')+'$'+Math.round(Math.abs(x.pnl)).toLocaleString('en-US')+'</b> &middot; ':'')+'<i style="font-style:normal" data-ovt="'+esc(opsWho(t))+'">@'+esc(opsWho(t).slice(0,12))+'</i></span></div>';}).join('')||'<div class="empty" style="padding:12px 0">no trade events in the last 48h &#8212; opens, closes and liquidations show here the moment they happen</div>');
+    if(x.kind==='open'){lbl='OPENED';col='#2ee6a8';}else if(x.kind==='trim'){lbl='PARTIAL CLOSE';col='#ffb347';}else if(x.kind==='liqhit'){lbl='HIT LIQ';col='#a06bff';}else if(x.kind==='liqclose'){lbl='LIQUIDATED';col='#a06bff';}else if(x.kind==='fund'){lbl='FUNDING';col='#7f93b8';}else if(x.kind==='sltp'){lbl='SL/TP SET';col='#38bdf8';}else{lbl='CLOSED';col='#8fa3c4';}
+    return '<div class="ovz-feedrow"><span style="color:#5c6b84;width:44px">'+ago(x.at)+'</span><b style="width:98px;color:'+col+'">'+lbl+'</b><span style="width:44px;font-weight:800;color:'+(lg?'#2ebd85':'#ff6258')+'">'+(lg?'Long':'Short')+'</span><span style="width:70px;color:#dbe4f5;overflow:hidden;white-space:nowrap">'+esc(String(t.sym||'').toUpperCase())+' '+((+t.lev||1))+'x</span><b style="width:70px;text-align:right;color:#c2f64a">'+ovzMoney(+t.margin||0)+'</b><span style="flex:1;text-align:right;color:#8fa3c4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(x.pnl!=null?'<b style="color:'+(x.pnl>=0?'#2ebd85':'#ff6258')+'">'+(x.pnl>=0?'+':'&#8722;')+'$'+(Math.abs(x.pnl)<10?Math.abs(x.pnl).toFixed(2):Math.round(Math.abs(x.pnl)).toLocaleString('en-US'))+'</b> &middot; ':'')+(x.via?'<i style="font-style:normal;color:#4a5872">'+esc(x.via)+'</i> &middot; ':'')+'<i style="font-style:normal" data-ovt="'+esc(opsWho(t))+'">@'+esc(opsWho(t).slice(0,12))+'</i></span></div>';}).join('')||'<div class="empty" style="padding:12px 0">no trade events in the last 48h &#8212; opens, closes and liquidations show here the moment they happen</div>');
   var risky=feed.filter(function(x){return !x.c.dead&&x.c.liqDist!=null&&x.c.liqDist>0&&x.c.liqDist<8&&(!CF||x.sy===CF);}).sort(function(a,b){return a.c.liqDist-b.c.liqDist;});
   var rn=document.getElementById('ovzRiskN');if(rn)rn.textContent=risky.length?risky.length+' within 8% of liq':'';
   upd9('ovzRisk',(risky.slice(0,9).map(function(x){var dd=x.c.liqDist;var col=dd<3?'#ff6258':'#ffb347';var w=Math.max(4,Math.min(100,dd*12.5));
@@ -4199,7 +4199,7 @@ function ovzTrader(who){
     +kpi('closest liq',liqSoon!=null?liqSoon.toFixed(liqSoon<3?2:1)+'%':'&#8212;',liqSoon!=null&&liqSoon<3?'#ff6258':(liqSoon!=null&&liqSoon<10?'#ffb347':'#dbe4f5'));
   var posRows=poss.slice().sort(function(a,b){return (+b.margin||0)-(+a.margin||0);}).slice(0,10).map(function(t){var c=opsCalc(t);
     return '<div class="ovz-feedrow"><span style="width:44px;font-weight:800;color:'+(c.dead?'#a06bff':(c.long?'#2ebd85':'#ff6258'))+'">'+(c.dead?'LIQ':(c.long?'Long':'Short'))+'</span><span style="width:88px;color:#dbe4f5">'+esc(String(t.sym||'').toUpperCase())+' '+c.lev+'x</span><b style="width:80px;text-align:right;color:#c2f64a">'+ovzMoney(c.margin)+'</b><b style="width:88px;text-align:right;color:'+(c.pnl==null?'#5c6b84':(c.pnl>=0?'#2ebd85':'#ff6258'))+'">'+(c.pnl!=null?money9(c.pnl):'&#8212;')+'</b><span style="width:70px;text-align:right;color:'+(c.liqDist!=null&&c.liqDist<3?'#ff6258':'#8fa3c4')+'">'+(c.liqDist!=null?'liq '+c.liqDist.toFixed(1)+'%':'')+'</span><span style="flex:1;text-align:right;color:#5c6b84">'+(t.ts?ago(t.ts):'')+'</span></div>';}).join('')||'<div class="empty" style="padding:8px 0">no open positions right now</div>';
-  var evRows=evs.slice(0,8).map(function(ev){var lbl=ev.kind==='open'?'OPENED':(ev.kind==='trim'?'PARTIAL':(ev.liq?'LIQUIDATED':'CLOSED'));var col=ev.kind==='open'?'#2ee6a8':(ev.kind==='trim'?'#ffb347':(ev.liq?'#a06bff':'#8fa3c4'));
+  var evRows=evs.slice(0,8).map(function(ev){var lbl=ev.kind==='open'?'OPENED':(ev.kind==='trim'?'PARTIAL':(ev.kind==='fund'?'FUNDING':(ev.kind==='sltp'?'SL/TP':(ev.liq?'LIQUIDATED':'CLOSED'))));var col=ev.kind==='open'?'#2ee6a8':(ev.kind==='trim'?'#ffb347':(ev.liq?'#a06bff':'#8fa3c4'));
     return '<div class="ovz-feedrow"><span style="width:46px;color:#5c6b84">'+ago(+ev.ts)+'</span><b style="width:92px;color:'+col+'">'+lbl+'</b><span style="width:44px;font-weight:800;color:'+(ev.side==='short'?'#ff6258':'#2ebd85')+'">'+(ev.side==='short'?'Short':'Long')+'</span><span style="width:80px;color:#dbe4f5">'+esc(ev.sym)+' '+Math.round(+ev.lev||1)+'x</span><b style="width:78px;text-align:right;color:#c2f64a">'+ovzMoney(+ev.margin||0)+'</b><span style="flex:1;text-align:right">'+(ev.pnl!=null?'<b style="color:'+(+ev.pnl>=0?'#2ebd85':'#ff6258')+'">'+money9(+ev.pnl)+'</b>':'')+'</span></div>';}).join('')||'<div class="empty" style="padding:8px 0">no logged events yet (log started 2026-07-11)</div>';
   var el=document.getElementById('ovzModal');
   if(!el){el=document.createElement('div');el.id='ovzModal';document.body.appendChild(el);
@@ -6289,7 +6289,7 @@ async function handleTrade(url, request, env) {
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jt({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jt({ error: 'tp_wrong_side', live: entry }, 400);
     const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: 0.00055, status: 'open', pnl: null, src: 'srv' }; // taker 0.055%/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
-    const r = await usersDO(env, '/botopen', { uid, t });
+    const r = await usersDO(env, '/botopen', { uid, t, via: 'site' });
     if (r && r.error) return jt(r, 400);
     return jt({ ok: true, position: t });
   }
@@ -6302,7 +6302,7 @@ async function handleTrade(url, request, env) {
     const pd = await fetchPriceCached(symC);
     if (!pd || !(+pd.price > 0)) return jt({ error: 'no_price' }, 503);
     const prices = {}; prices[symC.replace(/USDT$/, '')] = +pd.price; prices[symC] = +pd.price;
-    const r = await usersDO(env, '/botclose', { uid, id: String(b.id), pct: b.pct, pid: b.pid, prices });
+    const r = await usersDO(env, '/botclose', { uid, id: String(b.id), pct: b.pct, pid: b.pid, prices, via: 'site' });
     if (r && r.error) return jt(r, 400);
     return jt(r);
   }
@@ -6386,7 +6386,7 @@ async function handleBot(url, request, env, ctx) {
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jb({ error: 'tp_wrong_side', live: entry }, 400);
     // journal-shaped trade so it lands in My Trades exactly like a manual open (src:'bot' marks its origin)
     const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: 0, status: 'open', pnl: null, src: 'bot' };
-    const r = await doCall('/botopen', { uid, t, promos });
+    const r = await doCall('/botopen', { uid, t, promos, via: 'bot' });
     if (r && r.error) return jb(r, 400);
     try { if (env.AE) env.AE.writeDataPoint({ indexes: ['botapi'], blobs: ['event', 'botapi', 'open ' + sym], doubles: [1] }); } catch (e) {}
     return jb(r && r.position ? { ok: true, position: r.position } : { ok: true }, 200);
@@ -6395,7 +6395,7 @@ async function handleBot(url, request, env, ctx) {
     if (!b.id) return jb({ error: 'id_required' }, 400);
     const syms = await openSymsOf();
     const prices = await priceMap(syms);
-    const r = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices, promos });
+    const r = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices, promos, via: 'bot' });
     if (!r) return jb({ error: 'unavailable' }, 503);
     return jb(r, r.error ? 400 : 200);
   }
@@ -6408,7 +6408,7 @@ async function handleBot(url, request, env, ctx) {
   if (path === '/v1/close_all' && request.method === 'POST') {
     const syms = await openSymsOf();
     const prices = await priceMap(syms);
-    const r = await doCall('/botcloseall', { uid, prices, promos });
+    const r = await doCall('/botcloseall', { uid, prices, promos, via: 'bot' });
     return jb(r || { error: 'unavailable' }, r ? 200 : 503);
   }
   if (path === '/v1/account') {
@@ -8781,6 +8781,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS tradeev(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, ts INTEGER, kind TEXT, sym TEXT, side TEXT, lev REAL, margin REAL, pnl REAL, roe REAL, liq INTEGER DEFAULT 0)'); // persistent open/close trade events (diffed on journal sync — real pnl on closes)
     s.exec('CREATE INDEX IF NOT EXISTS tradeev_ts ON tradeev(ts)'); // claimed daily missions (verification runs against uevents) // per-user per-endpoint daily API usage (the ops API tab reads this)
     try { s.exec('CREATE INDEX IF NOT EXISTS tradeev_uid ON tradeev(user_id, ts)'); } catch (e) {} // for per-user window stats (duels)
+    try { s.exec('ALTER TABLE tradeev ADD COLUMN via TEXT'); } catch (e) {} // B3: executor attribution — client / site / bot / sweep / cron / sltp
     s.exec('CREATE TABLE IF NOT EXISTS duels(id TEXT PRIMARY KEY, a_uid TEXT, b_uid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0)'); // friend duels (weekly stat challenges). status: pending/active/declined/done/expired
     try { s.exec('CREATE INDEX IF NOT EXISTS bp_uid ON botpos(uid, ts)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS livepos(did TEXT PRIMARY KEY, json TEXT, cc TEXT, updated INTEGER)'); // anonymous (not-signed-in) open paper positions, keyed by the mp_did device cookie — feeds the ops Live-trades board
@@ -8842,7 +8843,7 @@ export class UserStore {
   // Merge `incoming` trades into the user's stored journal (union by id, close beats open, trim opens-safe) and persist,
   // plus the trade-event log + XP grants. Extracted from the /trades handler so the Bot API writes THROUGH the exact same
   // path as the browser → bot trades appear in My Trades, earn XP, hit the leaderboard and the ops trade feed. Returns the merged array.
-  _syncJournal(uid, incoming, promos, srvAuth) {
+  _syncJournal(uid, incoming, promos, srvAuth, via) {
     const sql = this.state.storage.sql, now = Date.now();
     try { sql.exec('CREATE TABLE IF NOT EXISTS active_srv(user_id TEXT PRIMARY KEY, ts INTEGER)'); } catch (e) {} // A3: index of users with OPEN srv/bot trades — sweeps iterate THIS, not every journal
     incoming = Array.isArray(incoming) ? incoming : [];
@@ -8907,7 +8908,7 @@ export class UserStore {
         if (nIns >= 60 && !(kind === 'close' && pv != null && pv <= 0)) continue; // per-sync cap (20→60); a LOSING close is ALWAYS logged so a heavy trader can't shed losses from the win-rate log in a burst
         const roe = (pv != null && m > 0) ? pv / m * 100 : null;
         const liq9 = (kind === 'close' && pv != null && pv <= -m * 0.985) ? 1 : 0;
-        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq) VALUES(?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9);
+        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via) VALUES(?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10));
         nIns++; try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9)) this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 750, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); }
           if (roe != null) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
             for (var _pi = 0; _pi < _pl.length; _pi++) { var _p = _pl[_pi]; if (!_p || _p.enabled === false) continue; if (!(ts9 >= _p.startMs && ts9 < _p.endMs && _p.endMs > _p.startMs)) continue; if (_p.coins && _p.coins.length && _p.coins.indexOf(_symU) < 0) continue; if (_lv > (+_p.levMax || 1000)) continue; if (roe < (+_p.roeMin || 0)) continue; if (_p.winOnly !== false && !(pv > 0)) continue; if (!_best || (+_p.xp || 0) > (+_best.xp || 0)) _best = _p; }
@@ -9010,7 +9011,7 @@ export class UserStore {
       const jn = this._loadJournal(uid);
       const openN = jn.filter(x => x && x.src === 'bot' && x.status !== 'win' && x.status !== 'loss').length;
       if (openN >= 50) return this.j({ error: 'too_many_open', max: 50 });
-      this._syncJournal(uid, [t], b.promos, true);
+      this._syncJournal(uid, [t], b.promos, true, b.via === 'bot' ? 'bot' : 'site');
       return this.j({ ok: true, position: this._j2bot(t, null) });
     }
     if (path === '/botpositions' || path === '/botclose' || path === '/botcloseall') {
@@ -9025,11 +9026,11 @@ export class UserStore {
         if (t.tp != null && (long ? live >= +t.tp : live <= +t.tp)) return close(+t.tp);
         return null; };
       const autoClosed = this._loadJournal(uid).map(sweep).filter(Boolean);
-      if (autoClosed.length) { autoClosed.forEach(x => { x.sc = 1; }); this._syncJournal(uid, autoClosed, b.promos, true); } // sc = server-executed close (prize-eligible)
+      if (autoClosed.length) { autoClosed.forEach(x => { x.sc = 1; }); this._syncJournal(uid, autoClosed, b.promos, true, 'sweep'); } // sc = server-executed close (prize-eligible)
       const cur = this._loadJournal(uid);
       if (path === '/botcloseall') {
         const closes = cur.filter(t => isOpen(t) && t.src === 'bot').map(t => { const live = PR[t.sym]; if (!(live > 0)) return null; const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0; let pnl = (+t.qty || 0) * (live - (+t.entry || 0)) * dir; if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); }).filter(Boolean);
-        if (closes.length) { closes.forEach(x => { x.sc = 1; }); this._syncJournal(uid, closes, b.promos, true); }
+        if (closes.length) { closes.forEach(x => { x.sc = 1; }); this._syncJournal(uid, closes, b.promos, true, b.via === 'bot' ? 'bot' : 'site'); }
         return this.j({ ok: true, closed: closes.length, positions: closes.map(t => this._j2bot(t, null)) });
       }
       if (path === '/botclose') {
@@ -9038,14 +9039,14 @@ export class UserStore {
         if (!isOpen(t)) return this.j({ error: 'already_closed', position: this._j2bot(t, null) });
         const live = PR[t.sym]; if (!(live > 0)) return this.j({ error: 'no_price' });
         const pct = Math.min(100, Math.max(1, +b.pct || 100)) / 100, long = t.side !== 'short', dir = long ? 1 : -1, entry = +t.entry || 0;
-        if (pct >= 1) { let pnl = (+t.qty || 0) * (live - entry) * dir - (+t.qty || 0) * (entry + live) * (+t.feeRate || 0) - (+t.fund || 0); const margin = +t.margin || 0; if (pnl < -margin) pnl = -margin; const closed = Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now(), sc: 1 }); this._syncJournal(uid, [closed], b.promos, true); return this.j({ ok: true, position: this._j2bot(closed, null) }); }
+        if (pct >= 1) { let pnl = (+t.qty || 0) * (live - entry) * dir - (+t.qty || 0) * (entry + live) * (+t.feeRate || 0) - (+t.fund || 0); const margin = +t.margin || 0; if (pnl < -margin) pnl = -margin; const closed = Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now(), sc: 1 }); this._syncJournal(uid, [closed], b.promos, true, b.via === 'bot' ? 'bot' : 'site'); return this.j({ ok: true, position: this._j2bot(closed, null) }); }
         const part = Object.assign({}, t); part.id = (b.pid && /^[A-Za-z0-9_-]{4,60}$/.test(String(b.pid))) ? String(b.pid) : (t.id + 'p' + Date.now().toString(36)); // pid: client-proposed part id so the optimistic local split and the server split converge on ONE row
         part.qty = (+t.qty || 0) * pct; part.margin = Math.round((+t.margin || 0) * pct * 100) / 100; part.partial = Math.round(pct * 100); part.notional = Math.round(((+t.notional || 0) * pct) * 100) / 100;
         part.fund = Math.round(((+t.fund || 0) * pct) * 1e6) / 1e6;
         let ppnl = part.qty * (live - entry) * dir - part.qty * (entry + live) * (+t.feeRate || 0) - (+part.fund || 0); if (ppnl < -part.margin) ppnl = -part.margin; part.status = ppnl >= 0 ? 'win' : 'loss'; part.exit = live; part.pnl = Math.round(ppnl * 100) / 100; part.closeTs = Date.now();
         const rem = Object.assign({}, t, { qty: (+t.qty || 0) * (1 - pct), margin: Math.round((+t.margin || 0) * (1 - pct) * 100) / 100, notional: Math.round(((+t.notional || 0) * (1 - pct)) * 100) / 100, fund: Math.round(((+t.fund || 0) * (1 - pct)) * 1e6) / 1e6 });
         part.sc = 1;
-        this._syncJournal(uid, [rem, part], b.promos, true);
+        this._syncJournal(uid, [rem, part], b.promos, true, b.via === 'bot' ? 'bot' : 'site');
         return this.j({ ok: true, closed: this._j2bot(part, null), remaining: this._j2bot(rem, live) });
       }
       cur.sort((a, c) => ((+c.closeTs || +c.ts || 0) - (+a.closeTs || +a.ts || 0)));
@@ -9244,7 +9245,8 @@ export class UserStore {
       if (sl != null && (long ? sl >= entry : sl <= entry)) return this.j({ error: 'sl_wrong_side' });
       if (tp != null && (long ? tp <= entry : tp >= entry)) return this.j({ error: 'tp_wrong_side' });
       const upd = Object.assign({}, t, { stop: sl, tp: tp });
-      this._syncJournal(uid, [upd], null, true);
+      this._syncJournal(uid, [upd], null, true, 'sltp');
+      try { sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via) VALUES(?,?,?,?,?,?,?,?,?,?,?)', uid, Date.now(), 'sltp', String(t.sym || '').toUpperCase().slice(0, 12), t.side === 'short' ? 'short' : 'long', +t.lev || 1, +t.margin || 0, null, null, 0, 'site'); } catch (e2) {} // B3 audit: SL/TP edits are invisible to the diff
       return this.j({ ok: true, position: upd });
     }
     if (path === '/tradeopensyms') { // cron sweep support: distinct symbols of ALL open server/bot-filled trades across every journal
@@ -9288,8 +9290,10 @@ export class UserStore {
               const rate = +RT[String(t.sym || '').toUpperCase()];
               const slot = Math.floor(Date.now() / 28800000) * 28800000;
               if (isFinite(rate) && rate !== 0 && (FORCE || (+(t.fundTs || t.ts || 0)) < slot)) {
-                t.fund = Math.round(((+t.fund || 0) + qty * live * rate * dir) * 1e6) / 1e6;
+                const dF = qty * live * rate * dir;
+                t.fund = Math.round(((+t.fund || 0) + dF) * 1e6) / 1e6;
                 t.fundTs = Date.now(); upds.push(t); funded++;
+                try { if (Math.abs(dF) >= 0.005) sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via) VALUES(?,?,?,?,?,?,?,?,?,?,?)', uid, Date.now(), 'fund', String(t.sym || '').toUpperCase().slice(0, 12), long ? 'long' : 'short', +t.lev || 1, margin, Math.round(-dF * 100) / 100, null, 0, 'cron'); } catch (eF) {} // B3 audit: pnl = signed pnl impact (negative = trader paid funding)
               }
             }
             if (long ? live <= (+t.liq || 0) : live >= (+t.liq || 0)) { closes.push(Object.assign({}, t, { status: 'loss', exit: +t.liq || 0, pnl: -margin, closeTs: Date.now(), liquidated: true })); continue; }
@@ -9297,7 +9301,7 @@ export class UserStore {
             if (t.stop != null && (long ? live <= +t.stop : live >= +t.stop)) { closes.push(closeAt(+t.stop)); continue; }
             if (t.tp != null && (long ? live >= +t.tp : live <= +t.tp)) { closes.push(closeAt(+t.tp)); }
           }
-          if (closes.length || upds.length) { closes.forEach(x => { x.sc = 1; }); this._syncJournal(uid, upds.concat(closes), null, true); swept += closes.length; }
+          if (closes.length || upds.length) { closes.forEach(x => { x.sc = 1; }); this._syncJournal(uid, upds.concat(closes), null, true, 'cron'); swept += closes.length; }
         }
       } catch (e) {}
       return this.j({ ok: true, swept, checked, funded });
@@ -9607,7 +9611,7 @@ export class UserStore {
     }
     if (path === '/tradeev') { // ops: persistent trade event history (opens/closes with REAL pnl from the journal)
       const since = +url.searchParams.get('since') || 0;
-      const rows = this.rows('SELECT e.ts,e.kind,e.sym,e.side,e.lev,e.margin,e.pnl,e.roe,e.liq,u.username,u.email,u.cc,u.id uid FROM tradeev e JOIN users u ON u.id=e.user_id WHERE e.ts>? ORDER BY e.ts DESC LIMIT 300', since);
+      const rows = this.rows('SELECT e.ts,e.kind,e.sym,e.side,e.lev,e.margin,e.pnl,e.roe,e.liq,e.via,u.username,u.email,u.cc,u.id uid FROM tradeev e JOIN users u ON u.id=e.user_id WHERE e.ts>? ORDER BY e.ts DESC LIMIT 300', since);
       return this.j({ events: rows });
     }
     if (path === '/opentrades') { // admin Ops board: every signed-in user's OPEN paper positions, flattened + labeled with whose they are
@@ -9780,7 +9784,7 @@ export class UserStore {
       if (!ids.length) return this.j({ feed: [], follows: 0 });
       const ph = ids.map(() => '?').join(',');
       // trade events (opens/closes) from followed accounts, newest first
-      const rows = this.rows('SELECT e.ts,e.kind,e.sym,e.side,e.lev,e.margin,e.pnl,e.roe,e.liq,u.username,u.xp FROM tradeev e JOIN users u ON u.id=e.user_id WHERE e.user_id IN (' + ph + ') ORDER BY e.ts DESC LIMIT 60', ...ids);
+      const rows = this.rows('SELECT e.ts,e.kind,e.sym,e.side,e.lev,e.margin,e.pnl,e.roe,e.liq,e.via,u.username,u.xp FROM tradeev e JOIN users u ON u.id=e.user_id WHERE e.user_id IN (' + ph + ') ORDER BY e.ts DESC LIMIT 60', ...ids);
       const feed = rows.filter(r => r.username).map(r => { const L = xpLevelOf(r.xp || 0); return {
         name: r.username, level: { k: L.k, name: L.name, col: L.col }, ts: r.ts, kind: r.kind,
         sym: r.sym, side: r.side, lev: r.lev, margin: r.margin, pnl: r.pnl, roe: r.roe, liq: r.liq }; });
