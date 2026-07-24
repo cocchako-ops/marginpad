@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8" />
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -17,7 +18,6 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Live Crypto Liquidations — Real-Time Rekt Feed | MarginPad</title>
 <meta name="description" content="Watch crypto futures liquidations happen live. A real-time feed of long & short liquidations across Bybit, OKX, BitMEX, Deribit and more — size, price, exchange and time, updated every few seconds." />
@@ -736,7 +736,7 @@
   loadLiqStats();setInterval(loadLiqStats,60000);
   function validSym(s){s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return s.length>=2&&/[A-Z]/.test(s);} // drop context-less junk like a bare "H"
   function setOffline(off){var el=document.getElementById('rkOffline');if(el)el.hidden=!off;}
-  var REKT_MAINT=true;/* VPS/collector down for maintenance (owner 2026-07-12) — set false + redeploy to re-enable the live feed */
+  var REKT_MAINT=false;/* collector back on the new DigitalOcean droplet (2026-07-24) — live feed ON; flip to true + redeploy for maintenance mode */
   var maintMode=false,_mTick=0;
   function setMaint(on){maintMode=on;var m=document.getElementById('rkMaint');if(m)m.hidden=!on;var f=document.getElementById('rkFeed'),t=document.getElementById('rkTerm'),o2=document.getElementById('rkOffline');if(f)f.style.display=on?'none':'';if(t)t.style.display=on?'none':'';if(on&&o2)o2.hidden=true;} // "Update ongoing" state — collector/VPS feed down; self-heals when data returns
   function poll(){if(document.hidden)return;if(maintMode){_mTick++;if(_mTick%8!==0)return;}fetch('/api/v1/feed?min=1000&limit=80').then(function(r){return r.ok?r.json():null;}).then(function(j){

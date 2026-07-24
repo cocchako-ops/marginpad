@@ -1703,6 +1703,12 @@ async function fetchPrice(sym) {
     const r = await fetch('https://api.mexc.com/api/v3/ticker/24hr?symbol=' + pair, { cf: { cacheTtl: 10 } });
     if (r.ok) { const d = await r.json(); const p = +d.lastPrice, o = +d.openPrice; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: (isFinite(o) && o > 0) ? (p / o - 1) * 100 : 0 }; }
   } catch (e) {}
+  // Binance futures via the collector droplet proxy (2026-07-24) — Binance 403-blocks CF egress, the droplet doesn't.
+  // Deliberately LAST: Bybit stays the price authority (same market as the WS feed); this only rescues tokens nobody above lists.
+  try {
+    const r = await fetch('https://collector.marginpad.io/api/v1/bnc?path=' + encodeURIComponent('/fapi/v1/ticker/24hr') + '&symbol=' + pair, { cf: { cacheTtl: 10 } });
+    if (r.ok) { const d = await r.json(); const p = +d.lastPrice; if (isFinite(p) && p > 0) return { sym: s, price: p, chg: isFinite(+d.priceChangePercent) ? +d.priceChangePercent : 0 }; }
+  } catch (e) {}
   return null;
 }
 // price candles for the interactive heatmap chart (Binance + Bybit fallback, normalized)
