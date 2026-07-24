@@ -7726,6 +7726,19 @@ export default {
       }
       if (q.get('usechannel') === '1') { const c = await env.STATS.get('tg:channel'); if (c) await env.STATS.put('csig:chat', c); } // copy the auto-captured channel id into csig:chat
       if (q.get('test') === '1') return J(await checkChartSignals(env, true));
+      if (q.get('btntest') === '1') { // send a SAMPLE signal (with the new app-deep-link buttons) to the owner DM only — no subscribers touched
+        const sym = String(q.get('sym') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '') || 'BTC';
+        const chat = q.get('chat') || env.TG_ADMIN_CHAT;
+        if (!chat || !env.TELEGRAM_TOKEN) return J({ err: 'no_chat_or_token' });
+        const text = '🟢 <b>BUY signal</b> · ' + sym + '/USDT · <b>1h</b>  <i>(test)</i>\n———\n🎯 Entry  <code>$64,000</code>\n🥇 TP1    <code>$65,300</code>  (+2.0%)\n🏁 TP2    <code>$66,600</code>  (+4.1%)\n🛑 SL     <code>$63,200</code>  (−1.3%)\n\n<i>Test message — tap the buttons below.</i>';
+        const kb = { inline_keyboard: [
+          [{ text: 'Open live chart', url: 'https://marginpad.io/charts?coin=' + sym }],
+          [{ text: 'Binance', url: 'https://marginpad.io/go?ex=binance&sym=' + sym },
+           { text: 'Bybit', url: 'https://marginpad.io/go?ex=bybit&sym=' + sym },
+           { text: 'MEXC', url: 'https://marginpad.io/go?ex=mexc&sym=' + sym }] ] };
+        const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', disable_web_page_preview: true, text, reply_markup: kb });
+        return J({ ok: !!(r && r.ok), chat, sym, tg: r && r.ok ? 'sent' : (r && r.description) });
+      }
       if (q.get('state') === '1') { // READ-ONLY diag: per-symbol signal state via the worker's env.STATS (reliable) — does NOT send
         const cl = ((await env.STATS.get('csig:coins')) || 'BTC ETH SOL BNB XRP DOGE ADA AVAX LINK SUI HYPE').split(/\s+/).filter(Boolean);
         const st = {};
