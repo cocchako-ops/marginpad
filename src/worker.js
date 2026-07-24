@@ -174,10 +174,10 @@ async function heatPoolsCron(env) {
       const px = bars[bars.length - 1].close;
       if (!st || !(st.binH > 0)) st = { last: 0, binH: px * 0.001, alive: {} }; // fixed ~0.1% price bins per coin
       const binH = st.binH, alive = st.alive;
-      let processed = 0;
+      let processed = 0; const swept = [];
       for (let i = 1; i < bars.length; i++) {
         const b = bars[i]; if (b.time <= st.last) continue; processed++;
-        for (const k in alive) { const pr = (+k + 0.5) * binH; if (pr >= b.low && pr <= b.high) delete alive[k]; } // consumed
+        for (const k in alive) { const pr = (+k + 0.5) * binH; if (pr >= b.low && pr <= b.high) { const a0 = alive[k]; if (a0.w >= 500000) swept.push({ t: b.time * 1000, p: Math.round(pr * 1e6) / 1e6, w: Math.round(a0.w), long: a0.long ? 1 : 0 }); delete alive[k]; } } // consumed — big ones get logged (post-sweep annotations)
         const prev = bars[i - 1], notion = (prev.vol || 0) * prev.close || Math.abs(prev.close - prev.open) * 1e4;
         for (const [L, wgt] of HM_LEVS) { const w = notion * wgt * 0.5;
           const bl = Math.floor(prev.close * (1 - 0.995 / L) / binH), bs = Math.floor(prev.close * (1 + 0.995 / L) / binH);
@@ -192,6 +192,7 @@ async function heatPoolsCron(env) {
       for (const k in alive) { const pr = (+k + 0.5) * binH; if (Math.abs(pr - px) / px > 0.30) { delete alive[k]; continue; } ent.push([k, alive[k]]); }
       if (ent.length > 400) { ent.sort((a, b) => b[1].w - a[1].w); for (let i = 400; i < ent.length; i++) delete alive[ent[i][0]]; }
       st.pubAt = Date.now();
+      if (swept.length) { try { let ring = JSON.parse(await env.STATS.get('hmp:swp:' + sym) || '[]'); ring = swept.concat(ring).slice(0, 30); await env.STATS.put('hmp:swp:' + sym, JSON.stringify(ring), { expirationTtl: 7 * 86400 }); } catch (e) {} }
       await env.STATS.put('hmp:st:' + sym, JSON.stringify(st), { expirationTtl: 14 * 86400 });
       const pub = ent.slice(0, 400).map(([k, a]) => ({ p: Math.round(((+k + 0.5) * binH) * 1e6) / 1e6, w: Math.round(a.w), long: a.long ? 1 : 0, t0: a.t0, lev: a.lev }));
       await env.STATS.put('hmp:pub:' + sym, JSON.stringify({ t: Date.now(), price: px, binH: binH, alive: pub }), { expirationTtl: 86400 });
@@ -204,6 +205,7 @@ async function handleHeatPools(url, env) { // GET /api/heatmap/pools?symbol=BTC 
   const ck = new Request('https://marginpad.io/__hmp_' + sym);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   let body = null; try { body = await env.STATS.get('hmp:pub:' + sym); } catch (e) {}
+  try { const sw = await env.STATS.get('hmp:swp:' + sym); if (body && sw) { const o = JSON.parse(body); o.sweeps = JSON.parse(sw); body = JSON.stringify(o); } } catch (e) {}
   const r = new Response(body || '{"alive":[]}', { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
   try { await caches.default.put(ck, r.clone()); } catch (e) {}
   return r;
@@ -7061,6 +7063,13 @@ async function handleAuth(url, request, env, ctx) {
     await grantXp(env, su.id, 'charts', 25, { dayCap: 25, note: 'Analyzed a chart' });
     return jr({ ok: true });
   }
+  if (path === '/heatxp') { // signed-in: reward actually READING the liquidation map (20s+ on page). dayCap = once/day.
+    const tok = getCookie(request, SESS_COOKIE);
+    const su2 = tok && env.USERS ? await sessionUser(env, tok) : null;
+    if (!su2 || !su2.id) return jr({ ok: false, granted: 0 });
+    await grantXp(env, su2.id, 'heatmap', 15, { dayCap: 15, note: 'Read the liquidation map' });
+    return jr({ ok: true });
+  }
   if (path === '/control') { // admin moderation actions
     if (!isAdmin) return jr({ error: 'forbidden' }, 403);
     const r = await stub.fetch(new Request('https://do/control', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) }));
@@ -10455,6 +10464,7 @@ const MISSION_POOL = [
   { mid: 'academy3', title: 'Finish 3 Academy lessons', desc: 'Three lessons in one day — a proper study session', cents: 6, vt: 'academy', va: '', n: 3, cat: 'academy' },
   { mid: 'academy2', title: 'Finish 2 Academy lessons', desc: 'Two lessons. Your future entries will thank you', cents: 5, vt: 'academy', va: '', n: 2, cat: 'academy' },
   { mid: 'academyvisit', title: 'Open the Academy', desc: 'Your path is where you left it. It waited', cents: 2, vt: 'pv', va: '/academy', n: 1, cat: 'academy' },
+  { mid: 'heatvisit', title: 'Read the liquidation map', desc: 'See where the stop-hunts are loaded before you trade', cents: 2, vt: 'pv', va: '/heatmap', n: 1, cat: 'market', url: '/heatmap' },
   // markets / tools discovery
   { mid: 'coins', title: 'Browse the coins market', desc: 'Scan the top of the market — know the terrain', cents: 2, vt: 'pv', va: '/coins', n: 1, cat: 'market' },
   { mid: 'news', title: 'Read the crypto news', desc: 'Read the headlines before they read your P&L', cents: 2, vt: 'pv', va: '/news', n: 1, cat: 'market' },

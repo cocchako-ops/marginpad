@@ -121,6 +121,18 @@
       ctx.fillStyle = lng ? 'rgba(46,189,133,.30)' : 'rgba(255,98,88,.30)'; ctx.fill();
       if (e.notional >= 25000) { ctx.lineWidth = 1.2; ctx.strokeStyle = lng ? '#2ebd85' : '#ff6258'; ctx.stroke(); }
     }
+    // post-sweep annotations: where price recently ate a BIG pool (server-logged)
+    if (S.sweeps && S.sweeps.length) { ctx.font = '700 10px "Space Mono",monospace'; ctx.textAlign = 'center';
+      var shown = 0;
+      for (i = 0; i < S.sweeps.length && shown < 3; i++) { var sv = S.sweeps[i], svt = sv.t / 1000;
+        if (svt < v.t0 || svt > v.t1 || sv.p < pLo || sv.p > pHi) continue; shown++;
+        var sx = X(svt), sy = Y(sv.p);
+        ctx.fillStyle = 'rgba(255,215,90,.95)'; ctx.fillText('\uD83D\uDCA5', sx, sy + 3);
+        var lb = money(sv.w) + ' ' + (sv.long ? 'longs' : 'shorts') + ' liquidated';
+        var lw = ctx.measureText(lb).width;
+        ctx.fillStyle = 'rgba(7,9,12,.85)'; ctx.fillRect(sx + 8, sy - 8, lw + 8, 14);
+        ctx.fillStyle = '#ffd75a'; ctx.textAlign = 'left'; ctx.fillText(lb, sx + 12, sy + 3); ctx.textAlign = 'center';
+      } }
     // top-3 standing pools labelled right on the map — instant read
     var lab = 0, usedY = [];
     for (i = 0; i < P.alive.length && lab < 3; i++) { var tp = P.alive[i];
@@ -207,12 +219,14 @@
           arr.sort(function (a, b) { return b.w - a.w; });
           var pmin = 1 / 0, pmax = -1 / 0; arr.forEach(function (x) { if (x.price < pmin) pmin = x.price; if (x.price > pmax) pmax = x.price; });
           S.pools = { alive: arr, pMin: pmin, pMax: pmax, binH: +srv.binH };
-        } else S.pools = buildPools(S.bars);
+          S.sweeps = srv.sweeps || [];
+        } else { S.pools = buildPools(S.bars); S.sweeps = []; }
+        if (!S._fr || Date.now() - S._fr > 300000) { S._fr = Date.now(); fetch('/api/v1/bnc?path=' + encodeURIComponent('/fapi/v1/premiumIndex') + '&symbol=' + coin + 'USDT').then(function (r) { return r.json(); }).then(function (f) { if (S && f && f.lastFundingRate != null) { S.funding = +f.lastFundingRate; updTargets(); } }).catch(function () {}); }
         if (first || !S.view) { var last = S.bars[S.bars.length - 1]; var step = S.bars[1] ? S.bars[1].time - S.bars[0].time : 60; S.view = { t0: Date.now() / 1000 - w.mins * 60, t1: last.time + step * 5 }; }
       }
       if (res[1] && res[1].events) S.events = res[1].events;
       if (res[2] && +res[2].price > 0) { S.price = +res[2].price; S.chg = +res[2].chg || 0; }
-      updHead(); if (S.loadEl) S.loadEl.style.display = 'none';
+      updHead(); updTargets(); if (S.loadEl) S.loadEl.style.display = 'none';
       sched();
     });
   }
@@ -225,6 +239,25 @@
       var fresh = d.events.filter(function (e) { return !seen[e.ts + '|' + e.price + '|' + e.qty]; });
       if (fresh.length) { S.events = fresh.concat(S.events).slice(0, 900); updHead(); sched(); }
     }).catch(function () {});
+  }
+  function magnetScore(x, px) { var dist = Math.abs(x.price - px) / px; if (dist < 0.0008) dist = 0.0008; var age = Math.max(0.1, (Date.now() / 1000 - x.t0) / 86400); return x.w * Math.pow(age + 0.3, 0.35) / Math.pow(dist * 100, 0.6); }
+  function updTargets() {
+    if (!S || !S.tgEl) return; var px = S.price, P = S.pools; if (!(px > 0) || !P.alive.length) { S.tgEl.innerHTML = ''; return; }
+    var up = [], dn = [];
+    for (var i = 0; i < P.alive.length; i++) { var x = P.alive[i]; if (Math.abs(x.price - px) / px > 0.12) continue; (x.price > px ? up : dn).push(x); }
+    var sc = function (a, b) { return magnetScore(b, px) - magnetScore(a, px); }; up.sort(sc); dn.sort(sc);
+    var cell = function (x) { var d = ((x.price - px) / px * 100); return '<span style="color:' + (x.long ? '#2ebd85' : '#ff6258') + '"><b style="color:#e9e7df">' + fpx(x.price) + '</b> ' + money(x.w) + ' <i style="font-style:normal;color:#5c6b84">' + (d >= 0 ? '+' : '') + d.toFixed(1) + '%</i></span>'; };
+    var h = '<span style="color:#5c6b84;font-weight:700">\uD83C\uDFAF TARGETS</span>';
+    if (up.length) h += '<span style="color:#5c6b84">\u2191</span>' + up.slice(0, 3).map(cell).join(' ');
+    if (dn.length) h += '<span style="color:#5c6b84;margin-left:6px">\u2193</span>' + dn.slice(0, 3).map(cell).join(' ');
+    // squeeze: strong pools close on BOTH sides
+    var wMax = P.alive.length ? P.alive[0].w : 0;
+    var nu = up[0], nd = dn[0];
+    if (nu && nd && Math.abs(nu.price - px) / px < 0.03 && Math.abs(nd.price - px) / px < 0.03 && nu.w > wMax * 0.35 && nd.w > wMax * 0.35) {
+      var lean = S.funding == null ? '' : (S.funding > 0.0001 ? ' \u00b7 longs pay funding \u2192 downside sweep slightly favored' : S.funding < -0.0001 ? ' \u00b7 shorts pay funding \u2192 upside sweep slightly favored' : '');
+      h += '<span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.45);color:#ffd75a;border-radius:7px;padding:2px 8px;font-weight:800">\u26A1 SQUEEZE SETUP' + lean + '</span>';
+    }
+    S.tgEl.innerHTML = h;
   }
   function updHead() {
     if (!S) return;
@@ -315,15 +348,16 @@
     var stEl = el('span', 'hm-stats', '');
     var pxEl = el('div', 'hm-px', '…');
     bar.appendChild(selC); bar.appendChild(selW); bar.appendChild(seg); bar.appendChild(dl); bar.appendChild(sh); bar.appendChild(pxEl); bar.appendChild(stEl);
+    var tgEl = el('div', 'hm-targets'); tgEl.style.cssText = 'display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11.5px "Space Mono",monospace;color:#8fa3c4;margin:0 0 8px;min-height:18px';
     var stage = el('div', 'hm-stage');
     var cv = el('canvas', 'hm-cv'), pf = el('canvas', 'hm-prof'), tip = el('div', 'hm-tip'), loadEl = el('div', 'hm-load', 'Building liquidation map…');
     stage.appendChild(cv); stage.appendChild(pf); stage.appendChild(tip); stage.appendChild(loadEl);
     var foot = el('div', 'hm-foot', '<b>How to read it:</b> bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices are stacking up there — price tends to sweep the brightest ones. Bands disappear the moment price trades through them. Drag to pan · scroll to zoom · double-click resets.<br><b>Data:</b> real liquidations streamed live from <b>Binance · Bybit · OKX · BitMEX · Deribit · Bitfinex</b> — that covers roughly <b>70%+</b> of the market&rsquo;s liquidation flow, not 100% of every venue, but the ones that move the market. The bands are our own estimate computed from live price action (10–100&times; entries at each close).');
-    wrap.appendChild(bar); wrap.appendChild(stage); wrap.appendChild(foot);
+    wrap.appendChild(bar); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(foot);
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
 
-    S = { coin: coin, win: '1D', sideF: 'all', bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
+    S = { coin: coin, win: '1D', sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
     wire();
     selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; S.view = null; S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
     selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; S.view = null; loadAll(true); });
@@ -362,13 +396,14 @@
         window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(txt), '_blank'); // desktop: the PNG just downloaded — attach it to the tweet
       } catch (e2) {} }, 'image/png');
     } catch (e) {} });
-    S.onPrice = function (ev) { var d = ev.detail || {}; if (S && d.sym === S.coin && +d.p > 0) { S.price = +d.p; updHead(); sched(); } };
+    S.onPrice = function (ev) { var d = ev.detail || {}; if (S && d.sym === S.coin && +d.p > 0) { S.price = +d.p; updHead(); if (!S._tgT || Date.now() - S._tgT > 5000) { S._tgT = Date.now(); updTargets(); } sched(); } };
     window.addEventListener('mp:price', S.onPrice);
     try { if (window.mpWS) window.mpWS.sub(coin); } catch (e) {}
     S.timers.push(setInterval(pollEvents, 6000));
     S.timers.push(setInterval(function () { if (S && !document.hidden) loadAll(false); }, 60000));
     S.onVis = function () { if (S && !document.hidden) { loadAll(false); pollEvents(); } };
     document.addEventListener('visibilitychange', S.onVis);
+    S.timers.push(setTimeout(function () { try { fetch('/api/auth/heatxp', { method: 'POST' }); } catch (e) {} }, 20000)); // signed-in: +15 XP once/day for actually reading the map
     S.ro = new ResizeObserver(sched); S.ro.observe(cv); S.ro.observe(pf);
     loadAll(true);
   }

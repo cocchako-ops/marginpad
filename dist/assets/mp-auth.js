@@ -676,7 +676,10 @@
   // cross-device sync: pull the account's stored journal and MERGE it into this device's local journal (union by id; a closed result beats an open one), so every open trade shows on every device the user signs in on.
   function pullTrades() {
     if (!ME) return;
-    fetch('/api/auth/trades', { headers: { accept: 'application/json' } }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+    var _ph = ''; try { _ph = sessionStorage.getItem('mp_pull_h') || ''; } catch (e) {}
+    fetch('/api/auth/trades' + (_ph ? '?h=' + encodeURIComponent(_ph) : ''), { headers: { accept: 'application/json' } }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (d && d.h) { try { sessionStorage.setItem('mp_pull_h', d.h); } catch (e) {} }
+      if (d && d.same) return; // journal unchanged server-side — zero-cost pull (A1)
       if (!d || !Array.isArray(d.journal) || !d.journal.length) return;
       var local = []; try { local = JSON.parse(localStorage.getItem('mp_journal') || '[]') || []; } catch (e) {} if (!Array.isArray(local)) local = [];
       var byId = {}, order = [];
@@ -710,7 +713,8 @@
   }
   document.addEventListener('visibilitychange', function () { dwAccrue(); dwVis = document.visibilityState === 'visible'; dwSince = Date.now(); if (!dwVis) { dwFlush(); syncTrades(); } });
   window.addEventListener('pagehide', dwFlush);
-  setInterval(syncTrades, 12000);
+  setInterval(function () { if (!document.hidden) syncTrades(); }, 12000); // A1: background tabs don't sync — flushed on pagehide + next visible tick
+  window.addEventListener('pagehide', function () { try { var j2 = localStorage.getItem('mp_journal') || ''; if (ME && j2 && j2 !== lastJ && j2.length < 60000 && navigator.sendBeacon) { lastJ = j2; navigator.sendBeacon('/api/auth/trades', new Blob([JSON.stringify({ journal: JSON.parse(j2) })], { type: 'application/json' })); } } catch (e) {} });
   // pull the server journal periodically so trades opened elsewhere — cross-device AND via the Bot API — appear LIVE in My Trades
   setInterval(function () { if (ME && document.visibilityState === 'visible') { try { pullTrades(); } catch (_) {} } }, 14000);
   document.addEventListener('visibilitychange', function () { if (ME && document.visibilityState === 'visible') { try { pullTrades(); } catch (_) {} } });
@@ -748,7 +752,7 @@
 
   /* ===== XP toasts + level-up celebration (2026-07-15) ===== */
   (function () {
-    var SRCN = { trade_hh: 'XP Happy Hour! ⚡', trade_promo: 'XP Promo! ⚡', trade_win: 'Profitable trade', trade: 'Trade closed', checkin: 'Daily check-in', streak: 'Streak bonus', mission: 'Mission complete', faucet: 'Faucet claim', promo: 'Promo post approved', exsign: 'Exchange sign-up', lbprize: 'Competition prize', username: 'Username set', academy: 'Academy', charts: 'Chart analysis 📊', admin: 'Bonus', backfill: 'Loyalty bonus' };
+    var SRCN = { heatmap: 'Liquidation map read 🗺️', trade_hh: 'XP Happy Hour! ⚡', trade_promo: 'XP Promo! ⚡', trade_win: 'Winner, banked', trade: 'Trade closed', checkin: 'Showed up today', streak: 'Streak pays', mission: 'Mission cleared', faucet: 'Faucet claim', promo: 'Promo post approved', exsign: 'Exchange sign-up', lbprize: 'Podium money 🏆', username: 'Name on the board', academy: 'Brain gains', charts: 'Chart time 📊', admin: 'Bonus', backfill: 'Loyalty bonus', duel: 'Duel won ⚔️' };
     var ICON = { bronze: '', silver: '', gold: '', platinum: '', diamond: '' };
     var xpCss = '#mpxpT{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:flex;flex-direction:column;gap:8px;pointer-events:none}'
       + '.mpxp{display:flex;align-items:center;gap:9px;background:#12151d;border:1px solid #2a3550;border-left:3px solid var(--xc,#c2f64a);border-radius:12px;padding:9px 13px;box-shadow:0 12px 34px rgba(0,0,0,.5);font-family:ui-monospace,Consolas,monospace;color:#e9e7df;transform:translateX(120%);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .4s;max-width:260px}'
@@ -779,7 +783,7 @@
     function followToast(name) {
       var host = document.getElementById('mpxpT'); if (!host) { host = document.createElement('div'); host.id = 'mpxpT'; document.body.appendChild(host); }
       var el = document.createElement('div'); el.className = 'mpxp'; el.style.setProperty('--xc', '#38bdf8');
-      el.innerHTML = '<b style="font-size:17px">★</b><span>New follower<br>' + (name ? '@' + esc(String(name).slice(0, 20)) : 'Someone followed you') + '</span>';
+      el.innerHTML = '<b style="font-size:17px">★</b><span>New follower<br>' + (name ? '@' + esc(String(name).slice(0, 20)) : 'Someone’s watching your trades') + '</span>';
       host.appendChild(el); requestAnimationFrame(function () { el.classList.add('on'); });
       setTimeout(function () { el.classList.remove('on'); setTimeout(function () { el.remove(); }, 450); }, 4600);
       try { if (navigator.vibrate) navigator.vibrate([15, 40, 15]); } catch (e) {}
@@ -789,7 +793,7 @@
       var col = lv.col || '#c2f64a';
       var conf = ''; for (var n = 0; n < 60; n++) { var cx = Math.floor(Math.random() * 100), d = (1.4 + Math.random() * 1.6).toFixed(2), dl = (Math.random() * 0.5).toFixed(2), cc = ['#c2f64a', col, '#ffd75a', '#38bdf8', '#ff6a3d'][n % 5]; conf += '<i class="mpxp-cf" style="left:' + cx + '%;background:' + cc + ';animation-duration:' + d + 's;animation-delay:' + dl + 's"></i>'; }
       ov.style.setProperty('--lc', col);
-      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + (window.mpLvlSvg ? window.mpLvlSvg(lv.k, col) : '') + '</div><div class="mpxp-up">Level up</div><div class="mpxp-nm">' + esc(lv.name || '') + '</div><div class="mpxp-sub">You reached <b>' + esc(lv.name || '') + '</b>.' + (lv.next ? ' Next: ' + esc(lv.next) + ' at ' + (lv.nextMin || 0).toLocaleString() + ' XP.' : ' You hit the top tier!') + '</div><button class="mpxp-x" type="button">Nice</button></div>';
+      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + (window.mpLvlSvg ? window.mpLvlSvg(lv.k, col) : '') + '</div><div class="mpxp-up">Level up</div><div class="mpxp-nm">' + esc(lv.name || '') + '</div><div class="mpxp-sub">You climbed to <b>' + esc(lv.name || '') + '</b> — earned, not given.' + (lv.next ? ' Next stop: ' + esc(lv.next) + ' at ' + (lv.nextMin || 0).toLocaleString() + ' XP.' : ' Top of the mountain. The view is P&L-green.') + '</div><button class="mpxp-x" type="button">Back to work</button></div>';
       requestAnimationFrame(function () { ov.classList.add('on'); });
       var close9 = function () { ov.classList.remove('on'); };
       ov.querySelector('.mpxp-x').addEventListener('click', close9);
