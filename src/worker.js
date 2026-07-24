@@ -171,7 +171,7 @@ async function heatPoolsCron(env) {
       if (!kd || !kd.closed || kd.closed.length < 10) continue;
       const bars = kd.closed;
       let st = null; try { st = JSON.parse(await env.STATS.get('hmp:st:' + sym) || 'null'); } catch (e) {}
-      const px = bars[bars.length - 1].close;
+      const px = kd.bars[kd.bars.length - 1].close; // freshest close (forming bar when present) — prune + published price track the LIVE market, not a 15-min-old close
       if (!st || !(st.binH > 0)) st = { last: 0, binH: px * 0.001, alive: {} }; // fixed ~0.1% price bins per coin
       const binH = st.binH, alive = st.alive;
       let processed = 0; const swept = [];
@@ -186,7 +186,14 @@ async function heatPoolsCron(env) {
         }
         st.last = b.time;
       }
-      if (!processed && st.pubAt && Date.now() - st.pubAt < 3600000) continue; // nothing new + fresh pub → skip writes
+      // live sweep: the FORMING bar consumes pools too — a dump must not leave "pierced" bands standing for
+      // 15 min until the bar closes (owner report 2026-07-24). No accumulation from it, st.last untouched.
+      const fb = kd.bars[kd.bars.length - 1];
+      let liveSwept = 0;
+      if (fb && fb.time > st.last && fb.low > 0) {
+        for (const k in alive) { const pr = (+k + 0.5) * binH; if (pr >= fb.low && pr <= fb.high) { const a0 = alive[k]; if (a0.w >= 500000) swept.push({ t: Date.now(), p: Math.round(pr * 1e6) / 1e6, w: Math.round(a0.w), long: a0.long ? 1 : 0 }); delete alive[k]; liveSwept++; } }
+      }
+      if (!processed && !liveSwept && st.pubAt && Date.now() - st.pubAt < 3600000) continue; // nothing new + fresh pub → skip writes
       // prune: keep bins within ±30% of price, cap to the 400 strongest
       const ent = [];
       for (const k in alive) { const pr = (+k + 0.5) * binH; if (Math.abs(pr - px) / px > 0.55) { delete alive[k]; continue; } ent.push([k, alive[k]]); } // ±55% keeps the 2x pools (liq at -49.75%)

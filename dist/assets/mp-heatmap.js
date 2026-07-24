@@ -47,6 +47,7 @@
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function money(n) { n = +n || 0; var a = Math.abs(n); if (a >= 1e9) return '$' + (n / 1e9).toFixed(2) + 'B'; if (a >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M'; if (a >= 1e3) return '$' + (n / 1e3).toFixed(0) + 'K'; return '$' + n.toFixed(0); }
+  function poolGone(x) { return S && S.price > 0 && (x.long ? x.price >= S.price : x.price <= S.price); } // crossed by the live price = consumed, waiting for the server sweep
   function fpx(p) { p = +p; if (!isFinite(p)) return '—'; return p >= 1000 ? p.toLocaleString('en-US', { maximumFractionDigits: 1 }) : p >= 1 ? p.toFixed(3) : p.toPrecision(4); }
   function liqPx(entry, lev, long) { return long ? entry * (1 - (1 - MMR) / lev) : entry * (1 + (1 - MMR) / lev); }
   function tlabel(t) { var d = new Date(t * 1000); var w = S && WINS[S.win].mins >= 4320; return w ? (d.getUTCDate() + '.' + (d.getUTCMonth() + 1) + '.') : (('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2)); }
@@ -105,6 +106,7 @@
     // STANDING pool bands — the heat. Band starts when the crowd started building and runs to the right edge.
     var bh = Math.max(2, H * (P.binH / (pHi - pLo)) * 1.15);
     for (i = P.alive.length - 1; i >= 0; i--) { var s = P.alive[i];
+      if (poolGone(s)) continue;
       if (S.sideF === 'long' && !s.long) continue; if (S.sideF === 'short' && s.long) continue;
       if (s.price < pLo || s.price > pHi) continue;
       var x0 = Math.max(0, X(s.t0)), y = Y(s.price) - bh / 2;
@@ -150,6 +152,7 @@
     // top-3 standing pools labelled right on the map — instant read
     var lab = 0, usedY = [];
     for (i = 0; i < P.alive.length && lab < 3; i++) { var tp = P.alive[i];
+      if (poolGone(tp)) continue;
       if (S.sideF === 'long' && !tp.long) continue; if (S.sideF === 'short' && tp.long) continue;
       if (tp.price < pLo || tp.price > pHi) continue;
       var ly = Y(tp.price), clash = false;
@@ -226,6 +229,7 @@
     // squashed every visible bar to a 2px sliver and the panel read as empty (owner report 2026-07-24)
     var vis = [];
     for (i = 0; i < P.alive.length; i++) { var s0 = P.alive[i];
+      if (poolGone(s0)) continue;
       if (S.sideF === 'long' && !s0.long) continue; if (S.sideF === 'short' && s0.long) continue;
       if (s0.price < pLo || s0.price > pHi) continue; vis.push(s0); }
     var wMax = 0; for (i = 0; i < vis.length; i++) if (vis[i].w > wMax) wMax = vis[i].w;
@@ -322,7 +326,7 @@
   function updTargets() {
     if (!S || !S.tgEl) return; var px = S.price, P = S.pools; if (!(px > 0) || !P.alive.length) { S.tgEl.innerHTML = ''; return; }
     var up = [], dn = [];
-    for (var i = 0; i < P.alive.length; i++) { var x = P.alive[i]; if (Math.abs(x.price - px) / px > 0.12) continue; (x.price > px ? up : dn).push(x); }
+    for (var i = 0; i < P.alive.length; i++) { var x = P.alive[i]; if (poolGone(x)) continue; if (Math.abs(x.price - px) / px > 0.12) continue; (x.price > px ? up : dn).push(x); }
     var sc = function (a, b) { return magnetScore(b, px) - magnetScore(a, px); }; up.sort(sc); dn.sort(sc);
     var cell = function (x) { var d = ((x.price - px) / px * 100); return '<span style="color:' + (x.long ? '#2ebd85' : '#ff6258') + '"><b style="color:#e9e7df">' + fpx(x.price) + '</b> ' + money(x.w) + ' <i style="font-style:normal;color:#5c6b84">' + (d >= 0 ? '+' : '') + d.toFixed(1) + '%</i></span>'; };
     var h = '<div class="hm-tg-h">TARGETS \u2014 where liquidity pulls price</div>';
@@ -356,7 +360,7 @@
         var dp = (my - S.drag.y) / r.height * (S.drag.yHi - S.drag.yLo); S.yView = { lo: S.drag.yLo + dp, hi: S.drag.yHi + dp }; sched(); return; }
       var p = S.yHi - my / r.height * (S.yHi - S.yLo);
       var P = S.pools, best = null, i;
-      for (i = 0; i < P.alive.length; i++) { var s = P.alive[i]; var d = Math.abs(s.price - p); if (d < P.binH * 2.4 && (!best || s.w > best.s.w)) best = { d: d, s: s }; }
+      for (i = 0; i < P.alive.length; i++) { var s = P.alive[i]; if (poolGone(s)) continue; var d = Math.abs(s.price - p); if (d < P.binH * 2.4 && (!best || s.w > best.s.w)) best = { d: d, s: s }; }
       var bev = null;
       if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 13 && (!bev || dd < bev.d)) bev = { d: dd, e: e }; }
       if (!best && !bev) { tip.style.display = 'none'; return; }
@@ -394,7 +398,7 @@
       if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 14 && (!bev || dd < bev.d)) bev = { d: dd, e: e }; }
       if (bev) { S.sel = { type: 'ev', ref: bev.e }; showSel(); sched(); return; }
       var P = S.pools, best = null, t = S.view.t0 + mx / r.width * (S.view.t1 - S.view.t0);
-      for (i = 0; i < P.alive.length; i++) { var s2 = P.alive[i]; if (t < s2.t0) continue; var d2 = Math.abs(s2.price - p); if (d2 < P.binH * 2.2 && (!best || s2.w > best.w)) best = s2; }
+      for (i = 0; i < P.alive.length; i++) { var s2 = P.alive[i]; if (poolGone(s2)) continue; if (t < s2.t0) continue; var d2 = Math.abs(s2.price - p); if (d2 < P.binH * 2.2 && (!best || s2.w > best.w)) best = s2; }
       if (best) { S.sel = { type: 'pool', ref: best }; showSel(); sched(); return; }
       if (S.sel) { S.sel = null; showSel(); sched(); }
     });
