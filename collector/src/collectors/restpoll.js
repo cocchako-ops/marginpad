@@ -22,6 +22,7 @@ class RestPoller {
     const tick = async () => { try { await this.poll(); this.connected = true; this.lastMsgAt = Date.now(); } catch (e) { this.connected = false; log.warn('[' + this.name + '] poll failed', { e: String(e).slice(0, 120) }); } };
     tick(); this.timer = setInterval(tick, this.intervalMs);
   }
+  async init() {} // BaseCollector API parity — index.js awaits init() on every collector before start()
   stop() { if (this.timer) clearInterval(this.timer); }
   shutdown() { this.stop(); } // index.js graceful-exit calls shutdown() on every collector
   async getJson(url, opts) { const r = await fetch(url, { signal: AbortSignal.timeout(8000), ...opts }); if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + url.slice(0, 80)); return r.json(); }
