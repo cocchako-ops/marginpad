@@ -550,7 +550,7 @@
         <div>
           <div class="rkh-tot"><span id="rkhTot">$0</span><small> liquidated</small></div>
           <p class="rkh-sub">Every forced liquidation, streamed the moment it happens. When leverage runs out of margin, it prints here — <b>watch who's getting rekt, in real time</b>.</p>
-          <div class="rkh-src" id="rkhSrc"><span class="t">Streaming live from</span><span class="chip" data-x="bybit"><i></i>Bybit</span><span class="chip" data-x="okx"><i></i>OKX</span><span class="chip" data-x="bitmex"><i></i>BitMEX</span><span class="chip" data-x="deribit"><i></i>Deribit</span><span class="chip" data-x="bitfinex"><i></i>Bitfinex</span></div>
+          <div class="rkh-src" id="rkhSrc"><span class="t">Streaming live from</span><span class="chip" data-x="binance"><i></i>Binance</span><span class="chip" data-x="bybit"><i></i>Bybit</span><span class="chip" data-x="okx"><i></i>OKX</span><span class="chip" data-x="bitmex"><i></i>BitMEX</span><span class="chip" data-x="deribit"><i></i>Deribit</span><span class="chip" data-x="bitfinex"><i></i>Bitfinex</span></div>
         </div>
         <div class="rkh-tiles">
           <div class="rkh-tile"><div class="l">Positions rekt · 24h</div><div class="v" id="rkhCnt">—</div></div>
@@ -832,7 +832,7 @@
     var hs=document.getElementById('rktHist');if(hs){var lbl=['&lt;$10K','$10–100K','$100K–1M','&gt;$1M'],mx2=Math.max.apply(null,sessB.concat([1]));
       hs.innerHTML=lbl.map(function(l,i){return '<div class="mr"><span>'+l+'</span><i class="mb" style="width:'+Math.max(3,Math.round(sessB[i]/mx2*100))+'%"></i><span>'+sessB[i]+'</span></div>';}).join('');}
     // hero source chips: a venue lights green the moment it actually prints in the live stream (live proof, not a claim)
-    var srcBox=document.getElementById('rkhSrc');if(srcBox){for(var xk in sessEx){var ch=srcBox.querySelector('.chip[data-x="'+String(xk).toLowerCase()+'"]');if(ch)ch.classList.add('on');}}}
+    var srcBox=document.getElementById('rkhSrc');if(srcBox){for(var xk in sessEx){var ch=srcBox.querySelector('.chip[data-x="'+String(xk).toLowerCase().replace('binance-coin','binance')+'"]');if(ch)ch.classList.add('on');}}}
   setInterval(function(){if(!document.hidden)deskSide();},5000); // rolling windows decay even when quiet; also feeds the hero pace tile + venue chips on MOBILE (rail is display:none there but the writes are cheap)
   function deskCoins(d){var box=document.getElementById('rktCoins');if(!box||!d||!d.coins||!d.coins.length)return;
     box.innerHTML=d.coins.slice(0,8).map(function(c){var t=(+c.long||0)+(+c.short||0)||1,lp2=Math.round((+c.long||0)/t*100);var f=fund[c.s];
