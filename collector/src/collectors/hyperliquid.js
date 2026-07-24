@@ -12,9 +12,10 @@
 import { log } from '../logger.js';
 
 const INFO = 'https://api.hyperliquid.xyz/info';
-const MIN_NOTIONAL = 3000;    // candidate threshold ($) — below this we don't spend rate-limit budget
+const MIN_NOTIONAL = 1000;    // candidate threshold ($) — the 15-min fills window amortizes one check across ALL the user's recent liqs
 const CHECK_MS = 1400;        // one userFillsByTime per 1.4s ≈ 43/min (HL weight ceiling is ~60/min)
-const RECHECK_USER_MS = 60000;
+const RECHECK_USER_MS = 600000; // a checked user is silent for 10 min — their window already covered it
+const FILLS_WINDOW_MS = 900000; // look at the user's last 15 min of fills (proven in the 8-min diagnostic: 210 liqs found)
 
 export class HyperliquidLiqCollector {
   constructor({ symbols, onEvent } = {}) {
@@ -22,7 +23,8 @@ export class HyperliquidLiqCollector {
     this.symbols = symbols || [];
     this.onEvent = onEvent || (() => {});
     this.connected = false; this.lastMsgAt = null; this.lastEventAt = null; this.eventsTotal = 0;
-    this.candidates = [];            // {user, time, coin, notional}
+    this.candidates = [];            // {user, notional} — unique users seen on sizeable trades
+    this.queued = new Set();
     this.checked = new Map();        // user -> last checked ts
     this.seenTid = new Set();        // emitted fill tids
     this.ws = null; this.workerT = null; this.reT = null;
@@ -51,11 +53,15 @@ export class HyperliquidLiqCollector {
         for (const t of d.data) {
           const px = +t.px, sz = +t.sz; if (!(px > 0) || !(sz > 0)) continue;
           const notional = px * sz; if (notional < MIN_NOTIONAL) continue;
-          // aggressor = the forced order in a liquidation: side 'B' → buyer (users[0]), side 'A' → seller (users[1])
-          const user = t.side === 'B' ? (t.users && t.users[0]) : (t.users && t.users[1]); if (!user) continue;
-          const last = this.checked.get(user) || 0; if (Date.now() - last < RECHECK_USER_MS) continue;
-          this.candidates.push({ user, time: +t.time, coin: String(t.coin), notional });
-          if (this.candidates.length > 300) { this.candidates.sort((a, b) => b.notional - a.notional); this.candidates.length = 150; }
+          // BOTH participants become candidates — a liquidation shows up in EITHER side's fills (the liquidated
+          // user's own fill AND the counterparty's fill both carry the liquidation metadata)
+          for (const user of (t.users || [])) {
+            if (!user) continue;
+            const last = this.checked.get(user) || 0; if (Date.now() - last < RECHECK_USER_MS) continue;
+            if (this.queued.has(user)) continue; this.queued.add(user);
+            this.candidates.push({ user, notional });
+          }
+          if (this.candidates.length > 500) { this.candidates.sort((a, b) => b.notional - a.notional); this.candidates.length = 250; this.queued = new Set(this.candidates.map(x => x.user)); }
         }
       } catch (e) {}
     };
@@ -67,13 +73,13 @@ export class HyperliquidLiqCollector {
   async checkNext() {
     if (!this.candidates.length) return;
     this.candidates.sort((a, b) => b.notional - a.notional);
-    const c = this.candidates.shift();
+    const c = this.candidates.shift(); this.queued.delete(c.user);
     if (Date.now() - (this.checked.get(c.user) || 0) < RECHECK_USER_MS) return;
     this.checked.set(c.user, Date.now());
-    if (this.checked.size > 4000) this.checked.clear();
+    if (this.checked.size > 6000) this.checked.clear();
     let fills;
     try {
-      const r = await fetch(INFO, { method: 'POST', headers: { 'content-type': 'application/json' }, signal: AbortSignal.timeout(8000), body: JSON.stringify({ type: 'userFillsByTime', user: c.user, startTime: c.time - 30000, endTime: c.time + 30000 }) });
+      const r = await fetch(INFO, { method: 'POST', headers: { 'content-type': 'application/json' }, signal: AbortSignal.timeout(8000), body: JSON.stringify({ type: 'userFillsByTime', user: c.user, startTime: Date.now() - FILLS_WINDOW_MS }) });
       if (!r.ok) return;
       fills = await r.json();
     } catch (e) { return; }
