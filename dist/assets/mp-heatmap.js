@@ -239,7 +239,8 @@
       if (!S || coin !== S.coin) return;
       var kd = res[0];
       if (kd && kd.length) {
-        S.bars = kd; // FULL fetched history (up to 1000 candles) — pan back as far as the data goes, like /charts
+        if (S.bars.length && S.bars[0].time < kd[0].time) { var older = S.bars.filter(function (b3) { return b3.time < kd[0].time; }); kd = older.concat(kd); } // keep back-paginated history — the 60s refresh only replaces the fresh tail
+        S.bars = kd;
         var srv = res[3]; // server-accumulated pools (cron model — days of history, same map for everyone); local build = fallback
         if (srv && srv.alive && srv.alive.length > 10 && srv.binH > 0) {
           var arr = srv.alive.map(function (x) { return { price: +x.p, w: +x.w, long: !!x.long, t0: +x.t0, lev: +x.lev }; });
@@ -247,7 +248,7 @@
           arr.forEach(function (x) { x.a = Math.pow(x.w / (wMax || 1), 0.4); });
           arr.sort(function (a, b) { return b.w - a.w; });
           var pmin = 1 / 0, pmax = -1 / 0; arr.forEach(function (x) { if (x.price < pmin) pmin = x.price; if (x.price > pmax) pmax = x.price; });
-          S.pools = { alive: arr, pMin: pmin, pMax: pmax, binH: +srv.binH };
+          S.pools = { alive: arr, pMin: pmin, pMax: pmax, binH: +srv.binH, srv: 1 };
           S.sweeps = srv.sweeps || [];
         } else { S.pools = buildPools(S.bars); S.sweeps = []; }
         if (!S._fr || Date.now() - S._fr > 300000) { S._fr = Date.now(); fetch('/api/v1/bnc?path=' + encodeURIComponent('/fapi/v1/premiumIndex') + '&symbol=' + coin + 'USDT').then(function (r) { return r.json(); }).then(function (f) { if (S && f && f.lastFundingRate != null) { S.funding = +f.lastFundingRate; updTargets(); } }).catch(function () {}); }
@@ -257,7 +258,23 @@
       if (res[2] && +res[2].price > 0) { S.price = +res[2].price; S.chg = +res[2].chg || 0; }
       updHead(); updTargets(); if (S.loadEl) S.loadEl.style.display = 'none';
       sched();
+      if (first) { S._noMore = 0; S._lm = 0; setTimeout(function () { loadMore(3); }, 800); } // ~5000 candles of history in the background
     });
+  }
+  function loadMore(chain) { // back-pagination like /charts: pull candles older than the first loaded bar
+    if (!S || S._lm || S._noMore || !S.bars.length) return;
+    S._lm = 1;
+    var coin = S.coin, w = WINS[S.win], endMs = (S.bars[0].time - 1) * 1000;
+    fetch('/api/klines?symbol=' + coin + '&interval=' + w.iv + '&end=' + endMs).then(function (r) { return r.ok ? r.json() : null; }).then(function (kd) {
+      if (!S || coin !== S.coin) return;
+      S._lm = 0;
+      var older = (kd || []).filter(function (b3) { return b3.time < S.bars[0].time; });
+      if (older.length < 20) { S._noMore = 1; return; }
+      S.bars = older.concat(S.bars);
+      if (!(S.pools && S.pools.srv)) S.pools = buildPools(S.bars);
+      sched();
+      if (chain > 0) loadMore(chain - 1); // eager warm-up right after the first paint
+    }).catch(function () { S._lm = 0; });
   }
   function pollEvents() {
     if (!S || document.hidden) return;
@@ -303,7 +320,7 @@
     cv.addEventListener('mousemove', function (ev) {
       if (!S.X) return;
       var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
-      if (S.drag) { if (Math.abs(S.drag.x - mx) + Math.abs(my - S.drag.y) > 5) S._dragged = 1; var dt = (S.drag.x - mx) / r.width * (S.drag.t1 - S.drag.t0); S.view.t0 = S.drag.t0 + dt; S.view.t1 = S.drag.t1 + dt;
+      if (S.drag) { if (Math.abs(S.drag.x - mx) + Math.abs(my - S.drag.y) > 5) S._dragged = 1; var dt = (S.drag.x - mx) / r.width * (S.drag.t1 - S.drag.t0); S.view.t0 = S.drag.t0 + dt; S.view.t1 = S.drag.t1 + dt; if (S.bars.length && S.view.t0 < S.bars[0].time + (S.bars[1] ? (S.bars[1].time - S.bars[0].time) : 60) * 30) loadMore(0);
         var dp = (my - S.drag.y) / r.height * (S.drag.yHi - S.drag.yLo); S.yView = { lo: S.drag.yLo + dp, hi: S.drag.yHi + dp }; sched(); return; }
       var p = S.yHi - my / r.height * (S.yHi - S.yLo);
       var P = S.pools, best = null, i;
@@ -366,7 +383,9 @@
       var full = S.bars.length ? (S.bars[S.bars.length - 1].time - S.bars[0].time) * 1.15 : span * 4; // zoom out to the WHOLE loaded history
       var ns = Math.max(600, Math.min(full, span * f));
       var pivot = S.view.t0 + fx * span;
-      S.view.t0 = pivot - fx * ns; S.view.t1 = pivot + (1 - fx) * ns; sched();
+      S.view.t0 = pivot - fx * ns; S.view.t1 = pivot + (1 - fx) * ns;
+      if (S.bars.length && S.view.t0 < S.bars[0].time + 1800) loadMore(1);
+      sched();
     }, { passive: false });
     cv.addEventListener('dblclick', function () { if (S.bars.length) { var w = WINS[S.win]; S.view = { t0: Date.now() / 1000 - w.mins * 60, t1: S.bars[S.bars.length - 1].time + 300 }; S.yView = null; sched(); } });
     // touch: 1 finger = pan, 2 fingers = pinch zoom (around the midpoint). passive:false so the page
