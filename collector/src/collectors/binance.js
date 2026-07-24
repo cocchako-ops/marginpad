@@ -1,4 +1,7 @@
-// Binance USDT-M Futures liquidations. Stream: wss://fstream.binance.com/ws/!forceOrder@arr
+// Binance USDT-M Futures liquidations. Stream: wss://fstream.binance.com/market/ws/!forceOrder@arr
+// MIGRATED 2026-07-24: Binance split futures WS into /public /market /private (notice 2026-03-06) and KILLED
+// the legacy /ws/ paths on 2026-04-23 — legacy connects fine but pushes NOTHING (that silent mute looked
+// exactly like a geo-block and cost us a proxy-hunting detour; it was just a dead endpoint).
 // Schema verified at build time from Binance derivatives docs.
 //   Message: { e:'forceOrder', E:eventTime, o:{ s:symbol, S:side, q:origQty, p:price, ap:avgPrice, T:tradeTime, ... } }
 // QUIRK: this is a SNAPSHOT stream — only the largest liquidation per symbol per ~1000ms is pushed,
@@ -31,7 +34,7 @@ export class BinanceCollector extends BaseCollector {
     this._set = new Set(this.symbols);
     this._dispatcher = null; // set in init() when a proxy is configured
   }
-  url() { return 'wss://fstream.binance.com/ws/!forceOrder@arr'; }
+  url() { return 'wss://fstream.binance.com/market/ws/!forceOrder@arr'; } // /market category since the 2026-04 URL split — forceOrder lives there (verified: legacy /ws/ = mute, /market/ws/ = data)
   wsOptions() { return this._dispatcher ? { dispatcher: this._dispatcher } : undefined; }
 
   async init() {
