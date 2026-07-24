@@ -752,7 +752,7 @@
 
   /* ===== XP toasts + level-up celebration (2026-07-15) ===== */
   (function () {
-    var SRCN = { heatmap: 'Liquidation map read 🗺️', trade_hh: 'XP Happy Hour! ⚡', trade_promo: 'XP Promo! ⚡', trade_win: 'Winner, banked', trade: 'Trade closed', checkin: 'Showed up today', streak: 'Streak pays', mission: 'Mission cleared', faucet: 'Faucet claim', promo: 'Promo post approved', exsign: 'Exchange sign-up', lbprize: 'Podium money 🏆', username: 'Name on the board', academy: 'Brain gains', charts: 'Chart time 📊', admin: 'Bonus', backfill: 'Loyalty bonus', duel: 'Duel won ⚔️' };
+    var SRCN = { heatmap: 'Liquidation map read', trade_hh: 'XP Happy Hour! ⚡', trade_promo: 'XP Promo! ⚡', trade_win: 'Winner, banked', trade: 'Trade closed', checkin: 'Showed up today', streak: 'Streak pays', mission: 'Mission cleared', faucet: 'Faucet claim', promo: 'Promo post approved', exsign: 'Exchange sign-up', lbprize: 'Podium money 🏆', username: 'Name on the board', academy: 'Brain gains', charts: 'Chart time 📊', admin: 'Bonus', backfill: 'Loyalty bonus', duel: 'Duel won ⚔️' };
     var ICON = { bronze: '', silver: '', gold: '', platinum: '', diamond: '' };
     var xpCss = '#mpxpT{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:flex;flex-direction:column;gap:8px;pointer-events:none}'
       + '.mpxp{display:flex;align-items:center;gap:9px;background:#12151d;border:1px solid #2a3550;border-left:3px solid var(--xc,#c2f64a);border-radius:12px;padding:9px 13px;box-shadow:0 12px 34px rgba(0,0,0,.5);font-family:ui-monospace,Consolas,monospace;color:#e9e7df;transform:translateX(120%);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .4s;max-width:260px}'

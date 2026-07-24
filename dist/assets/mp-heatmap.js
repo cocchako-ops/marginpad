@@ -130,7 +130,7 @@
       for (i = 0; i < S.sweeps.length && shown < 3; i++) { var sv = S.sweeps[i], svt = sv.t / 1000;
         if (svt < v.t0 || svt > v.t1 || sv.p < pLo || sv.p > pHi) continue; shown++;
         var sx = X(svt), sy = Y(sv.p);
-        ctx.fillStyle = 'rgba(255,215,90,.95)'; ctx.fillText('\uD83D\uDCA5', sx, sy + 3);
+        ctx.strokeStyle = 'rgba(255,215,90,.95)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(sx - 4, sy - 4); ctx.lineTo(sx + 4, sy + 4); ctx.moveTo(sx + 4, sy - 4); ctx.lineTo(sx - 4, sy + 4); ctx.stroke();
         var lb = money(sv.w) + ' ' + (sv.long ? 'longs' : 'shorts') + ' liquidated';
         var lw = ctx.measureText(lb).width;
         ctx.fillStyle = 'rgba(7,9,12,.85)'; ctx.fillRect(sx + 8, sy - 8, lw + 8, 14);
@@ -249,7 +249,7 @@
     for (var i = 0; i < P.alive.length; i++) { var x = P.alive[i]; if (Math.abs(x.price - px) / px > 0.12) continue; (x.price > px ? up : dn).push(x); }
     var sc = function (a, b) { return magnetScore(b, px) - magnetScore(a, px); }; up.sort(sc); dn.sort(sc);
     var cell = function (x) { var d = ((x.price - px) / px * 100); return '<span style="color:' + (x.long ? '#2ebd85' : '#ff6258') + '"><b style="color:#e9e7df">' + fpx(x.price) + '</b> ' + money(x.w) + ' <i style="font-style:normal;color:#5c6b84">' + (d >= 0 ? '+' : '') + d.toFixed(1) + '%</i></span>'; };
-    var h = '<span style="color:#5c6b84;font-weight:700">\uD83C\uDFAF TARGETS</span>';
+    var h = '<span style="color:#5c6b84;font-weight:700">TARGETS</span>';
     if (up.length) h += '<span style="color:#5c6b84">\u2191</span>' + up.slice(0, 3).map(cell).join(' ');
     if (dn.length) h += '<span style="color:#5c6b84;margin-left:6px">\u2193</span>' + dn.slice(0, 3).map(cell).join(' ');
     // squeeze: strong pools close on BOTH sides
@@ -257,7 +257,7 @@
     var nu = up[0], nd = dn[0];
     if (nu && nd && Math.abs(nu.price - px) / px < 0.03 && Math.abs(nd.price - px) / px < 0.03 && nu.w > wMax * 0.35 && nd.w > wMax * 0.35) {
       var lean = S.funding == null ? '' : (S.funding > 0.0001 ? ' \u00b7 longs pay funding \u2192 downside sweep slightly favored' : S.funding < -0.0001 ? ' \u00b7 shorts pay funding \u2192 upside sweep slightly favored' : '');
-      h += '<span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.45);color:#ffd75a;border-radius:7px;padding:2px 8px;font-weight:800">\u26A1 SQUEEZE SETUP' + lean + '</span>';
+      h += '<span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.45);color:#ffd75a;border-radius:7px;padding:2px 8px;font-weight:800">SQUEEZE SETUP' + lean + '</span>';
     }
     S.tgEl.innerHTML = h;
   }
