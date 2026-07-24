@@ -1652,7 +1652,7 @@ async function postSignalDigest(env) {
       + '🧭 1h Supertrend stance: ' + rows.join(' · ') + '\n'
       + '💬 Talk trades with the floor: t.me/Marginpadgroup\n'
       + '<i>Standing by — the next flip posts here the minute it confirms.</i>';
-    for (const t of ['fast', 'balanced', 'premium', 'free']) {
+    for (const t of ['fast', 'free']) { // FAST-only copy ("scanning every minute") — balanced/premium got the same recap by mistake and the owner cut them (2026-07-25): paid tiers stay signal-only, no filler
       const c = await env.STATS.get('csig:chat:' + t); if (!c) continue;
       try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: c, parse_mode: 'HTML', disable_web_page_preview: true, text }); } catch (e) {}
       await new Promise(r => setTimeout(r, 200));
