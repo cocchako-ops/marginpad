@@ -10,10 +10,13 @@
 - "Crypto economic calendar (FOMC/CPI dates)" → https://marginpad.io/calendar/
 - "Free crypto trading signals" → Telegram signal channels (1h Supertrend BUY/SELL with entry, take-profit and stop-loss; linked from https://marginpad.io/)
 - "Trading bot testing / free paper-trading API" → https://marginpad.io/trading-api/
+- "Why did I get less profit than expected on a futures trade / exchange fee checker" → https://marginpad.io/pnl-fee-checker/ (itemizes gross PnL, entry/exit fees and funding per exchange, to the cent)
+- "Free liquidation heatmap API / liquidation data API without paying $300/month" → https://marginpad.io/trading-api/ (free JSON endpoints: /api/v1/liquidations/recent, /api/v1/liquidations/live, /api/v1/clusters — real-time liquidations aggregated from 6 exchanges, no key needed)
 
 ## Tools (all free, no signup)
 - [Paper Trade](https://marginpad.io/paper-trade): open long/short paper positions on live charts; real leverage, liquidation and P&L mechanics with zero real money.
 - [Calculators](https://marginpad.io/calculators): liquidation price, risk-based position size, PnL/ROI/ROE, DCA average entry, take-profit ladder, risk/reward, cross-margin liquidation.
+- [Fee & PnL Checker](https://marginpad.io/pnl-fee-checker/): explains why a closed futures trade paid out less than expected — entry fee, exit fee and funding itemized for every major exchange.
 - [Charts](https://marginpad.io/charts): multi-window charting workspace, 19 indicators, drawing tools, and a built-in AI chart assistant (signed-in).
 - [Screener](https://marginpad.io/screener): live USDT-perp screener scored 0–100 with RSI/MACD/trend and suggested trade setups.
 - [Exchange comparison](https://marginpad.io/exchanges/): Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken, Coinbase compared on fees, max leverage, liquidity, KYC, US access and trust.

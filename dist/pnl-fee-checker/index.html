@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Why Did I Get Less Profit? Crypto Futures Fee &amp; PnL Checker — MarginPad</title>
+<meta name="description" content="Closed a trade expecting $25 profit but your balance only grew $16? Enter your exchange, entry, exit and size — we break down exactly where the money went: entry fee, exit fee and funding, line by line. Free, no signup." />
+<meta name="keywords" content="crypto futures fee calculator, why did I get less profit futures, exchange fee checker, funding fee calculator, taker fee maker fee crypto, pnl after fees calculator, binance fee calculator, bybit fee calculator, mexc zero fees" />
+<link rel="canonical" href="https://marginpad.io/pnl-fee-checker/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Crypto Futures Fee &amp; PnL Checker — see exactly where your profit went" />
+<meta property="og:description" content="Expected $25, got $16? Enter the trade — we itemize entry fee, exit fee and funding for your exchange, to the cent." />
+<meta property="og:url" content="https://marginpad.io/pnl-fee-checker/" />
+<meta property="og:image" content="https://marginpad.io/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/lab.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Futures Fee & PnL Checker","url":"https://marginpad.io/pnl-fee-checker/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Breaks a closed futures trade into gross PnL, entry fee, exit fee and funding for every major exchange, so traders can see exactly why the balance grew less than expected."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"MarginPad","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Trading Tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":3,"name":"Fee & PnL Checker","item":"https://marginpad.io/pnl-fee-checker/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Why did my balance grow less than my profit on a futures trade?","acceptedAnswer":{"@type":"Answer","text":"Because fees are charged on the NOTIONAL value (position size × price), not on your profit. A $100 margin trade at 50x is a $5,000 position — a 0.055% taker fee is $2.75 on entry and again on exit, plus funding every 8 hours while the position is open. On a $25 gross profit that can easily eat $9."}},
+{"@type":"Question","name":"What is the difference between maker and taker fees?","acceptedAnswer":{"@type":"Answer","text":"A taker order fills instantly at market and pays the higher fee (typically 0.02–0.07%). A maker order is a limit order that waits in the book and pays the lower fee (0–0.02%). Using limit orders on both entry and exit can cut your fee bill by 60–100%."}},
+{"@type":"Question","name":"What is funding and why was I charged it?","acceptedAnswer":{"@type":"Answer","text":"Perpetual futures charge a funding payment every 8 hours between longs and shorts to keep the contract near spot price. If you hold a long while funding is positive (the usual case), you PAY roughly 0.01% of your notional every 8 hours — about 0.03% per day, on the full leveraged size."}},
+{"@type":"Question","name":"Which exchange has the lowest futures fees?","acceptedAnswer":{"@type":"Answer","text":"Among major exchanges, MEXC currently has the lowest standard futures fees: 0.000% maker and 0.020% taker — versus 0.02%/0.055% on Bybit or 0.02%/0.05% on Binance. On a $5,000 position closed with market orders that is $2.00 in fees on MEXC versus $5.50–$7.50 elsewhere."}},
+{"@type":"Question","name":"Is this fee checker free?","acceptedAnswer":{"@type":"Answer","text":"Yes — completely free, no signup, everything runs in your browser. It uses each exchange's standard non-VIP fee schedule."}}
+]}</script>
+<style>
+  .fee-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:18px 0}
+  .fi{background:#0d1014;border:1px solid #1e242e;border-radius:12px;padding:12px 14px}
+  .fi label{display:block;font-size:12px;font-weight:700;color:#c9d3e0;margin:0 0 4px;letter-spacing:.02em}
+  .fi .hint{font-size:11px;color:#68748a;line-height:1.5;margin:6px 0 0}
+  .fi input,.fi select{width:100%;background:#12161d;border:1px solid #262e3c;border-radius:8px;color:#fff;padding:9px 10px;font-size:14px;font-family:inherit}
+  .fi input:focus,.fi select:focus{outline:none;border-color:#c2f64a}
+  .fi .seg{display:flex;background:#12161d;border:1px solid #262e3c;border-radius:8px;overflow:hidden}
+  .fi .seg button{flex:1;background:none;border:0;color:#8fa3c4;padding:9px 0;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
+  .fi .seg button.on{background:#1a2413;color:#c2f64a}.fi .seg button.on.sh{background:#2a1512;color:#ff6258}
+  .fee-out{background:#0b0e12;border:1px solid #232b3a;border-radius:14px;padding:18px;margin:6px 0 20px}
+  .fo-row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed #1c2230;font-size:14px}
+  .fo-row:last-child{border-bottom:0}
+  .fo-row b{font-family:'Space Mono',monospace}
+  .fo-row .neg{color:#ff6258}.fo-row .pos{color:#2ebd85}
+  .fo-net{font-size:17px;padding-top:12px;margin-top:6px;border-top:1px solid #2a3345!important}
+  .fo-why{background:rgba(255,179,71,.07);border:1px solid rgba(255,179,71,.3);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.6;color:#dbe4f5;margin-top:14px}
+  .fo-match{background:rgba(46,189,133,.08);border-color:rgba(46,189,133,.35)}
+  .mexc{background:linear-gradient(135deg,rgba(10,194,214,.08),rgba(194,246,74,.05));border:1px solid rgba(10,194,214,.35);border-radius:14px;padding:18px;margin:20px 0}
+  .mexc h3{margin:0 0 8px;font-size:17px}
+  .mexc .cmp{font-family:'Space Mono',monospace;font-size:13.5px;margin:10px 0;line-height:1.7}
+  .mexc .btn-m{display:inline-block;background:#0ac2d6;color:#04252a;font-weight:800;border-radius:10px;padding:11px 20px;text-decoration:none;font-size:14px;margin-top:8px}
+  .prose{max-width:820px;line-height:1.7;color:#b9c2d0;font-size:14.5px}
+  .prose h2{color:#fff;margin:28px 0 10px}
+  .faq details{background:#0d1014;border:1px solid #1e242e;border-radius:10px;padding:12px 16px;margin:8px 0}
+  .faq summary{cursor:pointer;font-weight:700;color:#dbe4f5;font-size:14px}
+  .faq p{color:#9aa7ba;font-size:13.5px;line-height:1.65;margin:10px 0 2px}
+</style>
+</head>
+<body>
+<div class="wrap" style="max-width:1060px;margin:0 auto;padding:18px 16px 40px">
+  <header><a class="brand" href="/" style="font-weight:800;font-size:19px;text-decoration:none;color:#fff">Margin<b style="color:#c2f64a">Pad</b></a></header>
+
+  <section class="hero" style="margin:26px 0 8px">
+    <h1 style="margin:0 0 10px;font-size:clamp(26px,4.2vw,38px);line-height:1.15">Closed with <span style="color:#2ebd85">+$25</span>… balance grew <span style="color:#ff6258">+$16</span>?<br>Here's exactly where it went.</h1>
+    <p style="color:#9aa7ba;max-width:760px;line-height:1.65;font-size:15px">Futures fees are charged on your <b>full leveraged position</b>, not your profit — and funding quietly bills you every 8 hours. Enter your trade below and we'll itemize every dollar: gross profit, entry fee, exit fee, funding, net. Free, no signup, runs in your browser.</p>
+  </section>
+
+  <div class="fee-grid">
+    <div class="fi"><label>Exchange</label>
+      <select id="fEx"></select>
+      <p class="hint">We apply this exchange's standard (non-VIP) USDT-perpetual futures fee schedule. Discounts from VIP tiers or token holdings (e.g. BNB) are not included.</p></div>
+    <div class="fi"><label>Direction</label>
+      <div class="seg" id="fSide"><button type="button" class="on" data-v="long">Long</button><button type="button" class="sh" data-v="short">Short</button></div>
+      <p class="hint">Long = you profit when price rises. Direction matters for the funding sign: longs usually PAY funding, shorts usually receive it.</p></div>
+    <div class="fi"><label>Entry price ($)</label><input id="fEntry" type="number" inputmode="decimal" placeholder="e.g. 64000" />
+      <p class="hint">The price your position was opened at (shown on your position card / trade history).</p></div>
+    <div class="fi"><label>Exit price ($)</label><input id="fExit" type="number" inputmode="decimal" placeholder="e.g. 65600" />
+      <p class="hint">The price you closed at. For partial closes, run the checker per closed chunk.</p></div>
+    <div class="fi"><label>Margin ($)</label><input id="fMargin" type="number" inputmode="decimal" placeholder="e.g. 100" />
+      <p class="hint">Your own money in the trade (the collateral). NOT the position size — that's margin × leverage.</p></div>
+    <div class="fi"><label>Leverage (×)</label><input id="fLev" type="number" inputmode="decimal" placeholder="e.g. 50" />
+      <p class="hint">Fees are charged on margin × leverage (the notional). This is the #1 reason fees feel huge: at 50× your fee base is 50× your margin.</p></div>
+    <div class="fi"><label>Entry order type</label>
+      <div class="seg" id="fEntT"><button type="button" class="on" data-v="taker">Market (taker)</button><button type="button" data-v="maker">Limit (maker)</button></div>
+      <p class="hint">Market orders fill instantly but pay the higher taker fee. Limit orders that rest in the book pay the lower maker fee (0% on some exchanges).</p></div>
+    <div class="fi"><label>Exit order type</label>
+      <div class="seg" id="fExT"><button type="button" class="on" data-v="taker">Market (taker)</button><button type="button" data-v="maker">Limit (maker)</button></div>
+      <p class="hint">Take-profit LIMIT orders usually count as maker. Stop-loss and "Close position" buttons are market = taker.</p></div>
+    <div class="fi"><label>Time position was open (hours)</label><input id="fHours" type="number" inputmode="decimal" placeholder="e.g. 14" value="0" />
+      <p class="hint">Perpetuals charge funding every 8h (00:00 / 08:00 / 16:00 UTC). Held under 8h and across no funding timestamp? Leave 0.</p></div>
+    <div class="fi"><label>Avg funding rate (% per 8h)</label><input id="fFund" type="number" inputmode="decimal" step="0.001" value="0.01" />
+      <p class="hint">0.01% is the market default in calm conditions. In hot markets it can spike to 0.1%+ per cycle. Find the exact history on your exchange's funding page.</p></div>
+    <div class="fi"><label>What your balance actually changed by ($) <span style="color:#68748a;font-weight:400">— optional</span></label><input id="fGot" type="number" inputmode="decimal" placeholder="e.g. 16" />
+      <p class="hint">If you enter this, we'll reconcile our math against reality and flag any unexplained difference (usually extra funding cycles or a worse fill than you think).</p></div>
+  </div>
+
+  <div class="fee-out" id="fOut"><div style="color:#68748a;font-size:14px">Fill in the trade above — the breakdown appears here instantly.</div></div>
+
+  <div class="mexc" id="mexcBox" hidden>
+    <h3>😤 Tired of fees eating your profit?</h3>
+    <div class="cmp" id="mexcCmp"></div>
+    <p style="color:#9aa7ba;font-size:13px;line-height:1.6;margin:6px 0 4px">MEXC runs <b style="color:#0ac2d6">0.000% maker / 0.020% taker</b> standard futures fees — the lowest of any major exchange. Same trade, same leverage, a fraction of the fee bill.</p>
+    <a class="btn-m" href="https://promote.mexc.com/r/GND4jI97o0" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&__mpTrack('exchange','MEXC')}catch(e){}">Trade with near-zero fees on MEXC →</a>
+    <p style="color:#5c6b84;font-size:10.5px;margin:8px 0 0">Referral link — we may earn a commission at no cost to you. Standard rates as published; always verify on the exchange.</p>
+  </div>
+
+  <section class="prose">
+    <h2>Why your profit shrinks: the 3 silent costs</h2>
+    <p><b>1. Fees are charged on the notional, not your margin.</b> $100 margin at 50× = a $5,000 position. A 0.055% taker fee is <b>$2.75 per side</b> — $5.50 round-trip, even though you "only" risked $100. That is 5.5% of your margin gone before price moves at all.</p>
+    <p><b>2. Funding bills you every 8 hours.</b> While your long is open, you typically pay ~0.01% of the notional per 8h cycle. Hold that $5,000 position over a weekend (6 cycles) and it's ~$3 — again, charged on the full leveraged size.</p>
+    <p><b>3. You paid taker twice without noticing.</b> The "Close position" button and every stop-loss are market orders — the expensive kind. Entering AND exiting with resting limit orders can cut the round-trip cost by more than half, and to zero-maker on some venues.</p>
+    <h2>How to keep more of your PnL</h2>
+    <p>Use limit orders where the setup allows it, avoid holding leveraged positions across many funding timestamps for no reason, size positions with the fee bill in mind (the checker above shows fees as a % of your gross profit), and — bluntly — trade where fees are lowest. Practice the whole flow risk-free on our <a href="/paper-trade" style="color:#c2f64a">Paper Trade</a> terminal, which since 2026 charges realistic simulated fees and funding, so nothing here surprises you with real money.</p>
+  </section>
+
+  <section class="faq" style="max-width:820px;margin:26px 0">
+    <h2 style="margin:0 0 12px">FAQ</h2>
+    <details><summary>Why did my balance grow less than my profit?</summary><p>Fees are a percentage of the notional (position size × price) taken at entry and exit, plus funding every 8 hours the position is open. On leveraged trades these routinely eat 20–40% of a modest profit. Enter your numbers above to see the exact split.</p></details>
+    <details><summary>My difference is bigger than the checker shows. What else could it be?</summary><p>Most common: more funding cycles than you think (check the exact open/close timestamps vs 00:00/08:00/16:00 UTC), a worse average fill than the price shown (slippage on market orders), partial fills where part of a "limit" order executed as taker, or a VIP/discount tier different from the standard rates we assume.</p></details>
+    <details><summary>Do these rates match my exchange exactly?</summary><p>We use each exchange's published standard non-VIP USDT-perpetual rates. If you hold fee-discount tokens, have VIP volume, or used a fee-discount coupon, your real rates are lower — check the fee page of your exchange and adjust mentally.</p></details>
+    <details><summary>Which exchange has the lowest futures fees?</summary><p>MEXC: 0.000% maker / 0.020% taker standard. That's why we suggest it above — the same trade simply costs less there.</p></details>
+  </section>
+
+  <footer class="toolfoot" style="color:#5c6b84;font-size:12px;margin-top:30px;line-height:1.7">
+    <p>Educational tool — not financial advice. Rates are standard published non-VIP schedules and can change; verify on your exchange.</p>
+    <p>More free tools: <a href="/calculators" style="color:#8fa3c4">Calculators</a> · <a href="/heatmap" style="color:#8fa3c4">Liquidation Heatmap</a> · <a href="/rekt/" style="color:#8fa3c4">Live Liquidations</a> · <a href="/paper-trade" style="color:#8fa3c4">Paper Trade</a> · <a href="/tools/" style="color:#8fa3c4">All tools</a></p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  // standard non-VIP USDT-perp futures fees, % (maker, taker) — verified against published schedules 2026-07
+  var FEES={
+    'MEXC':[0.000,0.020],'Binance':[0.020,0.050],'Bybit':[0.020,0.055],'OKX':[0.020,0.050],
+    'Bitget':[0.020,0.060],'Gate':[0.020,0.050],'KuCoin':[0.020,0.060],'Kraken':[0.020,0.050],
+    'HTX':[0.020,0.050],'Crypto.com':[0.025,0.070],'Other / custom':[0.020,0.055]};
+  var exSel=document.getElementById('fEx');
+  Object.keys(FEES).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=k+'  ('+FEES[k][0].toFixed(3)+'% / '+FEES[k][1].toFixed(3)+'%)';if(k==='Bybit')o.selected=true;exSel.appendChild(o);});
+  var side='long',entT='taker',exT='taker';
+  function segWire(id,set){var el=document.getElementById(id);el.addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;el.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});set(b.getAttribute('data-v'));calc();});}
+  segWire('fSide',function(v){side=v;});segWire('fEntT',function(v){entT=v;});segWire('fExT',function(v){exT=v;});
+  var $=function(id){return document.getElementById(id);};
+  ['fEntry','fExit','fMargin','fLev','fHours','fFund','fGot'].forEach(function(id){$(id).addEventListener('input',calc);});
+  exSel.addEventListener('change',calc);
+  function money(n){var s=n<0?'−$':'$';return s+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function calc(){
+    var entry=+$('fEntry').value,exit=+$('fExit').value,margin=+$('fMargin').value,lev=+$('fLev').value||1;
+    var out=$('fOut');
+    if(!(entry>0)||!(exit>0)||!(margin>0)){out.innerHTML='<div style="color:#68748a;font-size:14px">Fill in the trade above — the breakdown appears here instantly.</div>';$('mexcBox').hidden=true;return;}
+    var fees=FEES[exSel.value],notional=margin*lev,qty=notional/entry,dir=side==='long'?1:-1;
+    var gross=qty*(exit-entry)*dir;
+    var feeIn=notional*(entT==='maker'?fees[0]:fees[1])/100;
+    var feeOut=qty*exit*(exT==='maker'?fees[0]:fees[1])/100;
+    var cycles=Math.floor((+$('fHours').value||0)/8);
+    var fr=(+$('fFund').value||0)/100;
+    var funding=qty*((entry+exit)/2)*fr*cycles*dir; // long pays positive funding, short receives
+    var net=gross-feeIn-feeOut-funding;
+    var totalCost=feeIn+feeOut+funding;
+    var h='';
+    h+='<div class="fo-row"><span>Position size (notional) — what fees are charged on</span><b>'+money(notional)+'</b></div>';
+    h+='<div class="fo-row"><span>Gross PnL (price move only)</span><b class="'+(gross>=0?'pos':'neg')+'">'+money(gross)+'</b></div>';
+    h+='<div class="fo-row"><span>Entry fee ('+(entT==='maker'?'maker '+fees[0]:'taker '+fees[1])+'% of '+money(notional)+')</span><b class="neg">−'+money(feeIn).slice(1)+'</b></div>';
+    h+='<div class="fo-row"><span>Exit fee ('+(exT==='maker'?'maker '+fees[0]:'taker '+fees[1])+'% of '+money(qty*exit)+')</span><b class="neg">−'+money(feeOut).slice(1)+'</b></div>';
+    h+='<div class="fo-row"><span>Funding ('+cycles+' cycle'+(cycles===1?'':'s')+' × '+(+$('fFund').value||0)+'%/8h'+(cycles?'':' — none crossed')+')</span><b class="'+(funding>0.005?'neg':funding<-0.005?'pos':'')+'">'+(funding>0.005?'−'+money(funding).slice(1):funding<-0.005?'+'+money(-funding).slice(1):'$0.00')+'</b></div>';
+    h+='<div class="fo-row fo-net"><span><b>Net — what your balance should change by</b></span><b class="'+(net>=0?'pos':'neg')+'" style="font-size:19px">'+money(net)+'</b></div>';
+    if(gross>0&&totalCost>0)h+='<div class="fo-why">💸 Costs ate <b>'+money(totalCost)+'</b> — that’s <b>'+Math.min(999,Math.round(totalCost/gross*100))+'% of your gross profit</b>. The single biggest lever: fees are computed on the '+money(notional)+' position, not your '+money(margin)+' margin.</div>';
+    var got=$('fGot').value===''?null:+$('fGot').value;
+    if(got!=null&&isFinite(got)){
+      var diff=got-net;
+      if(Math.abs(diff)<=Math.max(0.05,Math.abs(net)*0.02)) h+='<div class="fo-why fo-match">✅ <b>The math checks out.</b> Your '+money(got)+' matches our breakdown ('+money(net)+') — nothing shady, just fees'+(cycles?' and funding':'')+' working exactly as published.</div>';
+      else h+='<div class="fo-why">🔍 You received <b>'+money(got)+'</b> but the standard schedule predicts <b>'+money(net)+'</b> — a gap of <b>'+money(diff)+'</b>. Usual suspects: more funding cycles than entered (check your open/close times vs 00:00/08:00/16:00 UTC), slippage on market fills (your real avg price ≠ the chart price), a "limit" order that partially filled as taker, or non-standard fee tier. Your exchange’s trade history shows the exact fee per fill — compare it line by line.</div>';
+    }
+    out.innerHTML=h;
+    // MEXC comparison (skip when MEXC is already selected)
+    var mb=$('mexcBox');
+    if(exSel.value!=='MEXC'){
+      var mf=FEES['MEXC'];
+      var mIn=notional*(entT==='maker'?mf[0]:mf[1])/100, mOut=qty*exit*(exT==='maker'?mf[0]:mf[1])/100;
+      var save=(feeIn+feeOut)-(mIn+mOut);
+      if(save>0.01){$('mexcCmp').innerHTML='This exact trade on '+exSel.value+': <b style="color:#ff6258">'+money(feeIn+feeOut)+'</b> in fees.<br>Same trade on MEXC: <b style="color:#2ebd85">'+money(mIn+mOut)+'</b> — you keep <b style="color:#c2f64a">'+money(save)+'</b> more.';mb.hidden=false;}
+      else mb.hidden=true;
+    } else mb.hidden=true;
+  }
+})();
+</script>
+<script defer src="/assets/mp-nav.js"></script>
+<script defer src="/assets/sentry.js"></script>
+</body>
+</html>
