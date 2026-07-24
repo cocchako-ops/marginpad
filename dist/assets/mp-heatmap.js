@@ -12,7 +12,8 @@
   var BINS = 200;
   var S = null;
 
-  var CSS = '#heatmap.hm-full{width:min(96vw,1860px)!important;margin-left:calc(50% - min(48vw,930px))!important;max-width:none!important}' +
+  var CSS = 'body.heatmap-page .wrap{max-width:none!important}#heatmap.hm-full{width:auto!important;margin-left:0!important;max-width:none!important}' + // same full-width wrap as /paper-trade — header/logo land at the SAME x on both pages (owner 2026-07-25)
+    
     '.hm-wrap{background:#0b0d10;border:1px solid #1c2230;border-radius:14px;padding:12px 14px 10px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif}' +
     '.hm-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:9px}' +
     '.hm-sel{appearance:none;-webkit-appearance:none;background:#12161d url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 stroke=%27%238fa3c4%27 stroke-width=%271.6%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid #232b3a;color:#fff;border-radius:8px;padding:5px 24px 5px 10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;height:32px}' +
@@ -93,12 +94,12 @@
       if (S.sideF === 'long' && !s.long) continue; if (S.sideF === 'short' && s.long) continue;
       if (s.price < pLo || s.price > pHi) continue;
       var x0 = Math.max(0, X(s.t0)), y = Y(s.price) - bh / 2;
-      var al = 0.14 + s.a * 0.78;
+      var al = 0.03 + Math.pow(s.a, 2.1) * 0.85; // owner 2026-07-25: weak pools nearly invisible, strong ones keep the punch — the yellow core is the highlight
       ctx.fillStyle = s.long ? 'rgba(46,189,133,' + (al * 0.5).toFixed(3) + ')' : 'rgba(255,98,88,' + (al * 0.5).toFixed(3) + ')';
-      ctx.fillRect(x0, y - bh * 0.6, W - x0, bh * 2.2); // soft halo
+      if (s.a > 0.45) ctx.fillRect(x0, y - bh * 0.6, W - x0, bh * 2.2); // soft halo only for meaningful pools — small ones stay whisper-thin
       ctx.fillStyle = s.long ? 'rgba(46,189,133,' + al.toFixed(3) + ')' : 'rgba(255,98,88,' + al.toFixed(3) + ')';
       ctx.fillRect(x0, y, W - x0, bh);
-      if (s.a > 0.72) { ctx.fillStyle = s.long ? 'rgba(194,246,74,' + (al * 0.55).toFixed(3) + ')' : 'rgba(255,179,71,' + (al * 0.55).toFixed(3) + ')'; ctx.fillRect(x0, y + bh * 0.28, W - x0, bh * 0.44); }
+      if (s.a > 0.62) { ctx.fillStyle = s.long ? 'rgba(194,246,74,' + Math.min(0.85, al * 0.75).toFixed(3) + ')' : 'rgba(255,179,71,' + Math.min(0.85, al * 0.75).toFixed(3) + ')'; ctx.fillRect(x0, y + bh * 0.28, W - x0, bh * 0.44); } // the yellow/amber highlight — slightly wider entry, brighter
     }
     // candles
     var n = 0; for (i = 0; i < bars.length; i++) if (bars[i].time >= v.t0 && bars[i].time <= v.t1) n++;
@@ -301,6 +302,7 @@
     unmount();
     if (!document.getElementById('hmCss')) { var st = document.createElement('style'); st.id = 'hmCss'; st.textContent = CSS; document.head.appendChild(st); }
     section.classList.add('hm-full');
+    try { document.documentElement.style.overflowY = 'scroll'; } catch (e) {} // keep the scrollbar gutter ALWAYS on — without it this page (which fits the viewport) centers 8px wider than /paper-trade and the logo visibly shifts
     coin = (coin || 'BTC').toUpperCase(); if (COINS.indexOf(coin) < 0) coin = 'BTC';
     var wrap = el('div', 'hm-wrap');
     var bar = el('div', 'hm-bar');
@@ -372,6 +374,7 @@
   }
   function unmount() {
     if (!S) return;
+    try { document.documentElement.style.overflowY = ''; } catch (e) {}
     try { S.timers.forEach(clearInterval); } catch (e) {}
     try { window.removeEventListener('mp:price', S.onPrice); } catch (e) {}
     try { document.removeEventListener('visibilitychange', S.onVis); } catch (e) {}
