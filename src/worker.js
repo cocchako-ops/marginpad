@@ -1512,9 +1512,9 @@ async function checkChartSignals(env, force) {
     // per-signal action buttons: our live chart + exchange universal links (https links open the NATIVE app when installed — Telegram buttons only allow http(s), app schemes are rejected)
     const sigKb = (sym) => ({ inline_keyboard: [
       [{ text: 'Open live chart', url: 'https://marginpad.io/charts?coin=' + sym }],
-      [{ text: 'Binance', url: 'https://www.binance.com/en/futures/' + sym + 'USDT' },
-       { text: 'Bybit', url: 'https://www.bybit.com/trade/usdt/' + sym + 'USDT' },
-       { text: 'MEXC', url: 'https://www.mexc.com/futures/' + sym + '_USDT' }],
+      [{ text: 'Binance', url: 'https://marginpad.io/go?ex=binance&sym=' + sym },
+       { text: 'Bybit', url: 'https://marginpad.io/go?ex=bybit&sym=' + sym },
+       { text: 'MEXC', url: 'https://marginpad.io/go?ex=mexc&sym=' + sym }],
     ] });
     const send = async (chat, text, replyTo, sym) => { const b = { chat_id: chat, text: text + DISC, parse_mode: 'HTML', disable_web_page_preview: true }; if (replyTo) { b.reply_to_message_id = replyTo; b.allow_sending_without_reply = true; } if (sym) b.reply_markup = sigKb(sym); const r = await tgApi(token, 'sendMessage', b); return (r && r.result && r.result.message_id) || 0; }; // returns the sent message_id so TP/SL follow-ups can reply to the original signal (threaded)
     // Event guard (once): skip NEW confirmed signals within ~2h before a high-impact macro event (FOMC/CPI).
@@ -7402,6 +7402,7 @@ export default {
     if (url.pathname === '/api/gecko/trending') return handleGeckoTrending(env);
     if (url.pathname === '/api/gecko/coin') return handleGeckoCoin(url, env);
     if (url.pathname === '/api/onchain') return handleOnchain(env);
+    if (url.pathname === '/go') return handleExchangeGo(url); // TG signal exchange buttons → deep-link into the native app
     if (url.pathname === '/api/happyhour') return handleHappyHour(env);
     if (url.pathname === '/api/calendar') return handleCalendar(request, env);
     if (url.pathname === '/api/calendar/remind') return handleCalRemind(request, env);
@@ -8960,6 +8961,44 @@ async function xpPromos(env) {
 }
 function promoActiveAt(p, ts) { return !!(p && p.enabled && isFinite(+ts) && +ts >= p.startMs && +ts < p.endMs && p.endMs > p.startMs); }
 
+// /go?ex=binance&sym=SOL — deep-link interstitial. Telegram inline-button URLs must be https, and Telegram opens
+// them in its OWN in-app webview, which cannot hand a universal (https) link off to a native app. This page,
+// served on our own origin, fires the exchange APP's deep link instead: Android via intent:// (with a built-in
+// browser fallback), iOS via the custom URL scheme (+ a timed web fallback). Desktop just goes to the web pair.
+function handleExchangeGo(url) {
+  const ex = String(url.searchParams.get('ex') || '').toLowerCase().replace(/[^a-z]/g, '');
+  const sym = String(url.searchParams.get('sym') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12) || 'BTC';
+  const CFG = {
+    // web = correct pair page (always the fallback). scheme/host/pkg = the app deep link (best-effort per app).
+    binance: { name: 'Binance', web: 'https://www.binance.com/en/futures/' + sym + 'USDT', scheme: 'bnc', host: 'app.binance.com/futures/' + sym + 'USDT', pkg: 'com.binance.dev' },
+    bybit: { name: 'Bybit', web: 'https://www.bybit.com/trade/usdt/' + sym + 'USDT', scheme: 'bybitapp', host: 'open/route/trade?symbol=' + sym + 'USDT', pkg: 'com.bybit.app' },
+    mexc: { name: 'MEXC', web: 'https://www.mexc.com/futures/' + sym + '_USDT', scheme: 'mexc', host: 'futures/' + sym + '_USDT', pkg: 'com.mexc.mexctrade' },
+  };
+  const c = CFG[ex];
+  if (!c) return new Response('', { status: 302, headers: { location: 'https://marginpad.io/charts?coin=' + sym } });
+  const web = c.web;
+  const intent = 'intent://' + c.host + '#Intent;scheme=' + c.scheme + ';package=' + c.pkg + ';S.browser_fallback_url=' + encodeURIComponent(web) + ';end';
+  const ios = c.scheme + '://' + c.host;
+  const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+  const html = '<!doctype html><html lang="en"><head><meta charset="utf-8">'
+    + '<meta name="viewport" content="width=device-width,initial-scale=1"><title>Opening ' + esc(c.name) + '…</title>'
+    + '<style>html,body{margin:0;height:100%;background:#0a0b0d;color:#dbe4f5;font-family:system-ui,-apple-system,"Familjen Grotesk",sans-serif;display:flex;align-items:center;justify-content:center}'
+    + '.b{text-align:center;padding:26px}.b h1{font-size:17px;margin:0 0 6px;color:#fff}.b p{font-size:13px;color:#8fa3c4;margin:0 0 18px}'
+    + '.b a{display:inline-block;background:#c2f64a;color:#0a0b0d;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:10px;font-size:14px}'
+    + '.sp{width:26px;height:26px;border:3px solid #1c2230;border-top-color:#c2f64a;border-radius:50%;margin:0 auto 16px;animation:sp 0.8s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}</style></head><body>'
+    + '<div class="b"><div class="sp"></div><h1>Opening the ' + esc(c.name) + ' app…</h1>'
+    + '<p>' + esc(sym) + '/USDT perpetual. If nothing happens, tap below.</p>'
+    + '<a id="w" href="' + esc(web) + '">Open ' + esc(c.name) + '</a></div>'
+    + '<script>(function(){var web=' + JSON.stringify(web) + ',intent=' + JSON.stringify(intent) + ',ios=' + JSON.stringify(ios) + ';'
+    + 'var ua=navigator.userAgent||"",t=Date.now(),done=false;'
+    + 'document.addEventListener("visibilitychange",function(){if(document.hidden)done=true;});' // app took over -> tab hidden -> cancel the web fallback
+    + 'function fb(){if(!done&&!document.hidden&&Date.now()-t<3000)location.href=web;}'
+    + 'try{if(/Android/i.test(ua)){location.href=intent;}' // intent:// carries its own browser_fallback_url
+    + 'else if(/iPhone|iPad|iPod/i.test(ua)){location.href=ios;setTimeout(fb,1400);}'
+    + 'else{location.href=web;}}catch(e){location.href=web;}'
+    + '})();</script></body></html>';
+  return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', ...CORS } });
+}
 async function handleHappyHour(env) {
   const now = Date.now(), d = new Date(now);
   const todayStart = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), HH.hourUTC, 0, 0);
