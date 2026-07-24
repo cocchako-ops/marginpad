@@ -37,7 +37,7 @@
     '.hm-foot{margin-top:8px;font-size:11px;color:#5c6b84;line-height:1.55}' +
     '.hm-foot b{color:#8fa3c4;font-weight:700}.hm-foot .l{color:#2ebd85}.hm-foot .s{color:#ff6258}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
-    '@media(max-width:980px){.hm-targets{order:4;background:#0d1014;border:1px solid #1e242e;border-radius:10px;padding:10px 12px;margin:8px 0 0}.hm-tg-h{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;color:#c2f64a;margin-bottom:6px}.hm-tg-exp{display:block;font-size:10.5px;color:#5c6b84;line-height:1.5;margin-top:7px}.hm-tg-row{display:block;margin:3px 0}.hm-tg-row>span{display:inline-block;margin:2px 8px 2px 0}.hm-foot{order:5}}' +
+    '@media(max-width:980px){.hm-targets{order:4;background:#0d1014;border:1px solid #1e242e;border-radius:10px;padding:10px 12px;margin:8px 0 0}.hm-tg-lab{display:none}.hm-tg-h{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;color:#c2f64a;margin-bottom:6px}.hm-tg-exp{display:block;font-size:10.5px;color:#5c6b84;line-height:1.5;margin-top:7px}.hm-tg-row{display:block;margin:3px 0}.hm-tg-row>span{display:inline-block;margin:2px 8px 2px 0}.hm-foot{order:5}}' +
     '@media(max-width:980px){#heatmap.hm-full{width:auto!important;margin-left:0!important}.hm-wrap{padding:8px 8px 7px}.hm-bar{gap:4px;margin-bottom:6px}.hm-sel{height:27px;padding:2px 20px 2px 8px;font-size:11.5px;border-radius:7px;background-position:right 6px center}.hm-seg{height:27px;border-radius:7px}.hm-seg button{padding:0 8px;font-size:10.5px}.hm-btn{width:27px;height:27px;border-radius:7px}.hm-btn svg{width:13px;height:13px}.hm-px{font-size:12px}.hm-px small{font-size:9.5px;margin-left:3px}.hm-stage{height:52vh;min-height:320px}.hm-prof{width:64px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
@@ -256,7 +256,7 @@
     var sc = function (a, b) { return magnetScore(b, px) - magnetScore(a, px); }; up.sort(sc); dn.sort(sc);
     var cell = function (x) { var d = ((x.price - px) / px * 100); return '<span style="color:' + (x.long ? '#2ebd85' : '#ff6258') + '"><b style="color:#e9e7df">' + fpx(x.price) + '</b> ' + money(x.w) + ' <i style="font-style:normal;color:#5c6b84">' + (d >= 0 ? '+' : '') + d.toFixed(1) + '%</i></span>'; };
     var h = '<div class="hm-tg-h">TARGETS \u2014 where liquidity pulls price</div>';
-    var row1 = '<span style="color:#5c6b84;font-weight:700">TARGETS \u2191</span>' + (up.length ? up.slice(0, 3).map(cell).join(' ') : '<span style="color:#3a465c">none nearby</span>');
+    var row1 = '<span style="color:#5c6b84;font-weight:700"><span class="hm-tg-lab">TARGETS </span>\u2191</span>' + (up.length ? up.slice(0, 3).map(cell).join(' ') : '<span style="color:#3a465c">none nearby</span>');
     var row2 = '<span style="color:#5c6b84;font-weight:700;margin-left:6px">\u2193</span>' + (dn.length ? dn.slice(0, 3).map(cell).join(' ') : '<span style="color:#3a465c">none nearby</span>');
     h += '<div class="hm-tg-row">' + row1 + row2;
     // squeeze: strong pools close on BOTH sides
