@@ -543,11 +543,35 @@
     if (row.length) flush(row);
     return rects;
   }
+  var MKT_CSS2 = '.hm-tmd{margin-top:12px;background:#0b0e13;border:1px solid #c2f64a55;border-radius:12px;padding:12px 14px;font:11.5px "Space Mono",monospace;position:relative;display:none}' +
+    '.hm-tmd-x{position:absolute;top:8px;right:10px;background:none;border:0;color:#5c6b84;font-size:16px;cursor:pointer;font-family:inherit}.hm-tmd-x:hover{color:#fff}' +
+    '.hm-tmd-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:9px}.hm-tmd-h b{font-size:15px;color:#fff}.hm-tmd-h .pxv{color:#c9d4e8}.hm-tmd-h .chg{font-size:11px}' +
+    '.hm-tmd-g{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}' +
+    '.hm-tmd-c{background:#10151f;border-radius:9px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}' +
+    '.hm-tmd-c .tw{color:#5c6b84;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase}.hm-tmd-c b{color:#fff;font-size:13px}' +
+    '.hm-tmd-cta{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}' +
+    '.hm-tmd-cta a,.hm-tmd-cta button{background:#141a26;border:1px solid #2a3550;color:#c2f64a;font:11px "Space Mono",monospace;padding:6px 12px;border-radius:8px;cursor:pointer;text-decoration:none}' +
+    '.hm-tmd-cta a:hover,.hm-tmd-cta button:hover{border-color:#c2f64a}' +
+    '.hm-ext-h span[data-k]{cursor:pointer}.hm-ext-h span[data-k]:hover{color:#c2f64a}.hm-ext-h span[data-k].on{color:#c2f64a}' +
+    '.hm-ct{margin-top:14px;background:#0b0e13;border:1px solid #1c2230;border-radius:12px;padding:10px 14px 6px}' +
+    '.hm-ct-h{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:2px 0 9px;border-bottom:1px solid #10151f}' +
+    '.hm-ct-h b{font:700 11px "Space Mono",monospace;letter-spacing:.13em;color:#c2f64a}' +
+    '.hm-ct-h input{margin-left:auto;background:#10151f;border:1px solid #1c2230;border-radius:8px;color:#dbe4f5;font:11.5px "Space Mono",monospace;padding:6px 10px;width:150px;outline:none}' +
+    '.hm-ct-h input:focus{border-color:#2a3550}' +
+    '.hm-ct-tw{overflow-x:auto}' +
+    '.hm-ct-hd,.hm-ct-r{display:grid;grid-template-columns:34px 120px 118px repeat(8,minmax(76px,1fr));gap:6px;align-items:center;min-width:1000px;padding:7px 0;border-bottom:1px solid #10151f;font:11px "Space Mono",monospace}' +
+    '.hm-ct-hd{color:#5c6b84;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase}' +
+    '.hm-ct-hd span[data-ck]{cursor:pointer}.hm-ct-hd span[data-ck]:hover{color:#c2f64a}.hm-ct-hd span[data-ck].on{color:#c2f64a}' +
+    '.hm-ct-r:last-child{border-bottom:0}.hm-ct-r{cursor:pointer}.hm-ct-r:hover{background:rgba(255,255,255,.02)}' +
+    '.hm-ct-r .rk2c{color:#5c6b84}.hm-ct-r .sym{color:#fff;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+    '.hm-ct-r .pxc{color:#c9d4e8;white-space:nowrap}.hm-ct-r .pxc i{font-style:normal;font-size:9.5px;display:block}' +
+    '.hm-ct-r .hv{border-radius:5px;padding:4px 6px;color:#eef3ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+    '@media(max-width:980px){.hm-tmd-g{grid-template-columns:1fr 1fr}}';
   function buildMkt(wrap) {
-    if (!document.getElementById('hmMktCss')) { var st = document.createElement('style'); st.id = 'hmMktCss'; st.textContent = MKT_CSS; document.head.appendChild(st); }
-    var M = { win: '24H', events: [] };
+    if (!document.getElementById('hmMktCss')) { var st = document.createElement('style'); st.id = 'hmMktCss'; st.textContent = MKT_CSS + MKT_CSS2; document.head.appendChild(st); }
+    var M = { win: '24H', p: null, px: {}, exSort: { k: 'v', d: -1 }, ctSort: { k: 't24', d: -1 }, ctQ: '' };
     var host = el('div', 'hm-mkt'); wrap.appendChild(host);
-    var WINH = { '1H': 1, '4H': 4, '12H': 12, '24H': 24 };
+    var WINH = { '1H': 'h1', '4H': 'h4', '12H': 'h12', '24H': 'h24' };
     var head = el('div', 'hm-mkt-head');
     head.appendChild(el('b', '', 'LIQUIDATION MARKET PULSE'));
     head.appendChild(el('span', 'hm-mkt-sub', 'every coin · all venues · orders ≥ $1K · live'));
@@ -555,15 +579,92 @@
     Object.keys(WINH).forEach(function (k) { var b = el('button', k === M.win ? 'on' : '', k.toLowerCase()); b.type = 'button'; b.setAttribute('data-w', k); chips.appendChild(b); });
     head.appendChild(chips); host.appendChild(head);
     var grid = el('div', 'hm-mkt-grid'), left = el('div', 'hm-mkt-l'), right = el('div', 'hm-mkt-r');
-    var tm = el('div', 'hm-tm'), exT = el('div', 'hm-ext'), tots = el('div', 'hm-tots'), story = el('div', 'hm-story'), t10 = el('div', 'hm-t10');
-    left.appendChild(tm); left.appendChild(exT);
+    var tm = el('div', 'hm-tm'), det = el('div', 'hm-tmd'), exT = el('div', 'hm-ext'), tots = el('div', 'hm-tots'), story = el('div', 'hm-story'), t10 = el('div', 'hm-t10');
+    left.appendChild(tm); left.appendChild(det); left.appendChild(exT);
     right.appendChild(tots); right.appendChild(story); right.appendChild(t10);
     grid.appendChild(left); grid.appendChild(right); host.appendChild(grid);
+    var ct = el('div', 'hm-ct');
+    var ctH = el('div', 'hm-ct-h'); ctH.appendChild(el('b', '', 'TOTAL LIQUIDATIONS BY COIN'));
+    var ctQ = el('input', ''); ctQ.type = 'text'; ctQ.placeholder = 'Search coin'; ctH.appendChild(ctQ);
+    var ctTb = el('div', 'hm-ct-tw');
+    ct.appendChild(ctH); ct.appendChild(ctTb); host.appendChild(ct);
     var h10 = '<div class="hm-t10-h">TOP 10 LIQUIDATION EVENTS OF ALL TIME</div>';
     MKT_TOP10.forEach(function (r, i) { h10 += '<div class="hm-t10-r"><span class="rk rk' + (i + 1) + '">' + (i + 1) + '</span><span class="dt">' + r[0] + '</span><b>' + r[1] + '</b><span class="why">' + r[2] + '</span></div>'; });
     t10.innerHTML = h10;
     chips.addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (!b) return; M.win = b.getAttribute('data-w'); chips.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); }); render(); });
-    function wkey(k) { return { '1H': 'h1', '4H': 'h4', '12H': 'h12', '24H': 'h24' }[k] || 'h24'; }
+    ctQ.addEventListener('input', function () { M.ctQ = (ctQ.value || '').trim().toUpperCase(); ctRender(); });
+    function winsOf(sym) {
+      var o = {};
+      ['h1', 'h4', 'h12', 'h24'].forEach(function (k) {
+        var r = null, a = (M.p[k] || {}).bySym || [];
+        for (var i = 0; i < a.length; i++) if (a[i].s === sym) { r = a[i]; break; }
+        o[k] = r ? { l: +r.l, s: +r.sh } : { l: 0, s: 0 };
+      });
+      return o;
+    }
+    function priceOf(sym) {
+      if (M.px[sym]) return M.px[sym];
+      var a = (M.p && M.p.h24 ? M.p.h24.bySym : []) || [];
+      for (var i = 0; i < a.length; i++) if (a[i].s === sym && +a[i].px > 0) return { price: +a[i].px, chg: null };
+      return null;
+    }
+    function showDet(sym) {
+      if (!M.p) return;
+      var w = winsOf(sym), pr = priceOf(sym);
+      var h = '<button type="button" class="hm-tmd-x" title="Close">×</button><div class="hm-tmd-h"><b>' + sym + '</b>';
+      if (pr) h += '<span class="pxv">$' + fpx(pr.price) + '</span>' + (pr.chg != null ? '<span class="chg" style="color:' + (pr.chg >= 0 ? '#2ebd85' : '#ff6258') + '">' + (pr.chg >= 0 ? '+' : '') + (+pr.chg).toFixed(2) + '% 24h</span>' : '');
+      h += '</div><div class="hm-tmd-g">';
+      [['1h', 'h1'], ['4h', 'h4'], ['12h', 'h12'], ['24h', 'h24']].forEach(function (wd) {
+        var x = w[wd[1]];
+        h += '<div class="hm-tmd-c"><span class="tw">' + wd[0] + ' rekt</span><b>' + money(x.l + x.s) + '</b><span class="tl">Long ' + money(x.l) + '</span><span class="ts">Short ' + money(x.s) + '</span></div>';
+      });
+      h += '</div><div class="hm-tmd-cta">';
+      if (COINS.indexOf(sym) >= 0) h += '<button type="button" data-map="' + sym + '">View ' + sym + ' on the liquidation map</button>';
+      if (sym.indexOf(':') < 0 && sym !== 'Others') h += '<a href="/paper-trade?coin=' + sym + '">Paper trade ' + sym + '</a>';
+      h += '</div>';
+      det.innerHTML = h; det.style.display = 'block';
+      det.querySelector('.hm-tmd-x').addEventListener('click', function () { det.style.display = 'none'; });
+      var mb = det.querySelector('[data-map]');
+      if (mb) mb.addEventListener('click', function () { if (S && S.setCoin) S.setCoin(sym); });
+      try { det.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+    }
+    tm.addEventListener('click', function (ev) { var c = ev.target.closest('.hm-tm-c'); if (!c) return; var sym = c.getAttribute('data-sym'); if (!sym || sym === 'Others') return; showDet(sym); });
+    exT.addEventListener('click', function (ev) { var hh = ev.target.closest('span[data-k]'); if (!hh) return; var k = hh.getAttribute('data-k'); if (M.exSort.k === k) M.exSort.d = -M.exSort.d; else M.exSort = { k: k, d: -1 }; render(); });
+    ctTb.addEventListener('click', function (ev) {
+      var hh = ev.target.closest('span[data-ck]');
+      if (hh) { var k = hh.getAttribute('data-ck'); if (M.ctSort.k === k) M.ctSort.d = -M.ctSort.d; else M.ctSort = { k: k, d: -1 }; ctRender(); return; }
+      var row = ev.target.closest('.hm-ct-r'); if (row) { var sy = row.getAttribute('data-sym'); if (sy) showDet(sy); }
+    });
+    function ctRender() {
+      if (!M.p) return;
+      var map = {};
+      ['h1', 'h4', 'h12', 'h24'].forEach(function (k) {
+        ((M.p[k] || {}).bySym || []).forEach(function (r) {
+          var m = map[r.s] || (map[r.s] = { sym: r.s, px: 0, h1l: 0, h1s: 0, h4l: 0, h4s: 0, h12l: 0, h12s: 0, h24l: 0, h24s: 0 });
+          m[k + 'l'] = +r.l; m[k + 's'] = +r.sh; if (+r.px > 0) m.px = +r.px;
+        });
+      });
+      var rows = Object.keys(map).map(function (k) { var m = map[k]; m.t24 = m.h24l + m.h24s; return m; });
+      if (M.ctQ) rows = rows.filter(function (r) { return r.sym.toUpperCase().indexOf(M.ctQ) >= 0; });
+      var sk = M.ctSort.k, sd = M.ctSort.d;
+      rows.sort(function (a, b) { return ((a[sk] || 0) - (b[sk] || 0)) * sd; });
+      var CK = ['h1l', 'h1s', 'h4l', 'h4s', 'h12l', 'h12s', 'h24l', 'h24s'];
+      var mx = {}; CK.forEach(function (c) { mx[c] = 0; rows.forEach(function (r) { if (r[c] > mx[c]) mx[c] = r[c]; }); });
+      function tint(c, v) { if (!(v > 0) || !mx[c]) return ''; var a = (0.07 + 0.55 * Math.sqrt(v / mx[c])).toFixed(2); return 'background:rgba(' + (c.charAt(c.length - 1) === 'l' ? '46,189,133' : '255,98,88') + ',' + a + ')'; }
+      var arrow = function (k) { return M.ctSort.k === k ? (M.ctSort.d < 0 ? ' ↓' : ' ↑') : ''; };
+      var hcell = function (k, lb) { return '<span data-ck="' + k + '"' + (M.ctSort.k === k ? ' class="on"' : '') + '>' + lb + arrow(k) + '</span>'; };
+      var h = '<div class="hm-ct-hd"><span>#</span><span>Coin</span><span>Price</span>' +
+        hcell('h1l', '1h Long') + hcell('h1s', '1h Short') + hcell('h4l', '4h Long') + hcell('h4s', '4h Short') +
+        hcell('h12l', '12h Long') + hcell('h12s', '12h Short') + hcell('h24l', '24h Long') + hcell('h24s', '24h Short') + '</div>';
+      rows.slice(0, 40).forEach(function (r, i) {
+        var pr = M.px[r.sym], pxs = pr ? '$' + fpx(pr.price) : (r.px > 0 ? '$' + fpx(r.px) : '—');
+        var chg = pr && pr.chg != null ? '<i style="color:' + (pr.chg >= 0 ? '#2ebd85' : '#ff6258') + '">' + (pr.chg >= 0 ? '+' : '') + (+pr.chg).toFixed(2) + '%</i>' : '';
+        h += '<div class="hm-ct-r" data-sym="' + r.sym + '"><span class="rk2c">' + (i + 1) + '</span><span class="sym">' + r.sym + '</span><span class="pxc">' + pxs + chg + '</span>';
+        CK.forEach(function (c) { h += '<span class="hv" style="' + tint(c, r[c]) + '">' + (r[c] > 0 ? money(r[c]) : '$0') + '</span>'; });
+        h += '</div>';
+      });
+      ctTb.innerHTML = h;
+    }
     function render() {
       if (!M.p) return;
       var th = '';
@@ -572,7 +673,7 @@
         th += '<div class="hm-tot"><span class="tw">' + wd[0] + ' rekt</span><b>' + money(t.v) + '</b><span class="tl">Long ' + money(t.l) + '</span><span class="ts">Short ' + money(t.v - t.l) + '</span></div>';
       });
       tots.innerHTML = th;
-      var A = M.p[wkey(M.win)] || {}, T = A.tot || { n: 0, v: 0, l: 0 };
+      var A = M.p[WINH[M.win]] || {}, T = A.tot || { n: 0, v: 0, l: 0 };
       if (T.n && A.big) {
         story.innerHTML = 'Past ' + M.win.toLowerCase() + ': <b>' + (+T.n).toLocaleString('en-US') + '</b> liquidation orders totaling <b>' + money(T.v) + '</b> across our tracked venues. The largest single order hit <b>' + String(A.big.exchange).replace('binance-coin', 'Binance COIN-M').toUpperCase() + '</b> — <b>' + A.big.symbol + '</b> ' + (A.big.side === 'long_liquidated' ? '<span class="tl">LONG</span>' : '<span class="ts">SHORT</span>') + ' worth <b>' + money(A.big.notional) + '</b>.';
       } else story.innerHTML = 'No liquidation orders ≥ $1K captured in this window yet.';
@@ -584,18 +685,22 @@
       layoutTreemap(top, W, H).forEach(function (r) {
         var d = el('div', 'hm-tm-c'); var lsh = r.it.v ? r.it.l / r.it.v : 0.5;
         var dom = Math.abs(lsh - 0.5) * 2; // 0 = balanced flow, 1 = one-sided
-        d.style.cssText = 'left:' + r.x.toFixed(1) + 'px;top:' + r.y.toFixed(1) + 'px;width:' + Math.max(0, r.w - 2).toFixed(1) + 'px;height:' + Math.max(0, r.h - 2).toFixed(1) + 'px;background:' + (lsh >= 0.5 ? 'rgba(210,68,58,' : 'rgba(32,146,100,') + (0.55 + dom * 0.4).toFixed(2) + ')';
+        d.style.cssText = 'left:' + r.x.toFixed(1) + 'px;top:' + r.y.toFixed(1) + 'px;width:' + Math.max(0, r.w - 2).toFixed(1) + 'px;height:' + Math.max(0, r.h - 2).toFixed(1) + 'px;cursor:pointer;background:' + (lsh >= 0.5 ? 'rgba(210,68,58,' : 'rgba(32,146,100,') + (0.55 + dom * 0.4).toFixed(2) + ')';
+        d.setAttribute('data-sym', r.it.sym);
         if (r.w > 46 && r.h > 26) d.innerHTML = '<b>' + r.it.sym + '</b>' + (r.h > 46 ? '<span>' + money(r.it.v) + '</span>' : '');
-        d.title = r.it.sym + ' — ' + money(r.it.v) + ' liquidated in the last ' + M.win.toLowerCase() + ': longs ' + money(r.it.l) + ' · shorts ' + money(r.it.s);
+        d.title = r.it.sym + ' — ' + money(r.it.v) + ' liquidated in the last ' + M.win.toLowerCase() + ': longs ' + money(r.it.l) + ' · shorts ' + money(r.it.s) + '. Click for details.';
         tm.appendChild(d);
       });
       var exr = (A.byEx || []).map(function (r) { return { ex: r.e, v: (+r.l) + (+r.sh), l: +r.l, s: +r.sh }; });
-      var eh = '<div class="hm-ext-h"><span>Exchange</span><span>Liquidations</span><span>Long</span><span>Short</span><span>Share</span></div>';
+      exr.sort(function (a, b) { return ((a[M.exSort.k] || 0) - (b[M.exSort.k] || 0)) * M.exSort.d; });
+      var earr = function (k) { return M.exSort.k === k ? (M.exSort.d < 0 ? ' ↓' : ' ↑') : ''; };
+      var eh = '<div class="hm-ext-h"><span>Exchange</span><span data-k="v"' + (M.exSort.k === 'v' ? ' class="on"' : '') + '>Liquidations' + earr('v') + '</span><span data-k="l"' + (M.exSort.k === 'l' ? ' class="on"' : '') + '>Long' + earr('l') + '</span><span data-k="s"' + (M.exSort.k === 's' ? ' class="on"' : '') + '>Short' + earr('s') + '</span><span>Share</span></div>';
       exr.forEach(function (r) {
         var share = T.v ? r.v / T.v * 100 : 0;
         eh += '<div class="hm-ext-r"><span class="ex">' + r.ex.replace('binance-coin', 'binance COIN-M') + '</span><b>' + money(r.v) + '</b><span class="tl">' + money(r.l) + '</span><span class="ts">' + money(r.s) + '</span><span class="shr"><i style="width:' + Math.min(100, share).toFixed(1) + '%"></i><em>' + share.toFixed(1) + '%</em></span></div>';
       });
       exT.innerHTML = eh;
+      ctRender();
     }
     function loadMkt() {
       fetch('/api/v1/pulse').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
@@ -603,6 +708,11 @@
         M.p = j; render();
       }).catch(function () {});
     }
+    fetch('/api/prices').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (!j || !Array.isArray(j.pairs)) return;
+      j.pairs.forEach(function (pr) { M.px[String(pr.symbol).replace(/USDT$/, '')] = { price: +pr.price, chg: pr.changePct != null ? +pr.changePct : null }; });
+      if (M.p) render();
+    }).catch(function () {});
     loadMkt();
     S.timers.push(setInterval(function () { if (!document.hidden) loadMkt(); }, 90000));
     var roT; try { new ResizeObserver(function () { clearTimeout(roT); roT = setTimeout(render, 250); }).observe(tm); } catch (e) {}
@@ -638,6 +748,7 @@
 
     S = { coin: coin, win: '1D', sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, showDots: (function(){ try { return localStorage.getItem('mp_hm_dots') !== '0'; } catch (e) { return true; } })(), bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
     wire();
+    S.setCoin = function (c) { if (COINS.indexOf(c) < 0) return; selC.value = c; selC.dispatchEvent(new Event('change')); try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); } };
     selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
     selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); loadAll(true); });
     function dotsUi() { dotsB.classList.toggle('on', !!S.showDots); }
