@@ -1563,15 +1563,18 @@ window.addEventListener('load', function () {
     fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin)return;
       if(kd&&kd.length&&candle){ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; _hlgp=lastBar&&lastBar.close||0; _hrej=0; }
       loadedKlines=true; setTimeout(sched,80); setTimeout(sched,400); }); }
-  function load(coin){ cur.coin=coin; if(pxEl)pxEl.textContent='…';
-    ensureLib(function(){ initChart(); ensureOverlay();
-      if(!subd){ subd=true; try{chart.timeScale().subscribeVisibleTimeRangeChange(sched); chart.subscribeCrosshairMove(onCross);}catch(e){} }
-      fetch('/api/price?symbol='+encodeURIComponent(coin),{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return null;}).then(function(pd){ if(coin!==cur.coin)return;
-        if(pd&&pd.price){cur.price=+pd.price;cur.chg=+pd.chg||0;if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>';liveCandle();}
-        else{cur.price=0;if(pxEl)pxEl.textContent='unavailable';} applyTheo(); });
-      reloadKlines(); startPoll();
-    });
+  function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js
+    // (pool-model + real-liq canvas engine). Everything below this function (ensureLib/initChart/fetchLiq/startPoll)
+    // is the RETIRED v1 — dormant, unreachable, kept only to avoid a risky mass-delete in this shared IIFE.
+    var sec=document.getElementById('heatmap');
+    if(window.mpHeatmap){window.mpHeatmap.mount(sec,coin);return;}
+    if(window.__mpHmLd)return; window.__mpHmLd=1;
+    var s=document.createElement('script'); s.src='/assets/mp-heatmap.js';
+    s.onload=function(){window.mpHeatmap&&window.mpHeatmap.mount(document.getElementById('heatmap'),coin);};
+    s.onerror=function(){window.__mpHmLd=0;};
+    document.head.appendChild(s);
   }
+  window.mpHeatBoot=function(c){load(c||'BTC');};
   if(sel)sel.addEventListener('change',function(){load(sel.value);});
   function shot(cb){ if(!chart)return; try{ var base=chart.takeScreenshot(),c=document.createElement('canvas'); c.width=base.width; c.height=base.height; var x=c.getContext('2d');
     x.fillStyle='#0a0b0d'; x.fillRect(0,0,c.width,c.height); /* chart layout bg is transparent -> paint our dark bg so the PNG isn't white */
@@ -1644,7 +1647,7 @@ window.addEventListener('load', function () {
       try{if(window.mpPlanRisk)window.mpPlanRisk();}catch(e){}
     },300);}
   if(/^\/calculators\/?$/.test(location.pathname)){document.body.classList.add('calc-page');var _ccd=document.querySelector('.card'),_ctb0=document.querySelector('.tabs'),_cwp=document.querySelector('.wrap');if(_cwp){Array.prototype.forEach.call(_cwp.children,function(ch){if(ch!==_ccd&&ch!==_ctb0&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});}if(_ctb0)_ctb0.style.display='';if(_ccd)_ccd.style.display='';var _ct=(location.search.match(/[?&]c=([a-z]+)/)||[])[1]||'liq';var _ctb=document.querySelector('.tab[data-tab="'+_ct+'"]')||document.querySelector('.tab[data-tab="liq"]');if(_ctb)_ctb.click();}
-  if(/^\/(heatmap|swap)\/?$/.test(location.pathname)){var _pid=/heatmap/.test(location.pathname)?'heatmap':'swap',_pd=_pid==='heatmap'?'heat':'swap';document.body.classList.add(_pid+'-page');document.body.setAttribute('data-prod',_pd);var _pe=document.querySelector('.prod[data-prod="'+_pd+'"]');if(_pe)_pe.click();var _se=document.getElementById(_pid),_we=document.querySelector('.wrap');if(_se&&_we){Array.prototype.forEach.call(_we.children,function(ch){if(ch!==_se&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_se.style.display='';}var _hc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_pid==='heatmap'){var _hcS=document.getElementById('heatCoin');if(_hcS){if(_hc){var _cu=_hc.toUpperCase();for(var _ci=0;_ci<_hcS.options.length;_ci++)if(_hcS.options[_ci].value===_cu){_hcS.value=_cu;break;}}_hcS.dispatchEvent(new Event('change',{bubbles:true}));}}}/* change ALWAYS fires → load(): the old .prod[data-prod=heat] click is a no-op since the prodnav heat card became an <a href> (2026-07-03) — that dead click left /heatmap chartless */
+  if(/^\/(heatmap|swap)\/?$/.test(location.pathname)){var _pid=/heatmap/.test(location.pathname)?'heatmap':'swap',_pd=_pid==='heatmap'?'heat':'swap';document.body.classList.add(_pid+'-page');document.body.setAttribute('data-prod',_pd);var _pe=document.querySelector('.prod[data-prod="'+_pd+'"]');if(_pe)_pe.click();var _se=document.getElementById(_pid),_we=document.querySelector('.wrap');if(_se&&_we){Array.prototype.forEach.call(_we.children,function(ch){if(ch!==_se&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_se.style.display='';}var _hc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];if(_pid==='heatmap'&&window.mpHeatBoot)window.mpHeatBoot(_hc);}/* boots the v2 module directly — the old .prod[data-prod=heat] click has been a no-op since the prodnav card became an <a href> (2026-07-03) */
   var _pq=(location.search.match(/[?&]p=(heat|swap|plan|charts)/)||[])[1]||(/heatmap/i.test(location.hash)?'heat':(/swap/i.test(location.hash)?'swap':''));
   var _coin=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1];
   if(_pq){var hb=document.querySelector('.prod[data-prod="'+_pq+'"]');if(hb)hb.click();
@@ -1696,7 +1699,7 @@ window.addEventListener('load', function () {
       if(wp2){Array.prototype.forEach.call(wp2.children,function(ch){if(ch!==cd2&&ch!==tb0&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});}
       if(tb0)tb0.style.display='';if(cd2)cd2.style.display='';
       var ctv=(search.match(/[?&]c=([a-z]+)/)||[])[1]||'liq';var ctb=document.querySelector('.tab[data-tab="'+ctv+'"]')||document.querySelector('.tab[data-tab="liq"]');if(ctb)ctb.click();
-    } else if(/^\/(heatmap|swap)\/?$/.test(path)){ var _pid=/heatmap/.test(path)?'heatmap':'swap',_pd=_pid==='heatmap'?'heat':'swap'; document.body.classList.add(_pid+'-page'); document.body.setAttribute('data-prod',_pd); var _pe=document.querySelector('.prod[data-prod="'+_pd+'"]'); if(_pe)_pe.click(); var _se=document.getElementById(_pid),_we=document.querySelector('.wrap'); if(_se&&_we){Array.prototype.forEach.call(_we.children,function(ch){if(ch!==_se&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_se.style.display='';} var _hc=(search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1]; if(_pid==='heatmap'){var _hcS=document.getElementById('heatCoin');if(_hcS){if(_hc){var _cu=_hc.toUpperCase();for(var _ci=0;_ci<_hcS.options.length;_ci++)if(_hcS.options[_ci].value===_cu){_hcS.value=_cu;break;}}_hcS.dispatchEvent(new Event('change',{bubbles:true}));}}
+    } else if(/^\/(heatmap|swap)\/?$/.test(path)){ var _pid=/heatmap/.test(path)?'heatmap':'swap',_pd=_pid==='heatmap'?'heat':'swap'; document.body.classList.add(_pid+'-page'); document.body.setAttribute('data-prod',_pd); var _pe=document.querySelector('.prod[data-prod="'+_pd+'"]'); if(_pe)_pe.click(); var _se=document.getElementById(_pid),_we=document.querySelector('.wrap'); if(_se&&_we){Array.prototype.forEach.call(_we.children,function(ch){if(ch!==_se&&ch.tagName!=='HEADER'&&ch.tagName!=='FOOTER')ch.style.display='none';});_se.style.display='';} var _hc=(search.match(/[?&]coin=([A-Za-z0-9]+)/)||[])[1]; if(_pid==='heatmap'&&window.mpHeatBoot)window.mpHeatBoot(_hc);
     } else { // homepage ("/"), optionally with ?p=heat|swap
       document.body.setAttribute('data-prod','calc');
       var pq=(search.match(/[?&]p=(heat|swap|plan|charts)/)||[])[1];

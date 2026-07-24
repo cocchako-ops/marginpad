@@ -2344,33 +2344,39 @@ async function collectorHealth(env) {
   const base = (env && env.COLLECTOR_URL || '').replace(/\/$/, '');
   const fail = (msg) => `<div class="hp hp-down"><div class="hp-h"><span class="hp-dot"></span><span class="hp-st">LIQUIDATION MAP — DOWN</span></div><div class="hp-sub">${msg}</div></div>`;
   if (!base) return fail('COLLECTOR_URL not configured');
-  let st, cl;
+  let st, cl, fd;
   try {
     const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 2000); // fast-fail: a DOWN collector VPS must not hang the whole dashboard render for seconds
-    const [r1, r2] = await Promise.all([
+    const [r1, r2, r3] = await Promise.all([
       fetch(base + '/api/v1/status', { cf: { cacheTtl: 0 }, signal: ctl.signal }),
       fetch(base + '/api/v1/clusters?symbol=BTC', { cf: { cacheTtl: 0 }, signal: ctl.signal }).catch(() => null),
+      fetch(base + '/api/v1/feed', { cf: { cacheTtl: 0 }, signal: ctl.signal }).catch(() => null),
     ]);
     clearTimeout(tm);
     if (!r1.ok) return fail('collector unreachable (HTTP ' + r1.status + ')');
     st = await r1.json();
     cl = r2 && r2.ok ? await r2.json() : null;
+    fd = r3 && r3.ok ? await r3.json() : null;
   } catch (e) { return fail('collector unreachable'); }
   if (!st || !Array.isArray(st.exchanges)) return fail('bad status response');
   const now = Date.now();
-  const exs = st.exchanges.filter((e) => ['bybit', 'okx', 'bitmex', 'bitfinex'].indexOf((e.name || '').toLowerCase()) >= 0); // only the active sources — the rest are deactivated/not working
+  const exs = st.exchanges; // ALL 7 sources (2026-07-24: binance USDT-M fixed — /market/ws path — and is now the biggest; binance-coin + deribit also live on the new droplet)
   const conn = exs.filter((e) => e.connected).length, total = exs.length;
   const anyRecent = exs.some((e) => e.lastEventAt && now - e.lastEventAt < 30 * 60000);
   const status = conn === 0 ? ['DOWN', 'hp-down'] : !anyRecent ? ['STALLED', 'hp-down'] : conn < total ? ['DEGRADED', 'hp-warn'] : ['LIVE', 'hp-live']; // STALLED = connected but no liquidation events in 30 min (the feed silently stopped)
   const up = (s) => { const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60); return (h ? h + 'h ' : '') + m + 'm'; };
   const ago = (t) => !t ? 'never' : (now - t < 60000 ? '<1m' : Math.round((now - t) / 60000) + 'm') + ' ago';
-  const idleLbl = (e) => e.name === 'binance' ? 'idle (geo-restricted)' : 'connected · awaiting';
-  const exHtml = exs.map((e) => `<div class="hp-ex"><span class="hp-edot ${!e.connected ? 'off' : e.lastEventAt ? 'on' : 'idle'}"></span><b>${e.name}</b><small>${!e.connected ? 'OFFLINE' : e.lastEventAt ? 'live · ' + ago(e.lastEventAt) : idleLbl(e)} · ${e.eventsPerMin || 0}/min</small></div>`).join('');
+  const exHtml = exs.map((e) => `<div class="hp-ex"><span class="hp-edot ${!e.connected ? 'off' : e.lastEventAt ? 'on' : 'idle'}"></span><b>${e.name}</b><small>${!e.connected ? 'OFFLINE' : e.lastEventAt ? 'live · ' + ago(e.lastEventAt) : 'connected · awaiting'} · ${e.eventsPerMin || 0}/min</small></div>`).join('');
+  // Rekt + Heatmap product freshness (owner asks "is it ažurno?" — answer it right here)
+  const newestEv = fd && fd.events && fd.events[0] ? fd.events[0].ts : 0;
+  const rektLine = newestEv ? ('Rekt feed: newest liq <b>' + (now - newestEv < 60000 ? Math.round((now - newestEv) / 1000) + 's' : Math.round((now - newestEv) / 60000) + 'm') + ' ago</b> (edge +3s, page poll 4s)') : 'Rekt feed: no events yet';
+  const heatLine = cl && cl.updatedAt ? ('Heatmap v2: clusters refreshed <b>' + Math.round((now - cl.updatedAt) / 1000) + 's ago</b> · pools model client-side · 10 coins') : 'Heatmap: clusters unavailable';
   const clN = cl && Array.isArray(cl.clusters) ? cl.clusters.length : 0;
   return `<div class="hp ${status[1]}">
     <div class="hp-h"><span class="hp-dot"></span><span class="hp-st">LIQUIDATION MAP — ${status[0]}</span><span class="hp-up">uptime ${up(st.uptimeSec || 0)}</span></div>
     <div class="hp-grid">${exHtml}</div>
     <div class="hp-meta">${Number(st.db && st.db.events24h || 0).toLocaleString('en-US')} liquidations · ${clN} BTC clusters · ${(st.symbols || []).length} symbols${anyRecent ? '' : ' · <i>quiet — no liqs in 30m (normal when price is flat)</i>'}</div>
+    <div class="hp-meta">${rektLine} &nbsp;·&nbsp; ${heatLine}</div>
   </div>`;
 }
 
