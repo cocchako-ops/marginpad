@@ -179,6 +179,27 @@
         }
       }
     }
+    // YOUR position on the map — see whether your liq sits inside a pool the price is hunting
+    if (S.myPos && S.myPos.length) {
+      ctx.font = '700 10px "Space Mono",monospace'; ctx.textAlign = 'left';
+      for (i = 0; i < S.myPos.length; i++) { var mp = S.myPos[i];
+        if (mp.entry > pLo && mp.entry < pHi) { var ey2 = Y(mp.entry);
+          ctx.setLineDash([2, 3]); ctx.strokeStyle = 'rgba(56,189,248,.85)'; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(0, ey2); ctx.lineTo(W, ey2); ctx.stroke(); ctx.setLineDash([]);
+          ctx.fillStyle = 'rgba(7,9,12,.85)'; ctx.fillRect(4, ey2 - 13, 118, 12);
+          ctx.fillStyle = '#38bdf8'; ctx.fillText('YOUR ENTRY ' + (mp.long ? 'L' : 'S') + mp.lev + 'x', 7, ey2 - 4);
+        }
+        if (mp.liq > pLo && mp.liq < pHi) { var ly2 = Y(mp.liq);
+          ctx.setLineDash([5, 3]); ctx.strokeStyle = 'rgba(160,107,255,.9)'; ctx.lineWidth = 1.2;
+          ctx.beginPath(); ctx.moveTo(0, ly2); ctx.lineTo(W, ly2); ctx.stroke(); ctx.setLineDash([]);
+          var inPool = false; for (var pi2 = 0; pi2 < P.alive.length; pi2++) { if (Math.abs(P.alive[pi2].price - mp.liq) < P.binH * 1.5 && P.alive[pi2].w > (P.alive[0] ? P.alive[0].w * 0.2 : 0)) { inPool = true; break; } }
+          var lqTxt = 'YOUR LIQ ' + fpx(mp.liq) + (inPool ? ' — INSIDE A POOL' : '');
+          var lw2 = ctx.measureText(lqTxt).width;
+          ctx.fillStyle = 'rgba(7,9,12,.85)'; ctx.fillRect(4, ly2 - 13, lw2 + 8, 12);
+          ctx.fillStyle = inPool ? '#ffd75a' : '#a06bff'; ctx.fillText(lqTxt, 7, ly2 - 4);
+        }
+      }
+    }
     // live price
     if (S.price > 0 && S.price > pLo && S.price < pHi) {
       var py = Y(S.price);
@@ -257,7 +278,7 @@
       }
       if (res[1] && res[1].events) S.events = res[1].events;
       if (res[2] && +res[2].price > 0) { S.price = +res[2].price; S.chg = +res[2].chg || 0; }
-      updHead(); updTargets(); if (S.loadEl) S.loadEl.style.display = 'none';
+      loadMyPos(); updHead(); updTargets(); if (S.loadEl) S.loadEl.style.display = 'none';
       sched();
       if (first) { S._noMore = 0; S._lm = 0; setTimeout(function () { loadMore(3); }, 800); } // ~5000 candles of history in the background
     });
@@ -276,6 +297,16 @@
       sched();
       if (chain > 0) loadMore(chain - 1); // eager warm-up right after the first paint
     }).catch(function () { S._lm = 0; });
+  }
+  function loadMyPos() { // the user's OPEN paper trades for this coin -> drawn on the map (entry + liq lines)
+    if (!S) return;
+    try {
+      var jn = JSON.parse(localStorage.getItem('mp_journal') || '[]');
+      S.myPos = jn.filter(function (t) { return t && t.status !== 'win' && t.status !== 'loss' && String(t.sym || '').toUpperCase() === S.coin && +t.entry > 0; })
+        .slice(0, 6).map(function (t) { var lev = +t.lev || 1, long = t.side !== 'short';
+          var liq = +t.liq || (long ? t.entry * (1 - (1 - MMR) / lev) : t.entry * (1 + (1 - MMR) / lev));
+          return { entry: +t.entry, liq: liq, long: long, lev: lev }; });
+    } catch (e) { S.myPos = []; }
   }
   function pollEvents() {
     if (!S || document.hidden) return;
@@ -513,6 +544,7 @@
     S.onPrice = function (ev) { var d = ev.detail || {}; if (S && d.sym === S.coin && +d.p > 0) { S.price = +d.p; updHead(); if (!S._tgT || Date.now() - S._tgT > 5000) { S._tgT = Date.now(); updTargets(); } sched(); } };
     window.addEventListener('mp:price', S.onPrice);
     try { if (window.mpWS) window.mpWS.sub(coin); } catch (e) {}
+    S.timers.push(setInterval(function () { loadMyPos(); }, 15000));
     S.timers.push(setInterval(pollEvents, 6000));
     S.timers.push(setInterval(function () { if (S && !document.hidden) loadAll(false); }, 60000));
     S.onVis = function () { if (S && !document.hidden) { loadAll(false); pollEvents(); } };
