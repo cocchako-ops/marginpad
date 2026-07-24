@@ -149,12 +149,19 @@ export function createSqliteStorage(path) {
     }
     return out;
   }
+  function pulse(sinceTs) { ensure(); // aggregated market pulse (heatmap page): per-coin + per-exchange long/short split + totals + biggest order, orders >= $1k
+    const bySym = db.prepare("SELECT symbol s, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) l, SUM(CASE WHEN side<>'long_liquidated' THEN notional ELSE 0 END) sh FROM liquidations WHERE ts>=? AND notional>=1000 GROUP BY symbol ORDER BY (l+sh) DESC LIMIT 40").all(sinceTs);
+    const byEx = db.prepare("SELECT exchange e, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) l, SUM(CASE WHEN side<>'long_liquidated' THEN notional ELSE 0 END) sh FROM liquidations WHERE ts>=? AND notional>=1000 GROUP BY exchange ORDER BY (l+sh) DESC").all(sinceTs);
+    const tot = db.prepare("SELECT COUNT(*) n, COALESCE(SUM(notional),0) v, COALESCE(SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END),0) l FROM liquidations WHERE ts>=? AND notional>=1000").get(sinceTs);
+    const big = db.prepare("SELECT exchange,symbol,side,notional FROM liquidations WHERE ts>=? AND notional>=1000 ORDER BY notional DESC LIMIT 1").get(sinceTs);
+    return { bySym, byEx, tot, big: big || null };
+  }
   function liqBySymbol(since) { ensure();
     return db.prepare("SELECT symbol s, SUM(notional) liq, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) lng, COUNT(*) n FROM liquidations WHERE ts>=? GROUP BY symbol ORDER BY liq DESC LIMIT 300").all(since);
   }
 
   return { migrate, insert, aggregateNew, histogram, live, feed, prune, stats,
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi,
-    saveOiSnap, oi24h, liqBySymbol,
+    saveOiSnap, oi24h, liqBySymbol, pulse,
     close: () => db.close() };
 }

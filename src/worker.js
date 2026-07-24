@@ -1855,7 +1855,7 @@ async function handleCollectorProxy(url, request, env) {
       return new Response(r.body, { status: 200, headers: { 'content-type': 'text/event-stream', 'cache-control': 'no-store', 'access-control-allow-origin': '*' } });
     } catch (e) { return J({ error: 'collector_unreachable', fallback: true }, 503); }
   }
-  const ttl = p.endsWith('/recent') ? 45 : p.endsWith('/screener-extra') ? 120 : p.endsWith('/feed') ? (url.searchParams.get('since') ? 60 : 2) : p.endsWith('/live') ? 4 : p.endsWith('/clusters') ? 30 : 5; // a since= backfill is a big historical pull — cache it a full minute so page loads share one collector hit. /live+/clusters got TTLs 2026-07-24 (public liq API scale: they were 0 = every request hit the droplet); default 5s floor for anything else
+  const ttl = p.endsWith('/recent') ? 45 : p.endsWith('/screener-extra') ? 120 : p.endsWith('/feed') ? (url.searchParams.get('since') ? 60 : 2) : p.endsWith('/live') ? 4 : p.endsWith('/clusters') ? 30 : p.endsWith('/pulse') ? 45 : 5; // a since= backfill is a big historical pull — cache it a full minute so page loads share one collector hit. /live+/clusters got TTLs 2026-07-24 (public liq API scale: they were 0 = every request hit the droplet); default 5s floor for anything else
   try {
     const r = await fetch(base + p + url.search, {
       headers: { 'x-api-key': request.headers.get('x-api-key') || '' },

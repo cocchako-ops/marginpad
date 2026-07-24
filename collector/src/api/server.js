@@ -80,6 +80,16 @@ export function createApiServer({ storage, getStatus, bus }) {
     catch (e) { log.error('feed failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
+  // aggregated liquidation market pulse (heatmap page bottom section): 1h/4h/12h/24h totals + per-coin + per-exchange
+  app.get('/api/v1/pulse', (req, res) => {
+    try {
+      const now = Date.now(), out = {};
+      [['h1', 1], ['h4', 4], ['h12', 12], ['h24', 24]].forEach(([k, h]) => { out[k] = storage.pulse(now - h * 3600000); });
+      res.set('Cache-Control', 'public, max-age=45');
+      res.json(out);
+    } catch (e) { log.error('pulse failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
+  });
+
   // Server-Sent Events: push new liquidations to connected browsers for a live feel.
   app.get('/api/v1/liquidations/stream', (req, res) => {
     const symbol = String(req.query.symbol || 'BTC').toUpperCase();

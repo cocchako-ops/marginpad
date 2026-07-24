@@ -470,6 +470,139 @@
     });
   }
 
+
+  // ===== Liquidation market pulse (below the map): treemap by coin + window totals + per-exchange split + all-time top 10 =====
+  var MKT_TOP10 = [
+    ['2025-10-10', '$19.16B', 'U.S. tariff hike on China'],
+    ['2021-04-18', '$9.94B', 'AML crackdown rumor + mining halt'],
+    ['2021-05-19', '$9.01B', 'Tesla stance reversal + regulatory tightening'],
+    ['2021-02-22', '$4.10B', 'Overheated rally correction'],
+    ['2021-09-07', '$3.65B', 'El Salvador BTC law launch dump'],
+    ['2025-09-22', '$3.62B', 'Over-leveraged longs flushed'],
+    ['2021-02-23', '$3.15B', 'Yellen anti-BTC remarks'],
+    ['2021-04-23', '$2.92B', 'U.S. capital-gains tax hike plan'],
+    ['2021-04-16', '$2.77B', 'Turkey crypto-payment ban'],
+    ['2026-01-31', '$2.56B', 'Over-leveraged longs flushed']
+  ];
+  var MKT_CSS = '.hm-mkt{margin:26px 0 10px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif}' +
+    '.hm-mkt-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}' +
+    '.hm-mkt-head>b{font:700 12px "Space Mono",monospace;letter-spacing:.14em;color:#c2f64a}' +
+    '.hm-mkt-sub{font:11px "Space Mono",monospace;color:#5c6b84}' +
+    '.hm-mkt-chips{display:flex;gap:6px;margin-left:auto}' +
+    '.hm-mkt-chips button{background:#0b0e13;border:1px solid #1c2230;color:#8fa3c4;font:11px "Space Mono",monospace;padding:5px 12px;border-radius:8px;cursor:pointer}' +
+    '.hm-mkt-chips button.on{border-color:#c2f64a;color:#c2f64a}' +
+    '.hm-mkt-grid{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:14px;align-items:start}' +
+    '.hm-mkt-l,.hm-mkt-r{min-width:0}' +
+    '.hm-tm{position:relative;height:340px;background:#0b0e13;border:1px solid #1c2230;border-radius:12px;overflow:hidden}' +
+    '.hm-tm-c{position:absolute;border-radius:3px;overflow:hidden;padding:5px 7px;box-sizing:border-box}' +
+    '.hm-tm-c b{display:block;font:700 12px "Space Mono",monospace;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.45);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+    '.hm-tm-c span{display:block;font:10.5px "Space Mono",monospace;color:rgba(255,255,255,.82);white-space:nowrap;overflow:hidden}' +
+    '.hm-ext{margin-top:12px;background:#0b0e13;border:1px solid #1c2230;border-radius:12px;padding:4px 14px 8px;font:11.5px "Space Mono",monospace;overflow-x:auto}' +
+    '.hm-ext-h,.hm-ext-r{display:grid;grid-template-columns:1.25fr 1fr 1fr 1fr 1.35fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #10151f;min-width:460px}' +
+    '.hm-ext-h{color:#5c6b84;font-size:10px;letter-spacing:.08em;text-transform:uppercase}' +
+    '.hm-ext-r:last-child{border-bottom:0}' +
+    '.hm-ext-r .ex{color:#dbe4f5;text-transform:capitalize;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+    '.hm-ext-r b{color:#fff;font-weight:700}' +
+    '.hm-mkt .tl{color:#2ebd85}.hm-mkt .ts{color:#ff6258}' +
+    '.hm-ext-r .shr{position:relative;height:14px;background:#10151f;border-radius:4px;overflow:hidden}' +
+    '.hm-ext-r .shr i{position:absolute;left:0;top:0;bottom:0;background:rgba(194,246,74,.4);border-radius:4px}' +
+    '.hm-ext-r .shr em{position:absolute;right:5px;top:0;line-height:14px;font-style:normal;font-size:9.5px;color:#c9d4e8}' +
+    '.hm-tots{display:grid;grid-template-columns:1fr 1fr;gap:10px}' +
+    '.hm-tot{background:#0b0e13;border:1px solid #1c2230;border-radius:12px;padding:10px 13px;display:flex;flex-direction:column;gap:2px;font:11px "Space Mono",monospace}' +
+    '.hm-tot .tw{color:#5c6b84;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase}' +
+    '.hm-tot b{font-size:17px;color:#fff;margin:1px 0 2px}' +
+    '.hm-story{margin-top:12px;background:#0b0e13;border:1px solid #1c2230;border-radius:12px;padding:11px 14px;font:12px/1.65 "Familjen Grotesk",sans-serif;color:#8fa3c4}' +
+    '.hm-story b{color:#fff}' +
+    '.hm-t10{margin-top:12px;background:#0b0e13;border:1px solid #1c2230;border-radius:12px;padding:8px 14px 6px;font:11.5px "Space Mono",monospace}' +
+    '.hm-t10-h{font:700 10.5px "Space Mono",monospace;letter-spacing:.12em;color:#c2f64a;padding:5px 0 7px;border-bottom:1px solid #10151f}' +
+    '.hm-t10-r{display:grid;grid-template-columns:24px 86px 62px minmax(0,1fr);gap:8px;align-items:center;padding:6.5px 0;border-bottom:1px solid #10151f}' +
+    '.hm-t10-r:last-child{border-bottom:0}' +
+    '.hm-t10-r .rk{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:#141a26;color:#8fa3c4;font-size:10px;font-weight:700}' +
+    '.hm-t10-r .rk1{background:rgba(255,215,90,.16);color:#ffd75a}.hm-t10-r .rk2{background:rgba(201,212,232,.14);color:#c9d4e8}.hm-t10-r .rk3{background:rgba(201,127,74,.16);color:#c97f4a}' +
+    '.hm-t10-r .dt{color:#5c6b84}.hm-t10-r b{color:#fff}.hm-t10-r .why{color:#8fa3c4;font-family:"Familjen Grotesk",sans-serif;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+    '@media(max-width:980px){.hm-mkt-grid{grid-template-columns:1fr}.hm-tm{height:250px}.hm-mkt-chips{margin-left:0;width:100%}.hm-t10-r .why{white-space:normal}}';
+  function layoutTreemap(items, W, H) { // squarified treemap: items [{v,...}] sorted desc -> [{x,y,w,h,it}]
+    var sum = 0; items.forEach(function (i) { sum += i.v; }); if (!(sum > 0)) return [];
+    var scaled = items.map(function (i) { return { it: i, a: i.v / sum * W * H }; });
+    var rects = [], x = 0, y = 0, w = W, h = H, row = [], i = 0;
+    function worst(r) { var s = 0, mx = 0, mn = 1e18, side = Math.min(w, h); r.forEach(function (q) { s += q.a; mx = Math.max(mx, q.a); mn = Math.min(mn, q.a); }); var s2 = s * s, d2 = side * side; return Math.max(d2 * mx / s2, s2 / (d2 * mn)); }
+    function flush(r) {
+      var s = 0; r.forEach(function (q) { s += q.a; });
+      if (w >= h) { var rw = s / h, cy = y; r.forEach(function (q) { var rh = q.a / rw; rects.push({ x: x, y: cy, w: rw, h: rh, it: q.it }); cy += rh; }); x += rw; w -= rw; }
+      else { var rh2 = s / w, cx = x; r.forEach(function (q) { var rw2 = q.a / rh2; rects.push({ x: cx, y: y, w: rw2, h: rh2, it: q.it }); cx += rw2; }); y += rh2; h -= rh2; }
+    }
+    while (i < scaled.length) {
+      var q = scaled[i];
+      if (!row.length || worst(row.concat([q])) <= worst(row)) { row.push(q); i++; }
+      else { flush(row); row = []; }
+    }
+    if (row.length) flush(row);
+    return rects;
+  }
+  function buildMkt(wrap) {
+    if (!document.getElementById('hmMktCss')) { var st = document.createElement('style'); st.id = 'hmMktCss'; st.textContent = MKT_CSS; document.head.appendChild(st); }
+    var M = { win: '24H', events: [] };
+    var host = el('div', 'hm-mkt'); wrap.appendChild(host);
+    var WINH = { '1H': 1, '4H': 4, '12H': 12, '24H': 24 };
+    var head = el('div', 'hm-mkt-head');
+    head.appendChild(el('b', '', 'LIQUIDATION MARKET PULSE'));
+    head.appendChild(el('span', 'hm-mkt-sub', 'every coin · all venues · orders ≥ $1K · live'));
+    var chips = el('div', 'hm-mkt-chips');
+    Object.keys(WINH).forEach(function (k) { var b = el('button', k === M.win ? 'on' : '', k.toLowerCase()); b.type = 'button'; b.setAttribute('data-w', k); chips.appendChild(b); });
+    head.appendChild(chips); host.appendChild(head);
+    var grid = el('div', 'hm-mkt-grid'), left = el('div', 'hm-mkt-l'), right = el('div', 'hm-mkt-r');
+    var tm = el('div', 'hm-tm'), exT = el('div', 'hm-ext'), tots = el('div', 'hm-tots'), story = el('div', 'hm-story'), t10 = el('div', 'hm-t10');
+    left.appendChild(tm); left.appendChild(exT);
+    right.appendChild(tots); right.appendChild(story); right.appendChild(t10);
+    grid.appendChild(left); grid.appendChild(right); host.appendChild(grid);
+    var h10 = '<div class="hm-t10-h">TOP 10 LIQUIDATION EVENTS OF ALL TIME</div>';
+    MKT_TOP10.forEach(function (r, i) { h10 += '<div class="hm-t10-r"><span class="rk rk' + (i + 1) + '">' + (i + 1) + '</span><span class="dt">' + r[0] + '</span><b>' + r[1] + '</b><span class="why">' + r[2] + '</span></div>'; });
+    t10.innerHTML = h10;
+    chips.addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (!b) return; M.win = b.getAttribute('data-w'); chips.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); }); render(); });
+    function wkey(k) { return { '1H': 'h1', '4H': 'h4', '12H': 'h12', '24H': 'h24' }[k] || 'h24'; }
+    function render() {
+      if (!M.p) return;
+      var th = '';
+      [['1h', 'h1'], ['4h', 'h4'], ['12h', 'h12'], ['24h', 'h24']].forEach(function (wd) {
+        var t = (M.p[wd[1]] || {}).tot || { n: 0, v: 0, l: 0 };
+        th += '<div class="hm-tot"><span class="tw">' + wd[0] + ' rekt</span><b>' + money(t.v) + '</b><span class="tl">Long ' + money(t.l) + '</span><span class="ts">Short ' + money(t.v - t.l) + '</span></div>';
+      });
+      tots.innerHTML = th;
+      var A = M.p[wkey(M.win)] || {}, T = A.tot || { n: 0, v: 0, l: 0 };
+      if (T.n && A.big) {
+        story.innerHTML = 'Past ' + M.win.toLowerCase() + ': <b>' + (+T.n).toLocaleString('en-US') + '</b> liquidation orders totaling <b>' + money(T.v) + '</b> across our tracked venues. The largest single order hit <b>' + String(A.big.exchange).replace('binance-coin', 'Binance COIN-M').toUpperCase() + '</b> — <b>' + A.big.symbol + '</b> ' + (A.big.side === 'long_liquidated' ? '<span class="tl">LONG</span>' : '<span class="ts">SHORT</span>') + ' worth <b>' + money(A.big.notional) + '</b>.';
+      } else story.innerHTML = 'No liquidation orders ≥ $1K captured in this window yet.';
+      var items = (A.bySym || []).map(function (r) { return { sym: r.s, v: (+r.l) + (+r.sh), l: +r.l, s: +r.sh }; });
+      var top = items.slice(0, 18), rest = items.slice(18);
+      if (rest.length) { var rv = 0, rl = 0, rs = 0; rest.forEach(function (r) { rv += r.v; rl += r.l; rs += r.s; }); top.push({ sym: 'Others', v: rv, l: rl, s: rs }); }
+      tm.innerHTML = '';
+      var W = tm.clientWidth || 620, H = tm.clientHeight || 320;
+      layoutTreemap(top, W, H).forEach(function (r) {
+        var d = el('div', 'hm-tm-c'); var lsh = r.it.v ? r.it.l / r.it.v : 0.5;
+        var dom = Math.abs(lsh - 0.5) * 2; // 0 = balanced flow, 1 = one-sided
+        d.style.cssText = 'left:' + r.x.toFixed(1) + 'px;top:' + r.y.toFixed(1) + 'px;width:' + Math.max(0, r.w - 2).toFixed(1) + 'px;height:' + Math.max(0, r.h - 2).toFixed(1) + 'px;background:' + (lsh >= 0.5 ? 'rgba(210,68,58,' : 'rgba(32,146,100,') + (0.55 + dom * 0.4).toFixed(2) + ')';
+        if (r.w > 46 && r.h > 26) d.innerHTML = '<b>' + r.it.sym + '</b>' + (r.h > 46 ? '<span>' + money(r.it.v) + '</span>' : '');
+        d.title = r.it.sym + ' — ' + money(r.it.v) + ' liquidated in the last ' + M.win.toLowerCase() + ': longs ' + money(r.it.l) + ' · shorts ' + money(r.it.s);
+        tm.appendChild(d);
+      });
+      var exr = (A.byEx || []).map(function (r) { return { ex: r.e, v: (+r.l) + (+r.sh), l: +r.l, s: +r.sh }; });
+      var eh = '<div class="hm-ext-h"><span>Exchange</span><span>Liquidations</span><span>Long</span><span>Short</span><span>Share</span></div>';
+      exr.forEach(function (r) {
+        var share = T.v ? r.v / T.v * 100 : 0;
+        eh += '<div class="hm-ext-r"><span class="ex">' + r.ex.replace('binance-coin', 'binance COIN-M') + '</span><b>' + money(r.v) + '</b><span class="tl">' + money(r.l) + '</span><span class="ts">' + money(r.s) + '</span><span class="shr"><i style="width:' + Math.min(100, share).toFixed(1) + '%"></i><em>' + share.toFixed(1) + '%</em></span></div>';
+      });
+      exT.innerHTML = eh;
+    }
+    function loadMkt() {
+      fetch('/api/v1/pulse').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+        if (!j || !j.h24) return;
+        M.p = j; render();
+      }).catch(function () {});
+    }
+    loadMkt();
+    S.timers.push(setInterval(function () { if (!document.hidden) loadMkt(); }, 90000));
+    var roT; try { new ResizeObserver(function () { clearTimeout(roT); roT = setTimeout(render, 250); }).observe(tm); } catch (e) {}
+  }
   function mount(section, coin) {
     if (!section) return;
     unmount();
@@ -551,6 +684,7 @@
     document.addEventListener('visibilitychange', S.onVis);
     S.timers.push(setTimeout(function () { try { fetch('/api/auth/heatxp', { method: 'POST' }); } catch (e) {} }, 20000)); // signed-in: +15 XP once/day for actually reading the map
     S.ro = new ResizeObserver(sched); S.ro.observe(cv); S.ro.observe(pf);
+    try { buildMkt(wrap); } catch (e) {}
     loadAll(true);
   }
   function unmount() {
