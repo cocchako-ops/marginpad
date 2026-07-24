@@ -59,6 +59,19 @@
   /* async: pull recent liquidations for this window's symbol (our collector), cache 60s per symbol, re-render markers */
   function loadLiqRev(w){if(!w||w.dead||!w.sym||w._liqFetching)return;if(w._liqEvents&&w._liqSym===w.sym&&Date.now()-(w._liqT||0)<60000)return;w._liqFetching=true;
     fetch('/api/v1/liquidations/live?symbol='+encodeURIComponent(w.sym)+'&limit=1000').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(jj){w._liqFetching=false;if(!w||w.dead)return;w._liqEvents=(jj&&jj.events)||[];w._liqSym=w.sym;w._liqT=Date.now();try{applyInds(w);}catch(e){}});}
+  /* Self-scoring: grade every arrow this indicator fired on the LOADED bars — 1R:1R (entry=signal close,
+     target/stop = +/-1.5*ATR14, same-bar both-hit = loss, conservative). The honesty layer: a signal shows
+     its own recent hit-rate on THIS symbol+TF, so users see when it works and when it does not. */
+  function scoreMarkers(bars,mks){if(!bars||bars.length<30||!mks||!mks.length)return null;
+    var tIdx={},i;for(i=0;i<bars.length;i++)tIdx[bars[i].time]=i;
+    var a=atr(bars,14),w=0,l=0;
+    for(var m=0;m<mks.length;m++){var mk=mks[m];if(mk.shape!=='arrowUp'&&mk.shape!=='arrowDown')continue;
+      var i0=tIdx[mk.time];if(i0==null||!(a[i0]>0))continue;
+      var dir=mk.shape==='arrowUp'?1:-1,e=bars[i0].close,tp=e+dir*1.5*a[i0],sl=e-dir*1.5*a[i0];
+      for(var j=i0+1;j<Math.min(bars.length,i0+80);j++){var b=bars[j];
+        if(dir===1?b.low<=sl:b.high>=sl){l++;break;}
+        if(dir===1?b.high>=tp:b.low<=tp){w++;break;}}}
+    return (w+l)>=5?{w:w,l:l,pct:Math.round(100*w/(w+l))}:null;}
   /* Cascade Radar: incremental leverage-ladder pool model over the loaded bars (5-100x entries at each close,
      swept when a bar trades through) -> fragility = proximity-weighted liq mass within 5% of price vs the
      market's absorbing volume, scaled 0-100. Same math family as the server heatmap model, computed locally
@@ -115,7 +128,7 @@
   // decimals to show on the price axis by magnitude — small-cap tokens (e.g. $0.000123) need many more than 2
   function pricePrec(p){p=Math.abs(+p)||0;if(!(p>0))return 2;if(p>=1000)return 2;if(p>=100)return 3;if(p>=10)return 3;if(p>=1)return 4;if(p>=0.1)return 4;if(p>=0.01)return 5;if(p>=0.001)return 6;if(p>=0.0001)return 7;if(p>=0.00001)return 8;return 9;} /* ~5 sig figs: $1-100 coins (XRP 1.0904, SOL 74.093) were capped at 2 dp -> lost the digits that matter */
   function applyPrec(series,p){try{var n=pricePrec(p);series.applyOptions({priceFormat:{type:'price',precision:n,minMove:Math.pow(10,-n)}});}catch(e){}}
-  function cwLeg(w,param){if(!w||!w.legEl)return;if(!w.legItems||!w.legItems.length){w.legEl.style.display='none';w.legEl.innerHTML='';return;}w.legEl.style.display='';w.legEl.innerHTML=w.legItems.map(function(it){var v=it.last;if(param&&param.seriesData){var sd=param.seriesData.get(it.series);if(sd!=null)v=(typeof sd==='object'?(sd.value!=null?sd.value:sd.close):sd);}return '<span style="color:'+it.color+'">'+it.label+' <b>'+cwFmt(v,it.dec)+'</b></span>';}).join('');}
+  function cwLeg(w,param){if(!w||!w.legEl)return;if(!w.legItems||!w.legItems.length){w.legEl.style.display='none';w.legEl.innerHTML='';return;}w.legEl.style.display='';w.legEl.innerHTML=w.legItems.map(function(it){if(it.raw)return '<span style="color:'+it.color+';font-weight:700"'+(it.title?' title="'+it.title+'"':'')+'>'+it.label+'</span>';var v=it.last;if(param&&param.seriesData){var sd=param.seriesData.get(it.series);if(sd!=null)v=(typeof sd==='object'?(sd.value!=null?sd.value:sd.close):sd);}return '<span style="color:'+it.color+'">'+it.label+' <b>'+cwFmt(v,it.dec)+'</b></span>';}).join('');}
   function sma(v,p){var o=[],s=0;for(var i=0;i<v.length;i++){s+=v[i];if(i>=p)s-=v[i-p];o.push(i>=p-1?s/p:NaN);}return o;}
   function bollinger(b,p,k){var c=closes(b),m=sma(c,p),up=[],lo=[],mid=[];for(var i=0;i<c.length;i++){if(i<p-1){up.push(NaN);lo.push(NaN);mid.push(NaN);continue;}var s=0;for(var j=i-p+1;j<=i;j++){var d=c[j]-m[i];s+=d*d;}var sd=Math.sqrt(s/p);up.push(m[i]+k*sd);lo.push(m[i]-k*sd);mid.push(m[i]);}return {up:mapVal(b,up),mid:mapVal(b,mid),low:mapVal(b,lo)};}
   function donchian(b,p){var up=[],lo=[],mid=[];for(var i=0;i<b.length;i++){if(i<p-1){up.push(NaN);lo.push(NaN);mid.push(NaN);continue;}var h=-Infinity,l=Infinity;for(var j=i-p+1;j<=i;j++){if(b[j].high>h)h=b[j].high;if(b[j].low<l)l=b[j].low;}up.push(h);lo.push(l);mid.push((h+l)/2);}return {up:mapVal(b,up),low:mapVal(b,lo),mid:mapVal(b,mid)};}
@@ -130,9 +143,18 @@
   function willrW(bs,p){var o=[],i,j;for(i=0;i<bs.length;i++){if(i<p-1){o.push(NaN);continue;}var hh=-Infinity,ll=Infinity;for(j=i-p+1;j<=i;j++){if(bs[j].high>hh)hh=bs[j].high;if(bs[j].low<ll)ll=bs[j].low;}o.push(hh===ll?-50:(hh-bs[i].close)/(hh-ll)*-100);}return o;}
   function cciW(bs,p){var tp=bs.map(function(b){return (+b.high+ +b.low+ +b.close)/3;}),o=[],i,j;for(i=0;i<bs.length;i++){if(i<p-1){o.push(NaN);continue;}var sum=0;for(j=i-p+1;j<=i;j++)sum+=tp[j];var ma=sum/p,md=0;for(j=i-p+1;j<=i;j++)md+=Math.abs(tp[j]-ma);md/=p;o.push(md===0?0:(tp[i]-ma)/(0.015*md));}return o;}
   function applyInds(w){ if(!w.candle)return; var bars=w.bars||[];
-    var mk=[]; if(w.inds.sig)mk=mk.concat(computeSignals(bars)); if(w.inds.mom)mk=mk.concat(computeMomentum(bars)); if(w.inds.sqz)mk=mk.concat(computeSqueeze(bars)); if(w.inds.liqr){if(w._liqEvents&&w._liqSym===w.sym)mk=mk.concat(computeLiqRev(bars,w._liqEvents,parseInt(w.tf,10)*60||3600));else loadLiqRev(w);} w._casc=null; if(w.inds.casc){w._casc=cascadeCalc(bars);if(w._casc)mk=mk.concat(w._casc.mk);} mk.sort(function(a,b){return a.time-b.time;}); try{w.candle.setMarkers(mk);}catch(e){}
+    var mk=[],_ss={};
+    function _addSig(key,arr){if(!arr||!arr.length)return;mk=mk.concat(arr);try{var st=scoreMarkers(bars,arr);if(st)_ss[key]=st;}catch(e){}}
+    if(w.inds.sig)_addSig('TREND',computeSignals(bars));
+    if(w.inds.mom)_addSig('MOM',computeMomentum(bars));
+    if(w.inds.sqz)_addSig('SQZ',computeSqueeze(bars));
+    if(w.inds.liqr){if(w._liqEvents&&w._liqSym===w.sym)_addSig('LIQ',computeLiqRev(bars,w._liqEvents,parseInt(w.tf,10)*60||3600));else loadLiqRev(w);}
+    w._casc=null; if(w.inds.casc){w._casc=cascadeCalc(bars);if(w._casc)_addSig('CASC',w._casc.mk);}
+    w._sigStats=_ss;
+    mk.sort(function(a,b){return a.time-b.time;}); try{w.candle.setMarkers(mk);}catch(e){}
     (w.indLines||[]).forEach(function(l){try{w.candle.removePriceLine(l);}catch(e){}}); w.indLines=[];
     (w.indSeries||[]).forEach(function(s){try{w.chart.removeSeries(s);}catch(e){}}); w.indSeries=[]; w.legItems=[];
+    try{var _st=w._sigStats||{};for(var _sk in _st){var _sv=_st[_sk];w.legItems.push({raw:true,color:_sv.pct>=55?'#2ebd85':_sv.pct<=45?'#ff6258':'#8fa3c4',label:_sk+' '+_sv.pct+'% ('+_sv.w+'W/'+_sv.l+'L)',title:'How this signal scored on the loaded history of THIS symbol and timeframe: each arrow graded 1R vs 1R (target and stop both 1.5\u00d7ATR from the signal close).'});}}catch(e){}
     // allocate the bottom 30% of the chart among the active sub-panes (rsi/macd/stoch/atr) so they stack instead of overlapping; candles take the rest. Reset each call (fixes RSI leaving candles compressed after toggle-off).
     var paneKeys=['vol','rsi','macd','stoch','atr','wr','cci','casc'].filter(function(k){return w.inds[k];}); var paneN=paneKeys.length;
     try{w.chart.priceScale('right').applyOptions({scaleMargins:{top:0.06,bottom:paneN?0.30:0.08}});}catch(e){}
