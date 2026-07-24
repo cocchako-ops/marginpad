@@ -232,7 +232,7 @@
     if (first && S.loadEl) S.loadEl.style.display = 'flex';
     Promise.all([
       fetch('/api/klines?symbol=' + coin + '&interval=' + w.iv, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
-      fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=400').then(function (r) { return r.json(); }).catch(function () { return null; }),
+      fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=1000').then(function (r) { return r.json(); }).catch(function () { return null; }),
       fetch('/api/price?symbol=' + coin, { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return null; }),
       fetch('/api/heatmap/pools?symbol=' + coin).then(function (r) { return r.json(); }).catch(function () { return null; })
     ]).then(function (res) {
@@ -283,7 +283,7 @@
       if (!S || coin !== S.coin || !d || !d.events) return;
       var seen = {}; S.events.slice(0, 200).forEach(function (e) { seen[e.ts + '|' + e.price + '|' + e.qty] = 1; });
       var fresh = d.events.filter(function (e) { return !seen[e.ts + '|' + e.price + '|' + e.qty]; });
-      if (fresh.length) { S.events = fresh.concat(S.events).slice(0, 900); updHead(); sched(); }
+      if (fresh.length) { S.events = fresh.concat(S.events).slice(0, 2200); updHead(); sched(); }
     }).catch(function () {});
   }
   function magnetScore(x, px) { var dist = Math.abs(x.price - px) / px; if (dist < 0.0008) dist = 0.0008; var age = Math.max(0.1, (Date.now() / 1000 - x.t0) / 86400); return x.w * Math.pow(age + 0.3, 0.35) / Math.pow(dist * 100, 0.6); }
