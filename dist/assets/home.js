@@ -337,10 +337,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function preloadTfs(sym,curTf){ if(window.innerWidth<721)return; /* mobile: skip the 6-TF prewarm (~150KB/symbol) — TF switches just fetch on demand (edge-cached); desktop keeps instant switching */ ['1','5','15','60','240','1440','10080'].forEach(function(tf){ if(tf===curTf)return; var ck=sym+'|'+tf; if(klCache[ck])return; fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(kd&&kd.length)klCache[ck]=kd;}); }); }
   function loadKlines(){var sym=formSym();chartSym=sym;var tf=chartTf;try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){}bars=[];loadingMore=false;noMore=false;
     var ck=sym+'|'+tf,cached=klCache[ck],_csT=performance.now(); // UX budget: TF/symbol switch → candles painted
-    if(cached&&cached.length&&candle){renderKlines(cached);try{window.__mpUxm&&window.__mpUxm('cs',performance.now()-_csT);}catch(e){}} // INSTANT from the preload cache — no flash on a TF/symbol switch
+    if(cached&&cached.length&&candle){renderKlines(cached);try{if(window.__mpCsWarm&&window.__mpUxm)window.__mpUxm('cs',performance.now()-_csT);}catch(e){}} // INSTANT from the preload cache — no flash on a TF/symbol switch
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(sym!==chartSym||tf!==chartTf)return; // user switched again before this resolved → drop the stale response
-      if(kd&&kd.length){klCache[ck]=kd;clearNoData();renderKlines(kd);if(!(cached&&cached.length))try{window.__mpUxm&&window.__mpUxm('cs',performance.now()-_csT);}catch(e){}}else if(!cached){hideSkel();showNoData(sym);} // empty klines = coin our feed can't resolve → show a message, don't leave a silent blank/frozen chart
+      if(kd&&kd.length){klCache[ck]=kd;clearNoData();renderKlines(kd);if(!(cached&&cached.length))try{if(window.__mpCsWarm&&window.__mpUxm)window.__mpUxm('cs',performance.now()-_csT);}catch(e){}try{window.__mpCsWarm=1;}catch(e){}} // first load is a COLD page-load fetch, not a switch — the 100ms budget measures switches onlyelse if(!cached){hideSkel();showNoData(sym);} // empty klines = coin our feed can't resolve → show a message, don't leave a silent blank/frozen chart
       preloadTfs(sym,tf); // warm the other timeframes in the background so the next switch is instant
     }); }
   // quietly re-sync candles with the true exchange OHLC WITHOUT scrolling the view — self-heals a phantom wick a bad live
@@ -990,7 +990,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     ws.onclose=function(){alive=false;try{if(!window.__mpWsDownT)window.__mpWsDownT=Date.now();}catch(e){}if(pingT){clearInterval(pingT);pingT=null;}if(connT){clearTimeout(connT);connT=null;}reconnect();};
     ws.onerror=function(){try{ws.close();}catch(_){}reconnect();}; // some mobile webviews fire onerror WITHOUT a following onclose → reconnect here too (reconnect() is self-guarded against stacking)
   }
-  function reconnect(){if(reT)return;retry=Math.min(retry+1,6);reT=setTimeout(function(){reT=null;connect();},Math.min(1200*retry,8000));} // guarded: never stack multiple reconnects
+  function reconnect(){if(reT)return;retry=Math.min(retry+1,6);reT=setTimeout(function(){reT=null;connect();},[250,900,2500,5000,8000,8000][retry-1]||8000);} // fast first retry (250ms — ws-recon budget is 1s), then exponential; guarded: never stack multiple reconnects
   function kick(){ // force a brand-new socket NOW (dead/stuck one) — used by the watchdog / resume / online
     try{if(ws){ws.onclose=null;ws.close();}}catch(_){}
     ws=null;if(reT){clearTimeout(reT);reT=null;}if(connT){clearTimeout(connT);connT=null;}retry=0;connect();
@@ -1242,7 +1242,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
         else val='<b style="color:'+((+x.roe)>=0?'#2ebd85':'#ff6258')+'">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</b>';
         return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span> — '+val;}).join('<br>');
       var _we=d&&d.weekEnd,_es='';if(_we){var _ms=_we-Date.now();if(_ms>0){var _d=Math.floor(_ms/86400000),_h=Math.floor(_ms%86400000/3600000);_es=(_d>0?_d+'d ':'')+_h+'h';}}
-      html+='<br><span style="color:#ffce8a;font-size:11.5px">⏳ Runs Mon → Sun (UTC)'+(_es?' · ends in '+_es:'')+'</span>';
+      html+='<br><span style="color:#ffce8a;font-size:11.5px">⏳ 14-day season (UTC)'+(_es?' · ends in '+_es:'')+'</span>';
       html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> ROE · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · members only, prizes paid weekly in USDT</span>';
       lbMsg.innerHTML=html;msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();
     }).catch(function(){lbMsg.innerHTML='<span style="color:#ff6258">Could not load the leaderboard. Try again.</span>';});
@@ -2114,7 +2114,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function renderGate(){if(!gate)return;var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
     if(!me){gate.className='lg-gate locked';gate.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'+LT('lgGateAnon','The Trade League is for registered users.')+' <button type="button" class="lg-signin" data-auth-open>'+LT('lgGateBtn','Sign in free to join')+'</button>';return;}
     gate.className='lg-gate ok';gate.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#41e3a3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M20 6L9 17l-5-5"/></svg>'+LT('lgInAs','You are in the league as')+' <b>'+esc(me.username||(me.email?me.email.split('@')[0]:'you'))+'</b> '+LT('lgClimb','— close winning trades to climb.');}
-  function lbEnds(weekEnd){if(!weekEnd)return '';var ms=weekEnd-Date.now();if(ms<=0)return '';var d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000);var t=(d>0?d+'d ':'')+((d>0||h>0)?h+'h ':'')+m+'m';return '<div class="lg-ends">⏳ '+LT('lgReset','Resets')+' <b>'+LT('lgMonUtc','Monday 00:00 UTC')+'</b> · '+LT('lgEndsIn','ends in')+' <b>'+t+'</b></div>';}
+  function lbEnds(weekEnd){if(!weekEnd)return '';var ms=weekEnd-Date.now();if(ms<=0)return '';var d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000);var t=(d>0?d+'d ':'')+((d>0||h>0)?h+'h ':'')+m+'m';return '<div class="lg-ends">⏳ 14-day season · '+LT('lgEndsIn','ends in')+' <b>'+t+'</b></div>';}
   var lgMode='roe',lgLast=null;
   function lgPills(){return '<div class="lg-pills"><button type="button" class="lg-pill'+(lgMode==='roe'?' on':'')+'" data-lgm="roe">'+LT('lgTopRoe','Top ROE')+'</button><button type="button" class="lg-pill'+(lgMode==='pnl'?' on':'')+'" data-lgm="pnl">'+LT('lgTopPnl','Top PnL')+'</button><button type="button" class="lg-pill'+(lgMode==='wr'?' on':'')+'" data-lgm="wr">'+LT('lgBestWr','Best win rate')+'</button></div>';}
   function lgNote(){return lgMode==='roe'?'<div class="lg-wr-note pay">'+LT('lgPayRoe','Top ROE pays the weekly prizes — the other boards start paying soon.')+'</div>':'<div class="lg-wr-note">'+LT('lgPaySoon','No prizes yet — this board starts paying out soon.')+'</div>';}

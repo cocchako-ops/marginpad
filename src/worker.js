@@ -62,6 +62,12 @@ function calcTakeProfit(p) {
 }
 // P1 mp-core (worker side): THE liquidation formula — every server fill path calls this one function.
 // Client copies of the same formula are drift-guarded by build/check-formulas.js (verbatim literal asserts).
+// ---- Competition period (owner 2026-07-24: 7d -> 14d) ----
+// One canonical clock for EVERY leaderboard surface (boards, prizes, digest, profile week-stats, lb keys).
+// Anchor = Monday 2026-07-20 00:00 UTC: the running week became the first 14-day season; existing lb rows
+// are keyed by that same Monday timestamp so nothing orphaned. Boundaries stay Monday-aligned.
+const LB_PERIOD = 14 * 86400000, LB_ANCHOR = Date.UTC(2026, 6, 20);
+function lbPeriodStart(now) { now = +now || Date.now(); return LB_ANCHOR + Math.floor((now - LB_ANCHOR) / LB_PERIOD) * LB_PERIOD; }
 function mpcLiq(entry, lev, mmr, long) { return long ? entry * (1 - (1 - mmr) / lev) : entry * (1 + (1 - mmr) / lev); }
 function handleApi(url) {
   const p = url.searchParams;
@@ -144,6 +150,10 @@ async function handlePrices(env, ctx, prof) {
   try { await cache.put(cacheKey, resp.clone()); } catch (e) {}
   mk('cache_put', tP);
   return withProf(resp, 'cold');
+}
+async function screenerKvWarm(env) { // */10 cron: keep the scr:cache6 floor fresh so NO visitor ever pays the ~11s 33-subrequest compute (profiled 2026-07-24 — the floor was only written when a user paid it)
+  try { const kv = await env.STATS.get('scr:cache6'); if (kv) { const o = JSON.parse(kv); if (o && Date.now() - (+o.ts || 0) < 420000) return; } } catch (e) {}
+  try { await handleScreener(env, true); } catch (e) {}
 }
 async function pricesKvWarm(env) { // every-minute cron: refresh the KV floor copy cold colos serve instantly (≤1440 KV writes/day — negligible vs the A5 diet)
   try { const r = await handlePrices(env, null, 2); if (r && r.ok) { const txt = await r.text(); if (txt && txt.length > 50) await env.STATS.put('prices:last', txt, { expirationTtl: 300 }); } } catch (e) {}
@@ -1201,13 +1211,13 @@ async function _multiBase(env) {
   return out;
 }
 
-async function handleScreener(env) {
+async function handleScreener(env, force) { // force=true (cron warmer) skips caches so the KV floor gets a FRESH compute
   const cache = caches.default;
   const ck = new Request('https://marginpad.io/__screener_v13');
-  try { const hit = await cache.match(ck); if (hit) return hit; } catch (e) {}
+  if (!force) { try { const hit = await cache.match(ck); if (hit) return hit; } catch (e) {} }
   // colo cache missed → fall back to the GLOBAL KV snapshot the cron keeps warm (caches.default is per-colo, so a cold colo
   // otherwise pays the full ~33-subrequest compute → the "top signals take ages to load" lag). KV is global + instant.
-  if (env && env.STATS) { try { const kv = await env.STATS.get('scr:cache6'); if (kv) { const o = JSON.parse(kv); if (o && o.body && (Date.now() - (o.ts || 0) < 900000)) { const r = new Response(o.body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } }); try { await cache.put(ck, r.clone()); } catch (e) {} return r; } } } catch (e) {} }
+  if (!force && env && env.STATS) { try { const kv = await env.STATS.get('scr:cache6'); if (kv) { const o = JSON.parse(kv); if (o && o.body && (Date.now() - (o.ts || 0) < 900000)) { const r = new Response(o.body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } }); try { await cache.put(ck, r.clone()); } catch (e) {} return r; } } } catch (e) {} }
   // Multi-exchange (Bybit + OKX + Gate) USDT-perp universe: aggregated USD volume + venue count + median-price cross-check
   let universe = [];
   try {
@@ -5278,8 +5288,8 @@ function lbExcluded(sym) { return LB_EXCL_SET.has(String(sym || '').toUpperCase(
 // ---- Trade League (weekly leaderboard, stored in KV) ----
 async function leaderboard(env) {
   if (!env.USERS) return 'Leaderboard temporarily unavailable.';
-  const MON = 4 * 86400000, WK = 7 * 86400000, nowMs = Date.now();
-  const weekStart = Math.floor((nowMs - MON) / WK) * WK + MON, weekEnd = weekStart + WK;
+  const nowMs = Date.now();
+  const weekStart = lbPeriodStart(nowMs), weekEnd = weekStart + LB_PERIOD;
   let board = [], xpBoard = [];
   try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=40')); const j = await r.json(); board = (j && j.top) || []; xpBoard = (j && j.xp) || []; } catch (e) {}
   const banned = {};
@@ -5295,7 +5305,7 @@ async function leaderboard(env) {
   out += '<b>🏆 Top ROE</b>\n' + (top.length ? top.map((x, i) => row(x, i, '<b>' + ((+x.roe) >= 0 ? '+' : '') + (+x.roe).toFixed(0) + '%</b>')).join('') : '<i>no one yet</i>\n');
   out += '\n<b>🎯 Best win rate</b> <i>(min 20 trades)</i>\n' + (topWr.length ? topWr.map((x, i) => row(x, i, '<b>' + x.wr.toFixed(0) + '%</b> (' + x.w + 'W-' + x.l + 'L)')).join('') : '<i>no one yet</i>\n');
   out += '\n<b>✨ Weekly XP</b>\n' + (topXp.length ? topXp.map((x, i) => row(x, i, '<b>' + x.xp.toLocaleString('en-US') + ' XP</b>')).join('') : '<i>no one yet</i>\n');
-  out += '\n⏳ Runs <b>Mon → Sun (UTC)</b>' + (endStr ? ' — ends in <b>' + endStr + '</b>' : '') + '. Winners paid weekly in USDT.\n';
+  out += '\n⏳ <b>14-day season (UTC)</b>' + (endStr ? ' — ends in <b>' + endStr + '</b>' : '') + '. Winners paid in USDT when the season ends.\n';
   out += '🔒 <b>Members only</b> — sign up free at <a href="https://marginpad.io">marginpad.io</a> and close winning <a href="https://marginpad.io/paper-trade">Paper Trades</a> to rank.';
   return out;
 }
@@ -6111,17 +6121,18 @@ async function sendLeaderboardEmail(env, to, info) {
 // armed (a `lbpay:since` anchor stamped on the first run), so enabling it won't retroactively pay old weeks.
 async function payWeeklyPrizes(env) {
   if (!env.STATS || !env.REWARDS || !env.USERS) return;
-  const WK = 604800000, MON = 4 * 86400000, now = Date.now();
-  const thisWeekStart = Math.floor((now - MON) / WK) * WK + MON; // Monday 00:00 UTC anchor (same as /lb)
+  const now = Date.now();
+  const thisWeekStart = lbPeriodStart(now); // 14-day period boundary (same clock as /lb)
   let since = null; try { since = +(await env.STATS.get('lbpay:since')) || null; } catch (e) {}
   if (!since) { try { await env.STATS.put('lbpay:since', String(thisWeekStart)); } catch (e) {} return; } // first run: arm from this week; the current week pays out once it ends
   const cfg = await rewardCfg(env);
   const legacyPrizes = [cfg.prize1 || 0, cfg.prize2 || 0, cfg.prize3 || 0]; // pre-v2 weeks: ROE top-3 (unchanged)
-  for (let ws = since; ws < thisWeekStart; ws += WK) { // every ENDED week from the anchor up to (not incl.) this week
+  if (since < LB_ANCHOR) since = LB_ANCHOR; // pre-14d weeks were already paid under the old 7d keys - never re-walk them on the new grid
+  for (let ws = since; ws < thisWeekStart; ws += LB_PERIOD) { // every ENDED period from the anchor up to (not incl.) the running one
     const flag = 'lbpaid:' + ws;
     let done = false; try { done = !!(await env.STATS.get(flag)); } catch (e) {}
     if (done) continue;
-    const we = ws + WK;
+    const we = ws + LB_PERIOD;
     let ud = {};
     try { const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + ws + '&we=' + we + '&limit=40')); ud = await ur.json(); } catch (e) {}
     const board = (ud && ud.top) || [], xpBoard = (ud && ud.xp) || [];
@@ -6566,7 +6577,7 @@ async function checkDigest(env) {
   if (!env || !env.USERS || !env.RESEND_API_KEY || !env.STATS) return;
   const d = new Date();
   if (d.getUTCDay() !== 1 || d.getUTCHours() < 9) return;
-  const WK = 604800000, MON = 4 * 86400000, weekStart = Math.floor((Date.now() - MON) / WK) * WK + MON, flag = 'digest:wk:' + weekStart;
+  const weekStart = lbPeriodStart(), flag = 'digest:wk:' + weekStart; // digest follows the 14-day season clock
   try { if (await env.STATS.get(flag)) return; } catch (e) { return; }
   try { await env.STATS.put(flag, '1', { expirationTtl: 1209600 }); } catch (e) {}
   let recips = [];
@@ -7139,8 +7150,8 @@ async function handleReward(url, request, env) {
     let bodyText = null;
     try { const hit = await caches.default.match(lbCk); if (hit) bodyText = await hit.text(); } catch (e) {}
     if (bodyText == null) {
-      const WK = 604800000, MON = 4 * 86400000, nowMs = Date.now();
-      const weekStart = Math.floor((nowMs - MON) / WK) * WK + MON, weekEnd = weekStart + WK, week = weekStart; // Monday 00:00 UTC anchor
+      const nowMs = Date.now();
+      const weekStart = lbPeriodStart(nowMs), weekEnd = weekStart + LB_PERIOD, week = weekStart; // 14-day season boundary
       try {
         let board = [], xpBoard = [];
         if (env.USERS) {
@@ -7169,7 +7180,7 @@ async function handleReward(url, request, env) {
   }
   if (path === '/lbtop') { // admin eject panel — same authoritative board as /lb (UserStore-derived) but with real account ids + ban state
     const WK = 604800000, MON = 4 * 86400000, nowMs = Date.now();
-    const weekStart = Math.floor((nowMs - MON) / WK) * WK + MON, weekEnd = weekStart + WK, week = weekStart;
+    const weekStart = lbPeriodStart(nowMs), weekEnd = weekStart + LB_PERIOD, week = weekStart;
     let board = [];
     try { if (env.USERS) { const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=40')); const ud = await ur.json(); board = (ud && ud.top) || []; } } catch (e) {}
     const banned = {};
@@ -8090,6 +8101,7 @@ export default {
     ctx.waitUntil(postSignalDigest(env)); // daily 18:00-UTC liveness digest to the signal channels
     ctx.waitUntil(nightlyBackup(env)); // P0.5 — once per UTC day (stamped), retries on failure each */10
     ctx.waitUntil(sweepServerPositions(env)); // P0 — server-side SL/TP/liq sweep for srv/bot trades
+    ctx.waitUntil(screenerKvWarm(env)); // keep the screener KV floor fresh — no visitor ever pays the full compute
     ctx.waitUntil(checkAlerts(env));
     ctx.waitUntil(checkAccountAlerts(env));
     ctx.waitUntil(payWeeklyPrizes(env));
@@ -8746,7 +8758,7 @@ export class RewardLedger {
     }
     if (path === '/lb') { // weekly paper-trade leaderboard — Monday 00:00 UTC → Sunday 23:59 UTC
       const WK = 604800000, MON = 4 * 86400000; // anchor weeks to Monday 00:00 UTC (epoch 1970-01-01 was Thursday, +4d = Monday)
-      const weekStart = Math.floor((now - MON) / WK) * WK + MON, weekEnd = weekStart + WK, week = weekStart; // use the Monday-00:00-UTC ms timestamp as the week key — won't collide with the old Thursday-indexed rows
+      const weekStart = lbPeriodStart(now), weekEnd = weekStart + LB_PERIOD, week = weekStart; // period-start ms as the key (14d since 2026-07-20; anchor matches the old weekly keys) — won't collide with the old Thursday-indexed rows
       if (request.method === 'POST') {
         const key = acct || (validAddr ? addr : ''); // leaderboard is now keyed by the signed-in account (members-only); legacy wallet entries still resolve
         if (!key) return this.j({ error: 'login_required' }, 401);
@@ -9854,7 +9866,7 @@ export class UserStore {
       if (!u) return this.j({ exists: false });
       const L = xpLevelOf(u.xp || 0);
       const t = this.rows('SELECT json, n, wins, losses, pnl FROM utrades WHERE user_id = ?', u.id)[0] || {};
-      const WK = 604800000, MON = 4 * 86400000; const weekStart = Math.floor((now - MON) / WK) * WK + MON;
+      const weekStart = lbPeriodStart(now);
       let bestRoe = null, bestPnl = null, weekPnl = 0, weekN = 0, weekW = 0;
       try { const arr = JSON.parse(t.json || '[]'); if (Array.isArray(arr)) for (const e of arr) {
         if (!e || (e.status !== 'win' && e.status !== 'loss')) continue;
@@ -9904,7 +9916,7 @@ export class UserStore {
       const uid = String(url.searchParams.get('uid') || '').replace(/^u:/, '');
       if (!uid) return this.j({ following: [] });
       const rows = this.rows('SELECT tuid, tname, ts FROM ufollows WHERE uid = ? ORDER BY ts DESC LIMIT 200', uid);
-      const WK = 604800000, MON = 4 * 86400000; const weekStart = Math.floor((now - MON) / WK) * WK + MON;
+      const weekStart = lbPeriodStart(now);
       const out = [];
       for (const f of rows) {
         const tu = String(f.tuid).replace(/^u:/, '');
@@ -10064,8 +10076,7 @@ export class UserStore {
     }
     if (path === '/dm/unread') { const uid = String((b && b.uid) || url.searchParams.get('uid') || '').replace(/^u:/, ''); if (!uid) return this.j({ unread: 0 }); return this.j({ unread: (this.rows('SELECT COUNT(*) c FROM dms WHERE to_uid=? AND seen=0', uid)[0] || { c: 0 }).c }); }
     if (path === '/lbhist') { // past N weeks of winners, reconstructed from the synced journals (each closed trade's closeTs buckets it into its week)
-      const WK = 604800000, MON = 4 * 86400000;
-      const curWeek = Math.floor((now - MON) / WK) * WK + MON;
+      const curWeek = lbPeriodStart(now); // 14-day season grid (pre-anchor history simply merges into 14d buckets — admin-only view)
       const nWeeks = Math.min(12, Math.max(1, +url.searchParams.get('weeks') || 8));
       const perWeek = []; for (let i = 0; i < nWeeks; i++) perWeek.push(new Map());
       const rows = this.rows("SELECT u.id uid, u.username, t.json FROM utrades t JOIN users u ON u.id=t.user_id WHERE t.n>0 AND (u.status IS NULL OR u.status='active') ORDER BY t.updated DESC LIMIT 1000");
@@ -10075,7 +10086,7 @@ export class UserStore {
         for (const e of arr) {
           if (!e || (e.status !== 'win' && e.status !== 'loss')) continue;
           const ct = +e.closeTs; if (!isFinite(ct)) continue;
-          const weekOf = Math.floor((ct - MON) / WK) * WK + MON, idx = Math.round((curWeek - weekOf) / WK);
+          const weekOf = lbPeriodStart(ct), idx = Math.round((curWeek - weekOf) / LB_PERIOD);
           if (idx < 0 || idx >= nWeeks) continue;
           const margin = +e.margin, pnl = +e.pnl; if (!(margin > 0) || !isFinite(pnl)) continue;
           let roe = pnl / margin * 100; if (!isFinite(roe)) continue; roe = Math.max(-100, Math.min(roe, 1000000));
@@ -10084,7 +10095,7 @@ export class UserStore {
         }
       }
       const weeks = [];
-      for (let i = 0; i < nWeeks; i++) { const ws = curWeek - i * WK; const top = Array.from(perWeek[i].values()).sort((a, b) => b.roe - a.roe).slice(0, 10); weeks.push({ weekStart: ws, weekEnd: ws + WK, current: i === 0, entries: perWeek[i].size, top }); }
+      for (let i = 0; i < nWeeks; i++) { const ws = curWeek - i * LB_PERIOD; const top = Array.from(perWeek[i].values()).sort((a, b) => b.roe - a.roe).slice(0, 10); weeks.push({ weekStart: ws, weekEnd: ws + LB_PERIOD, current: i === 0, entries: perWeek[i].size, top }); }
       return this.j({ weeks });
     }
     return this.j({ error: 'not_found' }, 404);

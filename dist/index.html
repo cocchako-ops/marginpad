@@ -1190,7 +1190,7 @@
     ['lbPz1','lbPz2','lbPz3'].forEach(function(id,i){var e=document.getElementById(id);if(e&&pz[i]!=null)e.textContent='$'+pz[i];});
     if(window.mpLbpzSetPrizes)window.mpLbpzSetPrizes(d&&d.boardPrizes);
     var we=+(d&&d.weekEnd)||0,rs=document.getElementById('lbReset');
-    if(we&&rs){var ms=we-Date.now();if(ms>0){var dd=Math.floor(ms/86400000),hh=Math.floor(ms%86400000/3600000),mm=Math.floor(ms%3600000/60000);rs.innerHTML='Resets Monday 00:00 UTC · ends in <b>'+dd+'d '+hh+'h '+mm+'m</b>';}else rs.textContent='Resetting…';}
+    if(we&&rs){var ms=we-Date.now();if(ms>0){var dd=Math.floor(ms/86400000),hh=Math.floor(ms%86400000/3600000),mm=Math.floor(ms%3600000/60000);rs.innerHTML='14-day season · ends in <b>'+dd+'d '+hh+'h '+mm+'m</b>';}else rs.textContent='Resetting…';}
   }).catch(function(){});
   // reflect sign-in state on the leaderboard CTA
   function lbYou(){var y=document.getElementById('lbYou');if(!y)return;var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();y.textContent=me?('You are in as @'+((me.username||me.email||'you').split('@')[0])+' — close a winning trade to climb.'):'Sign in (free) and your best trade enters automatically.';}
