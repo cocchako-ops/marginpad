@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8" />
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -17,7 +18,6 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Free USDT Faucet — Welcome Bonus + Claim Every 5 Minutes | MarginPad</title>
 <meta name="description" content="Earn free USDT on MarginPad: sign in with just your email (no password), get an instant welcome bonus, claim every 5 minutes and complete daily missions. Withdraw from $5 to your Bybit UID. No deposit." />
@@ -252,22 +252,26 @@
      (leaderboard prizes, how-it-works steps) — they read best full-bleed AND keep them out of the 2-col
      flow so the remaining pairs are height-matched with no half-empty cell. */
   .rwd-cards>#authCard,.rwd-cards>#dash,.rwd-cards>#wdHistCard,.rwd-cards>#lbCompCard,.rwd-cards>#howCard,.rwd-cards>#exchanges{grid-column:1/-1}
-  /* order so the two 2-col pairs are tight: [missions|promote] then [your level|more ways]. */
+  /* Missions is the tall card → let it span 2 rows on the right so the two short left cards (Invite + Promote)
+     stack beside it with no dead space. Then [your level | more ways] as the next pair. */
   .rwd-cards>#authCard,.rwd-cards>#dash{order:0}
   .rwd-cards>#wdHistCard{order:1}
-  .rwd-cards>#msnCard{order:2}      /* 2-col */
-  .rwd-cards>#promoCard{order:3}    /* 2-col */
-  .rwd-cards>#lbCompCard{order:4}   /* full  */
-  .rwd-cards>#howCard{order:5}      /* full  */
-  .rwd-cards>#lvlCard{order:6}      /* 2-col */
-  .rwd-cards>.card.aff{order:7}     /* 2-col */
+  .rwd-cards>#refCard{order:2;grid-column:1}          /* 2-col left (short) */
+  .rwd-cards>#msnCard{order:3;grid-column:2;grid-row:span 2}  /* 2-col right (tall) — spans both left cards */
+  .rwd-cards>#promoCard{order:4;grid-column:1}        /* 2-col left (short) — stacks under Invite */
+  .rwd-cards>#lbCompCard{order:5}   /* full  */
+  .rwd-cards>#howCard{order:6}      /* full  */
+  .rwd-cards>#lvlCard{order:7}      /* 2-col */
+  .rwd-cards>.card.aff{order:8}     /* 2-col */
   .rwd-cards>#exchanges{order:20}
+  @media(max-width:1000px){.rwd-cards>#msnCard,.rwd-cards>#refCard,.rwd-cards>#promoCard{grid-row:auto;grid-column:auto}}
   /* the balance card = the star of the page */
   .card--primary{position:relative;border-color:rgba(194,246,74,.34);background:linear-gradient(168deg,rgba(194,246,74,.075),var(--panel) 62%);box-shadow:0 26px 66px -36px rgba(194,246,74,.5),0 22px 52px -30px rgba(0,0,0,.92)}
   .card--primary::before{content:'';position:absolute;inset:0;border-radius:18px;padding:1px;background:linear-gradient(158deg,rgba(194,246,74,.5),transparent 42%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.55}
   .bal{font-size:54px}
   @media(max-width:560px){.bal{font-size:42px}}
-.ref-camp{background:#12161d;border:1px solid #2a323d;color:#cdd3da;border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}.ref-camp:hover{border-color:#c2f64a;color:#e9e7df}</style>
+.ref-camp{background:#12161d;border:1px solid #2a323d;color:#cdd3da;border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}.ref-camp:hover{border-color:#c2f64a;color:#e9e7df}.msn-go{color:#c2f64a;font-weight:700;text-decoration:none;font-size:12px;margin-left:6px}.msn-go:hover{text-decoration:underline}
+</style>
 
 <script defer src="/assets/sentry.js"></script>
 </head>
@@ -782,7 +786,7 @@
   bp.addEventListener('click',function(e){var t=e.target;
     if(t.closest('.browse-x')){close();return;}
     var exp=t.closest('[data-expand]');if(exp){var sub=bp.querySelector('[data-sub="'+exp.getAttribute('data-expand')+'"]');if(sub){var show=sub.hidden;sub.hidden=!show;exp.classList.toggle('expanded',show);}return;}
-    var go=t.closest('[data-go]');if(go){var p=go.getAttribute('data-go');location.href=(p==='plan')?'/paper-trade':'/?p='+p;return;}
+    var go=t.closest('[data-go]');if(go){var p=go.getAttribute('data-go');location.href=(p==='plan')?'/paper-trade':(p==='heat')?'/heatmap':(p==='swap')?'/swap':'/?p='+p;return;}
     var cc=t.closest('[data-calc]');if(cc){location.href='/calculators?c='+cc.getAttribute('data-calc');return;}
     if(t.closest('a'))close();
   });
@@ -807,9 +811,11 @@
       document.getElementById('msnFoot').innerHTML='<a href="#" data-auth-open style="color:#c2f64a;font-weight:700">Sign in</a> to unlock daily missions \u2014 they verify automatically.';
       return;
     }
+    if(!list._go){list._go=1;list.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('[data-msngo]');if(!a)return;try{fetch('/api/track?t=tg&e=group&p=%2Frewards%2F',{method:'POST',keepalive:true});}catch(e){}});}
     list.innerHTML=d.missions.map(function(m){
       var right=m.claimed?'<span class="claimed">CLAIMED \u2713</span>':(m.done?'<button data-msn="'+m.mid+'">Claim '+fmt2(m.cents)+'</button>':'<span class="amt">'+fmt2(m.cents)+'</span>');
-      return '<div class="msn'+(m.done?' done':' locked')+'"><span class="st">'+(m.done?'\u2713':'\u25cb')+'</span><span class="tx"><span class="t1">'+m.title+'</span><span class="t2" style="display:block">'+m.desc+'</span></span>'+right+'</div>';
+      var go=(m.url&&!m.claimed)?' <a class="msn-go" href="'+m.url+'" target="_blank" rel="noopener" data-msngo="'+m.mid+'">Open &rarr;</a>':'';
+      return '<div class="msn'+(m.done?' done':' locked')+'"><span class="st">'+(m.done?'\u2713':'\u25cb')+'</span><span class="tx"><span class="t1">'+m.title+'</span><span class="t2" style="display:block">'+m.desc+go+'</span></span>'+right+'</div>';
     }).join('');
     var doneN=d.missions.filter(function(m){return m.claimed;}).length;
     document.getElementById('msnFoot').textContent=doneN===d.missions.length?'All missions done for today \u2014 come back after 00:00 UTC.':'Do the thing anywhere on the site, come back, hit Claim.';

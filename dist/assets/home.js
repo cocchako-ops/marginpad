@@ -2303,7 +2303,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
    +row('<a class="browse-row" href="/coins/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>','Markets','Top 100 coins · prices &amp; market cap','#16c2d6','','brMktsT','brMktsS')
    +row('<a class="browse-row" href="/defi/">','</a>','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg>','DeFi','TVL, chains, protocols &amp; stablecoins','#9d7bff','','brDefiT','brDefiS')
    +row('<a class="browse-row" href="/fear-greed/">','</a>',I.fng,'Fear &amp; Greed','Live market sentiment','#7fd957','','brFngT','brFngS')
-   +row('<div class="browse-row browse-soon">','</div>',I.heat,'Liquidation Heatmap','Coming soon — premium data feed','#ffb347','Soon','brHeatT','brHeatS','brSoon')
+   +row('<a class="browse-row" href="/heatmap">','</a>',I.heat,'Liquidation Heatmap','Liquidation pools & real liqs — live','#ffb347','','brHeatT','brHeatS')
    +row('<a class="browse-row" href="/rekt/">','</a>',I.rekt,'Rekt','Live liquidations feed','#ff6258','','navRekt','prodRektS')
    +row('<a class="browse-row" href="/alerts/">','</a>',I.alert,'Price Alerts','Email or Telegram when a coin hits your price','#c2f64a','','brAlertsT','brAlertsS')
    +'<div class="browse-sec" data-i18n="secEarn">Earn</div>'

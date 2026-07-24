@@ -1105,7 +1105,7 @@
   bp.addEventListener('click',function(e){var t=e.target;
     if(t.closest('.browse-x')){close();return;}
     var exp=t.closest('[data-expand]');if(exp){var sub=bp.querySelector('[data-sub="'+exp.getAttribute('data-expand')+'"]');if(sub){var show=sub.hidden;sub.hidden=!show;exp.classList.toggle('expanded',show);}return;}
-    var go=t.closest('[data-go]');if(go){var p=go.getAttribute('data-go');location.href=(p==='plan')?'/paper-trade':'/?p='+p;return;}
+    var go=t.closest('[data-go]');if(go){var p=go.getAttribute('data-go');location.href=(p==='plan')?'/paper-trade':(p==='heat')?'/heatmap':(p==='swap')?'/swap':'/?p='+p;return;}
     var cc=t.closest('[data-calc]');if(cc){location.href='/calculators?c='+cc.getAttribute('data-calc');return;}
     if(t.closest('a'))close();
   });
