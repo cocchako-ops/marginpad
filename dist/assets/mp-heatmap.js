@@ -190,14 +190,23 @@
     Promise.all([
       fetch('/api/klines?symbol=' + coin + '&interval=' + w.iv, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
       fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=400').then(function (r) { return r.json(); }).catch(function () { return null; }),
-      fetch('/api/price?symbol=' + coin, { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return null; })
+      fetch('/api/price?symbol=' + coin, { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return null; }),
+      fetch('/api/heatmap/pools?symbol=' + coin).then(function (r) { return r.json(); }).catch(function () { return null; })
     ]).then(function (res) {
       if (!S || coin !== S.coin) return;
       var kd = res[0];
       if (kd && kd.length) {
         var cut = Date.now() / 1000 - w.mins * 60 * 1.6;
         S.bars = kd.filter(function (b2) { return b2.time > cut; });
-        S.pools = buildPools(S.bars);
+        var srv = res[3]; // server-accumulated pools (cron model — days of history, same map for everyone); local build = fallback
+        if (srv && srv.alive && srv.alive.length > 10 && srv.binH > 0) {
+          var arr = srv.alive.map(function (x) { return { price: +x.p, w: +x.w, long: !!x.long, t0: +x.t0, lev: +x.lev }; });
+          var wMax = 0; arr.forEach(function (x) { if (x.w > wMax) wMax = x.w; });
+          arr.forEach(function (x) { x.a = Math.pow(x.w / (wMax || 1), 0.4); });
+          arr.sort(function (a, b) { return b.w - a.w; });
+          var pmin = 1 / 0, pmax = -1 / 0; arr.forEach(function (x) { if (x.price < pmin) pmin = x.price; if (x.price > pmax) pmax = x.price; });
+          S.pools = { alive: arr, pMin: pmin, pMax: pmax, binH: +srv.binH };
+        } else S.pools = buildPools(S.bars);
         if (first || !S.view) { var last = S.bars[S.bars.length - 1]; var step = S.bars[1] ? S.bars[1].time - S.bars[0].time : 60; S.view = { t0: Date.now() / 1000 - w.mins * 60, t1: last.time + step * 5 }; }
       }
       if (res[1] && res[1].events) S.events = res[1].events;

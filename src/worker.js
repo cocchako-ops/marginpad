@@ -155,6 +155,59 @@ async function screenerKvWarm(env) { // */10 cron: keep the scr:cache6 floor fre
   try { const kv = await env.STATS.get('scr:cache6'); if (kv) { const o = JSON.parse(kv); if (o && Date.now() - (+o.ts || 0) < 420000) return; } } catch (e) {}
   try { await handleScreener(env, true); } catch (e) {}
 }
+
+// ---- Heatmap pool accumulator (2026-07-25, heatmap roadmap #1) ----
+// The v2 heatmap computed its leverage-ladder pool model CLIENT-side from whatever klines the visitor loaded —
+// every page load started from zero and no pool could be older than the kline window. This cron runs the SAME
+// model incrementally on the server (state in KV), so pools accumulate for days/weeks, get consumed exactly once
+// when price trades through, and every visitor sees the same map. Client keeps its local build as fallback.
+const HM_COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB', 'ADA', 'LINK', 'AVAX', 'LTC'];
+const HM_LEVS = [[10, 0.34], [25, 0.30], [50, 0.21], [100, 0.15]];
+async function heatPoolsCron(env) {
+  if (!env || !env.STATS) return;
+  for (const sym of HM_COINS) {
+    try {
+      const kd = await sigKlines(sym, 15); // closed 15m candles (same fetch path as the signal engine)
+      if (!kd || !kd.closed || kd.closed.length < 10) continue;
+      const bars = kd.closed;
+      let st = null; try { st = JSON.parse(await env.STATS.get('hmp:st:' + sym) || 'null'); } catch (e) {}
+      const px = bars[bars.length - 1].close;
+      if (!st || !(st.binH > 0)) st = { last: 0, binH: px * 0.001, alive: {} }; // fixed ~0.1% price bins per coin
+      const binH = st.binH, alive = st.alive;
+      let processed = 0;
+      for (let i = 1; i < bars.length; i++) {
+        const b = bars[i]; if (b.time <= st.last) continue; processed++;
+        for (const k in alive) { const pr = (+k + 0.5) * binH; if (pr >= b.low && pr <= b.high) delete alive[k]; } // consumed
+        const prev = bars[i - 1], notion = (prev.vol || 0) * prev.close || Math.abs(prev.close - prev.open) * 1e4;
+        for (const [L, wgt] of HM_LEVS) { const w = notion * wgt * 0.5;
+          const bl = Math.floor(prev.close * (1 - 0.995 / L) / binH), bs = Math.floor(prev.close * (1 + 0.995 / L) / binH);
+          const al = alive[bl]; if (al && al.long) al.w += w; else if (!al) alive[bl] = { w: w, long: 1, t0: prev.time, lev: L };
+          const as2 = alive[bs]; if (as2 && !as2.long) as2.w += w; else if (!as2) alive[bs] = { w: w, long: 0, t0: prev.time, lev: L };
+        }
+        st.last = b.time;
+      }
+      if (!processed && st.pubAt && Date.now() - st.pubAt < 3600000) continue; // nothing new + fresh pub → skip writes
+      // prune: keep bins within ±30% of price, cap to the 400 strongest
+      const ent = [];
+      for (const k in alive) { const pr = (+k + 0.5) * binH; if (Math.abs(pr - px) / px > 0.30) { delete alive[k]; continue; } ent.push([k, alive[k]]); }
+      if (ent.length > 400) { ent.sort((a, b) => b[1].w - a[1].w); for (let i = 400; i < ent.length; i++) delete alive[ent[i][0]]; }
+      st.pubAt = Date.now();
+      await env.STATS.put('hmp:st:' + sym, JSON.stringify(st), { expirationTtl: 14 * 86400 });
+      const pub = ent.slice(0, 400).map(([k, a]) => ({ p: Math.round(((+k + 0.5) * binH) * 1e6) / 1e6, w: Math.round(a.w), long: a.long ? 1 : 0, t0: a.t0, lev: a.lev }));
+      await env.STATS.put('hmp:pub:' + sym, JSON.stringify({ t: Date.now(), price: px, binH: binH, alive: pub }), { expirationTtl: 86400 });
+      await new Promise(r => setTimeout(r, 80));
+    } catch (e) {}
+  }
+}
+async function handleHeatPools(url, env) { // GET /api/heatmap/pools?symbol=BTC — server-accumulated pools (edge 60s)
+  const sym = String(url.searchParams.get('symbol') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const ck = new Request('https://marginpad.io/__hmp_' + sym);
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  let body = null; try { body = await env.STATS.get('hmp:pub:' + sym); } catch (e) {}
+  const r = new Response(body || '{"alive":[]}', { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+  try { await caches.default.put(ck, r.clone()); } catch (e) {}
+  return r;
+}
 async function pricesKvWarm(env) { // every-minute cron: refresh the KV floor copy cold colos serve instantly (≤1440 KV writes/day — negligible vs the A5 diet)
   try { const r = await handlePrices(env, null, 2); if (r && r.ok) { const txt = await r.text(); if (txt && txt.length > 50) await env.STATS.put('prices:last', txt, { expirationTtl: 300 }); } } catch (e) {}
 }
@@ -7309,6 +7362,7 @@ export default {
     if (url.protocol === 'http:') { url.protocol = 'https:'; return Response.redirect(url.toString(), 301); }
     if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
     if (url.pathname === '/api/geo') return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // visitor country for geo-aware exchange cards (US/CA see US-legal venues first)
+    if (url.pathname === '/api/heatmap/pools') return handleHeatPools(url, env);
     if (url.pathname === '/api/prices') return perfWrap(env, ctx, 'prices', 10, () => handlePrices(env, ctx, +url.searchParams.get('prof') || 0));
     if (url.pathname === '/api/screener') return perfWrap(env, ctx, 'screener', 3, () => handleScreener(env));
     if (url.pathname === '/api/symbols') return handleSymbols();
@@ -7690,6 +7744,7 @@ export default {
       for (const tn of Object.keys(src)) { const a = src[tn], b2 = res.counts ? res.counts[tn] : null; tables[tn] = { dump: a, restored: b2, match: a === b2 }; if (a !== b2) allOk = false; }
       return new Response(JSON.stringify({ ok: allOk, backupAt: dump.at, ageHours: dump.at ? Math.round((Date.now() - dump.at) / 3600000 * 10) / 10 : null, store: env.BACKUP ? 'r2' : 'kv', tables }, null, 1), { headers: jh });
     }
+    if (url.pathname === '/api/admin/heatpools' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { await heatPoolsCron(env); return J({ ok: true }); } // manual model run (first seed / debugging)
     if (url.pathname === '/api/admin/mktestuser' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // E2E suites: ensure an 'e2e-' users row exists (DO enforces the prefix)
       return J(await usersDO(env, '/mktestuser', { uid: url.searchParams.get('uid') || '' }));
     }
@@ -8106,6 +8161,7 @@ export default {
     ctx.waitUntil(nightlyBackup(env)); // P0.5 — once per UTC day (stamped), retries on failure each */10
     ctx.waitUntil(sweepServerPositions(env)); // P0 — server-side SL/TP/liq sweep for srv/bot trades
     ctx.waitUntil(screenerKvWarm(env)); // keep the screener KV floor fresh — no visitor ever pays the full compute
+    ctx.waitUntil(heatPoolsCron(env)); // heatmap: server-side pool accumulation (pools older than any kline window)
     ctx.waitUntil(checkAlerts(env));
     ctx.waitUntil(checkAccountAlerts(env));
     ctx.waitUntil(payWeeklyPrizes(env));
