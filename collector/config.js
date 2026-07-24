@@ -41,7 +41,7 @@ export const config = {
     port: Number(process.env.PORT || 8787),
     corsOrigin: process.env.CORS_ORIGIN || '*',
     aggCacheSeconds: 45,
-    rateLimit: { windowMs: 60_000, max: 120 }, // per IP per minute
+    rateLimit: { windowMs: 60_000, max: 600 }, // per IP per minute — through the CF worker chain many users share one egress IP, and edge TTLs bound the miss rate anyway (raised 120->600 for the public liq API, 2026-07-24)
   },
 
   // ---- Phase 2 (estimated clusters) — defined now, not used yet ----

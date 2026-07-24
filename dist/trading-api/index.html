@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#0a0b0d" />
@@ -144,6 +157,19 @@
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/account</code><p>Account summary: open positions, margin in use, live unrealized P&amp;L, realized P&amp;L, wins/losses and win rate.</p></div>
 <p class="note">Authenticate with the <code class="k">X-API-Key</code> header on every call except <code class="k">/price</code> and <code class="k">/klines</code>.</p>
 
+
+<h2 id="liq-api">Free Liquidation Data API <span style="background:rgba(255,98,88,.14);border:1px solid rgba(255,98,88,.4);color:#ff8a80;font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;vertical-align:middle;letter-spacing:.04em">LIVE DATA</span></h2>
+<p>Real-time liquidations aggregated from <b>Binance, Bybit, OKX, BitMEX, Deribit and Bitfinex</b> — the data behind our <a href="/rekt/">Rekt feed</a> and <a href="/heatmap">Liquidation Heatmap</a>, exposed as free JSON. Comparable data is normally paywalled at <b>$300+/month</b> elsewhere; here it needs <b>no API key at all</b>. Edge-cached and rate-limited, so it comfortably handles polling bots.</p>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/v1/feed</code><p>The newest liquidations across ALL tracked symbols — <code>{events:[{ts, exchange, symbol, side, price, qty, notional}]}</code>. Freshness: events land here seconds after they happen (3s edge cache). Poll every 3–5s.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/v1/liquidations/live?symbol=BTC&amp;limit=400</code><p>Raw recent liquidation events for one symbol (BTC, ETH, SOL, XRP, DOGE, BNB, ADA, LINK, AVAX, LTC). <code>side</code> is <code>long_liquidated</code> or <code>short_liquidated</code>, <code>notional</code> is the USD size.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/v1/liquidations/recent?symbol=BTC&amp;minutes=1440</code><p>Time-bucketed histogram (long vs short $ per bucket) for charts — the exact source of our heatmap&rsquo;s stats. <code>minutes</code>: up to 43200 (30 days).</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/v1/clusters?symbol=BTC</code><p>Modeled liquidation clusters: price levels where liquidation liquidity is estimated to sit right now — <code>{clusters:[{price, side, est_notional}]}</code>. Refreshes continuously from live order flow.</p></div>
+<pre class="code"><span class="c"># the last liquidations on the market, right now:</span>
+curl "https://marginpad.io/api/v1/feed"
+<span class="c"># BTC liquidation clusters for your own heatmap:</span>
+curl "https://marginpad.io/api/v1/clusters?symbol=BTC"</pre>
+<p class="note">Attribution appreciated (link marginpad.io) but not required. Coverage is ~70%+ of the market&rsquo;s liquidation flow — the venues that move price. Educational use; no uptime SLA.</p>
+
 <h2>3 · Two-minute quickstart</h2>
 <pre><b># price (no key)</b>
 curl "https://marginpad.io/api/bot/v1/price?symbol=SOL"
@@ -211,6 +237,7 @@ if (mySignal(price)) {  // your strategy here
 <div class="faq"><b>See your bot's trades on the site</b><p>Positions opened via the API live on your account server-side. The <a href="/trading-journal/">Trading Journal</a> and account profile analytics for API positions are on the roadmap.</p></div>
 
 <h2>FAQ</h2>
+<details><summary>Is there a free liquidation data / heatmap API?</summary><p>Yes — MarginPad exposes real-time liquidations aggregated from 6 exchanges as free JSON, no key needed: <code>/api/v1/feed</code>, <code>/api/v1/liquidations/live</code>, <code>/api/v1/liquidations/recent</code> and <code>/api/v1/clusters</code>. Comparable feeds are usually $300+/month. See the "Free Liquidation Data API" section above.</p></details>
 <div class="faq"><b>Is the trading bot API really free?</b><p>Yes. It's a paper-trading simulator — positions use real live market prices but no real money. Sign in with an email, generate an API key and start testing immediately.</p></div>
 <div class="faq"><b>Which programming languages can I use?</b><p>Any language that can make an HTTPS request — Python, JavaScript/Node.js, Go, Rust, PHP, or plain curl. Standard REST, JSON responses, one <code class="k">X-API-Key</code> header.</p></div>
 <div class="faq"><b>Backtesting vs paper trading — what's the difference?</b><p>Backtesting replays historical candles (fast, but hides bugs and overfitting). Paper trading runs your bot on live prices in real time and catches what backtests can't. Do both — <a href="/crypto-backtester/">backtest here</a>, then forward-test on this API.</p></div>
