@@ -157,13 +157,26 @@
     if (cv.width !== Math.round(W * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
     var P = S.pools, Y = function (p) { return H - (p - pLo) / (pHi - pLo) * H; }, i;
-    var wMax = 0;
-    for (i = 0; i < P.alive.length; i++) if (P.alive[i].w > wMax) wMax = P.alive[i].w;
-    for (i = 0; i < P.alive.length; i++) { var s = P.alive[i];
-      if (S.sideF === 'long' && !s.long) continue; if (S.sideF === 'short' && s.long) continue;
-      var y = Y(s.price); if (y < -4 || y > H + 4) continue;
-      ctx.fillStyle = s.long ? 'rgba(46,189,133,.62)' : 'rgba(255,98,88,.62)';
-      ctx.fillRect(0, y - 1.6, Math.max(2, s.w / (wMax || 1) * (W - 12)), 3.2); }
+    // scale against the biggest VISIBLE pool — normalizing to the global max (often far off-screen)
+    // squashed every visible bar to a 2px sliver and the panel read as empty (owner report 2026-07-24)
+    var vis = [];
+    for (i = 0; i < P.alive.length; i++) { var s0 = P.alive[i];
+      if (S.sideF === 'long' && !s0.long) continue; if (S.sideF === 'short' && s0.long) continue;
+      if (s0.price < pLo || s0.price > pHi) continue; vis.push(s0); }
+    var wMax = 0; for (i = 0; i < vis.length; i++) if (vis[i].w > wMax) wMax = vis[i].w;
+    var bh = Math.max(3, H * (P.binH / (pHi - pLo)));
+    for (i = vis.length - 1; i >= 0; i--) { var s = vis[i];
+      var y = Y(s.price), rel = s.w / (wMax || 1);
+      var bw = 4 + rel * (W - 20);
+      ctx.fillStyle = s.long ? 'rgba(46,189,133,' + (0.3 + rel * 0.6).toFixed(2) + ')' : 'rgba(255,98,88,' + (0.3 + rel * 0.6).toFixed(2) + ')';
+      ctx.fillRect(0, y - bh / 2, bw, bh); }
+    // label the single biggest visible pool with its $ size
+    if (vis.length) { var top = vis[0]; var ty = Y(top.price);
+      ctx.font = '700 9.5px "Space Mono",monospace'; ctx.textAlign = 'right';
+      ctx.fillStyle = 'rgba(7,9,12,.8)'; var mt = money(top.w); var mw = ctx.measureText(mt).width;
+      ctx.fillRect(W - mw - 10, ty - 7, mw + 8, 13);
+      ctx.fillStyle = top.long ? '#7ee2b8' : '#ffa39b';
+      ctx.fillText(mt, W - 6, ty + 3); }
     ctx.fillStyle = 'rgba(92,107,132,.9)'; ctx.font = '9px "Space Mono",monospace'; ctx.textAlign = 'center';
     ctx.fillText('WHERE $ SITS', W / 2, 12);
   }
