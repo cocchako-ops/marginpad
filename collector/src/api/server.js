@@ -150,6 +150,29 @@ export function createApiServer({ storage, getStatus, bus }) {
     res.json(out);
   });
 
+  // ---- Binance REST proxy (2026-07-24) — Cloudflare Workers can't reach Binance (403 on CF egress IPs),
+  // this droplet can. STRICT whitelist of read-only market-data paths + 5s in-memory cache so the worker's
+  // edge cache + this cache together keep us far under Binance's 1200 weight/min. No account/trade paths, ever.
+  const BNC_ALLOW = /^\/(api\/v3\/(time|ticker\/24hr|ticker\/price|klines|depth|exchangeInfo)|fapi\/v1\/(ticker\/price|ticker\/24hr|premiumIndex|openInterest|klines|fundingRate)|futures\/data\/(openInterestHist|globalLongShortAccountRatio|topLongShortPositionRatio))$/;
+  const bncCache = new Map(); // key -> {t, status, body}
+  setInterval(() => { const c = Date.now() - 30000; for (const [k, v] of bncCache) if (v.t < c) bncCache.delete(k); }, 30000).unref?.();
+  app.get('/api/v1/bnc', async (req, res) => {
+    const p = String(req.query.path || '');
+    if (!BNC_ALLOW.test(p)) return res.status(400).json({ error: 'path_not_allowed' });
+    const qs = Object.entries(req.query).filter(([k]) => k !== 'path').map(([k, v]) => k + '=' + encodeURIComponent(String(v))).join('&');
+    const host = p.startsWith('/fapi') || p.startsWith('/futures') ? 'https://fapi.binance.com' : 'https://api.binance.com';
+    const url = host + p + (qs ? '?' + qs : '');
+    const hitB = bncCache.get(url);
+    if (hitB && Date.now() - hitB.t < 5000) { res.set('Cache-Control', 'public, max-age=5'); res.set('x-bnc-cache', 'hit'); return res.status(hitB.status).type('application/json').send(hitB.body); }
+    try {
+      const r = await fetch(url, { signal: AbortSignal.timeout(9000) });
+      const body = await r.text();
+      if (r.status === 200) bncCache.set(url, { t: Date.now(), status: r.status, body });
+      res.set('Cache-Control', 'public, max-age=5');
+      return res.status(r.status).type('application/json').send(body);
+    } catch (e) { return res.status(502).json({ error: 'binance_unreachable', detail: String(e).slice(0, 120) }); }
+  });
+
   // Health — per-exchange socket state, last event, events/min. Check it from your phone.
   app.get('/api/v1/status', (req, res) => { res.set('Cache-Control', 'no-store'); res.json(getStatus()); });
   app.get('/api/v1/health', (req, res) => res.json({ ok: true }));
