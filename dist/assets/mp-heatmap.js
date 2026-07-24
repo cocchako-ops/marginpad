@@ -279,6 +279,18 @@
     ctx.fillText('WHERE $ SITS', W / 2, 12);
   }
 
+  function poolHit(my, H) { // nearest visible pool band to screen-y `my` (px), respecting side filter + current zoom
+    if (!S || !(S.yHi > S.yLo) || !(H > 0)) return null;
+    var P = S.pools, rng = S.yHi - S.yLo, bh = H * (P.binH / rng), tol = Math.max(bh / 2 + 4, 10), best = null;
+    for (var i = 0; i < P.alive.length; i++) { var s = P.alive[i];
+      if (poolGone(s)) continue;
+      if (S.sideF === 'long' && !s.long) continue; if (S.sideF === 'short' && s.long) continue;
+      if (s.price < S.yLo || s.price > S.yHi) continue;
+      var py = (S.yHi - s.price) / rng * H, d = Math.abs(py - my);
+      if (d < tol && (!best || d < best.d)) best = { d: d, s: s };
+    }
+    return best ? best.s : null;
+  }
   var rafP = false;
   function sched() { if (rafP) return; rafP = true; requestAnimationFrame(function () { rafP = false; try { draw(); } catch (e) {} }); }
 
@@ -387,9 +399,7 @@
       var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
       if (S.drag) { if (Math.abs(S.drag.x - mx) + Math.abs(my - S.drag.y) > 5) S._dragged = 1; var dt = (S.drag.x - mx) / r.width * (S.drag.t1 - S.drag.t0); S.view.t0 = S.drag.t0 + dt; S.view.t1 = S.drag.t1 + dt; if (S.bars.length && S.view.t0 < S.bars[0].time + (S.bars[1] ? (S.bars[1].time - S.bars[0].time) : 60) * 30) loadMore(0);
         var dp = (my - S.drag.y) / r.height * (S.drag.yHi - S.drag.yLo); S.yView = { lo: S.drag.yLo + dp, hi: S.drag.yHi + dp }; sched(); return; }
-      var p = S.yHi - my / r.height * (S.yHi - S.yLo);
-      var P = S.pools, best = null, i;
-      for (i = 0; i < P.alive.length; i++) { var s = P.alive[i]; if (poolGone(s)) continue; var d = Math.abs(s.price - p); if (d < P.binH * 2.4 && (!best || s.w > best.s.w)) best = { d: d, s: s }; }
+      var _ph = poolHit(my, r.height), best = _ph ? { s: _ph } : null, i;
       var bev = null, nNear = 0;
       if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 13) { nNear++; if (!bev || dd < bev.d) bev = { d: dd, e: e }; } }
       if (!best && !bev) { tip.style.display = 'none'; return; }
@@ -439,13 +449,11 @@
       if (S._dragged) { S._dragged = 0; return; }
       if (!S.X) return;
       var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
-      var p = S.yHi - my / r.height * (S.yHi - S.yLo);
       var hits = [], i;
       if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 16) hits.push({ d: dd, e: e }); }
       if (hits.length === 1) { S.sel = { type: 'ev', ref: hits[0].e }; showSel(); sched(); return; }
       if (hits.length > 1) { hits.sort(function (a, b) { return b.e.notional - a.e.notional; }); S.sel = { type: 'clu', refs: hits.map(function (x) { return x.e; }) }; showSel(); sched(); return; }
-      var P = S.pools, best = null, t = S.view.t0 + mx / r.width * (S.view.t1 - S.view.t0);
-      for (i = 0; i < P.alive.length; i++) { var s2 = P.alive[i]; if (poolGone(s2)) continue; if (t < s2.t0) continue; var d2 = Math.abs(s2.price - p); if (d2 < P.binH * 2.2 && (!best || s2.w > best.w)) best = s2; }
+      var best = poolHit(my, r.height);
       if (best) { S.sel = { type: 'pool', ref: best }; showSel(); sched(); return; }
       if (S.sel) { S.sel = null; showSel(); sched(); }
     });
@@ -499,16 +507,18 @@
     // WHERE-$-SITS column = price-axis zoom control (TradingView-style): drag DOWN = expand the range
     // (zoom out, see far pools), drag UP = tighten. Works with finger and mouse; wheel too.
     (function () {
-      var pf = S.pf, g = null;
+      var pf = S.pf, g = null, moved = 0;
       function yr() { return { lo: S.yView ? S.yView.lo : S.yLo, hi: S.yView ? S.yView.hi : S.yHi }; }
-      function apply(dy) { var r0 = g.r, f = Math.exp(dy / 220); var mid = (r0.lo + r0.hi) / 2, half = (r0.hi - r0.lo) / 2 * f; S.yView = { lo: mid - half, hi: mid + half }; sched(); }
+      function apply(dy) { if (Math.abs(dy) > 4) moved = 1; var r0 = g.r, f = Math.exp(dy / 220); var mid = (r0.lo + r0.hi) / 2, half = (r0.hi - r0.lo) / 2 * f; S.yView = { lo: mid - half, hi: mid + half }; sched(); }
+      function pfPick(cy) { var r = pf.getBoundingClientRect(), s = poolHit(cy - r.top, r.height); if (s) { S.sel = { type: 'pool', ref: s }; if (S.showSel) S.showSel(); sched(); } else if (S.sel && S.sel.type === 'pool') { S.sel = null; if (S.showSel) S.showSel(); sched(); } }
       pf.style.cursor = 'ns-resize'; pf.title = 'Drag to zoom the price axis';
-      pf.addEventListener('mousedown', function (ev) { g = { y: ev.clientY, r: yr() }; ev.preventDefault(); });
+      pf.addEventListener('mousedown', function (ev) { g = { y: ev.clientY, r: yr() }; moved = 0; ev.preventDefault(); });
+      pf.addEventListener('click', function (ev) { if (moved) { moved = 0; return; } pfPick(ev.clientY); });
       window.addEventListener('mousemove', function (ev) { if (g && S) apply(ev.clientY - g.y); });
       window.addEventListener('mouseup', function () { g = null; });
       pf.addEventListener('touchstart', function (ev) { if (ev.touches.length === 1) g = { y: ev.touches[0].clientY, r: yr() }; }, { passive: true });
       pf.addEventListener('touchmove', function (ev) { if (g && ev.touches.length === 1) { ev.preventDefault(); apply(ev.touches[0].clientY - g.y); } }, { passive: false });
-      pf.addEventListener('touchend', function () { g = null; });
+      pf.addEventListener('touchend', function (ev) { if (!moved && g) { var t = (ev.changedTouches && ev.changedTouches[0]); if (t) pfPick(t.clientY); } g = null; });
       pf.addEventListener('wheel', function (ev) { ev.preventDefault(); var r0 = yr(), f = ev.deltaY > 0 ? 1.15 : 0.87; var mid = (r0.lo + r0.hi) / 2, half = (r0.hi - r0.lo) / 2 * f; S.yView = { lo: mid - half, hi: mid + half }; sched(); }, { passive: false });
       pf.addEventListener('dblclick', function () { S.yView = null; sched(); });
     })();
