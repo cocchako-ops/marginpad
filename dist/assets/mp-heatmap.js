@@ -75,9 +75,12 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
     var v = S.view, bars = S.bars, P = S.pools, i, b;
     var pLo = 1 / 0, pHi = -1 / 0;
-    for (i = 0; i < bars.length; i++) { b = bars[i]; if (b.time < v.t0 || b.time > v.t1) continue; if (b.low < pLo) pLo = b.low; if (b.high > pHi) pHi = b.high; }
-    if (!isFinite(pLo)) { pLo = P.pMin; pHi = P.pMax; }
-    var yPad = (pHi - pLo) * 0.28; pLo -= yPad; pHi += yPad;
+    if (S.yView) { pLo = S.yView.lo; pHi = S.yView.hi; } // user panned/zoomed the price axis — respect it
+    else {
+      for (i = 0; i < bars.length; i++) { b = bars[i]; if (b.time < v.t0 || b.time > v.t1) continue; if (b.low < pLo) pLo = b.low; if (b.high > pHi) pHi = b.high; }
+      if (!isFinite(pLo)) { pLo = P.pMin; pHi = P.pMax; }
+      var yPad = (pHi - pLo) * 0.28; pLo -= yPad; pHi += yPad;
+    }
     S.yLo = pLo; S.yHi = pHi;
     var X = function (t) { return (t - v.t0) / (v.t1 - v.t0) * W; };
     var Y = function (p) { return H - (p - pLo) / (pHi - pLo) * H; };
@@ -209,8 +212,7 @@
       if (!S || coin !== S.coin) return;
       var kd = res[0];
       if (kd && kd.length) {
-        var cut = Date.now() / 1000 - w.mins * 60 * 1.6;
-        S.bars = kd.filter(function (b2) { return b2.time > cut; });
+        S.bars = kd; // FULL fetched history (up to 1000 candles) — pan back as far as the data goes, like /charts
         var srv = res[3]; // server-accumulated pools (cron model — days of history, same map for everyone); local build = fallback
         if (srv && srv.alive && srv.alive.length > 10 && srv.binH > 0) {
           var arr = srv.alive.map(function (x) { return { price: +x.p, w: +x.w, long: !!x.long, t0: +x.t0, lev: +x.lev }; });
@@ -272,7 +274,8 @@
     cv.addEventListener('mousemove', function (ev) {
       if (!S.X) return;
       var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
-      if (S.drag) { var dt = (S.drag.x - mx) / r.width * (S.view.t1 - S.view.t0); S.view.t0 = S.drag.t0 + dt; S.view.t1 = S.drag.t1 + dt; sched(); return; }
+      if (S.drag) { var dt = (S.drag.x - mx) / r.width * (S.drag.t1 - S.drag.t0); S.view.t0 = S.drag.t0 + dt; S.view.t1 = S.drag.t1 + dt;
+        var dp = (my - S.drag.y) / r.height * (S.drag.yHi - S.drag.yLo); S.yView = { lo: S.drag.yLo + dp, hi: S.drag.yHi + dp }; sched(); return; }
       var p = S.yHi - my / r.height * (S.yHi - S.yLo);
       var P = S.pools, best = null, i;
       for (i = 0; i < P.alive.length; i++) { var s = P.alive[i]; var d = Math.abs(s.price - p); if (d < P.binH * 2.4 && (!best || s.w > best.s.w)) best = { d: d, s: s }; }
@@ -289,17 +292,25 @@
       tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
     });
     cv.addEventListener('mouseleave', function () { tip.style.display = 'none'; S.drag = null; });
-    cv.addEventListener('mousedown', function (ev) { var r = cv.getBoundingClientRect(); S.drag = { x: ev.clientX - r.left, t0: S.view.t0, t1: S.view.t1 }; });
+    cv.addEventListener('mousedown', function (ev) { var r = cv.getBoundingClientRect(); S.drag = { x: ev.clientX - r.left, y: ev.clientY - r.top, t0: S.view.t0, t1: S.view.t1, yLo: S.yLo, yHi: S.yHi }; });
     window.addEventListener('mouseup', function () { if (S) S.drag = null; });
     cv.addEventListener('wheel', function (ev) {
       ev.preventDefault();
-      var r = cv.getBoundingClientRect(), fx = (ev.clientX - r.left) / r.width;
-      var span = S.view.t1 - S.view.t0, f = ev.deltaY > 0 ? 1.18 : 0.85;
-      var ns = Math.max(600, Math.min(WINS[S.win].mins * 60 * 2.2, span * f));
+      var r = cv.getBoundingClientRect(), f = ev.deltaY > 0 ? 1.18 : 0.85;
+      if (ev.shiftKey || ev.ctrlKey) { // price-axis zoom around the cursor
+        var fy = (ev.clientY - r.top) / r.height;
+        var lo = S.yView ? S.yView.lo : S.yLo, hi = S.yView ? S.yView.hi : S.yHi;
+        var pv = hi - fy * (hi - lo), nsp = (hi - lo) * f;
+        S.yView = { lo: pv - (1 - fy) * nsp, hi: pv + fy * nsp }; sched(); return;
+      }
+      var fx = (ev.clientX - r.left) / r.width;
+      var span = S.view.t1 - S.view.t0;
+      var full = S.bars.length ? (S.bars[S.bars.length - 1].time - S.bars[0].time) * 1.15 : span * 4; // zoom out to the WHOLE loaded history
+      var ns = Math.max(600, Math.min(full, span * f));
       var pivot = S.view.t0 + fx * span;
       S.view.t0 = pivot - fx * ns; S.view.t1 = pivot + (1 - fx) * ns; sched();
     }, { passive: false });
-    cv.addEventListener('dblclick', function () { if (S.bars.length) { var w = WINS[S.win]; S.view = { t0: Date.now() / 1000 - w.mins * 60, t1: S.bars[S.bars.length - 1].time + 300 }; sched(); } });
+    cv.addEventListener('dblclick', function () { if (S.bars.length) { var w = WINS[S.win]; S.view = { t0: Date.now() / 1000 - w.mins * 60, t1: S.bars[S.bars.length - 1].time + 300 }; S.yView = null; sched(); } });
     // touch: 1 finger = pan, 2 fingers = pinch zoom (around the midpoint). passive:false so the page
     // doesn't scroll/rubber-band underneath while the user works the chart.
     var tX = null, tP = null;
@@ -307,7 +318,7 @@
     cv.addEventListener('touchstart', function (ev) {
       var r = cv.getBoundingClientRect();
       if (ev.touches.length === 2) { tX = null; tP = { d: tDist(ev), t0: S.view.t0, t1: S.view.t1, fx: ((ev.touches[0].clientX + ev.touches[1].clientX) / 2 - r.left) / r.width }; }
-      else if (ev.touches.length === 1) { tP = null; tX = { x: ev.touches[0].clientX - r.left, t0: S.view.t0, t1: S.view.t1 }; }
+      else if (ev.touches.length === 1) { tP = null; tX = { x: ev.touches[0].clientX - r.left, y: ev.touches[0].clientY - r.top, t0: S.view.t0, t1: S.view.t1, yLo: S.yLo, yHi: S.yHi }; }
     }, { passive: true });
     cv.addEventListener('touchmove', function (ev) {
       var r = cv.getBoundingClientRect();
@@ -320,7 +331,9 @@
       } else if (tX && ev.touches.length === 1) {
         ev.preventDefault();
         var dt = (tX.x - (ev.touches[0].clientX - r.left)) / r.width * (tX.t1 - tX.t0);
-        S.view.t0 = tX.t0 + dt; S.view.t1 = tX.t1 + dt; sched();
+        S.view.t0 = tX.t0 + dt; S.view.t1 = tX.t1 + dt;
+        var dp = ((ev.touches[0].clientY - r.top) - tX.y) / r.height * (tX.yHi - tX.yLo);
+        S.yView = { lo: tX.yLo + dp, hi: tX.yHi + dp }; sched();
       }
     }, { passive: false });
     cv.addEventListener('touchend', function (ev) {
@@ -352,15 +365,15 @@
     var stage = el('div', 'hm-stage');
     var cv = el('canvas', 'hm-cv'), pf = el('canvas', 'hm-prof'), tip = el('div', 'hm-tip'), loadEl = el('div', 'hm-load', 'Building liquidation map…');
     stage.appendChild(cv); stage.appendChild(pf); stage.appendChild(tip); stage.appendChild(loadEl);
-    var foot = el('div', 'hm-foot', '<b>How to read it:</b> bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices are stacking up there — price tends to sweep the brightest ones. Bands disappear the moment price trades through them. Drag to pan · scroll to zoom · double-click resets.<br><b>Data:</b> real liquidations streamed live from <b>Binance · Bybit · OKX · BitMEX · Deribit · Bitfinex</b> — that covers roughly <b>70%+</b> of the market&rsquo;s liquidation flow, not 100% of every venue, but the ones that move the market. The bands are our own estimate computed from live price action (10–100&times; entries at each close).');
+    var foot = el('div', 'hm-foot', '<b>How to read it:</b> bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices are stacking up there — price tends to sweep the brightest ones. Bands disappear the moment price trades through them. Drag to pan (any direction) · scroll = zoom time · Shift+scroll = zoom price · double-click resets.<br><b>Data:</b> real liquidations streamed live from <b>Binance · Bybit · OKX · BitMEX · Deribit · Bitfinex</b> — that covers roughly <b>70%+</b> of the market&rsquo;s liquidation flow, not 100% of every venue, but the ones that move the market. The bands are our own estimate computed from live price action (10–100&times; entries at each close).');
     wrap.appendChild(bar); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(foot);
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
 
     S = { coin: coin, win: '1D', sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
     wire();
-    selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; S.view = null; S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
-    selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; S.view = null; loadAll(true); });
+    selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; S.view = null; S.yView = null; S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
+    selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; S.view = null; S.yView = null; loadAll(true); });
     seg.addEventListener('click', function (ev) { var t = ev.target.closest('button'); if (!t || !S) return; S.sideF = t.getAttribute('data-s'); seg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === t); }); updHead(); sched(); });
     function shot() { var out = document.createElement('canvas'); var sc = window.devicePixelRatio || 1; out.width = cv.width + pf.width; out.height = cv.height + Math.round(34 * sc); var ox = out.getContext('2d'); ox.fillStyle = '#07090c'; ox.fillRect(0, 0, out.width, out.height); ox.drawImage(cv, 0, 0); ox.drawImage(pf, cv.width, 0); ox.fillStyle = '#c2f64a'; ox.font = '700 ' + Math.round(13 * sc) + 'px "Space Mono",monospace'; ox.textAlign = 'left'; ox.fillText(S.coin + ' LIQUIDATION MAP', Math.round(10 * sc), out.height - Math.round(11 * sc)); ox.fillStyle = '#8fa3c4'; ox.textAlign = 'right'; ox.fillText('marginpad.io/heatmap', out.width - Math.round(10 * sc), out.height - Math.round(11 * sc)); return out; }
     dl.addEventListener('click', function () { try { var a = document.createElement('a'); a.download = 'marginpad-liqmap-' + S.coin + '.png'; a.href = shot().toDataURL('image/png'); a.click(); } catch (e) {} });
