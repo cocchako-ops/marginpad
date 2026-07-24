@@ -741,7 +741,7 @@
   var REKT_MAINT=false;/* collector back on the new DigitalOcean droplet (2026-07-24) — live feed ON; flip to true + redeploy for maintenance mode */
   var maintMode=false,_mTick=0;
   function setMaint(on){maintMode=on;var m=document.getElementById('rkMaint');if(m)m.hidden=!on;var f=document.getElementById('rkFeed'),t=document.getElementById('rkTerm'),o2=document.getElementById('rkOffline');if(f)f.style.display=on?'none':'';if(t)t.style.display=on?'none':'';if(on&&o2)o2.hidden=true;} // "Update ongoing" state — collector/VPS feed down; self-heals when data returns
-  function poll(){if(document.hidden)return;if(maintMode){_mTick++;if(_mTick%8!==0)return;}fetch('/api/v1/feed?min=1000&limit=80').then(function(r){return r.ok?r.json():null;}).then(function(j){
+  function poll(){if(document.hidden)return;if(maintMode){_mTick++;if(_mTick%8!==0)return;}fetch('/api/v1/feed?min=0&limit=200').then(function(r){return r.ok?r.json():null;}).then(function(j){
     if(!j||!Array.isArray(j.events)){offFails++;if(offFails>=2)setMaint(true);else if(offFails>=3)setOffline(true);return;}
     offFails=0;setOffline(false);if(maintMode)setMaint(false);
     var added=false,fresh=[];
@@ -763,12 +763,12 @@
   var rkP=document.getElementById('rkPause');
   if(rkP)rkP.addEventListener('click',function(){paused=!paused;rkP.classList.toggle('on',paused);rkP.setAttribute('aria-pressed',paused?'true':'false');rkP.textContent=paused?'▶ Live':'⏸ Pause';if(!paused){render();try{deskRenderAll();}catch(_e){}}});
   try{matchMedia('(min-width:861px)').addEventListener('change',function(){render();try{deskRenderAll();}catch(_e){}});}catch(_e){} // breakpoint cross → hand the stream to the other renderer
-  if(REKT_MAINT){setMaint(true);}else{poll();setInterval(poll,4000);}
+  if(REKT_MAINT){setMaint(true);}else{poll();setInterval(poll,2500);}
   // backfill TODAY (UTC) from the collector's history so the terminal doesn't start from zero on page open —
   // the live poll only carries the last ~80 events; this seeds the day's aggregates (venue split, size histogram,
   // biggest hit, source chips) + fills the tape. One 60s-edge-cached pull shared by all visitors.
   (function backfill(){if(REKT_MAINT)return;var mid=new Date();mid.setUTCHours(0,0,0,0);
-    fetch('/api/v1/feed?min=1000&limit=3000&since='+mid.getTime()).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
+    fetch('/api/v1/feed?min=0&limit=3000&since='+mid.getTime()).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
       if(!j||!Array.isArray(j.events)||!j.events.length)return;
       j.events.forEach(function(e){if(!validSym(e.symbol))return;var k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;if(!seen[k]){seen[k]=1;all.push(e);try{deskAgg(e);}catch(_e){}}});
       all.sort(function(a,b){return b.ts-a.ts;});if(all.length>200)all=all.slice(0,200);
@@ -829,7 +829,7 @@
     var cas=document.getElementById('rktCascade');if(cas){var on=c90>=2000000||n90>=25;cas.hidden=!on;if(on){var cv=document.getElementById('rktCasV');if(cv)cv.textContent='$'+money(c90);}}
     var rec=document.getElementById('rktRec');if(rec&&sessBig){var lg=sessBig.side==='long_liquidated';
       rec.innerHTML='<span class="amt" style="color:'+(lg?'#ff8a80':'#41e3a3')+'">$'+money(sessBig.notional)+'</span><span class="sub">'+esc(sessBig.symbol)+' '+(lg?'LONG':'SHORT')+' liquidated @ $'+px(sessBig.price)+'<br>'+esc(String(sessBig.exchange).toUpperCase())+' · '+ago(sessBig.ts)+' ago</span>';}
-    var ex=document.getElementById('rktEx');if(ex){var ks=Object.keys(sessEx).sort(function(x,y){return sessEx[y]-sessEx[x];}).slice(0,5);var mx=sessEx[ks[0]]||1;
+    var ex=document.getElementById('rktEx');if(ex){var ks=Object.keys(sessEx).sort(function(x,y){return sessEx[y]-sessEx[x];}).slice(0,7);var mx=sessEx[ks[0]]||1;
       ex.innerHTML=ks.length?ks.map(function(k){return '<div class="mr"><span>'+esc(k)+'</span><i class="mb" style="width:'+Math.max(4,Math.round(sessEx[k]/mx*100))+'%"></i><span>$'+money(sessEx[k])+'</span></div>';}).join(''):'—';}
     var hs=document.getElementById('rktHist');if(hs){var lbl=['&lt;$10K','$10–100K','$100K–1M','&gt;$1M'],mx2=Math.max.apply(null,sessB.concat([1]));
       hs.innerHTML=lbl.map(function(l,i){return '<div class="mr"><span>'+l+'</span><i class="mb" style="width:'+Math.max(3,Math.round(sessB[i]/mx2*100))+'%"></i><span>'+sessB[i]+'</span></div>';}).join('');}

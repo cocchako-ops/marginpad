@@ -1847,7 +1847,7 @@ async function handleCollectorProxy(url, request, env) {
   // Edge-cache TTL per path: /recent aggregate is slow-moving (45s); the live /feed gets a tiny 3s cache so a
   // crowd of rekt pollers (every ~4s each) collapses to one collector fetch per 3s instead of N — protects the VPS.
   const p = url.pathname;
-  const ttl = p.endsWith('/recent') ? 45 : p.endsWith('/screener-extra') ? 120 : p.endsWith('/feed') ? (url.searchParams.get('since') ? 60 : 3) : p.endsWith('/live') ? 4 : p.endsWith('/clusters') ? 30 : 5; // a since= backfill is a big historical pull — cache it a full minute so page loads share one collector hit. /live+/clusters got TTLs 2026-07-24 (public liq API scale: they were 0 = every request hit the droplet); default 5s floor for anything else
+  const ttl = p.endsWith('/recent') ? 45 : p.endsWith('/screener-extra') ? 120 : p.endsWith('/feed') ? (url.searchParams.get('since') ? 60 : 2) : p.endsWith('/live') ? 4 : p.endsWith('/clusters') ? 30 : 5; // a since= backfill is a big historical pull — cache it a full minute so page loads share one collector hit. /live+/clusters got TTLs 2026-07-24 (public liq API scale: they were 0 = every request hit the droplet); default 5s floor for anything else
   try {
     const r = await fetch(base + p + url.search, {
       headers: { 'x-api-key': request.headers.get('x-api-key') || '' },
@@ -9924,6 +9924,18 @@ export class UserStore {
           const margin = +e.margin, pnl = +e.pnl, lev = +e.lev || 0;
           let roe = (margin > 0 && isFinite(pnl)) ? pnl / margin * 100 : NaN;
           if (isFinite(roe)) roe = Math.max(-100, Math.min(roe, 1000000)); // clamp absurd margins/pnl like the legacy path
+          // ECONOMIC SANITY (2026-07-25, the "Tiger90 1,000,000% ROE" incident): until SRV_LB_START arms, client-journal
+          // trades are trusted — but ROE physically cannot exceed price-move × leverage. Recompute from entry/exit and
+          // drop anything above it (edited-localStorage pnl) or riding an impossible move (corrupted/cross-venue price).
+          if (isFinite(roe) && roe > 0) {
+            const _en = +e.entry, _ex = +e.exit, _dir = e.side === 'short' ? -1 : 1;
+            if (isFinite(_en) && _en > 0 && isFinite(_ex) && _ex > 0) {
+              const _mv = (_ex - _en) / _en * _dir;
+              if (roe > _mv * Math.max(1, lev || 1) * 100 * 1.1 + 10) continue; // claims more than the move × lev allows → fabricated
+              if (_mv > 4) continue; // a >+400% move inside one paper trade = feed glitch, not a market
+            } else if (roe > 10000) continue; // no entry/exit to verify against → unverifiable moonshots don't rank
+          }
+          if (margin < 1) continue; // dust-margin division tricks
           const realMove = (lev > 0 && isFinite(roe)) ? (roe / lev) >= WR_MIN_MOVE : false; // the win must reflect a ≥0.2% real price move
           // win-rate board input: losses always count; from v2 a win only counts at ≥ +5% ROE AND a real ≥0.2% move (sub-threshold = neither)
           if (v2) { if (e.status === 'loss') lWk++; else if (isFinite(roe) && roe >= WR_MIN_WIN_ROE && realMove) wWk++; }
