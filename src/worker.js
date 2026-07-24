@@ -162,7 +162,7 @@ async function screenerKvWarm(env) { // */10 cron: keep the scr:cache6 floor fre
 // model incrementally on the server (state in KV), so pools accumulate for days/weeks, get consumed exactly once
 // when price trades through, and every visitor sees the same map. Client keeps its local build as fallback.
 const HM_COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB', 'ADA', 'LINK', 'AVAX', 'LTC'];
-const HM_LEVS = [[10, 0.34], [25, 0.30], [50, 0.21], [100, 0.15]];
+const HM_LEVS = [[2, 0.08], [3, 0.10], [5, 0.16], [10, 0.26], [25, 0.20], [50, 0.12], [100, 0.08]]; // 2x/3x/5x rungs added 2026-07-25 — without them the deepest pool was only -10% from price (owner: 'nothing below 55k')
 async function heatPoolsCron(env) {
   if (!env || !env.STATS) return;
   for (const sym of HM_COINS) {
@@ -189,12 +189,12 @@ async function heatPoolsCron(env) {
       if (!processed && st.pubAt && Date.now() - st.pubAt < 3600000) continue; // nothing new + fresh pub → skip writes
       // prune: keep bins within ±30% of price, cap to the 400 strongest
       const ent = [];
-      for (const k in alive) { const pr = (+k + 0.5) * binH; if (Math.abs(pr - px) / px > 0.30) { delete alive[k]; continue; } ent.push([k, alive[k]]); }
-      if (ent.length > 400) { ent.sort((a, b) => b[1].w - a[1].w); for (let i = 400; i < ent.length; i++) delete alive[ent[i][0]]; }
+      for (const k in alive) { const pr = (+k + 0.5) * binH; if (Math.abs(pr - px) / px > 0.55) { delete alive[k]; continue; } ent.push([k, alive[k]]); } // ±55% keeps the 2x pools (liq at -49.75%)
+      if (ent.length > 650) { ent.sort((a, b) => b[1].w - a[1].w); for (let i = 650; i < ent.length; i++) delete alive[ent[i][0]]; }
       st.pubAt = Date.now();
       if (swept.length) { try { let ring = JSON.parse(await env.STATS.get('hmp:swp:' + sym) || '[]'); ring = swept.concat(ring).slice(0, 30); await env.STATS.put('hmp:swp:' + sym, JSON.stringify(ring), { expirationTtl: 7 * 86400 }); } catch (e) {} }
       await env.STATS.put('hmp:st:' + sym, JSON.stringify(st), { expirationTtl: 14 * 86400 });
-      const pub = ent.slice(0, 400).map(([k, a]) => ({ p: Math.round(((+k + 0.5) * binH) * 1e6) / 1e6, w: Math.round(a.w), long: a.long ? 1 : 0, t0: a.t0, lev: a.lev }));
+      const pub = ent.slice(0, 650).map(([k, a]) => ({ p: Math.round(((+k + 0.5) * binH) * 1e6) / 1e6, w: Math.round(a.w), long: a.long ? 1 : 0, t0: a.t0, lev: a.lev }));
       await env.STATS.put('hmp:pub:' + sym, JSON.stringify({ t: Date.now(), price: px, binH: binH, alive: pub }), { expirationTtl: 86400 });
       await new Promise(r => setTimeout(r, 80));
     } catch (e) {}
@@ -7753,7 +7753,7 @@ export default {
       for (const tn of Object.keys(src)) { const a = src[tn], b2 = res.counts ? res.counts[tn] : null; tables[tn] = { dump: a, restored: b2, match: a === b2 }; if (a !== b2) allOk = false; }
       return new Response(JSON.stringify({ ok: allOk, backupAt: dump.at, ageHours: dump.at ? Math.round((Date.now() - dump.at) / 3600000 * 10) / 10 : null, store: env.BACKUP ? 'r2' : 'kv', tables }, null, 1), { headers: jh });
     }
-    if (url.pathname === '/api/admin/heatpools' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { await heatPoolsCron(env); return J({ ok: true }); } // manual model run (first seed / debugging)
+    if (url.pathname === '/api/admin/heatpools' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { if (url.searchParams.get('reset')) { for (const sy of HM_COINS) { try { await env.STATS.delete('hmp:st:' + sy); } catch (e) {} } } await heatPoolsCron(env); return J({ ok: true, reset: !!url.searchParams.get('reset') }); } // manual model run; ?reset=1 wipes state so the full kline window re-accumulates (e.g. after a ladder change)
     if (url.pathname === '/api/admin/mktestuser' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // E2E suites: ensure an 'e2e-' users row exists (DO enforces the prefix)
       return J(await usersDO(env, '/mktestuser', { uid: url.searchParams.get('uid') || '' }));
     }

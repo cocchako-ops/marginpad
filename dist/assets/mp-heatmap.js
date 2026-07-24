@@ -6,7 +6,7 @@
    Desktop: the section goes full-bleed (chartspace-style) with a viewport-tall canvas. */
 (function () {
   if (window.mpHeatmap) return;
-  var MMR = 0.005, LEVS = [10, 25, 50, 100], LEVW = { 10: 0.34, 25: 0.30, 50: 0.21, 100: 0.15 };
+  var MMR = 0.005, LEVS = [2, 3, 5, 10, 25, 50, 100], LEVW = { 2: 0.08, 3: 0.10, 5: 0.16, 10: 0.26, 25: 0.20, 50: 0.12, 100: 0.08 };
   var COINS = ['BTC', 'ETH', 'SOL', 'XRP', 'DOGE', 'BNB', 'ADA', 'LINK', 'AVAX', 'LTC'];
   var WINS = { '4H': { iv: '5', mins: 240 }, '12H': { iv: '15', mins: 720 }, '1D': { iv: '15', mins: 1440 }, '3D': { iv: '60', mins: 4320 }, '7D': { iv: '240', mins: 10080 } };
   var BINS = 200;
@@ -55,7 +55,7 @@
     if (!bars || bars.length < 5) return { alive: [], pMin: 0, pMax: 1, binH: 0 };
     var pMin = 1 / 0, pMax = -1 / 0, i, b;
     for (i = 0; i < bars.length; i++) { b = bars[i]; if (b.low < pMin) pMin = b.low; if (b.high > pMax) pMax = b.high; }
-    var pad = (pMax - pMin) * 0.35; pMin -= pad; pMax += pad;
+    var pad = (pMax - pMin) * 0.7; pMin -= pad; pMax += pad; // wide enough for the 2x rungs (liq ~50% away)
     var binH = (pMax - pMin) / BINS;
     var binOf = function (p) { var x = Math.floor((p - pMin) / binH); return x < 0 ? 0 : x >= BINS ? BINS - 1 : x; };
     var alive = {};
