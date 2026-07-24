@@ -1811,36 +1811,44 @@ async function handleKlines(url) {
   // Bybit is the fallback (works from CF but only goes back to ~2021 and returns nothing for old `end`).
   const gMap = { '1': '1m', '5': '5m', '15': '15m', '60': '1h', '240': '4h', '1440': '1d', '10080': '7d' };
   const byMap = { '1': '1', '5': '5', '15': '15', '60': '60', '240': '240', '1440': 'D', '10080': 'W' };
-  let out = null;
-  // Bybit USDT-perp (linear) FIRST — SAME market as the live WS feed, so the chart candles, the form's live price and the position lines all agree (spot vs perp mismatch was making them disagree).
+  let out = null, bestOut = null, bestFlat = 1;
+  // zero-range (h==l) candles = an illiquid feed padding no-trade periods with flat bars — they render as
+  // invisible 1px dashes ("candles missing" on low-cap alts, e.g. HBAR when Bybit's CF egress is rate-limited
+  // and it falls to Gate SPOT). Prefer the source with the fewest, so we never serve a flat-looking chart.
+  const _flatRatio = (bars) => { if (!bars || bars.length < 40) return 1; let n = 0, f = 0; for (let i = bars.length - 1; i >= Math.max(0, bars.length - 400); i--) { n++; if (+bars[i].high === +bars[i].low) f++; } return n ? f / n : 1; };
+  const _pick = (cand) => { if (!cand || !cand.length) return; const fr = _flatRatio(cand); if (fr <= 0.03) { out = cand; } else if (fr < bestFlat) { bestFlat = fr; bestOut = cand; } };
+  // 1) Bybit USDT-perp (linear) FIRST — SAME market as the live WS feed, so the chart candles, the form's live
+  // price and the position lines all agree (spot vs perp mismatch made them disagree). Primary for liquid coins.
   try {
     const r = await fetch('https://api.bybit.com/v5/market/kline?category=linear&symbol=' + pair + '&interval=' + (byMap[iv] || '60') + '&limit=1000' + (hasEnd ? '&end=' + end : ''), { cf: { cacheTtl: hasEnd ? 600 : 8 } });
-    if (r.ok) { const d = await r.json(); const list = d && d.result && d.result.list; if (list && list.length) out = list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4], vol: +k[5] })).sort((a, b) => a.time - b.time); }
+    if (r.ok) { const d = await r.json(); const list = d && d.result && d.result.list; if (list && list.length) _pick(list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4], vol: +k[5] })).sort((a, b) => a.time - b.time)); }
   } catch (e) {}
-  // Gate.io (spot) — fallback: deep history + coins not on Bybit linear
+  // 2) OKX USDT-perp — clean, liquid data for the alts Bybit's CF egress rate-limits (HBAR etc). Moved AHEAD of
+  // Gate spot (thin spot books leave flat no-trade candles). Only 300 bars, but 300 real > 1000 flat; loadMore extends.
+  if (!out) try {
+    const okMap = { '1': '1m', '5': '5m', '15': '15m', '60': '1H', '240': '4H', '1440': '1D', '10080': '1W' };
+    const r = await fetch('https://www.okx.com/api/v5/market/candles?instId=' + sym + '-USDT-SWAP&bar=' + (okMap[iv] || '1H') + '&limit=300' + (hasEnd ? '&after=' + end : ''), { cf: { cacheTtl: hasEnd ? 600 : 12 } });
+    if (r.ok) { const d = await r.json(); const list = d && d.data; if (list && list.length) _pick(list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4], vol: +k[5] })).filter(b => isFinite(b.time) && b.open > 0).sort((a, b) => a.time - b.time)); }
+  } catch (e) {}
+  // 3) Gate.io (spot) — deep history + coins not on Bybit/OKX perp
   if (!out) try {
     const g = 'https://api.gateio.ws/api/v4/spot/candlesticks?currency_pair=' + sym + '_USDT&interval=' + (gMap[iv] || '1h') + '&limit=1000' + (hasEnd ? '&to=' + Math.floor(end / 1000) : '');
     const r = await fetch(g, { cf: { cacheTtl: hasEnd ? 600 : 20 } });
     if (r.ok) { const d = await r.json(); // Gate row: [t, quoteVol, close, high, low, open, baseVol, closed]
-      if (Array.isArray(d) && d.length) out = d.map(k => ({ time: +k[0], open: +k[5], high: +k[3], low: +k[4], close: +k[2], vol: +k[6] })).sort((a, b) => a.time - b.time); }
+      if (Array.isArray(d) && d.length) _pick(d.map(k => ({ time: +k[0], open: +k[5], high: +k[3], low: +k[4], close: +k[2], vol: +k[6] })).sort((a, b) => a.time - b.time)); }
   } catch (e) {}
-  // Gate.io USDT-PERP futures — candles for metals/indices/forex (these live on Gate futures, not spot). Row = {t,o,h,l,c,v}
+  // 4) Gate.io USDT-PERP futures — candles for metals/indices/forex (these live on Gate futures, not spot). Row = {t,o,h,l,c,v}
   if (!out) try {
     const g = 'https://api.gateio.ws/api/v4/futures/usdt/candlesticks?contract=' + sym + '_USDT&interval=' + (gMap[iv] || '1h') + '&limit=1000' + (hasEnd ? '&to=' + Math.floor(end / 1000) : '');
     const r = await fetch(g, { cf: { cacheTtl: hasEnd ? 600 : 20 } });
-    if (r.ok) { const d = await r.json(); if (Array.isArray(d) && d.length) out = d.map(k => ({ time: +k.t, open: +k.o, high: +k.h, low: +k.l, close: +k.c, vol: +k.v })).sort((a, b) => a.time - b.time); }
+    if (r.ok) { const d = await r.json(); if (Array.isArray(d) && d.length) _pick(d.map(k => ({ time: +k.t, open: +k.o, high: +k.h, low: +k.l, close: +k.c, vol: +k.v })).sort((a, b) => a.time - b.time)); }
   } catch (e) {}
-  // Bybit spot — fallback
+  // 5) Bybit spot — last resort
   if (!out) try {
     const r = await fetch('https://api.bybit.com/v5/market/kline?category=spot&symbol=' + pair + '&interval=' + (byMap[iv] || '60') + '&limit=1000' + (hasEnd ? '&end=' + end : ''), { cf: { cacheTtl: hasEnd ? 600 : 30 } });
-    if (r.ok) { const d = await r.json(); const list = d && d.result && d.result.list; if (list && list.length) out = list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4], vol: +k[5] })).sort((a, b) => a.time - b.time); }
+    if (r.ok) { const d = await r.json(); const list = d && d.result && d.result.list; if (list && list.length) _pick(list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4], vol: +k[5] })).sort((a, b) => a.time - b.time)); }
   } catch (e) {}
-  // OKX USDT-perp — last resort so tokens listed on OKX but absent from Bybit+Gate still get a chart (was a "no data" 404 → chart couldn't load)
-  if (!out) try {
-    const okMap = { '1': '1m', '5': '5m', '15': '15m', '60': '1H', '240': '4H', '1440': '1D', '10080': '1W' };
-    const r = await fetch('https://www.okx.com/api/v5/market/candles?instId=' + sym + '-USDT-SWAP&bar=' + (okMap[iv] || '1H') + '&limit=300' + (hasEnd ? '&after=' + end : ''), { cf: { cacheTtl: hasEnd ? 600 : 12 } });
-    if (r.ok) { const d = await r.json(); const list = d && d.data; if (list && list.length) out = list.map(k => ({ time: Math.floor(+k[0] / 1000), open: +k[1], high: +k[2], low: +k[3], close: +k[4], vol: +k[5] })).filter(b => isFinite(b.time) && b.open > 0).sort((a, b) => a.time - b.time); }
-  } catch (e) {}
+  if (!out) out = bestOut; // no perfectly-clean source (e.g. a metal on a closed weekend) -> the least-flat we found
   // never ship a bar with a NaN field — JSON.stringify turns NaN into null, and one null OHLC value permanently
   // poisons lightweight-charts' render loop client-side ("Value is null" crash on every frame until reload)
   if (out) out = out.filter(b => b && b.time > 0 && b.open > 0 && b.high > 0 && b.low > 0 && b.close > 0 && isFinite(b.time) && isFinite(b.open) && isFinite(b.high) && isFinite(b.low) && isFinite(b.close));
