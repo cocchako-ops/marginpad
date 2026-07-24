@@ -2235,10 +2235,30 @@ async function sweepServerPositions(env) {
   try {
     if (!env.USERS) return;
     const os = await usersDO(env, '/tradeopensyms', {});
-    const syms = (os && os.syms) || [];
-    if (!syms.length) return;
+    const allSyms = (os && os.syms) || [];
+    if (!allSyms.length) return;
+    // B5 (reconcile): round-robin coverage. The old slice(0,40) permanently STARVED any open symbol beyond the
+    // first 40 — their SL/TP/liq never fired, leaving orphaned "open" trades. A per-run KV cursor cycles through
+    // ALL open symbols so the every-minute cron covers ceil(N/CAP) runs; ≤CAP distinct symbols still sweep every run.
+    const CAP = 60;
+    let syms = allSyms;
+    if (allSyms.length > CAP) {
+      let cur = 0; try { cur = +(await env.STATS.get('sweep:cursor')) || 0; } catch (e) {}
+      if (!(cur >= 0) || cur >= allSyms.length) cur = 0;
+      syms = allSyms.slice(cur, cur + CAP);
+      if (syms.length < CAP) syms = syms.concat(allSyms.slice(0, CAP - syms.length)); // wrap so a partial tail run still fills to CAP
+      try { await env.STATS.put('sweep:cursor', String((cur + CAP) % allSyms.length), { expirationTtl: 3600 }); } catch (e) {}
+    }
+    // stale-orphan watchdog: a server trade open >7 days is almost certainly stuck (never priced, or a bug) — alert once/day
+    try {
+      if (os.oldestMs && Date.now() - os.oldestMs > 7 * 86400000) {
+        const day = new Date().toISOString().slice(0, 10);
+        if (!(await env.STATS.get('alrt:orphan:' + day))) { await env.STATS.put('alrt:orphan:' + day, '1', { expirationTtl: 172800 });
+          await tgAdmin(env, 'Server-trade reconcile: an open position is ' + Math.floor((Date.now() - os.oldestMs) / 86400000) + ' days old (' + (os.n || 0) + ' open symbols across ' + (os.owners || 0) + ' traders). Check for a stuck/orphaned trade.'); }
+      }
+    } catch (e) {}
     const prices = {};
-    for (const sym of syms.slice(0, 40)) {
+    for (const sym of syms) {
       try { const pd = await fetchPriceCached(sym); if (pd && +pd.price > 0) { const k = sym.replace(/USDT$/, ''); prices[k] = +pd.price; prices[k + 'USDT'] = +pd.price; } } catch (e) {}
       await new Promise(r => setTimeout(r, 50));
     }
@@ -9568,14 +9588,15 @@ export class UserStore {
           }
         }
       } catch (e) {}
+      let oldest = 0; // B5 reconcile: oldest still-open server trade → orphan/stale detection
       try {
         for (const r of this.rows("SELECT user_id FROM active_srv LIMIT 5000")) { // A3: only users indexed as holding open srv/bot trades
           const jn = this._loadJournal(r.user_id);
           const open = jn.filter(x => x && (x.src === 'srv' || x.src === 'bot') && x.status !== 'win' && x.status !== 'loss');
-          if (open.length) { owners++; open.forEach(x => syms.add(String(x.sym || '').toUpperCase())); }
+          if (open.length) { owners++; open.forEach(x => { syms.add(String(x.sym || '').toUpperCase()); const ots = +x.ts || 0; if (ots > 0 && (!oldest || ots < oldest)) oldest = ots; }); }
         }
       } catch (e) {}
-      return this.j({ syms: Array.from(syms).slice(0, 60), owners });
+      return this.j({ syms: Array.from(syms).slice(0, 300), owners, n: syms.size, oldestMs: oldest }); // return ALL open symbols (was capped 60) so the sweep can round-robin every one
     }
     if (path === '/tradesweepall') { // cron sweep: SL/TP/liq + 8h FUNDING for server/bot-filled trades even when nobody is looking
       const PR = b.prices || {}, RT = b.rates || null, FORCE = !!b.force, ONLY = b.onlyUid ? String(b.onlyUid) : null;
