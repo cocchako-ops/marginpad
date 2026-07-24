@@ -573,7 +573,8 @@
     if (row.length) flush(row);
     return rects;
   }
-  var MKT_CSS2 = '.hm-tmd{margin-top:12px;background:#0b0e13;border:1px solid #c2f64a55;border-radius:12px;padding:12px 14px;font:11.5px "Space Mono",monospace;position:relative;display:none}' +
+  var MKT_CSS2 = '.hm-tmw{position:relative}' +
+    '.hm-tmd{position:absolute;top:0;left:0;right:0;z-index:6;max-height:100%;overflow:auto;overscroll-behavior:contain;background:rgba(9,11,15,.97);border:1px solid #c2f64a55;border-radius:12px;padding:12px 14px;font:11.5px "Space Mono",monospace;display:none;box-shadow:0 10px 34px rgba(0,0,0,.5)}' +
     '.hm-tmd-x{position:absolute;top:8px;right:10px;background:none;border:0;color:#5c6b84;font-size:16px;cursor:pointer;font-family:inherit}.hm-tmd-x:hover{color:#fff}' +
     '.hm-tmd-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:9px}.hm-tmd-h b{font-size:15px;color:#fff}.hm-tmd-h .pxv{color:#c9d4e8}.hm-tmd-h .chg{font-size:11px}' +
     '.hm-tmd-g{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}' +
@@ -588,7 +589,10 @@
     '.hm-ct-h b{font:700 11px "Space Mono",monospace;letter-spacing:.13em;color:#c2f64a}' +
     '.hm-ct-h input{margin-left:auto;background:#10151f;border:1px solid #1c2230;border-radius:8px;color:#dbe4f5;font:11.5px "Space Mono",monospace;padding:6px 10px;width:150px;outline:none}' +
     '.hm-ct-h input:focus{border-color:#2a3550}' +
-    '.hm-ct-tw{overflow-x:auto}' +
+    '.hm-ct-tw{height:560px;overflow:auto;overscroll-behavior:contain}' +
+    '.hm-ct-hd{position:sticky;top:0;background:#0b0e13;z-index:2}' +
+    '.hm-ct-n{font:10.5px "Space Mono",monospace;color:#5c6b84}' +
+    '@media(max-width:980px){.hm-ct-tw{height:430px}}' +
     '.hm-ct-hd,.hm-ct-r{display:grid;grid-template-columns:34px 120px 118px repeat(8,minmax(76px,1fr));gap:6px;align-items:center;min-width:1000px;padding:7px 0;border-bottom:1px solid #10151f;font:11px "Space Mono",monospace}' +
     '.hm-ct-hd{color:#5c6b84;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase}' +
     '.hm-ct-hd span[data-ck]{cursor:pointer}.hm-ct-hd span[data-ck]:hover{color:#c2f64a}.hm-ct-hd span[data-ck].on{color:#c2f64a}' +
@@ -610,11 +614,13 @@
     head.appendChild(chips); host.appendChild(head);
     var grid = el('div', 'hm-mkt-grid'), left = el('div', 'hm-mkt-l'), right = el('div', 'hm-mkt-r');
     var tm = el('div', 'hm-tm'), det = el('div', 'hm-tmd'), exT = el('div', 'hm-ext'), tots = el('div', 'hm-tots'), story = el('div', 'hm-story'), t10 = el('div', 'hm-t10');
-    left.appendChild(tm); left.appendChild(det); left.appendChild(exT);
+    var tmw = el('div', 'hm-tmw'); tmw.appendChild(tm); tmw.appendChild(det);
+    left.appendChild(tmw); left.appendChild(exT);
     right.appendChild(tots); right.appendChild(story); right.appendChild(t10);
     grid.appendChild(left); grid.appendChild(right); host.appendChild(grid);
     var ct = el('div', 'hm-ct');
     var ctH = el('div', 'hm-ct-h'); ctH.appendChild(el('b', '', 'TOTAL LIQUIDATIONS BY COIN'));
+    var ctN = el('span', 'hm-ct-n', ''); ctH.appendChild(ctN);
     var ctQ = el('input', ''); ctQ.type = 'text'; ctQ.placeholder = 'Search coin'; ctH.appendChild(ctQ);
     var ctTb = el('div', 'hm-ct-tw');
     ct.appendChild(ctH); ct.appendChild(ctTb); host.appendChild(ct);
@@ -656,7 +662,7 @@
       det.querySelector('.hm-tmd-x').addEventListener('click', function () { det.style.display = 'none'; });
       var mb = det.querySelector('[data-map]');
       if (mb) mb.addEventListener('click', function () { if (S && S.setCoin) S.setCoin(sym); });
-      try { det.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+      det.scrollTop = 0;
     }
     tm.addEventListener('click', function (ev) { var c = ev.target.closest('.hm-tm-c'); if (!c) return; var sym = c.getAttribute('data-sym'); if (!sym || sym === 'Others') return; showDet(sym); });
     exT.addEventListener('click', function (ev) { var hh = ev.target.closest('span[data-k]'); if (!hh) return; var k = hh.getAttribute('data-k'); if (M.exSort.k === k) M.exSort.d = -M.exSort.d; else M.exSort = { k: k, d: -1 }; render(); });
@@ -686,14 +692,15 @@
       var h = '<div class="hm-ct-hd"><span>#</span><span>Coin</span><span>Price</span>' +
         hcell('h1l', '1h Long') + hcell('h1s', '1h Short') + hcell('h4l', '4h Long') + hcell('h4s', '4h Short') +
         hcell('h12l', '12h Long') + hcell('h12s', '12h Short') + hcell('h24l', '24h Long') + hcell('h24s', '24h Short') + '</div>';
-      rows.slice(0, 40).forEach(function (r, i) {
+      ctN.textContent = rows.length + ' coins';
+      rows.forEach(function (r, i) {
         var pr = M.px[r.sym], pxs = pr ? '$' + fpx(pr.price) : (r.px > 0 ? '$' + fpx(r.px) : '—');
         var chg = pr && pr.chg != null ? '<i style="color:' + (pr.chg >= 0 ? '#2ebd85' : '#ff6258') + '">' + (pr.chg >= 0 ? '+' : '') + (+pr.chg).toFixed(2) + '%</i>' : '';
         h += '<div class="hm-ct-r" data-sym="' + r.sym + '"><span class="rk2c">' + (i + 1) + '</span><span class="sym">' + r.sym + '</span><span class="pxc">' + pxs + chg + '</span>';
         CK.forEach(function (c) { h += '<span class="hv" style="' + tint(c, r[c]) + '">' + (r[c] > 0 ? money(r[c]) : '$0') + '</span>'; });
         h += '</div>';
       });
-      ctTb.innerHTML = h;
+      var sc0 = ctTb.scrollTop; ctTb.innerHTML = h; ctTb.scrollTop = sc0;
     }
     function render() {
       if (!M.p) return;
