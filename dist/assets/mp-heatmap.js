@@ -36,6 +36,10 @@
     '.hm-tip b{color:#fff}.hm-tip .l{color:#2ebd85}.hm-tip .s{color:#ff6258}' +
     '.hm-foot{margin-top:8px;font-size:11px;color:#5c6b84;line-height:1.55}' +
     '.hm-foot b{color:#8fa3c4;font-weight:700}.hm-foot .l{color:#2ebd85}.hm-foot .s{color:#ff6258}' +
+    '.hm-selbox{position:absolute;top:10px;left:10px;z-index:6;background:rgba(10,12,16,.96);border:1px solid #c2f64a;border-radius:9px;padding:8px 30px 8px 11px;font:11.5px "Space Mono",monospace;color:#dbe4f5;line-height:1.55;max-width:340px;display:none}' +
+    '.hm-selbox b{color:#fff}.hm-selbox .l{color:#2ebd85}.hm-selbox .s{color:#ff6258}.hm-selbox .k{color:#c2f64a;font-weight:800;font-size:9.5px;letter-spacing:.08em;display:block;margin-bottom:2px}' +
+    '.hm-selx{position:absolute;top:4px;right:6px;background:none;border:0;color:#5c6b84;font-size:15px;cursor:pointer;font-family:inherit;padding:2px}.hm-selx:hover{color:#fff}' +
+    '@media(max-width:980px){.hm-selbox{max-width:78%;font-size:10.5px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
     '@media(max-width:980px){.hm-targets{order:4;background:#0d1014;border:1px solid #1e242e;border-radius:10px;padding:10px 12px;margin:8px 0 0}.hm-tg-lab{display:none}.hm-tg-h{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;color:#c2f64a;margin-bottom:6px}.hm-tg-exp{display:block;font-size:10.5px;color:#5c6b84;line-height:1.5;margin-top:7px}.hm-tg-row{display:block;margin:3px 0}.hm-tg-row>span{display:inline-block;margin:2px 8px 2px 0}.hm-foot{order:5}}' +
     '@media(max-width:980px){#heatmap.hm-full{width:auto!important;margin-left:0!important}.hm-wrap{padding:8px 8px 7px}.hm-bar{gap:4px;margin-bottom:6px}.hm-sel{height:27px;padding:2px 20px 2px 8px;font-size:11.5px;border-radius:7px;background-position:right 6px center}.hm-seg{height:27px;border-radius:7px}.hm-seg button{padding:0 8px;font-size:10.5px}.hm-btn{width:27px;height:27px;border-radius:7px}.hm-btn svg{width:13px;height:13px}.hm-px{font-size:12px}.hm-px small{font-size:9.5px;margin-left:3px}.hm-stage{height:52vh;min-height:320px}.hm-prof{width:64px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
@@ -156,6 +160,23 @@
       ctx.fillStyle = 'rgba(7,9,12,.85)'; ctx.fillRect(W - tw - 18, ly - 9, tw + 12, 16);
       ctx.fillStyle = tp.long ? '#7ee2b8' : '#ffa39b'; ctx.textAlign = 'left';
       ctx.fillText(txt, W - tw - 12, ly + 3);
+    }
+    if (S.sel) {
+      if (S.sel.type === 'pool') { var sp = S.sel.ref;
+        if (sp.price >= pLo && sp.price <= pHi) {
+          var shh = Math.max(3, H * (P.binH / (pHi - pLo)) * 1.15), sy0 = Y(sp.price) - shh / 2, sx0 = Math.max(0, X(sp.t0));
+          ctx.fillStyle = sp.long ? 'rgba(46,189,133,.95)' : 'rgba(255,98,88,.95)'; ctx.fillRect(sx0, sy0, W - sx0, shh);
+          ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.4; ctx.strokeRect(sx0 + 0.5, sy0 - 2, W - sx0 - 1, shh + 4);
+        }
+      } else { var se = S.sel.ref, sts = se.ts / 1000;
+        if (sts >= v.t0 && sts <= v.t1 && se.price >= pLo && se.price <= pHi) {
+          var sr = Math.max(4, Math.min(12, Math.log10(Math.max(10, se.notional)) * 1.9 - 1));
+          ctx.beginPath(); ctx.arc(X(sts), Y(se.price), sr + 4, 0, 6.2832);
+          ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.6; ctx.stroke();
+          ctx.beginPath(); ctx.arc(X(sts), Y(se.price), sr + 8, 0, 6.2832);
+          ctx.strokeStyle = 'rgba(194,246,74,.55)'; ctx.lineWidth = 1; ctx.stroke();
+        }
+      }
     }
     // live price
     if (S.price > 0 && S.price > pLo && S.price < pHi) {
@@ -282,7 +303,7 @@
     cv.addEventListener('mousemove', function (ev) {
       if (!S.X) return;
       var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
-      if (S.drag) { var dt = (S.drag.x - mx) / r.width * (S.drag.t1 - S.drag.t0); S.view.t0 = S.drag.t0 + dt; S.view.t1 = S.drag.t1 + dt;
+      if (S.drag) { if (Math.abs(S.drag.x - mx) + Math.abs(my - S.drag.y) > 5) S._dragged = 1; var dt = (S.drag.x - mx) / r.width * (S.drag.t1 - S.drag.t0); S.view.t0 = S.drag.t0 + dt; S.view.t1 = S.drag.t1 + dt;
         var dp = (my - S.drag.y) / r.height * (S.drag.yHi - S.drag.yLo); S.yView = { lo: S.drag.yLo + dp, hi: S.drag.yHi + dp }; sched(); return; }
       var p = S.yHi - my / r.height * (S.yHi - S.yLo);
       var P = S.pools, best = null, i;
@@ -300,6 +321,35 @@
       tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
     });
     cv.addEventListener('mouseleave', function () { tip.style.display = 'none'; S.drag = null; });
+    function ago2(t) { var m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + 'm ago' : m < 2880 ? Math.round(m / 60) + 'h ago' : Math.round(m / 1440) + 'd ago'; }
+    function showSel() {
+      var el2 = S.selBox; if (!el2) return;
+      if (!S.sel) { el2.style.display = 'none'; return; }
+      var h = '<span class="k">SELECTED</span>';
+      if (S.sel.type === 'ev') { var e = S.sel.ref, lg = e.side === 'long_liquidated';
+        h += '<span class="' + (lg ? 'l' : 's') + '">' + (lg ? 'LONG' : 'SHORT') + ' liquidation</span> <b>' + money(e.notional) + '</b> @ <b>' + fpx(e.price) + '</b><br>' + String(e.exchange).toUpperCase() + ' · ' + ago2(e.ts);
+      } else { var pl2 = S.sel.ref;
+        h += '<span class="' + (pl2.long ? 'l' : 's') + '">' + (pl2.long ? 'long' : 'short') + ' liquidation pool</span> <b>~' + money(pl2.w) + '</b> @ <b>' + fpx(pl2.price) + '</b><br>' + (pl2.long ? 'longs get liquidated here' : 'shorts get liquidated here') + ' · building since ' + ago2(pl2.t0 * 1000) + (S.price > 0 ? ' · ' + (((pl2.price - S.price) / S.price * 100) >= 0 ? '+' : '') + ((pl2.price - S.price) / S.price * 100).toFixed(1) + '% from price' : '');
+      }
+      el2.innerHTML = h + '<button type="button" class="hm-selx" title="Clear selection">×</button>';
+      el2.style.display = 'block';
+      el2.querySelector('.hm-selx').addEventListener('click', function (ev2) { ev2.stopPropagation(); S.sel = null; showSel(); sched(); });
+    }
+    S.showSel = showSel;
+    cv.addEventListener('click', function (ev) {
+      if (S._dragged) { S._dragged = 0; return; }
+      if (!S.X) return;
+      var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
+      var p = S.yHi - my / r.height * (S.yHi - S.yLo);
+      var bev = null, i;
+      for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 14 && (!bev || dd < bev.d)) bev = { d: dd, e: e }; }
+      if (bev) { S.sel = { type: 'ev', ref: bev.e }; showSel(); sched(); return; }
+      var P = S.pools, best = null, t = S.view.t0 + mx / r.width * (S.view.t1 - S.view.t0);
+      for (i = 0; i < P.alive.length; i++) { var s2 = P.alive[i]; if (t < s2.t0) continue; var d2 = Math.abs(s2.price - p); if (d2 < P.binH * 2.2 && (!best || s2.w > best.w)) best = s2; }
+      if (best) { S.sel = { type: 'pool', ref: best }; showSel(); sched(); return; }
+      if (S.sel) { S.sel = null; showSel(); sched(); }
+    });
+
     cv.addEventListener('mousedown', function (ev) { var r = cv.getBoundingClientRect(); S.drag = { x: ev.clientX - r.left, y: ev.clientY - r.top, t0: S.view.t0, t1: S.view.t1, yLo: S.yLo, yHi: S.yHi }; });
     window.addEventListener('mouseup', function () { if (S) S.drag = null; });
     cv.addEventListener('wheel', function (ev) {
@@ -390,16 +440,17 @@
     var tgEl = el('div', 'hm-targets'); tgEl.style.cssText = 'display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11.5px "Space Mono",monospace;color:#8fa3c4;margin:0 0 8px;min-height:18px';
     var stage = el('div', 'hm-stage');
     var cv = el('canvas', 'hm-cv'), pf = el('canvas', 'hm-prof'), tip = el('div', 'hm-tip'), loadEl = el('div', 'hm-load', 'Building liquidation map…');
-    stage.appendChild(cv); stage.appendChild(pf); stage.appendChild(tip); stage.appendChild(loadEl);
+    var selBox = el('div', 'hm-selbox');
+    stage.appendChild(cv); stage.appendChild(pf); stage.appendChild(tip); stage.appendChild(loadEl); stage.appendChild(selBox);
     var foot = el('div', 'hm-foot', '<b>How to read it:</b> bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices are stacking up there — price tends to sweep the brightest ones. Bands disappear the moment price trades through them. Drag to pan (any direction) · scroll = zoom time · Shift+scroll = zoom price · double-click resets.<br><b>Data:</b> real liquidations streamed live from <b>Binance · Bybit · OKX · Gate · HTX · dYdX · BitMEX · Deribit · Bitfinex</b> — that covers roughly <b>80%+</b> of the market&rsquo;s liquidation flow, not 100% of every venue, but the ones that move the market. The bands are our own estimate computed from live price action (10–100&times; entries at each close).');
     wrap.appendChild(bar); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(foot);
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
 
-    S = { coin: coin, win: '1D', sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
+    S = { coin: coin, win: '1D', sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
     wire();
-    selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; S.view = null; S.yView = null; S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
-    selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; S.view = null; S.yView = null; loadAll(true); });
+    selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
+    selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); loadAll(true); });
     seg.addEventListener('click', function (ev) { var t = ev.target.closest('button'); if (!t || !S) return; S.sideF = t.getAttribute('data-s'); seg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === t); }); updHead(); sched(); });
     function shot() { var out = document.createElement('canvas'); var sc = window.devicePixelRatio || 1; out.width = cv.width + pf.width; out.height = cv.height + Math.round(34 * sc); var ox = out.getContext('2d'); ox.fillStyle = '#07090c'; ox.fillRect(0, 0, out.width, out.height); ox.drawImage(cv, 0, 0); ox.drawImage(pf, cv.width, 0); ox.fillStyle = '#c2f64a'; ox.font = '700 ' + Math.round(13 * sc) + 'px "Space Mono",monospace'; ox.textAlign = 'left'; ox.fillText(S.coin + ' LIQUIDATION MAP', Math.round(10 * sc), out.height - Math.round(11 * sc)); ox.fillStyle = '#8fa3c4'; ox.textAlign = 'right'; ox.fillText('marginpad.io/heatmap', out.width - Math.round(10 * sc), out.height - Math.round(11 * sc)); return out; }
     dl.addEventListener('click', function () { try { var a = document.createElement('a'); a.download = 'marginpad-liqmap-' + S.coin + '.png'; a.href = shot().toDataURL('image/png'); a.click(); } catch (e) {} });
