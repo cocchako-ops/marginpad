@@ -257,10 +257,34 @@
       S.view.t0 = pivot - fx * ns; S.view.t1 = pivot + (1 - fx) * ns; sched();
     }, { passive: false });
     cv.addEventListener('dblclick', function () { if (S.bars.length) { var w = WINS[S.win]; S.view = { t0: Date.now() / 1000 - w.mins * 60, t1: S.bars[S.bars.length - 1].time + 300 }; sched(); } });
-    var tX = null;
-    cv.addEventListener('touchstart', function (ev) { if (ev.touches.length === 1) { var r = cv.getBoundingClientRect(); tX = { x: ev.touches[0].clientX - r.left, t0: S.view.t0, t1: S.view.t1 }; } }, { passive: true });
-    cv.addEventListener('touchmove', function (ev) { if (tX && ev.touches.length === 1) { var r = cv.getBoundingClientRect(); var dt = (tX.x - (ev.touches[0].clientX - r.left)) / r.width * (tX.t1 - tX.t0); S.view.t0 = tX.t0 + dt; S.view.t1 = tX.t1 + dt; sched(); } }, { passive: true });
-    cv.addEventListener('touchend', function () { tX = null; });
+    // touch: 1 finger = pan, 2 fingers = pinch zoom (around the midpoint). passive:false so the page
+    // doesn't scroll/rubber-band underneath while the user works the chart.
+    var tX = null, tP = null;
+    function tDist(ev) { var a = ev.touches[0], b = ev.touches[1]; return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY) || 1; }
+    cv.addEventListener('touchstart', function (ev) {
+      var r = cv.getBoundingClientRect();
+      if (ev.touches.length === 2) { tX = null; tP = { d: tDist(ev), t0: S.view.t0, t1: S.view.t1, fx: ((ev.touches[0].clientX + ev.touches[1].clientX) / 2 - r.left) / r.width }; }
+      else if (ev.touches.length === 1) { tP = null; tX = { x: ev.touches[0].clientX - r.left, t0: S.view.t0, t1: S.view.t1 }; }
+    }, { passive: true });
+    cv.addEventListener('touchmove', function (ev) {
+      var r = cv.getBoundingClientRect();
+      if (tP && ev.touches.length === 2) {
+        ev.preventDefault();
+        var span0 = tP.t1 - tP.t0;
+        var ns = Math.max(600, Math.min(WINS[S.win].mins * 60 * 2.2, span0 * (tP.d / tDist(ev))));
+        var pivot = tP.t0 + tP.fx * span0;
+        S.view.t0 = pivot - tP.fx * ns; S.view.t1 = pivot + (1 - tP.fx) * ns; sched();
+      } else if (tX && ev.touches.length === 1) {
+        ev.preventDefault();
+        var dt = (tX.x - (ev.touches[0].clientX - r.left)) / r.width * (tX.t1 - tX.t0);
+        S.view.t0 = tX.t0 + dt; S.view.t1 = tX.t1 + dt; sched();
+      }
+    }, { passive: false });
+    cv.addEventListener('touchend', function (ev) {
+      if (ev.touches.length < 2) tP = null;
+      if (ev.touches.length === 1) { var r = cv.getBoundingClientRect(); tX = { x: ev.touches[0].clientX - r.left, t0: S.view.t0, t1: S.view.t1 }; }
+      else if (!ev.touches.length) tX = null;
+    });
   }
 
   function mount(section, coin) {
