@@ -39,6 +39,11 @@
     '.hm-foot b{color:#8fa3c4;font-weight:700}.hm-foot .l{color:#2ebd85}.hm-foot .s{color:#ff6258}' +
     '.hm-selbox{position:absolute;top:10px;left:10px;z-index:6;background:rgba(10,12,16,.96);border:1px solid #c2f64a;border-radius:9px;padding:8px 30px 8px 11px;font:11.5px "Space Mono",monospace;color:#dbe4f5;line-height:1.55;max-width:340px;display:none}' +
     '.hm-selbox b{color:#fff}.hm-selbox .l{color:#2ebd85}.hm-selbox .s{color:#ff6258}.hm-selbox .k{color:#c2f64a;font-weight:800;font-size:9.5px;letter-spacing:.08em;display:block;margin-bottom:2px}' +
+    '.hm-cl-h{display:block;color:#c9d4e8;margin-bottom:4px}' +
+    '.hm-cl-list{max-height:186px;overflow-y:auto;overscroll-behavior:contain;margin:2px -4px 0 0;padding-right:4px}' +
+    '.hm-cl-it{display:flex;gap:7px;align-items:baseline;padding:3.5px 4px;border-radius:6px;cursor:pointer;white-space:nowrap}' +
+    '.hm-cl-it:hover{background:rgba(255,255,255,.07)}' +
+    '.hm-cl-it .ag{color:#5c6b84;margin-left:auto;font-size:10px}' +
     '.hm-selx{position:absolute;top:4px;right:6px;background:none;border:0;color:#5c6b84;font-size:15px;cursor:pointer;font-family:inherit;padding:2px}.hm-selx:hover{color:#fff}' +
     '@media(max-width:980px){.hm-selbox{max-width:78%;font-size:10.5px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
@@ -166,7 +171,14 @@
       ctx.fillText(txt, W - tw - 12, ly + 3);
     }
     if (S.sel) {
-      if (S.sel.type === 'pool') { var sp = S.sel.ref;
+      if (S.sel.type === 'clu') {
+        var crefs = S.sel.refs || [];
+        for (var cri = 0; cri < crefs.length; cri++) { var ce = crefs[cri], cts = ce.ts / 1000;
+          if (cts < v.t0 || cts > v.t1 || ce.price < pLo || ce.price > pHi) continue;
+          ctx.beginPath(); ctx.arc(X(cts), Y(ce.price), 7, 0, 6.2832);
+          ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 1.2; ctx.stroke();
+        }
+      } else if (S.sel.type === 'pool') { var sp = S.sel.ref;
         if (sp.price >= pLo && sp.price <= pHi) {
           var shh = Math.max(3, H * (P.binH / (pHi - pLo)) * 1.15), sy0 = Y(sp.price) - shh / 2, sx0 = Math.max(0, X(sp.t0));
           ctx.fillStyle = sp.long ? 'rgba(46,189,133,.95)' : 'rgba(255,98,88,.95)'; ctx.fillRect(sx0, sy0, W - sx0, shh);
@@ -361,12 +373,12 @@
       var p = S.yHi - my / r.height * (S.yHi - S.yLo);
       var P = S.pools, best = null, i;
       for (i = 0; i < P.alive.length; i++) { var s = P.alive[i]; if (poolGone(s)) continue; var d = Math.abs(s.price - p); if (d < P.binH * 2.4 && (!best || s.w > best.s.w)) best = { d: d, s: s }; }
-      var bev = null;
-      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 13 && (!bev || dd < bev.d)) bev = { d: dd, e: e }; }
+      var bev = null, nNear = 0;
+      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 13) { nNear++; if (!bev || dd < bev.d) bev = { d: dd, e: e }; } }
       if (!best && !bev) { tip.style.display = 'none'; return; }
       var h = '';
       if (best) { var s2 = best.s; h += '<b>' + fpx(s2.price) + '</b> — <span class="' + (s2.long ? 'l' : 's') + '">' + (s2.long ? 'longs get liquidated here' : 'shorts get liquidated here') + '</span><br>~' + money(s2.w) + ' waiting'; }
-      if (bev) { var e2 = bev.e; h += (h ? '<br>' : '') + '<span class="' + (e2.side === 'long_liquidated' ? 'l' : 's') + '">' + (e2.side === 'long_liquidated' ? 'LONG' : 'SHORT') + ' liquidated</span> ' + money(e2.notional) + ' · ' + e2.exchange; }
+      if (bev) { var e2 = bev.e; h += (h ? '<br>' : '') + '<span class="' + (e2.side === 'long_liquidated' ? 'l' : 's') + '">' + (e2.side === 'long_liquidated' ? 'LONG' : 'SHORT') + ' liquidated</span> ' + money(e2.notional) + ' · ' + e2.exchange + (nNear > 1 ? ' <span style="color:#c2f64a">+' + (nNear - 1) + ' more — click to list</span>' : ''); }
       tip.innerHTML = h; tip.style.display = 'block';
       var tx = mx + 14, ty = my + 12;
       if (tx + tip.offsetWidth > r.width - 4) tx = mx - tip.offsetWidth - 12;
@@ -379,6 +391,23 @@
       var el2 = S.selBox; if (!el2) return;
       if (!S.sel) { el2.style.display = 'none'; return; }
       var h = '<span class="k">SELECTED</span>';
+      if (S.sel.type === 'clu') {
+        var refs = S.sel.refs, totC = 0; refs.forEach(function (x) { totC += x.notional; });
+        h = '<span class="k">CLUSTER</span><span class="hm-cl-h"><b>' + refs.length + ' liquidations</b> stacked here · <b>' + money(totC) + '</b> total — pick one:</span><div class="hm-cl-list">';
+        refs.slice(0, 30).forEach(function (x, ci) {
+          var lg2 = x.side === 'long_liquidated';
+          h += '<div class="hm-cl-it" data-ci="' + ci + '"><span class="' + (lg2 ? 'l' : 's') + '">' + (lg2 ? 'LONG' : 'SHORT') + '</span><b>' + money(x.notional) + '</b><span>@ ' + fpx(x.price) + '</span><span>' + String(x.exchange).toUpperCase() + '</span><span class="ag">' + ago2(x.ts) + '</span></div>';
+        });
+        if (refs.length > 30) h += '<div class="hm-cl-it" style="cursor:default;color:#5c6b84">+ ' + (refs.length - 30) + ' more (zoom in to split the cluster)</div>';
+        h += '</div>';
+        el2.innerHTML = h + '<button type="button" class="hm-selx" title="Clear selection">\u00d7</button>';
+        el2.style.display = 'block';
+        el2.querySelector('.hm-selx').addEventListener('click', function (ev2) { ev2.stopPropagation(); S.sel = null; showSel(); sched(); });
+        el2.querySelectorAll('.hm-cl-it[data-ci]').forEach(function (row) {
+          row.addEventListener('click', function (ev3) { ev3.stopPropagation(); var ci = +row.getAttribute('data-ci'); var e4 = S.sel && S.sel.refs && S.sel.refs[ci]; if (e4) { S.sel = { type: 'ev', ref: e4 }; showSel(); sched(); } });
+        });
+        return;
+      }
       if (S.sel.type === 'ev') { var e = S.sel.ref, lg = e.side === 'long_liquidated';
         h += '<span class="' + (lg ? 'l' : 's') + '">' + (lg ? 'LONG' : 'SHORT') + ' liquidation</span> <b>' + money(e.notional) + '</b> @ <b>' + fpx(e.price) + '</b><br>' + String(e.exchange).toUpperCase() + ' · ' + ago2(e.ts);
       } else { var pl2 = S.sel.ref;
@@ -394,9 +423,10 @@
       if (!S.X) return;
       var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
       var p = S.yHi - my / r.height * (S.yHi - S.yLo);
-      var bev = null, i;
-      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 14 && (!bev || dd < bev.d)) bev = { d: dd, e: e }; }
-      if (bev) { S.sel = { type: 'ev', ref: bev.e }; showSel(); sched(); return; }
+      var hits = [], i;
+      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 16) hits.push({ d: dd, e: e }); }
+      if (hits.length === 1) { S.sel = { type: 'ev', ref: hits[0].e }; showSel(); sched(); return; }
+      if (hits.length > 1) { hits.sort(function (a, b) { return b.e.notional - a.e.notional; }); S.sel = { type: 'clu', refs: hits.map(function (x) { return x.e; }) }; showSel(); sched(); return; }
       var P = S.pools, best = null, t = S.view.t0 + mx / r.width * (S.view.t1 - S.view.t0);
       for (i = 0; i < P.alive.length; i++) { var s2 = P.alive[i]; if (poolGone(s2)) continue; if (t < s2.t0) continue; var d2 = Math.abs(s2.price - p); if (d2 < P.binH * 2.2 && (!best || s2.w > best.w)) best = s2; }
       if (best) { S.sel = { type: 'pool', ref: best }; showSel(); sched(); return; }
