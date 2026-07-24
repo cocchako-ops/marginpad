@@ -686,6 +686,8 @@
   function affLink(exchange,sym){
     var s=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,''),ex=String(exchange||'').toLowerCase();
     if(ex==='binance')return 'https://www.binance.com/en/futures/'+s+'USDT?ref=MAOZM9DS';
+    if(ex==='okx')return 'https://okx.com/join/96160298';
+    if(ex==='gate')return 'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103';
     return 'https://www.bybit.com/trade/usdt/'+s+'USDT?ref=LZKBERJ';
   }
   function row(e){
