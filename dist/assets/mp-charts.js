@@ -877,13 +877,13 @@
     var advc=qtEl.querySelector('.cqt-adv-chk'),advOn=advc&&advc.checked,tp=advOn?parseFloat(qtEl.querySelector('.cqt-tp').value):NaN,sl=advOn?parseFloat(qtEl.querySelector('.cqt-sl').value):NaN;
     if(!(amt>0)){msg.style.color='#ff6258';msg.textContent='Enter an amount.';return;}
     if(window.mpTradeGate&&!window.mpTradeGate(sym,qtSide))return; // enforce open-trade limits + one-way mode
-    function open(p){var mmr=0.005,L=lev,notional=amt*L,qty=notional/p,liq=qtSide==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
+    function open(p,srvT){var mmr=0.005,L=lev,notional=amt*L,qty=notional/p,liq=qtSide==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
       // drop a stop/target already on the wrong side of entry, so it can't auto-close the position at open
       var _lng=qtSide==='long',_sl=sl,_tp=tp;
       if(isFinite(_sl)&&((_lng&&_sl>=p)||(!_lng&&_sl<=p)))_sl=NaN;
       if(isFinite(_tp)&&((_lng&&_tp<=p)||(!_lng&&_tp>=p)))_tp=NaN;
-      var d=jload();d.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:qtSide,entry:p,stop:isFinite(_sl)?_sl:null,tp:isFinite(_tp)?_tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null});
-      if(window.mpLivePrices)window.mpLivePrices[sym]={p:p,t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();
+      var d=jload();d.push(srvT||{id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:qtSide,entry:p,stop:isFinite(_sl)?_sl:null,tp:isFinite(_tp)?_tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null});
+      if(window.mpLivePrices)window.mpLivePrices[sym]={p:(srvT?+srvT.entry:p),t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();
       try{window.mpBuzz&&window.mpBuzz([15]);}catch(e){} // haptic on open (chart quick-trade)
       try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (parity with the terminal's add())
       try{wins.forEach(updateMTBtn);}catch(e){}
@@ -893,8 +893,14 @@
     // open at a FRESH price only — a stale mpLivePrices[sym] (old value seeded by another position, coin not in the live
     // feed) would give a wrong entry → wrong liq → phantom "instant liquidation". Stale/missing → REST fetch then open.
     var _lp=window.mpLivePrices&&window.mpLivePrices[sym],entry=(_lp&&_lp.p>0&&_lp.t&&(Date.now()-_lp.t)<2000)?+_lp.p:0;
-    if(entry>0)open(entry);
-    else{msg.style.color='#9aa3ad';msg.textContent='Fetching price…';fetch('/api/price?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0)open(+j.price);else{msg.style.color='#ff6258';msg.textContent='Could not get price. Try again.';}});} }
+    var openVia=function(p){ // P0 dual-write: signed-in -> server fill (src:'srv'); anon/failure -> classic local open
+      var _lng=qtSide==='long',_sl2=sl,_tp2=tp;
+      if(isFinite(_sl2)&&((_lng&&_sl2>=p)||(!_lng&&_sl2<=p)))_sl2=NaN;
+      if(isFinite(_tp2)&&((_lng&&_tp2<=p)||(!_lng&&_tp2>=p)))_tp2=NaN;
+      if(window.mpSrvOpen){window.mpSrvOpen({sym:sym,side:qtSide,lev:lev,margin:amt,sl:isFinite(_sl2)?_sl2:null,tp:isFinite(_tp2)?_tp2:null},function(t){open(p,t);},function(){open(p);});}
+      else open(p);};
+    if(entry>0)openVia(entry);
+    else{msg.style.color='#9aa3ad';msg.textContent='Fetching price…';fetch('/api/price?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0)openVia(+j.price);else{msg.style.color='#ff6258';msg.textContent='Could not get price. Try again.';}});} }
   function buildQT(){ qtEl=el('<div class="cqt-modal" hidden><div class="cqt-panel"><div class="cqt-head"><span>Quick Paper Trade</span><button class="cqt-x" type="button" aria-label="Close">&#10005;</button></div><label class="cqt-l">Symbol</label><select class="cqt-sym">'+SYMS.map(function(s){return '<option>'+s+'</option>';}).join('')+'</select><div class="cqt-side"><button type="button" class="on" data-side="long">Long</button><button type="button" class="cqt-short" data-side="short">Short</button></div><label class="cqt-l">Amount (USD)</label><input class="cqt-amt" type="number" value="100" min="0" inputmode="decimal"><label class="cqt-l cqt-levl">Leverage <span class="cqt-levv">10&times;</span></label><input class="cqt-lev" type="range" min="0" max="1000" value="333"><label class="cqt-adv"><input type="checkbox" class="cqt-adv-chk"><span class="cqt-adv-box"></span>Advanced &mdash; take-profit &amp; stop-loss</label><div class="cqt-adv-fields" hidden><div class="cqt-grid2"><div><label class="cqt-l">Take profit</label><input class="cqt-tp" type="number" min="0" inputmode="decimal"></div><div><label class="cqt-l">Stop loss</label><input class="cqt-sl" type="number" min="0" inputmode="decimal"></div></div></div><div class="cqt-info3"><div class="cqt-cell"><span>Entry</span><b class="cqt-entry">&mdash;</b></div><div class="cqt-cell"><span>Liq. price</span><b class="cqt-liq">&mdash;</b></div><div class="cqt-cell"><span>Position</span><b class="cqt-size">&mdash;</b></div></div><button class="cqt-open" type="button">Open position</button><div class="cqt-msg"></div></div></div>');
     document.body.appendChild(qtEl);
     qtEl.querySelector('.cqt-x').addEventListener('click',function(){qtEl.hidden=true;});
@@ -1035,7 +1041,7 @@
   }
   document.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('.cws-tile[data-preset]');if(b){var n=parseInt(b.getAttribute('data-preset'),10);if(n)applyPreset(n);}});
   function buildInitial(){var sn=loadNotes();if(sn&&sn.length)sn.forEach(function(c){addNote(c);});
-    var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}if(_fc){_fc=String(_fc).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_fc){showEmpty(false);try{addWin({sym:_fc,tf:'60'});}catch(e){}try{setTimeout(reflowWins,120);setTimeout(reflowWins,450);}catch(e){}if(wins.length)return;}}
+    var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}if(!_fc){try{_fc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/i)||[])[1]||null;}catch(e){}} /* TG signal buttons deep-link /charts?coin=SYM */ if(_fc){_fc=String(_fc).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_fc){showEmpty(false);try{addWin({sym:_fc,tf:'60'});}catch(e){}try{setTimeout(reflowWins,120);setTimeout(reflowWins,450);}catch(e){}if(wins.length)return;}}
     var sv=loadPersist(); // auto-restore the last session (owner request 2026-07-09: leaving /charts and coming back must look exactly as left — windows, symbols, TFs, indicators; drawings restore per SYM:TF via w.dr.reload)
     if(sv&&sv.length){showEmpty(false);sv.slice(0,MAXn()).forEach(function(cfg){try{addWin(cfg);}catch(e){}});if(!wins.length)showEmpty(true);}
     else showEmpty(true);}

@@ -2492,7 +2492,7 @@ window.mpSrvOpen=function(payload,ok,fail){
     if(isMob()){e.preventDefault();e.stopPropagation();ensure(function(){if(window.mpOpenCharts)window.mpOpenCharts();});}
   },true);
   window.mpOpenMobileCharts=function(sym){ensure(function(){if(window.mpOpenCharts)window.mpOpenCharts(sym);});};
-  if(isMob()&&/^\/charts\/?$/.test(location.pathname)){window.addEventListener('load',function(){setTimeout(function(){var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}ensure(function(){if(window.mpOpenCharts)window.mpOpenCharts(_fc||undefined);});},250);});}
+  if(isMob()&&/^\/charts\/?$/.test(location.pathname)){window.addEventListener('load',function(){setTimeout(function(){var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}if(!_fc){try{_fc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/i)||[])[1]||null;}catch(e){}}ensure(function(){if(window.mpOpenCharts)window.mpOpenCharts(_fc||undefined);});},250);});}
 })();
 
 ;/* ══════════ service worker registration (added 2026-07) ══════════

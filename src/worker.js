@@ -1509,7 +1509,14 @@ async function checkChartSignals(env, force) {
     const mTp1 = (sym, long, e, tp1, tp2) => '✅ <b>TP1 HIT</b> · ' + sym + ' ' + (long ? 'LONG' : 'SHORT') + '  <b>+' + pct(tp1, e) + '%</b>\n' + DIV + '\nTake partial profit and move your stop to entry <code>' + fpx(e) + '</code> — the rest is now <b>risk-free</b>.\n🏁 Next target TP2 <code>' + fpx(tp2) + '</code>.';
     const mBe = (sym, long, e, tp1) => '⚖️ <b>BREAKEVEN</b> · ' + sym + ' ' + (long ? 'LONG' : 'SHORT') + '\n' + DIV + '\nPrice returned to entry after TP1 — runner closed at breakeven. You still banked <b>TP1 (+' + pct(tp1, e) + '%)</b>.';
     const mTp2 = (sym, long, e, tp2) => '🏁 <b>TP2 HIT</b> · ' + sym + ' ' + (long ? 'LONG' : 'SHORT') + '  <b>+' + pct(tp2, e) + '%</b>\n' + DIV + '\nFull target reached — great trade. 🎉';
-    const send = async (chat, text, replyTo) => { const b = { chat_id: chat, text: text + DISC, parse_mode: 'HTML', disable_web_page_preview: true }; if (replyTo) { b.reply_to_message_id = replyTo; b.allow_sending_without_reply = true; } const r = await tgApi(token, 'sendMessage', b); return (r && r.result && r.result.message_id) || 0; }; // returns the sent message_id so TP/SL follow-ups can reply to the original signal (threaded)
+    // per-signal action buttons: our live chart + exchange universal links (https links open the NATIVE app when installed — Telegram buttons only allow http(s), app schemes are rejected)
+    const sigKb = (sym) => ({ inline_keyboard: [
+      [{ text: 'Open live chart', url: 'https://marginpad.io/charts?coin=' + sym }],
+      [{ text: 'Binance', url: 'https://www.binance.com/en/futures/' + sym + 'USDT' },
+       { text: 'Bybit', url: 'https://www.bybit.com/trade/usdt/' + sym + 'USDT' },
+       { text: 'MEXC', url: 'https://www.mexc.com/futures/' + sym + '_USDT' }],
+    ] });
+    const send = async (chat, text, replyTo, sym) => { const b = { chat_id: chat, text: text + DISC, parse_mode: 'HTML', disable_web_page_preview: true }; if (replyTo) { b.reply_to_message_id = replyTo; b.allow_sending_without_reply = true; } if (sym) b.reply_markup = sigKb(sym); const r = await tgApi(token, 'sendMessage', b); return (r && r.result && r.result.message_id) || 0; }; // returns the sent message_id so TP/SL follow-ups can reply to the original signal (threaded)
     // Event guard (once): skip NEW confirmed signals within ~2h before a high-impact macro event (FOMC/CPI).
     let eventSoon = false;
     if (evGuardOn && !force) {
@@ -1555,7 +1562,7 @@ async function checkChartSignals(env, force) {
                   if (long ? ls.peakLo <= ls.sl : ls.peakHi >= ls.sl) { m = mBe(sym, long, ls.entry, ls.tp1); ls.done = true; }
                   else if (long ? ls.peakHi >= ls.tp2 : ls.peakLo <= ls.tp2) { m = mTp2(sym, long, ls.entry, ls.tp2); ls.done = true; }
                 }
-                if (m) { await send(chans.fast, m + (ls.sigId ? '\n🆔 <code>#' + ls.sigId + '</code>' : ''), ls.msgId); report.sent.push(sym + ' fast-' + (ls.done ? 'exit' : 'tp1')); }
+                if (m) { await send(chans.fast, m + (ls.sigId ? '\n🆔 <code>#' + ls.sigId + '</code>' : ''), ls.msgId, sym); report.sent.push(sym + ' fast-' + (ls.done ? 'exit' : 'tp1')); }
                 await env.STATS.put('csig:live:' + sym, JSON.stringify(ls)); // always persist so running peaks accumulate across minutes
               }
               // (b) NEW live flip → arm it, and only FIRE once it has held for a full cron cycle (kills forming-candle wicks).
@@ -1570,7 +1577,7 @@ async function checkChartSignals(env, force) {
                   const long = lDir === 1, e = lPx, risk = 1.5 * lAtr;
                   const tp1 = long ? e + 1.5 * risk : e - 1.5 * risk, tp2 = long ? e + 3 * risk : e - 3 * risk, sl = long ? e - risk : e + risk;
                   const sigId = sym + 'L' + (Math.floor(now / 60000) % 46656).toString(36).toUpperCase();
-                  const mid = await send(chans.fast, ticket(long, sym, e, tp1, tp2, sl, ' ⚡<i>live</i>') + '🆔 <code>#' + sigId + '</code>');
+                  const mid = await send(chans.fast, ticket(long, sym, e, tp1, tp2, sl, ' ⚡<i>live</i>') + '🆔 <code>#' + sigId + '</code>', 0, sym);
                   await env.STATS.put('csig:live:' + sym, JSON.stringify({ sigDir: lDir, entry: e, risk, tp1, tp2, sl, phase: 0, peakHi: e, peakLo: e, cool: now + liveCool, ts: now, done: false, msgId: mid, sigId, firedBar: curBar }));
                   try { const dk = 'csig:sentd:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + 1), { expirationTtl: 3 * 86400 }); } catch (e) {} // daily sent counter → digest + morning brief
                   sl({ s: sym, ev: 'FIRE-live', sig: long ? 'BUY' : 'SELL', closed: DIRN(cDir), live: DIRN(lDir), hold: Math.round((now - ls.pendTs) / 1000), bar: BART(curBar), px: e, atr: Number(lAtr.toPrecision(5)), c3: closed.slice(-3).map(b => b.close) }); // atr + last-3 closed closes = data fingerprint — a data-source phantom becomes provable by diffing c3 vs the chart's candles
@@ -1639,9 +1646,9 @@ async function checkChartSignals(env, force) {
             + '🆔 <code>#' + sigId + '</code>';
           const msgIds = {}; let sentOk = 0;
           // one channel failing must NEVER abort the others or state persistence — an unsaved state re-fires next minute and DUPLICATES the signal in every channel that already got it
-          for (const t of postTiers) { const bd = t === 'premium' ? premText : (text + TIER_NOTE[t]); try { msgIds[t] = await send(chans[t], bd); sentOk++; } catch (e) {} await new Promise(r => setTimeout(r, 90)); }
+          for (const t of postTiers) { const bd = t === 'premium' ? premText : (text + TIER_NOTE[t]); try { msgIds[t] = await send(chans[t], bd, 0, sym); sentOk++; } catch (e) {} await new Promise(r => setTimeout(r, 90)); }
           // FREE channel: gets the top-conviction (premium-grade) setup as a taste — NO follow-up management (live entries + TP/SL alerts are the paid perk)
-          if (!force && chans.free && isPrem) { try { await send(chans.free, text + TIER_NOTE.free); } catch (e) {} await new Promise(r => setTimeout(r, 90)); }
+          if (!force && chans.free && isPrem) { try { await send(chans.free, text + TIER_NOTE.free, 0, sym); } catch (e) {} await new Promise(r => setTimeout(r, 90)); }
           if (!force && sentOk) await env.STATS.put('csig:st:' + sym, JSON.stringify({ dir: dNow, bar, entry, risk, tp1, tp2, sl, phase: 0, tiers: postTiers, premium: isPrem, msgIds, sigId, ts: Date.now(), done: false })); // zero deliveries (TG fully down) → don't persist → clean retry next minute
           if (!force && sentOk) { try { const dk = 'csig:sentd:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + 1), { expirationTtl: 3 * 86400 }); } catch (e) {} }
           if (!force && sentOk) { try { await evPush(env, null, 'signal', sym + ' ' + (long ? 'BUY' : 'SELL') + ' ' + postTiers.join('/'), ''); } catch (e) {} }
@@ -1669,12 +1676,12 @@ async function checkChartSignals(env, force) {
           if (!msg && state.premium && state.phase === 0 && !state.stalled && (Date.now() - (state.ts || 0)) > 4 * 3600000) {
             state.stalled = true;
             const c = chans.premium;
-            if (c) { await send(c, '⏳ <b>Time-check</b> · ' + sym + ' ' + (state.dir === 1 ? 'LONG' : 'SHORT') + '\n' + DIV + '\n~4h in and TP1 isn’t tagged — momentum has stalled. Consider closing near entry (breakeven) or tightening your stop.\n🆔 <code>#' + state.sigId + '</code>', state.msgIds && state.msgIds.premium); }
+            if (c) { await send(c, '⏳ <b>Time-check</b> · ' + sym + ' ' + (state.dir === 1 ? 'LONG' : 'SHORT') + '\n' + DIV + '\n~4h in and TP1 isn’t tagged — momentum has stalled. Consider closing near entry (breakeven) or tightening your stop.\n🆔 <code>#' + state.sigId + '</code>', state.msgIds && state.msgIds.premium, sym); }
             await env.STATS.put('csig:st:' + sym, JSON.stringify(state));
           }
           if (msg) {
             const tagged = msg + (state.sigId ? '\n🆔 <code>#' + state.sigId + '</code>' : '');
-            for (const t of (state.tiers || ['premium'])) { const c = chans[t]; if (c) { try { await send(c, tagged, state.msgIds && state.msgIds[t]); } catch (e) {} await new Promise(r => setTimeout(r, 90)); } } // reply to the original signal per channel (threaded); per-channel try/catch — a missed follow-up in one channel beats duplicate spam in all of them
+            for (const t of (state.tiers || ['premium'])) { const c = chans[t]; if (c) { try { await send(c, tagged, state.msgIds && state.msgIds[t], sym); } catch (e) {} await new Promise(r => setTimeout(r, 90)); } } // reply to the original signal per channel (threaded); per-channel try/catch — a missed follow-up in one channel beats duplicate spam in all of them
             await env.STATS.put('csig:st:' + sym, JSON.stringify(state));
             report.sent.push(sym + (state.done ? (state.phase === 1 ? ' TP2/BE' : ' SL') : ' TP1'));
           }
