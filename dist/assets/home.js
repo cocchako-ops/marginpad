@@ -1230,7 +1230,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   setTimeout(pollChatLast,2500);setInterval(pollChatLast,45000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)pollChatLast();});
   function sysMsg(html){var d=document.createElement('div');d.className='ct-msg ct-sys';d.innerHTML=html;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
-  var LB_META={1:{t:'🏆 Top ROE',k:'top'},2:{t:'🎯 Best win rate',k:'topWr'},3:{t:'✨ Weekly XP',k:'topXp'}};
+  var LB_META={1:{t:'🏆 Top ROE',k:'top'},2:{t:'🎯 Best win rate',k:'topWr'},3:{t:'✨ Season XP',k:'topXp'}};
   function showLeaderboard(board){board=(board===2||board===3)?board:1;var meta=LB_META[board];
     var lbMsg=sysMsg('<b style="color:#c2f64a">'+meta.t+'</b><br><span style="color:#9aa3ad">loading…</span>');
     fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){var t=(d&&d[meta.k])||[],medal=['🥇','🥈','🥉'];
@@ -2118,7 +2118,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function lbEnds(weekEnd){if(!weekEnd)return '';var ms=weekEnd-Date.now();if(ms<=0)return '';var d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000);var t=(d>0?d+'d ':'')+((d>0||h>0)?h+'h ':'')+m+'m';return '<div class="lg-ends">⏳ 14-day season · '+LT('lgEndsIn','ends in')+' <b>'+t+'</b></div>';}
   var lgMode='roe',lgLast=null;
   function lgPills(){return '<div class="lg-pills"><button type="button" class="lg-pill'+(lgMode==='roe'?' on':'')+'" data-lgm="roe">'+LT('lgTopRoe','Top ROE')+'</button><button type="button" class="lg-pill'+(lgMode==='pnl'?' on':'')+'" data-lgm="pnl">'+LT('lgTopPnl','Top PnL')+'</button><button type="button" class="lg-pill'+(lgMode==='wr'?' on':'')+'" data-lgm="wr">'+LT('lgBestWr','Best win rate')+'</button></div>';}
-  function lgNote(){return lgMode==='roe'?'<div class="lg-wr-note pay">'+LT('lgPayRoe','Top ROE pays the weekly prizes — the other boards start paying soon.')+'</div>':'<div class="lg-wr-note">'+LT('lgPaySoon','No prizes yet — this board starts paying out soon.')+'</div>';}
+  function lgNote(){return lgMode==='roe'?'<div class="lg-wr-note pay">'+LT('lgPayRoe','Top ROE pays the season prizes — the other boards start paying soon.')+'</div>':'<div class="lg-wr-note">'+LT('lgPaySoon','No prizes yet — this board starts paying out soon.')+'</div>';}
   function lgMoneyH(x){x=+x||0;var sg=x<0?'-':'+';x=Math.abs(x);return sg+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
   function lgDraw(){var d=lgLast;if(!d)return;var ends=lbEnds(d&&d.weekEnd);
     if(lgMode==='wr'){

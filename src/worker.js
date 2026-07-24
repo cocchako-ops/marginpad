@@ -5149,7 +5149,7 @@ const TG_HELP =
   '<code>/rekt</code> — 24h liquidations · <code>/funding</code> — funding extremes · <code>/sentiment</code> — Fear &amp; Greed\n' +
   '<code>/fundalert</code> BTC 0.1 — ping me on extreme funding\n\n' +
   '<b>🏆 Competition</b>\n' +
-  '<code>/leaderboard</code> — weekly boards (ROE · win rate · XP)\n\n' +
+  '<code>/leaderboard</code> — season boards (ROE · win rate · XP)\n\n' +
   '<b>📡 Signals, news &amp; community</b>\n' +
   '<code>/premium</code> — free &amp; premium signal groups\n' +
   '<code>/community</code> — 💬 join the open traders chat (@Marginpadgroup)\n' +
@@ -5304,7 +5304,7 @@ async function leaderboard(env) {
   let out = '🏆 <b>Weekly Trade League — 3 boards</b>\n' + DIV + '\n';
   out += '<b>🏆 Top ROE</b>\n' + (top.length ? top.map((x, i) => row(x, i, '<b>' + ((+x.roe) >= 0 ? '+' : '') + (+x.roe).toFixed(0) + '%</b>')).join('') : '<i>no one yet</i>\n');
   out += '\n<b>🎯 Best win rate</b> <i>(min 20 trades)</i>\n' + (topWr.length ? topWr.map((x, i) => row(x, i, '<b>' + x.wr.toFixed(0) + '%</b> (' + x.w + 'W-' + x.l + 'L)')).join('') : '<i>no one yet</i>\n');
-  out += '\n<b>✨ Weekly XP</b>\n' + (topXp.length ? topXp.map((x, i) => row(x, i, '<b>' + x.xp.toLocaleString('en-US') + ' XP</b>')).join('') : '<i>no one yet</i>\n');
+  out += '\n<b>✨ Season XP</b>\n' + (topXp.length ? topXp.map((x, i) => row(x, i, '<b>' + x.xp.toLocaleString('en-US') + ' XP</b>')).join('') : '<i>no one yet</i>\n');
   out += '\n⏳ <b>14-day season (UTC)</b>' + (endStr ? ' — ends in <b>' + endStr + '</b>' : '') + '. Winners paid in USDT when the season ends.\n';
   out += '🔒 <b>Members only</b> — sign up free at <a href="https://marginpad.io">marginpad.io</a> and close winning <a href="https://marginpad.io/paper-trade">Paper Trades</a> to rank.';
   return out;

@@ -888,17 +888,17 @@
 </section>
 
 <section class="band" style="--glow:rgba(255,215,90,.09);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Weekly leaderboard</h2><span class="band-s">Three weekly boards — ROE, win rate and XP — each pays the top 5 in real USDT. Free to enter — just sign in and trade.</span></div>
+  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Season leaderboard</h2><span class="band-s">Three boards — ROE, win rate and XP — each pays the top 5 in real USDT every 14-day season. Free to enter — just sign in and trade.</span></div>
   <div class="lb-wrap">
     <div class="lb-card lb-info">
       <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> 3 boards · win real USDT</div>
       <div class="t-title" style="font-size:22px">Three boards, bigger prizes</div>
-      <div class="t-sub">Three weekly boards — <b>Highest ROE</b>, <b>Best win rate</b> and <b>Weekly XP</b> — each pays the <b>top 5</b> in real USDT, every Monday. Pick your game:</div>
+      <div class="t-sub">Three season boards — <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> — each pays the <b>top 5</b> in real USDT when the 14-day season ends. Pick your game:</div>
       <div class="lbpz">
         <div class="lbpz-tabs" id="lbpzTabs">
           <button type="button" class="lbpz-tab on" data-pz="roe">Highest ROE</button>
           <button type="button" class="lbpz-tab" data-pz="wr">Win rate</button>
-          <button type="button" class="lbpz-tab" data-pz="xp">Weekly XP</button>
+          <button type="button" class="lbpz-tab" data-pz="xp">Season XP</button>
         </div>
         <div class="lbpz-panel" id="lbpzPanel"></div>
       </div>
@@ -914,7 +914,7 @@
     </div>
     <div class="lb-card">
       <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="wr">Win rate</button><button type="button" class="lb-tab" data-lbm="xp">Top XP</button><button type="button" class="lb-tab lb-tab-f" data-lbm="following">★ Following</button></div>
-      <div class="lb-note" id="lbNote">💰 <b>Top ROE</b> wins the weekly prizes for now — <b>Top PnL</b> and <b>Best win rate</b> will start paying out soon too.</div>
+      <div class="lb-note" id="lbNote">💰 <b>Top ROE</b> wins the season prizes for now — <b>Top PnL</b> and <b>Best win rate</b> will start paying out soon too.</div>
       <div class="lb-board" id="lbBoard" style="margin-top:10px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
     </div>
   </div>
@@ -946,7 +946,7 @@
     <a class="tile s4 lime" href="/rewards/" style="--ac:#c2f64a">
       <div class="t-kick" style="color:#a9d33f"><span class="dot"></span> Free USDT</div>
       <div class="t-title">Rewards</div>
-      <div class="t-sub">Claim free USDT every 5 minutes, earn $1 per post about us, win the weekly league. Withdraw real USDT.</div>
+      <div class="t-sub">Claim free USDT every 5 minutes, earn $1 per post about us, win the 14-day league. Withdraw real USDT.</div>
       <div class="rw-chip"><span class="cd"></span> CLAIM EVERY 5 MIN · $1 PER POST</div>
       <div class="t-go">Start earning <i>→</i></div>
     </a>
@@ -1203,7 +1203,7 @@
     var PZ={
       roe:{name:'Highest ROE',pool:25,p:[10,6,4,3,2],live:true,desc:"Your single best trade's return on equity (profit ÷ margin) for the 14-day season. One well-timed, high-leverage call can top it — any account size."},
       wr:{name:'Best win rate',pool:75,p:[35,18,10,7,5],live:true,desc:"The highest share of winning trades over the 14-day season (minimum 20 closed trades). Only wins of at least +5% ROE count — tiny scalps don't pad your rate. Rewards steady, consistent trading, not one lucky shot."},
-      xp:{name:'Weekly XP',pool:30,p:[10,8,6,4,2],live:true,desc:"Total XP you earn this season — from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size."}
+      xp:{name:'Season XP',pool:30,p:[10,8,6,4,2],live:true,desc:"Total XP you earn this season — from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size."}
     };
     function seasonEnd(){var A=Date.UTC(2026,6,20),P=14*864e5,n=Date.now();return A+(Math.floor((n-A)/P)+1)*P;} // 14-day season clock — same anchor as the server (lbPeriodStart, Mon 2026-07-20)
     var START=seasonEnd();
