@@ -5697,6 +5697,7 @@ async function handleTelegram(request, env) {
   const msg = update.message || update.edited_message;
   if (!msg || !msg.text) return new Response('ok');
   const cmd = msg.text.trim().split(/\s+/)[0].toLowerCase().replace(/@.*$/, '');
+  try { if (msg.chat && msg.chat.type === 'private') await env.STATS.put('tg:lastdm', String(msg.chat.id), { expirationTtl: 30 * 86400 }); } catch (e) {} // remember the last private chat (owner test destination for signal-button previews)
   await bumpBot(env, cmd.replace(/^\//, '') || 'msg', msg.from);
   if (cmd.charAt(0) === '/') await botLog(env, cmd.replace(/^\//, ''), msg.from); // → ops Real-time activity, tagged with the Telegram user
   if (cmd === '/start' || cmd === '/help') {
@@ -7728,7 +7729,7 @@ export default {
       if (q.get('test') === '1') return J(await checkChartSignals(env, true));
       if (q.get('btntest') === '1') { // send a SAMPLE signal (with the new app-deep-link buttons) to the owner DM only — no subscribers touched
         const sym = String(q.get('sym') || 'BTC').toUpperCase().replace(/[^A-Z0-9]/g, '') || 'BTC';
-        const chat = q.get('chat') || env.TG_ADMIN_CHAT;
+        const chat = q.get('chat') || env.TG_ADMIN_CHAT || (await env.STATS.get('tg:lastdm'));
         if (!chat || !env.TELEGRAM_TOKEN) return J({ err: 'no_chat_or_token' });
         const text = '🟢 <b>BUY signal</b> · ' + sym + '/USDT · <b>1h</b>  <i>(test)</i>\n———\n🎯 Entry  <code>$64,000</code>\n🥇 TP1    <code>$65,300</code>  (+2.0%)\n🏁 TP2    <code>$66,600</code>  (+4.1%)\n🛑 SL     <code>$63,200</code>  (−1.3%)\n\n<i>Test message — tap the buttons below.</i>';
         const kb = { inline_keyboard: [
