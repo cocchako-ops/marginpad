@@ -29,6 +29,7 @@
     '.hm-stats{font-size:11px;color:#5c6b84;font-family:"Space Mono",monospace;white-space:nowrap}' +
     '.hm-btn{background:#12161d;border:1px solid #232b3a;color:#8fa3c4;border-radius:8px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;padding:0}' +
     '.hm-btn:hover{color:#dbe4f5;border-color:#3a465c}.hm-btn svg{width:15px;height:15px}' +
+    '.hm-btnw{width:auto;padding:0 11px;font-size:11.5px;font-weight:700}.hm-btnw.on{background:#1a2413;border-color:#c2f64a;color:#c2f64a}' +
     '.hm-stage{position:relative;display:flex;min-height:380px;height:calc(100vh - 320px);max-height:820px}' +
     '.hm-cv{flex:1;min-width:0;display:block;border-radius:10px 0 0 10px;background:#07090c;cursor:crosshair}' +
     '.hm-prof{width:132px;flex:none;display:block;background:#07090c;border-left:1px solid #141a24;border-radius:0 10px 10px 0}' +
@@ -124,8 +125,8 @@
       ctx.fillStyle = up ? '#2ebd85' : '#ff6258';
       var yO = Y(b.open), yC = Y(b.close); ctx.fillRect(x - cw / 2, Math.min(yO, yC), cw, Math.max(1.2, Math.abs(yC - yO)));
     }
-    // real liquidations — subtle dots; only sizeable ones get an outline
-    for (i = 0; i < S.events.length; i++) { var e = S.events[i], ts = e.ts / 1000;
+    // real liquidations — subtle dots; only sizeable ones get an outline (toggleable via the Dots button)
+    if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ts = e.ts / 1000;
       if (ts < v.t0 || ts > v.t1 || e.price < pLo || e.price > pHi) continue;
       var lng = e.side === 'long_liquidated';
       if (S.sideF === 'long' && !lng) continue; if (S.sideF === 'short' && lng) continue;
@@ -326,7 +327,7 @@
       var P = S.pools, best = null, i;
       for (i = 0; i < P.alive.length; i++) { var s = P.alive[i]; var d = Math.abs(s.price - p); if (d < P.binH * 2.4 && (!best || s.w > best.s.w)) best = { d: d, s: s }; }
       var bev = null;
-      for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 13 && (!bev || dd < bev.d)) bev = { d: dd, e: e }; }
+      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 13 && (!bev || dd < bev.d)) bev = { d: dd, e: e }; }
       if (!best && !bev) { tip.style.display = 'none'; return; }
       var h = '';
       if (best) { var s2 = best.s; h += '<b>' + fpx(s2.price) + '</b> — <span class="' + (s2.long ? 'l' : 's') + '">' + (s2.long ? 'longs get liquidated here' : 'shorts get liquidated here') + '</span><br>~' + money(s2.w) + ' waiting'; }
@@ -359,7 +360,7 @@
       var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
       var p = S.yHi - my / r.height * (S.yHi - S.yLo);
       var bev = null, i;
-      for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 14 && (!bev || dd < bev.d)) bev = { d: dd, e: e }; }
+      if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 14 && (!bev || dd < bev.d)) bev = { d: dd, e: e }; }
       if (bev) { S.sel = { type: 'ev', ref: bev.e }; showSel(); sched(); return; }
       var P = S.pools, best = null, t = S.view.t0 + mx / r.width * (S.view.t1 - S.view.t0);
       for (i = 0; i < P.alive.length; i++) { var s2 = P.alive[i]; if (t < s2.t0) continue; var d2 = Math.abs(s2.price - p); if (d2 < P.binH * 2.2 && (!best || s2.w > best.w)) best = s2; }
@@ -451,11 +452,12 @@
     var selW = el('select', 'hm-sel'); Object.keys(WINS).forEach(function (wk) { var o = document.createElement('option'); o.value = wk; o.textContent = wk === '4H' ? 'Last 4 hours' : wk === '12H' ? 'Last 12 hours' : wk === '1D' ? 'Last 24 hours' : wk === '3D' ? 'Last 3 days' : 'Last 7 days'; if (wk === '1D') o.selected = true; selW.appendChild(o); });
     var seg = el('div', 'hm-seg');
     [['all', 'All', ''], ['long', 'Longs', ' s-l'], ['short', 'Shorts', ' s-s']].forEach(function (sd) { var b = el('button', (sd[0] === 'all' ? 'on' : '') + sd[2], sd[1]); b.type = 'button'; b.setAttribute('data-s', sd[0]); seg.appendChild(b); });
+    var dotsB = el('button', 'hm-btn hm-btnw', 'Dots'); dotsB.type = 'button'; dotsB.title = 'Show/hide real liquidation dots';
     var dl = el('button', 'hm-btn', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>'); dl.type = 'button'; dl.title = 'Download PNG';
     var sh = el('button', 'hm-btn', '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>'); sh.type = 'button'; sh.title = 'Share on X';
     var stEl = el('span', 'hm-stats', '');
     var pxEl = el('div', 'hm-px', '…');
-    bar.appendChild(selC); bar.appendChild(selW); bar.appendChild(seg); bar.appendChild(dl); bar.appendChild(sh); bar.appendChild(pxEl); bar.appendChild(stEl);
+    bar.appendChild(selC); bar.appendChild(selW); bar.appendChild(seg); bar.appendChild(dotsB); bar.appendChild(dl); bar.appendChild(sh); bar.appendChild(pxEl); bar.appendChild(stEl);
     var tgEl = el('div', 'hm-targets'); tgEl.style.cssText = 'display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11.5px "Space Mono",monospace;color:#8fa3c4;margin:0 0 8px;min-height:18px';
     var stage = el('div', 'hm-stage');
     var cv = el('canvas', 'hm-cv'), pf = el('canvas', 'hm-prof'), tip = el('div', 'hm-tip'), loadEl = el('div', 'hm-load', 'Building liquidation map…');
@@ -466,10 +468,13 @@
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
 
-    S = { coin: coin, win: '1D', sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
+    S = { coin: coin, win: '1D', sideF: 'all', tgEl: tgEl, sweeps: [], funding: null, sel: null, selBox: selBox, showDots: (function(){ try { return localStorage.getItem('mp_hm_dots') !== '0'; } catch (e) { return true; } })(), bars: [], pools: { alive: [], pMin: 0, pMax: 1, binH: 0 }, events: [], price: 0, chg: 0, view: null, cv: cv, pf: pf, tip: tip, pxEl: pxEl, stEl: stEl, loadEl: loadEl, timers: [] };
     wire();
     selC.addEventListener('change', function () { if (!S) return; S.coin = selC.value; S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); S.events = []; loadAll(true); try { if (window.mpWS) window.mpWS.sub(S.coin); } catch (e) {} });
     selW.addEventListener('change', function () { if (!S) return; S.win = selW.value; S.view = null; S.yView = null; S.sel = null; if (S.showSel) S.showSel(); loadAll(true); });
+    function dotsUi() { dotsB.classList.toggle('on', !!S.showDots); }
+    dotsUi();
+    dotsB.addEventListener('click', function () { if (!S) return; S.showDots = !S.showDots; try { localStorage.setItem('mp_hm_dots', S.showDots ? '1' : '0'); } catch (e) {} if (!S.showDots && S.sel && S.sel.type === 'ev') { S.sel = null; if (S.showSel) S.showSel(); } dotsUi(); sched(); });
     seg.addEventListener('click', function (ev) { var t = ev.target.closest('button'); if (!t || !S) return; S.sideF = t.getAttribute('data-s'); seg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === t); }); updHead(); sched(); });
     function shot() { var out = document.createElement('canvas'); var sc = window.devicePixelRatio || 1; out.width = cv.width + pf.width; out.height = cv.height + Math.round(34 * sc); var ox = out.getContext('2d'); ox.fillStyle = '#07090c'; ox.fillRect(0, 0, out.width, out.height); ox.drawImage(cv, 0, 0); ox.drawImage(pf, cv.width, 0); ox.fillStyle = '#c2f64a'; ox.font = '700 ' + Math.round(13 * sc) + 'px "Space Mono",monospace'; ox.textAlign = 'left'; ox.fillText(S.coin + ' LIQUIDATION MAP', Math.round(10 * sc), out.height - Math.round(11 * sc)); ox.fillStyle = '#8fa3c4'; ox.textAlign = 'right'; ox.fillText('marginpad.io/heatmap', out.width - Math.round(10 * sc), out.height - Math.round(11 * sc)); return out; }
     dl.addEventListener('click', function () { try { var a = document.createElement('a'); a.download = 'marginpad-liqmap-' + S.coin + '.png'; a.href = shot().toDataURL('image/png'); a.click(); } catch (e) {} });
