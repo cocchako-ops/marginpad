@@ -239,6 +239,12 @@
   @media(max-width:1000px){.wrap{max-width:660px}}
   body::before{content:'';position:fixed;inset:-14% 0 auto 0;height:660px;background:radial-gradient(44% 58% at 28% 0,rgba(194,246,74,.09),transparent 72%),radial-gradient(42% 54% at 84% 4%,rgba(56,189,248,.08),transparent 72%);filter:blur(6px);pointer-events:none;z-index:-2}
   .rwd-hero{max-width:660px;margin:0 0 26px}
+  .rwd-hero2{max-width:none;display:flex;gap:28px;align-items:center}
+  .rwd-hero-l{flex:1;min-width:0;max-width:640px}
+  .rwd-hero-r{width:410px;flex:none;display:flex;flex-direction:column;gap:12px}
+  .rwd-hero-r .card{margin-bottom:0;background:rgba(15,18,22,.48);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-color:rgba(255,255,255,.1)}
+  .rwd-hero-r .card--primary{background:rgba(15,22,14,.5)}
+  @media(max-width:1000px){.rwd-hero2{flex-direction:column;align-items:stretch;gap:18px}.rwd-hero-r{width:auto}}
   .rwd-hero h1{margin:0 0 9px}
   .rwd-hero .sub{margin:0;font-size:15px}
   /* symmetric 2-column grid: cards pair into rows of EQUAL height with a consistent gap; big/wide sections span full width */
@@ -251,10 +257,10 @@
   /* full-width rows: account/balance header, plus the two cards whose content is a horizontal row
      (leaderboard prizes, how-it-works steps) — they read best full-bleed AND keep them out of the 2-col
      flow so the remaining pairs are height-matched with no half-empty cell. */
-  .rwd-cards>#authCard,.rwd-cards>#dash,.rwd-cards>#wdHistCard,.rwd-cards>#lbCompCard,.rwd-cards>#howCard,.rwd-cards>#exchanges{grid-column:1/-1}
+  .rwd-cards>#wdHistCard,.rwd-cards>#lbCompCard,.rwd-cards>#howCard,.rwd-cards>#exchanges{grid-column:1/-1} /* authCard+dash now live in the hero */
   /* Missions is the tall card → let it span 2 rows on the right so the two short left cards (Invite + Promote)
      stack beside it with no dead space. Then [your level | more ways] as the next pair. */
-  .rwd-cards>#authCard,.rwd-cards>#dash{order:0}
+
   .rwd-cards>#wdHistCard{order:1}
   .rwd-cards>#refCard{order:2;grid-column:1}          /* 2-col left (short) */
   .rwd-cards>#msnCard{order:3;grid-column:2;grid-row:span 2}  /* 2-col right (tall) — spans both left cards */
@@ -262,7 +268,7 @@
   .rwd-cards>#lbCompCard{order:5}   /* full  */
   .rwd-cards>#howCard{order:6}      /* full  */
   .rwd-cards>#lvlCard{order:7}      /* 2-col */
-  .rwd-cards>.card.aff{order:8}     /* 2-col */
+  .rwd-cards>.card.aff{order:3;grid-column:2}  /* sits directly under Daily missions (same column; ties resolved by DOM order) */
   .rwd-cards>#exchanges{order:20}
   @media(max-width:1000px){.rwd-cards>#msnCard,.rwd-cards>#refCard,.rwd-cards>#promoCard{grid-row:auto;grid-column:auto}}
   /* the balance card = the star of the page */
@@ -293,14 +299,13 @@
     </nav>
   </header>
 
-  <div class="rwd-hero">
-    <span class="pill">● Free USDT · No deposit</span>
-    <h1>Stack <span>free USDT</span> every 5 minutes.</h1>
-    <p class="sub">Use the site, complete missions, stack USDT — then cash out to your Bybit account. Your daily rewards hub.</p>
-  </div>
-
-  <div class="rwd-cards">
-
+  <div class="rwd-hero rwd-hero2">
+    <div class="rwd-hero-l">
+      <span class="pill">● Free USDT · No deposit</span>
+      <h1>Stack <span>free USDT</span> every 5 minutes.</h1>
+      <p class="sub">Use the site, complete missions, stack USDT — then cash out to your Bybit account. Your daily rewards hub.</p>
+    </div>
+    <div class="rwd-hero-r">
   <div class="card" id="authCard">
     <div id="authGate">
       <div id="welcomeHook" hidden></div>
@@ -333,6 +338,10 @@
     </div>
     <div class="msg" id="msg"></div>
   </div>
+    </div>
+  </div>
+
+  <div class="rwd-cards">
 
   <div class="card" id="wdHistCard" hidden>
     <div class="lbl">Withdrawal history</div>
@@ -362,6 +371,11 @@
     <div id="msnList" style="margin-top:12px"></div>
     <p class="sub" id="msnFoot" style="margin-top:10px;font-size:11.5px"></p>
   </div>
+  <div class="card aff">
+    <p><b>More ways to earn are on the way</b> — affiliate bonuses and bigger prize pools. Meanwhile, the real edge is trading smart: our calculators and live liquidation feed are 100% free.</p>
+    <a class="btn btn-lime" href="/" style="text-decoration:none">Open the tools →</a>
+  </div>
+
   <div class="card" id="refCard">
     <div class="lbl">Invite friends</div>
     <h2 style="margin:0 0 6px;font-size:19px">Invite a friend — earn <b style="color:#c2f64a">$<span class="refAmt">0.20</span></b> each</h2>
@@ -426,10 +440,6 @@
     .rxch-go{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--ink-dim,#9aa3ad)}
     .rxch:hover .rxch-go{color:var(--lime,#c2f64a)}
   </style>
-  <div class="card aff">
-    <p><b>More ways to earn are on the way</b> — affiliate bonuses and bigger prize pools. Meanwhile, the real edge is trading smart: our calculators and live liquidation feed are 100% free.</p>
-    <a class="btn btn-lime" href="/" style="text-decoration:none">Open the tools →</a>
-  </div>
   <div class="card" id="exchanges">
     <div class="lbc-tag">Partner exchanges</div>
     <h2 class="lbc-title">Ready for real? Grab a sign-up bonus</h2>
