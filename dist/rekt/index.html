@@ -741,7 +741,12 @@
   var REKT_MAINT=false;/* collector back on the new DigitalOcean droplet (2026-07-24) — live feed ON; flip to true + redeploy for maintenance mode */
   var maintMode=false,_mTick=0;
   function setMaint(on){maintMode=on;var m=document.getElementById('rkMaint');if(m)m.hidden=!on;var f=document.getElementById('rkFeed'),t=document.getElementById('rkTerm'),o2=document.getElementById('rkOffline');if(f)f.style.display=on?'none':'';if(t)t.style.display=on?'none':'';if(on&&o2)o2.hidden=true;} // "Update ongoing" state — collector/VPS feed down; self-heals when data returns
-  function poll(){if(document.hidden)return;if(maintMode){_mTick++;if(_mTick%8!==0)return;}fetch('/api/v1/feed?min=0&limit=200').then(function(r){return r.ok?r.json():null;}).then(function(j){
+  var _esLive=0,_esTick=0;function esFresh(){return _esLive&&(Date.now()-_esLive<25000);} // SSE healthy → demote the poll to a 10s catch-up sweep
+  function ingest(e){if(!e||!validSym(e.symbol))return;var k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;if(seen[k])return;seen[k]=1;all.push(e);
+    all.sort(function(a,b){return b.ts-a.ts;});if(all.length>200)all=all.slice(0,200);
+    if(maintMode)setMaint(false);setOffline(false);offFails=0;
+    render();try{deskPush([e]);}catch(_e){}}
+  function poll(){if(document.hidden)return;if(maintMode){_mTick++;if(_mTick%8!==0)return;}if(esFresh()){_esTick++;if(_esTick%4!==0)return;}fetch('/api/v1/feed?min=1000&limit=200').then(function(r){return r.ok?r.json():null;}).then(function(j){
     if(!j||!Array.isArray(j.events)){offFails++;if(offFails>=2)setMaint(true);else if(offFails>=3)setOffline(true);return;}
     offFails=0;setOffline(false);if(maintMode)setMaint(false);
     var added=false,fresh=[];
@@ -764,11 +769,20 @@
   if(rkP)rkP.addEventListener('click',function(){paused=!paused;rkP.classList.toggle('on',paused);rkP.setAttribute('aria-pressed',paused?'true':'false');rkP.textContent=paused?'▶ Live':'⏸ Pause';if(!paused){render();try{deskRenderAll();}catch(_e){}}});
   try{matchMedia('(min-width:861px)').addEventListener('change',function(){render();try{deskRenderAll();}catch(_e){}});}catch(_e){} // breakpoint cross → hand the stream to the other renderer
   if(REKT_MAINT){setMaint(true);}else{poll();setInterval(poll,2500);}
+  // instant push: SSE firehose (all symbols, min $1k) — events land the moment the collector sees them.
+  // keepalive stamps _esLive too, so a quiet market doesn't look like a dead stream; poll drops to ~10s while healthy.
+  (function startES(){if(REKT_MAINT||!window.EventSource)return;var es;
+    try{es=new EventSource('/api/v1/liquidations/stream?symbol=ALL&min=1000');}catch(_e){return;}
+    es.onopen=function(){_esLive=Date.now();};
+    es.onmessage=function(m){_esLive=Date.now();try{ingest(JSON.parse(m.data));}catch(_e){}};
+    es.addEventListener('ping',function(){_esLive=Date.now();});
+    es.onerror=function(){_esLive=0;try{es.close();}catch(_e){}setTimeout(startES,6000);};
+  })();
   // backfill TODAY (UTC) from the collector's history so the terminal doesn't start from zero on page open —
   // the live poll only carries the last ~80 events; this seeds the day's aggregates (venue split, size histogram,
   // biggest hit, source chips) + fills the tape. One 60s-edge-cached pull shared by all visitors.
   (function backfill(){if(REKT_MAINT)return;var mid=new Date();mid.setUTCHours(0,0,0,0);
-    fetch('/api/v1/feed?min=0&limit=3000&since='+mid.getTime()).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
+    fetch('/api/v1/feed?min=1000&limit=3000&since='+mid.getTime()).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
       if(!j||!Array.isArray(j.events)||!j.events.length)return;
       j.events.forEach(function(e){if(!validSym(e.symbol))return;var k=e.ts+'|'+e.symbol+'|'+e.price+'|'+e.exchange;if(!seen[k]){seen[k]=1;all.push(e);try{deskAgg(e);}catch(_e){}}});
       all.sort(function(a,b){return b.ts-a.ts;});if(all.length>200)all=all.slice(0,200);

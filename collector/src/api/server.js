@@ -83,13 +83,16 @@ export function createApiServer({ storage, getStatus, bus }) {
   // Server-Sent Events: push new liquidations to connected browsers for a live feel.
   app.get('/api/v1/liquidations/stream', (req, res) => {
     const symbol = String(req.query.symbol || 'BTC').toUpperCase();
-    if (!validSymbol(symbol)) return res.status(400).end();
-    res.set({ 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive', 'Access-Control-Allow-Origin': config.api.corsOrigin });
+    const allSyms = symbol === 'ALL'; // firehose mode (Rekt live push) — every symbol, optional min notional
+    if (!allSyms && !validSymbol(symbol)) return res.status(400).end();
+    const min = Math.max(0, parseFloat(req.query.min) || 0);
+    // X-Accel-Buffering: nginx fronts this — without it proxy buffering holds SSE events back
+    res.set({ 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive', 'Access-Control-Allow-Origin': config.api.corsOrigin, 'X-Accel-Buffering': 'no' });
     res.flushHeaders?.();
     res.write(`event: hello\ndata: ${JSON.stringify({ symbol })}\n\n`);
-    const onLiq = (e) => { if (e.symbol === symbol) res.write(`data: ${JSON.stringify(e)}\n\n`); };
+    const onLiq = (e) => { if ((allSyms || e.symbol === symbol) && e.notional >= min) res.write(`data: ${JSON.stringify(e)}\n\n`); };
     bus.on('liq', onLiq);
-    const ka = setInterval(() => res.write(': keepalive\n\n'), 20000);
+    const ka = setInterval(() => res.write('event: ping\ndata: 1\n\n'), 20000); // named event (not a comment) so clients can track stream liveness
     req.on('close', () => { clearInterval(ka); bus.off('liq', onLiq); });
   });
 
