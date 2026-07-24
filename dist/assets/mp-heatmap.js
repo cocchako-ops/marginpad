@@ -282,9 +282,32 @@
     seg.addEventListener('click', function (ev) { var t = ev.target.closest('button'); if (!t || !S) return; S.sideF = t.getAttribute('data-s'); seg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === t); }); updHead(); sched(); });
     function shot() { var out = document.createElement('canvas'); var sc = window.devicePixelRatio || 1; out.width = cv.width + pf.width; out.height = cv.height + Math.round(34 * sc); var ox = out.getContext('2d'); ox.fillStyle = '#07090c'; ox.fillRect(0, 0, out.width, out.height); ox.drawImage(cv, 0, 0); ox.drawImage(pf, cv.width, 0); ox.fillStyle = '#c2f64a'; ox.font = '700 ' + Math.round(13 * sc) + 'px "Space Mono",monospace'; ox.textAlign = 'left'; ox.fillText(S.coin + ' LIQUIDATION MAP', Math.round(10 * sc), out.height - Math.round(11 * sc)); ox.fillStyle = '#8fa3c4'; ox.textAlign = 'right'; ox.fillText('marginpad.io/heatmap', out.width - Math.round(10 * sc), out.height - Math.round(11 * sc)); return out; }
     dl.addEventListener('click', function () { try { var a = document.createElement('a'); a.download = 'marginpad-liqmap-' + S.coin + '.png'; a.href = shot().toDataURL('image/png'); a.click(); } catch (e) {} });
+    function shotX() { // 1200x675 (16:9) — the exact card X shows uncropped in the timeline
+      var W = 1200, H = 675, out = document.createElement('canvas'); out.width = W; out.height = H;
+      var ox = out.getContext('2d'); ox.fillStyle = '#07090c'; ox.fillRect(0, 0, W, H);
+      var HEAD = 62, FOOT = 40, mapH = H - HEAD - FOOT;
+      var srcW = cv.width + pf.width, srcH = cv.height;
+      // stitch the two canvases, then COVER the map area anchored RIGHT (price line, labels and the profile live there)
+      var stg = document.createElement('canvas'); stg.width = srcW; stg.height = srcH;
+      var sx = stg.getContext('2d'); sx.fillStyle = '#07090c'; sx.fillRect(0, 0, srcW, srcH); sx.drawImage(cv, 0, 0); sx.drawImage(pf, cv.width, 0);
+      var scl = Math.max(W / srcW, mapH / srcH);
+      var dw = srcW * scl, dh = srcH * scl;
+      ox.drawImage(stg, W - dw, HEAD + (mapH - dh) / 2, dw, dh);
+      ox.fillStyle = '#07090c'; ox.fillRect(0, 0, W, HEAD); ox.fillRect(0, H - FOOT, W, FOOT);
+      ox.strokeStyle = '#1c2230'; ox.lineWidth = 1; ox.beginPath(); ox.moveTo(0, HEAD - 0.5); ox.lineTo(W, HEAD - 0.5); ox.moveTo(0, H - FOOT + 0.5); ox.lineTo(W, H - FOOT + 0.5); ox.stroke();
+      ox.textBaseline = 'middle'; ox.textAlign = 'left';
+      ox.fillStyle = '#c2f64a'; ox.font = '700 24px "Space Mono",monospace';
+      ox.fillText('$' + S.coin + ' LIQUIDATION HEATMAP', 22, HEAD / 2 + 1);
+      if (S.price > 0) { ox.fillStyle = '#ffffff'; ox.font = '700 20px "Space Mono",monospace'; var tW = ox.measureText('$' + S.coin + ' LIQUIDATION HEATMAP').width; ox.font = '700 24px "Space Mono",monospace'; tW = ox.measureText('$' + S.coin + ' LIQUIDATION HEATMAP').width; ox.font = '700 20px "Space Mono",monospace'; ox.fillText('$' + fpx(S.price), 22 + tW + 26, HEAD / 2 + 2); }
+      ox.textAlign = 'right'; ox.fillStyle = '#8fa3c4'; ox.font = '700 17px "Space Mono",monospace';
+      ox.fillText('marginpad.io/heatmap', W - 22, HEAD / 2 + 1);
+      ox.textAlign = 'left'; ox.fillStyle = '#5c6b84'; ox.font = '13px "Space Mono",monospace';
+      ox.fillText('Real liquidations live from Binance \u00b7 Bybit \u00b7 OKX \u00b7 BitMEX \u00b7 Deribit \u00b7 Bitfinex \u2014 bright bands = where liquidations are stacking', 22, H - FOOT / 2);
+      return out;
+    }
     sh.addEventListener('click', function () { try {
       var txt = '$' + S.coin + ' liquidation heatmap — live from 6 exchanges. Price hunts the bright bands.\nhttps://marginpad.io/heatmap';
-      shot().toBlob(function (bl) { try {
+      shotX().toBlob(function (bl) { try {
         var f = bl ? new File([bl], 'marginpad-liqmap-' + S.coin + '.png', { type: 'image/png' }) : null;
         if (f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], text: txt }).catch(function () {}); return; }
         if (bl) { var a = document.createElement('a'); a.download = 'marginpad-liqmap-' + S.coin + '.png'; a.href = URL.createObjectURL(bl); a.click(); }
