@@ -16,6 +16,7 @@ import { DeribitCollector } from './collectors/deribit.js';
 import { BitfinexCollector } from './collectors/bitfinex.js';
 import { BinanceCoinCollector } from './collectors/binancecoin.js';
 import { GateLiqCollector, HtxLiqCollector, DydxLiqCollector } from './collectors/restpoll.js'; // REST-polled public liq feeds (2026-07-25)
+import { HyperliquidLiqCollector } from './collectors/hyperliquid.js'; // counterparty-harvest detection (no public liq stream exists)
 import { startPhase2 } from './phase2.js';
 
 const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'migrations');
@@ -48,6 +49,7 @@ const collectors = [
   new GateLiqCollector({ symbols: config.symbols, onEvent }),
   new HtxLiqCollector({ symbols: config.symbols, onEvent }),
   new DydxLiqCollector({ symbols: config.symbols, onEvent }),
+  new HyperliquidLiqCollector({ symbols: config.symbols, onEvent }),
 ];
 
 function getStatus() {
