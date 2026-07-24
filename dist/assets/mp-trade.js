@@ -424,8 +424,8 @@
         else val='<b style="color:'+((+x.roe)>=0?'#2ebd85':'#ff6258')+'">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</b>';
         return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span> — '+val;}).join('<br>');
       var _we=d&&d.weekEnd,_es='';if(_we){var _ms=_we-Date.now();if(_ms>0){var _d=Math.floor(_ms/86400000),_h=Math.floor(_ms%86400000/3600000);_es=(_d>0?_d+'d ':'')+_h+'h';}}
-      html+='<br><span style="color:#ffce8a;font-size:11.5px">⏳ Runs Mon → Sun (UTC)'+(_es?' · ends in '+_es:'')+'</span>';
-      html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> ROE · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · members only, prizes paid weekly in USDT</span>';
+      html+='<br><span style="color:#ffce8a;font-size:11.5px">⏳ 14-day season (UTC)'+(_es?' · ends in '+_es:'')+'</span>';
+      html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> ROE · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · members only, prizes paid in USDT each 14-day season</span>';
       lbMsg.innerHTML=html;msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();
     }).catch(function(){lbMsg.innerHTML='<span style="color:#ff6258">Could not load the leaderboard. Try again.</span>';});
   }

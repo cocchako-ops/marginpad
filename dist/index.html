@@ -1086,7 +1086,7 @@
     if(note){
       if(lbMode==='following'){note.className='lb-note';note.innerHTML='★ Accounts you follow. Tap any trader to see their card. Sign in to follow players from the board.';}
       else{note.className='lb-note'+(lbMode==='roe'?' pay':'');
-        note.innerHTML='💰 <b>'+(lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every week — climb it. Prizes drop every Monday.';}}
+        note.innerHTML='💰 <b>'+(lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it. Prizes drop when the season ends.';}}
     if(lbMode==='following'){ lbRenderFollowing(el); return; }
     if(lbMode==='wr'){
       var wt=((d&&d.topWr)||[]).slice(0,15);
