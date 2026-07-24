@@ -1243,7 +1243,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
         return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span> — '+val;}).join('<br>');
       var _we=d&&d.weekEnd,_es='';if(_we){var _ms=_we-Date.now();if(_ms>0){var _d=Math.floor(_ms/86400000),_h=Math.floor(_ms%86400000/3600000);_es=(_d>0?_d+'d ':'')+_h+'h';}}
       html+='<br><span style="color:#ffce8a;font-size:11.5px">⏳ 14-day season (UTC)'+(_es?' · ends in '+_es:'')+'</span>';
-      html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> ROE · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · members only, prizes paid weekly in USDT</span>';
+      html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> ROE · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · members only, prizes paid in USDT each 14-day season</span>';
       lbMsg.innerHTML=html;msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();
     }).catch(function(){lbMsg.innerHTML='<span style="color:#ff6258">Could not load the leaderboard. Try again.</span>';});
   }
@@ -2123,7 +2123,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     if(lgMode==='wr'){
       var wt=(d&&d.topWr)||[];
       if(!wt.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgWrEmpty','No one has 20 closed trades this week yet — close 20+ trades and claim the win-rate crown.')+'</div>'+ends;wireLgPills();return;}
-      board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgWrHead','Best win rate this week')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+wt.slice(0,5).map(function(x,i){var rk=i+1;
+      board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgWrHead','Best win rate this season')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+wt.slice(0,5).map(function(x,i){var rk=i+1;
         return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who">'+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span></span><span class="lg-tr">'+(+x.w||0)+'W-'+(+x.l||0)+'L</span><span class="lg-roe up">'+(+x.wr||0).toFixed(0)+'%</span></div>';}).join('')
         +ends;
       if(window.mpLvlDecorate)window.mpLvlDecorate();wireLgPills();return;}

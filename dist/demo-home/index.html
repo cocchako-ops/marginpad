@@ -1053,18 +1053,18 @@
     if(lbMode==='wr'){
       var wt=((d&&d.topWr)||[]).slice(0,15);
       el.innerHTML=wt.length?wt.map(function(t,i){return lbRow(i,t.who,(+t.w||0)+'W-'+(+t.l||0)+'L',Math.round(+t.wr||0)+'%');}).join('')
-        :'<div class="lb-empty">No one has 20 closed trades yet this week — close 20+ and claim the win-rate crown.</div>';
+        :'<div class="lb-empty">No one has 20 closed trades yet this season — close 20+ and claim the win-rate crown.</div>';
       lbAfter(el);return;
     }
     if(lbMode==='xp'){
       var xt=((d&&d.topXp)||[]).slice(0,15);
-      el.innerHTML=xt.length?xt.map(function(t,i){return lbRow(i,t.who,'this week',(+t.xp||0).toLocaleString('en-US')+' XP','up');}).join('')
-        :'<div class="lb-empty">No XP earned yet this week — trade, learn in the Academy, and complete missions to climb.</div>';
+      el.innerHTML=xt.length?xt.map(function(t,i){return lbRow(i,t.who,'this season',(+t.xp||0).toLocaleString('en-US')+' XP','up');}).join('')
+        :'<div class="lb-empty">No XP earned yet this season — trade, learn in the Academy, and complete missions to climb.</div>';
       lbAfter(el);return;
     }
     var top=((d&&d.top)||[]).filter(function(t){return +t.roe>0;}).slice(0,15);
     el.innerHTML=top.length?top.map(function(t,i){var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');return lbRow(i,t.who,pair,'+'+Math.round(+t.roe).toLocaleString('en-US')+'%','up');}).join('')
-      :'<div class="lb-empty">No winning trades yet this week — open a paper trade and close it in profit to top the board.</div>';
+      :'<div class="lb-empty">No winning trades yet this season — open a paper trade and close it in profit to top the board.</div>';
     lbAfter(el);
   }
   function lbAfter(el){ if(window.mpLvlDecorate)try{window.mpLvlDecorate();}catch(e){} }
@@ -1080,7 +1080,7 @@
       if(!f.length){el.innerHTML='<div class="lb-empty">You are not following anyone yet. Tap a trader on the board and hit <b>Follow</b>.</div>';return;}
       el.innerHTML=f.map(function(x){
         var lc=(x.level&&x.level.col)||'#c97f4a';
-        var wk=x.weekTrades>0?(lbMoneyC(x.weekPnl)+' · '+x.weekTrades+' wk'):'no trades this week';
+        var wk=x.weekTrades>0?(lbMoneyC(x.weekPnl)+' · '+x.weekTrades+' wk'):'no trades this season';
         return '<div class="lb-r lb-fr" data-lbu="'+lbEsc(x.name)+'" role="button" tabindex="0" style="--lc:'+lc+'"><span class="lb-fdot" style="background:'+lc+'"></span><span class="lb-who">'+lbEsc(x.name)+'<span data-lvln="'+lbEsc(x.name)+'"></span></span><span class="lb-pair">'+(x.closed||0)+' trades · '+(x.winRate||0)+'%</span><span class="lb-roe '+((+x.weekPnl>=0)?'up':'dn')+'">'+wk+'</span></div>';
       }).join('');
       lbAfter(el);
@@ -1163,21 +1163,21 @@
     var panel=document.getElementById('lbpzPanel'),tabs=document.getElementById('lbpzTabs');
     if(!panel||!tabs)return;
     var PZ={
-      roe:{name:'Highest ROE',pool:25,p:[10,6,4,3,2],live:true,desc:"Your single best trade's return on equity (profit ÷ margin) for the week. One well-timed, high-leverage call can top it — any account size."},
-      wr:{name:'Best win rate',pool:75,p:[35,18,10,7,5],live:true,desc:"The highest share of winning trades over the week (minimum 20 closed trades). Only wins of at least +5% ROE count — tiny scalps don't pad your rate. Rewards steady, consistent trading, not one lucky shot."},
-      xp:{name:'Weekly XP',pool:30,p:[10,8,6,4,2],live:true,desc:"Total XP you earn this week — from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size."}
+      roe:{name:'Highest ROE',pool:25,p:[10,6,4,3,2],live:true,desc:"Your single best trade's return on equity (profit ÷ margin) for the 14-day season. One well-timed, high-leverage call can top it — any account size."},
+      wr:{name:'Best win rate',pool:75,p:[35,18,10,7,5],live:true,desc:"The highest share of winning trades over the 14-day season (minimum 20 closed trades). Only wins of at least +5% ROE count — tiny scalps don't pad your rate. Rewards steady, consistent trading, not one lucky shot."},
+      xp:{name:'Weekly XP',pool:30,p:[10,8,6,4,2],live:true,desc:"Total XP you earn this season — from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size."}
     };
-    function nextMonday(){var n=new Date();var d=Date.UTC(n.getUTCFullYear(),n.getUTCMonth(),n.getUTCDate());var dow=new Date(d).getUTCDay();var add=(8-dow)%7;if(add===0)add=7;return d+add*864e5;}
-    var START=nextMonday();
+    function seasonEnd(){var A=Date.UTC(2026,6,20),P=14*864e5,n=Date.now();return A+(Math.floor((n-A)/P)+1)*P;} // 14-day season clock — same anchor as the server (lbPeriodStart, Mon 2026-07-20)
+    var START=seasonEnd();
     function ctd(){var ms=START-Date.now();if(ms<=0)return'any moment now';var m=Math.floor(ms/6e4),dd=Math.floor(m/1440),h=Math.floor(m%1440/60),mm=m%60;return'in '+(dd>0?dd+'d ':'')+h+'h '+mm+'m';}
     var cur='roe';
     function render(){
       var b=PZ[cur],rows='';
       for(var i=0;i<b.p.length;i++){var r=i+1,lbl=r+(r===1?'st':r===2?'nd':r===3?'rd':'th');rows+='<div class="lbpz-row p'+r+'"><span class="m">'+r+'</span><span class="l">'+lbl+' place</span><span class="v">$'+b.p[i]+'</span></div>';}
-      var badge=b.live?'<span class="lbpz-livebadge">● Live now</span>':'<span class="lbpz-lockbadge">🔒 Next week</span>';
-      var foot=b.live?('Running this week · pays out Monday 00:00 UTC · <b>'+ctd()+'</b>'):('Unlocks Monday 00:00 UTC · <b>'+ctd()+'</b>');
+      var badge=b.live?'<span class="lbpz-livebadge">● Live now</span>':'<span class="lbpz-lockbadge">🔒 Next season</span>';
+      var foot=b.live?('Running this season · pays out at season end (00:00 UTC) · <b>'+ctd()+'</b>'):('Unlocks next season · <b>'+ctd()+'</b>');
       panel.innerHTML='<div class="lbpz-name">'+b.name+badge+'</div>'
-        +'<div class="lbpz-pool">$'+b.pool+'<small>weekly prize pool</small></div>'
+        +'<div class="lbpz-pool">$'+b.pool+'<small>season prize pool</small></div>'
         +'<div class="lbpz-desc">'+b.desc+'</div>'
         +'<div class="lbpz-rows">'+rows+'</div>'
         +'<div class="lbpz-count">'+foot+'</div>';
