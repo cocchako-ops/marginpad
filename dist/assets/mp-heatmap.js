@@ -46,6 +46,23 @@
     '.hm-cl-it .ag{color:#5c6b84;margin-left:auto;font-size:10px}' +
     '.hm-selx{position:absolute;top:4px;right:6px;background:none;border:0;color:#5c6b84;font-size:15px;cursor:pointer;font-family:inherit;padding:2px}.hm-selx:hover{color:#fff}' +
     '@media(max-width:980px){.hm-selbox{max-width:78%;font-size:10.5px}}' +
+    '.hm-mast{order:0;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin:2px 2px 10px}' +
+    '.hm-mast-l{min-width:0}' +
+    '.hm-mast-t{display:flex;align-items:center;gap:10px;font:700 13.5px "Space Mono",monospace;letter-spacing:.13em;color:#c2f64a}' +
+    '.hm-live{display:inline-flex;align-items:center;gap:5px;font-size:9px;letter-spacing:.1em;color:#ff6258;border:1px solid #ff625855;border-radius:20px;padding:2px 8px}' +
+    '.hm-live i{width:6px;height:6px;border-radius:50%;background:#ff6258;animation:hmLive 1.6s infinite}' +
+    '@keyframes hmLive{0%,100%{opacity:1}50%{opacity:.25}}' +
+    '.hm-mast-s{font:11px "Familjen Grotesk",sans-serif;color:#5c6b84;margin-top:4px}' +
+    '.hm-mast-r{margin-left:auto;text-align:right}' +
+    '.hm-mast-r .hm-px{margin-left:0;font-size:19px;line-height:1.15}' +
+    '.hm-mast-r .hm-stats{display:block;margin-top:2px}' +
+    '.hm-bar .hm-btnw{margin-left:auto}' +
+    '.hm-tg-row>span:not(:first-child){background:#0d1116;border:1px solid #1d242f;border-radius:8px;padding:3.5px 9px;white-space:nowrap}' +
+    '.hm-stage{border:1px solid #1c2230;border-radius:12px;overflow:hidden}' +
+    '.hm-foot{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}' +
+    '.hm-foot-c{background:#0b0e13;border:1px solid #1c2230;border-radius:12px;padding:10px 13px}' +
+    '.hm-foot-h{font:700 10px "Space Mono",monospace;letter-spacing:.12em;color:#c2f64a;margin-bottom:5px}' +
+    '@media(max-width:980px){.hm-mast{margin-bottom:8px}.hm-mast-s{display:none}.hm-mast-r .hm-px{font-size:16px}.hm-foot{grid-template-columns:1fr;gap:8px}}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
     '@media(max-width:980px){.hm-targets{order:4;background:#0d1014;border:1px solid #1e242e;border-radius:10px;padding:10px 12px;margin:8px 0 0}.hm-tg-lab{display:none}.hm-tg-h{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;color:#c2f64a;margin-bottom:6px}.hm-tg-exp{display:block;font-size:10.5px;color:#5c6b84;line-height:1.5;margin-top:7px}.hm-tg-row{display:block;margin:3px 0}.hm-tg-row>span{display:inline-block;margin:2px 8px 2px 0}.hm-foot{order:5}}' +
     '@media(max-width:980px){#heatmap.hm-full{width:auto!important;margin-left:0!important}.hm-wrap{padding:8px 8px 7px}.hm-bar{gap:4px;margin-bottom:6px}.hm-sel{height:27px;padding:2px 20px 2px 8px;font-size:11.5px;border-radius:7px;background-position:right 6px center}.hm-seg{height:27px;border-radius:7px}.hm-seg button{padding:0 8px;font-size:10.5px}.hm-btn{width:27px;height:27px;border-radius:7px}.hm-btn svg{width:13px;height:13px}.hm-px{font-size:12px}.hm-px small{font-size:9.5px;margin-left:3px}.hm-stage{height:52vh;min-height:320px}.hm-prof{width:64px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
@@ -554,7 +571,7 @@
     '.hm-t10-r .rk{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;background:#141a26;color:#8fa3c4;font-size:10px;font-weight:700}' +
     '.hm-t10-r .rk1{background:rgba(255,215,90,.16);color:#ffd75a}.hm-t10-r .rk2{background:rgba(201,212,232,.14);color:#c9d4e8}.hm-t10-r .rk3{background:rgba(201,127,74,.16);color:#c97f4a}' +
     '.hm-t10-r .dt{color:#5c6b84}.hm-t10-r b{color:#fff}.hm-t10-r .why{color:#8fa3c4;font-family:"Familjen Grotesk",sans-serif;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
-    '@media(max-width:980px){.hm-mkt-grid{grid-template-columns:1fr}.hm-tm{height:250px}.hm-mkt-chips{margin-left:0;width:100%}.hm-t10-r .why{white-space:normal}}';
+    '@media(max-width:980px){.hm-mkt-grid{grid-template-columns:1fr}.hm-tm{height:250px}.hm-mkt-chips{margin-left:0;width:100%}.hm-t10-r .why{white-space:normal}.hm-mkt-l,.hm-mkt-r{display:contents}.hm-tmw{order:1}.hm-tots{order:2}.hm-story{order:3}.hm-ext{order:4}.hm-t10{order:5}}';
   function layoutTreemap(items, W, H) { // squarified treemap: items [{v,...}] sorted desc -> [{x,y,w,h,it}]
     var sum = 0; items.forEach(function (i) { sum += i.v; }); if (!(sum > 0)) return [];
     var scaled = items.map(function (i) { return { it: i, a: i.v / sum * W * H }; });
@@ -772,14 +789,19 @@
     var sh = el('button', 'hm-btn', '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>'); sh.type = 'button'; sh.title = 'Share on X';
     var stEl = el('span', 'hm-stats', '');
     var pxEl = el('div', 'hm-px', '…');
-    bar.appendChild(selC); bar.appendChild(selW); bar.appendChild(seg); bar.appendChild(dotsB); bar.appendChild(dl); bar.appendChild(sh); bar.appendChild(pxEl); bar.appendChild(stEl);
+    bar.appendChild(selC); bar.appendChild(selW); bar.appendChild(seg); bar.appendChild(dotsB); bar.appendChild(dl); bar.appendChild(sh);
+    var mast = el('div', 'hm-mast');
+    mast.innerHTML = '<div class="hm-mast-l"><div class="hm-mast-t">LIQUIDATION HEATMAP<span class="hm-live"><i></i>LIVE</span></div><div class="hm-mast-s">Real liquidations from 11 venues, streamed the second they happen \u2014 bright bands show where leveraged positions die next.</div></div><div class="hm-mast-r"></div>';
+    var mastR = mast.querySelector('.hm-mast-r'); mastR.appendChild(pxEl); mastR.appendChild(stEl);
     var tgEl = el('div', 'hm-targets'); tgEl.style.cssText = 'display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11.5px "Space Mono",monospace;color:#8fa3c4;margin:0 0 8px;min-height:18px';
     var stage = el('div', 'hm-stage');
     var cv = el('canvas', 'hm-cv'), pf = el('canvas', 'hm-prof'), tip = el('div', 'hm-tip'), loadEl = el('div', 'hm-load', 'Building liquidation map…');
     var selBox = el('div', 'hm-selbox');
     stage.appendChild(cv); stage.appendChild(pf); stage.appendChild(tip); stage.appendChild(loadEl); stage.appendChild(selBox);
-    var foot = el('div', 'hm-foot', '<b>How to read it:</b> bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices are stacking up there — price tends to sweep the brightest ones. Bands disappear the moment price trades through them. Drag to pan (any direction) · scroll = zoom time · Shift+scroll = zoom price · double-click resets.<br><b>Data:</b> real liquidations streamed live from <b>Binance · Bybit · OKX · Hyperliquid · Gate · HTX · dYdX · BitMEX · Deribit · Bitfinex</b> — that covers roughly <b>85%+</b> of the market&rsquo;s liquidation flow, not 100% of every venue, but the ones that move the market. The bands are our own estimate computed from live price action (10–100&times; entries at each close).');
-    wrap.appendChild(bar); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(foot);
+    var foot = el('div', 'hm-foot',
+      '<div class="hm-foot-c"><div class="hm-foot-h">HOW TO READ IT</div>Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there \u2014 price tends to sweep the brightest ones, and a band disappears the moment price trades through it. Drag to pan (any direction) \u00b7 scroll = zoom time \u00b7 Shift+scroll = zoom price \u00b7 double-click resets.</div>' +
+      '<div class="hm-foot-c"><div class="hm-foot-h">DATA</div>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 BitMEX \u00b7 Deribit \u00b7 Bitfinex</b> \u2014 roughly <b>85%+</b> of the market\u2019s liquidation flow. The bands are our own estimate computed from live price action (10\u2013100\u00d7 entries at each close).</div>');
+    wrap.appendChild(mast); wrap.appendChild(bar); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(foot);
     section.innerHTML = ''; section.appendChild(wrap);
     section.style.display = '';
 
