@@ -148,7 +148,7 @@
   function loadKlines(p){ if(!p.candle)return;var sym=p.sym,tf=p.tf;p.reload=Date.now();
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle)return;
-      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);p.chart.priceScale('right').applyOptions({autoScale:true});p.chart.timeScale().scrollToRealTime();}catch(e){}applyInds(p);if(p.trades)drawTrades(p);try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}}
+      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);var _lp=Math.abs(+p.lastBar.close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);p.candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});p.chart.priceScale('right').applyOptions({autoScale:true});p.chart.timeScale().scrollToRealTime();}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs — mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}}
       label(p);
     });
   }
@@ -333,10 +333,12 @@
         if(isFinite(tp)&&((long&&tp<=px)||(!long&&tp>=px)))tp=NaN;
         var tr=parseFloat(q('mtrTr').value),be=parseFloat(q('mtrBE').value);
         var notional=amt*lev,qty=notional/px,liq=long?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
+        var _locT={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:tSym,side:side,entry:px,stop:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,trail:(isFinite(tr)&&tr>0)?tr:null,be:(isFinite(be)&&be>0)?be:null,hwm:null,lev:lev,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null};
+        var _finMc=function(P){
         var d;try{d=JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){d=[];}
-        d.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:tSym,side:side,entry:px,stop:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,trail:(isFinite(tr)&&tr>0)?tr:null,be:(isFinite(be)&&be>0)?be:null,hwm:null,lev:lev,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null});
+        d.push(P);
         try{localStorage.setItem('mp_journal',JSON.stringify(d));}catch(e){}
-        if(window.mpLivePrices)window.mpLivePrices[tSym]={p:px,t:Date.now()};
+        if(window.mpLivePrices)window.mpLivePrices[tSym]={p:+P.entry,t:Date.now()};
         if(window.mpJournalRender)window.mpJournalRender();
         try{window.mpBuzz&&window.mpBuzz([15]);}catch(e){}
         try{if(window.mpLevWarn)window.mpLevWarn(lev);}catch(e){}
@@ -345,6 +347,10 @@
         msg.style.color='#2ebd85';msg.textContent=mcT('mtOpened','Position opened ✓')+' — '+tSym+' '+side+' '+lev+'× · $'+amt;
         var g=q('mtrGo');g.textContent=mcT('mtOpened','Position opened ✓');
         setTimeout(function(){if(document.body.contains(g))g.textContent=mcT('mtOpen','Open demo trade');},1600);
+        };
+        var _tr9=(isFinite(tr)&&tr>0)?tr:null,_be9=(isFinite(be)&&be>0)?be:null;
+        if(window.mpSrvOpen){window.mpSrvOpen({sym:tSym,side:side,lev:lev,margin:amt,sl:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null},function(t){t.trail=_tr9;t.be=_be9;t.hwm=null;_finMc(t);},function(){_finMc(_locT);});}
+        else{_finMc(_locT);}
         panes.forEach(function(pn){if(pn.trades)try{drawTrades(pn);}catch(e){}});
       });
     });

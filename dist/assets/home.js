@@ -328,7 +328,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   // render a klines array onto the chart (precision + data + scale + live-seed of the forming candle + position lines)
   function renderKlines(kd){ if(!(kd&&kd.length&&candle))return;
     bars=sanitizeBars(kd);
-    try{var _lp=Math.abs(+kd[kd.length-1].close)||0,_pc=(_lp>=1?2:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});}catch(e){}
+    try{var _lp=Math.abs(+kd[kd.length-1].close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});}catch(e){}/* ~5 sig figs — $1-100 coins were 2dp (XRP 1.09 hid 1.0904) */
     try{candle.setData(bars);chart.priceScale('right').applyOptions({autoScale:true});chart.timeScale().applyOptions({secondsVisible:parseInt(chartTf,10)<=5});chart.timeScale().scrollToRealTime();}catch(e){}
     lastBar=bars[bars.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;
     /* seed the forming candle with the live price immediately — the klines tail is edge-cached up to ~20s, so the last candle (and the price-line basis) isn't a few ticks behind the live number */
@@ -1931,7 +1931,7 @@ window.addEventListener('load', function () {
    real consecutive ticks. mpSmoothPx(el, value, fmtFn) registers an element; the rAF loop animates it. */
 (function(){
   var states={}; // keyed state so the roll persists even when a ticket rebuilds its element
-  function dpFor(v){ return v>=1?2 : v>=0.01?4 : v>=0.0001?6 : 8; }     // every price ≥ $1 shows exactly 2 decimals (.00); sub-dollar keeps precision
+  function dpFor(v){ v=Math.abs(+v)||0; return v>=1000?2 : v>=100?3 : v>=10?3 : v>=1?4 : v>=0.1?4 : v>=0.01?5 : v>=0.001?6 : v>=0.0001?7 : 8; }     // ~5 sig figs; $1-100 coins now keep 3-4 dp (XRP 1.0904, SOL 74.093) instead of collapsing to 2
   function fmt(v,dp){ return '$'+v.toLocaleString('en-US',{minimumFractionDigits:dp,maximumFractionDigits:dp}); } // min=max → width never changes
   window.mpSmoothPx=function(el,value,key){
     if(!el||!(value>0))return false;
