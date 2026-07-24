@@ -14,7 +14,11 @@
 
   var CSS = 'body.heatmap-page .wrap{max-width:none!important}#heatmap.hm-full{width:auto!important;margin-left:0!important;max-width:none!important}' + // same full-width wrap as /paper-trade — header/logo land at the SAME x on both pages (owner 2026-07-25)
     
-    '.hm-wrap{background:#0b0d10;border:1px solid #1c2230;border-radius:14px;padding:12px 14px 10px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif}' +
+    '.hm-wrap{background:#0b0d10;border:1px solid #1c2230;border-radius:14px;padding:12px 14px 10px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif;display:flex;flex-direction:column}' +
+    '.hm-bar{order:1}.hm-targets{order:2}.hm-stage{order:3}.hm-foot{order:4}' +
+    '.hm-tg-h{display:none}' +
+    '.hm-tg-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}' +
+    '.hm-tg-exp{display:none}' +
     '.hm-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:9px}' +
     '.hm-sel{appearance:none;-webkit-appearance:none;background:#12161d url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 stroke=%27%238fa3c4%27 stroke-width=%271.6%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid #232b3a;color:#fff;border-radius:8px;padding:5px 24px 5px 10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;height:32px}' +
     '.hm-sel:focus{outline:none;border-color:#c2f64a}' +
@@ -33,6 +37,7 @@
     '.hm-foot{margin-top:8px;font-size:11px;color:#5c6b84;line-height:1.55}' +
     '.hm-foot b{color:#8fa3c4;font-weight:700}.hm-foot .l{color:#2ebd85}.hm-foot .s{color:#ff6258}' +
     '.hm-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5c6b84;font-size:13px;background:rgba(7,9,12,.7);z-index:4;border-radius:10px}' +
+    '@media(max-width:980px){.hm-targets{order:4;background:#0d1014;border:1px solid #1e242e;border-radius:10px;padding:10px 12px;margin:8px 0 0}.hm-tg-h{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;color:#c2f64a;margin-bottom:6px}.hm-tg-exp{display:block;font-size:10.5px;color:#5c6b84;line-height:1.5;margin-top:7px}.hm-tg-row{display:block;margin:3px 0}.hm-tg-row>span{display:inline-block;margin:2px 8px 2px 0}.hm-foot{order:5}}' +
     '@media(max-width:980px){#heatmap.hm-full{width:auto!important;margin-left:0!important}.hm-wrap{padding:8px 8px 7px}.hm-bar{gap:4px;margin-bottom:6px}.hm-sel{height:27px;padding:2px 20px 2px 8px;font-size:11.5px;border-radius:7px;background-position:right 6px center}.hm-seg{height:27px;border-radius:7px}.hm-seg button{padding:0 8px;font-size:10.5px}.hm-btn{width:27px;height:27px;border-radius:7px}.hm-btn svg{width:13px;height:13px}.hm-px{font-size:12px}.hm-px small{font-size:9.5px;margin-left:3px}.hm-stage{height:52vh;min-height:320px}.hm-prof{width:64px}.hm-stats{display:none}.hm-foot{font-size:10px;margin-top:6px}}';
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
@@ -75,6 +80,7 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
     var v = S.view, bars = S.bars, P = S.pools, i, b;
     var pLo = 1 / 0, pHi = -1 / 0;
+    if (S.yView && (!isFinite(S.yView.lo) || !isFinite(S.yView.hi) || S.yView.hi <= S.yView.lo)) S.yView = null; // corrupt view state self-heals instead of blanking the canvas
     if (S.yView) { pLo = S.yView.lo; pHi = S.yView.hi; } // user panned/zoomed the price axis — respect it
     else {
       for (i = 0; i < bars.length; i++) { b = bars[i]; if (b.time < v.t0 || b.time > v.t1) continue; if (b.low < pLo) pLo = b.low; if (b.high > pHi) pHi = b.high; }
@@ -249,9 +255,10 @@
     for (var i = 0; i < P.alive.length; i++) { var x = P.alive[i]; if (Math.abs(x.price - px) / px > 0.12) continue; (x.price > px ? up : dn).push(x); }
     var sc = function (a, b) { return magnetScore(b, px) - magnetScore(a, px); }; up.sort(sc); dn.sort(sc);
     var cell = function (x) { var d = ((x.price - px) / px * 100); return '<span style="color:' + (x.long ? '#2ebd85' : '#ff6258') + '"><b style="color:#e9e7df">' + fpx(x.price) + '</b> ' + money(x.w) + ' <i style="font-style:normal;color:#5c6b84">' + (d >= 0 ? '+' : '') + d.toFixed(1) + '%</i></span>'; };
-    var h = '<span style="color:#5c6b84;font-weight:700">TARGETS</span>';
-    if (up.length) h += '<span style="color:#5c6b84">\u2191</span>' + up.slice(0, 3).map(cell).join(' ');
-    if (dn.length) h += '<span style="color:#5c6b84;margin-left:6px">\u2193</span>' + dn.slice(0, 3).map(cell).join(' ');
+    var h = '<div class="hm-tg-h">TARGETS \u2014 where liquidity pulls price</div>';
+    var row1 = '<span style="color:#5c6b84;font-weight:700">TARGETS \u2191</span>' + (up.length ? up.slice(0, 3).map(cell).join(' ') : '<span style="color:#3a465c">none nearby</span>');
+    var row2 = '<span style="color:#5c6b84;font-weight:700;margin-left:6px">\u2193</span>' + (dn.length ? dn.slice(0, 3).map(cell).join(' ') : '<span style="color:#3a465c">none nearby</span>');
+    h += '<div class="hm-tg-row">' + row1 + row2;
     // squeeze: strong pools close on BOTH sides
     var wMax = P.alive.length ? P.alive[0].w : 0;
     var nu = up[0], nd = dn[0];
@@ -259,6 +266,7 @@
       var lean = S.funding == null ? '' : (S.funding > 0.0001 ? ' \u00b7 longs pay funding \u2192 downside sweep slightly favored' : S.funding < -0.0001 ? ' \u00b7 shorts pay funding \u2192 upside sweep slightly favored' : '');
       h += '<span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.45);color:#ffd75a;border-radius:7px;padding:2px 8px;font-weight:800">SQUEEZE SETUP' + lean + '</span>';
     }
+    h += '</div><div class="hm-tg-exp">The biggest crowds of liquidation prices near the current price \u2014 green = longs get liquidated there (below), red = shorts (above). Price tends to sweep the largest ones. Drag the map with one finger, pinch with two.</div>';
     S.tgEl.innerHTML = h;
   }
   function updHead() {
@@ -336,10 +344,28 @@
         S.yView = { lo: tX.yLo + dp, hi: tX.yHi + dp }; sched();
       }
     }, { passive: false });
+    // WHERE-$-SITS column = price-axis zoom control (TradingView-style): drag DOWN = expand the range
+    // (zoom out, see far pools), drag UP = tighten. Works with finger and mouse; wheel too.
+    (function () {
+      var pf = S.pf, g = null;
+      function yr() { return { lo: S.yView ? S.yView.lo : S.yLo, hi: S.yView ? S.yView.hi : S.yHi }; }
+      function apply(dy) { var r0 = g.r, f = Math.exp(dy / 220); var mid = (r0.lo + r0.hi) / 2, half = (r0.hi - r0.lo) / 2 * f; S.yView = { lo: mid - half, hi: mid + half }; sched(); }
+      pf.style.cursor = 'ns-resize'; pf.title = 'Drag to zoom the price axis';
+      pf.addEventListener('mousedown', function (ev) { g = { y: ev.clientY, r: yr() }; ev.preventDefault(); });
+      window.addEventListener('mousemove', function (ev) { if (g && S) apply(ev.clientY - g.y); });
+      window.addEventListener('mouseup', function () { g = null; });
+      pf.addEventListener('touchstart', function (ev) { if (ev.touches.length === 1) g = { y: ev.touches[0].clientY, r: yr() }; }, { passive: true });
+      pf.addEventListener('touchmove', function (ev) { if (g && ev.touches.length === 1) { ev.preventDefault(); apply(ev.touches[0].clientY - g.y); } }, { passive: false });
+      pf.addEventListener('touchend', function () { g = null; });
+      pf.addEventListener('wheel', function (ev) { ev.preventDefault(); var r0 = yr(), f = ev.deltaY > 0 ? 1.15 : 0.87; var mid = (r0.lo + r0.hi) / 2, half = (r0.hi - r0.lo) / 2 * f; S.yView = { lo: mid - half, hi: mid + half }; sched(); }, { passive: false });
+      pf.addEventListener('dblclick', function () { S.yView = null; sched(); });
+    })();
     cv.addEventListener('touchend', function (ev) {
       if (ev.touches.length < 2) tP = null;
-      if (ev.touches.length === 1) { var r = cv.getBoundingClientRect(); tX = { x: ev.touches[0].clientX - r.left, t0: S.view.t0, t1: S.view.t1 }; }
+      if (ev.touches.length === 1) { var r = cv.getBoundingClientRect(); tX = { x: ev.touches[0].clientX - r.left, y: ev.touches[0].clientY - r.top, t0: S.view.t0, t1: S.view.t1, yLo: S.yLo, yHi: S.yHi }; } // FULL state incl. y — the old rebuild here missed y/yLo/yHi, the next 1-finger move produced a NaN price range and the map went blank
       else if (!ev.touches.length) tX = null;
+      // double-tap = reset both axes (phones have no dblclick/wheel)
+      if (!ev.touches.length) { var nw = Date.now(); if (S._lt && nw - S._lt < 320) { if (S.bars.length) { var w = WINS[S.win]; S.view = { t0: Date.now() / 1000 - w.mins * 60, t1: S.bars[S.bars.length - 1].time + 300 }; S.yView = null; sched(); } S._lt = 0; } else S._lt = nw; }
     });
   }
 
