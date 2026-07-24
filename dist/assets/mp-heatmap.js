@@ -518,7 +518,7 @@
     ['2021-04-16', '$2.77B', 'Turkey crypto-payment ban'],
     ['2026-01-31', '$2.56B', 'Over-leveraged longs flushed']
   ];
-  var MKT_CSS = '.hm-mkt{margin:26px 0 10px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif}' +
+  var MKT_CSS = '.hm-mkt{order:9;margin:26px 0 10px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif}' +
     '.hm-mkt-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}' +
     '.hm-mkt-head>b{font:700 12px "Space Mono",monospace;letter-spacing:.14em;color:#c2f64a}' +
     '.hm-mkt-sub{font:11px "Space Mono",monospace;color:#5c6b84}' +
