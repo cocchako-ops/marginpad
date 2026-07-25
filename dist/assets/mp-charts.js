@@ -373,7 +373,7 @@
     indMenuEl.addEventListener('click',function(e){
       var per=e.target.closest&&e.target.closest('.cwin-ind-pers b[data-pp]');
       if(per&&indMenuW){var row=per.parentNode,pk=row.getAttribute('data-p'),pp=+per.getAttribute('data-pp');var list=pk==='ema'?(indMenuW.emaList=indMenuW.emaList||(indMenuW.emaP?[indMenuW.emaP]:[21])):(indMenuW.smaList=indMenuW.smaList||(indMenuW.smaP?[indMenuW.smaP]:[50]));var ix=list.indexOf(pp);if(ix>=0){if(list.length>1)list.splice(ix,1);}else{if(list.length>=3)list.shift();list.push(pp);}list.sort(function(a,b){return a-b;});Array.prototype.forEach.call(row.querySelectorAll('b'),function(x){x.classList.toggle('on',list.indexOf(+x.getAttribute('data-pp'))>=0);});if(!indMenuW.inds[pk]){indMenuW.inds[pk]=true;var itm=indMenuEl.querySelector('.cwin-ind-item[data-ind="'+pk+'"]');if(itm)itm.classList.add('on');}applyInds(indMenuW);updateIndN(indMenuW);savePersist();return;}
-      var b=e.target.closest&&e.target.closest('.cwin-ind-item');if(!b||!indMenuW)return;var k=b.getAttribute('data-ind');if(MP_INDS[k]&&!indAllowed()){chartToast('Locked — this is a MarginPad exclusive indicator. Ask us to unlock it for your account.');return;}indMenuW.inds[k]=!indMenuW.inds[k];b.classList.toggle('on',!!indMenuW.inds[k]);if(indMenuW.inds[k]){try{var _il=(b.querySelector('.cwin-ind-it-lbl')||{}).textContent||k;window.__mpTrack&&window.__mpTrack('ind',_il);}catch(_){}}applyInds(indMenuW);updateIndN(indMenuW);savePersist();
+      var b=e.target.closest&&e.target.closest('.cwin-ind-item');if(!b||!indMenuW)return;var k=b.getAttribute('data-ind');if(MP_INDS[k]&&!indAllowed()){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show('Unlock the premium indicators');else chartToast('Premium indicator — sign in and upgrade to use it.');return;}indMenuW.inds[k]=!indMenuW.inds[k];b.classList.toggle('on',!!indMenuW.inds[k]);if(indMenuW.inds[k]){try{var _il=(b.querySelector('.cwin-ind-it-lbl')||{}).textContent||k;window.__mpTrack&&window.__mpTrack('ind',_il);}catch(_){}}applyInds(indMenuW);updateIndN(indMenuW);savePersist();
     });
     document.addEventListener('pointerdown',function(e){if(indMenuEl&&!indMenuEl.hidden&&!(e.target.closest&&(e.target.closest('.cwin-ind-menu')||e.target.closest('.cwin-ind-btn'))))indMenuEl.hidden=true;},true);
     window.addEventListener('scroll',function(e){if(indMenuEl&&!indMenuEl.hidden&&!(e.target&&e.target.closest&&e.target.closest('.cwin-ind-menu')))indMenuEl.hidden=true;},true);/* scrolling inside the indicator list must not close it */
@@ -470,6 +470,8 @@
   }
   function aiRenderBody(w){var body=aiEl&&aiEl.querySelector('.cwin-ai-body');if(!body)return;var arr=aiHistLoad(w);if(!arr.length){body.innerHTML='<div class="aimsg-empty"><b>New here? Just tap “Read this chart for me”.</b><br>I’ll explain in plain words what this '+escHtml(w.sym+' '+tfLabel(w.tf))+' chart is doing and whether it looks better for a long or a short — no jargon. Ask follow-ups any time.<br><button class="cwin-ai-chip" data-q="" style="margin-top:11px">Read this chart for me</button></div>';return;}body.innerHTML=arr.map(aiBubble).join('');body.scrollTop=body.scrollHeight;}
   function aiSetChips(w){var box=aiEl&&aiEl.querySelector('.cwin-ai-chips');if(!box)return;var chips=[['','Quick read'],['What is the trend and momentum here?','Trend'],['Where are the key support and resistance levels?','Levels'],['What would confirm or invalidate this setup?','What to watch']];var hasPos=false;try{hasPos=jload().some(function(e){return e.status==='open'&&e.sym===w.sym;});}catch(e){}if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);box.innerHTML=chips.map(function(c){return '<button class="cwin-ai-chip" data-q="'+escAttr(c[0])+'">'+escHtml(c[1])+'</button>';}).join('');}
+  var aiPremium=false;
+  function aiShowPremiumGate(){if(!aiEl)return;aiEl.classList.add('gated');var body=aiEl.querySelector('.cwin-ai-body');if(!body)return;body.innerHTML='<div class="cwin-ai-gate"><b>Ask AI is a Premium feature.</b><br>A built-in analyst that reads any chart and answers your questions in plain words.<br><button class="g-btn" type="button">Unlock Premium — $12.99/mo</button></div>';var g=body.querySelector('.g-btn');if(g)g.addEventListener('click',function(){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show('Unlock Ask AI on your charts');});}
   function aiShowGate(){if(!aiEl)return;aiEl.classList.add('gated');var body=aiEl.querySelector('.cwin-ai-body');body.innerHTML='<div class="cwin-ai-gate">Sign in (free — just an email code) to ask AI about your charts.<br>You get <b>'+aiLimit+' questions a day</b>.<br><button class="g-btn" type="button">Sign in free</button></div>';var g=body.querySelector('.g-btn');if(g)g.addEventListener('click',function(){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}});}
   function aiClose(){if(aiEl)aiEl.hidden=true;if(aiRaf){cancelAnimationFrame(aiRaf);aiRaf=0;}}
   /* The panel stays attached to its chart window via an offset (aiOffX/aiOffY from the window's top-right) — so it moves WITH the window on drag/scroll, but the user can freely drag it anywhere (which just updates the offset). */
@@ -510,6 +512,7 @@
     if(aiBusy||!aiW||!aiEl)return;
     var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
     if(!me){aiShowGate();return;}
+    if(!aiPremium){aiShowPremiumGate();return;}
     var w=aiW,q=String(question||'').trim();if(!q)q='Give me a sharp, practical read on this chart right now.';
     try{window.__mpTrack&&window.__mpTrack('ai',(w&&w.sym)||'');}catch(_){}
     var hist=aiHistLoad(w);hist.push({role:'user',text:q,ts:Date.now()});aiHistSave(w,hist);
@@ -521,7 +524,7 @@
     var acc='',got=false;
     function fail(msg){aiBusy=false;bub.classList.remove('streaming');bub.innerHTML='<span style="color:#ff8a80">'+escHtml(msg)+'</span>';}
     fetch('/api/ai/chart',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({context:aiContext(w),question:q,history:payloadHist,stream:true,lang:(window.mpLang||document.documentElement.lang||'en')})}).then(function(resp){
-      if(!resp.ok){resp.json().then(function(d){aiBusy=false;if(resp.status===401){bub.remove();aiShowGate();}else if(resp.status===429){fail('You’ve used all '+((d&&d.limit)||aiLimit)+' AI questions today — resets tomorrow.');aiSetQuota((d&&d.used)||(d&&d.limit)||aiLimit,(d&&d.limit)||aiLimit);}else if(d&&d.error==='ai_unconfigured'){fail('AI is not switched on yet.');}else{fail('Could not reach AI — please try again.');}}).catch(function(){fail('Could not reach AI — please try again.');});return;}
+      if(!resp.ok){resp.json().then(function(d){aiBusy=false;if(resp.status===401){bub.remove();aiShowGate();}else if(resp.status===402){bub.remove();aiShowPremiumGate();}else if(resp.status===429){fail('You’ve used all '+((d&&d.limit)||aiLimit)+' AI questions today — resets tomorrow.');aiSetQuota((d&&d.used)||(d&&d.limit)||aiLimit,(d&&d.limit)||aiLimit);}else if(d&&d.error==='ai_unconfigured'){fail('AI is not switched on yet.');}else{fail('Could not reach AI — please try again.');}}).catch(function(){fail('Could not reach AI — please try again.');});return;}
       var u=resp.headers.get('x-ai-used'),l=resp.headers.get('x-ai-limit');if(u)aiSetQuota(+u,+l);
       if(!resp.body||!resp.body.getReader){resp.text().then(function(){fail('Streaming not supported here.');});return;}
       var reader=resp.body.getReader(),dec=new TextDecoder(),buf='';
@@ -542,10 +545,10 @@
     aiW=w;aiBusy=false;aiLastL=null;aiLastT=null;
     aiEl.querySelector('.cwin-ai-sym').textContent=w.sym+' · '+tfLabel(w.tf);
     var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;
-    if(!me){aiShowGate();}else{aiEl.classList.remove('gated');aiSetChips(w);aiRenderBody(w);}
+    if(!me){aiShowGate();}else if(!aiPremium){aiShowPremiumGate();}else{aiEl.classList.remove('gated');aiSetChips(w);aiRenderBody(w);}
     aiEl.hidden=false;
     if(aiRaf)cancelAnimationFrame(aiRaf);aiRaf=requestAnimationFrame(aiFollow);
-    if(me)fetch('/api/ai/chart',{method:'GET'}).then(function(r){return r.json();}).then(function(d){if(d&&d.signedIn)aiSetQuota(d.used,d.limit);}).catch(function(){});
+    if(me)fetch('/api/ai/chart',{method:'GET'}).then(function(r){return r.json();}).then(function(d){if(d){aiPremium=!!d.premium;if(!aiPremium){aiShowPremiumGate();}else{aiEl&&aiEl.classList.remove('gated');if(d.signedIn)aiSetQuota(d.used,d.limit);}}}).catch(function(){});
   }
   /* Set a price alert straight from the chart — tap a level, it creates a real /api/alerts alert + draws an anchored line */
   // remove an alert's line + cancel it server-side (silent skips the toast / used on failed creates)

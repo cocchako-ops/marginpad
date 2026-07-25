@@ -781,6 +781,29 @@
     S.timers.push(setInterval(function () { if (!document.hidden) loadMkt(); }, 90000));
     var roT; try { new ResizeObserver(function () { clearTimeout(roT); roT = setTimeout(render, 250); }).observe(tm); } catch (e) {}
   }
+  function premiumGate(wrap) {
+    var stage = wrap.querySelector('.hm-stage'); if (!stage) return;
+    fetch('/api/premium/status', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }).then(function (j) {
+      if (!S || !stage.parentNode) return;
+      if (j && j.premium) return; // full access for premium members
+      var PREVIEW = 60, left = PREVIEW, signedIn = j && j.signedIn;
+      var rib = el('div', 'hm-prevrib'); rib.style.cssText = 'position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:7;background:rgba(10,12,16,.92);border:1px solid #c2f64a55;border-radius:20px;padding:5px 14px;font:11px "Space Mono",monospace;color:#c2f64a;pointer-events:none';
+      rib.textContent = 'Premium preview — locks in ' + left + 's'; stage.appendChild(rib);
+      var iv = setInterval(function () { left--; if (rib) rib.textContent = 'Premium preview — locks in ' + Math.max(0, left) + 's'; if (left <= 0) { try { clearInterval(iv); } catch (e) {} } }, 1000);
+      S.timers.push(iv);
+      var t = setTimeout(function () {
+        if (!S || !stage.parentNode) return; try { clearInterval(iv); } catch (e) {} if (rib && rib.parentNode) rib.parentNode.removeChild(rib);
+        var ov = el('div', 'hm-paywall'); ov.style.cssText = 'position:absolute;inset:0;z-index:9;background:rgba(7,9,12,.9);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:9px';
+        ov.innerHTML = '<div style="font:700 11px \'Space Mono\',monospace;letter-spacing:.16em;color:#c2f64a">MARGINPAD PREMIUM</div>' +
+          '<div style="font:800 21px \'Familjen Grotesk\',system-ui,sans-serif;color:#fff;max-width:430px;line-height:1.25">The live liquidation heatmap is a Premium feature</div>' +
+          '<div style="color:#8fa3c4;font-size:13px;max-width:430px;line-height:1.55">See exactly where leveraged positions get wiped and which levels price is hunting — plus 8 exclusive indicators and AI on your charts.</div>' +
+          '<button class="hm-pw-btn" type="button" style="margin-top:10px;background:#c2f64a;color:#0a0b0d;border:0;border-radius:12px;padding:13px 26px;font-size:15px;font-weight:800;cursor:pointer">' + (signedIn ? 'Unlock Premium — $12.99 / month' : 'Sign in to unlock') + '</button>';
+        stage.appendChild(ov);
+        ov.querySelector('.hm-pw-btn').addEventListener('click', function () { if (window.mpPremium && window.mpPremium.show) window.mpPremium.show('Unlock the liquidation heatmap'); else if (window.mpAuth && window.mpAuth.open) window.mpAuth.open(); });
+      }, PREVIEW * 1000);
+      S.timers.push(t);
+    });
+  }
   function mount(section, coin) {
     if (!section) return;
     unmount();
@@ -869,6 +892,7 @@
     S.timers.push(setTimeout(function () { try { fetch('/api/auth/heatxp', { method: 'POST' }); } catch (e) {} }, 20000)); // signed-in: +15 XP once/day for actually reading the map
     S.ro = new ResizeObserver(sched); S.ro.observe(cv); S.ro.observe(pf);
     try { buildMkt(wrap); } catch (e) {}
+    try { premiumGate(wrap); } catch (e) {}
     loadAll(true);
   }
   function unmount() {

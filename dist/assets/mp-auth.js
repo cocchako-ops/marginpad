@@ -750,6 +750,60 @@
     dm: function (name) { if (!ME) { open(); return; } open(); setTimeout(function () { try { renderDmThread(name); } catch (e) {} }, 30); },
     duel: function (name) { open(); setTimeout(function () { try { if (ME) renderDuelChallenge(name); } catch (e) {} }, 30); } };
 
+  /* ===== Premium upgrade modal (shared: charts indicators, AI, heatmap all call window.mpPremium) ===== */
+  (function () {
+    var FEATS = [
+      ['8 exclusive indicators', 'Market Brain, Cascade Radar, Liquidation Magnet, Market Memory & more — signals built on our data that no other chart has.'],
+      ['Live liquidation heatmap', 'The full interactive map of where leveraged positions get wiped — desktop & mobile, unlimited.'],
+      ['Ask AI on your charts', 'A built-in analyst that reads any chart and answers your questions in plain words.']
+    ];
+    function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
+    var ov = null;
+    function close() { if (ov) { ov.remove(); ov = null; } }
+    function checkout(btn, note) {
+      if (!(window.mpAuth && window.mpAuth.me && window.mpAuth.me())) { close(); open(); return; }
+      if (btn) { btn.disabled = true; btn.textContent = 'Starting checkout...'; }
+      fetch('/api/premium/checkout', { method: 'POST' }).then(function (r) { return r.json(); }).then(function (j) {
+        if (j && j.invoice_url) { location.href = j.invoice_url; return; }
+        if (btn) { btn.disabled = false; btn.textContent = 'Pay with crypto — $12.99 / month'; }
+        if (note) note.textContent = (j && j.error === 'already_premium') ? 'You are already Premium. Thank you.' : (j && j.error === 'unconfigured') ? 'Crypto checkout is being switched on — please check back very soon.' : 'Could not start checkout. Please try again.';
+      }).catch(function () { if (btn) { btn.disabled = false; btn.textContent = 'Pay with crypto — $12.99 / month'; } if (note) note.textContent = 'Network error. Please try again.'; });
+    }
+    function show(reason) {
+      close();
+      if (!document.getElementById('mpPremCss')) { var st = document.createElement('style'); st.id = 'mpPremCss'; st.textContent =
+        '.mpprem-ov{position:fixed;inset:0;z-index:100000;background:rgba(5,7,10,.72);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:18px}' +
+        '.mpprem{width:min(440px,94vw);max-height:92vh;overflow:auto;background:#0b0e13;border:1px solid #c2f64a55;border-radius:18px;padding:24px 22px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif;box-shadow:0 24px 70px rgba(0,0,0,.6);position:relative}' +
+        '.mpprem-x{position:absolute;top:12px;right:14px;background:none;border:0;color:#5c6b84;font-size:20px;cursor:pointer}.mpprem-x:hover{color:#fff}' +
+        '.mpprem-tag{display:inline-block;font:700 10px "Space Mono",monospace;letter-spacing:.16em;color:#0a0b0d;background:#c2f64a;border-radius:20px;padding:3px 11px;margin-bottom:12px}' +
+        '.mpprem h3{margin:0 0 4px;font-size:22px;color:#fff;font-weight:800}.mpprem-sub{color:#8fa3c4;font-size:13px;margin-bottom:16px}' +
+        '.mpprem-f{display:flex;gap:11px;padding:10px 0;border-top:1px solid #161c26}.mpprem-f:first-of-type{border-top:0}' +
+        '.mpprem-f .ck{flex:none;width:20px;height:20px;border-radius:50%;background:rgba(194,246,74,.14);color:#c2f64a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;margin-top:1px}' +
+        '.mpprem-f b{color:#fff;font-size:13.5px;display:block}.mpprem-f span{color:#8fa3c4;font-size:12px;line-height:1.5}' +
+        '.mpprem-price{margin:16px 0 4px;font-size:15px;color:#fff}.mpprem-price b{font-size:26px;color:#c2f64a}' +
+        '.mpprem-buy{display:block;width:100%;margin-top:12px;background:#c2f64a;color:#0a0b0d;border:0;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer}.mpprem-buy:hover{filter:brightness(1.06)}.mpprem-buy:disabled{opacity:.6;cursor:default}' +
+        '.mpprem-note{text-align:center;font-size:11.5px;color:#5c6b84;margin-top:10px;min-height:14px}';
+        document.head.appendChild(st); }
+      ov = el('div', 'mpprem-ov');
+      var card = el('div', 'mpprem');
+      var h = '<button class="mpprem-x" type="button" aria-label="Close">×</button>' +
+        '<span class="mpprem-tag">MARGINPAD PREMIUM</span>' +
+        '<h3>' + (reason || 'Unlock the full toolkit') + '</h3>' +
+        '<div class="mpprem-sub">Everything the pros use to read the market — one membership.</div>';
+      FEATS.forEach(function (f) { h += '<div class="mpprem-f"><span class="ck">✓</span><div><b>' + f[0] + '</b><span>' + f[1] + '</span></div></div>'; });
+      h += '<div class="mpprem-price"><b>$12.99</b> / month</div>' +
+        '<button class="mpprem-buy" type="button">Pay with crypto — $12.99 / month</button>' +
+        '<div class="mpprem-note">Pay in BTC, USDT or any major coin via NOWPayments. Cancel anytime — it simply won’t renew.</div>';
+      card.innerHTML = h;
+      ov.appendChild(card); document.body.appendChild(ov);
+      card.querySelector('.mpprem-x').addEventListener('click', close);
+      ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
+      var note = card.querySelector('.mpprem-note');
+      card.querySelector('.mpprem-buy').addEventListener('click', function () { checkout(this, note); });
+    }
+    window.mpPremium = { show: show, close: close, checkout: function () { checkout(null, null); } };
+  })();
+
   /* ===== XP toasts + level-up celebration (2026-07-15) ===== */
   (function () {
     var SRCN = { heatmap: 'Liquidation map read', trade_hh: 'XP Happy Hour! ⚡', trade_promo: 'XP Promo! ⚡', trade_win: 'Winner, banked', trade: 'Trade closed', checkin: 'Showed up today', streak: 'Streak pays', mission: 'Mission cleared', faucet: 'Faucet claim', promo: 'Promo post approved', exsign: 'Exchange sign-up', lbprize: 'Podium money 🏆', username: 'Name on the board', academy: 'Brain gains', charts: 'Chart time 📊', admin: 'Bonus', backfill: 'Loyalty bonus', duel: 'Duel won ⚔️' };
