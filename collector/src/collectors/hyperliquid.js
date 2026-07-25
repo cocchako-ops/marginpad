@@ -31,7 +31,7 @@ export class HyperliquidLiqCollector {
     this.queued = new Set();
     this.checked = new Map();        // user -> last checked ts
     this.seenTid = new Set();        // emitted fill tids
-    this.ws = null; this.workerT = null; this.reT = null; this.coinT = null;
+    this.ws = null; this.workerT = null; this.reT = null; this.coinT = null; this.pingT = null; this.wdT = null; this.connStartedAt = null;
   }
   async info(body) {
     const r = await fetch(INFO, { method: 'POST', headers: { 'content-type': 'application/json' }, signal: AbortSignal.timeout(10000), body: JSON.stringify(body) });
@@ -65,10 +65,26 @@ export class HyperliquidLiqCollector {
   start() {
     this.connect();
     this.workerT = setInterval(() => this.checkNext().catch(() => {}), CHECK_MS);
+    this.pingT = setInterval(() => { try { if (this.ws && this.ws.readyState === 1) this.ws.send(JSON.stringify({ method: 'ping' })); } catch (e) {} }, 30000); // HL drops idle sockets after ~60s — keep it warm (pong also refreshes lastMsgAt)
+    this.wdT = setInterval(() => this.watchdog(), 15000); // self-heal backstop: force a reconnect if the socket is stuck-open or the feed went silent (the event-driven onclose reconnect can't catch those)
   }
-  shutdown() { try { if (this.ws) { this.ws.onclose = null; this.ws.close(); } } catch (e) {} if (this.workerT) clearInterval(this.workerT); if (this.reT) clearTimeout(this.reT); if (this.coinT) clearInterval(this.coinT); }
+  shutdown() { try { if (this.ws) { this.ws.onclose = null; this.ws.close(); } } catch (e) {} if (this.workerT) clearInterval(this.workerT); if (this.reT) clearTimeout(this.reT); if (this.coinT) clearInterval(this.coinT); if (this.pingT) clearInterval(this.pingT); if (this.wdT) clearInterval(this.wdT); }
+  watchdog() {
+    const now = Date.now();
+    if (this.connected) {
+      if (this.lastMsgAt && now - this.lastMsgAt > 70000) { log.info('[hyperliquid] watchdog: feed silent, reconnecting', { silentMs: now - this.lastMsgAt }); this.forceReconnect(); } // connected but no trade/pong in 70s across ~900 coins = dead socket
+    } else if (!this.reT && (!this.connStartedAt || now - this.connStartedAt > 20000)) { // down with no reconnect pending, or a socket that opened but never fired onopen for 20s
+      log.info('[hyperliquid] watchdog: down, forcing reconnect'); this.forceReconnect();
+    }
+  }
+  forceReconnect() {
+    try { if (this.ws) { this.ws.onopen = this.ws.onmessage = this.ws.onclose = this.ws.onerror = null; this.ws.close(); } } catch (e) {}
+    this.ws = null; this.connected = false; if (this.reT) { clearTimeout(this.reT); this.reT = null; }
+    this.connect();
+  }
 
   connect() {
+    this.connStartedAt = Date.now();
     try { this.ws = new WebSocket('wss://api.hyperliquid.xyz/ws'); } catch (e) { return this.reconnect(); }
     this.ws.onopen = () => {
       this.connected = true;
