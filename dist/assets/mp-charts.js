@@ -5,12 +5,12 @@
   var MAX_DESKTOP=8;
   var SYMS=['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX','LINK','LTC','TON','TRX','DOT','ATOM','NEAR','ARB','OP'];
   var TFS=[['1','1m'],['5','5m'],['15','15m'],['60','1H'],['240','4H'],['1440','1D']];
-  var INDS=[['sig','Buy / Sell signals (+ TP)'],['mom','Momentum shift (MACD+RSI)'],['sqz','Squeeze breakout'],['liqr','Liquidation reversal'],['casc','Cascade Radar'],['brain','Market Brain (adaptive AI)'],['ema','EMA'],['sma','SMA'],['hma','Hull MA (21)'],['vwap','VWAP'],['bb','Bollinger Bands'],['kc','Keltner Channels'],['dc','Donchian Channel'],['ichi','Ichimoku Cloud'],['psar','Parabolic SAR'],['sr','Support / Resistance'],['pp','Pivot Points'],['vol','Volume'],['rsi','RSI (14)'],['macd','MACD (12/26/9)'],['stoch','Stochastic (14/3)'],['atr','ATR (14)'],['wr','Williams %R (14)'],['cci','CCI (20)']];
-  var MP_INDS={mom:1,sqz:1,liqr:1,casc:1,brain:1};
+  var INDS=[['sig','Buy / Sell signals (+ TP)'],['mom','Momentum shift (MACD+RSI)'],['sqz','Squeeze breakout'],['liqr','Liquidation reversal'],['casc','Cascade Radar'],['brain','Market Brain (adaptive AI)'],['memory','Market Memory (AI forecast)'],['magnet','Liquidation Magnet'],['sentf','Sentiment Flip'],['ema','EMA'],['sma','SMA'],['hma','Hull MA (21)'],['vwap','VWAP'],['bb','Bollinger Bands'],['kc','Keltner Channels'],['dc','Donchian Channel'],['ichi','Ichimoku Cloud'],['psar','Parabolic SAR'],['sr','Support / Resistance'],['pp','Pivot Points'],['vol','Volume'],['rsi','RSI (14)'],['macd','MACD (12/26/9)'],['stoch','Stochastic (14/3)'],['atr','ATR (14)'],['wr','Williams %R (14)'],['cci','CCI (20)']];
+  var MP_INDS={mom:1,sqz:1,liqr:1,casc:1,brain:1,memory:1,magnet:1,sentf:1};
   var INDACC={ok:false};
   function indAllowed(){return !!INDACC.ok;}
   function fetchIndAccess(cb){try{fetch('/api/ind/access',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){INDACC.ok=!!(j&&j.allowed);if(cb)cb();});}catch(e){}} // MarginPad-exclusive signals — lime in every menu so they stand out
-  var ITIPS={sig:'Green arrow = the trend just flipped UP (a possible buy). Red arrow = flipped DOWN (a possible sell). A green "TP" circle then appears on the bar where price first reaches the take-profit target for that signal (sized by recent volatility, ATR).',mom:'Momentum shift: a green MOM arrow when MACD momentum turns up AND RSI confirms strength (>52); red when momentum turns down and RSI is weak (<48). Catches the moment buyers/sellers take over — pair it with the trend Buy/Sell for confirmation.',sqz:'Squeeze breakout: when volatility coils tight (Bollinger Bands squeeze inside the Keltner Channel) the market is loading up. A SQZ arrow fires the moment it releases, in the breakout direction — often the start of a fast move.',liqr:'Liquidation reversal (our data): a big liquidation cascade = forced traders capitulating. A green LIQ arrow marks a bar where LONGS were wiped out (panic low, a possible bounce); red where SHORTS were squeezed (blow-off top). A contrarian signal you will not find on other charts.',brain:'Market Brain (our adaptive AI): blends 8 factors — trend, momentum, volume, liquidation fragility, REAL liquidation flow, funding history, crowd long/short positioning and market structure — and LEARNS which of them actually predict THIS coin on THIS timeframe from the loaded history (walk-forward, no look-ahead). Factors that do not work here weight themselves to zero. BRAIN arrows fire only when the learned blend is strongly one-sided, and stay silent around high-impact macro events (FOMC/CPI). The legend shows what is driving it right now and its own live hit-rate. Exclusive to MarginPad.',casc:'Cascade Radar (our model): measures how much leveraged-liquidation fuel sits CLOSE to the current price versus how much volume the market can absorb. High readings = fragile market — one push can trigger a chain of forced liquidations. A CASC arrow fires when fragility is extreme and one-sided: red = the fuel is below price (long liqs, price tends to hunt down), green = above (short-squeeze fuel). Exclusive to MarginPad.',ichi:'A full trend system: Tenkan (fast) crossing Kijun (slow) signals momentum; Span A vs Span B (the cloud) shows the bigger-picture trend.',psar:'Trailing dots that flip sides of price. Dots UNDER price = uptrend (trail your stop up); dots ABOVE = downtrend. A flip is an exit/reverse cue.',ema:'A smooth line of the average price, but recent prices count more. Price above the line = going up; below = going down.',sma:'The plain average price over the last bars. A simple trend line — price above it is bullish.',hma:'A super-smooth, fast average price line — less wobble and less lag than EMA/SMA.',vwap:'The average price weighted by how much was traded. Big traders treat it as today’s fair price.',bb:'Two bands hugging price. Near the top band = pricey, near the bottom = cheap. Wide bands = wild, tight = calm.',kc:'Bands based on how much price usually moves. Price popping outside them signals a strong move.',dc:'The highest high and lowest low of the last bars. Price breaking above = an upside breakout.',sr:'Lines where price often bounces (support) or gets rejected (resistance).',pp:'Key daily price levels (pivot) where price tends to pause or turn.',vol:'How much was traded each bar. Tall bars = lots of people trading right then.',rsi:'A 0–100 speed meter. Above 70 = maybe too high (overbought); below 30 = maybe too low (oversold).',macd:'Shows if the trend is speeding up or slowing down. Above the 0 line = buyers in control.',stoch:'Like RSI for timing turns. Above 80 = overbought, below 20 = oversold.',atr:'How much price usually moves per bar. Big ATR = wild market → use wider stops.',wr:'Williams %R — like an upside-down RSI. Near 0 = overbought, near −100 = oversold.',cci:'Shows how far price is from its average. Above +100 = strong up push; below −100 = strong down push.'};
+  var ITIPS={sig:'Green arrow = the trend just flipped UP (a possible buy). Red arrow = flipped DOWN (a possible sell). A green "TP" circle then appears on the bar where price first reaches the take-profit target for that signal (sized by recent volatility, ATR).',mom:'Momentum shift: a green MOM arrow when MACD momentum turns up AND RSI confirms strength (>52); red when momentum turns down and RSI is weak (<48). Catches the moment buyers/sellers take over — pair it with the trend Buy/Sell for confirmation.',sqz:'Squeeze breakout: when volatility coils tight (Bollinger Bands squeeze inside the Keltner Channel) the market is loading up. A SQZ arrow fires the moment it releases, in the breakout direction — often the start of a fast move.',liqr:'Liquidation reversal (our data): a big liquidation cascade = forced traders capitulating. A green LIQ arrow marks a bar where LONGS were wiped out (panic low, a possible bounce); red where SHORTS were squeezed (blow-off top). A contrarian signal you will not find on other charts.',memory:'Market Memory (our AI forecast): finds the past bars whose full market state (8 factors) most resembles RIGHT NOW, then shows what happened NEXT on average. The lower panel is the expected 6-bar move, the dashed line is the projected target, and the legend tells you how many analogs matched and how often they went up. It WILL be wrong sometimes \u2014 it is the market\u2019s own memory, an edge, not a crystal ball. Exclusive to MarginPad.',magnet:'Liquidation Magnet (our data): price is pulled toward big pools of liquidation orders. This draws the dominant pool ABOVE (short liqs, red) and BELOW (long liqs, green) the current price; the BOLD line is the stronger magnet \u2014 the more likely next target. Estimated from our liquidation model. Exclusive to MarginPad.',sentf:'Sentiment Flip (our data): when the crowd is piled on one side AND paying to hold it (funding), a small turn against them snowballs. A green FLIP fires when positioning is stretched short and momentum turns up (squeeze fuel); red when the crowd is trapped long and momentum rolls over. Contrarian, and self-scored. Exclusive to MarginPad.',brain:'Market Brain (our adaptive AI): blends 8 factors — trend, momentum, volume, liquidation fragility, REAL liquidation flow, funding history, crowd long/short positioning and market structure — and LEARNS which of them actually predict THIS coin on THIS timeframe from the loaded history (walk-forward, no look-ahead). Factors that do not work here weight themselves to zero. BRAIN arrows fire only when the learned blend is strongly one-sided, and stay silent around high-impact macro events (FOMC/CPI). The legend shows what is driving it right now and its own live hit-rate. Exclusive to MarginPad.',casc:'Cascade Radar (our model): measures how much leveraged-liquidation fuel sits CLOSE to the current price versus how much volume the market can absorb. High readings = fragile market — one push can trigger a chain of forced liquidations. A CASC arrow fires when fragility is extreme and one-sided: red = the fuel is below price (long liqs, price tends to hunt down), green = above (short-squeeze fuel). Exclusive to MarginPad.',ichi:'A full trend system: Tenkan (fast) crossing Kijun (slow) signals momentum; Span A vs Span B (the cloud) shows the bigger-picture trend.',psar:'Trailing dots that flip sides of price. Dots UNDER price = uptrend (trail your stop up); dots ABOVE = downtrend. A flip is an exit/reverse cue.',ema:'A smooth line of the average price, but recent prices count more. Price above the line = going up; below = going down.',sma:'The plain average price over the last bars. A simple trend line — price above it is bullish.',hma:'A super-smooth, fast average price line — less wobble and less lag than EMA/SMA.',vwap:'The average price weighted by how much was traded. Big traders treat it as today’s fair price.',bb:'Two bands hugging price. Near the top band = pricey, near the bottom = cheap. Wide bands = wild, tight = calm.',kc:'Bands based on how much price usually moves. Price popping outside them signals a strong move.',dc:'The highest high and lowest low of the last bars. Price breaking above = an upside breakout.',sr:'Lines where price often bounces (support) or gets rejected (resistance).',pp:'Key daily price levels (pivot) where price tends to pause or turn.',vol:'How much was traded each bar. Tall bars = lots of people trading right then.',rsi:'A 0–100 speed meter. Above 70 = maybe too high (overbought); below 30 = maybe too low (oversold).',macd:'Shows if the trend is speeding up or slowing down. Above the 0 line = buyers in control.',stoch:'Like RSI for timing turns. Above 80 = overbought, below 20 = oversold.',atr:'How much price usually moves per bar. Big ATR = wild market → use wider stops.',wr:'Williams %R — like an upside-down RSI. Near 0 = overbought, near −100 = oversold.',cci:'Shows how far price is from its average. Above +100 = strong up push; below −100 = strong down push.'};
   var wins=[], notes=[], zTop=10, built=false, libLoading=false, libCbs=[];
   function isMobile(){return !!(window.matchMedia && window.matchMedia('(max-width:880px)').matches);}
   function MAXn(){return isMobile()?1:MAX_DESKTOP;}
@@ -116,15 +116,17 @@
   /* Market Brain: adaptive multi-factor ensemble. Factors are raw reads; a WALK-FORWARD information-coefficient
      pass learns per-factor weights from the trailing window only (never the future), so the composite reflects
      what actually predicts this symbol+timeframe. See ITIPS.brain for the user-facing story. */
-  function brainCalc(w,bars){var n=bars?bars.length:0;if(n<80)return null;
+  /* shared 8-factor space (used by Market Brain AND the predictive Market Memory / forecasts). Each factor is
+     a raw, bounded read; no future leakage inside a factor. */
+  function brainFactors(w,bars){var n=bars?bars.length:0;
     loadLiqRev(w);loadFunding(w);loadCrowd(w);loadCalHi();
     var c=closes(bars),a=atr(bars,14),e21=ema(c,21),e50=ema(c,50),md=macdCalc(c),rs=rsiCalc(c,14);
     var names=['trend','momentum','volume','fragility','liq flow','funding','crowd','structure'];
-    var i,j,k,cl=function(v,lo,hi){return v<lo?lo:v>hi?hi:v;};
+    var i,j,z,cl=function(v,lo,hi){return v<lo?lo:v>hi?hi:v;};
     var f0=new Array(n);for(i=0;i<n;i++)f0[i]=(a[i]>0&&isFinite(e21[i])&&isFinite(e50[i]))?cl((e21[i]-e50[i])/(a[i]*2),-1,1):0;
     var f1=new Array(n);for(i=0;i<n;i++){var mh=(a[i]>0&&isFinite(md.hist[i]))?cl(md.hist[i]/a[i],-1,1):0;var rr=isFinite(rs[i])?(rs[i]-50)/50:0;f1[i]=(mh+rr)/2;}
     var f2=new Array(n);for(i=0;i<n;i++){var av=0,cn=0;for(j=Math.max(0,i-20);j<i;j++){av+=(+bars[j].vol||0);cn++;}av=cn?av/cn:0;var vv=+bars[i].vol||0;f2[i]=av>0?cl((bars[i].close>=bars[i].open?1:-1)*Math.max(0,vv/av-1)/2,-1,1):0;}
-    var f3=new Array(n),z;for(z=0;z<n;z++)f3[z]=0;
+    var f3=new Array(n);for(z=0;z<n;z++)f3[z]=0;
     try{var cc=cascadeCalc(bars);if(cc&&cc.dir)for(i=0;i<n;i++)f3[i]=-(cc.dir[i]||0)*((cc.score[i]||0)/100);}catch(e){}
     var f4=new Array(n);for(z=0;z<n;z++)f4[z]=0;
     if(w._liqEvents&&w._liqSym===w.sym&&w._liqEvents.length){var iv=parseInt(w.tf,10)*60||3600,bk={};
@@ -139,7 +141,10 @@
       for(i=0;i<n;i++){var bt3=bars[i].time*1000;while(ci+1<chh.length&&+chh[ci+1].timestamp<=bt3)ci++;if(+chh[ci].timestamp<=bt3){var la=+chh[ci].longAccount;if(isFinite(la))f6[i]=-cl((la-0.5)*4,-1,1);}}}
     var f7=new Array(n);for(z=0;z<n;z++)f7[z]=0;
     for(i=54;i<n;i++){var hh=-Infinity,ll=Infinity;for(j=i-54;j<=i;j++){if(bars[j].high>hh)hh=bars[j].high;if(bars[j].low<ll)ll=bars[j].low;}if(hh>ll)f7[i]=cl(2*(c[i]-(hh+ll)/2)/(hh-ll),-1,1);}
-    var F=[f0,f1,f2,f3,f4,f5,f6,f7];
+    return {F:[f0,f1,f2,f3,f4,f5,f6,f7],names:names,a:a,c:c};}
+  function brainCalc(w,bars){var n=bars?bars.length:0;if(n<80)return null;
+    var _bf=brainFactors(w,bars),F=_bf.F,names=_bf.names,a=_bf.a,c=_bf.c;
+    var i,j,k,z,cl=function(v,lo,hi){return v<lo?lo:v>hi?hi:v;};
     var K=6,fwd=new Array(n);for(z=0;z<n;z++)fwd[z]=NaN;
     for(i=0;i<n-K;i++)if(a[i]>0)fwd[i]=(c[i+K]-c[i])/a[i];
     function corr(f,lo,hi){var sx=0,sy=0,sxx=0,syy=0,sxy=0,m=0;for(var j2=lo;j2<hi;j2++){var x=f[j2],y=fwd[j2];if(!isFinite(x)||!isFinite(y))continue;sx+=x;sy+=y;sxx+=x*x;syy+=y*y;sxy+=x*y;m++;}if(m<40)return 0;var cov=sxy/m-(sx/m)*(sy/m),vx=sxx/m-(sx/m)*(sx/m),vy=syy/m-(sy/m)*(sy/m);return (vx>1e-12&&vy>1e-12)?cov/Math.sqrt(vx*vy):0;}
@@ -158,6 +163,55 @@
     contrib.sort(function(x,y){return y[0]-x[0];});
     var top=[];for(k=0;k<Math.min(2,contrib.length);k++)if(contrib[k][0]>0.02)top.push(contrib[k][1]);
     return {score:score,mk:mk,top:top};}
+  /* Market Memory: k-nearest-neighbour ANALOG forecast. For each bar we take its 8-factor vector and find the
+     most similar PAST bars (scaled Euclidean distance, only bars old enough to have a known 6-bar outcome), then
+     average what happened next. A genuinely predictive read from our data — it will be wrong sometimes, but it
+     is the market's own memory: "when it looked like this before, here is what tended to happen". */
+  function memoryCalc(w,bars){var n=bars?bars.length:0;if(n<160)return null;
+    var _bf=brainFactors(w,bars),F=_bf.F,a=_bf.a,c=_bf.c,nf=F.length,i,j,k;
+    var K=6,KN=25,fwd=new Array(n);for(i=0;i<n;i++)fwd[i]=(i<n-K&&a[i]>0)?(c[i+K]-c[i])/a[i]:NaN;
+    var sd=new Array(nf);for(k=0;k<nf;k++){var m=0,cn=0;for(i=0;i<n;i++){m+=F[k][i];cn++;}m/=cn||1;var v=0;for(i=0;i<n;i++){var dd=F[k][i]-m;v+=dd*dd;}sd[k]=Math.sqrt(v/(cn||1))||1;}
+    function predict(qi,loEnd){var best=[],worst=1e18,wi=-1;
+      for(j=60;j<loEnd;j++){if(!isFinite(fwd[j]))continue;var dist=0;for(k=0;k<nf;k++){var q=(F[k][qi]-F[k][j])/sd[k];dist+=q*q;}
+        if(best.length<KN){best.push({d:dist,f:fwd[j]});if(best.length===KN){worst=0;for(k=0;k<KN;k++)if(best[k].d>worst){worst=best[k].d;wi=k;}}}
+        else if(dist<worst){best[wi]={d:dist,f:fwd[j]};worst=0;for(k=0;k<KN;k++)if(best[k].d>worst){worst=best[k].d;wi=k;}}}
+      if(best.length<10)return null;var sf=0,up=0;for(k=0;k<best.length;k++){sf+=best[k].f;if(best[k].f>0)up++;}
+      return {avg:sf/best.length,up:up/best.length,n:best.length};}
+    var forecast=new Array(n),conf=new Array(n);for(i=0;i<n;i++){forecast[i]=NaN;conf[i]=NaN;}
+    for(i=120;i<n;i++){var pr=predict(i,i-K);if(pr){forecast[i]=pr.avg;conf[i]=pr.up;}}
+    var mk=[],armed=true;
+    for(i=140;i<n;i++){var fc=forecast[i],cf=conf[i];if(!isFinite(fc))continue;
+      if(armed&&Math.abs(fc)>=0.85&&((fc>0&&cf>=0.62)||(fc<0&&cf<=0.38))){mk.push(fc>0?{time:bars[i].time,position:'belowBar',color:'#2ebd85',shape:'arrowUp',text:'MEMO'}:{time:bars[i].time,position:'aboveBar',color:'#ff6258',shape:'arrowDown',text:'MEMO'});armed=false;}
+      else if(!armed&&Math.abs(fc)<0.35)armed=true;}
+    var last=n-1,pl=predict(last,n-K),proj=null;
+    if(pl){var projRet=pl.avg*a[last]/c[last];proj={p:c[last]*(1+projRet),ret:projRet,up:pl.up,n:pl.n};}
+    return {forecast:forecast,mk:mk,proj:proj};}
+  /* current liquidation pools (local leverage-ladder snapshot — same model as Cascade Radar / the heatmap) */
+  function poolsNow(bars){var n=bars?bars.length:0;if(n<40)return [];var LEVS=[[5,0.16],[10,0.26],[25,0.24],[50,0.18],[100,0.16]];var px0=bars[n-1].close,binH=px0*0.002;if(!(binH>0))return [];var alive={},i,k;
+    for(i=0;i<n;i++){var b=bars[i];for(k in alive){var pr=(+k+0.5)*binH;if(pr>=b.low&&pr<=b.high)delete alive[k];}
+      if(i>0){var pv=bars[i-1],noti=((+pv.vol||0)*pv.close)||Math.abs(pv.close-pv.open)*1e4;for(var L=0;L<LEVS.length;L++){var lv=LEVS[L][0],wg=noti*LEVS[L][1]*0.5;var bl=Math.floor(pv.close*(1-0.995/lv)/binH),bs=Math.floor(pv.close*(1+0.995/lv)/binH);var al=alive[bl];if(al&&al.long)al.w+=wg;else if(!al)alive[bl]={w:wg,long:1};var as2=alive[bs];if(as2&&!as2.long)as2.w+=wg;else if(!as2)alive[bs]={w:wg,long:0};}}
+      if(i%50===49){for(k in alive){var pr2=(+k+0.5)*binH;if(Math.abs(pr2-b.close)/b.close>0.35)delete alive[k];}}}
+    var out=[];for(k in alive){out.push({price:(+k+0.5)*binH,w:alive[k].w,long:!!alive[k].long});}return out;}
+  /* Liquidation Magnet: the dominant pool above and below price PULL it. Returns the strongest magnet on each
+     side (weighted by size and proximity) and which way price is most likely being drawn next. */
+  function magnetCalc(bars){var n=bars?bars.length:0;if(n<40)return null;var px=bars[n-1].close,pools=poolsNow(bars);if(!pools.length||!(px>0))return null;
+    var up=null,dn=null,i;for(i=0;i<pools.length;i++){var pl=pools[i],dist=Math.abs(pl.price-px)/px;if(dist>0.09||dist<0.0005)continue;var pull=pl.w*(1-dist/0.09);
+      if(pl.price>px){if(!up||pull>up.pull)up={price:pl.price,w:pl.w,pull:pull,long:pl.long,dist:dist};}
+      else{if(!dn||pull>dn.pull)dn={price:pl.price,w:pl.w,pull:pull,long:pl.long,dist:dist};}}
+    var side=null;if(up&&dn)side=up.pull>=dn.pull?'up':'down';else if(up)side='up';else if(dn)side='down';
+    return {px:px,up:up,dn:dn,side:side};}
+  /* Sentiment Flip: crowd positioning + funding (our data) reach a contrarian extreme, then momentum turns the
+     crowd's way of pain. Crowd heavily long + longs paying funding, price rolling over -> they get trapped -> SELL. */
+  function sentimentCalc(w,bars){var n=bars?bars.length:0;if(n<80)return null;
+    var _bf=brainFactors(w,bars),F=_bf.F,c=_bf.c,a=_bf.a,fund=F[5],crowd=F[6],i,any=false;
+    for(i=0;i<n;i++)if(fund[i]!==0||crowd[i]!==0){any=true;break;}if(!any)return null;
+    var sent=new Array(n);for(i=0;i<n;i++)sent[i]=(fund[i]+crowd[i])/2; // +contrarian-bullish .. -contrarian-bearish
+    var md=macdCalc(c),mk=[],armed=true;
+    for(i=40;i<n;i++){var st=sent[i],mom=(a[i]>0&&isFinite(md.hist[i]))?md.hist[i]/a[i]:0;
+      if(armed&&st>=0.45&&mom>0){mk.push({time:bars[i].time,position:'belowBar',color:'#2ebd85',shape:'arrowUp',text:'FLIP'});armed=false;}
+      else if(armed&&st<=-0.45&&mom<0){mk.push({time:bars[i].time,position:'aboveBar',color:'#ff6258',shape:'arrowDown',text:'FLIP'});armed=false;}
+      else if(!armed&&Math.abs(st)<0.2)armed=true;}
+    return {sent:sent,mk:mk};}
   /* Ichimoku (9/26/52) — Tenkan, Kijun, Senkou span A/B */
   function ichimoku(b){var n=b.length,conv=[],base=[],spanA=[],spanB=[];function hl(i,p){if(i<p-1)return NaN;var h=-Infinity,l=Infinity;for(var j=i-p+1;j<=i;j++){if(b[j].high>h)h=b[j].high;if(b[j].low<l)l=b[j].low;}return (h+l)/2;}
     for(var i=0;i<n;i++){var c=hl(i,9),k=hl(i,26),sb=hl(i,52);conv.push(c);base.push(k);spanA.push((isFinite(c)&&isFinite(k))?(c+k)/2:NaN);spanB.push(sb);}return {conv:conv,base:base,spanA:spanA,spanB:spanB};}
@@ -178,6 +232,7 @@
     return rs.concat(ss);}
   function closes(b){return b.map(function(x){return x.close;});}
   function mapVal(b,arr){var o=[];for(var i=0;i<b.length;i++){if(isFinite(arr[i]))o.push({time:b[i].time,value:arr[i]});}return o;}
+  function money(n){n=+n||0;var a=Math.abs(n);return a>=1e9?'$'+(n/1e9).toFixed(1)+'B':a>=1e6?'$'+(n/1e6).toFixed(1)+'M':a>=1e3?'$'+(n/1e3).toFixed(0)+'K':'$'+n.toFixed(0);}
   function cwFmt(v,dec){if(v==null||!isFinite(v))return '–';if(dec===0)return String(Math.round(v));if(dec!=null)return (+v).toFixed(dec);var a=Math.abs(v);return a>=1000?(+v).toLocaleString('en-US',{maximumFractionDigits:2}):a>=1?(+v).toFixed(3):(+v).toFixed(6);}
   // decimals to show on the price axis by magnitude — small-cap tokens (e.g. $0.000123) need many more than 2
   function pricePrec(p){p=Math.abs(+p)||0;if(!(p>0))return 2;if(p>=1000)return 2;if(p>=100)return 3;if(p>=10)return 3;if(p>=1)return 4;if(p>=0.1)return 4;if(p>=0.01)return 5;if(p>=0.001)return 6;if(p>=0.0001)return 7;if(p>=0.00001)return 8;return 9;} /* ~5 sig figs: $1-100 coins (XRP 1.0904, SOL 74.093) were capped at 2 dp -> lost the digits that matter */
@@ -205,13 +260,16 @@
     if(w.inds.liqr&&IA){if(w._liqEvents&&w._liqSym===w.sym)_addSig('LIQ',computeLiqRev(bars,w._liqEvents,parseInt(w.tf,10)*60||3600));else loadLiqRev(w);}
     w._casc=null; if(w.inds.casc&&IA){w._casc=cascadeCalc(bars);if(w._casc)_addSig('CASC',w._casc.mk);}
     w._brain=null; if(w.inds.brain&&IA){try{w._brain=brainCalc(w,bars);}catch(e){}if(w._brain)_addSig('BRAIN',w._brain.mk);}
+    w._mem=null; if(w.inds.memory&&IA){try{w._mem=memoryCalc(w,bars);}catch(e){}}
+    w._mag=null; if(w.inds.magnet&&IA){try{w._mag=magnetCalc(bars);}catch(e){}}
+    w._sent=null; if(w.inds.sentf&&IA){try{w._sent=sentimentCalc(w,bars);}catch(e){}if(w._sent)_addSig('FLIP',w._sent.mk);}
     w._sigStats=_ss;
     mk.sort(function(a,b){return a.time-b.time;}); try{w.candle.setMarkers(mk);}catch(e){}
     (w.indLines||[]).forEach(function(l){try{w.candle.removePriceLine(l);}catch(e){}}); w.indLines=[];
     (w.indSeries||[]).forEach(function(s){try{w.chart.removeSeries(s);}catch(e){}}); w.indSeries=[]; w.legItems=[];
     try{var _st=w._sigStats||{};for(var _sk in _st){var _sv=_st[_sk];w.legItems.push({raw:true,color:_sv.pct>=55?'#2ebd85':_sv.pct<=45?'#ff6258':'#8fa3c4',label:_sk+' '+_sv.pct+'% ('+_sv.w+'W/'+_sv.l+'L)',title:'How this signal scored on the loaded history of THIS symbol and timeframe: each arrow graded 1R vs 1R (target and stop both 1.5\u00d7ATR from the signal close).'});}}catch(e){}
     // allocate the bottom 30% of the chart among the active sub-panes (rsi/macd/stoch/atr) so they stack instead of overlapping; candles take the rest. Reset each call (fixes RSI leaving candles compressed after toggle-off).
-    var paneKeys=['vol','rsi','macd','stoch','atr','wr','cci','casc','brain'].filter(function(k){return w.inds[k];}); var paneN=paneKeys.length;
+    var paneKeys=['vol','rsi','macd','stoch','atr','wr','cci','casc','brain','memory','sentf'].filter(function(k){return w.inds[k];}); var paneN=paneKeys.length;
     try{w.chart.priceScale('right').applyOptions({scaleMargins:{top:0.06,bottom:paneN?0.30:0.08}});}catch(e){}
     function pm(key){var idx=paneKeys.indexOf(key),band=0.30/Math.max(1,paneN);return {top:0.70+idx*band+0.006,bottom:(paneN-1-idx)*band+0.02};}
     function pscale(id,key){try{w.chart.priceScale(id).applyOptions({scaleMargins:pm(key)});}catch(e){}}
@@ -238,6 +296,15 @@
     if(w.inds.casc&&w._casc){addS({color:'#c2f64a',lineWidth:1.6,priceScaleId:'casc'},mapVal(bars,w._casc.score),{label:'CASCADE',dec:0});addS({color:'rgba(255,215,90,.4)',lineStyle:2,priceScaleId:'casc'},bars.map(function(b){return {time:b.time,value:90};}));pscale('casc','casc');}
     if(w.inds.brain&&w._brain){addS({color:'#c2f64a',lineWidth:1.6,priceScaleId:'brain'},mapVal(bars,w._brain.score),{label:'BRAIN',dec:0});addS({color:'rgba(120,130,140,.35)',lineStyle:2,priceScaleId:'brain'},bars.map(function(b){return {time:b.time,value:0};}));addS({color:'rgba(255,215,90,.3)',lineStyle:2,priceScaleId:'brain'},bars.map(function(b){return {time:b.time,value:55};}));addS({color:'rgba(255,215,90,.3)',lineStyle:2,priceScaleId:'brain'},bars.map(function(b){return {time:b.time,value:-55};}));pscale('brain','brain');
       try{if(w._brain.top&&w._brain.top.length)w.legItems.push({raw:true,color:'#c2f64a',label:'BRAIN driven by: '+w._brain.top.join(' + '),title:'The factors the model currently weights highest on this symbol and timeframe (learned from the loaded history, walk-forward).'});}catch(e){}}
+    if(w.inds.memory&&w._mem){var _mo=[];for(var _mi=0;_mi<bars.length;_mi++){var _mv=w._mem.forecast[_mi];if(isFinite(_mv))_mo.push({time:bars[_mi].time,value:Math.max(-100,Math.min(100,_mv*30))});}addS({color:'#c2f64a',lineWidth:1.6,priceScaleId:'memory'},_mo,{label:'MEMORY',dec:0});addS({color:'rgba(120,130,140,.35)',lineStyle:2,priceScaleId:'memory'},bars.map(function(b){return {time:b.time,value:0};}));pscale('memory','memory');
+      if(w._mem.proj){addPL({price:w._mem.proj.p,color:w._mem.proj.ret>=0?'#2ebd85':'#ff6258',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'MEM'});
+        w.legItems.push({raw:true,color:'#c2f64a',label:'Memory: '+w._mem.proj.n+' analogs \u00b7 '+Math.round(w._mem.proj.up*100)+'% up \u00b7 proj '+(w._mem.proj.ret>=0?'+':'')+(w._mem.proj.ret*100).toFixed(2)+'% / 6 bars',title:'k-nearest-neighbour forecast: the most similar past bars across 8 factors, and what happened over the next 6 bars.'});}}
+    if(w.inds.magnet&&w._mag){var _mg=w._mag;
+      if(_mg.up)addPL({price:_mg.up.price,color:_mg.side==='up'?'#ff6258':'rgba(255,98,88,.55)',lineWidth:_mg.side==='up'?2:1,lineStyle:_mg.side==='up'?0:2,axisLabelVisible:true,title:'SHORT '+money(_mg.up.w)});
+      if(_mg.dn)addPL({price:_mg.dn.price,color:_mg.side==='down'?'#2ebd85':'rgba(46,189,133,.55)',lineWidth:_mg.side==='down'?2:1,lineStyle:_mg.side==='down'?0:2,axisLabelVisible:true,title:'LONG '+money(_mg.dn.w)});
+      var _tg=_mg.side==='up'?_mg.up:(_mg.side==='down'?_mg.dn:null);
+      if(_tg)w.legItems.push({raw:true,color:'#c2f64a',label:'Magnet: pulled '+(_mg.side==='up'?'UP':'DOWN')+' \u2192 '+cwFmt(_tg.price)+' ('+money(_tg.w)+' '+(_tg.long?'long':'short')+' liqs \u00b7 '+(_tg.dist*100).toFixed(1)+'% away)',title:'The dominant liquidation pool on each side pulls price; the bold line is the stronger magnet. Estimated from our model.'});}
+    if(w.inds.sentf&&w._sent){var _so=[];for(var _si=0;_si<bars.length;_si++){var _sv=w._sent.sent[_si];if(isFinite(_sv))_so.push({time:bars[_si].time,value:_sv*100});}addS({color:'#c2f64a',lineWidth:1.4,priceScaleId:'sentf'},_so,{label:'SENTIMENT',dec:0});addS({color:'rgba(120,130,140,.35)',lineStyle:2,priceScaleId:'sentf'},bars.map(function(b){return {time:b.time,value:0};}));addS({color:'rgba(255,215,90,.3)',lineStyle:2,priceScaleId:'sentf'},bars.map(function(b){return {time:b.time,value:45};}));addS({color:'rgba(255,215,90,.3)',lineStyle:2,priceScaleId:'sentf'},bars.map(function(b){return {time:b.time,value:-45};}));pscale('sentf','sentf');}
     if(w.inds.vol){var vhs;try{vhs=w.chart.addHistogramSeries({priceFormat:{type:'volume'},priceScaleId:'vol',lastValueVisible:false,priceLineVisible:false});}catch(e){}
       if(vhs){var vhd=[];for(var vhi=0;vhi<bars.length;vhi++){var vhb=bars[vhi],vhv=+vhb.vol;if(isFinite(vhv)&&vhv>0)vhd.push({time:vhb.time,value:vhv,color:(+vhb.close>=+vhb.open)?'rgba(46,189,133,.45)':'rgba(255,98,88,.45)'});}try{vhs.setData(vhd);}catch(e){}w.indSeries.push(vhs);}
       pscale('vol','vol');}
