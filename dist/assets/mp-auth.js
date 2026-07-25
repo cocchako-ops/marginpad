@@ -555,6 +555,7 @@
           + tileBtn('mpaDuel', 'swords', 'Duels', 'mpaDuelBadge')
         + '</div>'
           + '<button class="mpa-row2" id="mpaBal" type="button"><svg class="mpa-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="14" r="1.4"/></svg><span>Balance Mode</span><span style="font:700 9px \'Space Mono\',monospace;color:#c2f64a;background:rgba(194,246,74,.14);border-radius:5px;padding:2px 6px">PREMIUM</span>' + ic('chev') + '</button>'
+          + '<button class="mpa-row2" id="mpaBrief" type="button"><svg class="mpa-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h2"/></svg><span>Daily Brief</span><span style="font:700 9px \'Space Mono\',monospace;color:#c2f64a;background:rgba(194,246,74,.14);border-radius:5px;padding:2px 6px">PREMIUM</span>' + ic('chev') + '</button>'
           + '<button class="mpa-row2" id="mpaEdit" type="button">' + ic('edit') + '<span>Edit profile</span>' + ic('chev') + '</button>'
           + '<button class="mpa-row2" id="mpaXp" type="button">' + ic('spark') + '<span>XP history</span>' + ic('chev') + '</button>' : '')
         + '<div class="mpa-foot2">'
@@ -595,6 +596,7 @@
       var duB = bodyEl.querySelector('#mpaDuel'); if (duB) duB.addEventListener('click', function () { renderDuels(); });
       var edB = bodyEl.querySelector('#mpaEdit'); if (edB) edB.addEventListener('click', function () { renderEditProfile(); });
       var blB = bodyEl.querySelector('#mpaBal'); if (blB) blB.addEventListener('click', function () { renderBalance(); });
+      var brB = bodyEl.querySelector('#mpaBrief'); if (brB) brB.addEventListener('click', function () { if (window.mpBrief) window.mpBrief.show(); });
       dmSetBadge(window._mpDmUnread || 0); duelSetBadge(window._mpDuelPending || 0); notifSetBadge(window._mpNotifUnread || 0);
       return;
     }
@@ -856,6 +858,28 @@
     cfg: function () { try { var c = JSON.parse(localStorage.getItem('mp_balmode') || 'null'); if (c && c.on) return { on: true, start: (+c.start > 0 ? +c.start : 10000), since: +c.since || 0 }; } catch (e) {} return { on: false, start: 10000, since: 0 }; },
     setCfg: function (on, start, resetSince) { var prev; try { prev = JSON.parse(localStorage.getItem('mp_balmode') || 'null') || {}; } catch (e) { prev = {}; } var since = (resetSince || !prev.since) ? Date.now() : (+prev.since || Date.now()); try { localStorage.setItem('mp_balmode', JSON.stringify({ on: !!on, start: Math.max(0, Math.round(+start || 0)), since: since })); } catch (e) {} try { window.dispatchEvent(new Event('mp-balmode')); } catch (e) {} try { if (window.mpJournalRender) window.mpJournalRender(); } catch (e) {} }
   };
+
+  /* ===== Daily Brief (Premium): majors trend + RSI + next macro events, in a modal ===== */
+  window.mpBrief = { show: function () {
+    var ov = document.createElement('div'); ov.className = 'mpprem-ov';
+    ov.innerHTML = '<div class="mpprem" style="max-width:480px"><button class="mpprem-x" type="button" aria-label="Close">×</button><span class="mpprem-tag">DAILY BRIEF</span><h3>Today’s market brief</h3><div class="mpbrief-body" style="margin-top:14px;color:#8fa3c4;font-size:13px">Loading…</div></div>';
+    document.body.appendChild(ov);
+    ov.querySelector('.mpprem-x').addEventListener('click', function () { ov.remove(); });
+    ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
+    var body = ov.querySelector('.mpbrief-body');
+    fetch('/api/premium/brief', { cache: 'no-store' }).then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); }).then(function (o) {
+      if (o.s === 401) { ov.remove(); open(); return; }
+      if (o.s === 402) { ov.remove(); if (window.mpPremium) window.mpPremium.show('Unlock the Daily Brief'); return; }
+      var j = o.j || {};
+      var arrow = function (d) { return d === 'up' ? '<span style="color:#2ebd85">▲ up</span>' : d === 'down' ? '<span style="color:#ff6258">▼ down</span>' : '<span style="color:#5c6b84">—</span>'; };
+      var h = '<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:7px 14px;align-items:center;font:12px \'Space Mono\',monospace"><div style="color:#5c6b84;font-size:10px;letter-spacing:.06em">COIN</div><div style="color:#5c6b84;font-size:10px">1H</div><div style="color:#5c6b84;font-size:10px">4H</div><div style="color:#5c6b84;font-size:10px">RSI</div>';
+      (j.coins || []).forEach(function (c) { var pr = c.price >= 1 ? (+c.price).toLocaleString('en-US', { maximumFractionDigits: 2 }) : c.price; h += '<div style="color:#fff;font-weight:700">' + c.sym + ' <span style="color:#8fa3c4;font-weight:400">$' + pr + '</span></div><div>' + arrow(c.h1) + '</div><div>' + arrow(c.h4) + '</div><div style="color:' + (c.rsi >= 70 ? '#ff6258' : c.rsi <= 30 ? '#2ebd85' : '#dbe4f5') + '">' + (c.rsi == null ? '—' : c.rsi) + '</div>'; });
+      h += '</div>';
+      if (j.events && j.events.length) { h += '<div style="margin-top:18px;font:700 10px \'Space Mono\',monospace;letter-spacing:.13em;color:#c2f64a">UPCOMING HIGH-IMPACT EVENTS</div>'; j.events.forEach(function (e) { var d = new Date(e.ts); h += '<div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #161c26;font-size:12.5px"><span style="color:#dbe4f5">' + esc(e.title) + '</span><span style="color:#8fa3c4;white-space:nowrap">' + d.toISOString().slice(5, 16).replace('T', ' ') + ' UTC</span></div>'; }); }
+      h += '<div style="margin-top:14px;font-size:11px;color:#5c6b84;line-height:1.5">Trend = Supertrend(10,3) direction on each timeframe. Educational only — not financial advice.</div>';
+      body.innerHTML = h;
+    }).catch(function () { body.textContent = 'Could not load the brief — please try again.'; });
+  } };
 
   /* ===== XP toasts + level-up celebration (2026-07-15) ===== */
   (function () {

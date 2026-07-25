@@ -7487,6 +7487,7 @@ export default {
       const st = await premiumFor(env, request);
       return new Response(JSON.stringify({ allowed: st.premium, premium: st.premium, signedIn: !!st.uid, until: st.until, source: st.source, price: 12.99, user: st.user }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
     }
+    if (url.pathname === '/api/premium/brief') return handlePremiumBrief(env, request);
     if (url.pathname === '/api/premium/badges') { // usernames that get the PRO cosmetic badge (founders + granted + paid)
       const set = await premiumSet(env);
       return new Response(JSON.stringify({ names: [...set] }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
@@ -9127,6 +9128,29 @@ function handleExchangeGo(url) {
     + 'else{location.href=web;}}catch(e){location.href=web;}'
     + '})();</script></body></html>';
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=300', ...CORS } });
+}
+async function handlePremiumBrief(env, request) { // Premium daily brief: majors 1h/4h trend + RSI + next macro events (cached hourly, deterministic)
+  const st = await premiumFor(env, request);
+  if (!st.uid) return J({ error: 'login_required' }, 401);
+  if (!st.premium) return J({ error: 'premium_required' }, 402);
+  const ck = 'prem:brief:' + new Date().toISOString().slice(0, 13);
+  try { const c = await env.STATS.get(ck); if (c) return new Response(c, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, max-age=300', ...CORS } }); } catch (e) {}
+  const out = [];
+  for (const sym of ['BTC', 'ETH', 'SOL', 'BNB', 'XRP']) {
+    try {
+      const kd = await sigKlines(sym, 60); if (!kd || !kd.closed || kd.closed.length < 40) continue;
+      const bars = kd.closed, c = bars.map(b => b.close);
+      const s1 = _supertrend(bars, 10, 3); const d1 = s1 ? s1.dir[s1.dir.length - 1] : null;
+      let d4 = null; try { const kd4 = await sigKlines(sym, 240); if (kd4 && kd4.closed && kd4.closed.length >= 30) { const s4 = _supertrend(kd4.closed, 10, 3); d4 = s4 ? s4.dir[kd4.closed.length - 1] : null; } } catch (e) {}
+      const rsi = _rsi(c, 14);
+      out.push({ sym, price: c[c.length - 1], h1: d1 === 1 ? 'up' : d1 === -1 ? 'down' : null, h4: d4 === 1 ? 'up' : d4 === -1 ? 'down' : null, rsi: rsi == null ? null : Math.round(rsi) });
+    } catch (e) {}
+  }
+  let events = [];
+  try { const cr = await handleCalendar(new Request('https://marginpad.io/api/calendar'), env); const cj = await cr.json(); const now = Date.now(); events = (cj.events || []).filter(e => e && e.impact >= 3 && e.ts > now && e.type !== 'crypto').sort((a, b) => a.ts - b.ts).slice(0, 3).map(e => ({ title: e.title || e.type, ts: e.ts, type: e.type })); } catch (e) {}
+  const body = JSON.stringify({ at: Date.now(), coins: out, events });
+  try { await env.STATS.put(ck, body, { expirationTtl: 3900 }); } catch (e) {}
+  return new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'private, max-age=300', ...CORS } });
 }
 async function handleHappyHour(env) {
   const now = Date.now(), d = new Date(now);
