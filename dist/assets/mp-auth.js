@@ -760,14 +760,15 @@
     function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
     var ov = null;
     function close() { if (ov) { ov.remove(); ov = null; } }
-    function checkout(btn, note) {
+    function checkoutPlan(plan, btn, note) {
       if (!(window.mpAuth && window.mpAuth.me && window.mpAuth.me())) { close(); open(); return; }
+      var label = btn && btn.textContent;
       if (btn) { btn.disabled = true; btn.textContent = 'Starting checkout...'; }
-      fetch('/api/premium/checkout', { method: 'POST' }).then(function (r) { return r.json(); }).then(function (j) {
+      fetch('/api/premium/checkout' + (plan === 'founder' ? '?plan=founder' : ''), { method: 'POST' }).then(function (r) { return r.json(); }).then(function (j) {
         if (j && j.invoice_url) { location.href = j.invoice_url; return; }
-        if (btn) { btn.disabled = false; btn.textContent = 'Pay with crypto — $12.99 / month'; }
+        if (btn) { btn.disabled = false; btn.textContent = label; }
         if (note) note.textContent = (j && j.error === 'already_premium') ? 'You are already Premium. Thank you.' : (j && j.error === 'unconfigured') ? 'Crypto checkout is being switched on — please check back very soon.' : 'Could not start checkout. Please try again.';
-      }).catch(function () { if (btn) { btn.disabled = false; btn.textContent = 'Pay with crypto — $12.99 / month'; } if (note) note.textContent = 'Network error. Please try again.'; });
+      }).catch(function () { if (btn) { btn.disabled = false; btn.textContent = label; } if (note) note.textContent = 'Network error. Please try again.'; });
     }
     function show(reason) {
       close();
@@ -793,15 +794,28 @@
       FEATS.forEach(function (f) { h += '<div class="mpprem-f"><span class="ck">✓</span><div><b>' + f[0] + '</b><span>' + f[1] + '</span></div></div>'; });
       h += '<div class="mpprem-price"><b>$12.99</b> / month</div>' +
         '<button class="mpprem-buy" type="button">Pay with crypto — $12.99 / month</button>' +
+        '<button class="mpprem-founder" type="button" style="display:block;width:100%;margin-top:8px;background:none;border:1px solid #2a3550;color:#c2f64a;border-radius:12px;padding:11px;font-size:13px;font-weight:700;cursor:pointer">Or go Founder — lifetime access, $99 once</button>' +
         '<div class="mpprem-note">Pay in BTC, USDT or any major coin via NOWPayments. Cancel anytime — it simply won’t renew.</div>';
       card.innerHTML = h;
       ov.appendChild(card); document.body.appendChild(ov);
       card.querySelector('.mpprem-x').addEventListener('click', close);
       ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
       var note = card.querySelector('.mpprem-note');
-      card.querySelector('.mpprem-buy').addEventListener('click', function () { checkout(this, note); });
+      card.querySelector('.mpprem-buy').addEventListener('click', function () { checkoutPlan('monthly', this, note); });
+      card.querySelector('.mpprem-founder').addEventListener('click', function () { checkoutPlan('founder', this, note); });
     }
-    window.mpPremium = { show: show, close: close, checkout: function () { checkout(null, null); } };
+    window.mpPremium = { show: show, close: close, checkout: function (plan) { checkoutPlan(plan, null, null); } };
+  })();
+
+  /* ===== PRO cosmetic badge — gold "PRO" next to every premium username ([data-lbu]) across chat, leaderboards, profiles ===== */
+  (function () {
+    var PRO = null;
+    function badge() { return '<span class="mp-pro" title="MarginPad Premium member" style="display:inline-block;font:700 8px \'Space Mono\',monospace;letter-spacing:.05em;color:#0a0b0d;background:#c2f64a;border-radius:4px;padding:1px 4px;margin-left:4px;vertical-align:middle">PRO</span>'; }
+    function scan() { if (!PRO) return; var els = document.querySelectorAll('[data-lbu]:not([data-pro])'); for (var i = 0; i < els.length; i++) { var el = els[i], u = (el.getAttribute('data-lbu') || '').toLowerCase(); el.setAttribute('data-pro', '1'); if (u && PRO[u]) { try { el.insertAdjacentHTML('beforeend', badge()); } catch (e) {} } } }
+    function load() { fetch('/api/premium/badges', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { if (j && j.names) { PRO = {}; j.names.forEach(function (n) { PRO[String(n).toLowerCase()] = 1; }); scan(); } }).catch(function () {}); }
+    window.mpIsPro = function (n) { return !!(PRO && PRO[String(n || '').toLowerCase()]); };
+    window.mpProScan = scan;
+    try { load(); setInterval(scan, 1600); setInterval(load, 300000); } catch (e) {}
   })();
 
   /* ===== XP toasts + level-up celebration (2026-07-15) ===== */

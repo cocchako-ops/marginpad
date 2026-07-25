@@ -7484,6 +7484,10 @@ export default {
       const st = await premiumFor(env, request);
       return new Response(JSON.stringify({ allowed: st.premium, premium: st.premium, signedIn: !!st.uid, until: st.until, source: st.source, price: 12.99, user: st.user }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
     }
+    if (url.pathname === '/api/premium/badges') { // usernames that get the PRO cosmetic badge (founders + granted + paid)
+      const set = await premiumSet(env);
+      return new Response(JSON.stringify({ names: [...set] }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+    }
     if (url.pathname === '/api/premium/checkout' && request.method === 'POST') { // start a NOWPayments $12.99/mo invoice for the signed-in user
       const st = await premiumFor(env, request);
       if (!st.uid) return J({ error: 'login_required' }, 401);
