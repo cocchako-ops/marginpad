@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>MarginPad Level System — Bronze to Diamond XP Progression &amp; Rewards</title>
 <meta name="description" content="Earn XP for real activity on MarginPad — trading, daily streaks, missions and competitions — and climb from Bronze to Diamond. Higher levels unlock bigger faucet rewards, exclusive badges and a Diamond withdrawal bonus. A slow, loyalty-first progression." />
@@ -239,7 +252,7 @@ footer a{color:var(--dim)}
   fetch('/api/levels/top?limit=15&_='+Date.now(),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
     var t=(d&&d.top)||[];if(!t.length)return;
     document.getElementById('tmList').innerHTML=t.map(function(x){
-      return '<li class="tm-row'+(x.rank<=3?' top':'')+'" data-lbu="'+esc(x.username)+'" role="button" tabindex="0"><span class="tm-rank">'+x.rank+'</span><span class="tm-gem">'+lvlSvg(x.k,x.col)+'</span><span class="tm-who"><span class="tm-nm">'+esc(x.username)+'</span> <span class="tm-tier" style="color:'+esc(x.col)+'">'+esc(x.name)+'</span></span><span class="tm-xp">'+(x.xp||0).toLocaleString()+' XP</span></li>';
+      return '<li class="tm-row'+(x.rank<=3?' top':'')+'" data-lbu="'+esc(x.username)+'" role="button" tabindex="0"><span class="tm-rank">'+x.rank+'</span><span class="tm-gem">'+lvlSvg(x.k,x.col)+'</span><span class="tm-who"><span class="tm-nm">'+esc(x.username)+'</span><span data-lpro="'+esc(x.username)+'"></span> <span class="tm-tier" style="color:'+esc(x.col)+'">'+esc(x.name)+'</span></span><span class="tm-xp">'+(x.xp||0).toLocaleString()+' XP</span></li>';
     }).join('');
     document.getElementById('topMembers').hidden=false;
   }).catch(function(){});
