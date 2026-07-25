@@ -61,7 +61,7 @@
     return mk;}
   /* async: pull recent liquidations for this window's symbol (our collector), cache 60s per symbol, re-render markers */
   function loadLiqRev(w){if(!w||w.dead||!w.sym||w._liqFetching)return;if(w._liqEvents&&w._liqSym===w.sym&&Date.now()-(w._liqT||0)<60000)return;w._liqFetching=true;
-    fetch('/api/v1/liquidations/live?symbol='+encodeURIComponent(w.sym)+'&limit=1000').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(jj){w._liqFetching=false;if(!w||w.dead)return;w._liqEvents=(jj&&jj.events)||[];w._liqSym=w.sym;w._liqT=Date.now();try{applyInds(w);}catch(e){}});}
+    fetch('/api/v1/liquidations/live?symbol='+encodeURIComponent(w.sym)+'&limit=1000').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(jj){w._liqFetching=false;if(!w||w.dead)return;w._liqEvents=(jj&&jj.events)||[];w._liqSym=w.sym;w._liqT=Date.now();try{(w._reapply||function(){applyInds(w);})();}catch(e){}});}
   /* Self-scoring: grade every arrow this indicator fired on the LOADED bars — 1R:1R (entry=signal close,
      target/stop = +/-1.5*ATR14, same-bar both-hit = loss, conservative). The honesty layer: a signal shows
      its own recent hit-rate on THIS symbol+TF, so users see when it works and when it does not. */
@@ -108,9 +108,9 @@
         armed=false;}}
     return {score:score,mk:mk,dir:dirA};}
   function loadFunding(w){if(!w||w.dead||w._fundFetching)return;if(w._fundH&&w._fundSym===w.sym&&Date.now()-(w._fundT||0)<900000)return;w._fundFetching=true;
-    fetch('/api/v1/bnc?path='+encodeURIComponent('/fapi/v1/fundingRate')+'&symbol='+encodeURIComponent(w.sym)+'USDT&limit=1000').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){w._fundFetching=false;if(!w||w.dead)return;w._fundH=Array.isArray(j)?j:[];w._fundSym=w.sym;w._fundT=Date.now();try{applyInds(w);}catch(e){}});}
+    fetch('/api/v1/bnc?path='+encodeURIComponent('/fapi/v1/fundingRate')+'&symbol='+encodeURIComponent(w.sym)+'USDT&limit=1000').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){w._fundFetching=false;if(!w||w.dead)return;w._fundH=Array.isArray(j)?j:[];w._fundSym=w.sym;w._fundT=Date.now();try{(w._reapply||function(){applyInds(w);})();}catch(e){}});}
   function loadCrowd(w){if(!w||w.dead||w._crFetching)return;if(w._crowdH&&w._crowdSym===w.sym&&Date.now()-(w._crT||0)<900000)return;w._crFetching=true;
-    fetch('/api/v1/bnc?path='+encodeURIComponent('/futures/data/globalLongShortAccountRatio')+'&symbol='+encodeURIComponent(w.sym)+'USDT&period=1h&limit=500').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){w._crFetching=false;if(!w||w.dead)return;w._crowdH=Array.isArray(j)?j:[];w._crowdSym=w.sym;w._crT=Date.now();try{applyInds(w);}catch(e){}});}
+    fetch('/api/v1/bnc?path='+encodeURIComponent('/futures/data/globalLongShortAccountRatio')+'&symbol='+encodeURIComponent(w.sym)+'USDT&period=1h&limit=500').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){w._crFetching=false;if(!w||w.dead)return;w._crowdH=Array.isArray(j)?j:[];w._crowdSym=w.sym;w._crT=Date.now();try{(w._reapply||function(){applyInds(w);})();}catch(e){}});}
   function loadCalHi(){if(window.__mpCalHi||window.__mpCalHiF)return;window.__mpCalHiF=1;
     fetch('/api/calendar?year='+(new Date().getUTCFullYear())).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){window.__mpCalHiF=0;if(j&&j.events)window.__mpCalHi=j.events.filter(function(e){return e&&e.impact>=3&&e.type!=='crypto'&&e.type!=='expiry';}).map(function(e){return +e.ts;});});}
   /* Market Brain: adaptive multi-factor ensemble. Factors are raw reads; a WALK-FORWARD information-coefficient
@@ -782,6 +782,7 @@
       var tl=b.getAttribute('data-tool');if(tl){w.dr.tool=tl;if(tl!=='select'){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}if(w.el&&w.el.classList)w.el.classList.toggle('dr-select',tl==='select');setToolUI(tl);closePops();syncUI();}});
     syncUI();
   }
+  try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,computeMomentum:computeMomentum,computeSqueeze:computeSqueeze,computeLiqRev:computeLiqRev,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,sentimentCalc:sentimentCalc,scoreMarkers:scoreMarkers,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
   try{window.__mpDraw={setup:setupDraw,wire:wireDrawTools};}catch(e){} // expose the price-anchored draw engine to the mobile full-screen charts module
   try{window.__mpAiContext=aiContext;}catch(e){} // expose the rich chart-analysis context so the mobile AI bubble can actually "read" the chart
   /* movable sticky notes on the board */
