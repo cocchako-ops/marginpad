@@ -33,7 +33,22 @@
     + '.lbm-self{font-size:12px;color:#c2f64a;font-weight:700}'
     + '.lbm-follow{background:var(--lc);color:#0a0b0d;border:0;border-radius:10px;padding:9px 18px;font:800 12px "Space Mono",monospace;letter-spacing:.03em;cursor:pointer;transition:filter .15s}'
     + '.lbm-follow:hover{filter:brightness(1.1)}'
-    + '.lbm-follow.on{background:transparent;color:var(--lc);border:1px solid var(--lc)}';
+    + '.lbm-follow.on{background:transparent;color:var(--lc);border:1px solid var(--lc)}'
+    + '.lbm-acts{display:flex;align-items:center;gap:8px}'
+    + '.lbm-dm{background:transparent;color:#38bdf8;border:1px solid rgba(56,189,248,.5);border-radius:10px;padding:9px 12px;font:800 13px "Space Mono",monospace;letter-spacing:.02em;cursor:pointer;transition:background .15s}'
+    + '.lbm-dm:hover{background:rgba(56,189,248,.12)}'
+    + '.lbm-duel{color:#ff9640;border-color:rgba(255,150,64,.5)}.lbm-duel:hover{background:rgba(255,150,64,.12)}'
+    + '.lbm-friend{display:inline-block;margin-left:8px;vertical-align:middle;font-size:10.5px;font-weight:800;letter-spacing:.03em;color:#0a0b0d;background:#c2f64a;border-radius:20px;padding:3px 9px}'
+    + '.lbm-fw{display:inline-block;margin-left:8px;vertical-align:middle;font-size:10px;font-weight:700;letter-spacing:.03em;color:#8b97a5;border:1px solid #2f3742;border-radius:20px;padding:2px 8px}'
+    + '.lbm-av{margin-right:7px;font-size:19px;vertical-align:-2px}'
+    + '.lbm-av-img{width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:-8px}'
+    + '.lbm-bio{margin:12px 0 0;padding:10px 13px;background:rgba(255,255,255,.03);border:1px solid #2a323c;border-left-width:3px;border-radius:10px;font-size:13px;line-height:1.5;color:#d3d8de}'
+    + '.lbm-coins{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}.lbm-coin{font:800 11px "Space Mono",monospace;color:#9aa3ad;border:1px solid #2f3742;border-radius:7px;padding:3px 8px}'
+    + '.lbm-card.lbm-premium{border-color:#c2f64a;box-shadow:0 0 0 1px #c2f64a55,0 24px 70px rgba(0,0,0,.6),0 0 40px rgba(194,246,74,.12)}'
+    + '.lbm-card.lbm-premium:before{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(120% 60% at 50% 0,rgba(194,246,74,.10),transparent 70%);pointer-events:none}'
+    + '.lbm-premtag{display:inline-block;font:800 9px "Space Mono",monospace;letter-spacing:.18em;color:#0a0b0d;background:linear-gradient(90deg,#c2f64a,#e5ff8a);border-radius:20px;padding:3px 11px;margin-bottom:10px}'
+    + '.lbm-pro{display:inline-block;font:800 8.5px "Space Mono",monospace;letter-spacing:.05em;color:#0a0b0d;background:#c2f64a;border-radius:5px;padding:1px 5px;margin-left:7px;vertical-align:middle}'
+    + '.lbm-dm svg{display:block}';
   var st = document.createElement('style'); st.textContent = CSS; (document.head || document.documentElement).appendChild(st);
   var modal = null;
   function closeModal() { if (modal) { modal.classList.remove('on'); setTimeout(function () { if (modal && !modal.classList.contains('on')) modal.style.display = 'none'; }, 200); } }
@@ -48,15 +63,24 @@
     fetch('/api/lb/user?name=' + encodeURIComponent(name)).then(function (r) { return r.json(); }).then(function (d) {
       if (!d || !d.exists) { body.innerHTML = '<div class="lbm-load">No public profile for this trader yet.</div>'; return; }
       var L = d.level || { k: 'bronze', name: 'Bronze', col: '#c97f4a' }, s2 = d.stats || {}, lc = L.col || '#c97f4a';
-      card.style.setProperty('--lc', lc); card.className = 'lbm-card lvl-' + (L.k || 'bronze');
+      card.style.setProperty('--lc', lc); card.className = 'lbm-card lvl-' + (L.k || 'bronze') + (d.premium ? ' lbm-premium' : '');
       var svg = (window.mpLvlSvg ? window.mpLvlSvg(L.k, lc) : '');
       var me = (window.mpAuth && window.mpAuth.me && window.mpAuth.me()) || null;
       var isSelf = me && (me.username && me.username.toLowerCase() === String(d.name).toLowerCase());
       var following = followSet().map(function (x) { return String(x).toLowerCase(); }).indexOf(String(d.name).toLowerCase()) >= 0;
       function stat(v, l, c) { return '<div class="lbm-s"><div class="lbm-sv"' + (c ? ' style="color:' + c + '"' : '') + '>' + v + '</div><div class="lbm-sl">' + l + '</div></div>'; }
-      var mBtn = isSelf ? '<div class="lbm-self">This is you</div>' : (signedIn() ? '<button type="button" class="lbm-follow' + (following ? ' on' : '') + '" data-lbfollow="' + esc(d.name) + '" data-tuid="' + esc(d.uid) + '">' + (following ? '✓ Following' : '+ Follow') + '</button>' : '<button type="button" class="lbm-follow" data-auth-open>Sign in to follow</button>');
+      var CHAT_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+      var DUEL_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/></svg>';
+      var dmBtn = (!isSelf && signedIn()) ? '<button type="button" class="lbm-dm" data-lbdm="' + esc(d.name) + '" title="Message">' + CHAT_SVG + '</button><button type="button" class="lbm-dm lbm-duel" data-lbduel="' + esc(d.name) + '" title="Challenge to a duel">' + DUEL_SVG + '</button>' : '';
+      var mBtn = '<div class="lbm-acts">' + (isSelf ? '<div class="lbm-self">This is you</div>' : (signedIn() ? '<button type="button" class="lbm-follow' + (following ? ' on' : '') + '" data-lbfollow="' + esc(d.name) + '" data-tuid="' + esc(d.uid) + '">' + (following ? '✓ Following' : '+ Follow') + '</button>' : '<button type="button" class="lbm-follow" data-auth-open>Sign in to follow</button>')) + dmBtn + '</div>';
+      var av = d.avatar ? (/^data:image\//.test(d.avatar) ? '<img class="lbm-av lbm-av-img" src="' + esc(d.avatar) + '" alt="">' : '<span class="lbm-av">' + esc(d.avatar) + '</span>') : '';
+      var acc = d.accent || '';
+      var bioHtml = d.bio ? '<div class="lbm-bio"' + (acc ? ' style="border-color:' + acc + '55"' : '') + '>' + esc(d.bio) + '</div>' : '';
+      var coinsHtml = (d.coins && d.coins.length) ? '<div class="lbm-coins">' + d.coins.map(function (c) { return '<span class="lbm-coin"' + (acc ? ' style="color:' + acc + ';border-color:' + acc + '44"' : '') + '>' + esc(c) + '</span>'; }).join('') + '</div>' : '';
       body.innerHTML =
-        '<div class="lbm-head"><div class="lbm-badge">' + svg + '</div><div class="lbm-id"><div class="lbm-name">' + esc(d.name) + '</div><div class="lbm-lvl" style="color:' + lc + '">' + esc(L.name || 'Bronze') + (L.next ? ' · ' + (L.pct || 0) + '% to ' + esc(L.next) : ' · max tier') + '</div></div></div>'
+        (d.premium ? '<div class="lbm-premtag">PREMIUM MEMBER</div>' : '')
+        + '<div class="lbm-head"><div class="lbm-badge">' + svg + '</div><div class="lbm-id"><div class="lbm-name">' + av + esc(d.name) + (d.premium ? '<span class="lbm-pro">PRO</span>' : '') + (d.mutual ? '<span class="lbm-friend" title="You follow each other">★ Friends</span>' : (d.followsMe ? '<span class="lbm-fw" title="Follows you">Follows you</span>' : '')) + '</div><div class="lbm-lvl" style="color:' + lc + '">' + esc(L.name || 'Bronze') + (L.next ? ' · ' + (L.pct || 0) + '% to ' + esc(L.next) : ' · max tier') + '</div></div></div>'
+        + bioHtml + coinsHtml
         + '<div class="lbm-bar"><i style="width:' + (L.pct || 0) + '%;background:' + lc + '"></i></div>'
         + '<div class="lbm-grid">'
           + stat((s2.trades || 0), 'Trades')
@@ -81,6 +105,10 @@
       }).catch(function () { fb.disabled = false; });
       return;
     }
+    var du = e.target.closest && e.target.closest('[data-lbduel]');
+    if (du) { var un = du.getAttribute('data-lbduel'); closeModal(); if (window.mpAuth && window.mpAuth.duel) window.mpAuth.duel(un); else if (window.mpAuth && window.mpAuth.open) window.mpAuth.open(); return; }
+    var db = e.target.closest && e.target.closest('[data-lbdm]');
+    if (db) { var dn = db.getAttribute('data-lbdm'); closeModal(); if (window.mpAuth && window.mpAuth.dm) window.mpAuth.dm(dn); else if (window.mpAuth && window.mpAuth.open) window.mpAuth.open(); return; }
     var row = e.target.closest && e.target.closest('[data-lbu]');
     if (row && !e.target.closest('[data-auth-open]')) window.mpOpenProfile(row.getAttribute('data-lbu'));
   });

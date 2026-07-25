@@ -1080,7 +1080,7 @@
   function lbMoney(x){x=+x||0;var s=x<0?'-':'+';x=Math.abs(x);return s+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
   function lbMoneyC(x){x=+x||0;var s=x<0?'-':'+';var a=Math.abs(x),u='',d=a;if(a>=1e9){d=a/1e9;u='B';}else if(a>=1e6){d=a/1e6;u='M';}else if(a>=1e3){d=a/1e3;u='K';}var str=u?(d>=100?Math.round(d):d.toFixed(1))+u:(a>=1?Math.round(a).toString():a.toFixed(2));return s+'$'+str;}
   function lbPctC(x){x=+x||0;var s=x<0?'-':'+';var a=Math.abs(x),u='',d=a;if(a>=1e6){d=a/1e6;u='M';}else if(a>=1e3){d=a/1e3;u='K';}var str=u?(d>=100?Math.round(d):d.toFixed(1))+u:Math.round(a).toString();return s+str+'%';}
-  function lbRow(i,who,mid,val,cls){var med=i<3?' m'+(i+1):'';return '<div class="lb-r'+(i===0?' top':'')+'" data-lbu="'+lbEsc(who||'')+'" role="button" tabindex="0"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who">'+lbEsc(who||'trader')+'<span data-lvln="'+lbEsc(who||'')+'"></span></span><span class="lb-pair">'+mid+'</span><span class="lb-roe '+(cls||'')+'">'+val+'</span></div>';}
+  function lbRow(i,who,mid,val,cls){var med=i<3?' m'+(i+1):'';return '<div class="lb-r'+(i===0?' top':'')+'" data-lbu="'+lbEsc(who||'')+'" role="button" tabindex="0"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who"><span data-lvln="'+lbEsc(who||'')+'"></span>'+lbEsc(who||'trader')+'<span data-lpro="'+lbEsc(who||'')+'"></span></span><span class="lb-pair">'+mid+'</span><span class="lb-roe '+(cls||'')+'">'+val+'</span></div>';}
   function lbRender(){
     var d=lbData,el=document.getElementById('lbBoard'),note=document.getElementById('lbNote');if(!el)return;
     if(note){
@@ -1119,7 +1119,7 @@
       el.innerHTML=f.map(function(x){
         var lc=(x.level&&x.level.col)||'#c97f4a';
         var wk=x.weekTrades>0?(lbMoneyC(x.weekPnl)+' · '+x.weekTrades+' wk'):'no trades this season';
-        return '<div class="lb-r lb-fr" data-lbu="'+lbEsc(x.name)+'" role="button" tabindex="0" style="--lc:'+lc+'"><span class="lb-fdot" style="background:'+lc+'"></span><span class="lb-who">'+lbEsc(x.name)+'<span data-lvln="'+lbEsc(x.name)+'"></span></span><span class="lb-pair">'+(x.closed||0)+' trades · '+(x.winRate||0)+'%</span><span class="lb-roe '+((+x.weekPnl>=0)?'up':'dn')+'">'+wk+'</span></div>';
+        return '<div class="lb-r lb-fr" data-lbu="'+lbEsc(x.name)+'" role="button" tabindex="0" style="--lc:'+lc+'"><span class="lb-fdot" style="background:'+lc+'"></span><span class="lb-who"><span data-lvln="'+lbEsc(x.name)+'"></span>'+lbEsc(x.name)+'<span data-lpro="'+lbEsc(x.name)+'"></span></span><span class="lb-pair">'+(x.closed||0)+' trades · '+(x.winRate||0)+'%</span><span class="lb-roe '+((+x.weekPnl>=0)?'up':'dn')+'">'+wk+'</span></div>';
       }).join('');
       lbAfter(el);
     }).catch(function(){el.innerHTML='<div class="lb-empty">Could not load your following list.</div>';});

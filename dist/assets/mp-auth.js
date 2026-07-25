@@ -838,7 +838,13 @@
   (function () {
     var PRO = null;
     function badge() { return '<span class="mp-pro" title="MarginPad Premium member" style="display:inline-block;font:700 8px \'Space Mono\',monospace;letter-spacing:.05em;color:#0a0b0d;background:#c2f64a;border-radius:4px;padding:1px 4px;margin-left:4px;vertical-align:middle">PRO</span>'; }
-    function scan() { if (!PRO) return; var els = document.querySelectorAll('[data-lbu]:not([data-pro])'); for (var i = 0; i < els.length; i++) { var el = els[i], u = (el.getAttribute('data-lbu') || '').toLowerCase(); el.setAttribute('data-pro', '1'); if (u && PRO[u]) { try { el.insertAdjacentHTML('beforeend', badge()); } catch (e) {} } } }
+    function scan() { if (!PRO) return;
+      // precise placement: a [data-lpro="name"] slot renders the badge exactly after the name (LEVEL / NAME / PRO)
+      var slots = document.querySelectorAll('[data-lpro]:not([data-prodone])');
+      for (var i = 0; i < slots.length; i++) { var sl = slots[i], su = (sl.getAttribute('data-lpro') || '').toLowerCase(); sl.setAttribute('data-prodone', '1'); if (su && PRO[su]) sl.innerHTML = badge(); }
+      // fallback for name elements without a slot (some lists): append the badge, unless the row already has a slot
+      var els = document.querySelectorAll('[data-lbu]:not([data-pro])');
+      for (var j = 0; j < els.length; j++) { var el = els[j], u = (el.getAttribute('data-lbu') || '').toLowerCase(); el.setAttribute('data-pro', '1'); if (u && PRO[u]) { var pn = el.parentNode; if (pn && (pn.querySelector('[data-lpro]') || el.querySelector('[data-lpro]'))) continue; try { el.insertAdjacentHTML('beforeend', badge()); } catch (e) {} } } }
     function load() { fetch('/api/premium/badges', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { if (j && j.names) { PRO = {}; j.names.forEach(function (n) { PRO[String(n).toLowerCase()] = 1; }); scan(); } }).catch(function () {}); }
     window.mpIsPro = function (n) { return !!(PRO && PRO[String(n || '').toLowerCase()]); };
     window.mpProScan = scan;
