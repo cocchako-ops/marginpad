@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const SP = path.join(__dirname, '..', 'dist', 'sitemap.xml');
 const EXTRAS = [
+  ['https://marginpad.io/premium/', '0.9'],
   ['https://marginpad.io/trading-api/', '0.8'],
   ['https://marginpad.io/pnl-fee-checker/', '0.8'],
   ['https://marginpad.io/calendar/', '0.8'],
