@@ -5508,6 +5508,7 @@ async function handleNowpayIpn(request, env) {
         if (life) { expiry = Date.now() + 100 * 365 * 86400000; await env.STATS.put('prem:sub:' + uid, String(expiry)); await env.STATS.put('prem:founder:' + uid, '1'); }
         else { let base = Date.now(); try { const cur = +(await env.STATS.get('prem:sub:' + uid)) || 0; if (cur > base) base = cur; } catch (e) {} expiry = base + 30 * 86400000; await env.STATS.put('prem:sub:' + uid, String(expiry), { expirationTtl: Math.ceil((expiry - Date.now()) / 1000) + 7 * 86400 }); }
         try { await premMarkName(env, uid); } catch (e) {}
+        try { await setPremiumDO(env, { uid: uid }, expiry); } catch (e) {}
         try { await evPush(env, null, 'sale', (life ? 'premium-founder ($' : 'premium ($') + (data.price_amount || (life ? '99' : '12.99')) + ')', ''); } catch (e) {}
         await tgAdmin(env, '<b>Premium ' + (life ? 'FOUNDER (lifetime)' : 'paid') + '</b>\nUser <code>' + uid + '</code>' + (life ? '' : ' until ' + new Date(expiry).toISOString().slice(0, 10)) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
       }
@@ -5543,6 +5544,8 @@ async function premMarkName(env, uid) {
     if (set.indexOf(un) < 0) { set.push(un); if (set.length > 500) set = set.slice(-500); await env.STATS.put('premium:names', set.join(' ')); }
   } catch (e) {}
 }
+const PREM_FARFUTURE = 4102444800000;
+async function setPremiumDO(env, who, until) { if (!env.USERS) return; try { await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/setpremium', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(Object.assign({ until: until }, who)) })); } catch (e) {} }
 // the set of usernames that get the premium PRO badge (founders + owner-granted + paid) — cached per isolate 60s
 let _premSet = { t: 0, s: null };
 async function premiumSet(env) {
@@ -7508,6 +7511,8 @@ export default {
       if (add && PREM_FOUNDERS.indexOf(add) < 0 && list.indexOf(add) < 0) list.push(add);
       if (rem) list = list.filter(x => x !== rem);
       if (add || rem) await env.STATS.put('premium:allow', list.join(' '));
+      if (add) { try { await setPremiumDO(env, { username: add }, PREM_FARFUTURE); } catch (e) {} }
+      if (rem) { try { await setPremiumDO(env, { username: rem }, 0); } catch (e) {} }
       const paid = []; // active paid subs (scan)
       try { let cur; do { const l = await env.STATS.list({ prefix: 'prem:sub:', cursor: cur, limit: 1000 }); for (const k of l.keys) { const until = +(await env.STATS.get(k.name)) || 0; if (until > Date.now()) paid.push({ uid: k.name.slice(9), until }); } cur = l.list_complete ? null : l.cursor; } while (cur); } catch (e) {}
       return J({ ok: true, always: PREM_FOUNDERS, granted: list, paid });
@@ -8146,7 +8151,9 @@ export default {
       if (sub === 'user') { // public profile card (by ?name=); if the viewer is signed in, add mutual-follow ("friend") flags — uncached
         const tok = getCookie(request, SESS_COOKIE); const vu = tok ? await sessionUser(env, tok) : null;
         const q = 'https://do/lbuser?name=' + encodeURIComponent(url.searchParams.get('name') || '') + (vu && vu.id ? '&viewer=' + encodeURIComponent(vu.id) : '');
-        try { const r = await stub.fetch(new Request(q)); return new Response(await r.text(), { headers: { ...jh, 'cache-control': vu && vu.id ? 'no-store' : 'public, max-age=15' } }); }
+        try { const r = await stub.fetch(new Request(q)); let txt = await r.text();
+          try { const jd = JSON.parse(txt); if (jd && jd.name) { const pset = await premiumSet(env); jd.premium = pset.has(String(jd.name).toLowerCase()); txt = JSON.stringify(jd); } } catch (e) {} // premium flag for the PRO badge + premium profile styling
+          return new Response(txt, { headers: { ...jh, 'cache-control': vu && vu.id ? 'no-store' : 'public, max-age=15' } }); }
         catch (e) { return new Response('{"exists":false}', { headers: jh }); }
       }
       // follow + following require sign-in
@@ -9147,7 +9154,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS otp(email TEXT PRIMARY KEY, code TEXT, expires INTEGER, attempts INTEGER DEFAULT 0, sent INTEGER, sends INTEGER DEFAULT 0, day TEXT)'); // one active code per email; rate-limited
     s.exec('CREATE TABLE IF NOT EXISTS otpip(k TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)'); // per-IP-per-day OTP send cap, so one source can't email-bomb many addresses
     for (const col of ['dev TEXT', 'br TEXT', 'last_seen INTEGER', 'pv INTEGER DEFAULT 0', 'username TEXT', "status TEXT DEFAULT 'active'", 'susp_until INTEGER DEFAULT 0', 'muted INTEGER DEFAULT 0', 'restrictions TEXT', 'note TEXT', 'asn INTEGER', 'org TEXT', 'digest INTEGER DEFAULT 1', 'tg_chat TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} }
-    for (const col of ['xp INTEGER DEFAULT 0', 'streak INTEGER DEFAULT 0', 'streak_day TEXT', 'lvl_seen TEXT', 'freezes INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // XP & level system (+freezes = streak-freeze anti-churn buffer)
+    for (const col of ['xp INTEGER DEFAULT 0', 'streak INTEGER DEFAULT 0', 'streak_day TEXT', 'lvl_seen TEXT', 'freezes INTEGER DEFAULT 0', 'premium INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // XP & level system (+freezes = streak-freeze; premium = expiry ms, drives the +5% XP boost)
     try { s.exec('ALTER TABLE users ADD COLUMN did TEXT'); } catch (e) {} // device fingerprint (mp_did cookie) captured at login → same-device multi-account detection for the Security tab
     for (const col of ['bio TEXT', 'avatar TEXT', 'accent TEXT', 'coins TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // public profile personalization: bio, avatar emoji, accent colour, favourite coins (csv)
     s.exec('CREATE TABLE IF NOT EXISTS xplog(user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)'); // XP earn/adjust history (ring-buffered ~150/user)
@@ -9197,7 +9204,9 @@ export class UserStore {
   _grantXp(uid, src, amt, o) { // o: {dayCap, lifeCap, once, note}. Returns granted (clamped). Anti-abuse via xpday.
     o = o || {}; amt = Math.max(0, Math.round(+amt || 0)); if (!uid || !amt) return 0;
     const sql = this.state.storage.sql; const now = Date.now();
-    if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return 0;
+    const _u = this.rows('SELECT premium, username FROM users WHERE id=?', uid)[0];
+    if (!_u) return 0;
+    if (PREM_FOUNDERS.indexOf(String(_u.username || '').toLowerCase()) >= 0 || (+_u.premium || 0) > now) amt = Math.round(amt * 1.05); // Premium members earn +5% XP on everything
     if (o.once && this.rows('SELECT 1 FROM xplog WHERE user_id=? AND src=? LIMIT 1', uid, src)[0]) return 0;
     if (o.lifeCap) { const t = (this.rows('SELECT COALESCE(SUM(amt),0) s FROM xplog WHERE user_id=? AND src=? AND amt>0', uid, src)[0] || { s: 0 }).s; if (t >= o.lifeCap) return 0; amt = Math.min(amt, o.lifeCap - t); }
     if (o.dayCap) { const day = new Date().toISOString().slice(0, 10); const got = (this.rows('SELECT n FROM xpday WHERE user_id=? AND day=? AND src=?', uid, day, src)[0] || { n: 0 }).n; if (got >= o.dayCap) return 0; amt = Math.min(amt, o.dayCap - got); if (amt <= 0) return 0; sql.exec('INSERT INTO xpday(user_id,day,src,n) VALUES(?,?,?,?) ON CONFLICT(user_id,day,src) DO UPDATE SET n=n+?', uid, day, src, amt, amt); }
@@ -10185,6 +10194,15 @@ export class UserStore {
           realized: +(t.pnl || 0).toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
           weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2) },
         followers });
+    }
+    if (path === '/setpremium') { // sync premium standing onto the users row (drives the +5% XP boost). {uid|username, until} — until=expiry ms (0 clears)
+      let b = {}; try { b = await request.json(); } catch (e) {}
+      const until = Math.max(0, Math.round(+b.until || 0));
+      try {
+        if (b.uid) sql.exec('UPDATE users SET premium=? WHERE id=?', until, String(b.uid));
+        else if (b.username) sql.exec('UPDATE users SET premium=? WHERE username COLLATE NOCASE=?', until, String(b.username).slice(0, 24));
+      } catch (e) {}
+      return this.j({ ok: true });
     }
     if (path === '/lbfollow') { // toggle follow (uid follows tuid). uid from worker (session); tuid+tname in body
       const uid = String((b && b.uid) || '').replace(/^u:/, '');
