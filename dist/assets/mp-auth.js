@@ -445,6 +445,28 @@
     fr.onerror = function () { cb(null, 'Could not read that file.'); };
     fr.readAsDataURL(file);
   }
+  function renderBalance() {
+    if (!bodyEl) return;
+    bodyEl.innerHTML = '<h3 class="mpa-h">Balance Mode</h3><p class="mpa-sub">Checking your membership…</p>';
+    fetch('/api/premium/status', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (st) {
+      if (!st || !st.premium) { if (window.mpPremium && window.mpPremium.show) window.mpPremium.show('Unlock Balance Mode'); render(); return; }
+      var c = window.mpBal.cfg();
+      bodyEl.innerHTML = '<button class="mpa-row2" id="mpaBalBack" type="button" style="margin-bottom:12px">' + ic('chev') + '<span>Back</span></button>'
+        + '<h3 class="mpa-h">Balance Mode</h3>'
+        + '<p class="mpa-sub" style="margin:-4px 0 14px">Trade with a portfolio balance, like a real account. Your balance, equity and available margin show at the top of <b>My Trades</b>, and every new trade draws its margin from what is available.</p>'
+        + '<div class="mpa-prow"><span>Enable Balance Mode</span><label class="mpa-tgl" style="position:relative;display:inline-block;width:40px;height:22px"><input type="checkbox" id="mpaBalOn"' + (c.on ? ' checked' : '') + ' style="opacity:0;width:0;height:0"><span class="mpa-tgl-s" style="position:absolute;inset:0;background:#242c38;border-radius:22px;transition:.2s"></span></label></div>'
+        + '<label style="display:block;font-size:11px;color:#9aa3ad;margin:14px 0 5px">Starting balance (USD)</label>'
+        + '<input class="mpa-in" id="mpaBalStart" inputmode="numeric" value="' + c.start + '">'
+        + '<button class="mpa-btn" id="mpaBalSave" type="button">Save</button>'
+        + '<div class="mpa-msg"></div>'
+        + '<button class="mpa-flink" id="mpaBalReset" type="button" style="margin-top:10px">' + ic('spark') + 'Reset balance to the starting amount</button>';
+      if (!document.getElementById('mpaBalCss')) { var s2 = document.createElement('style'); s2.id = 'mpaBalCss'; s2.textContent = '#mpaBalOn:checked + .mpa-tgl-s{background:#c2f64a}.mpa-tgl-s:before{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:.2s}#mpaBalOn:checked + .mpa-tgl-s:before{transform:translateX(18px);background:#0a0b0d}'; document.head.appendChild(s2); }
+      var bk = bodyEl.querySelector('#mpaBalBack'); if (bk) bk.addEventListener('click', render);
+      var msg = bodyEl.querySelector('.mpa-msg');
+      var sv = bodyEl.querySelector('#mpaBalSave'); if (sv) sv.addEventListener('click', function () { var on = bodyEl.querySelector('#mpaBalOn').checked; var start = parseFloat((bodyEl.querySelector('#mpaBalStart').value || '').replace(/[^0-9.]/g, '')) || 10000; if (start > 1e7) start = 1e7; window.mpBal.setCfg(on, start); if (msg) { msg.textContent = on ? 'Saved — open My Trades to see your balance.' : 'Balance Mode turned off.'; msg.className = 'mpa-msg ok'; } });
+      var rs = bodyEl.querySelector('#mpaBalReset'); if (rs) rs.addEventListener('click', function () { var cc = window.mpBal.cfg(); window.mpBal.setCfg(cc.on, cc.start, true); if (msg) { msg.textContent = 'Balance reset to $' + cc.start.toLocaleString(); msg.className = 'mpa-msg ok'; } });
+    }).catch(function () { render(); });
+  }
   function renderEditProfile() {
     var bio = (ME && ME.bio) || '', av = (ME && ME.avatar) || '', ac = (ME && ME.accent) || '', co = (ME && ME.coins) || '';
     var avState = av; // current avatar (data URI or emoji), updated on upload
@@ -532,6 +554,7 @@
           + tileBtn('mpaFeed', 'feed', 'Following', '')
           + tileBtn('mpaDuel', 'swords', 'Duels', 'mpaDuelBadge')
         + '</div>'
+          + '<button class="mpa-row2" id="mpaBal" type="button"><svg class="mpa-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="14" r="1.4"/></svg><span>Balance Mode</span><span style="font:700 9px \'Space Mono\',monospace;color:#c2f64a;background:rgba(194,246,74,.14);border-radius:5px;padding:2px 6px">PREMIUM</span>' + ic('chev') + '</button>'
           + '<button class="mpa-row2" id="mpaEdit" type="button">' + ic('edit') + '<span>Edit profile</span>' + ic('chev') + '</button>'
           + '<button class="mpa-row2" id="mpaXp" type="button">' + ic('spark') + '<span>XP history</span>' + ic('chev') + '</button>' : '')
         + '<div class="mpa-foot2">'
@@ -571,6 +594,7 @@
       var fdB = bodyEl.querySelector('#mpaFeed'); if (fdB) fdB.addEventListener('click', function () { renderFeed(); });
       var duB = bodyEl.querySelector('#mpaDuel'); if (duB) duB.addEventListener('click', function () { renderDuels(); });
       var edB = bodyEl.querySelector('#mpaEdit'); if (edB) edB.addEventListener('click', function () { renderEditProfile(); });
+      var blB = bodyEl.querySelector('#mpaBal'); if (blB) blB.addEventListener('click', function () { renderBalance(); });
       dmSetBadge(window._mpDmUnread || 0); duelSetBadge(window._mpDuelPending || 0); notifSetBadge(window._mpNotifUnread || 0);
       return;
     }
@@ -755,7 +779,9 @@
     var FEATS = [
       ['8 exclusive indicators', 'Market Brain, Cascade Radar, Liquidation Magnet, Market Memory & more — signals built on our data that no other chart has.'],
       ['Live liquidation heatmap', 'The full interactive map of where leveraged positions get wiped — desktop & mobile, unlimited.'],
-      ['Ask AI on your charts', 'A built-in analyst that reads any chart and answers your questions in plain words.']
+      ['Ask AI on your charts', 'A built-in analyst that reads any chart and answers your questions in plain words — 50 questions a day.'],
+      ['Balance Mode', 'Give yourself a portfolio balance and trade it like a real account. Your balance, equity and stats live right in My Trades.'],
+      ['Premium leaderboards & competitions', 'Compete only against other Premium traders on account growth — with real prizes.']
     ];
     function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
     var ov = null;
@@ -795,6 +821,7 @@
       h += '<div class="mpprem-price"><b>$12.99</b> / month</div>' +
         '<button class="mpprem-buy" type="button">Pay with crypto — $12.99 / month</button>' +
         '<button class="mpprem-founder" type="button" style="display:block;width:100%;margin-top:8px;background:none;border:1px solid #2a3550;color:#c2f64a;border-radius:12px;padding:11px;font-size:13px;font-weight:700;cursor:pointer">Or go Founder — lifetime access, $99 once</button>' +
+        '<div style="text-align:center;font:700 11px \'Space Mono\',monospace;color:#ffd75a;margin-top:9px">The first 5 members lock in lifetime Premium.</div>' +
         '<div class="mpprem-note">Pay in BTC, USDT or any major coin via NOWPayments. Cancel anytime — it simply won’t renew.</div>';
       card.innerHTML = h;
       ov.appendChild(card); document.body.appendChild(ov);
@@ -817,6 +844,12 @@
     window.mpProScan = scan;
     try { load(); setInterval(scan, 1600); setInterval(load, 300000); } catch (e) {}
   })();
+
+  /* ===== Balance Mode (Premium): trade a portfolio balance; the strip renders in My Trades (home.js + mp-trade.js) ===== */
+  window.mpBal = {
+    cfg: function () { try { var c = JSON.parse(localStorage.getItem('mp_balmode') || 'null'); if (c && c.on) return { on: true, start: (+c.start > 0 ? +c.start : 10000), since: +c.since || 0 }; } catch (e) {} return { on: false, start: 10000, since: 0 }; },
+    setCfg: function (on, start, resetSince) { var prev; try { prev = JSON.parse(localStorage.getItem('mp_balmode') || 'null') || {}; } catch (e) { prev = {}; } var since = (resetSince || !prev.since) ? Date.now() : (+prev.since || Date.now()); try { localStorage.setItem('mp_balmode', JSON.stringify({ on: !!on, start: Math.max(0, Math.round(+start || 0)), since: since })); } catch (e) {} try { window.dispatchEvent(new Event('mp-balmode')); } catch (e) {} try { if (window.mpJournalRender) window.mpJournalRender(); } catch (e) {} }
+  };
 
   /* ===== XP toasts + level-up celebration (2026-07-15) ===== */
   (function () {

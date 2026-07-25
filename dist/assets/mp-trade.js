@@ -138,6 +138,13 @@
       navigator.clipboard.write([item]).then(function(){toast(MT('jImgLinkCopied','Image + link copied'));},function(){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied','Link copied'));},function(){});});
     }catch(_){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied','Link copied'));},function(){});}
   }
+  function balCfg(){return (window.mpBal&&window.mpBal.cfg&&window.mpBal.cfg())||{on:false,start:10000,since:0};}
+  function balStrip(open,closed,unreal){var bm=balCfg();if(!bm.on)return '';
+    var realized=closed.reduce(function(s,e){if(bm.since&&(+e.closeTs||0)<bm.since)return s;return s+(+e.pnl||0);},0),openMargin=open.reduce(function(s,e){return s+(+e.margin||0);},0),equity=bm.start+realized+(unreal||0),avail=bm.start+realized-openMargin,pl=equity-bm.start,plc=pl>=0?'#34d99a':'#ff7b72';
+    function cell(l,v,col){return '<div style="flex:1"><div style="font:11px monospace;color:#5c6b84">'+l+'</div><div style="font:700 13px monospace;color:'+(col||'#e9e7df')+'">'+v+'</div></div>';}
+    return '<div class="jr-bal" style="background:#0d1117;border:1px solid #1c2431;border-left:3px solid #c2f64a;border-radius:12px;padding:11px 13px;margin:0 0 10px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><span style="font:700 9px monospace;letter-spacing:.14em;color:#c2f64a">BALANCE MODE</span><span style="font:700 17px monospace;color:'+plc+'">'+money(equity)+' <small style="font-size:10px;color:'+plc+'">'+(pl>=0?'+':'')+(bm.start>0?(pl/bm.start*100).toFixed(1):'0')+'%</small></span></div>'
+      +'<div style="display:flex;gap:10px">'+cell('Start',money(bm.start))+cell('Available',money(Math.max(0,avail)),avail<0?'#ff7b72':'#e9e7df')+cell('In trades',money(openMargin))+cell('Realized',(realized>=0?'+':'')+money(realized),realized>=0?'#34d99a':'#ff7b72')+'</div></div>';}
   function render(){
     var listEl=document.getElementById('jrList'),statsEl=document.getElementById('jrStats'),emptyEl=document.getElementById('jrEmpty');
     if(!listEl||!statsEl)return;
@@ -155,7 +162,7 @@
       +stat((realized>=0?'+':'−')+money(Math.abs(realized)).replace('-',''),MT('jRealized','Realized'),realized>=0?'#34d99a':'#ff7b72');
     var rows=(jrTab==='open'?open:closed);
     var cards=rows.length?rows.slice().reverse().map(jrTab==='open'?openCard:closedCard).join(''):'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='open'?MT('jNoOpen','No open positions — open one from Paper Trade.'):MT('jNoClosed','No closed trades yet.'))+'</span></div>';
-    listEl.innerHTML='<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+cards;
+    listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+cards;
     if(emptyEl)emptyEl.style.display='none';
   }
   function add(){
