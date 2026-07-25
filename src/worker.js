@@ -5499,16 +5499,17 @@ async function handleNowpayIpn(request, env) {
         await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', disable_web_page_preview: true, text: '✅ <b>Payment confirmed!</b> Welcome to <b>' + tier + '</b> signals 🎉' + (invite ? '\n\n👉 <b>Join now:</b> ' + invite : '\n\nWe’ll add you shortly.') + '\n\n🗓 Access runs <b>30 days</b> (until ' + new Date(expiry).toISOString().slice(0, 10) + '). I’ll remind you before it ends. Status: /mysub' });
         await tgAdmin(env, '💰 <b>NOWPayments — paid</b>\nTier: <b>' + tier + '</b> ($' + data.price_amount + ')\nUser chat: <code>' + chat + '</code> · until ' + new Date(expiry).toISOString().slice(0, 10) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
       }
-    } else if (/^prem_[a-z0-9]{4,40}$/i.test(orderId)) {
-      const uid = orderId.slice(5), payId = String(data.payment_id || data.id || '');
+    } else if (/^premlife_[a-z0-9]{4,40}$/i.test(orderId) || /^prem_[a-z0-9]{4,40}$/i.test(orderId)) {
+      const life = orderId.indexOf('premlife_') === 0, uid = orderId.slice(life ? 9 : 5), payId = String(data.payment_id || data.id || '');
       const dup = payId ? await env.STATS.get('np:done:' + payId) : null;
       if (!dup) {
         if (payId) await env.STATS.put('np:done:' + payId, '1', { expirationTtl: 7776000 });
-        let base = Date.now(); try { const cur = +(await env.STATS.get('prem:sub:' + uid)) || 0; if (cur > base) base = cur; } catch (e) {} // renewal extends
-        const expiry = base + 30 * 86400000;
-        await env.STATS.put('prem:sub:' + uid, String(expiry), { expirationTtl: Math.ceil((expiry - Date.now()) / 1000) + 7 * 86400 });
-        try { await evPush(env, null, 'sale', 'premium ($' + (data.price_amount || '12.99') + ')', ''); } catch (e) {}
-        await tgAdmin(env, '💰 <b>Premium — paid</b>\nUser <code>' + uid + '</code> until ' + new Date(expiry).toISOString().slice(0, 10) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
+        let expiry;
+        if (life) { expiry = Date.now() + 100 * 365 * 86400000; await env.STATS.put('prem:sub:' + uid, String(expiry)); await env.STATS.put('prem:founder:' + uid, '1'); }
+        else { let base = Date.now(); try { const cur = +(await env.STATS.get('prem:sub:' + uid)) || 0; if (cur > base) base = cur; } catch (e) {} expiry = base + 30 * 86400000; await env.STATS.put('prem:sub:' + uid, String(expiry), { expirationTtl: Math.ceil((expiry - Date.now()) / 1000) + 7 * 86400 }); }
+        try { await premMarkName(env, uid); } catch (e) {}
+        try { await evPush(env, null, 'sale', (life ? 'premium-founder ($' : 'premium ($') + (data.price_amount || (life ? '99' : '12.99')) + ')', ''); } catch (e) {}
+        await tgAdmin(env, '<b>Premium ' + (life ? 'FOUNDER (lifetime)' : 'paid') + '</b>\nUser <code>' + uid + '</code>' + (life ? '' : ' until ' + new Date(expiry).toISOString().slice(0, 10)) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
       }
     } else {
       await tgAdmin(env, '💰 <b>NOWPayments</b> ' + status + ' — order <code>' + orderId + '</code> $' + (data.price_amount || '?'));
@@ -5530,6 +5531,26 @@ async function premiumFor(env, request) {
   if (uname && allow.has(uname)) return { premium: true, user: uname, uid, until: null, source: 'grant' };
   try { const until = +(await env.STATS.get('prem:sub:' + uid)) || 0; if (until > Date.now()) return { premium: true, user: uname, uid, until, source: 'paid' }; } catch (e) {}
   return { premium: false, user: uname, uid, until: null, source: null };
+}
+// cosmetics: remember a paid member's username so the PRO badge shows in leaderboards/chat (KV premium:names, cap ~500)
+async function premMarkName(env, uid) {
+  if (!env.USERS || !uid) return;
+  try {
+    const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/profiles', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids: [uid] }) }));
+    const d = await r.json(); const prof = d && d.profiles && d.profiles[uid]; const un = prof && prof.username && String(prof.username).toLowerCase();
+    if (!un) return;
+    let set = ((await env.STATS.get('premium:names')) || '').toLowerCase().split(/\s+/).filter(Boolean);
+    if (set.indexOf(un) < 0) { set.push(un); if (set.length > 500) set = set.slice(-500); await env.STATS.put('premium:names', set.join(' ')); }
+  } catch (e) {}
+}
+// the set of usernames that get the premium PRO badge (founders + owner-granted + paid) — cached per isolate 60s
+let _premSet = { t: 0, s: null };
+async function premiumSet(env) {
+  const now = Date.now(); if (_premSet.s && now - _premSet.t < 60000) return _premSet.s;
+  const set = new Set(PREM_FOUNDERS);
+  try { ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => set.add(x)); } catch (e) {}
+  try { ((await env.STATS.get('premium:names')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => set.add(x)); } catch (e) {}
+  _premSet = { t: now, s: set }; return set;
 }
 // ---- Bot ↔ site account connection + unified alerts ----
 async function tgLinkedUser(env, chat) { // returns the site account linked to this Telegram chat, or null
@@ -6407,12 +6428,14 @@ async function handleAiChart(url, request, env) {
   // effective daily limit = per-user override (KV ai:lim:<uid>) ?? global default (KV ai:cfg.limit) ?? 10 — both set from the admin
   let LIMIT = 10; try { const c = JSON.parse(await env.STATS.get('ai:cfg') || '{}'); if (c && Number.isFinite(c.limit)) LIMIT = c.limit; } catch (e) {}
   if (uid) { try { const ov = await env.STATS.get('ai:lim:' + uid); if (ov != null && ov !== '') { const n = parseInt(ov, 10); if (!isNaN(n)) LIMIT = n; } } catch (e) {} }
+  const _prem = uid ? (await premiumFor(env, request)).premium : false;
+  if (_prem) LIMIT = Math.max(LIMIT, 50); // premium members get a much higher AI daily allowance
   const rk = uid ? 'ai:u:' + uid + ':' + day : '';
   const usedNow = async () => { if (!rk) return 0; try { return parseInt(await env.STATS.get(rk) || '0', 10) || 0; } catch (e) { return 0; } };
-  if (request.method === 'GET') { const _pf = uid ? await premiumFor(env, request) : { premium: false }; return J({ signedIn: !!uid, premium: !!_pf.premium, used: await usedNow(), limit: LIMIT, ai: !!env.ANTHROPIC_API_KEY }); }
+  if (request.method === 'GET') { return J({ signedIn: !!uid, premium: _prem, used: await usedNow(), limit: LIMIT, ai: !!env.ANTHROPIC_API_KEY }); }
   if (request.method !== 'POST') return J({ error: 'method' }, 405);
   if (!uid) return J({ error: 'login_required' }, 401);
-  { const _pf = await premiumFor(env, request); if (!_pf.premium) return J({ error: 'premium_required' }, 402); }
+  if (!_prem) return J({ error: 'premium_required' }, 402);
   if (!env.ANTHROPIC_API_KEY) return J({ error: 'ai_unconfigured' }, 503);
   const gk = 'ai:g:' + day; let g = 0; try { g = parseInt(await env.STATS.get(gk) || '0', 10) || 0; } catch (e) {}
   if (g >= 6000) return J({ error: 'busy' }, 503); // global daily backstop (KV, approximate — the hard per-user gate is the DO below)
@@ -7466,7 +7489,10 @@ export default {
       if (!st.uid) return J({ error: 'login_required' }, 401);
       if (st.premium) return J({ error: 'already_premium', until: st.until, source: st.source });
       if (!env.NOWPAY_API_KEY) return J({ error: 'unconfigured' }, 503);
-      const body = { price_amount: 12.99, price_currency: 'usd', order_id: 'prem_' + st.uid, order_description: 'MarginPad Premium — 1 month', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' };
+      const founder = url.searchParams.get('plan') === 'founder';
+      const body = founder
+        ? { price_amount: 99, price_currency: 'usd', order_id: 'premlife_' + st.uid, order_description: 'MarginPad Premium — Founder (lifetime)', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' }
+        : { price_amount: 12.99, price_currency: 'usd', order_id: 'prem_' + st.uid, order_description: 'MarginPad Premium — 1 month', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' };
       try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) return J({ invoice_url: j.invoice_url }); } catch (e) {}
       return J({ error: 'invoice_failed' }, 502);
     }
