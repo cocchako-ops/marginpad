@@ -833,7 +833,7 @@
       card.querySelector('.mpprem-buy').addEventListener('click', function () { checkoutPlan('monthly', this, note); });
       card.querySelector('.mpprem-founder').addEventListener('click', function () { checkoutPlan('founder', this, note); });
     }
-    window.mpPremium = { show: show, close: close, checkout: function (plan) { checkoutPlan(plan, null, null); } };
+    window.mpPremium = { show: function (reason) { try { location.href = '/premium'; } catch (e) {} }, showModal: show, close: close, checkout: function (plan) { checkoutPlan(plan, null, null); } };
   })();
 
   /* ===== PRO cosmetic badge — gold "PRO" next to every premium username ([data-lbu]) across chat, leaderboards, profiles ===== */

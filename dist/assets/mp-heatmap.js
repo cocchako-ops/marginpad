@@ -793,13 +793,13 @@
       S.timers.push(iv);
       var t = setTimeout(function () {
         if (!S || !stage.parentNode) return; try { clearInterval(iv); } catch (e) {} if (rib && rib.parentNode) rib.parentNode.removeChild(rib);
-        var ov = el('div', 'hm-paywall'); ov.style.cssText = 'position:absolute;inset:0;z-index:9;background:rgba(7,9,12,.9);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:9px';
+        var ov = el('div', 'hm-paywall'); ov.style.cssText = 'position:absolute;inset:0;z-index:9;background:rgba(7,9,12,.9);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:10px;cursor:pointer';
         ov.innerHTML = '<div style="font:700 11px \'Space Mono\',monospace;letter-spacing:.16em;color:#c2f64a">MARGINPAD PREMIUM</div>' +
-          '<div style="font:800 21px \'Familjen Grotesk\',system-ui,sans-serif;color:#fff;max-width:430px;line-height:1.25">The live liquidation heatmap is a Premium feature</div>' +
-          '<div style="color:#8fa3c4;font-size:13px;max-width:430px;line-height:1.55">See exactly where leveraged positions get wiped and which levels price is hunting — plus 8 exclusive indicators and AI on your charts.</div>' +
-          '<button class="hm-pw-btn" type="button" style="margin-top:10px;background:#c2f64a;color:#0a0b0d;border:0;border-radius:12px;padding:13px 26px;font-size:15px;font-weight:800;cursor:pointer">' + (signedIn ? 'Unlock Premium — $12.99 / month' : 'Sign in to unlock') + '</button>';
+          '<div style="font:800 22px \'Familjen Grotesk\',system-ui,sans-serif;color:#fff;max-width:440px;line-height:1.22">Unlock the live liquidation heatmap</div>' +
+          '<div style="color:#8fa3c4;font-size:13px;max-width:440px;line-height:1.55">See exactly where leveraged positions get wiped — plus 8 exclusive AI indicators, Ask-AI on your charts and more, from <b style="color:#c2f64a">$12.99/mo</b>.</div>' +
+          '<span class="hm-pw-btn" style="margin-top:10px;background:linear-gradient(180deg,#c2f64a,#a6e02f);color:#0a0b0d;border-radius:12px;padding:13px 26px;font-size:15px;font-weight:800;box-shadow:0 10px 30px rgba(194,246,74,.24)">See Premium plans</span>';
         stage.appendChild(ov);
-        ov.querySelector('.hm-pw-btn').addEventListener('click', function () { if (window.mpPremium && window.mpPremium.show) window.mpPremium.show('Unlock the liquidation heatmap'); else if (window.mpAuth && window.mpAuth.open) window.mpAuth.open(); });
+        ov.addEventListener('click', function () { location.href = '/premium'; });
       }, PREVIEW * 1000);
       S.timers.push(t);
     });
