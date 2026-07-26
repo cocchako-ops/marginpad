@@ -18,7 +18,12 @@
     help: '<circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
     out: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
     chev: '<path d="m9 18 6-6-6-6"/>',
-    cam: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3.5"/>'
+    cam: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"/><circle cx="12" cy="13" r="3.5"/>',
+    user: '<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20v-.5a6 6 0 0 1 6-6h3a6 6 0 0 1 6 6v.5"/>',
+    mail: '<rect x="2.5" y="5" width="19" height="14" rx="2.2"/><path d="m3 7 9 6 9-6"/>',
+    cal: '<rect x="3" y="4.5" width="18" height="16.5" rx="2.2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
+    trades: '<path d="M3 16.5l6-6 4 4 7-7.5"/><path d="M16.5 6.5H21v4.5"/>',
+    people: '<circle cx="9" cy="8" r="3.4"/><path d="M2.5 20v-.5a5 5 0 0 1 5-5h3a5 5 0 0 1 5 5v.5"/><path d="M16.5 4.4a3.4 3.4 0 0 1 0 6.6"/><path d="M21.5 20v-.5a5 5 0 0 0-3.4-4.7"/>'
   };
   function ic(name, cls) { return '<svg class="mpa-svg' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || '') + '</svg>'; }
   function tileBtn(id, icon, label, badgeId) { return '<button class="mpa-tile" id="' + id + '" type="button">' + ic(icon) + '<span class="mpa-tile-l">' + label + '</span>' + (badgeId ? '<span class="mpa-tile-dot" id="' + badgeId + '" hidden></span>' : '') + '</button>'; }
@@ -56,18 +61,18 @@
         .then(function (d) { d = d || {}; var bi = d.byId || {}, bn = d.byName || {}; ids.forEach(function (id) { cache.byId[id] = bi[id] || MISS; }); names.forEach(function (n) { cache.byName[n] = bn[n] || MISS; }); waiting.forEach(fill); })
         .catch(function () {});
     }
-    return function () { if (pend) return; pend = setTimeout(run, 220); };
+    return function () { try { if (window.mpProScan) window.mpProScan(); } catch (e) {} if (pend) return; pend = setTimeout(run, 220); }; // PRO gold rides the SAME synchronous post-render pass as level badges → no gold flash (was: gold applied on a 1.6s interval → name flashed normal→gold)
   })();
 
   function emailOk(v) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v); }
 
   var css = '.mpa-modal{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(4,6,9,.7);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}'
     + '.mpa-modal[hidden]{display:none}'
-    + '.mpa-panel{position:relative;width:100%;max-width:372px;max-height:calc(100vh - 32px);overflow-y:auto;background:linear-gradient(180deg,#14181f,#0c0f13);border:1px solid #283039;border-radius:16px;padding:14px 16px;box-shadow:0 30px 90px -20px rgba(0,0,0,.9);font-family:system-ui,-apple-system,Segoe UI,sans-serif;scrollbar-width:thin;scrollbar-color:#232a33 transparent}'
+    + '.mpa-panel{position:relative;width:100%;max-width:344px;max-height:calc(100vh - 32px);overflow-y:auto;background:linear-gradient(180deg,#14181f,#0c0f13);border:1px solid #283039;border-radius:16px;padding:11px 15px;box-shadow:0 30px 90px -20px rgba(0,0,0,.9);font-family:system-ui,-apple-system,Segoe UI,sans-serif;scrollbar-width:thin;scrollbar-color:#232a33 transparent}'
     + '.mpa-panel::-webkit-scrollbar{width:8px}.mpa-panel::-webkit-scrollbar-thumb{background:#232a33;border-radius:8px}'
     + '.mpa-x{position:absolute;top:12px;right:14px;background:none;border:none;color:#5c656f;font-size:19px;cursor:pointer;line-height:1;padding:4px}'
     + '.mpa-x:hover{color:#e9e7df}'
-    + '.mpa-h{font-size:15px;font-weight:800;color:#f2f0e9;margin:0 0 6px;letter-spacing:-.01em}'
+    + '.mpa-h{font-size:15px;font-weight:800;color:#f2f0e9;margin:0 0 5px;letter-spacing:-.01em}'
     + '.mpa-sub{font-size:13.5px;color:#9aa3ad;margin:0 0 16px;line-height:1.5}'
     + '.mpa-sub b{color:#cdd3da}'
     + '.mpa-in{width:100%;box-sizing:border-box;background:#0a0d11;border:1px solid #2f3742;border-radius:11px;padding:13px 14px;color:#f2f0e9;font-size:15px;outline:none;transition:border-color .15s}'
@@ -77,18 +82,18 @@
     + '.mpa-btn:hover{filter:brightness(1.06)}'
     + '.mpa-svg{width:18px;height:18px;flex:none;display:block}'
     // 2×2 tile grid for the social actions — one calm accent, monochrome icons
-    + '.mpa-tiles{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0 0}'
-    + '.mpa-tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:5px;background:#0f131a;border:1px solid #222a35;border-radius:11px;padding:8px 11px 7px;cursor:pointer;color:#cfd5dc;transition:border-color .15s,background .15s,transform .05s}'
+    + '.mpa-tiles{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 0}'
+    + '.mpa-tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:5px;background:#0f131a;border:1px solid #222a35;border-radius:11px;padding:6px 10px 5px;cursor:pointer;color:#cfd5dc;transition:border-color .15s,background .15s,transform .05s}'
     + '.mpa-tile .mpa-svg{width:20px;height:20px;color:#7f8a97;transition:color .15s}'
     + '.mpa-tile:hover{border-color:#38506a;background:#131923}.mpa-tile:hover .mpa-svg{color:#7fd6ff}.mpa-tile:active{transform:translateY(1px)}'
     + '.mpa-tile-l{font-size:13px;font-weight:700;letter-spacing:.01em}'
     + '.mpa-tile-dot{position:absolute;top:10px;right:11px;min-width:17px;height:17px;line-height:17px;padding:0 4px;box-sizing:border-box;text-align:center;background:#38bdf8;color:#04121c;border-radius:9px;font-size:10.5px;font-weight:800;font-family:ui-monospace,Consolas,monospace}'
     + '.mpa-tile-dot[hidden]{display:none}'
     // single-line secondary rows (edit, xp) — quiet, with a chevron
-    + '.mpa-row2{display:flex;align-items:center;gap:10px;width:100%;margin-top:6px;background:#0f131a;border:1px solid #1e2530;border-radius:10px;padding:8px 11px;cursor:pointer;color:#cfd5dc;font-size:13.5px;font-weight:600;text-align:left;transition:border-color .15s,background .15s}'
+    + '.mpa-row2{display:flex;align-items:center;gap:10px;width:100%;margin-top:5px;background:#0f131a;border:1px solid #1e2530;border-radius:10px;padding:6px 11px;cursor:pointer;color:#cfd5dc;font-size:13.5px;font-weight:600;text-align:left;transition:border-color .15s,background .15s}'
     + '.mpa-row2:hover{border-color:#33404f;background:#131923}.mpa-row2 .mpa-svg{width:18px;height:18px;color:#7f8a97}.mpa-row2 span{flex:1}.mpa-row2 .mpa-svg:last-child{width:15px;height:15px;color:#556170}'
     // footer: support + sign out as quiet links
-    + '.mpa-foot2{display:flex;gap:10px;margin-top:9px}'
+    + '.mpa-foot2{display:flex;gap:10px;margin-top:7px}'
     + '.mpa-flink{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;background:transparent;border:1px solid #1e2530;border-radius:10px;padding:10px;color:#8b97a5;font-size:12.5px;font-weight:600;cursor:pointer;transition:color .15s,border-color .15s}'
     + '.mpa-flink:hover{color:#cfd5dc;border-color:#33404f}.mpa-flink .mpa-svg{width:15px;height:15px}'
     // avatar image (upload) + emoji fallback
@@ -116,22 +121,26 @@
     + '.mpa-btn:disabled{opacity:.55;cursor:default}'
     + '.mpa-msg{font-size:12.5px;margin-top:10px;min-height:16px;color:#9aa3ad;text-align:center}'
     + '.mpa-msg.err{color:#ff8a80}.mpa-msg.ok{color:#41e3a3}'
-    + '.mpa-link{display:block;margin:14px auto 0;background:none;border:none;color:#7f8893;font-size:12.5px;cursor:pointer}'
+    + '.mpa-link{display:block;margin:9px auto 0;background:none;border:none;color:#7f8893;font-size:12.5px;cursor:pointer}'
     + '.mpa-link:hover{color:#c2f64a}'
     + '.mpa-foot{font-size:11px;color:#5c656f;text-align:center;margin-top:14px;line-height:1.5}'
     + '.mpa-prof{background:#0a0d11;border:1px solid #2f3742;border-radius:11px;padding:6px 11px;margin:0 0 4px;display:grid;grid-template-columns:1fr 1fr;gap:0 12px}'
     + '.mpa-prow{display:flex;flex-direction:column;align-items:flex-start;gap:0;padding:4px 0;border-bottom:1px solid #171d24;font-size:12.5px;min-width:0;width:100%}.mpa-prow--wide{grid-column:1/-1}'
     + '.mpa-prof>.mpa-prow:last-child,.mpa-prof>.mpa-prow:nth-last-child(2):nth-child(odd){border-bottom:none}'
     + '.mpa-prow span{color:#8a93a0;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em}.mpa-prow b{color:#f2f0e9;font-weight:700;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}'
-    + '.mpa-lvl{background:linear-gradient(160deg,#12151d,#0a0d11);border:1px solid #2a3140;border-radius:12px;padding:9px 11px;margin:0 0 6px;position:relative;overflow:hidden}'
+    + '.mpa-stat3{display:grid;grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:7px;margin:0 0 6px}'
+    + '.mpa-st{background:#0a0d11;border:1px solid #232b34;border-radius:10px;padding:7px 6px;text-align:center;min-width:0}'
+    + '.mpa-st b{display:block;color:#f2f0e9;font-weight:700;font-size:13px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}'
+    + '.mpa-st span{display:block;color:#8a93a0;font-size:9px;text-transform:uppercase;letter-spacing:.03em;margin-top:2px}'
+    + '.mpa-lvl{background:linear-gradient(160deg,#12151d,#0a0d11);border:1px solid #2a3140;border-radius:12px;padding:7px 11px;margin:0 0 5px;position:relative;overflow:hidden}'
     + '.mpa-lvl-top{display:flex;align-items:center;gap:9px}'
-    + '.mpa-lvl-badge{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;box-shadow:0 0 18px -4px var(--lc)}'
+    + '.mpa-lvl-badge{width:28px;height:28px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none;box-shadow:0 0 18px -4px var(--lc)}'
     + '.mpa-lvl-nm{font-weight:800;font-size:14px;color:var(--lc)}'
     + '.mpa-lvl-xp{font-size:11.5px;color:#8a93a0;font-family:ui-monospace,Consolas,monospace;margin-top:1px}'
     + '.mpa-lvl-next{margin-left:auto;text-align:right;font-size:10.5px;color:#5c656f;font-family:ui-monospace,Consolas,monospace}'
-    + '.mpa-lvl-bar{height:6px;border-radius:5px;background:#1a2027;overflow:hidden;margin-top:7px}'
+    + '.mpa-lvl-bar{height:5px;border-radius:5px;background:#1a2027;overflow:hidden;margin-top:6px}'
     + '.mpa-lvl-bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--lc),#ffffff88);transition:width .6s ease}'
-    + '.mpa-lvl-link{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;font-weight:700;color:#c2f64a;text-decoration:none}.mpa-lvl-link:hover{text-decoration:underline}'
+    + '.mpa-lvl-link{display:inline-flex;align-items:center;gap:4px;margin-top:5px;font-size:11px;font-weight:700;color:#c2f64a;text-decoration:none}.mpa-lvl-link:hover{text-decoration:underline}'
     + '.mpa-lvl-link:hover{background:rgba(194,246,74,.08)}'
     + '.mpa-uname-set{display:flex;align-items:center;gap:8px;background:#0a0d11;border:1px solid #2f3742;border-radius:11px;padding:13px 14px;color:#f2f0e9;font-size:15px;font-weight:700}'
     + '.mpa-uname-set .mpa-lock{margin-left:auto;font-size:12px;font-weight:600;color:#5c656f}'
@@ -194,6 +203,38 @@
     + '.mpa-du-won{flex:none;font-weight:800;font-size:11px;color:#0a0b0d;background:#c2f64a;border-radius:20px;padding:4px 11px}.mpa-du-lost{flex:none;font-weight:800;font-size:11px;color:#ff8a80;border:1px solid rgba(255,90,77,.4);border-radius:20px;padding:3px 10px}.mpa-du-tie{flex:none;font-weight:800;font-size:11px;color:#8b97a5;border:1px solid #2f3742;border-radius:20px;padding:3px 10px}'
     + '.mpa-du-pick{display:flex;flex-direction:column;gap:9px}.mpa-du-opt{text-align:left;background:#0a0d11;border:1px solid #2f3742;border-radius:12px;padding:13px 15px;cursor:pointer;transition:border-color .15s,background .15s}.mpa-du-opt:hover{border-color:#ff9640;background:#160f0a}.mpa-du-opt b{display:block;color:#f2f0e9;font-size:14px}.mpa-du-opt span{display:block;color:#8b97a5;font-size:12px;margin-top:2px}.mpa-du-opt:disabled{opacity:.5;cursor:default}'
     + '.mpa-du-msg{font-size:12.5px;text-align:center;margin:12px 0 2px;min-height:16px}'
+    + '.mpa-dt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:2px 0 4px}'
+    + '.mpa-dt{position:relative;text-align:left;background:#0a0d11;border:1px solid #232b36;border-radius:13px;padding:12px 11px 11px;cursor:pointer;transition:border-color .16s,background .16s,transform .1s;overflow:hidden;-webkit-appearance:none;appearance:none;font:inherit;color:inherit}'
+    + '.mpa-dt:hover{border-color:#3a4552}.mpa-dt:active{transform:scale(.985)}'
+    + '.mpa-dt.on{border-color:#f5a623;background:linear-gradient(158deg,rgba(245,166,35,.15),rgba(245,166,35,.02))}'
+    + '.mpa-dt.on::before{content:"";position:absolute;top:10px;right:10px;width:13px;height:13px;border-radius:50%;background:#f5a623;box-shadow:0 0 0 3px rgba(245,166,35,.16)}'
+    + '.mpa-dt-ic{display:block;width:26px;height:26px;color:#f5a623;margin-bottom:8px}.mpa-dt-ic svg{width:100%;height:100%;display:block}'
+    + '.mpa-dt-nm{display:block;font-size:13px;font-weight:800;color:#f2f0e9}.mpa-dt-ds{display:block;font-size:10.5px;line-height:1.36;color:#8b97a5;margin-top:3px}'
+    + '.mpa-dt-pro{position:absolute;top:10px;right:10px;font-size:8.5px;font-weight:800;letter-spacing:.06em;color:#0a0b0d;background:linear-gradient(90deg,#f5a623,#ffce5a);border-radius:5px;padding:2px 5px}'
+    + '.mpa-dt.lk{opacity:.7}.mpa-dt.lk .mpa-dt-ic{color:#6b7581}.mpa-dt.lk:hover{border-color:#f5a623}'
+    + '.mpa-fld{margin:14px 0 0}.mpa-fld-l{font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#7f8893;margin:0 0 7px;display:flex;justify-content:space-between;align-items:center;gap:8px}.mpa-fld-l em{font-style:normal;color:#5c656f;text-transform:none;letter-spacing:0;font-weight:600}'
+    + '.mpa-seg{display:flex;gap:5px;background:#0a0d11;border:1px solid #232b36;border-radius:11px;padding:4px}'
+    + '.mpa-seg b{flex:1;text-align:center;font-size:12px;font-weight:700;color:#8b97a5;padding:8px 4px;border-radius:8px;cursor:pointer;position:relative;transition:color .14s,background .14s}'
+    + '.mpa-seg b.on{background:#f5a623;color:#0a0b0d}.mpa-seg b.lk{opacity:.55}.mpa-seg b.lk::after{content:"PRO";position:absolute;top:-7px;right:1px;font-size:7px;font-weight:800;color:#f5a623;letter-spacing:.04em}'
+    + '.mpa-stk{display:flex;gap:6px;flex-wrap:wrap}'
+    + '.mpa-stk .c{font-family:ui-monospace,Consolas,monospace;font-size:12px;font-weight:800;color:#c7cdd4;background:#0a0d11;border:1px solid #232b36;border-radius:9px;padding:8px 13px;cursor:pointer;transition:.14s;-webkit-appearance:none;appearance:none}.mpa-stk .c.on{border-color:#f5a623;color:#f5a623;background:rgba(245,166,35,.1)}.mpa-stk .c.lk{opacity:.42}'
+    + '.mpa-stk-info{display:flex;justify-content:space-between;font-size:11.5px;margin-top:9px;color:#8b97a5}.mpa-stk-info b{color:#c2f64a;font-family:ui-monospace,Consolas,monospace}'
+    + '.mpa-symin{width:100%;box-sizing:border-box;background:#0a0d11;border:1px solid #232b36;border-radius:10px;padding:10px 12px;color:#f2f0e9;font-size:13px;font-family:ui-monospace,Consolas,monospace;text-transform:uppercase;letter-spacing:.04em}.mpa-symin::placeholder{color:#5c656f;letter-spacing:0}.mpa-symin:focus{outline:none;border-color:#f5a623}'
+    + '.mpa-send{width:100%;margin-top:16px;background:linear-gradient(90deg,#f5a623,#ff8a3d);color:#0a0b0d;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:800;cursor:pointer;transition:filter .15s,transform .1s;box-shadow:0 6px 22px rgba(245,166,35,.22);-webkit-appearance:none;appearance:none}.mpa-send:hover{filter:brightness(1.06)}.mpa-send:active{transform:translateY(1px)}.mpa-send:disabled{opacity:.5;cursor:default;box-shadow:none;filter:none}'
+    + '.mpa-ups{margin-top:13px;background:linear-gradient(158deg,rgba(245,166,35,.11),rgba(245,166,35,.015));border:1px solid rgba(245,166,35,.32);border-radius:12px;padding:12px 13px}.mpa-ups b{color:#f5a623;font-size:12.5px;font-weight:800}.mpa-ups p{margin:5px 0 10px;font-size:11.5px;color:#a9b3bf;line-height:1.45}.mpa-ups button{background:#f5a623;color:#0a0b0d;border:none;border-radius:9px;padding:9px 15px;font-size:12px;font-weight:800;cursor:pointer;-webkit-appearance:none;appearance:none}'
+    + '.mpa-dv{background:linear-gradient(165deg,#0d1117,#0a0d11);border:1px solid #1f2732;border-radius:14px;padding:13px 14px;position:relative;overflow:hidden}'
+    + '.mpa-dv-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}.mpa-dv-ty{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:#f5a623}.mpa-dv-ty svg{width:14px;height:14px}.mpa-dv-tl{font-size:11px;font-family:ui-monospace,Consolas,monospace;color:#8b97a5;flex:none}'
+    + '.mpa-dv-vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}.mpa-dv-side{text-align:center;min-width:0}.mpa-dv-nm{font-size:11px;color:#8b97a5;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mpa-dv-val{font-family:ui-monospace,Consolas,monospace;font-size:19px;font-weight:800;color:#c7cdd4;line-height:1.2}.mpa-dv-side.w .mpa-dv-val{color:#c2f64a}.mpa-dv-side.w .mpa-dv-nm{color:#c2f64a}.mpa-dv-mid{font-size:10px;font-weight:800;color:#5c656f;letter-spacing:.12em}'
+    + '.mpa-dv-bar{height:4px;background:#141a22;border-radius:3px;margin-top:13px;overflow:hidden}.mpa-dv-bar i{display:block;height:100%;background:linear-gradient(90deg,#f5a623,#ff8a3d);border-radius:3px;transition:width .4s}'
+    + '.mpa-dv-ft{display:flex;justify-content:space-between;align-items:center;margin-top:9px;font-size:10.5px;color:#7f8893}.mpa-pot{font-family:ui-monospace,Consolas,monospace;color:#c2f64a;font-weight:800}.mpa-dv-ft>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;margin-right:8px}.mpa-dv-ft .mpa-pot{flex:none}'
+    + '.mpa-dtag{display:inline-block;font-size:9.5px;font-weight:800;color:#8b97a5;background:#141a22;border:1px solid #232b36;border-radius:5px;padding:2px 6px;margin-left:6px;vertical-align:middle}'
+    + '.mpa-dv-val{max-width:100%}'
+    + '.mpa-di{background:linear-gradient(158deg,rgba(245,166,35,.1),#0a0d11);border:1px solid rgba(245,166,35,.34);border-radius:14px;padding:13px 14px}'
+    + '.mpa-di-top{display:flex;align-items:center;gap:10px;margin-bottom:9px}.mpa-di-ic{flex:none;width:30px;height:30px;color:#f5a623}.mpa-di-ic svg{width:100%;height:100%;display:block}'
+    + '.mpa-di-h{min-width:0;flex:1}.mpa-di-h b{display:block;font-size:13.5px;color:#f2f0e9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mpa-di-h span{display:block;font-size:11px;color:#f5a623;font-weight:700;margin-top:1px}'
+    + '.mpa-di-rule{font-size:12px;color:#c7cdd4;line-height:1.4;margin-bottom:11px}'
+    + '.mpa-di-terms{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}.mpa-di-tm{flex:1 1 30%;min-width:0;background:#0a0d11;border:1px solid #232b36;border-radius:9px;padding:7px 9px;font-size:12px;font-weight:700;color:#e9e7df;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mpa-di-tm i{display:block;font-style:normal;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#7f8893;margin-bottom:2px}.mpa-di-stake{color:#c2f64a;border-color:rgba(194,246,74,.32)}'
+    + '.mpa-di-acts{display:flex;gap:8px}.mpa-di-acts .mpa-du-y{flex:1;padding:10px}.mpa-di-acts .mpa-du-n{flex:none;padding:10px 14px}'
     + '.mpa-pl{display:block;font-size:11px;color:#9aa3ad;margin:0 0 5px;font-weight:600}'
     + '.mpa-pacc{display:flex;gap:8px;flex-wrap:wrap}.mpa-pc{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0;transition:transform .1s}.mpa-pc:hover{transform:scale(1.1)}.mpa-pc.on{border-color:#fff;box-shadow:0 0 0 2px #0a0d11,0 0 0 4px currentColor}'
     + '.mpa-nf{display:flex;flex-direction:column;max-height:min(58vh,460px);overflow-y:auto;margin:2px 0;scrollbar-width:thin;scrollbar-color:#232a33 #0a0d11}'
@@ -208,7 +249,43 @@
     // must be impossible to miss (a static inline dot wasn't)
     + '.mpa-ping{position:absolute;top:-4px;right:-4px;width:11px;height:11px;border-radius:50%;background:#ff5a4d;border:2px solid #0a0b0d;z-index:6;pointer-events:none;animation:mpaPing 1.5s ease-out infinite}'
     + '@keyframes mpaPing{0%{box-shadow:0 0 0 0 rgba(255,90,77,.75),0 0 8px rgba(255,90,77,.9)}70%{box-shadow:0 0 0 10px rgba(255,90,77,0),0 0 8px rgba(255,90,77,.9)}100%{box-shadow:0 0 0 0 rgba(255,90,77,0),0 0 8px rgba(255,90,77,.9)}}'
-    + '@media(prefers-reduced-motion:reduce){.mpa-ping{animation:none;box-shadow:0 0 8px rgba(255,90,77,.9)}}';
+    + '@media(prefers-reduced-motion:reduce){.mpa-ping{animation:none;box-shadow:0 0 8px rgba(255,90,77,.9)}}'
+    // profile-card frame cosmetics — applied to the real card (.lbm-card) AND the customize-panel swatch (.mpa-fr-sw)
+    + '@property --mpAng{syntax:"<angle>";initial-value:0deg;inherits:false}'
+    + '@keyframes mpaSpin{to{--mpAng:360deg}}'
+    // --- LEVEL TIERS (earned by XP) — restrained, escalate softly ---
+    + '.lbm-card.frame-silver,.mpa-fr-sw.frame-silver{border-color:#c3cdda;box-shadow:0 0 0 1px rgba(195,205,218,.55),0 16px 54px -24px rgba(195,205,218,.42)}'
+    + '.lbm-card.frame-gold,.mpa-fr-sw.frame-gold{border-color:#ffcf3f;box-shadow:0 0 0 1px rgba(255,207,63,.55),0 0 24px -14px rgba(255,207,63,.4),0 16px 54px -24px rgba(255,207,63,.4)}'
+    + '.lbm-card.frame-platinum,.mpa-fr-sw.frame-platinum{border-color:#8fe6ff;box-shadow:0 0 0 1px rgba(143,230,255,.6),0 0 28px -12px rgba(143,230,255,.42),inset 0 1px 0 rgba(255,255,255,.14),0 16px 54px -24px rgba(143,230,255,.4)}'
+    + '.lbm-card.frame-diamond,.mpa-fr-sw.frame-diamond{border-color:#9d78ff;box-shadow:0 0 0 1px rgba(157,120,255,.6),0 0 34px -12px rgba(157,120,255,.5),inset 0 0 30px -22px rgba(157,120,255,.55),0 16px 54px -24px rgba(157,120,255,.44)}'
+    + '.lbm-card.frame-legendary,.mpa-fr-sw.frame-legendary{border-color:#ff8a2a;box-shadow:0 0 0 1px rgba(255,138,42,.6),0 0 34px -10px rgba(255,138,42,.55);animation:mpaFrLeg 3.4s ease-in-out infinite}'
+    + '@keyframes mpaFrLeg{0%,100%{box-shadow:0 0 0 1px rgba(255,138,42,.5),0 0 24px -12px rgba(255,138,42,.38)}50%{box-shadow:0 0 0 1px rgba(255,178,66,.85),0 0 48px -6px rgba(255,138,42,.72)}}'
+    // --- PREMIUM (paid) — animated glow / spinning aurora ring ---
+    + '.lbm-card.frame-neon,.mpa-fr-sw.frame-neon{border-color:#c2f64a;box-shadow:0 0 0 1px #c2f64a,0 0 42px -6px rgba(194,246,74,.6);animation:mpaFrNeon 2.6s ease-in-out infinite}'
+    + '@keyframes mpaFrNeon{0%,100%{box-shadow:0 0 0 1px #c2f64a,0 0 30px -8px rgba(194,246,74,.5)}50%{box-shadow:0 0 0 1px #d8ff6a,0 0 58px -4px rgba(194,246,74,.9)}}'
+    + '.lbm-card.frame-aurora,.mpa-fr-sw.frame-aurora{position:relative;border-color:transparent;box-shadow:0 0 40px -14px rgba(139,92,255,.5),0 18px 60px -26px rgba(0,0,0,.7)}'
+    + '.lbm-card.frame-aurora::after,.mpa-fr-sw.frame-aurora::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:conic-gradient(from var(--mpAng),#38bdf8,#8b5cff,#ff5a4d,#ffd75a,#c2f64a,#38bdf8);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 7s linear infinite}'
+    // --- FOUNDER — rich gold + diagonal shine sweep (above premium) ---
+    + '.lbm-card.frame-founder,.mpa-fr-sw.frame-founder{position:relative;border-color:#ffd75a;box-shadow:0 0 0 1px rgba(255,215,90,.7),0 0 42px -8px rgba(255,198,74,.58),inset 0 0 44px -30px rgba(255,226,132,.75),0 22px 66px -30px rgba(0,0,0,.8)}'
+    + '@keyframes mpaShine{0%{background-position:170% 0}42%{background-position:-80% 0}100%{background-position:-80% 0}}'
+    // --- OWNER — spinning gold-jewel ring, layered halo, inner sheen: the crown jewel (chako, gladijator only) ---
+    + '.lbm-card.frame-owner,.mpa-fr-sw.frame-owner{position:relative;border-color:transparent;box-shadow:0 0 0 1px rgba(255,215,90,.5),0 0 58px -10px rgba(255,200,80,.55),0 0 120px -34px rgba(255,178,58,.5),inset 0 0 52px -34px rgba(255,232,150,.85),0 26px 82px -30px rgba(0,0,0,.86);animation:mpaOwnerHalo 4.2s ease-in-out infinite}'
+    + '@keyframes mpaOwnerHalo{0%,100%{box-shadow:0 0 0 1px rgba(255,215,90,.42),0 0 44px -12px rgba(255,200,80,.44),0 0 98px -34px rgba(255,178,58,.4),inset 0 0 52px -34px rgba(255,232,150,.78),0 26px 82px -30px rgba(0,0,0,.86)}50%{box-shadow:0 0 0 1px rgba(255,226,124,.72),0 0 74px -6px rgba(255,206,86,.72),0 0 146px -26px rgba(255,186,60,.62),inset 0 0 52px -30px rgba(255,238,164,.96),0 26px 82px -30px rgba(0,0,0,.86)}}'
+    + '.lbm-card.frame-owner::after,.mpa-fr-sw.frame-owner::after{content:"";position:absolute;inset:-2.5px;border-radius:inherit;padding:2.5px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng),#7a4d0a,#ffd75a,#fff7d0,#ffe27a,#b98a1f,#fff2b0,#ffcf3f,#7a4d0a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 5s linear infinite}'
+    + '.lbm-card.frame-owner::before,.mpa-fr-sw.frame-owner::before{content:"";position:absolute;inset:0;height:auto;border-radius:inherit;pointer-events:none;z-index:6;background:linear-gradient(115deg,transparent 40%,rgba(255,246,208,.16) 47%,rgba(255,255,255,.4) 50%,rgba(255,246,208,.16) 53%,transparent 60%);background-size:250% 100%;background-repeat:no-repeat;background-position:170% 0;animation:mpaShine 6s linear infinite}'
+    // customize panel grid
+    + '.mpa-frgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:6px 0 4px}'
+    + '.mpa-fr{position:relative;display:flex;flex-direction:column;gap:6px;background:#0f131a;border:1px solid #1e2530;border-radius:11px;padding:8px;cursor:pointer;transition:border-color .15s,transform .05s;text-align:center}'
+    + '.mpa-fr:hover{border-color:#33404f}.mpa-fr:active{transform:scale(.98)}'
+    + '.mpa-fr.on{border-color:#c2f64a;box-shadow:0 0 0 1px rgba(194,246,74,.4)}'
+    + '.mpa-fr.lock{opacity:.55;cursor:not-allowed}'
+    + '.mpa-fr-sw{height:38px;border-radius:8px;border:1px solid #2a3340;background:linear-gradient(150deg,#141922,#0d1017)}'
+    + '.mpa-fr-nm{font:700 12px monospace;color:#e7ecf2}'
+    + '.mpa-fr-by{font-size:10px;color:#8b97a5;line-height:1.2}.mpa-fr.on .mpa-fr-by{color:#c2f64a}'
+    // PRO members: glossy gold name (replaces the old "PRO" chip — fits everywhere, never clipped on mobile)
+    + '.mp-progold{background:linear-gradient(100deg,#e0a52a 0%,#ffe07a 18%,#fff6c8 30%,#ffd75a 46%,#e0a52a 68%,#ffe98a 100%) !important;background-size:200% auto !important;-webkit-background-clip:text !important;background-clip:text !important;-webkit-text-fill-color:transparent !important;color:transparent !important;font-weight:800 !important;text-shadow:none !important;animation:mpGold 3.2s linear infinite}'
+    + '@keyframes mpGold{to{background-position:200% center}}'
+    + '@media(prefers-reduced-motion:reduce){.mp-progold{animation:none;background-position:30% center}}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   var modal = document.createElement('div'); modal.className = 'mpa-modal'; modal.hidden = true;
@@ -219,7 +296,7 @@
   modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) close(); });
 
-  function open() { modal.hidden = false; render(); if (!ME) { try { window.__mpTrack && window.__mpTrack('signin', 'opened'); } catch (e) {} } }
+  function open() { modal.hidden = false; render(); if (!ME) { try { window.__mpTrack && window.__mpTrack('signin', 'opened'); } catch (e) {} } else { try { window.__mpTrack && window.__mpTrack('myprofile', (ME.level && ME.level.k) || ''); } catch (e) {} } } // ops feed: signed-in user opened their own profile from the header
   function close() { modal.hidden = true; }
   function setMsg(t, kind) { var m = bodyEl.querySelector('.mpa-msg'); if (m) { m.textContent = t; m.className = 'mpa-msg ' + (kind || ''); } }
 
@@ -381,48 +458,123 @@
     }).catch(function () { var fd = bodyEl.querySelector('#mpaFd'); if (fd) fd.innerHTML = '<div class="mpa-xp-empty">Could not load your feed.</div>'; });
   }
   // ---- Friend duels (weekly stat challenges) ----
-  var DMET = { roe: 'Best ROE', wr: 'Win rate', win: 'Biggest win' };
-  function duelScoreTxt(metric, v) { if (v == null) return '—'; if (metric === 'win') return (v >= 0 ? '+$' : '-$') + Math.abs(v).toLocaleString(undefined, { maximumFractionDigits: 2 }); return (v >= 0 ? '+' : '') + Math.round(v) + '%'; }
-  function duelTimeLeft(end) { var ms = end - Date.now(); if (ms <= 0) return 'ending…'; var h = Math.floor(ms / 3600000), dd = Math.floor(h / 24); return dd >= 1 ? dd + 'd ' + (h % 24) + 'h left' : h + 'h left'; }
+  var DMET = { roe: 'ROE', wr: 'Win rate', win: 'Biggest win', pnl: 'Profit', survival: 'Survival', streak: 'Streak', sniper: 'Sniper' };
+  var DTYPES = [
+    { k: 'roe', nm: 'ROE Duel', ds: 'Highest single-trade ROE% wins', prem: false },
+    { k: 'pnl', nm: 'Profit Duel', ds: 'Most realized profit ($) wins', prem: true },
+    { k: 'survival', nm: 'Survival', ds: 'Higher ending balance wins — blow up and you are out', prem: true },
+    { k: 'streak', nm: 'Streak', ds: 'Longest run of winning trades wins', prem: true },
+    { k: 'sniper', nm: 'Sniper', ds: 'Best ROE inside your first few trades', prem: true }
+  ];
+  var DDUR = [{ v: 3600000, l: '1h' }, { v: 86400000, l: '24h' }, { v: 259200000, l: '3d' }, { v: 604800000, l: '7d' }];
+  var DSTK = [0, 50, 100, 250, 500];
+  var DICO = {
+    roe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>',
+    pnl: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M16.5 6.2c0-1.7-2-2.7-4.5-2.7s-4.5 1-4.5 3.2c0 4.3 9 1.9 9 6.3 0 2.1-2 3.2-4.5 3.2s-4.5-1-4.5-2.8"/></svg>',
+    survival: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8.6-8 11-4.5-2.4-8-6-8-11V5z"/><path d="M9 12l2 2 4-4"/></svg>',
+    streak: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3 3 5 5.4 5 9a5 5 0 0 1-10 0c0-2 1-3.6 2.6-5C10 8 11 6 12 3z"/></svg>',
+    sniper: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="2.4"/></svg>'
+  };
+  function dico(k) { return DICO[k] || (k === 'wr' ? DICO.roe : k === 'win' ? DICO.pnl : DICO.roe); }
+  function durShort(ms) { return ({ '3600000': '1h', '86400000': '24h', '259200000': '3d', '604800000': '7d' })[String(ms)] || '7d'; }
+  var DRULE = { roe: 'Highest single-trade ROE% wins', wr: 'Best win rate wins (min 5 trades)', win: 'Biggest single winning trade wins', pnl: 'Most realized profit wins', survival: 'Higher ending balance wins — a blow-up loses', streak: 'Longest run of winning trades wins', sniper: 'Best ROE in your first few trades wins' };
+  function _dm(v) { var a = Math.abs(+v || 0); return a >= 1e9 ? (a / 1e9).toFixed(2) + 'B' : a >= 1e6 ? (a / 1e6).toFixed(2) + 'M' : a >= 1e3 ? (a / 1e3).toFixed(1) + 'K' : a.toFixed(a < 100 ? 2 : 0); } // compact money so a big score can never overflow the card
+  function duelScoreTxt(metric, v) { if (v == null) return '—';
+    if (metric === 'win' || metric === 'pnl') return (v >= 0 ? '+$' : '-$') + _dm(v);
+    if (metric === 'survival') return '$' + _dm(v);
+    if (metric === 'streak') return v + (v === 1 ? ' win' : ' wins');
+    if (metric === 'wr') return Math.round(v) + '%';
+    return (v >= 0 ? '+' : '') + Math.round(v) + '%'; }
+  function ensurePrem(cb) { if (typeof window._mpPrem === 'boolean') { cb(window._mpPrem); return; } fetch('/api/premium/status', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (st) { window._mpPrem = !!(st && st.premium); cb(window._mpPrem); }).catch(function () { cb(false); }); }
+  function duelTimeLeft(end) { var ms = end - Date.now(); if (ms <= 0) return 'ending…'; var s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60; if (d >= 1) return d + 'd ' + h + 'h left'; if (h >= 1) return h + 'h ' + m + 'm left'; if (m >= 1) return m + 'm ' + ss + 's left'; return ss + 's left'; }
+  function duelTick(du) { Array.prototype.forEach.call(du.querySelectorAll('.mpa-dv[data-end]'), function (c) { var end = +c.getAttribute('data-end'), start = +c.getAttribute('data-start'), dur = +c.getAttribute('data-dur'); var tl = c.querySelector('.mpa-dv-tl'); if (tl) tl.textContent = duelTimeLeft(end); var bar = c.querySelector('.mpa-dv-bar i'); if (bar && dur > 0) bar.style.width = (Math.min(1, Math.max(0, (Date.now() - start) / dur)) * 100).toFixed(1) + '%'; }); }
   function renderDuels() {
-    bodyEl.innerHTML = '<h3 class="mpa-h">Duels ⚔️</h3><p class="mpa-sub" style="margin:-4px 0 10px">Challenge a trader you follow. Best stat over 7 days wins <b style="color:#c2f64a">+120 XP</b>.</p><div class="mpa-du" id="mpaDu"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaDuBack" type="button">← Back to profile</button>';
+    if (window._mpDuelT1) clearInterval(window._mpDuelT1); if (window._mpDuelT2) clearInterval(window._mpDuelT2);
+    bodyEl.innerHTML = '<h3 class="mpa-h">Duels</h3><p class="mpa-sub" style="margin:-4px 0 10px">Challenge any trader you follow. Pick a format, stake XP, best stat when the clock ends takes the pot.</p><div class="mpa-du" id="mpaDu"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaDuBack" type="button">← Back to profile</button>';
     var bk = bodyEl.querySelector('#mpaDuBack'); if (bk) bk.addEventListener('click', render);
-    fetch('/api/duel/mine').then(function (r) { return r.json(); }).then(function (d) {
-      var du = bodyEl.querySelector('#mpaDu'); if (!du) return;
-      var all = (d && d.duels) || [];
-      if (!all.length) { du.innerHTML = '<div class="mpa-xp-empty">No duels yet. Open a trader’s profile (from the leaderboard) and tap <b>⚔️ Duel</b> to challenge someone you follow.</div>'; return; }
-      var inc = all.filter(function (x) { return x.incoming; }), act = all.filter(function (x) { return x.status === 'active'; }), pend = all.filter(function (x) { return x.status === 'pending' && !x.incoming; }), done = all.filter(function (x) { return x.status === 'done'; });
-      var html = '';
-      if (inc.length) html += '<div class="mpa-du-sec">Incoming challenges</div>' + inc.map(function (x) { return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">@' + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · 7 days</div></div><div class="mpa-du-acts"><button class="mpa-du-y" data-duacc="' + esc(x.id) + '">Accept</button><button class="mpa-du-n" data-dudec="' + esc(x.id) + '">Decline</button></div></div>'; }).join('');
-      if (act.length) html += '<div class="mpa-du-sec">Active</div>' + act.map(function (x) { var mine = x.myScore, opp = x.oppScore, lead = (mine != null && (opp == null || mine >= opp)); return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">You vs @' + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + duelTimeLeft(x.end) + '</div></div><div class="mpa-du-sc"><span class="' + (lead ? 'w' : '') + '">' + duelScoreTxt(x.metric, mine) + '</span><i>vs</i><span class="' + (!lead && opp != null ? 'w' : '') + '">' + duelScoreTxt(x.metric, opp) + '</span></div></div>'; }).join('');
-      if (pend.length) html += '<div class="mpa-du-sec">Waiting for reply</div>' + pend.map(function (x) { return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">You challenged @' + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · pending</div></div><div class="mpa-du-wait">…</div></div>'; }).join('');
-      if (done.length) html += '<div class="mpa-du-sec">Results</div>' + done.map(function (x) { var r = x.won === true ? '<span class="mpa-du-won">WON</span>' : x.won === false ? '<span class="mpa-du-lost">LOST</span>' : '<span class="mpa-du-tie">TIE</span>'; return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">You vs @' + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + duelScoreTxt(x.metric, x.myScore) + ' vs ' + duelScoreTxt(x.metric, x.oppScore) + '</div></div>' + r + '</div>'; }).join('');
-      du.innerHTML = html;
-      Array.prototype.forEach.call(du.querySelectorAll('[data-duacc]'), function (b) { b.addEventListener('click', function () { duelRespond(b.getAttribute('data-duacc'), 'accept', b); }); });
-      Array.prototype.forEach.call(du.querySelectorAll('[data-dudec]'), function (b) { b.addEventListener('click', function () { duelRespond(b.getAttribute('data-dudec'), 'decline', b); }); });
-    }).catch(function () { var du = bodyEl.querySelector('#mpaDu'); if (du) du.innerHTML = '<div class="mpa-xp-empty">Could not load your duels.</div>'; });
+    var sec = function (t) { return '<div class="mpa-du-sec">' + t + '</div>'; };
+    var incCard = function (x) { var pot = x.stake > 0 ? x.stake * 2 : 0;
+      return '<div class="mpa-di">'
+        + '<div class="mpa-di-top"><span class="mpa-di-ic">' + dico(x.metric) + '</span><div class="mpa-di-h"><b>@' + esc(x.opp) + ' challenged you</b><span>' + DMET[x.metric] + ' duel</span></div></div>'
+        + '<div class="mpa-di-rule">' + DRULE[x.metric] + '</div>'
+        + '<div class="mpa-di-terms"><span class="mpa-di-tm"><i>Runs for</i>' + durShort(x.dur) + '</span><span class="mpa-di-tm"><i>Coin</i>' + (x.sym ? esc(x.sym) + ' only' : 'Any coin') + '</span><span class="mpa-di-tm' + (x.stake > 0 ? ' mpa-di-stake' : '') + '"><i>Stake' + (x.stake > 0 ? ' → win' : '') + '</i>' + (x.stake > 0 ? x.stake + ' → ' + pot + ' XP' : 'None') + '</span></div>'
+        + '<div class="mpa-di-acts"><button class="mpa-du-y" data-duacc="' + esc(x.id) + '">Accept' + (x.stake > 0 ? ' · stake ' + x.stake + ' XP' : '') + '</button><button class="mpa-du-n" data-dudec="' + esc(x.id) + '">Decline</button></div></div>'; };
+    var vsCard = function (x) { var mine = x.myScore, opp = x.oppScore, lead = (mine != null && (opp == null || mine >= opp)), oLead = (opp != null && (mine == null || opp > mine)); var el = (x.dur > 0 && x.start > 0) ? Math.min(1, Math.max(0, (Date.now() - x.start) / x.dur)) : 0;
+      return '<div class="mpa-dv" data-end="' + (x.end || 0) + '" data-start="' + (x.start || 0) + '" data-dur="' + (x.dur || 0) + '"><div class="mpa-dv-top"><div class="mpa-dv-ty">' + dico(x.metric) + '<span>' + DMET[x.metric] + '</span>' + (x.sym ? '<span class="mpa-dtag">' + esc(x.sym) + '</span>' : '') + '</div><div class="mpa-dv-tl">' + duelTimeLeft(x.end) + '</div></div>'
+        + '<div class="mpa-dv-vs"><div class="mpa-dv-side' + (lead ? ' w' : '') + '"><div class="mpa-dv-nm">You</div><div class="mpa-dv-val">' + duelScoreTxt(x.metric, mine) + '</div></div><div class="mpa-dv-mid">VS</div><div class="mpa-dv-side' + (oLead ? ' w' : '') + '"><div class="mpa-dv-nm">@' + esc(x.opp) + '</div><div class="mpa-dv-val">' + duelScoreTxt(x.metric, opp) + '</div></div></div>'
+        + '<div class="mpa-dv-bar"><i style="width:' + (el * 100).toFixed(1) + '%"></i></div>'
+        + '<div class="mpa-dv-ft"><span>' + DRULE[x.metric] + '</span>' + (x.stake > 0 ? '<span class="mpa-pot">Pot ' + (x.stake * 2) + ' XP</span>' : '<span>No stake</span>') + '</div></div>'; };
+    var pendCard = function (x) { return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">You challenged @' + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + durShort(x.dur) + (x.sym ? ' · ' + esc(x.sym) : '') + (x.stake > 0 ? ' · ' + x.stake + ' XP staked' : '') + '</div></div><div class="mpa-du-wait">…</div></div>'; };
+    var resCard = function (x) { var r = x.won === true ? '<span class="mpa-du-won">WON</span>' : x.won === false ? '<span class="mpa-du-lost">LOST</span>' : '<span class="mpa-du-tie">TIE</span>'; var xp = x.stake > 0 ? ' · <b style="color:' + (x.won === true ? '#c2f64a' : x.won === false ? '#ff8a80' : '#8b97a5') + '">' + (x.won === true ? '+' + x.stake : x.won === false ? '-' + x.stake : '±0') + ' XP</b>' : ''; return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">You vs @' + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + duelScoreTxt(x.metric, x.myScore) + ' vs ' + duelScoreTxt(x.metric, x.oppScore) + xp + '</div></div>' + r + '</div>'; };
+    function load() {
+      fetch('/api/duel/mine').then(function (r) { return r.json(); }).then(function (d) {
+        var du = bodyEl.querySelector('#mpaDu'); if (!du) return;
+        var all = (d && d.duels) || [];
+        if (!all.length) {
+          du.innerHTML = '<div class="mpa-xp-empty">No duels yet. Open a trader’s profile from the leaderboard and tap <b style="color:#f5a623">Duel</b> to throw down.</div>' + (window._mpPrem === false ? '<div class="mpa-ups" style="margin-top:12px"><b>Premium duels</b><p>Free duels are a 7-day ROE race. Premium unlocks Profit, Survival, Streak and Sniper formats, XP stakes and faster rounds.</p><button type="button" id="mpaDuUps0">Go Premium</button></div>' : '');
+          var u0 = du.querySelector('#mpaDuUps0'); if (u0) u0.addEventListener('click', function () { if (window.mpPremium && window.mpPremium.show) { close(); window.mpPremium.show('Duels'); } }); return;
+        }
+        var inc = all.filter(function (x) { return x.incoming; }), act = all.filter(function (x) { return x.status === 'active'; }), pend = all.filter(function (x) { return x.status === 'pending' && !x.incoming; }), done = all.filter(function (x) { return x.status === 'done'; });
+        var html = '';
+        if (inc.length) html += sec('Incoming challenges') + inc.map(incCard).join('');
+        if (act.length) html += sec('Active') + act.map(vsCard).join('');
+        if (pend.length) html += sec('Waiting for reply') + pend.map(pendCard).join('');
+        if (done.length) html += sec('Results') + done.map(resCard).join('');
+        du.innerHTML = html;
+        Array.prototype.forEach.call(du.querySelectorAll('[data-duacc]'), function (b) { b.addEventListener('click', function () { duelRespond(b.getAttribute('data-duacc'), 'accept', b); }); });
+        Array.prototype.forEach.call(du.querySelectorAll('[data-dudec]'), function (b) { b.addEventListener('click', function () { duelRespond(b.getAttribute('data-dudec'), 'decline', b); }); });
+      }).catch(function () { var du = bodyEl.querySelector('#mpaDu'); if (du && !du.querySelector('.mpa-dv,.mpa-di,.mpa-du-r')) du.innerHTML = '<div class="mpa-xp-empty">Could not load your duels.</div>'; });
+    }
+    load();
+    window._mpDuelT2 = setInterval(function () { var du = bodyEl.querySelector('#mpaDu'); if (!du) { clearInterval(window._mpDuelT2); if (window._mpDuelT1) clearInterval(window._mpDuelT1); return; } if (!document.hidden) load(); }, 30000); // fresh scores
+    window._mpDuelT1 = setInterval(function () { var du = bodyEl.querySelector('#mpaDu'); if (!du) { clearInterval(window._mpDuelT1); return; } duelTick(du); }, 1000); // live countdown + progress
   }
   function duelRespond(id, action, btn) {
     if (btn) { btn.disabled = true; }
-    fetch('/api/duel/respond', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: id, action: action }) }).then(function (r) { return r.json(); }).then(function () { renderDuels(); if (window.mpXpCheck) window.mpXpCheck(); }).catch(function () { if (btn) btn.disabled = false; });
+    fetch('/api/duel/respond', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: id, action: action }) }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.error) { if (btn) { btn.disabled = false; btn.textContent = d.error === 'need_xp' ? ('Need ' + d.need + ' XP') : 'Try again'; } return; }
+      renderDuels(); if (window.mpXpCheck) window.mpXpCheck();
+    }).catch(function () { if (btn) btn.disabled = false; });
   }
+  function duelErr(d) { var e = d && d.error; return e === 'exists' ? 'You already have a live duel with this trader.' : e === 'not_connected' ? 'Follow this trader first to challenge them.' : e === 'need_username' ? 'Set a username first.' : e === 'too_many' ? ('You are at your live-duel limit' + (d.cap ? ' (' + d.cap + ')' : '') + '. Finish one first' + (d.cap === 1 ? ' — Premium raises it to 10' : '') + '.') : e === 'need_xp' ? ('Not enough XP — you need ' + d.need + ' but have ' + d.have + '.') : e === 'premium_required' ? 'That is a Premium duel type.' : e === 'no_recipient' ? 'User not found.' : e === 'restricted' ? 'Your account cannot start duels right now.' : 'Could not send the challenge.'; }
   function renderDuelChallenge(name) {
     name = String(name || '').replace(/[^a-zA-Z0-9_]/g, ''); if (!name) { renderDuels(); return; }
-    bodyEl.innerHTML = '<h3 class="mpa-h">Challenge @' + esc(name) + '</h3><p class="mpa-sub" style="margin:-4px 0 12px">Pick the stat you’ll compete on for the next 7 days. Winner gets <b style="color:#c2f64a">+120 XP</b>.</p>'
-      + '<div class="mpa-du-pick">'
-      + '<button class="mpa-du-opt" data-met="roe"><b>Best ROE</b><span>Highest single-trade ROE % wins</span></button>'
-      + '<button class="mpa-du-opt" data-met="win"><b>Biggest win</b><span>Largest single winning trade ($) wins</span></button>'
-      + '<button class="mpa-du-opt" data-met="wr"><b>Win rate</b><span>Best win % (min 3 trades) wins</span></button>'
-      + '</div><div class="mpa-du-msg" id="mpaDuMsg"></div><button class="mpa-link" id="mpaDuCancel" type="button">Cancel</button>';
-    var cc = bodyEl.querySelector('#mpaDuCancel'); if (cc) cc.addEventListener('click', renderDuels);
-    Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-met]'), function (b) { b.addEventListener('click', function () {
-      Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-met]'), function (x) { x.disabled = true; });
-      var msg = bodyEl.querySelector('#mpaDuMsg'); if (msg) msg.innerHTML = 'Sending…';
-      fetch('/api/duel/challenge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to: name, metric: b.getAttribute('data-met') }) }).then(function (r) { return r.json(); }).then(function (d) {
-        if (d && d.ok) { if (msg) msg.innerHTML = '<span style="color:#34d99a">Challenge sent to @' + esc(name) + '! They’ll see it in their Duels.</span>'; setTimeout(renderDuels, 1400); }
-        else { Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-met]'), function (x) { x.disabled = false; }); var m = d && d.error === 'exists' ? 'You already have a duel going with this trader.' : d && d.error === 'not_connected' ? 'Follow this trader first to challenge them.' : d && d.error === 'need_username' ? 'Set a username first.' : d && d.error === 'too_many' ? 'Too many pending challenges — wait for replies.' : d && d.error === 'no_recipient' ? 'User not found.' : 'Could not send the challenge.'; if (msg) msg.innerHTML = '<span style="color:#ffb347">' + m + '</span>'; }
-      }).catch(function () { Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-met]'), function (x) { x.disabled = false; }); var msg2 = bodyEl.querySelector('#mpaDuMsg'); if (msg2) msg2.innerHTML = '<span style="color:#ffb347">Network error — try again.</span>'; });
-    }); });
+    ensurePrem(function (prem) {
+      var xp = (window._mpXpBal != null ? window._mpXpBal : ((ME && ME.xp) || 0));
+      var C = { type: 'roe', dur: 604800000, stake: 0, sym: '', maxTrades: 3 };
+      function upsell(reason) { if (window.mpPremium && window.mpPremium.show) { close(); window.mpPremium.show(reason || 'Duels'); } }
+      function draw() {
+        var typeCards = DTYPES.map(function (t) { var locked = t.prem && !prem, on = C.type === t.k;
+          return '<button class="mpa-dt' + (on ? ' on' : '') + (locked ? ' lk' : '') + '" data-dt="' + t.k + '" data-lk="' + (locked ? 1 : '') + '">' + (locked ? '<span class="mpa-dt-pro">PRO</span>' : '') + '<span class="mpa-dt-ic">' + dico(t.k) + '</span><span class="mpa-dt-nm">' + t.nm + '</span><span class="mpa-dt-ds">' + t.ds + '</span></button>'; }).join('');
+        var durSeg = DDUR.map(function (dd) { var locked = dd.v !== 604800000 && !prem; return '<b data-dur="' + dd.v + '" class="' + (C.dur === dd.v ? 'on' : '') + (locked ? ' lk' : '') + '" data-lk="' + (locked ? 1 : '') + '">' + dd.l + '</b>'; }).join('');
+        var stkChips = DSTK.map(function (s) { var locked = !prem && s !== 0 && s !== 50; return '<button class="c' + (C.stake === s ? ' on' : '') + (locked ? ' lk' : '') + '" data-stk="' + s + '" data-lk="' + (locked ? 1 : '') + '">' + (s === 0 ? 'No stake' : s + ' XP') + '</button>'; }).join('');
+        var html = '<h3 class="mpa-h">Challenge @' + esc(name) + '</h3><p class="mpa-sub" style="margin:-4px 0 12px">Set the terms. The winner is locked in the moment the clock runs out.</p>';
+        html += '<div class="mpa-fld-l" style="margin-bottom:8px">Format</div><div class="mpa-dt-grid">' + typeCards + '</div>';
+        html += '<div class="mpa-fld"><div class="mpa-fld-l">Duration' + (!prem ? ' <em>Premium unlocks faster rounds</em>' : '') + '</div><div class="mpa-seg">' + durSeg + '</div></div>';
+        html += '<div class="mpa-fld"><div class="mpa-fld-l">XP wager' + (!prem ? ' <em>Premium sets any amount</em>' : '') + '</div><div class="mpa-stk">' + stkChips + '</div>' + (C.stake > 0 ? '<div class="mpa-stk-info"><span>Your XP: <b>' + xp.toLocaleString() + '</b></span><span>Winner takes <b>' + (C.stake * 2) + ' XP</b></span></div>' : '') + '</div>';
+        if (C.type === 'sniper') html += '<div class="mpa-fld"><div class="mpa-fld-l">Shots <em>first N trades count</em></div><div class="mpa-seg">' + [1, 2, 3, 4, 5].map(function (n) { return '<b data-mt="' + n + '" class="' + (C.maxTrades === n ? 'on' : '') + '">' + n + '</b>'; }).join('') + '</div></div>';
+        if (prem) html += '<div class="mpa-fld"><div class="mpa-fld-l">Lock to one coin <em>optional</em></div><input class="mpa-symin" id="mpaDuSym" maxlength="12" placeholder="e.g. BTC — blank = any coin" value="' + esc(C.sym) + '"></div>';
+        html += '<button class="mpa-send" id="mpaDuSend">Send challenge</button><div class="mpa-du-msg" id="mpaDuMsg"></div>';
+        if (!prem) html += '<div class="mpa-ups"><b>Unlock the full arena</b><p>Premium opens 4 more duel formats, XP stakes up to 2,000, 1h/24h/3-day rounds, and up to 10 duels at once.</p><button type="button" id="mpaDuUps">Go Premium</button></div>';
+        html += '<button class="mpa-link" id="mpaDuCancel" type="button" style="margin-top:10px">Cancel</button>';
+        bodyEl.innerHTML = html;
+        Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-dt]'), function (b) { b.addEventListener('click', function () { if (b.getAttribute('data-lk')) { upsell('Premium duel formats'); return; } C.type = b.getAttribute('data-dt'); draw(); }); });
+        Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-dur]'), function (b) { b.addEventListener('click', function () { if (b.getAttribute('data-lk')) { upsell('Faster duel rounds'); return; } C.dur = +b.getAttribute('data-dur'); draw(); }); });
+        Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-stk]'), function (b) { b.addEventListener('click', function () { if (b.getAttribute('data-lk')) { upsell('Custom XP stakes'); return; } C.stake = +b.getAttribute('data-stk'); draw(); }); });
+        Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-mt]'), function (b) { b.addEventListener('click', function () { C.maxTrades = +b.getAttribute('data-mt'); draw(); }); });
+        var sy = bodyEl.querySelector('#mpaDuSym'); if (sy) sy.addEventListener('input', function () { var p = sy.selectionStart; C.sym = sy.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase(); sy.value = C.sym; try { sy.setSelectionRange(p, p); } catch (e) {} });
+        var cc = bodyEl.querySelector('#mpaDuCancel'); if (cc) cc.addEventListener('click', renderDuels);
+        var up = bodyEl.querySelector('#mpaDuUps'); if (up) up.addEventListener('click', function () { upsell('Duels'); });
+        var snd = bodyEl.querySelector('#mpaDuSend'); if (snd) snd.addEventListener('click', function () {
+          snd.disabled = true; var msg = bodyEl.querySelector('#mpaDuMsg'); if (msg) msg.innerHTML = 'Sending…';
+          fetch('/api/duel/challenge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to: name, metric: C.type, dur: C.dur, stake: C.stake, sym: C.sym, maxTrades: C.maxTrades }) }).then(function (r) { return r.json(); }).then(function (d) {
+            if (d && d.ok) { if (msg) msg.innerHTML = '<span style="color:#34d99a">Challenge sent to @' + esc(name) + '. It is waiting in their Duels.</span>'; if (window.mpXpCheck) window.mpXpCheck(); setTimeout(renderDuels, 1300); }
+            else { snd.disabled = false; if (msg) msg.innerHTML = '<span style="color:#ffb347">' + duelErr(d) + '</span>'; }
+          }).catch(function () { snd.disabled = false; if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error — try again.</span>'; });
+        });
+      }
+      draw();
+    });
   }
   // ---- Profile personalization editor ----
   var ACCENTS = ['#c2f64a', '#38bdf8', '#ff9640', '#c78bff', '#34d99a', '#ff6c5c', '#ffd75a', '#f472b6'];
@@ -450,22 +602,72 @@
     bodyEl.innerHTML = '<h3 class="mpa-h">Balance Mode</h3><p class="mpa-sub">Checking your membership…</p>';
     fetch('/api/premium/status', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (st) {
       if (!st || !st.premium) { if (window.mpPremium && window.mpPremium.show) window.mpPremium.show('Unlock Balance Mode'); render(); return; }
-      var c = window.mpBal.cfg();
-      bodyEl.innerHTML = '<button class="mpa-row2" id="mpaBalBack" type="button" style="margin-bottom:12px">' + ic('chev') + '<span>Back</span></button>'
-        + '<h3 class="mpa-h">Balance Mode</h3>'
-        + '<p class="mpa-sub" style="margin:-4px 0 14px">Trade with a portfolio balance, like a real account. Your balance, equity and available margin show at the top of <b>My Trades</b>, and every new trade draws its margin from what is available.</p>'
-        + '<div class="mpa-prow"><span>Enable Balance Mode</span><label class="mpa-tgl" style="position:relative;display:inline-block;width:40px;height:22px"><input type="checkbox" id="mpaBalOn"' + (c.on ? ' checked' : '') + ' style="opacity:0;width:0;height:0"><span class="mpa-tgl-s" style="position:absolute;inset:0;background:#242c38;border-radius:22px;transition:.2s"></span></label></div>'
-        + '<label style="display:block;font-size:11px;color:#9aa3ad;margin:14px 0 5px">Starting balance (USD)</label>'
-        + '<input class="mpa-in" id="mpaBalStart" inputmode="numeric" value="' + c.start + '">'
-        + '<button class="mpa-btn" id="mpaBalSave" type="button">Save</button>'
-        + '<div class="mpa-msg"></div>'
-        + '<button class="mpa-flink" id="mpaBalReset" type="button" style="margin-top:10px">' + ic('spark') + 'Reset balance to the starting amount</button>';
-      if (!document.getElementById('mpaBalCss')) { var s2 = document.createElement('style'); s2.id = 'mpaBalCss'; s2.textContent = '#mpaBalOn:checked + .mpa-tgl-s{background:#c2f64a}.mpa-tgl-s:before{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:.2s}#mpaBalOn:checked + .mpa-tgl-s:before{transform:translateX(18px);background:#0a0b0d}'; document.head.appendChild(s2); }
-      var bk = bodyEl.querySelector('#mpaBalBack'); if (bk) bk.addEventListener('click', render);
-      var msg = bodyEl.querySelector('.mpa-msg');
-      var sv = bodyEl.querySelector('#mpaBalSave'); if (sv) sv.addEventListener('click', function () { var on = bodyEl.querySelector('#mpaBalOn').checked; var start = parseFloat((bodyEl.querySelector('#mpaBalStart').value || '').replace(/[^0-9.]/g, '')) || 10000; if (start > 1e7) start = 1e7; window.mpBal.setCfg(on, start); if (msg) { msg.textContent = on ? 'Saved — open My Trades to see your balance.' : 'Balance Mode turned off.'; msg.className = 'mpa-msg ok'; } });
-      var rs = bodyEl.querySelector('#mpaBalReset'); if (rs) rs.addEventListener('click', function () { var cc = window.mpBal.cfg(); window.mpBal.setCfg(cc.on, cc.start, true); if (msg) { msg.textContent = 'Balance reset to $' + cc.start.toLocaleString(); msg.className = 'mpa-msg ok'; } });
+      if (!document.getElementById('mpaBalCss')) { var s2 = document.createElement('style'); s2.id = 'mpaBalCss'; s2.textContent = '.bal-seg{display:flex;gap:0;background:#0a0d11;border:1px solid #232b36;border-radius:12px;padding:4px;margin:2px 0 12px}.bal-seg button{flex:1;padding:13px;border:none;background:none;color:#8b97a5;font-size:14px;font-weight:800;letter-spacing:.08em;border-radius:9px;cursor:pointer;transition:.15s;-webkit-appearance:none;appearance:none}.bal-seg button.off{background:#2a2f38;color:#e9e7df}.bal-seg button.on{background:#c2f64a;color:#0a0b0d}.bal-status{font-size:12.5px;color:#8b97a5;line-height:1.55;padding:11px 13px;background:#0a0d11;border:1px solid #232b36;border-radius:11px}.bal-status.on{border-color:rgba(194,246,74,.3);color:#c7cdd4}.bal-status b{color:#c2f64a}.bal-econ{margin-top:14px;background:linear-gradient(158deg,rgba(194,246,74,.06),#0a0d11);border:1px solid #232b36;border-radius:12px;padding:12px 14px}.bal-econ-h{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#7f8893;margin-bottom:9px}.bal-econ-r{display:flex;align-items:baseline;gap:10px;padding:5px 0}.bal-econ-r b{flex:none;width:90px;color:#c2f64a;font-family:ui-monospace,Consolas,monospace;font-size:14px;font-weight:800}.bal-econ-r span{font-size:12px;color:#a9b3bf;line-height:1.35}'; document.head.appendChild(s2); }
+      function draw(on) {
+        var cc = window.mpBal.cfg();
+        bodyEl.innerHTML = '<button class="mpa-row2" id="mpaBalBack" type="button" style="margin-bottom:12px">' + ic('chev') + '<span>Back</span></button>'
+          + '<h3 class="mpa-h">Balance Mode <span style="font:700 9px \'Space Mono\',monospace;color:#c2f64a;background:rgba(194,246,74,.14);border-radius:5px;padding:2px 6px;vertical-align:2px">PREMIUM</span></h3>'
+          + '<p class="mpa-sub" style="margin:-2px 0 14px">Trade a real portfolio instead of unlimited paper money. Every trade draws its margin from your balance — blow it up and you feel it, exactly like a real account.</p>'
+          + '<div class="bal-seg"><button type="button" data-balset="0" class="' + (on ? '' : 'off') + '">OFF</button><button type="button" data-balset="1" class="' + (on ? 'on' : '') + '">ON</button></div>'
+          + '<div class="bal-status ' + (on ? 'on' : '') + '">' + (on ? 'Balance Mode is <b>ON</b> — you\'re trading a <b>$' + cc.start.toLocaleString() + '</b> portfolio. It shows at the top of <b>My Trades</b>.' : 'Balance Mode is <b>OFF</b> — normal paper trading with no balance limit.') + '</div>'
+          + (on ? '<div class="bal-econ"><div class="bal-econ-h">How your balance grows</div><div class="bal-econ-r"><b>$10,000</b><span>to start — just for being VIP</span></div><div class="bal-econ-r"><b>+$10,000</b><span>every new day you show up and trade</span></div><div class="bal-econ-r"><b>+ bonus</b><span>from completing your daily missions</span></div></div>' : '')
+          + (on ? '<button class="mpa-flink" id="mpaBalReset" type="button" style="margin-top:14px">' + ic('spark') + 'Reset balance to $10,000</button>' : '');
+        var bk = bodyEl.querySelector('#mpaBalBack'); if (bk) bk.addEventListener('click', render);
+        Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-balset]'), function (b) { b.addEventListener('click', function () { var want = b.getAttribute('data-balset') === '1'; window.mpBal.setCfg(want); draw(want); }); });
+        var rs = bodyEl.querySelector('#mpaBalReset'); if (rs) rs.addEventListener('click', function () { if (!confirm('Reset your balance back to $10,000? Your open Balance-Mode trades stay open.')) return; window.mpBal.setCfg(true, true); draw(true); });
+      }
+      draw(window.mpBal.cfg().on);
     }).catch(function () { render(); });
+  }
+  var FRAMES = [
+    { k: 'default', name: 'Classic', by: 'Free' },
+    { k: 'silver', name: 'Silver', by: 'Reach Silver' },
+    { k: 'gold', name: 'Gold', by: 'Reach Gold' },
+    { k: 'platinum', name: 'Platinum', by: 'Reach Platinum' },
+    { k: 'diamond', name: 'Diamond', by: 'Reach Diamond' },
+    { k: 'legendary', name: 'Legendary', by: 'Reach Legendary' },
+    { k: 'neon', name: 'Neon', by: 'Premium' },
+    { k: 'aurora', name: 'Aurora', by: 'Premium' },
+    { k: 'founder', name: 'Founder', by: 'Founder' }
+  ];
+  function renderCustomize() {
+    bodyEl.innerHTML = '<h3 class="mpa-h">Customize card</h3><p class="mpa-sub" style="margin:-4px 0 12px">Pick a frame for your public trader card. Unlock more by ranking up or going Premium.</p>'
+      + '<div class="mpa-frgrid" id="mpaFrGrid"><div class="mpa-xp-empty" style="grid-column:1/-1">Loading…</div></div>'
+      + '<button class="mpa-row2" id="mpaFrPic" type="button" style="margin-top:10px">' + ic('cam') + '<span>Change profile picture</span>' + ic('chev') + '</button>'
+      + '<div class="mpa-du-msg" id="mpaFrMsg" style="margin-top:8px"></div>'
+      + '<button class="mpa-link" id="mpaFrBack" type="button">← Back</button>';
+    var bk = bodyEl.querySelector('#mpaFrBack'); if (bk) bk.addEventListener('click', render);
+    var pc = bodyEl.querySelector('#mpaFrPic'); if (pc) pc.addEventListener('click', function () { renderEditProfile(); });
+    var msg = bodyEl.querySelector('#mpaFrMsg');
+    fetch('/api/auth/frames').then(function (r) { return r.json(); }).then(function (d) {
+      var owned = (d && d.owned) || ['default']; var eq = (d && d.equipped) || 'default';
+      var grid = bodyEl.querySelector('#mpaFrGrid'); if (!grid) return;
+      grid.innerHTML = FRAMES.map(function (f) {
+        var own = owned.indexOf(f.k) >= 0; var isEq = f.k === eq;
+        return '<button class="mpa-fr' + (isEq ? ' on' : '') + (own ? '' : ' lock') + '" data-frame="' + f.k + '"' + (own ? '' : ' disabled') + '>'
+          + '<div class="mpa-fr-sw frame-' + f.k + '"></div>'
+          + '<div class="mpa-fr-nm">' + f.name + '</div>'
+          + '<div class="mpa-fr-by">' + (own ? (isEq ? 'Equipped' : 'Owned') : f.by) + '</div>'
+          + '</button>';
+      }).join('');
+      Array.prototype.forEach.call(grid.querySelectorAll('[data-frame]:not([disabled])'), function (b) {
+        b.addEventListener('click', function () {
+          var fr = b.getAttribute('data-frame');
+          if (msg) msg.innerHTML = '<span style="color:#8b97a5">Saving…</span>';
+          fetch('/api/auth/frame', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ frame: fr }) })
+            .then(function (r) { return r.json(); }).then(function (rd) {
+              if (rd && rd.ok) {
+                if (ME) ME.frame = rd.frame;
+                Array.prototype.forEach.call(grid.querySelectorAll('.mpa-fr'), function (x) {
+                  var k = x.getAttribute('data-frame'); x.classList.toggle('on', k === rd.frame);
+                  if (owned.indexOf(k) >= 0) { var by = x.querySelector('.mpa-fr-by'); if (by) by.textContent = (k === rd.frame ? 'Equipped' : 'Owned'); }
+                });
+                if (msg) msg.innerHTML = '<span style="color:#34d99a">Frame equipped! Your trader card is updated.</span>';
+              } else if (msg) msg.innerHTML = '<span style="color:#ffb347">' + (rd && rd.error === 'locked' ? 'You do not own that frame yet.' : 'Could not equip — try again.') + '</span>';
+            }).catch(function () { if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error — try again.</span>'; });
+        });
+      });
+    }).catch(function () { var grid = bodyEl.querySelector('#mpaFrGrid'); if (grid) grid.innerHTML = '<div class="mpa-xp-empty" style="grid-column:1/-1">Could not load frames.</div>'; });
   }
   function renderEditProfile() {
     var bio = (ME && ME.bio) || '', av = (ME && ME.avatar) || '', ac = (ME && ME.accent) || '', co = (ME && ME.coins) || '';
@@ -504,7 +706,7 @@
   // ---- Notifications center ----
   function notifSetBadge(n) { n = +n || 0; window._mpNotifUnread = n; setDot('mpaNotifBadge', n); refreshTrigDot(); }
   window.mpNotifBadge = notifSetBadge;
-  function notifIcon(k) { return k === 'dm' ? '💬' : k === 'duel' ? '⚔️' : k === 'mention' ? '💬' : k === 'follow' ? '★' : '🔔'; }
+  function notifIcon(k) { var m = { dm: 'chat', duel: 'swords', mention: 'chat', follow: 'user' }; return '<span style="color:#8b97a5;display:flex;justify-content:center">' + ic(m[k] || 'bell') + '</span>'; }
   function renderNotifs() {
     bodyEl.innerHTML = '<h3 class="mpa-h">Notifications</h3><div class="mpa-nf" id="mpaNf"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaNfBack" type="button">← Back to profile</button>';
     var bk = bodyEl.querySelector('#mpaNfBack'); if (bk) bk.addEventListener('click', render);
@@ -539,12 +741,14 @@
       bodyEl.innerHTML = '<h3 class="mpa-h">Your profile</h3>'
         + lvlHtml
         + '<div class="mpa-prof">'
-          + (hasU ? '<div class="mpa-prow mpa-prow--wide"><span>Username</span><b>' + esc(ME.username) + '</b></div>' : '')
+          + (hasU ? '<div class="mpa-prow mpa-prow--wide"><span>Username</span><b' + ((window.mpIsPro && window.mpIsPro(ME.username)) ? ' class="mp-progold"' : '') + '>' + esc(ME.username) + '</b></div>' : '')
           + '<div class="mpa-prow mpa-prow--wide"><span>Email</span><b>' + esc(ME.email) + '</b></div>'
-          + '<div class="mpa-prow"><span>Member since</span><b>' + fmtDate(ME.created) + '</b></div>'
-          + '<div class="mpa-prow"><span>Paper trades</span><b>' + tradeCount() + '</b></div>'
-          + (hasU ? '<div class="mpa-prow"><span>Followers</span><b id="mpaFollowers">…</b></div>' : '')
-          + (ME.status && ME.status !== 'active' ? '<div class="mpa-prow"><span>Status</span><b style="color:#ffb347;text-transform:capitalize">' + esc(ME.status) + '</b></div>' : '')
+          + (ME.status && ME.status !== 'active' ? '<div class="mpa-prow mpa-prow--wide"><span>Status</span><b style="color:#ffb347;text-transform:capitalize">' + esc(ME.status) + '</b></div>' : '')
+        + '</div>'
+        + '<div class="mpa-stat3">'
+          + '<div class="mpa-st"><b>' + fmtDate(ME.created) + '</b><span>Member since</span></div>'
+          + '<div class="mpa-st"><b>' + tradeCount() + '</b><span>Paper trades</span></div>'
+          + (hasU ? '<div class="mpa-st"><b id="mpaFollowers">…</b><span>Followers</span></div>' : '')
         + '</div>'
         + (hasU ? '' : '<label style="display:block;font-size:11px;color:#9aa3ad;margin:8px 0 5px">Pick a username <span style="color:#5c656f">(public, permanent)</span></label><input class="mpa-in" id="mpaUname" maxlength="20" autocomplete="off" placeholder="choose a username"><button class="mpa-btn" id="mpaSaveU" type="button">Set username</button><div class="mpa-msg"></div>')
         + (ME.muted ? '<p class="mpa-foot" style="color:#ffb347">You are muted in chat.</p>' : '')
@@ -557,6 +761,7 @@
           + '<button class="mpa-row2" id="mpaBal" type="button"><svg class="mpa-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="14" r="1.4"/></svg><span>Balance Mode</span><span style="font:700 9px \'Space Mono\',monospace;color:#c2f64a;background:rgba(194,246,74,.14);border-radius:5px;padding:2px 6px">PREMIUM</span>' + ic('chev') + '</button>'
           + '<button class="mpa-row2" id="mpaBrief" type="button"><svg class="mpa-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8M8 9h2"/></svg><span>Daily Brief</span><span style="font:700 9px \'Space Mono\',monospace;color:#c2f64a;background:rgba(194,246,74,.14);border-radius:5px;padding:2px 6px">PREMIUM</span>' + ic('chev') + '</button>'
           + '<button class="mpa-row2" id="mpaEdit" type="button">' + ic('edit') + '<span>Edit profile</span>' + ic('chev') + '</button>'
+          + '<button class="mpa-row2" id="mpaFrames" type="button"><svg class="mpa-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="10" height="10" rx="1"/></svg><span>Customize card</span>' + ic('chev') + '</button>'
           + '<button class="mpa-row2" id="mpaXp" type="button">' + ic('spark') + '<span>XP history</span>' + ic('chev') + '</button>' : '')
         + '<div class="mpa-foot2">'
           + '<button class="mpa-flink" id="mpaSup" type="button">' + ic('help') + 'Support</button>'
@@ -595,8 +800,9 @@
       var fdB = bodyEl.querySelector('#mpaFeed'); if (fdB) fdB.addEventListener('click', function () { renderFeed(); });
       var duB = bodyEl.querySelector('#mpaDuel'); if (duB) duB.addEventListener('click', function () { renderDuels(); });
       var edB = bodyEl.querySelector('#mpaEdit'); if (edB) edB.addEventListener('click', function () { renderEditProfile(); });
+      var frB = bodyEl.querySelector('#mpaFrames'); if (frB) frB.addEventListener('click', function () { renderCustomize(); });
       var blB = bodyEl.querySelector('#mpaBal'); if (blB) blB.addEventListener('click', function () { renderBalance(); });
-      var brB = bodyEl.querySelector('#mpaBrief'); if (brB) brB.addEventListener('click', function () { if (window.mpBrief) window.mpBrief.show(); });
+      var brB = bodyEl.querySelector('#mpaBrief'); if (brB) brB.addEventListener('click', function () { close(); if (window.mpBrief) window.mpBrief.show(); });
       dmSetBadge(window._mpDmUnread || 0); duelSetBadge(window._mpDuelPending || 0); notifSetBadge(window._mpNotifUnread || 0);
       return;
     }
@@ -716,6 +922,7 @@
         var pq = +prev.qty, cq = +e.qty; if (isFinite(pq) && isFinite(cq) && cq > pq) return; byId[id] = e; } // both open → keep the more-reduced (partial-close safe)
       local.forEach(put); d.journal.forEach(put); // server applied last → wins same-state ties; a stale local 'open' never overwrites a stored close
       var merged = order.map(function (id) { return byId[id]; });
+      try { var _bt = JSON.parse(localStorage.getItem('mp_bal_tags') || '{}') || {}; for (var _i = 0; _i < merged.length; _i++) { var _e = merged[_i]; if (_e && _e.id && !_e.bal && _bt[_e.id]) _e.bal = _bt[_e.id]; } } catch (e) {} // restore the Balance-Mode session tag the server strips — keeps the gold ticket (pp-gold) + BAL badge stable across syncs (no flicker)
       merged.sort(function (a, b) { return (+a.ts || 0) - (+b.ts || 0); });
       if (JSON.stringify(merged) === JSON.stringify(local)) return; // nothing new on this device
       try { localStorage.setItem('mp_journal', JSON.stringify(merged)); } catch (e) {}
@@ -742,7 +949,7 @@
   setInterval(function () { if (!document.hidden) syncTrades(); }, 12000); // A1: background tabs don't sync — flushed on pagehide + next visible tick
   window.addEventListener('pagehide', function () { try { var j2 = localStorage.getItem('mp_journal') || ''; if (ME && j2 && j2 !== lastJ && j2.length < 60000 && navigator.sendBeacon) { lastJ = j2; navigator.sendBeacon('/api/auth/trades', new Blob([JSON.stringify({ journal: JSON.parse(j2) })], { type: 'application/json' })); } } catch (e) {} });
   // pull the server journal periodically so trades opened elsewhere — cross-device AND via the Bot API — appear LIVE in My Trades
-  setInterval(function () { if (ME && document.visibilityState === 'visible') { try { pullTrades(); } catch (_) {} } }, 14000);
+  setInterval(function () { if (ME && document.visibilityState === 'visible') { try { pullTrades(); } catch (_) {} } }, 40000); // server-journal pull: 40s (cross-device/bot sync doesn't need faster) — lowers steady-state load on the single 'main' UserStore DO, which reduces the reset/"internal error" rate
   document.addEventListener('visibilitychange', function () { if (ME && document.visibilityState === 'visible') { try { pullTrades(); } catch (_) {} } });
 
   // ---- Web push (browser notifications for price alerts) ----
@@ -839,28 +1046,54 @@
   /* ===== PRO cosmetic badge — gold "PRO" next to every premium username ([data-lbu]) across chat, leaderboards, profiles ===== */
   (function () {
     var PRO = null;
-    function badge() { return '<span class="mp-pro" title="MarginPad Premium member" style="display:inline-block;font:700 8px \'Space Mono\',monospace;letter-spacing:.05em;color:#0a0b0d;background:#c2f64a;border-radius:4px;padding:1px 4px;margin-left:4px;vertical-align:middle">PRO</span>'; }
-    function scan() { if (!PRO) return;
-      // precise placement: a [data-lpro="name"] slot renders the badge exactly after the name (LEVEL / NAME / PRO)
+    try { var _pc = JSON.parse(localStorage.getItem('mp_proset') || 'null'); if (_pc && _pc.n && _pc.n.length) { PRO = {}; _pc.n.forEach(function (n) { PRO[String(n).toLowerCase()] = 1; }); } } catch (e) {} // warm-cache the PRO set so mpIsPro() is ready SYNCHRONOUSLY on first paint → renderers gold names same-frame (no flash); load() refreshes it below
+    function goldName(nm) { if (nm && nm.nodeType === 1 && !nm.hasAttribute('data-lvln') && !nm.classList.contains('mplvb') && !nm.classList.contains('mp-progold')) nm.classList.add('mp-progold'); }
+    function goldSlot(sl) { // the name sits right before a [data-lpro] slot — as an element (tm-nm) OR a bare text node (bento leaderboard rows)
+      var prev = sl.previousSibling;
+      while (prev && prev.nodeType === 3 && !(prev.nodeValue || '').trim()) prev = prev.previousSibling; // skip whitespace
+      if (!prev) return;
+      if (prev.nodeType === 3) { var span = document.createElement('span'); span.className = 'mp-progold'; prev.parentNode.insertBefore(span, prev); span.appendChild(prev); return; } // wrap the bare text-node name
+      goldName(prev);
+    }
+    function scan() { if (!PRO || document.hidden) return;
+      // PRO members get a glossy GOLD name (no chip — the old badge got lost / didn't fit on mobile). A [data-lpro="name"] slot marks the name right before it (LEVEL / NAME).
       var slots = document.querySelectorAll('[data-lpro]:not([data-prodone])');
-      for (var i = 0; i < slots.length; i++) { var sl = slots[i], su = (sl.getAttribute('data-lpro') || '').toLowerCase(); sl.setAttribute('data-prodone', '1'); if (su && PRO[su]) sl.innerHTML = badge(); }
-      // fallback for name elements without a slot (some lists): append the badge, unless the row already has a slot
+      for (var i = 0; i < slots.length; i++) { var sl = slots[i], su = (sl.getAttribute('data-lpro') || '').toLowerCase(); sl.setAttribute('data-prodone', '1'); if (su && PRO[su]) goldSlot(sl); }
+      // fallback: a [data-lbu] name element without a slot (chat) — gold the name itself, unless its row carries a slot
       var els = document.querySelectorAll('[data-lbu]:not([data-pro])');
-      for (var j = 0; j < els.length; j++) { var el = els[j], u = (el.getAttribute('data-lbu') || '').toLowerCase(); el.setAttribute('data-pro', '1'); if (u && PRO[u]) { var pn = el.parentNode; if (pn && (pn.querySelector('[data-lpro]') || el.querySelector('[data-lpro]'))) continue; try { el.insertAdjacentHTML('beforeend', badge()); } catch (e) {} } } }
-    function load() { fetch('/api/premium/badges', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { if (j && j.names) { PRO = {}; j.names.forEach(function (n) { PRO[String(n).toLowerCase()] = 1; }); scan(); } }).catch(function () {}); }
+      for (var j = 0; j < els.length; j++) { var el = els[j], u = (el.getAttribute('data-lbu') || '').toLowerCase(); el.setAttribute('data-pro', '1'); if (u && PRO[u]) { var pn = el.parentNode; if (pn && (pn.querySelector('[data-lpro]') || el.querySelector('[data-lpro]'))) continue; goldName(el); } } }
+    function load() { if (document.hidden && PRO) return; fetch('/api/premium/badges', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { if (j && j.names) { PRO = {}; j.names.forEach(function (n) { PRO[String(n).toLowerCase()] = 1; }); try { localStorage.setItem('mp_proset', JSON.stringify({ t: Date.now(), n: j.names })); } catch (e) {} scan(); } }).catch(function () {}); }
     window.mpIsPro = function (n) { return !!(PRO && PRO[String(n || '').toLowerCase()]); };
     window.mpProScan = scan;
-    try { load(); setInterval(scan, 1600); setInterval(load, 300000); } catch (e) {}
+    try { load(); setInterval(scan, 1600); setInterval(load, 300000); document.addEventListener('visibilitychange', function () { if (!document.hidden) scan(); }); } catch (e) {} // hidden tabs skip the scan/fetch; re-decorate any nodes added while hidden on return
   })();
 
   /* ===== Balance Mode (Premium): trade a portfolio balance; the strip renders in My Trades (home.js + mp-trade.js) ===== */
   window.mpBal = {
-    cfg: function () { try { var c = JSON.parse(localStorage.getItem('mp_balmode') || 'null'); if (c && c.on) return { on: true, start: (+c.start > 0 ? +c.start : 10000), since: +c.since || 0 }; } catch (e) {} return { on: false, start: 10000, since: 0 }; },
-    setCfg: function (on, start, resetSince) { var prev; try { prev = JSON.parse(localStorage.getItem('mp_balmode') || 'null') || {}; } catch (e) { prev = {}; } var since = (resetSince || !prev.since) ? Date.now() : (+prev.since || Date.now()); try { localStorage.setItem('mp_balmode', JSON.stringify({ on: !!on, start: Math.max(0, Math.round(+start || 0)), since: since })); } catch (e) {} try { window.dispatchEvent(new Event('mp-balmode')); } catch (e) {} try { if (window.mpJournalRender) window.mpJournalRender(); } catch (e) {} }
+    _sid: function () { return 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }, // unique Balance Mode session id
+    cfg: function () { try { var c = JSON.parse(localStorage.getItem('mp_balmode') || 'null'); if (c && c.on) { if (!c.sid) { c.sid = this._sid(); try { localStorage.setItem('mp_balmode', JSON.stringify(c)); } catch (e) {} } return { on: true, start: (+c.start > 0 ? +c.start : 10000), since: +c.since || 0, sid: c.sid }; } } catch (e) {} return { on: false, start: 10000, since: 0, sid: '' }; },
+    _emit: function () { try { window.dispatchEvent(new Event('mp-balmode')); } catch (e) {} try { if (window.mpJournalRender) window.mpJournalRender(); } catch (e) {} },
+    setCfg: function (on, reset) { var prev; try { prev = JSON.parse(localStorage.getItem('mp_balmode') || 'null') || {}; } catch (e) { prev = {}; } var fresh = reset || !prev.sid; var since = fresh ? Date.now() : (+prev.since || Date.now()); var sid = fresh ? this._sid() : prev.sid; var start = fresh ? 10000 : (+prev.start > 0 ? +prev.start : 10000); var today = new Date().toISOString().slice(0, 10); var topup = fresh ? today : (prev.topup || today); try { localStorage.setItem('mp_balmode', JSON.stringify({ on: !!on, start: start, since: since, sid: sid, topup: topup })); } catch (e) {} if (on) { try { this._dailyTopup(); } catch (e) {} } this._emit(); }, // no user-set amount anymore — VIP gets a fixed 10k base; _dailyTopup + grant() top it up
+    _dailyTopup: function () { var c; try { c = JSON.parse(localStorage.getItem('mp_balmode') || 'null'); } catch (e) { return; } if (!c || !c.on) return; var today = new Date().toISOString().slice(0, 10); if (c.topup === today) return; c.start = Math.min(250000, (+c.start || 10000) + 10000); c.topup = today; try { localStorage.setItem('mp_balmode', JSON.stringify(c)); } catch (e) {} this._emit(); return c.start; }, // +$10,000 once per NEW active day (not per calendar gap — away 30 days ≠ +300k), capped at 250k
+    grant: function (n) { n = Math.max(0, Math.round(+n || 0)); if (!n) return; var c; try { c = JSON.parse(localStorage.getItem('mp_balmode') || 'null'); } catch (e) { return; } if (!c) return; c.start = Math.min(250000, (+c.start || 10000) + n); try { localStorage.setItem('mp_balmode', JSON.stringify(c)); } catch (e) {} this._emit(); }, // top up from daily missions / other systems
+    tag: function (e) { try { var c = this.cfg(); if (c.on && c.sid && e && e.id) { if (!e.bal) e.bal = c.sid; var m = {}; try { m = JSON.parse(localStorage.getItem('mp_bal_tags') || '{}') || {}; } catch (x) {} if (m[e.id] !== c.sid) { m[e.id] = c.sid; var ks = Object.keys(m); if (ks.length > 500) ks.slice(0, ks.length - 500).forEach(function (k) { delete m[k]; }); try { localStorage.setItem('mp_bal_tags', JSON.stringify(m)); } catch (x) {} } } } catch (_) {} return e; } // tag the trade for the current Balance Mode session — writes BOTH e.bal AND an id->sid map (mp_bal_tags) so the tag survives the server journal sync for signed-in/premium users
   };
+  try { window.mpBal._dailyTopup(); } catch (e) {} // on load: give a returning VIP their +$10,000 for the new day
 
+  // shared modal-overlay CSS (the premium modal used to inject it, but mpPremium.show now redirects to /premium, so the Daily Brief needs it independently)
+  function ensurePremCss() {
+    if (document.getElementById('mpPremCss')) return;
+    var st = document.createElement('style'); st.id = 'mpPremCss'; st.textContent =
+      '.mpprem-ov{position:fixed;inset:0;z-index:100000;background:rgba(5,7,10,.72);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:18px}' +
+      '.mpprem{width:min(440px,94vw);max-height:92vh;overflow:auto;background:#0b0e13;border:1px solid #c2f64a55;border-radius:18px;padding:24px 22px;color:#dbe4f5;font-family:"Familjen Grotesk",system-ui,sans-serif;box-shadow:0 24px 70px rgba(0,0,0,.6);position:relative}' +
+      '.mpprem-x{position:absolute;top:12px;right:14px;background:none;border:0;color:#5c6b84;font-size:20px;cursor:pointer}.mpprem-x:hover{color:#fff}' +
+      '.mpprem-tag{display:inline-block;font:700 10px "Space Mono",monospace;letter-spacing:.16em;color:#0a0b0d;background:#c2f64a;border-radius:20px;padding:3px 11px;margin-bottom:12px}' +
+      '.mpprem h3{margin:0 0 4px;font-size:22px;color:#fff;font-weight:800}.mpprem-sub{color:#8fa3c4;font-size:13px;margin-bottom:16px}';
+    document.head.appendChild(st);
+  }
   /* ===== Daily Brief (Premium): majors trend + RSI + next macro events, in a modal ===== */
   window.mpBrief = { show: function () {
+    ensurePremCss();
     var ov = document.createElement('div'); ov.className = 'mpprem-ov';
     ov.innerHTML = '<div class="mpprem" style="max-width:480px"><button class="mpprem-x" type="button" aria-label="Close">×</button><span class="mpprem-tag">DAILY BRIEF</span><h3>Today’s market brief</h3><div class="mpbrief-body" style="margin-top:14px;color:#8fa3c4;font-size:13px">Loading…</div></div>';
     document.body.appendChild(ov);
@@ -883,7 +1116,7 @@
 
   /* ===== XP toasts + level-up celebration (2026-07-15) ===== */
   (function () {
-    var SRCN = { heatmap: 'Liquidation map read', trade_hh: 'XP Happy Hour! ⚡', trade_promo: 'XP Promo! ⚡', trade_win: 'Winner, banked', trade: 'Trade closed', checkin: 'Showed up today', streak: 'Streak pays', mission: 'Mission cleared', faucet: 'Faucet claim', promo: 'Promo post approved', exsign: 'Exchange sign-up', lbprize: 'Podium money 🏆', username: 'Name on the board', academy: 'Brain gains', charts: 'Chart time 📊', admin: 'Bonus', backfill: 'Loyalty bonus', duel: 'Duel won ⚔️' };
+    var SRCN = { heatmap: 'Liquidation map read', trade_hh: 'XP Happy Hour! ⚡', trade_promo: 'XP Promo! ⚡', trade_win: 'Winner, banked', trade: 'Trade closed', checkin: 'Showed up today', streak: 'Streak pays', mission: 'Mission cleared', faucet: 'Faucet claim', promo: 'Promo post approved', exsign: 'Exchange sign-up', lbprize: 'Podium money 🏆', username: 'Name on the board', academy: 'Brain gains', charts: 'Chart time 📊', admin: 'Bonus', backfill: 'Loyalty bonus', duel: 'Duel won' };
     var ICON = { bronze: '', silver: '', gold: '', platinum: '', diamond: '' };
     var xpCss = '#mpxpT{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:flex;flex-direction:column;gap:8px;pointer-events:none}'
       + '.mpxp{display:flex;align-items:center;gap:9px;background:#12151d;border:1px solid #2a3550;border-left:3px solid var(--xc,#c2f64a);border-radius:12px;padding:9px 13px;box-shadow:0 12px 34px rgba(0,0,0,.5);font-family:ui-monospace,Consolas,monospace;color:#e9e7df;transform:translateX(120%);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .4s;max-width:260px}'
@@ -897,8 +1130,10 @@
       + '.mpxp-up{font-family:ui-monospace,Consolas,monospace;font-size:11px;letter-spacing:.28em;color:var(--lc);text-transform:uppercase}'
       + '.mpxp-nm{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:34px;color:var(--lc);margin:4px 0 6px;letter-spacing:-.02em}'
       + '.mpxp-sub{color:#c7ccd4;font-size:14px;line-height:1.5}.mpxp-sub b{color:#fff}'
-      + '.mpxp-x{margin-top:18px;background:var(--lc);color:#0a0b0d;border:none;border-radius:11px;padding:11px 26px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit}'
+      + '.mpxp-x{margin-top:18px;background:var(--lc);color:#0a0b0d;border:none;border-radius:11px;padding:11px 26px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit}.mpxp-see,.mpxp-x2{display:block;width:100%;box-sizing:border-box;text-align:center;text-decoration:none}.mpxp-see{margin-top:16px}.mpxp-x2{background:none;border:1px solid rgba(255,255,255,.22);color:#c7cdd4;margin-top:9px;font-weight:700}'
       + '.mpxp-cf{position:absolute;top:0;width:9px;height:14px;border-radius:2px;opacity:.9;animation:mpxpFall linear forwards}'
+      + '.mpxp-perks{list-style:none;margin:14px 0 2px;padding:0;text-align:left;display:grid;gap:7px}'
+      + '.mpxp-perks li{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:#dfe4ec;line-height:1.35}.mpxp-perks li svg{flex:none;margin-top:1px}'
       + '@keyframes mpxpFall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(105vh) rotate(720deg);opacity:.2}}'
       + '@media(max-width:560px){.mpxp-card{padding:28px 26px;max-width:88vw}.mpxp-nm{font-size:28px}}';
     var st = document.createElement('style'); st.textContent = xpCss; document.head.appendChild(st);
@@ -931,6 +1166,26 @@
       ov.addEventListener('click', function (e) { if (e.target === ov) close9(); });
       try { if (navigator.vibrate) navigator.vibrate([20, 40, 20]); } catch (e) {}
     }
+    function premiumCelebrate() { // center-screen gold celebration when a member upgrades to Premium (reuses the level-up stage)
+      window.__mpPremCelebrated = true;
+      var ov = document.getElementById('mpxpLv'); if (!ov) { ov = document.createElement('div'); ov.id = 'mpxpLv'; document.body.appendChild(ov); }
+      var col = '#ffd75a';
+      var conf = ''; for (var n = 0; n < 84; n++) { var cx = Math.floor(Math.random() * 100), d = (1.4 + Math.random() * 1.7).toFixed(2), dl = (Math.random() * 0.5).toFixed(2), cc = ['#ffd75a', '#fff6c8', '#e0a52a', '#c2f64a', '#ffe98a'][n % 5]; conf += '<i class="mpxp-cf" style="left:' + cx + '%;background:' + cc + ';animation-duration:' + d + 's;animation-delay:' + dl + 's"></i>'; }
+      var crown = '<svg viewBox="0 0 24 24" width="96" height="96" fill="none"><defs><linearGradient id="mpPgc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset="0.5" stop-color="#ffd75a"/><stop offset="1" stop-color="#e0a52a"/></linearGradient></defs><path d="M2.6 8.2l4.4 3.3L12 4l5 7.5 4.4-3.3-1.9 11.3H4.5L2.6 8.2z" fill="url(#mpPgc)" stroke="#8a5a10" stroke-width="0.5" stroke-linejoin="round"/><rect x="4.5" y="18.4" width="15" height="2.3" rx="0.7" fill="url(#mpPgc)" stroke="#8a5a10" stroke-width="0.4"/><circle cx="2.6" cy="8.2" r="1.5" fill="#ffe98a"/><circle cx="21.4" cy="8.2" r="1.5" fill="#ffe98a"/><circle cx="12" cy="4" r="1.6" fill="#ffe98a"/></svg>';
+      ov.style.setProperty('--lc', col);
+      var ck = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#ffd75a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+      var perks = ['8 exclusive AI indicators', 'Live liquidation heatmap', 'Ask AI on your charts — 50/day', 'Balance Mode — real portfolio trading', 'Premium duels — all 5 formats', 'Premium chat lounge (VIPs only)', 'Daily market brief', 'Gold name, card frames & share cards', '+5% XP on everything'];
+      var perksHtml = '<ul class="mpxp-perks">' + perks.map(function (p) { return '<li>' + ck + '<span>' + p + '</span></li>'; }).join('') + '</ul>';
+      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + crown + '</div><div class="mpxp-up">Premium unlocked</div><div class="mpxp-nm mp-progold">MarginPad Premium</div><div class="mpxp-sub">You are now a <b>Premium member</b>. Here is everything you just unlocked:</div>' + perksHtml + '<a class="mpxp-x mpxp-see" href="/premium" target="_blank" rel="noopener">See everything you got →</a><button class="mpxp-x mpxp-x2" type="button">Start trading</button></div>';
+      requestAnimationFrame(function () { ov.classList.add('on'); });
+      var close9 = function () { ov.classList.remove('on'); };
+      var xb = ov.querySelector('button.mpxp-x'); if (xb) xb.addEventListener('click', close9);
+      var see = ov.querySelector('.mpxp-see'); if (see) see.addEventListener('click', function () { try { if (window.__mpTrack) window.__mpTrack('premview', 'celebration'); } catch (e) {} setTimeout(close9, 400); });
+      ov.addEventListener('click', function (e) { if (e.target === ov) close9(); });
+      setTimeout(close9, 18000);
+      try { if (navigator.vibrate) navigator.vibrate([20, 40, 20, 40, 70]); } catch (e) {}
+    }
+    window.mpPremiumCelebrate = premiumCelebrate;
     function check() {
       if (!ME) return;
       fetch('/api/auth/xp').then(function (r) { return r.json(); }).then(function (d) {
@@ -938,7 +1193,18 @@
         // DM unread + duel pending badges — run on EVERY poll incl. the first (before the seed early-return below)
         if (typeof d.dmUnread === 'number' && window.mpDmBadge) { try { window.mpDmBadge(d.dmUnread); } catch (e) {} }
         if (typeof d.duelPending === 'number' && window.mpDuelBadge) { try { window.mpDuelBadge(d.duelPending); } catch (e) {} }
+        if (typeof d.premium === 'boolean') window._mpPrem = d.premium; if (typeof d.xp === 'number') window._mpXpBal = d.xp; // cached for the duel composer (premium gating + stake affordability)
         if (typeof d.notifUnread === 'number' && window.mpNotifBadge) { try { window.mpNotifBadge(d.notifUnread); } catch (e) {} }
+        // Premium upgrade celebration — SERVER-driven (d.premiumNew = premium && !prem_seen). Fires once regardless of
+        // WHEN the user became premium (owner grant / IPN that landed while offline → first login already premium, which
+        // the old localStorage "non-premium -> premium transition" check silently missed). The server flag (prem_seen)
+        // is set only by the ack BELOW, AFTER the animation is shown — so a tab closed mid-animation just replays it next
+        // time (never a silent loss of the celebration).
+        if (d.premiumNew && !window.__mpPremCelebrated) { try {
+          window.__mpPremCelebrated = true;
+          setTimeout(function () { try { premiumCelebrate(); } catch (e) {} try { reflect(); } catch (e) {} }, 500);
+          setTimeout(function () { try { fetch('/api/auth/xp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ack: 1 }) }); } catch (e) {} }, 3500); // ack AFTER the ~3s animation is shown
+        } catch (e) {} }
         var uid = ME.id; var stored = null;
         try { stored = JSON.parse(localStorage.getItem(key(uid)) || 'null'); } catch (e) {}
         if (!stored) { // first observation for this device: seed silently (no toast flood)
@@ -967,5 +1233,13 @@
     setTimeout(function () { clearInterval(_iv); }, 20000);
   })();
 
-  fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (d) { ME = d.user || null; BANNED = !!d.banned; reflect(); if (ME) { dwSince = Date.now(); syncTrades(); } }).catch(function () {});
+  var _liChk; try { _liChk = localStorage.getItem('mp_li_chk') === '1'; } catch (e) { _liChk = false; }
+  if (/(?:^|;\s*)mp_li=1(?:;|$)/.test(document.cookie) || !_liChk) { // COOKIE GATE: probe /api/auth/me only if the non-HttpOnly session-marker cookie mp_li is present, OR this browser hasn't done the one-time migration check yet (catches sessions that predate the marker → no existing login gets dropped). A returning logged-out visitor (no marker, already checked once) skips the DO round-trip entirely — that was ~most of the auth invocations. mp_sess is HttpOnly so JS can't read it directly; mp_li mirrors it (set by /verify + /me, cleared by /logout).
+    fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (d) { try { localStorage.setItem('mp_li_chk', '1'); } catch (e) {} ME = d.user || null; BANNED = !!d.banned; reflect(); if (ME) { dwSince = Date.now(); syncTrades();
+      if (/[?&]premium=ok(&|$)/.test(location.search)) { // just returned from a successful checkout — celebrate now (the 60s poll would otherwise lag)
+        setTimeout(function () { if (window.mpPremiumCelebrate) window.mpPremiumCelebrate(); }, 1000);
+        try { var u = new URL(location.href); u.searchParams.delete('premium'); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
+      }
+    } }).catch(function () {});
+  } else { ME = null; reflect(); }
 })();
