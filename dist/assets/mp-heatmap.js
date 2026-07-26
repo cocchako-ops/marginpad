@@ -159,17 +159,15 @@
       ctx.fillStyle = lng ? 'rgba(46,189,133,.30)' : 'rgba(255,98,88,.30)'; ctx.fill();
       if (e.notional >= 25000) { ctx.lineWidth = 1.2; ctx.strokeStyle = lng ? '#2ebd85' : '#ff6258'; ctx.stroke(); }
     }
-    // post-sweep annotations: where price recently ate a BIG pool (server-logged)
-    if (S.sweeps && S.sweeps.length) { ctx.font = '700 10px "Space Mono",monospace'; ctx.textAlign = 'center';
-      var shown = 0;
-      for (i = 0; i < S.sweeps.length && shown < 3; i++) { var sv = S.sweeps[i], svt = sv.t / 1000;
-        if (svt < v.t0 || svt > v.t1 || sv.p < pLo || sv.p > pHi) continue; shown++;
-        var sx = X(svt), sy = Y(sv.p);
-        ctx.strokeStyle = 'rgba(255,215,90,.95)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(sx - 4, sy - 4); ctx.lineTo(sx + 4, sy + 4); ctx.moveTo(sx + 4, sy - 4); ctx.lineTo(sx - 4, sy + 4); ctx.stroke();
-        var lb = money(sv.w) + ' ' + (sv.long ? 'longs' : 'shorts') + ' liquidated';
-        var lw = ctx.measureText(lb).width;
-        ctx.fillStyle = 'rgba(7,9,12,.85)'; ctx.fillRect(sx + 8, sy - 8, lw + 8, 14);
-        ctx.fillStyle = '#ffd75a'; ctx.textAlign = 'left'; ctx.fillText(lb, sx + 12, sy + 3); ctx.textAlign = 'center';
+    // big server-logged sweeps → distinct clickable dots (was a space-hungry "$52M longs liquidated" text label — terrible on mobile). Bigger + a glow ring so the huge ones stand out; hover/click shows the amount like every other dot.
+    if (S.showDots && S.sweeps && S.sweeps.length) {
+      for (i = 0; i < S.sweeps.length; i++) { var sv = S.sweeps[i], svt = sv.t / 1000;
+        if (svt < v.t0 || svt > v.t1 || sv.p < pLo || sv.p > pHi) continue;
+        if (S.sideF === 'long' && !sv.long) continue; if (S.sideF === 'short' && sv.long) continue;
+        var sx = X(svt), sy = Y(sv.p), sr = Math.max(7, Math.min(15, Math.log10(Math.max(1e6, sv.w)) * 2.3 - 7)), scol = sv.long ? '46,189,133' : '255,98,88';
+        ctx.beginPath(); ctx.arc(sx, sy, sr, 0, 6.2832); ctx.fillStyle = 'rgba(' + scol + ',.30)'; ctx.fill();
+        ctx.lineWidth = 2; ctx.strokeStyle = 'rgb(' + scol + ')'; ctx.stroke();
+        ctx.beginPath(); ctx.arc(sx, sy, sr + 3.5, 0, 6.2832); ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(' + scol + ',.45)'; ctx.stroke();
       } }
     // top-3 standing pools labelled right on the map — instant read
     var lab = 0, usedY = [];
@@ -180,7 +178,7 @@
       var ly = Y(tp.price), clash = false;
       for (var u = 0; u < usedY.length; u++) if (Math.abs(usedY[u] - ly) < 16) { clash = true; break; }
       if (clash) continue; usedY.push(ly); lab++;
-      var txt = money(tp.w) + (tp.long ? ' long liqs' : ' short liqs');
+      var txt = (tp.long ? 'proj. long zone' : 'proj. short zone');
       ctx.font = '700 11px "Space Mono",monospace';
       var tw = ctx.measureText(txt).width;
       ctx.fillStyle = 'rgba(7,9,12,.85)'; ctx.fillRect(W - tw - 18, ly - 9, tw + 12, 16);
@@ -200,6 +198,14 @@
           var shh = Math.max(3, H * (P.binH / (pHi - pLo)) * 1.15), sy0 = Y(sp.price) - shh / 2, sx0 = Math.max(0, X(sp.t0));
           ctx.fillStyle = sp.long ? 'rgba(46,189,133,.95)' : 'rgba(255,98,88,.95)'; ctx.fillRect(sx0, sy0, W - sx0, shh);
           ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.4; ctx.strokeRect(sx0 + 0.5, sy0 - 2, W - sx0 - 1, shh + 4);
+        }
+      } else if (S.sel.type === 'swp') { var sw = S.sel.ref, swts = sw.t / 1000;
+        if (swts >= v.t0 && swts <= v.t1 && sw.p >= pLo && sw.p <= pHi) {
+          var swr = Math.max(7, Math.min(15, Math.log10(Math.max(1e6, sw.w)) * 2.3 - 7)), swx = X(swts), swy = Y(sw.p), swc = sw.long ? '46,189,133' : '255,98,88';
+          ctx.save(); ctx.setLineDash([4, 4]); ctx.strokeStyle = 'rgba(255,255,255,.32)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, swy); ctx.lineTo(W, swy); ctx.moveTo(swx, 0); ctx.lineTo(swx, H); ctx.stroke(); ctx.restore(); // crosshair guides to both axes so it's obvious which dot is selected
+          ctx.beginPath(); ctx.arc(swx, swy, swr, 0, 6.2832); ctx.fillStyle = 'rgba(' + swc + ',.62)'; ctx.fill(); // brighter core
+          ctx.beginPath(); ctx.arc(swx, swy, swr + 4, 0, 6.2832); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.4; ctx.stroke();
+          ctx.beginPath(); ctx.arc(swx, swy, swr + 9, 0, 6.2832); ctx.strokeStyle = 'rgba(194,246,74,.75)'; ctx.lineWidth = 1.6; ctx.stroke();
         }
       } else { var se = S.sel.ref, sts = se.ts / 1000;
         if (sts >= v.t0 && sts <= v.t1 && se.price >= pLo && se.price <= pHi) {
@@ -271,12 +277,12 @@
     // label the single biggest visible pool with its $ size
     if (vis.length) { var top = vis[0]; var ty = Y(top.price);
       ctx.font = '700 9.5px "Space Mono",monospace'; ctx.textAlign = 'right';
-      ctx.fillStyle = 'rgba(7,9,12,.8)'; var mt = money(top.w); var mw = ctx.measureText(mt).width;
+      ctx.fillStyle = 'rgba(7,9,12,.8)'; var mt = (top.long ? 'long zone' : 'short zone'); var mw = ctx.measureText(mt).width;
       ctx.fillRect(W - mw - 10, ty - 7, mw + 8, 13);
       ctx.fillStyle = top.long ? '#7ee2b8' : '#ffa39b';
       ctx.fillText(mt, W - 6, ty + 3); }
     ctx.fillStyle = 'rgba(92,107,132,.9)'; ctx.font = '9px "Space Mono",monospace'; ctx.textAlign = 'center';
-    ctx.fillText('WHERE $ SITS', W / 2, 12);
+    ctx.fillText('PROJECTED ZONES', W / 2, 12);
   }
 
   function poolHit(my, H) { // nearest visible pool band to screen-y `my` (px), respecting side filter + current zoom
@@ -369,7 +375,7 @@
     var up = [], dn = [];
     for (var i = 0; i < P.alive.length; i++) { var x = P.alive[i]; if (poolGone(x)) continue; if (Math.abs(x.price - px) / px > 0.12) continue; (x.price > px ? up : dn).push(x); }
     var sc = function (a, b) { return magnetScore(b, px) - magnetScore(a, px); }; up.sort(sc); dn.sort(sc);
-    var cell = function (x) { var d = ((x.price - px) / px * 100); return '<span style="color:' + (x.long ? '#2ebd85' : '#ff6258') + '"><b style="color:#e9e7df">' + fpx(x.price) + '</b> ' + money(x.w) + ' <i style="font-style:normal;color:#5c6b84">' + (d >= 0 ? '+' : '') + d.toFixed(1) + '%</i></span>'; };
+    var cell = function (x) { var d = ((x.price - px) / px * 100); return '<span style="color:' + (x.long ? '#2ebd85' : '#ff6258') + '"><b style="color:#e9e7df">' + fpx(x.price) + '</b> <i style="font-style:normal;color:#5c6b84">' + (d >= 0 ? '+' : '') + d.toFixed(1) + '%</i></span>'; };
     var h = '<div class="hm-tg-h">TARGETS \u2014 where liquidity pulls price</div>';
     var row1 = '<span style="color:#5c6b84;font-weight:700"><span class="hm-tg-lab">TARGETS </span>\u2191</span>' + (up.length ? up.slice(0, 3).map(cell).join(' ') : '<span style="color:#3a465c">none nearby</span>');
     var row2 = '<span style="color:#5c6b84;font-weight:700;margin-left:6px">\u2193</span>' + (dn.length ? dn.slice(0, 3).map(cell).join(' ') : '<span style="color:#3a465c">none nearby</span>');
@@ -381,7 +387,7 @@
       var lean = S.funding == null ? '' : (S.funding > 0.0001 ? ' \u00b7 longs pay funding \u2192 downside sweep slightly favored' : S.funding < -0.0001 ? ' \u00b7 shorts pay funding \u2192 upside sweep slightly favored' : '');
       h += '<span style="background:rgba(255,215,90,.12);border:1px solid rgba(255,215,90,.45);color:#ffd75a;border-radius:7px;padding:2px 8px;font-weight:800">SQUEEZE SETUP' + lean + '</span>';
     }
-    h += '</div><div class="hm-tg-exp">The biggest crowds of liquidation prices near the current price \u2014 green = longs get liquidated there (below), red = shorts (above). Price tends to sweep the largest ones. Drag the map with one finger, pinch with two.</div>';
+    h += '</div><div class="hm-tg-exp">Projected leverage zones near the current price \u2014 green = longs would liquidate there (below), red = shorts (above). Estimated from volume \u00d7 leverage, not realized liquidations. Price tends to sweep the largest ones. Drag the map with one finger, pinch with two.</div>';
     S.tgEl.innerHTML = h;
   }
   function updHead() {
@@ -402,10 +408,13 @@
       var _ph = poolHit(my, r.height), best = _ph ? { s: _ph } : null, i;
       var bev = null, nNear = 0;
       if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 13) { nNear++; if (!bev || dd < bev.d) bev = { d: dd, e: e }; } }
-      if (!best && !bev) { tip.style.display = 'none'; return; }
+      var bsw = null;
+      if (S.showDots && S.sweeps) for (i = 0; i < S.sweeps.length; i++) { var swv = S.sweeps[i]; if (S.sideF === 'long' && !swv.long) continue; if (S.sideF === 'short' && swv.long) continue; var sd0 = Math.hypot(S.X(swv.t / 1000) - mx, S.Y(swv.p) - my); if (sd0 < 16 && (!bsw || sd0 < bsw.d)) bsw = { d: sd0, s: swv }; }
+      if (!best && !bev && !bsw) { tip.style.display = 'none'; return; }
       var h = '';
-      if (best) { var s2 = best.s; h += '<b>' + fpx(s2.price) + '</b> — <span class="' + (s2.long ? 'l' : 's') + '">' + (s2.long ? 'longs get liquidated here' : 'shorts get liquidated here') + '</span><br>~' + money(s2.w) + ' waiting'; }
-      if (bev) { var e2 = bev.e; h += (h ? '<br>' : '') + '<span class="' + (e2.side === 'long_liquidated' ? 'l' : 's') + '">' + (e2.side === 'long_liquidated' ? 'LONG' : 'SHORT') + ' liquidated</span> ' + money(e2.notional) + ' · ' + e2.exchange + (nNear > 1 ? ' <span style="color:#c2f64a">+' + (nNear - 1) + ' more — click to list</span>' : ''); }
+      if (best) { var s2 = best.s; h += '<b>' + fpx(s2.price) + '</b> — <span class="' + (s2.long ? 'l' : 's') + '">projected ' + (s2.long ? 'long' : 'short') + '-liq zone</span><br>' + (s2.long ? 'longs' : 'shorts') + ' would liquidate here'; }
+      if (bsw) { var sw3 = bsw.s; h += (h ? '<br>' : '') + '<span class="' + (sw3.long ? 'l' : 's') + '">price swept a projected ' + (sw3.long ? 'long' : 'short') + ' zone</span>'; }
+      else if (bev) { var e2 = bev.e; h += (h ? '<br>' : '') + '<span class="' + (e2.side === 'long_liquidated' ? 'l' : 's') + '">' + (e2.side === 'long_liquidated' ? 'LONG' : 'SHORT') + ' liquidated</span> ' + money(e2.notional) + ' · ' + e2.exchange + (nNear > 1 ? ' <span style="color:#c2f64a">+' + (nNear - 1) + ' more — click to list</span>' : ''); }
       tip.innerHTML = h; tip.style.display = 'block';
       var tx = mx + 14, ty = my + 12;
       if (tx + tip.offsetWidth > r.width - 4) tx = mx - tip.offsetWidth - 12;
@@ -437,8 +446,10 @@
       }
       if (S.sel.type === 'ev') { var e = S.sel.ref, lg = e.side === 'long_liquidated';
         h += '<span class="' + (lg ? 'l' : 's') + '">' + (lg ? 'LONG' : 'SHORT') + ' liquidation</span> <b>' + money(e.notional) + '</b> @ <b>' + fpx(e.price) + '</b><br>' + String(e.exchange).toUpperCase() + ' · ' + ago2(e.ts);
+      } else if (S.sel.type === 'swp') { var sw = S.sel.ref;
+        h += '<span class="' + (sw.long ? 'l' : 's') + '">price swept a projected ' + (sw.long ? 'long' : 'short') + ' leverage zone</span> @ <b>' + fpx(sw.p) + '</b><br>the model projected ' + (sw.long ? 'long' : 'short') + ' liquidations clustering here (estimated, not measured) · ' + ago2(sw.t);
       } else { var pl2 = S.sel.ref;
-        h += '<span class="' + (pl2.long ? 'l' : 's') + '">' + (pl2.long ? 'long' : 'short') + ' liquidation pool</span> <b>~' + money(pl2.w) + '</b> @ <b>' + fpx(pl2.price) + '</b><br>' + (pl2.long ? 'longs get liquidated here' : 'shorts get liquidated here') + ' · building since ' + ago2(pl2.t0 * 1000) + (S.price > 0 ? ' · ' + (((pl2.price - S.price) / S.price * 100) >= 0 ? '+' : '') + ((pl2.price - S.price) / S.price * 100).toFixed(1) + '% from price' : '');
+        h += '<span class="' + (pl2.long ? 'l' : 's') + '">projected ' + (pl2.long ? 'long' : 'short') + ' liquidation zone</span> @ <b>' + fpx(pl2.price) + '</b><br>' + (pl2.long ? 'longs' : 'shorts') + ' would liquidate here if price reaches it (estimated leverage exposure, not realized) · building since ' + ago2(pl2.t0 * 1000) + (S.price > 0 ? ' · ' + (((pl2.price - S.price) / S.price * 100) >= 0 ? '+' : '') + ((pl2.price - S.price) / S.price * 100).toFixed(1) + '% from price' : '');
       }
       el2.innerHTML = h + '<button type="button" class="hm-selx" title="Clear selection">×</button>';
       el2.style.display = 'block';
@@ -450,6 +461,7 @@
       if (!S.X) return;
       var r = cv.getBoundingClientRect(), mx = ev.clientX - r.left, my = ev.clientY - r.top;
       var hits = [], i;
+      if (S.showDots && S.sweeps) { var swH = null; for (i = 0; i < S.sweeps.length; i++) { var sw4 = S.sweeps[i]; if (S.sideF === 'long' && !sw4.long) continue; if (S.sideF === 'short' && sw4.long) continue; var d4 = Math.hypot(S.X(sw4.t / 1000) - mx, S.Y(sw4.p) - my); if (d4 < 16 && (!swH || d4 < swH.d)) swH = { d: d4, s: sw4 }; } if (swH) { S.sel = { type: 'swp', ref: swH.s }; showSel(); sched(); return; } }
       if (S.showDots) for (i = 0; i < S.events.length; i++) { var e = S.events[i], ex = S.X(e.ts / 1000), ey = S.Y(e.price); var dd = Math.hypot(ex - mx, ey - my); if (dd < 16) hits.push({ d: dd, e: e }); }
       if (hits.length === 1) { S.sel = { type: 'ev', ref: hits[0].e }; showSel(); sched(); return; }
       if (hits.length > 1) { hits.sort(function (a, b) { return b.e.notional - a.e.notional; }); S.sel = { type: 'clu', refs: hits.map(function (x) { return x.e; }) }; showSel(); sched(); return; }
@@ -787,12 +799,11 @@
       if (!S || !stage.parentNode) return;
       if (j && j.premium) return; // full access for premium members
       var PREVIEW = 60, left = PREVIEW, signedIn = j && j.signedIn;
-      var rib = el('div', 'hm-prevrib'); rib.style.cssText = 'position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:7;background:rgba(10,12,16,.92);border:1px solid #c2f64a55;border-radius:20px;padding:5px 14px;font:11px "Space Mono",monospace;color:#c2f64a;pointer-events:none';
-      rib.textContent = 'Premium preview — locks in ' + left + 's'; stage.appendChild(rib);
-      var iv = setInterval(function () { left--; if (rib) rib.textContent = 'Premium preview — locks in ' + Math.max(0, left) + 's'; if (left <= 0) { try { clearInterval(iv); } catch (e) {} } }, 1000);
-      S.timers.push(iv);
-      var t = setTimeout(function () {
-        if (!S || !stage.parentNode) return; try { clearInterval(iv); } catch (e) {} if (rib && rib.parentNode) rib.parentNode.removeChild(rib);
+      var LOCKKEY = 'mp_hm_lock', COOLDOWN = 12 * 3600 * 1000; // one short preview per 12h; a refresh after it locks stays locked
+      function lockNow() { // paint the paywall immediately (no preview)
+        if (!S || !stage.parentNode) return;
+        if (stage.querySelector('.hm-paywall')) return;
+        try { if (!window.__hmGateLogged) { window.__hmGateLogged = 1; window.__mpTrack && window.__mpTrack('premgate', 'Heatmap'); } } catch (e) {} // ops feed: a non-premium visitor hit the heatmap premium wall
         var ov = el('div', 'hm-paywall'); ov.style.cssText = 'position:absolute;inset:0;z-index:9;background:rgba(7,9,12,.9);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:10px;cursor:pointer';
         ov.innerHTML = '<div style="font:700 11px \'Space Mono\',monospace;letter-spacing:.16em;color:#c2f64a">MARGINPAD PREMIUM</div>' +
           '<div style="font:800 22px \'Familjen Grotesk\',system-ui,sans-serif;color:#fff;max-width:440px;line-height:1.22">Unlock the live liquidation heatmap</div>' +
@@ -800,6 +811,17 @@
           '<span class="hm-pw-btn" style="margin-top:10px;background:linear-gradient(180deg,#c2f64a,#a6e02f);color:#0a0b0d;border-radius:12px;padding:13px 26px;font-size:15px;font-weight:800;box-shadow:0 10px 30px rgba(194,246,74,.24)">See Premium plans</span>';
         stage.appendChild(ov);
         ov.addEventListener('click', function () { location.href = '/premium'; });
+      }
+      var lockedAt = 0; try { lockedAt = +localStorage.getItem(LOCKKEY) || 0; } catch (e) {}
+      if (lockedAt && Date.now() - lockedAt < COOLDOWN) { lockNow(); return; } // already used the preview recently → stay locked across refreshes
+      var rib = el('div', 'hm-prevrib'); rib.style.cssText = 'position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:7;background:rgba(10,12,16,.92);border:1px solid #c2f64a55;border-radius:20px;padding:5px 14px;font:11px "Space Mono",monospace;color:#c2f64a;pointer-events:none';
+      rib.textContent = 'Premium preview — locks in ' + left + 's'; stage.appendChild(rib);
+      var iv = setInterval(function () { left--; if (rib) rib.textContent = 'Premium preview — locks in ' + Math.max(0, left) + 's'; if (left <= 0) { try { clearInterval(iv); } catch (e) {} } }, 1000);
+      S.timers.push(iv);
+      var t = setTimeout(function () {
+        if (!S || !stage.parentNode) return; try { clearInterval(iv); } catch (e) {} if (rib && rib.parentNode) rib.parentNode.removeChild(rib);
+        try { localStorage.setItem(LOCKKEY, String(Date.now())); } catch (e) {} // remember the lock so a refresh doesn't grant a fresh preview
+        lockNow();
       }, PREVIEW * 1000);
       S.timers.push(t);
     });
