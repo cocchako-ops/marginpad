@@ -1,6 +1,14 @@
 /* MarginPad homepage bundle — extracted from app/index.html inline blocks (order preserved).
    This file is the SOURCE (edited in place like mp-trade.js); app/index.html references it. */
 
+/* Is this ticket a Balance-Mode trade? Gold/BAL badge derive from the DURABLE mp_bal_tags map (id->sid), NOT the
+   e.bal field on the journal entry — the server journal sync strips e.bal, so keying the render off it made the
+   gold flicker on/off every re-render (the ticket list rebuilds innerHTML on every price tick). The tag map is
+   never stripped, so this is stable across ALL renders. e.bal is still the fast path so a brand-new open is gold
+   instantly. Cached 1.2s to avoid a localStorage parse per ticket per tick. Defined once (guard) — home.js loads
+   before mp-trade.js/mp-auth.js. */
+window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return function (e) { if (!e) return false; if (e.bal) return true; if (!e.id) return false; var n = Date.now(); if (!c || n - t > 1200) { try { c = JSON.parse(localStorage.getItem('mp_bal_tags') || '{}') || {}; } catch (x) { c = {}; } t = n; } return !!c[e.id]; }; })();
+
 ;/* extreme-leverage warning — non-blocking, throttled once/6h (mterm defaults to 1000×, so a blocking
    confirm on every open would kill the one-tap flow the terminal is built around). Fires on lev≥500;
    teaches that the position liquidates ~0.1% from entry (why skyfall/whyme lost big wins instantly). */
@@ -30,6 +38,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       // non-crypto markets: metals (Bybit linear XAUUSDT/XAGUSDT) + indices/forex (Gate futures) — always tradeable regardless of the Bybit-only gate; price/klines resolve via the worker fallback chain (REST poll, no WS — fine for slower-moving assets)
       var MKT={XAU:1,XAG:1,SPX500:1,NAS100:1,US30:1,GER40:1,EURUSD:1,GBPUSD:1};
       window.mpIsBybit=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return MKT[sym]?true:_byb0(sym);};
+      // Per-coin max leverage — only the deepest-liquidity coins get 1000×; illiquid tokens, metals, indices & forex are capped (roughly what real exchanges allow). Default = 50×.
+      // Per-trade taker fee, applied ONLY at close (live P&L stays clean → no -99% at open). Capped so the round-trip fee can never exceed ~20% of margin at any leverage: realistic 0.055% up to ~180×, tapering above so 1000× fees don't nuke the position.
+      window.mpFeeRate=function(lev){return Math.min(0.00055,0.1/Math.max(1,+lev||1));};
+      window.mpMaxLev=(function(){var M={BTC:1000,ETH:1000,SOL:1000,XRP:1000,BNB:1000,DOGE:1000,HYPE:1000,ADA:1000,AVAX:1000,LINK:1000,LTC:1000,DOT:200,TRX:1000,TON:1000,SUI:1000,BCH:200,NEAR:200,PEPE:1000,SHIB:200,WIF:200,ATOM:100,APT:100,ARB:100,OP:100,MATIC:100,POL:100,INJ:100,SEI:100,TIA:100,FIL:100,ETC:100,UNI:100,AAVE:100,RUNE:100,LDO:100,FTM:100,ALGO:100,HBAR:100,ICP:100,IMX:100,STX:100,RENDER:100,FET:100,ENA:100,ONDO:100,JUP:100,PYTH:100,STRK:100,ORDI:100,BONK:100,FLOKI:100,GALA:100,SAND:100,MANA:100,AXS:100,GRT:100,CRV:100,COMP:100,DYDX:100,WLD:100,KAS:100,TAO:100,XLM:100,VET:100,XAU:20,XAG:20,SPX500:20,NAS100:20,US30:20,GER40:20,EURUSD:50,GBPUSD:50};return function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');return M[sym]||50;};})();
       var seen={},out=[];function add(s){s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(s&&!seen[s]&&window.mpIsBybit(s)){seen[s]=1;out.push(s);}}
       Object.keys(MKT).forEach(add);                          // gold / silver / indices / forex group first
       base.forEach(add);                                      // then crypto majors (only those Bybit actually has)
@@ -76,10 +88,15 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function syncLevR(){if(!levR||!levEl)return;var v=parseFloat(levEl.value);if(isFinite(v)&&v>0){levR.value=String(levToPos(v));levFill();}}
   function levRisk(){var l=document.getElementById('planLev'),f=l&&l.closest('.pt2-fields');if(f)f.classList.toggle('risky',num('planLev')>50);}
   var _levHT=0;
-  if(levEl)levEl.addEventListener('input',function(){if(parseFloat(levEl.value)>1000){levEl.value='1000';var _n=Date.now();if(_n-_levHT>4000){_levHT=_n;if(window.mpLimitToast)window.mpLimitToast('Max leverage is 1000×.');}}syncLevR();levRisk();});
+  function planCap(){var s=(document.getElementById('planSym')||{}).value||'';return (window.mpMaxLev?window.mpMaxLev(s):1000);}
+  function applyLevCap(loud){var cap=planCap();if(!levEl)return;if(parseFloat(levEl.value)>cap){levEl.value=String(cap);syncLevR();levRisk();try{calc();}catch(_){}var _n=Date.now();if(loud&&_n-_levHT>3000){_levHT=_n;if(window.mpLimitToast)window.mpLimitToast('Max leverage for '+((document.getElementById('planSym')||{}).value||'this coin')+' is '+cap+'×.');}}var h=document.getElementById('planLevMax');if(h)h.textContent='max '+cap+'×';}
+  window.mpApplyLevCap=applyLevCap;
+  if(levEl)levEl.addEventListener('input',function(){var cap=planCap();if(parseFloat(levEl.value)>cap){levEl.value=String(cap);var _n=Date.now();if(_n-_levHT>3000){_levHT=_n;if(window.mpLimitToast)window.mpLimitToast('Max leverage for '+((document.getElementById('planSym')||{}).value||'this coin')+' is '+cap+'×.');}}syncLevR();levRisk();});
   var _levRaf=false;
-  if(levR)levR.addEventListener('input',function(){if(!levEl)return;levEl.value=String(posToLev(parseFloat(levR.value)));levFill();levRisk();if(_levRaf)return;_levRaf=true;requestAnimationFrame(function(){_levRaf=false;calc();});});
-  syncLevR();levRisk();
+  if(levR)levR.addEventListener('input',function(){if(!levEl)return;levEl.value=String(Math.min(planCap(),posToLev(parseFloat(levR.value))));levFill();levRisk();if(_levRaf)return;_levRaf=true;requestAnimationFrame(function(){_levRaf=false;calc();});});
+  var _pSymCap=document.getElementById('planSym');if(_pSymCap)_pSymCap.addEventListener('change',function(){applyLevCap(true);});
+  syncLevR();levRisk();setTimeout(function(){applyLevCap(false);},200);
+  (function(){var row=document.querySelector('.pt2-px');if(!row||document.getElementById('mpBalNote'))return;var note=document.createElement('div');note.id='mpBalNote';note.className='mp-balnote';note.hidden=true;note.innerHTML='<span class="mbn-dot"></span>Balance Mode ON';row.parentNode.appendChild(note);function upd(){var on=false;try{var c=JSON.parse(localStorage.getItem('mp_balmode')||'null');on=!!(c&&c.on);}catch(e){}note.hidden=!on;}upd();window.addEventListener('mp-balmode',upd);window.addEventListener('storage',function(e){if(e.key==='mp_balmode')upd();});setTimeout(upd,800);})(); // "Balance Mode ON" tag in the LIVE-price row — reads localStorage directly so it doesn't depend on mp-auth (defer) being loaded yet
   var advChk=document.getElementById('planAdvChk');
   if(advChk)advChk.addEventListener('change',function(){var ai=document.getElementById('planAdvIn');if(ai)ai.hidden=!advChk.checked;
     if(advChk.checked){window._mpSltpHidden=false;try{ensureDrag();}catch(e){}var sl=document.getElementById('planSlOpt'),tp=document.getElementById('planTpOpt'),entry=(window.mpPlanLive&&+window.mpPlanLive.price)||0,seg=document.getElementById('planSeg'),onb=seg&&seg.querySelector('button.on'),lng=!(onb&&onb.getAttribute('data-side')==='short'),dp=(entry>=1?2:6);
@@ -145,7 +162,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   // REST is only a FALLBACK: prices[] is shared with the live WS feed (window.mpLivePrices). Never clobber a
   // fresh WS tick with the slower/edge-cached /api/price value — that mismatch was the ±$1k position flicker.
   function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
-  function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-((+e.qty||0)*(e.entry+live)*(+e.feeRate||0))-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L — legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
+  function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L — legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open positions cap at -99% (never show -100% until actually liquidated/closed) */return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
   function checkClose(e,m){if(e.status!=='open')return false;var dir=m.long?1:-1;
     // ROOT-CAUSE GUARD (proven from [LIQ-DECISION] logs): only decide an exit when there is a REAL market price for the
     // symbol. When prices[sym] is unset/seed, metrics() falls back to EACH trade's OWN entry — so two open trades on the
@@ -154,7 +171,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     // 1000× entry (e.g. 0.0465 vs 0.0237) → −49% → phantom liquidation. Display P&L can use the entry fallback; liquidation must NOT.
     var _spx=prices[e.sym]; if(!_spx||!(+_spx.p>0)||_spx.seed)return false;
     var px=ccPx(e.sym,m.live);                                 // spike-validated: a lone >2.5% bad print can't fire an exit
-    try{var _tb=window.__mpTicks||(window.__mpTicks={});var _ta=_tb[e.sym]||(_tb[e.sym]=[]);_ta.push({t:Date.now(),rawLive:+m.live,px:+px,priceMap:(prices[e.sym]?+prices[e.sym].p:null),seed:(prices[e.sym]&&prices[e.sym].seed)||false});if(_ta.length>25)_ta.shift();}catch(_){} // DIAG: per-symbol tick trail
+    if(window.__mpDebug){try{var _tb=window.__mpTicks||(window.__mpTicks={});var _ta=_tb[e.sym]||(_tb[e.sym]=[]);_ta.push({t:Date.now(),rawLive:+m.live,px:+px,priceMap:(prices[e.sym]?+prices[e.sym].p:null),seed:(prices[e.sym]&&prices[e.sym].seed)||false});if(_ta.length>25)_ta.shift();}catch(_){}} // DIAG (opt-in): per-symbol tick trail — was allocating for every open position every tick
     var clamp=function(p){return (+e.margin>0&&p!=null&&p<-(+e.margin))?-(+e.margin):p;}; // a paper loss can never exceed the isolated margin (an SL set BEYOND liq used to book more than −margin)
     var pnlAt=function(exit){return (e.qty!=null&&isFinite(e.qty))?e.qty*(exit-e.entry)*dir-((+e.qty||0)*(e.entry+exit)*(+e.feeRate||0))-(+e.fund||0):null;};
     var tp=e.tp!=null&&(m.long?px>=e.tp:px<=e.tp);
@@ -178,7 +195,14 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       if(e.entry>0&&Math.abs(m.liq-e.entry)/e.entry<0.003){_clArm[e.id]=(_clArm[e.id]||0)+1;if(_clArm[e.id]<2)return false;}
       _clArm[e.id]=0;
       e.status='loss';e.exit=m.liq;e.liquidated=true;e.pnl=(+e.margin>0)?-(+e.margin):pnlAt(m.liq);} // liquidated = lose the full margin
-    e.closeTs=Date.now();notify(e,tp?'tp':(e.liquidated?'liq':'sl'));return true;}
+    e.closeTs=Date.now();notify(e,tp?'tp':(e.liquidated?'liq':'sl'));if(e.src==='srv')queueNudge(e.id);return true;}
+  var _nudgeIds={},_nudgeT=null;
+  // A srv (server-filled, signed-in) position that auto-closes LOCALLY must tell the server so it settles the SAME
+  // position at its OWN level (candle-check) and stamps sc — otherwise the client's local close syncs WITHOUT sc and the
+  // trade never counts on the paid board. Debounced: one nudge per close-burst; the server rate-limits (1/3s) + verifies
+  // from its own candles (no client price/reason trusted). keepalive so a tab close still delivers it. Fire-and-forget:
+  // the server is authoritative and pullTrades reconciles the sc'd close (local-closed display is kept until then).
+  function queueNudge(id){if(!id)return;_nudgeIds[String(id)]=1;if(_nudgeT)return;_nudgeT=setTimeout(function(){var ids=Object.keys(_nudgeIds);_nudgeIds={};_nudgeT=null;if(!ids.length)return;try{fetch('/api/trade/nudge',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',keepalive:true,body:JSON.stringify({ids:ids})}).catch(function(){});}catch(e){}},500);}
   function buzz(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
   window.mpBuzz=buzz;
   function notify(e,kind){if(notified[e.id])return;notified[e.id]=true;
@@ -189,12 +213,12 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     try{if('Notification'in window&&Notification.permission==='granted')new Notification(sym+' '+side+' — '+t,{body:'Closed at '+fp(e.exit)+(pnl?' · PnL '+pnl:''),tag:'mp-'+e.id});}catch(_){}
     try{window.__mpTrack&&window.__mpTrack('close',sym+(kind==='liq'?' — liquidated':kind==='tp'?' — take-profit':' — stop-loss')+(pnl?' '+pnl:''));}catch(_){}}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
-    return '<div class="pp '+cls+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+fp(m.live)+'</span></div>'
+    return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live">'+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-meta">Entry <b>'+fp(e.entry)+'</b> · Size <b>'+(e.qty!=null?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:5}):'—')+'</b> · '+(e.lev||1)+'×<br>Notional <b>'+(m.notional!=null?money(m.notional):'—')+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')<br>SL <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'—'))+'</b> · TP <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'—'))+'</b> · '+dur(Date.now()-e.ts)+' · '+hm(e.ts)+'</div>'
       +'<div class="pp-btns"><button class="cl" data-act="close" data-id="'+e.id+'">Close</button><button data-act="edit" data-id="'+e.id+'">Modify</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
   function closedCard(e){var win=e.status==='win',cls=win?'pf':'ls';
-    return '<div class="pp '+cls+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span><span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+'</span></div>'
+    return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?((+e.pnl>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span></div>'
       +'<div class="pp-meta">'+fp(e.entry)+' → '+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+((+e.margin>0)?' · Size <b>'+money(+e.margin)+'</b>':'')+(e.partial?' · <b>'+e.partial+'%</b>':'')+(e.closeTs?' · '+dur(e.closeTs-e.ts):'')+'</div>'
       +'<div class="pp-btns"><button data-act="reopen" data-id="'+e.id+'">Reopen</button><button data-act="del" data-id="'+e.id+'">✕</button></div></div>';}
@@ -210,7 +234,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var _prevIds=_lastSig?_lastSig.split(','):[];
     _lastSig=list.map(function(e){return e.id;}).join(',');
     el.innerHTML=list.map(function(e,idx){var m=metrics(e),long=m.long;
-      return '<div class="pt-last '+_tkCls(m)+'" data-tid="'+e.id+'">'
+      return '<div class="pt-last '+_tkCls(m)+(window.mpBalTkt(e)?' pt-gold':'')+'" data-tid="'+e.id+'">'
         +'<div class="ptl-top"><span class="ptl-sym">'+esc(e.sym||'—')+'</span><span class="ptl-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="ptl-lev">'+(e.lev||1)+'×</span><span class="ptl-live">● <b class="ptl-px">'+fp(m.live)+'</b></span></div>'
         +'<div class="ptl-pnl"><span class="big">'+_tkPnl(m)+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span><button type="button" class="ptl-close" data-ptl-close="'+e.id+'">Close</button></div>'
         +'<div class="ptl-cut"></div>'
@@ -227,7 +251,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var list=open.slice(-5).reverse(),sig=list.map(function(e){return e.id;}).join(',');
     if(sig!==_lastSig){renderLast();return;} // a trade opened/closed → structural rebuild (re-animates once, intentionally)
     list.forEach(function(e){var row=el.querySelector('.pt-last[data-tid="'+e.id+'"]');if(!row)return;var m=metrics(e);
-      var cls='pt-last '+_tkCls(m);if(row.className!==cls)row.className=cls;
+      var pnlc=_tkCls(m);if(!row.classList.contains(pnlc)){row.classList.remove('pf','ls','be');row.classList.add(pnlc);} // swap ONLY the pnl state class — the old wholesale row.className='pt-last '+pnlc dropped pt-gold every tick (Balance Mode gold on the small ticket)
       var px=row.querySelector('.ptl-px');if(px){var pv=fp(m.live);if(px.textContent!==pv)px.textContent=pv;}
       var big=row.querySelector('.big');if(big){var bv=_tkPnl(m);if(big.textContent!==bv)big.textContent=bv;}
       var roe=row.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
@@ -240,6 +264,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var m=metrics(e);e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);buzz([22]); // haptic on manual close
     window._mpSltpHidden=true;store(d);renderLast();renderPos();drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();});
   var _posSig='';
+  // DEAD CODE (2026-07-26): #ptPosList + #ptPosTabs are in NO markup (app/index.html, dist/app.html) — this render + openCard(the terminal copy)/closedCard here NO-OP (getElementById returns null). The LIVE small tickets are #ptLastTrade (renderLast, .pt-last). Kept only so the renderPos() calls in the close handlers stay harmless no-ops; delete in the cleanup round. (Caused a mis-diagnosis of the Balance-Mode gold bug — the real render was renderLast.)
   function renderPos(d0){var el=document.getElementById('ptPosList');if(!el)return;var d=d0||load();
     // same pattern as renderLastLive: rebuild the DOM only when the SET of cards changes (open/close/tab switch);
     // otherwise update the live numbers IN PLACE. The old unconditional innerHTML rebuild every second killed hover
@@ -249,7 +274,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       if(sig!==_posSig||!o.length){_posSig=sig;el.innerHTML=o.length?o.slice().reverse().map(openCard).join(''):'<div class="pp-empty">No open positions — open one above ↑</div>';return;}
       if(el.querySelector('button:hover'))return; // leave the DOM alone while a button is hovered → no lost tap
       o.forEach(function(e){var card=el.querySelector('.pp[data-id="'+e.id+'"]');if(!card)return;var m=metrics(e);
-        var cls='pp '+(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));if(card.className!==cls)card.className=cls;
+        var pnlc=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));if(!card.classList.contains(pnlc)){card.classList.remove('pf','ls','be');card.classList.add(pnlc);} // swap ONLY the pnl state class — the old wholesale card.className='pp '+pnlc dropped pp-gold EVERY tick, so balance tickets flickered gold→normal on each price change (the real root cause behind 5 reports; earlier fixes only touched the full-render path, not this in-place tick update)
         var lv=card.querySelector('.pp-live');if(lv){var lvv=fp(m.live);if(lv.textContent!==lvv)lv.textContent=lvv;}
         var big=card.querySelector('.big');if(big){var bv=(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));if(big.textContent!==bv)big.textContent=bv;}
         var roe=card.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
@@ -338,9 +363,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function loadKlines(){var sym=formSym();chartSym=sym;var tf=chartTf;try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){}bars=[];loadingMore=false;noMore=false;
     var ck=sym+'|'+tf,cached=klCache[ck],_csT=performance.now(); // UX budget: TF/symbol switch → candles painted
     if(cached&&cached.length&&candle){renderKlines(cached);try{if(window.__mpCsWarm&&window.__mpUxm)window.__mpUxm('cs',performance.now()-_csT);}catch(e){}} // INSTANT from the preload cache — no flash on a TF/symbol switch
-    fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
+    var _pk=null;try{if(window.__preK){var _hit=(window.__preK.key===ck);if(_hit)_pk=window.__preK.p;window.__preR=_hit?'hit':'miss';window.__preK=null;}}catch(e){}/* cold-load waterfall: an inline <head> preload may have fired this exact klines request in parallel with the bundle download — pick up its promise instead of a fresh serial fetch. no-store means the browser won't dedupe, so the handoff MUST be the promise not the cache. DRIFT DETECTOR: __preR = hit (key matched) or miss (inline drifted from what loadKlines asks → a wasted request on EVERY cold load, silently, forever — the exact thing this optimization is supposed to REDUCE). __preR rides the perf probe → AE 'preload' rows, so drift surfaces as a metric with a denominator instead of quietly burning infra. consume __preK once either way. */
+    (_pk||fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})).then(function(kd){
       if(sym!==chartSym||tf!==chartTf)return; // user switched again before this resolved → drop the stale response
-      if(kd&&kd.length){klCache[ck]=kd;clearNoData();renderKlines(kd);if(!(cached&&cached.length))try{if(window.__mpCsWarm&&window.__mpUxm)window.__mpUxm('cs',performance.now()-_csT);}catch(e){}try{window.__mpCsWarm=1;}catch(e){}} // first load is a COLD page-load fetch, not a switch — the 100ms budget measures switches onlyelse if(!cached){hideSkel();showNoData(sym);} // empty klines = coin our feed can't resolve → show a message, don't leave a silent blank/frozen chart
+      if(kd&&kd.length){klCache[ck]=kd;clearNoData();renderKlines(kd);if(!(cached&&cached.length)){try{if(window.__mpUxm){if(window.__mpCsWarm)window.__mpUxm('cs',performance.now()-_csT);else window.__mpUxm('cc',performance.now());}}catch(e){}}try{window.__mpCsWarm=1;}catch(e){}/* cc = COLD first-chart telemetry: performance.now() = nav->first render (the first-impression time ux-chart deliberately skips). Fires once per page load (first cold render, __mpCsWarm still falsy). */} // first load is a COLD page-load fetch, not a switch — the 100ms budget measures switches onlyelse if(!cached){hideSkel();showNoData(sym);} // empty klines = coin our feed can't resolve → show a message, don't leave a silent blank/frozen chart
       preloadTfs(sym,tf); // warm the other timeframes in the background so the next switch is instant
     }); }
   // quietly re-sync candles with the true exchange OHLC WITHOUT scrolling the view — self-heals a phantom wick a bad live
@@ -489,13 +515,13 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     updateEdges();
     if(!zoneEl){zoneEl=document.createElement('div');zoneEl.className='ptt-zones';host.appendChild(zoneEl);}
     var pos=load().filter(function(e){return e.status==='open'&&e.sym===chartSym;});
-    if(!pos.length){if(zoneEl.childNodes.length)zoneEl.innerHTML='';return;}
+    if(!pos.length){if(zoneEl._h){zoneEl._h='';zoneEl.innerHTML='';}return;}
     var H=host.clientHeight||0,html='';
     pos.forEach(function(e){var long=e.side!=='short',y;try{y=candle.priceToCoordinate(liqOf(e));}catch(_){y=null;}
       if(y==null||!isFinite(y))return;
       if(long)html+='<div class="zone" style="top:'+Math.max(0,y).toFixed(1)+'px;height:'+Math.max(0,H-y).toFixed(1)+'px"></div>';
       else html+='<div class="zone" style="top:0;height:'+Math.max(0,Math.min(H,y)).toFixed(1)+'px"></div>';});
-    zoneEl.innerHTML=html;}
+    if(zoneEl._h!==html){zoneEl._h=html;zoneEl.innerHTML=html;}} // only touch the DOM when the zone geometry actually changed — was an unconditional innerHTML rebuild at ~60fps
   window.mpDrawLines=drawLines; // let the My Trades drawer refresh the chart lines the instant a position is closed/edited
   function chartHeader(){var px=document.getElementById('ptChartPx'),ch=document.getElementById('ptChartChg'),pd=window.mpPlanLive;var p=(pd&&pd.sym===chartSym&&pd.price>0)?pd.price:(prices[chartSym]&&prices[chartSym].p),cg=(pd&&pd.sym===chartSym)?pd.chg:0;if(p>0){if(px){if(window.mpSmoothPx)window.mpSmoothPx(px,p,fp);else px.textContent=fp(p);}if(ch){ch.textContent=((cg>=0?'+':'')+(+cg||0).toFixed(2))+'%';ch.style.color=cg>=0?'var(--up)':'var(--red)';}}
     // the on-chart live-price label colour follows the 24h change (consistent) — never the current TF candle's up/down
@@ -659,10 +685,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function tsf(t){if(!t)return '';var d=new Date(t),MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return d.getDate()+' '+MO[d.getMonth()]+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
-  function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-((+e.qty||0)*(e.entry+live)*(+e.feeRate||0))-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L — legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){if(pnl!=null&&pnl<-margin)pnl=-margin;if(roe<-1)roe=-1;}return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,margin:margin};}
+  function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L — legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open positions cap at -99% (never show -100% until actually liquidated/closed) */return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,margin:margin};}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
-    return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e,true)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
+    return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+'" data-id="'+e.id+'">'+ppActions(e,true)
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
@@ -712,8 +738,8 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     },true);}
 
   function closedCard(e){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
-    return '<div class="pp '+cls+'" data-id="'+e.id+'">'+ppActions(e)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span><span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
+    return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+'" data-id="'+e.id+'">'+ppActions(e)
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?(((+e.pnl)>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span>'+((e.margin&&e.pnl!=null)?'<span class="roe">ROE '+pctS(((+e.pnl)/(+e.margin||1))*100)+'</span>':'')+'</div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
@@ -733,23 +759,27 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var m=metrics(e),closed=(e.status==='win'||e.status==='loss'),long=e.side!=='short';
     var pnl=closed?(+e.pnl||0):(m.pnl||0),roe=closed?((e.margin&&e.pnl!=null)?(+e.pnl)/(+e.margin):0):m.roe;
     var entry=e.entry,markpx=closed?(e.exit!=null?e.exit:(e.status==='win'?e.tp:e.stop)):m.live,win=pnl>=0;
+    var prem=(window._mpPrem===true),GOLD='#f0c35a',GOLD2='#ffd97a';
     var W=1080,H=1080,c=document.createElement('canvas');c.width=W;c.height=H;var x=c.getContext('2d');
-    var g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0d1117');g.addColorStop(1,'#070809');x.fillStyle=g;x.fillRect(0,0,W,H);
+    var g=x.createLinearGradient(0,0,0,H);if(prem){g.addColorStop(0,'#171105');g.addColorStop(0.55,'#0a0a0b');g.addColorStop(1,'#000');}else{g.addColorStop(0,'#0d1117');g.addColorStop(1,'#070809');}x.fillStyle=g;x.fillRect(0,0,W,H);
     var ac=win?'#2ebd85':'#ff6258';
-    var rgl=x.createRadialGradient(W*0.5,H*0.42,80,W*0.5,H*0.42,660);rgl.addColorStop(0,win?'rgba(46,189,133,0.16)':'rgba(255,98,88,0.16)');rgl.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=rgl;x.fillRect(0,0,W,H);
-    x.strokeStyle='rgba(255,255,255,0.08)';x.lineWidth=2;rr(x,40,40,W-80,H-80,28);x.stroke();
-    x.textBaseline='alphabetic';x.fillStyle='#c2f64a';x.font='700 38px Arial';x.fillText('MARGINPAD',70,120);
+    var rgl=x.createRadialGradient(W*0.5,H*0.42,80,W*0.5,H*0.42,660);rgl.addColorStop(0,prem?'rgba(240,195,90,0.15)':(win?'rgba(46,189,133,0.16)':'rgba(255,98,88,0.16)'));rgl.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=rgl;x.fillRect(0,0,W,H);
+    x.strokeStyle=prem?'rgba(240,195,90,0.55)':'rgba(255,255,255,0.08)';x.lineWidth=prem?3:2;rr(x,40,40,W-80,H-80,28);x.stroke();
+    if(prem){x.strokeStyle='rgba(240,195,90,0.22)';x.lineWidth=1.5;rr(x,54,54,W-108,H-108,22);x.stroke();}
+    x.textBaseline='alphabetic';x.fillStyle=prem?GOLD:'#c2f64a';x.font='700 38px Arial';x.fillText('MARGINPAD',70,120);
+    if(prem){var pw=x.measureText('MARGINPAD').width;x.fillStyle='rgba(240,195,90,0.16)';rr(x,70+pw+16,88,138,40,11);x.fill();x.fillStyle=GOLD2;x.font='800 22px Arial';x.fillText('PREMIUM',70+pw+31,116);}
     x.fillStyle='#6b7682';x.font='400 26px Arial';x.textAlign='right';x.fillText('marginpad.io',W-70,120);x.textAlign='left';
     x.fillStyle='#fff';x.font='800 92px Arial';x.fillText(e.sym||'—',70,252);
     var bs=(long?'LONG':'SHORT')+'  '+(e.lev||1)+'x';x.font='700 34px Arial';var bw=x.measureText(bs).width+44;
     x.fillStyle=long?'rgba(46,189,133,0.18)':'rgba(255,98,88,0.18)';rr(x,70,292,bw,60,14);x.fill();
     x.fillStyle=long?'#34d99a':'#ff7b72';x.fillText(bs,92,334);
     x.textAlign='center';x.fillStyle=ac;x.font='800 190px Arial';x.fillText((roe>=0?'+':'')+(roe*100).toFixed(2)+'%',W/2,628);
+    if(prem){x.strokeStyle=GOLD;x.lineWidth=3;x.beginPath();x.moveTo(W/2-120,662);x.lineTo(W/2+120,662);x.stroke();}
     x.fillStyle=win?'#9fe9c8':'#ffb3ad';x.font='700 58px Arial';x.fillText((pnl>=0?'+$':'-$')+Math.abs(pnl).toLocaleString('en-US',{maximumFractionDigits:2})+(closed?'':' (live)'),W/2,722);x.textAlign='left';
-    x.fillStyle='rgba(255,255,255,0.04)';rr(x,70,800,W-140,168,20);x.fill();
-    function kv(lbl,val,cx){x.fillStyle='#6b7682';x.font='400 29px Arial';x.fillText(lbl,cx,856);x.fillStyle='#fff';x.font='700 44px Arial';x.fillText(val,cx,914);}
+    x.fillStyle=prem?'rgba(240,195,90,0.05)':'rgba(255,255,255,0.04)';rr(x,70,800,W-140,168,20);x.fill();if(prem){x.strokeStyle='rgba(240,195,90,0.25)';x.lineWidth=1.5;rr(x,70,800,W-140,168,20);x.stroke();}
+    function kv(lbl,val,cx){x.fillStyle=prem?'#9a865a':'#6b7682';x.font='400 29px Arial';x.fillText(lbl,cx,856);x.fillStyle='#fff';x.font='700 44px Arial';x.fillText(val,cx,914);}
     kv(MT('jEntry','Entry'),fp(entry),110);kv(closed?MT('jExit','Exit'):MT('jMark','Mark'),fp(markpx),470);kv(MT('jStatus','Status'),closed?(win?'WIN':'LOSS'):'OPEN',830);
-    x.fillStyle='#4b545d';x.font='400 24px Arial';x.textAlign='center';x.fillText(MT('jPaperDisc','Paper trade · not financial advice'),W/2,1020);x.textAlign='left';
+    x.fillStyle=prem?'#8a7a52':'#4b545d';x.font='400 24px Arial';x.textAlign='center';x.fillText((prem?'Premium member · ':'')+MT('jPaperDisc','Paper trade · not financial advice'),W/2,1020);x.textAlign='left';
     return c;
   }
   function shareTicket(e){
@@ -773,15 +803,26 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       navigator.clipboard.write([item]).then(function(){toast(MT('jImgLinkCopied','Image + link copied'));},function(){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied','Link copied'));},function(){});});
     }catch(_){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied','Link copied'));},function(){});}
   }
-  function balCfg(){return (window.mpBal&&window.mpBal.cfg&&window.mpBal.cfg())||{on:false,start:10000,since:0};}
-  function balRealized(closed,since){return closed.reduce(function(s,e){if(since&&(+e.closeTs||0)<since)return s;return s+(+e.pnl||0);},0);}
-  function balAvail(){var bm=balCfg();if(!bm.on)return null;var data=jload();var open=data.filter(function(e){return e.status==='open';});var closed=data.filter(function(e){return e.status==='win'||e.status==='loss';});var openMargin=open.reduce(function(s,e){return s+(+e.margin||0);},0);return bm.start+balRealized(closed,bm.since)-openMargin;}
-  function balStrip(open,closed,unreal){var bm=balCfg();if(!bm.on)return '';
-    var realized=balRealized(closed,bm.since),openMargin=open.reduce(function(s,e){return s+(+e.margin||0);},0),equity=bm.start+realized+(unreal||0),avail=bm.start+realized-openMargin,pl=equity-bm.start,plc=pl>=0?'#34d99a':'#ff7b72';
-    function cell(l,v,col){return '<div style="flex:1"><div style="font:11px \'Space Mono\',monospace;color:#5c6b84">'+l+'</div><div style="font:700 13px \'Space Mono\',monospace;color:'+(col||'#e9e7df')+'">'+v+'</div></div>';}
-    return '<div class="jr-bal" style="background:#0d1117;border:1px solid #1c2431;border-left:3px solid #c2f64a;border-radius:12px;padding:11px 13px;margin:0 0 10px">'
-      +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><span style="font:700 9px \'Space Mono\',monospace;letter-spacing:.14em;color:#c2f64a">BALANCE MODE</span><span style="font:700 17px \'Space Mono\',monospace;color:'+plc+'">'+money(equity)+' <small style="font-size:10px;color:'+plc+'">'+(pl>=0?'+':'')+(bm.start>0?(pl/bm.start*100).toFixed(1):'0')+'%</small></span></div>'
-      +'<div style="display:flex;gap:10px">'+cell('Start',money(bm.start))+cell('Available',money(Math.max(0,avail)),avail<0?'#ff7b72':'#e9e7df')+cell('In trades',money(openMargin))+cell('Realized',(realized>=0?'+':'')+money(realized),realized>=0?'#34d99a':'#ff7b72')+'</div></div>';}
+  function balCfg(){return (window.mpBal&&window.mpBal.cfg&&window.mpBal.cfg())||{on:false,start:10000,since:0,sid:''};}
+  function balTags(){try{return JSON.parse(localStorage.getItem('mp_bal_tags')||'{}')||{};}catch(e){return {};}} // id -> sid map, survives ANY server journal sync (the e.bal field can be stripped when the server rewrites the journal for signed-in/premium users)
+  function balMine(e,sid,tags){return !!(sid&&e&&(e.bal===sid||(tags&&tags[e.id]===sid)));}
+  function balRealized(closed,sid,tags){return closed.reduce(function(s,e){return balMine(e,sid,tags)?s+(+e.pnl||0):s;},0);}
+  function balOpenMargin(open,sid,tags){return open.reduce(function(s,e){return balMine(e,sid,tags)?s+(+e.margin||0):s;},0);}
+  function balAvail(){var bm=balCfg();if(!bm.on)return null;var t=balTags(),data=load();var open=data.filter(function(e){return e.status==='open';});var closed=data.filter(function(e){return e.status==='win'||e.status==='loss';});return bm.start+balRealized(closed,bm.sid,t)-balOpenMargin(open,bm.sid,t);}
+  window.mpBalAvail=balAvail; // exposed so the plan-form "Balance Mode ON" notice can show available margin
+  document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-baltgl]');if(!t)return;e.preventDefault();e.stopPropagation();var c=(window.mpBal&&window.mpBal.cfg&&window.mpBal.cfg())||{on:false};if(!c.on&&window._mpPrem!==true){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show('Balance Mode');return;}if(window.mpBal&&window.mpBal.setCfg)window.mpBal.setCfg(!c.on);try{if(window.mpBuzz)window.mpBuzz([12]);}catch(_){}}); // My Trades Balance-Mode on/off toggle
+  function balHasTagged(){var bm=balCfg();if(!bm.on||!bm.sid)return false;var t=balTags(),d=load();for(var i=0;i<d.length;i++)if(balMine(d[i],bm.sid,t))return true;return false;} // has this Balance Mode session actually opened any trade yet? (load() = this IIFE's journal loader; jload() lives in OTHER IIFEs and was undefined here → threw → dead open button whenever Balance Mode was ON)
+  function balStrip(open,closed,unreal){var bm=balCfg();var prem=(window._mpPrem===true)||bm.on;if(!prem)return '';// show the card (with the on/off toggle) to premium members; hidden for everyone else
+    var _tgl='<button type="button" class="bal-tgl'+(bm.on?' on':'')+'" data-baltgl="1" title="Balance Mode '+(bm.on?'ON':'OFF')+'" aria-label="Toggle Balance Mode"><span class="bal-tgl-k"></span></button>';
+    if(!bm.on)return '<div class="jr-bal jr-bal-gold jr-bal-off"><div class="jrb-row" style="display:flex;align-items:center;gap:9px"><span style="font:700 9px \'Space Mono\',monospace;letter-spacing:.14em;color:#f0c35a">BALANCE MODE</span><span style="font-size:10.5px;color:#8a7a52;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">trade a real portfolio</span>'+_tgl+'</div></div>';
+    var _t=balTags(),realized=balRealized(closed,bm.sid,_t),openMargin=balOpenMargin(open,bm.sid,_t),myUnreal=open.reduce(function(s,e){if(!balMine(e,bm.sid,_t))return s;var mm=metrics(e);return s+(mm.pnl||0);},0),equity=bm.start+realized+myUnreal,pl=equity-bm.start,plc=pl>=0?'#34d99a':'#ff7b72';// only Balance-Mode-tagged trades count toward realized/margin/equity
+    function mK(n){n=+n||0;var g=n<0?'-':'',a=Math.abs(n);if(a>=1e12)return g+'$'+(a/1e12).toFixed(2).replace(/\.?0+$/,'')+'T';if(a>=1e9)return g+'$'+(a/1e9).toFixed(2).replace(/\.?0+$/,'')+'B';if(a>=1e6)return g+'$'+(a/1e6).toFixed(2).replace(/\.?0+$/,'')+'M';if(a>=1e4)return g+'$'+(a/1e3).toFixed(1).replace(/\.0$/,'')+'K';return g+'$'+a.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}// K/M/B/T so nothing overflows
+    function cell(l,v,col){return '<div style="flex:1;min-width:0"><div style="font:11px \'Space Mono\',monospace;color:#5c6b84">'+l+'</div><div style="font:700 17px \'Space Mono\',monospace;color:'+(col||'#e9e7df')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+v+'</div></div>';}
+    return '<div class="jr-bal jr-bal-gold">'
+      +'<div class="jrb-row" style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:5px"><span style="display:inline-flex;align-items:center;gap:8px;font:700 9px \'Space Mono\',monospace;letter-spacing:.14em;color:#f0c35a">BALANCE MODE'+_tgl+'</span><span style="display:inline-flex;align-items:center;gap:6px"><span style="font:11px \'Space Mono\',monospace;color:#5c6b84">all-time</span><span style="font:700 11px \'Space Mono\',monospace;color:'+plc+';background:'+(pl>=0?'rgba(52,217,154,.12)':'rgba(255,123,114,.13)')+';border-radius:20px;padding:2px 9px;white-space:nowrap">'+(pl>=0?'+':'')+(bm.start>0?(pl/bm.start*100).toFixed(1):'0')+'%</span></span></div>'
+      +'<div class="jrb-row" style="font:800 26px \'Space Mono\',monospace;color:#f4cf7a;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;text-shadow:0 0 18px rgba(240,195,90,.28)">'+mK(equity)+'</div>'
+      +'<div class="jrb-row" style="font:11px \'Space Mono\',monospace;color:#8a7a52;margin:0 0 10px">from '+mK(bm.start)+'</div>'
+      +'<div class="jrb-row" style="display:flex;gap:14px;border-top:1px solid rgba(240,195,90,.18);padding-top:9px">'+cell('In trades',mK(openMargin))+cell('Available',mK(bm.start+realized-openMargin))+cell('Realized',(realized>=0?'+':'')+mK(realized),realized>=0?'#34d99a':'#ff7b72')+'</div></div>';}
   function render(){
     var listEl=document.getElementById('jrList'),statsEl=document.getElementById('jrStats'),emptyEl=document.getElementById('jrEmpty');
     if(!listEl||!statsEl)return;
@@ -812,7 +853,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(isFinite(amt)&&amt>100000){amt=100000;var _ael=document.getElementById('planAmt');if(_ael)_ael.value='100000';_say('Max trade size is $100,000 — the amount was capped.');} // hard cap: max $100k per trade (owner rule)
     if(!isFinite(amt)||amt<=0){_say('Enter an amount (USD) above $0 to open a trade.');return;}
     if(!isFinite(entry)||entry<=0){_say('Waiting for the live price — try again in a second.');return;}
-    var _bav=balAvail(); if(_bav!=null){ if(_bav<=0.5){_say('Balance Mode: no balance available — close a trade or top up in your profile.');return;} if(amt>_bav){amt=Math.max(1,Math.floor(_bav));var _pa=document.getElementById('planAmt');if(_pa)_pa.value=String(amt);_say('Balance Mode: capped to your available $'+amt.toLocaleString()+'.');} } // trade with your portfolio balance
+    var _bav=balAvail(); if(_bav!=null&&balHasTagged()&&_bav>0.5&&amt>_bav){amt=Math.max(1,Math.floor(_bav));var _pa=document.getElementById('planAmt');if(_pa)_pa.value=String(amt);_say('Balance Mode: capped to your available $'+amt.toLocaleString()+'.');} // Balance Mode only CAPS the size to what's left — it NEVER blocks the open button. A used-up balance just drives equity negative (shown red on the strip), like a real blow-up. Fixes the "nothing happens" dead-button for good.
     var seg=document.getElementById('planSeg'); var on=seg&&seg.querySelector('button.on'); var side=on?on.getAttribute('data-side'):'long';
     var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
     // the live price MUST be a fresh reading for THIS exact symbol — a stale mpPlanLive, or one still holding the
@@ -820,7 +861,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(!pl||pl.sym!==sym||!(+pl.price>0)||!pl.t||(Date.now()-pl.t)>3000){_say('Waiting for the live price for '+(sym||'this coin')+' — try again in a second.');add._busy=false;return;}
     entry=+pl.price;
     var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=(window.mpPlanMmr||0.005);
-    var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:0;
+    var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:window.mpFeeRate(L); // default to a realistic 0.055% taker fee (matches the server-fill) so EVERY trade carries a fee — was 0, which made some closed tickets show no Fees line
     var sl=num('planSlOpt'), tp=num('planTpOpt'), trail=num('planTrail'), be=num('planBE');
     trail=(isFinite(trail)&&trail>0)?trail:0; be=(isFinite(be)&&be>0)?be:0;
     // Guard: a stop/target already on the WRONG side of the live entry would trigger the instant the position
@@ -845,6 +886,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
        the classic local open below, so trading never blocks on the network. Anonymous users: local as always. */
     var _tLocal={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym||'—',side:side,entry:entry,stop:stop,tp:isFinite(tp)?tp:null,trail:trail,be:be,hwm:entry,lev:L,rr:isFinite(rr)?rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:feeRate,status:'open',pnl:null};
     var _finishOpen=function(t){
+      try{if(window.mpBal&&window.mpBal.tag)window.mpBal.tag(t);}catch(_){} // stamp the trade with the current Balance Mode session so it (and only it) counts toward the balance
       var data=load();
       data.push(t);
       if(window.mpLivePrices&&sym)window.mpLivePrices[sym]={p:t.entry,t:Date.now()}; // start P&L at exactly 0 — kills the phantom -100% / instant-liquidation at open
@@ -907,7 +949,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(statsEl){var closed=data.filter(function(e){return e.status==='win'||e.status==='loss';});var wins=closed.filter(function(e){return e.status==='win';}).length;var wr=closed.length?Math.round(wins/closed.length*100):null;var realized=closed.reduce(function(s,e){return s+(+e.pnl||0);},0);var unreal=open.reduce(function(s,e){var mm=metrics(e);return s+(mm.pnl||0);},0);
       var vs=statsEl.querySelectorAll('.jr-stat .v');if(vs.length>=4){vs[1].textContent=(unreal>=0?'+':'−')+money(Math.abs(unreal)).replace('-','');vs[1].style.color=unreal>=0?'#34d99a':'#ff7b72';vs[3].textContent=(realized>=0?'+':'−')+money(Math.abs(realized)).replace('-','');}}
     if(listEl&&jrTab==='open')open.forEach(function(e){var card=listEl.querySelector('.pp[data-id="'+e.id+'"]');if(!card)return;var m=metrics(e);
-      var cls='pp '+(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));if(card.className!==cls)card.className=cls;
+      var pnlc=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));if(!card.classList.contains(pnlc)){card.classList.remove('pf','ls','be');card.classList.add(pnlc);} // swap ONLY the pnl class — wholesale className= dropped pp-gold every tick (2nd copy: the My Trades drawer, same flicker as the terminal list)
       var lv=card.querySelector('.pp-live');if(lv){var lvv=(e.lev||1)+'× · '+fp(m.live);if(lv.textContent!==lvv)lv.textContent=lvv;}
       var big=card.querySelector('.big');if(big){var bv=(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));if(big.textContent!==bv)big.textContent=bv;}
       var roe=card.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
@@ -1196,18 +1238,20 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   var ws=null,user='',joined=false;
   /* per-coin chat rooms: All + a few majors. 'global' = the original shared room (history preserved). */
   var ROOMS=['global','BTC','ETH','SOL','BNB','XRP','DOGE'],room='global',roomBar=null;
-  function roomLabel(r){return r==='global'?'All':r;}
+  var CT_STAR='<svg class="ct-ric ct-ricprem" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>';
+  function chatRooms(){var b=['global','BTC','ETH','SOL','BNB','XRP','DOGE'];if(window._mpPrem===true)b.splice(1,0,'PREMIUM');return b;} // Premium lounge appears only for VIPs (server also enforces it)
+  function roomLabel(r){return r==='global'?'All':r==='PREMIUM'?'Premium':r;}
   var CT_CARET='<svg class="ct-rcaret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
   var CT_CHECK='<svg class="ct-ri-ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>';
   var CT_COIN={BTC:1,ETH:1027,SOL:5426,BNB:1839,XRP:52,DOGE:74};
   var CT_ALL='<svg class="ct-ric ct-ricall" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3.2 9.5h17.6M3.2 14.5h17.6M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg>';
-  function roomIcon(r){if(r==='global')return CT_ALL;var id=CT_COIN[r];if(id)return '<img class="ct-ricimg" data-coin="'+r+'" src="https://s2.coinmarketcap.com/static/img/coins/64x64/'+id+'.png" alt="">';return '<span class="ct-ricl">'+r.charAt(0)+'</span>';}
+  function roomIcon(r){if(r==='PREMIUM')return CT_STAR;if(r==='global')return CT_ALL;var id=CT_COIN[r];if(id)return '<img class="ct-ricimg" data-coin="'+r+'" src="https://s2.coinmarketcap.com/static/img/coins/64x64/'+id+'.png" alt="">';return '<span class="ct-ricl">'+r.charAt(0)+'</span>';}
   function ctImgFallback(root){if(!root)return;Array.prototype.forEach.call(root.querySelectorAll('.ct-ricimg'),function(img){img.addEventListener('error',function(){var s=document.createElement('span');s.className='ct-ricl';s.textContent=(img.getAttribute('data-coin')||'?').charAt(0);if(img.parentNode)img.parentNode.replaceChild(s,img);});});}
   function buildRoomBar(){
     if(roomBar||!box)return;var head=box.querySelector('.ct-head');if(!head)return;
     roomBar=document.createElement('div');roomBar.className='ct-roomsel';
     roomBar.innerHTML='<button type="button" class="ct-roombtn" aria-haspopup="true"><span class="ct-ricw">'+roomIcon(room)+'</span><span class="ct-roomcur">'+roomLabel(room)+'</span>'+CT_CARET+'</button>'
-      +'<div class="ct-roommenu" hidden>'+ROOMS.map(function(r){return '<button type="button" class="ct-roomitem'+(r===room?' on':'')+'" data-room="'+r+'"><span class="ct-riw">'+roomIcon(r)+'</span><span class="ct-ri-l">'+roomLabel(r)+'</span>'+CT_CHECK+'</button>';}).join('')+'</div>';
+      +'<div class="ct-roommenu" hidden>'+chatRooms().map(function(r){return '<button type="button" class="ct-roomitem'+(r===room?' on':'')+(r==='PREMIUM'?' ct-roomprem':'')+'" data-room="'+r+'"><span class="ct-riw">'+roomIcon(r)+'</span><span class="ct-ri-l">'+roomLabel(r)+'</span>'+CT_CHECK+'</button>';}).join('')+'</div>';
     var title=head.querySelector('.ct-title');if(title&&title.nextSibling)head.insertBefore(roomBar,title.nextSibling);else head.appendChild(roomBar);
     ctImgFallback(roomBar);
     var btn=roomBar.querySelector('.ct-roombtn'),menu=roomBar.querySelector('.ct-roommenu');
@@ -1216,7 +1260,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     document.addEventListener('click',function(){if(menu&&!menu.hidden){menu.hidden=true;btn.classList.remove('open');}});
   }
   function markRoomPills(){if(!roomBar)return;var cur=roomBar.querySelector('.ct-roomcur');if(cur)cur.textContent=roomLabel(room);var iw=roomBar.querySelector('.ct-roombtn .ct-ricw');if(iw){iw.innerHTML=roomIcon(room);ctImgFallback(iw);}var its=roomBar.querySelectorAll('[data-room]');for(var i=0;i<its.length;i++)its[i].classList.toggle('on',its[i].getAttribute('data-room')===room);}
-  function switchRoom(r){if(r===room||ROOMS.indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':'Message '+room+' room…')+'  ·  type /leaderboard';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
+  function switchRoom(r){if(r===room||chatRooms().indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?'Premium lounge — VIPs only…':'Message '+room+' room…')+'  ·  type /leaderboard';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
   function meUser(){var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me)return '';return String(me.username||(me.email||'').split('@')[0]||'trader').replace(/[<>&]/g,'').slice(0,20);}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   function colorFor(u){var h=0;for(var i=0;i<u.length;i++)h=(h*31+u.charCodeAt(i))%360;return 'hsl('+h+',65%,70%)';}
@@ -1555,7 +1599,7 @@ window.addEventListener('load', function () {
     if(rolled){ var _hop=lastBar.close,_hspk=(_hlgp>0&&Math.abs(p-_hlgp)/_hlgp>0.025),_hcl=_hspk?_hop:p; lastBar={time:nowBar,open:_hop,high:Math.max(_hop,_hcl),low:Math.min(_hop,_hcl),close:_hcl}; if(!_hspk)_hlgp=p; _hrej=0; }
     else { if(_hlgp>0 && Math.abs(p-_hlgp)/_hlgp>0.025){ if(++_hrej<3) return; } /* reject a lone >2.5% print that would ratchet a fake wick; accept only if 3 in a row confirm a real move */ _hlgp=p; _hrej=0; lastBar.close=p; if(p>lastBar.high)lastBar.high=p; if(p<lastBar.low)lastBar.low=p; }
     try{ candle.update(lastBar); if(rolled)chart.timeScale().scrollToRealTime(); }catch(e){} }
-  function pricePoll(){ var c=cur.coin; fetch('/api/price?symbol='+encodeURIComponent(c),{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return null;}).then(function(pd){ if(c!==cur.coin||!pd||!pd.price)return;
+  function pricePoll(){ if(document.hidden)return; var c=cur.coin; fetch('/api/price?symbol='+encodeURIComponent(c),{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return null;}).then(function(pd){ if(c!==cur.coin||!pd||!pd.price)return;
     if(_hWsT&&Date.now()-_hWsT<6000){sched();return;} // a fresh WS tick already moved the candle — don't clobber it with the slower (≤10s) cached REST value
     cur.price=+pd.price; cur.chg=+pd.chg||0; if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>'; liveCandle(); sched(); }); }
   function startPoll(){ stopPoll(); fetchLiq(); pollT=setInterval(fetchLiq,8000); pricePoll(); priceT=setInterval(pricePoll,6000); klT=setInterval(function(){ if(loadedKlines)reloadKlines(); },45000); }
@@ -2008,7 +2052,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function updTick(s){var row=tickEl.querySelector('.mtk[data-tk="'+s+'"]');if(!row)return;var p=price(s),c=chgv(s),pe=row.querySelector('[data-p]'),ce=row.querySelector('[data-c]');if(p>0){var old=pe._v;pe.textContent=fmt(p);if(old!=null&&p!==old){pe.style.color=p>old?'var(--up)':'var(--red)';setTimeout(function(){pe.style.color='';},260);}pe._v=p;}if(c!=null){ce.textContent=(c>=0?'+':'')+c.toFixed(2)+'%';ce.className='mtk-c '+(c>=0?'up':'dn');}}
   function updTickAll(){TICK.forEach(updTick);}
   function updPanel(){var p=price(sym),c=chgv(sym);if(pxEl&&p>0)rollPx(pxEl,p);if(pxEl&&c!=null){pxEl.classList.toggle('up',c>=0);pxEl.classList.toggle('down',c<0);}if(chgEl&&c!=null){chgEl.textContent=(c>=0?'↑ +':'↓ ')+Math.abs(c).toFixed(2)+'%';chgEl.className='mtp-chg '+(c>=0?'up':'dn');}}/* the open button stays "Open demo trade" — no live price/coin in it */
-  function mtMet(e){var lp=price(e.sym)||e.entry,long=e.side!=='short',lv=+e.lev||1;var move=(lp-e.entry)/e.entry*(long?1:-1);var pnl=e.qty*(lp-e.entry)*(long?1:-1)-((+e.qty||0)*(e.entry+lp)*(+e.feeRate||0))-(+e.fund||0);if(e.margin>0&&pnl<-e.margin)pnl=-e.margin;var roe=e.margin>0?pnl/e.margin*100:move*lv*100;var liq=e.liq||(long?e.entry*(1-(1-0.005)/lv):e.entry*(1+(1-0.005)/lv));var liqDist=(lp-liq)/lp*100*(long?1:-1);return {lp:lp,long:long,pnl:pnl,roe:roe,liq:liq,liqDist:liqDist,move:move};}
+  function mtMet(e){var lp=price(e.sym)||e.entry,long=e.side!=='short',lv=+e.lev||1;var move=(lp-e.entry)/e.entry*(long?1:-1);var pnl=e.qty*(lp-e.entry)*(long?1:-1)-(+e.fund||0);if(e.margin>0){var _op=e.status!=='win'&&e.status!=='loss',_pf=_op?-e.margin*0.99:-e.margin;if(pnl<_pf)pnl=_pf;}var roe=e.margin>0?pnl/e.margin*100:move*lv*100;var liq=e.liq||(long?e.entry*(1-(1-0.005)/lv):e.entry*(1+(1-0.005)/lv));var liqDist=(lp-liq)/lp*100*(long?1:-1);return {lp:lp,long:long,pnl:pnl,roe:roe,liq:liq,liqDist:liqDist,move:move};}
   function pl(v){var a=Math.abs(v),m=a>=1e9?(a/1e9).toFixed(2)+'B':a>=1e6?(a/1e6).toFixed(2)+'M':a.toLocaleString('en-US',{maximumFractionDigits:2});return (v>=0?'+':'−')+'$'+m;}
   function pc(v){return (v>=0?'+':'')+v.toFixed(2)+'%';}
   // render the latest open position as the same "LAST TRADE" torn ticket used in Paper Trade (with a live price + Close)
@@ -2024,7 +2068,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     var _lp=window.mpLivePrices&&window.mpLivePrices[sym],p=(_lp&&_lp.p>0&&_lp.t&&(Date.now()-_lp.t)<2000)?+_lp.p:0; // 2s window: majors (WS, sub-second) use the cache; a polled altcoin (US) forces a fresh fetch so the entry matches the live market to the second (else it opens past its 100× liq → instant liquidation)
     if(!(p>0)){fetch('/api/price?symbol='+sym,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0){if(window.mpLivePrices)window.mpLivePrices[sym]={p:+j.price,t:Date.now()};openPos();}});return;}
     var L=lev,mmr=(window.mpPlanMmr||0.005),notional=amt*L,qty=notional/p,liq=side==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
-    var pos={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:side,entry:p,stop:null,tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null};
+    var pos={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:side,entry:p,stop:null,tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:window.mpFeeRate(lev),status:'open',pnl:null};
     var _finMt=function(P){var d=jload();d.push(P);if(window.mpLivePrices)window.mpLivePrices[sym]={p:+P.entry,t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();
     try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (throttled)
     try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
@@ -2072,6 +2116,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   var _symBtn=document.getElementById('mtpSymBtn'),_symCur=document.getElementById('mtpSymCur');
   function setMtSym(s){s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!s||s===sym)return;sym=s;
     if(_symCur)_symCur.textContent=s;
+    var _cap=(window.mpMaxLev?window.mpMaxLev(s):1000);if(lev>_cap){lev=_cap;if(levVal)levVal.textContent=lev+'×';if(levSl)levSl.value=levToPos(lev);hiChips(lev);if(window.mpLimitToast)window.mpLimitToast('Max leverage for '+s+' is '+_cap+'×.');}
     if(pxEl)pxEl._cur=null;updPanel();mtReset();mtLoadKlines();}
   var _dd=document.getElementById('mtpDD'),_dds=document.getElementById('mtpDDs'),_ddl=document.getElementById('mtpDDl');
   // search-only: nothing is listed until the user types (BTC stays selected by default)
@@ -2091,8 +2136,8 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function posToLev(p){return Math.max(1,Math.min(1000,Math.round(Math.exp(LMAX*p/1000))));}
   function snapLev(L){if(L>=200)return Math.round(L/50)*50;if(L>=100)return Math.round(L/25)*25;if(L>=20)return Math.round(L/5)*5;return Math.round(L);}
   function hiChips(L){if(levChips)levChips.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',+x.getAttribute('data-lev')===L);});}
-  if(levSl)levSl.addEventListener('input',function(){lev=snapLev(posToLev(+this.value));if(levVal)levVal.textContent=lev+'×';hiChips(lev);mtDrawLiq();});
-  if(levChips)levChips.addEventListener('click',function(e){var b=e.target.closest('[data-lev]');if(!b)return;lev=+b.getAttribute('data-lev');if(levVal)levVal.textContent=lev+'×';if(levSl)levSl.value=levToPos(lev);hiChips(lev);mtDrawLiq();});
+  if(levSl)levSl.addEventListener('input',function(){lev=Math.min((window.mpMaxLev?window.mpMaxLev(sym):1000),snapLev(posToLev(+this.value)));if(levVal)levVal.textContent=lev+'×';hiChips(lev);mtDrawLiq();});
+  if(levChips)levChips.addEventListener('click',function(e){var b=e.target.closest('[data-lev]');if(!b)return;lev=Math.min((window.mpMaxLev?window.mpMaxLev(sym):1000),+b.getAttribute('data-lev'));if(levVal)levVal.textContent=lev+'×';if(levSl)levSl.value=levToPos(lev);hiChips(lev);mtDrawLiq();});
   if(levSl)levSl.value=levToPos(lev);if(levVal)levVal.textContent=lev+'×';hiChips(lev); // sync slider/display/chips to the default leverage on load
   goEl.addEventListener('click',openPos);
   function mtVis(){return !document.hidden&&term.offsetParent!==null;} // mterm is CSS-hidden on route pages + open products — its per-tick tweens/canvas draws used to burn CPU there anyway (mobile perf 2026-07-14)
@@ -2318,7 +2363,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
    +row('<a class="browse-row" href="/rekt/">','</a>',I.rekt,'Rekt','Live liquidations feed','#ff6258','','navRekt','prodRektS')
    +row('<a class="browse-row" href="/alerts/">','</a>',I.alert,'Price Alerts','Email or Telegram when a coin hits your price','#c2f64a','','brAlertsT','brAlertsS')
    +'<div class="browse-sec" data-i18n="secEarn">Earn</div>'
-   +row('<a class="browse-row" href="/rewards/">','</a>',I.gift,'Free USDT','Claim every 5 minutes','#ffd75a','','brFreeT','brFreeS')
+   +row('<a class="browse-row" href="/rewards/">','</a>',I.gift,'Rewards','Claim every 5 minutes','#ffd75a','','brFreeT','brFreeS')
    +'<div class="browse-sec" data-i18n="secMore">More</div><div class="browse-more">'
      +'<a class="browse-mrow" href="/blog/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span data-i18n="navBlog">Blog</span></a>'
      +'<a class="browse-mrow" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Telegram</a>'
@@ -2441,7 +2486,7 @@ window.mpSrvOpen=function(payload,ok,fail){
       if(window.mpTradeGate&&!window.mpTradeGate(p.sym,long?'long':'short')){cleanUrl();return;} // respect open-trade limits + one-way mode for Telegram imports too
       var notional=margin*lev,qty=entry>0?notional/entry:0,mmr=0.005;
       var liq=long?entry*(1-(1-mmr)/lev):entry*(1+(1-mmr)/lev);
-      arr.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:+p.ts||Date.now(),sym:p.sym,side:long?'long':'short',entry:entry,stop:null,tp:null,lev:lev,rr:null,qty:qty,notional:notional,margin:margin,riskAmt:margin,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null,src:'telegram',tgClaim:tok});
+      arr.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:+p.ts||Date.now(),sym:p.sym,side:long?'long':'short',entry:entry,stop:null,tp:null,lev:lev,rr:null,qty:qty,notional:notional,margin:margin,riskAmt:margin,liq:liq,mmr:mmr,feeRate:window.mpFeeRate(lev),status:'open',pnl:null,src:'telegram',tgClaim:tok});
       try{localStorage.setItem('mp_journal',JSON.stringify(arr));}catch(e){}
       try{window.mpLivePrices=window.mpLivePrices||{};if(!(window.mpLivePrices[p.sym]&&window.mpLivePrices[p.sym].p>0))window.mpLivePrices[p.sym]={p:entry,t:Date.now()};}catch(e){}
       cleanUrl();try{if(window.mpJournalRender)window.mpJournalRender();}catch(e){}toast();
@@ -2553,7 +2598,7 @@ window.mpSrvOpen=function(payload,ok,fail){
 (function(){ if(window.mpCloseSheet)return;
   function jload(){try{return JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){return[];}}
   function jstore(a){try{localStorage.setItem('mp_journal',JSON.stringify(a));}catch(e){}}
-  function mx(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1)-((+e.qty||0)*(e.entry+live)*(+e.feeRate||0))-(+e.fund||0):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);if(margin>0&&pnl!=null&&pnl<-margin)pnl=-margin;var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;return{live:live,long:long,move:move,pnl:pnl,margin:margin,roe:roe};}
+  function mx(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1)-(+e.fund||0):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);if(margin>0&&pnl!=null){var _op=e.status!=='win'&&e.status!=='loss',_pf=_op?-margin*0.99:-margin;if(pnl<_pf)pnl=_pf;}var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;return{live:live,long:long,move:move,pnl:pnl,margin:margin,roe:roe};}
   function fm(x){x=+x||0;var n=x<0;x=Math.abs(x);return (n?'-$':'$')+x.toLocaleString('en-US',{maximumFractionDigits:2});}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   var ov=null,pct=100,curId=null,after=null,syncT=null;
@@ -2858,6 +2903,7 @@ window.mpSrvOpen=function(payload,ok,fail){
       var ws=(window.__mpWsLat!=null&&window.__mpWsLat>=0)?Math.round(window.__mpWsLat):null;
       var payload={};if(ws!=null)payload.ws=ws;payload.fps=f2;
       try{var u=window.__mpUx||{};for(var k in u){payload[k]=Math.round(u[k]);}window.__mpUx={};}catch(e){}
+      try{if(window.__preR){payload.pr=window.__preR;window.__preR=null;}}catch(e){} // preload drift detector: hit|miss (miss = inline drifted → wasted request on every cold load)
       try{var pr=window.mpLivePrices||{},best=1/0,n2=Date.now();for(var s in pr){if(pr[s]&&pr[s].t&&!pr[s].seed)best=Math.min(best,n2-pr[s].t);}if(isFinite(best))payload.pa=Math.max(0,Math.round(best));}catch(e){}
       try{navigator.sendBeacon('/api/perf',new Blob([JSON.stringify(payload)],{type:'application/json'}));}catch(e){}
     });
