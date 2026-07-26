@@ -8541,6 +8541,20 @@ export default {
         dbg: await env.STATS.get('fsig:dbg'), open: JSON.parse(await env.STATS.get('fsig:open') || '[]'), results: JSON.parse(await env.STATS.get('fsig:results') || '[]').slice(0, 30),
       });
     }
+    // READ-ONLY SEO measurement from Analytics Engine (pageview blobs: blob3=path, blob4=src). Organic Google =
+    // src 'google.<tld>' (referrer host); Google Ads is 'google-ads' → excluded by the dot. adminCookie OR ?key=.
+    if (url.pathname === '/api/admin/seoae' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) {
+      const days = Math.max(1, Math.min(90, +url.searchParams.get('days') || 30)), D = "timestamp > NOW() - INTERVAL '" + days + "' DAY";
+      const [srcTop, totalPv, googleOrgPv, searchOrgPv, pathsTotal, pathsGoogle] = await Promise.all([
+        aeQuery(env, `SELECT blob4 AS src, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND ${D} GROUP BY src ORDER BY n DESC LIMIT 40`),
+        aeQuery(env, `SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND ${D}`),
+        aeQuery(env, `SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND blob4 LIKE 'google.%' AND ${D}`),
+        aeQuery(env, `SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND (blob4 LIKE 'google.%' OR blob4 LIKE 'bing%' OR blob4 LIKE 'duckduckgo%' OR blob4 LIKE 'yahoo%' OR blob4 LIKE 'yandex%' OR blob4 LIKE 'ecosia%' OR blob4 LIKE 'brave%') AND ${D}`),
+        aeQuery(env, `SELECT blob3 AS path, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND ${D} GROUP BY path ORDER BY n DESC LIMIT 500`),
+        aeQuery(env, `SELECT blob3 AS path, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND blob4 LIKE 'google.%' AND ${D} GROUP BY path ORDER BY n DESC LIMIT 500`),
+      ]);
+      return J({ days, srcTop, totalPv, googleOrgPv, searchOrgPv, pathsTotalCount: (pathsTotal || []).length, pathsGoogle: pathsGoogle || [], pathsTotal: pathsTotal || [] });
+    }
     if (url.pathname === '/api/perf' && request.method === 'POST') { // client health beacon: real WS latency (Bybit msg.ts delta) + chart FPS; sampled ~1/5min per client
       try {
         if (isBot(request.headers.get('user-agent') || '')) return new Response('{}', { headers: { 'content-type': 'application/json', ...CORS } });
