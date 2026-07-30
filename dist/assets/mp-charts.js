@@ -685,6 +685,7 @@
         return s;}).filter(Boolean);
       redraw();}
     w.dr.save=save;w.dr.reload=reload;
+    w.dr._dbg=function(){var g=grid();return {grid:g,shapes:JSON.parse(JSON.stringify(w.dr.shapes)),proj:w.dr.shapes.map(function(s){var l1=(s.l1!=null?s.l1:s.l),p1=(s.p1!=null?s.p1:s.p);return {x1:xOf(l1),y1:yOf(p1),x2:(s.l2!=null?xOf(s.l2):null),y2:(s.p2!=null?yOf(s.p2):null)};})};};/* debug/E2E hook (2026-07-30, permanent like __mpKlineMerge): read-only snapshot of shape anchors + projections + grid — powers drift measurement */
     // ---- interactions ----
     function pos(e){var r=cv.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
     function d2seg(px,py,x1,y1,x2,y2){var dx=x2-x1,dy=y2-y1,L2=dx*dx+dy*dy,t=L2?((px-x1)*dx+(py-y1)*dy)/L2:0;t=Math.max(0,Math.min(1,t));return Math.hypot(px-(x1+t*dx),py-(y1+t*dy));}
@@ -814,6 +815,7 @@
   }
   try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,computeMomentum:computeMomentum,computeSqueeze:computeSqueeze,computeLiqRev:computeLiqRev,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,sentimentCalc:sentimentCalc,scoreMarkers:scoreMarkers,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
   try{window.__mpDraw={setup:setupDraw,wire:wireDrawTools};}catch(e){} // expose the price-anchored draw engine to the mobile full-screen charts module
+  try{window.__mpWinsDbg=wins;}catch(e){} /* debug/E2E hook (2026-07-30, permanent): window list for headless harnesses */
   try{window.__mpAiContext=aiContext;}catch(e){} // expose the rich chart-analysis context so the mobile AI bubble can actually "read" the chart
   /* movable sticky notes on the board */
   function saveNotes(){try{localStorage.setItem('mp_chart_notes',JSON.stringify(notes.map(function(n){return {text:n.text,html:n.html||'',x:parseInt(n.el.style.left,10)||0,y:parseInt(n.el.style.top,10)||0,w:parseInt(n.el.style.width,10)||0,h:parseInt(n.el.style.height,10)||0,color:n.color||'#e9e7df',winId:(n.winId!=null)?n.winId:null};})));}catch(e){}}
@@ -912,6 +914,7 @@
     w.bars=plan.bars;try{w.candle.setData(w.bars);}catch(e){} // setData on the MERGED array: deep bars = local values (identical → no visual flip), only recent reconciled + new appended
     w.lastBar=w.bars.length?w.bars[w.bars.length-1]:w.lastBar;
     w._syncEdge=w.lastBar?w.lastBar.time:edge; // advance watermark: everything up to the newest bar is authoritative; only future live ticks can corrupt beyond it
+    if(plan.mode==='replace'){try{if(w.dr&&w.dr.reload)w.dr.reload();}catch(e){}} // drift guard (2026-07-30): a replace swaps in a window whose START shifted → logical indices re-index under the drawings (the OLD full-replace refreshData drifted shapes 1 bar per rolled candle this way). Re-derive logicals from the stored TIME anchors against the new grid (every mutation saves, so store==memory). merge mode keeps the array start → no re-anchor needed. Mobile re-anchors itself (loadKlines calls p.w.dr.reload() after every load).
     return plan.mode;
   }
   try{window.__mpKlineMerge=mpKlineMerge;window.__mpChartSync=chartSync;}catch(e){} // debug/test hooks (like window.__mpDraw/__mpAiContext)
