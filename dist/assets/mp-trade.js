@@ -1,3 +1,4 @@
+window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};if(!window.__mpWsL){window.__mpWsL=1;try{document.addEventListener('mp:price',function(ev){if(ev&&ev.detail&&ev.detail.sym)window.__mpWsSeen[ev.detail.sym]=Date.now();});}catch(e){}} /* TEMP pxtag until 2026-09-01 — DELETE with the pxtag round */
 /* My Trades drawer + price feed + Trader Chat — shared widget logic (ported from the homepage).
    View-only journal on pages without the Paper Trade form (add() simply finds no form and no-ops). */
 
@@ -366,7 +367,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
       var lp=window.mpLivePrices[sym];
       if(lp&&lp.t&&(now-lp.t)<6000)return;               // WS or a recent poll already fresh → skip
       if(_busy[sym])return;_busy[sym]=1;
-      fetch('/api/price?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
+      fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('ptr',sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
         _busy[sym]=0;var p=j&&(+j.price);if(!(p>0))return;
         var prev=window.mpLivePrices[sym]||{};
         window.mpLivePrices[sym]={p:p,t:Date.now(),chg:(j&&j.chg!=null&&isFinite(j.chg))?+j.chg:prev.chg};

@@ -2056,6 +2056,16 @@ async function fetchPrice(sym) {
 }
 // price candles for the interactive heatmap chart (Binance + Bybit fallback, normalized)
 const PERF_AE_UNTIL = Date.UTC(2026, 8, 1); // 2026-09-01: UX-perf AE dual-write (index 'uxperf', blob2=metric, double2=ms). Fixes the perf-ring-8h blindness (no day/week p95 history) for ux-cold/ux-chart/price-age etc. Revisit at the date — if it's earning its keep make it permanent, else drop. Read via /api/admin/uxperf.
+const PXTAG_UNTIL = Date.UTC(2026, 8, 1); // 2026-09-01: TEMP /api/price call-site tag — WHO drives /api/price (33% of invocations). Client appends &px=<ctx>&pxw=<0|1>; blob2=ctx, blob3=ws-covered, blob4=cache h/m, blob5=sym. Sample 1:10 (SUM(_sample_interval) corrects). Read /api/admin/pxtag. Goal: '?' (untagged) bucket ~0. DELETE const + pxTag() + its 2 call sites + /api/admin/pxtag + the client __mpPQ/__mpWsSeen after.
+function pxTag(env, url, cache) {
+  try {
+    if (!(env && env.AE && Date.now() < PXTAG_UNTIL) || Math.random() >= 0.1) return; // 1:10 sample
+    const ctx = String(url.searchParams.get('px') || '?').replace(/[^a-z0-9]/gi, '').slice(0, 8) || '?';
+    const ws = url.searchParams.get('pxw') === '1' ? '1' : '0';
+    const sym = String(url.searchParams.get('symbol') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+    env.AE.writeDataPoint({ indexes: ['pxtag'], blobs: ['pxtag', ctx, ws, cache, sym], doubles: [1] });
+  } catch (e) {}
+}
 async function fetchTO(url, opts, ms, env, lbl) { const ac = new AbortController(); const t = setTimeout(() => ac.abort(), ms || 1500); try { return await fetch(url, Object.assign({}, opts || {}, { signal: ac.signal })); } finally { clearTimeout(t); } } // per-source abort: the 8.5s tail is a source hanging serially → cut it at ~1.5s and fall through to the next (env/lbl retained for call-site compatibility)
 async function handleKlines(url, env, klSrc, ctx) {
   const _klT0 = Date.now();
@@ -8149,7 +8159,8 @@ export default {
     if (url.pathname === '/api/price') {
       const sym = String(url.searchParams.get('symbol') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
       const ck = new Request('https://marginpad.io/__price_' + sym);
-      try { const hit = await caches.default.match(ck); if (hit) { const ca = +hit.headers.get('x-mp-cached') || 0; if (Date.now() - ca < 8000) return hit; } } catch (e) {} // enforce freshness in the worker — a zone Cache-TTL override was pinning /api/price at 4h (stale live price)
+      try { const hit = await caches.default.match(ck); if (hit) { const ca = +hit.headers.get('x-mp-cached') || 0; if (Date.now() - ca < 8000) { pxTag(env, url, 'h'); return hit; } } } catch (e) {} // enforce freshness in the worker — a zone Cache-TTL override was pinning /api/price at 4h (stale live price)
+      pxTag(env, url, 'm');
       const p = await fetchPrice(sym);
       const resp = new Response(JSON.stringify(p || { error: 'not found' }), { status: p ? 200 : 404, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': p ? 'public, max-age=5' : 'public, max-age=30', 'cdn-cache-control': p ? 'max-age=5' : 'max-age=30', 'cloudflare-cdn-cache-control': p ? 'max-age=5' : 'max-age=30', 'x-mp-cached': String(Date.now()), ...CORS } });
       try { await caches.default.put(ck, resp.clone()); } catch (e) {} // edge-cache BOTH the hit (5s) AND the miss (30s) — without negative-caching, an unresolvable/delisted symbol re-ran fetchPrice's 5 sequential upstream legs on EVERY poll (5 wasted round-trips + subrequests each time)
@@ -8594,6 +8605,24 @@ export default {
       const out = { hours: hrs, metrics: {} };
       for (const r of rows) out.metrics[r.metric || '?'] = { n: +r.n || 0, p50: r.p50 != null ? Math.round(+r.p50) : null, p95: r.p95 != null ? Math.round(+r.p95) : null, max: r.mx != null ? Math.round(+r.mx) : null };
       return new Response(JSON.stringify(out, null, 1), { headers: jh });
+    }
+    if (url.pathname === '/api/admin/pxtag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // TEMP: WHO drives /api/price (33% of invocations) — by call-site ctx / WS-covered / cache h-m / symbol. '?' = untagged call site (goal ~0).
+      const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const hrs = Math.min(168, Math.max(1, +url.searchParams.get('h') || 24));
+      const W = "blob1='pxtag' AND timestamp > NOW() - INTERVAL '" + hrs + "' HOUR";
+      const byCtx = (await aeQuery(env, "SELECT blob2 ctx, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY ctx")) || [];
+      const byWs = (await aeQuery(env, "SELECT blob3 ws, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY ws")) || [];
+      const byCache = (await aeQuery(env, "SELECT blob4 cache, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY cache")) || [];
+      const topSym = (await aeQuery(env, "SELECT blob5 sym, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY sym ORDER BY n DESC LIMIT 20")) || [];
+      const tot = byCtx.reduce((a, r) => a + (+r.n || 0), 0), pct = n => tot ? Math.round(n / tot * 1000) / 10 : 0;
+      const unk = byCtx.filter(r => (r.ctx || '?') === '?').reduce((a, r) => a + (+r.n || 0), 0);
+      return new Response(JSON.stringify({
+        hours: hrs, total: tot, untaggedPct: pct(unk), // untaggedPct → 0 means every call site is tagged
+        byCtx: byCtx.map(r => ({ ctx: r.ctx || '?', n: +r.n || 0, pct: pct(+r.n || 0) })).sort((a, b) => b.n - a.n),
+        byWs: byWs.map(r => ({ ws: r.ws || '?', n: +r.n || 0 })).sort((a, b) => b.n - a.n),
+        byCache: byCache.map(r => ({ cache: r.cache || '?', n: +r.n || 0 })).sort((a, b) => b.n - a.n),
+        topSym: topSym.map(r => ({ sym: r.sym || '?', n: +r.n || 0 })),
+      }, null, 1), { headers: jh });
     }
     if (url.pathname === '/api/admin/restoretest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // E1: prove the backup is restorable — load users-latest into the 'bkp-restore-test' DO sandbox and diff row counts vs the dump
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };

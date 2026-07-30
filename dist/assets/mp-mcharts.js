@@ -1,3 +1,4 @@
+window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};if(!window.__mpWsL){window.__mpWsL=1;try{document.addEventListener('mp:price',function(ev){if(ev&&ev.detail&&ev.detail.sym)window.__mpWsSeen[ev.detail.sym]=Date.now();});}catch(e){}} /* TEMP pxtag until 2026-09-01 — DELETE with the pxtag round */
 /* Mobile full-screen Charts — landscape-first 1/2-pane workspace: same indicator families as desktop, drawing, trade import, an AI chat bubble and a quick liq calculator. Exposed as window.mpOpenCharts(). */
 (function(){
   var ov=null,panes=[],activeI=0,split=1,drawOn=false,forcePair=null,tokens=['BTC','ETH','SOL','BNB','XRP','DOGE','ADA','AVAX','LINK'];
@@ -364,7 +365,7 @@
       var lp=window.mpLivePrices&&window.mpLivePrices[tSym];
       if(lp&&lp.p>0&&lp.t&&(Date.now()-lp.t)<15000)return +lp.p;
       // nothing fresh → pull a REST price + seed the map, return 0 so the opener asks the user to retry (never opens stale)
-      fetch('/api/price?symbol='+encodeURIComponent(tSym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){var pv=+((d&&(d.price||d.p))||0);if(pv>0&&window.mpLivePrices)window.mpLivePrices[tSym]={p:pv,t:Date.now()};}).catch(function(){});
+      fetch('/api/price?symbol='+encodeURIComponent(tSym)+window.__mpPQ('one',tSym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){var pv=+((d&&(d.price||d.p))||0);if(pv>0&&window.mpLivePrices)window.mpLivePrices[tSym]={p:pv,t:Date.now()};}).catch(function(){});
       return 0;}
     function upd(){var px=livePx();var amt=+q('mtrAmt').value||0;
       if(px>0){var liq=side==='long'?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
@@ -383,7 +384,7 @@
       // ALWAYS open at a FRESHLY-fetched price. A cached price even a few seconds old opens a volatile coin (US moves >1%/sec)
       // already past its 100× liq distance → the trade "instantly liquidates" the moment the real price loads. Fetch at click.
       msg.style.color='#9aa3ad';msg.textContent=mcT('mtGetPx','Getting live price…');
-      fetch('/api/price?symbol='+encodeURIComponent(tSym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
+      fetch('/api/price?symbol='+encodeURIComponent(tSym)+window.__mpPQ('one',tSym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
         var px=j&&+(j.price||j.p||0);if(!(px>0))px=livePx();
         if(!(px>0)){msg.style.color='#ff6258';msg.textContent='Waiting for a live price — try again in a second.';return;}
         var long=side==='long';
@@ -523,7 +524,7 @@
     var lp=window.mpLivePrices&&window.mpLivePrices[p.sym];
     if(!lp||!lp.t||Date.now()-lp.t>8000){ try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(e){}
       if(!p._rf||Date.now()-p._rf>8000){ p._rf=Date.now();
-        fetch('/api/price?symbol='+encodeURIComponent(p.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){var px=j&&+j.price;if(px>0&&window.mpLivePrices){window.mpLivePrices[p.sym]={p:px,t:Date.now(),chg:(j.chg!=null?+j.chg:(lp&&lp.chg))};}live(p);});
+        fetch('/api/price?symbol='+encodeURIComponent(p.sym)+window.__mpPQ('mcht',p.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){var px=j&&+j.price;if(px>0&&window.mpLivePrices){window.mpLivePrices[p.sym]={p:px,t:Date.now(),chg:(j.chg!=null?+j.chg:(lp&&lp.chg))};}live(p);});
       } return; }
     live(p);});},2000);
   // returning to the tab: the 60s reload gate only fires from live ticks, so force a real klines re-sync immediately

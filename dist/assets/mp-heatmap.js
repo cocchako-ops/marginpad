@@ -1,3 +1,4 @@
+window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};if(!window.__mpWsL){window.__mpWsL=1;try{document.addEventListener('mp:price',function(ev){if(ev&&ev.detail&&ev.detail.sym)window.__mpWsSeen[ev.detail.sym]=Date.now();});}catch(e){}} /* TEMP pxtag until 2026-09-01 — DELETE with the pxtag round */
 /* mp-heatmap.js — Liquidation Heatmap v2.1 (simplified + full-bleed, owner pass 2026-07-24).
    ONE idea on screen: bright horizontal bands = standing crowds of liquidation prices (est. from every
    candle close at 10/25/50/100x, consumed internally the moment price trades through — only what still
@@ -304,7 +305,7 @@
     Promise.all([
       fetch('/api/klines?symbol=' + coin + '&interval=' + w.iv, { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }),
       fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=1000').then(function (r) { return r.json(); }).catch(function () { return null; }),
-      fetch('/api/price?symbol=' + coin, { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return null; }),
+      fetch('/api/price?symbol=' + coin + window.__mpPQ('heatx', coin), { cache: 'no-store' }).then(function (r) { return r.json(); }).catch(function () { return null; }),
       fetch('/api/heatmap/pools?symbol=' + coin).then(function (r) { return r.json(); }).catch(function () { return null; })
     ]).then(function (res) {
       if (!S || coin !== S.coin) return;

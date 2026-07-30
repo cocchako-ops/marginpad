@@ -1,5 +1,10 @@
 /* MarginPad homepage bundle — extracted from app/index.html inline blocks (order preserved).
    This file is the SOURCE (edited in place like mp-trade.js); app/index.html references it. */
+/* TEMP pxtag (until 2026-09-01): identify WHO drives /api/price. __mpPQ(ctx,sym) → query suffix &px=<ctx>&pxw=<0|1>
+   appended to every /api/price poll; pxw = is this symbol WS-covered (fresh <15s in __mpWsSeen, marked in emit()).
+   Worker samples 1:10 → /api/admin/pxtag. DELETE this block + __mpWsSeen mark + the &px= call-site suffixes after. */
+window.__mpWsSeen=window.__mpWsSeen||{};
+window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};
 
 /* Is this ticket a Balance-Mode trade? Gold/BAL badge derive from the DURABLE mp_bal_tags map (id->sid), NOT the
    e.bal field on the journal entry — the server journal sync strips e.bal, so keying the render off it made the
@@ -78,7 +83,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   }
   // REST /api/price (Binance, edge-cached 5s) is a FALLBACK only. The Bybit WS is the real-time truth; never let
   // the slower cached REST value clobber a fresh WS tick — that 0–5s staleness was the ±$1k forming-candle flicker.
-  function poll(){if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return;if(_wsT&&Date.now()-_wsT<6000)return;var sym=((document.getElementById('planSym')||{}).value||'');if(!sym)return;fetch('/api/price?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0&&(!_wsT||Date.now()-_wsT>=6000)){live=+pd.price;liveChg=+pd.chg||0;showLive();calc();}}).catch(function(){});}
+  function poll(){if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return;if(_wsT&&Date.now()-_wsT<6000)return;var sym=((document.getElementById('planSym')||{}).value||'');if(!sym)return;fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('frm',sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0&&(!_wsT||Date.now()-_wsT>=6000)){live=+pd.price;liveChg=+pd.chg||0;showLive();calc();}}).catch(function(){});}
   if(seg)seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
   ['planAmt','planLev'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
   var levEl=document.getElementById('planLev'),levR=document.getElementById('planLevR');
@@ -161,7 +166,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function openSyms(){var s={};load().forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='—')s[e.sym]=1;});if(chartSym&&!(document.hidden||document.body.getAttribute('data-prod')!=='plan'))s[chartSym]=1;return Object.keys(s);} // OPEN positions always polled (liq safety); the chart-only symbol is dropped when the Paper Trade chart isn't visible so an idle /calculators or /screener or hidden tab with no positions stops the 3s /api/price poll entirely
   // REST is only a FALLBACK: prices[] is shared with the live WS feed (window.mpLivePrices). Never clobber a
   // fresh WS tick with the slower/edge-cached /api/price value — that mismatch was the ±$1k position flicker.
-  function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
+  function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('pos',sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
   function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L — legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open positions cap at -99% (never show -100% until actually liquidated/closed) */return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
   function checkClose(e,m){if(e.status!=='open')return false;var dir=m.long?1:-1;
     // ROOT-CAUSE GUARD (proven from [LIQ-DECISION] logs): only decide an exit when there is a REAL market price for the
@@ -1020,6 +1025,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   var lastTick=Date.now(), lastWsTick=Date.now(), reT=null, connT=null; // lastWsTick = WS-only freshness (REST bridge must NOT refresh it, or a dead socket looks alive)
   function emit(sym,price,chg){
     lastTick=Date.now();
+    try{window.__mpWsSeen[sym]=Date.now();}catch(_){} // TEMP pxtag: mark this symbol as WS-covered (see __mpPQ) — DELETE with the pxtag round
     var prev=window.mpLivePrices[sym]||{};
     window.mpLivePrices[sym]={p:price,t:Date.now(),chg:(chg!=null&&isFinite(chg))?chg:prev.chg};
     pushHist(sym,price);
@@ -1056,7 +1062,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(document.hidden)return;
     if(!connT&&!reT&&Date.now()-lastWsTick>8000)kick();
     if(Date.now()-lastTick>7000){ // prices haven't moved from ANY source in 7s → bridge with REST so the UI never fully freezes while the socket re-establishes
-      order.slice(-4).forEach(function(s){fetch('/api/price?symbol='+encodeURIComponent(s),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&+j.price>0)emit(s,+j.price,(j.chg!=null?+j.chg:undefined));}).catch(function(){});});
+      order.slice(-4).forEach(function(s){fetch('/api/price?symbol='+encodeURIComponent(s)+window.__mpPQ('wsrc',s),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(j&&+j.price>0)emit(s,+j.price,(j.chg!=null?+j.chg:undefined));}).catch(function(){});});
     }
   },3000);
   function onResume(){if(Date.now()-lastWsTick>5000&&!connT&&!reT)kick();} // returned to a stale tab / bfcache restore → new socket now
@@ -1574,7 +1580,7 @@ window.addEventListener('load', function () {
       fetch('/api/v1/liquidations/recent?symbol='+encodeURIComponent(c)+'&minutes='+WIN[win].mins).then(function(r){return r.json();}).catch(function(){return {fallback:true};}),
       fetch('/api/v1/liquidations/live?symbol='+encodeURIComponent(c)+'&limit=400').then(function(r){return r.json();}).catch(function(){return {fallback:true};}),
       fetch('/api/v1/clusters?symbol='+encodeURIComponent(c)).then(function(r){return r.json();}).catch(function(){return {clusters:[]};}),
-      fetch('/api/price?symbol='+encodeURIComponent(c),{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return null;})
+      fetch('/api/price?symbol='+encodeURIComponent(c)+window.__mpPQ('cdash',c),{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return null;})
     ]).then(function(res){ if(c!==cur.coin)return; var rec=res[0],lv=res[1],cls=res[2],pd=res[3];
       if(pd&&pd.price){cur.price=+pd.price;cur.chg=+pd.chg||0;if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>';liveCandle();}
       if(!rec||rec.fallback||!Array.isArray(rec.buckets)||!lv||lv.fallback){ setFallback(true); return; }
@@ -1600,7 +1606,7 @@ window.addEventListener('load', function () {
     if(rolled){ var _hop=lastBar.close,_hspk=(_hlgp>0&&Math.abs(p-_hlgp)/_hlgp>0.025),_hcl=_hspk?_hop:p; lastBar={time:nowBar,open:_hop,high:Math.max(_hop,_hcl),low:Math.min(_hop,_hcl),close:_hcl}; if(!_hspk)_hlgp=p; _hrej=0; }
     else { if(_hlgp>0 && Math.abs(p-_hlgp)/_hlgp>0.025){ if(++_hrej<3) return; } /* reject a lone >2.5% print that would ratchet a fake wick; accept only if 3 in a row confirm a real move */ _hlgp=p; _hrej=0; lastBar.close=p; if(p>lastBar.high)lastBar.high=p; if(p<lastBar.low)lastBar.low=p; }
     try{ candle.update(lastBar); if(rolled)chart.timeScale().scrollToRealTime(); }catch(e){} }
-  function pricePoll(){ if(document.hidden)return; var c=cur.coin; fetch('/api/price?symbol='+encodeURIComponent(c),{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return null;}).then(function(pd){ if(c!==cur.coin||!pd||!pd.price)return;
+  function pricePoll(){ if(document.hidden)return; var c=cur.coin; fetch('/api/price?symbol='+encodeURIComponent(c)+window.__mpPQ('heat',c),{cache:'no-store'}).then(function(r){return r.json();}).catch(function(){return null;}).then(function(pd){ if(c!==cur.coin||!pd||!pd.price)return;
     if(_hWsT&&Date.now()-_hWsT<6000){sched();return;} // a fresh WS tick already moved the candle — don't clobber it with the slower (≤10s) cached REST value
     cur.price=+pd.price; cur.chg=+pd.chg||0; if(pxEl)pxEl.innerHTML='$'+money(cur.price)+' <small>'+(cur.chg>=0?'+':'')+cur.chg.toFixed(2)+'%</small>'; liveCandle(); sched(); }); }
   function startPoll(){ stopPoll(); fetchLiq(); pollT=setInterval(fetchLiq,8000); pricePoll(); priceT=setInterval(pricePoll,6000); klT=setInterval(function(){ if(loadedKlines)reloadKlines(); },45000); }
@@ -2068,7 +2074,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     // FRESH price only: a stale mpLivePrices[sym] (seeded long ago by another open position on the same coin, never
     // updated because the coin isn't in the live feed) must never be the entry → wrong liq → phantom "instant liquidation".
     var _lp=window.mpLivePrices&&window.mpLivePrices[sym],p=(_lp&&_lp.p>0&&_lp.t&&(Date.now()-_lp.t)<2000)?+_lp.p:0; // 2s window: majors (WS, sub-second) use the cache; a polled altcoin (US) forces a fresh fetch so the entry matches the live market to the second (else it opens past its 100× liq → instant liquidation)
-    if(!(p>0)){fetch('/api/price?symbol='+sym,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0){if(window.mpLivePrices)window.mpLivePrices[sym]={p:+j.price,t:Date.now()};openPos();}});return;}
+    if(!(p>0)){fetch('/api/price?symbol='+sym+window.__mpPQ('mterm',sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0){if(window.mpLivePrices)window.mpLivePrices[sym]={p:+j.price,t:Date.now()};openPos();}});return;}
     var L=lev,mmr=(window.mpPlanMmr||0.005),notional=amt*L,qty=notional/p,liq=side==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
     var pos={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:side,entry:p,stop:null,tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:window.mpFeeRate(lev),status:'open',pnl:null};
     var _finMt=function(P){var d=jload();d.push(P);if(window.mpLivePrices)window.mpLivePrices[sym]={p:+P.entry,t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();
