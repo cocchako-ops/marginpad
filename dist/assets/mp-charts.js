@@ -711,13 +711,15 @@
         var hitS=null;for(var i=w.dr.shapes.length-1;i>=0;i--){if(hitShape(w.dr.shapes[i],p.x,p.y)){hitS=w.dr.shapes[i];break;}}
         w.dr.sel=hitS;redraw();if(w._drSyncUI)w._drSyncUI();
         if(hitS){var snap;try{snap=JSON.parse(JSON.stringify(hitS));}catch(_2){snap=null;}drag={mode:'move',s:hitS,l0:L,p0:P,snap:snap};}
+        else if(w.dr._auto){w.dr._auto=0;w.dr.on=false;try{w.el.classList.remove('drawing');var _atg=w.el.querySelector('.cwin-draw-tg');if(_atg)_atg.classList.remove('on');}catch(_3){}}/* auto edit-session (entered by clicking a drawing outside draw mode) ends on an empty click — this one click is consumed, the next gesture pans the chart normally */
         return;}
       if(tl==='alert'){createChartAlert(w,p.y);return;}
       var st={color:w.dr.color,w:w.dr.lw,dash:w.dr.dash};
+      var placed=function(s){w.dr.shapes.push(s);w.dr.sel=s;if(w._drSetTool)w._drSetTool('select');else w.dr.tool='select';redraw();save();if(w._drSyncUI)w._drSyncUI();};/* TradingView parity (2026-07-30): after placing a shape, revert to select + auto-select it (immediate adjust/style); pen is the exception — stays active for multi-stroke annotation */
       if(tl==='pen')w.dr.cur=Object.assign({t:'pen',pts:[{l:L,p:P}]},st);
-      else if(tl==='hline'){w.dr.shapes.push(Object.assign({t:'hline',p:P},st));redraw();save();}
-      else if(tl==='vline'){w.dr.shapes.push(Object.assign({t:'vline',l:L},st));redraw();save();}
-      else if(tl==='text'){var txt=prompt(mpDrawT('Text:'),'');if(txt&&txt.trim()){w.dr.shapes.push(Object.assign({t:'text',l:L,p:P,txt:txt.trim().slice(0,80)},st));redraw();save();}}
+      else if(tl==='hline')placed(Object.assign({t:'hline',p:P},st));
+      else if(tl==='vline')placed(Object.assign({t:'vline',l:L},st));
+      else if(tl==='text'){var txt=prompt(mpDrawT('Text:'),'');if(txt&&txt.trim())placed(Object.assign({t:'text',l:L,p:P,txt:txt.trim().slice(0,80)},st));}
       else w.dr.cur=Object.assign({t:tl,l1:L,p1:P,l2:L,p2:P},st);});
     cv.addEventListener('pointermove',function(e){if(!w.dr.on)return;var p=pos(e),L=toL(p.x),P=toP(p.y);
       if(drag&&drag.s){var s=drag.s;
@@ -736,11 +738,34 @@
       if(drag){drag=null;save();return;}
       if(w.dr.cur){var c=w.dr.cur;w.dr.cur=null;
         var degenerate=(c.l1!=null&&c.l2!=null&&c.p1!=null&&c.p2!=null&&Math.abs((xOf(c.l2)||0)-(xOf(c.l1)||0))<3&&Math.abs((yOf(c.p2)||0)-(yOf(c.p1)||0))<3);
-        if(!degenerate)w.dr.shapes.push(c);
-        redraw();save();}}
+        if(!degenerate){w.dr.shapes.push(c);if(c.t!=='pen'){w.dr.sel=c;if(w._drSetTool)w._drSetTool('select');else w.dr.tool='select';}}/* TV parity: placed → select tool + shape selected; pen keeps drawing */
+        redraw();save();if(w._drSyncUI)w._drSyncUI();}}
     cv.addEventListener('pointerup',endStroke);cv.addEventListener('pointercancel',endStroke);
     cv.addEventListener('dblclick',function(e){if(!w.dr.on)return;var p=pos(e);
       for(var i=w.dr.shapes.length-1;i>=0;i--){var s=w.dr.shapes[i];if(s.t==='text'&&hitShape(s,p.x,p.y)){var t=prompt(mpDrawT('Text:'),s.txt||'');if(t!=null){s.txt=t.trim().slice(0,80);redraw();save();}return;}}});
+    /* TradingView parity (2026-07-30): drawings are clickable OUTSIDE draw mode. The canvas stays pointer-events:none
+       (pan/zoom untouched by default); this CAPTURE-phase listener on the window body hit-tests a pointerdown BEFORE the
+       chart sees it. On a shape hit: consume the event, enter an auto edit-session (draw mode + select + selection) and
+       start the move-drag immediately — setPointerCapture routes the follow-up pointermove/up to cv, so the EXISTING drag
+       handlers do the work. Empty space: listener stays silent → the chart pans as before. The session exits on an empty
+       click in select mode (that one click is consumed — re-dispatching into the LWC canvas is fragile; TradingView eats
+       a deselect click the same way). Zero overhead with no drawings (early return). */
+    w._drBodyPd=function(e){
+      if(w.dead||!w.dr||w.dr.on||!w.dr.shapes.length)return;
+      if(e.button!=null&&e.button!==0)return;
+      var p=pos(e);if(!(p.x>=0&&p.y>=0&&p.x<=w.dr.W&&p.y<=w.dr.H))return;
+      var hitS=null;for(var i=w.dr.shapes.length-1;i>=0;i--){if(hitShape(w.dr.shapes[i],p.x,p.y)){hitS=w.dr.shapes[i];break;}}
+      if(!hitS)return;
+      e.preventDefault();e.stopPropagation();
+      w.dr.on=true;w.dr._auto=1;
+      try{w.el.classList.add('drawing');var tg=w.el.querySelector('.cwin-draw-tg');if(tg)tg.classList.add('on');}catch(_){}
+      if(w._drSetTool)w._drSetTool('select');else w.dr.tool='select';
+      w.dr.sel=hitS;redraw();if(w._drSyncUI)w._drSyncUI();
+      var L=toL(p.x),P=toP(p.y),snap=null;try{snap=JSON.parse(JSON.stringify(hitS));}catch(_2){}
+      drag={mode:'move',s:hitS,l0:L,p0:P,snap:snap};
+      try{cv.setPointerCapture(e.pointerId);}catch(_3){}
+    };
+    body.addEventListener('pointerdown',w._drBodyPd,true); // dies with the window DOM — no closeWin cleanup needed (unlike the window/document-level w._drKey/w._drPd)
     w._drKey=function(e){if(!w.dr||!w.dr.on||w.dead)return;var tg=e.target;if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'||tg.isContentEditable))return;
       if((e.key==='Delete'||e.key==='Backspace')&&w.dr.sel){var ix=w.dr.shapes.indexOf(w.dr.sel);if(ix>=0)w.dr.shapes.splice(ix,1);w.dr.sel=null;redraw();save();if(w._drSyncUI)w._drSyncUI();e.preventDefault();}
       else if(e.key==='Escape'&&w.dr.sel){w.dr.sel=null;redraw();if(w._drSyncUI)w._drSyncUI();}};window.addEventListener('keydown',w._drKey); // handler ref kept on w so closeWin can removeEventListener (was leaking per window over preset/layout switches)
@@ -753,7 +778,7 @@
   function mpDrawT(s){return s;}
   // shared draw toggle + toolbar wiring (used by desktop windows and the mobile chart)
   function wireDrawTools(w,dtg,tools){
-    if(dtg)dtg.addEventListener('click',function(e){e.stopPropagation();if(!w.dr)return;w.dr.on=!w.dr.on;w.el.classList.toggle('drawing',w.dr.on);dtg.classList.toggle('on',w.dr.on);if(w.dr.on){try{window.__mpTrack&&window.__mpTrack('draw',(w&&w.sym)||'');}catch(_){}}if(!w.dr.on){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}});
+    if(dtg)dtg.addEventListener('click',function(e){e.stopPropagation();if(!w.dr)return;w.dr.on=!w.dr.on;w.dr._auto=0;/* a manual toggle always ends any auto edit-session */w.el.classList.toggle('drawing',w.dr.on);dtg.classList.toggle('on',w.dr.on);if(w.dr.on){try{window.__mpTrack&&window.__mpTrack('draw',(w&&w.sym)||'');}catch(_){}}if(!w.dr.on){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}});
     if(!tools)return;
     function closePops(){tools.querySelectorAll('.cwin-pop').forEach(function(x){x.hidden=true;});tools.querySelectorAll('.cwin-pick').forEach(function(x){x.classList.remove('open');});}
     function togglePop(name,btn){var p=tools.querySelector('[data-pop="'+name+'"]');if(!p)return;var wasHidden=p.hidden;closePops();if(wasHidden){p.hidden=false;if(btn)btn.classList.add('open');}}
@@ -771,6 +796,7 @@
       var sc=tools.querySelector('.scur');if(sc){sc.textContent=da?'┄':'━';sc.style.fontSize=(lw===1?'9px':(lw===3?'15px':'12px'));}
       var del=tools.querySelector('[data-del]');if(del)del.classList.toggle('sel',!!s);}
     w._drSyncUI=syncUI;
+    w._drSetTool=function(tl){if(!w.dr)return;w.dr.tool=tl;if(w.el&&w.el.classList)w.el.classList.toggle('dr-select',tl==='select');setToolUI(tl);syncUI();};/* engine hook (auto-revert to select after placing a shape + the outside-mode click path). Lives on w, not w.dr — wire runs BEFORE setupDraw on desktop and AFTER on mobile; call-time lookup makes the order irrelevant (documented gotcha). Does NOT clear sel (the palette click path does that itself). */
     tools.addEventListener('pointerdown',function(e){e.stopPropagation();});
     tools.addEventListener('click',function(e){var b=e.target.closest('.cwin-tool,.cwin-color,.cpop-it');if(!b||!w.dr)return;e.stopPropagation();
       if(b.hasAttribute('data-tpick')){togglePop('tool',b);return;}
@@ -783,7 +809,7 @@
       if(b.hasAttribute('data-lw')){var lw=+b.getAttribute('data-lw')||2;if(sel){sel.w=lw;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}else w.dr.lw=lw;syncUI();return;}
       if(b.hasAttribute('data-dash')){if(sel){sel.dash=!sel.dash;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}else w.dr.dash=!w.dr.dash;syncUI();return;}
       if(b.classList.contains('cwin-color')){var c=b.getAttribute('data-color');if(sel){sel.color=c;if(w.dr.redraw)w.dr.redraw();if(w.dr.save)w.dr.save();}w.dr.color=c;closePops();syncUI();return;}
-      var tl=b.getAttribute('data-tool');if(tl){w.dr.tool=tl;if(tl!=='select'){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}if(w.el&&w.el.classList)w.el.classList.toggle('dr-select',tl==='select');setToolUI(tl);closePops();syncUI();}});
+      var tl=b.getAttribute('data-tool');if(tl){if(tl!=='select'){w.dr.sel=null;if(w.dr.redraw)w.dr.redraw();}w._drSetTool(tl);closePops();}});
     syncUI();
   }
   try{window.__mpSig={indAllowed:indAllowed,MP_INDS:MP_INDS,ITIPS:ITIPS,money:money,computeSignals:computeSignals,computeMomentum:computeMomentum,computeSqueeze:computeSqueeze,computeLiqRev:computeLiqRev,cascadeCalc:cascadeCalc,brainFactors:brainFactors,brainCalc:brainCalc,memoryCalc:memoryCalc,poolsNow:poolsNow,magnetCalc:magnetCalc,sentimentCalc:sentimentCalc,scoreMarkers:scoreMarkers,loadLiqRev:loadLiqRev,loadFunding:loadFunding,loadCrowd:loadCrowd,loadCalHi:loadCalHi};}catch(e){} // shared premium-signal engine for the mobile charts (single source of truth)
