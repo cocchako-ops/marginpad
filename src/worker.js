@@ -5068,9 +5068,9 @@ function u360(email,uname){
     function u3LvlPanel(d,xpd){
       
       var lv=(xpd&&xpd.level)||{k:'bronze',name:'Bronze',col:'#c97f4a',xp:0,pct:0,next:'Silver',toNext:2000};
-      var log=(xpd&&xpd.log)||[],bySrc=(xpd&&xpd.bySrc)||[];
-      var SRCN={trade_win:'Profitable trades',trade:'Closed trades',checkin:'Daily check-in',streak:'Streak bonus',mission:'Missions',faucet:'Faucet claims',promo:'Promo posts',exsign:'Exchange sign-ups',lbprize:'Competitions',username:'Username',academy:'Academy',admin:'Admin adjust'};
-      var srcRows=bySrc.slice(0,8).map(function(s){return '<div class="ovv-row"><span style="flex:1;color:#8fa3c4">'+esc(SRCN[s.src]||s.src)+'</span><b style="color:#c2f64a">+'+(+s.tot).toLocaleString()+'</b></div>';}).join('')||'<div class="empty">no XP yet</div>';
+      var log=(xpd&&xpd.log)||[],bySrc=(xpd&&xpd.bySrc)||[],spent=(xpd&&xpd.spent)||[];
+      var SRCN={trade_win:'Profitable trades',trade:'Closed trades',checkin:'Daily check-in',streak:'Streak bonus',mission:'Missions',faucet:'Faucet claims',promo:'Promo posts',exsign:'Exchange sign-ups',lbprize:'Competitions',username:'Username',academy:'Academy',charts:'Chart analysis',heatmap:'Liquidation map',duel:'Duels won',duel_pot:'Duel pot',duel_stake:'Duel stakes',admin:'Admin adjust'};
+      var srcRows=(bySrc.slice(0,8).map(function(s){return '<div class="ovv-row"><span style="flex:1;color:#8fa3c4">'+esc(SRCN[s.src]||s.src)+'</span><b style="color:#c2f64a">+'+(+s.tot).toLocaleString()+'</b></div>';}).join('')+spent.slice(0,4).map(function(s){return '<div class="ovv-row"><span style="flex:1;color:#8fa3c4">'+esc(SRCN[s.src]||s.src)+'</span><b style="color:#ff6258">'+(+s.tot).toLocaleString()+'</b></div>';}).join(''))||'<div class="empty">no XP yet</div>';
       var logRows=log.slice(0,12).map(function(e9){var neg=(+e9.amt)<0;return '<div class="ovv-row"><span style="width:52px;color:#5c6b84">'+ago(e9.ts)+'</span><span style="flex:1;color:#dbe4f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(SRCN[e9.src]||e9.src)+(e9.note?' <small style="color:#5c6b84">'+esc(String(e9.note).slice(0,30))+'</small>':'')+'</span><b style="color:'+(neg?'#ff6258':'#2ebd85')+'">'+(neg?'':'+')+(+e9.amt).toLocaleString()+'</b></div>';}).join('')||'<div class="empty">no history</div>';
       return '<div class="ovv-p" style="grid-column:1/-1;margin-top:12px" data-u3lvl>'
         +'<div class="ovv-ph">Level &amp; XP <a class="ovv-more" href="/levels/" target="_blank">/levels/ &rarr;</a></div>'
@@ -7644,7 +7644,7 @@ async function handleAuth(url, request, env, ctx) {
     if (!tok) return jr({ signedIn: false });
     let sd = null; try { const sr = await stub.fetch(new Request('https://do/session?token=' + encodeURIComponent(tok))); sd = await sr.json(); } catch (e) { return jr({ signedIn: false, transient: true }); }
     if (!sd || !sd.user || !sd.user.id) return jr({ signedIn: false });
-    try { const r = await stub.fetch(new Request('https://do/xplog?uid=' + encodeURIComponent(sd.user.id))); const d = await r.json(); return jr({ signedIn: true, xp: sd.user.xp || 0, log: d.log || [], bySrc: d.bySrc || [] }); } catch (e) { return jr({ signedIn: true, xp: sd.user.xp || 0, log: [], bySrc: [] }); }
+    try { const r = await stub.fetch(new Request('https://do/xplog?uid=' + encodeURIComponent(sd.user.id))); const d = await r.json(); return jr({ signedIn: true, xp: sd.user.xp || 0, log: d.log || [], bySrc: d.bySrc || [], spent: d.spent || [] }); } catch (e) { return jr({ signedIn: true, xp: sd.user.xp || 0, log: [], bySrc: [], spent: [] }); }
   }
   if (path === '/me') {
     const tok = getCookie(request, SESS_COOKIE);
@@ -10491,7 +10491,8 @@ export class UserStore {
     if (path === '/xplog') { const uid = String(url.searchParams.get('uid') || ''); const u = this.rows('SELECT xp,streak,freezes FROM users WHERE id=?', uid)[0];
       const log = this.rows('SELECT ts,src,amt,note FROM xplog WHERE user_id=? ORDER BY ts DESC LIMIT 80', uid);
       const bySrc = this.rows('SELECT src, COALESCE(SUM(amt),0) tot FROM xplog WHERE user_id=? AND amt>0 GROUP BY src ORDER BY tot DESC', uid);
-      return this.j({ xp: u ? (u.xp || 0) : 0, streak: u ? (u.streak || 0) : 0, freezes: u ? (u.freezes || 0) : 0, level: xpLevelOf(u ? u.xp : 0), log, bySrc });
+      const spent = this.rows('SELECT src, COALESCE(SUM(amt),0) tot FROM xplog WHERE user_id=? AND amt<0 GROUP BY src ORDER BY tot ASC', uid); // XP SPENT by source (negative tot), e.g. duel_stake — bySrc filters amt>0 so spending was invisible in the "by source" view (2026-07-30 fix)
+      return this.j({ xp: u ? (u.xp || 0) : 0, streak: u ? (u.streak || 0) : 0, freezes: u ? (u.freezes || 0) : 0, level: xpLevelOf(u ? u.xp : 0), log, bySrc, spent });
     }
     if (path === '/xp/top') { // public: top members by XP (Top clanovi leaderboard) — named, non-banned, xp>0
       const lim = Math.min(50, Math.max(1, +url.searchParams.get('limit') || 20));

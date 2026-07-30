@@ -155,7 +155,7 @@
     + '.mpa-dm-send{background:#38bdf8;color:#04121c;font-weight:800;border:none;border-radius:11px;padding:0 16px;cursor:pointer}'
     + '.mpa-dm-send:disabled{opacity:.5;cursor:default}'
     + '.mpa-xp-tot{font-family:ui-monospace,Consolas,monospace;font-size:13px;color:#9aa3ad;margin:2px 0 10px}.mpa-xp-tot b{color:#c9a5ff;font-size:16px}'
-    + '.mpa-xp-sum{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 11px}.mpa-xp-chip{font-family:ui-monospace,Consolas,monospace;font-size:11px;font-weight:700;color:#c9a5ff;background:rgba(180,140,255,.1);border:1px solid rgba(180,140,255,.28);border-radius:20px;padding:4px 10px}.mpa-xp-chip b{color:#e6d8ff}'
+    + '.mpa-xp-sum{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 11px}.mpa-xp-chip{font-family:ui-monospace,Consolas,monospace;font-size:11px;font-weight:700;color:#c9a5ff;background:rgba(180,140,255,.1);border:1px solid rgba(180,140,255,.28);border-radius:20px;padding:4px 10px}.mpa-xp-chip b{color:#e6d8ff}.mpa-xp-chip.neg{color:#ff8a80;background:rgba(255,120,110,.1);border-color:rgba(255,120,110,.28)}.mpa-xp-chip.neg b{color:#ffb3ab}'
     + '.mpa-xp-list{display:flex;flex-direction:column;max-height:min(50vh,400px);overflow-y:auto;background:#0a0d11;border:1px solid #2f3742;border-radius:12px;padding:2px 12px}'
     + '.mpa-xp-r{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid #1a2027}.mpa-xp-r:last-child{border-bottom:none}'
     + '.mpa-xp-amt{flex:0 0 auto;min-width:46px;font-family:ui-monospace,Consolas,monospace;font-weight:800;font-size:13.5px}.mpa-xp-amt.pos{color:#c9a5ff}.mpa-xp-amt.neg{color:#ff8a80}'
@@ -362,7 +362,7 @@
     });
   }
   // ---- XP history (header profile → what XP you earned, when and why) ----
-  var XPN = { trade: 'Trade closed', trade_win: 'Winning trade', trade_hh: 'XP Happy Hour', trade_promo: 'XP promo', checkin: 'Daily check-in', streak: 'Streak bonus', mission: 'Daily mission', faucet: 'Faucet claim', promo: 'Promo post', exsign: 'Exchange sign-up', lbprize: 'Competition prize', username: 'Username set', academy: 'Academy lesson', charts: 'Chart analysis', admin: 'Manual adjustment', backfill: 'Loyalty bonus', signup: 'Signed up' };
+  var XPN = { trade: 'Trade closed', trade_win: 'Winning trade', trade_hh: 'XP Happy Hour', trade_promo: 'XP promo', checkin: 'Daily check-in', streak: 'Streak bonus', mission: 'Daily mission', faucet: 'Faucet claim', promo: 'Promo post', exsign: 'Exchange sign-up', lbprize: 'Competition prize', username: 'Username set', academy: 'Academy lesson', charts: 'Chart analysis', heatmap: 'Liquidation map', admin: 'Manual adjustment', backfill: 'Loyalty bonus', signup: 'Signed up', duel: 'Duel won', duel_pot: 'Duel pot', duel_stake: 'Duel stake' };
   function xpAgo(ts) { var s = Math.round((Date.now() - ts) / 1000); if (s < 60) return s + 's ago'; var m = Math.floor(s / 60); if (m < 60) return m + 'm ago'; var h = Math.floor(m / 60); if (h < 24) return h + 'h ago'; var d = Math.floor(h / 24); if (d < 30) return d + 'd ago'; try { return new Date(ts).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); } catch (e) { return d + 'd ago'; } }
   function renderXpHistory() {
     bodyEl.innerHTML = '<h3 class="mpa-h">XP history</h3>'
@@ -374,7 +374,7 @@
     fetch('/api/auth/xphistory').then(function (r) { return r.json(); }).then(function (d) {
       if (!d || d.signedIn === false) { var l0 = bodyEl.querySelector('#mpaXpList'); if (l0) l0.innerHTML = '<div class="mpa-xp-empty">Please sign in again.</div>'; return; }
       var tot = bodyEl.querySelector('#mpaXpTot'); if (tot) tot.innerHTML = '<b>' + (+d.xp || 0).toLocaleString() + '</b> total XP earned';
-      var sum = bodyEl.querySelector('#mpaXpSum'); if (sum) { var bs = (d.bySrc || []).slice(0, 4); sum.innerHTML = bs.map(function (x) { return '<span class="mpa-xp-chip">' + esc(XPN[x.src] || x.src) + ' <b>+' + (+x.tot || 0).toLocaleString() + '</b></span>'; }).join(''); }
+      var sum = bodyEl.querySelector('#mpaXpSum'); if (sum) { var bs = (d.bySrc || []).slice(0, 4), sp = (d.spent || []).slice(0, 3); sum.innerHTML = bs.map(function (x) { return '<span class="mpa-xp-chip">' + esc(XPN[x.src] || x.src) + ' <b>+' + (+x.tot || 0).toLocaleString() + '</b></span>'; }).join('') + sp.map(function (x) { return '<span class="mpa-xp-chip neg">' + esc(XPN[x.src] || x.src) + ' <b>' + (+x.tot || 0).toLocaleString() + '</b></span>'; }).join(''); }
       var list = bodyEl.querySelector('#mpaXpList'); if (!list) return;
       var log = (d.log || []);
       if (!log.length) { list.innerHTML = '<div class="mpa-xp-empty">No XP yet — close a winning paper trade, finish an Academy lesson, keep a daily streak or claim a reward to start earning.</div>'; return; }
