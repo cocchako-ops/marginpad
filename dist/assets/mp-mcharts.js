@@ -151,13 +151,7 @@
   function loadKlines(p){ if(!p.candle)return;var sym=p.sym,tf=p.tf;p.reload=Date.now();
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle)return;
-      if(kd&&kd.length){kd=sanitizeBars(kd);var CS=window.__mpChartSync;/* REUSE the desktop merge (mp-charts.js is loaded alongside for __mpDraw) — no duplicated merge logic here (2026-07-30) */
-        if(!p.lastBar||!CS){/* FIRST load (or shared merge not loaded yet: rare defer race) → authoritative full setData. This is the OLD whole-array behavior, NOT a copy of the merge → nothing to drift. */p.bars=kd;p.lastBar=kd[kd.length-1];p._syncEdge=p.lastBar.time;try{p.candle.setData(kd);}catch(e){}}
-        else{var _m=CS(p,kd);if(String(_m).indexOf('skip')===0){label(p);return;}}/* re-sync: MERGE — keeps closed history, reconciles only the live-touchable recent window, drops stale/out-of-order (race guard). Per-pane: chartSync only touches the p passed in. */
-        p._lgp=+p.lastBar.close||0;p._rej=0;
-        try{var _lp=Math.abs(+p.lastBar.close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);p.candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});p.chart.priceScale('right').applyOptions({autoScale:true});p.chart.timeScale().scrollToRealTime();}catch(e){}/* ~5 sig figs — mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */
-        applyInds(p);if(p.trades)drawTrades(p);
-        try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}}
+      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);var _lp=Math.abs(+p.lastBar.close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);p.candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});p.chart.priceScale('right').applyOptions({autoScale:true});p.chart.timeScale().scrollToRealTime();}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs — mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}}
       label(p);
     });
   }
@@ -326,7 +320,7 @@
     q('mtrSeg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;side=b.getAttribute('data-side');
       Array.prototype.forEach.call(q('mtrSeg').querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});
       q('mtrSeg').classList.toggle('short',side==='short');upd();});
-    q('mtrLev').addEventListener('input',function(){lev=Math.min((window.mpMaxLev?window.mpMaxLev(tSym):1000),posToLev(+this.value));q('mtrLevV').textContent=lev+'×';upd();});
+    q('mtrLev').addEventListener('input',function(){lev=posToLev(+this.value);q('mtrLevV').textContent=lev+'×';upd();});
     q('mtrAmt').addEventListener('input',function(){if(+this.value>100000)this.value=100000;upd();});
     q('mtrAdvChk').addEventListener('change',function(){q('mtrAdv').hidden=!this.checked;});
     q('mtrEx').addEventListener('change',function(){mmr=(+this.value||0.5)/100;upd();});
@@ -367,7 +361,7 @@
         if(isFinite(tp)&&((long&&tp<=px)||(!long&&tp>=px)))tp=NaN;
         var tr=parseFloat(q('mtrTr').value),be=parseFloat(q('mtrBE').value);
         var notional=amt*lev,qty=notional/px,liq=long?px*(1-(1-mmr)/lev):px*(1+(1-mmr)/lev);
-        var _locT={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:tSym,side:side,entry:px,stop:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,trail:(isFinite(tr)&&tr>0)?tr:null,be:(isFinite(be)&&be>0)?be:null,hwm:null,lev:lev,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:(window.mpFeeRate?window.mpFeeRate(lev):Math.min(0.00055,0.1/Math.max(1,lev))),status:'open',pnl:null};try{if(window.mpBal&&window.mpBal.tag)window.mpBal.tag(_locT);}catch(_){}
+        var _locT={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:tSym,side:side,entry:px,stop:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null,trail:(isFinite(tr)&&tr>0)?tr:null,be:(isFinite(be)&&be>0)?be:null,hwm:null,lev:lev,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null};
         var _finMc=function(P){
         var d;try{d=JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){d=[];}
         d.push(P);
@@ -485,7 +479,7 @@
   }
   window.mpOpenCharts=open;
   // live ticks
-  document.addEventListener('mp:price',function(ev){if(!ov||ov.hidden||!ev.detail)return;panes.forEach(function(p){if(p.sym===ev.detail.sym){if(p._raf)return;p._raf=true;requestAnimationFrame(function(){p._raf=false;if(ov&&!ov.hidden&&p.candle)live(p);});}});}); // per-pane rAF coalesce so two same-frame ticks don't run live() twice
+  document.addEventListener('mp:price',function(ev){if(!ov||ov.hidden||!ev.detail)return;panes.forEach(function(p){if(p.sym===ev.detail.sym)live(p);});});
   setInterval(function(){if(!ov||ov.hidden)return;panes.forEach(function(p){
     if(!p.candle)return;
     // (1) re-assert autoScale ONLY at the realtime edge — a locked/drifted price scale (e.g. the user dragged the

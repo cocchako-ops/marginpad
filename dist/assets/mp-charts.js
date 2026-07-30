@@ -783,7 +783,7 @@
     if(!tools)return;
     function closePops(){tools.querySelectorAll('.cwin-pop').forEach(function(x){x.hidden=true;});tools.querySelectorAll('.cwin-pick').forEach(function(x){x.classList.remove('open');});}
     function togglePop(name,btn){var p=tools.querySelector('[data-pop="'+name+'"]');if(!p)return;var wasHidden=p.hidden;closePops();if(wasHidden){p.hidden=false;if(btn)btn.classList.add('open');}}
-    w._drPd=function(e){if(!tools.isConnected)return;if(!tools.contains(e.target))closePops();};document.addEventListener('pointerdown',w._drPd,true); // ref on w → removed in closeWin
+    document.addEventListener('pointerdown',function(e){if(!tools.isConnected)return;if(!tools.contains(e.target))closePops();},true);
     function setToolUI(tl){
       tools.querySelectorAll('.cpop-it[data-tool]').forEach(function(x){x.classList.toggle('on',x.getAttribute('data-tool')===tl);});
       var sb=tools.querySelector('.cwin-tool[data-tool="select"]');if(sb)sb.classList.toggle('on',tl==='select');
@@ -898,39 +898,8 @@
   function loadData(w,first){ if(w._ls&&w._ls!==w.sym&&w.chAlerts&&w.chAlerts.length){w.chAlerts.forEach(function(a){if(a.pl&&w.candle)try{w.candle.removePriceLine(a.pl);}catch(e){}});w.chAlerts=[];} /* alert lines are per-symbol — drop them when the window switches coins (the server alert for the old coin stays) */ w._ls=w.sym;w._lt=w.tf;w._noMore=false;w._lm=false;/* restart history pagination for the new symbol/TF */try{aiClearPlan(w);}catch(e){}/* AI-drawn plan lines are a snapshot for the old symbol/TF — clear on switch */showSkel(w,true);try{if(window.mpWS)window.mpWS.sub(w.sym);}catch(e){} // stream this symbol live the moment its chart loads
     fetch('/api/klines?symbol='+encodeURIComponent(w.sym)+'&interval='+w.tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(w.dead||w._ls!==w.sym||w._lt!==w.tf||!w.candle)return;
-      if(kd&&kd.length){kd=sanitizeBars(kd);w.bars=kd;applyPrec(w.candle,kd[kd.length-1].close);try{w.candle.setData(kd);}catch(e){}w.lastBar=kd[kd.length-1];w._syncEdge=w.lastBar.time;/* reconcile watermark for refreshData: only bars at/after this can be live-touched → immutable deep history below it */w._lgp=w.lastBar&&w.lastBar.close||0;w._rej=0;w._disp=null;/* snap eased close to the new symbol */applyInds(w);try{if(w.dr&&w.dr.reload)w.dr.reload();}catch(e){}/* restore this symbol:TF's saved drawings (time-anchored) */if(first){try{w.chart.priceScale('right').applyOptions({autoScale:true});w.chart.timeScale().scrollToRealTime();}catch(e){}}}/* re-enable price auto-scale on every symbol/TF change so the chart re-fits to the new range (XRP 1.1 → BTC 63k) instead of staying stuck */
+      if(kd&&kd.length){kd=sanitizeBars(kd);w.bars=kd;applyPrec(w.candle,kd[kd.length-1].close);try{w.candle.setData(kd);}catch(e){}w.lastBar=kd[kd.length-1];w._lgp=w.lastBar&&w.lastBar.close||0;w._rej=0;w._disp=null;/* snap eased close to the new symbol */applyInds(w);try{if(w.dr&&w.dr.reload)w.dr.reload();}catch(e){}/* restore this symbol:TF's saved drawings (time-anchored) */if(first){try{w.chart.priceScale('right').applyOptions({autoScale:true});w.chart.timeScale().scrollToRealTime();}catch(e){}}}/* re-enable price auto-scale on every symbol/TF change so the chart re-fits to the new range (XRP 1.1 → BTC 63k) instead of staying stuck */
       showSkel(w,false); }); }
-  // ── Klines re-sync MERGE (2026-07-30 fix) ──────────────────────────────────────────────────────────────────────
-  // refreshData used to w.candle.setData(FRESH) — replacing the WHOLE history. So a cache-refresh source flip OR an
-  // out-of-order (stale-after-fresh) response rewrote already-CLOSED candles with another exchange's OHLC. But liveTick
-  // only ever touches the FORMING bar, so deep history can never hold a phantom wick → it must never be overwritten.
-  // mpKlineMerge keeps local deep-history values, takes fresh values only for bars at/after `edge` (the live-touchable
-  // window → still cleans phantom wicks + advances the forming bar), appends genuinely new bars, and DROPS a response
-  // whose newest bar is older than ours (the race guard). Structural mismatch → a TAGGED authoritative full rebuild.
-  function mpKlineMerge(local,fresh,edge){
-    if(!fresh||!fresh.length)return{mode:'skip',reason:'empty-fresh'};
-    if(!local||!local.length)return{mode:'replace',reason:'empty-local',bars:fresh};
-    var lLast=local[local.length-1].time,fFirst=fresh[0].time,fLast=fresh[fresh.length-1].time;
-    if(fLast<lLast)return{mode:'skip',reason:'fresh-older'};              // stale / out-of-order response → drop (RACE guard)
-    if(fFirst>lLast)return{mode:'replace',reason:'gap-too-large',bars:fresh}; // a hole reconcile can't bridge → rebuild
-    var fByT={};for(var i=0;i<fresh.length;i++)fByT[fresh[i].time]=fresh[i];
-    var out=[];for(var j=0;j<local.length;j++){var b=local[j];out.push((b.time>=edge&&fByT[b.time])?fByT[b.time]:b);} // deep history KEPT; recent reconciled
-    for(var k=0;k<fresh.length;k++){if(fresh[k].time>lLast)out.push(fresh[k]);} // append genuinely new bars
-    return{mode:'merge',reason:'',bars:out};
-  }
-  function chartSync(w,kd){ // apply mpKlineMerge to a window: setData(MERGED) on merge/replace, skip on stale; tag the rare full-replace fallback
-    if(!kd||!kd.length)return'skip:empty';
-    var edge=(w._syncEdge!=null)?w._syncEdge:(w.lastBar?w.lastBar.time:((w.bars&&w.bars.length)?w.bars[w.bars.length-1].time:0));
-    var plan=mpKlineMerge(w.bars,kd,edge);
-    if(plan.mode==='skip')return'skip:'+plan.reason;
-    if(plan.mode==='replace'){ try{console.warn('[chartsync] full-replace fallback: '+plan.reason+' '+w.sym+' '+w.tf);}catch(e){} try{window.__mpChartFallback=(window.__mpChartFallback||0)+1;}catch(e){} try{if(window.__mpTrack)window.__mpTrack('chartsync','fb:'+plan.reason);}catch(e){} } // TAG: rare→untested branch; surface every hit (AE event + console + counter) so a too-tight/too-loose condition is visible, never a silent revert to the old whole-replace
-    w.bars=plan.bars;try{w.candle.setData(w.bars);}catch(e){} // setData on the MERGED array: deep bars = local values (identical → no visual flip), only recent reconciled + new appended
-    w.lastBar=w.bars.length?w.bars[w.bars.length-1]:w.lastBar;
-    w._syncEdge=w.lastBar?w.lastBar.time:edge; // advance watermark: everything up to the newest bar is authoritative; only future live ticks can corrupt beyond it
-    if(plan.mode==='replace'){try{if(w.dr&&w.dr.reload)w.dr.reload();}catch(e){}} // drift guard (2026-07-30): a replace swaps in a window whose START shifted → logical indices re-index under the drawings (the OLD full-replace refreshData drifted shapes 1 bar per rolled candle this way). Re-derive logicals from the stored TIME anchors against the new grid (every mutation saves, so store==memory). merge mode keeps the array start → no re-anchor needed. Mobile re-anchors itself (loadKlines calls p.w.dr.reload() after every load).
-    return plan.mode;
-  }
-  try{window.__mpKlineMerge=mpKlineMerge;window.__mpChartSync=chartSync;}catch(e){} // debug/test hooks (like window.__mpDraw/__mpAiContext)
   // Quietly re-sync the candles with the exchange's true OHLC (no skeleton, preserves the view). The live WS feed only
   // ever EXPANDS the forming bar's high/low, so a transient bad/low print bakes a phantom wick ("a drop that never
   // happened") into the bar — and once it closes it's stuck forever (no other reload on desktop). A periodic refetch of
@@ -939,10 +908,7 @@
     try{var _vr=w.chart.timeScale().getVisibleLogicalRange();if(_vr&&w.bars&&w.bars.length&&_vr.to<w.bars.length-3)return;}catch(e){} // user scrolled into history → don't setData under them (drops paginated bars)
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(w.dead||w.sym!==sym||w.tf!==tf||!w.candle||!kd||!kd.length)return;
-      kd=sanitizeBars(kd);
-      var m=chartSync(w,kd); // MERGE not whole-replace: keeps closed history, reconciles only the live-touchable recent window, drops stale/out-of-order responses
-      if(m.indexOf('skip')===0)return; // stale response dropped → leave the chart untouched
-      w._lgp=w.lastBar&&w.lastBar.close||0;w._rej=0;w._disp=null;try{applyInds(w);}catch(e){}
+      kd=sanitizeBars(kd);w.bars=kd;try{w.candle.setData(kd);}catch(e){}w.lastBar=kd[kd.length-1];w._lgp=w.lastBar&&w.lastBar.close||0;w._rej=0;w._disp=null;try{applyInds(w);}catch(e){}
     }); }
   // load older history when the user scrolls back toward the start (full history to the coin's inception, like Paper Trade)
   function loadMoreW(w){ if(w.dead||w._lm||w._noMore||!w.bars||!w.bars.length||!w.candle)return;
@@ -972,7 +938,7 @@
     else{if(w._lgp>0&&Math.abs(p-w._lgp)/w._lgp>0.025){if((w._rej=(w._rej||0)+1)<3)return;}/* reject a lone >2.5% print that would ratchet a fake wick */w._lgp=p;w._rej=0;w.lastBar.close=p;if(p>w.lastBar.high)w.lastBar.high=p;if(p<w.lastBar.low)w.lastBar.low=p;}
     if(nb){w._disp=w.lastBar.close;try{w.candle.update(w.lastBar);}catch(e){}applyInds(w);try{w.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){} } // a fresh bar appears instantly + re-fit the price scale so candles never get clipped to "half" if the vertical scale drifted/locked over a long session
     else startSmooth(); // forming-bar close is eased toward the true price by the rAF loop → it glides at 60fps instead of snapping
-    if(w.dr&&w.dr.shapes&&w.dr.shapes.length&&w.dr.redraw){if(w._drawC)w._drawC();else w.dr.redraw();} // coalesced per-frame redraw instead of a full canvas re-projection on every price tick
+    if(w.dr&&w.dr.shapes&&w.dr.shapes.length&&w.dr.redraw)w.dr.redraw();
     // once price crosses an alert level it has triggered (cron emails) — clear its line so it doesn't linger
     if(w.chAlerts&&w.chAlerts.length){for(var ai=w.chAlerts.length-1;ai>=0;ai--){var al=w.chAlerts[ai];if((al.dir==='up'&&p>=al.price)||(al.dir==='down'&&p<=al.price)){if(al.pl)try{w.candle.removePriceLine(al.pl);}catch(e){}w.chAlerts.splice(ai,1);chartToast('🔔 '+w.sym+' hit '+cwFmt(al.price)+' — alert triggered');}}} }
   // ---- smoothness: ease each forming candle's displayed close toward its true price at 60fps so it glides (premium feel).
@@ -1082,7 +1048,7 @@
     Array.prototype.forEach.call(w.el.querySelectorAll('.cwin-rz'),function(h){h.addEventListener('pointerdown',function(e){startResize(w,h.getAttribute('data-rz'),e);});});
   }
   function renumber(){for(var i=0;i<wins.length;i++){var n=wins[i].el&&wins[i].el.querySelector('.cwin-num');if(n)n.textContent=String(i+1);}}
-  function closeWin(w){w.dead=true;if(w.poll)clearInterval(w.poll);if(w.refreshT)clearInterval(w.refreshT);try{if(w.dr&&w.dr.ro)w.dr.ro.disconnect();}catch(e){}try{if(w._drKey)window.removeEventListener('keydown',w._drKey);}catch(e){}try{if(w._drPd)document.removeEventListener('pointerdown',w._drPd,true);}catch(e){}/* drop the per-window draw listeners so they don't accumulate on window/document */try{if(w.chart)w.chart.remove();}catch(e){}w.chart=null;w.candle=null;w.indSeries=null;w.indLines=null;/* release the disposed LWC instance + its retained closures for GC */if(w.el&&w.el.parentNode)w.el.parentNode.removeChild(w.el);wins=wins.filter(function(x){return x!==w;});renumber();updateCount();savePersist();if(!wins.length)showEmpty(true);}
+  function closeWin(w){w.dead=true;if(w.poll)clearInterval(w.poll);if(w.refreshT)clearInterval(w.refreshT);try{if(w.dr&&w.dr.ro)w.dr.ro.disconnect();}catch(e){}try{if(w.chart)w.chart.remove();}catch(e){}w.chart=null;w.candle=null;w.indSeries=null;w.indLines=null;/* release the disposed LWC instance + its retained closures for GC */if(w.el&&w.el.parentNode)w.el.parentNode.removeChild(w.el);wins=wins.filter(function(x){return x!==w;});renumber();updateCount();savePersist();if(!wins.length)showEmpty(true);}
   function addWin(cfg){ if(wins.length>=MAXn())return; cfg=cfg||{}; showEmpty(false);
     var w={sym:cfg.sym||nextSym(),tf:cfg.tf||'60',inds:cfg.inds||{sig:false,sr:false,bs:false,ema:false},emaList:cfg.emaList||(cfg.emaP?[cfg.emaP]:[21]),smaList:cfg.smaList||(cfg.smaP?[cfg.smaP]:[50]),bars:[],dead:false,id:cfg.id||(++winSeq)};
     var symOpts=SYMS.map(function(s){return '<option'+(s===w.sym?' selected':'')+'>'+s+'</option>';}).join('');
@@ -1152,7 +1118,7 @@
   var qtEl=null,qtSide='long',qtLev=10;
   function qtPosToLev(p){return Math.max(1,Math.min(1000,Math.round(Math.pow(1000,p/1000))));}   // log slider 0..1000 → 1×..1000×
   function qtLevToPos(l){l=Math.max(1,Math.min(1000,l));return Math.round(Math.log(l)/Math.log(1000)*1000);}
-  function updateQT(){if(!qtEl||qtEl.hidden)return;var sym=qtEl.querySelector('.cqt-sym').value;var _cap=(window.mpMaxLev?window.mpMaxLev(sym):1000);if(qtLev>_cap){qtLev=_cap;var _sl=qtEl.querySelector('.cqt-lev');if(_sl)_sl.value=qtLevToPos(qtLev);var _lv=qtEl.querySelector('.cqt-levv');if(_lv)_lv.textContent=qtLev+'×';}var lev=qtLev,amt=+qtEl.querySelector('.cqt-amt').value||0,p=qtPrice(sym);
+  function updateQT(){if(!qtEl||qtEl.hidden)return;var sym=qtEl.querySelector('.cqt-sym').value,lev=qtLev,amt=+qtEl.querySelector('.cqt-amt').value||0,p=qtPrice(sym);
     var lvv=qtEl.querySelector('.cqt-levv');if(lvv)lvv.innerHTML=lev+'&times;';
     var eE=qtEl.querySelector('.cqt-entry'),eL=qtEl.querySelector('.cqt-liq'),eS=qtEl.querySelector('.cqt-size');
     if(!(p>0)){if(eE)eE.textContent='…';if(eL)eL.textContent='…';if(eS)eS.textContent='…';return;}
@@ -1168,7 +1134,7 @@
       var _lng=qtSide==='long',_sl=sl,_tp=tp;
       if(isFinite(_sl)&&((_lng&&_sl>=p)||(!_lng&&_sl<=p)))_sl=NaN;
       if(isFinite(_tp)&&((_lng&&_tp<=p)||(!_lng&&_tp>=p)))_tp=NaN;
-      var d=jload();var _qt=srvT||{id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:qtSide,entry:p,stop:isFinite(_sl)?_sl:null,tp:isFinite(_tp)?_tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:(window.mpFeeRate?window.mpFeeRate(L):Math.min(0.00055,0.1/Math.max(1,L))),status:'open',pnl:null};try{if(window.mpBal&&window.mpBal.tag)window.mpBal.tag(_qt);}catch(_){}d.push(_qt);
+      var d=jload();d.push(srvT||{id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:qtSide,entry:p,stop:isFinite(_sl)?_sl:null,tp:isFinite(_tp)?_tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:0,status:'open',pnl:null});
       if(window.mpLivePrices)window.mpLivePrices[sym]={p:(srvT?+srvT.entry:p),t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();
       try{window.mpBuzz&&window.mpBuzz([15]);}catch(e){} // haptic on open (chart quick-trade)
       try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (parity with the terminal's add())
@@ -1193,7 +1159,7 @@
     qtEl.addEventListener('click',function(e){if(e.target===qtEl)qtEl.hidden=true;});
     qtEl.querySelector('.cqt-side').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;qtSide=b.getAttribute('data-side');this.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');updateQT();});
     qtEl.querySelector('.cqt-sym').addEventListener('change',updateQT);
-    qtEl.querySelector('.cqt-lev').addEventListener('input',function(){qtLev=Math.min((window.mpMaxLev?window.mpMaxLev(qtEl.querySelector('.cqt-sym').value):1000),qtPosToLev(+this.value));updateQT();});
+    qtEl.querySelector('.cqt-lev').addEventListener('input',function(){qtLev=qtPosToLev(+this.value);updateQT();});
     qtEl.querySelector('.cqt-amt').addEventListener('input',updateQT);
     var advc=qtEl.querySelector('.cqt-adv-chk'),advf=qtEl.querySelector('.cqt-adv-fields');if(advc)advc.addEventListener('change',function(){advf.hidden=!advc.checked;});
     qtEl.querySelector('.cqt-open').addEventListener('click',doOpenPos);
