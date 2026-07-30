@@ -119,7 +119,7 @@
   function TOOLS(){return (window.__mpDrawToolsHtml?window.__mpDrawToolsHtml(false):'<div class="cwin-tools"></div>');}
   function mkPane(sym,tf){
     var el=document.createElement('div');el.className='mfc-pane';
-    el.innerHTML='<div class="mfc-chart"></div><canvas class="cwin-draw"></canvas>'+TOOLS()+'<div class="mfc-pl"><b class="mfc-pl-s"></b> <span class="mfc-pl-tf"></span> <span class="mfc-pl-p"></span></div><div class="cwin-leg"></div>';
+    el.innerHTML='<div class="mfc-chart"></div><canvas class="cwin-draw"></canvas>'+TOOLS()+'<div class="mfc-pl"><b class="mfc-pl-s"></b> <span class="mfc-pl-tf"></span> <span class="mfc-pl-cd"></span> <span class="mfc-pl-p"></span></div><div class="cwin-leg"></div>';
     var p={el:el,host:el.querySelector('.mfc-chart'),sym:sym,tf:tf,bars:[],lastBar:null,chart:null,candle:null,inds:{},indSeries:[],indLines:[],tradeLines:[],_mtPrices:[],reload:0,w:null};
     el.addEventListener('pointerdown',function(){setActive(panes.indexOf(p));},true);
     return p;
@@ -501,6 +501,12 @@
       } return; }
     live(p);});},2000);
   // returning to the tab: the 60s reload gate only fires from live ticks, so force a real klines re-sync immediately
+  // candle-close countdown (2026-07-30): shares the desktop's server-skew (window.__mpSrvSkew); one 1s ticker for all panes, guarded on the overlay being open. Stalled feed -> '--:--'.
+  (function(){function skew(){if(window.__mpSrvSkew!=null||window.__mpSrvSkewP)return;window.__mpSrvSkewP=1;fetch('/api/prices',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){window.__mpSrvSkew=(d&&+d.ts>0)?(+d.ts-Date.now()):0;}).catch(function(){window.__mpSrvSkew=0;});}
+  setInterval(function(){if(!ov||ov.hidden||document.hidden||!panes.length)return;skew();var nowS=(Date.now()+(+window.__mpSrvSkew||0))/1000;
+    panes.forEach(function(p){var el=p.el&&p.el.querySelector('.mfc-pl-cd');if(!el)return;var iv=parseInt(p.tf,10)*60;if(!(iv>0)){el.textContent='';return;}
+      var stale=!p.lastBar||((nowS-p.lastBar.time)>iv*1.5+90);var sec=Math.max(0,Math.floor(iv-(nowS%iv)));var h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),x=sec%60,P=function(n){return (n<10?'0':'')+n;};
+      el.textContent=stale?'--:--':(iv>=3600?(P(h)+':'+P(m)+':'+P(x)):(P(m)+':'+P(x)));});},1000);})();
   document.addEventListener('visibilitychange',function(){if(!document.hidden&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)loadKlines(p);});});
   window.addEventListener('pageshow',function(e){if(e&&e.persisted&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)loadKlines(p);});}); // iOS bfcache restore doesn't reliably fire visibilitychange
   // Browse "Charts" → open full-screen on mobile (intercept before navigation)
