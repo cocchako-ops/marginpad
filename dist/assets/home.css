@@ -1443,10 +1443,11 @@
   .cwin-notes-btn svg{flex-shrink:0;}
   .cwin-notes-n{font-size:9.5px;font-weight:700;}
   .cwin-notes-n:empty{display:none;}
-  .cwin-cd{flex:0 0 auto;font-family:'Space Mono',monospace;font-size:10px;color:#7f8893;letter-spacing:.03em;min-width:38px;text-align:center;}/* candle-close countdown chip (2026-07-30), header next to the TF buttons */
-  .cwin-cd.stale{opacity:.55;}
+  .cwin-cd{flex:0 0 auto;font-family:'Space Mono',monospace;font-size:10px;color:#c2f64a;letter-spacing:.03em;min-width:38px;text-align:center;}/* candle-close countdown chip (2026-07-30), header next to the TF buttons. Brand lime = raw #c2f64a — NOT var(--lime), which is #ffffff (white) in the app-shell :root, misleadingly named. */
+  .cwin-cd.stale{color:#5c656f;}/* no data → muted grey (not dim lime), so '--:--' clearly reads as inactive */
   .cwin-cd:empty{display:none;}
-  .mfc-pl-cd{font-family:'Space Mono',monospace;font-size:9.5px;color:#7f8893;letter-spacing:.02em;}
+  .mfc-pl-cd{font-family:'Space Mono',monospace;font-size:9.5px;color:#c2f64a;letter-spacing:.02em;}
+  .mfc-pl-cd.stale{color:#5c656f;}
   .cwin-draw-tg{flex-shrink:0;background:#0a0d11;border:1px solid #2b323b;border-radius:7px;color:#8a929c;padding:5px 7px;cursor:pointer;display:inline-flex;align-items:center;}
   .cwin-draw-tg:hover{color:#cfd4da;border-color:#3a434f;}
   .cwin-draw-tg.on{color:#06222a;background:#3fd8e6;border-color:#3fd8e6;}

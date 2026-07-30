@@ -506,7 +506,7 @@
   setInterval(function(){if(!ov||ov.hidden||document.hidden||!panes.length)return;skew();var nowS=(Date.now()+(+window.__mpSrvSkew||0))/1000;
     panes.forEach(function(p){var el=p.el&&p.el.querySelector('.mfc-pl-cd');if(!el)return;var iv=parseInt(p.tf,10)*60;if(!(iv>0)){el.textContent='';return;}
       var stale=!p.lastBar||((nowS-p.lastBar.time)>iv*1.5+90);var sec=Math.max(0,Math.floor(iv-(nowS%iv)));var h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),x=sec%60,P=function(n){return (n<10?'0':'')+n;};
-      el.textContent=stale?'--:--':(iv>=3600?(P(h)+':'+P(m)+':'+P(x)):(P(m)+':'+P(x)));});},1000);})();
+      el.classList.toggle('stale',!!stale);el.textContent=stale?'--:--':(iv>=3600?(P(h)+':'+P(m)+':'+P(x)):(P(m)+':'+P(x)));});},1000);})();
   document.addEventListener('visibilitychange',function(){if(!document.hidden&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)loadKlines(p);});});
   window.addEventListener('pageshow',function(e){if(e&&e.persisted&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)loadKlines(p);});}); // iOS bfcache restore doesn't reliably fire visibilitychange
   // Browse "Charts" → open full-screen on mobile (intercept before navigation)
