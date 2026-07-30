@@ -8054,6 +8054,10 @@ export default {
     const url = new URL(request.url);
     // SEO: http:// must 301 to https:// — GSC was indexing http duplicates (http returned 200)
     if (url.protocol === 'http:') { url.protocol = 'https:'; return Response.redirect(url.toString(), 301); }
+    // 301 renamed/dead blog slugs → their current URL, so old links + GSC-indexed dead URLs pass authority instead of 404ing.
+    // Root cause was fixed in gen-blog.js (sitemap prune) + the 2 internal links; this catches external/historical refs. (2026-07)
+    const BLOG_301 = { '/blog/what-is-the-funding-rate/': '/blog/what-is-funding-rate/', '/blog/liquidation-cascades-explained/': '/blog/liquidation-cascade-explained/', '/blog/what-is-leverage-in-crypto/': '/blog/crypto-leverage-explained/', '/blog/what-is-maintenance-margin/': '/blog/what-is-liquidation-in-crypto/' };
+    if (BLOG_301[url.pathname]) return Response.redirect(url.origin + BLOG_301[url.pathname], 301);
     if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
     // MEASUREMENT (temporary, read-only telemetry): unsampled per-invocation counter by route family → AE. AE has no
     // write quota and SUM(_sample_interval) corrects any internal down-sampling, so the SHARE per family is accurate.
