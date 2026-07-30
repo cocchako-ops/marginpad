@@ -1767,6 +1767,7 @@ window.addEventListener('load', function () {
   }
   function mpGo(path){ var u; try{u=new URL(path,location.href);}catch(e){location.href=path;return;}
     if(u.pathname==='/'&&!u.search){ location.href='/'; return; } // the homepage is now the separate bento page — a real nav, not an in-page applyRoute that would show the stale app-shell homepage
+    if(/^\/charts\/?$/.test(u.pathname)&&window.matchMedia&&window.matchMedia('(max-width: 880px)').matches){ location.href=u.pathname+u.search; return; } // MOBILE /charts must FULL-navigate (2026-07-30): the mp-mcharts loader only hooks the INITIAL /charts landing, never SPA routes (documented gotcha — same root cause as the My Trades Chart-button break). An intercepted SPA route (e.g. the mp-nav drawer's Charts link on /paper-trade) stranded the user on a dead app-shell page with no mobile charts. Guard here covers the link-interceptor AND every programmatic mpGo; since mobile never pushStates /charts, no popstate case can arise either.
     var run=function(){ _inApply=true; try{ history.pushState({mp:1},'',u.pathname+u.search); applyRoute(u.pathname,u.search); }catch(e){ _inApply=false; location.href=u.pathname+u.search; return; } _inApply=false; try{if(window.__mpNav)window.__mpNav(u.pathname);}catch(_){} };
     if(document.startViewTransition){try{document.startViewTransition(run);}catch(e){run();}}else run();
   }
