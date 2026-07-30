@@ -2071,9 +2071,9 @@ async function handleKlines(url, env, klSrc, ctx) {
   const _klT0 = Date.now();
   let _hadStale = false;
   const SRC_TO = 1500, bybitTO = SRC_TO; // 1500ms > upstream p95 (1040) + jitter margin → abort a hung source and fall through to the next
-  const staleMax = 90000; // SWR hard bound (90s); >staleMax → blocking refetch (the "chart freezes per-timeframe" guard)
   const sym = String(url.searchParams.get('symbol') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   const iv = String(url.searchParams.get('interval') || '60');
+  const staleMax = Math.min(90000, (parseInt(iv, 10) || 60) * 60000); // per-TF SWR bound: never serve a stale cache entry older than ONE candle interval → a stale-serve can't drop a CLOSED bar (the WS covers only the forming one). Flat 90s dropped a closed bar on 1m (age 60-90s), and 1m grew to 20.7% of stale-serves (was 3.5%) by 2026-07-31. 5m+ interval > 90s so unchanged. >staleMax → blocking refetch (the "chart freezes" guard).
   if (!sym) return J({ error: 'no symbol' }, 400);
   const pair = sym + 'USDT';
   const end = parseInt(url.searchParams.get('end') || '', 10); // optional endTime (ms) for back-paginating history
