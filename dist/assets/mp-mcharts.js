@@ -254,7 +254,7 @@
   function syncBar(){var p=panes[activeI];if(!p||!ov)return;var sL=ov.querySelector('.mfc-symL'),tL=ov.querySelector('.mfc-tfL');if(sL)sL.textContent=p.sym;if(tL)tL.textContent=tfLabel(p.tf);}
   // ---- split ----
   function toggleSplit(){split=split===1?2:1;var st=ov.querySelector('#mfcStage'),sL=ov.querySelector('.mfc-splitL');st.classList.toggle('split',split===2);if(sL)sL.textContent=split===2?mcT('mc1chart','1 chart'):mcT('mc2charts','2 charts');
-    if(split===2&&panes.length<2){var p=mkPane(panes[0]&&panes[0].sym==='BTC'?'ETH':'BTC','60');panes.push(p);st.appendChild(p.el);loadLib(function(){initChart(p);});}
+    if(split===2&&panes.length<2){var base=panes[activeI]||panes[0];var _bi=-1;for(var _ti=0;_ti<TFS.length;_ti++)if(TFS[_ti][0]===String(base&&base.tf))_bi=_ti;var _ntf=_bi<0?'240':(_bi<TFS.length-1?TFS[_bi+1][0]:TFS[_bi-1][0]);/* dual view = SAME symbol on the NEXT LARGER timeframe (BTC 5m -> +BTC 15m); at 1d (no larger) fall back to the next smaller (4h). Was hardcoded "other coin at 1h" (ETH 60), which ignored what the user was looking at (2026-07-30). */var p=mkPane(base?base.sym:'BTC',_ntf);panes.push(p);st.appendChild(p.el);loadLib(function(){initChart(p);});}
     else if(split===1&&panes.length>1){var rem=panes.pop();if(rem.w)rem.w.dead=true;try{if(rem.chart)rem.chart.remove();}catch(e){}if(rem.el.parentNode)rem.el.parentNode.removeChild(rem.el);if(activeI>0)setActive(0);}
     setTimeout(function(){panes.forEach(function(p){if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();});},140);
   }
