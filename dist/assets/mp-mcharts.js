@@ -148,15 +148,26 @@
     try{if(window.__mpDraw){p.w={chart:p.chart,candle:p.candle,el:p.el,sym:p.sym,tf:p.tf,bars:p.bars,dead:false};window.__mpDraw.setup(p.w,p.el);window.__mpDraw.wire(p.w,null,p.el.querySelector('.cwin-tools'));}}catch(e){}
     loadKlines(p);
   }
-  function loadKlines(p){ if(!p.candle)return;var sym=p.sym,tf=p.tf;p.reload=Date.now();
-    fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
-      if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle)return;
-      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);var _lp=Math.abs(+p.lastBar.close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);p.candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});p.chart.priceScale('right').applyOptions({autoScale:true});p.chart.timeScale().scrollToRealTime();}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs — mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}}
+  // klines fetch is split into two JOBS so the CALLER picks intent, never a bool it passes in (the loadData/chartSync
+  // "one function, two jobs, caller decides" shape is exactly what broke twice). loadKlines = user/initial (symbol/TF
+  // change, first load, re-open) → apply THEN jump to the live edge. resyncKlines = background re-sync (60s reload,
+  // gap, tab-return) → a scroll-back GUARD lives INSIDE it (can't be bypassed) and it NEVER scrolls. _applyKlines is the
+  // shared core and NEVER touches the time position (safe default); the edge-jump exists ONLY in loadKlines.
+  function _applyKlines(p){ if(!p.candle)return Promise.resolve(false);var sym=p.sym,tf=p.tf;p.reload=Date.now();
+    return fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
+      if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle)return false;
+      var ok=false;
+      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);var _lp=Math.abs(+p.lastBar.close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);p.candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs — mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}ok=true;}
       label(p);
+      return ok;
     });
   }
+  function loadKlines(p){ if(!p.candle)return;_applyKlines(p).then(function(ok){if(ok&&!p.dead&&p.candle)try{p.chart.timeScale().scrollToRealTime();}catch(e){}}); } // user/initial: jump to the live edge AFTER applying
+  function resyncKlines(p){ if(!p.candle)return; // background re-sync — mirror of desktop refreshData: bail if the user scrolled into history so we never yank them back to the edge (guard is INSIDE, un-bypassable); _applyKlines never scrolls
+    try{var vr=p.chart.timeScale().getVisibleLogicalRange();if(vr&&p.bars&&p.bars.length&&vr.to<p.bars.length-3)return;}catch(e){}
+    _applyKlines(p); }
   function live(p){if(!p.candle)return;
-    if(Date.now()-p.reload>(p.lastBar?60000:5000)){loadKlines(p);return;} // cold-start self-heal: if the FIRST klines fetch failed (lastBar still null) retry every 5s instead of a permanently blank chart; otherwise the normal 60s re-sync (checked BEFORE the pr>0 bail so a stalled feed still refetches)
+    if(Date.now()-p.reload>(p.lastBar?60000:5000)){(p.lastBar?resyncKlines:loadKlines)(p);return;} // cold-start self-heal: FIRST fetch failed (lastBar null) → loadKlines (initial, jump to edge), retry every 5s instead of a permanently blank chart; warm 60s re-sync → resyncKlines (guarded, never yanks a scrolled-back user). checked BEFORE the pr>0 bail so a stalled feed still refetches
     if(!p.lastBar)return;
     var pr=price(p.sym);if(!(pr>0))return;
     // spike filter (same as the desktop/paper-trade/heatmap engines): reject a lone tick that jumps >2.5% from the last
@@ -487,7 +498,7 @@
     //     price axis) makes the chart LOOK frozen even though live() keeps updating; heal it in ~2s like desktop.
     try{var vr=p.chart.timeScale().getVisibleLogicalRange();if(!vr||!p.bars||!p.bars.length||vr.to>=p.bars.length-2)p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}
     // (2) newest bar >1.5 intervals behind now → new bars stopped forming; force a klines re-sync (independent of price freshness)
-    try{if(p.lastBar){var _iv=parseInt(p.tf,10)*60,_nb=Math.floor(Date.now()/1000/_iv)*_iv;if(_nb-p.lastBar.time>_iv*1.5&&(!p._gapT||Date.now()-p._gapT>10000)){p._gapT=Date.now();loadKlines(p);return;}}}catch(e){}
+    try{if(p.lastBar){var _iv=parseInt(p.tf,10)*60,_nb=Math.floor(Date.now()/1000/_iv)*_iv;if(_nb-p.lastBar.time>_iv*1.5&&(!p._gapT||Date.now()-p._gapT>10000)){p._gapT=Date.now();resyncKlines(p);return;}}}catch(e){}
     // liveness: if the WS hasn't ticked this symbol for >8s, pull a REST price so the pane can NEVER freeze on a stale value
     var lp=window.mpLivePrices&&window.mpLivePrices[p.sym];
     if(!lp||!lp.t||Date.now()-lp.t>8000){ try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(e){}
@@ -502,8 +513,8 @@
     panes.forEach(function(p){var el=p.el&&p.el.querySelector('.mfc-pl-cd');if(!el)return;var iv=parseInt(p.tf,10)*60;if(!(iv>0)){el.textContent='';return;}
       var stale=!p.lastBar||((nowS-p.lastBar.time)>iv*1.5+90);var sec=Math.max(0,Math.floor(iv-(nowS%iv)));var h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),x=sec%60,P=function(n){return (n<10?'0':'')+n;};
       el.classList.toggle('stale',!!stale);el.textContent=stale?'--:--':(iv>=3600?(P(h)+':'+P(m)+':'+P(x)):(P(m)+':'+P(x)));});},1000);})();
-  document.addEventListener('visibilitychange',function(){if(!document.hidden&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)loadKlines(p);});});
-  window.addEventListener('pageshow',function(e){if(e&&e.persisted&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)loadKlines(p);});}); // iOS bfcache restore doesn't reliably fire visibilitychange
+  document.addEventListener('visibilitychange',function(){if(!document.hidden&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)resyncKlines(p);});});
+  window.addEventListener('pageshow',function(e){if(e&&e.persisted&&ov&&!ov.hidden)panes.forEach(function(p){if(p.candle)resyncKlines(p);});}); // iOS bfcache restore doesn't reliably fire visibilitychange (re-sync, guarded — don't yank a scrolled-back user)
   // Browse "Charts" → open full-screen on mobile (intercept before navigation)
   document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('[data-mcharts]');if(!t)return;if(isMob()){e.preventDefault();e.stopPropagation();open();}},true);
   // landing on /charts on a phone → open the full-screen experience automatically
