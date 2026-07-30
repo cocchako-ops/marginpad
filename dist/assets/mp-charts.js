@@ -914,10 +914,7 @@
     if(fLast<lLast)return{mode:'skip',reason:'fresh-older'};              // stale / out-of-order response → drop (RACE guard)
     if(fFirst>lLast)return{mode:'replace',reason:'gap-too-large',bars:fresh}; // a hole reconcile can't bridge → rebuild
     var fByT={};for(var i=0;i<fresh.length;i++)fByT[fresh[i].time]=fresh[i];
-    var out=[];for(var j=0;j<local.length;j++){var b=local[j];var f=(b.time>=edge&&fByT[b.time])?fByT[b.time]:null;
-      if(!f){out.push(b);continue;}
-      if(b.time===lLast){var _ho=Math.max(+f.high,+b.open,+b.close),_lo=Math.min(+f.low,+b.open,+b.close);out.push({time:b.time,open:+b.open,close:+b.close,high:_ho,low:_lo,vol:(f.vol!=null?f.vol:b.vol)});} /* FORMING bar hardening (2026-07-30): keep LOCAL open+close — the live feed is the freshest truth; the server close is up to ~28s cache-stale and only ever produced a color flip + value snap-back (measured), and swapping the open re-anchors the candle's color mid-bar. Take server high/low (the phantom-wick cleanup this re-sync exists for), clamped to contain the local open/close so the bar stays valid. */
-      else out.push(f);} // deep history KEPT; recent CLOSED bars fully reconciled from the server (close is final there)
+    var out=[];for(var j=0;j<local.length;j++){var b=local[j];out.push((b.time>=edge&&fByT[b.time])?fByT[b.time]:b);} // deep history KEPT; recent reconciled
     for(var k=0;k<fresh.length;k++){if(fresh[k].time>lLast)out.push(fresh[k]);} // append genuinely new bars
     return{mode:'merge',reason:'',bars:out};
   }
