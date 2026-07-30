@@ -1271,6 +1271,7 @@
   .cws-btn small{color:var(--ink-faint);font-size:10.5px;}
   .cws-add{color:#0a0b0d;background:#3fd8e6;border-color:#3fd8e6;}
   .cws-add:hover{background:#62e6f2;color:#0a0b0d;}
+  .cws-add[disabled]{opacity:.45;cursor:default;pointer-events:none;}/* at MAXn windows updateCount disables the button + the N/10 counter says why (2026-07-30) */
   .cws-add small{color:rgba(10,11,13,.6);}
   .cws-add[disabled]{opacity:.45;cursor:not-allowed;}
   .cws-board{position:relative;z-index:0;height:min(82vh,1180px);min-height:520px;border:1px solid #1c2025;border-radius:16px;overflow:hidden;touch-action:none;

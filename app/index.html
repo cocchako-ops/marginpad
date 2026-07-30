@@ -96,7 +96,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=5219fda3">
+<link rel="stylesheet" href="/assets/home.css?v=703a530a">
 
 </head>
 <body>
@@ -176,6 +176,17 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
     <button type="button" class="cws-reopen" id="cwsReopen" title="Show controls" aria-label="Show controls">Tools ▸</button>
     <div class="cws-bar">
       <button type="button" class="cws-side-x" id="cwsSideX" title="Hide the panel for more chart space">Hide</button>
+      <div class="cws-actions">
+        <button type="button" class="cws-btn cws-add" id="cwsAdd"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span>Add chart</span> <small id="cwsCount">0/8</small></button>
+        <button type="button" class="cws-btn cws-trade" id="cwsTrade"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Open Paper Trade</span></button>
+        <div class="cws-tiles" id="cwsTiles" role="group" aria-label="Layout"><button type="button" class="cws-tile" data-preset="2" style="grid-template-columns:repeat(2,4px)" title="2 charts"><i></i><i></i></button><button type="button" class="cws-tile" data-preset="4" style="grid-template-columns:repeat(2,4px)" title="4 charts"><i></i><i></i><i></i><i></i></button><button type="button" class="cws-tile" data-preset="6" style="grid-template-columns:repeat(3,4px)" title="6 charts"><i></i><i></i><i></i><i></i><i></i><i></i></button><button type="button" class="cws-tile" data-preset="8" style="grid-template-columns:repeat(4,4px)" title="8 charts"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></button></div>
+        <button type="button" class="cws-btn" id="cwsSync" title="Sync the crosshair across all charts (off by default)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span>Sync</span></button>
+        <button type="button" class="cws-btn" id="cwsNote"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10l6-6V5a2 2 0 0 0-2-2z"/><path d="M15 21v-6h6"/></svg><span>Note</span></button>
+        <button type="button" class="cws-btn" id="cwsCalc"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg><span>Calculator</span></button>
+        <button type="button" class="cws-btn" id="cwsSave"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span>Save layout</span></button>
+        <button type="button" class="cws-btn" id="cwsLayouts"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Layouts</span></button>
+        <button type="button" class="cws-btn" id="cwsShare"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span>Share</span></button>
+      </div>
       <div class="cws-widgets">
         <div class="cws-wpanel">
           <div class="cws-wh">Chart background</div>
@@ -189,17 +200,6 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
           <div class="cws-wh">Top signals <small class="cws-w-live">live</small></div>
           <div class="cws-scr" id="cwsScr"><div class="cws-w-empty">Loading…</div></div>
         </div>
-      </div>
-      <div class="cws-actions">
-        <button type="button" class="cws-btn cws-add" id="cwsAdd"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg><span>Add chart</span> <small id="cwsCount">0/8</small></button>
-        <button type="button" class="cws-btn cws-trade" id="cwsTrade"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>Open Paper Trade</span></button>
-        <div class="cws-tiles" id="cwsTiles" role="group" aria-label="Layout"><button type="button" class="cws-tile" data-preset="2" style="grid-template-columns:repeat(2,4px)" title="2 charts"><i></i><i></i></button><button type="button" class="cws-tile" data-preset="4" style="grid-template-columns:repeat(2,4px)" title="4 charts"><i></i><i></i><i></i><i></i></button><button type="button" class="cws-tile" data-preset="6" style="grid-template-columns:repeat(3,4px)" title="6 charts"><i></i><i></i><i></i><i></i><i></i><i></i></button><button type="button" class="cws-tile" data-preset="8" style="grid-template-columns:repeat(4,4px)" title="8 charts"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></button></div>
-        <button type="button" class="cws-btn" id="cwsSync" title="Sync the crosshair across all charts (off by default)"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span>Sync</span></button>
-        <button type="button" class="cws-btn" id="cwsNote"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10l6-6V5a2 2 0 0 0-2-2z"/><path d="M15 21v-6h6"/></svg><span>Note</span></button>
-        <button type="button" class="cws-btn" id="cwsCalc"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="16" y2="18"/></svg><span>Calculator</span></button>
-        <button type="button" class="cws-btn" id="cwsSave"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg><span>Save layout</span></button>
-        <button type="button" class="cws-btn" id="cwsLayouts"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><span>Layouts</span></button>
-        <button type="button" class="cws-btn" id="cwsShare"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg><span>Share</span></button>
       </div>
       <div class="cws-hint" id="cwsHint"><span>Drag a chart by its header</span><span>Resize from any edge</span><span>Double-click to maximize</span><span>Keys 1–6 switch timeframe</span><span>A = add chart · D = draw</span></div>
     </div>
@@ -805,7 +805,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=5219fda3"></script>
+<script src="/assets/home.js?v=703a530a"></script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>
