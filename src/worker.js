@@ -2055,17 +2055,13 @@ async function fetchPrice(sym) {
   return null;
 }
 // price candles for the interactive heatmap chart (Binance + Bybit fallback, normalized)
-const KLINES_TAG_UNTIL = Date.UTC(2026, 7, 9); // 2026-08-09: TEMP klines hit/miss + upstream-ms AE tag (baseline for the sweep-cost compare) — DELETE this const + klTag() + its call sites (handleKlines args, /api/klines route) after the compare
 const PERF_AE_UNTIL = Date.UTC(2026, 8, 1); // 2026-09-01: UX-perf AE dual-write (index 'uxperf', blob2=metric, double2=ms). Fixes the perf-ring-8h blindness (no day/week p95 history) for ux-cold/ux-chart/price-age etc. Revisit at the date — if it's earning its keep make it permanent, else drop. Read via /api/admin/uxperf.
-function klTag(env, hm, pair, iv, src, ms, le, won) {
-  try { if (env && env.AE && Date.now() < KLINES_TAG_UNTIL) env.AE.writeDataPoint({ indexes: ['klines'], blobs: ['klines', hm, String(pair || ''), String(iv || ''), String(src || 'pub'), le || 'live', won || ''], doubles: [1, +ms || 0] }); } catch (e) {} // blob2 hit|miss(_stale/_none), blob5 pub|sweep, blob6 live|hist, blob7 winning upstream (attributes a slow miss to ONE source vs a cascade fall-through)
-}
-async function fetchTO(url, opts, ms, env, lbl) { const ac = new AbortController(); const t = setTimeout(() => ac.abort(), ms || 1500); try { return await fetch(url, Object.assign({}, opts || {}, { signal: ac.signal })); } catch (e) { if (e && e.name === 'AbortError') { try { if (env && env.AE && Date.now() < KLINES_TAG_UNTIL) env.AE.writeDataPoint({ indexes: ['klines'], blobs: ['klines', 'abort', String(lbl || ''), '', '', 'live', ''], doubles: [1, ms || 0] }); } catch (e2) {} } throw e; } finally { clearTimeout(t); } } // per-source abort: the 8.5s tail is a source hanging serially → cut it at ~1.5s and fall to the next. blob2='abort' + blob3=source: measures how often a healthy-but-slow source gets cut (ratio to total = is the timeout too tight?)
+async function fetchTO(url, opts, ms, env, lbl) { const ac = new AbortController(); const t = setTimeout(() => ac.abort(), ms || 1500); try { return await fetch(url, Object.assign({}, opts || {}, { signal: ac.signal })); } finally { clearTimeout(t); } } // per-source abort: the 8.5s tail is a source hanging serially → cut it at ~1.5s and fall through to the next (env/lbl retained for call-site compatibility)
 async function handleKlines(url, env, klSrc, ctx) {
   const _klT0 = Date.now();
   let _hadStale = false;
-  const SRC_TO = 1500, bybitTO = (env && env.ENVIRONMENT === 'staging' && +url.searchParams.get('bybitTO') > 0) ? +url.searchParams.get('bybitTO') : SRC_TO; // 1500ms > upstream p95 (1040) + jitter margin; staging ?bybitTO=N forces source-1 abort to PROVE the cascade falls through to a valid next source
-  const staleMax = (env && env.ENVIRONMENT === 'staging' && +url.searchParams.get('staleMax') > 0) ? +url.searchParams.get('staleMax') : 90000; // SWR hard bound (90s); staging ?staleMax=N shrinks it to prove the >bound blocking-refetch path without a 90s wait
+  const SRC_TO = 1500, bybitTO = SRC_TO; // 1500ms > upstream p95 (1040) + jitter margin → abort a hung source and fall through to the next
+  const staleMax = 90000; // SWR hard bound (90s); >staleMax → blocking refetch (the "chart freezes per-timeframe" guard)
   const sym = String(url.searchParams.get('symbol') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   const iv = String(url.searchParams.get('interval') || '60');
   if (!sym) return J({ error: 'no symbol' }, 400);
@@ -2076,12 +2072,11 @@ async function handleKlines(url, env, klSrc, ctx) {
   // and chart loads share one upstream fetch instead of hammering Gate/Bybit on every request.
   const cacheKey = new Request('https://marginpad.io/__klines_v2_' + pair + '_' + iv + '_' + (hasEnd ? end : 'live'));
   try { const hit = await caches.default.match(cacheKey); if (hit) {
-    if (hasEnd) { klTag(env, 'hit', sym, iv, klSrc, 0, 'hist'); return hit; }                                        // historical candles are immutable → the edge cache (even 4h) is fine
+    if (hasEnd) { return hit; }                                        // historical candles are immutable → the edge cache (even 4h) is fine
     const ca = +hit.headers.get('x-mp-cached') || 0;              // LIVE tail: enforce freshness IN THE WORKER so a zone-level Cache-TTL override (Cloudflare was pinning these at 4h) can't serve stale candles — the "chart freezes per-timeframe" bug. Still offloads Bybit within the 10s window.
     const age = Date.now() - ca;
-    if (age < 10000) { klTag(env, 'hit', sym, iv, klSrc, 0, 'live'); return hit; }
+    if (age < 10000) { return hit; }
     if (age <= staleMax && ctx) { // SWR: serve this cached response NOW + revalidate the EDGE cache in the background (dedup per key per isolate). IMPORTANT: the reval refreshes the cache for the NEXT caller — it does NOT reach THIS client, who already holds the stale response and keeps showing it until ITS OWN next poll (reloadKlines is ~45s). So this user can display up-to-`age`-old candles for up to ~45s. The forming bar always comes from the WS, so the only real harm is a MISSING CLOSED bar — which happens once age > the candle interval. Hence the bound should be min(90s, interval) per-TF: on 1m a 90s bound drops up to 2 closed bars (too loose); on 5m+ 90s spans <1 bar (fine). staleMax is still a flat 90s here pending the per-interval share measurement (klinestat swr.staleServedByIv). >staleMax → blocking refetch (the "chart freezes" hard bound).
-      klTag(env, 'stale_served', sym, iv, klSrc, age, 'live'); // double2 = age of the SERVED entry. NB: the distribution is ~uniform over 10-staleMax by design — do NOT read "max≈bound" as clustering.
       try { const rk = cacheKey.url, fl = globalThis.__klReval = globalThis.__klReval || new Set(); if (!fl.has(rk)) { fl.add(rk); ctx.waitUntil(fetchFresh(true).catch(function () {}).finally(function () { fl.delete(rk); })); } } catch (e) {}
       return hit;
     }
@@ -2144,7 +2139,6 @@ async function handleKlines(url, env, klSrc, ctx) {
   const edgeAge = hasEnd ? 600 : 120; // EDGE (header split): keep the LIVE entry 120s so the worker can FIND a >10s-stale entry to SERVE (SWR) + revalidate. The 10s/90s worker gates decide fresh / stale-serve / blocking-refetch, so the "chart freezes per-timeframe" zone-TTL bug cannot reoccur.
   const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=' + maxAge, 'cdn-cache-control': 'max-age=' + edgeAge, 'cloudflare-cdn-cache-control': 'max-age=' + edgeAge, 'x-mp-cached': String(Date.now()), 'x-mp-src': srcWon || '', ...CORS } });
   try { await caches.default.put(cacheKey, resp.clone()); } catch (e) {}
-  if (!isReval) klTag(env, hasEnd ? 'miss' : (_hadStale ? 'miss_stale' : 'miss_none'), sym, iv, klSrc, Date.now() - _klT0, hasEnd ? 'hist' : 'live', srcWon); // miss_stale = entry expired vs miss_none = no entry. Background revalidations don't tag (the stale_served already fired for that request).
   return resp;
   }
   return await fetchFresh(false);
@@ -2162,7 +2156,7 @@ async function leanKlines(sym, ivMin, n, env) {
   sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (!sym) return null;
   const iv = String(ivMin || '1'), N = Math.min(200, Math.max(2, +n || 30)), pair = sym + 'USDT';
   const ckey = new Request('https://marginpad.io/__klines_lean_' + pair + '_' + iv + '_' + N);
-  try { const hit = await caches.default.match(ckey); if (hit) { const ca = +hit.headers.get('x-mp-cached') || 0; if (Date.now() - ca < 10000) { klTag(env, 'hit', sym, iv, 'sweep', 0, 'live'); return await hit.json(); } } } catch (e) {}
+  try { const hit = await caches.default.match(ckey); if (hit) { const ca = +hit.headers.get('x-mp-cached') || 0; if (Date.now() - ca < 10000) { return await hit.json(); } } } catch (e) {}
   const t0 = Date.now();
   const byMap = { '1': '1', '5': '5', '15': '15', '60': '60', '240': '240', '1440': 'D' };
   let out = null;
@@ -2170,9 +2164,8 @@ async function leanKlines(sym, ivMin, n, env) {
   if (!out) try { const okMap = { '1': '1m', '5': '5m', '15': '15m', '60': '1H', '240': '4H', '1440': '1D' }; const r = await fetchTO('https://www.okx.com/api/v5/market/candles?instId=' + sym + '-USDT-SWAP&bar=' + (okMap[iv] || '1m') + '&limit=' + N, { cf: { cacheTtl: 8 } }, 1500, env, 'sw-okx'); if (r.ok) { const d = await r.json(); const list = d && d.data; if (list && list.length) out = list.map(k => ({ time: Math.floor(+k[0] / 1000), high: +k[2], low: +k[3], close: +k[4] })).filter(b => isFinite(b.time) && b.high > 0).sort((a, b) => a.time - b.time); } } catch (e) {}
   if (!out) try { const gMap = { '1': '1m', '5': '5m', '15': '15m', '60': '1h', '240': '4h', '1440': '1d' }; const r = await fetchTO('https://api.gateio.ws/api/v4/futures/usdt/candlesticks?contract=' + sym + '_USDT&interval=' + (gMap[iv] || '1m') + '&limit=' + N, { cf: { cacheTtl: 8 } }, 1500, env, 'sw-gate'); if (r.ok) { const d = await r.json(); if (Array.isArray(d) && d.length) out = d.map(k => ({ time: +k.t, high: +k.h, low: +k.l, close: +k.c })).sort((a, b) => a.time - b.time); } } catch (e) {}
   if (out) out = out.filter(b => b && b.time > 0 && isFinite(b.high) && isFinite(b.low) && isFinite(b.close) && b.high > 0 && b.low > 0 && b.close > 0);
-  if (!out || !out.length) { klTag(env, 'miss', sym, iv, 'sweep', Date.now() - t0, 'live'); return null; }
+  if (!out || !out.length) { return null; }
   try { const resp = new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json', 'x-mp-cached': String(Date.now()) } }); await caches.default.put(ckey, resp.clone()); } catch (e) {}
-  klTag(env, 'miss', sym, iv, 'sweep', Date.now() - t0, 'live');
   return out;
 }
 
@@ -8587,13 +8580,6 @@ export default {
       const fprices = {}; fprices[fsym] = +fpd.price; const frates = {}; frates[fsym] = frate;
       return J(await usersDO(env, '/tradesweepall', { prices: fprices, rates: frates, force: true, onlyUid: fu }));
     }
-    if (url.pathname === '/api/admin/sweeptest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // E2E: forward CRAFTED {onlyUid,prices,klines,graceMin,pend} to /tradesweepall so the candle-check + pendClose can be proven deterministically (a real retraced wick can't be summoned on demand)
-      if (env.ENVIRONMENT !== 'staging') return J({ error: 'staging_only' }, 403); // crafted-klines force-settle at arbitrary levels is a test-only hook — NEVER on prod
-      let sb = {}; try { sb = await request.json(); } catch (e) {}
-      if (!sb.onlyUid) return J({ error: 'onlyUid_required' }, 400);
-      const scOn = (sb.srvCandle !== undefined) ? sb.srvCandle : ((await opsCfg(env)).srvCandle !== false); // honor the ops:cfg kill switch (like the real sweep) unless the body overrides
-      return J(await usersDO(env, '/tradesweepall', { onlyUid: String(sb.onlyUid), prices: sb.prices || {}, klines: sb.klines || {}, graceMin: sb.graceMin, srvCandle: scOn, pend: sb.pend, force: !!sb.force }));
-    }
     if (url.pathname === '/api/admin/journal' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // admin/E2E raw journal read
       return J(await usersDO(env, '/journaldump', { uid: url.searchParams.get('uid') || '' }));
     }
@@ -8607,36 +8593,6 @@ export default {
       const rows = (await aeQuery(env, "SELECT blob2 metric, SUM(_sample_interval) n, quantileWeighted(0.5)(double2,_sample_interval) p50, quantileWeighted(0.95)(double2,_sample_interval) p95, MAX(double2) mx FROM marginpad_events WHERE blob1='uxperf' AND timestamp > NOW() - INTERVAL '" + hrs + "' HOUR GROUP BY metric")) || [];
       const out = { hours: hrs, metrics: {} };
       for (const r of rows) out.metrics[r.metric || '?'] = { n: +r.n || 0, p50: r.p50 != null ? Math.round(+r.p50) : null, p95: r.p95 != null ? Math.round(+r.p95) : null, max: r.mx != null ? Math.round(+r.mx) : null };
-      return new Response(JSON.stringify(out, null, 1), { headers: jh });
-    }
-    if (url.pathname === '/api/admin/klinestat' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // klines cache tag: hit/miss by source (pub|sweep) + upstream ms percentiles on miss + live/hist split — LOCKS the SWR prediction before implementation
-      const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
-      const hrs = Math.min(168, Math.max(1, +url.searchParams.get('h') || 24));
-      const W = "blob1='klines' AND timestamp > NOW() - INTERVAL '" + hrs + "' HOUR";
-      const bySrc = (await aeQuery(env, "SELECT blob5 src, blob2 hm, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY src, hm")) || [];
-      const msMiss = (((await aeQuery(env, "SELECT quantileWeighted(0.5)(double2,_sample_interval) p50, quantileWeighted(0.95)(double2,_sample_interval) p95, quantileWeighted(0.99)(double2,_sample_interval) p99, MAX(double2) mx, SUM(IF(double2>2000,_sample_interval,0)) slow2s, SUM(_sample_interval) nmiss FROM marginpad_events WHERE " + W + " AND blob2='miss' AND double2>0")) || [])[0] || {});
-      const byLe = (await aeQuery(env, "SELECT blob6 le, blob2 hm, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY le, hm")) || [];
-      const ssAge = (((await aeQuery(env, "SELECT quantileWeighted(0.5)(double2,_sample_interval) p50, quantileWeighted(0.95)(double2,_sample_interval) p95, MAX(double2) mx, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " AND blob2='stale_served'")) || [])[0] || {}); // SWR served-entry AGE (distribution is ~uniform 10-90s by design; max≈bound is a tautology, NOT a signal)
-      const ssIv = (await aeQuery(env, "SELECT blob4 iv, SUM(_sample_interval) n, quantileWeighted(0.95)(double2,_sample_interval) p95 FROM marginpad_events WHERE " + W + " AND blob2='stale_served' GROUP BY iv")) || []; // stale_served BY interval: the per-TF bound (min(90s,interval)) only matters if 1m has a real share — staleness = missing CLOSED bars, harmful only when age > candle interval
-      const slowSrc = (await aeQuery(env, "SELECT blob7 won, SUM(_sample_interval) n, quantileWeighted(0.5)(double2,_sample_interval) p50, MAX(double2) mx FROM marginpad_events WHERE " + W + " AND blob2 LIKE 'miss%' AND double2>2000 GROUP BY won")) || []; // slow (>2s) misses by winning source: a late source (gate/bybit-spot) means the cascade fell through; bybit-lin means ONE source hung then succeeded
-      const allBySrc = (await aeQuery(env, "SELECT blob7 won, SUM(_sample_interval) n, quantileWeighted(0.5)(double2,_sample_interval) p50 FROM marginpad_events WHERE " + W + " AND blob2 LIKE 'miss%' AND blob7 <> '' GROUP BY won")) || []; // ALL misses by winning source
-      const aborts = (await aeQuery(env, "SELECT blob3 src, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " AND blob2='abort' GROUP BY src")) || []; // per-source aborts: how often a healthy-but-slow source got cut by the 1500ms timeout (ratio to total requests = is it too tight?)
-      const acc = (rows, keyf) => { const o = {}; let th = 0, tm = 0; for (const r of rows) { const k = keyf(r) || '?', hm = r.hm || '?', n = +r.n || 0; o[k] = o[k] || { hit: 0, miss: 0 }; if (hm === 'hit') { o[k].hit += n; th += n; } else if (hm.indexOf('miss') === 0) { o[k].miss += n; tm += n; } } return { o, th, tm }; };
-      const rate = (h, m) => (h + m) ? Math.round(h / (h + m) * 1000) / 10 : null;
-      const S = acc(bySrc, r => r.src), L = acc(byLe, r => r.le);
-      const outc = {}; for (const r of bySrc) { const hm = r.hm || '?'; outc[hm] = (outc[hm] || 0) + (+r.n || 0); }
-      const mb = { miss_stale: outc.miss_stale || 0, miss_none: outc.miss_none || 0, miss: outc.miss || 0 };
-      const liveHit = outc.hit || 0, sstale = outc.stale_served || 0, mS = outc.miss_stale || 0, mN = outc.miss_none || 0;
-      const liveTotal = liveHit + sstale + mS + mN; // live outcomes only (excludes hist 'miss' + 'abort')
-      const swr = { staleServed: sstale, liveRequests: liveTotal, staleServedShare: liveTotal ? Math.round(sstale / liveTotal * 1000) / 10 : null, noWaitRate: liveTotal ? Math.round((liveHit + sstale) / liveTotal * 1000) / 10 : null, servedAgeMs: { p50: ssAge.p50 != null ? Math.round(+ssAge.p50) : null, p95: ssAge.p95 != null ? Math.round(+ssAge.p95) : null, max: ssAge.mx != null ? Math.round(+ssAge.mx) : null } }; // SWR value: staleServedShare<10% after 24h => drop SWR; servedAge p95 near 90000 => bound too loose
-      const out = { hours: hrs, total: { hit: S.th, miss: S.tm, hitRate: rate(S.th, S.tm) }, swr: swr, missBreakdown: mb, upstreamMissMs: { p50: msMiss.p50 != null ? Math.round(+msMiss.p50) : null, p95: msMiss.p95 != null ? Math.round(+msMiss.p95) : null, p99: msMiss.p99 != null ? Math.round(+msMiss.p99) : null, max: msMiss.mx != null ? Math.round(+msMiss.mx) : null, over2s: +msMiss.slow2s || 0, nMiss: +msMiss.nmiss || 0 }, bySource: {}, byLiveHist: {} };
-      for (const k in S.o) out.bySource[k] = { hit: S.o[k].hit, miss: S.o[k].miss, hitRate: rate(S.o[k].hit, S.o[k].miss) };
-      for (const k in L.o) out.byLiveHist[k] = { hit: L.o[k].hit, miss: L.o[k].miss, hitRate: rate(L.o[k].hit, L.o[k].miss) };
-      out.swr.staleServedByIv = ssIv.map(r => ({ iv: r.iv || '?', n: +r.n || 0, p95: r.p95 != null ? Math.round(+r.p95) : null })).sort((a, b) => b.n - a.n);
-      out.slowMissByWinner = slowSrc.map(r => ({ won: r.won || '(none)', n: +r.n || 0, p50: r.p50 != null ? Math.round(+r.p50) : null, max: r.mx != null ? Math.round(+r.mx) : null }));
-      out.missByWinner = allBySrc.map(r => ({ won: r.won || '(none)', n: +r.n || 0, p50: r.p50 != null ? Math.round(+r.p50) : null }));
-      let totAbort = 0; const abBySrc = {}; for (const r of aborts) { const s = r.src || '?', n = +r.n || 0; abBySrc[s] = n; totAbort += n; }
-      out.aborts = { total: totAbort, rate: (S.th + S.tm) ? Math.round(totAbort / (S.th + S.tm) * 1000) / 10 : null, bySource: abBySrc, totalRequests: S.th + S.tm };
       return new Response(JSON.stringify(out, null, 1), { headers: jh });
     }
     if (url.pathname === '/api/admin/restoretest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // E1: prove the backup is restorable — load users-latest into the 'bkp-restore-test' DO sandbox and diff row counts vs the dump
@@ -8659,11 +8615,6 @@ export default {
     if (url.pathname === '/api/admin/heatpools' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { if (url.searchParams.get('reset')) { for (const sy of HM_COINS) { try { await env.STATS.delete('hmp:st:' + sy); } catch (e) {} } } await heatPoolsCron(env); return J({ ok: true, reset: !!url.searchParams.get('reset') }); } // manual model run; ?reset=1 wipes state so the full kline window re-accumulates (e.g. after a ladder change)
     if (url.pathname === '/api/admin/mktestuser' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // E2E suites: ensure an 'e2e-' users row exists (DO enforces the prefix)
       return J(await usersDO(env, '/mktestuser', { uid: url.searchParams.get('uid') || '' }));
-    }
-    if (url.pathname === '/api/admin/rewarduse' && await adminCookieOk(request, env)) { // rewards-ROI measurement: per-uid product signal (utrades.n) + affiliate clicks (uevents) from UserStore; the reward-account join happens in the analysis script (read-only, no shipped anti-abuse code).
-      const users = env.USERS.get(env.USERS.idFromName('main'));
-      const r = await users.fetch(new Request('https://do/rewarduse'));
-      return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/srvtrades' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // SRV_LB_START board-population check: src='srv' && sc closed trades in 7d (read-only)
       const users = env.USERS.get(env.USERS.idFromName('main'));
