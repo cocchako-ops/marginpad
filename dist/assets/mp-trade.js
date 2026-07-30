@@ -330,7 +330,9 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
   window.mpHist=window.mpHist||{};
   var ws=null,alive=false,retry=0,pingT=null,lastH={},chgMap={};
   function pushHist(sym,price){var now=Date.now();if(now-(lastH[sym]||0)<1000)return;lastH[sym]=now;var h=window.mpHist[sym]||(window.mpHist[sym]=[]);h.push(price);if(h.length>46)h.shift();}
+  window.__mpPQ=window.__mpPQ||function(sym,ctx){try{var s=window.__mpWsSeen,w=(s&&s[sym]&&Date.now()-s[sym]<30000)?1:0;return '&ctx='+ctx+'&ws='+w;}catch(e){return '&ctx='+ctx;}}; /* TEMP pxtag: remove with worker PXTAG_UNTIL 2026-08-02 */
   function emit(sym,price,chg){
+    try{(window.__mpWsSeen=window.__mpWsSeen||{})[sym]=Date.now();}catch(e){}/* TEMP pxtag: WS-tick time for the /api/price call-site diagnostic */
     var prev=window.mpLivePrices[sym]||{};
     window.mpLivePrices[sym]={p:price,t:Date.now(),chg:(chg!=null&&isFinite(chg))?chg:prev.chg};
     pushHist(sym,price);
@@ -366,7 +368,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
       var lp=window.mpLivePrices[sym];
       if(lp&&lp.t&&(now-lp.t)<6000)return;               // WS or a recent poll already fresh → skip
       if(_busy[sym])return;_busy[sym]=1;
-      fetch('/api/price?symbol='+encodeURIComponent(sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
+      fetch('/api/price?symbol='+encodeURIComponent(sym)+(window.__mpPQ?window.__mpPQ(sym,'ptr'):''),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
         _busy[sym]=0;var p=j&&(+j.price);if(!(p>0))return;
         var prev=window.mpLivePrices[sym]||{};
         window.mpLivePrices[sym]={p:p,t:Date.now(),chg:(j&&j.chg!=null&&isFinite(j.chg))?+j.chg:prev.chg};

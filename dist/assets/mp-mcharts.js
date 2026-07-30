@@ -497,7 +497,7 @@
     var lp=window.mpLivePrices&&window.mpLivePrices[p.sym];
     if(!lp||!lp.t||Date.now()-lp.t>8000){ try{if(window.mpWS)window.mpWS.sub(p.sym);}catch(e){}
       if(!p._rf||Date.now()-p._rf>8000){ p._rf=Date.now();
-        fetch('/api/price?symbol='+encodeURIComponent(p.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){var px=j&&+j.price;if(px>0&&window.mpLivePrices){window.mpLivePrices[p.sym]={p:px,t:Date.now(),chg:(j.chg!=null?+j.chg:(lp&&lp.chg))};}live(p);});
+        fetch('/api/price?symbol='+encodeURIComponent(p.sym)+(window.__mpPQ?window.__mpPQ(p.sym,'cht'):''),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){var px=j&&+j.price;if(px>0&&window.mpLivePrices){window.mpLivePrices[p.sym]={p:px,t:Date.now(),chg:(j.chg!=null?+j.chg:(lp&&lp.chg))};}live(p);});
       } return; }
     live(p);});},2000);
   // returning to the tab: the 60s reload gate only fires from live ticks, so force a real klines re-sync immediately
