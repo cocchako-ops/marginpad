@@ -127,6 +127,7 @@
   function initChart(p){ if(p.chart||!window.LightweightCharts||!p.host.clientWidth){return;}
     p.chart=LightweightCharts.createChart(p.host,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.35)'},horzLines:{color:'rgba(35,41,50,.35)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:5,barSpacing:6},crosshair:{mode:0},autoSize:true});
     try{p.chart.subscribeCrosshairMove(function(param){mLeg(p,param);});}catch(e){}
+    try{p.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<12)loadMoreM(p);});}catch(e){} // scrolled near the start → page older history (mirror desktop loadMoreW). Per-pane: closes over THIS p.
     p.candle=p.chart.addCandlestickSeries({upColor:'#2ebd85',downColor:'#ff6258',borderVisible:false,wickUpColor:'#2ebd85',wickDownColor:'#ff6258',
       // extend the auto-fit range to include the imported position's entry/liq lines (capped at 2.4× the candle range)
       // so a TF switch can't re-fit to candles only and push the lines off-screen — mirrors the desktop engines.
@@ -157,7 +158,7 @@
     return fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle)return false;
       var ok=false;
-      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);var _lp=Math.abs(+p.lastBar.close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);p.candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs — mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}ok=true;}
+      if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p._noMore=false;p._mpg=0;p._lm=false;/* fresh full load (initial/sym/TF/edge-resync) replaces bars → restart history pagination for this pane */p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);var _lp=Math.abs(+p.lastBar.close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);p.candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs — mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}ok=true;}
       label(p);
       return ok;
     });
@@ -166,6 +167,25 @@
   function resyncKlines(p){ if(!p.candle)return; // background re-sync — mirror of desktop refreshData: bail if the user scrolled into history so we never yank them back to the edge (guard is INSIDE, un-bypassable); _applyKlines never scrolls
     try{var vr=p.chart.timeScale().getVisibleLogicalRange();if(vr&&p.bars&&p.bars.length&&vr.to<p.bars.length-3)return;}catch(e){}
     _applyKlines(p); }
+  // load older history when the pane is scrolled back toward the start (full history to the coin's inception) — per-pane, mirror of desktop loadMoreW incl. the vr0+shift that keeps the view exactly where the user is (prepending resets setData to the edge otherwise = another way to yank them)
+  function loadMoreM(p){ if(!p.candle||p._lm||p._noMore||!p.bars||!p.bars.length)return;
+    var sym=p.sym,tf=p.tf,end=p.bars[0].time*1000-1; p._lm=true;
+    var _lmg=setTimeout(function(){p._lm=false;},12000); // a hung fetch must not pin p._lm forever (that would also disable the 60s resync)
+    fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
+      clearTimeout(_lmg); p._lm=false; if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle)return;
+      if(!kd||!kd.length){p._noMore=true;return;} // empty page → the deepest source ran out
+      var first=p.bars[0].time,older=sanitizeBars(kd.filter(function(b){return b.time<first;}));
+      if(!older.length){p._noMore=true;return;} // oldest bar didn't move back = source can't go deeper (real test, not "returned few")
+      p._mpg=(p._mpg||0)+1; if(p._mpg>=30)p._noMore=true; // hard cap ~30 pages/(sym+TF): anti-infinite backstop for thin pairs / history gaps
+      var shift=older.length; p.bars=older.concat(p.bars);
+      var vr0=null;try{vr0=p.chart.timeScale().getVisibleLogicalRange();}catch(e){}
+      try{p.candle.setData(p.bars);}catch(e){}
+      if(vr0)try{p.chart.timeScale().setVisibleLogicalRange({from:vr0.from+shift,to:vr0.to+shift});}catch(e){} // keep the user exactly where they were scrolled
+      try{if(p.w){p.w.bars=p.bars;if(p.w.dr&&p.w.dr.shapes&&p.w.dr.shapes.length){p.w.dr.shapes.forEach(function(s){if(s.l!=null)s.l+=shift;if(s.l1!=null)s.l1+=shift;if(s.l2!=null)s.l2+=shift;if(s.pts)s.pts.forEach(function(pt){if(pt.l!=null)pt.l+=shift;});});if(p.w.dr.redraw)p.w.dr.redraw();}}}catch(e){} // anchor drawings after older bars prepended (logical indices shift by `shift`)
+      try{applyInds(p);}catch(e){}
+      if(p.trades)drawTrades(p);
+    });
+  }
   function live(p){if(!p.candle)return;
     if(Date.now()-p.reload>(p.lastBar?60000:5000)){(p.lastBar?resyncKlines:loadKlines)(p);return;} // cold-start self-heal: FIRST fetch failed (lastBar null) → loadKlines (initial, jump to edge), retry every 5s instead of a permanently blank chart; warm 60s re-sync → resyncKlines (guarded, never yanks a scrolled-back user). checked BEFORE the pr>0 bail so a stalled feed still refetches
     if(!p.lastBar)return;
