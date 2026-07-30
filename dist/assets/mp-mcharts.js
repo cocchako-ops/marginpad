@@ -478,6 +478,7 @@
     try{location.replace('/');}catch(e){location.href='/';}
   }
   window.mpOpenCharts=open;
+  try{window.__mfcPanes=function(){return panes;};}catch(e){} // permanent read-only debug accessor (mirror of desktop window.__mpWinsDbg) — lets headless E2E introspect the live pane bars; panes is reassigned on forcePair so return it via closure
   // live ticks
   document.addEventListener('mp:price',function(ev){if(!ov||ov.hidden||!ev.detail)return;panes.forEach(function(p){if(p.sym===ev.detail.sym)live(p);});});
   setInterval(function(){if(!ov||ov.hidden)return;panes.forEach(function(p){
