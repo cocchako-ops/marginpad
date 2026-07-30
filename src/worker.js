@@ -2056,7 +2056,6 @@ async function fetchPrice(sym) {
 }
 // price candles for the interactive heatmap chart (Binance + Bybit fallback, normalized)
 const KLINES_TAG_UNTIL = Date.UTC(2026, 7, 9); // 2026-08-09: TEMP klines hit/miss + upstream-ms AE tag (baseline for the sweep-cost compare) — DELETE this const + klTag() + its call sites (handleKlines args, /api/klines route) after the compare
-const PXTAG_UNTIL = Date.UTC(2026, 7, 2); // 2026-08-02: TEMP /api/price call-site diagnostic (blob1='pxtag': ctx pos/chart/form, ws 0/1, cache h/m, sym). Sampled 1:10. REMOVE the const + the tagger in the /api/price handler + /api/admin/pxtag + the client &ctx=/&ws= params after reading the 2-3h numbers.
 const PERF_AE_UNTIL = Date.UTC(2026, 8, 1); // 2026-09-01: UX-perf AE dual-write (index 'uxperf', blob2=metric, double2=ms). Fixes the perf-ring-8h blindness (no day/week p95 history) for ux-cold/ux-chart/price-age etc. Revisit at the date — if it's earning its keep make it permanent, else drop. Read via /api/admin/uxperf.
 function klTag(env, hm, pair, iv, src, ms, le, won) {
   try { if (env && env.AE && Date.now() < KLINES_TAG_UNTIL) env.AE.writeDataPoint({ indexes: ['klines'], blobs: ['klines', hm, String(pair || ''), String(iv || ''), String(src || 'pub'), le || 'live', won || ''], doubles: [1, +ms || 0] }); } catch (e) {} // blob2 hit|miss(_stale/_none), blob5 pub|sweep, blob6 live|hist, blob7 winning upstream (attributes a slow miss to ONE source vs a cascade fall-through)
@@ -8152,12 +8151,9 @@ export default {
     if (url.pathname === '/api/cg/hyper') return handleCgHyper(url, env);
     if (url.pathname === '/api/price') {
       const sym = String(url.searchParams.get('symbol') || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-      // TEMP call-site diagnostic (remove with PXTAG_UNTIL): who drives /api/price invocations — ctx (pos/chart/form), ws-covered bool, worker cache hit/miss. Sampled 1:10.
-      const _pxCtx = (url.searchParams.get('ctx') || '').replace(/[^a-z]/g, '').slice(0, 3), _pxWs = url.searchParams.get('ws') === '1' ? '1' : (url.searchParams.get('ws') === '0' ? '0' : '-'), _pxs = Date.now() < PXTAG_UNTIL && Math.random() < 0.1;
-      const _pxlog = (hm) => { try { if (_pxs && env.AE) env.AE.writeDataPoint({ indexes: ['pxtag'], blobs: ['pxtag', _pxCtx || '?', _pxWs, hm, sym.slice(0, 10)], doubles: [1] }); } catch (e) {} };
       const ck = new Request('https://marginpad.io/__price_' + sym);
-      try { const hit = await caches.default.match(ck); if (hit) { const ca = +hit.headers.get('x-mp-cached') || 0; if (Date.now() - ca < 8000) { _pxlog('h'); return hit; } } } catch (e) {} // enforce freshness in the worker — a zone Cache-TTL override was pinning /api/price at 4h (stale live price)
-      const p = await fetchPrice(sym); _pxlog('m');
+      try { const hit = await caches.default.match(ck); if (hit) { const ca = +hit.headers.get('x-mp-cached') || 0; if (Date.now() - ca < 8000) return hit; } } catch (e) {} // enforce freshness in the worker — a zone Cache-TTL override was pinning /api/price at 4h (stale live price)
+      const p = await fetchPrice(sym);
       const resp = new Response(JSON.stringify(p || { error: 'not found' }), { status: p ? 200 : 404, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': p ? 'public, max-age=5' : 'public, max-age=30', 'cdn-cache-control': p ? 'max-age=5' : 'max-age=30', 'cloudflare-cdn-cache-control': p ? 'max-age=5' : 'max-age=30', 'x-mp-cached': String(Date.now()), ...CORS } });
       try { await caches.default.put(ck, resp.clone()); } catch (e) {} // edge-cache BOTH the hit (5s) AND the miss (30s) — without negative-caching, an unresolvable/delisted symbol re-ran fetchPrice's 5 sequential upstream legs on EVERY poll (5 wasted round-trips + subrequests each time)
       return resp;
@@ -8669,13 +8665,6 @@ export default {
       const users = env.USERS.get(env.USERS.idFromName('main'));
       const r = await users.fetch(new Request('https://do/srvtrades'));
       return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
-    }
-    if (url.pathname === '/api/admin/pxtag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // TEMP (remove with PXTAG_UNTIL): /api/price call-site breakdown from AE (sampled 1:10 → multiply n by ~10 for the real share)
-      const hrs = Math.min(48, Math.max(1, +url.searchParams.get('h') || 6)), W = "blob1='pxtag' AND timestamp > NOW() - INTERVAL '" + hrs + "' HOUR";
-      const byCtx = (await aeQuery(env, "SELECT blob2 ctx, blob3 ws, blob4 cache, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY ctx, ws, cache ORDER BY n DESC")) || [];
-      const bySym = (await aeQuery(env, "SELECT blob5 sym, blob2 ctx, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY sym, ctx ORDER BY n DESC LIMIT 60")) || [];
-      const tot = (await aeQuery(env, "SELECT SUM(_sample_interval) n FROM marginpad_events WHERE " + W)) || [];
-      return new Response(JSON.stringify({ hours: hrs, note: 'sampled 1:10; n≈10× for real share', sampledTotal: (tot[0] && +tot[0].n) || 0, byCtx, bySym }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/runcron' && await adminCookieOk(request, env)) { // COOKIE-ONLY (no ?key=): tasks MUTATE MONEY (referrals pay out, duels settle XP escrow) — a URL key would land in browser history / logs / Referer. adminCookieOk is the ONLY accepted auth here. Runs a */10 cron task DIRECTLY in fetch context → iterate in seconds; a task that works here but not on the cron is the scheduled-vs-fetch signal (e.g. aeQuery).
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
