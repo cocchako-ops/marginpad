@@ -10015,6 +10015,9 @@ export class UserStore {
     for (const col of ['bio TEXT', 'avatar TEXT', 'accent TEXT', 'coins TEXT', 'frame TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // public profile personalization: bio, avatar emoji, accent colour, favourite coins (csv)
     s.exec('CREATE TABLE IF NOT EXISTS xplog(user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)'); // XP earn/adjust history (ring-buffered ~150/user)
     s.exec('CREATE TABLE IF NOT EXISTS xpday(user_id TEXT, day TEXT, src TEXT, n INTEGER DEFAULT 0, PRIMARY KEY(user_id,day,src))'); // per-source per-UTC-day earned, for anti-abuse caps
+    let _xlAdded = false; try { s.exec('ALTER TABLE users ADD COLUMN xp_life INTEGER DEFAULT 0'); _xlAdded = true; } catch (e) {} // Patch B (2026-07-30): monotonic per-grant XP accumulator — only ever incremented (by _grantXp), never decremented and never trimmed (unlike xplog). Trim-proof basis for the seasonal XP board (seasonal = xp_life - per-season base).
+    if (_xlAdded) { try { s.exec('UPDATE users SET xp_life=COALESCE(xp,0)'); } catch (e) {} } // one-time backfill TIED to the ALTER success so it never re-runs. CAVEAT: users.xp is NET (already reduced by duel-stake _takeXp), so the seeded xp_life is NOT true "lifetime earned" — it is "net XP at migration + positive XP earned after". Harmless to the seasonal delta (both ends use xp_life), but do NOT surface xp_life to users as a lifetime-earned total.
+    s.exec('CREATE TABLE IF NOT EXISTS xpseason(user_id TEXT, season INTEGER, base INTEGER, PRIMARY KEY(user_id,season))'); // xp_life snapshot at a user's FIRST grant of a season → seasonal XP = xp_life - base (trim-proof, no xplog dependency)
     s.exec('CREATE TABLE IF NOT EXISTS academy(user_id TEXT, lesson TEXT, ts INTEGER, PRIMARY KEY(user_id,lesson))'); // completed Academy lessons (+ "course:<id>" bonus markers); XP via _grantXp src=academy lifeCap 800
     try { s.exec('CREATE INDEX IF NOT EXISTS xplog_u ON xplog(user_id,ts)'); } catch (e) {} // device/browser, activity rollups, moderation, digest opt-in, linked Telegram chat
     for (const col of ['ip TEXT', 'cc TEXT', 'asn INTEGER', 'org TEXT']) { try { s.exec('ALTER TABLE sessions ADD COLUMN ' + col); } catch (e) {} } // per-login location + ASN for the session/VPN view
@@ -10069,6 +10072,11 @@ export class UserStore {
     if (o.dayCap) { const day = new Date().toISOString().slice(0, 10); const got = (this.rows('SELECT n FROM xpday WHERE user_id=? AND day=? AND src=?', uid, day, src)[0] || { n: 0 }).n; if (got >= o.dayCap) return 0; amt = Math.min(amt, o.dayCap - got); if (amt <= 0) return 0; sql.exec('INSERT INTO xpday(user_id,day,src,n) VALUES(?,?,?,?) ON CONFLICT(user_id,day,src) DO UPDATE SET n=n+?', uid, day, src, amt, amt); }
     if (amt <= 0) return 0;
     sql.exec('UPDATE users SET xp=MAX(0,COALESCE(xp,0)+?) WHERE id=?', amt, uid);
+    // Patch B (2026-07-30): trim-proof lifetime + per-season base. Snapshot the season base at the user's FIRST grant of the
+    // season (base = xp_life BEFORE this grant) so seasonal XP = xp_life - base — independent of the xplog 150-row trim.
+    const _season = lbPeriodStart(now);
+    if (!this.rows('SELECT 1 FROM xpseason WHERE user_id=? AND season=?', uid, _season)[0]) { const _life = (this.rows('SELECT COALESCE(xp_life,0) v FROM users WHERE id=?', uid)[0] || { v: 0 }).v; sql.exec('INSERT INTO xpseason(user_id,season,base) VALUES(?,?,?)', uid, _season, _life); }
+    sql.exec('UPDATE users SET xp_life=COALESCE(xp_life,0)+? WHERE id=?', amt, uid);
     sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, now, src, amt, String(o.note || '').slice(0, 120));
     const cnt = (this.rows('SELECT COUNT(*) n FROM xplog WHERE user_id=?', uid)[0] || { n: 0 }).n;
     if (cnt > 160) sql.exec('DELETE FROM xplog WHERE rowid IN (SELECT rowid FROM xplog WHERE user_id=? ORDER BY ts ASC LIMIT ?)', uid, cnt - 150);
@@ -11133,8 +11141,17 @@ export class UserStore {
       // Includes non-traders (learners/mission-doers), can't be gamed by position size. Replaces the PnL board.
       let xp = [];
       try {
-        xp = this.rows("SELECT x.user_id uid, u.username, SUM(x.amt) xp FROM xplog x JOIN users u ON u.id=x.user_id WHERE x.ts>=? AND x.ts<? AND x.amt>0 AND x.src<>'lbprize' AND (u.status IS NULL OR u.status='active') GROUP BY x.user_id ORDER BY xp DESC LIMIT ?", ws, we, limit)
-          .map(r => ({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), xp: +r.xp || 0 }));
+        if (ws === LB_ANCHOR) {
+          // CURRENT SEASON (07-20 → 08-03): UNCHANGED — the existing (trim-affected) seasonal SUM. This season's payout goes as-is.
+          xp = this.rows("SELECT x.user_id uid, u.username, SUM(x.amt) xp FROM xplog x JOIN users u ON u.id=x.user_id WHERE x.ts>=? AND x.ts<? AND x.amt>0 AND x.src<>'lbprize' AND (u.status IS NULL OR u.status='active') GROUP BY x.user_id ORDER BY xp DESC LIMIT ?", ws, we, limit)
+            .map(r => ({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), xp: +r.xp || 0 }));
+        } else {
+          // FROM 08-03 ONWARD (Patch B): trim-proof seasonal XP = xp_life - per-season base. INNER JOIN xpseason ⇒ only users
+          // who earned XP this season rank (no prize for pre-season-only XP); base is snapshotted at their first grant of the
+          // season so the delta is exactly this season's positive XP — never trimmed, immune to duel-stake, does not touch users.xp.
+          xp = this.rows("SELECT u.id uid, u.username, (COALESCE(u.xp_life,0)-COALESCE(s.base,0)) sx FROM users u JOIN xpseason s ON s.user_id=u.id AND s.season=? WHERE (u.status IS NULL OR u.status='active') AND u.username IS NOT NULL AND u.username!='' AND (COALESCE(u.xp_life,0)-COALESCE(s.base,0))>0 ORDER BY sx DESC LIMIT ?", ws, limit)
+            .map(r => ({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), xp: +r.sx || 0 }));
+        }
       } catch (e) {}
       return this.j({ top: best.slice(0, limit), xp });
     }
