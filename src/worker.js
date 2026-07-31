@@ -2271,6 +2271,68 @@ async function xTweet(env, text) {
     return { ok: false, status: r.status, error: (j && (j.detail || j.title || (j.errors && j.errors[0] && j.errors[0].message))) || ('http_' + r.status), raw: j };
   } catch (e) { return { ok: false, error: String(e && e.message || e).slice(0, 160) }; }
 }
+// --- Content generators for the auto-poster: pull our own live data + compose a tweet (<=275 chars, URL counts ~23). Template-based (no Anthropic dep → reliable in cron). Return null if data is unavailable so the caller falls through. ---
+function _xMoney(n) { n = +n || 0; const a = Math.abs(n), s = n < 0 ? '-' : ''; return a >= 1e9 ? s + '$' + (a / 1e9).toFixed(2) + 'B' : a >= 1e6 ? s + '$' + (a / 1e6).toFixed(0) + 'M' : a >= 1e3 ? s + '$' + (a / 1e3).toFixed(0) + 'K' : s + '$' + a.toFixed(0); }
+async function _xJson(resp) { try { return resp && resp.json ? await resp.json() : null; } catch (e) { return null; } } // call our own handlers directly — a worker self-fetch to its own zone loops back and fails
+async function xComposeLiq(env) {
+  const d = await _xJson(await handleCgPulse(new URL('https://marginpad.io/api/cg/pulse'), env)); if (!d || !d.liq24h || !(+d.liq24h.total > 0)) return null;
+  const longPct = Math.round(d.liq24h.long / d.liq24h.total * 100), top = (d.topLiq || [])[0];
+  let s = '🔥 ' + _xMoney(d.liq24h.total) + ' liquidated in crypto futures in 24h (' + longPct + '% longs)';
+  if (top && top.s) s += '.\n\n' + top.s + ' got rekt hardest: ' + _xMoney(top.liq);
+  s += '.\n\nLive liquidation heatmap + feed 👇\nhttps://marginpad.io/liquidations\n\n#Crypto #Bitcoin #Liquidation';
+  return s;
+}
+async function xComposeMovers(env) {
+  const a = await _xJson(await handleScreener(env)); const arr = (a && a.rows) || []; if (arr.length < 3) return null;
+  const f = arr.filter(x => x && x.s && isFinite(x.chg) && x.score != null).sort((x, y) => y.chg - x.chg); const g = f[0], l = f[f.length - 1]; if (!g || !l) return null;
+  return '📊 24h movers on perps:\n\n🟢 ' + g.s + ' +' + (+g.chg).toFixed(1) + '%\n🔴 ' + l.s + ' ' + (+l.chg).toFixed(1) + '%\n\nScan 100+ pairs — live funding, OI & AI scores 👇\nhttps://marginpad.io/screener\n\n#Crypto #Altcoins #Trading';
+}
+async function xComposeCalendar(env) {
+  const d = await _xJson(await handleCalendar(new Request('https://marginpad.io/api/calendar'), env)); const ev = (d && d.events) || []; const now = Date.now();
+  const next = ev.find(e => e && e.ts > now && +e.impact >= 2) || ev.find(e => e && e.ts > now); if (!next || !next.title) return null;
+  const days = Math.round((next.ts - now) / 86400000), when = days <= 0 ? 'TODAY' : days === 1 ? 'tomorrow' : 'in ' + days + ' days';
+  return '⏰ ' + String(next.title).slice(0, 70) + ' — ' + when + '.\n\nBig events = big volatility. Don\'t get caught leveraged on the wrong side.\n\nLive countdowns + reminders 👇\nhttps://marginpad.io/calendar\n\n#Crypto #Bitcoin #FOMC';
+}
+async function xComposeFunding(env) {
+  const a = await _xJson(await handleScreener(env)); const arr = (a && a.rows) || []; if (!arr.length) return null;
+  const t = arr.filter(x => x && x.s && isFinite(x.f) && x.score != null && Math.abs(x.f) >= 0.0005 && Math.abs(x.f) <= 0.03).sort((x, y) => Math.abs(y.f) - Math.abs(x.f))[0]; if (!t) return null; // 0.05%–3% band: skip delisting/anomaly funding that looks like a data glitch
+  return '💸 ' + t.s + ' funding: ' + (t.f > 0 ? '+' : '') + (t.f * 100).toFixed(3) + '% — ' + (t.f > 0 ? 'longs paying shorts' : 'shorts paying longs') + '.\n\nWhen the crowd is this one-sided, the squeeze is loading.\n\nLive funding on 100+ pairs 👇\nhttps://marginpad.io/funding\n\n#Crypto #Funding #Trading';
+}
+const _X_EVERGREEN = [
+  'Learn crypto futures WITHOUT losing a cent 📈\n\nMarginPad — free, no sign-up:\n• Paper trade at live prices\n• Liquidation heatmap\n• FOMC/CPI calendar\n• Calculators + screener\n\nBlow up a demo, not your wallet 👇\nhttps://marginpad.io\n\n#Crypto #Bitcoin #CryptoTrading',
+  'Would your trade survive? Test it risk-free.\n\nMarginPad (free, no sign-up):\n• Paper trade at real live prices\n• See your exact liquidation price\n• Position size & PnL calculators\n\nPractice before real money 👇\nhttps://marginpad.io\n\n#Crypto #Trading #Bitcoin',
+  'Most leverage traders blow up. Be the exception.\n\nMarginPad — free tools to learn first:\n• Risk-free paper trading\n• Live liquidation heatmap\n• Macro calendar (FOMC/CPI)\n\nNo sign-up, no risk 👇\nhttps://marginpad.io\n\n#Crypto #Bitcoin #Leverage',
+];
+function xEvergreen() { return _X_EVERGREEN[Math.floor(Date.now() / 86400000) % _X_EVERGREEN.length]; }
+// Auto-poster: 2 posts/day at peak UTC slots. Rotates content types, evergreen fallback. Idempotent per day+slot. force=true → compose+post now (manual test), no slot/flag gate.
+async function checkXPost(env, force) {
+  if (env && env.ENVIRONMENT === 'staging') return;
+  let cfg = {}; try { cfg = await opsCfg(env); } catch (e) {}
+  if (cfg.xPost === false) return; // kill switch: ops:cfg xPost:false
+  const X_SLOTS = [14, 20]; // peak UTC hours (US morning/EU afternoon + US evening)
+  const now = new Date(), hour = now.getUTCHours(), day = now.toISOString().slice(0, 10);
+  let slot = X_SLOTS.indexOf(hour);
+  if (!force) {
+    if (slot < 0) return;
+    const flag = 'xpost:' + day + ':' + slot;
+    if (await env.STATS.get(flag)) return; // already posted this slot today
+    await env.STATS.put(flag, '1', { expirationTtl: 172800 }); // set BEFORE posting → a cron retry can't double-post
+  } else if (slot < 0) slot = 0;
+  const gens = [xComposeLiq, xComposeMovers, xComposeCalendar, xComposeFunding];
+  const dayNum = Math.floor(Date.parse(day) / 86400000), start = (dayNum * X_SLOTS.length + Math.max(0, slot)) % gens.length;
+  let text = null;
+  for (let i = 0; i < gens.length && !text; i++) { try { const t = await gens[(start + i) % gens.length](env); if (t && t.length <= 275) text = t; } catch (e) {} }
+  if (!text) text = xEvergreen();
+  const res = await xTweet(env, text);
+  // usage tracking (mp-ops): count + ring log so the owner can watch the $ credit drain and know when to top up
+  try {
+    if (res.ok) { const c = +(await env.STATS.get('xpost:count') || 0) + 1; await env.STATS.put('xpost:count', String(c)); }
+    let log = []; try { log = JSON.parse(await env.STATS.get('xpost:log') || '[]'); } catch (e) {}
+    log.unshift({ ts: Date.now(), day, slot, ok: !!res.ok, id: res.id || '', err: res.error || '', text: text.slice(0, 90) });
+    await env.STATS.put('xpost:log', JSON.stringify(log.slice(0, 60)));
+  } catch (e) {}
+  return res;
+}
 function deviceOf(ua) { return /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(ua) ? 'Mobile' : 'Desktop'; }
 // VPN / proxy / datacenter detection from the Cloudflare ASN (no enterprise Bot Management needed). The most reliable
 // FREE signal is the ASN: real people connect from residential ISPs (Comcast, Vodafone, Jio…), while VPNs and proxies
@@ -2559,7 +2621,7 @@ async function handleStatsReset(env) {
   return new Response('cleared ' + n + ' analytics keys (bot + league kept)');
 }
 // Live health of the liquidation collector (its own VPS), rendered into the stats dashboard.
-async function opsCfg(env) { let c = {}; try { c = JSON.parse(await env.STATS.get('ops:cfg') || '{}'); } catch (e) {} return { brief: c.brief !== false, briefHour: (Number.isFinite(+c.briefHour) && +c.briefHour >= 0 && +c.briefHour <= 23) ? +c.briefHour : 8, alerts: c.alerts !== false, bigTrade: (Number.isFinite(+c.bigTrade) && +c.bigTrade >= 0) ? +c.bigTrade : 5000, sessKv: c.sessKv !== false, srvCandle: c.srvCandle !== false, nudgeGraceMin: (Number.isFinite(+c.nudgeGraceMin) && +c.nudgeGraceMin >= 5 && +c.nudgeGraceMin <= 1440) ? +c.nudgeGraceMin : 60 }; }
+async function opsCfg(env) { let c = {}; try { c = JSON.parse(await env.STATS.get('ops:cfg') || '{}'); } catch (e) {} return { brief: c.brief !== false, briefHour: (Number.isFinite(+c.briefHour) && +c.briefHour >= 0 && +c.briefHour <= 23) ? +c.briefHour : 8, alerts: c.alerts !== false, bigTrade: (Number.isFinite(+c.bigTrade) && +c.bigTrade >= 0) ? +c.bigTrade : 5000, sessKv: c.sessKv !== false, srvCandle: c.srvCandle !== false, xPost: c.xPost !== false, nudgeGraceMin: (Number.isFinite(+c.nudgeGraceMin) && +c.nudgeGraceMin >= 5 && +c.nudgeGraceMin <= 1440) ? +c.nudgeGraceMin : 60 }; }
 // ---- Performance sampling (MarginPad Health): per-isolate buffer -> KV ring perf:ring (cap 2000, 8h). ----
 // 8h retention (was 4h): the perf-budget alarm windows over the ring, and the sparse UX beacons (1/5min/client) need
 // ~8h to accumulate the 30 samples that make a p95 a percentile. cap 2000 (was 1200) so 8h isn't silently truncated.
@@ -8626,10 +8688,17 @@ export default {
       for (const r of rows) out.metrics[r.metric || '?'] = { n: +r.n || 0, p50: r.p50 != null ? Math.round(+r.p50) : null, p95: r.p95 != null ? Math.round(+r.p95) : null, max: r.mx != null ? Math.round(+r.mx) : null };
       return new Response(JSON.stringify(out, null, 1), { headers: jh });
     }
-    if (url.pathname === '/api/admin/xtest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // manual test post to X — verifies the 4 OAuth 1.0a keys + Read+Write permission before the auto-poster cron is wired
+    if (url.pathname === '/api/admin/xtest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // manual test post to X — ?auto=1 runs the live-data auto-composer once (proves the cron content); ?text= posts custom text
+      if (url.searchParams.get('dry')) { const gens = { liq: xComposeLiq, movers: xComposeMovers, calendar: xComposeCalendar, funding: xComposeFunding }; const out = {}; for (const k in gens) { try { const t = await gens[k](env); out[k] = t ? { len: t.length, text: t } : null; } catch (e) { out[k] = 'err:' + e.message; } } out.evergreen = xEvergreen(); return J(out); }
+      if (url.searchParams.get('auto')) { const res = await checkXPost(env, true); return J(res || { ok: false, error: 'no_result' }, (res && res.ok) ? 200 : 502); }
       const text = url.searchParams.get('text') || ('MarginPad — free crypto futures tools: live liquidation heatmap, paper trading (no sign-up), and a macro calendar with FOMC/CPI countdowns. https://marginpad.io [' + new Date().toISOString().slice(11, 16) + ']');
       const res = await xTweet(env, text);
       return J(res, res.ok ? 200 : 502);
+    }
+    if (url.pathname === '/api/admin/xstat' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // X auto-poster status + usage (watch the credit drain, know when to top up)
+      const count = +(await env.STATS.get('xpost:count') || 0); let log = []; try { log = JSON.parse(await env.STATS.get('xpost:log') || '[]'); } catch (e) {}
+      let cfg = {}; try { cfg = await opsCfg(env); } catch (e) {}
+      return J({ enabled: cfg.xPost !== false, slotsUTC: [14, 20], totalPosts: count, note: 'Compare totalPosts to the credit drain in your X Usage tab → cost per post → runway on the remaining $ balance.', recent: log.slice(0, 20) });
     }
     if (url.pathname === '/api/admin/pxtag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // TEMP: WHO drives /api/price (33% of invocations) — by call-site ctx / WS-covered / cache h-m / symbol. '?' = untagged call site (goal ~0).
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -9174,6 +9243,7 @@ export default {
     bg(checkWhaleAlerts, 'whale');
     bg(checkTokenUnlocks, 'unlocks');
     bg(checkNewsPost, 'news'); // auto-post fresh crypto news to @marginpadnews
+    bg(checkXPost, 'xpost'); // auto-post 2x/day (peak UTC 14:00 + 20:00) to X — rotating live-data content, idempotent per slot
     bg(checkSubscriptions, 'subs'); // premium-sub reminders + kick on expiry
     bg(checkLbNotify, 'lbnotify'); // DM leaderboard rank changes to linked users
     bg(checkReferrals, 'referrals'); // pay referrers once their friend gets active
