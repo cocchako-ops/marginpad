@@ -2251,6 +2251,26 @@ const isStatsKey = (env, k) => !!k && (k === statsKeyOf(env) || k === adminKeyOf
 async function sha8(s) {
   try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return Array.from(new Uint8Array(b)).slice(0, 8).map(x => x.toString(16).padStart(2, '0')).join(''); } catch (e) { return ''; }
 }
+// ---- X (Twitter) posting: OAuth 1.0a user-context, POST /2/tweets. Own scheduled posts only (no auto-reply to others). ----
+function _xEnc(s) { return encodeURIComponent(String(s)).replace(/[!*'()]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase()); }
+async function _hmacSha1(key, msg) { const enc = new TextEncoder(); const k = await crypto.subtle.importKey('raw', enc.encode(key), { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']); const sig = await crypto.subtle.sign('HMAC', k, enc.encode(msg)); return btoa(String.fromCharCode.apply(null, new Uint8Array(sig))); }
+// Post a tweet. Returns {ok, id?, error?}. JSON body → the body is NOT part of the OAuth signature base (v2 gotcha); only the oauth_* params are signed.
+async function xTweet(env, text) {
+  if (!(env && env.X_API_KEY && env.X_API_SECRET && env.X_ACCESS_TOKEN && env.X_ACCESS_SECRET)) return { ok: false, error: 'x_unconfigured' };
+  const url = 'https://api.twitter.com/2/tweets', method = 'POST';
+  const oa = { oauth_consumer_key: env.X_API_KEY, oauth_token: env.X_ACCESS_TOKEN, oauth_signature_method: 'HMAC-SHA1', oauth_timestamp: Math.floor(Date.now() / 1000).toString(), oauth_nonce: (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36)).replace(/-/g, ''), oauth_version: '1.0' };
+  const paramStr = Object.keys(oa).sort().map(k => _xEnc(k) + '=' + _xEnc(oa[k])).join('&');
+  const base = method + '&' + _xEnc(url) + '&' + _xEnc(paramStr);
+  const signingKey = _xEnc(env.X_API_SECRET) + '&' + _xEnc(env.X_ACCESS_SECRET);
+  oa.oauth_signature = await _hmacSha1(signingKey, base);
+  const authHeader = 'OAuth ' + Object.keys(oa).sort().map(k => _xEnc(k) + '="' + _xEnc(oa[k]) + '"').join(', ');
+  try {
+    const r = await fetch(url, { method, headers: { Authorization: authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ text: String(text || '').slice(0, 280) }) });
+    const j = await r.json().catch(() => null);
+    if (r.ok && j && j.data && j.data.id) return { ok: true, id: j.data.id };
+    return { ok: false, status: r.status, error: (j && (j.detail || j.title || (j.errors && j.errors[0] && j.errors[0].message))) || ('http_' + r.status), raw: j };
+  } catch (e) { return { ok: false, error: String(e && e.message || e).slice(0, 160) }; }
+}
 function deviceOf(ua) { return /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(ua) ? 'Mobile' : 'Desktop'; }
 // VPN / proxy / datacenter detection from the Cloudflare ASN (no enterprise Bot Management needed). The most reliable
 // FREE signal is the ASN: real people connect from residential ISPs (Comcast, Vodafone, Jio…), while VPNs and proxies
@@ -8605,6 +8625,11 @@ export default {
       const out = { hours: hrs, metrics: {} };
       for (const r of rows) out.metrics[r.metric || '?'] = { n: +r.n || 0, p50: r.p50 != null ? Math.round(+r.p50) : null, p95: r.p95 != null ? Math.round(+r.p95) : null, max: r.mx != null ? Math.round(+r.mx) : null };
       return new Response(JSON.stringify(out, null, 1), { headers: jh });
+    }
+    if (url.pathname === '/api/admin/xtest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // manual test post to X — verifies the 4 OAuth 1.0a keys + Read+Write permission before the auto-poster cron is wired
+      const text = url.searchParams.get('text') || ('MarginPad — free crypto futures tools: live liquidation heatmap, paper trading (no sign-up), and a macro calendar with FOMC/CPI countdowns. https://marginpad.io [' + new Date().toISOString().slice(11, 16) + ']');
+      const res = await xTweet(env, text);
+      return J(res, res.ok ? 200 : 502);
     }
     if (url.pathname === '/api/admin/pxtag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // TEMP: WHO drives /api/price (33% of invocations) — by call-site ctx / WS-covered / cache h-m / symbol. '?' = untagged call site (goal ~0).
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
