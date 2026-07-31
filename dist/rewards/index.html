@@ -37,7 +37,7 @@
 <meta name="twitter:description" content="Sign in with your email, get a welcome bonus, claim free USDT every 5 minutes. Withdraw from $5. No deposit." />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad USDT Faucet","url":"https://marginpad.io/rewards/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Earn free USDT on MarginPad: sign in with your email, get an instant welcome bonus, claim every 5 minutes and complete daily missions. Withdraw from $5 to your Bybit UID — no deposit."}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I claim free USDT?","acceptedAnswer":{"@type":"Answer","text":"Sign in with just your email (a 6-digit code, no password), collect your instant welcome bonus and tap Claim — you can claim free USDT every 5 minutes. No deposit required."}},{"@type":"Question","name":"Is the MarginPad faucet really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. There is no deposit and nothing to pay. You sign in with an email address; a Bybit UID is only needed when you withdraw."}},{"@type":"Question","name":"What is the minimum withdrawal?","acceptedAnswer":{"@type":"Answer","text":"Once your balance reaches $5 you can withdraw your USDT to your Bybit account by UID."}},{"@type":"Question","name":"How else can I earn besides claiming?","acceptedAnswer":{"@type":"Answer","text":"Daily missions pay extra USDT for using the tools (paper trades, screener, calendar), promo posts on X or TikTok earn a bonus per approved post, and the 14-day paper-trading leaderboard pays real USDT prizes to the top traders."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I claim free USDT?","acceptedAnswer":{"@type":"Answer","text":"Sign in with just your email (a 6-digit code, no password), collect your instant welcome bonus and tap Claim — you can claim free USDT every 5 minutes. No deposit required."}},{"@type":"Question","name":"Is the MarginPad faucet really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. There is no deposit and nothing to pay. You sign in with an email address; a Bybit UID is only needed when you withdraw."}},{"@type":"Question","name":"What is the minimum withdrawal?","acceptedAnswer":{"@type":"Answer","text":"Once your balance reaches $5 you can withdraw your USDT to your Bybit account by UID."}},{"@type":"Question","name":"How else can I earn besides claiming?","acceptedAnswer":{"@type":"Answer","text":"Daily missions pay extra USDT for using the tools (paper trades, screener, calendar), promo posts on X earn a bonus per approved post, and the 14-day paper-trading leaderboard pays real USDT prizes to the top traders."}}]}</script>
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
@@ -258,13 +258,13 @@
   .rwd-cards>#wdHistCard{order:1}
   .rwd-cards>#refCard{order:2;grid-column:1}          /* 2-col left (short) */
   .rwd-cards>#msnCard{order:3;grid-column:2;grid-row:span 2}  /* 2-col right (tall) — spans both left cards */
-  .rwd-cards>#promoCard{order:4;grid-column:1}        /* 2-col left (short) — stacks under Invite */
+  .rwd-cards>#xeCard{order:4;grid-column:1}        /* 2-col left (short) — stacks under Invite */
   .rwd-cards>#lbCompCard{order:5}   /* full  */
   .rwd-cards>#howCard{order:6}      /* full  */
   .rwd-cards>#lvlCard{order:7}      /* 2-col */
   .rwd-cards>.card.aff{order:8}     /* 2-col */
   .rwd-cards>#exchanges{order:20}
-  @media(max-width:1000px){.rwd-cards>#msnCard,.rwd-cards>#refCard,.rwd-cards>#promoCard{grid-row:auto;grid-column:auto}}
+  @media(max-width:1000px){.rwd-cards>#msnCard,.rwd-cards>#refCard,.rwd-cards>#xeCard{grid-row:auto;grid-column:auto}}
   /* the balance card = the star of the page */
   .card--primary{position:relative;border-color:rgba(194,246,74,.34);background:linear-gradient(168deg,rgba(194,246,74,.075),var(--panel) 62%);box-shadow:0 26px 66px -36px rgba(194,246,74,.5),0 22px 52px -30px rgba(0,0,0,.92)}
   .card--primary::before{content:'';position:absolute;inset:0;border-radius:18px;padding:1px;background:linear-gradient(158deg,rgba(194,246,74,.5),transparent 42%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.55}
@@ -283,8 +283,7 @@
       <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
     </div>
     <nav class="hnav">
-            <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
-      <a href="/rewards/" class="hlink hrwd on" aria-current="page" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>
+            <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a><a href="https://t.me/marginpad" target="_blank" rel="noopener" class="hlink htg" title="Join our Telegram group" aria-label="Telegram group"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></a>
       <button type="button" class="hlink hjr" id="jrOpen" data-mytrades><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</button>
       <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
       <select class="lang" id="langSel" aria-label="Language" onchange="if(this.value)location.href=this.value">
@@ -371,29 +370,24 @@
     <div id="refCampWrap" style="margin-top:14px;display:none"><div style="font-size:12px;color:#9aa3ad;margin-bottom:7px">Tap a platform to copy a tagged link — that's how you (and we) see <b style="color:#e9e7df">where your clicks come from</b>:</div><div id="refCamps" style="display:flex;flex-wrap:wrap;gap:7px"></div></div>
     <div class="pr-msg" id="refMsg"></div>
   </div>
-  <div class="card" id="promoCard" hidden>
-    <div class="lbl">Promote and earn</div>
-    <h2 style="margin:0 0 6px;font-size:19px">Share a liquidation — get paid for the post</h2>
-    <p style="color:#9aa3ad;font-size:13.5px;line-height:1.6;margin:0 0 10px"><b style="color:#e9e7df">𝕏 (Twitter) — $<span class="prAmtX">0.15</span> per approved post.</b> Plain "check out this site" posts don&rsquo;t qualify anymore — your post must include one of our <b>live share images</b>:</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px">
-      <div style="background:#0f1216;border:1px solid #23272e;border-radius:10px;padding:10px 12px"><b style="color:#ff6258;font-size:13px">Option 1 — Rekt ticket</b><p style="color:#9aa3ad;font-size:12.5px;line-height:1.55;margin:6px 0 0">Open <a href="/rekt/" style="color:#c2f64a">Rekt</a>, tap any live liquidation ticket and hit <b>Share</b> — you get a receipt image + ready caption. Post it on X.</p></div>
-      <div style="background:#0f1216;border:1px solid #23272e;border-radius:10px;padding:10px 12px"><b style="color:#ffb347;font-size:13px">Option 2 — Liquidation map</b><p style="color:#9aa3ad;font-size:12.5px;line-height:1.55;margin:6px 0 0">Open the <a href="/heatmap" style="color:#c2f64a">Liquidation Heatmap</a> and hit the <b>𝕏 button</b> — it builds a share-ready map image + caption. Post it on X.</p></div>
-    </div>
-    <p style="color:#9aa3ad;font-size:13px;line-height:1.6;margin:0 0 12px">On desktop the image downloads automatically — just attach it to the post. Then paste your post link below. <b style="color:#5ad8e6">TikTok:</b> <b style="color:#c2f64a">$<span class="prTtRate">2</span> per 1,000 views</b> (up to $<span class="prTtMax">1,000</span>) — any MarginPad video counts.<br>One X and one TikTok post per day. The post must <b>stay public for at least 24 hours</b> — we review manually after that window, so leave it up.</p>
-    <div class="pr-seg" id="prSeg"><button type="button" data-pl="x" class="on">X (Twitter)</button><button type="button" data-pl="tiktok">TikTok</button></div>
-    <div class="pr-row"><input id="prUrl" type="url" placeholder="https://x.com/you/status/…" autocomplete="off"><button class="btn" id="prSubmit" type="button">Submit</button></div>
-    <div class="pr-msg" id="prMsg"></div>
-    <div id="prList"></div>
+  <div class="card" id="xeCard" hidden>
+    <div class="lbl">Like &amp; comment — get paid</div>
+    <h2 style="margin:0 0 6px;font-size:19px">Engage with our posts on 𝕏 — earn USDT</h2>
+    <p style="color:#9aa3ad;font-size:13.5px;line-height:1.6;margin:0 0 12px">Follow <a href="https://x.com/marginpadtrade" target="_blank" rel="noopener" style="color:#c2f64a">@marginpadtrade</a>, then <b style="color:#e9e7df">like (+$<span class="xeLike">0.05</span>)</b> or <b style="color:#e9e7df">comment (+$<span class="xeCom">0.10</span>)</b> on any post below. Come back, enter your 𝕏 username, and once we confirm it the reward lands on your balance. <span style="color:#6b7480">Reviewed manually — usually within a day.</span></p>
+    <div style="margin:0 0 12px"><label for="xeUser" style="font-size:12px;color:#9aa3ad;display:block;margin-bottom:5px">Your 𝕏 (Twitter) username</label><input id="xeUser" type="text" placeholder="@yourhandle" autocomplete="off" spellcheck="false" style="width:100%;box-sizing:border-box;background:#0f1216;border:1px solid #23272e;border-radius:10px;color:#e9e7df;font:inherit;font-size:15px;padding:11px 13px"></div>
+    <div id="xePosts"></div>
+    <div class="pr-msg" id="xeMsg"></div>
+    <div id="xeList" style="margin-top:8px"></div>
   </div>
 
   <div class="card" id="lbCompCard">
     <div class="lbc-tag">14-day competition</div>
     <h2 class="lbc-title">Paper Trade Leaderboard</h2>
-    <p class="lbc-p">Every 14 days, the traders with the best paper trades win real USDT. Open longs and shorts on our free <a href="/?p=plan">Paper Trade</a> terminal — your single best trade of the season puts you on the board.</p>
+    <p class="lbc-p">Three season boards — Top ROE, Best win rate and Season XP — each pays the top 5 in real USDT at the end of every 14-day season. Free to enter: sign in and close paper trades on our free <a href="/?p=plan">Paper Trade</a> terminal.</p>
     <div class="prizes">
-      <div class="prize p1"><div class="prize-rank">1st place</div><div class="prize-amt tPz1">$30</div></div>
-      <div class="prize p2"><div class="prize-rank">2nd place</div><div class="prize-amt tPz2">$20</div></div>
-      <div class="prize p3"><div class="prize-rank">3rd place</div><div class="prize-amt tPz3">$10</div></div>
+      <div class="prize p1"><div class="prize-rank">Top ROE</div><div class="prize-amt">Top 5 · USDT</div></div>
+      <div class="prize p2"><div class="prize-rank">Best win rate</div><div class="prize-amt">Top 5 · USDT</div></div>
+      <div class="prize p3"><div class="prize-rank">Season XP</div><div class="prize-amt">Top 5 · USDT</div></div>
     </div>
     <div class="lbc-note"><b>Sign in above first</b> — your trades are saved to your account, and that's how we track your score and pay your prize.</div>
     <a class="btn btn-lime" href="/?p=plan" style="text-decoration:none;display:inline-block">Start trading →</a>
@@ -478,7 +472,7 @@
   var wdAddrRow=document.getElementById('wdAddrRow'),wdAddr=document.getElementById('wdAddr'),wdConfirm=document.getElementById('wdConfirm');
   function setText(cls,v){var els=document.querySelectorAll('.'+cls);for(var i=0;i<els.length;i++)els[i].textContent=v;}
   function fmtShort(n){return (+n).toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1');}
-  function applyCfg(j){if(j.perDay!=null){perDay=j.perDay;setText('tPer',fmtShort(perDay));}if(j.amount!=null){amount=j.amount;setText('tAmt',(+amount).toFixed(2));}if(j.minWd!=null){minWd=j.minWd;setText('tMin',fmtShort(minWd));}if(j.prize1!=null)setText('tPz1','$'+j.prize1);if(j.prize2!=null)setText('tPz2','$'+j.prize2);if(j.prize3!=null)setText('tPz3','$'+j.prize3);if(j.welcomeAmt!=null){welcomeAmt=+j.welcomeAmt;renderWelcomeHook();}if(j.promoEnabled!=null||j.promoUsd!=null)prCfg(j);if(j.exsignEnabled!=null||j.exsignUsd!=null)exsCfg(j);}
+  function applyCfg(j){if(j.perDay!=null){perDay=j.perDay;setText('tPer',fmtShort(perDay));}if(j.amount!=null){amount=j.amount;setText('tAmt',(+amount).toFixed(2));}if(j.minWd!=null){minWd=j.minWd;setText('tMin',fmtShort(minWd));}if(j.welcomeAmt!=null){welcomeAmt=+j.welcomeAmt;renderWelcomeHook();}if(j.exsignEnabled!=null||j.exsignUsd!=null)exsCfg(j);}
   function renderWelcomeHook(){var wh=document.getElementById('welcomeHook');if(!wh)return;if(welcomeAmt>0){wh.hidden=false;wh.innerHTML='<div style="background:linear-gradient(180deg,rgba(194,246,74,.13),rgba(194,246,74,.04));border:1px solid rgba(194,246,74,.45);border-radius:12px;padding:13px 15px;margin-bottom:12px;text-align:left"><div style="font-size:16px;font-weight:800;color:#d6f78a">Get free USDT, instantly</div><div style="font-size:12.5px;color:#9aa3ad;margin-top:3px;line-height:1.45">Sign in and we drop a USD welcome bonus straight into your balance — then keep claiming free USDT every few minutes.</div></div>';var sb=document.getElementById('signinBtn');if(sb)sb.textContent='Sign in & claim free USDT';}else{wh.hidden=true;}}
   function valid(a){return /^[0-9]{5,15}$/.test(a);}
   // ---- Exchange sign-up bonus: $3 per new exchange account via our ref link (manual verification against the affiliate dashboard) ----
@@ -531,37 +525,40 @@
     function sync(){var cb=sel.value==='coinbase';if(inp)inp.placeholder=cb?'Your Coinbase account name / wallet / .base':'Your UID on that exchange';if(hint){hint.style.display=cb?'':'none';if(cb)hint.innerHTML='<b>Coinbase:</b> there is no numeric UID we can see — send your <b>account name</b> (or the <b>wallet address</b> / <b>.base</b> handle shown on your Coinbase / Base profile) so we can match you in our referral list.';}}
     sel.addEventListener('change',sync);sync();
   })();
-  // ---- Promote & earn: $1 per X/TikTok post (manual review, 24h min live) ----
-  var prPlat='x';
-  function prCfg(j){var c=document.getElementById('promoCard');if(!c)return;c.hidden=(j.promoEnabled===false);function setAll(sel,v){Array.prototype.forEach.call(document.querySelectorAll(sel),function(e){e.textContent=v;});}if(j.promoXUsd!=null)setAll('.prAmtX',(+j.promoXUsd).toFixed(2));if(j.promoTtRate!=null)setAll('.prTtRate',String(+j.promoTtRate));if(j.promoTtMax!=null)setAll('.prTtMax',(+j.promoTtMax).toLocaleString());if(j.promoUsd!=null){var t=(+j.promoUsd)%1===0?String(+j.promoUsd):(+j.promoUsd).toFixed(2);setAll('.prAmt',t);}}
-  function prMsg(t,kind){var e=document.getElementById('prMsg');if(!e)return;e.innerHTML=t;e.className='pr-msg show '+(kind||'');}
-  function prLoad(){if(!signedIn)return;fetch('/api/reward/promo/mine').then(function(r){return r.json();}).then(function(d){var list=document.getElementById('prList');if(!list)return;var rows=(d&&d.promos)||[];function esc(x){return String(x==null?'':x).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
-    list.innerHTML=rows.map(function(p){
-      var st=p.status==='approved'?'<span class="st" style="color:#41e3a3">+$'+(+p.amount||0).toFixed(2)+' PAID</span>':p.status==='rejected'?'<span class="st" style="color:#ff8a80">REJECTED</span>':'<span class="st" style="color:#f3d44a">IN REVIEW</span>';
-      var row='<div class="pr-item"><span class="pl" style="color:'+(p.platform==='x'?'#e9e7df':'#5ad8e6')+'">'+(p.platform==='x'?'X':'TikTok')+'</span><a class="u" href="'+String(p.url).replace(/"/g,'')+'" target="_blank" rel="noopener">'+String(p.url).replace(/^https?:\/\//,'').replace(/</g,'&lt;')+'</a>'+st+'</div>';
-      if(p.status==='rejected'&&p.note)row+='<div class="pr-note"><b>Reason:</b> '+esc(p.note)+'</div>';
-      return row;
-    }).join('');}).catch(function(){});}
-  (function(){var seg=document.getElementById('prSeg');if(seg)seg.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;prPlat=b.getAttribute('data-pl');Array.prototype.forEach.call(seg.querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});var inp=document.getElementById('prUrl');if(inp)inp.placeholder=prPlat==='x'?'https://x.com/you/status/…':'https://www.tiktok.com/@you/video/…';});
-    var btn=document.getElementById('prSubmit');if(btn)btn.addEventListener('click',function(){
-      var inp=document.getElementById('prUrl'),u=(inp&&inp.value||'').trim();
-      if(!signedIn){prMsg('Sign in first — the bonus lands on your account balance.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
-      if(!u){prMsg('Paste the link to your post.','err');return;}
-      btn.disabled=true;btn.textContent='…';
-      fetch('/api/reward/promo/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({platform:prPlat,url:u})}).then(function(r){return r.json();}).then(function(d){
-        btn.disabled=false;btn.textContent='Submit';
-        if(d&&d.ok){prMsg('Submitted. We review posts manually — keep it public for at least 24 hours and the reward lands on your balance.','ok');if(inp)inp.value='';prLoad();return;}
-        var e=(d&&d.error)||'';
-        if(e==='login_required'){prMsg('Sign in first.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}
-        else if(e==='daily_limit')prMsg('You already submitted a '+(prPlat==='x'?'X':'TikTok')+' post today — come back tomorrow.','err');
-        else if(e==='url_taken')prMsg('That post link was already submitted.','err');
-        else if(e==='bad_url')prMsg('That does not look like a '+(prPlat==='x'?'post link on X (x.com/…/status/…)':'TikTok video link')+'.','err');
-        else if(e==='banned')prMsg('This account is suspended from rewards.','err');
-        else if(e==='restricted')prMsg('Your account is restricted from rewards. If you believe this is a mistake, contact support (<a href="https://marginpad.io/rewards/#" style="color:inherit;font-weight:700;text-decoration:underline" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">here</a>).','err');
-        else if(e==='paused')prMsg('Promo rewards are paused right now.','err');
-        else prMsg('Could not submit — try again shortly.','err');
-      }).catch(function(){btn.disabled=false;btn.textContent='Submit';prMsg('Network error — try again.','err');});
-    });})();
+  // ---- Like & comment our X posts → reward (manual review; the X read confirms the username) ----
+  var xeCfg={likeUsd:0.05,commentUsd:0.10};
+  function xeAmt(){var l=(+xeCfg.likeUsd).toFixed(2),c=(+xeCfg.commentUsd).toFixed(2);Array.prototype.forEach.call(document.querySelectorAll('.xeLike'),function(e){e.textContent=l;});Array.prototype.forEach.call(document.querySelectorAll('.xeCom'),function(e){e.textContent=c;});}
+  function xeMsg(t,kind){var e=document.getElementById('xeMsg');if(!e)return;e.innerHTML=t;e.className='pr-msg show '+(kind||'');}
+  function xeEsc(x){return String(x==null?'':x).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
+  function xePostsRender(posts){var host=document.getElementById('xePosts');if(!host)return;if(!posts||!posts.length){host.innerHTML='<div style="color:#6b7480;font-size:12.5px;padding:4px 0">No posts to engage with yet — check back soon.</div>';return;}
+    host.innerHTML=posts.map(function(p){var snip=xeEsc((p.text||'').replace(/\s+/g,' ').slice(0,90));return '<div style="background:#0f1216;border:1px solid #23272e;border-radius:11px;padding:11px 12px;margin-bottom:9px"><div style="font-size:12.5px;color:#c8cdd4;line-height:1.5;margin-bottom:9px">'+snip+'…</div><div style="display:flex;gap:7px;flex-wrap:wrap"><a href="'+xeEsc(p.url)+'" target="_blank" rel="noopener" style="text-decoration:none;background:#1a2027;color:#e9e7df;border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:600">Open on 𝕏 &rarr;</a><button type="button" class="xe-do" data-act="like" data-tid="'+xeEsc(p.id)+'" style="background:#1f2b1a;color:#c2f64a;border:1px solid #2f5321;border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:700;cursor:pointer">I liked it</button><button type="button" class="xe-do" data-act="comment" data-tid="'+xeEsc(p.id)+'" style="background:#16222b;color:#5ad8e6;border:1px solid #24505e;border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:700;cursor:pointer">I commented</button></div></div>';}).join('');}
+  function xePosts(){fetch('/api/reward/xposts').then(function(r){return r.json();}).then(function(d){var c=document.getElementById('xeCard');if(c)c.hidden=(d&&d.enabled===false);if(d){if(d.likeUsd!=null)xeCfg.likeUsd=d.likeUsd;if(d.commentUsd!=null)xeCfg.commentUsd=d.commentUsd;xeAmt();xePostsRender(d.posts||[]);}}).catch(function(){});}
+  function xeLoad(){if(!signedIn)return;fetch('/api/reward/xengage/mine').then(function(r){return r.json();}).then(function(d){var list=document.getElementById('xeList');if(!list)return;var rows=(d&&d.items)||[];
+    list.innerHTML=rows.map(function(p){var st=p.status==='approved'?'<span class="st" style="color:#41e3a3">+$'+(+p.amount||0).toFixed(2)+' PAID</span>':p.status==='rejected'?'<span class="st" style="color:#ff8a80">REJECTED</span>':'<span class="st" style="color:#f3d44a">IN REVIEW</span>';
+      var row='<div class="pr-item"><span class="pl" style="color:'+(p.action==='comment'?'#5ad8e6':'#c2f64a')+'">'+(p.action==='comment'?'Comment':'Like')+' &middot; @'+xeEsc(p.username)+'</span>'+st+'</div>';
+      if(p.status==='rejected'&&p.note)row+='<div class="pr-note"><b>Reason:</b> '+xeEsc(p.note)+'</div>';
+      return row;}).join('');}).catch(function(){});}
+  (function(){var host=document.getElementById('xePosts');if(!host)return;host.addEventListener('click',function(e){var b=e.target.closest('.xe-do');if(!b)return;
+    if(!signedIn){xeMsg('Sign in first — the reward lands on your account balance.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
+    var uinp=document.getElementById('xeUser'),u=(uinp&&uinp.value||'').trim().replace(/^@/,'');
+    if(!/^[A-Za-z0-9_]{1,15}$/.test(u)){xeMsg('Enter your 𝕏 username first (letters, numbers, underscore).','err');if(uinp)uinp.focus();return;}
+    var act=b.getAttribute('data-act'),tid=b.getAttribute('data-tid'),old=b.textContent;
+    b.disabled=true;b.textContent='…';
+    fetch('/api/reward/xengage/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:act,tweet_id:tid,username:u})}).then(function(r){return r.json();}).then(function(d){
+      b.disabled=false;b.textContent=old;
+      if(d&&d.ok){xeMsg('Submitted for your '+(act==='comment'?'comment':'like')+'. We confirm it and the reward lands on your balance.','ok');xeLoad();return;}
+      var er=(d&&d.error)||'';
+      if(er==='login_required'){xeMsg('Sign in first.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}
+      else if(er==='already_submitted')xeMsg('You already submitted that '+act+' for this post.','err');
+      else if(er==='username_taken')xeMsg('That 𝕏 username already claimed this post — one reward per post per account.','err');
+      else if(er==='bad_username')xeMsg('That 𝕏 username does not look right.','err');
+      else if(er==='bad_tweet')xeMsg('Could not read that post — refresh and try again.','err');
+      else if(er==='banned')xeMsg('This account is suspended from rewards.','err');
+      else if(er==='restricted')xeMsg('Your account is restricted from rewards. If you believe this is a mistake, contact support (<a href="https://marginpad.io/rewards/#" style="color:inherit;font-weight:700;text-decoration:underline" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">here</a>).','err');
+      else if(er==='paused')xeMsg('This reward is paused right now.','err');
+      else xeMsg('Could not submit — try again shortly.','err');
+    }).catch(function(){b.disabled=false;b.textContent=old;xeMsg('Network error — try again.','err');});
+  });xePosts();})();
   function msg(t,kind){msgEl.innerHTML=t;msgEl.className='msg show '+(kind||'');}
   function clearMsg(){msgEl.className='msg';}
   function fmt(n){return (+n).toFixed(2);}
@@ -601,7 +598,7 @@
 
   function loadWdHistory(){if(!signedIn)return;fetch('/api/reward/wdhistory').then(function(r){return r.json();}).then(function(d){var el=document.getElementById('wdHistList'),card=document.getElementById('wdHistCard');if(!el||!card)return;var w=(d&&d.withdrawals)||[];if(!w.length){card.hidden=true;return;}card.hidden=false;el.innerHTML=w.map(function(x){var paid=x.status==='paid';var txid=(x.txid||'').replace(/[^0-9a-fA-Fx]/g,'');var tx=(paid&&txid)?'<a href="https://bscscan.com/tx/'+txid+'" target="_blank" rel="noopener" class="clink">view tx</a>':'';return '<div class="wdh-row"><span class="wdh-amt">$'+(+x.amountUsd||0).toFixed(2)+'</span><span class="wdh-st '+(paid?'ok':'')+'">'+(paid?'Paid':'Pending')+'</span><span class="wdh-meta">'+new Date(x.ts).toLocaleDateString()+(tx?' · '+tx:'')+'</span></div>';}).join('');}).catch(function(){});}
   function refresh(){ if(!signedIn){dash.hidden=true;return;} dash.hidden=false;
-    fetch('/api/reward/account').then(function(r){return r.json();}).then(render).catch(function(){}); loadWdHistory();prLoad();exsLoad(); }
+    fetch('/api/reward/account').then(function(r){return r.json();}).then(render).catch(function(){}); loadWdHistory();xeLoad();exsLoad(); }
 
   // ---- auth gate: claiming requires a signed-in account (not a wallet) ----
   function updateGate(){
@@ -612,7 +609,7 @@
     signedIn=!!user;
     if(user&&whoEmail) whoEmail.textContent=user.username||user.email||'';
     updateGate();
-    if(signedIn){ fetch('/api/reward/me').then(function(r){return r.json();}).then(function(d){ applyCfg(d); if(d.payoutAddr){payoutAddr=d.payoutAddr; try{localStorage.setItem(KEY,payoutAddr);}catch(e){}} if(d.account){render(d);}else{refresh();} loadWdHistory();prLoad();exsLoad(); if(+d.welcomeBonus>0)msg('Welcome bonus of $'+(+d.welcomeBonus).toFixed(2)+' added to your balance. Claim more below.','ok'); }).catch(function(){refresh();}); }
+    if(signedIn){ fetch('/api/reward/me').then(function(r){return r.json();}).then(function(d){ applyCfg(d); if(d.payoutAddr){payoutAddr=d.payoutAddr; try{localStorage.setItem(KEY,payoutAddr);}catch(e){}} if(d.account){render(d);}else{refresh();} loadWdHistory();xeLoad();exsLoad(); if(+d.welcomeBonus>0)msg('Welcome bonus of $'+(+d.welcomeBonus).toFixed(2)+' added to your balance. Claim more below.','ok'); }).catch(function(){refresh();}); }
   }
   window.addEventListener('mp-auth-change',function(e){ onAuth(e.detail&&e.detail.user); paintLvl(e.detail&&e.detail.user); });
   (function(){
@@ -835,6 +832,7 @@
       .then(function(d){
         if(d&&d.ok){render({enabled:true,signedIn:true,missions:d.missions,resetInMs:null});
           try{if(typeof refresh==='function')refresh();}catch(e2){}
+          try{if(window.mpBal&&window.mpBal.grant)window.mpBal.grant(2500);}catch(e4){} // Balance Mode top-up per completed mission (no-op unless the VIP has Balance Mode)
           if(window.mpXpCheck)setTimeout(window.mpXpCheck,400);
         }else{b.disabled=false;b.textContent='Claim';}
       }).catch(function(){b.disabled=false;b.textContent='Claim';});
