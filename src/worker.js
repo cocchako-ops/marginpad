@@ -2263,6 +2263,18 @@ async function _xAuth(env, method, url, signed) {
   oa.oauth_signature = await _hmacSha1(_xEnc(env.X_API_SECRET) + '&' + _xEnc(env.X_ACCESS_SECRET), base);
   return 'OAuth ' + Object.keys(oa).sort().map(k => _xEnc(k) + '="' + _xEnc(oa[k]) + '"').join(', ');
 }
+// Signed GET to the X API (OAuth 1.0a user-context). Query params ARE folded into the signature base. Returns {status, ok, j}.
+async function _xGet(env, fullUrl) {
+  if (!(env && env.X_API_KEY && env.X_ACCESS_TOKEN)) return { status: 0, ok: false, j: { error: 'x_unconfigured' } };
+  const u = new URL(fullUrl), signed = {}; u.searchParams.forEach((v, k) => { signed[k] = v; });
+  try {
+    const auth = await _xAuth(env, 'GET', u.origin + u.pathname, signed);
+    const r = await fetch(fullUrl, { headers: { Authorization: auth } });
+    const j = await r.json().catch(() => null);
+    const H = k => r.headers.get(k);
+    return { status: r.status, ok: r.ok, j, limits: { remaining: H('x-rate-limit-remaining'), limit: H('x-rate-limit-limit'), reset: H('x-rate-limit-reset'), cap24: H('x-app-limit-24hour-remaining'), userCap24: H('x-user-limit-24hour-remaining') } };
+  } catch (e) { return { status: 0, ok: false, j: { error: String(e && e.message || e).slice(0, 120) } }; }
+}
 // Upload an image to X (v1.1 simple upload, ≤5MB). multipart body → not part of the signature base. Returns media_id_string or null.
 async function xUploadMedia(env, bytes, mime) {
   if (!(env && env.X_API_KEY && env.X_ACCESS_TOKEN)) return null;
@@ -8732,6 +8744,18 @@ export default {
     }
     if (url.pathname === '/api/admin/xtest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // manual test post to X — ?auto=1 runs the live-data auto-composer once (proves the cron content); ?text= posts custom text
       if (url.searchParams.get('dry')) { const gens = { liq: xComposeLiq, movers: xComposeMovers, calendar: xComposeCalendar, funding: xComposeFunding }; const out = {}; for (const k in gens) { try { const t = await gens[k](env); out[k] = t ? { len: t.length, text: t } : null; } catch (e) { out[k] = 'err:' + e.message; } } out.evergreen = xEvergreen(); return J(out); }
+      if (url.searchParams.get('read')) { // PROBE: does our API tier allow reading likes + replies? (needed for the like/comment reward). Free tier blocks these (403); Basic+ ($200/mo) allows them.
+        let tid = url.searchParams.get('tid'); if (!tid) { try { const lg = JSON.parse(await env.STATS.get('xpost:log') || '[]'); tid = (lg.find(x => x.ok && x.id) || {}).id; } catch (e) {} }
+        const me = await _xGet(env, 'https://api.twitter.com/2/users/me');
+        const out = { tier_hint: 'status 200 = allowed on our tier; 403/453 = needs a higher (paid) tier', me: { status: me.status, id: me.j && me.j.data && me.j.data.id, username: me.j && me.j.data && me.j.data.username }, testTweetId: tid };
+        if (tid) {
+          const likes = await _xGet(env, 'https://api.twitter.com/2/tweets/' + tid + '/liking_users?max_results=100&user.fields=username');
+          const replies = await _xGet(env, 'https://api.twitter.com/2/tweets/search/recent?query=' + encodeURIComponent('conversation_id:' + tid) + '&max_results=20&tweet.fields=author_id&expansions=author_id&user.fields=username');
+          out.likes = { status: likes.status, ok: likes.ok, count: likes.j && likes.j.data ? likes.j.data.length : 0, limits: likes.limits, error: likes.j && (likes.j.title || (likes.j.errors && likes.j.errors[0] && likes.j.errors[0].message)) || null };
+          out.replies = { status: replies.status, ok: replies.ok, count: replies.j && replies.j.data ? replies.j.data.length : 0, limits: replies.limits, error: replies.j && (replies.j.title || (replies.j.errors && replies.j.errors[0] && replies.j.errors[0].message)) || null };
+        }
+        return J(out);
+      }
       if (url.searchParams.get('imgtest')) { // prove the media pipeline end-to-end: upload one promo image + post an evergreen tweet with it
         const name = url.searchParams.get('imgtest'); const mediaId = await xPromoMedia(env, name === '1' ? X_PROMO_IMGS[0] : name);
         if (!mediaId) return J({ ok: false, error: 'media_upload_failed', img: name }, 502);
