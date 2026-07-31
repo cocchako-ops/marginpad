@@ -6720,12 +6720,12 @@ async function addressExists(addr) {
 // Effective faucet config = KV overrides (`rwd:cfg`, set live from the Settings tab) layered over env-var defaults.
 async function rewardCfg(env) {
   const num = (v, d) => { const n = +v; return isFinite(n) ? n : d; };
-  const base = { enabled: env.REWARD_ENABLED === '1', wdEnabled: env.REWARD_WD_ENABLED !== '0', requireOnchain: env.REWARD_REQUIRE_ONCHAIN !== '0', minClaimsToWd: num(env.REWARD_MIN_CLAIMS_WD, 0), pauseMsg: env.REWARD_PAUSE_MSG || '', amountUsd: num(env.REWARD_AMOUNT, 0.1), perDayUsd: num(env.REWARD_PER_DAY, 5), minWdUsd: num(env.REWARD_MIN_WD, 5), capUsd: num(env.REWARD_DAILY_CAP, 10), cooldownS: num(env.REWARD_COOLDOWN, 300), ipCap: num(env.REWARD_IP_CAP, 3), didCap: num(env.REWARD_DID_CAP, 0), welcomeUsd: num(env.REWARD_WELCOME, 0.5), promoUsd: num(env.REWARD_PROMO_USD, 0.3), promoXUsd: num(env.REWARD_PROMO_X_USD, 0.15), promoTtRate: num(env.REWARD_PROMO_TT_RATE, 2), promoTtMax: num(env.REWARD_PROMO_TT_MAX, 1000), promoEnabled: env.REWARD_PROMO_ENABLED !== '0', exsignUsd: num(env.REWARD_EXSIGN_USD, 3), exsignEnabled: env.REWARD_EXSIGN_ENABLED !== '0', prize1: num(env.REWARD_PRIZE1, 30), prize2: num(env.REWARD_PRIZE2, 20), prize3: num(env.REWARD_PRIZE3, 10), levelsEnabled: env.REWARD_LEVELS_ENABLED !== '0' };
+  const base = { enabled: env.REWARD_ENABLED === '1', wdEnabled: env.REWARD_WD_ENABLED !== '0', requireOnchain: env.REWARD_REQUIRE_ONCHAIN !== '0', minClaimsToWd: num(env.REWARD_MIN_CLAIMS_WD, 0), pauseMsg: env.REWARD_PAUSE_MSG || '', amountUsd: num(env.REWARD_AMOUNT, 0.1), perDayUsd: num(env.REWARD_PER_DAY, 5), minWdUsd: num(env.REWARD_MIN_WD, 5), capUsd: num(env.REWARD_DAILY_CAP, 10), cooldownS: num(env.REWARD_COOLDOWN, 300), ipCap: num(env.REWARD_IP_CAP, 3), didCap: num(env.REWARD_DID_CAP, 0), welcomeUsd: num(env.REWARD_WELCOME, 0.5), promoUsd: num(env.REWARD_PROMO_USD, 0.3), promoXUsd: num(env.REWARD_PROMO_X_USD, 0.15), promoTtRate: num(env.REWARD_PROMO_TT_RATE, 2), promoTtMax: num(env.REWARD_PROMO_TT_MAX, 1000), promoEnabled: env.REWARD_PROMO_ENABLED !== '0', exsignUsd: num(env.REWARD_EXSIGN_USD, 3), exsignEnabled: env.REWARD_EXSIGN_ENABLED !== '0', xEngageEnabled: env.REWARD_XENGAGE_ENABLED !== '0', xLikeUsd: num(env.REWARD_X_LIKE_USD, 0.05), xCommentUsd: num(env.REWARD_X_COMMENT_USD, 0.10), prize1: num(env.REWARD_PRIZE1, 30), prize2: num(env.REWARD_PRIZE2, 20), prize3: num(env.REWARD_PRIZE3, 10), levelsEnabled: env.REWARD_LEVELS_ENABLED !== '0' };
   let ov = {}; try { ov = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) {}
   const m = { ...base, ...ov }; const c = x => Math.round((+x) * 100);
   const arr5 = (v, d) => { const a = Array.isArray(v) ? v : d; return [0, 1, 2, 3, 4].map(i => Math.max(0, num(a[i], d[i]))); }; // 3-board prizes (top-5), USD, owner-tunable in Settings
   const lbRoe = arr5(m.lbRoe, [10, 6, 4, 3, 2]), lbWr = arr5(m.lbWr, [35, 18, 10, 7, 5]), lbXp = arr5(m.lbXp, [10, 8, 6, 4, 2]);
-  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.15)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, raw: m };
+  return { enabled: !!m.enabled, wdEnabled: m.wdEnabled !== false, requireOnchain: m.requireOnchain !== false, minClaimsToWd: num(m.minClaimsToWd, 0), pauseMsg: String(m.pauseMsg || ''), amountC: c(m.amountUsd), perDayC: c(m.perDayUsd), minWdC: c(m.minWdUsd), capC: c(m.capUsd), cooldown: num(m.cooldownS, 300) * 1000, ipCap: num(m.ipCap, 3), didCap: num(m.didCap, 0), welcomeC: c(num(m.welcomeUsd, 0.5)), promoC: c(num(m.promoUsd, 0.3)), promoXC: c(num(m.promoXUsd, 0.15)), promoTtRate: num(m.promoTtRate, 2), promoTtMax: num(m.promoTtMax, 1000), promoEnabled: m.promoEnabled !== false, exsignC: c(num(m.exsignUsd, 3)), exsignEnabled: m.exsignEnabled !== false, xEngageEnabled: m.xEngageEnabled !== false, xLikeC: c(num(m.xLikeUsd, 0.05)), xCommentC: c(num(m.xCommentUsd, 0.10)), prize1: num(m.prize1, 30), prize2: num(m.prize2, 20), prize3: num(m.prize3, 10), lbRoe, lbWr, lbXp, raw: m };
 }
 // Send a support reply email FROM support@marginpad.io via Resend (resend.com).
 // Requires the RESEND_API_KEY secret + marginpad.io verified in Resend (SPF/DKIM DNS records).
@@ -7950,15 +7950,46 @@ async function handleReward(url, request, env) {
   let b = {}; try { b = JSON.parse(raw || '{}'); } catch (e) {}
   // public address-existence check (the page calls this on Save for instant feedback)
   if (path === '/check') return jr({ exists: await addressExists(b.address || url.searchParams.get('address')) });
+  // Public: our recent X posts (so the /rewards engage card can list them to like/comment). From the auto-poster log.
+  if (path === '/xposts') {
+    let log = []; try { log = JSON.parse(await env.STATS.get('xpost:log') || '[]'); } catch (e) {}
+    const posts = log.filter(x => x && x.ok && x.id).slice(0, 6).map(x => ({ id: x.id, text: x.text || '', ts: x.ts, url: 'https://x.com/marginpadtrade/status/' + x.id }));
+    return jr({ posts, handle: 'marginpadtrade' });
+  }
+  // Admin: read X to confirm a submitted username actually liked/commented a tweet (assists manual review; reads only on demand → respects the monthly read cap).
+  if (path === '/xverify') {
+    if (!adminOk) return jr({ error: 'forbidden' }, 403);
+    const tweet = String(url.searchParams.get('tweet') || '').trim(), uname = String(url.searchParams.get('username') || '').trim().replace(/^@/, '').toLowerCase(), act = String(url.searchParams.get('action') || 'like');
+    if (!/^\d{5,25}$/.test(tweet) || !uname) return jr({ error: 'bad_params' }, 400);
+    let found = false, checked = 0, err = null;
+    try {
+      if (act === 'comment') {
+        const r = await _xGet(env, 'https://api.twitter.com/2/tweets/search/recent?query=' + encodeURIComponent('conversation_id:' + tweet) + '&max_results=100&expansions=author_id&user.fields=username');
+        const users = (r.j && r.j.includes && r.j.includes.users) || []; checked = users.length;
+        found = users.some(u => String(u.username || '').toLowerCase() === uname);
+        if (!r.ok) err = 'status ' + r.status + (r.j && r.j.title ? ' ' + r.j.title : '');
+      } else {
+        let token = '';
+        for (let pg = 0; pg < 4; pg++) {
+          const r = await _xGet(env, 'https://api.twitter.com/2/tweets/' + tweet + '/liking_users?max_results=100&user.fields=username' + (token ? '&pagination_token=' + token : ''));
+          if (!r.ok) { err = 'status ' + r.status + (r.j && r.j.title ? ' ' + r.j.title : ''); break; }
+          const users = (r.j && r.j.data) || []; checked += users.length;
+          if (users.some(x => String(x.username || '').toLowerCase() === uname)) { found = true; break; }
+          token = (r.j && r.j.meta && r.j.meta.next_token) || ''; if (!token) break;
+        }
+      }
+    } catch (e) { err = String(e && e.message || e).slice(0, 120); }
+    return jr({ found, checked, action: act, note: act === 'comment' ? 'search covers replies from the last ~7 days only' : null, error: err });
+  }
   // The faucet is account-based: resolve the signed-in user from the session cookie → 'u:<uid>'. Only for the account paths (avoids an extra UserStore call on /lb, /check, admin, /config).
   let acct = null, suRestr = '', suLevelK = 'bronze';
-  if (path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || (path === '/lb' && request.method === 'POST')) {
+  if (path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || path === '/xengage/submit' || path === '/xengage/mine' || (path === '/lb' && request.method === 'POST')) {
     const tok = getCookie(request, SESS_COOKIE);
     if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; } }
   }
   // enforce the admin per-user restrictions (profile page Controls): they were only STORED before — the toggles did nothing
   const hasRestr = k => (',' + suRestr + ',').indexOf(',' + k + ',') >= 0;
-  if (hasRestr('rewards') && (path === '/claim' || path === '/withdraw' || path === '/promo/submit' || path === '/exsign/submit')) return jr({ error: 'restricted' }, 403);
+  if (hasRestr('rewards') && (path === '/claim' || path === '/withdraw' || path === '/promo/submit' || path === '/exsign/submit' || path === '/xengage/submit')) return jr({ error: 'restricted' }, 403);
   if (hasRestr('withdraw') && path === '/withdraw') return jr({ error: 'restricted' }, 403);
   if (path === '/support/mine') { // signed-in user's own support conversation (their tickets + our email replies), identity resolved server-side
     const tok = getCookie(request, SESS_COOKIE);
@@ -7973,8 +8004,8 @@ async function handleReward(url, request, env) {
     if (request.method === 'POST') {
       let cur = {}; try { cur = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) {}
       const next = { ...cur };
-      for (const k of ['enabled', 'wdEnabled', 'requireOnchain', 'promoEnabled', 'exsignEnabled', 'missionsEnabled', 'levelsEnabled']) if (k in b) next[k] = !!b[k];
-      for (const k of ['amountUsd', 'perDayUsd', 'minWdUsd', 'capUsd', 'cooldownS', 'ipCap', 'didCap', 'minClaimsToWd', 'welcomeUsd', 'promoUsd', 'promoXUsd', 'promoTtRate', 'promoTtMax', 'referralUsd', 'exsignUsd', 'prize1', 'prize2', 'prize3']) if (k in b) next[k] = +b[k];
+      for (const k of ['enabled', 'wdEnabled', 'requireOnchain', 'promoEnabled', 'exsignEnabled', 'xEngageEnabled', 'missionsEnabled', 'levelsEnabled']) if (k in b) next[k] = !!b[k];
+      for (const k of ['amountUsd', 'perDayUsd', 'minWdUsd', 'capUsd', 'cooldownS', 'ipCap', 'didCap', 'minClaimsToWd', 'welcomeUsd', 'promoUsd', 'promoXUsd', 'promoTtRate', 'promoTtMax', 'referralUsd', 'exsignUsd', 'xLikeUsd', 'xCommentUsd', 'prize1', 'prize2', 'prize3']) if (k in b) next[k] = +b[k];
       for (const k of ['lbRoe', 'lbWr', 'lbXp']) if (k in b && Array.isArray(b[k])) next[k] = b[k].slice(0, 5).map(x => Math.max(0, Math.round((+x || 0) * 100) / 100)); // 3-board top-5 prizes (USD)
       if ('pauseMsg' in b) next.pauseMsg = String(b.pauseMsg || '').slice(0, 300);
       await env.STATS.put('rwd:cfg', JSON.stringify(next));
@@ -8013,7 +8044,7 @@ async function handleReward(url, request, env) {
     try { const rst = env.REWARDS.get(env.REWARDS.idFromName('ledger')); await rst.fetch(new Request('https://do/reply', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to, subject, message, conv: String(b.conv || '') }) })); } catch (e) {}
     return jr({ ok: true });
   }
-  const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, exsignC: full.exsignC, exsignEnabled: full.exsignEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp };
+  const cfg = { amountC: full.amountC, cooldown: full.cooldown, perDayC: full.perDayC, minWdC: full.minWdC, capC: full.capC, ipCap: full.ipCap, didCap: full.didCap, minClaimsToWd: full.minClaimsToWd, welcomeC: full.welcomeC, promoC: full.promoC, promoEnabled: full.promoEnabled, exsignC: full.exsignC, exsignEnabled: full.exsignEnabled, xLikeC: full.xLikeC, xCommentC: full.xCommentC, xEngageEnabled: full.xEngageEnabled, pauseMsg: full.pauseMsg, prize1: full.prize1, prize2: full.prize2, prize3: full.prize3, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp };
   if (path === '/claim' && !full.enabled) return jr({ error: 'paused', message: full.pauseMsg || '' }, 503);
   if (path === '/withdraw' && !full.wdEnabled) return jr({ error: 'wd_paused' }, 503);
   if ((path === '/claim' || path === '/withdraw') && !acct) return jr({ error: 'login_required' }, 401); // must be signed in (account-based faucet)
@@ -8021,7 +8052,7 @@ async function handleReward(url, request, env) {
     if (!(await verifyTurnstile(env, b.token, ip))) return jr({ error: 'captcha' }, 403);
     // no on-chain wallet check at claim anymore — there is no wallet here; the BEP20 address is validated at /withdraw (full.requireOnchain still gates the payout address there if you wire it later)
   }
-  if ((path === '/admin' || path === '/admin/paid' || path === '/accounts' || path === '/log' || path === '/unlock' || path === '/remove' || path === '/detail' || path === '/earnings' || path === '/note' || path === '/ban' || path === '/unban' || path === '/adjust' || path === '/lbban' || path === '/lbtop' || path === '/lbhistory' || path === '/message' || path === '/support/close' || path === '/support/new' || path === '/promo/list' || path === '/promo/review' || path === '/exsign/list' || path === '/exsign/review' || (path === '/support' && request.method === 'GET')) && !adminOk) return jr({ error: 'forbidden' }, 403);
+  if ((path === '/admin' || path === '/admin/paid' || path === '/accounts' || path === '/log' || path === '/unlock' || path === '/remove' || path === '/detail' || path === '/earnings' || path === '/note' || path === '/ban' || path === '/unban' || path === '/adjust' || path === '/lbban' || path === '/lbtop' || path === '/lbhistory' || path === '/message' || path === '/support/close' || path === '/support/new' || path === '/promo/list' || path === '/promo/review' || path === '/exsign/list' || path === '/exsign/review' || path === '/xengage/list' || path === '/xengage/review' || (path === '/support' && request.method === 'GET')) && !adminOk) return jr({ error: 'forbidden' }, 403);
   // The leaderboard board (GET /lb) is polled by EVERY homepage visitor and only changes on a new submission — edge-cache it 20s so the flood collapses to ~one hit per colo per window. This is what was overloading the single `ledger` DO (all reward traffic shares it) and tripping the "storage operation exceeded timeout" reset.
   if (path === '/lb' && request.method === 'GET') {
     const lbCk = new Request('https://marginpad.io/__reward_lb_v5'); // v2 = authoritative board derived from synced journals (UserStore), not the old client-submitted lb table
@@ -8104,17 +8135,19 @@ async function handleReward(url, request, env) {
       if (path === '/claim' && acct && (_rd.balance != null || _rd.credited != null || _rd.ok)) await grantXp(env, acct, 'faucet', 2, { dayCap: 20, note: 'faucet claim' });
       else if (path === '/promo/review' && _rd.status === 'approved' && _rd.acct) { await grantXp(env, _rd.acct, 'promo', 40, { note: 'promo post approved' }); try { await evPush(env, null, 'promopaid', '+$' + (+_rd.amount || 0).toFixed(2), '/rewards/'); } catch (e) {} }
       else if (path === '/exsign/review' && _rd.status === 'approved' && _rd.acct) { await grantXp(env, _rd.acct, 'exsign', 200, { note: 'exchange sign-up approved' }); try { await evPush(env, null, 'exsignpaid', String((JSON.parse(raw || '{}').exchange) || ''), '/rewards/'); } catch (e) {} }
+      else if (path === '/xengage/review' && _rd.status === 'approved' && _rd.acct) { await grantXp(env, _rd.acct, 'promo', 30, { note: 'X engagement approved' }); try { await evPush(env, null, 'promopaid', '+$' + (+_rd.amount || 0).toFixed(2), '/rewards/'); } catch (e) {} }
       if (path === '/claim' && _rd.ok) await evPush(env, request, 'claim', '+$' + (+_rd.credited || 0).toFixed(2), '/rewards/');
       if (path === '/withdraw' && _rd.ok) await evPush(env, request, 'withdraw', '$' + (+(_rd.total != null ? _rd.total : _rd.amount) || 0).toFixed(2), '/rewards/');
       if (path === '/promo/submit' && _rd.ok) { let _pl = ''; try { _pl = String((JSON.parse(raw || '{}').platform) || '').toUpperCase(); } catch (e) {} await evPush(env, request, 'promo', _pl === 'X' ? 'on X' : _pl === 'TIKTOK' ? 'on TikTok' : '', '/rewards/'); }
       if (path === '/exsign/submit' && _rd.ok) { let _ex = ''; try { _ex = String((JSON.parse(raw || '{}').exchange) || ''); } catch (e) {} await evPush(env, request, 'exsign', _ex, '/rewards/'); }
+      if (path === '/xengage/submit' && _rd.ok) { let _a = ''; try { _a = String((JSON.parse(raw || '{}').action) || ''); } catch (e) {} await evPush(env, request, 'exsign', 'X ' + _a, '/rewards/'); }
       if (path === '/support' && _rd.ok) await evPush(env, request, 'support', '', '/rewards/');
     } catch (xe) {} }
   // Admin views: faucet accounts are keyed by 'u:<uid>'. Resolve those to the real username/email from UserStore so the dashboard shows who claimed.
-  if (r.status === 200 && (path === '/log' || path === '/accounts' || path === '/detail' || path === '/promo/list' || path === '/exsign/list')) {
+  if (r.status === 200 && (path === '/log' || path === '/accounts' || path === '/detail' || path === '/promo/list' || path === '/exsign/list' || path === '/xengage/list')) {
     try {
       const data = JSON.parse(txt);
-      const arr = path === '/log' ? data.log : path === '/accounts' ? data.accounts : (path === '/promo/list' || path === '/exsign/list') ? [...(data.pending || []), ...(data.decided || [])] : (data.address ? [data] : []);
+      const arr = path === '/log' ? data.log : path === '/accounts' ? data.accounts : (path === '/promo/list' || path === '/exsign/list' || path === '/xengage/list') ? [...(data.pending || []), ...(data.decided || [])] : (data.address ? [data] : []);
       if (Array.isArray(arr) && arr.length) {
         const prof = await resolveProfiles(env, arr.map(e => e.address));
         arr.forEach(e => { const p = prof[String(e.address || '').replace(/^u:/, '')]; if (p) { e.username = p.username || ''; e.email = p.email || ''; e.tgLinked = !!p.tg; } });
@@ -9484,6 +9517,8 @@ export class RewardLedger {
     try { s.exec('CREATE INDEX IF NOT EXISTS idx_promos_acct ON promos(acct)'); } catch (e) {}
     s.exec("CREATE TABLE IF NOT EXISTS exsign(id TEXT PRIMARY KEY, acct TEXT, exchange TEXT, uid TEXT, ts INTEGER, status TEXT DEFAULT 'pending', note TEXT DEFAULT '', decided_ts INTEGER DEFAULT 0, amount INTEGER DEFAULT 0, ip TEXT, cc TEXT)"); // exchange sign-up bonus claims ($3 per exchange account via our ref link, manual review against the affiliate dashboard)
     try { s.exec('CREATE INDEX IF NOT EXISTS idx_exsign_acct ON exsign(acct)'); } catch (e) {}
+    s.exec("CREATE TABLE IF NOT EXISTS xengage(id TEXT PRIMARY KEY, acct TEXT, username TEXT, action TEXT, tweet_id TEXT, ts INTEGER, status TEXT DEFAULT 'pending', note TEXT DEFAULT '', decided_ts INTEGER DEFAULT 0, amount INTEGER DEFAULT 0, ip TEXT, cc TEXT)"); // like/comment our X post → reward (manual review; the X read confirms the submitted username actually engaged)
+    try { s.exec('CREATE INDEX IF NOT EXISTS idx_xengage_acct ON xengage(acct)'); } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS lbpayouts(week INTEGER, acct TEXT, rank INTEGER, amount INTEGER, ts INTEGER, PRIMARY KEY(week,acct))'); // legacy single-board (ROE top-3) payouts — kept for history
     s.exec('CREATE TABLE IF NOT EXISTS lbpay(week INTEGER, board TEXT, acct TEXT, rank INTEGER, amount INTEGER, ts INTEGER, PRIMARY KEY(week,board,acct))'); // 3-board weekly payouts — idempotent per (week,board,acct) so one account CAN win several boards the same week
     // Indexes for the admin Rewards tab: /accounts groups by ip, /detail filters by ip, lists sort by created — without these they're full-table scans that grow with signups.
@@ -9601,7 +9636,7 @@ export class RewardLedger {
     }
     if (path === '/export') { // nightly backup dump — every balance-bearing table (accounts = user money!)
       const out = { at: Date.now(), tables: {} };
-      for (const t of ['accounts', 'withdrawals', 'promos', 'exsign', 'lbpayouts', 'lb', 'lbban', 'msgs', 'notes', 'vidlock', 'log', 'support', 'sreply']) {
+      for (const t of ['accounts', 'withdrawals', 'promos', 'exsign', 'xengage', 'lbpayouts', 'lb', 'lbban', 'msgs', 'notes', 'vidlock', 'log', 'support', 'sreply']) {
         try { out.tables[t] = this.rows('SELECT * FROM ' + t + ' LIMIT 200000'); } catch (e) { out.tables[t] = { _err: String(e).slice(0, 120) }; }
       }
       return this.j(out);
@@ -9910,6 +9945,51 @@ export class RewardLedger {
       sql.exec('INSERT INTO daily(day,dispensed) VALUES(?,?) ON CONFLICT(day) DO UPDATE SET dispensed=dispensed+?', day, amt, amt); // counts in the Dispensed-today tile (visibility, not a gate - manual approval is the gate)
       sql.exec("UPDATE exsign SET status='approved', amount=?, note=?, decided_ts=? WHERE id=?", amt, String(body.note || '').slice(0, 200), now, id);
       this.log('exsign_paid', p.acct, p.cc || '', '', amt);
+      return this.j({ ok: true, status: 'approved', amount: amt / 100, acct: p.acct });
+    }
+    if (path === '/xengage/submit') { // user claims they liked/commented one of our X posts; goes to manual review
+      if (!acct) return this.j({ error: 'login_required' }, 401);
+      if (cfg.xEngageEnabled === false) return this.j({ error: 'paused' }, 503);
+      const arow = this.rows('SELECT banned FROM accounts WHERE address=?', acct)[0];
+      if (arow && arow.banned) return this.j({ error: 'banned' }, 403);
+      const act = String(body.action || '').toLowerCase().trim();
+      if (act !== 'like' && act !== 'comment') return this.j({ error: 'bad_action' }, 400);
+      const tweet = String(body.tweet_id || '').trim();
+      if (!/^\d{5,25}$/.test(tweet)) return this.j({ error: 'bad_tweet' }, 400);
+      const username = String(body.username || '').trim().replace(/^@/, '');
+      if (!/^[A-Za-z0-9_]{1,15}$/.test(username)) return this.j({ error: 'bad_username' }, 400);
+      if (this.rows("SELECT id FROM xengage WHERE acct=? AND tweet_id=? AND action=? AND status!='rejected'", acct, tweet, act).length) return this.j({ error: 'already_submitted' }, 409); // one claim per post per action per account
+      if (this.rows("SELECT id FROM xengage WHERE tweet_id=? AND action=? AND lower(username)=lower(?) AND status!='rejected'", tweet, act, username).length) return this.j({ error: 'username_taken' }, 409); // each X username pays once per post+action
+      const id = 'xe' + now.toString(36) + Math.floor(Math.random() * 1679616).toString(36);
+      sql.exec('INSERT INTO xengage(id,acct,username,action,tweet_id,ts,status,ip,cc) VALUES(?,?,?,?,?,?,?,?,?)', id, acct, username, act, tweet, now, 'pending', ip, cc);
+      this.log('xengage', acct, cc, dev, 0);
+      return this.j({ ok: true, id, status: 'pending' });
+    }
+    if (path === '/xengage/mine') {
+      if (!acct) return this.j({ error: 'login_required' }, 401);
+      const rows = this.rows('SELECT id,username,action,tweet_id,ts,status,note,amount,decided_ts FROM xengage WHERE acct=? ORDER BY ts DESC LIMIT 20', acct);
+      return this.j({ items: rows.map(r => ({ ...r, amount: (r.amount || 0) / 100 })) });
+    }
+    if (path === '/xengage/list') { // admin: review queue + recent decisions
+      const pending = this.rows("SELECT id,acct AS address,username,action,tweet_id,ts,ip,cc FROM xengage WHERE status='pending' ORDER BY ts ASC LIMIT 100");
+      const decided = this.rows("SELECT id,acct AS address,username,action,tweet_id,ts,status,note,amount,decided_ts FROM xengage WHERE status!='pending' ORDER BY decided_ts DESC LIMIT 30");
+      return this.j({ pending, decided: decided.map(r => ({ ...r, amount: (r.amount || 0) / 100 })), likeUsd: (cfg.xLikeC == null ? 5 : cfg.xLikeC) / 100, commentUsd: (cfg.xCommentC == null ? 10 : cfg.xCommentC) / 100 });
+    }
+    if (path === '/xengage/review') { // admin: approve (credits like/comment amount) or reject (note the user sees)
+      const id = String(body.id || ''), action = String(body.action || '');
+      const p = this.rows('SELECT * FROM xengage WHERE id=?', id)[0];
+      if (!p) return this.j({ error: 'not_found' }, 404);
+      if (p.status !== 'pending') return this.j({ error: 'already_decided' }, 409);
+      if (action === 'reject') { sql.exec("UPDATE xengage SET status='rejected', note=?, decided_ts=? WHERE id=?", String(body.note || '').slice(0, 200), now, id); return this.j({ ok: true, status: 'rejected' }); }
+      if (action !== 'approve') return this.j({ error: 'bad_action' }, 400);
+      const amt = p.action === 'comment' ? (cfg.xCommentC == null ? 10 : cfg.xCommentC) : (cfg.xLikeC == null ? 5 : cfg.xLikeC);
+      const acctRow = this.rows('SELECT address,banned FROM accounts WHERE address=?', p.acct)[0];
+      if (acctRow && acctRow.banned) return this.j({ error: 'banned' }, 403);
+      if (!acctRow) sql.exec('INSERT INTO accounts(address,day,created,balance,earned) VALUES(?,?,?,?,?)', p.acct, day, now, amt, amt);
+      else sql.exec('UPDATE accounts SET balance=balance+?, earned=earned+? WHERE address=?', amt, amt, p.acct);
+      sql.exec('INSERT INTO daily(day,dispensed) VALUES(?,?) ON CONFLICT(day) DO UPDATE SET dispensed=dispensed+?', day, amt, amt);
+      sql.exec("UPDATE xengage SET status='approved', amount=?, note=?, decided_ts=? WHERE id=?", amt, String(body.note || '').slice(0, 200), now, id);
+      this.log('xengage_paid', p.acct, p.cc || '', '', amt);
       return this.j({ ok: true, status: 'approved', amount: amt / 100, acct: p.acct });
     }
     if (path === '/support') {
