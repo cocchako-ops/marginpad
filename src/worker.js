@@ -8788,6 +8788,17 @@ export default {
     }
     if (url.pathname === '/api/admin/xtest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // manual test post to X — ?auto=1 runs the live-data auto-composer once (proves the cron content); ?text= posts custom text
       if (url.searchParams.get('dry')) { const gens = { liq: xComposeLiq, movers: xComposeMovers, calendar: xComposeCalendar, funding: xComposeFunding }; const out = {}; for (const k in gens) { try { const t = await gens[k](env); out[k] = t ? { len: t.length, text: t } : null; } catch (e) { out[k] = 'err:' + e.message; } } out.evergreen = xEvergreen(); return J(out); }
+      if (url.searchParams.get('list')) { // list our recent posts (accountability / cleanup)
+        const r = await _xGet(env, 'https://api.twitter.com/2/users/1860380518950576128/tweets?max_results=20&tweet.fields=created_at');
+        const posts = (r.j && r.j.data) || [];
+        return J({ status: r.status, count: posts.length, posts: posts.map(p => ({ id: p.id, at: p.created_at, text: (p.text || '').slice(0, 80) })) });
+      }
+      if (url.searchParams.get('del')) { // delete a tweet by id
+        const id = url.searchParams.get('del'); const durl = 'https://api.twitter.com/2/tweets/' + id;
+        const auth = await _xAuth(env, 'DELETE', durl, {});
+        const r = await fetch(durl, { method: 'DELETE', headers: { Authorization: auth } }); const j = await r.json().catch(() => null);
+        return J({ id, status: r.status, deleted: !!(j && j.data && j.data.deleted), raw: j }, r.ok ? 200 : 502);
+      }
       if (url.searchParams.get('read')) { // PROBE: does our API tier allow reading likes + replies? (needed for the like/comment reward). Free tier blocks these (403); Basic+ ($200/mo) allows them.
         let tid = url.searchParams.get('tid'); if (!tid) { try { const lg = JSON.parse(await env.STATS.get('xpost:log') || '[]'); tid = (lg.find(x => x.ok && x.id) || {}).id; } catch (e) {} }
         const me = await _xGet(env, 'https://api.twitter.com/2/users/me');
@@ -8806,8 +8817,10 @@ export default {
         const res = await xTweet(env, xEvergreen(), mediaId); res.mediaId = mediaId; res.img = name; return J(res, res.ok ? 200 : 502);
       }
       if (url.searchParams.get('auto')) { const res = await checkXPost(env, true); return J(res || { ok: false, error: 'no_result' }, (res && res.ok) ? 200 : 502); }
-      const text = url.searchParams.get('text') || ('MarginPad — free crypto futures tools: live liquidation heatmap, paper trading (no sign-up), and a macro calendar with FOMC/CPI countdowns. https://marginpad.io [' + new Date().toISOString().slice(11, 16) + ']');
-      const res = await xTweet(env, text);
+      // SAFETY: only post when EXPLICITLY asked (?text= or ?post=1). Prevents an unrecognized param on a stale edge worker from falling through and posting a default tweet.
+      const text = url.searchParams.get('text');
+      if (!text && !url.searchParams.get('post')) return J({ ok: false, error: 'no_action', help: 'use ?dry=1 (compose, no post), ?read=1, ?list=1, ?del=<id>, ?text=… or ?auto=1' });
+      const res = await xTweet(env, text || ('MarginPad — free crypto futures tools: live liquidation heatmap, paper trading (no sign-up), and a macro calendar with FOMC/CPI countdowns. https://marginpad.io [' + new Date().toISOString().slice(11, 16) + ']'));
       return J(res, res.ok ? 200 : 502);
     }
     if (url.pathname === '/api/admin/xstat' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // X auto-poster status + usage (watch the credit drain, know when to top up)
