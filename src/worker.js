@@ -2254,22 +2254,50 @@ async function sha8(s) {
 // ---- X (Twitter) posting: OAuth 1.0a user-context, POST /2/tweets. Own scheduled posts only (no auto-reply to others). ----
 function _xEnc(s) { return encodeURIComponent(String(s)).replace(/[!*'()]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase()); }
 async function _hmacSha1(key, msg) { const enc = new TextEncoder(); const k = await crypto.subtle.importKey('raw', enc.encode(key), { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']); const sig = await crypto.subtle.sign('HMAC', k, enc.encode(msg)); return btoa(String.fromCharCode.apply(null, new Uint8Array(sig))); }
-// Post a tweet. Returns {ok, id?, error?}. JSON body → the body is NOT part of the OAuth signature base (v2 gotcha); only the oauth_* params are signed.
-async function xTweet(env, text) {
+// OAuth 1.0a header for a request. `signed` = extra params folded into the signature base (form-urlencoded bodies + query params); JSON/multipart bodies are NOT signed, pass {}.
+async function _xAuth(env, method, url, signed) {
+  const oa = { oauth_consumer_key: env.X_API_KEY, oauth_token: env.X_ACCESS_TOKEN, oauth_signature_method: 'HMAC-SHA1', oauth_timestamp: Math.floor(Date.now() / 1000).toString(), oauth_nonce: (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36)).replace(/-/g, ''), oauth_version: '1.0' };
+  const all = Object.assign({}, oa, signed || {});
+  const paramStr = Object.keys(all).sort().map(k => _xEnc(k) + '=' + _xEnc(all[k])).join('&');
+  const base = method + '&' + _xEnc(url) + '&' + _xEnc(paramStr);
+  oa.oauth_signature = await _hmacSha1(_xEnc(env.X_API_SECRET) + '&' + _xEnc(env.X_ACCESS_SECRET), base);
+  return 'OAuth ' + Object.keys(oa).sort().map(k => _xEnc(k) + '="' + _xEnc(oa[k]) + '"').join(', ');
+}
+// Upload an image to X (v1.1 simple upload, ≤5MB). multipart body → not part of the signature base. Returns media_id_string or null.
+async function xUploadMedia(env, bytes, mime) {
+  if (!(env && env.X_API_KEY && env.X_ACCESS_TOKEN)) return null;
+  const url = 'https://upload.twitter.com/1.1/media/upload.json';
+  try {
+    const auth = await _xAuth(env, 'POST', url, {});
+    const fd = new FormData(); fd.append('media', new Blob([bytes], { type: mime || 'image/png' }), 'promo.png');
+    const r = await fetch(url, { method: 'POST', headers: { Authorization: auth }, body: fd });
+    const j = await r.json().catch(() => null);
+    return (r.ok && j && (j.media_id_string || j.media_id)) ? String(j.media_id_string || j.media_id) : null;
+  } catch (e) { return null; }
+}
+// Post a tweet (optional mediaId → attaches an image). JSON body is NOT part of the OAuth signature base (v2 gotcha); only oauth_* are signed.
+async function xTweet(env, text, mediaId) {
   if (!(env && env.X_API_KEY && env.X_API_SECRET && env.X_ACCESS_TOKEN && env.X_ACCESS_SECRET)) return { ok: false, error: 'x_unconfigured' };
   const url = 'https://api.twitter.com/2/tweets', method = 'POST';
-  const oa = { oauth_consumer_key: env.X_API_KEY, oauth_token: env.X_ACCESS_TOKEN, oauth_signature_method: 'HMAC-SHA1', oauth_timestamp: Math.floor(Date.now() / 1000).toString(), oauth_nonce: (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36)).replace(/-/g, ''), oauth_version: '1.0' };
-  const paramStr = Object.keys(oa).sort().map(k => _xEnc(k) + '=' + _xEnc(oa[k])).join('&');
-  const base = method + '&' + _xEnc(url) + '&' + _xEnc(paramStr);
-  const signingKey = _xEnc(env.X_API_SECRET) + '&' + _xEnc(env.X_ACCESS_SECRET);
-  oa.oauth_signature = await _hmacSha1(signingKey, base);
-  const authHeader = 'OAuth ' + Object.keys(oa).sort().map(k => _xEnc(k) + '="' + _xEnc(oa[k]) + '"').join(', ');
+  const authHeader = await _xAuth(env, method, url, {});
+  const payload = { text: String(text || '').slice(0, 280) };
+  if (mediaId) payload.media = { media_ids: [String(mediaId)] };
   try {
-    const r = await fetch(url, { method, headers: { Authorization: authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify({ text: String(text || '').slice(0, 280) }) });
+    const r = await fetch(url, { method, headers: { Authorization: authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     const j = await r.json().catch(() => null);
     if (r.ok && j && j.data && j.data.id) return { ok: true, id: j.data.id };
     return { ok: false, status: r.status, error: (j && (j.detail || j.title || (j.errors && j.errors[0] && j.errors[0].message))) || ('http_' + r.status), raw: j };
   } catch (e) { return { ok: false, error: String(e && e.message || e).slice(0, 160) }; }
+}
+// Load a promo image from our own deployed assets (dist/assets/x/) via the ASSETS binding, upload to X, return media_id or null.
+async function xPromoMedia(env, name) {
+  try {
+    const r = await env.ASSETS.fetch(new Request('https://marginpad.io/assets/x/' + name));
+    if (!r.ok) return null;
+    const buf = new Uint8Array(await r.arrayBuffer());
+    if (!buf.length || buf.length > 4900000) return null;
+    return await xUploadMedia(env, buf, 'image/png');
+  } catch (e) { return null; }
 }
 // --- Content generators for the auto-poster: pull our own live data + compose a tweet (<=275 chars, URL counts ~23). Template-based (no Anthropic dep → reliable in cron). Return null if data is unavailable so the caller falls through. ---
 function _xMoney(n) { n = +n || 0; const a = Math.abs(n), s = n < 0 ? '-' : ''; return a >= 1e9 ? s + '$' + (a / 1e9).toFixed(2) + 'B' : a >= 1e6 ? s + '$' + (a / 1e6).toFixed(0) + 'M' : a >= 1e3 ? s + '$' + (a / 1e3).toFixed(0) + 'K' : s + '$' + a.toFixed(0); }
@@ -2304,6 +2332,7 @@ const _X_EVERGREEN = [
   'Most leverage traders blow up. Be the exception.\n\nMarginPad — free tools to learn first:\n• Risk-free paper trading\n• Live liquidation heatmap\n• Macro calendar (FOMC/CPI)\n\nNo sign-up, no risk 👇\nhttps://marginpad.io\n\n#Crypto #Bitcoin #Leverage',
 ];
 function xEvergreen() { return _X_EVERGREEN[Math.floor(Date.now() / 86400000) % _X_EVERGREEN.length]; }
+const X_PROMO_IMGS = ['screener.png', 'papertrade.png', 'liquidations.png']; // live-site screenshots in dist/assets/x/ — regenerate when the UI changes materially (build/gen-x-promo.js)
 // Auto-poster: 2 posts/day at peak UTC slots. Rotates content types, evergreen fallback. Idempotent per day+slot. force=true → compose+post now (manual test), no slot/flag gate.
 async function checkXPost(env, force) {
   if (env && env.ENVIRONMENT === 'staging') return;
@@ -2322,15 +2351,28 @@ async function checkXPost(env, force) {
   const dayNum = Math.floor(Date.parse(day) / 86400000), start = (dayNum * X_SLOTS.length + Math.max(0, slot)) % gens.length;
   let text = null;
   for (let i = 0; i < gens.length && !text; i++) { try { const t = await gens[(start + i) % gens.length](env); if (t && t.length <= 275) text = t; } catch (e) {} }
-  if (!text) text = xEvergreen();
-  const res = await xTweet(env, text);
+  let mediaId = null, img = '';
+  if (!text) { // evergreen posts are generic → safe to attach a site screenshot (data posts stay text so a stale image can't contradict fresh numbers)
+    text = xEvergreen();
+    img = X_PROMO_IMGS[dayNum % X_PROMO_IMGS.length];
+    try { mediaId = await xPromoMedia(env, img); } catch (e) {}
+  }
+  const res = await xTweet(env, text, mediaId);
   // usage tracking (mp-ops): count + ring log so the owner can watch the $ credit drain and know when to top up
   try {
     if (res.ok) { const c = +(await env.STATS.get('xpost:count') || 0) + 1; await env.STATS.put('xpost:count', String(c)); }
     let log = []; try { log = JSON.parse(await env.STATS.get('xpost:log') || '[]'); } catch (e) {}
-    log.unshift({ ts: Date.now(), day, slot, ok: !!res.ok, id: res.id || '', err: res.error || '', text: text.slice(0, 90) });
+    log.unshift({ ts: Date.now(), day, slot, ok: !!res.ok, id: res.id || '', err: res.error || '', img: mediaId ? img : (img ? img + '(upload-failed)' : ''), text: text.slice(0, 90) });
     await env.STATS.put('xpost:log', JSON.stringify(log.slice(0, 60)));
   } catch (e) {}
+  // Post FAILED on a scheduled slot → almost always X credits depleted (402). Ping the owner once/day so they know to top up.
+  if (!force && !res.ok) {
+    const ak = 'alrt:xpost:' + day;
+    if (!(await env.STATS.get(ak))) {
+      await env.STATS.put(ak, '1', { expirationTtl: 172800 });
+      await tgAdmin(env, '⚠️ <b>X auto-post failed</b> (' + (res.status || '?') + '): ' + (res.error || 'unknown') + '\n\nLikely X API credits depleted — top up at the X Developer Portal (Usage/Billing) to resume the 2×/day posts.');
+    }
+  }
   return res;
 }
 function deviceOf(ua) { return /Mobi|Android|iPhone|iPad|iPod|Windows Phone/i.test(ua) ? 'Mobile' : 'Desktop'; }
@@ -8690,6 +8732,11 @@ export default {
     }
     if (url.pathname === '/api/admin/xtest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // manual test post to X — ?auto=1 runs the live-data auto-composer once (proves the cron content); ?text= posts custom text
       if (url.searchParams.get('dry')) { const gens = { liq: xComposeLiq, movers: xComposeMovers, calendar: xComposeCalendar, funding: xComposeFunding }; const out = {}; for (const k in gens) { try { const t = await gens[k](env); out[k] = t ? { len: t.length, text: t } : null; } catch (e) { out[k] = 'err:' + e.message; } } out.evergreen = xEvergreen(); return J(out); }
+      if (url.searchParams.get('imgtest')) { // prove the media pipeline end-to-end: upload one promo image + post an evergreen tweet with it
+        const name = url.searchParams.get('imgtest'); const mediaId = await xPromoMedia(env, name === '1' ? X_PROMO_IMGS[0] : name);
+        if (!mediaId) return J({ ok: false, error: 'media_upload_failed', img: name }, 502);
+        const res = await xTweet(env, xEvergreen(), mediaId); res.mediaId = mediaId; res.img = name; return J(res, res.ok ? 200 : 502);
+      }
       if (url.searchParams.get('auto')) { const res = await checkXPost(env, true); return J(res || { ok: false, error: 'no_result' }, (res && res.ok) ? 200 : 502); }
       const text = url.searchParams.get('text') || ('MarginPad — free crypto futures tools: live liquidation heatmap, paper trading (no sign-up), and a macro calendar with FOMC/CPI countdowns. https://marginpad.io [' + new Date().toISOString().slice(11, 16) + ']');
       const res = await xTweet(env, text);
@@ -8698,7 +8745,8 @@ export default {
     if (url.pathname === '/api/admin/xstat' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // X auto-poster status + usage (watch the credit drain, know when to top up)
       const count = +(await env.STATS.get('xpost:count') || 0); let log = []; try { log = JSON.parse(await env.STATS.get('xpost:log') || '[]'); } catch (e) {}
       let cfg = {}; try { cfg = await opsCfg(env); } catch (e) {}
-      return J({ enabled: cfg.xPost !== false, slotsUTC: [14, 20], totalPosts: count, note: 'Compare totalPosts to the credit drain in your X Usage tab → cost per post → runway on the remaining $ balance.', recent: log.slice(0, 20) });
+      let imgGen = null, imgAgeDays = null; try { const m = await (await env.ASSETS.fetch(new Request('https://marginpad.io/assets/x/manifest.json'))).json(); imgGen = m && m.generated; if (imgGen) imgAgeDays = Math.round((Date.now() - Date.parse(imgGen)) / 86400000); } catch (e) {}
+      return J({ enabled: cfg.xPost !== false, slotsUTC: [14, 20], totalPosts: count, promoImages: X_PROMO_IMGS, imagesGenerated: imgGen, imageAgeDays: imgAgeDays, regenerateHint: (imgAgeDays != null && imgAgeDays > 21) ? 'Promo screenshots are ' + imgAgeDays + 'd old (stale prices/coins) — re-run: node build/gen-x-promo.js' : null, note: 'Compare totalPosts to the credit drain in your X Usage tab → cost per post → runway on the remaining $ balance.', recent: log.slice(0, 20) });
     }
     if (url.pathname === '/api/admin/pxtag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // TEMP: WHO drives /api/price (33% of invocations) — by call-site ctx / WS-covered / cache h-m / symbol. '?' = untagged call site (goal ~0).
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
