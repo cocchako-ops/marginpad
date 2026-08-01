@@ -1976,12 +1976,12 @@ async function postSignalDigest(env) {
     const msgFor = (t, n) => t === 'free'
       ? ('📡 <b>Daily check-in</b> — scanning the whole market for high-conviction setups, around the clock.\n'
         + '🎯 Signals today: <b>' + n + '</b>' + (n ? '' : ' — nothing cleared the bar today. No forced trades; a signal posts the moment one triggers.') + '\n'
-        + '💬 Talk trades with the floor: t.me/Marginpadgroup\n'
+        + '💬 Talk trades with the floor: https://t.me/+KUdlNUNPem01YjVk\n'
         + '<i>Standing by — the next setup posts here the minute it triggers.</i>')
       : ('📡 <b>Daily check-in</b> — scanning ' + coins.length + ' coins every minute, around the clock.\n'
         + '🎯 Signals today: <b>' + n + '</b>' + (n ? '' : ' — no confirmed 1h flips today. No flip = no trade; we don’t invent signals.') + '\n'
         + stance
-        + '💬 Talk trades with the floor: t.me/Marginpadgroup\n'
+        + '💬 Talk trades with the floor: https://t.me/+KUdlNUNPem01YjVk\n'
         + '<i>Standing by — the next flip posts here the minute it confirms.</i>');
     let totalDigest = 0;
     for (const t of ['fast', 'free']) {
@@ -5843,7 +5843,7 @@ const TG_HELP =
   '<code>/leaderboard</code> — season boards (ROE · win rate · XP)\n\n' +
   '<b>📡 Signals, news &amp; community</b>\n' +
   '<code>/premium</code> — free &amp; premium signal groups\n' +
-  '<code>/community</code> — 💬 join the open traders chat (@Marginpadgroup)\n' +
+  '<code>/community</code> — 💬 join our Telegram community\n' +
   '📰 <b>Crypto news channel:</b> @marginpadnews — top stories + full read on our site\n\n' +
   '<b>🔗 Account</b>\n' +
   '<code>/connect</code> — link your MarginPad account · <code>/me</code> — status\n\n' +
@@ -5855,7 +5855,7 @@ const TG_KB = {
     [{ text: '📈 Paper trade', callback_data: 'paper' }, { text: '🔔 Alerts', callback_data: 'alerts' }],
     [{ text: '🐋 Whale alerts', callback_data: 'whale' }, { text: '🏆 Leaderboard', callback_data: 'lb' }],
     [{ text: '📡 Signals', callback_data: 'signals' }, { text: '🔗 Connect', callback_data: 'connect' }],
-    [{ text: '💬 Community chat', url: 'https://t.me/Marginpadgroup' }, { text: '📰 News', url: 'https://t.me/marginpadnews' }],
+    [{ text: '💬 Community chat', url: 'https://t.me/+KUdlNUNPem01YjVk' }, { text: '📰 News', url: 'https://t.me/marginpadnews' }],
     [{ text: '🌐 Open MarginPad.io', url: 'https://marginpad.io' }],
   ],
 };
@@ -6021,7 +6021,7 @@ async function premiumInfo(env) {
     out += '💳 Pay in <b>USDT (BEP20 / BSC)</b>:\n<code>' + PREM_ADDR + '</code>\n';
   }
   out += '📰 <b>Free crypto news:</b> @marginpadnews\n';
-  out += '💬 <b>Community chat:</b> @Marginpadgroup — /community\n';
+  out += '💬 <b>Community:</b> <a href="https://t.me/+KUdlNUNPem01YjVk">join here</a> — /community\n';
   out += '<i>Prices are informational. Not financial advice.</i>';
   return out;
 }
@@ -6433,7 +6433,7 @@ async function handleTelegram(request, env) {
     return new Response('ok');
   }
   if (cmd === '/community' || cmd === '/chat' || cmd === '/group') {
-    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, parse_mode: 'HTML', disable_web_page_preview: true, reply_markup: { inline_keyboard: [[{ text: '💬 Join the community', url: 'https://t.me/Marginpadgroup' }]] }, text: '💬 <b>MarginPad Community</b>\n' + DIV + '\nOur open chat for crypto traders — share setups, ask questions, and post your trades (<code>/share</code>). Everyone welcome 👇' });
+    await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, parse_mode: 'HTML', disable_web_page_preview: true, reply_markup: { inline_keyboard: [[{ text: '💬 Join the community', url: 'https://t.me/+KUdlNUNPem01YjVk' }]] }, text: '💬 <b>MarginPad Community</b>\n' + DIV + '\nOur open chat for crypto traders — share setups, ask questions, and post your trades (<code>/share</code>). Everyone welcome 👇' });
     return new Response('ok');
   }
   if (cmd === '/funding' || cmd === '/fund') {
