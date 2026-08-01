@@ -1866,40 +1866,46 @@ async function checkChartSignals(env, force) {
           const ema200 = cl.length >= 200 ? _emaSeries(cl, 200)[cl.length - 1] : null;
           const _v20 = closed.slice(-20), _vavg = _v20.reduce((s, b) => s + (+b.vol || 0), 0) / (_v20.length || 1);
           const volR = _vavg > 0 ? (+closed[li].vol || 0) / _vavg : 0;
+          // GATE REWORK (2026-08-01): Premium used to require balanced + ADX>=25 + RSI + 200-EMA ALL at once — a strict
+          // subset that fired ~never (every confirmed signal since 07-29 was tiers:["balanced"], premium:false → the
+          // most expensive channel sat DEAD for days while balanced got 10+ signals). Premium is the HIGHER tier, so it
+          // now receives EVERY confirmed signal (same as balanced) with the enriched analysis, and the extra confluence
+          // gates became an honest per-signal CONVICTION readout ("High-conviction" tag when all of them pass) instead
+          // of a silent drop filter. The premium extras stay premium-only: rich checks/plan/hold text + 4h time-stop ping.
+          const evOk = !eventSoon;
+          const volOk = volMul <= 0 || (_vavg > 0 && (+closed[li].vol || 0) >= volMul * _vavg);
+          let htfOk = true;
+          if (!force && htfOn) { const h = await sigKlines(sym, 240); const hc = h && h.closed; const hst = hc && hc.length >= 30 ? _supertrend(hc, 10, 3) : null; const hdir = hst ? hst.dir[hc.length - 1] : null; htfOk = hdir === dNow; }
+          const pAdxOk = adxV != null && adxV >= Math.max(adxMin || 0, 25);
+          const pRsiOk = rsiV == null || (long ? rsiV <= 74 : rsiV >= 26); // blow-off top / capitulation low warning
+          const pEmaOk = ema200 == null || (long ? entry >= ema200 * 0.995 : entry <= ema200 * 1.005);
+          const hiConv = pAdxOk && pRsiOk && pEmaOk;
           let tiers;
           if (force) { tiers = ['premium']; }
           else {
-            const evOk = !eventSoon;
-            const volOk = volMul <= 0 || (_vavg > 0 && (+closed[li].vol || 0) >= volMul * _vavg);
-            let htfOk = true;
-            if (htfOn) { const h = await sigKlines(sym, 240); const hc = h && h.closed; const hst = hc && hc.length >= 30 ? _supertrend(hc, 10, 3) : null; const hdir = hst ? hst.dir[hc.length - 1] : null; htfOk = hdir === dNow; }
-            // Premium = highest conviction: 4h trend aligned + strong ADX + aligned with the 200-EMA macro trend + not exhausted (RSI). Balanced = 4h + volume only.
-            const pAdxOk = adxV != null && adxV >= Math.max(adxMin || 0, 25);
-            const pRsiOk = rsiV == null || (long ? rsiV <= 74 : rsiV >= 26); // don't buy blow-off tops / sell capitulation lows
-            const pEmaOk = ema200 == null || (long ? entry >= ema200 * 0.995 : entry <= ema200 * 1.005);
             tiers = []; // Fast fires from the LIVE forming-candle path above (sanitized + 3min hold); these are the confirmed closed-candle tiers
-            if (evOk && htfOk && volOk) tiers.push('balanced');
-            if (evOk && htfOk && volOk && pAdxOk && pRsiOk && pEmaOk) tiers.push('premium');
+            if (evOk && htfOk && volOk) tiers.push('balanced', 'premium');
           }
           const postTiers = tiers.filter(t => chans[t]);
           if (!postTiers.length) { if (!force) await env.STATS.put('csig:st:' + sym, JSON.stringify({ bar, done: true })); continue; }
           const isPrem = tiers.includes('premium');
           const text = ticket(long, sym, entry, tp1, tp2, sl, force ? ' <i>(test)</i>' : '') + 'Supertrend flipped ' + (long ? 'bullish 📈' : 'bearish 📉') + ' on the 1h (candle closed).\n🆔 <code>#' + sigId + '</code>\n';
-          // ---- enriched PREMIUM message: confluence readout + trade plan + hold / time-stop guidance ----
+          // ---- enriched PREMIUM message: honest confluence readout (pass/fail per check) + trade plan + hold / time-stop guidance ----
           const cfl = [];
-          if (ema200 != null) cfl.push(long ? 'price &gt; 200-EMA 📈' : 'price &lt; 200-EMA 📉');
-          cfl.push('4h trend aligned ✅');
-          if (adxV != null) cfl.push('ADX ' + Math.round(adxV) + (adxV >= 30 ? ' <b>strong</b>' : ''));
-          if (rsiV != null) cfl.push('RSI ' + Math.round(rsiV));
+          cfl.push('4h trend aligned');
+          if (adxV != null) cfl.push('ADX ' + Math.round(adxV) + (pAdxOk ? (adxV >= 30 ? ' <b>strong</b>' : '') : ' <i>(weak trend)</i>'));
+          if (rsiV != null) cfl.push('RSI ' + Math.round(rsiV) + (pRsiOk ? '' : (long ? ' <i>(overbought)</i>' : ' <i>(oversold)</i>')));
+          if (ema200 != null) cfl.push(pEmaOk ? (long ? 'above the 200-EMA' : 'below the 200-EMA') : '<i>fighting the 200-EMA</i>');
           if (volR) cfl.push('Vol ' + volR.toFixed(1) + '×');
           const premText = ticket(long, sym, entry, tp1, tp2, sl, ' 💎') + '<b>Confirmed 1h ' + (long ? 'LONG 📈' : 'SHORT 📉') + '</b> — Supertrend flip on candle close.\n'
-            + '✅ <b>Why:</b> ' + cfl.join(' · ') + '\n'
+            + (hiConv ? '💎 <b>High-conviction</b> — trend, ADX, RSI and the 200-EMA all aligned.\n' : '')
+            + '✅ <b>Checks:</b> ' + cfl.join(' · ') + '\n'
             + '📋 <b>Plan:</b> enter now, take ~50% at TP1, move stop to breakeven, trail the runner to TP2.\n'
             + '⏳ <b>Hold ~1–4h</b> (until TP1/TP2 or the 1h Supertrend flips back). If TP1 isn’t tagged within ~3h and price stalls, momentum failed — I’ll ping a time-check.\n'
             + '🆔 <code>#' + sigId + '</code>';
           const msgIds = {}; let sentOk = 0;
           // one channel failing must NEVER abort the others or state persistence — an unsaved state re-fires next minute and DUPLICATES the signal in every channel that already got it
-          for (const t of postTiers) { const bd = t === 'premium' ? premText : (text + TIER_NOTE[t]); try { msgIds[t] = await send(chans[t], bd, 0, sym); sentOk++; } catch (e) {} await new Promise(r => setTimeout(r, 90)); }
+          for (const t of postTiers) { const bd = t === 'premium' ? premText : (text + TIER_NOTE[t]); try { msgIds[t] = await send(chans[t], bd, 0, sym); sentOk++; if (msgIds[t]) await bumpSentToday(env, t); } catch (e) {} await new Promise(r => setTimeout(r, 90)); } // per-channel honest counter → the daily digest's "Signals today" line counts what THAT channel actually received
           // NOTE: the FREE channel is served by checkFreeSignals (the screener product), NOT here. The old `chans.free`
           // send lived on this line but chans never had a `free` key → it silently posted nothing for ~6 days. Removed.
           if (!force && sentOk) await env.STATS.put('csig:st:' + sym, JSON.stringify({ dir: dNow, bar, entry, risk, tp1, tp2, sl, phase: 0, tiers: postTiers, premium: isPrem, msgIds, sigId, ts: Date.now(), done: false })); // zero deliveries (TG fully down) → don't persist → clean retry next minute
@@ -1984,7 +1990,7 @@ async function postSignalDigest(env) {
         + '💬 Talk trades with the floor: https://t.me/+KUdlNUNPem01YjVk\n'
         + '<i>Standing by — the next flip posts here the minute it confirms.</i>');
     let totalDigest = 0;
-    for (const t of ['fast', 'free']) {
+    for (const t of ['fast', 'balanced', 'premium', 'free']) { // ALL tiers get the daily check-in — balanced+premium fell out of this loop in the 07-26 "honest digest" rework, so the PAID channels went fully silent between confirmed signals (the "premium se ne oglašava" complaint)
       const c = await env.STATS.get('csig:chat:' + t); if (!c) continue;
       const n = +(await env.STATS.get('sig:sent:' + t + ':' + day)) || 0; totalDigest += n;
       try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: c, parse_mode: 'HTML', disable_web_page_preview: true, text: msgFor(t, n) }); } catch (e) {}
@@ -6009,7 +6015,7 @@ async function premiumInfo(env) {
   out += '🆓 <b>Free signals</b> — screener picks' + (freeLink ? ': <a href="' + freeLink + '">👉 join the free group</a>' : ' <i>(coming soon)</i>') + '.\n\n';
   out += '• ⚡ <b>Fast</b> — every flip, live (raw &amp; fastest) · <b>$14.99/mo</b>\n';
   out += '• ⚖️ <b>Balanced</b> — 4h-trend + volume confirmed · <b>$24.99/mo</b>\n';
-  out += '• 💎 <b>Premium</b> — highest-conviction (all filters) · <b>$39.99/mo</b>\n\n';
+  out += '• 💎 <b>Premium</b> — every confirmed signal with full analysis: conviction readout, trade plan, hold guidance + time-checks · <b>$39.99/mo</b>\n\n';
   const auto = env && env.NOWPAY_API_KEY;
   if (auto) {
     out += '💳 <b>Pay by crypto for instant access</b> — send:\n';
