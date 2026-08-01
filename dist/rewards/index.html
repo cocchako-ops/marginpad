@@ -813,7 +813,7 @@
       document.getElementById('msnFoot').innerHTML='<a href="#" data-auth-open style="color:#c2f64a;font-weight:700">Sign in</a> to unlock daily missions \u2014 they verify automatically.';
       return;
     }
-    if(!list._go){list._go=1;var TGT={tggroup:['tg','group'],tgsignals:['tgsig','signals'],tgnews:['tgnews','news'],tgbot:['tgbot','bot']};list.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('[data-msngo]');if(!a)return;var mid=a.getAttribute('data-msngo')||'';var m=TGT[mid];if(!m)return;try{fetch('/api/track?t='+m[0]+'&e='+m[1]+'&p=%2Frewards%2F',{method:'POST',keepalive:true});}catch(e){}});}
+    if(!list._go){list._go=1;var TGT={tgsignals:['tgsig','signals'],tgnews:['tgnews','news'],tgbot:['tgbot','bot']};list.addEventListener('click',function(ev){var a=ev.target.closest&&ev.target.closest('[data-msngo]');if(!a)return;var mid=a.getAttribute('data-msngo')||'';var m=TGT[mid];if(!m)return;try{fetch('/api/track?t='+m[0]+'&e='+m[1]+'&p=%2Frewards%2F',{method:'POST',keepalive:true});}catch(e){}});}
     list.innerHTML=d.missions.map(function(m){
       var right=m.claimed?'<span class="claimed">CLAIMED \u2713</span>':(m.done?'<button data-msn="'+m.mid+'">Claim '+fmt2(m.cents)+'</button>':'<span class="amt">'+fmt2(m.cents)+'</span>');
       var go=(m.url&&!m.claimed)?' <a class="msn-go" href="'+m.url+'" target="_blank" rel="noopener" data-msngo="'+m.mid+'">Open &rarr;</a>':'';

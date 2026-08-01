@@ -11980,9 +11980,8 @@ const MISSION_POOL = [
   // trade missions are always index 0/1 (missionsForDay picks one) — DO NOT reorder these two. cat = per-day category quota (see missionsForDay CAPS).
   { mid: 'trade1', title: 'Open a paper trade', desc: 'One trade, zero risk. In here, the market can’t hurt you', cents: 3, vt: 'ev', va: 'paper', n: 1, cat: 'core' },
   { mid: 'trade3', title: 'Open 3 paper trades', desc: 'Three reps today — repetition is how instinct gets built', cents: 5, vt: 'ev', va: 'paper', n: 3, cat: 'core' },
-  // growth: the Telegram trader group — forced into EVERY day's set (community growth push)
-  { mid: 'tggroup', title: 'Drop by our Telegram trader group', desc: 'Real traders, real time — hop in and say gm', cents: 3, vt: 'ev', va: 'tg', n: 1, cat: 'promo', url: 'https://t.me/Marginpadgroup' },
-  { mid: 'tgsignals', title: 'Join our free Telegram signal group', desc: 'Free 1h chart signals, posted the minute they confirm', cents: 2, vt: 'ev', va: 'tgsig', n: 1, cat: 'promo2', url: 'https://t.me/marginpad' }, // owner-updated 2026-07-31: free signal group at t.me/marginpad
+  // growth: Telegram — the free signal group / news channel / bot rotate ONE into every day (missionsForDay). owner-provided links 2026-07-31.
+  { mid: 'tgsignals', title: 'Join our free Telegram signal group', desc: 'Free 1h chart signals, posted the minute they confirm', cents: 2, vt: 'ev', va: 'tgsig', n: 1, cat: 'promo2', url: 'https://t.me/marginpad' },
   { mid: 'tgnews', title: 'Follow our Telegram news channel', desc: 'Crypto headlines the minute they drop — ahead of your P&L', cents: 2, vt: 'ev', va: 'tgnews', n: 1, cat: 'promo2', url: 'https://t.me/marginpadnews' }, // owner-added 2026-07-31
   { mid: 'tgbot', title: 'Open the MarginPad Telegram bot', desc: 'Live prices, alerts and signals right in your DMs', cents: 2, vt: 'ev', va: 'tgbot', n: 1, cat: 'promo2', url: 'https://t.me/MarginPadBot' }, // owner-added 2026-07-31
   // trade quality (verified against the trade-event log / event trail)
@@ -12035,21 +12034,20 @@ function missionsForDay(day, opts) { // daily set: 1 trade mission + the Telegra
   const seed = parseInt(String(day).replace(/-/g, ''), 10) || 0;
   const rnd = _missionRng(seed);
   const tradeM = MISSION_POOL[rnd() < 0.5 ? 0 : 1]; // trade1 or trade3 (random per day)
-  const promoM = MISSION_POOL.find(m => m.mid === 'tggroup'); // Telegram-group growth push — in EVERY day's set
   const PROMO2 = ['tgsignals', 'tgnews', 'tgbot']; // the free signal group / news channel / bot — rotate ONE into every day on an even 3-day cycle (guarantees fair visibility, unlike the skewed shuffle)
   const promo2M = MISSION_POOL.find(m => m.mid === PROMO2[Math.floor(Date.parse(day) / 86400000) % 3]);
-  const rest = MISSION_POOL.filter(m => m.cat !== 'core' && m.cat !== 'promo2' && m.mid !== 'tggroup');
+  const rest = MISSION_POOL.filter(m => m.cat !== 'core' && m.cat !== 'promo2');
   for (let i = rest.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = rest[i]; rest[i] = rest[j]; rest[j] = t; } // Fisher–Yates
   const skip = opts.academyDone ? (m => m.vt === 'academy') : (() => false); // finished-Academy users can't complete lesson missions
   const CAPS = { academy: 1, chat: 1, community: 1, social: 2, trade: 2, market: 3 }; // per-day category quotas
   const used = {}; const pick = [];
-  for (let i = 0; i < rest.length && pick.length < 5; i++) {
+  for (let i = 0; i < rest.length && pick.length < 6; i++) {
     const m = rest[i]; if (skip(m)) continue;
     const c = m.cat || 'market'; if ((used[c] || 0) >= (CAPS[c] != null ? CAPS[c] : 2)) continue;
     used[c] = (used[c] || 0) + 1; pick.push(m);
   }
-  for (let i = 0; i < rest.length && pick.length < 5; i++) { const m = rest[i]; if (skip(m) || pick.indexOf(m) >= 0) continue; pick.push(m); } // cap-relaxed fallback — never under-fill the day
-  return [tradeM, promoM, promo2M, ...pick].filter(Boolean); // 1 trade + tggroup + 1 rotating Telegram (signals/news/bot) + 5 = 8/day
+  for (let i = 0; i < rest.length && pick.length < 6; i++) { const m = rest[i]; if (skip(m) || pick.indexOf(m) >= 0) continue; pick.push(m); } // cap-relaxed fallback — never under-fill the day
+  return [tradeM, promo2M, ...pick].filter(Boolean); // 1 trade + 1 rotating Telegram (signals/news/bot) + 6 = 8/day
 }
 // ---------- Academy: Duolingo-style lesson path (content lives on /academy/; server = progress + XP) ----------
 const ACAD_COURSES = { basics: ['b1','b2','b3','b4','b5','b6','b7','b8','b9'], candles: ['c1','c2','c3','c4','c5','c6','c7','c8'], leverage: ['l1','l2','l3','l4','l5','l6','l7','l8','l9','l10','l11','l12'], risk: ['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10','r11','r12'], market: ['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12'], structure: ['a1','a2','a3','a4','a5','a6','a7','a8'], systems: ['s1','s2','s3','s4','s5','s6','s7'], going: ['g1','g2','g3','g4','g5'], stories: ['st1','st2','st3','st4','st5','st6','st7','st8'], psychology: ['py1','py2','py3','py4','py5','py6','py7','py8'], mastery: ['mm1','mm2','mm3','mm4','mm5','mm6','mm7'] }; // MUST match dist/academy #acadData course/lesson ids (9 courses, 81 lessons; 'stories' is free:true = always unlocked, outside the lock chain)
