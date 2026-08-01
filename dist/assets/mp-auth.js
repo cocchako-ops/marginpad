@@ -373,7 +373,7 @@
     var bk = bodyEl.querySelector('#mpaXpBack'); if (bk) bk.addEventListener('click', render);
     fetch('/api/auth/xphistory').then(function (r) { return r.json(); }).then(function (d) {
       if (!d || d.signedIn === false) { var l0 = bodyEl.querySelector('#mpaXpList'); if (l0) l0.innerHTML = '<div class="mpa-xp-empty">Please sign in again.</div>'; return; }
-      var tot = bodyEl.querySelector('#mpaXpTot'); if (tot) tot.innerHTML = '<b>' + (+d.xp || 0).toLocaleString() + '</b> total XP earned';
+      var tot = bodyEl.querySelector('#mpaXpTot'); if (tot) tot.innerHTML = '<b>' + (+d.xp || 0).toLocaleString() + '</b> XP balance'; // NET balance (earned minus duel stakes) — was labeled "total XP earned", which read as "my earned total went DOWN" after staking a duel
       var sum = bodyEl.querySelector('#mpaXpSum'); if (sum) { var bs = (d.bySrc || []).slice(0, 4), sp = (d.spent || []).slice(0, 3); sum.innerHTML = bs.map(function (x) { return '<span class="mpa-xp-chip">' + esc(XPN[x.src] || x.src) + ' <b>+' + (+x.tot || 0).toLocaleString() + '</b></span>'; }).join('') + sp.map(function (x) { return '<span class="mpa-xp-chip neg">' + esc(XPN[x.src] || x.src) + ' <b>' + (+x.tot || 0).toLocaleString() + '</b></span>'; }).join(''); }
       var list = bodyEl.querySelector('#mpaXpList'); if (!list) return;
       var log = (d.log || []);
@@ -1116,7 +1116,7 @@
 
   /* ===== XP toasts + level-up celebration (2026-07-15) ===== */
   (function () {
-    var SRCN = { heatmap: 'Liquidation map read', trade_hh: 'XP Happy Hour! ⚡', trade_promo: 'XP Promo! ⚡', trade_win: 'Winner, banked', trade: 'Trade closed', checkin: 'Showed up today', streak: 'Streak pays', mission: 'Mission cleared', faucet: 'Faucet claim', promo: 'Promo post approved', exsign: 'Exchange sign-up', lbprize: 'Podium money 🏆', username: 'Name on the board', academy: 'Brain gains', charts: 'Chart time 📊', admin: 'Bonus', backfill: 'Loyalty bonus', duel: 'Duel won' };
+    var SRCN = { heatmap: 'Liquidation map read', trade_hh: 'XP Happy Hour!', trade_promo: 'XP Promo!', trade_win: 'Winner, banked', trade: 'Trade closed', checkin: 'Showed up today', streak: 'Streak pays', mission: 'Mission cleared', faucet: 'Faucet claim', promo: 'Promo post approved', exsign: 'Exchange sign-up', lbprize: 'Podium money', username: 'Name on the board', academy: 'Brain gains', charts: 'Chart time', admin: 'Bonus', backfill: 'Loyalty bonus', duel: 'Duel won', duel_pot: 'Duel pot won', duel_stake: 'Duel stake locked' };
     var ICON = { bronze: '', silver: '', gold: '', platinum: '', diamond: '' };
     var xpCss = '#mpxpT{position:fixed;right:16px;bottom:16px;z-index:2147483000;display:flex;flex-direction:column;gap:8px;pointer-events:none}'
       + '.mpxp{display:flex;align-items:center;gap:9px;background:#12151d;border:1px solid #2a3550;border-left:3px solid var(--xc,#c2f64a);border-radius:12px;padding:9px 13px;box-shadow:0 12px 34px rgba(0,0,0,.5);font-family:ui-monospace,Consolas,monospace;color:#e9e7df;transform:translateX(120%);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .4s;max-width:260px}'
@@ -1142,7 +1142,7 @@
     function toast(amt, src, col) {
       var host = document.getElementById('mpxpT'); if (!host) { host = document.createElement('div'); host.id = 'mpxpT'; document.body.appendChild(host); }
       var el = document.createElement('div'); el.className = 'mpxp'; el.style.setProperty('--xc', col || '#c2f64a');
-      el.innerHTML = '<b>+' + amt + '</b><span>XP<br>' + (SRCN[src] || src) + '</span>';
+      el.innerHTML = '<b>' + (amt < 0 ? '−' : '+') + Math.abs(amt) + '</b><span>XP<br>' + (SRCN[src] || src) + '</span>'; // sign-aware: duel stakes toast as a red minus so an XP drop is EXPLAINED, not mysterious
       host.appendChild(el); requestAnimationFrame(function () { el.classList.add('on'); });
       setTimeout(function () { el.classList.remove('on'); setTimeout(function () { el.remove(); }, 450); }, 3600);
     }
@@ -1211,9 +1211,9 @@
           try { localStorage.setItem(key(uid), JSON.stringify({ xp: d.xp, idx: d.level.idx, ts: (d.log[0] || {}).ts || 0 })); } catch (e) {}
           lastXp = d.xp; lastIdx = d.level.idx; return;
         }
-        // toast every log entry newer than the last seen ts (positive only), oldest-first
-        var fresh = (d.log || []).filter(function (e) { return e.ts > (stored.ts || 0) && (+e.amt) > 0; }).sort(function (a, b) { return a.ts - b.ts; });
-        fresh.slice(-4).forEach(function (e, ix) { setTimeout(function () { toast(+e.amt, e.src, d.level.col); }, ix * 550); });
+        // toast every log entry newer than the last seen ts (positives AND negatives — a silent -500 duel stake looked like "my XP is shrinking"), oldest-first
+        var fresh = (d.log || []).filter(function (e) { return e.ts > (stored.ts || 0) && (+e.amt) !== 0; }).sort(function (a, b) { return a.ts - b.ts; });
+        fresh.slice(-4).forEach(function (e, ix) { setTimeout(function () { toast(+e.amt, e.src, (+e.amt) < 0 ? '#ff8a80' : d.level.col); }, ix * 550); });
         if (d.level.idx > (stored.idx != null ? stored.idx : d.level.idx)) setTimeout(function () { celebrate(d.level); }, fresh.length ? 700 : 0);
         try { localStorage.setItem(key(uid), JSON.stringify({ xp: d.xp, idx: d.level.idx, ts: (d.log[0] || {}).ts || stored.ts })); } catch (e) {}
         lastXp = d.xp; lastIdx = d.level.idx;

@@ -8282,6 +8282,11 @@ export default {
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/premseen', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }));
       return J(await r.json());
     }
+    if (url.pathname === '/api/admin/xpfloor' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // XP-board recovery: forward {season, targets:{uid:base}} to UserStore /xpseason/floor (min-only — can only RAISE a user's shown seasonal XP; used to restore totals eaten by the old xplog-trim SUM, values reconstructed from nightly backups)
+      let body9 = {}; try { body9 = await request.json(); } catch (e) { return J({ error: 'bad_json' }, 400); }
+      const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/xpseason/floor', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body9) }));
+      return J(await r.json());
+    }
     if ((url.pathname === '/api/admin/premium' || url.pathname === '/api/admin/indaccess') && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // mp-ops: manage premium members
       const q = url.searchParams;
       const add = (q.get('add') || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -10332,6 +10337,7 @@ export class UserStore {
     const _season = lbPeriodStart(now);
     if (!this.rows('SELECT 1 FROM xpseason WHERE user_id=? AND season=?', uid, _season)[0]) { const _life = (this.rows('SELECT COALESCE(xp_life,0) v FROM users WHERE id=?', uid)[0] || { v: 0 }).v; sql.exec('INSERT INTO xpseason(user_id,season,base) VALUES(?,?,?)', uid, _season, _life); }
     sql.exec('UPDATE users SET xp_life=COALESCE(xp_life,0)+? WHERE id=?', amt, uid);
+    if (src === 'lbprize') sql.exec('UPDATE xpseason SET base=base+? WHERE user_id=? AND season=?', amt, uid, _season); // last season's prize XP must not count toward the NEW season's board (the old SUM path had src<>'lbprize' — this keeps that exclusion in the xp_life world: bump the base by the prize so the seasonal delta is unchanged)
     sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, now, src, amt, String(o.note || '').slice(0, 120));
     const cnt = (this.rows('SELECT COUNT(*) n FROM xplog WHERE user_id=?', uid)[0] || { n: 0 }).n;
     if (cnt > 160) sql.exec('DELETE FROM xplog WHERE rowid IN (SELECT rowid FROM xplog WHERE user_id=? ORDER BY ts ASC LIMIT ?)', uid, cnt - 150);
@@ -10731,6 +10737,11 @@ export class UserStore {
       const uid = String(b.uid || ''); const u = this.rows('SELECT xp FROM users WHERE id=?', uid)[0]; if (!u) return this.j({ error: 'no_user' }, 404);
       const amt = Math.round(+b.amt || 0); if (!amt) return this.j({ error: 'zero' }, 400);
       sql.exec('UPDATE users SET xp=MAX(0,COALESCE(xp,0)+?) WHERE id=?', amt, uid);
+      if (amt > 0) { // positive admin grants also count as lifetime XP (else they never reach the seasonal board and xp > xp_life diverges); negatives don't touch xp_life (monotonic by contract)
+        const _season = lbPeriodStart(now);
+        if (!this.rows('SELECT 1 FROM xpseason WHERE user_id=? AND season=?', uid, _season)[0]) { const _life = (this.rows('SELECT COALESCE(xp_life,0) v FROM users WHERE id=?', uid)[0] || { v: 0 }).v; sql.exec('INSERT INTO xpseason(user_id,season,base) VALUES(?,?,?)', uid, _season, _life); }
+        sql.exec('UPDATE users SET xp_life=COALESCE(xp_life,0)+? WHERE id=?', amt, uid);
+      }
       sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, now, 'admin', amt, String(b.note || 'manual adjust').slice(0, 120));
       const u2 = this.rows('SELECT xp FROM users WHERE id=?', uid)[0];
       return this.j({ ok: true, xp: u2.xp || 0, level: xpLevelOf(u2.xp) });
@@ -10742,6 +10753,18 @@ export class UserStore {
       const add = L.min - cur; sql.exec('UPDATE users SET xp=? WHERE id=?', L.min, uid);
       sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, now, 'admin', add, String(b.note || ('set to ' + L.name)).slice(0, 120));
       return this.j({ ok: true, xp: L.min, level: xpLevelOf(L.min) });
+    }
+    if (path === '/xpseason/floor') { // admin recovery: LOWER a user's xpseason.base to a target (seasonal XP = xp_life - base, so a lower base = more shown XP). Used to give back board XP provably lost to the old trim-affected SUM, reconstructed from the nightly backups. min() only — can never reduce anyone's shown XP. Admin-gated in the worker (/api/admin/xpfloor).
+      const season = +b.season || 0; const targets = (b && b.targets) || {};
+      if (!season || typeof targets !== 'object') return this.j({ error: 'bad' }, 400);
+      let applied = 0, skipped = 0; const detail = {};
+      for (const uid of Object.keys(targets).slice(0, 500)) {
+        const t = Math.round(+targets[uid]); if (!isFinite(t) || t < 0) { skipped++; continue; }
+        const row = this.rows('SELECT base FROM xpseason WHERE user_id=? AND season=?', uid, season)[0];
+        if (!row) { if (this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) { sql.exec('INSERT INTO xpseason(user_id,season,base) VALUES(?,?,?)', uid, season, t); applied++; detail[uid] = { base: t, was: null }; } else skipped++; continue; }
+        if (t < (+row.base || 0)) { sql.exec('UPDATE xpseason SET base=? WHERE user_id=? AND season=?', t, uid, season); applied++; detail[uid] = { base: t, was: +row.base || 0 }; } else { skipped++; detail[uid] = { kept: +row.base || 0, target: t }; }
+      }
+      return this.j({ ok: true, applied, skipped, detail });
     }
     if (path === '/xplog') { const uid = String(url.searchParams.get('uid') || ''); const u = this.rows('SELECT xp,streak,freezes FROM users WHERE id=?', uid)[0];
       const log = this.rows('SELECT ts,src,amt,note FROM xplog WHERE user_id=? ORDER BY ts DESC LIMIT 80', uid);
@@ -11393,21 +11416,37 @@ export class UserStore {
         if (top) best.push({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), roe: top.roe, pnl: top.pnl, symbol: top.symbol, side: top.side, w: tw ? tw.w : wWk, l: tw ? tw.l : lWk, bp: bestPnl ? bestPnl.pnl : 0, bpSym: bestPnl ? bestPnl.symbol : '', bpSide: bestPnl ? bestPnl.side : '' });
       }
       best.sort((a, b) => b.roe - a.roe);
-      // Weekly XP board — total XP earned in [ws,we) per user (from xplog: trades, Academy, missions, Happy Hour…).
-      // Includes non-traders (learners/mission-doers), can't be gamed by position size. Replaces the PnL board.
+      // Weekly XP board — trim-proof for EVERY season since 2026-08-01: seasonal XP = xp_life - xpseason.base (Patch B).
+      // The old current-season SUM(xplog) path SHRANK live for very active users (the xplog ring trims to ~150 rows, so
+      // rows from earlier in the season fell out of the window and their board total visibly DROPPED during the day —
+      // the "XP mi se smanjuje" complaints; esPX showed 4036 on the board with 7931 actually earned). Includes
+      // non-traders (learners/mission-doers), can't be gamed by position size.
       let xp = [];
       try {
-        if (ws === LB_ANCHOR) {
-          // CURRENT SEASON (07-20 → 08-03): UNCHANGED — the existing (trim-affected) seasonal SUM. This season's payout goes as-is.
-          xp = this.rows("SELECT x.user_id uid, u.username, SUM(x.amt) xp FROM xplog x JOIN users u ON u.id=x.user_id WHERE x.ts>=? AND x.ts<? AND x.amt>0 AND x.src<>'lbprize' AND (u.status IS NULL OR u.status='active') GROUP BY x.user_id ORDER BY xp DESC LIMIT ?", ws, we, limit)
-            .map(r => ({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), xp: +r.xp || 0 }));
-        } else {
-          // FROM 08-03 ONWARD (Patch B): trim-proof seasonal XP = xp_life - per-season base. INNER JOIN xpseason ⇒ only users
-          // who earned XP this season rank (no prize for pre-season-only XP); base is snapshotted at their first grant of the
-          // season so the delta is exactly this season's positive XP — never trimmed, immune to duel-stake, does not touch users.xp.
-          xp = this.rows("SELECT u.id uid, u.username, (COALESCE(u.xp_life,0)-COALESCE(s.base,0)) sx FROM users u JOIN xpseason s ON s.user_id=u.id AND s.season=? WHERE (u.status IS NULL OR u.status='active') AND u.username IS NOT NULL AND u.username!='' AND (COALESCE(u.xp_life,0)-COALESCE(s.base,0))>0 ORDER BY sx DESC LIMIT ?", ws, limit)
-            .map(r => ({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), xp: +r.sx || 0 }));
+        if (ws === LB_ANCHOR && !this.rows("SELECT 1 FROM xpseason WHERE user_id='__rebased__' AND season=?", ws)[0]) {
+          // One-time transition rebase for the 07-20→08-03 season (marker-guarded): fold each user's best known season
+          // total — max(SUM of the SURVIVING xplog rows in window, the existing xp_life delta) — into xpseason.base, so
+          // nothing already on the board is lost and the number can only grow from here. XP already trimmed away before
+          // this rebase is unrecoverable (the rows are gone) — this freezes the bleeding at today's values.
+          const lifes = {}; this.rows('SELECT id, COALESCE(xp_life,0) l FROM users').forEach(r => { lifes[String(r.id)] = +r.l || 0; });
+          const bases = {}; this.rows('SELECT user_id uid, base FROM xpseason WHERE season=?', ws).forEach(r => { bases[String(r.uid)] = +r.base || 0; });
+          const sums = {}; this.rows("SELECT user_id uid, COALESCE(SUM(amt),0) s FROM xplog WHERE ts>=? AND ts<? AND amt>0 AND src<>'lbprize' GROUP BY user_id", ws, we).forEach(r => { sums[String(r.uid)] = +r.s || 0; });
+          for (const uid of new Set([...Object.keys(bases), ...Object.keys(sums)])) {
+            const life = lifes[uid]; if (life == null) continue; // orphaned xplog of a deleted user
+            const have = (bases[uid] != null) ? Math.max(0, life - bases[uid]) : 0;
+            const best9 = Math.max(sums[uid] || 0, have);
+            sql.exec('INSERT INTO xpseason(user_id,season,base) VALUES(?,?,?) ON CONFLICT(user_id,season) DO UPDATE SET base=excluded.base', uid, ws, life - best9);
+          }
+          sql.exec("INSERT INTO xpseason(user_id,season,base) VALUES('__rebased__',?,1)", ws);
         }
+        // Season total = (xp_life at season END — i.e. the base of the user's NEXT xpseason row — or live xp_life while
+        // the season runs / for users who never earned again) minus this season's base. The next-season cap FREEZES an
+        // ended season: XP earned after rollover can never leak into a finished board or its payout. base is snapshotted
+        // at the user's first grant of the season, so the delta is exactly this season's positive XP — never trimmed,
+        // immune to duel-stake (which doesn't touch xp_life), lbprize excluded via the base bump in _grantXp.
+        const SX = "(COALESCE((SELECT s2.base FROM xpseason s2 WHERE s2.user_id=s.user_id AND s2.season>s.season ORDER BY s2.season ASC LIMIT 1), COALESCE(u.xp_life,0)) - COALESCE(s.base,0))";
+        xp = this.rows("SELECT u.id uid, u.username, " + SX + " sx FROM users u JOIN xpseason s ON s.user_id=u.id AND s.season=? WHERE (u.status IS NULL OR u.status='active') AND u.username IS NOT NULL AND u.username!='' AND " + SX + ">0 ORDER BY sx DESC LIMIT ?", ws, limit)
+          .map(r => ({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), xp: +r.sx || 0 }));
       } catch (e) {}
       return this.j({ top: best.slice(0, limit), xp });
     }
