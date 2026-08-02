@@ -77,3 +77,72 @@ new_sqlite_classes = ["UserStore"]
 [[migrations]]
 tag = "v4"
 new_sqlite_classes = ["Community"]
+
+# Demo Spot (2026-08-02): server-authoritative demo spot wallets ($10k USDT, CEX coins + Solana memes).
+# Deliberately its OWN DO class — UserStore 'main' is already the hot single instance (has reset under load).
+[[durable_objects.bindings]]
+name = "SPOT"
+class_name = "SpotStore"
+
+[[migrations]]
+tag = "v5"
+new_sqlite_classes = ["SpotStore"]
+
+# ============================================================================
+# STAGING ENVIRONMENT (deploy: wrangler deploy --env staging → separate script
+# `marginpad-staging`, so ALL Durable Objects are physically separate instances).
+# NOT DEPLOYED YET — awaiting review of the resolved bindings (--dry-run) + the
+# worker.js guards (boot assertion / gate / OTP bypass). WRANGLER GOTCHA: binding
+# ARRAYS are REPLACED per env, not merged — so every DO/KV/AE/R2 binding is
+# re-listed here in full. Omitting one would make staging INHERIT the prod array
+# (shared fate). None of the DO bindings set script_name → each references the
+# class in THIS (staging) script = its own namespace.
+# ============================================================================
+[env.staging]
+name = "marginpad-staging"
+workers_dev = true              # marginpad-staging.<account>.workers.dev — zero DNS
+
+[env.staging.triggers]
+crons = []                      # SUSPENDERS: register NO cron for staging (belt = the ENVIRONMENT==='staging' return at the top of scheduled()). Arrays are replaced per-env, so this fully overrides the top-level crons.
+
+[env.staging.vars]
+ENVIRONMENT = "staging"         # drives the boot assertion + gate + noindex + OTP bypass in worker.js
+CF_ACCOUNT_ID = "877b9a26e1603197fb64fb046ecd72cd"
+COLLECTOR_URL = ""              # graceful fallback — no dependency on the prod collector
+REWARD_ENABLED = "0"            # faucet OFF (rewardCfg reads this → enabled:false, loudly off)
+REWARD_DAILY_CAP = "20"
+REWARD_PER_DAY = "1"
+
+[env.staging.assets]
+directory = "./dist"
+binding = "ASSETS"
+run_worker_first = true         # CRITICAL: worker runs BEFORE static assets, so the gate + X-Robots-Tag
+                                # cover all 1.836 dist/ pages (default false serves them before the worker)
+
+[[env.staging.kv_namespaces]]
+binding = "STATS"
+id = "841bae1f70b74c3c88f431bcdeed48cb"   # STATS_staging (separate namespace — created 2026-07-25)
+
+[[env.staging.analytics_engine_datasets]]
+binding = "AE"
+dataset = "marginpad_events_staging"       # SEPARATE dataset — never pollute the prod baseline again
+
+[[env.staging.r2_buckets]]
+binding = "BACKUP"
+bucket_name = "marginpad-backup-staging"   # separate bucket (backup cron is off on staging anyway)
+
+[[env.staging.durable_objects.bindings]]
+name = "CHAT"
+class_name = "ChatRoom"
+[[env.staging.durable_objects.bindings]]
+name = "REWARDS"
+class_name = "RewardLedger"
+[[env.staging.durable_objects.bindings]]
+name = "USERS"
+class_name = "UserStore"
+[[env.staging.durable_objects.bindings]]
+name = "COMM"
+class_name = "Community"
+[[env.staging.durable_objects.bindings]]
+name = "SPOT"
+class_name = "SpotStore"
