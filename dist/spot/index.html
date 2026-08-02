@@ -76,15 +76,15 @@
   .gl b{color:var(--ink);}
 
   /* ============ hub: masthead ============ */
-  .mast{display:flex;align-items:flex-end;gap:26px;flex-wrap:wrap;margin:2px 0 18px;}
-  .mast-l{flex:1;min-width:260px;}
-  .total{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(40px,6vw,58px);letter-spacing:-.045em;line-height:1;margin:6px 0 10px;}
-  .total small{font-size:.45em;color:var(--dim);font-weight:700;letter-spacing:-.02em;}
-  .mchips{display:flex;gap:8px;flex-wrap:wrap;}
-  .mchip{display:inline-flex;align-items:baseline;gap:7px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-family:'Space Mono',monospace;font-size:12.5px;}
-  .mchip .k{color:var(--faint);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
-  .mast-r{flex:0 1 340px;min-width:250px;}
-  .spark{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px 6px;}
+  .mast{margin:6px 0 18px;}
+  .total{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(46px,10vw,64px);letter-spacing:-.045em;line-height:1;margin:8px 0 8px;}
+  .total small{font-size:.42em;color:var(--dim);font-weight:700;letter-spacing:-.02em;}
+  .pnlline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-family:'Space Mono',monospace;font-size:13px;color:var(--dim);}
+  .pnlline .pl-main{display:inline-flex;align-items:center;gap:6px;font-weight:700;}
+  .pnlline .pl-main svg{flex:none;}
+  .pnlline .pl-sub{color:var(--faint);font-size:11.5px;}
+  .pnlline .pl-dot{color:var(--faint);}
+  .spark{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px 6px;border:none;background:none;padding:0;}
   .spark .sl{display:flex;justify-content:space-between;align-items:center;color:var(--faint);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:4px;}
   .wreset{background:none;border:none;color:var(--faint);font:700 10.5px 'Space Mono',monospace;letter-spacing:.06em;cursor:pointer;padding:2px 0;}
   .wreset:hover{color:var(--red);}
@@ -125,8 +125,8 @@
     .mm-track{left:50%;right:auto;top:-6px;bottom:-6px;width:2px;height:auto;}
     .mm-dot{display:none;}
   }
-  .ovr{display:grid;grid-template-columns:1.7fr 1fr;gap:12px;margin-bottom:14px;}
-  @media(max-width:820px){.ovr{grid-template-columns:1fr;}}
+  .ovr{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:12px;margin-bottom:14px;}
+  @media(max-width:920px){.ovr{grid-template-columns:1fr;}}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 15px;}
   .p-k{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.18em;color:var(--faint);text-transform:uppercase;margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline;}
   .dleg{display:flex;flex-wrap:wrap;gap:5px 12px;margin-top:8px;}
@@ -405,22 +405,9 @@
     <!-- ===== HUB ===== -->
     <div class="appv on" id="v-hub">
       <div class="mast">
-        <div class="mast-l">
-          <div class="kick">DEMO SPOT <i>·</i> YOUR MONEY, THE WHOLE WAY</div>
-          <div class="total" id="wTotal">—</div>
-          <div class="mchips">
-            <span class="mchip"><span class="k">Today</span><span id="wToday">—</span></span>
-            <span class="mchip"><span class="k">Since start</span><span id="wAll">—</span></span>
-            <span class="mchip"><span class="k">Realized</span><span id="wRealized">—</span></span>
-          </div>
-        </div>
-        <div class="mast-r">
-          <div class="spark">
-            <div class="sl"><span>Equity — daily</span><button class="wreset" id="wReset" type="button">RESET · 1 LEFT</button></div>
-            <canvas id="eqCv" height="84"></canvas>
-            <div class="empty" id="eqEmpty" style="padding:8px;font-size:11px" hidden>Draws after your first full day.</div>
-          </div>
-        </div>
+        <div class="kick">DEMO SPOT <i>·</i> YOUR MONEY, THE WHOLE WAY</div>
+        <div class="total" id="wTotal">—</div>
+        <div class="pnlline" id="wPnl"></div>
       </div>
 
       <div class="mmap">
@@ -430,6 +417,13 @@
       </div>
 
       <div class="ovr">
+        <div class="panel">
+          <div class="p-k"><span>Equity — daily</span><button class="wreset" id="wReset" type="button">RESET · 1 LEFT</button></div>
+          <div class="spark">
+            <canvas id="eqCv" height="84"></canvas>
+            <div class="empty" id="eqEmpty" style="padding:8px;font-size:11px" hidden>Draws after your first full day.</div>
+          </div>
+        </div>
         <div class="panel" id="allocPanel">
           <div class="p-k"><span>Allocation</span><span id="nPort"></span></div>
           <div style="display:flex;gap:14px;align-items:center">
@@ -685,13 +679,24 @@
     $('stnEx').addEventListener('click',function(){showView('ex');});
     $('stnWal').addEventListener('click',function(){showView('wal');});
   }
+  var totalShown=null;
+  function paintTotal(v){
+    var t=fmtUsd(v);var di=t.indexOf('.');
+    $('wTotal').innerHTML=di>0?esc(t.slice(0,di))+'<small>'+esc(t.slice(di))+'</small>':esc(t);
+  }
   function renderMast(){
     var d=PORT;if(!d)return;
-    var t=fmtUsd(d.totalUsd);var di=t.indexOf('.');
-    $('wTotal').innerHTML=di>0?esc(t.slice(0,di))+'<small>'+esc(t.slice(di))+'</small>':esc(t);
-    $('wToday').innerHTML=d.todayPnlUsd==null?'<span style="color:var(--faint)">starts tonight</span>':pnlHtml(d.todayPnlUsd);
-    $('wAll').innerHTML=pnlHtml(d.allTimePnlUsd,d.allTimePnlUsd/100);
-    $('wRealized').innerHTML=d.realizedUsd?pnlHtml(d.realizedUsd):'<span style="color:var(--faint)">—</span>';
+    if(totalShown==null){ // first paint: roll the number up — the landing moment should feel alive
+      totalShown=d.totalUsd;
+      var t0=performance.now(),from=Math.max(0,d.totalUsd*0.2),to=d.totalUsd,DUR=850;
+      (function tick(now){var k=Math.min(1,(now-t0)/DUR);var e=1-Math.pow(1-k,3);paintTotal(from+(to-from)*e);if(k<1)requestAnimationFrame(tick);else paintTotal(to);})(t0);
+    } else { totalShown=d.totalUsd; paintTotal(d.totalUsd); }
+    var up=(d.allTimePnlUsd||0)>=0;
+    var arrow='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">'+(up?'<path d="M4 16l6-6 4 4 6-8"/><path d="M14 6h6v6"/>':'<path d="M4 8l6 6 4-4 6 8"/><path d="M14 18h6v-6"/>')+'</svg>';
+    var pct=(d.allTimePnlUsd/100).toFixed(2);
+    var line='<span class="pl-main '+(up?'pnl-up':'pnl-dn')+'">'+arrow+(up?'+':'−')+'$'+Math.abs(d.allTimePnlUsd).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ('+(up?'+':'')+pct+'%)</span><span class="pl-sub">since your $10,000</span>';
+    if(d.realizedUsd)line+='<span class="pl-dot">·</span><span class="pl-sub">realized <b class="'+(d.realizedUsd>=0?'pnl-up':'pnl-dn')+'" style="font-weight:700">'+(d.realizedUsd>=0?'+':'−')+'$'+Math.abs(d.realizedUsd).toFixed(2)+'</b></span>';
+    $('wPnl').innerHTML=line;
     $('nPort').textContent=(d.holds&&d.holds.length)?(d.holds.length+' positions'):'';
     var rb=$('wReset');var cd=d.resetTs?(d.resetTs+7*86400000-Date.now()):0;
     if(cd>0){var days=Math.ceil(cd/86400000);rb.textContent='RESET · 0 LEFT ('+days+'D)';rb.disabled=true;rb.style.opacity=.55;}
