@@ -252,19 +252,17 @@
      (leaderboard prizes, how-it-works steps) — they read best full-bleed AND keep them out of the 2-col
      flow so the remaining pairs are height-matched with no half-empty cell. */
   .rwd-cards>#authCard,.rwd-cards>#dash,.rwd-cards>#wdHistCard,.rwd-cards>#lbCompCard,.rwd-cards>#howCard,.rwd-cards>#exchanges{grid-column:1/-1}
-  /* Missions is the tall card → let it span 2 rows on the right so the two short left cards (Invite + Promote)
-     stack beside it with no dead space. Then [your level | more ways] as the next pair. */
+  /* [Invite | Missions] as a 2-col pair, then the full-width cards. */
   .rwd-cards>#authCard,.rwd-cards>#dash{order:0}
   .rwd-cards>#wdHistCard{order:1}
-  .rwd-cards>#refCard{order:2;grid-column:1}          /* 2-col left (short) */
-  .rwd-cards>#msnCard{order:3;grid-column:2;grid-row:span 2}  /* 2-col right (tall) — spans both left cards */
-  .rwd-cards>#xeCard{order:4;grid-column:1}        /* 2-col left (short) — stacks under Invite */
+  .rwd-cards>#refCard{order:2;grid-column:1}          /* 2-col left */
+  .rwd-cards>#msnCard{order:3;grid-column:2}          /* 2-col right */
   .rwd-cards>#lbCompCard{order:5}   /* full  */
   .rwd-cards>#howCard{order:6}      /* full  */
   .rwd-cards>#lvlCard{order:7}      /* 2-col */
   .rwd-cards>.card.aff{order:8}     /* 2-col */
   .rwd-cards>#exchanges{order:20}
-  @media(max-width:1000px){.rwd-cards>#msnCard,.rwd-cards>#refCard,.rwd-cards>#xeCard{grid-row:auto;grid-column:auto}}
+  @media(max-width:1000px){.rwd-cards>#msnCard,.rwd-cards>#refCard{grid-row:auto;grid-column:auto}}
   /* the balance card = the star of the page */
   .card--primary{position:relative;border-color:rgba(194,246,74,.34);background:linear-gradient(168deg,rgba(194,246,74,.075),var(--panel) 62%);box-shadow:0 26px 66px -36px rgba(194,246,74,.5),0 22px 52px -30px rgba(0,0,0,.92)}
   .card--primary::before{content:'';position:absolute;inset:0;border-radius:18px;padding:1px;background:linear-gradient(158deg,rgba(194,246,74,.5),transparent 42%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.55}
@@ -370,16 +368,6 @@
     <div id="refCampWrap" style="margin-top:14px;display:none"><div style="font-size:12px;color:#9aa3ad;margin-bottom:7px">Tap a platform to copy a tagged link — that's how you (and we) see <b style="color:#e9e7df">where your clicks come from</b>:</div><div id="refCamps" style="display:flex;flex-wrap:wrap;gap:7px"></div></div>
     <div class="pr-msg" id="refMsg"></div>
   </div>
-  <div class="card" id="xeCard" hidden>
-    <div class="lbl">Like &amp; comment — get paid</div>
-    <h2 style="margin:0 0 6px;font-size:19px">Engage with our posts on 𝕏 — earn USDT</h2>
-    <p style="color:#9aa3ad;font-size:13.5px;line-height:1.6;margin:0 0 12px">Follow <a href="https://x.com/marginpadtrade" target="_blank" rel="noopener" style="color:#c2f64a">@marginpadtrade</a>, then <b style="color:#e9e7df">like (+$<span class="xeLike">0.05</span>)</b> or <b style="color:#e9e7df">comment (+$<span class="xeCom">0.10</span>)</b> on any post below. Come back, enter your 𝕏 username, and once we confirm it the reward lands on your balance. <span style="color:#6b7480">Every claim is reviewed against 𝕏 — usually within a day. Your 𝕏 account must be public, the username exact, and a comment must be a direct reply under the post (quote posts don’t count).</span></p>
-    <div style="margin:0 0 12px"><label for="xeUser" style="font-size:12px;color:#9aa3ad;display:block;margin-bottom:5px">Your 𝕏 (Twitter) username</label><input id="xeUser" type="text" placeholder="@yourhandle" autocomplete="off" spellcheck="false" style="width:100%;box-sizing:border-box;background:#0f1216;border:1px solid #23272e;border-radius:10px;color:#e9e7df;font:inherit;font-size:15px;padding:11px 13px"></div>
-    <div id="xePosts"></div>
-    <div class="pr-msg" id="xeMsg"></div>
-    <div id="xeList" style="margin-top:8px"></div>
-  </div>
-
   <div class="card" id="lbCompCard">
     <div class="lbc-tag">14-day competition</div>
     <h2 class="lbc-title">Paper Trade Leaderboard</h2>
@@ -472,93 +460,9 @@
   var wdAddrRow=document.getElementById('wdAddrRow'),wdAddr=document.getElementById('wdAddr'),wdConfirm=document.getElementById('wdConfirm');
   function setText(cls,v){var els=document.querySelectorAll('.'+cls);for(var i=0;i<els.length;i++)els[i].textContent=v;}
   function fmtShort(n){return (+n).toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1');}
-  function applyCfg(j){if(j.perDay!=null){perDay=j.perDay;setText('tPer',fmtShort(perDay));}if(j.amount!=null){amount=j.amount;setText('tAmt',(+amount).toFixed(2));}if(j.minWd!=null){minWd=j.minWd;setText('tMin',fmtShort(minWd));}if(j.welcomeAmt!=null){welcomeAmt=+j.welcomeAmt;renderWelcomeHook();}if(j.exsignEnabled!=null||j.exsignUsd!=null)exsCfg(j);}
+  function applyCfg(j){if(j.perDay!=null){perDay=j.perDay;setText('tPer',fmtShort(perDay));}if(j.amount!=null){amount=j.amount;setText('tAmt',(+amount).toFixed(2));}if(j.minWd!=null){minWd=j.minWd;setText('tMin',fmtShort(minWd));}if(j.welcomeAmt!=null){welcomeAmt=+j.welcomeAmt;renderWelcomeHook();}}
   function renderWelcomeHook(){var wh=document.getElementById('welcomeHook');if(!wh)return;if(welcomeAmt>0){wh.hidden=false;wh.innerHTML='<div style="background:linear-gradient(180deg,rgba(194,246,74,.13),rgba(194,246,74,.04));border:1px solid rgba(194,246,74,.45);border-radius:12px;padding:13px 15px;margin-bottom:12px;text-align:left"><div style="font-size:16px;font-weight:800;color:#d6f78a">Get free USDT, instantly</div><div style="font-size:12.5px;color:#9aa3ad;margin-top:3px;line-height:1.45">Sign in and we drop a USD welcome bonus straight into your balance — then keep claiming free USDT every few minutes.</div></div>';var sb=document.getElementById('signinBtn');if(sb)sb.textContent='Sign in & claim free USDT';}else{wh.hidden=true;}}
   function valid(a){return /^[0-9]{5,15}$/.test(a);}
-  // ---- Exchange sign-up bonus: $3 per new exchange account via our ref link (manual verification against the affiliate dashboard) ----
-  var exsAmtTxt='3';
-  var EXSN={bybit:'Bybit',binance:'Binance',okx:'OKX',bitget:'Bitget',kucoin:'KuCoin',gate:'Gate',mexc:'MEXC',kraken:'Kraken',cryptocom:'Crypto.com',coinbase:'Coinbase'};
-  function exsCfg(j){var c=document.getElementById('exsCard');if(!c)return;if(j.exsignEnabled!=null)c.hidden=(j.exsignEnabled===false);if(j.exsignUsd!=null){exsAmtTxt=(+j.exsignUsd)%1===0?String(+j.exsignUsd):(+j.exsignUsd).toFixed(2);setText('exsAmt',exsAmtTxt);}}
-  function exsMsgF(t,kind){var e=document.getElementById('exsMsg');if(!e)return;e.innerHTML=t;e.className='pr-msg show '+(kind||'');}
-  function exsLoad(){if(!signedIn)return;fetch('/api/reward/exsign/mine').then(function(r){return r.json();}).then(function(d){var list=document.getElementById('exsList');if(!list)return;var rows=(d&&d.signups)||[];function esc(x){return String(x==null?'':x).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
-    list.innerHTML=rows.map(function(p){
-      var st=p.status==='approved'?'<span class="st" style="color:#41e3a3">+$'+(+p.amount||0).toFixed(2)+' PAID</span>':p.status==='rejected'?'<span class="st" style="color:#ff8a80">REJECTED</span>':'<span class="st" style="color:#f3d44a">IN REVIEW</span>';
-      var row='<div class="pr-item"><span class="pl" style="color:#f3d44a;flex:0 0 78px">'+esc(EXSN[p.exchange]||p.exchange)+'</span><span class="u">'+(p.exchange==='coinbase'?'':'UID ')+esc(p.uid)+'</span>'+st+'</div>';
-      if(p.status==='rejected')row+='<div class="pr-note">'+(p.note?'<b>Reason:</b> '+esc(p.note)+' ':'')+'<button type="button" class="exs-resub" data-resub="'+esc(p.exchange)+'" style="background:none;border:none;color:#38bdf8;font:inherit;font-weight:700;cursor:pointer;padding:0;text-decoration:underline">Upload again for review &rarr;</button></div>';
-      return row;
-    }).join('');
-    Array.prototype.forEach.call(list.querySelectorAll('.exs-resub'),function(b){b.addEventListener('click',function(){var ex=b.getAttribute('data-resub'),sel=document.getElementById('exsSel');
-      if(sel){var has=false;Array.prototype.slice.call(sel.options).forEach(function(o){if(o.value===ex)has=true;});if(!has){var o=document.createElement('option');o.value=ex;o.textContent=EXSN[ex]||ex;sel.appendChild(o);}sel.value=ex;sel.style.display='';}
-      var b9=document.getElementById('exsSubmit');if(b9){b9.disabled=false;b9.textContent='Submit';}
-      var inp=document.getElementById('exsUid');if(inp){inp.style.display='';inp.value='';}
-      var form=document.querySelector('.exs-form');if(form)form.scrollIntoView({behavior:'smooth',block:'center'});
-      if(inp)setTimeout(function(){inp.focus();},250);
-      exsMsgF('Enter your UID for '+(EXSN[ex]||ex)+' and submit again — we&rsquo;ll re-review it.','ok');
-    });});
-    try{var takenEx={};rows.forEach(function(p){if(p.status!=='rejected')takenEx[p.exchange]=1;});
-      var sel9=document.getElementById('exsSel');
-      if(sel9){Array.prototype.slice.call(sel9.options).forEach(function(o){if(takenEx[o.value])o.remove();});
-        if(!sel9.options.length){var b9=document.getElementById('exsSubmit');if(b9){b9.disabled=true;b9.textContent='All exchange bonuses claimed';}sel9.style.display='none';var u9=document.getElementById('exsUid');if(u9)u9.style.display='none';}}
-    }catch(e9){}
-    }).catch(function(){});}
-  (function(){var btn=document.getElementById('exsSubmit');if(!btn)return;btn.addEventListener('click',function(){
-    var sel=document.getElementById('exsSel'),inp=document.getElementById('exsUid'),u=(inp&&inp.value||'').trim();
-    if(!signedIn){exsMsgF('Sign in first — the bonus lands on your account balance.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
-    if(!u){exsMsgF((sel&&sel.value==='coinbase')?'Paste your Coinbase account name (or wallet / .base) — that is what shows in our referral list.':'Paste your UID from the exchange (Profile → your user ID).','err');return;}
-    var kyc=document.getElementById('exsKyc');if(kyc&&!kyc.checked){exsMsgF('Please confirm you have completed KYC (identity verification) on the exchange — the bonus is only paid after KYC.','err');try{kyc.focus();}catch(_){}return;}
-    btn.disabled=true;btn.textContent='…';
-    fetch('/api/reward/exsign/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({exchange:sel?sel.value:'',uid:u})}).then(function(r){return r.json();}).then(function(d){
-      btn.disabled=false;btn.textContent='Submit';
-      if(d&&d.ok){exsMsgF('Submitted. Once your account is <b>KYC-verified</b> we confirm the referral — usually within a day — then $'+exsAmtTxt+' lands on your balance.','ok');if(inp)inp.value='';var _k=document.getElementById('exsKyc');if(_k)_k.checked=false;exsLoad();return;}
-      var e=(d&&d.error)||'';
-      if(e==='login_required'){exsMsgF('Sign in first.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}
-      else if(e==='already_submitted')exsMsgF('You already submitted a '+(EXSN[sel&&sel.value]||'account for this exchange')+' account — the bonus is once per exchange.','err');
-      else if(e==='uid_taken')exsMsgF('That UID was already submitted.','err');
-      else if(e==='bad_uid')exsMsgF((sel&&sel.value==='coinbase')?'Paste your Coinbase account name, wallet address, or .base handle.':'That does not look like a UID — copy the user ID from your exchange profile (letters and numbers only).','err');
-      else if(e==='banned')exsMsgF('This account is suspended from rewards.','err');
-      else if(e==='restricted')exsMsgF('Your account is restricted from rewards. If you believe this is a mistake, contact support (<a href="https://marginpad.io/rewards/#" style="color:inherit;font-weight:700;text-decoration:underline" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">here</a>).','err');
-      else if(e==='paused')exsMsgF('Exchange bonuses are paused right now.','err');
-      else exsMsgF('Could not submit — try again shortly.','err');
-    }).catch(function(){btn.disabled=false;btn.textContent='Submit';exsMsgF('Network error — try again.','err');});
-  });})();
-  (function(){var sel=document.getElementById('exsSel'),inp=document.getElementById('exsUid'),hint=document.getElementById('exsHint');if(!sel)return;
-    function sync(){var cb=sel.value==='coinbase';if(inp)inp.placeholder=cb?'Your Coinbase account name / wallet / .base':'Your UID on that exchange';if(hint){hint.style.display=cb?'':'none';if(cb)hint.innerHTML='<b>Coinbase:</b> there is no numeric UID we can see — send your <b>account name</b> (or the <b>wallet address</b> / <b>.base</b> handle shown on your Coinbase / Base profile) so we can match you in our referral list.';}}
-    sel.addEventListener('change',sync);sync();
-  })();
-  // ---- Like & comment our X posts → reward (manual review; the X read confirms the username) ----
-  var xeCfg={likeUsd:0.05,commentUsd:0.10};
-  function xeAmt(){var l=(+xeCfg.likeUsd).toFixed(2),c=(+xeCfg.commentUsd).toFixed(2);Array.prototype.forEach.call(document.querySelectorAll('.xeLike'),function(e){e.textContent=l;});Array.prototype.forEach.call(document.querySelectorAll('.xeCom'),function(e){e.textContent=c;});}
-  function xeMsg(t,kind){var e=document.getElementById('xeMsg');if(!e)return;e.innerHTML=t;e.className='pr-msg show '+(kind||'');}
-  function xeEsc(x){return String(x==null?'':x).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
-  function xePostsRender(posts){var host=document.getElementById('xePosts');if(!host)return;if(!posts||!posts.length){host.innerHTML='<div style="color:#6b7480;font-size:12.5px;padding:4px 0">No posts to engage with yet — check back soon.</div>';return;}
-    host.innerHTML=posts.map(function(p){var snip=xeEsc((p.text||'').replace(/\s+/g,' ').slice(0,90));return '<div style="background:#0f1216;border:1px solid #23272e;border-radius:11px;padding:11px 12px;margin-bottom:9px"><div style="font-size:12.5px;color:#c8cdd4;line-height:1.5;margin-bottom:9px">'+snip+'…</div><div style="display:flex;gap:7px;flex-wrap:wrap"><a href="'+xeEsc(p.url)+'" target="_blank" rel="noopener" style="text-decoration:none;background:#1a2027;color:#e9e7df;border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:600">Open on 𝕏 &rarr;</a><button type="button" class="xe-do" data-act="like" data-tid="'+xeEsc(p.id)+'" style="background:#1f2b1a;color:#c2f64a;border:1px solid #2f5321;border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:700;cursor:pointer">I liked it</button><button type="button" class="xe-do" data-act="comment" data-tid="'+xeEsc(p.id)+'" style="background:#16222b;color:#5ad8e6;border:1px solid #24505e;border-radius:8px;padding:8px 12px;font-size:12.5px;font-weight:700;cursor:pointer">I commented</button></div></div>';}).join('');}
-  function xePosts(){fetch('/api/reward/xposts').then(function(r){return r.json();}).then(function(d){var c=document.getElementById('xeCard');if(c)c.hidden=(d&&d.enabled===false);if(d){if(d.likeUsd!=null)xeCfg.likeUsd=d.likeUsd;if(d.commentUsd!=null)xeCfg.commentUsd=d.commentUsd;xeAmt();xePostsRender(d.posts||[]);}}).catch(function(){});}
-  function xeLoad(){if(!signedIn)return;fetch('/api/reward/xengage/mine').then(function(r){return r.json();}).then(function(d){var list=document.getElementById('xeList');if(!list)return;var rows=(d&&d.items)||[];
-    list.innerHTML=rows.map(function(p){var st=p.status==='approved'?'<span class="st" style="color:#41e3a3">+$'+(+p.amount||0).toFixed(2)+' PAID</span>':p.status==='rejected'?'<span class="st" style="color:#ff8a80">REJECTED</span>':'<span class="st" style="color:#f3d44a">IN REVIEW</span>';
-      var row='<div class="pr-item"><span class="pl" style="color:'+(p.action==='comment'?'#5ad8e6':'#c2f64a')+'">'+(p.action==='comment'?'Comment':'Like')+' &middot; @'+xeEsc(p.username)+'</span>'+st+'</div>';
-      if(p.status==='rejected'&&p.note)row+='<div class="pr-note"><b>Reason:</b> '+xeEsc(p.note)+'</div>';
-      return row;}).join('');}).catch(function(){});}
-  (function(){var host=document.getElementById('xePosts');if(!host)return;host.addEventListener('click',function(e){var b=e.target.closest('.xe-do');if(!b)return;
-    if(!signedIn){xeMsg('Sign in first — the reward lands on your account balance.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
-    var uinp=document.getElementById('xeUser'),u=(uinp&&uinp.value||'').trim().replace(/^@/,'');
-    if(!/^[A-Za-z0-9_]{1,15}$/.test(u)){xeMsg('Enter your 𝕏 username first (letters, numbers, underscore).','err');if(uinp)uinp.focus();return;}
-    var act=b.getAttribute('data-act'),tid=b.getAttribute('data-tid'),old=b.textContent;
-    b.disabled=true;b.textContent='…';
-    fetch('/api/reward/xengage/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:act,tweet_id:tid,username:u})}).then(function(r){return r.json();}).then(function(d){
-      b.disabled=false;b.textContent=old;
-      if(d&&d.ok){xeMsg('Submitted for your '+(act==='comment'?'comment':'like')+'. We confirm it and the reward lands on your balance.','ok');xeLoad();return;}
-      var er=(d&&d.error)||'';
-      if(er==='login_required'){xeMsg('Sign in first.','err');if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}
-      else if(er==='already_submitted')xeMsg('You already submitted that '+act+' for this post.','err');
-      else if(er==='username_taken')xeMsg('That 𝕏 username already claimed this post — one reward per post per account.','err');
-      else if(er==='bad_username')xeMsg('That 𝕏 username does not look right.','err');
-      else if(er==='bad_tweet')xeMsg('Could not read that post — refresh and try again.','err');
-      else if(er==='banned')xeMsg('This account is suspended from rewards.','err');
-      else if(er==='restricted')xeMsg('Your account is restricted from rewards. If you believe this is a mistake, contact support (<a href="https://marginpad.io/rewards/#" style="color:inherit;font-weight:700;text-decoration:underline" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">here</a>).','err');
-      else if(er==='paused')xeMsg('This reward is paused right now.','err');
-      else xeMsg('Could not submit — try again shortly.','err');
-    }).catch(function(){b.disabled=false;b.textContent=old;xeMsg('Network error — try again.','err');});
-  });xePosts();})();
   function msg(t,kind){msgEl.innerHTML=t;msgEl.className='msg show '+(kind||'');}
   function clearMsg(){msgEl.className='msg';}
   function fmt(n){return (+n).toFixed(2);}
@@ -598,7 +502,7 @@
 
   function loadWdHistory(){if(!signedIn)return;fetch('/api/reward/wdhistory').then(function(r){return r.json();}).then(function(d){var el=document.getElementById('wdHistList'),card=document.getElementById('wdHistCard');if(!el||!card)return;var w=(d&&d.withdrawals)||[];if(!w.length){card.hidden=true;return;}card.hidden=false;el.innerHTML=w.map(function(x){var paid=x.status==='paid',rej=x.status==='rejected';var txid=(x.txid||'').replace(/[^0-9a-fA-Fx]/g,'');var tx=(paid&&txid)?'<a href="https://bscscan.com/tx/'+txid+'" target="_blank" rel="noopener" class="clink">view tx</a>':'';return '<div class="wdh-row"><span class="wdh-amt">$'+(+x.amountUsd||0).toFixed(2)+'</span><span class="wdh-st '+(paid?'ok':'')+'"'+(rej?' style="color:#ff6258;border-color:rgba(255,98,88,.4)"':'')+'>'+(paid?'Paid':rej?'Rejected — refunded':'Pending')+'</span><span class="wdh-meta">'+new Date(x.ts).toLocaleDateString()+(tx?' · '+tx:'')+(rej&&x.note?' · '+String(x.note).replace(/</g,'&lt;'):'')+'</span></div>';}).join('');}).catch(function(){});}
   function refresh(){ if(!signedIn){dash.hidden=true;return;} dash.hidden=false;
-    fetch('/api/reward/account').then(function(r){return r.json();}).then(render).catch(function(){}); loadWdHistory();xeLoad();exsLoad(); }
+    fetch('/api/reward/account').then(function(r){return r.json();}).then(render).catch(function(){}); loadWdHistory(); }
 
   // ---- auth gate: claiming requires a signed-in account (not a wallet) ----
   function updateGate(){
@@ -609,7 +513,7 @@
     signedIn=!!user;
     if(user&&whoEmail) whoEmail.textContent=user.username||user.email||'';
     updateGate();
-    if(signedIn){ fetch('/api/reward/me').then(function(r){return r.json();}).then(function(d){ applyCfg(d); if(d.payoutAddr){payoutAddr=d.payoutAddr; try{localStorage.setItem(KEY,payoutAddr);}catch(e){}} if(d.account){render(d);}else{refresh();} loadWdHistory();xeLoad();exsLoad(); if(+d.welcomeBonus>0)msg('Welcome bonus of $'+(+d.welcomeBonus).toFixed(2)+' added to your balance. Claim more below.','ok'); }).catch(function(){refresh();}); }
+    if(signedIn){ fetch('/api/reward/me').then(function(r){return r.json();}).then(function(d){ applyCfg(d); if(d.payoutAddr){payoutAddr=d.payoutAddr; try{localStorage.setItem(KEY,payoutAddr);}catch(e){}} if(d.account){render(d);}else{refresh();} loadWdHistory(); if(+d.welcomeBonus>0)msg('Welcome bonus of $'+(+d.welcomeBonus).toFixed(2)+' added to your balance. Claim more below.','ok'); }).catch(function(){refresh();}); }
   }
   window.addEventListener('mp-auth-change',function(e){ onAuth(e.detail&&e.detail.user); paintLvl(e.detail&&e.detail.user); });
   (function(){
