@@ -186,6 +186,7 @@
   .v-ex .app-back{color:var(--dim);border-color:var(--line2);}
   .v-ex .app-id span{color:var(--faint);}
   .v-ex .app-logo{background:rgba(194,246,74,.14);color:var(--lime);}
+  .ex-swrap{padding:0 16px;}
   .ex-tick{overflow:hidden;border-top:1px solid rgba(194,246,74,.18);border-bottom:1px solid rgba(194,246,74,.18);background:rgba(6,8,5,.6);margin-bottom:14px;white-space:nowrap;}
   .ex-tick .tk{display:inline-block;padding:7px 0;font-family:'Space Mono',monospace;font-size:11px;animation:tkScroll 40s linear infinite;}
   .ex-tick .tk span{margin:0 14px;color:var(--dim);}
@@ -274,6 +275,44 @@
   .v-wal .list{max-height:none;}
   .wl-setup{background:rgba(16,13,26,.8);border:1px dashed rgba(167,139,250,.45);border-radius:16px;padding:18px 16px;text-align:center;color:#b6aecf;font-size:13px;line-height:1.6;}
   .wl-setup .m-go{margin-top:12px;}
+
+  /* ============ desktop (>=880px): the three apps become real desktop products ============
+     Wrappers are display:contents on mobile -> phone layouts stay byte-identical. */
+  .bk-cols,.bk-left,.bk-right,.wl-cols,.wl-left,.wl-right{display:contents;}
+  @media(min-width:880px){
+    /* BANK -> online-banking dashboard */
+    .appv.v-bank{padding:26px 30px 32px;}
+    .bk-cols{display:grid;grid-template-columns:420px minmax(0,1fr);column-gap:32px;align-items:start;}
+    .bk-left,.bk-right{display:block;min-width:0;}
+    .bk-left{position:sticky;top:14px;}
+    .bk-greet{font-size:15px;}
+    .vcard{aspect-ratio:1.586/1;display:flex;flex-direction:column;justify-content:flex-end;padding:22px;}
+    .vc-top{margin-bottom:auto;}
+    .vc-num{font-size:20px;}
+    .bk-acts{grid-template-columns:1fr;}
+    .bk-right .bk-sec{margin-top:0;}
+    .bk-right .bk-stmt{max-height:480px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#cfc6ac transparent;}
+    /* WALLET -> self-custody dashboard: rail + market */
+    .appv.v-wal{max-width:none;padding:24px 28px 30px;border-radius:24px;}
+    .wl-cols{display:grid;grid-template-columns:400px minmax(0,1fr);column-gap:32px;align-items:start;}
+    .wl-left,.wl-right{display:block;min-width:0;}
+    .wl-left{position:sticky;top:14px;max-height:calc(100vh - 28px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:#3a3352 transparent;}
+    .wl-bal{margin-top:2px;}
+    .wl-bal b{font-size:46px;}
+    .wl-right .wl-sec:first-child{margin-top:2px;}
+    .wl-setup{max-width:520px;margin:18px auto;}
+    /* EXCHANGE -> wider terminal */
+    .appv.v-ex{padding:22px 0 26px;}
+    .v-ex .app-head{padding:0 24px;}
+    .v-ex .ex-swrap{padding:0 24px;}
+    .v-ex .ex-sum{padding:0 24px;}
+    .v-ex .ex-sum .eb b{font-size:30px;}
+    .v-ex .ex-quick{padding:0 24px;}
+    .v-ex .ex-tabs{padding:0 24px;}
+    .v-ex .search{width:calc(100% - 48px);margin:10px 24px 6px;}
+    .v-ex .crow{padding:11px 24px;}
+    .v-ex .list{max-height:62vh;}
+  }
 
   /* ============ paper trail ============ */
   .trail{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;}
@@ -459,14 +498,20 @@
       </div>
       <div class="appsw"><button class="a-hub" data-view="hub" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1V10"/></svg>Map</button><button class="a-bank on" data-view="bank" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M12 3 3 8h18l-9-5z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/></svg>Bank</button><button class="a-ex" data-view="ex" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 14 4-5 3 3 5-7"/></svg>Exchange</button><button class="a-wal" data-view="wal" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/></svg>Wallet</button></div>
       <div class="bk-greet" id="bkGreet">Good day.</div>
+      <div class="bk-cols">
+      <div class="bk-left">
       <div id="bkCard"></div>
       <div class="bk-acts">
         <button class="bk-act" id="bkTopUp" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg><b>Send to exchange</b><span>Buy USDT with this card · 1.8% card fee</span></button>
         <button class="bk-act" id="bkCashOut" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg><b>Cash out from exchange</b><span>Sell USDT back to this card · 1% fee</span></button>
       </div>
+      </div>
+      <div class="bk-right">
       <div class="bk-sec">Recent transactions</div>
       <div class="bk-stmt" id="bkStmt"><div class="empty" style="color:#8a8168">No transactions yet.</div></div>
       <div class="bk-note"><b>Why a bank app?</b> In real life your money starts and ends at a bank. Crypto sits in the middle. Notice that BOTH directions cost a fee — getting in (1.8% card) and getting out (1% withdrawal). Banks and processors always take their cut.</div>
+      </div>
+      </div>
     </div>
 
     <!-- ===== EXCHANGE APP ===== -->
@@ -476,7 +521,7 @@
         <div class="app-id"><b>MarginPad Exchange</b><span>custodial · they hold it for you · taker fee 0.1%</span></div>
         <div class="app-logo"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 14 4-5 3 3 5-7"/></svg></div>
       </div>
-      <div style="padding:0 16px"><div class="appsw"><button class="a-hub" data-view="hub" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1V10"/></svg>Map</button><button class="a-bank" data-view="bank" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M12 3 3 8h18l-9-5z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/></svg>Bank</button><button class="a-ex on" data-view="ex" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 14 4-5 3 3 5-7"/></svg>Exchange</button><button class="a-wal" data-view="wal" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/></svg>Wallet</button></div></div>
+      <div class="ex-swrap"><div class="appsw"><button class="a-hub" data-view="hub" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1V10"/></svg>Map</button><button class="a-bank" data-view="bank" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M12 3 3 8h18l-9-5z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/></svg>Bank</button><button class="a-ex on" data-view="ex" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 14 4-5 3 3 5-7"/></svg>Exchange</button><button class="a-wal" data-view="wal" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/></svg>Wallet</button></div></div>
       <div class="ex-tick" id="exTick" hidden><div class="tk" id="exTickIn"></div></div>
       <div class="ex-sum">
         <div class="eb"><small>Exchange balance</small><b id="exTotal">—</b><span id="exFree">—</span></div>
@@ -843,7 +888,8 @@
     var IC_SWP='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 16V4M7 4 3 8M7 4l4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/></svg>';
     var IC_DEP='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M21 7H9M13 3 9 7l4 4"/></svg>';
     el.innerHTML=
-      '<div class="wl-bal"><small>Wallet total</small><b>'+fmtUsd(d.walletUsd)+'</b></div>'
+      '<div class="wl-cols"><div class="wl-left">'
+      +'<div class="wl-bal"><small>Wallet total</small><b>'+fmtUsd(d.walletUsd)+'</b></div>'
       +'<div class="wl-addr" id="wlShort" title="tap to copy your Solana address">'+shortAddr(d.addr.sol)+' · tap to copy</div>'
       +'<div class="wl-acts">'
       +'<button class="wl-act" id="wlRcv" type="button"><i>'+IC_RCV+'</i>Receive</button>'
@@ -855,6 +901,7 @@
       +'<div class="wl-card">'+toks+'</div>'
       +'<div class="wl-sec"><span>Your bags</span></div>'
       +'<div class="wl-card" id="wlBags">'+(bags.length?bags.map(holdRow).join(''):'<div class="empty" style="color:#8f86ad">No bags yet'+(gasHas()?' — pick a meme below.':' — get some gas first (Swap).')+'</div>')+'</div>'
+      +'</div><div class="wl-right">'
       +'<div class="wl-sec" style="margin-top:16px"><span>Trending — 4 chains</span></div>'
       +'<div class="memewarn"><b>Degen zone.</b> Every meme lives on a network and is paid for in that chain’s coin plus gas. Thin pools slip. Pools can rug to zero. That is the lesson.</div>'
       +'<div class="netfilt" id="netFilt">'
@@ -865,7 +912,8 @@
       +'<button class="nf'+(memeNetF==='bsc'?' on':'')+'" data-net="bsc" type="button">BNB</button>'
       +'</div>'
       +'<div class="wl-card list" id="memeList"><div class="empty" style="color:#8f86ad">Loading trending memes…</div></div>'
-      +'<div class="wl-chain" id="wlChain"><b>MarginPad Chain</b> — the public ledger of every transfer. View explorer</div>';
+      +'<div class="wl-chain" id="wlChain"><b>MarginPad Chain</b> — the public ledger of every transfer. View explorer</div>'
+      +'</div></div>';
     wireHoldRows($('wlBags'));
     var rc=$('wlRcv');if(rc)rc.addEventListener('click',openReceive);
     var sn=$('wlSnd');if(sn)sn.addEventListener('click',function(){openSendModal();});
