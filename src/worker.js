@@ -8109,6 +8109,11 @@ async function handleSpot(url, request, env) {
     const bars = list.map(r => ({ time: +r[0], open: +r[1], high: +r[2], low: +r[3], close: +r[4], vol: +r[5] })).filter(x => x.time > 0 && x.close > 0).sort((x, y) => x.time - y.time);
     return new Response(JSON.stringify(bars), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
   }
+  if (path === '/chain') { // MarginPad Chain explorer — public (fake ledger, educational; addresses are demo-generated)
+    try { const r = await spotStub(env).fetch(new Request('https://do/chain')); const d = await r.json();
+      return new Response(JSON.stringify(d), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=10', ...CORS } });
+    } catch (e) { return jr({ height: 0, txs: [] }); }
+  }
   // everything below acts on a user's wallet → session required (admin ?uid= override for testing/support)
   let uid = null;
   const tok = getCookie(request, SESS_COOKIE);
@@ -8216,6 +8221,23 @@ async function handleSpot(url, request, env) {
     if (!(usdC >= 1000)) return jr({ error: 'min_offramp', minUsd: 10 }, 400);
     const feeC = Math.max(100, Math.round(usdC * SPOT_OFFRAMP_BP / 10000));
     try { const r = await stub.fetch(new Request('https://do/offramp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'cash-out $' + (usdC / 100).toFixed(0), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return jr({ error: 'transient' }, 503); }
+  }
+  if (path === '/transfer' && request.method === 'POST') { // P2P send: wallet USDT to another user's address; chain auto-detected from the address format, gas in that chain's native coin
+    const toAddr = String(b.to || '').trim();
+    const usdC = Math.round((+b.usd || 0) * 100);
+    if (!(usdC >= 100)) return jr({ error: 'min_trade', minUsd: 1 }, 400);
+    if (usdC > 100000000) return jr({ error: 'too_big' }, 400);
+    let net;
+    if (/^[1-9A-HJ-NP-Za-km-z]{32,50}$/.test(toAddr)) net = 'solana';
+    else if (/^0x[0-9a-fA-F]{40}$/.test(toAddr)) net = (SPOT_NETS[String(b.net || '')] && String(b.net) !== 'solana') ? String(b.net) : 'bsc';
+    else return jr({ error: 'bad_address', hint: 'That is not a valid Solana or EVM address. Ask your friend to copy it from their Wallet app (Receive).' }, 400);
+    const memo = String(b.memo || '').replace(/[<>]/g, '').slice(0, 60);
+    try {
+      const r = await stub.fetch(new Request('https://do/transfer', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, toAddr, usdC, native: SPOT_NETS[net].native, gasNat: SPOT_NETS[net].gas, net, memo }) }));
+      const d = await r.json();
+      if (d && d.ok) { d.net = net; try { await evPush(env, request, 'spottrade', 'P2P send $' + (usdC / 100).toFixed(2), '/spot/'); } catch (e) {} }
+      return jr(d, d && d.ok ? 200 : 400);
+    } catch (e) { return jr({ error: 'transient' }, 503); }
   }
   if (path === '/wallet/create' && request.method === 'POST') { // sim step 3: self-custody wallet — addresses generated here; the seed phrase is shown ONCE and never stored (like real life)
     const addr = spotGenAddr();
@@ -9841,6 +9863,11 @@ export class SpotStore {
     // card/wusdt = cents on the card / wallet-USDT; gas = JSON {SOL:qty,ETH:qty,BNB:qty}; addr = JSON {sol,evm};
     // onb = onboarding progress (1 card linked, 2 USDT bought, 3 wallet created, 4 wallet funded).
     for (const col of ['card INTEGER DEFAULT 0', 'wusdt INTEGER DEFAULT 0', "gas TEXT DEFAULT '{}'", "addr TEXT DEFAULT ''", 'onb INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE spotacct ADD COLUMN ' + col); } catch (e) {} }
+    // v6 (2026-08-02): the internal "MarginPad Chain" — every user-to-user transfer is a public on-chain-style record
+    // with a tx hash and a block height. P2P sends move WALLET USDT between accounts, resolved by wallet ADDRESS
+    // (users literally share their Receive addresses with each other — the real-life flow).
+    s.exec('CREATE TABLE IF NOT EXISTS spotxfer(hash TEXT PRIMARY KEY, height INTEGER, from_uid TEXT, to_uid TEXT, from_addr TEXT, to_addr TEXT, amt INTEGER, net TEXT, memo TEXT, ts INTEGER)');
+    try { s.exec('CREATE INDEX IF NOT EXISTS spx_h ON spotxfer(height)'); } catch (e) {}
   }
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
@@ -9902,6 +9929,34 @@ export class SpotStore {
       sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'offramp','USD',?,1,?,?,0,'{}')", uid, now, (usdC - feeC) / 100, usdC - feeC, feeC);
       const a2 = this.rows('SELECT usdt,card FROM spotacct WHERE user_id=?', uid)[0];
       return this.j({ ok: true, usdtUsd: a2.usdt / 100, cardUsd: (a2.card || 0) / 100, feeUsd: feeC / 100, receivedUsd: (usdC - feeC) / 100 });
+    }
+    if (path === '/transfer') { // P2P: wallet USDT from one user to another user's ADDRESS, recorded on the internal MarginPad Chain (tx hash + block height); gas paid in the chain's native coin
+      const usdC = Math.round(+b.usdC || 0), toAddr = String(b.toAddr || '').trim(), native = String(b.native || '').toUpperCase(), gasNat = Math.max(0, +b.gasNat || 0), memo = String(b.memo || '').slice(0, 60);
+      if (!uid || usdC < 100 || !toAddr) return this.j({ error: 'bad' }, 400);
+      const a = this._acct(uid, now);
+      if (!a.addr) return this.j({ error: 'no_wallet' }, 400);
+      let myAddr = {}; try { myAddr = JSON.parse(a.addr || '{}'); } catch (e) {}
+      if (toAddr === myAddr.sol || toAddr === myAddr.evm) return this.j({ error: 'self' }, 400);
+      const rec = this.rows('SELECT user_id, addr FROM spotacct WHERE addr LIKE ? LIMIT 1', '%' + toAddr + '%')[0];
+      if (!rec) return this.j({ error: 'unknown_address' }, 404); // real chains send this into the void forever; the demo refuses and teaches instead
+      if ((a.wusdt || 0) < usdC) return this.j({ error: 'insufficient', wusdtUsd: (a.wusdt || 0) / 100 }, 400);
+      const g = this._gas(a);
+      if (native) { if ((+g[native] || 0) < gasNat) return this.j({ error: 'no_gas', native, have: +g[native] || 0, need: gasNat }, 400); g[native] = (+g[native] || 0) - gasNat; }
+      const rnd = new Uint8Array(32); crypto.getRandomValues(rnd); const hash = '0x' + Array.from(rnd).map(x => x.toString(16).padStart(2, '0')).join('');
+      const height = ((this.rows('SELECT MAX(height) h FROM spotxfer')[0] || {}).h || 0) + 1;
+      const fromAddr = (native === 'SOL' ? myAddr.sol : myAddr.evm) || myAddr.sol || '';
+      sql.exec('UPDATE spotacct SET wusdt=wusdt-?, gas=?, last_seen=? WHERE user_id=?', usdC, JSON.stringify(g), now, uid);
+      sql.exec('UPDATE spotacct SET wusdt=COALESCE(wusdt,0)+? WHERE user_id=?', usdC, rec.user_id);
+      sql.exec('INSERT INTO spotxfer(hash,height,from_uid,to_uid,from_addr,to_addr,amt,net,memo,ts) VALUES(?,?,?,?,?,?,?,?,?,?)', hash, height, uid, rec.user_id, fromAddr, toAddr, usdC, String(b.net || 'solana').slice(0, 12), memo, now);
+      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'send','USDT',?,1,?,0,0,?)", uid, now, usdC / 100, usdC, JSON.stringify({ to: toAddr, hash, net: String(b.net || 'solana').slice(0, 12) }));
+      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'recv','USDT',?,1,?,0,0,?)", rec.user_id, now, usdC / 100, usdC, JSON.stringify({ from: fromAddr, hash, net: String(b.net || 'solana').slice(0, 12) }));
+      const a2 = this.rows('SELECT wusdt,gas FROM spotacct WHERE user_id=?', uid)[0];
+      return this.j({ ok: true, hash, height, usdUsd: usdC / 100, wusdtUsd: (a2.wusdt || 0) / 100, gas: this._gas(a2) });
+    }
+    if (path === '/chain') { // public explorer feed: latest transfers on the internal ledger
+      const rows = this.rows('SELECT hash,height,from_addr,to_addr,amt,net,memo,ts FROM spotxfer ORDER BY height DESC LIMIT 50');
+      const h = ((this.rows('SELECT MAX(height) h FROM spotxfer')[0] || {}).h || 0);
+      return this.j({ height: h, txs: rows.map(r => ({ hash: r.hash, height: r.height, from: r.from_addr, to: r.to_addr, usd: r.amt / 100, net: r.net, memo: r.memo || '', ts: r.ts })) });
     }
     if (path === '/walletcreate') { // step 3: self-custody wallet — worker generated the addresses (stored once, never regenerated)
       if (!uid) return this.j({ error: 'bad' }, 400);
@@ -10014,7 +10069,7 @@ export class SpotStore {
     if (path === '/tx') {
       if (!uid) return this.j({ error: 'bad' }, 400);
       const list = this.rows('SELECT ts,side,sym,qty,price,usd,fee,pnl,meta FROM spottx WHERE user_id=? ORDER BY ts DESC LIMIT 120', uid)
-        .map(t => { let m = {}; try { m = JSON.parse(t.meta || '{}'); } catch (e) {} return { ts: t.ts, side: t.side, sym: t.sym, qty: t.qty, price: t.price, usdUsd: t.usd / 100, feeUsd: (t.fee || 0) / 100, pnlUsd: (t.pnl || 0) / 100, name: m.name || '', logo: m.logo || '' }; });
+        .map(t => { let m = {}; try { m = JSON.parse(t.meta || '{}'); } catch (e) {} return { ts: t.ts, side: t.side, sym: t.sym, qty: t.qty, price: t.price, usdUsd: t.usd / 100, feeUsd: (t.fee || 0) / 100, pnlUsd: (t.pnl || 0) / 100, name: m.name || '', logo: m.logo || '', xto: m.to || '', xfrom: m.from || '', hash: m.hash || '' }; });
       return this.j({ tx: list });
     }
     if (path === '/reset') { // back to a fresh $10,000 CARD — at most once per 7 days; wallet addresses + tx history kept
@@ -10061,7 +10116,7 @@ export class SpotStore {
     }
     if (path === '/export') { // nightly backup dump
       const out = { at: Date.now(), tables: {} };
-      for (const t of ['spotacct', 'spothold', 'spottx', 'spotsnap']) { try { out.tables[t] = this.rows('SELECT * FROM ' + t + ' LIMIT 200000'); } catch (e) { out.tables[t] = { _err: String(e).slice(0, 120) }; } }
+      for (const t of ['spotacct', 'spothold', 'spottx', 'spotsnap', 'spotxfer']) { try { out.tables[t] = this.rows('SELECT * FROM ' + t + ' LIMIT 200000'); } catch (e) { out.tables[t] = { _err: String(e).slice(0, 120) }; } }
       return this.j(out);
     }
     if (path === '/import') { // restore-test sandbox only (same guard as the other DOs: refuses on an instance with real accounts)

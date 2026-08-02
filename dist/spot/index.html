@@ -93,38 +93,29 @@
   .mmap{position:relative;background:linear-gradient(180deg,var(--bg2),var(--panel));border:1px solid var(--line);border-radius:20px;padding:20px 18px 16px;margin-bottom:14px;overflow:hidden;}
   .mmap::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.04) 1px,transparent 1.5px);background-size:22px 22px;}
   .mm-kick{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.24em;color:var(--faint);text-transform:uppercase;margin-bottom:14px;position:relative;}
-  .mm-row{display:flex;align-items:stretch;gap:0;position:relative;}
-  .stn{flex:1;min-width:0;background:rgba(10,12,16,.72);border:1px solid var(--line2);border-radius:16px;padding:13px 14px;cursor:pointer;position:relative;transition:transform .16s,border-color .16s;}
+  .mm-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;position:relative;}
+  .stn{position:relative;background:rgba(10,12,16,.72);border:1px solid var(--line2);border-radius:16px;padding:13px 12px 12px;cursor:pointer;text-align:left;transition:transform .16s,box-shadow .16s;overflow:hidden;}
   .stn:hover{transform:translateY(-2px);}
-  .stn .s-k{display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:7px;}
-  .stn .s-v{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(15px,2.2vw,20px);letter-spacing:-.02em;}
-  .stn .s-s{color:var(--faint);font-size:10.5px;margin-top:4px;line-height:1.45;min-height:15px;}
-  .stn .s-open{position:absolute;top:11px;right:12px;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--faint);}
-  .stn.s-card{border-color:rgba(230,196,106,.4);background:linear-gradient(150deg,rgba(230,196,106,.09),rgba(10,12,16,.72) 55%);}
-  .stn.s-card .s-k{color:var(--brass);}
-  .stn.s-ex{border-color:rgba(194,246,74,.4);background:linear-gradient(150deg,rgba(194,246,74,.08),rgba(10,12,16,.72) 55%);}
-  .stn.s-ex .s-k{color:var(--lime);}
-  .stn.s-wal{border-color:rgba(167,139,250,.42);background:linear-gradient(150deg,rgba(167,139,250,.1),rgba(10,12,16,.72) 55%);}
-  .stn.s-wal .s-k{color:var(--viol);}
+  .stn .s-ic{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:10px;margin-bottom:9px;font-style:normal;}
+  .stn .s-k{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:4px;}
+  .stn .s-v{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(13.5px,3.6vw,19px);letter-spacing:-.02em;}
+  .stn .s-s{color:var(--faint);font-size:10px;margin-top:3px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .stn .s-go{position:absolute;top:10px;right:10px;color:var(--faint);}
+  .stn.s-card{border-color:rgba(230,196,106,.42);background:linear-gradient(155deg,rgba(230,196,106,.12),rgba(10,12,16,.75) 58%);box-shadow:0 12px 32px -18px rgba(230,196,106,.35);}
+  .stn.s-card .s-k{color:var(--brass);} .stn.s-card .s-ic{background:rgba(230,196,106,.16);color:var(--brass);}
+  .stn.s-ex{border-color:rgba(194,246,74,.42);background:linear-gradient(155deg,rgba(194,246,74,.11),rgba(10,12,16,.75) 58%);box-shadow:0 12px 32px -18px rgba(194,246,74,.35);}
+  .stn.s-ex .s-k{color:var(--lime);} .stn.s-ex .s-ic{background:rgba(194,246,74,.14);color:var(--lime);}
+  .stn.s-wal{border-color:rgba(167,139,250,.45);background:linear-gradient(155deg,rgba(167,139,250,.14),rgba(10,12,16,.75) 58%);box-shadow:0 12px 32px -18px rgba(167,139,250,.4);}
+  .stn.s-wal .s-k{color:var(--viol);} .stn.s-wal .s-ic{background:rgba(167,139,250,.18);color:var(--viol);}
   .stn.dead{opacity:.55;}
-  .mm-link{flex:0 0 74px;position:relative;display:flex;align-items:center;justify-content:center;}
-  .mm-track{position:absolute;left:-6px;right:-6px;top:50%;height:2px;background:var(--line2);}
-  .mm-link.live .mm-track{background:linear-gradient(90deg,var(--line2),currentColor,var(--line2));}
-  .mm-dot{position:absolute;top:calc(50% - 2.5px);left:0;width:5px;height:5px;border-radius:50%;background:currentColor;opacity:0;animation:mmFlow 2.6s linear infinite;}
-  .mm-dot:nth-child(3){animation-delay:.85s;}
-  .mm-dot:nth-child(4){animation-delay:1.7s;}
-  @keyframes mmFlow{0%{left:-4px;opacity:0;}12%{opacity:.95;}88%{opacity:.95;}100%{left:calc(100% - 2px);opacity:0;}}
-  .mm-link .go{position:relative;z-index:2;background:var(--lime);color:#0a0b0d;border:none;border-radius:999px;padding:8px 13px;font:800 11px 'Familjen Grotesk',sans-serif;cursor:pointer;white-space:nowrap;box-shadow:0 6px 22px -8px rgba(194,246,74,.7);animation:goPulse 2.2s ease-in-out infinite;}
-  @keyframes goPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+  @media(max-width:420px){.stn{padding:11px 10px 10px;}.stn .s-s{font-size:9px;}}
   .coach{position:relative;display:flex;align-items:center;gap:10px;margin-top:14px;color:var(--dim);font-size:12.5px;line-height:1.5;}
   .coach .cnum{flex:none;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--lime);border:1px solid rgba(194,246,74,.4);border-radius:999px;padding:4px 9px;}
   .coach b{color:var(--ink);}
-  @media(max-width:760px){
-    .mm-row{flex-direction:column;}
-    .mm-link{flex-basis:44px;}
-    .mm-track{left:50%;right:auto;top:-6px;bottom:-6px;width:2px;height:auto;}
-    .mm-dot{display:none;}
-  }
+  .coach .go2{flex:none;margin-left:auto;background:var(--lime);color:#0a0b0d;border:none;border-radius:999px;padding:8px 15px;font:800 11.5px 'Familjen Grotesk',sans-serif;cursor:pointer;box-shadow:0 6px 22px -8px rgba(194,246,74,.7);animation:goPulse 2.2s ease-in-out infinite;white-space:nowrap;}
+  @keyframes goPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+  @media(max-width:600px){.coach{flex-wrap:wrap;}.coach .go2{margin-left:0;width:100%;}}
+
   .ovr{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:12px;margin-bottom:14px;}
   @media(max-width:920px){.ovr{grid-template-columns:1fr;}}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 15px;}
@@ -246,7 +237,23 @@
   .wl-bal small{display:block;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.2em;color:#8f86ad;text-transform:uppercase;margin-bottom:6px;}
   .wl-bal b{font-family:'Bricolage Grotesque',sans-serif;font-size:40px;font-weight:800;letter-spacing:-.04em;}
   .wl-addr{text-align:center;color:#8f86ad;font-family:'Space Mono',monospace;font-size:10.5px;margin:4px 0 16px;cursor:pointer;}
-  .wl-acts{display:flex;justify-content:center;gap:22px;margin-bottom:20px;}
+  .ex-quick{display:flex;gap:8px;align-items:center;padding:0 16px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;}
+  .ex-quick::-webkit-scrollbar{display:none;}
+  .exq-trade{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;background:var(--lime);color:#0a0b0d;border:none;border-radius:11px;padding:11px 17px;font:800 13px 'Familjen Grotesk',sans-serif;cursor:pointer;box-shadow:0 8px 26px -10px rgba(194,246,74,.55);}
+  .exq-mv{flex:0 0 auto;display:inline-flex;align-items:baseline;gap:6px;background:rgba(8,10,13,.7);border:1px solid var(--line2);border-radius:10px;padding:9px 12px;font-family:'Space Mono',monospace;font-size:11.5px;color:var(--ink);cursor:pointer;}
+  .exq-mv em{font-style:normal;font-weight:700;}
+  .tin-hint{color:var(--faint);font-size:11px;line-height:1.5;margin:6px 0 0;}
+  .tin-hint b{color:var(--dim);}
+  .wl-chain{margin-top:14px;text-align:center;color:#8f86ad;font-family:'Space Mono',monospace;font-size:10.5px;cursor:pointer;padding:9px;border:1px dashed rgba(167,139,250,.35);border-radius:12px;}
+  .wl-chain b{color:var(--viol);}
+  .ch-row{display:flex;align-items:center;gap:9px;padding:9px 0;border-top:1px dashed rgba(255,255,255,.08);font-family:'Space Mono',monospace;font-size:11px;}
+  .ch-h{flex:none;color:var(--viol);font-weight:700;min-width:38px;}
+  .ch-b{flex:1;min-width:0;color:var(--dim);}
+  .ch-b b{color:var(--ink);display:block;font-size:11.5px;}
+  .ch-b span{display:block;color:var(--faint);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .ch-amt{flex:none;text-align:right;font-weight:700;}
+  .ch-amt span{display:block;color:var(--faint);font-size:9.5px;font-weight:400;}
+  .wl-acts{display:flex;justify-content:center;gap:16px;margin-bottom:20px;}
   .wl-act{display:flex;flex-direction:column;align-items:center;gap:7px;background:none;border:none;cursor:pointer;color:#d9d3ec;font:600 11px 'Familjen Grotesk',sans-serif;}
   .wl-act i{width:52px;height:52px;border-radius:50%;background:rgba(167,139,250,.16);border:1px solid rgba(167,139,250,.4);display:flex;align-items:center;justify-content:center;color:#cfc3f5;font-style:normal;transition:transform .14s;}
   .wl-act:active i{transform:scale(.92);}
@@ -411,8 +418,8 @@
       </div>
 
       <div class="mmap">
-        <div class="mm-kick">THE MONEY MAP — TAP A PLACE TO OPEN ITS APP</div>
-        <div class="mm-row" id="mmRow"></div>
+        <div class="mm-kick">YOUR THREE APPS — TAP TO OPEN</div>
+        <div class="mm-cards" id="mmRow"></div>
         <div class="coach" id="coach" hidden></div>
       </div>
 
@@ -478,6 +485,7 @@
           <button class="ex-btn wd" id="exWd" type="button">Withdraw</button>
         </div>
       </div>
+      <div class="ex-quick" id="exQuick"></div>
       <div class="ex-tabs">
         <button class="ex-tab on" data-extab="assets" type="button">Assets</button>
         <button class="ex-tab" data-extab="markets" type="button">Markets</button>
@@ -655,26 +663,17 @@
   function renderMap(){
     var d=PORT;if(!d)return;
     var steps=stepState();
-    var nextIdx=-1;steps.forEach(function(s,i){if(nextIdx<0&&!s.done)nextIdx=i;});
+    var nextIdx=-1;steps.forEach(function(st,i){if(nextIdx<0&&!st.done)nextIdx=i;});
     var gasBits=[];var g=d.gas||{};for(var k in g){if(+g[k]>0)gasBits.push(fmtNat(g[k])+' '+k);}
-    var link1Step=(nextIdx===0||nextIdx===1)?steps[nextIdx]:null;
-    var link2Step=(nextIdx>=2&&nextIdx<=4)?steps[nextIdx]:null;
-    function linkHtml(step,col){
-      return '<div class="mm-link'+(step?' live':'')+'" style="color:'+col+'">'
-        +'<span class="mm-track"></span>'
-        +(step?'<span class="mm-dot"></span><span class="mm-dot"></span><span class="mm-dot"></span><button class="go" type="button" data-act>'+esc(step.cta)+'</button>':'')
-        +'</div>';
-    }
+    var CHEV='<svg class="s-go" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17 17 7M9 7h8v8"/></svg>';
     $('mmRow').innerHTML=
-      '<div class="stn s-card'+((d.cardUsd||0)<=0?' dead':'')+'" id="stnCard"><span class="s-open">OPEN &#8599;</span><div class="s-k">'+STN_CARD+'BANK</div><div class="s-v">'+fmtUsd(d.cardUsd)+'</div><div class="s-s">your card &amp; your cash</div></div>'
-      +linkHtml(link1Step,'#e6c46a')
-      +'<div class="stn s-ex" id="stnEx"><span class="s-open">OPEN &#8599;</span><div class="s-k">'+STN_EX+'EXCHANGE</div><div class="s-v">'+fmtUsd(d.exchangeUsd)+'</div><div class="s-s">'+fmtUsd(d.usdtUsd)+' USDT free · custodial</div></div>'
-      +linkHtml(link2Step,'#a78bfa')
-      +'<div class="stn s-wal'+(!(d.addr&&d.addr.sol)?' dead':'')+'" id="stnWal"><span class="s-open">OPEN &#8599;</span><div class="s-k">'+STN_WAL+'WALLET</div><div class="s-v">'+((d.addr&&d.addr.sol)?fmtUsd(d.walletUsd):'—')+'</div><div class="s-s">'+((d.addr&&d.addr.sol)?(gasBits.length?gasBits.join(' · '):fmtUsd(d.wusdtUsd)+' USDT · no gas yet'):'not created yet — tap to open')+'</div></div>';
+      '<div class="stn s-card'+((d.cardUsd||0)<=0?' dead':'')+'" id="stnCard">'+CHEV+'<i class="s-ic">'+STN_CARD+'</i><div class="s-k">Bank</div><div class="s-v">'+fmtUsd0(d.cardUsd)+'</div><div class="s-s">card &amp; cash</div></div>'
+      +'<div class="stn s-ex" id="stnEx">'+CHEV+'<i class="s-ic">'+STN_EX+'</i><div class="s-k">Exchange</div><div class="s-v">'+fmtUsd0(d.exchangeUsd)+'</div><div class="s-s">'+fmtUsd0(d.usdtUsd)+' USDT free</div></div>'
+      +'<div class="stn s-wal'+(!(d.addr&&d.addr.sol)?' dead':'')+'" id="stnWal">'+CHEV+'<i class="s-ic">'+STN_WAL+'</i><div class="s-k">Wallet</div><div class="s-v">'+((d.addr&&d.addr.sol)?fmtUsd0(d.walletUsd):'—')+'</div><div class="s-s">'+((d.addr&&d.addr.sol)?(gasBits.length?gasBits.join(' · '):'self-custody'):'not created yet')+'</div></div>';
     var c=$('coach');
     if(nextIdx<0){c.hidden=true;}
-    else{c.hidden=false;c.innerHTML='<span class="cnum">STEP '+(nextIdx+1)+' OF 5</span><span><b>'+esc(steps[nextIdx].t)+'.</b> '+esc(steps[nextIdx].coach)+'</span>';}
-    Array.prototype.forEach.call($('mmRow').querySelectorAll('[data-act]'),function(b){b.addEventListener('click',function(e){e.stopPropagation();steps[nextIdx].act();});});
+    else{c.hidden=false;c.innerHTML='<span class="cnum">STEP '+(nextIdx+1)+' OF 5</span><span><b>'+esc(steps[nextIdx].t)+'.</b> '+esc(steps[nextIdx].coach)+'</span><button class="go2" type="button" id="coachGo">'+esc(steps[nextIdx].cta)+'</button>';
+      var cg=$('coachGo');if(cg)cg.addEventListener('click',function(){steps[nextIdx].act();});}
     $('stnCard').addEventListener('click',function(){showView('bank');});
     $('stnEx').addEventListener('click',function(){showView('ex');});
     $('stnWal').addEventListener('click',function(){showView('wal');});
@@ -682,7 +681,7 @@
   var totalShown=null;
   function paintTotal(v){
     var t=fmtUsd(v);var di=t.indexOf('.');
-    $('wTotal').innerHTML=di>0?esc(t.slice(0,di))+'<small>'+esc(t.slice(di))+'</small>':esc(t);
+    document.getElementById('wTotal').innerHTML=di>0?esc(t.slice(0,di))+'<small>'+esc(t.slice(di))+'</small>':esc(t);
   }
   function renderMast(){
     var d=PORT;if(!d)return;
@@ -765,6 +764,27 @@
     $('exFree').textContent=fmtUsd(d.usdtUsd)+' USDT free';
     renderExAssets();
     renderTicker();
+    renderExQuick();
+  }
+  function renderExQuick(){
+    var el=$('exQuick');if(!el)return;
+    var TR='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 16V4M7 4 3 8M7 4l4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/></svg>';
+    var movers='';
+    if(MKT.length){
+      var top=MKT.slice(0,100).filter(function(c){return isFinite(+c.price_change_percentage_24h);}).sort(function(a,b){return Math.abs(+b.price_change_percentage_24h)-Math.abs(+a.price_change_percentage_24h);}).slice(0,3);
+      movers=top.map(function(c){var chg=+c.price_change_percentage_24h||0;return '<button class="exq-mv" data-mkt="'+esc(c.symbol)+'" type="button">'+esc(String(c.symbol||'').toUpperCase())+' <em class="'+(chg>=0?'pnl-up':'pnl-dn')+'">'+(chg>=0?'+':'')+chg.toFixed(1)+'%</em></button>';}).join('');
+    }
+    el.innerHTML='<button class="exq-trade" id="exGoTrade" type="button">'+TR+'Trade crypto</button>'+movers;
+    var gt=$('exGoTrade');if(gt)gt.addEventListener('click',function(){
+      exTab='markets';
+      Array.prototype.forEach.call(document.querySelectorAll('.ex-tab'),function(x){x.classList.toggle('on',x.getAttribute('data-extab')==='markets');});
+      $('exAssets').hidden=true;$('exMarkets').hidden=false;
+      var si=$('mktSearch');if(si)try{si.focus();}catch(e){}
+    });
+    Array.prototype.forEach.call(el.querySelectorAll('[data-mkt]'),function(r){r.addEventListener('click',function(){
+      var c=MKT.filter(function(x){return x.symbol===r.getAttribute('data-mkt');})[0];if(!c)return;
+      openTrade({kind:'cex',sym:String(c.symbol||'').toUpperCase(),name:c.name||'',logo:c.image||'',price:+c.current_price||0,chg:+c.price_change_percentage_24h||0});
+    });});
   }
   function renderTicker(){
     if(!MKT.length){$('exTick').hidden=true;return;}
@@ -818,6 +838,7 @@
     var toks='<div class="wl-row"><span class="clogo txt">$</span><span class="wr-b"><b>USDT</b><span>on-chain dollars</span></span><span class="wl-amt">'+fmtUsd(d.wusdtUsd)+'</span></div>';
     ['SOL','ETH','BNB'].forEach(function(a){var q=+g[a]||0;if(!q)return;
       toks+='<div class="wl-row"><span class="clogo txt">'+a.slice(0,3)+'</span><span class="wr-b"><b>'+a+'</b><span>gas + trading coin</span></span><span class="wl-amt">'+fmtNat(q)+'<span>'+fmtUsd(q*(natPx[a]||0))+'</span></span></div>';});
+    var IC_SND='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
     var IC_RCV='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>';
     var IC_SWP='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 16V4M7 4 3 8M7 4l4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/></svg>';
     var IC_DEP='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M21 7H9M13 3 9 7l4 4"/></svg>';
@@ -826,6 +847,7 @@
       +'<div class="wl-addr" id="wlShort" title="tap to copy your Solana address">'+shortAddr(d.addr.sol)+' · tap to copy</div>'
       +'<div class="wl-acts">'
       +'<button class="wl-act" id="wlRcv" type="button"><i>'+IC_RCV+'</i>Receive</button>'
+      +'<button class="wl-act" id="wlSnd" type="button"><i>'+IC_SND+'</i>Send</button>'
       +'<button class="wl-act" id="wlSwp" type="button"><i>'+IC_SWP+'</i>Swap</button>'
       +'<button class="wl-act" id="wlDep" type="button"><i>'+IC_DEP+'</i>From exchange</button>'
       +'</div>'
@@ -842,9 +864,12 @@
       +'<button class="nf'+(memeNetF==='eth'?' on':'')+'" data-net="eth" type="button">Ethereum</button>'
       +'<button class="nf'+(memeNetF==='bsc'?' on':'')+'" data-net="bsc" type="button">BNB</button>'
       +'</div>'
-      +'<div class="wl-card list" id="memeList"><div class="empty" style="color:#8f86ad">Loading trending memes…</div></div>';
+      +'<div class="wl-card list" id="memeList"><div class="empty" style="color:#8f86ad">Loading trending memes…</div></div>'
+      +'<div class="wl-chain" id="wlChain"><b>MarginPad Chain</b> — the public ledger of every transfer. View explorer</div>';
     wireHoldRows($('wlBags'));
     var rc=$('wlRcv');if(rc)rc.addEventListener('click',openReceive);
+    var sn=$('wlSnd');if(sn)sn.addEventListener('click',function(){openSendModal();});
+    var wc9=$('wlChain');if(wc9)wc9.addEventListener('click',openChainModal);
     var sw=$('wlSwp');if(sw)sw.addEventListener('click',function(){openSwapModal();});
     var dp=$('wlDep');if(dp)dp.addEventListener('click',function(){openWithdrawModal();});
     var sh=$('wlShort');if(sh)sh.addEventListener('click',function(){try{navigator.clipboard.writeText(PORT.addr.sol);toast('Solana address copied. Paste it, never retype it.');}catch(e){}});
@@ -860,7 +885,7 @@
   var mktQ='';
   function loadMarkets(){
     fetch('/api/gecko/markets').then(function(r){return r.json();}).then(function(d){
-      MKT=Array.isArray(d)?d:[];renderMarkets();if(VIEW==='ex')renderTicker();
+      MKT=Array.isArray(d)?d:[];renderMarkets();if(VIEW==='ex'){renderTicker();renderExQuick();}
     }).catch(function(){});
   }
   function renderMarkets(){
@@ -929,6 +954,8 @@
         else if(side==='offramp'){lbl='EX&#8594;CARD';cls='o';mid='<b>Cashed out to card</b><span>fee '+fmtUsd(t.feeUsd)+' (1%) · '+ago(t.ts)+'</span>';amt=fmtUsd(t.usdUsd);}
         else if(side==='wdraw'){lbl='EX&#8594;WALLET';cls='w';mid='<b>Withdrew to your wallet</b><span>network fee '+fmtUsd(t.feeUsd)+' · '+ago(t.ts)+'</span>';amt=fmtUsd(t.usdUsd);}
         else if(side==='swap'){lbl='SWAP';cls='x';mid='<b>USDT &harr; '+esc(t.sym)+'</b><span>'+fmtNat(t.qty)+' '+esc(t.sym)+' · fee '+fmtUsd(t.feeUsd)+' · '+ago(t.ts)+'</span>';amt=fmtUsd(t.usdUsd);}
+        else if(side==='send'){lbl='SEND';cls='w';mid='<b>Sent to '+esc(shortAddr(t.xto||''))+'</b><span>'+(t.hash?esc(String(t.hash).slice(0,12))+'… · ':'')+ago(t.ts)+'</span>';amt='−'+fmtUsd(t.usdUsd);}
+        else if(side==='recv'){lbl='RECEIVE';cls='b';mid='<b>Received from '+esc(shortAddr(t.xfrom||''))+'</b><span>'+(t.hash?esc(String(t.hash).slice(0,12))+'… · ':'')+ago(t.ts)+'</span>';amt='+'+fmtUsd(t.usdUsd);}
         else{
           var sym=t.sym.indexOf(':')>0?(t.name||'meme'):t.sym;
           lbl=side.toUpperCase();cls=side==='buy'?'b':'s';
@@ -1090,6 +1117,7 @@
       +'</div>'
       +'<div class="tin-l">Destination address <span style="text-transform:none;letter-spacing:0;font-family:Familjen Grotesk,sans-serif;font-weight:600">(<a href="#" id="wdPaste">paste my address</a>)</span></div>'
       +'<input class="tin sm" id="wdAddr" type="text" autocomplete="off" spellcheck="false" placeholder="your wallet address for the chosen network" />'
+      +'<div class="tin-hint">Your own address lives in the <b>Wallet app → Receive</b>. Always copy-paste it — never type an address by hand.</div>'
       +'<div class="tin-l" style="margin-top:10px">Amount (USDT)</div><input class="tin" id="wdAmt" type="number" inputmode="decimal" min="5" step="any" placeholder="500" />'
       +'<div class="chips"><button class="chip" data-wd="25" type="button">25%</button><button class="chip" data-wd="50" type="button">50%</button><button class="chip" data-wd="100" type="button">All</button></div>'
       +'<div class="m-est" id="wdEst" hidden></div>'
@@ -1161,6 +1189,83 @@
     });
   }
 
+  function openSendModal(){
+    if(!(PORT&&PORT.addr&&PORT.addr.sol)){openWalletCreate();return;}
+    if((PORT.wusdtUsd||0)<1){toast('Your wallet has no USDT to send — deposit from the exchange first.');openWithdrawModal();return;}
+    var net='solana';
+    openSim('<div class="m-h"><b>Send USDT</b><button class="m-x" type="button">&times;</button></div>'
+      +'<p class="m-p">Send wallet USDT to ANY other MarginPad user — person to person, recorded on the MarginPad Chain. Wallet balance: <b>'+fmtUsd(PORT.wusdtUsd)+'</b></p>'
+      +'<div class="tin-l">Recipient address</div>'
+      +'<input class="tin sm" id="sdAddr" type="text" autocomplete="off" spellcheck="false" placeholder="paste their address here" />'
+      +'<div class="tin-hint">Ask your friend for their address — it is in THEIR <b>Wallet app → Receive</b>. Solana or EVM, the format is detected automatically.</div>'
+      +'<div class="netpick" id="sdNets" hidden style="margin-top:8px">'
+      +'<div class="np on" data-n="bsc"><b>BNB Chain</b><span>gas ~0.0003 BNB</span></div>'
+      +'<div class="np" data-n="base"><b>Base</b><span>gas ~0.00004 ETH</span></div>'
+      +'<div class="np" data-n="eth"><b>Ethereum</b><span>gas ~0.0015 ETH</span></div>'
+      +'</div>'
+      +'<div class="tin-l" style="margin-top:10px">Amount (USDT)</div><input class="tin" id="sdAmt" type="number" inputmode="decimal" min="1" step="any" placeholder="25" />'
+      +'<div class="chips"><button class="chip" data-sd="5" type="button">$5</button><button class="chip" data-sd="25" type="button">$25</button><button class="chip" data-sd="50p" type="button">50%</button><button class="chip" data-sd="100p" type="button">All</button></div>'
+      +'<div class="tin-l" style="margin-top:2px">Note (optional, public on the chain)</div><input class="tin sm" id="sdMemo" type="text" maxlength="60" autocomplete="off" placeholder="thanks for lunch" />'
+      +'<div class="m-est" id="sdEst" hidden></div>'
+      +'<div class="lesson">On a real chain a transfer is FINAL — no bank, no undo, no support line. Triple-check the address. Here, sending to an address that does not exist is refused (out there, the money would be gone).</div>'
+      +'<button class="m-go" id="sdGo" type="button">Send</button><div class="m-msg" id="sdMsg"></div>');
+    function kind(){var a=($('sdAddr').value||'').trim();if(/^[1-9A-HJ-NP-Za-km-z]{32,50}$/.test(a))return 'sol';if(/^0x[0-9a-fA-F]{40}$/.test(a))return 'evm';return '';}
+    function gasTxt(){var nn=kind()==='sol'?'solana':net;return ({solana:'0.0008 SOL',base:'0.00004 ETH',eth:'0.0015 ETH',bsc:'0.0003 BNB'})[nn];}
+    function est(){var v=+($('sdAmt').value||0);var el=$('sdEst');var k=kind();
+      $('sdNets').hidden=k!=='evm';
+      if(!(v>=1)||!k){el.hidden=true;return;}
+      el.hidden=false;
+      el.innerHTML='<div><span>Recipient gets</span><b>'+fmtUsd(v)+' USDT</b></div><div><span>Network</span><b>'+(k==='sol'?'Solana':({bsc:'BNB Chain',base:'Base',eth:'Ethereum'})[net])+'</b></div><div><span>Gas (from your balance)</span><b>~'+gasTxt()+'</b></div>';}
+    $('sdAddr').addEventListener('input',est);
+    $('sdAmt').addEventListener('input',est);
+    Array.prototype.forEach.call($('smod').querySelectorAll('#sdNets .np'),function(nb){nb.addEventListener('click',function(){
+      net=nb.getAttribute('data-n');
+      Array.prototype.forEach.call($('smod').querySelectorAll('#sdNets .np'),function(x){x.classList.toggle('on',x===nb);});est();});});
+    Array.prototype.forEach.call($('smod').querySelectorAll('[data-sd]'),function(c){c.addEventListener('click',function(){
+      var v=c.getAttribute('data-sd');
+      $('sdAmt').value=v==='100p'?Math.floor(PORT.wusdtUsd*100)/100:(v==='50p'?Math.floor(PORT.wusdtUsd*50)/100:v);est();});});
+    $('sdGo').addEventListener('click',function(){
+      var a=($('sdAddr').value||'').trim();var v=+($('sdAmt').value||0);var msg=$('sdMsg');var btn=this;
+      if(!kind()){msg.className='m-msg err';msg.textContent='That is not a valid Solana or EVM address.';return;}
+      if(!(v>=1)){msg.className='m-msg err';msg.textContent='Minimum send is $1.';return;}
+      btn.disabled=true;msg.className='m-msg';msg.textContent='Broadcasting to MarginPad Chain…';
+      fetch('/api/spot/transfer',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({to:a,usd:v,net:net,memo:($('sdMemo').value||'').trim()})})
+        .then(function(r){return r.json();}).then(function(j){btn.disabled=false;
+          if(j&&j.ok){
+            msg.className='m-msg ok';
+            msg.innerHTML='Sent — block #'+j.height+' · tx <span style="font-family:Space Mono,monospace">'+esc(String(j.hash).slice(0,10))+'…</span><br><a href="#" id="sdView">View it on MarginPad Chain</a>';
+            var vw=$('sdView');if(vw)vw.addEventListener('click',function(e){e.preventDefault();openChainModal();});
+            toast(fmtUsd(j.usdUsd)+' sent. Block #'+j.height+' sealed.');loadPortfolio();
+          }
+          else if(j&&j.error==='unknown_address'){msg.className='m-msg err';msg.textContent='No MarginPad account has that address. On a real chain this money would be GONE forever — we refuse instead. Double-check with your friend.';}
+          else if(j&&j.error==='self'){msg.className='m-msg err';msg.textContent='That is your own address.';}
+          else if(j&&j.error==='no_gas'){msg.className='m-msg err';msg.innerHTML='Not enough '+esc(j.native||'SOL')+' for gas (have '+fmtNat(j.have)+'). <a href="#" id="sdGas">Swap USDT for '+esc(j.native||'SOL')+'</a>';var sg=$('sdGas');if(sg)sg.addEventListener('click',function(e){e.preventDefault();closeSim();openSwapModal({asset:j.native||'SOL'});});}
+          else if(j&&j.error==='insufficient'){msg.className='m-msg err';msg.textContent='Wallet only has '+fmtUsd(j.wusdtUsd||0)+' USDT.';}
+          else if(j&&j.error==='bad_address'){msg.className='m-msg err';msg.textContent=j.hint||'Invalid address.';}
+          else{msg.className='m-msg err';msg.textContent='Send failed — try again.';}
+        }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
+    });
+  }
+  function openChainModal(){
+    openSim('<div class="m-h"><b>MarginPad Chain</b><button class="m-x" type="button">&times;</button></div>'
+      +'<p class="m-p" id="chHead">Loading the ledger…</p>'
+      +'<div id="chList"></div>'
+      +'<div class="lesson" style="margin-top:12px">This is how a block explorer works: every transfer ever made is public, forever — amount, addresses, time and a tx hash. Nobody can edit or delete a sealed block. Real chains (Solscan, Etherscan) look just like this.</div>');
+    fetch('/api/spot/chain').then(function(r){return r.json();}).then(function(d){
+      var head=$('chHead'),list=$('chList');if(!head||!list)return;
+      var txs=(d&&d.txs)||[];
+      head.innerHTML='The public ledger of every user-to-user transfer. Current height: <b style="font-family:Space Mono,monospace;color:var(--viol)">#'+((d&&d.height)||0)+'</b>';
+      if(!txs.length){list.innerHTML='<div class="empty">No transfers yet — be the first block. Send a friend some USDT from your wallet.</div>';return;}
+      var mine=(PORT&&PORT.addr)||{};
+      list.innerHTML=txs.map(function(t){
+        var isMe=t.from===mine.sol||t.from===mine.evm||t.to===mine.sol||t.to===mine.evm;
+        return '<div class="ch-row"><span class="ch-h">#'+t.height+'</span>'
+          +'<span class="ch-b"><b>'+esc(shortAddr(t.from))+' &#8594; '+esc(shortAddr(t.to))+(isMe?' <span style="color:var(--viol)">(you)</span>':'')+'</b>'
+          +'<span>'+esc(String(t.hash).slice(0,18))+'… · '+esc(t.net||'solana')+(t.memo?' · &#8220;'+esc(t.memo)+'&#8221;':'')+'</span></span>'
+          +'<span class="ch-amt">'+fmtUsd(t.usd)+'<span>'+ago(t.ts)+'</span></span></div>';
+      }).join('');
+    }).catch(function(){var l=$('chList');if(l)l.innerHTML='<div class="empty">Could not load the chain — try again.</div>';});
+  }
   function openReceive(){
     if(!(PORT&&PORT.addr&&PORT.addr.sol)){openWalletCreate();return;}
     openSim('<div class="m-h"><b>Receive</b><button class="m-x" type="button">&times;</button></div>'
