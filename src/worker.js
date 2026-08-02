@@ -8059,16 +8059,25 @@ const SPOT_LOGO_OK = /^https:\/\/(assets\.coingecko\.com|coin-images\.coingecko\
 async function gtFetch(env, path, ttl, ckey) {
   const ck = new Request('https://marginpad.io/__gt_' + ckey);
   try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
-  try {
-    const r = await fetch('https://api.geckoterminal.com/api/v2' + path, { headers: { accept: 'application/json' }, cf: { cacheTtl: ttl } });
-    if (!r.ok) return null;
-    const j = await r.json();
-    try { await caches.default.put(ck, new Response(JSON.stringify(j), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=' + ttl } })); } catch (e) {}
-    return j;
-  } catch (e) { return null; }
+  // GT rate-limits Cloudflare's SHARED egress IPs aggressively (429 bursts even under our own budget) — one
+  // retry with a short backoff turns most transient 429s into a hit; the edge cache then holds it for everyone.
+  for (let att = 0; att < 2; att++) {
+    try {
+      const r = await fetch('https://api.geckoterminal.com/api/v2' + path, { headers: { accept: 'application/json' }, cf: { cacheTtl: ttl } });
+      if (r.ok) {
+        const j = await r.json();
+        try { await caches.default.put(ck, new Response(JSON.stringify(j), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=' + ttl } })); } catch (e) {}
+        return j;
+      }
+      if (r.status !== 429 && r.status < 500) return null; // hard error (404 bad pool etc.) — retrying won't help
+    } catch (e) {}
+    if (att === 0) await new Promise(rs => setTimeout(rs, 700));
+  }
+  return null;
 }
-async function spotMemeList(env) { // trending Solana pools → normalized meme rows (identity source of truth for meme trades)
-  const j = await gtFetch(env, '/networks/solana/trending_pools?include=base_token&page=1', 120, 'memes_v1');
+// Symbols that are NOT memes even when they head a hot pool (wrapped natives, stables, majors) — filtered out of the universe
+const SPOT_MEME_BLOCK = /^(W?ETH|W?BTC|CBBTC|W?SOL|W?BNB|USDT|USDC|USDE|DAI|FDUSD|TUSD|PYUSD|WSTETH|STETH|WEETH|JITOSOL|MSOL|JLP|SUI|XRP|DOGE|ADA|LINK|AVAX|TRX|TON|LTC)$/i;
+function _gtRows(j, net) { // one GeckoTerminal pool-list response → normalized meme rows
   if (!j || !Array.isArray(j.data)) return [];
   const tokens = {}; (j.included || []).forEach(t => { if (t && t.type === 'token') tokens[t.id] = t.attributes || {}; });
   const out = [];
@@ -8076,25 +8085,92 @@ async function spotMemeList(env) { // trending Solana pools → normalized meme 
     const a = p.attributes || {}; const rel = p.relationships || {};
     const btId = rel.base_token && rel.base_token.data && rel.base_token.data.id;
     const tok = tokens[btId] || {};
-    const mint = String(tok.address || String(btId || '').replace(/^solana_/, '') || '');
+    const mint = String(tok.address || String(btId || '').replace(new RegExp('^' + net + '_'), '') || '');
     if (!/^[A-Za-z0-9]{20,60}$/.test(mint)) continue;
     const price = +a.base_token_price_usd || 0; if (!(price > 0)) continue;
-    out.push({ mint, pool: String(a.address || ''), sym: (String(tok.symbol || '').slice(0, 12) || '?'), name: String(tok.name || '').slice(0, 48),
+    const sym = String(tok.symbol || '').slice(0, 12) || '?';
+    if (SPOT_MEME_BLOCK.test(sym.replace(/[^A-Za-z]/g, ''))) continue;
+    const liq = +a.reserve_in_usd || 0; if (liq < 8000) continue; // sub-$8k pools are pure exit-scam noise even for a demo
+    out.push({ mint, pool: String(a.address || ''), net, native: (SPOT_NETS[net] || {}).native || 'SOL', sym, name: String(tok.name || '').slice(0, 48),
       logo: SPOT_LOGO_OK.test(String(tok.image_url || '')) ? tok.image_url : '',
-      price, chg24: +((a.price_change_percentage || {}).h24) || 0, vol24: +((a.volume_usd || {}).h24) || 0, liqUsd: +a.reserve_in_usd || 0, fdv: +a.fdv_usd || 0 });
+      price, chg24: +((a.price_change_percentage || {}).h24) || 0, vol24: +((a.volume_usd || {}).h24) || 0, liqUsd: liq, fdv: +a.fdv_usd || 0 });
   }
-  return out.slice(0, 60);
+  return out;
 }
-async function spotMemePrice(env, pool) { // live {price, liqUsd} for one Solana pool (30s edge cache)
+async function spotMemeList(env) { // the MULTI-CHAIN meme universe: trending + top-volume pools across Solana/Base/Ethereum/BSC (~120-160 rows), one aggregate edge-cache entry
+  const ck = new Request('https://marginpad.io/__gt_agg_memes_v2');
+  try { const hit = await caches.default.match(ck); if (hit) return await hit.json(); } catch (e) {}
+  const FEEDS = [
+    ['/networks/solana/trending_pools?include=base_token&page=1', 'solana'],
+    ['/networks/solana/trending_pools?include=base_token&page=2', 'solana'],
+    ['/networks/solana/pools?include=base_token&sort=h24_volume_usd_desc&page=1', 'solana'],
+    ['/networks/solana/pools?include=base_token&sort=h24_volume_usd_desc&page=2', 'solana'],
+    ['/networks/base/trending_pools?include=base_token&page=1', 'base'],
+    ['/networks/base/pools?include=base_token&sort=h24_volume_usd_desc&page=1', 'base'],
+    ['/networks/eth/trending_pools?include=base_token&page=1', 'eth'],
+    ['/networks/bsc/trending_pools?include=base_token&page=1', 'bsc'],
+    ['/networks/bsc/pools?include=base_token&sort=h24_volume_usd_desc&page=1', 'bsc'],
+  ];
+  // ROTATING refresh (GT free tier ~30 req/min and it 429s CF's shared egress hard): one rebuild fetches only THREE
+  // of the nine feeds (round-robin via KV counter) and merges everything else from the KV-persisted last-good list.
+  // Coverage converges to all four chains within ~3 rebuild cycles and then STAYS — a chain is never lost to one 429.
+  // List prices can be a few minutes stale for the not-refreshed chains; the per-pool price at TRADE time is always
+  // fetched live (with its own retry + list fallback), so fills stay honest.
+  let rot = 0; try { rot = (+(await env.STATS.get('spot:memes:rot')) || 0) % FEEDS.length; } catch (e) {}
+  try { await env.STATS.put('spot:memes:rot', String((rot + 3) % FEEDS.length), { expirationTtl: 7 * 86400 }); } catch (e) {}
+  const pick = [FEEDS[rot], FEEDS[(rot + 1) % FEEDS.length], FEEDS[(rot + 2) % FEEDS.length]];
+  const seen = new Set(); const out = [];
+  for (const [pathF, net] of pick) {
+    try {
+      const j = await gtFetch(env, pathF, 170, 'feed_' + net + '_' + pathF.replace(/[^a-z0-9]/gi, '').slice(-24));
+      for (const r of _gtRows(j, net)) { const k = net + ':' + r.mint; if (seen.has(k)) continue; seen.add(k); out.push(r); }
+    } catch (e) {}
+    await new Promise(r => setTimeout(r, 350));
+  }
+  let prev = []; try { prev = JSON.parse((await env.STATS.get('spot:memes:last')) || '[]'); } catch (e) {}
+  for (const r of prev) { const k = r.net + ':' + r.mint; if (!seen.has(k)) { seen.add(k); out.push(r); } } // fresh rows win; everything else carries over
+  const list = out.slice(0, 220);
+  if (list.length >= 20) { try { await env.STATS.put('spot:memes:last', JSON.stringify(list), { expirationTtl: 3 * 86400 }); } catch (e) {} }
+  try { await caches.default.put(ck, new Response(JSON.stringify(list), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=170' } })); } catch (e) {}
+  return list;
+}
+async function spotMemePrice(env, net, pool) { // live {price, liqUsd} for one pool on one network (30s edge cache)
+  net = SPOT_NETS[net] ? net : 'solana';
   if (!/^[A-Za-z0-9]{20,60}$/.test(String(pool || ''))) return null;
-  const j = await gtFetch(env, '/networks/solana/pools/' + pool, 30, 'pool_' + pool);
+  const j = await gtFetch(env, '/networks/' + net + '/pools/' + pool, 30, 'pool_' + net + '_' + pool);
   const a = j && j.data && j.data.attributes;
   const price = a ? +a.base_token_price_usd || 0 : 0;
-  if (!(price > 0)) return null;
-  return { price, liqUsd: +a.reserve_in_usd || 0 };
+  if (price > 0) return { price, liqUsd: +a.reserve_in_usd || 0 };
+  // pool read failed (GT 429 burst) → fall back to the AGGREGATE meme list price (≤~3 min stale, cached at the
+  // edge for everyone). A slightly stale fill beats a broken Buy button in a demo; slippage sim is unaffected.
+  try { const m = (await spotMemeList(env)).find(x => x.pool === pool && x.net === net); if (m && m.price > 0) return { price: m.price, liqUsd: m.liqUsd || 0, stale: true }; } catch (e) {}
+  return null;
 }
 // Simulated DEX slippage: trade size vs pool liquidity — a $500 buy into a $50k pool hurts, majors don't. Clamp 0.2%–3%.
 function spotSlip(usd, liqUsd) { if (!(liqUsd > 0)) return 0.01; return Math.min(0.03, Math.max(0.002, 0.002 + (usd / liqUsd) * 0.5)); }
+// The chains the meme universe lives on. Every meme trade SETTLES in the chain's native coin (real life: a Solana
+// meme is bought with SOL) and pays a per-tx gas fee in that coin; exchange withdrawals cost a per-network fee
+// (the "pick a cheap network" lesson — Ethereum hurts, Solana doesn't). wdC = withdrawal fee in cents.
+const SPOT_NETS = {
+  solana: { native: 'SOL', label: 'Solana', wdC: 100, gas: 0.0008 },
+  base: { native: 'ETH', label: 'Base', wdC: 150, gas: 0.00004 },
+  eth: { native: 'ETH', label: 'Ethereum', wdC: 800, gas: 0.0015 },
+  bsc: { native: 'BNB', label: 'BNB Chain', wdC: 80, gas: 0.0003 },
+};
+const SPOT_MEME_FEE_BP = 30; // DEX swap fee on meme fills (0.3% — Raydium/Uniswap-like), vs 10bp CEX taker
+const SPOT_ONRAMP_BP = 180; // 1.8% card-processing fee on the fiat on-ramp (the "cards are expensive" lesson)
+const SPOT_SWAP_BP = 30; // 0.3% wallet DEX fee on USDT <-> native swaps
+// fake-but-realistic self-custody addresses + a 12-word seed phrase (educational moment; the seed is shown once
+// and NEVER stored — exactly like real wallets)
+function spotGenAddr() {
+  const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz', HEX = '0123456789abcdef';
+  const rnd = new Uint8Array(64); crypto.getRandomValues(rnd);
+  let sol = ''; for (let i = 0; i < 44; i++) sol += B58[rnd[i] % 58];
+  let evm = '0x'; for (let i = 0; i < 40; i++) evm += HEX[rnd[(i + 20) % 64] % 16];
+  return { sol, evm };
+}
+const SPOT_WORDS = 'apple bridge candle dolphin ember forest garden harbor island jungle kernel lantern meadow nectar orbit planet quartz river sunset timber umbrella valley walnut yellow zebra anchor breeze canyon dune eagle falcon glacier horizon iceberg jasmine karma lagoon marble nova opal prism raven silver thunder velvet willow amber blossom cedar drift'.split(' ');
+function spotGenSeed() { const r = new Uint8Array(12); crypto.getRandomValues(r); const out = []; const used = {}; let i = 0, gi = 0; while (out.length < 12 && gi < 60) { const w = SPOT_WORDS[(r[i % 12] + gi * 7) % SPOT_WORDS.length]; gi++; if (used[w]) continue; used[w] = 1; out.push(w); i++; } return out; }
 async function handleSpot(url, request, env) {
   const jr = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -8108,10 +8184,11 @@ async function handleSpot(url, request, env) {
   }
   if (path === '/memechart') {
     const pool = String(url.searchParams.get('pool') || '');
+    const net = SPOT_NETS[String(url.searchParams.get('net') || '')] ? String(url.searchParams.get('net')) : 'solana';
     if (!/^[A-Za-z0-9]{20,60}$/.test(pool)) return jr({ error: 'bad_pool' }, 400);
     const M = { '15m': ['minute', 15], '1h': ['hour', 1], '4h': ['hour', 4], '1d': ['day', 1] };
     const mm = M[String(url.searchParams.get('tf') || '1h')] || M['1h'];
-    const j = await gtFetch(env, '/networks/solana/pools/' + pool + '/ohlcv/' + mm[0] + '?aggregate=' + mm[1] + '&limit=300', 60, 'ohlcv_' + pool + '_' + mm[0] + mm[1]);
+    const j = await gtFetch(env, '/networks/' + net + '/pools/' + pool + '/ohlcv/' + mm[0] + '?aggregate=' + mm[1] + '&limit=300', 60, 'ohlcv_' + net + '_' + pool + '_' + mm[0] + mm[1]);
     const list = (j && j.data && j.data.attributes && j.data.attributes.ohlcv_list) || [];
     const bars = list.map(r => ({ time: +r[0], open: +r[1], high: +r[2], low: +r[3], close: +r[4], vol: +r[5] })).filter(x => x.time > 0 && x.close > 0).sort((x, y) => x.time - y.time);
     return new Response(JSON.stringify(bars), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
@@ -8129,7 +8206,7 @@ async function handleSpot(url, request, env) {
     for (const h of holds) {
       let px = 0;
       try {
-        if (h.meta && h.meta.k === 'meme') { const mp = await spotMemePrice(env, h.meta.pool); px = mp ? mp.price : 0; }
+        if (h.meta && h.meta.k === 'meme') { const mp = await spotMemePrice(env, h.meta.net || 'solana', h.meta.pool); px = mp ? mp.price : 0; }
         else { const pd = await fetchPriceCached(h.sym); px = pd ? +pd.price : 0; }
       } catch (e) {}
       if (!(px > 0)) { px = +((h.meta && h.meta.lastPx)) || 0; h.stale = true; } // dead feed (rugged meme) → last known mark + a stale flag for the UI
@@ -8138,24 +8215,36 @@ async function handleSpot(url, request, env) {
       h.pnlUsd = Math.round((h.valueUsd - h.costUsd) * 100) / 100;
       h.pnlPct = h.costUsd > 0 ? Math.round(h.pnlUsd / h.costUsd * 10000) / 100 : 0;
     }
-    const totalUsd = Math.round((d.usdtUsd + holds.reduce((s, h) => s + h.valueUsd, 0)) * 100) / 100;
+    // wallet natives at live prices (for the wallet panel + total)
+    const natPx = {};
+    for (const n of ['SOL', 'ETH', 'BNB']) { try { const pd = await fetchPriceCached(n); if (pd && +pd.price > 0) natPx[n] = +pd.price; } catch (e) {} }
+    let gasUsd = 0; const gas = d.gas || {};
+    for (const k of Object.keys(gas)) gasUsd += (+gas[k] || 0) * (natPx[k] || 0);
+    gasUsd = Math.round(gasUsd * 100) / 100;
+    const walletUsd = Math.round(((d.wusdtUsd || 0) + gasUsd + holds.filter(h => h.meta && h.meta.k === 'meme').reduce((s, h) => s + h.valueUsd, 0)) * 100) / 100;
+    const exchangeUsd = Math.round(((d.usdtUsd || 0) + holds.filter(h => !(h.meta && h.meta.k === 'meme')).reduce((s, h) => s + h.valueUsd, 0)) * 100) / 100;
+    const totalUsd = Math.round(((d.cardUsd || 0) + exchangeUsd + walletUsd) * 100) / 100;
     const snaps = d.snaps || [];
     let base = null; for (let i = snaps.length - 1; i >= 0; i--) { if (snaps[i].valueUsd != null) { base = snaps[i].valueUsd; break; } } // latest snapshot = start-of-day value (cron writes just after midnight UTC)
-    return jr({ ...d, holds, totalUsd, todayPnlUsd: base != null ? Math.round((totalUsd - base) * 100) / 100 : null, allTimePnlUsd: Math.round((totalUsd - 10000) * 100) / 100, feeBp: SPOT_FEE_BP });
+    return jr({ ...d, holds, natPx, gasUsd, walletUsd, exchangeUsd, totalUsd, todayPnlUsd: base != null ? Math.round((totalUsd - base) * 100) / 100 : null, allTimePnlUsd: Math.round((totalUsd - 10000) * 100) / 100, feeBp: SPOT_FEE_BP, nets: SPOT_NETS, onrampBp: SPOT_ONRAMP_BP, swapBp: SPOT_SWAP_BP, memeFeeBp: SPOT_MEME_FEE_BP });
   }
   if (path === '/trade' && request.method === 'POST') {
     const side = b.side === 'sell' ? 'sell' : 'buy';
     const kind = b.kind === 'meme' ? 'meme' : 'cex';
-    let sym, price = 0, liq = 0, meta = { k: kind };
+    let sym, price = 0, liq = 0, meta = { k: kind }, net = '', native = '', natPxT = 0, gasNat = 0;
     if (kind === 'meme') {
       const pool = String(b.pool || ''), mint = String(b.mint || '');
       if (!/^[A-Za-z0-9]{20,60}$/.test(pool) || !/^[A-Za-z0-9]{20,60}$/.test(mint)) return jr({ error: 'bad_token' }, 400);
-      sym = 'sol:' + mint;
-      const mp = await spotMemePrice(env, pool);
+      let info = null; try { info = (await spotMemeList(env)).find(m => m.mint === mint); } catch (e) {} // identity from OUR list when possible — client fields only as sanitized fallback
+      net = (info && info.net) || (SPOT_NETS[String(b.net || '')] ? String(b.net) : 'solana');
+      native = SPOT_NETS[net].native; gasNat = SPOT_NETS[net].gas;
+      sym = (net === 'solana' ? 'sol:' : net + ':') + mint; // hold key: mint is the identity (tickers collide); legacy Solana holds keep the sol: prefix
+      const mp = await spotMemePrice(env, net, pool);
       if (!mp) return jr({ error: 'no_price' }, 503);
       price = mp.price; liq = mp.liqUsd;
-      let info = null; try { info = (await spotMemeList(env)).find(m => m.mint === mint); } catch (e) {} // identity from OUR list when possible — client name/logo only as sanitized fallback
-      meta = { k: 'meme', mint, pool, sym: (info && info.sym) || String(b.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12) || '?', name: (info && info.name) || String(b.name || '').slice(0, 48), logo: (info && info.logo) || (SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '') };
+      try { const npd = await fetchPriceCached(native); natPxT = npd ? +npd.price : 0; } catch (e) {}
+      if (!(natPxT > 0)) return jr({ error: 'no_price' }, 503);
+      meta = { k: 'meme', mint, pool, net, native, sym: (info && info.sym) || String(b.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12) || '?', name: (info && info.name) || String(b.name || '').slice(0, 48), logo: (info && info.logo) || (SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '') };
     } else {
       sym = String(b.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
       if (!sym || sym === 'USDT' || sym === 'USDC') return jr({ error: 'bad_sym' }, 400);
@@ -8164,19 +8253,24 @@ async function handleSpot(url, request, env) {
       price = +pd.price;
       meta = { k: 'cex', logo: SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '' };
     }
+    const feeBp = kind === 'meme' ? SPOT_MEME_FEE_BP : SPOT_FEE_BP; // memes pay DEX-swap 0.3%, CEX pays taker 0.1%
     if (side === 'buy') {
       const usdC = Math.round((+b.usd || 0) * 100);
       if (!(usdC >= 100)) return jr({ error: 'min_trade', minUsd: 1 }, 400);
       if (usdC > 100000000) return jr({ error: 'too_big' }, 400);
       const slip = kind === 'meme' ? spotSlip(usdC / 100, liq) : 0;
       const eff = price * (1 + slip);
-      const feeC = Math.max(1, Math.round(usdC * SPOT_FEE_BP / 10000));
-      let d = null; try { const r = await stub.fetch(new Request('https://do/trade', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, side: 'buy', sym, usdC, price: eff, feeC, meta }) })); d = await r.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
-      if (d && d.ok) { d.slipPct = Math.round(slip * 10000) / 100; d.dispSym = meta.sym || sym; try { await evPush(env, request, 'spottrade', 'BUY ' + (meta.sym || sym) + ' $' + (usdC / 100).toFixed(2), '/spot/'); } catch (e) {} }
+      const feeC = Math.max(1, Math.round(usdC * feeBp / 10000));
+      const body9 = { uid, side: 'buy', sym, usdC, price: eff, feeC, meta };
+      if (kind === 'meme') { body9.native = native; body9.natQty = (usdC + feeC) / 100 / natPxT; body9.gasNat = gasNat; } // meme buys SETTLE in the chain's native coin + gas
+      let d = null; try { const r = await stub.fetch(new Request('https://do/trade', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body9) })); d = await r.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
+      if (d && d.ok) { d.slipPct = Math.round(slip * 10000) / 100; d.dispSym = meta.sym || sym; d.net = net || null; try { await evPush(env, request, 'spottrade', 'BUY ' + (meta.sym || sym) + ' $' + (usdC / 100).toFixed(2), '/spot/'); } catch (e) {} }
       return jr(d || { error: 'fail' }, d && d.ok ? 200 : 400);
     }
     // sell: look the hold up first (slippage needs the trade SIZE, and 100% must sell the exact stored qty)
-    let hq = 0; try { const hr = await stub.fetch(new Request('https://do/hold?uid=' + encodeURIComponent(uid) + '&sym=' + encodeURIComponent(sym))); const hd = await hr.json(); hq = +hd.qty || 0; } catch (e) {}
+    if (kind === 'meme' && !b.sym9) { /* client may pass the exact hold key */ }
+    const holdKey = kind === 'meme' && b.holdSym ? String(b.holdSym).slice(0, 64) : sym;
+    let hq = 0; try { const hr = await stub.fetch(new Request('https://do/hold?uid=' + encodeURIComponent(uid) + '&sym=' + encodeURIComponent(holdKey))); const hd = await hr.json(); hq = +hd.qty || 0; } catch (e) {}
     if (!(hq > 0)) return jr({ error: 'no_position' }, 400);
     const pct = Math.min(100, Math.max(0, +b.pct || 0));
     const qty = pct >= 100 ? hq : (isFinite(+b.qty) && +b.qty > 0 ? Math.min(+b.qty, hq) : hq * pct / 100);
@@ -8185,10 +8279,65 @@ async function handleSpot(url, request, env) {
     if (estUsd < 0.5) { /* dust positions may sell whole regardless of the $1 floor */ if (pct < 100) return jr({ error: 'min_trade', minUsd: 1 }, 400); }
     const slip = kind === 'meme' ? spotSlip(estUsd, liq) : 0;
     const eff = price * (1 - slip);
-    const feeC = Math.max(1, Math.round(qty * eff * 100 * SPOT_FEE_BP / 10000));
-    let d = null; try { const r = await stub.fetch(new Request('https://do/trade', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, side: 'sell', sym, qty, pct: pct >= 100 ? 100 : 0, price: eff, feeC }) })); d = await r.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
-    if (d && d.ok) { d.slipPct = Math.round(slip * 10000) / 100; try { await evPush(env, request, 'spottrade', 'SELL ' + sym.replace(/^sol:/, '').slice(0, 14) + ' $' + (+d.usdUsd || 0).toFixed(2) + (d.pnlUsd != null ? ' (' + (d.pnlUsd >= 0 ? '+' : '') + (+d.pnlUsd).toFixed(2) + ')' : ''), '/spot/'); } catch (e) {} }
+    const feeC = Math.max(1, Math.round(qty * eff * 100 * feeBp / 10000));
+    const body9 = { uid, side: 'sell', sym: holdKey, qty, pct: pct >= 100 ? 100 : 0, price: eff, feeC };
+    if (kind === 'meme') { const netC9 = Math.max(0, Math.round(qty * eff * 100) - feeC); body9.native = native; body9.natOut = netC9 / 100 / natPxT; body9.gasNat = gasNat; } // proceeds come back as SOL/ETH/BNB minus gas
+    let d = null; try { const r = await stub.fetch(new Request('https://do/trade', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body9) })); d = await r.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
+    if (d && d.ok) { d.slipPct = Math.round(slip * 10000) / 100; d.net = net || null; try { await evPush(env, request, 'spottrade', 'SELL ' + holdKey.replace(/^[a-z]+:/, '').slice(0, 14) + ' $' + (+d.usdUsd || 0).toFixed(2) + (d.pnlUsd != null ? ' (' + (d.pnlUsd >= 0 ? '+' : '') + (+d.pnlUsd).toFixed(2) + ')' : ''), '/spot/'); } catch (e) {} }
     return jr(d || { error: 'fail' }, d && d.ok ? 200 : 400);
+  }
+  if (path === '/link' && request.method === 'POST') { // sim step 1: link the virtual card to the exchange
+    try { const r = await stub.fetch(new Request('https://do/link', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid }) })); return jr(await r.json()); } catch (e) { return jr({ error: 'transient' }, 503); }
+  }
+  if (path === '/onramp' && request.method === 'POST') { // sim step 2: buy USDT with the card (1.8% processing fee — the real-life lesson)
+    const usdC = Math.round((+b.usd || 0) * 100);
+    if (!(usdC >= 1000)) return jr({ error: 'min_onramp', minUsd: 10 }, 400);
+    const feeC = Math.max(1, Math.round(usdC * SPOT_ONRAMP_BP / 10000));
+    try { const r = await stub.fetch(new Request('https://do/onramp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'on-ramp $' + (usdC / 100).toFixed(0), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return jr({ error: 'transient' }, 503); }
+  }
+  if (path === '/wallet/create' && request.method === 'POST') { // sim step 3: self-custody wallet — addresses generated here; the seed phrase is shown ONCE and never stored (like real life)
+    const addr = spotGenAddr();
+    try { const r = await stub.fetch(new Request('https://do/walletcreate', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, addr }) })); const d = await r.json();
+      if (d && d.ok) { if (!d.existed) d.seed = spotGenSeed(); return jr(d); } return jr(d || { error: 'fail' }, 400); } catch (e) { return jr({ error: 'transient' }, 503); }
+  }
+  if (path === '/withdraw' && request.method === 'POST') { // sim step 4: exchange → wallet, network choice decides the fee (Solana $1 / BSC $0.80 / Ethereum $8)
+    const net = SPOT_NETS[String(b.net || '')] ? String(b.net) : null;
+    if (!net) return jr({ error: 'bad_network' }, 400);
+    const usdC = Math.round((+b.usd || 0) * 100);
+    if (!(usdC >= 500)) return jr({ error: 'min_wd', minUsd: 5 }, 400);
+    const toAddr = String(b.address || '').trim();
+    const expect = net === 'solana' ? 'sol' : 'evm';
+    if (net === 'solana' && !/^[1-9A-HJ-NP-Za-km-z]{32,50}$/.test(toAddr)) return jr({ error: 'bad_address', hint: 'A Solana address is 32-44 base58 characters (no 0, O, I or l).' }, 400);
+    if (net !== 'solana' && !/^0x[0-9a-fA-F]{40}$/.test(toAddr)) return jr({ error: 'bad_address', hint: 'An EVM address starts with 0x followed by 40 hex characters.' }, 400);
+    // the address must be THEIR wallet's address for the chosen network — teaches "wrong chain/address = lost funds" without actually losing anything
+    let mine = null; try { const pr = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid))); const pd = await pr.json(); mine = pd && pd.addr; } catch (e) {}
+    if (!mine) return jr({ error: 'no_wallet' }, 400);
+    if (toAddr !== (expect === 'sol' ? mine.sol : mine.evm)) return jr({ error: 'address_mismatch', hint: 'That is not your wallet’s ' + SPOT_NETS[net].label + ' address. On a real exchange this money would be GONE forever — always copy-paste your own address for the right network.' }, 400);
+    const feeC = SPOT_NETS[net].wdC;
+    try { const r = await stub.fetch(new Request('https://do/wdraw', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC, net }) })); const d = await r.json(); if (d && d.ok) { d.net = net; d.feeUsd = feeC / 100; try { await evPush(env, request, 'spottrade', 'withdraw $' + (usdC / 100).toFixed(0) + ' via ' + net, '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return jr({ error: 'transient' }, 503); }
+  }
+  if (path === '/swap' && request.method === 'POST') { // wallet DEX swap: USDT ↔ SOL/ETH/BNB at live price, 0.3% fee
+    const asset = String(b.asset || '').toUpperCase();
+    if (['SOL', 'ETH', 'BNB'].indexOf(asset) < 0) return jr({ error: 'bad_asset' }, 400);
+    const dir = b.dir === 'sell' ? 'sell' : 'buy';
+    let pd = null; try { pd = await fetchPriceCached(asset); } catch (e) {}
+    if (!pd || !(+pd.price > 0)) return jr({ error: 'no_price' }, 503);
+    const px = +pd.price;
+    let usdC, natQty, feeC;
+    if (dir === 'buy') { // wallet USDT → native
+      usdC = Math.round((+b.usd || 0) * 100);
+      if (!(usdC >= 100)) return jr({ error: 'min_trade', minUsd: 1 }, 400);
+      feeC = Math.max(1, Math.round(usdC * SPOT_SWAP_BP / 10000));
+      natQty = (usdC - feeC) / 100 / px;
+    } else { // native → wallet USDT
+      natQty = +b.natQty || 0;
+      if (!(natQty > 0)) return jr({ error: 'bad' }, 400);
+      const grossC = Math.round(natQty * px * 100);
+      feeC = Math.max(1, Math.round(grossC * SPOT_SWAP_BP / 10000));
+      usdC = Math.max(0, grossC - feeC);
+      if (usdC < 100) return jr({ error: 'min_trade', minUsd: 1 }, 400);
+    }
+    try { const r = await stub.fetch(new Request('https://do/swap', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, asset, dir, usdC, natQty, feeC }) })); const d = await r.json(); if (d && d.ok) { d.price = px; d.natQty = natQty; d.feeUsd = feeC / 100; try { await evPush(env, request, 'spottrade', 'swap ' + (dir === 'buy' ? 'USDT>' + asset : asset + '>USDT'), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return jr({ error: 'transient' }, 503); }
   }
   if (path === '/history') {
     try { const r = await stub.fetch(new Request('https://do/tx?uid=' + encodeURIComponent(uid))); return jr(await r.json()); } catch (e) { return jr({ tx: [] }); }
@@ -8209,11 +8358,12 @@ async function spotDailySnapshot(env) {
     const stub = spotStub(env);
     const sr = await stub.fetch(new Request('https://do/allsyms')); const sd = await sr.json();
     const prices = {};
+    for (const n of ['SOL', 'ETH', 'BNB']) { try { const pd = await fetchPriceCached(n); if (pd && +pd.price > 0) prices[n] = +pd.price; } catch (e) {} } // wallet natives — every account's gas balances value at these
     for (const sym of Object.keys(sd.syms || {})) {
       const info = sd.syms[sym];
       try {
-        if (info.k === 'meme') { const mp = await spotMemePrice(env, info.pool); if (mp) prices[sym] = mp.price; }
-        else { const pd = await fetchPriceCached(sym); if (pd && +pd.price > 0) prices[sym] = +pd.price; }
+        if (info.k === 'meme') { const mp = await spotMemePrice(env, info.net || 'solana', info.pool); if (mp) prices[sym] = mp.price; }
+        else if (!prices[sym]) { const pd = await fetchPriceCached(sym); if (pd && +pd.price > 0) prices[sym] = +pd.price; }
       } catch (e) {}
       await new Promise(r => setTimeout(r, 60));
     }
@@ -9765,14 +9915,21 @@ export class SpotStore {
     s.exec('CREATE TABLE IF NOT EXISTS spottx(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, ts INTEGER, side TEXT, sym TEXT, qty REAL, price REAL, usd INTEGER, fee INTEGER, pnl INTEGER, meta TEXT)');
     s.exec('CREATE TABLE IF NOT EXISTS spotsnap(user_id TEXT, day TEXT, value INTEGER, PRIMARY KEY(user_id,day))');
     try { s.exec('CREATE INDEX IF NOT EXISTS sptx_u ON spottx(user_id, ts)'); } catch (e) {}
+    // v2 (2026-08-02, "life sim"): the $10k now arrives on a virtual CARD; USDT is bought on the exchange (card
+    // on-ramp fee), memes live in a self-custody WALLET and settle in the chain's NATIVE coin (SOL/ETH/BNB).
+    // card/wusdt = cents on the card / wallet-USDT; gas = JSON {SOL:qty,ETH:qty,BNB:qty}; addr = JSON {sol,evm};
+    // onb = onboarding progress (1 card linked, 2 USDT bought, 3 wallet created, 4 wallet funded).
+    for (const col of ['card INTEGER DEFAULT 0', 'wusdt INTEGER DEFAULT 0', "gas TEXT DEFAULT '{}'", "addr TEXT DEFAULT ''", 'onb INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE spotacct ADD COLUMN ' + col); } catch (e) {} }
   }
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
-  _acct(uid, now) { // get-or-create: the wallet is born with $10,000 on first touch
+  _acct(uid, now) { // get-or-create: v2 accounts are born with $10,000 ON THE CARD (the sim starts at "money in the bank")
     let a = this.rows('SELECT * FROM spotacct WHERE user_id=?', uid)[0];
-    if (!a) { this.state.storage.sql.exec('INSERT INTO spotacct(user_id,usdt,created,last_seen) VALUES(?,?,?,?)', uid, SPOT_START_C, now, now); a = this.rows('SELECT * FROM spotacct WHERE user_id=?', uid)[0]; a._fresh = true; }
+    if (!a) { this.state.storage.sql.exec('INSERT INTO spotacct(user_id,usdt,card,created,last_seen,onb) VALUES(?,0,?,?,?,0)', uid, SPOT_START_C, now, now); a = this.rows('SELECT * FROM spotacct WHERE user_id=?', uid)[0]; a._fresh = true; }
+    else if (!(a.onb > 0) && ((a.usdt || 0) > 0 || (this.rows('SELECT 1 FROM spothold WHERE user_id=? LIMIT 1', uid)[0]))) { this.state.storage.sql.exec('UPDATE spotacct SET onb=2 WHERE user_id=?', uid); a.onb = 2; } // grandfather pre-v2 accounts (USDT landed directly) — they already "did" the on-ramp
     return a;
   }
+  _gas(a) { try { const g = JSON.parse(a.gas || '{}'); return (g && typeof g === 'object') ? g : {}; } catch (e) { return {}; } }
   async fetch(request) {
     const url = new URL(request.url), path = url.pathname, sql = this.state.storage.sql, now = Date.now();
     let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
@@ -9784,26 +9941,95 @@ export class SpotStore {
       const holds = this.rows('SELECT sym,qty,cost,meta FROM spothold WHERE user_id=? AND qty>0', uid).map(h => { let m = {}; try { m = JSON.parse(h.meta || '{}'); } catch (e) {} return { sym: h.sym, qty: h.qty, costUsd: h.cost / 100, meta: m }; });
       const snaps = this.rows('SELECT day,value FROM spotsnap WHERE user_id=? ORDER BY day DESC LIMIT 120', uid).reverse().map(r => ({ day: r.day, valueUsd: r.value / 100 }));
       const txN = (this.rows('SELECT COUNT(*) n FROM spottx WHERE user_id=?', uid)[0] || { n: 0 }).n;
-      return this.j({ fresh: !!a._fresh, usdtUsd: a.usdt / 100, realizedUsd: (a.realized || 0) / 100, created: a.created, resetTs: a.reset_ts || 0, resets: a.resets || 0, holds, snaps, txN });
+      let addr = null; try { addr = a.addr ? JSON.parse(a.addr) : null; } catch (e) {}
+      return this.j({ fresh: !!a._fresh, usdtUsd: a.usdt / 100, cardUsd: (a.card || 0) / 100, wusdtUsd: (a.wusdt || 0) / 100, gas: this._gas(a), addr, onb: +a.onb || 0, realizedUsd: (a.realized || 0) / 100, created: a.created, resetTs: a.reset_ts || 0, resets: a.resets || 0, holds, snaps, txN });
+    }
+    if (path === '/link') { // step 1: "link" the virtual card to the exchange
+      if (!uid) return this.j({ error: 'bad' }, 400);
+      const a = this._acct(uid, now);
+      if ((+a.onb || 0) < 1) sql.exec('UPDATE spotacct SET onb=1 WHERE user_id=?', uid);
+      return this.j({ ok: true, onb: Math.max(1, +a.onb || 0) });
+    }
+    if (path === '/onramp') { // step 2: buy USDT with the card (worker computed the card-processing fee)
+      const usdC = Math.round(+b.usdC || 0), feeC = Math.max(0, Math.round(+b.feeC || 0));
+      if (!uid || usdC < 1000) return this.j({ error: 'min_onramp', minUsd: 10 }, 400); // $10 minimum like real on-ramps
+      const a = this._acct(uid, now);
+      if (usdC + feeC > (a.card || 0)) return this.j({ error: 'card_insufficient', cardUsd: (a.card || 0) / 100 }, 400);
+      sql.exec('UPDATE spotacct SET card=card-?, usdt=usdt+?, onb=MAX(onb,2), last_seen=? WHERE user_id=?', usdC + feeC, usdC, now, uid);
+      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'onramp','USDT',?,1,?,?,0,'{}')", uid, now, usdC / 100, usdC, feeC);
+      const a2 = this.rows('SELECT card,usdt FROM spotacct WHERE user_id=?', uid)[0];
+      return this.j({ ok: true, usdtUsd: a2.usdt / 100, cardUsd: (a2.card || 0) / 100, feeUsd: feeC / 100 });
+    }
+    if (path === '/walletcreate') { // step 3: self-custody wallet — worker generated the addresses (stored once, never regenerated)
+      if (!uid) return this.j({ error: 'bad' }, 400);
+      const a = this._acct(uid, now);
+      let cur = null; try { cur = a.addr ? JSON.parse(a.addr) : null; } catch (e) {}
+      if (cur && cur.sol) return this.j({ ok: true, addr: cur, existed: true });
+      const addr = { sol: String((b.addr && b.addr.sol) || '').slice(0, 64), evm: String((b.addr && b.addr.evm) || '').slice(0, 64) };
+      if (!addr.sol || !addr.evm) return this.j({ error: 'bad' }, 400);
+      sql.exec('UPDATE spotacct SET addr=?, onb=MAX(onb,3), last_seen=? WHERE user_id=?', JSON.stringify(addr), now, uid);
+      return this.j({ ok: true, addr });
+    }
+    if (path === '/wdraw') { // step 4: withdraw USDT from the exchange to the wallet (network fee already computed by the worker)
+      const usdC = Math.round(+b.usdC || 0), feeC = Math.max(0, Math.round(+b.feeC || 0));
+      if (!uid || usdC < 500) return this.j({ error: 'min_wd', minUsd: 5 }, 400);
+      const a = this._acct(uid, now);
+      if (!a.addr) return this.j({ error: 'no_wallet' }, 400);
+      if (usdC + feeC > (a.usdt || 0)) return this.j({ error: 'insufficient', usdtUsd: (a.usdt || 0) / 100 }, 400);
+      sql.exec('UPDATE spotacct SET usdt=usdt-?, wusdt=wusdt+?, onb=MAX(onb,4), last_seen=? WHERE user_id=?', usdC + feeC, usdC, now, uid);
+      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'wdraw','USDT',?,1,?,?,0,?)", uid, now, usdC / 100, usdC, feeC, JSON.stringify({ net: String(b.net || '').slice(0, 12) }));
+      const a2 = this.rows('SELECT usdt,wusdt FROM spotacct WHERE user_id=?', uid)[0];
+      return this.j({ ok: true, usdtUsd: a2.usdt / 100, wusdtUsd: (a2.wusdt || 0) / 100, feeUsd: feeC / 100 });
+    }
+    if (path === '/swap') { // wallet DEX swap: USDT ↔ native gas coin (SOL/ETH/BNB) at the worker's effective price
+      const asset = String(b.asset || '').toUpperCase(); if (['SOL', 'ETH', 'BNB'].indexOf(asset) < 0) return this.j({ error: 'bad_asset' }, 400);
+      const usdC = Math.round(+b.usdC || 0), natQty = +b.natQty;
+      if (!uid || !(usdC >= 100) || !(natQty > 0) || !isFinite(natQty)) return this.j({ error: 'bad' }, 400);
+      const a = this._acct(uid, now);
+      const g = this._gas(a);
+      if (b.dir === 'sell') { // native → wallet USDT
+        if ((+g[asset] || 0) < natQty * 0.9999999) return this.j({ error: 'insufficient_native', have: +g[asset] || 0 }, 400);
+        g[asset] = Math.max(0, (+g[asset] || 0) - natQty); if (g[asset] < 1e-12) delete g[asset];
+        sql.exec('UPDATE spotacct SET wusdt=wusdt+?, gas=?, last_seen=? WHERE user_id=?', usdC, JSON.stringify(g), now, uid);
+      } else { // wallet USDT → native
+        if ((a.wusdt || 0) < usdC) return this.j({ error: 'insufficient', wusdtUsd: (a.wusdt || 0) / 100 }, 400);
+        g[asset] = (+g[asset] || 0) + natQty;
+        sql.exec('UPDATE spotacct SET wusdt=wusdt-?, gas=?, last_seen=? WHERE user_id=?', usdC, JSON.stringify(g), now, uid);
+      }
+      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'swap',?,?,?,?,?,0,?)", uid, now, asset, natQty, usdC / 100 / natQty, usdC, Math.max(0, Math.round(+b.feeC || 0)), JSON.stringify({ dir: b.dir === 'sell' ? 'sell' : 'buy' }));
+      const a2 = this.rows('SELECT wusdt,gas FROM spotacct WHERE user_id=?', uid)[0];
+      return this.j({ ok: true, wusdtUsd: (a2.wusdt || 0) / 100, gas: this._gas(a2) });
     }
     if (path === '/trade') { // worker-computed effective price + fee; this is the atomic ledger step
       const side = String(b.side || ''), sym = String(b.sym || '').slice(0, 64), price = +b.price, feeC = Math.max(0, Math.round(+b.feeC || 0));
       if (!uid || !sym || !(price > 0) || !isFinite(price)) return this.j({ error: 'bad' }, 400);
       const a = this._acct(uid, now);
+      // native settlement (memes): the trade is ACCOUNTED in USD (cost basis/PnL unchanged) but SETTLES in the
+      // chain's native coin from the wallet — natQty in/out of gas[native], plus a flat gas fee per tx. Real life:
+      // a Solana meme is bought with SOL, not with exchange USDT.
+      const native = String(b.native || '').toUpperCase();
+      const natQty = +b.natQty || 0, gasNat = Math.max(0, +b.gasNat || 0);
       if (side === 'buy') {
         const usdC = Math.round(+b.usdC || 0);
         if (usdC < 100) return this.j({ error: 'min_trade' }, 400); // $1 minimum
-        if (usdC + feeC > a.usdt) return this.j({ error: 'insufficient', usdtUsd: a.usdt / 100 }, 400);
         const qty = (usdC / 100) / price;
         if (!(qty > 0) || !isFinite(qty)) return this.j({ error: 'bad' }, 400);
+        let g = null;
+        if (native) {
+          if (!a.addr) return this.j({ error: 'no_wallet' }, 400);
+          g = this._gas(a);
+          if (!(natQty > 0) || (+g[native] || 0) < natQty + gasNat) return this.j({ error: 'no_gas', native, have: +g[native] || 0, need: natQty + gasNat }, 400);
+          g[native] = (+g[native] || 0) - natQty - gasNat;
+        } else if (usdC + feeC > a.usdt) return this.j({ error: 'insufficient', usdtUsd: a.usdt / 100 }, 400);
         const meta = JSON.stringify(Object.assign({}, (b.meta && typeof b.meta === 'object') ? b.meta : {}, { lastPx: price }));
-        sql.exec('UPDATE spotacct SET usdt=usdt-?, last_seen=? WHERE user_id=?', usdC + feeC, now, uid);
+        if (native) sql.exec('UPDATE spotacct SET gas=?, last_seen=? WHERE user_id=?', JSON.stringify(g), now, uid);
+        else sql.exec('UPDATE spotacct SET usdt=usdt-?, last_seen=? WHERE user_id=?', usdC + feeC, now, uid);
         const h = this.rows('SELECT qty,cost FROM spothold WHERE user_id=? AND sym=?', uid, sym)[0];
         if (h) sql.exec('UPDATE spothold SET qty=qty+?, cost=cost+?, meta=?, updated=? WHERE user_id=? AND sym=?', qty, usdC + feeC, meta, now, uid, sym);
         else sql.exec('INSERT INTO spothold(user_id,sym,qty,cost,meta,updated) VALUES(?,?,?,?,?,?)', uid, sym, qty, usdC + feeC, meta, now);
         sql.exec('INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,?,?,?,?,?,?,0,?)', uid, now, 'buy', sym, qty, price, usdC, feeC, meta);
-        const a2 = this.rows('SELECT usdt FROM spotacct WHERE user_id=?', uid)[0];
-        return this.j({ ok: true, side: 'buy', sym, qty, price, usdUsd: usdC / 100, feeUsd: feeC / 100, usdtUsd: a2.usdt / 100 });
+        const a2 = this.rows('SELECT usdt,gas FROM spotacct WHERE user_id=?', uid)[0];
+        return this.j({ ok: true, side: 'buy', sym, qty, price, usdUsd: usdC / 100, feeUsd: feeC / 100, usdtUsd: a2.usdt / 100, gas: this._gas(a2), native: native || null, natQty: native ? natQty : null });
       }
       if (side === 'sell') {
         const h = this.rows('SELECT qty,cost,meta FROM spothold WHERE user_id=? AND sym=?', uid, sym)[0];
@@ -9818,15 +10044,22 @@ export class SpotStore {
         if (grossC < 1) return this.j({ error: 'dust' }, 400);
         const fee2 = Math.max(0, Math.round(+b.feeC || 0));
         const netC = Math.max(0, grossC - fee2);
+        let g2 = null;
+        if (native) { // proceeds land in the native coin, minus the tx gas
+          g2 = this._gas(a);
+          if ((+g2[native] || 0) < gasNat) return this.j({ error: 'no_gas', native, have: +g2[native] || 0, need: gasNat }, 400);
+          g2[native] = (+g2[native] || 0) - gasNat + (+b.natOut || 0);
+        }
         const costPart = Math.round(h.cost * (qty / h.qty));
         const pnlC = netC - costPart; // realized PnL of this slice (fees on both legs already inside)
         const left = h.qty - qty;
         if (left <= h.qty * 1e-9) sql.exec('DELETE FROM spothold WHERE user_id=? AND sym=?', uid, sym);
         else sql.exec('UPDATE spothold SET qty=?, cost=?, updated=? WHERE user_id=? AND sym=?', left, Math.max(0, h.cost - costPart), now, uid, sym);
-        sql.exec('UPDATE spotacct SET usdt=usdt+?, realized=COALESCE(realized,0)+?, last_seen=? WHERE user_id=?', netC, pnlC, now, uid);
+        if (native) sql.exec('UPDATE spotacct SET gas=?, realized=COALESCE(realized,0)+?, last_seen=? WHERE user_id=?', JSON.stringify(g2), pnlC, now, uid);
+        else sql.exec('UPDATE spotacct SET usdt=usdt+?, realized=COALESCE(realized,0)+?, last_seen=? WHERE user_id=?', netC, pnlC, now, uid);
         sql.exec('INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,?,?,?,?,?,?,?,?)', uid, now, 'sell', sym, qty, price, netC, fee2, pnlC, h.meta || '{}');
-        const a2 = this.rows('SELECT usdt,realized FROM spotacct WHERE user_id=?', uid)[0];
-        return this.j({ ok: true, side: 'sell', sym, qty, price, usdUsd: netC / 100, feeUsd: fee2 / 100, pnlUsd: pnlC / 100, usdtUsd: a2.usdt / 100, realizedUsd: (a2.realized || 0) / 100, closed: left <= h.qty * 1e-9 });
+        const a2 = this.rows('SELECT usdt,realized,gas FROM spotacct WHERE user_id=?', uid)[0];
+        return this.j({ ok: true, side: 'sell', sym, qty, price, usdUsd: netC / 100, feeUsd: fee2 / 100, pnlUsd: pnlC / 100, usdtUsd: a2.usdt / 100, gas: this._gas(a2), native: native || null, realizedUsd: (a2.realized || 0) / 100, closed: left <= h.qty * 1e-9 });
       }
       return this.j({ error: 'bad_side' }, 400);
     }
@@ -9841,29 +10074,30 @@ export class SpotStore {
         .map(t => { let m = {}; try { m = JSON.parse(t.meta || '{}'); } catch (e) {} return { ts: t.ts, side: t.side, sym: t.sym, qty: t.qty, price: t.price, usdUsd: t.usd / 100, feeUsd: (t.fee || 0) / 100, pnlUsd: (t.pnl || 0) / 100, name: m.name || '', logo: m.logo || '' }; });
       return this.j({ tx: list });
     }
-    if (path === '/reset') { // back to a clean $10,000 — at most once per 7 days; history (tx + snaps) is kept
+    if (path === '/reset') { // back to a fresh $10,000 CARD — at most once per 7 days; wallet addresses + tx history kept
       if (!uid) return this.j({ error: 'bad' }, 400);
       const a = this._acct(uid, now);
       const since = Math.max(a.reset_ts || 0, 0);
       if (since && now - since < 7 * 86400000) return this.j({ error: 'cooldown', nextMs: since + 7 * 86400000 - now }, 429);
       sql.exec('DELETE FROM spothold WHERE user_id=?', uid);
-      sql.exec('UPDATE spotacct SET usdt=?, reset_ts=?, resets=COALESCE(resets,0)+1, realized=0 WHERE user_id=?', SPOT_START_C, now, uid);
-      sql.exec('INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,?,?,0,0,?,0,0,?)', uid, now, 'reset', 'USDT', SPOT_START_C, '{}');
-      return this.j({ ok: true, usdtUsd: SPOT_START_C / 100 });
+      sql.exec("UPDATE spotacct SET card=?, usdt=0, wusdt=0, gas='{}', reset_ts=?, resets=COALESCE(resets,0)+1, realized=0 WHERE user_id=?", SPOT_START_C, now, uid);
+      sql.exec('INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,?,?,0,0,?,0,0,?)', uid, now, 'reset', 'USD', SPOT_START_C, '{}');
+      return this.j({ ok: true, cardUsd: SPOT_START_C / 100 });
     }
-    if (path === '/allsyms') { // daily snapshot cron: every distinct held symbol + one meta sample (pool/mint for meme price lookups)
-      const out = {}; this.rows('SELECT sym, meta FROM spothold WHERE qty>0 GROUP BY sym').forEach(r => { let m = {}; try { m = JSON.parse(r.meta || '{}'); } catch (e) {} out[r.sym] = { k: m.k || 'cex', pool: m.pool || '', lastPx: +m.lastPx || 0 }; });
+    if (path === '/allsyms') { // daily snapshot cron: every distinct held symbol + one meta sample (net/pool for meme price lookups)
+      const out = {}; this.rows('SELECT sym, meta FROM spothold WHERE qty>0 GROUP BY sym').forEach(r => { let m = {}; try { m = JSON.parse(r.meta || '{}'); } catch (e) {} out[r.sym] = { k: m.k || 'cex', net: m.net || 'solana', pool: m.pool || '', lastPx: +m.lastPx || 0 }; });
       return this.j({ syms: out });
     }
     if (path === '/snapshot-all') { // cron passes {day, prices:{sym:px}} → write each account's start-of-day value; missing price falls back to the hold's lastPx (a rugged meme keeps its last known mark until it truly dies)
       const day = String(b.day || '').slice(0, 10), prices = (b.prices && typeof b.prices === 'object') ? b.prices : {};
       if (!day) return this.j({ error: 'bad' }, 400);
-      const accts = this.rows('SELECT user_id, usdt FROM spotacct');
+      const accts = this.rows('SELECT user_id, usdt, card, wusdt, gas FROM spotacct');
       const holds = this.rows('SELECT user_id, sym, qty, cost, meta FROM spothold WHERE qty>0');
       const byU = {}; for (const h of holds) { (byU[h.user_id] = byU[h.user_id] || []).push(h); }
       let n = 0;
       for (const a of accts) {
-        let v = a.usdt;
+        let v = (a.usdt || 0) + (a.card || 0) + (a.wusdt || 0);
+        const g9 = this._gas(a); for (const k of Object.keys(g9)) { const px9 = +prices[k] || 0; if (px9 > 0) v += Math.round((+g9[k] || 0) * px9 * 100); } // wallet natives (SOL/ETH/BNB) at live price
         for (const h of (byU[a.user_id] || [])) {
           let px = +prices[h.sym] || 0;
           if (!(px > 0)) { try { px = +(JSON.parse(h.meta || '{}').lastPx) || 0; } catch (e) {} }
