@@ -436,7 +436,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
   document.addEventListener('visibilitychange',function(){if(!document.hidden)pollChatLast();});
   function setOnline(n){/* online count removed per owner */}
   function sysMsg(html){var d=document.createElement('div');d.className='ct-msg ct-sys';d.innerHTML=html;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
-  var LB_META={1:{t:'🏆 Top ROE',k:'top'},2:{t:'🎯 Best win rate',k:'topWr'},3:{t:'✨ Weekly XP',k:'topXp'}};
+  var LB_META={1:{t:'Spot bank balance',k:'topSpot'},2:{t:'🎯 Best win rate',k:'topWr'},3:{t:'✨ Weekly XP',k:'topXp'}};
   function showLeaderboard(board){board=(board===2||board===3)?board:1;var meta=LB_META[board];
     var lbMsg=sysMsg('<b style="color:#c2f64a">'+meta.t+'</b><br><span style="color:#9aa3ad">loading…</span>');
     fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){var t=(d&&d[meta.k])||[],medal=['🥇','🥈','🥉'];
@@ -445,11 +445,11 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
       else html+=t.slice(0,10).map(function(x,i){var val;
         if(board===2)val='<b style="color:#c2f64a">'+(+x.wr).toFixed(0)+'%</b> <span style="color:#7f8893">('+(+x.w||0)+'W-'+(+x.l||0)+'L)</span>';
         else if(board===3)val='<b style="color:#c2f64a">'+(+x.xp||0).toLocaleString()+' XP</b>';
-        else val='<b style="color:'+((+x.roe)>=0?'#2ebd85':'#ff6258')+'">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</b>';
+        else val='<b style="color:#2ebd85">$'+(+x.bankUsd||0).toLocaleString('en-US',{maximumFractionDigits:0})+'</b>';
         return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span> — '+val;}).join('<br>');
       var _we=d&&d.weekEnd,_es='';if(_we){var _ms=_we-Date.now();if(_ms>0){var _d=Math.floor(_ms/86400000),_h=Math.floor(_ms%86400000/3600000);_es=(_d>0?_d+'d ':'')+_h+'h';}}
       html+='<br><span style="color:#ffce8a;font-size:11.5px">⏳ 14-day season (UTC)'+(_es?' · ends in '+_es:'')+'</span>';
-      html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> ROE · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · members only, prizes paid in USDT each 14-day season</span>';
+      html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> bank · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · members only, prizes paid in USDT each 14-day season</span>';
       lbMsg.innerHTML=html;msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();
     }).catch(function(){lbMsg.innerHTML='<span style="color:#ff6258">Could not load the leaderboard. Try again.</span>';});
   }

@@ -1291,7 +1291,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   setTimeout(pollChatLast,2500);setInterval(pollChatLast,45000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden)pollChatLast();});
   function sysMsg(html){var d=document.createElement('div');d.className='ct-msg ct-sys';d.innerHTML=html;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
-  var LB_META={1:{t:'🏆 Top ROE',k:'top'},2:{t:'🎯 Best win rate',k:'topWr'},3:{t:'✨ Season XP',k:'topXp'}};
+  var LB_META={1:{t:'Spot bank balance',k:'topSpot'},2:{t:'🎯 Best win rate',k:'topWr'},3:{t:'✨ Season XP',k:'topXp'}};
   function showLeaderboard(board){board=(board===2||board===3)?board:1;var meta=LB_META[board];
     var lbMsg=sysMsg('<b style="color:#c2f64a">'+meta.t+'</b><br><span style="color:#9aa3ad">loading…</span>');
     fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){var t=(d&&d[meta.k])||[],medal=['🥇','🥈','🥉'];
@@ -1300,11 +1300,11 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       else html+=t.slice(0,10).map(function(x,i){var val;
         if(board===2)val='<b style="color:#c2f64a">'+(+x.wr).toFixed(0)+'%</b> <span style="color:#7f8893">('+(+x.w||0)+'W-'+(+x.l||0)+'L)</span>';
         else if(board===3)val='<b style="color:#c2f64a">'+(+x.xp||0).toLocaleString()+' XP</b>';
-        else val='<b style="color:'+((+x.roe)>=0?'#2ebd85':'#ff6258')+'">'+((+x.roe)>=0?'+':'')+(+x.roe).toFixed(0)+'%</b>';
+        else val='<b style="color:#2ebd85">$'+(+x.bankUsd||0).toLocaleString('en-US',{maximumFractionDigits:0})+'</b>';
         return (medal[i]||((i+1)+'.'))+' '+esc(x.who||'anon')+'<span data-lvln="'+esc(x.who||'')+'"></span> — '+val;}).join('<br>');
       var _we=d&&d.weekEnd,_es='';if(_we){var _ms=_we-Date.now();if(_ms>0){var _d=Math.floor(_ms/86400000),_h=Math.floor(_ms%86400000/3600000);_es=(_d>0?_d+'d ':'')+_h+'h';}}
       html+='<br><span style="color:#ffce8a;font-size:11.5px">⏳ 14-day season (UTC)'+(_es?' · ends in '+_es:'')+'</span>';
-      html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> ROE · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · members only, prizes paid in USDT each 14-day season</span>';
+      html+='<br><span style="color:#7f8893;font-size:11.5px">Boards: <b>/leaderboard1</b> bank · <b>/leaderboard2</b> win rate · <b>/leaderboard3</b> XP · members only, prizes paid in USDT each 14-day season</span>';
       lbMsg.innerHTML=html;msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();
     }).catch(function(){lbMsg.innerHTML='<span style="color:#ff6258">Could not load the leaderboard. Try again.</span>';});
   }
@@ -2180,8 +2180,8 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     gate.className='lg-gate ok';gate.innerHTML='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#41e3a3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:6px"><path d="M20 6L9 17l-5-5"/></svg>'+LT('lgInAs','You are in the league as')+' <b>'+esc(me.username||(me.email?me.email.split('@')[0]:'you'))+'</b> '+LT('lgClimb','— close winning trades to climb.');}
   function lbEnds(weekEnd){if(!weekEnd)return '';var ms=weekEnd-Date.now();if(ms<=0)return '';var d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000);var t=(d>0?d+'d ':'')+((d>0||h>0)?h+'h ':'')+m+'m';return '<div class="lg-ends">⏳ 14-day season · '+LT('lgEndsIn','ends in')+' <b>'+t+'</b></div>';}
   var lgMode='roe',lgLast=null;
-  function lgPills(){return '<div class="lg-pills"><button type="button" class="lg-pill'+(lgMode==='roe'?' on':'')+'" data-lgm="roe">'+LT('lgTopRoe','Top ROE')+'</button><button type="button" class="lg-pill'+(lgMode==='pnl'?' on':'')+'" data-lgm="pnl">'+LT('lgTopPnl','Top PnL')+'</button><button type="button" class="lg-pill'+(lgMode==='wr'?' on':'')+'" data-lgm="wr">'+LT('lgBestWr','Best win rate')+'</button></div>';}
-  function lgNote(){return lgMode==='roe'?'<div class="lg-wr-note pay">'+LT('lgPayRoe','Top ROE pays the season prizes — the other boards start paying soon.')+'</div>':'<div class="lg-wr-note">'+LT('lgPaySoon','No prizes yet — this board starts paying out soon.')+'</div>';}
+  function lgPills(){return '<div class="lg-pills"><button type="button" class="lg-pill'+(lgMode==='roe'?' on':'')+'" data-lgm="roe">'+LT('lgSpotBank','Spot bank')+'</button><button type="button" class="lg-pill'+(lgMode==='pnl'?' on':'')+'" data-lgm="pnl">'+LT('lgTopPnl','Top PnL')+'</button><button type="button" class="lg-pill'+(lgMode==='wr'?' on':'')+'" data-lgm="wr">'+LT('lgBestWr','Best win rate')+'</button></div>';}
+  function lgNote(){return lgMode==='roe'?'<div class="lg-wr-note pay">'+LT('lgPaySpot','Spot bank balance pays the season prizes — grow the Demo Spot $10,000 and cash profits out to your card.')+'</div>':'<div class="lg-wr-note">'+LT('lgPaySoon','No prizes yet — this board starts paying out soon.')+'</div>';}
   function lgMoneyH(x){x=+x||0;var sg=x<0?'-':'+';x=Math.abs(x);return sg+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
   function lgDraw(){var d=lgLast;if(!d)return;var ends=lbEnds(d&&d.weekEnd);
     if(lgMode==='wr'){
@@ -2197,12 +2197,12 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
       board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgPnlHead','Top PnL this week')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+pt.slice(0,5).map(function(x,i){var rk=i+1,p=+x.pnl;
         return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who"><span data-lvln="'+esc(x.who||'')+'"></span>'+esc(x.who||'anon')+'<span data-lpro="'+esc(x.who||'')+'"></span></span>'+(x.symbol?'<span class="lg-tr">'+esc(x.symbol)+' '+esc(x.side||'')+'</span>':'')+'<span class="lg-roe '+(p>=0?'up':'dn')+'">'+lgMoneyH(p)+'</span></div>';}).join('')+ends;
       if(window.mpLvlDecorate)window.mpLvlDecorate();wireLgPills();return;}
-    var t=(d&&d.top)||[];
-    var pz=(d&&d.prizes)||[30,20,10];
+    var t=(d&&d.topSpot)||[];
+    var pz=(d&&d.boardPrizes&&d.boardPrizes.spot)||[10,6,4,3,2];
     try{var sub=document.querySelector('.lg-sub');if(sub&&pz.length>=3){var k=0;sub.innerHTML=sub.innerHTML.replace(/\$\d+/g,function(m){k++;return k<=3?('$'+pz[k-1]):m;});}}catch(e){}
-    if(!t.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgEmpty','No trades yet this season — be the first. Open Paper Trade, close a winner, and you are on the board.')+'</div>'+ends;wireLgPills();return;}
-    board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgTopWeek','This week’s top traders')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+t.slice(0,5).map(function(x,i){var rk=i+1,roe=+x.roe,prize=(pz[i]!=null&&+pz[i]>0)?('$'+pz[i]):'';
-      return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who"><span data-lvln="'+esc(x.who||'')+'"></span>'+esc(x.who||'anon')+'<span data-lpro="'+esc(x.who||'')+'"></span></span>'+(x.symbol?'<span class="lg-tr">'+esc(x.symbol)+' '+esc(x.side||'')+'</span>':'')+'<span class="lg-roe '+(roe>=0?'up':'dn')+'">'+(roe>=0?'+':'')+roe.toFixed(0)+'%</span>'+(prize?'<span class="lg-prize">'+prize+'</span>':'')+'</div>';}).join('')+ends;
+    if(!t.length){board.innerHTML=lgPills()+lgNote()+'<div class="lg-empty">'+LT('lgSpotEmpty','No one is above the $10,000 start yet — trade on Demo Spot and cash profits out to your bank card.')+'</div>'+ends;wireLgPills();return;}
+    board.innerHTML=lgPills()+lgNote()+'<div class="lg-board-h">'+LT('lgSpotHead','Spot bank leaders')+' <span class="lg-live">'+LT('lgLive','live')+'</span></div>'+t.slice(0,5).map(function(x,i){var rk=i+1,bank=+x.bankUsd||0,prize=(pz[i]!=null&&+pz[i]>0)?('$'+pz[i]):'';
+      return '<div class="lg-row"><span class="lg-rank lg-r'+rk+'">'+rk+'</span><span class="lg-who"><span data-lvln="'+esc(x.who||'')+'"></span>'+esc(x.who||'anon')+'<span data-lpro="'+esc(x.who||'')+'"></span></span><span class="lg-roe up">$'+bank.toLocaleString('en-US',{maximumFractionDigits:0})+'</span>'+(prize?'<span class="lg-prize">'+prize+'</span>':'')+'</div>';}).join('')+ends;
     if(window.mpLvlDecorate)window.mpLvlDecorate();wireLgPills();}
   function wireLgPills(){board.querySelectorAll('[data-lgm]').forEach(function(b){b.addEventListener('click',function(){lgMode=b.getAttribute('data-lgm');lgDraw();});});}
   function renderBoard(){fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){lgLast=d;lgDraw();}).catch(function(){});}

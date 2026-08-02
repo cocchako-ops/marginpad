@@ -110,6 +110,9 @@
   .stn.dead{opacity:.55;}
   @media(max-width:420px){.stn{padding:11px 10px 10px;}.stn .s-s{font-size:9px;}}
   .coach{position:relative;display:flex;align-items:center;gap:10px;margin-top:14px;color:var(--dim);font-size:12.5px;line-height:1.5;}
+  .scomp{position:relative;margin-top:12px;font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.03em;line-height:1.6;color:var(--dim);border:1px dashed rgba(230,196,106,.4);border-radius:12px;padding:9px 12px;}
+  .scomp b{color:var(--brass);letter-spacing:.14em;}
+  .scomp a{color:var(--lime);}
   .coach .cnum{flex:none;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--lime);border:1px solid rgba(194,246,74,.4);border-radius:999px;padding:4px 9px;}
   .coach b{color:var(--ink);}
   .coach .go2{flex:none;margin-left:auto;background:var(--lime);color:#0a0b0d;border:none;border-radius:999px;padding:8px 15px;font:800 11.5px 'Familjen Grotesk',sans-serif;cursor:pointer;box-shadow:0 6px 22px -8px rgba(194,246,74,.7);animation:goPulse 2.2s ease-in-out infinite;white-space:nowrap;}
@@ -218,6 +221,16 @@
   .net-base{background:rgba(0,82,255,.22);color:#8fb1ff;}
   .net-eth{background:rgba(136,153,255,.18);color:#b3bdff;}
   .net-bsc{background:rgba(240,185,11,.16);color:#ffd75a;}
+  .ex-cols{display:contents;}
+  .ex-colh{display:none;}
+  .mkt-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:0 16px;margin:10px 0 6px;}
+  .mkt-bar .search{width:auto;flex:1;margin:0;min-width:150px;}
+  .mkt-chips{display:flex;gap:5px;}
+  .mc{background:rgba(8,10,13,.7);border:1px solid var(--line2);color:var(--dim);border-radius:9px;padding:7.5px 11px;font:700 11.5px 'Familjen Grotesk',sans-serif;cursor:pointer;}
+  .mc.on{color:#0a0b0d;background:var(--lime);border-color:transparent;}
+  .mkt-head{display:none;}
+  .cvol{display:none;}
+  .cspark{display:none;}
   .cpx{font-family:'Space Mono',monospace;font-size:12.5px;text-align:right;min-width:84px;}
   .cchg{font-family:'Space Mono',monospace;font-size:11.5px;text-align:right;min-width:58px;font-weight:700;}
   .cmeta{color:var(--faint);font-size:10.5px;text-align:right;min-width:72px;font-family:'Space Mono',monospace;}
@@ -308,10 +321,23 @@
     .v-ex .ex-sum{padding:0 24px;}
     .v-ex .ex-sum .eb b{font-size:30px;}
     .v-ex .ex-quick{padding:0 24px;}
-    .v-ex .ex-tabs{padding:0 24px;}
-    .v-ex .search{width:calc(100% - 48px);margin:10px 24px 6px;}
-    .v-ex .crow{padding:11px 24px;}
-    .v-ex .list{max-height:62vh;}
+    .v-ex .ex-tabs{display:none;}
+    .v-ex .ex-cols{display:grid;grid-template-columns:400px minmax(0,1fr);column-gap:30px;align-items:start;padding:0 24px;margin-top:4px;}
+    .v-ex #exAssets,.v-ex #exMarkets{display:block;min-width:0;}
+    .v-ex #exAssets[hidden],.v-ex #exMarkets[hidden]{display:block;}
+    .v-ex .ex-colh{display:flex;justify-content:space-between;align-items:baseline;font:700 10px 'Space Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin:2px 0 9px;border-bottom:1px solid rgba(194,246,74,.14);padding-bottom:8px;}
+    .v-ex .ex-colh .exch-s{font:600 11px 'Familjen Grotesk',sans-serif;letter-spacing:.02em;text-transform:none;}
+    .v-ex .mkt-bar{padding:0;margin:0 0 6px;}
+    .v-ex .mkt-head{display:flex;align-items:center;gap:10px;padding:7px 10px 6px;font:700 9.5px 'Space Mono',monospace;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.05);}
+    .v-ex .mh-c{flex:1;min-width:0;padding-left:39px;}
+    .v-ex .mh-p{min-width:84px;text-align:right;}
+    .v-ex .mh-g{min-width:58px;text-align:right;}
+    .v-ex .mh-v{min-width:64px;text-align:right;}
+    .v-ex .mh-s{flex:0 0 56px;text-align:right;}
+    .v-ex .crow{padding:11px 10px;border-radius:10px;}
+    .v-ex .cvol{display:block;color:var(--faint);font-size:10.5px;text-align:right;min-width:64px;font-family:'Space Mono',monospace;}
+    .v-ex .cspark{display:block;flex:0 0 56px;height:18px;}
+    .v-ex .list{max-height:60vh;}
   }
 
   /* ============ paper trail ============ */
@@ -460,6 +486,7 @@
         <div class="mm-kick">YOUR THREE APPS — TAP TO OPEN</div>
         <div class="mm-cards" id="mmRow"></div>
         <div class="coach" id="coach" hidden></div>
+        <div class="scomp"><b>SEASON PRIZE</b> — the top 5 bank-card balances above $10,000 when the 14-day season ends win real USDT. Grow it, cash it out, defend it. <a href="/rewards/">See the prizes</a></div>
       </div>
 
       <div class="ovr">
@@ -535,12 +562,25 @@
         <button class="ex-tab on" data-extab="assets" type="button">Assets</button>
         <button class="ex-tab" data-extab="markets" type="button">Markets</button>
       </div>
+      <div class="ex-cols">
       <div id="exAssets">
+        <div class="ex-colh"><span>Your assets</span><span class="exch-s">live P&amp;L per coin</span></div>
         <div id="exHolds"><div class="empty">Loading…</div></div>
       </div>
       <div id="exMarkets" hidden>
-        <input class="search" id="mktSearch" type="text" placeholder="Search 250 coins…" autocomplete="off" />
+        <div class="ex-colh"><span>Markets</span><span class="exch-s">top 250 by market cap</span></div>
+        <div class="mkt-bar">
+          <input class="search" id="mktSearch" type="text" placeholder="Search 250 coins…" autocomplete="off" />
+          <div class="mkt-chips">
+            <button class="mc on" data-msort="top" type="button">Top</button>
+            <button class="mc" data-msort="gain" type="button">Gainers</button>
+            <button class="mc" data-msort="lose" type="button">Losers</button>
+            <button class="mc" data-msort="vol" type="button">Volume</button>
+          </div>
+        </div>
+        <div class="mkt-head"><span class="mh-c">Coin</span><span class="mh-p">Price</span><span class="mh-g">24h</span><span class="mh-v">Volume</span><span class="mh-s">7 days</span></div>
         <div class="list" id="mktList"><div class="empty">Loading markets…</div></div>
+      </div>
       </div>
     </div>
 
@@ -930,7 +970,20 @@
   }
 
   // ---- markets ----
-  var mktQ='';
+  var mktQ='',mktSort='top';
+  function fmtCap(v){v=+v||0;if(v>=1e9)return '$'+(v/1e9).toFixed(1)+'B';if(v>=1e6)return '$'+(v/1e6).toFixed(0)+'M';if(v>=1e3)return '$'+(v/1e3).toFixed(0)+'K';return '$'+v.toFixed(0);}
+  function mktSpark(c){
+    try{
+      var arr=(c.sparkline_in_7d&&c.sparkline_in_7d.price)||[];if(arr.length<10)return '';
+      var st=Math.max(1,Math.floor(arr.length/26)),pts=[];
+      for(var i=0;i<arr.length;i+=st)pts.push(+arr[i]||0);
+      pts.push(+arr[arr.length-1]||0);
+      var mn=Math.min.apply(null,pts),mx=Math.max.apply(null,pts),sp=mx-mn||1;
+      var w=56,h=18,seg=pts.map(function(v,i){return (i*(w/(pts.length-1))).toFixed(1)+','+((h-2)-(v-mn)/sp*(h-4)).toFixed(1);}).join(' ');
+      var up=(+c.price_change_percentage_7d_in_currency||0)>=0;
+      return '<svg class="cspark" viewBox="0 0 56 18" preserveAspectRatio="none" aria-hidden="true"><polyline points="'+seg+'" fill="none" stroke="'+(up?'#2ebd85':'#ff6258')+'" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/></svg>';
+    }catch(e){return '';}
+  }
   function loadMarkets(){
     fetch('/api/gecko/markets').then(function(r){return r.json();}).then(function(d){
       MKT=Array.isArray(d)?d:[];renderMarkets();if(VIEW==='ex'){renderTicker();renderExQuick();}
@@ -940,7 +993,11 @@
     var el=$('mktList');if(!el)return;
     if(!MKT.length){el.innerHTML='<div class="empty">Could not load markets — refresh.</div>';return;}
     var q=mktQ.toLowerCase();
-    var rows=MKT.filter(function(c){if(!q)return true;return (c.symbol+' '+c.name).toLowerCase().indexOf(q)>=0;}).slice(0,q?60:100);
+    var rows=MKT.filter(function(c){if(!q)return true;return (c.symbol+' '+c.name).toLowerCase().indexOf(q)>=0;});
+    if(mktSort==='gain')rows=rows.slice().sort(function(a,b){return (+b.price_change_percentage_24h||0)-(+a.price_change_percentage_24h||0);});
+    else if(mktSort==='lose')rows=rows.slice().sort(function(a,b){return (+a.price_change_percentage_24h||0)-(+b.price_change_percentage_24h||0);});
+    else if(mktSort==='vol')rows=rows.slice().sort(function(a,b){return (+b.total_volume||0)-(+a.total_volume||0);});
+    rows=rows.slice(0,q?60:100);
     el.innerHTML=rows.map(function(c){
       var chg=+c.price_change_percentage_24h||0;
       return '<div class="crow" data-mkt="'+esc(c.symbol)+'">'
@@ -948,6 +1005,8 @@
         +'<div class="cname"><b>'+esc(String(c.symbol||'').toUpperCase())+'</b><span>'+esc(c.name||'')+'</span></div>'
         +'<div class="cpx">'+fmtPx(c.current_price)+'</div>'
         +'<div class="cchg '+(chg>=0?'pnl-up':'pnl-dn')+'">'+(chg>=0?'+':'')+chg.toFixed(2)+'%</div>'
+        +'<div class="cvol">'+fmtCap(c.total_volume)+'</div>'
+        +mktSpark(c)
         +'</div>';
     }).join('')||'<div class="empty">Nothing matches.</div>';
     Array.prototype.forEach.call(el.querySelectorAll('[data-mkt]'),function(r){r.addEventListener('click',function(){
@@ -956,6 +1015,12 @@
     });});
   }
   document.addEventListener('input',function(e){if(e.target&&e.target.id==='mktSearch'){mktQ=e.target.value||'';renderMarkets();}});
+  document.addEventListener('click',function(e){
+    var b=e.target&&e.target.closest&&e.target.closest('[data-msort]');if(!b)return;
+    mktSort=b.getAttribute('data-msort');
+    Array.prototype.forEach.call(document.querySelectorAll('[data-msort]'),function(x){x.classList.toggle('on',x===b);});
+    renderMarkets();
+  });
 
   // ---- memes ----
   function loadMemes(){
