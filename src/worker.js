@@ -9926,7 +9926,19 @@ export class SpotStore {
   _acct(uid, now) { // get-or-create: v2 accounts are born with $10,000 ON THE CARD (the sim starts at "money in the bank")
     let a = this.rows('SELECT * FROM spotacct WHERE user_id=?', uid)[0];
     if (!a) { this.state.storage.sql.exec('INSERT INTO spotacct(user_id,usdt,card,created,last_seen,onb) VALUES(?,0,?,?,?,0)', uid, SPOT_START_C, now, now); a = this.rows('SELECT * FROM spotacct WHERE user_id=?', uid)[0]; a._fresh = true; }
-    else if (!(a.onb > 0) && ((a.usdt || 0) > 0 || (this.rows('SELECT 1 FROM spothold WHERE user_id=? LIMIT 1', uid)[0]))) { this.state.storage.sql.exec('UPDATE spotacct SET onb=2 WHERE user_id=?', uid); a.onb = 2; } // grandfather pre-v2 accounts (USDT landed directly) — they already "did" the on-ramp
+    else {
+      const sql0 = this.state.storage.sql;
+      // pre-v2 account (v1 dropped the $10k straight onto the exchange — even just OPENING the page auto-created one,
+      // which is exactly what happened on the owner's account). An UNTOUCHED v1 account — exactly $10k on the exchange,
+      // zero transactions, zero holds — restarts as a fresh v2 CARD account so the on-ramp steps can't be "already
+      // done" on an account the user never actually used. Applies even if an earlier deploy already grandfathered it
+      // to onb=2 (that grandfathering is what skipped the USDT step). Accounts with ANY activity keep their money.
+      const touched = (this.rows('SELECT 1 FROM spottx WHERE user_id=? LIMIT 1', uid)[0]) || (this.rows('SELECT 1 FROM spothold WHERE user_id=? LIMIT 1', uid)[0]);
+      if (!touched && (a.usdt || 0) === SPOT_START_C && !(a.card > 0) && !(a.wusdt > 0)) {
+        sql0.exec("UPDATE spotacct SET card=?, usdt=0, onb=0, gas='{}' WHERE user_id=?", SPOT_START_C, uid);
+        a.card = SPOT_START_C; a.usdt = 0; a.onb = 0; a._fresh = true;
+      } else if (!(a.onb > 0) && ((a.usdt || 0) > 0 || (this.rows('SELECT 1 FROM spothold WHERE user_id=? LIMIT 1', uid)[0]))) { sql0.exec('UPDATE spotacct SET onb=2 WHERE user_id=?', uid); a.onb = 2; } // active pre-v2 account → grandfather past the on-ramp
+    }
     return a;
   }
   _gas(a) { try { const g = JSON.parse(a.gas || '{}'); return (g && typeof g === 'object') ? g : {}; } catch (e) { return {}; } }

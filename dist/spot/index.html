@@ -9,7 +9,7 @@
 <title>Free Demo Spot Trading — $10,000 Practice Wallet | MarginPad</title>
 <meta name="description" content="A full crypto life-simulation with $10,000 in practice money: link a card, buy USDT, create a wallet with a real seed-phrase moment, pick networks, pay gas and trade BTC plus 150+ meme coins across Solana, Base, Ethereum and BSC — zero risk." />
 <link rel="canonical" href="https://marginpad.io/spot/" />
-<meta name="theme-color" content="#0a0b0d" />
+<meta name="theme-color" content="#08090c" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta property="og:title" content="Free Demo Spot Trading — $10,000 Practice Wallet | MarginPad" />
 <meta property="og:description" content="Learn crypto from zero, step by step: card, exchange, USDT, self-custody wallet, networks, gas — then trade BTC and Solana meme coins. All practice, zero risk." />
@@ -24,138 +24,210 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is the $10,000 demo wallet real money?","acceptedAnswer":{"@type":"Answer","text":"No — it is practice money on a virtual card. Prices, fees, network costs and slippage are real-market accurate, but nothing is at risk and nothing can be withdrawn."}},{"@type":"Question","name":"What do I learn step by step?","acceptedAnswer":{"@type":"Answer","text":"The full real-life flow: buying USDT with a card (and its fee), creating a self-custody wallet and saving a seed phrase, withdrawing to the right network, swapping for gas coins like SOL, and finally buying coins and meme coins."}},{"@type":"Question","name":"Which coins can I trade?","acceptedAnswer":{"@type":"Answer","text":"The top 250 coins by market cap plus 150+ trending meme coins across Solana, Base, Ethereum and BNB Chain, priced live from on-chain DEX data."}},{"@type":"Question","name":"Can I reset my demo account?","acceptedAnswer":{"@type":"Answer","text":"Yes — one reset available, back to a fresh $10,000 card, at most once every 7 days. Your history is kept."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"MarginPad","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Demo Spot","item":"https://marginpad.io/spot/"}]}</script>
 <style>
-  :root{--bg:#0a0b0d;--panel:#111419;--panel2:#161a21;--line:#232932;--line2:#2f3742;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#2ebd85;--red:#ff6258;--cyan:#38bdf8;--gold:#ffd75a;--panel-2:#161a21;--line-bright:#2f3742;--ink-dim:#9aa3ad;--ink-faint:#5c656f;}
+  /* ============ tokens: three worlds, one path ============
+     The palette IS the information architecture — color tells you WHERE money sits:
+     brass = the bank/card world · lime = the exchange (MarginPad's own color) · violet = on-chain self-custody. */
+  :root{
+    --bg:#08090c;--bg2:#0b0d11;--panel:#101318;--panel2:#141821;--line:#1e242e;--line2:#2c3440;
+    --ink:#ecebe4;--dim:#98a1ac;--faint:#5a636e;
+    --lime:#c2f64a;--brass:#e6c46a;--viol:#a78bfa;--up:#2ebd85;--red:#ff6258;--cyan:#38bdf8;
+    --panel-2:#141821;--line-bright:#2c3440;--ink-dim:#98a1ac;--ink-faint:#5a636e;
+  }
   *{box-sizing:border-box;}
   html{touch-action:manipulation;}
   body{margin:0;overflow-x:hidden;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
   a{color:var(--lime);text-decoration:none;}
-  body::before{content:'';position:fixed;inset:-30% -10% auto;height:70%;background:radial-gradient(ellipse 60% 50% at 24% 18%,rgba(194,246,74,.075),transparent 60%),radial-gradient(ellipse 50% 44% at 78% 8%,rgba(56,189,248,.06),transparent 60%);pointer-events:none;z-index:0;}
-  .wrap{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:18px 16px calc(96px + env(safe-area-inset-bottom));}
-  header{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+  body::before{content:'';position:fixed;inset:-28% -12% auto;height:64%;pointer-events:none;z-index:0;
+    background:radial-gradient(ellipse 46% 42% at 16% 12%,rgba(230,196,106,.05),transparent 62%),radial-gradient(ellipse 44% 40% at 52% 6%,rgba(194,246,74,.055),transparent 60%),radial-gradient(ellipse 46% 44% at 86% 14%,rgba(167,139,250,.055),transparent 62%);}
+  .wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:18px 16px calc(96px + env(safe-area-inset-bottom));}
+  header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
   .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:var(--ink);letter-spacing:-.02em;}
   .brand b{color:var(--lime);}
   .hnav{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13.5px;font-weight:600;}
   .hnav a{color:var(--dim);}
-  .hauth{background:#1a2027;border:1px solid var(--line2);color:var(--ink);border-radius:10px;padding:8px 14px;font:600 13px 'Familjen Grotesk',sans-serif;cursor:pointer;}
-  h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,4.6vw,38px);letter-spacing:-.02em;margin:6px 0 8px;}
-  h1 b{color:var(--lime);}
-  .sub{color:var(--dim);font-size:14.5px;line-height:1.6;max-width:640px;margin:0 0 18px;}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;}
-  .gate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:16px 0;}
-  .gf{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;}
-  .gf b{display:block;font-size:14px;margin-bottom:4px;}
-  .gf span{color:var(--dim);font-size:12.5px;line-height:1.55;display:block;}
-  .cta{display:inline-block;background:var(--lime);color:#0a0b0d;font-weight:800;font-size:15px;border:none;border-radius:12px;padding:13px 26px;cursor:pointer;font-family:inherit;}
-  .disc{color:var(--faint);font-size:11.5px;margin-top:10px;}
-  /* journey stepper */
-  .jrny{background:linear-gradient(160deg,rgba(56,189,248,.06),var(--panel) 65%);border:1px solid rgba(56,189,248,.25);border-radius:16px;padding:14px 16px;margin-bottom:14px;}
-  .jrny-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin-bottom:2px;}
-  .jrny-s{color:var(--dim);font-size:12px;margin-bottom:11px;}
-  .steps{display:flex;flex-direction:column;gap:7px;}
-  .step{display:flex;align-items:center;gap:11px;background:rgba(10,12,15,.5);border:1px solid var(--line);border-radius:12px;padding:10px 12px;}
-  .step.done{opacity:.62;}
-  .step.next{border-color:rgba(194,246,74,.45);}
-  .st-n{flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:#20262e;color:var(--dim);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;}
-  .step.done .st-n{background:rgba(46,189,133,.2);color:var(--up);}
-  .step.next .st-n{background:rgba(194,246,74,.18);color:var(--lime);}
-  .st-b{flex:1;min-width:0;}
-  .st-b b{display:block;font-size:13.5px;}
-  .st-b span{display:block;color:var(--faint);font-size:11.5px;line-height:1.45;}
-  .st-go{flex:0 0 auto;background:var(--lime);color:#0a0b0d;border:none;border-radius:9px;padding:8px 14px;font:800 12px 'Familjen Grotesk',sans-serif;cursor:pointer;}
-  .step.done .st-go{display:none;}
-  .step.locked .st-go{display:none;}
-  /* wallet strip */
-  .wstrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:10px;}
-  .wbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;}
-  .wbox .l{color:var(--faint);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
-  .wbox .v{font-family:'Space Mono',ui-monospace,monospace;font-weight:700;font-size:19px;}
-  .wbox.hero{border-color:rgba(194,246,74,.35);background:linear-gradient(160deg,rgba(194,246,74,.08),var(--panel) 60%);}
-  .wbox .v small{font-size:11px;color:var(--faint);font-weight:400;}
+  .hauth{background:#171c24;border:1px solid var(--line2);color:var(--ink);border-radius:10px;padding:8px 14px;font:600 13px 'Familjen Grotesk',sans-serif;cursor:pointer;}
+  .btn{border:none;border-radius:11px;padding:11px 18px;font:800 13.5px 'Familjen Grotesk',sans-serif;cursor:pointer;}
+  .btn:focus-visible,button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:2px;}
+
+  /* ============ signed-out gate ============ */
+  #gate h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(30px,5.4vw,52px);line-height:1.02;letter-spacing:-.04em;margin:14px 0 14px;max-width:820px;}
+  #gate h1 em{font-style:normal;color:var(--lime);}
+  .gsub{color:var(--dim);font-size:15px;line-height:1.65;max-width:600px;margin:0 0 22px;}
+  .gsub b{color:var(--ink);}
+  .cta{display:inline-block;background:var(--lime);color:#0a0b0d;font-weight:800;font-size:15.5px;border:none;border-radius:13px;padding:15px 30px;cursor:pointer;font-family:inherit;box-shadow:0 14px 40px -14px rgba(194,246,74,.45);}
+  .disc{color:var(--faint);font-size:11.5px;margin-top:12px;}
+  /* the gate teaches the concept before signup: a miniature of the money map */
+  .gmap{display:flex;align-items:stretch;gap:0;margin:34px 0 10px;max-width:860px;}
+  .gmap .gstn{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 15px;position:relative;}
+  .gmap .gstn b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;letter-spacing:-.01em;margin:8px 0 4px;}
+  .gmap .gstn span{color:var(--dim);font-size:12px;line-height:1.55;display:block;}
+  .gmap .gstn i{font-style:normal;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;}
+  .gmap .glnk{flex:0 0 42px;display:flex;align-items:center;justify-content:center;position:relative;}
+  .gmap .glnk::before{content:'';position:absolute;left:0;right:0;top:50%;border-top:2px dashed var(--line2);}
+  .gmap .glnk svg{position:relative;background:var(--bg);}
+  .gstn.g1{border-color:rgba(230,196,106,.35);} .gstn.g1 i{color:var(--brass);}
+  .gstn.g2{border-color:rgba(194,246,74,.35);} .gstn.g2 i{color:var(--lime);}
+  .gstn.g3{border-color:rgba(167,139,250,.35);} .gstn.g3 i{color:var(--viol);}
+  .glist{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:22px 0 0;max-width:860px;}
+  .gl{display:flex;gap:10px;align-items:flex-start;color:var(--dim);font-size:12.5px;line-height:1.55;}
+  .gl svg{flex:none;margin-top:2px;}
+  .gl b{color:var(--ink);}
+  @media(max-width:700px){.gmap{flex-direction:column;}.gmap .glnk{flex-basis:30px;}.gmap .glnk::before{left:50%;right:auto;top:0;bottom:0;border-top:none;border-left:2px dashed var(--line2);}.gmap .glnk svg{transform:rotate(90deg);}}
+
+  /* ============ masthead ============ */
+  .mast{display:flex;align-items:flex-end;gap:26px;flex-wrap:wrap;margin:2px 0 20px;}
+  .mast-l{flex:1;min-width:260px;}
+  .kick{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.22em;color:var(--faint);text-transform:uppercase;}
+  .kick i{font-style:normal;color:var(--lime);}
+  .total{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(40px,6vw,58px);letter-spacing:-.045em;line-height:1;margin:6px 0 10px;}
+  .total small{font-size:.45em;color:var(--dim);font-weight:700;letter-spacing:-.02em;}
+  .mchips{display:flex;gap:8px;flex-wrap:wrap;}
+  .mchip{display:inline-flex;align-items:baseline;gap:7px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-family:'Space Mono',monospace;font-size:12.5px;}
+  .mchip .k{color:var(--faint);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
   .pnl-up{color:var(--up);}.pnl-dn{color:var(--red);}
-  .wreset{background:none;border:1px solid var(--line2);color:var(--dim);border-radius:9px;padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;margin-top:6px;font-family:inherit;}
-  .accts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
-  .acct{flex:1;min-width:150px;display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 12px;cursor:pointer;}
-  .acct i{flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
-  .acct .ab{flex:1;min-width:0;}
-  .acct .ab b{display:block;font-family:'Space Mono',ui-monospace,monospace;font-size:13.5px;}
-  .acct .ab span{display:block;color:var(--faint);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;}
-  .tabs{display:flex;gap:6px;margin:4px 0 14px;overflow-x:auto;scrollbar-width:none;}
-  .tabs::-webkit-scrollbar{display:none;}
-  .tab{flex:0 0 auto;background:var(--panel);border:1px solid var(--line);color:var(--dim);border-radius:11px;padding:9px 16px;font:600 13px 'Familjen Grotesk',sans-serif;cursor:pointer;white-space:nowrap;}
-  .tab.on{background:#1c2413;border-color:rgba(194,246,74,.45);color:var(--lime);}
-  .tab .n{font-size:10.5px;opacity:.7;}
-  .rowhead{display:flex;color:var(--faint);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:4px 12px 8px;gap:10px;}
-  .crow{display:flex;align-items:center;gap:10px;padding:11px 12px;border-top:1px solid var(--line);cursor:pointer;transition:background .12s;}
-  .crow:hover{background:rgba(255,255,255,.025);}
-  .clogo{width:30px;height:30px;border-radius:50%;background:#20262e;flex:0 0 auto;object-fit:contain;}
-  .clogo.txt{display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:var(--dim);}
-  .cname{flex:1;min-width:0;}
-  .cname b{display:block;font-size:14px;}
-  .cname span{display:block;color:var(--faint);font-size:11.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .netb{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.04em;border-radius:5px;padding:1px 6px;vertical-align:1px;margin-left:6px;}
-  .net-solana{background:rgba(153,69,255,.18);color:#c39aff;}
-  .net-base{background:rgba(0,82,255,.2);color:#7fa8ff;}
-  .net-eth{background:rgba(136,153,255,.16);color:#a9b4ff;}
-  .net-bsc{background:rgba(240,185,11,.16);color:#ffd75a;}
-  .cpx{font-family:'Space Mono',ui-monospace,monospace;font-size:13px;text-align:right;min-width:86px;}
-  .cchg{font-family:'Space Mono',ui-monospace,monospace;font-size:12px;text-align:right;min-width:64px;font-weight:700;}
-  .cmeta{color:var(--faint);font-size:11px;text-align:right;min-width:78px;font-family:'Space Mono',ui-monospace,monospace;}
-  .cbtn{flex:0 0 auto;background:#1c2413;border:1px solid rgba(194,246,74,.4);color:var(--lime);border-radius:9px;padding:7px 13px;font:700 12px 'Familjen Grotesk',sans-serif;cursor:pointer;}
-  .empty{color:var(--faint);text-align:center;padding:26px 10px;font-size:13.5px;line-height:1.6;}
-  .search{width:100%;background:var(--panel);border:1px solid var(--line2);border-radius:11px;color:var(--ink);font:600 14px 'Familjen Grotesk',sans-serif;padding:11px 14px;margin-bottom:10px;outline:none;}
-  .memewarn{background:rgba(255,98,88,.07);border:1px solid rgba(255,98,88,.25);border-radius:11px;color:#ffb4ad;font-size:12px;line-height:1.55;padding:9px 12px;margin-bottom:10px;}
-  .netfilt{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none;}
-  .nf{flex:0 0 auto;background:var(--panel);border:1px solid var(--line);color:var(--dim);border-radius:9px;padding:6px 12px;font:700 11.5px 'Familjen Grotesk',sans-serif;cursor:pointer;}
-  .nf.on{color:var(--lime);border-color:rgba(194,246,74,.4);}
-  .pgrid{display:grid;grid-template-columns:1.5fr 1fr;gap:12px;margin-bottom:12px;}
-  @media(max-width:760px){.pgrid{grid-template-columns:1fr;}}
-  .pv-title{color:var(--faint);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+  .mast-r{flex:0 1 340px;min-width:250px;}
+  .spark{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px 6px;}
+  .spark .sl{display:flex;justify-content:space-between;align-items:center;color:var(--faint);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:4px;}
+  .wreset{background:none;border:none;color:var(--faint);font:700 10.5px 'Space Mono',monospace;letter-spacing:.06em;cursor:pointer;padding:2px 0;}
+  .wreset:hover{color:var(--red);}
   canvas{display:block;width:100%;}
-  .dleg{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:8px;}
-  .dleg span{display:inline-flex;align-items:center;gap:5px;color:var(--dim);font-size:11.5px;font-family:'Space Mono',ui-monospace,monospace;}
-  .dleg i{width:9px;height:9px;border-radius:3px;display:inline-block;}
-  .hpnl{text-align:right;min-width:96px;}
-  .hpnl b{display:block;font-family:'Space Mono',ui-monospace,monospace;font-size:13px;}
-  .hpnl span{font-size:11px;font-family:'Space Mono',ui-monospace,monospace;}
-  .stale{color:#ffb347;font-size:9.5px;font-weight:700;text-transform:uppercase;}
-  /* wallet tab */
-  .wal-sec{margin-bottom:12px;}
-  .wal-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line);}
-  .wal-row .wr-b{flex:1;min-width:0;}
-  .wal-row .wr-b b{display:block;font-size:13.5px;}
-  .wal-row .wr-b span{display:block;color:var(--faint);font-size:11px;font-family:'Space Mono',ui-monospace,monospace;}
-  .wal-amt{text-align:right;font-family:'Space Mono',ui-monospace,monospace;font-size:13px;}
-  .wal-amt span{display:block;font-size:10.5px;color:var(--faint);}
-  .addr-box{background:#0c0f13;border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-top:8px;}
-  .addr-box .al{color:var(--faint);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;}
-  .addr-box .av{font-family:'Space Mono',ui-monospace,monospace;font-size:11px;word-break:break-all;color:var(--cyan);cursor:pointer;}
-  .sbtn{background:#16222b;border:1px solid rgba(56,189,248,.35);color:var(--cyan);border-radius:9px;padding:8px 13px;font:700 12px 'Familjen Grotesk',sans-serif;cursor:pointer;}
-  /* history */
-  .txrow{display:flex;align-items:center;gap:10px;padding:10px 12px;border-top:1px solid var(--line);font-size:12.5px;}
-  .txside{font-weight:800;font-size:10px;min-width:52px;}
-  .txside.b{color:var(--up);}.txside.s{color:var(--red);}.txside.r{color:var(--cyan);}.txside.o{color:var(--gold);}.txside.w{color:#c39aff;}.txside.x{color:var(--cyan);}
+  .empty{color:var(--faint);text-align:center;padding:26px 10px;font-size:13.5px;line-height:1.6;}
+
+  /* ============ THE MONEY MAP (signature) ============ */
+  .mmap{position:relative;background:linear-gradient(180deg,var(--bg2),var(--panel));border:1px solid var(--line);border-radius:20px;padding:20px 18px 16px;margin-bottom:14px;overflow:hidden;}
+  .mmap::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.04) 1px,transparent 1.5px);background-size:22px 22px;}
+  .mm-kick{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.24em;color:var(--faint);text-transform:uppercase;margin-bottom:14px;position:relative;}
+  .mm-row{display:flex;align-items:stretch;gap:0;position:relative;}
+  .stn{flex:1;min-width:0;background:rgba(10,12,16,.72);border:1px solid var(--line2);border-radius:16px;padding:13px 14px;cursor:pointer;position:relative;transition:transform .16s,border-color .16s;}
+  .stn:hover{transform:translateY(-2px);}
+  .stn .s-k{display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:7px;}
+  .stn .s-k svg{flex:none;}
+  .stn .s-v{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(15px,2.2vw,20px);letter-spacing:-.02em;}
+  .stn .s-s{color:var(--faint);font-size:10.5px;margin-top:4px;line-height:1.45;min-height:15px;}
+  .stn.s-card{border-color:rgba(230,196,106,.4);background:linear-gradient(150deg,rgba(230,196,106,.09),rgba(10,12,16,.72) 55%);}
+  .stn.s-card .s-k{color:var(--brass);}
+  .stn.s-ex{border-color:rgba(194,246,74,.4);background:linear-gradient(150deg,rgba(194,246,74,.08),rgba(10,12,16,.72) 55%);}
+  .stn.s-ex .s-k{color:var(--lime);}
+  .stn.s-wal{border-color:rgba(167,139,250,.42);background:linear-gradient(150deg,rgba(167,139,250,.1),rgba(10,12,16,.72) 55%);}
+  .stn.s-wal .s-k{color:var(--viol);}
+  .stn.dead{opacity:.55;}
+  .mm-link{flex:0 0 74px;position:relative;display:flex;align-items:center;justify-content:center;}
+  .mm-track{position:absolute;left:-6px;right:-6px;top:50%;height:2px;background:var(--line2);}
+  .mm-link.live .mm-track{background:linear-gradient(90deg,var(--line2),currentColor,var(--line2));}
+  .mm-dot{position:absolute;top:calc(50% - 2.5px);left:0;width:5px;height:5px;border-radius:50%;background:currentColor;opacity:0;animation:mmFlow 2.6s linear infinite;}
+  .mm-dot:nth-child(3){animation-delay:.85s;}
+  .mm-dot:nth-child(4){animation-delay:1.7s;}
+  @keyframes mmFlow{0%{left:-4px;opacity:0;}12%{opacity:.95;}88%{opacity:.95;}100%{left:calc(100% - 2px);opacity:0;}}
+  .mm-link .go{position:relative;z-index:2;background:var(--lime);color:#0a0b0d;border:none;border-radius:999px;padding:8px 13px;font:800 11px 'Familjen Grotesk',sans-serif;cursor:pointer;white-space:nowrap;box-shadow:0 6px 22px -8px rgba(194,246,74,.7);animation:goPulse 2.2s ease-in-out infinite;}
+  @keyframes goPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+  .coach{position:relative;display:flex;align-items:center;gap:10px;margin-top:14px;color:var(--dim);font-size:12.5px;line-height:1.5;}
+  .coach .cnum{flex:none;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--lime);border:1px solid rgba(194,246,74,.4);border-radius:999px;padding:4px 9px;}
+  .coach b{color:var(--ink);}
+  @media(max-width:760px){
+    .mm-row{flex-direction:column;}
+    .mm-link{flex-basis:44px;}
+    .mm-track{left:50%;right:auto;top:-6px;bottom:-6px;width:2px;height:auto;}
+    .mm-dot{display:none;}
+  }
+
+  /* ============ overview strip (equity + allocation) ============ */
+  .ovr{display:grid;grid-template-columns:1.7fr 1fr;gap:12px;margin-bottom:16px;}
+  @media(max-width:820px){.ovr{grid-template-columns:1fr;}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 15px;}
+  .p-k{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.18em;color:var(--faint);text-transform:uppercase;margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline;}
+  .dleg{display:flex;flex-wrap:wrap;gap:5px 12px;margin-top:8px;}
+  .dleg span{display:inline-flex;align-items:center;gap:5px;color:var(--dim);font-size:11px;font-family:'Space Mono',monospace;}
+  .dleg i{width:8px;height:8px;border-radius:3px;display:inline-block;}
+
+  /* ============ the two worlds ============ */
+  .worlds{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;margin-bottom:16px;}
+  @media(max-width:980px){.worlds{grid-template-columns:1fr;}}
+  .world{border-radius:20px;border:1px solid var(--line);overflow:hidden;}
+  .world.w-ex{background:
+    linear-gradient(180deg,rgba(194,246,74,.045),transparent 130px),
+    repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(194,246,74,.03) 27px,rgba(194,246,74,.03) 28px),
+    repeating-linear-gradient(90deg,transparent,transparent 27px,rgba(194,246,74,.03) 27px,rgba(194,246,74,.03) 28px),
+    var(--panel);border-color:rgba(194,246,74,.22);}
+  .world.w-wal{background:
+    linear-gradient(180deg,rgba(167,139,250,.05),transparent 130px),
+    radial-gradient(circle at 1px 1px,rgba(167,139,250,.06) 1px,transparent 1.6px),
+    var(--panel);background-size:auto,20px 20px,auto;border-color:rgba(167,139,250,.26);}
+  .w-head{display:flex;align-items:center;gap:11px;padding:15px 16px 12px;}
+  .w-glyph{flex:none;width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;}
+  .w-ex .w-glyph{background:rgba(194,246,74,.13);color:var(--lime);}
+  .w-wal .w-glyph{background:rgba(167,139,250,.15);color:var(--viol);}
+  .w-t{flex:1;min-width:0;}
+  .w-t b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:17px;letter-spacing:-.02em;}
+  .w-t span{display:block;color:var(--faint);font-size:11px;margin-top:1px;}
+  .w-bal{font-family:'Space Mono',monospace;font-weight:700;font-size:15px;text-align:right;}
+  .w-bal small{display:block;font-size:9.5px;color:var(--faint);font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+  .w-sec{padding:4px 16px 8px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.16em;color:var(--faint);text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;}
+  .w-sec .act{font-family:'Familjen Grotesk',sans-serif;letter-spacing:0;text-transform:none;font-size:11.5px;font-weight:700;cursor:pointer;background:none;border:none;padding:0;}
+  .w-ex .w-sec .act{color:var(--lime);}
+  .w-wal .w-sec .act{color:var(--viol);}
+  .search{width:calc(100% - 32px);margin:2px 16px 8px;background:rgba(8,10,13,.7);border:1px solid var(--line2);border-radius:10px;color:var(--ink);font:600 13px 'Familjen Grotesk',sans-serif;padding:10px 13px;outline:none;}
+  .list{max-height:430px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#242c38 transparent;}
+  .crow{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .12s;}
+  .crow:hover{background:rgba(255,255,255,.03);}
+  .clogo{width:29px;height:29px;border-radius:50%;background:#1b212b;flex:0 0 auto;object-fit:contain;}
+  .clogo.txt{display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;color:var(--dim);}
+  .cname{flex:1;min-width:0;}
+  .cname b{display:block;font-size:13.5px;}
+  .cname span{display:block;color:var(--faint);font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .netb{display:inline-block;font-family:'Space Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.05em;border-radius:5px;padding:1.5px 6px;vertical-align:1.5px;margin-left:6px;}
+  .net-solana{background:rgba(153,69,255,.2);color:#c8a5ff;}
+  .net-base{background:rgba(0,82,255,.22);color:#8fb1ff;}
+  .net-eth{background:rgba(136,153,255,.18);color:#b3bdff;}
+  .net-bsc{background:rgba(240,185,11,.16);color:#ffd75a;}
+  .cpx{font-family:'Space Mono',monospace;font-size:12.5px;text-align:right;min-width:84px;}
+  .cchg{font-family:'Space Mono',monospace;font-size:11.5px;text-align:right;min-width:58px;font-weight:700;}
+  .cmeta{color:var(--faint);font-size:10.5px;text-align:right;min-width:72px;font-family:'Space Mono',monospace;}
+  .hpnl{text-align:right;min-width:92px;}
+  .hpnl b{display:block;font-family:'Space Mono',monospace;font-size:12.5px;}
+  .hpnl span{font-size:10.5px;font-family:'Space Mono',monospace;}
+  .stale{color:#ffb347;font-size:9px;font-weight:700;text-transform:uppercase;}
+  .memewarn{margin:2px 16px 8px;background:rgba(255,98,88,.06);border:1px solid rgba(255,98,88,.22);border-radius:10px;color:#ffb4ad;font-size:11.5px;line-height:1.55;padding:8px 11px;}
+  .netfilt{display:flex;gap:6px;margin:0 16px 8px;overflow-x:auto;scrollbar-width:none;}
+  .nf{flex:0 0 auto;background:rgba(8,10,13,.7);border:1px solid var(--line2);color:var(--dim);border-radius:9px;padding:5.5px 11px;font:700 11px 'Familjen Grotesk',sans-serif;cursor:pointer;}
+  .nf.on{color:var(--viol);border-color:rgba(167,139,250,.5);}
+  .walbals{display:flex;gap:7px;flex-wrap:wrap;padding:0 16px 8px;}
+  .wb{display:inline-flex;align-items:baseline;gap:6px;background:rgba(8,10,13,.7);border:1px solid var(--line2);border-radius:9px;padding:6px 10px;font-family:'Space Mono',monospace;font-size:11.5px;}
+  .wb .k{color:var(--faint);font-size:9.5px;font-weight:700;}
+  .addr-mini{display:flex;gap:7px;padding:0 16px 12px;flex-wrap:wrap;}
+  .am{flex:1;min-width:150px;background:rgba(8,10,13,.7);border:1px solid var(--line2);border-radius:9px;padding:6px 10px;cursor:pointer;}
+  .am .al{color:var(--faint);font-size:8.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-family:'Space Mono',monospace;}
+  .am .av{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--viol);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+  /* ============ paper trail ============ */
+  .trail{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;}
+  .trail .p-k{padding:14px 16px 0;margin-bottom:6px;}
+  .txrow{display:flex;align-items:center;gap:10px;padding:9px 16px;border-top:1px dashed rgba(255,255,255,.07);font-size:12px;}
+  .txside{font-family:'Space Mono',monospace;font-weight:700;font-size:9px;letter-spacing:.08em;min-width:64px;}
+  .txside.b{color:var(--up);}.txside.s{color:var(--red);}.txside.r{color:var(--cyan);}.txside.o{color:var(--brass);}.txside.w{color:var(--viol);}.txside.x{color:var(--cyan);}
   .txmid{flex:1;min-width:0;}
-  .txmid b{font-size:13px;}
-  .txmid span{color:var(--faint);font-size:11px;display:block;font-family:'Space Mono',ui-monospace,monospace;}
-  .txamt{text-align:right;font-family:'Space Mono',ui-monospace,monospace;font-size:12.5px;}
-  .txamt span{display:block;font-size:10.5px;color:var(--faint);}
-  /* generic modal */
-  .tmask{position:fixed;inset:0;background:rgba(4,6,8,.8);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:120;display:none;align-items:flex-end;justify-content:center;}
+  .txmid b{font-size:12.5px;}
+  .txmid span{color:var(--faint);font-size:10.5px;display:block;font-family:'Space Mono',monospace;}
+  .txamt{text-align:right;font-family:'Space Mono',monospace;font-size:12px;}
+  .txamt span{display:block;font-size:10px;color:var(--faint);}
+
+  /* ============ modals (shared shell) ============ */
+  .tmask{position:fixed;inset:0;background:rgba(4,6,9,.82);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);z-index:120;display:none;align-items:flex-end;justify-content:center;}
   .tmask.on{display:flex;}
   @media(min-width:721px){.tmask.on{align-items:center;}}
-  .tmod{width:min(560px,100vw);max-height:92vh;overflow-y:auto;background:#0e1116;border:1px solid var(--line2);border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));}
-  @media(min-width:721px){.tmod{border-radius:20px;}}
+  .tmod{width:min(560px,100vw);max-height:92vh;overflow-y:auto;background:#0d1015;border:1px solid var(--line2);border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));}
+  @media(min-width:721px){.tmod{border-radius:22px;}}
   .m-h{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-  .m-h b{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;flex:1;}
+  .m-h b{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;letter-spacing:-.02em;flex:1;}
   .m-x{background:none;border:none;color:var(--faint);font-size:22px;cursor:pointer;padding:2px 6px;line-height:1;}
   .m-p{color:var(--dim);font-size:13px;line-height:1.6;margin:0 0 12px;}
-  .tin-l{color:var(--faint);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin:0 0 5px;}
+  .tin-l{color:var(--faint);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;margin:0 0 5px;font-family:'Space Mono',monospace;}
   .tin{width:100%;background:var(--panel);border:1px solid var(--line2);border-radius:11px;color:var(--ink);font:700 16px 'Space Mono',monospace;padding:12px 14px;outline:none;}
   .tin.sm{font-size:12px;}
   .chips{display:flex;gap:6px;margin:8px 0 12px;}
   .chip{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:7px 0;font:700 12px 'Space Mono',monospace;cursor:pointer;text-align:center;}
   .m-est{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin:10px 0 12px;}
-  .m-est div{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);padding:2px 0;font-family:'Space Mono',ui-monospace,monospace;gap:12px;}
+  .m-est div{display:flex;justify-content:space-between;font-size:12px;color:var(--dim);padding:2px 0;font-family:'Space Mono',monospace;gap:12px;}
   .m-est b{color:var(--ink);text-align:right;}
   .m-go{width:100%;border:none;border-radius:13px;padding:14px;font:800 15px 'Familjen Grotesk',sans-serif;cursor:pointer;background:var(--lime);color:#0a0b0d;}
   .m-go.buy{background:var(--up);color:#04110b;}
@@ -163,50 +235,55 @@
   .m-go:disabled{opacity:.45;cursor:default;}
   .m-msg{font-size:12.5px;margin-top:9px;text-align:center;min-height:16px;line-height:1.5;}
   .m-msg.ok{color:var(--up);}.m-msg.err{color:var(--red);}
-  .lesson{background:rgba(255,215,90,.07);border:1px solid rgba(255,215,90,.25);border-radius:10px;color:#ffe9a8;font-size:11.5px;line-height:1.55;padding:8px 11px;margin:10px 0;}
+  .lesson{background:rgba(230,196,106,.06);border:1px solid rgba(230,196,106,.26);border-radius:10px;color:#f0dfae;font-size:11.5px;line-height:1.55;padding:8px 11px;margin:10px 0;}
   .netpick{display:flex;flex-direction:column;gap:7px;margin:10px 0;}
   .np{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:10px 12px;cursor:pointer;}
-  .np.on{border-color:rgba(194,246,74,.5);background:#151b10;}
+  .np.on{border-color:rgba(194,246,74,.5);background:#141a10;}
   .np b{flex:1;font-size:13.5px;}
-  .np span{color:var(--faint);font-size:11.5px;font-family:'Space Mono',ui-monospace,monospace;}
+  .np span{color:var(--faint);font-size:11.5px;font-family:'Space Mono',monospace;}
   /* virtual card */
-  .vcard{position:relative;border-radius:16px;padding:18px;background:linear-gradient(135deg,#1d2b16,#0f1a2e 55%,#101318);border:1px solid rgba(194,246,74,.3);overflow:hidden;margin-bottom:12px;box-shadow:0 18px 40px -18px rgba(0,0,0,.8);}
-  .vcard::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 80% 0%,rgba(194,246,74,.12),transparent 60%);}
-  .vc-top{display:flex;align-items:center;margin-bottom:22px;}
-  .vc-brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13px;letter-spacing:.02em;}
-  .vc-brand b{color:var(--lime);}
-  .vc-type{margin-left:auto;font-style:italic;font-weight:800;font-size:15px;color:#dfe6ee;}
-  .vc-chip{width:38px;height:27px;border-radius:6px;background:linear-gradient(140deg,#e8c96a,#b8913a);margin-bottom:12px;position:relative;}
+  .vcard{position:relative;border-radius:18px;padding:20px;background:linear-gradient(132deg,#2b2412,#141017 48%,#0e1116);border:1px solid rgba(230,196,106,.4);overflow:hidden;margin-bottom:14px;box-shadow:0 22px 48px -20px rgba(0,0,0,.85);}
+  .vcard::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 82% -4%,rgba(230,196,106,.16),transparent 58%);}
+  .vcard::after{content:'';position:absolute;inset:-40% -60% auto;height:120%;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.05) 47%,transparent 54%);}
+  .vc-top{display:flex;align-items:center;margin-bottom:24px;position:relative;}
+  .vc-brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13px;}
+  .vc-brand b{color:var(--brass);}
+  .vc-type{margin-left:auto;font-style:italic;font-weight:800;font-size:15px;color:#e6e9ee;}
+  .vc-chip{width:40px;height:29px;border-radius:6px;background:linear-gradient(140deg,#ecd07c,#b8913a);margin-bottom:13px;position:relative;}
   .vc-chip::after{content:'';position:absolute;inset:6px 5px;border:1px solid rgba(60,45,10,.5);border-radius:3px;}
-  .vc-num{font-family:'Space Mono',ui-monospace,monospace;font-size:17.5px;letter-spacing:.13em;margin-bottom:12px;}
-  .vc-foot{display:flex;gap:22px;font-family:'Space Mono',ui-monospace,monospace;font-size:11px;color:#c6cdd6;}
+  .vc-num{font-family:'Space Mono',monospace;font-size:18px;letter-spacing:.13em;margin-bottom:13px;position:relative;}
+  .vc-foot{display:flex;gap:22px;font-family:'Space Mono',monospace;font-size:11px;color:#cfd4da;position:relative;}
   .vc-foot small{display:block;font-size:8.5px;color:var(--faint);letter-spacing:.08em;}
-  .vc-bal{position:absolute;right:16px;bottom:14px;text-align:right;}
-  .vc-bal b{display:block;font-family:'Space Mono',ui-monospace,monospace;font-size:17px;color:var(--lime);}
+  .vc-bal{position:absolute;right:18px;bottom:16px;text-align:right;}
+  .vc-bal b{display:block;font-family:'Space Mono',monospace;font-size:18px;color:var(--brass);}
   .vc-bal small{font-size:9px;color:var(--faint);letter-spacing:.08em;}
   .seedbox{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0;}
-  .seedw{background:#0c0f13;border:1px solid var(--line2);border-radius:8px;padding:7px 9px;font:600 12px 'Space Mono',monospace;color:var(--ink);}
+  .seedw{background:#0a0d12;border:1px solid var(--line2);border-radius:8px;padding:7px 9px;font:600 12px 'Space Mono',monospace;color:var(--ink);}
   .seedw i{font-style:normal;color:var(--faint);font-size:10px;margin-right:5px;}
   .ckrow{display:flex;align-items:flex-start;gap:9px;margin:12px 0;color:var(--dim);font-size:12.5px;line-height:1.5;cursor:pointer;}
   .ckrow input{margin-top:2px;accent-color:#c2f64a;}
-  .toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:calc(24px + env(safe-area-inset-bottom));background:#141a10;border:1px solid rgba(194,246,74,.5);color:var(--ink);border-radius:13px;padding:12px 18px;font-size:13.5px;z-index:200;opacity:0;transition:.25s;pointer-events:none;max-width:90vw;}
-  .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
-  .foot{color:var(--faint);font-size:11.5px;line-height:1.6;margin-top:26px;border-top:1px solid var(--line);padding-top:14px;}
-  /* trade modal specifics */
+  .addr-box{background:#0a0d12;border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-top:8px;}
+  .addr-box .al{color:var(--faint);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-family:'Space Mono',monospace;}
+  .addr-box .av{font-family:'Space Mono',monospace;font-size:11px;word-break:break-all;color:var(--viol);cursor:pointer;}
+  /* trade modal */
   .tm-chart{height:240px;background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;position:relative;overflow:hidden;}
   .tm-chart .ldg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:12px;}
   .tfs{display:flex;gap:6px;margin-bottom:12px;}
   .tf{background:var(--panel);border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:5px 11px;font:700 11px 'Space Mono',monospace;cursor:pointer;}
   .tf.on{color:var(--lime);border-color:rgba(194,246,74,.4);}
-  .tm-pos{background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.22);border-radius:11px;padding:9px 12px;font-size:12.5px;color:var(--dim);margin-bottom:12px;font-family:'Space Mono',ui-monospace,monospace;}
+  .tm-pos{background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.22);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--dim);margin-bottom:12px;font-family:'Space Mono',monospace;}
   .tm-pos b{color:var(--ink);}
-  .paywith{display:flex;align-items:center;gap:8px;background:rgba(153,69,255,.08);border:1px solid rgba(153,69,255,.3);border-radius:11px;padding:9px 12px;font-size:12.5px;color:#d9c6ff;margin-bottom:12px;}
+  .paywith{display:flex;align-items:center;gap:8px;background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.3);border-radius:11px;padding:9px 12px;font-size:12.5px;color:#d9ccff;margin-bottom:12px;}
   .paywith b{color:#fff;}
-  .paywith .fix{margin-left:auto;background:#c2f64a;color:#0a0b0d;border:none;border-radius:8px;padding:6px 11px;font:800 11.5px 'Familjen Grotesk',sans-serif;cursor:pointer;flex:0 0 auto;}
+  .paywith .fix{margin-left:auto;background:var(--lime);color:#0a0b0d;border:none;border-radius:8px;padding:6px 11px;font:800 11.5px 'Familjen Grotesk',sans-serif;cursor:pointer;flex:0 0 auto;}
   .seg{display:flex;background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:4px;gap:4px;margin-bottom:12px;}
   .seg button{flex:1;background:none;border:none;border-radius:9px;padding:10px;font:800 14px 'Familjen Grotesk',sans-serif;color:var(--dim);cursor:pointer;}
   .seg button.buy.on{background:rgba(46,189,133,.16);color:var(--up);}
   .seg button.sell.on{background:rgba(255,98,88,.14);color:var(--red);}
+  .toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:calc(24px + env(safe-area-inset-bottom));background:#131a0e;border:1px solid rgba(194,246,74,.5);color:var(--ink);border-radius:13px;padding:12px 18px;font-size:13.5px;z-index:200;opacity:0;transition:.25s;pointer-events:none;max-width:90vw;}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+  .foot{color:var(--faint);font-size:11.5px;line-height:1.6;margin-top:26px;border-top:1px solid var(--line);padding-top:14px;}
+  @media(prefers-reduced-motion:reduce){.stn:hover{transform:none;}}
 </style>
 </head>
 <body>
@@ -223,77 +300,108 @@
 
   <!-- ============ SIGNED-OUT GATE ============ -->
   <section id="gate">
-    <h1>Learn crypto <b>from zero</b> — with $10,000 of practice money</h1>
-    <p class="sub">A full life-simulation: your <b style="color:var(--ink)">$10,000 arrives on a card</b>. Link it to the exchange, buy USDT (yes, the card fee is real-ish), create a self-custody wallet, save your seed phrase, pick the right network, get gas — and then trade BTC and <b style="color:var(--ink)">150+ meme coins on Solana, Base, Ethereum and BSC</b>. Every step exactly like real life. Zero risk.</p>
-    <button class="cta" type="button" data-auth-open>Get your $10,000 card</button>
-    <div class="disc">Free forever. Sign in with just an email — no password, no deposit, nothing to lose.</div>
-    <div class="gate-grid">
-      <div class="gf"><b>Step-by-step, like real life</b><span>Card → exchange → USDT → wallet → network → gas → coins. Each step teaches the real thing, fees included.</span></div>
-      <div class="gf"><b>Your own wallet + seed phrase</b><span>Get real-looking Solana and EVM addresses and a 12-word seed phrase moment — learn self-custody safely.</span></div>
-      <div class="gf"><b>Networks matter</b><span>Withdraw over Solana for $1 or Ethereum for $8 — pick wrong and feel it (without losing anything).</span></div>
-      <div class="gf"><b>150+ meme coins, 4 chains</b><span>Live trending memes on Solana, Base, Ethereum and BNB Chain — each shows its network and the coin you pay with.</span></div>
-      <div class="gf"><b>Real fees, gas &amp; slippage</b><span>Card fee 1.8%, exchange fee 0.1%, DEX fee 0.3%, gas in SOL/ETH/BNB, liquidity-scaled slippage.</span></div>
-      <div class="gf"><b>Daily PnL &amp; equity curve</b><span>Portfolio snapshots every day, average entry per coin, realized PnL, full history of everything you did.</span></div>
+    <div class="kick">DEMO SPOT <i>·</i> A CRYPTO LIFE-SIMULATION</div>
+    <h1>Your first <em>$10,000</em> in crypto.<br>Every step. Nothing at stake.</h1>
+    <p class="gsub">Real life has no practice mode — this is it. The money starts <b>on a bank card</b> and you carry it the whole way: onto an exchange, into your own wallet, across networks, into coins and memes. Real fees, real gas, real slippage. Fake money.</p>
+    <button class="cta" type="button" data-auth-open>Get the $10,000 card</button>
+    <div class="disc">Free forever. Email sign-in, no password, no deposit — nothing to lose but bad habits.</div>
+    <div class="gmap">
+      <div class="gstn g1"><i>01 · BANK</i><b>The card</b><span>$10,000 lands on a virtual Visa. Link it to the exchange and feel the 1.8% card fee — your first lesson.</span></div>
+      <div class="glnk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5a636e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="gstn g2"><i>02 · EXCHANGE</i><b>USDT &amp; the top 250</b><span>Buy USDT, then trade Bitcoin and 250 majors at live prices. Custodial — the exchange holds it for you.</span></div>
+      <div class="glnk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5a636e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="gstn g3"><i>03 · ON-CHAIN</i><b>Your wallet &amp; the memes</b><span>Generate addresses, guard a seed phrase, pick a network, pay gas in SOL — and hunt 150+ live meme coins on 4 chains.</span></div>
+    </div>
+    <div class="glist">
+      <div class="gl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c2f64a" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Fees are the curriculum.</b> Card 1.8%, exchange 0.1%, DEX 0.3%, network fees $0.80-$8, gas per transaction.</span></div>
+      <div class="gl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c2f64a" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Seed phrase moment.</b> Shown once, never stored — exactly how self-custody works.</span></div>
+      <div class="gl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c2f64a" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Wrong network = lesson,</b> not lost money. Try it here, never out there.</span></div>
+      <div class="gl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c2f64a" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Daily PnL, equity curve,</b> average entries, realized profit and a full paper trail.</span></div>
     </div>
   </section>
 
   <!-- ============ SIGNED-IN APP ============ -->
   <section id="app" hidden>
-    <div id="jrny" class="jrny" hidden>
-      <div class="jrny-t">Your crypto journey</div>
-      <div class="jrny-s">From cash to coins in five real-life steps. Do them in order — each unlocks the next.</div>
-      <div class="steps" id="steps"></div>
-    </div>
-
-    <div class="wstrip">
-      <div class="wbox hero"><div class="l">Total portfolio</div><div class="v" id="wTotal">—</div><button class="wreset" id="wReset" type="button">Reset · 1 left</button></div>
-      <div class="wbox"><div class="l">Today's PnL</div><div class="v" id="wToday">—</div></div>
-      <div class="wbox"><div class="l">PnL since start</div><div class="v" id="wAll">—</div></div>
-      <div class="wbox"><div class="l">Realized PnL</div><div class="v" id="wRealized">—</div></div>
-    </div>
-    <div class="accts" id="accts"></div>
-
-    <div class="tabs" id="tabs">
-      <button class="tab on" data-tab="port">Portfolio <span class="n" id="nPort"></span></button>
-      <button class="tab" data-tab="mkt">Markets</button>
-      <button class="tab" data-tab="meme">Meme coins</button>
-      <button class="tab" data-tab="wal">Wallet</button>
-      <button class="tab" data-tab="hist">History</button>
-    </div>
-
-    <div id="v-port">
-      <div class="pgrid">
-        <div class="card"><div class="pv-title">Equity curve</div><canvas id="eqCv" height="150"></canvas><div class="empty" id="eqEmpty" style="padding:12px" hidden>Your equity curve starts drawing after your first full day.</div></div>
-        <div class="card"><div class="pv-title">Allocation</div><canvas id="alCv" height="120"></canvas><div class="dleg" id="alLeg"></div></div>
+    <div class="mast">
+      <div class="mast-l">
+        <div class="kick">DEMO SPOT <i>·</i> YOUR MONEY, THE WHOLE WAY</div>
+        <div class="total" id="wTotal">—</div>
+        <div class="mchips">
+          <span class="mchip"><span class="k">Today</span><span id="wToday">—</span></span>
+          <span class="mchip"><span class="k">Since start</span><span id="wAll">—</span></span>
+          <span class="mchip"><span class="k">Realized</span><span id="wRealized">—</span></span>
+        </div>
       </div>
-      <div class="card" style="padding:6px 0 0">
-        <div id="holdList"><div class="empty">Loading your portfolio…</div></div>
+      <div class="mast-r">
+        <div class="spark">
+          <div class="sl"><span>Equity — daily</span><button class="wreset" id="wReset" type="button">RESET · 1 LEFT</button></div>
+          <canvas id="eqCv" height="84"></canvas>
+          <div class="empty" id="eqEmpty" style="padding:8px;font-size:11px" hidden>Draws after your first full day.</div>
+        </div>
       </div>
     </div>
 
-    <div id="v-mkt" hidden>
-      <input class="search" id="mktSearch" type="text" placeholder="Search 250 coins…" autocomplete="off" />
-      <div class="card" style="padding:6px 0 0"><div id="mktList"><div class="empty">Loading markets…</div></div></div>
+    <div class="mmap">
+      <div class="mm-kick">THE MONEY MAP — WHERE IT SITS RIGHT NOW</div>
+      <div class="mm-row" id="mmRow"></div>
+      <div class="coach" id="coach" hidden></div>
     </div>
 
-    <div id="v-meme" hidden>
-      <div class="memewarn"><b>Degen zone — 4 chains.</b> Live trending meme coins from on-chain DEX data. Every meme lives on a NETWORK and is paid for with that chain's coin (SOL, ETH or BNB) plus gas. Thin pools mean real slippage — and pools can rug to zero. That is the lesson.</div>
-      <div class="netfilt" id="netFilt">
-        <button class="nf on" data-net="all" type="button">All chains</button>
-        <button class="nf" data-net="solana" type="button">Solana</button>
-        <button class="nf" data-net="base" type="button">Base</button>
-        <button class="nf" data-net="eth" type="button">Ethereum</button>
-        <button class="nf" data-net="bsc" type="button">BNB Chain</button>
+    <div class="ovr">
+      <div class="panel" id="allocPanel">
+        <div class="p-k"><span>Allocation</span><span id="nPort"></span></div>
+        <div style="display:flex;gap:14px;align-items:center">
+          <div style="flex:0 0 132px"><canvas id="alCv" height="120"></canvas></div>
+          <div class="dleg" id="alLeg" style="flex:1;margin-top:0"></div>
+        </div>
       </div>
-      <div class="card" style="padding:6px 0 0"><div id="memeList"><div class="empty">Loading trending memes…</div></div></div>
+      <div class="panel">
+        <div class="p-k"><span>Field notes</span></div>
+        <div id="noteBox" style="color:var(--dim);font-size:12.5px;line-height:1.65">Every fee you pay here is real out there. Watch how much of your $10,000 the PATH itself eats — card fee, trading fees, network fees, gas, slippage — before the market even moves.</div>
+      </div>
     </div>
 
-    <div id="v-wal" hidden>
-      <div class="card wal-sec" id="walCard"><div class="empty">Loading wallet…</div></div>
+    <div class="worlds">
+      <!-- EXCHANGE world -->
+      <div class="world w-ex" id="exWorld">
+        <div class="w-head">
+          <div class="w-glyph"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg></div>
+          <div class="w-t"><b>Exchange</b><span>custodial — they hold it for you · fee 0.1%</span></div>
+          <div class="w-bal" id="exBal">—<small>on the exchange</small></div>
+        </div>
+        <div class="w-sec"><span>Your coins</span><button class="act" id="exTopUp" type="button">Buy USDT with card</button></div>
+        <div id="exHolds"><div class="empty" style="padding:14px">Nothing yet — buy USDT, then pick a coin below.</div></div>
+        <div class="w-sec" style="margin-top:6px"><span>Top 250 markets</span></div>
+        <input class="search" id="mktSearch" type="text" placeholder="Search coins…" autocomplete="off" />
+        <div class="list" id="mktList"><div class="empty">Loading markets…</div></div>
+      </div>
+
+      <!-- WALLET world -->
+      <div class="world w-wal" id="walWorld">
+        <div class="w-head">
+          <div class="w-glyph"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/></svg></div>
+          <div class="w-t"><b>On-chain wallet</b><span>self-custody — your keys, your coins, your gas</span></div>
+          <div class="w-bal" id="walBal">—<small>on-chain</small></div>
+        </div>
+        <div id="walBody"></div>
+        <div class="w-sec"><span>Your bags</span></div>
+        <div id="walHolds"><div class="empty" style="padding:14px">No bags yet.</div></div>
+        <div class="w-sec" style="margin-top:6px"><span>Trending memes — 4 chains</span></div>
+        <div class="memewarn"><b>Degen zone.</b> Every meme lives on a network and is paid for in that chain's coin, plus gas. Thin pools slip, and pools can rug to zero. That is the lesson.</div>
+        <div class="netfilt" id="netFilt">
+          <button class="nf on" data-net="all" type="button">All chains</button>
+          <button class="nf" data-net="solana" type="button">Solana</button>
+          <button class="nf" data-net="base" type="button">Base</button>
+          <button class="nf" data-net="eth" type="button">Ethereum</button>
+          <button class="nf" data-net="bsc" type="button">BNB Chain</button>
+        </div>
+        <div class="list" id="memeList"><div class="empty">Loading trending memes…</div></div>
+      </div>
     </div>
 
-    <div id="v-hist" hidden>
-      <div class="card" style="padding:6px 0 0"><div id="txList"><div class="empty">No activity yet.</div></div></div>
+    <div class="trail">
+      <div class="p-k"><span>Paper trail — everything you did</span></div>
+      <div id="txList"><div class="empty">No activity yet.</div></div>
     </div>
   </section>
 
@@ -301,9 +409,7 @@
 </div>
 
 <!-- generic sim modal (card / onramp / wallet / withdraw / swap) -->
-<div class="tmask" id="smask">
-  <div class="tmod" id="smod"></div>
-</div>
+<div class="tmask" id="smask"><div class="tmod" id="smod"></div></div>
 
 <!-- trade modal -->
 <div class="tmask" id="tmask">
@@ -363,6 +469,7 @@
   var esc=function(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');};
 
   function fmtUsd(v,dec){v=+v||0;return '$'+v.toLocaleString('en-US',{minimumFractionDigits:dec==null?2:dec,maximumFractionDigits:dec==null?2:dec});}
+  function fmtUsd0(v){v=+v||0;return '$'+Math.round(v).toLocaleString('en-US');}
   function fmtPx(v){v=+v||0;if(v>=1000)return '$'+v.toLocaleString('en-US',{maximumFractionDigits:2});if(v>=1)return '$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:4});if(v>=0.001)return '$'+v.toFixed(6).replace(/0+$/,'').replace(/\.$/,'');if(v>0)return '$'+v.toPrecision(4).replace(/0+$/,'').replace(/\.$/,'');return '$0';}
   function fmtQty(q){q=+q||0;if(q>=1e6)return (q/1e6).toFixed(2)+'M';if(q>=1000)return q.toLocaleString('en-US',{maximumFractionDigits:2});if(q>=1)return q.toLocaleString('en-US',{maximumFractionDigits:4});return q?q.toPrecision(4):'0';}
   function fmtNat(q){q=+q||0;if(q>=100)return q.toFixed(2);if(q>=1)return q.toFixed(4);return q?q.toPrecision(4):'0';}
@@ -373,7 +480,6 @@
   function netBadge(net){var n=NETS[net];return n?'<span class="netb '+n.cls+'">'+esc(n.label.toUpperCase())+'</span>':'';}
   function gasBal(a){return (PORT&&PORT.gas&&+PORT.gas[a])||0;}
 
-  // deterministic fake card visuals from the user id (nothing stored, nothing real)
   function cardBits(uid){var h=0,s=String(uid||'demo');for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;
     var num='4532';for(var g=0;g<3;g++){num+=' ';for(var d=0;d<4;d++){h=(h*1103515245+12345)>>>0;num+=String(h%10);}}
     h=(h*1103515245+12345)>>>0;var cvv=String(100+h%900);
@@ -398,125 +504,138 @@
       if(!d||d.error==='login_required'){ME=null;$('gate').hidden=false;$('app').hidden=true;return;}
       if(d.error)return;
       PORT=d;
-      if(d.fresh)toast('<b>Your $10,000 card has arrived.</b> Follow the journey steps to turn it into crypto.');
-      renderJourney();renderWallet();renderAccts();renderHolds();renderEquity();renderDonut();renderWalletTab();
-      if(first)loadHistory();
+      if(d.fresh)toast('<b>Your $10,000 card has arrived.</b> The map shows the way — start by linking it.');
+      renderMast();renderMap();renderHolds();renderEquity();renderDonut();renderWalletBody();
+      loadHistory();
     }).catch(function(){});
   }
   function stepState(){
     var d=PORT||{};
     var hasGas=false;var g=d.gas||{};for(var k in g){if(+g[k]>0)hasGas=true;}
     return [
-      {t:'Link your card to the exchange', s:'Your $10,000 arrived on a virtual card. Connect it to the exchange so you can buy crypto.', done:(d.onb||0)>=1, act:openCardModal, cta:'View card'},
-      {t:'Buy USDT with the card', s:'USDT is the dollar of crypto. Card purchases cost a 1.8% processing fee — in real life bank transfers are cheaper.', done:(d.onb||0)>=2, act:openOnrampModal, cta:'Buy USDT'},
-      {t:'Create a self-custody wallet', s:'Exchanges hold coins FOR you; a wallet is YOURS. You will get addresses and a seed phrase — guard it with your life.', done:!!(d.addr&&d.addr.sol), act:openWalletCreate, cta:'Create wallet'},
-      {t:'Send USDT to your wallet', s:'Withdraw from the exchange to your own address. Pick the network carefully — fees differ wildly.', done:(d.wusdtUsd||0)>0||hasGas, act:openWithdrawModal, cta:'Withdraw'},
-      {t:'Swap for SOL (gas + trading coin)', s:'On-chain you pay gas and buy memes with the network coin. Swap some wallet USDT for SOL to unlock meme trading.', done:hasGas, act:openSwapModal, cta:'Swap'}
+      {t:'Link your card to the exchange', done:(d.onb||0)>=1, act:openCardModal, cta:'Link card', where:1, coach:'Your $10,000 arrived on a virtual card. Link it to the exchange so you can buy crypto — you confirm it with the card’s last 4 digits.'},
+      {t:'Buy USDT with the card', done:(d.onb||0)>=2, act:openOnrampModal, cta:'Buy USDT', where:1, coach:'USDT is the dollar of crypto — it is what you trade with. Card purchases cost a 1.8% processing fee; in real life a bank transfer is cheaper.'},
+      {t:'Create a self-custody wallet', done:!!(d.addr&&d.addr.sol), act:openWalletCreate, cta:'Create wallet', where:2, coach:'The exchange holds coins FOR you; a wallet is YOURS. You get real-looking addresses and a seed phrase — guard it with your life.'},
+      {t:'Send USDT to your wallet', done:(d.wusdtUsd||0)>0||hasGas, act:openWithdrawModal, cta:'Withdraw', where:2, coach:'Withdraw USDT from the exchange to your own address. Pick the network carefully — Solana costs $1, Ethereum $8.'},
+      {t:'Swap for SOL — gas money', done:hasGas, act:openSwapModal, cta:'Swap', where:2, coach:'On-chain everything costs gas, and memes are paid for in the network’s coin. Swap some wallet USDT for SOL to unlock the degen zone.'}
     ];
   }
-  function renderJourney(){
+  var STN_CARD='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg>';
+  var STN_EX='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg>';
+  var STN_WAL='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/></svg>';
+  function renderMap(){
+    var d=PORT;if(!d)return;
     var steps=stepState();
-    var allDone=steps.every(function(s){return s.done;});
-    $('jrny').hidden=allDone;
-    if(allDone)return;
     var nextIdx=-1;steps.forEach(function(s,i){if(nextIdx<0&&!s.done)nextIdx=i;});
-    $('steps').innerHTML=steps.map(function(s,i){
-      var cls=s.done?'done':(i===nextIdx?'next':'locked');
-      return '<div class="step '+cls+'" data-step="'+i+'"><span class="st-n">'+(s.done?'&#10003;':(i+1))+'</span><span class="st-b"><b>'+esc(s.t)+'</b><span>'+esc(s.s)+'</span></span>'+((i===nextIdx)?'<button class="st-go" type="button" data-go="'+i+'">'+esc(s.cta)+'</button>':'')+'</div>';
-    }).join('');
-    Array.prototype.forEach.call($('steps').querySelectorAll('[data-go]'),function(b){b.addEventListener('click',function(){steps[+b.getAttribute('data-go')].act();});});
+    var gasBits=[];var g=d.gas||{};for(var k in g){if(+g[k]>0)gasBits.push(fmtNat(g[k])+' '+k);}
+    var link1Step=(nextIdx===0||nextIdx===1)?steps[nextIdx]:null;   // card->exchange leg
+    var link2Step=(nextIdx>=2&&nextIdx<=4)?steps[nextIdx]:null;      // exchange->wallet leg
+    function linkHtml(step,col){
+      return '<div class="mm-link'+(step?' live':'')+'" style="color:'+col+'">'
+        +'<span class="mm-track"></span>'
+        +(step?'<span class="mm-dot"></span><span class="mm-dot"></span><span class="mm-dot"></span><button class="go" type="button" data-act>'+esc(step.cta)+'</button>':'')
+        +'</div>';
+    }
+    $('mmRow').innerHTML=
+      '<div class="stn s-card'+((d.cardUsd||0)<=0?' dead':'')+'" id="stnCard"><div class="s-k">'+STN_CARD+'BANK CARD</div><div class="s-v">'+fmtUsd(d.cardUsd)+'</div><div class="s-s">virtual Visa · tap to view</div></div>'
+      +linkHtml(link1Step,'#e6c46a')
+      +'<div class="stn s-ex" id="stnEx"><div class="s-k">'+STN_EX+'EXCHANGE</div><div class="s-v">'+fmtUsd(d.exchangeUsd)+'</div><div class="s-s">'+fmtUsd(d.usdtUsd)+' USDT free · custodial</div></div>'
+      +linkHtml(link2Step,'#a78bfa')
+      +'<div class="stn s-wal'+(!(d.addr&&d.addr.sol)?' dead':'')+'" id="stnWal"><div class="s-k">'+STN_WAL+'ON-CHAIN WALLET</div><div class="s-v">'+((d.addr&&d.addr.sol)?fmtUsd(d.walletUsd):'—')+'</div><div class="s-s">'+((d.addr&&d.addr.sol)?(gasBits.length?gasBits.join(' · '):fmtUsd(d.wusdtUsd)+' USDT · no gas yet'):'not created yet')+'</div></div>';
+    var c=$('coach');
+    if(nextIdx<0){c.hidden=true;}
+    else{c.hidden=false;c.innerHTML='<span class="cnum">STEP '+(nextIdx+1)+' OF 5</span><span><b>'+esc(steps[nextIdx].t)+'.</b> '+esc(steps[nextIdx].coach)+'</span>';}
+    Array.prototype.forEach.call($('mmRow').querySelectorAll('[data-act]'),function(b){b.addEventListener('click',function(e){e.stopPropagation();steps[nextIdx].act();});});
+    $('stnCard').addEventListener('click',openCardModal);
+    $('stnEx').addEventListener('click',function(){try{$('exWorld').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}});
+    $('stnWal').addEventListener('click',function(){if(!(PORT.addr&&PORT.addr.sol)){openWalletCreate();return;}try{$('walWorld').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}});
   }
-  function renderWallet(){
+  function renderMast(){
     var d=PORT;if(!d)return;
-    $('wTotal').textContent=fmtUsd(d.totalUsd);
-    $('wToday').innerHTML=d.todayPnlUsd==null?'<small>first snapshot tonight</small>':pnlHtml(d.todayPnlUsd,d.totalUsd>0?d.todayPnlUsd/(d.totalUsd-d.todayPnlUsd)*100:0);
+    var t=fmtUsd(d.totalUsd);var di=t.indexOf('.');
+    $('wTotal').innerHTML=di>0?esc(t.slice(0,di))+'<small>'+esc(t.slice(di))+'</small>':esc(t);
+    $('wToday').innerHTML=d.todayPnlUsd==null?'<span style="color:var(--faint)">starts tonight</span>':pnlHtml(d.todayPnlUsd);
     $('wAll').innerHTML=pnlHtml(d.allTimePnlUsd,d.allTimePnlUsd/100);
-    $('wRealized').innerHTML=d.realizedUsd?pnlHtml(d.realizedUsd):'<small>sell something first</small>';
-    $('nPort').textContent=(d.holds&&d.holds.length)?('('+d.holds.length+')'):'';
+    $('wRealized').innerHTML=d.realizedUsd?pnlHtml(d.realizedUsd):'<span style="color:var(--faint)">—</span>';
+    $('nPort').textContent=(d.holds&&d.holds.length)?(d.holds.length+' positions'):'';
+    $('exBal').innerHTML=esc(fmtUsd0(d.exchangeUsd))+'<small>on the exchange</small>';
+    $('walBal').innerHTML=((d.addr&&d.addr.sol)?esc(fmtUsd0(d.walletUsd)):'—')+'<small>on-chain</small>';
     var rb=$('wReset');var cd=d.resetTs?(d.resetTs+7*86400000-Date.now()):0;
-    if(cd>0){var days=Math.ceil(cd/86400000);rb.textContent='Reset · 0 left ('+days+'d)';rb.disabled=true;rb.style.opacity=.55;}
-    else {rb.textContent='Reset · 1 left';rb.disabled=false;rb.style.opacity=1;}
-  }
-  var CARD_SVG='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg>';
-  var EX_SVG='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg>';
-  var WAL_SVG='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/></svg>';
-  function renderAccts(){
-    var d=PORT;if(!d)return;
-    $('accts').innerHTML=
-      '<div class="acct" id="acCard"><i style="background:rgba(255,215,90,.14);color:var(--gold)">'+CARD_SVG+'</i><span class="ab"><b>'+fmtUsd(d.cardUsd)+'</b><span>Card</span></span></div>'
-      +'<div class="acct" id="acEx"><i style="background:rgba(56,189,248,.14);color:var(--cyan)">'+EX_SVG+'</i><span class="ab"><b>'+fmtUsd(d.exchangeUsd)+'</b><span>Exchange</span></span></div>'
-      +'<div class="acct" id="acWal"><i style="background:rgba(153,69,255,.14);color:#c39aff">'+WAL_SVG+'</i><span class="ab"><b>'+fmtUsd(d.walletUsd)+'</b><span>Wallet (on-chain)</span></span></div>';
-    $('acCard').addEventListener('click',openCardModal);
-    $('acEx').addEventListener('click',function(){openOnrampModal();});
-    $('acWal').addEventListener('click',function(){switchTab('wal');});
+    if(cd>0){var days=Math.ceil(cd/86400000);rb.textContent='RESET · 0 LEFT ('+days+'D)';rb.disabled=true;rb.style.opacity=.55;}
+    else {rb.textContent='RESET · 1 LEFT';rb.disabled=false;rb.style.opacity=1;}
   }
   function holdRow(h){
     var m=h.meta||{};var sym=m.sym||h.sym;var isMeme=m.k==='meme';
     return '<div class="crow" data-hold="'+esc(h.sym)+'">'
       +logoImg(m.logo,sym)
-      +'<div class="cname"><b>'+esc(sym)+(isMeme?netBadge(m.net||'solana'):'')+(h.stale?' <span class="stale">stale</span>':'')+'</b><span>'+esc(m.name||(isMeme?'meme coin':''))+' · '+fmtQty(h.qty)+' @ '+fmtPx(h.qty>0?h.costUsd/h.qty:0)+' avg</span></div>'
+      +'<div class="cname"><b>'+esc(sym)+(isMeme?netBadge(m.net||'solana'):'')+(h.stale?' <span class="stale">stale</span>':'')+'</b><span>'+fmtQty(h.qty)+' @ '+fmtPx(h.qty>0?h.costUsd/h.qty:0)+' avg</span></div>'
       +'<div class="cpx">'+fmtPx(h.price)+'</div>'
       +'<div class="hpnl"><b>'+fmtUsd(h.valueUsd)+'</b>'+pnlHtml(h.pnlUsd,h.pnlPct)+'</div>'
       +'</div>';
   }
-  function renderHolds(){
-    var el=$('holdList');var hs=(PORT&&PORT.holds)||[];
-    if(!hs.length){el.innerHTML='<div class="empty">No coins yet.<br>Follow the journey above, then open <b>Markets</b> or <b>Meme coins</b> and make your first buy.</div>';return;}
-    hs=hs.slice().sort(function(a,b){return b.valueUsd-a.valueUsd;});
-    el.innerHTML=hs.map(holdRow).join('');
+  function wireHoldRows(el){
     Array.prototype.forEach.call(el.querySelectorAll('[data-hold]'),function(r){r.addEventListener('click',function(){
       var h=(PORT.holds||[]).filter(function(x){return x.sym===r.getAttribute('data-hold');})[0];
       if(!h)return;var m=h.meta||{};
       openTrade({kind:m.k==='meme'?'meme':'cex',sym:m.k==='meme'?(m.sym||'?'):h.sym,name:m.name||'',logo:m.logo||'',price:h.price,mint:m.mint,pool:m.pool,net:m.net||'solana',holdSym:h.sym,defaultSide:'sell'});
     });});
   }
+  function renderHolds(){
+    var hs=(PORT&&PORT.holds)||[];
+    var ex=hs.filter(function(h){return !(h.meta&&h.meta.k==='meme');}).sort(function(a,b){return b.valueUsd-a.valueUsd;});
+    var wal=hs.filter(function(h){return h.meta&&h.meta.k==='meme';}).sort(function(a,b){return b.valueUsd-a.valueUsd;});
+    var exEl=$('exHolds'),walEl=$('walHolds');
+    exEl.innerHTML=ex.length?ex.map(holdRow).join(''):'<div class="empty" style="padding:14px">Nothing yet — '+((PORT&&PORT.usdtUsd>0)?'pick a coin below.':'buy USDT, then pick a coin below.')+'</div>';
+    walEl.innerHTML=wal.length?wal.map(holdRow).join(''):'<div class="empty" style="padding:14px">No bags yet'+((PORT&&gasHas())?' — pick a meme below.':'.')+'</div>';
+    wireHoldRows(exEl);wireHoldRows(walEl);
+  }
+  function gasHas(){var g=(PORT&&PORT.gas)||{};for(var k in g){if(+g[k]>0)return true;}return false;}
   function renderEquity(){
     var cv=$('eqCv');var snaps=(PORT&&PORT.snaps)||[];
     var pts=snaps.map(function(s){return s.valueUsd;});
     if(PORT)pts=pts.concat([PORT.totalUsd]);
     $('eqEmpty').hidden=pts.length>1;
-    var ctx=cv.getContext('2d');var W=cv.width=cv.clientWidth*2,H=cv.height=300;ctx.clearRect(0,0,W,H);
+    var ctx=cv.getContext('2d');var W=cv.width=cv.clientWidth*2,H=cv.height=168;ctx.clearRect(0,0,W,H);
     if(pts.length<2)return;
     var mn=Math.min.apply(null,pts),mx=Math.max.apply(null,pts);if(mx-mn<1){mx+=1;mn-=1;}
     var up=pts[pts.length-1]>=pts[0];var col=up?'#2ebd85':'#ff6258';
     ctx.beginPath();
-    pts.forEach(function(v,i){var x=i/(pts.length-1)*(W-8)+4,y=H-10-(v-mn)/(mx-mn)*(H-24);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+    pts.forEach(function(v,i){var x=i/(pts.length-1)*(W-8)+4,y=H-8-(v-mn)/(mx-mn)*(H-20);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
     ctx.strokeStyle=col;ctx.lineWidth=3;ctx.lineJoin='round';ctx.stroke();
     ctx.lineTo(W-4,H);ctx.lineTo(4,H);ctx.closePath();
-    var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,up?'rgba(46,189,133,.25)':'rgba(255,98,88,.22)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fill();
+    var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,up?'rgba(46,189,133,.24)':'rgba(255,98,88,.2)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fill();
   }
-  var DCOLS=['#ffd75a','#38bdf8','#c39aff','#c2f64a','#ff6a3d','#2ebd85','#ff5a9e','#5ad8e6','#c9a5ff','#9aa3ad'];
+  var DCOLS=['#e6c46a','#c2f64a','#a78bfa','#38bdf8','#ff6a3d','#2ebd85','#ff5a9e','#5ad8e6','#c9a5ff','#98a1ac'];
   function renderDonut(){
     var cv=$('alCv'),leg=$('alLeg');if(!PORT)return;
-    var parts=[{n:'Card',v:PORT.cardUsd},{n:'USDT (exchange)',v:PORT.usdtUsd},{n:'USDT (wallet)',v:PORT.wusdtUsd},{n:'Gas coins',v:PORT.gasUsd}]
+    var parts=[{n:'Card',v:PORT.cardUsd},{n:'Exchange USDT',v:PORT.usdtUsd},{n:'Wallet USDT',v:PORT.wusdtUsd},{n:'Gas coins',v:PORT.gasUsd}]
       .concat((PORT.holds||[]).map(function(h){return {n:(h.meta&&h.meta.sym)||h.sym,v:h.valueUsd};}));
-    parts=parts.filter(function(p){return p.v>0.01;}).sort(function(a,b){return b.v-a.v;}).slice(0,10);
+    parts=parts.filter(function(p){return p.v>0.01;}).sort(function(a,b){return b.v-a.v;}).slice(0,9);
     var tot=parts.reduce(function(s,p){return s+p.v;},0)||1;
     var ctx=cv.getContext('2d');var W=cv.width=cv.clientWidth*2,H=cv.height=240;ctx.clearRect(0,0,W,H);
-    var cx=W/2,cy=H/2,R=Math.min(W,H)/2-8,r=R*0.62,a=-Math.PI/2;
+    var cx=W/2,cy=H/2,R=Math.min(W,H)/2-6,r=R*0.64,a=-Math.PI/2;
     parts.forEach(function(p,i){var frac=p.v/tot,a2=a+frac*Math.PI*2;
       ctx.beginPath();ctx.arc(cx,cy,R,a,a2);ctx.arc(cx,cy,r,a2,a,true);ctx.closePath();ctx.fillStyle=DCOLS[i%DCOLS.length];ctx.fill();a=a2;});
     leg.innerHTML=parts.map(function(p,i){return '<span><i style="background:'+DCOLS[i%DCOLS.length]+'"></i>'+esc(p.n)+' '+Math.round(p.v/tot*100)+'%</span>';}).join('');
   }
-
-  // ---- wallet tab ----
-  function renderWalletTab(){
-    var el=$('walCard');var d=PORT;if(!el||!d)return;
-    if(!d.addr||!d.addr.sol){el.innerHTML='<div class="empty">No wallet yet.<br>Create your self-custody wallet in the journey above — you will get your own Solana and EVM addresses plus a seed phrase.</div>';return;}
+  function renderWalletBody(){
+    var el=$('walBody');var d=PORT;if(!el||!d)return;
+    if(!d.addr||!d.addr.sol){
+      el.innerHTML='<div class="empty" style="padding:10px 16px 14px;text-align:left">No wallet yet. Create it in the map above — you get your own addresses and a seed-phrase moment.</div>';
+      return;
+    }
     var g=d.gas||{};var natPx=d.natPx||{};
-    var rows='<div class="wal-row"><span class="clogo txt">$</span><span class="wr-b"><b>USDT</b><span>on-chain stablecoin</span></span><span class="wal-amt">'+fmtUsd(d.wusdtUsd)+'</span><button class="sbtn" id="wSwapB" type="button">Swap</button></div>';
-    ['SOL','ETH','BNB'].forEach(function(a){
-      var q=+g[a]||0;if(!q&&a!=='SOL')return;
-      rows+='<div class="wal-row"><span class="clogo txt">'+a.slice(0,3)+'</span><span class="wr-b"><b>'+a+'</b><span>gas + meme trading coin</span></span><span class="wal-amt">'+fmtNat(q)+' '+a+'<span>'+fmtUsd(q*(natPx[a]||0))+'</span></span></div>';
-    });
-    el.innerHTML='<div class="pv-title">Your self-custody wallet</div>'+rows
-      +'<div class="addr-box"><div class="al">Solana address</div><div class="av" data-copy="'+esc(d.addr.sol)+'">'+esc(d.addr.sol)+'</div></div>'
-      +'<div class="addr-box"><div class="al">EVM address (Ethereum · Base · BNB Chain)</div><div class="av" data-copy="'+esc(d.addr.evm)+'">'+esc(d.addr.evm)+'</div></div>'
-      +'<div class="lesson">Tap an address to copy it. In real life: ALWAYS copy-paste addresses (never type them), send a small test amount first, and never share your seed phrase with anyone — no exchange or support agent will ever ask for it.</div>'
-      +'<div style="display:flex;gap:8px;margin-top:10px"><button class="sbtn" id="wWdB" type="button">Deposit from exchange</button><button class="sbtn" id="wSwapB2" type="button">Swap USDT to gas coins</button></div>';
-    var sb=$('wSwapB');if(sb)sb.addEventListener('click',openSwapModal);
-    var sb2=$('wSwapB2');if(sb2)sb2.addEventListener('click',openSwapModal);
-    var wb=$('wWdB');if(wb)wb.addEventListener('click',openWithdrawModal);
+    var chips='<span class="wb"><span class="k">USDT</span>'+fmtUsd(d.wusdtUsd)+'</span>';
+    ['SOL','ETH','BNB'].forEach(function(a){var q=+g[a]||0;if(!q)return;chips+='<span class="wb"><span class="k">'+a+'</span>'+fmtNat(q)+' <span style="color:var(--faint)">('+fmtUsd0(q*(natPx[a]||0))+')</span></span>';});
+    chips+='<button class="wb" id="wSwapB" type="button" style="cursor:pointer;color:var(--viol);border-color:rgba(167,139,250,.4)">+ swap</button>';
+    chips+='<button class="wb" id="wWdB" type="button" style="cursor:pointer;color:var(--viol);border-color:rgba(167,139,250,.4)">+ deposit</button>';
+    el.innerHTML='<div class="walbals">'+chips+'</div>'
+      +'<div class="addr-mini">'
+      +'<div class="am" data-copy="'+esc(d.addr.sol)+'"><div class="al">Solana addr — tap to copy</div><div class="av">'+esc(d.addr.sol)+'</div></div>'
+      +'<div class="am" data-copy="'+esc(d.addr.evm)+'"><div class="al">EVM addr — tap to copy</div><div class="av">'+esc(d.addr.evm)+'</div></div>'
+      +'</div>';
+    var sb=$('wSwapB');if(sb)sb.addEventListener('click',function(){openSwapModal();});
+    var wb=$('wWdB');if(wb)wb.addEventListener('click',function(){openWithdrawModal();});
     Array.prototype.forEach.call(el.querySelectorAll('[data-copy]'),function(a){a.addEventListener('click',function(){
       try{navigator.clipboard.writeText(a.getAttribute('data-copy'));toast('Address copied. Real-life rule: paste it, never retype it.');}catch(e){}
     });});
@@ -537,10 +656,9 @@
       var chg=+c.price_change_percentage_24h||0;
       return '<div class="crow" data-mkt="'+esc(c.symbol)+'">'
         +logoImg(c.image,c.symbol)
-        +'<div class="cname"><b>'+esc(String(c.symbol||'').toUpperCase())+'</b><span>'+esc(c.name||'')+' · pays in USDT (exchange)</span></div>'
+        +'<div class="cname"><b>'+esc(String(c.symbol||'').toUpperCase())+'</b><span>'+esc(c.name||'')+'</span></div>'
         +'<div class="cpx">'+fmtPx(c.current_price)+'</div>'
         +'<div class="cchg '+(chg>=0?'pnl-up':'pnl-dn')+'">'+(chg>=0?'+':'')+chg.toFixed(2)+'%</div>'
-        +'<button class="cbtn" type="button">Trade</button>'
         +'</div>';
     }).join('')||'<div class="empty">Nothing matches.</div>';
     Array.prototype.forEach.call(el.querySelectorAll('[data-mkt]'),function(r){r.addEventListener('click',function(){
@@ -549,6 +667,7 @@
     });});
   }
   $('mktSearch').addEventListener('input',function(){mktQ=this.value||'';renderMarkets();});
+  $('exTopUp').addEventListener('click',function(){openOnrampModal();});
 
   // ---- memes ----
   function loadMemes(){
@@ -560,17 +679,16 @@
     var el=$('memeList');
     if(!MEMES.length){el.innerHTML='<div class="empty">Could not load the meme feed — try again in a minute.</div>';return;}
     var list=MEMES.filter(function(m){return memeNetF==='all'||m.net===memeNetF;});
-    el.innerHTML='<div class="rowhead"><span style="flex:1">'+list.length+' trending memes</span><span style="min-width:86px;text-align:right">Price</span><span style="min-width:64px;text-align:right">24h</span><span style="min-width:78px;text-align:right">Liquidity</span></div>'
-      +list.map(function(m){
+    el.innerHTML=list.map(function(m){
       var chg=+m.chg24||0;var i=MEMES.indexOf(m);
       return '<div class="crow" data-meme="'+i+'">'
         +logoImg(m.logo,m.sym)
         +'<div class="cname"><b>'+esc(m.sym)+netBadge(m.net)+'</b><span>'+esc(m.name)+' · pays in '+esc(m.native)+'</span></div>'
         +'<div class="cpx">'+fmtPx(m.price)+'</div>'
         +'<div class="cchg '+(chg>=0?'pnl-up':'pnl-dn')+'">'+(chg>=0?'+':'')+chg.toFixed(1)+'%</div>'
-        +'<div class="cmeta">$'+Math.round(+m.liqUsd||0).toLocaleString('en-US')+'</div>'
+        +'<div class="cmeta">$'+Math.round(+m.liqUsd||0).toLocaleString('en-US')+' liq</div>'
         +'</div>';
-    }).join('');
+    }).join('')||'<div class="empty">No memes on this chain right now.</div>';
     Array.prototype.forEach.call(el.querySelectorAll('[data-meme]'),function(r){r.addEventListener('click',function(){
       var m=MEMES[+r.getAttribute('data-meme')];if(!m)return;
       openTrade({kind:'meme',sym:m.sym,name:m.name,logo:m.logo,price:m.price,chg:m.chg24,mint:m.mint,pool:m.pool,net:m.net,liqUsd:m.liqUsd});
@@ -582,16 +700,23 @@
     renderMemes();
   });});
 
-  // ---- history ----
+  // ---- history (paper trail) ----
+  var histT=0;
   function loadHistory(){
+    if(Date.now()-histT<4000)return;histT=Date.now();
     fetch('/api/spot/history').then(function(r){return r.json();}).then(function(d){
       var el=$('txList');var tx=(d&&d.tx)||[];
-      if(!tx.length){el.innerHTML='<div class="empty">No activity yet — everything you do (on-ramps, withdrawals, swaps, trades) shows up here.</div>';return;}
+      // the "field notes" panel earns its place by being LIVE: total fees the path has eaten so far
+      try{var fees=0;tx.forEach(function(t){if(t.side!=='reset')fees+=(+t.feeUsd||0);});var nb=$('noteBox');
+        if(nb)nb.innerHTML=fees>0
+          ?'Every fee you pay here is real out there. So far the PATH itself has eaten <b style="color:var(--brass);font-family:Space Mono,monospace">'+fmtUsd(fees)+'</b> of your money — card fee, trading fees, network fees, swaps — before the market moved an inch. Slippage on memes is on top of that.'
+          :'Every fee you pay here is real out there. Watch how much of your $10,000 the PATH itself eats — card fee, trading fees, network fees, gas, slippage — before the market even moves.';}catch(e){}
+      if(!tx.length){el.innerHTML='<div class="empty">Empty for now — every card purchase, withdrawal, swap and trade prints a line here.</div>';return;}
       el.innerHTML=tx.map(function(t){
         var side=t.side;var lbl,cls,mid,amt;
         if(side==='reset'){lbl='RESET';cls='r';mid='<b>Fresh $10,000 card</b><span>'+ago(t.ts)+'</span>';amt='';}
-        else if(side==='onramp'){lbl='CARD BUY';cls='o';mid='<b>Bought USDT with card</b><span>fee '+fmtUsd(t.feeUsd)+' (1.8%) · '+ago(t.ts)+'</span>';amt=fmtUsd(t.usdUsd);}
-        else if(side==='wdraw'){lbl='WITHDRAW';cls='w';mid='<b>Exchange to wallet</b><span>network fee '+fmtUsd(t.feeUsd)+' · '+ago(t.ts)+'</span>';amt=fmtUsd(t.usdUsd);}
+        else if(side==='onramp'){lbl='CARD&#8594;EX';cls='o';mid='<b>Bought USDT with card</b><span>fee '+fmtUsd(t.feeUsd)+' (1.8%) · '+ago(t.ts)+'</span>';amt=fmtUsd(t.usdUsd);}
+        else if(side==='wdraw'){lbl='EX&#8594;WALLET';cls='w';mid='<b>Withdrew to your wallet</b><span>network fee '+fmtUsd(t.feeUsd)+' · '+ago(t.ts)+'</span>';amt=fmtUsd(t.usdUsd);}
         else if(side==='swap'){lbl='SWAP';cls='x';mid='<b>USDT &harr; '+esc(t.sym)+'</b><span>'+fmtNat(t.qty)+' '+esc(t.sym)+' · fee '+fmtUsd(t.feeUsd)+' · '+ago(t.ts)+'</span>';amt=fmtUsd(t.usdUsd);}
         else{
           var sym=t.sym.indexOf(':')>0?(t.name||'meme'):t.sym;
@@ -604,22 +729,11 @@
     }).catch(function(){});
   }
 
-  // ---- tabs ----
-  function switchTab(t){
-    Array.prototype.forEach.call(document.querySelectorAll('#tabs .tab'),function(x){x.classList.toggle('on',x.getAttribute('data-tab')===t);});
-    ['port','mkt','meme','wal','hist'].forEach(function(v){$('v-'+v).hidden=v!==t;});
-    if(t==='hist')loadHistory();
-    if(t==='meme'&&!MEMES.length)loadMemes();
-    if(t==='mkt'&&!MKT.length)loadMarkets();
-    if(t==='wal')renderWalletTab();
-  }
-  Array.prototype.forEach.call(document.querySelectorAll('#tabs .tab'),function(b){b.addEventListener('click',function(){switchTab(b.getAttribute('data-tab'));});});
-
   // ---- reset ----
   $('wReset').addEventListener('click',function(){
     if(!confirm('Use your ONE reset? Everything goes back to a fresh $10,000 card (positions closed, balances cleared, history kept). Next reset unlocks 7 days from now.'))return;
     fetch('/api/spot/reset',{method:'POST'}).then(function(r){return r.json();}).then(function(j){
-      if(j&&j.ok){toast('Fresh start — <b>$10,000</b> back on your card. Journey restarts from the on-ramp.');loadPortfolio(true);}
+      if(j&&j.ok){toast('Fresh start — <b>$10,000</b> back on your card.');loadPortfolio(true);}
       else if(j&&j.error==='cooldown'){var d=Math.ceil((+j.nextMs||0)/86400000);toast('0 resets left — next one in ~'+d+' day'+(d===1?'':'s')+'.');}
       else toast('Reset failed — try again.');
     }).catch(function(){});
@@ -640,7 +754,7 @@
         ?'<p class="m-p">Card is linked to the exchange. Use it to buy USDT any time (1.8% card fee applies).</p><button class="m-go" id="cGoOn" type="button">Buy USDT with this card</button>'
         :'<p class="m-p">To buy crypto you first link a payment method to an exchange. Confirm it is your card by typing the <b>last 4 digits</b>:</p>'
           +'<input class="tin" id="cLast4" type="text" inputmode="numeric" maxlength="4" placeholder="&bull;&bull;&bull;&bull;" autocomplete="off" />'
-          +'<div class="lesson">Real-life lesson: only ever link cards on exchanges you trust, with 2FA enabled. If a site asks for your FULL card number and CVV over chat — it is a scam.</div>'
+          +'<div class="lesson">Real-life lesson: only ever link cards on exchanges you trust, with 2FA on. If anyone asks for your FULL card number and CVV over chat — it is a scam.</div>'
           +'<button class="m-go" id="cLink" type="button">Link card to exchange</button>')
       +'<div class="m-msg" id="cMsg"></div>');
     var go=$('cGoOn');if(go)go.addEventListener('click',function(){closeSim();openOnrampModal();});
@@ -650,7 +764,7 @@
       lk.disabled=true;msg.className='m-msg';msg.textContent='Linking…';
       fetch('/api/spot/link',{method:'POST'}).then(function(r){return r.json();}).then(function(j){
         lk.disabled=false;
-        if(j&&j.ok){msg.className='m-msg ok';msg.textContent='Card linked. Next: buy USDT.';loadPortfolio();setTimeout(function(){closeSim();openOnrampModal();},900);}
+        if(j&&j.ok){if(PORT)PORT.onb=Math.max(PORT.onb||0,1);msg.className='m-msg ok';msg.textContent='Card linked. Next: buy USDT.';loadPortfolio();setTimeout(function(){closeSim();openOnrampModal();},900);}
         else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
       }).catch(function(){lk.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
     });
@@ -659,11 +773,11 @@
   function openOnrampModal(){
     if(((PORT&&PORT.onb)||0)<1){openCardModal();return;}
     openSim('<div class="m-h"><b>Buy USDT with your card</b><button class="m-x" type="button">&times;</button></div>'
-      +'<p class="m-p">USDT is a stablecoin — 1 USDT stays worth ~$1. It is what you actually trade with on exchanges. Card balance: <b>'+fmtUsd(PORT.cardUsd)+'</b></p>'
+      +'<p class="m-p">USDT is a stablecoin — 1 USDT stays worth ~$1. It is what you actually trade with. Card balance: <b>'+fmtUsd(PORT.cardUsd)+'</b></p>'
       +'<div class="tin-l">Amount (USD)</div><input class="tin" id="orAmt" type="number" inputmode="decimal" min="10" step="any" placeholder="1000" />'
       +'<div class="chips"><button class="chip" data-or="500" type="button">$500</button><button class="chip" data-or="2000" type="button">$2,000</button><button class="chip" data-or="5000" type="button">$5,000</button><button class="chip" data-or="max" type="button">All of it</button></div>'
       +'<div class="m-est" id="orEst" hidden></div>'
-      +'<div class="lesson">Card purchases cost <b>1.8%</b> here (real on-ramps charge 1.8-4%). In real life a bank transfer (SEPA/ACH) is usually free or nearly free — worth the extra day of waiting for big amounts.</div>'
+      +'<div class="lesson">Card purchases cost <b>1.8%</b> here (real on-ramps charge 1.8-4%). A bank transfer is usually near-free — worth the wait for big amounts.</div>'
       +'<button class="m-go" id="orGo" type="button">Buy USDT</button><div class="m-msg" id="orMsg"></div>');
     function est(){var v=+($('orAmt').value||0);var el=$('orEst');if(!(v>=10)){el.hidden=true;return;}
       var fee=v*0.018;el.hidden=false;
@@ -674,11 +788,11 @@
       $('orAmt').value=v==='max'?Math.floor(PORT.cardUsd/1.018*100)/100:v;est();});});
     $('orGo').addEventListener('click',function(){
       var v=+($('orAmt').value||0);var msg=$('orMsg');
-      if(!(v>=10)){msg.className='m-msg err';msg.textContent='Minimum on-ramp is $10.';return;}
+      if(!(v>=10)){msg.className='m-msg err';msg.textContent='Minimum is $10.';return;}
       this.disabled=true;msg.className='m-msg';msg.textContent='Processing card payment…';var btn=this;
       fetch('/api/spot/onramp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({usd:v})})
         .then(function(r){return r.json();}).then(function(j){btn.disabled=false;
-          if(j&&j.ok){msg.className='m-msg ok';msg.textContent='Done — '+fmtUsd(v)+' USDT is on your exchange balance (fee '+fmtUsd(j.feeUsd)+').';toast('USDT bought — you can now trade the Markets tab.');loadPortfolio();setTimeout(closeSim,1200);}
+          if(j&&j.ok){msg.className='m-msg ok';msg.textContent='Done — '+fmtUsd(v)+' USDT is on your exchange balance (fee '+fmtUsd(j.feeUsd)+').';toast('USDT bought — the exchange side of the map is open.');loadPortfolio();setTimeout(closeSim,1200);}
           else if(j&&j.error==='card_insufficient'){msg.className='m-msg err';msg.textContent='Card only has '+fmtUsd(j.cardUsd)+' (remember the 1.8% fee).';}
           else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
         }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
@@ -686,7 +800,7 @@
   }
 
   function openWalletCreate(){
-    if(PORT&&PORT.addr&&PORT.addr.sol){switchTab('wal');return;}
+    if(PORT&&PORT.addr&&PORT.addr.sol){openWithdrawModal();return;}
     openSim('<div class="m-h"><b>Create your self-custody wallet</b><button class="m-x" type="button">&times;</button></div>'
       +'<p class="m-p">On an exchange, THEY hold your coins. A self-custody wallet (like Phantom or MetaMask) is yours alone — secured by a <b>seed phrase</b>. Whoever knows the phrase owns the money.</p>'
       +'<button class="m-go" id="wcGo" type="button">Generate my wallet</button><div id="wcOut"></div><div class="m-msg" id="wcMsg"></div>');
@@ -694,7 +808,7 @@
       var btn=this;btn.disabled=true;$('wcMsg').textContent='Generating keys…';
       fetch('/api/spot/wallet/create',{method:'POST'}).then(function(r){return r.json();}).then(function(j){
         if(!(j&&j.ok)){btn.disabled=false;$('wcMsg').className='m-msg err';$('wcMsg').textContent='Failed — try again.';return;}
-        if(PORT)PORT.addr=j.addr; // update local state NOW — the chained withdraw modal must see the wallet before the portfolio refetch lands
+        if(PORT)PORT.addr=j.addr; // local state NOW — the chained withdraw modal must see the wallet before the refetch lands
         $('wcMsg').textContent='';btn.style.display='none';
         var seed=j.seed||[];
         $('wcOut').innerHTML='<div class="lesson"><b>Write these 12 words down, in order.</b> This is the ONLY backup of a real wallet. Shown once — never stored, never recoverable. Anyone who has it can take everything; no legit support will ever ask for it.</div>'
@@ -721,25 +835,24 @@
       +'<div class="np" data-n="base"><b>Base</b><span>fee $1.50 · ~30 sec</span></div>'
       +'<div class="np" data-n="eth"><b>Ethereum</b><span>fee $8.00 · ~2 min</span></div>'
       +'</div>'
-      +'<div class="tin-l">Destination address <span style="text-transform:none;letter-spacing:0">(<a href="#" id="wdPaste">paste my address</a>)</span></div>'
+      +'<div class="tin-l">Destination address <span style="text-transform:none;letter-spacing:0;font-family:Familjen Grotesk,sans-serif;font-weight:600">(<a href="#" id="wdPaste">paste my address</a>)</span></div>'
       +'<input class="tin sm" id="wdAddr" type="text" autocomplete="off" spellcheck="false" placeholder="your wallet address for the chosen network" />'
       +'<div class="tin-l" style="margin-top:10px">Amount (USDT)</div><input class="tin" id="wdAmt" type="number" inputmode="decimal" min="5" step="any" placeholder="500" />'
       +'<div class="chips"><button class="chip" data-wd="25" type="button">25%</button><button class="chip" data-wd="50" type="button">50%</button><button class="chip" data-wd="100" type="button">All</button></div>'
       +'<div class="m-est" id="wdEst" hidden></div>'
-      +'<div class="lesson">Real-life lesson: the network you pick on the exchange MUST match the network of the destination address. USDT sent over the wrong chain to the wrong address is gone forever. Here it is safe to get it wrong — try it.</div>'
+      +'<div class="lesson">The network on the exchange MUST match the network of the destination address. USDT sent over the wrong chain to the wrong address is gone forever. Here it is safe to get it wrong — try it.</div>'
       +'<button class="m-go" id="wdGo" type="button">Withdraw</button><div class="m-msg" id="wdMsg"></div>');
-    function myAddr(){return net==='solana'?PORT.addr.sol:PORT.addr.evm;}
     function est(){var v=+($('wdAmt').value||0);var el=$('wdEst');if(!(v>=5)){el.hidden=true;return;}
       var fee=NETS[net].wd;el.hidden=false;
       el.innerHTML='<div><span>Arrives in wallet</span><b>'+fmtUsd(v)+' USDT</b></div><div><span>'+esc(NETS[net].label)+' network fee</span><b>'+fmtUsd(fee)+'</b></div><div><span>Deducted from exchange</span><b>'+fmtUsd(v+fee)+'</b></div>';}
     Array.prototype.forEach.call($('smod').querySelectorAll('#wdNets .np'),function(n){n.addEventListener('click',function(){
       net=n.getAttribute('data-n');
       Array.prototype.forEach.call($('smod').querySelectorAll('#wdNets .np'),function(x){x.classList.toggle('on',x===n);});est();});});
-    $('wdPaste').addEventListener('click',function(e){e.preventDefault();$('wdAddr').value=myAddr();});
+    $('wdPaste').addEventListener('click',function(e){e.preventDefault();$('wdAddr').value=(net==='solana'?PORT.addr.sol:PORT.addr.evm);});
     $('wdAmt').addEventListener('input',est);
     Array.prototype.forEach.call($('smod').querySelectorAll('[data-wd]'),function(c){c.addEventListener('click',function(){
-      var p=+c.getAttribute('data-wd');var fee=NETS[net].wd;
-      var v=p>=100?Math.max(0,Math.floor((PORT.usdtUsd-fee)*100)/100):Math.floor(PORT.usdtUsd*p/100*100)/100;
+      var p2=+c.getAttribute('data-wd');var fee=NETS[net].wd;
+      var v=p2>=100?Math.max(0,Math.floor((PORT.usdtUsd-fee)*100)/100):Math.floor(PORT.usdtUsd*p2/100*100)/100;
       $('wdAmt').value=v;est();});});
     $('wdGo').addEventListener('click',function(){
       var v=+($('wdAmt').value||0);var msg=$('wdMsg');var btn=this;
@@ -788,7 +901,7 @@
       btn.disabled=true;msg.className='m-msg';msg.textContent='Swapping…';
       fetch('/api/spot/swap',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({asset:asset,usd:v,dir:'buy'})})
         .then(function(r){return r.json();}).then(function(j){btn.disabled=false;
-          if(j&&j.ok){msg.className='m-msg ok';msg.textContent='Swapped — you now hold '+fmtNat((j.gas&&j.gas[asset])||0)+' '+asset+'.';toast(asset+' in your wallet — meme trading is unlocked.');loadPortfolio();setTimeout(closeSim,1100);}
+          if(j&&j.ok){msg.className='m-msg ok';msg.textContent='Swapped — you now hold '+fmtNat((j.gas&&j.gas[asset])||0)+' '+asset+'.';toast(asset+' in your wallet — the degen zone is open.');loadPortfolio();setTimeout(closeSim,1100);}
           else if(j&&j.error==='insufficient'){msg.className='m-msg err';msg.textContent='Wallet only has '+fmtUsd(j.wusdtUsd||0)+' USDT.';}
           else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
         }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
@@ -834,7 +947,7 @@
       el.hidden=false;
       if(!(PORT&&PORT.addr&&PORT.addr.sol))el.innerHTML='Lives on <b>'+esc(n.label)+'</b> — you need a WALLET to buy it.<button class="fix" id="tmFix" type="button">Create wallet</button>';
       else if(bal<=0)el.innerHTML='Pays in <b>'+nat+'</b> on '+esc(n.label)+' — you have none.<button class="fix" id="tmFix" type="button">Get '+nat+'</button>';
-      else el.innerHTML='Pays in <b>'+nat+'</b> on '+esc(n.label)+' · your balance: <b>'+fmtNat(bal)+' '+nat+'</b> ('+fmtUsd(bal*((PORT.natPx||{})[nat]||0))+') · gas per tx ~'+(NETS[T.net]?'':'')+'<b>'+({solana:'0.0008 SOL',base:'0.00004 ETH',eth:'0.0015 ETH',bsc:'0.0003 BNB'}[T.net]||'0.0008 SOL')+'</b>';
+      else el.innerHTML='Pays in <b>'+nat+'</b> on '+esc(n.label)+' · your balance: <b>'+fmtNat(bal)+' '+nat+'</b> ('+fmtUsd(bal*((PORT.natPx||{})[nat]||0))+') · gas per tx ~<b>'+({solana:'0.0008 SOL',base:'0.00004 ETH',eth:'0.0015 ETH',bsc:'0.0003 BNB'}[T.net]||'0.0008 SOL')+'</b>';
       var fx=$('tmFix');if(fx)fx.addEventListener('click',function(){closeTrade();if(!(PORT&&PORT.addr&&PORT.addr.sol))openWalletCreate();else openSwapModal({asset:nat});});
     } else {
       el.hidden=false;
@@ -935,7 +1048,7 @@
         if(!Array.isArray(bars)||!bars.length){host.innerHTML='<div class="ldg">No chart data for this pair.</div>';return;}
         host.innerHTML='';
         if(chart){try{chart.remove();}catch(e){}}
-        chart=LightweightCharts.createChart(host,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontSize:10},grid:{vertLines:{color:'rgba(255,255,255,.04)'},horzLines:{color:'rgba(255,255,255,.04)'}},timeScale:{borderColor:'#232932',timeVisible:true},rightPriceScale:{borderColor:'#232932'},handleScroll:true,handleScale:true});
+        chart=LightweightCharts.createChart(host,{layout:{background:{color:'transparent'},textColor:'#98a1ac',fontSize:10},grid:{vertLines:{color:'rgba(255,255,255,.04)'},horzLines:{color:'rgba(255,255,255,.04)'}},timeScale:{borderColor:'#1e242e',timeVisible:true},rightPriceScale:{borderColor:'#1e242e'},handleScroll:true,handleScale:true});
         candle=chart.addCandlestickSeries({upColor:'#2ebd85',downColor:'#ff6258',borderVisible:false,wickUpColor:'#2ebd85',wickDownColor:'#ff6258',priceFormat:{type:'price',precision:T.price<0.01?8:(T.price<1?5:2),minMove:T.price<0.01?1e-8:(T.price<1?1e-5:0.01)}});
         candle.setData(bars.map(function(b2){return {time:b2.time,open:b2.open,high:b2.high,low:b2.low,close:b2.close};}));
         chart.timeScale().fitContent();
