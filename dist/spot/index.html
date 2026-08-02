@@ -280,17 +280,20 @@
   .txamt{text-align:right;font-family:'Space Mono',monospace;font-size:12px;}
   .txamt span{display:block;font-size:10px;color:var(--faint);}
 
-  /* ============ dock (app switcher) ============ */
-  .dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:96;display:none;gap:4px;background:rgba(10,12,16,.82);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border:1px solid var(--line2);border-radius:20px;padding:7px;box-shadow:0 16px 44px -14px rgba(0,0,0,.85);}
-  .dock.on{display:flex;}
-  .dock button{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;border-radius:14px;padding:8px 15px;color:var(--faint);font:700 9.5px 'Familjen Grotesk',sans-serif;cursor:pointer;min-width:64px;}
-  .dock button svg{width:19px;height:19px;}
-  .dock button.on{color:#0a0b0d;}
-  .dock button.d-hub.on{background:var(--ink);}
-  .dock button.d-bank.on{background:var(--brass);}
-  .dock button.d-ex.on{background:var(--lime);}
-  .dock button.d-wal.on{background:var(--viol);}
-
+  /* ============ in-page app switcher (no fixed bars — the site already has its own bottom nav) ============ */
+  .appsw{display:flex;gap:6px;margin:0 0 14px;overflow-x:auto;scrollbar-width:none;}
+  .appsw::-webkit-scrollbar{display:none;}
+  .appsw button{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;background:rgba(10,12,16,.55);border:1px solid var(--line2);border-radius:999px;padding:8px 15px;color:var(--dim);font:700 12px 'Familjen Grotesk',sans-serif;cursor:pointer;}
+  .appsw button svg{width:14px;height:14px;}
+  .appsw button.on{color:#0a0b0d;border-color:transparent;}
+  .appsw button.a-hub.on{background:var(--ink);}
+  .appsw button.a-bank.on{background:var(--brass);}
+  .appsw button.a-ex.on{background:var(--lime);}
+  .appsw button.a-wal.on{background:var(--viol);}
+  .v-bank .appsw button{background:#fffdf6;border-color:#ddd3b8;color:#6b6350;}
+  .v-bank .appsw button.on{color:#241f12;background:var(--brass);border-color:transparent;}
+  .v-wal .appsw button{background:rgba(16,13,26,.75);border-color:rgba(167,139,250,.3);color:#b6aecf;}
+  .v-wal .appsw button.on{color:#14101f;background:var(--viol);border-color:transparent;}
   /* ============ modals (shared) ============ */
   .tmask{position:fixed;inset:0;background:rgba(4,6,9,.82);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);z-index:120;display:none;align-items:flex-end;justify-content:center;}
   .tmask.on{display:flex;}
@@ -355,6 +358,7 @@
   .foot{color:var(--faint);font-size:11.5px;line-height:1.6;margin-top:26px;border-top:1px solid var(--line);padding-top:14px;}
   @media(prefers-reduced-motion:reduce){.stn:hover{transform:none;}.appv.on{animation:none;}}
   @media(max-width:520px){
+    .vc-foot{padding-right:104px;gap:14px;flex-wrap:wrap;}
     .bk-acts{grid-template-columns:1fr;}
     .ex-sum .eb b{font-size:20px;}
     .ex-btns{width:100%;}
@@ -452,6 +456,7 @@
         <div class="app-id"><b>MarginPad Bank</b><span>member since today · FDIC-insured (pretend)</span></div>
         <div class="app-logo"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M4 10h16"/><path d="M12 3 3 8h18l-9-5z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/></svg></div>
       </div>
+      <div class="appsw"><button class="a-hub" data-view="hub" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1V10"/></svg>Map</button><button class="a-bank on" data-view="bank" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M12 3 3 8h18l-9-5z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/></svg>Bank</button><button class="a-ex" data-view="ex" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 14 4-5 3 3 5-7"/></svg>Exchange</button><button class="a-wal" data-view="wal" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/></svg>Wallet</button></div>
       <div class="bk-greet" id="bkGreet">Good day.</div>
       <div id="bkCard"></div>
       <div class="bk-acts">
@@ -470,6 +475,7 @@
         <div class="app-id"><b>MarginPad Exchange</b><span>custodial · they hold it for you · taker fee 0.1%</span></div>
         <div class="app-logo"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 14 4-5 3 3 5-7"/></svg></div>
       </div>
+      <div style="padding:0 16px"><div class="appsw"><button class="a-hub" data-view="hub" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1V10"/></svg>Map</button><button class="a-bank" data-view="bank" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M12 3 3 8h18l-9-5z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/></svg>Bank</button><button class="a-ex on" data-view="ex" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 14 4-5 3 3 5-7"/></svg>Exchange</button><button class="a-wal" data-view="wal" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/></svg>Wallet</button></div></div>
       <div class="ex-tick" id="exTick" hidden><div class="tk" id="exTickIn"></div></div>
       <div class="ex-sum">
         <div class="eb"><small>Exchange balance</small><b id="exTotal">—</b><span id="exFree">—</span></div>
@@ -498,6 +504,7 @@
         <div class="app-id"><b>MarginPad Wallet</b><span>self-custody · your keys, your coins</span></div>
         <div class="app-logo"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/></svg></div>
       </div>
+      <div class="appsw"><button class="a-hub" data-view="hub" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1V10"/></svg>Map</button><button class="a-bank" data-view="bank" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M12 3 3 8h18l-9-5z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/></svg>Bank</button><button class="a-ex" data-view="ex" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 14 4-5 3 3 5-7"/></svg>Exchange</button><button class="a-wal on" data-view="wal" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/></svg>Wallet</button></div>
       <div id="wlBody"></div>
     </div>
 
@@ -506,13 +513,7 @@
   <div class="foot">Demo life-simulation with practice funds — prices, fees, gas, networks and slippage mirror real markets but no real money is involved and nothing can be withdrawn. The bank, card, exchange, wallet, addresses and seed phrase are simulated for education. Not financial advice. · <a href="/paper-trade">Try futures paper trading</a> · <a href="/academy/">Learn in the Academy</a></div>
 </div>
 
-<!-- dock: app switcher (visible inside apps) -->
-<nav class="dock" id="dock">
-  <button class="d-hub" data-view="hub" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1V10"/></svg>Map</button>
-  <button class="d-bank" data-view="bank" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M12 3 3 8h18l-9-5z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/></svg>Bank</button>
-  <button class="d-ex" data-view="ex" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 14 4-5 3 3 5-7"/></svg>Exchange</button>
-  <button class="d-wal" data-view="wal" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/></svg>Wallet</button>
-</nav>
+
 
 <!-- generic sim modal -->
 <div class="tmask" id="smask"><div class="tmod" id="smod"></div></div>
@@ -608,8 +609,7 @@
   function showView(v){
     VIEW=v;
     ['hub','bank','ex','wal'].forEach(function(x){var el=$('v-'+x);if(el)el.classList.toggle('on',x===v);});
-    var dock=$('dock');dock.classList.toggle('on',!!ME);
-    Array.prototype.forEach.call(dock.querySelectorAll('button'),function(b){b.classList.toggle('on',b.getAttribute('data-view')===v);});
+    Array.prototype.forEach.call(document.querySelectorAll('.appsw button'),function(b){b.classList.toggle('on',b.getAttribute('data-view')===v);});
     $('siteHead').style.display=v==='hub'?'':'none';
     try{window.scrollTo({top:0,behavior:'instant'});}catch(e){window.scrollTo(0,0);}
     if(v==='bank')renderBank();
@@ -624,7 +624,6 @@
     var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();
     ME=me||null;
     $('gate').hidden=!!ME;$('app').hidden=!ME;
-    $('dock').classList.toggle('on',!!ME);
     if(ME&&!booted){booted=true;loadPortfolio(true);loadMarkets();loadMemes();}
     else if(ME){loadPortfolio();}
   }
@@ -636,7 +635,7 @@
   // ---- portfolio ----
   function loadPortfolio(first){
     fetch('/api/spot/portfolio').then(function(r){return r.json();}).then(function(d){
-      if(!d||d.error==='login_required'){ME=null;$('gate').hidden=false;$('app').hidden=true;$('dock').classList.remove('on');return;}
+      if(!d||d.error==='login_required'){ME=null;$('gate').hidden=false;$('app').hidden=true;return;}
       if(d.error)return;
       PORT=d;
       if(d.fresh)toast('<b>Your $10,000 card has arrived.</b> The map shows the way — start at the bank.');
