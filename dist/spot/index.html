@@ -7,12 +7,12 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Free Demo Spot Trading — $10,000 Practice Wallet | MarginPad</title>
-<meta name="description" content="A full crypto life-simulation with $10,000 in practice money: link a card, buy USDT, create a wallet with a real seed-phrase moment, pick networks, pay gas and trade BTC plus 150+ meme coins across Solana, Base, Ethereum and BSC — zero risk." />
+<meta name="description" content="A full crypto life-simulation with $10,000 in practice money: a bank app, an exchange app and a self-custody wallet app — link a card, buy USDT, pick networks, pay gas and trade BTC plus 150+ meme coins across Solana, Base, Ethereum and BSC. Zero risk." />
 <link rel="canonical" href="https://marginpad.io/spot/" />
 <meta name="theme-color" content="#08090c" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta property="og:title" content="Free Demo Spot Trading — $10,000 Practice Wallet | MarginPad" />
-<meta property="og:description" content="Learn crypto from zero, step by step: card, exchange, USDT, self-custody wallet, networks, gas — then trade BTC and Solana meme coins. All practice, zero risk." />
+<meta property="og:description" content="Learn crypto from zero inside three real-feeling apps: bank, exchange and wallet. Real fees, real gas, fake money." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/spot/" />
 <meta name="twitter:card" content="summary" />
@@ -20,13 +20,12 @@
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="/assets/fonts.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad Demo Spot","url":"https://marginpad.io/spot/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free demo spot trading life-simulation: virtual card, exchange on-ramp, self-custody wallet with seed phrase, network fees and gas, plus 150+ meme coins across Solana, Base, Ethereum and BSC."}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is the $10,000 demo wallet real money?","acceptedAnswer":{"@type":"Answer","text":"No — it is practice money on a virtual card. Prices, fees, network costs and slippage are real-market accurate, but nothing is at risk and nothing can be withdrawn."}},{"@type":"Question","name":"What do I learn step by step?","acceptedAnswer":{"@type":"Answer","text":"The full real-life flow: buying USDT with a card (and its fee), creating a self-custody wallet and saving a seed phrase, withdrawing to the right network, swapping for gas coins like SOL, and finally buying coins and meme coins."}},{"@type":"Question","name":"Which coins can I trade?","acceptedAnswer":{"@type":"Answer","text":"The top 250 coins by market cap plus 150+ trending meme coins across Solana, Base, Ethereum and BNB Chain, priced live from on-chain DEX data."}},{"@type":"Question","name":"Can I reset my demo account?","acceptedAnswer":{"@type":"Answer","text":"Yes — one reset available, back to a fresh $10,000 card, at most once every 7 days. Your history is kept."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad Demo Spot","url":"https://marginpad.io/spot/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free demo spot trading life-simulation: a bank app, an exchange app and a self-custody wallet app with seed phrase, network fees and gas, plus 150+ meme coins across Solana, Base, Ethereum and BSC."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is the $10,000 demo wallet real money?","acceptedAnswer":{"@type":"Answer","text":"No — it is practice money on a virtual card. Prices, fees, network costs and slippage are real-market accurate, but nothing is at risk and nothing can be withdrawn."}},{"@type":"Question","name":"What do I learn step by step?","acceptedAnswer":{"@type":"Answer","text":"The full real-life flow across three apps: buying USDT with a card on an exchange (and its fee), cashing back out to the card, creating a self-custody wallet and saving a seed phrase, withdrawing over the right network, swapping for gas coins like SOL, and buying coins and meme coins."}},{"@type":"Question","name":"Which coins can I trade?","acceptedAnswer":{"@type":"Answer","text":"The top 250 coins by market cap plus 150+ trending meme coins across Solana, Base, Ethereum and BNB Chain, priced live from on-chain DEX data."}},{"@type":"Question","name":"Can I reset my demo account?","acceptedAnswer":{"@type":"Answer","text":"Yes — one reset available, back to a fresh $10,000 card, at most once every 7 days. Your history is kept."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"MarginPad","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Demo Spot","item":"https://marginpad.io/spot/"}]}</script>
 <style>
   /* ============ tokens: three worlds, one path ============
-     The palette IS the information architecture — color tells you WHERE money sits:
-     brass = the bank/card world · lime = the exchange (MarginPad's own color) · violet = on-chain self-custody. */
+     color = WHERE money sits: brass/paper = bank · lime/terminal = exchange · violet/phone = on-chain wallet */
   :root{
     --bg:#08090c;--bg2:#0b0d11;--panel:#101318;--panel2:#141821;--line:#1e242e;--line2:#2c3440;
     --ink:#ecebe4;--dim:#98a1ac;--faint:#5a636e;
@@ -39,72 +38,68 @@
   a{color:var(--lime);text-decoration:none;}
   body::before{content:'';position:fixed;inset:-28% -12% auto;height:64%;pointer-events:none;z-index:0;
     background:radial-gradient(ellipse 46% 42% at 16% 12%,rgba(230,196,106,.05),transparent 62%),radial-gradient(ellipse 44% 40% at 52% 6%,rgba(194,246,74,.055),transparent 60%),radial-gradient(ellipse 46% 44% at 86% 14%,rgba(167,139,250,.055),transparent 62%);}
-  .wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:18px 16px calc(96px + env(safe-area-inset-bottom));}
-  header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+  .wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:18px 16px calc(120px + env(safe-area-inset-bottom));}
+  header.site{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
   .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:var(--ink);letter-spacing:-.02em;}
   .brand b{color:var(--lime);}
   .hnav{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:13.5px;font-weight:600;}
   .hnav a{color:var(--dim);}
   .hauth{background:#171c24;border:1px solid var(--line2);color:var(--ink);border-radius:10px;padding:8px 14px;font:600 13px 'Familjen Grotesk',sans-serif;cursor:pointer;}
-  .btn{border:none;border-radius:11px;padding:11px 18px;font:800 13.5px 'Familjen Grotesk',sans-serif;cursor:pointer;}
-  .btn:focus-visible,button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:2px;}
+  button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--lime);outline-offset:2px;}
+  canvas{display:block;width:100%;}
+  .empty{color:var(--faint);text-align:center;padding:24px 10px;font-size:13.5px;line-height:1.6;}
+  .pnl-up{color:var(--up);}.pnl-dn{color:var(--red);}
 
-  /* ============ signed-out gate ============ */
+  /* ============ gate ============ */
   #gate h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(30px,5.4vw,52px);line-height:1.02;letter-spacing:-.04em;margin:14px 0 14px;max-width:820px;}
   #gate h1 em{font-style:normal;color:var(--lime);}
-  .gsub{color:var(--dim);font-size:15px;line-height:1.65;max-width:600px;margin:0 0 22px;}
+  .kick{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.22em;color:var(--faint);text-transform:uppercase;}
+  .kick i{font-style:normal;color:var(--lime);}
+  .gsub{color:var(--dim);font-size:15px;line-height:1.65;max-width:620px;margin:0 0 22px;}
   .gsub b{color:var(--ink);}
   .cta{display:inline-block;background:var(--lime);color:#0a0b0d;font-weight:800;font-size:15.5px;border:none;border-radius:13px;padding:15px 30px;cursor:pointer;font-family:inherit;box-shadow:0 14px 40px -14px rgba(194,246,74,.45);}
   .disc{color:var(--faint);font-size:11.5px;margin-top:12px;}
-  /* the gate teaches the concept before signup: a miniature of the money map */
-  .gmap{display:flex;align-items:stretch;gap:0;margin:34px 0 10px;max-width:860px;}
-  .gmap .gstn{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px 15px;position:relative;}
-  .gmap .gstn b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;letter-spacing:-.01em;margin:8px 0 4px;}
-  .gmap .gstn span{color:var(--dim);font-size:12px;line-height:1.55;display:block;}
-  .gmap .gstn i{font-style:normal;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.14em;}
-  .gmap .glnk{flex:0 0 42px;display:flex;align-items:center;justify-content:center;position:relative;}
-  .gmap .glnk::before{content:'';position:absolute;left:0;right:0;top:50%;border-top:2px dashed var(--line2);}
-  .gmap .glnk svg{position:relative;background:var(--bg);}
-  .gstn.g1{border-color:rgba(230,196,106,.35);} .gstn.g1 i{color:var(--brass);}
-  .gstn.g2{border-color:rgba(194,246,74,.35);} .gstn.g2 i{color:var(--lime);}
-  .gstn.g3{border-color:rgba(167,139,250,.35);} .gstn.g3 i{color:var(--viol);}
-  .glist{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:22px 0 0;max-width:860px;}
+  .gapps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:32px 0 8px;max-width:940px;}
+  .gapp{border-radius:18px;padding:16px;border:1px solid var(--line);position:relative;overflow:hidden;}
+  .gapp b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:16px;margin:10px 0 5px;}
+  .gapp span{display:block;font-size:12.5px;line-height:1.6;}
+  .gapp i{font-style:normal;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.16em;}
+  .gapp.ga-bank{background:#f4f1e9;color:#241f12;border-color:#d8d0ba;}
+  .gapp.ga-bank i{color:#8a6d1f;} .gapp.ga-bank span{color:#6b6350;}
+  .gapp.ga-ex{background:linear-gradient(180deg,rgba(194,246,74,.07),var(--panel) 70%);border-color:rgba(194,246,74,.3);}
+  .gapp.ga-ex i{color:var(--lime);} .gapp.ga-ex span{color:var(--dim);}
+  .gapp.ga-wal{background:linear-gradient(180deg,rgba(167,139,250,.12),#12101c 70%);border-color:rgba(167,139,250,.35);}
+  .gapp.ga-wal i{color:var(--viol);} .gapp.ga-wal span{color:#b6aecf;}
+  .glist{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:20px 0 0;max-width:940px;}
   .gl{display:flex;gap:10px;align-items:flex-start;color:var(--dim);font-size:12.5px;line-height:1.55;}
   .gl svg{flex:none;margin-top:2px;}
   .gl b{color:var(--ink);}
-  @media(max-width:700px){.gmap{flex-direction:column;}.gmap .glnk{flex-basis:30px;}.gmap .glnk::before{left:50%;right:auto;top:0;bottom:0;border-top:none;border-left:2px dashed var(--line2);}.gmap .glnk svg{transform:rotate(90deg);}}
 
-  /* ============ masthead ============ */
-  .mast{display:flex;align-items:flex-end;gap:26px;flex-wrap:wrap;margin:2px 0 20px;}
+  /* ============ hub: masthead ============ */
+  .mast{display:flex;align-items:flex-end;gap:26px;flex-wrap:wrap;margin:2px 0 18px;}
   .mast-l{flex:1;min-width:260px;}
-  .kick{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.22em;color:var(--faint);text-transform:uppercase;}
-  .kick i{font-style:normal;color:var(--lime);}
   .total{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(40px,6vw,58px);letter-spacing:-.045em;line-height:1;margin:6px 0 10px;}
   .total small{font-size:.45em;color:var(--dim);font-weight:700;letter-spacing:-.02em;}
   .mchips{display:flex;gap:8px;flex-wrap:wrap;}
   .mchip{display:inline-flex;align-items:baseline;gap:7px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-family:'Space Mono',monospace;font-size:12.5px;}
   .mchip .k{color:var(--faint);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
-  .pnl-up{color:var(--up);}.pnl-dn{color:var(--red);}
   .mast-r{flex:0 1 340px;min-width:250px;}
   .spark{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px 6px;}
   .spark .sl{display:flex;justify-content:space-between;align-items:center;color:var(--faint);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:4px;}
   .wreset{background:none;border:none;color:var(--faint);font:700 10.5px 'Space Mono',monospace;letter-spacing:.06em;cursor:pointer;padding:2px 0;}
   .wreset:hover{color:var(--red);}
-  canvas{display:block;width:100%;}
-  .empty{color:var(--faint);text-align:center;padding:26px 10px;font-size:13.5px;line-height:1.6;}
 
-  /* ============ THE MONEY MAP (signature) ============ */
+  /* ============ hub: money map ============ */
   .mmap{position:relative;background:linear-gradient(180deg,var(--bg2),var(--panel));border:1px solid var(--line);border-radius:20px;padding:20px 18px 16px;margin-bottom:14px;overflow:hidden;}
-  .mmap::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;
-    background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.04) 1px,transparent 1.5px);background-size:22px 22px;}
+  .mmap::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.04) 1px,transparent 1.5px);background-size:22px 22px;}
   .mm-kick{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.24em;color:var(--faint);text-transform:uppercase;margin-bottom:14px;position:relative;}
   .mm-row{display:flex;align-items:stretch;gap:0;position:relative;}
   .stn{flex:1;min-width:0;background:rgba(10,12,16,.72);border:1px solid var(--line2);border-radius:16px;padding:13px 14px;cursor:pointer;position:relative;transition:transform .16s,border-color .16s;}
   .stn:hover{transform:translateY(-2px);}
   .stn .s-k{display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:7px;}
-  .stn .s-k svg{flex:none;}
   .stn .s-v{font-family:'Space Mono',monospace;font-weight:700;font-size:clamp(15px,2.2vw,20px);letter-spacing:-.02em;}
   .stn .s-s{color:var(--faint);font-size:10.5px;margin-top:4px;line-height:1.45;min-height:15px;}
+  .stn .s-open{position:absolute;top:11px;right:12px;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--faint);}
   .stn.s-card{border-color:rgba(230,196,106,.4);background:linear-gradient(150deg,rgba(230,196,106,.09),rgba(10,12,16,.72) 55%);}
   .stn.s-card .s-k{color:var(--brass);}
   .stn.s-ex{border-color:rgba(194,246,74,.4);background:linear-gradient(150deg,rgba(194,246,74,.08),rgba(10,12,16,.72) 55%);}
@@ -130,9 +125,7 @@
     .mm-track{left:50%;right:auto;top:-6px;bottom:-6px;width:2px;height:auto;}
     .mm-dot{display:none;}
   }
-
-  /* ============ overview strip (equity + allocation) ============ */
-  .ovr{display:grid;grid-template-columns:1.7fr 1fr;gap:12px;margin-bottom:16px;}
+  .ovr{display:grid;grid-template-columns:1.7fr 1fr;gap:12px;margin-bottom:14px;}
   @media(max-width:820px){.ovr{grid-template-columns:1fr;}}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 15px;}
   .p-k{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.18em;color:var(--faint);text-transform:uppercase;margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline;}
@@ -140,34 +133,87 @@
   .dleg span{display:inline-flex;align-items:center;gap:5px;color:var(--dim);font-size:11px;font-family:'Space Mono',monospace;}
   .dleg i{width:8px;height:8px;border-radius:3px;display:inline-block;}
 
-  /* ============ the two worlds ============ */
-  .worlds{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start;margin-bottom:16px;}
-  @media(max-width:980px){.worlds{grid-template-columns:1fr;}}
-  .world{border-radius:20px;border:1px solid var(--line);overflow:hidden;}
-  .world.w-ex{background:
-    linear-gradient(180deg,rgba(194,246,74,.045),transparent 130px),
-    repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(194,246,74,.03) 27px,rgba(194,246,74,.03) 28px),
-    repeating-linear-gradient(90deg,transparent,transparent 27px,rgba(194,246,74,.03) 27px,rgba(194,246,74,.03) 28px),
-    var(--panel);border-color:rgba(194,246,74,.22);}
-  .world.w-wal{background:
-    linear-gradient(180deg,rgba(167,139,250,.05),transparent 130px),
-    radial-gradient(circle at 1px 1px,rgba(167,139,250,.06) 1px,transparent 1.6px),
-    var(--panel);background-size:auto,20px 20px,auto;border-color:rgba(167,139,250,.26);}
-  .w-head{display:flex;align-items:center;gap:11px;padding:15px 16px 12px;}
-  .w-glyph{flex:none;width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;}
-  .w-ex .w-glyph{background:rgba(194,246,74,.13);color:var(--lime);}
-  .w-wal .w-glyph{background:rgba(167,139,250,.15);color:var(--viol);}
-  .w-t{flex:1;min-width:0;}
-  .w-t b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:17px;letter-spacing:-.02em;}
-  .w-t span{display:block;color:var(--faint);font-size:11px;margin-top:1px;}
-  .w-bal{font-family:'Space Mono',monospace;font-weight:700;font-size:15px;text-align:right;}
-  .w-bal small{display:block;font-size:9.5px;color:var(--faint);font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
-  .w-sec{padding:4px 16px 8px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.16em;color:var(--faint);text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;}
-  .w-sec .act{font-family:'Familjen Grotesk',sans-serif;letter-spacing:0;text-transform:none;font-size:11.5px;font-weight:700;cursor:pointer;background:none;border:none;padding:0;}
-  .w-ex .w-sec .act{color:var(--lime);}
-  .w-wal .w-sec .act{color:var(--viol);}
-  .search{width:calc(100% - 32px);margin:2px 16px 8px;background:rgba(8,10,13,.7);border:1px solid var(--line2);border-radius:10px;color:var(--ink);font:600 13px 'Familjen Grotesk',sans-serif;padding:10px 13px;outline:none;}
-  .list{max-height:430px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#242c38 transparent;}
+  /* ============ app shells ============ */
+  .appv{display:none;}
+  .appv.on{display:block;animation:appIn .22s ease-out;}
+  @keyframes appIn{0%{opacity:0;transform:translateY(10px) scale(.995);}100%{opacity:1;transform:none;}}
+  .app-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .app-back{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid;border-radius:999px;padding:8px 14px;font:700 12px 'Familjen Grotesk',sans-serif;cursor:pointer;}
+  .app-id{flex:1;min-width:0;}
+  .app-id b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:19px;letter-spacing:-.02em;line-height:1.1;}
+  .app-id span{display:block;font-size:11px;margin-top:2px;}
+  .app-logo{flex:none;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+
+  /* ---- BANK app: paper-light, calm, brass ---- */
+  .appv.v-bank{background:#f4f1e9;color:#241f12;border-radius:24px;padding:20px 18px 26px;border:1px solid #d8d0ba;box-shadow:0 30px 80px -30px rgba(0,0,0,.8);}
+  .v-bank .app-back{color:#6b6350;border-color:#cfc6ac;}
+  .v-bank .app-id b{color:#241f12;}
+  .v-bank .app-id span{color:#8a8168;}
+  .v-bank .app-logo{background:#241f12;color:#e6c46a;}
+  .bk-greet{font-size:13.5px;color:#6b6350;margin:2px 0 14px;}
+  .bk-greet b{color:#241f12;}
+  .vcard{position:relative;border-radius:18px;padding:20px;background:linear-gradient(132deg,#2b2412,#141017 48%,#0e1116);border:1px solid rgba(230,196,106,.4);overflow:hidden;margin-bottom:14px;box-shadow:0 22px 48px -20px rgba(20,15,5,.5);color:#ecebe4;}
+  .vcard::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 82% -4%,rgba(230,196,106,.16),transparent 58%);}
+  .vcard::after{content:'';position:absolute;inset:-40% -60% auto;height:120%;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.05) 47%,transparent 54%);}
+  .vc-top{display:flex;align-items:center;margin-bottom:24px;position:relative;}
+  .vc-brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13px;}
+  .vc-brand b{color:var(--brass);}
+  .vc-type{margin-left:auto;font-style:italic;font-weight:800;font-size:15px;color:#e6e9ee;}
+  .vc-chip{width:40px;height:29px;border-radius:6px;background:linear-gradient(140deg,#ecd07c,#b8913a);margin-bottom:13px;position:relative;}
+  .vc-chip::after{content:'';position:absolute;inset:6px 5px;border:1px solid rgba(60,45,10,.5);border-radius:3px;}
+  .vc-num{font-family:'Space Mono',monospace;font-size:18px;letter-spacing:.13em;margin-bottom:13px;position:relative;}
+  .vc-foot{display:flex;gap:22px;font-family:'Space Mono',monospace;font-size:11px;color:#cfd4da;position:relative;}
+  .vc-foot small{display:block;font-size:8.5px;color:#7d8791;letter-spacing:.08em;}
+  .vc-bal{position:absolute;right:18px;bottom:16px;text-align:right;}
+  .vc-bal b{display:block;font-family:'Space Mono',monospace;font-size:18px;color:var(--brass);}
+  .vc-bal small{font-size:9px;color:#7d8791;letter-spacing:.08em;}
+  .bk-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+  .bk-act{display:flex;flex-direction:column;gap:6px;align-items:flex-start;background:#fffdf6;border:1px solid #ddd3b8;border-radius:14px;padding:13px 14px;cursor:pointer;font-family:inherit;text-align:left;}
+  .bk-act b{font-size:13.5px;color:#241f12;}
+  .bk-act span{font-size:11px;color:#8a8168;line-height:1.45;}
+  .bk-act svg{color:#8a6d1f;}
+  .bk-sec{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.18em;color:#8a8168;text-transform:uppercase;margin:4px 0 6px;}
+  .bk-stmt{background:#fffdf6;border:1px solid #ddd3b8;border-radius:14px;overflow:hidden;}
+  .bk-row{display:flex;align-items:center;gap:11px;padding:11px 14px;border-top:1px solid #eee7d2;}
+  .bk-row:first-child{border-top:none;}
+  .bk-ic{flex:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f0ead6;color:#8a6d1f;}
+  .bk-b{flex:1;min-width:0;}
+  .bk-b b{display:block;font-size:13px;color:#241f12;}
+  .bk-b span{display:block;font-size:11px;color:#8a8168;}
+  .bk-amt{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#241f12;}
+  .bk-amt.in{color:#1c7a4e;}
+  .bk-note{margin-top:12px;background:#efe9d4;border:1px solid #ddd3b8;border-radius:12px;color:#6b6350;font-size:11.5px;line-height:1.6;padding:10px 12px;}
+  .bk-note b{color:#241f12;}
+
+  /* ---- EXCHANGE app: dark terminal, lime, dense ---- */
+  .appv.v-ex{background:
+    linear-gradient(180deg,rgba(194,246,74,.05),transparent 140px),
+    repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(194,246,74,.028) 27px,rgba(194,246,74,.028) 28px),
+    repeating-linear-gradient(90deg,transparent,transparent 27px,rgba(194,246,74,.028) 27px,rgba(194,246,74,.028) 28px),
+    #0b0e08;border:1px solid rgba(194,246,74,.28);border-radius:24px;padding:18px 0 22px;box-shadow:0 30px 80px -30px rgba(0,0,0,.8);}
+  .v-ex .app-head{padding:0 16px;}
+  .v-ex .app-back{color:var(--dim);border-color:var(--line2);}
+  .v-ex .app-id span{color:var(--faint);}
+  .v-ex .app-logo{background:rgba(194,246,74,.14);color:var(--lime);}
+  .ex-tick{overflow:hidden;border-top:1px solid rgba(194,246,74,.18);border-bottom:1px solid rgba(194,246,74,.18);background:rgba(6,8,5,.6);margin-bottom:14px;white-space:nowrap;}
+  .ex-tick .tk{display:inline-block;padding:7px 0;font-family:'Space Mono',monospace;font-size:11px;animation:tkScroll 40s linear infinite;}
+  .ex-tick .tk span{margin:0 14px;color:var(--dim);}
+  .ex-tick .tk b{color:var(--ink);font-weight:700;}
+  @keyframes tkScroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+  .ex-sum{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;padding:0 16px;margin-bottom:14px;}
+  .ex-sum .eb{flex:1;min-width:160px;}
+  .ex-sum .eb small{display:block;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.16em;color:var(--faint);text-transform:uppercase;margin-bottom:3px;}
+  .ex-sum .eb b{font-family:'Space Mono',monospace;font-size:24px;letter-spacing:-.02em;}
+  .ex-sum .eb span{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--dim);display:block;margin-top:2px;}
+  .ex-btns{display:flex;gap:8px;}
+  .ex-btn{border:none;border-radius:11px;padding:11px 18px;font:800 13px 'Familjen Grotesk',sans-serif;cursor:pointer;}
+  .ex-btn.dep{background:var(--lime);color:#0a0b0d;}
+  .ex-btn.wd{background:none;border:1px solid var(--line2);color:var(--ink);}
+  .ex-tabs{display:flex;gap:4px;padding:0 16px;margin-bottom:2px;}
+  .ex-tab{background:none;border:none;border-bottom:2px solid transparent;color:var(--faint);padding:9px 4px;margin-right:14px;font:700 13px 'Familjen Grotesk',sans-serif;cursor:pointer;}
+  .ex-tab.on{color:var(--lime);border-bottom-color:var(--lime);}
+  .search{width:calc(100% - 32px);margin:10px 16px 6px;background:rgba(8,10,13,.7);border:1px solid var(--line2);border-radius:10px;color:var(--ink);font:600 13px 'Familjen Grotesk',sans-serif;padding:10px 13px;outline:none;}
+  .list{max-height:56vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#242c38 transparent;}
   .crow{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .12s;}
   .crow:hover{background:rgba(255,255,255,.03);}
   .clogo{width:29px;height:29px;border-radius:50%;background:#1b212b;flex:0 0 auto;object-fit:contain;}
@@ -187,17 +233,40 @@
   .hpnl b{display:block;font-family:'Space Mono',monospace;font-size:12.5px;}
   .hpnl span{font-size:10.5px;font-family:'Space Mono',monospace;}
   .stale{color:#ffb347;font-size:9px;font-weight:700;text-transform:uppercase;}
-  .memewarn{margin:2px 16px 8px;background:rgba(255,98,88,.06);border:1px solid rgba(255,98,88,.22);border-radius:10px;color:#ffb4ad;font-size:11.5px;line-height:1.55;padding:8px 11px;}
-  .netfilt{display:flex;gap:6px;margin:0 16px 8px;overflow-x:auto;scrollbar-width:none;}
-  .nf{flex:0 0 auto;background:rgba(8,10,13,.7);border:1px solid var(--line2);color:var(--dim);border-radius:9px;padding:5.5px 11px;font:700 11px 'Familjen Grotesk',sans-serif;cursor:pointer;}
-  .nf.on{color:var(--viol);border-color:rgba(167,139,250,.5);}
-  .walbals{display:flex;gap:7px;flex-wrap:wrap;padding:0 16px 8px;}
-  .wb{display:inline-flex;align-items:baseline;gap:6px;background:rgba(8,10,13,.7);border:1px solid var(--line2);border-radius:9px;padding:6px 10px;font-family:'Space Mono',monospace;font-size:11.5px;}
-  .wb .k{color:var(--faint);font-size:9.5px;font-weight:700;}
-  .addr-mini{display:flex;gap:7px;padding:0 16px 12px;flex-wrap:wrap;}
-  .am{flex:1;min-width:150px;background:rgba(8,10,13,.7);border:1px solid var(--line2);border-radius:9px;padding:6px 10px;cursor:pointer;}
-  .am .al{color:var(--faint);font-size:8.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-family:'Space Mono',monospace;}
-  .am .av{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--viol);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+  /* ---- WALLET app: violet phone column ---- */
+  .appv.v-wal{max-width:440px;margin:0 auto;background:
+    radial-gradient(ellipse 120% 46% at 50% -6%,rgba(167,139,250,.28),transparent 60%),
+    radial-gradient(circle at 1px 1px,rgba(167,139,250,.06) 1px,transparent 1.6px),
+    #120f1d;background-size:auto,20px 20px,auto;border:1px solid rgba(167,139,250,.34);border-radius:28px;padding:18px 16px 24px;box-shadow:0 30px 80px -30px rgba(0,0,0,.85);}
+  .v-wal .app-back{color:#b6aecf;border-color:rgba(167,139,250,.35);}
+  .v-wal .app-id span{color:#8f86ad;}
+  .v-wal .app-logo{background:rgba(167,139,250,.18);color:var(--viol);}
+  .wl-bal{text-align:center;margin:8px 0 4px;}
+  .wl-bal small{display:block;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.2em;color:#8f86ad;text-transform:uppercase;margin-bottom:6px;}
+  .wl-bal b{font-family:'Bricolage Grotesque',sans-serif;font-size:40px;font-weight:800;letter-spacing:-.04em;}
+  .wl-addr{text-align:center;color:#8f86ad;font-family:'Space Mono',monospace;font-size:10.5px;margin:4px 0 16px;cursor:pointer;}
+  .wl-acts{display:flex;justify-content:center;gap:22px;margin-bottom:20px;}
+  .wl-act{display:flex;flex-direction:column;align-items:center;gap:7px;background:none;border:none;cursor:pointer;color:#d9d3ec;font:600 11px 'Familjen Grotesk',sans-serif;}
+  .wl-act i{width:52px;height:52px;border-radius:50%;background:rgba(167,139,250,.16);border:1px solid rgba(167,139,250,.4);display:flex;align-items:center;justify-content:center;color:#cfc3f5;font-style:normal;transition:transform .14s;}
+  .wl-act:active i{transform:scale(.92);}
+  .wl-sec{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.18em;color:#8f86ad;text-transform:uppercase;margin:14px 2px 6px;display:flex;justify-content:space-between;align-items:center;}
+  .wl-card{background:rgba(16,13,26,.75);border:1px solid rgba(167,139,250,.22);border-radius:16px;overflow:hidden;}
+  .wl-row{display:flex;align-items:center;gap:11px;padding:11px 13px;border-top:1px solid rgba(167,139,250,.1);}
+  .wl-row:first-child{border-top:none;}
+  .wl-row .wr-b{flex:1;min-width:0;}
+  .wl-row .wr-b b{display:block;font-size:13.5px;}
+  .wl-row .wr-b span{display:block;color:#8f86ad;font-size:10.5px;font-family:'Space Mono',monospace;}
+  .wl-amt{text-align:right;font-family:'Space Mono',monospace;font-size:12.5px;}
+  .wl-amt span{display:block;font-size:10px;color:#8f86ad;}
+  .memewarn{margin:8px 0;background:rgba(255,98,88,.08);border:1px solid rgba(255,98,88,.26);border-radius:12px;color:#ffb4ad;font-size:11.5px;line-height:1.55;padding:9px 11px;}
+  .netfilt{display:flex;gap:6px;margin:0 0 8px;overflow-x:auto;scrollbar-width:none;}
+  .nf{flex:0 0 auto;background:rgba(16,13,26,.75);border:1px solid rgba(167,139,250,.25);color:#b6aecf;border-radius:9px;padding:5.5px 11px;font:700 11px 'Familjen Grotesk',sans-serif;cursor:pointer;}
+  .nf.on{color:#fff;border-color:var(--viol);background:rgba(167,139,250,.2);}
+  .v-wal .crow{padding:10px 13px;}
+  .v-wal .list{max-height:none;}
+  .wl-setup{background:rgba(16,13,26,.8);border:1px dashed rgba(167,139,250,.45);border-radius:16px;padding:18px 16px;text-align:center;color:#b6aecf;font-size:13px;line-height:1.6;}
+  .wl-setup .m-go{margin-top:12px;}
 
   /* ============ paper trail ============ */
   .trail{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;}
@@ -211,7 +280,18 @@
   .txamt{text-align:right;font-family:'Space Mono',monospace;font-size:12px;}
   .txamt span{display:block;font-size:10px;color:var(--faint);}
 
-  /* ============ modals (shared shell) ============ */
+  /* ============ dock (app switcher) ============ */
+  .dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:96;display:none;gap:4px;background:rgba(10,12,16,.82);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border:1px solid var(--line2);border-radius:20px;padding:7px;box-shadow:0 16px 44px -14px rgba(0,0,0,.85);}
+  .dock.on{display:flex;}
+  .dock button{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;border-radius:14px;padding:8px 15px;color:var(--faint);font:700 9.5px 'Familjen Grotesk',sans-serif;cursor:pointer;min-width:64px;}
+  .dock button svg{width:19px;height:19px;}
+  .dock button.on{color:#0a0b0d;}
+  .dock button.d-hub.on{background:var(--ink);}
+  .dock button.d-bank.on{background:var(--brass);}
+  .dock button.d-ex.on{background:var(--lime);}
+  .dock button.d-wal.on{background:var(--viol);}
+
+  /* ============ modals (shared) ============ */
   .tmask{position:fixed;inset:0;background:rgba(4,6,9,.82);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);z-index:120;display:none;align-items:flex-end;justify-content:center;}
   .tmask.on{display:flex;}
   @media(min-width:721px){.tmask.on{align-items:center;}}
@@ -241,22 +321,7 @@
   .np.on{border-color:rgba(194,246,74,.5);background:#141a10;}
   .np b{flex:1;font-size:13.5px;}
   .np span{color:var(--faint);font-size:11.5px;font-family:'Space Mono',monospace;}
-  /* virtual card */
-  .vcard{position:relative;border-radius:18px;padding:20px;background:linear-gradient(132deg,#2b2412,#141017 48%,#0e1116);border:1px solid rgba(230,196,106,.4);overflow:hidden;margin-bottom:14px;box-shadow:0 22px 48px -20px rgba(0,0,0,.85);}
-  .vcard::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 82% -4%,rgba(230,196,106,.16),transparent 58%);}
-  .vcard::after{content:'';position:absolute;inset:-40% -60% auto;height:120%;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.05) 47%,transparent 54%);}
-  .vc-top{display:flex;align-items:center;margin-bottom:24px;position:relative;}
-  .vc-brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13px;}
-  .vc-brand b{color:var(--brass);}
-  .vc-type{margin-left:auto;font-style:italic;font-weight:800;font-size:15px;color:#e6e9ee;}
-  .vc-chip{width:40px;height:29px;border-radius:6px;background:linear-gradient(140deg,#ecd07c,#b8913a);margin-bottom:13px;position:relative;}
-  .vc-chip::after{content:'';position:absolute;inset:6px 5px;border:1px solid rgba(60,45,10,.5);border-radius:3px;}
-  .vc-num{font-family:'Space Mono',monospace;font-size:18px;letter-spacing:.13em;margin-bottom:13px;position:relative;}
-  .vc-foot{display:flex;gap:22px;font-family:'Space Mono',monospace;font-size:11px;color:#cfd4da;position:relative;}
-  .vc-foot small{display:block;font-size:8.5px;color:var(--faint);letter-spacing:.08em;}
-  .vc-bal{position:absolute;right:18px;bottom:16px;text-align:right;}
-  .vc-bal b{display:block;font-family:'Space Mono',monospace;font-size:18px;color:var(--brass);}
-  .vc-bal small{font-size:9px;color:var(--faint);letter-spacing:.08em;}
+  .np small{display:block;color:var(--faint);font-size:10.5px;font-weight:400;margin-top:2px;line-height:1.4;}
   .seedbox{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0;}
   .seedw{background:#0a0d12;border:1px solid var(--line2);border-radius:8px;padding:7px 9px;font:600 12px 'Space Mono',monospace;color:var(--ink);}
   .seedw i{font-style:normal;color:var(--faint);font-size:10px;margin-right:5px;}
@@ -265,7 +330,12 @@
   .addr-box{background:#0a0d12;border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-top:8px;}
   .addr-box .al{color:var(--faint);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;font-family:'Space Mono',monospace;}
   .addr-box .av{font-family:'Space Mono',monospace;font-size:11px;word-break:break-all;color:var(--viol);cursor:pointer;}
-  /* trade modal */
+  .qrbox{display:flex;gap:14px;align-items:center;background:#0a0d12;border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:10px;}
+  .qrbox canvas{width:96px;height:96px;flex:none;image-rendering:pixelated;border-radius:6px;background:#fff;padding:5px;}
+  .qrbox .qb{flex:1;min-width:0;}
+  .qrbox .qb b{display:block;font-size:12.5px;margin-bottom:3px;}
+  .qrbox .qb span{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--viol);word-break:break-all;cursor:pointer;display:block;}
+  .qrbox .qb small{color:var(--faint);font-size:10px;display:block;margin-top:4px;}
   .tm-chart{height:240px;background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;position:relative;overflow:hidden;}
   .tm-chart .ldg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:12px;}
   .tfs{display:flex;gap:6px;margin-bottom:12px;}
@@ -280,16 +350,23 @@
   .seg button{flex:1;background:none;border:none;border-radius:9px;padding:10px;font:800 14px 'Familjen Grotesk',sans-serif;color:var(--dim);cursor:pointer;}
   .seg button.buy.on{background:rgba(46,189,133,.16);color:var(--up);}
   .seg button.sell.on{background:rgba(255,98,88,.14);color:var(--red);}
-  .toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:calc(24px + env(safe-area-inset-bottom));background:#131a0e;border:1px solid rgba(194,246,74,.5);color:var(--ink);border-radius:13px;padding:12px 18px;font-size:13.5px;z-index:200;opacity:0;transition:.25s;pointer-events:none;max-width:90vw;}
+  .toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:calc(84px + env(safe-area-inset-bottom));background:#131a0e;border:1px solid rgba(194,246,74,.5);color:var(--ink);border-radius:13px;padding:12px 18px;font-size:13.5px;z-index:200;opacity:0;transition:.25s;pointer-events:none;max-width:90vw;}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
   .foot{color:var(--faint);font-size:11.5px;line-height:1.6;margin-top:26px;border-top:1px solid var(--line);padding-top:14px;}
-  @media(prefers-reduced-motion:reduce){.stn:hover{transform:none;}}
+  @media(prefers-reduced-motion:reduce){.stn:hover{transform:none;}.appv.on{animation:none;}}
+  @media(max-width:520px){
+    .bk-acts{grid-template-columns:1fr;}
+    .ex-sum .eb b{font-size:20px;}
+    .ex-btns{width:100%;}
+    .ex-btn{flex:1;}
+    .list{max-height:none;}
+  }
 </style>
 </head>
 <body>
 <script defer src="/assets/sentry.js"></script>
 <div class="wrap">
-  <header>
+  <header class="site" id="siteHead">
     <a class="brand" href="/">MARGIN<b>PAD</b></a>
     <div class="hnav">
       <a href="/paper-trade">Futures</a>
@@ -302,113 +379,142 @@
   <section id="gate">
     <div class="kick">DEMO SPOT <i>·</i> A CRYPTO LIFE-SIMULATION</div>
     <h1>Your first <em>$10,000</em> in crypto.<br>Every step. Nothing at stake.</h1>
-    <p class="gsub">Real life has no practice mode — this is it. The money starts <b>on a bank card</b> and you carry it the whole way: onto an exchange, into your own wallet, across networks, into coins and memes. Real fees, real gas, real slippage. Fake money.</p>
+    <p class="gsub">Real life has no practice mode — this is it. Three apps, exactly like the real ones: a <b>bank</b> where your card lives, an <b>exchange</b> where you trade the top 250, and a <b>self-custody wallet</b> where the memes and the gas live. Real fees. Fake money.</p>
     <button class="cta" type="button" data-auth-open>Get the $10,000 card</button>
     <div class="disc">Free forever. Email sign-in, no password, no deposit — nothing to lose but bad habits.</div>
-    <div class="gmap">
-      <div class="gstn g1"><i>01 · BANK</i><b>The card</b><span>$10,000 lands on a virtual Visa. Link it to the exchange and feel the 1.8% card fee — your first lesson.</span></div>
-      <div class="glnk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5a636e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="gstn g2"><i>02 · EXCHANGE</i><b>USDT &amp; the top 250</b><span>Buy USDT, then trade Bitcoin and 250 majors at live prices. Custodial — the exchange holds it for you.</span></div>
-      <div class="glnk"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5a636e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="gstn g3"><i>03 · ON-CHAIN</i><b>Your wallet &amp; the memes</b><span>Generate addresses, guard a seed phrase, pick a network, pay gas in SOL — and hunt 150+ live meme coins on 4 chains.</span></div>
+    <div class="gapps">
+      <div class="gapp ga-bank"><i>01 · BANK APP</i><b>Your card &amp; your cash</b><span>$10,000 lands on a virtual Visa. Move money to the exchange — and cash profits back out. Both directions cost a fee, like real life.</span></div>
+      <div class="gapp ga-ex"><i>02 · EXCHANGE APP</i><b>USDT &amp; the top 250</b><span>A trading terminal: buy USDT, trade Bitcoin and 250 majors at live prices with a 0.1% fee. Custodial — they hold it for you.</span></div>
+      <div class="gapp ga-wal"><i>03 · WALLET APP</i><b>Your keys &amp; the memes</b><span>Addresses, a seed phrase, networks, gas in SOL — and 150+ live meme coins on 4 chains. Self-custody, the real thing.</span></div>
     </div>
     <div class="glist">
-      <div class="gl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c2f64a" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Fees are the curriculum.</b> Card 1.8%, exchange 0.1%, DEX 0.3%, network fees $0.80-$8, gas per transaction.</span></div>
+      <div class="gl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c2f64a" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Fees are the curriculum.</b> Card 1.8% in, 1% out, exchange 0.1%, DEX 0.3%, network fees $0.80-$8, gas per tx.</span></div>
       <div class="gl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c2f64a" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Seed phrase moment.</b> Shown once, never stored — exactly how self-custody works.</span></div>
       <div class="gl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c2f64a" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Wrong network = lesson,</b> not lost money. Try it here, never out there.</span></div>
       <div class="gl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c2f64a" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Daily PnL, equity curve,</b> average entries, realized profit and a full paper trail.</span></div>
     </div>
   </section>
 
-  <!-- ============ SIGNED-IN APP ============ -->
+  <!-- ============ SIGNED-IN ============ -->
   <section id="app" hidden>
-    <div class="mast">
-      <div class="mast-l">
-        <div class="kick">DEMO SPOT <i>·</i> YOUR MONEY, THE WHOLE WAY</div>
-        <div class="total" id="wTotal">—</div>
-        <div class="mchips">
-          <span class="mchip"><span class="k">Today</span><span id="wToday">—</span></span>
-          <span class="mchip"><span class="k">Since start</span><span id="wAll">—</span></span>
-          <span class="mchip"><span class="k">Realized</span><span id="wRealized">—</span></span>
+
+    <!-- ===== HUB ===== -->
+    <div class="appv on" id="v-hub">
+      <div class="mast">
+        <div class="mast-l">
+          <div class="kick">DEMO SPOT <i>·</i> YOUR MONEY, THE WHOLE WAY</div>
+          <div class="total" id="wTotal">—</div>
+          <div class="mchips">
+            <span class="mchip"><span class="k">Today</span><span id="wToday">—</span></span>
+            <span class="mchip"><span class="k">Since start</span><span id="wAll">—</span></span>
+            <span class="mchip"><span class="k">Realized</span><span id="wRealized">—</span></span>
+          </div>
+        </div>
+        <div class="mast-r">
+          <div class="spark">
+            <div class="sl"><span>Equity — daily</span><button class="wreset" id="wReset" type="button">RESET · 1 LEFT</button></div>
+            <canvas id="eqCv" height="84"></canvas>
+            <div class="empty" id="eqEmpty" style="padding:8px;font-size:11px" hidden>Draws after your first full day.</div>
+          </div>
         </div>
       </div>
-      <div class="mast-r">
-        <div class="spark">
-          <div class="sl"><span>Equity — daily</span><button class="wreset" id="wReset" type="button">RESET · 1 LEFT</button></div>
-          <canvas id="eqCv" height="84"></canvas>
-          <div class="empty" id="eqEmpty" style="padding:8px;font-size:11px" hidden>Draws after your first full day.</div>
+
+      <div class="mmap">
+        <div class="mm-kick">THE MONEY MAP — TAP A PLACE TO OPEN ITS APP</div>
+        <div class="mm-row" id="mmRow"></div>
+        <div class="coach" id="coach" hidden></div>
+      </div>
+
+      <div class="ovr">
+        <div class="panel" id="allocPanel">
+          <div class="p-k"><span>Allocation</span><span id="nPort"></span></div>
+          <div style="display:flex;gap:14px;align-items:center">
+            <div style="flex:0 0 132px"><canvas id="alCv" height="120"></canvas></div>
+            <div class="dleg" id="alLeg" style="flex:1;margin-top:0"></div>
+          </div>
         </div>
+        <div class="panel">
+          <div class="p-k"><span>Field notes</span></div>
+          <div id="noteBox" style="color:var(--dim);font-size:12.5px;line-height:1.65">Every fee you pay here is real out there. Watch how much of your $10,000 the PATH itself eats — card fees, trading fees, network fees, gas, slippage — before the market even moves.</div>
+        </div>
+      </div>
+
+      <div class="trail">
+        <div class="p-k"><span>Paper trail — everything you did</span></div>
+        <div id="txList"><div class="empty">No activity yet.</div></div>
       </div>
     </div>
 
-    <div class="mmap">
-      <div class="mm-kick">THE MONEY MAP — WHERE IT SITS RIGHT NOW</div>
-      <div class="mm-row" id="mmRow"></div>
-      <div class="coach" id="coach" hidden></div>
+    <!-- ===== BANK APP ===== -->
+    <div class="appv v-bank" id="v-bank">
+      <div class="app-head">
+        <button class="app-back" type="button" data-view="hub">&#8592; Home</button>
+        <div class="app-id"><b>MarginPad Bank</b><span>member since today · FDIC-insured (pretend)</span></div>
+        <div class="app-logo"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M4 10h16"/><path d="M12 3 3 8h18l-9-5z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/></svg></div>
+      </div>
+      <div class="bk-greet" id="bkGreet">Good day.</div>
+      <div id="bkCard"></div>
+      <div class="bk-acts">
+        <button class="bk-act" id="bkTopUp" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg><b>Send to exchange</b><span>Buy USDT with this card · 1.8% card fee</span></button>
+        <button class="bk-act" id="bkCashOut" type="button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg><b>Cash out from exchange</b><span>Sell USDT back to this card · 1% fee</span></button>
+      </div>
+      <div class="bk-sec">Recent transactions</div>
+      <div class="bk-stmt" id="bkStmt"><div class="empty" style="color:#8a8168">No transactions yet.</div></div>
+      <div class="bk-note"><b>Why a bank app?</b> In real life your money starts and ends at a bank. Crypto sits in the middle. Notice that BOTH directions cost a fee — getting in (1.8% card) and getting out (1% withdrawal). Banks and processors always take their cut.</div>
     </div>
 
-    <div class="ovr">
-      <div class="panel" id="allocPanel">
-        <div class="p-k"><span>Allocation</span><span id="nPort"></span></div>
-        <div style="display:flex;gap:14px;align-items:center">
-          <div style="flex:0 0 132px"><canvas id="alCv" height="120"></canvas></div>
-          <div class="dleg" id="alLeg" style="flex:1;margin-top:0"></div>
+    <!-- ===== EXCHANGE APP ===== -->
+    <div class="appv v-ex" id="v-ex">
+      <div class="app-head">
+        <button class="app-back" type="button" data-view="hub">&#8592; Home</button>
+        <div class="app-id"><b>MarginPad Exchange</b><span>custodial · they hold it for you · taker fee 0.1%</span></div>
+        <div class="app-logo"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 14 4-5 3 3 5-7"/></svg></div>
+      </div>
+      <div class="ex-tick" id="exTick" hidden><div class="tk" id="exTickIn"></div></div>
+      <div class="ex-sum">
+        <div class="eb"><small>Exchange balance</small><b id="exTotal">—</b><span id="exFree">—</span></div>
+        <div class="ex-btns">
+          <button class="ex-btn dep" id="exDep" type="button">Deposit</button>
+          <button class="ex-btn wd" id="exWd" type="button">Withdraw</button>
         </div>
       </div>
-      <div class="panel">
-        <div class="p-k"><span>Field notes</span></div>
-        <div id="noteBox" style="color:var(--dim);font-size:12.5px;line-height:1.65">Every fee you pay here is real out there. Watch how much of your $10,000 the PATH itself eats — card fee, trading fees, network fees, gas, slippage — before the market even moves.</div>
+      <div class="ex-tabs">
+        <button class="ex-tab on" data-extab="assets" type="button">Assets</button>
+        <button class="ex-tab" data-extab="markets" type="button">Markets</button>
       </div>
-    </div>
-
-    <div class="worlds">
-      <!-- EXCHANGE world -->
-      <div class="world w-ex" id="exWorld">
-        <div class="w-head">
-          <div class="w-glyph"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg></div>
-          <div class="w-t"><b>Exchange</b><span>custodial — they hold it for you · fee 0.1%</span></div>
-          <div class="w-bal" id="exBal">—<small>on the exchange</small></div>
-        </div>
-        <div class="w-sec"><span>Your coins</span><button class="act" id="exTopUp" type="button">Buy USDT with card</button></div>
-        <div id="exHolds"><div class="empty" style="padding:14px">Nothing yet — buy USDT, then pick a coin below.</div></div>
-        <div class="w-sec" style="margin-top:6px"><span>Top 250 markets</span></div>
-        <input class="search" id="mktSearch" type="text" placeholder="Search coins…" autocomplete="off" />
+      <div id="exAssets">
+        <div id="exHolds"><div class="empty">Loading…</div></div>
+      </div>
+      <div id="exMarkets" hidden>
+        <input class="search" id="mktSearch" type="text" placeholder="Search 250 coins…" autocomplete="off" />
         <div class="list" id="mktList"><div class="empty">Loading markets…</div></div>
       </div>
+    </div>
 
-      <!-- WALLET world -->
-      <div class="world w-wal" id="walWorld">
-        <div class="w-head">
-          <div class="w-glyph"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/></svg></div>
-          <div class="w-t"><b>On-chain wallet</b><span>self-custody — your keys, your coins, your gas</span></div>
-          <div class="w-bal" id="walBal">—<small>on-chain</small></div>
-        </div>
-        <div id="walBody"></div>
-        <div class="w-sec"><span>Your bags</span></div>
-        <div id="walHolds"><div class="empty" style="padding:14px">No bags yet.</div></div>
-        <div class="w-sec" style="margin-top:6px"><span>Trending memes — 4 chains</span></div>
-        <div class="memewarn"><b>Degen zone.</b> Every meme lives on a network and is paid for in that chain's coin, plus gas. Thin pools slip, and pools can rug to zero. That is the lesson.</div>
-        <div class="netfilt" id="netFilt">
-          <button class="nf on" data-net="all" type="button">All chains</button>
-          <button class="nf" data-net="solana" type="button">Solana</button>
-          <button class="nf" data-net="base" type="button">Base</button>
-          <button class="nf" data-net="eth" type="button">Ethereum</button>
-          <button class="nf" data-net="bsc" type="button">BNB Chain</button>
-        </div>
-        <div class="list" id="memeList"><div class="empty">Loading trending memes…</div></div>
+    <!-- ===== WALLET APP ===== -->
+    <div class="appv v-wal" id="v-wal">
+      <div class="app-head">
+        <button class="app-back" type="button" data-view="hub">&#8592; Home</button>
+        <div class="app-id"><b>MarginPad Wallet</b><span>self-custody · your keys, your coins</span></div>
+        <div class="app-logo"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/></svg></div>
       </div>
+      <div id="wlBody"></div>
     </div>
 
-    <div class="trail">
-      <div class="p-k"><span>Paper trail — everything you did</span></div>
-      <div id="txList"><div class="empty">No activity yet.</div></div>
-    </div>
   </section>
 
-  <div class="foot">Demo life-simulation with practice funds — prices, fees, gas, networks and slippage mirror real markets but no real money is involved and nothing can be withdrawn. The card, exchange, wallet, addresses and seed phrase are simulated for education. Not financial advice. · <a href="/paper-trade">Try futures paper trading</a> · <a href="/academy/">Learn in the Academy</a></div>
+  <div class="foot">Demo life-simulation with practice funds — prices, fees, gas, networks and slippage mirror real markets but no real money is involved and nothing can be withdrawn. The bank, card, exchange, wallet, addresses and seed phrase are simulated for education. Not financial advice. · <a href="/paper-trade">Try futures paper trading</a> · <a href="/academy/">Learn in the Academy</a></div>
 </div>
 
-<!-- generic sim modal (card / onramp / wallet / withdraw / swap) -->
+<!-- dock: app switcher (visible inside apps) -->
+<nav class="dock" id="dock">
+  <button class="d-hub" data-view="hub" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h3v-6h6v6h3a1 1 0 0 0 1-1V10"/></svg>Map</button>
+  <button class="d-bank" data-view="bank" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"/><path d="M12 3 3 8h18l-9-5z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/></svg>Bank</button>
+  <button class="d-ex" data-view="ex" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 14 4-5 3 3 5-7"/></svg>Exchange</button>
+  <button class="d-wal" data-view="wal" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/></svg>Wallet</button>
+</nav>
+
+<!-- generic sim modal -->
 <div class="tmask" id="smask"><div class="tmod" id="smod"></div></div>
 
 <!-- trade modal -->
@@ -463,7 +569,7 @@
 <script>
 (function(){
   'use strict';
-  var ME=null, PORT=null, MKT=[], MEMES=[], booted=false, memeNetF='all';
+  var ME=null, PORT=null, MKT=[], MEMES=[], booted=false, memeNetF='all', VIEW='hub', exTab='assets';
   var NETS={solana:{native:'SOL',label:'Solana',cls:'net-solana',wd:1},base:{native:'ETH',label:'Base',cls:'net-base',wd:1.5},eth:{native:'ETH',label:'Ethereum',cls:'net-eth',wd:8},bsc:{native:'BNB',label:'BNB Chain',cls:'net-bsc',wd:0.8}};
   var $=function(id){return document.getElementById(id);};
   var esc=function(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');};
@@ -479,17 +585,46 @@
   function logoImg(src,sym){if(src)return '<img class="clogo" loading="lazy" src="'+esc(src)+'" alt="" onerror="this.outerHTML=\''+'<span class=&quot;clogo txt&quot;>'+esc((sym||'?').slice(0,3))+'</span>'+'\'">';return '<span class="clogo txt">'+esc((sym||'?').slice(0,3))+'</span>';}
   function netBadge(net){var n=NETS[net];return n?'<span class="netb '+n.cls+'">'+esc(n.label.toUpperCase())+'</span>':'';}
   function gasBal(a){return (PORT&&PORT.gas&&+PORT.gas[a])||0;}
+  function gasHas(){var g=(PORT&&PORT.gas)||{};for(var k in g){if(+g[k]>0)return true;}return false;}
+  function shortAddr(a){a=String(a||'');return a.length>12?a.slice(0,5)+'…'+a.slice(-4):a;}
 
   function cardBits(uid){var h=0,s=String(uid||'demo');for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;
     var num='4532';for(var g=0;g<3;g++){num+=' ';for(var d=0;d<4;d++){h=(h*1103515245+12345)>>>0;num+=String(h%10);}}
     h=(h*1103515245+12345)>>>0;var cvv=String(100+h%900);
     return {num:num,cvv:cvv,exp:'11/29',last4:num.slice(-4)};}
 
+  // pseudo-QR: deterministic 25x25 grid from the address (looks real, scans nowhere — labeled as demo)
+  function drawQr(cv,str){
+    var N=25;cv.width=N;cv.height=N;var ctx=cv.getContext('2d');
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,N,N);ctx.fillStyle='#111';
+    var h=2166136261;for(var i=0;i<str.length;i++){h^=str.charCodeAt(i);h=(h*16777619)>>>0;}
+    var st=h;function rnd(){st^=st<<13;st^=st>>>17;st^=st<<5;st>>>=0;return st/4294967295;}
+    for(var y=0;y<N;y++)for(var x=0;x<N;x++){if((x<8&&y<8)||(x>=N-8&&y<8)||(x<8&&y>=N-8))continue;if(rnd()<0.46)ctx.fillRect(x,y,1,1);}
+    function finder(fx,fy){ctx.fillRect(fx,fy,7,7);ctx.fillStyle='#fff';ctx.fillRect(fx+1,fy+1,5,5);ctx.fillStyle='#111';ctx.fillRect(fx+2,fy+2,3,3);}
+    finder(0,0);finder(N-7,0);finder(0,N-7);
+  }
+
+  // ---- views ----
+  function showView(v){
+    VIEW=v;
+    ['hub','bank','ex','wal'].forEach(function(x){var el=$('v-'+x);if(el)el.classList.toggle('on',x===v);});
+    var dock=$('dock');dock.classList.toggle('on',!!ME);
+    Array.prototype.forEach.call(dock.querySelectorAll('button'),function(b){b.classList.toggle('on',b.getAttribute('data-view')===v);});
+    $('siteHead').style.display=v==='hub'?'':'none';
+    try{window.scrollTo({top:0,behavior:'instant'});}catch(e){window.scrollTo(0,0);}
+    if(v==='bank')renderBank();
+    if(v==='ex'){renderEx();if(!MKT.length)loadMarkets();}
+    if(v==='wal'){renderWal();if(!MEMES.length)loadMemes();}
+    try{if(window.__mpTrack)window.__mpTrack('spot','view '+v);}catch(e){}
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('[data-view]'),function(b){b.addEventListener('click',function(){showView(b.getAttribute('data-view'));});});
+
   // ---- boot / auth ----
   function boot(){
     var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();
     ME=me||null;
     $('gate').hidden=!!ME;$('app').hidden=!ME;
+    $('dock').classList.toggle('on',!!ME);
     if(ME&&!booted){booted=true;loadPortfolio(true);loadMarkets();loadMemes();}
     else if(ME){loadPortfolio();}
   }
@@ -501,35 +636,36 @@
   // ---- portfolio ----
   function loadPortfolio(first){
     fetch('/api/spot/portfolio').then(function(r){return r.json();}).then(function(d){
-      if(!d||d.error==='login_required'){ME=null;$('gate').hidden=false;$('app').hidden=true;return;}
+      if(!d||d.error==='login_required'){ME=null;$('gate').hidden=false;$('app').hidden=true;$('dock').classList.remove('on');return;}
       if(d.error)return;
       PORT=d;
-      if(d.fresh)toast('<b>Your $10,000 card has arrived.</b> The map shows the way — start by linking it.');
-      renderMast();renderMap();renderHolds();renderEquity();renderDonut();renderWalletBody();
-      loadHistory();
+      if(d.fresh)toast('<b>Your $10,000 card has arrived.</b> The map shows the way — start at the bank.');
+      [renderMast,renderMap,renderEquity,renderDonut].forEach(function(f){try{f();}catch(e){}});
+      try{if(VIEW==='bank')renderBank();if(VIEW==='ex')renderEx();if(VIEW==='wal')renderWal();}catch(e){}
+      loadHistory(true);
     }).catch(function(){});
   }
   function stepState(){
     var d=PORT||{};
-    var hasGas=false;var g=d.gas||{};for(var k in g){if(+g[k]>0)hasGas=true;}
+    var hasGas=gasHas();
     return [
-      {t:'Link your card to the exchange', done:(d.onb||0)>=1, act:openCardModal, cta:'Link card', where:1, coach:'Your $10,000 arrived on a virtual card. Link it to the exchange so you can buy crypto — you confirm it with the card’s last 4 digits.'},
-      {t:'Buy USDT with the card', done:(d.onb||0)>=2, act:openOnrampModal, cta:'Buy USDT', where:1, coach:'USDT is the dollar of crypto — it is what you trade with. Card purchases cost a 1.8% processing fee; in real life a bank transfer is cheaper.'},
-      {t:'Create a self-custody wallet', done:!!(d.addr&&d.addr.sol), act:openWalletCreate, cta:'Create wallet', where:2, coach:'The exchange holds coins FOR you; a wallet is YOURS. You get real-looking addresses and a seed phrase — guard it with your life.'},
-      {t:'Send USDT to your wallet', done:(d.wusdtUsd||0)>0||hasGas, act:openWithdrawModal, cta:'Withdraw', where:2, coach:'Withdraw USDT from the exchange to your own address. Pick the network carefully — Solana costs $1, Ethereum $8.'},
-      {t:'Swap for SOL — gas money', done:hasGas, act:openSwapModal, cta:'Swap', where:2, coach:'On-chain everything costs gas, and memes are paid for in the network’s coin. Swap some wallet USDT for SOL to unlock the degen zone.'}
+      {t:'Link your card to the exchange', done:(d.onb||0)>=1, act:openCardModal, cta:'Link card', coach:'Your $10,000 arrived on a virtual card in the BANK app. Link it to the exchange so you can buy crypto — you confirm it with the card’s last 4 digits.'},
+      {t:'Buy USDT with the card', done:(d.onb||0)>=2, act:openOnrampModal, cta:'Buy USDT', coach:'USDT is the dollar of crypto — it is what you trade with. Card purchases cost a 1.8% processing fee; in real life a bank transfer is cheaper.'},
+      {t:'Create a self-custody wallet', done:!!(d.addr&&d.addr.sol), act:openWalletCreate, cta:'Create wallet', coach:'The exchange holds coins FOR you; a wallet is YOURS. You get real-looking addresses and a seed phrase — guard it with your life.'},
+      {t:'Send USDT to your wallet', done:(d.wusdtUsd||0)>0||hasGas, act:openWithdrawModal, cta:'Withdraw', coach:'Withdraw USDT from the exchange to your own address. Pick the network carefully — Solana costs $1, Ethereum $8.'},
+      {t:'Swap for SOL — gas money', done:hasGas, act:openSwapModal, cta:'Swap', coach:'On-chain everything costs gas, and memes are paid for in the network’s coin. Swap some wallet USDT for SOL to unlock the degen zone.'}
     ];
   }
-  var STN_CARD='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg>';
-  var STN_EX='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg>';
+  var STN_CARD='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M3 21h18"/><path d="M12 3 3 8h18l-9-5z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/></svg>';
+  var STN_EX='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M3 3v18h18"/><path d="m7 14 4-5 3 3 5-7"/></svg>';
   var STN_WAL='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/></svg>';
   function renderMap(){
     var d=PORT;if(!d)return;
     var steps=stepState();
     var nextIdx=-1;steps.forEach(function(s,i){if(nextIdx<0&&!s.done)nextIdx=i;});
     var gasBits=[];var g=d.gas||{};for(var k in g){if(+g[k]>0)gasBits.push(fmtNat(g[k])+' '+k);}
-    var link1Step=(nextIdx===0||nextIdx===1)?steps[nextIdx]:null;   // card->exchange leg
-    var link2Step=(nextIdx>=2&&nextIdx<=4)?steps[nextIdx]:null;      // exchange->wallet leg
+    var link1Step=(nextIdx===0||nextIdx===1)?steps[nextIdx]:null;
+    var link2Step=(nextIdx>=2&&nextIdx<=4)?steps[nextIdx]:null;
     function linkHtml(step,col){
       return '<div class="mm-link'+(step?' live':'')+'" style="color:'+col+'">'
         +'<span class="mm-track"></span>'
@@ -537,18 +673,18 @@
         +'</div>';
     }
     $('mmRow').innerHTML=
-      '<div class="stn s-card'+((d.cardUsd||0)<=0?' dead':'')+'" id="stnCard"><div class="s-k">'+STN_CARD+'BANK CARD</div><div class="s-v">'+fmtUsd(d.cardUsd)+'</div><div class="s-s">virtual Visa · tap to view</div></div>'
+      '<div class="stn s-card'+((d.cardUsd||0)<=0?' dead':'')+'" id="stnCard"><span class="s-open">OPEN &#8599;</span><div class="s-k">'+STN_CARD+'BANK</div><div class="s-v">'+fmtUsd(d.cardUsd)+'</div><div class="s-s">your card &amp; your cash</div></div>'
       +linkHtml(link1Step,'#e6c46a')
-      +'<div class="stn s-ex" id="stnEx"><div class="s-k">'+STN_EX+'EXCHANGE</div><div class="s-v">'+fmtUsd(d.exchangeUsd)+'</div><div class="s-s">'+fmtUsd(d.usdtUsd)+' USDT free · custodial</div></div>'
+      +'<div class="stn s-ex" id="stnEx"><span class="s-open">OPEN &#8599;</span><div class="s-k">'+STN_EX+'EXCHANGE</div><div class="s-v">'+fmtUsd(d.exchangeUsd)+'</div><div class="s-s">'+fmtUsd(d.usdtUsd)+' USDT free · custodial</div></div>'
       +linkHtml(link2Step,'#a78bfa')
-      +'<div class="stn s-wal'+(!(d.addr&&d.addr.sol)?' dead':'')+'" id="stnWal"><div class="s-k">'+STN_WAL+'ON-CHAIN WALLET</div><div class="s-v">'+((d.addr&&d.addr.sol)?fmtUsd(d.walletUsd):'—')+'</div><div class="s-s">'+((d.addr&&d.addr.sol)?(gasBits.length?gasBits.join(' · '):fmtUsd(d.wusdtUsd)+' USDT · no gas yet'):'not created yet')+'</div></div>';
+      +'<div class="stn s-wal'+(!(d.addr&&d.addr.sol)?' dead':'')+'" id="stnWal"><span class="s-open">OPEN &#8599;</span><div class="s-k">'+STN_WAL+'WALLET</div><div class="s-v">'+((d.addr&&d.addr.sol)?fmtUsd(d.walletUsd):'—')+'</div><div class="s-s">'+((d.addr&&d.addr.sol)?(gasBits.length?gasBits.join(' · '):fmtUsd(d.wusdtUsd)+' USDT · no gas yet'):'not created yet — tap to open')+'</div></div>';
     var c=$('coach');
     if(nextIdx<0){c.hidden=true;}
     else{c.hidden=false;c.innerHTML='<span class="cnum">STEP '+(nextIdx+1)+' OF 5</span><span><b>'+esc(steps[nextIdx].t)+'.</b> '+esc(steps[nextIdx].coach)+'</span>';}
     Array.prototype.forEach.call($('mmRow').querySelectorAll('[data-act]'),function(b){b.addEventListener('click',function(e){e.stopPropagation();steps[nextIdx].act();});});
-    $('stnCard').addEventListener('click',openCardModal);
-    $('stnEx').addEventListener('click',function(){try{$('exWorld').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}});
-    $('stnWal').addEventListener('click',function(){if(!(PORT.addr&&PORT.addr.sol)){openWalletCreate();return;}try{$('walWorld').scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}});
+    $('stnCard').addEventListener('click',function(){showView('bank');});
+    $('stnEx').addEventListener('click',function(){showView('ex');});
+    $('stnWal').addEventListener('click',function(){showView('wal');});
   }
   function renderMast(){
     var d=PORT;if(!d)return;
@@ -558,11 +694,80 @@
     $('wAll').innerHTML=pnlHtml(d.allTimePnlUsd,d.allTimePnlUsd/100);
     $('wRealized').innerHTML=d.realizedUsd?pnlHtml(d.realizedUsd):'<span style="color:var(--faint)">—</span>';
     $('nPort').textContent=(d.holds&&d.holds.length)?(d.holds.length+' positions'):'';
-    $('exBal').innerHTML=esc(fmtUsd0(d.exchangeUsd))+'<small>on the exchange</small>';
-    $('walBal').innerHTML=((d.addr&&d.addr.sol)?esc(fmtUsd0(d.walletUsd)):'—')+'<small>on-chain</small>';
     var rb=$('wReset');var cd=d.resetTs?(d.resetTs+7*86400000-Date.now()):0;
     if(cd>0){var days=Math.ceil(cd/86400000);rb.textContent='RESET · 0 LEFT ('+days+'D)';rb.disabled=true;rb.style.opacity=.55;}
     else {rb.textContent='RESET · 1 LEFT';rb.disabled=false;rb.style.opacity=1;}
+  }
+  function renderEquity(){
+    var cv=$('eqCv');var snaps=(PORT&&PORT.snaps)||[];
+    var pts=snaps.map(function(s){return s.valueUsd;});
+    if(PORT)pts=pts.concat([PORT.totalUsd]);
+    $('eqEmpty').hidden=pts.length>1;
+    var W=cv.clientWidth*2;if(!(W>0))return;var ctx=cv.getContext('2d');cv.width=W;var H=cv.height=168;ctx.clearRect(0,0,W,H);
+    if(pts.length<2)return;
+    var mn=Math.min.apply(null,pts),mx=Math.max.apply(null,pts);if(mx-mn<1){mx+=1;mn-=1;}
+    var up=pts[pts.length-1]>=pts[0];var col=up?'#2ebd85':'#ff6258';
+    ctx.beginPath();
+    pts.forEach(function(v,i){var x=i/(pts.length-1)*(W-8)+4,y=H-8-(v-mn)/(mx-mn)*(H-20);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+    ctx.strokeStyle=col;ctx.lineWidth=3;ctx.lineJoin='round';ctx.stroke();
+    ctx.lineTo(W-4,H);ctx.lineTo(4,H);ctx.closePath();
+    var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,up?'rgba(46,189,133,.24)':'rgba(255,98,88,.2)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fill();
+  }
+  var DCOLS=['#e6c46a','#c2f64a','#a78bfa','#38bdf8','#ff6a3d','#2ebd85','#ff5a9e','#5ad8e6','#c9a5ff','#98a1ac'];
+  function renderDonut(){
+    var cv=$('alCv'),leg=$('alLeg');if(!PORT)return;
+    var parts=[{n:'Card',v:PORT.cardUsd},{n:'Exchange USDT',v:PORT.usdtUsd},{n:'Wallet USDT',v:PORT.wusdtUsd},{n:'Gas coins',v:PORT.gasUsd}]
+      .concat((PORT.holds||[]).map(function(h){return {n:(h.meta&&h.meta.sym)||h.sym,v:h.valueUsd};}));
+    parts=parts.filter(function(p){return p.v>0.01;}).sort(function(a,b){return b.v-a.v;}).slice(0,9);
+    var tot=parts.reduce(function(s,p){return s+p.v;},0)||1;
+    var W=cv.clientWidth*2;if(!(W>0))return;var ctx=cv.getContext('2d');cv.width=W;var H=cv.height=240;ctx.clearRect(0,0,W,H);
+    var cx=W/2,cy=H/2,R=Math.min(W,H)/2-6,r=R*0.64,a=-Math.PI/2;
+    parts.forEach(function(p,i){var frac=p.v/tot,a2=a+frac*Math.PI*2;
+      ctx.beginPath();ctx.arc(cx,cy,R,a,a2);ctx.arc(cx,cy,r,a2,a,true);ctx.closePath();ctx.fillStyle=DCOLS[i%DCOLS.length];ctx.fill();a=a2;});
+    leg.innerHTML=parts.map(function(p,i){return '<span><i style="background:'+DCOLS[i%DCOLS.length]+'"></i>'+esc(p.n)+' '+Math.round(p.v/tot*100)+'%</span>';}).join('');
+  }
+
+  // ---- BANK app ----
+  function renderBank(){
+    var d=PORT;if(!d)return;
+    var h=new Date().getHours();
+    $('bkGreet').innerHTML=(h<5?'Working late':h<12?'Good morning':h<18?'Good afternoon':'Good evening')+', <b>'+esc((ME&&ME.username)||'trader')+'</b>. Your money, before crypto.';
+    var bits=cardBits(ME&&ME.id);
+    var linked=(d.onb||0)>=1;
+    $('bkCard').innerHTML='<div class="vcard"><div class="vc-top"><span class="vc-brand">MARGIN<b>PAD</b> BANK</span><span class="vc-type">VISA</span></div><div class="vc-chip"></div><div class="vc-num">'+bits.num+'</div><div class="vc-foot"><span><small>CARD HOLDER</small>'+esc(((ME&&ME.username)||'DEMO TRADER').toUpperCase())+'</span><span><small>EXPIRES</small>'+bits.exp+'</span><span><small>CVV</small>'+bits.cvv+'</span></div><div class="vc-bal"><small>AVAILABLE</small><b>'+fmtUsd(d.cardUsd)+'</b></div></div>'
+      +(!linked?'<div class="bk-note" style="margin:0 0 14px"><b>Card not linked yet.</b> To buy crypto, first link this card to the exchange — tap "Send to exchange" and confirm the last 4 digits.</div>':'');
+    renderBankStmt();
+  }
+  var TX_CACHE=[];
+  function renderBankStmt(){
+    var el=$('bkStmt');if(!el)return;
+    var rows=TX_CACHE.filter(function(t){return t.side==='onramp'||t.side==='offramp'||t.side==='reset';}).slice(0,10);
+    if(!rows.length){el.innerHTML='<div class="empty" style="color:#8a8168">No card activity yet.</div>';return;}
+    var IC_OUT='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 17 17 7M9 7h8v8"/></svg>';
+    var IC_IN='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M17 7 7 17M15 17H7V9"/></svg>';
+    el.innerHTML=rows.map(function(t){
+      if(t.side==='reset')return '<div class="bk-row"><span class="bk-ic">'+IC_IN+'</span><span class="bk-b"><b>Card issued — fresh start</b><span>'+ago(t.ts)+'</span></span><span class="bk-amt in">+$10,000.00</span></div>';
+      if(t.side==='onramp')return '<div class="bk-row"><span class="bk-ic">'+IC_OUT+'</span><span class="bk-b"><b>USDT purchase — MarginPad Exchange</b><span>card fee '+fmtUsd(t.feeUsd)+' (1.8%) · '+ago(t.ts)+'</span></span><span class="bk-amt">−'+fmtUsd(t.usdUsd+t.feeUsd)+'</span></div>';
+      return '<div class="bk-row"><span class="bk-ic">'+IC_IN+'</span><span class="bk-b"><b>Incoming — MarginPad Exchange</b><span>cash-out fee '+fmtUsd(t.feeUsd)+' (1%) · '+ago(t.ts)+'</span></span><span class="bk-amt in">+'+fmtUsd(t.usdUsd)+'</span></div>';
+    }).join('');
+  }
+  $('bkTopUp').addEventListener('click',function(){openOnrampModal();});
+  $('bkCashOut').addEventListener('click',function(){openOfframpModal();});
+
+  // ---- EXCHANGE app ----
+  function renderEx(){
+    var d=PORT;if(!d)return;
+    $('exTotal').textContent=fmtUsd(d.exchangeUsd);
+    $('exFree').textContent=fmtUsd(d.usdtUsd)+' USDT free';
+    renderExAssets();
+    renderTicker();
+  }
+  function renderTicker(){
+    if(!MKT.length){$('exTick').hidden=true;return;}
+    var items=MKT.slice(0,14).map(function(c){var chg=+c.price_change_percentage_24h||0;
+      return '<span><b>'+esc(String(c.symbol||'').toUpperCase())+'</b> '+fmtPx(c.current_price)+' <em style="font-style:normal" class="'+(chg>=0?'pnl-up':'pnl-dn')+'">'+(chg>=0?'+':'')+chg.toFixed(1)+'%</em></span>';}).join('');
+    $('exTick').hidden=false;
+    $('exTickIn').innerHTML=items+items;
   }
   function holdRow(h){
     var m=h.meta||{};var sym=m.sym||h.sym;var isMeme=m.k==='meme';
@@ -580,76 +785,83 @@
       openTrade({kind:m.k==='meme'?'meme':'cex',sym:m.k==='meme'?(m.sym||'?'):h.sym,name:m.name||'',logo:m.logo||'',price:h.price,mint:m.mint,pool:m.pool,net:m.net||'solana',holdSym:h.sym,defaultSide:'sell'});
     });});
   }
-  function renderHolds(){
-    var hs=(PORT&&PORT.holds)||[];
-    var ex=hs.filter(function(h){return !(h.meta&&h.meta.k==='meme');}).sort(function(a,b){return b.valueUsd-a.valueUsd;});
-    var wal=hs.filter(function(h){return h.meta&&h.meta.k==='meme';}).sort(function(a,b){return b.valueUsd-a.valueUsd;});
-    var exEl=$('exHolds'),walEl=$('walHolds');
-    exEl.innerHTML=ex.length?ex.map(holdRow).join(''):'<div class="empty" style="padding:14px">Nothing yet — '+((PORT&&PORT.usdtUsd>0)?'pick a coin below.':'buy USDT, then pick a coin below.')+'</div>';
-    walEl.innerHTML=wal.length?wal.map(holdRow).join(''):'<div class="empty" style="padding:14px">No bags yet'+((PORT&&gasHas())?' — pick a meme below.':'.')+'</div>';
-    wireHoldRows(exEl);wireHoldRows(walEl);
+  function renderExAssets(){
+    var el=$('exHolds');var d=PORT;if(!el||!d)return;
+    var ex=((d.holds)||[]).filter(function(h){return !(h.meta&&h.meta.k==='meme');}).sort(function(a,b){return b.valueUsd-a.valueUsd;});
+    var usdtRow='<div class="crow" style="cursor:default"><span class="clogo txt">$</span><div class="cname"><b>USDT</b><span>Tether — your buying power</span></div><div class="hpnl"><b>'+fmtUsd(d.usdtUsd)+'</b><span style="color:var(--faint)">stable</span></div></div>';
+    el.innerHTML=usdtRow+(ex.length?ex.map(holdRow).join(''):'<div class="empty">'+((d.usdtUsd||0)>0?'No coins yet — open Markets and pick one.':'No USDT yet — tap Deposit to buy some with your card.')+'</div>');
+    wireHoldRows(el);
   }
-  function gasHas(){var g=(PORT&&PORT.gas)||{};for(var k in g){if(+g[k]>0)return true;}return false;}
-  function renderEquity(){
-    var cv=$('eqCv');var snaps=(PORT&&PORT.snaps)||[];
-    var pts=snaps.map(function(s){return s.valueUsd;});
-    if(PORT)pts=pts.concat([PORT.totalUsd]);
-    $('eqEmpty').hidden=pts.length>1;
-    var ctx=cv.getContext('2d');var W=cv.width=cv.clientWidth*2,H=cv.height=168;ctx.clearRect(0,0,W,H);
-    if(pts.length<2)return;
-    var mn=Math.min.apply(null,pts),mx=Math.max.apply(null,pts);if(mx-mn<1){mx+=1;mn-=1;}
-    var up=pts[pts.length-1]>=pts[0];var col=up?'#2ebd85':'#ff6258';
-    ctx.beginPath();
-    pts.forEach(function(v,i){var x=i/(pts.length-1)*(W-8)+4,y=H-8-(v-mn)/(mx-mn)*(H-20);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
-    ctx.strokeStyle=col;ctx.lineWidth=3;ctx.lineJoin='round';ctx.stroke();
-    ctx.lineTo(W-4,H);ctx.lineTo(4,H);ctx.closePath();
-    var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,up?'rgba(46,189,133,.24)':'rgba(255,98,88,.2)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fill();
-  }
-  var DCOLS=['#e6c46a','#c2f64a','#a78bfa','#38bdf8','#ff6a3d','#2ebd85','#ff5a9e','#5ad8e6','#c9a5ff','#98a1ac'];
-  function renderDonut(){
-    var cv=$('alCv'),leg=$('alLeg');if(!PORT)return;
-    var parts=[{n:'Card',v:PORT.cardUsd},{n:'Exchange USDT',v:PORT.usdtUsd},{n:'Wallet USDT',v:PORT.wusdtUsd},{n:'Gas coins',v:PORT.gasUsd}]
-      .concat((PORT.holds||[]).map(function(h){return {n:(h.meta&&h.meta.sym)||h.sym,v:h.valueUsd};}));
-    parts=parts.filter(function(p){return p.v>0.01;}).sort(function(a,b){return b.v-a.v;}).slice(0,9);
-    var tot=parts.reduce(function(s,p){return s+p.v;},0)||1;
-    var ctx=cv.getContext('2d');var W=cv.width=cv.clientWidth*2,H=cv.height=240;ctx.clearRect(0,0,W,H);
-    var cx=W/2,cy=H/2,R=Math.min(W,H)/2-6,r=R*0.64,a=-Math.PI/2;
-    parts.forEach(function(p,i){var frac=p.v/tot,a2=a+frac*Math.PI*2;
-      ctx.beginPath();ctx.arc(cx,cy,R,a,a2);ctx.arc(cx,cy,r,a2,a,true);ctx.closePath();ctx.fillStyle=DCOLS[i%DCOLS.length];ctx.fill();a=a2;});
-    leg.innerHTML=parts.map(function(p,i){return '<span><i style="background:'+DCOLS[i%DCOLS.length]+'"></i>'+esc(p.n)+' '+Math.round(p.v/tot*100)+'%</span>';}).join('');
-  }
-  function renderWalletBody(){
-    var el=$('walBody');var d=PORT;if(!el||!d)return;
+  Array.prototype.forEach.call(document.querySelectorAll('.ex-tab'),function(b){b.addEventListener('click',function(){
+    exTab=b.getAttribute('data-extab');
+    Array.prototype.forEach.call(document.querySelectorAll('.ex-tab'),function(x){x.classList.toggle('on',x===b);});
+    $('exAssets').hidden=exTab!=='assets';
+    $('exMarkets').hidden=exTab!=='markets';
+  });});
+  $('exDep').addEventListener('click',function(){openOnrampModal();});
+  $('exWd').addEventListener('click',function(){openWdChoice();});
+
+  // ---- WALLET app ----
+  function renderWal(){
+    var el=$('wlBody');var d=PORT;if(!el||!d)return;
     if(!d.addr||!d.addr.sol){
-      el.innerHTML='<div class="empty" style="padding:10px 16px 14px;text-align:left">No wallet yet. Create it in the map above — you get your own addresses and a seed-phrase moment.</div>';
+      el.innerHTML='<div class="wl-setup">This is where self-custody begins.<br><b style="color:#fff">No wallet yet.</b> Generate one — you get your own addresses and a seed phrase, just like Phantom or MetaMask.<button class="m-go" id="wlCreate" type="button" style="background:var(--viol);color:#14101f">Create my wallet</button></div>';
+      var cb=$('wlCreate');if(cb)cb.addEventListener('click',openWalletCreate);
       return;
     }
     var g=d.gas||{};var natPx=d.natPx||{};
-    var chips='<span class="wb"><span class="k">USDT</span>'+fmtUsd(d.wusdtUsd)+'</span>';
-    ['SOL','ETH','BNB'].forEach(function(a){var q=+g[a]||0;if(!q)return;chips+='<span class="wb"><span class="k">'+a+'</span>'+fmtNat(q)+' <span style="color:var(--faint)">('+fmtUsd0(q*(natPx[a]||0))+')</span></span>';});
-    chips+='<button class="wb" id="wSwapB" type="button" style="cursor:pointer;color:var(--viol);border-color:rgba(167,139,250,.4)">+ swap</button>';
-    chips+='<button class="wb" id="wWdB" type="button" style="cursor:pointer;color:var(--viol);border-color:rgba(167,139,250,.4)">+ deposit</button>';
-    el.innerHTML='<div class="walbals">'+chips+'</div>'
-      +'<div class="addr-mini">'
-      +'<div class="am" data-copy="'+esc(d.addr.sol)+'"><div class="al">Solana addr — tap to copy</div><div class="av">'+esc(d.addr.sol)+'</div></div>'
-      +'<div class="am" data-copy="'+esc(d.addr.evm)+'"><div class="al">EVM addr — tap to copy</div><div class="av">'+esc(d.addr.evm)+'</div></div>'
-      +'</div>';
-    var sb=$('wSwapB');if(sb)sb.addEventListener('click',function(){openSwapModal();});
-    var wb=$('wWdB');if(wb)wb.addEventListener('click',function(){openWithdrawModal();});
-    Array.prototype.forEach.call(el.querySelectorAll('[data-copy]'),function(a){a.addEventListener('click',function(){
-      try{navigator.clipboard.writeText(a.getAttribute('data-copy'));toast('Address copied. Real-life rule: paste it, never retype it.');}catch(e){}
+    var bags=((d.holds)||[]).filter(function(h){return h.meta&&h.meta.k==='meme';}).sort(function(a,b){return b.valueUsd-a.valueUsd;});
+    var toks='<div class="wl-row"><span class="clogo txt">$</span><span class="wr-b"><b>USDT</b><span>on-chain dollars</span></span><span class="wl-amt">'+fmtUsd(d.wusdtUsd)+'</span></div>';
+    ['SOL','ETH','BNB'].forEach(function(a){var q=+g[a]||0;if(!q)return;
+      toks+='<div class="wl-row"><span class="clogo txt">'+a.slice(0,3)+'</span><span class="wr-b"><b>'+a+'</b><span>gas + trading coin</span></span><span class="wl-amt">'+fmtNat(q)+'<span>'+fmtUsd(q*(natPx[a]||0))+'</span></span></div>';});
+    var IC_RCV='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>';
+    var IC_SWP='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 16V4M7 4 3 8M7 4l4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/></svg>';
+    var IC_DEP='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M21 7H9M13 3 9 7l4 4"/></svg>';
+    el.innerHTML=
+      '<div class="wl-bal"><small>Wallet total</small><b>'+fmtUsd(d.walletUsd)+'</b></div>'
+      +'<div class="wl-addr" id="wlShort" title="tap to copy your Solana address">'+shortAddr(d.addr.sol)+' · tap to copy</div>'
+      +'<div class="wl-acts">'
+      +'<button class="wl-act" id="wlRcv" type="button"><i>'+IC_RCV+'</i>Receive</button>'
+      +'<button class="wl-act" id="wlSwp" type="button"><i>'+IC_SWP+'</i>Swap</button>'
+      +'<button class="wl-act" id="wlDep" type="button"><i>'+IC_DEP+'</i>From exchange</button>'
+      +'</div>'
+      +'<div class="wl-sec"><span>Tokens</span></div>'
+      +'<div class="wl-card">'+toks+'</div>'
+      +'<div class="wl-sec"><span>Your bags</span></div>'
+      +'<div class="wl-card" id="wlBags">'+(bags.length?bags.map(holdRow).join(''):'<div class="empty" style="color:#8f86ad">No bags yet'+(gasHas()?' — pick a meme below.':' — get some gas first (Swap).')+'</div>')+'</div>'
+      +'<div class="wl-sec" style="margin-top:16px"><span>Trending — 4 chains</span></div>'
+      +'<div class="memewarn"><b>Degen zone.</b> Every meme lives on a network and is paid for in that chain’s coin plus gas. Thin pools slip. Pools can rug to zero. That is the lesson.</div>'
+      +'<div class="netfilt" id="netFilt">'
+      +'<button class="nf'+(memeNetF==='all'?' on':'')+'" data-net="all" type="button">All</button>'
+      +'<button class="nf'+(memeNetF==='solana'?' on':'')+'" data-net="solana" type="button">Solana</button>'
+      +'<button class="nf'+(memeNetF==='base'?' on':'')+'" data-net="base" type="button">Base</button>'
+      +'<button class="nf'+(memeNetF==='eth'?' on':'')+'" data-net="eth" type="button">Ethereum</button>'
+      +'<button class="nf'+(memeNetF==='bsc'?' on':'')+'" data-net="bsc" type="button">BNB</button>'
+      +'</div>'
+      +'<div class="wl-card list" id="memeList"><div class="empty" style="color:#8f86ad">Loading trending memes…</div></div>';
+    wireHoldRows($('wlBags'));
+    var rc=$('wlRcv');if(rc)rc.addEventListener('click',openReceive);
+    var sw=$('wlSwp');if(sw)sw.addEventListener('click',function(){openSwapModal();});
+    var dp=$('wlDep');if(dp)dp.addEventListener('click',function(){openWithdrawModal();});
+    var sh=$('wlShort');if(sh)sh.addEventListener('click',function(){try{navigator.clipboard.writeText(PORT.addr.sol);toast('Solana address copied. Paste it, never retype it.');}catch(e){}});
+    Array.prototype.forEach.call(el.querySelectorAll('#netFilt .nf'),function(b){b.addEventListener('click',function(){
+      memeNetF=b.getAttribute('data-net');
+      Array.prototype.forEach.call(el.querySelectorAll('#netFilt .nf'),function(x){x.classList.toggle('on',x===b);});
+      renderMemes();
     });});
+    renderMemes();
   }
 
   // ---- markets ----
   var mktQ='';
   function loadMarkets(){
     fetch('/api/gecko/markets').then(function(r){return r.json();}).then(function(d){
-      MKT=Array.isArray(d)?d:[];renderMarkets();
+      MKT=Array.isArray(d)?d:[];renderMarkets();if(VIEW==='ex')renderTicker();
     }).catch(function(){});
   }
   function renderMarkets(){
-    var el=$('mktList');if(!MKT.length){el.innerHTML='<div class="empty">Could not load markets — refresh.</div>';return;}
+    var el=$('mktList');if(!el)return;
+    if(!MKT.length){el.innerHTML='<div class="empty">Could not load markets — refresh.</div>';return;}
     var q=mktQ.toLowerCase();
     var rows=MKT.filter(function(c){if(!q)return true;return (c.symbol+' '+c.name).toLowerCase().indexOf(q)>=0;}).slice(0,q?60:100);
     el.innerHTML=rows.map(function(c){
@@ -666,8 +878,7 @@
       openTrade({kind:'cex',sym:String(c.symbol||'').toUpperCase(),name:c.name||'',logo:c.image||'',price:+c.current_price||0,chg:+c.price_change_percentage_24h||0});
     });});
   }
-  $('mktSearch').addEventListener('input',function(){mktQ=this.value||'';renderMarkets();});
-  $('exTopUp').addEventListener('click',function(){openOnrampModal();});
+  document.addEventListener('input',function(e){if(e.target&&e.target.id==='mktSearch'){mktQ=e.target.value||'';renderMarkets();}});
 
   // ---- memes ----
   function loadMemes(){
@@ -676,8 +887,8 @@
     }).catch(function(){});
   }
   function renderMemes(){
-    var el=$('memeList');
-    if(!MEMES.length){el.innerHTML='<div class="empty">Could not load the meme feed — try again in a minute.</div>';return;}
+    var el=$('memeList');if(!el)return;
+    if(!MEMES.length){el.innerHTML='<div class="empty" style="color:#8f86ad">Could not load the meme feed — try again in a minute.</div>';return;}
     var list=MEMES.filter(function(m){return memeNetF==='all'||m.net===memeNetF;});
     el.innerHTML=list.map(function(m){
       var chg=+m.chg24||0;var i=MEMES.indexOf(m);
@@ -686,36 +897,32 @@
         +'<div class="cname"><b>'+esc(m.sym)+netBadge(m.net)+'</b><span>'+esc(m.name)+' · pays in '+esc(m.native)+'</span></div>'
         +'<div class="cpx">'+fmtPx(m.price)+'</div>'
         +'<div class="cchg '+(chg>=0?'pnl-up':'pnl-dn')+'">'+(chg>=0?'+':'')+chg.toFixed(1)+'%</div>'
-        +'<div class="cmeta">$'+Math.round(+m.liqUsd||0).toLocaleString('en-US')+' liq</div>'
         +'</div>';
-    }).join('')||'<div class="empty">No memes on this chain right now.</div>';
+    }).join('')||'<div class="empty" style="color:#8f86ad">No memes on this chain right now.</div>';
     Array.prototype.forEach.call(el.querySelectorAll('[data-meme]'),function(r){r.addEventListener('click',function(){
       var m=MEMES[+r.getAttribute('data-meme')];if(!m)return;
       openTrade({kind:'meme',sym:m.sym,name:m.name,logo:m.logo,price:m.price,chg:m.chg24,mint:m.mint,pool:m.pool,net:m.net,liqUsd:m.liqUsd});
     });});
   }
-  Array.prototype.forEach.call(document.querySelectorAll('#netFilt .nf'),function(b){b.addEventListener('click',function(){
-    memeNetF=b.getAttribute('data-net');
-    Array.prototype.forEach.call(document.querySelectorAll('#netFilt .nf'),function(x){x.classList.toggle('on',x===b);});
-    renderMemes();
-  });});
 
-  // ---- history (paper trail) ----
+  // ---- history (paper trail + bank statement cache) ----
   var histT=0;
-  function loadHistory(){
-    if(Date.now()-histT<4000)return;histT=Date.now();
+  function loadHistory(force){
+    if(!force&&Date.now()-histT<4000)return;histT=Date.now();
     fetch('/api/spot/history').then(function(r){return r.json();}).then(function(d){
       var el=$('txList');var tx=(d&&d.tx)||[];
-      // the "field notes" panel earns its place by being LIVE: total fees the path has eaten so far
+      TX_CACHE=tx;
+      if(VIEW==='bank')renderBankStmt();
       try{var fees=0;tx.forEach(function(t){if(t.side!=='reset')fees+=(+t.feeUsd||0);});var nb=$('noteBox');
         if(nb)nb.innerHTML=fees>0
-          ?'Every fee you pay here is real out there. So far the PATH itself has eaten <b style="color:var(--brass);font-family:Space Mono,monospace">'+fmtUsd(fees)+'</b> of your money — card fee, trading fees, network fees, swaps — before the market moved an inch. Slippage on memes is on top of that.'
-          :'Every fee you pay here is real out there. Watch how much of your $10,000 the PATH itself eats — card fee, trading fees, network fees, gas, slippage — before the market even moves.';}catch(e){}
-      if(!tx.length){el.innerHTML='<div class="empty">Empty for now — every card purchase, withdrawal, swap and trade prints a line here.</div>';return;}
+          ?'Every fee you pay here is real out there. So far the PATH itself has eaten <b style="color:var(--brass);font-family:Space Mono,monospace">'+fmtUsd(fees)+'</b> of your money — card fees, trading fees, network fees, swaps — before the market moved an inch. Slippage on memes is on top of that.'
+          :'Every fee you pay here is real out there. Watch how much of your $10,000 the PATH itself eats — card fees, trading fees, network fees, gas, slippage — before the market even moves.';}catch(e){}
+      if(!tx.length){el.innerHTML='<div class="empty">Empty for now — every card purchase, cash-out, withdrawal, swap and trade prints a line here.</div>';return;}
       el.innerHTML=tx.map(function(t){
         var side=t.side;var lbl,cls,mid,amt;
         if(side==='reset'){lbl='RESET';cls='r';mid='<b>Fresh $10,000 card</b><span>'+ago(t.ts)+'</span>';amt='';}
         else if(side==='onramp'){lbl='CARD&#8594;EX';cls='o';mid='<b>Bought USDT with card</b><span>fee '+fmtUsd(t.feeUsd)+' (1.8%) · '+ago(t.ts)+'</span>';amt=fmtUsd(t.usdUsd);}
+        else if(side==='offramp'){lbl='EX&#8594;CARD';cls='o';mid='<b>Cashed out to card</b><span>fee '+fmtUsd(t.feeUsd)+' (1%) · '+ago(t.ts)+'</span>';amt=fmtUsd(t.usdUsd);}
         else if(side==='wdraw'){lbl='EX&#8594;WALLET';cls='w';mid='<b>Withdrew to your wallet</b><span>network fee '+fmtUsd(t.feeUsd)+' · '+ago(t.ts)+'</span>';amt=fmtUsd(t.usdUsd);}
         else if(side==='swap'){lbl='SWAP';cls='x';mid='<b>USDT &harr; '+esc(t.sym)+'</b><span>'+fmtNat(t.qty)+' '+esc(t.sym)+' · fee '+fmtUsd(t.feeUsd)+' · '+ago(t.ts)+'</span>';amt=fmtUsd(t.usdUsd);}
         else{
@@ -739,7 +946,7 @@
     }).catch(function(){});
   });
 
-  // ============ SIM MODALS (card / onramp / wallet / withdraw / swap) ============
+  // ============ SIM MODALS ============
   function openSim(html){$('smod').innerHTML=html;$('smask').classList.add('on');document.body.style.overflow='hidden';
     var x=$('smod').querySelector('.m-x');if(x)x.addEventListener('click',closeSim);}
   function closeSim(){$('smask').classList.remove('on');document.body.style.overflow='';}
@@ -749,7 +956,7 @@
     var bits=cardBits(ME&&ME.id);
     var linked=(PORT&&PORT.onb||0)>=1;
     openSim('<div class="m-h"><b>Your virtual card</b><button class="m-x" type="button">&times;</button></div>'
-      +'<div class="vcard"><div class="vc-top"><span class="vc-brand">MARGIN<b>PAD</b> BANK</span><span class="vc-type">VISA</span></div><div class="vc-chip"></div><div class="vc-num">'+bits.num+'</div><div class="vc-foot"><span><small>CARD HOLDER</small>'+esc(((ME&&ME.username)||'DEMO TRADER').toUpperCase())+'</span><span><small>EXPIRES</small>'+bits.exp+'</span><span><small>CVV</small>'+bits.cvv+'</span></div><div class="vc-bal"><small>BALANCE</small><b>'+fmtUsd(PORT?PORT.cardUsd:10000)+'</b></div></div>'
+      +'<div class="vcard"><div class="vc-top"><span class="vc-brand">MARGIN<b>PAD</b> BANK</span><span class="vc-type">VISA</span></div><div class="vc-chip"></div><div class="vc-num">'+bits.num+'</div><div class="vc-foot"><span><small>CARD HOLDER</small>'+esc(((ME&&ME.username)||'DEMO TRADER').toUpperCase())+'</span><span><small>EXPIRES</small>'+bits.exp+'</span><span><small>CVV</small>'+bits.cvv+'</span></div><div class="vc-bal"><small>AVAILABLE</small><b>'+fmtUsd(PORT?PORT.cardUsd:10000)+'</b></div></div>'
       +(linked
         ?'<p class="m-p">Card is linked to the exchange. Use it to buy USDT any time (1.8% card fee applies).</p><button class="m-go" id="cGoOn" type="button">Buy USDT with this card</button>'
         :'<p class="m-p">To buy crypto you first link a payment method to an exchange. Confirm it is your card by typing the <b>last 4 digits</b>:</p>'
@@ -792,11 +999,53 @@
       this.disabled=true;msg.className='m-msg';msg.textContent='Processing card payment…';var btn=this;
       fetch('/api/spot/onramp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({usd:v})})
         .then(function(r){return r.json();}).then(function(j){btn.disabled=false;
-          if(j&&j.ok){msg.className='m-msg ok';msg.textContent='Done — '+fmtUsd(v)+' USDT is on your exchange balance (fee '+fmtUsd(j.feeUsd)+').';toast('USDT bought — the exchange side of the map is open.');loadPortfolio();setTimeout(closeSim,1200);}
+          if(j&&j.ok){msg.className='m-msg ok';msg.textContent='Done — '+fmtUsd(v)+' USDT is on your exchange balance (fee '+fmtUsd(j.feeUsd)+').';toast('USDT bought — the Exchange app is open for business.');loadPortfolio();setTimeout(closeSim,1200);}
           else if(j&&j.error==='card_insufficient'){msg.className='m-msg err';msg.textContent='Card only has '+fmtUsd(j.cardUsd)+' (remember the 1.8% fee).';}
           else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
         }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
     });
+  }
+
+  function openOfframpModal(){
+    if(((PORT&&PORT.usdtUsd)||0)<10){toast('Nothing to cash out — you need at least $10 USDT on the exchange.');return;}
+    openSim('<div class="m-h"><b>Cash out to your card</b><button class="m-x" type="button">&times;</button></div>'
+      +'<p class="m-p">Selling USDT back to dollars on your card — the way profits actually leave crypto. Exchange balance: <b>'+fmtUsd(PORT.usdtUsd)+' USDT</b></p>'
+      +'<div class="tin-l">Amount (USDT)</div><input class="tin" id="ofAmt" type="number" inputmode="decimal" min="10" step="any" placeholder="500" />'
+      +'<div class="chips"><button class="chip" data-of="25" type="button">25%</button><button class="chip" data-of="50" type="button">50%</button><button class="chip" data-of="100" type="button">All</button></div>'
+      +'<div class="m-est" id="ofEst" hidden></div>'
+      +'<div class="lesson">Cashing out costs <b>1%</b> here (min $1). Real exchanges charge fiat-withdrawal fees too — and your bank may add its own. In and out, someone always takes a cut.</div>'
+      +'<button class="m-go" id="ofGo" type="button">Cash out</button><div class="m-msg" id="ofMsg"></div>');
+    function est(){var v=+($('ofAmt').value||0);var el=$('ofEst');if(!(v>=10)){el.hidden=true;return;}
+      var fee=Math.max(1,v*0.01);el.hidden=false;
+      el.innerHTML='<div><span>Deducted from exchange</span><b>'+fmtUsd(v)+' USDT</b></div><div><span>Withdrawal fee (1%)</span><b>'+fmtUsd(fee)+'</b></div><div><span>Lands on card</span><b>'+fmtUsd(v-fee)+'</b></div>';}
+    $('ofAmt').addEventListener('input',est);
+    Array.prototype.forEach.call($('smod').querySelectorAll('[data-of]'),function(c){c.addEventListener('click',function(){
+      var p2=+c.getAttribute('data-of');
+      $('ofAmt').value=Math.floor(PORT.usdtUsd*p2/100*100)/100;est();});});
+    $('ofGo').addEventListener('click',function(){
+      var v=+($('ofAmt').value||0);var msg=$('ofMsg');var btn=this;
+      if(!(v>=10)){msg.className='m-msg err';msg.textContent='Minimum cash-out is $10.';return;}
+      btn.disabled=true;msg.className='m-msg';msg.textContent='Selling USDT…';
+      fetch('/api/spot/offramp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({usd:v})})
+        .then(function(r){return r.json();}).then(function(j){btn.disabled=false;
+          if(j&&j.ok){msg.className='m-msg ok';msg.textContent='Done — '+fmtUsd(j.receivedUsd)+' landed on your card (fee '+fmtUsd(j.feeUsd)+').';toast(fmtUsd(j.receivedUsd)+' is back on your card. Full circle.');loadPortfolio();setTimeout(closeSim,1200);}
+          else if(j&&j.error==='insufficient'){msg.className='m-msg err';msg.textContent='Exchange only has '+fmtUsd(j.usdtUsd||0)+' USDT.';}
+          else if(j&&j.error==='min_offramp'){msg.className='m-msg err';msg.textContent='Minimum cash-out is $10.';}
+          else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
+        }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
+    });
+  }
+
+  function openWdChoice(){ // exchange Withdraw: fiat to card vs crypto to wallet — the difference IS the lesson
+    openSim('<div class="m-h"><b>Withdraw from the exchange</b><button class="m-x" type="button">&times;</button></div>'
+      +'<p class="m-p">Two very different exits. Pick where the money goes:</p>'
+      +'<div class="netpick">'
+      +'<div class="np" id="wcFiat"><b>To your bank card<small>Fiat withdrawal — sell USDT for dollars · 1% fee</small></b><span>'+fmtUsd((PORT&&PORT.usdtUsd)||0)+' available</span></div>'
+      +'<div class="np" id="wcCrypto"><b>To your own wallet<small>Crypto withdrawal — USDT moves on-chain · network fee $0.80-$8</small></b><span>'+((PORT&&PORT.addr&&PORT.addr.sol)?'wallet ready':'no wallet yet')+'</span></div>'
+      +'</div>'
+      +'<div class="lesson">On a real exchange these are separate menus too: "Withdraw fiat" and "Withdraw crypto". Crypto sent to a wrong address or network is gone — fiat just takes a day and a fee.</div>');
+    $('wcFiat').addEventListener('click',function(){closeSim();openOfframpModal();});
+    $('wcCrypto').addEventListener('click',function(){closeSim();openWithdrawModal();});
   }
 
   function openWalletCreate(){
@@ -808,7 +1057,7 @@
       var btn=this;btn.disabled=true;$('wcMsg').textContent='Generating keys…';
       fetch('/api/spot/wallet/create',{method:'POST'}).then(function(r){return r.json();}).then(function(j){
         if(!(j&&j.ok)){btn.disabled=false;$('wcMsg').className='m-msg err';$('wcMsg').textContent='Failed — try again.';return;}
-        if(PORT)PORT.addr=j.addr; // local state NOW — the chained withdraw modal must see the wallet before the refetch lands
+        if(PORT)PORT.addr=j.addr;
         $('wcMsg').textContent='';btn.style.display='none';
         var seed=j.seed||[];
         $('wcOut').innerHTML='<div class="lesson"><b>Write these 12 words down, in order.</b> This is the ONLY backup of a real wallet. Shown once — never stored, never recoverable. Anyone who has it can take everything; no legit support will ever ask for it.</div>'
@@ -871,7 +1120,7 @@
 
   function openSwapModal(pre){
     if(!(PORT&&PORT.addr&&PORT.addr.sol)){openWalletCreate();return;}
-    if((PORT.wusdtUsd||0)<1&&!pre){toast('Your wallet has no USDT yet — withdraw some from the exchange first.');openWithdrawModal();return;}
+    if((PORT.wusdtUsd||0)<1&&!pre){toast('Your wallet has no USDT yet — deposit some from the exchange first.');openWithdrawModal();return;}
     var asset=(pre&&pre.asset)||'SOL';
     openSim('<div class="m-h"><b>Swap USDT for a gas coin</b><button class="m-x" type="button">&times;</button></div>'
       +'<p class="m-p">On-chain everything costs gas, and DEX trades are priced in the network coin. Wallet USDT: <b>'+fmtUsd(PORT.wusdtUsd)+'</b></p>'
@@ -906,6 +1155,20 @@
           else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
         }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
     });
+  }
+
+  function openReceive(){
+    if(!(PORT&&PORT.addr&&PORT.addr.sol)){openWalletCreate();return;}
+    openSim('<div class="m-h"><b>Receive</b><button class="m-x" type="button">&times;</button></div>'
+      +'<p class="m-p">Share the RIGHT address for the RIGHT network. Solana coins go to the Solana address; Ethereum, Base and BNB Chain all use your EVM address.</p>'
+      +'<div class="qrbox"><canvas id="qrSol"></canvas><div class="qb"><b>Solana '+netBadge('solana')+'</b><span data-cp="'+esc(PORT.addr.sol)+'">'+esc(PORT.addr.sol)+'</span><small>Demo QR — it scans nowhere. Tap the address to copy.</small></div></div>'
+      +'<div class="qrbox"><canvas id="qrEvm"></canvas><div class="qb"><b>EVM '+netBadge('eth')+netBadge('base')+netBadge('bsc')+'</b><span data-cp="'+esc(PORT.addr.evm)+'">'+esc(PORT.addr.evm)+'</span><small>Demo QR — it scans nowhere. Tap the address to copy.</small></div></div>'
+      +'<div class="lesson">Real-life habit: copy-paste, send a tiny test amount first, and check the first + last 4 characters after pasting. Clipboard-hijack malware swaps addresses.</div>');
+    drawQr($('qrSol'),PORT.addr.sol);
+    drawQr($('qrEvm'),PORT.addr.evm);
+    Array.prototype.forEach.call($('smod').querySelectorAll('[data-cp]'),function(a){a.addEventListener('click',function(){
+      try{navigator.clipboard.writeText(a.getAttribute('data-cp'));toast('Address copied. Check the first and last 4 characters when you paste.');}catch(e){}
+    });});
   }
 
   // ============ TRADE MODAL ============

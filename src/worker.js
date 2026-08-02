@@ -8074,6 +8074,7 @@ const SPOT_NETS = {
 };
 const SPOT_MEME_FEE_BP = 30; // DEX swap fee on meme fills (0.3% — Raydium/Uniswap-like), vs 10bp CEX taker
 const SPOT_ONRAMP_BP = 180; // 1.8% card-processing fee on the fiat on-ramp (the "cards are expensive" lesson)
+const SPOT_OFFRAMP_BP = 100; // 1% fiat-withdrawal fee cashing out to the card (min $1) — the "cashing out costs too" lesson
 const SPOT_SWAP_BP = 30; // 0.3% wallet DEX fee on USDT <-> native swaps
 // fake-but-realistic self-custody addresses + a 12-word seed phrase (educational moment; the seed is shown once
 // and NEVER stored — exactly like real wallets)
@@ -8209,6 +8210,12 @@ async function handleSpot(url, request, env) {
     if (!(usdC >= 1000)) return jr({ error: 'min_onramp', minUsd: 10 }, 400);
     const feeC = Math.max(1, Math.round(usdC * SPOT_ONRAMP_BP / 10000));
     try { const r = await stub.fetch(new Request('https://do/onramp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'on-ramp $' + (usdC / 100).toFixed(0), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return jr({ error: 'transient' }, 503); }
+  }
+  if (path === '/offramp' && request.method === 'POST') { // cash out to the card: 1% fiat-withdrawal fee, min $1 — deducted from the amount (withdraw $500 → card gets $495)
+    const usdC = Math.round((+b.usd || 0) * 100);
+    if (!(usdC >= 1000)) return jr({ error: 'min_offramp', minUsd: 10 }, 400);
+    const feeC = Math.max(100, Math.round(usdC * SPOT_OFFRAMP_BP / 10000));
+    try { const r = await stub.fetch(new Request('https://do/offramp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'cash-out $' + (usdC / 100).toFixed(0), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return jr({ error: 'transient' }, 503); }
   }
   if (path === '/wallet/create' && request.method === 'POST') { // sim step 3: self-custody wallet — addresses generated here; the seed phrase is shown ONCE and never stored (like real life)
     const addr = spotGenAddr();
@@ -9885,6 +9892,16 @@ export class SpotStore {
       sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'onramp','USDT',?,1,?,?,0,'{}')", uid, now, usdC / 100, usdC, feeC);
       const a2 = this.rows('SELECT card,usdt FROM spotacct WHERE user_id=?', uid)[0];
       return this.j({ ok: true, usdtUsd: a2.usdt / 100, cardUsd: (a2.card || 0) / 100, feeUsd: feeC / 100 });
+    }
+    if (path === '/offramp') { // cash out: sell exchange USDT back to the CARD (fiat withdrawal; fee comes out of the amount — you withdraw $500, the card gets $495)
+      const usdC = Math.round(+b.usdC || 0), feeC = Math.max(0, Math.round(+b.feeC || 0));
+      if (!uid || usdC < 1000) return this.j({ error: 'min_offramp', minUsd: 10 }, 400);
+      const a = this._acct(uid, now);
+      if (usdC > (a.usdt || 0)) return this.j({ error: 'insufficient', usdtUsd: (a.usdt || 0) / 100 }, 400);
+      sql.exec('UPDATE spotacct SET usdt=usdt-?, card=card+?, last_seen=? WHERE user_id=?', usdC, usdC - feeC, now, uid);
+      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'offramp','USD',?,1,?,?,0,'{}')", uid, now, (usdC - feeC) / 100, usdC - feeC, feeC);
+      const a2 = this.rows('SELECT usdt,card FROM spotacct WHERE user_id=?', uid)[0];
+      return this.j({ ok: true, usdtUsd: a2.usdt / 100, cardUsd: (a2.card || 0) / 100, feeUsd: feeC / 100, receivedUsd: (usdC - feeC) / 100 });
     }
     if (path === '/walletcreate') { // step 3: self-custody wallet — worker generated the addresses (stored once, never regenerated)
       if (!uid) return this.j({ error: 'bad' }, 400);
