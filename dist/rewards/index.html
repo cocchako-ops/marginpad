@@ -162,6 +162,14 @@
   .prize.p1{border-color:rgba(255,215,90,.45)}.prize.p1 .prize-amt{color:#ffd75a}
   .prize.p2{border-color:rgba(200,210,220,.4)}.prize.p2 .prize-amt{color:#c8d2dc}
   .prize.p3{border-color:rgba(214,158,110,.45)}.prize.p3 .prize-amt{color:#d69e6e}
+  .prize-rules{margin-top:7px;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8b97a5;text-decoration:underline;text-underline-offset:2px}
+  .prize:hover .prize-rules{color:#c2f64a}
+  .lbr-sec{border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-top:10px;text-align:left}
+  .lbr-sec.on{border-color:rgba(194,246,74,.5);background:rgba(194,246,74,.04)}
+  .lbr-h{font-weight:800;font-size:14.5px;margin:0 0 6px;color:#e9e7df}
+  .lbr-sec ul{margin:6px 0 0;padding-left:18px;color:#c7ced6;font-size:12.8px;line-height:1.6}
+  .lbr-ex{margin-top:8px;border-left:3px solid rgba(194,246,74,.5);background:rgba(255,255,255,.025);border-radius:0 9px 9px 0;padding:8px 11px;font-size:12.3px;color:#9aa3ad;line-height:1.55}
+  .lbr-ex b{color:#d6f78a}
   .lbc-note{font-size:13px;color:var(--up);background:rgba(46,189,133,.07);border:1px solid rgba(46,189,133,.25);border-radius:10px;padding:11px 13px;margin:18px 0 16px;line-height:1.5}
   .lbc-note b{color:#7df0bd}
   .wdh-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
@@ -393,10 +401,10 @@
     <h2 class="lbc-title">Season Leaderboards</h2>
     <p class="lbc-p">Four season boards — Highest bank balance (Demo Spot), Highest ROE, Best win rate and Season XP — each pays the top 5 in real USDT at the end of every 14-day season. Free to enter: grow the demo $10,000 on <a href="/spot/">Demo Spot</a> and cash out to your card, or close paper trades on <a href="/?p=plan">Paper Trade</a>.</p>
     <div class="prizes">
-      <div class="prize p1"><div class="prize-rank">Bank balance</div><div class="prize-amt">Top 5 · USDT</div></div>
-      <div class="prize p2"><div class="prize-rank">Highest ROE</div><div class="prize-amt">Top 5 · USDT</div></div>
-      <div class="prize p2"><div class="prize-rank">Best win rate</div><div class="prize-amt">Top 5 · USDT</div></div>
-      <div class="prize p3"><div class="prize-rank">Season XP</div><div class="prize-amt">Top 5 · USDT</div></div>
+      <div class="prize p1" role="button" tabindex="0" data-rules="bank" style="cursor:pointer"><div class="prize-rank">Bank balance</div><div class="prize-amt">Top 5 · USDT</div><div class="prize-rules">See rules</div></div>
+      <div class="prize p2" role="button" tabindex="0" data-rules="roe" style="cursor:pointer"><div class="prize-rank">Highest ROE</div><div class="prize-amt">Top 5 · USDT</div><div class="prize-rules">See rules</div></div>
+      <div class="prize p2" role="button" tabindex="0" data-rules="wr" style="cursor:pointer"><div class="prize-rank">Best win rate</div><div class="prize-amt">Top 5 · USDT</div><div class="prize-rules">See rules</div></div>
+      <div class="prize p3" role="button" tabindex="0" data-rules="xp" style="cursor:pointer"><div class="prize-rank">Season XP</div><div class="prize-amt">Top 5 · USDT</div><div class="prize-rules">See rules</div></div>
     </div>
     <div class="lbc-note"><b>Sign in above first</b> — your trades are saved to your account, and that's how we track your score and pay your prize.</div>
     <a class="btn btn-lime" href="/?p=plan" style="text-decoration:none;display:inline-block">Start trading →</a>
@@ -457,6 +465,53 @@
   <footer>© MarginPad · <a href="/">Tools</a> · <a href="/blog/">Blog</a> · <a href="/rekt/">Rekt</a> · Free crypto-futures tools</footer>
 </div>
 
+<div class="cmodal" id="lbRulesModal" hidden>
+  <div class="cmod-panel" style="max-width:520px;max-height:86vh;overflow:auto">
+    <div class="cmod-head"><span class="cmod-title">Season board rules</span><button class="cmod-x" id="lbrClose" type="button" aria-label="Close">✕</button></div>
+    <p class="cmod-sub">Every board runs per 14-day season and pays the top 5 in real USDT to the rewards balance. Cheating, banned accounts and excluded symbols (forex, metals, indices, stablecoins) never count.</p>
+
+    <div class="lbr-sec" data-sec="bank">
+      <div class="lbr-h">Bank balance (Demo Spot)</div>
+      <ul>
+        <li>Everyone starts Demo Spot with $10,000. The board ranks the highest <b>bank-card balance</b> above the start.</li>
+        <li>Money must be cashed out to your card in Demo Spot to count — coins still sitting on the exchange don't.</li>
+      </ul>
+      <div class="lbr-ex"><b>Example:</b> you grow $10,000 to $13,400 and move it to your card — your board score is <b>$13,400</b>.</div>
+    </div>
+
+    <div class="lbr-sec" data-sec="roe">
+      <div class="lbr-h">Highest ROE</div>
+      <ul>
+        <li>Your best single <b>closed</b> paper trade of the season, measured by ROE (profit as % of your margin).</li>
+        <li>Only trades opened AND closed this season count, filled and closed by the server (no edited journals).</li>
+        <li>The ROE must be physically possible for the price move and leverage used — fabricated numbers are dropped.</li>
+      </ul>
+      <div class="lbr-ex"><b>Example:</b> you open a BTC long at 20x and price rises 4% before you close — that trade's ROE is <b>+80%</b> and becomes your board entry if it's your best.</div>
+    </div>
+
+    <div class="lbr-sec" data-sec="wr">
+      <div class="lbr-h">Best win rate</div>
+      <ul>
+        <li>You need at least <b>20 counted trades</b> closed this season.</li>
+        <li>A <b>win</b> only counts at <b>+5% ROE or better</b> on a real price move (at least 0.2%). Smaller profits count as neither. Losses always count.</li>
+        <li><b>Copies count once:</b> identical positions (same coin, same direction) opened together and closed together count as <b>one trade</b> — 20 copies of the same position is 1 win, not 20.</li>
+        <li>Ranking uses a <b>confidence-adjusted score</b>, not the raw percentage: more games at a high win rate beat fewer games at a perfect one.</li>
+      </ul>
+      <div class="lbr-ex"><b>Example:</b> 45 wins - 3 losses (93.8%) scores <b>89.1</b> and ranks ABOVE 20 wins - 0 losses (100%), which scores <b>83.9</b>. A perfect record on few trades can't lock the board — consistency wins.</div>
+      <div class="lbr-ex"><b>Example (copies):</b> opening 10 identical SOL shorts in one minute and closing them together = <b>1 counted trade</b>, win or lose.</div>
+    </div>
+
+    <div class="lbr-sec" data-sec="xp">
+      <div class="lbr-h">Season XP</div>
+      <ul>
+        <li>All XP you earn during the season counts: trading, Academy lessons, daily missions, duels, streaks.</li>
+        <li>Can't be gamed by position size — XP rewards activity, not margin.</li>
+      </ul>
+      <div class="lbr-ex"><b>Example:</b> 30 closed trades, 12 Academy lessons and daily missions through the season can out-score one lucky trade.</div>
+    </div>
+  </div>
+</div>
+
 <div class="cmodal" id="contactModal" hidden>
   <div class="cmod-panel">
     <div class="cmod-head"><span class="cmod-title">Contact support</span><button class="cmod-x" id="cmClose" type="button" aria-label="Close">✕</button></div>
@@ -471,6 +526,16 @@
 </div>
 
 <script>
+(function(){
+  var m=document.getElementById('lbRulesModal'),x=document.getElementById('lbrClose');
+  function openRules(which){if(!m)return;m.hidden=false;document.body.style.overflow='hidden';
+    var secs=m.querySelectorAll('.lbr-sec');for(var i=0;i<secs.length;i++)secs[i].classList.toggle('on',secs[i].getAttribute('data-sec')===which);
+    var t=m.querySelector('.lbr-sec[data-sec="'+which+'"]');if(t)setTimeout(function(){t.scrollIntoView({block:'nearest'});},40);}
+  function closeRules(){if(!m)return;m.hidden=true;document.body.style.overflow='';}
+  document.addEventListener('click',function(e){var p=e.target.closest&&e.target.closest('[data-rules]');if(p){openRules(p.getAttribute('data-rules'));return;}if(e.target===m)closeRules();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeRules();if(e.key==='Enter'&&document.activeElement&&document.activeElement.getAttribute&&document.activeElement.getAttribute('data-rules'))openRules(document.activeElement.getAttribute('data-rules'));});
+  if(x)x.addEventListener('click',closeRules);
+})();
 (function(){
   var KEY='mp_reward_addr';
   var dash=document.getElementById('dash'),
