@@ -2001,15 +2001,22 @@ async function checkCPaper(env) {
       for (const sym of CPAP_PAIRS) {
         try {
           const pair = sym + 'USDT';
-          const r = await fetch('https://api.bybit.com/v5/market/funding/history?category=linear&symbol=' + pair + '&limit=2', { signal: AbortSignal.timeout(6000) });
+          // limit=200 so a SHORT ring can be seeded from history in the same call — without seeding, the
+          // 90-settlement percentile baseline would take ~30 days to accumulate live (3 settlements/day)
+          // and the whole 2-week paper run would end with n=0.
+          const r = await fetch('https://api.bybit.com/v5/market/funding/history?category=linear&symbol=' + pair + '&limit=200', { signal: AbortSignal.timeout(8000) });
           const j = await r.json();
           const list = (j && j.result && j.result.list) || [];
           if (!list.length) continue;
-          const latest = { t: +list[0].fundingRateTimestamp, r: +list[0].fundingRate };
-          const gap = list[1] ? Math.min(8 * 3600e3, Math.max(3600e3, latest.t - (+list[1].fundingRateTimestamp))) : 8 * 3600e3;
+          const asc = list.map(x => ({ t: +x.fundingRateTimestamp, r: +x.fundingRate })).sort((x, y) => x.t - y.t);
+          const latest = asc[asc.length - 1];
+          const gap = asc.length > 1 ? Math.min(8 * 3600e3, Math.max(3600e3, latest.t - asc[asc.length - 2].t)) : 8 * 3600e3;
           const r8 = latest.r * (8 * 3600e3 / gap) * 100;
           let ring = []; try { ring = JSON.parse(await env.STATS.get('cpap:hist:' + sym) || '[]'); } catch (e) {}
           if (ring.length && ring[ring.length - 1].t >= latest.t) continue; // already processed this settlement
+          if (ring.length < P.minRing) { // seed the baseline from settled history (all PAST values — no lookahead)
+            ring = asc.slice(0, -1).map((x, xi) => { const g2 = xi > 0 ? Math.min(8 * 3600e3, Math.max(3600e3, x.t - asc[xi - 1].t)) : 8 * 3600e3; return { t: x.t, r8: +(x.r * (8 * 3600e3 / g2) * 100).toFixed(5) }; });
+          }
           let dir = 0;
           if (ring.length >= P.minRing) { // thresholds from the ring BEFORE this settlement joins it (no lookahead)
             const vals = ring.map(x => x.r8).sort((a, b) => a - b);
