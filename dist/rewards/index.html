@@ -155,7 +155,8 @@
   .lbc-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:23px;letter-spacing:-.02em;margin:5px 0 0;color:var(--ink)}
   .lbc-p{color:var(--dim);font-size:14.5px;margin:11px 0 0;line-height:1.55}
   .prizes{display:flex;gap:10px;margin:18px 0 0}
-  .prize{flex:1;text-align:center;background:#0c0f13;border:1px solid var(--line2);border-radius:13px;padding:15px 8px}
+  .prize{flex:1;min-width:0;text-align:center;background:#0c0f13;border:1px solid var(--line2);border-radius:13px;padding:15px 8px}
+  @media(max-width:430px){.prizes{flex-wrap:wrap}.prize{flex:1 1 30%;padding:12px 4px}.prize-amt{font-size:19px}.prize-rank{font-size:9px;letter-spacing:.04em}}
   .prize-rank{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);margin-bottom:6px}
   .prize-amt{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;line-height:1}
   .prize.p1{border-color:rgba(255,215,90,.45)}.prize.p1 .prize-amt{color:#ffd75a}
