@@ -350,7 +350,7 @@
     <div id="wdHistList"></div>
   </div>
 
-  <div class="card" id="moonCard">
+  <div class="card" id="moonCard" hidden>
     <div class="lbl" style="display:flex;align-items:center;gap:9px"><img src="/assets/moon.png" alt="Moon" width="22" height="22" style="border-radius:6px;background:#fff;padding:2px">Moon sign-up bonus <span style="margin-left:auto;color:#c2f64a;font-weight:800;text-shadow:0 0 12px rgba(194,246,74,.65)">+$<span id="moonAmt">1</span></span></div>
     <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Create a <b>Moon</b> account through our link, then enter your Moon username below. After a quick manual check we add <b style="color:#c2f64a">$<span id="moonAmt2">1</span></b> to your MarginPad balance. One bonus per account.</p>
     <a class="btn btn-lime" id="moonRefBtn" href="https://moon.com/?c=moonkickstart" target="_blank" rel="noopener sponsored" style="width:100%;display:block;text-align:center;text-decoration:none;margin-bottom:10px">1) Create your Moon account</a>
@@ -547,8 +547,9 @@
   function setText(cls,v){var els=document.querySelectorAll('.'+cls);for(var i=0;i<els.length;i++)els[i].textContent=v;}
   function fmtShort(n){return (+n).toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1');}
   function applyCfg(j){if(j.perDay!=null){perDay=j.perDay;setText('tPer',fmtShort(perDay));}if(j.amount!=null){amount=j.amount;setText('tAmt',(+amount).toFixed(2));}if(j.minWd!=null){minWd=j.minWd;setText('tMin',fmtShort(minWd));}if(j.welcomeAmt!=null){welcomeAmt=+j.welcomeAmt;renderWelcomeHook();}
+    window.__moonOff=(j.moonEnabled===false);
     var mc=document.getElementById('moonCard');
-    if(mc&&j.moonEnabled===false)mc.hidden=true;
+    if(mc)mc.hidden=window.__moonOff||!signedIn; // Moon bonus card is members-only (owner, 2026-08-03)
     if(j.moonUsd!=null){var a1=document.getElementById('moonAmt'),a2=document.getElementById('moonAmt2');var v=fmtShort(j.moonUsd);if(a1)a1.textContent=v;if(a2)a2.textContent=v;}}
   function moonMsg(t,kind){var el=document.getElementById('moonMsg');if(!el)return;el.innerHTML=t;el.className='msg show '+(kind||'');}
   function loadMoon(){var st=document.getElementById('moonStatus'),form=document.getElementById('moonForm');if(!st)return;
@@ -637,6 +638,7 @@
   function updateGate(){
     if(signedIn){ if(authCard)authCard.hidden=true; if(authGate)authGate.hidden=true; if(authWho)authWho.hidden=false; dash.hidden=false; }
     else { if(authCard)authCard.hidden=false; if(authGate)authGate.hidden=false; if(authWho)authWho.hidden=true; dash.hidden=true; if(wdAddrRow)wdAddrRow.hidden=true; }
+    var mcG=document.getElementById('moonCard'); if(mcG)mcG.hidden=!signedIn||!!window.__moonOff;
   }
   function onAuth(user){
     signedIn=!!user;
