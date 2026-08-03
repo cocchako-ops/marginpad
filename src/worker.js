@@ -1891,7 +1891,11 @@ async function checkDailyWrap(env) {
 async function buildWrapText(env) {
   let px = null; try { px = JSON.parse(await env.STATS.get('prices:last') || 'null'); } catch (e) {}
   const pmap = {};
-  for (const p of (px && px.pairs) || []) pmap[p.symbol.replace(/USDT$/, '')] = { p: +p.price, c: +p.changePct };
+  const fill = (o) => { for (const p of (o && o.pairs) || []) pmap[p.symbol.replace(/USDT$/, '')] = { p: +p.price, c: +p.changePct }; };
+  fill(px);
+  if (!pmap.BTC || !pmap.ETH) { // KV floor absent (pricesKvWarm can silently fail) — same internal compute any /api/prices visitor triggers, edge-cached
+    try { const r = await handlePrices(env, null, 0); if (r && r.ok) fill(JSON.parse(await r.text())); } catch (e) {}
+  }
   if (!pmap.BTC || !pmap.ETH) return null; // core of the wrap — without it the message is not worth sending
   const chip = s => fmtPx(pmap[s].p) + ' (' + (pmap[s].c >= 0 ? '+' : '') + pmap[s].c.toFixed(1) + '%)';
   const lines = ['<b>MarginPad Daily Wrap</b> — ' + new Date().toISOString().slice(5, 10).replace('-', '/'),
