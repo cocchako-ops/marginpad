@@ -5819,7 +5819,7 @@ const TG_HELP_OLD =
   '<code>/funding</code> — funding extremes\n' +
   '<code>/sentiment</code> — Fear &amp; Greed\n\n' +
   '<b>🏆 Weekly Trade League — win USDT</b>\n' +
-  '<code>/leaderboard</code> — all 3 boards (ROE · win rate · XP)\n' +
+  '<code>/leaderboard</code> — all 3 boards (bank balance · win rate · XP)\n' +
   'Members only — sign up free at marginpad.io\n\n' +
   '<b>📡 Signals</b>\n' +
   '<code>/premium</code> — free &amp; premium signal groups\n\n' +
@@ -5846,7 +5846,7 @@ const TG_HELP =
   '<code>/rekt</code> — 24h liquidations · <code>/funding</code> — funding extremes · <code>/sentiment</code> — Fear &amp; Greed\n' +
   '<code>/fundalert</code> BTC 0.1 — ping me on extreme funding\n\n' +
   '<b>🏆 Competition</b>\n' +
-  '<code>/leaderboard</code> — season boards (ROE · win rate · XP)\n\n' +
+  '<code>/leaderboard</code> — season boards (bank balance · win rate · XP)\n\n' +
   '<b>📡 Signals, news &amp; community</b>\n' +
   '<code>/premium</code> — free &amp; premium signal groups\n' +
   '<code>/community</code> — 💬 join our Telegram community\n' +
@@ -7403,15 +7403,22 @@ async function handleAlerts(url, env, request) {
 // ---- weekly digest (re-engagement email) ----
 async function digestContent(env) {
   let top = [];
-  try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lb')); const j = await r.json(); top = (j && j.top) || []; } catch (e) {}
-  return { top: top.slice(0, 3) };
+  try {
+    if (env.SPOT) {
+      const sr = await spotStub(env).fetch(new Request('https://do/lbbank'));
+      const el = (((await sr.json()) || {}).top || []).slice(0, 3);
+      const prof = await resolveProfiles(env, el.map(x => 'u:' + x.uid));
+      top = el.map(x => ({ who: (prof[x.uid] && prof[x.uid].username) || 'Trader', bank: (+x.cardC || 0) / 100 }));
+    }
+  } catch (e) {}
+  return { top };
 }
 async function sendDigestEmail(env, to, uid, content) {
   if (!env.RESEND_API_KEY) return { ok: false };
   const unsub = 'https://marginpad.io/unsubscribe?u=' + encodeURIComponent(uid), medal = ['🥇', '🥈', '🥉'];
   const lb = (content.top || []).length
-    ? '<p style="margin:0 0 8px;font-weight:700">Last week\'s top traders:</p>' + content.top.map((x, i) => '<div style="padding:4px 0;color:#333">' + medal[i] + ' <b>' + String(x.who || 'Trader').replace(/[<>&]/g, '') + '</b> &middot; ' + (x.roe >= 0 ? '+' : '') + Math.round(x.roe) + '% on ' + String(x.symbol || '').replace(/[^A-Z0-9]/g, '') + '</div>').join('') + '<p style="margin:10px 0 0;color:#555">A fresh week just started — your best single trade could be on top.</p>'
-    : '<p style="margin:0;color:#333">A fresh Trade League week just started. Open a paper trade and your best winner of the week lands you on the board.</p>';
+    ? '<p style="margin:0 0 8px;font-weight:700">Top Demo Spot bank balances right now:</p>' + content.top.map((x, i) => '<div style="padding:4px 0;color:#333">' + medal[i] + ' <b>' + String(x.who || 'Trader').replace(/[<>&]/g, '') + '</b> &middot; $' + Math.round(+x.bank || 0).toLocaleString('en-US') + ' on the bank card</div>').join('') + '<p style="margin:10px 0 0;color:#555">Grow the demo $10,000 and cash profits out to your card — the top 5 bank balances win USDT when the season ends.</p>'
+    : '<p style="margin:0;color:#333">A fresh season just started. Grow the demo $10,000 on Demo Spot and cash profits out to your bank card — the top 5 balances at season end win real USDT.</p>';
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
