@@ -895,10 +895,11 @@
     <div class="lb-card lb-info">
       <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> 3 boards · win real USDT</div>
       <div class="t-title" style="font-size:22px">Three boards, bigger prizes</div>
-      <div class="t-sub">Three season boards — <b>Highest bank balance</b> (Demo Spot), <b>Best win rate</b> and <b>Season XP</b> — each pays the <b>top 5</b> in real USDT when the 14-day season ends. Pick your game:</div>
+      <div class="t-sub">Four season boards — <b>Highest bank balance</b> (Demo Spot), <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> — each pays the <b>top 5</b> in real USDT when the 14-day season ends. Pick your game:</div>
       <div class="lbpz">
         <div class="lbpz-tabs" id="lbpzTabs">
           <button type="button" class="lbpz-tab on" data-pz="roe">Bank balance</button>
+          <button type="button" class="lbpz-tab" data-pz="roe2">Highest ROE</button>
           <button type="button" class="lbpz-tab" data-pz="wr">Win rate</button>
           <button type="button" class="lbpz-tab" data-pz="xp">Season XP</button>
         </div>
@@ -915,7 +916,7 @@
       <div class="lb-cta"><a class="btn-l" href="/paper-trade">Open Paper Trade →</a><span class="note" id="lbYou">Sign in (free) and your best trade enters automatically.</span></div>
     </div>
     <div class="lb-card">
-      <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="spot">Spot bank</button><button type="button" class="lb-tab" data-lbm="wr">Win rate</button><button type="button" class="lb-tab" data-lbm="xp">Top XP</button><button type="button" class="lb-tab lb-tab-f" data-lbm="following">★ Following</button></div>
+      <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="spot">Spot bank</button><button type="button" class="lb-tab" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="wr">Win rate</button><button type="button" class="lb-tab" data-lbm="xp">Top XP</button><button type="button" class="lb-tab lb-tab-f" data-lbm="following">★ Following</button></div>
       <div class="lb-note" id="lbNote"><b>Spot bank balance</b>, <b>Best win rate</b> and <b>Season XP</b> each pay the top 5 in real USDT every 14-day season.</div>
       <div class="lb-board" id="lbBoard" style="margin-top:10px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
     </div>
@@ -1098,8 +1099,14 @@
     if(note){
       if(lbMode==='following'){note.className='lb-note';note.innerHTML='★ Accounts you follow. Tap any trader to see their card. Sign in to follow players from the board.';}
       else{note.className='lb-note'+(lbMode==='spot'?' pay':'');
-        note.innerHTML='<b>'+(lbMode==='spot'?'Spot bank balance':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it. Prizes drop when the season ends.';}}
+        note.innerHTML='<b>'+(lbMode==='spot'?'Spot bank balance':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it. Prizes drop when the season ends.';}}
     if(lbMode==='following'){ lbRenderFollowing(el); return; }
+    if(lbMode==='roe'){
+      var rt=((d&&d.top)||[]).filter(function(t){return +t.roe>0;}).slice(0,15);
+      el.innerHTML=rt.length?rt.map(function(t,i){var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');return lbRow(i,t.who,pair,'+'+Math.round(+t.roe).toLocaleString('en-US')+'%','up');}).join('')
+        :'<div class="lb-empty">No winning trades yet this season — open a paper trade and close it in profit to top the board.</div>';
+      lbAfter(el);return;
+    }
     if(lbMode==='wr'){
       var wt=((d&&d.topWr)||[]).slice(0,15);
       el.innerHTML=wt.length?wt.map(function(t,i){return lbRow(i,t.who,(+t.w||0)+'W-'+(+t.l||0)+'L',Math.round(+t.wr||0)+'%');}).join('')
@@ -1244,7 +1251,8 @@
     if(!panel||!tabs)return;
     var PZ={
       roe:{name:'Highest bank balance',pool:25,p:[10,6,4,3,2],live:true,desc:"Grow the $10,000 on Demo Spot and cash profits OUT to your bank card — the biggest card balance when the 14-day season ends wins. Card in, trade the exchange, off-ramp back out: the full real-life loop, fees and all."},
-      wr:{name:'Best win rate',pool:75,p:[35,18,10,7,5],live:true,desc:"The highest share of winning trades over the 14-day season (minimum 20 closed trades). Only wins of at least +5% ROE count — tiny scalps don't pad your rate. Rewards steady, consistent trading, not one lucky shot."},
+      roe2:{name:'Highest ROE',pool:30,p:[10,8,6,4,2],live:true,desc:"Your single best trade's return on equity (profit ÷ margin) this 14-day season — server-verified trades only. One well-timed call can top it, on any account size."},
+      wr:{name:'Best win rate',pool:67,p:[30,15,10,7,5],live:true,desc:"The highest share of winning trades over the 14-day season (minimum 20 closed trades). Only wins of at least +5% ROE count — tiny scalps don't pad your rate. Rewards steady, consistent trading, not one lucky shot."},
       xp:{name:'Season XP',pool:30,p:[10,8,6,4,2],live:true,desc:"Total XP you earn this season — from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size."}
     };
     function seasonEnd(){var A=Date.UTC(2026,6,20),P=14*864e5,n=Date.now();return A+(Math.floor((n-A)/P)+1)*P;} // 14-day season clock — same anchor as the server (lbPeriodStart, Mon 2026-07-20)
@@ -1265,7 +1273,7 @@
     tabs.addEventListener('click',function(e){var t=e.target.closest('.lbpz-tab');if(!t)return;cur=t.getAttribute('data-pz');for(var i=0;i<tabs.children.length;i++)tabs.children[i].classList.toggle('on',tabs.children[i]===t);render();});
     // keep all 3 boards' prizes in sync with the LIVE reward config (owner tunes them in mp-ops Settings) — set from /api/reward/lb below
     function setArr(bk,pz){if(!Array.isArray(pz))return;var a=pz.map(function(x){return Math.round(+x||0);});while(a.length&&a[a.length-1]===0)a.pop();if(!a.length)return;PZ[bk].p=a;PZ[bk].pool=a.reduce(function(s,x){return s+x;},0);}
-    window.mpLbpzSetPrizes=function(bp){if(!bp)return;setArr('roe',bp.spot||bp.roe);setArr('wr',bp.wr);setArr('xp',bp.xp);render();};
+    window.mpLbpzSetPrizes=function(bp){if(!bp)return;setArr('roe',bp.spot||bp.roe);setArr('roe2',bp.roe);setArr('wr',bp.wr);setArr('xp',bp.xp);render();};
     render();setInterval(render,60000);
   })();
 
