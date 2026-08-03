@@ -6741,12 +6741,43 @@ async function handleTelegram(request, env) {
     if (cbChat) await tgApi(token, 'sendMessage', { chat_id: cbChat, text: cbText, ...base });
     return new Response('ok');
   }
+  // Community-group welcome: greet new members with what the group is for + the channel map (owner, 2026-08-03).
+  const njMsg = update.message, njList = njMsg && njMsg.new_chat_members;
+  if (njList && njList.length && njMsg.chat && (njMsg.chat.type === 'group' || njMsg.chat.type === 'supergroup')) {
+    const names = njList.filter(u => !u.is_bot).map(u => (u.first_name ? String(u.first_name).replace(/[<>&]/g, '').slice(0, 32) : 'trader'));
+    if (names.length) {
+      const freeLink = (env.STATS && await env.STATS.get('tg:prem:free')) || '';
+      try {
+        await tgApi(token, 'sendMessage', { chat_id: njMsg.chat.id, parse_mode: 'HTML', disable_web_page_preview: true, text:
+          '<b>Welcome, ' + names.join(', ') + '.</b>\n' + DIV + '\n' +
+          'This group is the open MarginPad community — talk trades, setups, wins, losses and the site itself. Ask anything, post anything trading-related.\n\n' +
+          '<b>Around MarginPad:</b>\n' +
+          '· <b>News channel:</b> @marginpadnews — the top crypto stories, daily\n' +
+          (freeLink ? '· <b>Free signals:</b> <a href="' + freeLink + '">join here</a> — screener-driven setups\n' : '') +
+          '· <b>Premium signals:</b> three paid tiers (Fast / Balanced / Premium) with full trade plans — DM the bot @MarginPadBot and send /premium\n' +
+          '· <b>The bot:</b> @MarginPadBot — calculators, paper trading, price alerts, leaderboard. Message it directly.\n\n' +
+          '<i>Tip: bot commands typed here are removed automatically to keep the chat clean — use @MarginPadBot in a private message instead.</i>' });
+      } catch (e) {}
+    }
+    return new Response('ok');
+  }
   const msg = update.message || update.edited_message;
   if (!msg || !msg.text) return new Response('ok');
   const cmd = msg.text.trim().split(/\s+/)[0].toLowerCase().replace(/@.*$/, '');
   try { if (msg.chat && msg.chat.type === 'private') await env.STATS.put('tg:lastdm', String(msg.chat.id), { expirationTtl: 30 * 86400 }); } catch (e) {} // remember the last private chat (owner test destination for signal-button previews)
   await bumpBot(env, cmd.replace(/^\//, '') || 'msg', msg.from);
   if (cmd.charAt(0) === '/') await botLog(env, cmd.replace(/^\//, ''), msg.from); // → ops Real-time activity, tagged with the Telegram user
+  // Group hygiene (owner, 2026-08-03): commands typed in the community GROUP spam everyone. Delete the
+  // command message (needs the bot to be a group admin with delete rights; fails silently otherwise) and
+  // reroute the reply to the user's DM — if they never started the bot, the DM send fails silently too.
+  // Non-command group chatter is never reacted to. NOTE: /share keeps working — it posts the trade card to
+  // the group explicitly (tg:chat:group) and tgLinkedUser now correctly resolves by the user's DM chat id.
+  if (msg.chat && (msg.chat.type === 'group' || msg.chat.type === 'supergroup')) {
+    if (cmd.charAt(0) !== '/') return new Response('ok');
+    try { await tgApi(token, 'deleteMessage', { chat_id: msg.chat.id, message_id: msg.message_id }); } catch (e) {}
+    if (!msg.from || msg.from.is_bot) return new Response('ok');
+    msg.chat = { id: msg.from.id, type: 'private' };
+  }
   if (cmd === '/start' || cmd === '/help') {
     const payload = msg.text.trim().split(/\s+/)[1] || ''; // deep-link token from t.me/MarginPadBot?start=<token> (account ↔ Telegram link for alerts)
     // calendar reminder deep link: t.me/MarginPadBot?start=cal_<tsSec>_<type> (from /calendar/ "Remind me → Telegram")
