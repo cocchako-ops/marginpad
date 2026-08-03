@@ -265,38 +265,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-ptl-close]');if(!b)return;
     var id=b.getAttribute('data-ptl-close'),d=load(),i=-1;for(var k=0;k<d.length;k++){if(d[k].id===id){i=k;break;}}if(i<0)return;
     var e=d[i];
-    if(window.mpCloseSheet){window.mpCloseSheet(id,function(){renderLast();renderPos();drawLines();mtCount();});return;} /* partial-close sheet (owner task) — the sheet stores + rerenders */
+    if(window.mpCloseSheet){window.mpCloseSheet(id,function(){renderLast();drawLines();mtCount();});return;} /* partial-close sheet (owner task) — the sheet stores + rerenders */
     var m=metrics(e);e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);buzz([22]); // haptic on manual close
-    window._mpSltpHidden=true;store(d);renderLast();renderPos();drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();});
+    window._mpSltpHidden=true;store(d);renderLast();drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();});
   var _posSig='';
-  // DEAD CODE (2026-07-26): #ptPosList + #ptPosTabs are in NO markup (app/index.html, dist/app.html) — this render + openCard(the terminal copy)/closedCard here NO-OP (getElementById returns null). The LIVE small tickets are #ptLastTrade (renderLast, .pt-last). Kept only so the renderPos() calls in the close handlers stay harmless no-ops; delete in the cleanup round. (Caused a mis-diagnosis of the Balance-Mode gold bug — the real render was renderLast.)
-  function renderPos(d0){var el=document.getElementById('ptPosList');if(!el)return;var d=d0||load();
-    // same pattern as renderLastLive: rebuild the DOM only when the SET of cards changes (open/close/tab switch);
-    // otherwise update the live numbers IN PLACE. The old unconditional innerHTML rebuild every second killed hover
-    // states, restarted CSS transitions and dropped taps that landed mid-rebuild.
-    if(posTab==='open'){var o=d.filter(function(e){return e.status==='open';});
-      var sig='o|'+o.map(function(e){return e.id;}).join(',');
-      if(sig!==_posSig||!o.length){_posSig=sig;el.innerHTML=o.length?o.slice().reverse().map(openCard).join(''):'<div class="pp-empty">No open positions — open one above ↑</div>';return;}
-      if(el.querySelector('button:hover'))return; // leave the DOM alone while a button is hovered → no lost tap
-      o.forEach(function(e){var card=el.querySelector('.pp[data-id="'+e.id+'"]');if(!card)return;var m=metrics(e);
-        var pnlc=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));if(!card.classList.contains(pnlc)){card.classList.remove('pf','ls','be');card.classList.add(pnlc);} // swap ONLY the pnl state class — the old wholesale card.className='pp '+pnlc dropped pp-gold EVERY tick, so balance tickets flickered gold→normal on each price change (the real root cause behind 5 reports; earlier fixes only touched the full-render path, not this in-place tick update)
-        var lv=card.querySelector('.pp-live');if(lv){var lvv=fp(m.live);if(lv.textContent!==lvv)lv.textContent=lvv;}
-        var big=card.querySelector('.big');if(big){var bv=(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100));if(big.textContent!==bv)big.textContent=bv;}
-        var roe=card.querySelector('.roe');if(roe){var rv='ROE '+pctS(m.roe*100);if(roe.textContent!==rv)roe.textContent=rv;}
-        var meta=card.querySelector('.pp-meta');if(meta){var mv='Entry <b>'+fp(e.entry)+'</b> · Size <b>'+(e.qty!=null?(+e.qty).toLocaleString('en-US',{maximumFractionDigits:5}):'—')+'</b> · '+(e.lev||1)+'×<br>Notional <b>'+(m.notional!=null?money(m.notional):'—')+'</b> · Liq <b>'+fp(m.liq)+'</b> ('+pctS(m.liqDist)+')<br>SL <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,false,fp):(e.stop!=null?fp(e.stop):'—'))+'</b> · TP <b>'+(window.mpLvlTxt?window.mpLvlTxt(e,true,fp):(e.tp!=null?fp(e.tp):'—'))+'</b> · '+dur(Date.now()-e.ts)+' · '+hm(e.ts);if(meta.innerHTML!==mv)meta.innerHTML=mv;}
-      });return;}
-    var c=d.filter(function(e){return e.status==='win'||e.status==='loss';});
-    var sigC='c|'+c.map(function(e){return e.id;}).join(',');
-    if(sigC!==_posSig){_posSig=sigC;el.innerHTML=c.length?c.slice().reverse().map(closedCard).join(''):'<div class="pp-empty">No closed trades yet.</div>';}}
-  var tabsEl=document.getElementById('ptPosTabs');
-  if(tabsEl)tabsEl.addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;tabsEl.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');posTab=b.getAttribute('data-pt');renderPos();});
-  var listEl=document.getElementById('ptPosList');
-  if(listEl)listEl.addEventListener('click',function(ev){var b=ev.target.closest('[data-act]');if(!b)return;var id=b.getAttribute('data-id'),act=b.getAttribute('data-act');var d=load(),i=-1;for(var k=0;k<d.length;k++){if(d[k].id===id){i=k;break;}}if(i<0)return;var e=d[i];
-    if(act==='del')d.splice(i,1);
-    else if(act==='close'){if(window.mpCloseSheet){window.mpCloseSheet(id,function(){renderLast();renderPos();drawLines();mtCount();});return;}var m=metrics(e);e.status=(m.pnl!=null?(m.pnl>=0?'win':'loss'):(m.move>=0?'win':'loss'));e.exit=m.live;e.closeTs=Date.now();e.pnl=(m.pnl!=null?m.pnl:0);buzz([22]);window._mpSltpHidden=true;}
-    else if(act==='reopen'){e.status='open';e.exit=null;e.closeTs=null;e.pnl=null;notified[id]=false;}
-    else if(act==='edit'){if(window.mpSltpSheet){window.mpSltpSheet(id,function(){renderPos();drawLines();});return;}var ns=prompt('New stop-loss price:',e.stop);if(ns!==null){var v=parseFloat(ns);if(isFinite(v))e.stop=v;}var nt=prompt('New take-profit (blank = none):',e.tp!=null?e.tp:'');if(nt!==null){var v2=parseFloat(nt);e.tp=isFinite(v2)?v2:null;}notified[id]=false;}
-    store(d);renderPos();drawLines();});
   function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='/assets/lightweight-charts-4.2.0.js';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
   function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;chart=LightweightCharts.createChart(el,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:10,barSpacing:7},crosshair:{mode:1},autoSize:true});candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444',lastValueVisible:false,priceLineVisible:true,priceLineColor:'#9aa3ad',autoscaleInfoProvider:function(orig){try{
     // Scale = the visible candles, EXTENDED to include the open position's entry/liq/tp/sl lines so they're visible on EVERY
@@ -540,7 +512,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   var pSym=document.getElementById('planSym');
   if(pSym)pSym.addEventListener('change',function(){setTimeout(loadKlines,30);});
   var sv=document.getElementById('planSave');
-  if(sv)sv.addEventListener('click',function(){setTimeout(function(){renderPos();renderLast();
+  if(sv)sv.addEventListener('click',function(){setTimeout(function(){renderLast();
     // ONLY pop the ticket when a NEW position actually opened this click — a blocked/spam click (cooldown, empty
     // amount, wrong-side SL/TP) must NOT re-shake the last ticket as if it just opened (owner report).
     if(Date.now()-(window._mpLastOpenTs||0)<500){window._mpLastOpenTs=0; /* consume: pop exactly once per real open, never on a later blocked click */ var _lt=document.getElementById('ptLastTrade');if(_lt&&!_lt.hidden){var _f=_lt.querySelector('.pt-last');if(_f){_f.classList.remove('justopened');void _f.offsetWidth;_f.classList.add('justopened');setTimeout(function(){_f.classList.remove('justopened');},1000);}}}
@@ -598,7 +570,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(closedAny)window._mpSltpHidden=true; // a position hit SL/TP/liq and closed → hide the SL/TP lines (they reappear only when a new trade is set up)
     if(document.documentElement.classList.contains('jr-open')&&window.innerWidth<721)return; // My Trades drawer covers the terminal on mobile — skip the invisible chart/position re-render to keep the main thread free (liquidation checks above still run)
     if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return; // the liq/SL/TP protection loop above ALWAYS runs; skip the RENDER work (innerHTML rebuilds, chart price-line churn, layout reads) when the Paper Trade panel isn't the visible product or the tab is hidden — it used to rebuild the whole positions list + recreate every chart line EVERY SECOND on /calculators, /screener, /charts and backgrounded tabs
-    liveCandle();chartHeader();renderPos();renderLastLive();mtCount();drawLines();/* drawLines() ends with updateZone(), so it's no longer called separately here (was running updateZone twice/tick). drawLines is now signature-diffed so it only churns chart price-lines when the open set changes. */
+    liveCandle();chartHeader();renderLastLive();mtCount();drawLines();/* drawLines() ends with updateZone(), so it's no longer called separately here (was running updateZone twice/tick). drawLines is now signature-diffed so it only churns chart price-lines when the open set changes. */
     try{posDragLines();}catch(e){}/* keep the draggable SL/TP lines aligned as the chart scrolls/scales — never let it break the lines above */}
   // real-time chart updates from the WebSocket feed (the forming candle, header price and liq zone follow every tick)
   var _rafC=false;
@@ -654,7 +626,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
         var dir=(t.side!=='short')?1:-1,pnl=(t.qty!=null&&isFinite(t.qty))?t.qty*(exitPx-t.entry)*dir:null;
         if(liab){pnl=(+t.margin>0)?-(+t.margin):pnl;t.liquidated=true;} else if(+t.margin>0&&pnl!=null&&pnl<-(+t.margin))pnl=-(+t.margin); // clamp any loss to −margin
         t.status=(pnl!=null&&pnl>0)?'win':'loss';t.exit=exitPx;t.pnl=pnl;t.closeTs=cross;notified[t.id]=true;
-        store(d2);renderPos();renderLast();drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();});});}
+        store(d2);renderLast();drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();});});}
   sweepLiq();
   document.addEventListener('visibilitychange',function(){if(!document.hidden){sweepLiq();if(chart&&candle){try{chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}reloadKlinesThrottled();try{refreshKlinesQuiet();}catch(e){}}}}); // on return from AFK: re-assert autoscale + force a fresh klines sync so a chart that "froze" while hidden recovers immediately (the throttled reload alone could skip)
   window.addEventListener('focus',function(){if(chart&&candle&&!document.hidden)reloadKlinesThrottled();});

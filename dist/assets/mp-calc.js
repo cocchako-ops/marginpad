@@ -30,7 +30,11 @@
     { name:'MEXC',       href:'https://promote.mexc.com/r/GND4jI97o0',                                                               accent:'#0ac2d6', fg:'#06231d', letter:'M', lev:'500×', tag:'High leverage, fast new listings', bonus:'Up to 10,000 USDT futures bonus + $20 gift' },
     { name:'Crypto.com', href:'https://crypto.com/app/sdf5hb6rkv',                                                                   accent:'#0b2e7a', fg:'#ffffff', letter:'C', lev:'100×', tag:'Trusted, easy fiat on-ramp', bonus:'Up to $50 in CRO for new users' }
   ];
-  const exgrid = document.getElementById('exgrid');
+  // LANDING-ONLY (2026-08-03): on every tool route (/paper-trade /charts /calculators /screener /heatmap /swap)
+  // home.js hides .exchanges/.hotpairs — populating them was pure wasted work (E2E-proven hidden on all 6).
+  // Only the direct /app landing state still shows them, and it keeps working.
+  const TOOLROUTE = /^\/(paper-trade|charts|calculators|screener|heatmap|swap)\/?$/.test(location.pathname);
+  const exgrid = TOOLROUTE ? null : document.getElementById('exgrid');
   if (exgrid) EXLIST.forEach(ex => {
     const a = document.createElement('a');
     a.className = 'excard';
@@ -187,7 +191,7 @@
   // ---- hot pairs: live prices via our own /api/prices (proxied, cached, fallback) ----
   (function(){
     const grid = document.getElementById('hpGrid');
-    if (!grid) return;
+    if (!grid || TOOLROUTE) return; // landing-only: skips 2 fetches (/api/prices + gecko/markets) + a 20s interval on every tool-route load
     grid.innerHTML = Array.from({length:8}).map(function(){return '<div class="hp-card hp-skel"><div class="sk sk-1"></div><div class="sk sk-2"></div><div class="sk sk-3"></div></div>';}).join('');
     const PAIRS = [
       {s:'BTCUSDT',n:'BTC'},{s:'ETHUSDT',n:'ETH'},{s:'SOLUSDT',n:'SOL'},{s:'BNBUSDT',n:'BNB'},

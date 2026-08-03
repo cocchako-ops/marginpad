@@ -3248,7 +3248,7 @@ async function checkOpsAlerts(env) {
       // rule calls for — RE-RUN the budgetSuggest calibration ~2026-08-02 (a different daily peak could make these too
       // tight/loose; the breach message carries -> suggest so drift surfaces on its own). Groups short of n>=30
       // (screener/ws/ws-recon/ux-modal/ux-nav) keep interim ceilings until they qualify.
-      const BUDGET = { 'prices': 230, 'klines': 780, 'screener': 600, 'trade-other': 910, 'trade-open': 540, 'ws': 1200, 'price-age': 3840, 'ws-recon': 2500, 'ux-modal': 800, 'ux-chart': 6020, 'ux-nav': 1000 };
+      const BUDGET = { 'prices': 155, 'klines': 542, 'screener': 195, 'trade-other': 617, 'trade-open': 540, 'ws': 1200, 'ws-recon': 2500, 'ux-modal': 800, 'ux-chart': 671, 'ux-nav': 1000, 'ux-cold': 12723, 'fps': 265 }; // RECALIBRATED 2026-08-03 from budgetSuggest (all n>=30 groups at once, max(p95x1.5, p95+150)). price-age REMOVED on owner order — structurally blind metric (min-age of the freshest symbol, see CLAUDE.md 2026-07-30), a budget on it pages on noise. trade-open/ws/ws-recon/ux-modal/ux-nav keep interim ceilings (n<30 still).
       let ring = []; try { ring = JSON.parse(await env.STATS.get('perf:ring') || '[]'); } catch (e) {}
       const cutP = Date.now() - 8 * 3600000, dayP = new Date().toISOString().slice(0, 10); // 8h = full ring retention → ~30+ samples even for the sparse UX beacons
       const byG = {}; for (const it of ring) { if (!it || (it.t || 0) < cutP) continue; (byG[it.g] = byG[it.g] || []).push(+it.ms || 0); }
