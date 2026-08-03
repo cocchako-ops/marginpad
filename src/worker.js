@@ -1858,6 +1858,211 @@ async function bumpSentToday(env, chanName) {
   try { const dk = 'sig:sent:' + chanName + ':' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + 1), { expirationTtl: 3 * 86400 }); } catch (e) {}
 }
 // ============================================================================================================
+// FREE-CHANNEL CONTENT (2026-08-03) — acquisition content while signal engines are paused. Owner rules:
+// NO entry/stop/TP or direction in any message; every message links the site; ZERO new third-party upstream
+// (reads our own KV floors, our collector, internal calendar); per-symbol cooldowns on alerts. No emojis.
+const fmtUsdShort = v => v >= 1e9 ? '$' + (v / 1e9).toFixed(1) + 'B' : v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + 'M' : '$' + Math.round(v / 1e3) + 'K';
+const fmtPx = v => { v = +v; return '$' + v.toLocaleString('en-US', { maximumFractionDigits: v >= 100 ? 0 : v >= 1 ? 3 : 6 }); };
+
+// B) Daily market wrap — once/day at wrap:hour UTC (default 16), free channel. Kill: KV wrap:on='0'.
+// All data internal: prices:last (1-min KV floor), scr:cache6 (screener floor), collector /pulse (ours),
+// handleCalendar (pure compute). Any core source missing -> unstamp + retry next */10, never a half-wrap.
+async function checkDailyWrap(env) {
+  if (!env.STATS || !env.TELEGRAM_TOKEN) return;
+  if ((await env.STATS.get('wrap:on')) === '0') return;
+  const hRaw = +(await env.STATS.get('wrap:hour'));
+  const H = Number.isFinite(hRaw) && hRaw >= 0 && hRaw <= 23 ? hRaw : 16;
+  const now = new Date();
+  if (now.getUTCHours() < H) return;
+  const day = now.toISOString().slice(0, 10);
+  if (await env.STATS.get('wrap:' + day)) return;
+  await env.STATS.put('wrap:' + day, '1', { expirationTtl: 172800 }); // stamp first — never double-post
+  try {
+    const chans = await sigChannels(env);
+    if (!chans.free) { await sigChanMissing(env, 'free'); return; }
+    const text = await buildWrapText(env);
+    if (!text) { await env.STATS.delete('wrap:' + day); return; } // core data missing — retry next */10
+    const mid = await sigSend(env, 'free', chans.free, text);
+    if (!mid) { await env.STATS.delete('wrap:' + day); return; }
+    await env.STATS.put('wrap:last', JSON.stringify({ day, mid, ts: Date.now() }), { expirationTtl: 7 * 86400 });
+    try { await evPush(env, null, 'wrap', day, ''); } catch (e) {}
+  } catch (e) { try { await env.STATS.delete('wrap:' + day); } catch (e2) {} throw e; }
+}
+async function buildWrapText(env) {
+  let px = null; try { px = JSON.parse(await env.STATS.get('prices:last') || 'null'); } catch (e) {}
+  const pmap = {};
+  for (const p of (px && px.pairs) || []) pmap[p.symbol.replace(/USDT$/, '')] = { p: +p.price, c: +p.changePct };
+  if (!pmap.BTC || !pmap.ETH) return null; // core of the wrap — without it the message is not worth sending
+  const chip = s => fmtPx(pmap[s].p) + ' (' + (pmap[s].c >= 0 ? '+' : '') + pmap[s].c.toFixed(1) + '%)';
+  const lines = ['<b>MarginPad Daily Wrap</b> — ' + new Date().toISOString().slice(5, 10).replace('-', '/'),
+    'BTC ' + chip('BTC') + ' · ETH ' + chip('ETH') + (pmap.SOL ? ' · SOL ' + chip('SOL') : '')];
+  try { // movers from the screener floor (liquid names only)
+    const sc = JSON.parse(await env.STATS.get('scr:cache6') || 'null');
+    const rows = ((sc && sc.body) ? JSON.parse(sc.body).rows : []) || [];
+    const liq = rows.filter(r => r && isFinite(r.chg) && (+r.vol || 0) > 2e7);
+    if (liq.length >= 6) {
+      const up = [...liq].sort((a, b) => b.chg - a.chg)[0], dn = [...liq].sort((a, b) => a.chg - b.chg)[0];
+      lines.push('Top mover 24h: ' + up.s + ' ' + (up.chg >= 0 ? '+' : '') + up.chg.toFixed(1) + '% · Weakest: ' + dn.s + ' ' + dn.chg.toFixed(1) + '%');
+    }
+  } catch (e) {}
+  try { // 24h liquidation totals from OUR collector
+    const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+    if (base) {
+      const r = await fetch(base + '/api/v1/pulse', { signal: AbortSignal.timeout(8000), cf: { cacheTtl: 300 } });
+      const j = await r.json();
+      const t = j && j.h24 && j.h24.tot;
+      if (t && t.v > 0) lines.push('Liquidations 24h: ' + fmtUsdShort(t.v) + ' — ' + Math.round(t.l / t.v * 100) + '% longs (' + t.n + ' orders across 9 exchanges)');
+    }
+  } catch (e) {}
+  try { // next high-impact event from our own calendar (pure compute)
+    const r = await handleCalendar(new Request('https://marginpad.io/api/calendar'), env);
+    const j = await r.json();
+    const ev = ((j && j.events) || []).filter(e => e.ts > Date.now() && (+e.impact || 0) >= 3).sort((a, b) => a.ts - b.ts)[0];
+    if (ev) {
+      const dd = Math.round((ev.ts - Date.now()) / 86400e3);
+      lines.push('Next market mover: ' + ev.title + ' — ' + (dd <= 0 ? 'today' : dd === 1 ? 'tomorrow' : 'in ' + dd + ' days'));
+    }
+  } catch (e) {}
+  lines.push('');
+  lines.push('Charts: https://marginpad.io/charts · Liq map: https://marginpad.io/liquidations/ · Practice: https://marginpad.io/paper-trade');
+  return lines.join('\n');
+}
+
+// A) Liquidation cascade alert — free channel, threshold + cooldown from ops:cfg (liqAlertUsd/liqAlertCoolMin,
+// tunable without deploy). Default OFF (KV liqalert:on='1' arms it — owner flips after watching the wrap rhythm).
+// Source: OUR collector feed since the last watermark; one message per symbol per window, cooldown per symbol
+// so a cascade never machine-guns the channel. No direction, no advice.
+async function checkLiqAlert(env) {
+  if (!env.STATS || !env.TELEGRAM_TOKEN) return;
+  if ((await env.STATS.get('liqalert:on')) !== '1') return;
+  const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+  if (!base) return;
+  const cfg = await opsCfg(env);
+  const nowMs = Date.now();
+  const wm = +(await env.STATS.get('liqal:wm') || 0);
+  const since = Math.max(wm || 0, nowMs - 15 * 60000); // never scan more than 15 min back (cold start / cron gap)
+  let evs = [];
+  try {
+    const r = await fetch(base + '/api/v1/feed?since=' + since + '&min=5000&limit=3000', { signal: AbortSignal.timeout(10000) });
+    const j = await r.json();
+    evs = (j && j.events) || [];
+  } catch (e) { return; } // collector unreachable — watermark untouched, next run rescans
+  await env.STATS.put('liqal:wm', String(nowMs), { expirationTtl: 86400 });
+  if (!evs.length) return;
+  const by = {};
+  for (const e of evs) {
+    if (!e || !e.symbol || !(e.notional > 0)) continue;
+    const s = by[e.symbol] = by[e.symbol] || { usd: 0, n: 0, long: 0, big: 0 };
+    s.usd += e.notional; s.n++; s.big = Math.max(s.big, e.notional);
+    if (e.side === 'long_liquidated') s.long += e.notional;
+  }
+  const hot = Object.entries(by).filter(([, s]) => s.usd >= cfg.liqAlertUsd);
+  if (!hot.length) return;
+  const chans = await sigChannels(env);
+  if (!chans.free) { await sigChanMissing(env, 'free'); return; }
+  for (const [sym, s] of hot.slice(0, 3)) { // hard cap 3 messages per run even in a market-wide flush
+    const ck = 'liqal:cd:' + sym;
+    if (await env.STATS.get(ck)) continue;
+    await env.STATS.put(ck, '1', { expirationTtl: cfg.liqAlertCoolMin * 60 });
+    const winMin = Math.max(1, Math.round((nowMs - since) / 60000));
+    const txt = '<b>Liquidation cascade: ' + sym + '</b>\n'
+      + fmtUsdShort(s.usd) + ' liquidated in the last ' + winMin + ' min — ' + Math.round(s.long / s.usd * 100) + '% longs, ' + s.n + ' orders, largest ' + fmtUsdShort(s.big) + '.\n'
+      + 'Live map: https://marginpad.io/liquidations/ · Live feed: https://marginpad.io/rekt/';
+    await sigSend(env, 'free', chans.free, txt);
+    try { await evPush(env, null, 'liqalert', sym + ' ' + Math.round(s.usd / 1e6) + 'M', ''); } catch (e) {}
+    await new Promise(r => setTimeout(r, 250));
+  }
+}
+
+// C-PAPER (2026-08-03) — the funding-percentile engine in RECORD-ONLY mode. Sends NOTHING anywhere; it logs
+// signals + resolves outcomes so 2 weeks of LIVE data can be compared against the backtests before any channel
+// decision (owner's phase 1; my 12mo backtest says EV −0.16%/trade — this measurement settles it either way).
+// R is computed from the ACTUAL outcome (exit vs entry over stop distance), no partial protocol, no behavior model.
+const CPAP_PAIRS = ['BTC','ETH','SOL','XRP','DOGE','BNB','ADA','LINK','AVAX','LTC','HYPE','SUI','ARB','OP','NEAR','APT','ATOM','DOT','TRX','BCH','FIL','INJ','WLD','1000PEPE'];
+async function checkCPaper(env) {
+  if (!env.STATS) return;
+  if ((await env.STATS.get('cpap:on')) === '0') return;
+  let cfgKv = {}; try { cfgKv = JSON.parse(await env.STATS.get('cpap:cfg') || '{}'); } catch (e) {}
+  const P = { p: 0.10, tpPct: 0.5, slPct: 0.75, maxHoldMin: 480, minRing: 90, ...cfgKv };
+  const nowD = new Date(), nowMs = Date.now();
+  // ---- settlement wave: first runs after every 4h UTC mark (00/04/08/16/20 — covers 8h and 4h funders) ----
+  if (nowD.getUTCHours() % 4 === 0 && nowD.getUTCMinutes() < 25) { // waves at 00/04/08/12/16/20 UTC — covers 8h and 4h funders
+    const waveKey = 'cpap:wave:' + nowD.toISOString().slice(0, 13);
+    if (!(await env.STATS.get(waveKey))) {
+      await env.STATS.put(waveKey, '1', { expirationTtl: 21600 });
+      let open = []; try { open = JSON.parse(await env.STATS.get('cpap:open') || '[]'); } catch (e) {}
+      let tickers = null; // lazy: one call covers all pairs, only fetched if some pair signals
+      for (const sym of CPAP_PAIRS) {
+        try {
+          const pair = sym + 'USDT';
+          const r = await fetch('https://api.bybit.com/v5/market/funding/history?category=linear&symbol=' + pair + '&limit=2', { signal: AbortSignal.timeout(6000) });
+          const j = await r.json();
+          const list = (j && j.result && j.result.list) || [];
+          if (!list.length) continue;
+          const latest = { t: +list[0].fundingRateTimestamp, r: +list[0].fundingRate };
+          const gap = list[1] ? Math.min(8 * 3600e3, Math.max(3600e3, latest.t - (+list[1].fundingRateTimestamp))) : 8 * 3600e3;
+          const r8 = latest.r * (8 * 3600e3 / gap) * 100;
+          let ring = []; try { ring = JSON.parse(await env.STATS.get('cpap:hist:' + sym) || '[]'); } catch (e) {}
+          if (ring.length && ring[ring.length - 1].t >= latest.t) continue; // already processed this settlement
+          let dir = 0;
+          if (ring.length >= P.minRing) { // thresholds from the ring BEFORE this settlement joins it (no lookahead)
+            const vals = ring.map(x => x.r8).sort((a, b) => a - b);
+            const q = (arr, qq) => arr[Math.max(0, Math.min(arr.length - 1, Math.ceil(qq * arr.length) - 1))];
+            const hi = q(vals, 1 - P.p), lo = q(vals, P.p);
+            if (r8 > hi && r8 > 0) dir = -1; else if (r8 < lo && r8 < 0) dir = 1; // strict >/<: the calm-regime clamp mass at the base rate must not fire
+          }
+          ring.push({ t: latest.t, r8: +r8.toFixed(5) });
+          await env.STATS.put('cpap:hist:' + sym, JSON.stringify(ring.slice(-220)), { expirationTtl: 90 * 86400 });
+          if (!dir || open.some(o => o.sym === sym)) continue;
+          if (!tickers) {
+            try { const tr = await fetch('https://api.bybit.com/v5/market/tickers?category=linear', { signal: AbortSignal.timeout(8000) }); const tj = await tr.json(); tickers = {}; for (const t of ((tj.result && tj.result.list) || [])) tickers[t.symbol] = +t.lastPrice; } catch (e) { tickers = {}; }
+          }
+          const entry = tickers[pair];
+          if (!(entry > 0)) continue;
+          const sl = entry * (1 - dir * P.slPct / 100), tp = entry * (1 + dir * P.tpPct / 100);
+          open.push({ id: sym + nowMs.toString(36).slice(-5).toUpperCase(), sym, dir, entry, tp, sl, sigTs: nowMs, settleTs: latest.t, r8: +r8.toFixed(4) });
+          try { await evPush(env, null, 'cpaper', sym + ' ' + (dir > 0 ? 'long' : 'short') + ' r8=' + r8.toFixed(3), ''); } catch (e) {}
+        } catch (e) {}
+        await new Promise(r => setTimeout(r, 60));
+      }
+      await env.STATS.put('cpap:open', JSON.stringify(open.slice(-40)), { expirationTtl: 30 * 86400 });
+    }
+  }
+  // ---- resolution pass: every run, re-check open signals at most every 25 min each, cap 8 kline pulls ----
+  let open = []; try { open = JSON.parse(await env.STATS.get('cpap:open') || '[]'); } catch (e) {}
+  if (!open.length) return;
+  let results = null, pulls = 0, changed = false;
+  const still = [];
+  for (const o of open) {
+    if (pulls >= 8 || (o.lastChk && nowMs - o.lastChk < 25 * 60000) || nowMs - o.sigTs < 20 * 60000) { still.push(o); continue; }
+    o.lastChk = nowMs; changed = true;
+    pulls++;
+    const bars = await freshSigKlines(o.sym, 15, 60, env);
+    if (!bars || !bars.length) { still.push(o); continue; }
+    const after = bars.filter(b => b.time * 1000 > o.sigTs);
+    let done = null;
+    let elapsed = 0;
+    for (const b of after) {
+      elapsed = b.time * 1000 - o.sigTs;
+      const hitSl = o.dir > 0 ? b.low <= o.sl : b.high >= o.sl;
+      const hitTp = o.dir > 0 ? b.high >= o.tp : b.low <= o.tp;
+      if (hitSl) { done = { res: 'sl', exitPx: o.sl, closeTs: b.time * 1000 }; break; } // same-bar both -> loss (conservative, same as the backtests)
+      if (hitTp) { done = { res: 'tp', exitPx: o.tp, closeTs: b.time * 1000 }; break; }
+      if (elapsed >= P.maxHoldMin * 60000) { done = { res: 'to', exitPx: b.close, closeTs: b.time * 1000 }; break; }
+    }
+    if (!done && after.length && nowMs - o.sigTs > (P.maxHoldMin + 90) * 60000) { const lb = after[after.length - 1]; done = { res: 'to', exitPx: lb.close, closeTs: lb.time * 1000 }; }
+    if (!done) { still.push(o); continue; }
+    if (results === null) { try { results = JSON.parse(await env.STATS.get('cpap:results') || '[]'); } catch (e) { results = []; } }
+    const R = o.dir * (done.exitPx - o.entry) / Math.abs(o.entry - o.sl);
+    const netPct = o.dir * (done.exitPx - o.entry) / o.entry * 100;
+    results.unshift({ ...o, ...done, R: +R.toFixed(3), grossPct: +netPct.toFixed(3) });
+    changed = true;
+  }
+  if (results !== null) await env.STATS.put('cpap:results', JSON.stringify(results.slice(0, 500)), { expirationTtl: 90 * 86400 });
+  if (changed) await env.STATS.put('cpap:open', JSON.stringify(still.slice(-40)), { expirationTtl: 30 * 86400 });
+}
+
+// ============================================================================================================
 // FREE-CHANNEL SIGNALS (the SCREENER product) — broad reach: any perp, 4h score, TP1/2/3. Distinct from the paid
 // chart tiers (9 coins, 1h Supertrend). Posts ONLY to the free channel via the loud sigSend() guard, records EVERY
 // signal into the outcome tracker (fsig:open) so win/loss is provable from day one. Leverage = levOf(entry,sl)
@@ -3117,7 +3322,7 @@ async function handleStatsReset(env) {
   return new Response('cleared ' + n + ' analytics keys (bot + league kept)');
 }
 // Live health of the liquidation collector (its own VPS), rendered into the stats dashboard.
-async function opsCfg(env) { let c = {}; try { c = JSON.parse(await env.STATS.get('ops:cfg') || '{}'); } catch (e) {} return { brief: c.brief !== false, briefHour: (Number.isFinite(+c.briefHour) && +c.briefHour >= 0 && +c.briefHour <= 23) ? +c.briefHour : 8, alerts: c.alerts !== false, bigTrade: (Number.isFinite(+c.bigTrade) && +c.bigTrade >= 0) ? +c.bigTrade : 5000, sessKv: c.sessKv !== false, srvCandle: c.srvCandle !== false, xPost: c.xPost !== false, nudgeGraceMin: (Number.isFinite(+c.nudgeGraceMin) && +c.nudgeGraceMin >= 5 && +c.nudgeGraceMin <= 1440) ? +c.nudgeGraceMin : 60 }; }
+async function opsCfg(env) { let c = {}; try { c = JSON.parse(await env.STATS.get('ops:cfg') || '{}'); } catch (e) {} return { brief: c.brief !== false, briefHour: (Number.isFinite(+c.briefHour) && +c.briefHour >= 0 && +c.briefHour <= 23) ? +c.briefHour : 8, alerts: c.alerts !== false, bigTrade: (Number.isFinite(+c.bigTrade) && +c.bigTrade >= 0) ? +c.bigTrade : 5000, sessKv: c.sessKv !== false, srvCandle: c.srvCandle !== false, xPost: c.xPost !== false, nudgeGraceMin: (Number.isFinite(+c.nudgeGraceMin) && +c.nudgeGraceMin >= 5 && +c.nudgeGraceMin <= 1440) ? +c.nudgeGraceMin : 60, liqAlertUsd: (Number.isFinite(+c.liqAlertUsd) && +c.liqAlertUsd >= 100000) ? +c.liqAlertUsd : 5000000, liqAlertCoolMin: (Number.isFinite(+c.liqAlertCoolMin) && +c.liqAlertCoolMin >= 5 && +c.liqAlertCoolMin <= 1440) ? +c.liqAlertCoolMin : 45 }; }
 // ---- Performance sampling (MarginPad Health): per-isolate buffer -> KV ring perf:ring (cap 2000, 8h). ----
 // 8h retention (was 4h): the perf-budget alarm windows over the ring, and the sparse UX beacons (1/5min/client) need
 // ~8h to accumulate the 30 samples that make a p95 a percentile. cap 2000 (was 1200) so 8h isn't silently truncated.
@@ -9357,7 +9562,10 @@ export default {
         const sessKv = (b.sessKv === false) ? false : (b.sessKv === true ? true : (cur.sessKv !== false));
         const srvCandle = (b.srvCandle === false) ? false : (b.srvCandle === true ? true : (cur.srvCandle !== false)); // srv candle-check kill switch; preserved across normal Settings saves (like sessKv). Flip OFF: POST {srvCandle:false}
         const nudgeGraceMin = (Number.isFinite(+b.nudgeGraceMin) && +b.nudgeGraceMin >= 5 && +b.nudgeGraceMin <= 1440) ? +b.nudgeGraceMin : (Number.isFinite(+cur.nudgeGraceMin) ? +cur.nudgeGraceMin : 60); // srv-position stale_settle grace; preserved across normal Settings saves (like sessKv). Change: POST {nudgeGraceMin:N}
-        const next = { brief: b.brief !== false, briefHour: (Number.isFinite(+b.briefHour) && +b.briefHour >= 0 && +b.briefHour <= 23) ? +b.briefHour : 8, alerts: b.alerts !== false, bigTrade: (Number.isFinite(+b.bigTrade) && +b.bigTrade >= 0) ? +b.bigTrade : 5000, sessKv, srvCandle, nudgeGraceMin };
+        const xPost = (b.xPost === false) ? false : (b.xPost === true ? true : (cur.xPost !== false)); // preserved (was silently reset to ON by every Settings save — same class as the lbRoe2 snapshot bug)
+        const liqAlertUsd = (Number.isFinite(+b.liqAlertUsd) && +b.liqAlertUsd >= 100000) ? +b.liqAlertUsd : (Number.isFinite(+cur.liqAlertUsd) ? +cur.liqAlertUsd : 5000000); // free-channel liq cascade alert threshold; change without deploy: POST {liqAlertUsd:N}
+        const liqAlertCoolMin = (Number.isFinite(+b.liqAlertCoolMin) && +b.liqAlertCoolMin >= 5 && +b.liqAlertCoolMin <= 1440) ? +b.liqAlertCoolMin : (Number.isFinite(+cur.liqAlertCoolMin) ? +cur.liqAlertCoolMin : 45); // per-symbol alert cooldown (min)
+        const next = { brief: b.brief !== false, briefHour: (Number.isFinite(+b.briefHour) && +b.briefHour >= 0 && +b.briefHour <= 23) ? +b.briefHour : 8, alerts: b.alerts !== false, bigTrade: (Number.isFinite(+b.bigTrade) && +b.bigTrade >= 0) ? +b.bigTrade : 5000, sessKv, srvCandle, nudgeGraceMin, xPost, liqAlertUsd, liqAlertCoolMin };
         await env.STATS.put('ops:cfg', JSON.stringify(next));
         return new Response(JSON.stringify({ ok: true, ...next }), { headers: jh2 });
       }
@@ -9651,6 +9859,24 @@ export default {
       return J({ coins: (await env.STATS.get('csig:coins')) || '(default majors + HYPE)', on: (await env.STATS.get('csig:on')) !== '0', adx: +(await env.STATS.get('csig:adx') || 20), volmul: +(await env.STATS.get('csig:volmul') || 1.2), htf: (await env.STATS.get('csig:htf')) !== '0', evguard: (await env.STATS.get('csig:evguard')) !== '0', channels: { fast: (await env.STATS.get('csig:chat:fast')) || '(unset)', balanced: (await env.STATS.get('csig:chat:balanced')) || '(unset)', premium: (await env.STATS.get('csig:chat:premium')) || (await env.STATS.get('csig:chat')) || '(unset)' } });
     }
     // FREE-channel (screener) signal config/state/proof. adminCookie OR ?key=ADMIN_KEY.
+    if (url.pathname === '/api/admin/content' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // free-channel content + C-paper state (read-only; ?preview=1 builds the wrap text WITHOUT sending)
+      const jh3 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const cfg = await opsCfg(env);
+      let cRes = [], cOpen = [], cCfg = {};
+      try { cRes = JSON.parse(await env.STATS.get('cpap:results') || '[]'); } catch (e) {}
+      try { cOpen = JSON.parse(await env.STATS.get('cpap:open') || '[]'); } catch (e) {}
+      try { cCfg = JSON.parse(await env.STATS.get('cpap:cfg') || '{}'); } catch (e) {}
+      const n = cRes.length, wins = cRes.filter(x => x.R > 0).length;
+      const out = {
+        wrap: { on: (await env.STATS.get('wrap:on')) !== '0', hour: +(await env.STATS.get('wrap:hour')) || 16, last: JSON.parse(await env.STATS.get('wrap:last') || 'null') },
+        liqAlert: { on: (await env.STATS.get('liqalert:on')) === '1', thresholdUsd: cfg.liqAlertUsd, coolMin: cfg.liqAlertCoolMin },
+        cpaper: { on: (await env.STATS.get('cpap:on')) !== '0', cfg: cCfg, openN: cOpen.length, open: cOpen,
+          summary: n ? { n, wins, winRate: +(wins / n * 100).toFixed(1), avgR: +(cRes.reduce((a, x) => a + x.R, 0) / n).toFixed(3), avgGrossPct: +(cRes.reduce((a, x) => a + x.grossPct, 0) / n).toFixed(3) } : { n: 0 },
+          recent: cRes.slice(0, 30) },
+      };
+      if (url.searchParams.get('preview') === '1') { try { out.wrapPreview = await buildWrapText(env); } catch (e) { out.wrapPreview = null; } }
+      return new Response(JSON.stringify(out), { headers: jh3 });
+    }
     if (url.pathname === '/api/admin/fsig' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) {
       const q = url.searchParams, day = new Date().toISOString().slice(0, 10);
       if (q.get('on') != null) await env.STATS.put('fsig:on', q.get('on') === '0' ? '0' : '1');
@@ -10328,6 +10554,9 @@ export default {
     bg(resolveFreeSignals, 'freesigres'); // resolve open free signals' outcome (TP1 vs stop) from fresh candles → fsig:results
     bg(nightlyBackup, 'backup'); // P0.5 — once per UTC day (stamped), retries on failure each */10
     bg(archiveLiq, 'liqarch'); // liquidation-feed daily dump → R2 liq/<day>.csv.gz (once/day, 7d self-heal backfill)
+    bg(checkDailyWrap, 'wrap'); // free-channel daily market wrap (16:00 UTC, no advice, internal data only)
+    bg(checkLiqAlert, 'liqalert'); // free-channel liq cascade alert — armed by KV liqalert:on='1' (default OFF)
+    bg(checkCPaper, 'cpaper'); // C funding-percentile engine in RECORD-ONLY paper mode (no sends; 2-week live-vs-backtest gate)
     bg(sweepServerPositions, 'sweep'); // P0 — server-side SL/TP/liq sweep for srv/bot trades
     bg(screenerKvWarm, 'scrwarm'); // keep the screener KV floor fresh — no visitor ever pays the full compute
     bg(heatPoolsCron, 'heatpools'); // heatmap: server-side pool accumulation
