@@ -2041,9 +2041,18 @@ async function sigKlines(sym, ivMin) {
 // KV `csig:st:<SYM>`={dir,bar,entry,tp,sl,done}. TP=entry±3·ATR (2R), SL=entry∓1.5·ATR (1R) — same as the charts.
 // `force` (test): re-sends BTC's current setup regardless of flip/dedup. Runs each */10 cron (flips detect at hour close).
 // Ring-log each confirmed signal's outcome (TP1 hit = win, SL before TP1 = loss) for the weekly performance report.
-async function logSigResult(env, sym, r) {
+async function logSigResult(env, sym, r, st, sl0) {
+  // st = the per-symbol signal state at outcome time; sl0 = the ORIGINAL stop (the win branch moves state.sl to
+  // entry, so the caller passes the pre-mutation value). Old {sym,r,ts}-only records made EV incomputable — a
+  // month of outcomes with no numbers (owner, 2026-08-03). Tier is deliberately NOT recorded: the three chart
+  // tiers share one state machine per symbol, so an outcome belongs to the signal, not a tier.
   try { await evPush(env, null, 'sigresult', sym + ' ' + r, ''); } catch (e) {}
-  try { let a = []; try { a = JSON.parse(await env.STATS.get('csig:results') || '[]'); } catch (e) {} a.unshift({ sym, r, ts: Date.now() }); await env.STATS.put('csig:results', JSON.stringify(a.slice(0, 400)), { expirationTtl: 90 * 86400 }); } catch (e) {}
+  try {
+    let a = []; try { a = JSON.parse(await env.STATS.get('csig:results') || '[]'); } catch (e) {}
+    const rec = { sym, r, ts: Date.now() };
+    if (st) { rec.dir = st.dir === 1 ? 'long' : 'short'; rec.entry = st.entry; rec.sl = (sl0 != null ? sl0 : st.sl); rec.tp1 = st.tp1; rec.tp2 = st.tp2; rec.sigTs = (st.bar || 0) * 1000; }
+    a.unshift(rec); await env.STATS.put('csig:results', JSON.stringify(a.slice(0, 400)), { expirationTtl: 90 * 86400 });
+  } catch (e) {}
 }
 // Weekly signal performance report → posted to every signal channel (Mon ≥09:00 UTC, once). Builds trust + justifies the paid tiers.
 async function postSignalReport(env) {
@@ -2279,8 +2288,8 @@ async function checkChartSignals(env, force) {
           if (state.phase === 0) {
             const post = bars.filter(b => b.time > state.bar);
             if (post.length) { const hi = Math.max(...post.map(b => b.high)), lo = Math.min(...post.map(b => b.low));
-              if (long ? lo <= state.sl : hi >= state.sl) { msg = mStop(sym, long, state.entry, state.sl); state.done = true; await logSigResult(env, sym, 'loss'); } // SL before TP1 = loss
-              else if (long ? hi >= state.tp1 : lo <= state.tp1) { msg = mTp1(sym, long, state.entry, state.tp1, state.tp2); state.phase = 1; state.sl = state.entry; state.tp1bar = bars[bars.length - 1].time; await logSigResult(env, sym, 'win'); } // reached TP1 = win (banked, now risk-free)
+              if (long ? lo <= state.sl : hi >= state.sl) { msg = mStop(sym, long, state.entry, state.sl); state.done = true; await logSigResult(env, sym, 'loss', state, state.sl); } // SL before TP1 = loss
+              else if (long ? hi >= state.tp1 : lo <= state.tp1) { msg = mTp1(sym, long, state.entry, state.tp1, state.tp2); await logSigResult(env, sym, 'win', state, state.sl); state.phase = 1; state.sl = state.entry; state.tp1bar = bars[bars.length - 1].time; } // reached TP1 = win (banked, now risk-free); outcome logged BEFORE the stop moves to entry so the record keeps the ORIGINAL sl
             }
           } else {
             const post = bars.filter(b => b.time > (state.tp1bar || state.bar));
