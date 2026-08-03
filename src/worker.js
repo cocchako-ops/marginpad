@@ -1899,16 +1899,20 @@ async function buildWrapText(env) {
     try { const r = await handlePrices(env, null, 0); if (r && r.ok) fill(JSON.parse(await r.text())); } catch (e) {}
   }
   if (!pmap.BTC || !pmap.ETH) return null; // core of the wrap — without it the message is not worth sending
-  const chip = s => fmtPx(pmap[s].p) + ' (' + (pmap[s].c >= 0 ? '+' : '') + pmap[s].c.toFixed(1) + '%)';
-  const lines = ['<b>MarginPad Daily Wrap</b> — ' + new Date().toISOString().slice(5, 10).replace('-', '/'),
-    'BTC ' + chip('BTC') + ' · ETH ' + chip('ETH') + (pmap.SOL ? ' · SOL ' + chip('SOL') : '')];
+  // Readable, scannable format (owner req 2026-08-04): bold section headers, one datum per line,
+  // blank line between sections — no dense "·"-packed one-liners, no emojis. Telegram HTML mode.
+  const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const dt = new Date();
+  const sign = c => (c >= 0 ? '+' : '') + c.toFixed(1) + '%';
+  const lines = ['<b>MarginPad — Daily Wrap</b>', '<i>' + MON[dt.getUTCMonth()] + ' ' + dt.getUTCDate() + ' · UTC</i>', '', '<b>Prices</b>'];
+  ['BTC', 'ETH', 'SOL'].forEach(s => { if (pmap[s]) lines.push('<b>' + s + '</b> ' + fmtPx(pmap[s].p) + ' (' + sign(pmap[s].c) + ')'); });
   try { // movers from the screener floor (liquid names only)
     const sc = JSON.parse(await env.STATS.get('scr:cache6') || 'null');
     const rows = ((sc && sc.body) ? JSON.parse(sc.body).rows : []) || [];
     const liq = rows.filter(r => r && isFinite(r.chg) && (+r.vol || 0) > 2e7);
     if (liq.length >= 6) {
       const up = [...liq].sort((a, b) => b.chg - a.chg)[0], dn = [...liq].sort((a, b) => a.chg - b.chg)[0];
-      lines.push('Top mover 24h: ' + up.s + ' ' + (up.chg >= 0 ? '+' : '') + up.chg.toFixed(1) + '% · Weakest: ' + dn.s + ' ' + dn.chg.toFixed(1) + '%');
+      lines.push('', '<b>24h movers</b>', 'Top: <b>' + up.s + '</b> ' + sign(up.chg), 'Weakest: <b>' + dn.s + '</b> ' + sign(dn.chg));
     }
   } catch (e) {}
   try { // 24h liquidation totals from OUR collector
@@ -1917,7 +1921,7 @@ async function buildWrapText(env) {
       const r = await fetch(base + '/api/v1/pulse', { signal: AbortSignal.timeout(8000), cf: { cacheTtl: 300 } });
       const j = await r.json();
       const t = j && j.h24 && j.h24.tot;
-      if (t && t.v > 0) lines.push('Liquidations 24h: ' + fmtUsdShort(t.v) + ' — ' + Math.round(t.l / t.v * 100) + '% longs (' + t.n + ' orders across 9 exchanges)');
+      if (t && t.v > 0) lines.push('', '<b>Liquidations · 24h</b>', fmtUsdShort(t.v) + ' · ' + Math.round(t.l / t.v * 100) + '% longs', (+t.n).toLocaleString('en-US') + ' orders across 9 exchanges');
     }
   } catch (e) {}
   try { // next high-impact event from our own calendar (pure compute)
@@ -1926,11 +1930,10 @@ async function buildWrapText(env) {
     const ev = ((j && j.events) || []).filter(e => e.ts > Date.now() && (+e.impact || 0) >= 3).sort((a, b) => a.ts - b.ts)[0];
     if (ev) {
       const dd = Math.round((ev.ts - Date.now()) / 86400e3);
-      lines.push('Next market mover: ' + ev.title + ' — ' + (dd <= 0 ? 'today' : dd === 1 ? 'tomorrow' : 'in ' + dd + ' days'));
+      lines.push('', '<b>Next market mover</b>', ev.title + ' — ' + (dd <= 0 ? 'today' : dd === 1 ? 'tomorrow' : 'in ' + dd + ' days'));
     }
   } catch (e) {}
-  lines.push('');
-  lines.push('Charts: https://marginpad.io/charts · Liq map: https://marginpad.io/liquidations/ · Practice: https://marginpad.io/paper-trade');
+  lines.push('', '<a href="https://marginpad.io/charts">Charts</a> · <a href="https://marginpad.io/liquidations/">Liq map</a> · <a href="https://marginpad.io/paper-trade">Practice</a>');
   return lines.join('\n');
 }
 

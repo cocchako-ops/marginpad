@@ -137,13 +137,13 @@ footer a{color:var(--dim)}
   <section class="hero">
     <span class="eyebrow">◆ Progression System</span>
     <h1>Level up from <span class="g">Bronze to Diamond</span></h1>
-    <p class="lead">Every meaningful thing you do on MarginPad earns XP. Climb six tiers, unlock bigger rewards, and prove your loyalty. This is a marathon, not a sprint — Diamond is for the few who stay.</p>
+    <p class="lead">Every meaningful thing you do on MarginPad earns XP. Everyone starts <b style="color:#8fb0c8">Unranked</b> — reach <b style="color:#c97f4a">Bronze (500 XP)</b> to unlock the faucet and rewards, then climb six tiers to Diamond and prove your loyalty. This is a marathon, not a sprint — Diamond is for the few who stay.</p>
   </section>
 
   <div id="myLvl">
     <div class="ml-top">
       <div class="ml-badge" id="mlBadge" style="background:transparent;padding:6px"></div>
-      <div><div class="ml-nm" id="mlName">Bronze</div><div class="ml-xp" id="mlXp">0 XP</div></div>
+      <div><div class="ml-nm" id="mlName">Unranked</div><div class="ml-xp" id="mlXp">0 XP</div></div>
       <div class="ml-next" id="mlNext"></div>
     </div>
     <div class="ml-bar"><i id="mlBar" style="width:0%"></i></div>
@@ -155,12 +155,16 @@ footer a{color:var(--dim)}
     <ol id="tmList" class="tm-list"></ol>
   </div>
 
-  <h2>The six tiers</h2>
-  <p class="sub">Each tier unlocks more. Reaching the next one takes progressively longer.</p>
+  <h2>The tiers</h2>
+  <p class="sub">Everyone starts Unranked. Reach Bronze — 500 XP — to unlock the faucet and the whole rewards system, then keep climbing. Each tier takes progressively longer.</p>
   <div class="tiers">
+    <div class="tier" style="--c:#5c6b7a">
+      <div class="tier-h"><div class="tier-badge" data-tb="unranked"></div><div class="tier-nm">Unranked</div><div class="tier-xp"><b>0</b> XP · where everyone starts</div></div>
+      <ul><li>Access to all free tools</li><li>Earn XP: Academy, paper trades, check-ins &amp; streaks</li><li><b>Reach 500 XP</b> to become Bronze</li><li>Rewards locked until Bronze</li></ul>
+    </div>
     <div class="tier" style="--c:#c97f4a">
-      <div class="tier-h"><div class="tier-badge" data-tb="bronze"></div><div class="tier-nm">Bronze</div><div class="tier-xp"><b>0</b> XP · everyone starts here</div></div>
-      <ul><li>Standard faucet rewards</li><li>Bronze profile badge</li><li>Access to all free tools</li><li>Daily missions &amp; streaks</li></ul>
+      <div class="tier-h"><div class="tier-badge" data-tb="bronze"></div><div class="tier-nm">Bronze</div><div class="tier-xp"><b>500</b> XP · unlocks rewards</div></div>
+      <ul><li><b>Faucet, missions &amp; withdrawals unlocked</b></li><li>Standard faucet rewards</li><li>Bronze profile badge</li><li>Exchange &amp; promo bonuses</li></ul>
     </div>
     <div class="tier" style="--c:#b7c2d0">
       <div class="tier-h"><div class="tier-badge" data-tb="silver"></div><div class="tier-nm">Silver</div><div class="tier-xp"><b>3,000</b> XP</div></div>
@@ -185,7 +189,7 @@ footer a{color:var(--dim)}
     </div>  </div>
 
   <h2>How you earn XP</h2>
-  <p class="sub">Real activity only. Every source is capped per day so nothing can be farmed.</p>
+  <p class="sub">Real activity only. Every source is capped per day so nothing can be farmed. <b>New here?</b> The faucet, mission and promo XP below unlock at Bronze — until then, earn your first 500 XP from the <a href="/academy/" style="color:var(--lime)">Academy</a>, <a href="/paper-trade" style="color:var(--lime)">paper trades</a>, daily check-ins and streaks.</p>
   <div class="xps">
     <div class="xp"><span class="ic" style="color:#2ebd85"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 7-8"/><path d="M17 7h4v4"/></svg></span><div><div class="t">Close a profitable trade</div><div class="d">up to 4/day</div></div><span class="v">+15</span></div>
     <div class="xp"><span class="ic" style="color:#c2f64a"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg></span><div><div class="t">Complete a daily mission</div><div class="d">up to 5/day</div></div><span class="v">+12</span></div>
@@ -226,7 +230,7 @@ footer a{color:var(--dim)}
 <script>
 (function(){
   try{var u='/api/track?t=pageview&p=/levels/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon)navigator.sendBeacon(u);}catch(e){}
-  var TCOL={bronze:'#c97f4a',silver:'#b7c2d0',gold:'#ffcf3f',platinum:'#7ee0ff',diamond:'#8b5cff',legendary:'#ff7a1a'};
+  var TCOL={unranked:'#5c6b7a',bronze:'#c97f4a',silver:'#b7c2d0',gold:'#ffcf3f',platinum:'#7ee0ff',diamond:'#8b5cff',legendary:'#ff7a1a'};
   /* self-contained tier insignia (mp-auth.js may load later; identical shape) */
   function lvlSvg(k,col){col=col||'#c97f4a';
     if(window.mpLvlSvg)return window.mpLvlSvg(k,col);
