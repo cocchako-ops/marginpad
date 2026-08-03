@@ -68,6 +68,25 @@ const COINS = [
   { sym: 'APE', name: 'ApeCoin', slug: 'ape', entry: 1.1, lev: 75, blurb: 'ApeCoin is a high-beta NFT-ecosystem perp that swings on sentiment and unlocks.' },
 ];
 
+const pctf = n => n + '%';
+// leverage → liquidation-distance table (isolated-margin estimate)
+function levTable(mmr, maxLev) {
+  const rows = [5, 10, 25, 50, 100].filter(l => l <= maxLev);
+  const cells = rows.map(l => {
+    const dist = (1 / l - mmr / 100) * 100;
+    return `<tr><td>${l}×</td><td>−${dist.toFixed(2)}%</td><td>${(100 / l).toFixed(2)}%</td></tr>`;
+  }).join('');
+  return `<table class="lvtab"><thead><tr><th>Leverage</th><th>Move to liquidation</th><th>Initial margin</th></tr></thead><tbody>${cells}</tbody></table>`;
+}
+const EXTRA_CSS = `<style>
+  .lvtab{width:100%;border-collapse:collapse;margin:14px 0 18px;font-size:14px}
+  .lvtab th,.lvtab td{padding:10px 13px;border-bottom:1px solid var(--line);text-align:left}
+  .lvtab th{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)}
+  .lvtab td{font-family:'Space Mono',monospace;color:var(--ink)}
+  .lvtab td:first-child{font-family:'Bricolage Grotesque',sans-serif;font-weight:700}
+  @media(max-width:600px){.lvtab{display:block;overflow-x:auto;white-space:nowrap}}
+</style>`;
+
 function head(o) {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -91,6 +110,7 @@ function head(o) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/assets/blog.css" />
+${EXTRA_CSS}
 ${o.ld}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"${o.bcName}","item":"${o.url}"}]}</script>
 </head>
@@ -143,18 +163,45 @@ function coinPage(c) {
       </div>
     </div>
     <h2>How ${c.sym} liquidation works</h2>
-    <p>${c.blurb} Liquidation happens when losses eat through the margin backing your position. The isolated-margin estimate is <code>Entry × (1 − 1/Leverage + MMR)</code> for a long and <code>Entry × (1 + 1/Leverage − MMR)</code> for a short, where <b>MMR</b> is the maintenance margin rate.</p>
+    <p>${c.blurb} Liquidation happens when losses eat through the margin backing your position — the exchange force-closes it to stop the loss going past your collateral. The isolated-margin estimate is <code>Entry × (1 − 1/Leverage + MMR)</code> for a long and <code>Entry × (1 + 1/Leverage − MMR)</code> for a short, where <b>MMR</b> is the maintenance margin rate (about 0.5% on most ${c.sym} perpetuals). ${c.sym} futures list up to <b>${c.lev}× leverage</b> across the major venues, but the headline cap is a trap: the higher you go, the closer liquidation sits to your entry.</p>
+
+    <h2>${c.sym} liquidation distance by leverage</h2>
+    <p>How far ${c.name} has to move against an isolated-margin long before it is liquidated, at a 0.5% maintenance margin:</p>
+    ${levTable(0.5, c.lev)}
+    <p>At 100× a move of just ~1% wipes the position; at 5× you get roughly ${((1 / 5 - 0.005) * 100).toFixed(1)}% of room. Because ${c.name} routinely moves several percent in a session, most traders who last keep ${c.sym} leverage in the low-to-mid range and let the position breathe.</p>
+
     <h2>Worked example — 10× ${c.sym} long</h2>
     <p>A 10× ${c.sym} long entered at <code>$${fmt(c.entry)}</code> with a 0.5% maintenance margin rate is liquidated at about:</p>
     <div class="example">
       <div class="row"><span>Liquidation price</span><b>$${fmt(liq)}</b></div>
       <div class="row"><span>Move to liquidation</span><b>−${dist.toFixed(2)}%</b></div>
     </div>
-    <p>Because ${c.sym} can move fast, keep your stop-loss well inside that level and size by risk. See <a href="/blog/crypto-position-sizing-risk-management/">how to size a position</a> and <a href="/blog/what-is-liquidation-in-crypto/">how to avoid liquidation</a>.</p>
+    <p>Enter your own numbers above — the calculator prefills the <b>live ${c.sym} price</b>, so you can see exactly where a real position would be wiped right now. Set your stop-loss comfortably inside that level and size by risk.</p>
+
+    <h2>Common ways ${c.sym} traders get liquidated</h2>
+    <ul>
+      <li><b>Chasing max leverage.</b> ${c.lev}× on ${c.sym} means a ~${(100 / c.lev).toFixed(2)}% wick against you is game over — and ${c.sym} prints wicks like that regularly.</li>
+      <li><b>No stop-loss.</b> Without a stop, the exchange's liquidation engine becomes your exit — at the worst possible price, plus a liquidation fee.</li>
+      <li><b>Ignoring funding.</b> On a crowded ${c.sym} trade, funding drains your margin every 8 hours, nudging liquidation closer than the raw price math shows.</li>
+      <li><b>Sizing by dollars, not risk.</b> Size from your stop distance instead — see the <a href="/calculators?c=size">position-size calculator</a>.</li>
+    </ul>
+
+    <h2>See ${c.sym} liquidations happen live</h2>
+    <p>Numbers are one thing; watching real leverage get wiped is another. The <a href="/liquidations/">live liquidations feed</a> and the <a href="/rekt/">Rekt ticker</a> show ${c.sym} longs and shorts being force-closed across Binance, Bybit and OKX in real time — a spike in long liquidations often marks local capitulation, a spike in shorts a squeeze. Then rehearse the trade with zero risk on the <a href="/paper-trade?coin=${c.sym}">${c.sym} paper-trading terminal</a> at the live price, and screen the whole market on the <a href="/screener">futures screener</a>.</p>
+
+    <h2>FAQ</h2>
+    <h3>At what percentage is a ${c.sym} position liquidated?</h3>
+    <p>Roughly 1 ÷ leverage, minus the maintenance margin. A 10× ${c.sym} position is liquidated after about a 9–10% adverse move; 25× after ~4%; 100× after ~1%.</p>
+    <h3>Does the ${c.sym} liquidation price change with position size?</h3>
+    <p>For <b>isolated</b> margin, no — the liquidation price depends on entry, leverage and MMR, not on how big the position is. For <b>cross</b> margin your whole wallet balance backs the trade, which pushes liquidation further away; model that with the <a href="/calculators?c=cross">cross-margin calculator</a>.</p>
+    <h3>Is this ${c.sym} liquidation calculator accurate?</h3>
+    <p>It uses the standard isolated-margin formula and your exchange's maintenance margin. Real liquidation can differ slightly because of fees, funding and tiered maintenance margin on very large positions — treat the figure as a close estimate and leave a buffer.</p>
+
     <h2>Other coins &amp; tools</h2>
     <div class="related">
       <a href="/#liq">All calculators</a>
       <a href="/funding-fee-calculator/">Funding fee</a>
+      <a href="/paper-trade?coin=${c.sym}">Paper-trade ${c.sym}</a>
       ${others.map(o => `<a href="/${o.slug}-liquidation-calculator/">${o.sym} liquidation</a>`).join('\n      ')}
     </div>
     <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Educational tool, not financial advice. Estimates exclude fees and funding and may differ from your exchange.</p>

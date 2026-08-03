@@ -9,13 +9,13 @@ const esc = s => String(s).replace(/&/g, '&amp;');
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
 
 const EX = {
-  bybit:   { name: 'Bybit',   ref: 'https://www.bybit.com/invite?ref=LZKBERJ',                                                              lev: 100, mmr: 0.5, maker: 0.02, taker: 0.055, accent: '#f7a600', fg: '#0a0b0d', known: 'a fast matching engine and deep USDT-perpetual liquidity' },
-  binance: { name: 'Binance', ref: 'https://www.binance.com/register?ref=MAOZM9DS',                                                          lev: 125, mmr: 0.4, maker: 0.02, taker: 0.04,  accent: '#f0b90b', fg: '#181a20', known: 'the largest volume and the widest range of futures pairs' },
-  okx:     { name: 'OKX',     ref: 'https://okx.com/join/96160298',                                                                          lev: 125, mmr: 0.5, maker: 0.02, taker: 0.05,  accent: '#cfd3d8', fg: '#0a0b0d', known: 'a powerful pro interface and a unified account model' },
-  kucoin:  { name: 'KuCoin',  ref: 'https://www.kucoin.com/r/rf/VHP8AYKY',                                                                   lev: 100, mmr: 0.5, maker: 0.02, taker: 0.06,  accent: '#23af91', fg: '#06231d', known: 'a huge altcoin futures selection' },
-  kraken:  { name: 'Kraken',  ref: 'https://invite.kraken.com/JDNW/guj2tf28',                                                                lev: 50,  mmr: 0.5, maker: 0.02, taker: 0.05,  accent: '#7b5cff', fg: '#ffffff', known: 'security and long-standing trust' },
-  bitget:  { name: 'Bitget',  ref: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK', lev: 125, mmr: 0.5, maker: 0.02, taker: 0.06, accent: '#00e5d0', fg: '#04231f', known: 'copy trading and one of the largest futures order books' },
-  gate:    { name: 'Gate',    ref: 'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103&ut-m_cmp=rXJBDjtJ&activity_id=1778642196063', lev: 100, mmr: 0.5, maker: 0.02, taker: 0.05, accent: '#3361ff', fg: '#ffffff', known: 'the widest selection of altcoin and new-listing futures' }
+  bybit:   { name: 'Bybit',   ref: 'https://www.bybit.com/invite?ref=LZKBERJ',                                                              lev: 100, mmr: 0.5, maker: 0.02, taker: 0.055, accent: '#f7a600', fg: '#0a0b0d', known: 'a fast matching engine and deep USDT-perpetual liquidity', founded: 2018, us: false, safety: 'publishes proof-of-reserves and has no major custodial hack on record; restricted in several regulated markets and not open to US residents' },
+  binance: { name: 'Binance', ref: 'https://www.binance.com/register?ref=MAOZM9DS',                                                          lev: 125, mmr: 0.4, maker: 0.02, taker: 0.04,  accent: '#f0b90b', fg: '#181a20', known: 'the largest volume and the widest range of futures pairs', founded: 2017, us: false, safety: 'the largest venue by volume, publishes proof-of-reserves, and now operates under tighter compliance after its 2023 US settlement; futures are not available to US residents' },
+  okx:     { name: 'OKX',     ref: 'https://okx.com/join/96160298',                                                                          lev: 125, mmr: 0.5, maker: 0.02, taker: 0.05,  accent: '#cfd3d8', fg: '#0a0b0d', known: 'a powerful pro interface and a unified account model', founded: 2017, us: false, safety: 'publishes proof-of-reserves and runs a unified account model; not available to US residents' },
+  kucoin:  { name: 'KuCoin',  ref: 'https://www.kucoin.com/r/rf/VHP8AYKY',                                                                   lev: 100, mmr: 0.5, maker: 0.02, taker: 0.06,  accent: '#23af91', fg: '#06231d', known: 'a huge altcoin futures selection', founded: 2017, us: false, safety: 'settled US regulatory action and wound down US access; carries one of the largest altcoin listing bases in the industry' },
+  kraken:  { name: 'Kraken',  ref: 'https://invite.kraken.com/JDNW/guj2tf28',                                                                lev: 50,  mmr: 0.5, maker: 0.02, taker: 0.05,  accent: '#7b5cff', fg: '#ffffff', known: 'security and long-standing trust', founded: 2011, us: true, safety: 'one of the oldest exchanges still running, US-regulated with a strong security record, favouring conservative leverage over headline numbers' },
+  bitget:  { name: 'Bitget',  ref: 'https://www.bitget.com/referral/register?clacCode=DSSSQKGK', lev: 125, mmr: 0.5, maker: 0.02, taker: 0.06, accent: '#00e5d0', fg: '#04231f', known: 'copy trading and one of the largest futures order books', founded: 2018, us: false, safety: 'publishes a protection fund, ranks top-five by futures volume, and centres its product on copy trading; not available to US residents' },
+  gate:    { name: 'Gate',    ref: 'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103&ut-m_cmp=rXJBDjtJ&activity_id=1778642196063', lev: 100, mmr: 0.5, maker: 0.02, taker: 0.05, accent: '#3361ff', fg: '#ffffff', known: 'the widest selection of altcoin and new-listing futures', founded: 2013, us: false, safety: 'has one of the longest track records in the industry, publishes proof-of-reserves, and lists an enormous catalogue of long-tail markets' }
 };
 
 const PAIRS = [
@@ -25,6 +25,8 @@ const PAIRS = [
   // 2026: Bitget (top-5 futures venue) + Gate (widest altcoin selection) — high-intent commercial queries
   ['bybit', 'bitget'], ['bitget', 'binance'], ['bitget', 'okx'], ['bitget', 'kucoin'],
   ['bybit', 'gate'], ['binance', 'gate'], ['bitget', 'gate'], ['gate', 'okx'], ['gate', 'kucoin'],
+  // complete the matrix — remaining high-intent pairs
+  ['bitget', 'kraken'], ['gate', 'kraken'],
 ];
 
 const LANG_CODES = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
@@ -140,6 +142,23 @@ function comparePage(ak, bk, lang) {
       <div style="font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#c2f64a;margin-bottom:8px">TL;DR — our verdict</div>
       <p style="margin:0;font-size:15px;line-height:1.55">Pick <strong>${a.name}</strong> if you want ${EN_KNOWN[ak]}. Pick <strong>${b.name}</strong> if ${EN_KNOWN[bk]} matters more. ${lowerTaker === L.bothEq ? 'Base taker fees are identical' : `<strong>${lowerTaker}</strong> is cheaper on base taker fees`}; <strong>${higherLev}</strong> has the higher leverage cap. Not sure yet? <a href="/paper-trade">Practice the strategy free</a> before funding either.</p>
     </div>`;
+  // EN-only deep sections: real fee cost + safety/regulation (translations keep the shorter version)
+  const aRt = (10000 * a.taker / 100 * 2), bRt = (10000 * b.taker / 100 * 2);
+  const feeMoney = v => '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const deep = lang ? '' : `
+    <h2>What the fees actually cost you</h2>
+    <p>Base fees look tiny, but they are paid on <em>notional</em> — the full leveraged position size, not your margin — and every round trip pays them twice (in and out). On a <strong>$10,000</strong> position taken and closed at market:</p>
+    <table class="cmp">
+      <tr><th>&nbsp;</th><th>${a.name}</th><th>${b.name}</th></tr>
+      <tr><td>Taker per side</td><td>${pct(a.taker)}</td><td>${pct(b.taker)}</td></tr>
+      <tr><td>Round-trip cost</td><td>${feeMoney(aRt)}</td><td>${feeMoney(bRt)}</td></tr>
+      <tr><td>Over 100 trades</td><td>${feeMoney(aRt * 100)}</td><td>${feeMoney(bRt * 100)}</td></tr>
+    </table>
+    <p>${aRt === bRt ? 'The two are level on base taker fees' : `Over a hundred round trips the gap is <strong>${feeMoney(Math.abs(aRt - bRt) * 100)}</strong> in ${aRt < bRt ? a.name : b.name}'s favour`} — real money for an active trader, but still small next to a single avoidable liquidation. Both venues charge <strong>maker</strong> orders (resting limits) less than taker, and cut rates further as your 30-day volume climbs, so patient limit-order entries beat chasing the lowest headline fee. Model any trade first with the <a href="/${lang ? lang + '/' : ''}funding-fee-calculator/">funding-fee calculator</a> and <a href="/calculators?c=pnl">PnL calculator</a>.</p>
+
+    <h2>Safety, regulation &amp; track record</h2>
+    <p><strong>${a.name}</strong> (founded ${a.founded}) ${a.safety}. <strong>${b.name}</strong> (founded ${b.founded}) ${b.safety}.</p>
+    <p>${a.us || b.us ? `On US access: ${a.us && b.us ? 'both serve US traders (subject to state rules)' : (a.us ? a.name : b.name) + ' is the US-friendly option here, while ' + (a.us ? b.name : a.name) + ' does not serve US residents'}.` : 'Neither is available to US residents — a US-regulated venue such as <a href="/kraken-liquidation-calculator/">Kraken</a> fits that case better.'} Whichever you choose, never keep more on any exchange than you are actively trading, enable withdrawal whitelists and two-factor authentication, and confirm current fees, leverage caps and regional availability on the exchange itself before funding.</p>`;
   const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":${JSON.stringify(F(L.q1))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q1a))}}},{"@type":"Question","name":${JSON.stringify(F(L.q2))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q2a))}}}${q3}]}</script>`;
   return head({
     lang: code, dir: RTL[lang] ? 1 : 0, title, desc: F(L.desc), url, homeHref, hreflang: hreflang(ak, bk),
@@ -173,7 +192,7 @@ ${verdict}
 
     <h2>${L.h2pick}</h2>
     <p>${F(L.pickP)}</p>
-
+${deep}
     <div class="related">
       <a href="${homeHref}">${L.relAll}</a>
       <a href="/${ak}-liquidation-calculator/">${fill(L.relLiq, { X: a.name })}</a>

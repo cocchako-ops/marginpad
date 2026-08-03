@@ -98,6 +98,29 @@ function levPage(L) {
       <div class="row"><span>Move to liquidation</span><b>−${dist.toFixed(2)}%</b></div>
     </div>
     <p>Always set your stop-loss <em>inside</em> that level. Learn more in <a href="/blog/crypto-leverage-explained/">crypto leverage explained</a> and <a href="/blog/what-is-liquidation-in-crypto/">how to avoid liquidation</a>.</p>
+
+    <h2>${L}× in context — liquidation distance by leverage</h2>
+    <p>The same trade at different leverage levels, showing how much room each one gives before an isolated-margin long is liquidated (0.5% maintenance margin):</p>
+    <table style="width:100%;border-collapse:collapse;margin:14px 0 18px;font-size:14px">
+      <thead><tr><th style="padding:10px 13px;border-bottom:1px solid var(--line);text-align:left;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)">Leverage</th><th style="padding:10px 13px;border-bottom:1px solid var(--line);text-align:left;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)">Move to liquidation</th><th style="padding:10px 13px;border-bottom:1px solid var(--line);text-align:left;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)">Buffer</th></tr></thead>
+      <tbody>${LEVS.map(x => { const d = (1 / x - mmr / 100) * 100; return `<tr${x === L ? ' style="background:rgba(194,246,74,.06)"' : ''}><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Bricolage Grotesque',sans-serif;font-weight:700">${x}×${x === L ? ' <span style="font-family:\'Space Mono\',monospace;font-size:9px;color:#c2f64a;text-transform:uppercase">this page</span>' : ''}</td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace">−${d.toFixed(2)}%</td><td style="padding:10px 13px;border-bottom:1px solid var(--line);font-family:'Space Mono',monospace;color:${x >= 50 ? '#ff8a80' : (x >= 20 ? '#ffd75a' : '#34d99a')}">${x >= 50 ? 'extremely thin' : (x >= 20 ? 'thin' : 'comfortable')}</td></tr>`; }).join('')}</tbody>
+    </table>
+
+    <h2>Who ${L}× leverage is for</h2>
+    <p>${L >= 50
+      ? `${L}× is high-conviction, tight-risk territory. A ~${dist.toFixed(1)}% wick against you ends the trade, and crypto prints wicks that size regularly — so ${L}× only makes sense for experienced traders scalping liquid pairs with a hard stop and a small slice of their book. If you cannot watch it, do not use it.`
+      : (L >= 20
+        ? `${L}× is an intermediate level: enough amplification to matter, but the ~${dist.toFixed(1)}% buffer leaves almost no room for normal volatility. Use it only on liquid majors, with a stop-loss set before you enter and position size worked out from that stop — not the other way round.`
+        : `${L}× is the sensible starting range. The ~${dist.toFixed(1)}% buffer gives a stop-loss room to work without a routine pullback wiping you out, which is why disciplined traders — and every beginner — should live here far more often than at the 50–125× end.`)}</p>
+
+    <h2>How to survive ${L}× leverage</h2>
+    <ul>
+      <li><strong>Set the stop first.</strong> Decide your invalidation price, then size the position so that stop equals a fixed % of your account (1–2%). The <a href="/#size">position-size calculator</a> does the math.</li>
+      <li><strong>Keep liquidation far from your stop.</strong> If liquidation and your stop are almost on top of each other, a wick can beat your stop to the punch — lower the leverage or widen the stop.</li>
+      <li><strong>Count fees and funding.</strong> Both eat margin and pull liquidation closer than the raw ${dist.toFixed(2)}% — model them with the <a href="/funding-fee-calculator/">funding calculator</a>.</li>
+      <li><strong>Rehearse it first.</strong> Open the same ${L}× trade on the <a href="/paper-trade">paper-trading terminal</a> at live prices, risk-free, until the liquidation behaviour is muscle memory.</li>
+    </ul>
+
     <h2>Compare other leverage levels</h2>
     <div class="related">
       <a href="/#liq">Custom leverage</a>

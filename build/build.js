@@ -90,6 +90,9 @@ run('Inject font preconnect', 'node build/add-preconnect.js');
 // 11b) re-add hand-maintained pages the sitemap generator doesn't know about
 run('Sitemap extras (hand-made pages)', 'node build/add-sitemap-extras.js');
 
+// 11c) dedicated sitemap for the translated SEO pages (compares/guides/best-for) → dist/sitemap-i18n.xml
+run('i18n sitemap (translated SEO pages)', 'node build/gen-i18n-sitemap.js');
+
 // 12) LAST: <meta charset> must be the FIRST tag in <head> (within the 1024-byte prescan) - the
 // Yandex/gtag head injections once pushed it deeper and the whole site rendered as windows-1252 mojibake.
 run('Charset meta first in head', 'node build/fix-charset.js');

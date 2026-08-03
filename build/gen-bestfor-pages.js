@@ -95,6 +95,26 @@ const CASES = [
     rank: ['bybit', 'binance', 'okx', 'kucoin', 'kraken'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×',
     why: { bybit: 'a slick, fast app with full futures controls and quick order entry', binance: 'a feature-packed app with the deepest markets behind it', okx: 'a clean app with pro charting and a unified account view', kucoin: 'a capable app with a huge coin list', kraken: 'a tidy, reliable app focused on the larger caps' },
     kw: 'best crypto exchange app, best futures trading app, best crypto app for leverage, mobile crypto futures' },
+  { slug: 'best-crypto-exchange-for-shorting', title: 'Best Crypto Exchange for Shorting (2026)', h1: 'Best crypto exchange for shorting',
+    intro: 'Shorting crypto means betting on a fall with leverage — you want deep short-side liquidity, reliable funding and a fast engine so your exit fills when volatility spikes. Ranked for short sellers.',
+    rank: ['bybit', 'binance', 'okx', 'kucoin', 'kraken'], metricKey: 'taker', metric: 'Taker fee', fmt: v => v + '%',
+    why: { bybit: 'deep two-sided perpetual liquidity and a fast engine, so shorts fill cleanly even in a squeeze', binance: 'the deepest books anywhere, which keeps short-side slippage low on the majors', okx: 'pro conditional orders for precise short entries and stop management', kucoin: 'a huge list of altcoins to short, including names other venues do not list', kraken: 'a trusted, US-regulated home for shorts, with conservative leverage' },
+    kw: 'best crypto exchange for shorting, how to short crypto, short selling crypto exchange, best exchange to short bitcoin' },
+  { slug: 'best-crypto-exchange-for-swing-trading', title: 'Best Crypto Exchange for Swing Trading (2026)', h1: 'Best crypto exchange for swing trading',
+    intro: 'Swing traders hold positions for days to weeks, so funding cost, a wide liquidation buffer and reliable uptime matter far more than shaving a fraction off the taker fee. Ranked for swing trading.',
+    rank: ['bybit', 'binance', 'okx', 'kraken', 'kucoin'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×',
+    why: { bybit: 'stable funding and deep liquidity for positions held across many funding cycles', binance: 'the deepest markets and widest pair list for multi-day holds', okx: 'a unified account that nets margin across products while a swing runs', kraken: 'conservative leverage and a strong security record for positions held overnight', kucoin: 'a vast altcoin list for swinging smaller-cap narratives' },
+    kw: 'best crypto exchange for swing trading, swing trading crypto futures, best exchange to hold positions, crypto swing trading platform' },
+  { slug: 'best-crypto-exchange-for-solana-futures', title: 'Best Crypto Exchange for Solana (SOL) Futures (2026)', h1: 'Best exchange for Solana futures',
+    intro: 'SOL is one of the most-traded and most-volatile large-cap perpetuals, so you want the deepest SOL books and a fast engine to fill during its sharp moves. Ranked for Solana futures.',
+    rank: ['bybit', 'binance', 'okx', 'kucoin', 'kraken'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×',
+    why: { bybit: 'very deep SOLUSDT liquidity and a fast engine for Solana’s violent candles', binance: 'the deepest SOL perpetual book with up to 125× on the majors', okx: '125× on SOL with pro order types and a unified account', kucoin: 'reliable SOL liquidity alongside its huge altcoin list', kraken: 'a trusted venue for Solana with a conservative 50× cap' },
+    kw: 'best exchange for solana futures, sol perpetual exchange, solana leverage trading, best sol futures platform' },
+  { slug: 'best-crypto-exchange-for-meme-coins', title: 'Best Crypto Exchange for Meme Coin Futures (2026)', h1: 'Best crypto exchange for meme coins',
+    intro: 'Trading DOGE, PEPE, WIF and the rest with leverage needs the widest meme-perp selection and enough liquidity to get in and out before the move is over. Ranked for meme-coin futures.',
+    rank: ['kucoin', 'bybit', 'binance', 'okx', 'kraken'], metricKey: 'lev', metric: 'Max leverage', fmt: v => v + '×',
+    why: { kucoin: 'one of the largest meme-coin futures selections, with new listings arriving fast', bybit: 'a growing meme-perp list with tight spreads on the popular names', binance: 'deep liquidity on the biggest meme perps and up to 125×', okx: 'clean pro tools for trading meme volatility with precision', kraken: 'a narrower, safety-first list focused on the larger names' },
+    kw: 'best exchange for meme coins, meme coin futures exchange, best exchange to trade doge pepe, meme coin leverage trading' },
 ];
 
 function head(o) {
@@ -211,6 +231,18 @@ function casePage(c, lang) {
     ${table}
     <h2>${L.h2rank}</h2>
     <p>${fill(L.rankP, { METRIC: metricLower })}</p>
+${lang ? '' : `
+    <h2>How to choose ${c.h1.replace(/^Best /, 'the best ').toLowerCase()}</h2>
+    <p>For this use case the factor that matters most is <strong>${c.metric.toLowerCase()}</strong>, which is why our ranking leads with it — but it is never the only thing to weigh. Deep liquidity keeps your fills tight and your slippage low; a fast, reliable matching engine means your orders actually land during the volatile moments that matter; and low fees compound in your favour the more you trade. Our top pick, <strong>${top.name}</strong>, offers ${c.why[c.rank[0]] || EN_KNOWN[c.rank[0]]}, which is what puts it first here. The runners-up, <strong>${EX[c.rank[1]].name}</strong> and <strong>${EX[c.rank[2]].name}</strong>, are close behind and may suit you better depending on which coins you trade and where you live.</p>
+    <h3>Our methodology</h3>
+    <p>We weight the factors that decide real outcomes for this use case — here, primarily ${c.metric.toLowerCase()} — alongside liquidity, execution reliability, fee schedule and overall trader experience. Figures such as leverage caps and fees are base-tier and change by contract, region and account tier, so we treat them as a starting point, not gospel. We do not rank an exchange we would not use ourselves, and every link below is a referral link that keeps these tools free — it does not change the order.</p>
+    <h3>What to watch out for</h3>
+    <ul>
+      <li><strong>Regional access.</strong> The best venue on paper is useless if it does not serve your country — most of these are not available to US residents (<a href="/highest-leverage-crypto-exchange/">Kraken is the main US-friendly major</a>).</li>
+      <li><strong>Leverage is a trap.</strong> A 125× headline means a ~1% move liquidates you. Check exactly where with the <a href="/#liq">liquidation calculator</a> before you size up.</li>
+      <li><strong>Fees are paid on notional.</strong> They look tiny but scale with your leverage and trade count — see how they add up on the <a href="/bybit-vs-binance/">exchange comparison pages</a>.</li>
+    </ul>
+    <p>Not sure which fits? <a href="/paper-trade">Practice the exact strategy free</a> on our paper-trading terminal — live prices, real liquidation logic, zero risk — before you fund any of them.</p>`}
     <div class="related">
       <a href="${rel('best-crypto-exchange-for-beginners')}">${L.relBeginners}</a>
       <a href="${rel('lowest-fee-crypto-exchange')}">${L.relLowFee}</a>

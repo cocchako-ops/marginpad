@@ -7,6 +7,8 @@ const DIST = path.join(__dirname, '..', 'dist');
 const COINS = [
   ['BTC', 'Bitcoin'], ['ETH', 'Ethereum'], ['SOL', 'Solana'], ['XRP', 'XRP'], ['DOGE', 'Dogecoin'],
   ['BNB', 'BNB'], ['ADA', 'Cardano'], ['LINK', 'Chainlink'], ['AVAX', 'Avalanche'], ['LTC', 'Litecoin'],
+  ['TRX', 'TRON'], ['DOT', 'Polkadot'], ['PEPE', 'Pepe'], ['WIF', 'dogwifhat'], ['SUI', 'Sui'],
+  ['HYPE', 'Hyperliquid'], ['SHIB', 'Shiba Inu'], ['NEAR', 'NEAR Protocol'],
 ];
 
 const faq = (name, sym) => [
@@ -70,6 +72,9 @@ ${crumbLd}
     <h2>Real liquidations vs estimated clusters</h2>
     <p>The bubbles and histogram are <strong>real events</strong>. There is also an optional <strong>Clusters</strong> layer — a model that estimates where future ${sym} liquidations are likely to sit, built from open-interest changes and an assumed leverage distribution. It is clearly labelled as an estimate, not exchange order-book data. A third <strong>Levels</strong> layer overlays the classic theoretical liquidation prices by leverage. Toggle any combination.</p>
     <div class="liqmap-cta"><a class="cta" href="${live}">Open the live ${sym} liquidation map →</a></div>
+    <h2>How traders use the ${sym} liquidation map</h2>
+    <p>Liquidation clusters are where forced orders pile up, and price is drawn toward them like a magnet — a large band of ${sym} long liquidations below spot is fuel for a flush lower, while a wall of short liquidations above is fuel for a squeeze higher. Many traders use the map to (1) avoid entering just above a thick long-liquidation band, (2) anticipate where a cascade might accelerate or exhaust, and (3) place take-profits just ahead of a cluster rather than inside it. It pairs naturally with <a href="/${sym.toLowerCase()}-liquidation-calculator/">${sym} liquidation prices</a> for your own position and the live <a href="/liquidations/${sym.toLowerCase()}/">${sym} 24h liquidation total</a>.</p>
+    <p>None of this is a signal on its own — clusters get consumed and levels flip. Treat the map as context, not a trade trigger, and rehearse the idea risk-free on the <a href="/paper-trade?coin=${sym}">${sym} paper-trading terminal</a> before you size up.</p>
     <div class="toolshow">
       <div class="ts-head">Everything free on MarginPad — no signup</div>
       <div class="ts-grid">

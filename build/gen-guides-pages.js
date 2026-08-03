@@ -213,6 +213,8 @@ ${faqLd}
     <p style="margin:10px 0 20px"><a href="${toolHref}" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;padding:11px 18px;border-radius:11px">${toolLabel} →</a></p>
     ${body}
     ${faqHtml}
+    <h2>${L.moreGuides || 'More guides'}</h2>
+    <div class="related">${GUIDES.filter(x => x.slug !== g.slug).slice(0, 6).map(x => { const xt = (lang && CASES[lang] && CASES[lang][x.slug]) ? CASES[lang][x.slug].title : x.title; return `<a href="${nav('guides/' + x.slug + '/')}">${xt}</a>`; }).join('\n      ')}</div>
     <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">${footNote}</p>
   </article>
   <footer>

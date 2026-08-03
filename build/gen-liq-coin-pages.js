@@ -7,6 +7,8 @@ const COINS = [
   ['BTC', 'Bitcoin'], ['ETH', 'Ethereum'], ['SOL', 'Solana'], ['XRP', 'XRP'],
   ['BNB', 'BNB'], ['DOGE', 'Dogecoin'], ['ADA', 'Cardano'], ['AVAX', 'Avalanche'],
   ['LINK', 'Chainlink'], ['TRX', 'TRON'], ['LTC', 'Litecoin'], ['PEPE', 'Pepe'],
+  ['DOT', 'Polkadot'], ['SUI', 'Sui'], ['WIF', 'dogwifhat'], ['HYPE', 'Hyperliquid'],
+  ['NEAR', 'NEAR Protocol'], ['APT', 'Aptos'], ['ARB', 'Arbitrum'], ['OP', 'Optimism'],
 ];
 
 const page = (sym, name) => {
@@ -98,7 +100,10 @@ const page = (sym, name) => {
 
     <h2>What ${sym} liquidations tell you</h2>
     <p>A <strong>liquidation</strong> is a leveraged position force-closed by the exchange when its margin runs out. When ${name} moves fast, over-leveraged traders get wiped in clusters — and those clusters are information: a spike in <strong>long liquidations</strong> during a dump often marks local capitulation (forced sellers exhausting), while a spike in <strong>short liquidations</strong> during a rally marks a squeeze. Watching the balance between the two on ${sym} helps you avoid entering right before a cascade — or spot the moment one has burned itself out.</p>
-    <p>If you trade ${sym} with leverage, know your liquidation price <em>before</em> you enter — the free <a href="/calculators?c=liq">liquidation calculator</a> does it in seconds (and the <a href="/calculators?c=cross">cross-margin version</a> shows how your wallet balance moves it). Better yet, rehearse the trade first on the <a href="/paper-trade?coin=${sym}">paper-trading terminal</a> at the live ${sym} price with zero risk, and keep an eye on the <a href="/calendar/">economic calendar</a> — most violent liquidation cascades happen around FOMC and CPI releases.</p>
+    <p>If you trade ${sym} with leverage, know your liquidation price <em>before</em> you enter — the free <a href="/${low}-liquidation-calculator/">${sym} liquidation calculator</a> does it in seconds (and the <a href="/calculators?c=cross">cross-margin version</a> shows how your wallet balance moves it). Better yet, rehearse the trade first on the <a href="/paper-trade?coin=${sym}">paper-trading terminal</a> at the live ${sym} price with zero risk, and keep an eye on the <a href="/calendar/">economic calendar</a> — most violent liquidation cascades happen around FOMC and CPI releases.</p>
+
+    <h2>Where ${sym} liquidations cluster</h2>
+    <p>The 24-hour total above tells you <em>how much</em> ${name} leverage was wiped; the <a href="/${low}-liquidation-map/">${sym} liquidation map</a> shows <em>where</em> — plotting every long (red) and short (green) liquidation on the price chart with a level-by-level histogram, so you can see which price bands are magnets for the next cascade. For the wider picture, the <a href="/liquidations/">all-coin liquidations hub</a> ranks ${sym} against every other market, and the <a href="/open-interest/">open-interest</a> and <a href="/funding/">funding</a> pages show whether leverage is building back up or unwinding.</p>
   </article>
   <footer>© MarginPad · <a href="/">Tools</a> · <a href="/liquidations/">Liquidations</a> · <a href="/rekt/">Rekt</a> · <a href="/blog/">Blog</a> · Not financial advice</footer>
 </div>

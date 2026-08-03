@@ -245,6 +245,10 @@ ${ld}
 
     <h2>${F(L.h2How)}</h2>
     <p>${langLink(F(L.pHow))}</p>
+${lang ? '' : `
+    <h2>Trading ${c.name} (${c.sym}) with leverage</h2>
+    <p>${c.blurb} When you trade ${c.sym} on leverage, the single most important number is your liquidation price. At 100× a roughly 1% move against you is a wipeout; at 10× it takes about a 9–10% move; at 5× closer to 18%. Because ${c.name} can move several percent in a session, traders who last keep ${c.sym} leverage modest and set a stop-loss <em>inside</em> the liquidation level rather than chasing the maximum the exchange allows. Work out exactly where a ${c.sym} position would be liquidated with the <a href="/calculators?c=liq">liquidation calculator</a>, and how funding drains margin over a multi-day hold with the <a href="/funding-fee-calculator/">funding-fee calculator</a>.</p>
+    <p>The four live numbers above tell you how crowded and leveraged the ${c.sym} market is right now — read them together. Then screen the whole market on the <a href="/screener">futures screener</a>, watch real ${c.sym} liquidations stream in on the <a href="/liquidations/">live liquidations feed</a>, and rehearse any ${c.sym} idea at the live price with zero risk on the <a href="/paper-trade?coin=${c.sym}">${c.sym} paper-trading terminal</a> before you commit real margin.</p>`}
 
     <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">${F(L.footNote)}</p>
   </article>
