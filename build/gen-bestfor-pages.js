@@ -7,6 +7,7 @@ const path = require('path');
 const { SHARED } = require('./data/bestfor-i18n');
 const { CASES: CASE_TR } = require('./data/bestfor-cases-i18n');
 const { KNOWN } = require('./data/compare-i18n');
+const { FEEC_CSS, feeWidget } = require('./data/feecalc-i18n');
 const OUT = path.join(__dirname, '..', 'dist');
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
 
@@ -159,6 +160,7 @@ ${o.hreflang}
   .cmp th{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)}
   .cmp td{font-family:'Space Mono',monospace;color:var(--ink)}.cmp td:first-child{font-family:'Bricolage Grotesque',sans-serif;font-weight:700}
   @media(max-width:600px){.rankcard{grid-template-columns:auto 1fr;gap:11px}.rk-metric,.rankcard .rk-cta{grid-column:2}.rk-metric{text-align:left;margin-top:8px}.cmp{display:block;overflow-x:auto}}
+${FEEC_CSS}
 </style>
 ${o.ld}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":${JSON.stringify(o.crumbHome)},"item":"${o.homeHref}"},{"@type":"ListItem","position":2,"name":${JSON.stringify(o.bcName)},"item":"${o.url}"}]}</script>
@@ -227,6 +229,7 @@ function casePage(c, lang) {
     <p class="lead">${intro}</p>
     <p style="color:var(--ink-faint);font-size:12.5px;margin:-6px 0 18px">${L.updated}</p>
     ${cards}
+    ${feeWidget(EX[c.rank[0]], EX[c.rank[1]], lang)}
     <h2>${L.h2cmp}</h2>
     ${table}
     <h2>${L.h2rank}</h2>
