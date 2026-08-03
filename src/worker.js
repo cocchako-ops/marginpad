@@ -9160,6 +9160,19 @@ async function handleReward(url, request, env) {
       for (const k of ['lbRoe', 'lbWr', 'lbXp', 'lbRoe2']) if (k in b && Array.isArray(b[k])) next[k] = b[k].slice(0, 5).map(x => Math.max(0, Math.round((+x || 0) * 100) / 100)); // 3-board top-5 prizes (USD)
       if ('pauseMsg' in b) next.pauseMsg = String(b.pauseMsg || '').slice(0, 300);
       await env.STATS.put('rwd:cfg', JSON.stringify(next));
+      // CONFIG AUDIT (2026-08-03, the silent $5-claim/$200-cap incident): every change to the money config
+      // pings the owner on TG with the exact diff — a test session can no longer leave prod knobs bent silently.
+      try {
+        const diffs = [];
+        for (const k of new Set([...Object.keys(cur), ...Object.keys(next)])) {
+          const a = JSON.stringify(cur[k]), z = JSON.stringify(next[k]);
+          if (a !== z) diffs.push(k + ': ' + (a === undefined ? '(unset)' : a) + ' -> ' + z);
+        }
+        if (diffs.length) {
+          try { await evPush(env, request, 'cfgchange', diffs.slice(0, 3).join('; ').slice(0, 90), '/rewards/'); } catch (e) {}
+          var NL9 = String.fromCharCode(10); await tgAdmin(env, '<b>Reward config changed</b> (' + diffs.length + ' key' + (diffs.length > 1 ? 's' : '') + ')' + NL9 + '<code>' + diffs.join(NL9).slice(0, 1500) + '</code>' + NL9 + 'If this was not you, restore it in ops Settings NOW.');
+        }
+      } catch (e) {}
       return jr({ ok: true, config: { ...full.raw, ...next, lbRoe: (next.lbRoe || full.lbRoe), lbWr: (next.lbWr || full.lbWr), lbXp: (next.lbXp || full.lbXp), lbRoe2: (next.lbRoe2 || full.lbRoe2) } });
     }
     return jr({ config: { ...full.raw, lbRoe: full.lbRoe, lbWr: full.lbWr, lbXp: full.lbXp, lbRoe2: full.lbRoe2 } });
