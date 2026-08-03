@@ -907,7 +907,40 @@
     $('exAssets').hidden=exTab!=='assets';
     $('exMarkets').hidden=exTab!=='markets';
   });});
-  $('exDep').addEventListener('click',function(){openOnrampModal();});
+  $('exDep').addEventListener('click',function(){openDepChoice();});
+  function openDepChoice(){
+    if(((PORT&&PORT.onb)||0)<1){openCardModal();return;}
+    openSim('<div class="m-h"><b>Deposit to the exchange</b><button class="m-x" type="button">&times;</button></div>'
+      +'<p class="m-p">Two ways in: buy instantly with your card, or send crypto to your personal exchange deposit address.</p>'
+      +'<button class="m-go" id="depCard" type="button">Buy USDT with card</button>'
+      +'<button class="m-go" id="depCrypto" type="button" style="margin-top:9px;background:linear-gradient(135deg,#26a17b,#1a7a5c)">Deposit crypto &middot; USDT</button>'
+      +'<div class="lesson">Crypto deposits arrive from your MarginPad Wallet (or from another trader) over the internal MarginPad Chain.</div>');
+    $('depCard').addEventListener('click',function(){openOnrampModal();});
+    $('depCrypto').addEventListener('click',function(){openCryptoDep();});
+  }
+  function openCryptoDep(){
+    openSim('<div class="m-h"><b>Deposit USDT</b><button class="m-x" type="button">&times;</button></div>'
+      +'<div class="tin-l">Asset</div>'
+      +'<div style="display:flex;align-items:center;gap:9px;background:#0c0f13;border:1px solid #26a17b66;border-radius:11px;padding:10px 13px;margin-bottom:11px"><b style="color:#2fe3ac">USDT</b><span style="color:#8b97a5;font-size:12px">Tether &middot; MarginPad Chain</span><span style="margin-left:auto;color:#8b97a5;font-size:11px">only USDT for now</span></div>'
+      +'<div class="tin-l">Your deposit address</div>'
+      +'<div id="depAddrBox" style="background:#0c0f13;border:1px dashed #3a4356;border-radius:11px;padding:12px 13px;font-family:monospace;font-size:12.5px;word-break:break-all;color:#e9e7df">loading&hellip;</div>'
+      +'<button class="m-go" id="depCopy" type="button" style="margin-top:9px" disabled>Copy address</button>'
+      +'<div class="lesson">Send USDT to this address from your <b>Wallet &rarr; Send</b> (paste it as the recipient), or share it with another trader so they can pay you straight to the exchange. Funds land on your exchange USDT balance in seconds. Send only USDT here.</div>'
+      +'<div class="m-msg" id="depMsg"></div>');
+    var addr='';
+    fetch('/api/spot/depaddr').then(function(r){return r.json();}).then(function(d){
+      var box=$('depAddrBox'),btn=$('depCopy');
+      if(d&&d.dep){addr=d.dep;box.textContent=addr;btn.disabled=false;}
+      else{box.textContent='Could not load your deposit address — try again in a moment.';}
+    }).catch(function(){var box=$('depAddrBox');if(box)box.textContent='Network error — try again.';});
+    $('depCopy').addEventListener('click',function(){
+      if(!addr)return;var msg=$('depMsg');
+      function done(){msg.className='m-msg ok';msg.textContent='Address copied — now open Wallet, tap Send and paste it.';}
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(addr).then(done).catch(function(){fallback();});}
+      else fallback();
+      function fallback(){var t=document.createElement('textarea');t.value=addr;document.body.appendChild(t);t.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(t);}
+    });
+  }
   $('exWd').addEventListener('click',function(){openWdChoice();});
 
   // ---- WALLET app ----

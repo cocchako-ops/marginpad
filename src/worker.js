@@ -8990,6 +8990,12 @@ async function handleSpot(url, request, env) {
       return jr(d, d && d.ok ? 200 : 400);
     } catch (e) { return jr({ error: 'transient' }, 503); }
   }
+  if (path === '/depaddr') { // exchange USDT deposit address (generated once; wallet -> exchange deposits go through /transfer to this address)
+    const rnd = new Uint8Array(20); crypto.getRandomValues(rnd);
+    const cand = '0x' + Array.from(rnd).map(x => x.toString(16).padStart(2, '0')).join('');
+    try { const r = await stub.fetch(new Request('https://do/depaddr', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, dep: cand }) })); return jr(await r.json()); }
+    catch (e) { return jr({ error: 'transient' }, 503); }
+  }
   if (path === '/wallet/create' && request.method === 'POST') { // sim step 3: self-custody wallet — addresses generated here; the seed phrase is shown ONCE and never stored (like real life)
     const addr = spotGenAddr();
     try { const r = await stub.fetch(new Request('https://do/walletcreate', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, addr }) })); const d = await r.json();
@@ -10754,6 +10760,8 @@ export class SpotStore {
       if (toAddr === myAddr.sol || toAddr === myAddr.evm) return this.j({ error: 'self' }, 400);
       const rec = this.rows('SELECT user_id, addr FROM spotacct WHERE addr LIKE ? LIMIT 1', '%' + toAddr + '%')[0];
       if (!rec) return this.j({ error: 'unknown_address' }, 404); // real chains send this into the void forever; the demo refuses and teaches instead
+      let recAddr = {}; try { recAddr = JSON.parse(rec.addr || '{}'); } catch (e) {}
+      const isDep = !!recAddr.dep && recAddr.dep === toAddr; // exchange DEPOSIT address -> credit the recipient's EXCHANGE USDT, not their wallet (own dep allowed: that IS the wallet->exchange deposit flow)
       if ((a.wusdt || 0) < usdC) return this.j({ error: 'insufficient', wusdtUsd: (a.wusdt || 0) / 100 }, 400);
       const g = this._gas(a);
       if (native) { if ((+g[native] || 0) < gasNat) return this.j({ error: 'no_gas', native, have: +g[native] || 0, need: gasNat }, 400); g[native] = (+g[native] || 0) - gasNat; }
@@ -10761,24 +10769,36 @@ export class SpotStore {
       const height = ((this.rows('SELECT MAX(height) h FROM spotxfer')[0] || {}).h || 0) + 1;
       const fromAddr = (native === 'SOL' ? myAddr.sol : myAddr.evm) || myAddr.sol || '';
       sql.exec('UPDATE spotacct SET wusdt=wusdt-?, gas=?, last_seen=? WHERE user_id=?', usdC, JSON.stringify(g), now, uid);
-      sql.exec('UPDATE spotacct SET wusdt=COALESCE(wusdt,0)+? WHERE user_id=?', usdC, rec.user_id);
+      sql.exec(isDep ? 'UPDATE spotacct SET usdt=COALESCE(usdt,0)+? WHERE user_id=?' : 'UPDATE spotacct SET wusdt=COALESCE(wusdt,0)+? WHERE user_id=?', usdC, rec.user_id);
       sql.exec('INSERT INTO spotxfer(hash,height,from_uid,to_uid,from_addr,to_addr,amt,net,memo,ts) VALUES(?,?,?,?,?,?,?,?,?,?)', hash, height, uid, rec.user_id, fromAddr, toAddr, usdC, String(b.net || 'solana').slice(0, 12), memo, now);
       sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'send','USDT',?,1,?,0,0,?)", uid, now, usdC / 100, usdC, JSON.stringify({ to: toAddr, hash, net: String(b.net || 'solana').slice(0, 12) }));
-      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'recv','USDT',?,1,?,0,0,?)", rec.user_id, now, usdC / 100, usdC, JSON.stringify({ from: fromAddr, hash, net: String(b.net || 'solana').slice(0, 12) }));
+      sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'recv','USDT',?,1,?,0,0,?)", rec.user_id, now, usdC / 100, usdC, JSON.stringify({ from: fromAddr, hash, net: String(b.net || 'solana').slice(0, 12), venue: isDep ? 'exchange' : 'wallet' }));
       const a2 = this.rows('SELECT wusdt,gas FROM spotacct WHERE user_id=?', uid)[0];
-      return this.j({ ok: true, hash, height, usdUsd: usdC / 100, wusdtUsd: (a2.wusdt || 0) / 100, gas: this._gas(a2) });
+      return this.j({ ok: true, hash, height, deposited: isDep, usdUsd: usdC / 100, wusdtUsd: (a2.wusdt || 0) / 100, gas: this._gas(a2) });
     }
     if (path === '/chain') { // public explorer feed: latest transfers on the internal ledger
       const rows = this.rows('SELECT hash,height,from_addr,to_addr,amt,net,memo,ts FROM spotxfer ORDER BY height DESC LIMIT 50');
       const h = ((this.rows('SELECT MAX(height) h FROM spotxfer')[0] || {}).h || 0);
       return this.j({ height: h, txs: rows.map(r => ({ hash: r.hash, height: r.height, from: r.from_addr, to: r.to_addr, usd: r.amt / 100, net: r.net, memo: r.memo || '', ts: r.ts })) });
     }
+    if (path === '/depaddr') { // exchange USDT deposit address — generated once (worker supplies the candidate), stored inside the addr JSON as .dep
+      if (!uid) return this.j({ error: 'bad' }, 400);
+      const a = this._acct(uid, now);
+      let cur = {}; try { cur = a.addr ? JSON.parse(a.addr) : {}; } catch (e) {}
+      if (!cur.dep) {
+        const cand = String(b.dep || '').slice(0, 64);
+        if (!/^0x[0-9a-f]{40}$/.test(cand)) return this.j({ error: 'bad' }, 400);
+        cur.dep = cand;
+        sql.exec('UPDATE spotacct SET addr=?, last_seen=? WHERE user_id=?', JSON.stringify(cur), now, uid);
+      }
+      return this.j({ ok: true, dep: cur.dep });
+    }
     if (path === '/walletcreate') { // step 3: self-custody wallet — worker generated the addresses (stored once, never regenerated)
       if (!uid) return this.j({ error: 'bad' }, 400);
       const a = this._acct(uid, now);
       let cur = null; try { cur = a.addr ? JSON.parse(a.addr) : null; } catch (e) {}
       if (cur && cur.sol) return this.j({ ok: true, addr: cur, existed: true });
-      const addr = { sol: String((b.addr && b.addr.sol) || '').slice(0, 64), evm: String((b.addr && b.addr.evm) || '').slice(0, 64) };
+      const addr = Object.assign({}, cur || {}, { sol: String((b.addr && b.addr.sol) || '').slice(0, 64), evm: String((b.addr && b.addr.evm) || '').slice(0, 64) }); // merge — never drop an existing .dep (exchange deposit address)
       if (!addr.sol || !addr.evm) return this.j({ error: 'bad' }, 400);
       sql.exec('UPDATE spotacct SET addr=?, onb=MAX(onb,3), last_seen=? WHERE user_id=?', JSON.stringify(addr), now, uid);
       return this.j({ ok: true, addr });

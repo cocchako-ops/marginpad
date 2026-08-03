@@ -898,11 +898,11 @@
 </section>
 
 <section class="band" style="--glow:rgba(255,215,90,.09);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Season leaderboard</h2><span class="band-s">Three boards — ROE, win rate and XP — each pays the top 5 in real USDT every 14-day season. Free to enter — just sign in and trade.</span></div>
+  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Season leaderboard</h2><span class="band-s">Four boards — Bank balance, Highest ROE, Win rate and Season XP — each pays the top 5 in real USDT every 14-day season. Free to enter — just sign in and trade.</span></div>
   <div class="lb-wrap">
     <div class="lb-card lb-info">
-      <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> 3 boards · win real USDT</div>
-      <div class="t-title" style="font-size:22px">Three boards, bigger prizes</div>
+      <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> 4 boards · win real USDT</div>
+      <div class="t-title" style="font-size:22px">Four boards, bigger prizes</div>
       <div class="t-sub">Four season boards — <b>Highest bank balance</b> (Demo Spot), <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> — each pays the <b>top 5</b> in real USDT when the 14-day season ends. Pick your game:</div>
       <div class="lbpz">
         <div class="lbpz-tabs" id="lbpzTabs">
@@ -912,6 +912,7 @@
           <button type="button" class="lbpz-tab" data-pz="xp">Season XP</button>
         </div>
         <div class="lbpz-panel" id="lbpzPanel"></div>
+        <button type="button" class="lbr-open" id="lbRulesOpen">See rules &mdash; how each board counts</button>
       </div>
       <div class="hh-wrap" id="hhWrap" hidden>
         <button type="button" class="hh-card hh-when" id="hhWhenCard" aria-haspopup="dialog">
@@ -925,7 +926,7 @@
     </div>
     <div class="lb-card">
       <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="spot">Spot bank</button><button type="button" class="lb-tab" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="wr">Win rate</button><button type="button" class="lb-tab" data-lbm="xp">Top XP</button><button type="button" class="lb-tab lb-tab-f" data-lbm="following">★ Following</button></div>
-      <div class="lb-note" id="lbNote"><b>Spot bank balance</b>, <b>Best win rate</b> and <b>Season XP</b> each pay the top 5 in real USDT every 14-day season.</div>
+      <div class="lb-note" id="lbNote">All <b>four boards</b> pay the top 5 in real USDT every 14-day season. <button type="button" class="lbr-open lbr-inline" data-lbr="1">See rules</button></div>
       <div class="lb-board" id="lbBoard" style="margin-top:10px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
     </div>
     <div class="lb-card duel-feed" style="grid-column:1/-1">
@@ -1587,5 +1588,43 @@
 }catch(e){}})();
 </script>
 
+
+<style>
+.lbr-open{margin-top:10px;background:none;border:1px solid rgba(255,215,90,.4);color:#ffd75a;border-radius:999px;padding:7px 14px;font:700 11px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.lbr-open:hover{border-color:#ffd75a;background:rgba(255,215,90,.08)}
+.lbr-inline{margin:0 0 0 6px;padding:4px 10px;font-size:10px}
+.lbrm{position:fixed;inset:0;z-index:220;background:rgba(5,6,8,.8);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:18px}
+.lbrm[hidden]{display:none}
+.lbrm-p{width:100%;max-width:540px;max-height:86vh;overflow:auto;background:#0d1016;border:1px solid #2a3346;border-radius:18px;padding:20px 22px}
+.lbrm-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.lbrm-h b{font:800 18px 'Bricolage Grotesque',sans-serif;color:#e9e7df}
+.lbrm-x{background:none;border:none;color:#8b97a5;font-size:20px;cursor:pointer;padding:4px 8px}
+.lbrm-sub{color:#8b97a5;font-size:12.5px;line-height:1.55;margin:0 0 6px}
+.lbrm-sec{border:1px solid #232a3a;border-radius:12px;padding:12px 14px;margin-top:10px}
+.lbrm-sec b.h{display:block;font-size:14px;color:#e9e7df;margin-bottom:5px}
+.lbrm-sec ul{margin:4px 0 0;padding-left:17px;color:#c7ced6;font-size:12.5px;line-height:1.6}
+.lbrm-ex{margin-top:8px;border-left:3px solid rgba(255,215,90,.55);background:rgba(255,255,255,.025);border-radius:0 9px 9px 0;padding:7px 11px;font-size:12px;color:#9aa3ad;line-height:1.55}
+.lbrm-ex b{color:#ffd75a}
+</style>
+<div class="lbrm" id="lbRulesM" hidden>
+  <div class="lbrm-p">
+    <div class="lbrm-h"><b>Season board rules</b><button class="lbrm-x" type="button" id="lbRulesX">&times;</button></div>
+    <p class="lbrm-sub">Every board runs per 14-day season and pays the top 5 in real USDT to the rewards balance. Cheating, banned accounts and excluded symbols (forex, metals, indices, stablecoins) never count.</p>
+    <div class="lbrm-sec"><b class="h">Bank balance (Demo Spot)</b><ul><li>Everyone starts Demo Spot with $10,000; the board ranks the highest bank-card balance above the start.</li><li>Money must be cashed out to your card in Demo Spot to count.</li></ul><div class="lbrm-ex"><b>Example:</b> grow $10,000 to $13,400 and move it to your card — your score is $13,400.</div></div>
+    <div class="lbrm-sec"><b class="h">Highest ROE</b><ul><li>Your best single closed paper trade of the season, by ROE (profit as % of margin).</li><li>Only trades opened AND closed this season count, filled and closed by the server.</li><li>The ROE must be physically possible for the move and leverage — fabricated numbers are dropped.</li></ul><div class="lbrm-ex"><b>Example:</b> BTC long at 20x, price +4% before you close — that trade is +80% ROE.</div></div>
+    <div class="lbrm-sec"><b class="h">Best win rate</b><ul><li>At least 20 counted trades closed this season.</li><li>A win only counts at +5% ROE or better on a real price move (at least 0.2%). Losses always count.</li><li>Copies count once: identical positions (same coin, same direction) opened together and closed together count as ONE trade.</li><li>Ranking uses a confidence-adjusted score, not the raw percentage — more games at a high win rate beat fewer games at a perfect one.</li></ul><div class="lbrm-ex"><b>Example:</b> 45-3 (93.8%) scores 89.1 and ranks ABOVE 20-0 (100%), which scores 83.9.</div><div class="lbrm-ex"><b>Example (copies):</b> 10 identical SOL shorts opened in one minute and closed together = 1 counted trade, win or lose.</div></div>
+    <div class="lbrm-sec"><b class="h">Season XP</b><ul><li>All XP earned during the season counts: trading, Academy, missions, duels, streaks.</li><li>Rewards activity, not position size.</li></ul><div class="lbrm-ex"><b>Example:</b> 30 closed trades, 12 Academy lessons and daily missions can out-score one lucky trade.</div></div>
+  </div>
+</div>
+<script>
+(function(){
+  var m=document.getElementById('lbRulesM'),x=document.getElementById('lbRulesX');
+  function open(){if(m){m.hidden=false;document.body.style.overflow='hidden';}}
+  function close(){if(m){m.hidden=true;document.body.style.overflow='';}}
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.lbr-open');if(b){open();return;}if(e.target===m)close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  if(x)x.addEventListener('click',close);
+})();
+</script>
 </body>
 </html>
