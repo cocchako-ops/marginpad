@@ -9654,6 +9654,9 @@ export default {
       const byWs = (await aeQuery(env, "SELECT blob3 ws, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY ws")) || [];
       const byCache = (await aeQuery(env, "SELECT blob4 cache, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY cache")) || [];
       const topSym = (await aeQuery(env, "SELECT blob5 sym, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY sym ORDER BY n DESC LIMIT 20")) || [];
+      const byCtxWs = (await aeQuery(env, "SELECT blob2 ctx, blob3 ws, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY ctx, ws")) || []; // ws=0 share PER call-site — the /api/price lever is picked from this cross
+      const klGap = (await aeQuery(env, "SELECT blob2 sym, SUM(_sample_interval) n FROM marginpad_events WHERE blob1='klines_gap' AND timestamp > NOW() - INTERVAL '" + hrs + "' HOUR GROUP BY sym ORDER BY n DESC LIMIT 12")) || [];
+      const sigMiss = (await aeQuery(env, "SELECT blob2 chan, SUM(_sample_interval) n FROM marginpad_events WHERE blob1='sigchan-missing' AND timestamp > NOW() - INTERVAL '" + hrs + "' HOUR GROUP BY chan")) || [];
       const tot = byCtx.reduce((a, r) => a + (+r.n || 0), 0), pct = n => tot ? Math.round(n / tot * 1000) / 10 : 0;
       const unk = byCtx.filter(r => (r.ctx || '?') === '?').reduce((a, r) => a + (+r.n || 0), 0);
       return new Response(JSON.stringify({
@@ -9661,6 +9664,9 @@ export default {
         byCtx: byCtx.map(r => ({ ctx: r.ctx || '?', n: +r.n || 0, pct: pct(+r.n || 0) })).sort((a, b) => b.n - a.n),
         byWs: byWs.map(r => ({ ws: r.ws || '?', n: +r.n || 0 })).sort((a, b) => b.n - a.n),
         byCache: byCache.map(r => ({ cache: r.cache || '?', n: +r.n || 0 })).sort((a, b) => b.n - a.n),
+        byCtxWs: (function () { const m = {}; for (const r of byCtxWs) { const c = r.ctx || '?'; m[c] = m[c] || { ctx: c, ws0: 0, ws1: 0 }; if (String(r.ws) === '1') m[c].ws1 += +r.n || 0; else m[c].ws0 += +r.n || 0; } return Object.values(m).map(x => ({ ...x, ws0Pct: (x.ws0 + x.ws1) ? Math.round(x.ws0 / (x.ws0 + x.ws1) * 1000) / 10 : 0 })).sort((a, b) => (b.ws0 + b.ws1) - (a.ws0 + a.ws1)); })(),
+        klinesGap: klGap.map(r => ({ sym: r.sym || '?', n: +r.n || 0 })),
+        sigchanMissing: sigMiss.map(r => ({ chan: r.chan || '?', n: +r.n || 0 })),
         topSym: topSym.map(r => ({ sym: r.sym || '?', n: +r.n || 0 })),
       }, null, 1), { headers: jh });
     }
