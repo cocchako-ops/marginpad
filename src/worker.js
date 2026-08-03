@@ -2050,13 +2050,32 @@ async function logSigResult(env, sym, r, st, sl0) {
   try {
     let a = []; try { a = JSON.parse(await env.STATS.get('csig:results') || '[]'); } catch (e) {}
     const rec = { sym, r, ts: Date.now() };
-    if (st) { rec.dir = st.dir === 1 ? 'long' : 'short'; rec.entry = st.entry; rec.sl = (sl0 != null ? sl0 : st.sl); rec.tp1 = st.tp1; rec.tp2 = st.tp2; rec.sigTs = (st.bar || 0) * 1000; }
+    if (st) { rec.dir = st.dir === 1 ? 'long' : 'short'; rec.entry = st.entry; rec.sl = (sl0 != null ? sl0 : st.sl); rec.tp1 = st.tp1; rec.tp2 = st.tp2; rec.sigTs = (st.bar || 0) * 1000; if (st.exitPx != null) rec.exitPx = st.exitPx; if (st.src) rec.src = st.src; if (st.sigId) rec.sigId = st.sigId; }
     a.unshift(rec); await env.STATS.put('csig:results', JSON.stringify(a.slice(0, 400)), { expirationTtl: 90 * 86400 });
+  } catch (e) {}
+}
+// Stamp the RUNNER's fate onto the newest un-finalized win record for a symbol. A 'win' alone only says TP1 was
+// hit — the position is half open after it (stop at entry). Without the final (be/tp2/flip@price) the signal's
+// realized R is NOT computable, which is how the old report could claim +1.5R per win (owner, 2026-08-03).
+async function logSigFinal(env, sym, final, exitPx, sigId) {
+  try {
+    const a = JSON.parse(await env.STATS.get('csig:results') || '[]');
+    // match by sigId when we have one — the live and confirmed machines can BOTH hold an open win on the same
+    // symbol, and a sym-only match could stamp the other machine's record. Fallback: newest un-finalized win.
+    const rec = (sigId && a.find(x => x.sigId === sigId && x.r === 'win' && !x.final))
+      || a.find(x => x.sym === sym && x.r === 'win' && x.entry != null && !x.final); // newest first (unshift order)
+    if (!rec) return;
+    rec.final = final; if (exitPx != null) rec.exitPx = exitPx; rec.finalTs = Date.now();
+    await env.STATS.put('csig:results', JSON.stringify(a), { expirationTtl: 90 * 86400 });
   } catch (e) {}
 }
 // Weekly signal performance report → posted to every signal channel (Mon ≥09:00 UTC, once). Builds trust + justifies the paid tiers.
 async function postSignalReport(env) {
   if (!env.STATS || !env.TELEGRAM_TOKEN) return;
+  // PAUSED until the owner re-enables (KV csig:report='1'). 2026-08-03: two reports went out computed from the
+  // +1.5R-per-win assumption (07-27: n=3 0/3 −1.00R; 08-03: n=14 8/14 +0.43R) — the second overstated results
+  // because the runner's fate (BE/TP2) was never tracked. Re-enable only after 30+ fully-tracked outcomes exist.
+  if ((await env.STATS.get('csig:report')) !== '1') return;
   const now = new Date();
   if (now.getUTCDay() !== 1 || now.getUTCHours() < 9) return; // Monday, from 09:00 UTC
   const wk = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString().slice(0, 10);
@@ -2064,14 +2083,41 @@ async function postSignalReport(env) {
   await env.STATS.put('csig:report:' + wk, '1', { expirationTtl: 14 * 86400 });
   let a = []; try { a = JSON.parse(await env.STATS.get('csig:results') || '[]'); } catch (e) {}
   const wkRes = a.filter(x => x.ts >= Date.now() - 7 * 86400000);
-  // n floor 30 (owner, 2026-08-03): an expectancy from n=14 is a non-datum — same rule as the perf budgets
-  // (a number without sufficient n misleads more than silence). Weeks with fewer signals send nothing.
-  if (wkRes.length < 30) return;
-  const n = wkRes.length, wins = wkRes.filter(x => x.r === 'win').length, wr = Math.round(wins / n * 100);
-  const expR = (wins * 1.5 - (n - wins)) / n; // TP1 = +1.5R, SL = −1R
-  const bySym = {}; wkRes.forEach(x => { (bySym[x.sym] = bySym[x.sym] || { w: 0, n: 0 }).n++; if (x.r === 'win') bySym[x.sym].w++; });
-  const best = Object.keys(bySym).map(s => ({ s, ...bySym[s] })).filter(x => x.n >= 2).sort((a, b) => (b.w / b.n) - (a.w / a.n) || b.n - a.n)[0];
-  const text = '📊 <b>Weekly signal report</b>\n' + DIV + '\n🎯 Signals fired: <b>' + n + '</b>\n✅ Hit target (TP1+): <b>' + wins + '</b>\n📈 Win rate: <b>' + wr + '%</b>\n💹 Expectancy: <b>' + (expR >= 0 ? '+' : '') + expR.toFixed(2) + 'R</b> / signal' + (best ? '\n⭐ Best coin: <b>' + best.s + '</b> (' + best.w + '/' + best.n + ')' : '') + '\n\n<i>1h Supertrend · TP1 = 1.5R, SL = 1R. Educational — past results ≠ future.</i>';
+  // Realized R per record from RECORDED PRICES + the posted plan (half off at TP1, stop to entry, runner to
+  // TP2/exit). The old formula assumed the FULL position exits at TP1 (+1.5R/win) — a behavior model, not a
+  // measurement — and overstated results (owner, 2026-08-03: a user-facing number must be computed from
+  // measurements). Records that can't be computed (legacy pre-price records, runners still open) are EXCLUDED
+  // and counted, never guessed.
+  const rOf = (x) => {
+    if (x.entry == null || x.sl == null) return null; // legacy record — no prices
+    const d = x.dir === 'long' ? 1 : -1, den = Math.abs(x.entry - x.sl); if (!(den > 0)) return null;
+    const R = px => d * (px - x.entry) / den;
+    if (x.r === 'loss') return -1;
+    if (x.r === 'exit') return x.exitPx != null ? R(x.exitPx) : null; // flipped out before TP1/SL — full position exits at flip
+    if (x.r === 'win') {
+      if (x.final === 'be') return 0.5 * R(x.tp1);
+      if (x.final === 'tp2') return 0.5 * R(x.tp1) + 0.5 * R(x.tp2);
+      if (x.final === 'flip') return x.exitPx != null ? 0.5 * R(x.tp1) + 0.5 * R(x.exitPx) : null;
+      return null; // runner still open — pending, not a result yet
+    }
+    return null;
+  };
+  const scored = wkRes.map(x => ({ x, R: rOf(x) }));
+  const done = scored.filter(e => e.R != null);
+  const excluded = scored.length - done.length;
+  // n floor 30 on COMPUTABLE outcomes (owner, 2026-08-03): an expectancy from n=14 is a non-datum — same rule
+  // as the perf budgets. Weeks with fewer fully-tracked outcomes send nothing.
+  if (done.length < 30) return;
+  const n = done.length, wins = done.filter(e => e.R > 0).length, wr = Math.round(wins / n * 100);
+  const avgR = done.reduce((s, e) => s + e.R, 0) / n;
+  const bySym = {}; done.forEach(e => { (bySym[e.x.sym] = bySym[e.x.sym] || { w: 0, n: 0 }).n++; if (e.R > 0) bySym[e.x.sym].w++; });
+  const best = Object.keys(bySym).map(s => ({ s, ...bySym[s] })).filter(x => x.n >= 3).sort((a, b) => (b.w / b.n) - (a.w / a.n) || b.n - a.n)[0];
+  const text = '<b>Weekly signal report</b>\n' + DIV
+    + '\nResolved signals: <b>' + n + '</b>' + (excluded ? ' (' + excluded + ' still open or pre-upgrade — excluded, not guessed)' : '')
+    + '\nProfitable: <b>' + wins + '/' + n + '</b> (' + wr + '%)'
+    + '\nAvg outcome: <b>' + (avgR >= 0 ? '+' : '') + avgR.toFixed(2) + 'R</b> per signal (n=' + n + ')'
+    + (best ? '\nBest coin: <b>' + best.s + '</b> (' + best.w + '/' + best.n + ')' : '')
+    + '\n\n<i>Computed from each signal’s recorded entry/stop/target prices, assuming the posted plan: half off at TP1, stop to entry, runner to TP2. 1h Supertrend. Past results are not future results.</i>';
   // CHART tiers only. 'free' was removed 2026-08-03: the free channel is PAUSED and gets screener signals
   // (fsig), not these 1h chart signals — a report about signals its subscribers never receive is worse than
   // silence (sent one on 08-03 before this fix). If free ever needs a report, it derives from fsig:results.
@@ -2179,12 +2225,15 @@ async function checkChartSignals(env, force) {
                 const long = ls.sigDir === 1;
                 ls.peakHi = Math.max(ls.peakHi || ls.entry, lPx); ls.peakLo = Math.min(ls.peakLo || ls.entry, lPx);
                 let m = null;
+                // live-signal outcomes now feed csig:results too (src:'live') — until 2026-08-03 the Fast live
+                // machine logged NOTHING, so the weekly stats silently covered only confirmed-tier signals
+                const lsShim = () => ({ dir: ls.sigDir, entry: ls.entry, sl: ls.sl, tp1: ls.tp1, tp2: ls.tp2, bar: Math.floor((ls.ts || 0) / 1000), src: 'live', sigId: ls.sigId });
                 if (ls.phase === 0) {
-                  if (long ? ls.peakLo <= ls.sl : ls.peakHi >= ls.sl) { m = mStop(sym, long, ls.entry, ls.sl); ls.done = true; }
-                  else if (long ? ls.peakHi >= ls.tp1 : ls.peakLo <= ls.tp1) { m = mTp1(sym, long, ls.entry, ls.tp1, ls.tp2); ls.phase = 1; ls.sl = ls.entry; ls.peakHi = ls.peakLo = ls.entry; }
+                  if (long ? ls.peakLo <= ls.sl : ls.peakHi >= ls.sl) { m = mStop(sym, long, ls.entry, ls.sl); ls.done = true; await logSigResult(env, sym, 'loss', lsShim(), ls.sl); }
+                  else if (long ? ls.peakHi >= ls.tp1 : ls.peakLo <= ls.tp1) { m = mTp1(sym, long, ls.entry, ls.tp1, ls.tp2); await logSigResult(env, sym, 'win', lsShim(), ls.sl); ls.phase = 1; ls.sl = ls.entry; ls.peakHi = ls.peakLo = ls.entry; }
                 } else {
-                  if (long ? ls.peakLo <= ls.sl : ls.peakHi >= ls.sl) { m = mBe(sym, long, ls.entry, ls.tp1); ls.done = true; }
-                  else if (long ? ls.peakHi >= ls.tp2 : ls.peakLo <= ls.tp2) { m = mTp2(sym, long, ls.entry, ls.tp2); ls.done = true; }
+                  if (long ? ls.peakLo <= ls.sl : ls.peakHi >= ls.sl) { m = mBe(sym, long, ls.entry, ls.tp1); ls.done = true; await logSigFinal(env, sym, 'be', null, ls.sigId); }
+                  else if (long ? ls.peakHi >= ls.tp2 : ls.peakLo <= ls.tp2) { m = mTp2(sym, long, ls.entry, ls.tp2); ls.done = true; await logSigFinal(env, sym, 'tp2', null, ls.sigId); }
                 }
                 if (m) { await send(chans.fast, m + (ls.sigId ? '\n🆔 <code>#' + ls.sigId + '</code>' : ''), ls.msgId, sym); report.sent.push(sym + ' fast-' + (ls.done ? 'exit' : 'tp1')); }
                 await env.STATS.put('csig:live:' + sym, JSON.stringify(ls)); // always persist so running peaks accumulate across minutes
@@ -2201,6 +2250,11 @@ async function checkChartSignals(env, force) {
                   const long = lDir === 1, e = lPx, risk = 1.5 * lAtr;
                   const tp1 = long ? e + 1.5 * risk : e - 1.5 * risk, tp2 = long ? e + 3 * risk : e - 3 * risk, sl = long ? e - risk : e + risk;
                   const sigId = sym + 'L' + (Math.floor(now / 60000) % 46656).toString(36).toUpperCase();
+                  // firing a new live signal abandons the previous tracked one — record its exit (same rule as the confirmed path)
+                  if (!ls.done && ls.tp1 != null && ls.entry != null) {
+                    if (ls.phase === 1) await logSigFinal(env, sym, 'flip', e, ls.sigId);
+                    else await logSigResult(env, sym, 'exit', { dir: ls.sigDir, entry: ls.entry, sl: ls.sl, tp1: ls.tp1, tp2: ls.tp2, bar: Math.floor((ls.ts || 0) / 1000), src: 'live', exitPx: e, sigId: ls.sigId }, ls.sl);
+                  }
                   const mid = await send(chans.fast, ticket(long, sym, e, tp1, tp2, sl, ' ⚡<i>live</i>') + '🆔 <code>#' + sigId + '</code>', 0, sym);
                   await env.STATS.put('csig:live:' + sym, JSON.stringify({ sigDir: lDir, entry: e, risk, tp1, tp2, sl, phase: 0, peakHi: e, peakLo: e, cool: now + liveCool, ts: now, done: false, msgId: mid, sigId, firedBar: curBar }));
                   try { const dk = 'csig:sentd:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + 1), { expirationTtl: 3 * 86400 }); } catch (e) {} // owner morning-brief grand total
@@ -2229,6 +2283,12 @@ async function checkChartSignals(env, force) {
         let flip = dNow !== dPrev;
         if (force && sym === 'BTC') { flip = true; state = null; }
         if (flip && (!state || state.bar !== bar || force)) {
+          // a NEW flip abandons any tracked signal on this symbol — record its exit at the flip price so the
+          // stats keep the WHOLE sample (an overwritten runner/pre-TP1 signal used to vanish without an outcome)
+          if (!force && state && !state.done && state.entry != null) {
+            if (state.phase === 1) await logSigFinal(env, sym, 'flip', entry, state.sigId);
+            else await logSigResult(env, sym, 'exit', { ...state, exitPx: entry }, state.sl);
+          }
           const long = dNow === 1;
           const risk = 1.5 * atr, tp1 = long ? entry + 1.5 * risk : entry - 1.5 * risk, tp2 = long ? entry + 3 * risk : entry - 3 * risk, sl = long ? entry - risk : entry + risk;
           const sigId = sym + (bar % 46656).toString(36).toUpperCase(); // short, stable per-signal tag e.g. BTC3F2
@@ -2299,8 +2359,8 @@ async function checkChartSignals(env, force) {
           } else {
             const post = bars.filter(b => b.time > (state.tp1bar || state.bar));
             if (post.length) { const hi = Math.max(...post.map(b => b.high)), lo = Math.min(...post.map(b => b.low));
-              if (long ? lo <= state.sl : hi >= state.sl) { msg = mBe(sym, long, state.entry, state.tp1); state.done = true; }
-              else if (long ? hi >= state.tp2 : lo <= state.tp2) { msg = mTp2(sym, long, state.entry, state.tp2); state.done = true; }
+              if (long ? lo <= state.sl : hi >= state.sl) { msg = mBe(sym, long, state.entry, state.tp1); state.done = true; await logSigFinal(env, sym, 'be', null, state.sigId); }
+              else if (long ? hi >= state.tp2 : lo <= state.tp2) { msg = mTp2(sym, long, state.entry, state.tp2); state.done = true; await logSigFinal(env, sym, 'tp2', null, state.sigId); }
             }
           }
           // Premium time-stop: no TP1 in ~4h → momentum stalled (one-time ping, threaded under the signal)
