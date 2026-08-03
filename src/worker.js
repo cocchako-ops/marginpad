@@ -3163,12 +3163,16 @@ async function archiveLiq(env) {
   try {
     const base = env.COLLECTOR_URL.replace(/\/$/, '');
     const errs = [];
-    let pulls = 0;
-    for (let back = 1; back <= 7 && pulls < 4; back++) {
+    let pulls = 0, missing = 0;
+    // Walk every day back to collector start (sqlite prunes raw rows at 30d — a bounded 7-day window would
+    // strand the oldest days forever). Cap 4 pulls/run to bound cron work; when the cap left days missing,
+    // the today-stamp is released below so the NEXT */10 run keeps catching up. Steady state = 1 pull/day.
+    for (let back = 1; back <= 400; back++) {
       const day = new Date(Date.now() - back * 86400000).toISOString().slice(0, 10);
       if (day < '2026-07-23') break; // collector (DigitalOcean) has no data before this
       const r2key = 'liq/' + day + '.csv.gz';
       if (await env.BACKUP.head(r2key)) continue; // already archived — immutable, never overwrite
+      if (pulls >= 4) { missing++; continue; }
       pulls++;
       const r = await fetch(base + '/api/v1/export?day=' + day, { headers: { 'x-export-key': exportKey }, signal: AbortSignal.timeout(30000) });
       if (!r.ok) { errs.push(day + ' http ' + r.status); continue; }
@@ -3178,6 +3182,7 @@ async function archiveLiq(env) {
       await env.STATS.put('liqarch:last', JSON.stringify({ day, bytes: buf.byteLength, rows: +(r.headers.get('x-rows') || 0), ts: Date.now() }));
     }
     if (errs.length) throw new Error('liq archive: ' + errs.join('; '));
+    if (missing > 0) await env.STATS.delete('liqarch:ran:' + today); // backfill not done — let the next */10 continue
   } catch (e) {
     try { await env.STATS.delete('liqarch:ran:' + today); } catch (e2) {}
     throw e;
