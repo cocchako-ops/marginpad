@@ -9948,6 +9948,13 @@ export default {
       return J({ coins: (await env.STATS.get('csig:coins')) || '(default majors + HYPE)', on: (await env.STATS.get('csig:on')) !== '0', adx: +(await env.STATS.get('csig:adx') || 20), volmul: +(await env.STATS.get('csig:volmul') || 1.2), htf: (await env.STATS.get('csig:htf')) !== '0', evguard: (await env.STATS.get('csig:evguard')) !== '0', channels: { fast: (await env.STATS.get('csig:chat:fast')) || '(unset)', balanced: (await env.STATS.get('csig:chat:balanced')) || '(unset)', premium: (await env.STATS.get('csig:chat:premium')) || (await env.STATS.get('csig:chat')) || '(unset)' } });
     }
     // FREE-channel (screener) signal config/state/proof. adminCookie OR ?key=ADMIN_KEY.
+    if (url.pathname === '/api/admin/claimaudit' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // 2026-08-03 broken-config forensics: claim counts per amount label from AE (read-only; remove after the incident closes)
+      const jh4 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      let byAmt = [], byHour = [];
+      try { byAmt = (await aeQuery(env, "SELECT blob3 AS amt, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='claim' AND timestamp > NOW() - INTERVAL '40' HOUR GROUP BY amt ORDER BY n DESC LIMIT 30")) || []; } catch (e) { byAmt = [{ err: String(e).slice(0, 200) }]; }
+      try { byHour = (await aeQuery(env, "SELECT toStartOfInterval(timestamp, INTERVAL '1' HOUR) AS h, blob3 AS amt, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='event' AND blob2='claim' AND timestamp > NOW() - INTERVAL '40' HOUR AND blob3 NOT IN ('+$0.10','+$0.20','+$0.15','+$0.12') GROUP BY h, amt ORDER BY h")) || []; } catch (e) {}
+      return new Response(JSON.stringify({ byAmt, byHour }), { headers: jh4 });
+    }
     if (url.pathname === '/api/admin/content' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // free-channel content + C-paper state (read-only; ?preview=1 builds the wrap text WITHOUT sending)
       const jh3 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const cfg = await opsCfg(env);
