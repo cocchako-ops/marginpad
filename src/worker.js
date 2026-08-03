@@ -9229,6 +9229,10 @@ async function handleReward(url, request, env) {
     // no on-chain wallet check at claim anymore — there is no wallet here; the BEP20 address is validated at /withdraw (full.requireOnchain still gates the payout address there if you wire it later)
   }
   if ((path === '/admin' || path === '/admin/paid' || path === '/accounts' || path === '/log' || path === '/unlock' || path === '/remove' || path === '/detail' || path === '/earnings' || path === '/note' || path === '/ban' || path === '/unban' || path === '/adjust' || path === '/lbban' || path === '/lbtop' || path === '/lbhistory' || path === '/message' || path === '/support/close' || path === '/support/new' || path === '/promo/list' || path === '/promo/review' || path === '/exsign/list' || path === '/exsign/review' || path === '/moonsign/list' || path === '/moonsign/review' || path === '/xengage/list' || path === '/xengage/review' || (path === '/support' && request.method === 'GET')) && !adminOk) return jr({ error: 'forbidden' }, 403);
+  if (path === '/dispense/adjust' && request.method === 'POST') { // admin: correct today's dispensed counter (clawback truth)
+    if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403);
+    try { const rr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/dispenseadjust', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ deltaUsd: +((b && b.deltaUsd) || 0) }) })); return jr(await rr.json()); } catch (e) { return jr({ error: 'transient' }, 503); }
+  }
   if (path === '/wd/cancel' && request.method === 'POST') { // SILENT admin cancel — refund + row deleted, user gets NOTHING (no banner/email/history entry)
     if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403);
     const idC = String((b && b.id) || ''); if (!idC) return jr({ error: 'bad' }, 400);
@@ -11320,6 +11324,16 @@ export class RewardLedger {
       sql.exec('UPDATE accounts SET balance=balance+? WHERE address=?', w.amount, owner9); // the WD moved the whole balance out at request time — put it back so support can resolve and the user can re-withdraw
       this.log('wdreject', owner9, '', '', w.amount);
       return this.j({ ok: true, acct: owner9, amountUsd: w.amount / 100, uid: w.address || '' });
+    }
+    if (path === '/dispenseadjust') { // admin: correct TODAY's dispensed counter (e.g. after a clawback the
+      // gross figure lies — 2026-08-03: $200.52 gross vs $20.22 net after the -$180.30 exploit deductions)
+      const deltaC = Math.round((+body.deltaUsd || 0) * 100);
+      if (!deltaC) return this.j({ error: 'zero_amount' }, 400);
+      sql.exec('INSERT INTO daily(day,dispensed) VALUES(?,0) ON CONFLICT(day) DO NOTHING', day);
+      sql.exec('UPDATE daily SET dispensed=MAX(0, dispensed+?) WHERE day=?', deltaC, day);
+      const row = this.rows('SELECT dispensed FROM daily WHERE day=?', day)[0];
+      this.log('dispadj', 'admin', '', '', deltaC);
+      return this.j({ ok: true, dispensedTodayUsd: (row ? row.dispensed : 0) / 100 });
     }
     if (path === '/wdcancel') { // admin: SILENT cancel of a pending withdrawal — refund the balance and DELETE the
       // row entirely, as if never requested (no rejected status, no note, nothing in the user's wd history; used
