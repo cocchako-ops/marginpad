@@ -3169,7 +3169,7 @@ async function archiveLiq(env) {
     // the today-stamp is released below so the NEXT */10 run keeps catching up. Steady state = 1 pull/day.
     for (let back = 1; back <= 400; back++) {
       const day = new Date(Date.now() - back * 86400000).toISOString().slice(0, 10);
-      if (day < '2026-07-23') break; // collector (DigitalOcean) has no data before this
+      if (day < '2026-07-24') break; // first FULL collector day (07-23 holds a single stray row — measured, not worth a file; archiving it would trip the min-size check forever)
       const r2key = 'liq/' + day + '.csv.gz';
       if (await env.BACKUP.head(r2key)) continue; // already archived — immutable, never overwrite
       if (pulls >= 4) { missing++; continue; }
