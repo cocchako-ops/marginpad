@@ -80,6 +80,32 @@ export function createApiServer({ storage, getStatus, bus }) {
     catch (e) { log.error('feed failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
+  // Full-day raw dump for the R2 archive (worker cron, 1 call/day). Gated by EXPORT_KEY (droplet .env —
+  // NOT in the repo, repo is public). Gzip CSV so a ~65k-row day ships as ~1MB. Completed UTC days only:
+  // the archive must be immutable — a partial "today" would get overwritten logic on the worker side instead.
+  app.get('/api/v1/export', async (req, res) => {
+    const key = req.headers['x-export-key'] || '';
+    if (!process.env.EXPORT_KEY || key !== process.env.EXPORT_KEY) return res.status(403).json({ error: 'forbidden' });
+    const day = String(req.query.day || '');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return res.status(400).json({ error: 'bad_day' });
+    const d0 = Date.parse(day + 'T00:00:00Z');
+    if (!isFinite(d0) || d0 + 86400000 > Date.now()) return res.status(400).json({ error: 'day_not_complete' });
+    try {
+      const rows = storage.exportDay(d0, d0 + 86400000);
+      let csv = 'ts,exchange,symbol,side,price,qty,notional\n';
+      const chunks = [];
+      for (const r of rows) {
+        csv += r.ts + ',' + r.exchange + ',' + r.symbol + ',' + r.side + ',' + r.price + ',' + r.qty + ',' + r.notional + '\n';
+        if (csv.length > 1 << 20) { chunks.push(csv); csv = ''; } // bound peak string size
+      }
+      chunks.push(csv);
+      const { gzipSync } = await import('node:zlib');
+      const gz = gzipSync(Buffer.concat(chunks.map(c => Buffer.from(c))));
+      res.set({ 'Content-Type': 'application/gzip', 'Cache-Control': 'no-store', 'x-rows': String(rows.length) });
+      res.send(gz);
+    } catch (e) { log.error('export failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
+  });
+
   // aggregated liquidation market pulse (heatmap page bottom section): 1h/4h/12h/24h totals + per-coin + per-exchange
   app.get('/api/v1/pulse', (req, res) => {
     try {

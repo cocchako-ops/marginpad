@@ -160,8 +160,14 @@ export function createSqliteStorage(path) {
     return db.prepare("SELECT symbol s, SUM(notional) liq, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) lng, COUNT(*) n FROM liquidations WHERE ts>=? GROUP BY symbol ORDER BY liq DESC LIMIT 300").all(since);
   }
 
+  // Full raw dump of one UTC day — feeds the R2 archive (worker cron pulls this once/day).
+  // Raw rows are pruned after retentionDays; the archive is how history outlives that AND the droplet.
+  function exportDay(d0, d1) { ensure();
+    return db.prepare('SELECT ts,exchange,symbol,side,price,qty,notional FROM liquidations WHERE ts>=? AND ts<? ORDER BY ts').all(d0, d1);
+  }
+
   return { migrate, insert, aggregateNew, histogram, live, feed, prune, stats,
     insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi,
-    saveOiSnap, oi24h, liqBySymbol, pulse,
+    saveOiSnap, oi24h, liqBySymbol, pulse, exportDay,
     close: () => db.close() };
 }
