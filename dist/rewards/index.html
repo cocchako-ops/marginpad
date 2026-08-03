@@ -20,7 +20,7 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Free USDT Faucet — Welcome Bonus + Claim Every 5 Minutes | MarginPad</title>
-<meta name="description" content="Earn free USDT on MarginPad: sign in with just your email (no password), get an instant welcome bonus, claim every 5 minutes and complete daily missions. Withdraw from $5 to your Bybit UID. No deposit." />
+<meta name="description" content="Earn free USDT on MarginPad: sign in with just your email (no password), get an instant welcome bonus, claim every 5 minutes and complete daily missions. Withdraw from $5 to your Bybit UID or Moon account. No deposit." />
 <meta name="keywords" content="usdt faucet, free usdt, crypto faucet, bep20 faucet, bnb chain faucet, claim free usdt, marginpad faucet" />
 <link rel="canonical" href="https://marginpad.io/rewards/" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
@@ -36,8 +36,8 @@
 <meta name="twitter:title" content="Free USDT — Welcome Bonus + Claim Every 5 Minutes | MarginPad" />
 <meta name="twitter:description" content="Sign in with your email, get a welcome bonus, claim free USDT every 5 minutes. Withdraw from $5. No deposit." />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad USDT Faucet","url":"https://marginpad.io/rewards/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Earn free USDT on MarginPad: sign in with your email, get an instant welcome bonus, claim every 5 minutes and complete daily missions. Withdraw from $5 to your Bybit UID — no deposit."}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I claim free USDT?","acceptedAnswer":{"@type":"Answer","text":"Sign in with just your email (a 6-digit code, no password), collect your instant welcome bonus and tap Claim — you can claim free USDT every 5 minutes. No deposit required."}},{"@type":"Question","name":"Is the MarginPad faucet really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. There is no deposit and nothing to pay. You sign in with an email address; a Bybit UID is only needed when you withdraw."}},{"@type":"Question","name":"What is the minimum withdrawal?","acceptedAnswer":{"@type":"Answer","text":"Once your balance reaches $5 you can withdraw your USDT to your Bybit account by UID."}},{"@type":"Question","name":"How else can I earn besides claiming?","acceptedAnswer":{"@type":"Answer","text":"Daily missions pay extra USDT for using the tools (paper trades, screener, calendar), promo posts on X earn a bonus per approved post, and the 14-day paper-trading leaderboard pays real USDT prizes to the top traders."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad USDT Faucet","url":"https://marginpad.io/rewards/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Earn free USDT on MarginPad: sign in with your email, get an instant welcome bonus, claim every 5 minutes and complete daily missions. Withdraw from $5 to your Bybit UID or Moon account — no deposit."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I claim free USDT?","acceptedAnswer":{"@type":"Answer","text":"Sign in with just your email (a 6-digit code, no password), collect your instant welcome bonus and tap Claim — you can claim free USDT every 5 minutes. No deposit required."}},{"@type":"Question","name":"Is the MarginPad faucet really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. There is no deposit and nothing to pay. You sign in with an email address; a Bybit UID is only needed when you withdraw."}},{"@type":"Question","name":"What is the minimum withdrawal?","acceptedAnswer":{"@type":"Answer","text":"Once your balance reaches $5 you can withdraw your USDT to your Bybit account by UID, or to your Moon account by username."}},{"@type":"Question","name":"How else can I earn besides claiming?","acceptedAnswer":{"@type":"Answer","text":"Daily missions pay extra USDT for using the tools (paper trades, screener, calendar), promo posts on X earn a bonus per approved post, and the 14-day paper-trading leaderboard pays real USDT prizes to the top traders."}}]}</script>
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
@@ -293,7 +293,7 @@
   <div class="rwd-hero">
     <span class="pill">● Free USDT · No deposit</span>
     <h1>Stack <span>free USDT</span> every 5 minutes.</h1>
-    <p class="sub">Use the site, complete missions, stack USDT — then cash out to your Bybit account. Your daily rewards hub.</p>
+    <p class="sub">Use the site, complete missions, stack USDT — then cash out to your Bybit or Moon account. Your daily rewards hub.</p>
   </div>
 
   <div class="rwd-cards">
@@ -301,7 +301,7 @@
   <div class="card" id="authCard">
     <div id="authGate">
       <div id="welcomeHook" hidden></div>
-      <p class="note" style="text-align:left;margin:0 0 12px">Sign in with just your email — no password, no deposit. Your balance follows you across devices; you only add your Bybit UID when you cash out.</p>
+      <p class="note" style="text-align:left;margin:0 0 12px">Sign in with just your email — no password, no deposit. Your balance follows you across devices; you only add your Bybit UID or Moon username when you cash out.</p>
       <button class="btn btn-lime" id="signinBtn" type="button" data-auth-open style="width:100%">Sign in to claim free USDT</button>
     </div>
   </div>
@@ -315,8 +315,13 @@
       <button class="btn btn-ghost" id="wdBtn" type="button" disabled>Withdraw</button>
     </div>
     <div id="wdAddrRow" hidden>
-      <div class="lbl" style="margin:12px 0 6px">Withdraw to your Bybit UID</div>
-      <div class="note" style="text-align:left;margin:0 0 9px;border:1px solid rgba(255,215,90,.45);background:rgba(255,215,90,.08);border-radius:9px;padding:10px 12px;line-height:1.55;color:#eef1f5;font-size:12.5px">⚠️ Payouts are sent to your <b style="color:#ffd75a">Bybit</b> account. You must have registered on Bybit through our link — <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="noopener" style="color:#ffd75a;font-weight:700">create your Bybit account here</a>.<br>Already have a Bybit account and can't open a new one via our link? <a href="https://marginpad.io/rewards/#" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());" style="color:#ffd75a;font-weight:700">Contact support</a> and we'll sort it out.</div>
+      <div class="lbl" style="margin:12px 0 6px">Where should we send it?</div>
+      <div style="display:flex;gap:8px;margin:0 0 10px">
+        <button type="button" id="wdmBybit" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid rgba(194,246,74,.55);background:rgba(194,246,74,.10);color:#d6f78a;font-weight:700;font-size:13px;cursor:pointer">Bybit UID</button>
+        <button type="button" id="wdmMoon" style="flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer"><img src="/assets/moon.png" alt="" width="16" height="16" style="border-radius:4px;background:#fff;padding:1px">Moon</button>
+      </div>
+      <div class="note" id="wdNoteBybit" style="text-align:left;margin:0 0 9px;border:1px solid rgba(255,215,90,.45);background:rgba(255,215,90,.08);border-radius:9px;padding:10px 12px;line-height:1.55;color:#eef1f5;font-size:12.5px">⚠️ Payouts are sent to your <b style="color:#ffd75a">Bybit</b> account. You must have registered on Bybit through our link — <a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="noopener" style="color:#ffd75a;font-weight:700">create your Bybit account here</a>.<br>Already have a Bybit account and can't open a new one via our link? <a href="https://marginpad.io/rewards/#" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());" style="color:#ffd75a;font-weight:700">Contact support</a> and we'll sort it out.</div>
+      <div class="note" id="wdNoteMoon" hidden style="text-align:left;margin:0 0 9px;border:1px solid rgba(127,214,255,.4);background:rgba(127,214,255,.07);border-radius:9px;padding:10px 12px;line-height:1.55;color:#eef1f5;font-size:12.5px">USDT is sent to your <b style="color:#7fd6ff">Moon</b> account by username. No Moon account yet? <a href="https://moon.com/?c=moonkickstart" target="_blank" rel="noopener" style="color:#7fd6ff;font-weight:700">Create one here</a> &mdash; it takes a minute (and pays a $1 bonus, see the Moon card below).</div>
       <div class="addr-row">
         <input id="wdAddr" type="text" inputmode="numeric" placeholder="Your Bybit UID (numbers only)" autocomplete="off" spellcheck="false" />
         <button class="btn btn-lime" id="wdConfirm" type="button">Send</button>
@@ -334,6 +339,20 @@
   <div class="card" id="wdHistCard" hidden>
     <div class="lbl">Withdrawal history</div>
     <div id="wdHistList"></div>
+  </div>
+
+  <div class="card" id="moonCard">
+    <div class="lbl" style="display:flex;align-items:center;gap:9px"><img src="/assets/moon.png" alt="Moon" width="22" height="22" style="border-radius:6px;background:#fff;padding:2px">Moon sign-up bonus <span style="margin-left:auto;color:#c2f64a;font-weight:800;text-shadow:0 0 12px rgba(194,246,74,.65)">+$<span id="moonAmt">1</span></span></div>
+    <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55">Create a <b>Moon</b> account through our link, then enter your Moon username below. After a quick manual check we add <b style="color:#c2f64a">$<span id="moonAmt2">1</span></b> to your MarginPad balance. One bonus per account.</p>
+    <a class="btn btn-lime" id="moonRefBtn" href="https://moon.com/?c=moonkickstart" target="_blank" rel="noopener sponsored" style="width:100%;display:block;text-align:center;text-decoration:none;margin-bottom:10px">1) Create your Moon account</a>
+    <div id="moonForm">
+      <div class="addr-row">
+        <input id="moonUser" type="text" placeholder="2) Your Moon username" autocomplete="off" spellcheck="false" />
+        <button class="btn btn-ghost" id="moonSubmit" type="button">Submit</button>
+      </div>
+    </div>
+    <div class="msg" id="moonMsg"></div>
+    <div id="moonStatus" style="margin-top:8px"></div>
   </div>
 
   <div class="card" id="lvlCard">
@@ -461,9 +480,52 @@
   var wdAddrRow=document.getElementById('wdAddrRow'),wdAddr=document.getElementById('wdAddr'),wdConfirm=document.getElementById('wdConfirm');
   function setText(cls,v){var els=document.querySelectorAll('.'+cls);for(var i=0;i<els.length;i++)els[i].textContent=v;}
   function fmtShort(n){return (+n).toFixed(2).replace(/\.00$/,'').replace(/(\.\d)0$/,'$1');}
-  function applyCfg(j){if(j.perDay!=null){perDay=j.perDay;setText('tPer',fmtShort(perDay));}if(j.amount!=null){amount=j.amount;setText('tAmt',(+amount).toFixed(2));}if(j.minWd!=null){minWd=j.minWd;setText('tMin',fmtShort(minWd));}if(j.welcomeAmt!=null){welcomeAmt=+j.welcomeAmt;renderWelcomeHook();}}
+  function applyCfg(j){if(j.perDay!=null){perDay=j.perDay;setText('tPer',fmtShort(perDay));}if(j.amount!=null){amount=j.amount;setText('tAmt',(+amount).toFixed(2));}if(j.minWd!=null){minWd=j.minWd;setText('tMin',fmtShort(minWd));}if(j.welcomeAmt!=null){welcomeAmt=+j.welcomeAmt;renderWelcomeHook();}
+    var mc=document.getElementById('moonCard');
+    if(mc&&j.moonEnabled===false)mc.hidden=true;
+    if(j.moonUsd!=null){var a1=document.getElementById('moonAmt'),a2=document.getElementById('moonAmt2');var v=fmtShort(j.moonUsd);if(a1)a1.textContent=v;if(a2)a2.textContent=v;}}
+  function moonMsg(t,kind){var el=document.getElementById('moonMsg');if(!el)return;el.innerHTML=t;el.className='msg show '+(kind||'');}
+  function loadMoon(){var st=document.getElementById('moonStatus'),form=document.getElementById('moonForm');if(!st)return;
+    if(!signedIn){st.innerHTML='';return;}
+    fetch('/api/reward/moonsign/mine').then(function(r){return r.json();}).then(function(d){
+      var rows=(d&&d.signups)||[];if(!rows.length){st.innerHTML='';if(form)form.style.display='';return;}
+      var x=rows[0];var chip;
+      if(x.status==='approved')chip='<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(194,246,74,.5);color:#c2f64a;font-size:12px;font-weight:700">+$'+(+x.amount||1).toFixed(2)+' PAID ✓</span>';
+      else if(x.status==='rejected')chip='<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,98,88,.5);color:#ff8a80;font-size:12px;font-weight:700">REJECTED</span>'+(x.note?' <span class="note" style="font-size:12px">'+String(x.note).replace(/</g,'&lt;')+'</span>':'');
+      else chip='<span style="display:inline-block;padding:5px 11px;border-radius:999px;border:1px solid rgba(255,215,90,.5);color:#ffd75a;font-size:12px;font-weight:700">IN REVIEW</span>';
+      st.innerHTML='<span class="note" style="font-size:12px">Moon username <b>'+String(x.uid).replace(/</g,'&lt;')+'</b> &middot; </span>'+chip;
+      if(form)form.style.display=(x.status==='rejected')?'':'none';
+    }).catch(function(){});}
+  (function(){var sb=document.getElementById('moonSubmit'),inp=document.getElementById('moonUser');
+    if(!sb)return;
+    sb.addEventListener('click',function(){
+      if(!signedIn){moonMsg('Sign in first (top of the page) — the bonus lands on your MarginPad balance.','err');return;}
+      var v=(inp.value||'').trim();
+      if(!/^[A-Za-z0-9_.-]{3,32}$/.test(v)){inp.classList.add('invalid');moonMsg('Enter your Moon username (3-32 letters/numbers).','err');return;}
+      inp.classList.remove('invalid');sb.disabled=true;moonMsg('Submitting…','');
+      fetch('/api/reward/moonsign/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({uid:v})}).then(function(r){return r.json();}).then(function(j){
+        sb.disabled=false;
+        if(j.ok){moonMsg('Submitted ✓ — we check every sign-up manually; the bonus lands on your balance once approved.','ok');loadMoon();}
+        else if(j.error==='already_submitted')moonMsg('You already submitted a Moon sign-up on this account.','err');
+        else if(j.error==='uid_taken')moonMsg('That Moon username was already claimed by another account.','err');
+        else if(j.error==='bad_uid')moonMsg('Invalid Moon username.','err');
+        else if(j.error==='login_required')moonMsg('Sign in first (top of the page).','err');
+        else moonMsg('Could not submit right now — try again in a minute.','err');
+      }).catch(function(){sb.disabled=false;moonMsg('Network error — try again.','err');});
+    });
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter')sb.click();});
+  })();
   function renderWelcomeHook(){var wh=document.getElementById('welcomeHook');if(!wh)return;if(welcomeAmt>0){wh.hidden=false;wh.innerHTML='<div style="background:linear-gradient(180deg,rgba(194,246,74,.13),rgba(194,246,74,.04));border:1px solid rgba(194,246,74,.45);border-radius:12px;padding:13px 15px;margin-bottom:12px;text-align:left"><div style="font-size:16px;font-weight:800;color:#d6f78a">Get free USDT, instantly</div><div style="font-size:12.5px;color:#9aa3ad;margin-top:3px;line-height:1.45">Sign in and we drop a USD welcome bonus straight into your balance — then keep claiming free USDT every few minutes.</div></div>';var sb=document.getElementById('signinBtn');if(sb)sb.textContent='Sign in & claim free USDT';}else{wh.hidden=true;}}
-  function valid(a){return /^[0-9]{5,15}$/.test(a);}
+  var wdMethod='bybit';
+  function valid(a){return wdMethod==='moon' ? /^[A-Za-z0-9_.-]{3,32}$/.test(a) : /^[0-9]{5,15}$/.test(a);}
+  function setWdMethod(m){wdMethod=m;var bb=document.getElementById('wdmBybit'),mb=document.getElementById('wdmMoon'),nb=document.getElementById('wdNoteBybit'),nm=document.getElementById('wdNoteMoon');
+    var on='flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid rgba(194,246,74,.55);background:rgba(194,246,74,.10);color:#d6f78a;font-weight:700;font-size:13px;cursor:pointer';
+    var off='flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:#c7ced6;font-weight:700;font-size:13px;cursor:pointer';
+    if(bb)bb.style.cssText=(m==='bybit'?on:off); if(mb)mb.style.cssText=(m==='moon'?on:off);
+    if(nb)nb.hidden=(m!=='bybit'); if(nm)nm.hidden=(m!=='moon');
+    if(wdAddr){wdAddr.classList.remove('invalid');wdAddr.setAttribute('inputmode',m==='moon'?'text':'numeric');wdAddr.placeholder=(m==='moon'?'Your Moon username':'Your Bybit UID (numbers only)');}
+  }
+  (function(){var bb=document.getElementById('wdmBybit'),mb=document.getElementById('wdmMoon');if(bb)bb.addEventListener('click',function(){setWdMethod('bybit');});if(mb)mb.addEventListener('click',function(){setWdMethod('moon');});})();
   function msg(t,kind){msgEl.innerHTML=t;msgEl.className='msg show '+(kind||'');}
   function clearMsg(){msgEl.className='msg';}
   function fmt(n){return (+n).toFixed(2);}
@@ -503,7 +565,7 @@
 
   function loadWdHistory(){if(!signedIn)return;fetch('/api/reward/wdhistory').then(function(r){return r.json();}).then(function(d){var el=document.getElementById('wdHistList'),card=document.getElementById('wdHistCard');if(!el||!card)return;var w=(d&&d.withdrawals)||[];if(!w.length){card.hidden=true;return;}card.hidden=false;el.innerHTML=w.map(function(x){var paid=x.status==='paid',rej=x.status==='rejected';var txid=(x.txid||'').replace(/[^0-9a-fA-Fx]/g,'');var tx=(paid&&txid)?'<a href="https://bscscan.com/tx/'+txid+'" target="_blank" rel="noopener" class="clink">view tx</a>':'';return '<div class="wdh-row"><span class="wdh-amt">$'+(+x.amountUsd||0).toFixed(2)+'</span><span class="wdh-st '+(paid?'ok':'')+'"'+(rej?' style="color:#ff6258;border-color:rgba(255,98,88,.4)"':'')+'>'+(paid?'Paid':rej?'Rejected — refunded':'Pending')+'</span><span class="wdh-meta">'+new Date(x.ts).toLocaleDateString()+(tx?' · '+tx:'')+(rej&&x.note?' · '+String(x.note).replace(/</g,'&lt;'):'')+'</span></div>';}).join('');}).catch(function(){});}
   function refresh(){ if(!signedIn){dash.hidden=true;return;} dash.hidden=false;
-    fetch('/api/reward/account').then(function(r){return r.json();}).then(render).catch(function(){}); loadWdHistory(); }
+    fetch('/api/reward/account').then(function(r){return r.json();}).then(render).catch(function(){}); loadWdHistory(); loadMoon(); }
 
   // ---- auth gate: claiming requires a signed-in account (not a wallet) ----
   function updateGate(){
@@ -567,20 +629,21 @@
   wdBtn.addEventListener('click',function(){
     if(wdBtn.disabled)return;
     wdAddrRow.hidden=!wdAddrRow.hidden;
-    if(!wdAddrRow.hidden){ if(payoutAddr)wdAddr.value=payoutAddr; setTimeout(function(){wdAddr.focus();},30); }
+    if(!wdAddrRow.hidden){ if(payoutAddr){ if(payoutAddr.indexOf('moon:')===0){setWdMethod('moon');wdAddr.value=payoutAddr.slice(5);}else{setWdMethod('bybit');wdAddr.value=payoutAddr;} } setTimeout(function(){wdAddr.focus();},30); }
   });
   if(wdAddr){ wdAddr.addEventListener('input',function(){var v=wdAddr.value.trim();if(v&&!valid(v))wdAddr.classList.add('invalid');else wdAddr.classList.remove('invalid');});
     wdAddr.addEventListener('keydown',function(e){if(e.key==='Enter')doWithdraw();}); }
   if(wdConfirm)wdConfirm.addEventListener('click',doWithdraw);
   function doWithdraw(){
     var a=(wdAddr.value||'').trim();
-    if(!valid(a)){ wdAddr.classList.add('invalid'); msg('Enter your Bybit UID (numbers only).','err'); return; }
+    if(!valid(a)){ wdAddr.classList.add('invalid'); msg(wdMethod==='moon'?'Enter your Moon username (3-32 letters/numbers).':'Enter your Bybit UID (numbers only).','err'); return; }
+    if(wdMethod==='moon')a='moon:'+a.toLowerCase();
     wdConfirm.disabled=true; clearMsg();
     fetch('/api/reward/withdraw',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a})})
       .then(function(r){return r.json();}).then(function(j){ wdConfirm.disabled=false;
-        if(j.ok){ payoutAddr=a; try{localStorage.setItem(KEY,a);}catch(e){} wdAddrRow.hidden=true; msg('Withdrawal of $'+fmt(j.amount)+' requested ✓ — withdrawals are NOT automatic: yours is queued, reviewed and sent to your Bybit account (by UID) manually, and will be processed soon. Balance resets to $0.','ok'); refresh(); }
+        if(j.ok){ payoutAddr=a; try{localStorage.setItem(KEY,a);}catch(e){} wdAddrRow.hidden=true; msg('Withdrawal of $'+fmt(j.amount)+' requested ✓ — withdrawals are NOT automatic: yours is queued, reviewed and sent to your '+(wdMethod==='moon'?'Moon account (by username)':'Bybit account (by UID)')+' manually, and will be processed soon. Balance resets to $0.','ok'); refresh(); }
         else if(j.error==='login_required'){ signedIn=false; updateGate(); if(window.mpAuth)window.mpAuth.open(); msg('Please sign in.','err'); }
-        else if(j.error==='bad_address'){ wdAddr.classList.add('invalid'); msg('Invalid Bybit UID (numbers only).','err'); }
+        else if(j.error==='bad_address'){ wdAddr.classList.add('invalid'); msg(wdMethod==='moon'?'Invalid Moon username.':'Invalid Bybit UID (numbers only).','err'); }
         else if(j.error==='min_not_met') msg('You need at least $'+fmt(minWd)+' to withdraw.','err');
         else if(j.error==='wd_paused'||j.error==='paused') msg('Withdrawals are paused right now — check back soon.','err');
         else if(j.error==='restricted') msg('Withdrawals are restricted on your account. If you believe this is a mistake, contact support (<a href="https://marginpad.io/rewards/#" style="color:inherit;font-weight:700;text-decoration:underline" onclick="return !(window.__mpOpenSupport&&window.__mpOpenSupport());">here</a>).','err');

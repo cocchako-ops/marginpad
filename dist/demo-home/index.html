@@ -534,17 +534,20 @@
   .lbx-who{font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .lbx-roe{font-family:'Space Mono',monospace;font-weight:700;color:var(--grn);font-size:12.5px;font-variant-numeric:tabular-nums;}
 
-  /* ---------- Go live: one BIG "coming soon" slot + compact exchange tiles ---------- */
+  /* ---------- Go live: one BIG Moon partner slot + compact exchange tiles ---------- */
   .exch-grid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:auto;gap:12px;}
-  .exbig{grid-column:1/-1;grid-row:auto;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:12px;padding:28px;border-radius:20px;overflow:hidden;
-    background:linear-gradient(160deg,rgba(194,246,74,.05),rgba(255,255,255,.01)),var(--panel);border:1.5px dashed rgba(194,246,74,.35);transition:border-color .2s ease,box-shadow .2s ease;}
+  .exbig{grid-column:1/-1;grid-row:auto;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:12px;padding:28px;border-radius:20px;overflow:hidden;text-decoration:none;color:var(--ink);cursor:pointer;
+    background:linear-gradient(160deg,rgba(194,246,74,.05),rgba(255,255,255,.01)),var(--panel);border:1.5px solid rgba(194,246,74,.35);transition:border-color .2s ease,box-shadow .2s ease;}
   .exbig:hover{border-color:rgba(194,246,74,.6);box-shadow:0 0 44px -18px rgba(194,246,74,.5);}
-  .exbig::after{content:'SOON';position:absolute;right:-14px;bottom:-30px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:104px;letter-spacing:-6px;color:rgba(194,246,74,.06);pointer-events:none;}
+  .exbig::after{content:'MOON';position:absolute;right:-14px;bottom:-30px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:104px;letter-spacing:-6px;color:rgba(194,246,74,.06);pointer-events:none;}
   .exbig-tag{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);border:1px solid rgba(194,246,74,.4);border-radius:999px;padding:6px 12px;}
   .exbig-tag i{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 9px var(--lime);animation:exsoon 1.6s ease-in-out infinite;}
   @keyframes exsoon{0%,100%{opacity:1}50%{opacity:.3}}
   .exbig-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(22px,2vw,30px);letter-spacing:-.02em;line-height:1.12;color:var(--ink);}
-  .exbig-s{color:var(--dim);font-size:14px;line-height:1.6;max-width:340px;}
+  .exbig-s{color:var(--dim);font-size:14px;line-height:1.6;max-width:420px;}
+  .exbig-logo{width:44px;height:44px;border-radius:12px;background:#fff;padding:6px;box-shadow:0 0 24px -8px rgba(194,246,74,.55);}
+  .exbig-cta{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#0a0b0d;background:var(--lime);border-radius:999px;padding:10px 18px;box-shadow:0 0 26px -8px rgba(194,246,74,.7);}
+  .exbig:hover .exbig-cta{box-shadow:0 0 34px -6px rgba(194,246,74,.9);}
   .exs{--exc:#f7a600;position:relative;display:flex;flex-direction:column;align-items:stretch;gap:9px;padding:13px 15px;border-radius:15px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.005)),var(--panel);border:1px solid var(--line);text-decoration:none;color:var(--ink);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;min-width:0;}
   .exs-top{display:flex;align-items:center;gap:11px;min-width:0;}
   .exs-perk{font-family:'Familjen Grotesk',sans-serif;font-size:11.5px;line-height:1.4;color:var(--dim);}
@@ -872,11 +875,13 @@
 <section class="band" style="--glow:rgba(247,166,0,.09);--bandc:#f7a600">
   <div class="band-head"><span class="band-idx">03</span><h2 class="band-t">Go live</h2><span class="band-s">When paper profits get boring — trade for real. Opening an account through these links supports MarginPad.</span></div>
   <div class="exch-grid">
-    <div class="exbig">
-      <span class="exbig-tag"><i></i>Coming soon</span>
-      <div class="exbig-t">Something big<br>launches here.</div>
-      <div class="exbig-s">A brand-new trading platform is about to go live — and MarginPad will be its first partner. This spot is reserved. Watch it.</div>
-    </div>
+    <a class="exbig" href="https://moon.com/?c=moonkickstart" target="_blank" rel="noopener sponsored" data-ex="Moon">
+      <span class="exbig-tag"><i></i>New partner &middot; live</span>
+      <img class="exbig-logo" src="/assets/moon.png" alt="Moon" width="44" height="44" loading="lazy">
+      <div class="exbig-t">Moon &mdash; spend your crypto<br>like cash.</div>
+      <div class="exbig-s">Our newest partner: create a Moon account through this link and pay with crypto anywhere. MarginPad members can even cash out rewards straight to their Moon account.</div>
+      <span class="exbig-cta">Create a Moon account &rarr;</span>
+    </a>
     <a class="exs" href="https://www.bybit.com/trade/usdt/BTCUSDT?ref=LZKBERJ" target="_blank" rel="noopener sponsored" data-ex="Bybit" style="--exc:#f7a600"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/521.png" alt="Bybit" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bybit</span><span class="exs-tag">Most popular</span><span class="exs-go">→</span></span><span class="exs-perk">Trading-fee discount + new-user welcome bonus</span></a>
     <a class="exs" href="https://www.binance.com/en/futures/BTCUSDT?ref=MAOZM9DS" target="_blank" rel="noopener sponsored" data-ex="Binance" style="--exc:#f0b90b"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/270.png" alt="Binance" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Binance</span><span class="exs-tag">Biggest volume</span><span class="exs-go">→</span></span><span class="exs-perk">Up to 20% off trading fees for life</span></a>
     <a class="exs" href="https://www.okx.com/trade-swap/btc-usdt-swap" target="_blank" rel="noopener sponsored" data-ex="OKX" style="--exc:#cfd3d8"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/294.png" alt="OKX" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='O'"></span><span class="exs-n">OKX</span><span class="exs-tag">Pro tools</span><span class="exs-go">→</span></span><span class="exs-perk">Fee rebate + sign-up reward in the app</span></a>
