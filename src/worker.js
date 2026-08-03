@@ -438,8 +438,9 @@ async function handleCgCoin(url, env) {
   if (!sym) return jr({ error: 'no_symbol' }, 400);
   if (!env.COINGLASS_API_KEY) return jr({ error: 'not_configured' }, 503);
   const ck = new Request('https://marginpad.io/__cg2_' + sym);
-  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  try { const hit = await caches.default.match(ck); if (hit) { try { if (env.AE) env.AE.writeDataPoint({ indexes: ['cgcoin'], blobs: ['cgcoin', 'hit', sym], doubles: [1] }); } catch (e2) {} return hit; } } catch (e) {}
   const data = await cgCoinAgg(sym, env);
+  try { if (env.AE) env.AE.writeDataPoint({ indexes: ['cgcoin'], blobs: ['cgcoin', data ? 'miss' : 'err', sym], doubles: [1] }); } catch (e) {} // SSR made this endpoint load-bearing — baseline error-rate lives in AE (plan fix #2)
   const out = data || { symbol: sym, error: 'no_data' };
   const resp = jr(out, 200, out.error ? 'no-store' : 'public, max-age=60');
   if (!out.error) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
@@ -581,6 +582,233 @@ async function handleCgBoard(url, env) {
   return resp;
 }
 // Full liquidations breakdown for the /liquidations page: market totals + top coins (24h long/short). Edge-cached 5 min.
+// ---------- SSR live-data injection for SEO pages (2026-08-03) ----------
+// Crawlers (Google + AI, which never execute JS) saw only the empty template on /coin/* (92% cross-page
+// similarity measured 2026-07-26) and zero live data in any blog post. At render time we inject a
+// crawler-visible prose block built from the SAME cached endpoints the client uses. Contract:
+//  - graceful: any data gap -> the static page is served unchanged (worst case = old behavior)
+//  - every sentence that INTERPRETS a number has an explicit neutral case (zero funding is NOT "longs pay shorts")
+//  - edge-cached 10 min per page -> upstreams see at most one build per colo per window
+function _susd(x) { x = +x; if (!isFinite(x)) return null; const a = Math.abs(x); if (a >= 1e12) return '$' + (x / 1e12).toFixed(2) + ' trillion'; if (a >= 1e9) return '$' + (x / 1e9).toFixed(2) + ' billion'; if (a >= 1e6) return '$' + (x / 1e6).toFixed(1) + ' million'; if (a >= 1e3) return '$' + (x / 1e3).toFixed(0) + 'K'; return '$' + x.toFixed(0); }
+function _spx(x) { x = +x; if (!isFinite(x)) return null; return '$' + x.toLocaleString('en-US', { maximumFractionDigits: x >= 100 ? 0 : x >= 1 ? 2 : 6 }); }
+function _pick(sym, arr) { let h = 0; const s = String(sym); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return arr[h % arr.length]; }
+function _hhmm() { const t = new Date(); return ('0' + t.getUTCHours()).slice(-2) + ':' + ('0' + t.getUTCMinutes()).slice(-2); }
+function ssrCoinProse(sym, name, cg, gk) {
+  const S = [];
+  const px = cg && _spx(cg.price), ch = cg && isFinite(+cg.chg24h) ? +cg.chg24h : null;
+  if (px) {
+    let chTxt = '';
+    if (ch != null) chTxt = Math.abs(ch) < 0.5 ? ', little changed over the last 24 hours' : (', ' + (ch > 0 ? 'up ' : 'down ') + Math.abs(ch).toFixed(2) + '% over the last 24 hours');
+    S.push(_pick(sym, [name + ' (' + sym + ') is trading at ' + px + chTxt + '.', sym + ' currently changes hands at ' + px + chTxt + '.', 'Right now ' + name + ' trades at ' + px + chTxt + '.']));
+  }
+  if (gk && gk.rank && gk.mcap) {
+    let s2 = 'It ranks #' + gk.rank + ' by market cap at ' + _susd(gk.mcap);
+    if (gk.vol) s2 += ', with ' + _susd(gk.vol) + ' traded across markets in the past day';
+    S.push(s2 + '.');
+  }
+  const f = cg && isFinite(+cg.funding) ? +cg.funding : null;
+  if (f != null) {
+    if (Math.abs(f) < 0.005) S.push('The aggregated funding rate is essentially flat at ' + (f >= 0 ? '+' : '') + f.toFixed(4) + '% — neither longs nor shorts are paying a meaningful premium right now.');
+    else if (f > 0) S.push('Funding is positive at +' + f.toFixed(4) + '% — ' + sym + ' longs are paying shorts to hold their positions, a long-tilted market.');
+    else S.push('Funding is negative at ' + f.toFixed(4) + '% — shorts are paying longs, a short-tilted market.');
+  }
+  if (cg && +cg.oiUsd > 0) {
+    let s4 = 'Open interest across major exchanges stands at ' + _susd(cg.oiUsd);
+    const oc = isFinite(+cg.oiChg24h) ? +cg.oiChg24h : null;
+    if (oc != null) s4 += Math.abs(oc) < 2 ? ' and has held roughly steady over 24 hours' : (oc > 0 ? ', up ' + oc.toFixed(1) + '% in a day as new leverage enters' : ', down ' + Math.abs(oc).toFixed(1) + '% in a day as positions unwind');
+    if (gk && +gk.mcap > 0) { const r = (+cg.oiUsd / +gk.mcap) * 100; if (isFinite(r) && r > 0.05) s4 += ' — about ' + (r >= 10 ? r.toFixed(0) : r.toFixed(1)) + '% of the coin&#39;s entire market cap sitting in open perp positions'; }
+    S.push(s4 + '.');
+  }
+  if (cg) {
+    const L = +cg.longLiq24h || 0, Sh = +cg.shortLiq24h || 0, T = L + Sh;
+    if (T >= 50000) {
+      let s5 = _susd(T) + ' in ' + sym + ' positions was liquidated over the past 24 hours';
+      if (L >= Sh * 1.5) s5 += ' — mostly longs (' + _susd(L) + ' vs ' + _susd(Sh) + ' in shorts), so the recent pain came on the way down';
+      else if (Sh >= L * 1.5) s5 += ' — mostly shorts (' + _susd(Sh) + ' vs ' + _susd(L) + ' in longs), squeezed on the way up';
+      else s5 += ', split fairly evenly between longs (' + _susd(L) + ') and shorts (' + _susd(Sh) + ')';
+      S.push(s5 + '.');
+    } else if (cg.price != null) S.push('Liquidations have been quiet — under $50K of ' + sym + ' positions were force-closed in the past 24 hours.');
+  }
+  if (cg && cg.longPct != null && cg.shortPct != null) {
+    const d = +cg.longPct - 50;
+    if (Math.abs(d) < 3) S.push('Account positioning is close to balanced: ' + cg.longPct + '% of accounts are long, ' + cg.shortPct + '% short — no crowded side.');
+    else S.push('Account positioning leans ' + (d > 0 ? 'long' : 'short') + ': ' + cg.longPct + '% of accounts are long vs ' + cg.shortPct + '% short.');
+  }
+  if (gk) {
+    const wk = isFinite(+gk.ch7d) ? +gk.ch7d : null, mo = isFinite(+gk.ch30d) ? +gk.ch30d : null;
+    if (wk != null && mo != null) {
+      if (Math.abs(wk) < 1 && Math.abs(mo) < 2) S.push('Momentum is muted — the price is roughly flat on both the week and the month.');
+      else S.push('Over the past week ' + sym + ' is ' + (wk >= 0 ? 'up ' : 'down ') + Math.abs(wk).toFixed(1) + '%, and over 30 days ' + (mo >= 0 ? 'up ' : 'down ') + Math.abs(mo).toFixed(1) + '%.');
+    }
+    if (isFinite(+gk.athChg) && gk.ath) {
+      let yr = ''; try { const y = new Date(gk.athDate).getUTCFullYear(); if (y > 2000) yr = ' (set in ' + y + ')'; } catch (e) {}
+      if (+gk.athChg <= -1) S.push('The price sits ' + Math.abs(+gk.athChg).toFixed(0) + '% below its all-time high of ' + _spx(gk.ath) + yr + '.');
+      else S.push(sym + ' is trading within about 1% of its all-time high of ' + _spx(gk.ath) + yr + '.');
+    }
+  }
+  return S;
+}
+function ssrCoinBlock(sym, name, sentences) {
+  return '\n    <section class="cdread" data-ssr="coin" style="margin:26px 0 10px;border:1px solid var(--line,#242a34);border-radius:14px;padding:16px 18px;background:rgba(194,246,74,.03)">' +
+    '<h2 style="margin:0 0 10px;font-size:19px">' + name + ' (' + sym + ') market read <span style="font-size:10px;font-weight:700;letter-spacing:.14em;color:#c2f64a;vertical-align:2px">LIVE</span></h2>' +
+    '<p style="margin:0;line-height:1.75">' + sentences.join(' ') + '</p>' +
+    '<p style="margin:10px 0 0;font-size:12px;color:var(--ink-faint,#5a636e)">Written from live exchange-aggregated derivatives data · updated ' + _hhmm() + ' UTC · the numbers on this page refresh continuously.</p>' +
+    '</section>\n';
+}
+async function handleSsrCoin(request, url, env) {
+  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const asset = await env.ASSETS.fetch(request);
+  const ct = (asset.headers && asset.headers.get('content-type')) || '';
+  if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
+  let html = '';
+  try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
+  const pass = () => new Response(html, { status: 200, headers: asset.headers });
+  const sm = html.match(/data-sym="([A-Z0-9]{2,12})"/);
+  const anchor = html.indexOf('<div class="cdmkt"');
+  if (!sm || anchor < 0) return pass();
+  const sym = sm[1];
+  let name = sym; const hm = html.match(/<h1>([^<(]+) \(/); if (hm) name = hm[1].trim();
+  let cg = null, gk = null;
+  try { const r = await handleCgCoin(new URL('https://marginpad.io/api/cg/coin?symbol=' + sym), env); const j = await r.json(); if (j && !j.error && j.price != null) cg = j; } catch (e) {}
+  try { const r = await handleGeckoCoin(new URL('https://marginpad.io/api/gecko/coin?sym=' + sym.toLowerCase()), env); const j = await r.json(); if (j && !j.error) gk = j; } catch (e) {}
+  let sentences = [];
+  try { sentences = ssrCoinProse(sym, name, cg, gk); } catch (e) { sentences = []; }
+  if (sentences.length < 3) return pass(); // not enough real data to say anything worth indexing -> static page
+  const out = html.slice(0, anchor) + ssrCoinBlock(sym, name, sentences) + '    ' + html.slice(anchor);
+  const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'coin' } });
+  try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
+// ---- data blog posts: a "LIVE MARKET DATA" box from our own endpoints, injected before the first <h2> ----
+const SSR_BLOG = {
+  'what-is-funding-rate': 'funding', 'funding-rate-arbitrage': 'funding',
+  'what-is-liquidation-in-crypto': 'liq', 'how-to-avoid-liquidation-crypto': 'liq',
+  'long-short-ratio-explained': 'ls',
+  'crypto-leverage-explained': 'lev', 'what-leverage-to-use-crypto': 'lev',
+  'btc-dominance-altcoin-season': 'dom',
+  'crypto-options-expiry-btc': 'opex'
+};
+function ssrBlogKind(pathname) { const m = pathname.match(/^\/blog\/([a-z0-9-]+)\/?$/); return m ? (SSR_BLOG[m[1]] || null) : null; }
+async function ssrBlogSentences(kind, env) {
+  const cgc = async sym => { try { const r = await handleCgCoin(new URL('https://marginpad.io/api/cg/coin?symbol=' + sym), env); const j = await r.json(); return (j && !j.error && j.price != null) ? j : null; } catch (e) { return null; } };
+  const S = [];
+  if (kind === 'funding') {
+    const [b, e2, s3] = await Promise.all([cgc('BTC'), cgc('ETH'), cgc('SOL')]);
+    const parts = [];
+    for (const c of [b, e2, s3]) if (c && isFinite(+c.funding)) parts.push(c.symbol + ' ' + (+c.funding >= 0 ? '+' : '') + (+c.funding).toFixed(4) + '%');
+    if (parts.length >= 2) S.push('Aggregated funding rates right now: ' + parts.join(' · ') + '.');
+    if (b && isFinite(+b.funding)) {
+      const f = +b.funding;
+      if (Math.abs(f) < 0.005) S.push('Bitcoin funding is essentially flat — neither side is paying a meaningful premium at the moment.');
+      else if (f > 0) S.push('Bitcoin funding is positive, so BTC longs are currently paying shorts — a long-tilted market.');
+      else S.push('Bitcoin funding is negative, so shorts are currently paying longs — a short-tilted market.');
+    }
+    return { S, links: [['/funding/', 'Live funding scanner'], ['/coin/btc/', 'BTC derivatives dashboard']] };
+  }
+  if (kind === 'liq') {
+    let j = null; try { j = await (await handleCgLiquidations(new URL('https://marginpad.io/api/cg/liquidations'), env)).json(); } catch (e) {}
+    const mk = j && !j.error && j.market;
+    if (mk && +mk.total > 0) {
+      S.push('Across the whole crypto market, ' + _susd(mk.total) + ' in leveraged positions was liquidated over the past 24 hours — ' + _susd(mk.long) + ' from longs and ' + _susd(mk.short) + ' from shorts.');
+      if (+mk.long >= +mk.short * 1.4) S.push('Long liquidations dominate right now, meaning the recent damage came on the way down.');
+      else if (+mk.short >= +mk.long * 1.4) S.push('Short liquidations dominate right now, meaning shorts were squeezed on a move up.');
+      else S.push('The long/short split is fairly even at the moment — no one-sided flush in progress.');
+      const top = j.coins && j.coins[0];
+      if (top && +top.liq > 0) S.push(String(top.s || '').toUpperCase() + ' leads with ' + _susd(top.liq) + ' liquidated in 24 hours.');
+    }
+    return { S, links: [['/liquidations/', '24h liquidation totals'], ['/rekt/', 'Live liquidation feed']] };
+  }
+  if (kind === 'ls') {
+    const [b, e2] = await Promise.all([cgc('BTC'), cgc('ETH')]);
+    if (b && b.longPct != null) {
+      let s1 = 'Right now ' + b.longPct + '% of BTC accounts are long and ' + b.shortPct + '% are short';
+      if (e2 && e2.longPct != null) s1 += '; on ETH the split is ' + e2.longPct + '% long / ' + e2.shortPct + '% short';
+      S.push(s1 + '.');
+      const d = +b.longPct - 50;
+      if (Math.abs(d) < 3) S.push('That is close to balanced — neither side is crowded on Bitcoin at the moment.');
+      else S.push('Bitcoin positioning currently leans ' + (d > 0 ? 'long' : 'short') + ' — worth knowing before you join the majority.');
+    }
+    return { S, links: [['/long-short/', 'Live long/short ratios'], ['/coin/btc/', 'BTC derivatives dashboard']] };
+  }
+  if (kind === 'lev') {
+    const b = await cgc('BTC');
+    if (b) {
+      if (+b.oiUsd > 0) {
+        let s1 = 'There is currently ' + _susd(b.oiUsd) + ' of open interest in Bitcoin perpetuals alone';
+        const oc = isFinite(+b.oiChg24h) ? +b.oiChg24h : null;
+        if (oc != null) s1 += Math.abs(oc) < 2 ? ' — roughly steady over the past day' : (oc > 0 ? ' — up ' + oc.toFixed(1) + '% in a day as new leverage enters' : ' — down ' + Math.abs(oc).toFixed(1) + '% in a day as positions unwind');
+        S.push(s1 + '.');
+      }
+      const T = (+b.longLiq24h || 0) + (+b.shortLiq24h || 0);
+      if (T >= 50000) S.push('Over the past 24 hours ' + _susd(T) + ' in BTC positions was liquidated — the live, ongoing cost of using more leverage than the market allows.');
+      else S.push('BTC liquidations have been quiet over the past 24 hours — but that changes fast when volatility returns.');
+    }
+    return { S, links: [['/coin/btc/', 'BTC derivatives dashboard'], ['/calculators?c=liq', 'Liquidation calculator'], ['/paper-trade', 'Practice with paper trading']] };
+  }
+  if (kind === 'dom') {
+    let g = null; try { g = await (await handleGeckoGlobal(env)).json(); } catch (e) {}
+    const d = g && g.data;
+    if (d && d.market_cap_percentage && isFinite(+d.market_cap_percentage.btc)) {
+      const bd = +d.market_cap_percentage.btc, ed = +d.market_cap_percentage.eth;
+      let s1 = 'Bitcoin dominance right now is ' + bd.toFixed(1) + '%' + (isFinite(ed) ? ' (Ethereum ' + ed.toFixed(1) + '%)' : '');
+      const tm = d.total_market_cap && +d.total_market_cap.usd;
+      if (tm > 0) s1 += ', with the total crypto market cap at ' + _susd(tm);
+      const chg = isFinite(+d.market_cap_change_percentage_24h_usd) ? +d.market_cap_change_percentage_24h_usd : null;
+      if (chg != null && Math.abs(chg) >= 0.3) s1 += ', ' + (chg > 0 ? 'up ' : 'down ') + Math.abs(chg).toFixed(1) + '% in 24 hours';
+      S.push(s1 + '.');
+      if (bd >= 58) S.push('Capital is concentrated in Bitcoin — historically these are NOT altcoin-season conditions.');
+      else if (bd <= 45) S.push('Dominance this low has historically coincided with broad altcoin outperformance.');
+      else S.push('Dominance is mid-range — neither a clear Bitcoin regime nor a broad altcoin season.');
+    }
+    return { S, links: [['/bitcoin-cycle/', 'Bitcoin cycle dashboard'], ['/coins/', 'Top coins by market cap']] };
+  }
+  if (kind === 'opex') {
+    const now = new Date(); let ts = null;
+    for (let k = 0; k < 3 && !ts; k++) {
+      const y = now.getUTCFullYear(), m = now.getUTCMonth() + k;
+      const last = new Date(Date.UTC(y, m + 1, 0));
+      const d = last.getUTCDate() - ((last.getUTCDay() - 5 + 7) % 7); // last Friday of the month
+      const t = Date.UTC(y, m, d, 8, 0, 0);
+      if (t > Date.now()) ts = t;
+    }
+    if (ts) {
+      const dd = Math.max(0, Math.round((ts - Date.now()) / 86400000));
+      const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      const e3 = new Date(ts);
+      S.push('The next monthly BTC options expiry lands on ' + MON[e3.getUTCMonth()] + ' ' + e3.getUTCDate() + ' at 08:00 UTC — ' + (dd <= 0 ? 'today' : 'in ' + dd + ' day' + (dd === 1 ? '' : 's')) + '.');
+    }
+    const b = await cgc('BTC');
+    if (b && +b.oiUsd > 0) S.push('Bitcoin perpetual open interest sits at ' + _susd(b.oiUsd) + ' going into it' + (isFinite(+b.funding) ? (Math.abs(+b.funding) < 0.005 ? ', with funding essentially flat' : (+b.funding > 0 ? ', with funding positive (long-tilted)' : ', with funding negative (short-tilted)')) : '') + '.');
+    return { S, links: [['/calendar/', 'Crypto economic calendar'], ['/coin/btc/', 'BTC derivatives dashboard']] };
+  }
+  return { S: [] };
+}
+async function handleSsrBlog(request, url, env, kind) {
+  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const asset = await env.ASSETS.fetch(request);
+  const ct = (asset.headers && asset.headers.get('content-type')) || '';
+  if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
+  let html = '';
+  try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
+  const pass = () => new Response(html, { status: 200, headers: asset.headers });
+  const anchor = html.indexOf('<h2');
+  if (anchor < 0) return pass();
+  let res = null;
+  try { res = await ssrBlogSentences(kind, env); } catch (e) {}
+  if (!res || !res.S || res.S.length < 2) return pass();
+  const links = (res.links || []).map(l => '<a href="' + l[0] + '" style="color:#c2f64a">' + l[1] + '</a>').join(' · ');
+  const box = '<div class="mp-live" data-ssr="blog" style="margin:22px 0;border:1px solid rgba(194,246,74,.35);border-left:3px solid #c2f64a;border-radius:12px;padding:14px 16px;background:rgba(194,246,74,.04)">'
+    + '<div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:#c2f64a;margin-bottom:8px">LIVE MARKET DATA · UPDATED ' + _hhmm() + ' UTC</div>'
+    + '<p style="margin:0;line-height:1.7">' + res.S.join(' ') + '</p>'
+    + (links ? '<p style="margin:9px 0 0;font-size:13px">See it live: ' + links + '</p>' : '')
+    + '</div>\n    ';
+  const out = html.slice(0, anchor) + box + html.slice(anchor);
+  const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'blog' } });
+  try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
 async function handleCgLiquidations(url, env) {
   const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (!env.COINGLASS_API_KEY) return jr({ error: 'not_configured' }, 'no-store');
@@ -9739,6 +9967,8 @@ export default {
         .on('meta[property="og:url"]', { element(e) { e.setAttribute('content', m.canon); } })
         .transform(base);
     }
+    if (request.method === 'GET' && url.pathname.indexOf('/coin/') === 0) return handleSsrCoin(request, url, env);
+    if (request.method === 'GET') { const _bk = ssrBlogKind(url.pathname); if (_bk) return handleSsrBlog(request, url, env, _bk); }
     return env.ASSETS.fetch(request);
     })();
    } catch (err) { // an unhandled exception = a user got a broken/500 response. Count it AND log the detail so the dashboard/`wrangler tail` can show WHAT broke (not just that something did).
