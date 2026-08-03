@@ -2459,7 +2459,7 @@ async function handleKlines(url, env, klSrc, ctx) {
     const ca = +hit.headers.get('x-mp-cached') || 0;              // LIVE tail: enforce freshness IN THE WORKER so a zone-level Cache-TTL override (Cloudflare was pinning these at 4h) can't serve stale candles — the "chart freezes per-timeframe" bug. Still offloads Bybit within the 10s window.
     const age = Date.now() - ca;
     if (age < 10000) { return hit; }
-    if (age <= staleMax && ctx) { // SWR: serve this cached response NOW + revalidate the EDGE cache in the background (dedup per key per isolate). IMPORTANT: the reval refreshes the cache for the NEXT caller — it does NOT reach THIS client, who already holds the stale response and keeps showing it until ITS OWN next poll (reloadKlines is ~45s). So this user can display up-to-`age`-old candles for up to ~45s. The forming bar always comes from the WS, so the only real harm is a MISSING CLOSED bar — which happens once age > the candle interval. Hence the bound should be min(90s, interval) per-TF: on 1m a 90s bound drops up to 2 closed bars (too loose); on 5m+ 90s spans <1 bar (fine). staleMax is still a flat 90s here pending the per-interval share measurement (klinestat swr.staleServedByIv). >staleMax → blocking refetch (the "chart freezes" hard bound).
+    if (age <= staleMax && ctx) { // SWR: serve this cached response NOW + revalidate the EDGE cache in the background (dedup per key per isolate). IMPORTANT: the reval refreshes the cache for the NEXT caller — it does NOT reach THIS client, who already holds the stale response and keeps showing it until ITS OWN next poll (reloadKlines is ~45s). So this user can display up-to-`age`-old candles for up to ~45s. The forming bar always comes from the WS, so the only real harm is a MISSING CLOSED bar — which happens once age > the candle interval. The bound IS per-TF since 2026-07-31: staleMax = min(90s, ONE candle interval) — see its declaration above — so a stale-serve can never span a closed bar on any TF. (The klinestat measurement instrument was retired after the fix; this comment previously claimed the flat 90s was still live — it was not.) >staleMax → blocking refetch (the "chart freezes" hard bound).
       try { const rk = cacheKey.url, fl = globalThis.__klReval = globalThis.__klReval || new Set(); if (!fl.has(rk)) { fl.add(rk); ctx.waitUntil(fetchFresh(true).catch(function () {}).finally(function () { fl.delete(rk); })); } } catch (e) {}
       return hit;
     }
@@ -3143,6 +3143,44 @@ async function nightlyBackup(env) {
   } catch (e) {
     try { await env.STATS.delete('bkp:done:' + new Date().toISOString().slice(0, 10)); } catch (e2) {}
     try { await tgAdmin(env, '🚨 <b>NIGHTLY BACKUP FAILED</b> — ' + String(e).slice(0, 180) + '\nUser/balance data currently has NO second copy. Check /api/admin/backup?run=1'); } catch (e3) {}
+  }
+}
+// Liquidation-feed archive (2026-08-03): once/day pull yesterday's raw events from the collector
+// (/api/v1/export, gated by LIQ_EXPORT_KEY secret = EXPORT_KEY in the droplet's .env) into R2
+// liq/YYYY-MM-DD.csv.gz. Raw rows on the droplet die after retentionDays AND with the droplet itself
+// (that's how the Contabo history was lost) — R2 is the copy that survives both. Backfills up to 7 days
+// (max 4 pulls/run) so a missed cron day self-heals. Failure: unstamp + throw → bg('liqarch') pages
+// once/20h and the next */10 retries. ~1 upstream call/day to OUR droplet, nothing third-party.
+async function archiveLiq(env) {
+  if (!env.BACKUP || !env.COLLECTOR_URL || !env.STATS) return;
+  // key lives in KV liqarch:key (secret-store writes are permission-gated for agents; KV is private and
+  // gates only our own data dump). A LIQ_EXPORT_KEY wrangler secret, if ever set, wins over KV.
+  const exportKey = env.LIQ_EXPORT_KEY || await env.STATS.get('liqarch:key');
+  if (!exportKey) return;
+  const today = new Date().toISOString().slice(0, 10);
+  if (await env.STATS.get('liqarch:ran:' + today)) return;
+  await env.STATS.put('liqarch:ran:' + today, '1', { expirationTtl: 172800 });
+  try {
+    const base = env.COLLECTOR_URL.replace(/\/$/, '');
+    const errs = [];
+    let pulls = 0;
+    for (let back = 1; back <= 7 && pulls < 4; back++) {
+      const day = new Date(Date.now() - back * 86400000).toISOString().slice(0, 10);
+      if (day < '2026-07-23') break; // collector (DigitalOcean) has no data before this
+      const r2key = 'liq/' + day + '.csv.gz';
+      if (await env.BACKUP.head(r2key)) continue; // already archived — immutable, never overwrite
+      pulls++;
+      const r = await fetch(base + '/api/v1/export?day=' + day, { headers: { 'x-export-key': exportKey }, signal: AbortSignal.timeout(30000) });
+      if (!r.ok) { errs.push(day + ' http ' + r.status); continue; }
+      const buf = await r.arrayBuffer();
+      if (buf.byteLength < 200) { errs.push(day + ' suspiciously small (' + buf.byteLength + 'b)'); continue; }
+      await env.BACKUP.put(r2key, buf);
+      await env.STATS.put('liqarch:last', JSON.stringify({ day, bytes: buf.byteLength, rows: +(r.headers.get('x-rows') || 0), ts: Date.now() }));
+    }
+    if (errs.length) throw new Error('liq archive: ' + errs.join('; '));
+  } catch (e) {
+    try { await env.STATS.delete('liqarch:ran:' + today); } catch (e2) {}
+    throw e;
   }
 }
 // Phase 5: one Telegram message every morning with everything that matters — so checking ops becomes optional.
@@ -9672,7 +9710,9 @@ export default {
       const byCache = (await aeQuery(env, "SELECT blob4 cache, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY cache")) || [];
       const topSym = (await aeQuery(env, "SELECT blob5 sym, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY sym ORDER BY n DESC LIMIT 20")) || [];
       const byCtxWs = (await aeQuery(env, "SELECT blob2 ctx, blob3 ws, SUM(_sample_interval) n FROM marginpad_events WHERE " + W + " GROUP BY ctx, ws")) || []; // ws=0 share PER call-site — the /api/price lever is picked from this cross
-      const klGap = (await aeQuery(env, "SELECT blob2 sym, SUM(_sample_interval) n FROM marginpad_events WHERE blob1='klines_gap' AND timestamp > NOW() - INTERVAL '" + hrs + "' HOUR GROUP BY sym ORDER BY n DESC LIMIT 12")) || [];
+      const klGap = (await aeQuery(env, "SELECT blob2 sym, SUM(_sample_interval) n, AVG(double1) avgMs, MAX(double1) maxMs FROM marginpad_events WHERE blob1='klines_gap' AND timestamp > NOW() - INTERVAL '" + hrs + "' HOUR GROUP BY sym ORDER BY n DESC LIMIT 12")) || [];
+      const klGapWho = (await aeQuery(env, "SELECT blob2 sym, blob3 uid, SUM(_sample_interval) n FROM marginpad_events WHERE blob1='klines_gap' AND timestamp > NOW() - INTERVAL '" + hrs + "' HOUR GROUP BY sym, uid ORDER BY n DESC LIMIT 30")) || [];
+      const klGapHr = (await aeQuery(env, "SELECT toStartOfInterval(timestamp, INTERVAL '1' HOUR) hr, SUM(_sample_interval) n FROM marginpad_events WHERE blob1='klines_gap' AND timestamp > NOW() - INTERVAL '" + hrs + "' HOUR GROUP BY hr ORDER BY hr")) || [];
       const sigMiss = (await aeQuery(env, "SELECT blob2 chan, SUM(_sample_interval) n FROM marginpad_events WHERE blob1='sigchan-missing' AND timestamp > NOW() - INTERVAL '" + hrs + "' HOUR GROUP BY chan")) || [];
       const tot = byCtx.reduce((a, r) => a + (+r.n || 0), 0), pct = n => tot ? Math.round(n / tot * 1000) / 10 : 0;
       const unk = byCtx.filter(r => (r.ctx || '?') === '?').reduce((a, r) => a + (+r.n || 0), 0);
@@ -9682,7 +9722,9 @@ export default {
         byWs: byWs.map(r => ({ ws: r.ws || '?', n: +r.n || 0 })).sort((a, b) => b.n - a.n),
         byCache: byCache.map(r => ({ cache: r.cache || '?', n: +r.n || 0 })).sort((a, b) => b.n - a.n),
         byCtxWs: (function () { const m = {}; for (const r of byCtxWs) { const c = r.ctx || '?'; m[c] = m[c] || { ctx: c, ws0: 0, ws1: 0 }; if (String(r.ws) === '1') m[c].ws1 += +r.n || 0; else m[c].ws0 += +r.n || 0; } return Object.values(m).map(x => ({ ...x, ws0Pct: (x.ws0 + x.ws1) ? Math.round(x.ws0 / (x.ws0 + x.ws1) * 1000) / 10 : 0 })).sort((a, b) => (b.ws0 + b.ws1) - (a.ws0 + a.ws1)); })(),
-        klinesGap: klGap.map(r => ({ sym: r.sym || '?', n: +r.n || 0 })),
+        klinesGap: klGap.map(r => ({ sym: r.sym || '?', n: +r.n || 0, avgMin: r.avgMs != null ? Math.round(+r.avgMs / 60000) : null, maxMin: r.maxMs != null ? Math.round(+r.maxMs / 60000) : null })),
+        klinesGapWho: klGapWho.map(r => ({ sym: r.sym || '?', uid: String(r.uid || '?').slice(0, 10), n: +r.n || 0 })),
+        klinesGapHr: klGapHr.map(r => ({ hr: r.hr, n: +r.n || 0 })),
         sigchanMissing: sigMiss.map(r => ({ chan: r.chan || '?', n: +r.n || 0 })),
         topSym: topSym.map(r => ({ sym: r.sym || '?', n: +r.n || 0 })),
       }, null, 1), { headers: jh });
@@ -9721,7 +9763,7 @@ export default {
         const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, text: 'MarginPad ops: TG_ADMIN_CHAT is live. Alerts + morning brief now deliver here.' });
         return new Response(JSON.stringify({ task: 'ping', tg: r }), { headers: jh });
       }
-      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions };
+      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, liqarch: archiveLiq };
       const fn = map[task];
       if (!fn) return new Response(JSON.stringify({ error: 'unknown_task', tasks: ['ping'].concat(Object.keys(map)), note: 'real side effects (sends alerts/DMs, PAYS money, writes KV) — manual trigger of the real cron task' }), { headers: jh });
       const t0 = Date.now();
@@ -9773,7 +9815,7 @@ export default {
       let online = 0; try { const om = JSON.parse(await env.STATS.get('onlog') || '{}'); const oc = Date.now() - 150000; for (const k in om) if (om[k] > oc) online++; } catch (e) {}
       let sessDo = null; try { sessDo = JSON.parse(await env.STATS.get('sessdo:stat') || 'null'); } catch (e) {} // UserStore session-DO health (computed by the */10 cron; read cheaply here)
       let cronErrs = []; try { const rows = (await aeQuery(env, `SELECT blob2 AS task, SUM(_sample_interval) AS n, max(blob3) AS msg FROM marginpad_events WHERE blob1='cronerr' AND timestamp > NOW() - INTERVAL '24' HOUR GROUP BY task ORDER BY n DESC`)) || []; cronErrs = rows.map(r => ({ task: r.task || '?', n: +r.n || 0, msg: r.msg || '' })); } catch (e) {} // bg() cron-task failures (24h) — VISIBLE on the dashboard even while TG is down (else the AE rows are a metric nobody opens)
-      let preload = null; try { const rows = (await aeQuery(env, `SELECT blob2 AS k, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='preload' AND timestamp > NOW() - INTERVAL '24' HOUR GROUP BY k`)) || []; const g = k => { const r = rows.find(x => x.k === k); return r ? Math.round(+r.n) : 0; }; const hn = g('hit'), mn = g('miss'), fn = g('fired'), tot = hn + mn + fn; if (tot) preload = { hit: hn, miss: mn, fired: fn, total: tot, missRate: +(mn / tot * 100).toFixed(1), firedRate: +(fn / tot * 100).toFixed(1), usefulRate: +(hn / tot * 100).toFixed(1) }; } catch (e) {} // hit=useful pickup, miss=drift (inline URL/symbol diverged from loadKlines), fired=loadKlines never ran (bounce-before-boot). missRate+firedRate together = share of preloads spent for nothing — watch both, not missRate alone.
+      let preload = null; try { const _ph = Math.min(168, Math.max(1, +url.searchParams.get('ph') || 24)); const rows = (await aeQuery(env, `SELECT blob2 AS k, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='preload' AND timestamp > NOW() - INTERVAL '${_ph}' HOUR GROUP BY k`)) || []; const g = k => { const r = rows.find(x => x.k === k); return r ? Math.round(+r.n) : 0; }; const hn = g('hit'), mn = g('miss'), fn = g('fired'), tot = hn + mn + fn; if (tot) preload = { hit: hn, miss: mn, fired: fn, total: tot, missRate: +(mn / tot * 100).toFixed(1), firedRate: +(fn / tot * 100).toFixed(1), usefulRate: +(hn / tot * 100).toFixed(1) }; } catch (e) {} // hit=useful pickup, miss=drift (inline URL/symbol diverged from loadKlines), fired=loadKlines never ran (bounce-before-boot). missRate+firedRate together = share of preloads spent for nothing — watch both, not missRate alone.
       return new Response(JSON.stringify({ groups, budgetSuggest, apiP95: pct(srvAll, 0.95), apiP50: pct(srvAll, 0.5), apiN: srvAll.length, errHr, srvErrHr, online, sessDo, cronErrs, preload, at: Date.now() }), { headers: jh });
     }
     if (url.pathname === '/api/admin/backup' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // P0.5: ?run=1 force a backup now · ?get=users|rewards download the latest dump
@@ -10211,6 +10253,7 @@ export default {
     bg(checkFreeSignals, 'freesig'); // screener-based signals → FREE channel (paced: fsig:daily/gap), loud guard on a missing chat id
     bg(resolveFreeSignals, 'freesigres'); // resolve open free signals' outcome (TP1 vs stop) from fresh candles → fsig:results
     bg(nightlyBackup, 'backup'); // P0.5 — once per UTC day (stamped), retries on failure each */10
+    bg(archiveLiq, 'liqarch'); // liquidation-feed daily dump → R2 liq/<day>.csv.gz (once/day, 7d self-heal backfill)
     bg(sweepServerPositions, 'sweep'); // P0 — server-side SL/TP/liq sweep for srv/bot trades
     bg(screenerKvWarm, 'scrwarm'); // keep the screener KV floor fresh — no visitor ever pays the full compute
     bg(heatPoolsCron, 'heatpools'); // heatmap: server-side pool accumulation
