@@ -687,7 +687,9 @@ const SSR_BLOG = {
   'long-short-ratio-explained': 'ls',
   'crypto-leverage-explained': 'lev', 'what-leverage-to-use-crypto': 'lev',
   'btc-dominance-altcoin-season': 'dom',
-  'crypto-options-expiry-btc': 'opex'
+  'crypto-options-expiry-btc': 'opex',
+  'cpi-week-crypto-playbook': 'macro', 'nfp-bitcoin-jobs-report': 'macro', 'pce-inflation-crypto': 'macro',
+  'fomc-july-2026-bitcoin': 'macro', 'crypto-economic-calendar-guide': 'macro'
 };
 function ssrBlogKind(pathname) { const m = pathname.match(/^\/blog\/([a-z0-9-]+)\/?$/); return m ? (SSR_BLOG[m[1]] || null) : null; }
 async function ssrBlogSentences(kind, env) {
@@ -782,6 +784,18 @@ async function ssrBlogSentences(kind, env) {
     if (b && +b.oiUsd > 0) S.push('Bitcoin perpetual open interest sits at ' + _susd(b.oiUsd) + ' going into it' + (isFinite(+b.funding) ? (Math.abs(+b.funding) < 0.005 ? ', with funding essentially flat' : (+b.funding > 0 ? ', with funding positive (long-tilted)' : ', with funding negative (short-tilted)')) : '') + '.');
     return { S, links: [['/calendar/', 'Crypto economic calendar'], ['/coin/btc/', 'BTC derivatives dashboard']] };
   }
+  if (kind === 'macro') {
+    let evs = [];
+    try { const r = await handleCalendar(new Request('https://marginpad.io/api/calendar'), env); const j = await r.json(); evs = (j && j.events) || []; } catch (e) {}
+    const now = Date.now();
+    const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const fmtEv = e3 => { const d = new Date(e3.ts); const dd = Math.max(0, Math.round((e3.ts - now) / 86400000)); return e3.title + ' on ' + MON[d.getUTCMonth()] + ' ' + d.getUTCDate() + (dd <= 0 ? ' (today)' : ' (in ' + dd + ' day' + (dd === 1 ? '' : 's') + ')'); };
+    const parts = ['cpi', 'fomc', 'nfp'].map(t => evs.find(e3 => e3.type === t && e3.ts > now)).filter(Boolean).map(fmtEv);
+    if (parts.length >= 2) S.push('Next on the macro calendar: ' + parts.join('; ') + '.');
+    const b = await cgc('BTC');
+    if (b && +b.oiUsd > 0) S.push('Bitcoin goes into it with ' + _susd(b.oiUsd) + ' of open interest' + (isFinite(+b.funding) ? (Math.abs(+b.funding) < 0.005 ? ' and funding essentially flat — no crowded side to squeeze' : (+b.funding > 0 ? ' and positive funding — a long-tilted market that a hawkish surprise would hit hardest' : ' and negative funding — a short-tilted market that a dovish surprise could squeeze')) : '') + '.');
+    return { S, links: [['/calendar/', 'Full crypto economic calendar'], ['/coin/btc/', 'BTC derivatives dashboard']] };
+  }
   return { S: [] };
 }
 async function handleSsrBlog(request, url, env, kind) {
@@ -806,6 +820,117 @@ async function handleSsrBlog(request, url, env, kind) {
     + '</div>\n    ';
   const out = html.slice(0, anchor) + box + html.slice(anchor);
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'blog' } });
+  try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
+async function ssrCgc(sym, env) { try { const r = await handleCgCoin(new URL('https://marginpad.io/api/cg/coin?symbol=' + sym), env); const j = await r.json(); return (j && !j.error && j.price != null) ? j : null; } catch (e) { return null; } }
+function ssrBoxHtml(kick, sentences, links) {
+  const ls = (links || []).map(l => '<a href="' + l[0] + '" style="color:#c2f64a">' + l[1] + '</a>').join(' · ');
+  return '<div class="mp-live" data-ssr="liq" style="margin:22px 0;border:1px solid rgba(194,246,74,.35);border-left:3px solid #c2f64a;border-radius:12px;padding:14px 16px;background:rgba(194,246,74,.04)">'
+    + '<div style="font-size:10.5px;font-weight:700;letter-spacing:.16em;color:#c2f64a;margin-bottom:8px">' + kick + ' · UPDATED ' + _hhmm() + ' UTC</div>'
+    + '<p style="margin:0;line-height:1.7">' + sentences.join(' ') + '</p>'
+    + (ls ? '<p style="margin:9px 0 0;font-size:13px">See it live: ' + ls + '</p>' : '')
+    + '</div>\n    ';
+}
+function _liqPx(entry, lev, side) { return side === 'short' ? entry * (1 + 1 / lev - 0.005) : entry * (1 - 1 / lev + 0.005); }
+function _liqBuf(lev) { return (1 / lev - 0.005) * 100; } // % distance to liquidation at 0.5% MMR
+async function ssrLiqSentences(mode, param, env) {
+  const S = [];
+  if (mode === 'lev') {
+    const N = +param, B = _liqBuf(N);
+    if (!(N >= 2) || !(B > 0)) return { S };
+    const [b, e2, s3] = await Promise.all([ssrCgc('BTC', env), ssrCgc('ETH', env), ssrCgc('SOL', env)]);
+    const live = [b, e2, s3].filter(Boolean);
+    if (live.length >= 2) {
+      const parts = live.map(c => 'a ' + N + 'x ' + c.symbol + ' long from ' + _spx(c.price) + ' is liquidated near ' + _spx(_liqPx(+c.price, N, 'long')));
+      S.push('At ' + N + 'x leverage the liquidation buffer is about ' + B.toFixed(2) + '% of your entry. From live prices right now: ' + parts.join(', ') + ' (0.5% maintenance margin; shorts mirror the same distance above the entry).');
+      const chs = live.filter(c => isFinite(+c.chg24h));
+      if (chs.length >= 2) {
+        const movers = chs.filter(c => Math.abs(+c.chg24h) >= B);
+        const moved = chs.map(c => c.symbol + ' ' + (+c.chg24h >= 0 ? '+' : '') + (+c.chg24h).toFixed(2) + '%');
+        if (movers.length) S.push('Over the past 24 hours ' + moved.join(', ') + ' — ' + movers.map(c => c.symbol).join(' and ') + ' alone covered more than the entire ' + N + 'x buffer in a single day.');
+        else S.push('Over the past 24 hours ' + moved.join(', ') + ' — all inside the ' + N + 'x buffer this time.');
+      }
+    }
+    let j = null; try { j = await (await handleCgLiquidations(new URL('https://marginpad.io/api/cg/liquidations'), env)).json(); } catch (e) {}
+    if (j && !j.error && j.market && +j.market.total > 0) S.push('Market-wide, ' + _susd(j.market.total) + ' in leveraged positions was liquidated over the past 24 hours (' + _susd(j.market.long) + ' from longs, ' + _susd(j.market.short) + ' from shorts).');
+    return { S, links: [['/calculators?c=liq', 'Full liquidation calculator'], ['/paper-trade', 'Practice risk-free with paper trading']] };
+  }
+  const sym = String(param).toUpperCase();
+  const c = await ssrCgc(sym, env);
+  if (!c) return { S };
+  const ch = isFinite(+c.chg24h) ? +c.chg24h : null;
+  if (mode === 'calc') {
+    let s1 = sym + ' is trading at ' + _spx(c.price) + ' right now';
+    if (ch != null) s1 += Math.abs(ch) < 0.5 ? ', little changed over the past 24 hours' : (', ' + (ch > 0 ? 'up ' : 'down ') + Math.abs(ch).toFixed(2) + '% in 24 hours');
+    S.push(s1 + '.');
+    const p = +c.price;
+    if (p > 0) S.push('From this price, a long is liquidated near ' + _spx(_liqPx(p, 10, 'long')) + ' at 10x, ' + _spx(_liqPx(p, 25, 'long')) + ' at 25x, ' + _spx(_liqPx(p, 50, 'long')) + ' at 50x and ' + _spx(_liqPx(p, 100, 'long')) + ' at 100x (0.5% maintenance margin) — short levels mirror the same distances above the price.');
+    if (ch != null) {
+      const a = Math.abs(ch);
+      const hit = [10, 20, 25, 50, 100].filter(L9 => a >= _liqBuf(L9));
+      if (hit.length) S.push('The last 24 hours alone moved ' + sym + ' ' + a.toFixed(2) + '% — enough to liquidate a ' + Math.min.apply(null, hit) + 'x position caught on the wrong side of it.');
+      else S.push('The past 24 hours were quiet for ' + sym + ' — the move stayed inside even a 100x buffer, which is the exception rather than the rule.');
+    }
+    const L = +c.longLiq24h || 0, Sh = +c.shortLiq24h || 0, T = L + Sh;
+    if (T >= 50000) {
+      let s4 = 'This is not theoretical: ' + _susd(T) + ' of ' + sym + ' positions was actually liquidated in the past 24 hours';
+      if (L >= Sh * 1.5) s4 += ', mostly longs (' + _susd(L) + ' vs ' + _susd(Sh) + ')';
+      else if (Sh >= L * 1.5) s4 += ', mostly shorts (' + _susd(Sh) + ' vs ' + _susd(L) + ')';
+      else s4 += ', split fairly evenly between longs and shorts';
+      S.push(s4 + '.');
+    }
+    const f = isFinite(+c.funding) ? +c.funding : null;
+    if (f != null) {
+      if (Math.abs(f) < 0.005) S.push('Funding is currently flat (' + (f >= 0 ? '+' : '') + f.toFixed(4) + '%), so holding a leveraged ' + sym + ' position costs little either way right now.');
+      else if (f > 0) S.push('Funding is +' + f.toFixed(4) + '% — ' + sym + ' longs are also paying shorts to hold, on top of the liquidation risk.');
+      else S.push('Funding is ' + f.toFixed(4) + '% — shorts are paying longs to hold right now.');
+    }
+    return { S, links: [['/liquidations/', '24h liquidation totals'], ['/paper-trade?coin=' + sym, 'Practice ' + sym + ' risk-free']] };
+  }
+  if (mode === 'map') {
+    const L = +c.longLiq24h || 0, Sh = +c.shortLiq24h || 0, T = L + Sh;
+    if (T >= 50000) {
+      let s1 = _susd(T) + ' of ' + sym + ' positions hit this map in the past 24 hours — ' + _susd(L) + ' from longs and ' + _susd(Sh) + ' from shorts';
+      if (L >= Sh * 1.5) s1 += ', so the recent damage came on the way down';
+      else if (Sh >= L * 1.5) s1 += ', so shorts were squeezed on a move up';
+      else s1 += ', a fairly even two-sided battle';
+      S.push(s1 + '.');
+    } else S.push('The ' + sym + ' map has been quiet — under $50K liquidated in the past 24 hours.');
+    if (+c.oiUsd > 0) {
+      let s2 = 'There is currently ' + _susd(c.oiUsd) + ' of open ' + sym + ' interest that the market can test';
+      const oc = isFinite(+c.oiChg24h) ? +c.oiChg24h : null;
+      if (oc != null) s2 += Math.abs(oc) < 2 ? ' (roughly steady over 24 hours)' : (oc > 0 ? ' (up ' + oc.toFixed(1) + '% in a day)' : ' (down ' + Math.abs(oc).toFixed(1) + '% in a day)');
+      S.push(s2 + '.');
+    }
+    const f = isFinite(+c.funding) ? +c.funding : null;
+    if (f != null) {
+      if (Math.abs(f) < 0.005) S.push('Funding is flat right now — no crowded side for the market to hunt.');
+      else if (f > 0) S.push('Funding is positive (+' + f.toFixed(4) + '%) — the crowd is long, and long clusters below the price are usually the first this map fills.');
+      else S.push('Funding is negative (' + f.toFixed(4) + '%) — the crowd is short, and short clusters above the price are the first targets.');
+    }
+    if (c.price != null) S.push(sym + ' trades at ' + _spx(c.price) + (ch != null && Math.abs(ch) >= 0.5 ? (', ' + (ch > 0 ? 'up ' : 'down ') + Math.abs(ch).toFixed(2) + '% in 24 hours') : '') + '.');
+    return { S, links: [['/rekt/', 'Live liquidation feed'], ['/liquidations/', '24h totals by coin']] };
+  }
+  return { S };
+}
+async function handleSsrLiq(request, url, env, mode, param) {
+  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const asset = await env.ASSETS.fetch(request);
+  const ct = (asset.headers && asset.headers.get('content-type')) || '';
+  if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
+  let html = '';
+  try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
+  const pass = () => new Response(html, { status: 200, headers: asset.headers });
+  const anchor = html.indexOf('<h2');
+  if (anchor < 0) return pass();
+  let res = null;
+  try { res = await ssrLiqSentences(mode, param, env); } catch (e) {}
+  if (!res || !res.S || res.S.length < 2) return pass();
+  const kick = mode === 'lev' ? 'LIVE — ' + param + 'X RIGHT NOW' : 'LIVE ' + String(param).toUpperCase() + ' DATA';
+  const out = html.slice(0, anchor) + ssrBoxHtml(kick, res.S, res.links) + html.slice(anchor);
+  const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'liq-' + mode } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
@@ -9968,7 +10093,15 @@ export default {
         .transform(base);
     }
     if (request.method === 'GET' && url.pathname.indexOf('/coin/') === 0) return handleSsrCoin(request, url, env);
-    if (request.method === 'GET') { const _bk = ssrBlogKind(url.pathname); if (_bk) return handleSsrBlog(request, url, env, _bk); }
+    if (request.method === 'GET') {
+      const mLiq = url.pathname.match(/^\/([a-z0-9]+)-liquidation-(calculator|map)\/$/);
+      if (mLiq) {
+        const lm = mLiq[1].match(/^(\d+)x$/);
+        if (mLiq[2] === 'calculator' && lm) return handleSsrLiq(request, url, env, 'lev', +lm[1]);
+        return handleSsrLiq(request, url, env, mLiq[2] === 'map' ? 'map' : 'calc', mLiq[1]);
+      }
+      const _bk = ssrBlogKind(url.pathname); if (_bk) return handleSsrBlog(request, url, env, _bk);
+    }
     return env.ASSETS.fetch(request);
     })();
    } catch (err) { // an unhandled exception = a user got a broken/500 response. Count it AND log the detail so the dashboard/`wrangler tail` can show WHAT broke (not just that something did).
