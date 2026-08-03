@@ -6887,7 +6887,7 @@ function frameOwned(fr, xp, premium, founder) {
 }
 function framesFor(xp, premium, founder) {
   const owned = ['default'];
-  for (const l of XP_LEVELS) if (l.k !== 'bronze' && (+xp || 0) >= l.min) owned.push(l.k);
+  for (const l of XP_LEVELS) if (l.k !== 'bronze' && l.k !== 'unranked' && (+xp || 0) >= l.min) owned.push(l.k);
   if (premium) { owned.push('neon'); owned.push('aurora'); }
   if (founder) owned.push('founder');
   return owned;
@@ -9157,10 +9157,10 @@ async function handleReward(url, request, env) {
     return jr({ found, checked, action: act, note: act === 'comment' ? 'search covers replies from the last ~7 days only' : null, error: err });
   }
   // The faucet is account-based: resolve the signed-in user from the session cookie → 'u:<uid>'. Only for the account paths (avoids an extra UserStore call on /lb, /check, admin, /config).
-  let acct = null, suRestr = '', suLevelK = 'bronze';
+  let acct = null, suRestr = '', suLevelK = 'bronze', suXp = 0;
   if (path === '/claim' || path === '/account' || path === '/me' || path === '/withdraw' || path === '/wdhistory' || path === '/visit' || path === '/msgseen' || path === '/promo/submit' || path === '/promo/mine' || path === '/exsign/submit' || path === '/exsign/mine' || path === '/moonsign/submit' || path === '/moonsign/mine' || path === '/xengage/submit' || path === '/xengage/mine' || (path === '/lb' && request.method === 'POST')) {
     const tok = getCookie(request, SESS_COOKIE);
-    if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; } }
+    if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { acct = 'u:' + su.id; suRestr = String(su.restrictions || ''); suLevelK = (su.level && su.level.k) || 'bronze'; suXp = +su.xp || 0; } }
     // admin override: credit an X engagement on behalf of a uid (owner sees the like/comment on X and rewards it manually)
     if (!acct && path === '/xengage/submit' && adminOk) { const ov = url.searchParams.get('uid'); if (ov) acct = 'u:' + ov; }
   }
@@ -9175,6 +9175,14 @@ async function handleReward(url, request, env) {
     try { const rr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/support/mine', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: 'u:' + su.id, email: su.email || '' }) })); return jr(await rr.json()); } catch (e) { return jr({ items: [], replies: [] }); }
   }
   const full = await rewardCfg(env);
+  // FAUCET/REWARDS GATE (2026-08-04): the whole rewards system unlocks at Bronze (500 XP). A signed-in user
+  // below 500 XP is 'unranked' and cannot claim, withdraw or submit earn tasks — they must earn XP first
+  // (academy / paper trade / charts). Respects the levelsEnabled kill-switch (set false → gate lifts for all).
+  // Users already ≥500 XP are unaffected. The /me + /account paths are NOT gated so the page can render the
+  // locked state; the DO also has an independent x-lvl check so this can't be bypassed by calling the DO directly.
+  if (full.raw.levelsEnabled !== false && acct && !rewardsUnlocked(suXp) &&
+      (path === '/claim' || path === '/withdraw' || path === '/promo/submit' || path === '/exsign/submit' || path === '/moonsign/submit' || path === '/xengage/submit'))
+    return jr({ error: 'need_xp', need: REWARDS_MIN_XP, have: suXp, level: 'unranked', earn: '/academy/' }, 403);
   // admin: read/write the live config (Settings tab) — applies instantly, no deploy
   if (path === '/config') {
     if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403); // cookie OR the ADMIN_KEY manual-recovery bearer (same pattern as the newer admin routes)
@@ -11240,6 +11248,7 @@ export class RewardLedger {
     }
     if (path === '/claim') {
       if (!acct) return this.j({ error: 'login_required' }, 401); // the faucet is account-based now — must be signed in (no wallet needed to claim)
+      if (xLvl === 'unranked') return this.j({ error: 'need_xp', need: 500, level: 'unranked' }, 403); // defense-in-depth: faucet unlocks at Bronze (500 XP); worker already gates this, DO re-checks
       const dispensed = (this.rows('SELECT dispensed FROM daily WHERE day=?', day)[0] || { dispensed: 0 }).dispensed;
       if (dispensed + cfg.amountC > cfg.capC) return this.j({ error: 'pool_empty' }, 429); // global daily budget reached → faucet closed until tomorrow
       let r = this.rows('SELECT * FROM accounts WHERE address=?', acct)[0];
@@ -11809,15 +11818,18 @@ export class RewardLedger {
 // Optional accounts (passwordless email sign-in). Single instance idFromName('main').
 // Anonymous use stays the default; this only backs the optional "Sign in" flow (email capture for MVP).
 // ===== XP & Level system (2026-07-15) — retention progression; Diamond ~10 months of active use =====
-const XP_LEVELS = [ // pragovi podignuti 2026-07-16 (Academy nosi ~1975 XP pa je pomerala distribuciju) + novi Legendary tier
-  { k: 'bronze', name: 'Bronze', min: 0, col: '#c97f4a' },
+const XP_LEVELS = [ // pragovi podignuti 2026-07-16 (Academy nosi ~1975 XP) + Legendary; 2026-08-04: novi UNRANKED tier ispod Bronze — faucet/rewards se OTKLJUČAVAJU tek na Bronze (500 XP)
+  { k: 'unranked', name: 'Unranked', min: 0, col: '#5c6b7a' },
+  { k: 'bronze', name: 'Bronze', min: 500, col: '#c97f4a' },
   { k: 'silver', name: 'Silver', min: 3000, col: '#b7c2d0' },
   { k: 'gold', name: 'Gold', min: 12000, col: '#ffcf3f' },
   { k: 'platinum', name: 'Platinum', min: 30000, col: '#7ee0ff' },
   { k: 'diamond', name: 'Diamond', min: 60000, col: '#8b5cff' },
   { k: 'legendary', name: 'Legendary', min: 120000, col: '#ff7a1a' },
 ];
-const LEVEL_CLAIM_MULT = { bronze: 1.0, silver: 1.10, gold: 1.20, platinum: 1.35, diamond: 1.50, legendary: 1.75 }; // faucet claim size by level
+const REWARDS_MIN_XP = 500;                 // faucet + the whole rewards system unlock at Bronze (500 XP); below that = 'unranked'
+function rewardsUnlocked(xp) { return (+xp || 0) >= REWARDS_MIN_XP; }
+const LEVEL_CLAIM_MULT = { unranked: 1.0, bronze: 1.0, silver: 1.10, gold: 1.20, platinum: 1.35, diamond: 1.50, legendary: 1.75 }; // faucet claim size by level
 const LEVEL_WD_BONUS = { diamond: 0.10, legendary: 0.15 };
 function lvlSvgS(k, col) { col = col || '#c97f4a'; if (k === 'legendary') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z" fill="' + col + '30"/><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3zM4 17l.6 2.5h14.8L20 17" stroke="' + col + '" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12" cy="13.4" r="1.5" fill="' + col + '"/></svg>'; if (k === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M8 5H16L20 10L12 19L4 10Z" fill="' + col + '30"/><path d="M8 5H16L20 10L12 19L4 10ZM4 10H20M8 5L10 10M16 5L14 10M10 10L12 19M14 10L12 19" stroke="' + col + '" stroke-width="1.25" stroke-linejoin="round"/></svg>'; return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M12 2.5 20 7v10L12 21.5 4 17V7z" fill="' + col + '22" stroke="' + col + '" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 7l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.6 8.9 16.1l.6-3.3L7.1 10.5l3.3-.5z" fill="' + col + '"/></svg>'; } // Diamond gets +10% on withdrawals (the house pays it)
 // ── XP Happy Hour ── bigger XP for winning paper trades with 200%+ ROE, opened at ≤100× leverage, CLOSED during the daily window.
@@ -13826,13 +13838,19 @@ async function handleMissions(url, request, env) {
   const enabled = cfg.raw ? cfg.raw.missionsEnabled !== false : true;
   const day = new Date().toISOString().slice(0, 10);
   const dayStart = new Date(day).getTime();
-  let uid = '';
+  let uid = '', uxp = 0;
   const tok = getCookie(request, SESS_COOKIE);
-  if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) uid = su.id; }
+  if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { uid = su.id; uxp = +su.xp || 0; } }
   const adminUid = url.searchParams.get('uid'); // owner preview/testing: act as a user (admin cookie only)
   if (adminUid && (await adminCookieOk(request, env))) uid = adminUid;
   if (!enabled) return jr({ enabled: false, missions: [] });
   if (!uid) return jr({ enabled: true, signedIn: false, missions: [], day }); // missions are NOT available to logged-out users — don't expose the list, just prompt sign-in on the client
+  // FAUCET/REWARDS GATE (2026-08-04): missions are part of the rewards system → also unlock at Bronze (500 XP).
+  const rewardsLocked = (cfg.raw ? cfg.raw.levelsEnabled !== false : true) && !rewardsUnlocked(uxp);
+  if (rewardsLocked) {
+    if (request.method === 'POST') return jr({ error: 'need_xp', need: REWARDS_MIN_XP, have: uxp, level: 'unranked', earn: '/academy/' }, 403);
+    return jr({ enabled: true, signedIn: true, locked: true, minXp: REWARDS_MIN_XP, xp: uxp, missions: [], day, resetInMs: (dayStart + 86400000) - Date.now() });
+  }
   let defs = missionsForDay(day);
   // Owner rule: a user who FINISHED the whole Academy must not get lesson-completion missions (impossible for them) →
   // swap them out for the next mission. Only fetch the completion count on days those missions actually appear.

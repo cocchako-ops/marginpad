@@ -260,7 +260,14 @@
   /* full-width rows: account/balance header, plus the two cards whose content is a horizontal row
      (leaderboard prizes, how-it-works steps) — they read best full-bleed AND keep them out of the 2-col
      flow so the remaining pairs are height-matched with no half-empty cell. */
-  .rwd-cards>#authCard,.rwd-cards>#dash,.rwd-cards>#wdHistCard,.rwd-cards>#lbCompCard,.rwd-cards>#howCard,.rwd-cards>#exchanges{grid-column:1/-1}
+  .rwd-cards>#authCard,.rwd-cards>#dash,.rwd-cards>#lockedCard,.rwd-cards>#wdHistCard,.rwd-cards>#lbCompCard,.rwd-cards>#howCard,.rwd-cards>#exchanges{grid-column:1/-1}
+  .rwd-cards>#lockedCard{order:0}
+  /* Faucet/rewards gate (2026-08-04): below Bronze (500 XP) = 'unranked' → the earn/withdraw cards are hidden
+     and the #lockedCard explains why + points to where XP is earned. CSS wins over any card's own loader. */
+  body.rewards-locked #dash,body.rewards-locked #wdHistCard,body.rewards-locked #msnCard,body.rewards-locked #exsCard,body.rewards-locked #moonCard,body.rewards-locked #promoCard,body.rewards-locked #refCard{display:none!important}
+  #lockedCard .lk-cta{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+  #lockedCard .lk-cta a{text-align:center;text-decoration:none;padding:12px 10px;border-radius:11px;font-weight:700;font-size:13.5px}
+  @media(max-width:520px){#lockedCard .lk-cta{grid-template-columns:1fr}}
   /* [Invite | Missions] as a 2-col pair, then the full-width cards. */
   .rwd-cards>#authCard,.rwd-cards>#dash{order:0}
   .rwd-cards>#wdHistCard{order:1}
@@ -311,8 +318,28 @@
     <div id="authGate">
       <div id="welcomeHook" hidden></div>
       <p class="note" style="text-align:left;margin:0 0 12px">Sign in with just your email — no password, no deposit. Your balance follows you across devices; you only add your Bybit UID or Moon username when you cash out.</p>
-      <button class="btn btn-lime" id="signinBtn" type="button" data-auth-open style="width:100%">Sign in to claim free USDT</button>
+      <button class="btn btn-lime" id="signinBtn" type="button" data-auth-open style="width:100%">Sign in free to start earning</button>
     </div>
+  </div>
+
+  <div class="card card--primary" id="lockedCard" hidden style="border-color:rgba(127,214,255,.4)">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+      <span id="lockLvlBadge" style="width:32px;height:32px;display:inline-block;flex:0 0 auto"></span>
+      <div>
+        <div style="font-weight:800;font-size:18px;color:#e9e7df">Rewards are locked</div>
+        <div style="font-family:Consolas,monospace;font-size:12.5px;color:#8fa3c4">You're <b style="color:#8fb0c8">Unranked</b> — reach <b style="color:#c97f4a">Bronze&nbsp;(500&nbsp;XP)</b> to unlock</div>
+      </div>
+    </div>
+    <p class="note" style="text-align:left;line-height:1.6;color:#cdd3da;margin:0">The faucet, daily missions, withdrawals and exchange bonuses open up at <b style="color:#c97f4a">Bronze — 500 XP</b>. It keeps rewards for people who actually use the platform. The good news: XP is quick to earn, and every way to earn it is free.</p>
+    <div class="prog" style="margin-top:13px"><i id="lockProg" style="background:linear-gradient(90deg,#5c6b7a,#c97f4a)"></i></div>
+    <div class="prog-lbl"><span id="lockProgLbl">0 / 500 XP</span></div>
+    <div class="lk-cta">
+      <a class="btn btn-lime" href="/academy/">Learn &amp; earn XP → Academy</a>
+      <a class="btn btn-ghost" href="/paper-trade">Practice → Paper Trade</a>
+      <a class="btn btn-ghost" href="/charts">Analyze → Charts</a>
+      <a class="btn btn-ghost" href="/where-to-start/">New here? Start guide</a>
+    </div>
+    <p class="note" style="text-align:left;margin:11px 0 0;color:#8fa3c4;font-size:12px">Fastest routes to 500 XP: finish a few <a href="/academy/" style="color:#c2f64a">Academy</a> lessons (25–50 XP each), open and close <a href="/paper-trade" style="color:#c2f64a">paper trades</a>, use <a href="/charts" style="color:#c2f64a">Charts</a> daily, and keep a login streak. Your live XP shows below.</p>
   </div>
 
   <div class="card card--primary" id="dash" hidden>
@@ -542,6 +569,11 @@
       balEl=document.getElementById('bal'),wdBtn=document.getElementById('wdBtn'),progEl=document.getElementById('prog'),
       progLbl=document.getElementById('progLbl'),claimBtn=document.getElementById('claimBtn'),msgEl=document.getElementById('msg');
   var nextClaim=0,perDay=1,amount=0.1,minWd=5,welcomeAmt=0,acct=null,busy=false,bannedAcct=false,signedIn=false,payoutAddr='';
+  // Faucet/rewards gate (2026-08-04): the whole rewards system unlocks at Bronze (500 XP). Signed-in users below
+  // that are 'unranked' → the earn cards hide and #lockedCard explains why + points to Academy/Paper Trade/Charts.
+  var MIN_XP=500,rewardsLocked=false;
+  function isUnranked(user){ if(!user)return false; if(user.level&&user.level.k)return user.level.k==='unranked'; if(user.xp!=null)return +user.xp<MIN_XP; return false; }
+  function paintLock(user){ var badge=document.getElementById('lockLvlBadge'),prog=document.getElementById('lockProg'),lbl=document.getElementById('lockProgLbl'); if(!badge)return; var xp=(user&&user.xp!=null)?+user.xp:0; if(window.mpLvlSvg)badge.innerHTML=window.mpLvlSvg('unranked','#5c6b7a'); var pct=Math.max(0,Math.min(100,xp/MIN_XP*100)); if(lbl)lbl.textContent=xp.toLocaleString()+' / '+MIN_XP+' XP'; if(prog)setTimeout(function(){prog.style.width=pct+'%';},120); }
   var authCard=document.getElementById('authCard'),authGate=document.getElementById('authGate'),authWho=document.getElementById('authWho'),whoEmail=document.getElementById('whoEmail');
   var wdAddrRow=document.getElementById('wdAddrRow'),wdAddr=document.getElementById('wdAddr'),wdConfirm=document.getElementById('wdConfirm');
   function setText(cls,v){var els=document.querySelectorAll('.'+cls);for(var i=0;i<els.length;i++)els[i].textContent=v;}
@@ -582,7 +614,7 @@
     });
     inp.addEventListener('keydown',function(e){if(e.key==='Enter')sb.click();});
   })();
-  function renderWelcomeHook(){var wh=document.getElementById('welcomeHook');if(!wh)return;if(welcomeAmt>0){wh.hidden=false;wh.innerHTML='<div style="background:linear-gradient(180deg,rgba(194,246,74,.13),rgba(194,246,74,.04));border:1px solid rgba(194,246,74,.45);border-radius:12px;padding:13px 15px;margin-bottom:12px;text-align:left"><div style="font-size:16px;font-weight:800;color:#d6f78a">Get free USDT, instantly</div><div style="font-size:12.5px;color:#9aa3ad;margin-top:3px;line-height:1.45">Sign in and we drop a USD welcome bonus straight into your balance — then keep claiming free USDT every few minutes.</div></div>';var sb=document.getElementById('signinBtn');if(sb)sb.textContent='Sign in & claim free USDT';}else{wh.hidden=true;}}
+  function renderWelcomeHook(){var wh=document.getElementById('welcomeHook');if(!wh)return;if(welcomeAmt>0){wh.hidden=false;wh.innerHTML='<div style="background:linear-gradient(180deg,rgba(194,246,74,.13),rgba(194,246,74,.04));border:1px solid rgba(194,246,74,.45);border-radius:12px;padding:13px 15px;margin-bottom:12px;text-align:left"><div style="font-size:16px;font-weight:800;color:#d6f78a">Earn free USDT</div><div style="font-size:12.5px;color:#9aa3ad;margin-top:3px;line-height:1.45">Sign in free with just your email. The faucet, missions and withdrawals unlock at <b style="color:#c97f4a">Bronze — 500 XP</b>, which is quick and free to earn on the <a href="/academy/" style="color:#c2f64a">Academy</a> and <a href="/paper-trade" style="color:#c2f64a">Paper Trade</a> — then claim free USDT every few minutes.</div></div>';var sb=document.getElementById('signinBtn');if(sb)sb.textContent='Sign in free to start earning';}else{wh.hidden=true;}}
   var wdMethod='bybit';
   function valid(a){return wdMethod==='moon' ? /^[A-Za-z0-9_.-]{3,32}$/.test(a) : /^[0-9]{5,15}$/.test(a);}
   function setWdMethod(m){wdMethod=m;var bb=document.getElementById('wdmBybit'),mb=document.getElementById('wdmMoon'),nb=document.getElementById('wdNoteBybit'),nm=document.getElementById('wdNoteMoon');
@@ -636,15 +668,26 @@
 
   // ---- auth gate: claiming requires a signed-in account (not a wallet) ----
   function updateGate(){
+    var lockedCard=document.getElementById('lockedCard');
+    document.body.classList.toggle('rewards-locked', signedIn&&rewardsLocked);
+    if(signedIn&&rewardsLocked){
+      if(authCard)authCard.hidden=true; if(authGate)authGate.hidden=true; if(authWho)authWho.hidden=false;
+      if(lockedCard)lockedCard.hidden=false; dash.hidden=true; if(wdAddrRow)wdAddrRow.hidden=true;
+      var mcL=document.getElementById('moonCard'); if(mcL)mcL.hidden=true;
+      return;
+    }
+    if(lockedCard)lockedCard.hidden=true;
     if(signedIn){ if(authCard)authCard.hidden=true; if(authGate)authGate.hidden=true; if(authWho)authWho.hidden=false; dash.hidden=false; }
     else { if(authCard)authCard.hidden=false; if(authGate)authGate.hidden=false; if(authWho)authWho.hidden=true; dash.hidden=true; if(wdAddrRow)wdAddrRow.hidden=true; }
     var mcG=document.getElementById('moonCard'); if(mcG)mcG.hidden=!signedIn||!!window.__moonOff;
   }
   function onAuth(user){
     signedIn=!!user;
+    rewardsLocked=isUnranked(user);
+    paintLock(user);
     if(user&&whoEmail) whoEmail.textContent=user.username||user.email||'';
     updateGate();
-    if(signedIn){ fetch('/api/reward/me').then(function(r){return r.json();}).then(function(d){ applyCfg(d); if(d.payoutAddr){payoutAddr=d.payoutAddr; try{localStorage.setItem(KEY,payoutAddr);}catch(e){}} if(d.account){render(d);}else{refresh();} loadWdHistory(); if(+d.welcomeBonus>0)msg('Welcome bonus of $'+(+d.welcomeBonus).toFixed(2)+' added to your balance. Claim more below.','ok'); }).catch(function(){refresh();}); }
+    if(signedIn&&!rewardsLocked){ fetch('/api/reward/me').then(function(r){return r.json();}).then(function(d){ applyCfg(d); if(d.payoutAddr){payoutAddr=d.payoutAddr; try{localStorage.setItem(KEY,payoutAddr);}catch(e){}} if(d.account){render(d);}else{refresh();} loadWdHistory(); if(+d.welcomeBonus>0)msg('Welcome bonus of $'+(+d.welcomeBonus).toFixed(2)+' added to your balance. Claim more below.','ok'); }).catch(function(){refresh();}); }
   }
   window.addEventListener('mp-auth-change',function(e){ onAuth(e.detail&&e.detail.user); paintLvl(e.detail&&e.detail.user); });
   (function(){
@@ -679,6 +722,7 @@
         if(j.ok){ msg('+'+fmt(j.credited)+' USDT credited. Balance: $'+fmt(j.balance),'ok'); render(Object.assign({},acct||{},{balance:j.balance,dayAmt:j.dayAmt,canWithdraw:j.canWithdraw,cooldownLeft:(j.cooldown!=null?j.cooldown:Math.max(0,j.nextClaim-Date.now()))})); if(window.mpXpCheck)setTimeout(window.mpXpCheck,400); }
         else { var e=j.error;
           if(e==='login_required'){ signedIn=false; updateGate(); if(window.mpAuth)window.mpAuth.open(); msg('Please sign in to claim.','err'); }
+          else if(e==='need_xp'){ rewardsLocked=true; paintLock({xp:j.have}); updateGate(); try{document.getElementById('lockedCard').scrollIntoView({behavior:'smooth',block:'center'});}catch(_){}  msg('Reach Bronze (500 XP) to unlock the faucet — earn free XP on the Academy and Paper Trade.','err'); }
           else if(e==='cooldown'){ nextClaim=Date.now()+(j.left||0); msg('Easy — come back when the timer hits zero.','err'); }
           else if(e==='daily_cap') msg('You’ve hit today’s $'+fmt(perDay)+' cap. Come back tomorrow.','err');
           else if(e==='pool_empty') msg('Today’s reward pool is empty — try again tomorrow. (Tip: earlier = better.)','err');
@@ -711,6 +755,7 @@
       .then(function(r){return r.json();}).then(function(j){ wdConfirm.disabled=false;
         if(j.ok){ payoutAddr=a; try{localStorage.setItem(KEY,a);}catch(e){} wdAddrRow.hidden=true; msg('Withdrawal of $'+fmt(j.amount)+' requested ✓ — withdrawals are NOT automatic: yours is queued, reviewed and sent to your '+(wdMethod==='moon'?'Moon account (by username)':'Bybit account (by UID)')+' manually, and will be processed soon. Balance resets to $0.','ok'); refresh(); }
         else if(j.error==='login_required'){ signedIn=false; updateGate(); if(window.mpAuth)window.mpAuth.open(); msg('Please sign in.','err'); }
+        else if(j.error==='need_xp'){ rewardsLocked=true; paintLock({xp:j.have}); updateGate(); msg('Reach Bronze (500 XP) to unlock withdrawals — earn free XP on the Academy and Paper Trade.','err'); }
         else if(j.error==='bad_address'){ wdAddr.classList.add('invalid'); msg(wdMethod==='moon'?'Invalid Moon username.':'Invalid Bybit UID (numbers only).','err'); }
         else if(j.error==='min_not_met') msg('You need at least $'+fmt(minWd)+' to withdraw.','err');
         else if(j.error==='wd_paused'||j.error==='paused') msg('Withdrawals are paused right now — check back soon.','err');
@@ -843,6 +888,7 @@
   function fmt2(c){return '+$'+(c/100).toFixed(2);}
   function render(d){
     if(!d||d.enabled===false){card.hidden=true;return;}
+    if(d.locked){card.hidden=true;return;} // below Bronze (500 XP) — the #lockedCard covers the whole rewards system
     card.hidden=false;
     var list=document.getElementById('msnList');
     if(d.signedIn===false){
