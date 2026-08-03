@@ -6164,7 +6164,7 @@ function renderWd(){var el=document.getElementById('wdList');if(!el)return;
       +'<span style="width:96px;color:#8fa3c4" title="decided at">'+(w.paidTs?wdFmtD(w.paidTs):'&#8212;')+'</span>'
       +'<span style="width:44px;text-align:center">'+txLink+'</span>'
       +(w.status==='pending'?'<button type="button" class="pay wd-payb" data-id="'+esc(w.id)+'">Pay</button>':'')
-      +(w.status==='pending'&&w.uidCheck==='missing'?'<button type="button" class="pay wd-rejb" data-id="'+esc(w.id)+'" style="color:#ff8a80;border-color:rgba(255,110,100,.45)">Reject + notify</button>':'')
+      +(w.status==='pending'?'<button type="button" class="pay wd-rejb" data-id="'+esc(w.id)+'" data-miss="'+(w.uidCheck==='missing'?'1':'')+'" style="color:#ff8a80;border-color:rgba(255,110,100,.45)">Reject + notify</button>':'')
       +'</div>'
       +'<div style="display:flex;align-items:center;gap:8px;margin-top:4px"><span style="font-family:Consolas,monospace;font-size:12px;font-weight:700;color:'+addrColor(w.wallet)+';word-break:break-all;user-select:all;-webkit-user-select:all;flex:1;min-width:0" title="payout wallet — send USDT here">'+esc(String(w.wallet||''))+'</span>'+(w.note?'<span class="muted" style="flex:0 1 auto;font-size:10.5px;color:#ff8a80">'+esc(w.note)+'</span>':'')+(w.wallet?'<button type="button" class="pay wdcopy" data-copy="'+esc(String(w.wallet))+'" style="flex:0 0 auto;padding:3px 9px;font-size:10.5px;color:#9fe0ff;border-color:rgba(159,224,255,.4)">copy</button>':'')+'</div>'
       +'</div>';}).join(''))||'<div class="empty">no withdrawals match</div>';
@@ -6172,9 +6172,13 @@ function renderWd(){var el=document.getElementById('wdList');if(!el)return;
     var id=btn.getAttribute('data-id'),tx=prompt('Tx hash (optional):')||'';btn.textContent='…';
     fetch('/api/reward/admin/paid?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:id,txid:tx})}).then(function(){loadWd();});});});
   Array.prototype.forEach.call(el.querySelectorAll('.wd-rejb'),function(btn){btn.addEventListener('click',function(){
-    if(!confirm('Reject this withdrawal? The amount is refunded to the user balance and they get a site banner + email: UID not via our link, contact support.'))return;
-    btn.textContent='…';btn.disabled=true;
-    fetch('/api/reward/wd/reject?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:btn.getAttribute('data-id')})}).then(function(r){return r.json();}).then(function(j){if(!(j&&j.ok))alert('Reject failed: '+((j&&j.error)||'unknown'));loadWd();}).catch(function(){btn.disabled=false;btn.textContent='Reject + notify';});});});
+    var pre=btn.getAttribute('data-miss')?'Your Bybit UID is not registered through MarginPad\u2019s Bybit link. Create a Bybit account via the link on the rewards page, or contact support.':'';
+    var reason=prompt('Reason for rejecting (the user sees this in the banner + email; the money is refunded to their balance):',pre);
+    if(reason===null)return;
+    reason=reason.trim();
+    if(!reason&&!confirm('No reason entered - send the generic "UID not via our link" message?'))return;
+    btn.textContent='\u2026';btn.disabled=true;
+    fetch('/api/reward/wd/reject?key='+encodeURIComponent(key),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:btn.getAttribute('data-id'),note:reason})}).then(function(r){return r.json();}).then(function(j){if(!(j&&j.ok))alert('Reject failed: '+((j&&j.error)||'unknown'));loadWd();}).catch(function(){btn.disabled=false;btn.textContent='Reject + notify';});});});
   Array.prototype.forEach.call(el.querySelectorAll('.wdcopy'),function(b){b.addEventListener('click',function(){var v=b.getAttribute('data-copy')||'';if(navigator.clipboard&&v){navigator.clipboard.writeText(v).then(function(){var o=b.textContent;b.textContent='copied ✓';setTimeout(function(){b.textContent=o;},1200);}).catch(function(){});}});});}
 (function(){
   document.addEventListener('click',function(e){if(!(e.target&&e.target.id==='buidSave'))return;var ta=document.getElementById('buidTa');if(!ta)return;var btn=e.target;btn.disabled=true;btn.textContent='saving…';
@@ -9216,10 +9220,12 @@ async function handleReward(url, request, env) {
     if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403);
     const id9 = String((b && b.id) || ''); if (!id9) return jr({ error: 'bad' }, 400);
     const stub9 = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
+    const noteIn = String((b && b.note) || '').trim().slice(0, 300); // owner-typed reason — shown to the user verbatim (banner + email + wd history)
     let rj = null;
-    try { const rr = await stub9.fetch(new Request('https://do/wdreject', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: id9, note: String((b && b.note) || 'Bybit UID not registered through MarginPad’s link') }) })); rj = await rr.json(); } catch (e) { return jr({ error: 'do_fail' }, 502); }
+    try { const rr = await stub9.fetch(new Request('https://do/wdreject', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: id9, note: noteIn || 'Bybit UID not registered through our link' }) })); rj = await rr.json(); } catch (e) {}
     if (!rj || !rj.ok) return jr(rj || { error: 'fail' }, 409);
-    const userMsg = 'Your withdrawal of $' + (+rj.amountUsd || 0).toFixed(2) + ' was rejected: Bybit UID ' + (rj.uid || '') + ' is not registered through MarginPad’s Bybit link. The full amount has been RETURNED to your rewards balance — nothing is lost. We only pay out to Bybit accounts created via our link. Please contact support (Rewards page → Contact support) and we’ll sort out your UID.';
+    const reason = noteIn || ('Bybit UID ' + (rj.uid || '') + ' is not registered through MarginPad\u2019s Bybit link.');
+    const userMsg = 'Your withdrawal of $' + (+rj.amountUsd || 0).toFixed(2) + ' was rejected: ' + reason + ' The full amount has been RETURNED to your rewards balance.';
     try { await stub9.fetch(new Request('https://do/message', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ address: rj.acct, message: userMsg }) })); } catch (e) {} // banner on /rewards next visit
     let emailed = false;
     try {
