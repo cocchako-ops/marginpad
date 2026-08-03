@@ -2064,13 +2064,18 @@ async function postSignalReport(env) {
   await env.STATS.put('csig:report:' + wk, '1', { expirationTtl: 14 * 86400 });
   let a = []; try { a = JSON.parse(await env.STATS.get('csig:results') || '[]'); } catch (e) {}
   const wkRes = a.filter(x => x.ts >= Date.now() - 7 * 86400000);
-  if (wkRes.length < 3) return; // too few to report on
+  // n floor 30 (owner, 2026-08-03): an expectancy from n=14 is a non-datum — same rule as the perf budgets
+  // (a number without sufficient n misleads more than silence). Weeks with fewer signals send nothing.
+  if (wkRes.length < 30) return;
   const n = wkRes.length, wins = wkRes.filter(x => x.r === 'win').length, wr = Math.round(wins / n * 100);
   const expR = (wins * 1.5 - (n - wins)) / n; // TP1 = +1.5R, SL = −1R
   const bySym = {}; wkRes.forEach(x => { (bySym[x.sym] = bySym[x.sym] || { w: 0, n: 0 }).n++; if (x.r === 'win') bySym[x.sym].w++; });
   const best = Object.keys(bySym).map(s => ({ s, ...bySym[s] })).filter(x => x.n >= 2).sort((a, b) => (b.w / b.n) - (a.w / a.n) || b.n - a.n)[0];
   const text = '📊 <b>Weekly signal report</b>\n' + DIV + '\n🎯 Signals fired: <b>' + n + '</b>\n✅ Hit target (TP1+): <b>' + wins + '</b>\n📈 Win rate: <b>' + wr + '%</b>\n💹 Expectancy: <b>' + (expR >= 0 ? '+' : '') + expR.toFixed(2) + 'R</b> / signal' + (best ? '\n⭐ Best coin: <b>' + best.s + '</b> (' + best.w + '/' + best.n + ')' : '') + '\n\n<i>1h Supertrend · TP1 = 1.5R, SL = 1R. Educational — past results ≠ future.</i>';
-  for (const t of ['fast', 'balanced', 'premium', 'free']) { const c = await env.STATS.get('csig:chat:' + t); if (c) { try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: c, parse_mode: 'HTML', disable_web_page_preview: true, text }); } catch (e) {} await new Promise(r => setTimeout(r, 300)); } }
+  // CHART tiers only. 'free' was removed 2026-08-03: the free channel is PAUSED and gets screener signals
+  // (fsig), not these 1h chart signals — a report about signals its subscribers never receive is worse than
+  // silence (sent one on 08-03 before this fix). If free ever needs a report, it derives from fsig:results.
+  for (const t of ['fast', 'balanced', 'premium']) { const c = await env.STATS.get('csig:chat:' + t); if (c) { try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: c, parse_mode: 'HTML', disable_web_page_preview: true, text }); } catch (e) {} await new Promise(r => setTimeout(r, 300)); } }
 }
 // Funding-rate map (coin → % per 8h) from Bybit linear tickers, edge-cached 2 min.
 async function fundingMap(env) {
@@ -2357,7 +2362,11 @@ async function postSignalDigest(env) {
         + '💬 Talk trades with the floor: https://t.me/+KUdlNUNPem01YjVk\n'
         + '<i>Standing by — the next flip posts here the minute it confirms.</i>');
     let totalDigest = 0;
+    // free's check-in claims "scanning the whole market around the clock" — only true while the fsig engine
+    // runs. Engine paused (fsig:on=0) → skip free (owner, 2026-08-03); resumes by itself when fsig resumes.
+    const fsigOn = (await env.STATS.get('fsig:on')) !== '0';
     for (const t of ['fast', 'balanced', 'premium', 'free']) { // ALL tiers get the daily check-in — balanced+premium fell out of this loop in the 07-26 "honest digest" rework, so the PAID channels went fully silent between confirmed signals (the "premium se ne oglašava" complaint)
+      if (t === 'free' && !fsigOn) continue;
       const c = await env.STATS.get('csig:chat:' + t); if (!c) continue;
       const n = +(await env.STATS.get('sig:sent:' + t + ':' + day)) || 0; totalDigest += n;
       try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: c, parse_mode: 'HTML', disable_web_page_preview: true, text: msgFor(t, n) }); } catch (e) {}
