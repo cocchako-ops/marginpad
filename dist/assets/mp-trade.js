@@ -412,12 +412,12 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
     document.addEventListener('click',function(){if(menu&&!menu.hidden){menu.hidden=true;btn.classList.remove('open');}});
   }
   function markRoomPills(){if(!roomBar)return;var cur=roomBar.querySelector('.ct-roomcur');if(cur)cur.textContent=roomLabel(room);var iw=roomBar.querySelector('.ct-roombtn .ct-ricw');if(iw){iw.innerHTML=roomIcon(room);ctImgFallback(iw);}var its=roomBar.querySelectorAll('[data-room]');for(var i=0;i<its.length;i++)its[i].classList.toggle('on',its[i].getAttribute('data-room')===room);}
-  function switchRoom(r){if(r===room||chatRooms().indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?'Premium lounge — VIPs only…':'Message '+room+' room…')+'  ·  type /leaderboard';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
+  function switchRoom(r){if(r===room||chatRooms().indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?'Premium lounge — VIPs only…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
   function meUser(){var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me)return '';return String(me.username||(me.email||'').split('@')[0]||'trader').replace(/[<>&]/g,'').slice(0,20);}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   function colorFor(u){var h=0;for(var i=0;i<u.length;i++)h=(h*31+u.charCodeAt(i))%360;return 'hsl('+h+',65%,70%)';}
   var MP_BADGE='<svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-3px;margin-right:4px;filter:drop-shadow(0 0 3px rgba(194,246,74,.55))"><path d="M12 1L14.83 3.3L18.47 3.1L19.4 6.62L22.46 8.6L21.15 12L22.46 15.4L19.4 17.38L18.47 20.9L14.83 20.7L12 23L9.17 20.7L5.53 20.9L4.6 17.38L1.54 15.4L2.85 12L1.54 8.6L4.6 6.62L5.53 3.1L9.17 3.3Z" fill="#c2f64a"/><path d="M7.7 12.3l2.9 2.9L16.4 9.3" fill="none" stroke="#0a0b0d" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var who=m.admin?'<b style="color:#e9e7df;font-weight:800">'+MP_BADGE+'Margin<span style="color:#c2f64a">Pad</span></b>':'<span data-lvln="'+esc(m.u)+'"></span><b class="ct-user" data-lbu="'+esc(m.u)+'" role="button" tabindex="0" style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b><span data-lpro="'+esc(m.u)+'"></span>';d.innerHTML=who+' '+esc(m.t);msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();}
+  function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var who=m.admin?'<b style="color:#e9e7df;font-weight:800">'+MP_BADGE+'Margin<span style="color:#c2f64a">Pad</span></b>':'<span data-lvln="'+esc(m.u)+'"></span><b class="ct-user" data-lbu="'+esc(m.u)+'" role="button" tabindex="0" style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b><span data-lpro="'+esc(m.u)+'"></span>';var _sg=window._mpParseSig&&window._mpParseSig(m.t);d.innerHTML=who+' '+(_sg?window._mpSigCardHtml(_sg):esc(m.t));msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();}
   /* click a username in chat → open that trader's profile card (window.mpOpenProfile provided by mp-profile.js, or the homepage's inline lbOpenProfile exposed as it) */
   function openTraderCard(n){n=String(n||'').replace(/[^a-zA-Z0-9_]/g,'');if(!n)return;if(window.mpOpenProfile){try{window.mpOpenProfile(n);}catch(_){}}}
   if(msgs)msgs.addEventListener('click',function(e){var el=e.target.closest&&e.target.closest('.ct-user[data-lbu]');if(el){e.stopPropagation();openTraderCard(el.getAttribute('data-lbu'));}});
@@ -465,7 +465,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
     ws.onclose=function(){ws=null;if(joined)setTimeout(connect,3000);};
     ws.onerror=function(){try{ws.close();}catch(e){}};
   }
-  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;buildRoomBar();if(roomBar)roomBar.hidden=false;connect();try{input.placeholder=(room==='global'?'Message…':'Message '+room+' room…')+'  ·  type /leaderboard';}catch(e){}setTimeout(function(){input.focus();},50);}
+  function showChat(){var _me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();if(_me&&(_me.muted||(','+String(_me.restrictions||'')+',').indexOf(',chat,')>=0)){gate.hidden=true;msgs.hidden=false;form.hidden=true;sysMsg('Your account is currently restricted from the chat. If you believe this is a mistake, contact <b>support@marginpad.io</b>.');return;}gate.hidden=true;msgs.hidden=false;form.hidden=false;joined=true;buildRoomBar();if(roomBar)roomBar.hidden=false;connect();try{input.placeholder=(room==='global'?'Message…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}setTimeout(function(){input.focus();},50);}
   function showGate(){gate.hidden=false;msgs.hidden=true;form.hidden=true;if(roomBar)roomBar.hidden=true;}
   function openBox(){chatAlert(false);markChatSeen();box.hidden=false;fab.hidden=true;document.body.classList.add('chat-open');var u=meUser();if(u){user=u;showChat();}else{showGate();}}
   window.mpOpenChat=openBox;
@@ -476,7 +476,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
   closeBtn.addEventListener('click',function(){box.hidden=true;fab.hidden=false;document.body.classList.remove('chat-open');});
   if(signinBtn)signinBtn.addEventListener('click',function(){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}});
   window.addEventListener('mp-auth-change',function(){if(!box.hidden&&!joined){var u=meUser();if(u){user=u;showChat();}}});
-  form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;var _lbm=t.match(/^\/(leaderboard|lb|leaders)\s*([1234])?\b/i);if(_lbm){input.value='';showLeaderboard(+_lbm[2]||1);return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));try{window.__mpTrack&&window.__mpTrack('chat','sent');}catch(_){}input.value='';});
+  form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;var _lbm=t.match(/^\/(leaderboard|lb|leaders)\s*([1234])?\b/i);if(_lbm){input.value='';showLeaderboard(+_lbm[2]||1);return;}if(/^\/sig(nal)?\b/i.test(t)){input.value='';if(window._mpOpenSigForm)window._mpOpenSigForm({anchor:form,send:function(txt){if(ws&&ws.readyState===1){ws.send(JSON.stringify({type:'msg',u:user,t:txt}));try{window.__mpTrack&&window.__mpTrack('chat','signal');}catch(_){}return true;}return false;}});return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));try{window.__mpTrack&&window.__mpTrack('chat','sent');}catch(_){}input.value='';});
 })();
 
 /* UX pass (2026-07): bottom-nav "Trades" badge — open-position count (rekt/rewards; the homepage has its own copy in home.js) */
@@ -672,4 +672,74 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
     if(after)try{after();}catch(_){}
   }
   window.mpSltpSheet=show;
+})();
+
+// ---- /signal chat cards (2026-08-03): parse + card render + mini form (shared shape home.js/mp-trade.js) ----
+(function(){
+  if(window._mpParseSig)return;
+  function fpx(v){v=+v;return '$'+v.toLocaleString('en-US',{maximumFractionDigits:v>=100?2:v>=1?4:6});}
+  function pct(a,b){return Math.abs((a-b)/b*100).toFixed(1);}
+  window._mpParseSig=function(t){
+    var m=/^\[SIGNAL\] (LONG|SHORT) ([A-Z0-9]{2,10})\/USDT (15m|1h|4h|1d) \| E ([0-9.]+) \| TP1 ([0-9.]+) \| TP2 ([0-9.]+) \| SL ([0-9.]+) \| LEV ([0-9]{1,3})$/.exec(String(t||'').trim());
+    if(!m)return null;
+    var s={side:m[1],sym:m[2],tf:m[3],e:+m[4],tp1:+m[5],tp2:+m[6],sl:+m[7],lev:+m[8]};
+    if(!(s.e>0&&s.tp1>0&&s.tp2>0&&s.sl>0&&s.lev>0))return null;
+    return s;
+  };
+  window._mpSigCardHtml=function(s){
+    var long=s.side==='LONG';
+    return '<div class="ct-sig '+(long?'lg':'sh')+'">'
+      +'<div class="ct-sig-h"><span class="ct-sig-pill">'+(long?'BUY':'SELL')+' signal</span><b>'+s.sym+'/USDT</b><span class="ct-sig-tf">'+s.tf+'</span></div>'
+      +'<div class="ct-sig-r"><span>Entry</span><code>'+fpx(s.e)+'</code></div>'
+      +'<div class="ct-sig-r"><span>TP1</span><code>'+fpx(s.tp1)+'</code><i>+'+pct(s.tp1,s.e)+'%</i><em>take ~half</em></div>'
+      +'<div class="ct-sig-r"><span>TP2</span><code>'+fpx(s.tp2)+'</code><i>+'+pct(s.tp2,s.e)+'%</i></div>'
+      +'<div class="ct-sig-r sl"><span>SL</span><code>'+fpx(s.sl)+'</code><i>-'+pct(s.sl,s.e)+'%</i></div>'
+      +'<div class="ct-sig-r lev"><span>Max lev</span><code>~'+s.lev+'×</code><em>more risks liquidation before TP</em></div>'
+      +'</div>';
+  };
+  window._mpOpenSigForm=function(ctx){
+    if(!ctx||!ctx.anchor)return;
+    var old=document.querySelector('.ctsg');if(old)old.remove();
+    var p=document.createElement('div');p.className='ctsg';
+    p.innerHTML='<div class="ctsg-h"><b>New signal</b><button type="button" class="ctsg-x" aria-label="Close">×</button></div>'
+      +'<div class="ctsg-seg"><button type="button" class="ctsg-side lg on" data-s="LONG">LONG</button><button type="button" class="ctsg-side sh" data-s="SHORT">SHORT</button></div>'
+      +'<div class="ctsg-row2"><input class="ctsg-in" data-f="sym" placeholder="Coin (e.g. XRP)" maxlength="10" autocapitalize="characters" spellcheck="false"><select class="ctsg-in" data-f="tf"><option>15m</option><option selected>1h</option><option>4h</option><option>1d</option></select></div>'
+      +'<div class="ctsg-grid">'
+      +'<label>Entry<input class="ctsg-in" data-f="e" inputmode="decimal" placeholder="1.0825"></label>'
+      +'<label>TP1<input class="ctsg-in" data-f="tp1" inputmode="decimal" placeholder="1.0960"><s class="ctsg-pc" data-p="tp1"></s></label>'
+      +'<label>TP2<input class="ctsg-in" data-f="tp2" inputmode="decimal" placeholder="1.1094"><s class="ctsg-pc" data-p="tp2"></s></label>'
+      +'<label>SL<input class="ctsg-in" data-f="sl" inputmode="decimal" placeholder="1.0735"><s class="ctsg-pc sl" data-p="sl"></s></label>'
+      +'<label>Max lev<input class="ctsg-in" data-f="lev" inputmode="numeric" placeholder="20" maxlength="3"></label>'
+      +'</div>'
+      +'<button type="button" class="ctsg-post">Post signal</button>'
+      +'<div class="ctsg-err"></div>';
+    ctx.anchor.parentNode.insertBefore(p,ctx.anchor);
+    var side='LONG';
+    function q(sel){return p.querySelector(sel);}
+    function val(f){var el=q('[data-f="'+f+'"]');return el?el.value.trim():'';}
+    function num(f){var v=parseFloat(val(f));return isFinite(v)&&v>0?v:null;}
+    function upPc(){var e=num('e');['tp1','tp2','sl'].forEach(function(f){var el=q('[data-p="'+f+'"]'),v=num(f);
+      if(!el)return;if(!(e&&v)){el.textContent='';return;}
+      var d=Math.abs((v-e)/e*100).toFixed(1);el.textContent=(f==='sl'?'-':'+')+d+'%';});}
+    Array.prototype.forEach.call(p.querySelectorAll('.ctsg-side'),function(b){b.addEventListener('click',function(){
+      side=b.getAttribute('data-s');Array.prototype.forEach.call(p.querySelectorAll('.ctsg-side'),function(x){x.classList.toggle('on',x===b);});upPc();});});
+    Array.prototype.forEach.call(p.querySelectorAll('.ctsg-in'),function(el){el.addEventListener('input',upPc);});
+    q('.ctsg-x').addEventListener('click',function(){p.remove();});
+    q('.ctsg-post').addEventListener('click',function(){
+      var err=q('.ctsg-err');err.textContent='';
+      var sym=val('sym').toUpperCase().replace(/[^A-Z0-9]/g,'');
+      var e=num('e'),tp1=num('tp1'),tp2=num('tp2'),sl=num('sl'),lev=Math.round(num('lev')||0);
+      if(sym.length<2){err.textContent='Enter the coin (e.g. XRP).';return;}
+      if(!e||!tp1||!tp2||!sl){err.textContent='Fill entry, TP1, TP2 and SL (numbers).';return;}
+      if(!(lev>=1&&lev<=125)){err.textContent='Max lev must be 1-125.';return;}
+      var long=side==='LONG';
+      if(long&&!(tp1>e&&tp2>=tp1&&sl<e)){err.textContent='For a LONG: TP1 above entry, TP2 above TP1, SL below entry.';return;}
+      if(!long&&!(tp1<e&&tp2<=tp1&&sl>e)){err.textContent='For a SHORT: TP1 below entry, TP2 below TP1, SL above entry.';return;}
+      var txt='[SIGNAL] '+side+' '+sym+'/USDT '+val('tf')+' | E '+e+' | TP1 '+tp1+' | TP2 '+tp2+' | SL '+sl+' | LEV '+lev;
+      if(txt.length>278){err.textContent='Too long - shorten the numbers.';return;}
+      if(!ctx.send(txt)){err.textContent='Chat is reconnecting - try again in a second.';return;}
+      p.remove();
+    });
+    setTimeout(function(){var f=q('[data-f="sym"]');if(f)f.focus();},40);
+  };
 })();
