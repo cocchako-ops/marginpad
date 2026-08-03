@@ -378,9 +378,14 @@ function _screenScore(d) {
   if (sma50 != null && sma200 != null) { if (sma50 > sma200) { score += 12; sig.push('Golden cross (50>200)'); } else { score -= 12; sig.push('Death cross (50<200)'); } }
   if (rsi != null) { if (rsi < 30) { score += 8; sig.push('RSI oversold ' + rsi.toFixed(0)); } else if (rsi > 70) { score -= 8; sig.push('RSI overbought ' + rsi.toFixed(0)); } }
   if (macd) { if (macd.hist > 0) { score += macd.hist > macd.prevHist ? 10 : 5; sig.push('MACD bullish'); } else { score -= macd.hist < macd.prevHist ? 10 : 5; sig.push('MACD bearish'); } }
+  // SYMMETRY FIX (owner, 2026-08-03): the range block had long-only bonuses — a coin BELOW its 30-bar low scored
+  // +6 "At support" and no breakdown/resistance penalty existed. Result (measured on 33 sent signals): every
+  // signal was a long. Mirrors added; thresholds/sort untouched by order.
   if (isFinite(recHigh) && price > recHigh) { score += 10; sig.push('Breakout above range'); }
+  else if (isFinite(recLow) && price < recLow) { score -= 10; sig.push('Breakdown below range'); }
   else if (isFinite(recLow) && price <= recLow * 1.015) { score += 6; sig.push('At support'); }
-  if (d.funding < 0) { score += 6; sig.push('Negative funding'); } else if (d.funding > 0.05) { score -= 6; sig.push('High positive funding'); }
+  else if (isFinite(recHigh) && price >= recHigh * 0.985) { score -= 6; sig.push('At resistance'); }
+  if (d.funding < 0) { score += 6; sig.push('Negative funding'); } else if (d.funding > 0) { score -= 6; sig.push('Positive funding'); } // mirror: ANY negative was +6 while positive needed >0.05 — now symmetric at 0 (note: baseline funding is mildly positive, so most coins carry the -6)
   if (volMA && curVol > volMA * 1.5) { if (d.chg >= 0) { score += 8; sig.push('Volume spike (up)'); } else { score -= 8; sig.push('Volume spike (down)'); } }
   if (d.chg > 3) score += 4; else if (d.chg < -3) score -= 4;
   score = Math.max(0, Math.min(100, Math.round(score)));
