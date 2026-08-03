@@ -541,7 +541,8 @@
   @keyframes moonBreath{0%,100%{box-shadow:0 0 26px -14px rgba(117,115,225,.55);}50%{box-shadow:0 0 46px -10px rgba(117,115,225,.85);}}
   .exbig:hover{border-color:rgba(142,148,235,.85);box-shadow:0 0 54px -12px rgba(117,115,225,.9);animation:none;}
   .exbig::after{content:'MOON';position:absolute;right:-14px;bottom:-30px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:104px;letter-spacing:-6px;color:rgba(117,115,225,.10);pointer-events:none;}
-  .exbig-tag{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#8e94eb;border:1px solid rgba(117,115,225,.5);border-radius:999px;padding:6px 12px;}
+  .exbig-tag{position:absolute;top:26px;right:26px;z-index:2;display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#8e94eb;border:1px solid rgba(117,115,225,.5);border-radius:999px;padding:6px 12px;background:rgba(10,11,13,.55);}
+  @media(max-width:640px){.exbig-tag{top:18px;right:14px;padding:5px 9px;font-size:9px;letter-spacing:.12em;}}
   .exbig-tag i{width:7px;height:7px;border-radius:50%;background:#8e94eb;box-shadow:0 0 9px #7573e1;animation:exsoon 1.6s ease-in-out infinite;}
   @keyframes exsoon{0%,100%{opacity:1}50%{opacity:.3}}
   .exbig-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(22px,2vw,30px);letter-spacing:-.02em;line-height:1.12;color:var(--ink);}
