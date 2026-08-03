@@ -1874,16 +1874,18 @@ async function checkDailyWrap(env) {
   const H = Number.isFinite(hRaw) && hRaw >= 0 && hRaw <= 23 ? hRaw : 16;
   const now = new Date();
   if (now.getUTCHours() < H) return;
+  // channel check BEFORE the stamp — the original order stamped first, so one transient chans miss on the
+  // first eligible run left the stamp set and silently killed the whole day's wrap (2026-08-03, first run)
+  const chans = await sigChannels(env);
+  if (!chans.free) { await sigChanMissing(env, 'free'); return; }
   const day = now.toISOString().slice(0, 10);
   if (await env.STATS.get('wrap:' + day)) return;
   await env.STATS.put('wrap:' + day, '1', { expirationTtl: 172800 }); // stamp first — never double-post
   try {
-    const chans = await sigChannels(env);
-    if (!chans.free) { await sigChanMissing(env, 'free'); return; }
     const text = await buildWrapText(env);
-    if (!text) { await env.STATS.delete('wrap:' + day); return; } // core data missing — retry next */10
+    if (!text) { await env.STATS.put('wrap:err', JSON.stringify({ ts: Date.now(), reason: 'no-data' }), { expirationTtl: 172800 }); await env.STATS.delete('wrap:' + day); return; } // core data missing — retry next */10
     const mid = await sigSend(env, 'free', chans.free, text);
-    if (!mid) { await env.STATS.delete('wrap:' + day); return; }
+    if (!mid) { await env.STATS.put('wrap:err', JSON.stringify({ ts: Date.now(), reason: 'send-0' }), { expirationTtl: 172800 }); await env.STATS.delete('wrap:' + day); return; }
     await env.STATS.put('wrap:last', JSON.stringify({ day, mid, ts: Date.now() }), { expirationTtl: 7 * 86400 });
     try { await evPush(env, null, 'wrap', day, ''); } catch (e) {}
   } catch (e) { try { await env.STATS.delete('wrap:' + day); } catch (e2) {} throw e; }
@@ -9906,7 +9908,7 @@ export default {
       try { cCfg = JSON.parse(await env.STATS.get('cpap:cfg') || '{}'); } catch (e) {}
       const n = cRes.length, wins = cRes.filter(x => x.R > 0).length;
       const out = {
-        wrap: { on: (await env.STATS.get('wrap:on')) !== '0', hour: +(await env.STATS.get('wrap:hour')) || 16, last: JSON.parse(await env.STATS.get('wrap:last') || 'null') },
+        wrap: { on: (await env.STATS.get('wrap:on')) !== '0', hour: +(await env.STATS.get('wrap:hour')) || 16, last: JSON.parse(await env.STATS.get('wrap:last') || 'null'), err: JSON.parse(await env.STATS.get('wrap:err') || 'null'), dayStamp: !!(await env.STATS.get('wrap:' + new Date().toISOString().slice(0, 10))) },
         liqAlert: { on: (await env.STATS.get('liqalert:on')) === '1', thresholdUsd: cfg.liqAlertUsd, coolMin: cfg.liqAlertCoolMin },
         cpaper: { on: (await env.STATS.get('cpap:on')) !== '0', cfg: cCfg, openN: cOpen.length, open: cOpen,
           summary: n ? { n, wins, winRate: +(wins / n * 100).toFixed(1), avgR: +(cRes.reduce((a, x) => a + x.R, 0) / n).toFixed(3), avgGrossPct: +(cRes.reduce((a, x) => a + x.grossPct, 0) / n).toFixed(3) } : { n: 0 },
