@@ -451,4 +451,28 @@
   <url><loc>https://marginpad.io/pnl-fee-checker/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://marginpad.io/premium/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://marginpad.io/free-crypto-api/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://marginpad.io/spot/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://marginpad.io/best-crypto-exchange-for-shorting/</loc><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/best-crypto-exchange-for-swing-trading/</loc><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/best-crypto-exchange-for-solana-futures/</loc><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/best-crypto-exchange-for-meme-coins/</loc><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/bitget-vs-kraken/</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/gate-vs-kraken/</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/trx-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/dot-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/pepe-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/wif-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/sui-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/hype-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/shib-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/near-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/dot/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/sui/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/wif/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/hype/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/near/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/apt/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/arb/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/liquidations/op/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/privacy/</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
 </urlset>

@@ -13903,7 +13903,7 @@ async function checkIndexNow(env, force) {
     if (!force && (await env.STATS.get('inow:day')) === day) return; // once per UTC day (force bypasses)
     await env.STATS.put('inow:day', day);
     let urls = [];
-    for (const sm of ['https://marginpad.io/sitemap.xml', 'https://marginpad.io/community/sitemap.xml']) {
+    for (const sm of ['https://marginpad.io/sitemap.xml', 'https://marginpad.io/sitemap-i18n.xml', 'https://marginpad.io/community/sitemap.xml']) {
       try { const t = await (await fetch(sm)).text(); urls = urls.concat([...t.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].trim())); } catch (e) {}
     }
     urls = [...new Set(urls)].filter(u => u.startsWith('https://marginpad.io'));
