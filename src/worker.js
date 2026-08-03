@@ -9229,6 +9229,16 @@ async function handleReward(url, request, env) {
     // no on-chain wallet check at claim anymore — there is no wallet here; the BEP20 address is validated at /withdraw (full.requireOnchain still gates the payout address there if you wire it later)
   }
   if ((path === '/admin' || path === '/admin/paid' || path === '/accounts' || path === '/log' || path === '/unlock' || path === '/remove' || path === '/detail' || path === '/earnings' || path === '/note' || path === '/ban' || path === '/unban' || path === '/adjust' || path === '/lbban' || path === '/lbtop' || path === '/lbhistory' || path === '/message' || path === '/support/close' || path === '/support/new' || path === '/promo/list' || path === '/promo/review' || path === '/exsign/list' || path === '/exsign/review' || path === '/moonsign/list' || path === '/moonsign/review' || path === '/xengage/list' || path === '/xengage/review' || (path === '/support' && request.method === 'GET')) && !adminOk) return jr({ error: 'forbidden' }, 403);
+  if (path === '/wd/cancel' && request.method === 'POST') { // SILENT admin cancel — refund + row deleted, user gets NOTHING (no banner/email/history entry)
+    if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403);
+    const idC = String((b && b.id) || ''); if (!idC) return jr({ error: 'bad' }, 400);
+    const stubC = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
+    let rc = null;
+    try { const rr = await stubC.fetch(new Request('https://do/wdcancel', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: idC }) })); rc = await rr.json(); } catch (e) {}
+    if (!rc || !rc.ok) return jr(rc || { error: 'fail' }, 409);
+    try { await evPush(env, request, 'wdcancel', '$' + (+rc.amountUsd || 0).toFixed(2), '/rewards/'); } catch (e) {} // ops feed only — the user is deliberately NOT notified
+    return jr({ ok: true, refundedUsd: rc.amountUsd, acct: rc.acct });
+  }
   if (path === '/wd/reject' && request.method === 'POST') { // ops one-click: reject a pending WD whose Bybit UID isn't via our affiliate link → DO refunds the balance, then the user gets a site banner + email telling them to contact support. Auth: admin cookie OR ?key= (manual recovery bearer, same as the newer admin routes)
     if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403);
     const id9 = String((b && b.id) || ''); if (!id9) return jr({ error: 'bad' }, 400);
@@ -11304,6 +11314,19 @@ export class RewardLedger {
       this.log('wdreject', owner9, '', '', w.amount);
       return this.j({ ok: true, acct: owner9, amountUsd: w.amount / 100, uid: w.address || '' });
     }
+    if (path === '/wdcancel') { // admin: SILENT cancel of a pending withdrawal — refund the balance and DELETE the
+      // row entirely, as if never requested (no rejected status, no note, nothing in the user's wd history; used
+      // for requests filed during the 2026-08-03 broken-config window — owner's call: no messaging at all)
+      const id = String(body.id || '');
+      const w = this.rows('SELECT * FROM withdrawals WHERE id=?', id)[0];
+      if (!w) return this.j({ error: 'not_found' }, 404);
+      if (w.status !== 'pending') return this.j({ error: 'already_decided', status: w.status }, 409);
+      const ownerC = w.acct || w.address;
+      sql.exec('DELETE FROM withdrawals WHERE id=?', id);
+      sql.exec('UPDATE accounts SET balance=balance+? WHERE address=?', w.amount, ownerC);
+      this.log('wdcancel', ownerC, '', '', w.amount);
+      return this.j({ ok: true, acct: ownerC, amountUsd: w.amount / 100, wallet: w.address || '' });
+    }
     if (path === '/wdhistory') { // a user's own withdrawal history (pending + paid, with tx hash) — keyed by their account
       if (!acct) return this.j({ withdrawals: [] });
       const list = this.rows('SELECT amount,status,ts,paid_ts,txid,note,address FROM withdrawals WHERE acct=? ORDER BY ts DESC LIMIT 50', acct).map(w => ({ amountUsd: w.amount / 100, status: w.status, ts: w.ts, paidTs: w.paid_ts || 0, txid: w.txid || '', note: w.note || '', address: w.address || '' }));
@@ -11313,8 +11336,8 @@ export class RewardLedger {
       // IP-sharing only counts REAL shared IPs — accounts with an unknown/empty IP must NOT be grouped together (that would falsely flag everyone whose IP we never captured)
       const ipCount = {}; this.rows("SELECT ip, COUNT(*) n FROM accounts WHERE ip IS NOT NULL AND ip != '' GROUP BY ip").forEach(r => { ipCount[r.ip] = r.n; });
       const didCount = {}; this.rows("SELECT did, COUNT(*) n FROM accounts WHERE did IS NOT NULL AND did != '' GROUP BY did").forEach(r => { didCount[r.did] = r.n; });
-      const list = this.rows('SELECT address,balance,earned,claims,cc,dev,ip,created,last_claim,banned,did FROM accounts ORDER BY created DESC LIMIT 500')
-        .map(a => ({ address: a.address, balanceUsd: a.balance / 100, earnedUsd: a.earned / 100, claims: a.claims || 0, cc: a.cc || '', dev: a.dev || '', ip: a.ip || '', created: a.created, lastClaim: a.last_claim, sameIp: (a.ip ? (ipCount[a.ip] || 1) : 1), sameDid: (a.did ? (didCount[a.did] || 1) : 1), did: a.did || '', banned: !!a.banned }));
+      const list = this.rows('SELECT address,balance,earned,claims,cc,dev,ip,created,last_claim,banned,did,day,day_amt FROM accounts ORDER BY created DESC LIMIT 500')
+        .map(a => ({ address: a.address, balanceUsd: a.balance / 100, earnedUsd: a.earned / 100, claims: a.claims || 0, cc: a.cc || '', dev: a.dev || '', ip: a.ip || '', created: a.created, lastClaim: a.last_claim, day: a.day || '', dayAmtUsd: (a.day_amt || 0) / 100, sameIp: (a.ip ? (ipCount[a.ip] || 1) : 1), sameDid: (a.did ? (didCount[a.did] || 1) : 1), did: a.did || '', banned: !!a.banned }));
       const totals = this.rows('SELECT COUNT(*) c, COALESCE(SUM(balance),0) b, COALESCE(SUM(earned),0) e FROM accounts')[0];
       const bannedCount = (this.rows('SELECT COUNT(*) n FROM accounts WHERE banned=1')[0] || { n: 0 }).n;
       const ipDistinct = (this.rows("SELECT COUNT(*) n FROM (SELECT ip FROM accounts WHERE ip IS NOT NULL AND ip != '' GROUP BY ip)")[0] || { n: 0 }).n;
