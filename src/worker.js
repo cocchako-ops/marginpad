@@ -9543,7 +9543,7 @@ export default {
         on: (await env.STATS.get('fsig:on')) !== '0', daily: +(await env.STATS.get('fsig:daily') || 5), gapMin: +(await env.STATS.get('fsig:gap') || 150),
         freeChannel: (await env.STATS.get('csig:chat:free')) || '(UNSET — signals will ALARM, not post)',
         sentTodayFree: +(await env.STATS.get('sig:sent:free:' + day)) || 0, sentTodayFast: +(await env.STATS.get('sig:sent:fast:' + day)) || 0,
-        dbg: await env.STATS.get('fsig:dbg'), open: JSON.parse(await env.STATS.get('fsig:open') || '[]'), results: JSON.parse(await env.STATS.get('fsig:results') || '[]').slice(0, 30),
+        dbg: await env.STATS.get('fsig:dbg'), open: JSON.parse(await env.STATS.get('fsig:open') || '[]'), results: JSON.parse(await env.STATS.get('fsig:results') || '[]').slice(0, q.get('all') === '1' ? 400 : 30),
       });
     }
     // READ-ONLY SEO measurement from Analytics Engine (pageview blobs: blob3=path, blob4=src). Organic Google =
