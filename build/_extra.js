@@ -554,6 +554,51 @@ const E = [
     {q:'Does position size change the liquidation price?',a:'For isolated margin, no — the liquidation price depends on entry, leverage and maintenance margin, not on how large the position is. Position size changes how much money you lose at liquidation, not the price it happens at. Cross margin is different: your whole balance backs the trade, pushing liquidation further away.'},
     {q:'Is the calculated liquidation price exact?',a:'It is a close estimate. Fees, funding and tiered maintenance margin on large positions all make real liquidation arrive slightly sooner, and exchanges liquidate against the mark price rather than the last trade. Treat the formula as a slightly optimistic guide and leave a buffer.'}
   ]
+},
+{
+  slug:'what-is-liquidation-in-crypto', tag:'Basics', read:7, crumb:'What is liquidation',
+  title:'What Is Liquidation in Crypto Trading (and How to Avoid It)',
+  desc:'Liquidation explained simply: what it is, why leverage causes it, what actually happens when you get liquidated, and seven practical ways to make sure it never happens to you.',
+  keywords:'what is liquidation in crypto, crypto liquidation explained, how does liquidation work, avoid liquidation crypto, leverage liquidation, liquidation price crypto futures',
+  body:`&lt;p&gt;&lt;strong&gt;Liquidation&lt;/strong&gt; is the fastest way to lose a crypto futures account — and it catches more traders than being wrong about direction ever does. You can call a move perfectly and still get wiped out if a normal wobble hits your liquidation price first. This guide explains, in plain English, what liquidation actually is, why leverage causes it, what happens the moment it hits, and seven habits that keep it from ever touching your account.&lt;/p&gt;
+
+&lt;h2&gt;What does liquidation mean?&lt;/h2&gt;
+&lt;p&gt;When you trade with leverage you are effectively borrowing to control a position larger than your own money. The money you put up is your &lt;strong&gt;margin&lt;/strong&gt;. If the market moves against you far enough that the loss would eat through that margin, the exchange steps in and &lt;strong&gt;force-closes&lt;/strong&gt; your position to stop the loss going past your collateral. That forced close is a liquidation, and you lose the margin backing the trade. The price at which it happens is your &lt;a href="/blog/how-to-calculate-liquidation-price/"&gt;liquidation price&lt;/a&gt; — the single most important number to know before you enter.&lt;/p&gt;
+
+&lt;h2&gt;Why does it happen? Leverage shrinks the buffer&lt;/h2&gt;
+&lt;p&gt;Liquidation is not bad luck; it is arithmetic. The higher your leverage, the smaller your margin is relative to the position, and the smaller the move needed to wipe it out. The distance to liquidation is roughly &lt;code&gt;1 ÷ leverage&lt;/code&gt;:&lt;/p&gt;
+&lt;table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:14px"&gt;
+&lt;thead&gt;&lt;tr&gt;&lt;th style="text-align:left;padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em"&gt;Leverage&lt;/th&gt;&lt;th style="text-align:left;padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em"&gt;Move that liquidates you&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;&lt;strong&gt;5×&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#34d99a"&gt;~20% — hard to hit by accident&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;&lt;strong&gt;10×&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#34d99a"&gt;~10% — survivable with a stop&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;&lt;strong&gt;25×&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#ffd75a"&gt;~4% — one candle&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;&lt;strong&gt;100×&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#ff7b72"&gt;~1% — ordinary noise&lt;/td&gt;&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+&lt;p&gt;Since crypto routinely swings 1–3% intraday, a 100× position is liquidated by a move most people would not even notice. That is the trap behind the big leverage numbers exchanges advertise. Learn the full relationship in &lt;a href="/blog/crypto-leverage-explained/"&gt;crypto leverage explained&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2&gt;What actually happens when you get liquidated&lt;/h2&gt;
+&lt;p&gt;Liquidation is not a gentle exit at your liquidation price. The exchange closes your position with a &lt;strong&gt;market order&lt;/strong&gt;, taking whatever price is available, and charges a &lt;strong&gt;liquidation fee&lt;/strong&gt; on top. In fast markets that fill can be worse than the level itself. Worse, your forced order pushes price further in the same direction — a liquidated long becomes a market sell — which can trigger the &lt;em&gt;next&lt;/em&gt; trader&apos;s liquidation, and the next. That chain reaction is a &lt;a href="/blog/liquidation-cascade-explained/"&gt;liquidation cascade&lt;/a&gt;, and it is why violent candles cluster where leverage is stacked. A &lt;strong&gt;long&lt;/strong&gt; is liquidated when price falls; a &lt;strong&gt;short&lt;/strong&gt; when price rises — and because a squeeze has no ceiling, shorts can be liquidated by far larger, faster moves.&lt;/p&gt;
+
+&lt;h2&gt;Seven ways to avoid liquidation&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;1. Use less leverage.&lt;/strong&gt; The biggest lever by far. Dropping from 100× to 10× moves liquidation from ~1% away to ~10% away — a completely different survival profile.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;2. Always set a stop-loss inside your liquidation.&lt;/strong&gt; A stop closes you at a price &lt;em&gt;you&lt;/em&gt; choose, with margin left, before the exchange does it for you at a worse one.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;3. Size by risk.&lt;/strong&gt; Risk a small fixed slice (1–2%) of your account per trade so a losing streak cannot end you. The &lt;a href="/#size"&gt;position-size calculator&lt;/a&gt; does the math.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;4. Keep a margin buffer.&lt;/strong&gt; Do not go all-in on margin; spare balance lets a position breathe through normal noise instead of dying on a wick.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;5. Prefer isolated margin.&lt;/strong&gt; It ring-fences risk to one position instead of your whole balance — see &lt;a href="/blog/cross-vs-isolated-margin/"&gt;cross vs isolated&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;6. Cut leverage before scheduled volatility.&lt;/strong&gt; FOMC and CPI on the &lt;a href="/calendar/"&gt;economic calendar&lt;/a&gt; routinely spike price several percent in seconds.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;7. Know your number before every trade.&lt;/strong&gt; Confirm your exact liquidation price with the &lt;a href="/#liq"&gt;liquidation calculator&lt;/a&gt; and make sure your stop sits comfortably inside it.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;See it happen with live data&lt;/h2&gt;
+&lt;p&gt;The concept sticks once you watch it in real time. MarginPad&apos;s &lt;a href="/liquidations/"&gt;live liquidations feed&lt;/a&gt; shows how much leverage is being wiped out across Binance, Bybit and OKX right now, and every major coin has its own page — &lt;a href="/liquidations/btc/"&gt;BTC&lt;/a&gt;, &lt;a href="/liquidations/eth/"&gt;ETH&lt;/a&gt;, &lt;a href="/liquidations/sol/"&gt;SOL&lt;/a&gt; — with the 24-hour total and the long-versus-short split. Then rehearse the habits above risk-free on the &lt;a href="/paper-trade"&gt;paper-trading terminal&lt;/a&gt; at the live price. It is far cheaper to learn liquidation with fake money than with your own.&lt;/p&gt;`,
+  faq:[
+    {q:'What does it mean to be liquidated in crypto?',a:'It means the exchange force-closed your leveraged position because your losses ate through the margin backing it. The position is closed at market, you lose that margin, and a liquidation fee is usually charged on top.'},
+    {q:'At what percentage do you get liquidated?',a:'Roughly 1 divided by your leverage, minus a small maintenance margin. A 10x position is liquidated after about a 9-10% move against it, 25x after about 4%, and 100x after about 1%. Higher leverage means a much smaller move wipes you out.'},
+    {q:'Can you lose more than your margin when liquidated?',a:'On isolated margin, normally no — your loss is capped at the margin assigned to that position. On cross margin your whole balance backs the trade, so a single bad position can drain the entire account. Insurance funds and auto-deleveraging cover the rare cases where liquidation cannot fill in time.'},
+    {q:'How do I avoid getting liquidated?',a:'Use lower leverage, always set a stop-loss inside your liquidation price, size each trade to risk only 1-2% of your account, keep a margin buffer, prefer isolated margin, cut leverage before major economic events, and check your exact liquidation price before every trade.'}
+  ]
 }
 ];
 E.forEach(a => { a.body = a.body.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>'); });
