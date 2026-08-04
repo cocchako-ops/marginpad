@@ -9186,6 +9186,19 @@ async function handleReward(url, request, env) {
   if (full.raw.levelsEnabled !== false && acct && !rewardsUnlocked(suXp) &&
       (path === '/claim' || path === '/withdraw' || path === '/promo/submit' || path === '/exsign/submit' || path === '/moonsign/submit' || path === '/xengage/submit'))
     return jr({ error: 'need_xp', need: REWARDS_MIN_XP, have: suXp, level: 'unranked', earn: '/academy/' }, 403);
+  // admin: Moon sign-up approval tally (key-gated read — the ops Moon panel is cookie-only; this lets the owner get the count with the ADMIN_KEY bearer)
+  if (path === '/moonstat') {
+    if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403);
+    const out = { approved: 0, rejected: 0, pending: 0, approvedUsd: 0 };
+    try {
+      const rr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/exsign/list'));
+      const d = await rr.json();
+      const moon = [...(d.pending || []), ...(d.decided || [])].filter(x => x.exchange === 'moon');
+      for (const x of moon) { const s = (x.status || 'pending').toLowerCase(); if (s === 'approved') { out.approved++; out.approvedUsd += (+x.amount || full.moonC / 100 || 1); } else if (s === 'rejected') out.rejected++; else out.pending++; }
+      out.total = moon.length; out.approvedUsd = Math.round(out.approvedUsd * 100) / 100;
+    } catch (e) { out.error = 'do_unreachable'; }
+    return jr(out);
+  }
   // admin: read/write the live config (Settings tab) — applies instantly, no deploy
   if (path === '/config') {
     if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403); // cookie OR the ADMIN_KEY manual-recovery bearer (same pattern as the newer admin routes)

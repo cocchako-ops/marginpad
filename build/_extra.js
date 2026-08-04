@@ -486,6 +486,74 @@ const E = [
 
 &amp;lt;p&amp;gt;Liquidation cascades are not random violence — they are a predictable consequence of leveraged positions stacking up and force-closing into a thin book. Once you see them as a feedback loop of market orders, the defenses are obvious: keep your leverage modest, your stops outside the fuel, and your size sensible before volatility. Use a &amp;lt;a href="/?p=heat"&amp;gt;liquidation map&amp;lt;/a&amp;gt; to see where the clusters are stacked, and let the over-leveraged crowd be the fuel instead of you.&amp;lt;/p&amp;gt;`,
   faq:[{q:'What is a liquidation cascade?',a:'It is a chain reaction of forced liquidations. One liquidation pushes price into the next cluster of leveraged positions, force-closing them too, which moves price further and triggers the next group — a self-sustaining loop until nearby positions are exhausted.'},{q:'Why do liquidations move the price?',a:'When an exchange liquidates a position it closes it with a market order, not a limit order. A liquidated long becomes a market sell and a liquidated short becomes a market buy, so the forced order itself pushes price in the same direction, triggering more liquidations.'},{q:'Can a liquidation map predict exactly when a cascade will happen?',a:'No. A map shows where liquidation fuel is stacked — which price zones are dangerous — but not the precise moment one ignites. Estimated clusters are inferred from open positions and leverage, so treat them as heat zones, not a countdown.'},{q:'How do I avoid getting caught in a cascade?',a:'Use lower leverage so your liquidation price sits far from the action, place stops outside dense clusters rather than inside them, reduce position size before high-volatility events, and keep a margin buffer for temporary overshoots.'}]
+},
+{
+  slug:'how-to-calculate-liquidation-price', tag:'Liquidation', read:8, crumb:'Calculating liquidation price',
+  title:'How to Calculate Liquidation Price (Formula + Examples)',
+  desc:'The exact formula exchanges use to set your liquidation price on isolated margin, why leverage moves it toward your entry, and worked examples for longs and shorts at 10x, 20x and 100x.',
+  keywords:'how to calculate liquidation price, liquidation price formula, crypto liquidation calculator, isolated margin liquidation, leverage liquidation distance, liquidation price long short, liquidation formula crypto',
+  body:`&lt;p&gt;Your &lt;strong&gt;liquidation price&lt;/strong&gt; is the single most important number in leveraged trading. It is the price at which the exchange force-closes your position and you lose the margin backing it — no warning, no negotiation. Knowing it &lt;em&gt;before&lt;/em&gt; you enter is the difference between a controlled trade and a surprise blow-up. The good news: it comes from a simple formula, and once you understand it you can size any trade so a normal market move can never reach it. If you just want the number, the &lt;a href="/#liq"&gt;liquidation calculator&lt;/a&gt; does it instantly — but the math is worth understanding.&lt;/p&gt;
+
+&lt;h2&gt;The liquidation price formula (isolated margin)&lt;/h2&gt;
+&lt;p&gt;On &lt;strong&gt;isolated margin&lt;/strong&gt; — where only the margin assigned to one position is at risk — the estimate is:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Long:&lt;/strong&gt; &lt;code&gt;Liquidation = Entry × (1 − 1/Leverage + MMR)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Short:&lt;/strong&gt; &lt;code&gt;Liquidation = Entry × (1 + 1/Leverage − MMR)&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;MMR&lt;/strong&gt; is the maintenance margin rate — the minimum margin the exchange requires to keep the position open, typically around &lt;code&gt;0.5%&lt;/code&gt; on major perpetuals. The real driver is the &lt;code&gt;1/Leverage&lt;/code&gt; term: that is your initial margin as a fraction of the position, and it sets how far price can move before your margin is gone. A long is liquidated when price falls by roughly &lt;code&gt;1/Leverage&lt;/code&gt;; a short when price rises by roughly the same. The maintenance margin nudges the level slightly closer than that.&lt;/p&gt;
+
+&lt;h2&gt;Leverage decides everything: the distance table&lt;/h2&gt;
+&lt;p&gt;Because the distance to liquidation is approximately &lt;code&gt;1/Leverage&lt;/code&gt;, higher leverage pulls the liquidation price right up against your entry. This single relationship explains why most leveraged accounts are wiped out:&lt;/p&gt;
+&lt;table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:14px"&gt;
+&lt;thead&gt;&lt;tr&gt;&lt;th style="text-align:left;padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em"&gt;Leverage&lt;/th&gt;&lt;th style="text-align:left;padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em"&gt;Move to liquidation&lt;/th&gt;&lt;th style="text-align:left;padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.05em"&gt;What that means&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;&lt;strong&gt;5×&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;~19.5%&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#34d99a"&gt;Room to breathe through normal swings&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;&lt;strong&gt;10×&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;~9.5%&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#34d99a"&gt;Survivable with a sensible stop&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;&lt;strong&gt;25×&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;~3.5%&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#ffd75a"&gt;One volatile candle&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;&lt;strong&gt;50×&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;~1.5%&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#ff7b72"&gt;A routine wick can end it&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;&lt;strong&gt;100×&lt;/strong&gt;&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39)"&gt;~0.5%&lt;/td&gt;&lt;td style="padding:9px 10px;border-bottom:1px solid var(--line,#2a2f39);color:#ff7b72"&gt;Noise liquidates you&lt;/td&gt;&lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+&lt;p&gt;At 100× a move most people would not even notice on the chart ends the trade. That is why high leverage feels random: you are not being wrong about direction, you are being stopped out by ordinary noise before your idea has a chance to play out.&lt;/p&gt;
+
+&lt;h2&gt;Worked example 1 — 10× long on Bitcoin&lt;/h2&gt;
+&lt;p&gt;You go long BTC at an entry of &lt;code&gt;$60,000&lt;/code&gt; with &lt;strong&gt;10×&lt;/strong&gt; leverage and a 0.5% maintenance margin. Plugging into the long formula: &lt;code&gt;60,000 × (1 − 1/10 + 0.005) = 60,000 × 0.905 = $54,300&lt;/code&gt;. Your liquidation sits about &lt;strong&gt;9.5%&lt;/strong&gt; below entry. To hold this trade safely you would place a stop-loss comfortably above $54,300 — say at $57,600 (−4%) — so &lt;em&gt;you&lt;/em&gt; decide the exit, not the exchange.&lt;/p&gt;
+
+&lt;h2&gt;Worked example 2 — 20× short on Ethereum&lt;/h2&gt;
+&lt;p&gt;You short ETH at &lt;code&gt;$3,000&lt;/code&gt; with &lt;strong&gt;20×&lt;/strong&gt; leverage. Using the short formula: &lt;code&gt;3,000 × (1 + 1/20 − 0.005) = 3,000 × 1.045 = $3,135&lt;/code&gt;. Your liquidation is only about &lt;strong&gt;4.5%&lt;/strong&gt; above entry — a single strong green candle. Shorts carry an extra wrinkle: a violent squeeze has no theoretical ceiling, so the upside move that liquidates a short can be far larger and faster than the downside move that liquidates a long. Give shorts more room, not less.&lt;/p&gt;
+
+&lt;h2&gt;Worked example 3 — why 100× is so dangerous&lt;/h2&gt;
+&lt;p&gt;Same BTC long at &lt;code&gt;$60,000&lt;/code&gt;, but now at &lt;strong&gt;100×&lt;/strong&gt;: &lt;code&gt;60,000 × (1 − 1/100 + 0.005) = 60,000 × 0.995 = $59,700&lt;/code&gt;. Liquidation is &lt;strong&gt;$300 away&lt;/strong&gt; — about half a percent. Bitcoin routinely travels that far in a minute for no reason at all. The 100× position that occasionally 10×s someone&apos;s money gets screenshotted; the thousands of silent liquidations behind it do not. Over any real sample, that half-percent buffer is a losing game.&lt;/p&gt;
+
+&lt;h2&gt;Cross margin changes the number&lt;/h2&gt;
+&lt;p&gt;Everything above assumes &lt;strong&gt;isolated&lt;/strong&gt; margin. In &lt;strong&gt;cross&lt;/strong&gt; margin your entire wallet balance backs the position, so your liquidation price sits much further away — the whole balance has to be exhausted, not just the slice assigned to the trade. The trade-off is that one bad cross-margin position can drain the entire account, not just its own margin. Model both modes with the &lt;a href="/calculators?c=cross"&gt;cross-margin calculator&lt;/a&gt;, and read the full comparison in &lt;a href="/blog/cross-vs-isolated-margin/"&gt;cross vs isolated margin&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2&gt;How to move your liquidation price further away&lt;/h2&gt;
+&lt;p&gt;Once you can calculate the number, you can control it. There are only four levers, and every one buys you more room before the exchange steps in:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Use less leverage.&lt;/strong&gt; By far the biggest lever — halving your leverage roughly doubles the distance to liquidation.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Add margin.&lt;/strong&gt; Topping up the margin on an isolated position lowers its effective leverage and pushes liquidation back, which helps when a trade goes against you but your thesis is still intact.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Switch to cross margin, carefully.&lt;/strong&gt; It moves liquidation much further away by backing the trade with your whole balance — at the cost of risking that whole balance.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Size from risk, not leverage.&lt;/strong&gt; A smaller position at the same entry lets you hold the same dollar risk at lower leverage, and lower leverage is what actually pushes liquidation away.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The professional order of operations is to work backwards: decide the most you will lose on the trade, place your stop where the chart justifies it, and let the size and leverage fall out of that — never pick the leverage first.&lt;/p&gt;
+
+&lt;h2&gt;What the simple formula leaves out&lt;/h2&gt;
+&lt;p&gt;The estimate above is close, but three things make real liquidation arrive slightly sooner than the clean math suggests:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Fees and funding.&lt;/strong&gt; Trading fees and the &lt;a href="/blog/what-is-funding-rate/"&gt;funding&lt;/a&gt; you pay while the position is open both drain your margin every cycle, pulling liquidation closer than the price math alone shows.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Tiered maintenance margin.&lt;/strong&gt; On very large positions the MMR rises in tiers, so the biggest positions are liquidated a little earlier than a flat 0.5% implies.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Mark price, not last price.&lt;/strong&gt; Exchanges liquidate against the &lt;a href="/blog/mark-price-vs-last-price/"&gt;mark price&lt;/a&gt; — an index-based fair value — not the last trade on that one venue, which protects you from a single manipulated wick but is the number you should actually watch near your level.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Treat the formula as a close, slightly-optimistic estimate and always leave a buffer.&lt;/p&gt;
+
+&lt;h2&gt;See it with live data&lt;/h2&gt;
+&lt;p&gt;Numbers land harder when you watch them play out. The &lt;a href="/liquidations/"&gt;live liquidations feed&lt;/a&gt; shows exactly how much leverage is being wiped out across Binance, Bybit and OKX right now, and every major coin has its own page — &lt;a href="/liquidations/btc/"&gt;BTC&lt;/a&gt;, &lt;a href="/liquidations/eth/"&gt;ETH&lt;/a&gt;, &lt;a href="/liquidations/sol/"&gt;SOL&lt;/a&gt; — with the 24-hour total and the long-versus-short split. Before you commit, drop your entry and leverage into the &lt;a href="/#liq"&gt;liquidation calculator&lt;/a&gt;, size the trade from your stop with the &lt;a href="/#size"&gt;position-size calculator&lt;/a&gt;, and rehearse the whole thing risk-free at the live price on the &lt;a href="/paper-trade"&gt;paper-trading terminal&lt;/a&gt;. Learning liquidation with fake money is far cheaper than learning it with your own.&lt;/p&gt;`,
+  faq:[
+    {q:'What is the formula for liquidation price?',a:'On isolated margin, a long is liquidated at roughly Entry × (1 − 1/Leverage + maintenance margin), and a short at Entry × (1 + 1/Leverage − maintenance margin). The 1/Leverage term is the main driver: it sets how far price can move before your margin is gone.'},
+    {q:'At what percentage does a position get liquidated?',a:'Approximately 1 divided by your leverage, minus the maintenance margin. A 10x position is liquidated after about a 9-10% move against it, 25x after about 3.5%, and 100x after about 1%. Higher leverage puts liquidation much closer to your entry.'},
+    {q:'Does position size change the liquidation price?',a:'For isolated margin, no — the liquidation price depends on entry, leverage and maintenance margin, not on how large the position is. Position size changes how much money you lose at liquidation, not the price it happens at. Cross margin is different: your whole balance backs the trade, pushing liquidation further away.'},
+    {q:'Is the calculated liquidation price exact?',a:'It is a close estimate. Fees, funding and tiered maintenance margin on large positions all make real liquidation arrive slightly sooner, and exchanges liquidate against the mark price rather than the last trade. Treat the formula as a slightly optimistic guide and leave a buffer.'}
+  ]
 }
 ];
 E.forEach(a => { a.body = a.body.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>'); });
