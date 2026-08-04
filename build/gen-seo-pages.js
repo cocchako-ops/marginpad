@@ -31,6 +31,14 @@ const EX = [
 const esc = s => String(s).replace(/&/g, '&amp;');
 const fmt = n => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const pct = n => n + '%';
+const { EC, ACTIVE_LANGS, RTL } = require('./data/exchangecalc-i18n');
+function hreflang(slug) {
+  let s = `<link rel="alternate" hreflang="en" href="https://marginpad.io/${slug}/" />\n`;
+  for (const lc of ACTIVE_LANGS) s += `<link rel="alternate" hreflang="${lc}" href="https://marginpad.io/${lc}/${slug}/" />\n`;
+  s += `<link rel="alternate" hreflang="x-default" href="https://marginpad.io/${slug}/" />`;
+  return s;
+}
+function fillT(str, map) { return String(str).replace(/\{(\w+)\}/g, (m, k) => (k in map ? map[k] : m)); }
 
 // leverage → liquidation-distance table (isolated-margin estimate), capped at the exchange's max leverage
 function levTable(mmr, maxLev) {
@@ -63,7 +71,7 @@ const EXTRA_CSS = `<style>
 
 function head(o) {
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${o.lang || 'en'}"${o.dir ? ' dir="rtl"' : ''}>
 <head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
@@ -74,6 +82,7 @@ function head(o) {
 <meta name="description" content="${o.desc}" />
 <meta name="keywords" content="${o.keywords}" />
 <link rel="canonical" href="${o.url}" />
+${o.hreflang || ''}
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta name="theme-color" content="#0a0b0d" />
 <meta property="og:title" content="${o.title}" />
@@ -91,22 +100,23 @@ function head(o) {
 <link rel="stylesheet" href="/assets/blog.css" />
 ${EXTRA_CSS}
 ${o.ld}
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"${o.bcName}","item":"${o.url}"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":${JSON.stringify(o.crumbHome || 'Home')},"item":"https://marginpad.io${o.homeHref || '/'}"},{"@type":"ListItem","position":2,"name":${JSON.stringify(o.bcName)},"item":"${o.url}"}]}</script>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <a class="brand" href="/">MARGIN<b>PAD</b></a>
-    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+    <a class="brand" href="${o.homeHref || '/'}">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="${o.homeHref || '/'}">${o.navCalc || 'Calculators'}</a><a href="/blog/">${o.navBlog || 'Blog'}</a></nav>
   </header>
-  <div class="crumb"><a href="/">Home</a> / ${o.crumb}</div>
+  <div class="crumb"><a href="${o.homeHref || '/'}">${o.crumbHome || 'Home'}</a> / ${o.crumb}</div>
   <article>`;
 }
-function foot(scriptSrc) {
+function foot(scriptSrc, o) {
+  o = o || {};
   return `  </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+    <span><a href="${o.homeHref || '/'}">${o.navCalc || 'Calculators'}</a> · <a href="/blog/">${o.navBlog || 'Blog'}</a></span>
   </footer>
 </div>
 <script src="${scriptSrc}"></script>
@@ -154,7 +164,7 @@ function liqPage(ex) {
   const availText = ex.us ? `Available to US traders — ${ex.region}.` : `Not available to US residents. ${ex.region}.`;
   const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"${ex.name} Liquidation Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"${url}","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"${desc}"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I calculate my liquidation price on ${ex.name}?","acceptedAnswer":{"@type":"Answer","text":"Enter entry price, leverage and direction. Liquidation = Entry x (1 - 1/Leverage + MMR) for a long and Entry x (1 + 1/Leverage - MMR) for a short."}},{"@type":"Question","name":"What is the maximum leverage on ${ex.name}?","acceptedAnswer":{"@type":"Answer","text":"${ex.name} offers up to ${ex.lev}x leverage on flagship perpetuals. The maximum varies by contract, region and account tier."}},{"@type":"Question","name":"What are ${ex.name}'s trading fees?","acceptedAnswer":{"@type":"Answer","text":"${ex.name}'s base USDT-perpetual fees are about ${pct(ex.maker)} maker and ${pct(ex.taker)} taker, before VIP tiers or token discounts. Funding is exchanged between longs and shorts ${ex.funding}."}},{"@type":"Question","name":"Is ${ex.name} available in the US?","acceptedAnswer":{"@type":"Answer","text":"${availText}"}},{"@type":"Question","name":"How do I avoid liquidation on ${ex.name}?","acceptedAnswer":{"@type":"Answer","text":"Use lower leverage, set a stop-loss inside your liquidation level, and size positions from your stop distance rather than a round dollar figure."}}]}</script>`;
-  return head({ title, desc, url, crumb: `${ex.name} liquidation calculator`, bcName: `${ex.name} Liquidation Calculator`, ld,
+  return head({ title, desc, url, crumb: `${ex.name} liquidation calculator`, bcName: `${ex.name} Liquidation Calculator`, ld, hreflang: hreflang(ex.slug + '-liquidation-calculator'),
     keywords: `${ex.name.toLowerCase()} liquidation calculator, ${ex.name.toLowerCase()} liquidation price, ${ex.name.toLowerCase()} futures calculator, ${ex.name.toLowerCase()} leverage calculator, ${ex.name.toLowerCase()} maintenance margin` })
     + `
     <h1>${ex.name} Liquidation Calculator</h1>
@@ -226,7 +236,7 @@ function pnlPage(ex) {
   const desc = `Free ${ex.name} PnL calculator: enter entry, exit and leverage to see profit, ROI and leveraged ROE for any ${ex.name} futures trade in one click, long or short. No signup.`;
   const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"${ex.name} PnL Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"${url}","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"${desc}"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I calculate PnL on ${ex.name}?","acceptedAnswer":{"@type":"Answer","text":"PnL = (exit - entry) x size for a long, or (entry - exit) x size for a short. ROE multiplies the price ROI by your leverage."}},{"@type":"Question","name":"What is ROE on ${ex.name} futures?","acceptedAnswer":{"@type":"Answer","text":"ROE is the return on the margin you posted, amplified by leverage. A 10% move at 10x leverage is roughly a 100% return on margin."}},{"@type":"Question","name":"Do ${ex.name} fees reduce my PnL?","acceptedAnswer":{"@type":"Answer","text":"Yes. ${ex.name} charges about ${pct(ex.taker)} taker per side plus funding ${ex.funding}, so net profit is a little below the raw price PnL. This tool shows gross PnL; subtract roughly two taker fees for a round trip."}}]}</script>`;
-  return head({ title, desc, url, crumb: `${ex.name} PnL calculator`, bcName: `${ex.name} PnL Calculator`, ld,
+  return head({ title, desc, url, crumb: `${ex.name} PnL calculator`, bcName: `${ex.name} PnL Calculator`, ld, hreflang: hreflang(ex.slug + '-pnl-calculator'),
     keywords: `${ex.name.toLowerCase()} pnl calculator, ${ex.name.toLowerCase()} profit calculator, ${ex.name.toLowerCase()} roi calculator, ${ex.name.toLowerCase()} futures pnl, ${ex.name.toLowerCase()} roe calculator` })
     + `
     <h1>${ex.name} PnL Calculator</h1>
@@ -287,13 +297,127 @@ ${LIVEPX}
     + foot('/assets/pnlcalc.js');
 }
 
+// ---- translated (lean, fully-native) lang variants ----
+const LIVEPX_LANG = `<script>(function(){var el=document.getElementById('livePx');if(!el)return;fetch('/api/price?symbol=BTC').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.price>0){var p=+d.price;el.innerHTML='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>BTC <b style="color:#c2f64a">$'+p.toLocaleString('en-US',{maximumFractionDigits:2})+'</b>';var e=document.getElementById('liqEntry')||document.getElementById('pnlEntry');if(e){e.value=Math.round(p);e.dispatchEvent(new Event('input'));}}else{el.style.display='none';}}).catch(function(){el.style.display='none';});})();</script>`;
+
+function liqPageLang(ex, lang) {
+  const L = EC[lang]; const home = `/${lang}/`;
+  const map = { X: ex.name, XL: ex.name.toLowerCase(), LEV: ex.lev, ENTRY: '$' + fmt(60000), MMR: ex.mmr, PCT: (100 / ex.lev).toFixed(2) };
+  const T = m => fillT(m, map);
+  const url = `https://marginpad.io/${lang}/${ex.slug}-liquidation-calculator/`;
+  const entry = 60000, mmr = ex.mmr / 100, liq = entry * (1 - 1 / 10 + mmr), dist = (1 - liq / entry) * 100;
+  const others = EX.filter(o => o.slug !== ex.slug).slice(0, 4);
+  const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":${JSON.stringify(T(L.liqH1))},"applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"${url}","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":${JSON.stringify(T(L.liqDesc))}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":${JSON.stringify(T(L.liqFaqQ))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(T(L.liqFaqA))}}},{"@type":"Question","name":${JSON.stringify(T(L.liqFaqQ2))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(T(L.liqFaqA2))}}}]}</script>`;
+  return head({ lang, dir: RTL[lang] ? 1 : 0, title: T(L.liqTitle), desc: T(L.liqDesc), url, crumb: T(L.liqCrumb), bcName: T(L.liqCrumb), ld, hreflang: hreflang(ex.slug + '-liquidation-calculator'), keywords: T(L.liqKw), homeHref: home, navCalc: L.navCalc, navBlog: L.navBlog, crumbHome: L.crumbHome })
+    + `
+    <h1>${T(L.liqH1)}</h1>
+    <p class="lead">${T(L.liqLead)}</p>
+    <p style="font-family:'Space Mono',monospace;font-size:13px;color:var(--ink-dim);margin:-4px 0 14px" id="livePx"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>${L.liveBtc}</p>
+    <div class="calc">
+      <div class="calc-in">
+        <div class="seg" id="liqSeg"><button class="on" data-side="long">${L.long}</button><button data-side="short">${L.short}</button></div>
+        <label>${L.lblEntry}</label><input id="liqEntry" type="number" value="60000" step="any">
+        <label>${L.lblLev}</label><input id="liqLev" type="number" value="10" step="any">
+        <label>${L.lblMmr}</label><input id="liqMmr" type="number" value="${ex.mmr}" step="any">
+      </div>
+      <div class="calc-out">
+        <div class="col">${L.outLiq}</div><div class="big" id="liqOut">—</div>
+        <div class="rr"><span>${L.outDist}</span><b id="liqDist">—</b></div>
+      </div>
+    </div>
+    <a class="exbtn" data-ex="${ex.name}" style="background:${ex.accent};color:${ex.fg}" href="${esc(ex.ref)}" target="_blank" rel="sponsored noopener noreferrer">${T(L.trade)}</a>
+    <h2>${T(L.liqHowH)}</h2>
+    <p>${T(L.liqHowP)}</p>
+    <h2>${T(L.liqExH)}</h2>
+    <p>${fillT(L.liqExIntro, { X: ex.name, ENTRY: '$' + fmt(entry), MMR: ex.mmr })}</p>
+    <div class="example">
+      <div class="row"><span>${L.exLiqL}</span><b>$${fmt(liq)}</b></div>
+      <div class="row"><span>${L.exMoveL}</span><b>−${dist.toFixed(2)}%</b></div>
+    </div>
+    <p>${T(L.liqExAfter)}</p>
+    <h2>${L.faqH}</h2>
+    <h3>${T(L.liqFaqQ)}</h3><p>${T(L.liqFaqA)}</p>
+    <h3>${T(L.liqFaqQ2)}</h3><p>${T(L.liqFaqA2)}</p>
+    <h2>${L.moreCalc}</h2>
+    <div class="related">
+      <a href="${home}">${L.relAll}</a>
+      <a href="/${lang}/${ex.slug}-pnl-calculator/">${fillT(L.relPnl, { X: ex.name })}</a>
+      ${others.map(o => `<a href="/${lang}/${o.slug}-liquidation-calculator/">${fillT(L.relLiq, { X: o.name })}</a>`).join('\n      ')}
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">${T(L.disc)}</p>
+${LIVEPX_LANG}
+`
+    + foot('/assets/liqcalc.js', { homeHref: home, navCalc: L.navCalc, navBlog: L.navBlog });
+}
+
+function pnlPageLang(ex, lang) {
+  const L = EC[lang]; const home = `/${lang}/`;
+  const map = { X: ex.name, XL: ex.name.toLowerCase() };
+  const T = m => fillT(m, map);
+  const url = `https://marginpad.io/${lang}/${ex.slug}-pnl-calculator/`;
+  const others = EX.filter(o => o.slug !== ex.slug).slice(0, 4);
+  const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":${JSON.stringify(T(L.pnlH1))},"applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"${url}","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":${JSON.stringify(T(L.pnlDesc))}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":${JSON.stringify(T(L.pnlFaqQ))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(T(L.pnlFaqA))}}},{"@type":"Question","name":${JSON.stringify(T(L.pnlFaqQ2))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(T(L.pnlFaqA2))}}}]}</script>`;
+  return head({ lang, dir: RTL[lang] ? 1 : 0, title: T(L.pnlTitle), desc: T(L.pnlDesc), url, crumb: T(L.pnlCrumb), bcName: T(L.pnlCrumb), ld, hreflang: hreflang(ex.slug + '-pnl-calculator'), keywords: T(L.pnlKw), homeHref: home, navCalc: L.navCalc, navBlog: L.navBlog, crumbHome: L.crumbHome })
+    + `
+    <h1>${T(L.pnlH1)}</h1>
+    <p class="lead">${T(L.pnlLead)}</p>
+    <p style="font-family:'Space Mono',monospace;font-size:13px;color:var(--ink-dim);margin:-4px 0 14px" id="livePx"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>${L.liveBtc}</p>
+    <div class="calc">
+      <div class="calc-in">
+        <div class="seg" id="pnlSeg"><button class="on" data-side="long">${L.long}</button><button data-side="short">${L.short}</button></div>
+        <label>${L.lblEntry}</label><input id="pnlEntry" type="number" value="60000" step="any">
+        <label>${L.lblExit}</label><input id="pnlExit" type="number" value="66000" step="any">
+        <label>${L.lblQty}</label><input id="pnlQty" type="number" value="0.5" step="any">
+        <label>${L.lblLevRoe}</label><input id="pnlLev" type="number" value="10" step="any">
+      </div>
+      <div class="calc-out">
+        <div class="col">${L.outPnl}</div><div class="big" id="pnlOut">—</div>
+        <div class="rr"><span>${L.outRoi}</span><b id="pnlRoi">—</b></div>
+        <div class="rr"><span>${L.outRoe}</span><b id="pnlRoe">—</b></div>
+      </div>
+    </div>
+    <a class="exbtn" data-ex="${ex.name}" style="background:${ex.accent};color:${ex.fg}" href="${esc(ex.ref)}" target="_blank" rel="sponsored noopener noreferrer">${T(L.trade)}</a>
+    <h2>${T(L.pnlHowH)}</h2>
+    <p>${T(L.pnlHowP)}</p>
+    <h2>${T(L.pnlExH)}</h2>
+    <p>${T(L.pnlExIntro)}</p>
+    <div class="example">
+      <div class="row"><span>${L.exProfitL}</span><b>+$3,000.00</b></div>
+      <div class="row"><span>${L.exRoiL}</span><b>+10.00%</b></div>
+      <div class="row"><span>${L.exRoeL}</span><b>+100.00%</b></div>
+    </div>
+    <p>${T(L.pnlExAfter)}</p>
+    <h2>${L.faqH}</h2>
+    <h3>${T(L.pnlFaqQ)}</h3><p>${T(L.pnlFaqA)}</p>
+    <h3>${T(L.pnlFaqQ2)}</h3><p>${T(L.pnlFaqA2)}</p>
+    <h2>${L.moreCalc}</h2>
+    <div class="related">
+      <a href="${home}">${L.relAll}</a>
+      <a href="/${lang}/${ex.slug}-liquidation-calculator/">${fillT(L.relLiq, { X: ex.name })}</a>
+      ${others.map(o => `<a href="/${lang}/${o.slug}-pnl-calculator/">${fillT(L.relPnl, { X: o.name })}</a>`).join('\n      ')}
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">${T(L.disc)}</p>
+${LIVEPX_LANG}
+`
+    + foot('/assets/pnlcalc.js', { homeHref: home, navCalc: L.navCalc, navBlog: L.navBlog });
+}
+
 let n = 0;
 for (const ex of EX) {
   const a = path.join(OUT, `${ex.slug}-liquidation-calculator`);
   fs.mkdirSync(a, { recursive: true }); fs.writeFileSync(path.join(a, 'index.html'), liqPage(ex)); n++;
   const b = path.join(OUT, `${ex.slug}-pnl-calculator`);
   fs.mkdirSync(b, { recursive: true }); fs.writeFileSync(path.join(b, 'index.html'), pnlPage(ex)); n++;
-  console.log('wrote', ex.slug, '(liquidation + pnl)');
+  // translated variants (EU langs in EC)
+  for (const lc of ACTIVE_LANGS) {
+    const la = path.join(OUT, lc, `${ex.slug}-liquidation-calculator`);
+    fs.mkdirSync(la, { recursive: true }); fs.writeFileSync(path.join(la, 'index.html'), liqPageLang(ex, lc)); n++;
+    const lb = path.join(OUT, lc, `${ex.slug}-pnl-calculator`);
+    fs.mkdirSync(lb, { recursive: true }); fs.writeFileSync(path.join(lb, 'index.html'), pnlPageLang(ex, lc)); n++;
+  }
+  console.log('wrote', ex.slug, '(liquidation + pnl, en +', ACTIVE_LANGS.length, 'langs)');
 }
 console.log('done:', n, 'pages');
 
