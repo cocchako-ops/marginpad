@@ -1,6 +1,7 @@
 :root{
   --bg:#0a0b0d; --panel:#111419; --line:#232932; --line-bright:#2f3742;
-  --ink:#e9e7df; --ink-dim:#9aa3ad; --ink-faint:#5c656f; --lime:#ffffff; --lime-deep:#cfd3d8;
+  --ink:#e9e7df; --ink-dim:#9aa3ad; --ink-faint:#5c656f; --lime:#c2f64a; --lime-deep:#cfd3d8;
+  --accent:#c2f64a; --accent2:#2ebd85;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;background:#0a0b0d}
@@ -155,3 +156,45 @@ footer a{color:var(--ink-dim);text-decoration:none}footer a:hover{color:var(--li
 article pre{background:#0a0c0f;border:1px solid var(--line-bright);border-radius:12px;padding:15px 16px;margin:0 0 18px;overflow-x:auto;-webkit-overflow-scrolling:touch;font-family:'Space Mono',ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.65;color:#cdd3da;white-space:pre;max-width:100%}
 article pre code{background:none;border:0;padding:0;font-size:inherit;color:inherit;white-space:inherit}
 article code{font-family:'Space Mono',ui-monospace,Menlo,monospace;font-size:.9em;background:#12161c;border:1px solid var(--line-bright);border-radius:6px;padding:1px 6px;word-break:break-word}
+
+/* ===== SEO page polish v3 (2026-08) — lift the "generated" look toward the product's live-terminal identity ===== */
+/* Ambient aurora — the same brand atmosphere as the app, restrained so text stays crisp and LCP stays fast */
+body::after{content:'';position:fixed;left:50%;top:-280px;width:min(1150px,96vw);height:640px;transform:translateX(-50%);
+  background:radial-gradient(closest-side,rgba(194,246,74,.11),transparent 70%),radial-gradient(closest-side,rgba(46,189,133,.09),transparent 72%);
+  background-repeat:no-repeat;background-position:26% 34%,74% 62%;filter:blur(22px);pointer-events:none;z-index:0;will-change:transform}
+body::before{opacity:.14}
+
+/* Lead — larger, calmer, anchored by a hairline accent instead of floating */
+.lead{font-size:19px;line-height:1.62;color:#c4cbd3;border-left:2px solid var(--accent);padding-left:17px;max-width:700px}
+@media(max-width:640px){.lead{padding-left:14px;font-size:17.5px}}
+
+/* H2 signature — a precise accent tick turns the wall of text into scannable terminal sections (no faux-numbering) */
+article h2{position:relative;padding-left:17px;font-weight:700;font-size:25px;color:#f2f0e9}
+article h2::before{content:'';position:absolute;left:0;top:.2em;bottom:.2em;width:3px;border-radius:3px;background:linear-gradient(180deg,var(--accent),var(--accent2))}
+article h3{color:#eef0ea;font-weight:700}
+
+/* Links — brand lime with a faint baseline underline that fills on hover (distinguishable without relying on colour alone) */
+article p a,article li a{color:var(--accent);text-decoration:none;
+  background-image:linear-gradient(var(--accent),var(--accent));background-size:100% 1px;background-position:0 1.15em;background-repeat:no-repeat;
+  transition:background-size .18s,color .15s;padding-bottom:1px}
+article p a:hover,article li a:hover{background-size:100% 2px}
+
+/* Crumb gets a small live-dot; meta reads like a terminal status line */
+.crumb::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);margin-right:9px;vertical-align:middle}
+
+/* Callout — accent rail + lime eyebrow, so it reads as a deliberate aside, not a boxed afterthought */
+.callout{border-left:3px solid var(--accent)}
+.callout .k{color:var(--accent)}
+
+/* Worked-example block — a compact ledger readout */
+.example{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,0))}
+.example .row b{color:var(--accent)}
+
+/* Related-links chips lift on hover toward the accent */
+.related a:hover{color:var(--accent);border-color:var(--accent);box-shadow:0 0 0 1px rgba(194,246,74,.25)}
+
+/* Section rhythm: a hairline before the first H2 after the calculator/CTA cluster reads as a terminal divider */
+article h2:first-of-type{margin-top:44px}
+
+/* Keep the ambient layer off when motion/energy is unwelcome */
+@media (prefers-reduced-motion:reduce){body::after{filter:none}}
