@@ -11,8 +11,13 @@ const EXTRAS = [
   ['https://marginpad.io/crypto-tax-calculator/', '0.8'],
   ['https://marginpad.io/crypto-cost-basis-calculator/', '0.8'],
   ['https://marginpad.io/crypto-trading-usa/', '0.8'],
+  ['https://marginpad.io/heatmap', '0.9'],
+  ['https://marginpad.io/swap', '0.7'],
   ['https://marginpad.io/academy/', '0.9'],
   ['https://marginpad.io/spot/', '0.9'],
+  ['https://marginpad.io/stock-trading-simulator/', '0.9'],
+  ['https://marginpad.io/forex-trading-simulator/', '0.9'],
+  ['https://marginpad.io/index-trading-simulator/', '0.9'],
   ['https://marginpad.io/crypto-trading-canada/', '0.8'],
   ['https://marginpad.io/privacy/', '0.3'],
 ];
