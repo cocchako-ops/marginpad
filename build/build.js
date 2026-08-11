@@ -32,6 +32,8 @@ run('"Best for" pages', 'node build/gen-bestfor-pages.js');
 run('Liquidation-map pages', 'node build/gen-liqmap-pages.js');
 run('Liquidations data page', 'node build/gen-liquidations-page.js');
 run('Per-coin liquidation SEO pages', 'node build/gen-liq-coin-pages.js');
+run('Liquidation statistics page', 'node build/gen-liq-stats-page.js');
+run('Alternative comparison pages', 'node build/gen-alternative-pages.js');
 run('Funding data page', 'node build/gen-funding-page.js');
 run('Long/short data page', 'node build/gen-longshort-page.js');
 run('Open-interest data page', 'node build/gen-openinterest-page.js');
@@ -92,6 +94,10 @@ run('Sitemap extras (hand-made pages)', 'node build/add-sitemap-extras.js');
 
 // 11c) dedicated sitemap for the translated SEO pages (compares/guides/best-for) → dist/sitemap-i18n.xml
 run('i18n sitemap (translated SEO pages)', 'node build/gen-i18n-sitemap.js');
+
+// 11d) honest freshness: bump dateModified + visible "Updated" + sitemap lastmod ONLY on pages whose
+// content actually changed since the last build (hash manifest in build/data/page-mod-hashes.json)
+run('Stamp updated dates (changed pages only)', 'node build/stamp-updated.js');
 
 // 12) LAST: <meta charset> must be the FIRST tag in <head> (within the 1024-byte prescan) - the
 // Yandex/gtag head injections once pushed it deeper and the whole site rendered as windows-1252 mojibake.

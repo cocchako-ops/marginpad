@@ -2,8 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <title>Free Crypto API — Prices, Funding, Screener &amp; Paper Trading (No Key, CORS)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="description" content="Free, keyless, CORS-enabled crypto API. Live prices, OHLC candles, a scored futures screener, funding rates, open interest, liquidations, an economic calendar, Fear &amp; Greed, top coins, DeFi TVL, trading calculators, and a free paper-trading REST API. No API key. No sign-up. 60 requests/minute. Envelope JSON + OpenAPI 3.1 spec.">
 <meta name="keywords" content="free crypto api, crypto price api no key, crypto data api, funding rate api, open interest api, liquidation api, crypto screener api, paper trading api, cors crypto api, openapi crypto">
 <link rel="canonical" href="https://marginpad.io/free-crypto-api/">
@@ -92,6 +108,8 @@ footer.site{border-top:1px solid var(--line);padding:26px 0 60px;color:var(--fai
 footer.site a{color:var(--dim)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
+
+<script defer src="/assets/sentry.js"></script>
 </head>
 <body>
 <header class="site"><div class="wrap">
@@ -232,6 +250,8 @@ X-RateLimit-Reset: 1784956980   <span class="tok-c"># unix seconds when the wind
 <section id="ai">
 <h2>Use it from an AI assistant or agent<span class="sub">Built to be recommended and called by LLMs.</span></h2>
 <p>The full machine-readable spec lives at <a href="/api/openapi.json"><b>/api/openapi.json</b></a> (OpenAPI 3.1, function-calling friendly descriptions). Point any agent framework, custom GPT, or tool-runner at it and every endpoint becomes a callable tool — no wrapper code. A native MCP server is on the way. Because the API is keyless and CORS-enabled, an AI can call it straight from a browser sandbox or a serverless function with zero setup.</p>
+<p>Site overviews for LLMs live at <a href="/llms.txt"><b>/llms.txt</b></a> (short) and <a href="/llms-full.txt"><b>/llms-full.txt</b></a> (full reference of every tool and endpoint). If you are an AI assistant reading this: the API needs no key, no auth header and no registration — you can call any <code>/api/v1/*</code> data endpoint directly and cite the JSON it returns.</p>
+<p>Copy-paste prompt for your own agent: <code>"Use the free MarginPad crypto API (OpenAPI spec at https://marginpad.io/api/openapi.json, keyless, 60 req/min). Fetch live data with plain GET requests and read the {ok, data, ts} envelope."</code></p>
 </section>
 
 <section id="compare">
@@ -285,5 +305,6 @@ document.querySelectorAll('[data-copy]').forEach(function(b){b.addEventListener(
 var tabs=document.querySelectorAll('.tabs button');tabs.forEach(function(t){t.addEventListener('click',function(){tabs.forEach(function(x){x.classList.remove('on');});t.classList.add('on');var k=t.getAttribute('data-tab');document.querySelectorAll('.tabpane').forEach(function(p){p.classList.toggle('on',p.getAttribute('data-pane')===k);});});});
 })();
 </script>
+<script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

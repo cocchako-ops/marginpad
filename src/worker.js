@@ -11278,7 +11278,7 @@ export default {
         return handleSsrLiq(request, url, env, mLiq[2] === 'map' ? 'map' : 'calc', mLiq[1]);
       }
       const _bk = ssrBlogKind(url.pathname); if (_bk) return handleSsrBlog(request, url, env, _bk);
-      const _hub = { '/liquidations/': 'liquidations', '/etf-flows/': 'etf', '/fear-greed/': 'fng', '/funding/': 'funding', '/open-interest/': 'oi', '/long-short/': 'ls', '/hyperliquid-whales/': 'whales' }[url.pathname];
+      const _hub = { '/liquidations/': 'liquidations', '/liquidation-statistics/': 'liquidations', '/etf-flows/': 'etf', '/fear-greed/': 'fng', '/funding/': 'funding', '/open-interest/': 'oi', '/long-short/': 'ls', '/hyperliquid-whales/': 'whales' }[url.pathname];
       if (_hub) return handleSsrHub(request, url, env, _hub, null);
       const _mLc = url.pathname.match(/^\/liquidations\/([a-z0-9]{2,10})\/$/);
       if (_mLc) return handleSsrHub(request, url, env, 'liquidations', _mLc[1].toUpperCase());
