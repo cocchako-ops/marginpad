@@ -939,6 +939,120 @@ async function handleSsrLiq(request, url, env, mode, param) {
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
 }
+// SSR live-data for the data-hub pages (/liquidations/, /etf-flows/, /fear-greed/, /funding/, /open-interest/,
+// /long-short/, /hyperliquid-whales/) — same crawler-visible box as handleSsrLiq. AI crawlers run no JS, so
+// without this the hubs read as empty shells to them; with it the static HTML carries dated, citable numbers.
+// Every data source is an existing edge-cached handler — a full miss costs one internal call, then 10 min cache.
+function _fpct(f) { return (f >= 0 ? '+' : '') + (+f).toFixed(4) + '%'; }
+async function ssrHubSentences(page, sym, env) {
+  const S = [];
+  const jget = async fn => { try { return await (await fn()).json(); } catch (e) { return null; } };
+  if (page === 'liquidations') {
+    const j = await jget(() => handleCgLiquidations(new URL('https://marginpad.io/api/cg/liquidations'), env));
+    if (!j || j.error || !j.market || !(+j.market.total > 0)) return { S };
+    const m = j.market;
+    if (sym) {
+      const c = (j.coins || []).find(x => String(x.s).toUpperCase() === sym);
+      if (c && c.liq > 0) {
+        const side = c.long >= c.short * 1.5 ? 'mostly longs' : c.short >= c.long * 1.5 ? 'mostly shorts' : 'roughly balanced between longs and shorts';
+        S.push(_susd(c.liq) + ' of ' + sym + ' positions was liquidated in the past 24 hours (' + _susd(c.long) + ' longs, ' + _susd(c.short) + ' shorts — ' + side + ').');
+      }
+      S.push('Market-wide, crypto futures liquidations total ' + _susd(m.total) + ' over 24 hours: ' + _susd(m.long) + ' from longs and ' + _susd(m.short) + ' from shorts across ' + m.count + ' coins.');
+      return { S, links: [['/rekt/', 'Live liquidation feed'], [sym ? '/' + sym.toLowerCase() + '-liquidation-map/' : '/btc-liquidation-map/', sym + ' liquidation map']] };
+    }
+    S.push('Crypto futures liquidations total ' + _susd(m.total) + ' over the past 24 hours: ' + _susd(m.long) + ' from longs and ' + _susd(m.short) + ' from shorts across ' + m.count + ' tracked coins.');
+    const top = (j.coins || []).slice(0, 3).filter(c => c.liq > 0);
+    if (top.length) S.push('Most liquidated right now: ' + top.map(c => c.s + ' (' + _susd(c.liq) + ')').join(', ') + '.');
+    if (m.long >= m.short * 1.5) S.push('Longs are taking most of the damage — the market is moving down through their liquidation levels.');
+    else if (m.short >= m.long * 1.5) S.push('Shorts are taking most of the damage — a squeeze is running through their liquidation levels.');
+    return { S, links: [['/rekt/', 'Live liquidation feed'], ['/btc-liquidation-map/', 'BTC liquidation map']] };
+  }
+  if (page === 'etf') {
+    const j = await jget(() => handleCgEtf(new URL('https://marginpad.io/api/cg/etf'), env));
+    if (!j || !j.active) return { S };
+    const one = (a, name) => {
+      if (!a || !(a.totalAum > 0)) return;
+      const f = +a.latestFlow || 0, d = a.latestTs ? new Date(a.latestTs).toISOString().slice(0, 10) : null;
+      let s = name + ' spot ETFs ' + (f >= 0 ? 'took in ' + _susd(f) + ' of net inflows' : 'saw ' + _susd(-f) + ' of net outflows') + (d ? ' on ' + d + ' (latest settled day)' : '') + ', with total AUM of ' + _susd(a.totalAum);
+      const big = a.list && a.list[0];
+      if (big) s += '; the largest fund is ' + big.ticker + ' at ' + _susd(big.aum);
+      S.push(s + '.');
+    };
+    one(j.btc, 'Bitcoin'); one(j.eth, 'Ethereum');
+    return { S, links: [['/bitcoin-cycle/', 'Bitcoin cycle dashboard'], ['/fear-greed/', 'Fear & Greed index']] };
+  }
+  if (page === 'fng') {
+    const j = await jget(() => handleFng(env));
+    const d = (j && j.data) || []; if (!d.length || !d[0] || !isFinite(+d[0].v)) return { S };
+    const now = d[0], y = d[1], w = d[7];
+    let s1 = 'The Crypto Fear & Greed Index reads ' + now.v + ' (' + now.c + ') right now';
+    if (y && isFinite(+y.v)) s1 += ', versus ' + y.v + ' (' + y.c + ') yesterday';
+    if (w && isFinite(+w.v)) s1 += ' and ' + w.v + ' a week ago';
+    S.push(s1 + '.');
+    const yr = d.slice(0, 365).map(x => +x.v).filter(isFinite);
+    if (yr.length > 30) S.push('Over the past ' + yr.length + ' days the index has ranged from ' + Math.min.apply(null, yr) + ' to ' + Math.max.apply(null, yr) + '.');
+    return { S, links: [['/bitcoin-cycle/', 'Cycle indicators'], ['/screener', 'Live market screener']] };
+  }
+  if (page === 'funding') {
+    const j = await jget(() => handleCgFunding(new URL('https://marginpad.io/api/cg/funding'), env));
+    const cs = (j && j.coins) || []; if (cs.length < 5) return { S };
+    const hi = cs.reduce((a, c) => (c.funding > a.funding ? c : a), cs[0]);
+    const lo = cs.reduce((a, c) => (c.funding < a.funding ? c : a), cs[0]);
+    S.push('Across ' + cs.length + ' USDT-perp markets right now, the most crowded long is ' + hi.s + ' (funding ' + _fpct(hi.funding) + ') and the most crowded short is ' + lo.s + ' (' + _fpct(lo.funding) + ').');
+    const btc = cs.find(c => c.s === 'BTC');
+    if (btc) S.push('BTC funding sits at ' + _fpct(btc.funding) + (Math.abs(btc.funding) < 0.005 ? ' — essentially flat, no crowded side' : btc.funding > 0 ? ' — longs are paying shorts to hold' : ' — shorts are paying longs to hold') + '.');
+    return { S, links: [['/open-interest/', 'Open interest by coin'], ['/long-short/', 'Long/short ratio']] };
+  }
+  if (page === 'oi') {
+    const j = await jget(() => handleCgOpenInterest(new URL('https://marginpad.io/api/cg/open-interest'), env));
+    const cs = (j && j.coins) || []; if (cs.length < 5) return { S };
+    const tot = cs.reduce((a, c) => a + (+c.oiUsd || 0), 0);
+    const top = cs.slice(0, 3);
+    S.push('Open interest across ' + cs.length + ' tracked USDT-perp markets totals ' + _susd(tot) + ' right now, led by ' + top.map(c => c.s + ' (' + _susd(c.oiUsd) + ')').join(', ') + '.');
+    const mv = cs.filter(c => isFinite(+c.oiChg24h)).sort((a, b) => Math.abs(+b.oiChg24h) - Math.abs(+a.oiChg24h))[0];
+    if (mv && Math.abs(+mv.oiChg24h) >= 3) S.push('Biggest 24h OI shift among the majors: ' + mv.s + ' ' + (+mv.oiChg24h > 0 ? '+' : '') + (+mv.oiChg24h).toFixed(1) + '% — ' + (+mv.oiChg24h > 0 ? 'new leverage is building there' : 'leverage is unwinding there') + '.');
+    return { S, links: [['/funding/', 'Funding rates'], ['/liquidations/', '24h liquidations']] };
+  }
+  if (page === 'ls') {
+    const j = await jget(() => handleCgLongShort(new URL('https://marginpad.io/api/cg/long-short'), env));
+    const cs = (j && j.coins) || []; if (cs.length < 5) return { S };
+    const hi = cs[0], lo = cs[cs.length - 1];
+    S.push('Global long/short account ratios right now: the most long-skewed of ' + cs.length + ' tracked coins is ' + hi.s + ' (' + hi.longPct + '% long vs ' + hi.shortPct + '% short) and the most short-skewed is ' + lo.s + ' (' + lo.longPct + '% long vs ' + lo.shortPct + '% short).');
+    const btc = cs.find(c => c.s === 'BTC');
+    if (btc) S.push('BTC accounts split ' + btc.longPct + '% long / ' + btc.shortPct + '% short.');
+    return { S, links: [['/funding/', 'Funding rates'], ['/liquidations/', '24h liquidations']] };
+  }
+  if (page === 'whales') {
+    const j = await jget(() => handleCgHyper(new URL('https://marginpad.io/api/cg/hyper'), env));
+    if (!j || !j.active || !j.agg) return { S };
+    const a = j.agg, net = a.longUsd >= a.shortUsd ? 'net long' : 'net short';
+    S.push('Hyperliquid whales currently hold ' + _susd(a.longUsd + a.shortUsd) + ' in open positions across ' + a.count + ' tracked wallets — ' + _susd(a.longUsd) + ' long vs ' + _susd(a.shortUsd) + ' short, ' + net + ' overall.');
+    if (isFinite(+a.upnl) && Math.abs(+a.upnl) > 0) S.push('Their combined unrealized PnL is ' + (a.upnl >= 0 ? '+' : '-') + _susd(Math.abs(a.upnl)) + '.');
+    const p = j.positions && j.positions[0];
+    if (p) S.push('Largest single position right now: ' + _susd(p.val) + ' ' + (p.long ? 'long' : 'short') + ' on ' + p.sym + (p.lev ? ' at ' + p.lev + 'x' : '') + (p.liq > 0 ? ', liquidation near ' + _spx(p.liq) : '') + '.');
+    return { S, links: [['/rekt/', 'Live liquidation feed'], ['/paper-trade', 'Practice risk-free']] };
+  }
+  return { S };
+}
+async function handleSsrHub(request, url, env, page, sym) {
+  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const asset = await env.ASSETS.fetch(request);
+  const ct = (asset.headers && asset.headers.get('content-type')) || '';
+  if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
+  let html = '';
+  try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
+  const pass = () => new Response(html, { status: 200, headers: asset.headers });
+  let anchor = html.indexOf('<h2'); if (anchor < 0) anchor = html.indexOf('<footer');
+  if (anchor < 0) return pass();
+  let res = null;
+  try { res = await ssrHubSentences(page, sym, env); } catch (e) {}
+  if (!res || !res.S || res.S.length < 2) return pass();
+  const out = html.slice(0, anchor) + ssrBoxHtml('LIVE ' + (sym || page.replace(/^./, c => c.toUpperCase())).toUpperCase() + ' DATA', res.S, res.links) + html.slice(anchor);
+  const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'hub-' + page } });
+  try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+  return resp;
+}
 async function handleCgLiquidations(url, env) {
   const jr = (o, cc) => new Response(JSON.stringify(o), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
   if (!env.COINGLASS_API_KEY) return jr({ error: 'not_configured' }, 'no-store');
@@ -1591,11 +1705,11 @@ async function checkCalReminders(env) {
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/profiles', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids: [v.uid] }) })); const j = await r.json(); email = (j.profiles && j.profiles[v.uid] && j.profiles[v.uid].email) || ''; } catch (e) {}
       if (!email) continue;
       const t = String(v.title || 'Crypto event');
-      try { await fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify({
+      try { await fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(refTagEmail({
         from: 'MarginPad Calendar <alerts@marginpad.io>', to: [email], reply_to: 'support@marginpad.io',
         subject: '⏰ ' + t + ' — in about 30 minutes',
         text: t + ' is coming up in about 30 minutes (' + when + ').\n\nVolatility window — mind your leverage.\n\nCalendar: https://marginpad.io/calendar/\nPaper Trade: https://marginpad.io/paper-trade\n\n— MarginPad',
-        html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:460px"><p style="font-size:19px;font-weight:800;margin:0 0 6px">⏰ ' + t.replace(/[<>&]/g, '') + '</p><p style="margin:0 0 12px">Coming up in about <b>30 minutes</b> (' + when + '). Volatility window — mind your leverage.</p><p style="margin:0"><a href="https://marginpad.io/calendar/" style="color:#111">Open the calendar →</a></p></div>' }) }); } catch (e) {}
+        html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:460px"><p style="font-size:19px;font-weight:800;margin:0 0 6px">⏰ ' + t.replace(/[<>&]/g, '') + '</p><p style="margin:0 0 12px">Coming up in about <b>30 minutes</b> (' + when + '). Volatility window — mind your leverage.</p><p style="margin:0"><a href="https://marginpad.io/calendar/" style="color:#111">Open the calendar →</a></p></div>' })) }); } catch (e) {}
     }
   }
 }
@@ -3023,7 +3137,10 @@ async function xTweet(env, text, mediaId) {
   if (!(env && env.X_API_KEY && env.X_API_SECRET && env.X_ACCESS_TOKEN && env.X_ACCESS_SECRET)) return { ok: false, error: 'x_unconfigured' };
   const url = 'https://api.twitter.com/2/tweets', method = 'POST';
   const authHeader = await _xAuth(env, method, url, {});
-  const payload = { text: String(text || '').slice(0, 280) };
+  // ref=x on our links so X arrivals stop reading as 'direct'; X wraps URLs in t.co (23 chars flat) but the
+  // raw-length guard below is crude — if tagging would blow the 280 slice, keep the original text instead.
+  const _tagged = refTagLinks(String(text || ''), 'x');
+  const payload = { text: (_tagged.length <= 280 ? _tagged : String(text || '')).slice(0, 280) };
   if (mediaId) payload.media = { media_ids: [String(mediaId)] };
   try {
     const r = await fetch(url, { method, headers: { Authorization: authHeader, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -4768,7 +4885,7 @@ h2 span{color:#6b7480;font-size:12.5px;font-weight:400;letter-spacing:0}
   var key=${JSON.stringify(injKey)},t=Date.now(),CC=${JSON.stringify(ccName)};
   function ago(ts){var s=Math.round((Date.now()-ts)/1000);return s<60?s+'s':s<3600?Math.floor(s/60)+'m':Math.floor(s/3600)+'h';}
   function flag(cc){return /^[A-Z]{2}$/.test(cc)?String.fromCodePoint(127397+cc.charCodeAt(0),127397+cc.charCodeAt(1)):'';}
-  function srcName(s){if(!s||s==='direct')return 'Direct (typed the URL or bookmark)';if(/chatgpt|openai/.test(s))return 'ChatGPT';if(/claude\\./.test(s))return 'Claude';if(/perplexity/.test(s))return 'Perplexity';if(/gemini\\./.test(s))return 'Gemini';if(/copilot\\./.test(s))return 'Microsoft Copilot';if(/syndicatedsearch|googlesyndication|googleadservices|doubleclick/.test(s))return 'Google Ads / search partner';if(/google\\./.test(s))return 'Google search';if(/bing\\./.test(s))return 'Bing';if(/yahoo/.test(s))return 'Yahoo';if(/yandex/.test(s))return 'Yandex';if(/duckduckgo/.test(s))return 'DuckDuckGo';if(/ecosia/.test(s))return 'Ecosia';if(/brave/.test(s))return 'Brave Search';if(/t\\.co|twitter|x\\.com/.test(s))return 'X / Twitter';if(/reddit/.test(s))return 'Reddit';if(/youtu/.test(s))return 'YouTube';if(/facebook|fb\\./.test(s))return 'Facebook';if(/instagram/.test(s))return 'Instagram';if(/tiktok/.test(s))return 'TikTok';if(/linkedin/.test(s))return 'LinkedIn';if(/t\\.me|telegram/.test(s))return 'Telegram';if(/discord/.test(s))return 'Discord';return s;}
+  function srcName(s){if(!s||s==='direct')return 'Direct (typed the URL or bookmark)';if(s==='x')return 'X / Twitter (our post)';if(s==='email')return 'Our email';if(s==='push')return 'Push notification';if(s==='extension')return 'Chrome extension';if(s==='telegram')return 'Telegram (our bot/channel)';if(/chatgpt|openai/.test(s))return 'ChatGPT';if(/claude\\./.test(s))return 'Claude';if(/perplexity/.test(s))return 'Perplexity';if(/gemini\\./.test(s))return 'Gemini';if(/copilot\\./.test(s))return 'Microsoft Copilot';if(/syndicatedsearch|googlesyndication|googleadservices|doubleclick/.test(s))return 'Google Ads / search partner';if(/google\\./.test(s))return 'Google search';if(/bing\\./.test(s))return 'Bing';if(/yahoo/.test(s))return 'Yahoo';if(/yandex/.test(s))return 'Yandex';if(/duckduckgo/.test(s))return 'DuckDuckGo';if(/ecosia/.test(s))return 'Ecosia';if(/brave/.test(s))return 'Brave Search';if(/t\\.co|twitter|x\\.com/.test(s))return 'X / Twitter';if(/reddit/.test(s))return 'Reddit';if(/youtu/.test(s))return 'YouTube';if(/facebook|fb\\./.test(s))return 'Facebook';if(/instagram/.test(s))return 'Instagram';if(/tiktok/.test(s))return 'TikTok';if(/linkedin/.test(s))return 'LinkedIn';if(/t\\.me|telegram/.test(s))return 'Telegram';if(/discord/.test(s))return 'Discord';return s;}
   function pageShort(pth){var s=String(pth||'').replace(/^\\/[a-z]{2}\\//,'/');if(s==='/'||s==='')return 'the homepage';var m;if((m=s.match(/^\\/coin\\/([a-z0-9]+)\\/?$/i)))return m[1].toUpperCase()+' coin page';var M={'/funding/':'the Funding page','/liquidations/':'the Liquidations page','/long-short/':'the Long/Short page','/open-interest/':'the Open Interest page','/screener':'the Screener','/screener/':'the Screener','/paper-trade':'Paper Trade','/paper-trade/':'Paper Trade','/charts':'Charts','/charts/':'Charts','/rekt/':'the Rekt feed','/rewards/':'Rewards','/calculators':'Calculators','/calculators/':'Calculators','/blog/':'the Blog'};if(M[s])return M[s];if((m=s.match(/^\\/([a-z0-9-]+)\\/?$/i)))return m[1].replace(/-/g,' ')+' page';return s;}
   function verb(t){return t==='tab'?'used a calculator':(t==='nav'||t==='el')?'clicked a link':('did '+t);}
   function evLine(x){var where=x.p?' <span class="fe-on">on '+esc(pageShort(x.p))+'</span>':'';var tg=x.e?esc(x.e):'';if(x.t==='bot'){if(x.e==='request')return '<span class="fe-rev">🔔 requested premium signals access</span> via the bot';return 'used <code>/'+tg+'</code> on the Telegram bot';}if(x.t==='exchange')return 'clicked through to <b class="fe-ex">'+(tg||'an exchange')+'</b>'+where+' <span class="fe-rev">💰 money click</span>';if(x.t==='paper')return 'opened a paper trade'+(tg?' <b>'+tg+'</b>':'');if(x.t==='close')return 'closed a trade <b>'+(tg||'')+'</b>'+where;if(x.t==='hotpair')return 'opened <b>'+tg+'</b> from Trending';if(x.t==='tool')return 'opened '+(tg?'<b>'+tg+'</b> ':'a ')+'tool'+where;if(x.t==='chat')return 'sent a chat message';if(x.t==='signin')return 'opened the sign-in form'+where;if(x.t==='search')return 'searched '+(tg?'<b>'+tg+'</b>':'something')+where;if(x.t==='watch')return 'added <b>'+tg+'</b> to the watchlist';if(x.t==='like')return 'liked '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='comment')return 'commented on '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='follow')return 'followed '+(tg?'<b>@'+tg+'</b>':'a trader');if(x.t==='dm')return 'sent a private message to '+(tg?'<b>@'+tg+'</b>':'a trader');if(x.t==='duel')return 'challenged '+(tg?'<b>@'+tg+'</b>':'a trader')+' to a duel';if(x.t==='mention')return 'mentioned '+(tg?'<b>@'+tg+'</b>':'someone')+' in chat';if(x.t==='save')return 'saved '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='profile')return 'viewed '+(tg?'<b>@'+tg+'</b>':'a trader')+"'s profile";if(x.t==='ind')return 'toggled the <b>'+(tg||'chart')+'</b> indicator'+where;if(x.t==='draw')return 'drew on '+(tg?'the <b>'+tg+'</b> chart':'a chart');if(x.t==='ai')return 'asked the AI'+(tg?' about <b>'+tg+'</b>':'');if(x.t==='coin')return 'opened the <b>'+(tg||'coin')+'</b> market';if(x.t==='sltp')return 'set SL/TP on <b>'+(tg||'a trade')+'</b>';if(x.t==='share')return 'shared '+(tg?'<b>'+tg+'</b>':'something');if(x.t==='lang')return 'switched language to <b>'+(tg||'?')+'</b>';if(x.t==='alert')return 'set a price alert'+(tg?' on <b>'+tg+'</b>':'');if(x.t==='promo')return 'submitted a promo post'+(tg?' <b>'+tg+'</b>':'');if(x.t==='exsign')return 'submitted an exchange sign-up'+(tg?' <b>'+tg+'</b>':'');if(x.t==='support')return 'sent a support message';if(x.t==='push')return 'enabled push notifications';if(x.t==='signup')return '<span class="fe-rev">created an account</span>'+(tg?' <b>@'+tg+'</b>':'');if(x.t==='login')return 'signed in'+(tg?' as <b>@'+tg+'</b>':'');if(x.t==='claim')return 'claimed <b>'+tg+'</b> from the faucet';if(x.t==='withdraw')return '<span class="fe-rev">requested a withdrawal</span> of <b>'+tg+'</b>';if(x.t==='mission')return 'completed daily mission <b>'+tg+'</b>';if(x.t==='academy')return 'finished Academy lesson <b>'+tg+'</b>';if(x.t==='post')return 'published a community post'+(tg?' (<b>@'+tg+'</b>)':'');if(x.t==='sale')return '<span class="fe-rev">💎 bought <b>'+(tg||'premium')+'</b> signals</span>';if(x.t==='refpaid')return '<span class="fe-rev">🎁 earned a referral reward</span>'+(tg?' '+tg:'');if(x.t==='refclick')return 'shared a referral link'+(tg?' &middot; clicked from <b>'+tg+'</b>':'');if(x.t==='promopaid')return '<span class="fe-rev">✅ promo post approved</span>'+(tg?' '+tg:'');if(x.t==='exsignpaid')return '<span class="fe-rev">✅ exchange sign-up approved</span>'+(tg?' <b>'+tg+'</b>':'');if(x.t==='duelwon')return '🏆 won a duel'+(tg?' vs <b>@'+tg+'</b>':'');if(x.t==='levelup')return '⭐ reached <b>'+(tg||'a new level')+'</b>';if(x.t==='signal')return '<span class="fe-sig">📡 sent signal <b>'+tg+'</b></span> to Telegram';if(x.t==='sigresult')return '📊 signal result: <b>'+tg+'</b>';if(x.t==='digest')return '📡 daily check-in posted to the signal channels ('+tg+')';if(x.t==='lbpaid')return '<span class="fe-rev">🏆 weekly prize paid</span> to <b>'+tg+'</b>';if(x.t==='wdpaid')return '<span class="fe-rev">💸 withdrawal marked PAID</span>';if(x.t==='alertfired')return '🔔 price alert fired <b>'+tg+'</b> → email sent';if(x.t==='newspost')return '📰 auto-posted news to Telegram';if(x.t==='subkick')return '⛔ premium expired — member removed ('+tg+')';if(x.t==='academyfin')return '🎓 finished the whole <b>'+tg+'</b> course';if(x.t==='myprofile')return 'opened their own <b>profile</b>'+where;if(x.t==='premgrant')return '<span class="fe-rev">granted Premium</span> to <b>'+tg+'</b>';if(x.t==='checkout')return '<span class="fe-rev">started a Premium checkout</span> '+tg;if(x.t==='premgate')return 'hit the <span class="fe-rev">Premium</span> wall on <b>'+(tg||'a feature')+'</b>'+where;if(x.t==='frame')return 'equipped the <b>'+tg+'</b> card frame';if(x.t==='brief')return 'opened the <b>daily market brief</b>';if(x.t==='chatmsg')return '💬 chat: '+tg;return verb(x.t)+(tg?' <b>'+tg+'</b>':'')+where;}
@@ -7037,7 +7154,28 @@ function tgCommand(text) {
   } catch (e) { return null; }
 }
 
+// Stamp every marginpad.io link in outbound copy (Telegram/email/X/push) with ?ref=<tag> so the resulting
+// visit names its source in the live feed instead of falling into 'direct' (in-app browsers send no referrer).
+// Skips links that already carry ref=/utm_, keeps trailing punctuation out of the URL. One choke point per
+// channel — individual message builders stay untouched and future messages are covered automatically.
+function refTagLinks(s, tag) {
+  if (!s || typeof s !== 'string') return s;
+  return s.replace(/https:\/\/marginpad\.io[^\s"'<>()\[\]]*/g, m => {
+    let tail = ''; const tm = m.match(/[.,;:!?]+$/); if (tm) { tail = tm[0]; m = m.slice(0, -tail.length); }
+    if (/[?&](ref|utm_source)=/.test(m)) return m + tail;
+    return m + (m.includes('?') ? '&' : '?') + 'ref=' + tag + tail;
+  });
+}
+function refTagEmail(p) { try { if (p) { if (typeof p.text === 'string') p.text = refTagLinks(p.text, 'email'); if (typeof p.html === 'string') p.html = refTagLinks(p.html, 'email'); } } catch (e) {} return p; }
 async function tgApi(token, method, body) {
+  try {
+    if (body) {
+      if (typeof body.text === 'string') body.text = refTagLinks(body.text, 'telegram');
+      if (typeof body.caption === 'string') body.caption = refTagLinks(body.caption, 'telegram');
+      const kb = body.reply_markup && body.reply_markup.inline_keyboard;
+      if (Array.isArray(kb)) for (const row of kb) if (Array.isArray(row)) for (const b of row) if (b && typeof b.url === 'string') b.url = refTagLinks(b.url, 'telegram');
+    }
+  } catch (e) {}
   try { const r = await fetch('https://api.telegram.org/bot' + token + '/' + method, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }); return await r.json(); } catch (e) { return null; } // returns {ok,result} — callers that want the message_id read result.message_id; others ignore it
 }
 async function bumpBot(env, cmd, from) {
@@ -7824,7 +7962,7 @@ async function handleTelegram(request, env) {
     if (!channel) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '⚙️ No channel detected yet. Add the bot as an admin of your channel and post one message there — I capture it automatically.', ...base }); return new Response('ok'); }
     const body = msg.text.replace(/^\/announce(@\S+)?\s*/i, '').trim();
     if (!body) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '📢 Send: <code>/announce your message…</code> — it posts to ' + channelName + '. HTML is supported.', ...base }); return new Response('ok'); }
-    let ok = false; try { const r = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ chat_id: channel, text: body, parse_mode: 'HTML', disable_web_page_preview: true }) }); ok = (await r.json()).ok; } catch (e) {}
+    let ok = false; try { const r = await fetch('https://api.telegram.org/bot' + token + '/sendMessage', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ chat_id: channel, text: refTagLinks(body, 'telegram'), parse_mode: 'HTML', disable_web_page_preview: true }) }); ok = (await r.json()).ok; } catch (e) {}
     await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ok ? '✅ Posted to ' + channelName + '.' : '❌ Couldn\'t post. Make sure the bot is an admin of ' + channelName + '.', ...base });
     return new Response('ok');
   }
@@ -7894,14 +8032,14 @@ async function sendSupportEmail(env, to, subject, message, fromKey) {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
-      body: JSON.stringify({
+      body: JSON.stringify(refTagEmail({
         from: F.name + ' <' + F.addr + '>',
         to: [to],
         reply_to: 'support@marginpad.io',
         subject,
         text: message + '\n\n— ' + F.name + ' · marginpad.io',
         html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111">' + html + '<br><br>—<br><b>' + F.name + '</b> · <a href="https://marginpad.io">marginpad.io</a></div>',
-      }),
+      })),
     });
     if (r.ok) return { ok: true };
     const t = await r.text().catch(() => '');
@@ -7973,12 +8111,12 @@ async function sendAuthCode(env, to, code) {
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
-      body: JSON.stringify({
+      body: JSON.stringify(refTagEmail({
         from: 'MarginPad <login@marginpad.io>', to: [to], reply_to: 'support@marginpad.io',
         subject: code + ' is your MarginPad sign-in code',
         text: 'Your MarginPad sign-in code is ' + code + '\n\nIt expires in 10 minutes. If you did not request this, just ignore this email.\n\n— MarginPad · marginpad.io',
         html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:440px"><p style="margin:0 0 10px">Your MarginPad sign-in code:</p><p style="font-size:34px;font-weight:800;letter-spacing:7px;font-family:ui-monospace,Menlo,monospace;color:#0a0b0d;margin:6px 0 14px">' + code + '</p><p style="color:#555;margin:0 0 10px">It expires in 10 minutes. If you did not request this, just ignore this email.</p><p style="color:#999;font-size:13px;margin:0">&mdash; <a href="https://marginpad.io" style="color:#15a06a;text-decoration:none">MarginPad</a></p></div>'
-      })
+      }))
     });
     if (r.ok) return { ok: true };
     const t = await r.text().catch(() => ''); return { ok: false, detail: ('HTTP ' + r.status + ' ' + t).slice(0, 240) };
@@ -8026,12 +8164,12 @@ async function sendAlertEmail(env, to, sym, dir, target, cur, note) {
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
-      body: JSON.stringify({
+      body: JSON.stringify(refTagEmail({
         from: 'MarginPad Alerts <alerts@marginpad.io>', to: [to], reply_to: 'support@marginpad.io',
         subject: sym + ' hit $' + cur + ' (' + arrow + ' $' + target + ')',
         text: sym + ' is now $' + cur + ' (' + arrow + ' your $' + target + ' target).\n\nTrade it: https://marginpad.io/paper-trade?coin=' + sym + '\nManage alerts: https://marginpad.io/alerts/\n\n— MarginPad',
         html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:460px"><p style="font-size:20px;font-weight:800;margin:0 0 6px">' + sym + ' alert</p><p style="margin:0 0 12px"><b>' + sym + '</b> is now <b>$' + cur + '</b> — it crossed your ' + arrow + ' <b>$' + target + '</b> target.</p>' + noteH + '<p style="margin:0 0 16px"><a href="https://marginpad.io/paper-trade?coin=' + sym + '" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-weight:700;padding:10px 18px;border-radius:10px">Trade ' + sym + ' &rarr;</a></p><p style="color:#999;font-size:13px;margin:0"><a href="https://marginpad.io/alerts/" style="color:#15a06a;text-decoration:none">Manage your alerts</a> &middot; MarginPad</p></div>'
-      })
+      }))
     });
     return { ok: r.ok };
   } catch (e) { return { ok: false }; }
@@ -8055,7 +8193,7 @@ async function sendLeaderboardEmail(env, to, info) {
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
-      body: JSON.stringify({
+      body: JSON.stringify(refTagEmail({
         from: 'MarginPad <hello@marginpad.io>', to: [to], reply_to: 'support@marginpad.io',
         subject: medal + ' You finished ' + place + ' on the ' + boardName + ' leaderboard — ' + prize + ' is yours',
         text: 'Congrats ' + hi + '!\n\nYou finished ' + place + ' place on this week\'s ' + boardName + ' board with ' + achieveTxt + '.\n\n' + prize + ' USDT has been credited to your Rewards balance. Withdraw it at https://marginpad.io/rewards/\n\nThe board just reset \u2014 defend your spot: https://marginpad.io/paper-trade\n\n\u2014 MarginPad',
@@ -8067,7 +8205,7 @@ async function sendLeaderboardEmail(env, to, info) {
           + '<p style="margin:0 0 18px"><a href="https://marginpad.io/rewards/" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-weight:800;padding:11px 20px;border-radius:10px">Withdraw your prize &rarr;</a></p>'
           + '<p style="margin:0 0 4px;color:#444">The board just reset for a new week.</p>'
           + '<p style="margin:0"><a href="https://marginpad.io/paper-trade" style="color:#15a06a;text-decoration:none;font-weight:700">Defend your spot &rarr;</a> &middot; <span style="color:#999">MarginPad \u2014 not financial advice</span></p></div>'
-      })
+      }))
     });
     return { ok: r.ok };
   } catch (e) { return { ok: false }; }
@@ -8171,7 +8309,7 @@ async function checkAccountAlerts(env) {
       const byUid = {}; subs.forEach(s => { (byUid[s.uid] = byUid[s.uid] || []).push(s); });
       const dead = [];
       await Promise.all(pushTargets.map(async t => {
-        const payload = { title: t.sym + ' price alert', body: t.sym + ' is now $' + tgfmt(t.cur) + ' (' + (t.dir === 'up' ? '≥' : '≤') + ' $' + tgfmt(t.target) + ')', url: 'https://marginpad.io/paper-trade?coin=' + t.sym };
+        const payload = { title: t.sym + ' price alert', body: t.sym + ' is now $' + tgfmt(t.cur) + ' (' + (t.dir === 'up' ? '≥' : '≤') + ' $' + tgfmt(t.target) + ')', url: 'https://marginpad.io/paper-trade?coin=' + t.sym + '&ref=push' };
         for (const s of (byUid[t.uid] || [])) { try { const res = await sendWebPush(env, s, payload); if (res.status === 404 || res.status === 410) dead.push(s.endpoint); } catch (e) {} }
       }));
       if (dead.length) { try { await Promise.all(dead.map(ep => env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/push/del', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ endpoint: ep }) })))); } catch (e) {} }
@@ -8611,12 +8749,12 @@ async function sendDigestEmail(env, to, uid, content) {
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
-      body: JSON.stringify({
+      body: JSON.stringify(refTagEmail({
         from: 'MarginPad <hello@marginpad.io>', to: [to], reply_to: 'support@marginpad.io',
         subject: 'Your weekly MarginPad recap 📈',
         text: 'A new Trade League week just started on MarginPad.\n\nTrade (free, no risk): https://marginpad.io/paper-trade\nSet price alerts: https://marginpad.io/alerts/\nClaim free USDT: https://marginpad.io/rewards/\n\nUnsubscribe: ' + unsub + '\n— MarginPad',
         html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:480px"><p style="font-size:20px;font-weight:800;margin:0 0 4px">Your weekly recap 📈</p><p style="color:#555;margin:0 0 16px">Here\'s what\'s happening on MarginPad this week.</p><div style="background:#f6f8f2;border:1px solid #e3ead0;border-radius:12px;padding:14px 16px;margin:0 0 16px">' + lb + '</div><p style="margin:0 0 8px"><a href="https://marginpad.io/paper-trade" style="display:inline-block;background:#0a0b0d;color:#c2f64a;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:10px">Open Paper Trade &rarr;</a></p><p style="margin:14px 0 0;color:#555">Don\'t miss a move &mdash; <a href="https://marginpad.io/alerts/" style="color:#15a06a">set a free price alert</a>, or <a href="https://marginpad.io/rewards/" style="color:#15a06a">claim free USDT</a>.</p><p style="color:#aaa;font-size:12px;margin:20px 0 0">You get this because you have a MarginPad account. <a href="' + unsub + '" style="color:#999">Unsubscribe</a> &middot; <a href="https://marginpad.io" style="color:#999">marginpad.io</a></p></div>'
-      })
+      }))
     });
     return { ok: r.ok };
   } catch (e) { return { ok: false }; }
@@ -10787,7 +10925,7 @@ export default {
       if (!payload.text && htmlIn) payload.text = htmlIn.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 5000);
       if (bd && bd.filename && bd.b64) payload.attachments = [{ filename: String(bd.filename).slice(0, 80), content: String(bd.b64) }];
       try {
-        const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+        const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(refTagEmail(payload)) });
         const jj = await r.json().catch(() => ({}));
         try { // sent-mail history for the Email tab (KV ring, newest first, cap 100)
           let lg9 = []; try { lg9 = JSON.parse(await env.STATS.get('mlog') || '[]'); } catch (e2) {}
@@ -10832,12 +10970,12 @@ export default {
       try {
         const rr = await fetch('https://api.resend.com/emails', {
           method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
-          body: JSON.stringify({
+          body: JSON.stringify(refTagEmail({
             from: 'MarginPad <hello@marginpad.io>', to: [email], reply_to: 'support@marginpad.io',
             subject: subj,
             text: 'Hi ' + uname + ', a friendly reminder: you have ' + rows.length + ' open paper position(s) on MarginPad. Check them here: https://marginpad.io/paper-trade — MarginPad',
             html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:480px"><p style="font-size:19px;font-weight:800;margin:0 0 4px">Hey ' + esc2(uname) + ' — your position update 👀</p><p style="color:#555;margin:0 0 14px">A friendly reminder that you still have ' + (rows.length > 1 ? rows.length + ' open paper positions' : 'an open paper position') + '. Here is where ' + (rows.length > 1 ? 'they stand' : 'it stands') + ' right now:</p><div style="background:#f6f8f2;border:1px solid #e3ead0;border-radius:12px;padding:6px 16px;margin:0 0 16px">' + list + '</div><p style="margin:0 0 8px"><a href="https://marginpad.io/paper-trade" style="display:inline-block;background:#0a0b0d;color:#c2f64a;text-decoration:none;font-weight:700;padding:12px 20px;border-radius:10px">Manage my positions &rarr;</a></p><p style="color:#aaa;font-size:12px;margin:18px 0 0">Paper trading &mdash; no real funds. You get this because you have a MarginPad account. <a href="https://marginpad.io" style="color:#999">marginpad.io</a></p></div>'
-          })
+          }))
         });
         sent = rr.ok; if (!rr.ok) detail = 'resend_' + rr.status;
       } catch (e) { detail = String(e).slice(0, 80); }
@@ -11140,6 +11278,10 @@ export default {
         return handleSsrLiq(request, url, env, mLiq[2] === 'map' ? 'map' : 'calc', mLiq[1]);
       }
       const _bk = ssrBlogKind(url.pathname); if (_bk) return handleSsrBlog(request, url, env, _bk);
+      const _hub = { '/liquidations/': 'liquidations', '/etf-flows/': 'etf', '/fear-greed/': 'fng', '/funding/': 'funding', '/open-interest/': 'oi', '/long-short/': 'ls', '/hyperliquid-whales/': 'whales' }[url.pathname];
+      if (_hub) return handleSsrHub(request, url, env, _hub, null);
+      const _mLc = url.pathname.match(/^\/liquidations\/([a-z0-9]{2,10})\/$/);
+      if (_mLc) return handleSsrHub(request, url, env, 'liquidations', _mLc[1].toUpperCase());
     }
     return env.ASSETS.fetch(request);
     })();

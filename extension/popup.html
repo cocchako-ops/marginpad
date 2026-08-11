@@ -3,44 +3,62 @@
 <head>
 <meta charset="UTF-8" />
 <style>
-  :root{--bg:#0a0b0d;--panel:#111419;--line:#232932;--line-bright:#2f3742;--ink:#e9e7df;--ink-dim:#9aa3ad;--ink-faint:#5c656f;--lime:#c2f64a;--red:#ff6258;}
+  :root{
+    --bg:#08090b;--bg2:#0c0e12;--panel:#111419;--panel2:#151922;
+    --line:#1c2129;--line2:#2a313c;--ink:#f1efe8;--ink2:#c8cdd4;--dim:#8a929c;--faint:#565e68;
+    --lime:#c2f64a;--limed:#a6e02a;--cyan:#46e0e6;--up:#37d398;--red:#ff6258;--amber:#ffb347;
+    --mono:'SF Mono',ui-monospace,'Cascadia Mono',Consolas,'Roboto Mono',monospace;
+    --ui:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{width:360px;background:var(--bg);color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:14px}
-  header{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid var(--line)}
-  .brand{font-weight:800;font-size:16px;letter-spacing:-.03em}
-  .brand b{color:var(--lime)}
-  header a{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);text-decoration:none}
+  body{width:352px;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:14px;-webkit-font-smoothing:antialiased;position:relative;overflow:hidden}
+  body::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:280px;height:180px;background:radial-gradient(closest-side,rgba(194,246,74,.10),transparent);pointer-events:none;z-index:0}
+  .wrap{position:relative;z-index:1}
+  header{display:flex;align-items:center;justify-content:space-between;padding:15px 16px 13px}
+  .brand{display:flex;align-items:baseline;gap:8px}
+  .brand .mark{font-family:var(--ui);font-weight:800;font-size:17px;letter-spacing:-.03em;color:var(--ink)}
+  .brand .mark b{color:var(--lime)}
+  .brand .kick{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line2);border-radius:5px;padding:2px 6px}
+  header a{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--dim);text-decoration:none;transition:color .15s}
   header a:hover{color:var(--lime)}
-  .tabs{display:flex;gap:4px;padding:10px 12px 0;overflow-x:auto;scrollbar-width:none}
+  .tabs{display:flex;gap:5px;padding:0 12px 12px;overflow-x:auto;scrollbar-width:none}
   .tabs::-webkit-scrollbar{display:none}
-  .tab{flex:none;font-size:11px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-dim);background:transparent;border:1px solid var(--line);padding:8px 11px;border-radius:8px;cursor:pointer;white-space:nowrap}
-  .tab.on{color:var(--bg);background:var(--lime);border-color:var(--lime);font-weight:700}
-  .body{padding:14px 15px 16px}
-  .seg{display:flex;gap:5px;margin-bottom:10px}
-  .seg button{flex:1;font-size:12px;text-transform:uppercase;padding:8px;border-radius:7px;background:var(--bg);border:1px solid var(--line-bright);color:var(--ink-dim);cursor:pointer}
-  .seg button.on[data-side=long]{background:rgba(194,246,74,.12);border-color:var(--lime);color:var(--lime)}
-  .seg button.on[data-side=short]{background:rgba(255,98,88,.12);border-color:var(--red);color:var(--red)}
-  label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);margin:9px 0 4px}
-  input{width:100%;background:var(--bg);border:1px solid var(--line-bright);color:var(--ink);font-family:'Courier New',monospace;font-size:14px;padding:9px 10px;border-radius:7px;outline:none}
-  input:focus{border-color:var(--lime)}
+  .tab{flex:none;font-family:var(--mono);font-size:10.5px;letter-spacing:.02em;text-transform:uppercase;color:var(--dim);background:var(--panel);border:1px solid var(--line);padding:8px 12px;border-radius:9px;cursor:pointer;white-space:nowrap;transition:color .14s,border-color .14s,background .14s}
+  .tab:hover{color:var(--ink2);border-color:var(--line2)}
+  .tab.on{color:#0a0b0d;background:linear-gradient(180deg,var(--lime),var(--limed));border-color:transparent;font-weight:700;box-shadow:0 4px 14px -4px rgba(194,246,74,.55)}
+  .body{padding:2px 16px 16px}
+  .seg{display:flex;gap:6px;margin-bottom:11px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:4px}
+  .seg button{flex:1;font-family:var(--mono);font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:8px;border-radius:7px;background:transparent;border:none;color:var(--dim);cursor:pointer;transition:.14s}
+  .seg button.on[data-side=long]{background:rgba(55,211,152,.14);color:var(--up);box-shadow:inset 0 0 0 1px rgba(55,211,152,.4)}
+  .seg button.on[data-side=short]{background:rgba(255,98,88,.14);color:var(--red);box-shadow:inset 0 0 0 1px rgba(255,98,88,.4)}
+  label{display:block;font-family:var(--mono);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.09em;color:var(--dim);margin:10px 0 5px}
+  input{width:100%;background:var(--bg2);border:1px solid var(--line2);color:var(--ink);font-family:var(--mono);font-size:14.5px;padding:10px 11px;border-radius:8px;outline:none;transition:border-color .15s,box-shadow .15s}
+  input:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(194,246,74,.13)}
   input::-webkit-inner-spin-button{-webkit-appearance:none}
-  .two{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-  .res{margin-top:14px;background:var(--panel);border:1px solid var(--line-bright);border-radius:10px;padding:13px 14px}
-  .res .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-dim);margin-bottom:5px}
-  .res .big{font-weight:800;font-size:25px;letter-spacing:-.02em;color:var(--lime);line-height:1;font-family:Arial}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .res{position:relative;margin-top:15px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);border-radius:12px;padding:15px 16px;overflow:hidden}
+  .res::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--lime),transparent 70%)}
+  .res.neg::before{background:linear-gradient(90deg,var(--red),transparent 70%)}
+  .res .lbl{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.11em;color:var(--dim);margin-bottom:6px}
+  .res .big{font-family:var(--mono);font-weight:700;font-size:27px;letter-spacing:-.02em;color:var(--lime);line-height:1;transition:color .2s}
   .res .big.neg{color:var(--red)}
-  .res .big.muted{color:var(--ink-faint)}
-  .res .rr{display:flex;justify-content:space-between;font-family:'Courier New',monospace;font-size:12px;color:var(--ink-dim);padding:6px 0 0}
-  .res .rr b{color:var(--ink);font-weight:400}
-  .panel{display:none}.panel.on{display:block}
-  .foot{padding:11px 15px;border-top:1px solid var(--line);text-align:center}
-  .foot a{display:inline-block;font-size:12px;font-weight:700;color:var(--bg);background:var(--lime);text-decoration:none;padding:9px 14px;border-radius:8px;width:100%}
+  .res .big.muted{color:var(--faint)}
+  .res .rr{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--dim);padding:8px 0 0;margin-top:8px;border-top:1px solid var(--line)}
+  .res .rr:first-of-type{margin-top:10px}
+  .res .rr b{color:var(--ink2);font-weight:400}
+  .panel{display:none;animation:fade .18s ease}.panel.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+  .foot{padding:0 16px 16px}
+  .foot a{display:flex;align-items:center;justify-content:center;gap:7px;font-family:var(--ui);font-size:12.5px;font-weight:800;color:#0a0b0d;background:linear-gradient(180deg,var(--lime),var(--limed));text-decoration:none;padding:11px;border-radius:10px;box-shadow:0 8px 22px -8px rgba(194,246,74,.5);transition:filter .15s,transform .12s}
+  .foot a:hover{filter:brightness(1.05);transform:translateY(-1px)}
+  .foot a svg{width:14px;height:14px}
 </style>
 </head>
 <body>
+<div class="wrap">
   <header>
-    <span class="brand">MARGIN<b>PAD</b></span>
-    <a id="siteLink" href="https://marginpad.io" target="_blank">marginpad.io ↗</a>
+    <span class="brand"><span class="mark">MARGIN<b>PAD</b></span><span class="kick">Calc</span></span>
+    <a id="siteLink" href="https://marginpad.io?ref=extension" target="_blank">marginpad.io &#8599;</a>
   </header>
 
   <div class="tabs">
@@ -56,46 +74,45 @@
     <div class="panel on" id="liq">
       <div class="seg" data-seg="liqSide"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
       <label>Entry price</label><input type="number" id="liqEntry" value="60000" step="any">
-      <label>Leverage</label><input type="number" id="liqLev" value="10" step="any">
-      <label>Maintenance margin %</label><input type="number" id="liqMmr" value="0.5" step="any">
-      <div class="res"><div class="lbl">Liquidation price</div><div class="big" id="liqOut">—</div>
-        <div class="rr"><span>Distance</span><b id="liqDist">—</b></div></div>
+      <div class="two"><div><label>Leverage</label><input type="number" id="liqLev" value="10" step="any"></div><div><label>Maint. margin %</label><input type="number" id="liqMmr" value="0.5" step="any"></div></div>
+      <div class="res"><div class="lbl">Liquidation price</div><div class="big" id="liqOut">&mdash;</div>
+        <div class="rr"><span>Distance</span><b id="liqDist">&mdash;</b></div></div>
     </div>
     <!-- SIZE -->
     <div class="panel" id="size">
-      <label>Account balance</label><input type="number" id="szBal" value="5000" step="any">
-      <label>Risk %</label><input type="number" id="szRisk" value="1" step="any">
+      <div class="two"><div><label>Account balance</label><input type="number" id="szBal" value="5000" step="any"></div><div><label>Risk %</label><input type="number" id="szRisk" value="1" step="any"></div></div>
       <div class="two"><div><label>Entry</label><input type="number" id="szEntry" value="60000" step="any"></div><div><label>Stop-loss</label><input type="number" id="szStop" value="58800" step="any"></div></div>
-      <div class="res"><div class="lbl">Position size</div><div class="big" id="szOut">—</div>
-        <div class="rr"><span>Notional</span><b id="szNotional">—</b></div><div class="rr"><span>Risked</span><b id="szRiskAmt">—</b></div></div>
+      <div class="res"><div class="lbl">Position size</div><div class="big" id="szOut">&mdash;</div>
+        <div class="rr"><span>Notional</span><b id="szNotional">&mdash;</b></div><div class="rr"><span>Risked</span><b id="szRiskAmt">&mdash;</b></div></div>
     </div>
     <!-- PNL -->
     <div class="panel" id="pnl">
       <div class="seg" data-seg="pnlSide"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
       <div class="two"><div><label>Entry</label><input type="number" id="pnlEntry" value="60000" step="any"></div><div><label>Exit</label><input type="number" id="pnlExit" value="66000" step="any"></div></div>
       <div class="two"><div><label>Size (coin)</label><input type="number" id="pnlQty" value="0.5" step="any"></div><div><label>Leverage</label><input type="number" id="pnlLev" value="10" step="any"></div></div>
-      <div class="res"><div class="lbl">Profit / Loss</div><div class="big" id="pnlOut">—</div>
-        <div class="rr"><span>ROI</span><b id="pnlRoi">—</b></div><div class="rr"><span>ROE</span><b id="pnlRoe">—</b></div></div>
+      <div class="res"><div class="lbl">Profit / Loss</div><div class="big" id="pnlOut">&mdash;</div>
+        <div class="rr"><span>ROI</span><b id="pnlRoi">&mdash;</b></div><div class="rr"><span>ROE</span><b id="pnlRoe">&mdash;</b></div></div>
     </div>
     <!-- DCA -->
     <div class="panel" id="dca">
       <div class="two"><div><label>Buy 1 price</label><input type="number" id="dcaP1" value="60000" step="any"></div><div><label>Qty</label><input type="number" id="dcaQ1" value="0.1" step="any"></div></div>
       <div class="two"><div><label>Buy 2 price</label><input type="number" id="dcaP2" value="55000" step="any"></div><div><label>Qty</label><input type="number" id="dcaQ2" value="0.1" step="any"></div></div>
       <div class="two"><div><label>Buy 3 price</label><input type="number" id="dcaP3" value="50000" step="any"></div><div><label>Qty</label><input type="number" id="dcaQ3" value="0.2" step="any"></div></div>
-      <div class="res"><div class="lbl">Average entry</div><div class="big" id="dcaOut">—</div>
-        <div class="rr"><span>Total qty</span><b id="dcaQty">—</b></div><div class="rr"><span>Invested</span><b id="dcaCost">—</b></div></div>
+      <div class="res"><div class="lbl">Average entry</div><div class="big" id="dcaOut">&mdash;</div>
+        <div class="rr"><span>Total qty</span><b id="dcaQty">&mdash;</b></div><div class="rr"><span>Invested</span><b id="dcaCost">&mdash;</b></div></div>
     </div>
     <!-- TAKE PROFIT -->
     <div class="panel" id="tp">
       <div class="seg" data-seg="tpSide"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
       <div class="two"><div><label>Entry</label><input type="number" id="tpEntry" value="60000" step="any"></div><div><label>Leverage</label><input type="number" id="tpLev" value="10" step="any"></div></div>
       <label>Target ROE %</label><input type="number" id="tpCustom" value="75" step="any">
-      <div class="res"><div class="lbl">Target exit price</div><div class="big" id="tpOut">—</div>
-        <div class="rr"><span>Price move</span><b id="tpMove">—</b></div></div>
+      <div class="res"><div class="lbl">Target exit price</div><div class="big" id="tpOut">&mdash;</div>
+        <div class="rr"><span>Price move</span><b id="tpMove">&mdash;</b></div></div>
     </div>
   </div>
 
-  <div class="foot"><a href="https://marginpad.io" target="_blank">Open all 5 calculators on MarginPad.io →</a></div>
-  <script src="popup.js"></script>
+  <div class="foot"><a href="https://marginpad.io?ref=extension" target="_blank">Open all tools on MarginPad<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+</div>
+<script src="popup.js"></script>
 </body>
 </html>

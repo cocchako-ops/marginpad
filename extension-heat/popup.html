@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+  :root{
+    --bg:#08090b;--bg2:#0c0e12;--panel:#111419;--panel2:#151922;
+    --line:#1c2129;--line2:#2a313c;--ink:#f1efe8;--ink2:#c8cdd4;--dim:#8a929c;--faint:#565e68;
+    --lime:#c2f64a;--cyan:#46e0e6;--up:#37d398;--red:#ff6258;--amber:#ffb347;
+    --mono:'SF Mono',ui-monospace,'Cascadia Mono',Consolas,'Roboto Mono',monospace;
+    --ui:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:356px;background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:14px;-webkit-font-smoothing:antialiased;position:relative;overflow:hidden}
+  body::before{content:'';position:absolute;top:-70px;right:-40px;width:260px;height:200px;background:radial-gradient(closest-side,rgba(255,98,88,.12),transparent);pointer-events:none;z-index:0}
+  .wrap{position:relative;z-index:1}
+  header{display:flex;align-items:center;justify-content:space-between;padding:15px 16px 12px}
+  .brand{display:flex;align-items:center;gap:8px}
+  .brand .mark{font-family:var(--ui);font-weight:800;font-size:17px;letter-spacing:-.03em;color:var(--ink)}
+  .brand .mark b{color:var(--lime)}
+  .brand .kick{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--red);border:1px solid rgba(255,98,88,.35);border-radius:5px;padding:2px 6px;display:inline-flex;align-items:center;gap:5px}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 7px var(--red);animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  header a{font-family:var(--mono);font-size:10px;color:var(--dim);text-decoration:none;transition:color .15s}
+  header a:hover{color:var(--lime)}
+  .coins{display:flex;gap:5px;padding:0 12px 12px;overflow-x:auto;scrollbar-width:none}
+  .coins::-webkit-scrollbar{display:none}
+  .coin{flex:none;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.03em;color:var(--dim);background:var(--panel);border:1px solid var(--line);padding:7px 12px;border-radius:9px;cursor:pointer;transition:.14s}
+  .coin:hover{color:var(--ink2);border-color:var(--line2)}
+  .coin.on{color:#0a0b0d;background:linear-gradient(180deg,var(--lime),#a6e02a);border-color:transparent;box-shadow:0 4px 14px -5px rgba(194,246,74,.5)}
+  .px{display:flex;align-items:baseline;gap:10px;padding:0 16px 12px}
+  .px .v{font-family:var(--mono);font-size:26px;font-weight:700;letter-spacing:-.02em;color:var(--ink)}
+  .px .chg{font-family:var(--mono);font-size:13px;font-weight:700}
+  .px .chg.up{color:var(--up)}.px .chg.dn{color:var(--red)}
+  .px .updated{font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-left:auto}
+  .sect{padding:0 16px}
+  .sect-h{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin:0 0 8px}
+  .sect-h .hint{color:var(--faint);letter-spacing:.02em;text-transform:none;font-weight:400}
+  /* heatmap ladder */
+  .heat{position:relative;border:1px solid var(--line);border-radius:11px;background:var(--bg2);padding:8px 10px;overflow:hidden}
+  .hrow{position:relative;display:flex;align-items:center;height:15px;margin:2px 0}
+  .hrow .hp{font-family:var(--mono);font-size:9px;color:var(--faint);width:58px;flex:none;text-align:right;padding-right:8px;z-index:2}
+  .hbarwrap{flex:1;height:9px;position:relative;border-radius:3px;overflow:hidden;background:rgba(255,255,255,.02)}
+  .hbar{position:absolute;top:0;bottom:0;left:0;border-radius:3px;transition:width .3s}
+  .hrow .hw{font-family:var(--mono);font-size:9px;color:var(--dim);width:44px;flex:none;text-align:left;padding-left:7px;z-index:2}
+  .hnow{position:relative;display:flex;align-items:center;height:20px;margin:3px 0}
+  .hnow .lab{font-family:var(--mono);font-size:9.5px;font-weight:700;color:#0a0b0d;background:var(--lime);border-radius:4px;padding:2px 7px;z-index:3;white-space:nowrap}
+  .hnow::after{content:'';position:absolute;left:66px;right:0;height:1px;background:var(--lime);box-shadow:0 0 6px rgba(194,246,74,.6);opacity:.7}
+  .heat-empty{text-align:center;color:var(--faint);font-family:var(--mono);font-size:11px;padding:26px 0}
+  .legend{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:9px;color:var(--faint);margin-top:8px;justify-content:center}
+  .legend .g{width:74px;height:7px;border-radius:4px;background:linear-gradient(90deg,#46e0e6,#c2f64a,#ffb347,#ff6258)}
+  /* 24h liq */
+  .liq24{margin-top:15px}
+  .l24-top{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+  .l24-top .tot{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--ink)}
+  .l24-top .cap{font-family:var(--mono);font-size:9.5px;color:var(--faint)}
+  .lsbar{display:flex;height:24px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+  .lsbar .ls-l{background:linear-gradient(180deg,rgba(55,211,152,.4),rgba(55,211,152,.18));display:flex;align-items:center;padding:0 9px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--up)}
+  .lsbar .ls-s{background:linear-gradient(180deg,rgba(255,98,88,.4),rgba(255,98,88,.18));display:flex;align-items:center;justify-content:flex-end;padding:0 9px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--red)}
+  /* top rekt */
+  .rekt{margin-top:15px}
+  .rk-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--line)}
+  .rk-row:last-child{border-bottom:none}
+  .rk-sym{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ink2);width:52px;flex:none}
+  .rk-bar{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.03);position:relative;overflow:hidden}
+  .rk-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:linear-gradient(90deg,#ff6258,#ffb347)}
+  .rk-amt{font-family:var(--mono);font-size:11px;color:var(--dim);width:52px;flex:none;text-align:right}
+  .foot{padding:15px 16px 16px}
+  .foot a{display:flex;align-items:center;justify-content:center;gap:7px;font-family:var(--ui);font-size:12.5px;font-weight:800;color:#0a0b0d;background:linear-gradient(180deg,var(--lime),#a6e02a);text-decoration:none;padding:11px;border-radius:10px;box-shadow:0 8px 22px -8px rgba(194,246,74,.5);transition:filter .15s,transform .12s}
+  .foot a:hover{filter:brightness(1.05);transform:translateY(-1px)}
+  .foot a svg{width:14px;height:14px}
+  .skel{color:var(--faint);font-family:var(--mono);font-size:11px;text-align:center;padding:22px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="brand"><span class="mark">MARGIN<b>PAD</b></span><span class="kick"><span class="dot"></span>Heat</span></span>
+    <a id="siteLink" href="https://marginpad.io/heatmap?ref=extension" target="_blank">marginpad.io &#8599;</a>
+  </header>
+
+  <div class="coins" id="coins"></div>
+
+  <div class="px"><span class="v" id="pxVal">&mdash;</span><span class="chg" id="pxChg"></span><span class="updated" id="pxUpd"></span></div>
+
+  <div class="sect">
+    <div class="sect-h"><span>Liquidation heatmap</span><span class="hint">where leverage clusters</span></div>
+    <div class="heat" id="heat"><div class="skel">Loading heatmap&hellip;</div></div>
+    <div class="legend" id="legend" hidden>light<span class="g"></span>dense</div>
+  </div>
+
+  <div class="sect liq24">
+    <div class="sect-h"><span>24h liquidations</span><span class="hint">all exchanges</span></div>
+    <div class="l24-top"><span class="tot" id="l24Tot">&mdash;</span><span class="cap" id="l24Cap"></span></div>
+    <div class="lsbar" id="l24Bar"><div class="ls-l" style="flex:1">&mdash;</div></div>
+  </div>
+
+  <div class="sect rekt">
+    <div class="sect-h"><span>Most rekt (24h)</span><span class="hint">top liquidated coins</span></div>
+    <div id="rekt"><div class="skel">&mdash;</div></div>
+  </div>
+
+  <div class="foot"><a id="ctaLink" href="https://marginpad.io/heatmap?ref=extension" target="_blank">Open the live heatmap<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+</div>
+<script src="popup.js"></script>
+</body>
+</html>
