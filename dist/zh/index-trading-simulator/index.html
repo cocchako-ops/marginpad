@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>免费指数交易模拟器 —— 零风险练习标普500、纳斯达克与道琼斯 | MarginPad</title>
+<meta name="description" content="用实时价格练习交易标普500、纳斯达克100、道琼斯和DAX指数,不花一分真钱。免费股指模拟器——真实图表、杠杆和止损,无需注册。" />
+<meta name="keywords" content="指数交易模拟器, 标普500交易模拟器, 纳斯达克交易模拟器, 道琼斯模拟器, 指数交易练习, 股指模拟账户, 标普指数交易练习" />
+<link rel="canonical" href="https://marginpad.io/zh/index-trading-simulator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/index-trading-simulator/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/index-trading-simulator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/index-trading-simulator/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/index-trading-simulator/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/index-trading-simulator/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/index-trading-simulator/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/index-trading-simulator/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/index-trading-simulator/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/index-trading-simulator/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/index-trading-simulator/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/index-trading-simulator/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/index-trading-simulator/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/index-trading-simulator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/index-trading-simulator/" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/zh/index-trading-simulator/" />
+<meta property="og:title" content="免费指数交易模拟器 —— 零风险练习标普500、纳斯达克与道琼斯" />
+<meta property="og:description" content="用实时价格练习交易标普500、纳斯达克100、道琼斯和DAX指数,不花一分真钱。免费股指模拟器——真实图表、杠杆和止损,无需注册。" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="免费指数交易模拟器 —— 零风险练习标普500、纳斯达克与道琼斯" />
+<meta name="twitter:description" content="用实时价格练习交易标普500、纳斯达克100、道琼斯和DAX指数,不花一分真钱。免费股指模拟器——真实图表、杠杆和止损,无需注册。" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/lab.css" />
+<style>
+  .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+  .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:8px}
+  .scard{display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink);transition:border-color .16s,transform .16s}
+  .scard:hover{border-color:var(--line2);transform:translateY(-2px);color:var(--ink)}
+  .scard .tk{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;color:var(--lime)}
+  .scard .nm{font-size:12.5px;color:var(--dim);line-height:1.25}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:8px}
+  .step{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--r);padding:20px}
+  .step .n{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--cyan);letter-spacing:.1em}
+  .step h3{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;margin:10px 0 7px}
+  .step p{color:var(--dim);font-size:13.5px;margin:0;line-height:1.55}
+  .prose{max-width:760px;color:var(--ink2);font-size:15.5px;line-height:1.7}
+  .prose p{margin:0 0 14px}
+  .faq{max-width:820px;margin-top:6px}
+  .qa{border-bottom:1px solid var(--line);padding:18px 0}
+  .qa:last-child{border-bottom:none}
+  .qa h3{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;margin:0 0 8px;color:var(--ink)}
+  .qa p{margin:0;color:var(--dim);font-size:14px;line-height:1.6}
+  .cmp td:first-child{color:var(--ink2)}
+  .cta-band{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);border-radius:var(--r);padding:30px 26px;margin-top:40px;text-align:center;box-shadow:var(--shadow)}
+  .cta-band h2{justify-content:center;margin-top:0}
+  .lnav{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none}
+  .lnav::-webkit-scrollbar{display:none}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"免费指数交易模拟器","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/zh/index-trading-simulator/","description":"用实时价格练习交易标普500、纳斯达克100、道琼斯和DAX指数,不花一分真钱。免费股指模拟器——真实图表、杠杆和止损,无需注册。","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"MarginPad","item":"https://marginpad.io/zh/"},{"@type":"ListItem","position":2,"name":"免费指数交易模拟器","item":"https://marginpad.io/zh/index-trading-simulator/"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"指数交易模拟器免费吗?","acceptedAnswer":{"@type":"Answer","text":"是的。无需注册、无需入金、不涉及真实资金。你用虚拟资金按照实时指数价格练习交易,完全零风险地学习。"}},{"@type":"Question","name":"我可以交易哪些指数?","acceptedAnswer":{"@type":"Answer","text":"主要股票指数,包括标普500、纳斯达克100、道琼斯、德国DAX 40、英国富时100(FTSE 100)以及日本日经225(Nikkei 225),均提供实时价格和真实K线图。"}},{"@type":"Question","name":"指数价格是实时的吗?","acceptedAnswer":{"@type":"Answer","text":"是的。价格和K线来自真实市场数据,因此图表与你在真实指数交易屏幕上看到的完全一致,并正确反映交易时段的实际情况。"}},{"@type":"Question","name":"我可以做空指数并使用杠杆吗?","acceptedAnswer":{"@type":"Answer","text":"可以。你可以做多或做空,自行选择杠杆倍数,并设置止损和止盈,操作方式与真实的指数差价合约或期货账户完全一样。强平机制也是模拟的,让你安全地学习风险管理。"}},{"@type":"Question","name":"在真实交易指数期货之前,这是个好的练习方式吗?","acceptedAnswer":{"@type":"Answer","text":"是的。由于它使用实时价格以及真实的杠杆和强平机制,你在这里养成的仓位管理和风险控制习惯可以直接迁移到真实的指数期货或差价合约账户——但在这里犯错不会付出任何代价。"}},{"@type":"Question","name":"什么时候可以在模拟器中交易指数?","acceptedAnswer":{"@type":"Answer","text":"你随时都可以查看图表。开立新的指数交易需遵循该指数所在市场的交易时段;当市场休市时,价格会冻结在最后收盘价,待市场重新开盘后交易将恢复。"}}]}
+</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/zh/">MARGIN<b>PAD</b></a><nav class="tool-switch lnav"><a href="/paper-trade">模拟交易</a><a href="/charts">图表</a><a href="/zh/stock-trading-simulator/">股票模拟器</a><a href="/zh/forex-trading-simulator/">外汇模拟器</a><a href="/zh/tools/">工具</a></nav><a class="home" href="/paper-trade">打开应用 &rarr;</a></header>
+
+<div class="wrap">
+  <section class="hero">
+    <span class="eyebrow">免费指数模拟器</span>
+    <h1>免费指数交易模拟器</h1>
+    <p class="sub">用实时价格练习交易标普500、纳斯达克100、道琼斯和DAX指数,不花一分真钱。按照真实交易的方式操作指数——图表、杠杆和止损一应俱全。无需注册,无需下载。</p>
+    <div class="hero-cta">
+      <a class="btn" href="/paper-trade?coin=SPX500">免费开始练习</a>
+      <a class="btn ghost" href="/charts">打开实时图表</a>
+    </div>
+    <p class="note" style="margin-top:16px">实时市场数据 · 可做多可做空 · 杠杆、止损与止盈 · 直接在浏览器中运行</p>
+  </section>
+
+  <h2>什么是指数交易模拟器?</h2>
+  <div class="prose"><p>股票指数追踪一篮子公司的表现——标普500追踪美国规模最大的500家公司,纳斯达克100追踪最大的科技股,道琼斯30追踪蓝筹股。指数交易模拟器让你用虚拟资金而非真实资金交易这些指数,使用与真实交易者相同的实时价格和K线图,亏损的交易除了教训之外不会让你损失任何东西。</p><p>MarginPad 的模拟器采用实时价格、真实杠杆和真实的强平机制。相比单只股票,指数的波动通常较为温和,这容易诱使交易者使用高杠杆——而这恰恰是模拟器能让你安全测试的习惯,在真钱上场之前先弄清楚后果。</p></div>
+
+  <h2>可供练习的指数</h2>
+  <p class="muted">点击任意市场,即可在模拟器中打开该品种的实时图表。</p>
+  <div class="sgrid">
+    <a class="scard" href="/paper-trade?coin=SPX500"><span class="tk">SPX500</span><span class="nm">S&amp;P 500</span></a>
+    <a class="scard" href="/paper-trade?coin=NAS100"><span class="tk">NAS100</span><span class="nm">Nasdaq 100</span></a>
+    <a class="scard" href="/paper-trade?coin=US30"><span class="tk">US30</span><span class="nm">Dow Jones</span></a>
+    <a class="scard" href="/paper-trade?coin=GER40"><span class="tk">GER40</span><span class="nm">DAX 40</span></a>
+    <a class="scard" href="/paper-trade?coin=UK100"><span class="tk">UK100</span><span class="nm">FTSE 100</span></a>
+    <a class="scard" href="/paper-trade?coin=JPN225"><span class="tk">JPN225</span><span class="nm">Nikkei 225</span></a>
+  </div>
+
+  <h2>使用方法</h2>
+  <div class="steps">
+    <div class="step"><div class="n">1</div><h3>选择一个市场</h3><p>从下方选择一个交易品种,实时K线图会立即加载——数据与真实交易屏幕上看到的完全一致。</p></div>
+    <div class="step"><div class="n">2</div><h3>做多或做空</h3><p>设置仓位大小和杠杆,预计上涨就买入,预计下跌就卖出。如果需要,还可以添加止损和止盈。</p></div>
+    <div class="step"><div class="n">3</div><h3>实时查看盈亏</h3><p>随着价格变动,你的盈亏会实时更新。随时可以平仓,并在交易日志中回顾这笔交易。不断重复、学习、进步。</p></div>
+  </div>
+
+  <h2>为什么要先练习指数交易,再投入真钱</h2>
+  <div class="prose"><p>指数期货和差价合约常常是许多交易者第一次使用高杠杆的地方,因为相比波动剧烈的单只股票,指数给人一种"更安全"的错觉。而这种错觉正是陷阱:即使是很小幅度的不利波动,也可能让一个高杠杆的指数仓位血本无归。模拟器让你可以免费学习这一切——保证金能多快蒸发、止损如何保护你,以及你的策略能否经受真实图表的考验。</p><p>因为 MarginPad 使用实时价格和真实的强平机制,这里没有虚假的安全感。一个在现实中会爆仓的高杠杆标普500仓位,在这里同样会爆仓。你毕业时带走的是真正经得起考验的交易习惯。</p></div>
+
+  <h2>模拟交易 vs. 真实交易</h2>
+  <div class="tablewrap"><table class="cmp">
+    <thead><tr><th>&nbsp;</th><th>MarginPad 模拟器</th><th>真实指数交易</th></tr></thead>
+    <tbody>
+      <tr><td>资金风险</td><td class="pos">$0</td><td class="neg">你的本金</td></tr>
+      <tr><td>价格与图表</td><td>实时市场数据</td><td>实时市场数据</td></tr>
+      <tr><td>杠杆与强平</td><td>真实交易机制</td><td>真实交易机制</td></tr>
+      <tr><td>需要注册</td><td class="pos">不需要</td><td>需要(经纪商)</td></tr>
+      <tr><td>犯错的代价</td><td class="pos">一次教训</td><td class="neg">真实亏损</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>常见问题</h2>
+  <div class="faq">
+    <div class="qa"><h3>指数交易模拟器免费吗?</h3><p>是的。无需注册、无需入金、不涉及真实资金。你用虚拟资金按照实时指数价格练习交易,完全零风险地学习。</p></div>
+    <div class="qa"><h3>我可以交易哪些指数?</h3><p>主要股票指数,包括标普500、纳斯达克100、道琼斯、德国DAX 40、英国富时100(FTSE 100)以及日本日经225(Nikkei 225),均提供实时价格和真实K线图。</p></div>
+    <div class="qa"><h3>指数价格是实时的吗?</h3><p>是的。价格和K线来自真实市场数据,因此图表与你在真实指数交易屏幕上看到的完全一致,并正确反映交易时段的实际情况。</p></div>
+    <div class="qa"><h3>我可以做空指数并使用杠杆吗?</h3><p>可以。你可以做多或做空,自行选择杠杆倍数,并设置止损和止盈,操作方式与真实的指数差价合约或期货账户完全一样。强平机制也是模拟的,让你安全地学习风险管理。</p></div>
+    <div class="qa"><h3>在真实交易指数期货之前,这是个好的练习方式吗?</h3><p>是的。由于它使用实时价格以及真实的杠杆和强平机制,你在这里养成的仓位管理和风险控制习惯可以直接迁移到真实的指数期货或差价合约账户——但在这里犯错不会付出任何代价。</p></div>
+    <div class="qa"><h3>什么时候可以在模拟器中交易指数?</h3><p>你随时都可以查看图表。开立新的指数交易需遵循该指数所在市场的交易时段;当市场休市时,价格会冻结在最后收盘价,待市场重新开盘后交易将恢复。</p></div>
+  </div>
+
+  <div class="cta-band">
+    <h2>几秒钟即可开始练习</h2>
+    <p class="sub" style="margin:0 auto 20px">在实时图表上打开标普500,下第一笔模拟交易——无需开户,零风险。</p>
+    <a class="btn" href="/paper-trade?coin=SPX500">打开模拟器</a>
+  </div>
+
+  <p class="note">你还可以练习 <a href="/zh/stock-trading-simulator/">股票模拟器</a>, <a href="/zh/forex-trading-simulator/">外汇模拟器</a>. MarginPad 是一个免费的练习平台——不构成投资建议,模拟结果并不保证真实收益。</p>
+</div>
+
+<footer class="toolfoot"><div class="wrap" style="padding-bottom:0"><div class="cols">
+  <div><a class="brand" href="/zh/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">使用实时价格练习交易股票、外汇、指数和加密货币,零风险。完全免费,无需注册。</p></div>
+  <div><h4>练习</h4><a href="/zh/stock-trading-simulator/">股票模拟器</a><a href="/zh/forex-trading-simulator/">外汇模拟器</a><a href="/zh/index-trading-simulator/">指数模拟器</a><a href="/paper-trade">模拟交易</a></div>
+  <div><h4>MarginPad</h4><a href="/charts">图表</a><a href="/calculators">Calculators</a><a href="/screener">Screener</a><a href="/zh/tools/">工具</a></div>
+</div><div class="bottom">© MarginPad · 练习平台,非投资建议 · marginpad.io</div></div></footer>
+
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

@@ -475,4 +475,7 @@
   <url><loc>https://marginpad.io/liquidations/arb/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/liquidations/op/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/privacy/</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://marginpad.io/stock-trading-simulator/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://marginpad.io/forex-trading-simulator/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://marginpad.io/index-trading-simulator/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
 </urlset>

@@ -1,19 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
-
-    ym(110941944, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
@@ -132,8 +119,6 @@
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the best crypto exchange for futures trading?","acceptedAnswer":{"@type":"Answer","text":"For most futures traders, Bybit and Binance lead: Binance has the deepest liquidity (tightest spreads on majors) while Bybit offers a cleaner pro interface, fair mark-price liquidations and basic use without full KYC. OKX and Bitget are strong alternatives, and Bitget is the best for copy trading. The \"best\" depends on what matters to you — liquidity, fees, leverage, KYC or trust."}},{"@type":"Question","name":"Which exchange has the lowest trading fees?","acceptedAnswer":{"@type":"Answer","text":"MEXC generally has the lowest base fees (often 0% maker and ~0.02% taker on futures). Most top exchanges sit around 0.02% maker / 0.05–0.06% taker at the base tier, and a referral link plus VIP volume tiers lower them further. But the lowest headline fee means little if the book is thin — slippage on an illiquid pair costs far more than a few basis points of fee."}},{"@type":"Question","name":"Is KuCoin safe to use in 2026?","acceptedAnswer":{"@type":"Answer","text":"KuCoin carries real trust concerns. It pleaded guilty in the US in 2025 to operating an unlicensed money-transmitting business (nearly $300M in penalties) and is banned for US users. In 2026, on-chain investigator ZachXBT publicly accused it of poor cooperation with hack victims and law enforcement, and Austria’s regulator restricted new EU sign-ups. We list it for completeness but recommend caution and keeping minimal funds there — see the trust section on this page."}},{"@type":"Question","name":"Do I need KYC to trade crypto futures?","acceptedAnswer":{"@type":"Answer","text":"Some exchanges (Bybit, Bitget, Gate, MEXC, KuCoin) allow limited use without full KYC, usually with reduced withdrawal limits, while Binance, OKX, Kraken and Coinbase require full identity verification. KYC-free access is convenient but comes with trade-offs in limits and, sometimes, in how disputes are handled."}},{"@type":"Question","name":"How does leverage affect me while trading?","acceptedAnswer":{"@type":"Answer","text":"Leverage multiplies both your gains and your liquidation risk. At 100×, a ~1% move against you wipes the position; at 500×, ~0.2% does. High max leverage is a marketing number — experienced traders rarely use more than 5–20×. Practice with our free paper-trading terminal first to feel how fast liquidation arrives before risking real money."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Exchange comparison","item":"https://marginpad.io/exchanges/"}]}</script>
-
-<script defer src="/assets/sentry.js"></script>
 </head>
 <body>
 <div class="ex-glow" aria-hidden="true"></div>
@@ -223,7 +208,12 @@
 </div>
 <script>
 (function(){
-  try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u);}catch(e){}
+  try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);
+  var es='';try{var ss=sessionStorage.getItem('mp_src');if(ss)es=ss;else{var q=new URLSearchParams(location.search||'');if(q.get('gclid')||q.get('gbraid')||q.get('wbraid'))es='google-ads';else if(q.get('msclkid'))es='bing-ads';else if(q.get('utm_source'))es=q.get('utm_source')+(q.get('utm_medium')?' / '+q.get('utm_medium'):'');else if(q.get('fbclid'))es='facebook';else if(q.get('twclid'))es='twitter';else if(q.get('ttclid'))es='tiktok';else if(q.get('ref'))es=q.get('ref');if(!es&&document.referrer){try{var h=new URL(document.referrer).hostname.replace(/^www\./,'');if(h&&h!=='marginpad.io')es=h;}catch(e2){}}es=(es||'').slice(0,40);try{sessionStorage.setItem('mp_src',es);}catch(e3){}}}catch(e4){}
+  var s0='';try{var r0=localStorage.getItem('mp_src0');if(r0){var o0=JSON.parse(r0);if(o0&&o0.s&&(Date.now()-(+o0.ts||0))<=7776e6)s0=String(o0.s).slice(0,40);}}catch(e5){}
+  if(es&&!s0){try{localStorage.setItem('mp_src0',JSON.stringify({s:es,ts:Date.now()}));}catch(e6){}}
+  if(es)u+='&src='+encodeURIComponent(es);else if(s0)u+='&s0='+encodeURIComponent(s0);
+  if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u);}catch(e){}
   document.addEventListener('click',function(e){var a=e.target.closest('a[data-ex]');if(!a)return;try{var ex=a.getAttribute('data-ex');if(navigator.sendBeacon)navigator.sendBeacon('/api/track?t=exchange&label='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname));}catch(_){}}, true);
   var mb=document.getElementById('mBurger');if(mb)mb.addEventListener('click',function(){function go(){if(window.mpNavOpen){window.mpNavOpen();return;}var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(go,150);}go();});
 })();

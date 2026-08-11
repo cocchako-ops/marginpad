@@ -137,6 +137,7 @@
   <h1>Test your trading bot — for free.</h1>
   <p class="lead">Point your bot at our paper-trading REST API. Real live crypto prices, leveraged positions up to 1000×, stop-loss/take-profit, partial closes and liquidation simulation — without risking a cent. Your bot's whole strategy, proven before it ever touches real money.</p>
   <div class="limits"><span>120 req/min</span><span>50 open positions</span><span>up to 1000× leverage</span><span>any USDT pair</span><span>max $100k margin per trade</span></div>
+  <p class="lead" style="margin-top:10px;font-size:14px">Just want market data? See the <a href="/free-crypto-api/" style="color:var(--lime);font-weight:700">free crypto data API</a> — keyless live prices, OHLC, a scored screener, funding, open interest, liquidations, an economic calendar and calculators, all CORS-enabled with an <a href="/api/openapi.json" style="color:var(--lime)">OpenAPI spec</a>.</p>
 </div>
 
 <div class="api-key-box" id="akb">
@@ -263,7 +264,7 @@ if (mySignal(price)) {  // your strategy here
 
 <script>
 (function(){
-  try{var u='/api/track?t=pageview&p=/trading-api/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon)navigator.sendBeacon(u);}catch(e){}
+  try{var u='/api/track?t=pageview&p=/trading-api/';if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);var _e9='';try{var _c9=sessionStorage.getItem('mp_src');if(_c9)_e9=_c9;else{var _q9=new URLSearchParams(location.search||'');if(_q9.get('gclid')||_q9.get('gbraid')||_q9.get('wbraid'))_e9='google-ads';else if(_q9.get('msclkid'))_e9='bing-ads';else if(_q9.get('utm_source'))_e9=_q9.get('utm_source')+(_q9.get('utm_medium')?' / '+_q9.get('utm_medium'):'');else if(_q9.get('fbclid'))_e9='facebook';else if(_q9.get('twclid'))_e9='twitter';else if(_q9.get('ttclid'))_e9='tiktok';else if(_q9.get('ref'))_e9=_q9.get('ref');if(!_e9&&document.referrer){try{var _h9=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h9&&_h9!=='marginpad.io')_e9=_h9;}catch(_x2){}}_e9=(_e9||'').slice(0,40);try{sessionStorage.setItem('mp_src',_e9);}catch(_x3){}}}catch(_x4){}var _s9='';try{var _r9=localStorage.getItem('mp_src0');if(_r9){var _o9=JSON.parse(_r9);if(_o9&&_o9.s&&(Date.now()-(+_o9.ts||0))<=7776e6)_s9=String(_o9.s).slice(0,40);}}catch(_x5){}if(_e9&&!_s9){try{localStorage.setItem('mp_src0',JSON.stringify({s:_e9,ts:Date.now()}));}catch(_x6){}}if(_e9)u+='&src='+encodeURIComponent(_e9);else if(_s9)u+='&s0='+encodeURIComponent(_s9);if(navigator.sendBeacon)navigator.sendBeacon(u);}catch(e){}
   var btn=document.getElementById('akbBtn'),out=document.getElementById('akbKey'),msg=document.getElementById('akbMsg');
   function showKey(k){out.textContent=k;out.classList.add('on');btn.textContent='Rotate key (invalidates the old one)';btn.dataset.rot='1';msg.textContent='Keep it secret — anyone with the key can trade on your paper account.';}
   function getKey(rotate){fetch('/api/bot/key',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({rotate:!!rotate}),credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){

@@ -1,9 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>MarginPad Community — Trading Ideas, Market Analysis &amp; Discussion</title>
 <meta name="description" content="A live community for crypto and futures traders: publish trading ideas, share market analysis, embed live charts, discuss strategies and follow the best authors. Free, sign in with an email." />
@@ -217,6 +230,7 @@ svg.ic{width:15px;height:15px;vertical-align:-2.5px;fill:none;stroke:currentColo
   .pv h1{font-size:21px}
   body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
 }
+.cmp-cnt{font-family:'Space Mono',monospace;font-size:11px;color:#8b93a7;margin:6px 2px 0}
 </style>
 </head>
 <body>
@@ -287,7 +301,7 @@ svg.ic{width:15px;height:15px;vertical-align:-2.5px;fill:none;stroke:currentColo
       <button type="button" id="tbPrev" title="Preview" style="margin-left:auto">Preview</button>
     </div>
     <textarea class="body" id="cBody" maxlength="20000" placeholder="Write your idea… Markdown works: ## heading, **bold**, - lists, > quote, ```code```, ![img](https://…), [chart:BTCUSDT], $BTC, @user"></textarea>
-    <div class="cmp-prev pbody" id="cPrev" hidden></div>
+    <div class="cmp-cnt" id="cCnt">0 / 500 min · share the full idea — AI-assisted posts are welcome</div><div class="cmp-prev pbody" id="cPrev" hidden></div>
     <div class="cmp-ft">
       <button class="pub" id="cPub" type="button">Publish</button>
       <button class="ghost" id="cCancel" type="button">Cancel</button>
@@ -548,8 +562,8 @@ cmp.addEventListener('click',function(e){if(e.target===cmp)cmp.hidden=true;});
     var title=(document.getElementById('cTitle').value||'').trim(),body=(ta.value||'').trim();
     var cat=document.getElementById('cCat').value,syms=(document.getElementById('cSyms').value||'');
     msg.className='cmp-msg';
-    if(title.length<6){msg.className='cmp-msg err';msg.textContent='Title too short (min 6 chars).';return;}
-    if(body.length<20){msg.className='cmp-msg err';msg.textContent='Write a bit more (min 20 chars).';return;}
+    if(title.length<15){msg.className='cmp-msg err';msg.textContent='Title too short — write a real headline (min 15 characters).';return;}
+    if(body.length<500){msg.className='cmp-msg err';msg.textContent='Posts need at least 500 characters ('+body.length+'/500). Share the full idea — setup, reasoning, levels. Writing it with AI is totally fine.';return;}
     b.disabled=true;msg.textContent='Publishing…';
     api('/post',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({title:title,body:body,cat:cat,syms:syms})}).then(function(d){
       b.disabled=false;
@@ -647,7 +661,7 @@ function route(){
 }
 document.getElementById('navSaved').addEventListener('click',function(e){e.preventDefault();savedView();});
 // track pageview
-try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u);}catch(e){}
+try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);var _e9='';try{var _c9=sessionStorage.getItem('mp_src');if(_c9)_e9=_c9;else{var _q9=new URLSearchParams(location.search||'');if(_q9.get('gclid')||_q9.get('gbraid')||_q9.get('wbraid'))_e9='google-ads';else if(_q9.get('msclkid'))_e9='bing-ads';else if(_q9.get('utm_source'))_e9=_q9.get('utm_source')+(_q9.get('utm_medium')?' / '+_q9.get('utm_medium'):'');else if(_q9.get('fbclid'))_e9='facebook';else if(_q9.get('twclid'))_e9='twitter';else if(_q9.get('ttclid'))_e9='tiktok';else if(_q9.get('ref'))_e9=_q9.get('ref');if(!_e9&&document.referrer){try{var _h9=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h9&&_h9!=='marginpad.io')_e9=_h9;}catch(_x2){}}_e9=(_e9||'').slice(0,40);try{sessionStorage.setItem('mp_src',_e9);}catch(_x3){}}}catch(_x4){}var _s9='';try{var _r9=localStorage.getItem('mp_src0');if(_r9){var _o9=JSON.parse(_r9);if(_o9&&_o9.s&&(Date.now()-(+_o9.ts||0))<=7776e6)_s9=String(_o9.s).slice(0,40);}}catch(_x5){}if(_e9&&!_s9){try{localStorage.setItem('mp_src0',JSON.stringify({s:_e9,ts:Date.now()}));}catch(_x6){}}if(_e9)u+='&src='+encodeURIComponent(_e9);else if(_s9)u+='&s0='+encodeURIComponent(_s9);if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u);}catch(e){}
 // boot: wait a beat for mp-auth to resolve, then render + widgets
 window.addEventListener('mp-auth-change',function(){pollNotifs();});
 try{if(window.innerWidth<880)document.getElementById('q').placeholder='Search';}catch(e){}
@@ -656,5 +670,5 @@ route();widgets();setTimeout(pollNotifs,1200);setInterval(pollNotifs,60000);setI
 </script>
 <script defer src="/assets/mp-auth.js"></script>
 <script defer src="/assets/mp-nav.js"></script>
-</body>
+<script>(function(){var ta=document.getElementById('cBody'),cn=document.getElementById('cCnt');if(!ta||!cn)return;function upd(){var n=(ta.value||'').trim().length;var okk=n>=500;cn.textContent=(n<500?(n+' / 500 min characters — keep going, real analysis ranks on Google'):(n+' characters ✓ ready to publish'));cn.style.color=okk?'#2ebd85':'#8b93a7';}ta.addEventListener('input',upd);upd();})();</script></body>
 </html>

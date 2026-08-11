@@ -109,7 +109,12 @@ const page = (sym, name) => {
 </div>
 <script>
 (function(){
-  try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u);}catch(e){}
+  try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);
+  var es='';try{var ss=sessionStorage.getItem('mp_src');if(ss)es=ss;else{var q=new URLSearchParams(location.search||'');if(q.get('gclid')||q.get('gbraid')||q.get('wbraid'))es='google-ads';else if(q.get('msclkid'))es='bing-ads';else if(q.get('utm_source'))es=q.get('utm_source')+(q.get('utm_medium')?' / '+q.get('utm_medium'):'');else if(q.get('fbclid'))es='facebook';else if(q.get('twclid'))es='twitter';else if(q.get('ttclid'))es='tiktok';else if(q.get('ref'))es=q.get('ref');if(!es&&document.referrer){try{var h=new URL(document.referrer).hostname.replace(/^www\\./,'');if(h&&h!=='marginpad.io')es=h;}catch(e2){}}es=(es||'').slice(0,40);try{sessionStorage.setItem('mp_src',es);}catch(e3){}}}catch(e4){}
+  var s0='';try{var r0=localStorage.getItem('mp_src0');if(r0){var o0=JSON.parse(r0);if(o0&&o0.s&&(Date.now()-(+o0.ts||0))<=7776e6)s0=String(o0.s).slice(0,40);}}catch(e5){}
+  if(es&&!s0){try{localStorage.setItem('mp_src0',JSON.stringify({s:es,ts:Date.now()}));}catch(e6){}}
+  if(es)u+='&src='+encodeURIComponent(es);else if(s0)u+='&s0='+encodeURIComponent(s0);
+  if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u);}catch(e){}
   function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
   function render(d){
     var el=document.getElementById('lqCoin');if(!el||!d||!d.coins){if(el)el.innerHTML='<div class="lqload">Data unavailable right now — try the <a href="/rekt/">live feed</a>.</div>';return;}

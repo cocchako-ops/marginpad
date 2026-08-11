@@ -29,7 +29,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
 /* shared token list for the typeable symbol pickers (Paper Trade + Charts) — the screener tokens + common coins. Fills #symTokens too. */
   // Paper Trade + Charts are BYBIT-ONLY (owner decision): only tokens Bybit lists get a smooth live WS feed, so the
   // pickers list ONLY Bybit-tradeable symbols and window.mpIsBybit() gates the screener's paper-trade action + free-entry.
-  window.mpMarketName=function(s){return ({XAU:'Gold',XAG:'Silver',SPX500:'S&P 500',NAS100:'Nasdaq 100',US30:'Dow Jones',GER40:'DAX 40',EURUSD:'EUR/USD',GBPUSD:'GBP/USD'})[String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'')]||'';};
+  window.mpMarketName=function(s){return ({XAU:'Gold',XAG:'Silver',SPX500:'S&P 500',NAS100:'Nasdaq 100',US30:'Dow Jones',GER40:'DAX 40',UK100:'FTSE 100',JPN225:'Nikkei 225',EURUSD:'EUR/USD',GBPUSD:'GBP/USD',USDJPY:'USD/JPY',AUDUSD:'AUD/USD',USDCAD:'USD/CAD',AAPL:'Apple',TSLA:'Tesla',NVDA:'NVIDIA',MSFT:'Microsoft',AMZN:'Amazon',GOOGL:'Alphabet',META:'Meta',AMD:'AMD',NFLX:'Netflix',COIN:'Coinbase',MSTR:'Strategy',PLTR:'Palantir',HOOD:'Robinhood',AVGO:'Broadcom',INTC:'Intel',JPM:'JPMorgan',DIS:'Disney',BABA:'Alibaba',SPY:'S&P 500 ETF',QQQ:'Nasdaq 100 ETF'})[String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'')]||'';};
   window.mpLoadTokens=function(cb){if(window.mpTokens){cb&&cb(window.mpTokens);return;}
     var base=['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX','LINK','LTC','ENA','TRX','DOT','ATOM','NEAR','ARB','OP','PEPE','SHIB','SUI','APT','INJ','TIA','SEI','WIF','LDO','UNI','AAVE','FIL','RENDER'];
     fetch('/api/symbols').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
@@ -41,14 +41,30 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       window.mpBybitSet=byb;
       var _byb0=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!sym)return false;if(!hasSyms)return true;return !!(byb[sym]||byb['1000'+sym]||byb['10000'+sym]||byb['1000000'+sym]||byb[sym+'1000']||byb[sym+'10000']||byb[sym+'1000000']);};
       // non-crypto markets: metals (Bybit linear XAUUSDT/XAGUSDT) + indices/forex (Gate futures) — always tradeable regardless of the Bybit-only gate; price/klines resolve via the worker fallback chain (REST poll, no WS — fine for slower-moving assets)
-      var MKT={XAU:1,XAG:1,SPX500:1,NAS100:1,US30:1,GER40:1,EURUSD:1,GBPUSD:1};
-      window.mpIsBybit=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return MKT[sym]?true:_byb0(sym);};
+      var MKT={XAU:1,XAG:1,SPX500:1,NAS100:1,US30:1,GER40:1,UK100:1,JPN225:1,EURUSD:1,GBPUSD:1,USDJPY:1,AUDUSD:1,USDCAD:1};
+      var STK={AAPL:1,TSLA:1,NVDA:1,MSFT:1,AMZN:1,GOOGL:1,META:1,AMD:1,NFLX:1,COIN:1,MSTR:1,PLTR:1,HOOD:1,AVGO:1,INTC:1,JPM:1,DIS:1,BABA:1,SPY:1,QQQ:1}; // real equities via Yahoo (worker leg) — tradeable, REST-priced (no crypto WS)
+      window.mpStk=STK;
+      // Centralized market-closed check (stocks only — Yahoo gives marketState for equities, not FX/indices). Populated
+      // by the price pollers (window.mpMktState[sym]=state). Default ALLOW when unknown. Used by every trade opener
+      // (plan form, mterm, /charts quick-trade, mobile demo) so the market-closed block is consistent, not plan-form-only.
+      window.mpMktState=window.mpMktState||{};
+      window.mpIsMktClosed=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!STK[sym])return false;return /^(CLOSED|PREPRE|POSTPOST)$/i.test(window.mpMktState[sym]||'');};
+      window.mpIsBybit=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return (MKT[sym]||STK[sym])?true:_byb0(sym);};
+      // Asset class of a symbol → realistic per-market fees + the class selector on Paper Trade
+      var IDX={SPX500:1,NAS100:1,US30:1,GER40:1,UK100:1,JPN225:1},FX={EURUSD:1,GBPUSD:1,USDJPY:1,AUDUSD:1,USDCAD:1};
+      window.mpAssetClass=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');if(STK[sym])return 'stock';if(sym==='XAU'||sym==='XAG')return 'metal';if(IDX[sym])return 'index';if(FX[sym])return 'forex';return 'crypto';};
+      // Yahoo-sourced (real stock/forex/index data) → keep OFF the Bybit WS (its tokenized/absent perp would feed a mismatched price into the forming candle). Metals stay on Bybit (real XAUUSDT perp, smooth WS).
+      window.mpIsYahoo=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');return !!(STK[sym]||IDX[sym]||FX[sym]);};
       // Per-coin max leverage — only the deepest-liquidity coins get 1000×; illiquid tokens, metals, indices & forex are capped (roughly what real exchanges allow). Default = 50×.
       // Per-trade taker fee, applied ONLY at close (live P&L stays clean → no -99% at open). Capped so the round-trip fee can never exceed ~20% of margin at any leverage: realistic 0.055% up to ~180×, tapering above so 1000× fees don't nuke the position.
-      window.mpFeeRate=function(lev){return Math.min(0.00055,0.1/Math.max(1,+lev||1));};
-      window.mpMaxLev=(function(){var M={BTC:1000,ETH:1000,SOL:1000,XRP:1000,BNB:1000,DOGE:1000,HYPE:1000,ADA:1000,AVAX:1000,LINK:1000,LTC:1000,DOT:200,TRX:1000,TON:1000,SUI:1000,BCH:200,NEAR:200,PEPE:1000,SHIB:200,WIF:200,ATOM:100,APT:100,ARB:100,OP:100,MATIC:100,POL:100,INJ:100,SEI:100,TIA:100,FIL:100,ETC:100,UNI:100,AAVE:100,RUNE:100,LDO:100,FTM:100,ALGO:100,HBAR:100,ICP:100,IMX:100,STX:100,RENDER:100,FET:100,ENA:100,ONDO:100,JUP:100,PYTH:100,STRK:100,ORDI:100,BONK:100,FLOKI:100,GALA:100,SAND:100,MANA:100,AXS:100,GRT:100,CRV:100,COMP:100,DYDX:100,WLD:100,KAS:100,TAO:100,XLM:100,VET:100,XAU:20,XAG:20,SPX500:20,NAS100:20,US30:20,GER40:20,EURUSD:50,GBPUSD:50};return function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');return M[sym]||50;};})();
+      // Per-MARKET fee (not the crypto taker fee for everything). Real-world cost by class: crypto perp taker ~0.055%/side;
+      // stocks = tight CFD spread/commission ~0.02%; forex majors = fraction of a pip ~0.008%; metals/indices ~0.015%.
+      // Applied once at close (round-trip), capped so it can never exceed ~10% of margin at extreme leverage.
+      window.mpFeeRate=function(lev,sym){var cls=(sym&&window.mpAssetClass)?window.mpAssetClass(sym):'crypto';var base=cls==='forex'?0.00008:cls==='stock'?0.0002:(cls==='metal'||cls==='index')?0.00015:0.00055;return Math.min(base,0.1/Math.max(1,+lev||1));};
+      window.mpMaxLev=(function(){var M={BTC:1000,ETH:1000,SOL:1000,XRP:1000,BNB:1000,DOGE:1000,HYPE:1000,ADA:1000,AVAX:1000,LINK:1000,LTC:1000,DOT:200,TRX:1000,TON:1000,SUI:1000,BCH:200,NEAR:200,PEPE:1000,SHIB:200,WIF:200,ATOM:100,APT:100,ARB:100,OP:100,MATIC:100,POL:100,INJ:100,SEI:100,TIA:100,FIL:100,ETC:100,UNI:100,AAVE:100,RUNE:100,LDO:100,FTM:100,ALGO:100,HBAR:100,ICP:100,IMX:100,STX:100,RENDER:100,FET:100,ENA:100,ONDO:100,JUP:100,PYTH:100,STRK:100,ORDI:100,BONK:100,FLOKI:100,GALA:100,SAND:100,MANA:100,AXS:100,GRT:100,CRV:100,COMP:100,DYDX:100,WLD:100,KAS:100,TAO:100,XLM:100,VET:100,XAU:100,XAG:100,SPX500:100,NAS100:100,US30:100,GER40:100,UK100:100,JPN225:100,EURUSD:200,GBPUSD:200,USDJPY:200,AUDUSD:200,USDCAD:200};return function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');return STK[sym]?1000:(M[sym]||50);};})();
       var seen={},out=[];function add(s){s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(s&&!seen[s]&&window.mpIsBybit(s)){seen[s]=1;out.push(s);}}
       Object.keys(MKT).forEach(add);                          // gold / silver / indices / forex group first
+      Object.keys(STK).forEach(add);                          // then real equities (Apple, Tesla, …)
       base.forEach(add);                                      // then crypto majors (only those Bybit actually has)
       if(hasSyms)j.symbols.forEach(function(s){add(clean(s));}); // then the rest of Bybit, multiplier stripped to the clean ticker
       if(!out.length)base.forEach(function(s){if(!seen[s]){seen[s]=1;out.push(s);}}); // /api/symbols failed → don't leave pickers empty
@@ -65,14 +81,19 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
 ;/* ══════════ inline block from app/index.html line 2955 ══════════ */
 /* Paper Trade: open a position at the live price, track it live in the Journal */
 (function(){
-  var side='long', live=NaN, liveChg=0, pollT=null;
+  var side='long', live=NaN, liveChg=0, liveState='', pollT=null;
+  // Stock/equity market hours: block OPENING a trade while the market is fully closed (price frozen at last close →
+  // an opened position wouldn't move, which reads as broken). Extended hours (PRE/POST) still tick, so allow those.
+  function mktClosed(){var sym=((document.getElementById('planSym')||{}).value||'').toUpperCase();if(!(window.mpStk&&window.mpStk[sym]))return false;return /^(CLOSED|PREPRE|POSTPOST)$/i.test(liveState||'');}
+  function updateMktGate(){var b=document.getElementById('planSave'),t=document.getElementById('planOpenTxt'),lbl=document.querySelector('.pt2-px-lbl');var closed=mktClosed();if(b){b.classList.toggle('mkt-closed',closed);b.setAttribute('aria-disabled',closed?'true':'false');}if(t&&closed){t.textContent=(window.mpT&&window.mpT('mktClosed'))||'Market closed';}else if(t&&!closed&&t.textContent==='Market closed'){t.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';}
+    if(lbl){var wasClosed=lbl.getAttribute('data-mkt')==='closed';if(closed!==wasClosed){lbl.setAttribute('data-mkt',closed?'closed':'open');lbl.childNodes.forEach&&Array.prototype.forEach.call(lbl.childNodes,function(n){if(n.nodeType===3)n.textContent=closed?'CLOSED':'LIVE';});}}}
   var seg=document.getElementById('planSeg');
   function num(id){var e=document.getElementById(id);var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
   function money(x){if(!isFinite(x))return '—';var neg=x<0;x=Math.abs(x);var s=x>=1e12?(x/1e12).toFixed(2)+'T':x>=1e9?(x/1e9).toFixed(2)+'B':x>=1e6?(x/1e6).toFixed(2)+'M':x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (neg?'-$':'$')+s;}
   function fmtPx(x){return '$'+(+x).toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-  function setBtn(){var t=document.getElementById('planOpenTxt'),b=document.getElementById('planSave');if(t)t.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';if(b)b.classList.toggle('short',side==='short');}
-  function showLive(){var el=document.getElementById('planLivePx');if(el){if(isFinite(live)&&window.mpSmoothPx){window.mpSmoothPx(el,live,fmtPx);}else{el.textContent=isFinite(live)?fmtPx(live):'…';}el.classList.toggle('up',isFinite(live)&&liveChg>=0);el.classList.toggle('down',isFinite(live)&&liveChg<0);}var c=document.getElementById('planLiveChg');if(c){c.textContent=isFinite(live)?((liveChg>=0?'↑ +':'↓ ')+liveChg.toFixed(2)+'%'):'';c.style.color=liveChg>=0?'var(--up)':'var(--red)';}window.mpPlanLive={sym:((document.getElementById('planSym')||{}).value||''),price:live,chg:liveChg,t:(isFinite(live)?Date.now():0)};}
+  function setBtn(){var t=document.getElementById('planOpenTxt'),b=document.getElementById('planSave'),cl=mktClosed();if(t)t.textContent=cl?((window.mpT&&window.mpT('mktClosed'))||'Market closed'):((window.mpT&&window.mpT('mtOpen'))||'Open demo trade');if(b){b.classList.toggle('short',side==='short');b.classList.toggle('mkt-closed',cl);}}
+  function showLive(){var el=document.getElementById('planLivePx');if(el){if(isFinite(live)&&window.mpSmoothPx){window.mpSmoothPx(el,live,fmtPx);}else{el.textContent=isFinite(live)?fmtPx(live):'…';}el.classList.toggle('up',isFinite(live)&&liveChg>=0);el.classList.toggle('down',isFinite(live)&&liveChg<0);}var c=document.getElementById('planLiveChg');if(c){c.textContent=isFinite(live)?((liveChg>=0?'↑ +':'↓ ')+liveChg.toFixed(2)+'%'):'';c.style.color=liveChg>=0?'var(--up)':'var(--red)';}window.mpPlanLive={sym:((document.getElementById('planSym')||{}).value||''),price:live,chg:liveChg,t:(isFinite(live)?Date.now():0),state:liveState};try{updateMktGate();}catch(_){}}
   function calc(){
     var amt=num('planAmt'),lev=num('planLev'),ids=['planSize','planLiq','planNotional'];
     if(!isFinite(live)||live<=0||!isFinite(amt)||amt<=0||!isFinite(lev)||lev<=0){ids.forEach(function(i){set(i,'—');});setBtn();return;}
@@ -83,7 +104,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   }
   // REST /api/price (Binance, edge-cached 5s) is a FALLBACK only. The Bybit WS is the real-time truth; never let
   // the slower cached REST value clobber a fresh WS tick — that 0–5s staleness was the ±$1k forming-candle flicker.
-  function poll(){if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return;if(_wsT&&Date.now()-_wsT<6000)return;var sym=((document.getElementById('planSym')||{}).value||'');if(!sym)return;fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('frm',sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0&&(!_wsT||Date.now()-_wsT>=6000)){live=+pd.price;liveChg=+pd.chg||0;showLive();calc();}}).catch(function(){});}
+  function poll(){if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return;if(_wsT&&Date.now()-_wsT<6000)return;var sym=((document.getElementById('planSym')||{}).value||'');if(!sym)return;fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('frm',sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0&&(!_wsT||Date.now()-_wsT>=6000)){live=+pd.price;liveChg=+pd.chg||0;liveState=(pd.state!=null?String(pd.state):'');try{if(pd.state!=null&&window.mpMktState)window.mpMktState[sym.toUpperCase()]=String(pd.state);}catch(_){}showLive();calc();}}).catch(function(){});}
   if(seg)seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
   ['planAmt','planLev'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
   var levEl=document.getElementById('planLev'),levR=document.getElementById('planLevR');
@@ -135,7 +156,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   ['planSlOpt','planTpOpt','planLev','planAmt'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',function(){window._mpSltpHidden=false;try{posDragLines();}catch(_){}try{updatePlanRisk();}catch(_){}});});
   var _prT=0;try{window.addEventListener('mp:price',function(){var n=Date.now();if(n-_prT<600)return;_prT=n;try{updatePlanRisk();}catch(_){}});}catch(_){}
   var pSym=document.getElementById('planSym');
-  if(pSym)pSym.addEventListener('change',function(){live=NaN;_wsT=0;showLive();calc();poll();});
+  if(pSym)pSym.addEventListener('change',function(){live=NaN;_wsT=0;liveState='';showLive();calc();poll();});
   // real-time price from the WebSocket feed (sub-100ms); REST poll stays as a slower fallback
   var _rafF=false,_wsT=0;
   document.addEventListener('mp:price',function(ev){var sym=((document.getElementById('planSym')||{}).value||'');if(!ev.detail||ev.detail.sym!==sym)return;live=+ev.detail.price;_wsT=Date.now();if(ev.detail.chg!=null&&isFinite(ev.detail.chg))liveChg=+ev.detail.chg;if(_rafF)return;_rafF=true;requestAnimationFrame(function(){_rafF=false;showLive();calc();});});
@@ -166,7 +187,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function openSyms(){var s={};load().forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='—')s[e.sym]=1;});if(chartSym&&!(document.hidden||document.body.getAttribute('data-prod')!=='plan'))s[chartSym]=1;return Object.keys(s);} // OPEN positions always polled (liq safety); the chart-only symbol is dropped when the Paper Trade chart isn't visible so an idle /calculators or /screener or hidden tab with no positions stops the 3s /api/price poll entirely
   // REST is only a FALLBACK: prices[] is shared with the live WS feed (window.mpLivePrices). Never clobber a
   // fresh WS tick with the slower/edge-cached /api/price value — that mismatch was the ±$1k position flicker.
-  function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('pos',sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
+  function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('pos',sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};try{if(pd.state!=null&&window.mpMktState)window.mpMktState[sym.toUpperCase()]=String(pd.state);}catch(_){}if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
   function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L — legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open positions cap at -99% (never show -100% until actually liquidated/closed) */return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
   function checkClose(e,m){if(e.status!=='open')return false;var dir=m.long?1:-1;
     // ROOT-CAUSE GUARD (proven from [LIQ-DECISION] logs): only decide an exit when there is a REAL market price for the
@@ -195,10 +216,12 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(tp){e.status='win';e.exit=e.tp;e.pnl=clamp(pnlAt(e.tp));_clArm[e.id]=0;}
     else if(sl){var _p=pnlAt(e.stop);e.status=(_p!=null&&_p>0)?'win':'loss';e.exit=e.stop;e.pnl=clamp(_p);_clArm[e.id]=0;} // a trailing/break-even stop can lock PROFIT → count it as a win
     else{
-      // Liquidation fills on the FIRST validated touch of liq. EXCEPTION: only at EXTREME leverage (liq <0.3% from entry,
-      // ~>300×) require 2 ticks so a sub-2.5% phantom print can't cross the razor-thin liq.
-      if(e.entry>0&&Math.abs(m.liq-e.entry)/e.entry<0.003){_clArm[e.id]=(_clArm[e.id]||0)+1;if(_clArm[e.id]<2)return false;}
+      // Liquidation needs 2 CONSECUTIVE validated ticks (2026-08-11, was extreme-leverage-only): after a tab return the
+      // spike-filter state is cold, so its FIRST accepted print is unchecked — one bad print could liquidate. TP/SL stay
+      // first-touch (touch orders, and their damage is bounded); liq is the -100% outcome so it pays the 1-tick delay.
+      _clArm[e.id]=(_clArm[e.id]||0)+1;if(_clArm[e.id]<2)return false;
       _clArm[e.id]=0;
+      try{if(window.__mpTrack)window.__mpTrack('cliq',e.sym+' liq'+(+m.liq).toPrecision(6)+' px'+(+px).toPrecision(6)+' age'+((prices[e.sym]&&prices[e.sym].t)?Math.round((Date.now()-prices[e.sym].t)/1000):-1)+'s');}catch(_){} // server-side trail: every client liquidation logs symbol + level + the price that fired it
       e.status='loss';e.exit=m.liq;e.liquidated=true;e.pnl=(+e.margin>0)?-(+e.margin):pnlAt(m.liq);} // liquidated = lose the full margin
     e.closeTs=Date.now();notify(e,tp?'tp':(e.liquidated?'liq':'sl'));if(e.src==='srv')queueNudge(e.id);return true;}
   var _nudgeIds={},_nudgeT=null;
@@ -332,7 +355,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function renderKlines(kd){ if(!(kd&&kd.length&&candle))return;
     bars=sanitizeBars(kd);
     try{var _lp=Math.abs(+kd[kd.length-1].close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});}catch(e){}/* ~5 sig figs — $1-100 coins were 2dp (XRP 1.09 hid 1.0904) */
-    try{candle.setData(bars);chart.priceScale('right').applyOptions({autoScale:true});chart.timeScale().applyOptions({secondsVisible:parseInt(chartTf,10)<=5});chart.timeScale().scrollToRealTime();}catch(e){}
+    try{candle.setData(bars);chart.priceScale('right').applyOptions({autoScale:true});chart.timeScale().applyOptions({secondsVisible:parseInt(chartTf,10)<=5});var _vn=bars.length;chart.timeScale().setVisibleLogicalRange({from:Math.max(0,_vn-120),to:_vn+6});}catch(e){}/* pin the view to the last ~120 bars on every symbol/TF load (was scrollToRealTime, which PRESERVED barSpacing → a prior zoomed-out state or a narrow viewport left the deep-history dataset squished into thin/sparse candles = "almost empty chart"). setVisibleLogicalRange refits barSpacing to a consistent recent window; scroll-back + live-edge still work. */
     lastBar=bars[bars.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;
     /* seed the forming candle with the live price immediately — the klines tail is edge-cached up to ~20s, so the last candle (and the price-line basis) isn't a few ticks behind the live number */
     try{var _slp=(window.mpPlanLive&&window.mpPlanLive.sym===chartSym&&+window.mpPlanLive.price>0)?+window.mpPlanLive.price:((prices[chartSym]&&prices[chartSym].p)||0);if(_slp>0&&lastBar){var _siv=parseInt(chartTf,10)*60,_snb=Math.floor(Date.now()/1000/_siv)*_siv;if(lastBar.time>=_snb){lastBar.close=_slp;if(_slp>lastBar.high)lastBar.high=_slp;if(_slp<lastBar.low)lastBar.low=_slp;candle.update(lastBar);}}}catch(e){}
@@ -345,7 +368,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     (_pk||fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})).then(function(kd){
       if(sym!==chartSym||tf!==chartTf)return; // user switched again before this resolved → drop the stale response
       if(kd&&kd.length){klCache[ck]=kd;clearNoData();renderKlines(kd);if(!(cached&&cached.length)){try{if(window.__mpUxm){if(window.__mpCsWarm)window.__mpUxm('cs',performance.now()-_csT);else window.__mpUxm('cc',performance.now());}}catch(e){}}try{window.__mpCsWarm=1;}catch(e){}/* cc = COLD first-chart telemetry: performance.now() = nav->first render (the first-impression time ux-chart deliberately skips). Fires once per page load (first cold render, __mpCsWarm still falsy). */} // first load is a COLD page-load fetch, not a switch — the 100ms budget measures switches onlyelse if(!cached){hideSkel();showNoData(sym);} // empty klines = coin our feed can't resolve → show a message, don't leave a silent blank/frozen chart
-      preloadTfs(sym,tf); // warm the other timeframes in the background so the next switch is instant
+      (window.requestIdleCallback?requestIdleCallback(function(){preloadTfs(sym,tf);},{timeout:4000}):setTimeout(function(){preloadTfs(sym,tf);},2500)); // warm the other timeframes so the next switch is instant — DEFERRED to browser-idle so the 6-TF prewarm (~114KB of klines) no longer competes with the essential bundle/chart on the cold-load critical path (cut cold load meaningfully); still warm within a few seconds of idle
     }); }
   // quietly re-sync candles with the true exchange OHLC WITHOUT scrolling the view — self-heals a phantom wick a bad live
   // tick baked into a (now closed) candle. renderKlines() scrolls to realtime so it can't be used for a periodic refresh.
@@ -353,7 +376,19 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     try{var _vr=chart.timeScale().getVisibleLogicalRange();if(_vr&&bars.length&&_vr.to<bars.length-3)return;}catch(e){} // user is scrolled into HISTORY → skip the re-sync (setData would drop their paginated bars + the autoScale re-assert would override their zoom). The live edge they're not watching heals on their return.
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(sym!==chartSym||tf!==chartTf||!candle||!kd||!kd.length)return;
-      kd=sanitizeBars(kd);klCache[sym+'|'+tf]=kd;bars=kd;try{candle.setData(kd);}catch(e){}try{chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}/* re-assert autoscale: after a big move (e.g. a +15% pump) the price scale can lock/drift so data keeps updating but the chart LOOKS frozen — re-fitting every quiet refresh self-heals it */lastBar=kd[kd.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;_linesSig=null;try{applySignals();}catch(e){}try{drawLines();}catch(e){}
+      kd=sanitizeBars(kd);klCache[sym+'|'+tf]=kd;
+      /* DIFF re-sync (was: unconditional setData every 30s): 0 = identical → paint nothing; 1 = only the last (forming)
+         bar differs → one cheap update(); 2 = history differs (real repaint needed) → setData. Kills the periodic
+         full-repaint flick now that the forming bar is built from exact trade extremes and rarely disagrees. */
+      var _rmode=2;
+      if(bars&&bars.length===kd.length&&bars.length>2&&bars[0].time===kd[0].time){_rmode=0;
+        for(var _qi=0;_qi<kd.length;_qi++){var _qa=bars[_qi],_qb=kd[_qi];
+          if(_qa.time!==_qb.time){_rmode=2;break;}
+          if(_qa.open!==_qb.open||_qa.high!==_qb.high||_qa.low!==_qb.low||_qa.close!==_qb.close){if(_qi===kd.length-1&&_rmode===0){_rmode=1;}else{_rmode=2;break;}}}}
+      bars=kd;
+      if(_rmode===2){try{candle.setData(kd);}catch(e){}}
+      else if(_rmode===1){try{candle.update(kd[kd.length-1]);}catch(e){}}
+      try{chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}/* re-assert autoscale: after a big move (e.g. a +15% pump) the price scale can lock/drift so data keeps updating but the chart LOOKS frozen — re-fitting every quiet refresh self-heals it */lastBar=kd[kd.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;if(_rmode!==0)_dispP=null;_linesSig=null;try{applySignals();}catch(e){}try{drawLines();}catch(e){}
     }); }
   function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;var _lmg=setTimeout(function(){loadingMore=false;},12000);/* a hung (never-settling) fetch would otherwise pin loadingMore=true forever, which permanently disables the 30s refreshKlinesQuiet re-sync (a real freeze) */fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){clearTimeout(_lmg);loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=sanitizeBars(kd.filter(function(b){return b.time<first;}));if(!older.length){noMore=true;return;}/* !older.length = oldest bar didn't move back = source can't go deeper (real "no more" test, not "returned few") */morePages++;if(morePages>=30)noMore=true;/* hard cap ~30 pages: anti-infinite for thin pairs. Removed `older.length<900 → noMore` which stopped at the SOURCE's inception (bybit-lin BTC 2020) instead of the coin's — the worker cascade falls through to a deeper source (gate-spot BTC 2013) on the next end= window */bars=older.concat(bars);try{candle.setData(bars);}catch(e){}applySignals();drawLines();});}
   /* Buy/Sell signals — a Supertrend(10,3) overlay (our own equivalent of TradingView "Buy Sell" indicators;
@@ -439,10 +474,12 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(pdFresh)p=pd.price;
     else{var _pr=prices[chartSym],_prT=(_pr&&_pr.p>0)?(_pr.t||0):-1,_pdT=(pd&&pd.sym===chartSym&&pd.price>0)?(pd.t||0):-1;
       if(_prT>=0||_pdT>=0)p=(_prT>=_pdT)?_pr.p:pd.price;}/* both sources stale → use the FRESHER one (the old code preferred the poll map even when it was minutes older than the WS value) */
-    if(!candle||!lastBar)return;var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(Date.now()/1000/ivSec)*ivSec;
+    if(!candle||!lastBar)return;var _snow=window.mpSrvNow?window.mpSrvNow():Date.now();var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(_snow/1000/ivSec)*ivSec; // SERVER-clock bucketing — a skewed device clock must not roll bars at wrong boundaries
     if(nowBar-lastBar.time>ivSec*1.5){reloadKlinesThrottled();if(!(p>0)||nowBar-lastBar.time>ivSec*30)return;} // klines is behind → refetch real candles; BUT if we have a live WS price and the gap is modest (≤30 bars), fall through and roll a LIVE forming candle so the chart keeps MOVING instead of freezing while klines catches up (fixes "candles freeze but price doesn't" on a brief klines stall). Huge gaps (e.g. a 4h-stale klines endpoint) still wait for the real refetch. THIS RUNS EVEN WITH NO LIVE PRICE (checked BEFORE the p>0 bail below) — the old order bailed on a stalled feed and never refetched, so new bars stopped forming and the chart "froze" until the 60s re-sync.
     if(!(p>0))return; // no usable live price this tick → the gap above is already handled; nothing else to update
-    if(nowBar>lastBar.time){var _op=lastBar.close,_spk=(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025),_cl=_spk?_op:p;lastBar={time:nowBar,open:_op,high:Math.max(_op,_cl),low:Math.min(_op,_cl),close:_cl};if(!_spk)_lgp=p;_rej=0;/* new candle opens at the prior close (contiguous — no "from the sky" gap) and ignores a spiked first print */try{var _vr=chart.timeScale().getVisibleLogicalRange();if(!_vr||!bars.length||_vr.to>=bars.length-2)chart.timeScale().scrollToRealTime();}catch(e){}_dispP=lastBar.close;try{candle.update(lastBar);}catch(e){} /* only snap to the live edge if the user is ALREADY there — don't yank them back while they pan history */}else{if(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025){if(++_rej<3)return;/* reject a lone >2.5% print (a bad tick that would ratchet a fake wick); accept only if 3 in a row confirm it's a real move */}_lgp=p;_rej=0;lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;startSmoothP();}}
+    if(nowBar>lastBar.time){var _op=lastBar.close,_spk=(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025),_cl=_spk?_op:p;lastBar={time:nowBar,open:_op,high:Math.max(_op,_cl),low:Math.min(_op,_cl),close:_cl};if(!_spk)_lgp=p;_rej=0;/* new candle opens at the prior close (contiguous — no "from the sky" gap) and ignores a spiked first print */try{var _vr=chart.timeScale().getVisibleLogicalRange();if(!_vr||!bars.length||_vr.to>=bars.length-2)chart.timeScale().scrollToRealTime();}catch(e){}_dispP=lastBar.close;try{candle.update(lastBar);}catch(e){} /* only snap to the live edge if the user is ALREADY there — don't yank them back while they pan history */}else{if(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025){if(++_rej<3)return;/* reject a lone >2.5% print (a bad tick that would ratchet a fake wick); accept only if 3 in a row confirm it's a real move */}_lgp=p;_rej=0;lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;
+      try{var _TK=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TK&&_lgp>0){var _mbs=[_TK.cur,_TK.prev];for(var _bi9=0;_bi9<2;_bi9++){var _bk=_mbs[_bi9];if(!_bk)continue;if(_bk.t<lastBar.time||_bk.t>=lastBar.time+ivSec)continue;if(_bk.h>lastBar.high&&_bk.h<_lgp*1.025)lastBar.high=_bk.h;if(_bk.l<lastBar.low&&_bk.l>_lgp*0.975)lastBar.low=_bk.l;}}}catch(_){} /* merge EXACT trade-stream extremes (exchange-stamped 1m buckets) into the forming bar — wicks match the authoritative kline instead of growing on the 30s re-sync */
+      startSmoothP();}}
   // ease the forming candle's displayed close toward the true price at 60fps so it glides instead of snapping
   var _smP=false,_dispP=null;
   function startSmoothP(){ if(!_smP){_smP=true;requestAnimationFrame(smoothLoopP);} }
@@ -489,6 +526,18 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
      phantom extra liquidations (bug screenshot: 7 stacked pills next to visible lines). Only the price lines +
      their right-axis labels remain. Kept as a cleaner so any previously rendered pills disappear. */
   function updateEdges(){if(edgeEl&&edgeEl.childNodes.length)edgeEl.innerHTML='';}
+  // Candle-close countdown chip (user request via chat, 2026-08-08): time left in the CURRENT candle for the active TF.
+  // Non-interactive readout (pointer-events:none) pinned bottom-left above the time axis; UTC-aligned intervals only
+  // (weekly is epoch-anchored → hidden there). Plain text update each second — no CSS animation (owner reduced-motion).
+  var _cdEl=null;
+  function tickCd(){var host=document.getElementById('ptChart');if(!host||!chart||!bars||!bars.length){if(_cdEl)_cdEl.textContent='';return;}
+    if(!_cdEl){_cdEl=document.createElement('div');_cdEl.className='pt-cd';_cdEl.style.cssText='position:absolute;top:8px;right:72px;z-index:5;pointer-events:none;font-family:\'Space Mono\',monospace;font-size:10.5px;font-weight:600;letter-spacing:.04em;color:#9aa3ad;background:rgba(10,12,15,.72);border:1px solid rgba(255,255,255,.09);border-radius:7px;padding:3px 8px;text-shadow:0 1px 3px rgba(0,0,0,.7)';host.appendChild(_cdEl);} // top-right, clear of the right price axis — bottom corners are covered by the page's floating buttons (E2E elementFromPoint proof)
+    if(_cdEl.parentNode!==host)host.appendChild(_cdEl); // chart rebuilds can drop the node — re-attach
+    var ivMin=+chartTf||15;if(!(ivMin>0)||ivMin>=10080){_cdEl.textContent='';return;}
+    var ivMs=ivMin*60000,_cnow=window.mpSrvNow?window.mpSrvNow():Date.now(),left=ivMs-(_cnow%ivMs),s=Math.floor(left/1000); // server clock — the countdown must be right even on a skewed device
+    var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;
+    _cdEl.textContent='close in '+(h?h+'h '+m+'m':(m?m+'m '+(ss<10?'0':'')+ss+'s':ss+'s'));}
+  setInterval(tickCd,1000);
   function updateZone(){var host=document.getElementById('ptChart');if(!host||!candle){return;}
     updateEdges();
     if(!zoneEl){zoneEl=document.createElement('div');zoneEl.className='ptt-zones';host.appendChild(zoneEl);}
@@ -592,7 +641,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(!_srcT||Date.now()-_srcT>9000){_lgp=0;_rej=0;try{if(window.mpWS&&chartSym)(window.mpWS.resub||window.mpWS.sub)(chartSym);}catch(e){}try{pollPrices();}catch(e){}reloadKlinesThrottled();try{chart.timeScale().scrollToRealTime();}catch(e){}}
     // ALSO: catch a stalled CHART even when the price source LOOKS fresh — if the newest bar is more than ~1.5
     // intervals behind now, new bars stopped forming (the real "chart froze" symptom). Force a fresh klines sync.
-    try{if(lastBar){var _ivS=parseInt(chartTf,10)*60,_nb=Math.floor(Date.now()/1000/_ivS)*_ivS;if(_nb-lastBar.time>_ivS*1.5)refreshKlinesQuiet();}}catch(e){}
+    try{if(lastBar){var _ivS=parseInt(chartTf,10)*60,_nb=Math.floor((window.mpSrvNow?window.mpSrvNow():Date.now())/1000/_ivS)*_ivS;if(_nb-lastBar.time>_ivS*1.5)refreshKlinesQuiet();}}catch(e){}
   },5000);
   /* Overnight realism: while the tab is closed the live tick can't watch price, so a position left for hours
      never gets liquidated even if it blew through its liq level. On load (and when the tab regains focus) we
@@ -624,7 +673,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
         if(cross==null)return;
         var d2=load(),idx=-1;for(var k=0;k<d2.length;k++){if(d2[k].id===e.id){idx=k;break;}}if(idx<0)return;var t=d2[idx];if(t.status!=='open')return;
         var dir=(t.side!=='short')?1:-1,pnl=(t.qty!=null&&isFinite(t.qty))?t.qty*(exitPx-t.entry)*dir:null;
-        if(liab){pnl=(+t.margin>0)?-(+t.margin):pnl;t.liquidated=true;} else if(+t.margin>0&&pnl!=null&&pnl<-(+t.margin))pnl=-(+t.margin); // clamp any loss to −margin
+        if(liab){pnl=(+t.margin>0)?-(+t.margin):pnl;t.liquidated=true;try{if(window.__mpTrack)window.__mpTrack('cliq','sweep '+t.sym+' tf'+tf+' liq'+(+lossExit).toPrecision(6));}catch(_){}} else if(+t.margin>0&&pnl!=null&&pnl<-(+t.margin))pnl=-(+t.margin); // clamp any loss to −margin
         t.status=(pnl!=null&&pnl>0)?'win':'loss';t.exit=exitPx;t.pnl=pnl;t.closeTs=cross;notified[t.id]=true;
         store(d2);renderLast();drawLines();mtCount();if(window.mpJournalRender)window.mpJournalRender();});});}
   sweepLiq();
@@ -644,6 +693,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function num(id){var e=document.getElementById(id);var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
   var jrTab='open';
   var SHARE_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>';
+  var CHATSHARE_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"></path></svg>';
   var COPY_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>';
   var CHART_SVG='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;vertical-align:-1px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>';
   var TRASH_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>';
@@ -658,7 +708,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(side){var seg=document.getElementById('planSeg');if(seg){var sb=seg.querySelector('[data-side="'+side+'"]');if(sb&&!sb.classList.contains('on'))sb.click();}}
     setTimeout(function(){var card=document.querySelector('.card');if(card&&card.scrollIntoView)card.scrollIntoView({behavior:'smooth',block:'start'});},170);
   }
-  function ppActions(e,close){return '<div class="pp-actions"><div class="pp-icons"><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button></div>'+(close?'<button class="pp-close" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button>':'')+'</div>';}
+  function ppActions(e,close){return '<div class="pp-actions"><div class="pp-icons"><button class="pp-ic pp-ic-chat" data-act="chatshare" data-id="'+e.id+'" title="'+MT('jShareChat','Share to chat')+'" aria-label="'+MT('jShareChat','Share to chat')+'">'+CHATSHARE_SVG+'</button><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button></div>'+(close?'<button class="pp-close" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button>':'')+'</div>';}
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
@@ -760,6 +810,24 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     x.fillStyle=prem?'#8a7a52':'#4b545d';x.font='400 24px Arial';x.textAlign='center';x.fillText((prem?'Premium member · ':'')+MT('jPaperDisc','Paper trade · not financial advice'),W/2,1020);x.textAlign='left';
     return c;
   }
+  /* build the safe, self-contained snapshot posted to /api/tshare so a shared ticket resolves for ANYONE in chat */
+  function tShareSnap(e){var m=metrics(e),closed=(e.status==='win'||e.status==='loss');
+    var roe=closed?((e.margin&&e.pnl!=null)?(+e.pnl)/(+e.margin):0):m.roe;
+    var pnl=closed?(+e.pnl||0):(m.pnl||0);
+    return {sym:e.sym,side:e.side,status:e.status,entry:e.entry,exit:(closed?(e.exit!=null?e.exit:(e.status==='win'?e.tp:e.stop)):m.live),lev:e.lev,margin:e.margin,notional:e.notional,qty:e.qty,liq:m.liq,stop:e.stop,tp:e.tp,fund:e.fund,liquidated:!!e.liquidated,partial:e.partial,ts:e.ts,closeTs:e.closeTs,roe:roe*100,pnl:pnl};}
+  function shareTicketChat(e,btn){
+    if(!(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(_){}return;}
+    if(btn){if(btn._busy)return;btn._busy=1;btn.classList.add('pp-ic-busy');}
+    try{window.__mpTrack&&window.__mpTrack('share',(e.sym||'')+' chat');}catch(_){}
+    fetch('/api/tshare',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({ticket:tShareSnap(e)})})
+      .then(function(r){return r.json();})
+      .then(function(d){if(btn){btn._busy=0;btn.classList.remove('pp-ic-busy');}
+        if(d&&d.id){try{closeJr();}catch(_){}if(window.mpChatSay)window.mpChatSay('trade:'+d.id);toast(MT('jSharedChat','Shared to chat'));}
+        else if(d&&d.error==='login_required'){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(_){}}
+        else if(d&&d.error==='rate_limited'){toast(MT('jShareLimit','Too many shares right now — try again later.'));}
+        else{toast(MT('jShareFail','Could not share the ticket.'));}})
+      .catch(function(){if(btn){btn._busy=0;btn.classList.remove('pp-ic-busy');}toast(MT('jShareFail','Could not share the ticket.'));});
+  }
   function shareTicket(e){
     try{window.__mpTrack&&window.__mpTrack('share',(e.sym||'')+' ticket');}catch(_){}
     var roe2=(function(){var m=metrics(e),closed=(e.status==='win'||e.status==='loss');return closed?((e.margin&&e.pnl!=null)?(+e.pnl)/(+e.margin):0):m.roe;})();
@@ -838,8 +906,9 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     // previously-selected coin's price, would set a wrong entry → wrong liq → the trade "instantly liquidates / vanishes".
     if(!pl||pl.sym!==sym||!(+pl.price>0)||!pl.t||(Date.now()-pl.t)>3000){_say('Waiting for the live price for '+(sym||'this coin')+' — try again in a second.');add._busy=false;return;}
     entry=+pl.price;
+    if(window.mpStk&&window.mpStk[sym]&&/^(CLOSED|PREPRE|POSTPOST)$/i.test(pl.state||'')){_say(sym+' market is closed right now — you can trade it when the market reopens.');add._busy=false;return;} // stocks: no fills while the exchange is shut (price is frozen at last close)
     var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=(window.mpPlanMmr||0.005);
-    var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:window.mpFeeRate(L); // default to a realistic 0.055% taker fee (matches the server-fill) so EVERY trade carries a fee — was 0, which made some closed tickets show no Fees line
+    var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:window.mpFeeRate(L,sym); // default to a realistic 0.055% taker fee (matches the server-fill) so EVERY trade carries a fee — was 0, which made some closed tickets show no Fees line
     var sl=num('planSlOpt'), tp=num('planTpOpt'), trail=num('planTrail'), be=num('planBE');
     trail=(isFinite(trail)&&trail>0)?trail:0; be=(isFinite(be)&&be>0)?be:0;
     // Guard: a stop/target already on the WRONG side of the live entry would trigger the instant the position
@@ -899,6 +968,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     var id=b.getAttribute('data-id'),act=b.getAttribute('data-act');
     var data=load(),i=-1; for(var k=0;k<data.length;k++){if(data[k].id===id){i=k;break;}} if(i<0)return; var e=data[i];
     if(act==='share'){shareTicket(e);return;}
+    if(act==='chatshare'){shareTicketChat(e,b);return;}
     if(act==='copy'){copyTicket(e);return;}
     if(act==='chart'){var _cs=String(e.sym||'').toUpperCase();closeJr();if(window.matchMedia&&window.matchMedia('(max-width:880px)').matches){if(window.mpOpenMobileCharts){window.mpOpenMobileCharts(_cs);}else{try{sessionStorage.setItem('mp_force_chart',_cs);}catch(_){}location.href='/charts';}return;}try{sessionStorage.setItem('mp_force_chart',_cs);}catch(_){}if(window.mpGo)window.mpGo('/charts');else location.href='/charts';var _t=0,_iv=setInterval(function(){_t++;var _c=null;try{_c=sessionStorage.getItem('mp_force_chart');}catch(_){}if(!_c){clearInterval(_iv);return;}if(window.mpCharts&&window.mpCharts.openOnly){clearInterval(_iv);try{sessionStorage.removeItem('mp_force_chart');}catch(_){}window.mpCharts.openOnly(_c);}else if(_t>25){clearInterval(_iv);}},120);return;}    if(act==='ptrade'){var _pu='/paper-trade?coin='+encodeURIComponent(String(e.sym||'').toUpperCase())+(e.side?'&side='+(e.side==='short'?'short':'long'):'');closeJr();if(window.mpGo)window.mpGo(_pu);else location.href=_pu;return;}
     if(act==='sltp'){if(window.mpSltpSheet)window.mpSltpSheet(id,function(){render();if(window.mpDrawLines)window.mpDrawLines();});return;}
@@ -977,6 +1047,14 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
 /* Real-time price feed — a single Bybit USDT-perp (linear) WebSocket streaming whatever symbols the user views.
    Updates window.mpLivePrices and fires a 'mp:price' event on every tick (sub-100ms), so the Paper Trade
    price, chart candle and live P&L feel instant. REST polling stays as a fallback if the socket is down. */
+/* Server-clock sync: candle boundaries + the close-countdown must NOT trust the device clock (a skewed clock rolls
+   bars into wrong minute buckets which the 30s re-sync then visibly repaints — measured 46s skew in the wild).
+   Best-RTT sample wins; refreshed every 10 min for drift. window.mpSrvNow() = server-true Date.now(). */
+(function(){
+  function sync(){var t0=Date.now();fetch('/api/now',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){var t1=Date.now();if(!d||!isFinite(+d.t))return;var rtt=t1-t0,off=(+d.t+rtt/2)-t1;if(window.__mpSrvRtt==null||rtt<=window.__mpSrvRtt+20){window.__mpSrvRtt=rtt;window.mpSrvOff=off;}}).catch(function(){});}
+  window.mpSrvNow=function(){return Date.now()+(window.mpSrvOff||0);};
+  sync();setTimeout(sync,4000);setInterval(sync,600000);
+})();
 (function(){
   if(!('WebSocket'in window))return;
   var BASE=['BTC','ETH','SOL','XRP','BNB','DOGE','ADA','AVAX'];
@@ -989,7 +1067,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function clean(s){return String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');}
   function argsFor(syms){var a=[];syms.forEach(function(s){a.push('publicTrade.'+s+'USDT');a.push('tickers.'+s+'USDT');});return a;}
   function sendOp(op,syms){if(!ws||ws.readyState!==1||!syms.length)return;var a=argsFor(syms);for(var i=0;i<a.length;i+=10){try{ws.send(JSON.stringify({op:op,args:a.slice(i,i+10)}));}catch(_){}}}
-  function ensureSub(sym){sym=clean(sym);if(!sym||want[sym])return;want[sym]=1;order.push(sym);
+  function ensureSub(sym){sym=clean(sym);if(!sym||want[sym])return;if(window.mpIsYahoo&&window.mpIsYahoo(sym))return; /* stocks/forex/indices: klines+price come from Yahoo (real data). Bybit lists TOKENIZED/absent perps whose WS ticks would feed a mismatched 24/7 price into the forming candle → phantom wick / candle-time mismatch. Keep them off the Bybit WS; poll()/pollPrices() drive them from /api/price (Yahoo). Metals stay (real Bybit XAUUSDT perp). */want[sym]=1;order.push(sym);
     if(order.length>MAXW){for(var i=0;i<order.length;i++){var os=order[i];if(BASE.indexOf(os)<0){order.splice(i,1);delete want[os];sendOp('unsubscribe',[os]);break;}}} // evict oldest dynamic symbol so we never grow unbounded
     sendOp('subscribe',[sym]);}
   window.mpWS={sub:ensureSub,resub:function(sym){sym=clean(sym);if(!sym)return;try{sendOp('unsubscribe',[sym]);}catch(_){}delete want[sym];var i=order.indexOf(sym);if(i>=0)order.splice(i,1);ensureSub(sym);}}; // resub = force a real re-subscribe (ensureSub short-circuits when already subscribed, so it can't recover a topic Bybit silently dropped)
@@ -1015,13 +1093,19 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     ws.onopen=function(){alive=true;retry=0;lastWsTick=Date.now();if(connT){clearTimeout(connT);connT=null;}try{if(window.__mpWsDownT){window.__mpUxm&&window.__mpUxm('rc',Date.now()-window.__mpWsDownT);window.__mpWsDownT=0;}}catch(e){}sendOp('subscribe',order.slice()); // (re)subscribe every wanted symbol (base + dynamic) on connect/reconnect — sendOp chunks at 10/req
       if(pingT)clearInterval(pingT);pingT=setInterval(function(){try{ws.send(JSON.stringify({op:'ping'}));}catch(_){}},18000);};
     ws.onmessage=function(ev){try{var m=JSON.parse(ev.data);if(m.ts&&isFinite(+m.ts)){var _wl=Date.now()-(+m.ts);if(_wl>-2000&&_wl<30000){var _ww=window.__mpWsLatW;if(!_ww||Date.now()-_ww.t>60000){window.__mpWsLatW={t:Date.now(),v:_wl};}else if(_wl<_ww.v){_ww.v=_wl;}window.__mpWsLat=(window.__mpWsLatW||{}).v;}}if(!m.topic)return;
-      if(m.topic.indexOf('publicTrade.')===0&&Array.isArray(m.data)&&m.data.length){var sym=m.topic.slice(12).replace('USDT','');var p=parseFloat(m.data[m.data.length-1].p);if(isFinite(p))stage(sym,p,chgMap[sym]);} // every trade → staged + coalesced per frame
+      if(m.topic.indexOf('publicTrade.')===0&&Array.isArray(m.data)&&m.data.length){var sym=m.topic.slice(12).replace('USDT','');
+        var TK=window.mpTicks1m=window.mpTicks1m||{},tk=TK[sym]; // EXACT per-minute OHLC from EVERY trade in the batch, bucketed by the trade's own exchange timestamp (T) — immune to device-clock skew. The forming candle merges these extremes so wicks are exact instead of rAF-sampled (the old path kept only the batch's LAST trade → missed extremes → the 30s re-sync visibly grew wicks).
+        for(var _ti=0;_ti<m.data.length;_ti++){var _tr=m.data[_ti],_tp=parseFloat(_tr.p),_tt=Math.floor((+_tr.T||Date.now())/60000)*60;
+          if(!isFinite(_tp))continue;
+          if(!tk||tk.cur.t!==_tt)tk=TK[sym]={cur:{t:_tt,o:_tp,h:_tp,l:_tp,c:_tp},prev:tk?tk.cur:null};
+          else{var _cb=tk.cur;_cb.c=_tp;if(_tp>_cb.h)_cb.h=_tp;if(_tp<_cb.l)_cb.l=_tp;}}
+        var p=parseFloat(m.data[m.data.length-1].p);if(isFinite(p))stage(sym,p,chgMap[sym]);} // every trade → staged + coalesced per frame
       else if(m.topic.indexOf('tickers.')===0&&m.data){var sym2=m.topic.slice(8).replace('USDT','');var lp=parseFloat(m.data.lastPrice);var chg=(m.data.price24hPcnt!=null&&m.data.price24hPcnt!=='')?parseFloat(m.data.price24hPcnt)*100:null;if(chg!=null&&isFinite(chg))chgMap[sym2]=chg;if(isFinite(lp))stage(sym2,lp,chgMap[sym2]);} // 24h change %
     }catch(_){}};
     ws.onclose=function(){alive=false;try{if(!window.__mpWsDownT)window.__mpWsDownT=Date.now();}catch(e){}if(pingT){clearInterval(pingT);pingT=null;}if(connT){clearTimeout(connT);connT=null;}reconnect();};
     ws.onerror=function(){try{ws.close();}catch(_){}reconnect();}; // some mobile webviews fire onerror WITHOUT a following onclose → reconnect here too (reconnect() is self-guarded against stacking)
   }
-  function reconnect(){if(reT)return;retry=Math.min(retry+1,6);reT=setTimeout(function(){reT=null;connect();},[250,900,2500,5000,8000,8000][retry-1]||8000);} // fast first retry (250ms — ws-recon budget is 1s), then exponential; guarded: never stack multiple reconnects
+  function reconnect(){if(reT)return;retry=Math.min(retry+1,6);reT=setTimeout(function(){reT=null;connect();},[250,900,2000,3000,3000,3000][retry-1]||3000);} // fast first retry (250ms), then backoff CAPPED at 3s (was 8s): the `online` event is unreliable on mobile radio hand-offs, so a network that returns mid-backoff could sit dead for up to 8s → 3s cap halves that worst case (ws-recon p95). Retries during a real outage are cheap failed WS handshakes.
   function kick(){ // force a brand-new socket NOW (dead/stuck one) — used by the watchdog / resume / online
     try{if(ws){ws.onclose=null;ws.close();}}catch(_){}
     ws=null;if(reT){clearTimeout(reT);reT=null;}if(connT){clearTimeout(connT);connT=null;}retry=0;connect();
@@ -1065,7 +1149,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   // (gclid = Google Ads, utm_source, fbclid, ref) FIRST, then the external referrer host — persisted so internal hops keep it.
   function mpEntrySrc(){
     try{
-      var s=sessionStorage.getItem('mp_src'); if(s!==null)return s;
+      var s=sessionStorage.getItem('mp_src'); if(s)return s; // '' cached = keep trying (a mid-session external return can still name the source)
       var q; try{q=new URLSearchParams(location.search||'');}catch(_){q=null;}
       var src='';
       if(q){
@@ -1080,7 +1164,16 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       if(!src&&document.referrer){try{var h=new URL(document.referrer).hostname.replace(/^www\./,'');if(h&&h!=='marginpad.io')src=h;}catch(_){}}
       src=(src||'').slice(0,40);
       try{sessionStorage.setItem('mp_src',src);}catch(_){}
+      if(src){try{if(!mpFirstSrc())localStorage.setItem('mp_src0',JSON.stringify({s:src,ts:Date.now()}));}catch(_){}}
       return src;
+    }catch(_){return '';}
+  }
+  // first-touch source (90d): when the current session has no referrer/utm (app webview, bookmark, returning
+  // visitor) the beacon still reports where this person ORIGINALLY came from, sent separately as &s0.
+  function mpFirstSrc(){
+    try{var raw=localStorage.getItem('mp_src0');if(!raw)return '';var o=JSON.parse(raw);
+      if(!o||!o.s||(Date.now()-(+o.ts||0))>7776e6){try{localStorage.removeItem('mp_src0');}catch(_){}return '';}
+      return String(o.s).slice(0,40);
     }catch(_){return '';}
   }
   window.mpEntrySrc=mpEntrySrc;
@@ -1089,7 +1182,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       var u='/api/track?t='+encodeURIComponent(t)+(e?'&e='+encodeURIComponent(e):'')+'&p='+encodeURIComponent(location.pathname);
       if(t==='pageview'){
         if(document.referrer){u+='&r='+encodeURIComponent(document.referrer);}
-        try{var _es=mpEntrySrc();if(_es)u+='&src='+encodeURIComponent(_es);}catch(_){}
+        try{var _es=mpEntrySrc();if(_es)u+='&src='+encodeURIComponent(_es);else{var _s0=mpFirstSrc();if(_s0)u+='&s0='+encodeURIComponent(_s0);}}catch(_){}
         try{var lp=sessionStorage.getItem('mp_lastpath');if(lp&&lp!==location.pathname)u+='&f='+encodeURIComponent(lp);sessionStorage.setItem('mp_lastpath',location.pathname);}catch(_){}
       }
       if(navigator.sendBeacon){navigator.sendBeacon(u);}else{fetch(u,{keepalive:true});}
@@ -1104,7 +1197,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   document.addEventListener('click',function(e){try{var mn=e.target.closest&&e.target.closest('.mobnav [data-mn]');if(mn)send('nav',(mn.getAttribute('aria-label')||mn.getAttribute('data-mn')||'nav').slice(0,24));}catch(_){}},true);
   // in-page product switches (Calc/Heatmap/Swap/Paper Trade/Charts on the homepage) don't reload, so fire a virtual
   // pageview for them too — same nav stream as real page loads, carrying where the visitor came from (&f).
-  function navTo(path){try{var from=null;try{from=sessionStorage.getItem('mp_lastpath');}catch(_){}if(from===path)return;var u='/api/track?t=pageview&p='+encodeURIComponent(path)+(from?('&f='+encodeURIComponent(from)):'');if(navigator.sendBeacon){navigator.sendBeacon(u);}else{fetch(u,{keepalive:true});}try{sessionStorage.setItem('mp_lastpath',path);}catch(_){}}catch(_){}}
+  function navTo(path){try{var from=null;try{from=sessionStorage.getItem('mp_lastpath');}catch(_){}if(from===path)return;var u='/api/track?t=pageview&p='+encodeURIComponent(path)+(from?('&f='+encodeURIComponent(from)):'');try{var _es=mpEntrySrc();if(_es)u+='&src='+encodeURIComponent(_es);else{var _s0=mpFirstSrc();if(_s0)u+='&s0='+encodeURIComponent(_s0);}}catch(_){}if(navigator.sendBeacon){navigator.sendBeacon(u);}else{fetch(u,{keepalive:true});}try{sessionStorage.setItem('mp_lastpath',path);}catch(_){}}catch(_){}}
   window.__mpNav=navTo;
   // scroll depth — fire once per 25/50/75/100% threshold
   (function(){var hit={};function s(){var st=window.scrollY||document.documentElement.scrollTop||0,dh=(document.documentElement.scrollHeight-window.innerHeight)||1,pct=st/dh*100;[25,50,75,100].forEach(function(t){if(pct>=t&&!hit[t]){hit[t]=1;send('scroll',String(t));}});}window.addEventListener('scroll',s,{passive:true});})();
@@ -1242,12 +1335,14 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function switchRoom(r){if(r===room||chatRooms().indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?'Premium lounge — VIPs only…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
   function meUser(){var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me)return '';return String(me.username||(me.email||'').split('@')[0]||'trader').replace(/[<>&]/g,'').slice(0,20);}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+  /* escape first (XSS-safe), THEN turn `trade:<id>` tokens into clickable links that open the shared ticket */
+  function linkifyMsg(t){return esc(t).replace(/\btrade:([a-z0-9]{6,16})\b/gi,function(mm,id){id=id.toLowerCase();return '<a class="ct-trade" data-trade="'+id+'" role="button" tabindex="0" title="Open shared ticket">trade:'+id+'</a>';});}
   function colorFor(u){var h=0;for(var i=0;i<u.length;i++)h=(h*31+u.charCodeAt(i))%360;return 'hsl('+h+',65%,70%)';}
   var MP_BADGE='<svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-3px;margin-right:4px;filter:drop-shadow(0 0 3px rgba(194,246,74,.55))"><path d="M12 1L14.83 3.3L18.47 3.1L19.4 6.62L22.46 8.6L21.15 12L22.46 15.4L19.4 17.38L18.47 20.9L14.83 20.7L12 23L9.17 20.7L5.53 20.9L4.6 17.38L1.54 15.4L2.85 12L1.54 8.6L4.6 6.62L5.53 3.1L9.17 3.3Z" fill="#c2f64a"/><path d="M7.7 12.3l2.9 2.9L16.4 9.3" fill="none" stroke="#0a0b0d" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var who=m.admin?'<b style="color:#e9e7df;font-weight:800">'+MP_BADGE+'Margin<span style="color:#c2f64a">Pad</span></b>':'<span data-lvln="'+esc(m.u)+'"></span><b class="ct-user" data-lbu="'+esc(m.u)+'" role="button" tabindex="0" style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b><span data-lpro="'+esc(m.u)+'"></span>';var _sg=window._mpParseSig&&window._mpParseSig(m.t);d.innerHTML=who+' '+(_sg?window._mpSigCardHtml(_sg):esc(m.t));msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();}
+  function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var who=m.admin?'<b style="color:#e9e7df;font-weight:800">'+MP_BADGE+'Margin<span style="color:#c2f64a">Pad</span></b>':'<span data-lvln="'+esc(m.u)+'"></span><b class="ct-user" data-lbu="'+esc(m.u)+'" role="button" tabindex="0" style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b><span data-lpro="'+esc(m.u)+'"></span>';var _sg=window._mpParseSig&&window._mpParseSig(m.t);d.innerHTML=who+' '+(_sg?window._mpSigCardHtml(_sg):linkifyMsg(m.t));msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();}
   /* click a username in chat → open that trader's profile card */
   function openTraderCard(n){n=String(n||'').replace(/[^a-zA-Z0-9_]/g,'');if(!n)return;if(window.mpOpenProfile){try{window.mpOpenProfile(n);}catch(_){}}}
-  if(msgs)msgs.addEventListener('click',function(e){var el=e.target.closest&&e.target.closest('.ct-user[data-lbu]');if(el){e.stopPropagation();openTraderCard(el.getAttribute('data-lbu'));}});
+  if(msgs)msgs.addEventListener('click',function(e){var tr=e.target.closest&&e.target.closest('.ct-trade[data-trade]');if(tr){e.stopPropagation();e.preventDefault();if(window.mpOpenTrade)window.mpOpenTrade(tr.getAttribute('data-trade'));return;}var el=e.target.closest&&e.target.closest('.ct-user[data-lbu]');if(el){e.stopPropagation();openTraderCard(el.getAttribute('data-lbu'));}});
   function setOnline(n){/* online count removed per owner */}
   /* unread signal: glow the chat FAB (desktop) + a dot on the bottom-nav Chat button (mobile) when a new message lands while the chat is closed */
   function chatAlert(on){try{
@@ -1302,6 +1397,92 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   if(signinBtn)signinBtn.addEventListener('click',function(){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}});
   window.addEventListener('mp-auth-change',function(){if(!box.hidden&&!joined){var u=meUser();if(u){user=u;showChat();}}});
   form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;var _lbm=t.match(/^\/(leaderboard|lb|leaders)\s*([1234])?\b/i);if(_lbm){input.value='';showLeaderboard(+_lbm[2]||1);return;}if(/^\/sig(nal)?\b/i.test(t)){input.value='';if(window._mpOpenSigForm)window._mpOpenSigForm({anchor:form,send:function(txt){if(ws&&ws.readyState===1){ws.send(JSON.stringify({type:'msg',u:user,t:txt}));try{window.__mpTrack&&window.__mpTrack('chat','signal');}catch(_){}return true;}return false;}});return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));try{window.__mpTrack&&window.__mpTrack('chat','sent');}catch(_){}input.value='';});
+  /* post a message into chat programmatically (used by "Share to chat" on a ticket): open the chat, ensure the WS is
+     up, queue the send until it connects. Returns false if the user isn't signed in (chat requires login). */
+  window.mpChatSay=function(text){text=String(text||'').trim();if(!text)return false;var u=meUser();if(!u){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}return false;}user=u;if(box&&box.hidden){try{openBox();}catch(e){}}else if(!joined){try{showChat();}catch(e){}}var payload=JSON.stringify({type:'msg',u:user,t:text}),tries=0;(function trySend(){if(ws&&ws.readyState===1){try{ws.send(payload);window.__mpTrack&&window.__mpTrack('chat','shareticket');}catch(e){}return;}if(tries++>40)return;if(!ws){try{connect();}catch(e){}}setTimeout(trySend,250);})();return true;};
+})();
+
+;/* ══════════ shared trade-ticket viewer — opens a chat `trade:<id>` link in a branded modal (self-contained) ══════════ */
+(function(){
+  if(window.mpOpenTrade)return;
+  var CSS='.mptk-ov{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(4,5,7,.8);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .18s}'
+   +'.mptk-ov.on{opacity:1}'
+   +'.mptk{position:relative;width:min(440px,94vw);max-height:92vh;overflow:auto;border-radius:20px;border:1px solid #232b36;background:linear-gradient(180deg,#0e1218,#08090b);box-shadow:0 30px 90px -20px rgba(0,0,0,.8);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;color:#e9e7df;transform:translateY(8px);transition:transform .2s}'
+   +'.mptk-ov.on .mptk{transform:none}'
+   +'.mptk-glow{position:absolute;inset:0;border-radius:20px;pointer-events:none}'
+   +'.mptk-in{position:relative;padding:22px 22px 20px}'
+   +'.mptk-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}'
+   +'.mptk-brand{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;font-size:15px;letter-spacing:-.02em;color:#f1efe8}'
+   +'.mptk-brand b{color:#c2f64a}'
+   +'.mptk-x{width:30px;height:30px;border-radius:9px;border:1px solid #2a3340;background:#12161d;color:#9aa3ad;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0}'
+   +'.mptk-x:hover{color:#fff;border-color:#3a4657}'
+   +'.mptk-hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}'
+   +'.mptk-sym{font-family:"Space Mono",monospace;font-size:25px;font-weight:700;letter-spacing:-.01em}'
+   +'.mptk-pill{font-family:"Space Mono",monospace;font-size:11px;font-weight:700;padding:4px 9px;border-radius:8px;letter-spacing:.03em}'
+   +'.mptk-long{color:#34d99a;background:rgba(46,189,133,.14)}.mptk-short{color:#ff7b72;background:rgba(255,98,88,.14)}'
+   +'.mptk-lev{color:#c8cdd4;background:#161b23;border:1px solid #262e3a}'
+   +'.mptk-st{margin-left:auto;font-family:"Space Mono",monospace;font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px}'
+   +'.mptk-st.open{color:#8fd4ff;background:rgba(56,189,248,.13)}.mptk-st.win{color:#34d99a;background:rgba(46,189,133,.14)}.mptk-st.loss{color:#ff7b72;background:rgba(255,98,88,.14)}'
+   +'.mptk-roe{font-family:"Space Mono",monospace;font-size:50px;font-weight:700;line-height:1;letter-spacing:-.02em;margin:6px 0 2px}'
+   +'.mptk-pnl{font-family:"Space Mono",monospace;font-size:16px;font-weight:700;margin-bottom:18px}'
+   +'.mptk-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#1b222c;border:1px solid #1b222c;border-radius:14px;overflow:hidden;margin-bottom:16px}'
+   +'.mptk-cell{background:#0c1015;padding:12px 14px}'
+   +'.mptk-cell .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#5f6770;font-weight:600;margin-bottom:3px}'
+   +'.mptk-cell .v{font-family:"Space Mono",monospace;font-size:15px;font-weight:700;color:#e9e7df;word-break:break-word}'
+   +'.mptk-by{font-size:12px;color:#7f8893;margin-bottom:16px}.mptk-by b{color:#c8cdd4}'
+   +'.mptk-cta{display:block;text-align:center;text-decoration:none;background:linear-gradient(180deg,#d3ff5e,#a6e02a);color:#0a0b0d;font-weight:800;border-radius:12px;padding:13px;font-size:14px;letter-spacing:.01em;box-shadow:0 10px 26px -10px rgba(194,246,74,.6)}'
+   +'.mptk-cta:hover{filter:brightness(1.05)}'
+   +'.mptk-foot{text-align:center;font-size:11px;color:#4b545d;margin-top:14px}'
+   +'.mptk-err{padding:38px 12px;text-align:center;color:#9aa3ad;font-size:14px}';
+  function inject(){if(document.getElementById('mptkCss'))return;var s=document.createElement('style');s.id='mptkCss';s.textContent=CSS;(document.head||document.documentElement).appendChild(s);}
+  function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
+  function fp(x){x=+x;if(!isFinite(x))return '—';return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
+  function money(x){var n=x<0;x=Math.abs(+x||0);var s;if(x>=1e9)s=(x/1e9).toFixed(2)+'B';else if(x>=1e6)s=(x/1e6).toFixed(2)+'M';else if(x>=1e5)s=(x/1e3).toFixed(1)+'K';else s=x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (n?'-$':'$')+s;}
+  function ago(t){t=+t;if(!t)return '';var s=Math.floor((Date.now()-t)/1000);if(s<60)return 'just now';var m=Math.floor(s/60);if(m<60)return m+'m ago';var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
+  var curOv=null;
+  function closeOv(){if(!curOv)return;var o=curOv;curOv=null;o.classList.remove('on');document.removeEventListener('keydown',onKey);setTimeout(function(){if(o&&o.parentNode)o.parentNode.removeChild(o);},220);}
+  function onKey(e){if(e.key==='Escape')closeOv();}
+  function wire(ov){var x=ov.querySelector('.mptk-x');if(x)x.onclick=closeOv;}
+  function shell(inner){inject();
+    if(curOv){var c=curOv.querySelector('.mptk');if(c){c.innerHTML=inner;wire(curOv);return curOv;}}
+    var ov=document.createElement('div');ov.className='mptk-ov';ov.innerHTML='<div class="mptk" role="dialog" aria-modal="true">'+inner+'</div>';
+    document.body.appendChild(ov);curOv=ov;ov.addEventListener('click',function(e){if(e.target===ov)closeOv();});document.addEventListener('keydown',onKey);wire(ov);requestAnimationFrame(function(){ov.classList.add('on');});return ov;}
+  function top(){return '<div class="mptk-top"><span class="mptk-brand">MARGIN<b>PAD</b></span><button class="mptk-x" type="button" aria-label="Close">✕</button></div>';}
+  function body(h){return '<div class="mptk-in">'+top()+h+'</div>';}
+  function render(t){
+    var long=t.side!=='short',closed=(t.status==='win'||t.status==='loss');
+    var pnl=(t.pnl!=null?+t.pnl:null),roe=(t.roe!=null?+t.roe:null);
+    var win=(pnl!=null?pnl>=0:(roe!=null?roe>=0:true)),ac=win?'#2ebd85':'#ff6258';
+    var stCls=t.liquidated?'loss':(closed?(win?'win':'loss'):'open');
+    var stTxt=t.liquidated?'LIQUIDATED':(closed?(win?'WIN':'LOSS'):'OPEN');
+    var mark=(t.exit!=null?t.exit:t.entry),margin=(+t.margin>0)?+t.margin:null;
+    var val=(margin!=null&&+t.lev>0)?margin*(+t.lev):(t.notional!=null?+t.notional:null);
+    var inner='<div class="mptk-glow" style="background:radial-gradient(120% 55% at 50% 0%,'+(win?'rgba(46,189,133,.16)':'rgba(255,98,88,.16)')+',transparent 70%)"></div>'
+      +'<div class="mptk-in">'+top()
+      +'<div class="mptk-hd"><span class="mptk-sym">'+esc(t.sym||'—')+'</span><span class="mptk-pill '+(long?'mptk-long':'mptk-short')+'">'+(long?'LONG':'SHORT')+'</span><span class="mptk-pill mptk-lev">'+(+t.lev>0?(+t.lev):1)+'×</span><span class="mptk-st '+stCls+'">'+stTxt+(t.partial?' · '+t.partial+'%':'')+'</span></div>'
+      +'<div class="mptk-roe" style="color:'+ac+'">'+(roe!=null?((roe>=0?'+':'')+roe.toFixed(2)+'%'):'—')+'</div>'
+      +'<div class="mptk-pnl" style="color:'+(win?'#9fe9c8':'#ffb3ad')+'">'+(pnl!=null?((pnl>=0?'+':'−')+money(Math.abs(pnl)).replace('-','')+(closed?'':' (live)')):'')+'</div>'
+      +'<div class="mptk-grid">'
+        +'<div class="mptk-cell"><div class="l">Entry</div><div class="v">'+fp(t.entry)+'</div></div>'
+        +'<div class="mptk-cell"><div class="l">'+(closed?'Exit':'Mark')+'</div><div class="v">'+fp(mark)+'</div></div>'
+        +'<div class="mptk-cell"><div class="l">Leverage</div><div class="v">'+(+t.lev>0?(+t.lev):1)+'×</div></div>'
+        +'<div class="mptk-cell"><div class="l">Liquidation</div><div class="v">'+(t.liq!=null?fp(t.liq):'—')+'</div></div>'
+        +'<div class="mptk-cell"><div class="l">Size</div><div class="v">'+(margin!=null?money(margin):'—')+'</div></div>'
+        +'<div class="mptk-cell"><div class="l">Value</div><div class="v">'+(val!=null?money(val):'—')+'</div></div>'
+      +'</div>'
+      +'<div class="mptk-by">Shared by <b>@'+esc(t.by||'trader')+'</b>'+((t.closeTs||t.ts)?' · '+ago(t.closeTs||t.ts):'')+'</div>'
+      +'<a class="mptk-cta" href="/paper-trade?coin='+encodeURIComponent(String(t.sym||'').toUpperCase())+(long?'&side=long':'&side=short')+'">Paper trade '+esc(t.sym||'')+' →</a>'
+      +'<div class="mptk-foot">Paper trade · not financial advice</div></div>';
+    shell(inner);
+  }
+  window.mpOpenTrade=function(id){
+    id=String(id||'').replace(/[^a-z0-9]/gi,'').slice(0,16);if(!id)return;
+    shell(body('<div class="mptk-err">Loading ticket…</div>'));
+    fetch('/api/tshare?id='+encodeURIComponent(id),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+      if(d&&d.ok&&d.ticket)render(d.ticket);
+      else shell(body('<div class="mptk-err">This shared ticket is no longer available.</div>'));
+    }).catch(function(){shell(body('<div class="mptk-err">Could not load the ticket. Check your connection.</div>'));});
+  };
 })();
 
 ;/* ══════════ inline block from app/index.html line 3884 ══════════ */
@@ -1845,6 +2026,47 @@ window.addEventListener('load', function () {
   function init(){
     enhance(document.getElementById('heatCoin'), true);
     enhance(document.getElementById('planSym'), true, true, true);
+    // Asset-class selector: a small dropdown next to the symbol picker → filters it to Crypto / Stocks / Forex / Metals / Indices and auto-switches to that market.
+    (function wirePlanClass(){
+      var pc=document.getElementById('planClass'), ps=document.getElementById('planSym'); if(!pc||!ps)return;
+      var DEF={crypto:'BTC',stock:'AAPL',forex:'EURUSD',metal:'XAU',index:'SPX500'};
+      function classOf(s){return window.mpAssetClass?window.mpAssetClass(s):'crypto';}
+      function rebuild(cls){
+        var t=window.mpTokens||[], syms=t.filter(function(s){return classOf(s)===cls;});
+        if(!syms.length)syms=[DEF[cls]];
+        ps.innerHTML=syms.map(function(s){var nm=window.mpMarketName?window.mpMarketName(s):'';return '<option value="'+s+'">'+s+(nm?' — '+nm:'')+'</option>';}).join('');
+        var want=(DEF[cls]&&syms.indexOf(DEF[cls])>=0)?DEF[cls]:syms[0];
+        ps.value=want; ps.dispatchEvent(new Event('change',{bubbles:true})); // reloads chart + price; enhance re-reads options on next open
+      }
+      // Advanced panel: the "Exchange (sets margin rate)" dropdown lists CRYPTO exchanges (Bybit/Binance/…). It's
+      // meaningless + confusing on a stock/forex/metal ("Bybit 0.5%" over AAPL). Hide it for non-crypto and set a
+      // class-appropriate maintenance-margin rate so the liquidation math still works; restore the picker for crypto.
+      var MMR_BY_CLASS={crypto:null,stock:0.005,index:0.005,metal:0.005,forex:0.002}; // null=use the #planEx picker; non-crypto = fixed sensible MMR (forex tighter)
+      function applyClassUI(cls){
+        var px=document.getElementById('planEx'), fld=px&&px.closest&&px.closest('.field');
+        if(fld){ if(cls==='crypto'){ fld.style.display=''; var v=parseFloat(px.value); window.mpPlanMmr=(isFinite(v)&&v>0)?v/100:0.005; } else { fld.style.display='none'; window.mpPlanMmr=MMR_BY_CLASS[cls]||0.005; } }
+        try{calc();}catch(_){} try{updatePlanRisk();}catch(_){}
+      }
+      window.mpLoadTokens&&window.mpLoadTokens(function(){ try{pc.value=classOf(ps.value);applyClassUI(pc.value);}catch(e){} });
+      pc.addEventListener('change',function(){ rebuild(pc.value); applyClassUI(pc.value); });
+      ps.addEventListener('change',function(){ var c=classOf(ps.value); if(pc.value!==c){pc.value=c; applyClassUI(c);} }); // keep the class in sync if the symbol changes elsewhere
+      // SAFETY: whenever the symbol picker OPENS, guarantee its options match the selected class. Defends against
+      // any drift — a stale cached bundle, or the free-entry search having added a cross-class ticker — so the
+      // dropdown can never show e.g. crypto while "Stocks" is selected. Capture-phase so it runs BEFORE the
+      // custom-select's own open→build (which reads ps.options), and it preserves the current pick.
+      try { var _trg = ps.closest && ps.closest('.csel') && ps.closest('.csel').querySelector('.csel-trigger');
+        if (_trg) _trg.addEventListener('click', function(){
+          var cls = pc.value || 'crypto';
+          if (![].slice.call(ps.options).some(function(o){ return classOf(o.value) !== cls; })) return; // already clean
+          var t = window.mpTokens || [], syms = t.filter(function(s){ return classOf(s) === cls; });
+          if (!syms.length) syms = [DEF[cls]];
+          var cur = ps.value;
+          ps.innerHTML = syms.map(function(s){ var nm = window.mpMarketName ? window.mpMarketName(s) : ''; return '<option value="'+s+'">'+s+(nm?' — '+nm:'')+'</option>'; }).join('');
+          ps.value = (classOf(cur) === cls && syms.indexOf(cur) >= 0) ? cur : ((DEF[cls] && syms.indexOf(DEF[cls]) >= 0) ? DEF[cls] : syms[0]);
+          if (ps.value !== cur) ps.dispatchEvent(new Event('change', { bubbles: true }));
+        }, true);
+      } catch(e) {}
+    })();
     // exchange presets (liq + cross calc + paper-trade advanced) → branded rows instead of the OS default dropdown
     var EXCOL={'Binance':['#f0b90b','#181a20'],'Bybit':['#f7a600','#0a0b0d'],'OKX':['#e9e7df','#0a0b0d'],'Bitget':['#00e7d8','#06231d'],'KuCoin':['#23af91','#06231d'],'Gate':['#3361ff','#ffffff'],'Kraken':['#7b5cff','#ffffff'],'MEXC':['#0ac2d6','#06231d'],'Crypto.com':['#0b2e7a','#ffffff']};
     function exDeco(o){var t=o.textContent||'',m=t.split('—'),name=(m[0]||t).trim(),rate=(m[1]||'').trim();
@@ -2044,12 +2266,13 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
       +'<div class="ptl-meta">'+_T('jEntry','Entry')+' <b>'+fmt(e.entry)+'</b> · '+_T('mtLiq','Liq')+' <b>'+fmt(m.liq)+'</b> ('+pc(m.liqDist)+')</div>';}
   document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('[data-ptl-close]'))setTimeout(updPnl,0);}); // re-render the ticket after its Close fires (the global handler does the actual close)
   function openPos(){if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; /* enforce open-trade limits + one-way mode */
+    if(window.mpIsMktClosed&&window.mpIsMktClosed(sym)){if(window.mpLimitToast)window.mpLimitToast(sym+' market is closed right now — you can trade it when it reopens.');return;} // stocks: no fills while the exchange is shut (consistent with the plan form)
     // FRESH price only: a stale mpLivePrices[sym] (seeded long ago by another open position on the same coin, never
     // updated because the coin isn't in the live feed) must never be the entry → wrong liq → phantom "instant liquidation".
     var _lp=window.mpLivePrices&&window.mpLivePrices[sym],p=(_lp&&_lp.p>0&&_lp.t&&(Date.now()-_lp.t)<2000)?+_lp.p:0; // 2s window: majors (WS, sub-second) use the cache; a polled altcoin (US) forces a fresh fetch so the entry matches the live market to the second (else it opens past its 100× liq → instant liquidation)
     if(!(p>0)){fetch('/api/price?symbol='+sym+window.__mpPQ('mterm',sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0){if(window.mpLivePrices)window.mpLivePrices[sym]={p:+j.price,t:Date.now()};openPos();}});return;}
     var L=lev,mmr=(window.mpPlanMmr||0.005),notional=amt*L,qty=notional/p,liq=side==='long'?p*(1-(1-mmr)/L):p*(1+(1-mmr)/L);
-    var pos={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:side,entry:p,stop:null,tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:window.mpFeeRate(lev),status:'open',pnl:null};
+    var pos={id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:Date.now(),sym:sym,side:side,entry:p,stop:null,tp:null,lev:L,rr:null,qty:qty,notional:notional,margin:amt,riskAmt:amt,liq:liq,mmr:mmr,feeRate:window.mpFeeRate(lev,sym),status:'open',pnl:null};
     var _finMt=function(P){var d=jload();d.push(P);if(window.mpLivePrices)window.mpLivePrices[sym]={p:+P.entry,t:Date.now()};jstore(d);if(window.mpJournalRender)window.mpJournalRender();
     try{if(window.mpLevWarn)window.mpLevWarn(L);}catch(e){} // extreme-leverage nudge (throttled)
     try{if(window.mpCheckGrad)window.mpCheckGrad();}catch(e){}
@@ -2154,7 +2377,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   function lbEnds(weekEnd){if(!weekEnd)return '';var ms=weekEnd-Date.now();if(ms<=0)return '';var d=Math.floor(ms/86400000),h=Math.floor(ms%86400000/3600000),m=Math.floor(ms%3600000/60000);var t=(d>0?d+'d ':'')+((d>0||h>0)?h+'h ':'')+m+'m';return '<div class="lg-ends">⏳ 14-day season · '+LT('lgEndsIn','ends in')+' <b>'+t+'</b></div>';}
   var lgMode='roe',lgLast=null;
   function lgPills(){return '<div class="lg-pills"><button type="button" class="lg-pill'+(lgMode==='roe'?' on':'')+'" data-lgm="roe">'+LT('lgSpotBank','Spot bank')+'</button><button type="button" class="lg-pill'+(lgMode==='roe2'?' on':'')+'" data-lgm="roe2">'+LT('lgTopRoe2','Top ROE')+'</button><button type="button" class="lg-pill'+(lgMode==='pnl'?' on':'')+'" data-lgm="pnl">'+LT('lgTopPnl','Top PnL')+'</button><button type="button" class="lg-pill'+(lgMode==='wr'?' on':'')+'" data-lgm="wr">'+LT('lgBestWr','Best win rate')+'</button></div>';}
-  function lgNote(){return lgMode==='pnl'?'<div class="lg-wr-note">'+LT('lgPnlNoPay','Top PnL is bragging rights — the other boards pay real USDT each 14-day season.')+'</div>':'<div class="lg-wr-note pay">'+LT('lgPayAll','This board pays the top 5 in real USDT every 14-day season.')+'</div>';}
+  function lgNote(){if(lgMode==='pnl')return '<div class="lg-wr-note">'+LT('lgPnlNoPay','Top PnL is bragging rights — the other boards pay real USDT each 14-day season.')+'</div>';if(lgMode==='wr')return '<div class="lg-wr-note pay">'+LT('lgWrRank','Pays the top 5 each 14-day season. Ranked by win rate weighted by trades played — more games make your % count for more (a 45W-3L can rank above a higher % on fewer trades). Min 20 closed trades.')+'</div>';return '<div class="lg-wr-note pay">'+LT('lgPayAll','This board pays the top 5 in real USDT every 14-day season.')+'</div>';}
   function lgMoneyH(x){x=+x||0;var sg=x<0?'-':'+';x=Math.abs(x);return sg+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
   function lgDraw(){var d=lgLast;if(!d)return;var ends=lbEnds(d&&d.weekEnd);
     if(lgMode==='wr'){
@@ -2474,7 +2697,7 @@ window.mpSrvOpen=function(payload,ok,fail){
       if(window.mpTradeGate&&!window.mpTradeGate(p.sym,long?'long':'short')){cleanUrl();return;} // respect open-trade limits + one-way mode for Telegram imports too
       var notional=margin*lev,qty=entry>0?notional/entry:0,mmr=0.005;
       var liq=long?entry*(1-(1-mmr)/lev):entry*(1+(1-mmr)/lev);
-      arr.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:+p.ts||Date.now(),sym:p.sym,side:long?'long':'short',entry:entry,stop:null,tp:null,lev:lev,rr:null,qty:qty,notional:notional,margin:margin,riskAmt:margin,liq:liq,mmr:mmr,feeRate:window.mpFeeRate(lev),status:'open',pnl:null,src:'telegram',tgClaim:tok});
+      arr.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:+p.ts||Date.now(),sym:p.sym,side:long?'long':'short',entry:entry,stop:null,tp:null,lev:lev,rr:null,qty:qty,notional:notional,margin:margin,riskAmt:margin,liq:liq,mmr:mmr,feeRate:window.mpFeeRate(lev,p.sym),status:'open',pnl:null,src:'telegram',tgClaim:tok});
       try{localStorage.setItem('mp_journal',JSON.stringify(arr));}catch(e){}
       try{window.mpLivePrices=window.mpLivePrices||{};if(!(window.mpLivePrices[p.sym]&&window.mpLivePrices[p.sym].p>0))window.mpLivePrices[p.sym]={p:entry,t:Date.now()};}catch(e){}
       cleanUrl();try{if(window.mpJournalRender)window.mpJournalRender();}catch(e){}toast();

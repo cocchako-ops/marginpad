@@ -9,7 +9,7 @@
 <script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944','ym');ym(110941944,'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",accurateTrackBounce:true,trackLinks:true});</script>
 <noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute;left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
-<meta name="description" content="Practice crypto futures with real live prices and zero risk: paper-trading terminal, live screener, real-time liquidations feed, charts, calculators and a bot API. Free — no deposit, no KYC." />
+<meta name="description" content="Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC." />
 <meta name="keywords" content="crypto futures, paper trading, crypto futures simulator, liquidation calculator, crypto screener, liquidations feed, trading bot api, free crypto tools" />
 <link rel="canonical" href="https://marginpad.io/" />
 <link rel="alternate" hreflang="x-default" href="https://marginpad.io/" />
@@ -29,14 +29,14 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/" />
 <meta property="og:title" content="MarginPad — Free Crypto Futures Terminal, Paper Trade & Liquidations" />
-<meta property="og:description" content="Practice crypto futures with real live prices and zero risk: paper-trading terminal, live screener, real-time liquidations feed, charts, calculators and a bot API. Free — no deposit, no KYC." />
+<meta property="og:description" content="Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC." />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta property="og:locale" content="en_US" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="MarginPad — Free Crypto Futures Terminal, Paper Trade & Liquidations" />
-<meta name="twitter:description" content="Practice crypto futures with real live prices and zero risk: paper-trading terminal, live screener, real-time liquidations feed, charts, calculators and a bot API. Free — no deposit, no KYC." />
+<meta name="twitter:description" content="Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC." />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Practice crypto futures with real live prices and zero risk: paper-trading terminal, live screener, real-time liquidations feed, charts, calculators and a bot API. Free — no deposit, no KYC."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC."}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"MarginPad","url":"https://marginpad.io/","logo":"https://marginpad.io/assets/og.png","sameAs":["https://t.me/MarginPadBot"]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","alternateName":"MarginPad — Free Crypto Futures Tools","url":"https://marginpad.io/","inLanguage":"en"}</script>
 <meta charset="UTF-8" />
@@ -572,17 +572,45 @@
   .lbx-who{font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .lbx-roe{font-family:'Space Mono',monospace;font-weight:700;color:var(--grn);font-size:12.5px;font-variant-numeric:tabular-nums;}
 
-  /* ---------- Go live: one BIG "coming soon" slot + compact exchange tiles ---------- */
+  /* ---------- Go live: one BIG Moon partner slot + compact exchange tiles ---------- */
   .exch-grid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:auto;gap:12px;}
-  .exbig{grid-column:1/-1;grid-row:auto;position:relative;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:12px;padding:28px;border-radius:20px;overflow:hidden;
-    background:linear-gradient(160deg,rgba(194,246,74,.05),rgba(255,255,255,.01)),var(--panel);border:1.5px dashed rgba(194,246,74,.35);transition:border-color .2s ease,box-shadow .2s ease;}
-  .exbig:hover{border-color:rgba(194,246,74,.6);box-shadow:0 0 44px -18px rgba(194,246,74,.5);}
-  .exbig::after{content:'SOON';position:absolute;right:-14px;bottom:-30px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:104px;letter-spacing:-6px;color:rgba(194,246,74,.06);pointer-events:none;}
-  .exbig-tag{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);border:1px solid rgba(194,246,74,.4);border-radius:999px;padding:6px 12px;}
-  .exbig-tag i{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 9px var(--lime);animation:exsoon 1.6s ease-in-out infinite;}
+  .exbig{grid-column:1/-1;grid-row:auto;position:relative;display:flex;flex-direction:row;align-items:center;gap:clamp(26px,3.4vw,52px);padding:30px 34px;border-radius:20px;overflow:hidden;text-decoration:none;color:var(--ink);cursor:pointer;
+    background:radial-gradient(120% 160% at 12% 0%,rgba(117,115,225,.16),rgba(99,88,211,.05) 45%,rgba(255,255,255,.01) 75%),var(--panel);border:1.5px solid rgba(117,115,225,.45);animation:moonBreath 3.2s ease-in-out infinite;transition:border-color .2s ease,box-shadow .2s ease;}
+  @keyframes moonBreath{0%,100%{box-shadow:0 0 26px -14px rgba(117,115,225,.55);}50%{box-shadow:0 0 46px -10px rgba(117,115,225,.85);}}
+  .exbig:hover{border-color:rgba(142,148,235,.85);box-shadow:0 0 54px -12px rgba(117,115,225,.9);animation:none;}
+  .exbig::after{content:'MOON';position:absolute;right:-14px;bottom:-30px;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:104px;letter-spacing:-6px;color:rgba(117,115,225,.10);pointer-events:none;}
+  /* Two-column Moon card (2026-08-05): left = pitch + CTA, right = rich info panel that fills the wide banner. */
+  .exbig-main{flex:1 1 46%;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:14px;position:relative;z-index:2;}
+  .exbig-side{flex:1 1 54%;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:18px;position:relative;z-index:2;}
+  /* Accumulating benefit list — items slide in one by one and stack into a series; when the list is
+     complete they all clear and it restarts. JS-driven with CSS transitions (which run even when the OS
+     has "reduce motion" on, unlike @keyframes). */
+  .moon-feats{display:flex;flex-direction:column;gap:13px;width:100%;}
+  .mf-item{display:flex;align-items:center;gap:13px;opacity:0;transform:translateX(38px);transition:opacity .5s ease,transform .62s cubic-bezier(.2,.85,.25,1);will-change:opacity,transform;}
+  .mf-item.in{opacity:1;transform:none;}
+  .mf-item.out{opacity:0;transform:translateX(-24px);transition:opacity .45s ease,transform .45s ease;}
+  .mf-ic{width:32px;height:32px;border-radius:9px;flex:none;display:flex;align-items:center;justify-content:center;background:linear-gradient(150deg,rgba(142,148,235,.32),rgba(99,88,211,.14));color:#c7c4ff;box-shadow:0 0 0 1px rgba(117,115,225,.34),0 0 22px -8px rgba(117,115,225,.85);transform:scale(.45);transition:transform .6s cubic-bezier(.2,1.4,.35,1);}
+  .mf-item.in .mf-ic{transform:scale(1);}
+  .mf-tx{font-family:'Familjen Grotesk',sans-serif;font-weight:600;font-size:clamp(16px,1.6vw,21px);color:#eae7ff;line-height:1.25;}
+  .mf-tx b{color:#aeb2f4;font-weight:800;}
+  @media(max-width:760px){
+    .exbig{flex-direction:column;align-items:flex-start;padding:24px;}
+    .exbig-main,.exbig-side{flex:1 1 auto;width:100%;}
+    .exbig-side{gap:16px;}
+    .moon-feats{gap:12px;}
+    .mf-tx{font-size:16px;}
+    .mf-ic{width:28px;height:28px;}
+  }
+  .exbig-tag{position:absolute;top:26px;right:26px;z-index:2;display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#8e94eb;border:1px solid rgba(117,115,225,.5);border-radius:999px;padding:6px 12px;background:rgba(10,11,13,.55);}
+  @media(max-width:640px){.exbig-tag{top:18px;right:14px;padding:5px 9px;font-size:9px;letter-spacing:.12em;}}
+  .exbig-tag i{width:7px;height:7px;border-radius:50%;background:#8e94eb;box-shadow:0 0 9px #7573e1;animation:exsoon 1.6s ease-in-out infinite;}
   @keyframes exsoon{0%,100%{opacity:1}50%{opacity:.3}}
   .exbig-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(22px,2vw,30px);letter-spacing:-.02em;line-height:1.12;color:var(--ink);}
-  .exbig-s{color:var(--dim);font-size:14px;line-height:1.6;max-width:340px;}
+  .exbig-s{color:var(--dim);font-size:14px;line-height:1.6;max-width:420px;}
+  .exbig-logo{width:44px;height:44px;border-radius:12px;background:#fff;padding:6px;box-shadow:0 0 26px -6px rgba(117,115,225,.75);}
+  .exbig-cta{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#7573e1,#6358d3);border-radius:999px;padding:10px 18px;box-shadow:0 0 26px -8px rgba(117,115,225,.85);animation:moonCta 3.2s ease-in-out infinite;}
+  @keyframes moonCta{0%,100%{box-shadow:0 0 22px -8px rgba(117,115,225,.7);}50%{box-shadow:0 0 34px -4px rgba(142,148,235,.95);}}
+  .exbig:hover .exbig-cta{box-shadow:0 0 38px -4px rgba(142,148,235,1);animation:none;}
   .exs{--exc:#f7a600;position:relative;display:flex;flex-direction:column;align-items:stretch;gap:9px;padding:13px 15px;border-radius:15px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.005)),var(--panel);border:1px solid var(--line);text-decoration:none;color:var(--ink);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;min-width:0;}
   .exs-top{display:flex;align-items:center;gap:11px;min-width:0;}
   .exs-perk{font-family:'Familjen Grotesk',sans-serif;font-size:11.5px;line-height:1.4;color:var(--dim);}
@@ -910,11 +938,24 @@
 <section class="band" style="--glow:rgba(247,166,0,.09);--bandc:#f7a600">
   <div class="band-head"><span class="band-idx">03</span><h2 class="band-t">Go live</h2><span class="band-s">When paper profits get boring — trade for real. Opening an account through these links supports MarginPad.</span></div>
   <div class="exch-grid">
-    <div class="exbig">
-      <span class="exbig-tag"><i></i>Coming soon</span>
-      <div class="exbig-t">Something big<br>launches here.</div>
-      <div class="exbig-s">A brand-new trading platform is about to go live — and MarginPad will be its first partner. This spot is reserved. Watch it.</div>
-    </div>
+    <a class="exbig" href="https://moon.com/?c=moonkickstart" target="_blank" rel="noopener sponsored" data-ex="Moon">
+      <span class="exbig-tag"><i></i>New partner &middot; live</span>
+      <div class="exbig-main">
+        <img class="exbig-logo" src="/assets/moon.png" alt="Moon" width="44" height="44" loading="lazy">
+        <div class="exbig-t">Moon &mdash; trade crypto, stocks, futures,<br>commodities and forex. 24/7.</div>
+        <div class="exbig-s">Our newest partner: call the market up or down on crypto, stocks, futures, commodities and forex &mdash; with leverage, around the clock, on one account. Practiced here? Go try it for real. MarginPad members can even cash out their rewards straight to a Moon account.</div>
+        <span class="exbig-cta">Create a Moon account &rarr;</span>
+      </div>
+      <div class="exbig-side" aria-hidden="true">
+        <div class="moon-feats">
+          <div class="mf-item"><span class="mf-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg></span><span class="mf-tx">Up to <b>&times;1000</b> leverage</span></div>
+          <div class="mf-item"><span class="mf-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5 9-5zM3 12l9 5 9-5M3 17l9 5 9-5"/></svg></span><span class="mf-tx">Crypto, stocks, futures, commodities &amp; forex</span></div>
+          <div class="mf-item"><span class="mf-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="mf-tx"><b>24/7</b> — markets never close</span></div>
+          <div class="mf-item"><span class="mf-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span class="mf-tx">One account, instant sign-up</span></div>
+          <div class="mf-item"><span class="mf-ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14h2"/></svg></span><span class="mf-tx">Cash out your MarginPad rewards</span></div>
+        </div>
+      </div>
+    </a>
     <a class="exs" href="https://www.bybit.com/trade/usdt/BTCUSDT?ref=LZKBERJ" target="_blank" rel="noopener sponsored" data-ex="Bybit" style="--exc:#f7a600"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/521.png" alt="Bybit" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Bybit</span><span class="exs-tag">Most popular</span><span class="exs-go">→</span></span><span class="exs-perk">Trading-fee discount + new-user welcome bonus</span></a>
     <a class="exs" href="https://www.binance.com/en/futures/BTCUSDT?ref=MAOZM9DS" target="_blank" rel="noopener sponsored" data-ex="Binance" style="--exc:#f0b90b"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/270.png" alt="Binance" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='B'"></span><span class="exs-n">Binance</span><span class="exs-tag">Biggest volume</span><span class="exs-go">→</span></span><span class="exs-perk">Up to 20% off trading fees for life</span></a>
     <a class="exs" href="https://www.okx.com/trade-swap/btc-usdt-swap" target="_blank" rel="noopener sponsored" data-ex="OKX" style="--exc:#cfd3d8"><span class="exs-top"><span class="exs-ic"><img src="https://s2.coinmarketcap.com/static/img/exchanges/64x64/294.png" alt="OKX" width="30" height="30" loading="lazy" onerror="this.parentNode.textContent='O'"></span><span class="exs-n">OKX</span><span class="exs-tag">Pro tools</span><span class="exs-go">→</span></span><span class="exs-perk">Fee rebate + sign-up reward in the app</span></a>
@@ -928,11 +969,11 @@
 </section>
 
 <section class="band" style="--glow:rgba(255,215,90,.09);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Season leaderboard</h2><span class="band-s">Three boards — ROE, win rate and XP — each pays the top 5 in real USDT every 14-day season. Free to enter — just sign in and trade.</span></div>
+  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Season leaderboard</h2><span class="band-s">Four boards — Bank balance, Highest ROE, Win rate and Season XP — each pays the top 5 in real USDT every 14-day season. Free to enter — just sign in and trade.</span></div>
   <div class="lb-wrap">
     <div class="lb-card lb-info">
-      <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> 3 boards · win real USDT</div>
-      <div class="t-title" style="font-size:22px">Three boards, bigger prizes</div>
+      <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> 4 boards · win real USDT</div>
+      <div class="t-title" style="font-size:22px">Four boards, bigger prizes</div>
       <div class="t-sub">Four season boards — <b>Highest bank balance</b> (Demo Spot), <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> — each pays the <b>top 5</b> in real USDT when the 14-day season ends. Pick your game:</div>
       <div class="lbpz">
         <div class="lbpz-tabs" id="lbpzTabs">
@@ -942,6 +983,7 @@
           <button type="button" class="lbpz-tab" data-pz="xp">Season XP</button>
         </div>
         <div class="lbpz-panel" id="lbpzPanel"></div>
+        <button type="button" class="lbr-open" id="lbRulesOpen">See rules &mdash; how each board counts</button>
       </div>
       <div class="hh-wrap" id="hhWrap" hidden>
         <button type="button" class="hh-card hh-when" id="hhWhenCard" aria-haspopup="dialog">
@@ -955,7 +997,7 @@
     </div>
     <div class="lb-card">
       <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="spot">Spot bank</button><button type="button" class="lb-tab" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="wr">Win rate</button><button type="button" class="lb-tab" data-lbm="xp">Top XP</button><button type="button" class="lb-tab lb-tab-f" data-lbm="following">★ Following</button></div>
-      <div class="lb-note" id="lbNote"><b>Spot bank balance</b>, <b>Best win rate</b> and <b>Season XP</b> each pay the top 5 in real USDT every 14-day season.</div>
+      <div class="lb-note" id="lbNote">All <b>four boards</b> pay the top 5 in real USDT every 14-day season. <button type="button" class="lbr-open lbr-inline" data-lbr="1">See rules</button></div>
       <div class="lb-board" id="lbBoard" style="margin-top:10px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
     </div>
     <div class="lb-card duel-feed" style="grid-column:1/-1">
@@ -1010,7 +1052,7 @@
       <a class="brand" href="/">MARGIN<b>PAD</b></a>
       <p class="foot-blurb">Free crypto futures tools — a paper-trading terminal, live screener, liquidation feed, calculators and a bot API. No deposit, no KYC.</p>
     </div>
-    <div><h5>Trade</h5><a href="/paper-trade">Paper Trade</a><a href="/charts">Charts</a><a href="/screener">Screener</a><a href="/rekt/">Rekt — Liquidations</a><a href="/alerts/">Price Alerts</a></div>
+    <div><h5>Trade</h5><a href="/paper-trade">Paper Trade</a><a href="/charts">Charts</a><a href="/stock-trading-simulator/">Stock simulator</a><a href="/forex-trading-simulator/">Forex simulator</a><a href="/index-trading-simulator/">Index simulator</a><a href="/screener">Screener</a><a href="/rekt/">Rekt — Liquidations</a><a href="/alerts/">Price Alerts</a></div>
     <div><h5>Analyze</h5><a href="/calculators">Calculators</a><a href="/tools/">Trading Tools</a><a href="/trading-api/">Bot API</a><a href="/coins/">Markets</a><a href="/defi/">DeFi</a></div>
     <div><h5>Guides</h5><a href="/blog/what-is-liquidation-in-crypto/">What is liquidation?</a><a href="/blog/what-is-funding-rate/">Funding rates explained</a><a href="/blog/crypto-leverage-explained/">Leverage explained</a><a href="/blog/best-crypto-futures-exchanges/">Best futures exchanges</a><a href="/blog/btc-dominance-altcoin-season/">BTC dominance &amp; altseason</a><a href="/blog/paper-trade-crypto-futures/">How to paper trade</a></div>
     <div><h5>Learn &amp; earn</h5><a href="/academy/">Academy</a><a href="/blog/">Blog</a><a href="/news/">News</a><a href="/rewards/">Rewards</a><a href="https://t.me/MarginPadBot">Telegram</a><a href="#" onclick="return false" style="cursor:default;color:var(--faint)">Ad disclosure: referral links</a></div>
@@ -1137,7 +1179,7 @@
     if(note){
       if(lbMode==='following'){note.className='lb-note';note.innerHTML='★ Accounts you follow. Tap any trader to see their card. Sign in to follow players from the board.';}
       else{note.className='lb-note'+(lbMode==='spot'?' pay':'');
-        note.innerHTML='<b>'+(lbMode==='spot'?'Spot bank balance':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it. Prizes drop when the season ends.';}}
+        note.innerHTML='<b>'+(lbMode==='spot'?'Spot bank balance':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.'+(lbMode==='wr'?' Ranked by <b>win rate weighted by trades played</b> — more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.':'')+' <button type="button" class="lbr-open lbr-inline" data-lbr="1">See rules</button>';}}
     if(lbMode==='following'){ lbRenderFollowing(el); return; }
     if(lbMode==='roe'){
       var rt=((d&&d.top)||[]).filter(function(t){return +t.roe>0;}).slice(0,15);
@@ -1458,8 +1500,10 @@
 
   // ---- tracking: pageview + affiliate click-outs (same /api/track events as the live site) ----
   try{var pv='/api/track?t=pageview&p=/';if(document.referrer)pv+='&r='+encodeURIComponent(document.referrer);
-    var _es='';try{var _s=sessionStorage.getItem('mp_src');if(_s!==null)_es=_s;else{var _q=new URLSearchParams(location.search||'');if(_q.get('gclid')||_q.get('gbraid')||_q.get('wbraid'))_es='google-ads';else if(_q.get('msclkid'))_es='bing-ads';else if(_q.get('utm_source'))_es=_q.get('utm_source')+(_q.get('utm_medium')?' / '+_q.get('utm_medium'):'');else if(_q.get('fbclid'))_es='facebook';else if(_q.get('twclid'))_es='twitter';else if(_q.get('ttclid'))_es='tiktok';else if(_q.get('ref'))_es=_q.get('ref');if(!_es&&document.referrer){try{var _h=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h&&_h!=='marginpad.io')_es=_h;}catch(e2){}}_es=(_es||'').slice(0,40);try{sessionStorage.setItem('mp_src',_es);}catch(e3){}}}catch(e4){}
-    if(_es)pv+='&src='+encodeURIComponent(_es);
+    var _es='';try{var _s=sessionStorage.getItem('mp_src');if(_s)_es=_s;else{var _q=new URLSearchParams(location.search||'');if(_q.get('gclid')||_q.get('gbraid')||_q.get('wbraid'))_es='google-ads';else if(_q.get('msclkid'))_es='bing-ads';else if(_q.get('utm_source'))_es=_q.get('utm_source')+(_q.get('utm_medium')?' / '+_q.get('utm_medium'):'');else if(_q.get('fbclid'))_es='facebook';else if(_q.get('twclid'))_es='twitter';else if(_q.get('ttclid'))_es='tiktok';else if(_q.get('ref'))_es=_q.get('ref');if(!_es&&document.referrer){try{var _h=new URL(document.referrer).hostname.replace(/^www\./,'');if(_h&&_h!=='marginpad.io')_es=_h;}catch(e2){}}_es=(_es||'').slice(0,40);try{sessionStorage.setItem('mp_src',_es);}catch(e3){}}}catch(e4){}
+    var _s0='';try{var _r0=localStorage.getItem('mp_src0');if(_r0){var _o0=JSON.parse(_r0);if(_o0&&_o0.s&&(Date.now()-(+_o0.ts||0))<=7776e6)_s0=String(_o0.s).slice(0,40);else try{localStorage.removeItem('mp_src0');}catch(e5){}}}catch(e6){}
+    if(_es&&!_s0){try{localStorage.setItem('mp_src0',JSON.stringify({s:_es,ts:Date.now()}));}catch(e7){}}
+    if(_es)pv+='&src='+encodeURIComponent(_es);else if(_s0)pv+='&s0='+encodeURIComponent(_s0);
     navigator.sendBeacon&&navigator.sendBeacon(pv);}catch(e){}
   document.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a[data-ex]'):null;if(!a)return;
     try{navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=exchange&e='+encodeURIComponent(a.getAttribute('data-ex'))+'&p=/demo-home/');}catch(_){}},true);
@@ -1617,5 +1661,61 @@
 }catch(e){}})();
 </script>
 
+
+<style>
+.lbr-open{margin-top:10px;background:none;border:1px solid rgba(255,215,90,.4);color:#ffd75a;border-radius:999px;padding:7px 14px;font:700 11px 'Space Mono',monospace;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.lbr-open:hover{border-color:#ffd75a;background:rgba(255,215,90,.08)}
+.lbr-inline{margin:0 0 0 6px;padding:4px 10px;font-size:10px}
+.lbrm{position:fixed;inset:0;z-index:220;background:rgba(5,6,8,.8);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:18px}
+.lbrm[hidden]{display:none}
+.lbrm-p{width:100%;max-width:540px;max-height:86vh;overflow:auto;background:#0d1016;border:1px solid #2a3346;border-radius:18px;padding:20px 22px}
+.lbrm-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.lbrm-h b{font:800 18px 'Bricolage Grotesque',sans-serif;color:#e9e7df}
+.lbrm-x{background:none;border:none;color:#8b97a5;font-size:20px;cursor:pointer;padding:4px 8px}
+.lbrm-sub{color:#8b97a5;font-size:12.5px;line-height:1.55;margin:0 0 6px}
+.lbrm-sec{border:1px solid #232a3a;border-radius:12px;padding:12px 14px;margin-top:10px}
+.lbrm-sec b.h{display:block;font-size:14px;color:#e9e7df;margin-bottom:5px}
+.lbrm-sec ul{margin:4px 0 0;padding-left:17px;color:#c7ced6;font-size:12.5px;line-height:1.6}
+.lbrm-ex{margin-top:8px;border-left:3px solid rgba(255,215,90,.55);background:rgba(255,255,255,.025);border-radius:0 9px 9px 0;padding:7px 11px;font-size:12px;color:#9aa3ad;line-height:1.55}
+.lbrm-ex b{color:#ffd75a}
+</style>
+<div class="lbrm" id="lbRulesM" hidden>
+  <div class="lbrm-p">
+    <div class="lbrm-h"><b>Season board rules</b><button class="lbrm-x" type="button" id="lbRulesX">&times;</button></div>
+    <p class="lbrm-sub">Every board runs per 14-day season and pays the top 5 in real USDT to the rewards balance. Cheating, banned accounts and excluded symbols (forex, metals, indices, stablecoins) never count.</p>
+    <div class="lbrm-sec"><b class="h">Bank balance (Demo Spot)</b><ul><li>Everyone starts Demo Spot with $10,000; the board ranks the highest bank-card balance above the start.</li><li>Money must be cashed out to your card in Demo Spot to count.</li></ul><div class="lbrm-ex"><b>Example:</b> grow $10,000 to $13,400 and move it to your card — your score is $13,400.</div></div>
+    <div class="lbrm-sec"><b class="h">Highest ROE</b><ul><li>Your best single closed paper trade of the season, by ROE (profit as % of margin).</li><li>Only trades opened AND closed this season count, filled and closed by the server.</li><li>The ROE must be physically possible for the move and leverage — fabricated numbers are dropped.</li></ul><div class="lbrm-ex"><b>Example:</b> BTC long at 20x, price +4% before you close — that trade is +80% ROE.</div></div>
+    <div class="lbrm-sec"><b class="h">Best win rate</b><ul><li>At least 20 counted trades closed this season.</li><li>A win only counts at +5% ROE or better on a real price move (at least 0.2%). Losses always count.</li><li>Copies count once: identical positions (same coin, same direction) opened together and closed together count as ONE trade.</li><li>Ranking uses a confidence-adjusted score, not the raw percentage — more games at a high win rate beat fewer games at a perfect one.</li></ul><div class="lbrm-ex"><b>Example:</b> 45-3 (93.8%) scores 89.1 and ranks ABOVE 20-0 (100%), which scores 83.9.</div><div class="lbrm-ex"><b>Example (copies):</b> 10 identical SOL shorts opened in one minute and closed together = 1 counted trade, win or lose.</div></div>
+    <div class="lbrm-sec"><b class="h">Season XP</b><ul><li>All XP earned during the season counts: trading, Academy, missions, duels, streaks.</li><li>Rewards activity, not position size.</li></ul><div class="lbrm-ex"><b>Example:</b> 30 closed trades, 12 Academy lessons and daily missions can out-score one lucky trade.</div></div>
+  </div>
+</div>
+<script>
+(function(){
+  var m=document.getElementById('lbRulesM'),x=document.getElementById('lbRulesX');
+  function open(){if(m){m.hidden=false;document.body.style.overflow='hidden';}}
+  function close(){if(m){m.hidden=true;document.body.style.overflow='';}}
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.lbr-open');if(b){open();return;}if(e.target===m)close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  if(x)x.addEventListener('click',close);
+})();
+</script>
+<script>
+/* Moon partner card — accumulating benefit list: items slide in one by one, hold, then all clear and
+   restart. JS-driven so it works even with "reduce motion" on (CSS transitions still run). */
+(function(){
+  var wrap=document.querySelector('.moon-feats'); if(!wrap)return;
+  var items=[].slice.call(wrap.querySelectorAll('.mf-item')); if(!items.length)return;
+  var STEP=640, HOLD=1800, CLR=110, EXIT=520, timers=[];
+  function run(){
+    timers.forEach(clearTimeout); timers=[];
+    items.forEach(function(it){it.classList.remove('in','out');});
+    items.forEach(function(it,idx){ timers.push(setTimeout(function(){it.classList.add('in');}, 150+idx*STEP)); });
+    var allIn=150+items.length*STEP;
+    items.forEach(function(it,idx){ timers.push(setTimeout(function(){it.classList.remove('in');it.classList.add('out');}, allIn+HOLD+idx*CLR)); });
+    timers.push(setTimeout(run, allIn+HOLD+items.length*CLR+EXIT));
+  }
+  run();
+})();
+</script>
 </body>
 </html>
