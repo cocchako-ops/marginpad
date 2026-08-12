@@ -10155,9 +10155,13 @@ export default {
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/premseen', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }));
       return J(await r.json());
     }
+    if (url.pathname === '/api/admin/lbremove' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // delete a proven-ineligible lbbest row: ?uid=&season=<ms, optional>
+      const r7 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/remove', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: url.searchParams.get('uid') || '', season: +url.searchParams.get('season') || 0 }) }));
+      return new Response(await r7.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/lbbackfill' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // on-demand run of the tradeev->lbbest self-heal (also runs daily from the cron); ?season=<ms> targets a past season
       const s8 = +url.searchParams.get('season') || 0;
-      const r8 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/backfill', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(s8 ? { season: s8 } : {}) }));
+      const r8 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/backfill', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...(s8 ? { season: s8 } : {}), ...(url.searchParams.get('verify') ? { verify: 1 } : {}) }) }));
       return new Response(await r8.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/lbfloor' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // ROE-board recovery: forward {season?, targets:{uid:{roe,pnl,symbol,side}}} to UserStore /lbbest/floor (keep-max only — restores season-best values provably lost to the utrades blob trim)
@@ -12734,6 +12738,7 @@ export class UserStore {
     s.exec('CREATE INDEX IF NOT EXISTS tradeev_ts ON tradeev(ts)'); // claimed daily missions (verification runs against uevents) // per-user per-endpoint daily API usage (the ops API tab reads this)
     try { s.exec('CREATE INDEX IF NOT EXISTS tradeev_uid ON tradeev(user_id, ts)'); } catch (e) {} // for per-user window stats (duels)
     try { s.exec('ALTER TABLE tradeev ADD COLUMN via TEXT'); } catch (e) {} // B3: executor attribution — client / site / bot / sweep / cron / sltp
+    try { s.exec('ALTER TABLE tradeev ADD COLUMN tid TEXT'); } catch (e) {} // trade id — lets recovery paths join open<->close EXACTLY (the lbbest backfill admitted a pre-season open at board rank 1 because closes alone can't prove when the trade opened)
     s.exec('CREATE TABLE IF NOT EXISTS duels(id TEXT PRIMARY KEY, a_uid TEXT, b_uid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0)'); // friend duels (stat challenges). status: pending/active/declined/done/expired. metric: roe/wr/win/pnl/survival/streak/sniper
     ['dur INTEGER', 'stake INTEGER', 'escrowed INTEGER', 'sym TEXT', 'rules TEXT'].forEach(c => { try { s.exec('ALTER TABLE duels ADD COLUMN ' + c); } catch (e) {} }); // Duels 2.0: variable duration, XP wager, escrow state, locked symbol, extra rules json
     try { s.exec('CREATE INDEX IF NOT EXISTS bp_uid ON botpos(uid, ts)'); } catch (e) {}
@@ -12903,7 +12908,7 @@ export class UserStore {
         if (nIns >= 60 && !(kind === 'close' && pv != null && pv <= 0)) continue; // per-sync cap (20→60); a LOSING close is ALWAYS logged so a heavy trader can't shed losses from the win-rate log in a burst
         const roe = (pv != null && m > 0) ? pv / m * 100 : null;
         const liq9 = (kind === 'close' && pv != null && pv <= -m * 0.985) ? 1 : 0;
-        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via) VALUES(?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10));
+        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24));
         nIns++; try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9)) { var _gh9 = this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 750, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); if (_gh9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note) VALUES(?,?,?,?)', uid, ts9, _gh9, (String(e.sym || '').toUpperCase() + ' ' + Math.round(roe) + '% ROE +' + _gh9 + ' XP · Happy Hour').slice(0, 60)); } catch (e7) {} } }
           if (roe != null) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
             for (var _pi = 0; _pi < _pl.length; _pi++) { var _p = _pl[_pi]; if (!_p || _p.enabled === false) continue; if (!(ts9 >= _p.startMs && ts9 < _p.endMs && _p.endMs > _p.startMs)) continue; if (_p.coins && _p.coins.length && _p.coins.indexOf(_symU) < 0) continue; if (_lv > (+_p.levMax || 1000)) continue; if (roe < (+_p.roeMin || 0)) continue; if (_p.winOnly !== false && !(pv > 0)) continue; if (!_best || (+_p.xp || 0) > (+_best.xp || 0)) _best = _p; }
@@ -13199,18 +13204,38 @@ export class UserStore {
       sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, now, 'admin', add, String(b.note || ('set to ' + L.name)).slice(0, 120));
       return this.j({ ok: true, xp: L.min, level: xpLevelOf(L.min) });
     }
-    if (path === '/lbbest/backfill') { // SELF-HEAL (2026-08-12, indrianta47 ticket = 3rd loss of a season-best to the blob trim): recompute every user's season-best from the 30-day tradeev close log (which survives ALL blob trims) and keep-max into lbbest. Runs daily from the cron + on demand. With this, a board value can only be missed if the close never reached tradeev at all. Known relaxation: tradeev carries no open-ts, so a trade opened just before the season boundary and closed inside it can slip in (the close-time _lbBest path still enforces opened-this-season; keep-max means this backfill can only RAISE).
+    if (path === '/lbbest/backfill') { // SELF-HEAL (2026-08-12, indrianta47 ticket = 3rd loss of a season-best to the blob trim): recompute every user's season-best from the 30-day tradeev close log (which survives ALL blob trims) and keep-max into lbbest. Runs daily from the cron + on demand. STRICT opened-this-season proof (Tiger90 lesson, same day: the first version admitted a pre-season 700x open at board rank 1): a close counts ONLY with a provable in-season open — exact tid match when both rows carry it, else an in-season open of the same (sym,side,lev) tuple. A recovery path must never be LOOSER than the close-time _lbBest it backs up; unprovable closes are skipped (they can still rank via the close-time path or the blob scan, both of which see the real open ts).
       const season9 = +b.season || lbPeriodStart(Date.now());
-      const rows9 = this.rows("SELECT user_id uid, ts, sym, side, margin, pnl FROM tradeev WHERE kind='close' AND ts>=? AND via!='client' AND pnl IS NOT NULL", season9);
+      const rows9 = this.rows("SELECT user_id uid, ts, sym, side, lev, margin, pnl, tid FROM tradeev WHERE kind='close' AND ts>=? AND via!='client' AND pnl IS NOT NULL", season9);
+      const opens9 = this.rows("SELECT user_id uid, ts, sym, side, lev, tid FROM tradeev WHERE kind='open'");
+      const opByTid = {}, opByTuple = {};
+      for (const o of opens9) {
+        if (o.tid) { const k = o.uid + '|' + o.tid; if (opByTid[k] == null || +o.ts < opByTid[k]) opByTid[k] = +o.ts; }
+        const kt = o.uid + '|' + String(o.sym || '').toUpperCase() + '|' + (o.side === 'short' ? 'short' : 'long') + '|' + (+o.lev || 1);
+        if (+o.ts >= season9 && (opByTuple[kt] == null || +o.ts < opByTuple[kt])) opByTuple[kt] = +o.ts;
+      }
       const best9 = {};
       for (const t of rows9) {
         const m9 = +t.margin, p9 = +t.pnl; if (!(m9 >= 1) || m9 > 100000 || !isFinite(p9)) continue;
         if (lbExcluded(t.sym)) continue;
+        const symU9 = String(t.sym || '').toUpperCase();
+        // opened-this-season proof: tid is authoritative when we have it; the tuple fallback covers pre-tid rows
+        const tk9 = t.tid ? (t.uid + '|' + t.tid) : null;
+        if (tk9 && opByTid[tk9] != null) { if (opByTid[tk9] < season9) continue; }
+        else { const kt9 = t.uid + '|' + symU9 + '|' + (t.side === 'short' ? 'short' : 'long') + '|' + (+t.lev || 1); const ot9 = opByTuple[kt9]; if (!(ot9 != null && ot9 <= +t.ts)) continue; }
         let roe9 = p9 / m9 * 100; if (!isFinite(roe9)) continue; roe9 = Math.max(-100, Math.min(roe9, 1000000));
-        const sym9 = String(t.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10), side9 = t.side === 'short' ? 'short' : 'long';
+        const sym9 = symU9.replace(/[^A-Z0-9]/g, '').slice(0, 10), side9 = t.side === 'short' ? 'short' : 'long';
         const c9 = best9[t.uid] || (best9[t.uid] = { roe: -Infinity, bp: -Infinity });
         if (roe9 > c9.roe) { c9.roe = roe9; c9.pnl = p9; c9.sym = sym9; c9.side = side9; }
         if (p9 > c9.bp) { c9.bp = p9; c9.bpSym = sym9; c9.bpSide = side9; }
+      }
+      if (b.verify) { // audit mode: list lbbest rows this STRICT recompute cannot justify — manual review only (a legit close-time row whose open event was capped out of tradeev will flag falsely; never auto-delete)
+        const sus = [];
+        for (const r9 of this.rows('SELECT l.user_id uid, u.username, l.roe, l.pnl, l.symbol, l.side FROM lbbest l LEFT JOIN users u ON u.id=l.user_id WHERE l.season=? ORDER BY l.roe DESC', season9)) {
+          const c9 = best9[r9.uid];
+          if (!c9 || !isFinite(c9.roe) || (+r9.roe) > c9.roe + 0.01) sus.push({ uid: r9.uid, username: r9.username, roe: +r9.roe, symbol: r9.symbol, side: r9.side, strictMax: c9 && isFinite(c9.roe) ? Math.round(c9.roe * 100) / 100 : null });
+        }
+        return this.j({ ok: true, season: season9, suspects: sus });
       }
       let raised = 0, inserted = 0;
       for (const uid9 in best9) { const c9 = best9[uid9]; if (!isFinite(c9.roe)) continue;
@@ -13220,6 +13245,13 @@ export class UserStore {
         if (c9.bp > (+row9.bp)) sql.exec('UPDATE lbbest SET bp=?, bpSym=?, bpSide=? WHERE user_id=? AND season=?', c9.bp, c9.bpSym || c9.sym, c9.bpSide || c9.side, uid9, season9);
       }
       return this.j({ ok: true, season: season9, closes: rows9.length, users: Object.keys(best9).length, inserted, raised });
+    }
+    if (path === '/lbbest/remove') { // admin correction: DELETE a user's lbbest row for a season — for entries proven ineligible (e.g. the backfill v1 admitted a pre-season open). The board then falls back to the blob scan / close-time values, which both enforce the real rules; the strict backfill will not re-insert it.
+      const uidR = String(b.uid || ''); const seasonR = +b.season || lbPeriodStart(Date.now());
+      const rowR = this.rows('SELECT roe, pnl, symbol, side FROM lbbest WHERE user_id=? AND season=?', uidR, seasonR)[0];
+      if (!rowR) return this.j({ error: 'not_found' });
+      sql.exec('DELETE FROM lbbest WHERE user_id=? AND season=?', uidR, seasonR);
+      return this.j({ ok: true, removed: rowR, uid: uidR, season: seasonR });
     }
     if (path === '/lbbest/floor') { // admin recovery: RAISE a user's stored season-best (keep-max only — can never lower a shown value). Restores ROE-board values provably lost to the utrades blob trim (evidence: tshare snapshots / nightly backups). Admin-gated in the worker (/api/admin/lbfloor).
       const season9 = +b.season || lbPeriodStart(now); const t9 = (b && b.targets) || {}; const out9 = {};
