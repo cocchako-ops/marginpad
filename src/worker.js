@@ -3996,6 +3996,19 @@ async function collectorHealth(env) {
 // lost. The cron (every 10 min) overwrites snap:<day> with today's running totals; the last write before UTC
 // midnight is the day's final figure. Totals live in the KV metadata so the dashboard's single list() reads
 // them for free (no extra GET per day). TTL ~1y keeps history bounded.
+// Daily tradeev->lbbest self-heal (belt-and-braces behind the close-time _lbBest upsert): whatever the
+// utrades blob trim eats, the 30-day tradeev close log still has — so a season-best can no longer vanish
+// from the ROE board (indrianta47 / Mistrlefty class). Keep-max only; day-guarded on the */10 cron.
+async function lbBackfillDaily(env) {
+  try {
+    const day = new Date().toISOString().slice(0, 10);
+    if (await env.STATS.get('lbbf:' + day)) return;
+    await env.STATS.put('lbbf:' + day, '1', { expirationTtl: 172800 });
+    const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/backfill', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' }));
+    const j = await r.json().catch(() => null);
+    if (j && (j.inserted || j.raised)) await tgAdmin(env, '<b>ROE board self-heal</b>: lbbest backfill raised ' + (j.raised || 0) + ' + inserted ' + (j.inserted || 0) + ' season-best rows from tradeev (' + (j.closes || 0) + ' closes scanned). A raise here means the close-time upsert missed something - worth a look if it keeps happening.');
+  } catch (e) {}
+}
 async function snapshotDaily(env) {
   if (!env || !env.STATS) return;
   const gc = async k => { try { const r = await env.STATS.getWithMetadata(k); return (r && r.metadata && r.metadata.c) || (r && r.value ? parseInt(r.value, 10) : 0) || 0; } catch (e) { return 0; } };
@@ -10142,6 +10155,11 @@ export default {
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/premseen', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }));
       return J(await r.json());
     }
+    if (url.pathname === '/api/admin/lbbackfill' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // on-demand run of the tradeev->lbbest self-heal (also runs daily from the cron); ?season=<ms> targets a past season
+      const s8 = +url.searchParams.get('season') || 0;
+      const r8 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/backfill', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(s8 ? { season: s8 } : {}) }));
+      return new Response(await r8.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/lbfloor' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // ROE-board recovery: forward {season?, targets:{uid:{roe,pnl,symbol,side}}} to UserStore /lbbest/floor (keep-max only — restores season-best values provably lost to the utrades blob trim)
       let body8 = {}; try { body8 = await request.json(); } catch (e) { return J({ error: 'bad_json' }, 400); }
       const r8 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/floor', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body8) }));
@@ -11386,6 +11404,7 @@ export default {
     bg(postSignalReport, 'sigreport'); // weekly signal performance report → channels (Mon 09:00 UTC)
     bg(checkFundingAlerts, 'funding'); // funding-rate extreme alerts
     bg(snapshotDaily, 'snapshot');
+    bg(lbBackfillDaily, 'lbbackfill');
     bg(checkMorningBrief, 'brief');
     bg(checkOpsAlerts, 'opsalerts');
     bg(settleDuels, 'duels');
@@ -13179,6 +13198,28 @@ export class UserStore {
       const add = L.min - cur; sql.exec('UPDATE users SET xp=? WHERE id=?', L.min, uid);
       sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, now, 'admin', add, String(b.note || ('set to ' + L.name)).slice(0, 120));
       return this.j({ ok: true, xp: L.min, level: xpLevelOf(L.min) });
+    }
+    if (path === '/lbbest/backfill') { // SELF-HEAL (2026-08-12, indrianta47 ticket = 3rd loss of a season-best to the blob trim): recompute every user's season-best from the 30-day tradeev close log (which survives ALL blob trims) and keep-max into lbbest. Runs daily from the cron + on demand. With this, a board value can only be missed if the close never reached tradeev at all. Known relaxation: tradeev carries no open-ts, so a trade opened just before the season boundary and closed inside it can slip in (the close-time _lbBest path still enforces opened-this-season; keep-max means this backfill can only RAISE).
+      const season9 = +b.season || lbPeriodStart(Date.now());
+      const rows9 = this.rows("SELECT user_id uid, ts, sym, side, margin, pnl FROM tradeev WHERE kind='close' AND ts>=? AND via!='client' AND pnl IS NOT NULL", season9);
+      const best9 = {};
+      for (const t of rows9) {
+        const m9 = +t.margin, p9 = +t.pnl; if (!(m9 >= 1) || m9 > 100000 || !isFinite(p9)) continue;
+        if (lbExcluded(t.sym)) continue;
+        let roe9 = p9 / m9 * 100; if (!isFinite(roe9)) continue; roe9 = Math.max(-100, Math.min(roe9, 1000000));
+        const sym9 = String(t.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10), side9 = t.side === 'short' ? 'short' : 'long';
+        const c9 = best9[t.uid] || (best9[t.uid] = { roe: -Infinity, bp: -Infinity });
+        if (roe9 > c9.roe) { c9.roe = roe9; c9.pnl = p9; c9.sym = sym9; c9.side = side9; }
+        if (p9 > c9.bp) { c9.bp = p9; c9.bpSym = sym9; c9.bpSide = side9; }
+      }
+      let raised = 0, inserted = 0;
+      for (const uid9 in best9) { const c9 = best9[uid9]; if (!isFinite(c9.roe)) continue;
+        const row9 = this.rows('SELECT roe, bp FROM lbbest WHERE user_id=? AND season=?', uid9, season9)[0];
+        if (!row9) { sql.exec('INSERT INTO lbbest(user_id,season,roe,pnl,symbol,side,bp,bpSym,bpSide) VALUES(?,?,?,?,?,?,?,?,?)', uid9, season9, c9.roe, c9.pnl, c9.sym, c9.side, Math.max(0, c9.bp), c9.bpSym || c9.sym, c9.bpSide || c9.side); inserted++; continue; }
+        if (c9.roe > (+row9.roe)) { sql.exec('UPDATE lbbest SET roe=?, pnl=?, symbol=?, side=? WHERE user_id=? AND season=?', c9.roe, c9.pnl, c9.sym, c9.side, uid9, season9); raised++; }
+        if (c9.bp > (+row9.bp)) sql.exec('UPDATE lbbest SET bp=?, bpSym=?, bpSide=? WHERE user_id=? AND season=?', c9.bp, c9.bpSym || c9.sym, c9.bpSide || c9.side, uid9, season9);
+      }
+      return this.j({ ok: true, season: season9, closes: rows9.length, users: Object.keys(best9).length, inserted, raised });
     }
     if (path === '/lbbest/floor') { // admin recovery: RAISE a user's stored season-best (keep-max only — can never lower a shown value). Restores ROE-board values provably lost to the utrades blob trim (evidence: tshare snapshots / nightly backups). Admin-gated in the worker (/api/admin/lbfloor).
       const season9 = +b.season || lbPeriodStart(now); const t9 = (b && b.targets) || {}; const out9 = {};
