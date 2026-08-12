@@ -377,18 +377,33 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(sym!==chartSym||tf!==chartTf||!candle||!kd||!kd.length)return;
       kd=sanitizeBars(kd);klCache[sym+'|'+tf]=kd;
-      /* DIFF re-sync (was: unconditional setData every 30s): 0 = identical → paint nothing; 1 = only the last (forming)
-         bar differs → one cheap update(); 2 = history differs (real repaint needed) → setData. Kills the periodic
-         full-repaint flick now that the forming bar is built from exact trade extremes and rarely disagrees. */
-      var _rmode=2;
-      if(bars&&bars.length===kd.length&&bars.length>2&&bars[0].time===kd[0].time){_rmode=0;
-        for(var _qi=0;_qi<kd.length;_qi++){var _qa=bars[_qi],_qb=kd[_qi];
-          if(_qa.time!==_qb.time){_rmode=2;break;}
-          if(_qa.open!==_qb.open||_qa.high!==_qb.high||_qa.low!==_qb.low||_qa.close!==_qb.close){if(_qi===kd.length-1&&_rmode===0){_rmode=1;}else{_rmode=2;break;}}}}
-      bars=kd;
-      if(_rmode===2){try{candle.setData(kd);}catch(e){}}
-      else if(_rmode===1){try{candle.update(kd[kd.length-1]);}catch(e){}}
-      try{chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}/* re-assert autoscale: after a big move (e.g. a +15% pump) the price scale can lock/drift so data keeps updating but the chart LOOKS frozen — re-fitting every quiet refresh self-heals it */lastBar=kd[kd.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;if(_rmode!==0)_dispP=null;_linesSig=null;try{applySignals();}catch(e){}try{drawLines();}catch(e){}
+      /* WINDOW-ALIGNED diff re-sync (2026-08-12, owner: a closed candle must NEVER visibly change).
+         The old diff compared by INDEX with a length-equality gate, so every candle roll (server window shifts
+         by one) downgraded to a FULL setData repaint — the "last few candles change when the timer ends" bug.
+         Now: compare by TIME over the overlap; our forming bar is NEVER regressed to the (edge-cached, older)
+         server snapshot; genuinely new trailing bars are APPENDED via cheap update()s; setData fires ONLY when
+         a CLOSED bar truly differs from the authoritative kline (real heal — rare now that bars are trade-exact). */
+      var _rmode=0,_app=[],_mism=false;
+      if(!bars||bars.length<3||kd.length<2){_rmode=2;bars=kd;}
+      else{
+        var _lastA=bars[bars.length-1],_lastK=kd[kd.length-1],_tmap={};
+        for(var _i2=0;_i2<bars.length;_i2++)_tmap[bars[_i2].time]=bars[_i2];
+        for(var _k2=0;_k2<kd.length;_k2++){var _b=kd[_k2];
+          if(_b.time>_lastA.time){_app.push(_b);continue;}
+          /* the snapshot's LAST bar is the SERVER'S forming bar — and the edge cache (5-20s) can serve a stale
+             PARTIAL version of a minute we already CLOSED from the live trade stream. It is never an authority
+             for a closed bar: measured flip-flop (h $22 off, then back) came exactly from trusting it. */
+          if(_k2===kd.length-1&&_b.time<=_lastA.time)continue;
+          var _a2=_tmap[_b.time];
+          if(!_a2){if(_b.time>=bars[0].time){_mism=true;break;}continue;}
+          if(_a2.open!==_b.open||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}
+        if(_mism){_rmode=2;bars=kd;if(_lastK.time===_lastA.time)bars[bars.length-1]=_lastA;else if(_lastA.time>_lastK.time){if(_tmap[_lastK.time])bars[bars.length-1]=_tmap[_lastK.time];bars.push(_lastA);}}/* heal history but keep our fresher forming bar AND our trade-finalized copy of the minute the lagging snapshot still shows as partial */
+        else if(_app.length){_rmode=1;bars=bars.concat(_app);}
+      }
+      if(_rmode===2){try{candle.setData(bars);}catch(e){}}
+      else if(_rmode===1){for(var _a3=0;_a3<_app.length;_a3++){try{candle.update(_app[_a3]);}catch(e){}}}
+      try{chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}/* re-assert autoscale: after a big move (e.g. a +15% pump) the price scale can lock/drift so data keeps updating but the chart LOOKS frozen — re-fitting every quiet refresh self-heals it */
+      if(_rmode!==0){lastBar=bars[bars.length-1];_lgp=lastBar&&lastBar.close||0;_rej=0;_dispP=null;_linesSig=null;try{applySignals();}catch(e){}try{drawLines();}catch(e){}} /* mode 0 = everything matched → touch NOTHING (the old unconditional lastBar swap nudged the live close backward every 30s) */
     }); }
   function loadMore(){if(loadingMore||noMore||!bars.length||!candle)return;var sym=chartSym,tf=chartTf,end=bars[0].time*1000-1;loadingMore=true;var _lmg=setTimeout(function(){loadingMore=false;},12000);/* a hung (never-settling) fetch would otherwise pin loadingMore=true forever, which permanently disables the 30s refreshKlinesQuiet re-sync (a real freeze) */fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf+'&end='+end,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){clearTimeout(_lmg);loadingMore=false;if(sym!==chartSym||tf!==chartTf)return;if(!kd||!kd.length){noMore=true;return;}var first=bars[0].time,older=sanitizeBars(kd.filter(function(b){return b.time<first;}));if(!older.length){noMore=true;return;}/* !older.length = oldest bar didn't move back = source can't go deeper (real "no more" test, not "returned few") */morePages++;if(morePages>=30)noMore=true;/* hard cap ~30 pages: anti-infinite for thin pairs. Removed `older.length<900 → noMore` which stopped at the SOURCE's inception (bybit-lin BTC 2020) instead of the coin's — the worker cascade falls through to a deeper source (gate-spot BTC 2013) on the next end= window */bars=older.concat(bars);try{candle.setData(bars);}catch(e){}applySignals();drawLines();});}
   /* Buy/Sell signals — a Supertrend(10,3) overlay (our own equivalent of TradingView "Buy Sell" indicators;
@@ -477,8 +492,26 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(!candle||!lastBar)return;var _snow=window.mpSrvNow?window.mpSrvNow():Date.now();var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(_snow/1000/ivSec)*ivSec; // SERVER-clock bucketing — a skewed device clock must not roll bars at wrong boundaries
     if(nowBar-lastBar.time>ivSec*1.5){reloadKlinesThrottled();if(!(p>0)||nowBar-lastBar.time>ivSec*30)return;} // klines is behind → refetch real candles; BUT if we have a live WS price and the gap is modest (≤30 bars), fall through and roll a LIVE forming candle so the chart keeps MOVING instead of freezing while klines catches up (fixes "candles freeze but price doesn't" on a brief klines stall). Huge gaps (e.g. a 4h-stale klines endpoint) still wait for the real refetch. THIS RUNS EVEN WITH NO LIVE PRICE (checked BEFORE the p>0 bail below) — the old order bailed on a stalled feed and never refetched, so new bars stopped forming and the chart "froze" until the 60s re-sync.
     if(!(p>0))return; // no usable live price this tick → the gap above is already handled; nothing else to update
-    if(nowBar>lastBar.time){var _op=lastBar.close,_spk=(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025),_cl=_spk?_op:p;lastBar={time:nowBar,open:_op,high:Math.max(_op,_cl),low:Math.min(_op,_cl),close:_cl};if(!_spk)_lgp=p;_rej=0;/* new candle opens at the prior close (contiguous — no "from the sky" gap) and ignores a spiked first print */try{var _vr=chart.timeScale().getVisibleLogicalRange();if(!_vr||!bars.length||_vr.to>=bars.length-2)chart.timeScale().scrollToRealTime();}catch(e){}_dispP=lastBar.close;try{candle.update(lastBar);}catch(e){} /* only snap to the live edge if the user is ALREADY there — don't yank them back while they pan history */}else{if(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025){if(++_rej<3)return;/* reject a lone >2.5% print (a bad tick that would ratchet a fake wick); accept only if 3 in a row confirm it's a real move */}_lgp=p;_rej=0;lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;
-      try{var _TK=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TK&&_lgp>0){var _mbs=[_TK.cur,_TK.prev];for(var _bi9=0;_bi9<2;_bi9++){var _bk=_mbs[_bi9];if(!_bk)continue;if(_bk.t<lastBar.time||_bk.t>=lastBar.time+ivSec)continue;if(_bk.h>lastBar.high&&_bk.h<_lgp*1.025)lastBar.high=_bk.h;if(_bk.l<lastBar.low&&_bk.l>_lgp*0.975)lastBar.low=_bk.l;}}}catch(_){} /* merge EXACT trade-stream extremes (exchange-stamped 1m buckets) into the forming bar — wicks match the authoritative kline instead of growing on the 30s re-sync */
+    if(nowBar>lastBar.time){
+      /* FINALIZE the closing bar from exchange-stamped trade buckets (mpTicks1m) BEFORE rolling: the candle that
+         just closed becomes EXACTLY the authoritative kline (1m: full OHLC; >1m: final-minute close + extremes)
+         and must never change again — the re-sync then has nothing to repaint (owner directive 2026-08-12). */
+      try{var _TKf=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TKf){var _fbs=[_TKf.cur,_TKf.prev],_fch=false;
+        for(var _fi=0;_fi<2;_fi++){var _fb=_fbs[_fi];if(!_fb)continue;if(_fb.t<lastBar.time||_fb.t>=lastBar.time+ivSec)continue;
+          if(ivSec===60){if(lastBar.open!==_fb.o||lastBar.high!==_fb.h||lastBar.low!==_fb.l||lastBar.close!==_fb.c){lastBar.open=_fb.o;lastBar.high=_fb.h;lastBar.low=_fb.l;lastBar.close=_fb.c;_fch=true;}}
+          else{if(_fb.h>lastBar.high){lastBar.high=_fb.h;_fch=true;}if(_fb.l<lastBar.low){lastBar.low=_fb.l;_fch=true;}if(_fb.t===lastBar.time+ivSec-60&&lastBar.close!==_fb.c){lastBar.close=_fb.c;_fch=true;}}}
+        if(_fch){if(lastBar.high<Math.max(lastBar.open,lastBar.close))lastBar.high=Math.max(lastBar.open,lastBar.close);if(lastBar.low>Math.min(lastBar.open,lastBar.close))lastBar.low=Math.min(lastBar.open,lastBar.close);try{candle.update(lastBar);}catch(_){}}
+      }}catch(_){}
+      /* keep the bars array in lockstep with the roll (workspace parity) — without this every post-roll re-sync
+         saw a length/window mismatch and downgraded to a FULL setData repaint of the last candles, every minute */
+      try{if(bars&&bars.length){if(bars[bars.length-1].time===lastBar.time)bars[bars.length-1]=lastBar;else if(lastBar.time>bars[bars.length-1].time)bars.push(lastBar);}}catch(_){}
+      var _nbk=null;try{var _TKo=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TKo&&_TKo.cur&&_TKo.cur.t===nowBar)_nbk=_TKo.cur;}catch(_){}
+      var _op=lastBar.close,_spk=(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025),_cl=_spk?_op:p;
+      if(_nbk){lastBar={time:nowBar,open:_nbk.o,high:_nbk.h,low:_nbk.l,close:_nbk.c};_lgp=_nbk.c;_rej=0;} /* the new bar opens at the FIRST TRADE of its interval (exchange convention) with exact extremes — not at prevClose */
+      else{lastBar={time:nowBar,open:_op,high:Math.max(_op,_cl),low:Math.min(_op,_cl),close:_cl};if(!_spk)_lgp=p;_rej=0;}/* no trade bucket yet (quiet first ms / non-WS symbol) → contiguous prev-close open, corrected by the retro-open fix on the first trade */
+      try{if(bars&&bars.length&&lastBar.time>bars[bars.length-1].time)bars.push(lastBar);}catch(_){}
+      try{var _vr=chart.timeScale().getVisibleLogicalRange();if(!_vr||!bars.length||_vr.to>=bars.length-2)chart.timeScale().scrollToRealTime();}catch(e){}_dispP=lastBar.close;try{candle.update(lastBar);}catch(e){} /* only snap to the live edge if the user is ALREADY there — don't yank them back while they pan history */}else{if(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025){if(++_rej<3)return;/* reject a lone >2.5% print (a bad tick that would ratchet a fake wick); accept only if 3 in a row confirm it's a real move */}_lgp=p;_rej=0;lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;
+      try{var _TK=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TK&&_lgp>0){var _mbs=[_TK.cur,_TK.prev];for(var _bi9=0;_bi9<2;_bi9++){var _bk=_mbs[_bi9];if(!_bk)continue;if(_bk.t<lastBar.time||_bk.t>=lastBar.time+ivSec)continue;if(_bk.t===lastBar.time&&lastBar.open!==_bk.o){lastBar.open=_bk.o;if(_bk.o>lastBar.high)lastBar.high=_bk.o;if(_bk.o<lastBar.low)lastBar.low=_bk.o;}/* retro-open: the bar rolled before its first trade arrived → adopt the exchange open (first trade of the interval) */if(_bk.h>lastBar.high&&_bk.h<_lgp*1.025)lastBar.high=_bk.h;if(_bk.l<lastBar.low&&_bk.l>_lgp*0.975)lastBar.low=_bk.l;}}}catch(_){} /* merge EXACT trade-stream extremes (exchange-stamped 1m buckets) into the forming bar — wicks match the authoritative kline instead of growing on the 30s re-sync */
       startSmoothP();}}
   // ease the forming candle's displayed close toward the true price at 60fps so it glides instead of snapping
   var _smP=false,_dispP=null;
