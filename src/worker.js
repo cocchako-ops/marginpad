@@ -3658,9 +3658,24 @@ async function sweepServerPositions(env) {
     } catch (e) {}
     let graceMin = 60, srvCandle = true; try { const oc = await opsCfg(env); graceMin = oc.nudgeGraceMin || 60; srvCandle = oc.srvCandle !== false; } catch (e) {}
     if (Object.keys(prices).length || Object.keys(klines).length) {
-      const res = await usersDO(env, '/tradesweepall', { prices, rates, klines, graceMin, srvCandle });
+      const res = await usersDO(env, '/tradesweepall', { prices, rates, klines, graceMin, srvCandle, promos: await xpPromos(env).catch(() => []) });
       try { await env.STATS.put('sweep:last', JSON.stringify({ swept: res && res.swept, checked: res && res.checked, staleN: res && res.staleN, funded: res && res.funded, syms: syms.length, klSyms: Object.keys(klines).length, srvCandle, ts: Date.now() }), { expirationTtl: 3600 }); } catch (e) {} // observability: read via /api/admin/sweepstat
     }
+    await drainXpBoostEvents(env); // boost/HH hits (from ANY close path) -> live activity feed with the username
+  } catch (e) {}
+}
+// XP boost hits land in the DO (any close path: site/cron/bot/client). This drains them into the evlog ring
+// so the Real-time activity feed shows WHO hit the boost — owner request 2026-08-12.
+async function drainXpBoostEvents(env) {
+  try {
+    const r = await usersDO(env, '/xpboostev', {});
+    const evs = (r && r.events) || [];
+    if (!evs.length) return;
+    let log = []; try { log = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
+    for (const ev of evs) log.unshift({ t: 'xpboost', e: String(ev.note || '').slice(0, 48), cc: '', v: 'srv', u: String(ev.username || '').slice(0, 24), p: '/paper-trade', d: '', ts: +ev.ts || Date.now() });
+    const _cut = Date.now() - 10800000; log = log.filter(e => (e.ts || 0) > _cut).slice(0, 800);
+    await env.STATS.put('evlog', JSON.stringify(log), { expirationTtl: 86400 });
+    try { const k = 'ev:xpboost'; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + evs.length)); } catch (e) {}
   } catch (e) {}
 }
 // P0.5 — nightly backup of the two single-instance DOs into KV (separate failure domain; the ChatRoom DO
@@ -4888,13 +4903,13 @@ h2 span{color:#6b7480;font-size:12.5px;font-weight:400;letter-spacing:0}
   function srcName(s){if(!s||s==='direct')return 'Direct (typed the URL or bookmark)';if(s==='x')return 'X / Twitter (our post)';if(s==='email')return 'Our email';if(s==='push')return 'Push notification';if(s==='extension')return 'Chrome extension';if(s==='telegram')return 'Telegram (our bot/channel)';if(/chatgpt|openai/.test(s))return 'ChatGPT';if(/claude\\./.test(s))return 'Claude';if(/perplexity/.test(s))return 'Perplexity';if(/gemini\\./.test(s))return 'Gemini';if(/copilot\\./.test(s))return 'Microsoft Copilot';if(/syndicatedsearch|googlesyndication|googleadservices|doubleclick/.test(s))return 'Google Ads / search partner';if(/google\\./.test(s))return 'Google search';if(/bing\\./.test(s))return 'Bing';if(/yahoo/.test(s))return 'Yahoo';if(/yandex/.test(s))return 'Yandex';if(/duckduckgo/.test(s))return 'DuckDuckGo';if(/ecosia/.test(s))return 'Ecosia';if(/brave/.test(s))return 'Brave Search';if(/t\\.co|twitter|x\\.com/.test(s))return 'X / Twitter';if(/reddit/.test(s))return 'Reddit';if(/youtu/.test(s))return 'YouTube';if(/facebook|fb\\./.test(s))return 'Facebook';if(/instagram/.test(s))return 'Instagram';if(/tiktok/.test(s))return 'TikTok';if(/linkedin/.test(s))return 'LinkedIn';if(/t\\.me|telegram/.test(s))return 'Telegram';if(/discord/.test(s))return 'Discord';return s;}
   function pageShort(pth){var s=String(pth||'').replace(/^\\/[a-z]{2}\\//,'/');if(s==='/'||s==='')return 'the homepage';var m;if((m=s.match(/^\\/coin\\/([a-z0-9]+)\\/?$/i)))return m[1].toUpperCase()+' coin page';var M={'/funding/':'the Funding page','/liquidations/':'the Liquidations page','/long-short/':'the Long/Short page','/open-interest/':'the Open Interest page','/screener':'the Screener','/screener/':'the Screener','/paper-trade':'Paper Trade','/paper-trade/':'Paper Trade','/charts':'Charts','/charts/':'Charts','/rekt/':'the Rekt feed','/rewards/':'Rewards','/calculators':'Calculators','/calculators/':'Calculators','/blog/':'the Blog'};if(M[s])return M[s];if((m=s.match(/^\\/([a-z0-9-]+)\\/?$/i)))return m[1].replace(/-/g,' ')+' page';return s;}
   function verb(t){return t==='tab'?'used a calculator':(t==='nav'||t==='el')?'clicked a link':('did '+t);}
-  function evLine(x){var where=x.p?' <span class="fe-on">on '+esc(pageShort(x.p))+'</span>':'';var tg=x.e?esc(x.e):'';if(x.t==='bot'){if(x.e==='request')return '<span class="fe-rev">🔔 requested premium signals access</span> via the bot';return 'used <code>/'+tg+'</code> on the Telegram bot';}if(x.t==='exchange')return 'clicked through to <b class="fe-ex">'+(tg||'an exchange')+'</b>'+where+' <span class="fe-rev">💰 money click</span>';if(x.t==='paper')return 'opened a paper trade'+(tg?' <b>'+tg+'</b>':'');if(x.t==='close')return 'closed a trade <b>'+(tg||'')+'</b>'+where;if(x.t==='hotpair')return 'opened <b>'+tg+'</b> from Trending';if(x.t==='tool')return 'opened '+(tg?'<b>'+tg+'</b> ':'a ')+'tool'+where;if(x.t==='chat')return 'sent a chat message';if(x.t==='signin')return 'opened the sign-in form'+where;if(x.t==='search')return 'searched '+(tg?'<b>'+tg+'</b>':'something')+where;if(x.t==='watch')return 'added <b>'+tg+'</b> to the watchlist';if(x.t==='like')return 'liked '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='comment')return 'commented on '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='follow')return 'followed '+(tg?'<b>@'+tg+'</b>':'a trader');if(x.t==='dm')return 'sent a private message to '+(tg?'<b>@'+tg+'</b>':'a trader');if(x.t==='duel')return 'challenged '+(tg?'<b>@'+tg+'</b>':'a trader')+' to a duel';if(x.t==='mention')return 'mentioned '+(tg?'<b>@'+tg+'</b>':'someone')+' in chat';if(x.t==='save')return 'saved '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='profile')return 'viewed '+(tg?'<b>@'+tg+'</b>':'a trader')+"'s profile";if(x.t==='ind')return 'toggled the <b>'+(tg||'chart')+'</b> indicator'+where;if(x.t==='draw')return 'drew on '+(tg?'the <b>'+tg+'</b> chart':'a chart');if(x.t==='ai')return 'asked the AI'+(tg?' about <b>'+tg+'</b>':'');if(x.t==='coin')return 'opened the <b>'+(tg||'coin')+'</b> market';if(x.t==='sltp')return 'set SL/TP on <b>'+(tg||'a trade')+'</b>';if(x.t==='share')return 'shared '+(tg?'<b>'+tg+'</b>':'something');if(x.t==='lang')return 'switched language to <b>'+(tg||'?')+'</b>';if(x.t==='alert')return 'set a price alert'+(tg?' on <b>'+tg+'</b>':'');if(x.t==='promo')return 'submitted a promo post'+(tg?' <b>'+tg+'</b>':'');if(x.t==='exsign')return 'submitted an exchange sign-up'+(tg?' <b>'+tg+'</b>':'');if(x.t==='support')return 'sent a support message';if(x.t==='push')return 'enabled push notifications';if(x.t==='signup')return '<span class="fe-rev">created an account</span>'+(tg?' <b>@'+tg+'</b>':'');if(x.t==='login')return 'signed in'+(tg?' as <b>@'+tg+'</b>':'');if(x.t==='claim')return 'claimed <b>'+tg+'</b> from the faucet';if(x.t==='withdraw')return '<span class="fe-rev">requested a withdrawal</span> of <b>'+tg+'</b>';if(x.t==='mission')return 'completed daily mission <b>'+tg+'</b>';if(x.t==='academy')return 'finished Academy lesson <b>'+tg+'</b>';if(x.t==='post')return 'published a community post'+(tg?' (<b>@'+tg+'</b>)':'');if(x.t==='sale')return '<span class="fe-rev">💎 bought <b>'+(tg||'premium')+'</b> signals</span>';if(x.t==='refpaid')return '<span class="fe-rev">🎁 earned a referral reward</span>'+(tg?' '+tg:'');if(x.t==='refclick')return 'shared a referral link'+(tg?' &middot; clicked from <b>'+tg+'</b>':'');if(x.t==='promopaid')return '<span class="fe-rev">✅ promo post approved</span>'+(tg?' '+tg:'');if(x.t==='exsignpaid')return '<span class="fe-rev">✅ exchange sign-up approved</span>'+(tg?' <b>'+tg+'</b>':'');if(x.t==='duelwon')return '🏆 won a duel'+(tg?' vs <b>@'+tg+'</b>':'');if(x.t==='levelup')return '⭐ reached <b>'+(tg||'a new level')+'</b>';if(x.t==='signal')return '<span class="fe-sig">📡 sent signal <b>'+tg+'</b></span> to Telegram';if(x.t==='sigresult')return '📊 signal result: <b>'+tg+'</b>';if(x.t==='digest')return '📡 daily check-in posted to the signal channels ('+tg+')';if(x.t==='lbpaid')return '<span class="fe-rev">🏆 weekly prize paid</span> to <b>'+tg+'</b>';if(x.t==='wdpaid')return '<span class="fe-rev">💸 withdrawal marked PAID</span>';if(x.t==='alertfired')return '🔔 price alert fired <b>'+tg+'</b> → email sent';if(x.t==='newspost')return '📰 auto-posted news to Telegram';if(x.t==='subkick')return '⛔ premium expired — member removed ('+tg+')';if(x.t==='academyfin')return '🎓 finished the whole <b>'+tg+'</b> course';if(x.t==='myprofile')return 'opened their own <b>profile</b>'+where;if(x.t==='premgrant')return '<span class="fe-rev">granted Premium</span> to <b>'+tg+'</b>';if(x.t==='checkout')return '<span class="fe-rev">started a Premium checkout</span> '+tg;if(x.t==='premgate')return 'hit the <span class="fe-rev">Premium</span> wall on <b>'+(tg||'a feature')+'</b>'+where;if(x.t==='frame')return 'equipped the <b>'+tg+'</b> card frame';if(x.t==='brief')return 'opened the <b>daily market brief</b>';if(x.t==='chatmsg')return '💬 chat: '+tg;return verb(x.t)+(tg?' <b>'+tg+'</b>':'')+where;}
+  function evLine(x){var where=x.p?' <span class="fe-on">on '+esc(pageShort(x.p))+'</span>':'';var tg=x.e?esc(x.e):'';if(x.t==='bot'){if(x.e==='request')return '<span class="fe-rev">🔔 requested premium signals access</span> via the bot';return 'used <code>/'+tg+'</code> on the Telegram bot';}if(x.t==='exchange')return 'clicked through to <b class="fe-ex">'+(tg||'an exchange')+'</b>'+where+' <span class="fe-rev">💰 money click</span>';if(x.t==='paper')return 'opened a paper trade'+(tg?' <b>'+tg+'</b>':'');if(x.t==='close')return 'closed a trade <b>'+(tg||'')+'</b>'+where;if(x.t==='hotpair')return 'opened <b>'+tg+'</b> from Trending';if(x.t==='tool')return 'opened '+(tg?'<b>'+tg+'</b> ':'a ')+'tool'+where;if(x.t==='chat')return 'sent a chat message';if(x.t==='signin')return 'opened the sign-in form'+where;if(x.t==='search')return 'searched '+(tg?'<b>'+tg+'</b>':'something')+where;if(x.t==='watch')return 'added <b>'+tg+'</b> to the watchlist';if(x.t==='like')return 'liked '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='comment')return 'commented on '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='follow')return 'followed '+(tg?'<b>@'+tg+'</b>':'a trader');if(x.t==='dm')return 'sent a private message to '+(tg?'<b>@'+tg+'</b>':'a trader');if(x.t==='duel')return 'challenged '+(tg?'<b>@'+tg+'</b>':'a trader')+' to a duel';if(x.t==='mention')return 'mentioned '+(tg?'<b>@'+tg+'</b>':'someone')+' in chat';if(x.t==='save')return 'saved '+(tg?'<b>'+tg+'</b>':'a post');if(x.t==='profile')return 'viewed '+(tg?'<b>@'+tg+'</b>':'a trader')+"'s profile";if(x.t==='ind')return 'toggled the <b>'+(tg||'chart')+'</b> indicator'+where;if(x.t==='draw')return 'drew on '+(tg?'the <b>'+tg+'</b> chart':'a chart');if(x.t==='ai')return 'asked the AI'+(tg?' about <b>'+tg+'</b>':'');if(x.t==='coin')return 'opened the <b>'+(tg||'coin')+'</b> market';if(x.t==='sltp')return 'set SL/TP on <b>'+(tg||'a trade')+'</b>';if(x.t==='share')return 'shared '+(tg?'<b>'+tg+'</b>':'something');if(x.t==='lang')return 'switched language to <b>'+(tg||'?')+'</b>';if(x.t==='alert')return 'set a price alert'+(tg?' on <b>'+tg+'</b>':'');if(x.t==='promo')return 'submitted a promo post'+(tg?' <b>'+tg+'</b>':'');if(x.t==='exsign')return 'submitted an exchange sign-up'+(tg?' <b>'+tg+'</b>':'');if(x.t==='support')return 'sent a support message';if(x.t==='push')return 'enabled push notifications';if(x.t==='signup')return '<span class="fe-rev">created an account</span>'+(tg?' <b>@'+tg+'</b>':'');if(x.t==='login')return 'signed in'+(tg?' as <b>@'+tg+'</b>':'');if(x.t==='claim')return 'claimed <b>'+tg+'</b> from the faucet';if(x.t==='withdraw')return '<span class="fe-rev">requested a withdrawal</span> of <b>'+tg+'</b>';if(x.t==='mission')return 'completed daily mission <b>'+tg+'</b>';if(x.t==='academy')return 'finished Academy lesson <b>'+tg+'</b>';if(x.t==='post')return 'published a community post'+(tg?' (<b>@'+tg+'</b>)':'');if(x.t==='sale')return '<span class="fe-rev">💎 bought <b>'+(tg||'premium')+'</b> signals</span>';if(x.t==='refpaid')return '<span class="fe-rev">🎁 earned a referral reward</span>'+(tg?' '+tg:'');if(x.t==='refclick')return 'shared a referral link'+(tg?' &middot; clicked from <b>'+tg+'</b>':'');if(x.t==='promopaid')return '<span class="fe-rev">✅ promo post approved</span>'+(tg?' '+tg:'');if(x.t==='exsignpaid')return '<span class="fe-rev">✅ exchange sign-up approved</span>'+(tg?' <b>'+tg+'</b>':'');if(x.t==='duelwon')return '🏆 won a duel'+(tg?' vs <b>@'+tg+'</b>':'');if(x.t==='levelup')return '⭐ reached <b>'+(tg||'a new level')+'</b>';if(x.t==='xpboost')return '<span class="fe-rev">hit the XP boost</span> — <b>'+tg+'</b>';if(x.t==='signal')return '<span class="fe-sig">📡 sent signal <b>'+tg+'</b></span> to Telegram';if(x.t==='sigresult')return '📊 signal result: <b>'+tg+'</b>';if(x.t==='digest')return '📡 daily check-in posted to the signal channels ('+tg+')';if(x.t==='lbpaid')return '<span class="fe-rev">🏆 weekly prize paid</span> to <b>'+tg+'</b>';if(x.t==='wdpaid')return '<span class="fe-rev">💸 withdrawal marked PAID</span>';if(x.t==='alertfired')return '🔔 price alert fired <b>'+tg+'</b> → email sent';if(x.t==='newspost')return '📰 auto-posted news to Telegram';if(x.t==='subkick')return '⛔ premium expired — member removed ('+tg+')';if(x.t==='academyfin')return '🎓 finished the whole <b>'+tg+'</b> course';if(x.t==='myprofile')return 'opened their own <b>profile</b>'+where;if(x.t==='premgrant')return '<span class="fe-rev">granted Premium</span> to <b>'+tg+'</b>';if(x.t==='checkout')return '<span class="fe-rev">started a Premium checkout</span> '+tg;if(x.t==='premgate')return 'hit the <span class="fe-rev">Premium</span> wall on <b>'+(tg||'a feature')+'</b>'+where;if(x.t==='frame')return 'equipped the <b>'+tg+'</b> card frame';if(x.t==='brief')return 'opened the <b>daily market brief</b>';if(x.t==='chatmsg')return '💬 chat: '+tg;return verb(x.t)+(tg?' <b>'+tg+'</b>':'')+where;}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   function N(x){x=+x||0;var a=Math.abs(x),sg=x<0?'-':'';return sg+(a>=1e12?(a/1e12).toFixed(2)+'T':a>=1e9?(a/1e9).toFixed(2)+'B':a>=1e6?(a/1e6).toFixed(2)+'M':a>=1e3?(a/1e3).toFixed(1)+'K':(a%1===0?String(a):a.toFixed(2)));}
   /* Real-time activity feed — merge CLICK/server events (feed) with PAGEVIEWS (visitors) into one live, color-coded,
      device-aware, filterable stream. All client-side from the data the 12s poll already ships. */
   var EV={f:${JSON.stringify(evlog.slice(0, 400))},v:${JSON.stringify(pvlog.slice(0, 300))},filt:'all',on:null,money:null};
-  function evKindOf(t){if(t==='myprofile')return 'acct';if(t==='premgrant'||t==='checkout'||t==='premgate')return 'money';if(t==='frame')return 'social';if(t==='brief')return 'tool';if(t==='signal'||t==='sigresult'||t==='digest')return 'signal';if(t==='lbpaid'||t==='wdpaid')return 'money';if(t==='alertfired'||t==='academyfin'||t==='subkick')return 'acct';if(t==='chatmsg')return 'social';if(t==='newspost')return 'other';if(t==='bot')return 'acct';if(t==='exchange'||t==='sale'||t==='refpaid'||t==='promopaid'||t==='exsignpaid')return 'money';if(t==='refclick'||t==='duelwon'||t==='levelup')return 'social';if(t==='paper'||t==='hotpair'||t==='close'||t==='sltp')return 'trade';if(t==='chat'||t==='like'||t==='comment'||t==='follow'||t==='post'||t==='save'||t==='profile'||t==='share'||t==='dm'||t==='duel'||t==='mention')return 'social';if(t==='signup'||t==='login'||t==='claim'||t==='withdraw'||t==='mission'||t==='academy'||t==='signin'||t==='alert'||t==='promo'||t==='exsign'||t==='support'||t==='push')return 'acct';if(t==='tool'||t==='ind'||t==='draw'||t==='ai')return 'tool';if(t==='pv')return 'page';return 'other';}
+  function evKindOf(t){if(t==='myprofile')return 'acct';if(t==='premgrant'||t==='checkout'||t==='premgate')return 'money';if(t==='frame')return 'social';if(t==='brief')return 'tool';if(t==='signal'||t==='sigresult'||t==='digest')return 'signal';if(t==='lbpaid'||t==='wdpaid')return 'money';if(t==='alertfired'||t==='academyfin'||t==='subkick')return 'acct';if(t==='chatmsg')return 'social';if(t==='newspost')return 'other';if(t==='bot')return 'acct';if(t==='exchange'||t==='sale'||t==='refpaid'||t==='promopaid'||t==='exsignpaid')return 'money';if(t==='refclick'||t==='duelwon'||t==='levelup')return 'social';if(t==='xpboost')return 'trade';if(t==='paper'||t==='hotpair'||t==='close'||t==='sltp')return 'trade';if(t==='chat'||t==='like'||t==='comment'||t==='follow'||t==='post'||t==='save'||t==='profile'||t==='share'||t==='dm'||t==='duel'||t==='mention')return 'social';if(t==='signup'||t==='login'||t==='claim'||t==='withdraw'||t==='mission'||t==='academy'||t==='signin'||t==='alert'||t==='promo'||t==='exsign'||t==='support'||t==='push')return 'acct';if(t==='tool'||t==='ind'||t==='draw'||t==='ai')return 'tool';if(t==='pv')return 'page';return 'other';}
   function evPageLine(x){var pg=esc(pageShort(x.p||'/'));if(x.f)return 'moved to <b>'+pg+'</b> <span class="fe-via">from '+esc(pageShort(x.f))+'</span>';if(x.s&&x.s!=='direct')return 'arrived on <b>'+pg+'</b> <span class="fe-via">via '+esc(srcName(x.s))+'</span>';if(x.s0)return 'arrived on <b>'+pg+'</b> <span class="fe-via">back again &middot; first came via '+esc(srcName(x.s0))+'</span>';return 'landed on <b>'+pg+'</b>';}
   function evIcon(x){if(x.u)return '👤';if(x.d)return dev(x.d);return flag(x.cc)||'🌐';}
   function evRowHtml(x){var k=evKindOf(x._pg?'pv':x.t);var nw=(Date.now()-x.ts)<12000?' fe-new':'';var who=x.u?('<b>@'+esc(x.u)+'</b> '):'A visitor ';var body=x._pg?evPageLine(x):evLine(x);return '<div class="fe k-'+k+nw+'"><span class="fe-f">'+evIcon(x)+'</span><span class="fe-t">'+who+body+'</span><span class="fe-a">'+ago(x.ts)+' ago</span></div>';}
@@ -7901,7 +7916,7 @@ async function handleTelegram(request, env) {
     const seed = await usersDO(env, '/botpositions', { uid: _lu.uid, prices: {} }); // read the account journal (same as My Trades on the web)
     const syms = Array.from(new Set(((seed && seed.positions) || []).filter(x => x.status === 'open').map(x => x.symbol)));
     const prices = {}; await Promise.all(syms.map(async s => { try { const pp = await fetchPrice(s); if (pp) prices[s] = pp.price; } catch (e) {} }));
-    const r = await usersDO(env, '/botpositions', { uid: _lu.uid, prices });
+    const r = await usersDO(env, '/botpositions', { uid: _lu.uid, prices, promos: await xpPromos(env).catch(() => []) });
     const poss = ((r && r.positions) || []).filter(x => x.status === 'open').sort((a, b) => (a.opened_ts || 0) - (b.opened_ts || 0));
     if (!poss.length) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '📊 No open positions yet.\nOpen one: <code>/open BTC 100 x300</code>', ...base }); return new Response('ok'); }
     let tot = 0;
@@ -8496,6 +8511,10 @@ async function handleTrade(url, request, env, ctx) {
   if (!uid) return jt({ error: 'login_required' }, 401);
   const path = url.pathname.slice('/api/trade'.length) || '/';
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
+  // XP promos ride ALONG every call that can close a trade — the DO can't read KV, so a missing promos field
+  // silently disqualifies server-side closes from owner-defined boosts (papisdiakite600 ticket 2026-08-12:
+  // a qualifying HYPE close via /api/trade/close earned no promo XP because this module never passed them).
+  let _prm = []; try { _prm = await xpPromos(env); } catch (e) {}
   if (path === '/open' && request.method === 'POST') {
     // light per-user rate limit: 20 opens/min (the count write is non-blocking — profiled 2026-07-24, the fill path pays only the read)
     const tR = Date.now();
@@ -8522,7 +8541,7 @@ async function handleTrade(url, request, env, ctx) {
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jt({ error: 'tp_wrong_side', live: entry }, 400);
     const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: Math.min(0.00055, 0.1/Math.max(1,lev)), status: 'open', pnl: null, src: 'srv' }; // taker 0.055%/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
     const tD = Date.now();
-    const r = await usersDO(env, '/botopen', { uid, t, via: 'site' });
+    const r = await usersDO(env, '/botopen', { uid, t, via: 'site', promos: _prm });
     mk('do_fill', tD);
     if (r && r.error) return jt(r, 400);
     return jt({ ok: true, position: t });
@@ -8536,7 +8555,7 @@ async function handleTrade(url, request, env, ctx) {
     const pd = await fetchPriceCached(symC);
     if (!pd || !(+pd.price > 0)) return jt({ error: 'no_price' }, 503);
     const prices = {}; prices[symC.replace(/USDT$/, '')] = +pd.price; prices[symC] = +pd.price;
-    const r = await usersDO(env, '/botclose', { uid, id: String(b.id), pct: b.pct, pid: b.pid, prices, via: 'site' });
+    const r = await usersDO(env, '/botclose', { uid, id: String(b.id), pct: b.pct, pid: b.pid, prices, via: 'site', promos: _prm });
     if (r && r.error) return jt(r, 400);
     return jt(r);
   }
@@ -8561,7 +8580,7 @@ async function handleTrade(url, request, env, ctx) {
       try { const lk = await leanKlines(sym2, '1', 30, env); if (lk && lk.length) klines[sym2] = lk; } catch (e) {}
     }
     let graceMin = 60, srvCandle = true; try { const oc = await opsCfg(env); graceMin = oc.nudgeGraceMin || 60; srvCandle = oc.srvCandle !== false; } catch (e) {}
-    const r = await usersDO(env, '/tradesweepall', { onlyUid: uid, prices, klines, graceMin, srvCandle, pend: ids });
+    const r = await usersDO(env, '/tradesweepall', { onlyUid: uid, prices, klines, graceMin, srvCandle, pend: ids, promos: _prm });
     return jt({ ok: true, swept: (r && r.swept) || 0 });
   }
   if (path === '/sltp' && request.method === 'POST') {
@@ -9081,7 +9100,7 @@ async function handleAuth(url, request, env, ctx) {
   const asn = (request.cf && request.cf.asn) || 0;
   const stub = env.USERS.get(env.USERS.idFromName('main'));
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
-  const isAdmin = (await adminCookieOk(request, env));
+  const isAdmin = (await adminCookieOk(request, env)) || isAdminKey(env, url.searchParams.get('key')); // cookie OR the ADMIN_KEY bearer — the ops user-360 UI already sends ?key= on /xp/adjust
 
 
   if (path === '/start') {
@@ -9792,7 +9811,7 @@ async function handleReward(url, request, env) {
   }
   // admin: support inbox (+ reply history) with an email-config flag injected at the Worker (DO can't see secrets)
   if (path === '/support' && request.method === 'GET') {
-    if (!adminOk) return jr({ error: 'forbidden' }, 403);
+    if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403); // cookie OR the ADMIN_KEY manual-recovery bearer (read-only; same pattern as /config)
     const sst = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
     let sj = { open: [], closed: [], replies: [], transient: true }; // polled every 30s; a DO reset mid-flight (every deploy) must not 500
     for (let attempt = 0; attempt < 2; attempt++) { try { const rr = await sst.fetch(new Request('https://do/support')); sj = await rr.json(); break; } catch (e) {} }
@@ -9800,7 +9819,7 @@ async function handleReward(url, request, env) {
     return jr(sj);
   }
   if (path === '/support/convs' && request.method === 'GET') { // admin: support threads grouped into conversations (chat view)
-    if (!adminOk) return jr({ error: 'forbidden' }, 403);
+    if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403); // cookie OR the ADMIN_KEY manual-recovery bearer (read-only; same pattern as /config)
     const sst = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
     let sj = { conversations: [], transient: true };
     for (let attempt = 0; attempt < 2; attempt++) { try { const rr = await sst.fetch(new Request('https://do/support/convs')); sj = await rr.json(); break; } catch (e) {} }
@@ -10707,6 +10726,12 @@ export default {
     }
     if (url.pathname === '/api/admin/journal' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // admin/E2E raw journal read
       return J(await usersDO(env, '/journaldump', { uid: url.searchParams.get('uid') || '' }));
+    }
+    if (url.pathname === '/api/admin/xpdiag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // read-only XP-credit audit: user + xp log + trade closes + promo config in one response — every "boost didn't credit" ticket becomes checkable against the exact predicate inputs
+      const out = await usersDO(env, '/xpdiag', { uid: url.searchParams.get('uid') || '', email: url.searchParams.get('email') || '', username: url.searchParams.get('u') || '' });
+      try { out.promosRaw = JSON.parse(await env.STATS.get('xp:promos') || '[]'); } catch (e) { out.promosRaw = []; }
+      out.hh = HH; out.now = Date.now();
+      return J(out);
     }
     if (url.pathname === '/api/admin/sweepstat' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // last srv-sweep summary (swept/checked/staleN) — observability for the candle-check rollout
       let last = null; try { last = JSON.parse(await env.STATS.get('sweep:last') || 'null'); } catch (e) {}
@@ -12647,6 +12672,7 @@ export class UserStore {
     try { s.exec('ALTER TABLE users ADD COLUMN prem_seen INTEGER DEFAULT 0'); s.exec('UPDATE users SET prem_seen=1 WHERE premium>0'); } catch (e) {} // "has this user seen the premium-upgrade celebration?" The backfill (existing premium = already-seen, no retroactive mass-animation) is TIED TO THE ALTER SUCCEEDING — so it runs exactly ONCE (first boot after ship); every later boot the ALTER throws → catch → backfill skipped → a subsequent reset (e.g. the mp-ops-granted cohort set back to 0 for the delayed welcome) is NEVER overwritten. New users get DEFAULT 0 → they get the celebration.
     for (const col of ['bio TEXT', 'avatar TEXT', 'accent TEXT', 'coins TEXT', 'frame TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // public profile personalization: bio, avatar emoji, accent colour, favourite coins (csv)
     s.exec('CREATE TABLE IF NOT EXISTS xplog(user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)'); // XP earn/adjust history (ring-buffered ~150/user)
+    s.exec('CREATE TABLE IF NOT EXISTS xpboost_ev(user_id TEXT, ts INTEGER, xp INTEGER, note TEXT, seen INTEGER DEFAULT 0)'); // XP boost/happy-hour hits queued for the ops live feed (drained by the minute cron via /xpboostev)
     s.exec('CREATE TABLE IF NOT EXISTS xpday(user_id TEXT, day TEXT, src TEXT, n INTEGER DEFAULT 0, PRIMARY KEY(user_id,day,src))'); // per-source per-UTC-day earned, for anti-abuse caps
     let _xlAdded = false; try { s.exec('ALTER TABLE users ADD COLUMN xp_life INTEGER DEFAULT 0'); _xlAdded = true; } catch (e) {} // Patch B (2026-07-30): monotonic per-grant XP accumulator — only ever incremented (by _grantXp), never decremented and never trimmed (unlike xplog). Trim-proof basis for the seasonal XP board (seasonal = xp_life - per-season base).
     if (_xlAdded) { try { s.exec('UPDATE users SET xp_life=COALESCE(xp,0)'); } catch (e) {} } // one-time backfill TIED to the ALTER success so it never re-runs. CAVEAT: users.xp is NET (already reduced by duel-stake _takeXp), so the seeded xp_life is NOT true "lifetime earned" — it is "net XP at migration + positive XP earned after". Harmless to the seasonal delta (both ends use xp_life), but do NOT surface xp_life to users as a lifetime-earned total.
@@ -12859,10 +12885,10 @@ export class UserStore {
         const roe = (pv != null && m > 0) ? pv / m * 100 : null;
         const liq9 = (kind === 'close' && pv != null && pv <= -m * 0.985) ? 1 : 0;
         sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via) VALUES(?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10));
-        nIns++; try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9)) this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 750, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); }
+        nIns++; try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9)) { var _gh9 = this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 750, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); if (_gh9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note) VALUES(?,?,?,?)', uid, ts9, _gh9, (String(e.sym || '').toUpperCase() + ' ' + Math.round(roe) + '% ROE +' + _gh9 + ' XP · Happy Hour').slice(0, 60)); } catch (e7) {} } }
           if (roe != null) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
             for (var _pi = 0; _pi < _pl.length; _pi++) { var _p = _pl[_pi]; if (!_p || _p.enabled === false) continue; if (!(ts9 >= _p.startMs && ts9 < _p.endMs && _p.endMs > _p.startMs)) continue; if (_p.coins && _p.coins.length && _p.coins.indexOf(_symU) < 0) continue; if (_lv > (+_p.levMax || 1000)) continue; if (roe < (+_p.roeMin || 0)) continue; if (_p.winOnly !== false && !(pv > 0)) continue; if (!_best || (+_p.xp || 0) > (+_best.xp || 0)) _best = _p; }
-            if (_best) this._grantXp(uid, 'trade_promo', +_best.xp || 0, { dayCap: (+_best.dayCap || 700), note: (String(_best.title || 'XP Promo')).slice(0, 30) + ' · ' + _symU + ' ' + Math.round(roe) + '% ROE' }); } } } catch (xe) {}
+            if (_best) { var _gp9 = this._grantXp(uid, 'trade_promo', +_best.xp || 0, { dayCap: (+_best.dayCap || 700), note: (String(_best.title || 'XP Promo')).slice(0, 30) + ' · ' + _symU + ' ' + Math.round(roe) + '% ROE' }); if (_gp9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note) VALUES(?,?,?,?)', uid, ts9, _gp9, (_symU + ' ' + Math.round(roe) + '% ROE +' + _gp9 + ' XP · ' + String(_best.title || 'XP Promo')).slice(0, 60)); } catch (e7) {} } } } } catch (xe) {}
       }
       if (nIns) sql.exec('DELETE FROM tradeev WHERE ts < ?', now - 30 * 86400000); // 30d (was 14d): the season is 14d long, so the old prune deleted early-season closes right before the final payout — the WR board shifted in the season's last days
     } catch (e9) {}
@@ -13379,12 +13405,30 @@ export class UserStore {
             if (stopP != null && (long ? live <= stopP : live >= stopP)) { closes.push(closeAt(stopP, false)); continue; }
             if (tpP != null && (long ? live >= tpP : live <= tpP)) { closes.push(closeAt(tpP, false)); }
           }
-          if (closes.length || upds.length) { closes.forEach(x => { x.sc = 1; }); this._syncJournal(uid, upds.concat(closes), null, true, 'cron'); swept += closes.length; }
+          if (closes.length || upds.length) { closes.forEach(x => { x.sc = 1; }); this._syncJournal(uid, upds.concat(closes), b.promos, true, 'cron'); swept += closes.length; }
         }
       } catch (e) {}
       return this.j({ ok: true, swept, checked, funded, staleN });
     }
     if (path === '/journaldump') { return this.j({ journal: this._loadJournal(String(b.uid || '')) }); } // admin/E2E raw journal read (sc/exit/swT/pendClose visible, unlike _j2bot)
+    if (path === '/xpboostev') { // minute-cron drain: unseen XP boost/HH hits -> ops live feed (who hit the boost)
+      const evs = this.rows('SELECT e.user_id uid, e.ts, e.xp, e.note, u.username FROM xpboost_ev e LEFT JOIN users u ON u.id = e.user_id WHERE e.seen = 0 ORDER BY e.ts LIMIT 40');
+      try { this.sql.exec('UPDATE xpboost_ev SET seen = 1 WHERE seen = 0'); this.sql.exec('DELETE FROM xpboost_ev WHERE ts < ?', Date.now() - 86400000); } catch (e) {}
+      return this.j({ events: evs });
+    }
+    if (path === '/xpdiag') { // read-only XP-credit audit (support/ops): the user row, every recent XP grant with its note, and every recent trade close with ts/sym/lev/margin/pnl/roe — the full set of promo predicate inputs, so a "boost didn't credit" report is verifiable line by line
+      let u = null;
+      const uq = (w, v) => (this.rows('SELECT id,email,username,xp,xp_life,created,last_seen FROM users WHERE ' + w + ' LIMIT 1', v)[0] || null);
+      if (b.uid) u = uq('id=?', String(b.uid));
+      else if (b.email) u = uq('lower(email)=lower(?)', String(b.email));
+      else if (b.username) u = uq('lower(username)=lower(?)', String(b.username));
+      if (!u) return this.j({ error: 'not_found' });
+      return this.j({
+        user: u,
+        xplog: this.rows('SELECT ts,src,amt,note FROM xplog WHERE user_id=? ORDER BY ts DESC LIMIT 80', u.id),
+        tradeev: this.rows('SELECT ts,kind,sym,side,lev,margin,pnl,roe,via FROM tradeev WHERE user_id=? ORDER BY ts DESC LIMIT 120', u.id),
+      });
+    }
     if (path === '/export') { // nightly backup dump — identity, money-adjacent progress and social state. Ephemeral/analytics tables (sessions, otp, uevents, uclicks, udwell) are deliberately excluded.
       const out = { at: Date.now(), tables: {} };
       for (const t of ['users', 'utrades', 'academy', 'missions', 'referrals', 'ufollows', 'dms', 'duels', 'tradeev', 'botkeys', 'botpos', 'alerts']) {
