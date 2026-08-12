@@ -189,7 +189,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
           if(_k2===kd.length-1&&_b.time<=_lastA.time)continue;
           var _a2=_tmap[_b.time];
           if(!_a2){if(_b.time>=p.bars[0].time){_mism=true;break;}continue;}
-          if(_a2.open!==_b.open||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}
+          if(Math.abs(_a2.open-_b.open)>Math.abs(_b.open)*5e-5||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}/* open tolerates ~a few ticks (0.005%): Bybit's kline open can differ one tick from the public trade stream (internal matching the feed doesn't carry) — strict equality forced an invisible \$0.1 'heal' repaint every minute. h/l/c stay strictly exact; a REAL open divergence (venue flap, >0.005%) still heals. */
         if(_mism){_rm=2;p.bars=kd;if(_lastK.time===_lastA.time)p.bars[p.bars.length-1]=_lastA;else if(_lastA.time>_lastK.time){if(_tmap[_lastK.time])p.bars[p.bars.length-1]=_tmap[_lastK.time];p.bars.push(_lastA);}}/* heal history but keep our fresher forming bar AND our trade-finalized copy of the minute the lagging snapshot still shows as partial */
         else if(_app.length){_rm=1;p.bars=p.bars.concat(_app);}
       }
@@ -226,8 +226,13 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     // (the "candles lose their shape / half candle over time" bug). Accept only if 3 in a row confirm a real move.
     if(p._lgp>0){ if(Math.abs(pr-p._lgp)/p._lgp>0.025){ p._rej=(p._rej||0)+1; if(p._rej<3)return; } else { p._rej=0; } }
     p._lgp=pr;
-    var iv=parseInt(p.tf,10)*60,nb=Math.floor((window.mpSrvNow?window.mpSrvNow():Date.now())/1000/iv)*iv; // server-clock bucketing (skewed device clocks rolled bars at wrong boundaries)
-    if(nb>p.lastBar.time){
+    var _msn=window.mpSrvNow?window.mpSrvNow():Date.now();
+    var iv=parseInt(p.tf,10)*60,nb=Math.floor(_msn/1000/iv)*iv; // server-clock bucketing (skewed device clocks rolled bars at wrong boundaries)
+    /* ROLL GRACE: hold the roll until the first NEW-minute trade arrives (time-ordered stream → old minute
+       complete) or 2s pass — a boundary-crossing ticker event must not finalize an incomplete bucket (clipped body) */
+    var _grace=false;
+    if(nb>p.lastBar.time){try{var _TKg=window.mpTicks1m&&window.mpTicks1m[p.sym];if(_TKg&&_TKg.cur&&_TKg.cur.t<nb&&(_msn/1000-nb)<2)_grace=true;}catch(_){}}
+    if(nb>p.lastBar.time&&!_grace){
       /* FINALIZE the closing bar from exchange-stamped trade buckets BEFORE rolling — the closed candle becomes
          exactly the authoritative kline and never changes again (1m: full OHLC; >1m: final-minute close + extremes). */
       try{var _TKz=window.mpTicks1m&&window.mpTicks1m[p.sym];if(_TKz){var _zbs=[_TKz.cur,_TKz.prev],_zch=false;
@@ -242,7 +247,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       else{p.lastBar={time:nb,open:p.lastBar.close,high:Math.max(p.lastBar.close,pr),low:Math.min(p.lastBar.close,pr),close:pr};}
       try{if(p.bars&&p.bars.length&&p.lastBar.time>p.bars[p.bars.length-1].time)p.bars.push(p.lastBar);}catch(_){}
       try{p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}}
-    else{p.lastBar.close=pr;if(pr>p.lastBar.high)p.lastBar.high=pr;if(pr<p.lastBar.low)p.lastBar.low=pr;
+    else{if(!_grace){p.lastBar.close=pr;if(pr>p.lastBar.high)p.lastBar.high=pr;if(pr<p.lastBar.low)p.lastBar.low=pr;}/* during the roll grace pr may already be a NEW-minute price — never bake it into the closing bar */
       try{var _TKm=window.mpTicks1m&&window.mpTicks1m[p.sym];if(_TKm&&p._lgp>0){var _mm=[_TKm.cur,_TKm.prev];for(var _mi9=0;_mi9<2;_mi9++){var _mk=_mm[_mi9];if(!_mk)continue;if(_mk.t<p.lastBar.time||_mk.t>=p.lastBar.time+iv)continue;if(_mk.t===p.lastBar.time&&p.lastBar.open!==_mk.o){p.lastBar.open=_mk.o;if(_mk.o>p.lastBar.high)p.lastBar.high=_mk.o;if(_mk.o<p.lastBar.low)p.lastBar.low=_mk.o;}/* retro-open: adopt the exchange open (first trade of the interval) */if(_mk.h>p.lastBar.high&&_mk.h<p._lgp*1.025)p.lastBar.high=_mk.h;if(_mk.l<p.lastBar.low&&_mk.l>p._lgp*0.975)p.lastBar.low=_mk.l;}}}catch(_){} /* exact trade-stream extremes (exchange-stamped) → wicks match the authoritative kline */}
     try{p.candle.update(p.lastBar);}catch(e){}label(p);
   }

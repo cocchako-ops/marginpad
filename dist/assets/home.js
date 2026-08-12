@@ -396,7 +396,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
           if(_k2===kd.length-1&&_b.time<=_lastA.time)continue;
           var _a2=_tmap[_b.time];
           if(!_a2){if(_b.time>=bars[0].time){_mism=true;break;}continue;}
-          if(_a2.open!==_b.open||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}
+          if(Math.abs(_a2.open-_b.open)>Math.abs(_b.open)*5e-5||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}/* open tolerates ~a few ticks (0.005%): Bybit's kline open can differ one tick from the public trade stream (internal matching the feed doesn't carry) — strict equality forced an invisible \$0.1 'heal' repaint every minute. h/l/c stay strictly exact; a REAL open divergence (venue flap, >0.005%) still heals. */
         if(_mism){_rmode=2;bars=kd;if(_lastK.time===_lastA.time)bars[bars.length-1]=_lastA;else if(_lastA.time>_lastK.time){if(_tmap[_lastK.time])bars[bars.length-1]=_tmap[_lastK.time];bars.push(_lastA);}}/* heal history but keep our fresher forming bar AND our trade-finalized copy of the minute the lagging snapshot still shows as partial */
         else if(_app.length){_rmode=1;bars=bars.concat(_app);}
       }
@@ -492,7 +492,14 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     if(!candle||!lastBar)return;var _snow=window.mpSrvNow?window.mpSrvNow():Date.now();var ivSec=parseInt(chartTf,10)*60,nowBar=Math.floor(_snow/1000/ivSec)*ivSec; // SERVER-clock bucketing — a skewed device clock must not roll bars at wrong boundaries
     if(nowBar-lastBar.time>ivSec*1.5){reloadKlinesThrottled();if(!(p>0)||nowBar-lastBar.time>ivSec*30)return;} // klines is behind → refetch real candles; BUT if we have a live WS price and the gap is modest (≤30 bars), fall through and roll a LIVE forming candle so the chart keeps MOVING instead of freezing while klines catches up (fixes "candles freeze but price doesn't" on a brief klines stall). Huge gaps (e.g. a 4h-stale klines endpoint) still wait for the real refetch. THIS RUNS EVEN WITH NO LIVE PRICE (checked BEFORE the p>0 bail below) — the old order bailed on a stalled feed and never refetched, so new bars stopped forming and the chart "froze" until the 60s re-sync.
     if(!(p>0))return; // no usable live price this tick → the gap above is already handled; nothing else to update
-    if(nowBar>lastBar.time){
+    /* ROLL GRACE (2026-08-12, "candle body ends incomplete" screenshot): a tickers/poll event can cross the
+       boundary 100-300ms BEFORE the closing minute's final publicTrade batch lands — finalizing then snapshots
+       an INCOMPLETE bucket (clipped close/body, healed later by the re-sync = the visible glitch). publicTrade
+       is time-ordered per symbol, so the first NEW-minute trade guarantees the old minute is complete → hold the
+       roll until that trade arrives (or 2s pass — a quiet boundary means no late trades, bucket already final). */
+    var _grace=false;
+    if(nowBar>lastBar.time){try{var _TKg=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TKg&&_TKg.cur&&_TKg.cur.t<nowBar&&(_snow/1000-nowBar)<2)_grace=true;}catch(_){}}
+    if(nowBar>lastBar.time&&!_grace){
       /* FINALIZE the closing bar from exchange-stamped trade buckets (mpTicks1m) BEFORE rolling: the candle that
          just closed becomes EXACTLY the authoritative kline (1m: full OHLC; >1m: final-minute close + extremes)
          and must never change again — the re-sync then has nothing to repaint (owner directive 2026-08-12). */
@@ -510,7 +517,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       if(_nbk){lastBar={time:nowBar,open:_nbk.o,high:_nbk.h,low:_nbk.l,close:_nbk.c};_lgp=_nbk.c;_rej=0;} /* the new bar opens at the FIRST TRADE of its interval (exchange convention) with exact extremes — not at prevClose */
       else{lastBar={time:nowBar,open:_op,high:Math.max(_op,_cl),low:Math.min(_op,_cl),close:_cl};if(!_spk)_lgp=p;_rej=0;}/* no trade bucket yet (quiet first ms / non-WS symbol) → contiguous prev-close open, corrected by the retro-open fix on the first trade */
       try{if(bars&&bars.length&&lastBar.time>bars[bars.length-1].time)bars.push(lastBar);}catch(_){}
-      try{var _vr=chart.timeScale().getVisibleLogicalRange();if(!_vr||!bars.length||_vr.to>=bars.length-2)chart.timeScale().scrollToRealTime();}catch(e){}_dispP=lastBar.close;try{candle.update(lastBar);}catch(e){} /* only snap to the live edge if the user is ALREADY there — don't yank them back while they pan history */}else{if(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025){if(++_rej<3)return;/* reject a lone >2.5% print (a bad tick that would ratchet a fake wick); accept only if 3 in a row confirm it's a real move */}_lgp=p;_rej=0;lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;
+      try{var _vr=chart.timeScale().getVisibleLogicalRange();if(!_vr||!bars.length||_vr.to>=bars.length-2)chart.timeScale().scrollToRealTime();}catch(e){}_dispP=lastBar.close;try{candle.update(lastBar);}catch(e){} /* only snap to the live edge if the user is ALREADY there — don't yank them back while they pan history */}else{if(!_grace){if(_lgp>0&&Math.abs(p-_lgp)/_lgp>0.025){if(++_rej<3)return;/* reject a lone >2.5% print (a bad tick that would ratchet a fake wick); accept only if 3 in a row confirm it's a real move */}_lgp=p;_rej=0;lastBar.close=p;if(p>lastBar.high)lastBar.high=p;if(p<lastBar.low)lastBar.low=p;}/* during the roll grace p may already be a NEW-minute price — never bake it into the closing bar; only the time-scoped bucket merge below may touch it */
       try{var _TK=window.mpTicks1m&&window.mpTicks1m[chartSym];if(_TK&&_lgp>0){var _mbs=[_TK.cur,_TK.prev];for(var _bi9=0;_bi9<2;_bi9++){var _bk=_mbs[_bi9];if(!_bk)continue;if(_bk.t<lastBar.time||_bk.t>=lastBar.time+ivSec)continue;if(_bk.t===lastBar.time&&lastBar.open!==_bk.o){lastBar.open=_bk.o;if(_bk.o>lastBar.high)lastBar.high=_bk.o;if(_bk.o<lastBar.low)lastBar.low=_bk.o;}/* retro-open: the bar rolled before its first trade arrived → adopt the exchange open (first trade of the interval) */if(_bk.h>lastBar.high&&_bk.h<_lgp*1.025)lastBar.high=_bk.h;if(_bk.l<lastBar.low&&_bk.l>_lgp*0.975)lastBar.low=_bk.l;}}}catch(_){} /* merge EXACT trade-stream extremes (exchange-stamped 1m buckets) into the forming bar — wicks match the authoritative kline instead of growing on the 30s re-sync */
       startSmoothP();}}
   // ease the forming candle's displayed close toward the true price at 60fps so it glides instead of snapping
@@ -1130,8 +1137,12 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
         var TK=window.mpTicks1m=window.mpTicks1m||{},tk=TK[sym]; // EXACT per-minute OHLC from EVERY trade in the batch, bucketed by the trade's own exchange timestamp (T) — immune to device-clock skew. The forming candle merges these extremes so wicks are exact instead of rAF-sampled (the old path kept only the batch's LAST trade → missed extremes → the 30s re-sync visibly grew wicks).
         for(var _ti=0;_ti<m.data.length;_ti++){var _tr=m.data[_ti],_tp=parseFloat(_tr.p),_tt=Math.floor((+_tr.T||Date.now())/60000)*60;
           if(!isFinite(_tp))continue;
-          if(!tk||tk.cur.t!==_tt)tk=TK[sym]={cur:{t:_tt,o:_tp,h:_tp,l:_tp,c:_tp},prev:tk?tk.cur:null};
-          else{var _cb=tk.cur;_cb.c=_tp;if(_tp>_cb.h)_cb.h=_tp;if(_tp<_cb.l)_cb.l=_tp;}}
+          if(!tk)tk=TK[sym]={cur:{t:_tt,o:_tp,h:_tp,l:_tp,c:_tp},prev:null};
+          else if(_tt===tk.cur.t){var _cb=tk.cur;_cb.c=_tp;if(_tp>_cb.h)_cb.h=_tp;if(_tp<_cb.l)_cb.l=_tp;}
+          else if(_tt>tk.cur.t)tk=TK[sym]={cur:{t:_tt,o:_tp,h:_tp,l:_tp,c:_tp},prev:tk.cur};
+          else if(tk.prev&&_tt===tk.prev.t){var _pb=tk.prev;_pb.c=_tp;if(_tp>_pb.h)_pb.h=_tp;if(_tp<_pb.l)_pb.l=_tp;}
+          /* older than prev → drop; the old `cur.t!==_tt → reset` path let a straggler REWIND cur to a past
+             minute and shove the live minute into prev — bucket order is now monotonic no matter what arrives */}
         var p=parseFloat(m.data[m.data.length-1].p);if(isFinite(p))stage(sym,p,chgMap[sym]);} // every trade → staged + coalesced per frame
       else if(m.topic.indexOf('tickers.')===0&&m.data){var sym2=m.topic.slice(8).replace('USDT','');var lp=parseFloat(m.data.lastPrice);var chg=(m.data.price24hPcnt!=null&&m.data.price24hPcnt!=='')?parseFloat(m.data.price24hPcnt)*100:null;if(chg!=null&&isFinite(chg))chgMap[sym2]=chg;if(isFinite(lp))stage(sym2,lp,chgMap[sym2]);} // 24h change %
     }catch(_){}};
