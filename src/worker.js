@@ -7914,7 +7914,8 @@ async function handleTelegram(request, env) {
     if (pairCnt >= 10) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: '⚠️ Limit reached — max 10 open ' + p.sym + ' positions. Close one first (<code>/close ' + p.sym + '</code>).', ...base }); return new Response('ok'); }
     // Write the trade STRAIGHT into the linked account's journal (My Trades) — same store as the web/REST bot, so it
     // auto-syncs to the website within ~14s (pullTrades). No claim link needed; opening here = opening on the web.
-    const long = o.side === 'long', mmr = 0.005, entry = p.price, lev = o.lev, margin = o.margin;
+    if (+o.margin > 100000) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Margin max is $100,000 per trade. Try a smaller size.', ...base }); return new Response('ok'); } // same cap the web terminal + /api/trade enforce
+    const long = o.side === 'long', mmr = 0.005, entry = p.price, lev = Math.min(maxLevFor(p.sym), Math.max(1, +o.lev || 1)), margin = o.margin; // per-coin leverage cap — this path trusted the raw /open text (x700.5 on a microcap parsed fine) while /api/trade and the bot API both clamp
     const liq = mpcLiq(entry, lev, mmr, long);
     const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: p.sym, side: o.side, entry, stop: null, tp: null, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: Math.min(0.00055, 0.1/Math.max(1,lev)), status: 'open', pnl: null, src: 'bot' };
     let promos = []; try { promos = await xpPromos(env); } catch (e) {}
@@ -8270,14 +8271,20 @@ async function payWeeklyPrizes(env) {
     } else {
       // 3 boards, top-5 each, from the owner-tunable config (Settings). One account can win several boards.
       const roeTop = board.filter(x => notB(x) && (+x.roe > 0)).slice(0, 5); // only pay a positive best-trade ROE (no prize for a losing/liquidated "best")
-      const wrTop = board.filter(x => notB(x) && ((+x.w || 0) + (+x.l || 0)) >= 20).map(x => { const w = +x.w || 0, l = +x.l || 0; return { uid: x.uid, name: x.name, w, l, wr: w / (w + l) }; }).sort((a, b) => (b.wr - a.wr) || ((b.w + b.l) - (a.w + a.l))).slice(0, 5);
+      // PAYOUT MUST MIRROR THE DISPLAYED BOARD EXACTLY (audit 2026-08-13): the shown WR board ranks by the
+      // WILSON lower bound (see /lb GET) — the old raw-% sort here could pay a different order than displayed
+      // (20-2 raw 90.9% ranks above 60-10 raw 85.7% by raw, but BELOW it by Wilson).
+      const _wilsonP = (w, n) => { if (!n) return 0; const z = 1.96, pr = w / n, z2 = z * z; return (pr + z2 / (2 * n) - z * Math.sqrt((pr * (1 - pr) + z2 / (4 * n)) / n)) / (1 + z2 / n); };
+      const wrTop = board.filter(x => notB(x) && ((+x.w || 0) + (+x.l || 0)) >= 20).map(x => { const w = +x.w || 0, l = +x.l || 0; return { uid: x.uid, name: x.name, w, l, wr: w / (w + l), score: _wilsonP(w, w + l) }; }).sort((a, b) => (b.score - a.score) || ((b.w + b.l) - (a.w + a.l))).slice(0, 5);
       const xpTop = xpBoard.filter(x => notB(x) && (+x.xp || 0) > 0).slice(0, 5);
       const push = (list, prizes, key, mk) => list.forEach((x, i) => { const cents = Math.round((prizes[i] || 0) * 100); if (cents > 0) { payload.push({ acct: x.uid, cents, rank: i + 1, board: key }); ctx[x.uid + '|' + key] = mk(x); } });
       if (ws >= SPOT_LB_START) {
         // Spot bank board — balances read at settle time (the */10 cron fires minutes after the season rolls over)
         let spotB = [];
         try { if (env.SPOT) { const sr = await spotStub(env).fetch(new Request('https://do/lbbank')); spotB = ((await sr.json()) || {}).top || []; } } catch (e) {}
-        const spotTop = spotB.map(x => ({ uid: 'u:' + x.uid, cardC: +x.cardC || 0 })).filter(notB).filter(x => x.cardC > 1000000).slice(0, 5); // pay prizes ONLY to profitable accounts (bank > $10k start); the display board (/lbbank) now also lists engaged ≤$10k users, but they don't win real USDT
+        let spotTop = spotB.map(x => ({ uid: 'u:' + x.uid, cardC: +x.cardC || 0 })).filter(notB).filter(x => x.cardC > 1000000).slice(0, 8); // pay prizes ONLY to profitable accounts (bank > $10k start); the display board (/lbbank) now also lists engaged ≤$10k users, but they don't win real USDT
+        try { const spr = await resolveProfiles(env, spotTop.map(x => x.uid)); spotTop = spotTop.filter(x => { const pk = x.uid.slice(2); return spr[pk] && spr[pk].username; }); } catch (e) {} // display shows NAMED accounts only (anonymous = farm wall, 2026-08-05) — the payout must not pay an account the board never showed
+        spotTop = spotTop.slice(0, 5);
         push(spotTop, cfg.lbRoe, 'spot', x => ({ bank: x.cardC / 100 }));
         push(roeTop, cfg.lbRoe2, 'roe', x => ({ roe: +x.roe || 0, symbol: x.symbol || '', side: x.side || '', name: x.name || '' })); // Highest-ROE board re-added (owner 2026-08-03) with its own small prizes
       } else {
@@ -8286,9 +8293,10 @@ async function payWeeklyPrizes(env) {
       push(wrTop, cfg.lbWr, 'wr', x => ({ name: x.name || '', wr: Math.round(x.wr * 100) }));
       push(xpTop, cfg.lbXp, 'xp', x => ({ name: x.name || '', xp: +x.xp || 0 }));
     }
-    let paidOut = [];
+    let paidOut = [], payOk = payload.length === 0; // nothing to pay = trivially settled
     if (payload.length) {
-      try { const pr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/paywinners', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ week: ws, winners: payload }) })); const pj = await pr.json(); paidOut = (pj && pj.payouts) || []; } catch (e) {}
+      try { const pr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/paywinners', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ week: ws, winners: payload }) })); const pj = await pr.json(); if (pj && (pj.ok || Array.isArray(pj.payouts))) { payOk = true; paidOut = pj.payouts || []; } } catch (e) {}
+      if (!payOk) { try { await tgAdmin(env, '<b>Weekly prize payout FAILED</b> for season ' + new Date(ws).toISOString().slice(0, 10) + ' (' + payload.length + ' winners) - RewardLedger unreachable. Will retry next cron (paywinners is idempotent).'); } catch (e) {} continue; } // do NOT set the paid flag — the old code marked the season paid even when the ledger call failed, silently stranding every winner
     }
     // email + XP-bonus the winners who were JUST paid (idempotent — re-runs return no fresh payouts, so no duplicate emails/XP)
     if (paidOut.length) {
@@ -12695,7 +12703,8 @@ export class UserStore {
     try { s.exec('ALTER TABLE users ADD COLUMN prem_seen INTEGER DEFAULT 0'); s.exec('UPDATE users SET prem_seen=1 WHERE premium>0'); } catch (e) {} // "has this user seen the premium-upgrade celebration?" The backfill (existing premium = already-seen, no retroactive mass-animation) is TIED TO THE ALTER SUCCEEDING — so it runs exactly ONCE (first boot after ship); every later boot the ALTER throws → catch → backfill skipped → a subsequent reset (e.g. the mp-ops-granted cohort set back to 0 for the delayed welcome) is NEVER overwritten. New users get DEFAULT 0 → they get the celebration.
     for (const col of ['bio TEXT', 'avatar TEXT', 'accent TEXT', 'coins TEXT', 'frame TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // public profile personalization: bio, avatar emoji, accent colour, favourite coins (csv)
     s.exec('CREATE TABLE IF NOT EXISTS xplog(user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)'); // XP earn/adjust history (ring-buffered ~150/user)
-    s.exec('CREATE TABLE IF NOT EXISTS xpboost_ev(user_id TEXT, ts INTEGER, xp INTEGER, note TEXT, seen INTEGER DEFAULT 0)'); // XP boost/happy-hour hits queued for the ops live feed (drained by the minute cron via /xpboostev)
+    s.exec('CREATE TABLE IF NOT EXISTS xpboost_ev(user_id TEXT, ts INTEGER, xp INTEGER, note TEXT, seen INTEGER DEFAULT 0)');
+    try { s.exec('ALTER TABLE xpboost_ev ADD COLUMN kind TEXT'); } catch (e) {} // dedupe discriminator: 'hh' or 'p:<promoId>' — (user_id, ts=closeTs, kind) uniquely names one grant of one boost on one close // XP boost/happy-hour hits queued for the ops live feed (drained by the minute cron via /xpboostev)
     s.exec('CREATE TABLE IF NOT EXISTS xpday(user_id TEXT, day TEXT, src TEXT, n INTEGER DEFAULT 0, PRIMARY KEY(user_id,day,src))'); // per-source per-UTC-day earned, for anti-abuse caps
     let _xlAdded = false; try { s.exec('ALTER TABLE users ADD COLUMN xp_life INTEGER DEFAULT 0'); _xlAdded = true; } catch (e) {} // Patch B (2026-07-30): monotonic per-grant XP accumulator — only ever incremented (by _grantXp), never decremented and never trimmed (unlike xplog). Trim-proof basis for the seasonal XP board (seasonal = xp_life - per-season base).
     if (_xlAdded) { try { s.exec('UPDATE users SET xp_life=COALESCE(xp,0)'); } catch (e) {} } // one-time backfill TIED to the ALTER success so it never re-runs. CAVEAT: users.xp is NET (already reduced by duel-stake _takeXp), so the seeded xp_life is NOT true "lifetime earned" — it is "net XP at migration + positive XP earned after". Harmless to the seasonal delta (both ends use xp_life), but do NOT surface xp_life to users as a lifetime-earned total.
@@ -12905,14 +12914,18 @@ export class UserStore {
         if (ts9 < cut) continue;
         const m = +e.margin || 0; if (!(m > 0) || m > 100000) continue;
         const pv = (kind !== 'open' && isFinite(+e.pnl)) ? +e.pnl : null;
-        if (nIns >= 60 && !(kind === 'close' && pv != null && pv <= 0)) continue; // per-sync cap (20→60); a LOSING close is ALWAYS logged so a heavy trader can't shed losses from the win-rate log in a burst
         const roe = (pv != null && m > 0) ? pv / m * 100 : null;
         const liq9 = (kind === 'close' && pv != null && pv <= -m * 0.985) ? 1 : 0;
-        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24));
-        nIns++; try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9)) { var _gh9 = this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 750, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); if (_gh9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note) VALUES(?,?,?,?)', uid, ts9, _gh9, (String(e.sym || '').toUpperCase() + ' ' + Math.round(roe) + '% ROE +' + _gh9 + ' XP · Happy Hour').slice(0, 60)); } catch (e7) {} } }
+        // XP grants BEFORE the per-sync tradeev insert cap (same principle as _lbBest above): every grant has its
+        // own day-cap, so the 60-row logging cap must never be the thing that eats a winning close's XP/boost.
+        try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9) && !this.rows("SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind='hh' LIMIT 1", uid, ts9)[0]) { var _gh9 = this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 750, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); if (_gh9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gh9, (String(e.sym || '').toUpperCase() + ' ' + Math.round(roe) + '% ROE +' + _gh9 + ' XP · Happy Hour').slice(0, 60), 'hh'); } catch (e7) {} } }
           if (roe != null) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
             for (var _pi = 0; _pi < _pl.length; _pi++) { var _p = _pl[_pi]; if (!_p || _p.enabled === false) continue; if (!(ts9 >= _p.startMs && ts9 < _p.endMs && _p.endMs > _p.startMs)) continue; if (_p.coins && _p.coins.length && _p.coins.indexOf(_symU) < 0) continue; if (_lv > (+_p.levMax || 1000)) continue; if (roe < (+_p.roeMin || 0)) continue; if (_p.winOnly !== false && !(pv > 0)) continue; if (!_best || (+_p.xp || 0) > (+_best.xp || 0)) _best = _p; }
-            if (_best) { var _gp9 = this._grantXp(uid, 'trade_promo', +_best.xp || 0, { dayCap: (+_best.dayCap || 700), note: (String(_best.title || 'XP Promo')).slice(0, 30) + ' · ' + _symU + ' ' + Math.round(roe) + '% ROE' }); if (_gp9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note) VALUES(?,?,?,?)', uid, ts9, _gp9, (_symU + ' ' + Math.round(roe) + '% ROE +' + _gp9 + ' XP · ' + String(_best.title || 'XP Promo')).slice(0, 60)); } catch (e7) {} } } } } catch (xe) {}
+            if (_best && this.rows('SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind=? LIMIT 1', uid, ts9, 'p:' + String(_best.id || ''))[0]) _best = null; /* this exact close already earned this promo once — a DO-reset re-sync must not double-grant */
+            if (_best) { var _gp9 = this._grantXp(uid, 'trade_promo', +_best.xp || 0, { dayCap: (+_best.dayCap || 700), note: (String(_best.title || 'XP Promo')).slice(0, 30) + ' · ' + _symU + ' ' + Math.round(roe) + '% ROE' }); if (_gp9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gp9, (_symU + ' ' + Math.round(roe) + '% ROE +' + _gp9 + ' XP · ' + String(_best.title || 'XP Promo')).slice(0, 60), 'p:' + String(_best.id || '')); } catch (e7) {} } } } } catch (xe) {}
+        if (nIns >= 60 && !(kind === 'close' && pv != null && pv <= 0)) continue; // per-sync cap (20→60); a LOSING close is ALWAYS logged so a heavy trader can't shed losses from the win-rate log in a burst
+        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24));
+        nIns++;
       }
       if (nIns) sql.exec('DELETE FROM tradeev WHERE ts < ?', now - 30 * 86400000); // 30d (was 14d): the season is 14d long, so the old prune deleted early-season closes right before the final payout — the WR board shifted in the season's last days
     } catch (e9) {}
@@ -13486,7 +13499,7 @@ export class UserStore {
     if (path === '/journaldump') { return this.j({ journal: this._loadJournal(String(b.uid || '')) }); } // admin/E2E raw journal read (sc/exit/swT/pendClose visible, unlike _j2bot)
     if (path === '/xpboostev') { // minute-cron drain: unseen XP boost/HH hits -> ops live feed (who hit the boost)
       const evs = this.rows('SELECT e.user_id uid, e.ts, e.xp, e.note, u.username FROM xpboost_ev e LEFT JOIN users u ON u.id = e.user_id WHERE e.seen = 0 ORDER BY e.ts LIMIT 40');
-      try { this.sql.exec('UPDATE xpboost_ev SET seen = 1 WHERE seen = 0'); this.sql.exec('DELETE FROM xpboost_ev WHERE ts < ?', Date.now() - 86400000); } catch (e) {}
+      try { this.sql.exec('UPDATE xpboost_ev SET seen = 1 WHERE seen = 0'); this.sql.exec('DELETE FROM xpboost_ev WHERE ts < ?', Date.now() - 7 * 86400000); } catch (e) {}
       return this.j({ events: evs });
     }
     if (path === '/xpdiag') { // read-only XP-credit audit (support/ops): the user row, every recent XP grant with its note, and every recent trade close with ts/sym/lev/margin/pnl/roe — the full set of promo predicate inputs, so a "boost didn't credit" report is verifiable line by line
