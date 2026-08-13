@@ -598,6 +598,178 @@ function _susd(x) { x = +x; if (!isFinite(x)) return null; const a = Math.abs(x)
 function _spx(x) { x = +x; if (!isFinite(x)) return null; return '$' + x.toLocaleString('en-US', { maximumFractionDigits: x >= 100 ? 0 : x >= 1 ? 2 : 6 }); }
 function _pick(sym, arr) { let h = 0; const s = String(sym); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return arr[h % arr.length]; }
 function _hhmm() { const t = new Date(); return ('0' + t.getUTCHours()).slice(-2) + ':' + ('0' + t.getUTCMinutes()).slice(-2); }
+// ---- SSR coin prose, translated (2026-08-13, AI-visibility push): the 12 lang coin dashboards were the single
+// biggest JS-only mass (696 pages AI crawlers saw as empty shells). One template set per lang; {k} placeholders
+// filled by ssrCoinProseL10n below. EN keeps the richer variant-picking ssrCoinProse. sr deliberately absent
+// (no /sr/ coin pages). Keys mirror the EN sentence builder 1:1 so data gating stays identical.
+const SSR_L10N = {
+  de: { px: '{name} ({sym}) notiert aktuell bei {px}{ch}.', chFlat: ', kaum verändert in den letzten 24 Stunden', chUp: ', plus {v}% in den letzten 24 Stunden', chDn: ', minus {v}% in den letzten 24 Stunden',
+    rank: 'Nach Marktkapitalisierung liegt der Coin auf Platz #{rank} mit {mcap}', rankVol: ', bei {vol} Handelsvolumen über alle Märkte am vergangenen Tag',
+    fundFlat: 'Die aggregierte Funding-Rate ist mit {f}% praktisch flach — weder Longs noch Shorts zahlen gerade eine nennenswerte Prämie.', fundPos: 'Das Funding ist mit +{f}% positiv — {sym}-Longs bezahlen Shorts fürs Halten, ein long-lastiger Markt.', fundNeg: 'Das Funding ist mit {f}% negativ — Shorts bezahlen Longs, ein short-lastiger Markt.',
+    oi: 'Das Open Interest über die großen Börsen beträgt {oi}', oiSteady: ' und blieb über 24 Stunden weitgehend stabil', oiUp: ', plus {v}% an einem Tag — neuer Hebel fließt in den Markt', oiDn: ', minus {v}% an einem Tag — Positionen werden abgebaut', oiRatio: ' — rund {r}% der gesamten Marktkapitalisierung steckt in offenen Perp-Positionen',
+    liq: '{t} an {sym}-Positionen wurde in den letzten 24 Stunden liquidiert', liqLong: ' — überwiegend Longs ({l} gegenüber {s} bei Shorts), der jüngste Schmerz kam also auf dem Weg nach unten', liqShort: ' — überwiegend Shorts ({s} gegenüber {l} bei Longs), gesqueezed auf dem Weg nach oben', liqEven: ', ziemlich gleichmäßig verteilt auf Longs ({l}) und Shorts ({s})', liqQuiet: 'Bei den Liquidationen war es ruhig — unter $50K an {sym}-Positionen wurden in den letzten 24 Stunden zwangsliquidiert.',
+    posBal: 'Die Positionierung ist nahezu ausgeglichen: {l}% der Konten sind long, {s}% short — keine überfüllte Seite.', posLean: 'Die Positionierung neigt zur {side}-Seite: {l}% der Konten sind long, {s}% short.', sideLong: 'Long', sideShort: 'Short',
+    momoFlat: 'Das Momentum ist gedämpft — der Preis ist auf Wochen- wie Monatssicht etwa unverändert.', momo: 'Auf Wochensicht liegt {sym} {w}, über 30 Tage {m}.', up: '{v}% im Plus', dn: '{v}% im Minus',
+    athBelow: 'Der Preis liegt {v}% unter dem Allzeithoch von {ath}{yr}.', athNear: '{sym} notiert weniger als 1% unter dem Allzeithoch von {ath}{yr}.', yr: ' (aufgestellt {y})',
+    head: '{name} ({sym}) Markt-Überblick', foot: 'Erstellt aus live aggregierten Derivate-Daten · aktualisiert {t} UTC · die Zahlen auf dieser Seite aktualisieren sich laufend.' },
+  es: { px: '{name} ({sym}) cotiza ahora a {px}{ch}.', chFlat: ', casi sin cambios en las últimas 24 horas', chUp: ', un {v}% arriba en las últimas 24 horas', chDn: ', un {v}% abajo en las últimas 24 horas',
+    rank: 'Ocupa el puesto #{rank} por capitalización de mercado con {mcap}', rankVol: ', con {vol} negociados en todos los mercados en el último día',
+    fundFlat: 'La tasa de funding agregada está prácticamente plana en {f}% — ni largos ni cortos pagan una prima relevante ahora mismo.', fundPos: 'El funding es positivo, +{f}% — los largos de {sym} pagan a los cortos por mantener posición: mercado inclinado al lado largo.', fundNeg: 'El funding es negativo, {f}% — los cortos pagan a los largos: mercado inclinado al lado corto.',
+    oi: 'El interés abierto en los principales exchanges asciende a {oi}', oiSteady: ' y se mantuvo básicamente estable en 24 horas', oiUp: ', un {v}% más en un día — entra apalancamiento nuevo', oiDn: ', un {v}% menos en un día — se deshacen posiciones', oiRatio: ' — cerca del {r}% de toda la capitalización del coin está en posiciones perp abiertas',
+    liq: 'En las últimas 24 horas se liquidaron {t} en posiciones de {sym}', liqLong: ' — sobre todo largos ({l} frente a {s} en cortos): el dolor reciente llegó en la caída', liqShort: ' — sobre todo cortos ({s} frente a {l} en largos), exprimidos en la subida', liqEven: ', repartidos de forma bastante pareja entre largos ({l}) y cortos ({s})', liqQuiet: 'Las liquidaciones han estado tranquilas — menos de $50K en posiciones de {sym} se cerraron a la fuerza en 24 horas.',
+    posBal: 'El posicionamiento está casi equilibrado: {l}% de las cuentas en largo y {s}% en corto — ningún lado saturado.', posLean: 'El posicionamiento se inclina al lado {side}: {l}% de las cuentas en largo frente a {s}% en corto.', sideLong: 'largo', sideShort: 'corto',
+    momoFlat: 'El momentum está apagado — el precio está prácticamente plano tanto en la semana como en el mes.', momo: 'En la última semana {sym} va {w}, y en 30 días {m}.', up: '{v}% arriba', dn: '{v}% abajo',
+    athBelow: 'El precio está un {v}% por debajo de su máximo histórico de {ath}{yr}.', athNear: '{sym} cotiza a menos de un 1% de su máximo histórico de {ath}{yr}.', yr: ' (marcado en {y})',
+    head: 'Lectura de mercado de {name} ({sym})', foot: 'Redactado con datos de derivados agregados en vivo · actualizado {t} UTC · las cifras de esta página se refrescan continuamente.' },
+  pt: { px: '{name} ({sym}) é negociado agora a {px}{ch}.', chFlat: ', quase sem variação nas últimas 24 horas', chUp: ', {v}% acima nas últimas 24 horas', chDn: ', {v}% abaixo nas últimas 24 horas',
+    rank: 'Ocupa a posição #{rank} por capitalização de mercado, com {mcap}', rankVol: ', e {vol} negociados em todos os mercados no último dia',
+    fundFlat: 'A taxa de funding agregada está praticamente estável em {f}% — nem comprados nem vendidos pagam um prémio relevante agora.', fundPos: 'O funding está positivo em +{f}% — os comprados em {sym} pagam aos vendidos para manter posição: mercado inclinado para o lado comprado.', fundNeg: 'O funding está negativo em {f}% — os vendidos pagam aos comprados: mercado inclinado para o lado vendido.',
+    oi: 'O interesse em aberto nas principais bolsas soma {oi}', oiSteady: ' e manteve-se estável ao longo de 24 horas', oiUp: ', {v}% a mais num dia — nova alavancagem a entrar', oiDn: ', {v}% a menos num dia — posições a serem desfeitas', oiRatio: ' — cerca de {r}% de toda a capitalização do coin está em posições perp abertas',
+    liq: '{t} em posições de {sym} foram liquidados nas últimas 24 horas', liqLong: ' — sobretudo comprados ({l} contra {s} de vendidos): a dor recente veio na queda', liqShort: ' — sobretudo vendidos ({s} contra {l} de comprados), espremidos na subida', liqEven: ', divididos de forma bastante equilibrada entre comprados ({l}) e vendidos ({s})', liqQuiet: 'As liquidações estiveram calmas — menos de $50K em posições de {sym} foram fechadas à força em 24 horas.',
+    posBal: 'O posicionamento está quase equilibrado: {l}% das contas compradas e {s}% vendidas — nenhum lado lotado.', posLean: 'O posicionamento pende para o lado {side}: {l}% das contas compradas contra {s}% vendidas.', sideLong: 'comprado', sideShort: 'vendido',
+    momoFlat: 'O momentum está fraco — o preço está praticamente estável na semana e no mês.', momo: 'Na última semana {sym} está {w}, e em 30 dias {m}.', up: '{v}% acima', dn: '{v}% abaixo',
+    athBelow: 'O preço está {v}% abaixo do máximo histórico de {ath}{yr}.', athNear: '{sym} negocia a menos de 1% do máximo histórico de {ath}{yr}.', yr: ' (registado em {y})',
+    head: 'Leitura de mercado de {name} ({sym})', foot: 'Escrito a partir de dados de derivados agregados ao vivo · atualizado {t} UTC · os números desta página atualizam-se continuamente.' },
+  fr: { px: '{name} ({sym}) s’échange actuellement à {px}{ch}.', chFlat: ', quasiment inchangé sur les dernières 24 heures', chUp: ', en hausse de {v}% sur 24 heures', chDn: ', en baisse de {v}% sur 24 heures',
+    rank: 'Il occupe le rang #{rank} par capitalisation avec {mcap}', rankVol: ', et {vol} échangés sur l’ensemble des marchés au cours du dernier jour',
+    fundFlat: 'Le taux de funding agrégé est quasiment neutre à {f}% — ni les longs ni les shorts ne paient de prime significative en ce moment.', fundPos: 'Le funding est positif à +{f}% — les longs {sym} paient les shorts pour conserver leur position : marché penché côté long.', fundNeg: 'Le funding est négatif à {f}% — les shorts paient les longs : marché penché côté short.',
+    oi: 'L’open interest sur les grandes plateformes atteint {oi}', oiSteady: ' et reste globalement stable sur 24 heures', oiUp: ', en hausse de {v}% en un jour — du levier frais entre sur le marché', oiDn: ', en baisse de {v}% en un jour — des positions se dénouent', oiRatio: ' — environ {r}% de toute la capitalisation du coin est logée dans des positions perp ouvertes',
+    liq: '{t} de positions {sym} ont été liquidées au cours des dernières 24 heures', liqLong: ' — surtout des longs ({l} contre {s} de shorts) : la douleur récente est venue à la baisse', liqShort: ' — surtout des shorts ({s} contre {l} de longs), pressés à la hausse', liqEven: ', réparties de façon assez équilibrée entre longs ({l}) et shorts ({s})', liqQuiet: 'Côté liquidations, c’est calme — moins de 50K$ de positions {sym} ont été clôturées de force en 24 heures.',
+    posBal: 'Le positionnement est proche de l’équilibre : {l}% des comptes sont longs, {s}% shorts — aucun côté surchargé.', posLean: 'Le positionnement penche côté {side} : {l}% des comptes sont longs contre {s}% shorts.', sideLong: 'long', sideShort: 'short',
+    momoFlat: 'Le momentum est atone — le prix est quasiment stable sur la semaine comme sur le mois.', momo: 'Sur la semaine écoulée, {sym} est {w}, et sur 30 jours {m}.', up: 'en hausse de {v}%', dn: 'en baisse de {v}%',
+    athBelow: 'Le prix se situe {v}% sous son plus haut historique de {ath}{yr}.', athNear: '{sym} s’échange à moins de 1% de son plus haut historique de {ath}{yr}.', yr: ' (établi en {y})',
+    head: 'Lecture de marché {name} ({sym})', foot: 'Rédigé à partir de données dérivés agrégées en direct · mis à jour à {t} UTC · les chiffres de cette page se rafraîchissent en continu.' },
+  nl: { px: '{name} ({sym}) wordt momenteel verhandeld op {px}{ch}.', chFlat: ', nauwelijks veranderd in de afgelopen 24 uur', chUp: ', {v}% hoger in de afgelopen 24 uur', chDn: ', {v}% lager in de afgelopen 24 uur',
+    rank: 'Het staat op plek #{rank} naar marktkapitalisatie met {mcap}', rankVol: ', met {vol} verhandeld over alle markten in de afgelopen dag',
+    fundFlat: 'De geaggregeerde funding rate is vrijwel vlak op {f}% — longs noch shorts betalen op dit moment een noemenswaardige premie.', fundPos: 'De funding is positief op +{f}% — {sym}-longs betalen shorts om hun positie aan te houden: een long-gerichte markt.', fundNeg: 'De funding is negatief op {f}% — shorts betalen longs: een short-gerichte markt.',
+    oi: 'Het open interest op de grote beurzen bedraagt {oi}', oiSteady: ' en bleef over 24 uur vrijwel stabiel', oiUp: ', {v}% hoger op één dag — nieuwe hefboom stroomt binnen', oiDn: ', {v}% lager op één dag — posities worden afgebouwd', oiRatio: ' — zo’n {r}% van de volledige marktkapitalisatie zit in open perp-posities',
+    liq: '{t} aan {sym}-posities werd in de afgelopen 24 uur geliquideerd', liqLong: ' — vooral longs ({l} tegenover {s} aan shorts): de recente pijn kwam op de weg omlaag', liqShort: ' — vooral shorts ({s} tegenover {l} aan longs), gesqueezed op de weg omhoog', liqEven: ', redelijk gelijk verdeeld tussen longs ({l}) en shorts ({s})', liqQuiet: 'De liquidaties waren rustig — minder dan $50K aan {sym}-posities werd in 24 uur gedwongen gesloten.',
+    posBal: 'De positionering is bijna in balans: {l}% van de accounts zit long, {s}% short — geen overvolle kant.', posLean: 'De positionering neigt naar {side}: {l}% van de accounts zit long tegenover {s}% short.', sideLong: 'long', sideShort: 'short',
+    momoFlat: 'Het momentum is gedempt — de prijs is zowel op week- als maandbasis vrijwel vlak.', momo: 'Over de afgelopen week staat {sym} {w}, en over 30 dagen {m}.', up: '{v}% in de plus', dn: '{v}% in de min',
+    athBelow: 'De prijs staat {v}% onder het all-time high van {ath}{yr}.', athNear: '{sym} handelt binnen zo’n 1% van het all-time high van {ath}{yr}.', yr: ' (neergezet in {y})',
+    head: '{name} ({sym}) marktlezing', foot: 'Geschreven op basis van live geaggregeerde derivatendata · bijgewerkt {t} UTC · de cijfers op deze pagina verversen continu.' },
+  ru: { px: '{name} ({sym}) сейчас торгуется по {px}{ch}.', chFlat: ', почти без изменений за последние 24 часа', chUp: ', плюс {v}% за 24 часа', chDn: ', минус {v}% за 24 часа',
+    rank: 'Монета занимает #{rank} место по капитализации — {mcap}', rankVol: ', при объёме торгов {vol} по всем рынкам за последние сутки',
+    fundFlat: 'Агрегированная ставка финансирования практически нулевая: {f}% — ни лонги, ни шорты сейчас не платят заметной премии.', fundPos: 'Фандинг положительный, +{f}% — лонги по {sym} платят шортам за удержание позиции: рынок перекошен в лонг.', fundNeg: 'Фандинг отрицательный, {f}% — шорты платят лонгам: рынок перекошен в шорт.',
+    oi: 'Открытый интерес на крупнейших биржах составляет {oi}', oiSteady: ' и за 24 часа почти не изменился', oiUp: ', плюс {v}% за день — на рынок заходит новое плечо', oiDn: ', минус {v}% за день — позиции сворачиваются', oiRatio: ' — примерно {r}% всей капитализации монеты сидит в открытых перп-позициях',
+    liq: 'За последние 24 часа ликвидировано {t} позиций по {sym}', liqLong: ' — в основном лонги ({l} против {s} у шортов): недавняя боль пришла на падении', liqShort: ' — в основном шорты ({s} против {l} у лонгов), выдавленные на росте', liqEven: ', примерно поровну между лонгами ({l}) и шортами ({s})', liqQuiet: 'С ликвидациями тихо — менее $50K позиций по {sym} принудительно закрыто за 24 часа.',
+    posBal: 'Позиционирование почти сбалансировано: {l}% аккаунтов в лонге, {s}% в шорте — перегретой стороны нет.', posLean: 'Позиционирование смещено в {side}: {l}% аккаунтов в лонге против {s}% в шорте.', sideLong: 'лонг', sideShort: 'шорт',
+    momoFlat: 'Импульс слабый — цена практически не изменилась и за неделю, и за месяц.', momo: 'За неделю {sym} {w}, за 30 дней {m}.', up: 'в плюсе на {v}%', dn: 'в минусе на {v}%',
+    athBelow: 'Цена находится на {v}% ниже исторического максимума {ath}{yr}.', athNear: '{sym} торгуется в пределах 1% от исторического максимума {ath}{yr}.', yr: ' (установлен в {y})',
+    head: 'Рыночная сводка {name} ({sym})', foot: 'Составлено по живым агрегированным данным деривативов · обновлено {t} UTC · цифры на этой странице обновляются непрерывно.' },
+  tr: { px: '{name} ({sym}) şu anda {px} seviyesinden işlem görüyor{ch}.', chFlat: ', son 24 saatte neredeyse değişmedi', chUp: ', son 24 saatte %{v} yukarıda', chDn: ', son 24 saatte %{v} aşağıda',
+    rank: 'Piyasa değerine göre #{rank} sırada, {mcap} büyüklüğünde', rankVol: ', son bir günde tüm piyasalarda {vol} işlem hacmiyle',
+    fundFlat: 'Toplam funding oranı %{f} ile neredeyse sıfır — şu anda ne longlar ne shortlar kayda değer bir prim ödüyor.', fundPos: 'Funding pozitif, +%{f} — {sym} longları pozisyon tutmak için shortlara ödüyor: long ağırlıklı bir piyasa.', fundNeg: 'Funding negatif, %{f} — shortlar longlara ödüyor: short ağırlıklı bir piyasa.',
+    oi: 'Büyük borsalardaki açık pozisyon (OI) {oi} seviyesinde', oiSteady: ' ve 24 saattir kabaca sabit', oiUp: ', bir günde %{v} arttı — piyasaya yeni kaldıraç giriyor', oiDn: ', bir günde %{v} azaldı — pozisyonlar kapatılıyor', oiRatio: ' — coinin toplam piyasa değerinin yaklaşık %{r}’i açık perp pozisyonlarında',
+    liq: 'Son 24 saatte {t} tutarında {sym} pozisyonu likide edildi', liqLong: ' — çoğunlukla long ({l}, shortlarda {s}): son acı düşüşte geldi', liqShort: ' — çoğunlukla short ({s}, longlarda {l}), yükselişte sıkıştırıldılar', liqEven: ', longlar ({l}) ve shortlar ({s}) arasında oldukça dengeli', liqQuiet: 'Likidasyonlar sakin — son 24 saatte $50K’dan az {sym} pozisyonu zorla kapatıldı.',
+    posBal: 'Pozisyonlanma dengeye yakın: hesapların %{l}’i long, %{s}’i short — kalabalık taraf yok.', posLean: 'Pozisyonlanma {side} tarafına eğik: hesapların %{l}’i long, %{s}’i short.', sideLong: 'long', sideShort: 'short',
+    momoFlat: 'Momentum zayıf — fiyat hem haftalık hem aylık bazda neredeyse yatay.', momo: 'Son bir haftada {sym} {w}, 30 günde {m}.', up: '%{v} yukarıda', dn: '%{v} aşağıda',
+    athBelow: 'Fiyat, {ath}{yr} olan tüm zamanların zirvesinin %{v} altında.', athNear: '{sym}, {ath}{yr} olan tüm zamanların zirvesine %1’den yakın işlem görüyor.', yr: ' ({y} yılında)',
+    head: '{name} ({sym}) piyasa okuması', foot: 'Canlı toplanmış türev verilerinden yazıldı · {t} UTC’de güncellendi · bu sayfadaki rakamlar sürekli yenilenir.' },
+  zh: { px: '{name}（{sym}）当前价格为 {px}{ch}。', chFlat: '，过去24小时几乎持平', chUp: '，24小时上涨 {v}%', chDn: '，24小时下跌 {v}%',
+    rank: '按市值排名第 #{rank}，市值 {mcap}', rankVol: '，过去一天全市场成交 {vol}',
+    fundFlat: '综合资金费率基本持平（{f}%）——目前多头和空头都没有支付明显的溢价。', fundPos: '资金费率为正（+{f}%）——{sym} 多头正在向空头付费持仓，市场偏多。', fundNeg: '资金费率为负（{f}%）——空头正在向多头付费，市场偏空。',
+    oi: '主要交易所的未平仓合约总量为 {oi}', oiSteady: '，24小时内基本稳定', oiUp: '，单日增加 {v}%——新杠杆正在进场', oiDn: '，单日减少 {v}%——仓位正在撤出', oiRatio: '——约占该币总市值的 {r}% 沉淀在未平仓永续合约中',
+    liq: '过去24小时共有 {t} 的 {sym} 仓位被强平', liqLong: '——以多头为主（{l}，空头为 {s}），近期的痛苦来自下跌', liqShort: '——以空头为主（{s}，多头为 {l}），在上涨中被挤压', liqEven: '，多头（{l}）与空头（{s}）大致均衡', liqQuiet: '强平相当平静——过去24小时被强平的 {sym} 仓位不足 $50K。',
+    posBal: '持仓比例接近均衡：{l}% 的账户做多，{s}% 做空——没有拥挤的一边。', posLean: '持仓偏向{side}：{l}% 的账户做多，{s}% 做空。', sideLong: '多头', sideShort: '空头',
+    momoFlat: '动能平淡——价格在周线和月线上都基本持平。', momo: '过去一周 {sym} {w}，30天内{m}。', up: '上涨 {v}%', dn: '下跌 {v}%',
+    athBelow: '当前价格比历史最高价 {ath}{yr} 低 {v}%。', athNear: '{sym} 的价格距历史最高价 {ath}{yr} 不到 1%。', yr: '（{y} 年创下）',
+    head: '{name}（{sym}）市场解读', foot: '基于实时聚合的衍生品数据撰写 · 更新于 {t} UTC · 本页数字持续刷新。' },
+  ja: { px: '{name}（{sym}）は現在 {px} で取引されています{ch}。', chFlat: '（過去24時間ほぼ横ばい）', chUp: '（24時間で {v}% 上昇）', chDn: '（24時間で {v}% 下落）',
+    rank: '時価総額は {mcap} で第 #{rank} 位', rankVol: '、過去1日の全市場出来高は {vol}',
+    fundFlat: '集計ファンディングレートは {f}% とほぼフラット——現時点でロングもショートも目立ったプレミアムを支払っていません。', fundPos: 'ファンディングは +{f}% のプラス——{sym} のロングがショートに支払っており、ロングに傾いた市場です。', fundNeg: 'ファンディングは {f}% のマイナス——ショートがロングに支払っており、ショートに傾いた市場です。',
+    oi: '主要取引所の未決済建玉（OI）は {oi}', oiSteady: 'で、24時間ほぼ横ばいです', oiUp: 'で、1日で {v}% 増加——新たなレバレッジが流入しています', oiDn: 'で、1日で {v}% 減少——ポジションが解消されています', oiRatio: '——時価総額の約 {r}% が未決済のパーペチュアルに置かれています',
+    liq: '過去24時間で {t} 相当の {sym} ポジションが清算されました', liqLong: '——大半がロング（{l}、ショートは {s}）で、直近の痛みは下落局面で発生', liqShort: '——大半がショート（{s}、ロングは {l}）で、上昇局面で締め上げられました', liqEven: '。ロング（{l}）とショート（{s}）でほぼ均等です', liqQuiet: '清算は落ち着いています——過去24時間に強制決済された {sym} ポジションは $50K 未満です。',
+    posBal: 'ポジション比率はほぼ均衡：口座の {l}% がロング、{s}% がショート——偏った側はありません。', posLean: 'ポジションは{side}に偏っています：口座の {l}% がロング、{s}% がショート。', sideLong: 'ロング側', sideShort: 'ショート側',
+    momoFlat: 'モメンタムは弱く、価格は週間でも月間でもほぼ横ばいです。', momo: '直近1週間で {sym} は{w}、30日では{m}です。', up: '{v}% 上昇', dn: '{v}% 下落',
+    athBelow: '価格は史上最高値 {ath}{yr} を {v}% 下回っています。', athNear: '{sym} は史上最高値 {ath}{yr} から 1% 以内で取引されています。', yr: '（{y} 年記録）',
+    head: '{name}（{sym}）マーケットリード', foot: 'ライブ集計されたデリバティブデータから作成 · {t} UTC 更新 · このページの数値は継続的に更新されます。' },
+  ko: { px: '{name}({sym})은(는) 현재 {px}에 거래되고 있습니다{ch}.', chFlat: ' (지난 24시간 거의 변동 없음)', chUp: ' (24시간 동안 {v}% 상승)', chDn: ' (24시간 동안 {v}% 하락)',
+    rank: '시가총액 기준 #{rank}위, 규모는 {mcap}', rankVol: ', 지난 하루 전체 시장 거래대금은 {vol}',
+    fundFlat: '집계 펀딩비는 {f}%로 사실상 제로 — 지금은 롱도 숏도 의미 있는 프리미엄을 내지 않고 있습니다.', fundPos: '펀딩비가 +{f}%로 양수 — {sym} 롱이 숏에게 보유 비용을 지불 중이며, 롱 쏠림 시장입니다.', fundNeg: '펀딩비가 {f}%로 음수 — 숏이 롱에게 지불 중이며, 숏 쏠림 시장입니다.',
+    oi: '주요 거래소의 미결제약정(OI)은 {oi}', oiSteady: '이며 24시간 동안 대체로 안정적입니다', oiUp: '이며 하루 만에 {v}% 증가 — 새 레버리지가 유입되고 있습니다', oiDn: '이며 하루 만에 {v}% 감소 — 포지션이 정리되고 있습니다', oiRatio: ' — 코인 전체 시가총액의 약 {r}%가 미결제 퍼페추얼에 잠겨 있습니다',
+    liq: '지난 24시간 동안 {t} 규모의 {sym} 포지션이 청산되었습니다', liqLong: ' — 대부분 롱({l}, 숏은 {s})으로, 최근 고통은 하락에서 발생했습니다', liqShort: ' — 대부분 숏({s}, 롱은 {l})으로, 상승장에서 스퀴즈당했습니다', liqEven: ' — 롱({l})과 숏({s})이 비교적 고르게 나뉘었습니다', liqQuiet: '청산은 조용합니다 — 지난 24시간 강제 청산된 {sym} 포지션은 $50K 미만입니다.',
+    posBal: '포지션 비중은 거의 균형: 계정의 {l}%가 롱, {s}%가 숏 — 쏠린 쪽이 없습니다.', posLean: '포지션이 {side}으로 기울어 있습니다: 계정의 {l}%가 롱, {s}%가 숏.', sideLong: '롱 쪽', sideShort: '숏 쪽',
+    momoFlat: '모멘텀이 약합니다 — 가격이 주간·월간 모두 거의 횡보 중입니다.', momo: '지난 한 주 {sym}은(는) {w}, 30일 기준 {m}입니다.', up: '{v}% 상승', dn: '{v}% 하락',
+    athBelow: '가격은 사상 최고가 {ath}{yr}보다 {v}% 낮습니다.', athNear: '{sym}은(는) 사상 최고가 {ath}{yr}의 1% 이내에서 거래되고 있습니다.', yr: ' ({y}년 기록)',
+    head: '{name}({sym}) 시장 읽기', foot: '실시간 집계 파생상품 데이터로 작성 · {t} UTC 업데이트 · 이 페이지의 숫자는 계속 갱신됩니다.' },
+  ar: { px: 'يتداول {name} ({sym}) حاليا عند {px}{ch}.', chFlat: '، دون تغير يذكر خلال آخر 24 ساعة', chUp: '، مرتفعا {v}% خلال 24 ساعة', chDn: '، منخفضا {v}% خلال 24 ساعة',
+    rank: 'يحتل المرتبة #{rank} من حيث القيمة السوقية عند {mcap}', rankVol: '، مع تداول {vol} عبر جميع الأسواق خلال اليوم الماضي',
+    fundFlat: 'معدل التمويل المجمع شبه مسطح عند {f}% — لا المراكز الشرائية ولا البيعية تدفع علاوة تذكر الآن.', fundPos: 'التمويل موجب عند +{f}% — أصحاب مراكز الشراء في {sym} يدفعون للبائعين مقابل الاحتفاظ بمراكزهم: سوق يميل للشراء.', fundNeg: 'التمويل سالب عند {f}% — البائعون يدفعون للمشترين: سوق يميل للبيع.',
+    oi: 'العقود المفتوحة عبر المنصات الكبرى تبلغ {oi}', oiSteady: ' وظلت مستقرة تقريبا خلال 24 ساعة', oiUp: '، بزيادة {v}% في يوم واحد — رافعة مالية جديدة تدخل السوق', oiDn: '، بانخفاض {v}% في يوم واحد — المراكز تُغلق', oiRatio: ' — نحو {r}% من كامل القيمة السوقية للعملة موجود في مراكز عقود دائمة مفتوحة',
+    liq: 'تمت تصفية {t} من مراكز {sym} خلال آخر 24 ساعة', liqLong: ' — معظمها مراكز شراء ({l} مقابل {s} للبيع)، فالألم الأخير جاء مع الهبوط', liqShort: ' — معظمها مراكز بيع ({s} مقابل {l} للشراء)، جرى عصرها مع الصعود', liqEven: '، موزعة بشكل متقارب بين الشراء ({l}) والبيع ({s})', liqQuiet: 'التصفيات هادئة — أقل من $50K من مراكز {sym} أُغلقت قسرا خلال 24 ساعة.',
+    posBal: 'تموضع الحسابات شبه متوازن: {l}% من الحسابات شراء و{s}% بيع — لا جانب مزدحم.', posLean: 'يميل تموضع الحسابات إلى جانب {side}: {l}% شراء مقابل {s}% بيع.', sideLong: 'الشراء', sideShort: 'البيع',
+    momoFlat: 'الزخم ضعيف — السعر شبه ثابت على مستوى الأسبوع والشهر.', momo: 'خلال الأسبوع الماضي {sym} {w}، وخلال 30 يوما {m}.', up: 'مرتفع {v}%', dn: 'منخفض {v}%',
+    athBelow: 'السعر أدنى بنسبة {v}% من أعلى مستوى تاريخي عند {ath}{yr}.', athNear: 'يتداول {sym} ضمن 1% من أعلى مستوى تاريخي عند {ath}{yr}.', yr: ' (سُجل في {y})',
+    head: 'قراءة سوق {name} ({sym})', foot: 'كُتب من بيانات مشتقات مجمعة مباشرة · حُدّث {t} UTC · أرقام هذه الصفحة تتجدد باستمرار.' },
+  id: { px: '{name} ({sym}) saat ini diperdagangkan di {px}{ch}.', chFlat: ', nyaris tidak berubah dalam 24 jam terakhir', chUp: ', naik {v}% dalam 24 jam terakhir', chDn: ', turun {v}% dalam 24 jam terakhir',
+    rank: 'Menempati peringkat #{rank} berdasarkan kapitalisasi pasar sebesar {mcap}', rankVol: ', dengan {vol} diperdagangkan di semua pasar dalam sehari terakhir',
+    fundFlat: 'Funding rate agregat nyaris datar di {f}% — baik long maupun short tidak membayar premi berarti saat ini.', fundPos: 'Funding positif di +{f}% — long {sym} membayar short untuk mempertahankan posisi: pasar condong ke long.', fundNeg: 'Funding negatif di {f}% — short membayar long: pasar condong ke short.',
+    oi: 'Open interest di bursa-bursa besar mencapai {oi}', oiSteady: ' dan relatif stabil selama 24 jam', oiUp: ', naik {v}% dalam sehari — leverage baru masuk ke pasar', oiDn: ', turun {v}% dalam sehari — posisi mulai dilepas', oiRatio: ' — sekitar {r}% dari seluruh kapitalisasi pasar coin ini tersimpan di posisi perp terbuka',
+    liq: '{t} posisi {sym} terlikuidasi dalam 24 jam terakhir', liqLong: ' — kebanyakan long ({l} berbanding {s} untuk short): rasa sakit terbaru datang saat harga turun', liqShort: ' — kebanyakan short ({s} berbanding {l} untuk long), terjepit saat harga naik', liqEven: ', terbagi cukup merata antara long ({l}) dan short ({s})', liqQuiet: 'Likuidasi sedang sepi — kurang dari $50K posisi {sym} ditutup paksa dalam 24 jam.',
+    posBal: 'Posisi akun hampir seimbang: {l}% akun long, {s}% short — tidak ada sisi yang terlalu ramai.', posLean: 'Posisi akun condong ke {side}: {l}% akun long berbanding {s}% short.', sideLong: 'long', sideShort: 'short',
+    momoFlat: 'Momentum lemah — harga nyaris datar baik mingguan maupun bulanan.', momo: 'Sepekan terakhir {sym} {w}, dan dalam 30 hari {m}.', up: 'naik {v}%', dn: 'turun {v}%',
+    athBelow: 'Harga berada {v}% di bawah rekor tertinggi {ath}{yr}.', athNear: '{sym} diperdagangkan dalam kisaran 1% dari rekor tertinggi {ath}{yr}.', yr: ' (dicetak tahun {y})',
+    head: 'Bacaan pasar {name} ({sym})', foot: 'Ditulis dari data derivatif agregat langsung · diperbarui {t} UTC · angka di halaman ini terus diperbarui.' },
+};
+function _ssrFill(t, m) { return String(t || '').replace(/\{(\w+)\}/g, (x, k) => (k in m ? m[k] : x)); }
+// lang-aware mirror of ssrCoinProse: SAME data gating (thresholds, neutral cases), localized sentences
+function ssrCoinProseL10n(L, sym, name, cg, gk) {
+  const S = [];
+  const px = cg && _spx(cg.price), ch = cg && isFinite(+cg.chg24h) ? +cg.chg24h : null;
+  if (px) {
+    let chTxt = '';
+    if (ch != null) chTxt = Math.abs(ch) < 0.5 ? L.chFlat : _ssrFill(ch > 0 ? L.chUp : L.chDn, { v: Math.abs(ch).toFixed(2) });
+    S.push(_ssrFill(L.px, { name, sym, px, ch: chTxt }));
+  }
+  if (gk && gk.rank && gk.mcap) {
+    let s2 = _ssrFill(L.rank, { rank: gk.rank, mcap: _susd(gk.mcap) });
+    if (gk.vol) s2 += _ssrFill(L.rankVol, { vol: _susd(gk.vol) });
+    S.push(s2 + '.');
+  }
+  const f = cg && isFinite(+cg.funding) ? +cg.funding : null;
+  if (f != null) {
+    const fv = (f >= 0 ? '+' : '') + f.toFixed(4);
+    if (Math.abs(f) < 0.005) S.push(_ssrFill(L.fundFlat, { f: fv, sym }));
+    else if (f > 0) S.push(_ssrFill(L.fundPos, { f: f.toFixed(4), sym }));
+    else S.push(_ssrFill(L.fundNeg, { f: f.toFixed(4), sym }));
+  }
+  if (cg && +cg.oiUsd > 0) {
+    let s4 = _ssrFill(L.oi, { oi: _susd(cg.oiUsd) });
+    const oc = isFinite(+cg.oiChg24h) ? +cg.oiChg24h : null;
+    if (oc != null) s4 += Math.abs(oc) < 2 ? L.oiSteady : _ssrFill(oc > 0 ? L.oiUp : L.oiDn, { v: Math.abs(oc).toFixed(1) });
+    if (gk && +gk.mcap > 0) { const r = (+cg.oiUsd / +gk.mcap) * 100; if (isFinite(r) && r > 0.05) s4 += _ssrFill(L.oiRatio, { r: r >= 10 ? r.toFixed(0) : r.toFixed(1) }); }
+    S.push(s4 + '.');
+  }
+  if (cg) {
+    const Lq = +cg.longLiq24h || 0, Sh = +cg.shortLiq24h || 0, T = Lq + Sh;
+    if (T >= 50000) {
+      let s5 = _ssrFill(L.liq, { t: _susd(T), sym });
+      if (Lq >= Sh * 1.5) s5 += _ssrFill(L.liqLong, { l: _susd(Lq), s: _susd(Sh) });
+      else if (Sh >= Lq * 1.5) s5 += _ssrFill(L.liqShort, { l: _susd(Lq), s: _susd(Sh) });
+      else s5 += _ssrFill(L.liqEven, { l: _susd(Lq), s: _susd(Sh) });
+      S.push(s5 + '.');
+    } else if (cg.price != null) S.push(_ssrFill(L.liqQuiet, { sym }));
+  }
+  if (cg && cg.longPct != null && cg.shortPct != null) {
+    const d = +cg.longPct - 50;
+    if (Math.abs(d) < 3) S.push(_ssrFill(L.posBal, { l: cg.longPct, s: cg.shortPct }));
+    else S.push(_ssrFill(L.posLean, { side: d > 0 ? L.sideLong : L.sideShort, l: cg.longPct, s: cg.shortPct }));
+  }
+  if (gk) {
+    const wk = isFinite(+gk.ch7d) ? +gk.ch7d : null, mo = isFinite(+gk.ch30d) ? +gk.ch30d : null;
+    if (wk != null && mo != null) {
+      if (Math.abs(wk) < 1 && Math.abs(mo) < 2) S.push(L.momoFlat);
+      else S.push(_ssrFill(L.momo, { sym, w: _ssrFill(wk >= 0 ? L.up : L.dn, { v: Math.abs(wk).toFixed(1) }), m: _ssrFill(mo >= 0 ? L.up : L.dn, { v: Math.abs(mo).toFixed(1) }) }));
+    }
+    if (isFinite(+gk.athChg) && gk.ath) {
+      let yr = ''; try { const y = new Date(gk.athDate).getUTCFullYear(); if (y > 2000) yr = _ssrFill(L.yr, { y }); } catch (e) {}
+      if (+gk.athChg <= -1) S.push(_ssrFill(L.athBelow, { v: Math.abs(+gk.athChg).toFixed(0), ath: _spx(gk.ath), yr }));
+      else S.push(_ssrFill(L.athNear, { sym, ath: _spx(gk.ath), yr }));
+    }
+  }
+  return S;
+}
 function ssrCoinProse(sym, name, cg, gk) {
   const S = [];
   const px = cg && _spx(cg.price), ch = cg && isFinite(+cg.chg24h) ? +cg.chg24h : null;
@@ -653,11 +825,13 @@ function ssrCoinProse(sym, name, cg, gk) {
   }
   return S;
 }
-function ssrCoinBlock(sym, name, sentences) {
+function ssrCoinBlock(sym, name, sentences, L) {
+  const head = L ? _ssrFill(L.head, { name, sym }) : (name + ' (' + sym + ') market read');
+  const foot = L ? _ssrFill(L.foot, { t: _hhmm() }) : ('Written from live exchange-aggregated derivatives data · updated ' + _hhmm() + ' UTC · the numbers on this page refresh continuously.');
   return '\n    <section class="cdread" data-ssr="coin" style="margin:26px 0 10px;border:1px solid var(--line,#242a34);border-radius:14px;padding:16px 18px;background:rgba(194,246,74,.03)">' +
-    '<h2 style="margin:0 0 10px;font-size:19px">' + name + ' (' + sym + ') market read <span style="font-size:10px;font-weight:700;letter-spacing:.14em;color:#c2f64a;vertical-align:2px">LIVE</span></h2>' +
+    '<h2 style="margin:0 0 10px;font-size:19px">' + head + ' <span style="font-size:10px;font-weight:700;letter-spacing:.14em;color:#c2f64a;vertical-align:2px">LIVE</span></h2>' +
     '<p style="margin:0;line-height:1.75">' + sentences.join(' ') + '</p>' +
-    '<p style="margin:10px 0 0;font-size:12px;color:var(--ink-faint,#5a636e)">Written from live exchange-aggregated derivatives data · updated ' + _hhmm() + ' UTC · the numbers on this page refresh continuously.</p>' +
+    '<p style="margin:10px 0 0;font-size:12px;color:var(--ink-faint,#5a636e)">' + foot + '</p>' +
     '</section>\n';
 }
 async function handleSsrCoin(request, url, env) {
@@ -674,13 +848,14 @@ async function handleSsrCoin(request, url, env) {
   if (!sm || anchor < 0) return pass();
   const sym = sm[1];
   let name = sym; const hm = html.match(/<h1>([^<(]+) \(/); if (hm) name = hm[1].trim();
+  const _lm = url.pathname.match(/^\/(de|es|pt|fr|nl|ru|tr|zh|ja|ko|ar|id)\/coin\//); const L10 = _lm ? SSR_L10N[_lm[1]] : null; // translated block on the 12 lang variants (696 pages were AI-invisible without it)
   let cg = null, gk = null;
   try { const r = await handleCgCoin(new URL('https://marginpad.io/api/cg/coin?symbol=' + sym), env); const j = await r.json(); if (j && !j.error && j.price != null) cg = j; } catch (e) {}
   try { const r = await handleGeckoCoin(new URL('https://marginpad.io/api/gecko/coin?sym=' + sym.toLowerCase()), env); const j = await r.json(); if (j && !j.error) gk = j; } catch (e) {}
   let sentences = [];
-  try { sentences = ssrCoinProse(sym, name, cg, gk); } catch (e) { sentences = []; }
+  try { sentences = L10 ? ssrCoinProseL10n(L10, sym, name, cg, gk) : ssrCoinProse(sym, name, cg, gk); } catch (e) { sentences = []; }
   if (sentences.length < 3) return pass(); // not enough real data to say anything worth indexing -> static page
-  const out = html.slice(0, anchor) + ssrCoinBlock(sym, name, sentences) + '    ' + html.slice(anchor);
+  const out = html.slice(0, anchor) + ssrCoinBlock(sym, name, sentences, L10) + '    ' + html.slice(anchor);
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'coin' } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
@@ -861,6 +1036,20 @@ async function ssrLiqSentences(mode, param, env) {
     if (j && !j.error && j.market && +j.market.total > 0) S.push('Market-wide, ' + _susd(j.market.total) + ' in leveraged positions was liquidated over the past 24 hours (' + _susd(j.market.long) + ' from longs, ' + _susd(j.market.short) + ' from shorts).');
     return { S, links: [['/calculators?c=liq', 'Full liquidation calculator'], ['/paper-trade', 'Practice risk-free with paper trading']] };
   }
+  if (mode === 'excalc') { // per-EXCHANGE liquidation calculators (bybit/binance/... slugs — no coin data of their own). BTC is the reference: live price + concrete liq levels + market-wide 24h total, phrased around the venue.
+    const exn = String(param).charAt(0).toUpperCase() + String(param).slice(1);
+    const b = await ssrCgc('BTC', env);
+    if (b && +b.price > 0) {
+      const p = +b.price, bch = isFinite(+b.chg24h) ? +b.chg24h : null;
+      let s1 = 'BTC — the reference market for every ' + exn + ' calculation on this page — trades at ' + _spx(p) + ' right now';
+      if (bch != null) s1 += Math.abs(bch) < 0.5 ? ', little changed over the past 24 hours' : (', ' + (bch > 0 ? 'up ' : 'down ') + Math.abs(bch).toFixed(2) + '% in 24 hours');
+      S.push(s1 + '.');
+      S.push('From this price, a BTC long on ' + exn + ' is liquidated near ' + _spx(_liqPx(p, 10, 'long')) + ' at 10x, ' + _spx(_liqPx(p, 25, 'long')) + ' at 25x and ' + _spx(_liqPx(p, 100, 'long')) + ' at 100x (0.5% maintenance margin) — shorts mirror the same distances above the price.');
+    }
+    let j = null; try { j = await (await handleCgLiquidations(new URL('https://marginpad.io/api/cg/liquidations'), env)).json(); } catch (e) {}
+    if (j && !j.error && j.market && +j.market.total > 0) S.push('Across the whole market, ' + _susd(j.market.total) + ' in leveraged positions was liquidated over the past 24 hours (' + _susd(j.market.long) + ' from longs, ' + _susd(j.market.short) + ' from shorts) — the exact scenario this calculator exists to keep you out of.');
+    return { S, links: [['/liquidations/', '24h liquidation totals'], ['/paper-trade', 'Practice risk-free with paper trading']] };
+  }
   const sym = String(param).toUpperCase();
   const c = await ssrCgc(sym, env);
   if (!c) return { S };
@@ -933,7 +1122,7 @@ async function handleSsrLiq(request, url, env, mode, param) {
   let res = null;
   try { res = await ssrLiqSentences(mode, param, env); } catch (e) {}
   if (!res || !res.S || res.S.length < 2) return pass();
-  const kick = mode === 'lev' ? 'LIVE — ' + param + 'X RIGHT NOW' : 'LIVE ' + String(param).toUpperCase() + ' DATA';
+  const kick = mode === 'lev' ? 'LIVE — ' + param + 'X RIGHT NOW' : mode === 'excalc' ? 'LIVE MARKET DATA' : 'LIVE ' + String(param).toUpperCase() + ' DATA';
   const out = html.slice(0, anchor) + ssrBoxHtml(kick, res.S, res.links) + html.slice(anchor);
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'liq-' + mode } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
@@ -11359,12 +11548,13 @@ export default {
         .on('meta[property="og:url"]', { element(e) { e.setAttribute('content', m.canon); } })
         .transform(base);
     }
-    if (request.method === 'GET' && url.pathname.indexOf('/coin/') === 0) return handleSsrCoin(request, url, env);
+    if (request.method === 'GET' && (url.pathname.indexOf('/coin/') === 0 || /^\/(de|es|pt|fr|nl|ru|tr|zh|ja|ko|ar|id)\/coin\//.test(url.pathname))) return handleSsrCoin(request, url, env);
     if (request.method === 'GET') {
       const mLiq = url.pathname.match(/^\/([a-z0-9]+)-liquidation-(calculator|map)\/$/);
       if (mLiq) {
         const lm = mLiq[1].match(/^(\d+)x$/);
         if (mLiq[2] === 'calculator' && lm) return handleSsrLiq(request, url, env, 'lev', +lm[1]);
+        if (mLiq[2] === 'calculator' && { bybit: 1, binance: 1, okx: 1, bitget: 1, mexc: 1, gate: 1, kraken: 1, coinbase: 1, kucoin: 1 }[mLiq[1]]) return handleSsrLiq(request, url, env, 'excalc', mLiq[1]); // exchange-slug calculators: no coin data of their own -> BTC-referenced live block
         return handleSsrLiq(request, url, env, mLiq[2] === 'map' ? 'map' : 'calc', mLiq[1]);
       }
       const _bk = ssrBlogKind(url.pathname); if (_bk) return handleSsrBlog(request, url, env, _bk);
