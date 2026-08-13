@@ -167,7 +167,7 @@ function coinPage(c) {
     keywords: `${c.slug} liquidation calculator, ${c.name.toLowerCase()} liquidation calculator, ${c.slug} liquidation price, ${c.slug} futures calculator, ${c.slug} leverage calculator` })
     + `
     <h1>${c.sym} Liquidation Calculator</h1>
-    <p class="lead">Find your exact <strong>${c.name} (${c.sym})</strong> liquidation price — for any leverage, long or short. Free, instant and private (it runs in your browser).</p>
+    <p class="lead"><strong>The quick answer:</strong> a ${c.name} (${c.sym}) long is liquidated roughly <strong>1 ÷ leverage</strong> below your entry (minus a ~0.5% maintenance margin) — about <strong>${dist.toFixed(1)}% at 10×</strong>, ~3.5% at 25× and ~0.5% at 100×; shorts mirror the same distance above entry. The calculator below gives your exact price for any entry, leverage and side — free, instant and private (it runs in your browser).</p>
     <p style="font-family:'Space Mono',monospace;font-size:13px;color:var(--ink-dim);margin:-4px 0 16px" id="livePx" data-sym="${c.sym}"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>Live ${c.sym} price loading…</p>
     <div class="calc">
       <div class="calc-in">
