@@ -6888,7 +6888,7 @@ function ovDrillRow(kind,x,i){
   return '';
 }
 function ovDrill(kind){
-  var titles={visitors:'Visitors today — where they landed',returning:'Returning users today',affiliate:'Affiliate clicks today',signups:'Signups today',dwell:'Most active — all users by time on site'};
+  var titles={visitors:'Visitors today — where they landed',returning:'Returning today — signed-in users',affiliate:'Affiliate clicks today',signups:'Signups today',dwell:'Most active — all users by time on site'};
   var m=document.getElementById('ovDrillM');
   if(!m){m=document.createElement('div');m.id='ovDrillM';m.className='amodal';m.hidden=true;
     m.innerHTML='<div class="ovd-card"><div class="ovd-head"><b id="ovDrillT"></b><button id="ovDrillX" type="button" aria-label="Close">×</button></div><div id="ovDrillB" class="ovd-body"></div></div>';
@@ -10799,6 +10799,13 @@ export default {
         if (k === 'signups' || k === 'returning' || k === 'dwell') {
           if (!env.USERS) return new Response(JSON.stringify({ kind: k, rows: [] }), { headers: jh });
           const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/drill?kind=' + k + '&since=' + dayStart));
+          if (k === 'returning') { // the TILE counts returning VISITORS (mp_did, incl. anonymous); this list can only name the SIGNED-IN ones — reconcile the two numbers explicitly so the gap never reads as missing data (owner 2026-08-14)
+            let rd = { kind: k, rows: [] }; try { rd = await r.json(); } catch (e) {}
+            let rv = 0; try { const rr = await env.STATS.getWithMetadata('uv:ret:' + new Date().toISOString().slice(0, 10)); rv = (rr && rr.metadata && rr.metadata.c) || (rr && rr.value ? parseInt(rr.value, 10) : 0) || 0; } catch (e) {}
+            const named = (rd.rows || []).length, anon = Math.max(0, rv - named);
+            rd.note = rv ? (rv + ' returning visitors today (the tile) — ' + named + ' signed in and listed here' + (anon ? ', ' + anon + ' returned anonymously (no account, nothing to list)' : '')) : (named + ' signed-in returning users');
+            return new Response(JSON.stringify(rd), { headers: jh });
+          }
           if (k !== 'dwell') return new Response(await r.text(), { headers: jh });
           // dwell extras (owner 2026-08-13): rank-movement arrows. Snapshots in KV — dwellrank:cur = latest ranking
           // seen today; on the FIRST open of a new day, cur (yesterday's final state) rotates into dwellrank:base,
@@ -14170,7 +14177,7 @@ export class UserStore {
         return this.j({ kind, rows: rows.map(u => ({ u: u.username || '', email: u.email || '', cc: u.cc || '', dev: u.dev || '', ts: u.created })) });
       }
       if (kind === 'returning') { // registered users active today who joined before today
-        const rows = this.rows('SELECT username, email, cc, pv, last_seen FROM users WHERE last_seen>=? AND created<? ORDER BY last_seen DESC LIMIT 100', since, since);
+        const rows = this.rows('SELECT username, email, cc, pv, last_seen FROM users WHERE last_seen>=? AND created<? ORDER BY last_seen DESC LIMIT 300', since, since);
         return this.j({ kind, rows: rows.map(u => ({ u: u.username || '', email: u.email || '', cc: u.cc || '', pv: u.pv || 0, ts: u.last_seen })) });
       }
       if (kind === 'dwell') { // ALL users by accumulated lifetime time-on-site (was top 10; owner wants the full list)
