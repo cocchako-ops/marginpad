@@ -14441,6 +14441,7 @@ export class Community {
       const syms = String(b.syms || '').toUpperCase().replace(/[^A-Z0-9,]/g, '').split(',').filter(Boolean).slice(0, 6).join(',');
       if (title.length < 15) return this.j({ error: 'title_short' }, 400); // SEO floor: a real headline, not "gm"
       if (body.length < 500) return this.j({ error: 'body_short' }, 400); // SEO floor (~100 words) — posts are SSR'd public pages; AI-assisted writing is fine
+      const q9 = commQuality(title, body); if (q9) return this.j({ error: q9 }, 400); // anti-gibberish: real words, not length-padding (reward-farm posts)
       const id = this.rid();
       sql.exec('INSERT INTO posts(id,uid,author,ts,cat,title,body,syms) VALUES(?,?,?,?,?,?,?,?)', id, uid, author, now, cat, title, body, syms);
       return this.j({ ok: true, id });
@@ -14569,6 +14570,34 @@ export class Community {
 function escH(x) { return String(x == null ? '' : x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 const COMM_CATS = { ideas: 'Trading Ideas', analysis: 'Technical Analysis', news: 'Market News', education: 'Education', crypto: 'Crypto', forex: 'Forex', stocks: 'Stocks', futures: 'Futures', strategies: 'Strategies', psychology: 'Psychology', risk: 'Risk Management', indicators: 'Indicators', platform: 'Platform Updates' };
 function commSlug(t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70) || 'post'; }
+// Anti-gibberish gate (2026-08-13, owner: reward-farm posts like "wweegrdddd…" + 500 dots beat the pure
+// length floor). A post must be made of plausible WORDS, not padding. Script-agnostic: any Unicode letter
+// sequence counts; the no-vowel junk test only fires on pure-ASCII words (so sr/ru/ar/CJK never false-flag);
+// CJK counts per character (no spaces between words). Enforced HERE in the DO (authoritative — FE is a
+// mirror, farmers curl the API) and mirrored in dist/community/index.html for instant feedback. Heuristic by
+// design: borderline spam still reaches the owner's TG new-post ping for manual review.
+function commQuality(title, body) {
+  const anal = s => {
+    s = String(s || '').replace(/```[\s\S]*?```/g, ' ').replace(/https?:\/\/\S+/g, ' ').replace(/!\[[^\]]*\]\([^)]*\)/g, ' ').replace(/\[chart:[a-z0-9:]+\]/gi, ' '); // code/URLs/embeds are legit non-prose — never counted for OR against
+    const cjkN = (s.match(/[぀-ヿ㐀-鿿가-힯]/g) || []).length;
+    const raw = s.match(/[\p{L}\p{M}][\p{L}\p{M}'’-]*/gu) || [];
+    let good = 0, junk = 0; const seen = new Set();
+    for (const w of raw) {
+      if (w.length < 2) continue;
+      const lw = w.toLowerCase();
+      if (/(.)\1\1\1/.test(lw) || (/^[a-z'-]{4,}$/.test(lw) && !/[aeiouy]/.test(lw))) { junk++; continue; } // 4+ same char run ("dddd") or vowel-free ASCII mash ("hjkl", "sdfkjsdf") — ratio-based use means a lone real one ("prst") can't sink a post
+      good++; seen.add(lw);
+    }
+    const glyphs = s.replace(/\s/g, '').length, alnum = (s.match(/[\p{L}\p{M}\p{N}]/gu) || []).length;
+    return { good: good + cjkN, junk, distinct: seen.size + Math.min(cjkN, 30), symRatio: glyphs ? 1 - alnum / glyphs : 1 };
+  };
+  const t = anal(title);
+  if (t.good < 2 || t.junk > t.good) return 'title_words';
+  const b = anal(body);
+  // 500+ chars of real prose carries 60+ words in any language — 25 good / 12 distinct is a generous floor; symRatio kills punctuation flood
+  if (b.good < 25 || b.distinct < 12 || b.junk > b.good * 0.5 || b.symRatio > 0.5) return 'body_words';
+  return null;
+}
 // markdown-lite -> safe HTML (escape FIRST, then transform). Same rules as the client renderer in dist/community/.
 function commMd(src) {
   let s = escH(String(src || '').slice(0, 20000));

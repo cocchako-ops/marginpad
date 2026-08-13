@@ -557,6 +557,28 @@ cmp.addEventListener('click',function(e){if(e.target===cmp)cmp.hidden=true;});
     else if(pr==='chart'){var sy=prompt('Symbol for the live chart (e.g. BTCUSDT):','BTCUSDT');if(sy)insAt('\n[chart:'+sy.toUpperCase().replace(/[^A-Z0-9]/g,'')+']\n');}
     else if(pr==='sym'){var sy2=prompt('Symbol tag (e.g. BTC):','BTC');if(sy2)insAt(' $'+sy2.toUpperCase().replace(/[^A-Z]/g,'')+' ');}
   });
+  // Mirror of the server-side anti-gibberish gate (commQuality in the worker — keep thresholds in sync).
+  // Real words required, not length-padding; old browsers without \p{L} regex support skip this (server still enforces).
+  function commQualityFE(title,body){
+    var reWord,reAlnum;
+    try{reWord=new RegExp("[\\p{L}\\p{M}][\\p{L}\\p{M}'\\u2019-]*",'gu');reAlnum=new RegExp('[\\p{L}\\p{M}\\p{N}]','gu');}catch(e){return null;}
+    function anal(s){
+      s=String(s||'').replace(/```[\s\S]*?```/g,' ').replace(/https?:\/\/\S+/g,' ').replace(/!\[[^\]]*\]\([^)]*\)/g,' ').replace(/\[chart:[a-z0-9:]+\]/gi,' ');
+      var cjkN=(s.match(/[぀-ヿ㐀-鿿가-힯]/g)||[]).length;
+      var raw=s.match(reWord)||[],good=0,junk=0,seen={},distinct=0;
+      for(var i=0;i<raw.length;i++){var w=raw[i];if(w.length<2)continue;var lw=w.toLowerCase();
+        if(/(.)\1\1\1/.test(lw)||(/^[a-z'-]{4,}$/.test(lw)&&!/[aeiouy]/.test(lw))){junk++;continue;}
+        good++;if(!seen[lw]){seen[lw]=1;distinct++;}}
+      var glyphs=s.replace(/\s/g,'').length,alnum=(s.match(reAlnum)||[]).length;
+      return {good:good+cjkN,junk:junk,distinct:distinct+Math.min(cjkN,30),symRatio:glyphs?1-alnum/glyphs:1};
+    }
+    var t=anal(title);
+    if(t.good<2||t.junk>t.good)return 'title_words';
+    var bq=anal(body);
+    if(bq.good<25||bq.distinct<12||bq.junk>bq.good*0.5||bq.symRatio>0.5)return 'body_words';
+    return null;
+  }
+  var QMSG={title_words:'The title needs to be real words — write an actual headline about your idea.',body_words:'The post body has to be real, readable text — normal words and sentences. Repeated characters or random letters just to reach 500 characters will not publish.'};
   document.getElementById('cPub').addEventListener('click',function(){
     var b=this,msg=document.getElementById('cMsg');
     var title=(document.getElementById('cTitle').value||'').trim(),body=(ta.value||'').trim();
@@ -564,12 +586,14 @@ cmp.addEventListener('click',function(e){if(e.target===cmp)cmp.hidden=true;});
     msg.className='cmp-msg';
     if(title.length<15){msg.className='cmp-msg err';msg.textContent='Title too short — write a real headline (min 15 characters).';return;}
     if(body.length<500){msg.className='cmp-msg err';msg.textContent='Posts need at least 500 characters ('+body.length+'/500). Share the full idea — setup, reasoning, levels. Writing it with AI is totally fine.';return;}
+    var q=commQualityFE(title,body);
+    if(q){msg.className='cmp-msg err';msg.textContent=QMSG[q];return;}
     b.disabled=true;msg.textContent='Publishing…';
     api('/post',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({title:title,body:body,cat:cat,syms:syms})}).then(function(d){
       b.disabled=false;
       if(d&&d.ok){msg.textContent='Published ✓';location.href='/community/p/'+d.id+'/'+slug(title);return;}
       msg.className='cmp-msg err';
-      msg.textContent=d.error==='slow_down'?'Easy — wait 2 minutes between posts.':d.error==='daily_cap'?'Daily post limit reached (12/day).':d.error==='need_username'?'Pick a username first (account button, top right).':d.error==='restricted'?'Your account is restricted from posting.':d.error==='login_required'?'Sign in first.':'Failed: '+(d.error||'error');
+      msg.textContent=d.error==='slow_down'?'Easy — wait 2 minutes between posts.':d.error==='daily_cap'?'Daily post limit reached (12/day).':d.error==='need_username'?'Pick a username first (account button, top right).':d.error==='restricted'?'Your account is restricted from posting.':d.error==='login_required'?'Sign in first.':QMSG[d.error]||'Failed: '+(d.error||'error');
       if(d.error==='login_required'||d.error==='need_username'){window.mpAuth&&window.mpAuth.open();}
     }).catch(function(){b.disabled=false;msg.className='cmp-msg err';msg.textContent='Network error.';});
   });
