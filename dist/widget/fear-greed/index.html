@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Crypto Fear &amp; Greed Widget — MarginPad</title>
+<meta name="robots" content="noindex,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#0c0f13;color:#e9e7df;font-family:'Space Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px}
+  body{padding:14px}
+  .w{max-width:320px;margin:0 auto;text-align:center}
+  .wh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:6px;text-align:left}
+  .wh b{font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-weight:800;font-size:15px;letter-spacing:-.02em}
+  .live{font-size:10.5px;color:#9aa3ad;white-space:nowrap}.live .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#2ebd85;margin-right:5px;vertical-align:middle}
+  .gauge{position:relative;width:220px;height:120px;margin:6px auto 0}
+  .gauge svg{display:block}
+  .val{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:44px;letter-spacing:-2px;margin-top:-46px;font-variant-numeric:tabular-nums}
+  .cls{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;margin-top:2px}
+  .hist{display:flex;justify-content:center;gap:14px;margin-top:12px;font-size:10.5px;color:#9aa3ad}
+  .hist b{display:block;font-size:14px;color:#e9e7df}
+  .pb{display:block;text-align:center;margin-top:13px;font-size:11px;color:#5c656f;text-decoration:none}
+  .pb:hover b{text-decoration:underline}.pb b{color:#c2f64a}
+</style>
+
+<script defer src="/assets/sentry.js"></script>
+</head><body>
+<div class="w">
+  <div class="wh"><b>Crypto Fear &amp; Greed</b><span class="live"><span class="dot"></span>LIVE</span></div>
+  <div class="gauge">
+    <svg width="220" height="120" viewBox="0 0 220 120">
+      <path d="M 15 110 A 95 95 0 0 1 205 110" fill="none" stroke="#1c2230" stroke-width="14" stroke-linecap="round"/>
+      <path id="arc" d="M 15 110 A 95 95 0 0 1 205 110" fill="none" stroke="#c2f64a" stroke-width="14" stroke-linecap="round" stroke-dasharray="298" stroke-dashoffset="298" style="transition:stroke-dashoffset .8s ease,stroke .8s ease"/>
+      <line id="ndl" x1="110" y1="110" x2="110" y2="34" stroke="#e9e7df" stroke-width="2.5" stroke-linecap="round" style="transform-origin:110px 110px;transition:transform .8s ease"/>
+      <circle cx="110" cy="110" r="5" fill="#e9e7df"/>
+    </svg>
+    <div class="val" id="v">--</div>
+    <div class="cls" id="c">loading</div>
+  </div>
+  <div class="hist"><span>Yesterday<b id="h1">--</b></span><span>Last week<b id="h7">--</b></span></div>
+  <a class="pb" href="https://marginpad.io/fear-greed/?ref=widget" target="_blank" rel="noopener">Crypto Fear &amp; Greed Index by <b>MarginPad</b></a>
+</div>
+<script>
+(function(){
+  function col(v){return v<=24?'#ff5a4d':v<=44?'#ff9f4d':v<=55?'#ffd75a':v<=75?'#9be15d':'#2ebd85';}
+  function paint(rows){
+    if(!rows||!rows.length)return;
+    var v=+rows[0].v||0,c=rows[0].c||'';
+    document.getElementById('v').textContent=v;
+    document.getElementById('v').style.color=col(v);
+    document.getElementById('c').textContent=c;
+    document.getElementById('c').style.color=col(v);
+    var arc=document.getElementById('arc');arc.style.strokeDashoffset=String(298-298*v/100);arc.style.stroke=col(v);
+    document.getElementById('ndl').style.transform='rotate('+((v/100*180)-90)+'deg)';
+    if(rows[1])document.getElementById('h1').textContent=rows[1].v;
+    if(rows[7])document.getElementById('h7').textContent=rows[7].v;
+  }
+  function load(){fetch('https://marginpad.io/api/fng',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){paint(j&&j.data);}).catch(function(){});}
+  load();setInterval(load,300000);
+})();
+</script>
+</body></html>

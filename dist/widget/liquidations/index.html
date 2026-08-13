@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Live Crypto Liquidations Widget — MarginPad</title>
+<meta name="robots" content="noindex,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#0c0f13;color:#e9e7df;font-family:'Space Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+  body{padding:14px}
+  .w{max-width:360px;margin:0 auto}
+  .wh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .wh b{font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-weight:800;font-size:15px;letter-spacing:-.02em}
+  .live{font-size:10.5px;color:#9aa3ad;white-space:nowrap}.live .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#2ebd85;margin-right:5px;vertical-align:middle}
+  .sel{display:flex;gap:5px;margin-bottom:9px}
+  .sel button{flex:1;padding:6px 4px;border:1px solid #2f3742;background:#0a0b0d;color:#9aa3ad;border-radius:8px;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:700}
+  .sel button.on{background:rgba(194,246,74,.14);border-color:#c2f64a;color:#c2f64a}
+  .rows{border:1px solid #232932;border-radius:11px;overflow:hidden;min-height:178px}
+  .r{display:flex;justify-content:space-between;gap:8px;padding:7px 11px;border-bottom:1px solid #161b22;font-variant-numeric:tabular-nums}
+  .r:last-child{border-bottom:none}
+  .r .s{font-weight:700}
+  .r .long{color:#ff7b72}.r .short{color:#34d99a}
+  .r .m{color:#9aa3ad;font-size:11px}
+  .empty{padding:24px;text-align:center;color:#5c656f;font-size:12px}
+  .pb{display:block;text-align:center;margin-top:12px;font-size:11px;color:#5c656f;text-decoration:none}
+  .pb:hover b{text-decoration:underline}.pb b{color:#c2f64a}
+</style>
+
+<script defer src="/assets/sentry.js"></script>
+</head><body>
+<div class="w">
+  <div class="wh"><b>Live Liquidations</b><span class="live"><span class="dot"></span>10-exchange feed</span></div>
+  <div class="sel" id="sel"><button class="on" data-s="BTC" type="button">BTC</button><button data-s="ETH" type="button">ETH</button><button data-s="SOL" type="button">SOL</button><button data-s="XRP" type="button">XRP</button></div>
+  <div class="rows" id="rows"><div class="empty">loading the feed&hellip;</div></div>
+  <a class="pb" href="https://marginpad.io/rekt/?ref=widget" target="_blank" rel="noopener">Real-time liquidation feed by <b>MarginPad</b></a>
+</div>
+<script>
+(function(){
+  var sym='BTC';
+  function usd(v){v=+v||0;if(v>=1e6)return '$'+(v/1e6).toFixed(2)+'M';if(v>=1e3)return '$'+(v/1e3).toFixed(1)+'K';return '$'+Math.round(v);}
+  function ago(t){var s=Math.floor((Date.now()-t)/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';return Math.floor(m/60)+'h';}
+  function paint(evs){
+    var host=document.getElementById('rows');
+    if(!evs||!evs.length){host.innerHTML='<div class="empty">quiet right now — no recent '+sym+' liquidations</div>';return;}
+    host.innerHTML=evs.slice(0,7).map(function(e){
+      var long=e.side==='long_liquidated';
+      return '<div class="r"><span class="s '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+' '+(e.symbol||sym)+'</span><span>'+usd(e.notional)+'</span><span class="m">'+(e.exchange||'')+' · '+ago(e.ts)+'</span></div>';
+    }).join('');
+  }
+  function load(){fetch('https://marginpad.io/api/v1/liquidations/live?symbol='+sym+'&limit=7',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){paint(j&&(j.events||(j.data&&j.data.events)));}).catch(function(){});}
+  document.getElementById('sel').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;sym=b.getAttribute('data-s');var bs=this.querySelectorAll('button');for(var i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i]===b);load();});
+  load();setInterval(load,10000);
+})();
+</script>
+</body></html>
