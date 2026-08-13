@@ -2198,6 +2198,9 @@ async function checkCPaper(env) {
 // signal into the outcome tracker (fsig:open) so win/loss is provable from day one. Leverage = levOf(entry,sl)
 // (3–20×, same risk scale as the paid tiers) — the old Math.max(20,…) floor that overrode the setup's own risk
 // on a FREE channel is gone. Kill-switch KV fsig:on='0'. Pacing: fsig:daily/day + fsig:gap min between, 6h/symbol.
+// Partner footer for tier signal messages (owner 2026-08-13: Bybit + Moon everywhere money-intent lives).
+// The free channel carries the same pair as inline BUTTONS instead (see its reply_markup below).
+const TG_AFF_LINE = '\n<a href="https://www.bybit.com/invite?ref=LZKBERJ">Trade it on Bybit</a> · <a href="https://moon.com/?c=moonkickstart">or call it up/down on Moon</a>';
 async function checkFreeSignals(env, force) {
   try {
     if (!env || !env.STATS || !env.TELEGRAM_TOKEN) return { err: 'no-env' };
@@ -2241,7 +2244,7 @@ async function checkFreeSignals(env, force) {
       const kb = { inline_keyboard: [
         [{ text: 'Open live chart', url: 'https://marginpad.io/charts?coin=' + sym }],
         [{ text: 'Practice on Paper Trade', url: 'https://marginpad.io/paper-trade?coin=' + sym + '&side=' + (long ? 'long' : 'short') + '&lev=' + lev }],
-        [{ text: 'Binance', url: 'https://marginpad.io/go?ex=binance&sym=' + sym }, { text: 'Bybit', url: 'https://marginpad.io/go?ex=bybit&sym=' + sym }, { text: 'MEXC', url: 'https://marginpad.io/go?ex=mexc&sym=' + sym }],
+        [{ text: 'Trade on Bybit', url: 'https://marginpad.io/go?ex=bybit&sym=' + sym }, { text: 'Up/down on Moon', url: 'https://marginpad.io/go?ex=moon&sym=' + sym }],
       ] };
       const mid = await sigSend(env, 'free', chans.free, text, { reply_markup: kb });
       if (!mid) return { err: 'send-failed', sym }; // delivery failed (or chan missing, already alarmed) → don't cooldown/count → clean retry next run
@@ -2656,7 +2659,7 @@ async function checkChartSignals(env, force) {
           const postTiers = tiers.filter(t => chans[t]);
           if (!postTiers.length) { if (!force) await env.STATS.put('csig:st:' + sym, JSON.stringify({ bar, done: true })); continue; }
           const isPrem = tiers.includes('premium');
-          const text = ticket(long, sym, entry, tp1, tp2, sl, force ? ' <i>(test)</i>' : '') + 'Supertrend flipped ' + (long ? 'bullish 📈' : 'bearish 📉') + ' on the 1h (candle closed).\n🆔 <code>#' + sigId + '</code>\n';
+          const text = ticket(long, sym, entry, tp1, tp2, sl, force ? ' <i>(test)</i>' : '') + 'Supertrend flipped ' + (long ? 'bullish 📈' : 'bearish 📉') + ' on the 1h (candle closed).\n🆔 <code>#' + sigId + '</code>\n' + TG_AFF_LINE;
           // ---- enriched PREMIUM message: honest confluence readout (pass/fail per check) + trade plan + hold / time-stop guidance ----
           const cfl = [];
           cfl.push('4h trend aligned');
@@ -2669,7 +2672,7 @@ async function checkChartSignals(env, force) {
             + '✅ <b>Checks:</b> ' + cfl.join(' · ') + '\n'
             + '📋 <b>Plan:</b> enter now, take ~50% at TP1, move stop to breakeven, trail the runner to TP2.\n'
             + '⏳ <b>Hold ~1–4h</b> (until TP1/TP2 or the 1h Supertrend flips back). If TP1 isn’t tagged within ~3h and price stalls, momentum failed — I’ll ping a time-check.\n'
-            + '🆔 <code>#' + sigId + '</code>';
+            + '🆔 <code>#' + sigId + '</code>' + TG_AFF_LINE;
           const msgIds = {}; let sentOk = 0;
           // one channel failing must NEVER abort the others or state persistence — an unsaved state re-fires next minute and DUPLICATES the signal in every channel that already got it
           for (const t of postTiers) { const bd = t === 'premium' ? premText : (text + TIER_NOTE[t]); try { msgIds[t] = await send(chans[t], bd, 0, sym); sentOk++; if (msgIds[t]) await bumpSentToday(env, t); } catch (e) {} await new Promise(r => setTimeout(r, 90)); } // per-channel honest counter → the daily digest's "Signals today" line counts what THAT channel actually received
@@ -8205,6 +8208,14 @@ async function sendAlertEmail(env, to, sym, dir, target, cur, note) {
 }
 // Cron: evaluate account price-alerts (UserStore DO) and email the ones that trigger. Runs alongside the Telegram alert cron.
 // Congratulate + notify a weekly leaderboard winner by email (Resend, from hello@marginpad.io).
+// Partner line for outbound emails (owner 2026-08-13: Bybit + Moon on every high-intent surface). Light-theme,
+// table-based (flex/grid are unreliable in mail clients), inline styles only. Reused by digest + congrats mails.
+const MAIL_AFF_HTML = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0 0"><tr>'
+  + '<td style="border:1px solid #e6e2d6;border-left:3px solid #f7a600;border-radius:10px;padding:10px 12px"><a href="https://www.bybit.com/invite?ref=LZKBERJ" style="text-decoration:none;color:#111"><b style="color:#b97b00">Bybit</b> <span style="color:#666;font-size:12.5px">&mdash; futures for real &middot; 100&times;</span></a></td>'
+  + '<td style="width:8px;font-size:0">&nbsp;</td>'
+  + '<td style="border:1px solid #e6e2d6;border-left:3px solid #8a5cff;border-radius:10px;padding:10px 12px"><a href="https://moon.com/?c=moonkickstart" style="text-decoration:none;color:#111"><b style="color:#6a3fd8">Moon</b> <span style="color:#666;font-size:12.5px">&mdash; up or down &middot; stocks &amp; forex &middot; 24/7</span></a></td>'
+  + '</tr></table>';
+const MAIL_AFF_TEXT = 'Trade for real: Bybit (futures, 100x) https://www.bybit.com/invite?ref=LZKBERJ · Moon (up or down, stocks & forex, 24/7) https://moon.com/?c=moonkickstart';
 async function sendLeaderboardEmail(env, to, info) {
   if (!env.RESEND_API_KEY || !to) return { ok: false };
   const medal = info.rank === 1 ? '\uD83E\uDD47' : info.rank === 2 ? '\uD83E\uDD48' : '\uD83E\uDD49';
@@ -8225,7 +8236,7 @@ async function sendLeaderboardEmail(env, to, info) {
       body: JSON.stringify(refTagEmail({
         from: 'MarginPad <hello@marginpad.io>', to: [to], reply_to: 'support@marginpad.io',
         subject: medal + ' You finished ' + place + ' on the ' + boardName + ' leaderboard — ' + prize + ' is yours',
-        text: 'Congrats ' + hi + '!\n\nYou finished ' + place + ' place on this week\'s ' + boardName + ' board with ' + achieveTxt + '.\n\n' + prize + ' USDT has been credited to your Rewards balance. Withdraw it at https://marginpad.io/rewards/\n\nThe board just reset \u2014 defend your spot: https://marginpad.io/paper-trade\n\n\u2014 MarginPad',
+        text: 'Congrats ' + hi + '!\n\nYou finished ' + place + ' place on this week\'s ' + boardName + ' board with ' + achieveTxt + '.\n\n' + prize + ' USDT has been credited to your Rewards balance. Withdraw it at https://marginpad.io/rewards/\n\nThe board just reset \u2014 defend your spot: https://marginpad.io/paper-trade\n\n' + MAIL_AFF_TEXT + '\n\n\u2014 MarginPad',
         html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:480px">'
           + '<p style="font-size:40px;margin:0 0 4px">' + medal + '</p>'
           + '<p style="font-size:22px;font-weight:800;margin:0 0 10px">You finished ' + place + ' place!</p>'
@@ -8233,7 +8244,7 @@ async function sendLeaderboardEmail(env, to, info) {
           + '<p style="margin:0 0 16px;background:#f2fbdf;border:1px solid #c2f64a;border-radius:12px;padding:14px 16px"><b style="font-size:18px">' + prize + ' USDT</b> has been credited to your Rewards balance.</p>'
           + '<p style="margin:0 0 18px"><a href="https://marginpad.io/rewards/" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-weight:800;padding:11px 20px;border-radius:10px">Withdraw your prize &rarr;</a></p>'
           + '<p style="margin:0 0 4px;color:#444">The board just reset for a new week.</p>'
-          + '<p style="margin:0"><a href="https://marginpad.io/paper-trade" style="color:#15a06a;text-decoration:none;font-weight:700">Defend your spot &rarr;</a> &middot; <span style="color:#999">MarginPad \u2014 not financial advice</span></p></div>'
+          + '<p style="margin:0"><a href="https://marginpad.io/paper-trade" style="color:#15a06a;text-decoration:none;font-weight:700">Defend your spot &rarr;</a> &middot; <span style="color:#999">MarginPad \u2014 not financial advice</span></p>' + MAIL_AFF_HTML + '</div>'
       }))
     });
     return { ok: r.ok };
@@ -8792,8 +8803,8 @@ async function sendDigestEmail(env, to, uid, content) {
       body: JSON.stringify(refTagEmail({
         from: 'MarginPad <hello@marginpad.io>', to: [to], reply_to: 'support@marginpad.io',
         subject: 'Your weekly MarginPad recap 📈',
-        text: 'A new Trade League week just started on MarginPad.\n\nTrade (free, no risk): https://marginpad.io/paper-trade\nSet price alerts: https://marginpad.io/alerts/\nClaim free USDT: https://marginpad.io/rewards/\n\nUnsubscribe: ' + unsub + '\n— MarginPad',
-        html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:480px"><p style="font-size:20px;font-weight:800;margin:0 0 4px">Your weekly recap 📈</p><p style="color:#555;margin:0 0 16px">Here\'s what\'s happening on MarginPad this week.</p><div style="background:#f6f8f2;border:1px solid #e3ead0;border-radius:12px;padding:14px 16px;margin:0 0 16px">' + lb + '</div><p style="margin:0 0 8px"><a href="https://marginpad.io/paper-trade" style="display:inline-block;background:#0a0b0d;color:#c2f64a;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:10px">Open Paper Trade &rarr;</a></p><p style="margin:14px 0 0;color:#555">Don\'t miss a move &mdash; <a href="https://marginpad.io/alerts/" style="color:#15a06a">set a free price alert</a>, or <a href="https://marginpad.io/rewards/" style="color:#15a06a">claim free USDT</a>.</p><p style="color:#aaa;font-size:12px;margin:20px 0 0">You get this because you have a MarginPad account. <a href="' + unsub + '" style="color:#999">Unsubscribe</a> &middot; <a href="https://marginpad.io" style="color:#999">marginpad.io</a></p></div>'
+        text: 'A new Trade League week just started on MarginPad.\n\nTrade (free, no risk): https://marginpad.io/paper-trade\nSet price alerts: https://marginpad.io/alerts/\nClaim free USDT: https://marginpad.io/rewards/\n\n' + MAIL_AFF_TEXT + '\n\nUnsubscribe: ' + unsub + '\n— MarginPad',
+        html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:480px"><p style="font-size:20px;font-weight:800;margin:0 0 4px">Your weekly recap 📈</p><p style="color:#555;margin:0 0 16px">Here\'s what\'s happening on MarginPad this week.</p><div style="background:#f6f8f2;border:1px solid #e3ead0;border-radius:12px;padding:14px 16px;margin:0 0 16px">' + lb + '</div><p style="margin:0 0 8px"><a href="https://marginpad.io/paper-trade" style="display:inline-block;background:#0a0b0d;color:#c2f64a;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:10px">Open Paper Trade &rarr;</a></p><p style="margin:14px 0 0;color:#555">Don\'t miss a move &mdash; <a href="https://marginpad.io/alerts/" style="color:#15a06a">set a free price alert</a>, or <a href="https://marginpad.io/rewards/" style="color:#15a06a">claim free USDT</a>.</p>' + MAIL_AFF_HTML + '<p style="color:#aaa;font-size:12px;margin:20px 0 0">You get this because you have a MarginPad account. <a href="' + unsub + '" style="color:#999">Unsubscribe</a> &middot; <a href="https://marginpad.io" style="color:#999">marginpad.io</a></p></div>'
       }))
     });
     return { ok: r.ok };
@@ -12608,6 +12619,7 @@ function handleExchangeGo(url) {
     bybit: { name: 'Bybit', web: 'https://www.bybit.com/trade/usdt/' + sym + 'USDT', scheme: 'bybitapp', host: 'open/route/trade?symbol=' + sym + 'USDT', pkg: 'com.bybit.app' },
     mexc: { name: 'MEXC', web: 'https://www.mexc.com/futures/' + sym + '_USDT', scheme: 'mexc', host: 'futures/' + sym + '_USDT', pkg: 'com.mexc.mexctrade' },
   };
+  if (ex === 'moon') return new Response('', { status: 302, headers: { location: 'https://moon.com/?c=moonkickstart', 'cache-control': 'no-store' } }); // no public app scheme — straight to the ref link
   const c = CFG[ex];
   if (!c) return new Response('', { status: 302, headers: { location: 'https://marginpad.io/charts?coin=' + sym } });
   const web = c.web;

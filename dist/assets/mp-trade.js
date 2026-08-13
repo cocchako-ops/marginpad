@@ -20,11 +20,12 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
   function num(id){var e=document.getElementById(id);var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
   var jrTab='open';
   var SHARE_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line></svg>';
+  var CHATSHARE_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"></path></svg>';
   var COPY_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>';
   var CHART_SVG='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" style="margin-right:5px;vertical-align:-1px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>';
   var TRASH_SVG='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>';
   function gotoChart(sym){location.href='/paper-trade'+(sym?'?coin='+encodeURIComponent(sym):'');}
-  function ppActions(e,close){return '<div class="pp-actions"><div class="pp-icons"><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button></div>'+(close?'<button class="pp-close" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button>':'')+'</div>';}
+  function ppActions(e,close){return '<div class="pp-actions"><div class="pp-icons"><button class="pp-ic pp-ic-chat" data-act="chatshare" data-id="'+e.id+'" title="'+MT('jShareChat','Share to chat')+'" aria-label="'+MT('jShareChat','Share to chat')+'">'+CHATSHARE_SVG+'</button><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button></div>'+(close?'<button class="pp-close" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button>':'')+'</div>';}
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
@@ -126,6 +127,24 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
     x.fillStyle=prem?'#8a7a52':'#4b545d';x.font='400 24px Arial';x.textAlign='center';x.fillText((prem?'Premium member · ':'')+MT('jPaperDisc','Paper trade · not financial advice'),W/2,1020);x.textAlign='left';
     return c;
   }
+  /* build the safe, self-contained snapshot posted to /api/tshare so a shared ticket resolves for ANYONE in chat */
+  function tShareSnap(e){var m=metrics(e),closed=(e.status==='win'||e.status==='loss');
+    var roe=closed?((e.margin&&e.pnl!=null)?(+e.pnl)/(+e.margin):0):m.roe;
+    var pnl=closed?(+e.pnl||0):(m.pnl||0);
+    return {sym:e.sym,side:e.side,status:e.status,entry:e.entry,exit:(closed?(e.exit!=null?e.exit:(e.status==='win'?e.tp:e.stop)):m.live),lev:e.lev,margin:e.margin,notional:e.notional,qty:e.qty,liq:m.liq,stop:e.stop,tp:e.tp,fund:e.fund,liquidated:!!e.liquidated,partial:e.partial,ts:e.ts,closeTs:e.closeTs,roe:roe*100,pnl:pnl};}
+  function shareTicketChat(e,btn){
+    if(!(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(_){}return;}
+    if(btn){if(btn._busy)return;btn._busy=1;btn.classList.add('pp-ic-busy');}
+    try{window.__mpTrack&&window.__mpTrack('share',(e.sym||'')+' chat');}catch(_){}
+    fetch('/api/tshare',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({ticket:tShareSnap(e)})})
+      .then(function(r){return r.json();})
+      .then(function(d){if(btn){btn._busy=0;btn.classList.remove('pp-ic-busy');}
+        if(d&&d.id){try{closeJr();}catch(_){}if(window.mpChatSay)window.mpChatSay('trade:'+d.id);toast(MT('jSharedChat','Shared to chat'));}
+        else if(d&&d.error==='login_required'){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(_){}}
+        else if(d&&d.error==='rate_limited'){toast(MT('jShareLimit','Too many shares right now — try again later.'));}
+        else{toast(MT('jShareFail','Could not share the ticket.'));}})
+      .catch(function(){if(btn){btn._busy=0;btn.classList.remove('pp-ic-busy');}toast(MT('jShareFail','Could not share the ticket.'));});
+  }
   function shareTicket(e){
     try{window.__mpTrack&&window.__mpTrack('share',(e.sym||'')+' ticket');}catch(_){}
     var roe2=(function(){var m=metrics(e),closed=(e.status==='win'||e.status==='loss');return closed?((e.margin&&e.pnl!=null)?(+e.pnl)/(+e.margin):0):m.roe;})();
@@ -188,7 +207,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
     var seg=document.getElementById('planSeg'); var on=seg&&seg.querySelector('button.on'); var side=on?on.getAttribute('data-side'):'long';
     var symEl=document.getElementById('planSym'); var sym=((symEl&&symEl.value)||'').toUpperCase();
     var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=0.005;
-    var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:(window.mpFeeRate?window.mpFeeRate(L):Math.min(0.00055,0.1/Math.max(1,L))); // default 0.055% taker fee so every trade carries a fee
+    var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:(window.mpFeeRate?window.mpFeeRate(L,sym):Math.min(0.00055,0.1/Math.max(1,L))); // default 0.055% taker fee so every trade carries a fee
     var sl=num('planSlOpt'), tp=num('planTpOpt');
     // block a wrong-side SL/TP instead of storing it (parity with home.js add() — it would self-trigger instantly)
     var _lng2=side==='long',_bad2=[];
@@ -219,6 +238,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
     var id=b.getAttribute('data-id'),act=b.getAttribute('data-act');
     var data=load(),i=-1; for(var k=0;k<data.length;k++){if(data[k].id===id){i=k;break;}} if(i<0)return; var e=data[i];
     if(act==='share'){shareTicket(e);return;}
+    if(act==='chatshare'){shareTicketChat(e,b);return;}
     if(act==='copy'){copyTicket(e);return;}
     if(act==='chart'){var _cs=String(e.sym||'').toUpperCase();try{sessionStorage.setItem('mp_force_chart',_cs);}catch(_){}try{closeJr();}catch(_){}if(window.mpGo)window.mpGo('/charts');else location.href='/charts';var _t=0,_iv=setInterval(function(){_t++;var _c=null;try{_c=sessionStorage.getItem('mp_force_chart');}catch(_){}if(!_c){clearInterval(_iv);return;}if(window.mpCharts&&window.mpCharts.openOnly){clearInterval(_iv);try{sessionStorage.removeItem('mp_force_chart');}catch(_){}window.mpCharts.openOnly(_c);}else if(_t>25){clearInterval(_iv);}},120);return;}if(act==='ptrade'){var _pu='/paper-trade?coin='+encodeURIComponent(String(e.sym||'').toUpperCase())+(e.side?'&side='+(e.side==='short'?'short':'long'):'');try{closeJr();}catch(_){}if(window.mpGo)window.mpGo(_pu);else location.href=_pu;return;}
     if(act==='sltp'){if(window.mpSltpSheet)window.mpSltpSheet(id,function(){render();});return;}
@@ -312,7 +332,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
         if(cross==null)return;
         var d2=load(),idx=-1;for(var k=0;k<d2.length;k++){if(d2[k].id===e.id){idx=k;break;}}if(idx<0)return;var t=d2[idx];if(t.status!=='open')return;
         var dir=(t.side!=='short')?1:-1,pnl=(t.qty!=null&&isFinite(t.qty))?t.qty*(exitPx-t.entry)*dir:null;
-        if(liab){pnl=(+t.margin>0)?-(+t.margin):pnl;t.liquidated=true;} else if(+t.margin>0&&pnl!=null&&pnl<-(+t.margin))pnl=-(+t.margin);
+        if(liab){pnl=(+t.margin>0)?-(+t.margin):pnl;t.liquidated=true;try{if(window.__mpTrack)window.__mpTrack('cliq','sweep '+t.sym+' tf'+tf+' liq'+(+lossExit).toPrecision(6));}catch(_){}} else if(+t.margin>0&&pnl!=null&&pnl<-(+t.margin))pnl=-(+t.margin);
         t.status=(pnl!=null&&pnl>0)?'win':'loss';t.exit=exitPx;t.pnl=pnl;t.closeTs=cross;
         store(d2);if(window.mpJournalRender)window.mpJournalRender();});});}
   sweepLiq();
@@ -348,7 +368,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
     ws.onclose=function(){alive=false;if(pingT){clearInterval(pingT);pingT=null;}reconnect();};
     ws.onerror=function(){try{ws.close();}catch(_){}};
   }
-  function reconnect(){retry=Math.min(retry+1,6);setTimeout(connect,Math.min(1200*retry,8000));}
+  function reconnect(){retry=Math.min(retry+1,6);setTimeout(connect,Math.min(1200*retry,3000));} // backoff capped at 3s (was 8s) so a returned network reconnects faster when the `online` event doesn't fire (mobile) — matches home.js
   connect();
 })();
 
@@ -415,12 +435,14 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
   function switchRoom(r){if(r===room||chatRooms().indexOf(r)<0)return;room=r;markRoomPills();if(msgs)msgs.innerHTML='';try{input.placeholder=(room==='global'?'Message…':room==='PREMIUM'?'Premium lounge — VIPs only…':'Message '+room+' room…')+'  ·  /leaderboard · /signal';}catch(e){}if(ws){try{ws.onclose=null;ws.close();}catch(e){}ws=null;}if(joined)connect();}
   function meUser(){var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())||null;if(!me)return '';return String(me.username||(me.email||'').split('@')[0]||'trader').replace(/[<>&]/g,'').slice(0,20);}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+  /* escape first (XSS-safe), THEN turn `trade:<id>` tokens into clickable links that open the shared ticket */
+  function linkifyMsg(t){return esc(t).replace(/\btrade:([a-z0-9]{6,16})\b/gi,function(mm,id){id=id.toLowerCase();return '<a class="ct-trade" data-trade="'+id+'" role="button" tabindex="0" title="Open shared ticket">trade:'+id+'</a>';});}
   function colorFor(u){var h=0;for(var i=0;i<u.length;i++)h=(h*31+u.charCodeAt(i))%360;return 'hsl('+h+',65%,70%)';}
   var MP_BADGE='<svg viewBox="0 0 24 24" width="13" height="13" style="vertical-align:-3px;margin-right:4px;filter:drop-shadow(0 0 3px rgba(194,246,74,.55))"><path d="M12 1L14.83 3.3L18.47 3.1L19.4 6.62L22.46 8.6L21.15 12L22.46 15.4L19.4 17.38L18.47 20.9L14.83 20.7L12 23L9.17 20.7L5.53 20.9L4.6 17.38L1.54 15.4L2.85 12L1.54 8.6L4.6 6.62L5.53 3.1L9.17 3.3Z" fill="#c2f64a"/><path d="M7.7 12.3l2.9 2.9L16.4 9.3" fill="none" stroke="#0a0b0d" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var who=m.admin?'<b style="color:#e9e7df;font-weight:800">'+MP_BADGE+'Margin<span style="color:#c2f64a">Pad</span></b>':'<span data-lvln="'+esc(m.u)+'"></span><b class="ct-user" data-lbu="'+esc(m.u)+'" role="button" tabindex="0" style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b><span data-lpro="'+esc(m.u)+'"></span>';var _sg=window._mpParseSig&&window._mpParseSig(m.t);d.innerHTML=who+' '+(_sg?window._mpSigCardHtml(_sg):esc(m.t));msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();}
+  function addMsg(m){var d=document.createElement('div');d.className='ct-msg';var who=m.admin?'<b style="color:#e9e7df;font-weight:800">'+MP_BADGE+'Margin<span style="color:#c2f64a">Pad</span></b>':'<span data-lvln="'+esc(m.u)+'"></span><b class="ct-user" data-lbu="'+esc(m.u)+'" role="button" tabindex="0" style="color:'+colorFor(m.u)+'">'+esc(m.u)+'</b><span data-lpro="'+esc(m.u)+'"></span>';var _sg=window._mpParseSig&&window._mpParseSig(m.t);d.innerHTML=who+' '+(_sg?window._mpSigCardHtml(_sg):linkifyMsg(m.t));msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;if(window.mpLvlDecorate)window.mpLvlDecorate();}
   /* click a username in chat → open that trader's profile card (window.mpOpenProfile provided by mp-profile.js, or the homepage's inline lbOpenProfile exposed as it) */
   function openTraderCard(n){n=String(n||'').replace(/[^a-zA-Z0-9_]/g,'');if(!n)return;if(window.mpOpenProfile){try{window.mpOpenProfile(n);}catch(_){}}}
-  if(msgs)msgs.addEventListener('click',function(e){var el=e.target.closest&&e.target.closest('.ct-user[data-lbu]');if(el){e.stopPropagation();openTraderCard(el.getAttribute('data-lbu'));}});
+  if(msgs)msgs.addEventListener('click',function(e){var tr=e.target.closest&&e.target.closest('.ct-trade[data-trade]');if(tr){e.stopPropagation();e.preventDefault();if(window.mpOpenTrade)window.mpOpenTrade(tr.getAttribute('data-trade'));return;}var el=e.target.closest&&e.target.closest('.ct-user[data-lbu]');if(el){e.stopPropagation();openTraderCard(el.getAttribute('data-lbu'));}});
   /* unread signal: glow the chat FAB (desktop) + a dot on the bottom-nav Chat button (mobile) when a new message lands while the chat is closed */
   function chatAlert(on){try{
     if(fab){fab.classList.toggle('ct-alert',on);var fd=fab.querySelector('.ctfab-dot');if(on&&!fd){fd=document.createElement('span');fd.className='ctfab-dot';fab.appendChild(fd);}else if(!on&&fd){fd.remove();}}
@@ -477,6 +499,117 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
   if(signinBtn)signinBtn.addEventListener('click',function(){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}});
   window.addEventListener('mp-auth-change',function(){if(!box.hidden&&!joined){var u=meUser();if(u){user=u;showChat();}}});
   form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;var _lbm=t.match(/^\/(leaderboard|lb|leaders)\s*([1234])?\b/i);if(_lbm){input.value='';showLeaderboard(+_lbm[2]||1);return;}if(/^\/sig(nal)?\b/i.test(t)){input.value='';if(window._mpOpenSigForm)window._mpOpenSigForm({anchor:form,send:function(txt){if(ws&&ws.readyState===1){ws.send(JSON.stringify({type:'msg',u:user,t:txt}));try{window.__mpTrack&&window.__mpTrack('chat','signal');}catch(_){}return true;}return false;}});return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));try{window.__mpTrack&&window.__mpTrack('chat','sent');}catch(_){}input.value='';});
+  /* post a message into chat programmatically (used by "Share to chat" on a ticket): open the chat, ensure the WS is
+     up, queue the send until it connects. Returns false if the user isn't signed in (chat requires login). */
+  window.mpChatSay=function(text){text=String(text||'').trim();if(!text)return false;var u=meUser();if(!u){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}return false;}user=u;if(box&&box.hidden){try{openBox();}catch(e){}}else if(!joined){try{showChat();}catch(e){}}var payload=JSON.stringify({type:'msg',u:user,t:text}),tries=0;(function trySend(){if(ws&&ws.readyState===1){try{ws.send(payload);window.__mpTrack&&window.__mpTrack('chat','shareticket');}catch(e){}return;}if(tries++>40)return;if(!ws){try{connect();}catch(e){}}setTimeout(trySend,250);})();return true;};
+})();
+
+;/* ══════════ shared trade-ticket viewer — opens a chat `trade:<id>` link in a branded modal (self-contained) ══════════ */
+(function(){
+  if(window.mpOpenTrade)return;
+  var CSS='.mptk-ov{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(4,5,7,.8);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .18s}'
+   +'.mptk-ov.on{opacity:1}'
+   +'.mptk{position:relative;width:min(440px,94vw);max-height:92vh;overflow:auto;border-radius:20px;border:1px solid #232b36;background:linear-gradient(180deg,#0e1218,#08090b);box-shadow:0 30px 90px -20px rgba(0,0,0,.8);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;color:#e9e7df;transform:translateY(8px);transition:transform .2s}'
+   +'.mptk-ov.on .mptk{transform:none}'
+   +'.mptk-glow{position:absolute;inset:0;border-radius:20px;pointer-events:none}'
+   +'.mptk-in{position:relative;padding:22px 22px 20px}'
+   +'.mptk-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}'
+   +'.mptk-brand{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;font-size:15px;letter-spacing:-.02em;color:#f1efe8}'
+   +'.mptk-brand b{color:#c2f64a}'
+   +'.mptk-x{width:30px;height:30px;border-radius:9px;border:1px solid #2a3340;background:#12161d;color:#9aa3ad;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0}'
+   +'.mptk-x:hover{color:#fff;border-color:#3a4657}'
+   +'.mptk-hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}'
+   +'.mptk-sym{font-family:"Space Mono",monospace;font-size:25px;font-weight:700;letter-spacing:-.01em}'
+   +'.mptk-pill{font-family:"Space Mono",monospace;font-size:11px;font-weight:700;padding:4px 9px;border-radius:8px;letter-spacing:.03em}'
+   +'.mptk-long{color:#34d99a;background:rgba(46,189,133,.14)}.mptk-short{color:#ff7b72;background:rgba(255,98,88,.14)}'
+   +'.mptk-lev{color:#c8cdd4;background:#161b23;border:1px solid #262e3a}'
+   +'.mptk-st{margin-left:auto;font-family:"Space Mono",monospace;font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px}'
+   +'.mptk-st.open{color:#8fd4ff;background:rgba(56,189,248,.13)}.mptk-st.win{color:#34d99a;background:rgba(46,189,133,.14)}.mptk-st.loss{color:#ff7b72;background:rgba(255,98,88,.14)}'
+   +'.mptk-roe{font-family:"Space Mono",monospace;font-size:50px;font-weight:700;line-height:1;letter-spacing:-.02em;margin:6px 0 2px}'
+   +'.mptk-pnl{font-family:"Space Mono",monospace;font-size:16px;font-weight:700;margin-bottom:18px}'
+   +'.mptk-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#1b222c;border:1px solid #1b222c;border-radius:14px;overflow:hidden;margin-bottom:16px}'
+   +'.mptk-cell{background:#0c1015;padding:12px 14px}'
+   +'.mptk-cell .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#5f6770;font-weight:600;margin-bottom:3px}'
+   +'.mptk-cell .v{font-family:"Space Mono",monospace;font-size:15px;font-weight:700;color:#e9e7df;word-break:break-word}'
+   +'.mptk-by{font-size:12px;color:#7f8893;margin-bottom:16px}.mptk-by b{color:#c8cdd4}'
+   +'.mptk-cta{display:block;text-align:center;text-decoration:none;background:linear-gradient(180deg,#d3ff5e,#a6e02a);color:#0a0b0d;font-weight:800;border-radius:12px;padding:13px;font-size:14px;letter-spacing:.01em;box-shadow:0 10px 26px -10px rgba(194,246,74,.6)}'
+   +'.mptk-cta:hover{filter:brightness(1.05)}'
+   +'.mptk-foot{text-align:center;font-size:11px;color:#4b545d;margin-top:14px}'
+   +'.mptk-err{padding:38px 12px;text-align:center;color:#9aa3ad;font-size:14px}'
+   /* two-rails partner strip (Bybit amber rail / Moon violet-lime rail, slanted ticket cut). MIRROR: home.js */
+   +'.mprl{margin:16px 0 0}'
+   +'.mprl-t{display:flex;align-items:center;gap:10px;font-family:"Space Mono",monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}'
+   +'.mprl-t::before{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,#28303c)}'
+   +'.mprl-t::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,#28303c,transparent)}'
+   +'.mprl-row{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}'
+   +'.mprl-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:12px 12px 12px 15px;text-decoration:none;color:#e9e7df;transition:background .16s}'
+   +'.mprl-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}'
+   +'.mprl-by::before{background:#f7a600}'
+   +'.mprl-mn::before{background:linear-gradient(180deg,#8a5cff,#c2f64a)}'
+   +'.mprl-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}'
+   +'.mprl-k{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:13.5px;letter-spacing:.01em;flex-shrink:0}'
+   +'.mprl-by .mprl-k{color:#f7a600}'
+   +'.mprl-mn .mprl-k{color:#cdb7ff}'
+   +'.mprl-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}'
+   +'.mprl-a{color:#5c656f;flex-shrink:0;transition:transform .16s,color .16s;font-weight:700}'
+   +'.mprl-c:hover{background:#12161c}'
+   +'.mprl-c:hover .mprl-a{transform:translateX(3px);color:#e9e7df}'
+   +'.mprl-c img{border-radius:5px;flex-shrink:0;display:block}'
+   +'@media(max-width:520px){.mprl-row{flex-direction:column}.mprl-cut{width:auto;height:1px;transform:none}}';
+  function inject(){if(document.getElementById('mptkCss'))return;var s=document.createElement('style');s.id='mptkCss';s.textContent=CSS;(document.head||document.documentElement).appendChild(s);}
+  function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
+  function fp(x){x=+x;if(!isFinite(x))return '—';return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
+  function money(x){var n=x<0;x=Math.abs(+x||0);var s;if(x>=1e9)s=(x/1e9).toFixed(2)+'B';else if(x>=1e6)s=(x/1e6).toFixed(2)+'M';else if(x>=1e5)s=(x/1e3).toFixed(1)+'K';else s=x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (n?'-$':'$')+s;}
+  function ago(t){t=+t;if(!t)return '';var s=Math.floor((Date.now()-t)/1000);if(s<60)return 'just now';var m=Math.floor(s/60);if(m<60)return m+'m ago';var h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
+  var curOv=null;
+  function closeOv(){if(!curOv)return;var o=curOv;curOv=null;o.classList.remove('on');document.removeEventListener('keydown',onKey);setTimeout(function(){if(o&&o.parentNode)o.parentNode.removeChild(o);},220);}
+  function onKey(e){if(e.key==='Escape')closeOv();}
+  function wire(ov){var x=ov.querySelector('.mptk-x');if(x)x.onclick=closeOv;}
+  function shell(inner){inject();
+    if(curOv){var c=curOv.querySelector('.mptk');if(c){c.innerHTML=inner;wire(curOv);return curOv;}}
+    var ov=document.createElement('div');ov.className='mptk-ov';ov.innerHTML='<div class="mptk" role="dialog" aria-modal="true">'+inner+'</div>';
+    document.body.appendChild(ov);curOv=ov;ov.addEventListener('click',function(e){if(e.target===ov)closeOv();});document.addEventListener('keydown',onKey);wire(ov);requestAnimationFrame(function(){ov.classList.add('on');});return ov;}
+  function top(){return '<div class="mptk-top"><span class="mptk-brand">MARGIN<b>PAD</b></span><button class="mptk-x" type="button" aria-label="Close">✕</button></div>';}
+  function body(h){return '<div class="mptk-in">'+top()+h+'</div>';}
+  function render(t){
+    var long=t.side!=='short',closed=(t.status==='win'||t.status==='loss');
+    var pnl=(t.pnl!=null?+t.pnl:null),roe=(t.roe!=null?+t.roe:null);
+    var win=(pnl!=null?pnl>=0:(roe!=null?roe>=0:true)),ac=win?'#2ebd85':'#ff6258';
+    var stCls=t.liquidated?'loss':(closed?(win?'win':'loss'):'open');
+    var stTxt=t.liquidated?'LIQUIDATED':(closed?(win?'WIN':'LOSS'):'OPEN');
+    var mark=(t.exit!=null?t.exit:t.entry),margin=(+t.margin>0)?+t.margin:null;
+    var val=(margin!=null&&+t.lev>0)?margin*(+t.lev):(t.notional!=null?+t.notional:null);
+    var inner='<div class="mptk-glow" style="background:radial-gradient(120% 55% at 50% 0%,'+(win?'rgba(46,189,133,.16)':'rgba(255,98,88,.16)')+',transparent 70%)"></div>'
+      +'<div class="mptk-in">'+top()
+      +'<div class="mptk-hd"><span class="mptk-sym">'+esc(t.sym||'—')+'</span><span class="mptk-pill '+(long?'mptk-long':'mptk-short')+'">'+(long?'LONG':'SHORT')+'</span><span class="mptk-pill mptk-lev">'+(+t.lev>0?(+t.lev):1)+'×</span><span class="mptk-st '+stCls+'">'+stTxt+(t.partial?' · '+t.partial+'%':'')+'</span></div>'
+      +'<div class="mptk-roe" style="color:'+ac+'">'+(roe!=null?((roe>=0?'+':'')+roe.toFixed(2)+'%'):'—')+'</div>'
+      +'<div class="mptk-pnl" style="color:'+(win?'#9fe9c8':'#ffb3ad')+'">'+(pnl!=null?((pnl>=0?'+':'−')+money(Math.abs(pnl)).replace('-','')+(closed?'':' (live)')):'')+'</div>'
+      +'<div class="mptk-grid">'
+        +'<div class="mptk-cell"><div class="l">Entry</div><div class="v">'+fp(t.entry)+'</div></div>'
+        +'<div class="mptk-cell"><div class="l">'+(closed?'Exit':'Mark')+'</div><div class="v">'+fp(mark)+'</div></div>'
+        +'<div class="mptk-cell"><div class="l">Leverage</div><div class="v">'+(+t.lev>0?(+t.lev):1)+'×</div></div>'
+        +'<div class="mptk-cell"><div class="l">Liquidation</div><div class="v">'+(t.liq!=null?fp(t.liq):'—')+'</div></div>'
+        +'<div class="mptk-cell"><div class="l">Size</div><div class="v">'+(margin!=null?money(margin):'—')+'</div></div>'
+        +'<div class="mptk-cell"><div class="l">Value</div><div class="v">'+(val!=null?money(val):'—')+'</div></div>'
+      +'</div>'
+      +'<div class="mptk-by">Shared by <b>@'+esc(t.by||'trader')+'</b>'+((t.closeTs||t.ts)?' · '+ago(t.closeTs||t.ts):'')+'</div>'
+      +'<a class="mptk-cta" href="/paper-trade?coin='+encodeURIComponent(String(t.sym||'').toUpperCase())+(long?'&side=long':'&side=short')+'">Paper trade '+esc(t.sym||'')+' →</a>'
+      +'<div class="mprl"><div class="mprl-t">TRADE IT FOR REAL</div><div class="mprl-row">'
+      +'<a class="mprl-c mprl-by" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mprl-k">Bybit</span><span class="mprl-d">Futures · 100× · deep liquidity</span><span class="mprl-a">→</span></a>'
+      +'<i class="mprl-cut"></i>'
+      +'<a class="mprl-c mprl-mn" data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><img src="/assets/moon.png" alt="" width="18" height="18"><span class="mprl-k">Moon</span><span class="mprl-d">Call it up or down · 24/7</span><span class="mprl-a">→</span></a>'
+      +'</div></div>'
+      +'<div class="mptk-foot">Paper trade · not financial advice</div></div>';
+    shell(inner);
+  }
+  window.mpOpenTrade=function(id){
+    id=String(id||'').replace(/[^a-z0-9]/gi,'').slice(0,16);if(!id)return;
+    shell(body('<div class="mptk-err">Loading ticket…</div>'));
+    fetch('/api/tshare?id='+encodeURIComponent(id),{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+      if(d&&d.ok&&d.ticket)render(d.ticket);
+      else shell(body('<div class="mptk-err">This shared ticket is no longer available.</div>'));
+    }).catch(function(){shell(body('<div class="mptk-err">Could not load the ticket. Check your connection.</div>'));});
+  };
 })();
 
 /* UX pass (2026-07): bottom-nav "Trades" badge — open-position count (rekt/rewards; the homepage has its own copy in home.js) */

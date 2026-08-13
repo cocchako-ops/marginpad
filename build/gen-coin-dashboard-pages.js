@@ -23,6 +23,7 @@ const EN = {
   leadT: 'Live {NAME} perpetual-futures data — price, funding rate, open interest, trader positioning and 24-hour liquidations, aggregated across major exchanges.',
   cardFunding: 'Funding rate', cardOI: 'Open interest', cardLiqL: '24h liq · longs', cardLiqS: '24h liq · shorts', cardPos: 'Trader positioning · long vs short',
   tradeH: 'Trade {SYM}USDT perpetual',
+  moonLine: 'Call {SYM} up or down on Moon — stocks & forex too, 24/7',
   ctaScreener: 'See {SYM} on the screener →', ctaCalc: '{SYM} liquidation calculator', ctaPractice: 'Practice {SYM} risk-free',
   h2Explained: '{NAME} perpetual futures, explained',
   pExplained: 'A {SYM} perpetual future (perp) lets you trade {NAME} with leverage and no expiry. The <a href="/funding/">funding rate</a> keeps the perp price tethered to spot — positive funding means {SYM} longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open {SYM} positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged {SYM} traders got force-closed — long liquidations on drops, short liquidations on rallies.',
@@ -122,6 +123,13 @@ const CSS = `
   .cdtrade-h{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;margin-bottom:9px}
   .cdex{display:grid;grid-template-columns:1fr 1fr;gap:9px}
   @media(min-width:620px){.cdex{grid-template-columns:repeat(4,1fr)}}
+  .cdmoon{display:flex;align-items:center;gap:10px;margin-top:9px;padding:11px 13px 11px 15px;background:linear-gradient(120deg,rgba(138,92,255,.12),rgba(194,246,74,.05) 65%,transparent),#0d1014;border:1px solid #2e3350;border-radius:12px;text-decoration:none;color:var(--ink);position:relative;overflow:hidden;transition:transform .15s,border-color .15s}
+  .cdmoon::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#8a5cff,#c2f64a)}
+  .cdmoon:hover{transform:translateY(-1px);border-color:#4a4f7d}
+  .cdmoon img{border-radius:6px;flex-shrink:0}
+  .cdmoon span{font-size:12.5px;flex:1;min-width:0}
+  .cdmoon b{color:#8b95a1;font-weight:700;transition:transform .15s}
+  .cdmoon:hover b{transform:translateX(3px)}
   .cdex a{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line-bright);border-radius:11px;padding:11px 13px;font-family:'Familjen Grotesk',sans-serif;font-weight:700;font-size:14px;transition:transform .13s,border-color .13s}
   .cdex a:hover{transform:translateY(-2px)}
   .cdex .ic{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:14px;flex:0 0 auto}
@@ -232,6 +240,7 @@ ${ld}
         <a href="${okx(s)}" target="_blank" rel="noopener sponsored" data-ex="OKX"><span class="ic" style="background:#cfd3d8;color:#0a0b0d">O</span>OKX</a>
         <a href="${kucoin(s)}" target="_blank" rel="noopener sponsored" data-ex="KuCoin"><span class="ic" style="background:#23af91;color:#06231d">K</span>KuCoin</a>
       </div>
+      <a class="cdmoon" data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="noopener sponsored"><img src="/assets/moon.png" alt="Moon" width="20" height="20" loading="lazy"><span>${F(L.moonLine || EN.moonLine)}</span><b>&rarr;</b></a>
     </div>
 
     <div class="cdcta">

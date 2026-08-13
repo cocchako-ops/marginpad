@@ -1477,7 +1477,27 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
    +'.mptk-cta{display:block;text-align:center;text-decoration:none;background:linear-gradient(180deg,#d3ff5e,#a6e02a);color:#0a0b0d;font-weight:800;border-radius:12px;padding:13px;font-size:14px;letter-spacing:.01em;box-shadow:0 10px 26px -10px rgba(194,246,74,.6)}'
    +'.mptk-cta:hover{filter:brightness(1.05)}'
    +'.mptk-foot{text-align:center;font-size:11px;color:#4b545d;margin-top:14px}'
-   +'.mptk-err{padding:38px 12px;text-align:center;color:#9aa3ad;font-size:14px}';
+   +'.mptk-err{padding:38px 12px;text-align:center;color:#9aa3ad;font-size:14px}'
+   /* two-rails partner strip (Bybit amber rail / Moon violet-lime rail, slanted ticket cut). MIRROR: mp-trade.js */
+   +'.mprl{margin:16px 0 0}'
+   +'.mprl-t{display:flex;align-items:center;gap:10px;font-family:"Space Mono",monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}'
+   +'.mprl-t::before{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,#28303c)}'
+   +'.mprl-t::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,#28303c,transparent)}'
+   +'.mprl-row{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}'
+   +'.mprl-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:12px 12px 12px 15px;text-decoration:none;color:#e9e7df;transition:background .16s}'
+   +'.mprl-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}'
+   +'.mprl-by::before{background:#f7a600}'
+   +'.mprl-mn::before{background:linear-gradient(180deg,#8a5cff,#c2f64a)}'
+   +'.mprl-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}'
+   +'.mprl-k{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:13.5px;letter-spacing:.01em;flex-shrink:0}'
+   +'.mprl-by .mprl-k{color:#f7a600}'
+   +'.mprl-mn .mprl-k{color:#cdb7ff}'
+   +'.mprl-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}'
+   +'.mprl-a{color:#5c656f;flex-shrink:0;transition:transform .16s,color .16s;font-weight:700}'
+   +'.mprl-c:hover{background:#12161c}'
+   +'.mprl-c:hover .mprl-a{transform:translateX(3px);color:#e9e7df}'
+   +'.mprl-c img{border-radius:5px;flex-shrink:0;display:block}'
+   +'@media(max-width:520px){.mprl-row{flex-direction:column}.mprl-cut{width:auto;height:1px;transform:none}}';
   function inject(){if(document.getElementById('mptkCss'))return;var s=document.createElement('style');s.id='mptkCss';s.textContent=CSS;(document.head||document.documentElement).appendChild(s);}
   function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m];});}
   function fp(x){x=+x;if(!isFinite(x))return '—';return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
@@ -1516,6 +1536,11 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       +'</div>'
       +'<div class="mptk-by">Shared by <b>@'+esc(t.by||'trader')+'</b>'+((t.closeTs||t.ts)?' · '+ago(t.closeTs||t.ts):'')+'</div>'
       +'<a class="mptk-cta" href="/paper-trade?coin='+encodeURIComponent(String(t.sym||'').toUpperCase())+(long?'&side=long':'&side=short')+'">Paper trade '+esc(t.sym||'')+' →</a>'
+      +'<div class="mprl"><div class="mprl-t">TRADE IT FOR REAL</div><div class="mprl-row">'
+      +'<a class="mprl-c mprl-by" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack(\'exchange\',\'Bybit\')}catch(e){}"><span class="mprl-k">Bybit</span><span class="mprl-d">Futures · 100× · deep liquidity</span><span class="mprl-a">→</span></a>'
+      +'<i class="mprl-cut"></i>'
+      +'<a class="mprl-c mprl-mn" data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack(\'exchange\',\'Moon\')}catch(e){}"><img src="/assets/moon.png" alt="" width="18" height="18"><span class="mprl-k">Moon</span><span class="mprl-d">Call it up or down · 24/7</span><span class="mprl-a">→</span></a>'
+      +'</div></div>'
       +'<div class="mptk-foot">Paper trade · not financial advice</div></div>';
     shell(inner);
   }
@@ -3233,4 +3258,46 @@ window.mpSrvOpen=function(payload,ok,fail){
     });
     setTimeout(function(){var f=q('[data-f="sym"]');if(f)f.focus();},40);
   };
+})();
+
+;/* Moon nudge (owner 2026-08-13): stocks/forex/metals/indices in the PT plan form are markets crypto venues
+   don't offer retail — Moon is exactly that product. A violet-lime rail under the Open button, ONLY for
+   non-crypto classes; copy follows the selected symbol. Single copy (home.js only — plan form lives on app shell). */
+(function(){
+  function ensure(){
+    var ex=document.getElementById('mpMoonNudge');if(ex)return ex;
+    var b=document.getElementById('planSave');if(!b||!b.parentNode)return null;
+    if(!document.getElementById('mpMoonNudgeCss')){var s=document.createElement('style');s.id='mpMoonNudgeCss';s.textContent=
+      '#mpMoonNudge{display:none;align-items:center;gap:10px;margin-top:10px;padding:11px 13px 11px 15px;background:linear-gradient(120deg,rgba(138,92,255,.12),rgba(194,246,74,.05) 65%,transparent),#0d1014;border:1px solid #2e3350;border-radius:12px;text-decoration:none;position:relative;overflow:hidden;transition:transform .15s,border-color .15s}'
+      +'#mpMoonNudge.on{display:flex}'
+      +'#mpMoonNudge::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#8a5cff,#c2f64a)}'
+      +'#mpMoonNudge:hover{transform:translateY(-1px);border-color:#4a4f7d}'
+      +'#mpMoonNudge img{width:20px;height:20px;border-radius:6px;flex-shrink:0}'
+      +'#mpMoonNudge .k{font-family:"Space Mono",monospace;font-size:9px;font-weight:700;letter-spacing:.2em;color:#cdb7ff;display:block;margin-bottom:2px}'
+      +'#mpMoonNudge .t{font-size:12px;color:#c8cdd4;line-height:1.35;flex:1;min-width:0}'
+      +'#mpMoonNudge .t b{color:#e9e7df}'
+      +'#mpMoonNudge .a{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .15s,color .15s}'
+      +'#mpMoonNudge:hover .a{transform:translateX(3px);color:#e9e7df}';
+      (document.head||document.documentElement).appendChild(s);}
+    var a=document.createElement('a');a.id='mpMoonNudge';a.href='https://moon.com/?c=moonkickstart';a.target='_blank';a.rel='sponsored noopener noreferrer';a.setAttribute('data-ex','Moon');
+    a.addEventListener('click',function(){try{window.__mpTrack&&window.__mpTrack('exchange','Moon');}catch(e){}});
+    b.parentNode.insertBefore(a,b.nextSibling);
+    return a;
+  }
+  var CLSW={stock:'stocks',forex:'forex',metal:'metals',index:'indices'};
+  window._mpMoonNudge=function(){
+    var ps=document.getElementById('planSym');if(!ps)return;
+    var sym=String(ps.value||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,''),cls;
+    if(window.mpAssetClass)cls=window.mpAssetClass(sym);
+    else{ /* mpAssetClass arrives async (Bybit symbol fetch) — same tables inline so the nudge is timing-proof */
+      var STK2={AAPL:1,TSLA:1,NVDA:1,MSFT:1,AMZN:1,GOOGL:1,META:1,AMD:1,NFLX:1,COIN:1,MSTR:1,PLTR:1,HOOD:1,AVGO:1,INTC:1,JPM:1,DIS:1,BABA:1,SPY:1,QQQ:1},IDX2={SPX500:1,NAS100:1,US30:1,GER40:1,UK100:1,JPN225:1},FX2={EURUSD:1,GBPUSD:1,USDJPY:1,AUDUSD:1,USDCAD:1};
+      cls=STK2[sym]?'stock':(sym==='XAU'||sym==='XAG')?'metal':IDX2[sym]?'index':FX2[sym]?'forex':'crypto';}
+    var n=ensure();if(!n)return;
+    if(cls==='crypto'){n.classList.remove('on');return;}
+    var nm=(window.mpMarketName&&window.mpMarketName(sym))||sym;
+    n.innerHTML='<img src="/assets/moon.png" alt=""><span class="t"><span class="k">MOON · REAL MARKETS</span>Trade <b>'+nm+'</b> for real on Moon — '+(CLSW[cls]||'markets')+', up or down, 24/7</span><span class="a">→</span>';
+    n.classList.add('on');
+  };
+  function wire(){var ps=document.getElementById('planSym');if(!ps)return;ps.addEventListener('change',function(){setTimeout(window._mpMoonNudge,0);});window._mpMoonNudge();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();
 })();

@@ -85,6 +85,25 @@ const EXTRA_CSS = `<style>
   .lvtab td{font-family:'Space Mono',monospace;color:var(--ink)}
   .lvtab td:first-child{font-family:'Bricolage Grotesque',sans-serif;font-weight:700}
   @media(max-width:600px){.lvtab{display:block;overflow-x:auto;white-space:nowrap}}
+  .mprl{margin:22px 0 8px}
+  .mprl-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+  .mprl-t::before{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,#28303c)}
+  .mprl-t::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,#28303c,transparent)}
+  .mprl-row{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+  .mprl-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:12px 12px 12px 15px;text-decoration:none;color:#e9e7df;transition:background .16s}
+  .mprl-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+  .mprl-by::before{background:#f7a600}
+  .mprl-mn::before{background:linear-gradient(180deg,#8a5cff,#c2f64a)}
+  .mprl-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+  .mprl-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0}
+  .mprl-by .mprl-k{color:#f7a600}
+  .mprl-mn .mprl-k{color:#cdb7ff}
+  .mprl-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+  .mprl-a{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+  .mprl-c:hover{background:#12161c}
+  .mprl-c:hover .mprl-a{transform:translateX(3px);color:#e9e7df}
+  .mprl-c img{border-radius:5px;flex-shrink:0;display:block}
+  @media(max-width:520px){.mprl-row{flex-direction:column}.mprl-cut{width:auto;height:1px;transform:none}}
 </style>`;
 
 function head(o) {
@@ -188,6 +207,12 @@ function coinPage(c) {
 
     <h2>See ${c.sym} liquidations happen live</h2>
     <p>Numbers are one thing; watching real leverage get wiped is another. The <a href="/liquidations/">live liquidations feed</a> and the <a href="/rekt/">Rekt ticker</a> show ${c.sym} longs and shorts being force-closed across Binance, Bybit and OKX in real time — a spike in long liquidations often marks local capitulation, a spike in shorts a squeeze. Then rehearse the trade with zero risk on the <a href="/paper-trade?coin=${c.sym}">${c.sym} paper-trading terminal</a> at the live price, and screen the whole market on the <a href="/screener">futures screener</a>.</p>
+
+    <div class="mprl"><div class="mprl-t">TRADE ${c.sym} FOR REAL</div><div class="mprl-row">
+      <a class="mprl-c mprl-by" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer"><span class="mprl-k">Bybit</span><span class="mprl-d">${c.sym} futures · up to ${c.lev}× · deep liquidity</span><span class="mprl-a">&rarr;</span></a>
+      <i class="mprl-cut"></i>
+      <a class="mprl-c mprl-mn" data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer"><img src="/assets/moon.png" alt="" width="18" height="18" loading="lazy"><span class="mprl-k">Moon</span><span class="mprl-d">Call ${c.sym} up or down · 24/7</span><span class="mprl-a">&rarr;</span></a>
+    </div></div>
 
     <h2>FAQ</h2>
     <h3>At what percentage is a ${c.sym} position liquidated?</h3>

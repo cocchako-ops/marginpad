@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8">
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index, follow, max-image-preview:large">
 <title>Crypto Trading Journal &amp; Analytics — Track Your Performance | MarginPad</title>
@@ -78,6 +91,61 @@
   .jperiod button.on{background:#37d398;color:#04140d;border-color:transparent;box-shadow:0 4px 16px -6px rgba(55,211,152,.7)}
   .jp-count{font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);margin-left:auto}
   @media(max-width:560px){.jp-count{margin-left:0;width:100%;margin-top:2px}}
+  /* ── headline summary card (the "wow" band at the top) ── */
+  .jsum{position:relative;overflow:hidden;border-radius:20px;border:1px solid var(--line2);background:linear-gradient(150deg,var(--panel2),var(--bg2) 62%);padding:24px 26px;margin:6px 0 8px;box-shadow:var(--shadow)}
+  .jsum::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 80% at 100% 0,rgba(70,224,230,.10),transparent 55%)}
+  .jsum.pos::before{background:radial-gradient(120% 80% at 100% 0,rgba(55,211,152,.14),transparent 55%)}
+  .jsum.neg::before{background:radial-gradient(120% 80% at 100% 0,rgba(255,98,88,.13),transparent 55%)}
+  .jsum-top{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .jsum-lab{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:0 0 6px}
+  .jsum-net{font-family:'Space Mono',monospace;font-size:clamp(38px,7vw,58px);font-weight:700;letter-spacing:-.03em;line-height:.95}
+  .jsum-sub{font-family:'Space Mono',monospace;font-size:13px;color:var(--dim);margin-top:8px}
+  .jsum-stats{position:relative;display:flex;gap:26px;flex-wrap:wrap;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+  .jsum-st .v{font-family:'Space Mono',monospace;font-size:21px;font-weight:700;letter-spacing:-.01em;line-height:1}
+  .jsum-st .l{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);font-weight:600;margin-top:5px}
+  .jsum-badge{align-self:flex-start;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.05em;padding:6px 12px;border-radius:20px;border:1px solid var(--line2);white-space:nowrap}
+  .jsum-badge.good{color:var(--up);border-color:rgba(55,211,152,.4);background:rgba(55,211,152,.08)}
+  .jsum-badge.bad{color:var(--red);border-color:rgba(255,98,88,.4);background:rgba(255,98,88,.08)}
+  .jsum-badge.flat{color:var(--amber);border-color:rgba(255,179,71,.4);background:rgba(255,179,71,.08)}
+  /* ── export toolbar ── */
+  .jexport{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-left:auto}
+  .jbtn-rep{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,#d3ff5e,#a6e02a);color:#0a0b0d;font-weight:800;border:none;border-radius:10px;padding:9px 16px;font-size:13px;cursor:pointer;font-family:inherit;letter-spacing:.01em;box-shadow:0 8px 22px -10px rgba(194,246,74,.6);transition:transform .12s,filter .15s}
+  .jbtn-rep:hover{transform:translateY(-1px);filter:brightness(1.05)}
+  .jbtn-rep svg{width:15px;height:15px}
+  .jbtn-csv{background:#0c0f13;border:1px solid #2f3742;border-radius:10px;color:#9aa3ad;padding:9px 13px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:color .14s,border-color .14s}
+  .jbtn-csv:hover{color:#c8cdd4;border-color:#3a4657}
+  /* ── print-only report chrome (branded header + verification seal) ── */
+  #prHead,#prSeal{display:none}
+  #prHead{align-items:flex-start;justify-content:space-between;gap:20px;padding-bottom:16px;margin-bottom:6px;border-bottom:2px solid #c2f64a}
+  #prHead .ph-brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.02em;color:#0a0c10}
+  #prHead .ph-brand b{color:#7bb519}
+  #prHead .ph-tag{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#6b7580;margin-top:2px}
+  #prHead .ph-meta{text-align:right;font-family:'Space Mono',monospace;font-size:11.5px;line-height:1.7;color:#3a4048}
+  #prHead .ph-meta b{color:#0a0c10}
+  #prSeal{align-items:center;gap:16px;justify-content:center;margin-top:26px;padding-top:20px;border-top:1px solid #d8dce2}
+  #prSeal .ps-txt{font-family:'Space Mono',monospace;font-size:11px;line-height:1.7;color:#4b545d;text-align:left}
+  #prSeal .ps-txt b{color:#0a0c10}
+  @media print{
+    @page{margin:14mm}
+    :root{--bg:#fff;--bg2:#fff;--panel:#fff;--panel2:#f7f8fa;--panel3:#eef0f3;--line:#dde1e7;--line2:#c9cfd7;--ink:#0a0c10;--ink2:#232a33;--dim:#4b545d;--faint:#727b85;--shadow:none}
+    html,body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    body{color:#0a0c10!important;font-size:12px}
+    .topbar,.topbar.mpnav-hdr,header.mpnav-hdr,#mpCkBar,#mpAnnounce,#mpnavSugg,.hero .sub,.eyebrow,#empty,.jperiod .jp-lbl,.jperiod button,.jexport,.prose,.faq,.toolfoot,.mpaff,.note,.mpbn,.mpnav,.mpnav-burger,#jSummary .jsum-badge{display:none!important}
+    .hero{padding:0!important;margin:0!important}
+    .hero h1{display:none}
+    #prHead{display:flex!important}
+    #prSeal{display:flex!important}
+    .wrap{max-width:100%!important;padding:0!important}
+    .card,.tablewrap,.kpi,.verdict,.jsum{box-shadow:none!important;break-inside:avoid}
+    .jsum::before{display:none}
+    h2{break-after:avoid;margin-top:16px}
+    .grid2{gap:12px}
+    .jperiod{border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:12px 0}
+    .jp-count{margin-left:0}
+    .viz{background:#fff!important;border:1px solid var(--line)!important}
+    .form .blk{border-color:#d8dce2!important}
+    a[href]:after{content:none!important}
+  }
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Trading Journal","applicationCategory":"FinanceApplication","operatingSystem":"Web","url":"https://marginpad.io/trading-journal/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
@@ -111,6 +179,11 @@
   </div>
 
   <div id="out" hidden>
+    <div id="prHead">
+      <div><div class="ph-brand">MARGIN<b>PAD</b></div><div class="ph-tag">Trading Performance Report</div></div>
+      <div class="ph-meta"><div>Trader: <b id="prUser">Anonymous</b></div><div>Period: <b id="prPeriod">All time</b></div><div>Generated: <b id="prDate">—</b></div></div>
+    </div>
+
     <div id="jPeriod" class="jperiod">
       <span class="jp-lbl">Show</span>
       <button type="button" data-p="day">Today</button>
@@ -119,6 +192,22 @@
       <button type="button" data-p="year">This year</button>
       <button type="button" data-p="all" class="on">All time</button>
       <span class="jp-count" id="jpCount"></span>
+      <div class="jexport">
+        <button id="trReport" type="button" class="jbtn-rep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>Download report</button>
+        <button id="trCsv" type="button" class="jbtn-csv">CSV</button>
+      </div>
+    </div>
+
+    <div id="jSummary" class="jsum">
+      <div class="jsum-top">
+        <div>
+          <div class="jsum-lab">Net profit &amp; loss <span id="sumScope">· all time</span></div>
+          <div class="jsum-net" id="sumNet">$0.00</div>
+          <div class="jsum-sub" id="sumSub"></div>
+        </div>
+        <div class="jsum-badge flat" id="sumBadge">—</div>
+      </div>
+      <div class="jsum-stats" id="sumStats"></div>
     </div>
 
     <div id="verdict" class="verdict"><span class="dot"></span><span id="verdictTxt"></span></div>
@@ -180,7 +269,6 @@
     <div id="trCtl" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px">
       <select id="trFsym" style="background:#0c0f13;border:1px solid #2f3742;border-radius:9px;color:#e9e7df;padding:8px 10px;font-size:13px"><option value="">All coins</option></select>
       <select id="trFside" style="background:#0c0f13;border:1px solid #2f3742;border-radius:9px;color:#e9e7df;padding:8px 10px;font-size:13px"><option value="">Long + Short</option><option value="long">Long only</option><option value="short">Short only</option></select>
-      <button id="trCsv" type="button" style="margin-left:auto;background:#0c0f13;border:1px solid #2f3742;border-radius:9px;color:#c2f64a;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer">⬇ Export CSV</button>
     </div>
     <div class="tablewrap">
       <div class="tablescroll">
@@ -188,6 +276,17 @@
       </div>
     </div>
     <div class="note"><b>How it's computed:</b> profit factor = gross wins ÷ gross losses · expectancy = net P&amp;L ÷ trades · ROE = P&amp;L ÷ margin. All figures are derived only from trades you've closed in the Paper Trade terminal, stored locally in your browser.</div>
+
+    <div id="prSeal">
+      <svg viewBox="0 0 120 120" width="86" height="86" aria-hidden="true">
+        <circle cx="60" cy="60" r="55" fill="none" stroke="#7bb519" stroke-width="2.5"/>
+        <circle cx="60" cy="60" r="47" fill="#f4f9e8" stroke="#c2e06a" stroke-width="1"/>
+        <text x="60" y="33" font-family="Arial,sans-serif" font-size="10" font-weight="800" letter-spacing="1.4" fill="#5f8a12" text-anchor="middle">MARGINPAD</text>
+        <path d="M42 60 l12 13 l24 -28" fill="none" stroke="#6fa314" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="60" y="97" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="2" fill="#5f8a12" text-anchor="middle">VERIFIED</text>
+      </svg>
+      <div class="ps-txt"><b>Officially generated on MarginPad</b><br>marginpad.io/trading-journal · <span id="prSealDate">—</span><br>Educational paper-trading record · not financial advice</div>
+    </div>
   </div>
 
   <section class="prose" style="margin-top:46px">
@@ -213,6 +312,7 @@
   </section>
 </div>
 
+<div class="mpaff"><style>.mpaff{display:flex;align-items:center;gap:16px;flex-wrap:wrap;max-width:1160px;margin:34px auto 0;padding:13px 18px;border:1px solid #262e3a;border-radius:13px;background:linear-gradient(120deg,rgba(247,166,0,.05),transparent 40%,rgba(138,92,255,.07)),#0c0f13;font-size:13px}.mpaff-t{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.22em;color:#5c656f}.mpaff a{display:inline-flex;align-items:center;gap:7px;color:#e9e7df;text-decoration:none;font-weight:700;transition:color .15s}.mpaff a small{color:#8b95a1;font-weight:400}.mpaff a i{width:8px;height:8px;border-radius:3px;display:inline-block}.mpaff a b{color:#5c656f;transition:transform .15s;font-weight:700}.mpaff a:hover b{transform:translateX(3px);color:#e9e7df}</style><span class="mpaff-t">TRADE FOR REAL</span><a data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer"><i style="background:#f7a600"></i>Bybit <small>futures &middot; 100&times;</small><b>&rarr;</b></a><a data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer"><i style="background:linear-gradient(135deg,#8a5cff,#c2f64a)"></i>Moon <small>up or down &middot; 24/7</small><b>&rarr;</b></a></div>
 <footer class="toolfoot"><div class="cols"><div><a class="brand" href="/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">Free crypto futures tools — calculators, a live charts workspace, a paper-trading terminal and a real-time liquidation feed. No signup.</p></div><div><h4>Tools</h4><a href="/crypto-backtester/">Strategy Backtester</a><a href="/trading-journal/">Trading Journal</a><a href="/pivot-point-calculator/">Pivot Points</a><a href="/risk-of-ruin-calculator/">Risk of Ruin</a><a href="/crypto-correlation-matrix/">Correlation Matrix</a></div><div><h4>MarginPad</h4><a href="/paper-trade">Paper Trade</a><a href="/charts">Charts</a><a href="/calculators">Calculators</a><a href="/screener">Screener</a><a href="/rekt/">Liquidations</a></div></div><div class="bottom">© 2026 MarginPad · Free crypto trading tools · Not financial advice</div></footer>
 
 <script>
@@ -232,6 +332,8 @@
   master.forEach(function(e){e._pnl=+e.pnl||0;e._roe=(+e.margin>0)?e._pnl/(+e.margin)*100:0;e._long=(e.side!=='short');e._ts=(+e.closeTs||+e.closedTs||+e.ts||0);});
   $('out').hidden=false;
   var period='all';
+  var PERIOD_LBL={day:'today',week:'this week',month:'this month',year:'this year',all:'all time'};
+  function durS(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h';return Math.floor(h/24)+'d';}
   function periodStart(p){var d=new Date();
     if(p==='day'){d.setHours(0,0,0,0);return d.getTime();}
     if(p==='week'){var wd=(d.getDay()+6)%7;d.setHours(0,0,0,0);return d.getTime()-wd*86400000;}
@@ -277,6 +379,30 @@
   else if(exp>=0||pf>=1){vEl.className='verdict flat';vTxt.innerHTML='<b>Roughly break-even.</b> Expectancy is '+money(exp)+'/trade and profit factor '+(isFinite(pf)?pf.toFixed(2):'∞')+'. The edge is marginal — tighten your losers or let winners run.';}
   else{vEl.className='verdict bad';vTxt.innerHTML='<b>No edge yet.</b> Expectancy is '+money(exp)+' per trade and profit factor '+pf.toFixed(2)+' — this sample loses money. Review your worst trades below.';}
 
+  // extra headline stats
+  var totalVol=all.reduce(function(s,e){return s+((+e.margin||0)*((+e.lev>0)?+e.lev:1));},0);
+  var holds=[];all.forEach(function(e){var h=(+e._ts)-(+e.ts||0);if(h>0&&e.ts)holds.push(h);});
+  var avgHold=holds.length?holds.reduce(function(s,x){return s+x;},0)/holds.length:0;
+  var symCount={};all.forEach(function(e){var s=e.sym||'?';symCount[s]=(symCount[s]||0)+1;});
+  var topSym='—',topSymN=0;Object.keys(symCount).forEach(function(s){if(symCount[s]>topSymN){topSymN=symCount[s];topSym=s;}});
+
+  // headline summary card (the top "wow" band)
+  (function(){
+    var sc=$('sumScope');if(sc)sc.textContent='· '+PERIOD_LBL[period];
+    var netEl=$('sumNet');if(netEl){netEl.textContent=(net>=0?'+':'−')+money(Math.abs(net)).replace('-','');netEl.style.color=net>=0?'var(--up)':'var(--red)';}
+    var js=$('jSummary');if(js)js.className='jsum '+(net>=0?'pos':'neg');
+    var sub=$('sumSub');if(sub)sub.textContent=wins.length+' win'+(wins.length===1?'':'s')+' / '+losses.length+' loss'+(losses.length===1?'':'es')+' · profit factor '+(isFinite(pf)?pf.toFixed(2):'∞')+' · '+all.length+' closed';
+    var bd=$('sumBadge');if(bd){if(all.length<10){bd.className='jsum-badge flat';bd.textContent='Building sample';}else if(posEdge){bd.className='jsum-badge good';bd.textContent='Positive edge';}else if(exp>=0||pf>=1){bd.className='jsum-badge flat';bd.textContent='Break-even';}else{bd.className='jsum-badge bad';bd.textContent='No edge yet';}}
+    function sst(v,l,c){return '<div class="jsum-st"><div class="v"'+(c?' style="color:'+c+'"':'')+'>'+v+'</div><div class="l">'+l+'</div></div>';}
+    var st=$('sumStats');if(st)st.innerHTML=
+      sst(wr.toFixed(0)+'%','Win rate',wr>=50?'var(--up)':'')
+      +sst(String(all.length),'Trades','')
+      +sst((best._pnl>=0?'+':'−')+money(Math.abs(best._pnl)).replace('-',''),'Best trade','var(--up)')
+      +sst(pct(avgRoe),'Avg ROE',avgRoe>=0?'var(--up)':'var(--red)')
+      +sst(durS(avgHold),'Avg hold','')
+      +sst(money(totalVol),'Volume','');
+  })();
+
   // KPIs
   function kpi(v,l,cls){return '<div class="kpi '+(cls||'')+'"><div class="v '+(cls==='pos'?'pos':cls==='neg'?'neg':'')+'">'+v+'</div><div class="l">'+l+'</div></div>';}
   $('kpis').innerHTML=
@@ -291,7 +417,10 @@
     +kpi(money(best._pnl),'Best trade','pos')
     +kpi(money(worst._pnl),'Worst trade','neg')
     +kpi(maxW,'Max win streak','pos')
-    +kpi(maxL,'Max loss streak','neg');
+    +kpi(maxL,'Max loss streak','neg')
+    +kpi(durS(avgHold),'Avg hold time','')
+    +kpi(money(totalVol),'Total volume','')
+    +kpi(topSym+(topSymN?' ·'+topSymN:''),'Most traded','');
 
   // ===== equity curve =====
   (function(){
@@ -432,9 +561,21 @@
   })();
   } // end rebuild()
   var _jp=$('jPeriod');if(_jp)_jp.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button[data-p]');if(!b)return;period=b.getAttribute('data-p');Array.prototype.forEach.call(_jp.querySelectorAll('button'),function(x){x.classList.toggle('on',x===b);});rebuild();});
+  // ── branded report → print (Save as PDF): fill the print-only header + verification seal, then print ──
+  function fillReport(){
+    var u='Anonymous trader';try{var me=(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me());if(me&&(me.username||me.email))u='@'+String(me.username||me.email.split('@')[0]);}catch(e){}
+    var d=new Date();var ds=d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' · '+('0'+d.getUTCHours()).slice(-2)+':'+('0'+d.getUTCMinutes()).slice(-2)+' UTC';
+    var pu=$('prUser');if(pu)pu.textContent=u;
+    var pp=$('prPeriod');if(pp)pp.textContent=PERIOD_LBL[period].replace(/^\w/,function(c){return c.toUpperCase();});
+    var pd=$('prDate');if(pd)pd.textContent=ds;
+    var psd=$('prSealDate');if(psd)psd.textContent=ds;
+  }
+  var _rb=$('trReport');if(_rb)_rb.addEventListener('click',function(){fillReport();try{if(window.__mpTrack)window.__mpTrack('journal','report');}catch(e){}setTimeout(function(){window.print();},80);});
+  window.addEventListener('beforeprint',fillReport); // Ctrl+P path also gets a filled header/seal
   rebuild();
 })();
 </script>
+<script defer src="/assets/mp-auth.js"></script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>
