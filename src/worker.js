@@ -6562,7 +6562,13 @@ function ovDrillRow(kind,x,i){
   if(kind==='affiliate')return '<div class="ovd-r"><span class="ovd-ex">'+_dde(x.ex||'?')+'</span><span class="ovd-main"><b>'+_dde(x.path||'/')+'</b><small>'+fl+(x.u?' &middot; @'+_dde(x.u):'')+'</small></span>'+t+'</div>';
   if(kind==='returning')return '<div class="ovd-r"'+clk+'><span class="ovd-main"><b>'+who+'</b><small>'+fl+' &middot; '+(x.pv||0)+' pv</small></span>'+t+'</div>';
   if(kind==='signups')return '<div class="ovd-r"'+clk+'><span class="ovd-main"><b>'+who+'</b><small>'+fl+(x.dev?' &middot; '+_dde(x.dev):'')+'</small></span>'+t+'</div>';
-  if(kind==='dwell')return '<div class="ovd-r"'+clk+'><span class="ovd-rank">'+(i+1)+'</span><span class="ovd-main"><b>'+who+'</b><small>'+fl+'</small></span><span class="ovd-t" style="color:#c2f64a;font-weight:700">'+_ddur(x.secs)+'</span></div>';
+  if(kind==='dwell'){var top9=window._ovdTop||1;var pc9=Math.max(0,Math.min(100,(+x.secs||0)/top9*100));
+    var dl9=x.delta,dh9;
+    if(dl9==null)dh9='<span class="ovd-mv ovd-new">NEW</span>';
+    else if(dl9>0)dh9='<span class="ovd-mv ovd-up">▲'+dl9+'</span>';
+    else if(dl9<0)dh9='<span class="ovd-mv ovd-dn">▼'+(-dl9)+'</span>';
+    else dh9='<span class="ovd-mv ovd-eq">·</span>';
+    return '<div class="ovd-r"'+clk+'><span class="ovd-rank">'+(i+1)+'</span>'+dh9+'<span class="ovd-main"><b>'+who+'</b><small>'+fl+'</small><span class="ovd-bar"><i style="width:'+pc9.toFixed(1)+'%"></i></span></span><span class="ovd-t" style="color:#c2f64a;font-weight:700">'+_ddur(x.secs)+'<small class="ovd-pc">'+(pc9<10?pc9.toFixed(1):Math.round(pc9))+'% of #1</small></span></div>';}
   return '';
 }
 function ovDrill(kind){
@@ -6580,10 +6586,11 @@ function ovDrill(kind){
   fetch('/api/admin/drill?k='+kind).then(function(r){return r.json();}).then(function(d){
     var rows=(d&&d.rows)||[];
     if(!rows.length){b.innerHTML='<div class="ovd-empty">Nothing today yet.</div>';return;}
+    if(kind==='dwell')window._ovdTop=(+rows[0].secs)||1;
     b.innerHTML='<div class="ovd-cnt">'+rows.length+(rows.length>=(kind==='dwell'?500:100)?'+':'')+(kind==='dwell'?' users':' today')+'</div>'+rows.map(function(x,i){return ovDrillRow(kind,x,i);}).join('')+(d.note?'<div class="ovd-note">'+_dde(d.note)+'</div>':'');
   }).catch(function(){b.innerHTML='<div class="ovd-empty" style="color:#ff8a80">Could not load.</div>';});
 }
-(function(){var css='.ovd-card{background:#111419;border:1px solid #232932;border-radius:16px;width:100%;max-width:560px;max-height:86vh;display:flex;flex-direction:column;overflow:hidden}.ovd-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 17px;border-bottom:1px solid #232932;flex:none}.ovd-head b{font-size:15px;color:#e9e7df}.ovd-head button{background:none;border:none;color:#5c656f;font-size:24px;line-height:1;cursor:pointer;padding:0 2px}.ovd-head button:hover{color:#e9e7df}.ovd-body{overflow-y:auto;padding:4px 8px 10px}.ovd-cnt{color:#5c656f;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:9px 9px 5px}.ovd-r{display:flex;align-items:center;gap:11px;padding:10px 9px;border-bottom:1px solid #1a1f27}.ovd-r:last-child{border-bottom:none}.ovd-r[data-uemail]:hover{background:rgba(194,246,74,.05)}.ovd-cc{flex:none;font-size:12px;color:#9aa3ad;width:46px;font-family:monospace}.ovd-ex{flex:none;font-weight:800;color:#c2f64a;font-size:12.5px;width:76px;text-transform:capitalize;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ovd-rank{flex:none;width:22px;text-align:center;font-weight:800;color:#5c656f;font-family:monospace}.ovd-main{flex:1;min-width:0}.ovd-main b{display:block;font-size:13px;color:#e9e7df;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}.ovd-main small{display:block;font-size:11px;color:#5c656f;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ovd-t{flex:none;font-size:11px;color:#7f8893;font-family:monospace;text-align:right}.ovd-empty{color:#5c656f;padding:24px;text-align:center;font-size:13px}.ovd-note{color:#5c656f;font-size:10.5px;text-align:center;padding:10px}.card.drillable{cursor:pointer;transition:border-color .15s,transform .1s}.card.drillable:hover{border-color:#c2f64a}.card.drillable:active{transform:scale(.99)}';
+(function(){var css='.ovd-card{background:#111419;border:1px solid #232932;border-radius:16px;width:100%;max-width:560px;max-height:86vh;display:flex;flex-direction:column;overflow:hidden}.ovd-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 17px;border-bottom:1px solid #232932;flex:none}.ovd-head b{font-size:15px;color:#e9e7df}.ovd-head button{background:none;border:none;color:#5c656f;font-size:24px;line-height:1;cursor:pointer;padding:0 2px}.ovd-head button:hover{color:#e9e7df}.ovd-body{overflow-y:auto;padding:4px 8px 10px}.ovd-cnt{color:#5c656f;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:9px 9px 5px}.ovd-r{display:flex;align-items:center;gap:11px;padding:10px 9px;border-bottom:1px solid #1a1f27}.ovd-r:last-child{border-bottom:none}.ovd-r[data-uemail]:hover{background:rgba(194,246,74,.05)}.ovd-cc{flex:none;font-size:12px;color:#9aa3ad;width:46px;font-family:monospace}.ovd-ex{flex:none;font-weight:800;color:#c2f64a;font-size:12.5px;width:76px;text-transform:capitalize;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ovd-rank{flex:none;width:22px;text-align:center;font-weight:800;color:#5c656f;font-family:monospace}.ovd-main{flex:1;min-width:0}.ovd-main b{display:block;font-size:13px;color:#e9e7df;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}.ovd-main small{display:block;font-size:11px;color:#5c656f;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ovd-t{flex:none;font-size:11px;color:#7f8893;font-family:monospace;text-align:right}.ovd-empty{color:#5c656f;padding:24px;text-align:center;font-size:13px}.ovd-note{color:#5c656f;font-size:10.5px;text-align:center;padding:10px}.card.drillable{cursor:pointer;transition:border-color .15s,transform .1s}.card.drillable:hover{border-color:#c2f64a}.card.drillable:active{transform:scale(.99)}.ovd-mv{flex:none;width:38px;text-align:center;font-family:monospace;font-size:11px;font-weight:700}.ovd-up{color:#2ebd85}.ovd-dn{color:#ff5a4d}.ovd-eq{color:#3a434f}.ovd-new{color:#ffb020;font-size:9px;letter-spacing:.05em}.ovd-bar{display:block;height:4px;border-radius:2px;background:#141b29;margin-top:5px;overflow:hidden}.ovd-bar i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,#8b7bff,#c2f64a)}.ovd-pc{display:block;color:#5c656f;font-size:9.5px;font-weight:400;margin-top:2px}';
   try{var s=document.createElement('style');s.textContent=css;document.head.appendChild(s);}catch(e){}
   function wire(){[['tUv','visitors'],['tRet','returning'],['tAff','affiliate'],['tSign','signups'],['tDwell','dwell']].forEach(function(p){var cv=document.getElementById(p[0]);if(!cv)return;var card=cv.closest?cv.closest('.card'):null;if(!card||card._drill)return;card._drill=1;card.classList.add('drillable');card.title='Click for details';card.addEventListener('click',function(){ovDrill(p[1]);});});}
   wire();setTimeout(wire,1500);
@@ -10476,7 +10483,24 @@ export default {
         if (k === 'signups' || k === 'returning' || k === 'dwell') {
           if (!env.USERS) return new Response(JSON.stringify({ kind: k, rows: [] }), { headers: jh });
           const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/drill?kind=' + k + '&since=' + dayStart));
-          return new Response(await r.text(), { headers: jh });
+          if (k !== 'dwell') return new Response(await r.text(), { headers: jh });
+          // dwell extras (owner 2026-08-13): rank-movement arrows. Snapshots in KV — dwellrank:cur = latest ranking
+          // seen today; on the FIRST open of a new day, cur (yesterday's final state) rotates into dwellrank:base,
+          // so every delta shown during a day means "places moved vs yesterday's closing ranking".
+          let dd = { kind: k, rows: [] }; try { dd = await r.json(); } catch (e) {}
+          const rowsD = Array.isArray(dd.rows) ? dd.rows : [];
+          const todayD = new Date().toISOString().slice(0, 10);
+          let baseS = null, curS = null;
+          try { baseS = await env.STATS.get('dwellrank:base', 'json'); } catch (e) {}
+          try { curS = await env.STATS.get('dwellrank:cur', 'json'); } catch (e) {}
+          const ranksNow = {}; rowsD.forEach((x, i) => { const kk = String(x.uid || x.email || x.u || ''); if (kk) ranksNow[kk] = i + 1; });
+          if (curS && curS.day !== todayD) { baseS = curS; try { await env.STATS.put('dwellrank:base', JSON.stringify(curS)); } catch (e) {} }
+          if (!baseS) { baseS = { day: todayD, ranks: ranksNow }; try { await env.STATS.put('dwellrank:base', JSON.stringify(baseS)); } catch (e) {} }
+          try { await env.STATS.put('dwellrank:cur', JSON.stringify({ day: todayD, ranks: ranksNow })); } catch (e) {}
+          const brk = baseS.ranks || {};
+          dd.rows = rowsD.map((x, i) => { const kk = String(x.uid || x.email || x.u || ''); const pr = kk && brk[kk] != null ? +brk[kk] : null; return { ...x, delta: pr == null ? null : pr - (i + 1) }; });
+          dd.note = baseS.day === todayD ? 'Rank arrows compare against the first snapshot taken today - from tomorrow they mean "vs yesterday’s closing ranking"' : 'Arrows = places moved vs the closing ranking of ' + baseS.day;
+          return new Response(JSON.stringify(dd), { headers: jh });
         }
         return new Response(JSON.stringify({ error: 'bad_kind' }), { status: 400, headers: jh });
       } catch (e) { return new Response(JSON.stringify({ kind: k, rows: [] }), { headers: jh }); }
@@ -13831,7 +13855,7 @@ export class UserStore {
       }
       if (kind === 'dwell') { // ALL users by accumulated lifetime time-on-site (was top 10; owner wants the full list)
         const rows = this.rows("SELECT d.user_id uid, SUM(d.secs) tot, u.username, u.email, u.cc FROM udwell d LEFT JOIN users u ON u.id=d.user_id WHERE LOWER(COALESCE(u.username,'')) NOT IN ('whyme','chako') GROUP BY d.user_id ORDER BY tot DESC LIMIT 500"); // exclude the owner's own accounts (whyme/chako)
-        return this.j({ kind, rows: rows.map(r => ({ u: r.username || '', email: r.email || '', cc: r.cc || '', secs: +r.tot || 0 })) });
+        return this.j({ kind, rows: rows.map(r => ({ uid: String(r.uid || ''), u: r.username || '', email: r.email || '', cc: r.cc || '', secs: +r.tot || 0 })) }); // uid = stable key for the worker's rank-movement snapshots
       }
       return this.j({ kind, rows: [] });
     }
