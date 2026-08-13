@@ -265,6 +265,34 @@
     + '@keyframes mpaFrNeon{0%,100%{box-shadow:0 0 0 1px #c2f64a,0 0 30px -8px rgba(194,246,74,.5)}50%{box-shadow:0 0 0 1px #d8ff6a,0 0 58px -4px rgba(194,246,74,.9)}}'
     + '.lbm-card.frame-aurora,.mpa-fr-sw.frame-aurora{position:relative;border-color:transparent;box-shadow:0 0 40px -14px rgba(139,92,255,.5),0 18px 60px -26px rgba(0,0,0,.7)}'
     + '.lbm-card.frame-aurora::after,.mpa-fr-sw.frame-aurora::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:conic-gradient(from var(--mpAng),#38bdf8,#8b5cff,#ff5a4d,#ffd75a,#c2f64a,#38bdf8);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 7s linear infinite}'
+    /* ===== FRAMES v2 (THE VAULT, 2026-08-14): richer materials for level frames + the 10 shop frames.
+       Ring technique = the proven aurora ::after conic/linear + xor mask. Selectors mirror the existing pair. ===== */
+    + '.lbm-card.frame-silver::after,.mpa-fr-sw.frame-silver::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(160deg,#eef3fa,#8fa0b4 38%,#dfe7f1 52%,#6f7f92 78%,#cdd8e4);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    + '.lbm-card.frame-gold::after,.mpa-fr-sw.frame-gold::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(160deg,#fff3b0,#c98f1b 40%,#ffe98a 55%,#8a5c00 80%,#ffd54a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    + '.lbm-card.frame-platinum::after,.mpa-fr-sw.frame-platinum::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(160deg,#ffffff,#9adfff 42%,#e8fbff 58%,#5a90a8 82%,#cfeefc);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    + '.lbm-card.frame-diamond::after,.mpa-fr-sw.frame-diamond::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:conic-gradient(from var(--mpAng,0deg),#9d78ff,#5ad0ff,#ff8ad0,#9d78ff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 11s linear infinite}'
+    + '.lbm-card.frame-legendary::after,.mpa-fr-sw.frame-legendary::after{content:"";position:absolute;inset:-1.8px;border-radius:inherit;padding:1.8px;pointer-events:none;z-index:6;background:linear-gradient(160deg,#ffb056,#7a2d00 45%,#ff8a2a 60%,#3a1200 85%,#ffcf8a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    /* ---- shop frames ---- */
+    + '.lbm-card.frame-carbon,.mpa-fr-sw.frame-carbon{border-color:#3a4149;box-shadow:0 0 0 1px rgba(70,80,92,.6),0 14px 44px -22px rgba(0,0,0,.8)}'
+    + '.lbm-card.frame-carbon::after,.mpa-fr-sw.frame-carbon::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:repeating-linear-gradient(45deg,#2a2f36 0 5px,#14171c 5px 10px);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    + '.lbm-card.frame-jade,.mpa-fr-sw.frame-jade{border-color:#4fbf8f;box-shadow:0 0 0 1px rgba(79,191,143,.5),0 0 26px -14px rgba(79,191,143,.45)}'
+    + '.lbm-card.frame-jade::after,.mpa-fr-sw.frame-jade::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(150deg,#a9f0cf,#1d6b4a 45%,#7fe0b0 60%,#0e3f2a 85%,#5ad4a0);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    + '.lbm-card.frame-royal,.mpa-fr-sw.frame-royal{border-color:#8b5cff;box-shadow:0 0 0 1px rgba(139,92,255,.55),0 0 0 3px rgba(255,215,90,.14),0 0 30px -12px rgba(139,92,255,.5)}'
+    + '.lbm-card.frame-royal::after,.mpa-fr-sw.frame-royal::after{content:"";position:absolute;inset:-1.8px;border-radius:inherit;padding:1.8px;pointer-events:none;z-index:6;background:linear-gradient(135deg,#ffd75a,#7a3cff 30%,#3b1d7a 55%,#7a3cff 75%,#ffd75a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    + '.lbm-card.frame-blood,.mpa-fr-sw.frame-blood{border-color:#ff4d4d;box-shadow:0 0 0 1px rgba(255,77,77,.55),0 0 34px -12px rgba(255,60,60,.5),inset 0 0 34px -26px rgba(255,60,60,.6)}'
+    + '.lbm-card.frame-blood::after,.mpa-fr-sw.frame-blood::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(160deg,#ff8a8a,#5a0a0a 45%,#ff4d4d 62%,#2a0404 88%,#c92a2a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    + '.lbm-card.frame-matrix,.mpa-fr-sw.frame-matrix{border-color:#39ff7a;box-shadow:0 0 0 1px rgba(57,255,122,.6),0 0 40px -8px rgba(57,255,122,.45)}'
+    + '.lbm-card.frame-matrix::after,.mpa-fr-sw.frame-matrix::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:repeating-linear-gradient(0deg,#0a2313 0 3px,#1fda66 3px 4px,#0a2313 4px 8px);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    + '.lbm-card.frame-ice,.mpa-fr-sw.frame-ice{border-color:#bfeaff;box-shadow:0 0 0 1px rgba(191,234,255,.65),0 0 34px -10px rgba(120,200,255,.5),inset 0 1px 0 rgba(255,255,255,.2)}'
+    + '.lbm-card.frame-ice::after,.mpa-fr-sw.frame-ice::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(160deg,#ffffff,#5db9e8 40%,#dff6ff 58%,#2e7ba8 84%,#bfeaff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    + '.lbm-card.frame-ember,.mpa-fr-sw.frame-ember{border-color:#ff7a1a;box-shadow:0 0 0 1px rgba(255,122,26,.6),0 0 44px -8px rgba(255,100,20,.55);animation:mpaFrLeg 3.4s ease-in-out infinite}'
+    + '.lbm-card.frame-ember::after,.mpa-fr-sw.frame-ember::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(20deg,#ffb347,#7a2000 40%,#ff7a1a 65%,#3a1204 90%,#ff9a3a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    + '.lbm-card.frame-sakura,.mpa-fr-sw.frame-sakura{border-color:#ffb7c9;box-shadow:0 0 0 1px rgba(255,183,201,.6),0 0 30px -12px rgba(255,150,180,.45)}'
+    + '.lbm-card.frame-sakura::after,.mpa-fr-sw.frame-sakura::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(150deg,#fff1f4,#ff9fbb 40%,#ffe3ea 58%,#c96a86 84%,#ffc7d6);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    + '.lbm-card.frame-void,.mpa-fr-sw.frame-void{border-color:#241238;box-shadow:0 0 0 1px rgba(90,40,140,.6),0 0 60px -12px rgba(80,20,160,.6),inset 0 0 46px -26px rgba(60,10,120,.8)}'
+    + '.lbm-card.frame-void::after,.mpa-fr-sw.frame-void::after{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;pointer-events:none;z-index:6;background:conic-gradient(from var(--mpAng,0deg),#241238,#6a2fd0,#0a0512,#8b5cff,#241238);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 9s linear infinite}'
+    + '.lbm-card.frame-sovereign,.mpa-fr-sw.frame-sovereign{border-color:transparent;box-shadow:0 0 0 1px rgba(255,244,214,.7),0 0 64px -10px rgba(255,228,150,.6),inset 0 0 40px -26px rgba(255,240,200,.5)}'
+    + '.lbm-card.frame-sovereign::after,.mpa-fr-sw.frame-sovereign::after{content:"";position:absolute;inset:-2.2px;border-radius:inherit;padding:2.2px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#fff8e1,#d4af37,#ffffff,#b8860b,#fff8e1);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 8s linear infinite}'
     // --- FOUNDER — rich gold + diagonal shine sweep (above premium) ---
     + '.lbm-card.frame-founder,.mpa-fr-sw.frame-founder{position:relative;border-color:#ffd75a;box-shadow:0 0 0 1px rgba(255,215,90,.7),0 0 42px -8px rgba(255,198,74,.58),inset 0 0 44px -30px rgba(255,226,132,.75),0 22px 66px -30px rgba(0,0,0,.8)}'
     + '@keyframes mpaShine{0%{background-position:170% 0}42%{background-position:-80% 0}100%{background-position:-80% 0}}'
@@ -332,10 +360,11 @@
     var sc = bodyEl.querySelector('#mpaSupScroll'); if (sc) sc.scrollTop = sc.scrollHeight;
     bodyEl.querySelector('#mpaSupBack').addEventListener('click', renderSup);
     var inp = bodyEl.querySelector('#mpaSupReply'), send = bodyEl.querySelector('#mpaSupSend'), st = bodyEl.querySelector('#mpaSupSt');
-    function doSend() { var v = (inp.value || '').trim(); if (!v && !_supImg) return; send.disabled = true; if (st) st.innerHTML = '<span style="color:#8b97a5">Sending\u2026</span>';
+    var _supBusy = false; // the Enter key bypassed the disabled button \u2192 mashing Enter while a send was in flight posted the same message 2-8x (the "These x4" tickets)
+    function doSend() { if (_supBusy) return; var v = (inp.value || '').trim(); if (!v && !_supImg) return; _supBusy = true; send.disabled = true; if (st) st.innerHTML = '<span style="color:#8b97a5">Sending\u2026</span>';
       fetch('/api/reward/support', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: (ME && ME.email) || '', message: v, conv: conv, img: _supImg }) })
-        .then(function (r) { return r.json(); }).then(function (d) { send.disabled = false; if (d && d.ok) { inp.value = ''; _supImg = ''; supReopen(conv); } else { if (st) st.innerHTML = '<span style="color:#ffb347">Failed \u2014 try again.</span>'; } })
-        .catch(function () { send.disabled = false; if (st) st.innerHTML = '<span style="color:#ffb347">Network error.</span>'; }); }
+        .then(function (r) { return r.json(); }).then(function (d) { _supBusy = false; send.disabled = false; if (d && d.ok) { inp.value = ''; _supImg = ''; supReopen(conv); } else { if (st) st.innerHTML = '<span style="color:#ffb347">Failed \u2014 try again.</span>'; } })
+        .catch(function () { _supBusy = false; send.disabled = false; if (st) st.innerHTML = '<span style="color:#ffb347">Network error.</span>'; }); }
     if (send) send.addEventListener('click', doSend);
     if (inp) inp.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(); } });
     var pic = bodyEl.querySelector('#mpaSupPic'), file = bodyEl.querySelector('#mpaSupFile'), prev = bodyEl.querySelector('#mpaSupPrev');
@@ -628,7 +657,17 @@
     { k: 'legendary', name: 'Legendary', by: 'Reach Legendary' },
     { k: 'neon', name: 'Neon', by: 'Premium' },
     { k: 'aurora', name: 'Aurora', by: 'Premium' },
-    { k: 'founder', name: 'Founder', by: 'Founder' }
+    { k: 'founder', name: 'Founder', by: 'Founder' },
+    { k: 'carbon', name: 'Carbon', by: 'Vault' },
+    { k: 'jade', name: 'Jade', by: 'Vault' },
+    { k: 'royal', name: 'Royal', by: 'Vault' },
+    { k: 'blood', name: 'Bloodline', by: 'Vault' },
+    { k: 'matrix', name: 'Matrix', by: 'Vault' },
+    { k: 'ice', name: 'Glacier', by: 'Vault' },
+    { k: 'ember', name: 'Ember', by: 'Vault' },
+    { k: 'sakura', name: 'Sakura', by: 'Vault' },
+    { k: 'void', name: 'Void', by: 'Vault' },
+    { k: 'sovereign', name: 'Sovereign', by: 'Vault' }
   ];
   function renderCustomize() {
     bodyEl.innerHTML = '<h3 class="mpa-h">Customize card</h3><p class="mpa-sub" style="margin:-4px 0 12px">Pick a frame for your public trader card. Unlock more by ranking up or going Premium.</p>'
@@ -917,6 +956,11 @@
       var byId = {}, order = [];
       function put(e) { if (!e || typeof e !== 'object') return; var id = String(e.id || ('_a' + order.length)); var prev = byId[id]; if (prev === undefined) { byId[id] = e; order.push(id); return; } var pc = (prev.status === 'win' || prev.status === 'loss'), cc = (e.status === 'win' || e.status === 'loss');
         if (cc && !pc) { byId[id] = e; return; }                     // a close always beats an open
+        // EXCEPTION (2026-08-11, phantom-liq heal): a local LIQUIDATION of an srv trade is only a CLAIM until the server
+        // confirms it (sc). If the server still says OPEN 5+ minutes later, its candle-check refuted the claim (a real
+        // cross settles within one sweep) — take the server's open row back so the user's ticket un-liquidates. Manual
+        // closes (via /botclose) and non-srv trades keep the old local-wins rule.
+        if (!cc && pc && prev.liquidated && !prev.sc && String(id).slice(0, 3) === 'srv' && (Date.now() - (+prev.closeTs || 0)) > 300000) { byId[id] = e; return; }
         if (!cc && pc) return;                                       // never let a stale server 'open' overwrite a locally-closed trade
         if (cc && pc) { byId[id] = e; return; }
         var pq = +prev.qty, cq = +e.qty; if (isFinite(pq) && isFinite(cq) && cq > pq) return; byId[id] = e; } // both open → keep the more-reduced (partial-close safe)
@@ -1095,7 +1139,7 @@
   window.mpBrief = { show: function () {
     ensurePremCss();
     var ov = document.createElement('div'); ov.className = 'mpprem-ov';
-    ov.innerHTML = '<div class="mpprem" style="max-width:480px"><button class="mpprem-x" type="button" aria-label="Close">×</button><span class="mpprem-tag">DAILY BRIEF</span><h3>Today’s market brief</h3><div class="mpbrief-body" style="margin-top:14px;color:#8fa3c4;font-size:13px">Loading…</div></div>';
+    ov.innerHTML = '<div class="mpprem" style="max-width:460px"><button class="mpprem-x" type="button" aria-label="Close">×</button><span class="mpprem-tag">DAILY BRIEF</span><h3>Where the opportunities are</h3><div class="mpbrief-body" style="margin-top:14px;color:#8fa3c4;font-size:13px;max-height:64vh;overflow-y:auto">Loading…</div></div>';
     document.body.appendChild(ov);
     ov.querySelector('.mpprem-x').addEventListener('click', function () { ov.remove(); });
     ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
@@ -1104,12 +1148,29 @@
       if (o.s === 401) { ov.remove(); open(); return; }
       if (o.s === 402) { ov.remove(); if (window.mpPremium) window.mpPremium.show('Unlock the Daily Brief'); return; }
       var j = o.j || {};
-      var arrow = function (d) { return d === 'up' ? '<span style="color:#2ebd85">▲ up</span>' : d === 'down' ? '<span style="color:#ff6258">▼ down</span>' : '<span style="color:#5c6b84">—</span>'; };
-      var h = '<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:7px 14px;align-items:center;font:12px \'Space Mono\',monospace"><div style="color:#5c6b84;font-size:10px;letter-spacing:.06em">COIN</div><div style="color:#5c6b84;font-size:10px">1H</div><div style="color:#5c6b84;font-size:10px">4H</div><div style="color:#5c6b84;font-size:10px">RSI</div>';
-      (j.coins || []).forEach(function (c) { var pr = c.price >= 1 ? (+c.price).toLocaleString('en-US', { maximumFractionDigits: 2 }) : c.price; h += '<div style="color:#fff;font-weight:700">' + c.sym + ' <span style="color:#8fa3c4;font-weight:400">$' + pr + '</span></div><div>' + arrow(c.h1) + '</div><div>' + arrow(c.h4) + '</div><div style="color:' + (c.rsi >= 70 ? '#ff6258' : c.rsi <= 30 ? '#2ebd85' : '#dbe4f5') + '">' + (c.rsi == null ? '—' : c.rsi) + '</div>'; });
-      h += '</div>';
-      if (j.events && j.events.length) { h += '<div style="margin-top:18px;font:700 10px \'Space Mono\',monospace;letter-spacing:.13em;color:#c2f64a">UPCOMING HIGH-IMPACT EVENTS</div>'; j.events.forEach(function (e) { var d = new Date(e.ts); h += '<div style="display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid #161c26;font-size:12.5px"><span style="color:#dbe4f5">' + esc(e.title) + '</span><span style="color:#8fa3c4;white-space:nowrap">' + d.toISOString().slice(5, 16).replace('T', ' ') + ' UTC</span></div>'; }); }
-      h += '<div style="margin-top:14px;font-size:11px;color:#5c6b84;line-height:1.5">Trend = Supertrend(10,3) direction on each timeframe. Educational only — not financial advice.</div>';
+      var biasCol = j.bias === 'bullish' ? '#2ebd85' : j.bias === 'bearish' ? '#ff6258' : '#ffd75a';
+      var biasTxt = j.bias === 'bullish' ? 'Market leans BULLISH' : j.bias === 'bearish' ? 'Market leans BEARISH' : 'Market is MIXED today';
+      var h = '<div style="display:flex;align-items:center;gap:8px"><span style="width:9px;height:9px;border-radius:50%;background:' + biasCol + ';box-shadow:0 0 9px ' + biasCol + '"></span><b style="color:' + biasCol + ';font-size:14.5px">' + biasTxt + '</b></div>';
+      h += '<div style="font-size:11.5px;color:#8fa3c4;margin:3px 0 15px">' + esc(j.biasNote || '') + '</div>';
+      h += '<div style="font:700 10px \'Space Mono\',monospace;letter-spacing:.13em;color:#c2f64a;margin-bottom:2px">WHERE THE SETUPS ARE</div>';
+      var opps = j.opps || [];
+      if (!opps.length) {
+        h += '<div style="font-size:13px;color:#9aa3ad;padding:9px 0 2px;line-height:1.5">No clean setups right now — the majors are choppy. Best trade is patience.</div>';
+      } else {
+        opps.forEach(function (op) {
+          var lng = op.dir === 'long', dcol = lng ? '#2ebd85' : '#ff6258';
+          var pr = op.price >= 1 ? (+op.price).toLocaleString('en-US', { maximumFractionDigits: 2 }) : op.price;
+          var rcol = op.rsi >= 70 ? '#ff6258' : op.rsi <= 30 ? '#2ebd85' : '#8fa3c4';
+          h += '<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #161c26">'
+            + '<div style="min-width:60px"><b style="color:#fff;font-size:14px">' + op.sym + '</b><div style="font:10px \'Space Mono\',monospace;color:#8fa3c4">$' + pr + '</div></div>'
+            + '<div style="flex:1;min-width:0"><span style="display:inline-block;font:700 9.5px \'Space Mono\',monospace;letter-spacing:.04em;color:' + dcol + ';background:' + (lng ? 'rgba(46,189,133,.12)' : 'rgba(255,98,88,.12)') + ';border:1px solid ' + dcol + '55;border-radius:6px;padding:2px 8px">' + op.kind + ' ' + (lng ? 'LONG' : 'SHORT') + '</span>'
+            + '<div style="font-size:11.5px;color:#9aa3ad;margin-top:4px;line-height:1.35">' + esc(op.note) + '</div></div>'
+            + (op.rsi == null ? '' : '<div style="text-align:right;min-width:38px;font:700 10px \'Space Mono\',monospace;color:' + rcol + ';line-height:1.3">RSI<br>' + op.rsi + '</div>')
+            + '</div>';
+        });
+      }
+      if (j.events && j.events.length) { h += '<div style="margin-top:16px;font:700 10px \'Space Mono\',monospace;letter-spacing:.13em;color:#c2f64a">NEXT HIGH-IMPACT EVENT</div>'; j.events.forEach(function (e) { var d = new Date(e.ts); h += '<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid #161c26;font-size:12px"><span style="color:#dbe4f5">' + esc(e.title) + '</span><span style="color:#8fa3c4;white-space:nowrap">' + d.toISOString().slice(5, 16).replace('T', ' ') + ' UTC</span></div>'; }); }
+      h += '<div style="margin-top:14px;font-size:10.5px;color:#5c6b84;line-height:1.5">Setups from Supertrend(10,3) trend alignment + RSI(14) extremes on 1H/4H. Educational only — not financial advice.</div>';
       body.innerHTML = h;
     }).catch(function () { body.textContent = 'Could not load the brief — please try again.'; });
   } };
@@ -1159,7 +1220,9 @@
       var col = lv.col || '#c2f64a';
       var conf = ''; for (var n = 0; n < 60; n++) { var cx = Math.floor(Math.random() * 100), d = (1.4 + Math.random() * 1.6).toFixed(2), dl = (Math.random() * 0.5).toFixed(2), cc = ['#c2f64a', col, '#ffd75a', '#38bdf8', '#ff6a3d'][n % 5]; conf += '<i class="mpxp-cf" style="left:' + cx + '%;background:' + cc + ';animation-duration:' + d + 's;animation-delay:' + dl + 's"></i>'; }
       ov.style.setProperty('--lc', col);
-      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + (window.mpLvlSvg ? window.mpLvlSvg(lv.k, col) : '') + '</div><div class="mpxp-up">Level up</div><div class="mpxp-nm">' + esc(lv.name || '') + '</div><div class="mpxp-sub">You climbed to <b>' + esc(lv.name || '') + '</b> — earned, not given.' + (lv.next ? ' Next stop: ' + esc(lv.next) + ' at ' + (lv.nextMin || 0).toLocaleString() + ' XP.' : ' Top of the mountain. The view is P&L-green.') + '</div><button class="mpxp-x" type="button">Back to work</button></div>';
+      ov.innerHTML = conf + '<div class="mpxp-card" style="--lc:' + col + '"><div class="mpxp-badge">' + (window.mpLvlSvg ? window.mpLvlSvg(lv.k, col) : '') + '</div><div class="mpxp-up">Level up</div><div class="mpxp-nm">' + esc(lv.name || '') + '</div><div class="mpxp-sub">You climbed to <b>' + esc(lv.name || '') + '</b> — earned, not given.' + (lv.next ? ' Next stop: ' + esc(lv.next) + ' at ' + (lv.nextMin || 0).toLocaleString() + ' XP.' : ' Top of the mountain. The view is P&L-green.') + '</div>'
+        + (function(){var UN={bronze:'Rewards + The Vault unlocked',silver:'Silver frame + bigger claims unlocked',gold:'Gold frame + bigger claims unlocked',platinum:'Platinum frame unlocked',diamond:'Diamond frame + withdrawal bonus unlocked',legendary:'Legendary frame + max perks unlocked'}[lv.k];return UN?('<a class="mpxp-unlock" href="/vault/" style="display:block;margin:10px auto 0;max-width:280px;padding:9px 14px;border:1px solid rgba(194,246,74,.4);border-radius:11px;background:rgba(194,246,74,.08);color:#c2f64a;font-size:12.5px;font-weight:700;text-decoration:none">'+UN+' — open The Vault →</a>'):'';})()
+        + '<button class="mpxp-x" type="button">Back to work</button></div>';
       requestAnimationFrame(function () { ov.classList.add('on'); });
       var close9 = function () { ov.classList.remove('on'); };
       ov.querySelector('.mpxp-x').addEventListener('click', close9);

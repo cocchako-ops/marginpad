@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>The Vault — Frames, Levels &amp; Cosmetics | MarginPad</title>
+<meta name="description" content="The Vault: unlock and buy exclusive profile-card frames with XP or your rewards balance. Every level has its own identity — climb, collect, flex.">
+<link rel="canonical" href="https://marginpad.io/vault/">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--line:#232932;--lime:#c2f64a;--panel:#101216}
+html,body{background:#0a0b0d;color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+a{color:var(--lime);text-decoration:none}
+.wrap{max-width:1060px;margin:0 auto;padding:26px 16px 80px}
+.crumb{font-size:12.5px;color:var(--faint)}.crumb a{color:var(--faint)}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,5.5vw,44px);letter-spacing:-.03em;margin:8px 0 4px}
+h1 b{color:var(--lime)}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;margin:40px 0 4px}
+.h2s{color:var(--faint);font-size:13px;margin-bottom:16px}
+.wallet{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 4px}
+.wchip{display:flex;align-items:baseline;gap:7px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 16px}
+.wchip b{font-family:'Space Mono',monospace;font-size:17px}
+.wchip span{font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.07em}
+.wchip.xp b{color:#ffd75a}.wchip.bal b{color:var(--lime)}.wchip.lvl b{color:#7ee0ff}
+.signin{margin:14px 0 0;padding:13px 16px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.3);border-radius:12px;font-size:13.5px}
+/* ladder */
+.ladder{display:grid;grid-template-columns:repeat(auto-fit,minmax(136px,1fr));gap:10px}
+.lv{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 12px;text-align:center;transition:transform .15s,border-color .15s}
+.lv:hover{transform:translateY(-2px)}
+.lv .ic{width:44px;height:44px;margin:0 auto 8px}
+.lv b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:14.5px}
+.lv small{display:block;color:var(--faint);font-size:10.5px;font-family:'Space Mono',monospace;margin-top:2px}
+.lv .perk{display:block;font-size:11px;color:var(--dim);margin-top:7px;line-height:1.45;min-height:32px}
+.lv.cur{border-color:var(--lime);box-shadow:0 0 24px -12px rgba(194,246,74,.5)}
+.lv.cur::after{content:"YOU";position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--lime);color:#0a0b0d;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;border-radius:99px;padding:1px 8px}
+.lv.done{border-color:#2e3a2e}
+.lv.lock{opacity:.62}
+/* gallery */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:14px}
+.fcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;transition:transform .15s}
+.fcard:hover{transform:translateY(-2px)}
+.prev{position:relative;border-radius:14px;background:linear-gradient(180deg,#151a21,#0c0f13);border:2px solid #2a313c;height:96px;display:flex;align-items:center;gap:11px;padding:0 14px}
+.prev .av{width:44px;height:44px;border-radius:11px;background:#1a2029;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;color:var(--lime);flex:0 0 44px}
+.prev .un{font-weight:800;font-size:15px;font-family:'Bricolage Grotesque',sans-serif}
+.prev .us{font-size:10.5px;color:var(--faint);font-family:'Space Mono',monospace;margin-top:2px}
+.fmeta{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.fname{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px}
+.tier{font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-radius:99px;padding:2px 9px;border:1px solid}
+.tier.common{color:#9aa3ad;border-color:#3a434f}
+.tier.rare{color:#7fb6ff;border-color:#2c4a75}
+.tier.epic{color:#c792ff;border-color:#5a3a85}
+.tier.legendary{color:#ffd75a;border-color:#7a6220}
+.tier.level{color:#7ee0ff;border-color:#2a5a6e}
+.fdesc{font-size:11.5px;color:var(--faint);line-height:1.45;min-height:32px}
+.fact{display:flex;gap:8px}
+.btn{flex:1;text-align:center;border:1px solid var(--line);background:#0a0c0f;color:var(--ink);border-radius:10px;padding:10px 8px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;transition:.13s}
+.btn:hover{border-color:#3a434f}
+.btn.xp{color:#ffd75a}.btn.usd{color:var(--lime)}
+.btn.eq{background:var(--lime);color:#0a0b0d;border-color:var(--lime)}
+.btn.owned{color:#34d99a;border-color:#1f4a38;cursor:default}
+.btn.lock{color:var(--faint);cursor:not-allowed}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.msg{font-size:12px;font-family:'Space Mono',monospace;min-height:16px;margin-top:10px}
+.msg.ok{color:#34d99a}.msg.err{color:#ff7b72}
+.note{font-size:12px;color:var(--faint);margin-top:22px;line-height:1.6}
+footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-size:12px;color:var(--faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+
+<script defer src="/assets/sentry.js"></script>
+</head><body>
+<div class="wrap">
+  <div class="crumb"><a href="/">Home</a> / The Vault</div>
+  <h1>THE <b>VAULT</b></h1>
+  <p class="sub">Every level has its own identity. Every frame tells the room who you are. Unlock frames by climbing — or buy the exclusive ones with XP or your rewards balance.</p>
+
+  <div class="wallet" id="wallet" hidden>
+    <div class="wchip lvl"><b id="wLvl">—</b><span>level</span></div>
+    <div class="wchip xp"><b id="wXp">—</b><span>XP</span></div>
+    <div class="wchip bal"><b id="wBal">—</b><span>rewards balance</span></div>
+  </div>
+  <div class="signin" id="signin" hidden>Sign in (free, email code only) to see your XP, buy frames and equip them. <a href="/paper-trade">Open the app to sign in →</a></div>
+
+  <h2>The ladder</h2>
+  <div class="h2s">Climb with XP from trades, missions, Academy and duels — each level unlocks its frame and perks. Rewards unlock at Bronze.</div>
+  <div class="ladder" id="ladder"></div>
+
+  <h2>Level frames</h2>
+  <div class="h2s">Earned by reaching the level — these can never be bought.</div>
+  <div class="gal" id="galLevel"></div>
+
+  <h2>Vault frames</h2>
+  <div class="h2s">Exclusive frames — pay with XP (never drops you below your level threshold) or with your rewards balance. Balance purchases are final.</div>
+  <div class="gal" id="galShop"></div>
+  <div class="msg" id="msg"></div>
+
+  <p class="note">XP prices deduct from your XP but a purchase can never cost you a level — the shop refuses any spend that would drop you below your current level's threshold. Balance purchases are deducted from your withdrawable rewards balance and are final. Equipped frames show on your public trader card, chat and leaderboards.</p>
+
+  <footer><span>© 2026 MarginPad · Not financial advice</span><span><a href="/rewards/">Rewards</a> · <a href="/levels/">Levels</a> · <a href="/paper-trade">Paper Trade</a></span></footer>
+</div>
+<script src="/assets/mp-nav.js" defer></script>
+<script src="/assets/mp-auth.js" defer></script>
+<script>
+(function(){
+  var LEVELS=[
+    {k:'unranked',name:'Unranked',min:0,col:'#5c6b7a',perk:'The starting line'},
+    {k:'bronze',name:'Bronze',min:500,col:'#c97f4a',perk:'Rewards + Vault unlock'},
+    {k:'silver',name:'Silver',min:3000,col:'#b7c2d0',perk:'Silver frame · +10% claims'},
+    {k:'gold',name:'Gold',min:12000,col:'#ffcf3f',perk:'Gold frame · +20% claims'},
+    {k:'platinum',name:'Platinum',min:30000,col:'#7ee0ff',perk:'Platinum frame · +35% claims'},
+    {k:'diamond',name:'Diamond',min:60000,col:'#8b5cff',perk:'Diamond frame · +50% claims · +10% WD bonus'},
+    {k:'legendary',name:'Legendary',min:120000,col:'#ff7a1a',perk:'Legendary frame · +75% claims · +15% WD bonus'}
+  ];
+  var LEVEL_FRAMES=[
+    {id:'silver',name:'Silver',need:'Reach Silver (3,000 XP)'},
+    {id:'gold',name:'Gold',need:'Reach Gold (12,000 XP)'},
+    {id:'platinum',name:'Platinum',need:'Reach Platinum (30,000 XP)'},
+    {id:'diamond',name:'Diamond',need:'Reach Diamond (60,000 XP)'},
+    {id:'legendary',name:'Legendary',need:'Reach Legendary (120,000 XP)'},
+    {id:'neon',name:'Neon',need:'Premium members'},
+    {id:'aurora',name:'Aurora',need:'Premium members'}
+  ];
+  function medal(k,col){
+    if(k==='legendary')return '<svg viewBox="0 0 24 24" fill="none"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z" fill="'+col+'30"/><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3zM4 17l.6 2.5h14.8L20 17" stroke="'+col+'" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12" cy="13.4" r="1.5" fill="'+col+'"/></svg>';
+    if(k==='diamond')return '<svg viewBox="0 0 24 24" fill="none"><path d="M8 5h8l4 5-8 9-8-9z" fill="'+col+'2e"/><path d="M8 5h8l4 5-8 9-8-9zM4 10h16M8 5l4 5 4-5M12 10v9" stroke="'+col+'" stroke-width="1.3" stroke-linejoin="round"/></svg>';
+    if(k==='platinum')return '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3l2.7 5.6 6.3.8-4.6 4.3 1.2 6.1L12 16.9 6.4 19.8l1.2-6.1L3 9.4l6.3-.8z" fill="'+col+'26" stroke="'+col+'" stroke-width="1.3" stroke-linejoin="round"/></svg>';
+    if(k==='gold')return '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="5.2" fill="'+col+'26" stroke="'+col+'" stroke-width="1.4"/><path d="M8.6 13.4 7 21l5-2.6L17 21l-1.6-7.6" stroke="'+col+'" stroke-width="1.4" stroke-linejoin="round"/><path d="M10.2 9l1.3 1.4 2.5-2.8" stroke="'+col+'" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    if(k==='silver')return '<svg viewBox="0 0 24 24" fill="none"><rect x="5" y="5" width="14" height="14" rx="3" fill="'+col+'22" stroke="'+col+'" stroke-width="1.4"/><path d="M9 12.2l2.1 2.2L15.4 10" stroke="'+col+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    if(k==='bronze')return '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" fill="'+col+'22" stroke="'+col+'" stroke-width="1.4"/><path d="M12 8.4v7.2M8.4 12h7.2" stroke="'+col+'" stroke-width="1.5" stroke-linecap="round"/></svg>';
+    return '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="7.2" stroke="'+col+'" stroke-width="1.4" stroke-dasharray="3 3"/></svg>';
+  }
+  var ST=null;
+  function fmt(n){return (+n||0).toLocaleString('en-US');}
+  function renderLadder(){
+    var xp=ST?ST.xp:0,cur=ST?ST.level:null;
+    document.getElementById('ladder').innerHTML=LEVELS.map(function(l){
+      var state=cur? (l.k===cur?'cur':(xp>=l.min?'done':'lock')) : (l.min===0?'':'lock');
+      return '<div class="lv '+state+'"><div class="ic">'+medal(l.k,l.col)+'</div><b style="color:'+l.col+'">'+l.name+'</b><small>'+fmt(l.min)+' XP</small><span class="perk">'+l.perk+'</span></div>';
+    }).join('');
+  }
+  function prevCard(id,un){
+    return '<div class="prev lbm-card frame-'+id+'"><span class="av">'+(un?un[0].toUpperCase():'M')+'</span><span><span class="un">'+(un||'YourName')+'</span><div class="us">MARGINPAD TRADER</div></span></div>';
+  }
+  function renderLevelGal(){
+    var owned=ST?ST.owned:[],un=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()?window.mpAuth.me().username:'';
+    document.getElementById('galLevel').innerHTML=LEVEL_FRAMES.map(function(f){
+      var own=owned.indexOf(f.id)>=0,eq=ST&&ST.equipped===f.id;
+      var act=own?(eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-eq="'+f.id+'">Equip</button>'):'<button class="btn lock" disabled>'+f.need+'</button>';
+      return '<div class="fcard">'+prevCard(f.id,un)+'<div class="fmeta"><span class="fname">'+f.name+'</span><span class="tier level">'+(f.need.indexOf('Premium')>=0?'PREMIUM':'LEVEL')+'</span></div><div class="fdesc">'+f.need+'</div><div class="fact">'+act+'</div></div>';
+    }).join('');
+  }
+  function renderShopGal(){
+    var items=(ST&&ST.items)||[],owned=ST?ST.owned:[],un=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()?window.mpAuth.me().username:'';
+    document.getElementById('galShop').innerHTML=items.map(function(it){
+      var own=owned.indexOf(it.id)>=0,eq=ST&&ST.equipped===it.id;
+      var acts='';
+      if(own){acts=eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-eq="'+it.id+'">Equip</button><button class="btn owned" disabled>OWNED</button>';}
+      else{
+        if(it.xp)acts+='<button class="btn xp" data-buy="'+it.id+'" data-cur="xp">'+fmt(it.xp)+' XP</button>';
+        if(it.cents)acts+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
+        if(it.minLevel)acts+='';
+      }
+      return '<div class="fcard">'+prevCard(it.id,un)+'<div class="fmeta"><span class="fname">'+it.name+'</span><span class="tier '+it.tier+'">'+it.tier+'</span></div><div class="fdesc">'+(it.desc||'')+(it.minLevel?' · Requires '+it.minLevel.charAt(0).toUpperCase()+it.minLevel.slice(1):'')+'</div><div class="fact">'+(acts||'<button class="btn lock" disabled>Unavailable</button>')+'</div></div>';
+    }).join('');
+  }
+  function say(t,ok){var m=document.getElementById('msg');m.textContent=t;m.className='msg '+(ok?'ok':'err');}
+  function load(){
+    fetch('/api/auth/shop',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+      ST=d;
+      document.getElementById('wallet').hidden=!d.signedIn;
+      document.getElementById('signin').hidden=!!d.signedIn;
+      if(d.signedIn){
+        document.getElementById('wLvl').textContent=(d.level||'—').toUpperCase();
+        document.getElementById('wXp').textContent=fmt(d.xp);
+        document.getElementById('wBal').textContent='$'+(+d.balance||0).toFixed(2);
+      }
+      renderLadder();renderLevelGal();renderShopGal();
+      if(!d.on)say('The Vault is temporarily paused — purchases are disabled.',false);
+    }).catch(function(){say('Could not load the Vault. Refresh to retry.',false);});
+  }
+  document.addEventListener('click',function(e){
+    var bb=e.target.closest('[data-buy]');
+    if(bb){
+      if(!ST||!ST.signedIn){say('Sign in first to buy frames.',false);return;}
+      bb.disabled=true;
+      fetch('/api/auth/shop/buy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:bb.getAttribute('data-buy'),cur:bb.getAttribute('data-cur')})})
+        .then(function(r){return r.json();}).then(function(d){
+          if(d&&d.ok){say('Purchased. It is yours forever — equip it below.',true);load();}
+          else{
+            var er=d&&d.error;
+            say(er==='level_floor'?('Not enough spare XP — this purchase would drop you below your level threshold ('+fmt(d.floor)+' XP). Earn a bit more first.'):er==='insufficient'?('Not enough rewards balance ($'+((d.balance||0)/100).toFixed(2)+' available).'):er==='level_locked'?('Requires '+d.need+' level.'):er==='owned'?'You already own this.':er==='shop_paused'?'The Vault is paused right now.':'Purchase failed: '+(er||'error'),false);
+            bb.disabled=false;
+          }
+        }).catch(function(){say('Network error.',false);bb.disabled=false;});
+      return;
+    }
+    var eb=e.target.closest('[data-eq]');
+    if(eb){
+      if(!ST||!ST.signedIn){say('Sign in first.',false);return;}
+      eb.disabled=true;
+      fetch('/api/auth/frame',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({frame:eb.getAttribute('data-eq')})})
+        .then(function(r){return r.json();}).then(function(d){
+          if(d&&d.ok){say('Equipped — your card now wears '+d.frame+'.',true);load();}
+          else{say(d&&d.error==='locked'?'You do not own that frame yet.':'Equip failed.',false);eb.disabled=false;}
+        }).catch(function(){say('Network error.',false);eb.disabled=false;});
+    }
+  });
+  load();
+  setTimeout(load,2500); /* mpAuth resolves the session async — second pass picks up the username for previews */
+})();
+</script>
+</body></html>

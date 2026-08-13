@@ -7754,6 +7754,25 @@ function frameOwned(fr, xp, premium, founder) {
   const lv = XP_LEVELS.find(l => l.k === fr); if (lv) return (+xp || 0) >= lv.min;
   return false;
 }
+
+// ---------- THE VAULT (owner 2026-08-14): cosmetic shop. XP prices spend users.xp (level-floor guarded so a
+// purchase can never DE-LEVEL you); usd prices (integer cents) debit the RewardLedger balance — a real sink that
+// reduces withdrawal liability. Catalog is versioned here; kill switch KV shop:on='0'. ----------
+const VAULT_TESTERS = ['chako']; // owner's test account — owns every item (testing)
+const VAULT_ITEMS = [
+  { id: 'carbon', name: 'Carbon', tier: 'common', xp: 400, desc: 'Matte black weave with a soft steel edge' },
+  { id: 'jade', name: 'Jade', tier: 'common', xp: 900, desc: 'Deep jade with a polished stone sheen' },
+  { id: 'royal', name: 'Royal', tier: 'rare', xp: 2500, desc: 'Imperial purple with gold corner caps' },
+  { id: 'blood', name: 'Bloodline', tier: 'rare', xp: 4000, desc: 'Crimson gradient with a dark pulse edge' },
+  { id: 'matrix', name: 'Matrix', tier: 'rare', xp: 6000, desc: 'Code-green terminal glow' },
+  { id: 'ice', name: 'Glacier', tier: 'epic', cents: 49, desc: 'Cold blue mirror with frosted corners' },
+  { id: 'ember', name: 'Ember', tier: 'epic', cents: 99, desc: 'Smoldering orange-red heat shimmer' },
+  { id: 'sakura', name: 'Sakura', tier: 'epic', cents: 199, desc: 'Soft rose gradient with a silver lining' },
+  { id: 'void', name: 'Void', tier: 'legendary', cents: 499, desc: 'Black-violet depth that eats the light' },
+  { id: 'sovereign', name: 'Sovereign', tier: 'legendary', cents: 999, minLevel: 'diamond', desc: 'Diamond-gated white gold — the flex' },
+];
+function vaultItem(id) { return VAULT_ITEMS.find(x => x.id === id) || null; }
+function vaultIsTester(username) { return VAULT_TESTERS.indexOf(String(username || '').toLowerCase()) >= 0; }
 function framesFor(xp, premium, founder) {
   const owned = ['default'];
   for (const l of XP_LEVELS) if (l.k !== 'bronze' && l.k !== 'unranked' && (+xp || 0) >= l.min) owned.push(l.k);
@@ -9570,6 +9589,50 @@ async function handleAuth(url, request, env, ctx) {
     const r = await stub.fetch(new Request('https://do/setprofile', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: tok, bio: b.bio, avatar: b.avatar, accent: b.accent, coins: b.coins }) }));
     return jr(await r.json(), 200);
   }
+  if (path === '/shop') { // The Vault: catalog + my ownership/equip + balance — one call for the whole page
+    const tok = getCookie(request, SESS_COOKIE);
+    let u = tok ? await sessionUser(env, tok) : null;
+    if (!u && isAdmin && url.searchParams.get('uid')) u = { id: url.searchParams.get('uid'), username: url.searchParams.get('un') || '' }; // owner/E2E testing hook (same pattern as tshare/missions)
+    let on = true; try { on = (await env.STATS.get('shop:on')) !== '0'; } catch (e) {}
+    const out = { on: on, items: VAULT_ITEMS, signedIn: !!u, owned: ['default'], equipped: 'default', xp: 0, level: 'unranked', balance: 0, tester: false };
+    if (u) {
+      try { const r1 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/framestate?uid=' + encodeURIComponent(u.id))); const d1 = await r1.json(); out.owned = d1.owned || out.owned; out.equipped = d1.equipped || 'default'; out.xp = +d1.xp || 0; out.level = d1.level || 'unranked'; } catch (e) {}
+      try { const led0 = env.REWARDS.get(env.REWARDS.idFromName('ledger')); const r2 = await led0.fetch(new Request('https://do/account', { headers: { 'x-acct': 'u:' + u.id } })); const d2 = await r2.json(); out.balance = (d2 && +d2.balance) || 0; } catch (e) {} // ledger DO reads identity from the x-acct header; balance arrives as USD float
+      out.tester = vaultIsTester(u.username);
+    }
+    return jr(out);
+  }
+  if (path === '/shop/buy' && request.method === 'POST') { // {id, cur:'xp'|'usd'}
+    const tok = getCookie(request, SESS_COOKIE);
+    let u = tok ? await sessionUser(env, tok) : null;
+    if (!u && isAdmin && url.searchParams.get('uid')) u = { id: url.searchParams.get('uid'), username: url.searchParams.get('un') || '' }; // owner/E2E testing hook
+    if (!u) return jr({ error: 'not_signed_in' }, 401); // b is parsed once at the top of handleAuth — never re-read the body here
+    let on = true; try { on = (await env.STATS.get('shop:on')) !== '0'; } catch (e) {}
+    if (!on) return jr({ error: 'shop_paused' }, 503);
+    const it = vaultItem(String(b.id || ''));
+    if (!it) return jr({ error: 'no_item' }, 404);
+    const cur = b.cur === 'usd' ? 'usd' : 'xp';
+    const users = env.USERS.get(env.USERS.idFromName('main'));
+    if (cur === 'xp') {
+      if (!it.xp) return jr({ error: 'not_xp_priced' }, 400);
+      const r = await users.fetch(new Request('https://do/shopbuy', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: u.id, item: it.id }) }));
+      const d = await r.json();
+      if (d && d.ok) { try { await evPush(env, request, 'shopbuy', it.id + ' (XP)', '/vault/'); } catch (e) {} try { const dk = 'shop:xp:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + it.xp)); } catch (e) {} }
+      return jr(d, d && d.ok ? 200 : 400);
+    }
+    if (!it.cents) return jr({ error: 'not_usd_priced' }, 400);
+    const acct = 'u:' + u.id;
+    const led = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
+    const rd = await led.fetch(new Request('https://do/shopdebit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: acct, cents: it.cents, item: it.id }) }));
+    const dd = await rd.json();
+    if (!dd || !dd.ok) return jr(dd || { error: 'debit_failed' }, 400);
+    let granted = false;
+    try { const rg = await users.fetch(new Request('https://do/shopgrant', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: u.id, item: it.id, src: 'usd' }) })); const dg = await rg.json(); granted = !!(dg && dg.ok); } catch (e) {}
+    if (!granted) { try { await led.fetch(new Request('https://do/shoprefund', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ acct: acct, cents: it.cents, item: it.id }) })); } catch (e) {} return jr({ error: 'grant_failed_refunded' }, 500); }
+    try { await evPush(env, request, 'shopbuy', it.id + ' ($' + (it.cents / 100).toFixed(2) + ')', '/vault/'); } catch (e) {}
+    try { const dk2 = 'shop:usd:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk2, String((+(await env.STATS.get(dk2)) || 0) + it.cents)); } catch (e) {}
+    return jr({ ok: true, item: it.id, balance: dd.balance != null ? dd.balance : null });
+  }
   if (path === '/frames') { // owned profile-card frames + equipped (for the customize panel)
     const tok = getCookie(request, SESS_COOKIE);
     const u = tok ? await sessionUser(env, tok) : null;
@@ -11121,6 +11184,15 @@ export default {
       out.hh = HH; out.now = Date.now();
       return J(out);
     }
+    if (url.pathname === '/api/admin/shopstats' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // The Vault ops: sales per item/currency + buyers + daily sinks
+      let ds = { per: [], buyers: 0 };
+      try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/shopstats')); ds = await r.json(); } catch (e) {}
+      const day = new Date().toISOString().slice(0, 10);
+      let xpDay = 0, usdDay = 0;
+      try { xpDay = +(await env.STATS.get('shop:xp:' + day)) || 0; } catch (e) {}
+      try { usdDay = +(await env.STATS.get('shop:usd:' + day)) || 0; } catch (e) {}
+      return J({ ...ds, day, xpSinkToday: xpDay, usdSinkTodayCents: usdDay });
+    }
     if (url.pathname === '/api/admin/sweepstat' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // last srv-sweep summary (swept/checked/staleN) — observability for the candle-check rollout
       let last = null; try { last = JSON.parse(await env.STATS.get('sweep:last') || 'null'); } catch (e) {}
       return J({ last });
@@ -12527,6 +12599,25 @@ export class RewardLedger {
       sql.exec('UPDATE accounts SET banned=0 WHERE address=?', addr); this.log('unban', addr, '', '', 0);
       return this.j({ ok: true });
     }
+    if (path === '/shopdebit') { // The Vault: debit balance for a cosmetic (integer cents). FINAL sink — logged as 'shop', never returns to withdrawable except via explicit /shoprefund on a failed grant.
+      const sacct = String(body.acct || ''), scents = Math.max(1, Math.round(+body.cents || 0)), sitem = String(body.item || '').slice(0, 24);
+      if (!sacct || sacct.indexOf('u:') !== 0) return this.j({ error: 'bad' }, 400);
+      const srow = this.rows('SELECT balance, banned FROM accounts WHERE address=?', sacct)[0];
+      if (!srow) return this.j({ error: 'no_account' }, 404);
+      if (srow.banned) return this.j({ error: 'banned' }, 403);
+      if ((+srow.balance || 0) < scents) return this.j({ error: 'insufficient', balance: +srow.balance || 0 });
+      sql.exec('UPDATE accounts SET balance=balance-? WHERE address=?', scents, sacct);
+      this.log('shop', sacct, sitem, '', -scents);
+      const sb = this.rows('SELECT balance FROM accounts WHERE address=?', sacct)[0];
+      return this.j({ ok: true, balance: sb ? +sb.balance : 0 });
+    }
+    if (path === '/shoprefund') { // compensating credit when the cosmetic grant failed after a successful debit
+      const racct = String(body.acct || ''), rcents = Math.max(1, Math.round(+body.cents || 0)), ritem = String(body.item || '').slice(0, 24);
+      if (!racct || racct.indexOf('u:') !== 0) return this.j({ error: 'bad' }, 400);
+      sql.exec('UPDATE accounts SET balance=balance+? WHERE address=?', rcents, racct);
+      this.log('shoprefund', racct, ritem, '', rcents);
+      return this.j({ ok: true });
+    }
     if (path === '/mission') { // Daily Missions payout: credit cents, auto-create the account, respect bans; logged as 'mission'
       const macct = String(body.acct || ''), mcents = Math.max(0, Math.min(50, Math.round(+body.cents || 0))), mmid = String(body.mid || '').slice(0, 24);
       if (!macct || macct.indexOf('u:') !== 0 || !mcents) return this.j({ error: 'bad' }, 400);
@@ -13065,7 +13156,8 @@ export class UserStore {
     try { s.exec('ALTER TABLE users ADD COLUMN did TEXT'); } catch (e) {} // device fingerprint (mp_did cookie) captured at login → same-device multi-account detection for the Security tab
     try { s.exec('ALTER TABLE users ADD COLUMN prem_seen INTEGER DEFAULT 0'); s.exec('UPDATE users SET prem_seen=1 WHERE premium>0'); } catch (e) {} // "has this user seen the premium-upgrade celebration?" The backfill (existing premium = already-seen, no retroactive mass-animation) is TIED TO THE ALTER SUCCEEDING — so it runs exactly ONCE (first boot after ship); every later boot the ALTER throws → catch → backfill skipped → a subsequent reset (e.g. the mp-ops-granted cohort set back to 0 for the delayed welcome) is NEVER overwritten. New users get DEFAULT 0 → they get the celebration.
     for (const col of ['bio TEXT', 'avatar TEXT', 'accent TEXT', 'coins TEXT', 'frame TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // public profile personalization: bio, avatar emoji, accent colour, favourite coins (csv)
-    s.exec('CREATE TABLE IF NOT EXISTS xplog(user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)'); // XP earn/adjust history (ring-buffered ~150/user)
+    s.exec('CREATE TABLE IF NOT EXISTS xplog(user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)');
+    s.exec('CREATE TABLE IF NOT EXISTS cosmetics(user_id TEXT, item_id TEXT, ts INTEGER, src TEXT, PRIMARY KEY(user_id,item_id))'); // The Vault: purchased/granted cosmetic items (frames F1) // XP earn/adjust history (ring-buffered ~150/user)
     s.exec('CREATE TABLE IF NOT EXISTS xpboost_ev(user_id TEXT, ts INTEGER, xp INTEGER, note TEXT, seen INTEGER DEFAULT 0)');
     try { s.exec('ALTER TABLE xpboost_ev ADD COLUMN kind TEXT'); } catch (e) {} // dedupe discriminator: 'hh' or 'p:<promoId>' — (user_id, ts=closeTs, kind) uniquely names one grant of one boost on one close // XP boost/happy-hour hits queued for the ops live feed (drained by the minute cron via /xpboostev)
     s.exec('CREATE TABLE IF NOT EXISTS xpday(user_id TEXT, day TEXT, src TEXT, n INTEGER DEFAULT 0, PRIMARY KEY(user_id,day,src))'); // per-source per-UTC-day earned, for anti-abuse caps
@@ -14461,7 +14553,9 @@ export class UserStore {
       if (!u) return this.j({ error: 'no_user' }, 404);
       const founder = PREM_FOUNDERS.indexOf(String(u.username || '').toLowerCase()) >= 0;
       const premium = founder || (+u.premium || 0) > Date.now();
-      if (!frameOwned(fr, u.xp, premium, founder)) return this.j({ error: 'locked' });
+      const bought = this.rows('SELECT item_id FROM cosmetics WHERE user_id=?', uid).map(x => x.item_id);
+      const okFr = frameOwned(fr, u.xp, premium, founder) || bought.indexOf(fr) >= 0 || (vaultIsTester(u.username) && (!!vaultItem(fr) || fr === 'default'));
+      if (!okFr) return this.j({ error: 'locked' });
       try { sql.exec('UPDATE users SET frame=? WHERE id=?', fr, uid); } catch (e) {}
       return this.j({ ok: true, frame: fr });
     }
@@ -14471,7 +14565,36 @@ export class UserStore {
       if (!u) return this.j({ owned: ['default'], equipped: 'default', xp: 0 });
       const founder = PREM_FOUNDERS.indexOf(String(u.username || '').toLowerCase()) >= 0;
       const premium = founder || (+u.premium || 0) > Date.now();
-      return this.j({ owned: framesFor(u.xp, premium, founder), equipped: u.frame || 'default', premium: premium, founder: founder, xp: +u.xp || 0 });
+      let owned = framesFor(u.xp, premium, founder).concat(this.rows('SELECT item_id FROM cosmetics WHERE user_id=?', uid).map(x => x.item_id));
+      if (vaultIsTester(u.username)) owned = owned.concat(VAULT_ITEMS.map(x => x.id)); // owner test account sees everything
+      owned = owned.filter(function(v, i, a) { return a.indexOf(v) === i; });
+      return this.j({ owned: owned, equipped: u.frame || 'default', premium: premium, founder: founder, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k });
+    }
+    if (path === '/shopbuy') { // XP purchase — atomic; LEVEL-FLOOR GUARD: spending can never drop you below your current level's threshold (a frame purchase must not cost someone their level, their level frames or the rewards gate)
+      const uid = String(b.uid || ''); const it = vaultItem(String(b.item || ''));
+      if (!uid || !it || !it.xp) return this.j({ error: 'bad' }, 400);
+      const u = this.rows('SELECT xp, username FROM users WHERE id=?', uid)[0];
+      if (!u) return this.j({ error: 'no_user' }, 404);
+      if (this.rows('SELECT 1 FROM cosmetics WHERE user_id=? AND item_id=?', uid, it.id)[0]) return this.j({ error: 'owned' });
+      if (it.minLevel) { const lv = xpLevelOf(u.xp || 0); const need = XP_LEVELS.findIndex(x => x.k === it.minLevel); const have = XP_LEVELS.findIndex(x => x.k === lv.k); if (have < need) return this.j({ error: 'level_locked', need: it.minLevel }); }
+      const curLv = xpLevelOf(u.xp || 0);
+      if ((+u.xp || 0) - it.xp < curLv.min) return this.j({ error: 'level_floor', floor: curLv.min, xp: +u.xp || 0 }); // would de-level — refuse with the numbers so the UI can explain
+      sql.exec('UPDATE users SET xp=MAX(0,COALESCE(xp,0)-?) WHERE id=?', it.xp, uid);
+      sql.exec("INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,'shop',?,?)", uid, Date.now(), -it.xp, ('Vault: ' + it.name + ' frame').slice(0, 120));
+      sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', uid, it.id, Date.now(), 'xp');
+      const nx = this.rows('SELECT xp FROM users WHERE id=?', uid)[0];
+      return this.j({ ok: true, item: it.id, xp: nx ? +nx.xp : 0 });
+    }
+    if (path === '/shopgrant') { // balance purchase grant (worker already debited the ledger) / admin grant — idempotent
+      const uid = String(b.uid || ''); const it = vaultItem(String(b.item || ''));
+      if (!uid || !it) return this.j({ error: 'bad' }, 400);
+      try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', uid, it.id, Date.now(), String(b.src || 'usd').slice(0, 12)); } catch (e) { /* already owned = fine (idempotent) */ }
+      return this.j({ ok: true, item: it.id });
+    }
+    if (path === '/shopstats') { // ops: sales per item + total spenders
+      const per = this.rows("SELECT item_id, src, COUNT(*) n FROM cosmetics GROUP BY item_id, src ORDER BY n DESC");
+      const buyers = (this.rows('SELECT COUNT(DISTINCT user_id) c FROM cosmetics')[0] || { c: 0 }).c;
+      return this.j({ per: per, buyers: buyers });
     }
     if (path === '/lbfollow') { // toggle follow (uid follows tuid). uid from worker (session); tuid+tname in body
       const uid = String((b && b.uid) || '').replace(/^u:/, '');
