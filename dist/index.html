@@ -1530,7 +1530,7 @@
   }).catch(function(){});
 
   // ---- language select (navigates to the language homepage, like the live site) ----
-  (function(){var ls=document.getElementById('langSel');if(ls)ls.addEventListener('change',function(){location.href=this.value;});})();
+  (function(){var ls=document.getElementById('langSel');if(ls)ls.addEventListener('change',function(){var v=this.value,m=(v.match(/^\/([a-z]{2})\//)||[])[1]||'en';try{localStorage.setItem('mp_lang',m);}catch(e){}location.href=v;});})();
 
   // ---- the lime burger + mobnav Browse open the SHARED site drawer (mp-nav.js) ----
   function openBrowse(){var b=document.querySelector('.mpnav-burger');if(b){b.click();return;}setTimeout(openBrowse,150);}
