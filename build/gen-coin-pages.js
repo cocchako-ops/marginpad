@@ -224,7 +224,7 @@ function coinPage(c) {
 
     <h2>Other coins &amp; tools</h2>
     <div class="related">
-      <a href="/#liq">All calculators</a>
+      <a href="/calculators?c=liq">All calculators</a>
       <a href="/funding-fee-calculator/">Funding fee</a>
       <a href="/paper-trade?coin=${c.sym}">Paper-trade ${c.sym}</a>
       ${others.map(o => `<a href="/${o.slug}-liquidation-calculator/">${o.sym} liquidation</a>`).join('\n      ')}

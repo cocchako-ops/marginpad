@@ -1,5 +1,5 @@
 /* Generates per-coin SEO landing pages: /<sym>-liquidation-map/ with server-rendered text + a deep link
-   into the live interactive map (/?p=heat&coin=SYM). Run: node build/gen-liqmap-pages.js */
+   into the live interactive map (/heatmap?coin=SYM). Run: node build/gen-liqmap-pages.js */
 const fs = require('fs');
 const path = require('path');
 const DIST = path.join(__dirname, '..', 'dist');
@@ -20,7 +20,7 @@ const faq = (name, sym) => [
 
 function page(sym, name) {
   const url = `https://marginpad.io/${sym.toLowerCase()}-liquidation-map/`;
-  const live = `/?p=heat&coin=${sym}`;
+  const live = `/heatmap?coin=${sym}`;
   const F = faq(name, sym);
   const faqLd = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[${F.map(f => `{"@type":"Question","name":${JSON.stringify(f.q)},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(f.a)}}}`).join(',')}]}</script>`;
   const crumbLd = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"${sym} Liquidation Map","item":"${url}"}]}</script>`;
@@ -57,7 +57,7 @@ ${crumbLd}
 <div class="wrap">
   <header>
     <a class="brand" href="/">MARGIN<b>PAD</b></a>
-    <nav class="nav"><a href="/">Calculators</a><a href="/?p=heat">Heatmap</a><a href="/blog/">Blog</a></nav>
+    <nav class="nav"><a href="/calculators">Calculators</a><a href="/heatmap">Heatmap</a><a href="/blog/">Blog</a></nav>
   </header>
   <div class="crumb"><a href="/">Home</a> / ${sym} Liquidation Map</div>
   <article>
@@ -78,16 +78,16 @@ ${crumbLd}
     <div class="toolshow">
       <div class="ts-head">Everything free on MarginPad — no signup</div>
       <div class="ts-grid">
-        <a class="ts-card" href="/#liq"><b>Liquidation Calculator</b><small>Know your exit price</small></a>
-        <a class="ts-card" href="/?p=heat"><b>Liquidation Heatmap</b><small>All coins, live</small></a>
-        <a class="ts-card" href="/?p=swap"><b>Crypto Swap</b><small>900+ coins, no account</small></a>
+        <a class="ts-card" href="/calculators?c=liq"><b>Liquidation Calculator</b><small>Know your exit price</small></a>
+        <a class="ts-card" href="/heatmap"><b>Liquidation Heatmap</b><small>All coins, live</small></a>
+        <a class="ts-card" href="/swap"><b>Crypto Swap</b><small>900+ coins, no account</small></a>
         <a class="ts-card" href="/blog/how-to-read-a-liquidation-heatmap/"><b>Guide</b><small>How to read a liquidation map</small></a>
       </div>
     </div>
   </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="/">Calculators</a> · <a href="/?p=heat">Heatmap</a> · <a href="/blog/">Blog</a></span>
+    <span><a href="/">Calculators</a> · <a href="/heatmap">Heatmap</a> · <a href="/blog/">Blog</a></span>
   </footer>
 </div>
 </body>

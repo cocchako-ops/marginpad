@@ -20,7 +20,7 @@ const EN_SHARED = {
   tagBest: 'Top pick', openCta: 'Open {X} account →', offers: '{A} offers {WHY}.',
   thExchange: 'Exchange', thMaxLev: 'Max lev', thMaker: 'Maker', thTaker: 'Taker', thKnown: 'Best known for',
   h2cmp: 'Side-by-side comparison', h2rank: 'How we rank',
-  rankP: 'We weight the factors that matter for this use case — here, primarily <strong>{METRIC}</strong> — alongside liquidity, reliability and overall trader experience. Fees and leverage caps vary by contract, region and account tier, so always confirm on the exchange. Before you size a trade, check exactly where it would be wiped with the <a href="/#liq">liquidation calculator</a> and practice risk-free in <a href="/?p=plan">Paper Trade</a>.',
+  rankP: 'We weight the factors that matter for this use case — here, primarily <strong>{METRIC}</strong> — alongside liquidity, reliability and overall trader experience. Fees and leverage caps vary by contract, region and account tier, so always confirm on the exchange. Before you size a trade, check exactly where it would be wiped with the <a href="/calculators?c=liq">liquidation calculator</a> and practice risk-free in <a href="/paper-trade">Paper Trade</a>.',
   updated: 'Updated for 2026. Links are referral links — see disclosure below.',
   relBeginners: 'For beginners', relLowFee: 'Lowest fees', relHighLev: 'Highest leverage', relAlt: 'For altcoins', relDay: 'For day trading',
   disclosure: 'Disclosure: the exchange links above are referral links. If you sign up through them MarginPad may earn a commission at no extra cost to you — it keeps the tools free. Not financial advice; trade at your own risk.',
@@ -242,7 +242,7 @@ ${lang ? '' : `
     <h3>What to watch out for</h3>
     <ul>
       <li><strong>Regional access.</strong> The best venue on paper is useless if it does not serve your country — most of these are not available to US residents (<a href="/highest-leverage-crypto-exchange/">Kraken is the main US-friendly major</a>).</li>
-      <li><strong>Leverage is a trap.</strong> A 125× headline means a ~1% move liquidates you. Check exactly where with the <a href="/#liq">liquidation calculator</a> before you size up.</li>
+      <li><strong>Leverage is a trap.</strong> A 125× headline means a ~1% move liquidates you. Check exactly where with the <a href="/calculators?c=liq">liquidation calculator</a> before you size up.</li>
       <li><strong>Fees are paid on notional.</strong> They look tiny but scale with your leverage and trade count — see how they add up on the <a href="/bybit-vs-binance/">exchange comparison pages</a>.</li>
     </ul>
     <p>Not sure which fits? <a href="/paper-trade">Practice the exact strategy free</a> on our paper-trading terminal — live prices, real liquidation logic, zero risk — before you fund any of them.</p>`}

@@ -12,14 +12,14 @@ const E = [
 &lt;p&gt;The core idea is simple. Every leveraged trade has a liquidation price set the moment it opens. If you take a long with &lt;code&gt;10x&lt;/code&gt; leverage, your position gets liquidated roughly when price falls about 10% from entry. A short at the same leverage gets liquidated when price rises about 10%. A heatmap aggregates millions of these levels into a single picture so you can see where forced selling or forced buying would concentrate.&lt;/p&gt;
 
 &lt;h2&gt;What liquidation levels and zones represent&lt;/h2&gt;
-&lt;p&gt;A single liquidation level is the price at which one position runs out of margin and is closed automatically. You can compute one yourself with the &lt;a href="/#liq"&gt;liquidation calculator&lt;/a&gt;, or read the full method in our guide on &lt;a href="/blog/how-to-calculate-liquidation-price/"&gt;how to calculate liquidation price&lt;/a&gt;. The rough formula for a long is &lt;code&gt;entry x (1 - 1/leverage)&lt;/code&gt;, and for a short it is &lt;code&gt;entry x (1 + 1/leverage)&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;A single liquidation level is the price at which one position runs out of margin and is closed automatically. You can compute one yourself with the &lt;a href="/calculators?c=liq"&gt;liquidation calculator&lt;/a&gt;, or read the full method in our guide on &lt;a href="/blog/how-to-calculate-liquidation-price/"&gt;how to calculate liquidation price&lt;/a&gt;. The rough formula for a long is &lt;code&gt;entry x (1 - 1/leverage)&lt;/code&gt;, and for a short it is &lt;code&gt;entry x (1 + 1/leverage)&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;A liquidation &lt;strong&gt;zone&lt;/strong&gt; is what you get when many of those levels stack up at similar prices. Zones matter because liquidations are not quiet. When a cluster of longs gets liquidated, the exchange sells those positions into the market, pushing price down further and potentially triggering the next cluster below. The same happens in reverse for shorts. This chain reaction is why a dense zone behaves very differently from an empty stretch of chart.&lt;/p&gt;
 
 &lt;h2&gt;Why high-leverage liquidations cluster close to price&lt;/h2&gt;
 &lt;p&gt;The single most important thing to understand is the relationship between leverage and distance. The higher the leverage, the closer the liquidation price sits to the entry price. At &lt;code&gt;100x&lt;/code&gt;, a position is wiped out by roughly a 1% move against it. At &lt;code&gt;50x&lt;/code&gt; it takes about 2%, at &lt;code&gt;25x&lt;/code&gt; about 4%, and at &lt;code&gt;10x&lt;/code&gt; about 10%.&lt;/p&gt;
 &lt;p&gt;Because high-leverage traders are liquidated by tiny moves, their liquidation levels sit right next to the current price. That is why the band immediately above and below the candle is usually the most crowded and most reactive part of any heatmap. If you want the full picture of how this distance scales, see &lt;a href="/blog/crypto-leverage-explained/"&gt;leverage explained&lt;/a&gt;. The practical takeaway: the levels nearest to price are the high-leverage ones, and they are the first to get hit on any sharp move.&lt;/p&gt;
 
-&lt;div class="callout"&gt;&lt;div class="k"&gt;SEE IT LIVE&lt;/div&gt;&lt;p style="margin-bottom:14px"&gt;MarginPad's interactive heatmap plots real candles with every leverage's liquidation level — pan, zoom and hover for exact prices.&lt;/p&gt;&lt;a class="cta" href="/?p=heat"&gt;Open the liquidation heatmap →&lt;/a&gt;&lt;/div&gt;
+&lt;div class="callout"&gt;&lt;div class="k"&gt;SEE IT LIVE&lt;/div&gt;&lt;p style="margin-bottom:14px"&gt;MarginPad's interactive heatmap plots real candles with every leverage's liquidation level — pan, zoom and hover for exact prices.&lt;/p&gt;&lt;a class="cta" href="/heatmap"&gt;Open the liquidation heatmap →&lt;/a&gt;&lt;/div&gt;
 
 &lt;h2&gt;How clusters act as magnets and as support or resistance&lt;/h2&gt;
 &lt;p&gt;Traders often describe liquidation clusters as &lt;strong&gt;magnets&lt;/strong&gt;. The logic is that resting liquidations are a pool of guaranteed orders. A cluster of long liquidations below price is a pool of pending market sells; a cluster of short liquidations above price is a pool of pending market buys. Market makers and large players have an incentive to push price toward that resting liquidity, because it lets them fill size and trigger a cascade.&lt;/p&gt;
@@ -39,14 +39,14 @@ const E = [
 &lt;p&gt;Treat the heatmap as a map of &lt;em&gt;probable&lt;/em&gt; liquidity, not certainty. Real markets contain stop-losses, partial closes, added margin, and isolated-versus-cross differences that no model captures perfectly. Use it to understand structure and risk, not as a guaranteed price prediction. Combine it with your own analysis rather than trading it blindly.&lt;/p&gt;
 
 &lt;h2&gt;How to use MarginPad's heatmap&lt;/h2&gt;
-&lt;p&gt;The &lt;a href="/?p=heat"&gt;liquidation heatmap&lt;/a&gt; on MarginPad is built to make all of this readable at a glance. Here is the colour and layout convention:&lt;/p&gt;
+&lt;p&gt;The &lt;a href="/heatmap"&gt;liquidation heatmap&lt;/a&gt; on MarginPad is built to make all of this readable at a glance. Here is the colour and layout convention:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;White line = current price.&lt;/strong&gt; Everything is oriented around it.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Green = long liquidations below price.&lt;/strong&gt; These are the levels exposed if the market drops.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Blue = short liquidations above price.&lt;/strong&gt; These are the levels exposed if the market rises.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;100x sits nearest the price&lt;/strong&gt; on each side, with lower leverages plotted progressively further away, so distance from the white line maps directly to how risky a position is.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;To use it, plot real candles, then pan and zoom to the area around current price and hover any level to read its exact liquidation price. Look for the densest green band below and the densest blue band above. Those are your most likely magnets and your most important support and resistance zones. If you want to verify a specific number, drop the price and leverage into the &lt;a href="/#liq"&gt;liquidation calculator&lt;/a&gt; and confirm it lines up with what the heatmap shows.&lt;/p&gt;
+&lt;p&gt;To use it, plot real candles, then pan and zoom to the area around current price and hover any level to read its exact liquidation price. Look for the densest green band below and the densest blue band above. Those are your most likely magnets and your most important support and resistance zones. If you want to verify a specific number, drop the price and leverage into the &lt;a href="/calculators?c=liq"&gt;liquidation calculator&lt;/a&gt; and confirm it lines up with what the heatmap shows.&lt;/p&gt;
 
 &lt;h2&gt;Putting it together&lt;/h2&gt;
 &lt;p&gt;A liquidation heatmap will not tell you the future, but it tells you where the market is structurally fragile and where forced flow is likely to appear. Read the nearest, highest-leverage clusters first, watch how price interacts with the dense green and blue bands, and always remember you are looking at an estimate of where leverage sits, not a certified order book. Used that way, it becomes one of the sharpest context tools in a futures trader's kit.&lt;/p&gt;`,
@@ -66,7 +66,7 @@ const E = [
 
 &lt;h2&gt;What a no-account, non-custodial swap actually is&lt;/h2&gt;
 &lt;p&gt;A &lt;strong&gt;non-custodial swap&lt;/strong&gt; lets you trade crypto without handing your funds to a company or creating a login. There is no balance sitting in an account, no password to reset, and usually no sign-up at all. You start the swap, send coins from your own wallet, and receive the new coins straight to a wallet you control. The service simply coordinates the exchange and moves on.&lt;/p&gt;
-&lt;p&gt;This is different from a traditional exchange, where you deposit funds, they appear as a number in your account, and you trust the company to let you withdraw later. With a non-custodial &lt;a href="/?p=swap"&gt;crypto swap&lt;/a&gt;, your coins are only ever in transit between two wallets you own.&lt;/p&gt;
+&lt;p&gt;This is different from a traditional exchange, where you deposit funds, they appear as a number in your account, and you trust the company to let you withdraw later. With a non-custodial &lt;a href="/swap"&gt;crypto swap&lt;/a&gt;, your coins are only ever in transit between two wallets you own.&lt;/p&gt;
 
 &lt;h2&gt;How instant exchangers work&lt;/h2&gt;
 &lt;p&gt;Instant exchangers follow a simple pattern. You pick the coin you are sending (coin A) and the coin you want to receive (coin B), enter an amount, and paste the wallet address where coin B should land. The service then shows you a one-time &lt;strong&gt;deposit address&lt;/strong&gt;.&lt;/p&gt;
@@ -86,7 +86,7 @@ const E = [
 &lt;p&gt;Because a non-custodial swap does not hold your balance over time, many providers do not require an account or identity verification for ordinary amounts. You are not opening a financial account; you are using a one-off conversion service. This makes swaps fast and private for everyday use.&lt;/p&gt;
 &lt;p&gt;Be realistic, though: providers may still apply automated compliance checks, and unusually large or flagged transactions can trigger extra verification. No-KYC is common, not guaranteed. Always assume on-chain activity is public and traceable.&lt;/p&gt;
 
-&lt;div class="callout"&gt;&lt;div class="k"&gt;SWAP ON MARGINPAD&lt;/div&gt;&lt;p style="margin-bottom:14px"&gt;Swap 900+ coins with no account — non-custodial, your funds and addresses never touch MarginPad.&lt;/p&gt;&lt;a class="cta" href="/?p=swap"&gt;Open the crypto swap →&lt;/a&gt;&lt;/div&gt;
+&lt;div class="callout"&gt;&lt;div class="k"&gt;SWAP ON MARGINPAD&lt;/div&gt;&lt;p style="margin-bottom:14px"&gt;Swap 900+ coins with no account — non-custodial, your funds and addresses never touch MarginPad.&lt;/p&gt;&lt;a class="cta" href="/swap"&gt;Open the crypto swap →&lt;/a&gt;&lt;/div&gt;
 
 &lt;h2&gt;Fixed vs floating rates, fees, and slippage&lt;/h2&gt;
 &lt;p&gt;Most instant exchangers offer two rate types:&lt;/p&gt;
@@ -112,7 +112,7 @@ const E = [
 &lt;p&gt;These same habits apply whether you are moving coins, building a long-term stack, or rotating between assets. If you are weighing simple buy-and-hold against leveraged trading, see &lt;a href="/blog/spot-vs-futures-trading/"&gt;spot vs futures&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h2&gt;How to swap on MarginPad, step by step&lt;/h2&gt;
-&lt;p&gt;The &lt;a href="/?p=swap"&gt;crypto swap&lt;/a&gt; on MarginPad is built for exactly this no-account flow. Here is the full process:&lt;/p&gt;
+&lt;p&gt;The &lt;a href="/swap"&gt;crypto swap&lt;/a&gt; on MarginPad is built for exactly this no-account flow. Here is the full process:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;Pick from and to.&lt;/strong&gt; Choose the coin you are sending and the coin you want to receive from 900+ supported assets.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Enter the amount.&lt;/strong&gt; Type how much you want to swap and review the estimated output, fees, and rate type.&lt;/li&gt;
@@ -152,13 +152,13 @@ const E = [
 
 &lt;h2&gt;2. Size by risk, not by gut&lt;/h2&gt;
 &lt;p&gt;Most blow-ups come from position size, not direction. The fix is the &lt;strong&gt;1% rule&lt;/strong&gt;: never risk more than 1% of your account on a single trade. Risk is the distance from your entry to your stop-loss, not the notional size of the position.&lt;/p&gt;
-&lt;p&gt;If your account is 10,000 USDT and your stop is 2% away, your maximum position is &lt;code&gt;(10000 x 0.01) / 0.02 = 5,000 USDT&lt;/code&gt; notional. Let the math set your size. Our &lt;a href="/#size"&gt;position size calculator&lt;/a&gt; does this in one step, and &lt;a href="/blog/crypto-position-sizing-risk-management/"&gt;position sizing&lt;/a&gt; covers the full method.&lt;/p&gt;
+&lt;p&gt;If your account is 10,000 USDT and your stop is 2% away, your maximum position is &lt;code&gt;(10000 x 0.01) / 0.02 = 5,000 USDT&lt;/code&gt; notional. Let the math set your size. Our &lt;a href="/calculators?c=size"&gt;position size calculator&lt;/a&gt; does this in one step, and &lt;a href="/blog/crypto-position-sizing-risk-management/"&gt;position sizing&lt;/a&gt; covers the full method.&lt;/p&gt;
 
 &lt;h2&gt;3. Always set a stop-loss inside your liquidation price&lt;/h2&gt;
 &lt;p&gt;A stop-loss is a manual exit you choose; liquidation is a forced exit the exchange takes — usually with a fee and worse fill. Your stop must always trigger &lt;strong&gt;before&lt;/strong&gt; price reaches your liquidation level, with room to spare.&lt;/p&gt;
 &lt;p&gt;If your liquidation is 9% away, do not place your stop at 8.9%. Wicks and slippage will hit liquidation first. Keep a clear gap. See &lt;a href="/blog/how-to-set-a-stop-loss/"&gt;how to set a stop-loss&lt;/a&gt; for placement that respects market structure rather than round numbers.&lt;/p&gt;
 
-&lt;div class="callout"&gt;&lt;div class="k"&gt;KNOW YOUR EXIT&lt;/div&gt;&lt;p style="margin-bottom:14px"&gt;Check your exact liquidation price before you enter — then see where every leverage liquidates on the heatmap.&lt;/p&gt;&lt;a class="cta" href="/#liq"&gt;Open the liquidation calculator →&lt;/a&gt;&lt;/div&gt;
+&lt;div class="callout"&gt;&lt;div class="k"&gt;KNOW YOUR EXIT&lt;/div&gt;&lt;p style="margin-bottom:14px"&gt;Check your exact liquidation price before you enter — then see where every leverage liquidates on the heatmap.&lt;/p&gt;&lt;a class="cta" href="/calculators?c=liq"&gt;Open the liquidation calculator →&lt;/a&gt;&lt;/div&gt;
 
 &lt;h2&gt;4. Keep a margin buffer — and add margin when it matters&lt;/h2&gt;
 &lt;p&gt;Trading with every available coin as margin leaves no cushion. A small buffer of unused balance moves your liquidation price further away and buys you time during a sharp move.&lt;/p&gt;
@@ -190,7 +190,7 @@ const E = [
 
 &lt;h2&gt;8. Check your numbers before every trade&lt;/h2&gt;
 &lt;p&gt;None of the rules above work if you are guessing at the numbers. Before you enter, know your exact liquidation price, your position size, and where every leverage level would liquidate.&lt;/p&gt;
-&lt;p&gt;Run the entry through the &lt;a href="/#liq"&gt;liquidation calculator&lt;/a&gt; to confirm liquidation is comfortably beyond your stop, size it with the &lt;a href="/#size"&gt;position size calculator&lt;/a&gt;, and use the &lt;a href="/?p=heat"&gt;liquidation heatmap&lt;/a&gt; to see how dramatically higher leverage pulls liquidation toward your entry. Thirty seconds of checking prevents most forced exits.&lt;/p&gt;
+&lt;p&gt;Run the entry through the &lt;a href="/calculators?c=liq"&gt;liquidation calculator&lt;/a&gt; to confirm liquidation is comfortably beyond your stop, size it with the &lt;a href="/calculators?c=size"&gt;position size calculator&lt;/a&gt;, and use the &lt;a href="/heatmap"&gt;liquidation heatmap&lt;/a&gt; to see how dramatically higher leverage pulls liquidation toward your entry. Thirty seconds of checking prevents most forced exits.&lt;/p&gt;
 
 &lt;h2&gt;Worked example: size so a normal move cannot liquidate you&lt;/h2&gt;
 &lt;p&gt;Say you have a &lt;strong&gt;$2,000&lt;/strong&gt; account and you want to risk 1% (&lt;strong&gt;$20&lt;/strong&gt;) on a BTC long at $60,000, with your stop 3% away at $58,200. Your position size is risk ÷ stop distance = &lt;code&gt;$20 ÷ 0.03&lt;/code&gt; ≈ &lt;strong&gt;$667&lt;/strong&gt; of exposure — regardless of leverage. At 10× that needs only about $67 of margin, and your liquidation sits roughly 9% away, three times further than your $58,200 stop. The stop does the work; the exchange&apos;s liquidation engine never gets a turn. The table below shows why the same trade becomes a coin-flip at higher leverage:&lt;/p&gt;
@@ -250,7 +250,7 @@ const E = [
 &lt;p&gt;Liquidity is where Binance most often pulls ahead. It generally carries the deepest order books and highest volumes across the widest set of pairs, which means tighter spreads and less slippage on large orders, especially in less popular markets.&lt;/p&gt;
 &lt;p&gt;Bybit is also highly liquid in major pairs and many altcoin perps — for typical retail order sizes you may not notice a meaningful difference. The gap tends to show up when you trade size, trade thin markets, or place orders during volatile moves. If slippage is a core concern for your strategy, test both with realistic order sizes.&lt;/p&gt;
 
-&lt;div class="callout"&gt;&lt;div class="k"&gt;PLAN BEFORE YOU PICK&lt;/div&gt;&lt;p style="margin-bottom:14px"&gt;Whatever exchange you choose, check your liquidation price and size by risk first — free, works with any venue.&lt;/p&gt;&lt;a class="cta" href="/#liq"&gt;Open the calculators →&lt;/a&gt;&lt;/div&gt;
+&lt;div class="callout"&gt;&lt;div class="k"&gt;PLAN BEFORE YOU PICK&lt;/div&gt;&lt;p style="margin-bottom:14px"&gt;Whatever exchange you choose, check your liquidation price and size by risk first — free, works with any venue.&lt;/p&gt;&lt;a class="cta" href="/calculators?c=liq"&gt;Open the calculators →&lt;/a&gt;&lt;/div&gt;
 
 &lt;h2&gt;Leverage and margin modes&lt;/h2&gt;
 &lt;p&gt;Both platforms offer high maximum leverage on major perpetuals, along with cross and isolated margin modes. Maximum leverage is tiered: larger positions are capped at lower leverage to manage risk, and top-end limits change over time and by region.&lt;/p&gt;
@@ -258,7 +258,7 @@ const E = [
 &lt;li&gt;&lt;strong&gt;Cross margin&lt;/strong&gt; shares your whole balance as collateral, which can avoid premature liquidation but risks more of your account.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Isolated margin&lt;/strong&gt; confines risk to the margin assigned to a single position.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;High leverage cuts both ways — it magnifies gains and losses and brings your liquidation price closer to entry. Before sizing up, read &lt;a href="/blog/crypto-leverage-explained/"&gt;leverage explained&lt;/a&gt; and run the numbers with our &lt;a href="/#liq"&gt;liquidation calculator&lt;/a&gt;. Treat advertised maximum leverage as a ceiling, not a target.&lt;/p&gt;
+&lt;p&gt;High leverage cuts both ways — it magnifies gains and losses and brings your liquidation price closer to entry. Before sizing up, read &lt;a href="/blog/crypto-leverage-explained/"&gt;leverage explained&lt;/a&gt; and run the numbers with our &lt;a href="/calculators?c=liq"&gt;liquidation calculator&lt;/a&gt;. Treat advertised maximum leverage as a ceiling, not a target.&lt;/p&gt;
 
 &lt;h2&gt;Platform and UX&lt;/h2&gt;
 &lt;p&gt;Bybit is frequently praised for a clean, derivatives-first layout that many active futures traders find efficient. Binance is feature-rich and powerful, but its breadth can feel busier to newcomers because it bundles many products into one ecosystem.&lt;/p&gt;
@@ -296,7 +296,7 @@ const E = [
   title:'Liquidation Clusters Explained: How to Spot Liquidity Magnets',
   desc:'Learn what liquidation clusters are, how stacked leverage forms them, and why these liquidity magnets pull crypto futures price toward them. A practical guide.',
   keywords:'liquidation clusters, liquidity magnets, liquidation map, open interest, crypto leverage, liquidation levels, support and resistance, futures trading',
-  body:`&amp;lt;p&amp;gt;If you trade crypto futures, you have probably watched price drift toward a level, accelerate into it, and then snap back. Often that level is a &amp;lt;strong&amp;gt;liquidation cluster&amp;lt;/strong&amp;gt; — a price where a lot of leveraged positions are set to get forced out. This guide explains what clusters are, how they form, and how to read them on a &amp;lt;a href="/?p=heat"&amp;gt;liquidation map&amp;lt;/a&amp;gt; without fooling yourself about what the data actually shows.&amp;lt;/p&amp;gt;
+  body:`&amp;lt;p&amp;gt;If you trade crypto futures, you have probably watched price drift toward a level, accelerate into it, and then snap back. Often that level is a &amp;lt;strong&amp;gt;liquidation cluster&amp;lt;/strong&amp;gt; — a price where a lot of leveraged positions are set to get forced out. This guide explains what clusters are, how they form, and how to read them on a &amp;lt;a href="/heatmap"&amp;gt;liquidation map&amp;lt;/a&amp;gt; without fooling yourself about what the data actually shows.&amp;lt;/p&amp;gt;
 
 &amp;lt;h2&amp;gt;What a liquidation cluster actually is&amp;lt;/h2&amp;gt;
 &amp;lt;p&amp;gt;A single liquidation level is the price at which one leveraged position can no longer cover its margin and gets force-closed by the exchange. On its own, one level means nothing. A &amp;lt;strong&amp;gt;cluster&amp;lt;/strong&amp;gt; is what you get when many liquidation levels stack up at or near the same price.&amp;lt;/p&amp;gt;
@@ -322,7 +322,7 @@ const E = [
 &amp;lt;/ul&amp;gt;
 &amp;lt;p&amp;gt;This is why traders describe clusters as &amp;lt;strong&amp;gt;magnets&amp;lt;/strong&amp;gt;. It is not magic and it is not guaranteed — it is the simple gravity of concentrated forced flow.&amp;lt;/p&amp;gt;
 
-&amp;lt;div class="callout"&amp;gt;&amp;lt;div class="k"&amp;gt;SEE THE CLUSTERS&amp;lt;/div&amp;gt;&amp;lt;p style="margin-bottom:14px"&amp;gt;MarginPad's live map plots real liquidations plus estimated clusters from open-interest — toggle the layers and see where leverage is stacked.&amp;lt;/p&amp;gt;&amp;lt;a class="cta" href="/?p=heat"&amp;gt;Open the liquidation map →&amp;lt;/a&amp;gt;&amp;lt;/div&amp;gt;
+&amp;lt;div class="callout"&amp;gt;&amp;lt;div class="k"&amp;gt;SEE THE CLUSTERS&amp;lt;/div&amp;gt;&amp;lt;p style="margin-bottom:14px"&amp;gt;MarginPad's live map plots real liquidations plus estimated clusters from open-interest — toggle the layers and see where leverage is stacked.&amp;lt;/p&amp;gt;&amp;lt;a class="cta" href="/heatmap"&amp;gt;Open the liquidation map →&amp;lt;/a&amp;gt;&amp;lt;/div&amp;gt;
 
 &amp;lt;h2&amp;gt;Long clusters below, short clusters above&amp;lt;/h2&amp;gt;
 &amp;lt;p&amp;gt;Direction matters, and it follows directly from how leverage works:&amp;lt;/p&amp;gt;
@@ -355,7 +355,7 @@ const E = [
 &amp;lt;/ul&amp;gt;
 &amp;lt;p&amp;gt;Used this way, clusters become a context tool: they tell you where the market's leverage is loaded, which directions carry cascade risk, and which levels have already been cleared.&amp;lt;/p&amp;gt;
 
-&amp;lt;p&amp;gt;Liquidation clusters are not a crystal ball — they are a map of where leverage is stacked and where forced flow is likely to fire. Read them as liquidity magnets that can pull price, act as soft support and resistance, and then vanish once consumed. Pair the estimated &amp;lt;a href="/?p=heat"&amp;gt;liquidation map&amp;lt;/a&amp;gt; with the real-liquidation feed, keep the model's limits in mind, and you will have a far better sense of where the next move is most likely to accelerate.&amp;lt;/p&amp;gt;`,
+&amp;lt;p&amp;gt;Liquidation clusters are not a crystal ball — they are a map of where leverage is stacked and where forced flow is likely to fire. Read them as liquidity magnets that can pull price, act as soft support and resistance, and then vanish once consumed. Pair the estimated &amp;lt;a href="/heatmap"&amp;gt;liquidation map&amp;lt;/a&amp;gt; with the real-liquidation feed, keep the model's limits in mind, and you will have a far better sense of where the next move is most likely to accelerate.&amp;lt;/p&amp;gt;`,
   faq:[
     {q:'What is a liquidation cluster?',a:'It is a price level where many leveraged positions would be liquidated at once. Individual liquidation levels stack up at the same price, creating a dense pool of forced orders that can move the market when price reaches it.'},
     {q:'Why do liquidation clusters act like magnets?',a:'A liquidation is a forced market order, so a cluster is a stack of guaranteed flow at a known price. Large players seek that liquidity, and once price reaches a cluster the forced orders can trigger a self-reinforcing cascade that pulls price further in.'},
@@ -368,7 +368,7 @@ const E = [
   title:'Long vs Short Liquidations: What the Balance Tells You',
   desc:'Learn how long vs short liquidations work, where each sits on a liquidation map, and how to read the imbalance to spot squeeze fuel and cascade risk.',
   keywords:'long vs short liquidations, liquidation map, long liquidation, short liquidation, liquidation cascade, short squeeze, long squeeze, leverage',
-  body:`&amp;lt;p&amp;gt;Every liquidation has a direction. A trader is either long or short when their position gets force-closed, and the side that is getting wiped out tells you a lot about where the market is fragile. This guide explains what long-liquidation and short-liquidation actually mean, where each lands on a &amp;lt;a href="/?p=heat"&amp;gt;liquidation map&amp;lt;/a&amp;gt;, and how to read the balance between the two.&amp;lt;/p&amp;gt;
+  body:`&amp;lt;p&amp;gt;Every liquidation has a direction. A trader is either long or short when their position gets force-closed, and the side that is getting wiped out tells you a lot about where the market is fragile. This guide explains what long-liquidation and short-liquidation actually mean, where each lands on a &amp;lt;a href="/heatmap"&amp;gt;liquidation map&amp;lt;/a&amp;gt;, and how to read the balance between the two.&amp;lt;/p&amp;gt;
 
 &amp;lt;h2&amp;gt;What a long vs a short liquidation means&amp;lt;/h2&amp;gt;
 &amp;lt;p&amp;gt;A liquidation happens when a leveraged position can no longer cover its losses and the exchange force-closes it. The direction of that trade decides what the exchange has to do:&amp;lt;/p&amp;gt;
@@ -394,7 +394,7 @@ const E = [
 &amp;lt;/ul&amp;gt;
 &amp;lt;p&amp;gt;In plain terms: the over-leveraged side is the vulnerable side. If far more longs are stacked below than shorts above, the market is leaning long and is exposed to a flush down. If shorts dominate above, the crowd is leaning short and a pop higher can hurt them. Traders often describe price as being &amp;lt;em&amp;gt;magnetised&amp;lt;/em&amp;gt; toward the largest pools of liquidity.&amp;lt;/p&amp;gt;
 
-&amp;lt;div class="callout"&amp;gt;&amp;lt;div class="k"&amp;gt;SEE BOTH SIDES&amp;lt;/div&amp;gt;&amp;lt;p style="margin-bottom:14px"&amp;gt;On MarginPad's live map, red bubbles are longs liquidated, green are shorts — see which side is stacked and where.&amp;lt;/p&amp;gt;&amp;lt;a class="cta" href="/?p=heat"&amp;gt;Open the liquidation map →&amp;lt;/a&amp;gt;&amp;lt;/div&amp;gt;
+&amp;lt;div class="callout"&amp;gt;&amp;lt;div class="k"&amp;gt;SEE BOTH SIDES&amp;lt;/div&amp;gt;&amp;lt;p style="margin-bottom:14px"&amp;gt;On MarginPad's live map, red bubbles are longs liquidated, green are shorts — see which side is stacked and where.&amp;lt;/p&amp;gt;&amp;lt;a class="cta" href="/heatmap"&amp;gt;Open the liquidation map →&amp;lt;/a&amp;gt;&amp;lt;/div&amp;gt;
 
 &amp;lt;h2&amp;gt;How cascades start on the heavier side&amp;lt;/h2&amp;gt;
 &amp;lt;p&amp;gt;A &amp;lt;strong&amp;gt;cascade&amp;lt;/strong&amp;gt; is a chain reaction of liquidations, and it almost always begins on the heavier side. The sequence looks like this:&amp;lt;/p&amp;gt;
@@ -450,9 +450,9 @@ const E = [
 
 &amp;lt;h2&amp;gt;Why high-leverage clusters near price are the fuse&amp;lt;/h2&amp;gt;
 &amp;lt;p&amp;gt;A position's liquidation price depends on its leverage. A 3x long can fall a long way before it is liquidated; a 50x long is liquidated by a tiny move against it. That means &amp;lt;strong&amp;gt;high-leverage positions sit very close to the current price&amp;lt;/strong&amp;gt;, and they tend to pile up at the same round numbers and obvious levels.&amp;lt;/p&amp;gt;
-&amp;lt;p&amp;gt;Those tight clusters are the fuse. Because they are so close to price, it takes only a small nudge to ignite them, and once lit they release a burst of forced market orders that carries price into the next group. You can estimate where your own position sits relative to these zones with a &amp;lt;a href="/#liq"&amp;gt;liquidation calculator&amp;lt;/a&amp;gt;, and see where the broader clusters stack up on a &amp;lt;a href="/?p=heat"&amp;gt;liquidation map&amp;lt;/a&amp;gt;.&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;Those tight clusters are the fuse. Because they are so close to price, it takes only a small nudge to ignite them, and once lit they release a burst of forced market orders that carries price into the next group. You can estimate where your own position sits relative to these zones with a &amp;lt;a href="/calculators?c=liq"&amp;gt;liquidation calculator&amp;lt;/a&amp;gt;, and see where the broader clusters stack up on a &amp;lt;a href="/heatmap"&amp;gt;liquidation map&amp;lt;/a&amp;gt;.&amp;lt;/p&amp;gt;
 
-&amp;lt;div class="callout"&amp;gt;&amp;lt;div class="k"&amp;gt;SEE THE FUEL&amp;lt;/div&amp;gt;&amp;lt;p style="margin-bottom:14px"&amp;gt;MarginPad's live map shows where liquidation fuel is stacked — so you can avoid putting your stop right inside a cluster.&amp;lt;/p&amp;gt;&amp;lt;a class="cta" href="/?p=heat"&amp;gt;Open the liquidation map →&amp;lt;/a&amp;gt;&amp;lt;/div&amp;gt;
+&amp;lt;div class="callout"&amp;gt;&amp;lt;div class="k"&amp;gt;SEE THE FUEL&amp;lt;/div&amp;gt;&amp;lt;p style="margin-bottom:14px"&amp;gt;MarginPad's live map shows where liquidation fuel is stacked — so you can avoid putting your stop right inside a cluster.&amp;lt;/p&amp;gt;&amp;lt;a class="cta" href="/heatmap"&amp;gt;Open the liquidation map →&amp;lt;/a&amp;gt;&amp;lt;/div&amp;gt;
 
 &amp;lt;h2&amp;gt;How cascades show up on a chart&amp;lt;/h2&amp;gt;
 &amp;lt;p&amp;gt;A cascade looks like a &amp;lt;strong&amp;gt;sudden vertical wick&amp;lt;/strong&amp;gt; — price travels a large distance in seconds, far faster than ordinary buying or selling would explain, then often snaps partway back. That snap-back happens because the cascade overshoots: once the nearby liquidations are exhausted, there are no more forced orders, and the price was pushed below (or above) where genuine supply and demand would settle.&amp;lt;/p&amp;gt;
@@ -467,7 +467,7 @@ const E = [
 &amp;lt;p&amp;gt;The mechanics are identical; only the sign flips. The &amp;lt;a href="/btc-liquidation-map/"&amp;gt;BTC liquidation map&amp;lt;/a&amp;gt; often shows fuel stacked on both sides at once, which is why fast markets can spike one way, reverse, and spike the other.&amp;lt;/p&amp;gt;
 
 &amp;lt;h2&amp;gt;Using a liquidation map to stay out of the blast radius&amp;lt;/h2&amp;gt;
-&amp;lt;p&amp;gt;A &amp;lt;a href="/?p=heat"&amp;gt;liquidation map&amp;lt;/a&amp;gt; plots where positions are likely to be force-closed — in other words, where the fuel is stacked. It will not tell you the exact second a cascade ignites, but it does tell you which price zones are dangerous to sit inside. Use it like this:&amp;lt;/p&amp;gt;
+&amp;lt;p&amp;gt;A &amp;lt;a href="/heatmap"&amp;gt;liquidation map&amp;lt;/a&amp;gt; plots where positions are likely to be force-closed — in other words, where the fuel is stacked. It will not tell you the exact second a cascade ignites, but it does tell you which price zones are dangerous to sit inside. Use it like this:&amp;lt;/p&amp;gt;
 &amp;lt;ul&amp;gt;
 &amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Find the dense clusters&amp;lt;/strong&amp;gt; above and below the current price.&amp;lt;/li&amp;gt;
 &amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Do not place your stop inside one.&amp;lt;/strong&amp;gt; A stop tucked into a cluster is likely to be swept by the very cascade the cluster fuels. Put it on the far side of the dense zone, where a wick is less likely to reach and reverse.&amp;lt;/li&amp;gt;
@@ -484,7 +484,7 @@ const E = [
 &amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;Keep a margin buffer.&amp;lt;/strong&amp;gt; Extra collateral moves your liquidation price away from the danger zone and buys you room to survive a temporary overshoot.&amp;lt;/li&amp;gt;
 &amp;lt;/ul&amp;gt;
 
-&amp;lt;p&amp;gt;Liquidation cascades are not random violence — they are a predictable consequence of leveraged positions stacking up and force-closing into a thin book. Once you see them as a feedback loop of market orders, the defenses are obvious: keep your leverage modest, your stops outside the fuel, and your size sensible before volatility. Use a &amp;lt;a href="/?p=heat"&amp;gt;liquidation map&amp;lt;/a&amp;gt; to see where the clusters are stacked, and let the over-leveraged crowd be the fuel instead of you.&amp;lt;/p&amp;gt;`,
+&amp;lt;p&amp;gt;Liquidation cascades are not random violence — they are a predictable consequence of leveraged positions stacking up and force-closing into a thin book. Once you see them as a feedback loop of market orders, the defenses are obvious: keep your leverage modest, your stops outside the fuel, and your size sensible before volatility. Use a &amp;lt;a href="/heatmap"&amp;gt;liquidation map&amp;lt;/a&amp;gt; to see where the clusters are stacked, and let the over-leveraged crowd be the fuel instead of you.&amp;lt;/p&amp;gt;`,
   faq:[{q:'What is a liquidation cascade?',a:'It is a chain reaction of forced liquidations. One liquidation pushes price into the next cluster of leveraged positions, force-closing them too, which moves price further and triggers the next group — a self-sustaining loop until nearby positions are exhausted.'},{q:'Why do liquidations move the price?',a:'When an exchange liquidates a position it closes it with a market order, not a limit order. A liquidated long becomes a market sell and a liquidated short becomes a market buy, so the forced order itself pushes price in the same direction, triggering more liquidations.'},{q:'Can a liquidation map predict exactly when a cascade will happen?',a:'No. A map shows where liquidation fuel is stacked — which price zones are dangerous — but not the precise moment one ignites. Estimated clusters are inferred from open positions and leverage, so treat them as heat zones, not a countdown.'},{q:'How do I avoid getting caught in a cascade?',a:'Use lower leverage so your liquidation price sits far from the action, place stops outside dense clusters rather than inside them, reduce position size before high-volatility events, and keep a margin buffer for temporary overshoots.'}]
 },
 {
@@ -492,7 +492,7 @@ const E = [
   title:'How to Calculate Liquidation Price (Formula + Examples)',
   desc:'The exact formula exchanges use to set your liquidation price on isolated margin, why leverage moves it toward your entry, and worked examples for longs and shorts at 10x, 20x and 100x.',
   keywords:'how to calculate liquidation price, liquidation price formula, crypto liquidation calculator, isolated margin liquidation, leverage liquidation distance, liquidation price long short, liquidation formula crypto',
-  body:`&lt;p&gt;Your &lt;strong&gt;liquidation price&lt;/strong&gt; is the single most important number in leveraged trading. It is the price at which the exchange force-closes your position and you lose the margin backing it — no warning, no negotiation. Knowing it &lt;em&gt;before&lt;/em&gt; you enter is the difference between a controlled trade and a surprise blow-up. The good news: it comes from a simple formula, and once you understand it you can size any trade so a normal market move can never reach it. If you just want the number, the &lt;a href="/#liq"&gt;liquidation calculator&lt;/a&gt; does it instantly — but the math is worth understanding.&lt;/p&gt;
+  body:`&lt;p&gt;Your &lt;strong&gt;liquidation price&lt;/strong&gt; is the single most important number in leveraged trading. It is the price at which the exchange force-closes your position and you lose the margin backing it — no warning, no negotiation. Knowing it &lt;em&gt;before&lt;/em&gt; you enter is the difference between a controlled trade and a surprise blow-up. The good news: it comes from a simple formula, and once you understand it you can size any trade so a normal market move can never reach it. If you just want the number, the &lt;a href="/calculators?c=liq"&gt;liquidation calculator&lt;/a&gt; does it instantly — but the math is worth understanding.&lt;/p&gt;
 
 &lt;h2&gt;The liquidation price formula (isolated margin)&lt;/h2&gt;
 &lt;p&gt;On &lt;strong&gt;isolated margin&lt;/strong&gt; — where only the margin assigned to one position is at risk — the estimate is:&lt;/p&gt;
@@ -547,7 +547,7 @@ const E = [
 &lt;p&gt;Treat the formula as a close, slightly-optimistic estimate and always leave a buffer.&lt;/p&gt;
 
 &lt;h2&gt;See it with live data&lt;/h2&gt;
-&lt;p&gt;Numbers land harder when you watch them play out. The &lt;a href="/liquidations/"&gt;live liquidations feed&lt;/a&gt; shows exactly how much leverage is being wiped out across Binance, Bybit and OKX right now, and every major coin has its own page — &lt;a href="/liquidations/btc/"&gt;BTC&lt;/a&gt;, &lt;a href="/liquidations/eth/"&gt;ETH&lt;/a&gt;, &lt;a href="/liquidations/sol/"&gt;SOL&lt;/a&gt; — with the 24-hour total and the long-versus-short split. Before you commit, drop your entry and leverage into the &lt;a href="/#liq"&gt;liquidation calculator&lt;/a&gt;, size the trade from your stop with the &lt;a href="/#size"&gt;position-size calculator&lt;/a&gt;, and rehearse the whole thing risk-free at the live price on the &lt;a href="/paper-trade"&gt;paper-trading terminal&lt;/a&gt;. Learning liquidation with fake money is far cheaper than learning it with your own.&lt;/p&gt;`,
+&lt;p&gt;Numbers land harder when you watch them play out. The &lt;a href="/liquidations/"&gt;live liquidations feed&lt;/a&gt; shows exactly how much leverage is being wiped out across Binance, Bybit and OKX right now, and every major coin has its own page — &lt;a href="/liquidations/btc/"&gt;BTC&lt;/a&gt;, &lt;a href="/liquidations/eth/"&gt;ETH&lt;/a&gt;, &lt;a href="/liquidations/sol/"&gt;SOL&lt;/a&gt; — with the 24-hour total and the long-versus-short split. Before you commit, drop your entry and leverage into the &lt;a href="/calculators?c=liq"&gt;liquidation calculator&lt;/a&gt;, size the trade from your stop with the &lt;a href="/calculators?c=size"&gt;position-size calculator&lt;/a&gt;, and rehearse the whole thing risk-free at the live price on the &lt;a href="/paper-trade"&gt;paper-trading terminal&lt;/a&gt;. Learning liquidation with fake money is far cheaper than learning it with your own.&lt;/p&gt;`,
   faq:[
     {q:'What is the formula for liquidation price?',a:'On isolated margin, a long is liquidated at roughly Entry × (1 − 1/Leverage + maintenance margin), and a short at Entry × (1 + 1/Leverage − maintenance margin). The 1/Leverage term is the main driver: it sets how far price can move before your margin is gone.'},
     {q:'At what percentage does a position get liquidated?',a:'Approximately 1 divided by your leverage, minus the maintenance margin. A 10x position is liquidated after about a 9-10% move against it, 25x after about 3.5%, and 100x after about 1%. Higher leverage puts liquidation much closer to your entry.'},
@@ -584,11 +584,11 @@ const E = [
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;1. Use less leverage.&lt;/strong&gt; The biggest lever by far. Dropping from 100× to 10× moves liquidation from ~1% away to ~10% away — a completely different survival profile.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;2. Always set a stop-loss inside your liquidation.&lt;/strong&gt; A stop closes you at a price &lt;em&gt;you&lt;/em&gt; choose, with margin left, before the exchange does it for you at a worse one.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;3. Size by risk.&lt;/strong&gt; Risk a small fixed slice (1–2%) of your account per trade so a losing streak cannot end you. The &lt;a href="/#size"&gt;position-size calculator&lt;/a&gt; does the math.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;3. Size by risk.&lt;/strong&gt; Risk a small fixed slice (1–2%) of your account per trade so a losing streak cannot end you. The &lt;a href="/calculators?c=size"&gt;position-size calculator&lt;/a&gt; does the math.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;4. Keep a margin buffer.&lt;/strong&gt; Do not go all-in on margin; spare balance lets a position breathe through normal noise instead of dying on a wick.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;5. Prefer isolated margin.&lt;/strong&gt; It ring-fences risk to one position instead of your whole balance — see &lt;a href="/blog/cross-vs-isolated-margin/"&gt;cross vs isolated&lt;/a&gt;.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;6. Cut leverage before scheduled volatility.&lt;/strong&gt; FOMC and CPI on the &lt;a href="/calendar/"&gt;economic calendar&lt;/a&gt; routinely spike price several percent in seconds.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;7. Know your number before every trade.&lt;/strong&gt; Confirm your exact liquidation price with the &lt;a href="/#liq"&gt;liquidation calculator&lt;/a&gt; and make sure your stop sits comfortably inside it.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;7. Know your number before every trade.&lt;/strong&gt; Confirm your exact liquidation price with the &lt;a href="/calculators?c=liq"&gt;liquidation calculator&lt;/a&gt; and make sure your stop sits comfortably inside it.&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;h2&gt;See it happen with live data&lt;/h2&gt;

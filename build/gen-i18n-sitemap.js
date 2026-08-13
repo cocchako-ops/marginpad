@@ -17,7 +17,7 @@ const exists = p => fs.existsSync(path.join(p, 'index.html'));
 const urls = [];
 function add(loc, pri) { urls.push(`  <url><loc>${loc}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>${pri}</priority></url>`); }
 
-let nCmp = 0, nGuide = 0, nBest = 0, nCalc = 0;
+let nCmp = 0, nGuide = 0, nBest = 0, nCalc = 0, nSim = 0;
 for (const lang of LANGS) {
   const base = path.join(DIST, lang);
   if (!fs.existsSync(base)) continue;
@@ -36,6 +36,10 @@ for (const lang of LANGS) {
   for (const slug of Object.keys(tr)) {
     if (exists(path.join(base, slug))) { add(`https://marginpad.io/${lang}/${slug}/`, '0.5'); nBest++; }
   }
+  // trading-simulator SEO pages  /<lang>/{stock,forex,index}-trading-simulator/  (translated, full hreflang)
+  for (const slug of ['stock-trading-simulator', 'forex-trading-simulator', 'index-trading-simulator']) {
+    if (exists(path.join(base, slug))) { add(`https://marginpad.io/${lang}/${slug}/`, '0.7'); nSim++; }
+  }
 }
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -44,7 +48,7 @@ ${urls.join('\n')}
 </urlset>
 `;
 fs.writeFileSync(path.join(DIST, 'sitemap-i18n.xml'), xml);
-console.log(`sitemap-i18n.xml: ${urls.length} URLs (compares ${nCmp}, calculators ${nCalc}, guides ${nGuide}, best-for ${nBest})`);
+console.log(`sitemap-i18n.xml: ${urls.length} URLs (compares ${nCmp}, calculators ${nCalc}, guides ${nGuide}, best-for ${nBest}, simulators ${nSim})`);
 
 // reference it from robots.txt (idempotent)
 try {

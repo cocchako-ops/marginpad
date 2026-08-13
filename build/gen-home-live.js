@@ -21,7 +21,7 @@ const OUT = path.join(ROOT, 'dist', 'index.html');
 let h = fs.readFileSync(SRC, 'utf8');
 
 const TITLE = 'MarginPad — Free Crypto Futures Terminal, Paper Trade & Liquidations';
-const DESC = 'Practice crypto futures with real live prices and zero risk: paper-trading terminal, live screener, real-time liquidations feed, charts, calculators and a bot API. Free — no deposit, no KYC.';
+const DESC = 'Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC.';
 const CANON = 'https://marginpad.io/';
 const OG_IMG = 'https://marginpad.io/assets/og.png';
 

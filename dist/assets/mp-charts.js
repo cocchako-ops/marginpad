@@ -1117,7 +1117,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function tfLabel(tf){for(var i=0;i<TFS.length;i++)if(TFS[i][0]===tf)return TFS[i][1];return tf;}
   /* Share = a screenshot of the whole workspace (every chart + drawings + notes), composited to one PNG */
   function doShare(){
-    if(!wins.length){var url=location.origin+'/?p=charts';if(navigator.share)navigator.share({title:'MarginPad Charts',url:url}).catch(function(){});else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url);shareFeedback('Link copied');}return;}
+    if(!wins.length){var url=location.origin+'/charts';if(navigator.share)navigator.share({title:'MarginPad Charts',url:url}).catch(function(){});else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url);shareFeedback('Link copied');}return;}
     var bw=board.clientWidth,bh=board.clientHeight,dpr=Math.min(window.devicePixelRatio||1,2);
     var cv=document.createElement('canvas');cv.width=Math.round(bw*dpr);cv.height=Math.round(bh*dpr);var ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
     ctx.fillStyle='#16191e';ctx.fillRect(0,0,bw,bh);

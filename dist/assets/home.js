@@ -880,7 +880,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   var toastT=null;
   function toast(msg){var t=document.getElementById('mpToast');if(!t){t=document.createElement('div');t.id='mpToast';t.className='mp-toast';document.body.appendChild(t);}t.textContent=msg;t.classList.add('on');if(toastT)clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on');},2200);}
   function copyTicket(e){
-    var url='https://marginpad.io/?p=plan';
+    var url='https://marginpad.io/paper-trade';
     if(!navigator.clipboard){toast(MT('jCopyFail','Copy not supported'));return;}
     if(!window.ClipboardItem){navigator.clipboard.writeText(url).then(function(){toast(MT('jLinkCopied','Link copied'));},function(){});return;}
     try{

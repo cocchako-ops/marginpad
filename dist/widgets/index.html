@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Free Crypto Widgets — Liquidation Calculator, Economic Calendar, Fear &amp; Greed | MarginPad</title>
+<title>Free Liquidation Calculator Widget — Embed on Your Site | MarginPad</title>
 <meta name="description" content="Embed a free crypto liquidation calculator on your website or blog in one line of HTML. Live prices, long &amp; short, any coin. No signup, no API key, no cost." />
 <meta name="keywords" content="liquidation calculator widget, embed liquidation calculator, crypto calculator widget, free trading widget, liquidation price widget embed" />
 <link rel="canonical" href="https://marginpad.io/widgets/" />
@@ -98,54 +98,14 @@
       <div><b>Zero cost</b>Free forever, no account, no API key, works anywhere.</div>
     </div>
 
-    <h2 id="calendar">Crypto Economic Calendar widget</h2>
-    <p>A live mini-calendar of everything that moves crypto — FOMC decisions, CPI prints, jobs reports and options expiries, with days colored by impact and a "next event" countdown line. Perfect for trading blogs, Discord/community sites and news pages.</p>
-    <div class="embed-grid">
-      <div class="embed-prev">
-        <iframe src="/embed/calendar/" height="360" title="Crypto Economic Calendar by MarginPad" loading="lazy"></iframe>
-      </div>
-      <div>
-        <h2 style="margin-top:0">Copy the embed code</h2>
-        <div class="code"><button class="copy" type="button" onclick="(function(b){var t=b.parentNode.querySelector('code');navigator.clipboard&&navigator.clipboard.writeText(t.textContent);b.textContent='Copied ✓';setTimeout(function(){b.textContent='Copy';},1400);})(this)">Copy</button><code>&lt;iframe src="https://marginpad.io/embed/calendar/"
-  width="340" height="370" loading="lazy"
-  style="border:0;border-radius:14px;max-width:100%"
-  title="Crypto Economic Calendar by MarginPad"&gt;&lt;/iframe&gt;</code></div>
-        <p>Auto-updates itself — new Fed speeches and data releases appear without you touching anything.</p>
-      </div>
-    </div>
-
-    <h2 id="fear-greed">Fear &amp; Greed Index widget</h2>
-    <p>The live crypto Fear &amp; Greed gauge with yesterday / last-week comparison — a one-glance sentiment box for any sidebar.</p>
-    <div class="embed-grid">
-      <div class="embed-prev">
-        <iframe src="/embed/fear-greed/" height="190" title="Crypto Fear &amp; Greed Index by MarginPad" loading="lazy"></iframe>
-      </div>
-      <div>
-        <h2 style="margin-top:0">Copy the embed code</h2>
-        <div class="code"><button class="copy" type="button" onclick="(function(b){var t=b.parentNode.querySelector('code');navigator.clipboard&&navigator.clipboard.writeText(t.textContent);b.textContent='Copied ✓';setTimeout(function(){b.textContent='Copy';},1400);})(this)">Copy</button><code>&lt;iframe src="https://marginpad.io/embed/fear-greed/"
-  width="340" height="200" loading="lazy"
-  style="border:0;border-radius:14px;max-width:100%"
-  title="Crypto Fear &amp; Greed Index by MarginPad"&gt;&lt;/iframe&gt;</code></div>
-      </div>
-    </div>
-
-    <h2 id="api">Free calendar API (JSON)</h2>
-    <p>Building something yourself? The calendar data behind our widgets is a free public endpoint — no key needed:</p>
-    <div class="code"><button class="copy" type="button" onclick="(function(b){var t=b.parentNode.querySelector('code');navigator.clipboard&&navigator.clipboard.writeText(t.textContent);b.textContent='Copied ✓';setTimeout(function(){b.textContent='Copy';},1400);})(this)">Copy</button><code>GET https://marginpad.io/api/calendar          → upcoming events (next ~8 months)
-GET https://marginpad.io/api/calendar?year=2025 → any year back to 2023
-
-// each event: { ts, type: fomc|cpi|nfp|expiry|crypto|macro,
-//               title, desc, impact: 1–3 }</code></div>
-    <p>Fair use: cache on your side, link back to <a href="/calendar/">marginpad.io/calendar</a> if you use it publicly. Also see the free <a href="/trading-api/">paper-trading Bot API</a>.</p>
-
     <h2>Why embed it?</h2>
     <p>A live calculator keeps readers on your page longer and gives real utility to any article about leverage, liquidation or risk. It is fully self-contained — just an <code>&lt;iframe&gt;</code> — so it can't slow down or break your site. Attribution isn't required, but the small "Powered by MarginPad" link is appreciated and helps keep the tools free.</p>
 
     <h2>More free tools</h2>
     <div class="related">
-      <a href="/#liq">Liquidation calculator</a>
-      <a href="/?p=heat">Liquidation heatmap</a>
-      <a href="/?p=plan">Paper Trade</a>
+      <a href="/calculators?c=liq">Liquidation calculator</a>
+      <a href="/heatmap">Liquidation heatmap</a>
+      <a href="/paper-trade">Paper Trade</a>
       <a href="/funding-fee-calculator/">Funding fee</a>
       <a href="/blog/">Trading guides</a>
     </div>

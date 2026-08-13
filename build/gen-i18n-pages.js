@@ -53,9 +53,30 @@ const HREFLANG = [
   '<link rel="alternate" hreflang="en" href="https://marginpad.io/" />',
 ].concat(LANGS.map(l => `<link rel="alternate" hreflang="${l}" href="https://marginpad.io/${l}/" />`)).join('\n');
 
+// Homepage copy string-map (build/data/home-i18n/<lang>.json = { "<EN text node>": "<translation>" }).
+// The bento homepage (dist/index.html) carries NO data-i18n attributes, so the data-i18n loop below can't touch it.
+// This map translates its visible text nodes directly (exact >text< boundary, whitespace-tolerant, longest-first)
+// WITHOUT modifying dist/demo-home — zero risk to the homepage's structure/JS. Translations are used verbatim
+// (agents produce HTML-ready text, keeping entities/brands/tickers as-is), so no double-escaping.
+const HOME = {};
+for (const l of LANGS) {
+  const f = path.join(__dirname, 'data', 'home-i18n', l + '.json');
+  if (fs.existsSync(f)) { try { HOME[l] = JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { console.error('home-i18n bad JSON ' + l + ': ' + e.message); } }
+}
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function translateHome(html, lang) {
+  const m = HOME[lang]; if (!m) return html;
+  const keys = Object.keys(m).sort((a, b) => b.length - a.length); // longest-first: a short string can't clobber part of a longer text node
+  let out = html;
+  for (const en of keys) {
+    const tr = m[en]; if (!tr || tr === en) continue;
+    try { out = out.replace(new RegExp('>(\\s*)' + reEsc(en) + '(\\s*)<', 'g'), (mm, w1, w2) => '>' + w1 + tr + w2 + '<'); } catch (e) {}
+  }
+  return out;
+}
 function translate(html, lang) {
   const t = T[lang];
-  let out = html;
+  let out = translateHome(html, lang); // homepage text-node map first (data-i18n loop below is a no-op on the bento)
   for (const key in t) {
     const val = escText(t[key]);
     const reTxt = new RegExp('(<([a-z0-9]+)([^>]*?)\\sdata-i18n="' + key + '"([^>]*?)>)([\\s\\S]*?)(<\\/\\2>)', 'g');

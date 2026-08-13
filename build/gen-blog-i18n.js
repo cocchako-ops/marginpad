@@ -82,7 +82,7 @@ ${ld}
     <p>${t.pa}</p>
     <h2>${t.h2b}</h2>
     <p>${t.pb}</p>
-    <div class="callout"><a class="cta" href="/#liq">${t.cta}</a></div>
+    <div class="callout"><a class="cta" href="/calculators?c=liq">${t.cta}</a></div>
   </article>
   <footer>
     <span>© 2026 MarginPad</span>

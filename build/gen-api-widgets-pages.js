@@ -221,8 +221,8 @@ ${hreflang('widgets')}
     <h2>${t.moreH}</h2>
     <div class="related">
       <a href="${home}#liq">${t.relLiq}</a>
-      <a href="${home}?p=heat">${t.relHeat}</a>
-      <a href="${home}?p=plan">${t.relPaper}</a>
+      <a href="/heatmap">${t.relHeat}</a>
+      <a href="/paper-trade">${t.relPaper}</a>
       <a href="/funding-fee-calculator/">${t.relFunding}</a>
       <a href="/blog/">${t.relGuides}</a>
     </div>

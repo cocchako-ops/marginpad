@@ -115,7 +115,7 @@ function levPage(L) {
 
     <h2>How to survive ${L}× leverage</h2>
     <ul>
-      <li><strong>Set the stop first.</strong> Decide your invalidation price, then size the position so that stop equals a fixed % of your account (1–2%). The <a href="/#size">position-size calculator</a> does the math.</li>
+      <li><strong>Set the stop first.</strong> Decide your invalidation price, then size the position so that stop equals a fixed % of your account (1–2%). The <a href="/calculators?c=size">position-size calculator</a> does the math.</li>
       <li><strong>Keep liquidation far from your stop.</strong> If liquidation and your stop are almost on top of each other, a wick can beat your stop to the punch — lower the leverage or widen the stop.</li>
       <li><strong>Count fees and funding.</strong> Both eat margin and pull liquidation closer than the raw ${dist.toFixed(2)}% — model them with the <a href="/funding-fee-calculator/">funding calculator</a>.</li>
       <li><strong>Rehearse it first.</strong> Open the same ${L}× trade on the <a href="/paper-trade">paper-trading terminal</a> at live prices, risk-free, until the liquidation behaviour is muscle memory.</li>
@@ -123,7 +123,7 @@ function levPage(L) {
 
     <h2>Compare other leverage levels</h2>
     <div class="related">
-      <a href="/#liq">Custom leverage</a>
+      <a href="/calculators?c=liq">Custom leverage</a>
       ${others.map(x => `<a href="/${x}x-liquidation-calculator/">${x}× liquidation</a>`).join('\n      ')}
     </div>
     <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Educational tool, not financial advice. Estimates exclude fees and funding and may differ from your exchange.</p>
@@ -169,7 +169,7 @@ function fundingPage() {
     <p>Small per interval, but it compounds on big or long-held positions. Read <a href="/blog/what-is-funding-rate/">what is a funding rate</a> for the full picture.</p>
     <h2>More calculators</h2>
     <div class="related">
-      <a href="/#liq">Liquidation price</a><a href="/#pnl">PnL / ROI</a><a href="/#size">Position size</a><a href="/glossary/">Glossary</a>
+      <a href="/calculators?c=liq">Liquidation price</a><a href="/calculators?c=pnl">PnL / ROI</a><a href="/calculators?c=size">Position size</a><a href="/glossary/">Glossary</a>
     </div>
     <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Educational tool, not financial advice. Real funding depends on your exchange's rate and timing.</p>
 `
@@ -178,7 +178,7 @@ function fundingPage() {
 
 // ---------- glossary ----------
 const TERMS = [
-  ['Liquidation', 'The forced closure of a leveraged position when losses consume the margin backing it. See the <a href="/#liq">liquidation calculator</a>.'],
+  ['Liquidation', 'The forced closure of a leveraged position when losses consume the margin backing it. See the <a href="/calculators?c=liq">liquidation calculator</a>.'],
   ['Liquidation price', 'The price at which your position is liquidated. Long ≈ Entry × (1 − 1/Leverage + MMR).'],
   ['Leverage', 'Borrowed exposure that multiplies both gains and losses. 10× means $1 controls $10. See <a href="/blog/crypto-leverage-explained/">leverage explained</a>.'],
   ['Margin', 'The collateral you post to open and hold a leveraged position.'],
@@ -188,12 +188,12 @@ const TERMS = [
   ['Cross margin', 'Margin mode where your whole balance backs the position, lowering liquidation risk but exposing more capital.'],
   ['Perpetual futures', 'A futures contract with no expiry, kept near spot by the funding mechanism.'],
   ['Funding rate', 'A periodic payment between longs and shorts on perpetuals. See the <a href="/funding-fee-calculator/">funding fee calculator</a>.'],
-  ['PnL', 'Profit and loss — the gain or loss on a position. See the <a href="/#pnl">PnL calculator</a>.'],
+  ['PnL', 'Profit and loss — the gain or loss on a position. See the <a href="/calculators?c=pnl">PnL calculator</a>.'],
   ['ROI', 'Return on investment — the raw percentage the asset moved.'],
   ['ROE', 'Return on equity — your return on posted margin, amplified by leverage. A 10% move at 10× ≈ 100% ROE.'],
   ['Long', 'A position that profits when price rises.'],
   ['Short', 'A position that profits when price falls.'],
-  ['Position size', 'How much of an asset you hold. Size it by risk with the <a href="/#size">position size calculator</a>.'],
+  ['Position size', 'How much of an asset you hold. Size it by risk with the <a href="/calculators?c=size">position size calculator</a>.'],
   ['Notional value', 'The full market value of a position — size × price — not just the margin posted.'],
   ['Mark price', 'A smoothed reference price used to calculate unrealised PnL and trigger liquidations, less manipulable than last price.'],
   ['Index price', 'An average of spot prices across exchanges that anchors the mark price.'],
@@ -231,7 +231,7 @@ ${TERMS.map(t => `      <dt id="${t[0].toLowerCase().replace(/[^a-z0-9]+/g, '-')
     </dl>
     <h2>Put the terms to work</h2>
     <div class="related">
-      <a href="/#liq">Liquidation calculator</a><a href="/#size">Position size</a><a href="/funding-fee-calculator/">Funding fee</a><a href="/blog/">All guides</a>
+      <a href="/calculators?c=liq">Liquidation calculator</a><a href="/calculators?c=size">Position size</a><a href="/funding-fee-calculator/">Funding fee</a><a href="/blog/">All guides</a>
     </div>
 `
     + foot('');
