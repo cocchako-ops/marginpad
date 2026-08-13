@@ -120,7 +120,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function TOOLS(){return (window.__mpDrawToolsHtml?window.__mpDrawToolsHtml(false):'<div class="cwin-tools"></div>');}
   function mkPane(sym,tf){
     var el=document.createElement('div');el.className='mfc-pane';
-    el.innerHTML='<div class="mfc-chart"></div><canvas class="cwin-draw"></canvas>'+TOOLS()+'<div class="mfc-pl"><b class="mfc-pl-s"></b> <span class="mfc-pl-tf"></span> <span class="mfc-pl-cd"></span> <span class="mfc-pl-p"></span></div><div class="cwin-leg"></div>';
+    el.innerHTML='<div class="mfc-chart"></div><div class="mfc-sub"></div><canvas class="cwin-draw"></canvas>'+TOOLS()+'<div class="mfc-pl"><b class="mfc-pl-s"></b> <span class="mfc-pl-tf"></span> <span class="mfc-pl-cd"></span> <span class="mfc-pl-p"></span></div><div class="cwin-leg"></div>';
     var p={el:el,host:el.querySelector('.mfc-chart'),sym:sym,tf:tf,bars:[],lastBar:null,chart:null,candle:null,inds:{},indSeries:[],indLines:[],tradeLines:[],_mtPrices:[],reload:0,w:null};
     el.addEventListener('pointerdown',function(){setActive(panes.indexOf(p));},true);
     return p;
@@ -131,6 +131,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try{p.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<12)loadMoreM(p);});}catch(e){} // scrolled near the start → page older history (mirror desktop loadMoreW). Per-pane: closes over THIS p.
     /* FREE PAN (owner 2026-08-13): vertical pane drag -> manual price scale (pan up/down freely); axis drag remembered; p._userPS gates every periodic autoScale re-assert; a fresh symbol/TF load (loadKlines) or price-axis double-tap re-arms autofit. */
     (function(pp){var st={d:0};pp.host.addEventListener('pointerdown',function(e){var r=pp.host.getBoundingClientRect();st.d=1;st.x=e.clientX;st.y=e.clientY;st.ax=(e.clientX>r.right-56);st.dec=0;},true);pp.host.addEventListener('pointermove',function(e){if(!st.d||st.dec)return;var dx=Math.abs(e.clientX-st.x),dy=Math.abs(e.clientY-st.y);if(dx<5&&dy<5)return;st.dec=1;if(st.ax){pp._userPS=true;return;}if(dy>dx){pp._userPS=true;try{pp.chart.priceScale('right').applyOptions({autoScale:false});}catch(_){}}},true);window.addEventListener('pointerup',function(){st.d=0;},true);pp.host.addEventListener('dblclick',function(e){var r=pp.host.getBoundingClientRect();if(e.clientX>r.right-56){pp._userPS=false;try{pp.chart.priceScale('right').applyOptions({autoScale:true});}catch(_){}}});})(p);
+    p.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(!r||!p.sub||p._subSync)return;p._subSync=1;try{p.sub.timeScale().setVisibleLogicalRange(r);}catch(_){}p._subSync=0;}); /* oscillator sub-pane follows the main time axis */
     p.candle=p.chart.addCandlestickSeries({upColor:'#2ebd85',downColor:'#ff6258',borderVisible:false,wickUpColor:'#2ebd85',wickDownColor:'#ff6258',
       // extend the auto-fit range to include the imported position's entry/liq lines (capped at 2.4× the candle range)
       // so a TF switch can't re-fit to candles only and push the lines off-screen — mirrors the desktop engines.
@@ -256,15 +257,29 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function label(p){var s=p.el.querySelector('.mfc-pl-s'),t=p.el.querySelector('.mfc-pl-tf'),pe=p.el.querySelector('.mfc-pl-p'),pr=price(p.sym)||(p.lastBar&&p.lastBar.close);if(s)s.textContent=p.sym;if(t)t.textContent=tfLabel(p.tf);if(pe&&pr)pe.textContent=fp(pr);}
   // ---- indicator value legend (owner request: RSI etc. must SHOW their number) ----
   function legFmt(v,dec){if(v==null||!isFinite(v))return '\u2014';if(dec===0)return String(Math.round(v));if(dec!=null)return (+v).toFixed(dec);var a=Math.abs(v);return a>=1000?(+v).toLocaleString('en-US',{maximumFractionDigits:2}):a>=1?(+v).toFixed(3):(+v).toFixed(6);}
+  function _mLegHidden(){try{var v=localStorage.getItem('mp:leghide');return v==null?true:v==='1';}catch(e){return true;}} /* mobile defaults to a clean chart - values one tap away */
   function mLeg(p,param){var el=p.el.querySelector('.cwin-leg');if(!el)return;
     if(!p.legItems||!p.legItems.length){el.style.display='none';el.innerHTML='';return;}
     el.style.display='';
-    el.innerHTML=p.legItems.map(function(it){var v=it.last;
+    if(!el._tgw){el._tgw=1;el.addEventListener('click',function(e){var t=e.target.closest('[data-legtg]');if(!t)return;try{localStorage.setItem('mp:leghide',_mLegHidden()?'0':'1');}catch(_){}panes.forEach(function(x){try{mLeg(x);}catch(_){}});});}
+    var _tg='<span data-legtg style="cursor:pointer;color:#5c656f;border:1px solid #2a3140;border-radius:7px;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:.06em">'+(_mLegHidden()?'VALUES':'HIDE')+'</span>';
+    if(_mLegHidden()){el.innerHTML=_tg;return;}
+    el.innerHTML=_tg+p.legItems.map(function(it){var v=it.last;
       if(param&&param.seriesData){var sd=param.seriesData.get(it.series);if(sd!=null)v=(typeof sd==='object'?(sd.value!=null?sd.value:sd.close):sd);}
       return it.raw?'<span style="color:'+it.color+';font-weight:700">'+it.label+'</span>':'<span style="color:'+it.color+'">'+it.label+' <b>'+legFmt(v,it.dec)+'</b></span>';}).join('');}
   // ---- indicators ----
+  /* OSCILLATOR SUB-PANE (owner 2026-08-13, mirror of desktop mp-charts): oscillators render in their OWN synced
+     chart strip below the candles - free vertical pan can never slide candles through them. */
+  function ensureSubM(p,on){var el=p.el;if(!el)return null;var sh=el.querySelector('.mfc-sub'),dc=el.querySelector('canvas.cwin-draw'),host=p.host;
+    if(!on){if(p.sub){try{p.sub.remove();}catch(e){}p.sub=null;}p.subSeries=[];if(sh){sh.style.display='none';sh.style.height='0px';}if(host)host.style.bottom='0px';if(dc)dc.style.bottom='0px';return null;}
+    var H=Math.max(70,Math.min(150,Math.round((el.clientHeight||300)*0.26)));
+    if(sh){sh.style.display='block';sh.style.height=H+'px';}if(host)host.style.bottom=H+'px';if(dc)dc.style.bottom=H+'px';
+    if(!p.sub&&window.LightweightCharts&&sh){try{p.sub=LightweightCharts.createChart(sh,{layout:{background:{color:'transparent'},textColor:'#8b95a1',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.22)'},horzLines:{color:'rgba(35,41,50,.22)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{visible:false},crosshair:{mode:0},autoSize:true,handleScale:{axisPressedMouseMove:{time:false,price:false},mouseWheel:false,pinch:false},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false,mouseWheel:false}});
+      p.sub.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(!r||!p.chart||p._subSync)return;p._subSync=1;try{p.chart.timeScale().setVisibleLogicalRange(r);}catch(_){}p._subSync=0;});
+      try{var _r0=p.chart.timeScale().getVisibleLogicalRange();if(_r0)p.sub.timeScale().setVisibleLogicalRange(_r0);}catch(e){}}catch(e){p.sub=null;}}
+    return p.sub;}
   function applyInds(p){ if(!p.chart||!p.candle)return;
-    p.indSeries.forEach(function(s){try{p.chart.removeSeries(s);}catch(e){}});p.indSeries=[];p.legItems=[];
+    p.indSeries.forEach(function(s){try{p.chart.removeSeries(s);}catch(e){}});p.indSeries=[];(p.subSeries||[]).forEach(function(s){try{if(p.sub)p.sub.removeSeries(s);}catch(e){}});p.subSeries=[];p.legItems=[];
     (p.indLines||[]).forEach(function(l){try{p.candle.removePriceLine(l);}catch(e){}});p.indLines=[];
     p._reapply=function(){applyInds(p);}; // loaders (liq/funding/crowd) re-render THIS pane when data lands
     var S=mSig(),IA=mAllowed(),_mk=[],_ss={};
@@ -285,30 +300,31 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try{for(var _sk in _ss){var _sv=_ss[_sk];p.legItems.push({raw:true,color:_sv.pct>=55?'#2ebd85':_sv.pct<=45?'#ff6258':'#8fa3c4',label:_sk+' '+_sv.pct+'% ('+_sv.w+'W/'+_sv.l+'L)'});}}catch(e){}
     if(p.inds.sr)computeSR(p.bars).forEach(function(L){try{p.indLines.push(p.candle.createPriceLine({price:L.price,color:L.type==='r'?'#ff9f4d':'#3ad29a',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:L.type==='r'?'R':'S'}));}catch(e){}});
     var c=p.bars.map(function(b){return +b.close;}),t=p.bars.map(function(b){return b.time;});
-    function add(vals,opts,leg){var s;try{s=p.chart.addLineSeries(Object.assign({lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},opts));}catch(e){return;}var d=[];for(var i=0;i<vals.length;i++)if(vals[i]!=null&&isFinite(vals[i]))d.push({time:t[i],value:vals[i]});try{s.setData(d);}catch(e){}p.indSeries.push(s);if(leg){var last=null;for(var li=d.length-1;li>=0;li--){if(d[li]&&isFinite(d[li].value)){last=d[li].value;break;}}p.legItems.push({label:leg.label,series:s,color:opts.color,dec:leg.dec,last:last});}}
+    function add(vals,opts,leg){var s;try{var _tc=(opts.priceScaleId&&p.sub)?p.sub:p.chart;s=_tc.addLineSeries(Object.assign({lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},opts));}catch(e){return;}var d=[];for(var i=0;i<vals.length;i++)if(vals[i]!=null&&isFinite(vals[i]))d.push({time:t[i],value:vals[i]});try{s.setData(d);}catch(e){}if(opts.priceScaleId&&p.sub)p.subSeries.push(s);else p.indSeries.push(s);if(leg){var last=null;for(var li=d.length-1;li>=0;li--){if(d[li]&&isFinite(d[li].value)){last=d[li].value;break;}}p.legItems.push({label:leg.label,series:s,color:opts.color,dec:leg.dec,last:last});}}
     var MA=[['ema9',9,'e','#7fb6ff'],['ema21',21,'e','#3fd8e6'],['ema50',50,'e','#5fe0a6'],['ema100',100,'e','#c2f64a'],['ema200',200,'e','#ffd75a'],['sma20',20,'s','#ff9f43'],['sma50',50,'s','#ff7b72'],['sma100',100,'s','#e0a0ff'],['sma200',200,'s','#ff5a4d']];
     var oscs=['rsi','macd','stoch','atr','vol','wr','cci'].concat((S&&IA)?['casc','brain','memory','sentf']:[]).filter(function(k){return p.inds[k];}),oN=oscs.length;
-    try{p.chart.priceScale('right').applyOptions({scaleMargins:{top:0.06,bottom:oN?0.34:0.08}});}catch(e){}
-    function band(key){var idx=oscs.indexOf(key),b=0.32/Math.max(1,oN);return {top:0.68+idx*b+0.005,bottom:(oN-1-idx)*b+0.02};}
-    function setScale(id){try{p.chart.priceScale(id).applyOptions({scaleMargins:band(id)});}catch(e){}}
+    try{p.chart.priceScale('right').applyOptions({scaleMargins:{top:0.06,bottom:0.08}});}catch(e){} /* candles own the full pane - oscillators live in the sub strip */
+    ensureSubM(p,oN>0);
+    function band(key){var idx=oscs.indexOf(key),b=0.92/Math.max(1,oN);return {top:idx*b+0.04,bottom:(oN-1-idx)*b+0.04};}
+    function setScale(id){try{if(p.sub)p.sub.priceScale(id).applyOptions({scaleMargins:band(id)});}catch(e){}}
     MA.forEach(function(m){if(p.inds[m[0]])add(m[2]==='e'?ema(c,m[1]):sma(c,m[1]),{color:m[3]},{label:(m[2]==='e'?'EMA ':'SMA ')+m[1],dec:null});});
     if(p.inds.bb){var bb=boll(c,20,2);add(bb.u,{color:'rgba(154,163,173,.7)'});add(bb.m,{color:'rgba(154,163,173,.55)',lineStyle:2});add(bb.l,{color:'rgba(154,163,173,.7)'});}
     if(p.inds.vwap)add(vwap(p.bars),{color:'#46e0e6',lineWidth:2},{label:'VWAP',dec:null});
     if(p.inds.hma)add(hma(c,21),{color:'#ff7bd5'},{label:'HMA 21',dec:null});
     if(p.inds.rsi){add(rsi(c,14),{color:'#e0a0ff',priceScaleId:'rsi'},{label:'RSI 14',dec:0});add(c.map(function(){return 70;}),{color:'rgba(255,98,88,.25)',lineStyle:2,priceScaleId:'rsi'});add(c.map(function(){return 30;}),{color:'rgba(46,189,133,.25)',lineStyle:2,priceScaleId:'rsi'});setScale('rsi');}
     if(p.inds.macd){var mc=macd(c);add(mc.macd,{color:'#3fd8e6',priceScaleId:'macd'},{label:'MACD',dec:null});add(mc.signal,{color:'#ff9f4d',priceScaleId:'macd'},{label:'Signal',dec:null});add(c.map(function(){return 0;}),{color:'rgba(120,130,140,.4)',lineStyle:2,priceScaleId:'macd'});setScale('macd');}
-    if(p.inds.stoch){var st=stoch(p.bars,14,3);add(st.k,{color:'#c2f64a',priceScaleId:'stoch'},{label:'Stoch %K',dec:0});add(st.d,{color:'#ff6258',priceScaleId:'stoch'},{label:'%D',dec:0});add(c.map(function(){return 80;}),{color:'rgba(255,159,77,.22)',lineStyle:2,priceScaleId:'stoch'});add(c.map(function(){return 20;}),{color:'rgba(46,189,133,.22)',lineStyle:2,priceScaleId:'stoch'});setScale('stoch');}
+    if(p.inds.stoch){var st=stoch(p.bars,14,3);add(st.k,{color:'#2ee6a8',priceScaleId:'stoch'},{label:'Stoch %K',dec:0});add(st.d,{color:'#ff6258',priceScaleId:'stoch'},{label:'%D',dec:0});add(c.map(function(){return 80;}),{color:'rgba(255,159,77,.22)',lineStyle:2,priceScaleId:'stoch'});add(c.map(function(){return 20;}),{color:'rgba(46,189,133,.22)',lineStyle:2,priceScaleId:'stoch'});setScale('stoch');}
     if(p.inds.atr){add(atr(p.bars,14),{color:'#ffb347',priceScaleId:'atr'},{label:'ATR 14',dec:null});setScale('atr');}
     if(p.inds.wr){add(willr(p.bars,14),{color:'#ffd75a',priceScaleId:'wr'},{label:'%R 14',dec:0});add(c.map(function(){return -20;}),{color:'rgba(255,98,88,.3)',lineStyle:2,priceScaleId:'wr'});add(c.map(function(){return -80;}),{color:'rgba(46,189,133,.3)',lineStyle:2,priceScaleId:'wr'});setScale('wr');}
     if(p.inds.cci){add(cci(p.bars,20),{color:'#7fb6ff',priceScaleId:'cci'},{label:'CCI 20',dec:0});add(c.map(function(){return 100;}),{color:'rgba(255,98,88,.25)',lineStyle:2,priceScaleId:'cci'});add(c.map(function(){return -100;}),{color:'rgba(46,189,133,.25)',lineStyle:2,priceScaleId:'cci'});setScale('cci');}
-    if(p.inds.vol){var vs;try{vs=p.chart.addHistogramSeries({priceFormat:{type:'volume'},priceScaleId:'vol',lastValueVisible:false,priceLineVisible:false});}catch(e){}
-      if(vs){var vd=[];for(var vi=0;vi<p.bars.length;vi++){var vb=p.bars[vi],vv=+vb.vol;if(isFinite(vv)&&vv>0)vd.push({time:vb.time,value:vv,color:(+vb.close>=+vb.open)?'rgba(46,189,133,.45)':'rgba(255,98,88,.45)'});}try{vs.setData(vd);}catch(e){}p.indSeries.push(vs);}
+    if(p.inds.vol){var vs;try{vs=(p.sub||p.chart).addHistogramSeries({priceFormat:{type:'volume'},priceScaleId:'vol',lastValueVisible:false,priceLineVisible:false});}catch(e){}
+      if(vs){var vd=[];for(var vi=0;vi<p.bars.length;vi++){var vb=p.bars[vi],vv=+vb.vol;if(isFinite(vv)&&vv>0)vd.push({time:vb.time,value:vv,color:(+vb.close>=+vb.open)?'rgba(46,189,133,.45)':'rgba(255,98,88,.45)'});}try{vs.setData(vd);}catch(e){}if(p.sub)p.subSeries.push(vs);else p.indSeries.push(vs);}
       setScale('vol');}
-    if(p.inds.casc&&p._casc){add(p._casc.score,{color:'#c2f64a',lineWidth:1.6,priceScaleId:'casc'},{label:'CASCADE',dec:0});add(c.map(function(){return 90;}),{color:'rgba(255,215,90,.4)',lineStyle:2,priceScaleId:'casc'});setScale('casc');}
-    if(p.inds.brain&&p._brain){add(p._brain.score,{color:'#c2f64a',lineWidth:1.6,priceScaleId:'brain'},{label:'BRAIN',dec:0});add(c.map(function(){return 0;}),{color:'rgba(120,130,140,.35)',lineStyle:2,priceScaleId:'brain'});setScale('brain');try{if(p._brain.top&&p._brain.top.length)p.legItems.push({raw:true,color:'#c2f64a',label:'BRAIN: '+p._brain.top.join(' + ')});}catch(e){}}
-    if(p.inds.memory&&p._mem){add(p._mem.forecast.map(function(v){return isFinite(v)?Math.max(-100,Math.min(100,v*30)):null;}),{color:'#c2f64a',lineWidth:1.6,priceScaleId:'memory'},{label:'MEMORY',dec:0});add(c.map(function(){return 0;}),{color:'rgba(120,130,140,.35)',lineStyle:2,priceScaleId:'memory'});setScale('memory');
+    if(p.inds.casc&&p._casc){var _cl=p._casc.score[p._casc.score.length-1];if(isFinite(_cl))p.legItems.push({raw:true,color:_cl>=90?'#ff6258':_cl>=70?'#ffb020':'#8fa3c4',label:'Cascade '+Math.round(_cl)+'/100 \u2014 '+(_cl>=90?'EXTREME':_cl>=70?'fragile':'calm')});add(p._casc.score,{color:'#ffb020',lineWidth:1.6,priceScaleId:'casc'},{label:'CASCADE',dec:0});add(c.map(function(){return 90;}),{color:'rgba(255,215,90,.4)',lineStyle:2,priceScaleId:'casc'});setScale('casc');}
+    if(p.inds.brain&&p._brain){var _bl=p._brain.score[p._brain.score.length-1];if(isFinite(_bl))p.legItems.push({raw:true,color:_bl>=55?'#2ebd85':_bl<=-55?'#ff6258':'#8fa3c4',label:'Brain '+(_bl>=0?'+':'')+Math.round(_bl)+' \u2014 '+(_bl>=55?'bullish lean':_bl<=-55?'bearish lean':'no edge')});add(p._brain.score,{color:'#c2f64a',lineWidth:1.6,priceScaleId:'brain'},{label:'BRAIN',dec:0});add(c.map(function(){return 0;}),{color:'rgba(120,130,140,.35)',lineStyle:2,priceScaleId:'brain'});setScale('brain');try{if(p._brain.top&&p._brain.top.length)p.legItems.push({raw:true,color:'#c2f64a',label:'BRAIN: '+p._brain.top.join(' + ')});}catch(e){}}
+    if(p.inds.memory&&p._mem){add(p._mem.forecast.map(function(v){return isFinite(v)?Math.max(-100,Math.min(100,v*30)):null;}),{color:'#b18cff',lineWidth:1.6,priceScaleId:'memory'},{label:'MEMORY',dec:0});add(c.map(function(){return 0;}),{color:'rgba(120,130,140,.35)',lineStyle:2,priceScaleId:'memory'});setScale('memory');
       if(p._mem.proj){try{p.indLines.push(p.candle.createPriceLine({price:p._mem.proj.p,color:p._mem.proj.ret>=0?'#2ebd85':'#ff6258',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'MEM'}));}catch(e){}p.legItems.push({raw:true,color:'#c2f64a',label:'Memory: '+p._mem.proj.n+' analogs, '+Math.round(p._mem.proj.up*100)+'% up, proj '+(p._mem.proj.ret>=0?'+':'')+(p._mem.proj.ret*100).toFixed(2)+'%'});}}
-    if(p.inds.sentf&&p._sent){add(p._sent.sent.map(function(v){return isFinite(v)?v*100:null;}),{color:'#c2f64a',lineWidth:1.4,priceScaleId:'sentf'},{label:'SENTIMENT',dec:0});add(c.map(function(){return 0;}),{color:'rgba(120,130,140,.35)',lineStyle:2,priceScaleId:'sentf'});setScale('sentf');}
+    if(p.inds.sentf&&p._sent){add(p._sent.sent.map(function(v){return isFinite(v)?v*100:null;}),{color:'#3fd8e6',lineWidth:1.4,priceScaleId:'sentf'},{label:'SENTIMENT',dec:0});add(c.map(function(){return 0;}),{color:'rgba(120,130,140,.35)',lineStyle:2,priceScaleId:'sentf'});setScale('sentf');}
     if(p.inds.magnet&&p._mag&&S){var _mg=p._mag,_M=S.money;
       if(_mg.up)try{p.indLines.push(p.candle.createPriceLine({price:_mg.up.price,color:_mg.side==='up'?'#ff6258':'rgba(255,98,88,.55)',lineWidth:_mg.side==='up'?2:1,lineStyle:_mg.side==='up'?0:2,axisLabelVisible:true,title:'SHORT '+_M(_mg.up.w)}));}catch(e){}
       if(_mg.dn)try{p.indLines.push(p.candle.createPriceLine({price:_mg.dn.price,color:_mg.side==='down'?'#2ebd85':'rgba(46,189,133,.55)',lineWidth:_mg.side==='down'?2:1,lineStyle:_mg.side==='down'?0:2,axisLabelVisible:true,title:'LONG '+_M(_mg.dn.w)}));}catch(e){}
@@ -333,7 +349,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // ---- split ----
   function toggleSplit(){split=split===1?2:1;var st=ov.querySelector('#mfcStage'),sL=ov.querySelector('.mfc-splitL');st.classList.toggle('split',split===2);if(sL)sL.textContent=split===2?mcT('mc1chart','1 chart'):mcT('mc2charts','2 charts');
     if(split===2&&panes.length<2){var base=panes[activeI]||panes[0];var _bi=-1;for(var _ti=0;_ti<TFS.length;_ti++)if(TFS[_ti][0]===String(base&&base.tf))_bi=_ti;var _ntf=_bi<0?'240':(_bi<TFS.length-1?TFS[_bi+1][0]:TFS[_bi-1][0]);/* dual view = SAME symbol on the NEXT LARGER timeframe (BTC 5m -> +BTC 15m); at 1d (no larger) fall back to the next smaller (4h). Was hardcoded "other coin at 1h" (ETH 60), which ignored what the user was looking at (2026-07-30). */var p=mkPane(base?base.sym:'BTC',_ntf);panes.push(p);st.appendChild(p.el);loadLib(function(){initChart(p);});}
-    else if(split===1&&panes.length>1){var rem=panes.pop();if(rem.w)rem.w.dead=true;try{if(rem.chart)rem.chart.remove();}catch(e){}if(rem.el.parentNode)rem.el.parentNode.removeChild(rem.el);if(activeI>0)setActive(0);}
+    else if(split===1&&panes.length>1){var rem=panes.pop();if(rem.w)rem.w.dead=true;try{if(rem.chart)rem.chart.remove();}catch(e){}try{if(rem.sub)rem.sub.remove();}catch(e){}rem.sub=null;if(rem.el.parentNode)rem.el.parentNode.removeChild(rem.el);if(activeI>0)setActive(0);}
     setTimeout(function(){panes.forEach(function(p){if(p.w&&p.w.dr&&p.w.dr.redraw)p.w.dr.redraw();});},140);
   }
   // ---- bottom sheets ----
@@ -528,7 +544,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function isPortrait(){return !!(window.matchMedia&&window.matchMedia('(orientation:portrait)').matches);}
   function showGate(on){var g=ov&&ov.querySelector('.mfc-gate');if(g)g.hidden=!on;var bar=ov&&ov.querySelector('.mfc-bar'),st=ov&&ov.querySelector('#mfcStage'),fab=ov&&ov.querySelector('.mfc-ai-fab');[bar,st,fab].forEach(function(x){if(x)x.style.visibility=on?'hidden':'';});}
   function open(sym){ if(!ov)build(); ov.hidden=false; document.documentElement.style.overflow='hidden';
-    if(sym){var _S=String(sym).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_S){forcePair=_S;if(panes.length){try{var _st=ov.querySelector('#mfcStage');panes.forEach(function(pp){try{if(pp.chart)pp.chart.remove();}catch(e){}});if(_st)_st.innerHTML='';panes=[];activeI=0;}catch(e){}}}}
+    if(sym){var _S=String(sym).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_S){forcePair=_S;if(panes.length){try{var _st=ov.querySelector('#mfcStage');panes.forEach(function(pp){try{if(pp.chart)pp.chart.remove();}catch(e){}try{if(pp.sub)pp.sub.remove();}catch(e){}pp.sub=null;});if(_st)_st.innerHTML='';panes=[];activeI=0;}catch(e){}}}}
     showGate(false);proceed(); // portrait works too — the inline .mfc-rot hint nudges toward landscape instead of a full-screen wall (UX audit)
   }
   function proceed(){ entered=true; showGate(false);
