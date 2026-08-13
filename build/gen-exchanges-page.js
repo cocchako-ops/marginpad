@@ -9,7 +9,7 @@ const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.go
 const url = 'https://marginpad.io/exchanges/';
 const title = 'Crypto Exchange Comparison 2026 — Fees, Leverage, Liquidity & Trust';
 const desc = 'A trader-first comparison of every major crypto exchange — Bybit, Binance, OKX, Bitget, MEXC, Gate, KuCoin, Kraken and more. Real futures fees, max leverage, liquidity, KYC, US access and a hard look at trust and safety (including the KuCoin controversy). No fluff.';
-const kw = 'crypto exchange comparison, best crypto futures exchange, bybit vs binance, lowest fee crypto exchange, best leverage exchange, kucoin safe, crypto exchange fees, best exchange for trading';
+const kw = 'crypto exchange comparison, best crypto futures exchange, bybit vs binance, lowest fee crypto exchange, best leverage exchange, kucoin safe, crypto exchange fees, best exchange for trading, moon trading platform, trade stocks and crypto in one account';
 const lg = id => 'https://s2.coinmarketcap.com/static/img/exchanges/64x64/' + id + '.png';
 
 // Editorial ratings are our take (0-100), meant for at-a-glance comparison — not financial advice. Fees are the
@@ -169,6 +169,13 @@ const CSS = HEADER_CSS + `
   .exc-cta.warn{background:transparent;color:var(--red);border:1px solid rgba(255,90,77,.5);box-shadow:none}
   .exc-bonus{text-align:center;font-family:'Space Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin-top:9px}
   /* trust / kucoin section */
+  .moonbox{background:radial-gradient(70% 100% at 0 0,rgba(194,246,74,.09),transparent 55%),var(--panel);border:1px solid rgba(194,246,74,.35);border-radius:18px;padding:22px;margin:26px 0 6px;display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+  .moonbox img{width:46px;height:46px;border-radius:12px;flex-shrink:0}
+  .moonbox .mb-t{flex:1;min-width:240px}
+  .moonbox .mb-tag{display:inline-block;font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--lime);border:1px solid rgba(194,246,74,.4);border-radius:99px;padding:3px 10px;margin-bottom:8px}
+  .moonbox h3{margin:0 0 8px;font-size:19px}
+  .moonbox p{margin:0 0 12px;font-size:14px;line-height:1.6;color:var(--ink-dim)}
+  .moonbox .mb-cta{display:inline-block;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:12px 18px;border-radius:11px;background:var(--lime);color:#0a0b0d}
   .kbox{background:radial-gradient(70% 100% at 0 0,rgba(255,90,77,.08),transparent 55%),var(--panel);border:1px solid rgba(255,90,77,.35);border-radius:18px;padding:22px;margin:16px 0}
   .kbox h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;color:var(--ink);margin:0 0 4px;display:flex;align-items:center;gap:9px}
   .kbox .kwho{font-family:'Space Mono',monospace;font-size:11px;color:var(--red);margin-bottom:14px}
@@ -270,6 +277,16 @@ ${ld}
       <a href="/screener">Live screener</a>
     </div>
 
+    <div class="moonbox">
+      <img src="/assets/moon.png" alt="Moon" width="46" height="46" loading="lazy">
+      <div class="mb-t">
+        <span class="mb-tag">New partner — not a futures exchange</span>
+        <h3>Moon — call crypto, stocks, forex &amp; commodities up or down. 24/7.</h3>
+        <p>Moon isn't in the table above because it plays a different game: instead of an order book, you call any market up or down with leverage — including stocks, forex and commodities crypto exchanges don't carry — from one account, around the clock, with a public leaderboard and traders you can follow. MarginPad members can even cash <a href="/rewards">rewards</a> out straight to a Moon account. Full breakdown in our <a href="/blog/moon-trading-platform-review/">Moon review</a>.</p>
+        <a class="mb-cta" data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer">Create a Moon account →</a>
+      </div>
+    </div>
+
     <h2 class="h2">Every exchange, in depth</h2>
     <div class="h2s">Ranked roughly best-to-worst for an active futures trader. Bars are our 0–5 editorial scores.</div>
     ${EX.map(card).join('\n    ')}
@@ -286,7 +303,7 @@ ${ld}
     </div>
 
     <h2>So which exchange should you actually use?</h2>
-    <p><strong>If liquidity and execution are everything</strong> — Binance, then Bybit and OKX. <strong>If you want to trade without full KYC</strong> — Bybit or Bitget for majors, MEXC for cheap fees and new listings (mind the thin books). <strong>If you’re learning</strong> — Bitget for copy trading, or just <a href="/paper-trade">paper-trade here first</a>. <strong>If you’re in the US or safety comes first</strong> — Kraken or Coinbase, accepting fewer markets and lower leverage. And whatever you pick, the rule that matters more than any fee: <strong>don’t store what you can’t afford to lose on any exchange</strong> — they are for trading, not custody.</p>
+    <p><strong>If liquidity and execution are everything</strong> — Binance, then Bybit and OKX. <strong>If you want to trade without full KYC</strong> — Bybit or Bitget for majors, MEXC for cheap fees and new listings (mind the thin books). <strong>If you’re learning</strong> — Bitget for copy trading, or just <a href="/paper-trade">paper-trade here first</a>. <strong>If you’re in the US or safety comes first</strong> — Kraken or Coinbase, accepting fewer markets and lower leverage. <strong>If you want markets beyond crypto</strong> — <a data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer">Moon</a> covers stocks, forex and commodities alongside crypto with simple up-or-down calls, 24/7 (see the spotlight above). And whatever you pick, the rule that matters more than any fee: <strong>don’t store what you can’t afford to lose on any exchange</strong> — they are for trading, not custody.</p>
     <p>The smartest first move costs nothing: open our free <a href="/paper-trade">Paper Trade</a> terminal, run the exact setup you’re eyeing with live prices and real liquidation math, and see how it behaves before a cent of your money touches an exchange. Size your leverage with the <a href="/calculators">liquidation calculator</a>, watch the tape on the <a href="/screener">screener</a>, and only then go live — through whichever venue above fits how you actually trade.</p>
 
     <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:20px 0 6px">Fees, leverage and features change often — verify on the exchange before depositing. Ratings are MarginPad’s editorial opinion. Links marked as referral are affiliate links. This page is information, not financial advice.</p>

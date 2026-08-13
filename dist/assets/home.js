@@ -2475,18 +2475,17 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
 (function(){
   var NXKEY='mp_grad_next';
   function count(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]).length;}catch(e){return 0;}}
-  var EX=[{n:'Bybit',h:'https://www.bybit.com/invite?ref=LZKBERJ',c:'#f7a600',fg:'#0a0b0d',l:'B',t:'100x · deep liquidity'},
-          {n:'Binance',h:'https://www.binance.com/register?ref=MAOZM9DS',c:'#f0b90b',fg:'#181a20',l:'B',t:'125x · most pairs'},
-          {n:'OKX',h:'https://okx.com/join/96160298',c:'#e9e7df',fg:'#0a0b0d',l:'O',t:'125x · pro tools'},
-          {n:'Coinbase',h:'https://base.app/invite/chakko/FHSFNY5H',c:'#0052ff',fg:'#fff',l:'C',t:'US-regulated · beginner-friendly'}];
+  /* Partner focus (owner 2026-08-13): ONLY Bybit + Moon here — the two refs that matter. Mirror any change on the /exchanges spotlight + blog. */
+  var EX=[{n:'Bybit',h:'https://www.bybit.com/invite?ref=LZKBERJ',c:'#f7a600',fg:'#0a0b0d',l:'B',t:'crypto futures · 100x · deep liquidity'},
+          {n:'Moon',h:'https://moon.com/?c=moonkickstart',c:'#14161c',fg:'#fff',l:'M',img:'/assets/moon.png',t:'crypto, stocks & forex · up or down · 24/7'}];
   var elm=null;
   function build(){ elm=document.createElement('div'); elm.className='grad-modal'; elm.hidden=true;
-    elm.innerHTML='<div class="grad-panel"><button class="grad-x" type="button" aria-label="Close">&#10005;</button><div class="grad-badge">5 trades practiced</div><h3>Ready to trade for real?</h3><p>You have opened 5 paper trades — the mechanics are second nature now. Put it to work on a real futures account (new sign-ups often get fee discounts and bonuses).</p><div class="grad-ex">'+EX.map(function(x){return '<a class="grad-card" href="'+x.h+'" target="_blank" rel="sponsored noopener noreferrer" data-ex="'+x.n+'"><span class="grad-mark" style="background:'+x.c+';color:'+x.fg+'">'+x.l+'</span><span class="grad-cn"><b>'+x.n+'</b><small>'+x.t+'</small></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>';}).join('')+'</div><button class="grad-later" type="button">Keep practicing</button></div>';
+    elm.innerHTML='<div class="grad-panel"><button class="grad-x" type="button" aria-label="Close">&#10005;</button><div class="grad-badge">5 trades practiced</div><h3>Ready to trade for real?</h3><p>You have opened 5 paper trades — the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).</p><div class="grad-ex">'+EX.map(function(x){return '<a class="grad-card" href="'+x.h+'" target="_blank" rel="sponsored noopener noreferrer" data-ex="'+x.n+'"><span class="grad-mark" style="background:'+x.c+';color:'+x.fg+'">'+(x.img?'<img src="'+x.img+'" alt="" width="22" height="22" style="width:22px;height:22px;border-radius:6px;display:block">':x.l)+'</span><span class="grad-cn"><b>'+x.n+'</b><small>'+x.t+'</small></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>';}).join('')+'</div><button class="grad-later" type="button">Keep practicing</button></div>';
     document.body.appendChild(elm);
     elm.addEventListener('click',function(e){var t=e.target;if(t.closest('.grad-x')||t.closest('.grad-later')||t===elm){elm.hidden=true;return;}var c=t.closest('[data-ex]');if(c){try{if(window.__mpTrack)window.__mpTrack('exchange',c.getAttribute('data-ex'));}catch(_){}setTimeout(function(){elm.hidden=true;},80);}}); }
   function show(){if(!elm)build();var n=window.__gradN||count();
     try{var bd=elm.querySelector('.grad-badge');if(bd)bd.textContent=n+' trades practiced';
-        var pp=elm.querySelector('.grad-panel > p');if(pp)pp.textContent='You have opened '+n+' paper trades — the mechanics are second nature now. Put it to work on a real futures account (new sign-ups often get fee discounts and bonuses).';}catch(e){}
+        var pp=elm.querySelector('.grad-panel > p');if(pp)pp.textContent='You have opened '+n+' paper trades — the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).';}catch(e){}
     elm.hidden=false;}
   window.mpCheckGrad=function(){try{var n=count();var nx=parseInt(localStorage.getItem(NXKEY)||'20',10);if(!(nx>0))nx=20;if(n>=nx){var k=Math.floor((n-20)/30)+1;localStorage.setItem(NXKEY,String(20+30*k));window.__gradN=n;setTimeout(show,600);}}catch(e){}};
   setTimeout(function(){try{window.mpCheckGrad();}catch(e){}},1500);
