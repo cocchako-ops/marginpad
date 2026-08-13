@@ -2511,10 +2511,19 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     document.body.appendChild(elm);
     elm.addEventListener('click',function(e){var t=e.target;if(t.closest('.grad-x')||t.closest('.grad-later')||t===elm){elm.hidden=true;return;}var c=t.closest('[data-ex]');if(c){try{if(window.__mpTrack)window.__mpTrack('exchange',c.getAttribute('data-ex'));}catch(_){}setTimeout(function(){elm.hidden=true;},80);}}); }
   function show(){if(!elm)build();var n=window.__gradN||count();
-    try{var bd=elm.querySelector('.grad-badge');if(bd)bd.textContent=n+' trades practiced';
-        var pp=elm.querySelector('.grad-panel > p');if(pp)pp.textContent='You have opened '+n+' paper trades — the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).';}catch(e){}
+    try{var bd=elm.querySelector('.grad-badge');if(bd)bd.textContent=window.__gradFW?'First winning trade':(n+' trades practiced');
+        var pp=elm.querySelector('.grad-panel > p');if(pp)pp.textContent=window.__gradFW?'You just closed your first winning paper trade. That exact trade, on a real account, would have been real profit - futures on Bybit, or up/down calls on Moon (new sign-ups get bonuses on both).':'You have opened '+n+' paper trades — the mechanics are second nature now. Put it to work for real: futures on Bybit, or call markets up or down on Moon (new sign-ups get bonuses on both).';}catch(e){}
     elm.hidden=false;}
-  window.mpCheckGrad=function(){try{var n=count();var nx=parseInt(localStorage.getItem(NXKEY)||'20',10);if(!(nx>0))nx=20;if(n>=nx){var k=Math.floor((n-20)/30)+1;localStorage.setItem(NXKEY,String(20+30*k));window.__gradN=n;setTimeout(show,600);}}catch(e){}};
+  function wins(){try{return (JSON.parse(localStorage.getItem('mp_journal')||'[]')||[]).filter(function(t){return t&&(t.status==='win'||(+t.pnl>0));}).length;}catch(e){return 0;}}
+  /* funnel tuning (owner 2026-08-14): first offer at 8 opened trades (20 was measured too late - /paper-trade converts ~2%),
+     then every 30 as before; PLUS a one-time "first winning trade" moment for early users (the hottest second to offer a
+     real account). Existing users keep their stored schedule. Impressions tracked so CTR per trigger is measurable. */
+  window.mpCheckGrad=function(){try{
+    var n=count();
+    if(n<8){var wn=wins();if(wn>=1&&!localStorage.getItem('mp_grad_fw')){if(document.querySelector('.grad-modal:not([hidden])'))return;/* the signup nudge (shares the class) is up - do not stack, do not consume the flag; we retry on the next check */localStorage.setItem('mp_grad_fw','1');window.__gradN=n;window.__gradFW=1;setTimeout(show,600);try{window.__mpTrack&&window.__mpTrack('grad','firstwin');}catch(e2){}return;}}
+    var nx=parseInt(localStorage.getItem(NXKEY)||'8',10);if(!(nx>0))nx=8;
+    if(n>=nx){var k=Math.floor(Math.max(0,n-8)/30)+1;localStorage.setItem(NXKEY,String(8+30*k));window.__gradN=n;window.__gradFW=0;setTimeout(show,600);try{window.__mpTrack&&window.__mpTrack('grad','n'+n);}catch(e3){}}
+  }catch(e){}};
   setTimeout(function(){try{window.mpCheckGrad();}catch(e){}},1500);
 })();
 
