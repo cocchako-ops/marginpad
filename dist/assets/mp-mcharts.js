@@ -265,17 +265,23 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var _tg='<span data-legtg style="cursor:pointer;color:#5c656f;border:1px solid #2a3140;border-radius:7px;padding:1px 8px;font-size:10px;font-weight:700;letter-spacing:.06em">'+(_mLegHidden()?'VALUES':'HIDE')+'</span>';
     if(_mLegHidden()){el.innerHTML=_tg;return;}
     el.innerHTML=_tg+p.legItems.map(function(it){var v=it.last;
-      if(param&&param.seriesData){var sd=param.seriesData.get(it.series);if(sd!=null)v=(typeof sd==='object'?(sd.value!=null?sd.value:sd.close):sd);}
+      if(param&&param.seriesData){var sd=param.seriesData.get(it.series);if(sd!=null)v=(typeof sd==='object'?(sd.value!=null?sd.value:sd.close):sd);else if(param.time!=null&&it.arr){var lo=0,hi=it.arr.length-1;while(lo<hi){var mid=(lo+hi+1)>>1;if(it.arr[mid].time<=param.time)lo=mid;else hi=mid-1;}if(it.arr[lo]&&it.arr[lo].time===param.time&&isFinite(it.arr[lo].value))v=it.arr[lo].value;}}
       return it.raw?'<span style="color:'+it.color+';font-weight:700">'+it.label+'</span>':'<span style="color:'+it.color+'">'+it.label+' <b>'+legFmt(v,it.dec)+'</b></span>';}).join('');}
   // ---- indicators ----
   /* OSCILLATOR SUB-PANE (owner 2026-08-13, mirror of desktop mp-charts): oscillators render in their OWN synced
      chart strip below the candles - free vertical pan can never slide candles through them. */
   function ensureSubM(p,on){var el=p.el;if(!el)return null;var sh=el.querySelector('.mfc-sub'),dc=el.querySelector('canvas.cwin-draw'),host=p.host;
     if(!on){if(p.sub){try{p.sub.remove();}catch(e){}p.sub=null;}p.subSeries=[];if(sh){sh.style.display='none';sh.style.height='0px';}if(host)host.style.bottom='0px';if(dc)dc.style.bottom='0px';return null;}
-    var H=Math.max(70,Math.min(150,Math.round((el.clientHeight||300)*0.26)));
+    var _eh=el.clientHeight||300,_sv=0;try{_sv=parseInt(localStorage.getItem('mp:subhm'))||0;}catch(e){}
+    var H=Math.max(56,Math.min(Math.round(_eh*0.55),_sv||Math.max(70,Math.min(150,Math.round(_eh*0.26)))));
     if(sh){sh.style.display='block';sh.style.height=H+'px';}if(host)host.style.bottom=H+'px';if(dc)dc.style.bottom=H+'px';
+    if(sh&&!sh.querySelector('.mfc-subrz')){var rz=document.createElement('div');rz.className='mfc-subrz';sh.appendChild(rz);
+      (function(){var dr={on:false};rz.addEventListener('pointerdown',function(e){dr.on=true;try{rz.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();e.stopPropagation();},true);
+      rz.addEventListener('pointermove',function(e){if(!dr.on)return;var br=el.getBoundingClientRect();var nh=Math.max(56,Math.min(Math.round(br.height*0.55),Math.round(br.bottom-e.clientY)));sh.style.height=nh+'px';if(host)host.style.bottom=nh+'px';if(dc)dc.style.bottom=nh+'px';e.preventDefault();},true);
+      rz.addEventListener('pointerup',function(){if(!dr.on)return;dr.on=false;try{localStorage.setItem('mp:subhm',String(parseInt(sh.style.height)||0));}catch(_){}},true);})();}
     if(!p.sub&&window.LightweightCharts&&sh){try{p.sub=LightweightCharts.createChart(sh,{layout:{background:{color:'transparent'},textColor:'#8b95a1',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.22)'},horzLines:{color:'rgba(35,41,50,.22)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{visible:false},crosshair:{mode:0},autoSize:true,handleScale:{axisPressedMouseMove:{time:false,price:false},mouseWheel:false,pinch:false},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false,mouseWheel:false}});
       p.sub.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(!r||!p.chart||p._subSync)return;p._subSync=1;try{p.chart.timeScale().setVisibleLogicalRange(r);}catch(_){}p._subSync=0;});
+      try{p.sub.subscribeCrosshairMove(function(prm){mLeg(p,prm);});}catch(e){} /* touch-scrub over the indicator strip drives the value legend */
       try{var _r0=p.chart.timeScale().getVisibleLogicalRange();if(_r0)p.sub.timeScale().setVisibleLogicalRange(_r0);}catch(e){}}catch(e){p.sub=null;}}
     return p.sub;}
   function applyInds(p){ if(!p.chart||!p.candle)return;
@@ -300,7 +306,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try{for(var _sk in _ss){var _sv=_ss[_sk];p.legItems.push({raw:true,color:_sv.pct>=55?'#2ebd85':_sv.pct<=45?'#ff6258':'#8fa3c4',label:_sk+' '+_sv.pct+'% ('+_sv.w+'W/'+_sv.l+'L)'});}}catch(e){}
     if(p.inds.sr)computeSR(p.bars).forEach(function(L){try{p.indLines.push(p.candle.createPriceLine({price:L.price,color:L.type==='r'?'#ff9f4d':'#3ad29a',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:L.type==='r'?'R':'S'}));}catch(e){}});
     var c=p.bars.map(function(b){return +b.close;}),t=p.bars.map(function(b){return b.time;});
-    function add(vals,opts,leg){var s;try{var _tc=(opts.priceScaleId&&p.sub)?p.sub:p.chart;s=_tc.addLineSeries(Object.assign({lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},opts));}catch(e){return;}var d=[];for(var i=0;i<vals.length;i++)if(vals[i]!=null&&isFinite(vals[i]))d.push({time:t[i],value:vals[i]});try{s.setData(d);}catch(e){}if(opts.priceScaleId&&p.sub)p.subSeries.push(s);else p.indSeries.push(s);if(leg){var last=null;for(var li=d.length-1;li>=0;li--){if(d[li]&&isFinite(d[li].value)){last=d[li].value;break;}}p.legItems.push({label:leg.label,series:s,color:opts.color,dec:leg.dec,last:last});}}
+    function add(vals,opts,leg){var s;try{var _tc=(opts.priceScaleId&&p.sub)?p.sub:p.chart;s=_tc.addLineSeries(Object.assign({lineWidth:1,priceLineVisible:false,lastValueVisible:false,crosshairMarkerVisible:false},opts));}catch(e){return;}var d=[];for(var i=0;i<vals.length;i++)if(vals[i]!=null&&isFinite(vals[i]))d.push({time:t[i],value:vals[i]});try{s.setData(d);}catch(e){}if(opts.priceScaleId&&p.sub)p.subSeries.push(s);else p.indSeries.push(s);if(leg){var last=null;for(var li=d.length-1;li>=0;li--){if(d[li]&&isFinite(d[li].value)){last=d[li].value;break;}}p.legItems.push({label:leg.label,series:s,color:opts.color,dec:leg.dec,last:last,arr:d});}}
     var MA=[['ema9',9,'e','#7fb6ff'],['ema21',21,'e','#3fd8e6'],['ema50',50,'e','#5fe0a6'],['ema100',100,'e','#c2f64a'],['ema200',200,'e','#ffd75a'],['sma20',20,'s','#ff9f43'],['sma50',50,'s','#ff7b72'],['sma100',100,'s','#e0a0ff'],['sma200',200,'s','#ff5a4d']];
     var oscs=['rsi','macd','stoch','atr','vol','wr','cci'].concat((S&&IA)?['casc','brain','memory','sentf']:[]).filter(function(k){return p.inds[k];}),oN=oscs.length;
     try{p.chart.priceScale('right').applyOptions({scaleMargins:{top:0.06,bottom:0.08}});}catch(e){} /* candles own the full pane - oscillators live in the sub strip */
