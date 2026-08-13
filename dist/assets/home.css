@@ -1425,6 +1425,7 @@
   .cwin-body{position:relative;flex:1;min-height:0;background:#0a0d11;}
   .cwin-chart{position:absolute;inset:0;}
   .cwin-sub{position:absolute;left:0;right:0;bottom:0;height:0;display:none;border-top:1px solid #232932;background:#0a0d11;}
+  .cwin-leg [data-legtg]{pointer-events:auto;} /* the legend itself is input-transparent so chart drags pass through - only the HIDE/VALUES chip takes clicks */
   .cwin-subrz{position:absolute;left:0;right:0;top:-1px;height:9px;cursor:ns-resize;z-index:6;touch-action:none;}
   .cwin-subrz:hover{background:linear-gradient(180deg,rgba(194,246,74,.28),transparent);}
   .cwin-leg{position:absolute;top:4px;left:7px;z-index:5;display:flex;gap:9px;flex-wrap:wrap;max-width:calc(100% - 14px);font-family:'Space Mono',monospace;font-size:10px;line-height:1.25;color:#9aa3ad;pointer-events:none;text-shadow:0 1px 3px rgba(0,0,0,.8);}
