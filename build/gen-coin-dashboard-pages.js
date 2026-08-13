@@ -25,6 +25,8 @@ const EN = {
   tradeH: 'Trade {SYM}USDT perpetual',
   moonLine: 'Call {SYM} up or down on Moon — stocks & forex too, 24/7',
   ctaScreener: 'See {SYM} on the screener →', ctaCalc: '{SYM} liquidation calculator', ctaPractice: 'Practice {SYM} risk-free',
+  faqQ1: 'What is a {SYM} perpetual future?',
+  faqQ2: 'How do you read {SYM} funding, open interest and liquidations together?',
   h2Explained: '{NAME} perpetual futures, explained',
   pExplained: 'A {SYM} perpetual future (perp) lets you trade {NAME} with leverage and no expiry. The <a href="/funding/">funding rate</a> keeps the perp price tethered to spot — positive funding means {SYM} longs are paying shorts (crowded longs), negative means the reverse. <strong>Open interest</strong> is the total value of open {SYM} positions; a fast rise means new leverage is flowing in. <strong>Liquidations</strong> show where over-leveraged {SYM} traders got force-closed — long liquidations on drops, short liquidations on rallies.',
   h2How: 'How to use this {SYM} dashboard',
@@ -171,7 +173,13 @@ function page(c, lang) {
   let hreflang = `<link rel="alternate" hreflang="en" href="https://marginpad.io/coin/${sl}/" />\n`;
   for (const lc of LANG_CODES) hreflang += `<link rel="alternate" hreflang="${lc}" href="https://marginpad.io/${lc}/coin/${sl}/" />\n`;
   hreflang += `<link rel="alternate" hreflang="x-default" href="https://marginpad.io/coin/${sl}/" />`;
-  const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"${s} Perpetual Futures Dashboard","url":"${url}","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>`;
+  const BUILT = new Date().toISOString().slice(0, 10); // regenerated on every build -> honest dateModified
+  const strip9 = h => String(h).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"${s} Perpetual Futures Dashboard","url":"${url}","applicationCategory":"FinanceApplication","operatingSystem":"Web","dateModified":"${BUILT}","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>`
+    + `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', dateModified: BUILT, mainEntity: [
+      { '@type': 'Question', name: F(L.faqQ1 || EN.faqQ1), acceptedAnswer: { '@type': 'Answer', text: strip9(F(L.pExplained)) } },
+      { '@type': 'Question', name: F(L.faqQ2 || EN.faqQ2), acceptedAnswer: { '@type': 'Answer', text: strip9(F(L.pHow)) } }
+    ] })}</script>`;
   return `<!DOCTYPE html>
 <html lang="${code}"${RTL[lang] ? ' dir="rtl"' : ''}>
 <head>${GTAG}
