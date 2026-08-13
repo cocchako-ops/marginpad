@@ -88,3 +88,5 @@ Allow: /
 # LLM-friendly summary of the whole site (tools, API, key facts): https://marginpad.io/llms.txt
 Sitemap: https://marginpad.io/community/sitemap.xml
 Sitemap: https://marginpad.io/sitemap.xml
+Sitemap: https://marginpad.io/sitemap-i18n.xml
+Sitemap: https://marginpad.io/sitemap-recaps.xml

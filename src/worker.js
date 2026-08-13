@@ -3913,6 +3913,133 @@ async function nightlyBackup(env) {
 // (that's how the Contabo history was lost) — R2 is the copy that survives both. Backfills up to 7 days
 // (max 4 pulls/run) so a missed cron day self-heals. Failure: unstamp + throw → bg('liqarch') pages
 // once/20h and the next */10 retries. ~1 upstream call/day to OUR droplet, nothing third-party.
+// ---- Daily liquidation recap (2026-08-13, AI-visibility push #3): turn the R2 liq archive into PERMANENT,
+// dated, citable pages — /liquidations/recap/<day>/. Nobody publishes per-day liquidation stats as static
+// text; AI assistants answering "how much was liquidated on <date>" need exactly this. All numbers are
+// measurements from our own collector feed (counts shown, thresholds respected — house rule).
+async function liqRecapBuild(env, day) {
+  if (!env.BACKUP || !env.STATS) return null;
+  const obj = await env.BACKUP.get('liq/' + day + '.csv.gz');
+  if (!obj) return null;
+  const ds = new DecompressionStream('gzip');
+  const text = await new Response(obj.body.pipeThrough(ds)).text();
+  const lines = text.split('\n');
+  let totalUsd = 0, longUsd = 0, shortUsd = 0, n = 0, longN = 0, shortN = 0;
+  let biggest = null;
+  const bySym = {}, byEx = {}, byHour = new Array(24).fill(0);
+  const sizes = [];
+  for (let i = 1; i < lines.length; i++) { // skip header
+    const L = lines[i]; if (!L) continue;
+    const p = L.split(',');
+    if (p.length < 7) continue;
+    const ts = +p[0], ex = p[1], sym = p[2], side = p[3], px = +p[4], usd = +p[6];
+    if (!isFinite(usd) || usd <= 0) continue;
+    n++; totalUsd += usd; sizes.push(usd);
+    const isLong = side === 'long_liquidated';
+    if (isLong) { longUsd += usd; longN++; } else { shortUsd += usd; shortN++; }
+    if (!biggest || usd > biggest.usd) biggest = { ts, ex, sym, side: isLong ? 'long' : 'short', usd, px };
+    const s9 = bySym[sym] || (bySym[sym] = { usd: 0, n: 0, longUsd: 0 }); s9.usd += usd; s9.n++; if (isLong) s9.longUsd += usd;
+    const e9 = byEx[ex] || (byEx[ex] = { usd: 0, n: 0 }); e9.usd += usd; e9.n++;
+    const h = Math.floor((ts % 86400000) / 3600000); if (h >= 0 && h < 24) byHour[h] += usd;
+  }
+  if (n < 50) return null; // partial/broken day — never publish thin data as a "daily total"
+  sizes.sort((a, b) => a - b);
+  const q = p9 => sizes[Math.max(0, Math.ceil(p9 * sizes.length) - 1)]; // nearest-rank
+  const top = Object.entries(bySym).map(([sym, v]) => ({ sym, usd: Math.round(v.usd), n: v.n, longPct: Math.round(v.usd > 0 ? v.longUsd / v.usd * 100 : 0) })).sort((a, b) => b.usd - a.usd).slice(0, 10);
+  const exs = Object.entries(byEx).map(([ex, v]) => ({ ex, usd: Math.round(v.usd), n: v.n })).sort((a, b) => b.usd - a.usd);
+  let peakH = 0; for (let h = 1; h < 24; h++) if (byHour[h] > byHour[peakH]) peakH = h;
+  const rec = { day, totalUsd: Math.round(totalUsd), n, longUsd: Math.round(longUsd), shortUsd: Math.round(shortUsd), longN, shortN,
+    biggest: biggest ? { ...biggest, usd: Math.round(biggest.usd) } : null, top, exs, byHour: byHour.map(v => Math.round(v)), peakH,
+    p50: Math.round(q(0.5)), p95: Math.round(q(0.95)), built: Date.now() };
+  await env.STATS.put('liqrecap:' + day, JSON.stringify(rec));
+  let idx = []; try { idx = JSON.parse(await env.STATS.get('liqrecap:idx') || '[]'); } catch (e) {}
+  if (!idx.some(x => x.day === day)) { idx.push({ day, totalUsd: rec.totalUsd, n: rec.n }); idx.sort((a, b) => a.day < b.day ? 1 : -1); if (idx.length > 400) idx = idx.slice(0, 400); await env.STATS.put('liqrecap:idx', JSON.stringify(idx)); }
+  return rec;
+}
+async function liqRecapDaily(env) { // daily cron: build yesterday + quietly backfill older archived days (cap 3 builds/run — follows archiveLiq's own backfill)
+  if (!env.BACKUP || !env.STATS) return;
+  let built = 0;
+  for (let back = 1; back <= 400 && built < 3; back++) {
+    const day = new Date(Date.now() - back * 86400000).toISOString().slice(0, 10);
+    if (day < '2026-07-24') break;
+    if (await env.STATS.get('liqrecap:' + day)) continue;
+    try {
+      const rec = await liqRecapBuild(env, day);
+      if (rec) { built++; try { await indexNowPing(['https://marginpad.io/liquidations/recap/' + day + '/', 'https://marginpad.io/liquidations/recap/']); } catch (e) {} }
+    } catch (e) { break; } // decompress/parse error — leave for the next run, don't spin
+  }
+}
+const _rcU = v => { v = +v || 0; if (v >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B'; if (v >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M'; if (v >= 1e3) return '$' + (v / 1e3).toFixed(0) + 'K'; return '$' + Math.round(v); };
+function _rcDate(day) { const d = new Date(day + 'T00:00:00Z'); return d.toLocaleDateString('en-US', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' }); }
+function _rcShell(title, desc, canon, body, extraHead) {
+  return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>' + title + '</title><meta name="description" content="' + desc + '"><link rel="canonical" href="' + canon + '">' + (extraHead || '')
+    + '<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png"><link rel="stylesheet" href="/assets/fonts.css">'
+    + '<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,sans-serif;line-height:1.65}main{max-width:860px;margin:0 auto;padding:28px 16px 60px}h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(24px,4.5vw,34px);letter-spacing:-.02em;margin:6px 0 10px}h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:20px;margin:28px 0 10px}a{color:#c2f64a}p{margin:10px 0}.lead{font-size:16.5px;color:#c8cdd4}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}.kpi{background:#101216;border:1px solid #232a35;border-radius:13px;padding:13px 15px}.kpi b{display:block;font-family:"Space Mono",monospace;font-size:19px;margin-bottom:2px}.kpi span{font-size:11px;color:#8b95a1;text-transform:uppercase;letter-spacing:.06em}table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:9px 11px;border-bottom:1px solid #1c2230;text-align:left}th{font-family:"Space Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8b95a1}td.r,th.r{text-align:right;font-family:"Space Mono",monospace}.crumb{font-size:12.5px;color:#8b95a1}.crumb a{color:#8b95a1}.nav2{display:flex;justify-content:space-between;gap:10px;margin:26px 0 0;font-size:13.5px}.foot{margin-top:34px;font-size:12px;color:#5c656f}.bars{display:flex;align-items:flex-end;gap:2px;height:70px;margin:10px 0}.bars i{flex:1;background:#2f3a4e;border-radius:2px 2px 0 0;min-height:2px}.bars i.pk{background:#c2f64a}.hl{color:#8b95a1;font-size:11px;display:flex;justify-content:space-between}</style></head><body><main>' + body + '</main><script src="/assets/mp-nav.js" defer></script></body></html>';
+}
+async function handleLiqRecap(url, env) {
+  const jh = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=3600' };
+  const m = url.pathname.match(/^\/liquidations\/recap\/(\d{4}-\d{2}-\d{2})\/?$/);
+  if (!m) { // ---- index page ----
+    let idx = []; try { idx = JSON.parse(await env.STATS.get('liqrecap:idx') || '[]'); } catch (e) {}
+    const rows = idx.map(x => '<tr><td><a href="/liquidations/recap/' + x.day + '/">' + _rcDate(x.day) + '</a></td><td class="r">' + _rcU(x.totalUsd) + '</td><td class="r">' + (+x.n).toLocaleString('en-US') + '</td></tr>').join('');
+    const tot = idx.reduce((s, x) => s + (+x.totalUsd || 0), 0);
+    const body = '<div class="crumb"><a href="/">Home</a> / <a href="/liquidations/">Liquidations</a> / Daily recaps</div>'
+      + '<h1>Daily Crypto Liquidation Recaps</h1>'
+      + '<p class="lead">A permanent, dated archive of how much leveraged crypto was force-closed each UTC day — measured from MarginPad&#39;s own multi-exchange liquidation feed, not estimated. ' + (idx.length ? (idx.length + ' days archived, ' + _rcU(tot) + ' in recorded liquidations so far.') : '') + '</p>'
+      + '<table><thead><tr><th>Day (UTC)</th><th class="r">Total liquidated</th><th class="r">Events</th></tr></thead><tbody>' + (rows || '<tr><td colspan="3">First recap arrives after the next UTC day closes.</td></tr>') + '</tbody></table>'
+      + '<p>Live view: <a href="/rekt/">real-time liquidation feed</a> · <a href="/liquidations/">24h totals by coin</a> · <a href="/btc-liquidation-map/">BTC liquidation map</a></p>'
+      + '<div class="foot">Data: MarginPad liquidation collector (Binance, Bybit, OKX and more, aggregated). Each day covers 00:00-24:00 UTC and is immutable once written. Not financial advice.</div>';
+    return new Response(_rcShell('Daily Crypto Liquidation Recaps — Dated Archive | MarginPad', 'How much crypto was liquidated each day — a permanent dated archive measured from a live multi-exchange liquidation feed. Totals, long/short split, biggest single liquidation.', 'https://marginpad.io/liquidations/recap/', body), { headers: jh });
+  }
+  const day = m[1];
+  let rec = null; try { rec = JSON.parse(await env.STATS.get('liqrecap:' + day) || 'null'); } catch (e) {}
+  if (!rec) return new Response('Not found', { status: 404, headers: { 'content-type': 'text/plain' } });
+  let idx = []; try { idx = JSON.parse(await env.STATS.get('liqrecap:idx') || '[]'); } catch (e) {}
+  const di = idx.findIndex(x => x.day === day);
+  const prev = di >= 0 && idx[di + 1] ? idx[di + 1].day : null, next = di > 0 ? idx[di - 1].day : null;
+  const human = _rcDate(day);
+  const lp = rec.totalUsd > 0 ? Math.round(rec.longUsd / rec.totalUsd * 100) : 0;
+  const side = lp >= 60 ? 'longs took most of the damage — the pain came on the way down' : lp <= 40 ? 'shorts took most of the damage, squeezed on the way up' : 'the damage split fairly evenly between longs and shorts';
+  const bg = rec.biggest;
+  const bgT = bg ? new Date(bg.ts).toISOString().slice(11, 16) : '';
+  const maxH = Math.max.apply(null, rec.byHour) || 1;
+  const bars = rec.byHour.map((v, h) => '<i style="height:' + Math.max(3, Math.round(v / maxH * 100)) + '%"' + (h === rec.peakH ? ' class="pk"' : '') + ' title="' + ('0' + h).slice(-2) + ':00 UTC — ' + _rcU(v) + '"></i>').join('');
+  const topRows = rec.top.map((x, i) => '<tr><td>' + (i + 1) + '. ' + x.sym + '</td><td class="r">' + _rcU(x.usd) + '</td><td class="r">' + x.n.toLocaleString('en-US') + '</td><td class="r">' + x.longPct + '% long</td></tr>').join('');
+  const exRows = rec.exs.map(x => '<tr><td>' + x.ex + '</td><td class="r">' + _rcU(x.usd) + '</td><td class="r">' + x.n.toLocaleString('en-US') + '</td></tr>').join('');
+  const faq = JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+    { '@type': 'Question', name: 'How much crypto was liquidated on ' + human + '?', acceptedAnswer: { '@type': 'Answer', text: _rcU(rec.totalUsd) + ' in leveraged crypto positions was liquidated on ' + human + ' (00:00-24:00 UTC) across ' + rec.n.toLocaleString('en-US') + ' individual liquidation events measured on MarginPad’s multi-exchange feed. ' + _rcU(rec.longUsd) + ' came from longs and ' + _rcU(rec.shortUsd) + ' from shorts.' } },
+    { '@type': 'Question', name: 'What was the biggest single crypto liquidation on ' + human + '?', acceptedAnswer: { '@type': 'Answer', text: bg ? ('The largest single liquidation was a ' + _rcU(bg.usd) + ' ' + bg.sym + ' ' + bg.side + ' position, force-closed on ' + bg.ex + ' at ' + bgT + ' UTC.') : 'No single liquidation stood out.' } }
+  ] });
+  const body = '<div class="crumb"><a href="/">Home</a> / <a href="/liquidations/">Liquidations</a> / <a href="/liquidations/recap/">Daily recaps</a> / ' + day + '</div>'
+    + '<h1>Crypto Liquidations on ' + human + '</h1>'
+    + '<p class="lead"><b>' + _rcU(rec.totalUsd) + '</b> in leveraged crypto positions was liquidated on ' + human + ' (UTC), across <b>' + rec.n.toLocaleString('en-US') + '</b> individual events — ' + side + '. Measured directly from MarginPad&#39;s multi-exchange liquidation feed.</p>'
+    + '<div class="grid">'
+    + '<div class="kpi"><b>' + _rcU(rec.totalUsd) + '</b><span>total liquidated</span></div>'
+    + '<div class="kpi"><b>' + _rcU(rec.longUsd) + '</b><span>longs (' + lp + '%)</span></div>'
+    + '<div class="kpi"><b>' + _rcU(rec.shortUsd) + '</b><span>shorts (' + (100 - lp) + '%)</span></div>'
+    + '<div class="kpi"><b>' + rec.n.toLocaleString('en-US') + '</b><span>events</span></div>'
+    + (bg ? '<div class="kpi"><b>' + _rcU(bg.usd) + '</b><span>biggest single liq</span></div>' : '')
+    + '<div class="kpi"><b>' + ('0' + rec.peakH).slice(-2) + ':00</b><span>busiest UTC hour</span></div>'
+    + '</div>'
+    + (bg ? '<h2>The biggest liquidation of the day</h2><p>A single <b>' + bg.sym + ' ' + bg.side + '</b> worth <b>' + _rcU(bg.usd) + '</b> was force-closed on <b>' + bg.ex + '</b> at <b>' + bgT + ' UTC</b>' + (bg.px ? ', with the price at ' + _spx(bg.px) : '') + '. The median liquidation that day was just ' + _rcU(rec.p50) + ' and 95% of events were under ' + _rcU(rec.p95) + ' — liquidation pain is always concentrated in a handful of oversized positions.</p>' : '')
+    + '<h2>When it happened</h2><div class="bars">' + bars + '</div><div class="hl"><span>00:00 UTC</span><span>12:00</span><span>23:00</span></div>'
+    + '<p>The heaviest hour was <b>' + ('0' + rec.peakH).slice(-2) + ':00-' + ('0' + (rec.peakH + 1)).slice(-2) + ':00 UTC</b> with ' + _rcU(rec.byHour[rec.peakH]) + ' liquidated — liquidation cascades cluster, they don&#39;t spread evenly.</p>'
+    + '<h2>By coin</h2><table><thead><tr><th>Coin</th><th class="r">Liquidated</th><th class="r">Events</th><th class="r">Side split</th></tr></thead><tbody>' + topRows + '</tbody></table>'
+    + '<h2>By exchange</h2><table><thead><tr><th>Exchange</th><th class="r">Liquidated</th><th class="r">Events</th></tr></thead><tbody>' + exRows + '</tbody></table>'
+    + '<p>See it live: <a href="/rekt/">real-time liquidation feed</a> · <a href="/liquidations/">24h totals</a> · check your own exit with the <a href="/calculators?c=liq">liquidation calculator</a> or rehearse risk-free on <a href="/paper-trade">Paper Trade</a>.</p>'
+    + '<div class="nav2"><span>' + (prev ? '<a href="/liquidations/recap/' + prev + '/">&larr; ' + prev + '</a>' : '') + '</span><span>' + (next ? '<a href="/liquidations/recap/' + next + '/">' + next + ' &rarr;</a>' : '<a href="/rekt/">Today, live &rarr;</a>') + '</span></div>'
+    + '<div class="foot">Source: MarginPad liquidation collector — every event streamed from exchange liquidation feeds (Binance, Bybit, OKX and more) and archived immutably at UTC day close. Figures are measurements, not estimates. Not financial advice.</div>';
+  const title = 'Crypto Liquidations on ' + human + ' — ' + _rcU(rec.totalUsd) + ' Liquidated | MarginPad';
+  const desc = _rcU(rec.totalUsd) + ' in crypto was liquidated on ' + human + ': ' + _rcU(rec.longUsd) + ' longs vs ' + _rcU(rec.shortUsd) + ' shorts across ' + rec.n.toLocaleString('en-US') + ' events. Biggest single liquidation, busiest hour, per-coin and per-exchange breakdown.';
+  const extraHead = '<script type="application/ld+json">' + faq + '</script><meta property="og:title" content="' + title + '"><meta property="og:description" content="' + desc + '">';
+  return new Response(_rcShell(title, desc, 'https://marginpad.io/liquidations/recap/' + day + '/', body, extraHead), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=86400' } });
+}
+async function handleRecapSitemap(env) {
+  let idx = []; try { idx = JSON.parse(await env.STATS.get('liqrecap:idx') || '[]'); } catch (e) {}
+  const urls = ['<url><loc>https://marginpad.io/liquidations/recap/</loc><changefreq>daily</changefreq></url>']
+    .concat(idx.map(x => '<url><loc>https://marginpad.io/liquidations/recap/' + x.day + '/</loc><lastmod>' + x.day + '</lastmod></url>'));
+  return new Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + urls.join('') + '</urlset>', { headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600' } });
+}
 async function archiveLiq(env) {
   if (!env.BACKUP || !env.COLLECTOR_URL || !env.STATS) return;
   // key lives in KV liqarch:key (secret-store writes are permission-gated for agents; KV is private and
@@ -11104,7 +11231,7 @@ export default {
         const r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, text: 'MarginPad ops: TG_ADMIN_CHAT is live. Alerts + morning brief now deliver here.' });
         return new Response(JSON.stringify({ task: 'ping', tg: r }), { headers: jh });
       }
-      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, liqarch: archiveLiq };
+      const map = { opsalerts: checkOpsAlerts, brief: checkMorningBrief, referrals: checkReferrals, subs: checkSubscriptions, duels: settleDuels, news: checkNewsPost, payWeeklyPrizes: payWeeklyPrizes, sweep: sweepServerPositions, liqarch: archiveLiq, liqrecap: liqRecapDaily };
       const fn = map[task];
       if (!fn) return new Response(JSON.stringify({ error: 'unknown_task', tasks: ['ping'].concat(Object.keys(map)), note: 'real side effects (sends alerts/DMs, PAYS money, writes KV) — manual trigger of the real cron task' }), { headers: jh });
       const t0 = Date.now();
@@ -11560,6 +11687,8 @@ export default {
       const _bk = ssrBlogKind(url.pathname); if (_bk) return handleSsrBlog(request, url, env, _bk);
       const _hub = { '/liquidations/': 'liquidations', '/liquidation-statistics/': 'liquidations', '/etf-flows/': 'etf', '/fear-greed/': 'fng', '/funding/': 'funding', '/open-interest/': 'oi', '/long-short/': 'ls', '/hyperliquid-whales/': 'whales' }[url.pathname];
       if (_hub) return handleSsrHub(request, url, env, _hub, null);
+      if (url.pathname === '/liquidations/recap' || url.pathname === '/liquidations/recap/' || /^\/liquidations\/recap\/\d{4}-\d{2}-\d{2}\/?$/.test(url.pathname)) return handleLiqRecap(url, env); // BEFORE the coin match — 'recap' must never be parsed as a coin slug
+      if (url.pathname === '/sitemap-recaps.xml') return handleRecapSitemap(env);
       const _mLc = url.pathname.match(/^\/liquidations\/([a-z0-9]{2,10})\/$/);
       if (_mLc) return handleSsrHub(request, url, env, 'liquidations', _mLc[1].toUpperCase());
     }
@@ -11619,6 +11748,7 @@ export default {
     bg(resolveFreeSignals, 'freesigres'); // resolve open free signals' outcome (TP1 vs stop) from fresh candles → fsig:results
     bg(nightlyBackup, 'backup'); // P0.5 — once per UTC day (stamped), retries on failure each */10
     bg(archiveLiq, 'liqarch'); // liquidation-feed daily dump → R2 liq/<day>.csv.gz (once/day, 7d self-heal backfill)
+    bg(liqRecapDaily, 'liqrecap'); // R2 archive → permanent /liquidations/recap/<day>/ pages (KV summaries; builds yesterday + backfills 3/run)
     bg(checkDailyWrap, 'wrap'); // free-channel daily market wrap (16:00 UTC, no advice, internal data only)
     bg(checkLiqAlert, 'liqalert'); // free-channel liq cascade alert — armed by KV liqalert:on='1' (default OFF)
     bg(checkCPaper, 'cpaper'); // C funding-percentile engine in RECORD-ONLY paper mode (no sends; 2-week live-vs-backtest gate)
