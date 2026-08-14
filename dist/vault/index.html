@@ -83,6 +83,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     <div class="wchip lvl"><b id="wLvl">—</b><span>level</span></div>
     <div class="wchip xp"><b id="wXp">—</b><span>XP</span></div>
     <div class="wchip bal"><b id="wBal">—</b><span>rewards balance</span></div>
+    <div class="wchip" style="border-color:#5a3a1a"><b id="wStreak" style="color:#ff9a3a">—</b><span>day streak</span></div>
   </div>
   <div class="signin" id="signin" hidden>Sign in (free, email code only) to see your XP, buy frames and equip them. <a href="/paper-trade">Open the app to sign in →</a></div>
 
@@ -98,6 +99,14 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   <div class="h2s">Exclusive frames — pay with XP (never drops you below your level threshold) or with your rewards balance. Balance purchases are final.</div>
   <div class="gal" id="galShop"></div>
   <div class="msg" id="msg"></div>
+
+  <h2>Earned frames</h2>
+  <div class="h2s">These cannot be bought at any price — streak milestones and the weekly crown.</div>
+  <div class="gal" id="galEarn"></div>
+
+  <h2>Achievements</h2>
+  <div class="h2s">Server-verified from your real trading record — earned once, kept forever.</div>
+  <div class="gal" id="galAch" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))"></div>
 
   <p class="note">XP prices deduct from your XP but a purchase can never cost you a level — the shop refuses any spend that would drop you below your current level's threshold. Balance purchases are deducted from your withdrawable rewards balance and are final. Equipped frames show on your public trader card, chat and leaderboards.</p>
 
@@ -168,6 +177,30 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       return '<div class="fcard">'+prevCard(it.id,un)+'<div class="fmeta"><span class="fname">'+it.name+'</span><span class="tier '+it.tier+'">'+it.tier+'</span></div><div class="fdesc">'+(it.desc||'')+(it.minLevel?' · Requires '+it.minLevel.charAt(0).toUpperCase()+it.minLevel.slice(1):'')+'</div><div class="fact">'+(acts||'<button class="btn lock" disabled>Unavailable</button>')+'</div></div>';
     }).join('');
   }
+  var EARN_FRAMES=[
+    {id:'streak7',name:'Kindling',need:'Hold a 7-day streak',tier:'rare'},
+    {id:'streak30',name:'Wildfire',need:'Hold a 30-day streak',tier:'epic'},
+    {id:'streak100',name:'Eternal Flame',need:'Hold a 100-day streak',tier:'legendary'},
+    {id:'champion',name:'Champion',need:'Finish #1 on the weekly ROE board (worn 7 days)',tier:'legendary'}
+  ];
+  function renderEarn(){
+    var owned=ST?ST.owned:[],un=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()?window.mpAuth.me().username:'';
+    var st=ST?(+ST.streak||0):0;
+    document.getElementById('galEarn').innerHTML=EARN_FRAMES.map(function(f){
+      var own=owned.indexOf(f.id)>=0,eq=ST&&ST.equipped===f.id;
+      var prog=f.id==='streak7'?Math.min(st,7)+'/7 days':f.id==='streak30'?Math.min(st,30)+'/30 days':f.id==='streak100'?Math.min(st,100)+'/100 days':'';
+      var act=own?(eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-eq="'+f.id+'">Equip</button>'):'<button class="btn lock" disabled>'+(prog?prog:'Not earned yet')+'</button>';
+      return '<div class="fcard">'+prevCard(f.id,un)+'<div class="fmeta"><span class="fname">'+f.name+'</span><span class="tier '+f.tier+'">EARNED</span></div><div class="fdesc">'+f.need+'</div><div class="fact">'+act+'</div></div>';
+    }).join('');
+  }
+  function renderAch(){
+    var defs=(ST&&ST.achDefs)||[],got=(ST&&ST.ach)||[];
+    if(!defs.length){document.getElementById('galAch').innerHTML='<div class="fdesc">Sign in to see your achievements.</div>';return;}
+    document.getElementById('galAch').innerHTML=defs.map(function(a){
+      var own=got.indexOf(a.id)>=0;
+      return '<div class="fcard" style="opacity:'+(own?'1':'.55')+'"><div class="fmeta"><span class="fname" style="font-size:14px">'+a.name+'</span><span class="tier '+(own?'legendary':'common')+'">'+(own?'EARNED':'LOCKED')+'</span></div><div class="fdesc">'+a.how+'</div></div>';
+    }).join('');
+  }
   function say(t,ok){var m=document.getElementById('msg');m.textContent=t;m.className='msg '+(ok?'ok':'err');}
   function load(){
     fetch('/api/auth/shop',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
@@ -179,7 +212,8 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
         document.getElementById('wXp').textContent=fmt(d.xp);
         document.getElementById('wBal').textContent='$'+(+d.balance||0).toFixed(2);
       }
-      renderLadder();renderLevelGal();renderShopGal();
+      renderLadder();renderLevelGal();renderShopGal();renderEarn();renderAch();
+      if(d.signedIn&&document.getElementById('wStreak'))document.getElementById('wStreak').textContent=(d.streak||0);
       if(!d.on)say('The Vault is temporarily paused — purchases are disabled.',false);
     }).catch(function(){say('Could not load the Vault. Refresh to retry.',false);});
   }

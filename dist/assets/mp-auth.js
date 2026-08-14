@@ -293,6 +293,14 @@
     + '.lbm-card.frame-void::after,.mpa-fr-sw.frame-void::after{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;pointer-events:none;z-index:6;background:conic-gradient(from var(--mpAng,0deg),#241238,#6a2fd0,#0a0512,#8b5cff,#241238);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 9s linear infinite}'
     + '.lbm-card.frame-sovereign,.mpa-fr-sw.frame-sovereign{border-color:transparent;box-shadow:0 0 0 1px rgba(255,244,214,.7),0 0 64px -10px rgba(255,228,150,.6),inset 0 0 40px -26px rgba(255,240,200,.5)}'
     + '.lbm-card.frame-sovereign::after,.mpa-fr-sw.frame-sovereign::after{content:"";position:absolute;inset:-2.2px;border-radius:inherit;padding:2.2px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#fff8e1,#d4af37,#ffffff,#b8860b,#fff8e1);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 8s linear infinite}'
+    + '.lbm-card.frame-streak7,.mpa-fr-sw.frame-streak7{border-color:#ffb84a;box-shadow:0 0 0 1px rgba(255,184,74,.55),0 0 30px -12px rgba(255,150,50,.5)}'
+    + '.lbm-card.frame-streak7::after,.mpa-fr-sw.frame-streak7::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(15deg,#ffdf8a,#b85c00 45%,#ffb84a 65%,#5a2a00 90%,#ffcf6a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    + '.lbm-card.frame-streak30,.mpa-fr-sw.frame-streak30{border-color:#ff6a2a;box-shadow:0 0 0 1px rgba(255,106,42,.6),0 0 44px -8px rgba(255,80,20,.55);animation:mpaFrLeg 3s ease-in-out infinite}'
+    + '.lbm-card.frame-streak30::after,.mpa-fr-sw.frame-streak30::after{content:"";position:absolute;inset:-1.8px;border-radius:inherit;padding:1.8px;pointer-events:none;z-index:6;background:linear-gradient(10deg,#ffd75a,#c92a00 35%,#ff6a2a 55%,#7a1000 80%,#ffae4a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
+    + '.lbm-card.frame-streak100,.mpa-fr-sw.frame-streak100{border-color:#9adfff;box-shadow:0 0 0 1px rgba(154,223,255,.7),0 0 64px -10px rgba(120,200,255,.6),inset 0 0 40px -26px rgba(154,223,255,.5)}'
+    + '.lbm-card.frame-streak100::after,.mpa-fr-sw.frame-streak100::after{content:"";position:absolute;inset:-2.2px;border-radius:inherit;padding:2.2px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#e8fbff,#5ad0ff,#ffffff,#2a8ac0,#e8fbff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 6.5s linear infinite}'
+    + '.lbm-card.frame-champion,.mpa-fr-sw.frame-champion{border-color:transparent;box-shadow:0 0 0 1px rgba(255,215,90,.8),0 0 70px -8px rgba(255,200,60,.65),inset 0 0 44px -24px rgba(255,220,120,.55)}'
+    + '.lbm-card.frame-champion::after,.mpa-fr-sw.frame-champion::after{content:"";position:absolute;inset:-2.4px;border-radius:inherit;padding:2.4px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#ffd75a,#fff3c0,#c98f1b,#ffe98a,#ffd75a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 5.5s linear infinite}'
     // --- FOUNDER — rich gold + diagonal shine sweep (above premium) ---
     + '.lbm-card.frame-founder,.mpa-fr-sw.frame-founder{position:relative;border-color:#ffd75a;box-shadow:0 0 0 1px rgba(255,215,90,.7),0 0 42px -8px rgba(255,198,74,.58),inset 0 0 44px -30px rgba(255,226,132,.75),0 22px 66px -30px rgba(0,0,0,.8)}'
     + '@keyframes mpaShine{0%{background-position:170% 0}42%{background-position:-80% 0}100%{background-position:-80% 0}}'
@@ -667,7 +675,11 @@
     { k: 'ember', name: 'Ember', by: 'Vault' },
     { k: 'sakura', name: 'Sakura', by: 'Vault' },
     { k: 'void', name: 'Void', by: 'Vault' },
-    { k: 'sovereign', name: 'Sovereign', by: 'Vault' }
+    { k: 'sovereign', name: 'Sovereign', by: 'Vault' },
+    { k: 'streak7', name: 'Kindling', by: '7-day streak' },
+    { k: 'streak30', name: 'Wildfire', by: '30-day streak' },
+    { k: 'streak100', name: 'Eternal Flame', by: '100-day streak' },
+    { k: 'champion', name: 'Champion', by: 'Weekly #1' }
   ];
   function renderCustomize() {
     bodyEl.innerHTML = '<h3 class="mpa-h">Customize card</h3><p class="mpa-sub" style="margin:-4px 0 12px">Pick a frame for your public trader card. Unlock more by ranking up or going Premium.</p>'

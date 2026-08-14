@@ -7770,6 +7770,28 @@ const VAULT_ITEMS = [
   { id: 'sakura', name: 'Sakura', tier: 'epic', cents: 199, desc: 'Soft rose gradient with a silver lining' },
   { id: 'void', name: 'Void', tier: 'legendary', cents: 499, desc: 'Black-violet depth that eats the light' },
   { id: 'sovereign', name: 'Sovereign', tier: 'legendary', cents: 999, minLevel: 'diamond', desc: 'Diamond-gated white gold — the flex' },
+  // earn-only (no price fields -> buy routes refuse them; ownership comes from grants)
+  { id: 'streak7', name: 'Kindling', tier: 'rare', earn: '7-day streak', desc: 'Seven straight days on the desk' },
+  { id: 'streak30', name: 'Wildfire', tier: 'epic', earn: '30-day streak', desc: 'A full month without missing a day' },
+  { id: 'streak100', name: 'Eternal Flame', tier: 'legendary', earn: '100-day streak', desc: 'One hundred days. Unbuyable. Unquestionable.' },
+  { id: 'champion', name: 'Champion', tier: 'legendary', earn: 'Win a weekly board (worn for 7 days)', desc: 'Reserved for the week&#39;s #1 — expires when the crown moves on' },
+];
+const ACH_DEFS = [ // id, name, how — all server-verified from real tables; earned once, kept forever
+  { id: 'first_win', name: 'First Blood', how: 'Close your first winning trade' },
+  { id: 'ten_wins', name: 'On a Roll', how: 'Close 10 winning trades' },
+  { id: 'fifty_closes', name: 'Volume Dealer', how: 'Close 50 trades' },
+  { id: 'big_win', name: 'Moonshot', how: 'Close a trade at +100% ROE or better' },
+  { id: 'degen_survivor', name: 'Degen Survivor', how: 'Win a trade at 100x or higher leverage' },
+  { id: 'explorer', name: 'Market Explorer', how: 'Trade 10 different symbols' },
+  { id: 'week_flame', name: 'Week of Fire', how: 'Hold a 7-day streak' },
+  { id: 'month_flame', name: 'Month of Fire', how: 'Hold a 30-day streak' },
+  { id: 'duelist', name: 'Duelist', how: 'Win a duel' },
+  { id: 'warlord', name: 'Warlord', how: 'Win 10 duels' },
+  { id: 'scholar', name: 'Scholar', how: 'Finish 20 Academy lessons' },
+  { id: 'graduate', name: 'Graduate', how: 'Finish the entire Academy' },
+  { id: 'collector', name: 'Collector', how: 'Own 3 Vault frames' },
+  { id: 'veteran', name: 'Veteran', how: 'Earn 30,000 lifetime XP' },
+  { id: 'regular', name: 'The Regular', how: '500 pageviews on your account' },
 ];
 function vaultItem(id) { return VAULT_ITEMS.find(x => x.id === id) || null; }
 function vaultIsTester(username) { return VAULT_TESTERS.indexOf(String(username || '').toLowerCase()) >= 0; }
@@ -8643,6 +8665,8 @@ async function payWeeklyPrizes(env) {
       } else {
         push(roeTop, cfg.lbRoe, 'roe', x => ({ roe: +x.roe || 0, symbol: x.symbol || '', side: x.side || '', name: x.name || '' }));
       }
+      // THE VAULT F2: the week's #1 on the ROE board wears the Champion frame for 7 days (grant refreshes ts)
+      try { if (roeTop[0] && roeTop[0].uid) { const chUid = String(roeTop[0].uid).replace(/^u:/, ''); await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/shopgrant', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: chUid, item: 'champion', src: 'wk' }) })); await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/champrefresh', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: chUid }) })); } } catch (eCh) {}
       push(wrTop, cfg.lbWr, 'wr', x => ({ name: x.name || '', wr: Math.round(x.wr * 100) }));
       push(xpTop, cfg.lbXp, 'xp', x => ({ name: x.name || '', xp: +x.xp || 0 }));
     }
@@ -9596,7 +9620,8 @@ async function handleAuth(url, request, env, ctx) {
     let on = true; try { on = (await env.STATS.get('shop:on')) !== '0'; } catch (e) {}
     const out = { on: on, items: VAULT_ITEMS, signedIn: !!u, owned: ['default'], equipped: 'default', xp: 0, level: 'unranked', balance: 0, tester: false };
     if (u) {
-      try { const r1 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/framestate?uid=' + encodeURIComponent(u.id))); const d1 = await r1.json(); out.owned = d1.owned || out.owned; out.equipped = d1.equipped || 'default'; out.xp = +d1.xp || 0; out.level = d1.level || 'unranked'; } catch (e) {}
+      try { const r1 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/framestate?uid=' + encodeURIComponent(u.id))); const d1 = await r1.json(); out.owned = d1.owned || out.owned; out.equipped = d1.equipped || 'default'; out.xp = +d1.xp || 0; out.level = d1.level || 'unranked'; out.streak = +d1.streak || 0; out.freezes = +d1.freezes || 0; } catch (e) {}
+      try { const r3 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/achstate?uid=' + encodeURIComponent(u.id))); const d3 = await r3.json(); out.ach = d3.earned || []; out.achDefs = d3.defs || []; } catch (e) {}
       try { const led0 = env.REWARDS.get(env.REWARDS.idFromName('ledger')); const r2 = await led0.fetch(new Request('https://do/account', { headers: { 'x-acct': 'u:' + u.id } })); const d2 = await r2.json(); out.balance = (d2 && +d2.balance) || 0; } catch (e) {} // ledger DO reads identity from the x-acct header; balance arrives as USD float
       out.tester = vaultIsTester(u.username);
     }
@@ -13559,6 +13584,7 @@ export class UserStore {
                 else { const missed = diff - 1; if (fz >= missed) { st = (+ur.streak || 0) + 1; usedFreeze = missed; } else st = 1; } } // freeze(s) cover the gap, else streak resets
               let newFz = fz - usedFreeze; if (st > 0 && st % 7 === 0) newFz = Math.min(3, newFz + 1); // earn 1 freeze each 7-day milestone, banked cap 3
               sql.exec('UPDATE users SET streak_day=?, streak=?, freezes=? WHERE id=?', today9, st, newFz, uid);
+              if (st === 7 || st === 30 || st === 100) { try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', uid, 'streak' + st, now, 'streak'); this._grantXp(uid, 'streak', 50, { note: st + '-day streak frame unlocked' }); } catch (eS) {} } // THE VAULT: milestone frames — earn-only, never buyable
               this._grantXp(uid, 'checkin', 20, { note: 'daily check-in' });
               this._grantXp(uid, 'streak', Math.min(40, st * 2), { note: st + '-day streak' });
               if (usedFreeze) this._grantXp(uid, 'streak', 5, { note: 'streak freeze saved your ' + st + '-day streak' }); // small reward + shows as a toast so the save is visible
@@ -14553,7 +14579,7 @@ export class UserStore {
       if (!u) return this.j({ error: 'no_user' }, 404);
       const founder = PREM_FOUNDERS.indexOf(String(u.username || '').toLowerCase()) >= 0;
       const premium = founder || (+u.premium || 0) > Date.now();
-      const bought = this.rows('SELECT item_id FROM cosmetics WHERE user_id=?', uid).map(x => x.item_id);
+      const bought = this.rows('SELECT item_id, ts FROM cosmetics WHERE user_id=?', uid).filter(function(x) { return x.item_id !== 'champion' || (Date.now() - (+x.ts || 0)) < 7 * 86400000; }).map(x => x.item_id);
       const okFr = frameOwned(fr, u.xp, premium, founder) || bought.indexOf(fr) >= 0 || (vaultIsTester(u.username) && (!!vaultItem(fr) || fr === 'default'));
       if (!okFr) return this.j({ error: 'locked' });
       try { sql.exec('UPDATE users SET frame=? WHERE id=?', fr, uid); } catch (e) {}
@@ -14565,10 +14591,28 @@ export class UserStore {
       if (!u) return this.j({ owned: ['default'], equipped: 'default', xp: 0 });
       const founder = PREM_FOUNDERS.indexOf(String(u.username || '').toLowerCase()) >= 0;
       const premium = founder || (+u.premium || 0) > Date.now();
-      let owned = framesFor(u.xp, premium, founder).concat(this.rows('SELECT item_id FROM cosmetics WHERE user_id=?', uid).map(x => x.item_id));
+      const cosRows = this.rows('SELECT item_id, ts FROM cosmetics WHERE user_id=?', uid);
+      let owned = framesFor(u.xp, premium, founder).concat(cosRows.filter(function(x) { return x.item_id !== 'champion' || (Date.now() - (+x.ts || 0)) < 7 * 86400000; }).map(x => x.item_id)); // champion is worn for 7 days, then the crown moves on
       if (vaultIsTester(u.username)) owned = owned.concat(VAULT_ITEMS.map(x => x.id)); // owner test account sees everything
       owned = owned.filter(function(v, i, a) { return a.indexOf(v) === i; });
-      return this.j({ owned: owned, equipped: u.frame || 'default', premium: premium, founder: founder, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k });
+      const uSt = this.rows('SELECT streak, freezes FROM users WHERE id=?', uid)[0] || {};
+      return this.j({ owned: owned, equipped: u.frame || 'default', premium: premium, founder: founder, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k, streak: +uSt.streak || 0, freezes: +uSt.freezes || 0 });
+    }
+    if (path === '/achstate') { // THE VAULT F2: achievements — computed from REAL tables, earns PERSISTED (tradeev only holds 30d, so an earned badge must never un-earn)
+      const uid = String(url.searchParams.get('uid') || '');
+      const u = this.rows('SELECT xp, xp_life, pv, streak, username FROM users WHERE id=?', uid)[0];
+      if (!u) return this.j({ earned: [], defs: ACH_DEFS });
+      try { sql.exec('CREATE TABLE IF NOT EXISTS achievements(user_id TEXT, ach_id TEXT, ts INTEGER, PRIMARY KEY(user_id,ach_id))'); } catch (e) {}
+      const have = {}; this.rows('SELECT ach_id FROM achievements WHERE user_id=?', uid).forEach(r => { have[r.ach_id] = 1; });
+      const tv = this.rows("SELECT COUNT(*) n, SUM(CASE WHEN pnl>0 THEN 1 ELSE 0 END) w, MAX(roe) mx, SUM(CASE WHEN lev>=100 AND pnl>0 THEN 1 ELSE 0 END) hl, COUNT(DISTINCT sym) sy FROM tradeev WHERE user_id=? AND kind='close'", uid)[0] || {};
+      const duelsW = (this.rows("SELECT COUNT(*) n FROM duels WHERE winner=? AND status='done'", uid)[0] || {}).n || 0;
+      const acadN = (this.rows("SELECT COUNT(*) n FROM academy WHERE user_id=? AND lesson NOT LIKE 'course:%'", uid)[0] || {}).n || 0;
+      const cosN = (this.rows('SELECT COUNT(*) n FROM cosmetics WHERE user_id=?', uid)[0] || {}).n || 0;
+      const st9 = +u.streak || 0, xl = +u.xp_life || +u.xp || 0, pv9 = +u.pv || 0;
+      const now9 = Date.now(); const fresh = [];
+      const tests = { first_win: (+tv.w || 0) >= 1, ten_wins: (+tv.w || 0) >= 10, fifty_closes: (+tv.n || 0) >= 50, big_win: (+tv.mx || 0) >= 100, degen_survivor: (+tv.hl || 0) >= 1, explorer: (+tv.sy || 0) >= 10, week_flame: st9 >= 7, month_flame: st9 >= 30, duelist: duelsW >= 1, warlord: duelsW >= 10, scholar: acadN >= 20, graduate: acadN >= 73, collector: cosN >= 3, veteran: xl >= 30000, regular: pv9 >= 500 };
+      for (const k9 in tests) if (tests[k9] && !have[k9]) { try { sql.exec('INSERT INTO achievements(user_id,ach_id,ts) VALUES(?,?,?)', uid, k9, now9); have[k9] = 1; fresh.push(k9); } catch (e) {} }
+      return this.j({ earned: Object.keys(have), fresh: fresh, defs: ACH_DEFS });
     }
     if (path === '/shopbuy') { // XP purchase — atomic; LEVEL-FLOOR GUARD: spending can never drop you below your current level's threshold (a frame purchase must not cost someone their level, their level frames or the rewards gate)
       const uid = String(b.uid || ''); const it = vaultItem(String(b.item || ''));
@@ -14584,6 +14628,10 @@ export class UserStore {
       sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', uid, it.id, Date.now(), 'xp');
       const nx = this.rows('SELECT xp FROM users WHERE id=?', uid)[0];
       return this.j({ ok: true, item: it.id, xp: nx ? +nx.xp : 0 });
+    }
+    if (path === '/champrefresh') { // weekly winner: refresh the champion row's ts so the 7-day wear window restarts
+      try { sql.exec('UPDATE cosmetics SET ts=? WHERE user_id=? AND item_id=?', Date.now(), String(b.uid || ''), 'champion'); } catch (e) {}
+      return this.j({ ok: true });
     }
     if (path === '/shopgrant') { // balance purchase grant (worker already debited the ledger) / admin grant — idempotent
       const uid = String(b.uid || ''); const it = vaultItem(String(b.item || ''));
