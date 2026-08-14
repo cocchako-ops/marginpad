@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Funding Cost Calculator — What Holding a Perp Really Costs | MarginPad</title>
+<meta name="description" content="Free funding cost calculator for crypto perpetuals: position size, funding rate and hold time turned into the exact dollars paid or earned per interval, per day and total." />
+<meta name="keywords" content="funding cost calculator, funding rate calculator crypto, perpetual funding fees, how much is funding" />
+<link rel="canonical" href="https://marginpad.io/crypto-funding-cost-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Funding Cost Calculator — What Holding a Perp Really Costs | MarginPad" />
+<meta property="og:description" content="Free funding cost calculator for crypto perpetuals: position size, funding rate and hold time turned into the exact dollars paid or earned per interval, per day and total." />
+<meta property="og:url" content="https://marginpad.io/crypto-funding-cost-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og-home.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<style>
+:root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:34px 18px 60px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,4.6vw,38px);letter-spacing:-.02em;line-height:1.12;margin:10px 0 10px}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px;margin:0 0 24px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;margin:34px 0 10px}
+p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.f label{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0 0 5px}
+.f input,.f select{width:100%;background:#0a0d11;border:1px solid #2b323b;border-radius:9px;padding:11px 12px;color:var(--ink);font-family:'Space Mono',monospace;font-size:16px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--lime)}
+.res{margin-top:16px;border-top:1px solid var(--line);padding-top:6px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(32,38,47,.6)}
+.rrow:last-child{border-bottom:none}.rrow .k{color:var(--dim);font-size:13.5px}
+.rrow .v{font-family:'Space Mono',monospace;font-size:16px;font-weight:700}
+.rrow.big .v{font-size:21px;color:var(--lime)}.v.up{color:var(--up)}.v.dn{color:var(--red)}
+.frm{background:#0a0d11;border:1px solid var(--line);border-radius:var(--rs);padding:13px 16px;font-family:'Space Mono',monospace;font-size:13.5px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+.ex{background:linear-gradient(160deg,rgba(194,246,74,.05),transparent 60%),var(--panel);border:1px solid var(--line);border-radius:var(--rs);padding:14px 17px}
+.faq details{border:1px solid var(--line);border-radius:var(--rs);background:var(--panel);margin-bottom:9px;padding:0 16px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:14.5px;padding:13px 0}
+.rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.rel a{color:var(--lime);border:1px solid rgba(194,246,74,.35);border-radius:999px;padding:7px 14px;font-size:12.5px;text-decoration:none}
+.rel a:hover{background:rgba(194,246,74,.1)}
+.mprail{margin:34px 0 8px;border:1px solid rgba(245,166,35,.35);border-radius:16px;padding:16px;background:linear-gradient(160deg,rgba(245,166,35,.06),transparent 60%),var(--panel)}
+.mprail-t{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;color:#f5a623;margin-bottom:10px}
+.mprail a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;color:var(--ink);text-decoration:none;margin-bottom:8px;transition:.15s}
+.mprail a:hover{border-color:#f5a623}.mprail a b{flex:none}.mprail a span{flex:1;color:var(--dim);font-size:12.5px}.mprail a i{color:#f5a623;font-style:normal}
+.note{color:var(--faint);font-size:12px;margin-top:26px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Funding Cost Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/crypto-funding-cost-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Funding Cost Calculator","item":"https://marginpad.io/crypto-funding-cost-calculator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Who pays funding to whom?","acceptedAnswer":{"@type":"Answer","text":"When the rate is positive, longs pay shorts (the perp trades above spot and the market pays people to short it back down). When negative, shorts pay longs. You pay or receive automatically every 8 hours while the position is open at the funding timestamp."}},{"@type":"Question","name":"Is funding the same on every exchange?","acceptedAnswer":{"@type":"Answer","text":"No — each exchange computes its own rate from its own perp-vs-index premium, and they diverge, especially on smaller coins. That divergence is what funding-arbitrage desks trade. Check the live per-exchange rates on the MarginPad funding page before choosing a venue for a long hold."}},{"@type":"Question","name":"Can I avoid funding entirely?","acceptedAnswer":{"@type":"Answer","text":"Close before the funding timestamp and you pay nothing for that interval — funding only hits positions open at the exact mark. Spot holdings never pay funding, and dated futures (quarterlies) replace it with a fixed basis, which suits long-term directional holds better than perps."}}]}</script>
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+<h1>Funding Cost Calculator</h1>
+<p class="sub">Perpetuals never expire — funding is the rent that keeps them tied to spot. Price what your hold actually costs (or earns).</p>
+<div class="calc"><div class="cgrid"><div class="f"><label for="pos">Position size (USD)</label><input id="pos" type="number" inputmode="decimal" value="10000"></div><div class="f"><label for="frate">Funding rate % / 8h</label><input id="frate" type="number" inputmode="decimal" value="0.01" step="0.001"></div><div class="f"><label for="days">Days held</label><input id="days" type="number" inputmode="decimal" value="7" step="0.5"></div><div class="f"><label for="dir">You are</label><select id="dir"><option value="1">Paying (with the crowd)</option><option value="-1">Receiving (against it)</option></select></div></div><div class="res" id="res"></div></div>
+<h2>How it is calculated</h2>
+<div class="frm">cost per interval = position &times; rate &nbsp;&nbsp;|&nbsp;&nbsp; daily = &times;3 &nbsp;&nbsp;|&nbsp;&nbsp; APR = rate &times; 3 &times; 365</div>
+<p>Funding is exchanged directly between traders every 8 hours on the <strong>full position value</strong>, not your margin. A "small" 0.01% rate is 10.95% annualized — real money on any position held for weeks. When rates spike during euphoria (0.1%+ per interval), holding the crowded side can cost more than the move you are hoping for.</p>
+<h2>Worked example</h2>
+<div class="ex">A <b>$10,000</b> long at <b>+0.01%/8h</b> for <b>7 days</b>: $1 per interval, $3 per day, <b>$21 total</b> — about 10.95% APR. The same week at a euphoric 0.1% rate would cost <b>$210</b>.</div>
+<h2>FAQ</h2>
+<div class="faq"><details><summary>Who pays funding to whom?</summary><p>When the rate is positive, longs pay shorts (the perp trades above spot and the market pays people to short it back down). When negative, shorts pay longs. You pay or receive automatically every 8 hours while the position is open at the funding timestamp.</p></details><details><summary>Is funding the same on every exchange?</summary><p>No — each exchange computes its own rate from its own perp-vs-index premium, and they diverge, especially on smaller coins. That divergence is what funding-arbitrage desks trade. Check the live per-exchange rates on the MarginPad funding page before choosing a venue for a long hold.</p></details><details><summary>Can I avoid funding entirely?</summary><p>Close before the funding timestamp and you pay nothing for that interval — funding only hits positions open at the exact mark. Spot holdings never pay funding, and dated futures (quarterlies) replace it with a fixed basis, which suits long-term directional holds better than perps.</p></details></div>
+<h2>Related tools</h2>
+<div class="rel"><a href="/funding">Live funding rates</a><a href="/crypto-break-even-calculator/">Break-even calculator</a><a href="/blog/what-is-funding-rate/">What is funding? (guide)</a><a href="/crypto-profit-calculator/">Profit calculator</a><a href="/calculators">All calculators (app)</a></div>
+<div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
+<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
+<a href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
+<p class="note">Free, no signup, runs entirely in your browser. Educational tool — not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
+</div>
+<script>function calc(){var p=+document.getElementById('pos').value,fr=+document.getElementById('frate').value/100,d=+document.getElementById('days').value,dir=+document.getElementById('dir').value;var r=document.getElementById('res');if(!(p>0&&d>0)){r.innerHTML='';return;}var per=p*fr,day=per*3,tot=day*d,sgn=dir>0?-1:1;var fx=function(v){return (v>=0?'+':'')+v.toFixed(2);};
+r.innerHTML='<div class="rrow"><span class="k">Per 8h interval</span><span class="v '+(sgn>0?'up':'dn')+'">'+fx(sgn*per)+' USD</span></div><div class="rrow"><span class="k">Per day (3 intervals)</span><span class="v '+(sgn>0?'up':'dn')+'">'+fx(sgn*day)+' USD</span></div><div class="rrow big"><span class="k">Over '+d+' day'+(d===1?'':'s')+'</span><span class="v '+(sgn>0?'up':'dn')+'">'+fx(sgn*tot)+' USD</span></div><div class="rrow"><span class="k">Annualized rate</span><span class="v">'+(fr*3*365*100).toFixed(1)+'% APR</span></div>';}
+document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

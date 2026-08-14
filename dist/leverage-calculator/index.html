@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Leverage Calculator — Margin, Position & Liquidation Distance | MarginPad</title>
+<meta name="description" content="Free crypto leverage calculator: see the leverage implied by your margin and position size, the margin a target position needs, and roughly how far liquidation sits." />
+<meta name="keywords" content="leverage calculator crypto, margin calculator futures, how much leverage, liquidation distance calculator" />
+<link rel="canonical" href="https://marginpad.io/leverage-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Leverage Calculator — Margin, Position & Liquidation Distance | MarginPad" />
+<meta property="og:description" content="Free crypto leverage calculator: see the leverage implied by your margin and position size, the margin a target position needs, and roughly how far liquidation sits." />
+<meta property="og:url" content="https://marginpad.io/leverage-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og-home.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<style>
+:root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:34px 18px 60px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,4.6vw,38px);letter-spacing:-.02em;line-height:1.12;margin:10px 0 10px}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px;margin:0 0 24px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;margin:34px 0 10px}
+p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.f label{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0 0 5px}
+.f input,.f select{width:100%;background:#0a0d11;border:1px solid #2b323b;border-radius:9px;padding:11px 12px;color:var(--ink);font-family:'Space Mono',monospace;font-size:16px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--lime)}
+.res{margin-top:16px;border-top:1px solid var(--line);padding-top:6px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(32,38,47,.6)}
+.rrow:last-child{border-bottom:none}.rrow .k{color:var(--dim);font-size:13.5px}
+.rrow .v{font-family:'Space Mono',monospace;font-size:16px;font-weight:700}
+.rrow.big .v{font-size:21px;color:var(--lime)}.v.up{color:var(--up)}.v.dn{color:var(--red)}
+.frm{background:#0a0d11;border:1px solid var(--line);border-radius:var(--rs);padding:13px 16px;font-family:'Space Mono',monospace;font-size:13.5px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+.ex{background:linear-gradient(160deg,rgba(194,246,74,.05),transparent 60%),var(--panel);border:1px solid var(--line);border-radius:var(--rs);padding:14px 17px}
+.faq details{border:1px solid var(--line);border-radius:var(--rs);background:var(--panel);margin-bottom:9px;padding:0 16px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:14.5px;padding:13px 0}
+.rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.rel a{color:var(--lime);border:1px solid rgba(194,246,74,.35);border-radius:999px;padding:7px 14px;font-size:12.5px;text-decoration:none}
+.rel a:hover{background:rgba(194,246,74,.1)}
+.mprail{margin:34px 0 8px;border:1px solid rgba(245,166,35,.35);border-radius:16px;padding:16px;background:linear-gradient(160deg,rgba(245,166,35,.06),transparent 60%),var(--panel)}
+.mprail-t{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;color:#f5a623;margin-bottom:10px}
+.mprail a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;color:var(--ink);text-decoration:none;margin-bottom:8px;transition:.15s}
+.mprail a:hover{border-color:#f5a623}.mprail a b{flex:none}.mprail a span{flex:1;color:var(--dim);font-size:12.5px}.mprail a i{color:#f5a623;font-style:normal}
+.note{color:var(--faint);font-size:12px;margin-top:26px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Leverage Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/leverage-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Crypto Leverage Calculator","item":"https://marginpad.io/leverage-calculator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What leverage do most professionals actually use?","acceptedAnswer":{"@type":"Answer","text":"Serious futures traders rarely run effective leverage above 3-5x on the whole account, even when an exchange offers 100x. High per-trade leverage is mainly a capital-efficiency tool: it lets you lock less margin for the same deliberately-sized position — not a way to multiply the bet."}},{"@type":"Question","name":"Is liquidation the same as my stop-loss?","acceptedAnswer":{"@type":"Answer","text":"No. Liquidation is the exchange force-closing you when margin runs out — you lose the whole margin plus liquidation fees. A stop-loss is your own exit at a price you chose. If liquidation is doing the job of your stop, the position was oversized."}},{"@type":"Question","name":"Why is my real liquidation price slightly different?","acceptedAnswer":{"@type":"Answer","text":"Exchanges compute liquidation from the maintenance-margin tier of your exact position size, plus fees, and for isolated vs cross margin differently. The distance formula here is the standard approximation for an isolated position and lands very close for typical sizes."}}]}</script>
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+<h1>Crypto Leverage Calculator</h1>
+<p class="sub">Margin, position size and leverage are one equation — set any two and the third follows, along with the distance to liquidation.</p>
+<div class="calc"><div class="cgrid"><div class="f"><label for="margin">Margin (USD)</label><input id="margin" type="number" inputmode="decimal" value="100"></div><div class="f"><label for="pos">Position size (USD)</label><input id="pos" type="number" inputmode="decimal" value="1000"></div><div class="f"><label for="mmr">Maintenance margin %</label><input id="mmr" type="number" inputmode="decimal" value="0.5" step="0.1"></div></div><div class="res" id="res"></div></div>
+<h2>How it is calculated</h2>
+<div class="frm">leverage = position / margin &nbsp;&nbsp;|&nbsp;&nbsp; liq distance &asymp; (1 &minus; MMR) / leverage</div>
+<p>Leverage is not a setting to max out — it is the ratio between the position you control and the collateral behind it. The higher it goes, the closer liquidation moves: at 10x the price only needs to travel roughly <strong>10%</strong> against you; at 100x, about <strong>1%</strong> — inside the random noise of a single candle on most coins.</p>
+<h2>Worked example</h2>
+<div class="ex"><b>$100</b> margin holding a <b>$1,000</b> position = <b>10x</b>. With a 0.5% maintenance margin, liquidation sits roughly <b>9.95% below entry</b> on a long. Every 1% move changes your margin by 10% — a normal 3% daily swing is a 30% equity swing at this size.</div>
+<h2>FAQ</h2>
+<div class="faq"><details><summary>What leverage do most professionals actually use?</summary><p>Serious futures traders rarely run effective leverage above 3-5x on the whole account, even when an exchange offers 100x. High per-trade leverage is mainly a capital-efficiency tool: it lets you lock less margin for the same deliberately-sized position — not a way to multiply the bet.</p></details><details><summary>Is liquidation the same as my stop-loss?</summary><p>No. Liquidation is the exchange force-closing you when margin runs out — you lose the whole margin plus liquidation fees. A stop-loss is your own exit at a price you chose. If liquidation is doing the job of your stop, the position was oversized.</p></details><details><summary>Why is my real liquidation price slightly different?</summary><p>Exchanges compute liquidation from the maintenance-margin tier of your exact position size, plus fees, and for isolated vs cross margin differently. The distance formula here is the standard approximation for an isolated position and lands very close for typical sizes.</p></details></div>
+<h2>Related tools</h2>
+<div class="rel"><a href="/btc-liquidation-calculator/">Liquidation calculator</a><a href="/crypto-profit-calculator/">Profit calculator</a><a href="/position-size-calculator/">Position size</a><a href="/calculators">All calculators (app)</a><a href="/blog/crypto-leverage-explained/">Leverage explained (guide)</a></div>
+<div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
+<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
+<a href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
+<p class="note">Free, no signup, runs entirely in your browser. Educational tool — not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
+</div>
+<script>function calc(){var m=+document.getElementById('margin').value,p=+document.getElementById('pos').value,mmr=+document.getElementById('mmr').value/100;var r=document.getElementById('res');if(!(m>0&&p>0)){r.innerHTML='';return;}var lev=p/m,liq=(1-mmr)/lev*100;
+r.innerHTML='<div class="rrow big"><span class="k">Implied leverage</span><span class="v">'+lev.toFixed(2)+'x</span></div><div class="rrow"><span class="k">Liquidation distance (approx, long)</span><span class="v dn">-'+liq.toFixed(2)+'%</span></div><div class="rrow"><span class="k">A 1% price move changes your margin by</span><span class="v">'+lev.toFixed(1)+'%</span></div><div class="rrow"><span class="k">Move that wipes 50% of margin</span><span class="v">'+(50/lev).toFixed(2)+'%</span></div>';}
+document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

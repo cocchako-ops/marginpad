@@ -15475,6 +15475,14 @@ const MISSION_POOL = [
   { mid: 'alert', title: 'Set a price alert', desc: 'Pick your level and let the site watch the chart for you', cents: 3, vt: 'ev', va: 'alert', n: 1, cat: 'market' },
   { mid: 'ai', title: 'Ask the AI about a chart', desc: 'Get a second opinion before you click', cents: 3, vt: 'ev', va: 'ai', n: 1, cat: 'market' },
   { mid: 'draw', title: 'Draw on a chart', desc: 'Mark a level — trade lines, not vibes', cents: 2, vt: 'ev', va: 'draw', n: 1, cat: 'market' },
+  // 2026-08-14 owner: more same-value missions so the daily rotation feels fresh
+  { mid: 'vault', title: 'Browse The Vault', desc: 'Frames, ticket skins, backgrounds — see what your XP buys', cents: 2, vt: 'pv', va: '/vault', n: 1, cat: 'market' },
+  { mid: 'rekt', title: 'Watch the liquidations feed', desc: 'See who got rekt in real time — and learn from it', cents: 2, vt: 'pv', va: '/rekt', n: 1, cat: 'market' },
+  { mid: 'spotvisit', title: 'Open Demo Spot', desc: 'The buy-and-hold side of the house — no leverage, no liquidations', cents: 3, vt: 'pv', va: '/spot', n: 1, cat: 'market' },
+  { mid: 'exchanges', title: 'Compare the exchanges', desc: 'Fees, leverage, funding — know where the edge is', cents: 2, vt: 'pv', va: '/exchanges', n: 1, cat: 'market' },
+  { mid: 'cycle', title: 'Check the Bitcoin cycle', desc: 'Where are we in the four-year story? Look before you size up', cents: 2, vt: 'pv', va: '/bitcoin-cycle', n: 1, cat: 'market' },
+  { mid: 'journalvisit', title: 'Open the trading journal', desc: 'Your trades, your stats — review before you repeat', cents: 2, vt: 'pv', va: '/trading-journal', n: 1, cat: 'market' },
+  { mid: 'backtest', title: 'Run the backtester', desc: 'Test the idea on history before it tests your balance', cents: 3, vt: 'pv', va: '/crypto-backtester', n: 1, cat: 'market' },
 ];
 // mulberry32 — tiny deterministic PRNG so a day's missions are STABLE within that day (claims re-derive the set)
 // but well-shuffled and different day-to-day (feels random). Seeded from the UTC date.
