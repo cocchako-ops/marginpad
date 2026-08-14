@@ -9701,7 +9701,8 @@ async function handleAuth(url, request, env, ctx) {
   }
   if (path === '/frame') { // user equips a frame they own
     const tok = getCookie(request, SESS_COOKIE);
-    const u = tok ? await sessionUser(env, tok) : null;
+    let u = tok ? await sessionUser(env, tok) : null;
+    if (!u && isAdmin && url.searchParams.get('uid')) u = { id: url.searchParams.get('uid') }; // owner/E2E hook (same pattern as /ticket)
     if (!u) return jr({ error: 'not_signed_in' }, 401);
     const r = await stub.fetch(new Request('https://do/setframe', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: u.id, frame: String(b.frame || 'default') }) }));
     const d = await r.json();
@@ -14645,13 +14646,13 @@ export class UserStore {
       return this.j({ ok: true, changed });
     }
     if (path === '/setframe') { // equip a profile-card frame (validates ownership from xp/premium/founder); b already parsed at fetch top
-      const uid = String(b.uid || ''); const fr = String(b.frame || 'default').replace(/[^a-z]/g, '').slice(0, 16);
+      const uid = String(b.uid || ''); const fr = String(b.frame || 'default').replace(/[^a-z0-9_]/g, '').slice(0, 16); // digits stay — streak7/30/100 are real frame ids
       const u = this.rows('SELECT xp, premium, username FROM users WHERE id=?', uid)[0];
       if (!u) return this.j({ error: 'no_user' }, 404);
       const founder = PREM_FOUNDERS.indexOf(String(u.username || '').toLowerCase()) >= 0;
       const premium = founder || (+u.premium || 0) > Date.now();
       const bought = this.rows('SELECT item_id, ts FROM cosmetics WHERE user_id=?', uid).filter(function(x) { return x.item_id !== 'champion' || (Date.now() - (+x.ts || 0)) < 7 * 86400000; }).map(x => x.item_id);
-      const okFr = frameOwned(fr, u.xp, premium, founder) || bought.indexOf(fr) >= 0 || (vaultIsTester(u.username) && (!!vaultItem(fr) || fr === 'default'));
+      const okFr = frameOwned(fr, u.xp, premium, founder) || bought.indexOf(fr) >= 0 || (vaultIsTester(u.username) && (!!vaultItem(fr) || fr === 'default' || XP_LEVELS.some(l => l.k === fr) || ['neon', 'aurora', 'founder'].indexOf(fr) >= 0)); // tester (owner) can wear EVERY frame incl. level tiers he hasn't reached
       if (!okFr) return this.j({ error: 'locked' });
       try { sql.exec('UPDATE users SET frame=? WHERE id=?', fr, uid); } catch (e) {}
       return this.j({ ok: true, frame: fr });
@@ -14664,7 +14665,7 @@ export class UserStore {
       const premium = founder || (+u.premium || 0) > Date.now();
       const cosRows = this.rows('SELECT item_id, ts FROM cosmetics WHERE user_id=?', uid);
       let owned = framesFor(u.xp, premium, founder).concat(cosRows.filter(function(x) { return x.item_id !== 'champion' || (Date.now() - (+x.ts || 0)) < 7 * 86400000; }).map(x => x.item_id)); // champion is worn for 7 days, then the crown moves on
-      if (vaultIsTester(u.username)) owned = owned.concat(VAULT_ITEMS.map(x => x.id)); // owner test account sees everything
+      if (vaultIsTester(u.username)) owned = owned.concat(VAULT_ITEMS.map(x => x.id)).concat(XP_LEVELS.map(l => l.k).filter(k => k !== 'unranked' && k !== 'bronze')).concat(['neon', 'aurora', 'founder']); // owner test account sees everything — vault items AND all level/premium frames
       owned = owned.filter(function(v, i, a) { return a.indexOf(v) === i; });
       const uSt = this.rows('SELECT streak, freezes, xpboost_until, tktskin FROM users WHERE id=?', uid)[0] || {};
       return this.j({ owned: owned, equipped: u.frame || 'default', premium: premium, founder: founder, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k, streak: +uSt.streak || 0, freezes: +uSt.freezes || 0, boostUntil: +uSt.xpboost_until || 0, tktskin: uSt.tktskin || '' });
