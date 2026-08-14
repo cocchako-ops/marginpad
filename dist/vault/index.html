@@ -57,6 +57,9 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;m
 .tier.epic{color:#c792ff;border-color:#5a3a85}
 .tier.legendary{color:#ffd75a;border-color:#7a6220}
 .tier.level{color:#7ee0ff;border-color:#2a5a6e}
+.tier.limited{color:#ff9a3a;border-color:#7a4a1a}
+.btn.gift{color:#c792ff;border-color:#5a3a85;font-size:11px}
+.sup-state{font-family:'Space Mono',monospace;font-size:11px;color:#7ee0ff;margin-top:6px}
 .fdesc{font-size:11.5px;color:var(--faint);line-height:1.45;min-height:32px}
 .fact{display:flex;gap:8px}
 .btn{flex:1;text-align:center;border:1px solid var(--line);background:#0a0c0f;color:var(--ink);border-radius:10px;padding:10px 8px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;transition:.13s}
@@ -84,6 +87,8 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     <div class="wchip xp"><b id="wXp">—</b><span>XP</span></div>
     <div class="wchip bal"><b id="wBal">—</b><span>rewards balance</span></div>
     <div class="wchip" style="border-color:#5a3a1a"><b id="wStreak" style="color:#ff9a3a">—</b><span>day streak</span></div>
+    <div class="wchip" style="border-color:#2a5a6e"><b id="wFz" style="color:#7ee0ff">—</b><span>freezes</span></div>
+    <div class="wchip" id="wBoost" hidden style="border-color:#5a3a85"><b style="color:#c792ff">2x XP</b><span id="wBoostT"></span></div>
   </div>
   <div class="signin" id="signin" hidden>Sign in (free, email code only) to see your XP, buy frames and equip them. <a href="/paper-trade">Open the app to sign in →</a></div>
 
@@ -99,6 +104,10 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   <div class="h2s">Exclusive frames — pay with XP (never drops you below your level threshold) or with your rewards balance. Balance purchases are final.</div>
   <div class="gal" id="galShop"></div>
   <div class="msg" id="msg"></div>
+
+  <h2>Supply drop</h2>
+  <div class="h2s">Consumables — instant effects for your account, buyable again and again.</div>
+  <div class="gal" id="galSupply" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr))"></div>
 
   <h2>Earned frames</h2>
   <div class="h2s">These cannot be bought at any price — streak milestones and the weekly crown.</div>
@@ -164,17 +173,39 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     }).join('');
   }
   function renderShopGal(){
-    var items=(ST&&ST.items)||[],owned=ST?ST.owned:[],un=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()?window.mpAuth.me().username:'';
+    var items=((ST&&ST.items)||[]).filter(function(it){return (it.xp||it.cents)&&it.kind!=='c';}),owned=ST?ST.owned:[],un=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()?window.mpAuth.me().username:'';
     document.getElementById('galShop').innerHTML=items.map(function(it){
       var own=owned.indexOf(it.id)>=0,eq=ST&&ST.equipped===it.id;
       var acts='';
+      var expired=it.until&&Date.now()>Date.parse(it.until);
       if(own){acts=eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-eq="'+it.id+'">Equip</button><button class="btn owned" disabled>OWNED</button>';}
+      else if(expired){acts='<button class="btn lock" disabled>Drop over</button>';}
       else{
         if(it.xp)acts+='<button class="btn xp" data-buy="'+it.id+'" data-cur="xp">'+fmt(it.xp)+' XP</button>';
         if(it.cents)acts+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
-        if(it.minLevel)acts+='';
       }
-      return '<div class="fcard">'+prevCard(it.id,un)+'<div class="fmeta"><span class="fname">'+it.name+'</span><span class="tier '+it.tier+'">'+it.tier+'</span></div><div class="fdesc">'+(it.desc||'')+(it.minLevel?' · Requires '+it.minLevel.charAt(0).toUpperCase()+it.minLevel.slice(1):'')+'</div><div class="fact">'+(acts||'<button class="btn lock" disabled>Unavailable</button>')+'</div></div>';
+      if(!expired&&ST&&ST.signedIn)acts+='<button class="btn gift" data-gift="'+it.id+'" data-cur="'+(it.xp?'xp':'usd')+'" title="Buy this frame for another trader">Gift</button>';
+      var badge=it.until?'<span class="tier limited">'+(expired?'ENDED':'LIMITED')+'</span>':'';
+      var lim=it.until&&!expired?' · Available '+Math.max(1,Math.ceil((Date.parse(it.until)-Date.now())/86400000))+' more days':'';
+      return '<div class="fcard">'+prevCard(it.id,un)+'<div class="fmeta"><span class="fname">'+it.name+'</span>'+badge+'<span class="tier '+it.tier+'">'+it.tier+'</span></div><div class="fdesc">'+(it.desc||'')+(it.minLevel?' · Requires '+it.minLevel.charAt(0).toUpperCase()+it.minLevel.slice(1):'')+lim+'</div><div class="fact">'+(acts||'<button class="btn lock" disabled>Unavailable</button>')+'</div></div>';
+    }).join('');
+  }
+  function renderSupply(){
+    var items=((ST&&ST.items)||[]).filter(function(it){return it.kind==='c';});
+    var now=Date.now(),bu=ST?(+ST.boostUntil||0):0,fz=ST?(+ST.freezes||0):0;
+    document.getElementById('galSupply').innerHTML=items.map(function(it){
+      var state='';
+      if(it.id==='shield')state='Freezes banked: '+fz+'/5';
+      else if(it.id==='surge')state=bu>now?('Active — '+Math.ceil((bu-now)/3600000)+'h left'):'Not active';
+      else if(it.id==='reroll')state='Once per day';
+      var acts='';
+      if(it.id==='shield'&&fz>=5)acts='<button class="btn lock" disabled>Bank full</button>';
+      else if(it.id==='surge'&&bu>now)acts='<button class="btn lock" disabled>Already active</button>';
+      else{
+        if(it.xp)acts+='<button class="btn xp" data-buy="'+it.id+'" data-cur="xp">'+fmt(it.xp)+' XP</button>';
+        if(it.cents)acts+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
+      }
+      return '<div class="fcard"><div class="fmeta"><span class="fname">'+it.name+'</span><span class="tier '+it.tier+'">'+it.tier+'</span></div><div class="fdesc">'+(it.desc||'')+'</div><div class="sup-state">'+state+'</div><div class="fact">'+acts+'</div></div>';
     }).join('');
   }
   var EARN_FRAMES=[
@@ -212,7 +243,12 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
         document.getElementById('wXp').textContent=fmt(d.xp);
         document.getElementById('wBal').textContent='$'+(+d.balance||0).toFixed(2);
       }
-      renderLadder();renderLevelGal();renderShopGal();renderEarn();renderAch();
+      renderLadder();renderLevelGal();renderShopGal();renderSupply();renderEarn();renderAch();
+      if(d.signedIn){
+        var fzEl=document.getElementById('wFz');if(fzEl)fzEl.textContent=(+d.freezes||0)+'/5';
+        var bEl=document.getElementById('wBoost'),bu2=+d.boostUntil||0;
+        if(bEl){bEl.hidden=!(bu2>Date.now());if(bu2>Date.now())document.getElementById('wBoostT').textContent=Math.ceil((bu2-Date.now())/3600000)+'h left';}
+      }
       if(d.signedIn&&document.getElementById('wStreak'))document.getElementById('wStreak').textContent=(d.streak||0);
       if(!d.on)say('The Vault is temporarily paused — purchases are disabled.',false);
     }).catch(function(){say('Could not load the Vault. Refresh to retry.',false);});
@@ -224,13 +260,32 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       bb.disabled=true;
       fetch('/api/auth/shop/buy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:bb.getAttribute('data-buy'),cur:bb.getAttribute('data-cur')})})
         .then(function(r){return r.json();}).then(function(d){
-          if(d&&d.ok){say('Purchased. It is yours forever — equip it below.',true);load();}
+          if(d&&d.ok){
+            var iid=bb.getAttribute('data-buy');
+            say(iid==='shield'?'Streak Shield added — one extra freeze is banked.':iid==='surge'?'XP Surge is live — double XP for the next 24 hours.':iid==='reroll'?'Missions rerolled — open the Rewards page for your fresh set.':d.giftedTo?('Gifted to @'+d.giftedTo+' — they have been notified.'):'Purchased. It is yours forever — equip it below.',true);
+            load();
+          }
           else{
             var er=d&&d.error;
-            say(er==='level_floor'?('Not enough spare XP — this purchase would drop you below your level threshold ('+fmt(d.floor)+' XP). Earn a bit more first.'):er==='insufficient'?('Not enough rewards balance ($'+((d.balance||0)/100).toFixed(2)+' available).'):er==='level_locked'?('Requires '+d.need+' level.'):er==='owned'?'You already own this.':er==='shop_paused'?'The Vault is paused right now.':'Purchase failed: '+(er||'error'),false);
+            say(er==='level_floor'?('Not enough spare XP — this purchase would drop you below your level threshold ('+fmt(d.floor)+' XP). Earn a bit more first.'):er==='insufficient'?('Not enough rewards balance ($'+((d.balance||0)/100).toFixed(2)+' available).'):er==='level_locked'?('Requires '+d.need+' level.'):er==='owned'?'You already own this.':er==='shop_paused'?'The Vault is paused right now.':er==='expired'?'This drop has ended — it is no longer for sale.':er==='max_freezes'?'Your freeze bank is full (5/5).':er==='boost_active'?'An XP Surge is already running — let it finish first.':er==='rerolled'?'You already rerolled today — a fresh set comes at midnight UTC.':er==='no_target'?'No trader with that username.':er==='self'?'You cannot gift to yourself — just buy it.':er==='target_owned'?'They already own that frame.':'Purchase failed: '+(er||'error'),false);
             bb.disabled=false;
           }
         }).catch(function(){say('Network error.',false);bb.disabled=false;});
+      return;
+    }
+    var gb=e.target.closest('[data-gift]');
+    if(gb){
+      if(!ST||!ST.signedIn){say('Sign in first to gift frames.',false);return;}
+      var toU=prompt('Gift the '+gb.getAttribute('data-gift')+' frame to (username):');
+      if(!toU)return;
+      toU=toU.replace(/[^a-zA-Z0-9_]/g,'').slice(0,24);
+      if(!toU){say('Enter a valid username.',false);return;}
+      gb.disabled=true;
+      fetch('/api/auth/shop/buy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:gb.getAttribute('data-gift'),cur:gb.getAttribute('data-cur'),to:toU})})
+        .then(function(r){return r.json();}).then(function(d){
+          if(d&&d.ok){say('Gifted to @'+(d.giftedTo||toU)+' — they have been notified.',true);load();}
+          else{var er=d&&d.error;say(er==='no_target'?'No trader with that username.':er==='self'?'You cannot gift to yourself — just buy it.':er==='target_owned'?'They already own that frame.':er==='level_floor'?'Not enough spare XP — gifting would drop you below your level threshold.':er==='insufficient'?'Not enough rewards balance.':er==='expired'?'This drop has ended.':'Gift failed: '+(er||'error'),false);gb.disabled=false;}
+        }).catch(function(){say('Network error.',false);gb.disabled=false;});
       return;
     }
     var eb=e.target.closest('[data-eq]');

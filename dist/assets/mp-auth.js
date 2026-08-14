@@ -293,6 +293,8 @@
     + '.lbm-card.frame-void::after,.mpa-fr-sw.frame-void::after{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;pointer-events:none;z-index:6;background:conic-gradient(from var(--mpAng,0deg),#241238,#6a2fd0,#0a0512,#8b5cff,#241238);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 9s linear infinite}'
     + '.lbm-card.frame-sovereign,.mpa-fr-sw.frame-sovereign{border-color:transparent;box-shadow:0 0 0 1px rgba(255,244,214,.7),0 0 64px -10px rgba(255,228,150,.6),inset 0 0 40px -26px rgba(255,240,200,.5)}'
     + '.lbm-card.frame-sovereign::after,.mpa-fr-sw.frame-sovereign::after{content:"";position:absolute;inset:-2.2px;border-radius:inherit;padding:2.2px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#fff8e1,#d4af37,#ffffff,#b8860b,#fff8e1);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 8s linear infinite}'
+    + '.lbm-card.frame-eclipse,.mpa-fr-sw.frame-eclipse{border-color:#120c06;box-shadow:0 0 0 1px rgba(255,140,40,.5),0 0 56px -10px rgba(255,120,20,.55),inset 0 0 36px -22px rgba(255,140,40,.4)}'
+    + '.lbm-card.frame-eclipse::after,.mpa-fr-sw.frame-eclipse::after{content:"";position:absolute;inset:-2px;border-radius:inherit;padding:2px;pointer-events:none;z-index:7;background:conic-gradient(from var(--mpAng,0deg),#0a0705,#ff9a2a 12%,#0a0705 28%,#3a1d05 55%,#ffb35a 70%,#0a0705 90%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:mpaSpin 9s linear infinite}'
     + '.lbm-card.frame-streak7,.mpa-fr-sw.frame-streak7{border-color:#ffb84a;box-shadow:0 0 0 1px rgba(255,184,74,.55),0 0 30px -12px rgba(255,150,50,.5)}'
     + '.lbm-card.frame-streak7::after,.mpa-fr-sw.frame-streak7::after{content:"";position:absolute;inset:-1.5px;border-radius:inherit;padding:1.5px;pointer-events:none;z-index:6;background:linear-gradient(15deg,#ffdf8a,#b85c00 45%,#ffb84a 65%,#5a2a00 90%,#ffcf6a);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}'
     + '.lbm-card.frame-streak30,.mpa-fr-sw.frame-streak30{border-color:#ff6a2a;box-shadow:0 0 0 1px rgba(255,106,42,.6),0 0 44px -8px rgba(255,80,20,.55);animation:mpaFrLeg 3s ease-in-out infinite}'
@@ -676,6 +678,7 @@
     { k: 'sakura', name: 'Sakura', by: 'Vault' },
     { k: 'void', name: 'Void', by: 'Vault' },
     { k: 'sovereign', name: 'Sovereign', by: 'Vault' },
+    { k: 'eclipse', name: 'Eclipse', by: 'Vault - limited' },
     { k: 'streak7', name: 'Kindling', by: '7-day streak' },
     { k: 'streak30', name: 'Wildfire', by: '30-day streak' },
     { k: 'streak100', name: 'Eternal Flame', by: '100-day streak' },
