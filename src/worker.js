@@ -11764,15 +11764,26 @@ export default {
         try { ctx.waitUntil(caches.default.put(ck, resp.clone())); } catch (e) {}
         return resp;
       }
-      const tok = getCookie(request, SESS_COOKIE); const su = tok ? await sessionUser(env, tok) : null;
+      const tok = getCookie(request, SESS_COOKIE); let su = tok ? await sessionUser(env, tok) : null;
+      if ((!su || !su.id) && url.searchParams.get('uid') && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) su = { id: url.searchParams.get('uid') }; // owner/E2E hook (same pattern as /shop, missions)
       if (!su || !su.id) return new Response('{"error":"login_required"}', { status: 401, headers: jh });
       const call = async (p, body) => { try { const r = await stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })); return new Response(await r.text(), { status: r.status, headers: jh }); } catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); } };
       if (sub === 'challenge' && request.method === 'POST') { let bd = {}; try { bd = await request.json(); } catch (e) {}
-        const resp = await call('/duel/challenge', { from: su.id, toName: bd.to, metric: bd.metric, dur: bd.dur, stake: bd.stake, sym: bd.sym, maxTrades: bd.maxTrades, maxLev: bd.maxLev });
-        try { const jd = await resp.clone().json(); if (jd && jd.ok) { const rn = String(bd.to || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20); ctx.waitUntil(evPush(env, request, 'duel', rn, '')); } } catch (e) {}
+        const resp = await call('/duel/challenge', { from: su.id, toName: bd.to, open: bd.open ? 1 : 0, metric: bd.metric, dur: bd.dur, stake: bd.stake, sym: bd.sym, maxTrades: bd.maxTrades, maxLev: bd.maxLev });
+        try { const jd = await resp.clone().json(); if (jd && jd.ok) { const rn = bd.open ? 'open challenge posted' : String(bd.to || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20); ctx.waitUntil(evPush(env, request, 'duel', rn, '')); } } catch (e) {}
         return resp; }
       if (sub === 'respond' && request.method === 'POST') { let bd = {}; try { bd = await request.json(); } catch (e) {} return call('/duel/respond', { uid: su.id, id: bd.id, action: bd.action }); }
       if (sub === 'mine') return call('/duel/mine', { uid: su.id });
+      if (sub === 'openlist') return call('/duel/openlist', { uid: su.id });
+      if (sub === 'accept' && request.method === 'POST') { let bd = {}; try { bd = await request.json(); } catch (e) {}
+        const resp = await call('/duel/accept', { uid: su.id, id: bd.id });
+        try { const jd = await resp.clone().json(); if (jd && jd.ok) ctx.waitUntil(evPush(env, request, 'duel', 'open duel accepted', '')); } catch (e) {}
+        return resp; }
+      if (sub === 'cancelopen' && request.method === 'POST') { let bd = {}; try { bd = await request.json(); } catch (e) {} return call('/duel/cancelopen', { uid: su.id, id: bd.id }); }
+      if (sub === 'rematch' && request.method === 'POST') { let bd = {}; try { bd = await request.json(); } catch (e) {}
+        const resp = await call('/duel/rematch', { uid: su.id, id: bd.id });
+        try { const jd = await resp.clone().json(); if (jd && jd.ok) ctx.waitUntil(evPush(env, request, 'duel', 'rematch', '')); } catch (e) {}
+        return resp; }
       return new Response('{"error":"not_found"}', { status: 404, headers: jh });
     }
     if (url.pathname === '/api/academy') return handleAcademy(url, request, env);
@@ -13415,7 +13426,7 @@ export class UserStore {
     if (winner) {
       const loser = String(winner) === String(d.a_uid) ? d.b_uid : d.a_uid, wName = String(winner) === String(d.a_uid) ? d.a_name : d.b_name, lName = String(winner) === String(d.a_uid) ? d.b_name : d.a_name;
       if (stake > 0 && esc >= 2) this._giveXp(winner, stake * 2, 'Duel pot vs @' + lName); // pot = both stakes
-      try { this._grantXp(winner, 'duel', 150, { dayCap: 600, note: 'Won a ' + ml + ' duel' }); } catch (e) {} // house win-bonus (capped, anti-farm)
+      try { const hh2 = hhActiveAt(Date.now()); this._grantXp(winner, 'duel', hh2 ? 300 : 150, { dayCap: 600, note: 'Won a ' + ml + ' duel' + (hh2 ? ' · Happy Hour x2' : '') }); } catch (e) {} // house win-bonus (capped, anti-farm); settles during XP Happy Hour -> doubled
       this._pushNotif(winner, 'duel', 'Duel won. You beat @' + lName + ' on ' + ml + (stake > 0 && esc >= 2 ? '. +' + (stake * 2) + ' XP pot' : '') + '. Run it back?', 'duel');
       this._pushNotif(loser, 'duel', '@' + wName + ' took the ' + ml + ' duel' + (stake > 0 && esc >= 2 ? '. ' + stake + ' XP gone' : '') + '. Rematch?', 'duel');
     } else {
@@ -13761,6 +13772,7 @@ export class UserStore {
           else if (d.vt === 'follow') c = (this.rows('SELECT COUNT(*) n FROM ufollows WHERE uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'dm') c = (this.rows('SELECT COUNT(*) n FROM dms WHERE from_uid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'duel') c = (this.rows('SELECT COUNT(*) n FROM duels WHERE a_uid=? AND created>=?', uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'duelw') c = (this.rows("SELECT COUNT(*) n FROM duels WHERE winner=? AND status='done' AND end_ts>=?", uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'follower') c = (this.rows('SELECT COUNT(*) n FROM ufollows WHERE tuid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'win') c = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND ts>=?", uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'academy') c = (this.rows("SELECT COUNT(*) n FROM academy WHERE user_id=? AND ts>=? AND lesson NOT LIKE 'course:%'", uid, dayStart)[0] || {}).n || 0;
@@ -14865,32 +14877,103 @@ export class UserStore {
     }
     if (path === '/duel/challenge') { // a challenges b to a stat duel. from=uid, toName, metric, dur, stake, sym, maxTrades, maxLev
       const from = String((b && b.from) || '').replace(/^u:/, '');
+      const isOpen = !!(b && b.open); // open challenge: no target — sits in the lobby until anyone accepts
       const toName = String((b && b.toName) || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
       const metric = ['roe', 'wr', 'win', 'pnl', 'survival', 'streak', 'sniper'].indexOf(String((b && b.metric) || '')) >= 0 ? b.metric : 'roe';
-      if (!from || !toName) return this.j({ error: 'bad' }, 400);
+      if (!from || (!toName && !isOpen)) return this.j({ error: 'bad' }, 400);
       const me = this.rows('SELECT username, status, muted, restrictions, premium FROM users WHERE id=?', from)[0];
       if (!me) return this.j({ error: 'no_user' }, 400);
       if (!me.username) return this.j({ error: 'need_username' }, 400);
       if ((me.status && me.status !== 'active') || me.muted) return this.j({ error: 'restricted' }, 403);
-      const to = this.rows('SELECT id, username FROM users WHERE username=? COLLATE NOCASE', toName)[0];
-      if (!to) return this.j({ error: 'no_recipient' }, 404);
-      const toId = String(to.id); if (toId === from) return this.j({ error: 'self' }, 400);
-      if (!this._canDm(from, toId)) return this.j({ error: 'not_connected' }, 403);
-      if (this.rows("SELECT 1 FROM duels WHERE ((a_uid=? AND b_uid=?) OR (a_uid=? AND b_uid=?)) AND status IN ('pending','active') LIMIT 1", from, toId, toId, from)[0]) return this.j({ error: 'exists' }, 409); // one live duel per pair
       const prem = this._isPrem(me); const ADV = ['pnl', 'survival', 'streak', 'sniper'];
-      if (ADV.indexOf(metric) >= 0 && !prem) return this.j({ error: 'premium_required', feat: metric }, 403); // advanced types are premium-only to CREATE
+      let to = null, toId = '';
+      if (!isOpen) {
+        to = this.rows('SELECT id, username FROM users WHERE username=? COLLATE NOCASE', toName)[0];
+        if (!to) return this.j({ error: 'no_recipient' }, 404);
+        toId = String(to.id); if (toId === from) return this.j({ error: 'self' }, 400);
+        // 2026-08-14 (duel activation): the follow-gate is gone — you can challenge ANY trader (leaderboard neighbours!).
+        // Decline + one-live-duel-per-pair + a daily outgoing cap keep the spam surface small.
+        if (this.rows("SELECT 1 FROM duels WHERE ((a_uid=? AND b_uid=?) OR (a_uid=? AND b_uid=?)) AND status IN ('pending','active') LIMIT 1", from, toId, toId, from)[0]) return this.j({ error: 'exists' }, 409); // one live duel per pair
+        const sent24 = (this.rows("SELECT COUNT(*) c FROM duels WHERE a_uid=? AND created>=?", from, now - 86400000)[0] || { c: 0 }).c;
+        if (sent24 >= (prem ? 20 : 5)) return this.j({ error: 'daily_limit', cap: (prem ? 20 : 5) }, 429);
+      } else {
+        const myOpen = (this.rows("SELECT COUNT(*) c FROM duels WHERE a_uid=? AND status='open'", from)[0] || { c: 0 }).c;
+        if (myOpen >= (prem ? 3 : 1)) return this.j({ error: 'open_cap', cap: (prem ? 3 : 1) }, 429);
+      }
+      if (ADV.indexOf(metric) >= 0 && !prem) { // teaser: every FREE account gets ONE premium-format duel per week
+        const advWk = (this.rows("SELECT COUNT(*) c FROM duels WHERE a_uid=? AND created>=? AND metric IN ('pnl','survival','streak','sniper')", from, lbPeriodStart(now))[0] || { c: 0 }).c;
+        if (advWk >= 1) return this.j({ error: 'premium_required', feat: metric, teaser: true }, 403);
+      }
       let dur = +(b && b.dur) || 604800000; if (['3600000', '86400000', '259200000', '604800000'].indexOf(String(dur)) < 0) dur = 604800000; if (dur !== 604800000 && !prem) dur = 604800000; // free = 7d only
       let stake = Math.round(+(b && b.stake) || 0); if (stake < 0) stake = 0; if (stake > 2000) stake = 2000; if (!prem) stake = stake > 0 ? 50 : 0; // free: off or fixed 50; premium: 0–2000
       let sym = String((b && b.sym) || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 12).toUpperCase(); if (!prem) sym = '';
       const rules = {}; if (metric === 'sniper') rules.maxTrades = Math.min(5, Math.max(1, +(b && b.maxTrades) || 3)); if (prem && +(b && b.maxLev) > 0) rules.maxLev = Math.min(1000, Math.round(+(b && b.maxLev))); if (sym) rules.sym = sym;
       const mineActive = (this.rows("SELECT COUNT(*) c FROM duels WHERE a_uid=? AND status IN ('pending','active')", from)[0] || { c: 0 }).c;
       if (mineActive >= (prem ? 10 : 1)) return this.j({ error: 'too_many', cap: (prem ? 10 : 1) }, 429); // free: 1 live duel; premium: 10
-      if (stake > 0 && !this._takeXp(from, stake, 'Duel stake vs @' + to.username)) return this.j({ error: 'need_xp', need: stake, have: this._xpBal(from) }, 402); // escrow challenger's stake now
+      if (stake > 0 && !this._takeXp(from, stake, isOpen ? 'Open duel stake (board)' : 'Duel stake vs @' + to.username)) return this.j({ error: 'need_xp', need: stake, have: this._xpBal(from) }, 402); // escrow challenger's stake now (open posts have no target yet)
       const escrowed = stake > 0 ? 1 : 0;
       const id = (now.toString(36) + Math.abs((from + toId + metric).split('').reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)).toString(36)).slice(0, 16);
-      sql.exec('INSERT INTO duels(id,a_uid,b_uid,a_name,b_name,metric,created,start_ts,end_ts,status,winner,a_score,b_score,settled,dur,stake,escrowed,sym,rules) VALUES(?,?,?,?,?,?,?,0,0,?,?,0,0,0,?,?,?,?,?)', id, from, toId, me.username, to.username, metric, now, 'pending', '', dur, stake, escrowed, sym, JSON.stringify(rules));
-      this._pushNotif(toId, 'duel', '@' + me.username + ' challenged you to a ' + this._duelLabel(metric) + ' duel' + (sym ? ' on ' + sym : '') + ' — ' + this._durLabel(dur) + (stake > 0 ? ', ' + stake + ' XP on the line' : '') + '. Accept?', 'duel');
-      return this.j({ ok: true, id });
+      sql.exec('INSERT INTO duels(id,a_uid,b_uid,a_name,b_name,metric,created,start_ts,end_ts,status,winner,a_score,b_score,settled,dur,stake,escrowed,sym,rules) VALUES(?,?,?,?,?,?,?,0,0,?,?,0,0,0,?,?,?,?,?)', id, from, isOpen ? '' : toId, me.username, isOpen ? '' : to.username, metric, now, isOpen ? 'open' : 'pending', '', dur, stake, escrowed, sym, JSON.stringify(rules));
+      if (!isOpen) this._pushNotif(toId, 'duel', '@' + me.username + ' challenged you to a ' + this._duelLabel(metric) + ' duel' + (sym ? ' on ' + sym : '') + ' — ' + this._durLabel(dur) + (stake > 0 ? ', ' + stake + ' XP on the line' : '') + '. Accept?', 'duel');
+      return this.j({ ok: true, id, open: isOpen || undefined });
+    }
+    if (path === '/duel/openlist') { // the lobby: latest open challenges anyone can take
+      const uid = String((b && b.uid) || url.searchParams.get('uid') || '').replace(/^u:/, '');
+      for (const d of this.rows("SELECT * FROM duels WHERE status='open' AND created<=?", now - 7 * 86400000)) { // stale posts: refund + close
+        if ((+d.stake || 0) > 0 && (+d.escrowed || 0) >= 1) this._giveXp(d.a_uid, +d.stake, 'Open duel expired — stake returned');
+        sql.exec("UPDATE duels SET status='declined', escrowed=0 WHERE id=?", d.id);
+      }
+      const rows = this.rows("SELECT * FROM duels WHERE status='open' ORDER BY created DESC LIMIT 30");
+      const uids = [...new Set(rows.map(d => String(d.a_uid)))];
+      const uinfo = {}; if (uids.length) { try { this.rows('SELECT id, username, premium, xp FROM users WHERE id IN (' + uids.map(() => '?').join(',') + ')', ...uids).forEach(u => { uinfo[String(u.id)] = { prem: this._isPrem(u), lvl: xpLevelOf(u.xp || 0).k }; }); } catch (e) {} }
+      return this.j({ open: rows.map(d => ({ id: d.id, name: d.a_name, metric: d.metric, dur: +d.dur || 604800000, stake: +d.stake || 0, sym: d.sym || '', ts: d.created, mine: String(d.a_uid) === uid, prem: (uinfo[String(d.a_uid)] || {}).prem || false, lvl: (uinfo[String(d.a_uid)] || {}).lvl || 'bronze' })) });
+    }
+    if (path === '/duel/accept') { // anyone takes an open challenge from the lobby
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''); const id = String((b && b.id) || '');
+      if (!uid || !id) return this.j({ error: 'bad' }, 400);
+      const d = this.rows('SELECT * FROM duels WHERE id=?', id)[0];
+      if (!d || d.status !== 'open') return this.j({ error: 'gone' }, 404); // already taken / cancelled / expired
+      if (String(d.a_uid) === uid) return this.j({ error: 'self' }, 400);
+      const acc = this.rows('SELECT username, status, muted FROM users WHERE id=?', uid)[0];
+      if (!acc) return this.j({ error: 'no_user' }, 400);
+      if (!acc.username) return this.j({ error: 'need_username' }, 400);
+      if ((acc.status && acc.status !== 'active') || acc.muted) return this.j({ error: 'restricted' }, 403);
+      if (this.rows("SELECT 1 FROM duels WHERE ((a_uid=? AND b_uid=?) OR (a_uid=? AND b_uid=?)) AND status IN ('pending','active') LIMIT 1", String(d.a_uid), uid, uid, String(d.a_uid))[0]) return this.j({ error: 'exists' }, 409);
+      const stake = +d.stake || 0;
+      if (stake > 0 && !this._takeXp(uid, stake, 'Duel stake vs @' + d.a_name)) return this.j({ error: 'need_xp', need: stake, have: this._xpBal(uid) }, 402);
+      const dur = +d.dur || 604800000;
+      sql.exec('UPDATE duels SET b_uid=?, b_name=?, status=?, start_ts=?, end_ts=?, escrowed=? WHERE id=?', uid, acc.username, 'active', now, now + dur, stake > 0 ? 2 : 0, id);
+      this._pushNotif(String(d.a_uid), 'duel', '@' + acc.username + ' took your open ' + this._duelLabel(d.metric) + ' duel. It is live — ' + this._durLabel(dur) + ' on the clock.', 'duel');
+      return this.j({ ok: true, status: 'active' });
+    }
+    if (path === '/duel/cancelopen') { // creator pulls their open post back (stake returned)
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''); const id = String((b && b.id) || '');
+      const d = this.rows('SELECT * FROM duels WHERE id=?', id)[0];
+      if (!d || d.status !== 'open' || String(d.a_uid) !== uid) return this.j({ error: 'bad_state' }, 400);
+      if ((+d.stake || 0) > 0 && (+d.escrowed || 0) >= 1) this._giveXp(uid, +d.stake, 'Open duel cancelled — stake returned');
+      sql.exec("UPDATE duels SET status='declined', escrowed=0 WHERE id=?", id);
+      return this.j({ ok: true });
+    }
+    if (path === '/duel/rematch') { // one-click revenge: same terms, roles flipped. Premium-format gate WAIVED (rematch of an existing config)
+      const uid = String((b && b.uid) || '').replace(/^u:/, ''); const id = String((b && b.id) || '');
+      const d0 = this.rows('SELECT * FROM duels WHERE id=?', id)[0];
+      if (!d0 || d0.status !== 'done') return this.j({ error: 'bad_state' }, 400);
+      const amI_A = String(d0.a_uid) === uid;
+      if (!amI_A && String(d0.b_uid) !== uid) return this.j({ error: 'bad_state' }, 400);
+      const oppId = amI_A ? String(d0.b_uid) : String(d0.a_uid), oppName = amI_A ? d0.b_name : d0.a_name;
+      const me2 = this.rows('SELECT username, status, muted, premium FROM users WHERE id=?', uid)[0];
+      if (!me2 || !me2.username) return this.j({ error: 'need_username' }, 400);
+      if ((me2.status && me2.status !== 'active') || me2.muted) return this.j({ error: 'restricted' }, 403);
+      if (this.rows("SELECT 1 FROM duels WHERE ((a_uid=? AND b_uid=?) OR (a_uid=? AND b_uid=?)) AND status IN ('pending','active') LIMIT 1", uid, oppId, oppId, uid)[0]) return this.j({ error: 'exists' }, 409);
+      const prem2 = this._isPrem(me2);
+      const mineActive2 = (this.rows("SELECT COUNT(*) c FROM duels WHERE a_uid=? AND status IN ('pending','active')", uid)[0] || { c: 0 }).c;
+      if (mineActive2 >= (prem2 ? 10 : 1)) return this.j({ error: 'too_many', cap: (prem2 ? 10 : 1) }, 429);
+      const stake2 = +d0.stake || 0;
+      if (stake2 > 0 && !this._takeXp(uid, stake2, 'Duel stake vs @' + oppName)) return this.j({ error: 'need_xp', need: stake2, have: this._xpBal(uid) }, 402);
+      const rid = (now.toString(36) + Math.abs((uid + oppId + d0.metric + 'r').split('').reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)).toString(36)).slice(0, 16);
+      sql.exec('INSERT INTO duels(id,a_uid,b_uid,a_name,b_name,metric,created,start_ts,end_ts,status,winner,a_score,b_score,settled,dur,stake,escrowed,sym,rules) VALUES(?,?,?,?,?,?,?,0,0,?,?,0,0,0,?,?,?,?,?)', rid, uid, oppId, me2.username, oppName, d0.metric, now, 'pending', '', +d0.dur || 604800000, stake2, stake2 > 0 ? 1 : 0, d0.sym || '', d0.rules || '{}');
+      this._pushNotif(oppId, 'duel', '@' + me2.username + ' wants a REMATCH — same terms: ' + this._duelLabel(d0.metric) + ', ' + this._durLabel(+d0.dur || 604800000) + (stake2 > 0 ? ', ' + stake2 + ' XP on the line' : '') + '. Accept?', 'duel');
+      return this.j({ ok: true, id: rid });
     }
     if (path === '/duel/respond') { // b accepts/declines a pending duel
       const uid = String((b && b.uid) || '').replace(/^u:/, ''); const id = String((b && b.id) || ''); const action = String((b && b.action) || '');
@@ -14916,12 +14999,12 @@ export class UserStore {
       if (!uid) return this.j({ duels: [] });
       // settle any of this user's active duels whose window has ended (lazy settlement, cron also does it)
       for (const d of this.rows("SELECT * FROM duels WHERE (a_uid=? OR b_uid=?) AND status='active' AND end_ts<=? AND end_ts>0", uid, uid, now)) this._duelSettle(d);
-      const rows = this.rows("SELECT * FROM duels WHERE (a_uid=? OR b_uid=?) AND status IN ('pending','active','done') ORDER BY created DESC LIMIT 40", uid, uid);
+      const rows = this.rows("SELECT * FROM duels WHERE (a_uid=? OR b_uid=?) AND status IN ('open','pending','active','done') ORDER BY created DESC LIMIT 40", uid, uid);
       const out = rows.map(d => { const meA = String(d.a_uid) === uid; const oppName = meA ? d.b_name : d.a_name;
         let myScore = null, oppScore = null;
         if (d.status === 'active') { myScore = this._duelDisp(d.metric, this._duelScore(d, meA ? 'a' : 'b')); oppScore = this._duelDisp(d.metric, this._duelScore(d, meA ? 'b' : 'a')); }
         else if (d.status === 'done') { myScore = this._duelDisp(d.metric, meA ? d.a_score : d.b_score); oppScore = this._duelDisp(d.metric, meA ? d.b_score : d.a_score); }
-        return { id: d.id, metric: d.metric, status: d.status, opp: oppName, iAmChallenger: meA, incoming: (!meA && d.status === 'pending'),
+        return { id: d.id, metric: d.metric, status: d.status, opp: oppName, iAmChallenger: meA, incoming: (!meA && d.status === 'pending'), open: d.status === 'open' || undefined,
           start: d.start_ts, end: d.end_ts, dur: +d.dur || 604800000, stake: +d.stake || 0, sym: d.sym || '', myScore, oppScore, won: d.status === 'done' ? (d.winner ? String(d.winner) === uid : null) : null }; });
       return this.j({ duels: out });
     }
@@ -15348,6 +15431,7 @@ const MISSION_POOL = [
   { mid: 'follow', title: 'Follow a trader', desc: 'Scout the board — follow someone worth studying', cents: 3, vt: 'follow', va: '', n: 1, cat: 'social' },
   { mid: 'dm', title: 'Message a trader', desc: 'Slide into a trader’s DMs. Strictly charts', cents: 3, vt: 'dm', va: '', n: 1, cat: 'social' },
   { mid: 'duel', title: 'Challenge a trader to a duel', desc: 'Seven days, best stats win. Pick your opponent', cents: 3, vt: 'duel', va: '', n: 1, cat: 'social' },
+  { mid: 'duelwin', title: 'Win a duel', desc: 'Any format — take the pot and the bragging rights', cents: 3, vt: 'duelw', va: '', n: 1, cat: 'social' },
   { mid: 'follower', title: 'Get a new follower', desc: 'Trade, post, talk — be worth following today', cents: 3, vt: 'follower', va: '', n: 1, cat: 'social' },
   { mid: 'profile', title: "Check out a trader's profile", desc: 'Open a trader card — see how the ranked ones do it', cents: 2, vt: 'ev', va: 'profile', n: 1, cat: 'social' },
   { mid: 'share', title: 'Share a trade card', desc: 'Show the floor your win — or your tuition', cents: 3, vt: 'ev', va: 'share', n: 1, cat: 'social' },

@@ -259,6 +259,25 @@ footer a{color:var(--dim)}
       return '<li class="tm-row'+(x.rank<=3?' top':'')+'" data-lbu="'+esc(x.username)+'" role="button" tabindex="0"><span class="tm-rank">'+x.rank+'</span><span class="tm-gem">'+lvlSvg(x.k,x.col)+'</span><span class="tm-who"><span class="tm-nm">'+esc(x.username)+'</span><span data-lpro="'+esc(x.username)+'"></span> <span class="tm-tier" style="color:'+esc(x.col)+'">'+esc(x.name)+'</span></span><span class="tm-xp">'+(x.xp||0).toLocaleString()+' XP</span></li>';
     }).join('');
     document.getElementById('topMembers').hidden=false;
+    /* duel activation: the trader ranked DIRECTLY ABOVE you gets a "Duel" chip — beat them where it counts */
+    (function(){
+      function mark(){
+        var me9=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();
+        if(!me9||!me9.username)return;
+        var mi=-1;t.forEach(function(x,i){if(String(x.username).toLowerCase()===String(me9.username).toLowerCase())mi=i;});
+        if(mi<1)return; /* not on the board, or already #1 */
+        var above=t[mi-1];
+        var row=document.querySelector('.tm-row[data-lbu="'+(window.CSS&&CSS.escape?CSS.escape(above.username):above.username)+'"]');
+        if(!row||row.querySelector('.tm-duelbtn'))return;
+        var btn=document.createElement('button');
+        btn.type='button';btn.className='tm-duelbtn';btn.textContent='Duel';
+        btn.title='Beat @'+above.username+' in a duel and take their spot';
+        btn.style.cssText='flex:0 0 auto;margin-left:8px;background:rgba(245,166,35,.14);color:#f5a623;border:1px solid rgba(245,166,35,.5);border-radius:8px;padding:4px 11px;font:800 11px "Familjen Grotesk",sans-serif;cursor:pointer';
+        btn.addEventListener('click',function(ev){ev.stopPropagation();if(window.mpAuth&&window.mpAuth.duel)window.mpAuth.duel(above.username);});
+        row.appendChild(btn);
+      }
+      mark();var n9=0,iv9=setInterval(function(){n9++;mark();if(n9>8||document.querySelector('.tm-duelbtn'))clearInterval(iv9);},1200); /* mpAuth session stize async */
+    })();
   }).catch(function(){});
 })();
 </script>

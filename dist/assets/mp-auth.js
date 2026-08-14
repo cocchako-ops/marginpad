@@ -556,8 +556,14 @@
   function duelTick(du) { Array.prototype.forEach.call(du.querySelectorAll('.mpa-dv[data-end]'), function (c) { var end = +c.getAttribute('data-end'), start = +c.getAttribute('data-start'), dur = +c.getAttribute('data-dur'); var tl = c.querySelector('.mpa-dv-tl'); if (tl) tl.textContent = duelTimeLeft(end); var bar = c.querySelector('.mpa-dv-bar i'); if (bar && dur > 0) bar.style.width = (Math.min(1, Math.max(0, (Date.now() - start) / dur)) * 100).toFixed(1) + '%'; }); }
   function renderDuels() {
     if (window._mpDuelT1) clearInterval(window._mpDuelT1); if (window._mpDuelT2) clearInterval(window._mpDuelT2);
-    bodyEl.innerHTML = '<h3 class="mpa-h">Duels</h3><p class="mpa-sub" style="margin:-4px 0 10px">Challenge any trader you follow. Pick a format, stake XP, best stat when the clock ends takes the pot.</p><div class="mpa-du" id="mpaDu"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaDuBack" type="button">← Back to profile</button>';
+    var hhOn = (new Date()).getUTCHours() === 18; /* MIRROR: worker HH {hourUTC:18, durMin:60} — duel win-bonus doubles while it runs */
+    bodyEl.innerHTML = '<h3 class="mpa-h">Duels</h3>'
+      + (hhOn ? '<div style="font:700 11px \'Space Mono\',monospace;color:#0a0b0d;background:linear-gradient(90deg,#ffd75a,#c2f64a);border-radius:8px;padding:6px 10px;margin:0 0 10px">HAPPY HOUR — duel win bonus is DOUBLED right now</div>' : '')
+      + '<p class="mpa-sub" style="margin:-4px 0 10px">Challenge any trader — or post an open challenge and let anyone take it. Best stat when the clock ends takes the pot.</p>'
+      + '<button class="mpa-send" id="mpaDuOpenPost" type="button" style="margin:0 0 12px">Post an open challenge</button>'
+      + '<div class="mpa-du" id="mpaDu"><div class="mpa-xp-empty">Loading…</div></div><button class="mpa-link" id="mpaDuBack" type="button">← Back to profile</button>';
     var bk = bodyEl.querySelector('#mpaDuBack'); if (bk) bk.addEventListener('click', render);
+    var op0 = bodyEl.querySelector('#mpaDuOpenPost'); if (op0) op0.addEventListener('click', function () { renderDuelChallenge('', true); });
     var sec = function (t) { return '<div class="mpa-du-sec">' + t + '</div>'; };
     var incCard = function (x) { var pot = x.stake > 0 ? x.stake * 2 : 0;
       return '<div class="mpa-di">'
@@ -571,24 +577,54 @@
         + '<div class="mpa-dv-bar"><i style="width:' + (el * 100).toFixed(1) + '%"></i></div>'
         + '<div class="mpa-dv-ft"><span>' + DRULE[x.metric] + '</span>' + (x.stake > 0 ? '<span class="mpa-pot">Pot ' + (x.stake * 2) + ' XP</span>' : '<span>No stake</span>') + '</div></div>'; };
     var pendCard = function (x) { return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">You challenged @' + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + durShort(x.dur) + (x.sym ? ' · ' + esc(x.sym) : '') + (x.stake > 0 ? ' · ' + x.stake + ' XP staked' : '') + '</div></div><div class="mpa-du-wait">…</div></div>'; };
-    var resCard = function (x) { var r = x.won === true ? '<span class="mpa-du-won">WON</span>' : x.won === false ? '<span class="mpa-du-lost">LOST</span>' : '<span class="mpa-du-tie">TIE</span>'; var xp = x.stake > 0 ? ' · <b style="color:' + (x.won === true ? '#c2f64a' : x.won === false ? '#ff8a80' : '#8b97a5') + '">' + (x.won === true ? '+' + x.stake : x.won === false ? '-' + x.stake : '±0') + ' XP</b>' : ''; return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">You vs @' + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + duelScoreTxt(x.metric, x.myScore) + ' vs ' + duelScoreTxt(x.metric, x.oppScore) + xp + '</div></div>' + r + '</div>'; };
+    var resCard = function (x) { var r = x.won === true ? '<span class="mpa-du-won">WON</span>' : x.won === false ? '<span class="mpa-du-lost">LOST</span>' : '<span class="mpa-du-tie">TIE</span>'; var xp = x.stake > 0 ? ' · <b style="color:' + (x.won === true ? '#c2f64a' : x.won === false ? '#ff8a80' : '#8b97a5') + '">' + (x.won === true ? '+' + x.stake : x.won === false ? '-' + x.stake : '±0') + ' XP</b>' : ''; return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">You vs @' + esc(x.opp) + '</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + duelScoreTxt(x.metric, x.myScore) + ' vs ' + duelScoreTxt(x.metric, x.oppScore) + xp + '</div></div>' + r + '<button class="mpa-du-y" data-durem="' + esc(x.id) + '" style="flex:0 0 auto;margin-left:8px" title="Same terms, straight back at them">Rematch</button></div>'; };
+    var lobbyCard = function (x) { var pot = x.stake > 0 ? x.stake * 2 : 0;
+      return '<div class="mpa-di">'
+        + '<div class="mpa-di-top"><span class="mpa-di-ic">' + dico(x.metric) + '</span><div class="mpa-di-h"><b>@' + esc(x.name) + (x.prem ? ' <span style="font:700 8px \'Space Mono\',monospace;color:#c2f64a">PRO</span>' : '') + '</b><span>Open ' + DMET[x.metric] + ' duel — first taker</span></div></div>'
+        + '<div class="mpa-di-terms"><span class="mpa-di-tm"><i>Runs for</i>' + durShort(x.dur) + '</span><span class="mpa-di-tm"><i>Coin</i>' + (x.sym ? esc(x.sym) + ' only' : 'Any coin') + '</span><span class="mpa-di-tm' + (x.stake > 0 ? ' mpa-di-stake' : '') + '"><i>Stake' + (x.stake > 0 ? ' → win' : '') + '</i>' + (x.stake > 0 ? x.stake + ' → ' + pot + ' XP' : 'None') + '</span></div>'
+        + '<div class="mpa-di-acts"><button class="mpa-du-y" data-dutake="' + esc(x.id) + '">Take it' + (x.stake > 0 ? ' · stake ' + x.stake + ' XP' : '') + '</button></div></div>'; };
+    var myOpenCard = function (x) { return '<div class="mpa-du-r"><div class="mpa-du-b"><div class="mpa-du-nm">Your open challenge</div><div class="mpa-du-met">' + DMET[x.metric] + ' · ' + durShort(x.dur) + (x.sym ? ' · ' + esc(x.sym) : '') + (x.stake > 0 ? ' · ' + x.stake + ' XP staked' : '') + ' · waiting for a taker</div></div><button class="mpa-du-n" data-ducxl="' + esc(x.id) + '" style="flex:0 0 auto">Cancel</button></div>'; };
     function load() {
-      fetch('/api/duel/mine').then(function (r) { return r.json(); }).then(function (d) {
+      Promise.all([
+        fetch('/api/duel/mine').then(function (r) { return r.json(); }),
+        fetch('/api/duel/openlist').then(function (r) { return r.json(); }).catch(function () { return { open: [] }; })
+      ]).then(function (res) {
+        var d = res[0] || {}, lobby = ((res[1] && res[1].open) || []).filter(function (x) { return !x.mine; });
         var du = bodyEl.querySelector('#mpaDu'); if (!du) return;
         var all = (d && d.duels) || [];
-        if (!all.length) {
+        if (!all.length && !lobby.length) {
           du.innerHTML = '<div class="mpa-xp-empty">No duels yet. Open a trader’s profile from the leaderboard and tap <b style="color:#f5a623">Duel</b> to throw down.</div>' + (window._mpPrem === false ? '<div class="mpa-ups" style="margin-top:12px"><b>Premium duels</b><p>Free duels are a 7-day ROE race. Premium unlocks Profit, Survival, Streak and Sniper formats, XP stakes and faster rounds.</p><button type="button" id="mpaDuUps0">Go Premium</button></div>' : '');
           var u0 = du.querySelector('#mpaDuUps0'); if (u0) u0.addEventListener('click', function () { if (window.mpPremium && window.mpPremium.show) { close(); window.mpPremium.show('Duels'); } }); return;
         }
-        var inc = all.filter(function (x) { return x.incoming; }), act = all.filter(function (x) { return x.status === 'active'; }), pend = all.filter(function (x) { return x.status === 'pending' && !x.incoming; }), done = all.filter(function (x) { return x.status === 'done'; });
+        var inc = all.filter(function (x) { return x.incoming; }), act = all.filter(function (x) { return x.status === 'active'; }), pend = all.filter(function (x) { return x.status === 'pending' && !x.incoming; }), mineOpen = all.filter(function (x) { return x.status === 'open'; }), done = all.filter(function (x) { return x.status === 'done'; });
         var html = '';
         if (inc.length) html += sec('Incoming challenges') + inc.map(incCard).join('');
+        if (lobby.length) html += sec('Open challenges — first taker wins the spot') + lobby.map(lobbyCard).join('');
         if (act.length) html += sec('Active') + act.map(vsCard).join('');
+        if (mineOpen.length) html += sec('Your open posts') + mineOpen.map(myOpenCard).join('');
         if (pend.length) html += sec('Waiting for reply') + pend.map(pendCard).join('');
         if (done.length) html += sec('Results') + done.map(resCard).join('');
         du.innerHTML = html;
         Array.prototype.forEach.call(du.querySelectorAll('[data-duacc]'), function (b) { b.addEventListener('click', function () { duelRespond(b.getAttribute('data-duacc'), 'accept', b); }); });
         Array.prototype.forEach.call(du.querySelectorAll('[data-dudec]'), function (b) { b.addEventListener('click', function () { duelRespond(b.getAttribute('data-dudec'), 'decline', b); }); });
+        Array.prototype.forEach.call(du.querySelectorAll('[data-dutake]'), function (b) { b.addEventListener('click', function () {
+          b.disabled = true;
+          fetch('/api/duel/accept', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: b.getAttribute('data-dutake') }) }).then(function (r) { return r.json(); }).then(function (jd) {
+            if (jd && jd.ok) { renderDuels(); if (window.mpXpCheck) window.mpXpCheck(); }
+            else { b.disabled = false; b.textContent = jd && jd.error === 'need_xp' ? ('Need ' + jd.need + ' XP') : jd && jd.error === 'gone' ? 'Already taken' : jd && jd.error === 'exists' ? 'Live duel with them' : 'Try again'; }
+          }).catch(function () { b.disabled = false; });
+        }); });
+        Array.prototype.forEach.call(du.querySelectorAll('[data-ducxl]'), function (b) { b.addEventListener('click', function () {
+          b.disabled = true;
+          fetch('/api/duel/cancelopen', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: b.getAttribute('data-ducxl') }) }).then(function (r) { return r.json(); }).then(function () { renderDuels(); if (window.mpXpCheck) window.mpXpCheck(); }).catch(function () { b.disabled = false; });
+        }); });
+        Array.prototype.forEach.call(du.querySelectorAll('[data-durem]'), function (b) { b.addEventListener('click', function () {
+          b.disabled = true; b.textContent = '…';
+          fetch('/api/duel/rematch', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: b.getAttribute('data-durem') }) }).then(function (r) { return r.json(); }).then(function (jd) {
+            if (jd && jd.ok) { renderDuels(); if (window.mpXpCheck) window.mpXpCheck(); }
+            else { b.disabled = false; b.textContent = jd && jd.error === 'exists' ? 'Already live' : jd && jd.error === 'need_xp' ? ('Need ' + jd.need + ' XP') : jd && jd.error === 'too_many' ? 'At duel limit' : 'Rematch'; }
+          }).catch(function () { b.disabled = false; b.textContent = 'Rematch'; });
+        }); });
       }).catch(function () { var du = bodyEl.querySelector('#mpaDu'); if (du && !du.querySelector('.mpa-dv,.mpa-di,.mpa-du-r')) du.innerHTML = '<div class="mpa-xp-empty">Could not load your duels.</div>'; });
     }
     load();
@@ -602,29 +638,42 @@
       renderDuels(); if (window.mpXpCheck) window.mpXpCheck();
     }).catch(function () { if (btn) btn.disabled = false; });
   }
-  function duelErr(d) { var e = d && d.error; return e === 'exists' ? 'You already have a live duel with this trader.' : e === 'not_connected' ? 'Follow this trader first to challenge them.' : e === 'need_username' ? 'Set a username first.' : e === 'too_many' ? ('You are at your live-duel limit' + (d.cap ? ' (' + d.cap + ')' : '') + '. Finish one first' + (d.cap === 1 ? ' — Premium raises it to 10' : '') + '.') : e === 'need_xp' ? ('Not enough XP — you need ' + d.need + ' but have ' + d.have + '.') : e === 'premium_required' ? 'That is a Premium duel type.' : e === 'no_recipient' ? 'User not found.' : e === 'restricted' ? 'Your account cannot start duels right now.' : 'Could not send the challenge.'; }
-  function renderDuelChallenge(name) {
-    name = String(name || '').replace(/[^a-zA-Z0-9_]/g, ''); if (!name) { renderDuels(); return; }
+  function duelNudge() { /* post-win momentum nudge -> duels (max 1/day) */
+    try {
+      var n = document.createElement('div');
+      n.style.cssText = 'position:fixed;left:50%;bottom:86px;transform:translateX(-50%) translateY(8px);z-index:9999;display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#151a12,#0d1014);border:1px solid rgba(245,166,35,.5);border-radius:14px;padding:11px 14px;box-shadow:0 18px 50px -18px rgba(0,0,0,.85),0 0 30px -14px rgba(245,166,35,.5);opacity:0;transition:opacity .3s,transform .3s;max-width:92vw';
+      n.innerHTML = '<span style="font:700 12.5px Familjen Grotesk,sans-serif;color:#e9e7df">On form. Put that streak on the line — challenge someone to a duel.</span><button type="button" style="flex:0 0 auto;background:#f5a623;color:#0a0b0d;border:none;border-radius:9px;padding:8px 13px;font:800 12px Familjen Grotesk,sans-serif;cursor:pointer">Duels</button><button type="button" aria-label="Dismiss" style="flex:0 0 auto;background:none;border:none;color:#5c656f;font-size:15px;cursor:pointer;padding:2px 4px">&#215;</button>';
+      document.body.appendChild(n);
+      requestAnimationFrame(function () { n.style.opacity = '1'; n.style.transform = 'translateX(-50%) translateY(0)'; });
+      var kill = function () { n.style.opacity = '0'; setTimeout(function () { try { n.remove(); } catch (e) {} }, 320); };
+      n.querySelectorAll('button')[0].addEventListener('click', function () { kill(); try { open(); renderDuels(); } catch (e) {} });
+      n.querySelectorAll('button')[1].addEventListener('click', kill);
+      setTimeout(kill, 9000);
+    } catch (e) {}
+  }
+  function duelErr(d) { var e = d && d.error; return e === 'exists' ? 'You already have a live duel with this trader.' : e === 'daily_limit' ? ('Challenge limit for today (' + (d.cap || 5) + '). Back tomorrow' + (d.cap === 5 ? ' — Premium raises it to 20/day' : '') + '.') : e === 'open_cap' ? ('You already have an open challenge on the board' + (d.cap === 1 ? ' — Premium allows 3 at once' : '') + '. Cancel it or wait for a taker.') : e === 'not_connected' ? 'Follow this trader first to challenge them.' : e === 'need_username' ? 'Set a username first.' : e === 'too_many' ? ('You are at your live-duel limit' + (d.cap ? ' (' + d.cap + ')' : '') + '. Finish one first' + (d.cap === 1 ? ' — Premium raises it to 10' : '') + '.') : e === 'need_xp' ? ('Not enough XP — you need ' + d.need + ' but have ' + d.have + '.') : e === 'premium_required' ? (d && d.teaser ? 'Your free premium-format duel for this week is used. Premium makes them unlimited.' : 'That is a Premium duel type.') : e === 'no_recipient' ? 'User not found.' : e === 'restricted' ? 'Your account cannot start duels right now.' : 'Could not send the challenge.'; }
+  function renderDuelChallenge(name, isOpen) {
+    name = String(name || '').replace(/[^a-zA-Z0-9_]/g, ''); if (!name && !isOpen) { renderDuels(); return; }
     ensurePrem(function (prem) {
       var xp = (window._mpXpBal != null ? window._mpXpBal : ((ME && ME.xp) || 0));
       var C = { type: 'roe', dur: 604800000, stake: 0, sym: '', maxTrades: 3 };
       function upsell(reason) { if (window.mpPremium && window.mpPremium.show) { close(); window.mpPremium.show(reason || 'Duels'); } }
       function draw() {
         var typeCards = DTYPES.map(function (t) { var locked = t.prem && !prem, on = C.type === t.k;
-          return '<button class="mpa-dt' + (on ? ' on' : '') + (locked ? ' lk' : '') + '" data-dt="' + t.k + '" data-lk="' + (locked ? 1 : '') + '">' + (locked ? '<span class="mpa-dt-pro">PRO</span>' : '') + '<span class="mpa-dt-ic">' + dico(t.k) + '</span><span class="mpa-dt-nm">' + t.nm + '</span><span class="mpa-dt-ds">' + t.ds + '</span></button>'; }).join('');
+          return '<button class="mpa-dt' + (on ? ' on' : '') + (locked ? ' lk' : '') + '" data-dt="' + t.k + '"' + '>' + (locked ? '<span class="mpa-dt-pro">PRO · 1 free/wk</span>' : '') + '<span class="mpa-dt-ic">' + dico(t.k) + '</span><span class="mpa-dt-nm">' + t.nm + '</span><span class="mpa-dt-ds">' + t.ds + '</span></button>'; }).join(''); /* premium formats stay pickable for free users — every account gets ONE premium-format duel a week (server enforces) */
         var durSeg = DDUR.map(function (dd) { var locked = dd.v !== 604800000 && !prem; return '<b data-dur="' + dd.v + '" class="' + (C.dur === dd.v ? 'on' : '') + (locked ? ' lk' : '') + '" data-lk="' + (locked ? 1 : '') + '">' + dd.l + '</b>'; }).join('');
         var stkChips = DSTK.map(function (s) { var locked = !prem && s !== 0 && s !== 50; return '<button class="c' + (C.stake === s ? ' on' : '') + (locked ? ' lk' : '') + '" data-stk="' + s + '" data-lk="' + (locked ? 1 : '') + '">' + (s === 0 ? 'No stake' : s + ' XP') + '</button>'; }).join('');
-        var html = '<h3 class="mpa-h">Challenge @' + esc(name) + '</h3><p class="mpa-sub" style="margin:-4px 0 12px">Set the terms. The winner is locked in the moment the clock runs out.</p>';
+        var html = isOpen ? '<h3 class="mpa-h">Open challenge</h3><p class="mpa-sub" style="margin:-4px 0 12px">No target — it goes on the board and the FIRST trader to take it is in. Winner locked when the clock runs out.</p>' : '<h3 class="mpa-h">Challenge @' + esc(name) + '</h3><p class="mpa-sub" style="margin:-4px 0 12px">Set the terms. The winner is locked in the moment the clock runs out.</p>';
         html += '<div class="mpa-fld-l" style="margin-bottom:8px">Format</div><div class="mpa-dt-grid">' + typeCards + '</div>';
         html += '<div class="mpa-fld"><div class="mpa-fld-l">Duration' + (!prem ? ' <em>Premium unlocks faster rounds</em>' : '') + '</div><div class="mpa-seg">' + durSeg + '</div></div>';
         html += '<div class="mpa-fld"><div class="mpa-fld-l">XP wager' + (!prem ? ' <em>Premium sets any amount</em>' : '') + '</div><div class="mpa-stk">' + stkChips + '</div>' + (C.stake > 0 ? '<div class="mpa-stk-info"><span>Your XP: <b>' + xp.toLocaleString() + '</b></span><span>Winner takes <b>' + (C.stake * 2) + ' XP</b></span></div>' : '') + '</div>';
         if (C.type === 'sniper') html += '<div class="mpa-fld"><div class="mpa-fld-l">Shots <em>first N trades count</em></div><div class="mpa-seg">' + [1, 2, 3, 4, 5].map(function (n) { return '<b data-mt="' + n + '" class="' + (C.maxTrades === n ? 'on' : '') + '">' + n + '</b>'; }).join('') + '</div></div>';
         if (prem) html += '<div class="mpa-fld"><div class="mpa-fld-l">Lock to one coin <em>optional</em></div><input class="mpa-symin" id="mpaDuSym" maxlength="12" placeholder="e.g. BTC — blank = any coin" value="' + esc(C.sym) + '"></div>';
-        html += '<button class="mpa-send" id="mpaDuSend">Send challenge</button><div class="mpa-du-msg" id="mpaDuMsg"></div>';
+        html += '<button class="mpa-send" id="mpaDuSend">' + (isOpen ? 'Post to the board' : 'Send challenge') + '</button><div class="mpa-du-msg" id="mpaDuMsg"></div>';
         if (!prem) html += '<div class="mpa-ups"><b>Unlock the full arena</b><p>Premium opens 4 more duel formats, XP stakes up to 2,000, 1h/24h/3-day rounds, and up to 10 duels at once.</p><button type="button" id="mpaDuUps">Go Premium</button></div>';
         html += '<button class="mpa-link" id="mpaDuCancel" type="button" style="margin-top:10px">Cancel</button>';
         bodyEl.innerHTML = html;
-        Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-dt]'), function (b) { b.addEventListener('click', function () { if (b.getAttribute('data-lk')) { upsell('Premium duel formats'); return; } C.type = b.getAttribute('data-dt'); draw(); }); });
+        Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-dt]'), function (b) { b.addEventListener('click', function () { C.type = b.getAttribute('data-dt'); draw(); }); });
         Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-dur]'), function (b) { b.addEventListener('click', function () { if (b.getAttribute('data-lk')) { upsell('Faster duel rounds'); return; } C.dur = +b.getAttribute('data-dur'); draw(); }); });
         Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-stk]'), function (b) { b.addEventListener('click', function () { if (b.getAttribute('data-lk')) { upsell('Custom XP stakes'); return; } C.stake = +b.getAttribute('data-stk'); draw(); }); });
         Array.prototype.forEach.call(bodyEl.querySelectorAll('[data-mt]'), function (b) { b.addEventListener('click', function () { C.maxTrades = +b.getAttribute('data-mt'); draw(); }); });
@@ -633,8 +682,8 @@
         var up = bodyEl.querySelector('#mpaDuUps'); if (up) up.addEventListener('click', function () { upsell('Duels'); });
         var snd = bodyEl.querySelector('#mpaDuSend'); if (snd) snd.addEventListener('click', function () {
           snd.disabled = true; var msg = bodyEl.querySelector('#mpaDuMsg'); if (msg) msg.innerHTML = 'Sending…';
-          fetch('/api/duel/challenge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to: name, metric: C.type, dur: C.dur, stake: C.stake, sym: C.sym, maxTrades: C.maxTrades }) }).then(function (r) { return r.json(); }).then(function (d) {
-            if (d && d.ok) { if (msg) msg.innerHTML = '<span style="color:#34d99a">Challenge sent to @' + esc(name) + '. It is waiting in their Duels.</span>'; if (window.mpXpCheck) window.mpXpCheck(); setTimeout(renderDuels, 1300); }
+          fetch('/api/duel/challenge', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ to: name, open: isOpen ? 1 : 0, metric: C.type, dur: C.dur, stake: C.stake, sym: C.sym, maxTrades: C.maxTrades }) }).then(function (r) { return r.json(); }).then(function (d) {
+            if (d && d.ok) { if (msg) msg.innerHTML = '<span style="color:#34d99a">' + (isOpen ? 'Posted. It is on the board — first taker starts the clock.' : 'Challenge sent to @' + esc(name) + '. It is waiting in their Duels.') + '</span>'; if (window.mpXpCheck) window.mpXpCheck(); setTimeout(renderDuels, 1300); }
             else { snd.disabled = false; if (msg) msg.innerHTML = '<span style="color:#ffb347">' + duelErr(d) + '</span>'; }
           }).catch(function () { snd.disabled = false; if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error — try again.</span>'; });
         });
@@ -1325,6 +1374,7 @@
         // toast every log entry newer than the last seen ts (positives AND negatives — a silent -500 duel stake looked like "my XP is shrinking"), oldest-first
         var fresh = (d.log || []).filter(function (e) { return e.ts > (stored.ts || 0) && (+e.amt) !== 0; }).sort(function (a, b) { return a.ts - b.ts; });
         fresh.slice(-4).forEach(function (e, ix) { setTimeout(function () { toast(+e.amt, e.src, (+e.amt) < 0 ? '#ff8a80' : d.level.col); }, ix * 550); });
+        if (fresh.some(function (e) { return e.src === 'trade_win'; })) { try { var dn9 = 'mp_dnudge_' + new Date().toISOString().slice(0, 10); if (!localStorage.getItem(dn9)) { localStorage.setItem(dn9, '1'); setTimeout(duelNudge, 2800); } } catch (e) {} }
         if (d.level.idx > (stored.idx != null ? stored.idx : d.level.idx)) setTimeout(function () { celebrate(d.level); }, fresh.length ? 700 : 0);
         try { localStorage.setItem(key(uid), JSON.stringify({ xp: d.xp, idx: d.level.idx, ts: (d.log[0] || {}).ts || stored.ts })); } catch (e) {}
         lastXp = d.xp; lastIdx = d.level.idx;
