@@ -9630,10 +9630,16 @@ async function handleAuth(url, request, env, ctx) {
     if (!u && isAdmin && url.searchParams.get('uid')) u = { id: url.searchParams.get('uid'), username: url.searchParams.get('un') || '' }; // owner/E2E testing hook (same pattern as tshare/missions)
     let on = true; try { on = (await env.STATS.get('shop:on')) !== '0'; } catch (e) {}
     const out = { on: on, items: VAULT_ITEMS, signedIn: !!u, owned: ['default'], equipped: 'default', xp: 0, level: 'unranked', balance: 0, tester: false };
-    if (u) {
-      try { const r1 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/framestate?uid=' + encodeURIComponent(u.id))); const d1 = await r1.json(); out.owned = d1.owned || out.owned; out.equipped = d1.equipped || 'default'; out.xp = +d1.xp || 0; out.level = d1.level || 'unranked'; out.streak = +d1.streak || 0; out.freezes = +d1.freezes || 0; out.boostUntil = +d1.boostUntil || 0; out.equippedTkt = d1.tktskin || ''; } catch (e) {}
-      try { const r3 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/achstate?uid=' + encodeURIComponent(u.id))); const d3 = await r3.json(); out.ach = d3.earned || []; out.achDefs = d3.defs || []; } catch (e) {}
-      try { const led0 = env.REWARDS.get(env.REWARDS.idFromName('ledger')); const r2 = await led0.fetch(new Request('https://do/account', { headers: { 'x-acct': 'u:' + u.id } })); const d2 = await r2.json(); out.balance = (d2 && +d2.balance) || 0; } catch (e) {} // ledger DO reads identity from the x-acct header; balance arrives as USD float
+    if (u) { // one page-load = 3 independent DO reads -> parallel (was serial; audit 2026-08-14)
+      const stub9 = env.USERS.get(env.USERS.idFromName('main'));
+      const [d1, d3, d2] = await Promise.all([
+        stub9.fetch(new Request('https://do/framestate?uid=' + encodeURIComponent(u.id))).then(r => r.json()).catch(() => null),
+        stub9.fetch(new Request('https://do/achstate?uid=' + encodeURIComponent(u.id))).then(r => r.json()).catch(() => null),
+        env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/account', { headers: { 'x-acct': 'u:' + u.id } })).then(r => r.json()).catch(() => null) // ledger DO reads identity from the x-acct header; balance arrives as USD float
+      ]);
+      if (d1) { out.owned = d1.owned || out.owned; out.equipped = d1.equipped || 'default'; out.xp = +d1.xp || 0; out.level = d1.level || 'unranked'; out.streak = +d1.streak || 0; out.freezes = +d1.freezes || 0; out.boostUntil = +d1.boostUntil || 0; out.equippedTkt = d1.tktskin || ''; }
+      if (d3) { out.ach = d3.earned || []; out.achDefs = d3.defs || []; }
+      if (d2) out.balance = +d2.balance || 0;
       out.tester = vaultIsTester(u.username);
     }
     return jr(out);
@@ -14624,7 +14630,7 @@ export class UserStore {
       }
       return this.j({ exists: true, uid: 'u:' + u.id, name: u.username, level: { k: L.k, name: L.name, col: L.col, pct: L.pct, next: L.next, toNext: L.toNext, xp: L.xp },
         iFollow, followsMe, mutual,
-        bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [], frame: u.frame || 'default',
+        bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [], frame: (function (fr9) { if (fr9 !== 'champion') return fr9; try { const cr9 = this.rows("SELECT ts FROM cosmetics WHERE user_id=? AND item_id='champion'", u.id)[0]; return (cr9 && (Date.now() - (+cr9.ts || 0)) < 7 * 86400000) ? fr9 : 'default'; } catch (e) { return 'default'; } }).call(this, u.frame || 'default'), // champion is worn 7 days — the public card must expire it too, not only the equip panel
         stats: { trades: t.n || 0, closed, wins: t.wins || 0, winRate: closed ? Math.round((t.wins || 0) / closed * 100) : 0,
           realized: +(t.pnl || 0).toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
           weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2) },
@@ -14652,7 +14658,7 @@ export class UserStore {
       const founder = PREM_FOUNDERS.indexOf(String(u.username || '').toLowerCase()) >= 0;
       const premium = founder || (+u.premium || 0) > Date.now();
       const bought = this.rows('SELECT item_id, ts FROM cosmetics WHERE user_id=?', uid).filter(function(x) { return x.item_id !== 'champion' || (Date.now() - (+x.ts || 0)) < 7 * 86400000; }).map(x => x.item_id);
-      const okFr = frameOwned(fr, u.xp, premium, founder) || bought.indexOf(fr) >= 0 || (vaultIsTester(u.username) && (!!vaultItem(fr) || fr === 'default' || XP_LEVELS.some(l => l.k === fr) || ['neon', 'aurora', 'founder'].indexOf(fr) >= 0)); // tester (owner) can wear EVERY frame incl. level tiers he hasn't reached
+      const okFr = frameOwned(fr, u.xp, premium, founder) || bought.indexOf(fr) >= 0 || (fr === 'owner' && PREM_OWNERS.indexOf(String(u.username || '').toLowerCase()) >= 0) || (vaultIsTester(u.username) && (!!vaultItem(fr) || fr === 'default' || XP_LEVELS.some(l => l.k === fr) || ['neon', 'aurora', 'founder'].indexOf(fr) >= 0)); // tester (owner) can wear EVERY frame incl. level tiers; 'owner' = MP One apex, owners only
       if (!okFr) return this.j({ error: 'locked' });
       try { sql.exec('UPDATE users SET frame=? WHERE id=?', fr, uid); } catch (e) {}
       return this.j({ ok: true, frame: fr });
@@ -14665,6 +14671,7 @@ export class UserStore {
       const premium = founder || (+u.premium || 0) > Date.now();
       const cosRows = this.rows('SELECT item_id, ts FROM cosmetics WHERE user_id=?', uid);
       let owned = framesFor(u.xp, premium, founder).concat(cosRows.filter(function(x) { return x.item_id !== 'champion' || (Date.now() - (+x.ts || 0)) < 7 * 86400000; }).map(x => x.item_id)); // champion is worn for 7 days, then the crown moves on
+      if (PREM_OWNERS.indexOf(String(u.username || '').toLowerCase()) >= 0) owned.push('owner'); // MP One — the apex frame, owners only
       if (vaultIsTester(u.username)) owned = owned.concat(VAULT_ITEMS.map(x => x.id)).concat(XP_LEVELS.map(l => l.k).filter(k => k !== 'unranked' && k !== 'bronze')).concat(['neon', 'aurora', 'founder']); // owner test account sees everything — vault items AND all level/premium frames
       owned = owned.filter(function(v, i, a) { return a.indexOf(v) === i; });
       const uSt = this.rows('SELECT streak, freezes, xpboost_until, tktskin FROM users WHERE id=?', uid)[0] || {};
