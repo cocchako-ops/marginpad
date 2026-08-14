@@ -408,7 +408,14 @@
   .df-sechd:first-child{margin-top:0}
   @keyframes dfPulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,138,61,.55);}50%{opacity:.45;box-shadow:0 0 0 5px rgba(255,138,61,0);}}
   .df-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
-  @media(max-width:680px){.df-list{grid-template-columns:1fr;}}
+  @media(max-width:680px){
+    .df-list{grid-template-columns:1fr;}
+    .df-head{flex-wrap:wrap;row-gap:10px;}
+    .df-h{flex:1 1 calc(100% - 48px);} /* naslov + podnaslov u punoj sirini pored ikone; dugme + LIVE padaju u drugi red */
+    .df-post{order:5;}
+    .df-live{order:6;margin-left:auto;}
+    .df-r .df-vs .sub{white-space:normal;overflow:visible;text-overflow:clip;margin-top:2px;}
+  }
   .df-r{display:flex;align-items:center;gap:9px;padding:10px 12px;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.06);border-radius:12px;transition:.14s;min-width:0;}
   .df-r:hover{border-color:rgba(255,120,60,.4);background:rgba(255,120,60,.05);}
   .df-r.prem{border-color:rgba(255,211,106,.34);background:linear-gradient(160deg,rgba(255,211,106,.07),rgba(0,0,0,.22));}
