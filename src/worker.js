@@ -7779,7 +7779,7 @@ const VAULT_ITEMS = [
   { id: 'eclipse', name: 'Eclipse', tier: 'legendary', xp: 5000, until: '2026-09-01', desc: 'August drop: a black sun with a burning corona. Gone Sep 1 — forever' },
   // consumables (kind:'c') — instant effects, buyable repeatedly, never giftable
   { id: 'shield', name: 'Streak Shield', kind: 'c', tier: 'rare', xp: 300, cents: 29, desc: 'One extra streak freeze, bankable up to 5 (a missed day auto-spends one)' },
-  { id: 'surge', name: 'XP Surge', kind: 'c', tier: 'epic', cents: 49, desc: 'Double XP from everything you earn for the next 24 hours' },
+  { id: 'surge', name: 'XP Surge', kind: 'c', tier: 'epic', cents: 89, desc: 'Double XP from everything you earn for the next 24 hours' },
   { id: 'reroll', name: 'Mission Reroll', kind: 'c', tier: 'common', xp: 200, cents: 15, desc: 'Swap today&#39;s mission set for a fresh one (once per day)' },
   // ticket skins (kind:'t') — restyle your P&L tickets in the journal, drawers and every shared chat ticket
   { id: 'tkt_noir', name: 'Noir Ticket', kind: 't', tier: 'rare', xp: 800, desc: 'Blackout ticket with a cold silver seam' },
@@ -11756,7 +11756,7 @@ export default {
       const stub = env.USERS.get(env.USERS.idFromName('main'));
       const sub = url.pathname.slice('/api/duel/'.length);
       if (sub === 'feed') { // PUBLIC live duels feed for the homepage — recent challenges/active/results, edge-cached 15s
-        const ck = new Request('https://marginpad.io/__duel_feed_v2');
+        const ck = new Request('https://marginpad.io/__duel_feed_v3'); // v3: shape changed (open rows) -> new synthetic key per the edge-cache rule
         try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
         let body = '{"duels":[]}';
         try { const r = await stub.fetch(new Request('https://do/duelfeed')); body = await r.text(); } catch (e) {}
@@ -15010,10 +15010,10 @@ export class UserStore {
     }
     if (path === '/duel/pending') { const uid = String((b && b.uid) || url.searchParams.get('uid') || '').replace(/^u:/, ''); if (!uid) return this.j({ pending: 0 }); return this.j({ pending: (this.rows("SELECT COUNT(*) c FROM duels WHERE b_uid=? AND status='pending'", uid)[0] || { c: 0 }).c }); }
     if (path === '/duelfeed') { // public homepage feed: recent challenges / active duels / results, with premium flags so VIPs stand out
-      const rows = this.rows("SELECT id,a_uid,b_uid,a_name,b_name,metric,status,stake,sym,winner,created,end_ts FROM duels WHERE status IN ('pending','active','done') ORDER BY created DESC LIMIT 26");
+      const rows = this.rows("SELECT id,a_uid,b_uid,a_name,b_name,metric,status,stake,sym,winner,created,end_ts,dur FROM duels WHERE status IN ('open','active','done') ORDER BY created DESC LIMIT 26"); // v3 (owner 2026-08-14): OPEN posts are the product now, pending noise is gone
       const uids = new Set(); rows.forEach(d => { uids.add(String(d.a_uid)); uids.add(String(d.b_uid)); });
       const prem = {}; if (uids.size) { const list = [...uids]; try { this.rows('SELECT id,username,premium FROM users WHERE id IN (' + list.map(() => '?').join(',') + ')', ...list).forEach(u => { prem[String(u.id)] = this._isPrem(u); }); } catch (e) {} }
-      const out = rows.map(d => ({ id: d.id, a: d.a_name || '?', b: d.b_name || '?', metric: d.metric, status: d.status, stake: +d.stake || 0, sym: d.sym || '', winner: d.winner ? (String(d.winner) === String(d.a_uid) ? 'a' : 'b') : '', aPrem: !!prem[String(d.a_uid)], bPrem: !!prem[String(d.b_uid)], ts: d.created, end: d.end_ts || 0 }));
+      const out = rows.map(d => ({ id: d.id, a: d.a_name || '?', b: d.b_name || '?', metric: d.metric, status: d.status, stake: +d.stake || 0, sym: d.sym || '', dur: +d.dur || 604800000, winner: d.winner ? (String(d.winner) === String(d.a_uid) ? 'a' : 'b') : '', aPrem: !!prem[String(d.a_uid)], bPrem: !!prem[String(d.b_uid)], ts: d.created, end: d.end_ts || 0 }));
       return this.j({ duels: out });
     }
     if (path === '/premdesk') { // Premium desk (mp-ops): every premium member with trading P&L + flattened open/closed tickets (money enriched in the worker from the reward ledger)

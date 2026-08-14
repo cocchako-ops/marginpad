@@ -361,6 +361,13 @@
   .df-h span{display:block;font-size:12px;color:var(--dim);margin-top:1px;}
   .df-live{flex:none;display:inline-flex;align-items:center;gap:6px;font:700 9px 'Space Mono',monospace;letter-spacing:.11em;color:#ff8a3d;background:rgba(255,120,60,.1);border:1px solid rgba(255,120,60,.35);border-radius:20px;padding:4px 9px;}
   .df-live i{width:6px;height:6px;border-radius:50%;background:#ff8a3d;animation:dfPulse 1.6s infinite;}
+  .df-take{flex:none;background:rgba(255,150,64,.16);color:#ffab5e;border:1px solid rgba(255,150,64,.55);border-radius:9px;padding:6px 13px;font:800 12px 'Familjen Grotesk',sans-serif;cursor:pointer;transition:.15s}
+  .df-take:hover{background:#f5a623;color:#0a0b0d}
+  .df-take[disabled]{opacity:.55;cursor:default}
+  .df-post{background:#f5a623;color:#0a0b0d;border:none;border-radius:10px;padding:9px 16px;font:800 12.5px 'Familjen Grotesk',sans-serif;cursor:pointer;flex:none}
+  .df-post:hover{filter:brightness(1.08)}
+  .df-sechd{font:700 9.5px 'Space Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:#7f8893;margin:12px 0 7px}
+  .df-sechd:first-child{margin-top:0}
   @keyframes dfPulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,138,61,.55);}50%{opacity:.45;box-shadow:0 0 0 5px rgba(255,138,61,0);}}
   .df-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
   @media(max-width:680px){.df-list{grid-template-columns:1fr;}}
@@ -965,11 +972,12 @@
     <div class="lb-card duel-feed" style="grid-column:1/-1">
       <div class="df-head">
         <span class="df-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"/><path d="m5 14 4 4"/><path d="m3 19 2-2"/></svg></span>
-        <div class="df-h"><b>Live Duels</b><span>Trader vs trader — best stat when the clock ends takes the XP pot</span></div>
+        <div class="df-h"><b>Live Duels</b><span>Post an open challenge, or take one off the board — best stat when the clock ends takes the pot</span></div>
+        <button type="button" class="df-post" id="dfPost">Post open challenge</button>
         <span class="df-live"><i></i>LIVE</span>
       </div>
       <div class="df-list" id="duelFeed"><div class="df-empty">Loading duels…</div></div>
-      <div class="df-foot"><span class="df-note">Open any trader on the board and hit <b>Duel</b> to throw down. <span class="df-prem">Gold names are Premium.</span></span></div>
+      <div class="df-foot"><span class="df-note">Anyone signed in can take an open challenge — first taker starts the clock. <span class="df-prem">Gold names are Premium.</span></span></div>
     </div>
   </div>
 </section>
@@ -1255,9 +1263,10 @@
     function esc(s){return String(s==null?'':s).replace(/[<>&]/g,function(m){return{'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
     function nm(n,pr){return '<span class="nm'+(pr?' pr':'')+'" data-lbu="'+esc(n)+'" role="button">@'+esc(n)+(pr?STAR:'')+'</span>';}
     function tleft(end){var ms=end-Date.now();if(ms<=0)return 'ending';var h=Math.floor(ms/3600000),d=Math.floor(h/24);return d>=1?d+'d':h>=1?h+'h':Math.max(1,Math.floor(ms/60000))+'m';}
+    function durS(v){return v===3600000?'1h':v===86400000?'24h':v===259200000?'3d':'7d';}
     function row(x){
       var met=MET[x.metric]||'ROE',sym=x.sym?' · '+esc(x.sym):'',prem=x.aPrem||x.bPrem;
-      if(x.status==='pending')return '<div class="df-r'+(prem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+'<span class="vs">challenged</span>'+nm(x.b,x.bPrem)+'<span class="sub">'+met+sym+(x.stake>0?' · '+x.stake+' XP':'')+' · awaiting reply</span></div><span class="df-tag pending">Pending</span></div>';
+      if(x.status==='open')return '<div class="df-r'+(x.aPrem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+'<span class="vs">posted an open duel</span><span class="sub">'+met+sym+' · '+durS(+x.dur)+(x.stake>0?' · stake '+x.stake+' XP, winner takes '+(x.stake*2):' · no stake')+'</span></div><button type="button" class="df-take" data-dftake="'+esc(x.id)+'">Take it</button></div>';
       if(x.status==='active')return '<div class="df-r'+(prem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+'<span class="vs">vs</span>'+nm(x.b,x.bPrem)+'<span class="sub">'+met+sym+(x.stake>0?' · '+(x.stake*2)+' XP pot':'')+' · '+tleft(x.end)+' left</span></div><span class="df-tag active"><i></i>Live</span></div>';
       var w=x.winner==='a'?x.a:x.winner==='b'?x.b:'',wp=x.winner==='a'?x.aPrem:x.bPrem,l=x.winner==='a'?x.b:x.a,lp=x.winner==='a'?x.bPrem:x.aPrem;
       if(!w)return '<div class="df-r'+(prem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+'<span class="vs">vs</span>'+nm(x.b,x.bPrem)+'<span class="sub">'+met+' · dead heat</span></div><span class="df-tag done">Tie</span></div>';
@@ -1266,12 +1275,32 @@
     function draw(){
       fetch('/api/duel/feed').then(function(r){return r.json();}).then(function(d){
         var arr=(d&&d.duels)||[];
-        if(!arr.length){el.innerHTML='<div class="df-empty">No duels yet — <b>be the first</b>. Open any trader on the board and hit <b>Duel</b> to challenge them.</div>';return;}
-        var order={pending:0,active:1,done:2};
-        arr.sort(function(a,b){return (order[a.status]-order[b.status])||(b.ts-a.ts);});
-        el.innerHTML=arr.slice(0,10).map(row).join('');
+        var opens=arr.filter(function(x){return x.status==='open';}).sort(function(a,b){return b.ts-a.ts;});
+        var hist=arr.filter(function(x){return x.status==='active'||x.status==='done';}).sort(function(a,b){return (a.status==='active'?0:1)-(b.status==='active'?0:1)||(b.ts-a.ts);});
+        if(!opens.length&&!hist.length){el.innerHTML='<div class="df-empty">No duels yet — <b>be the first</b>: post an open challenge and let anyone take it.</div>';return;}
+        var html='';
+        html+='<div class="df-sechd">Open challenges — first taker is in</div>';
+        html+=opens.length?opens.slice(0,6).map(row).join(''):'<div class="df-empty" style="padding:8px 0">The board is empty — post one and set your terms.</div>';
+        if(hist.length)html+='<div class="df-sechd">Duel history</div>'+hist.slice(0,8).map(row).join('');
+        el.innerHTML=html;
+        Array.prototype.forEach.call(el.querySelectorAll('[data-dftake]'),function(b){b.addEventListener('click',function(){
+          var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();
+          if(!me){if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
+          b.disabled=true;b.textContent='…';
+          fetch('/api/duel/accept',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:b.getAttribute('data-dftake')})})
+            .then(function(r){return r.json();}).then(function(jd){
+              if(jd&&jd.ok){b.textContent='You are in';if(window.mpAuth&&window.mpAuth.duelsView)setTimeout(window.mpAuth.duelsView,700);setTimeout(draw,1200);}
+              else{b.disabled=false;b.textContent=jd&&jd.error==='need_username'?'Set a username first':jd&&jd.error==='gone'?'Already taken':jd&&jd.error==='exists'?'Live duel with them':jd&&jd.error==='need_xp'?('Need '+jd.need+' XP'):'Try again';}
+            }).catch(function(){b.disabled=false;b.textContent='Take it';});
+        });});
       }).catch(function(){});
     }
+    var pb=document.getElementById('dfPost');
+    if(pb)pb.addEventListener('click',function(){
+      var me=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();
+      if(!me){if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
+      if(window.mpAuth&&window.mpAuth.duelOpen)window.mpAuth.duelOpen();
+    });
     draw();setInterval(function(){if(!document.hidden)draw();},20000);
   })();
   document.addEventListener('keydown',function(e){if(e.key==='Escape')lbCloseModal();});

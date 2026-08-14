@@ -1122,7 +1122,9 @@
 
   window.mpAuth = { open: open, close: close, me: function () { return ME; }, sync: syncTrades,
     dm: function (name) { if (!ME) { open(); return; } open(); setTimeout(function () { try { renderDmThread(name); } catch (e) {} }, 30); },
-    duel: function (name) { open(); setTimeout(function () { try { if (ME) renderDuelChallenge(name); } catch (e) {} }, 30); } };
+    duel: function (name) { open(); setTimeout(function () { try { if (ME) renderDuelChallenge(name); } catch (e) {} }, 30); },
+    duelOpen: function () { open(); setTimeout(function () { try { if (ME) renderDuelChallenge('', true); } catch (e) {} }, 30); },
+    duelsView: function () { open(); setTimeout(function () { try { if (ME) renderDuels(); } catch (e) {} }, 30); } };
 
   /* ===== Premium upgrade modal (shared: charts indicators, AI, heatmap all call window.mpPremium) ===== */
   (function () {
