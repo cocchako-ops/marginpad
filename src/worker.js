@@ -10495,7 +10495,7 @@ async function handleReward(url, request, env) {
   else if (path === '/moonsign/list') doPath = '/exsign/list';
   else if (path === '/moonsign/review') doPath = '/exsign/review';
   const fwd = new Request('https://do' + doPath + (request.method === 'GET' ? url.search : ''), {
-    method: request.method, headers: { 'content-type': 'application/json', 'x-cfg': JSON.stringify(cfg), 'x-ip': ip, 'x-cc': cc, 'x-dev': deviceOf(ua), 'x-vid': vid, 'x-did': (getCookie(request, 'mp_did') || '').slice(0, 40), 'x-acct': acct || '', 'x-lvl': (cfg.levelsEnabled !== false ? suLevelK : ''), 'x-claimx': String(cfg.levelsEnabled !== false ? (LEVEL_CLAIM_MULT[suLevelK] || 1) : 1) },
+    method: request.method, headers: { 'content-type': 'application/json', 'x-cfg': JSON.stringify(cfg), 'x-ip': ip, 'x-cc': cc, 'x-dev': deviceOf(ua), 'x-vid': vid, 'x-did': (getCookie(request, 'mp_did') || '').slice(0, 40), 'x-acct': acct || '', 'x-lvl': (cfg.levelsEnabled !== false ? suLevelK : ''), 'x-claimx': String(cfg.levelsEnabled !== false ? (LEVEL_CLAIM_MULT[suLevelK] || 1) : 1), 'x-dayx': String(cfg.levelsEnabled !== false ? (LEVEL_DAY_MULT[suLevelK] || 1) : 1) },
     body: request.method === 'POST' ? fwdBody : undefined,
   });
   let r, txt;
@@ -12479,7 +12479,7 @@ export class RewardLedger {
     const url = new URL(request.url), path = url.pathname, sql = this.state.storage.sql;
     const cfg = JSON.parse(request.headers.get('x-cfg') || '{}');
     const ip = request.headers.get('x-ip') || '';
-    const cc = request.headers.get('x-cc') || '', dev = request.headers.get('x-dev') || '', vid = request.headers.get('x-vid') || '', did = request.headers.get('x-did') || ''; const xLvl = request.headers.get('x-lvl') || ''; const xClaimX = Math.max(1, Math.min(2, +request.headers.get('x-claimx') || 1));
+    const cc = request.headers.get('x-cc') || '', dev = request.headers.get('x-dev') || '', vid = request.headers.get('x-vid') || '', did = request.headers.get('x-did') || ''; const xLvl = request.headers.get('x-lvl') || ''; const xClaimX = Math.max(1, Math.min(2, +request.headers.get('x-claimx') || 1)); const xDayX = Math.max(1, Math.min(2, +request.headers.get('x-dayx') || 1));
     const day = new Date().toISOString().slice(0, 10), now = Date.now();
     let body = {}; if (request.method === 'POST') { try { body = await request.json(); } catch (e) {} }
     const addr = String(body.address || url.searchParams.get('address') || '').toLowerCase();
@@ -12488,7 +12488,7 @@ export class RewardLedger {
     const validMoon = /^moon:[a-z0-9_.-]{3,32}$/.test(addr); // Moon payout — 'moon:<username>' (addr is lowercased above); shows as-is in the ops Withdrawals queue
     const validAcct = validAddr || /^u:[0-9a-z]{8,40}$/.test(addr); // admin endpoints address an account by its key ('u:<uid>') OR a legacy 0x wallet
     const acct = String(request.headers.get('x-acct') || ''); // logged-in account identity ('u:<uid>'), resolved server-side from the session; this is the faucet account key (replaces the wallet)
-    const meta = { amount: cfg.amountC / 100, perDay: cfg.perDayC / 100, minWd: cfg.minWdC / 100, minClaimsToWd: cfg.minClaimsToWd || 0, welcomeAmt: (cfg.welcomeC || 0) / 100, promoUsd: (cfg.promoC == null ? 0.3 : cfg.promoC / 100), promoXUsd: (cfg.promoXC != null ? cfg.promoXC / 100 : 0.15), promoTtRate: cfg.promoTtRate || 2, promoTtMax: cfg.promoTtMax || 1000, promoEnabled: cfg.promoEnabled !== false, exsignUsd: (cfg.exsignC == null ? 3 : cfg.exsignC / 100), exsignEnabled: cfg.exsignEnabled !== false, moonUsd: (cfg.moonC == null ? 1 : cfg.moonC / 100), moonEnabled: cfg.moonEnabled !== false, pauseMsg: cfg.pauseMsg || '', prize1: cfg.prize1, prize2: cfg.prize2, prize3: cfg.prize3 };
+    const meta = { /* amount+perDay are level-scaled: the tiles show YOUR claim + YOUR daily cap */ amount: Math.round(cfg.amountC * xClaimX) / 100, perDay: Math.round(cfg.perDayC * xDayX) / 100, minWd: cfg.minWdC / 100, minClaimsToWd: cfg.minClaimsToWd || 0, welcomeAmt: (cfg.welcomeC || 0) / 100, promoUsd: (cfg.promoC == null ? 0.3 : cfg.promoC / 100), promoXUsd: (cfg.promoXC != null ? cfg.promoXC / 100 : 0.15), promoTtRate: cfg.promoTtRate || 2, promoTtMax: cfg.promoTtMax || 1000, promoEnabled: cfg.promoEnabled !== false, exsignUsd: (cfg.exsignC == null ? 3 : cfg.exsignC / 100), exsignEnabled: cfg.exsignEnabled !== false, moonUsd: (cfg.moonC == null ? 1 : cfg.moonC / 100), moonEnabled: cfg.moonEnabled !== false, pauseMsg: cfg.pauseMsg || '', prize1: cfg.prize1, prize2: cfg.prize2, prize3: cfg.prize3 };
 
     if (path === '/account') {
       const welcomeBonus = acct ? this.grantWelcome(acct, cfg) : 0; // one-time sign-up bonus on first account read
@@ -12520,7 +12520,7 @@ export class RewardLedger {
       }
       if (now - r.last_claim < cfg.cooldown) return this.j({ error: 'cooldown', left: cfg.cooldown - (now - r.last_claim) }, 429);
       const dayAmt = r.day === day ? r.day_amt : 0;
-      const credC = Math.round(cfg.amountC * xClaimX); if (dayAmt + credC > cfg.perDayC) return this.j({ error: 'daily_cap' }, 429);
+      const credC = Math.round(cfg.amountC * xClaimX); const dayCapC = Math.round(cfg.perDayC * xDayX); if (dayAmt + credC > dayCapC) return this.j({ error: 'daily_cap' }, 429); // personal daily cap scales with level (LEVEL_DAY_MULT)
       sql.exec('UPDATE accounts SET balance=balance+?,earned=earned+?,day=?,day_amt=?,last_claim=?,claims=COALESCE(claims,0)+1 WHERE address=?', credC, credC, day, dayAmt + credC, now, acct);
       sql.exec('INSERT INTO daily(day,dispensed) VALUES(?,?) ON CONFLICT(day) DO UPDATE SET dispensed=dispensed+?', day, credC, credC);
       sql.exec('INSERT INTO claimday(day,n) VALUES(?,1) ON CONFLICT(day) DO UPDATE SET n=n+1', day); // persisted claim count for the Funnel tab
@@ -13102,6 +13102,7 @@ const XP_LEVELS = [ // pragovi podignuti 2026-07-16 (Academy nosi ~1975 XP) + Le
 const REWARDS_MIN_XP = 500;                 // faucet + the whole rewards system unlock at Bronze (500 XP); below that = 'unranked'
 function rewardsUnlocked(xp) { return (+xp || 0) >= REWARDS_MIN_XP; }
 const LEVEL_CLAIM_MULT = { unranked: 1.0, bronze: 1.0, silver: 1.10, gold: 1.20, platinum: 1.35, diamond: 1.50, legendary: 1.75 }; // faucet claim size by level
+const LEVEL_DAY_MULT = { unranked: 1.0, bronze: 1.0, silver: 1.10, gold: 1.25, platinum: 1.40, diamond: 1.60, legendary: 2.0 }; // personal DAILY cap by level (owner 2026-08-14: each tier must be able to EARN more per day, not just claim in fewer clicks — gold $0.20 -> $0.25)
 const LEVEL_WD_BONUS = { diamond: 0.10, legendary: 0.15 };
 function lvlSvgS(k, col) { col = col || '#c97f4a'; if (k === 'legendary') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3z" fill="' + col + '30"/><path d="M4 17h16l-1.2-8-4 3L12 5l-2.8 7-4-3zM4 17l.6 2.5h14.8L20 17" stroke="' + col + '" stroke-width="1.4" stroke-linejoin="round"/><circle cx="12" cy="13.4" r="1.5" fill="' + col + '"/></svg>'; if (k === 'diamond') return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M8 5H16L20 10L12 19L4 10Z" fill="' + col + '30"/><path d="M8 5H16L20 10L12 19L4 10ZM4 10H20M8 5L10 10M16 5L14 10M10 10L12 19M14 10L12 19" stroke="' + col + '" stroke-width="1.25" stroke-linejoin="round"/></svg>'; return '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none"><path d="M12 2.5 20 7v10L12 21.5 4 17V7z" fill="' + col + '22" stroke="' + col + '" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 7l1.5 3 3.3.5-2.4 2.3.6 3.3L12 14.6 8.9 16.1l.6-3.3L7.1 10.5l3.3-.5z" fill="' + col + '"/></svg>'; } // Diamond gets +10% on withdrawals (the house pays it)
 // ── XP Happy Hour ── bigger XP for winning paper trades with 200%+ ROE, opened at ≤100× leverage, CLOSED during the daily window.
