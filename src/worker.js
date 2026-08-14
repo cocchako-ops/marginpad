@@ -13279,6 +13279,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS mev(user_id TEXT, day TEXT, type TEXT, n INTEGER, PRIMARY KEY(user_id,day,type))'); // trim-proof per-day mission-event counter (type = ev:<type> | pv:/<first-seg>) — survives the uevents ring; pruned >3d
     s.exec('CREATE TABLE IF NOT EXISTS uclicks(user_id TEXT, ts INTEGER, x INTEGER, y INTEGER, path TEXT)'); // per-user click heatmap (normalized x/y %, ring-buffered ~300)
     s.exec('CREATE TABLE IF NOT EXISTS utrades(user_id TEXT PRIMARY KEY, json TEXT, n INTEGER, wins INTEGER, losses INTEGER, opens INTEGER, pnl REAL, updated INTEGER)'); // synced paper-trade journal + summary
+    for (const col of ['life_closes INTEGER DEFAULT 0', 'life_wins INTEGER DEFAULT 0', 'life_losses INTEGER DEFAULT 0', 'life_pnl REAL DEFAULT 0', 'best_pnl REAL', 'life_seed INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE utrades ADD COLUMN ' + col); } catch (e) {} } // LIFETIME stats (2026-08-14, owner: profile numbers must NOT be 100-capped): monotonic, incremented per close EVENT — the json blob stays capped for display history only
     s.exec("CREATE TABLE IF NOT EXISTS referrals(referrer TEXT, referred TEXT PRIMARY KEY, ts INTEGER, status TEXT DEFAULT 'pending', qual_ts INTEGER, did TEXT)"); // invite-a-friend: one row per referred user, paid when they get active
     s.exec('CREATE TABLE IF NOT EXISTS refhit(referrer TEXT, campaign TEXT, src TEXT, ts INTEGER, url TEXT)'); // referral-link visits (clicks) for the Affiliate tab: who came, via which campaign, from where (host + exact post URL)
     try { s.exec('ALTER TABLE refhit ADD COLUMN url TEXT'); } catch (e) {}
@@ -13483,6 +13484,7 @@ export class UserStore {
     const CAP = 100;
     const roeOf = (e) => { const m = +(e && e.margin), p = +(e && e.pnl); return (isFinite(m) && m > 0 && isFinite(p)) ? p / m : -Infinity; };
     const protIds = new Set(closed.slice().sort((a, c) => roeOf(c) - roeOf(a)).filter((e) => roeOf(e) > 0).slice(0, 3).map((e) => String(e.id)));
+    closed.slice().sort((a, c) => ((+c.pnl || -1e18) - (+a.pnl || -1e18))).filter((e) => (+e.pnl || 0) > 0).slice(0, 3).forEach((e) => protIds.add(String(e.id))); // "Best trade $" must survive the trim — protect top-3 by dollars alongside top-3 by ROE
     const isProt = (e) => protIds.has(String(e && e.id));
     if (opensArr.length + closed.length > CAP) { const prot = closed.filter(isProt); let rest = closed.filter((e) => !isProt(e)); const room = Math.max(0, CAP - opensArr.length - prot.length); if (room <= 0) rest = []; else if (rest.length > room) rest = rest.slice(-room); closed = prot.concat(rest); }
     arr = opensArr.concat(closed).sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));
@@ -13498,9 +13500,10 @@ export class UserStore {
         if (!o9) { if (isCl(e)) evs.push(['close', e, +e.closeTs || now]); else evs.push(['open', e, +e.ts || now]); }
         else if (!isCl(o9) && isCl(e)) evs.push(['close', e, +e.closeTs || now]);
         else if (!isCl(o9) && !isCl(e)) { const q0 = +o9.qty, q1 = +e.qty; if (isFinite(q0) && isFinite(q1) && q1 < q0 * 0.99) evs.push(['trim', e, now]); } }
-      const cut = now - 7 * 86400000; let nIns = 0;
+      const cut = now - 7 * 86400000; let nIns = 0; let _lfC = 0, _lfW = 0, _lfL = 0, _lfP = 0, _lfB = null; // lifetime deltas this sync
       for (const ev9 of evs) { const kind = ev9[0], e = ev9[1], ts9 = ev9[2];
         if (kind === 'close') try { this._lbBest(uid, e, ts9); } catch (e8) {} // season-best BEFORE the per-sync cap/age skips — a qualifying close must never miss the board store
+        if (kind === 'close') { const lp9 = +e.pnl; if (isFinite(lp9)) { _lfC++; if (lp9 > 0) _lfW++; else _lfL++; _lfP += lp9; if (_lfB == null || lp9 > _lfB) _lfB = lp9; } } // lifetime counters: every close counts, no matter how old/large/capped
         if (ts9 < cut) continue;
         const m = +e.margin || 0; if (!(m > 0) || m > 100000) continue;
         const pv = (kind !== 'open' && isFinite(+e.pnl)) ? +e.pnl : null;
@@ -13520,6 +13523,12 @@ export class UserStore {
       if (nIns) sql.exec('DELETE FROM tradeev WHERE ts < ?', now - 30 * 86400000); // 30d (was 14d): the season is 14d long, so the old prune deleted early-season closes right before the final payout — the WR board shifted in the season's last days
     } catch (e9) {}
     sql.exec('INSERT INTO utrades(user_id,json,n,wins,losses,opens,pnl,updated) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET json=excluded.json,n=excluded.n,wins=excluded.wins,losses=excluded.losses,opens=excluded.opens,pnl=excluded.pnl,updated=excluded.updated', uid, json, arr.length, wins, losses, opens, pnl, now);
+    try { // lifetime stats: seed ONCE from the current blob (a floor — pre-cap history is unrecoverable), then event-increments only. The upsert above never touches life_* columns.
+      const lrow = this.rows('SELECT life_seed FROM utrades WHERE user_id=?', uid)[0] || {};
+      let blobBest = null; for (const e of arr) { const bp = +(e && e.pnl); if (e && (e.status === 'win' || e.status === 'loss') && isFinite(bp)) { if (blobBest == null || bp > blobBest) blobBest = bp; } }
+      if (!+lrow.life_seed) sql.exec('UPDATE utrades SET life_closes=?, life_wins=?, life_losses=?, life_pnl=?, best_pnl=?, life_seed=1 WHERE user_id=?', wins + losses, wins, losses, pnl, blobBest, uid); // seed already contains this sync's closes — deltas intentionally NOT added here
+      else if (_lfC > 0 || blobBest != null) sql.exec('UPDATE utrades SET life_closes=COALESCE(life_closes,0)+?, life_wins=COALESCE(life_wins,0)+?, life_losses=COALESCE(life_losses,0)+?, life_pnl=COALESCE(life_pnl,0)+?, best_pnl=MAX(COALESCE(best_pnl,-1e15), ?, ?) WHERE user_id=?', _lfC, _lfW, _lfL, _lfP, _lfB == null ? -1e15 : _lfB, blobBest == null ? -1e15 : blobBest, uid);
+    } catch (eL) {}
     try { const hasSrv = opensArr.some(e => e && (e.src === 'srv' || e.src === 'bot')); if (hasSrv) sql.exec('INSERT INTO active_srv(user_id,ts) VALUES(?,?) ON CONFLICT(user_id) DO UPDATE SET ts=excluded.ts', uid, now); else sql.exec('DELETE FROM active_srv WHERE user_id=?', uid); } catch (e) {}
     return arr;
   }
@@ -14639,7 +14648,7 @@ export class UserStore {
       const u = this.rows('SELECT id, username, xp, created, bio, avatar, accent, coins, frame, cardbg FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0];
       if (!u) return this.j({ exists: false });
       const L = xpLevelOf(u.xp || 0);
-      const t = this.rows('SELECT json, n, wins, losses, pnl FROM utrades WHERE user_id = ?', u.id)[0] || {};
+      const t = this.rows('SELECT json, n, wins, losses, pnl, life_closes, life_wins, life_losses, life_pnl, best_pnl, life_seed FROM utrades WHERE user_id = ?', u.id)[0] || {};
       const weekStart = lbPeriodStart(now);
       let bestRoe = null, bestPnl = null, weekPnl = 0, weekN = 0, weekW = 0;
       try { const arr = JSON.parse(t.json || '[]'); if (Array.isArray(arr)) for (const e of arr) {
@@ -14653,6 +14662,11 @@ export class UserStore {
       // weekly win/loss from tradeev (the blob is 100-capped so a heavy trader's old losses get trimmed → inflated WR); v2: win needs ≥5% ROE
       try { const v2w = weekStart >= LB_V2_START; const mvW = v2w ? WR_MIN_MOVE : -1e9; const wr = this.rows("SELECT SUM(CASE WHEN pnl>0 AND roe>=? AND (? <= -1e8 OR (lev>0 AND roe/lev >= ?)) THEN 1 ELSE 0 END) w, SUM(CASE WHEN pnl<=0 THEN 1 ELSE 0 END) l FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ")", v2w ? WR_MIN_WIN_ROE : -1e9, mvW, mvW, u.id, weekStart)[0]; if (wr) { weekW = +wr.w || 0; weekN = weekW + (+wr.l || 0); } } catch (e) {}
       const closed = (t.wins || 0) + (t.losses || 0);
+      const lifeOn = !!+t.life_seed; // lifetime counters exist once the user has synced since the upgrade
+      const lClosed = lifeOn ? Math.max(+t.life_closes || 0, closed) : closed;
+      const lWins = lifeOn ? Math.max(+t.life_wins || 0, t.wins || 0) : (t.wins || 0);
+      const lPnl = lifeOn ? +(+t.life_pnl || 0) : +(t.pnl || 0);
+      if (lifeOn && t.best_pnl != null && (bestPnl == null || +t.best_pnl > bestPnl)) bestPnl = +t.best_pnl;
       const followers = (this.rows('SELECT COUNT(*) c FROM ufollows WHERE tuid = ?', u.id)[0] || { c: 0 }).c;
       // viewer-relative relationship (mutual follow = "friends") — only when a signed-in viewer is passed
       const viewer = String(url.searchParams.get('viewer') || '').replace(/^u:/, '');
@@ -14665,8 +14679,8 @@ export class UserStore {
       return this.j({ exists: true, uid: 'u:' + u.id, name: u.username, level: { k: L.k, name: L.name, col: L.col, pct: L.pct, next: L.next, toNext: L.toNext, xp: L.xp },
         iFollow, followsMe, mutual,
         bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [], frame: (function (fr9) { if (fr9 !== 'champion') return fr9; try { const cr9 = this.rows("SELECT ts FROM cosmetics WHERE user_id=? AND item_id='champion'", u.id)[0]; return (cr9 && (Date.now() - (+cr9.ts || 0)) < 7 * 86400000) ? fr9 : 'default'; } catch (e) { return 'default'; } }).call(this, u.frame || 'default'), cardbg: u.cardbg || '', // champion is worn 7 days — the public card must expire it too, not only the equip panel
-        stats: { trades: t.n || 0, closed, wins: t.wins || 0, winRate: closed ? Math.round((t.wins || 0) / closed * 100) : 0,
-          realized: +(t.pnl || 0).toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
+        stats: { trades: Math.max(t.n || 0, lClosed), closed: lClosed, wins: lWins, winRate: lClosed ? Math.round(lWins / lClosed * 100) : 0,
+          realized: +lPnl.toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
           weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2) },
         followers });
     }
@@ -14725,13 +14739,14 @@ export class UserStore {
       const now9 = Date.now(); const fresh = [];
       // F4 earn frames: time-on-site (udwell) + lifetime closes (utrades summary — tradeev only holds 30d) + claimed missions
       const dwellS = +((this.rows('SELECT COALESCE(SUM(secs),0) s FROM udwell WHERE user_id=?', uid)[0] || {}).s || 0);
-      const ut9 = this.rows('SELECT wins, losses FROM utrades WHERE user_id=?', uid)[0] || {};
-      const closes9 = (+ut9.wins || 0) + (+ut9.losses || 0);
+      const ut9 = this.rows('SELECT wins, losses, life_closes, life_wins, life_seed FROM utrades WHERE user_id=?', uid)[0] || {};
+      const closes9 = Math.max((+ut9.wins || 0) + (+ut9.losses || 0), +ut9.life_closes || 0); // lifetime (blob sums are 100-capped)
+      const lifeW9 = Math.max(+ut9.wins || 0, +ut9.life_wins || 0);
       const msn9 = +((this.rows('SELECT COUNT(*) n FROM missions WHERE user_id=?', uid)[0] || {}).n || 0);
       const FR9 = { dwell10: dwellS >= 36000, dwell100: dwellS >= 360000, closer: closes9 >= 500, operative: msn9 >= 100 };
       const haveCos9 = {}; this.rows('SELECT item_id FROM cosmetics WHERE user_id=?', uid).forEach(r => { haveCos9[r.item_id] = 1; });
       for (const k9 in FR9) if (FR9[k9] && !haveCos9[k9]) { try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', uid, k9, now9, 'earn'); this._grantXp(uid, 'earnframe', 50, { note: (vaultItem(k9) || { name: k9 }).name + ' frame unlocked' }); } catch (e) {} }
-      const tests = { first_win: (+tv.w || 0) >= 1, ten_wins: (+tv.w || 0) >= 10, fifty_closes: (+tv.n || 0) >= 50, big_win: (+tv.mx || 0) >= 100, degen_survivor: (+tv.hl || 0) >= 1, explorer: (+tv.sy || 0) >= 10, week_flame: st9 >= 7, month_flame: st9 >= 30, duelist: duelsW >= 1, warlord: duelsW >= 10, scholar: acadN >= 20, graduate: acadN >= 73, collector: cosN >= 3, veteran: xl >= 30000, regular: pv9 >= 500 };
+      const tests = { first_win: (+tv.w || 0) >= 1 || lifeW9 >= 1, ten_wins: (+tv.w || 0) >= 10 || lifeW9 >= 10, fifty_closes: (+tv.n || 0) >= 50 || closes9 >= 50, big_win: (+tv.mx || 0) >= 100, degen_survivor: (+tv.hl || 0) >= 1, explorer: (+tv.sy || 0) >= 10, week_flame: st9 >= 7, month_flame: st9 >= 30, duelist: duelsW >= 1, warlord: duelsW >= 10, scholar: acadN >= 20, graduate: acadN >= 73, collector: cosN >= 3, veteran: xl >= 30000, regular: pv9 >= 500 };
       for (const k9 in tests) if (tests[k9] && !have[k9]) { try { sql.exec('INSERT INTO achievements(user_id,ach_id,ts) VALUES(?,?,?)', uid, k9, now9); have[k9] = 1; fresh.push(k9); } catch (e) {} }
       return this.j({ earned: Object.keys(have), fresh: fresh, defs: ACH_DEFS, progress: { dwellS: dwellS, closes: closes9, missions: msn9 } });
     }
@@ -15030,6 +15045,7 @@ export class UserStore {
           else if (t.status === 'win' || t.status === 'loss') { closedN++; const pl = +t.pnl || 0; realized += pl; if (t.status === 'win') wins++; else losses++; if (t.liquidated) liqN++;
             closedT.push({ uid: String(u.id), who, sym: t.sym || '?', side: t.side || 'long', lev: +t.lev || 1, margin: m, pnl: pl, liq: !!t.liquidated, ts: +t.closeTs || +t.ts || 0, bal: !!t.bal }); }
         }
+        try { const lt9 = this.rows('SELECT life_wins, life_losses, life_pnl, life_seed FROM utrades WHERE user_id=?', u.id)[0]; if (lt9 && +lt9.life_seed) { wins = Math.max(wins, +lt9.life_wins || 0); losses = Math.max(losses, +lt9.life_losses || 0); realized = +lt9.life_pnl || realized; closedN = Math.max(closedN, wins + losses); } } catch (e) {} // lifetime beats the 100-capped blob sums
         out.push({ uid: String(u.id), username: u.username || '', email: u.email || '', cc: u.cc || '', premUntil: +u.premium || 0, founder: PREM_FOUNDERS.indexOf(String(u.username || '').toLowerCase()) >= 0, xp: u.xp || 0, lastSeen: +u.last_seen || 0, openN, closedN, realized: +realized.toFixed(2), wins, losses, liqN });
       }
       closedT.sort((a, b) => b.ts - a.ts); openT.sort((a, b) => b.ts - a.ts);
