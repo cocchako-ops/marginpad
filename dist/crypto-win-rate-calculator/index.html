@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Win Rate & Expectancy Calculator — Is the System Profitable? | MarginPad</title>
+<meta name="description" content="Free expectancy calculator: win rate, average winner and average loser combined into expectancy per trade — the number that says if a system makes money." />
+<meta name="keywords" content="win rate calculator, expectancy calculator trading, average win loss ratio" />
+<link rel="canonical" href="https://marginpad.io/crypto-win-rate-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Win Rate & Expectancy Calculator — Is the System Profitable? | MarginPad" />
+<meta property="og:description" content="Free expectancy calculator: win rate, average winner and average loser combined into expectancy per trade — the number that says if a system makes money." />
+<meta property="og:url" content="https://marginpad.io/crypto-win-rate-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og-home.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<style>
+:root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:34px 18px 60px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,4.6vw,38px);letter-spacing:-.02em;line-height:1.12;margin:10px 0 10px}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px;margin:0 0 24px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;margin:34px 0 10px}
+p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.f label{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0 0 5px}
+.f input,.f select{width:100%;background:#0a0d11;border:1px solid #2b323b;border-radius:9px;padding:11px 12px;color:var(--ink);font-family:'Space Mono',monospace;font-size:16px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--lime)}
+.res{margin-top:16px;border-top:1px solid var(--line);padding-top:6px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(32,38,47,.6)}
+.rrow:last-child{border-bottom:none}.rrow .k{color:var(--dim);font-size:13.5px}
+.rrow .v{font-family:'Space Mono',monospace;font-size:16px;font-weight:700}
+.rrow.big .v{font-size:21px;color:var(--lime)}.v.up{color:var(--up)}.v.dn{color:var(--red)}
+.frm{background:#0a0d11;border:1px solid var(--line);border-radius:var(--rs);padding:13px 16px;font-family:'Space Mono',monospace;font-size:13.5px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+.ex{background:linear-gradient(160deg,rgba(194,246,74,.05),transparent 60%),var(--panel);border:1px solid var(--line);border-radius:var(--rs);padding:14px 17px}
+.faq details{border:1px solid var(--line);border-radius:var(--rs);background:var(--panel);margin-bottom:9px;padding:0 16px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:14.5px;padding:13px 0}
+.rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.rel a{color:var(--lime);border:1px solid rgba(194,246,74,.35);border-radius:999px;padding:7px 14px;font-size:12.5px;text-decoration:none}
+.rel a:hover{background:rgba(194,246,74,.1)}
+.mprail{margin:34px 0 8px;border:1px solid rgba(245,166,35,.35);border-radius:16px;padding:16px;background:linear-gradient(160deg,rgba(245,166,35,.06),transparent 60%),var(--panel)}
+.mprail-t{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;color:#f5a623;margin-bottom:10px}
+.mprail a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;color:var(--ink);text-decoration:none;margin-bottom:8px;transition:.15s}
+.mprail a:hover{border-color:#f5a623}.mprail a b{flex:none}.mprail a span{flex:1;color:var(--dim);font-size:12.5px}.mprail a i{color:#f5a623;font-style:normal}
+.note{color:var(--faint);font-size:12px;margin-top:26px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Win Rate &amp; Expectancy Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/crypto-win-rate-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Win Rate &amp; Expectancy Calculator","item":"https://marginpad.io/crypto-win-rate-calculator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How many trades before win rate is trustworthy?","acceptedAnswer":{"@type":"Answer","text":"Under ~100 trades the confidence interval is roughly plus or minus 10 points. Judge systems on expectancy over hundreds of journaled trades, not a hot week."}},{"@type":"Question","name":"Improve win rate or payoff first?","acceptedAnswer":{"@type":"Answer","text":"They trade off. Most durable systems fix a payoff floor (say 1.5R minimum) and optimize entries, because letting winners run is easier to systematize."}},{"@type":"Question","name":"Where do I get my numbers?","acceptedAnswer":{"@type":"Answer","text":"From your journal — MarginPad tracks every paper trade automatically and the profile stats give win rate and average W/L to feed this page."}}]}</script>
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+<h1>Win Rate &amp; Expectancy Calculator</h1>
+<p class="sub">Win rate alone is a vanity metric. Expectancy is what your account actually feels.</p>
+<div class="calc"><div class="cgrid"><div class="f"><label for="wr">Win rate %</label><input id="wr" type="number" inputmode="decimal" value="45" step="0.5"></div><div class="f"><label for="aw">Average winner (USD)</label><input id="aw" type="number" inputmode="decimal" value="120"></div><div class="f"><label for="al">Average loser (USD)</label><input id="al" type="number" inputmode="decimal" value="60"></div><div class="f"><label for="tpm">Trades per month</label><input id="tpm" type="number" inputmode="decimal" value="30"></div></div><div class="res" id="res"></div></div>
+<h2>How it is calculated</h2>
+<div class="frm">expectancy = winrate &times; avg win &minus; (1 &minus; winrate) &times; avg loss</div>
+<p>A 45% win rate can be highly profitable and a 70% win rate can bleed money — it hinges on the <strong>size</strong> of winners versus losers. Expectancy multiplies the two into dollars per trade; times your frequency, that is your real monthly edge.</p>
+<h2>Worked example</h2>
+<div class="ex">45% win rate, avg winner <b>$120</b>, avg loser <b>$60</b>: expectancy <b>+$21 per trade</b> (+$630 over 30 trades), while the break-even win rate for that payoff is only 33%.</div>
+<h2>FAQ</h2>
+<div class="faq"><details><summary>How many trades before win rate is trustworthy?</summary><p>Under ~100 trades the confidence interval is roughly plus or minus 10 points. Judge systems on expectancy over hundreds of journaled trades, not a hot week.</p></details><details><summary>Improve win rate or payoff first?</summary><p>They trade off. Most durable systems fix a payoff floor (say 1.5R minimum) and optimize entries, because letting winners run is easier to systematize.</p></details><details><summary>Where do I get my numbers?</summary><p>From your journal — MarginPad tracks every paper trade automatically and the profile stats give win rate and average W/L to feed this page.</p></details></div>
+<h2>Related tools</h2>
+<div class="rel"><a href="/risk-of-ruin-calculator/">Risk of ruin</a><a href="/stop-loss-calculator/">Stop-loss & R targets</a><a href="/trading-journal">Trading journal</a><a href="/paper-trade">Paper trading</a></div>
+<div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
+<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
+<a href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
+<p class="note">Free, no signup, runs entirely in your browser. Educational tool — not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
+</div>
+<script>function calc(){var w=+document.getElementById('wr').value/100,aw=+document.getElementById('aw').value,al=+document.getElementById('al').value,n=+document.getElementById('tpm').value;var r=document.getElementById('res');if(!(w>=0&&w<=1&&aw>=0&&al>=0)){r.innerHTML='';return;}var ex=w*aw-(1-w)*al,mo=ex*n,beWR=al+aw>0?al/(aw+al)*100:0;r.innerHTML='<div class="rrow big"><span class="k">Expectancy per trade</span><span class="v '+(ex>=0?'up':'dn')+'">'+(ex>=0?'+':'')+ex.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Expected monthly ('+n+' trades)</span><span class="v '+(mo>=0?'up':'dn')+'">'+(mo>=0?'+':'')+mo.toFixed(2)+' USD</span></div><div class="rrow"><span class="k">Break-even win rate</span><span class="v">'+beWR.toFixed(1)+'%</span></div>';}
+document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

@@ -81,5 +81,23 @@ The API is function-calling / MCP friendly — point any AI tool at https://marg
 - [Bybit vs Binance](https://marginpad.io/blog/bybit-vs-binance/) · [Best exchanges for US traders](https://marginpad.io/blog/best-crypto-exchanges-us-traders/) · [Is KuCoin safe](https://marginpad.io/blog/is-kucoin-safe-2026/)
 - [Cross vs isolated margin](https://marginpad.io/blog/cross-vs-isolated-margin/) · [What is funding rate](https://marginpad.io/blog/what-is-funding-rate/) · [Full blog index](https://marginpad.io/blog/)
 
+## Calculator suite (free, no signup, formulas + worked examples on every page)
+- https://marginpad.io/crypto-profit-calculator/
+- https://marginpad.io/position-size-calculator/
+- https://marginpad.io/leverage-calculator/
+- https://marginpad.io/crypto-break-even-calculator/
+- https://marginpad.io/stop-loss-calculator/
+- https://marginpad.io/crypto-funding-cost-calculator/
+- https://marginpad.io/crypto-fee-calculator/
+- https://marginpad.io/crypto-roi-calculator/
+- https://marginpad.io/crypto-drawdown-calculator/
+- https://marginpad.io/crypto-compound-calculator/
+- https://marginpad.io/crypto-dca-calculator/
+- https://marginpad.io/crypto-win-rate-calculator/
+- https://marginpad.io/crypto-margin-calculator/
+- https://marginpad.io/risk-reward-calculator/
+- https://marginpad.io/apr-apy-calculator/
+- https://marginpad.io/crypto-slippage-calculator/
+
 ## About
 MarginPad is a free, independent crypto-futures education and tooling site. Monetized via exchange affiliate links; the tools themselves are free. Contact: hello@marginpad.io · Telegram bot: https://t.me/MarginPadBot
