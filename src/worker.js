@@ -7781,6 +7781,10 @@ const VAULT_ITEMS = [
   { id: 'shield', name: 'Streak Shield', kind: 'c', tier: 'rare', xp: 300, cents: 29, desc: 'One extra streak freeze, bankable up to 5 (a missed day auto-spends one)' },
   { id: 'surge', name: 'XP Surge', kind: 'c', tier: 'epic', cents: 49, desc: 'Double XP from everything you earn for the next 24 hours' },
   { id: 'reroll', name: 'Mission Reroll', kind: 'c', tier: 'common', xp: 200, cents: 15, desc: 'Swap today&#39;s mission set for a fresh one (once per day)' },
+  // ticket skins (kind:'t') — restyle your P&L tickets in the journal, drawers and every shared chat ticket
+  { id: 'tkt_noir', name: 'Noir Ticket', kind: 't', tier: 'rare', xp: 800, desc: 'Blackout ticket with a cold silver seam' },
+  { id: 'tkt_holo', name: 'Holo Ticket', kind: 't', tier: 'epic', xp: 2000, desc: 'Iridescent foil that shifts between blue, violet and green' },
+  { id: 'tkt_aurum', name: 'Aurum Ticket', kind: 't', tier: 'legendary', cents: 149, desc: 'Liquid gold plate — for your wins and your losses alike' },
 ];
 const ACH_DEFS = [ // id, name, how — all server-verified from real tables; earned once, kept forever
   { id: 'first_win', name: 'First Blood', how: 'Close your first winning trade' },
@@ -8886,6 +8890,7 @@ async function handleTshare(url, request, env, ctx) {
     roe: numOrNull(t.roe), pnl: numOrNull(t.pnl), margin, notional: numOrNull(t.notional), qty: numOrNull(t.qty),
     liq: numOrNull(t.liq), stop: numOrNull(t.stop), tp: numOrNull(t.tp), fund: numOrNull(t.fund),
     liquidated: !!t.liquidated, partial: numOrNull(t.partial),
+    skin: ['tkt_noir', 'tkt_holo', 'tkt_aurum'].indexOf(String(t.skin || '')) >= 0 ? String(t.skin) : undefined,
     ts: numOrNull(t.ts), closeTs: numOrNull(t.closeTs),
     by: uname || 'trader', at: Date.now()
   };
@@ -9626,7 +9631,7 @@ async function handleAuth(url, request, env, ctx) {
     let on = true; try { on = (await env.STATS.get('shop:on')) !== '0'; } catch (e) {}
     const out = { on: on, items: VAULT_ITEMS, signedIn: !!u, owned: ['default'], equipped: 'default', xp: 0, level: 'unranked', balance: 0, tester: false };
     if (u) {
-      try { const r1 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/framestate?uid=' + encodeURIComponent(u.id))); const d1 = await r1.json(); out.owned = d1.owned || out.owned; out.equipped = d1.equipped || 'default'; out.xp = +d1.xp || 0; out.level = d1.level || 'unranked'; out.streak = +d1.streak || 0; out.freezes = +d1.freezes || 0; out.boostUntil = +d1.boostUntil || 0; } catch (e) {}
+      try { const r1 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/framestate?uid=' + encodeURIComponent(u.id))); const d1 = await r1.json(); out.owned = d1.owned || out.owned; out.equipped = d1.equipped || 'default'; out.xp = +d1.xp || 0; out.level = d1.level || 'unranked'; out.streak = +d1.streak || 0; out.freezes = +d1.freezes || 0; out.boostUntil = +d1.boostUntil || 0; out.equippedTkt = d1.tktskin || ''; } catch (e) {}
       try { const r3 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/achstate?uid=' + encodeURIComponent(u.id))); const d3 = await r3.json(); out.ach = d3.earned || []; out.achDefs = d3.defs || []; } catch (e) {}
       try { const led0 = env.REWARDS.get(env.REWARDS.idFromName('ledger')); const r2 = await led0.fetch(new Request('https://do/account', { headers: { 'x-acct': 'u:' + u.id } })); const d2 = await r2.json(); out.balance = (d2 && +d2.balance) || 0; } catch (e) {} // ledger DO reads identity from the x-acct header; balance arrives as USD float
       out.tester = vaultIsTester(u.username);
@@ -9701,6 +9706,15 @@ async function handleAuth(url, request, env, ctx) {
     const r = await stub.fetch(new Request('https://do/setframe', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: u.id, frame: String(b.frame || 'default') }) }));
     const d = await r.json();
     if (d && d.ok && d.frame && d.frame !== 'default') { try { await evPush(env, request, 'frame', d.frame, '/'); } catch (e) {} } // ops feed: equipped a profile-card frame
+    return jr(d, d.error ? (d.error === 'locked' ? 403 : 400) : 200);
+  }
+  if (path === '/ticket' && request.method === 'POST') { // equip a P&L ticket skin (Vault)
+    const tok = getCookie(request, SESS_COOKIE);
+    let u = tok ? await sessionUser(env, tok) : null;
+    if (!u && isAdmin && url.searchParams.get('uid')) u = { id: url.searchParams.get('uid') }; // owner/E2E hook (same pattern as /shop)
+    if (!u) return jr({ error: 'not_signed_in' }, 401);
+    const r = await stub.fetch(new Request('https://do/setticket', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: u.id, skin: String(b.skin || 'default') }) }));
+    const d = await r.json();
     return jr(d, d.error ? (d.error === 'locked' ? 403 : 400) : 200);
   }
   if (path === '/notifs') { // signed-in user's social notifications (list, or ?seen=1 to mark read)
@@ -13205,7 +13219,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS otp(email TEXT PRIMARY KEY, code TEXT, expires INTEGER, attempts INTEGER DEFAULT 0, sent INTEGER, sends INTEGER DEFAULT 0, day TEXT)'); // one active code per email; rate-limited
     s.exec('CREATE TABLE IF NOT EXISTS otpip(k TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)'); // per-IP-per-day OTP send cap, so one source can't email-bomb many addresses
     for (const col of ['dev TEXT', 'br TEXT', 'last_seen INTEGER', 'pv INTEGER DEFAULT 0', 'username TEXT', "status TEXT DEFAULT 'active'", 'susp_until INTEGER DEFAULT 0', 'muted INTEGER DEFAULT 0', 'restrictions TEXT', 'note TEXT', 'asn INTEGER', 'org TEXT', 'digest INTEGER DEFAULT 1', 'tg_chat TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} }
-    for (const col of ['xp INTEGER DEFAULT 0', 'streak INTEGER DEFAULT 0', 'streak_day TEXT', 'lvl_seen TEXT', 'freezes INTEGER DEFAULT 0', 'premium INTEGER DEFAULT 0', 'xpboost_until INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // XP & level system (+freezes = streak-freeze; premium = expiry ms, drives the +5% XP boost)
+    for (const col of ['xp INTEGER DEFAULT 0', 'streak INTEGER DEFAULT 0', 'streak_day TEXT', 'lvl_seen TEXT', 'freezes INTEGER DEFAULT 0', 'premium INTEGER DEFAULT 0', 'xpboost_until INTEGER DEFAULT 0', 'tktskin TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // XP & level system (+freezes = streak-freeze; premium = expiry ms, drives the +5% XP boost)
     try { s.exec('ALTER TABLE users ADD COLUMN did TEXT'); } catch (e) {} // device fingerprint (mp_did cookie) captured at login → same-device multi-account detection for the Security tab
     try { s.exec('ALTER TABLE users ADD COLUMN prem_seen INTEGER DEFAULT 0'); s.exec('UPDATE users SET prem_seen=1 WHERE premium>0'); } catch (e) {} // "has this user seen the premium-upgrade celebration?" The backfill (existing premium = already-seen, no retroactive mass-animation) is TIED TO THE ALTER SUCCEEDING — so it runs exactly ONCE (first boot after ship); every later boot the ALTER throws → catch → backfill skipped → a subsequent reset (e.g. the mp-ops-granted cohort set back to 0 for the delayed welcome) is NEVER overwritten. New users get DEFAULT 0 → they get the celebration.
     for (const col of ['bio TEXT', 'avatar TEXT', 'accent TEXT', 'coins TEXT', 'frame TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // public profile personalization: bio, avatar emoji, accent colour, favourite coins (csv)
@@ -13652,10 +13666,10 @@ export class UserStore {
       const token = url.searchParams.get('token') || '';
       const s = this.rows('SELECT * FROM sessions WHERE token=?', token)[0];
       if (!s || now > s.expires) return this.j({ user: null });
-      const u = this.rows('SELECT id,email,username,created,status,muted,restrictions,xp,streak,freezes,bio,avatar,accent,coins,premium,prem_seen FROM users WHERE id=?', s.user_id)[0];
+      const u = this.rows('SELECT id,email,username,created,status,muted,restrictions,xp,streak,freezes,bio,avatar,accent,coins,premium,prem_seen,tktskin FROM users WHERE id=?', s.user_id)[0];
       if (!u) return this.j({ user: null });
       if (u.status === 'banned') return this.j({ user: null, banned: true });
-      return this.j({ user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '', xp: u.xp || 0, streak: u.streak || 0, freezes: u.freezes || 0, level: xpLevelOf(u.xp), bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins || '', premium: +u.premium || 0, prem_seen: +u.prem_seen || 0 } });
+      return this.j({ user: { id: u.id, email: u.email, username: u.username || '', created: u.created, status: u.status || 'active', muted: !!u.muted, restrictions: u.restrictions || '', xp: u.xp || 0, streak: u.streak || 0, freezes: u.freezes || 0, level: xpLevelOf(u.xp), bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins || '', premium: +u.premium || 0, prem_seen: +u.prem_seen || 0, tktskin: u.tktskin || '' } });
     }
     if (path === '/premseen') { // premium-celebration-seen flag. {uid|username, seen} sets it (ack=1, mp-ops-cohort reset=0); {uid|username, read:1} reads it (persistence proof). COLLATE NOCASE so 'Chako'==='chako'.
       let u; try { if (b.uid) u = this.rows('SELECT id,prem_seen,premium FROM users WHERE id=?', String(b.uid))[0]; else if (b.username) u = this.rows('SELECT id,prem_seen,premium FROM users WHERE username COLLATE NOCASE=?', String(b.username).slice(0, 24))[0]; } catch (e) {}
@@ -14652,8 +14666,8 @@ export class UserStore {
       let owned = framesFor(u.xp, premium, founder).concat(cosRows.filter(function(x) { return x.item_id !== 'champion' || (Date.now() - (+x.ts || 0)) < 7 * 86400000; }).map(x => x.item_id)); // champion is worn for 7 days, then the crown moves on
       if (vaultIsTester(u.username)) owned = owned.concat(VAULT_ITEMS.map(x => x.id)); // owner test account sees everything
       owned = owned.filter(function(v, i, a) { return a.indexOf(v) === i; });
-      const uSt = this.rows('SELECT streak, freezes, xpboost_until FROM users WHERE id=?', uid)[0] || {};
-      return this.j({ owned: owned, equipped: u.frame || 'default', premium: premium, founder: founder, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k, streak: +uSt.streak || 0, freezes: +uSt.freezes || 0, boostUntil: +uSt.xpboost_until || 0 });
+      const uSt = this.rows('SELECT streak, freezes, xpboost_until, tktskin FROM users WHERE id=?', uid)[0] || {};
+      return this.j({ owned: owned, equipped: u.frame || 'default', premium: premium, founder: founder, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k, streak: +uSt.streak || 0, freezes: +uSt.freezes || 0, boostUntil: +uSt.xpboost_until || 0, tktskin: uSt.tktskin || '' });
     }
     if (path === '/achstate') { // THE VAULT F2: achievements — computed from REAL tables, earns PERSISTED (tradeev only holds 30d, so an earned badge must never un-earn)
       const uid = String(url.searchParams.get('uid') || '');
@@ -14670,6 +14684,19 @@ export class UserStore {
       const tests = { first_win: (+tv.w || 0) >= 1, ten_wins: (+tv.w || 0) >= 10, fifty_closes: (+tv.n || 0) >= 50, big_win: (+tv.mx || 0) >= 100, degen_survivor: (+tv.hl || 0) >= 1, explorer: (+tv.sy || 0) >= 10, week_flame: st9 >= 7, month_flame: st9 >= 30, duelist: duelsW >= 1, warlord: duelsW >= 10, scholar: acadN >= 20, graduate: acadN >= 73, collector: cosN >= 3, veteran: xl >= 30000, regular: pv9 >= 500 };
       for (const k9 in tests) if (tests[k9] && !have[k9]) { try { sql.exec('INSERT INTO achievements(user_id,ach_id,ts) VALUES(?,?,?)', uid, k9, now9); have[k9] = 1; fresh.push(k9); } catch (e) {} }
       return this.j({ earned: Object.keys(have), fresh: fresh, defs: ACH_DEFS });
+    }
+    if (path === '/setticket') { // equip a P&L ticket skin (Vault kind:'t' cosmetics; '' = default)
+      const uid = String(b.uid || ''); const skin = String(b.skin || 'default').replace(/[^a-z0-9_]/g, '').slice(0, 24);
+      if (!uid) return this.j({ error: 'bad' }, 400);
+      const u = this.rows('SELECT username FROM users WHERE id=?', uid)[0];
+      if (!u) return this.j({ error: 'no_user' }, 404);
+      if (skin !== 'default') {
+        const it = vaultItem(skin);
+        if (!it || it.kind !== 't') return this.j({ error: 'bad_skin' }, 400);
+        if (!vaultIsTester(u.username) && !this.rows('SELECT 1 FROM cosmetics WHERE user_id=? AND item_id=?', uid, skin)[0]) return this.j({ error: 'locked' }, 403);
+      }
+      sql.exec('UPDATE users SET tktskin=? WHERE id=?', skin === 'default' ? '' : skin, uid);
+      return this.j({ ok: true, skin: skin });
     }
     if (path === '/shopbuy') { // XP purchase — atomic; LEVEL-FLOOR GUARD: spending can never drop you below your current level's threshold (a frame purchase must not cost someone their level, their level frames or the rewards gate)
       const uid = String(b.uid || ''); const it = vaultItem(String(b.item || ''));

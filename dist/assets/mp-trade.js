@@ -32,7 +32,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
   function tsf(t){if(!t)return '';var d=new Date(t),MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return d.getDate()+' '+MO[d.getMonth()]+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
   function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-(+e.fund||0):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open caps at -99% until real liquidation */return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,margin:margin};}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
-    return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+'" data-id="'+e.id+'">'+ppActions(e,true)
+    return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e,true)
       +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-perf"></div>'
@@ -83,7 +83,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
     },true);}
 
   function closedCard(e){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
-    return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+'" data-id="'+e.id+'">'+ppActions(e)
+    return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e)
       +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?(((+e.pnl)>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span>'+((e.margin&&e.pnl!=null)?'<span class="roe">ROE '+pctS(((+e.pnl)/(+e.margin||1))*100)+'</span>':'')+'</div>'
       +'<div class="pp-perf"></div>'
@@ -131,7 +131,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
   function tShareSnap(e){var m=metrics(e),closed=(e.status==='win'||e.status==='loss');
     var roe=closed?((e.margin&&e.pnl!=null)?(+e.pnl)/(+e.margin):0):m.roe;
     var pnl=closed?(+e.pnl||0):(m.pnl||0);
-    return {sym:e.sym,side:e.side,status:e.status,entry:e.entry,exit:(closed?(e.exit!=null?e.exit:(e.status==='win'?e.tp:e.stop)):m.live),lev:e.lev,margin:e.margin,notional:e.notional,qty:e.qty,liq:m.liq,stop:e.stop,tp:e.tp,fund:e.fund,liquidated:!!e.liquidated,partial:e.partial,ts:e.ts,closeTs:e.closeTs,roe:roe*100,pnl:pnl};}
+    return {sym:e.sym,side:e.side,status:e.status,entry:e.entry,exit:(closed?(e.exit!=null?e.exit:(e.status==='win'?e.tp:e.stop)):m.live),lev:e.lev,margin:e.margin,notional:e.notional,qty:e.qty,liq:m.liq,stop:e.stop,tp:e.tp,fund:e.fund,liquidated:!!e.liquidated,partial:e.partial,ts:e.ts,closeTs:e.closeTs,roe:roe*100,pnl:pnl,skin:window.mpTktSkin||undefined};}
   function shareTicketChat(e,btn){
     if(!(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(_){}return;}
     if(btn){if(btn._busy)return;btn._busy=1;btn.classList.add('pp-ic-busy');}
@@ -601,6 +601,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
       +'</div></div>'
       +'<div class="mptk-foot">Paper trade · not financial advice</div></div>';
     shell(inner);
+    try{if(t.skin){var _sc=document.querySelector('.mptk-ov .mptk');if(_sc)_sc.className+=' tsk-'+String(t.skin).replace(/[^a-z0-9_]/g,'');}}catch(_){}
   }
   window.mpOpenTrade=function(id){
     id=String(id||'').replace(/[^a-z0-9]/gi,'').slice(0,16);if(!id)return;

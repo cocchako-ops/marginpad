@@ -900,7 +900,7 @@
       fetch('/api/auth/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: email, code: c, ref: refCode() }) })
         .then(function (r) { return r.json(); }).then(function (d) {
           vb.disabled = false;
-          if (d.ok) { ME = d.user; reflect(); setMsg(d.isNew ? 'Account created ✓' : 'Signed in ✓', 'ok'); if (d.isNew && typeof gtag === 'function') { try { gtag('event', 'conversion', { send_to: 'AW-18230384038/8GygCJ2ry8IcEKar9vRD', value: 1.0, currency: 'USD' }); } catch (_) {} } setTimeout(render, 750); }
+          if (d.ok) { ME = d.user; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} reflect(); setMsg(d.isNew ? 'Account created ✓' : 'Signed in ✓', 'ok'); if (d.isNew && typeof gtag === 'function') { try { gtag('event', 'conversion', { send_to: 'AW-18230384038/8GygCJ2ry8IcEKar9vRD', value: 1.0, currency: 'USD' }); } catch (_) {} } setTimeout(render, 750); }
           else if (d.error === 'bad_code') setMsg('Wrong code' + (d.left != null ? ' — ' + d.left + ' tries left' : '') + '.', 'err');
           else if (d.error === 'expired' || d.error === 'no_code') setMsg('Code expired — request a new one.', 'err');
           else if (d.error === 'too_many_attempts') setMsg('Too many tries — request a new code.', 'err');
@@ -1313,7 +1313,7 @@
 
   var _liChk; try { _liChk = localStorage.getItem('mp_li_chk') === '1'; } catch (e) { _liChk = false; }
   if (/(?:^|;\s*)mp_li=1(?:;|$)/.test(document.cookie) || !_liChk) { // COOKIE GATE: probe /api/auth/me only if the non-HttpOnly session-marker cookie mp_li is present, OR this browser hasn't done the one-time migration check yet (catches sessions that predate the marker → no existing login gets dropped). A returning logged-out visitor (no marker, already checked once) skips the DO round-trip entirely — that was ~most of the auth invocations. mp_sess is HttpOnly so JS can't read it directly; mp_li mirrors it (set by /verify + /me, cleared by /logout).
-    fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (d) { try { localStorage.setItem('mp_li_chk', '1'); } catch (e) {} ME = d.user || null; BANNED = !!d.banned; reflect(); if (ME) { dwSince = Date.now(); syncTrades();
+    fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (d) { try { localStorage.setItem('mp_li_chk', '1'); } catch (e) {} ME = d.user || null; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} BANNED = !!d.banned; reflect(); if (ME) { dwSince = Date.now(); syncTrades();
       if (/[?&]premium=ok(&|$)/.test(location.search)) { // just returned from a successful checkout — celebrate now (the 60s poll would otherwise lag)
         setTimeout(function () { if (window.mpPremiumCelebrate) window.mpPremiumCelebrate(); }, 1000);
         try { var u = new URL(location.href); u.searchParams.delete('premium'); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {}
