@@ -118,6 +118,10 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   <div class="h2s">Restyle your P&amp;L tickets — the journal, the drawers and every ticket you share to chat.</div>
   <div class="gal" id="galTkt"></div>
 
+  <h2>Card backgrounds</h2>
+  <div class="h2s">A scene behind your whole trader card — subtle, but yours.</div>
+  <div class="gal" id="galBg"></div>
+
   <h2>Supply drop</h2>
   <div class="h2s">Consumables — instant effects for your account, buyable again and again.</div>
   <div class="gal" id="galSupply" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr))"></div>
@@ -221,6 +225,28 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     cards.unshift('<div class="fcard">'+tktPrev('')+'<div class="fmeta"><span class="fname">Standard</span><span class="tier common">DEFAULT</span></div><div class="fdesc">The classic MarginPad ticket.</div><div class="fact">'+(eqT?'<button class="btn" data-eqt="default">Equip</button>':'<button class="btn eq" disabled>EQUIPPED</button>')+'</div></div>');
     document.getElementById('galTkt').innerHTML=cards.join('');
   }
+  function bgPrev(id,un){
+    return '<div class="prev lbm-card'+(id?' bg-'+id:'')+'"><span class="av">'+(un?un[0].toUpperCase():'M')+'</span><span><span class="un">'+(un||'YourName')+'</span><div class="us">MARGINPAD TRADER</div></span></div>';
+  }
+  function renderBg(){
+    var items=((ST&&ST.items)||[]).filter(function(it){return it.kind==='bg';}),owned=ST?ST.owned:[];
+    var un=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()?window.mpAuth.me().username:'';
+    var eqB=ST?(ST.equippedBg||''):'';
+    var cards=items.map(function(it){
+      var own=owned.indexOf(it.id)>=0,eq=eqB===it.id;
+      var acts='';
+      if(own){acts=eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-eqbg="'+it.id+'">Equip</button>';}
+      else if(it.id==='bg_one'){acts='<button class="btn lock" disabled>Owners only</button>';}
+      else{
+        if(it.xp)acts+='<button class="btn xp" data-buy="'+it.id+'" data-cur="xp">'+fmt(it.xp)+' XP</button>';
+        if(it.cents)acts+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
+      }
+      if(it.id!=='bg_one'&&ST&&ST.signedIn)acts+='<button class="btn gift" data-gift="'+it.id+'" data-cur="'+(it.xp?'xp':'usd')+'" title="Buy this background for another trader">Gift</button>';
+      return '<div class="fcard">'+bgPrev(it.id,un)+'<div class="fmeta"><span class="fname">'+it.name+'</span><span class="tier '+it.tier+'">'+it.tier+'</span></div><div class="fdesc">'+(it.desc||'')+'</div><div class="fact">'+acts+'</div></div>';
+    });
+    cards.unshift('<div class="fcard">'+bgPrev('',un)+'<div class="fmeta"><span class="fname">Plain</span><span class="tier common">DEFAULT</span></div><div class="fdesc">The standard card face.</div><div class="fact">'+(eqB?'<button class="btn" data-eqbg="default">Equip</button>':'<button class="btn eq" disabled>EQUIPPED</button>')+'</div></div>');
+    document.getElementById('galBg').innerHTML=cards.join('');
+  }
   function renderSupply(){
     var items=((ST&&ST.items)||[]).filter(function(it){return it.kind==='c';});
     var now=Date.now(),bu=ST?(+ST.boostUntil||0):0,fz=ST?(+ST.freezes||0):0;
@@ -243,6 +269,10 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     {id:'streak7',name:'Kindling',need:'Hold a 7-day streak',tier:'rare'},
     {id:'streak30',name:'Wildfire',need:'Hold a 30-day streak',tier:'epic'},
     {id:'streak100',name:'Eternal Flame',need:'Hold a 100-day streak',tier:'legendary'},
+    {id:'dwell10',name:'Local',need:'Spend 10 hours on MarginPad',tier:'rare'},
+    {id:'dwell100',name:'Resident',need:'Spend 100 hours on MarginPad',tier:'legendary'},
+    {id:'closer',name:'The Closer',need:'Close 500 trades',tier:'epic'},
+    {id:'operative',name:'Operative',need:'Claim 100 daily missions',tier:'epic'},
     {id:'champion',name:'Champion',need:'Finish #1 on the weekly ROE board (worn 7 days)',tier:'legendary'}
   ];
   function renderEarn(){
@@ -250,7 +280,12 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     var st=ST?(+ST.streak||0):0;
     document.getElementById('galEarn').innerHTML=EARN_FRAMES.map(function(f){
       var own=owned.indexOf(f.id)>=0,eq=ST&&ST.equipped===f.id;
-      var prog=f.id==='streak7'?Math.min(st,7)+'/7 days':f.id==='streak30'?Math.min(st,30)+'/30 days':f.id==='streak100'?Math.min(st,100)+'/100 days':'';
+      var pg=ST&&ST.progress?ST.progress:null;
+      var prog=f.id==='streak7'?Math.min(st,7)+'/7 days':f.id==='streak30'?Math.min(st,30)+'/30 days':f.id==='streak100'?Math.min(st,100)+'/100 days'
+        :(f.id==='dwell10'&&pg)?Math.min(Math.floor((pg.dwellS||0)/3600),10)+'/10 hours'
+        :(f.id==='dwell100'&&pg)?Math.min(Math.floor((pg.dwellS||0)/3600),100)+'/100 hours'
+        :(f.id==='closer'&&pg)?Math.min(pg.closes||0,500)+'/500 closes'
+        :(f.id==='operative'&&pg)?Math.min(pg.missions||0,100)+'/100 missions':'';
       var act=own?(eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-eq="'+f.id+'">Equip</button>'):'<button class="btn lock" disabled>'+(prog?prog:'Not earned yet')+'</button>';
       return '<div class="fcard">'+prevCard(f.id,un)+'<div class="fmeta"><span class="fname">'+f.name+'</span><span class="tier '+f.tier+'">EARNED</span></div><div class="fdesc">'+f.need+'</div><div class="fact">'+act+'</div></div>';
     }).join('');
@@ -274,7 +309,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
         document.getElementById('wXp').textContent=fmt(d.xp);
         document.getElementById('wBal').textContent='$'+(+d.balance||0).toFixed(2);
       }
-      renderLadder();renderLevelGal();renderShopGal();renderTkt();renderSupply();renderEarn();renderAch();
+      renderLadder();renderLevelGal();renderShopGal();renderTkt();renderBg();renderSupply();renderEarn();renderAch();
       if(d.signedIn){
         var fzEl=document.getElementById('wFz');if(fzEl)fzEl.textContent=(+d.freezes||0)+'/5';
         var bEl=document.getElementById('wBoost'),bu2=+d.boostUntil||0;
@@ -317,6 +352,17 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
           if(d&&d.ok){say('Gifted to @'+(d.giftedTo||toU)+' — they have been notified.',true);load();}
           else{var er=d&&d.error;say(er==='no_target'?'No trader with that username.':er==='self'?'You cannot gift to yourself — just buy it.':er==='target_owned'?'They already own that frame.':er==='level_floor'?'Not enough spare XP — gifting would drop you below your level threshold.':er==='insufficient'?'Not enough rewards balance.':er==='expired'?'This drop has ended.':'Gift failed: '+(er||'error'),false);gb.disabled=false;}
         }).catch(function(){say('Network error.',false);gb.disabled=false;});
+      return;
+    }
+    var gbg=e.target.closest('[data-eqbg]');
+    if(gbg){
+      if(!ST||!ST.signedIn){say('Sign in first.',false);return;}
+      gbg.disabled=true;
+      fetch('/api/auth/cardbg',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({bg:gbg.getAttribute('data-eqbg')})})
+        .then(function(r){return r.json();}).then(function(d){
+          if(d&&d.ok){say(d.bg==='default'?'Back to the plain card.':'Equipped — your card now sits on '+d.bg.replace('bg_','')+'.',true);load();}
+          else{say(d&&d.error==='locked'?'You do not own that background yet.':'Equip failed.',false);gbg.disabled=false;}
+        }).catch(function(){say('Network error.',false);gbg.disabled=false;});
       return;
     }
     var tb=e.target.closest('[data-eqt]');

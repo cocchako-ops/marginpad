@@ -7785,6 +7785,18 @@ const VAULT_ITEMS = [
   { id: 'tkt_noir', name: 'Noir Ticket', kind: 't', tier: 'rare', xp: 800, desc: 'Blackout ticket with a cold silver seam' },
   { id: 'tkt_holo', name: 'Holo Ticket', kind: 't', tier: 'epic', xp: 2000, desc: 'Iridescent foil that shifts between blue, violet and green' },
   { id: 'tkt_aurum', name: 'Aurum Ticket', kind: 't', tier: 'legendary', cents: 149, desc: 'Liquid gold plate — for your wins and your losses alike' },
+  // the burning one
+  { id: 'inferno', name: 'Inferno', tier: 'epic', xp: 3500, desc: 'A frame that is actually on fire — flickering flames and rising embers' },
+  // earn-only: time-on-site + activity (granted automatically when /achstate sees the threshold)
+  { id: 'dwell10', name: 'Local', tier: 'rare', earn: 'Spend 10 hours on MarginPad', desc: 'Ten real hours on the desk — you live here now' },
+  { id: 'dwell100', name: 'Resident', tier: 'legendary', earn: 'Spend 100 hours on MarginPad', desc: 'One hundred hours. The desk has your name on it' },
+  { id: 'closer', name: 'The Closer', tier: 'epic', earn: 'Close 500 trades', desc: 'Five hundred closed tickets — volume is a lifestyle' },
+  { id: 'operative', name: 'Operative', tier: 'epic', earn: 'Claim 100 daily missions', desc: 'A hundred missions executed without a miss' },
+  // card backgrounds (kind:'bg') — a scene behind the whole trader card
+  { id: 'bg_grid', name: 'Blueprint', kind: 'bg', tier: 'common', xp: 600, desc: 'Faint engineering grid — the builder&#39;s backdrop' },
+  { id: 'bg_stars', name: 'Night Shift', kind: 'bg', tier: 'rare', xp: 1200, desc: 'A quiet starfield for the 3am candles' },
+  { id: 'bg_candles', name: 'Uptrend', kind: 'bg', tier: 'epic', cents: 99, desc: 'Ghost candlesticks marching up and to the right' },
+  { id: 'bg_one', name: 'MP One Field', kind: 'bg', tier: 'legendary', earn: 'Owners only', desc: 'Molten gold ground reserved for the people who built this place' },
 ];
 const ACH_DEFS = [ // id, name, how — all server-verified from real tables; earned once, kept forever
   { id: 'first_win', name: 'First Blood', how: 'Close your first winning trade' },
@@ -9637,8 +9649,8 @@ async function handleAuth(url, request, env, ctx) {
         stub9.fetch(new Request('https://do/achstate?uid=' + encodeURIComponent(u.id))).then(r => r.json()).catch(() => null),
         env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/account', { headers: { 'x-acct': 'u:' + u.id } })).then(r => r.json()).catch(() => null) // ledger DO reads identity from the x-acct header; balance arrives as USD float
       ]);
-      if (d1) { out.owned = d1.owned || out.owned; out.equipped = d1.equipped || 'default'; out.xp = +d1.xp || 0; out.level = d1.level || 'unranked'; out.streak = +d1.streak || 0; out.freezes = +d1.freezes || 0; out.boostUntil = +d1.boostUntil || 0; out.equippedTkt = d1.tktskin || ''; }
-      if (d3) { out.ach = d3.earned || []; out.achDefs = d3.defs || []; }
+      if (d1) { out.owned = d1.owned || out.owned; out.equipped = d1.equipped || 'default'; out.xp = +d1.xp || 0; out.level = d1.level || 'unranked'; out.streak = +d1.streak || 0; out.freezes = +d1.freezes || 0; out.boostUntil = +d1.boostUntil || 0; out.equippedTkt = d1.tktskin || ''; out.equippedBg = d1.cardbg || ''; }
+      if (d3) { out.ach = d3.earned || []; out.achDefs = d3.defs || []; out.progress = d3.progress || null; }
       if (d2) out.balance = +d2.balance || 0;
       out.tester = vaultIsTester(u.username);
     }
@@ -9721,6 +9733,15 @@ async function handleAuth(url, request, env, ctx) {
     if (!u && isAdmin && url.searchParams.get('uid')) u = { id: url.searchParams.get('uid') }; // owner/E2E hook (same pattern as /shop)
     if (!u) return jr({ error: 'not_signed_in' }, 401);
     const r = await stub.fetch(new Request('https://do/setticket', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: u.id, skin: String(b.skin || 'default') }) }));
+    const d = await r.json();
+    return jr(d, d.error ? (d.error === 'locked' ? 403 : 400) : 200);
+  }
+  if (path === '/cardbg' && request.method === 'POST') { // equip a card background (Vault)
+    const tok = getCookie(request, SESS_COOKIE);
+    let u = tok ? await sessionUser(env, tok) : null;
+    if (!u && isAdmin && url.searchParams.get('uid')) u = { id: url.searchParams.get('uid') }; // owner/E2E hook
+    if (!u) return jr({ error: 'not_signed_in' }, 401);
+    const r = await stub.fetch(new Request('https://do/setbg', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: u.id, bg: String(b.bg || 'default') }) }));
     const d = await r.json();
     return jr(d, d.error ? (d.error === 'locked' ? 403 : 400) : 200);
   }
@@ -13226,7 +13247,7 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS otp(email TEXT PRIMARY KEY, code TEXT, expires INTEGER, attempts INTEGER DEFAULT 0, sent INTEGER, sends INTEGER DEFAULT 0, day TEXT)'); // one active code per email; rate-limited
     s.exec('CREATE TABLE IF NOT EXISTS otpip(k TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)'); // per-IP-per-day OTP send cap, so one source can't email-bomb many addresses
     for (const col of ['dev TEXT', 'br TEXT', 'last_seen INTEGER', 'pv INTEGER DEFAULT 0', 'username TEXT', "status TEXT DEFAULT 'active'", 'susp_until INTEGER DEFAULT 0', 'muted INTEGER DEFAULT 0', 'restrictions TEXT', 'note TEXT', 'asn INTEGER', 'org TEXT', 'digest INTEGER DEFAULT 1', 'tg_chat TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} }
-    for (const col of ['xp INTEGER DEFAULT 0', 'streak INTEGER DEFAULT 0', 'streak_day TEXT', 'lvl_seen TEXT', 'freezes INTEGER DEFAULT 0', 'premium INTEGER DEFAULT 0', 'xpboost_until INTEGER DEFAULT 0', 'tktskin TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // XP & level system (+freezes = streak-freeze; premium = expiry ms, drives the +5% XP boost)
+    for (const col of ['xp INTEGER DEFAULT 0', 'streak INTEGER DEFAULT 0', 'streak_day TEXT', 'lvl_seen TEXT', 'freezes INTEGER DEFAULT 0', 'premium INTEGER DEFAULT 0', 'xpboost_until INTEGER DEFAULT 0', 'tktskin TEXT', 'cardbg TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // XP & level system (+freezes = streak-freeze; premium = expiry ms, drives the +5% XP boost)
     try { s.exec('ALTER TABLE users ADD COLUMN did TEXT'); } catch (e) {} // device fingerprint (mp_did cookie) captured at login → same-device multi-account detection for the Security tab
     try { s.exec('ALTER TABLE users ADD COLUMN prem_seen INTEGER DEFAULT 0'); s.exec('UPDATE users SET prem_seen=1 WHERE premium>0'); } catch (e) {} // "has this user seen the premium-upgrade celebration?" The backfill (existing premium = already-seen, no retroactive mass-animation) is TIED TO THE ALTER SUCCEEDING — so it runs exactly ONCE (first boot after ship); every later boot the ALTER throws → catch → backfill skipped → a subsequent reset (e.g. the mp-ops-granted cohort set back to 0 for the delayed welcome) is NEVER overwritten. New users get DEFAULT 0 → they get the celebration.
     for (const col of ['bio TEXT', 'avatar TEXT', 'accent TEXT', 'coins TEXT', 'frame TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // public profile personalization: bio, avatar emoji, accent colour, favourite coins (csv)
@@ -14602,7 +14623,7 @@ export class UserStore {
     if (path === '/lbuser') { // public profile card for a leaderboard name: level + all-time & this-week trade stats
       const name = String(url.searchParams.get('name') || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24);
       if (!name) return this.j({ error: 'no_name' }, 400);
-      const u = this.rows('SELECT id, username, xp, created, bio, avatar, accent, coins, frame FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0];
+      const u = this.rows('SELECT id, username, xp, created, bio, avatar, accent, coins, frame, cardbg FROM users WHERE username COLLATE NOCASE = ? LIMIT 1', name)[0];
       if (!u) return this.j({ exists: false });
       const L = xpLevelOf(u.xp || 0);
       const t = this.rows('SELECT json, n, wins, losses, pnl FROM utrades WHERE user_id = ?', u.id)[0] || {};
@@ -14630,7 +14651,7 @@ export class UserStore {
       }
       return this.j({ exists: true, uid: 'u:' + u.id, name: u.username, level: { k: L.k, name: L.name, col: L.col, pct: L.pct, next: L.next, toNext: L.toNext, xp: L.xp },
         iFollow, followsMe, mutual,
-        bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [], frame: (function (fr9) { if (fr9 !== 'champion') return fr9; try { const cr9 = this.rows("SELECT ts FROM cosmetics WHERE user_id=? AND item_id='champion'", u.id)[0]; return (cr9 && (Date.now() - (+cr9.ts || 0)) < 7 * 86400000) ? fr9 : 'default'; } catch (e) { return 'default'; } }).call(this, u.frame || 'default'), // champion is worn 7 days — the public card must expire it too, not only the equip panel
+        bio: u.bio || '', avatar: u.avatar || '', accent: u.accent || '', coins: u.coins ? u.coins.split(',').filter(Boolean) : [], frame: (function (fr9) { if (fr9 !== 'champion') return fr9; try { const cr9 = this.rows("SELECT ts FROM cosmetics WHERE user_id=? AND item_id='champion'", u.id)[0]; return (cr9 && (Date.now() - (+cr9.ts || 0)) < 7 * 86400000) ? fr9 : 'default'; } catch (e) { return 'default'; } }).call(this, u.frame || 'default'), cardbg: u.cardbg || '', // champion is worn 7 days — the public card must expire it too, not only the equip panel
         stats: { trades: t.n || 0, closed, wins: t.wins || 0, winRate: closed ? Math.round((t.wins || 0) / closed * 100) : 0,
           realized: +(t.pnl || 0).toFixed(2), bestRoe: bestRoe == null ? null : Math.round(bestRoe), bestPnl: bestPnl == null ? null : +bestPnl.toFixed(2),
           weekTrades: weekN, weekWinRate: weekN ? Math.round(weekW / weekN * 100) : 0, weekPnl: +weekPnl.toFixed(2) },
@@ -14671,11 +14692,11 @@ export class UserStore {
       const premium = founder || (+u.premium || 0) > Date.now();
       const cosRows = this.rows('SELECT item_id, ts FROM cosmetics WHERE user_id=?', uid);
       let owned = framesFor(u.xp, premium, founder).concat(cosRows.filter(function(x) { return x.item_id !== 'champion' || (Date.now() - (+x.ts || 0)) < 7 * 86400000; }).map(x => x.item_id)); // champion is worn for 7 days, then the crown moves on
-      if (PREM_OWNERS.indexOf(String(u.username || '').toLowerCase()) >= 0) owned.push('owner'); // MP One — the apex frame, owners only
+      if (PREM_OWNERS.indexOf(String(u.username || '').toLowerCase()) >= 0) { owned.push('owner'); owned.push('bg_one'); } // MP One frame + MP One Field bg — owners only
       if (vaultIsTester(u.username)) owned = owned.concat(VAULT_ITEMS.map(x => x.id)).concat(XP_LEVELS.map(l => l.k).filter(k => k !== 'unranked' && k !== 'bronze')).concat(['neon', 'aurora', 'founder']); // owner test account sees everything — vault items AND all level/premium frames
       owned = owned.filter(function(v, i, a) { return a.indexOf(v) === i; });
-      const uSt = this.rows('SELECT streak, freezes, xpboost_until, tktskin FROM users WHERE id=?', uid)[0] || {};
-      return this.j({ owned: owned, equipped: u.frame || 'default', premium: premium, founder: founder, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k, streak: +uSt.streak || 0, freezes: +uSt.freezes || 0, boostUntil: +uSt.xpboost_until || 0, tktskin: uSt.tktskin || '' });
+      const uSt = this.rows('SELECT streak, freezes, xpboost_until, tktskin, cardbg FROM users WHERE id=?', uid)[0] || {};
+      return this.j({ owned: owned, equipped: u.frame || 'default', premium: premium, founder: founder, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k, streak: +uSt.streak || 0, freezes: +uSt.freezes || 0, boostUntil: +uSt.xpboost_until || 0, tktskin: uSt.tktskin || '', cardbg: uSt.cardbg || '' });
     }
     if (path === '/achstate') { // THE VAULT F2: achievements — computed from REAL tables, earns PERSISTED (tradeev only holds 30d, so an earned badge must never un-earn)
       const uid = String(url.searchParams.get('uid') || '');
@@ -14689,9 +14710,17 @@ export class UserStore {
       const cosN = (this.rows('SELECT COUNT(*) n FROM cosmetics WHERE user_id=?', uid)[0] || {}).n || 0;
       const st9 = +u.streak || 0, xl = +u.xp_life || +u.xp || 0, pv9 = +u.pv || 0;
       const now9 = Date.now(); const fresh = [];
+      // F4 earn frames: time-on-site (udwell) + lifetime closes (utrades summary — tradeev only holds 30d) + claimed missions
+      const dwellS = +((this.rows('SELECT COALESCE(SUM(secs),0) s FROM udwell WHERE user_id=?', uid)[0] || {}).s || 0);
+      const ut9 = this.rows('SELECT wins, losses FROM utrades WHERE user_id=?', uid)[0] || {};
+      const closes9 = (+ut9.wins || 0) + (+ut9.losses || 0);
+      const msn9 = +((this.rows('SELECT COUNT(*) n FROM missions WHERE user_id=?', uid)[0] || {}).n || 0);
+      const FR9 = { dwell10: dwellS >= 36000, dwell100: dwellS >= 360000, closer: closes9 >= 500, operative: msn9 >= 100 };
+      const haveCos9 = {}; this.rows('SELECT item_id FROM cosmetics WHERE user_id=?', uid).forEach(r => { haveCos9[r.item_id] = 1; });
+      for (const k9 in FR9) if (FR9[k9] && !haveCos9[k9]) { try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', uid, k9, now9, 'earn'); this._grantXp(uid, 'earnframe', 50, { note: (vaultItem(k9) || { name: k9 }).name + ' frame unlocked' }); } catch (e) {} }
       const tests = { first_win: (+tv.w || 0) >= 1, ten_wins: (+tv.w || 0) >= 10, fifty_closes: (+tv.n || 0) >= 50, big_win: (+tv.mx || 0) >= 100, degen_survivor: (+tv.hl || 0) >= 1, explorer: (+tv.sy || 0) >= 10, week_flame: st9 >= 7, month_flame: st9 >= 30, duelist: duelsW >= 1, warlord: duelsW >= 10, scholar: acadN >= 20, graduate: acadN >= 73, collector: cosN >= 3, veteran: xl >= 30000, regular: pv9 >= 500 };
       for (const k9 in tests) if (tests[k9] && !have[k9]) { try { sql.exec('INSERT INTO achievements(user_id,ach_id,ts) VALUES(?,?,?)', uid, k9, now9); have[k9] = 1; fresh.push(k9); } catch (e) {} }
-      return this.j({ earned: Object.keys(have), fresh: fresh, defs: ACH_DEFS });
+      return this.j({ earned: Object.keys(have), fresh: fresh, defs: ACH_DEFS, progress: { dwellS: dwellS, closes: closes9, missions: msn9 } });
     }
     if (path === '/setticket') { // equip a P&L ticket skin (Vault kind:'t' cosmetics; '' = default)
       const uid = String(b.uid || ''); const skin = String(b.skin || 'default').replace(/[^a-z0-9_]/g, '').slice(0, 24);
@@ -14705,6 +14734,21 @@ export class UserStore {
       }
       sql.exec('UPDATE users SET tktskin=? WHERE id=?', skin === 'default' ? '' : skin, uid);
       return this.j({ ok: true, skin: skin });
+    }
+    if (path === '/setbg') { // equip a card background (Vault kind:'bg'; '' = default). bg_one = owners only
+      const uid = String(b.uid || ''); const bg = String(b.bg || 'default').replace(/[^a-z0-9_]/g, '').slice(0, 24);
+      if (!uid) return this.j({ error: 'bad' }, 400);
+      const u = this.rows('SELECT username FROM users WHERE id=?', uid)[0];
+      if (!u) return this.j({ error: 'no_user' }, 404);
+      if (bg !== 'default') {
+        const it = vaultItem(bg);
+        if (!it || it.kind !== 'bg') return this.j({ error: 'bad_bg' }, 400);
+        const isOwn9 = PREM_OWNERS.indexOf(String(u.username || '').toLowerCase()) >= 0;
+        const ok9 = (bg === 'bg_one') ? (isOwn9 || vaultIsTester(u.username)) : (vaultIsTester(u.username) || !!this.rows('SELECT 1 FROM cosmetics WHERE user_id=? AND item_id=?', uid, bg)[0]);
+        if (!ok9) return this.j({ error: 'locked' }, 403);
+      }
+      sql.exec('UPDATE users SET cardbg=? WHERE id=?', bg === 'default' ? '' : bg, uid);
+      return this.j({ ok: true, bg: bg });
     }
     if (path === '/shopbuy') { // XP purchase — atomic; LEVEL-FLOOR GUARD: spending can never drop you below your current level's threshold (a frame purchase must not cost someone their level, their level frames or the rewards gate)
       const uid = String(b.uid || ''); const it = vaultItem(String(b.item || ''));
