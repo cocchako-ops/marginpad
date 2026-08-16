@@ -6,6 +6,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
    e.bal field, so the gold/BAL never flickers). Guard-defined so whichever of home.js/mp-trade.js loads first wins. */
 window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return function (e) { if (!e) return false; if (e.bal) return true; if (!e.id) return false; var n = Date.now(); if (!c || n - t > 1200) { try { c = JSON.parse(localStorage.getItem('mp_bal_tags') || '{}') || {}; } catch (x) { c = {}; } t = n; } return !!c[e.id]; }; })();
 
+/* Season stats reset — mirror of home.js (guard: whichever bundle loads first wins; the bento homepage loads
+   mp-trade.js WITHOUT home.js, so the definition must live in both). See home.js for the full rationale. */
+window.mpSsnStart = window.mpSsnStart || function () { var A = Date.UTC(2026, 6, 20), n = Date.now(); if (n < Date.UTC(2026, 7, 17)) return 0; return A + Math.floor((n - A) / 1209600000) * 1209600000; };
+window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(); return !s || !e || ((+e.closeTs || +e.ts || 0) >= s); };
+
 /* Disable pinch-zoom on iOS (Safari ignores user-scalable=no in the viewport meta). */
 (function(){['gesturestart','gesturechange','gestureend'].forEach(function(g){document.addEventListener(g,function(e){e.preventDefault();},{passive:false});});})();
 
@@ -184,7 +189,9 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
     if(!listEl||!statsEl)return;
     var data=load();
     var open=data.filter(function(e){return e.status==='open';});
-    var closed=data.filter(function(e){return e.status==='win'||e.status==='loss';});
+    var allClosed=data.filter(function(e){return e.status==='win'||e.status==='loss';});
+    var closed=allClosed.filter(window.mpSsnShow); // season display scope (pre-epoch: identity)
+    var archN=allClosed.length-closed.length;
     var wins=closed.filter(function(e){return e.status==='win';}).length;
     var wr=closed.length?Math.round(wins/closed.length*100):null;
     var realized=closed.reduce(function(s,e){return s+(+e.pnl||0);},0);
@@ -196,6 +203,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
       +stat((realized>=0?'+':'−')+money(Math.abs(realized)).replace('-',''),MT('jRealized','Realized'),realized>=0?'#34d99a':'#ff7b72');
     var rows=(jrTab==='open'?open:closed);
     var cards=rows.length?rows.slice().reverse().map(jrTab==='open'?openCard:closedCard).join(''):'<div class="pp-empty"><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg><span>'+(jrTab==='open'?MT('jNoOpen','No open positions — open one from Paper Trade.'):MT('jNoClosed','No closed trades yet.'))+'</span></div>';
+    if(jrTab==='closed'&&archN>0)cards+='<div style="text-align:center;font:11px/1.5 \'Familjen Grotesk\',sans-serif;color:#5b6470;padding:10px 12px 4px">'+MT('jSsnArch','New season — stats restarted. Earlier trades are archived, your XP and progress are untouched.')+'</div>';
     listEl.innerHTML=balStrip(open,closed,unreal)+'<div class="jr-tabs"><button data-jt="open" class="'+(jrTab==='open'?'on':'')+'">'+MT('jOpenN','Open')+' ('+open.length+')</button><button data-jt="closed" class="'+(jrTab==='closed'?'on':'')+'">'+MT('jClosedN','Closed')+' ('+closed.length+')</button></div>'+cards;
     if(emptyEl)emptyEl.style.display='none';
   }
@@ -257,7 +265,7 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
     var sig=jrTab+'|'+open.map(function(e){return e.id;}).join(',')+'|'+(data.length-open.length);
     if(sig!==_jrSig){_jrSig=sig;render();return;}
     var listEl=document.getElementById('jrList'),statsEl=document.getElementById('jrStats');
-    if(statsEl){var closed=data.filter(function(e){return e.status==='win'||e.status==='loss';});var wins=closed.filter(function(e){return e.status==='win';}).length;var realized=closed.reduce(function(s,e){return s+(+e.pnl||0);},0);var unreal=open.reduce(function(s,e){var mm=metrics(e);return s+(mm.pnl||0);},0);
+    if(statsEl){var closed=data.filter(function(e){return e.status==='win'||e.status==='loss';}).filter(window.mpSsnShow);var wins=closed.filter(function(e){return e.status==='win';}).length;var realized=closed.reduce(function(s,e){return s+(+e.pnl||0);},0);var unreal=open.reduce(function(s,e){var mm=metrics(e);return s+(mm.pnl||0);},0);
       var vs=statsEl.querySelectorAll('.jr-stat .v');if(vs.length>=4){vs[1].textContent=(unreal>=0?'+':'−')+money(Math.abs(unreal)).replace('-','');vs[1].style.color=unreal>=0?'#34d99a':'#ff7b72';vs[3].textContent=(realized>=0?'+':'−')+money(Math.abs(realized)).replace('-','');}}
     if(listEl&&jrTab==='open')open.forEach(function(e){var card=listEl.querySelector('.pp[data-id="'+e.id+'"]');if(!card)return;var m=metrics(e);
       var pnlc=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));if(!card.classList.contains(pnlc)){card.classList.remove('pf','ls','be');card.classList.add(pnlc);} // swap ONLY the pnl state class — wholesale card.className= dropped pp-gold every tick (balance tickets flickered gold→normal on each price change)
@@ -498,7 +506,26 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
   closeBtn.addEventListener('click',function(){box.hidden=true;fab.hidden=false;document.body.classList.remove('chat-open');});
   if(signinBtn)signinBtn.addEventListener('click',function(){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}});
   window.addEventListener('mp-auth-change',function(){if(!box.hidden&&!joined){var u=meUser();if(u){user=u;showChat();}}});
-  form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;var _lbm=t.match(/^\/(leaderboard|lb|leaders)\s*([1234])?\b/i);if(_lbm){input.value='';showLeaderboard(+_lbm[2]||1);return;}if(/^\/sig(nal)?\b/i.test(t)){input.value='';if(window._mpOpenSigForm)window._mpOpenSigForm({anchor:form,send:function(txt){if(ws&&ws.readyState===1){ws.send(JSON.stringify({type:'msg',u:user,t:txt}));try{window.__mpTrack&&window.__mpTrack('chat','signal');}catch(_){}return true;}return false;}});return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));try{window.__mpTrack&&window.__mpTrack('chat','sent');}catch(_){}input.value='';});
+  var ccPal=null,ccCmds=null,ccDeny=false;
+  function ccHide(){if(ccPal)ccPal.style.display='none';}
+  function ccRender(){
+    var v=(input.value||'');if(v.charAt(0)!=='/'||!ccCmds){ccHide();return;}
+    if(!ccPal){ccPal=document.createElement('div');ccPal.style.cssText='position:absolute;left:8px;right:8px;bottom:100%;margin-bottom:6px;background:#101318;border:1px solid #2a3140;border-radius:12px;box-shadow:0 -8px 30px rgba(0,0,0,.5);z-index:60;max-height:260px;overflow:auto;padding:5px;display:none';form.style.position='relative';form.appendChild(ccPal);
+      ccPal.addEventListener('mousedown',function(e){var r=e.target.closest&&e.target.closest('[data-cc]');if(!r)return;e.preventDefault();input.value=r.getAttribute('data-cc')+' ';input.focus();ccRender();});}
+    var q=v.toLowerCase().split(' ')[0];
+    var list=q==='/'?ccCmds:ccCmds.filter(function(c){return c.c.indexOf(q)===0;});
+    if(!list.length){ccHide();return;}
+    ccPal.style.display='block';
+    ccPal.innerHTML=list.map(function(c){return '<div data-cc="'+c.c+'" style="display:flex;gap:10px;align-items:baseline;padding:7px 10px;border-radius:8px;cursor:pointer"><b style="color:#c2f64a;font:700 12.5px Consolas,monospace;white-space:nowrap">'+c.u+'</b><span style="color:#8a93a0;font-size:11.5px">'+c.d+'</span></div>';}).join('');
+  }
+  function ccProbe(){
+    if(ccDeny||ccCmds)return;
+    if(ccCmds===null){ccCmds=false;fetch('/api/auth/chatcmd',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({cmd:'/cmds'})}).then(function(r){return r.json();}).then(function(j){if(j&&j.ok&&j.cmds&&j.cmds.length){ccCmds=j.cmds;ccRender();}else{ccDeny=true;}}).catch(function(){ccCmds=null;});}
+  }
+  input.addEventListener('input',function(){var v=(input.value||'');if(v.charAt(0)==='/'){ccProbe();ccRender();}else ccHide();});
+  input.addEventListener('keyup',function(){var v=(input.value||'');if(v.charAt(0)!=='/')ccHide();});
+  input.addEventListener('blur',function(){setTimeout(ccHide,160);});
+  form.addEventListener('submit',function(e){e.preventDefault();var t=(input.value||'').trim();if(!t)return;var _lbm=t.match(/^\/(leaderboard|lb|leaders)\s*([1234])?\b/i);if(_lbm){input.value='';showLeaderboard(+_lbm[2]||1);return;}if(/^\/sig(nal)?\b/i.test(t)){input.value='';if(window._mpOpenSigForm)window._mpOpenSigForm({anchor:form,send:function(txt){if(ws&&ws.readyState===1){ws.send(JSON.stringify({type:'msg',u:user,t:txt}));try{window.__mpTrack&&window.__mpTrack('chat','signal');}catch(_){}return true;}return false;}});return;}if(t.charAt(0)==='/'){input.value='';fetch('/api/auth/chatcmd',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({cmd:t})}).then(function(r){return r.json();}).then(function(j){window.__mpCcSys((j&&j.reply)||'Command failed.');}).catch(function(){window.__mpCcSys('Network error.');});return;}if(!ws||ws.readyState!==1)return;ws.send(JSON.stringify({type:'msg',u:user,t:t}));try{window.__mpTrack&&window.__mpTrack('chat','sent');}catch(_){}input.value='';});
   /* post a message into chat programmatically (used by "Share to chat" on a ticket): open the chat, ensure the WS is
      up, queue the send until it connects. Returns false if the user isn't signed in (chat requires login). */
   window.mpChatSay=function(text){text=String(text||'').trim();if(!text)return false;var u=meUser();if(!u){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}return false;}user=u;if(box&&box.hidden){try{openBox();}catch(e){}}else if(!joined){try{showChat();}catch(e){}}var payload=JSON.stringify({type:'msg',u:user,t:text}),tries=0;(function trySend(){if(ws&&ws.readyState===1){try{ws.send(payload);window.__mpTrack&&window.__mpTrack('chat','shareticket');}catch(e){}return;}if(tries++>40)return;if(!ws){try{connect();}catch(e){}}setTimeout(trySend,250);})();return true;};
@@ -877,3 +904,28 @@ window.mpBalTkt = window.mpBalTkt || (function () { var c = null, t = 0; return 
     setTimeout(function(){var f=q('[data-f="sym"]');if(f)f.focus();},40);
   };
 })();
+
+/* GUEST CLOSES -> homepage Live closes feed (owner 2026-08-15): every close (manual, TP/SL, partial, liquidation) is
+   swept from the journal and beaconed to /api/trades/guestclose. The SERVER decides: signed-in sessions are dropped
+   there (their closes arrive via tradeev), anonymous visitors show up as a stable guestNNNNN. Recency guard (<2min)
+   means historical closes never spam the feed on first run. Mirrored in home.js and mp-trade.js; one instance per page. */
+(function(){if(window.__mpGW)return;window.__mpGW=1;
+  function sweep(){try{
+    var raw=localStorage.getItem('mp_journal')||'[]';
+    if(raw===sweep._l)return; /* unchanged journal -> skip the JSON.parse entirely (runs every 4s; big journals stay free on idle) */
+    var arr=JSON.parse(raw)||[];var ch=false,now=Date.now();
+    for(var i=0;i<arr.length;i++){var e=arr[i];if(!e||e._gs)continue;
+      if(e.status!=='win'&&e.status!=='loss')continue;
+      e._gs=1;ch=true;
+      if(!e.closeTs||now-e.closeTs>120000)continue;
+      var mg=+e.margin||0,pnl=+e.pnl||0;if(!(mg>0))continue;
+      try{fetch('/api/trades/guestclose',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({sym:String(e.sym||'').toUpperCase(),side:e.side==='short'?'short':'long',lev:+e.lev||1,margin:mg,pnl:pnl,liq:e.liquidated?1:0,cid:String(e.id||'')}),keepalive:true});}catch(_){}
+    }
+    if(ch){try{localStorage.setItem('mp_journal',JSON.stringify(arr));sweep._l=localStorage.getItem('mp_journal');}catch(_){}}
+    else sweep._l=raw;
+  }catch(_){}}
+  setInterval(sweep,4000);setTimeout(sweep,2500);
+})();
+
+/* shared toast for role-gated chat command replies (visible only to the sender; mirrored home.js/mp-trade.js, one instance per page) */
+(function(){if(window.__mpCcSys)return;window.__mpCcSys=function(t){var h=document.getElementById('ccSysT');if(!h){h=document.createElement('div');h.id='ccSysT';h.style.cssText='position:fixed;bottom:86px;left:50%;transform:translateX(-50%);z-index:1400;background:#12151d;border:1px solid rgba(194,246,74,.5);color:#c2f64a;border-radius:12px;padding:9px 16px;font:600 12.5px system-ui,sans-serif;max-width:88vw;opacity:0;transition:opacity .25s;pointer-events:none;text-align:center';document.body.appendChild(h);}h.textContent=t;h.style.opacity='1';clearTimeout(window.__mpCcT);window.__mpCcT=setTimeout(function(){h.style.opacity='0';},4600);};})();

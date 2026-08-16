@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -11,7 +11,7 @@
         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
 
-    ym(110941944, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
@@ -351,6 +351,28 @@
   .lbpz-pool small{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin-left:9px;vertical-align:middle;}
   .lbpz-desc{font-size:12.5px;color:var(--dim);line-height:1.55;margin:10px 0 13px;}
   .lbpz-rows{display:flex;flex-direction:column;gap:6px;}
+  /* ---- Live closes feed ---- */
+  .close-feed{margin-top:14px;border-color:rgba(46,189,133,.28);background:linear-gradient(160deg,rgba(46,189,133,.06),rgba(255,255,255,.006) 55%),var(--panel);padding:20px 22px;}
+  .close-feed .df-ic{color:#2ebd85;border-color:rgba(46,189,133,.4);background:rgba(46,189,133,.08)}
+  .cf-r{display:grid;grid-template-columns:minmax(64px,1.1fr) minmax(126px,1.5fr) 84px 92px 84px 58px;align-items:center;gap:10px;padding:9px 6px;border-top:1px solid rgba(255,255,255,.05);font-size:13px;border-radius:8px}
+  .cf-r>*{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} /* every value in ITS OWN column, aligned across rows, never breaking out of its box (owner) */
+  .cf-r:first-child{border-top:none}
+  .cf-r.liq{background:linear-gradient(90deg,rgba(255,90,77,.16),rgba(255,90,77,.04) 80%);border-top-color:transparent} /* liquidation = the whole row runs red, no badge (owner) */
+  .cf-nm{color:#e9e7df;font-weight:700}
+  .cf-gold{color:#ffd75a}
+  .cf-guest{color:#8a93a0;font-weight:600}
+  .cf-pos{justify-self:start;max-width:100%;font-family:'Space Mono',monospace;font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:6px;border:1px solid}
+  .cf-pos.lg{color:#2ebd85;border-color:rgba(46,189,133,.45)}
+  .cf-pos.sh{color:#ff5a4d;border-color:rgba(255,90,77,.45)}
+  .cf-mg{color:#8a93a0;font-size:11.5px;font-family:'Space Mono',monospace;text-align:right}
+  .cf-pnl{font-family:'Space Mono',monospace;font-weight:700;text-align:right}
+  .cf-pnl.up{color:#2ebd85}.cf-pnl.dn{color:#ff5a4d}
+  .cf-roe{font-size:11.5px;font-family:'Space Mono',monospace;text-align:right}
+  .cf-roe.up{color:#2ebd85}.cf-roe.dn{color:#ff5a4d}
+  .cf-ago{color:#5c656f;font-size:11px;font-family:'Space Mono',monospace;text-align:right}
+  .cf-empty{color:#5c656f;font-size:12.5px;padding:10px 0}
+  @media(max-width:640px){.cf-r{grid-template-columns:minmax(56px,1fr) minmax(104px,1.4fr) 74px 60px 50px;gap:7px;font-size:12px}.cf-mg{display:none}.roe-lbl{display:none}.cf-pos{padding:2px 6px;font-size:10.5px}}
+  @media(max-width:400px){.cf-r{grid-template-columns:minmax(52px,1fr) minmax(96px,1.4fr) 70px 56px}.cf-ago{display:none}} /* columns collapse by priority — a row NEVER becomes two (owner) */
   /* ---- Live Duels feed ---- */
   .duel-feed{margin-top:14px;border-color:rgba(255,120,60,.26);background:linear-gradient(160deg,rgba(255,120,60,.06),rgba(255,255,255,.006) 55%),var(--panel);padding:20px 22px;}
   .df-head{display:flex;align-items:center;gap:12px;margin-bottom:15px;}
@@ -976,6 +998,14 @@
       <div class="lb-note" id="lbNote">All <b>four boards</b> pay the top 5 in real USDT every 14-day season. <button type="button" class="lbr-open lbr-inline" data-lbr="1">See rules</button></div>
       <div class="lb-board" id="lbBoard" style="margin-top:10px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
     </div>
+    <div class="lb-card close-feed" style="grid-column:1/-1">
+      <div class="df-head">
+        <span class="df-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
+        <div class="df-h"><b>Live closes</b><span>Every closed trade on the floor — wins, losses and liquidations, the second they land</span></div>
+        <span class="df-live"><i></i>LIVE</span>
+      </div>
+      <div class="df-list" id="closeFeed"><div class="cf-empty">Loading trades…</div></div>
+    </div>
     <div class="lb-card duel-feed" style="grid-column:1/-1">
       <div class="df-head">
         <span class="df-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"/><path d="m5 14 4 4"/><path d="m3 19 2-2"/></svg></span>
@@ -1029,7 +1059,7 @@
       <a class="brand" href="/">MARGIN<b>PAD</b></a>
       <p class="foot-blurb">Free crypto futures tools — a paper-trading terminal, live screener, liquidation feed, calculators and a bot API. No deposit, no KYC.</p>
     </div>
-    <div><h5>Trade</h5><a href="/paper-trade">Paper Trade</a><a href="/charts">Charts</a><a href="/stock-trading-simulator/">Stock simulator</a><a href="/forex-trading-simulator/">Forex simulator</a><a href="/index-trading-simulator/">Index simulator</a><a href="/screener">Screener</a><a href="/rekt/">Rekt — Liquidations</a><a href="/alerts/">Price Alerts</a></div>
+    <div><h5>Trade</h5><a href="/paper-trade">Paper Trade</a><a href="/charts">Charts</a><a href="/stock-trading-simulator/">Stock simulator</a><a href="/forex-trading-simulator/">Forex simulator</a><a href="/index-trading-simulator/">Index simulator</a><a href="/leverage-trading-simulator/">Leverage simulator</a><a href="/crypto-trading-simulator-no-sign-up/">No sign-up simulator</a><a href="/screener">Screener</a><a href="/rekt/">Rekt — Liquidations</a><a href="/crypto-liquidations-today/">Liquidations today</a><a href="/alerts/">Price Alerts</a></div>
     <div><h5>Analyze</h5><a href="/calculators">Calculators</a><a href="/tools/">Trading Tools</a><a href="/trading-api/">Bot API</a><a href="/coins/">Markets</a><a href="/defi/">DeFi</a></div>
     <div><h5>Guides</h5><a href="/blog/what-is-liquidation-in-crypto/">What is liquidation?</a><a href="/blog/what-is-funding-rate/">Funding rates explained</a><a href="/blog/crypto-leverage-explained/">Leverage explained</a><a href="/blog/best-crypto-futures-exchanges/">Best futures exchanges</a><a href="/blog/btc-dominance-altcoin-season/">BTC dominance &amp; altseason</a><a href="/blog/paper-trade-crypto-futures/">How to paper trade</a></div>
     <div><h5>Learn &amp; earn</h5><a href="/academy/">Academy</a><a href="/blog/">Blog</a><a href="/news/">News</a><a href="/rewards/">Rewards</a><a href="https://t.me/MarginPadBot">Telegram</a><a href="#" onclick="return false" style="cursor:default;color:var(--faint)">Ad disclosure: referral links</a></div>
@@ -1262,6 +1292,39 @@
     if(row&&!e.target.closest('[data-auth-open]')){lbOpenProfile(row.getAttribute('data-lbu'));}
   });
   window.mpOpenProfile=lbOpenProfile; // expose so the chat (mp-trade.js) can open a trader's profile on username click
+  /* ---- Live closes feed (public /api/trades/feed) — every closed trade + liquidations, new rows slide in ---- */
+  (function(){
+    var el=document.getElementById('closeFeed'); if(!el) return;
+    var seen={},first=true;
+    function esc9(s){return String(s||'').replace(/[<>&"]/g,function(c){return c==='<'?'&lt;':c==='>'?'&gt;':c==='&'?'&amp;':'&quot;';});}
+    function ago9(ts){var s=Math.max(0,(Date.now()-ts)/1000);return s<60?Math.floor(s)+'s ago':s<3600?Math.floor(s/60)+'m ago':s<86400?Math.floor(s/3600)+'h ago':Math.floor(s/86400)+'d ago';}
+    function fk9(n){n=+n||0;var a=Math.abs(n);if(a>=1e6)return (n/1e6).toFixed(a>=1e7?0:1).replace(/\.0([Mk])?$/,'$1')+'M';if(a>=1e4)return (n/1e3).toFixed(0)+'k';if(a>=1e3)return (n/1e3).toFixed(1).replace(/\.0$/,'')+'k';return a>=100?n.toFixed(0):n.toFixed(2).replace(/\.00$/,'');} /* short numbers everywhere: 19894.74 -> 19.9k (owner: nikad dugi brojevi, nikad drugi red) */
+    function row(x){
+      var k=(+x.ts||0)+'|'+String(x.who||'');
+      var up=(+x.pnl)>=0,roeA=Math.abs(+x.roe||0);
+      return '<div class="cf-r'+(x.liq?' liq':'')+'" data-k="'+esc9(k)+'">'
+        +'<b class="cf-nm'+(x.prem?' cf-gold':'')+(x.guest?' cf-guest':'')+'" title="'+esc9(x.who)+'">'+esc9(x.who)+'</b>'
+        +'<span class="cf-pos '+((x.side==='short')?'sh':'lg')+'">'+esc9(String(x.sym||'').toUpperCase())+' ×'+(+x.lev||1)+' '+((x.side==='short')?'Short':'Long')+'</span>'
+        +'<span class="cf-mg">'+((+x.margin>0)?'$'+fk9(+x.margin)+' mgn':'')+'</span>'
+        +'<span class="cf-pnl '+(up?'up':'dn')+'">'+(up?'+':'−')+'$'+fk9(Math.abs(+x.pnl))+'</span>'
+        +'<span class="cf-roe '+(up?'up':'dn')+'">'+((+x.roe>=0?'+':'−')+(roeA>=1000?fk9(roeA):roeA.toFixed(0)))+'%<span class="roe-lbl"> ROE</span></span>'
+        +'<span class="cf-ago" data-ts="'+(+x.ts||0)+'">'+ago9(+x.ts||0)+'</span></div>';
+    }
+    function load(){
+      fetch('/api/trades/feed').then(function(r){return r.json();}).then(function(d){
+        var arr=(d&&d.closes)||[];
+        if(!arr.length){if(first){el.innerHTML='<div class="cf-empty">No closed trades yet — the floor is warming up.</div>';first=false;}return;}
+        var frag='',news=[];
+        arr.slice(0,10).forEach(function(x){var k=(+x.ts||0)+'|'+String(x.who||'');if(!seen[k])news.push(k);seen[k]=1;frag+=row(x);});
+        el.innerHTML=frag;
+        if(!first&&news.length){Array.prototype.forEach.call(el.querySelectorAll('.cf-r'),function(r9){if(news.indexOf(r9.getAttribute('data-k'))>=0){r9.style.opacity='0';r9.style.transform='translateY(-7px)';requestAnimationFrame(function(){r9.style.transition='opacity .5s,transform .5s';r9.style.opacity='1';r9.style.transform='none';});}});}
+        first=false;
+      }).catch(function(){});
+    }
+    load();setInterval(function(){if(!document.hidden)load();},12000);
+    document.addEventListener('visibilitychange',function(){if(!document.hidden)load();}); /* hidden tabs stop polling; instant refresh on return */
+    setInterval(function(){Array.prototype.forEach.call(el.querySelectorAll('.cf-ago'),function(a){var ts=+a.getAttribute('data-ts');if(ts)a.textContent=ago9(ts);});},30000);
+  })();
   /* ---- Live Duels feed (public /api/duel/feed) — premium names in gold ---- */
   (function(){
     var el=document.getElementById('duelFeed'); if(!el) return;

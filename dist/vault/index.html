@@ -10,6 +10,8 @@
 <link rel="canonical" href="https://marginpad.io/vault/">
 <meta name="robots" content="index,follow">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="stylesheet" href="/assets/fonts.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -84,10 +86,24 @@ section[data-vsec] h2:first-child{margin-top:6px}
 .btn.owned{color:#34d99a;border-color:#1f4a38;cursor:default}
 .btn.lock{color:var(--faint);cursor:not-allowed}
 .btn[disabled]{opacity:.55;cursor:not-allowed}
-.msg{font-size:12px;font-family:'Space Mono',monospace;min-height:16px;margin-top:10px}
-.msg.ok{color:#34d99a}.msg.err{color:#ff7b72}
+.msg{position:fixed;left:50%;bottom:26px;transform:translate(-50%,8px);z-index:1200;background:#12151d;border:1px solid #2a3140;border-radius:12px;padding:11px 18px;font-size:12.5px;font-family:'Space Mono',monospace;max-width:min(92vw,480px);text-align:center;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+.msg.show{opacity:1;transform:translate(-50%,0)}
+.msg.ok{color:#34d99a;border-color:rgba(52,217,154,.45)}.msg.err{color:#ff7b72;border-color:rgba(255,123,114,.45)}
+.gmod{position:fixed;inset:0;z-index:1100;background:rgba(5,6,9,.72);display:none;align-items:center;justify-content:center;padding:20px}
+.gmod.on{display:flex}
+.gmod-card{background:#101318;border:1px solid #2a3140;border-radius:16px;padding:22px 22px 18px;max-width:380px;width:100%;box-shadow:0 24px 80px -20px rgba(0,0,0,.8)}
+.gmod-t{font-weight:800;font-size:17px;margin:0 0 4px}
+.gmod-s{font-size:12px;color:#8a93a0;line-height:1.5;margin:0 0 14px}
+.gmod input{width:100%;box-sizing:border-box;background:#0a0d11;border:1px solid #2b323b;border-radius:10px;color:#e9e7df;padding:11px 12px;font-size:16px;font-family:inherit}
+.gmod input.bad{border-color:#ff7b72}
+.gmod-m{font-size:12px;font-family:'Space Mono',monospace;min-height:16px;margin-top:8px;line-height:1.45}
+.gmod-m.ok{color:#34d99a}.gmod-m.err{color:#ff7b72}
+.gmod-row{display:flex;gap:8px;margin-top:12px}
+.gmod-row .btn{flex:1}
 .note{font-size:12px;color:var(--faint);margin-top:22px;line-height:1.6}
 footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-size:12px;color:var(--faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .tprev.tsk-tkt_dragon{border-color:#c9302a;background:linear-gradient(135deg,rgba(255,90,40,.16),rgba(20,6,4,.95) 45%),repeating-linear-gradient(115deg,rgba(255,120,50,.10) 0 7px,rgba(60,12,6,.18) 7px 14px);box-shadow:0 0 30px -10px rgba(255,90,40,.5)}
+  .tprev.tsk-tkt_vapor{border-color:#b06cff;background:linear-gradient(180deg,rgba(255,64,190,.16),rgba(24,8,40,.94) 55%),repeating-linear-gradient(0deg,transparent 0 9px,rgba(0,220,255,.12) 9px 10px);box-shadow:0 0 30px -10px rgba(176,108,255,.55)}
 </style>
 
 <script defer src="/assets/sentry.js"></script>
@@ -108,6 +124,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   <div class="signin" id="signin" hidden>Sign in (free, email code only) to see your XP, buy frames and equip them. <a href="/paper-trade">Open the app to sign in →</a></div>
 
   <nav class="vtabs" id="vtabs" aria-label="Vault sections">
+    <button type="button" data-vtab="owned">Owned</button>
     <button type="button" data-vtab="frames">Frames</button>
     <button type="button" data-vtab="tickets">Ticket skins</button>
     <button type="button" data-vtab="backgrounds">Backgrounds</button>
@@ -116,6 +133,25 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     <button type="button" data-vtab="levels">Levels</button>
   </nav>
   <div class="msg" id="msg"></div>
+  <div class="gmod" id="gmod" role="dialog" aria-modal="true">
+    <div class="gmod-card">
+      <div id="gmBody">
+        <h3 class="gmod-t" id="gmTitle">Gift</h3>
+        <p class="gmod-s" id="gmSub"></p>
+        <input id="gmUser" type="text" placeholder="Trader's username" autocomplete="off" spellcheck="false" maxlength="24">
+        <div class="gmod-m" id="gmMsg"></div>
+        <div class="gmod-row">
+          <button class="btn" id="gmCancel" type="button">Cancel</button>
+          <button class="btn" id="gmSend" type="button" style="background:#c2f64a;color:#0a0b0d;border-color:#c2f64a;font-weight:800">Send gift</button>
+        </div>
+      </div>
+      <div id="gmDone" style="display:none;text-align:center">
+        <div style="font-size:15px;font-weight:800;color:#c2f64a;margin-bottom:8px">Gift sent</div>
+        <p class="gmod-s" id="gmDoneTxt" style="text-align:center"></p>
+        <button class="btn" id="gmOk" type="button" style="width:100%">Done</button>
+      </div>
+    </div>
+  </div>
 
   <section data-vsec="levels" hidden>
   <h2>The ladder</h2>
@@ -125,6 +161,12 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   <h2>Level frames</h2>
   <div class="h2s">Earned by reaching the level — these can never be bought.</div>
   <div class="gal" id="galLevel"></div>
+  </section>
+
+  <section data-vsec="owned" hidden>
+  <h2>Your collection</h2>
+  <div class="h2s">Everything you own in one place — one tap to equip, no digging through the shop.</div>
+  <div class="gal" id="galOwned"></div>
   </section>
 
   <section data-vsec="frames" hidden>
@@ -228,7 +270,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
         if(it.xp)acts+='<button class="btn xp" data-buy="'+it.id+'" data-cur="xp">'+fmt(it.xp)+' XP</button>';
         if(it.cents)acts+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
       }
-      if(!expired&&ST&&ST.signedIn)acts+='<button class="btn gift" data-gift="'+it.id+'" data-cur="'+(it.xp?'xp':'usd')+'" title="Buy this frame for another trader">Gift</button>';
+      if(!expired&&ST&&ST.signedIn)acts+='<button class="btn gift" data-gift="'+it.id+'" data-cur="'+(it.xp?'xp':'usd')+'" data-name="'+it.name+'" data-price="'+(it.xp?it.xp+' XP':'$'+((it.cents||0)/100).toFixed(2))+'" title="Buy this frame for another trader">Gift</button>';
       var badge=it.until?'<span class="tier limited">'+(expired?'ENDED':'LIMITED')+'</span>':'';
       var lim=it.until&&!expired?' · Available '+Math.max(1,Math.ceil((Date.parse(it.until)-Date.now())/86400000))+' more days':'';
       return '<div class="fcard">'+prevCard(it.id,un)+'<div class="fmeta"><span class="fname">'+it.name+'</span>'+badge+'<span class="tier '+it.tier+'">'+it.tier+'</span></div><div class="fdesc">'+(it.desc||'')+(it.minLevel?' · Requires '+it.minLevel.charAt(0).toUpperCase()+it.minLevel.slice(1):'')+lim+'</div><div class="fact">'+(acts||'<button class="btn lock" disabled>Unavailable</button>')+'</div></div>';
@@ -246,7 +288,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
         if(it.xp)acts+='<button class="btn xp" data-buy="'+it.id+'" data-cur="xp">'+fmt(it.xp)+' XP</button>';
         if(it.cents)acts+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
       }
-      if(ST&&ST.signedIn)acts+='<button class="btn gift" data-gift="'+it.id+'" data-cur="'+(it.xp?'xp':'usd')+'" title="Buy this skin for another trader">Gift</button>';
+      if(ST&&ST.signedIn)acts+='<button class="btn gift" data-gift="'+it.id+'" data-cur="'+(it.xp?'xp':'usd')+'" data-name="'+it.name+'" data-price="'+(it.xp?it.xp+' XP':'$'+((it.cents||0)/100).toFixed(2))+'" title="Buy this skin for another trader">Gift</button>';
       return '<div class="fcard">'+tktPrev(it.id)+'<div class="fmeta"><span class="fname">'+it.name+'</span><span class="tier '+it.tier+'">'+it.tier+'</span></div><div class="fdesc">'+(it.desc||'')+'</div><div class="fact">'+acts+'</div></div>';
     });
     cards.unshift('<div class="fcard">'+tktPrev('')+'<div class="fmeta"><span class="fname">Standard</span><span class="tier common">DEFAULT</span></div><div class="fdesc">The classic MarginPad ticket.</div><div class="fact">'+(eqT?'<button class="btn" data-eqt="default">Equip</button>':'<button class="btn eq" disabled>EQUIPPED</button>')+'</div></div>');
@@ -268,7 +310,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
         if(it.xp)acts+='<button class="btn xp" data-buy="'+it.id+'" data-cur="xp">'+fmt(it.xp)+' XP</button>';
         if(it.cents)acts+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
       }
-      if(it.id!=='bg_one'&&ST&&ST.signedIn)acts+='<button class="btn gift" data-gift="'+it.id+'" data-cur="'+(it.xp?'xp':'usd')+'" title="Buy this background for another trader">Gift</button>';
+      if(it.id!=='bg_one'&&ST&&ST.signedIn)acts+='<button class="btn gift" data-gift="'+it.id+'" data-cur="'+(it.xp?'xp':'usd')+'" data-name="'+it.name+'" data-price="'+(it.xp?it.xp+' XP':'$'+((it.cents||0)/100).toFixed(2))+'" title="Buy this background for another trader">Gift</button>';
       return '<div class="fcard">'+bgPrev(it.id,un)+'<div class="fmeta"><span class="fname">'+it.name+'</span><span class="tier '+it.tier+'">'+it.tier+'</span></div><div class="fdesc">'+(it.desc||'')+'</div><div class="fact">'+acts+'</div></div>';
     });
     cards.unshift('<div class="fcard">'+bgPrev('',un)+'<div class="fmeta"><span class="fname">Plain</span><span class="tier common">DEFAULT</span></div><div class="fdesc">The standard card face.</div><div class="fact">'+(eqB?'<button class="btn" data-eqbg="default">Equip</button>':'<button class="btn eq" disabled>EQUIPPED</button>')+'</div></div>');
@@ -300,7 +342,10 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     {id:'dwell100',name:'Resident',need:'Spend 100 hours on MarginPad',tier:'legendary'},
     {id:'closer',name:'The Closer',need:'Close 500 trades',tier:'epic'},
     {id:'operative',name:'Operative',need:'Claim 100 daily missions',tier:'epic'},
-    {id:'champion',name:'Champion',need:'Finish #1 on the weekly ROE board (worn 7 days)',tier:'legendary'}
+    {id:'champion',name:'Champion',need:'Finish #1 on the Highest ROE board (worn for the 14-day season)',tier:'legendary'},
+    {id:'deadeye',name:'Deadeye',need:'Finish #1 on the Win-Rate board (worn for the 14-day season)',tier:'legendary'},
+    {id:'overdrive',name:'Overdrive',need:'Finish #1 on the XP board (worn for the 14-day season)',tier:'legendary'},
+    {id:'tycoon',name:'Tycoon',need:'Finish #1 on the Spot Bank board (worn for the 14-day season)',tier:'legendary'}
   ];
   function renderEarn(){
     var owned=ST?ST.owned:[],un=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()?window.mpAuth.me().username:'';
@@ -325,7 +370,45 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       return '<div class="fcard" style="opacity:'+(own?'1':'.55')+'"><div class="fmeta"><span class="fname" style="font-size:14px">'+a.name+'</span><span class="tier '+(own?'legendary':'common')+'">'+(own?'EARNED':'LOCKED')+'</span></div><div class="fdesc">'+a.how+'</div></div>';
     }).join('');
   }
-  function say(t,ok){var m=document.getElementById('msg');m.textContent=t;m.className='msg '+(ok?'ok':'err');}
+  function say(t,ok){var m=document.getElementById('msg');m.textContent=t;m.className='msg show '+(ok?'ok':'err');clearTimeout(say._t);say._t=setTimeout(function(){m.className='msg '+(ok?'ok':'err');},5200);} /* fixed toast — the old inline top-of-page line was OFF-SCREEN whenever the user was down in a section, so buys/gifts looked like "nothing happened" */
+  var gmState=null;
+  function gmMsg(t,kind){var el=document.getElementById('gmMsg');if(el){el.textContent=t||'';el.className='gmod-m '+(kind||'');}}
+  function gmOpen(id,cur,name,price){gmState={id:id,cur:cur,name:name,price:price||''};
+    document.getElementById('gmBody').style.display='';document.getElementById('gmDone').style.display='none';
+    document.getElementById('gmTitle').textContent='Gift '+name;
+    var free=!!(ST&&ST.tester);
+    document.getElementById('gmSub').innerHTML=free
+      ?('Send <b>'+name+'</b> to any trader — <b style="color:#c2f64a">free on your owner account</b>. They own it forever and get a full-screen celebration.')
+      :('Buy <b>'+name+'</b> for another trader — you pay <b style="color:#c2f64a">'+(price||'')+'</b>'+(cur==='xp'?' from your XP':' from your rewards balance')+'. They own it forever and get a full-screen celebration.');
+    var inp=document.getElementById('gmUser');inp.value='';inp.classList.remove('bad');gmMsg('');
+    var sb=document.getElementById('gmSend');sb.disabled=false;sb.textContent=free?'Send gift (free)':('Send gift · '+(price||''));
+    document.getElementById('gmod').classList.add('on');
+    setTimeout(function(){try{inp.focus();}catch(_){}},60);}
+  function gmClose(){document.getElementById('gmod').classList.remove('on');gmState=null;}
+  (function(){var ov=document.getElementById('gmod');if(!ov)return;
+    ov.addEventListener('click',function(e){if(e.target===ov)gmClose();});
+    document.getElementById('gmCancel').addEventListener('click',gmClose);
+    document.getElementById('gmOk').addEventListener('click',gmClose);
+    var inp=document.getElementById('gmUser'),sb=document.getElementById('gmSend');
+    inp.addEventListener('keydown',function(e){if(e.key==='Enter')sb.click();});
+    sb.addEventListener('click',function(){
+      if(!gmState)return;
+      var v=(inp.value||'').replace(/^@/,'').replace(/[^a-zA-Z0-9_]/g,'').slice(0,24);
+      if(v.length<2){inp.classList.add('bad');gmMsg('Enter the trader&#39;s username.','err');return;}
+      inp.classList.remove('bad');sb.disabled=true;sb.textContent='Sending…';gmMsg('');
+      fetch('/api/auth/shop/buy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:gmState.id,cur:gmState.cur,to:v})})
+        .then(function(r){return r.json();}).then(function(d){
+          if(d&&d.ok){
+            document.getElementById('gmBody').style.display='none';document.getElementById('gmDone').style.display='block';
+            document.getElementById('gmDoneTxt').innerHTML='<b>'+gmState.name+'</b> now belongs to <b>@'+(d.giftedTo||v)+'</b>. They got a notification and a full-screen celebration next time they look.';
+            say('Gifted to @'+(d.giftedTo||v)+'.',true);load();
+          } else {
+            var er=d&&d.error;sb.disabled=false;sb.textContent=(ST&&ST.tester)?'Send gift (free)':('Send gift · '+(gmState&&gmState.price||''));inp.classList.toggle('bad',er==='no_target');
+            gmMsg(er==='no_target'?'No trader with that username — check the spelling.':er==='self'?'That is you. You cannot gift to yourself — just buy it.':er==='target_owned'?'@'+v+' already owns '+gmState.name+'.':er==='level_floor'?'Not enough spare XP — gifting would drop you below your level threshold.':er==='insufficient'?'Not enough rewards balance for this gift.':er==='expired'?'This drop has ended — it is no longer for sale.':er==='no_gift_consumable'?'Consumables cannot be gifted.':'Gift failed: '+(er||'error')+' — try again.','err');
+          }
+        }).catch(function(){sb.disabled=false;sb.textContent='Send gift';gmMsg('Network error — try again.','err');});
+    });
+  })();
   function load(){
     fetch('/api/auth/shop',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
       ST=d;
@@ -369,16 +452,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     var gb=e.target.closest('[data-gift]');
     if(gb){
       if(!ST||!ST.signedIn){say('Sign in first to gift frames.',false);return;}
-      var toU=prompt('Gift the '+gb.getAttribute('data-gift')+' frame to (username):');
-      if(!toU)return;
-      toU=toU.replace(/[^a-zA-Z0-9_]/g,'').slice(0,24);
-      if(!toU){say('Enter a valid username.',false);return;}
-      gb.disabled=true;
-      fetch('/api/auth/shop/buy',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id:gb.getAttribute('data-gift'),cur:gb.getAttribute('data-cur'),to:toU})})
-        .then(function(r){return r.json();}).then(function(d){
-          if(d&&d.ok){say('Gifted to @'+(d.giftedTo||toU)+' — they have been notified.',true);load();}
-          else{var er=d&&d.error;say(er==='no_target'?'No trader with that username.':er==='self'?'You cannot gift to yourself — just buy it.':er==='target_owned'?'They already own that frame.':er==='level_floor'?'Not enough spare XP — gifting would drop you below your level threshold.':er==='insufficient'?'Not enough rewards balance.':er==='expired'?'This drop has ended.':'Gift failed: '+(er||'error'),false);gb.disabled=false;}
-        }).catch(function(){say('Network error.',false);gb.disabled=false;});
+      gmOpen(gb.getAttribute('data-gift'),gb.getAttribute('data-cur'),gb.getAttribute('data-name')||gb.getAttribute('data-gift'),gb.getAttribute('data-price')||'');
       return;
     }
     var gbg=e.target.closest('[data-eqbg]');
@@ -420,10 +494,22 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       if(SECS.indexOf(k)<0)k='frames';
       document.querySelectorAll('[data-vsec]').forEach(function(sc){sc.hidden=sc.getAttribute('data-vsec')!==k;});
       document.querySelectorAll('[data-vtab]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-vtab')===k);});
+    if(k==='owned')try{renderOwned();}catch(e){} /* rebuilt on every open so a fresh equip/purchase is always reflected */
       try{localStorage.setItem('mp_vault_tab',k);}catch(e){}
       try{history.replaceState(null,'','#'+k);}catch(e){}
     }
-    document.querySelectorAll('[data-vtab]').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-vtab'));window.scrollTo(0,0);});});
+    function renderOwned(){ /* OWNED tab (owner 2026-08-15): clone every owned card out of the four galleries — same markup, same document-level click delegation, zero duplicated logic */
+    var g=document.getElementById('galOwned');if(!g)return;var out=[];
+    ['galLevel','galShop','galTkt','galBg'].forEach(function(id){var gal=document.getElementById(id);if(!gal)return;
+      gal.querySelectorAll('.fcard').forEach(function(c){var f=c.querySelector('.fact');if(!f)return;
+        if(f.querySelector('[data-eq],[data-eqt],[data-eqbg],.btn.eq'))out.push(c.cloneNode(true));
+      });
+    });
+    g.innerHTML='';
+    if(!out.length){g.innerHTML='<div class="h2s" style="padding:18px 0">Nothing owned yet — frames, ticket skins and backgrounds you own will line up here for one-tap equip.</div>';return;}
+    out.forEach(function(c){g.appendChild(c);});
+  }
+  document.querySelectorAll('[data-vtab]').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-vtab'));window.scrollTo(0,0);});});
     var init=(location.hash||'').replace('#','');
     if(SECS.indexOf(init)<0){try{init=localStorage.getItem('mp_vault_tab')||'';}catch(e){}}
     show(init);

@@ -9,6 +9,10 @@ const COINS = [
   ['BNB', 'BNB'], ['ADA', 'Cardano'], ['LINK', 'Chainlink'], ['AVAX', 'Avalanche'], ['LTC', 'Litecoin'],
   ['TRX', 'TRON'], ['DOT', 'Polkadot'], ['PEPE', 'Pepe'], ['WIF', 'dogwifhat'], ['SUI', 'Sui'],
   ['HYPE', 'Hyperliquid'], ['SHIB', 'Shiba Inu'], ['NEAR', 'NEAR Protocol'],
+  // +14 (2026-08-16 SEO kompas: alt-coin map SERPs are soft — even X posts rank; every new slug auto-gets the SSR live block via the /*-liquidation-map/* middle-glob)
+  ['TON', 'Toncoin'], ['ATOM', 'Cosmos'], ['APT', 'Aptos'], ['ARB', 'Arbitrum'], ['OP', 'Optimism'],
+  ['INJ', 'Injective'], ['SEI', 'Sei'], ['FIL', 'Filecoin'], ['UNI', 'Uniswap'], ['AAVE', 'Aave'],
+  ['BONK', 'Bonk'], ['FLOKI', 'Floki'], ['ORDI', 'ORDI'], ['TAO', 'Bittensor'],
 ];
 
 const faq = (name, sym) => [
@@ -32,7 +36,7 @@ function page(sym, name) {
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>${name} (${sym}) Liquidation Map — Live Liquidations | MarginPad</title>
+<title>${name} (${sym}) Liquidation Map — Live, Free, No Login | MarginPad</title>
 <meta name="description" content="${desc}" />
 <meta name="keywords" content="${sym} liquidation map, ${name} liquidations, ${sym} liquidation heatmap, crypto liquidations, ${sym} liquidation levels, liquidation chart" />
 <link rel="canonical" href="${url}" />
@@ -63,7 +67,7 @@ ${crumbLd}
   <article>
     <h1>${name} (${sym}) Liquidation Map</h1>
     <div class="meta">Live liquidation data · Binance · Bybit · OKX</div>
-    <p><strong>What this is:</strong> the ${name} liquidation map shows, in real time, where leveraged ${sym} traders are getting forced out of their positions — and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short — sized by how big the position was — plotted directly on the ${sym} price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.</p>
+    <p><strong>What this is:</strong> a free ${name} liquidation map with no login and no paywall — it shows, in real time, where leveraged ${sym} traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short — sized by how big the position was — plotted directly on the ${sym} price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.</p>
     <div class="liqmap-cta"><a class="cta" href="${live}">Open the live ${sym} liquidation map →</a></div>
     <h2>What the ${sym} liquidation map shows</h2>
     <p>MarginPad streams real liquidation events from three of the largest perpetual-futures venues — Binance, Bybit and OKX — over public websockets. They are normalized and shown three ways: <strong>bubbles</strong> at the exact price and time of each liquidation, a <strong>price-level histogram</strong> of where ${sym} liquidations cluster, and a scrolling <strong>ticker</strong> of the largest hits. You can switch the timeframe between 1 day, 1 week, 1 month and 1 year.</p>

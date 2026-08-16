@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8" />
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <meta name="theme-color" content="#08090b" />
@@ -64,6 +64,8 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is risk of ruin?","acceptedAnswer":{"@type":"Answer","text":"Risk of ruin is the probability that your account falls to a chosen failure level — here a 50% drawdown — at some point over a series of trades. Even a positive edge can hit ruin if you risk too much per trade, because losing streaks are inevitable. We estimate it by Monte-Carlo: running thousands of simulated sequences from your win rate and reward-to-risk and counting how often equity crosses that line."}},{"@type":"Question","name":"What is the Kelly criterion?","acceptedAnswer":{"@type":"Answer","text":"The Kelly criterion is a formula for the bet size that maximizes the long-run growth rate of your capital. For a trade with win probability p and reward-to-risk R, the Kelly fraction is (p·R − (1−p)) / R, which is the share of capital to risk per trade. A negative result means there is no edge to bet on."}},{"@type":"Question","name":"Why is full Kelly risky?","acceptedAnswer":{"@type":"Answer","text":"Full Kelly maximizes growth but produces large drawdowns, so most traders use a fraction like half-Kelly. It assumes your win rate and reward-to-risk are known exactly; real edges drift, and at full Kelly a normal losing streak can cut the account in half. Sizing at half-Kelly keeps most of the growth with far smaller swings."}}]}
 </script>
+
+<script defer src="/assets/sentry.js"></script>
 </head>
 <body>
 <header class="topbar"><a class="brand" href="/">MARGIN<b>PAD</b></a><nav class="tool-switch"><a href="/tools/">All tools</a><a href="/crypto-backtester/">Backtester</a><a href="/trading-journal/">Journal</a><a href="/pivot-point-calculator/">Pivots</a><a href="/risk-of-ruin-calculator/" class="on">Risk</a><a href="/crypto-correlation-matrix/">Correlation</a></nav><a class="home" href="/">← marginpad.io</a></header>

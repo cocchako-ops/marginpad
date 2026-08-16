@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+<meta charset="UTF-8" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>ETC Perpetual Futures — Preis, Funding, Open Interest & Liquidationen | MarginPad</title>
 <meta name="description" content="Live Ethereum Classic (ETC) Perpetual Futures: Preis, Funding-Rate, Open Interest, Long/Short-Positionierung und 24h-Liquidationen. Handle ETCUSDT an Top-Börsen. Kostenlos, ohne Anmeldung." />
 <meta name="keywords" content="ETC perpetual, Ethereum Classic futures, ETC funding rate, ETC open interest, ETC liquidationen, ETC long short ratio, ETCusdt perp" />
@@ -39,9 +39,9 @@
 <meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="manifest" href="/site.webmanifest" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
 <style>
   .cdhero{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:12px 0 4px}
@@ -93,6 +93,8 @@
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ETC Perpetual Futures Dashboard","url":"https://marginpad.io/de/coin/etc/","applicationCategory":"FinanceApplication","operatingSystem":"Web","dateModified":"2026-08-13","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-08-13","mainEntity":[{"@type":"Question","name":"Was ist ein ETC Perpetual Future?","acceptedAnswer":{"@type":"Answer","text":"Ein ETC-Perpetual-Future (Perp) lässt dich Ethereum Classic mit Hebel und ohne Verfall handeln. Die Funding-Rate hält den Perp-Preis am Spot — positives Funding bedeutet, dass ETC-Longs an Shorts zahlen (überfüllte Longs), negatives das Gegenteil. Open Interest ist der Gesamtwert offener ETC-Positionen; ein schneller Anstieg heißt, dass neuer Hebel hereinkommt. Liquidationen zeigen, wo überhebelte ETC-Trader zwangsgeschlossen wurden — Long-Liquidationen bei Einbrüchen, Short-Liquidationen bei Rallyes."}},{"@type":"Question","name":"Wie liest man ETC Funding, Open Interest und Liquidationen zusammen?","acceptedAnswer":{"@type":"Answer","text":"Lies die vier Zahlen zusammen. Stark positives Funding plus einseitige Long-Positionierung und steigendes Open Interest ist ein überfülltes Long-Setup, das sich scharf auflösen kann. Eine Spitze bei Long-Liquidationen markiert oft ein lokales ETC-Tief; eine Welle von Short-Liquidationen kann einen Squeeze nach oben befeuern. Bestätige Einstiege im technischen Screener und dimensioniere mit dem ETC-Liquidationsrechner, damit der Hebel dich nie näher an die Liquidation bringt, als du beabsichtigst."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Start","item":"https://marginpad.io/de/"},{"@type":"ListItem","position":2,"name":"Coins","item":"https://marginpad.io/screener"},{"@type":"ListItem","position":3,"name":"ETC","item":"https://marginpad.io/de/coin/etc/"}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -199,5 +201,6 @@
   var ADS_CONV_LABEL='';/* paste your Google Ads conversion label here once created, e.g. 'abCdEf1gH' */
   Array.prototype.forEach.call(document.querySelectorAll('[data-ex]'),function(a){a.addEventListener('click',function(){try{var ex=a.getAttribute('data-ex');if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathname});if(ADS_CONV_LABEL)gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon)navigator.sendBeacon(u);else (new Image()).src=u;}catch(e){}});});
 })();</script>
+<script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

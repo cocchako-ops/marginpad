@@ -1,9 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Pepe (PEPE) Liquidations Today — Live 24h Data | MarginPad</title>
 <meta name="description" content="How much Pepe was liquidated in the last 24 hours — live PEPE long vs short liquidations, share of the market, and where PEPE ranks among the most-liquidated coins. Free, updates automatically." />
@@ -90,17 +103,33 @@
           <a href="/liquidations/link/">LINK</a>
           <a href="/liquidations/trx/">TRX</a>
           <a href="/liquidations/ltc/">LTC</a>
+          <a href="/liquidations/dot/">DOT</a>
+          <a href="/liquidations/sui/">SUI</a>
+          <a href="/liquidations/wif/">WIF</a>
+          <a href="/liquidations/hype/">HYPE</a>
+          <a href="/liquidations/near/">NEAR</a>
+          <a href="/liquidations/apt/">APT</a>
+          <a href="/liquidations/arb/">ARB</a>
+          <a href="/liquidations/op/">OP</a>
     </div>
 
     <h2>What PEPE liquidations tell you</h2>
     <p>A <strong>liquidation</strong> is a leveraged position force-closed by the exchange when its margin runs out. When Pepe moves fast, over-leveraged traders get wiped in clusters — and those clusters are information: a spike in <strong>long liquidations</strong> during a dump often marks local capitulation (forced sellers exhausting), while a spike in <strong>short liquidations</strong> during a rally marks a squeeze. Watching the balance between the two on PEPE helps you avoid entering right before a cascade — or spot the moment one has burned itself out.</p>
-    <p>If you trade PEPE with leverage, know your liquidation price <em>before</em> you enter — the free <a href="/calculators?c=liq">liquidation calculator</a> does it in seconds (and the <a href="/calculators?c=cross">cross-margin version</a> shows how your wallet balance moves it). Better yet, rehearse the trade first on the <a href="/paper-trade?coin=PEPE">paper-trading terminal</a> at the live PEPE price with zero risk, and keep an eye on the <a href="/calendar/">economic calendar</a> — most violent liquidation cascades happen around FOMC and CPI releases.</p>
+    <p>If you trade PEPE with leverage, know your liquidation price <em>before</em> you enter — the free <a href="/pepe-liquidation-calculator/">PEPE liquidation calculator</a> does it in seconds (and the <a href="/calculators?c=cross">cross-margin version</a> shows how your wallet balance moves it). Better yet, rehearse the trade first on the <a href="/paper-trade?coin=PEPE">paper-trading terminal</a> at the live PEPE price with zero risk, and keep an eye on the <a href="/calendar/">economic calendar</a> — most violent liquidation cascades happen around FOMC and CPI releases.</p>
+
+    <h2>Where PEPE liquidations cluster</h2>
+    <p>The 24-hour total above tells you <em>how much</em> Pepe leverage was wiped; the <a href="/pepe-liquidation-map/">PEPE liquidation map</a> shows <em>where</em> — plotting every long (red) and short (green) liquidation on the price chart with a level-by-level histogram, so you can see which price bands are magnets for the next cascade. For the wider picture, the <a href="/liquidations/">all-coin liquidations hub</a> ranks PEPE against every other market, and the <a href="/open-interest/">open-interest</a> and <a href="/funding/">funding</a> pages show whether leverage is building back up or unwinding.</p>
   </article>
   <footer>© MarginPad · <a href="/">Tools</a> · <a href="/liquidations/">Liquidations</a> · <a href="/rekt/">Rekt</a> · <a href="/blog/">Blog</a> · Not financial advice</footer>
 </div>
 <script>
 (function(){
-  try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u);}catch(e){}
+  try{var u='/api/track?t=pageview&p='+encodeURIComponent(location.pathname);if(document.referrer)u+='&r='+encodeURIComponent(document.referrer);
+  var es='';try{var ss=sessionStorage.getItem('mp_src');if(ss)es=ss;else{var q=new URLSearchParams(location.search||'');if(q.get('gclid')||q.get('gbraid')||q.get('wbraid'))es='google-ads';else if(q.get('msclkid'))es='bing-ads';else if(q.get('utm_source'))es=q.get('utm_source')+(q.get('utm_medium')?' / '+q.get('utm_medium'):'');else if(q.get('fbclid'))es='facebook';else if(q.get('twclid'))es='twitter';else if(q.get('ttclid'))es='tiktok';else if(q.get('ref'))es=q.get('ref');if(!es&&document.referrer){try{var h=new URL(document.referrer).hostname.replace(/^www\./,'');if(h&&h!=='marginpad.io')es=h;}catch(e2){}}es=(es||'').slice(0,40);try{sessionStorage.setItem('mp_src',es);}catch(e3){}}}catch(e4){}
+  var s0='';try{var r0=localStorage.getItem('mp_src0');if(r0){var o0=JSON.parse(r0);if(o0&&o0.s&&(Date.now()-(+o0.ts||0))<=7776e6)s0=String(o0.s).slice(0,40);}}catch(e5){}
+  if(es&&!s0){try{localStorage.setItem('mp_src0',JSON.stringify({s:es,ts:Date.now()}));}catch(e6){}}
+  if(es)u+='&src='+encodeURIComponent(es);else if(s0)u+='&s0='+encodeURIComponent(s0);
+  if(navigator.sendBeacon)navigator.sendBeacon(u);else fetch(u);}catch(e){}
   function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(1)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
   function render(d){
     var el=document.getElementById('lqCoin');if(!el||!d||!d.coins){if(el)el.innerHTML='<div class="lqload">Data unavailable right now — try the <a href="/rekt/">live feed</a>.</div>';return;}

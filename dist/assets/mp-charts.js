@@ -941,7 +941,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     try{var _vr=w.chart.timeScale().getVisibleLogicalRange();if(_vr&&w.bars&&w.bars.length&&_vr.to<w.bars.length-3)return;}catch(e){} // user scrolled into history → don't setData under them (drops paginated bars)
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
       if(w.dead||w.sym!==sym||w.tf!==tf||!w.candle||!kd||!kd.length)return;
-      kd=sanitizeBars(kd);
+      kd=sanitizeBars(kd);w._hole=0;/* server answered — the diff below heals any missing minutes (or the hole is legit per the authority) */
       /* WINDOW-ALIGNED diff re-sync (2026-08-12, owner: a closed candle must NEVER visibly change). Compare by
          TIME over the overlap (a roll shifts the server window → the old index/length diff full-repainted every
          minute); never regress our live forming bar to the edge-cached snapshot; append new trailing bars via
@@ -951,6 +951,11 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       else{
         var _lastA=w.bars[w.bars.length-1],_lastK=kd[kd.length-1],_tmap={};
         for(var _i2=0;_i2<w.bars.length;_i2++)_tmap[w.bars[_i2].time]=w.bars[_i2];
+        /* tick estimate from the data itself (max decimals over the last ~40 bars): the open tolerance below must be
+           TICK-relative, not only %-relative — one HYPE tick ($0.01 at $57 = 0.0175%) blew past the 0.005% gate and
+           forced a visible full-repaint heal every resync after a roll (probe 2026-08-15), while one BTC tick is 0.00016%. */
+        var _tkD=0;for(var _t5=Math.max(0,kd.length-40);_t5<kd.length;_t5++){var _b5=kd[_t5],_v5=[_b5.open,_b5.high,_b5.low,_b5.close];for(var _t6=0;_t6<4;_t6++){var _s5=String(_v5[_t6]),_e5=_s5.indexOf('e-'),_d5=0;if(_e5>=0){_d5=(+_s5.slice(_e5+2)||0)+(((_s5.slice(0,_e5).split('.')[1])||'').length);}else{var _p5=_s5.indexOf('.');_d5=_p5<0?0:_s5.length-_p5-1;}if(_d5>_tkD)_tkD=_d5;}}
+        var _otol=function(o){var a=Math.abs(o);return Math.max(a*5e-5,Math.min(Math.pow(10,-_tkD)*1.6,a*0.001));};/* allow 1 tick (not 2+), hard-capped at 0.1% so a degenerate decimals estimate can't mask a real divergence */
         for(var _k2=0;_k2<kd.length;_k2++){var _b=kd[_k2];
           if(_b.time>_lastA.time){_app.push(_b);continue;}
           /* the snapshot's LAST bar = the server's (possibly stale-cached, PARTIAL) forming bar — never an
@@ -958,7 +963,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
           if(_k2===kd.length-1&&_b.time<=_lastA.time)continue;
           var _a2=_tmap[_b.time];
           if(!_a2){if(_b.time>=w.bars[0].time){_mism=true;break;}continue;}
-          if(Math.abs(_a2.open-_b.open)>Math.abs(_b.open)*5e-5||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}/* open tolerates ~a few ticks (0.005%): Bybit's kline open can differ one tick from the public trade stream (internal matching the feed doesn't carry) — strict equality forced an invisible \$0.1 'heal' repaint every minute. h/l/c stay strictly exact; a REAL open divergence (venue flap, >0.005%) still heals. */
+          if(Math.abs(_a2.open-_b.open)>_otol(_b.open)||_a2.high!==_b.high||_a2.low!==_b.low||_a2.close!==_b.close){_mism=true;break;}}/* open tolerates max(0.005%, 1 tick): Bybit's kline open can differ one tick from the public trade stream (internal matching the feed doesn't carry) — strict equality forced an invisible 'heal' repaint every minute, and a %-only gate re-broke it on low-priced symbols (HYPE). h/l/c stay strictly exact; a REAL open divergence (>=2 ticks and >0.005%) still heals. */
         if(_mism){_rm=2;w.bars=kd;if(_lastK.time===_lastA.time)w.bars[w.bars.length-1]=_lastA;else if(_lastA.time>_lastK.time){if(_tmap[_lastK.time])w.bars[w.bars.length-1]=_tmap[_lastK.time];w.bars.push(_lastA);}}/* heal history but keep our fresher forming bar AND our trade-finalized copy of the minute the lagging snapshot still shows as partial */
         else if(_app.length){_rm=1;w.bars=w.bars.concat(_app);}
       }
@@ -989,7 +994,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function liveTick(w,p){ if(!w.candle||!w.lastBar)return;
     var _wsn=window.mpSrvNow?window.mpSrvNow():Date.now();
     var ivSec=parseInt(w.tf,10)*60,nowBar=Math.floor(_wsn/1000/ivSec)*ivSec,nb=false; // server-clock bucketing (skewed device clocks rolled bars at wrong boundaries)
-    if(nowBar-w.lastBar.time>ivSec*1.5){ if(!w._gapT||Date.now()-w._gapT>8000){w._gapT=Date.now();refreshData(w);} if(!(p>0)||nowBar-w.lastBar.time>ivSec*30)return; } /* klines behind → refetch; but with a live price and a modest gap (≤30 bars) fall through to roll a LIVE candle so the chart keeps moving instead of freezing while klines catches up. missed >1 interval (throttled/backgrounded tab, feed pause) → refetch the real candles instead of leaving a hole. Checked BEFORE the p>0 bail so a stalled feed still refetches (mirrors the Paper Trade fix). */
+    if(nowBar-w.lastBar.time>ivSec*1.5){ w._hole=1;/* remember the hole: once a live bar rolls below, lastBar looks current and every gap check goes blind — the watchdog keeps retrying refreshData off this flag until a klines fetch actually SUCCEEDS (mobile 4G wake drops the first one) */ if(!w._gapT||Date.now()-w._gapT>8000){w._gapT=Date.now();refreshData(w);} if(!(p>0)||nowBar-w.lastBar.time>ivSec*30)return; } /* klines behind → refetch; but with a live price and a modest gap (≤30 bars) fall through to roll a LIVE candle so the chart keeps moving instead of freezing while klines catches up. missed >1 interval (throttled/backgrounded tab, feed pause) → refetch the real candles instead of leaving a hole. Checked BEFORE the p>0 bail so a stalled feed still refetches (mirrors the Paper Trade fix). */
     if(!(p>0))return;
     /* ROLL GRACE: a tickers/poll event can cross the boundary before the closing minute's final publicTrade
        batch lands — hold the roll until the first NEW-minute trade (stream is time-ordered → old minute is then
@@ -1001,17 +1006,17 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
          exactly the authoritative kline and never changes again (1m: full OHLC; >1m: final-minute close + extremes). */
       try{var _TKf=window.mpTicks1m&&window.mpTicks1m[w.sym];if(_TKf){var _fbs=[_TKf.cur,_TKf.prev],_fch=false;
         for(var _fi=0;_fi<2;_fi++){var _fb=_fbs[_fi];if(!_fb)continue;if(_fb.t<w.lastBar.time||_fb.t>=w.lastBar.time+ivSec)continue;
-          if(ivSec===60){if(w.lastBar.open!==_fb.o||w.lastBar.high!==_fb.h||w.lastBar.low!==_fb.l||w.lastBar.close!==_fb.c){w.lastBar.open=_fb.o;w.lastBar.high=_fb.h;w.lastBar.low=_fb.l;w.lastBar.close=_fb.c;_fch=true;}}
+          if(ivSec===60){if(w.lastBar.high!==_fb.h||w.lastBar.low!==_fb.l||w.lastBar.close!==_fb.c){w.lastBar.high=_fb.h;w.lastBar.low=_fb.l;w.lastBar.close=_fb.c;_fch=true;}}/* h/l/c from the stream; open is NOT the bucket's first trade — Bybit kline open = prevClose EXACTLY (measured 0/998 gaps, 2026-08-15), so the roll-set open already matches the authority */
           else{if(_fb.h>w.lastBar.high){w.lastBar.high=_fb.h;_fch=true;}if(_fb.l<w.lastBar.low){w.lastBar.low=_fb.l;_fch=true;}if(_fb.t===w.lastBar.time+ivSec-60&&w.lastBar.close!==_fb.c){w.lastBar.close=_fb.c;_fch=true;}}}
         if(_fch){if(w.lastBar.high<Math.max(w.lastBar.open,w.lastBar.close))w.lastBar.high=Math.max(w.lastBar.open,w.lastBar.close);if(w.lastBar.low>Math.min(w.lastBar.open,w.lastBar.close))w.lastBar.low=Math.min(w.lastBar.open,w.lastBar.close);try{w.candle.update(w.lastBar);}catch(_){}}
       }}catch(_){}
       var _nbk=null;try{var _TKo=window.mpTicks1m&&window.mpTicks1m[w.sym];if(_TKo&&_TKo.cur&&_TKo.cur.t===nowBar)_nbk=_TKo.cur;}catch(_){}
       var _wop=w.lastBar.close,_wspk=(w._lgp>0&&Math.abs(p-w._lgp)/w._lgp>0.025),_wcl=_wspk?_wop:p;
-      if(_nbk){w.lastBar={time:nowBar,open:_nbk.o,high:_nbk.h,low:_nbk.l,close:_nbk.c};w._lgp=_nbk.c;w._rej=0;}/* exchange convention: the new bar opens at its FIRST TRADE, exact extremes from the stream */
-      else{w.lastBar={time:nowBar,open:_wop,high:Math.max(_wop,_wcl),low:Math.min(_wop,_wcl),close:_wcl};if(!_wspk)w._lgp=p;w._rej=0;}/* no bucket yet → contiguous prev-close open, retro-corrected on the first trade */
+      if(_nbk){w.lastBar={time:nowBar,open:_wop,high:Math.max(_nbk.h,_wop),low:Math.min(_nbk.l,_wop),close:_nbk.c};w._lgp=_nbk.c;w._rej=0;}/* open = prevClose ALWAYS (Bybit kline convention — measured 0/998 open!=prevClose gaps, 2026-08-15; the old first-trade open drew phantom gaps between candles); extremes/close stay trade-exact and must contain the open */
+      else{w.lastBar={time:nowBar,open:_wop,high:Math.max(_wop,_wcl),low:Math.min(_wop,_wcl),close:_wcl};if(!_wspk)w._lgp=p;w._rej=0;}/* no bucket yet → same prev-close open */
       w.bars.push(w.lastBar);nb=true;}
     else{if(!_grace){if(w._lgp>0&&Math.abs(p-w._lgp)/w._lgp>0.025){if((w._rej=(w._rej||0)+1)<3)return;}/* reject a lone >2.5% print that would ratchet a fake wick */w._lgp=p;w._rej=0;w.lastBar.close=p;if(p>w.lastBar.high)w.lastBar.high=p;if(p<w.lastBar.low)w.lastBar.low=p;}/* during the roll grace p may already be a NEW-minute price — never bake it into the closing bar */
-      try{var _TKw=window.mpTicks1m&&window.mpTicks1m[w.sym];if(_TKw&&w._lgp>0){var _mw=[_TKw.cur,_TKw.prev];for(var _wi9=0;_wi9<2;_wi9++){var _wk=_mw[_wi9];if(!_wk)continue;if(_wk.t<w.lastBar.time||_wk.t>=w.lastBar.time+ivSec)continue;if(_wk.t===w.lastBar.time&&w.lastBar.open!==_wk.o){w.lastBar.open=_wk.o;if(_wk.o>w.lastBar.high)w.lastBar.high=_wk.o;if(_wk.o<w.lastBar.low)w.lastBar.low=_wk.o;}/* retro-open: adopt the exchange open (first trade of the interval) */if(_wk.h>w.lastBar.high&&_wk.h<w._lgp*1.025)w.lastBar.high=_wk.h;if(_wk.l<w.lastBar.low&&_wk.l>w._lgp*0.975)w.lastBar.low=_wk.l;}}}catch(_){} /* exact trade-stream extremes (exchange-stamped) → wicks match the authoritative kline */}
+      try{var _TKw=window.mpTicks1m&&window.mpTicks1m[w.sym];if(_TKw&&w._lgp>0){var _mw=[_TKw.cur,_TKw.prev];for(var _wi9=0;_wi9<2;_wi9++){var _wk=_mw[_wi9];if(!_wk)continue;if(_wk.t<w.lastBar.time||_wk.t>=w.lastBar.time+ivSec)continue;/* NO retro-open: Bybit kline open = prevClose (measured), the first trade is NOT the open — adopting it drew a phantom gap between candles */if(_wk.h>w.lastBar.high&&_wk.h<w._lgp*1.025)w.lastBar.high=_wk.h;if(_wk.l<w.lastBar.low&&_wk.l>w._lgp*0.975)w.lastBar.low=_wk.l;}}}catch(_){} /* exact trade-stream extremes (exchange-stamped) → wicks match the authoritative kline */}
     if(nb){w._disp=w.lastBar.close;try{w.candle.update(w.lastBar);}catch(e){}applyInds(w);try{if(!w._userPS)w.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){} } // a fresh bar appears instantly + re-fit the price scale so candles never get clipped to "half" if the vertical scale drifted/locked over a long session
     else startSmooth(); // forming-bar close is eased toward the true price by the rAF loop → it glides at 60fps instead of snapping
     if(w.dr&&w.dr.shapes&&w.dr.shapes.length&&w.dr.redraw)w.dr.redraw();
@@ -1046,7 +1051,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     for(var i=0;i<wins.length;i++){ var w=wins[i]; if(w.dead||!w.candle)continue;
       try{var vr=w.chart.timeScale().getVisibleLogicalRange();if(!w._userPS&&(!vr||!w.bars||!w.bars.length||vr.to>=w.bars.length-2))w.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}
       // catch a stalled CHART even when the price source LOOKS fresh: newest bar >1.5 intervals behind now → force a re-sync
-      try{if(w.lastBar){var _iv=parseInt(w.tf,10)*60,_nb=Math.floor(now/1000/_iv)*_iv;if(_nb-w.lastBar.time>_iv*1.5&&(!w._gapT||now-w._gapT>10000)){w._gapT=now;refreshData(w);continue;}}}catch(e){}
+      try{if(w.lastBar){var _iv=parseInt(w.tf,10)*60,_nb=Math.floor(now/1000/_iv)*_iv;if((_nb-w.lastBar.time>_iv*1.5||w._hole)&&(!w._gapT||now-w._gapT>10000)){w._gapT=now;refreshData(w);continue;}}}catch(e){}
       var src=Math.max(w._wsT||0,w._pollT||0);
       if(!src||now-src>15000){ try{if(window.mpWS)window.mpWS.sub(w.sym);}catch(e){} w._pollT=now;/* claim the slot so the next sweep doesn't double-fire while the fetch is in flight */
         (function(w){fetch('/api/price?symbol='+encodeURIComponent(w.sym)+window.__mpPQ('cht',w.sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(w.dead)return;var px=j&&+(j.price||j.p||j.last||0);if(px>0){w._pollT=Date.now();liveTick(w,px);}else if(!w._gapT||Date.now()-w._gapT>12000){w._gapT=Date.now();refreshData(w);}});})(w);

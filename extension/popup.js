@@ -66,6 +66,7 @@ function calcTp(){
   out.textContent='$'+fmtUSD(px); out.className='big';
   $('tpMove').textContent=(long?'+':'−')+Math.abs(roe/lev).toFixed(2)+'% price';
 }
-function calcAll(){ calcLiq(); calcSize(); calcPnl(); calcDca(); calcTp(); }
+function syncResColors(){ document.querySelectorAll('.res').forEach(r => { const b = r.querySelector('.big'); r.classList.toggle('neg', !!(b && b.classList.contains('neg'))); }); }
+function calcAll(){ calcLiq(); calcSize(); calcPnl(); calcDca(); calcTp(); syncResColors(); }
 document.querySelectorAll('input[type=number]').forEach(i => i.addEventListener('input', calcAll));
 calcAll();

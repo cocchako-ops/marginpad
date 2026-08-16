@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "MarginPad — Crypto Liquidation & Position Size Calculator",
-  "version": "1.0.0",
-  "description": "Instant crypto futures calculators in your toolbar: liquidation price, position size, PnL, DCA & take-profit. No signup.",
+  "version": "1.1.0",
+  "description": "Instant crypto futures calculators in your toolbar: liquidation price, position size, PnL, DCA & take-profit. Offline, no signup, no tracking.",
   "action": {
     "default_popup": "popup.html",
     "default_title": "MarginPad Calculators",

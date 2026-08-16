@@ -486,4 +486,43 @@
   <url><loc>https://marginpad.io/swap</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/blog/moon-trading-platform-review/</loc><lastmod>2026-06-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://marginpad.io/vault/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/crypto-profit-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/position-size-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/leverage-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/crypto-break-even-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/stop-loss-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/crypto-funding-cost-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/crypto-fee-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/crypto-roi-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/crypto-drawdown-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/crypto-compound-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/crypto-dca-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/crypto-win-rate-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/crypto-margin-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/risk-reward-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/apr-apy-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/crypto-slippage-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/paper-trading/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://marginpad.io/leverage-trading-simulator/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://marginpad.io/crypto-trading-simulator-no-sign-up/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://marginpad.io/best-crypto-paper-trading-platforms/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://marginpad.io/mexc-liquidation-calculator/</loc><lastmod>2026-08-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/mexc-pnl-calculator/</loc><lastmod>2026-08-16</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/best-liquidation-heatmap-tools/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://marginpad.io/hyperliquid-liquidation-calculator/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://marginpad.io/crypto-liquidations-today/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://marginpad.io/ton-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/atom-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/apt-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/arb-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/op-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/inj-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/sei-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/fil-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/uni-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/aave-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/bonk-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/floki-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/ordi-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/tao-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>

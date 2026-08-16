@@ -2,20 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<script>/* cold-load waterfall fix: fire the first chart's klines fetch NOW, in parallel with the bundle download, instead of after boot (~1.1s serial). loadKlines picks up this promise (key match). Gated to /paper-trade (+ optional trailing slash — the worker serves both) only; app.html serves 6 routes, no wasted request elsewhere. ?pre=0 is a MEASUREMENT-ONLY switch to repeat before/after on prod — it must NEVER gate anything but this preload. __preR='fired' is the denominator: if loadKlines never runs (bounce before boot / a branch that never reaches the chart), it stays 'fired' = a preload spent for nothing, distinct from hit/miss. */(function(){try{if(!/^\/paper-trade\/?$/.test(location.pathname))return;if(/[?&]pre=0(&|$)/.test(location.search))return;/* prod-live 2026-07-30 after the KEEP decision (n=299 baseline collected). ?pre=0 stays as the before/after measurement switch. */var m=location.search.match(/[?&]coin=([A-Za-z0-9]+)/i);var sym=(m&&m[1])?m[1].toUpperCase():'BTC';try{if(!m){var ls=localStorage.getItem('mp_pt_sym');if(ls)sym=String(ls).toUpperCase();}}catch(e){}/* returning users sit on a SAVED symbol (mp_pt_sym) — guessing BTC made 77% of preloads a wasted request (measured 2026-08-03); read the exact state loadKlines will ask for */var tf='5';window.__preK={key:sym+'|'+tf,p:fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})};window.__preR='fired';}catch(e){}})();</script>
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
-
-    ym(110941944, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
 <meta name="color-scheme" content="dark" />
 <style>html{background:#0a0b0d;color-scheme:dark}</style>
 <!-- crash/error beacon: counts JS errors & unhandled rejections so the admin dashboard can see how many users hit a broken page -->
@@ -110,10 +96,8 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=c6600368">
+<link rel="stylesheet" href="/assets/home.css?v=28c7ea07">
 
-
-<script defer src="/assets/sentry.js"></script>
 </head>
 <body>
 <script>
@@ -254,11 +238,11 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
     <div class="heat-ctrl heat-ctrl2">
       <span class="heat-levlbl" data-i18n="levLabel">Leverage liquidation levels (est.)</span>
       <div class="heat-wins heat-levs">
-        <button class="heat-win heat-lev" data-lev=1efc41ed"5" type="button">5×</button>
-        <button class="heat-win heat-lev" data-lev=1efc41ed"10" type="button">10×</button>
-        <button class="heat-win heat-lev active" data-lev=1efc41ed"25" type="button">25×</button>
-        <button class="heat-win heat-lev" data-lev=1efc41ed"50" type="button">50×</button>
-        <button class="heat-win heat-lev active" data-lev=1efc41ed"100" type="button">100×</button>
+        <button class="heat-win heat-lev" data-lev="5" type="button">5×</button>
+        <button class="heat-win heat-lev" data-lev="10" type="button">10×</button>
+        <button class="heat-win heat-lev active" data-lev="25" type="button">25×</button>
+        <button class="heat-win heat-lev" data-lev="50" type="button">50×</button>
+        <button class="heat-win heat-lev active" data-lev="100" type="button">100×</button>
       </div>
     </div>
     <div class="heat-stage">
@@ -345,6 +329,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
           </div>
           <div id="ptChart"></div>
         </div>
+        <div class="ptt-recent" id="ptRecent" aria-label="Recently traded pairs" hidden></div>
         <div class="ptt-side">
           <div class="ptt-form">
             <div class="pt2-top">
@@ -815,7 +800,6 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 <script defer src="/assets/mp-auth.js"></script>
-<script defer src="/assets/mp-profile.js"></script>
 
 <div id="mpStreak" class="mp-streak" hidden></div>
 
@@ -823,7 +807,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=c6600368"></script>
+<script src="/assets/home.js?v=28c7ea07"></script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

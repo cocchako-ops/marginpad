@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
+<meta charset="UTF-8" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>ONDO Perpetual Futures — Prijs, Funding, Open Interest en Liquidaties | MarginPad</title>
 <meta name="description" content="Ondo (ONDO) perpetual futures live: prijs, funding-rate, open interest, long/short-positionering en 24u-liquidaties. Trade ONDOUSDT op topexchanges. Gratis, zonder registratie." />
 <meta name="keywords" content="ONDO perpetual, Ondo futures, ONDO funding rate, ONDO open interest, ONDO liquidaties, ONDO long short ratio, ONDOusdt perp" />
@@ -39,9 +39,9 @@
 <meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="manifest" href="/site.webmanifest" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
 <style>
   .cdhero{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:12px 0 4px}
@@ -93,6 +93,8 @@
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ONDO Perpetual Futures Dashboard","url":"https://marginpad.io/nl/coin/ondo/","applicationCategory":"FinanceApplication","operatingSystem":"Web","dateModified":"2026-08-13","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-08-13","mainEntity":[{"@type":"Question","name":"Wat is een ONDO perpetual future?","acceptedAnswer":{"@type":"Answer","text":"Een ONDO-perpetual-future (perp) laat je Ondo traden met hefboom en zonder vervaldatum. De funding-rate houdt de perp-prijs verankerd aan spot — positieve funding betekent dat ONDO-longs aan shorts betalen (overvolle longs), negatief het omgekeerde. Open interest is de totale waarde van open ONDO-posities; een snelle stijging betekent dat er nieuwe hefboom binnenkomt. Liquidaties tonen waar overgehefboomde ONDO-traders gedwongen gesloten werden — long-liquidaties bij dalingen, short-liquidaties bij rally’s."}},{"@type":"Question","name":"Hoe lees je ONDO funding, open interest en liquidaties samen?","acceptedAnswer":{"@type":"Answer","text":"Lees de vier cijfers samen. Sterk positieve funding plus eenzijdige long-positionering en stijgende open interest is een overvolle long-setup die scherp kan ontladen. Een piek in long-liquidaties markeert vaak een lokale ONDO-bodem; een golf short-liquidaties kan een squeeze omhoog voeden. Bevestig entries op de technische screener en bepaal je omvang met de ONDO-liquidatiecalculator, zodat hefboom je nooit dichter bij liquidatie brengt dan je bedoelt."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/nl/"},{"@type":"ListItem","position":2,"name":"Munten","item":"https://marginpad.io/screener"},{"@type":"ListItem","position":3,"name":"ONDO","item":"https://marginpad.io/nl/coin/ondo/"}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -199,5 +201,6 @@
   var ADS_CONV_LABEL='';/* paste your Google Ads conversion label here once created, e.g. 'abCdEf1gH' */
   Array.prototype.forEach.call(document.querySelectorAll('[data-ex]'),function(a){a.addEventListener('click',function(){try{var ex=a.getAttribute('data-ex');if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathname});if(ADS_CONV_LABEL)gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon)navigator.sendBeacon(u);else (new Image()).src=u;}catch(e){}});});
 })();</script>
+<script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

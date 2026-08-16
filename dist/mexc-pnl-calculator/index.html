@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>MEXC PnL Calculator (2026) — Profit, ROI & ROE | MarginPad</title>
+<meta name="description" content="Free MEXC PnL calculator: enter entry, exit and leverage to see profit, ROI and leveraged ROE for any MEXC futures trade in one click, long or short. No signup." />
+<meta name="keywords" content="mexc pnl calculator, mexc profit calculator, mexc roi calculator, mexc futures pnl, mexc roe calculator" />
+<link rel="canonical" href="https://marginpad.io/mexc-pnl-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/mexc-pnl-calculator/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/mexc-pnl-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/mexc-pnl-calculator/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/mexc-pnl-calculator/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/mexc-pnl-calculator/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/mexc-pnl-calculator/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/mexc-pnl-calculator/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/mexc-pnl-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/mexc-pnl-calculator/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="MEXC PnL Calculator (2026) — Profit, ROI & ROE" />
+<meta property="og:description" content="Free MEXC PnL calculator: enter entry, exit and leverage to see profit, ROI and leveraged ROE for any MEXC futures trade in one click, long or short. No signup." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/mexc-pnl-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+  .lvtab{width:100%;border-collapse:collapse;margin:14px 0 18px;font-size:14px}
+  .lvtab th,.lvtab td{padding:10px 13px;border-bottom:1px solid var(--line);text-align:left}
+  .lvtab th{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)}
+  .lvtab td{font-family:'Space Mono',monospace;color:var(--ink)}
+  .lvtab td:first-child{font-family:'Bricolage Grotesque',sans-serif;font-weight:700}
+  .lvtab tr.self td{background:rgba(194,246,74,.05)}
+  .lvtab .you{font-family:'Space Mono',monospace;font-size:9px;color:#c2f64a;text-transform:uppercase;letter-spacing:.05em;margin-left:5px}
+  .avail{display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:12px;padding:6px 11px;border-radius:8px;border:1px solid var(--line-bright);margin:2px 0 14px}
+  .avail.no{color:#ff8a80}.avail.yes{color:#34d99a}
+  @media(max-width:600px){.lvtab{display:block;overflow-x:auto;white-space:nowrap}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"MEXC PnL Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"https://marginpad.io/mexc-pnl-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free MEXC PnL calculator: enter entry, exit and leverage to see profit, ROI and leveraged ROE for any MEXC futures trade in one click, long or short. No signup."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I calculate PnL on MEXC?","acceptedAnswer":{"@type":"Answer","text":"PnL = (exit - entry) x size for a long, or (entry - exit) x size for a short. ROE multiplies the price ROI by your leverage."}},{"@type":"Question","name":"What is ROE on MEXC futures?","acceptedAnswer":{"@type":"Answer","text":"ROE is the return on the margin you posted, amplified by leverage. A 10% move at 10x leverage is roughly a 100% return on margin."}},{"@type":"Question","name":"Do MEXC fees reduce my PnL?","acceptedAnswer":{"@type":"Answer","text":"Yes. MEXC charges about 0.04% taker per side plus funding every 8 hours, so net profit is a little below the raw price PnL. This tool shows gross PnL; subtract roughly two taker fees for a round trip."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"MEXC PnL Calculator","item":"https://marginpad.io/mexc-pnl-calculator/"}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / MEXC PnL calculator</div>
+  <article>
+    <h1>MEXC PnL Calculator</h1>
+    <p class="lead">Calculate your profit and loss, ROI and leveraged ROE for any MEXC futures trade — long or short. Free, instant, no signup.</p>
+    <p style="font-family:'Space Mono',monospace;font-size:13px;color:var(--ink-dim);margin:-4px 0 14px" id="livePx"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>Live BTC price loading…</p>
+    <div class="calc">
+      <div class="calc-in">
+        <div class="seg" id="pnlSeg"><button class="on" data-side="long">Long</button><button data-side="short">Short</button></div>
+        <label>Entry price (USD)</label><input id="pnlEntry" type="number" value="60000" step="any">
+        <label>Exit price (USD)</label><input id="pnlExit" type="number" value="66000" step="any">
+        <label>Position size (coin)</label><input id="pnlQty" type="number" value="0.5" step="any">
+        <label>Leverage (for ROE)</label><input id="pnlLev" type="number" value="10" step="any">
+      </div>
+      <div class="calc-out">
+        <div class="col">Profit / Loss</div><div class="big" id="pnlOut">—</div>
+        <div class="rr"><span>Price ROI</span><b id="pnlRoi">—</b></div>
+        <div class="rr"><span>ROE (on margin)</span><b id="pnlRoe">—</b></div>
+      </div>
+    </div>
+    <a class="exbtn" data-ex="MEXC" style="background:undefined;color:undefined" href="https://www.mexc.com/" target="_blank" rel="sponsored noopener noreferrer">Trade on MEXC →</a>
+    <span class="avail no">✕ Non-US · base taker 0.04%</span>
+
+    <h2>How PnL and ROE work on MEXC</h2>
+    <p>MEXC lists over 1,000 perpetual contracts — the widest futures menu of any major venue — with headline leverage up to 500x on select majors and some of the lowest maker fees in the market. Your raw profit on a MEXC trade is the price move times your position size: <code>(Exit − Entry) × Size</code> for a long, and the reverse for a short. <b>Price ROI</b> is the percentage the asset moved; <b>ROE</b> is your return on the margin you actually posted, which MEXC's leverage multiplies. MEXC competes on breadth and price: more than 1,000 USDT-perpetual pairs (new listings appear here first), maker fees from 0.01% down to 0% on selected pairs, and up to 500x leverage on BTC-class majors. The flip side of 500x is a razor-thin liquidation buffer — at that leverage a roughly 0.2% adverse move ends the position, which is exactly what this calculator makes visible before you try it with money. Maintenance margin on BTC starts around 0.5% at retail position sizes and tiers up with size.</p>
+
+    <h2>Worked example</h2>
+    <p>A 0.5-coin long opened at <code>$60,000</code> and closed at <code>$66,000</code> at 10× leverage:</p>
+    <div class="example">
+      <div class="row"><span>Profit (gross)</span><b>+$3,000.00</b></div>
+      <div class="row"><span>Price ROI</span><b>+10.00%</b></div>
+      <div class="row"><span>ROE (10×)</span><b>+100.00%</b></div>
+    </div>
+    <p>Leverage cuts both ways — the same move down would be a 100% loss of margin. Plan your exit and check your <a href="/mexc-liquidation-calculator/">MEXC liquidation price</a> first.</p>
+
+    <h2>ROE by leverage — same 10% move</h2>
+    <p>ROE is just the price move multiplied by leverage. A single 10% winning move on MEXC returns, on the margin you posted:</p>
+    <table class="lvtab"><thead><tr><th>Leverage</th><th>ROE on a +10% move</th><th>ROE on a −10% move</th></tr></thead><tbody>
+      <tr><td>5×</td><td style="color:#34d99a">+50%</td><td style="color:#ff8a80">−50%</td></tr><tr><td>10×</td><td style="color:#34d99a">+100%</td><td style="color:#ff8a80">−100%</td></tr><tr><td>25×</td><td style="color:#34d99a">+250%</td><td style="color:#ff8a80">−250%</td></tr><tr><td>50×</td><td style="color:#34d99a">+500%</td><td style="color:#ff8a80">−500%</td></tr><tr><td>500×</td><td style="color:#34d99a">+5,000%</td><td style="color:#ff8a80">−5,000%</td></tr>
+    </tbody></table>
+    <p>The higher the leverage, the faster ROE compounds — and the smaller the move that liquidates you. That symmetry is why position sizing beats chasing leverage.</p>
+
+    <h2>Fees &amp; funding on MEXC</h2>
+    <p>This tool shows <b>gross</b> PnL. On MEXC you also pay about <b>0.04% taker</b> per side (so roughly <b>0.080%</b> for a round trip at market), plus <b>funding</b> every 8 hours while the position is open. On a fast scalp the fees can outweigh a small edge, which is why makers (resting limit orders at <b>0.01%</b>) keep more of their profit. Subtract those costs from the figure above for your true net result.</p>
+
+    <h2>FAQ</h2>
+    <h3>How is ROE different from ROI on MEXC?</h3>
+    <p>Price ROI is the raw % move. ROE multiplies it by your leverage — it is your return on posted margin. Fees and funding are not included in the gross figure.</p>
+    <h3>Does MEXC show PnL automatically?</h3>
+    <p>MEXC shows live PnL on open positions, but this tool lets you plan and compare scenarios <em>before</em> you trade — and see how leverage changes the ROE.</p>
+    <h3>Is MEXC available in the US?</h3>
+    <p>No — Global; not available to residents of the United States and several restricted jurisdictions. US traders can use a domestic venue such as <a href="/kraken-pnl-calculator/">Kraken</a>.</p>
+
+    <h2>More calculators</h2>
+    <div class="related">
+      <a href="/calculators">All calculators</a>
+      <a href="/mexc-liquidation-calculator/">MEXC liquidation</a>
+      <a href="/calculators?c=tp">Take-profit</a>
+      <a href="/bybit-pnl-calculator/">Bybit PnL</a>
+      <a href="/binance-pnl-calculator/">Binance PnL</a>
+      <a href="/okx-pnl-calculator/">OKX PnL</a>
+      <a href="/kucoin-pnl-calculator/">KuCoin PnL</a>
+      <a href="/gate-pnl-calculator/">Gate PnL</a>
+      <a href="/kraken-pnl-calculator/">Kraken PnL</a>
+      <a href="/bitget-pnl-calculator/">Bitget PnL</a>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Educational tool, not financial advice. Fees and availability are approximate and change by tier, region and over time — confirm on MEXC. The MEXC link is a referral link; we may earn a commission at no cost to you.</p>
+<script>(function(){var el=document.getElementById('livePx');if(!el)return;fetch('/api/price?symbol=BTC').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.price>0){var p=+d.price;el.innerHTML='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>Live BTC price: <b style="color:#c2f64a">$'+p.toLocaleString('en-US',{maximumFractionDigits:2})+'</b> — prefilled below';var e=document.getElementById('liqEntry')||document.getElementById('pnlEntry');if(e){e.value=Math.round(p);e.dispatchEvent(new Event('input'));}}else{el.style.display='none';}}).catch(function(){el.style.display='none';});})();</script>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+  </footer>
+</div>
+<script src="/assets/pnlcalc.js"></script>
+<script>
+/* affiliate-click conversion signal — Google Ads + GA4 + admin dashboard. The revenue proxy ad bidding optimises toward. */
+(function(){var ADS_CONV_LABEL='';/* paste your Google Ads conversion label here once created, e.g. 'abCdEf1gH' */
+Array.prototype.forEach.call(document.querySelectorAll('a.exbtn,[data-ex]'),function(a){a.addEventListener('click',function(){try{
+var ex=(a.getAttribute('data-ex')||a.textContent||'').replace(/Trade on|→/g,'').trim();
+if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathname});if(ADS_CONV_LABEL)gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}
+var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon)navigator.sendBeacon(u);
+}catch(_){}});});})();
+</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

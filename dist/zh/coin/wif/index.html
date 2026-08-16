@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+<meta charset="UTF-8" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>WIF 永续合约 — 价格、资金费、未平仓与强平 | MarginPad</title>
 <meta name="description" content="实时 dogwifhat（WIF）永续合约：价格、资金费率、未平仓、多空持仓与 24 小时强平。在顶级交易所交易 WIFUSDT。免费，无需注册。" />
 <meta name="keywords" content="WIF 永续, dogwifhat 合约, WIF 资金费率, WIF 未平仓, WIF 强平, WIF 多空比, WIFusdt 永续" />
@@ -39,9 +39,9 @@
 <meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="manifest" href="/site.webmanifest" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
 <style>
   .cdhero{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:12px 0 4px}
@@ -93,6 +93,8 @@
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"WIF Perpetual Futures Dashboard","url":"https://marginpad.io/zh/coin/wif/","applicationCategory":"FinanceApplication","operatingSystem":"Web","dateModified":"2026-08-13","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-08-13","mainEntity":[{"@type":"Question","name":"什么是 WIF 永续合约？","acceptedAnswer":{"@type":"Answer","text":"WIF 永续合约（perp）让你用杠杆交易 dogwifhat，且无到期日。资金费率让永续价格锚定现货——资金费为正意味着 WIF 多头向空头支付（多头拥挤），为负则相反。未平仓是所有 WIF 持仓的总价值；快速上升意味着新杠杆正在流入。强平显示过度杠杆的 WIF 交易者在何处被强制平仓——下跌时多头被强平，上涨时空头被强平。"}},{"@type":"Question","name":"如何综合解读 WIF 的资金费率、未平仓合约和强平数据？","acceptedAnswer":{"@type":"Answer","text":"把四个数字放在一起看。强烈为正的资金费，加上失衡的多头持仓和上升的未平仓，是一个拥挤的多头结构，可能急剧瓦解。多头强平的激增往往标记 WIF 的局部底部；一波空头强平可能推动向上逼空。在技术筛选器上确认入场，并用WIF 强平计算器计算仓位，让杠杆永远不会把你推到比你本意更接近强平的位置。"}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://marginpad.io/zh/"},{"@type":"ListItem","position":2,"name":"币种","item":"https://marginpad.io/screener"},{"@type":"ListItem","position":3,"name":"WIF","item":"https://marginpad.io/zh/coin/wif/"}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -199,5 +201,6 @@
   var ADS_CONV_LABEL='';/* paste your Google Ads conversion label here once created, e.g. 'abCdEf1gH' */
   Array.prototype.forEach.call(document.querySelectorAll('[data-ex]'),function(a){a.addEventListener('click',function(){try{var ex=a.getAttribute('data-ex');if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathname});if(ADS_CONV_LABEL)gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon)navigator.sendBeacon(u);else (new Image()).src=u;}catch(e){}});});
 })();</script>
+<script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

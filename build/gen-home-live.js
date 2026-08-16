@@ -42,7 +42,7 @@ const HREFLANG = ['<link rel="alternate" hreflang="x-default" href="https://marg
 
 // Yandex.Metrica (counter 110941944) — on the homepage too so quick gen-home-live deploys never drop it (build/add-metrica.js covers the rest of the site).
 const METRICA = `<!-- Yandex.Metrika counter -->
-<script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944','ym');ym(110941944,'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",accurateTrackBounce:true,trackLinks:true});</script>
+<script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944','ym');ym(110941944,'init',{ssr:true,webvisor:(window.innerWidth>880),clickmap:true,ecommerce:"dataLayer",accurateTrackBounce:true,trackLinks:true});</script>
 <noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute;left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->`;
 

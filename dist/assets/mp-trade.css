@@ -304,3 +304,14 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .mptk.tsk-tkt_noir{background:linear-gradient(180deg,#101014,#0a0a0d);border-color:#3a3f4a}
 .mptk.tsk-tkt_holo{border-color:#7fb6ff;background:linear-gradient(135deg,rgba(127,214,255,.10),rgba(199,146,255,.11) 45%,rgba(46,189,133,.10)),#0d1014;box-shadow:0 0 34px -12px rgba(150,180,255,.55)}
 .mptk.tsk-tkt_aurum{border-color:#c98f1b;background:linear-gradient(180deg,rgba(255,215,90,.14),rgba(22,17,8,.95)),#0d1014;box-shadow:0 0 40px -12px rgba(255,200,60,.6)}
+
+/* premium ticket skins (2026-08-15): Dragonhide + Vapor */
+.pp.tsk-tkt_dragon{border-color:#c9302a;background:linear-gradient(135deg,rgba(255,90,40,.16),rgba(20,6,4,.95) 45%),repeating-linear-gradient(115deg,rgba(255,120,50,.10) 0 7px,rgba(60,12,6,.18) 7px 14px);box-shadow:0 0 30px -10px rgba(255,90,40,.5),inset 0 1px 0 rgba(255,170,90,.25)}
+.pp.tsk-tkt_vapor{border-color:#b06cff;background:linear-gradient(180deg,rgba(255,64,190,.16),rgba(24,8,40,.94) 55%),repeating-linear-gradient(0deg,transparent 0 9px,rgba(0,220,255,.12) 9px 10px);box-shadow:0 0 30px -10px rgba(176,108,255,.55)}
+.mptk.tsk-tkt_dragon{border-color:#c9302a;background:linear-gradient(135deg,rgba(255,90,40,.18),rgba(20,6,4,.96) 45%),repeating-linear-gradient(115deg,rgba(255,120,50,.12) 0 7px,rgba(60,12,6,.2) 7px 14px),#0d1014;box-shadow:0 0 40px -12px rgba(255,90,40,.55)}
+.mptk.tsk-tkt_vapor{border-color:#b06cff;background:linear-gradient(180deg,rgba(255,64,190,.18),rgba(24,8,40,.95) 55%),repeating-linear-gradient(0deg,transparent 0 9px,rgba(0,220,255,.14) 9px 10px),#0d1014;box-shadow:0 0 40px -12px rgba(176,108,255,.6)}
+
+/* MOBILE BATTERY (2026-08-16, mirror of home.css rule): blur compositing off on phones; rgba backgrounds carry the look */
+@media(max-width:880px){
+  *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;}
+}

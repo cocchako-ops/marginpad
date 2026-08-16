@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<meta charset="UTF-8" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>ETC 무기한 선물 — 가격, 펀딩, 미결제약정, 청산 | MarginPad</title>
 <meta name="description" content="실시간 Ethereum Classic(ETC) 무기한 선물: 가격, 펀딩 비율, 미결제약정, 롱/숏 포지셔닝, 24시간 청산. 최고 거래소에서 ETCUSDT 거래. 무료, 가입 불필요." />
 <meta name="keywords" content="ETC 무기한, Ethereum Classic 선물, ETC 펀딩 비율, ETC 미결제약정, ETC 청산, ETC 롱숏 비율, ETCusdt 무기한" />
@@ -39,9 +39,9 @@
 <meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
 <link rel="manifest" href="/site.webmanifest" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
 <style>
   .cdhero{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:12px 0 4px}
@@ -93,6 +93,8 @@
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"ETC Perpetual Futures Dashboard","url":"https://marginpad.io/ko/coin/etc/","applicationCategory":"FinanceApplication","operatingSystem":"Web","dateModified":"2026-08-13","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script><script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","dateModified":"2026-08-13","mainEntity":[{"@type":"Question","name":"ETC 무기한 선물이란 무엇인가요?","acceptedAnswer":{"@type":"Answer","text":"ETC 무기한 선물(퍼프)은 Ethereum Classic을 레버리지로, 만기 없이 거래하게 해줍니다. 펀딩 비율이 퍼프 가격을 현물에 묶어둡니다 — 양의 펀딩은 ETC 롱이 숏에게 지불(롱 과밀)함을, 음의 펀딩은 그 반대를 뜻합니다. 미결제약정은 열려 있는 ETC 포지션의 총가치이며, 빠른 상승은 새로운 레버리지 유입을 뜻합니다. 청산은 과도하게 레버리지를 쓴 ETC 트레이더가 어디서 강제 청산됐는지 보여줍니다 — 하락 시 롱 청산, 상승 시 숏 청산."}},{"@type":"Question","name":"ETC 펀딩비·미결제약정·청산을 함께 읽는 법은?","acceptedAnswer":{"@type":"Answer","text":"네 숫자를 함께 읽으세요. 강한 양의 펀딩에 한쪽으로 치우친 롱 포지셔닝과 상승하는 미결제약정이 더해지면, 급격히 풀릴 수 있는 과밀 롱 구조입니다. 롱 청산 급증은 흔히 ETC의 국지적 바닥을 표시하고, 숏 청산의 물결은 위쪽 스퀴즈를 부추길 수 있습니다. 진입은 기술 스크리너에서 확인하고 ETC 청산 계산기로 크기를 정해, 레버리지가 의도보다 청산에 더 가까이 가지 않게 하세요."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://marginpad.io/ko/"},{"@type":"ListItem","position":2,"name":"코인","item":"https://marginpad.io/screener"},{"@type":"ListItem","position":3,"name":"ETC","item":"https://marginpad.io/ko/coin/etc/"}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -199,5 +201,6 @@
   var ADS_CONV_LABEL='';/* paste your Google Ads conversion label here once created, e.g. 'abCdEf1gH' */
   Array.prototype.forEach.call(document.querySelectorAll('[data-ex]'),function(a){a.addEventListener('click',function(){try{var ex=a.getAttribute('data-ex');if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathname});if(ADS_CONV_LABEL)gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon)navigator.sendBeacon(u);else (new Image()).src=u;}catch(e){}});});
 })();</script>
+<script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

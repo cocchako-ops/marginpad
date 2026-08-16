@@ -145,9 +145,19 @@
     +   '<a class="mpnav-subrow" href="/calculators?c=rr">'+TR('subRr')+'</a>'
     +   '<a class="mpnav-subrow" href="/crypto-tax-calculator/">Crypto tax calculator</a>'
     +   '<a class="mpnav-subrow" href="/crypto-cost-basis-calculator/">Cost basis calculator (FIFO/LIFO)</a>'
+    +   '<a class="mpnav-subrow" href="/hyperliquid-liquidation-calculator/">Hyperliquid liquidation calculator</a>'
+    +   '<a class="mpnav-subrow" href="/bybit-liquidation-calculator/">Exchange calculators (Bybit, Binance, OKX, MEXC&hellip;)</a>'
     + '</div>'
     + '<div class="mpnav-sec">'+TR('secTrade')+'</div>'
     + row('prodPaper', 'brPaperS', '/paper-trade', '#2ebd85', 'plan')
+    + '<button type="button" class="mpnav-row mpnav-expand" data-mpexpand="sim"><span class="mpnav-ic" style="color:#2ebd85;background:#2ebd8522">'+I.plan+'</span><span class="mpnav-rt"><b>Simulators</b><small>Stocks, forex, indices, leverage &middot; free, no sign-up</small></span>'+I.chev+'</button>'
+    + '<div class="mpnav-sub" data-sub="sim" hidden>'
+    +   '<a class="mpnav-subrow" href="/stock-trading-simulator/">Stock trading simulator</a>'
+    +   '<a class="mpnav-subrow" href="/forex-trading-simulator/">Forex trading simulator</a>'
+    +   '<a class="mpnav-subrow" href="/index-trading-simulator/">Index trading simulator</a>'
+    +   '<a class="mpnav-subrow" href="/leverage-trading-simulator/">Leverage trading simulator (1x-1000x)</a>'
+    +   '<a class="mpnav-subrow" href="/crypto-trading-simulator-no-sign-up/">No sign-up crypto simulator</a>'
+    + '</div>'
     + '<a class="mpnav-row" href="/spot/"><span class="mpnav-ic" style="color:#c2f64a;background:#c2f64a22"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/></svg></span><span class="mpnav-rt"><b>Demo Spot <i style="font-style:normal;background:#c2f64a;color:#0a0b0d;font-size:9px;font-weight:800;border-radius:5px;padding:1px 5px;vertical-align:1px">NEW</i></b><small>$10,000 practice wallet &middot; buy BTC &amp; Solana memes</small></span>' + I.chev + '</a>'
     + row('prodCharts', 'prodChartsS', '/charts', '#3fd8e6', 'charts')
     + row('prodScreener', 'brScrS', '/screener', '#6aa3ff', 'scr')
@@ -165,6 +175,7 @@
     + row('Compare exchanges', 'Fees, leverage, liquidity &amp; trust', '/exchanges/', '#c2f64a', 'mkt')
     + '<a class="mpnav-row" href="/heatmap"><span class="mpnav-ic" style="color:#ffb347;background:#ffb34722">'+I.heat+'</span><span class="mpnav-rt"><b>'+TR('brHeatT')+'</b><small>'+TR('brHeatS')+'</small></span></a>'
     + row('navRekt', 'prodRektS', '/rekt/', '#ff6258', 'rekt')
+    + row('Liquidations today', 'Live 24h total &amp; all-time records', '/crypto-liquidations-today/', '#ff8c5a', 'rekt')
     + row('brAlertsT', 'brAlertsS', '/alerts/', '#c2f64a', 'alert')
     + '<div class="mpnav-sec">'+TR('secEarn')+'</div>'
     + row('brFreeT', 'brFreeS', '/rewards/', '#ffd75a', 'gift')
@@ -176,6 +187,9 @@
     + '<a class="mpnav-mrow" href="https://t.me/MarginPadBot" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Telegram</a>'
     + '<a class="mpnav-mrow" href="/api/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>API</a>'
     + '<a class="mpnav-mrow" href="/widgets/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>'+TR('navWidgets')+'</a>'
+    + '<a class="mpnav-mrow" href="/coinglass-alternative/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>Coinglass alternative</a>'
+    + '<a class="mpnav-mrow" href="/best-crypto-paper-trading-platforms/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15 8.5 22 9.3 17 14 18.3 21 12 17.5 5.7 21 7 14 2 9.3 9 8.5 12 2"/></svg>Best paper trading</a>'
+    + '<a class="mpnav-mrow" href="/best-liquidation-heatmap-tools/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="10" width="4" height="10" rx="1"/><rect x="10" y="5" width="4" height="15" rx="1"/><rect x="17" y="8" width="4" height="12" rx="1"/></svg>Best heatmap tools</a>'
     + '<a class="mpnav-mrow" href="/about/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/></svg>'+TR('navAbout')+'</a>'
     + '<a class="mpnav-mrow" href="/contact/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>'+TR('navContact')+'</a>'
     + '</div></div></div>';
@@ -187,7 +201,7 @@
     var S = 'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
     var items = [
       ['browse', 'Browse', 'mnBrowse', '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'],
-      ['/paper-trade', 'Practice', 'mnPaper', '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>'],
+      ['/paper-trade', 'Practice', 'mnPaper', '<path d="M7 3.5v3M7 17.5v3M17 3.5v3M17 13.5v3"/><rect x="4.5" y="6.5" width="5" height="11" rx="1"/><rect x="14.5" y="6.5" width="5" height="7" rx="1"/>'], // candlestick icon + the label reads "Paper Trade" via i18n mnPaper (owner 2026-08-15; internal key stays 'Practice' for the analytics map below)
       ['/paper-trade?trades=1', 'Trades', 'mnTrades', '<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>'],
       ['/', 'Chat', 'mnChat', '<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/>']
     ];
@@ -437,7 +451,7 @@
     var b=document.createElement('div');b.id='mpCkBar';
     b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 76px);z-index:94;max-width:430px;margin:0 auto;display:flex;align-items:center;gap:11px;background:rgba(13,16,21,.97);border:1px solid #2b323b;border-radius:13px;padding:11px 13px;box-shadow:0 18px 44px -14px rgba(0,0,0,.85);font-family:\'Familjen Grotesk\',system-ui,sans-serif;font-size:12.5px;line-height:1.45;color:#c8cdd4;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)';
     if(window.matchMedia&&window.matchMedia('(min-width:721px)').matches)b.style.bottom='16px';
-    b.innerHTML='<span style="font-size:16px;flex:0 0 auto">🍪</span><span style="flex:1;min-width:0">We use cookies for sign-in, security (multi-account protection) and anonymous stats. No ad tracking.</span><button type="button" id="mpCkOk" style="flex:0 0 auto;background:#c2f64a;border:none;border-radius:9px;color:#0a0b0d;font-family:\'Space Mono\',monospace;font-size:11px;font-weight:800;letter-spacing:.03em;padding:9px 14px;cursor:pointer">OK</button>';
+    b.innerHTML='<span style="flex:0 0 auto;display:inline-flex"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c9a86a" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="#c9a86a" stroke="none"/><circle cx="14.5" cy="9" r="1" fill="#c9a86a" stroke="none"/><circle cx="10.5" cy="14.5" r="1" fill="#c9a86a" stroke="none"/><circle cx="15" cy="14" r="1" fill="#c9a86a" stroke="none"/></svg></span><span style="flex:1;min-width:0">We use cookies for sign-in, security (multi-account protection) and analytics, including anonymized session recordings that help us improve the product. No ad tracking.</span><button type="button" id="mpCkOk" style="flex:0 0 auto;background:#c2f64a;border:none;border-radius:9px;color:#0a0b0d;font-family:\'Space Mono\',monospace;font-size:11px;font-weight:800;letter-spacing:.03em;padding:9px 14px;cursor:pointer">OK</button>';
     document.body.appendChild(b);
     document.getElementById('mpCkOk').addEventListener('click',function(){try{localStorage.setItem('mp_ck_ok',String(Date.now()));}catch(e){}b.remove();});
   }

@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <title>Free Crypto Trading Tools — Backtester, Journal, Risk &amp; More | MarginPad</title>
@@ -40,14 +53,14 @@
 <link rel="stylesheet" href="/assets/lab.css" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Free Crypto Trading Tools","url":"https://marginpad.io/tools/","description":"A free suite of crypto trading tools: strategy backtester, trading journal, pivot point calculator, risk-of-ruin simulator and correlation matrix.","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://marginpad.io/tools/"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","itemListElement":[{"@type":"ListItem","position":1,"name":"Crypto Strategy Backtester","url":"https://marginpad.io/crypto-backtester/"},{"@type":"ListItem","position":2,"name":"Trading Journal & Analytics","url":"https://marginpad.io/trading-journal/"},{"@type":"ListItem","position":3,"name":"Pivot Point Calculator","url":"https://marginpad.io/pivot-point-calculator/"},{"@type":"ListItem","position":4,"name":"Crypto Tax Calculator","url":"https://marginpad.io/crypto-tax-calculator/"},{"@type":"ListItem","position":5,"name":"Crypto Cost Basis Calculator","url":"https://marginpad.io/crypto-cost-basis-calculator/"},{"@type":"ListItem","position":6,"name":"Risk of Ruin Calculator","url":"https://marginpad.io/risk-of-ruin-calculator/"},{"@type":"ListItem","position":7,"name":"Crypto Correlation Matrix","url":"https://marginpad.io/crypto-correlation-matrix/"},{"@type":"ListItem","position":8,"name":"Paper Trading API for Bots","url":"https://marginpad.io/trading-api/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","itemListElement":[{"@type":"ListItem","position":1,"name":"Crypto Strategy Backtester","url":"https://marginpad.io/crypto-backtester/"},{"@type":"ListItem","position":2,"name":"Trading Journal & Analytics","url":"https://marginpad.io/trading-journal/"},{"@type":"ListItem","position":3,"name":"Pivot Point Calculator","url":"https://marginpad.io/pivot-point-calculator/"},{"@type":"ListItem","position":4,"name":"Crypto Tax Calculator","url":"https://marginpad.io/crypto-tax-calculator/"},{"@type":"ListItem","position":5,"name":"Crypto Cost Basis Calculator","url":"https://marginpad.io/crypto-cost-basis-calculator/"},{"@type":"ListItem","position":6,"name":"Risk of Ruin Calculator","url":"https://marginpad.io/risk-of-ruin-calculator/"},{"@type":"ListItem","position":7,"name":"Crypto Correlation Matrix","url":"https://marginpad.io/crypto-correlation-matrix/"},{"@type":"ListItem","position":8,"name":"Paper Trading API for Bots","url":"https://marginpad.io/trading-api/"},{"@type":"ListItem","position":9,"name":"Stock Trading Simulator","url":"https://marginpad.io/stock-trading-simulator/"},{"@type":"ListItem","position":10,"name":"Forex Trading Simulator","url":"https://marginpad.io/forex-trading-simulator/"},{"@type":"ListItem","position":11,"name":"Index Trading Simulator","url":"https://marginpad.io/index-trading-simulator/"}]}</script>
 
 <script defer src="/assets/sentry.js"></script>
 </head>
 <body>
 <header class="topbar">
   <a class="brand" href="/">MARGIN<b>PAD</b></a>
-  <nav class="tool-switch"><a class="on" href="/tools/">All tools</a><a href="/crypto-backtester/">Backtester</a><a href="/trading-journal/">Journal</a><a href="/crypto-tax-calculator/">Tax</a><a href="/crypto-cost-basis-calculator/">Cost basis</a><a href="/pivot-point-calculator/">Pivots</a><a href="/risk-of-ruin-calculator/">Risk</a><a href="/crypto-correlation-matrix/">Correlation</a><a href="/trading-api/">Bot API</a></nav>
+  <nav class="tool-switch"><a class="on" href="/tools/">All tools</a><a href="/crypto-backtester/">Backtester</a><a href="/trading-journal/">Journal</a><a href="/crypto-tax-calculator/">Tax</a><a href="/crypto-cost-basis-calculator/">Cost basis</a><a href="/pivot-point-calculator/">Pivots</a><a href="/risk-of-ruin-calculator/">Risk</a><a href="/crypto-correlation-matrix/">Correlation</a><a href="/trading-api/">Bot API</a><a href="/stock-trading-simulator/">Stocks</a><a href="/forex-trading-simulator/">Forex</a><a href="/index-trading-simulator/">Indices</a></nav>
   <a class="home" href="/">← marginpad.io</a>
 </header>
 <div class="wrap">
@@ -98,11 +111,56 @@
       <p>Test your trading bot for free — a paper-trading REST API with real live prices, leverage, SL/TP and liquidation simulation. Any language, one API key.</p>
       <span class="tag">free api</span>
     </a>
+    <a class="prod" href="/stock-trading-simulator/">
+      <div class="ic"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="#c2f64a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></div><h3>Stock Trading Simulator</h3>
+      <p>Practice 20+ real US stocks — Apple, Tesla, Nvidia and more — with live prices, long/short, leverage and stop-loss. Free, no sign-up.</p>
+      <span class="tag">live data</span>
+    </a>
+    <a class="prod" href="/forex-trading-simulator/">
+      <div class="ic"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="#46e0e6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3"/><path d="M20 16H7l3 3"/></svg></div><h3>Forex Trading Simulator</h3>
+      <p>Practice EUR/USD, GBP/USD, USD/JPY and other majors with live rates, leverage and stop-loss — a free forex demo, no deposit.</p>
+      <span class="tag">live data</span>
+    </a>
+    <a class="prod" href="/index-trading-simulator/">
+      <div class="ic"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="6" y="12" width="3" height="6"/><rect x="11" y="8" width="3" height="10"/><rect x="16" y="5" width="3" height="13"/></svg></div><h3>Index Trading Simulator</h3>
+      <p>Practice the S&amp;P 500, Nasdaq 100, Dow Jones and DAX with live prices, leverage and stop-loss. Free, no sign-up.</p>
+      <span class="tag">live data</span>
+    </a>
     <a class="prod" href="/paper-trade">
       <div class="ic"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="#46e0e6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="3" x2="7" y2="21"/><rect x="4.5" y="8" width="5" height="7" rx="1"/><line x1="17" y1="3.5" x2="17" y2="20.5"/><rect x="14.5" y="6.5" width="5" height="8" rx="1"/></svg></div><h3>Paper Trade Terminal</h3>
       <p>Open long/short positions at the live price with up to 1000x leverage and full P&amp;L tracking — practice risk-free, then journal it here.</p>
       <span class="tag">live data</span>
     </a>
+  </div>
+
+  <h2>All calculators</h2>
+  <p class="note" style="font-size:13.5px;color:var(--dim);margin:0 0 10px">Every calculator is free, instant and private — the math runs in your browser.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:8px;margin-bottom:26px">
+    <a href="/position-size-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Position size calculator</a>
+    <a href="/crypto-profit-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Profit (PnL) calculator</a>
+    <a href="/leverage-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Leverage calculator</a>
+    <a href="/stop-loss-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Stop-loss calculator</a>
+    <a href="/risk-reward-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Risk/reward calculator</a>
+    <a href="/crypto-break-even-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Break-even calculator</a>
+    <a href="/crypto-margin-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Margin calculator</a>
+    <a href="/crypto-fee-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Exchange fee calculator</a>
+    <a href="/funding-fee-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Funding fee calculator</a>
+    <a href="/crypto-funding-cost-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Funding cost calculator</a>
+    <a href="/crypto-roi-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">ROI calculator</a>
+    <a href="/crypto-drawdown-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Drawdown calculator</a>
+    <a href="/crypto-compound-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Compound calculator</a>
+    <a href="/crypto-dca-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">DCA calculator</a>
+    <a href="/crypto-win-rate-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Win rate &amp; expectancy</a>
+    <a href="/crypto-slippage-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Slippage calculator</a>
+    <a href="/apr-apy-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">APR to APY converter</a>
+    <a href="/crypto-tax-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Tax calculator</a>
+    <a href="/crypto-cost-basis-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Cost basis calculator</a>
+    <a href="/risk-of-ruin-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Risk of ruin calculator</a>
+    <a href="/pivot-point-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Pivot point calculator</a>
+    <a href="/bybit-liquidation-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Liquidation — per exchange (Bybit, Binance, OKX, MEXC…)</a>
+    <a href="/btc-liquidation-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Liquidation — per coin (65 coins)</a>
+    <a href="/100x-liquidation-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Liquidation — per leverage (5x-100x)</a>
+    <a href="/hyperliquid-liquidation-calculator/" style="padding:10px 13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:13.5px">Hyperliquid liquidation calculator</a>
   </div>
 
   <h2>One free toolkit for crypto futures traders</h2>

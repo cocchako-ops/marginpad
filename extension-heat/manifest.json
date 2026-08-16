@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "MarginPad — Crypto Liquidation Heatmap",
+  "version": "1.0.0",
+  "description": "Live crypto liquidation heatmap in your toolbar: see where BTC, ETH & SOL liquidations cluster, 24h liquidations long vs short, and the most-rekt coins.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "MarginPad Liquidation Heatmap",
+    "default_icon": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" }
+  },
+  "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "host_permissions": ["https://marginpad.io/*"]
+}

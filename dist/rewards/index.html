@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -11,7 +11,7 @@
         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
 
-    ym(110941944, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
@@ -414,6 +414,21 @@
     <div id="moonStatus" style="margin-top:8px"></div>
   </div>
 
+  <div class="card" id="promoCard" hidden>
+    <div class="lbl" style="display:flex;align-items:center;gap:9px">Post &amp; earn <span style="margin-left:auto;color:#c2f64a;font-weight:800;text-shadow:0 0 12px rgba(194,246,74,.65)">up to $<span id="prMaxAmt">5</span></span></div>
+    <p class="note" style="text-align:left;margin:10px 0 12px;line-height:1.55"><b>Reddit</b>: write a post about MarginPad (your experience, a trade, a tool you like) — base <b style="color:#c2f64a">$<span id="prRedditAmt">0.50</span></b>, up to <b style="color:#c2f64a">$<span id="prMaxAmt2">5</span></b> if the post performs well. <b>X</b>: share one of your trade tickets — <b style="color:#c2f64a">$<span id="prXAmt">0.10</span></b>. One of each per day; every post is reviewed manually and must stay live at least 24h.</p>
+    <div class="addr-row" style="margin-bottom:8px">
+      <input id="prRedditUrl" type="url" placeholder="Link to your Reddit post" autocomplete="off" spellcheck="false" />
+      <button class="btn btn-ghost" id="prRedditSub" type="button">Submit</button>
+    </div>
+    <div class="addr-row">
+      <input id="prXUrl" type="url" placeholder="Link to your X post (trade ticket)" autocomplete="off" spellcheck="false" />
+      <button class="btn btn-ghost" id="prXSub" type="button">Submit</button>
+    </div>
+    <div class="msg" id="prMsg"></div>
+    <div id="prStatus" style="margin-top:8px"></div>
+  </div>
+
   <div class="card" id="lvlCard">
     <div id="authWho" hidden style="margin:0 0 14px;padding-bottom:13px;border-bottom:1px solid var(--line)">
       <div class="note" style="text-align:left;margin:0">Signed in as <b id="whoEmail"></b> · <a href="#" id="signoutLink" class="clink">sign out</a>. Need help? <a href="#" id="contactLink" class="clink">Contact us</a>.</div>
@@ -433,7 +448,21 @@
   </div>
   <div class="card" id="msnCard" hidden>
     <div class="lbl">Daily missions</div>
-    <p class="sub" style="margin:6px 0 2px">Use the tools, earn extra USDT. Missions verify automatically from your activity and reset at 00:00 UTC<span id="msnReset"></span>.</p>
+    <div id="msnDeck" style="display:none;margin:12px 0 4px;align-items:center;gap:16px">
+      <svg id="msnRing" width="66" height="66" viewBox="0 0 66 66" style="flex:none" aria-hidden="true">
+        <circle cx="33" cy="33" r="27" fill="none" stroke="#1a2027" stroke-width="7"/>
+        <circle id="msnRingF" cx="33" cy="33" r="27" fill="none" stroke="#c2f64a" stroke-width="7" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="169.6" transform="rotate(-90 33 33)" style="transition:stroke-dashoffset .8s ease"/>
+        <text id="msnRingT" x="33" y="38" text-anchor="middle" style="fill:#e9e7df;font:800 13px 'Space Mono',monospace">0/8</text>
+      </svg>
+      <div style="flex:1;min-width:0;display:grid;gap:9px">
+        <div id="msnSetTxt" style="font:700 11.5px 'Space Mono',monospace;color:#9aa3ad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font:700 10.5px 'Space Mono',monospace;color:#9aa3ad"><span>WEEKLY BONUS</span><span id="msnWkTxt"></span></div>
+          <div style="height:7px;border-radius:4px;background:#1a2027;overflow:hidden;margin-top:4px"><i id="msnWkBar" style="display:block;height:100%;width:0;background:linear-gradient(90deg,#c2f64a,#8fd14a);border-radius:4px;transition:width .8s ease"></i></div>
+        </div>
+      </div>
+    </div>
+    <p class="sub" style="margin:6px 0 2px">Use the tools, earn extra USDT — every claim also drops a <b style="color:#c2f64a">mystery XP bonus</b>. Claim 6 for the daily set bonus, 15 in a week for the weekly drop. Resets at 00:00 UTC<span id="msnReset"></span>.</p>
     <div id="msnList" style="margin-top:12px"></div>
     <p class="sub" id="msnFoot" style="margin-top:10px;font-size:11.5px"></p>
   </div>
@@ -441,6 +470,30 @@
   /* ═══ Rewards cards redesign (2026-08-05) — Invite / Season boards / Partner exchanges ═══ */
   #refCard{position:relative;overflow:hidden}
   #refCard::after{content:'';position:absolute;top:-46%;right:-8%;width:250px;height:250px;background:radial-gradient(circle,rgba(194,246,74,.09),transparent 68%);pointer-events:none}
+  /* ═══ Creator program — broadcast-styled card (2026-08-15) ═══ */
+  .rwd-cards>#streamCard{order:7}
+  #streamCard{position:relative;overflow:hidden;border-color:rgba(145,70,255,.45);background:linear-gradient(165deg,rgba(145,70,255,.13),rgba(10,11,13,0) 45%),linear-gradient(315deg,rgba(83,252,24,.05),rgba(10,11,13,0) 55%),#0d0f14}
+  #streamCard .st-glow{position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:440px;height:260px;background:radial-gradient(ellipse,rgba(145,70,255,.22),transparent 65%);pointer-events:none}
+  .st-top{display:flex;align-items:center;gap:10px;position:relative}
+  .st-live{display:inline-flex;align-items:center;gap:6px;font:800 10.5px 'Space Mono',monospace;letter-spacing:.12em;color:#fff;background:#e91916;border-radius:6px;padding:3px 9px}
+  .st-live i{width:6px;height:6px;border-radius:50%;background:#fff;display:inline-block;transition:opacity .55s}
+  .st-eyebrow{font:700 10.5px 'Space Mono',monospace;letter-spacing:.22em;color:#b795ff}
+  .st-rec{margin-left:auto;font:700 10px 'Space Mono',monospace;letter-spacing:.1em;color:#53fc18;border:1px solid rgba(83,252,24,.4);border-radius:6px;padding:3px 8px;white-space:nowrap}
+  .st-h{font-size:26px;line-height:1.15;margin:14px 0 8px;letter-spacing:-.02em;position:relative}
+  .st-h b{color:#c2f64a}
+  .st-p{font-size:13.5px;color:#9aa3ad;line-height:1.6;margin:0 0 16px;max-width:540px;text-align:left;position:relative}
+  .st-plats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;position:relative}
+  .st-pl{display:inline-flex;align-items:center;gap:8px;background:#12151d;border:1px solid #262c38;border-radius:11px;padding:9px 14px;font-weight:700;font-size:13px;color:#e9e7df;transition:transform .2s,border-color .2s;cursor:default}
+  .st-pl:hover{transform:translateY(-2px)}
+  .st-pl svg{width:18px;height:18px;flex:none}
+  .st-pl.tw:hover{border-color:rgba(145,70,255,.65)}
+  .st-pl.yt:hover{border-color:rgba(255,0,51,.65)}
+  .st-pl.kk:hover{border-color:rgba(83,252,24,.65)}
+  .st-pl.tt:hover{border-color:rgba(37,244,238,.65)}
+  .st-cta{display:block;text-align:center;background:#c2f64a;color:#0a0b0d;border-radius:12px;padding:13px 20px;font-weight:800;font-size:14.5px;text-decoration:none;position:relative;transition:transform .15s,box-shadow .15s}
+  .st-cta:hover{transform:translateY(-1px);box-shadow:0 8px 30px -10px rgba(194,246,74,.5)}
+  .st-note{font-size:10.5px;letter-spacing:.08em;color:#5c656f;text-align:center;margin:9px 0 0;font-family:'Space Mono',monospace}
+  @media(max-width:520px){.st-h{font-size:21px}.st-eyebrow{display:none}}
   .ref2-h{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.02em;margin:7px 0 15px;color:var(--ink)}
   .ref2-h b{color:var(--lime)}
   .ref2-split{display:flex;align-items:center;gap:10px;margin:0 0 14px}
@@ -475,15 +528,34 @@
     <div class="lbl">Invite friends</div>
     <h2 class="ref2-h">Bring a friend — <b>you both cash in</b></h2>
     <div class="ref2-split">
-      <div class="ref2-cell you"><span class="ref2-role">You get</span><span class="ref2-amt">+$<span class="refAmt">0.20</span></span><span class="ref2-w">straight to your balance</span></div>
+      <div class="ref2-cell you"><span class="ref2-role">You get</span><span class="ref2-amt">+$<span class="refAmt">0.50</span></span><span class="ref2-w">straight to your balance</span></div>
       <span class="ref2-plus">+</span>
       <div class="ref2-cell them"><span class="ref2-role">They get</span><span class="ref2-amt">+$0.50</span><span class="ref2-w">instant welcome bonus</span></div>
     </div>
-    <p class="ref2-p">Share your link. When a friend joins and reaches <b style="color:#c97f4a">Bronze</b> — 500 XP earned from trading, missions and the Academy — your reward drops automatically. No limit, invite as many as you like.</p>
+    <p class="ref2-p">Share your link. Your reward drops automatically once your friend becomes a <b>real trader</b>: reaches <b style="color:#c97f4a">Bronze</b> (500 XP), closes <b>5 trades</b> and sticks around for <b>3 days</b>. Real friends only — but we pay properly for them. No limit, invite as many as you like.</p>
     <div class="addr-row"><input id="refLink" type="text" readonly value="Sign in to get your referral link" onclick="this.select()"><button class="btn btn-lime" id="refCopy" type="button">Copy link</button></div>
     <div id="refStats" style="display:flex;flex-wrap:wrap;gap:10px 20px;margin-top:12px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;color:#8fa3c4"></div>
     <div id="refCampWrap" style="margin-top:14px;display:none"><div style="font-size:12px;color:#9aa3ad;margin-bottom:7px">Tap a platform to copy a tagged link — that's how you (and we) see <b style="color:#e9e7df">where your clicks come from</b>:</div><div id="refCamps" style="display:flex;flex-wrap:wrap;gap:7px"></div></div>
     <div class="pr-msg" id="refMsg"></div>
+  </div>
+
+  <div class="card" id="streamCard">
+    <div class="st-glow"></div>
+    <div class="st-top">
+      <span class="st-live"><i id="stDot"></i>LIVE</span>
+      <span class="st-eyebrow">CREATOR PROGRAM</span>
+      <span class="st-rec">PAID PER HOUR</span>
+    </div>
+    <h2 class="st-h">Stream MarginPad.<br><b>Get paid by the hour.</b></h2>
+    <p class="st-p">Go live, trade, flex your wins and roast your liquidations — and we pay you for <b style="color:#e9e7df">every hour you stream</b>. The rate is agreed per creator, based on your channel and viewership. No minimum size — small channels welcome.</p>
+    <div class="st-plats">
+      <span class="st-pl tw"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#9146FF" d="M4.3 2 2.5 6.2V19h4.6v3h2.6l3-3h4l4.8-4.8V2H4.3zm15.5 11.4-2.8 2.8h-4.4l-3 3v-3H6V3.7h13.8v9.7zM16.6 6.5v5h-1.9v-5h1.9zm-5 0v5H9.7v-5h1.9z"/></svg>Twitch</span>
+      <span class="st-pl yt"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="4.5" width="21" height="15" rx="4.2" fill="#FF0033"/><path d="M10 9.2l5.6 2.8L10 14.8z" fill="#fff"/></svg>YouTube</span>
+      <span class="st-pl kk"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#53FC18" d="M4 3h5.5v5.2h2V6.1h2.6V3H21v6.3h-2.7v2h-2v1.4h2v2H21V21h-6.9v-3.1h-2.6v-2.1h-2V21H4z"/></svg>Kick</span>
+      <span class="st-pl tt"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#25F4EE" d="M15 4h-2.9v12.5a2.6 2.6 0 1 1-2.6-2.6c.2 0 .5 0 .7.1v-3.1a5.7 5.7 0 0 0-.7 0 5.8 5.8 0 1 0 5.8 5.8V8.9c1 .8 2.3 1.3 3.8 1.4V7.2C16.9 7 15.2 5.9 15 4z"/><path fill="#FE2C55" d="M16 4.9h-2.9v12.5a2.6 2.6 0 1 1-2.6-2.6c.2 0 .5 0 .7.1v-3.1a5.7 5.7 0 0 0-.7 0 5.8 5.8 0 1 0 5.8 5.8V9.8c1 .8 2.3 1.3 3.8 1.4V8.1c-2.1-.2-3.8-1.3-4-3.2z" opacity=".85"/><path fill="#fff" d="M15.5 4.4h-2.9v12.5a2.6 2.6 0 1 1-2.6-2.6c.2 0 .5 0 .7.1v-3.1a5.7 5.7 0 0 0-.7 0 5.8 5.8 0 1 0 5.8 5.8V9.3c1 .8 2.3 1.3 3.8 1.4V7.6c-2.1-.2-3.8-1.3-4.1-3.2z"/></svg>TikTok Live</span>
+    </div>
+    <a class="st-cta" href="mailto:affiliate@marginpad.io?subject=Creator%20program%20%E2%80%94%20my%20channel">Apply now — affiliate@marginpad.io</a>
+    <p class="st-note">SEND: channel link + average viewers. WE REPLY WITHIN A DAY.</p>
   </div>
   <div class="card" id="lbCompCard">
     <div class="lbc-tag">14-day competition</div>
@@ -598,6 +670,7 @@
         <li>Your best single <b>closed</b> paper trade of the season, measured by ROE (profit as % of your margin).</li>
         <li>Only trades opened AND closed this season count, filled and closed by the server (no edited journals).</li>
         <li>The ROE must be physically possible for the price move and leverage used — fabricated numbers are dropped.</li>
+        <li><b>Crypto pairs only</b> — forex, metals, indices and stablecoins never rank.</li>
       </ul>
       <div class="lbr-ex"><b>Example:</b> you open a BTC long at 20x and price rises 4% before you close — that trade's ROE is <b>+80%</b> and becomes your board entry if it's your best.</div>
     </div>
@@ -607,6 +680,8 @@
       <ul>
         <li>You need at least <b>20 counted trades</b> closed this season.</li>
         <li>A <b>win</b> only counts at <b>+5% ROE or better</b> on a real price move (at least 0.2%). Smaller profits count as neither. Losses always count.</li>
+        <li><b>High leverage doesn't shortcut it:</b> the 0.2% is the market move itself — +10% ROE at 100x is only a 0.1% price move, so it is NOT a counted win. Lower the leverage, not the standard.</li>
+        <li><b>Crypto pairs only</b> — forex, metals, indices and stablecoins never rank on any board.</li>
         <li><b>Copies count once:</b> identical positions (same coin, same direction) opened together and closed together count as <b>one trade</b> — 20 copies of the same position is 1 win, not 20.</li>
         <li>Ranking uses a <b>confidence-adjusted score</b>, not the raw percentage: more games at a high win rate beat fewer games at a perfect one.</li>
       </ul>
@@ -668,7 +743,13 @@
     window.__moonOff=(j.moonEnabled===false);
     var mc=document.getElementById('moonCard');
     if(mc)mc.hidden=window.__moonOff||!signedIn; // Moon bonus card is members-only (owner, 2026-08-03)
-    if(j.moonUsd!=null){var a1=document.getElementById('moonAmt'),a2=document.getElementById('moonAmt2');var v=fmtShort(j.moonUsd);if(a1)a1.textContent=v;if(a2)a2.textContent=v;}}
+    if(j.moonUsd!=null){var a1=document.getElementById('moonAmt'),a2=document.getElementById('moonAmt2');var v=fmtShort(j.moonUsd);if(a1)a1.textContent=v;if(a2)a2.textContent=v;}
+    window.__promoOff=(j.promoEnabled===false);
+    var pc=document.getElementById('promoCard');
+    if(pc)pc.hidden=window.__promoOff||!signedIn; // Post & earn card is members-only, mirrors the Moon card gating
+    if(j.redditUsd!=null){var p1=document.getElementById('prRedditAmt');if(p1)p1.textContent=fmtShort(j.redditUsd);}
+    if(j.redditMaxUsd!=null){var p2=document.getElementById('prMaxAmt'),p3=document.getElementById('prMaxAmt2');var pv=fmtShort(j.redditMaxUsd);if(p2)p2.textContent=pv;if(p3)p3.textContent=pv;}
+    if(j.promoXUsd!=null){var p4=document.getElementById('prXAmt');if(p4)p4.textContent=(+j.promoXUsd).toFixed(2);}}
   function moonMsg(t,kind){var el=document.getElementById('moonMsg');if(!el)return;el.innerHTML=t;el.className='msg show '+(kind||'');}
   function loadMoon(){var st=document.getElementById('moonStatus'),form=document.getElementById('moonForm');if(!st)return;
     if(!signedIn){st.innerHTML='';return;}
@@ -700,6 +781,39 @@
     });
     inp.addEventListener('keydown',function(e){if(e.key==='Enter')sb.click();});
   })();
+  function prMsgF(t,kind){var el=document.getElementById('prMsg');if(!el)return;el.innerHTML=t;el.className='msg show '+(kind||'');}
+  function loadPromo(){var st=document.getElementById('prStatus');if(!st)return;
+    if(!signedIn){st.innerHTML='';return;}
+    fetch('/api/reward/promo/mine').then(function(r){return r.json();}).then(function(d){
+      var rows=(d&&d.promos)||[];if(!rows.length){st.innerHTML='';return;}
+      st.innerHTML=rows.slice(0,4).map(function(x){var chip;
+        if(x.status==='approved')chip='<span style="display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid rgba(194,246,74,.5);color:#c2f64a;font-size:11.5px;font-weight:700">+$'+(+x.amount||0).toFixed(2)+' PAID</span>';
+        else if(x.status==='rejected')chip='<span style="display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid rgba(255,98,88,.5);color:#ff8a80;font-size:11.5px;font-weight:700">REJECTED</span>'+(x.note?' <span class="note" style="font-size:11.5px">'+String(x.note).replace(/</g,'&lt;')+'</span>':'');
+        else chip='<span style="display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid rgba(255,215,90,.5);color:#ffd75a;font-size:11.5px;font-weight:700">IN REVIEW</span>';
+        return '<div style="display:flex;align-items:center;gap:8px;margin-top:6px;min-width:0"><span class="note" style="font-size:11.5px;text-transform:uppercase;font-weight:700;flex:0 0 auto">'+(x.platform==='reddit'?'Reddit':'X')+'</span><span class="note" style="font-size:11.5px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+String(x.url||'').replace(/</g,'&lt;')+'</span>'+chip+'</div>';}).join('');
+    }).catch(function(){});}
+  function prSubmit(platform,inp,btn){
+    if(!signedIn){prMsgF('Sign in first (top of the page) — rewards land on your MarginPad balance.','err');return;}
+    var v=(inp.value||'').trim();
+    if(v.length<12){inp.classList.add('invalid');prMsgF('Paste the full link to your post.','err');return;}
+    inp.classList.remove('invalid');btn.disabled=true;prMsgF('Submitting…','');
+    fetch('/api/reward/promo/submit',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({platform:platform,url:v})}).then(function(r){return r.json();}).then(function(j){
+      btn.disabled=false;
+      if(j.ok){inp.value='';prMsgF('Submitted — we review every post manually (it must stay live 24h); the reward lands on your balance once approved.','ok');loadPromo();}
+      else if(j.error==='daily_limit')prMsgF('You already submitted a '+(platform==='reddit'?'Reddit':'X')+' post today — come back tomorrow.','err');
+      else if(j.error==='url_taken')prMsgF('That post link was already submitted.','err');
+      else if(j.error==='bad_url')prMsgF('That does not look like a '+(platform==='reddit'?'reddit.com':'x.com')+' post link.','err');
+      else if(j.error==='paused')prMsgF('Post rewards are paused right now.','err');
+      else if(j.error==='login_required')prMsgF('Sign in first (top of the page).','err');
+      else prMsgF('Could not submit right now — try again in a minute.','err');
+    }).catch(function(){btn.disabled=false;prMsgF('Network error — try again.','err');});}
+  (function(){var rb=document.getElementById('prRedditSub'),ri=document.getElementById('prRedditUrl'),xb=document.getElementById('prXSub'),xi=document.getElementById('prXUrl');
+    if(rb&&ri)rb.addEventListener('click',function(){prSubmit('reddit',ri,rb);});
+    if(xb&&xi)xb.addEventListener('click',function(){prSubmit('x',xi,xb);});
+    if(ri&&rb)ri.addEventListener('keydown',function(e){if(e.key==='Enter')rb.click();});
+    if(xi&&xb)xi.addEventListener('keydown',function(e){if(e.key==='Enter')xb.click();});
+  })();
+  (function(){var d=document.getElementById('stDot');if(!d)return;var on=true;setInterval(function(){on=!on;d.style.opacity=on?'1':'.25';},650);})(); /* LIVE dot pulse via JS+transition — visible under reduced-motion too */
   function renderWelcomeHook(){var wh=document.getElementById('welcomeHook');if(!wh)return;if(welcomeAmt>0){wh.hidden=false;wh.innerHTML='<div style="background:linear-gradient(180deg,rgba(194,246,74,.13),rgba(194,246,74,.04));border:1px solid rgba(194,246,74,.45);border-radius:12px;padding:13px 15px;margin-bottom:12px;text-align:left"><div style="font-size:16px;font-weight:800;color:#d6f78a">Earn free USDT</div><div style="font-size:12.5px;color:#9aa3ad;margin-top:3px;line-height:1.45">Sign in free with just your email. The faucet, missions and withdrawals unlock at <b style="color:#c97f4a">Bronze — 500 XP</b>, which is quick and free to earn on the <a href="/academy/" style="color:#c2f64a">Academy</a> and <a href="/paper-trade" style="color:#c2f64a">Paper Trade</a> — then claim free USDT every few minutes.</div></div>';var sb=document.getElementById('signinBtn');if(sb)sb.textContent='Sign in free to start earning';}else{wh.hidden=true;}}
   var wdMethod='bybit';
   function valid(a){return wdMethod==='moon' ? /^[A-Za-z0-9_.-]{3,32}$/.test(a) : /^[0-9]{5,15}$/.test(a);}
@@ -753,7 +867,7 @@
 
   function loadWdHistory(){if(!signedIn)return;fetch('/api/reward/wdhistory').then(function(r){return r.json();}).then(function(d){var el=document.getElementById('wdHistList'),card=document.getElementById('wdHistCard');if(!el||!card)return;var w=(d&&d.withdrawals)||[];if(!w.length){card.hidden=true;return;}card.hidden=false;el.innerHTML=w.map(function(x){var paid=x.status==='paid',rej=x.status==='rejected';var txid=(x.txid||'').replace(/[^0-9a-fA-Fx]/g,'');var tx=(paid&&txid)?'<a href="https://bscscan.com/tx/'+txid+'" target="_blank" rel="noopener" class="clink">view tx</a>':'';return '<div class="wdh-row"><span class="wdh-amt">$'+(+x.amountUsd||0).toFixed(2)+'</span><span class="wdh-st '+(paid?'ok':'')+'"'+(rej?' style="color:#ff6258;border-color:rgba(255,98,88,.4)"':'')+'>'+(paid?'Paid':rej?'Rejected — refunded':'Pending')+'</span><span class="wdh-meta">'+new Date(x.ts).toLocaleDateString()+(tx?' · '+tx:'')+(rej&&x.note?' · '+String(x.note).replace(/</g,'&lt;'):'')+'</span></div>';}).join('');}).catch(function(){});}
   function refresh(){ if(!signedIn){dash.hidden=true;return;} dash.hidden=false;
-    fetch('/api/reward/account').then(function(r){return r.json();}).then(render).catch(function(){}); loadWdHistory(); loadMoon(); }
+    fetch('/api/reward/account').then(function(r){return r.json();}).then(render).catch(function(){}); loadWdHistory(); loadMoon(); loadPromo(); }
 
   // ---- auth gate: claiming requires a signed-in account (not a wallet) ----
   function updateGate(){
@@ -763,12 +877,14 @@
       if(authCard)authCard.hidden=true; if(authGate)authGate.hidden=true; if(authWho)authWho.hidden=false;
       if(lockedCard)lockedCard.hidden=false; dash.hidden=true; if(wdAddrRow)wdAddrRow.hidden=true;
       var mcL=document.getElementById('moonCard'); if(mcL)mcL.hidden=true;
+      var pcL=document.getElementById('promoCard'); if(pcL)pcL.hidden=true;
       return;
     }
     if(lockedCard)lockedCard.hidden=true;
     if(signedIn){ if(authCard)authCard.hidden=true; if(authGate)authGate.hidden=true; if(authWho)authWho.hidden=false; dash.hidden=false; }
     else { if(authCard)authCard.hidden=false; if(authGate)authGate.hidden=false; if(authWho)authWho.hidden=true; dash.hidden=true; if(wdAddrRow)wdAddrRow.hidden=true; }
     var mcG=document.getElementById('moonCard'); if(mcG)mcG.hidden=!signedIn||!!window.__moonOff;
+    var pcG=document.getElementById('promoCard'); if(pcG)pcG.hidden=!signedIn||!!window.__promoOff;
   }
   function onAuth(user){
     signedIn=!!user;
@@ -776,7 +892,7 @@
     paintLock(user);
     if(user&&whoEmail) whoEmail.textContent=user.username||user.email||'';
     updateGate();
-    if(signedIn&&!rewardsLocked){ fetch('/api/reward/me').then(function(r){return r.json();}).then(function(d){ applyCfg(d); if(d.payoutAddr){payoutAddr=d.payoutAddr; try{localStorage.setItem(KEY,payoutAddr);}catch(e){}} if(d.account){render(d);}else{refresh();} loadWdHistory(); if(+d.welcomeBonus>0)msg('Welcome bonus of $'+(+d.welcomeBonus).toFixed(2)+' added to your balance. Claim more below.','ok'); }).catch(function(){refresh();}); }
+    if(signedIn&&!rewardsLocked){ fetch('/api/reward/me').then(function(r){return r.json();}).then(function(d){ applyCfg(d); if(d.payoutAddr){payoutAddr=d.payoutAddr; try{localStorage.setItem(KEY,payoutAddr);}catch(e){}} if(d.account){render(d);}else{refresh();} loadWdHistory(); loadPromo(); if(+d.welcomeBonus>0)msg('Welcome bonus of $'+(+d.welcomeBonus).toFixed(2)+' added to your balance. Claim more below.','ok'); }).catch(function(){refresh();}); }
   }
   window.addEventListener('mp-auth-change',function(e){ onAuth(e.detail&&e.detail.user); paintLvl(e.detail&&e.detail.user); });
   (function(){
@@ -838,7 +954,15 @@
   function doWithdraw(){
     var a=(wdAddr.value||'').trim();
     if(!valid(a)){ wdAddr.classList.add('invalid'); msg(wdMethod==='moon'?'Enter your Moon username (3-32 letters/numbers).':'Enter your Bybit UID (numbers only).','err'); return; }
-    if(wdMethod==='moon')a='moon:'+a.toLowerCase();
+    if(wdMethod==='moon'){a='moon:'+a.toLowerCase();wdSend(a);return;}
+    /* Bybit UID pre-check (2026-08-16, support-driven): warn BEFORE submitting — a doomed withdrawal used to sit pending for days and end as a support ticket */
+    wdConfirm.disabled=true; clearMsg();
+    fetch('/api/reward/uidcheck?uid='+encodeURIComponent(a)).then(function(r){return r.json();}).then(function(u9){
+      if(u9&&u9.ok&&u9.gate&&!u9.listed){ wdConfirm.disabled=false; wdAddr.classList.add('invalid'); msg('This Bybit UID is not registered through our link, so the payout would be rejected. An existing Bybit account cannot be linked afterwards — create a new Bybit account via our link (see the exchange cards below), or switch the payout method to Moon (just your Moon username).','err'); return; }
+      wdSend(a);
+    }).catch(function(){wdSend(a);});
+  }
+  function wdSend(a){
     wdConfirm.disabled=true; clearMsg();
     fetch('/api/reward/withdraw',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({address:a})})
       .then(function(r){return r.json();}).then(function(j){ wdConfirm.disabled=false;
@@ -992,9 +1116,22 @@
       return '<div class="msn'+(m.done?' done':' locked')+'"><span class="st">'+(m.done?'\u2713':'\u25cb')+'</span><span class="tx"><span class="t1">'+m.title+'</span><span class="t2" style="display:block">'+m.desc+go+'</span></span>'+right+'</div>';
     }).join('');
     var doneN=d.missions.filter(function(m){return m.claimed;}).length;
+    var deck=document.getElementById('msnDeck');
+    if(deck&&d.missions.length){deck.style.display='flex';
+      var C9=169.6,total9=d.missions.length;
+      var rf=document.getElementById('msnRingF');if(rf)rf.style.strokeDashoffset=String((C9*(1-(total9?doneN/total9:0))).toFixed(1));
+      var rt=document.getElementById('msnRingT');if(rt)rt.textContent=doneN+'/'+total9;
+      var b9=d.bonus||{};var sN=+b9.setN||6,sU=(+b9.setUsd||0.05).toFixed(2),wN9=+b9.weekN||15,wU=(+b9.weekUsd||0.1).toFixed(2),wC=+b9.weekCount||0;
+      var st9=document.getElementById('msnSetTxt');
+      if(st9)st9.innerHTML=b9.setClaimed?'SET BONUS <span style="color:#c2f64a">+$'+sU+' PAID</span>':'SET BONUS <span style="color:#c2f64a">+$'+sU+'</span> at '+sN+' claims \u00b7 <span style="color:#e9e7df">'+Math.min(doneN,sN)+'/'+sN+'</span>';
+      var wt=document.getElementById('msnWkTxt');
+      if(wt)wt.innerHTML=b9.weekClaimed?'<span style="color:#c2f64a">+$'+wU+' PAID</span>':(wC+'/'+wN9+' \u2192 +$'+wU);
+      var wb=document.getElementById('msnWkBar');if(wb)wb.style.width=Math.min(100,Math.round(wC/(wN9||15)*100))+'%';
+    }
     document.getElementById('msnFoot').textContent=doneN===d.missions.length?'All missions done for today \u2014 come back after 00:00 UTC.':'Do the thing anywhere on the site, come back, hit Claim.';
     if(d.resetInMs){var h=Math.floor(d.resetInMs/3600000),mi=Math.floor(d.resetInMs%3600000/60000);document.getElementById('msnReset').textContent=' (in '+h+'h '+mi+'m)';}
   }
+  function msnToast(t,col){var h=document.getElementById('msnToastH');if(!h){h=document.createElement('div');h.id='msnToastH';h.style.cssText='position:fixed;bottom:76px;left:50%;transform:translateX(-50%);z-index:1300;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none';document.body.appendChild(h);}var el=document.createElement('div');el.style.cssText='background:#12151d;border:1px solid '+col+';color:'+col+';border-radius:999px;padding:8px 16px;font:800 12.5px "Space Mono",monospace;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;white-space:nowrap';el.textContent=t;h.appendChild(el);requestAnimationFrame(function(){el.style.opacity='1';el.style.transform='none';});setTimeout(function(){el.style.opacity='0';setTimeout(function(){el.remove();},400);},2800);}
   function load(){fetch('/api/missions',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}
   card.addEventListener('click',function(e){
     var b=e.target.closest('[data-msn]');if(!b)return;
@@ -1002,7 +1139,10 @@
     fetch('/api/missions',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({mid:b.getAttribute('data-msn')})})
       .then(function(r){return r.json();})
       .then(function(d){
-        if(d&&d.ok){render({enabled:true,signedIn:true,missions:d.missions,resetInMs:null});
+        if(d&&d.ok){render({enabled:true,signedIn:true,missions:d.missions,resetInMs:null,bonus:d.bonus});
+          if(d.bonusXp)msnToast('+'+d.bonusXp+' XP MYSTERY BONUS','#c2f64a');
+          if(d.setBonusUsd)setTimeout(function(){msnToast('DAILY SET COMPLETE +$'+(+d.setBonusUsd).toFixed(2),'#ffd75a');},700);
+          if(d.weekBonusUsd)setTimeout(function(){msnToast('WEEKLY BONUS +$'+(+d.weekBonusUsd).toFixed(2),'#ffd75a');},1400);
           try{if(typeof refresh==='function')refresh();}catch(e2){}
           try{if(window.mpBal&&window.mpBal.grant)window.mpBal.grant(2500);}catch(e4){} // Balance Mode top-up per completed mission (no-op unless the VIP has Balance Mode)
           if(window.mpXpCheck)setTimeout(window.mpXpCheck,400);

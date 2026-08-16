@@ -26,6 +26,9 @@ const EX = [
   { name:'Bitget',  slug:'bitget',  ref:'https://www.bitget.com/referral/register?clacCode=DSSSQKGK',                                             lev:125, mmr:0.5, maker:0.02, taker:0.06, founded:2018, region:'Global; not available to residents of the United States', us:false, funding:'every 8 hours',
     blurb:'Bitget is a top-five futures exchange best known for copy trading — automatically mirror pro traders — with deep USDT-perpetual liquidity and up to 125x leverage.',
     detail:'Bitget turned copy trading into its flagship feature: you can mirror the positions of ranked lead traders automatically, with transparent stats on each. Behind that sits one of the larger futures order books in the market and up to 125x on the majors, making it a genuine top-five venue by derivatives volume.' },
+  { name:'MEXC',    slug:'mexc',    ref:'https://www.mexc.com/',                                                                                 lev:500, mmr:0.5, maker:0.01, taker:0.04, founded:2018, region:'Global; not available to residents of the United States and several restricted jurisdictions', us:false, funding:'every 8 hours',
+    blurb:'MEXC lists over 1,000 perpetual contracts — the widest futures menu of any major venue — with headline leverage up to 500x on select majors and some of the lowest maker fees in the market.',
+    detail:'MEXC competes on breadth and price: more than 1,000 USDT-perpetual pairs (new listings appear here first), maker fees from 0.01% down to 0% on selected pairs, and up to 500x leverage on BTC-class majors. The flip side of 500x is a razor-thin liquidation buffer — at that leverage a roughly 0.2% adverse move ends the position, which is exactly what this calculator makes visible before you try it with money. Maintenance margin on BTC starts around 0.5% at retail position sizes and tiers up with size.' },
 ];
 
 const esc = s => String(s).replace(/&/g, '&amp;');
