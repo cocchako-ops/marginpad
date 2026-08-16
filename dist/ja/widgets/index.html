@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>無料の清算計算ウィジェット — あなたのサイトに埋め込む | MarginPad</title>
+<meta name="description" content="1行のHTMLで、無料の暗号資産清算計算ツールをあなたのウェブサイトやブログに埋め込めます。リアルタイム価格、ロング＆ショート、あらゆる銘柄に対応。サインアップ不要、APIキー不要、無料。" />
+<meta name="keywords" content="清算計算ウィジェット, 清算計算ツール埋め込み, 暗号資産計算ウィジェット, 無料トレードウィジェット, 清算価格ウィジェット埋め込み" />
+<link rel="canonical" href="https://marginpad.io/ja/widgets/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/widgets/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/widgets/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/widgets/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/widgets/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/widgets/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/widgets/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/widgets/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/widgets/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/widgets/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/widgets/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/widgets/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/widgets/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/widgets/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/widgets/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="無料の清算計算ウィジェット — あなたのサイトに埋め込む" />
+<meta property="og:description" content="1行のHTMLで、無料の暗号資産清算計算ツールをあなたのサイトに埋め込めます。リアルタイム価格、ロング＆ショート、あらゆる銘柄に対応。" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/ja/widgets/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"MarginPad Liquidation Calculator Widget","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"https://marginpad.io/widgets/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free embeddable crypto liquidation calculator widget with live prices."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"ホーム","item":"https://marginpad.io/ja/"},{"@type":"ListItem","position":2,"name":"ウィジェット","item":"https://marginpad.io/ja/widgets/"}]}</script>
+<style>
+  .embed-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:28px;align-items:start;margin:24px 0 8px}
+  @media(max-width:720px){.embed-grid{grid-template-columns:1fr}}
+  .embed-prev{background:#0c0f13;border:1px solid var(--line-bright);border-radius:16px;padding:8px}
+  .embed-prev iframe{display:block;width:100%;border:0;border-radius:11px}
+  .code{position:relative;background:#0a0b0d;border:1px solid var(--line-bright);border-radius:12px;padding:16px 16px 14px;font-family:'Space Mono',monospace;font-size:12.5px;color:#c9d2dc;line-height:1.6;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+  .copy{position:absolute;top:10px;right:10px;background:#1a1f27;border:1px solid var(--line-bright);color:var(--ink-dim);font-family:'Space Mono',monospace;font-size:11px;padding:5px 10px;border-radius:7px;cursor:pointer}
+  .copy:hover{color:#c2f64a;border-color:#c2f64a}
+  .coins{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 18px}
+  .coins a{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-dim);text-decoration:none;border:1px solid var(--line-bright);border-radius:8px;padding:6px 11px}
+  .coins a:hover{color:#c2f64a;border-color:#c2f64a}
+  .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0 8px}
+  @media(max-width:620px){.feat{grid-template-columns:1fr}}
+  .feat div{background:var(--panel);border:1px solid var(--line-bright);border-radius:12px;padding:14px 15px;font-size:14px}
+  .feat b{display:block;color:#c2f64a;font-family:'Space Mono',monospace;font-size:12px;margin-bottom:5px}
+</style>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/ja/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/ja/">計算ツール</a><a href="/blog/">ブログ</a><a href="/glossary/">用語集</a></nav>
+  </header>
+  <div class="crumb"><a href="/ja/">ホーム</a> / ウィジェット</div>
+  <article>
+    <h1>無料の清算計算ウィジェット</h1>
+    <p class="lead">1行のHTMLで、リアルタイムの暗号資産<strong>清算計算ツール</strong>をあなたのウェブサイト、ブログ、トレードコミュニティに設置できます。リアルタイム価格を取得し、ロング＆amp;ショートやあらゆる銘柄に対応 — 無料、サインアップ不要、APIキー不要。</p>
+
+    <div class="embed-grid">
+      <div class="embed-prev">
+        <iframe src="/widget/liquidation-calculator/?coin=BTC" height="430" title="Liquidation Calculator by MarginPad" loading="lazy"></iframe>
+      </div>
+      <div>
+        <h2 style="margin-top:0">埋め込みコードをコピー</h2>
+        <div class="code"><button class="copy" type="button" onclick="(function(b){var t=b.parentNode.querySelector('code');navigator.clipboard&&navigator.clipboard.writeText(t.textContent);b.textContent='コピーしました ✓';setTimeout(function(){b.textContent='コピー';},1400);})(this)">コピー</button><code>&lt;iframe src="https://marginpad.io/widget/liquidation-calculator/?coin=BTC"
+  width="360" height="440" loading="lazy"
+  style="border:0;border-radius:14px;max-width:100%"
+  title="Liquidation Calculator by MarginPad"&gt;&lt;/iframe&gt;</code></div>
+        <h2>銘柄を選ぶ</h2>
+        <p><code>?coin=BTC</code> を任意のティッカーに変更してください — ウィジェットがその銘柄のリアルタイム価格を自動で読み込みます：</p>
+        <div class="coins">
+          <a href="/widget/liquidation-calculator/?coin=BTC" target="_blank">BTC</a>
+          <a href="/widget/liquidation-calculator/?coin=ETH" target="_blank">ETH</a>
+          <a href="/widget/liquidation-calculator/?coin=SOL" target="_blank">SOL</a>
+          <a href="/widget/liquidation-calculator/?coin=XRP" target="_blank">XRP</a>
+          <a href="/widget/liquidation-calculator/?coin=BNB" target="_blank">BNB</a>
+          <a href="/widget/liquidation-calculator/?coin=DOGE" target="_blank">DOGE</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat">
+      <div><b>リアルタイム価格</b>選んだ銘柄の現在価格を自動で読み込みます。</div>
+      <div><b>ロング＆ショート</b>両方向の分離マージン清算に対応。</div>
+      <div><b>完全無料</b>ずっと無料、アカウント不要、APIキー不要、どこでも動作します。</div>
+    </div>
+
+    <h2>なぜ埋め込むのか？</h2>
+    <p>リアルタイムの計算ツールは読者をページに長く留め、レバレッジ・清算・リスクに関するあらゆる記事に実用的な価値を加えます。完全に自己完結型で — ただの<code>&lt;iframe&gt;</code>なので — あなたのサイトの速度を落としたり壊したりすることはありません。クレジット表記は必須ではありませんが、小さな「Powered by MarginPad」リンクをいただけると幸いで、ツールを無料で提供し続ける助けになります。</p>
+
+    <h2>その他の無料ツール</h2>
+    <div class="related">
+      <a href="/ja/#liq">清算計算ツール</a>
+      <a href="/heatmap">清算ヒートマップ</a>
+      <a href="/paper-trade">ペーパートレード</a>
+      <a href="/funding-fee-calculator/">ファンディング手数料</a>
+      <a href="/blog/">トレードガイド</a>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">教育目的のツールであり、投資助言ではありません。概算には手数料やファンディングが含まれず、ご利用の取引所と異なる場合があります。</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/ja/">計算ツール</a> · <a href="/blog/">ブログ</a> · <a href="/glossary/">用語集</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

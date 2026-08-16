@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<title>免费加密货币策略回测器 — 测试交易策略 | MarginPad</title>
+<meta name="description" content="回测加密货币交易策略 — EMA 交叉、RSI 回归、SMA 趋势和 Donchian 突破 — 基于真实历史K线。查看胜率、盈亏比、最大回撤以及对比买入持有的资金曲线。免费，无需注册。" />
+<meta name="keywords" content="加密货币回测器, 策略回测, 交易策略测试, ema 交叉回测, 加密货币交易策略, 免费回测器" />
+<link rel="canonical" href="https://marginpad.io/zh/crypto-backtester/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-backtester/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/crypto-backtester/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-backtester/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/crypto-backtester/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/crypto-backtester/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/crypto-backtester/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/crypto-backtester/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/crypto-backtester/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/crypto-backtester/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/crypto-backtester/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/crypto-backtester/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/crypto-backtester/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/crypto-backtester/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-backtester/" />
+<meta name="theme-color" content="#08090b" />
+<meta property="og:title" content="免费加密货币策略回测器 — 测试交易策略 | MarginPad" />
+<meta property="og:description" content="基于真实历史K线回测加密货币交易策略。查看胜率、盈亏比、最大回撤以及对比买入持有的资金曲线。免费，无需注册。" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/zh/crypto-backtester/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="免费加密货币策略回测器 — 测试交易策略 | MarginPad" />
+<meta name="twitter:description" content="基于真实历史K线回测加密货币交易策略。查看胜率、盈亏比、最大回撤以及对比买入持有的资金曲线。免费，无需注册。" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/lab.css" />
+<style>
+  .eq{height:230px}
+  .faq h3{font-family:'Bricolage Grotesque',sans-serif;font-size:15.5px;font-weight:700;margin:22px 0 6px;letter-spacing:-.01em}
+  .faq p{color:var(--dim);font-size:14px;line-height:1.65;margin:0;max-width:760px}
+  .prose p{color:var(--dim);font-size:14.5px;line-height:1.7;max-width:760px;margin:0 0 12px}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Strategy Backtester","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://marginpad.io/crypto-backtester/","description":"回测加密货币交易策略 — EMA 交叉、RSI 回归、SMA 趋势和 Donchian 突破 — 基于真实历史K线。查看胜率、盈亏比、最大回撤以及对比买入持有的资金曲线。"}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"全部工具","item":"https://marginpad.io/zh/tools/"},{"@type":"ListItem","position":2,"name":"加密货币策略回测器","item":"https://marginpad.io/zh/crypto-backtester/"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"什么是交易策略回测？","acceptedAnswer":{"@type":"Answer","text":"回测是在历史价格数据上运行一套固定的交易规则，以查看该策略在过去的表现。它会报告总收益、胜率、盈亏比和最大回撤，并将其与单纯的买入持有作对比 — 这样你就能在投入真金白银之前判断这套规则是否具有优势。"}},{"@type":"Question","name":"我可以回测哪些策略？","acceptedAnswer":{"@type":"Answer","text":"四种经典的基于规则的策略：EMA 交叉 (9 / 21)、价格对比 SMA 50 趋势跟随、RSI(14) 均值回归，以及 20 根 Donchian 通道突破。每种策略都在你所选币种和时间周期的真实历史K线上以仅做多方式运行。"}},{"@type":"Question","name":"这个回测器的准确度如何？","acceptedAnswer":{"@type":"Answer","text":"它使用历史收盘价和固定的单边手续费，不计滑点、资金费用或部分成交，并且仅做多。信号在每根K线的收盘时计算，并在下一根K线执行。请将结果视为关于某策略是否具有优势的方向性、教育性参考 — 而非对未来或真实表现的保证。"}}]}
+</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/zh/">MARGIN<b>PAD</b></a><nav class="tool-switch"><a href="/zh/tools/">全部工具</a><a href="/zh/crypto-backtester/" class="on">回测器</a><a href="/trading-journal/">交易日志</a><a href="/pivot-point-calculator/">轴点</a><a href="/risk-of-ruin-calculator/">风险</a><a href="/crypto-correlation-matrix/">相关性</a></nav><a class="home" href="/zh/">← marginpad.io</a></header>
+<div class="wrap">
+  <section class="hero">
+    <span class="eyebrow">回测器</span>
+    <h1>加密货币策略回测器</h1>
+    <p class="sub">在真实历史K线上运行基于规则的策略，看看它的历史表现如何 — 并与单纯的买入持有作对比。EMA 交叉、RSI、SMA 趋势或 Donchian 突破，适用于任意币种。</p>
+  </section>
+
+  <div class="toolbar">
+    <div class="row">
+      <label class="f">币种<input id="coin" value="BTC" maxlength="12" autocomplete="off" style="width:110px"></label>
+      <label class="f">时间周期<select id="tf"><option value="60">1h</option><option value="240" selected>4h</option><option value="1440">1d</option><option value="15">15m</option></select></label>
+      <label class="f">策略<select id="strat">
+        <optgroup label="Trend">
+          <option value="emacross">EMA 交叉 (9 / 21)</option>
+          <option value="smatrend">价格 vs SMA 50</option>
+          <option value="goldcross">Golden cross (SMA 50/200)</option>
+          <option value="ema3">EMA ribbon (8&gt;21&gt;50)</option>
+          <option value="st">Supertrend (10, 3)</option>
+          <option value="macd">MACD cross (12/26/9)</option>
+        </optgroup>
+        <optgroup label="Momentum">
+          <option value="momo">Momentum (ROC 10 &gt; 0)</option>
+          <option value="stoch">Stochastic (14,3) 20/80</option>
+          <option value="rsi">RSI 回归 (14)</option>
+          <option value="rsi2">RSI-2 scalp (10/60)</option>
+        </optgroup>
+        <optgroup label="Breakout">
+          <option value="donch">Donchian 突破 (20)</option>
+          <option value="donch55">Donchian 55 (turtle)</option>
+          <option value="bbbreak">Bollinger breakout (20,2)</option>
+          <option value="kelt">Keltner breakout (20, 2xATR)</option>
+        </optgroup>
+        <optgroup label="Mean reversion">
+          <option value="bbrevert">Bollinger dip-buy (20,2)</option>
+          <option value="mrev">Buy 2% below SMA-20</option>
+        </optgroup>
+      </select></label>
+      <label class="f">初始资金 $<input id="cap" type="number" value="1000" min="1" style="width:110px"></label>
+      <label class="f">手续费 % / 单边<input id="fee" type="number" value="0.05" step="0.01" min="0" style="width:90px"></label>
+      <button class="btn" id="run">运行回测</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div id="out" hidden>
+    <h2>结果 <span class="muted" id="resSub"></span></h2>
+    <div class="kpis" id="kpis"></div>
+
+    <h2>资金曲线</h2>
+    <div class="tablewrap" style="padding:16px 18px 14px">
+      <svg class="viz eq" id="eq" viewBox="0 0 600 230" preserveAspectRatio="none" style="margin-top:0;border:none;background:transparent"></svg>
+      <div class="legend"><span><i style="background:#c2f64a"></i>策略</span><span><i style="background:#5c656f"></i>买入持有</span></div>
+    </div>
+
+    <h2>交易记录 <span class="muted" id="trSub"></span></h2>
+    <div class="tablewrap"><div class="tablescroll"><table id="trades"></table></div></div>
+  </div>
+
+  <h2>回测器的工作原理</h2>
+  <div class="prose">
+    <p>每个策略读取已完成的K线，并在每根K线的<b>收盘</b>时产生做多或空仓信号，然后在<b>下一</b>根K线上执行 — 因此你今天看到的信号会在下一根K线入场，绝不使用未来信息。你可以选择币种、时间周期、初始资金，以及对交易每个单边收取的固定手续费。引擎逐根K线对仓位进行盯市，并记录每一笔入场和出场。</p>
+    <p>内置四套经典规则：<b>EMA 交叉</b>（9 上穿 21）、<b>价格对比 SMA 50</b> 趋势跟随、<b>RSI(14)</b> 均值回归，以及 <b>20 根 Donchian 突破</b>。结果均为仅做多，使用收盘价，不计滑点或资金费用，因此请将其视为关于某策略是否具有优势的教育性研究 — 而非投资建议。</p>
+  </div>
+
+  <h2>常见问题</h2>
+  <div class="faq">
+    <h3>什么是交易策略回测？</h3>
+    <p>回测是在历史价格数据上运行一套固定的交易规则，以查看该策略在过去的表现。它会报告总收益、胜率、盈亏比和最大回撤，并将其与单纯的买入持有作对比 — 这样你就能在投入真金白银之前判断这套规则是否具有优势。</p>
+    <h3>我可以回测哪些策略？</h3>
+    <p>四种经典的基于规则的策略：EMA 交叉 (9 / 21)、价格对比 SMA 50 趋势跟随、RSI(14) 均值回归，以及 20 根 Donchian 通道突破。每种策略都在你所选币种和时间周期的真实历史K线上以仅做多方式运行。</p>
+    <h3>这个回测器的准确度如何？</h3>
+    <p>它使用历史收盘价和固定的单边手续费，不计滑点、资金费用或部分成交，并且仅做多。信号在每根K线的收盘时计算，并在下一根K线执行。请将结果视为关于某策略是否具有优势的方向性、教育性参考 — 而非对未来或真实表现的保证。</p>
+  </div>
+</div>
+
+<div class="wrap" style="padding-bottom:0">
+<div class="mpaff"><style>.mpaff{display:flex;align-items:center;gap:16px;flex-wrap:wrap;max-width:1160px;margin:34px auto 0;padding:13px 18px;border:1px solid #262e3a;border-radius:13px;background:linear-gradient(120deg,rgba(247,166,0,.05),transparent 40%,rgba(138,92,255,.07)),#0c0f13;font-size:13px}.mpaff-t{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.22em;color:#5c656f}.mpaff a{display:inline-flex;align-items:center;gap:7px;color:#e9e7df;text-decoration:none;font-weight:700;transition:color .15s}.mpaff a small{color:#8b95a1;font-weight:400}.mpaff a i{width:8px;height:8px;border-radius:3px;display:inline-block}.mpaff a b{color:#5c656f;transition:transform .15s;font-weight:700}.mpaff a:hover b{transform:translateX(3px);color:#e9e7df}</style><span class="mpaff-t">TRADE FOR REAL</span><a data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer"><i style="background:#f7a600"></i>Bybit <small>futures &middot; 100&times;</small><b>&rarr;</b></a><a data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer"><i style="background:linear-gradient(135deg,#8a5cff,#c2f64a)"></i>Moon <small>up or down &middot; 24/7</small><b>&rarr;</b></a></div>
+<footer class="toolfoot"><div class="cols"><div><a class="brand" href="/zh/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">免费的加密货币合约工具——计算器、实时图表工作区、模拟交易终端和实时爆仓数据流。无需注册。</p></div><div><h4>工具</h4><a href="/crypto-backtester/">策略回测器</a><a href="/trading-journal/">交易日志</a><a href="/pivot-point-calculator/">轴点</a><a href="/risk-of-ruin-calculator/">破产风险</a><a href="/crypto-correlation-matrix/">相关性矩阵</a></div><div><h4>MarginPad</h4><a href="/paper-trade">模拟交易</a><a href="/charts">图表</a><a href="/calculators">计算器</a><a href="/screener">筛选器</a><a href="/rekt/">爆仓</a></div></div><div class="bottom">© 2026 MarginPad · 免费加密货币交易工具 · 非投资建议</div></footer>
+</div>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  function ema(v,p){var k=2/(p+1),o=[],e;for(var i=0;i<v.length;i++){e=i?v[i]*k+o[i-1]*(1-k):v[i];o.push(e);}return o;}
+  function sma(v,p){var o=[],s=0;for(var i=0;i<v.length;i++){s+=v[i];if(i>=p)s-=v[i-p];o.push(i>=p-1?s/p:NaN);}return o;}
+  function rsi(v,p){var o=[],g=0,l=0;for(var i=0;i<v.length;i++){if(i===0){o.push(NaN);continue;}var ch=v[i]-v[i-1],u=ch>0?ch:0,d=ch<0?-ch:0;if(i<=p){g+=u;l+=d;o.push(i===p?100-100/(1+(l===0?100:g/l)):NaN);if(i===p){g/=p;l/=p;}}else{g=(g*(p-1)+u)/p;l=(l*(p-1)+d)/p;o.push(100-100/(1+(l===0?100:g/l)));}}return o;}
+  function money(x){var n=x<0;x=Math.abs(+x||0);var s=x>=1000?x.toLocaleString('en-US',{maximumFractionDigits:0}):x.toFixed(2);return (n?'-$':'$')+s;}
+  function pct(x){return (x>=0?'+':'')+(+x).toFixed(1)+'%';}
+  function stdv(v,p){var o=[];for(var i=0;i<v.length;i++){if(i<p-1){o.push(NaN);continue;}var s=0,j;for(j=i-p+1;j<=i;j++)s+=v[j];var m=s/p,q=0;for(j=i-p+1;j<=i;j++)q+=(v[j]-m)*(v[j]-m);o.push(Math.sqrt(q/p));}return o;}
+  function atr(h,l,c,p){var tr=[],o=[];for(var i=0;i<c.length;i++){tr.push(i?Math.max(h[i]-l[i],Math.abs(h[i]-c[i-1]),Math.abs(l[i]-c[i-1])):h[i]-l[i]);}var a=0;for(i=0;i<c.length;i++){if(i<p){a+=tr[i];o.push(i===p-1?a/p:NaN);}else{a=(o[i-1]*(p-1)+tr[i])/p;o.push(a);}}return o;}
+  function donchWant(c,h,P){var want=[],inpos=false;for(var i=0;i<c.length;i++){if(i<P){want.push(false);continue;}var hh=-Infinity,ll=Infinity;for(var j=i-P;j<i;j++){if(h[j]>hh)hh=h[j];}for(j=i-Math.ceil(P/2);j<i;j++){}if(!inpos&&c[i]>hh)inpos=true;else if(inpos){var mid=0,n=0;for(j=Math.max(0,i-P);j<i;j++){mid+=c[j];n++;}if(c[i]<mid/n)inpos=false;}want.push(inpos);}return want;}
+  function signals(strat,c,h,l){
+    var want=[],i,j,inpos=false;
+    if(strat==='emacross'){var f=ema(c,9),s=ema(c,21);for(i=0;i<c.length;i++)want.push(f[i]>s[i]);}
+    else if(strat==='smatrend'){var m=sma(c,50);for(i=0;i<c.length;i++)want.push(isFinite(m[i])&&c[i]>m[i]);}
+    else if(strat==='goldcross'){var s50=sma(c,50),s200=sma(c,200);for(i=0;i<c.length;i++)want.push(isFinite(s200[i])&&s50[i]>s200[i]);}
+    else if(strat==='ema3'){var e8=ema(c,8),e21=ema(c,21),e50=ema(c,50);for(i=0;i<c.length;i++)want.push(i>50&&e8[i]>e21[i]&&e21[i]>e50[i]);}
+    else if(strat==='st'){var a10=atr(h,l,c,10),dir=1,ub=NaN,lb=NaN;for(i=0;i<c.length;i++){if(!isFinite(a10[i])){want.push(false);continue;}var hl2=(h[i]+l[i])/2,bu=hl2+3*a10[i],bl=hl2-3*a10[i];ub=isFinite(ub)?(c[i-1]>ub?bu:Math.min(bu,ub)):bu;lb=isFinite(lb)?(c[i-1]<lb?bl:Math.max(bl,lb)):bl;if(dir===1&&c[i]<lb)dir=-1;else if(dir===-1&&c[i]>ub)dir=1;want.push(dir===1);}}
+    else if(strat==='macd'){var e12=ema(c,12),e26=ema(c,26),md=[],sg;for(i=0;i<c.length;i++)md.push(e12[i]-e26[i]);sg=ema(md,9);for(i=0;i<c.length;i++)want.push(i>30&&md[i]>sg[i]);}
+    else if(strat==='momo'){for(i=0;i<c.length;i++)want.push(i>=10&&c[i]>c[i-10]);}
+    else if(strat==='stoch'){for(i=0;i<c.length;i++){if(i<14){want.push(false);continue;}var hh=-Infinity,ll=Infinity;for(j=i-13;j<=i;j++){if(h[j]>hh)hh=h[j];if(l[j]<ll)ll=l[j];}var kk=hh>ll?(c[i]-ll)/(hh-ll)*100:50;if(!inpos&&kk<20)inpos=true;else if(inpos&&kk>80)inpos=false;want.push(inpos);}}
+    else if(strat==='rsi'){var r=rsi(c,14);for(i=0;i<c.length;i++){if(!isFinite(r[i])){want.push(false);continue;}if(!inpos&&r[i]<30)inpos=true;else if(inpos&&r[i]>55)inpos=false;want.push(inpos);}}
+    else if(strat==='rsi2'){var r2=rsi(c,2);for(i=0;i<c.length;i++){if(!isFinite(r2[i])){want.push(false);continue;}if(!inpos&&r2[i]<10)inpos=true;else if(inpos&&r2[i]>60)inpos=false;want.push(inpos);}}
+    else if(strat==='donch55'){want=donchWant(c,h,55);}
+    else if(strat==='bbbreak'){var m20=sma(c,20),sd=stdv(c,20);for(i=0;i<c.length;i++){if(!isFinite(m20[i])){want.push(false);continue;}if(!inpos&&c[i]>m20[i]+2*sd[i])inpos=true;else if(inpos&&c[i]<m20[i])inpos=false;want.push(inpos);}}
+    else if(strat==='kelt'){var e20=ema(c,20),a10b=atr(h,l,c,10);for(i=0;i<c.length;i++){if(!isFinite(a10b[i])||i<20){want.push(false);continue;}if(!inpos&&c[i]>e20[i]+2*a10b[i])inpos=true;else if(inpos&&c[i]<e20[i])inpos=false;want.push(inpos);}}
+    else if(strat==='bbrevert'){var mB=sma(c,20),sdB=stdv(c,20);for(i=0;i<c.length;i++){if(!isFinite(mB[i])){want.push(false);continue;}if(!inpos&&c[i]<mB[i]-2*sdB[i])inpos=true;else if(inpos&&c[i]>mB[i])inpos=false;want.push(inpos);}}
+    else if(strat==='mrev'){var mR=sma(c,20);for(i=0;i<c.length;i++){if(!isFinite(mR[i])){want.push(false);continue;}if(!inpos&&c[i]<mR[i]*0.98)inpos=true;else if(inpos&&c[i]>=mR[i])inpos=false;want.push(inpos);}}
+    else{want=donchWant(c,h,20);}
+    return want;
+  }
+  function run(){
+    var coin=($('coin').value||'BTC').toUpperCase().replace(/[^A-Z0-9]/g,'')||'BTC';
+    var tf=$('tf').value, strat=$('strat').value, cap0=+$('cap').value||1000, fee=(+$('fee').value||0)/100;
+    $('status').textContent="加载 "+coin+" 根K线…"; $('run').disabled=true;
+    fetch('/api/klines?symbol='+coin+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){
+      var k=Array.isArray(d)?d:((d&&(d.klines||d.data||d.candles))||[]);
+      k=k.map(function(x){return Array.isArray(x)?{time:x[0],open:+x[1],high:+x[2],low:+x[3],close:+x[4]}:{time:x.time,open:+x.open,high:+x.high,low:+x.low,close:+x.close};}).filter(function(x){return isFinite(x.close);});
+      if(k.length<60){$('status').textContent="数据不足："+coin+" — 请尝试其他币种或时间周期。";$('run').disabled=false;return;}
+      var c=k.map(function(x){return x.close;}),h=k.map(function(x){return x.high;}),l=k.map(function(x){return x.low;});
+      var want=signals(strat,c,h,l);
+      var eq=cap0, pos=0, entry=0, trades=[], curve=[], bh=cap0, peak=cap0, maxDD=0;
+      for(var i=1;i<k.length;i++){
+        if(pos>0){eq*= (c[i]/c[i-1]);}
+        var sigPrev=want[i-1];
+        if(pos===0 && sigPrev){pos=eq/c[i]*(1-fee);entry=c[i];eq*=(1-fee);}
+        else if(pos>0 && !sigPrev){var ret=(c[i]/entry)-1;eq*=(1-fee);trades.push({i:i,entry:entry,exit:c[i],ret:ret*100-fee*200,t:k[i].time});pos=0;}
+        bh*= (c[i]/c[i-1]);
+        if(eq>peak)peak=eq; var dd=(eq-peak)/peak*100; if(dd<maxDD)maxDD=dd;
+        curve.push({s:eq,b:bh});
+      }
+      if(pos>0){var rr=(c[c.length-1]/entry)-1;trades.push({i:k.length-1,entry:entry,exit:c[c.length-1],ret:rr*100-fee*100,t:k[k.length-1].time,open:true});}
+      var wins=trades.filter(function(t){return t.ret>0;}),losses=trades.filter(function(t){return t.ret<=0;});
+      var gw=wins.reduce(function(s,t){return s+t.ret;},0),gl=Math.abs(losses.reduce(function(s,t){return s+t.ret;},0));
+      var ret=(eq/cap0-1)*100, bhret=(bh/cap0-1)*100, wr=trades.length?wins.length/trades.length*100:0;
+      var pf=gl>0?gw/gl:(gw>0?99:0), avgW=wins.length?gw/wins.length:0, avgL=losses.length?-gl/losses.length:0;
+      render({coin:coin,tf:tf,ret:ret,bhret:bhret,eq:eq,cap0:cap0,trades:trades,wr:wr,pf:pf,avgW:avgW,avgL:avgL,maxDD:maxDD,curve:curve,bars:k.length});
+      $('status').textContent=''; $('run').disabled=false;
+    }).catch(function(){$('status').textContent="无法加载数据 — 请重试。";$('run').disabled=false;});
+  }
+  function render(R){
+    $('out').hidden=false;
+    var tfl={'15':'15m','60':'1h','240':'4h','1440':'1d'}[R.tf]||R.tf;
+    $('resSub').textContent='· '+R.coin+' '+tfl+' · '+R.bars+" 根K线";
+    function kpi(v,l,cls){return '<div class="kpi '+(cls||'')+'"><div class="v '+(cls||'')+'">'+v+'</div><div class="l">'+l+'</div></div>';}
+    $('kpis').innerHTML=kpi(pct(R.ret),"策略收益",R.ret>=0?'pos':'neg')
+      +kpi(pct(R.bhret),"买入持有",R.bhret>=0?'pos':'neg')
+      +kpi((R.ret-R.bhret>=0?'+':'')+(R.ret-R.bhret).toFixed(1)+'%',"对比持有",R.ret-R.bhret>=0?'pos':'neg')
+      +kpi(R.trades.length,"交易笔数")
+      +kpi(R.wr.toFixed(0)+'%',"胜率")
+      +kpi(R.pf.toFixed(2),"盈亏比")
+      +kpi(R.avgW.toFixed(1)+'%',"平均盈利",'pos')
+      +kpi(R.avgL.toFixed(1)+'%',"平均亏损",'neg')
+      +kpi(R.maxDD.toFixed(1)+'%',"最大回撤",'neg')
+      +kpi(money(R.eq),"最终资金",R.eq>=R.cap0?'pos':'neg');
+    var cv=R.curve,mn=Infinity,mx=-Infinity;cv.forEach(function(p){mn=Math.min(mn,p.s,p.b);mx=Math.max(mx,p.s,p.b);});
+    var W=600,H=230,pad=8;function X(i){return pad+i/(cv.length-1||1)*(W-2*pad);}function Y(v){return H-pad-((v-mn)/((mx-mn)||1))*(H-2*pad);}
+    function path(key){var d='';cv.forEach(function(p,i){d+=(i?'L':'M')+X(i).toFixed(1)+' '+Y(p[key]).toFixed(1);});return d;}
+    $('eq').innerHTML='<path d="'+path('b')+'" fill="none" stroke="#5c656f" stroke-width="1.5"/><path d="'+path('s')+'" fill="none" stroke="#c2f64a" stroke-width="2"/>';
+    $('trSub').textContent='· '+R.trades.length+" 笔";
+    var rows='<thead><tr><th>#</th><th>入场</th><th>出场</th><th>收益</th></tr></thead><tbody>';
+    R.trades.slice().reverse().forEach(function(t,idx){var n=R.trades.length-idx;rows+='<tr><td>'+n+(t.open?' <span style="color:#ffb347">'+"持仓中"+'</span>':'')+'</td><td>'+t.entry.toPrecision(6)+'</td><td>'+t.exit.toPrecision(6)+'</td><td class="'+(t.ret>=0?'pos':'neg')+'">'+pct(t.ret)+'</td></tr>';});
+    rows+='</tbody>';
+    $('trades').innerHTML=rows;
+  }
+  $('run').addEventListener('click',run);
+  $('coin').addEventListener('keydown',function(e){if(e.key==='Enter')run();});
+  run();
+})();
+</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

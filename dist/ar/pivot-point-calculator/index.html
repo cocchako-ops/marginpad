@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>حاسبة نقاط الارتكاز للعملات الرقمية — مستويات يومية وأسبوعية | MarginPad</title>
+<meta name="description" content="حاسبة مجانية لنقاط الارتكاز للعملات الرقمية: مستويات الدعم والمقاومة اليومية والأسبوعية بطرق Classic وFibonacci وCamarilla لأي عملة، مع وضع السعر الحي على السلّم. بدون تسجيل." />
+<meta name="keywords" content="حاسبة نقاط الارتكاز, نقاط ارتكاز العملات الرقمية, حاسبة الدعم والمقاومة, نقاط ارتكاز فيبوناتشي, نقاط ارتكاز كاماريلا, نقاط الارتكاز اليومية للعملات الرقمية" />
+<link rel="canonical" href="https://marginpad.io/ar/pivot-point-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/pivot-point-calculator/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/pivot-point-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/pivot-point-calculator/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/pivot-point-calculator/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/pivot-point-calculator/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/pivot-point-calculator/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/pivot-point-calculator/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/pivot-point-calculator/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/pivot-point-calculator/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/pivot-point-calculator/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/pivot-point-calculator/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/pivot-point-calculator/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/pivot-point-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/pivot-point-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/ar/pivot-point-calculator/" />
+<meta property="og:title" content="حاسبة نقاط الارتكاز للعملات الرقمية — مستويات يومية وأسبوعية | MarginPad" />
+<meta property="og:description" content="حاسبة مجانية لنقاط الارتكاز للعملات الرقمية: مستويات الدعم والمقاومة اليومية والأسبوعية بطرق Classic وFibonacci وCamarilla لأي عملة، مع وضع السعر الحي على السلّم. بدون تسجيل." />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="حاسبة نقاط الارتكاز للعملات الرقمية — مستويات يومية وأسبوعية | MarginPad" />
+<meta name="twitter:description" content="حاسبة مجانية لنقاط الارتكاز للعملات الرقمية: مستويات الدعم والمقاومة اليومية والأسبوعية بطرق Classic وFibonacci وCamarilla لأي عملة، مع وضع السعر الحي على السلّم. بدون تسجيل." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/lab.css" />
+<style>
+  .lvl{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(32,38,47,.55);font-family:'Space Mono',monospace}
+  .lvl:last-child{border-bottom:none}
+  .lvl .nm{width:44px;font-weight:700;font-size:13px;letter-spacing:.02em}
+  .lvl .pr{flex:1;font-size:15px;color:var(--ink)}
+  .lvl .ds{color:var(--faint);font-size:12px}
+  .lvl.r{background:linear-gradient(90deg,rgba(255,98,88,.06),transparent)}
+  .lvl.s{background:linear-gradient(90deg,rgba(55,211,152,.06),transparent)}
+  .lvl.p{background:linear-gradient(90deg,rgba(194,246,74,.05),transparent)}
+  .lvl.p .nm{color:var(--lime)}
+  .lvl.r .nm{color:var(--red)}
+  .lvl.s .nm{color:var(--up)}
+  .lvl.nowrow{background:rgba(70,224,230,.09)!important}
+  .lvl.nowrow .nm,.lvl.nowrow .pr{color:var(--cyan)}
+  .nowrow{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#0a0d11;border:1px dashed var(--cyan);border-radius:var(--rs);margin:0;color:var(--cyan);font-family:'Space Mono',monospace;font-weight:700;font-size:14px}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Pivot Point Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/pivot-point-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"كل الأدوات","item":"https://marginpad.io/ar/tools/"},{"@type":"ListItem","position":2,"name":"حاسبة نقاط الارتكاز","item":"https://marginpad.io/ar/pivot-point-calculator/"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"ما هي نقاط الارتكاز؟","acceptedAnswer":{"@type":"Answer","text":"نقاط الارتكاز هي مجموعة من مستويات الدعم والمقاومة المشتقة من حركة سعر جلسة سابقة. تعمل نقطة الارتكاز المركزية (P) كمرجع لاتجاه اليوم، بينما تشير المستويات الأعلى (R1، R2، R3) والأدنى (S1، S2، S3) إلى المواضع التي يُرجَّح أن يجد فيها السعر مقاومة أو دعمًا. يستخدمها المتداولون لتخطيط نقاط الدخول وأوامر الإيقاف والأهداف."}},{"@type":"Question","name":"ما الفرق بين نقاط ارتكاز Classic وFibonacci وCamarilla؟","acceptedAnswer":{"@type":"Answer","text":"تباعد نقاط ارتكاز Classic (متداولي القاعة) المستويات بالتساوي باستخدام المدى أعلى وأسفل نقطة الارتكاز المركزية. تضع نقاط ارتكاز Fibonacci المستويات R1/S1 وR2/S2 وR3/S3 عند 0.382 و0.618 و1.0 من المدى السابق، فتتجمّع المستويات بالقرب من نقطة الارتكاز. تستخدم نقاط ارتكاز Camarilla مضاعِفات ضيقة مرتكزة على سعر الإغلاق، مما ينتج مستويات يومية متقاربة يفضّلها متداولو الارتداد نحو المتوسط."}},{"@type":"Question","name":"كيف تُحسب المستويات اليومية؟","acceptedAnswer":{"@type":"Answer","text":"تُحسب المستويات اليومية من أعلى وأدنى وإغلاق الجلسة المكتملة السابقة. تُغذّى هذه القيم الثلاث في الصيغة المختارة (Classic أو Fibonacci أو Camarilla) لإنتاج نقطة الارتكاز المركزية إضافةً إلى مستويات المقاومة والدعم للجلسة الحالية."}}]}
+</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/ar/">MARGIN<b>PAD</b></a><nav class="tool-switch"><a href="/ar/tools/">كل الأدوات</a><a href="/crypto-backtester/">الاختبار الرجعي</a><a href="/trading-journal/">اليوميات</a><a href="/ar/pivot-point-calculator/" class="on">نقاط الارتكاز</a><a href="/risk-of-ruin-calculator/">المخاطر</a><a href="/crypto-correlation-matrix/">الارتباط</a></nav><a class="home" href="/ar/">← marginpad.io</a></header>
+
+<div class="wrap">
+  <section class="hero">
+    <span class="eyebrow">المستويات</span>
+    <h1>حاسبة نقاط الارتكاز</h1>
+    <p class="sub">مستويات الدعم والمقاومة التي تراقبها مكاتب التداول — Classic وFibonacci وCamarilla، يومية أو أسبوعية — محسوبة من آخر جلسة مكتملة، مع وضع السعر الحي على السلّم.</p>
+  </section>
+
+  <div class="toolbar">
+    <div class="row">
+      <label class="f">العملة<input id="coin" value="BTC" maxlength="12" autocomplete="off" style="width:120px"></label>
+      <label class="f">الفترة<select id="per"><option value="d">يومي</option><option value="w">أسبوعي</option></select></label>
+      <label class="f">الطريقة<select id="method"><option value="classic">Classic</option><option value="fib">Fibonacci</option><option value="cam">Camarilla</option></select></label>
+      <button class="btn" id="run">احسب</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div id="out" hidden style="margin-top:18px">
+    <div class="nowrow" id="now"></div>
+    <div class="tablewrap" id="ladder" style="margin-top:12px"></div>
+    <div class="note">مستويات من <span id="perL">اليوم</span> المكتمل السابق (H/L/C). <b>Classic</b> = نقطة الارتكاز القياسية لمتداولي القاعة؛ <b>Fibonacci</b> يستخدم 0.382 / 0.618 / 1.0 من المدى السابق؛ <b>Camarilla</b> يجمّع مستويات يومية ضيقة حول سعر الإغلاق. ليست نصيحة مالية.</div>
+  </div>
+
+  <h2>كيفية استخدام نقاط الارتكاز</h2>
+  <p class="muted" style="max-width:760px;font-size:15px;color:var(--ink2);line-height:1.65">
+    اختر عملة، وحدّد <b>يومي</b> أو <b>أسبوعي</b>، ثم اختر طريقة. تسحب الحاسبة أعلى وأدنى وإغلاق آخر جلسة مكتملة وتطبع سلّمًا من المستويات مع وضع السعر الحي عليه. نقطة الارتكاز المركزية (P) هي مرجع الجلسة: التداول فوقها يميل صعوديًا، وتحتها هبوطيًا. تعامل مع <b>R1–R3</b> كمقاومة قد تتوقف عندها أو تنعكس الارتفاعات، ومع <b>S1–S3</b> كدعم قد تصمد عنده الانخفاضات. يراقب كثير من المتداولين رد فعل السعر عند أقرب مستوى، ويدخلون الصفقات عند الصمود أو الاختراق، ويضعون أوامر الإيقاف خلف المستوى التالي مباشرة. تناسب Camarilla صفقات السكالبينج الضيقة المرتدة نحو المتوسط؛ بينما تناسب Classic وFibonacci إعدادات التأرجح الأوسع. أكّد دائمًا بحركة السعر وأدِر المخاطر في كل صفقة.
+  </p>
+
+  <h2>الأسئلة الشائعة</h2>
+  <p style="font-weight:700;color:var(--ink);margin:18px 0 4px">ما هي نقاط الارتكاز؟</p>
+  <p class="muted" style="font-size:14px;line-height:1.65;max-width:760px">نقاط الارتكاز هي مجموعة من مستويات الدعم والمقاومة المشتقة من حركة سعر جلسة سابقة. تعمل نقطة الارتكاز المركزية (P) كمرجع لاتجاه اليوم، بينما تشير المستويات الأعلى (R1، R2، R3) والأدنى (S1، S2، S3) إلى المواضع التي يُرجَّح أن يجد فيها السعر مقاومة أو دعمًا. يستخدمها المتداولون لتخطيط نقاط الدخول وأوامر الإيقاف والأهداف.</p>
+
+  <p style="font-weight:700;color:var(--ink);margin:18px 0 4px">ما الفرق بين نقاط ارتكاز Classic وFibonacci وCamarilla؟</p>
+  <p class="muted" style="font-size:14px;line-height:1.65;max-width:760px">تباعد نقاط ارتكاز Classic (متداولي القاعة) المستويات بالتساوي باستخدام المدى أعلى وأسفل نقطة الارتكاز المركزية. تضع نقاط ارتكاز Fibonacci المستويات R1/S1 وR2/S2 وR3/S3 عند 0.382 و0.618 و1.0 من المدى السابق، فتتجمّع المستويات بالقرب من نقطة الارتكاز. تستخدم نقاط ارتكاز Camarilla مضاعِفات ضيقة مرتكزة على سعر الإغلاق، مما ينتج مستويات يومية متقاربة يفضّلها متداولو الارتداد نحو المتوسط.</p>
+
+  <p style="font-weight:700;color:var(--ink);margin:18px 0 4px">كيف تُحسب المستويات اليومية؟</p>
+  <p class="muted" style="font-size:14px;line-height:1.65;max-width:760px">تُحسب المستويات اليومية من أعلى وأدنى وإغلاق الجلسة المكتملة السابقة. تُغذّى هذه القيم الثلاث في الصيغة المختارة (Classic أو Fibonacci أو Camarilla) لإنتاج نقطة الارتكاز المركزية إضافةً إلى مستويات المقاومة والدعم للجلسة الحالية.</p>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  function fp(x){x=+x;return x>=1000?x.toLocaleString('en-US',{maximumFractionDigits:2}):x>=1?x.toFixed(4):x.toPrecision(5);}
+  function levels(method,H,L,C){
+    var P=(H+L+C)/3,r=H-L,out=[];
+    if(method==='classic'){out=[['R3',H+2*(P-L)],['R2',P+r],['R1',2*P-L],['P',P],['S1',2*P-H],['S2',P-r],['S3',L-2*(H-P)]];}
+    else if(method==='fib'){out=[['R3',P+r],['R2',P+0.618*r],['R1',P+0.382*r],['P',P],['S1',P-0.382*r],['S2',P-0.618*r],['S3',P-r]];}
+    else{var u=1.1;out=[['R4',C+r*u/2],['R3',C+r*u/4],['R2',C+r*u/6],['R1',C+r*u/12],['P',P],['S1',C-r*u/12],['S2',C-r*u/6],['S3',C-r*u/4],['S4',C-r*u/2]];}
+    return out.map(function(x){return {nm:x[0],v:x[1],type:x[0][0]==='R'?'r':x[0][0]==='S'?'s':'p'};});
+  }
+  function run(){
+    var coin=($('coin').value||'BTC').toUpperCase().replace(/[^A-Z0-9]/g,'')||'BTC';
+    var per=$('per').value, method=$('method').value;
+    $('status').textContent="جارٍ التحميل…";$('run').disabled=true;$('perL').textContent=per==='w'?"أسبوع":"يوم";
+    Promise.all([
+      fetch('/api/klines?symbol='+coin+'&interval=1440',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}),
+      fetch('/api/price?symbol='+coin,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
+    ]).then(function(res){
+      var d=res[0];var k=Array.isArray(d)?d:((d&&(d.klines||d.data||d.candles))||[]);
+      k=k.map(function(x){return Array.isArray(x)?{high:+x[2],low:+x[3],close:+x[4]}:{high:+x.high,low:+x.low,close:+x.close};}).filter(function(x){return isFinite(x.close);});
+      if(k.length<3){$('status').textContent="بيانات غير كافية لـ "+coin+'.';$('run').disabled=false;return;}
+      var H,L,C;
+      if(per==='w'){var seg=k.slice(-8,-1);if(seg.length<2)seg=k.slice(0,-1);H=Math.max.apply(null,seg.map(function(x){return x.high;}));L=Math.min.apply(null,seg.map(function(x){return x.low;}));C=seg[seg.length-1].close;}
+      else{var prev=k[k.length-2];H=prev.high;L=prev.low;C=prev.close;}
+      var live=res[1]&&(+res[1].price||+res[1].p);if(!(live>0))live=k[k.length-1].close;
+      var lv=levels(method,H,L,C);
+      lv.sort(function(a,b){return b.v-a.v;});
+      var html='';lv.forEach(function(x,i){
+        if(i>0&&lv[i-1].v>=live&&x.v<live){html+='<div class="lvl nowrow"><span class="nm">'+"الآن"+'</span><span class="pr">'+fp(live)+'</span><span class="ds">'+"حي"+'</span></div>';}
+        var dist=(live-x.v)/live*100;
+        html+='<div class="lvl '+x.type+'"><span class="nm">'+x.nm+'</span><span class="pr">'+fp(x.v)+'</span><span class="ds">'+(dist>=0?'+':'')+dist.toFixed(2)+'%</span></div>';
+      });
+      if(live<lv[lv.length-1].v){html+='<div class="lvl nowrow"><span class="nm">'+"الآن"+'</span><span class="pr">'+fp(live)+'</span><span class="ds">'+"حي"+'</span></div>';}
+      $('ladder').innerHTML=html;
+      $('now').innerHTML=coin+' · '+"حي"+' '+fp(live)+' · '+"ارتكاز"+' '+fp(lv.filter(function(x){return x.type==='p';})[0].v);
+      $('out').hidden=false;$('status').textContent='';$('run').disabled=false;
+    }).catch(function(){$('status').textContent="تعذّر التحميل — حاول مجددًا.";$('run').disabled=false;});
+  }
+  $('run').addEventListener('click',run);$('coin').addEventListener('keydown',function(e){if(e.key==='Enter')run();});
+  run();
+})();
+</script>
+
+<div class="wrap" style="padding-bottom:0">
+<div class="mpaff"><style>.mpaff{display:flex;align-items:center;gap:16px;flex-wrap:wrap;max-width:1160px;margin:34px auto 0;padding:13px 18px;border:1px solid #262e3a;border-radius:13px;background:linear-gradient(120deg,rgba(247,166,0,.05),transparent 40%,rgba(138,92,255,.07)),#0c0f13;font-size:13px}.mpaff-t{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.22em;color:#5c656f}.mpaff a{display:inline-flex;align-items:center;gap:7px;color:#e9e7df;text-decoration:none;font-weight:700;transition:color .15s}.mpaff a small{color:#8b95a1;font-weight:400}.mpaff a i{width:8px;height:8px;border-radius:3px;display:inline-block}.mpaff a b{color:#5c656f;transition:transform .15s;font-weight:700}.mpaff a:hover b{transform:translateX(3px);color:#e9e7df}</style><span class="mpaff-t">TRADE FOR REAL</span><a data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer"><i style="background:#f7a600"></i>Bybit <small>futures &middot; 100&times;</small><b>&rarr;</b></a><a data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer"><i style="background:linear-gradient(135deg,#8a5cff,#c2f64a)"></i>Moon <small>up or down &middot; 24/7</small><b>&rarr;</b></a></div>
+<footer class="toolfoot"><div class="cols"><div><a class="brand" href="/ar/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">أدوات مجانية لعقود العملات الرقمية الآجلة — حاسبات، ومساحة عمل للرسوم البيانية الحية، وطرفية للتداول الورقي، وتدفق مباشر للتصفيات. بدون تسجيل.</p></div><div><h4>الأدوات</h4><a href="/crypto-backtester/">اختبار رجعي للاستراتيجيات</a><a href="/trading-journal/">يوميات التداول</a><a href="/pivot-point-calculator/">نقاط الارتكاز</a><a href="/risk-of-ruin-calculator/">مخاطر الإفلاس</a><a href="/crypto-correlation-matrix/">مصفوفة الارتباط</a></div><div><h4>MarginPad</h4><a href="/paper-trade">تداول ورقي</a><a href="/charts">الرسوم البيانية</a><a href="/calculators">الحاسبات</a><a href="/screener">الماسح</a><a href="/rekt/">التصفيات</a></div></div><div class="bottom">© 2026 MarginPad · أدوات مجانية لتداول العملات الرقمية · ليست نصيحة مالية</div></footer>
+</div>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

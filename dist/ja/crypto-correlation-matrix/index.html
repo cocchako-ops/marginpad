@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<title>暗号資産の相関マトリックス — ライブのコイン相関 | MarginPad</title>
+<meta name="description" content="主要銘柄のライブ暗号資産相関マトリックス — BTC、ETH、SOL、BNB ほか。選択した期間でコイン同士がどれだけ連動して動くかを確認し、トレードを重ねたときの隠れた二重エクスポージャーを回避しましょう。無料・登録不要。" />
+<meta name="keywords" content="暗号資産 相関マトリックス, ビットコイン 相関, コイン 相関, 暗号資産 分散, 相関 計算ツール, アルトコイン 相関" />
+<link rel="canonical" href="https://marginpad.io/ja/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-correlation-matrix/" />
+<meta name="theme-color" content="#08090b" />
+<meta property="og:title" content="暗号資産の相関マトリックス — ライブのコイン相関 | MarginPad" />
+<meta property="og:description" content="主要銘柄のライブ暗号資産相関マトリックス — BTC、ETH、SOL、BNB ほか。選択した期間でコイン同士がどれだけ連動して動くかを確認し、トレードを重ねたときの隠れた二重エクスポージャーを回避しましょう。無料・登録不要。" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/ja/crypto-correlation-matrix/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="暗号資産の相関マトリックス — ライブのコイン相関 | MarginPad" />
+<meta name="twitter:description" content="主要銘柄のライブ暗号資産相関マトリックス — BTC、ETH、SOL、BNB ほか。コイン同士の連動度を確認し、隠れた二重エクスポージャーを回避。無料・登録不要。" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/lab.css" />
+<style>
+  .mx{border-collapse:separate;border-spacing:4px;font-family:'Space Mono',monospace}
+  .mx td,.mx th{text-align:center;padding:0}
+  .mx th{font-size:11.5px;color:var(--dim);font-weight:700;letter-spacing:.03em;width:58px;padding-bottom:4px}
+  .mx td.lbl{color:var(--ink2);font-weight:700;font-size:11.5px;letter-spacing:.03em;text-align:right;padding-right:9px;white-space:nowrap}
+  .cell{width:58px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;color:#f4f2ec;border:1px solid rgba(255,255,255,.05);text-shadow:0 1px 2px rgba(0,0,0,.45);transition:transform .12s}
+  .cell:hover{transform:scale(1.06)}
+  .cell.diag{background:var(--panel3)!important;color:var(--faint);border-color:var(--line2)}
+  .mxlegend{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px;font-size:12px;color:var(--dim)}
+  .mxlegend .scale{display:flex;height:11px;width:200px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+  .mxlegend .scale i{flex:1}
+  .faq h3{font-family:'Bricolage Grotesque',sans-serif;font-size:15.5px;font-weight:700;margin:22px 0 6px;letter-spacing:-.01em}
+  .faq p{color:var(--dim);font-size:14px;line-height:1.65;margin:0;max-width:760px}
+  .prose p{color:var(--dim);font-size:14.5px;line-height:1.7;max-width:760px;margin:0 0 12px}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Correlation Matrix","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://marginpad.io/crypto-correlation-matrix/","description":"主要銘柄のライブ暗号資産相関マトリックス — BTC、ETH、SOL、BNB ほか。選択した期間でコイン同士がどれだけ連動して動くかを確認し、トレードを重ねたときの隠れた二重エクスポージャーを回避しましょう。無料・登録不要。"}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"すべてのツール","item":"https://marginpad.io/ja/tools/"},{"@type":"ListItem","position":2,"name":"暗号資産の相関マトリックス","item":"https://marginpad.io/ja/crypto-correlation-matrix/"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"相関マトリックスとは何ですか？","acceptedAnswer":{"@type":"Answer","text":"相関マトリックスは、複数の資産の価格変動がどれだけ密接に連動しているかを示すグリッドです。各セルには、その行と列のペアについて −1 から +1 の係数が入ります：+1 は完全に連動して動くこと、0 は線形の関係がないこと、−1 は完全に逆方向に動くことを意味します。このツールは、選択した期間における主要コインのバーごとのリターンについてPearson（ピアソン）相関を計算します。"}},{"@type":"Question","name":"なぜトレードにおいて相関が重要なのですか？","acceptedAnswer":{"@type":"Answer","text":"相関の高いポジションを重ねると、同じリスクが何倍にもなります。3つのコインをロングしていて、それらがすべて一体となって動くなら、あなたが持っているのは3つの独立したトレードではなく、サイズが3倍の1つの賭けであり、ひとつの不利な動きがそれら全部を同時に直撃します。相関を知っておけば、ポジションサイズを賢く決め、隠れた二重エクスポージャーを回避し、連動して動かないコインにリスクを分散できます。"}},{"@type":"Question","name":"負の相関は何を意味しますか？","acceptedAnswer":{"@type":"Answer","text":"負の相関とは、2つのコインが逆方向に動きやすいことを意味します：一方が上がると、もう一方は下がりやすくなります。−1付近のペアは自然なヘッジとして機能し、互いの値動きを部分的に相殺します。暗号資産では、主要コイン同士の本物の負の相関はまれで、たいてい弱いものです — ほとんどのコインはBitcoinに対して強い正の相関を示します — そのため、負の値はしばしば、持続的な関係ではなく、短期的でウィンドウ特有の乖離を反映しています。"}}]}
+</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/ja/">MARGIN<b>PAD</b></a><nav class="tool-switch"><a href="/ja/tools/">すべてのツール</a><a href="/crypto-backtester/">バックテスター</a><a href="/trading-journal/">ジャーナル</a><a href="/pivot-point-calculator/">ピボット</a><a href="/risk-of-ruin-calculator/">リスク</a><a href="/ja/crypto-correlation-matrix/" class="on">相関</a></nav><a class="home" href="/ja/">← marginpad.io</a></header>
+<div class="wrap">
+  <section class="hero">
+    <span class="eyebrow">相関</span>
+    <h1>暗号資産の相関マトリックス</h1>
+    <p class="sub">3つのコインをロングしていて、それらがすべて一体となって動くなら、あなたが持っているのは3つのトレードではなく、サイズが3倍の1つのトレードです。これは選択した期間における主要銘柄同士の隠れた重なりを示します。</p>
+  </section>
+
+  <div class="toolbar">
+    <div class="row">
+      <label class="f">時間足<select id="tf"><option value="60">1h</option><option value="240" selected>4h</option><option value="1440">1d</option></select></label>
+      <label class="f">ウィンドウ（バー数）<select id="win"><option>60</option><option selected>120</option><option>200</option></select></label>
+      <button class="btn" id="run">計算</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div id="out" hidden style="margin-top:18px">
+    <div class="card scrollx"><table class="mx" id="mx"></table></div>
+    <div class="mxlegend">
+      <span style="color:var(--up);font-weight:700">−1 ヘッジ</span>
+      <span class="scale"><i style="background:rgba(46,189,133,.70)"></i><i style="background:rgba(46,189,133,.34)"></i><i style="background:#1a2028"></i><i style="background:rgba(255,98,88,.34)"></i><i style="background:rgba(255,98,88,.70)"></i></span>
+      <span style="color:var(--red);font-weight:700">+1 連動して動く</span>
+    </div>
+    <div class="note">バーごとのリターンのPearson（ピアソン）相関。<b style="color:#ff8a80">赤 ≈ +1</b>：連動して動く（重ねるとリスクが集中）。0付近：独立。<b style="color:#41e3a3">緑</b>：逆方向に動く（自然なヘッジ）。暗号資産は通常、BTCに対して強い正の相関を示します。</div>
+  </div>
+
+  <h2>マトリックスの読み方</h2>
+  <div class="prose">
+    <p>各セルは、選択した期間における2つのコインのバーごとのリターンの<b>Pearson（ピアソン）相関</b>で、<b>−1 から +1</b>のスケールで表されます。対角線は常に<b>1.00</b>です — どのコインも自分自身とは完全に相関します。行を横方向に、または列を縦方向に読むことで、1つのコインが他のすべてとどう関係しているかが分かります。</p>
+    <p>濃い<b style="color:#ff8a80">赤</b>のセル（+1付近）は強く連動して動きます：両方をロングすると、ひとつの賭けを倍にしていることになります。<b>0</b>付近のセルはほぼ独立しているため、リスクを分散します。<b style="color:#41e3a3">緑</b>のセル（負）は逆方向に動き、部分的なヘッジとして機能します。ウィンドウを短くすれば直近のレジーム変化が見え、長くすれば主要銘柄が群れとしてどう動くかの、より安定した構造的な姿が見えます。</p>
+  </div>
+
+  <h2>よくある質問</h2>
+  <div class="faq">
+    <h3>相関マトリックスとは何ですか？</h3>
+    <p>相関マトリックスは、複数の資産の価格変動がどれだけ密接に連動しているかを示すグリッドです。各セルには、その行と列のペアについて −1 から +1 の係数が入ります：+1 は完全に連動して動くこと、0 は線形の関係がないこと、−1 は完全に逆方向に動くことを意味します。このツールは、選択した期間における主要コインのバーごとのリターンについてPearson（ピアソン）相関を計算します。</p>
+    <h3>なぜトレードにおいて相関が重要なのですか？</h3>
+    <p>相関の高いポジションを重ねると、同じリスクが何倍にもなります。3つのコインをロングしていて、それらがすべて一体となって動くなら、あなたが持っているのは3つの独立したトレードではなく、サイズが3倍の1つの賭けであり、ひとつの不利な動きがそれら全部を同時に直撃します。相関を知っておけば、ポジションサイズを賢く決め、隠れた二重エクスポージャーを回避し、連動して動かないコインにリスクを分散できます。</p>
+    <h3>負の相関は何を意味しますか？</h3>
+    <p>負の相関とは、2つのコインが逆方向に動きやすいことを意味します：一方が上がると、もう一方は下がりやすくなります。−1付近のペアは自然なヘッジとして機能し、互いの値動きを部分的に相殺します。暗号資産では、主要コイン同士の本物の負の相関はまれで、たいてい弱いものです — ほとんどのコインはBitcoinに対して強い正の相関を示します — そのため、負の値はしばしば、持続的な関係ではなく、短期的でウィンドウ特有の乖離を反映しています。</p>
+  </div>
+</div>
+
+<div class="wrap" style="padding-bottom:0">
+<div class="mpaff"><style>.mpaff{display:flex;align-items:center;gap:16px;flex-wrap:wrap;max-width:1160px;margin:34px auto 0;padding:13px 18px;border:1px solid #262e3a;border-radius:13px;background:linear-gradient(120deg,rgba(247,166,0,.05),transparent 40%,rgba(138,92,255,.07)),#0c0f13;font-size:13px}.mpaff-t{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.22em;color:#5c656f}.mpaff a{display:inline-flex;align-items:center;gap:7px;color:#e9e7df;text-decoration:none;font-weight:700;transition:color .15s}.mpaff a small{color:#8b95a1;font-weight:400}.mpaff a i{width:8px;height:8px;border-radius:3px;display:inline-block}.mpaff a b{color:#5c656f;transition:transform .15s;font-weight:700}.mpaff a:hover b{transform:translateX(3px);color:#e9e7df}</style><span class="mpaff-t">TRADE FOR REAL</span><a data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer"><i style="background:#f7a600"></i>Bybit <small>futures &middot; 100&times;</small><b>&rarr;</b></a><a data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer"><i style="background:linear-gradient(135deg,#8a5cff,#c2f64a)"></i>Moon <small>up or down &middot; 24/7</small><b>&rarr;</b></a></div>
+<footer class="toolfoot"><div class="cols"><div><a class="brand" href="/ja/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">無料の仮想通貨先物ツール — 計算機、ライブチャートのワークスペース、ペーパートレード端末、リアルタイムの清算フィード。登録不要。</p></div><div><h4>ツール</h4><a href="/crypto-backtester/">戦略バックテスター</a><a href="/trading-journal/">トレードジャーナル</a><a href="/pivot-point-calculator/">ピボットポイント</a><a href="/risk-of-ruin-calculator/">破産確率</a><a href="/crypto-correlation-matrix/">相関マトリックス</a></div><div><h4>MarginPad</h4><a href="/paper-trade">ペーパートレード</a><a href="/charts">チャート</a><a href="/calculators">計算機</a><a href="/screener">スクリーナー</a><a href="/rekt/">清算</a></div></div><div class="bottom">© 2026 MarginPad · 無料の仮想通貨トレードツール · 投資助言ではありません</div></footer>
+</div>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var COINS=['BTC','ETH','SOL','BNB','XRP','DOGE','LINK','AVAX'];
+  function col(v){if(v>=0)return 'rgba(255,98,88,'+(0.08+v*0.62).toFixed(3)+')';return 'rgba(46,189,133,'+(0.08+(-v)*0.62).toFixed(3)+')';}
+  function corr(a,b){var n=Math.min(a.length,b.length);if(n<3)return 0;a=a.slice(-n);b=b.slice(-n);var ma=0,mb=0,i;for(i=0;i<n;i++){ma+=a[i];mb+=b[i];}ma/=n;mb/=n;var sa=0,sb=0,sab=0;for(i=0;i<n;i++){var da=a[i]-ma,db=b[i]-mb;sa+=da*da;sb+=db*db;sab+=da*db;}var d=Math.sqrt(sa*sb);return d?sab/d:0;}
+  function run(){
+    var tf=$('tf').value, win=+$('win').value||120;
+    $('status').textContent=""+COINS.length+" 市場を読み込み中…";$('run').disabled=true;
+    Promise.all(COINS.map(function(c){return fetch('/api/klines?symbol='+c+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});})).then(function(res){
+      var rets={};COINS.forEach(function(c,i){var d=res[i];var k=Array.isArray(d)?d:((d&&(d.klines||d.data||d.candles))||[]);var cl=k.map(function(x){return Array.isArray(x)?+x[4]:+x.close;}).filter(function(x){return isFinite(x);}).slice(-win-1);var r=[];for(var j=1;j<cl.length;j++)r.push(Math.log(cl[j]/cl[j-1]));rets[c]=r;});
+      var have=COINS.filter(function(c){return rets[c]&&rets[c].length>=10;});
+      if(have.length<2){$('status').textContent="十分なデータを読み込めませんでした — もう一度お試しください。";$('run').disabled=false;return;}
+      var html='<tr><th></th>'+have.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr>';
+      have.forEach(function(a){html+='<tr><td class="lbl">'+a+'</td>'+have.map(function(b){var v=a===b?1:corr(rets[a],rets[b]);return '<td><div class="cell'+(a===b?' diag':'')+'" style="background:'+(a===b?'#1a2028':col(v))+'">'+v.toFixed(2)+'</div></td>';}).join('')+'</tr>';});
+      $('mx').innerHTML=html;$('out').hidden=false;$('status').textContent='';$('run').disabled=false;
+    }).catch(function(){$('status').textContent="読み込めませんでした — もう一度お試しください。";$('run').disabled=false;});
+  }
+  $('run').addEventListener('click',run);run();
+})();
+</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

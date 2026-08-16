@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>暗号資産の清算（ロスカット）の読み方 | MarginPad</title>
+<meta name="description" content="暗号資産の清算を理解する。清算とは何か、ロング清算とショート清算の違い、そして清算カスケードがどのようにボラティリティを生むか。" />
+<link rel="canonical" href="https://marginpad.io/ja/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/guides/how-to-read-liquidations/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="暗号資産の清算（ロスカット）の読み方" />
+<meta property="og:description" content="暗号資産の清算を理解する。清算とは何か、ロング清算とショート清算の違い、そして清算カスケードがどのようにボラティリティを生むか。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/ja/guides/how-to-read-liquidations/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/coin.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"ホーム","item":"https://marginpad.io/ja/"},{"@type":"ListItem","position":2,"name":"ガイド","item":"https://marginpad.io/ja/guides/"},{"@type":"ListItem","position":3,"name":"暗号資産の清算（ロスカット）の読み方","item":"https://marginpad.io/ja/guides/how-to-read-liquidations/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"清算は何が原因で起きますか？","acceptedAnswer":{"@type":"Answer","text":"ポジションは、価格が逆行して証拠金が損失をカバーできなくなったときに清算され、取引所が自動的に決済します。"}},{"@type":"Question","name":"ロング清算とショート清算、どちらが強気ですか？","acceptedAnswer":{"@type":"Answer","text":"ロング清算のスパイク（下落時）は局所的な底を示すことがあり、ショート清算のスパイク（上昇時）は上方向へのスクイーズを煽ることがあります。"}}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/ja/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/ja/markets/">マーケット</a><a href="/screener">スクリーナー</a><a href="/ja/">ツール</a><a href="/blog/">ブログ</a></nav>
+  </header>
+  <div class="crumb"><a href="/ja/">ホーム</a> / <a href="/ja/guides/">ガイド</a> / 暗号資産の清算（ロスカット）の読み方</div>
+  <article>
+    <h1>暗号資産の清算（ロスカット）の読み方</h1>
+    <p class="lead">暗号資産の清算を理解する。清算とは何か、ロング清算とショート清算の違い、そして清算カスケードがどのようにボラティリティを生むか。</p>
+    <p style="margin:10px 0 20px"><a href="/ja/liquidations/" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;padding:11px 18px;border-radius:11px">ライブ清算トラッカー →</a></p>
+    <h2>清算とは</h2><p><strong>清算</strong>とは、トレーダーの証拠金が損失をカバーしきれなくなったために、取引所がレバレッジポジションを強制的に決済することです。ポジションは成行で決済され、トレーダーは証拠金を失います。高いレバレッジでは清算価格はエントリーのすぐ近くに位置します。</p>
+<h2>ロング清算とショート清算</h2><p><strong>ロング清算</strong>は、価格下落時に一掃される過剰レバレッジの買い手です。<strong>ショート清算</strong>は、価格上昇時に一掃される売り手です。大きな一方向のスパイクはしばしば局所的な極値を示します — ロング清算の大量発生は底を示すことがあり、ショート清算の波は上昇を煽ることがあります。</p>
+<h2>清算カスケード</h2><p>清算は燃料のように働きます。価格がレバレッジの密集するゾーンに到達すると、強制注文が価格をさらに押し進め、より多くの清算を引き起こします — これが<strong>カスケード</strong>です。レバレッジがどこに最も厚いかを観察することで、過密なトレードを避ける助けになります。</p>
+<h2>他の指標と併用する</h2><p>清算は<a href="/ja/funding/">資金調達</a>や<a href="/ja/open-interest/">建玉</a>と組み合わせましょう。建玉の減少は通常、レバレッジが一掃されるカスケードの後に続きます。</p>
+    <h2>よくある質問</h2><h3 style="font-size:16px;margin:16px 0 4px">清算は何が原因で起きますか？</h3><p>ポジションは、価格が逆行して証拠金が損失をカバーできなくなったときに清算され、取引所が自動的に決済します。</p><h3 style="font-size:16px;margin:16px 0 4px">ロング清算とショート清算、どちらが強気ですか？</h3><p>ロング清算のスパイク（下落時）は局所的な底を示すことがあり、ショート清算のスパイク（上昇時）は上方向へのスクイーズを煽ることがあります。</p>
+    <h2>More guides</h2>
+    <div class="related"><a href="/ja/guides/how-to-read-funding-rates/">暗号資産の資金調達率の読み方</a>
+      <a href="/ja/guides/what-is-open-interest/">暗号資産の建玉（オープンインタレスト）とは？</a>
+      <a href="/ja/guides/long-short-ratio-explained/">暗号資産のロング/ショート比率を解説</a>
+      <a href="/ja/guides/what-is-liquidation-price/">暗号資産の清算価格とは？</a>
+      <a href="/ja/guides/isolated-vs-cross-margin/">分離証拠金と全体証拠金（アイソレーテッドとクロス）を解説</a>
+      <a href="/ja/guides/how-to-calculate-position-size/">暗号資産でのポジションサイズの計算方法</a></div>
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">情報提供のみ——投資助言ではありません。ライブデータは<a href="/ja/markets/">マーケットハブ</a>でご覧ください。</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/ja/markets/">マーケット</a> · <a href="/ja/liquidations/">清算</a> · <a href="/ja/funding/">資金調達</a> · <a href="/screener">スクリーナー</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

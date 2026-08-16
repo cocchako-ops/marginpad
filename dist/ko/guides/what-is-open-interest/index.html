@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>암호화폐에서 미결제약정이란? | MarginPad</title>
+<meta name="description" content="미결제약정 설명: 거래량과 어떻게 다른지, 미결제약정의 상승과 하락이 무엇을 신호하는지, 가격과 함께 미결제약정을 어떻게 읽는지 알아봅니다." />
+<link rel="canonical" href="https://marginpad.io/ko/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/guides/what-is-open-interest/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="암호화폐에서 미결제약정이란?" />
+<meta property="og:description" content="미결제약정 설명: 거래량과 어떻게 다른지, 미결제약정의 상승과 하락이 무엇을 신호하는지, 가격과 함께 미결제약정을 어떻게 읽는지 알아봅니다." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/ko/guides/what-is-open-interest/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/coin.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://marginpad.io/ko/"},{"@type":"ListItem","position":2,"name":"가이드","item":"https://marginpad.io/ko/guides/"},{"@type":"ListItem","position":3,"name":"암호화폐에서 미결제약정이란?","item":"https://marginpad.io/ko/guides/what-is-open-interest/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"높은 미결제약정은 강세인가요 약세인가요?","acceptedAnswer":{"@type":"Answer","text":"그 자체만으로는 어느 쪽도 아닙니다 — 가격에 달려 있습니다. 가격 상승과 함께 미결제약정이 상승하면 새로운 매수자를, 가격 하락과 함께 미결제약정이 상승하면 새로운 매도자를 시사합니다."}},{"@type":"Question","name":"미결제약정의 하락은 무엇을 의미하나요?","acceptedAnswer":{"@type":"Answer","text":"미결제약정의 하락은 포지션이 종료되고 있다는 뜻으로, 흔히 청산 캐스케이드가 시장에서 레버리지를 쓸어낸 뒤에 일어납니다."}}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/ko/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/ko/markets/">마켓</a><a href="/screener">스크리너</a><a href="/ko/">도구</a><a href="/blog/">블로그</a></nav>
+  </header>
+  <div class="crumb"><a href="/ko/">홈</a> / <a href="/ko/guides/">가이드</a> / 암호화폐에서 미결제약정이란?</div>
+  <article>
+    <h1>암호화폐에서 미결제약정이란?</h1>
+    <p class="lead">미결제약정 설명: 거래량과 어떻게 다른지, 미결제약정의 상승과 하락이 무엇을 신호하는지, 가격과 함께 미결제약정을 어떻게 읽는지 알아봅니다.</p>
+    <p style="margin:10px 0 20px"><a href="/ko/open-interest/" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;padding:11px 18px;border-radius:11px">실시간 미결제약정 트래커 →</a></p>
+    <h2>미결제약정 대 거래량</h2><p><strong>미결제약정(OI)</strong>은 한 코인에 대해 열려 있는 모든 무기한 선물 포지션의 총 가치입니다. 모든 거래를 세는 거래량과 달리, 미결제약정은 현재 시장에 얼마나 많은 레버리지가 <em>열려</em> 있는지를 측정합니다.</p>
+<h2>상승하는 미결제약정과 하락하는 미결제약정</h2><p>미결제약정의 상승은 새로운 포지션과 신규 레버리지가 진입하고 있다는 뜻입니다. 미결제약정의 하락은 트레이더들이 청산하고 있다는 뜻입니다. 미결제약정의 갑작스러운 하락은 보통 과도한 레버리지 포지션이 쓸려나가면서 <a href="/ko/liquidations/">청산 캐스케이드</a> 뒤에 따라옵니다.</p>
+<h2>가격과 함께 미결제약정 읽기</h2><p><strong>가격 상승 + 미결제약정 상승</strong> = 새 자금이 움직임을 뒷받침(더 강한 추세). <strong>가격 상승 + 미결제약정 하락</strong> = 신규 수요가 아니라 숏 커버링. 무거운 미결제약정 축적에 더해 한쪽으로 치우친 <a href="/ko/funding/">펀딩</a>은 과밀하고 취약한 셋업을 알립니다.</p>
+    <h2>자주 묻는 질문</h2><h3 style="font-size:16px;margin:16px 0 4px">높은 미결제약정은 강세인가요 약세인가요?</h3><p>그 자체만으로는 어느 쪽도 아닙니다 — 가격에 달려 있습니다. 가격 상승과 함께 미결제약정이 상승하면 새로운 매수자를, 가격 하락과 함께 미결제약정이 상승하면 새로운 매도자를 시사합니다.</p><h3 style="font-size:16px;margin:16px 0 4px">미결제약정의 하락은 무엇을 의미하나요?</h3><p>미결제약정의 하락은 포지션이 종료되고 있다는 뜻으로, 흔히 청산 캐스케이드가 시장에서 레버리지를 쓸어낸 뒤에 일어납니다.</p>
+    <h2>More guides</h2>
+    <div class="related"><a href="/ko/guides/how-to-read-funding-rates/">암호화폐 펀딩비 읽는 법</a>
+      <a href="/ko/guides/how-to-read-liquidations/">암호화폐 청산 읽는 법</a>
+      <a href="/ko/guides/long-short-ratio-explained/">암호화폐 롱/숏 비율 설명</a>
+      <a href="/ko/guides/what-is-liquidation-price/">암호화폐에서 청산 가격이란?</a>
+      <a href="/ko/guides/isolated-vs-cross-margin/">격리 마진 대 교차 마진 설명</a>
+      <a href="/ko/guides/how-to-calculate-position-size/">암호화폐에서 포지션 크기 계산하는 법</a></div>
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">정보 제공용일 뿐 — 투자 조언이 아닙니다. 실시간 데이터는 <a href="/ko/markets/">마켓 허브</a>에서 살펴보세요.</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/ko/markets/">마켓</a> · <a href="/ko/liquidations/">청산</a> · <a href="/ko/funding/">펀딩</a> · <a href="/screener">스크리너</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

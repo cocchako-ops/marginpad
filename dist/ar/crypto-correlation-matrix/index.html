@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<title>مصفوفة ارتباط العملات الرقمية — ارتباطات حية للعملات | MarginPad</title>
+<meta name="description" content="مصفوفة ارتباط حية لكبرى العملات الرقمية — BTC و ETH و SOL و BNB وغيرها. شاهد مدى تحرّك العملات معًا خلال النافذة التي تختارها لتجنّب التعرّض المزدوج الخفي عند تكديس الصفقات. مجانًا، بدون تسجيل." />
+<meta name="keywords" content="مصفوفة ارتباط العملات الرقمية، ارتباط البيتكوين، ارتباط العملات، تنويع العملات الرقمية، حاسبة الارتباط، ارتباط العملات البديلة" />
+<link rel="canonical" href="https://marginpad.io/ar/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/crypto-correlation-matrix/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/crypto-correlation-matrix/" />
+<meta name="theme-color" content="#08090b" />
+<meta property="og:title" content="مصفوفة ارتباط العملات الرقمية — ارتباطات حية للعملات | MarginPad" />
+<meta property="og:description" content="مصفوفة ارتباط حية لكبرى العملات الرقمية — BTC و ETH و SOL و BNB وغيرها. شاهد مدى تحرّك العملات معًا خلال النافذة التي تختارها لتجنّب التعرّض المزدوج الخفي عند تكديس الصفقات. مجانًا، بدون تسجيل." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/ar/crypto-correlation-matrix/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="مصفوفة ارتباط العملات الرقمية — ارتباطات حية للعملات | MarginPad" />
+<meta name="twitter:description" content="مصفوفة ارتباط حية لكبرى العملات الرقمية — BTC و ETH و SOL و BNB وغيرها. شاهد مدى تحرّك العملات معًا لتجنّب التعرّض المزدوج الخفي. مجانًا، بدون تسجيل." />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/lab.css" />
+<style>
+  .mx{border-collapse:separate;border-spacing:4px;font-family:'Space Mono',monospace}
+  .mx td,.mx th{text-align:center;padding:0}
+  .mx th{font-size:11.5px;color:var(--dim);font-weight:700;letter-spacing:.03em;width:58px;padding-bottom:4px}
+  .mx td.lbl{color:var(--ink2);font-weight:700;font-size:11.5px;letter-spacing:.03em;text-align:right;padding-right:9px;white-space:nowrap}
+  .cell{width:58px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;color:#f4f2ec;border:1px solid rgba(255,255,255,.05);text-shadow:0 1px 2px rgba(0,0,0,.45);transition:transform .12s}
+  .cell:hover{transform:scale(1.06)}
+  .cell.diag{background:var(--panel3)!important;color:var(--faint);border-color:var(--line2)}
+  .mxlegend{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:16px;font-size:12px;color:var(--dim)}
+  .mxlegend .scale{display:flex;height:11px;width:200px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+  .mxlegend .scale i{flex:1}
+  .faq h3{font-family:'Bricolage Grotesque',sans-serif;font-size:15.5px;font-weight:700;margin:22px 0 6px;letter-spacing:-.01em}
+  .faq p{color:var(--dim);font-size:14px;line-height:1.65;margin:0;max-width:760px}
+  .prose p{color:var(--dim);font-size:14.5px;line-height:1.7;max-width:760px;margin:0 0 12px}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Correlation Matrix","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://marginpad.io/crypto-correlation-matrix/","description":"مصفوفة ارتباط حية لكبرى العملات الرقمية — BTC و ETH و SOL و BNB وغيرها. شاهد مدى تحرّك العملات معًا خلال النافذة التي تختارها لتجنّب التعرّض المزدوج الخفي عند تكديس الصفقات. مجانًا، بدون تسجيل."}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"كل الأدوات","item":"https://marginpad.io/ar/tools/"},{"@type":"ListItem","position":2,"name":"مصفوفة ارتباط العملات الرقمية","item":"https://marginpad.io/ar/crypto-correlation-matrix/"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"ما هي مصفوفة الارتباط؟","acceptedAnswer":{"@type":"Answer","text":"مصفوفة الارتباط هي شبكة تُظهر مدى تتبّع حركات أسعار عدّة أصول لبعضها البعض. تحمل كل خلية مُعاملًا بين −1 و +1 للزوج في ذلك الصفّ والعمود: +1 يعني أنهما يتحرّكان معًا تمامًا، و0 يعني عدم وجود علاقة خطية، و−1 يعني أنهما يتحرّكان في اتجاهين متعاكسين تمامًا. تحسب هذه الأداة ارتباط بيرسون على عوائد الشمعة إلى الشمعة لكبرى العملات خلال النافذة التي تختارها."}},{"@type":"Question","name":"لماذا يهمّ الارتباط في التداول؟","acceptedAnswer":{"@type":"Answer","text":"تكديس مراكز شديدة الارتباط يُضاعف المخاطر نفسها. إذا كنت تمتلك مراكز شراء في ثلاث عملات تتحرّك جميعها ككتلة واحدة، فأنت لا تملك ثلاث صفقات مستقلة — بل رهانًا واحدًا بثلاثة أضعاف الحجم، وحركة سلبية واحدة تضربها جميعها دفعة واحدة. معرفة الارتباطات تتيح لك تحديد أحجام المراكز بحكمة، وتجنّب التعرّض المزدوج الخفي، وتوزيع المخاطر على عملات لا تتحرّك بتناغم تام."}},{"@type":"Question","name":"ماذا يعني الارتباط السالب؟","acceptedAnswer":{"@type":"Answer","text":"الارتباط السالب يعني أن عملتين تميلان إلى التحرّك في اتجاهين متعاكسين: عندما ترتفع إحداهما، تميل الأخرى إلى الهبوط. الزوج القريب من −1 يعمل كتحوّط طبيعي، إذ يُعوّض جزئيًا تقلّبات كلٍّ منهما. في العملات الرقمية، يندر وجود ارتباط سالب حقيقي بين كبرى العملات وعادةً ما يكون طفيفًا — فمعظم العملات موجبة الارتباط بقوة مقابل Bitcoin — لذا غالبًا ما تعكس القراءة السالبة تباعدًا قصير المدى خاصًّا بالنافذة بدلًا من علاقة دائمة."}}]}
+</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/ar/">MARGIN<b>PAD</b></a><nav class="tool-switch"><a href="/ar/tools/">كل الأدوات</a><a href="/crypto-backtester/">الاختبار الرجعي</a><a href="/trading-journal/">اليوميات</a><a href="/pivot-point-calculator/">نقاط الارتكاز</a><a href="/risk-of-ruin-calculator/">المخاطر</a><a href="/ar/crypto-correlation-matrix/" class="on">الارتباط</a></nav><a class="home" href="/ar/">← marginpad.io</a></header>
+<div class="wrap">
+  <section class="hero">
+    <span class="eyebrow">الارتباط</span>
+    <h1>مصفوفة ارتباط العملات الرقمية</h1>
+    <p class="sub">إذا كنت تمتلك مراكز شراء في ثلاث عملات تتحرّك جميعها ككتلة واحدة، فأنت لا تملك ثلاث صفقات — بل صفقة واحدة بثلاثة أضعاف الحجم. هذا يُظهر التداخل الخفي بين كبرى العملات خلال النافذة التي تختارها.</p>
+  </section>
+
+  <div class="toolbar">
+    <div class="row">
+      <label class="f">الإطار الزمني<select id="tf"><option value="60">1h</option><option value="240" selected>4h</option><option value="1440">1d</option></select></label>
+      <label class="f">النافذة (الشموع)<select id="win"><option>60</option><option selected>120</option><option>200</option></select></label>
+      <button class="btn" id="run">احسب</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div id="out" hidden style="margin-top:18px">
+    <div class="card scrollx"><table class="mx" id="mx"></table></div>
+    <div class="mxlegend">
+      <span style="color:var(--up);font-weight:700">−1 تحوّط</span>
+      <span class="scale"><i style="background:rgba(46,189,133,.70)"></i><i style="background:rgba(46,189,133,.34)"></i><i style="background:#1a2028"></i><i style="background:rgba(255,98,88,.34)"></i><i style="background:rgba(255,98,88,.70)"></i></span>
+      <span style="color:var(--red);font-weight:700">+1 يتحرّكان معًا</span>
+    </div>
+    <div class="note">ارتباط بيرسون لعوائد الشمعة إلى الشمعة. <b style="color:#ff8a80">أحمر ≈ +1</b>: يتحرّكان معًا (تكديسهما يُركّز المخاطر). قريب من 0: مستقلان. <b style="color:#41e3a3">أخضر</b>: يتحرّكان في اتجاهين متعاكسين (تحوّط طبيعي). العملات الرقمية عادةً ما تكون موجبة الارتباط بقوة vs BTC.</div>
+  </div>
+
+  <h2>كيف تقرأ المصفوفة</h2>
+  <div class="prose">
+    <p>كل خلية هي <b>ارتباط بيرسون</b> لعوائد عملتين من الشمعة إلى الشمعة خلال النافذة التي تختارها، على مقياس من <b>−1 إلى +1</b>. القطر دائمًا <b>1.00</b> — كل عملة مرتبطة ارتباطًا تامًا بنفسها. اقرأ عبر صفّ أو نزولًا في عمود لترى كيف ترتبط عملة واحدة بجميع العملات الأخرى.</p>
+    <p>الخلايا <b style="color:#ff8a80">الحمراء</b> الداكنة (قرب +1) تتحرّك بتناغم وثيق: شراؤهما معًا يعني مضاعفة رهان واحد. الخلايا القريبة من <b>0</b> مستقلة تقريبًا، فهي تُوزّع المخاطر. الخلايا <b style="color:#41e3a3">الخضراء</b> (السالبة) تتحرّك في اتجاهين متعاكسين وتعمل كتحوّط جزئي. قلّص النافذة لرؤية تحوّلات النظام الأخيرة؛ ووسّعها للحصول على صورة بنيوية أكثر ثباتًا لكيفية تحرّك كبرى العملات كمجموعة.</p>
+  </div>
+
+  <h2>الأسئلة الشائعة</h2>
+  <div class="faq">
+    <h3>ما هي مصفوفة الارتباط؟</h3>
+    <p>مصفوفة الارتباط هي شبكة تُظهر مدى تتبّع حركات أسعار عدّة أصول لبعضها البعض. تحمل كل خلية مُعاملًا بين −1 و +1 للزوج في ذلك الصفّ والعمود: +1 يعني أنهما يتحرّكان معًا تمامًا، و0 يعني عدم وجود علاقة خطية، و−1 يعني أنهما يتحرّكان في اتجاهين متعاكسين تمامًا. تحسب هذه الأداة ارتباط بيرسون على عوائد الشمعة إلى الشمعة لكبرى العملات خلال النافذة التي تختارها.</p>
+    <h3>لماذا يهمّ الارتباط في التداول؟</h3>
+    <p>تكديس مراكز شديدة الارتباط يُضاعف المخاطر نفسها. إذا كنت تمتلك مراكز شراء في ثلاث عملات تتحرّك جميعها ككتلة واحدة، فأنت لا تملك ثلاث صفقات مستقلة — بل رهانًا واحدًا بثلاثة أضعاف الحجم، وحركة سلبية واحدة تضربها جميعها دفعة واحدة. معرفة الارتباطات تتيح لك تحديد أحجام المراكز بحكمة، وتجنّب التعرّض المزدوج الخفي، وتوزيع المخاطر على عملات لا تتحرّك بتناغم تام.</p>
+    <h3>ماذا يعني الارتباط السالب؟</h3>
+    <p>الارتباط السالب يعني أن عملتين تميلان إلى التحرّك في اتجاهين متعاكسين: عندما ترتفع إحداهما، تميل الأخرى إلى الهبوط. الزوج القريب من −1 يعمل كتحوّط طبيعي، إذ يُعوّض جزئيًا تقلّبات كلٍّ منهما. في العملات الرقمية، يندر وجود ارتباط سالب حقيقي بين كبرى العملات وعادةً ما يكون طفيفًا — فمعظم العملات موجبة الارتباط بقوة مقابل Bitcoin — لذا غالبًا ما تعكس القراءة السالبة تباعدًا قصير المدى خاصًّا بالنافذة بدلًا من علاقة دائمة.</p>
+  </div>
+</div>
+
+<div class="wrap" style="padding-bottom:0">
+<div class="mpaff"><style>.mpaff{display:flex;align-items:center;gap:16px;flex-wrap:wrap;max-width:1160px;margin:34px auto 0;padding:13px 18px;border:1px solid #262e3a;border-radius:13px;background:linear-gradient(120deg,rgba(247,166,0,.05),transparent 40%,rgba(138,92,255,.07)),#0c0f13;font-size:13px}.mpaff-t{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.22em;color:#5c656f}.mpaff a{display:inline-flex;align-items:center;gap:7px;color:#e9e7df;text-decoration:none;font-weight:700;transition:color .15s}.mpaff a small{color:#8b95a1;font-weight:400}.mpaff a i{width:8px;height:8px;border-radius:3px;display:inline-block}.mpaff a b{color:#5c656f;transition:transform .15s;font-weight:700}.mpaff a:hover b{transform:translateX(3px);color:#e9e7df}</style><span class="mpaff-t">TRADE FOR REAL</span><a data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer"><i style="background:#f7a600"></i>Bybit <small>futures &middot; 100&times;</small><b>&rarr;</b></a><a data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer"><i style="background:linear-gradient(135deg,#8a5cff,#c2f64a)"></i>Moon <small>up or down &middot; 24/7</small><b>&rarr;</b></a></div>
+<footer class="toolfoot"><div class="cols"><div><a class="brand" href="/ar/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">أدوات مجانية لعقود العملات الرقمية الآجلة — حاسبات، ومساحة عمل للرسوم البيانية الحية، وطرفية للتداول الورقي، وتدفق مباشر للتصفيات. بدون تسجيل.</p></div><div><h4>الأدوات</h4><a href="/crypto-backtester/">اختبار رجعي للاستراتيجيات</a><a href="/trading-journal/">يوميات التداول</a><a href="/pivot-point-calculator/">نقاط الارتكاز</a><a href="/risk-of-ruin-calculator/">مخاطر الإفلاس</a><a href="/crypto-correlation-matrix/">مصفوفة الارتباط</a></div><div><h4>MarginPad</h4><a href="/paper-trade">تداول ورقي</a><a href="/charts">الرسوم البيانية</a><a href="/calculators">الحاسبات</a><a href="/screener">الماسح</a><a href="/rekt/">التصفيات</a></div></div><div class="bottom">© 2026 MarginPad · أدوات مجانية لتداول العملات الرقمية · ليست نصيحة مالية</div></footer>
+</div>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var COINS=['BTC','ETH','SOL','BNB','XRP','DOGE','LINK','AVAX'];
+  function col(v){if(v>=0)return 'rgba(255,98,88,'+(0.08+v*0.62).toFixed(3)+')';return 'rgba(46,189,133,'+(0.08+(-v)*0.62).toFixed(3)+')';}
+  function corr(a,b){var n=Math.min(a.length,b.length);if(n<3)return 0;a=a.slice(-n);b=b.slice(-n);var ma=0,mb=0,i;for(i=0;i<n;i++){ma+=a[i];mb+=b[i];}ma/=n;mb/=n;var sa=0,sb=0,sab=0;for(i=0;i<n;i++){var da=a[i]-ma,db=b[i]-mb;sa+=da*da;sb+=db*db;sab+=da*db;}var d=Math.sqrt(sa*sb);return d?sab/d:0;}
+  function run(){
+    var tf=$('tf').value, win=+$('win').value||120;
+    $('status').textContent="جارٍ تحميل "+COINS.length+" سوقًا…";$('run').disabled=true;
+    Promise.all(COINS.map(function(c){return fetch('/api/klines?symbol='+c+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;});})).then(function(res){
+      var rets={};COINS.forEach(function(c,i){var d=res[i];var k=Array.isArray(d)?d:((d&&(d.klines||d.data||d.candles))||[]);var cl=k.map(function(x){return Array.isArray(x)?+x[4]:+x.close;}).filter(function(x){return isFinite(x);}).slice(-win-1);var r=[];for(var j=1;j<cl.length;j++)r.push(Math.log(cl[j]/cl[j-1]));rets[c]=r;});
+      var have=COINS.filter(function(c){return rets[c]&&rets[c].length>=10;});
+      if(have.length<2){$('status').textContent="تعذّر تحميل بيانات كافية — حاول مرة أخرى.";$('run').disabled=false;return;}
+      var html='<tr><th></th>'+have.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr>';
+      have.forEach(function(a){html+='<tr><td class="lbl">'+a+'</td>'+have.map(function(b){var v=a===b?1:corr(rets[a],rets[b]);return '<td><div class="cell'+(a===b?' diag':'')+'" style="background:'+(a===b?'#1a2028':col(v))+'">'+v.toFixed(2)+'</div></td>';}).join('')+'</tr>';});
+      $('mx').innerHTML=html;$('out').hidden=false;$('status').textContent='';$('run').disabled=false;
+    }).catch(function(){$('status').textContent="تعذّر التحميل — حاول مرة أخرى.";$('run').disabled=false;});
+  }
+  $('run').addEventListener('click',run);run();
+})();
+</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

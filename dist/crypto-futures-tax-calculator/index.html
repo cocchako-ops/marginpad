@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>Crypto Futures Tax Calculator — Net Realized P&L Estimator | MarginPad</title>
+<meta name="description" content="Free crypto futures tax estimator: turn a year of realized gains, losses, fees and funding into a net taxable figure and an estimated bill at your own tax rate. Educational, not tax advice." />
+<meta name="keywords" content="crypto futures tax calculator, crypto tax estimator, futures trading tax, capital gains crypto calculator, do i pay tax on crypto futures" />
+<link rel="canonical" href="https://marginpad.io/crypto-futures-tax-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Crypto Futures Tax Calculator — Net Realized P&L Estimator | MarginPad" />
+<meta property="og:description" content="Free crypto futures tax estimator: turn a year of realized gains, losses, fees and funding into a net taxable figure and an estimated bill at your own tax rate. Educational, not tax advice." />
+<meta property="og:url" content="https://marginpad.io/crypto-futures-tax-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og-home.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<style>
+:root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:34px 18px 60px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(26px,4.6vw,38px);letter-spacing:-.02em;line-height:1.12;margin:10px 0 10px}
+.sub{color:var(--dim);font-size:15.5px;max-width:640px;margin:0 0 24px}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;margin:34px 0 10px}
+p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.f label{display:block;font:700 10px 'Space Mono',monospace;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);margin:0 0 5px}
+.f input,.f select{width:100%;background:#0a0d11;border:1px solid #2b323b;border-radius:9px;padding:11px 12px;color:var(--ink);font-family:'Space Mono',monospace;font-size:16px}
+.f input:focus,.f select:focus{outline:none;border-color:var(--lime)}
+.res{margin-top:16px;border-top:1px solid var(--line);padding-top:6px}
+.rrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(32,38,47,.6)}
+.rrow:last-child{border-bottom:none}.rrow .k{color:var(--dim);font-size:13.5px}
+.rrow .v{font-family:'Space Mono',monospace;font-size:16px;font-weight:700}
+.rrow.big .v{font-size:21px;color:var(--lime)}.v.up{color:var(--up)}.v.dn{color:var(--red)}
+.frm{background:#0a0d11;border:1px solid var(--line);border-radius:var(--rs);padding:13px 16px;font-family:'Space Mono',monospace;font-size:13.5px;color:var(--ink);overflow-x:auto;white-space:nowrap}
+.ex{background:linear-gradient(160deg,rgba(194,246,74,.05),transparent 60%),var(--panel);border:1px solid var(--line);border-radius:var(--rs);padding:14px 17px}
+.faq details{border:1px solid var(--line);border-radius:var(--rs);background:var(--panel);margin-bottom:9px;padding:0 16px}
+.faq summary{cursor:pointer;font-weight:700;color:var(--ink);font-size:14.5px;padding:13px 0}
+.rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.rel a{color:var(--lime);border:1px solid rgba(194,246,74,.35);border-radius:999px;padding:7px 14px;font-size:12.5px;text-decoration:none}
+.rel a:hover{background:rgba(194,246,74,.1)}
+.mprail{margin:34px 0 8px;border:1px solid rgba(245,166,35,.35);border-radius:16px;padding:16px;background:linear-gradient(160deg,rgba(245,166,35,.06),transparent 60%),var(--panel)}
+.mprail-t{font:700 10px 'Space Mono',monospace;letter-spacing:.14em;color:#f5a623;margin-bottom:10px}
+.mprail a{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:11px;color:var(--ink);text-decoration:none;margin-bottom:8px;transition:.15s}
+.mprail a:hover{border-color:#f5a623}.mprail a b{flex:none}.mprail a span{flex:1;color:var(--dim);font-size:12.5px}.mprail a i{color:#f5a623;font-style:normal}
+.note{color:var(--faint);font-size:12px;margin-top:26px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Futures Tax Estimator","applicationCategory":"FinanceApplication","operatingSystem":"Any","url":"https://marginpad.io/crypto-futures-tax-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Crypto Futures Tax Estimator","item":"https://marginpad.io/crypto-futures-tax-calculator/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I pay tax on crypto futures profits?","acceptedAnswer":{"@type":"Answer","text":"In most countries, yes, once a position is closed and the profit is realized. What differs is the category it falls into and the rate that applies: capital gains in some places, ordinary income in others, a dedicated futures regime or a flat crypto rate elsewhere. Check your own jurisdiction or ask a local accountant — this tool deliberately does not assume one."}},{"@type":"Question","name":"Are unrealized gains on an open position taxed?","acceptedAnswer":{"@type":"Answer","text":"Generally not. Most systems tax realized results, so an open position that is deep in profit is usually not a taxable event until you close it. A small number of regimes apply mark-to-market treatment to certain contracts or professional traders, which is one more reason to confirm your local rule rather than assume."}},{"@type":"Question","name":"Can I deduct trading fees and funding payments?","acceptedAnswer":{"@type":"Answer","text":"In most systems trading fees and net funding paid are costs of the trade and reduce the taxable result, which is why they are separate inputs here. Keep them itemised in your records — a return that lumps them into a single P&amp;L number is much harder to justify if anyone asks."}},{"@type":"Question","name":"What happens to a losing year?","acceptedAnswer":{"@type":"Answer","text":"Realized losses normally offset realized gains in the same period, and an unused balance often carries forward to future years. Enter a carry-forward amount above to see it applied. How many years it carries and what it may offset is jurisdiction-specific."}},{"@type":"Question","name":"Is this calculator tax advice?","acceptedAnswer":{"@type":"Answer","text":"No. It is an educational estimator that does arithmetic on numbers you supply, using a tax rate you supply. It does not know your country, your income, your contract types or your filing status, and it should not be used as the basis of a return. Treat the output as a planning figure and confirm the real one with a qualified professional."}}]}</script>
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+<h1>Crypto Futures Tax Estimator</h1>
+<p class="sub">Turn a year of trading into the number that actually matters: net realized P&amp;L after costs, and what it might cost you at your own rate.</p>
+<div class="calc"><div class="cgrid"><div class="f"><label for="gains">Realized gains (USD)</label><input id="gains" type="number" inputmode="decimal" value="12000"></div><div class="f"><label for="losses">Realized losses (USD)</label><input id="losses" type="number" inputmode="decimal" value="7500"></div><div class="f"><label for="fees">Trading fees paid (USD)</label><input id="fees" type="number" inputmode="decimal" value="420"></div><div class="f"><label for="funding">Net funding paid (USD)</label><input id="funding" type="number" inputmode="decimal" value="180"></div><div class="f"><label for="carry">Loss carried forward (USD)</label><input id="carry" type="number" inputmode="decimal" value="0"></div><div class="f"><label for="rate">Your tax rate %</label><input id="rate" type="number" inputmode="decimal" value="25" step="0.5"></div></div><div class="res" id="res"></div></div>
+<h2>How it is calculated</h2>
+<div class="frm">taxable &asymp; (realized gains &minus; realized losses &minus; fees &minus; net funding) &minus; loss carry-forward &nbsp;&nbsp;|&nbsp;&nbsp; tax = taxable &times; your rate</div>
+<p><strong>Read this first: this is an estimator, not tax advice.</strong> How a futures trade is taxed depends on where you live and on what you actually traded, and no calculator on the internet knows either. What it does do is the part everyone gets wrong by hand — turning a messy year of trades into one honest net number, with fees and funding treated as the real costs they are.</p>
+<h2>Why "realized" is the only word that matters</h2>
+<p>Almost every tax system taxes <strong>closed</strong> positions. An open long sitting at +$40,000 is generally not a taxable event no matter how good it looks; the day you close it, it usually is. That single distinction is why a trader can feel rich in December and owe nothing, or feel flat and owe a lot because the gains were realized early and given back later in a new tax year.</p>
+<p>Your <a href="/trading-journal/">trading journal</a> is what makes this answerable — it separates closed trades from open ones and sums realized P&amp;L per period, which is exactly the input this estimator wants.</p>
+<h2>Fees and funding are costs, not decoration</h2>
+<p>Traders routinely enter their gross P&amp;L and forget that they also paid taker fees on every entry and exit and, on perpetuals, <a href="/blog/what-is-funding-rate/">funding</a> every eight hours. In most systems those are deductible costs of the trade. On an active account they are not a rounding error: a year of 0.055% round trips plus funding can be a five-figure deduction on a six-figure notional turnover, which is the difference between an accurate return and an expensive one.</p>
+<h2>Losses are an asset — if you record them</h2>
+<p>Realized losses normally offset realized gains, and many jurisdictions let an unused loss carry forward into future years. That is why the loss field here is not decoration: a $30,000 loss in a bad year can quietly reduce the bill on a good one. The rule attached to it (how long it carries, what it may offset) varies enormously, so the mechanic is universal but the limits are local.</p>
+<h2>Why we do not pick a rate for you</h2>
+<p>Because there is no honest single answer. Depending on where you file, futures profit may be treated as capital gains, as ordinary income, under a special futures regime with its own blended rate, or under a flat crypto-specific rate — and within any of those, the percentage typically depends on your total income for the year, not just on trading. Anyone showing you a confident "you owe X" without knowing your country and your income is guessing. Put <em>your</em> marginal rate in, or ask an accountant for it, and the arithmetic above is then genuinely yours.</p>
+<h2>Keep records that survive a question</h2>
+<ul>
+<li><strong>Every closed trade</strong> with date, symbol, side, size, entry, exit and result — exchange exports and a journal both work.</li>
+<li><strong>Fees and funding separately</strong>, because they are deductions and lumping them into P&amp;L makes the return unverifiable.</li>
+<li><strong>Transfers between venues</strong>, which are usually not taxable events but look exactly like income to anyone reconstructing your year later.</li>
+<li><strong>The year-end snapshot</strong> of open positions, so the line between realized and unrealized is documented rather than remembered.</li>
+</ul>
+<h2>Worked example</h2>
+<div class="ex">A year with <b>$12,000</b> of realized gains, <b>$7,500</b> of realized losses, <b>$420</b> in fees and <b>$180</b> of net funding paid: net P&amp;L <b>+$4,500</b>, minus <b>$600</b> of costs = <b>$3,900</b> after costs. At a self-entered <b>25%</b> rate the estimate is <b>$975</b> of tax, leaving <b>$2,925</b>. Notice that the $600 of costs alone moved the bill by $150 — the part most hand-made spreadsheets forget.</div>
+<h2>FAQ</h2>
+<div class="faq"><details><summary>Do I pay tax on crypto futures profits?</summary><p>In most countries, yes, once a position is closed and the profit is realized. What differs is the category it falls into and the rate that applies: capital gains in some places, ordinary income in others, a dedicated futures regime or a flat crypto rate elsewhere. Check your own jurisdiction or ask a local accountant — this tool deliberately does not assume one.</p></details><details><summary>Are unrealized gains on an open position taxed?</summary><p>Generally not. Most systems tax realized results, so an open position that is deep in profit is usually not a taxable event until you close it. A small number of regimes apply mark-to-market treatment to certain contracts or professional traders, which is one more reason to confirm your local rule rather than assume.</p></details><details><summary>Can I deduct trading fees and funding payments?</summary><p>In most systems trading fees and net funding paid are costs of the trade and reduce the taxable result, which is why they are separate inputs here. Keep them itemised in your records — a return that lumps them into a single P&amp;L number is much harder to justify if anyone asks.</p></details><details><summary>What happens to a losing year?</summary><p>Realized losses normally offset realized gains in the same period, and an unused balance often carries forward to future years. Enter a carry-forward amount above to see it applied. How many years it carries and what it may offset is jurisdiction-specific.</p></details><details><summary>Is this calculator tax advice?</summary><p>No. It is an educational estimator that does arithmetic on numbers you supply, using a tax rate you supply. It does not know your country, your income, your contract types or your filing status, and it should not be used as the basis of a return. Treat the output as a planning figure and confirm the real one with a qualified professional.</p></details></div>
+<h2>Related tools</h2>
+<div class="rel"><a href="/trading-journal/">Trading journal</a><a href="/crypto-profit-calculator/">Profit calculator</a><a href="/crypto-fee-calculator/">Fee calculator</a><a href="/crypto-funding-cost-calculator/">Funding cost</a><a href="/calculators">All calculators (app)</a></div>
+<div class="mprail"><div class="mprail-t">TRADE IT FOR REAL</div>
+<a href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Bybit'})}catch(e){}"><b>Bybit</b><span>Futures &middot; up to 100x &middot; deep liquidity</span><i>&rarr;</i></a>
+<a href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer" onclick="try{gtag('event','conversion_event_outbound_click',{ex:'Moon'})}catch(e){}"><b>Moon</b><span>Call it up or down &middot; 24/7 markets</span><i>&rarr;</i></a></div>
+<p class="note">Free, no signup, runs entirely in your browser. Educational tool — not financial advice. Practice the setup risk-free on the <a href="/paper-trade" style="color:var(--lime)">MarginPad paper-trading terminal</a> before putting real money behind it.</p>
+</div>
+<script>function calc(){var g=+document.getElementById('gains').value,l=+document.getElementById('losses').value,f=+document.getElementById('fees').value,fu=+document.getElementById('funding').value,cf=+document.getElementById('carry').value,rt=+document.getElementById('rate').value/100;var r=document.getElementById('res');if(!(g>=0&&l>=0)){r.innerHTML='';return;}var net=g-l,costs=(f||0)+(fu||0),afterCosts=net-costs,taxable=Math.max(0,afterCosts-(cf||0)),unused=Math.max(0,(cf||0)-Math.max(0,afterCosts)),tax=taxable*rt,keep=afterCosts-tax;var m=function(v){return (v<0?'-$':'$')+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:2});};
+r.innerHTML='<div class="rrow"><span class="k">Net realized P&L (gains &minus; losses)</span><span class="v '+(net>=0?'up':'dn')+'">'+m(net)+'</span></div><div class="rrow"><span class="k">Deductible trading costs</span><span class="v dn">-'+m(costs).replace('$','')+' USD</span></div><div class="rrow"><span class="k">Result after costs</span><span class="v '+(afterCosts>=0?'up':'dn')+'">'+m(afterCosts)+'</span></div>'+(cf>0?'<div class="rrow"><span class="k">Loss carried forward applied</span><span class="v">-'+m(Math.min(cf,Math.max(0,afterCosts))).replace('$','')+' USD</span></div>':'')+'<div class="rrow"><span class="k">Estimated taxable amount</span><span class="v">'+m(taxable)+'</span></div><div class="rrow big"><span class="k">Estimated tax at '+(rt*100).toFixed(1)+'%</span><span class="v dn">'+m(tax)+'</span></div><div class="rrow"><span class="k">Keep after estimated tax</span><span class="v '+(keep>=0?'up':'dn')+'">'+m(keep)+'</span></div>'+(afterCosts<0?'<div class="rrow"><span class="k">Loss available to carry forward</span><span class="v">'+m(Math.abs(afterCosts)+(cf||0))+'</span></div>':(unused>0?'<div class="rrow"><span class="k">Unused carry-forward remaining</span><span class="v">'+m(unused)+'</span></div>':''));}
+document.querySelectorAll('.calc input,.calc select').forEach(function(el){el.addEventListener('input',calc);el.addEventListener('change',calc);});calc();</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

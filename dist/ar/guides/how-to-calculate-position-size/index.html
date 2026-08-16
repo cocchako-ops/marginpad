@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>كيفية حساب حجم المركز في الكريبتو | MarginPad</title>
+<meta name="description" content="حدّد حجم كل صفقة بناءً على المخاطرة لا الحدس: كيف تحسب حجم المركز من حسابك ومسافة وقف الخسارة والمخاطرة لكل صفقة." />
+<link rel="canonical" href="https://marginpad.io/ar/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/guides/how-to-calculate-position-size/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/guides/how-to-calculate-position-size/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="كيفية حساب حجم المركز في الكريبتو" />
+<meta property="og:description" content="حدّد حجم كل صفقة بناءً على المخاطرة لا الحدس: كيف تحسب حجم المركز من حسابك ومسافة وقف الخسارة والمخاطرة لكل صفقة." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/ar/guides/how-to-calculate-position-size/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/coin.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"الرئيسية","item":"https://marginpad.io/ar/"},{"@type":"ListItem","position":2,"name":"الأدلة","item":"https://marginpad.io/ar/guides/"},{"@type":"ListItem","position":3,"name":"كيفية حساب حجم المركز في الكريبتو","item":"https://marginpad.io/ar/guides/how-to-calculate-position-size/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"كم ينبغي أن أخاطر لكل صفقة؟","acceptedAnswer":{"@type":"Answer","text":"إرشاد شائع الاستخدام هو 1–2% من حسابك لكل صفقة، بحيث لا تستطيع سلسلة من الخسائر تفجير الحساب."}},{"@type":"Question","name":"هل تغيّر الرافعة المالية حجم مركزي؟","acceptedAnswer":{"@type":"Answer","text":"لا — تتحدّد مخاطرتك بحجم المركز ومسافة وقف الخسارة. الرافعة تحدّد فقط الهامش اللازم للاحتفاظ بذلك المركز."}}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/ar/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/ar/markets/">الأسواق</a><a href="/screener">الماسح</a><a href="/ar/">الأدوات</a><a href="/blog/">المدونة</a></nav>
+  </header>
+  <div class="crumb"><a href="/ar/">الرئيسية</a> / <a href="/ar/guides/">الأدلة</a> / كيفية حساب حجم المركز في الكريبتو</div>
+  <article>
+    <h1>كيفية حساب حجم المركز في الكريبتو</h1>
+    <p class="lead">حدّد حجم كل صفقة بناءً على المخاطرة لا الحدس: كيف تحسب حجم المركز من حسابك ومسافة وقف الخسارة والمخاطرة لكل صفقة.</p>
+    <p style="margin:10px 0 20px"><a href="/calculators?c=size" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;padding:11px 18px;border-radius:11px">حاسبة حجم المركز →</a></p>
+    <h2>المخاطرة أولاً، الحجم ثانياً</h2><p>يبدأ التحجيم الاحترافي من رقم واحد: كم أنت مستعد لخسارته في الصفقة. القاعدة الشائعة هي المخاطرة بـ<strong>1–2% من حسابك لكل صفقة</strong>. ومن ثم يتبع حجم مركزك مسافة وقف الخسارة لديك.</p>
+<h2>المعادلة</h2><p>حجم المركز = (الحساب × نسبة المخاطرة) ÷ (نسبة مسافة وقف الخسارة). إذا خاطرت بـ$20 وكان وقف الخسارة على بعد 2%، فإنك تأخذ تعرّضاً قدره $1,000 — بصرف النظر عن الرافعة المالية. الرافعة تحدّد الهامش المطلوب فقط، لا مخاطرتك.</p>
+<h2>الرافعة المالية ليست مخاطرة</h2><p>هذه هي النقطة التي يفوتها معظم المبتدئين: تتحدّد مخاطرتك بالحجم ووقف الخسارة، لا بالرافعة المالية. قد يكون 10× على مركز صغير محكم الوقف أكثر أماناً بكثير من 2× على مركز مفرط الحجم. استخدم <a href="/calculators?c=size">حاسبة حجم المركز</a> بحيث تخاطر كل صفقة بالمقدار نفسه، وراقب <a href="/ar/guides/what-is-liquidation-price/">سعر التصفية</a>.</p>
+    <h2>الأسئلة الشائعة</h2><h3 style="font-size:16px;margin:16px 0 4px">كم ينبغي أن أخاطر لكل صفقة؟</h3><p>إرشاد شائع الاستخدام هو 1–2% من حسابك لكل صفقة، بحيث لا تستطيع سلسلة من الخسائر تفجير الحساب.</p><h3 style="font-size:16px;margin:16px 0 4px">هل تغيّر الرافعة المالية حجم مركزي؟</h3><p>لا — تتحدّد مخاطرتك بحجم المركز ومسافة وقف الخسارة. الرافعة تحدّد فقط الهامش اللازم للاحتفاظ بذلك المركز.</p>
+    <h2>More guides</h2>
+    <div class="related"><a href="/ar/guides/how-to-read-funding-rates/">كيفية قراءة معدلات التمويل في الكريبتو</a>
+      <a href="/ar/guides/how-to-read-liquidations/">كيفية قراءة التصفيات في الكريبتو</a>
+      <a href="/ar/guides/what-is-open-interest/">ما هي المراكز المفتوحة في الكريبتو؟</a>
+      <a href="/ar/guides/long-short-ratio-explained/">شرح نسبة الشراء/البيع في الكريبتو</a>
+      <a href="/ar/guides/what-is-liquidation-price/">ما هو سعر التصفية في الكريبتو؟</a>
+      <a href="/ar/guides/isolated-vs-cross-margin/">شرح الهامش المعزول مقابل الهامش المتقاطع</a></div>
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">للمعلومات فقط — ليست نصيحة مالية. استكشف البيانات المباشرة في <a href="/ar/markets/">مركز الأسواق</a>.</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/ar/markets/">الأسواق</a> · <a href="/ar/liquidations/">التصفيات</a> · <a href="/ar/funding/">التمويل</a> · <a href="/screener">الماسح</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

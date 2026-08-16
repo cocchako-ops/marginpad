@@ -525,4 +525,6 @@
   <url><loc>https://marginpad.io/floki-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/ordi-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/tao-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://marginpad.io/wordpress-crypto-widgets/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://marginpad.io/crypto-futures-tax-calculator/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>

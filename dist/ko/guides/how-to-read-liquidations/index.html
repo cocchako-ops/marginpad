@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>암호화폐 청산 읽는 법 | MarginPad</title>
+<meta name="description" content="암호화폐 청산을 이해하세요: 청산이 무엇인지, 롱 청산과 숏 청산의 차이, 그리고 청산 캐스케이드가 어떻게 변동성을 이끄는지 알아봅니다." />
+<link rel="canonical" href="https://marginpad.io/ko/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/guides/how-to-read-liquidations/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/guides/how-to-read-liquidations/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="암호화폐 청산 읽는 법" />
+<meta property="og:description" content="암호화폐 청산을 이해하세요: 청산이 무엇인지, 롱 청산과 숏 청산의 차이, 그리고 청산 캐스케이드가 어떻게 변동성을 이끄는지 알아봅니다." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/ko/guides/how-to-read-liquidations/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/coin.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://marginpad.io/ko/"},{"@type":"ListItem","position":2,"name":"가이드","item":"https://marginpad.io/ko/guides/"},{"@type":"ListItem","position":3,"name":"암호화폐 청산 읽는 법","item":"https://marginpad.io/ko/guides/how-to-read-liquidations/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"청산은 무엇이 원인인가요?","acceptedAnswer":{"@type":"Answer","text":"가격이 포지션에 불리하게 충분히 움직여 증거금이 더 이상 손실을 감당할 수 없게 되면 포지션이 청산되며, 거래소가 자동으로 이를 종료합니다."}},{"@type":"Question","name":"롱 청산과 숏 청산 중 어느 쪽이 강세 신호인가요?","acceptedAnswer":{"@type":"Answer","text":"(하락 중) 롱 청산의 급등은 국지적 바닥을 표시할 수 있고, (랠리 중) 숏 청산의 급등은 위쪽 스퀴즈를 부추길 수 있습니다."}}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/ko/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/ko/markets/">마켓</a><a href="/screener">스크리너</a><a href="/ko/">도구</a><a href="/blog/">블로그</a></nav>
+  </header>
+  <div class="crumb"><a href="/ko/">홈</a> / <a href="/ko/guides/">가이드</a> / 암호화폐 청산 읽는 법</div>
+  <article>
+    <h1>암호화폐 청산 읽는 법</h1>
+    <p class="lead">암호화폐 청산을 이해하세요: 청산이 무엇인지, 롱 청산과 숏 청산의 차이, 그리고 청산 캐스케이드가 어떻게 변동성을 이끄는지 알아봅니다.</p>
+    <p style="margin:10px 0 20px"><a href="/ko/liquidations/" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;padding:11px 18px;border-radius:11px">실시간 청산 트래커 →</a></p>
+    <h2>청산이란 무엇인가</h2><p><strong>청산</strong>은 트레이더의 증거금이 더 이상 손실을 감당할 수 없어 거래소가 레버리지 포지션을 강제로 종료하는 것입니다. 포지션은 시장가로 청산되고 트레이더는 증거금을 잃습니다. 높은 레버리지에서는 청산 가격이 진입가에 매우 가깝게 위치합니다.</p>
+<h2>롱 청산 대 숏 청산</h2><p><strong>롱 청산</strong>은 가격이 하락할 때 쓸려나가는 과도한 레버리지의 매수자들입니다. <strong>숏 청산</strong>은 가격이 상승할 때 쓸려나가는 매도자들입니다. 한쪽으로 크게 치우친 급등은 흔히 국지적 극단을 나타냅니다 — 롱 청산의 쓸림은 바닥을 표시할 수 있고, 숏 청산의 물결은 랠리를 부추길 수 있습니다.</p>
+<h2>청산 캐스케이드</h2><p>청산은 연료처럼 작용합니다. 가격이 레버리지가 가득 찬 구간에 닿으면, 강제 주문이 가격을 더 밀어붙여 더 많은 청산을 촉발합니다 — 이것이 <strong>캐스케이드</strong>입니다. 레버리지가 가장 무거운 곳을 지켜보면 과밀된 거래를 피하는 데 도움이 됩니다.</p>
+<h2>나머지와 함께 활용하라</h2><p>청산을 <a href="/ko/funding/">펀딩</a> 및 <a href="/ko/open-interest/">미결제약정</a>과 짝지어 보세요: 미결제약정의 감소는 레버리지가 쓸려나가면서 보통 캐스케이드 뒤에 따라옵니다.</p>
+    <h2>자주 묻는 질문</h2><h3 style="font-size:16px;margin:16px 0 4px">청산은 무엇이 원인인가요?</h3><p>가격이 포지션에 불리하게 충분히 움직여 증거금이 더 이상 손실을 감당할 수 없게 되면 포지션이 청산되며, 거래소가 자동으로 이를 종료합니다.</p><h3 style="font-size:16px;margin:16px 0 4px">롱 청산과 숏 청산 중 어느 쪽이 강세 신호인가요?</h3><p>(하락 중) 롱 청산의 급등은 국지적 바닥을 표시할 수 있고, (랠리 중) 숏 청산의 급등은 위쪽 스퀴즈를 부추길 수 있습니다.</p>
+    <h2>More guides</h2>
+    <div class="related"><a href="/ko/guides/how-to-read-funding-rates/">암호화폐 펀딩비 읽는 법</a>
+      <a href="/ko/guides/what-is-open-interest/">암호화폐에서 미결제약정이란?</a>
+      <a href="/ko/guides/long-short-ratio-explained/">암호화폐 롱/숏 비율 설명</a>
+      <a href="/ko/guides/what-is-liquidation-price/">암호화폐에서 청산 가격이란?</a>
+      <a href="/ko/guides/isolated-vs-cross-margin/">격리 마진 대 교차 마진 설명</a>
+      <a href="/ko/guides/how-to-calculate-position-size/">암호화폐에서 포지션 크기 계산하는 법</a></div>
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">정보 제공용일 뿐 — 투자 조언이 아닙니다. 실시간 데이터는 <a href="/ko/markets/">마켓 허브</a>에서 살펴보세요.</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/ko/markets/">마켓</a> · <a href="/ko/liquidations/">청산</a> · <a href="/ko/funding/">펀딩</a> · <a href="/screener">스크리너</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

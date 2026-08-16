@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>暗号資産の建玉 — ライブOIトラッカー | MarginPad</title>
+<meta name="description" content="ライブの暗号資産パーペチュアル先物建玉：銘柄ごとの総建玉と、24時間で最大の流入・流出。レバレッジがどこで積み上がり、資金がどこへ流れるかを確認。無料、登録不要。" />
+<meta name="keywords" content="暗号資産 建玉, 建玉トラッカー, btc 建玉, oi 変化, 先物建玉" />
+<link rel="canonical" href="https://marginpad.io/ja/open-interest/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/open-interest/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/open-interest/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/open-interest/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/open-interest/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/open-interest/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/open-interest/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/open-interest/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/open-interest/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/open-interest/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/open-interest/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/open-interest/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/open-interest/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/open-interest/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/open-interest/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="暗号資産の建玉 — ライブOIトラッカー" />
+<meta property="og:description" content="ライブの暗号資産パーペチュアル先物建玉：銘柄ごとの総建玉と、24時間で最大の流入・流出。レバレッジがどこで積み上がり、資金がどこへ流れるかを確認。無料、登録不要。" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/ja/open-interest/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/open-interest.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="暗号資産の建玉 — ライブOIトラッカー" />
+<meta name="twitter:description" content="ライブの暗号資産パーペチュアル先物建玉：銘柄ごとの総建玉と、24時間で最大の流入・流出。レバレッジがどこで積み上がり、資金がどこへ流れるかを確認。無料、登録不要。" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/open-interest.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+  .oitop{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 6px}
+  @media(max-width:560px){.oitop{grid-template-columns:1fr}}
+  .oicard{background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line-bright);border-radius:15px;padding:16px 18px}
+  .oicard.in{border-color:rgba(46,189,133,.4)}.oicard.out{border-color:rgba(255,90,77,.4)}
+  .oi-k{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;margin-bottom:8px}
+  .oi-row{display:flex;align-items:baseline;gap:9px}
+  .oi-sym{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px}
+  .oi-val{font-family:'Space Mono',monospace;font-weight:800;font-size:20px;margin-left:auto}
+  .oi-val.up{color:#34d99a}.oi-val.dn{color:#ff7b72}
+  .oi-hint{font-size:12.5px;color:var(--ink-dim);margin-top:6px;line-height:1.45}
+  .oitbl{width:100%;border-collapse:collapse;margin:8px 0 4px;font-size:14px}
+  .oitbl th,.oitbl td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  .oitbl th:first-child,.oitbl td:first-child,.oitbl th:nth-child(2),.oitbl td:nth-child(2){text-align:left}
+  .oitbl th{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint)}
+  .oitbl td{font-family:'Space Mono',monospace;color:var(--ink)}
+  .oitbl td.sym{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px}
+  .oitbl .rk{color:var(--ink-faint);width:26px;text-align:right}
+  .oitbl td.ch.up{color:#34d99a;font-weight:700}.oitbl td.ch.dn{color:#ff7b72;font-weight:700}
+  .oitbl td.pc.up{color:#34d99a}.oitbl td.pc.dn{color:#ff7b72}
+  .oinote{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);text-align:center;margin:8px 0 0}
+  .oicta{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 8px}
+  .oicta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
+  .oicta a.go{background:#c2f64a;color:#0a0b0d;border-color:#c2f64a}
+  .oiload{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-faint);padding:16px 0;text-align:center}
+  @media(max-width:600px){.oitbl th.hide,.oitbl td.hide{display:none}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Open Interest Tracker","url":"https://marginpad.io/ja/open-interest/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is open interest in crypto?","acceptedAnswer":{"@type":"Answer","text":"Open interest is the total value of all outstanding (open) perpetual-futures positions on a coin. Rising open interest means new leverage is entering the market; falling open interest means positions are being closed."}},{"@type":"Question","name":"What does a rise in open interest mean?","acceptedAnswer":{"@type":"Answer","text":"Open interest rising alongside price suggests new money backing the move; open interest falling while price rises often means short covering. A sharp drop in open interest usually follows a liquidation cascade as leverage is flushed."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Open interest","item":"https://marginpad.io/ja/open-interest/"}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/markets/">マーケット</a><a href="/liquidations/">清算</a><a href="/funding/">資金調達率</a><a href="/open-interest/">建玉</a><a href="/long-short/">ロング/ショート</a><a href="/screener">Screener</a></nav>
+  </header>
+  <div class="crumb"><a href="/ja/">ホーム</a> / 建玉</div>
+  <article>
+    <h1>暗号資産の建玉</h1>
+    <p class="lead">ライブのパーペチュアル先物建玉 — 各銘柄の未決済ポジションの総額と、過去24時間でレバレッジが最も増えた、または巻き戻された場所。建玉の増加は新規資金とレバレッジ、減少はポジションが閉じられていることを意味します。自動更新。</p>
+
+    <div class="oitop" id="oiTop"><div class="oiload">ライブ建玉データを読み込み中…</div></div>
+
+    <h2>建玉 · 全銘柄</h2>
+    <div id="oiTable"><div class="oiload">読み込み中…</div></div>
+    <p class="oinote" id="oiUpd"></p>
+
+    <div class="oicta">
+      <a class="go" href="/screener">マーケットスクリーナーを開く →</a>
+      <a href="/funding/">資金調達率</a>
+      <a href="/liquidations/">ライブ清算</a>
+    </div>
+
+    <h2>建玉とは？</h2>
+    <p><strong>建玉（OI）</strong>は、ある銘柄の未決済パーペチュアル先物ポジションの合計ドル価値です。出来高（各取引を数える）と異なり、OIは現在市場でどれだけのレバレッジが<em>未決済</em>かを数えます。建玉の増加は新規ポジションと新たなレバレッジの流入、減少はトレーダーが手仕舞っていることを意味します。</p>
+
+    <h2>OIの変化の読み方</h2>
+    <p>OIは価格と一緒に見るのが最も有用です。<strong>価格上昇＋OI上昇</strong>は新規資金が動きを支える — より強いトレンドを意味します。<strong>価格上昇＋OI低下</strong>はしばしば新規需要ではなくショートの買い戻しです。突然の<strong>OI低下</strong>は通常、過剰レバレッジのポジションが洗い流される<a href="/liquidations/">清算の連鎖</a>に続きます。OIの大量積み上がりと一方向の<a href="/funding/">資金調達</a>が組み合わさると、混雑し脆弱なセットアップを示します。</p>
+
+    <h2>レバレッジが積み上がる場所</h2>
+    <p>上のカードは24時間で最大のOI流入・流出を強調します — トレーダーがどこに殺到し、どこの出口へ向かっているかを素早く把握できます。<a href="/screener">テクニカルスクリーナー</a>でセットアップを確認し、<a href="/">ポジションサイズ計算ツール</a>でサイズを決めましょう。</p>
+
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">建玉データは主要取引所全体で集計。情報提供のみ — 投資助言ではありません。</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/screener">Screener</a> · <a href="/funding/">資金調達率</a> · <a href="/liquidations/">清算</a> · <a href="/long-short/">ロング/ショート</a></span>
+  </footer>
+</div>
+<script>(function(){
+  var topEl=document.getElementById('oiTop'),tEl=document.getElementById('oiTable'),uEl=document.getElementById('oiUpd');
+  function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(0)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
+  function pc(v){return (v>=0?'+':'')+(+v).toFixed(2)+'%';}
+  function render(d){
+    if(!d||d.error||!d.coins||!d.coins.length){topEl.innerHTML='<div class="oiload">ライブデータが現在利用できません — まもなく再試行してください。</div>';tEl.innerHTML='';return;}
+    var c=d.coins.slice().filter(function(x){return isFinite(x.oiChg24h);});
+    var byCh=c.slice().sort(function(a,b){return b.oiChg24h-a.oiChg24h;});
+    var inflow=byCh[0], outflow=byCh[byCh.length-1];
+    topEl.innerHTML=(inflow?'<div class="oicard in"><div class="oi-k">最大のOI流入 · 24時間</div><div class="oi-row"><span class="oi-sym">'+inflow.s+'</span><span class="oi-val up">'+pc(inflow.oiChg24h)+'</span></div><div class="oi-hint">ここでレバレッジが最も速く積み上がっています — 新規ポジションが殺到。</div></div>':'')
+      +(outflow?'<div class="oicard out"><div class="oi-k">最大のOI流出 · 24時間</div><div class="oi-row"><span class="oi-sym">'+outflow.s+'</span><span class="oi-val dn">'+pc(outflow.oiChg24h)+'</span></div><div class="oi-hint">ここでポジションが最も速く巻き戻されています — トレーダーが出口へ。</div></div>':'');
+    var rows=d.coins.map(function(x,i){var och=(x.oiChg24h||0)>=0,pch=(x.chg24h||0)>=0;return '<tr><td class="rk">'+(i+1)+'</td><td class="sym">'+x.s+'</td><td>'+bn(x.oiUsd)+'</td><td class="ch '+(och?'up':'dn')+'">'+(isFinite(x.oiChg24h)?pc(x.oiChg24h):'—')+'</td><td class="hide pc '+(pch?'up':'dn')+'">'+(pch?'+':'')+(x.chg24h!=null?x.chg24h.toFixed(2):'0')+'%</td></tr>';}).join('');
+    tEl.innerHTML='<table class="oitbl"><thead><tr><th class="rk">#</th><th>銘柄</th><th>建玉</th><th>OI 24時間</th><th class="hide">価格 24時間</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    if(uEl)uEl.textContent='たった今更新 · 自動更新';
+  }
+  function load(){fetch('/api/cg/openinterest',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}
+  load();setInterval(load,60000);
+})();</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

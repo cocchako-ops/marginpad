@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>KuCoin 盈亏计算器（2026）— 利润、ROI 与 ROE | MarginPad</title>
+<meta name="description" content="免费的 KuCoin 盈亏计算器：输入开仓价、平仓价和杠杆，即可算出任意 KuCoin 合约交易（做多或做空）的利润、ROI 和杠杆后的 ROE。无需注册。" />
+<meta name="keywords" content="kucoin 盈亏计算器, kucoin 利润计算器, kucoin roi 计算器, kucoin 合约盈亏, kucoin roe 计算器" />
+<link rel="canonical" href="https://marginpad.io/zh/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/kucoin-pnl-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/kucoin-pnl-calculator/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="KuCoin 盈亏计算器（2026）— 利润、ROI 与 ROE" />
+<meta property="og:description" content="免费的 KuCoin 盈亏计算器：输入开仓价、平仓价和杠杆，即可算出任意 KuCoin 合约交易（做多或做空）的利润、ROI 和杠杆后的 ROE。无需注册。" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/zh/kucoin-pnl-calculator/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+  .lvtab{width:100%;border-collapse:collapse;margin:14px 0 18px;font-size:14px}
+  .lvtab th,.lvtab td{padding:10px 13px;border-bottom:1px solid var(--line);text-align:left}
+  .lvtab th{font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)}
+  .lvtab td{font-family:'Space Mono',monospace;color:var(--ink)}
+  .lvtab td:first-child{font-family:'Bricolage Grotesque',sans-serif;font-weight:700}
+  .lvtab tr.self td{background:rgba(194,246,74,.05)}
+  .lvtab .you{font-family:'Space Mono',monospace;font-size:9px;color:#c2f64a;text-transform:uppercase;letter-spacing:.05em;margin-left:5px}
+  .avail{display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:12px;padding:6px 11px;border-radius:8px;border:1px solid var(--line-bright);margin:2px 0 14px}
+  .avail.no{color:#ff8a80}.avail.yes{color:#34d99a}
+  @media(max-width:600px){.lvtab{display:block;overflow-x:auto;white-space:nowrap}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"KuCoin 盈亏计算器","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"https://marginpad.io/zh/kucoin-pnl-calculator/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"免费的 KuCoin 盈亏计算器：输入开仓价、平仓价和杠杆，即可算出任意 KuCoin 合约交易（做多或做空）的利润、ROI 和杠杆后的 ROE。无需注册。"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"在 KuCoin 上 ROE 和 ROI 有什么区别？","acceptedAnswer":{"@type":"Answer","text":"价格 ROI 是标的的涨跌百分比。ROE 则把它乘上你的杠杆 — 也就是你投入保证金的回报率。毛数字不包含手续费和资金费率。"}},{"@type":"Question","name":"KuCoin 会自动显示盈亏吗？","acceptedAnswer":{"@type":"Answer","text":"KuCoin 会显示持仓的实时盈亏，但这个工具让你在下单之前先规划和比较不同情景 — 并看清杠杆如何改变 ROE。"}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://marginpad.io/zh/"},{"@type":"ListItem","position":2,"name":"盈亏计算器","item":"https://marginpad.io/zh/kucoin-pnl-calculator/"}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/zh/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/zh/">计算器</a><a href="/blog/">博客</a></nav>
+  </header>
+  <div class="crumb"><a href="/zh/">首页</a> / 盈亏计算器</div>
+  <article>
+    <h1>KuCoin 盈亏计算器</h1>
+    <p class="lead">计算任意 KuCoin 合约交易的盈亏、ROI 和杠杆后的 ROE — 做多或做空。免费、即时、无需注册。</p>
+    <p style="font-family:'Space Mono',monospace;font-size:13px;color:var(--ink-dim);margin:-4px 0 14px" id="livePx"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>正在加载 BTC 实时价格…</p>
+    <div class="calc">
+      <div class="calc-in">
+        <div class="seg" id="pnlSeg"><button class="on" data-side="long">做多</button><button data-side="short">做空</button></div>
+        <label>开仓价（USD）</label><input id="pnlEntry" type="number" value="60000" step="any">
+        <label>平仓价（USD）</label><input id="pnlExit" type="number" value="66000" step="any">
+        <label>仓位大小（币）</label><input id="pnlQty" type="number" value="0.5" step="any">
+        <label>杠杆（用于 ROE）</label><input id="pnlLev" type="number" value="10" step="any">
+      </div>
+      <div class="calc-out">
+        <div class="col">盈亏</div><div class="big" id="pnlOut">—</div>
+        <div class="rr"><span>价格 ROI</span><b id="pnlRoi">—</b></div>
+        <div class="rr"><span>ROE（按保证金）</span><b id="pnlRoe">—</b></div>
+      </div>
+    </div>
+    <a class="exbtn" data-ex="KuCoin" style="background:undefined;color:undefined" href="https://www.kucoin.com/r/rf/VHP8AYKY" target="_blank" rel="sponsored noopener noreferrer">在 KuCoin 交易 →</a>
+    <h2>KuCoin 的盈亏与 ROE 计算方式</h2>
+    <p>在 KuCoin 上，你的毛利润等于价格变动乘以仓位大小：做多为 <code>(平仓价 − 开仓价) × 数量</code>，做空则相反。<b>价格 ROI</b> 是标的本身的涨跌百分比；<b>ROE</b> 是你投入保证金的回报率，会被 KuCoin 的杠杆放大。10× 杠杆下 10% 的波动约等于保证金 100% 的回报 — 反向同样的波动就是 100% 的亏损。</p>
+    <h2>实例计算</h2>
+    <p>在 KuCoin 上以 <code>$60,000</code> 开仓、<code>$66,000</code> 平仓的 0.5 币多单，杠杆 10×：</p>
+    <div class="example">
+      <div class="row"><span>利润（毛）</span><b>+$3,000.00</b></div>
+      <div class="row"><span>价格 ROI</span><b>+10.00%</b></div>
+      <div class="row"><span>ROE（10×）</span><b>+100.00%</b></div>
+    </div>
+    <p>杠杆是双刃剑。开仓前先规划好离场并确认强平价。上面的毛数字不包含手续费和资金费率。</p>
+    <h2>常见问题</h2>
+    <h3>在 KuCoin 上 ROE 和 ROI 有什么区别？</h3><p>价格 ROI 是标的的涨跌百分比。ROE 则把它乘上你的杠杆 — 也就是你投入保证金的回报率。毛数字不包含手续费和资金费率。</p>
+    <h3>KuCoin 会自动显示盈亏吗？</h3><p>KuCoin 会显示持仓的实时盈亏，但这个工具让你在下单之前先规划和比较不同情景 — 并看清杠杆如何改变 ROE。</p>
+    <h2>更多计算器</h2>
+    <div class="related">
+      <a href="/zh/">全部计算器</a>
+      <a href="/zh/kucoin-liquidation-calculator/">KuCoin 强平</a>
+      <a href="/zh/bybit-pnl-calculator/">Bybit 盈亏</a>
+      <a href="/zh/binance-pnl-calculator/">Binance 盈亏</a>
+      <a href="/zh/okx-pnl-calculator/">OKX 盈亏</a>
+      <a href="/zh/gate-pnl-calculator/">Gate 盈亏</a>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">教育工具，非投资建议。手续费、杠杆上限和可用性均为近似值，会随等级、地区和时间变化 — 请在 KuCoin 上确认。KuCoin 链接为推荐链接；我们可能获得佣金，你无需支付额外费用。</p>
+<script>(function(){var el=document.getElementById('livePx');if(!el)return;fetch('/api/price?symbol=BTC').then(function(r){return r.ok?r.json():null;}).then(function(d){if(d&&d.price>0){var p=+d.price;el.innerHTML='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#2ebd85;margin-right:7px;vertical-align:middle"></span>BTC <b style="color:#c2f64a">$'+p.toLocaleString('en-US',{maximumFractionDigits:2})+'</b>';var e=document.getElementById('liqEntry')||document.getElementById('pnlEntry');if(e){e.value=Math.round(p);e.dispatchEvent(new Event('input'));}}else{el.style.display='none';}}).catch(function(){el.style.display='none';});})();</script>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/zh/">计算器</a> · <a href="/blog/">博客</a></span>
+  </footer>
+</div>
+<script src="/assets/pnlcalc.js"></script>
+<script>
+/* affiliate-click conversion signal — Google Ads + GA4 + admin dashboard. The revenue proxy ad bidding optimises toward. */
+(function(){var ADS_CONV_LABEL='';/* paste your Google Ads conversion label here once created, e.g. 'abCdEf1gH' */
+Array.prototype.forEach.call(document.querySelectorAll('a.exbtn,[data-ex]'),function(a){a.addEventListener('click',function(){try{
+var ex=(a.getAttribute('data-ex')||a.textContent||'').replace(/Trade on|→/g,'').trim();
+if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathname});if(ADS_CONV_LABEL)gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}
+var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon)navigator.sendBeacon(u);
+}catch(_){}});});})();
+</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>암호화폐 미결제약정 — 실시간 OI 트래커 | MarginPad</title>
+<meta name="description" content="실시간 암호화폐 무기한 선물 미결제약정: 코인별 총 OI와 24시간 최대 유입·유출. 레버리지가 어디서 쌓이고 자금이 어디로 흐르는지 확인하세요. 무료, 가입 불필요." />
+<meta name="keywords" content="암호화폐 미결제약정, 미결제약정 트래커, btc 미결제약정, oi 변화, 선물 미결제약정" />
+<link rel="canonical" href="https://marginpad.io/ko/open-interest/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/open-interest/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/open-interest/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/open-interest/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/open-interest/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/open-interest/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/open-interest/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/open-interest/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/open-interest/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/open-interest/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/open-interest/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/open-interest/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/open-interest/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/open-interest/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/open-interest/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="암호화폐 미결제약정 — 실시간 OI 트래커" />
+<meta property="og:description" content="실시간 암호화폐 무기한 선물 미결제약정: 코인별 총 OI와 24시간 최대 유입·유출. 레버리지가 어디서 쌓이고 자금이 어디로 흐르는지 확인하세요. 무료, 가입 불필요." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/ko/open-interest/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/open-interest.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="암호화폐 미결제약정 — 실시간 OI 트래커" />
+<meta name="twitter:description" content="실시간 암호화폐 무기한 선물 미결제약정: 코인별 총 OI와 24시간 최대 유입·유출. 레버리지가 어디서 쌓이고 자금이 어디로 흐르는지 확인하세요. 무료, 가입 불필요." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/open-interest.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+  .oitop{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 6px}
+  @media(max-width:560px){.oitop{grid-template-columns:1fr}}
+  .oicard{background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line-bright);border-radius:15px;padding:16px 18px}
+  .oicard.in{border-color:rgba(46,189,133,.4)}.oicard.out{border-color:rgba(255,90,77,.4)}
+  .oi-k{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:700;margin-bottom:8px}
+  .oi-row{display:flex;align-items:baseline;gap:9px}
+  .oi-sym{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px}
+  .oi-val{font-family:'Space Mono',monospace;font-weight:800;font-size:20px;margin-left:auto}
+  .oi-val.up{color:#34d99a}.oi-val.dn{color:#ff7b72}
+  .oi-hint{font-size:12.5px;color:var(--ink-dim);margin-top:6px;line-height:1.45}
+  .oitbl{width:100%;border-collapse:collapse;margin:8px 0 4px;font-size:14px}
+  .oitbl th,.oitbl td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  .oitbl th:first-child,.oitbl td:first-child,.oitbl th:nth-child(2),.oitbl td:nth-child(2){text-align:left}
+  .oitbl th{font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-faint)}
+  .oitbl td{font-family:'Space Mono',monospace;color:var(--ink)}
+  .oitbl td.sym{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px}
+  .oitbl .rk{color:var(--ink-faint);width:26px;text-align:right}
+  .oitbl td.ch.up{color:#34d99a;font-weight:700}.oitbl td.ch.dn{color:#ff7b72;font-weight:700}
+  .oitbl td.pc.up{color:#34d99a}.oitbl td.pc.dn{color:#ff7b72}
+  .oinote{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);text-align:center;margin:8px 0 0}
+  .oicta{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 8px}
+  .oicta a{flex:1;min-width:150px;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13.5px;padding:13px 14px;border-radius:11px;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--panel),#0d0f12);color:var(--ink)}
+  .oicta a.go{background:#c2f64a;color:#0a0b0d;border-color:#c2f64a}
+  .oiload{font-family:'Space Mono',monospace;font-size:12.5px;color:var(--ink-faint);padding:16px 0;text-align:center}
+  @media(max-width:600px){.oitbl th.hide,.oitbl td.hide{display:none}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Crypto Open Interest Tracker","url":"https://marginpad.io/ko/open-interest/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is open interest in crypto?","acceptedAnswer":{"@type":"Answer","text":"Open interest is the total value of all outstanding (open) perpetual-futures positions on a coin. Rising open interest means new leverage is entering the market; falling open interest means positions are being closed."}},{"@type":"Question","name":"What does a rise in open interest mean?","acceptedAnswer":{"@type":"Answer","text":"Open interest rising alongside price suggests new money backing the move; open interest falling while price rises often means short covering. A sharp drop in open interest usually follows a liquidation cascade as leverage is flushed."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Open interest","item":"https://marginpad.io/ko/open-interest/"}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/markets/">마켓</a><a href="/liquidations/">청산</a><a href="/funding/">펀딩</a><a href="/open-interest/">미결제약정</a><a href="/long-short/">롱/숏</a><a href="/screener">Screener</a></nav>
+  </header>
+  <div class="crumb"><a href="/ko/">홈</a> / 미결제약정</div>
+  <article>
+    <h1>암호화폐 미결제약정</h1>
+    <p class="lead">실시간 무기한 선물 미결제약정 — 각 코인의 미결제 포지션 총가치, 그리고 지난 24시간 동안 레버리지가 가장 많이 늘거나 풀린 곳. OI 상승은 신규 자금과 레버리지, 하락은 포지션이 청산되고 있음을 의미합니다. 자동 갱신.</p>
+
+    <div class="oitop" id="oiTop"><div class="oiload">실시간 미결제약정 데이터 불러오는 중…</div></div>
+
+    <h2>미결제약정 · 모든 코인</h2>
+    <div id="oiTable"><div class="oiload">불러오는 중…</div></div>
+    <p class="oinote" id="oiUpd"></p>
+
+    <div class="oicta">
+      <a class="go" href="/screener">시장 스크리너 열기 →</a>
+      <a href="/funding/">펀딩 비율</a>
+      <a href="/liquidations/">실시간 청산</a>
+    </div>
+
+    <h2>미결제약정이란?</h2>
+    <p><strong>미결제약정(OI)</strong>은 한 코인의 모든 미결제 무기한 선물 포지션의 달러 총가치입니다. 거래량(모든 거래를 셈)과 달리 OI는 현재 시장에 얼마나 많은 레버리지가 <em>열려</em> 있는지를 셉니다. OI 상승은 새 포지션과 신규 레버리지 유입, 하락은 트레이더가 청산 중임을 의미합니다.</p>
+
+    <h2>OI 변화 읽기</h2>
+    <p>OI는 가격과 함께 볼 때 가장 유용합니다. <strong>가격 상승 + OI 상승</strong>은 새 자금이 움직임을 뒷받침함 — 더 강한 추세를 의미합니다. <strong>가격 상승 + OI 하락</strong>은 흔히 신규 수요가 아닌 숏 커버링입니다. 갑작스러운 <strong>OI 하락</strong>은 보통 과도한 레버리지 포지션이 청산되는 <a href="/liquidations/">청산 연쇄</a>를 뒤따릅니다. 일방적 <a href="/funding/">펀딩</a>과 결합된 큰 OI 누적은 과밀하고 취약한 셋업을 알립니다.</p>
+
+    <h2>레버리지가 쌓이는 곳</h2>
+    <p>위 카드는 24시간 최대 OI 유입과 유출을 강조합니다 — 트레이더가 어디로 몰리고 어디로 빠져나가는지 빠르게 파악할 수 있습니다. <a href="/screener">기술 스크리너</a>에서 셋업을 확인하고 <a href="/">포지션 크기 계산기</a>로 규모를 정하세요.</p>
+
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">미결제약정 데이터는 주요 거래소 전반에서 집계. 정보 제공용 — 투자 자문 아님.</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/screener">Screener</a> · <a href="/funding/">펀딩</a> · <a href="/liquidations/">청산</a> · <a href="/long-short/">롱/숏</a></span>
+  </footer>
+</div>
+<script>(function(){
+  var topEl=document.getElementById('oiTop'),tEl=document.getElementById('oiTable'),uEl=document.getElementById('oiUpd');
+  function bn(x){x=+x||0;var a=Math.abs(x);if(a>=1e9)return '$'+(x/1e9).toFixed(2)+'B';if(a>=1e6)return '$'+(x/1e6).toFixed(0)+'M';if(a>=1e3)return '$'+(x/1e3).toFixed(0)+'K';return '$'+x.toFixed(0);}
+  function pc(v){return (v>=0?'+':'')+(+v).toFixed(2)+'%';}
+  function render(d){
+    if(!d||d.error||!d.coins||!d.coins.length){topEl.innerHTML='<div class="oiload">실시간 데이터를 지금 사용할 수 없습니다 — 잠시 후 다시 시도하세요.</div>';tEl.innerHTML='';return;}
+    var c=d.coins.slice().filter(function(x){return isFinite(x.oiChg24h);});
+    var byCh=c.slice().sort(function(a,b){return b.oiChg24h-a.oiChg24h;});
+    var inflow=byCh[0], outflow=byCh[byCh.length-1];
+    topEl.innerHTML=(inflow?'<div class="oicard in"><div class="oi-k">최대 OI 유입 · 24시간</div><div class="oi-row"><span class="oi-sym">'+inflow.s+'</span><span class="oi-val up">'+pc(inflow.oiChg24h)+'</span></div><div class="oi-hint">여기서 레버리지가 가장 빠르게 쌓입니다 — 신규 포지션이 몰립니다.</div></div>':'')
+      +(outflow?'<div class="oicard out"><div class="oi-k">최대 OI 유출 · 24시간</div><div class="oi-row"><span class="oi-sym">'+outflow.s+'</span><span class="oi-val dn">'+pc(outflow.oiChg24h)+'</span></div><div class="oi-hint">여기서 포지션이 가장 빠르게 풀립니다 — 트레이더가 출구로 향합니다.</div></div>':'');
+    var rows=d.coins.map(function(x,i){var och=(x.oiChg24h||0)>=0,pch=(x.chg24h||0)>=0;return '<tr><td class="rk">'+(i+1)+'</td><td class="sym">'+x.s+'</td><td>'+bn(x.oiUsd)+'</td><td class="ch '+(och?'up':'dn')+'">'+(isFinite(x.oiChg24h)?pc(x.oiChg24h):'—')+'</td><td class="hide pc '+(pch?'up':'dn')+'">'+(pch?'+':'')+(x.chg24h!=null?x.chg24h.toFixed(2):'0')+'%</td></tr>';}).join('');
+    tEl.innerHTML='<table class="oitbl"><thead><tr><th class="rk">#</th><th>코인</th><th>미결제약정</th><th>OI 24시간</th><th class="hide">가격 24시간</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    if(uEl)uEl.textContent='방금 업데이트됨 · 자동 새로고침';
+  }
+  function load(){fetch('/api/cg/openinterest',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}
+  load();setInterval(load,60000);
+})();</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

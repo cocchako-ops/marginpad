@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>暗号資産の清算価格とは？ | MarginPad</title>
+<meta name="description" content="清算価格とは何か、レバレッジがどのように清算価格をエントリーに近づけるか、そしてポジションを開く前にそれを計算する方法。" />
+<link rel="canonical" href="https://marginpad.io/ja/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/guides/what-is-liquidation-price/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/guides/what-is-liquidation-price/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="暗号資産の清算価格とは？" />
+<meta property="og:description" content="清算価格とは何か、レバレッジがどのように清算価格をエントリーに近づけるか、そしてポジションを開く前にそれを計算する方法。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/ja/guides/what-is-liquidation-price/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/coin.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"ホーム","item":"https://marginpad.io/ja/"},{"@type":"ListItem","position":2,"name":"ガイド","item":"https://marginpad.io/ja/guides/"},{"@type":"ListItem","position":3,"name":"暗号資産の清算価格とは？","item":"https://marginpad.io/ja/guides/what-is-liquidation-price/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"清算価格はどう計算されますか？","acceptedAnswer":{"@type":"Answer","text":"おおまかに、ロングでは清算 ≈ エントリー × (1 − 1/レバレッジ + 維持証拠金)、ショートはその逆です。正確な値は取引所の維持証拠金率と手数料に依存します。"}},{"@type":"Question","name":"レバレッジが高いほど清算価格は近くなりますか？","acceptedAnswer":{"@type":"Answer","text":"はい。100×では清算価格はエントリーからわずか約1%、5×では約20%です — レバレッジが高いほど、価格が逆行する余地はほとんど残りません。"}}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/ja/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/ja/markets/">マーケット</a><a href="/screener">スクリーナー</a><a href="/ja/">ツール</a><a href="/blog/">ブログ</a></nav>
+  </header>
+  <div class="crumb"><a href="/ja/">ホーム</a> / <a href="/ja/guides/">ガイド</a> / 暗号資産の清算価格とは？</div>
+  <article>
+    <h1>暗号資産の清算価格とは？</h1>
+    <p class="lead">清算価格とは何か、レバレッジがどのように清算価格をエントリーに近づけるか、そしてポジションを開く前にそれを計算する方法。</p>
+    <p style="margin:10px 0 20px"><a href="/btc-liquidation-calculator/" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;padding:11px 18px;border-radius:11px">清算価格計算機 →</a></p>
+    <h2>清算価格とは</h2><p>あなたの<strong>清算価格</strong>は、証拠金が損失をカバーしきれなくなったために取引所がレバレッジポジションを強制決済する価格です。これを超えると証拠金を失います。エントリー前にこれを知っておくことが、レバレッジ取引で最も重要な数字です。</p>
+<h2>レバレッジがどう動かすか</h2><p>レバレッジが高いほど、清算価格はエントリーに近づきます。5×ではロングはおよそ20%の下落で清算され、100×ではおよそ1%の動きで清算されます。だからこそ高いレバレッジは非常に脆いのです — ありふれたヒゲ一本でポジションが一掃され得ます。</p>
+<h2>どう計算されるか</h2><p>分離（アイソレーテッド）のロングの場合、清算 ≈ エントリー × (1 − 1/レバレッジ + 維持証拠金率)、ショートは符号が反転します。正確な数値は取引所の維持証拠金と手数料に依存するため、あなたの銘柄とレバレッジについては<a href="/btc-liquidation-calculator/">清算計算機</a>で確認してください。</p>
+<h2>余裕を持たせる</h2><p>清算価格がノイズの外側 — 明白なサポートとレジスタンスや直近のヒゲの先 — に位置するように、サイズとレバレッジを設定し、エントリーの真上に置かないようにしましょう。<a href="/ja/guides/how-to-avoid-liquidation/">清算を避ける方法</a>も参照してください。</p>
+    <h2>よくある質問</h2><h3 style="font-size:16px;margin:16px 0 4px">清算価格はどう計算されますか？</h3><p>おおまかに、ロングでは清算 ≈ エントリー × (1 − 1/レバレッジ + 維持証拠金)、ショートはその逆です。正確な値は取引所の維持証拠金率と手数料に依存します。</p><h3 style="font-size:16px;margin:16px 0 4px">レバレッジが高いほど清算価格は近くなりますか？</h3><p>はい。100×では清算価格はエントリーからわずか約1%、5×では約20%です — レバレッジが高いほど、価格が逆行する余地はほとんど残りません。</p>
+    <h2>More guides</h2>
+    <div class="related"><a href="/ja/guides/how-to-read-funding-rates/">暗号資産の資金調達率の読み方</a>
+      <a href="/ja/guides/how-to-read-liquidations/">暗号資産の清算（ロスカット）の読み方</a>
+      <a href="/ja/guides/what-is-open-interest/">暗号資産の建玉（オープンインタレスト）とは？</a>
+      <a href="/ja/guides/long-short-ratio-explained/">暗号資産のロング/ショート比率を解説</a>
+      <a href="/ja/guides/isolated-vs-cross-margin/">分離証拠金と全体証拠金（アイソレーテッドとクロス）を解説</a>
+      <a href="/ja/guides/how-to-calculate-position-size/">暗号資産でのポジションサイズの計算方法</a></div>
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">情報提供のみ——投資助言ではありません。ライブデータは<a href="/ja/markets/">マーケットハブ</a>でご覧ください。</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/ja/markets/">マーケット</a> · <a href="/ja/liquidations/">清算</a> · <a href="/ja/funding/">資金調達</a> · <a href="/screener">スクリーナー</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

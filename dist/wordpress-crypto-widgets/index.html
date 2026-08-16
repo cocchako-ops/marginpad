@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Free Crypto Widgets for WordPress — Plugin &amp; Shortcodes | MarginPad</title>
+<meta name="description" content="A free WordPress plugin with four live crypto widgets: liquidation calculator, Fear &amp; Greed index, real-time liquidation feed and a crypto economic calendar. Shortcodes, no API key, no account." />
+<meta name="keywords" content="crypto widget wordpress plugin, bitcoin widget wordpress, liquidation calculator wordpress, crypto fear and greed wordpress, free crypto plugin wordpress, crypto shortcode wordpress" />
+<link rel="canonical" href="https://marginpad.io/wordpress-crypto-widgets/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/wordpress-crypto-widgets/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/wordpress-crypto-widgets/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="Free Crypto Widgets for WordPress — Plugin &amp; Shortcodes" />
+<meta property="og:description" content="Four live crypto widgets for any WordPress site: liquidation calculator, Fear &amp; Greed, live liquidations and an economic calendar. One shortcode each." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/wordpress-crypto-widgets/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"MarginPad Crypto Widgets","applicationCategory":"BrowserApplication","operatingSystem":"WordPress 5.0+","softwareVersion":"1.0.0","url":"https://marginpad.io/wordpress-crypto-widgets/","downloadUrl":"https://marginpad.io/downloads/marginpad-widgets.zip","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free WordPress plugin with four live crypto widgets: liquidation calculator, Fear and Greed index, live liquidation feed and a crypto economic calendar.","author":{"@type":"Organization","name":"MarginPad"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Widgets","item":"https://marginpad.io/widgets/"},{"@type":"ListItem","position":3,"name":"WordPress plugin","item":"https://marginpad.io/wordpress-crypto-widgets/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Is the MarginPad WordPress plugin free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely. There is no paid tier, no API key and no account. The widgets are the same ones running on marginpad.io."}},
+{"@type":"Question","name":"Does the plugin slow down my WordPress site?","acceptedAnswer":{"@type":"Answer","text":"No. Each widget is a lazy-loaded iframe, so nothing is fetched until the visitor scrolls to it, and no scripts or stylesheets are added to your front end. The plugin writes nothing to your database."}},
+{"@type":"Question","name":"Which crypto widgets are included?","acceptedAnswer":{"@type":"Answer","text":"Four: a live liquidation calculator for any coin, the Crypto Fear and Greed index, a real-time liquidation feed aggregated from ten exchanges, and a crypto economic calendar with FOMC, CPI and NFP dates."}},
+{"@type":"Question","name":"Can I use the widgets without WordPress?","acceptedAnswer":{"@type":"Answer","text":"Yes. Every widget is also available as a plain iframe embed that works on any site, including Ghost, Webflow, Squarespace and hand-written HTML. The embed codes are on the widgets page."}},
+{"@type":"Question","name":"Does the plugin collect visitor data?","acceptedAnswer":{"@type":"Answer","text":"No. The plugin sets no cookies, adds no tracking and stores nothing in your database. It only renders iframes served from marginpad.io."}}
+]}</script>
+<style>
+  .embed-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:28px;align-items:start;margin:24px 0 8px}
+  @media(max-width:720px){.embed-grid{grid-template-columns:1fr}}
+  .embed-prev{background:#0c0f13;border:1px solid var(--line-bright);border-radius:16px;padding:8px}
+  .embed-prev iframe{display:block;width:100%;border:0;border-radius:11px}
+  .code{position:relative;background:#0a0b0d;border:1px solid var(--line-bright);border-radius:12px;padding:16px 16px 14px;font-family:'Space Mono',monospace;font-size:12.5px;color:#c9d2dc;line-height:1.6;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+  .copy{position:absolute;top:10px;right:10px;background:#1a1f27;border:1px solid var(--line-bright);color:var(--ink-dim);font-family:'Space Mono',monospace;font-size:11px;padding:5px 10px;border-radius:7px;cursor:pointer}
+  .copy:hover{color:#c2f64a;border-color:#c2f64a}
+  .dl{display:inline-flex;align-items:center;gap:10px;background:#c2f64a;color:#0a0b0d;font-family:'Space Mono',monospace;font-size:14px;font-weight:700;text-decoration:none;padding:14px 22px;border-radius:12px;margin:6px 0 4px}
+  .dl:hover{filter:brightness(1.06)}
+  .dlmeta{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 20px}
+  .steps{counter-reset:s;list-style:none;padding:0;margin:14px 0 8px}
+  .steps li{counter-increment:s;position:relative;padding:0 0 14px 40px;font-size:15px;line-height:1.65}
+  .steps li:before{content:counter(s);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:8px;background:#1a1f27;border:1px solid var(--line-bright);color:#c2f64a;font-family:'Space Mono',monospace;font-size:12px;display:flex;align-items:center;justify-content:center}
+  .sc-table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px}
+  .sc-table th{text-align:left;padding:8px 10px;border-bottom:1px solid #2a3140;font-family:'Space Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:#8b95a1}
+  .sc-table td{padding:9px 10px;border-bottom:1px solid #1c2230;vertical-align:top}
+  .sc-table code{font-size:12.5px;color:#c2f64a}
+  .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0 8px}
+  @media(max-width:620px){.feat{grid-template-columns:1fr}}
+  .feat div{background:var(--panel);border:1px solid var(--line-bright);border-radius:12px;padding:14px 15px;font-size:14px}
+  .feat b{display:block;color:#c2f64a;font-family:'Space Mono',monospace;font-size:12px;margin-bottom:5px}
+</style>
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/">Calculators</a><a href="/widgets/">Widgets</a><a href="/blog/">Blog</a><a href="/glossary/">Glossary</a></nav>
+  </header>
+  <div class="crumb"><a href="/">Home</a> / <a href="/widgets/">Widgets</a> / WordPress plugin</div>
+  <article>
+    <h1>Free crypto widgets for WordPress</h1>
+    <p class="lead">One small plugin, four live crypto widgets, four shortcodes. A liquidation calculator, the Fear &amp; Greed index, a real-time liquidation feed and a crypto economic calendar &mdash; free forever, no API key, no account, nothing written to your database.</p>
+
+    <a class="dl" href="/downloads/marginpad-widgets.zip" download>Download the plugin (.zip)</a>
+    <p class="dlmeta">Version 1.0.0 &middot; ~4 KB &middot; GPLv2 &middot; WordPress 5.0+ &middot; PHP 7.0+</p>
+
+    <h2>Install it in three steps</h2>
+    <ol class="steps">
+      <li>In wp-admin go to <b>Plugins &rarr; Add New &rarr; Upload Plugin</b> and pick the zip you just downloaded.</li>
+      <li>Click <b>Install Now</b>, then <b>Activate</b>.</li>
+      <li>Paste a shortcode into any post, page or text widget. The full reference also lives in <b>Settings &rarr; MarginPad Widgets</b>.</li>
+    </ol>
+
+    <h2>The four shortcodes</h2>
+    <div style="overflow-x:auto;margin:16px 0">
+      <table class="sc-table">
+        <tr><th>Shortcode</th><th>What it renders</th></tr>
+        <tr><td><code>[marginpad_liquidation_calculator coin="BTC"]</code></td><td>Live liquidation calculator for any coin &mdash; long and short, isolated margin, current price loaded automatically.</td></tr>
+        <tr><td><code>[marginpad_fear_greed]</code></td><td>Crypto Fear &amp; Greed index with yesterday and last-week readings.</td></tr>
+        <tr><td><code>[marginpad_liquidations]</code></td><td>Real-time liquidation feed aggregated from ten exchanges, refreshed every ten seconds.</td></tr>
+        <tr><td><code>[marginpad_calendar]</code></td><td>Crypto economic calendar: FOMC, CPI and NFP dates plus crypto-native events.</td></tr>
+      </table>
+    </div>
+    <p>Every shortcode accepts <code>width</code> (<code>360</code> or <code>100%</code>), <code>height</code> in pixels and <code>credit="no"</code> to hide the credit link. The calculator also takes <code>coin</code> &mdash; any listed ticker, for example <code>coin="ETH"</code>.</p>
+
+    <h2 style="margin-top:34px">Liquidation calculator</h2>
+    <p>The widget most trading blogs want: readers enter an entry price, leverage and direction and immediately see where the position would be force-closed. It is the natural companion to any article about <a href="/blog/crypto-leverage-explained/">leverage</a> or <a href="/blog/what-is-liquidation-in-crypto/">liquidation</a>.</p>
+    <div class="embed-grid">
+      <div class="embed-prev">
+        <iframe src="/widget/liquidation-calculator/?coin=BTC" height="430" title="Liquidation Calculator by MarginPad" loading="lazy"></iframe>
+      </div>
+      <div>
+        <h3 style="margin-top:0">WordPress</h3>
+        <div class="code"><button class="copy" type="button" onclick="(function(b){var t=b.parentNode.querySelector('code');navigator.clipboard&amp;&amp;navigator.clipboard.writeText(t.textContent);b.textContent='Copied &#10003;';setTimeout(function(){b.textContent='Copy';},1400);})(this)">Copy</button><code>[marginpad_liquidation_calculator coin="BTC"]</code></div>
+        <h3>Any other site</h3>
+        <div class="code"><button class="copy" type="button" onclick="(function(b){var t=b.parentNode.querySelector('code');navigator.clipboard&amp;&amp;navigator.clipboard.writeText(t.textContent);b.textContent='Copied &#10003;';setTimeout(function(){b.textContent='Copy';},1400);})(this)">Copy</button><code>&lt;iframe src="https://marginpad.io/widget/liquidation-calculator/?coin=BTC"
+  width="360" height="440" loading="lazy"
+  style="border:0;border-radius:14px;max-width:100%"
+  title="Liquidation Calculator by MarginPad"&gt;&lt;/iframe&gt;</code></div>
+      </div>
+    </div>
+
+    <h2 style="margin-top:34px">Fear &amp; Greed and the live liquidation feed</h2>
+    <p>The sentiment gauge is the single most embedded crypto widget on the web, and the liquidation feed is data most sites pay a subscription for &mdash; here both are free and self-updating.</p>
+    <div class="embed-grid">
+      <div class="embed-prev">
+        <iframe src="/widget/fear-greed/" height="260" title="Crypto Fear &amp; Greed Index by MarginPad" loading="lazy"></iframe>
+      </div>
+      <div class="embed-prev">
+        <iframe src="/widget/liquidations/" height="300" title="Live Crypto Liquidations by MarginPad" loading="lazy"></iframe>
+      </div>
+    </div>
+    <div class="code" style="margin-top:14px"><button class="copy" type="button" onclick="(function(b){var t=b.parentNode.querySelector('code');navigator.clipboard&amp;&amp;navigator.clipboard.writeText(t.textContent);b.textContent='Copied &#10003;';setTimeout(function(){b.textContent='Copy';},1400);})(this)">Copy</button><code>[marginpad_fear_greed]
+[marginpad_liquidations]</code></div>
+
+    <h2 style="margin-top:34px">Why it will not slow your site down</h2>
+    <div class="feat">
+      <div><b>No front-end assets</b>The plugin enqueues no scripts and no stylesheets on your site.</div>
+      <div><b>Lazy iframes</b>Nothing loads until the visitor actually scrolls to the widget.</div>
+      <div><b>No database writes</b>No tables, no options bloat, no cron jobs, no cookies.</div>
+    </div>
+    <p>Each widget is a sandboxed iframe served from marginpad.io, so it cannot touch your theme, conflict with another plugin or break on a WordPress update. Removing the plugin removes it completely &mdash; there is nothing left behind to clean up.</p>
+
+    <h2>What the widgets are actually pulling</h2>
+    <p>The calculator uses live prices from our multi-exchange price cascade, the same feed behind the <a href="/calculators?c=liq">liquidation calculator</a> and <a href="/paper-trade">Paper Trade</a>. The liquidation feed comes from a dedicated collector watching ten exchanges &mdash; the same stream behind the <a href="/rekt/">Rekt feed</a>. The calendar is the curated <a href="/calendar/">crypto economic calendar</a>, with FOMC and CPI dates maintained by hand rather than scraped.</p>
+
+    <h2>FAQ</h2>
+    <h3>Is the plugin free?</h3>
+    <p>Completely. There is no paid tier, no API key and no account. These are the same widgets running on marginpad.io, and keeping the credit link visible is the only thing we ask.</p>
+    <h3>Will it slow down my site?</h3>
+    <p>No. Every widget is a lazy-loaded iframe, so nothing is fetched until a visitor scrolls to it, and the plugin adds no scripts or styles to your front end.</p>
+    <h3>Can I use the widgets without WordPress?</h3>
+    <p>Yes &mdash; every widget is also a plain iframe that works on Ghost, Webflow, Squarespace or hand-written HTML. The embed codes are on the <a href="/widgets/">widgets page</a>.</p>
+    <h3>Does it collect visitor data?</h3>
+    <p>No cookies, no tracking, no database writes. The plugin renders iframes and nothing else.</p>
+    <h3>Is it on the WordPress.org plugin directory?</h3>
+    <p>Not yet &mdash; for now install it from the zip above. It is GPLv2 licensed, so you are free to modify it for your own site.</p>
+
+    <h2>More free tools</h2>
+    <div class="related">
+      <a href="/widgets/">All embeddable widgets</a>
+      <a href="/calculators?c=liq">Liquidation calculator</a>
+      <a href="/heatmap">Liquidation heatmap</a>
+      <a href="/rekt/">Live liquidation feed</a>
+      <a href="/calendar/">Crypto calendar</a>
+      <a href="/paper-trade">Paper Trade</a>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">Educational tools, not financial advice. Calculator estimates exclude fees and funding and may differ from your exchange.</p>
+  </article>
+  <footer>
+    <span>&copy; 2026 MarginPad</span>
+    <span><a href="/">Calculators</a> &middot; <a href="/blog/">Blog</a> &middot; <a href="/glossary/">Glossary</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

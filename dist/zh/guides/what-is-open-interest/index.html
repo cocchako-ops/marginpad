@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>加密货币中的未平仓合约是什么？ | MarginPad</title>
+<meta name="description" content="未平仓合约详解：它与成交量有何不同、未平仓上升和下降分别意味着什么，以及如何结合价格解读未平仓合约。" />
+<link rel="canonical" href="https://marginpad.io/zh/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/guides/what-is-open-interest/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/guides/what-is-open-interest/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="加密货币中的未平仓合约是什么？" />
+<meta property="og:description" content="未平仓合约详解：它与成交量有何不同、未平仓上升和下降分别意味着什么，以及如何结合价格解读未平仓合约。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://marginpad.io/zh/guides/what-is-open-interest/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/coin.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://marginpad.io/zh/"},{"@type":"ListItem","position":2,"name":"指南","item":"https://marginpad.io/zh/guides/"},{"@type":"ListItem","position":3,"name":"加密货币中的未平仓合约是什么？","item":"https://marginpad.io/zh/guides/what-is-open-interest/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"未平仓合约高是看涨还是看跌？","acceptedAnswer":{"@type":"Answer","text":"单看它本身都不是——要看价格。OI 上升伴随价格上涨意味着新买家进场；OI 上升伴随价格下跌则意味着新卖家进场。"}},{"@type":"Question","name":"未平仓合约下降意味着什么？","acceptedAnswer":{"@type":"Answer","text":"未平仓下降意味着仓位正在被平掉，通常发生在一波爆仓连锁把杠杆清洗出市场之后。"}}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/zh/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/zh/markets/">行情</a><a href="/screener">筛选器</a><a href="/zh/">工具</a><a href="/blog/">博客</a></nav>
+  </header>
+  <div class="crumb"><a href="/zh/">首页</a> / <a href="/zh/guides/">指南</a> / 加密货币中的未平仓合约是什么？</div>
+  <article>
+    <h1>加密货币中的未平仓合约是什么？</h1>
+    <p class="lead">未平仓合约详解：它与成交量有何不同、未平仓上升和下降分别意味着什么，以及如何结合价格解读未平仓合约。</p>
+    <p style="margin:10px 0 20px"><a href="/zh/open-interest/" style="display:inline-block;background:#c2f64a;color:#0a0b0d;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;padding:11px 18px;border-radius:11px">实时未平仓合约追踪器 →</a></p>
+    <h2>未平仓合约 vs 成交量</h2><p><strong>未平仓合约（OI）</strong>是某个币种所有未平永续合约仓位的总价值。和成交量不同——成交量统计每一笔交易——OI 衡量的是市场中当前<em>开着的</em>杠杆有多少。</p>
+<h2>未平仓上升和下降</h2><p>未平仓上升意味着新仓位和新杠杆正在进场。未平仓下降意味着交易者正在平仓。OI 的骤降通常出现在一波<a href="/zh/liquidations/">爆仓连锁</a>之后，因为过度加杠杆的仓位被清洗了。</p>
+<h2>结合价格解读未平仓</h2><p><strong>价格涨 + OI 涨</strong> = 有新资金在支撑这波行情（趋势更强）。<strong>价格涨 + OI 跌</strong> = 是空头回补，而非新的买盘需求。OI 大量堆积加上一边倒的<a href="/zh/funding/">资金费率</a>，预示着一个拥挤、脆弱的布局。</p>
+    <h2>常见问题</h2><h3 style="font-size:16px;margin:16px 0 4px">未平仓合约高是看涨还是看跌？</h3><p>单看它本身都不是——要看价格。OI 上升伴随价格上涨意味着新买家进场；OI 上升伴随价格下跌则意味着新卖家进场。</p><h3 style="font-size:16px;margin:16px 0 4px">未平仓合约下降意味着什么？</h3><p>未平仓下降意味着仓位正在被平掉，通常发生在一波爆仓连锁把杠杆清洗出市场之后。</p>
+    <h2>More guides</h2>
+    <div class="related"><a href="/zh/guides/how-to-read-funding-rates/">如何解读加密货币资金费率</a>
+      <a href="/zh/guides/how-to-read-liquidations/">如何解读加密货币爆仓</a>
+      <a href="/zh/guides/long-short-ratio-explained/">加密货币多空比详解</a>
+      <a href="/zh/guides/what-is-liquidation-price/">加密货币中的爆仓价是什么？</a>
+      <a href="/zh/guides/isolated-vs-cross-margin/">逐仓 vs 全仓保证金详解</a>
+      <a href="/zh/guides/how-to-calculate-position-size/">如何计算加密货币的仓位大小</a></div>
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">仅供参考——非投资建议。在<a href="/zh/markets/">行情中心</a>探索实时数据。</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/zh/markets/">行情</a> · <a href="/zh/liquidations/">强平</a> · <a href="/zh/funding/">资金费</a> · <a href="/screener">筛选器</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

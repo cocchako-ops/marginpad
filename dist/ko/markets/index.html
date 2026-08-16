@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>암호화폐 선물 시장 데이터 — 청산, 펀딩, OI, 롱/숏 | MarginPad</title>
+<meta name="description" content="암호화폐 무기한 선물 시장의 실시간 데이터를 한곳에: 청산, 펀딩 비율, 미결제약정, 롱/숏 포지셔닝, 그리고 주요 코인별 실시간 대시보드. 무료, 가입 불필요." />
+<meta name="keywords" content="암호화폐 시장 데이터, 선물 데이터, 청산, 펀딩 비율, 미결제약정, 롱숏 비율" />
+<link rel="canonical" href="https://marginpad.io/ko/markets/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/markets/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/markets/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/markets/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/markets/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/markets/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/markets/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/markets/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/markets/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/markets/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/markets/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/markets/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/markets/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/markets/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/markets/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="암호화폐 선물 시장 데이터 — 청산, 펀딩, OI, 롱/숏" />
+<meta property="og:description" content="암호화폐 무기한 선물 시장의 실시간 데이터를 한곳에: 청산, 펀딩 비율, 미결제약정, 롱/숏 포지셔닝, 그리고 주요 코인별 실시간 대시보드. 무료, 가입 불필요." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/ko/markets/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/coin.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+  .mkgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 6px}
+  @media(max-width:640px){.mkgrid{grid-template-columns:1fr}}
+  .mkcard{display:flex;align-items:flex-start;gap:13px;background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line-bright);border-radius:14px;padding:15px 16px;text-decoration:none;color:var(--ink);transition:transform .14s,border-color .14s}
+  .mkcard:hover{transform:translateY(-2px);border-color:#c2f64a}
+  .mk-e{font-size:26px;line-height:1;flex:0 0 auto}
+  .mk-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;margin:0 0 3px}
+  .mk-d{color:var(--ink-dim);font-size:13px;line-height:1.45;margin:0}
+  .mk-coins{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px}
+  .mk-coin{text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line-bright);border-radius:9px;padding:8px 12px;transition:.13s}
+  .mk-coin:hover{border-color:#c2f64a;color:#c2f64a}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Markets","item":"https://marginpad.io/ko/markets/"}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/screener">Screener</a><a href="/liquidations/">청산</a><a href="/funding/">펀딩</a><a href="/">도구</a></nav>
+  </header>
+  <div class="crumb"><a href="/ko/">홈</a> / 마켓</div>
+  <article>
+    <h1>암호화폐 선물 시장 데이터</h1>
+    <p class="lead">암호화폐 무기한 선물 시장의 모든 일을 한곳에 — 실시간 청산, 펀딩 비율, 미결제약정, 트레이더 포지셔닝, 그리고 주요 코인별 전용 실시간 대시보드. 전부 무료, 가입 불필요.</p>
+
+    <h2>실시간 시장 데이터</h2>
+    <div class="mkgrid">
+      <a class="mkcard" href="/liquidations/"><span class="mk-e">💥</span><span><span class="mk-t">청산</span><p class="mk-d">24시간 총 청산, 롱 vs 숏, 가장 많이 청산된 코인.</p></span></a>
+      <a class="mkcard" href="/funding/"><span class="mk-e">📊</span><span><span class="mk-t">펀딩 비율</span><p class="mk-d">가장 높고 가장 마이너스인 펀딩 — 과밀한 롱 & 숏.</p></span></a>
+      <a class="mkcard" href="/open-interest/"><span class="mk-e">📈</span><span><span class="mk-t">미결제약정</span><p class="mk-d">코인별로 레버리지가 쌓이고 풀리는 지점.</p></span></a>
+      <a class="mkcard" href="/long-short/"><span class="mk-e">⚖️</span><span><span class="mk-t">롱/숏 비율</span><p class="mk-d">각 코인에서 대중이 어떻게 포지션을 잡았는지.</p></span></a>
+      <a class="mkcard" href="/screener/"><span class="mk-e">🔍</span><span><span class="mk-t">시장 스크리너</span><p class="mk-d">진입 및 셋업이 포함된 점수제 기술 스크리너.</p></span></a>
+      <a class="mkcard" href="/rekt/"><span class="mk-e">💀</span><span><span class="mk-t">실시간 청산 피드</span><p class="mk-d">큰 청산이 발생할 때마다 실시간으로 스트리밍.</p></span></a>
+    </div>
+
+    <h2>코인별 대시보드 <span style="color:var(--ink-faint);font-weight:400;font-size:14px">(58개 코인)</span></h2>
+    <p style="color:var(--ink-dim);font-size:14px;margin:0 0 12px">각 코인의 실시간 가격, 펀딩, 미결제약정, 롱/숏 포지셔닝, 24시간 청산 — 그리고 거래 링크.</p>
+    <div class="mk-coins">
+      <a class="mk-coin" href="/coin/aave/">AAVE</a><a class="mk-coin" href="/coin/ada/">ADA</a><a class="mk-coin" href="/coin/algo/">ALGO</a><a class="mk-coin" href="/coin/apt/">APT</a><a class="mk-coin" href="/coin/arb/">ARB</a><a class="mk-coin" href="/coin/atom/">ATOM</a><a class="mk-coin" href="/coin/avax/">AVAX</a><a class="mk-coin" href="/coin/axs/">AXS</a><a class="mk-coin" href="/coin/bch/">BCH</a><a class="mk-coin" href="/coin/bnb/">BNB</a><a class="mk-coin" href="/coin/bonk/">BONK</a><a class="mk-coin" href="/coin/btc/">BTC</a><a class="mk-coin" href="/coin/crv/">CRV</a><a class="mk-coin" href="/coin/doge/">DOGE</a><a class="mk-coin" href="/coin/dot/">DOT</a><a class="mk-coin" href="/coin/dydx/">DYDX</a><a class="mk-coin" href="/coin/ena/">ENA</a><a class="mk-coin" href="/coin/ens/">ENS</a><a class="mk-coin" href="/coin/etc/">ETC</a><a class="mk-coin" href="/coin/eth/">ETH</a><a class="mk-coin" href="/coin/fet/">FET</a><a class="mk-coin" href="/coin/fil/">FIL</a><a class="mk-coin" href="/coin/floki/">FLOKI</a><a class="mk-coin" href="/coin/gala/">GALA</a><a class="mk-coin" href="/coin/gmx/">GMX</a><a class="mk-coin" href="/coin/grt/">GRT</a><a class="mk-coin" href="/coin/hbar/">HBAR</a><a class="mk-coin" href="/coin/icp/">ICP</a><a class="mk-coin" href="/coin/imx/">IMX</a><a class="mk-coin" href="/coin/inj/">INJ</a><a class="mk-coin" href="/coin/jup/">JUP</a><a class="mk-coin" href="/coin/ldo/">LDO</a><a class="mk-coin" href="/coin/link/">LINK</a><a class="mk-coin" href="/coin/ltc/">LTC</a><a class="mk-coin" href="/coin/mana/">MANA</a><a class="mk-coin" href="/coin/mkr/">MKR</a><a class="mk-coin" href="/coin/near/">NEAR</a><a class="mk-coin" href="/coin/ondo/">ONDO</a><a class="mk-coin" href="/coin/op/">OP</a><a class="mk-coin" href="/coin/ordi/">ORDI</a><a class="mk-coin" href="/coin/pendle/">PENDLE</a><a class="mk-coin" href="/coin/pepe/">PEPE</a><a class="mk-coin" href="/coin/pyth/">PYTH</a><a class="mk-coin" href="/coin/render/">RENDER</a><a class="mk-coin" href="/coin/rune/">RUNE</a><a class="mk-coin" href="/coin/sand/">SAND</a><a class="mk-coin" href="/coin/sei/">SEI</a><a class="mk-coin" href="/coin/shib/">SHIB</a><a class="mk-coin" href="/coin/sol/">SOL</a><a class="mk-coin" href="/coin/sui/">SUI</a><a class="mk-coin" href="/coin/tao/">TAO</a><a class="mk-coin" href="/coin/tia/">TIA</a><a class="mk-coin" href="/coin/ton/">TON</a><a class="mk-coin" href="/coin/trx/">TRX</a><a class="mk-coin" href="/coin/uni/">UNI</a><a class="mk-coin" href="/coin/vet/">VET</a><a class="mk-coin" href="/coin/wif/">WIF</a><a class="mk-coin" href="/coin/xrp/">XRP</a>
+    </div>
+
+    <h2>여기서 할 수 있는 것</h2>
+    <p><a href="/liquidations/">청산 트래커</a>로 레버리지가 청산되는 지점을 보고, <a href="/funding/">펀딩 스캐너</a>로 과밀한 롱·숏을 포착하고, <a href="/open-interest/">미결제약정</a>으로 자금 흐름을 따라가고, <a href="/long-short/">롱/숏 비율</a>로 대중을 읽으세요. 그런 다음 아무 <a href="/coin/btc/">코인 대시보드</a>를 열어 전체 그림을 보고, <a href="/screener">기술 스크리너</a>에서 셋업을 확인하고, <a href="/">청산가 계산기</a>로 규모를 정하세요.</p>
+
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">데이터는 주요 거래소 전반에서 집계. 정보 제공용 — 투자 자문 아님.</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/liquidations/">청산</a> · <a href="/funding/">펀딩</a> · <a href="/open-interest/">OI</a> · <a href="/long-short/">Long/Short</a> · <a href="/screener">Screener</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

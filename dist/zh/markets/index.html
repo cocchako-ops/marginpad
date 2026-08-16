@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>加密合约市场数据 — 爆仓、资金费率、持仓量、多空 | MarginPad</title>
+<meta name="description" content="加密永续合约市场的实时数据，集于一处：爆仓、资金费率、持仓量与多空持仓，以及每个主流币种的实时仪表盘。免费、无需注册。" />
+<meta name="keywords" content="加密市场数据, 合约市场数据, 加密爆仓, 资金费率, 持仓量, 多空比" />
+<link rel="canonical" href="https://marginpad.io/zh/markets/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/markets/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/markets/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/markets/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/markets/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/markets/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/markets/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/markets/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/markets/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/markets/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/markets/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/markets/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/markets/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/markets/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/markets/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="加密合约市场数据 — 爆仓、资金费率、持仓量、多空" />
+<meta property="og:description" content="加密永续合约市场的实时数据，集于一处：爆仓、资金费率、持仓量与多空持仓，以及每个主流币种的实时仪表盘。免费、无需注册。" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/zh/markets/" />
+<meta property="og:image" content="https://marginpad.io/assets/og/coin.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://marginpad.io/assets/og/coin.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+<style>
+  .mkgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 6px}
+  @media(max-width:640px){.mkgrid{grid-template-columns:1fr}}
+  .mkcard{display:flex;align-items:flex-start;gap:13px;background:linear-gradient(180deg,var(--panel),#0d0f12);border:1px solid var(--line-bright);border-radius:14px;padding:15px 16px;text-decoration:none;color:var(--ink);transition:transform .14s,border-color .14s}
+  .mkcard:hover{transform:translateY(-2px);border-color:#c2f64a}
+  .mk-e{font-size:26px;line-height:1;flex:0 0 auto}
+  .mk-t{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;margin:0 0 3px}
+  .mk-d{color:var(--ink-dim);font-size:13px;line-height:1.45;margin:0}
+  .mk-coins{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px}
+  .mk-coin{text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line-bright);border-radius:9px;padding:8px 12px;transition:.13s}
+  .mk-coin:hover{border-color:#c2f64a;color:#c2f64a}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Markets","item":"https://marginpad.io/zh/markets/"}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/screener">Screener</a><a href="/liquidations/">爆仓</a><a href="/funding/">资金费率</a><a href="/">工具</a></nav>
+  </header>
+  <div class="crumb"><a href="/zh/">首页</a> / 行情</div>
+  <article>
+    <h1>加密合约市场数据</h1>
+    <p class="lead">加密永续合约市场发生的一切，集于一处 — 实时爆仓、资金费率、持仓量和交易者持仓，以及每个主流币种专属的实时仪表盘。全部免费、无需注册。</p>
+
+    <h2>实时市场数据</h2>
+    <div class="mkgrid">
+      <a class="mkcard" href="/liquidations/"><span class="mk-e">💥</span><span><span class="mk-t">爆仓</span><p class="mk-d">24小时总爆仓、多头对空头、爆仓最多的币种。</p></span></a>
+      <a class="mkcard" href="/funding/"><span class="mk-e">📊</span><span><span class="mk-t">资金费率</span><p class="mk-d">最高与最负的资金费率 — 拥挤的多头与空头。</p></span></a>
+      <a class="mkcard" href="/open-interest/"><span class="mk-e">📈</span><span><span class="mk-t">持仓量</span><p class="mk-d">各币种杠杆建立与平仓的位置。</p></span></a>
+      <a class="mkcard" href="/long-short/"><span class="mk-e">⚖️</span><span><span class="mk-t">多空比</span><p class="mk-d">大众在每个币种上的持仓方向。</p></span></a>
+      <a class="mkcard" href="/screener/"><span class="mk-e">🔍</span><span><span class="mk-t">市场选币器</span><p class="mk-d">带评分的技术选币器，含入场点与交易设置。</p></span></a>
+      <a class="mkcard" href="/rekt/"><span class="mk-e">💀</span><span><span class="mk-t">实时爆仓动态</span><p class="mk-d">每一笔大额爆仓发生时的实时推送。</p></span></a>
+    </div>
+
+    <h2>各币种仪表盘 <span style="color:var(--ink-faint);font-weight:400;font-size:14px">(58 个币种)</span></h2>
+    <p style="color:var(--ink-dim);font-size:14px;margin:0 0 12px">每个币种的实时价格、资金费率、持仓量、多空持仓与24小时爆仓 — 以及交易链接。</p>
+    <div class="mk-coins">
+      <a class="mk-coin" href="/coin/aave/">AAVE</a><a class="mk-coin" href="/coin/ada/">ADA</a><a class="mk-coin" href="/coin/algo/">ALGO</a><a class="mk-coin" href="/coin/apt/">APT</a><a class="mk-coin" href="/coin/arb/">ARB</a><a class="mk-coin" href="/coin/atom/">ATOM</a><a class="mk-coin" href="/coin/avax/">AVAX</a><a class="mk-coin" href="/coin/axs/">AXS</a><a class="mk-coin" href="/coin/bch/">BCH</a><a class="mk-coin" href="/coin/bnb/">BNB</a><a class="mk-coin" href="/coin/bonk/">BONK</a><a class="mk-coin" href="/coin/btc/">BTC</a><a class="mk-coin" href="/coin/crv/">CRV</a><a class="mk-coin" href="/coin/doge/">DOGE</a><a class="mk-coin" href="/coin/dot/">DOT</a><a class="mk-coin" href="/coin/dydx/">DYDX</a><a class="mk-coin" href="/coin/ena/">ENA</a><a class="mk-coin" href="/coin/ens/">ENS</a><a class="mk-coin" href="/coin/etc/">ETC</a><a class="mk-coin" href="/coin/eth/">ETH</a><a class="mk-coin" href="/coin/fet/">FET</a><a class="mk-coin" href="/coin/fil/">FIL</a><a class="mk-coin" href="/coin/floki/">FLOKI</a><a class="mk-coin" href="/coin/gala/">GALA</a><a class="mk-coin" href="/coin/gmx/">GMX</a><a class="mk-coin" href="/coin/grt/">GRT</a><a class="mk-coin" href="/coin/hbar/">HBAR</a><a class="mk-coin" href="/coin/icp/">ICP</a><a class="mk-coin" href="/coin/imx/">IMX</a><a class="mk-coin" href="/coin/inj/">INJ</a><a class="mk-coin" href="/coin/jup/">JUP</a><a class="mk-coin" href="/coin/ldo/">LDO</a><a class="mk-coin" href="/coin/link/">LINK</a><a class="mk-coin" href="/coin/ltc/">LTC</a><a class="mk-coin" href="/coin/mana/">MANA</a><a class="mk-coin" href="/coin/mkr/">MKR</a><a class="mk-coin" href="/coin/near/">NEAR</a><a class="mk-coin" href="/coin/ondo/">ONDO</a><a class="mk-coin" href="/coin/op/">OP</a><a class="mk-coin" href="/coin/ordi/">ORDI</a><a class="mk-coin" href="/coin/pendle/">PENDLE</a><a class="mk-coin" href="/coin/pepe/">PEPE</a><a class="mk-coin" href="/coin/pyth/">PYTH</a><a class="mk-coin" href="/coin/render/">RENDER</a><a class="mk-coin" href="/coin/rune/">RUNE</a><a class="mk-coin" href="/coin/sand/">SAND</a><a class="mk-coin" href="/coin/sei/">SEI</a><a class="mk-coin" href="/coin/shib/">SHIB</a><a class="mk-coin" href="/coin/sol/">SOL</a><a class="mk-coin" href="/coin/sui/">SUI</a><a class="mk-coin" href="/coin/tao/">TAO</a><a class="mk-coin" href="/coin/tia/">TIA</a><a class="mk-coin" href="/coin/ton/">TON</a><a class="mk-coin" href="/coin/trx/">TRX</a><a class="mk-coin" href="/coin/uni/">UNI</a><a class="mk-coin" href="/coin/vet/">VET</a><a class="mk-coin" href="/coin/wif/">WIF</a><a class="mk-coin" href="/coin/xrp/">XRP</a>
+    </div>
+
+    <h2>你能在这里做什么</h2>
+    <p>用<a href="/liquidations/">爆仓追踪器</a>查看杠杆在哪里被清洗，用<a href="/funding/">资金费率扫描器</a>发现拥挤的多头和空头，用<a href="/open-interest/">持仓量</a>追踪资金流向，用<a href="/long-short/">多空比</a>解读大众。然后打开任意<a href="/coin/btc/">币种仪表盘</a>看全貌，在<a href="/screener">技术选币器</a>确认交易设置，并用<a href="/">强平价格计算器</a>确定仓位大小。</p>
+
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">数据汇总自主流交易所。仅供参考 — 非投资建议。</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/liquidations/">爆仓</a> · <a href="/funding/">资金费率</a> · <a href="/open-interest/">OI</a> · <a href="/long-short/">Long/Short</a> · <a href="/screener">Screener</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>무료 청산 계산기 위젯 — 내 사이트에 임베드 | MarginPad</title>
+<meta name="description" content="한 줄의 HTML로 무료 암호화폐 청산 계산기를 웹사이트나 블로그에 임베드하세요. 실시간 가격, 롱 &amp; 숏, 모든 코인 지원. 가입 불필요, API 키 불필요, 비용 없음." />
+<meta name="keywords" content="청산 계산기 위젯, 청산 계산기 임베드, 암호화폐 계산기 위젯, 무료 트레이딩 위젯, 청산 가격 위젯 임베드" />
+<link rel="canonical" href="https://marginpad.io/ko/widgets/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/widgets/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/widgets/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/widgets/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/widgets/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/widgets/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/widgets/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/widgets/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/widgets/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/widgets/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/widgets/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/widgets/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/widgets/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/widgets/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/widgets/" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="무료 청산 계산기 위젯 — 내 사이트에 임베드" />
+<meta property="og:description" content="한 줄의 HTML로 무료 암호화폐 청산 계산기를 사이트에 임베드하세요. 실시간 가격, 롱 &amp; 숏, 모든 코인 지원." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/ko/widgets/" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/blog.css" />
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"MarginPad Liquidation Calculator Widget","applicationCategory":"FinanceApplication","operatingSystem":"Any (web browser)","url":"https://marginpad.io/widgets/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free embeddable crypto liquidation calculator widget with live prices."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://marginpad.io/ko/"},{"@type":"ListItem","position":2,"name":"위젯","item":"https://marginpad.io/ko/widgets/"}]}</script>
+<style>
+  .embed-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:28px;align-items:start;margin:24px 0 8px}
+  @media(max-width:720px){.embed-grid{grid-template-columns:1fr}}
+  .embed-prev{background:#0c0f13;border:1px solid var(--line-bright);border-radius:16px;padding:8px}
+  .embed-prev iframe{display:block;width:100%;border:0;border-radius:11px}
+  .code{position:relative;background:#0a0b0d;border:1px solid var(--line-bright);border-radius:12px;padding:16px 16px 14px;font-family:'Space Mono',monospace;font-size:12.5px;color:#c9d2dc;line-height:1.6;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+  .copy{position:absolute;top:10px;right:10px;background:#1a1f27;border:1px solid var(--line-bright);color:var(--ink-dim);font-family:'Space Mono',monospace;font-size:11px;padding:5px 10px;border-radius:7px;cursor:pointer}
+  .copy:hover{color:#c2f64a;border-color:#c2f64a}
+  .coins{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 18px}
+  .coins a{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-dim);text-decoration:none;border:1px solid var(--line-bright);border-radius:8px;padding:6px 11px}
+  .coins a:hover{color:#c2f64a;border-color:#c2f64a}
+  .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0 8px}
+  @media(max-width:620px){.feat{grid-template-columns:1fr}}
+  .feat div{background:var(--panel);border:1px solid var(--line-bright);border-radius:12px;padding:14px 15px;font-size:14px}
+  .feat b{display:block;color:#c2f64a;font-family:'Space Mono',monospace;font-size:12px;margin-bottom:5px}
+</style>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/ko/">MARGIN<b>PAD</b></a>
+    <nav class="nav"><a href="/ko/">계산기</a><a href="/blog/">블로그</a><a href="/glossary/">용어집</a></nav>
+  </header>
+  <div class="crumb"><a href="/ko/">홈</a> / 위젯</div>
+  <article>
+    <h1>무료 청산 계산기 위젯</h1>
+    <p class="lead">한 줄의 HTML로 실시간 암호화폐 <strong>청산 계산기</strong>를 웹사이트, 블로그 또는 트레이딩 커뮤니티에 추가하세요. 실시간 가격을 가져오고 롱 &amp; 숏과 모든 코인을 처리합니다 — 무료, 가입 불필요, API 키 불필요.</p>
+
+    <div class="embed-grid">
+      <div class="embed-prev">
+        <iframe src="/widget/liquidation-calculator/?coin=BTC" height="430" title="Liquidation Calculator by MarginPad" loading="lazy"></iframe>
+      </div>
+      <div>
+        <h2 style="margin-top:0">임베드 코드 복사</h2>
+        <div class="code"><button class="copy" type="button" onclick="(function(b){var t=b.parentNode.querySelector('code');navigator.clipboard&&navigator.clipboard.writeText(t.textContent);b.textContent='복사됨 ✓';setTimeout(function(){b.textContent='복사';},1400);})(this)">복사</button><code>&lt;iframe src="https://marginpad.io/widget/liquidation-calculator/?coin=BTC"
+  width="360" height="440" loading="lazy"
+  style="border:0;border-radius:14px;max-width:100%"
+  title="Liquidation Calculator by MarginPad"&gt;&lt;/iframe&gt;</code></div>
+        <h2>코인 선택</h2>
+        <p><code>?coin=BTC</code>를 원하는 티커로 변경하세요 — 위젯이 해당 코인의 실시간 가격을 자동으로 불러옵니다:</p>
+        <div class="coins">
+          <a href="/widget/liquidation-calculator/?coin=BTC" target="_blank">BTC</a>
+          <a href="/widget/liquidation-calculator/?coin=ETH" target="_blank">ETH</a>
+          <a href="/widget/liquidation-calculator/?coin=SOL" target="_blank">SOL</a>
+          <a href="/widget/liquidation-calculator/?coin=XRP" target="_blank">XRP</a>
+          <a href="/widget/liquidation-calculator/?coin=BNB" target="_blank">BNB</a>
+          <a href="/widget/liquidation-calculator/?coin=DOGE" target="_blank">DOGE</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat">
+      <div><b>실시간 가격</b>선택한 코인의 현재 가격을 자동으로 불러옵니다.</div>
+      <div><b>롱 & 숏</b>양방향 모두에 대한 격리 증거금 청산.</div>
+      <div><b>비용 없음</b>영구 무료, 계정 불필요, API 키 불필요, 어디서든 작동.</div>
+    </div>
+
+    <h2>왜 임베드해야 할까요?</h2>
+    <p>실시간 계산기는 독자가 페이지에 더 오래 머물게 하고, 레버리지, 청산, 위험에 관한 모든 글에 실질적인 유용성을 더해 줍니다. 완전히 독립적이며 — 단지 <code>&lt;iframe&gt;</code>일 뿐이라서 — 사이트를 느리게 하거나 손상시키지 않습니다. 출처 표기는 필수가 아니지만, 작은 "Powered by MarginPad" 링크는 감사하게 여겨지며 도구를 무료로 유지하는 데 도움이 됩니다.</p>
+
+    <h2>더 많은 무료 도구</h2>
+    <div class="related">
+      <a href="/ko/#liq">청산 계산기</a>
+      <a href="/heatmap">청산 히트맵</a>
+      <a href="/paper-trade">모의 거래</a>
+      <a href="/funding-fee-calculator/">펀딩 수수료</a>
+      <a href="/blog/">트레이딩 가이드</a>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-faint);margin-top:24px">교육용 도구이며 투자 조언이 아닙니다. 추정치에는 수수료와 펀딩이 포함되지 않으며 사용 중인 거래소와 다를 수 있습니다.</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/ko/">계산기</a> · <a href="/blog/">블로그</a> · <a href="/glossary/">용어집</a></span>
+  </footer>
+</div>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>

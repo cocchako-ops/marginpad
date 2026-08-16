@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#08090b" />
+<title>파산 위험 계산기 &amp; 켈리 기준 — 크립토 | MarginPad</title>
+<meta name="description" content="수많은 거래에 걸쳐 당신의 엣지가 실제로 무엇을 하는지 확인하세요: 몬테카를로 시뮬레이션을 통한 파산 위험, 켈리 비율, 기댓값, 그리고 승률과 손익비로 만든 자산 곡선 팬. 무료 포지션 사이징·리스크 관리 도구입니다." />
+<meta name="keywords" content="파산 위험 계산기, 켈리 기준 계산기, 포지션 사이징, 기댓값 계산기, 몬테카를로 트레이딩, 크립토 리스크 관리" />
+<link rel="canonical" href="https://marginpad.io/ko/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="en" href="https://marginpad.io/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="de" href="https://marginpad.io/de/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="es" href="https://marginpad.io/es/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="pt" href="https://marginpad.io/pt/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="fr" href="https://marginpad.io/fr/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="nl" href="https://marginpad.io/nl/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="ru" href="https://marginpad.io/ru/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="tr" href="https://marginpad.io/tr/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="zh" href="https://marginpad.io/zh/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="ja" href="https://marginpad.io/ja/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="ko" href="https://marginpad.io/ko/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="ar" href="https://marginpad.io/ar/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="id" href="https://marginpad.io/id/risk-of-ruin-calculator/" />
+<link rel="alternate" hreflang="x-default" href="https://marginpad.io/risk-of-ruin-calculator/" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://marginpad.io/ko/risk-of-ruin-calculator/" />
+<meta property="og:title" content="파산 위험 계산기 &amp; 켈리 기준 — 크립토 | MarginPad" />
+<meta property="og:description" content="수많은 거래에 걸쳐 당신의 엣지가 실제로 무엇을 하는지 확인하세요: 몬테카를로 시뮬레이션을 통한 파산 위험, 켈리 비율, 기댓값, 그리고 승률과 손익비로 만든 자산 곡선 팬." />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
+<meta property="og:site_name" content="MarginPad" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="파산 위험 계산기 &amp; 켈리 기준 — 크립토 | MarginPad" />
+<meta name="twitter:description" content="수많은 거래에 걸쳐 당신의 엣지가 실제로 무엇을 하는지 확인하세요: 몬테카를로 시뮬레이션을 통한 파산 위험, 켈리 비율, 기댓값, 그리고 승률과 손익비로 만든 자산 곡선 팬." />
+<meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/lab.css" />
+<style>
+  .fan{width:100%;height:260px;background:#0a0c10;border:1px solid var(--line);border-radius:14px;margin-top:8px;display:block}
+  .verdict{font-size:13.5px;color:var(--ink2);line-height:1.65;margin-top:16px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:12px;padding:14px 16px}
+  .content{max-width:760px;margin-top:8px}
+  .content p{color:var(--ink2);font-size:14.5px;line-height:1.7;margin:0 0 14px}
+  .faq{margin-top:10px}
+  .faq details{border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--panel),var(--bg2));margin-bottom:10px;overflow:hidden}
+  .faq summary{cursor:pointer;padding:15px 18px;font-weight:700;font-size:15px;color:var(--ink);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .faq summary::-webkit-details-marker{display:none}
+  .faq summary::after{content:'+';color:var(--cyan);font-family:'Space Mono',monospace;font-size:18px;font-weight:700}
+  .faq details[open] summary::after{content:'\2212'}
+  .faq details[open] summary{border-bottom:1px solid var(--line)}
+  .faq .a{padding:14px 18px 17px;color:var(--ink2);font-size:14px;line-height:1.7}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Risk of Ruin Calculator","applicationCategory":"FinanceApplication","operatingSystem":"Web","url":"https://marginpad.io/risk-of-ruin-calculator/","description":"몬테카를로 시뮬레이션을 통한 파산 위험, 켈리 비율, 기댓값, 그리고 승률과 손익비로 만든 자산 곡선 팬.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"전체 도구","item":"https://marginpad.io/ko/tools/"},{"@type":"ListItem","position":2,"name":"파산 위험 계산기","item":"https://marginpad.io/ko/risk-of-ruin-calculator/"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"파산 위험이란 무엇인가요?","acceptedAnswer":{"@type":"Answer","text":"파산 위험이란 일련의 거래에 걸쳐 어느 시점에서든 당신의 계좌가 선택한 실패 수준 — 여기서는 50% 손실폭 — 까지 떨어질 확률입니다. 연속 손실은 필연적이기 때문에, 양(+)의 엣지를 가지고 있더라도 거래당 너무 많이 리스크를 지면 파산에 이를 수 있습니다. 우리는 이를 몬테카를로 방식으로 추정합니다: 당신의 승률과 손익비로부터 수천 개의 모의 시퀀스를 돌리고, 자산이 그 선을 넘는 횟수를 세는 것입니다."}},{"@type":"Question","name":"켈리 기준이란 무엇인가요?","acceptedAnswer":{"@type":"Answer","text":"켈리 기준은 자본의 장기 성장률을 극대화하는 베팅 크기를 구하는 공식입니다. 승리 확률 p와 손익비 R인 거래의 경우, 켈리 비율은 (p·R − (1−p)) / R 이며, 이는 거래당 위험에 노출할 자본의 비율입니다. 결과가 음수라면 베팅할 만한 엣지가 없다는 뜻입니다."}},{"@type":"Question","name":"풀 켈리는 왜 위험한가요?","acceptedAnswer":{"@type":"Answer","text":"풀 켈리는 성장을 극대화하지만 큰 손실폭을 만들기 때문에, 대부분의 트레이더는 하프 켈리 같은 일부 비율을 사용합니다. 풀 켈리는 당신의 승률과 손익비가 정확히 알려져 있다고 가정하지만, 실제 엣지는 변동하며, 풀 켈리에서는 평범한 연속 손실만으로도 계좌가 절반으로 줄어들 수 있습니다. 하프 켈리로 사이징하면 훨씬 작은 변동폭으로 성장의 대부분을 유지할 수 있습니다."}}]}
+</script>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/ko/">MARGIN<b>PAD</b></a><nav class="tool-switch"><a href="/ko/tools/">전체 도구</a><a href="/crypto-backtester/">백테스터</a><a href="/trading-journal/">매매일지</a><a href="/pivot-point-calculator/">피벗</a><a href="/ko/risk-of-ruin-calculator/" class="on">리스크</a><a href="/crypto-correlation-matrix/">상관관계</a></nav><a class="home" href="/ko/">← marginpad.io</a></header>
+
+<div class="wrap">
+  <section class="hero">
+    <span class="eyebrow">리스크</span>
+    <h1>파산 위험 계산기</h1>
+    <p class="sub">당신의 엣지 — 승률, 손익비, 거래당 리스크 비율 — 를 입력하고, 수많은 거래에 걸쳐 그 수학이 계좌에 실제로 어떤 영향을 미치는지 확인하세요. 몬테카를로 파산 위험, 켈리 사이징, 그리고 자산 곡선 팬.</p>
+  </section>
+
+  <div class="toolbar">
+    <div class="row">
+      <label class="f">승률 %<input id="wr" type="number" value="45" min="1" max="99" style="width:96px"></label>
+      <label class="f">손익비 (보상 : 리스크)<input id="rr" type="number" value="2" step="0.1" min="0.1" style="width:96px"></label>
+      <label class="f">거래당 리스크 %<input id="risk" type="number" value="2" step="0.5" min="0.1" max="100" style="width:108px"></label>
+      <label class="f">거래 횟수<input id="n" type="number" value="100" min="10" max="1000" style="width:96px"></label>
+      <button class="btn" id="run">시뮬레이션</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div id="out" hidden>
+    <h2>엣지</h2>
+    <div class="kpis" id="kEdge"></div>
+
+    <h2><span id="nL">100</span>회 거래 <span class="muted">(2,000회 시뮬레이션)</span></h2>
+    <div class="kpis" id="kSim"></div>
+
+    <h2>자산 곡선 팬</h2>
+    <svg class="fan" id="fan" viewBox="0 0 600 230" preserveAspectRatio="none"></svg>
+    <div class="legend"><span><i style="background:rgba(70,224,230,.15);height:9px;border-radius:2px"></i>5–95% 범위</span><span><i style="background:rgba(70,224,230,.3);height:9px;border-radius:2px"></i>25–75% 범위</span><span><i style="background:var(--lime)"></i>중앙값</span><span><i style="background:var(--red)"></i>시작</span></div>
+
+    <div class="verdict" id="verdict"></div>
+  </div>
+
+  <section class="content">
+    <h2>프로처럼 포지션 사이징하는 법</h2>
+    <p>트레이딩 엣지는 수많은 거래에 걸쳐서만 의미를 가지며, 당신이 선택하는 베팅 크기가 그 엣지를 복리로 불릴지 아니면 당신을 파산시킬지를 결정합니다. 실제 수치에서 출발하세요: 얼마나 자주 이기는지, 평균 손익비, 그리고 거래당 위험에 노출하는 자본의 비율. 기댓값은 단일 거래의 평균적인 결과를 알려줍니다. 만약 그것이 음수라면, 어떤 포지션 크기도 계좌를 구할 수 없습니다. 켈리 비율은 최대 성장을 위한 수학적으로 최적의 리스크를 제시합니다 — 하지만 실제 트레이딩 데스크는 그것을 온전히 쓰는 일이 드뭅니다. 엣지는 변동하고 손실폭은 복리로 누적되기 때문에, 전문가들은 켈리의 일부, 흔히 절반 수준에서 사이징하며, 평범한 연속 손실이 결코 계좌를 위협하지 않을 만큼 거래당 리스크를 작게 유지합니다. 시뮬레이션을 돌리고, 자산 곡선 팬을 지켜보고, 당신이 상상하는 상승 여력이 아니라 당신이 견뎌낼 수 있는 손실폭을 기준으로 리스크를 선택하세요.</p>
+  </section>
+
+  <section class="content faq">
+    <h2>자주 묻는 질문</h2>
+    <details>
+      <summary>파산 위험이란 무엇인가요?</summary>
+      <div class="a">파산 위험이란 일련의 거래에 걸쳐 어느 시점에서든 당신의 계좌가 선택한 실패 수준 — 여기서는 50% 손실폭 — 까지 떨어질 확률입니다. 연속 손실은 필연적이기 때문에, 양(+)의 엣지를 가지고 있더라도 거래당 너무 많이 리스크를 지면 파산에 이를 수 있습니다. 우리는 이를 몬테카를로 방식으로 추정합니다: 당신의 승률과 손익비로부터 수천 개의 모의 시퀀스를 돌리고, 자산이 그 선을 넘는 횟수를 세는 것입니다.</div>
+    </details>
+    <details>
+      <summary>켈리 기준이란 무엇인가요?</summary>
+      <div class="a">켈리 기준은 자본의 장기 성장률을 극대화하는 베팅 크기를 구하는 공식입니다. 승리 확률 p와 손익비 R인 거래의 경우, 켈리 비율은 (p·R − (1−p)) / R 이며, 이는 거래당 위험에 노출할 자본의 비율입니다. 결과가 음수라면 베팅할 만한 엣지가 없다는 뜻입니다.</div>
+    </details>
+    <details>
+      <summary>풀 켈리는 왜 위험한가요?</summary>
+      <div class="a">풀 켈리는 성장을 극대화하지만 큰 손실폭을 만들기 때문에, 대부분의 트레이더는 하프 켈리 같은 일부 비율을 사용합니다. 풀 켈리는 당신의 승률과 손익비가 정확히 알려져 있다고 가정하지만, 실제 엣지는 변동하며, 풀 켈리에서는 평범한 연속 손실만으로도 계좌가 절반으로 줄어들 수 있습니다. 하프 켈리로 사이징하면 훨씬 작은 변동폭으로 성장의 대부분을 유지할 수 있습니다.</div>
+    </details>
+  </section>
+</div>
+
+<div class="wrap" style="padding-bottom:0">
+<div class="mpaff"><style>.mpaff{display:flex;align-items:center;gap:16px;flex-wrap:wrap;max-width:1160px;margin:34px auto 0;padding:13px 18px;border:1px solid #262e3a;border-radius:13px;background:linear-gradient(120deg,rgba(247,166,0,.05),transparent 40%,rgba(138,92,255,.07)),#0c0f13;font-size:13px}.mpaff-t{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.22em;color:#5c656f}.mpaff a{display:inline-flex;align-items:center;gap:7px;color:#e9e7df;text-decoration:none;font-weight:700;transition:color .15s}.mpaff a small{color:#8b95a1;font-weight:400}.mpaff a i{width:8px;height:8px;border-radius:3px;display:inline-block}.mpaff a b{color:#5c656f;transition:transform .15s;font-weight:700}.mpaff a:hover b{transform:translateX(3px);color:#e9e7df}</style><span class="mpaff-t">TRADE FOR REAL</span><a data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer"><i style="background:#f7a600"></i>Bybit <small>futures &middot; 100&times;</small><b>&rarr;</b></a><a data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer"><i style="background:linear-gradient(135deg,#8a5cff,#c2f64a)"></i>Moon <small>up or down &middot; 24/7</small><b>&rarr;</b></a></div>
+<footer class="toolfoot"><div class="cols"><div><a class="brand" href="/ko/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">무료 암호화폐 선물 도구 — 계산기, 실시간 차트 작업공간, 모의 매매 터미널, 실시간 청산 피드. 가입 불필요.</p></div><div><h4>도구</h4><a href="/crypto-backtester/">전략 백테스터</a><a href="/trading-journal/">매매일지</a><a href="/pivot-point-calculator/">피벗 포인트</a><a href="/risk-of-ruin-calculator/">파산 확률</a><a href="/crypto-correlation-matrix/">상관관계 매트릭스</a></div><div><h4>MarginPad</h4><a href="/paper-trade">모의 매매</a><a href="/charts">차트</a><a href="/calculators">계산기</a><a href="/screener">스크리너</a><a href="/rekt/">청산</a></div></div><div class="bottom">© 2026 MarginPad · 무료 암호화폐 매매 도구 · 투자 자문 아님</div></footer>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  function pc(x){return (+x).toFixed(1)+'%';}
+  function run(){
+    var wr=Math.min(99,Math.max(1,+$('wr').value||45))/100, R=Math.max(0.1,+$('rr').value||2), risk=Math.min(100,Math.max(0.1,+$('risk').value||2))/100, N=Math.min(1000,Math.max(10,+$('n').value||100));
+    $('nL').textContent=N;
+    var expR=wr*R-(1-wr);
+    var expPct=expR*risk*100;
+    var kelly=(wr*R-(1-wr))/R;
+    function kpi(v,l,cls){return '<div class="kpi"><div class="v '+(cls||'')+'">'+v+'</div><div class="l">'+l+'</div></div>';}
+    $('kEdge').innerHTML=kpi((expR>=0?'+':'')+expR.toFixed(2)+'R',"거래당 기댓값",expR>=0?'pos':'neg')
+      +kpi((expPct>=0?'+':'')+expPct.toFixed(2)+'%',"거래당 평균 수익",expPct>=0?'pos':'neg')
+      +kpi(kelly>0?pc(kelly*100):'0%',"풀 켈리 (리스크 %)",kelly>0?'pos':'neg')
+      +kpi(kelly>0?pc(kelly*50):'0%',"하프 켈리 (더 안전)",kelly>0?'pos':'neg');
+    var S=2000, finals=[], ruin50=0, ruin0=0, steps=[];for(var s=0;s<=N;s++)steps.push([]);
+    for(var sim=0;sim<S;sim++){
+      var eq=1, minEq=1, path=[1];
+      for(var t=0;t<N;t++){ eq*= (Math.random()<wr)?(1+R*risk):(1-risk); if(eq<minEq)minEq=eq; path.push(eq);}
+      finals.push(eq);
+      if(minEq<=0.5)ruin50++; if(eq<1)ruin0++;
+      for(var st=0;st<=N;st++)steps[st].push(path[st]);
+    }
+    finals.sort(function(a,b){return a-b;});
+    function q(arr,p){var a=arr.slice().sort(function(x,y){return x-y;});return a[Math.min(a.length-1,Math.floor(p*a.length))];}
+    var med=finals[Math.floor(S*0.5)], p5=finals[Math.floor(S*0.05)], p95=finals[Math.floor(S*0.95)];
+    $('kSim').innerHTML=kpi('×'+med.toFixed(2),"중앙값 결과",med>=1?'pos':'neg')
+      +kpi(pc((1-ruin0/S)*100),"수익 확률",(1-ruin0/S)>=0.5?'pos':'neg')
+      +kpi(pc(ruin50/S*100),"파산 위험 (−50%)",ruin50/S>0.1?'neg':'pos')
+      +kpi('×'+p95.toFixed(2),"최선의 경우 (p95)",'pos')
+      +kpi('×'+p5.toFixed(2),"최악의 경우 (p5)",'neg');
+    var W=600,H=230,pad=8;var qs={p5:[],p25:[],p50:[],p75:[],p95:[]};
+    steps.forEach(function(col){qs.p5.push(q(col,0.05));qs.p25.push(q(col,0.25));qs.p50.push(q(col,0.5));qs.p75.push(q(col,0.75));qs.p95.push(q(col,0.95));});
+    var mx=Math.max.apply(null,qs.p95),mn=Math.min.apply(null,qs.p5);mx=Math.max(mx,1.05);mn=Math.min(mn,0.95);
+    function X(i){return pad+i/N*(W-2*pad);}function Y(v){return H-pad-((v-mn)/((mx-mn)||1))*(H-2*pad);}
+    function band(lo,hi){var d='';for(var i=0;i<=N;i++)d+=(i?'L':'M')+X(i).toFixed(1)+' '+Y(qs[hi][i]).toFixed(1);for(var j=N;j>=0;j--)d+='L'+X(j).toFixed(1)+' '+Y(qs[lo][j]).toFixed(1);return d+'Z';}
+    function line(k,col,w){var d='';for(var i=0;i<=N;i++)d+=(i?'L':'M')+X(i).toFixed(1)+' '+Y(qs[k][i]).toFixed(1);return '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="'+w+'"/>';}
+    var oneY=Y(1).toFixed(1);
+    $('fan').innerHTML='<path d="'+band('p5','p95')+'" fill="rgba(70,224,230,.13)"/><path d="'+band('p25','p75')+'" fill="rgba(70,224,230,.28)"/><line x1="'+pad+'" y1="'+oneY+'" x2="'+(W-pad)+'" y2="'+oneY+'" stroke="#ff6258" stroke-dasharray="3 3"/>'+line('p50','#c2f64a',2);
+    var v;if(expR<=0)v="⚠ 음의 기댓값 — 포지션 크기가 어떻든 시간이 지나면 손해를 봅니다. 먼저 승률이나 손익비를 개선하세요.";
+    else if(ruin50/S>0.2)v="당신의 엣지는 양수이지만, 거래당 {risk}%의 리스크를 지면 −50% 손실폭이 발생할 확률이 {ror}입니다. 하프 켈리({hk})에 가깝게 사이징하는 것을 고려하세요.".replace('{risk}',(risk*100).toFixed(1)).replace('{ror}',pc(ruin50/S*100)).replace('{hk}',pc(kelly*50));
+    else v="통제된 리스크와 함께하는 양의 엣지. {n}회 거래에 걸친 중앙값 결과는 ×{med}이며, −50% 손실폭 확률은 {ror}입니다.".replace('{med}',med.toFixed(2)).replace('{n}',N).replace('{ror}',pc(ruin50/S*100));
+    $('verdict').textContent=v;
+    $('out').hidden=false;$('status').textContent='';
+  }
+  $('run').addEventListener('click',run);run();
+})();
+</script>
+<script defer src="/assets/mp-nav.js"></script>
+</body>
+</html>
