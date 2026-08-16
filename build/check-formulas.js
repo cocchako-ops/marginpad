@@ -14,18 +14,18 @@ const w = R('src/worker.js');
 must('mpcLiq defined once', w.split('function mpcLiq(').length - 1 === 1);
 must('zero inline liq copies outside mpcLiq', w.split('(1 - (1 - mmr) / lev)').length - 1 === 1, 'found ' + (w.split('(1 - (1 - mmr) / lev)').length - 1));
 must('all fill paths call mpcLiq', w.split('mpcLiq(entry, lev, mmr, long)').length - 1 >= 5, 'call sites: ' + (w.split('mpcLiq(entry, lev, mmr, long)').length - 1));
-must('server fee literal ×5', w.split('(+t.feeRate || 0)').length - 1 === 5, 'count ' + (w.split('(+t.feeRate || 0)').length - 1));
-must('server fund settlement ×4 (+1 partial)', w.split('- (+t.fund || 0)').length - 1 === 4 && w.split('- (+part.fund || 0)').length - 1 === 1, 'counts t:' + (w.split('- (+t.fund || 0)').length - 1) + ' part:' + (w.split('- (+part.fund || 0)').length - 1));
+must('server fee literal ×4', w.split('(+t.feeRate || 0)').length - 1 === 4, 'count ' + (w.split('(+t.feeRate || 0)').length - 1)); // was 5 — the sync-guard recompute site went away when client syncs stopped being able to close srv trades (P0.6)
+must('server fund settlement ×3 (+1 partial)', w.split('- (+t.fund || 0)').length - 1 === 3 && w.split('- (+part.fund || 0)').length - 1 === 1, 'counts t:' + (w.split('- (+t.fund || 0)').length - 1) + ' part:' + (w.split('- (+part.fund || 0)').length - 1)); // same removal as the fee site above
 
 console.log('[clients] verbatim formula literals (drift = count mismatch):');
 const CLIENT = [
   ['dist/assets/home.js', [
     ["liq (all copies)", '1-(1-mmr)', 6],
-    ["pnl clamp", 'pnl<-margin', 3],
+    ["pnl clamp (-99% open cap)", '_pf=_op?-margin*0.99:-margin', 3],
   ]],
   ['dist/assets/mp-charts.js', [["liq", '1-(1-mmr)', 2]]],
   ['dist/assets/mp-mcharts.js', [["liq", '1-(1-mmr)', 4]]],
-  ['dist/assets/mp-trade.js', [["pnl clamp", 'pnl<-margin', null]]], // null = presence only
+  ['dist/assets/mp-trade.js', [["pnl clamp (-99% open cap)", '_pf=_op?-margin*0.99:-margin', null]]], // null = presence only
   // P1 fees: the per-side taker fee literal must exist at every P&L center (server copies asserted below)
   ['dist/assets/home.js', [["fee literal", '(+e.feeRate||0)', 5]]],
   ['dist/assets/mp-trade.js', [["fee literal", '(+e.feeRate||0)', 2]]],

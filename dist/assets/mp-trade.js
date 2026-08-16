@@ -35,7 +35,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
   function dur(ms){var s=Math.floor(ms/1000);if(s<60)return s+'s';var m=Math.floor(s/60);if(m<60)return m+'m';var h=Math.floor(m/60);if(h<24)return h+'h '+(m%60)+'m';return Math.floor(h/24)+'d '+(h%24)+'h';}
   function tsf(t){if(!t)return '';var d=new Date(t),MO=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return d.getDate()+' '+MO[d.getMonth()]+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);}
-  function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-(+e.fund||0):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open caps at -99% until real liquidation */return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,margin:margin};}
+  function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-((+e.qty||0)*(e.entry+live)*(+e.feeRate||0))-(+e.fund||0):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open caps at -99% until real liquidation */return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,margin:margin};}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e,true)
       +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
@@ -657,7 +657,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
 (function(){ if(window.mpCloseSheet)return;
   function jload(){try{return JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){return[];}}
   function jstore(a){try{localStorage.setItem('mp_journal',JSON.stringify(a));}catch(e){}}
-  function mx(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1)-(+e.fund||0):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);if(margin>0&&pnl!=null){var _op=e.status!=='win'&&e.status!=='loss',_pf=_op?-margin*0.99:-margin;if(pnl<_pf)pnl=_pf;}var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;return{live:live,long:long,move:move,pnl:pnl,margin:margin,roe:roe};}
+  function mx(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1)-((+e.qty||0)*(e.entry+live)*(+e.feeRate||0))-(+e.fund||0):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);if(margin>0&&pnl!=null){var _op=e.status!=='win'&&e.status!=='loss',_pf=_op?-margin*0.99:-margin;if(pnl<_pf)pnl=_pf;}var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;return{live:live,long:long,move:move,pnl:pnl,margin:margin,roe:roe};}
   function fm(x){x=+x||0;var n=x<0;x=Math.abs(x);return (n?'-$':'$')+x.toLocaleString('en-US',{maximumFractionDigits:2});}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   var ov=null,pct=100,curId=null,after=null,syncT=null;
@@ -826,6 +826,11 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     }
     put(sls,false);put(tps,true);
     jstore(r.d);hide();
+    /* Server-first for server-filled trades — mirror of home.js (see the rationale there). */
+    try{var _me8=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();
+      if(_me8&&e.src==='srv'&&window.fetch){
+        fetch('/api/trade/sltp',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',keepalive:true,body:JSON.stringify({id:e.id,sl:(e.stop==null?null:+e.stop),tp:(e.tp==null?null:+e.tp)})}).catch(function(){});}
+    }catch(_){}
     try{document.dispatchEvent(new CustomEvent('mp:sltp',{detail:{id:e.id}}));}catch(_){}
     try{window.__mpTrack&&window.__mpTrack('sltp',(e.sym||'')+' '+(e.side==='short'?'SHORT':'LONG'));}catch(_){}
     try{if(window.mpBuzz)window.mpBuzz([14]);else if(navigator.vibrate)navigator.vibrate(14);}catch(_){}

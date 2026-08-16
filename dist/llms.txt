@@ -48,6 +48,7 @@ Full expanded reference: https://marginpad.io/llms-full.txt
 - [Rekt — live liquidations feed](https://marginpad.io/rekt/): real-time crypto liquidations.
 - [Liquidations data](https://marginpad.io/liquidations/) · [Funding rates](https://marginpad.io/funding/) · [Open interest](https://marginpad.io/open-interest/) · [Long/short ratio](https://marginpad.io/long-short/) (Coinglass-aggregated).
 - [ETF flows](https://marginpad.io/etf-flows/): daily spot Bitcoin & Ethereum ETF net flows and AUM.
+- [Hyperliquid liquidations](https://marginpad.io/hyperliquid-liquidations/): how HL liquidations work (oracle mark, maintenance margin by max leverage, HLP backstop, ADL) plus a live board of the largest positions closest to their liquidation price.
 - [Hyperliquid whale tracker](https://marginpad.io/hyperliquid-whales/): biggest live on-chain whale positions with leverage, liquidation price and P&L.
 - [Bitcoin cycle dashboard](https://marginpad.io/bitcoin-cycle/): Pi Cycle, Rainbow, Puell and other cycle top/bottom signals.
 - [DeFi dashboard](https://marginpad.io/defi/) · [Top coins](https://marginpad.io/coins/) · [Fear & Greed](https://marginpad.io/fear-greed/).

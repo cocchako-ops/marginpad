@@ -1213,6 +1213,21 @@ async function ssrHubSentences(page, sym, env) {
     if (btc) S.push('BTC accounts split ' + btc.longPct + '% long / ' + btc.shortPct + '% short.');
     return { S, links: [['/funding/', 'Funding rates'], ['/liquidations/', '24h liquidations']] };
   }
+  if (page === 'hlliq') { // Hyperliquid liquidation levels — every sentence is arithmetic on live position data
+    const j = await jget(() => handleCgHyper(new URL('https://marginpad.io/api/cg/hyper'), env));
+    if (!j || !j.active || !Array.isArray(j.positions) || !j.positions.length) return { S };
+    const ps = j.positions.filter(p => +p.liq > 0 && +p.mark > 0 && +p.val > 0);
+    if (!ps.length) return { S };
+    const dist = p => Math.abs(+p.mark - +p.liq) / +p.mark * 100;
+    const a = j.agg || {};
+    if (a.count) S.push('Across ' + a.count + ' tracked Hyperliquid whale wallets there is ' + _susd((+a.longUsd || 0) + (+a.shortUsd || 0)) + ' in open perpetual positions right now — ' + _susd(+a.longUsd || 0) + ' long against ' + _susd(+a.shortUsd || 0) + ' short.');
+    const near = ps.slice().sort((x, y) => dist(x) - dist(y))[0];
+    S.push('Of the ' + ps.length + ' largest positions, the closest to being liquidated is a ' + _susd(+near.val) + ' ' + (near.long ? 'long' : 'short') + ' on ' + near.sym + (near.lev ? ' at ' + near.lev + 'x' : '') + ': the mark sits ' + dist(near).toFixed(2) + '% from its liquidation price of ' + _spx(+near.liq) + '.');
+    const within = ps.filter(p => dist(p) <= 5), wv = within.reduce((s, p) => s + (+p.val || 0), 0);
+    S.push(within.length ? within.length + ' of them (' + _susd(wv) + ' of position value) sit within 5% of liquidation — that is the size that would be force-closed if price ran that far against them.'
+      : 'None of them sit within 5% of liquidation at the moment, so a small move would not force anything on this list.');
+    return { S, links: [['/hyperliquid-liquidation-calculator/', 'Hyperliquid liquidation calculator'], ['/hyperliquid-whales/', 'Full whale board'], ['/rekt/', 'Live liquidation feed']] };
+  }
   if (page === 'whales') {
     const j = await jget(() => handleCgHyper(new URL('https://marginpad.io/api/cg/hyper'), env));
     if (!j || !j.active || !j.agg) return { S };
@@ -1239,7 +1254,8 @@ async function handleSsrHub(request, url, env, page, sym) {
   let res = null;
   try { res = await ssrHubSentences(page, sym, env); } catch (e) {}
   if (!res || !res.S || res.S.length < 2) return pass();
-  const out = html.slice(0, anchor) + ssrBoxHtml('LIVE ' + (sym || page.replace(/^./, c => c.toUpperCase())).toUpperCase() + ' DATA', res.S, res.links) + html.slice(anchor);
+  const HUB_LABEL = { hlliq: 'LIVE HYPERLIQUID POSITIONS', whales: 'LIVE WHALE POSITIONS' }; // internal page keys make ugly headings ("LIVE HLLIQ DATA") — name them for the reader
+  const out = html.slice(0, anchor) + ssrBoxHtml(HUB_LABEL[page] || ('LIVE ' + (sym || page.replace(/^./, c => c.toUpperCase())).toUpperCase() + ' DATA'), res.S, res.links) + html.slice(anchor);
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'hub-' + page } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
   return resp;
@@ -12191,7 +12207,7 @@ export default {
       }
       if (url.pathname === '/crypto-liquidations-today/') return handleSsrBlog(request, url, env, 'liq'); // exact-match "total crypto liquidations today" landing — live market total box before the first <h2 (SEO kompas: the SERP has no clean-number answer)
       const _bk = ssrBlogKind(url.pathname); if (_bk) return handleSsrBlog(request, url, env, _bk);
-      const _hub = { '/liquidations/': 'liquidations', '/liquidation-statistics/': 'liquidations', '/etf-flows/': 'etf', '/fear-greed/': 'fng', '/funding/': 'funding', '/open-interest/': 'oi', '/long-short/': 'ls', '/hyperliquid-whales/': 'whales' }[url.pathname];
+      const _hub = { '/liquidations/': 'liquidations', '/liquidation-statistics/': 'liquidations', '/etf-flows/': 'etf', '/fear-greed/': 'fng', '/funding/': 'funding', '/open-interest/': 'oi', '/long-short/': 'ls', '/hyperliquid-whales/': 'whales', '/hyperliquid-liquidations/': 'hlliq' }[url.pathname];
       if (_hub) return handleSsrHub(request, url, env, _hub, null);
       if (url.pathname === '/liquidations/recap' || url.pathname === '/liquidations/recap/' || /^\/liquidations\/recap\/\d{4}-\d{2}-\d{2}\/?$/.test(url.pathname)) return handleLiqRecap(url, env); // BEFORE the coin match — 'recap' must never be parsed as a coin slug
       if (url.pathname === '/sitemap-recaps.xml') return handleRecapSitemap(env);

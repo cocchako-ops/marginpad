@@ -46,6 +46,7 @@ const EXTRAS = [
   ['https://marginpad.io/crypto-trading-canada/', '0.8'],
   ['https://marginpad.io/wordpress-crypto-widgets/', '0.8'],
   ['https://marginpad.io/crypto-futures-tax-calculator/', '0.8'],
+  ['https://marginpad.io/hyperliquid-liquidations/', '0.9'],
   ['https://marginpad.io/privacy/', '0.3'],
 ];
 let xml = fs.readFileSync(SP, 'utf8');
