@@ -30,7 +30,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"Is the MarginPad WordPress plugin free?","acceptedAnswer":{"@type":"Answer","text":"Yes, completely. There is no paid tier, no API key and no account. The widgets are the same ones running on marginpad.io."}},
 {"@type":"Question","name":"Does the plugin slow down my WordPress site?","acceptedAnswer":{"@type":"Answer","text":"No. Each widget is a lazy-loaded iframe, so nothing is fetched until the visitor scrolls to it, and no scripts or stylesheets are added to your front end. The plugin writes nothing to your database."}},
-{"@type":"Question","name":"Which crypto widgets are included?","acceptedAnswer":{"@type":"Answer","text":"Four: a live liquidation calculator for any coin, the Crypto Fear and Greed index, a real-time liquidation feed aggregated from ten exchanges, and a crypto economic calendar with FOMC, CPI and NFP dates."}},
+{"@type":"Question","name":"Which crypto widgets are included?","acceptedAnswer":{"@type":"Answer","text":"Four: a live liquidation calculator for any coin, the Crypto Fear and Greed index, a real-time liquidation feed aggregated from nine exchanges, and a crypto economic calendar with FOMC, CPI and NFP dates."}},
 {"@type":"Question","name":"Can I use the widgets without WordPress?","acceptedAnswer":{"@type":"Answer","text":"Yes. Every widget is also available as a plain iframe embed that works on any site, including Ghost, Webflow, Squarespace and hand-written HTML. The embed codes are on the widgets page."}},
 {"@type":"Question","name":"Does the plugin collect visitor data?","acceptedAnswer":{"@type":"Answer","text":"No. The plugin sets no cookies, adds no tracking and stores nothing in your database. It only renders iframes served from marginpad.io."}}
 ]}</script>
@@ -86,7 +86,7 @@
         <tr><th>Shortcode</th><th>What it renders</th></tr>
         <tr><td><code>[marginpad_liquidation_calculator coin="BTC"]</code></td><td>Live liquidation calculator for any coin &mdash; long and short, isolated margin, current price loaded automatically.</td></tr>
         <tr><td><code>[marginpad_fear_greed]</code></td><td>Crypto Fear &amp; Greed index with yesterday and last-week readings.</td></tr>
-        <tr><td><code>[marginpad_liquidations]</code></td><td>Real-time liquidation feed aggregated from ten exchanges, refreshed every ten seconds.</td></tr>
+        <tr><td><code>[marginpad_liquidations]</code></td><td>Real-time liquidation feed aggregated from nine exchanges, refreshed every ten seconds.</td></tr>
         <tr><td><code>[marginpad_calendar]</code></td><td>Crypto economic calendar: FOMC, CPI and NFP dates plus crypto-native events.</td></tr>
       </table>
     </div>
@@ -131,7 +131,7 @@
     <p>Each widget is a sandboxed iframe served from marginpad.io, so it cannot touch your theme, conflict with another plugin or break on a WordPress update. Removing the plugin removes it completely &mdash; there is nothing left behind to clean up.</p>
 
     <h2>What the widgets are actually pulling</h2>
-    <p>The calculator uses live prices from our multi-exchange price cascade, the same feed behind the <a href="/calculators?c=liq">liquidation calculator</a> and <a href="/paper-trade">Paper Trade</a>. The liquidation feed comes from a dedicated collector watching ten exchanges &mdash; the same stream behind the <a href="/rekt/">Rekt feed</a>. The calendar is the curated <a href="/calendar/">crypto economic calendar</a>, with FOMC and CPI dates maintained by hand rather than scraped.</p>
+    <p>The calculator uses live prices from our multi-exchange price cascade, the same feed behind the <a href="/calculators?c=liq">liquidation calculator</a> and <a href="/paper-trade">Paper Trade</a>. The liquidation feed comes from a dedicated collector watching nine exchanges &mdash; the same stream behind the <a href="/rekt/">Rekt feed</a>. The calendar is the curated <a href="/calendar/">crypto economic calendar</a>, with FOMC and CPI dates maintained by hand rather than scraped.</p>
 
     <h2>FAQ</h2>
     <h3>Is the plugin free?</h3>

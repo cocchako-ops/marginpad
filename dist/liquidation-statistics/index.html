@@ -1,53 +1,45 @@
-/* Generates /liquidation-statistics/ — a citable statistics hub built on OUR measured liquidation data
-   (VPS collector across 9 exchanges + Coinglass 24h aggregates). The static HTML carries methodology and
-   structure; live numbers arrive two ways: the worker's SSR live-data box (crawler-visible, dated) and
-   client-side tables from /api/cg/liquidations + /api/v1/liquidations/live.
-   Run: node build/gen-liq-stats-page.js */
-const fs = require('fs');
-const path = require('path');
-const DIST = path.join(__dirname, '..', 'dist');
-
-const URL0 = 'https://marginpad.io/liquidation-statistics/';
-const DESC = 'Live crypto liquidation statistics: 24-hour totals by coin, long vs short split, and the largest individual liquidations — measured in real time from 9 exchanges. Free, updated continuously.';
-
-const FAQ = [
-  { q: 'How much crypto is liquidated every day?', a: 'It varies enormously with volatility: calm days wipe out tens of millions of dollars across all futures markets, while crash or squeeze days can exceed a billion. The live 24-hour total measured right now is shown at the top of this page and updates continuously.' },
-  { q: 'What does a liquidation mean in crypto futures?', a: 'A liquidation is the forced closure of a leveraged position after its margin can no longer cover the loss. The exchange closes the position at market, which adds sell pressure (for longs) or buy pressure (for shorts) and can cascade into further liquidations.' },
-  { q: 'Why are most liquidations longs?', a: 'On most days the majority of open leverage is long, so down-moves liquidate more volume than up-moves. When shorts dominate the daily total instead, it usually means a short squeeze is running.' },
-  { q: 'Where does this liquidation data come from?', a: 'Two measured sources: MarginPad’s own collector streams individual liquidation events live from the public websockets of 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), and per-coin 24-hour totals are aggregated from Coinglass. Every figure on this page is a measurement with a timestamp, not an estimate.' },
-  { q: 'Is there a free API for liquidation data?', a: 'Yes. MarginPad’s free keyless API serves the same data as JSON: /api/v1/liquidations/recent (price-level buckets), /api/v1/liquidations/live (latest individual events) and /api/v1/clusters. CORS-enabled, 60 requests/minute, no signup.' },
-];
-
-function page() {
-  const faqLd = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[${FAQ.map(f => `{"@type":"Question","name":${JSON.stringify(f.q)},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(f.a)}}}`).join(',')}]}</script>`;
-  const crumbLd = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Liquidation Statistics","item":"${URL0}"}]}</script>`;
-  const dataLd = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Crypto Liquidation Statistics (live)","description":${JSON.stringify(DESC)},"url":"${URL0}","creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"isAccessibleForFree":true,"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations/recent"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations/live"}]}</script>`;
-  return `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Crypto Liquidation Statistics — Live 24h Totals by Coin | MarginPad</title>
-<meta name="description" content="${DESC}" />
+<meta name="description" content="Live crypto liquidation statistics: 24-hour totals by coin, long vs short split, and the largest individual liquidations — measured in real time from 9 exchanges. Free, updated continuously." />
 <meta name="keywords" content="crypto liquidation statistics, liquidations today, 24h liquidations, bitcoin liquidations, long short liquidations, biggest liquidation" />
-<link rel="canonical" href="${URL0}" />
+<link rel="canonical" href="https://marginpad.io/liquidation-statistics/" />
 <meta property="og:title" content="Crypto Liquidation Statistics — Live" />
-<meta property="og:description" content="${DESC}" />
+<meta property="og:description" content="Live crypto liquidation statistics: 24-hour totals by coin, long vs short split, and the largest individual liquidations — measured in real time from 9 exchanges. Free, updated continuously." />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="${URL0}" />
+<meta property="og:url" content="https://marginpad.io/liquidation-statistics/" />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Crypto Liquidation Statistics — Live" />
-<meta name="twitter:description" content="${DESC}" />
+<meta name="twitter:description" content="Live crypto liquidation statistics: 24-hour totals by coin, long vs short split, and the largest individual liquidations — measured in real time from 9 exchanges. Free, updated continuously." />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-${faqLd}
-${crumbLd}
-${dataLd}
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How much crypto is liquidated every day?","acceptedAnswer":{"@type":"Answer","text":"It varies enormously with volatility: calm days wipe out tens of millions of dollars across all futures markets, while crash or squeeze days can exceed a billion. The live 24-hour total measured right now is shown at the top of this page and updates continuously."}},{"@type":"Question","name":"What does a liquidation mean in crypto futures?","acceptedAnswer":{"@type":"Answer","text":"A liquidation is the forced closure of a leveraged position after its margin can no longer cover the loss. The exchange closes the position at market, which adds sell pressure (for longs) or buy pressure (for shorts) and can cascade into further liquidations."}},{"@type":"Question","name":"Why are most liquidations longs?","acceptedAnswer":{"@type":"Answer","text":"On most days the majority of open leverage is long, so down-moves liquidate more volume than up-moves. When shorts dominate the daily total instead, it usually means a short squeeze is running."}},{"@type":"Question","name":"Where does this liquidation data come from?","acceptedAnswer":{"@type":"Answer","text":"Two measured sources: MarginPad’s own collector streams individual liquidation events live from the public websockets of 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), and per-coin 24-hour totals are aggregated from Coinglass. Every figure on this page is a measurement with a timestamp, not an estimate."}},{"@type":"Question","name":"Is there a free API for liquidation data?","acceptedAnswer":{"@type":"Answer","text":"Yes. MarginPad’s free keyless API serves the same data as JSON: /api/v1/liquidations/recent (price-level buckets), /api/v1/liquidations/live (latest individual events) and /api/v1/clusters. CORS-enabled, 60 requests/minute, no signup."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Liquidation Statistics","item":"https://marginpad.io/liquidation-statistics/"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Dataset","name":"Crypto Liquidation Statistics (live)","description":"Live crypto liquidation statistics: 24-hour totals by coin, long vs short split, and the largest individual liquidations — measured in real time from 9 exchanges. Free, updated continuously.","url":"https://marginpad.io/liquidation-statistics/","creator":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"},"isAccessibleForFree":true,"distribution":[{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations/recent"},{"@type":"DataDownload","encodingFormat":"application/json","contentUrl":"https://marginpad.io/api/v1/liquidations/live"}]}</script>
 <style>
 .lqs-table{width:100%;border-collapse:collapse;margin:14px 0 22px;font-size:14.5px}
 .lqs-table th,.lqs-table td{padding:8px 10px;text-align:right;border-bottom:1px solid rgba(255,255,255,.08)}
@@ -56,6 +48,8 @@ ${dataLd}
 .lqs-long{color:#ff5a4d}.lqs-short{color:#2ebd85}
 .lqs-note{font-family:'Space Mono',monospace;font-size:11.5px;color:#9aa3ad;margin:-14px 0 22px}
 </style>
+
+<script defer src="/assets/sentry.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -81,7 +75,16 @@ ${dataLd}
     <h2>Get the raw data (free API, no key)</h2>
     <p>The same data is served as JSON by the <a href="/free-crypto-api/">MarginPad free crypto API</a>: <code>/api/v1/liquidations/recent</code> (price-level buckets per coin), <code>/api/v1/liquidations/live</code> (latest individual events) and <code>/api/v1/clusters</code> (estimated forward clusters, labelled as estimates). CORS-enabled, 60 requests/minute, no signup.</p>
     <h2>FAQ</h2>
-    ${FAQ.map(f => `<h3>${f.q}</h3>\n    <p>${f.a}</p>`).join('\n    ')}
+    <h3>How much crypto is liquidated every day?</h3>
+    <p>It varies enormously with volatility: calm days wipe out tens of millions of dollars across all futures markets, while crash or squeeze days can exceed a billion. The live 24-hour total measured right now is shown at the top of this page and updates continuously.</p>
+    <h3>What does a liquidation mean in crypto futures?</h3>
+    <p>A liquidation is the forced closure of a leveraged position after its margin can no longer cover the loss. The exchange closes the position at market, which adds sell pressure (for longs) or buy pressure (for shorts) and can cascade into further liquidations.</p>
+    <h3>Why are most liquidations longs?</h3>
+    <p>On most days the majority of open leverage is long, so down-moves liquidate more volume than up-moves. When shorts dominate the daily total instead, it usually means a short squeeze is running.</p>
+    <h3>Where does this liquidation data come from?</h3>
+    <p>Two measured sources: MarginPad’s own collector streams individual liquidation events live from the public websockets of 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), and per-coin 24-hour totals are aggregated from Coinglass. Every figure on this page is a measurement with a timestamp, not an estimate.</p>
+    <h3>Is there a free API for liquidation data?</h3>
+    <p>Yes. MarginPad’s free keyless API serves the same data as JSON: /api/v1/liquidations/recent (price-level buckets), /api/v1/liquidations/live (latest individual events) and /api/v1/clusters. CORS-enabled, 60 requests/minute, no signup.</p>
     <div class="toolshow">
       <div class="ts-head">Everything free on MarginPad — no signup</div>
       <div class="ts-grid">
@@ -128,20 +131,3 @@ ${dataLd}
 <script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>
-`;
-}
-
-const dir = path.join(DIST, 'liquidation-statistics');
-fs.mkdirSync(dir, { recursive: true });
-fs.writeFileSync(path.join(dir, 'index.html'), page());
-console.log('wrote /liquidation-statistics/');
-
-const SITEMAP = path.join(DIST, 'sitemap.xml');
-if (fs.existsSync(SITEMAP)) {
-  let sm = fs.readFileSync(SITEMAP, 'utf8');
-  if (sm.indexOf(URL0) === -1) {
-    sm = sm.replace('</urlset>', `  <url><loc>${URL0}</loc><lastmod>${new Date().toISOString().slice(0, 10)}</lastmod><changefreq>hourly</changefreq><priority>0.7</priority></url>\n</urlset>`);
-    fs.writeFileSync(SITEMAP, sm);
-    console.log('sitemap updated');
-  }
-}

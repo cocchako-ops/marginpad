@@ -16,7 +16,7 @@ Four live crypto widgets you can drop into any post, page or sidebar with a shor
 
 * **Liquidation calculator** — live price for any coin, long and short, isolated-margin liquidation price.
 * **Crypto Fear & Greed index** — current sentiment score with yesterday and last-week readings.
-* **Live liquidations** — real-time liquidation feed aggregated from ten exchanges, refreshed every ten seconds.
+* **Live liquidations** — real-time liquidation feed aggregated from nine exchanges, refreshed every ten seconds.
 * **Crypto economic calendar** — FOMC, CPI and NFP dates plus crypto-native events.
 
 Each widget is a sandboxed iframe served from marginpad.io. The plugin adds no scripts to your front end, sets no cookies, and collects no visitor data.

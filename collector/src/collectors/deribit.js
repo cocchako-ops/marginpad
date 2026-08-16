@@ -1,3 +1,14 @@
+// UNWIRED 2026-08-16 — NOT loaded by index.js. Deribit no longer publishes liquidations.
+// Measured that day, all three ways: (1) 3,000 recent trades over REST (BTC/ETH/USDC futures) carry no
+// `liquidation` key and no liquidation-ish key at all — the payload now has starbase_match_id /
+// starbase_timestamp / combo_id, i.e. a new matching engine; (2) live WS trade payloads show the same key
+// set; (3) every candidate channel (liquidations.*, liquidation.*, forced_liquidations.*,
+// trades.*.liquidation) subscribes to [] while control channels (deribit_price_index.btc_usd,
+// platform_state.public_methods_state) echo back fine, and public/get_liquidations* is method_not_found.
+// Result before unwiring: 0 events in 13.6 days of collector uptime. Re-wire this file (import + the
+// collectors[] entry in index.js) if Deribit ever exposes them again — the parser below is unchanged and
+// still correct for the OLD schema, so it will need the new flag wired in first.
+//
 // Deribit liquidations. Endpoint: wss://www.deribit.com/ws/api/v2 (JSON-RPC).
 // Deribit has no public liquidation channel, but its `trades` stream flags liquidation fills, so we subscribe
 // to the trades channel of EVERY active PERPETUAL and emit the ones carrying a `liquidation` flag.

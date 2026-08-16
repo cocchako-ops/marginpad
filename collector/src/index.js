@@ -12,7 +12,9 @@ import { BinanceCollector } from './collectors/binance.js';
 import { BybitCollector } from './collectors/bybit.js';
 import { OkxCollector } from './collectors/okx.js';
 import { BitmexCollector } from './collectors/bitmex.js';
-import { DeribitCollector } from './collectors/deribit.js';
+// Deribit UNWIRED 2026-08-16 — their new matching engine dropped the `liquidation` flag from public
+// trades, and no liquidations channel/method exists any more (see the header of collectors/deribit.js
+// for the measurements). The file is kept so it can be re-wired the day Deribit publishes them again.
 import { BitfinexCollector } from './collectors/bitfinex.js';
 import { BinanceCoinCollector } from './collectors/binancecoin.js';
 import { GateLiqCollector, HtxLiqCollector, DydxLiqCollector } from './collectors/restpoll.js'; // REST-polled public liq feeds (2026-07-25)
@@ -43,7 +45,6 @@ const collectors = [
   new BybitCollector({ symbols: config.symbols, onEvent }),
   new OkxCollector({ symbols: config.symbols, onEvent }),
   new BitmexCollector({ symbols: config.symbols, onEvent }),
-  new DeribitCollector({ symbols: config.symbols, onEvent }),
   new BitfinexCollector({ symbols: config.symbols, onEvent }),
   new BinanceCoinCollector({ symbols: config.symbols, onEvent }),
   new GateLiqCollector({ symbols: config.symbols, onEvent }),

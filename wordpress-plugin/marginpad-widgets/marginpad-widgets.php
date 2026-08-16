@@ -176,7 +176,7 @@ function marginpad_widgets_settings_page() {
 	$rows = array(
 		array( '[marginpad_liquidation_calculator coin="BTC"]', 'Live liquidation calculator for any coin. Change coin to ETH, SOL, XRP, and so on.' ),
 		array( '[marginpad_fear_greed]', 'Crypto Fear &amp; Greed index with yesterday and last-week readings.' ),
-		array( '[marginpad_liquidations]', 'Real-time liquidation feed aggregated from ten exchanges.' ),
+		array( '[marginpad_liquidations]', 'Real-time liquidation feed aggregated from nine exchanges.' ),
 		array( '[marginpad_calendar]', 'Crypto economic calendar: FOMC, CPI, NFP and crypto-native events.' ),
 	);
 	echo '<div class="wrap"><h1>MarginPad Crypto Widgets</h1>';
