@@ -2039,7 +2039,7 @@ window.addEventListener('load', function () {
         var isImg=!ic&&!NONCRYPTO[s];
         h+='<button type="button" class="ptr-b'+(s===cur?' cur':'')+(isImg?'':' nc')+'" data-ptr="'+s+'" title="'+s+' — trade it again" aria-label="Switch to '+s+'">'
           +(ic?ic:'<span>'+letters+'</span>'
-          +(isImg?'<img alt="" data-s="'+s.toLowerCase()+'" src="/assets/coins/'+s.toLowerCase()+'.png" onerror="if(!this.dataset.f){this.dataset.f=1;this.src=\'https://assets.coincap.io/assets/icons/\'+this.dataset.s+\'@2x.png\';}else{this.parentNode.classList.add(\'nc\');this.remove();}">':''))
+          +(isImg?'<img alt="" data-s="'+s.toLowerCase()+'" src="/assets/coins/'+s.toLowerCase()+'.png" onerror="var f=+(this.dataset.f||0)+1;this.dataset.f=f;if(f===1){this.src=\'/api/coinicon?sym=\'+this.dataset.s;}else if(f===2){this.src=\'https://assets.coincap.io/assets/icons/\'+this.dataset.s+\'@2x.png\';}else{this.parentNode.classList.add(\'nc\');this.remove();}">':''))
           +'</button>'; }
       box.innerHTML=h; box.hidden=false; if(ptt)ptt.classList.add('has-recent');
     }

@@ -1562,6 +1562,61 @@ async function handleGeckoMarkets(url, env) {
   return resp;
 }
 // One coin's CoinGecko market data (market cap, volume, ATH/ATL, supply, multi-window change, sparkline). Symbol-keyed; takes the highest-mcap match. Cached 2 min.
+// Coin logo for ANY symbol, self-maintaining. The rail (and anything else showing coin badges) tries a
+// self-hosted PNG first; new listings have none, and the old coincap fallback is stale — so instead of
+// falling through to a bare letter, it lands here. Resolution is cached in KV (symbol -> image URL,
+// including NEGATIVE results so an unknown ticker is not re-queried every render), and the image itself
+// is edge-cached hard, so CoinGecko is hit roughly once per symbol per month.
+// Exchange ticker -> CoinGecko id, for the handful where the two disagree (our feed says AIGENSYN,
+// CoinGecko files it under symbol "AI", id "gensyn"). Only add entries verified against the coin's page.
+// Verified 2026-08-16 against coins/markets?ids= (gensyn/pepe/bonk/shiba-inu/floki) and search (pump-fun).
+// '1000RATS' is NOT here: CoinGecko has an id of exactly that name, so the normal symbol path finds it.
+const ICON_ALIAS = { aigensyn: 'gensyn', '1000pepe': 'pepe', '1000bonk': 'bonk', '1000shib': 'shiba-inu', '1000floki': 'floki', pumpfun: 'pump-fun' };
+async function handleCoinIcon(url, env) {
+  const sym = String(url.searchParams.get('sym') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16);
+  const bad = (s) => new Response('', { status: s, headers: { 'cache-control': 'public, max-age=86400', ...CORS } });
+  if (!sym) return bad(400);
+  const ck = new Request('https://marginpad.io/__coinicon_' + sym);
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  let src = null;
+  try { src = await env.STATS.get('icon:' + sym); } catch (e) {}     // '' = known-missing
+  if (src == null) {
+    const ok = (u) => (u && /^https:\/\/[a-z0-9.-]*coingecko\.com\//i.test(u)) ? String(u).split('?')[0] : null;
+    try {
+      const h = { headers: { accept: 'application/json' } };
+      if (env.COINGECKO_API_KEY) h.headers['x-cg-demo-api-key'] = env.COINGECKO_API_KEY;
+      const id = ICON_ALIAS[sym];
+      if (id) { // our exchange ticker differs from CoinGecko's symbol (AIGENSYN is CoinGecko's "AI" / id gensyn)
+        const r0 = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=' + id, h);
+        if (r0.ok) { const j0 = await r0.json(); if (Array.isArray(j0) && j0[0]) src = ok(j0[0].image); }
+      }
+      if (!src) {
+        const r = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&symbols=' + sym, h);
+        if (r.ok) {
+          const j = await r.json();
+          if (Array.isArray(j) && j.length) src = ok(j.sort((a, b) => (+b.market_cap || 0) - (+a.market_cap || 0))[0].image);
+        }
+      }
+      if (!src) { // second chance: search only accepts an EXACT ticker match, so a wrong logo can't sneak in
+        const r2 = await fetch('https://api.coingecko.com/api/v3/search?query=' + sym, h);
+        if (r2.ok) {
+          const j2 = await r2.json();
+          const hit = (j2 && Array.isArray(j2.coins) ? j2.coins : []).filter(c => String(c.symbol || '').toLowerCase() === sym)[0];
+          if (hit) src = ok(hit.large) || ok(hit.thumb);
+        }
+      }
+    } catch (e) {}
+    try { await env.STATS.put('icon:' + sym, src || '', { expirationTtl: src ? 2592000 : 21600 }); } catch (e) {} // 30d hit / 6h miss (a new listing usually reaches CoinGecko within hours, and a 3d negative cache made every fix invisible until it expired)
+  }
+  if (!src) return bad(404);
+  try {
+    const img = await fetch(src, { cf: { cacheEverything: true, cacheTtl: 2592000 } });
+    if (!img.ok) return bad(404);
+    const resp = new Response(img.body, { status: 200, headers: { 'content-type': img.headers.get('content-type') || 'image/png', 'cache-control': 'public, max-age=2592000, immutable', ...CORS } });
+    try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+    return resp;
+  } catch (e) { return bad(404); }
+}
 async function handleGeckoCoin(url, env) {
   const sym = String(url.searchParams.get('sym') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16);
   if (!sym) return new Response(JSON.stringify({ error: 'no_symbol' }), { status: 400, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
@@ -10854,6 +10909,7 @@ export default {
     if (url.pathname === '/api/gecko/markets') return handleGeckoMarkets(url, env);
     if (url.pathname === '/api/gecko/global') return handleGeckoGlobal(env);
     if (url.pathname === '/api/gecko/trending') return handleGeckoTrending(env);
+    if (url.pathname === '/api/coinicon') return handleCoinIcon(url, env);
     if (url.pathname === '/api/gecko/coin') return handleGeckoCoin(url, env);
     if (url.pathname === '/api/onchain') return handleOnchain(env);
     if (url.pathname === '/go') return handleExchangeGo(url); // TG signal exchange buttons → deep-link into the native app
