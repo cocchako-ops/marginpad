@@ -2152,13 +2152,16 @@ async function _multiBase(env) {
   return out;
 }
 
-async function handleScreener(env, force) { // force=true (cron warmer) skips caches so the KV floor gets a FRESH compute
+async function handleScreener(env, force, ctx) { // force=true (cron warmer) skips caches so the KV floor gets a FRESH compute
   const cache = caches.default;
   const ck = new Request('https://marginpad.io/__screener_v13');
   if (!force) { try { const hit = await cache.match(ck); if (hit) return hit; } catch (e) {} }
   // colo cache missed → fall back to the GLOBAL KV snapshot the cron keeps warm (caches.default is per-colo, so a cold colo
   // otherwise pays the full ~33-subrequest compute → the "top signals take ages to load" lag). KV is global + instant.
-  if (!force && env && env.STATS) { try { const kv = await env.STATS.get('scr:cache6'); if (kv) { const o = JSON.parse(kv); if (o && o.body && (Date.now() - (o.ts || 0) < 900000)) { const r = new Response(o.body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } }); try { await cache.put(ck, r.clone()); } catch (e) {} return r; } } } catch (e) {} }
+  // STALE-WHILE-REVALIDATE (2026-08-17): the floor is served up to 2h old and refreshed in the background.
+  // Before, anything older than 15 min dropped the visitor onto the ~33-subrequest recompute — that tail was
+  // the screener p95 of ~11s. A screener a few minutes old is worth far more to a user than an 11-second wait.
+  if (!force && env && env.STATS) { try { const kv = await env.STATS.get('scr:cache6'); if (kv) { const o = JSON.parse(kv); const age = Date.now() - (o && o.ts || 0); if (o && o.body && age < 7200000) { if (age > 900000) { try { if (ctx && ctx.waitUntil) ctx.waitUntil(handleScreener(env, true)); } catch (e) {} } const r = new Response(o.body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } }); try { await cache.put(ck, r.clone()); } catch (e) {} return r; } } } catch (e) {} }
   // Multi-exchange (Bybit + OKX + Gate) USDT-perp universe: aggregated USD volume + venue count + median-price cross-check
   let universe = [];
   try {
@@ -4324,13 +4327,22 @@ async function checkOpsAlerts(env) {
       // rule calls for — RE-RUN the budgetSuggest calibration ~2026-08-02 (a different daily peak could make these too
       // tight/loose; the breach message carries -> suggest so drift surfaces on its own). Groups short of n>=30
       // (screener/ws/ws-recon/ux-modal/ux-nav) keep interim ceilings until they qualify.
-      const BUDGET = { 'prices': 155, 'klines': 542, 'screener': 195, 'trade-other': 617, 'trade-open': 540, 'ws': 1200, 'ws-recon': 2500, 'ux-modal': 800, 'ux-chart': 671, 'ux-nav': 1000, 'ux-cold': 12723, 'fps': 265 }; // RECALIBRATED 2026-08-03 from budgetSuggest (all n>=30 groups at once, max(p95x1.5, p95+150)). price-age REMOVED on owner order — structurally blind metric (min-age of the freshest symbol, see CLAUDE.md 2026-07-30), a budget on it pages on noise. trade-open/ws/ws-recon/ux-modal/ux-nav keep interim ceilings (n<30 still).
+      // RECALIBRATED 2026-08-17 from /api/admin/perf budgetSuggest over the WIDE window (the 2026-07-26 set came
+      // from a single 8h afternoon and the note below said to re-run on 08-02). Same formula as before:
+      // max(round(p95 x1.5), p95+150). Groups still short of n>=30 keep their interim ceiling.
+      // fps is NOT here: it is frames-per-second, where HIGHER is better — it is checked as a floor below.
+      const BUDGET = { 'prices': 155, 'klines': 1106, 'screener': 16268, 'trade-other': 1413, 'trade-open': 540, 'ws': 6030, 'ws-recon': 2500, 'ux-modal': 800, 'ux-chart': 5378, 'ux-nav': 1000, 'ux-cold': 11934 }; // RECALIBRATED 2026-08-03 from budgetSuggest (all n>=30 groups at once, max(p95x1.5, p95+150)). price-age REMOVED on owner order — structurally blind metric (min-age of the freshest symbol, see CLAUDE.md 2026-07-30), a budget on it pages on noise. trade-open/ws/ws-recon/ux-modal/ux-nav keep interim ceilings (n<30 still).
       let ring = []; try { ring = JSON.parse(await env.STATS.get('perf:ring') || '[]'); } catch (e) {}
       const cutP = Date.now() - 8 * 3600000, dayP = new Date().toISOString().slice(0, 10); // 8h = full ring retention → ~30+ samples even for the sparse UX beacons
       const byG = {}; for (const it of ring) { if (!it || (it.t || 0) < cutP) continue; (byG[it.g] = byG[it.g] || []).push(+it.ms || 0); }
       const breaches = [];
       for (const g in BUDGET) { const a = byG[g]; if (!a || a.length < 30) continue; a.sort((x, y) => x - y); const p95 = a[Math.max(0, Math.ceil(a.length * 0.95) - 1)]; // nearest-rank (floor() returns the MAX at the low-n boundary)
         if (p95 > BUDGET[g] && !(await env.STATS.get('alrt:perf:' + g + ':' + dayP))) { await env.STATS.put('alrt:perf:' + g + ':' + dayP, '1', { expirationTtl: 100000 }); breaches.push(g + ' p95=' + p95 + 'ms (budget ' + BUDGET[g] + ', n=' + a.length + ') -> suggest ' + Math.max(Math.round(p95 * 1.5), p95 + 150)); } }
+      try { // fps: frames per second, so the alert is a FLOOR (janky client), not a ceiling
+        const fa = byG['fps'];
+        if (fa && fa.length >= 30) { const s = fa.slice().sort((x, y) => x - y); const p05 = s[Math.max(0, Math.ceil(s.length * 0.05) - 1)];
+          if (p05 < 30 && !(await env.STATS.get('alrt:perf:fps:' + dayP))) { await env.STATS.put('alrt:perf:fps:' + dayP, '1', { expirationTtl: 100000 }); breaches.push('fps p05=' + p05 + 'fps (floor 30, n=' + fa.length + ') — the slowest 5% of clients are janky'); } }
+      } catch (e) {}
       if (breaches.length) await tgAdmin(env, '<b>PERFORMANCE BUDGET BREACH</b>\n' + breaches.map(x => '· ' + x).join('\n') + '\nRegression thresholds (calibrated 2026-07-26 = p95 x1.5). A breach = ~50% slower than baseline; set to the -> suggest value only after confirming it is real drift, not a one-off.\nDetail: ops -> Performance tab.');
     } catch (e) {}
     const cfg = await opsCfg(env); if (!cfg.alerts) return;
@@ -10902,7 +10914,7 @@ export default {
     if (url.pathname === '/api/heatmap/pools') return handleHeatPools(url, env);
     if (url.pathname === '/api/now') return new Response(JSON.stringify({ t: Date.now() }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...CORS } }); // ms server clock for the client offset sync — candle boundaries/countdown must NOT trust the device clock (measured: a 46s-skewed device rolled bars into wrong buckets, then the 30s re-sync visibly repainted them)
     if (url.pathname === '/api/prices') return perfWrap(env, ctx, 'prices', 10, () => handlePrices(env, ctx, +url.searchParams.get('prof') || 0));
-    if (url.pathname === '/api/screener') return perfWrap(env, ctx, 'screener', 3, () => handleScreener(env));
+    if (url.pathname === '/api/screener') return perfWrap(env, ctx, 'screener', 3, () => handleScreener(env, false, ctx));
     if (url.pathname === '/api/symbols') return handleSymbols();
     if (url.pathname === '/api/gecko/markets') return handleGeckoMarkets(url, env);
     if (url.pathname === '/api/gecko/global') return handleGeckoGlobal(env);
