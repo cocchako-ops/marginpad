@@ -557,8 +557,9 @@
   .lb-rank.m1{background:rgba(255,215,90,.2);color:var(--amber);}
   .lb-rank.m2{background:rgba(200,205,215,.14);color:#c8cdd7;}
   .lb-rank.m3{background:rgba(205,130,74,.16);color:#cd824a;}
-  .lb-who{font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .lb-pair{font-family:'Space Mono',monospace;font-size:11px;color:var(--faint);flex:0 0 auto;}
+  .lb-who{font-weight:700;flex:1 1 auto;min-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .lb-pair{font-family:'Space Mono',monospace;font-size:11px;color:var(--faint);flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  @media(max-width:430px){.lb-pair{display:none}} /* phone: a truncated "11 trad…" beside a truncated name reads as broken — the name and the score are what matter */
   .lb-roe{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;color:var(--grn);flex:0 0 auto;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
   .lb-empty{padding:26px 14px;text-align:center;color:var(--faint);font-size:13.5px;}
   /* ---------- Leaderboard (tile in band 04, legacy) ---------- */
@@ -1208,7 +1209,7 @@
       lbAfter(el);return;
     }
     var st=((d&&d.topGreen)||[]).slice(0,15);
-    el.innerHTML=st.length?st.map(function(t,i){return lbRow(i,t.who,((+t.trades||0)+' trades this season'),(+t.days||0)+((+t.days||0)===1?' green day':' green days'),'up');}).join('')
+    el.innerHTML=st.length?st.map(function(t,i){return lbRow(i,t.who,((+t.trades||0)+' trades'),(+t.days||0)+((+t.days||0)===1?' day':' days'),'up');}).join('')
       :'<div class="lb-empty">No green days yet this season — close a day in profit (3 or more trades) and you are on the board.</div>';
     lbAfter(el);
   }
