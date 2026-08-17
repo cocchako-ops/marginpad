@@ -74,6 +74,14 @@ ${HREFLANG}
 ${JSONLD}`;
 h = h.replace('<head>', '<head>' + headExtra);
 
+// 3b) CHARSET MUST STAY THE FIRST TAG IN <head>. headExtra above is ~4.7KB, which pushed the charset
+// meta (it sits after <head> in demo-home) past the browser's 1024-byte encoding prescan. Cloudflare
+// serves this asset as bare "text/html" with no charset parameter, so the browser fell back to
+// windows-1252 and rendered every non-ASCII character as mojibake across the whole front page --
+// while the file itself was valid UTF-8. Hoist it back to the top, unconditionally.
+h = h.replace(/[ \t]*<meta charset=[^>]*>\s*/i, '');
+h = h.replace('<head>', '<head>\n<meta charset="UTF-8" />');
+
 // 4) the on-page demo pageview beacon points at /demo-home/ — retarget it to the homepage
 h = h.replace("'/api/track?t=pageview&p=/demo-home/'", "'/api/track?t=pageview&p=/'");
 
