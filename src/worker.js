@@ -3672,19 +3672,14 @@ async function authLogPush(env, kind, request, uid, username) {
     const ip = (request && (request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip'))) || '';
     const cc = (request && request.cf && request.cf.country) || '';
     const did = ((request && getCookie(request, 'mp_did')) || '').slice(0, 16);
-    let ring = []; try { ring = JSON.parse(await env.STATS.get('authlog') || '[]'); } catch (e) {}
-    ring.unshift({ k: kind, u: String(username || '').slice(0, 32), id: String(uid || '').slice(0, 32), ip: String(ip).slice(0, 45), did, cc, ts: Date.now() });
-    await env.STATS.put('authlog', JSON.stringify(ring.slice(0, 500)));
+    await opslogPush(env, 'authlog', { k: kind, u: String(username || '').slice(0, 32), id: String(uid || '').slice(0, 32), ip: String(ip).slice(0, 45), did, cc, ts: Date.now() }, 500, 0);
   } catch (e) {}
 }
 async function evPush(env, request, type, label, pg) {
   try {
     const cc = (request && request.cf && request.cf.country) || '';
     const u = request ? (getCookie(request, 'mp_un') || '').slice(0, 24) : '';
-    let log = []; try { log = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
-    log.unshift({ t: type, e: String(label || '').slice(0, 48), cc, v: 'srv', u, p: pg || '', d: deviceOf((request && request.headers.get('user-agent')) || ''), ts: Date.now() });
-    { const _cut = Date.now() - 10800000; log = log.filter(e => (e.ts || 0) > _cut).slice(0, 800); } // keep ~3h (cap 800) — the Activity tab shows the full ring
-    await env.STATS.put('evlog', JSON.stringify(log), { expirationTtl: 86400 });
+    await opslogPush(env, 'evlog', { t: type, e: String(label || '').slice(0, 48), cc, v: 'srv', u, p: pg || '', d: deviceOf((request && request.headers.get('user-agent')) || ''), ts: Date.now() }, 800, 10800000);
     try { const k = 'ev:' + type; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + 1)); } catch (e) {}
     try { if (env.AE) env.AE.writeDataPoint({ indexes: [type], blobs: ['event', type, String(label || '').slice(0, 90), cc, pg || ''], doubles: [1] }); } catch (e) {}
   } catch (e) {}
@@ -3706,8 +3701,35 @@ async function kvIncFlush(env, batch) {
     try { const c = await env.STATS.getWithMetadata(k); const v = ((c && c.metadata && c.metadata.c) || 0) + e.d; const o = { metadata: { c: v } }; if (e.ttl) o.expirationTtl = e.ttl; await env.STATS.put(k, String(v), o); } catch (e2) {}
   }
 }
+function opslogDo(env) { return env.OPSLOG.get(env.OPSLOG.idFromName('main')); }
+// Single-writer ring push via the OpsLog DO. Fallback = the legacy KV read-modify-write, which can lose
+// rows to concurrent writers — acceptable only as a degraded mode while the DO is unreachable.
+async function opslogPush(env, key, items, cap, cutMs) {
+  const arr = Array.isArray(items) ? items : [items];
+  try {
+    const r = await opslogDo(env).fetch(new Request('https://do/push', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ k: key, items: arr, cap, cutMs }) }));
+    if (r && r.ok) return true; throw new Error('push_' + (r && r.status));
+  } catch (e) {
+    try { let log = []; try { log = JSON.parse(await env.STATS.get(key) || '[]'); } catch (e2) {} log.unshift(...arr.slice().reverse()); if (cutMs) { const c = Date.now() - cutMs; log = log.filter(x => x && (x.ts || 0) > c); } await env.STATS.put(key, JSON.stringify(log.slice(0, cap || 800)), cutMs ? { expirationTtl: 86400 } : undefined); } catch (e3) {}
+    return false;
+  }
+}
+// Ring read via the DO (+ optional online vid list); falls back to the legacy KV keys.
+async function ringRead(env, keys, opts) {
+  try {
+    const r = await opslogDo(env).fetch(new Request('https://do/read?k=' + keys.join(',') + ((opts && opts.online) ? '&on=1' : '') + ((opts && opts.n) ? '&n=' + opts.n : '')));
+    if (!r.ok) throw new Error('read_' + r.status);
+    return await r.json();
+  } catch (e) {
+    const rings = {};
+    for (const k of keys) { try { rings[k] = JSON.parse(await env.STATS.get(k) || '[]'); } catch (e2) { rings[k] = []; } }
+    const out = { rings };
+    if (opts && opts.online) { out.on = []; try { const om = JSON.parse(await env.STATS.get('onlog') || '{}'); const oc = Date.now() - 150000; for (const v in om) if (om[v] > oc) out.on.push(v); } catch (e3) {} }
+    return out;
+  }
+}
 async function kvRingFlush(env, key, items, cap, cutMs, ttl) {
-  try { let log = []; try { log = JSON.parse(await env.STATS.get(key) || '[]'); } catch (e) {} log.unshift(...items.reverse()); if (cutMs) { const c = Date.now() - cutMs; log = log.filter(x => x && (x.ts || 0) > c); } await env.STATS.put(key, JSON.stringify(log.slice(0, cap)), { expirationTtl: ttl || 86400 }); } catch (e) {}
+  await opslogPush(env, key, items, cap, cutMs);
 }
 function kvRingPush(env, ctx, key, entry, cap, cutMs) {
   // `lf` = when this key was last flushed, and it survives the buffer reset. The old rule timed the
@@ -3718,6 +3740,8 @@ function kvRingPush(env, ctx, key, entry, cap, cutMs) {
     if (b.a.length >= 8 || Date.now() - (b.lf || 0) > 8000) { const items = b.a; B[key] = { a: [], t: Date.now(), lf: Date.now() }; if (ctx) ctx.waitUntil(kvRingFlush(env, key, items, cap, cutMs)); } } catch (e) {}
 }
 async function onlogFlush(env, mm) {
+  try { const r = await opslogDo(env).fetch(new Request('https://do/mark', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ m: mm }) })); if (r && r.ok) return; } catch (e) {}
+  // DO unreachable -> legacy KV merge (racy, degraded)
   try { let om = {}; try { om = JSON.parse(await env.STATS.get('onlog') || '{}'); } catch (e) {} Object.assign(om, mm); const cut = Date.now() - 240000; for (const k in om) if (om[k] < cut) delete om[k]; await env.STATS.put('onlog', JSON.stringify(om), { expirationTtl: 900 }); } catch (e) {}
 }
 function onlogMark(env, ctx, vid6) {
@@ -3886,10 +3910,7 @@ async function handleTrack(url, request, env, ctx) {
         }
         kvRingPush(env, ctx, 'evlog', { t: type, e: label, cc: cc, v: evVid.slice(0, 6), u: _u9, p: (p.get('p') || '').slice(0, 48), d: deviceOf(request.headers.get('user-agent') || ''), ts: Date.now() }, 800, 10800000); // A5 batched (cap aligned with evPush 800)
         if (type === 'exchange') { // money clicks get their OWN ring (no TTL) so the Revenue tab keeps the last 50 regardless of event noise
-          try { let mc = []; try { mc = JSON.parse(await env.STATS.get('mclog') || '[]'); } catch (e) {}
-            mc.unshift({ ts: Date.now(), e: label, p: (p.get('p') || '').slice(0, 60), cc: cc, u: _u9, src: _evSrc(p) });
-            if (mc.length > 50) mc = mc.slice(0, 50);
-            await env.STATS.put('mclog', JSON.stringify(mc)); } catch (e) {}
+          try { await opslogPush(env, 'mclog', { ts: Date.now(), e: label, p: (p.get('p') || '').slice(0, 60), cc: cc, u: _u9, src: _evSrc(p) }, 50, 0); } catch (e) {}
         }
       } catch (e) {}
     }
@@ -4030,10 +4051,7 @@ async function drainXpBoostEvents(env) {
     const r = await usersDO(env, '/xpboostev', {});
     const evs = (r && r.events) || [];
     if (!evs.length) return;
-    let log = []; try { log = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
-    for (const ev of evs) log.unshift({ t: 'xpboost', e: String(ev.note || '').slice(0, 48), cc: '', v: 'srv', u: String(ev.username || '').slice(0, 24), p: '/paper-trade', d: '', ts: +ev.ts || Date.now() });
-    const _cut = Date.now() - 10800000; log = log.filter(e => (e.ts || 0) > _cut).slice(0, 800);
-    await env.STATS.put('evlog', JSON.stringify(log), { expirationTtl: 86400 });
+    await opslogPush(env, 'evlog', evs.map(ev => ({ t: 'xpboost', e: String(ev.note || '').slice(0, 48), cc: '', v: 'srv', u: String(ev.username || '').slice(0, 24), p: '/paper-trade', d: '', ts: +ev.ts || Date.now() })), 800, 10800000);
     try { const k = 'ev:xpboost'; await env.STATS.put(k, String((+(await env.STATS.get(k)) || 0) + evs.length)); } catch (e) {}
   } catch (e) {}
 }
@@ -4866,12 +4884,13 @@ async function handleStats(url, env, request, ctx) {
     const gc = async k => { try { const r = await env.STATS.getWithMetadata(k); return (r && r.metadata && r.metadata.c) || (r && r.value ? parseInt(r.value, 10) : 0) || 0; } catch (e) { return 0; } };
     const day = new Date().toISOString().slice(0, 10);
     const [uvTod, uvTot, pvTot, affTot, affTod, botTod, pvTod2, newTod, retTod] = await Promise.all([gc('uv:day:' + day), gc('uv:total'), gc('pv:total'), gc('aff:total'), gc('aff:day:' + day), gc('botf:day:' + day), gc('pv:day:' + day), gc('uv:new:' + day), gc('uv:ret:' + day)]);
-    let pvl = [], evl = []; try { pvl = JSON.parse(await env.STATS.get('pvlog') || '[]'); } catch (e) {} try { evl = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
+    const rr9 = await ringRead(env, ['pvlog', 'evlog'], { online: true });
+    let pvl = rr9.rings.pvlog || [], evl = rr9.rings.evlog || [];
     const now = Date.now(), recent = new Set();
     // "online" = DISTINCT posetioci sa OTVORENIM tabom u zadnjih 150s. Izvor = onlog mapa (vid6 -> lastSeen),
     // koju pune pageview + hb heartbeat (60s dok je tab vidljiv). Time se broje i ljudi koji 20 min gledaju
     // chart bez ijednog novog pageview-a (stari 5-min pvlog metod ih je gubio, a bounce-ove drzao predugo).
-    try { const om = JSON.parse(await env.STATS.get('onlog') || '{}'); for (const ok3 in om) if (now - om[ok3] < 150000) recent.add(ok3); } catch (e) {}
+    (rr9.on || []).forEach(v9 => recent.add(v9));
     pvl.forEach(v => { if (v && v.v && now - v.ts < 150000) recent.add(v.v); });
     return new Response(JSON.stringify({ online: recent.size, uvToday: uvTod, uvTotal: uvTot, pv: pvTot, aff: affTot, revToday: Math.round(affTod * 0.45), botToday: botTod, pvToday: pvTod2, newToday: newTod, retToday: retTod, affToday: affTod, visitors: pvl.slice(0, 300), feed: evl.slice(0, 400), ts: now }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
   }
@@ -5054,7 +5073,7 @@ async function handleStats(url, env, request, ctx) {
   const jsErrList = jsErrRows.length ? `<h2 style="font-size:14px;margin-top:14px">Broken pages — exactly what broke <span>(last 7 days, newest first)</span></h2><div class="feedcap">Each client crash with its page and error message. The same message repeating from one page is usually <b>one</b> visitor stuck in a broken state (it re-reports on every page load), not many visitors.</div><div class="list">${jsErrRows.map(r => `<div class="fe"><span class="fe-t">${esc(flag(r.cc) || '')} <code style="color:#ff8c7a">${esc(r.page || '/')}</code> — ${esc(r.msg || '')}</span><span class="fe-a">${esc(String(r.timestamp || '').slice(5, 16))}</span></div>`).join('')}</div>` : '';
   const errHtml = `<div class="feedcap">A <b>broken page</b> = a visitor's browser hit a script error, so they may have seen a broken or frozen page. <b>0 is healthy.</b> Server errors = our server failed to answer a request.</div><div class="cards" style="grid-template-columns:repeat(4,1fr)">${kcard(N(errToday), 'Broken pages today', spark(errDays), dpc(errToday, errYd))}${kcard(N(errTotal), 'Broken pages total')}${kcard(N(srvToday), 'Server errors today')}${kcard(N(srvErrTotal), 'Server errors total')}</div>` + jsErrList + srvErrList + ((errMsgs.length || errBrowsers.length) ? `<div class="two"><div><h2 style="font-size:14px;margin-top:14px">Top error messages</h2><div class="list">${barlist(errMsgs)}</div></div><div><h2 style="font-size:14px;margin-top:14px">Crashes by browser</h2><div class="list">${barlist(errBrowsers)}</div></div></div>` : (srvErrList ? '' : `<div class="sl" style="margin-top:8px">No broken pages recorded — every visitor's page has loaded cleanly. ✅</div>`));
   // live activity feed (ring buffer) + per-exchange revenue + ordered engagement metrics
-  let evlog = []; try { evlog = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
+  let evlog = []; try { evlog = (await ringRead(env, ['evlog'])).rings.evlog || []; } catch (e) {}
   // latest community posts for the overview (fail-soft; the anonymous feed is edge-cached 20s so this is cheap)
   let commPosts = [];
   try { if (env.COMM) { const cr = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/feed?sort=new')); const cd = await cr.json(); commPosts = ((cd && cd.posts) || []).slice(0, 8); } } catch (e) {}
@@ -5077,7 +5096,7 @@ async function handleStats(url, env, request, ctx) {
       }).join('') + '</div>' + (botUserList.length > 80 ? '<div class="cap">showing 80 of ' + botUserList.length + '</div>' : '')
     : '';
   // last visitors — who (country) + from which source (referrer), most recent 5
-  let pvlog = []; try { pvlog = JSON.parse(await env.STATS.get('pvlog') || '[]'); } catch (e) {}
+  let pvlog = []; try { pvlog = (await ringRead(env, ['pvlog'])).rings.pvlog || []; } catch (e) {}
   const ccName = { US: 'United States', GB: 'UK', DE: 'Germany', FR: 'France', RS: 'Serbia', ES: 'Spain', BR: 'Brazil', RU: 'Russia', TR: 'Turkey', IN: 'India', CN: 'China', JP: 'Japan', KR: 'Korea', NL: 'Netherlands', CA: 'Canada', AU: 'Australia', IT: 'Italy', PL: 'Poland', UA: 'Ukraine', ID: 'Indonesia', VN: 'Vietnam', PH: 'Philippines', NG: 'Nigeria', MX: 'Mexico', AR: 'Argentina', PT: 'Portugal' };
   const srcName = s => { if (!s || s === 'direct') return 'Direct (typed the URL or bookmark)'; if (/syndicatedsearch|googlesyndication|googleadservices|doubleclick/.test(s)) return 'Google Ads / search partner'; if (/google\./.test(s)) return 'Google search'; if (/bing\./.test(s)) return 'Bing'; if (/yahoo/.test(s)) return 'Yahoo'; if (/yandex/.test(s)) return 'Yandex'; if (/duckduckgo/.test(s)) return 'DuckDuckGo'; if (/ecosia/.test(s)) return 'Ecosia'; if (/brave/.test(s)) return 'Brave Search'; if (/t\.co|twitter|x\.com/.test(s)) return 'X / Twitter'; if (/reddit/.test(s)) return 'Reddit'; if (/youtu/.test(s)) return 'YouTube'; if (/facebook|fb\./.test(s)) return 'Facebook'; if (/instagram/.test(s)) return 'Instagram'; if (/tiktok/.test(s)) return 'TikTok'; if (/linkedin/.test(s)) return 'LinkedIn'; if (/t\.me|telegram/.test(s)) return 'Telegram'; if (/discord/.test(s)) return 'Discord'; return s; };
   const vcol = v => { let h = 0; const s = String(v || ''); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return 'hsl(' + (h % 360) + ',70%,62%)'; };
@@ -7811,10 +7830,7 @@ async function botLog(env, cmd, from) {
   try {
     if (!env.STATS || !cmd || cmd === 'msg') return;
     const u = String((from && (from.username || from.first_name)) || '').replace(/[^a-zA-Z0-9_ ]/g, '').slice(0, 24);
-    let log = []; try { log = JSON.parse(await env.STATS.get('evlog') || '[]'); } catch (e) {}
-    log.unshift({ t: 'bot', e: cmd.slice(0, 24), cc: '', v: 'srv', u, p: '', d: 'Telegram', ts: Date.now() });
-    const cut = Date.now() - 10800000; log = log.filter(e => (e.ts || 0) > cut).slice(0, 600);
-    await env.STATS.put('evlog', JSON.stringify(log), { expirationTtl: 86400 });
+    await opslogPush(env, 'evlog', { t: 'bot', e: cmd.slice(0, 24), cc: '', v: 'srv', u, p: '', d: 'Telegram', ts: Date.now() }, 800, 10800000);
   } catch (e) {}
 }
 // ---- Leaderboard v2 (3 boards, top-15, prizes for top-5) launches this Monday ----
@@ -8244,7 +8260,7 @@ async function handleTgbotStats(env) {
   const gc = async k => { try { const r = await env.STATS.getWithMetadata(k); return (r && r.metadata && r.metadata.c) || (r && r.value ? +r.value : 0) || 0; } catch (e) { return 0; } };
   const botMsg = await gc('bot:msg'), botUsers = await gc('bot:users');
   let premReqs = []; try { premReqs = JSON.parse(await env.STATS.get('tg:premreq') || '[]'); } catch (e) {}
-  let activity = []; try { activity = (JSON.parse(await env.STATS.get('evlog') || '[]')).filter(e => e.t === 'bot').slice(0, 40).map(e => ({ e: e.e, u: e.u || '', ts: e.ts })); } catch (e) {}
+  let activity = []; try { activity = ((await ringRead(env, ['evlog'])).rings.evlog || []).filter(e => e.t === 'bot').slice(0, 40).map(e => ({ e: e.e, u: e.u || '', ts: e.ts })); } catch (e) {}
   const TIERS = [['fast', '⚡ Fast'], ['balanced', '⚖️ Balanced'], ['premium', '💎 Premium'], ['free', '🆓 Free'], ['news', '📰 News']];
   const channels = [];
   for (const [tier, label] of TIERS) {
@@ -11310,8 +11326,8 @@ export default {
       const ck = new Request('https://marginpad.io/__adm_revenue_v4');
       // latest money clicks are read fresh on EVERY call (one KV get) and appended to the cached AE core
       let mclicks = [];
-      try { mclicks = JSON.parse(await env.STATS.get('mclog') || '[]').slice(0, 30); } catch (e) {}
-      if (!mclicks.length) try { const ev = JSON.parse(await env.STATS.get('evlog') || '[]'); mclicks = ev.filter(x => x && x.t === 'exchange').sort((a, b2) => (b2.ts || 0) - (a.ts || 0)).slice(0, 30).map(x => ({ ts: x.ts, e: x.e || '', p: x.p || '/', cc: x.cc || '', u: x.u || '' })); } catch (e) {}
+      try { mclicks = ((await ringRead(env, ['mclog'])).rings.mclog || []).slice(0, 30); } catch (e) {}
+      if (!mclicks.length) try { const ev = (await ringRead(env, ['evlog'])).rings.evlog || []; mclicks = ev.filter(x => x && x.t === 'exchange').sort((a, b2) => (b2.ts || 0) - (a.ts || 0)).slice(0, 30).map(x => ({ ts: x.ts, e: x.e || '', p: x.p || '/', cc: x.cc || '', u: x.u || '' })); } catch (e) {}
       const withClicks = (txt) => { try { const core = JSON.parse(txt); core.clicks = mclicks; return JSON.stringify(core); } catch (e) { return txt; } };
       try { const hit = await caches.default.match(ck); if (hit) return new Response(withClicks(await hit.text()), { headers: jh2 }); } catch (e) {}
       const [byDayEx, byPage, byEx, byCc, bySrc, pvBySrc] = await Promise.all([
@@ -11365,14 +11381,14 @@ export default {
       const nd = new Date(); const dayStart = Date.UTC(nd.getUTCFullYear(), nd.getUTCMonth(), nd.getUTCDate());
       try {
         if (k === 'visitors') { // per-visitor landing (first pageview today) + country + device, from the pvlog ring (last ~400 pv / 3h)
-          let pv = []; try { pv = JSON.parse(await env.STATS.get('pvlog') || '[]'); } catch (e) {}
+          let pv = []; try { pv = (await ringRead(env, ['pvlog'])).rings.pvlog || []; } catch (e) {}
           const today = pv.filter(x => x && x.ts >= dayStart); const byV = new Map();
           for (const x of today) { const c = byV.get(x.v); if (!c || x.ts < c.ts) byV.set(x.v, x); } // earliest = their landing
           const rows = [...byV.values()].sort((a, b) => b.ts - a.ts).slice(0, 150).map(x => ({ cc: x.cc || '', path: x.p || '/', dev: x.d || '', u: x.u || '', src: (x.s && x.s !== 'direct') ? x.s : (x.s0 ? x.s0 + ' (earlier visit)' : (x.s || '')), ts: x.ts }));
           return new Response(JSON.stringify({ kind: k, rows, note: 'landing page per visitor · from the last ~3h of pageviews' }), { headers: jh });
         }
         if (k === 'affiliate') { // today's exchange link-outs: exchange + page + country + who, from the mclog ring
-          let mc = []; try { mc = JSON.parse(await env.STATS.get('mclog') || '[]'); } catch (e) {}
+          let mc = []; try { mc = (await ringRead(env, ['mclog'])).rings.mclog || []; } catch (e) {}
           const rows = mc.filter(x => x && x.ts >= dayStart).map(x => ({ ex: x.e || '', path: x.p || '', cc: x.cc || '', u: x.u || '', ts: x.ts }));
           return new Response(JSON.stringify({ kind: k, rows }), { headers: jh });
         }
@@ -11542,7 +11558,7 @@ export default {
       const vpnCount = rows.filter(r => r.vpn).length;
       // auth timeline (login/signup/logout with ip + device id) + which devices/IPs carry MULTIPLE accounts —
       // the "forced logout then different account" multi-accounting pattern reads directly off this list
-      let authlog = []; try { authlog = JSON.parse(await env.STATS.get('authlog') || '[]'); } catch (e) {}
+      let authlog = []; try { authlog = (await ringRead(env, ['authlog'])).rings.authlog || []; } catch (e) {}
       const devAccts = {}, ipAccts = {};
       for (const e of authlog) {
         if (e.did && e.id) (devAccts[e.did] = devAccts[e.did] || new Set()).add(String(e.id));
@@ -11877,13 +11893,12 @@ export default {
       const who = String(url.searchParams.get('user') || '').toLowerCase();
       const n = Math.min(400, Math.max(10, +url.searchParams.get('n') || 120));
       let evlog = [], pvlog = [];
-      try { evlog = JSON.parse((await env.STATS.get('evlog')) || '[]'); } catch (e) {}
-      try { pvlog = JSON.parse((await env.STATS.get('pvlog')) || '[]'); } catch (e) {}
+      try { const rr8 = await ringRead(env, ['evlog', 'pvlog']); evlog = rr8.rings.evlog || []; pvlog = rr8.rings.pvlog || []; } catch (e) {}
       const mine = who ? evlog.filter(x => String(x.u || '').toLowerCase() === who) : [];
       const minePv = who ? pvlog.filter(x => String(x.u || '').toLowerCase() === who) : [];
       let uev = null;
       if (who && env.USERS) { try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/uevdiag?name=' + encodeURIComponent(who) + '&n=' + n)); uev = await r.json(); } catch (e) {} }
-      const tailN = Math.min(60, Math.max(0, +url.searchParams.get('tail') || 0));
+      const tailN = Math.min(800, Math.max(0, +url.searchParams.get('tail') || 0));
       const tail = tailN ? { pv: pvlog.slice(0, tailN), ev: evlog.slice(0, tailN) } : null;
       const byType = {}; evlog.forEach(x => { byType[x.t] = (byType[x.t] || 0) + 1; });
       const withUser = evlog.filter(x => x.u).length;
@@ -11958,7 +11973,7 @@ export default {
       const srvAll = []; for (const g in by) if (g !== 'ws' && g !== 'fps') srvAll.push(...by[g]);
       const hk = new Date().toISOString().slice(0, 13);
       const errHr = (+(await env.STATS.get('err:hr:' + hk)) || 0), srvErrHr = (+(await env.STATS.get('srverr:hr:' + hk)) || 0);
-      let online = 0; try { const om = JSON.parse(await env.STATS.get('onlog') || '{}'); const oc = Date.now() - 150000; for (const k in om) if (om[k] > oc) online++; } catch (e) {}
+      let online = 0; try { online = ((await ringRead(env, [], { online: true })).on || []).length; } catch (e) {}
       let sessDo = null; try { sessDo = JSON.parse(await env.STATS.get('sessdo:stat') || 'null'); } catch (e) {} // UserStore session-DO health (computed by the */10 cron; read cheaply here)
       let cronErrs = []; try { const rows = (await aeQuery(env, `SELECT blob2 AS task, SUM(_sample_interval) AS n, max(blob3) AS msg FROM marginpad_events WHERE blob1='cronerr' AND timestamp > NOW() - INTERVAL '24' HOUR GROUP BY task ORDER BY n DESC`)) || []; cronErrs = rows.map(r => ({ task: r.task || '?', n: +r.n || 0, msg: r.msg || '' })); } catch (e) {} // bg() cron-task failures (24h) — VISIBLE on the dashboard even while TG is down (else the AE rows are a metric nobody opens)
       let preload = null; try { const _ph = Math.min(168, Math.max(1, +url.searchParams.get('ph') || 24)); const rows = (await aeQuery(env, `SELECT blob2 AS k, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='preload' AND timestamp > NOW() - INTERVAL '${_ph}' HOUR GROUP BY k`)) || []; const g = k => { const r = rows.find(x => x.k === k); return r ? Math.round(+r.n) : 0; }; const hn = g('hit'), mn = g('miss'), fn = g('fired'), tot = hn + mn + fn; if (tot) preload = { hit: hn, miss: mn, fired: fn, total: tot, missRate: +(mn / tot * 100).toFixed(1), firedRate: +(fn / tot * 100).toFixed(1), usefulRate: +(hn / tot * 100).toFixed(1) }; } catch (e) {} // hit=useful pickup, miss=drift (inline URL/symbol diverged from loadKlines), fired=loadKlines never ran (bounce-before-boot). missRate+firedRate together = share of preloads spent for nothing — watch both, not missRate alone.
@@ -12600,6 +12615,71 @@ function extractEmailText(raw) {
 // memes can share a ticker — the mint is the identity; display name/logo live in meta JSON). Cost basis INCLUDES
 // fees, so PnL is honest. The WORKER computes the effective fill price (live price + slippage) and fee and passes
 // them in — this DO is the atomic ledger, never a price oracle. Single instance 'main'; in nightlyBackup.
+// ---- OpsLog DO: the ops activity rings (pvlog/evlog/mclog/authlog) + the online map ----
+// One instance ('main'), so ring writes are serialized: the KV era's read-modify-write races (concurrent
+// flushes clobbering each other, rows vanishing from the live feed — measured 2026-08-17) cannot happen.
+// Feed data is ephemeral (3h) and ops-only; KV stays as the fallback path when this DO is unreachable.
+export class OpsLog {
+  constructor(state, env) {
+    this.state = state; this.env = env;
+    const s = state.storage.sql;
+    s.exec('CREATE TABLE IF NOT EXISTS ring(id INTEGER PRIMARY KEY AUTOINCREMENT, k TEXT, ts INTEGER, j TEXT)');
+    try { s.exec('CREATE INDEX IF NOT EXISTS ring_k ON ring(k, ts)'); } catch (e) {}
+    s.exec('CREATE TABLE IF NOT EXISTS onmap(vid TEXT PRIMARY KEY, ts INTEGER)');
+    s.exec('CREATE TABLE IF NOT EXISTS meta(k TEXT PRIMARY KEY, v TEXT)');
+  }
+  rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
+  j(o, s2 = 200) { return new Response(JSON.stringify(o), { status: s2, headers: { 'content-type': 'application/json' } }); }
+  async seed() { // one-time import of the legacy KV rings, so the feed is not blank for 3h after cut-over
+    if (this._seeded || this.rows("SELECT v FROM meta WHERE k='seeded'")[0]) { this._seeded = true; return; }
+    this._seeded = true;
+    try { this.state.storage.sql.exec("INSERT OR REPLACE INTO meta(k,v) VALUES('seeded','1')"); } catch (e) {}
+    for (const [k, cap] of [['pvlog', 400], ['evlog', 800], ['mclog', 50], ['authlog', 500]]) {
+      try {
+        const arr = JSON.parse((await this.env.STATS.get(k)) || '[]');
+        for (const it of arr.slice(0, cap)) this.state.storage.sql.exec('INSERT INTO ring(k,ts,j) VALUES(?,?,?)', k, +(it && it.ts) || 0, JSON.stringify(it));
+      } catch (e) {}
+    }
+  }
+  trim(k, cap, cutMs) {
+    if (cutMs) try { this.state.storage.sql.exec('DELETE FROM ring WHERE k=? AND ts<?', k, Date.now() - cutMs); } catch (e) {}
+    if (cap) try { this.state.storage.sql.exec('DELETE FROM ring WHERE k=? AND id NOT IN (SELECT id FROM ring WHERE k=? ORDER BY ts DESC, id DESC LIMIT ?)', k, k, cap); } catch (e) {}
+  }
+  async fetch(request) {
+    const url = new URL(request.url); const path = url.pathname;
+    await this.seed();
+    if (path === '/push' && request.method === 'POST') {
+      let b = {}; try { b = await request.json(); } catch (e) {}
+      const k = String(b.k || '').replace(/[^a-z]/g, '').slice(0, 24);
+      if (!k) return this.j({ error: 'k_required' }, 400);
+      const items = Array.isArray(b.items) ? b.items.slice(0, 64) : [];
+      for (const it of items) { try { this.state.storage.sql.exec('INSERT INTO ring(k,ts,j) VALUES(?,?,?)', k, +(it && it.ts) || Date.now(), JSON.stringify(it)); } catch (e) {} }
+      this.trim(k, +b.cap || 800, +b.cutMs || 0);
+      return this.j({ ok: 1, n: items.length });
+    }
+    if (path === '/mark' && request.method === 'POST') { // online heartbeats: vid -> lastSeen
+      let b = {}; try { b = await request.json(); } catch (e) {}
+      const m = (b && b.m) || {}; const now = Date.now();
+      for (const vid in m) { try { this.state.storage.sql.exec('INSERT INTO onmap(vid,ts) VALUES(?,?) ON CONFLICT(vid) DO UPDATE SET ts=excluded.ts', String(vid).slice(0, 16), +m[vid] || now); } catch (e) {} }
+      try { this.state.storage.sql.exec('DELETE FROM onmap WHERE ts<?', now - 240000); } catch (e) {}
+      return this.j({ ok: 1 });
+    }
+    if (path === '/read') { // ?k=pvlog,evlog[&n=N][&on=1] -> { rings:{k:[newest..oldest]}, on:[vids] }
+      const keys = String(url.searchParams.get('k') || '').split(',').map(x => x.trim()).filter(Boolean).slice(0, 6);
+      const n = Math.min(1000, +url.searchParams.get('n') || 0) || 0;
+      const DEF = { pvlog: 400, evlog: 800, mclog: 50, authlog: 500 };
+      const rings = {};
+      for (const k of keys) {
+        rings[k] = this.rows('SELECT j FROM ring WHERE k=? ORDER BY ts DESC, id DESC LIMIT ?', k, n || DEF[k] || 400)
+          .map(r => { try { return JSON.parse(r.j); } catch (e) { return null; } }).filter(Boolean);
+      }
+      const out = { rings };
+      if (url.searchParams.get('on')) out.on = this.rows('SELECT vid FROM onmap WHERE ts>?', Date.now() - 150000).map(r => r.vid);
+      return this.j(out);
+    }
+    return this.j({ error: 'not_found' }, 404);
+  }
+}
 export class SpotStore {
   constructor(state, env) {
     this.state = state; this.env = env;

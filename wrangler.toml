@@ -92,6 +92,18 @@ class_name = "SpotStore"
 tag = "v5"
 new_sqlite_classes = ["SpotStore"]
 
+# Ops activity rings (2026-08-17): pvlog/evlog/mclog/authlog + online map moved off KV. Concurrent
+# read-modify-write flushes from different isolates/colos clobbered each other (KV is last-write-wins,
+# cross-colo reads up to 60s stale) — rows measurably VANISHED from the live activity feed. A single
+# DO instance serializes the writes; KV remains the fallback path when the DO is unreachable.
+[[durable_objects.bindings]]
+name = "OPSLOG"
+class_name = "OpsLog"
+
+[[migrations]]
+tag = "v6"
+new_sqlite_classes = ["OpsLog"]
+
 # ============================================================================
 # STAGING ENVIRONMENT (deploy: wrangler deploy --env staging → separate script
 # `marginpad-staging`, so ALL Durable Objects are physically separate instances).
@@ -150,3 +162,6 @@ class_name = "Community"
 [[env.staging.durable_objects.bindings]]
 name = "SPOT"
 class_name = "SpotStore"
+[[env.staging.durable_objects.bindings]]
+name = "OPSLOG"
+class_name = "OpsLog"
