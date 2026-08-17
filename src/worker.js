@@ -11825,6 +11825,23 @@ export default {
       if (!stored || adminCookieHash(request, 'mp_pmail') !== stored) return new Response(adminLoginHTML('Private inbox', !stored, '/api/admin/pmail/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
       return new Response(PMAIL_HTML, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
     }
+    if (url.pathname === '/api/admin/uidlookup' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // whose Bybit UID is this? (read-only)
+      const uids = String(url.searchParams.get('uid') || url.searchParams.get('uids') || '');
+      if (url.searchParams.get('all')) {
+        let rows = [];
+        try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/uidall')); const j = await r.json(); rows = (j && j.rows) || []; } catch (e) {}
+        return new Response(JSON.stringify({ rows }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+      }
+      if (!uids) return new Response(JSON.stringify({ error: 'uid_required' }), { status: 400, headers: { 'content-type': 'application/json' } });
+      let found = {};
+      try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/uidfind?uids=' + encodeURIComponent(uids))); const j = await r.json(); found = (j && j.found) || {}; } catch (e) {}
+      const accts = new Set(); for (const k in found) (found[k] || []).forEach(w => { if (w.acct) accts.add(String(w.acct).replace(/^u:/, '')); });
+      const names = {};
+      for (const a of accts) { try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/roleof?uid=' + encodeURIComponent(a) + '&full=1')); const jj = await rr.json(); if (jj) names[a] = { username: jj.username || '', created: jj.created || 0, status: jj.status || '' }; } catch (e) {} }
+      const out = {};
+      for (const k in found) out[k] = (found[k] || []).map(w => { const id = String(w.acct || '').replace(/^u:/, ''); return { ...w, username: (names[id] && names[id].username) || '', accountStatus: (names[id] && names[id].status) || '' }; });
+      return new Response(JSON.stringify({ uids: out }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/actdiag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // read-only: compare the three activity sources for one user
       const who = String(url.searchParams.get('user') || '').toLowerCase();
       const n = Math.min(400, Math.max(10, +url.searchParams.get('n') || 120));
@@ -13117,6 +13134,36 @@ export class RewardLedger {
       sql.exec('UPDATE accounts SET balance=0, payout_addr=? WHERE address=?', addr, acct); // move credit to the pending payout queue; remember the wallet
       this.log('withdraw', acct, cc, dev, amt + bonusC);
       return this.j({ ok: true, amount: amt / 100, bonus: bonusC / 100, total: (amt + bonusC) / 100, level: xLvl, id, status: 'pending' });
+    }
+    if (path === '/uidall') { // every sign-up UID on record, newest first
+      let rows = [];
+      try { rows = this.rows("SELECT acct, exchange, uid, status, ts, cc FROM exsign WHERE uid<>'' ORDER BY ts DESC LIMIT 400"); } catch (e) {}
+      return this.j({ rows: rows.map(r => ({ acct: r.acct || '', exchange: r.exchange || '', uid: r.uid || '', status: r.status || '', ts: r.ts, cc: r.cc || '' })) });
+    }
+    if (path === '/uidfind') { // resolve one or more Bybit UIDs to the accounts that withdrew with them
+      const list = String(url.searchParams.get('uids') || '').split(',').map(x => x.replace(/[^0-9a-zA-Z:_-]/g, '').slice(0, 40)).filter(Boolean).slice(0, 40);
+      const out = {};
+      for (const uid of list) {
+        const hits = [];
+        try { this.rows('SELECT acct, address, amount, status, ts FROM withdrawals WHERE address=? ORDER BY ts DESC LIMIT 20', uid)
+          .forEach(r => hits.push({ src: 'withdrawal', acct: r.acct || r.address || '', usd: (r.amount || 0) / 100, status: r.status, ts: r.ts })); } catch (e) {}
+        try { this.rows('SELECT acct, exchange, amount, status, ts, decided_ts, note, cc FROM exsign WHERE uid=? ORDER BY ts DESC LIMIT 20', uid)
+          .forEach(r => hits.push({ src: 'signup', acct: r.acct || '', exchange: r.exchange || '', usd: (r.amount || 0) / 100, status: r.status, ts: r.ts, decidedTs: r.decided_ts || 0, note: r.note || '', cc: r.cc || '' })); } catch (e) {}
+        if (!hits.length) { const like = '%' + uid + '%';
+          try { this.rows("SELECT acct, exchange, uid, amount, status, ts, note, cc FROM exsign WHERE uid LIKE ? OR note LIKE ? ORDER BY ts DESC LIMIT 10", like, like)
+            .forEach(r => hits.push({ src: 'signup~', acct: r.acct || '', exchange: r.exchange || '', raw: r.uid || '', usd: (r.amount || 0) / 100, status: r.status, ts: r.ts, note: (r.note || '').slice(0, 80), cc: r.cc || '' })); } catch (e) {}
+          try { this.rows('SELECT acct, address, amount, status, ts FROM withdrawals WHERE address LIKE ? ORDER BY ts DESC LIMIT 10', like)
+            .forEach(r => hits.push({ src: 'withdrawal~', acct: r.acct || '', raw: r.address || '', usd: (r.amount || 0) / 100, status: r.status, ts: r.ts })); } catch (e) {}
+          try { this.rows('SELECT ts, email, address, message FROM support WHERE message LIKE ? ORDER BY ts DESC LIMIT 10', like)
+            .forEach(r => hits.push({ src: 'support', acct: r.address || '', email: r.email || '', ts: r.ts, note: (r.message || '').slice(0, 120) })); } catch (e) {}
+          try { this.rows('SELECT address, note, ts FROM notes WHERE note LIKE ? LIMIT 10', like)
+            .forEach(r => hits.push({ src: 'adminnote', acct: r.address || '', ts: r.ts, note: (r.note || '').slice(0, 120) })); } catch (e) {}
+          try { this.rows('SELECT address, message, ts FROM msgs WHERE message LIKE ? LIMIT 10', like)
+            .forEach(r => hits.push({ src: 'usermsg', acct: r.address || '', ts: r.ts, note: (r.message || '').slice(0, 120) })); } catch (e) {}
+        }
+        out[uid] = hits;
+      }
+      return this.j({ found: out });
     }
     if (path === '/wdlist') { // Withdrawals tab: every withdrawal enriched with the owning account's ip/cc/dev/claims/balance
       const rows = this.rows("SELECT w.id,w.address,w.acct,w.amount,w.bonus,w.status,w.ts,w.paid_ts,w.txid,w.note,a.ip,a.cc,a.dev,a.claims,a.balance,a.banned FROM withdrawals w LEFT JOIN accounts a ON a.address=COALESCE(w.acct,w.address) ORDER BY w.ts DESC LIMIT 500");
