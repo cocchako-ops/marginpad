@@ -3710,8 +3710,12 @@ async function kvRingFlush(env, key, items, cap, cutMs, ttl) {
   try { let log = []; try { log = JSON.parse(await env.STATS.get(key) || '[]'); } catch (e) {} log.unshift(...items.reverse()); if (cutMs) { const c = Date.now() - cutMs; log = log.filter(x => x && (x.ts || 0) > c); } await env.STATS.put(key, JSON.stringify(log.slice(0, cap)), { expirationTtl: ttl || 86400 }); } catch (e) {}
 }
 function kvRingPush(env, ctx, key, entry, cap, cutMs) {
-  try { const B = globalThis.__ringB = globalThis.__ringB || {}; const b = B[key] = B[key] || { a: [], t: Date.now() }; b.a.push(entry);
-    if (b.a.length >= 8 || Date.now() - b.t > 15000) { const items = b.a; B[key] = { a: [], t: Date.now() }; if (ctx) ctx.waitUntil(kvRingFlush(env, key, items, cap, cutMs)); } } catch (e) {}
+  // `lf` = when this key was last flushed, and it survives the buffer reset. The old rule timed the
+  // buffer's own age, which is only ever re-checked by a LATER push — so a one-page visit sat in an
+  // isolate nothing else touched and was lost. Timing from the last flush means a fresh or idle
+  // isolate writes its first entry immediately (lf = 0), while a burst still batches to 8.
+  try { const B = globalThis.__ringB = globalThis.__ringB || {}; const b = B[key] = B[key] || { a: [], t: Date.now(), lf: 0 }; b.a.push(entry);
+    if (b.a.length >= 8 || Date.now() - (b.lf || 0) > 8000) { const items = b.a; B[key] = { a: [], t: Date.now(), lf: Date.now() }; if (ctx) ctx.waitUntil(kvRingFlush(env, key, items, cap, cutMs)); } } catch (e) {}
 }
 async function onlogFlush(env, mm) {
   try { let om = {}; try { om = JSON.parse(await env.STATS.get('onlog') || '{}'); } catch (e) {} Object.assign(om, mm); const cut = Date.now() - 240000; for (const k in om) if (om[k] < cut) delete om[k]; await env.STATS.put('onlog', JSON.stringify(om), { expirationTtl: 900 }); } catch (e) {}
@@ -11879,9 +11883,11 @@ export default {
       const minePv = who ? pvlog.filter(x => String(x.u || '').toLowerCase() === who) : [];
       let uev = null;
       if (who && env.USERS) { try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/uevdiag?name=' + encodeURIComponent(who) + '&n=' + n)); uev = await r.json(); } catch (e) {} }
+      const tailN = Math.min(60, Math.max(0, +url.searchParams.get('tail') || 0));
+      const tail = tailN ? { pv: pvlog.slice(0, tailN), ev: evlog.slice(0, tailN) } : null;
       const byType = {}; evlog.forEach(x => { byType[x.t] = (byType[x.t] || 0) + 1; });
       const withUser = evlog.filter(x => x.u).length;
-      return new Response(JSON.stringify({ now: Date.now(),
+      return new Response(JSON.stringify({ tail, now: Date.now(),
         evlog: { total: evlog.length, withUsername: withUser, oldest: evlog.length ? evlog[evlog.length - 1].ts : 0, byType, mine: mine.slice(0, n) },
         pvlog: { total: pvlog.length, withUsername: pvlog.filter(x => x.u).length, withS0: pvlog.filter(x => x.s0).length, mine: minePv.slice(0, n) },
         uevents: uev }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
