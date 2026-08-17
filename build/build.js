@@ -99,6 +99,11 @@ run('i18n sitemap (translated SEO pages)', 'node build/gen-i18n-sitemap.js');
 // content actually changed since the last build (hash manifest in build/data/page-mod-hashes.json)
 run('Stamp updated dates (changed pages only)', 'node build/stamp-updated.js');
 
+// 11e) contextual exchange rail on pages that carry no affiliate link at all. Runs AFTER stamp-updated
+// on purpose: the rail is monetisation, not editorial, so it must not bump dateModified/lastmod on 582
+// pages at once (that reads as refresh-spam). Stamping therefore always hashes rail-free content.
+run('Exchange rail on unmonetised pages', 'node build/add-exchange-rail.js');
+
 // 12) LAST: <meta charset> must be the FIRST tag in <head> (within the 1024-byte prescan) - the
 // Yandex/gtag head injections once pushed it deeper and the whole site rendered as windows-1252 mojibake.
 run('Charset meta first in head', 'node build/fix-charset.js');

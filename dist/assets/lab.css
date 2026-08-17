@@ -16,7 +16,7 @@ a:hover{color:var(--lime)}
 .wrap{max-width:1120px;margin:0 auto;padding:0 20px 100px}
 
 /* top bar + tool switcher */
-.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:14px;padding:14px 20px;margin:0 -20px 0;background:rgba(8,9,11,.72);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:14px;padding:14px 20px;background:rgba(8,9,11,.72);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .brand{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;color:var(--ink);letter-spacing:-.02em;white-space:nowrap}
 .brand b{color:var(--lime)}
 .tool-switch{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;margin:0 4px}
@@ -112,7 +112,9 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;m
 @media(max-width:720px){
   .hero{padding:34px 0 24px}
   .toolfoot .cols{grid-template-columns:1fr 1fr;gap:20px}
-  .topbar{padding:12px 16px;margin:0 -16px}
+  /* No negative margin: .topbar is a direct child of <body> (body has no horizontal padding), so the
+     old -16px had nothing to cancel and pushed every lab page 16px wider than the viewport on mobile. */
+  .topbar{padding:12px 16px}
   .wrap{padding:0 16px 90px}
 }
 @media(max-width:480px){.toolfoot .cols{grid-template-columns:1fr}}

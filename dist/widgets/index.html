@@ -2,6 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
@@ -66,7 +79,7 @@
   </header>
   <div class="crumb"><a href="/">Home</a> / Widgets</div>
   <article>
-    <h1>Free crypto widgets for your site</h1><p class="lead" style="margin-bottom:4px">Three live, embeddable widgets — a liquidation calculator, the Fear &amp; Greed index and a real-time liquidation feed. One line of HTML each, free forever.</p><h2 style="margin-top:26px">Liquidation calculator widget</h2>
+    <h1>Free liquidation calculator widget</h1>
     <p class="lead">Drop a live crypto <strong>liquidation calculator</strong> onto your website, blog or trading community in one line of HTML. It pulls live prices, handles longs &amp; shorts and any coin — free, no signup, no API key.</p>
 
     <div class="embed-grid">
@@ -92,56 +105,18 @@
       </div>
     </div>
 
-
-    <h2 id="fear-greed" style="margin-top:38px">Crypto Fear &amp; Greed widget</h2>
-    <p>A live sentiment gauge (0-100) with yesterday and last-week readings — updates itself, dark theme, one line of HTML. The snippet includes a credit link; keeping it helps keep the widgets free.</p>
-    <div class="embed-grid">
-      <div class="embed-prev">
-        <iframe src="/widget/fear-greed/" height="260" title="Crypto Fear &amp; Greed Index by MarginPad" loading="lazy"></iframe>
-      </div>
-      <div>
-        <h3 style="margin-top:0">Copy the embed code</h3>
-        <div class="code"><button class="copy" type="button" onclick="(function(b){var t=b.parentNode.querySelector('code');navigator.clipboard&amp;&amp;navigator.clipboard.writeText(t.textContent);b.textContent='Copied &#10003;';setTimeout(function(){b.textContent='Copy';},1400);})(this)">Copy</button><code>&lt;iframe src="https://marginpad.io/widget/fear-greed/"
-  width="340" height="260" loading="lazy"
-  style="border:0;border-radius:14px;max-width:100%"
-  title="Crypto Fear &amp; Greed Index"&gt;&lt;/iframe&gt;
-&lt;a href="https://marginpad.io/fear-greed/" target="_blank"
-  style="font-size:12px"&gt;Crypto Fear &amp; Greed Index by MarginPad&lt;/a&gt;</code></div>
-      </div>
-    </div>
-
-    <h2 id="liquidations" style="margin-top:38px">Live liquidations widget</h2>
-    <p>Real-time liquidations streamed from a 10-exchange collector (Binance, Bybit, OKX, Hyperliquid and more) — data most sites pay $300/month for, embeddable free. BTC/ETH/SOL/XRP switcher built in, refreshes every 10 seconds.</p>
-    <div class="embed-grid">
-      <div class="embed-prev">
-        <iframe src="/widget/liquidations/" height="320" title="Live Crypto Liquidations by MarginPad" loading="lazy"></iframe>
-      </div>
-      <div>
-        <h3 style="margin-top:0">Copy the embed code</h3>
-        <div class="code"><button class="copy" type="button" onclick="(function(b){var t=b.parentNode.querySelector('code');navigator.clipboard&amp;&amp;navigator.clipboard.writeText(t.textContent);b.textContent='Copied &#10003;';setTimeout(function(){b.textContent='Copy';},1400);})(this)">Copy</button><code>&lt;iframe src="https://marginpad.io/widget/liquidations/"
-  width="380" height="320" loading="lazy"
-  style="border:0;border-radius:14px;max-width:100%"
-  title="Live Crypto Liquidations"&gt;&lt;/iframe&gt;
-&lt;a href="https://marginpad.io/rekt/" target="_blank"
-  style="font-size:12px"&gt;Live crypto liquidation feed by MarginPad&lt;/a&gt;</code></div>
-      </div>
-    </div>
-
     <div class="feat">
       <div><b>Live prices</b>Auto-loads the current price for the coin you choose.</div>
       <div><b>Long & short</b>Isolated-margin liquidation for both directions.</div>
       <div><b>Zero cost</b>Free forever, no account, no API key, works anywhere.</div>
     </div>
 
-    <h2 id="wordpress" style="margin-top:38px">Running WordPress?</h2>
-    <p>There is a free plugin that adds all of these as shortcodes &mdash; <code>[marginpad_liquidation_calculator coin="BTC"]</code> and one for each of the others, plus the crypto economic calendar. No API key, no database writes, nothing enqueued on your front end. <a href="/wordpress-crypto-widgets/"><strong>Get the WordPress plugin &rarr;</strong></a></p>
-
     <h2>Why embed it?</h2>
     <p>A live calculator keeps readers on your page longer and gives real utility to any article about leverage, liquidation or risk. It is fully self-contained — just an <code>&lt;iframe&gt;</code> — so it can't slow down or break your site. Attribution isn't required, but the small "Powered by MarginPad" link is appreciated and helps keep the tools free.</p>
 
     <h2>More free tools</h2>
     <div class="related">
-      <a href="/calculators?c=liq">Liquidation calculator</a>
+      <a href="/#liq">Liquidation calculator</a>
       <a href="/heatmap">Liquidation heatmap</a>
       <a href="/paper-trade">Paper Trade</a>
       <a href="/funding-fee-calculator/">Funding fee</a>

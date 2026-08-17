@@ -88,6 +88,23 @@
 </script>
 
 <script defer src="/assets/sentry.js"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
 </head>
 <body>
 <header class="topbar"><a class="brand" href="/nl/">MARGIN<b>PAD</b></a><nav class="tool-switch lnav"><a href="/paper-trade">Paper trading</a><a href="/charts">Grafieken</a><a href="/nl/forex-trading-simulator/">Forexsimulator</a><a href="/nl/index-trading-simulator/">Indexsimulator</a><a href="/nl/tools/">Tools</a></nav><a class="home" href="/paper-trade">Open app &rarr;</a></header>
@@ -174,6 +191,8 @@
   <p class="note">Je kunt ook oefenen met <a href="/nl/forex-trading-simulator/">Forexsimulator</a>, <a href="/nl/index-trading-simulator/">Indexsimulator</a>. MarginPad is een gratis oefenplatform — geen beleggingsadvies, en gesimuleerde resultaten garanderen geen echte rendementen.</p>
 </div>
 
+
+<div class="mp-xr"><div class="mp-xr-t">ALS OEFENEN NIETS MEER LEERT</div><p class="mp-xr-w">Een simulator leert je geen slippage, geen funding, en zeker niet wat echt geld met je oordeel doet. Zodra het demo-account je niet meer verrast: kleiner inzetten en live gaan.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#8a5cff" data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><span class="mp-xr-k">Moon</span><span class="mp-xr-d">Elke markt, omhoog of omlaag</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Affiliate links. Wij krijgen commissie als je je aanmeldt; jij betaalt hetzelfde.</p></div>
 <footer class="toolfoot"><div class="wrap" style="padding-bottom:0"><div class="cols">
   <div><a class="brand" href="/nl/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">Oefen met het traden van aandelen, forex, indices en crypto met live koersen en zonder risico. Gratis, geen registratie nodig.</p></div>
   <div><h4>Oefenen</h4><a href="/nl/stock-trading-simulator/">Aandelensimulator</a><a href="/nl/forex-trading-simulator/">Forexsimulator</a><a href="/nl/index-trading-simulator/">Indexsimulator</a><a href="/paper-trade">Paper trading</a></div>

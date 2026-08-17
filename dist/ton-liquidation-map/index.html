@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Toncoin (TON) Liquidation Map — Live, Free, No Login | MarginPad</title>
 <meta name="description" content="Live Toncoin (TON) liquidation map: real TON liquidations from Binance, Bybit and OKX as bubbles plus a price-level histogram, with estimated clusters. Free, no signup." />
 <meta name="keywords" content="TON liquidation map, Toncoin liquidations, TON liquidation heatmap, crypto liquidations, TON liquidation levels, liquidation chart" />
@@ -19,12 +32,31 @@
 <meta name="twitter:description" content="Live Toncoin (TON) liquidation map: real TON liquidations from Binance, Bybit and OKX as bubbles plus a price-level histogram, with estimated clusters. Free, no signup." />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a Toncoin liquidation map?","acceptedAnswer":{"@type":"Answer","text":"A Toncoin liquidation map shows where leveraged TON positions are being forcibly closed. MarginPad plots real liquidation events from Binance, Bybit and OKX as bubbles on the TON price chart, with a price-level histogram showing where they cluster."}},{"@type":"Question","name":"Is the TON liquidation data real?","acceptedAnswer":{"@type":"Answer","text":"Yes — the bubbles and the right-edge histogram are real liquidation events streamed live from exchange websockets. The optional \"Clusters\" layer is a model estimated from open-interest changes and assumed leverage, clearly labelled as an estimate."}},{"@type":"Question","name":"How do I read the TON liquidation map?","acceptedAnswer":{"@type":"Answer","text":"Each bubble is one liquidation at a price and time; bigger bubbles are larger positions. Red means longs were liquidated, green means shorts. The histogram on the right shows total liquidations at each price level — the densest bands are where most leverage was wiped out."}},{"@type":"Question","name":"Is the Toncoin liquidation map free?","acceptedAnswer":{"@type":"Answer","text":"Yes, it is completely free with no signup. You can switch coins, change the timeframe (1D/1W/1M/1Y), and toggle the real, estimated and theoretical layers."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"TON Liquidation Map","item":"https://marginpad.io/ton-liquidation-map/"}]}</script>
+
+<script defer src="/assets/sentry.js"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -58,11 +90,14 @@
         <a class="ts-card" href="/blog/how-to-read-a-liquidation-heatmap/"><b>Guide</b><small>How to read a liquidation map</small></a>
       </div>
     </div>
-  </article>
+  
+<div class="mp-xr"><div class="mp-xr-t">WHERE THESE LIQUIDATIONS HAPPEN</div><p class="mp-xr-w">Nothing on this page is theoretical &mdash; it is real positions being force-closed on real order books. These are the venues those books belong to.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Affiliate links. We earn a commission if you sign up; you pay the same either way.</p></div>
+</article>
   <footer>
     <span>© 2026 MarginPad</span>
     <span><a href="/">Calculators</a> · <a href="/heatmap">Heatmap</a> · <a href="/blog/">Blog</a></span>
   </footer>
 </div>
+<script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

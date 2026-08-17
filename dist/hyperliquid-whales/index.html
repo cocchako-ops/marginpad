@@ -125,6 +125,23 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a Hyperliquid whale tracker?","acceptedAnswer":{"@type":"Answer","text":"Hyperliquid is a decentralized perpetuals exchange where every position is on-chain and public. A whale tracker surfaces the largest open positions — their size, direction, leverage, entry, liquidation price and live unrealized profit or loss — so you can see exactly what the biggest traders are betting on in real time."}},{"@type":"Question","name":"Why watch whale positions?","acceptedAnswer":{"@type":"Answer","text":"Large positions can move markets and their liquidation levels often act as magnets for price. Watching whether whales are net long or net short, and where their liquidation prices cluster, gives context that funding rates and open interest alone do not."}},{"@type":"Question","name":"Is the whale data live?","acceptedAnswer":{"@type":"Answer","text":"Yes. Positions and recent whale actions are aggregated from Coinglass and refresh about once a minute. Because Hyperliquid is on-chain, the sizes, leverage and liquidation prices are the real values, not estimates."}}]}</script>
 
 <script defer src="/assets/sentry.js"></script>
+<style id="mp-xr-css">
+.mp-xr{margin:38px 0 6px}
+.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
+.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
+.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
+.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
+.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
+.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
+.mp-xr-c:hover{background:#12161c}
+.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
+.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
+.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
+.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
+.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
+@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
+</style>
 </head>
 <body>
 <div class="wl-glow" aria-hidden="true"></div>
@@ -136,12 +153,12 @@
     </div>
     <nav class="hnav">
       <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a>
+      <a href="/rewards/" class="hlink hrwd" title="Free USDT — claim every 5 min"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Rewards</a>
       <a href="/paper-trade?trades=1" class="hlink hjr"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>My Trades</a>
       <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Sign in</span></button>
     </nav>
   </header>
   <div class="crumb"><a href="/">Home</a> / Hyperliquid whales</div>
-  <p style="margin:0 0 10px;font-size:13px;color:#8b95a1">See also: <a href="/hyperliquid-liquidations/" style="color:#c2f64a">how Hyperliquid liquidations work + who is closest to being liquidated</a></p>
   <article>
     <div class="wl-eyebrow"><i></i>Live · Hyperliquid on-chain</div>
     <h1>Hyperliquid Whale Tracker</h1>
@@ -190,7 +207,9 @@
     <p>A big position is a bet, not a guarantee — whales get liquidated too (watch the aggregate unrealized P&amp;L). Use this board the way you would <a href="/open-interest/">open interest</a> and <a href="/funding/">funding</a>: to understand positioning and where the pain points are, not as a reason to blindly copy. When many large shorts sit just above price, an upward squeeze becomes more likely; when big longs pile in with tight liquidations below, a flush can cascade.</p>
 
     <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Whale data aggregated from Coinglass / Hyperliquid. For information only — not financial advice.</p>
-  </article>
+  
+<div class="mp-xr"><div class="mp-xr-t">TRADE THIS DATA</div><p class="mp-xr-w">Funding, open interest and basis are only worth something if you are positioned on the venue that pays them.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Affiliate links. We earn a commission if you sign up; you pay the same either way.</p></div>
+</article>
 
   <footer class="site-foot"><div class="foot-bar"><span>© MarginPad · <a href="/">marginpad.io</a> · Not financial advice</span></div></footer>
 </div>
