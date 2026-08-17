@@ -1158,9 +1158,29 @@ async function ssrHubSentences(page, sym, env) {
     S.push('Crypto futures liquidations total ' + _susd(m.total) + ' over the past 24 hours: ' + _susd(m.long) + ' from longs and ' + _susd(m.short) + ' from shorts across ' + m.count + ' tracked coins.');
     const top = (j.coins || []).slice(0, 3).filter(c => c.liq > 0);
     if (top.length) S.push('Most liquidated right now: ' + top.map(c => c.s + ' (' + _susd(c.liq) + ')').join(', ') + '.');
+    const _tc = (j.coins || []).filter(c => +c.liq > 0);
+    if (_tc.length && m.total > 0) S.push(_tc[0].s + ' alone accounts for ' + Math.round(+_tc[0].liq / m.total * 100) + '% of the 24-hour total (' + _susd(+_tc[0].long || 0) + ' longs against ' + _susd(+_tc[0].short || 0) + ' shorts).');
     if (m.long >= m.short * 1.5) S.push('Longs are taking most of the damage — the market is moving down through their liquidation levels.');
     else if (m.short >= m.long * 1.5) S.push('Shorts are taking most of the damage — a squeeze is running through their liquidation levels.');
     return { S, links: [['/rekt/', 'Live liquidation feed'], ['/btc-liquidation-map/', 'BTC liquidation map']] };
+  }
+  if (page === 'rekt') {
+    let j = null;
+    try { const _b = (env.COLLECTOR_URL || '').replace(/\/$/, ''); if (_b) { const _r = await fetch(_b + '/api/v1/pulse', { signal: AbortSignal.timeout(8000), cf: { cacheTtl: 120 } }); j = await _r.json(); } } catch (e) {}
+    const w = j && (j.h24 || j.h12 || j.h4);
+    if (!w || !w.tot || !(+w.tot.v > 0)) return { S };
+    const tot = +w.tot.v || 0, lng = +w.tot.l || 0, sht = Math.max(0, tot - lng), n = +w.tot.n || 0;
+    S.push('Across the exchanges MarginPad streams, ' + _susd(tot) + ' in leveraged positions has been liquidated over the past 24 hours — ' + _susd(lng) + ' from longs and ' + _susd(sht) + ' from shorts, over ' + n.toLocaleString('en-US') + ' individual liquidations.');
+    const _real = (s) => !/^TEST/i.test(String(s || ''));
+    const syms = (w.bySym || []).filter(x => _real(x.s)).slice(0, 4).filter(x => (+x.l + +x.sh) > 0);
+    if (syms.length) S.push('Hardest hit right now: ' + syms.map(x => x.s + ' (' + _susd((+x.l || 0) + (+x.sh || 0)) + ')').join(', ') + '.');
+    const b = w.big;
+    if (b && +b.notional > 0 && _real(b.symbol)) S.push('The single largest liquidation in that window was ' + _susd(+b.notional) + ' on ' + String(b.symbol || '').toUpperCase() + ' at ' + String(b.exchange || '').toUpperCase() + ' (' + (String(b.side || '').indexOf('long') === 0 ? 'a long' : 'a short') + ' position).');
+    const ex = (w.byEx || []).slice(0, 3).filter(x => (+x.l + +x.sh) > 0);
+    if (ex.length) S.push('By venue: ' + ex.map(x => String(x.e).charAt(0).toUpperCase() + String(x.e).slice(1) + ' ' + _susd((+x.l || 0) + (+x.sh || 0))).join(', ') + '.');
+    if (lng >= sht * 1.4) S.push('Longs are absorbing the damage, which is what a market grinding DOWN through liquidation levels looks like.');
+    else if (sht >= lng * 1.4) S.push('Shorts are absorbing the damage — a squeeze running UP through their liquidation levels.');
+    return { S, links: [['/liquidations/', '24h liquidation totals'], ['/btc-liquidation-map/', 'BTC liquidation map'], ['/heatmap', 'Liquidation heatmap']] };
   }
   if (page === 'etf') {
     const j = await jget(() => handleCgEtf(new URL('https://marginpad.io/api/cg/etf'), env));
@@ -1174,6 +1194,8 @@ async function ssrHubSentences(page, sym, env) {
       S.push(s + '.');
     };
     one(j.btc, 'Bitcoin'); one(j.eth, 'Ethereum');
+    try { const _ba = +(j.btc && j.btc.totalAum) || 0, _ea = +(j.eth && j.eth.totalAum) || 0;
+      if (_ba > 0 && _ea > 0) S.push('Bitcoin spot ETFs hold about ' + (_ba / _ea).toFixed(1) + ' times the assets of the Ethereum ones, ' + _susd(_ba + _ea) + ' between them.'); } catch (e) {}
     return { S, links: [['/bitcoin-cycle/', 'Bitcoin cycle dashboard'], ['/fear-greed/', 'Fear & Greed index']] };
   }
   if (page === 'fng') {
@@ -1196,7 +1218,12 @@ async function ssrHubSentences(page, sym, env) {
     S.push('Across ' + cs.length + ' USDT-perp markets right now, the most crowded long is ' + hi.s + ' (funding ' + _fpct(hi.funding) + ') and the most crowded short is ' + lo.s + ' (' + _fpct(lo.funding) + ').');
     const btc = cs.find(c => c.s === 'BTC');
     if (btc) S.push('BTC funding sits at ' + _fpct(btc.funding) + (Math.abs(btc.funding) < 0.005 ? ' — essentially flat, no crowded side' : btc.funding > 0 ? ' — longs are paying shorts to hold' : ' — shorts are paying longs to hold') + '.');
-    return { S, links: [['/open-interest/', 'Open interest by coin'], ['/long-short/', 'Long/short ratio']] };
+    const pos = cs.filter(c => +c.funding > 0).length, neg = cs.filter(c => +c.funding < 0).length;
+    if (pos + neg > 10) S.push(pos + ' of those markets are paying positive funding (longs paying) against ' + neg + ' negative — ' + (pos > neg * 1.5 ? 'the market is broadly long-tilted' : neg > pos * 1.5 ? 'the market is broadly short-tilted' : 'the two sides are close to balanced') + '.');
+    if (btc) { const apr = (+btc.funding || 0) * 3 * 365; S.push('Held for a year at that rate, BTC funding works out to roughly ' + (apr >= 0 ? '' : '-') + Math.abs(apr).toFixed(1) + '% ' + (apr >= 0 ? 'paid by longs' : 'paid by shorts') + ' — the annualised cost of holding the crowded side.'); }
+    const hot = cs.filter(c => Math.abs(+c.funding || 0) >= 0.05);
+    if (hot.length) S.push(hot.length + ' market' + (hot.length === 1 ? ' is' : 's are') + ' running at 0.05% or beyond per interval, which is squeeze territory: ' + hot.slice(0, 3).map(c => c.s).join(', ') + '.');
+    return { S, links: [['/open-interest/', 'Open interest by coin'], ['/long-short/', 'Long/short ratio'], ['/blog/what-is-funding-rate/', 'How funding works']] };
   }
   if (page === 'oi') {
     const j = await jget(() => handleCgOpenInterest(new URL('https://marginpad.io/api/cg/open-interest'), env));
@@ -1204,6 +1231,8 @@ async function ssrHubSentences(page, sym, env) {
     const tot = cs.reduce((a, c) => a + (+c.oiUsd || 0), 0);
     const top = cs.slice(0, 3);
     S.push('Open interest across ' + cs.length + ' tracked USDT-perp markets totals ' + _susd(tot) + ' right now, led by ' + top.map(c => c.s + ' (' + _susd(c.oiUsd) + ')').join(', ') + '.');
+    const _c3 = cs.slice(0, 3).reduce((a, c) => a + (+c.oiUsd || 0), 0);
+    if (tot > 0) S.push('The top three account for ' + Math.round(_c3 / tot * 100) + '% of all tracked open interest, so most leverage in this market sits in a handful of names.');
     const mv = cs.filter(c => isFinite(+c.oiChg24h)).sort((a, b) => Math.abs(+b.oiChg24h) - Math.abs(+a.oiChg24h))[0];
     if (mv && Math.abs(+mv.oiChg24h) >= 3) S.push('Biggest 24h OI shift among the majors: ' + mv.s + ' ' + (+mv.oiChg24h > 0 ? '+' : '') + (+mv.oiChg24h).toFixed(1) + '% — ' + (+mv.oiChg24h > 0 ? 'new leverage is building there' : 'leverage is unwinding there') + '.');
     return { S, links: [['/funding/', 'Funding rates'], ['/liquidations/', '24h liquidations']] };
@@ -1215,7 +1244,11 @@ async function ssrHubSentences(page, sym, env) {
     S.push('Global long/short account ratios right now: the most long-skewed of ' + cs.length + ' tracked coins is ' + hi.s + ' (' + hi.longPct + '% long vs ' + hi.shortPct + '% short) and the most short-skewed is ' + lo.s + ' (' + lo.longPct + '% long vs ' + lo.shortPct + '% short).');
     const btc = cs.find(c => c.s === 'BTC');
     if (btc) S.push('BTC accounts split ' + btc.longPct + '% long / ' + btc.shortPct + '% short.');
-    return { S, links: [['/funding/', 'Funding rates'], ['/liquidations/', '24h liquidations']] };
+    const crowdedL = cs.filter(c => +c.longPct >= 60).length, crowdedS = cs.filter(c => +c.longPct <= 40).length;
+    S.push('Of the ' + cs.length + ' coins tracked, ' + crowdedL + ' have 60% or more of accounts long and ' + crowdedS + ' have 60% or more short' + ((crowdedL + crowdedS) === 0 ? ' — positioning is unusually balanced across the board' : '') + '.');
+    const avgL = cs.reduce((a, c) => a + (+c.longPct || 0), 0) / Math.max(1, cs.length);
+    S.push('The average account across those markets is ' + avgL.toFixed(1) + '% long — worth reading as a contrarian gauge, because the crowded side is the one with liquidations resting behind it.');
+    return { S, links: [['/funding/', 'Funding rates'], ['/liquidations/', '24h liquidations'], ['/rekt/', 'Live liquidation feed']] };
   }
   if (page === 'hlliq') { // Hyperliquid liquidation levels — every sentence is arithmetic on live position data
     const j = await jget(() => handleCgHyper(new URL('https://marginpad.io/api/cg/hyper'), env));
@@ -1258,7 +1291,7 @@ async function handleSsrHub(request, url, env, page, sym) {
   let res = null;
   try { res = await ssrHubSentences(page, sym, env); } catch (e) {}
   if (!res || !res.S || res.S.length < 2) return pass();
-  const HUB_LABEL = { hlliq: 'LIVE HYPERLIQUID POSITIONS', whales: 'LIVE WHALE POSITIONS' }; // internal page keys make ugly headings ("LIVE HLLIQ DATA") — name them for the reader
+  const HUB_LABEL = { hlliq: 'LIVE HYPERLIQUID POSITIONS', whales: 'LIVE WHALE POSITIONS', rekt: 'LIVE LIQUIDATIONS' }; // internal page keys make ugly headings ("LIVE HLLIQ DATA") — name them for the reader
   const out = html.slice(0, anchor) + ssrBoxHtml(HUB_LABEL[page] || ('LIVE ' + (sym || page.replace(/^./, c => c.toUpperCase())).toUpperCase() + ' DATA'), res.S, res.links) + html.slice(anchor);
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'hub-' + page } });
   try { await caches.default.put(ck, resp.clone()); } catch (e) {}
@@ -12282,7 +12315,7 @@ export default {
       }
       if (url.pathname === '/crypto-liquidations-today/') return handleSsrBlog(request, url, env, 'liq'); // exact-match "total crypto liquidations today" landing — live market total box before the first <h2 (SEO kompas: the SERP has no clean-number answer)
       const _bk = ssrBlogKind(url.pathname); if (_bk) return handleSsrBlog(request, url, env, _bk);
-      const _hub = { '/liquidations/': 'liquidations', '/liquidation-statistics/': 'liquidations', '/etf-flows/': 'etf', '/fear-greed/': 'fng', '/funding/': 'funding', '/open-interest/': 'oi', '/long-short/': 'ls', '/hyperliquid-whales/': 'whales', '/hyperliquid-liquidations/': 'hlliq' }[url.pathname];
+      const _hub = { '/liquidations/': 'liquidations', '/liquidation-statistics/': 'liquidations', '/etf-flows/': 'etf', '/fear-greed/': 'fng', '/funding/': 'funding', '/open-interest/': 'oi', '/long-short/': 'ls', '/hyperliquid-whales/': 'whales', '/hyperliquid-liquidations/': 'hlliq', '/rekt/': 'rekt' }[url.pathname];
       if (_hub) return handleSsrHub(request, url, env, _hub, null);
       if (url.pathname === '/liquidations/recap' || url.pathname === '/liquidations/recap/' || /^\/liquidations\/recap\/\d{4}-\d{2}-\d{2}\/?$/.test(url.pathname)) return handleLiqRecap(url, env); // BEFORE the coin match — 'recap' must never be parsed as a coin slug
       if (url.pathname === '/sitemap-recaps.xml') return handleRecapSitemap(env);
