@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
@@ -40,6 +39,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Practice crypto, stocks, forex and indices with real live prices and zero risk: a paper-trading terminal, live charts, screener, calculators, real-time liquidations and a free bot API. Free — no deposit, no KYC."}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"MarginPad","url":"https://marginpad.io/","logo":"https://marginpad.io/assets/og.png","sameAs":["https://t.me/MarginPadBot"]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"MarginPad","alternateName":"MarginPad — Free Crypto Futures Tools","url":"https://marginpad.io/","inLanguage":"en"}</script>
+<meta charset="UTF-8" />
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -1005,15 +1005,15 @@
 </section>
 
 <section class="band" style="--glow:rgba(255,215,90,.09);--bandc:#ffd75a">
-  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Season leaderboard</h2><span class="band-s">Four boards — Bank balance, Highest ROE, Win rate and Season XP — each pays the top 5 in real USDT every 14-day season. Free to enter — just sign in and trade.</span></div>
+  <div class="band-head"><span class="band-idx">04</span><h2 class="band-t">Season leaderboard</h2><span class="band-s">Four boards — Green days, Highest ROE, Win rate and Season XP — each pays the top 5 in real USDT every 14-day season. Free to enter — just sign in and trade.</span></div>
   <div class="lb-wrap">
     <div class="lb-card lb-info">
       <div class="t-kick" style="color:#d8b84a"><span class="dot" style="--ac:#ffd75a"></span> 4 boards · win real USDT</div>
       <div class="t-title" style="font-size:22px">Four boards, bigger prizes</div>
-      <div class="t-sub">Four season boards — <b>Highest bank balance</b> (Demo Spot), <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> — each pays the <b>top 5</b> in real USDT when the 14-day season ends. Pick your game:</div>
+      <div class="t-sub">Four season boards — <b>Green days</b>, <b>Highest ROE</b>, <b>Best win rate</b> and <b>Season XP</b> — each pays the <b>top 5</b> in real USDT when the 14-day season ends. Pick your game:</div>
       <div class="lbpz">
         <div class="lbpz-tabs" id="lbpzTabs">
-          <button type="button" class="lbpz-tab on" data-pz="roe">Bank balance</button>
+          <button type="button" class="lbpz-tab on" data-pz="roe">Green days</button>
           <button type="button" class="lbpz-tab" data-pz="roe2">Highest ROE</button>
           <button type="button" class="lbpz-tab" data-pz="wr">Win rate</button>
           <button type="button" class="lbpz-tab" data-pz="xp">Season XP</button>
@@ -1032,7 +1032,7 @@
       <div class="lb-cta"><a class="btn-l" href="/paper-trade">Open Paper Trade →</a><span class="note" id="lbYou">Sign in (free) and your best trade enters automatically.</span></div>
     </div>
     <div class="lb-card">
-      <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="spot">Spot bank</button><button type="button" class="lb-tab" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="wr">Win rate</button><button type="button" class="lb-tab" data-lbm="xp">Top XP</button><button type="button" class="lb-tab lb-tab-f" data-lbm="following">★ Following</button></div>
+      <div class="lb-tabs"><button type="button" class="lb-tab on" data-lbm="green">Green days</button><button type="button" class="lb-tab" data-lbm="roe">Top ROE</button><button type="button" class="lb-tab" data-lbm="wr">Win rate</button><button type="button" class="lb-tab" data-lbm="xp">Top XP</button><button type="button" class="lb-tab lb-tab-f" data-lbm="following">★ Following</button></div>
       <div class="lb-note" id="lbNote">All <b>four boards</b> pay the top 5 in real USDT every 14-day season. <button type="button" class="lbr-open lbr-inline" data-lbr="1">See rules</button></div>
       <div class="lb-board" id="lbBoard" style="margin-top:10px"><div class="skel" style="width:80%"></div><div class="skel" style="width:66%"></div><div class="skel" style="width:74%"></div><div class="skel" style="width:60%"></div><div class="skel" style="width:70%"></div></div>
     </div>
@@ -1213,7 +1213,7 @@
   }).catch(function(){});
 
   // ---- leaderboard (Top ROE + Best win rate switcher) ----
-  var lbMode='spot',lbData=null;
+  var lbMode='green',lbData=null;
   function lbEsc(x){return String(x).replace(/</g,'&lt;');}
   function lbMoney(x){x=+x||0;var s=x<0?'-':'+';x=Math.abs(x);return s+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
   function lbMoneyC(x){x=+x||0;var s=x<0?'-':'+';var a=Math.abs(x),u='',d=a;if(a>=1e9){d=a/1e9;u='B';}else if(a>=1e6){d=a/1e6;u='M';}else if(a>=1e3){d=a/1e3;u='K';}var str=u?(d>=100?Math.round(d):d.toFixed(1))+u:(a>=1?Math.round(a).toString():a.toFixed(2));return s+'$'+str;}
@@ -1223,8 +1223,8 @@
     var d=lbData,el=document.getElementById('lbBoard'),note=document.getElementById('lbNote');if(!el)return;
     if(note){
       if(lbMode==='following'){note.className='lb-note';note.innerHTML='★ Accounts you follow. Tap any trader to see their card. Sign in to follow players from the board.';}
-      else{note.className='lb-note'+(lbMode==='spot'?' pay':'');
-        note.innerHTML='<b>'+(lbMode==='spot'?'Spot bank balance':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.'+(lbMode==='wr'?' Ranked by <b>win rate weighted by trades played</b> — more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.':'')+' <button type="button" class="lbr-open lbr-inline" data-lbr="1">See rules</button>';}}
+      else{note.className='lb-note'+(lbMode==='green'?' pay':'');
+        note.innerHTML='<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.'+(lbMode==='wr'?' Ranked by <b>win rate weighted by trades played</b> — more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.':'')+' <button type="button" class="lbr-open lbr-inline" data-lbr="1">See rules</button>';}}
     if(lbMode==='following'){ lbRenderFollowing(el); return; }
     if(lbMode==='roe'){
       var rt=((d&&d.top)||[]).filter(function(t){return +t.roe>0;}).slice(0,15);
@@ -1244,9 +1244,9 @@
         :'<div class="lb-empty">No XP earned yet this season — trade, learn in the Academy, and complete missions to climb.</div>';
       lbAfter(el);return;
     }
-    var st=((d&&d.topSpot)||[]).slice(0,15);
-    el.innerHTML=st.length?st.map(function(t,i){return lbRow(i,t.who,'on the bank card','$'+(+t.bankUsd||0).toLocaleString('en-US',{maximumFractionDigits:0}),'up');}).join('')
-      :'<div class="lb-empty">No one has grown past the $10,000 start yet this season — trade on <a href="/spot/" style="color:var(--lime)">Demo Spot</a> and cash profits out to your bank card.</div>';
+    var st=((d&&d.topGreen)||[]).slice(0,15);
+    el.innerHTML=st.length?st.map(function(t,i){return lbRow(i,t.who,((+t.trades||0)+' trades this season'),(+t.days||0)+((+t.days||0)===1?' green day':' green days'),'up');}).join('')
+      :'<div class="lb-empty">No green days yet this season — close a day in profit (3 or more trades) and you are on the board.</div>';
     lbAfter(el);
   }
   function lbAfter(el){ if(window.mpLvlDecorate)try{window.mpLvlDecorate();}catch(e){} }
@@ -1430,7 +1430,7 @@
     var panel=document.getElementById('lbpzPanel'),tabs=document.getElementById('lbpzTabs');
     if(!panel||!tabs)return;
     var PZ={
-      roe:{name:'Highest bank balance',pool:25,p:[10,6,4,3,2],live:true,desc:"Grow the $10,000 on Demo Spot and cash profits OUT to your bank card — the biggest card balance when the 14-day season ends wins. Card in, trade the exchange, off-ramp back out: the full real-life loop, fees and all."},
+      roe:{name:'Green days',pool:25,p:[10,6,4,3,2],live:true,desc:"Every day of the season you finish in profit counts as one green day — the trader with the most of them wins. A day needs at least 3 closed trades to turn green, you need 10 closed trades in the season to rank, and you have to be up on the season overall. It is the one board you cannot win in a single session."},
       roe2:{name:'Highest ROE',pool:30,p:[10,8,6,4,2],live:true,desc:"Your single best trade's return on equity (profit ÷ margin) this 14-day season — server-verified trades only. One well-timed call can top it, on any account size."},
       wr:{name:'Best win rate',pool:67,p:[30,15,10,7,5],live:true,desc:"The highest share of winning trades over the 14-day season (minimum 20 closed trades). Only wins of at least +5% ROE count — tiny scalps don't pad your rate. Rewards steady, consistent trading, not one lucky shot."},
       xp:{name:'Season XP',pool:30,p:[10,8,6,4,2],live:true,desc:"Total XP you earn this season — from trading, the Academy, daily missions and XP Happy Hour. Rewards using the whole platform, not just one lucky trade, and it can't be gamed with position size."}
@@ -1453,7 +1453,7 @@
     tabs.addEventListener('click',function(e){var t=e.target.closest('.lbpz-tab');if(!t)return;cur=t.getAttribute('data-pz');for(var i=0;i<tabs.children.length;i++)tabs.children[i].classList.toggle('on',tabs.children[i]===t);render();});
     // keep all 3 boards' prizes in sync with the LIVE reward config (owner tunes them in mp-ops Settings) — set from /api/reward/lb below
     function setArr(bk,pz){if(!Array.isArray(pz))return;var a=pz.map(function(x){return Math.round(+x||0);});while(a.length&&a[a.length-1]===0)a.pop();if(!a.length)return;PZ[bk].p=a;PZ[bk].pool=a.reduce(function(s,x){return s+x;},0);}
-    window.mpLbpzSetPrizes=function(bp){if(!bp)return;setArr('roe',bp.spot||bp.roe);setArr('roe2',bp.roe);setArr('wr',bp.wr);setArr('xp',bp.xp);render();};
+    window.mpLbpzSetPrizes=function(bp){if(!bp)return;setArr('roe',bp.green||bp.roe);setArr('roe2',bp.roe);setArr('wr',bp.wr);setArr('xp',bp.xp);render();};
     render();setInterval(render,60000);
   })();
 
@@ -1783,7 +1783,7 @@
   <div class="lbrm-p">
     <div class="lbrm-h"><b>Season board rules</b><button class="lbrm-x" type="button" id="lbRulesX">&times;</button></div>
     <p class="lbrm-sub">Every board runs per 14-day season and pays the top 5 in real USDT to the rewards balance. Cheating, banned accounts and excluded symbols (forex, metals, indices, stablecoins) never count.</p>
-    <div class="lbrm-sec"><b class="h">Bank balance (Demo Spot)</b><ul><li>Everyone starts Demo Spot with $10,000; the board ranks the highest bank-card balance above the start.</li><li>Money must be cashed out to your card in Demo Spot to count.</li></ul><div class="lbrm-ex"><b>Example:</b> grow $10,000 to $13,400 and move it to your card — your score is $13,400.</div></div>
+    <div class="lbrm-sec"><b class="h">Green days</b><ul><li>Counts the <b>days of the season you finished in profit</b> — everything you closed that day, added up.</li><li>A day only turns green with <b>at least 3 closed trades</b>, so one lucky micro-trade can't buy a day.</li><li>You need <b>10 closed trades</b> in the season, and you must be <b>up on the season overall</b>, to rank.</li><li>Ties go to the bigger season profit. Days run from the season start in UTC.</li></ul><div class="lbrm-ex"><b>Example:</b> you trade on 9 days and finish 6 of them green — your score is <b>6 days</b>. A trader who made more in one huge session but was green on 2 days ranks below you.</div></div>
     <div class="lbrm-sec"><b class="h">Highest ROE</b><ul><li>Your best single closed paper trade of the season, by ROE (profit as % of margin).</li><li>Only trades opened AND closed this season count, filled and closed by the server.</li><li>The ROE must be physically possible for the move and leverage — fabricated numbers are dropped.</li></ul><div class="lbrm-ex"><b>Example:</b> BTC long at 20x, price +4% before you close — that trade is +80% ROE.</div></div>
     <div class="lbrm-sec"><b class="h">Best win rate</b><ul><li>At least 20 counted trades closed this season.</li><li>A win only counts at +5% ROE or better on a real price move (at least 0.2%). Losses always count.</li><li>Copies count once: identical positions (same coin, same direction) opened together and closed together count as ONE trade.</li><li>Ranking uses a confidence-adjusted score, not the raw percentage — more games at a high win rate beat fewer games at a perfect one.</li></ul><div class="lbrm-ex"><b>Example:</b> 45-3 (93.8%) scores 89.1 and ranks ABOVE 20-0 (100%), which scores 83.9.</div><div class="lbrm-ex"><b>Example (copies):</b> 10 identical SOL shorts opened in one minute and closed together = 1 counted trade, win or lose.</div></div>
     <div class="lbrm-sec"><b class="h">Season XP</b><ul><li>All XP earned during the season counts: trading, Academy, missions, duels, streaks.</li><li>Rewards activity, not position size.</li></ul><div class="lbrm-ex"><b>Example:</b> 30 closed trades, 12 Academy lessons and daily missions can out-score one lucky trade.</div></div>

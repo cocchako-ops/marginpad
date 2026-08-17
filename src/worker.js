@@ -67,6 +67,10 @@ function calcTakeProfit(p) {
 // Anchor = Monday 2026-07-20 00:00 UTC: the running week became the first 14-day season; existing lb rows
 // are keyed by that same Monday timestamp so nothing orphaned. Boundaries stay Monday-aligned.
 const LB_PERIOD = 14 * 86400000, LB_ANCHOR = Date.UTC(2026, 6, 20);
+// Green Days board thresholds: a day counts as green only with GD_DAY closes finishing net-positive,
+// and a trader needs GD_SEASON closes in the season to appear at all — so the board measures showing
+// up and staying green, not a single lucky trade repeated once a day.
+const GD_DAY = 3, GD_SEASON = 10;
 const SEASON_FRAMES = ['champion', 'deadeye', 'overdrive', 'tycoon'], SEASON_WEAR_MS = LB_PERIOD; // board-winner frames: worn from the grant (season settle) until the next season settles — ts refreshed on every win
 const SEASON_STATS_EPOCH = Date.UTC(2026, 7, 17); // owner 2026-08-16: from this Monday, USER-facing trading stats (profile card) show the current season only; before it nothing changes. Progress systems (XP, achievements, referrals, missions) and ops/admin views stay lifetime.
 function lbPeriodStart(now) { now = +now || Date.now(); return LB_ANCHOR + Math.floor((now - LB_ANCHOR) / LB_PERIOD) * LB_PERIOD; }
@@ -7707,16 +7711,12 @@ async function leaderboard(env) {
   if (!env.USERS) return 'Leaderboard temporarily unavailable.';
   const nowMs = Date.now();
   const weekStart = lbPeriodStart(nowMs), weekEnd = weekStart + LB_PERIOD;
-  let board = [], xpBoard = [];
-  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=40')); const j = await r.json(); board = (j && j.top) || []; xpBoard = (j && j.xp) || []; } catch (e) {}
+  let board = [], xpBoard = [], greenB = [];
+  try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=40')); const j = await r.json(); board = (j && j.top) || []; xpBoard = (j && j.xp) || []; greenB = (j && j.green) || []; } catch (e) {}
   const banned = {};
   try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
   const mask = a => !a ? 'Trader' : (String(a).slice(0, 2) === 'u:' ? 'Trader' : String(a).slice(0, 6) + '…' + String(a).slice(-4));
-  let spotB = [];
-  try { if (env.SPOT) { const sr = await spotStub(env).fetch(new Request('https://do/lbbank')); spotB = ((await sr.json()) || {}).top || []; } } catch (e) {}
-  const sCand9 = spotB.filter(x => !banned['u:' + x.uid]);
-  const sProf9 = await resolveProfiles(env, sCand9.map(x => 'u:' + x.uid));
-  const topSpot = sCand9.filter(x => sProf9[x.uid] && sProf9[x.uid].username).slice(0, 5).map(x => ({ who: sProf9[x.uid].username, bank: (+x.cardC || 0) / 100 })); // NAMED accounts only (no anonymous "Trader" wall)
+  const topGreen = greenB.filter(x => !banned[x.uid] && !banned['u:' + x.uid] && (+x.days || 0) > 0).slice(0, 5).map(x => ({ who: x.name, days: +x.days || 0, pnl: +x.pnl || 0 }));
   const topR = board.filter(x => !banned[x.uid] && (+x.roe > 0)).slice(0, 5).map(x => ({ who: x.name || mask(x.uid), roe: +x.roe }));
   const _wilson = (w, n) => { if (!n) return 0; const z = 1.96, p = w / n, z2 = z * z; return (p + z2 / (2 * n) - z * Math.sqrt((p * (1 - p) + z2 / (4 * n)) / n)) / (1 + z2 / n); };
   const topWr = board.filter(x => !banned[x.uid] && ((+x.w || 0) + (+x.l || 0)) >= 20)
@@ -7728,7 +7728,7 @@ async function leaderboard(env) {
   const medal = ['🥇', '🥈', '🥉'];
   const row = (x, i, val) => (medal[i] || (i + 1) + '.') + ' <code>' + x.who + '</code> — ' + val + '\n';
   let out = '🏆 <b>Weekly Trade League — 4 boards</b>\n' + DIV + '\n';
-  out += '<b>Highest bank balance</b> <i>(Demo Spot — cash profits out to the card)</i>\n' + (topSpot.length ? topSpot.map((x, i) => row(x, i, '<b>$' + x.bank.toLocaleString('en-US', { maximumFractionDigits: 0 }) + '</b>')).join('') : '<i>no one has used Demo Spot yet</i>\n');
+  out += '<b>Green days</b> <i>(days of the season closed in profit)</i>\n' + (topGreen.length ? topGreen.map((x, i) => row(x, i, '<b>' + x.days + ' day' + (x.days === 1 ? '' : 's') + '</b>')).join('') : '<i>no one has a green day yet this season</i>\n');
   out += '\n<b>Highest ROE</b>\n' + (topR.length ? topR.map((x, i) => row(x, i, '<b>' + (x.roe >= 0 ? '+' : '') + x.roe.toFixed(0) + '%</b>')).join('') : '<i>no one yet</i>\n');
   out += '\n<b>🎯 Best win rate</b> <i>(min 20 trades)</i>\n' + (topWr.length ? topWr.map((x, i) => row(x, i, '<b>' + x.wr.toFixed(0) + '%</b> (' + x.w + 'W-' + x.l + 'L)')).join('') : '<i>no one yet</i>\n');
   out += '\n<b>✨ Season XP</b>\n' + (topXp.length ? topXp.map((x, i) => row(x, i, '<b>' + x.xp.toLocaleString('en-US') + ' XP</b>')).join('') : '<i>no one yet</i>\n');
@@ -8759,11 +8759,11 @@ async function sendLeaderboardEmail(env, to, info) {
   const prize = '$' + (Math.round(info.prizeUsd * 100) / 100).toFixed(2);
   const esc = x => String(x == null ? '' : x).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
   const board = info.board || 'roe';
-  const boardName = board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Weekly XP' : board === 'spot' ? 'Highest Bank Balance' : 'Highest ROE';
+  const boardName = board === 'wr' ? 'Best Win Rate' : board === 'xp' ? 'Weekly XP' : board === 'green' ? 'Green Days' : board === 'spot' ? 'Highest Bank Balance' : 'Highest ROE';
   const roe = (info.roe >= 0 ? '+' : '') + Math.round(info.roe || 0).toLocaleString('en-US') + '%';
   const trade = (info.symbol ? String(info.symbol) : '') + (info.side ? ' ' + String(info.side) : '');
-  const achieve = board === 'spot' ? ('<b>$' + (Math.round((info.bank || 0) * 100) / 100).toLocaleString('en-US') + '</b> on your Demo Spot bank card') : board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this week') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this week') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
-  const achieveTxt = board === 'spot' ? ('$' + (Math.round((info.bank || 0) * 100) / 100).toLocaleString('en-US') + ' on your Demo Spot bank card') : board === 'wr' ? ('a win rate of ' + (info.wr != null ? info.wr : 0) + '%') : board === 'xp' ? (Math.round(info.xp || 0).toLocaleString('en-US') + ' XP') : ('a best trade of ' + roe + (trade ? ' on ' + trade : ''));
+  const achieve = board === 'green' ? ('<b>' + (info.days || 0) + ' green day' + ((info.days === 1) ? '' : 's') + '</b> this season') : board === 'spot' ? ('<b>$' + (Math.round((info.bank || 0) * 100) / 100).toLocaleString('en-US') + '</b> on your Demo Spot bank card') : board === 'wr' ? ('a win rate of <b>' + (info.wr != null ? info.wr : 0) + '%</b> this week') : board === 'xp' ? ('<b>' + Math.round(info.xp || 0).toLocaleString('en-US') + ' XP</b> earned this week') : ('a best trade of <b>' + roe + '</b>' + (trade ? ' on <b>' + esc(trade) + '</b>' : ''));
+  const achieveTxt = board === 'green' ? ((info.days || 0) + ' green days this season') : board === 'spot' ? ('$' + (Math.round((info.bank || 0) * 100) / 100).toLocaleString('en-US') + ' on your Demo Spot bank card') : board === 'wr' ? ('a win rate of ' + (info.wr != null ? info.wr : 0) + '%') : board === 'xp' ? (Math.round(info.xp || 0).toLocaleString('en-US') + ' XP') : ('a best trade of ' + roe + (trade ? ' on ' + trade : ''));
   const hi = info.username ? ('@' + esc(info.username)) : 'trader';
   try {
     const r = await fetch('https://api.resend.com/emails', {
@@ -8806,7 +8806,7 @@ async function payWeeklyPrizes(env) {
     const we = ws + LB_PERIOD;
     let ud = {};
     try { const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + ws + '&we=' + we + '&limit=40')); ud = await ur.json(); } catch (e) {}
-    const board = (ud && ud.top) || [], xpBoard = (ud && ud.xp) || [];
+    const board = (ud && ud.top) || [], xpBoard = (ud && ud.xp) || [], greenBoard = (ud && ud.green) || [];
     const banned = {};
     try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
     const notB = x => x && x.uid && !banned[x.uid];
@@ -8827,14 +8827,13 @@ async function payWeeklyPrizes(env) {
       // THE VAULT: each board's #1 wears his season frame until the NEXT season settles (grant is idempotent, champrefresh restarts the 14-day window on a repeat win)
       const grantSeasonFrame = async (winner, item, boardName) => { try { if (!winner || !winner.uid) return; const gUid = String(winner.uid).replace(/^u:/, ''); const us9 = env.USERS.get(env.USERS.idFromName('main')); await us9.fetch(new Request('https://do/shopgrant', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: gUid, item, src: 'wk' }) })); await us9.fetch(new Request('https://do/champrefresh', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: gUid, item }) })); await us9.fetch(new Request('https://do/notify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: gUid, kind: 'bell', body: 'You finished #1 on the ' + boardName + ' board — the ' + ((vaultItem(item) || {}).name || item) + ' frame is yours for the whole season. Open The Vault to equip it', link: '/vault/' }) })); } catch (eG) {} };
       if (ws >= SPOT_LB_START) {
-        // Spot bank board — balances read at settle time (the */10 cron fires minutes after the season rolls over)
-        let spotB = [];
-        try { if (env.SPOT) { const sr = await spotStub(env).fetch(new Request('https://do/lbbank')); spotB = ((await sr.json()) || {}).top || []; } } catch (e) {}
-        let spotTop = spotB.map(x => ({ uid: 'u:' + x.uid, cardC: +x.cardC || 0 })).filter(notB).filter(x => x.cardC > 1000000).slice(0, 8); // pay prizes ONLY to profitable accounts (bank > $10k start); the display board (/lbbank) now also lists engaged ≤$10k users, but they don't win real USDT
-        try { const spr = await resolveProfiles(env, spotTop.map(x => x.uid)); spotTop = spotTop.filter(x => { const pk = x.uid.slice(2); return spr[pk] && spr[pk].username; }); } catch (e) {} // display shows NAMED accounts only (anonymous = farm wall, 2026-08-05) — the payout must not pay an account the board never showed
-        spotTop = spotTop.slice(0, 5);
-        push(spotTop, cfg.lbRoe, 'spot', x => ({ bank: x.cardC / 100 }));
-        await grantSeasonFrame(spotTop[0], 'tycoon', 'Spot Bank');
+        // GREEN DAYS board (owner 2026-08-17; took the Spot bank board's slot AND its prize pool cfg.lbRoe).
+        // The board is computed in the DO from tradeev with the same anti-farm thresholds the display uses,
+        // so what was shown all season is exactly what gets paid.
+        const greenTop = greenBoard.filter(x => notB(x) && !banned['u:' + String(x.uid).replace(/^u:/, '')] && (+x.days || 0) > 0).slice(0, 5)
+          .map(x => ({ uid: String(x.uid).indexOf('u:') === 0 ? x.uid : 'u:' + x.uid, name: x.name, days: +x.days || 0, pnl: +x.pnl || 0, closes: +x.closes || 0 }));
+        push(greenTop, cfg.lbRoe, 'green', x => ({ days: x.days, pnl: x.pnl, name: x.name || '' }));
+        await grantSeasonFrame(greenTop[0], 'tycoon', 'Green Days');
         push(roeTop, cfg.lbRoe2, 'roe', x => ({ roe: +x.roe || 0, symbol: x.symbol || '', side: x.side || '', name: x.name || '' })); // Highest-ROE board re-added (owner 2026-08-03) with its own small prizes
       } else {
         push(roeTop, cfg.lbRoe, 'roe', x => ({ roe: +x.roe || 0, symbol: x.symbol || '', side: x.side || '', name: x.name || '' }));
@@ -8856,7 +8855,7 @@ async function payWeeklyPrizes(env) {
       for (const p of paidOut) {
         const u = prof[String(p.acct).replace(/^u:/, '')]; const cx = ctx[p.acct + '|' + (p.board || 'roe')] || {};
         try { await evPush(env, null, 'lbpaid', ((u && u.username) || String(p.acct || '').replace('u:', '').slice(0, 10)) + ' $' + ((p.amount || 0) / 100).toFixed(2) + ' (#' + p.rank + ' ' + (p.board || 'roe') + ')', ''); } catch (e) {}
-        if (u && u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, roe: cx.roe || 0, symbol: cx.symbol || '', side: cx.side || '', username: u.username || cx.name || '', board: p.board || 'roe', xp: cx.xp || 0, wr: cx.wr, bank: cx.bank || 0 }); } catch (e) {} }
+        if (u && u.email) { try { await sendLeaderboardEmail(env, u.email, { rank: p.rank, prizeUsd: (p.amount || 0) / 100, roe: cx.roe || 0, symbol: cx.symbol || '', side: cx.side || '', username: u.username || cx.name || '', board: p.board || 'roe', xp: cx.xp || 0, wr: cx.wr, bank: cx.bank || 0, days: cx.days || 0 }); } catch (e) {} }
         try { const xp = p.rank === 1 ? 300 : p.rank === 2 ? 200 : p.rank === 3 ? 100 : 50; await grantXp(env, p.acct, 'lbprize', xp, { note: 'weekly ' + (p.board || 'roe') + ' leaderboard #' + p.rank }); } catch (xe) {}
       }
     }
@@ -10692,13 +10691,11 @@ async function handleReward(url, request, env) {
       const nowMs = Date.now();
       const weekStart = lbPeriodStart(nowMs), weekEnd = weekStart + LB_PERIOD, week = weekStart; // 14-day season boundary
       try {
-        let board = [], xpBoard = [];
+        let board = [], xpBoard = [], greenBoard = [];
         if (env.USERS) {
           const ur = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/leaderboard?ws=' + weekStart + '&we=' + weekEnd + '&limit=40'));
-          const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || [];
+          const ud = await ur.json(); board = (ud && ud.top) || []; xpBoard = (ud && ud.xp) || []; greenBoard = (ud && ud.green) || [];
         }
-        let spotB = [];
-        try { if (env.SPOT) { const sr = await spotStub(env).fetch(new Request('https://do/lbbank')); spotB = ((await sr.json()) || {}).top || []; } } catch (e) {}
         const banned = {};
         try { const br = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbbans')); const bd = await br.json(); (bd.banned || []).forEach(a => { banned[a] = 1; }); } catch (e) {}
         const mask = a => !a ? '' : (a.slice(0, 2) === 'u:' ? 'Trader' : a.slice(0, 6) + '…' + a.slice(-4));
@@ -10714,16 +10711,17 @@ async function handleReward(url, request, env) {
         // Weekly XP board: total XP earned this week (trading + Academy + missions + Happy Hour). Replaces PnL — can't be gamed by size.
         const topXp = xpBoard.filter(x => !banned[x.uid] && (+x.xp || 0) > 0)
           .slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name || mask(x.uid), xp: +x.xp || 0 }));
-        // Spot bank board (paid board since 2026-08-03): highest Demo-Spot BANK-CARD balance above the $10k start
-        const sCand = spotB.filter(x => !banned['u:' + x.uid]);
-        const sProf = await resolveProfiles(env, sCand.map(x => 'u:' + x.uid));
-        const topSpot = sCand.filter(x => sProf[x.uid] && sProf[x.uid].username).slice(0, 15).map((x, i) => ({ rank: i + 1, who: sProf[x.uid].username, bankUsd: Math.round(+x.cardC || 0) / 100 })); // NAMED accounts only — anonymous/farm accounts (no username) are never shown; they all rendered as an identical "Trader" wall (2026-08-05 bug fix)
-        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topSpot });
+        // GREEN DAYS board (replaced the Demo-Spot bank board, owner 2026-08-17): days of the season finished
+        // in profit. The Spot board ranked a STANDING BALANCE, so it could list someone who had not opened the
+        // site in weeks; this one only moves when you come back and close the day green.
+        const topGreen = greenBoard.filter(x => !banned[x.uid] && !banned['u:' + x.uid] && (+x.days || 0) > 0)
+          .slice(0, 15).map((x, i) => ({ rank: i + 1, who: x.name, days: +x.days || 0, red: +x.red || 0, trades: +x.closes || 0, pnl: +x.pnl || 0 }));
+        bodyText = JSON.stringify({ week, weekStart, weekEnd, top, topWr, topXp, topGreen });
         try { await caches.default.put(lbCk, new Response(bodyText, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {} // 20s edge cache → board computed at most once per colo per window
       } catch (e) { bodyText = '{"top":[],"week":' + week + ',"weekStart":' + weekStart + ',"weekEnd":' + weekEnd + ',"busy":true}'; } // fail soft, never a 500
     }
     let out = bodyText;
-    try { const o = JSON.parse(bodyText); o.prizes = [cfg.prize1, cfg.prize2, cfg.prize3]; o.boardPrizes = { spot: cfg.lbRoe, roe: cfg.lbRoe2, wr: cfg.lbWr, xp: cfg.lbXp }; out = JSON.stringify(o); } catch (e) {} // prizes from live config (cfg already built above) — admin changes reflect immediately even though the board itself is edge-cached
+    try { const o = JSON.parse(bodyText); o.prizes = [cfg.prize1, cfg.prize2, cfg.prize3]; o.boardPrizes = { green: cfg.lbRoe, roe: cfg.lbRoe2, wr: cfg.lbWr, xp: cfg.lbXp }; out = JSON.stringify(o); } catch (e) {} // prizes from live config (cfg already built above) — admin changes reflect immediately even though the board itself is edge-cached
     return new Response(out, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // browser always re-requests but is served the ≤20s-cached board — DO stays protected, leaderboard stays fresh
   }
   if (path === '/lbtop') { // admin eject panel — same authoritative board as /lb (UserStore-derived) but with real account ids + ban state
@@ -11703,6 +11701,15 @@ export default {
       const users = env.USERS.get(env.USERS.idFromName('main'));
       const r = await users.fetch(new Request('https://do/srvtrades'));
       return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/greencheck' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // Green Days board over an arbitrary window (read-only): an empty board must be provably "nobody qualified", not a broken query
+      const ws = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
+      const we = +url.searchParams.get('we') || (ws + LB_PERIOD);
+      const users = env.USERS.get(env.USERS.idFromName('main'));
+      const r = await users.fetch(new Request('https://do/leaderboard?ws=' + ws + '&we=' + we + '&limit=50'));
+      let j = {}; try { j = await r.json(); } catch (e) {}
+      const g = (j && j.green) || [];
+      return new Response(JSON.stringify({ ws, we, days: Math.round((we - ws) / 86400000), thresholds: { closesPerGreenDay: GD_DAY, closesToQualify: GD_SEASON }, entries: g.length, board: g.slice(0, 20) }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/runcron' && await adminCookieOk(request, env)) { // COOKIE-ONLY (no ?key=): tasks MUTATE MONEY (referrals pay out, duels settle XP escrow) — a URL key would land in browser history / logs / Referer. adminCookieOk is the ONLY accepted auth here. Runs a */10 cron task DIRECTLY in fetch context → iterate in seconds; a task that works here but not on the cron is the scheduled-vs-fetch signal (e.g. aeQuery).
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
@@ -15002,6 +15009,33 @@ export class UserStore {
         }
         flush();
       } catch (e) {}
+      // GREEN DAYS board (owner 2026-08-17, replaces the Demo-Spot bank board): how many days of the season
+      // the trader FINISHED in profit. It is the only board that cannot be won in one sitting — you have to
+      // come back and be green again. Anti-farm: a day only turns green with >= GD_DAY closes (so a single
+      // lucky micro-trade can't buy a day) and the trader needs >= GD_SEASON closes to appear at all.
+      // Server-filled+closed only (via<>'client'), same money-path rule as the other paid boards; the same
+      // symbol exclusions apply. Days are bucketed from the season start, so they line up with the season
+      // rather than with a viewer's local calendar.
+      const green = [];
+      try {
+        const gRows = this.rows("SELECT user_id uid, CAST((ts - ?) / 86400000 AS INTEGER) d, COUNT(*) n, COALESCE(SUM(pnl),0) p FROM tradeev WHERE kind='close' AND ts>=? AND ts<? AND via<>'client' AND pnl IS NOT NULL AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ") GROUP BY user_id, d", ws, ws, we);
+        const agg = {};
+        for (const g of gRows) {
+          const a = agg[String(g.uid)] || (agg[String(g.uid)] = { days: 0, closes: 0, pnl: 0, red: 0 });
+          a.closes += +g.n || 0; a.pnl += +g.p || 0;
+          if ((+g.n || 0) >= GD_DAY) { if ((+g.p || 0) > 0) a.days++; else a.red++; }
+        }
+        const gIds = Object.keys(agg).filter(u => agg[u].closes >= GD_SEASON && agg[u].days > 0 && agg[u].pnl > 0); // net-positive on the season, or you do not rank — see the note above the board
+        if (gIds.length) {
+          const nameOf = {};
+          for (let i = 0; i < gIds.length; i += 50) { // chunked: a large IN() silently returns 0 rows at scale
+            const part = gIds.slice(i, i + 50);
+            try { this.rows("SELECT id, username FROM users WHERE id IN (" + part.map(() => '?').join(',') + ") AND (status IS NULL OR status='active') AND username IS NOT NULL AND username!=''", ...part).forEach(u => { nameOf[String(u.id)] = u.username; }); } catch (e) {}
+          }
+          for (const u of gIds) if (nameOf[u]) green.push({ uid: u, name: nameOf[u], days: agg[u].days, red: agg[u].red, closes: agg[u].closes, pnl: +(agg[u].pnl).toFixed(2) });
+          green.sort((a, b) => (b.days - a.days) || (b.pnl - a.pnl) || (b.closes - a.closes));
+        }
+      } catch (e) {}
       for (const r of rows) {
         let arr = []; try { arr = JSON.parse(r.json); } catch (e) {}
         if (!Array.isArray(arr)) continue;
@@ -15088,7 +15122,7 @@ export class UserStore {
         xp = this.rows("SELECT u.id uid, u.username, " + SX + " sx FROM users u JOIN xpseason s ON s.user_id=u.id AND s.season=? WHERE (u.status IS NULL OR u.status='active') AND u.username IS NOT NULL AND u.username!='' AND " + SX + ">0 ORDER BY sx DESC LIMIT ?", ws, limit)
           .map(r => ({ uid: 'u:' + r.uid, name: String(r.username || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20), xp: +r.sx || 0 }));
       } catch (e) {}
-      return this.j({ top: best.slice(0, limit), xp });
+      return this.j({ top: best.slice(0, limit), xp, green: green.slice(0, limit) });
     }
     if (path === '/myfollowers') { // signed-in user's own follower count + most-recent follower (for the "new follower" toast)
       const uid = String(url.searchParams.get('uid') || ''); if (!uid) return this.j({ count: 0, last: null });
