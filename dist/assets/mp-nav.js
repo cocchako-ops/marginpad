@@ -499,6 +499,8 @@
     window.__mpTrack = function (t, e) {
       try {
         var u = '/api/track?t=' + encodeURIComponent(t) + (e ? '&e=' + encodeURIComponent(String(e).slice(0, 48)) : '') + '&p=' + encodeURIComponent(location.pathname);
+        // money clicks carry the entry source (set by the pageview beacon earlier in the session)
+        if (t === 'exchange' || t === 'tool') { try { var ms = sessionStorage.getItem('mp_src') || ''; if (!ms) { var f0 = JSON.parse(localStorage.getItem('mp_src0') || 'null'); if (f0 && f0.s && (Date.now() - (+f0.ts || 0)) <= 7776e6) ms = String(f0.s); } if (ms) u += '&src=' + encodeURIComponent(ms.slice(0, 40)); } catch (x2) {} }
         if (navigator.sendBeacon) navigator.sendBeacon(u); else (new Image()).src = u;
       } catch (x) {}
     };

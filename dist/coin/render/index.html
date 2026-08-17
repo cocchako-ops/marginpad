@@ -215,7 +215,7 @@
   })();
   // affiliate-click beacon (analytics + Google Ads / GA4 conversion signal)
   var ADS_CONV_LABEL='';/* paste your Google Ads conversion label here once created, e.g. 'abCdEf1gH' */
-  Array.prototype.forEach.call(document.querySelectorAll('[data-ex]'),function(a){a.addEventListener('click',function(){try{var ex=a.getAttribute('data-ex');if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathname});if(ADS_CONV_LABEL)gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon)navigator.sendBeacon(u);else (new Image()).src=u;}catch(e){}});});
+  Array.prototype.forEach.call(document.querySelectorAll('[data-ex]'),function(a){a.addEventListener('click',function(){try{var ex=a.getAttribute('data-ex');if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathname});if(ADS_CONV_LABEL)gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);var ms='';try{ms=sessionStorage.getItem('mp_src')||'';if(!ms){var f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(f0&&f0.s&&(Date.now()-(+f0.ts||0))<=7776e6)ms=String(f0.s);}}catch(e9){}if(ms)u+='&src='+encodeURIComponent(ms.slice(0,40));if(navigator.sendBeacon)navigator.sendBeacon(u);else (new Image()).src=u;}catch(e){}});});
 })();</script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>

@@ -1584,7 +1584,8 @@
     if(_es)pv+='&src='+encodeURIComponent(_es);else if(_s0)pv+='&s0='+encodeURIComponent(_s0);
     navigator.sendBeacon&&navigator.sendBeacon(pv);}catch(e){}
   document.addEventListener('click',function(e){var a=e.target.closest?e.target.closest('a[data-ex]'):null;if(!a)return;
-    try{navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=exchange&e='+encodeURIComponent(a.getAttribute('data-ex'))+'&p=/demo-home/');}catch(_){}},true);
+    try{var _ms='';try{_ms=sessionStorage.getItem('mp_src')||'';if(!_ms){var _f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(_f0&&_f0.s&&(Date.now()-(+_f0.ts||0))<=7776e6)_ms=String(_f0.s);}}catch(e8){}
+      navigator.sendBeacon&&navigator.sendBeacon('/api/track?t=exchange&e='+encodeURIComponent(a.getAttribute('data-ex'))+'&p=/demo-home/'+(_ms?'&src='+encodeURIComponent(_ms.slice(0,40)):''));}catch(_){}},true);
 
   // ---- geo-aware exchange cards: US/CA visitors see US-legal venues first (Bybit/Binance/OKX geoblock them) ----
   try{fetch('/api/geo').then(function(r){return r.json();}).then(function(g){

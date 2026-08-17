@@ -1139,7 +1139,7 @@
 document.addEventListener('click',function(ev){var a=ev.target&&ev.target.closest&&ev.target.closest('a[href*="ref=LZKBERJ"],a[href*="ref=MAOZM9DS"],a[href*="ref=96160298"],a[href*="ref=VHP8AYKY"],a[data-ex]');if(!a)return;try{
 var ex=a.getAttribute('data-ex')||(/binance/i.test(a.href)?'Binance':/bybit/i.test(a.href)?'Bybit':/okx/i.test(a.href)?'OKX':/kucoin/i.test(a.href)?'KuCoin':'exchange');
 if(window.gtag){gtag('event','affiliate_click',{exchange:ex,page:location.pathname});if(ADS_CONV_LABEL)gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}
-var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);if(navigator.sendBeacon)navigator.sendBeacon(u);
+var u='/api/track?t=exchange&e='+encodeURIComponent(ex)+'&p='+encodeURIComponent(location.pathname);var ms='';try{ms=sessionStorage.getItem('mp_src')||'';if(!ms){var f0=JSON.parse(localStorage.getItem('mp_src0')||'null');if(f0&&f0.s&&(Date.now()-(+f0.ts||0))<=7776e6)ms=String(f0.s);}}catch(e9){}if(ms)u+='&src='+encodeURIComponent(ms.slice(0,40));if(navigator.sendBeacon)navigator.sendBeacon(u);
 }catch(_){}},true);})();
 </script>
 <script defer src="/assets/mp-nav.js"></script>

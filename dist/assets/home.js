@@ -1278,6 +1278,9 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
         try{var _es=mpEntrySrc();if(_es)u+='&src='+encodeURIComponent(_es);else{var _s0=mpFirstSrc();if(_s0)u+='&s0='+encodeURIComponent(_s0);}}catch(_){}
         try{var lp=sessionStorage.getItem('mp_lastpath');if(lp&&lp!==location.pathname)u+='&f='+encodeURIComponent(lp);sessionStorage.setItem('mp_lastpath',location.pathname);}catch(_){}
       }
+      // money clicks carry the entry source too, so a paid campaign can be judged on exchange
+      // clicks and not just on pageviews (the pageview branch above already sends it)
+      if(t==='exchange'||t==='tool'){try{var _ms=mpEntrySrc()||mpFirstSrc();if(_ms)u+='&src='+encodeURIComponent(_ms);}catch(_){}}
       if(navigator.sendBeacon){navigator.sendBeacon(u);}else{fetch(u,{keepalive:true});}
       if(window.clarity){window.clarity('event', t+(e?':'+e:''));}
     }catch(_){}
