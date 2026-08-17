@@ -31,6 +31,10 @@ export class BitfinexCollector extends BaseCollector {
     for (const row of rows) {
       if (!Array.isArray(row) || row[0] !== 'pos') continue;
       const m = SYM_RE.exec(row[4] || ''); if (!m) continue;
+      // TESTBTC/TESTUSD etc. are Bitfinex PAPER-TRADING instruments — real fills, but not a real
+      // market. They were inflating our 24h totals and one of them surfaced as "the single largest
+      // liquidation" on /rekt/ (2026-08-17). Never emit them.
+      if (/^TEST/i.test(m[1])) continue;
       const amount = parseFloat(row[5]);
       const price = parseFloat(row[11] != null ? row[11] : row[6]);
       if (!(price > 0) || !(amount !== 0)) continue;
