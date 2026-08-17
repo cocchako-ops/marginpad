@@ -12449,6 +12449,10 @@ export default {
       const text = extractEmailText(raw);
       const msg = ((subject ? subject + '\n\n' : '') + text).slice(0, 1000) || '(no text body)';
       let rcpt = ''; try { rcpt = String(message.to || '').toLowerCase(); } catch (e) {}
+      // PERSONAL addresses are never filed as support: they would show up in the ops Support tab as tickets,
+      // readable and answerable by anyone with admin access. Forward only (EMAIL_FORWARD) and store nothing.
+      const PERSONAL = ['milan@'];
+      if (PERSONAL.some(a => rcpt.indexOf(a) === 0)) { if (env.EMAIL_FORWARD) { try { await message.forward(env.EMAIL_FORWARD); } catch (e) {} } return; }
       const inbox = rcpt.indexOf('affiliate@') === 0 ? 'affiliate' : 'email'; // affiliate@marginpad.io → its own mp-ops inbox section (creator/streaming deals, owner negotiates rates there)
       if (env.REWARDS) await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/support', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: from, message: msg, address: inbox }) }));
       // optionally also forward to a verified inbox (set EMAIL_FORWARD to a Cloudflare-verified destination address)
