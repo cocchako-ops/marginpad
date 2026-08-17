@@ -12022,7 +12022,7 @@ export default {
         const tok = getCookie(request, SESS_COOKIE); const vu = tok ? await sessionUser(env, tok) : null;
         const q = 'https://do/lbuser?name=' + encodeURIComponent(url.searchParams.get('name') || '') + (vu && vu.id ? '&viewer=' + encodeURIComponent(vu.id) : '');
         try { const r = await stub.fetch(new Request(q)); let txt = await r.text();
-          try { const jd = JSON.parse(txt); if (jd && jd.name) { const pset = await premiumSet(env); const lnm = String(jd.name).toLowerCase(); jd.premium = pset.has(lnm); jd.founder = PREM_FOUNDERS.indexOf(lnm) >= 0; jd.owner = PREM_OWNERS.indexOf(lnm) >= 0; txt = JSON.stringify(jd); } } catch (e) {} // premium/founder/owner flags for the PRO badge + tiered profile frame
+          try { const jd = JSON.parse(txt); if (jd && jd.name) { const pset = await premiumSet(env); const lnm = String(jd.name).toLowerCase(); jd.premium = pset.has(lnm); jd.founder = PREM_FOUNDERS.indexOf(lnm) >= 0; jd.owner = PREM_OWNERS.indexOf(lnm) >= 0; if (jd.uid) { try { const wr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbwins?acct=' + encodeURIComponent(jd.uid))); const wj = await wr.json(); if (wj && +wj.wins > 0) jd.wins = { n: +wj.wins || 0, boards: wj.boards || [], last: +wj.last || 0 }; } catch (e) {} } txt = JSON.stringify(jd); } } catch (e) {} // premium/founder/owner flags for the PRO badge + tiered profile frame
           return new Response(txt, { headers: { ...jh, 'cache-control': vu && vu.id ? 'no-store' : 'public, max-age=15' } }); }
         catch (e) { return new Response('{"exists":false}', { headers: jh }); }
       }
@@ -13518,6 +13518,15 @@ export class RewardLedger {
       const banned = {}; this.rows('SELECT address FROM lbban').forEach(r => { banned[r.address] = 1; });
       const top = this.rows('SELECT address,roe,pnl,symbol,side,name FROM lb WHERE week=? ORDER BY roe DESC LIMIT 30', week).map((r, i) => ({ rank: i + 1, address: r.address, name: r.name || '', roe: r.roe, pnl: r.pnl, symbol: r.symbol, side: r.side, banned: !!banned[r.address] }));
       return this.j({ week, top });
+    }
+    if (path === '/lbwins') { // season WINS (rank 1) for the profile medal — permanent, unlike the 14-day season frames
+      const a = String(url.searchParams.get('acct') || '');
+      if (!a) return this.j({ wins: 0, boards: [] });
+      let rows = [];
+      try { rows = this.rows("SELECT week, board, ts FROM lbpay WHERE acct=? AND rank=1 UNION ALL SELECT week, 'roe' board, ts FROM lbpayouts WHERE acct=? AND rank=1 ORDER BY ts DESC", a, a); } catch (e) {}
+      const boards = [], seen = {};
+      for (const r of rows) { const b = String(r.board || 'roe'); if (!seen[b]) { seen[b] = 1; boards.push(b); } }
+      return this.j({ wins: rows.length, boards, last: rows.length ? (+rows[0].ts || 0) : 0 });
     }
     if (path === '/lbbans') { return this.j({ banned: this.rows('SELECT address FROM lbban').map(r => r.address) }); } // ban list → worker applies it to the UserStore-derived board
     if (path === '/visit') { this.log('visit', acct || '', cc, dev, 0); return this.j({ ok: true }); } // someone opened the rewards page
