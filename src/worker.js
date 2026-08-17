@@ -4557,6 +4557,52 @@ function adminCookieHash(request, cookieName) {
   const c = cookies.split(/;\s*/).find(x => x.indexOf(cookieName + '=') === 0);
   return c ? c.slice(cookieName.length + 1) : '';
 }
+const PMAIL_HTML = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Private inbox</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e8ecf1;font-family:-apple-system,system-ui,Segoe UI,sans-serif}
+.top{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid #1c2230;position:sticky;top:0;background:#0a0b0d;z-index:5}
+.top b{font-size:14px;letter-spacing:.02em}.top .cnt{font:11px ui-monospace,Consolas,monospace;color:#7f8893}
+.top button{margin-left:auto;background:#151a22;border:1px solid #2a3140;color:#9aa3ad;border-radius:8px;padding:7px 13px;font-size:12px;cursor:pointer}
+.top button:hover{color:#ff6c5c;border-color:#ff6c5c}
+.wrap{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 53px)}
+@media(max-width:820px){.wrap{grid-template-columns:1fr}.rd{display:none}.wrap.open .lst{display:none}.wrap.open .rd{display:block}}
+.lst{border-right:1px solid #1c2230;overflow:auto}
+.it{padding:13px 16px;border-bottom:1px solid #141a24;cursor:pointer}
+.it:hover{background:#0f141b}.it.on{background:#121821;border-left:2px solid #c2f64a;padding-left:14px}
+.it .f{font-size:13px;font-weight:600;color:#e8ecf1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.it .s{font-size:12.5px;color:#c8d0d9;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.it .t{font:10.5px ui-monospace,Consolas,monospace;color:#6b7480;margin-top:4px}
+.rd{padding:22px 26px;overflow:auto}
+.rd h2{font-size:17px;margin:0 0 6px}.rd .meta{font:11.5px ui-monospace,Consolas,monospace;color:#7f8893;margin-bottom:16px}
+.rd pre{white-space:pre-wrap;word-wrap:break-word;font:13.5px/1.65 -apple-system,system-ui,sans-serif;color:#c8d0d9;margin:0}
+.empty{padding:40px 20px;text-align:center;color:#6b7480;font-size:13px}
+</style></head><body>
+<div class="top"><b>Private inbox</b><span class="cnt" id="cnt"></span><button onclick="lock()">Lock</button></div>
+<div class="wrap" id="wrap"><div class="lst" id="lst"><div class="empty">Loading…</div></div><div class="rd" id="rd"><div class="empty">Pick a message</div></div></div>
+<script>
+var M=[];
+function esc(s){return String(s==null?'':s).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];});}
+function fmt(ts){try{var d=new Date(ts);return d.toISOString().slice(0,16).replace('T',' ')+' UTC';}catch(e){return '';}}
+function open_(i){
+  var m=M[i];if(!m)return;
+  document.getElementById('rd').innerHTML='<h2>'+esc(m.subject||'(no subject)')+'</h2>'+
+    '<div class="meta">from '+esc(m.from)+' &middot; to '+esc(m.to)+' &middot; '+fmt(m.ts)+'</div>'+
+    '<pre>'+esc(m.body||'(empty)')+'</pre>';
+  var its=document.querySelectorAll('.it');for(var k=0;k<its.length;k++)its[k].classList.toggle('on',k===i);
+  document.getElementById('wrap').classList.add('open');
+}
+function lock(){fetch('/api/admin/pmail/logout',{method:'POST'}).then(function(){location.reload();});}
+fetch('/api/admin/pmail/data').then(function(r){return r.json();}).then(function(d){
+  M=(d&&d.mail)||[];
+  document.getElementById('cnt').textContent=M.length?(M.length+' message'+(M.length===1?'':'s')):'';
+  if(!M.length){document.getElementById('lst').innerHTML='<div class="empty">Nothing here yet.</div>';return;}
+  document.getElementById('lst').innerHTML=M.map(function(m,i){
+    return '<div class="it" onclick="open_('+i+')"><div class="f">'+esc(m.from)+'</div><div class="s">'+esc(m.subject||'(no subject)')+'</div><div class="t">'+fmt(m.ts)+'</div></div>';
+  }).join('');
+  open_(0);
+}).catch(function(){document.getElementById('lst').innerHTML='<div class="empty">Could not load.</div>';});
+</script></body></html>`;
 async function adminDoLogin(request, env, kvKey, cookieName, pathScope, go) {
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
   let b = {}; try { b = await request.json(); } catch (e) {}
@@ -11762,6 +11808,23 @@ export default {
       const r = await users.fetch(new Request('https://do/srvtrades'));
       return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
+    if (url.pathname === '/api/admin/pmail/login' && request.method === 'POST') { // first run sets the password; claiming it needs admin so a stranger cannot get there first
+      const had = (env.STATS && await env.STATS.get('cfg:pmailpass')) || '';
+      if (!had && !(await adminCookieOk(request, env)) && !isAdminKey(env, url.searchParams.get('key'))) return new Response(JSON.stringify({ error: 'admin_required_for_first_setup' }), { status: 403, headers: { 'content-type': 'application/json' } });
+      return adminDoLogin(request, env, 'cfg:pmailpass', 'mp_pmail', '/api/admin/pmail', '/api/admin/pmail');
+    }
+    if (url.pathname === '/api/admin/pmail/logout' && request.method === 'POST') return adminLogout('mp_pmail', '/api/admin/pmail');
+    if (url.pathname === '/api/admin/pmail/data') {
+      const stored = (env.STATS && await env.STATS.get('cfg:pmailpass')) || '';
+      if (!stored || adminCookieHash(request, 'mp_pmail') !== stored) return new Response(JSON.stringify({ error: 'locked' }), { status: 401, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+      let ring = []; try { ring = JSON.parse((await env.STATS.get('pmail')) || '[]'); } catch (e) {}
+      return new Response(JSON.stringify({ mail: ring.slice(0, 100) }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/pmail') {
+      const stored = (env.STATS && await env.STATS.get('cfg:pmailpass')) || '';
+      if (!stored || adminCookieHash(request, 'mp_pmail') !== stored) return new Response(adminLoginHTML('Private inbox', !stored, '/api/admin/pmail/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
+      return new Response(PMAIL_HTML, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
+    }
     if (url.pathname === '/api/admin/actdiag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // read-only: compare the three activity sources for one user
       const who = String(url.searchParams.get('user') || '').toLowerCase();
       const n = Math.min(400, Math.max(10, +url.searchParams.get('n') || 120));
@@ -12452,7 +12515,13 @@ export default {
       // PERSONAL addresses are never filed as support: they would show up in the ops Support tab as tickets,
       // readable and answerable by anyone with admin access. Forward only (EMAIL_FORWARD) and store nothing.
       const PERSONAL = ['milan@'];
-      if (PERSONAL.some(a => rcpt.indexOf(a) === 0)) { if (env.EMAIL_FORWARD) { try { await message.forward(env.EMAIL_FORWARD); } catch (e) {} } return; }
+      if (PERSONAL.some(a => rcpt.indexOf(a) === 0)) {
+        try { let ring = []; try { ring = JSON.parse((await env.STATS.get('pmail')) || '[]'); } catch (e) {}
+          ring.unshift({ ts: Date.now(), from, to: rcpt.slice(0, 60), subject, body: text.slice(0, 4000) });
+          await env.STATS.put('pmail', JSON.stringify(ring.slice(0, 200))); } catch (e) {}
+        if (env.EMAIL_FORWARD) { try { await message.forward(env.EMAIL_FORWARD); } catch (e) {} }
+        return;
+      }
       const inbox = rcpt.indexOf('affiliate@') === 0 ? 'affiliate' : 'email'; // affiliate@marginpad.io → its own mp-ops inbox section (creator/streaming deals, owner negotiates rates there)
       if (env.REWARDS) await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/support', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: from, message: msg, address: inbox }) }));
       // optionally also forward to a verified inbox (set EMAIL_FORWARD to a Cloudflare-verified destination address)
