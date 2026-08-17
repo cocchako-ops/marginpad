@@ -3804,6 +3804,7 @@ async function handleTrack(url, request, env, ctx) {
     const vid = did0 ? await sha8('d|' + did0) : await sha8(ip + '|' + ua);
     if (vid) {
       onlogMark(env, ctx, vid.slice(0, 6)); // A5 batched presence
+      let _newVisitor = false; // set below when this really is someone's first-ever pageview
       const seen = await env.STATS.get('uvd:' + day + ':' + vid);
       if (!seen) { // first visit today from this person — the per-visit counters live here so repeat pageviews stay cheap
         await env.STATS.put('uvd:' + day + ':' + vid, '1', { expirationTtl: 172800 });
@@ -3814,7 +3815,7 @@ async function handleTrack(url, request, env, ctx) {
         if (!ever && did0) { // transition: person may be known under the legacy ip+ua identity — don't call them new
           try { ever = await env.STATS.get('v:' + (await sha8(ip + '|' + ua))); migrated = !!ever; } catch (e) {}
         }
-        if (!ever) { await env.STATS.put('v:' + vid, day); await inc('uv:total'); await inc('uv:new:' + day); }
+        if (!ever) { _newVisitor = true; await env.STATS.put('v:' + vid, day); await inc('uv:total'); await inc('uv:new:' + day); }
         else { if (migrated) await env.STATS.put('v:' + vid, day); await inc('uv:ret:' + day); }
         if (cc) await inc('geo:' + cc);
         if (src !== 'direct') await inc('ref:' + src);
@@ -3829,7 +3830,10 @@ async function handleTrack(url, request, env, ctx) {
         const fromPath = (p.get('f') || '').replace(/[^a-zA-Z0-9/_?=&#:. -]/g, '').slice(0, 44);
         // s0 = client-remembered FIRST-TOUCH source (90d localStorage) — only sent when the current session has no
         // source of its own, so the live feed can say "back again, first came via X" instead of a blank landing.
-        const s0 = src === 'direct' ? await normRef9((p.get('s0') || '').replace(/[^a-zA-Z0-9 ._/+-]/g, '').trim().slice(0, 40)) : '';
+        // Only a visitor arriving for the FIRST time gets the remembered first-touch attached. It used to ride
+        // along on every direct pageview, so the feed told the admin a returning regular had 'come from telegram'
+        // on every single visit (owner, 2026-08-17 — it was neither true of that visit nor wanted).
+        const s0 = (_newVisitor && src === 'direct') ? await normRef9((p.get('s0') || '').replace(/[^a-zA-Z0-9 ._/+-]/g, '').trim().slice(0, 40)) : '';
         kvRingPush(env, ctx, 'pvlog', { v: vid.slice(0, 6), cc: cc || '', u: (getCookie(request, 'mp_un') || '').slice(0, 24), s: src, ...(s0 ? { s0 } : {}), p: pth0.slice(0, 44), f: fromPath, d: deviceOf(ua), ts: Date.now() }, 400, 10800000); // A5 batched
         void 0; // (old inline RMW removed)
         if (false) await env.STATS.put('pvlog', JSON.stringify(vlog), { expirationTtl: 86400 });
@@ -3857,13 +3861,24 @@ async function handleTrack(url, request, env, ctx) {
       await inc('aff:total'); await inc('aff:day:' + d2, 3456000);        // affiliate-click totals + daily series
     }
     if (type === 'exchange') await inc('xpath:' + (p.get('p') || '/').slice(0, 48)); // which page/tool drove this exchange link-out (revenue path)
-    if (type === 'exchange' || type === 'paper' || type === 'hotpair' || type === 'tool' || type === 'tab' || type === 'el' || type === 'nav' || type === 'prod' || type === 'close' || type === 'chat' || type === 'signin' || type === 'search' || type === 'watch' || type === 'ind' || type === 'draw' || type === 'ai' || type === 'profile' || type === 'coin' || type === 'lang' || type === 'share' || type === 'sltp' || type === 'premgate' || type === 'myprofile') { // live activity ring buffer — every meaningful CLICK + key actions (trade close/SL-TP, chat, sign-in, search, watchlist, chart indicator/drawing/AI, profile view, coin open, language, share) with a visitor id so the journeys view can show WHAT each person does, not just where they go
+    if (type === 'exchange' || type === 'paper' || type === 'hotpair' || type === 'tool' || type === 'tab' || type === 'nav' || type === 'prod' || type === 'close' || type === 'chat' || type === 'signin' || type === 'search' || type === 'watch' || type === 'ind' || type === 'draw' || type === 'ai' || type === 'profile' || type === 'coin' || type === 'lang' || type === 'share' || type === 'sltp' || type === 'premgate' || type === 'myprofile') { // live activity ring buffer — every meaningful CLICK + key actions (trade close/SL-TP, chat, sign-in, search, watchlist, chart indicator/drawing/AI, profile view, coin open, language, share) with a visitor id so the journeys view can show WHAT each person does, not just where they go
       try {
         const cc = (request.cf && request.cf.country) || '';
-        kvRingPush(env, ctx, 'evlog', { t: type, e: label, cc: cc, v: evVid.slice(0, 6), u: (getCookie(request, 'mp_un') || '').slice(0, 24), p: (p.get('p') || '').slice(0, 48), d: deviceOf(request.headers.get('user-agent') || ''), ts: Date.now() }, 800, 10800000); // A5 batched (cap aligned with evPush 800)
+        let _u9 = (getCookie(request, 'mp_un') || '').slice(0, 24);
+        if (!_u9) { // display-name cookie gone but the account cookie is there — resolve it, cached per isolate
+          const _uid9 = getCookie(request, 'mp_uid');
+          if (_uid9 && /^[0-9a-f]{32}$/.test(_uid9) && env.USERS) {
+            try { const _NC = globalThis.__unNm = globalThis.__unNm || new Map();
+              let _nm = _NC.get(_uid9);
+              if (_nm === undefined) { const _rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/roleof?uid=' + encodeURIComponent(_uid9) + '&full=1')); const _jj = await _rr.json(); _nm = (_jj && _jj.username) ? String(_jj.username).slice(0, 24) : ''; _NC.set(_uid9, _nm); if (_NC.size > 500) _NC.clear(); }
+              _u9 = _nm || '';
+            } catch (e) {}
+          }
+        }
+        kvRingPush(env, ctx, 'evlog', { t: type, e: label, cc: cc, v: evVid.slice(0, 6), u: _u9, p: (p.get('p') || '').slice(0, 48), d: deviceOf(request.headers.get('user-agent') || ''), ts: Date.now() }, 800, 10800000); // A5 batched (cap aligned with evPush 800)
         if (type === 'exchange') { // money clicks get their OWN ring (no TTL) so the Revenue tab keeps the last 50 regardless of event noise
           try { let mc = []; try { mc = JSON.parse(await env.STATS.get('mclog') || '[]'); } catch (e) {}
-            mc.unshift({ ts: Date.now(), e: label, p: (p.get('p') || '').slice(0, 60), cc: cc, u: (getCookie(request, 'mp_un') || '').slice(0, 24) });
+            mc.unshift({ ts: Date.now(), e: label, p: (p.get('p') || '').slice(0, 60), cc: cc, u: _u9 });
             if (mc.length > 50) mc = mc.slice(0, 50);
             await env.STATS.put('mclog', JSON.stringify(mc)); } catch (e) {}
         }
@@ -11747,6 +11762,23 @@ export default {
       const r = await users.fetch(new Request('https://do/srvtrades'));
       return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
+    if (url.pathname === '/api/admin/actdiag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // read-only: compare the three activity sources for one user
+      const who = String(url.searchParams.get('user') || '').toLowerCase();
+      const n = Math.min(400, Math.max(10, +url.searchParams.get('n') || 120));
+      let evlog = [], pvlog = [];
+      try { evlog = JSON.parse((await env.STATS.get('evlog')) || '[]'); } catch (e) {}
+      try { pvlog = JSON.parse((await env.STATS.get('pvlog')) || '[]'); } catch (e) {}
+      const mine = who ? evlog.filter(x => String(x.u || '').toLowerCase() === who) : [];
+      const minePv = who ? pvlog.filter(x => String(x.u || '').toLowerCase() === who) : [];
+      let uev = null;
+      if (who && env.USERS) { try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/uevdiag?name=' + encodeURIComponent(who) + '&n=' + n)); uev = await r.json(); } catch (e) {} }
+      const byType = {}; evlog.forEach(x => { byType[x.t] = (byType[x.t] || 0) + 1; });
+      const withUser = evlog.filter(x => x.u).length;
+      return new Response(JSON.stringify({ now: Date.now(),
+        evlog: { total: evlog.length, withUsername: withUser, oldest: evlog.length ? evlog[evlog.length - 1].ts : 0, byType, mine: mine.slice(0, n) },
+        pvlog: { total: pvlog.length, withUsername: pvlog.filter(x => x.u).length, withS0: pvlog.filter(x => x.s0).length, mine: minePv.slice(0, n) },
+        uevents: uev }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/greencheck' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // Green Days board over an arbitrary window (read-only): an empty board must be provably "nobody qualified", not a broken query
       const ws = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
       const we = +url.searchParams.get('we') || (ws + LB_PERIOD);
@@ -14240,6 +14272,17 @@ export class UserStore {
       try { this.rows("SELECT user_id, COUNT(*) AS c FROM uevents WHERE type='exchange' GROUP BY user_id").forEach(r => { exchange[r.user_id] = +r.c || 0; }); } catch (e) {}
       try { this.rows("SELECT user_id, COUNT(*) AS c FROM uevents WHERE type NOT IN ('pageview','hb','time') GROUP BY user_id").forEach(r => { engaged[r.user_id] = +r.c || 0; }); } catch (e) {}
       return this.j({ trades, exchange, engaged });
+    }
+    if (path === '/uevdiag') { // per-user activity trail, newest first (read-only)
+      const nm = String(url.searchParams.get('name') || '').toLowerCase();
+      const n = Math.min(400, Math.max(10, +url.searchParams.get('n') || 120));
+      const u = this.rows('SELECT id, username, created, last_seen FROM users WHERE lower(username)=? LIMIT 1', nm)[0];
+      if (!u) return this.j({ found: false });
+      const rows = this.rows('SELECT ts, type, label, path, cc, dev FROM uevents WHERE user_id=? ORDER BY ts DESC LIMIT ?', String(u.id), n);
+      const day = new Date().toISOString().slice(0, 10);
+      const mev = this.rows('SELECT type, n FROM mev WHERE user_id=? AND day=?', String(u.id), day);
+      const byType = {}; rows.forEach(r => { byType[r.type] = (byType[r.type] || 0) + 1; });
+      return this.j({ found: true, uid: String(u.id), username: u.username, created: +u.created || 0, lastSeen: +u.last_seen || 0, count: rows.length, byType, todayMev: mev, rows });
     }
     if (path === '/srvtrades') { // count src='srv' closed trades in the last 7d — answers whether the SRV_LB_START paid board (from the 2026-08-03 season, which ranks ONLY src==='srv' && sc) would be POPULATED or empty. Read-only journal scan.
       const since = Date.now() - 7 * 86400000;
