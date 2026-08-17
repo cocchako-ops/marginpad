@@ -7982,6 +7982,11 @@ async function handleNowpayIpn(request, env) {
 }
 const PREM_FOUNDERS = ['chako', 'whyme', 'gladijator']; // always premium, can't be removed
 const PREM_OWNERS = ['chako', 'gladijator']; // the site owners — get the exclusive owner frame (whyme is founder, not owner)
+// Badge text on the PUBLIC profile card for an owner account. Owner asked (2026-08-17) that his own
+// card read FOUNDER; anyone not listed keeps the default OWNER. Server-side on purpose — the card is
+// rendered by fourteen client copies (mp-profile.js, the bento source and twelve language homepages),
+// so a hardcoded label would mean fourteen edits and a cache wait every time it changes.
+const OWNER_TAG = { chako: 'FOUNDER' };
 // Per-coin max leverage — mirror of window.mpMaxLev in home.js. Only the deepest-liquidity coins get 1000×; illiquid tokens / metals / indices / forex are capped. Default 50×.
 const MAXLEV = { BTC: 1000, ETH: 1000, SOL: 1000, XRP: 1000, BNB: 1000, DOGE: 1000, HYPE: 1000, ADA: 1000, AVAX: 1000, LINK: 1000, LTC: 1000, DOT: 200, TRX: 1000, TON: 1000, SUI: 1000, BCH: 200, NEAR: 200, PEPE: 1000, SHIB: 200, WIF: 200, ATOM: 100, APT: 100, ARB: 100, OP: 100, MATIC: 100, POL: 100, INJ: 100, SEI: 100, TIA: 100, FIL: 100, ETC: 100, UNI: 100, AAVE: 100, RUNE: 100, LDO: 100, FTM: 100, ALGO: 100, HBAR: 100, ICP: 100, IMX: 100, STX: 100, RENDER: 100, FET: 100, ENA: 100, ONDO: 100, JUP: 100, PYTH: 100, STRK: 100, ORDI: 100, BONK: 100, FLOKI: 100, GALA: 100, SAND: 100, MANA: 100, AXS: 100, GRT: 100, CRV: 100, COMP: 100, DYDX: 100, WLD: 100, KAS: 100, TAO: 100, XLM: 100, VET: 100, XAU: 20, XAG: 20, SPX500: 20, NAS100: 20, US30: 20, GER40: 20, EURUSD: 50, GBPUSD: 50 };
 function maxLevFor(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); return MAXLEV[sym] || 50; }
@@ -12227,7 +12232,7 @@ export default {
         const tok = getCookie(request, SESS_COOKIE); const vu = tok ? await sessionUser(env, tok) : null;
         const q = 'https://do/lbuser?name=' + encodeURIComponent(url.searchParams.get('name') || '') + (vu && vu.id ? '&viewer=' + encodeURIComponent(vu.id) : '');
         try { const r = await stub.fetch(new Request(q)); let txt = await r.text();
-          try { const jd = JSON.parse(txt); if (jd && jd.name) { const pset = await premiumSet(env); const lnm = String(jd.name).toLowerCase(); jd.premium = pset.has(lnm); jd.founder = PREM_FOUNDERS.indexOf(lnm) >= 0; jd.owner = PREM_OWNERS.indexOf(lnm) >= 0; if (jd.uid) { try { const wr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbwins?acct=' + encodeURIComponent(jd.uid))); const wj = await wr.json(); if (wj && +wj.wins > 0) jd.wins = { n: +wj.wins || 0, boards: wj.boards || [], last: +wj.last || 0 }; } catch (e) {} } txt = JSON.stringify(jd); } } catch (e) {} // premium/founder/owner flags for the PRO badge + tiered profile frame
+          try { const jd = JSON.parse(txt); if (jd && jd.name) { const pset = await premiumSet(env); const lnm = String(jd.name).toLowerCase(); jd.premium = pset.has(lnm); jd.founder = PREM_FOUNDERS.indexOf(lnm) >= 0; jd.owner = PREM_OWNERS.indexOf(lnm) >= 0; jd.otag = jd.owner ? (OWNER_TAG[lnm] || 'OWNER') : ''; if (jd.uid) { try { const wr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/lbwins?acct=' + encodeURIComponent(jd.uid))); const wj = await wr.json(); if (wj && +wj.wins > 0) jd.wins = { n: +wj.wins || 0, boards: wj.boards || [], last: +wj.last || 0 }; } catch (e) {} } txt = JSON.stringify(jd); } } catch (e) {} // premium/founder/owner flags for the PRO badge + tiered profile frame
           return new Response(txt, { headers: { ...jh, 'cache-control': vu && vu.id ? 'no-store' : 'public, max-age=15' } }); }
         catch (e) { return new Response('{"exists":false}', { headers: jh }); }
       }
