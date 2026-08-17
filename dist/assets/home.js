@@ -1248,7 +1248,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       if(q){
         if(q.get('gclid')||q.get('gbraid')||q.get('wbraid'))src='google-ads';
         else if(q.get('msclkid'))src='bing-ads';
-        else if(q.get('utm_source')){src=q.get('utm_source')+(q.get('utm_medium')?' / '+q.get('utm_medium'):'');}
+        else if(q.get('utm_source')){src=q.get('utm_source')+(q.get('utm_medium')?' / '+q.get('utm_medium'):'')+(function(){var c=q.get('utm_campaign')||q.get('utm_content');return c?' / '+String(c).slice(0,14):'';})();}
         else if(q.get('fbclid'))src='facebook';
         else if(q.get('twclid'))src='twitter';
         else if(q.get('ttclid'))src='tiktok';
