@@ -1,3 +1,26 @@
+/* Chart times render in the VIEWER'S timezone. lightweight-charts formats the axis and crosshair in UTC,
+   so without this every visitor outside UTC saw a chart clock that disagreed with their own device — the
+   long-standing "chart is bugging" report (Belgrade device 17:56 vs axis 15:56, measured 2026-08-17).
+   DISPLAY ONLY: bar timestamps stay UTC, so bucketing, close countdowns, WS merging and liq checks are
+   unaffected. Shifting the data instead would corrupt every one of those. */
+function mpTzMerge(o){
+  var p=function(n){return n<10?'0'+n:''+n;};
+  var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var D=function(t){if(t&&typeof t==='object'&&t.year)return new Date(t.year,(t.month||1)-1,t.day||1);return new Date((+t||0)*1000);};
+  var hm=function(d){return p(d.getHours())+':'+p(d.getMinutes());};
+  o=o||{};
+  if(!o.localization)o.localization={};
+  if(!o.localization.timeFormatter)o.localization.timeFormatter=function(t){var d=D(t);return p(d.getDate())+' '+MON[d.getMonth()]+'  '+hm(d);};
+  if(!o.timeScale)o.timeScale={};
+  if(!o.timeScale.tickMarkFormatter)o.timeScale.tickMarkFormatter=function(t,type){var d=D(t);
+    if(type===0)return String(d.getFullYear());
+    if(type===1)return MON[d.getMonth()];
+    if(type===2)return String(d.getDate());
+    if(type===4)return hm(d)+':'+p(d.getSeconds());
+    return hm(d);};
+  return o;
+}
+function mpCreateChart(host,opts){return LightweightCharts.createChart(host,mpTzMerge(opts));}
 window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};if(!window.__mpWsL){window.__mpWsL=1;try{document.addEventListener('mp:price',function(ev){if(ev&&ev.detail&&ev.detail.sym)window.__mpWsSeen[ev.detail.sym]=Date.now();});}catch(e){}} /* TEMP pxtag until 2026-09-01 — DELETE with the pxtag round */
 /* ===== Charts workspace: draggable, resizable windowed charts (LightweightCharts) ===== */
 (function(){
@@ -269,7 +292,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       (function(){var dr={on:false};rz.addEventListener('pointerdown',function(e){dr.on=true;try{rz.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();e.stopPropagation();},true);
       rz.addEventListener('pointermove',function(e){if(!dr.on)return;var br=body.getBoundingClientRect();var nh=Math.max(60,Math.min(Math.round(br.height*0.6),Math.round(br.bottom-e.clientY)));sh.style.height=nh+'px';if(host)host.style.bottom=nh+'px';if(dc)dc.style.bottom=nh+'px';e.preventDefault();},true);
       rz.addEventListener('pointerup',function(){if(!dr.on)return;dr.on=false;try{localStorage.setItem('mp:subh',String(parseInt(sh.style.height)||0));}catch(_){}},true);})();}
-    if(!w.sub&&window.LightweightCharts&&sh){try{w.sub=LightweightCharts.createChart(sh,{layout:{background:{color:'transparent'},textColor:'#8b95a1',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.22)'},horzLines:{color:'rgba(35,41,50,.22)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{visible:false},crosshair:{mode:0},autoSize:true,handleScale:{axisPressedMouseMove:{time:false,price:false},mouseWheel:false,pinch:false},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false,mouseWheel:false}});
+    if(!w.sub&&window.LightweightCharts&&sh){try{w.sub=mpCreateChart(sh,{layout:{background:{color:'transparent'},textColor:'#8b95a1',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.22)'},horzLines:{color:'rgba(35,41,50,.22)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{visible:false},crosshair:{mode:0},autoSize:true,handleScale:{axisPressedMouseMove:{time:false,price:false},mouseWheel:false,pinch:false},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false,mouseWheel:false}});
       w.sub.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(!r||!w.chart||w._subSync)return;w._subSync=1;try{w.chart.timeScale().setVisibleLogicalRange(r);}catch(_){}w._subSync=0;});
       try{w.sub.subscribeCrosshairMove(function(prm){cwLeg(w,prm);});}catch(e){} /* hovering the indicator panel drives the value legend too */
       try{var _r0=w.chart.timeScale().getVisibleLogicalRange();if(_r0)w.sub.timeScale().setVisibleLogicalRange(_r0);}catch(e){}}catch(e){w.sub=null;}}
@@ -917,7 +940,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function applyTheme(){try{var bd=document.getElementById('cwsBoard');if(bd)bd.classList.toggle('cws-light',chTheme==='light');}catch(e){}for(var i=0;i<wins.length;i++){if(wins[i].chart)try{wins[i].chart.applyOptions(themeOpts());}catch(e){}}}
   function buildChart(w){ loadLib(function(){ if(w.dead||!window.LightweightCharts)return;
     var host=w.el.querySelector('.cwin-chart');
-    try{ w.chart=LightweightCharts.createChart(host,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.35)'},horzLines:{color:'rgba(35,41,50,.35)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:6,barSpacing:6},crosshair:{mode:0},autoSize:true});
+    try{ w.chart=mpCreateChart(host,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.35)'},horzLines:{color:'rgba(35,41,50,.35)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:6,barSpacing:6},crosshair:{mode:0},autoSize:true});
       w.candle=w.chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444',autoscaleInfoProvider:mtAutoscale(w)});
       try{if(chTheme==='light')w.chart.applyOptions(themeOpts());}catch(e){}
       /* FREE PAN (owner 2026-08-13): a vertical drag in the pane flips the price scale to manual so the user can pan
@@ -1398,7 +1421,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     function indN_(){var n=0;for(var k in mw.inds)if(mw.inds[k])n++;indN.textContent=n?(' '+n):'';indBtn.classList.toggle('on',n>0);}
     function updMT(){var has=hasTrades(mw.sym);mtBtn.hidden=!has;mtBtn.classList.toggle('on',!!mw.mtOn);}
     loadLib(function(){ if(!window.LightweightCharts)return; var host=wrap.querySelector('.cwm-chart');
-      try{ mw.chart=LightweightCharts.createChart(host,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.3)'},horzLines:{color:'rgba(35,41,50,.3)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:5,barSpacing:5},crosshair:{mode:1},autoSize:true});
+      try{ mw.chart=mpCreateChart(host,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.3)'},horzLines:{color:'rgba(35,41,50,.3)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:5,barSpacing:5},crosshair:{mode:1},autoSize:true});
         mw.candle=mw.chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444',autoscaleInfoProvider:mtAutoscale(mw)});
         var lg=document.createElement('div');lg.className='cwin-leg';host.appendChild(lg);mw.legEl=lg;
         try{mw.chart.subscribeCrosshairMove(function(p){cwLeg(mw,p);});}catch(e){}

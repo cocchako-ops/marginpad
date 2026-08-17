@@ -1,3 +1,26 @@
+/* Chart times render in the VIEWER'S timezone. lightweight-charts formats the axis and crosshair in UTC,
+   so without this every visitor outside UTC saw a chart clock that disagreed with their own device — the
+   long-standing "chart is bugging" report (Belgrade device 17:56 vs axis 15:56, measured 2026-08-17).
+   DISPLAY ONLY: bar timestamps stay UTC, so bucketing, close countdowns, WS merging and liq checks are
+   unaffected. Shifting the data instead would corrupt every one of those. */
+function mpTzMerge(o){
+  var p=function(n){return n<10?'0'+n:''+n;};
+  var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var D=function(t){if(t&&typeof t==='object'&&t.year)return new Date(t.year,(t.month||1)-1,t.day||1);return new Date((+t||0)*1000);};
+  var hm=function(d){return p(d.getHours())+':'+p(d.getMinutes());};
+  o=o||{};
+  if(!o.localization)o.localization={};
+  if(!o.localization.timeFormatter)o.localization.timeFormatter=function(t){var d=D(t);return p(d.getDate())+' '+MON[d.getMonth()]+'  '+hm(d);};
+  if(!o.timeScale)o.timeScale={};
+  if(!o.timeScale.tickMarkFormatter)o.timeScale.tickMarkFormatter=function(t,type){var d=D(t);
+    if(type===0)return String(d.getFullYear());
+    if(type===1)return MON[d.getMonth()];
+    if(type===2)return String(d.getDate());
+    if(type===4)return hm(d)+':'+p(d.getSeconds());
+    return hm(d);};
+  return o;
+}
+function mpCreateChart(host,opts){return LightweightCharts.createChart(host,mpTzMerge(opts));}
 window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};if(!window.__mpWsL){window.__mpWsL=1;try{document.addEventListener('mp:price',function(ev){if(ev&&ev.detail&&ev.detail.sym)window.__mpWsSeen[ev.detail.sym]=Date.now();});}catch(e){}} /* TEMP pxtag until 2026-09-01 — DELETE with the pxtag round */
 /* Mobile full-screen Charts — landscape-first 1/2-pane workspace: same indicator families as desktop, drawing, trade import, an AI chat bubble and a quick liq calculator. Exposed as window.mpOpenCharts(). */
 (function(){
@@ -126,7 +149,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     return p;
   }
   function initChart(p){ if(p.chart||!window.LightweightCharts||!p.host.clientWidth){return;}
-    p.chart=LightweightCharts.createChart(p.host,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.35)'},horzLines:{color:'rgba(35,41,50,.35)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:5,barSpacing:6},crosshair:{mode:0},autoSize:true});
+    p.chart=mpCreateChart(p.host,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.35)'},horzLines:{color:'rgba(35,41,50,.35)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:5,barSpacing:6},crosshair:{mode:0},autoSize:true});
     try{p.chart.subscribeCrosshairMove(function(param){mLeg(p,param);});}catch(e){}
     try{p.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<12)loadMoreM(p);});}catch(e){} // scrolled near the start → page older history (mirror desktop loadMoreW). Per-pane: closes over THIS p.
     /* FREE PAN (owner 2026-08-13): vertical pane drag -> manual price scale (pan up/down freely); axis drag remembered; p._userPS gates every periodic autoScale re-assert; a fresh symbol/TF load (loadKlines) or price-axis double-tap re-arms autofit. */
@@ -291,7 +314,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       (function(){var dr={on:false};rz.addEventListener('pointerdown',function(e){dr.on=true;try{rz.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();e.stopPropagation();},true);
       rz.addEventListener('pointermove',function(e){if(!dr.on)return;var br=el.getBoundingClientRect();var nh=Math.max(56,Math.min(Math.round(br.height*0.55),Math.round(br.bottom-e.clientY)));sh.style.height=nh+'px';if(host)host.style.bottom=nh+'px';if(dc)dc.style.bottom=nh+'px';e.preventDefault();},true);
       rz.addEventListener('pointerup',function(){if(!dr.on)return;dr.on=false;try{localStorage.setItem('mp:subhm',String(parseInt(sh.style.height)||0));}catch(_){}},true);})();}
-    if(!p.sub&&window.LightweightCharts&&sh){try{p.sub=LightweightCharts.createChart(sh,{layout:{background:{color:'transparent'},textColor:'#8b95a1',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.22)'},horzLines:{color:'rgba(35,41,50,.22)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{visible:false},crosshair:{mode:0},autoSize:true,handleScale:{axisPressedMouseMove:{time:false,price:false},mouseWheel:false,pinch:false},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false,mouseWheel:false}});
+    if(!p.sub&&window.LightweightCharts&&sh){try{p.sub=mpCreateChart(sh,{layout:{background:{color:'transparent'},textColor:'#8b95a1',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.22)'},horzLines:{color:'rgba(35,41,50,.22)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{visible:false},crosshair:{mode:0},autoSize:true,handleScale:{axisPressedMouseMove:{time:false,price:false},mouseWheel:false,pinch:false},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false,mouseWheel:false}});
       p.sub.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(!r||!p.chart||p._subSync)return;p._subSync=1;try{p.chart.timeScale().setVisibleLogicalRange(r);}catch(_){}p._subSync=0;});
       try{p.sub.subscribeCrosshairMove(function(prm){mLeg(p,prm);});}catch(e){} /* touch-scrub over the indicator strip drives the value legend */
       try{var _r0=p.chart.timeScale().getVisibleLogicalRange();if(_r0)p.sub.timeScale().setVisibleLogicalRange(_r0);}catch(e){}}catch(e){p.sub=null;}}

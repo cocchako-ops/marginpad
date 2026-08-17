@@ -1,4 +1,27 @@
-﻿/* MarginPad homepage bundle — extracted from app/index.html inline blocks (order preserved).
+﻿/* Chart times render in the VIEWER'S timezone. lightweight-charts formats the axis and crosshair in UTC,
+   so without this every visitor outside UTC saw a chart clock that disagreed with their own device — the
+   long-standing "chart is bugging" report (Belgrade device 17:56 vs axis 15:56, measured 2026-08-17).
+   DISPLAY ONLY: bar timestamps stay UTC, so bucketing, close countdowns, WS merging and liq checks are
+   unaffected. Shifting the data instead would corrupt every one of those. */
+function mpTzMerge(o){
+  var p=function(n){return n<10?'0'+n:''+n;};
+  var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var D=function(t){if(t&&typeof t==='object'&&t.year)return new Date(t.year,(t.month||1)-1,t.day||1);return new Date((+t||0)*1000);};
+  var hm=function(d){return p(d.getHours())+':'+p(d.getMinutes());};
+  o=o||{};
+  if(!o.localization)o.localization={};
+  if(!o.localization.timeFormatter)o.localization.timeFormatter=function(t){var d=D(t);return p(d.getDate())+' '+MON[d.getMonth()]+'  '+hm(d);};
+  if(!o.timeScale)o.timeScale={};
+  if(!o.timeScale.tickMarkFormatter)o.timeScale.tickMarkFormatter=function(t,type){var d=D(t);
+    if(type===0)return String(d.getFullYear());
+    if(type===1)return MON[d.getMonth()];
+    if(type===2)return String(d.getDate());
+    if(type===4)return hm(d)+':'+p(d.getSeconds());
+    return hm(d);};
+  return o;
+}
+function mpCreateChart(host,opts){return LightweightCharts.createChart(host,mpTzMerge(opts));}
+/* MarginPad homepage bundle — extracted from app/index.html inline blocks (order preserved).
    This file is the SOURCE (edited in place like mp-trade.js); app/index.html references it. */
 /* TEMP pxtag (until 2026-09-01): identify WHO drives /api/price. __mpPQ(ctx,sym) → query suffix &px=<ctx>&pxw=<0|1>
    appended to every /api/price poll; pxw = is this symbol WS-covered (fresh <15s in __mpWsSeen, marked in emit()).
@@ -325,7 +348,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   var _userPS=false; /* FREE PAN (owner 2026-08-13): true = the user panned/scaled the price axis by hand — every periodic autoScale re-assert must stand down until a symbol/TF change (or price-axis double-click) re-arms autofit */
   function wireFreePan(el){var st={d:0};el.addEventListener('pointerdown',function(e){var r=el.getBoundingClientRect();st.d=1;st.x=e.clientX;st.y=e.clientY;st.ax=(e.clientX>r.right-64);st.dec=0;},true);el.addEventListener('pointermove',function(e){if(!st.d||st.dec)return;var dx=Math.abs(e.clientX-st.x),dy=Math.abs(e.clientY-st.y);if(dx<5&&dy<5)return;st.dec=1;if(st.ax){_userPS=true;return;}if(dy>dx){_userPS=true;try{chart.priceScale('right').applyOptions({autoScale:false});}catch(_){}}},true);window.addEventListener('pointerup',function(){st.d=0;},true);el.addEventListener('dblclick',function(e){var r=el.getBoundingClientRect();if(e.clientX>r.right-64){_userPS=false;try{chart.priceScale('right').applyOptions({autoScale:true});}catch(_){}}});}
   function loadLib(cb){if(window.LightweightCharts)return cb();var s=document.createElement('script');s.src='/assets/lightweight-charts-4.2.0.js';s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
-  function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;chart=LightweightCharts.createChart(el,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:10,barSpacing:7},crosshair:{mode:1},autoSize:true});wireFreePan(el);candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444',lastValueVisible:false,priceLineVisible:true,priceLineColor:'#9aa3ad',autoscaleInfoProvider:function(orig){try{
+  function initChart(){if(chart||!window.LightweightCharts)return;var el=document.getElementById('ptChart');if(!el||!el.clientWidth)return;chart=mpCreateChart(el,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Familjen Grotesk',system-ui,sans-serif",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,.4)'},horzLines:{color:'rgba(35,41,50,.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false,rightOffset:10,barSpacing:7},crosshair:{mode:1},autoSize:true});wireFreePan(el);candle=chart.addCandlestickSeries({upColor:'#10b981',downColor:'#ef4444',borderVisible:false,wickUpColor:'#10b981',wickDownColor:'#ef4444',lastValueVisible:false,priceLineVisible:true,priceLineColor:'#9aa3ad',autoscaleInfoProvider:function(orig){try{
     // Scale = the visible candles, EXTENDED to include the open position's entry/liq/tp/sl lines so they're visible on EVERY
     // timeframe — but the expansion is CAPPED so the candles never shrink below ~30% of the view (no "zoomed-out like a higher TF").
     if(!bars||!bars.length)return orig?orig():null;
@@ -1741,7 +1764,7 @@ window.addEventListener('load', function () {
     s.onload=function(){libBusy=false;cb();}; s.onerror=function(){libBusy=false;stage.innerHTML='<div class="heat-err">Chart failed to load — check your connection.</div>';};
     document.head.appendChild(s); }
   function initChart(){ if(chart||!window.LightweightCharts)return;
-    chart=LightweightCharts.createChart(stage,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Space Mono', monospace",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,0.4)'},horzLines:{color:'rgba(35,41,50,0.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false},crosshair:{mode:1,vertLine:{color:'rgba(194,246,74,0.45)',labelBackgroundColor:'#3a4416'},horzLine:{color:'rgba(194,246,74,0.45)',labelBackgroundColor:'#3a4416'}},autoSize:true});
+    chart=mpCreateChart(stage,{layout:{background:{color:'transparent'},textColor:'#9aa3ad',fontFamily:"'Space Mono', monospace",attributionLogo:false},grid:{vertLines:{color:'rgba(35,41,50,0.4)'},horzLines:{color:'rgba(35,41,50,0.4)'}},rightPriceScale:{borderColor:'#232932'},timeScale:{borderColor:'#232932',timeVisible:true,secondsVisible:false},crosshair:{mode:1,vertLine:{color:'rgba(194,246,74,0.45)',labelBackgroundColor:'#3a4416'},horzLine:{color:'rgba(194,246,74,0.45)',labelBackgroundColor:'#3a4416'}},autoSize:true});
     candle=chart.addCandlestickSeries({upColor:'#2ebd85',downColor:'#ff6258',borderVisible:false,wickUpColor:'#2ebd85',wickDownColor:'#ff6258'}); }
   function setLines(P){ if(!candle)return; for(var i=0;i<plines.length;i++){try{candle.removePriceLine(plines[i]);}catch(e){}} plines=[]; if(!P)return;
     plines.push(candle.createPriceLine({price:P,color:'#ffffff',lineWidth:2,lineStyle:2,axisLabelVisible:true,title:'PRICE'}));
