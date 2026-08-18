@@ -95,6 +95,45 @@ ${relatedHtml}
 // ---- NEW articles (hand-written bodies) ----
 const NEW = [
   {
+    slug:'uae-crypto-tax-residency', tag:'UAE', read:9, crumb:'UAE crypto tax', date:'2026-08-19',
+    title:'UAE Crypto Tax for Traders (2026): 0% Is Real &mdash; Tax Residency Is the Part People Get Wrong',
+    desc:'The UAE really does levy no personal income or capital gains tax on crypto. The trap is the certificate: domestic tax residency starts at 90 days, but a foreign tax authority will normally want 183 before it stops taxing you. What the three tests actually are, and when the 9% corporate rate applies instead.',
+    keywords:'uae crypto tax, dubai crypto tax, uae tax residency crypto, uae tax residency certificate, 183 day rule uae, 90 day rule uae, move to dubai crypto trader, crypto tax free country, abu dhabi crypto tax, trc uae',
+    faq:[{q:'Is crypto really tax-free in the UAE?',a:'For an individual acting in a personal capacity, yes: the UAE levies no personal income tax and no capital gains tax, so trading, staking and mining profits are not taxed and there is no return to file on them. Transferring and converting virtual assets has also been VAT-exempt since January 2018. The two things that change the answer are trading at a scale that makes it a business, which brings the 9% corporate tax into play, and remaining tax resident somewhere else.'},{q:'How many days do I need to spend in the UAE?',a:'Under Cabinet Decision No. 85 of 2022 there are three routes: a centre-of-interests test, 183 days of physical presence in any rolling twelve-month period, or 90 days if you are a UAE or GCC national or hold a valid residence permit AND keep a permanent home in the country. Partial days count as whole days. Note that the twelve months roll continuously and are not the calendar year.'},{q:'Does a UAE Tax Residency Certificate stop my home country taxing me?',a:'Not automatically, and this is where people come unstuck. Domestic residency at 90 days does not deliver a treaty-valid certificate: the Federal Tax Authority requires 183 days of physical presence for a certificate intended for treaty purposes, and a foreign authority presented with a 90-day certificate will normally reject it for treaty relief. Getting a UAE residence visa also does not, by itself, end tax residency in the country you left.'},{q:'Will my trading be reported to my home country?',a:'Increasingly, yes. The UAE signed the Crypto-Asset Reporting Framework in July 2025, with cross-border exchange of information expected to begin in 2028. Zero local tax has never meant zero reporting, and exchanges collect your data regardless of the local rate.'}],
+    body:`    <p>The headline is true, which is why it travels so far: <strong>the UAE levies no personal income tax and no capital gains tax</strong>. An individual trading their own money pays nothing on the profit and files no return on it. Virtual asset transfers and conversions have been VAT-exempt since January 2018 as well.</p>
+    <p>What travels less well is the rest of the sentence. Three things decide whether the 0% actually applies to <em>you</em>, and only one of them is about the UAE.</p>
+
+    <h2>1. &ldquo;Personal capacity&rdquo; is doing real work</h2>
+    <p>The exemption covers an individual acting for themselves. If the activity amounts to a business &mdash; scale, structure, trading on behalf of others, operating through a company &mdash; the UAE&rsquo;s <strong>9% corporate tax</strong> can apply instead. There is no bright line published for &ldquo;when does a trader become a business&rdquo;, which is precisely why it is worth asking someone qualified before assuming which side of it you sit on.</p>
+
+    <h2>2. Tax residency has three doors, and they are not the same size</h2>
+    <p>Cabinet Decision No. 85 of 2022, with Ministerial Decision No. 27 of 2023 filling in the detail, sets out three routes to UAE tax residency for an individual:</p>
+    <ul>
+      <li><strong>Centre of interests</strong> &mdash; your personal and financial life is primarily in the UAE.</li>
+      <li><strong>183 days</strong> of physical presence in any consecutive twelve-month period.</li>
+      <li><strong>90 days</strong>, but only if you are a UAE or GCC national or hold a valid UAE residence permit, <em>and</em> you maintain a permanent place of residence in the country.</li>
+    </ul>
+    <p>Two details matter more than they look. The twelve-month window <strong>rolls continuously</strong> rather than resetting each January, so the count is not a calendar-year exercise. And a partial day counts as a whole day &mdash; if you were in the country for any part of it, it counts.</p>
+
+    <h2>3. The certificate is where it usually goes wrong</h2>
+    <p>This is the part that costs people money, and most guides skip it entirely.</p>
+    <p>Being tax resident under UAE domestic law and holding a certificate that a <em>foreign</em> tax authority will accept are two different things. The Federal Tax Authority issues a Tax Residency Certificate, but for treaty purposes it expects <strong>183 days</strong> of physical presence &mdash; even where domestic residency was established at 90.</p>
+    <p>So the failure mode looks like this: you qualify domestically at 90 days, obtain a certificate, present it at home to claim exemption on your trading gains, and the authority there declines to treat it as a treaty certificate. You are then tax resident in your old country on income you assumed was untaxed, usually with interest attached.</p>
+    <p>A residence visa on its own does even less than that. It does not make you UAE tax resident and it does not end tax residency where you came from &mdash; that is decided by your old country&rsquo;s rules, and plenty of them use tests that a plane ticket does not satisfy.</p>
+
+    <h2>4. Zero tax has never meant zero reporting</h2>
+    <p>The UAE signed the <strong>Crypto-Asset Reporting Framework</strong> in July 2025, with cross-border exchange of information expected from <strong>2028</strong>. Exchanges collect and share account data on the basis of where you are tax resident, whatever the local rate happens to be. Planning that depends on nobody finding out has a visible expiry date.</p>
+
+    <h2>Where you can actually trade from</h2>
+    <p>Worth knowing before you plan around a city: the UAE has two crypto regulators and they give different answers. Bybit holds the first full Virtual Asset Platform Operator licence from the federal <strong>SCA</strong>, covering the mainland &mdash; but retail users physically inside the <strong>Dubai</strong> emirate, which is regulated separately by VARA, are blocked from bybit.com. Abu Dhabi and the rest of the country have full access. We set that out in detail in <a href="/blog/bybit-uae-dubai-availability/">can you use Bybit in the UAE</a>.</p>
+
+    <h2>The honest summary</h2>
+    <p>The UAE is one of the most favourable places in the world to trade from, and nothing above changes that. What changes is the amount of care the move deserves: the tax outcome depends on days counted correctly, a certificate at the right threshold, activity that stays personal rather than corporate, and a clean exit from your previous tax residency. Those are four separate things, and the internet&rsquo;s &ldquo;0% tax&rdquo; posts usually address none of them.</p>
+    <p>Get advice from someone qualified in <em>both</em> jurisdictions before you move money on the strength of a headline &mdash; including this one. What we can help with is the trading side: our <a href="/calculators?c=liq">liquidation calculator</a> shows exactly where a position gets closed against you, and the <a href="/paper-trade">paper-trading terminal</a> lets you rehearse on live prices before any of it is real.</p>
+`,
+    bottom:`<div class="cta-box"><h3>Know the exit before the entry</h3><p style="margin-bottom:14px">Entry, leverage, direction &mdash; the exact liquidation price with fees included. Free, no signup.</p><a class="cta" href="/calculators?c=liq">Open the liquidation calculator &rarr;</a></div>`
+  },
+  {
     slug:'mica-deadline-passed-what-happened', tag:'Europe', read:8, crumb:'After the MiCA deadline', date:'2026-08-18',
     title:'The MiCA Deadline Has Passed: What Actually Happened to Europe&rsquo;s Crypto Exchanges',
     desc:'On 1 July 2026 the MiCA transition ended with no extension, and most of Europe&rsquo;s registered crypto firms lost the right to serve EU customers. Which exchanges kept their licence, what happens to your balance if yours did not, and how to check before you deposit again.',
@@ -1253,6 +1292,7 @@ const NEW = [
 
 // full list for the index (existing + new), newest first-ish
 const INDEX = [
+  {slug:'uae-crypto-tax-residency', tag:'UAE', title:'UAE Crypto Tax for Traders (2026): 0% Is Real &mdash; Tax Residency Is the Part People Get Wrong', card:'The exemption is genuine. The trap is the certificate: domestic residency starts at 90 days, but a foreign authority normally wants 183 before it stops taxing you.'},
   {slug:'mica-deadline-passed-what-happened', tag:'Europe', title:'The MiCA Deadline Has Passed: What Actually Happened to Europe&rsquo;s Crypto Exchanges', card:'1 July 2026 came with no extension and most of Europe&rsquo;s registered crypto firms lost the right to serve EU customers. How to check whether yours survived &mdash; in five minutes.'},
   {slug:'bybit-uae-dubai-availability', tag:'UAE', title:'Can You Use Bybit in the UAE? The Dubai Exception Most Guides Get Wrong (2026)', card:'A full federal SCA licence across the mainland &mdash; and a retail block inside the Dubai emirate. Two regulators, two opposite answers, plus the tax picture behind the 0% headline.'},
   {"slug":"moon-trading-platform-review","tag":"Guides","title":"Moon Review (2026): Call Crypto, Stocks & Forex Up or Down — 24/7","card":"Moon is MarginPad's newest partner — call markets up or down on crypto, stocks, forex and commodities, with leverage, around the clock, on one account. How it works, how it differs from futures, and how rewards cash out to Moon."},
