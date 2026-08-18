@@ -85,11 +85,11 @@ function contactBody(lang) {
   return `
     <h1>${t.cTitle}</h1>
     <p class="lead">${t.cLead}</p>
-    <h2> ${t.cH1}</h2>
+    <h2>${t.cH1}</h2>
     <p>${p1}</p>
-    <h2> ${t.cH2}</h2>
+    <h2>${t.cH2}</h2>
     <p>${p2}</p>
-    <h2> ${t.cH3}</h2>
+    <h2>${t.cH3}</h2>
     <p>${t.cP3}</p>
   `;
 }

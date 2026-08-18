@@ -5195,7 +5195,7 @@ async function handleStats(url, env, request, ctx) {
     ? '<h2>Bot users <span>(who uses the Telegram bot · ' + botUserList.length + ')</span></h2><div class="feed" style="max-height:360px;overflow:auto">' + botUserList.slice(0, 80).map(u => {
         const nm = u.u ? '@' + esc(u.u) : (esc(u.f) || ('id ' + esc(u.id)));
         const link = u.u ? 'https://t.me/' + esc(u.u) : '';
-        return '<div class="fe"><span class="fe-f"></span><span class="fe-t">' + (link ? '<a href="' + link + '" target="_blank" rel="noopener" style="color:#e9e7df;text-decoration:none"><b>' + nm + '</b></a>' : '<b>' + nm + '</b>') + (u.lc ? ' <span style="color:#5c656f">last: /' + esc(u.lc) + '</span>' : '') + ' <span style="color:#5c656f">· ' + u.n + ' msg</span></span><span class="fe-a">' + (u.ts ? ago(u.ts) + ' ago' : '') + '</span></div>';
+        return '<div class="fe"><span class="fe-t">' + (link ? '<a href="' + link + '" target="_blank" rel="noopener" style="color:#e9e7df;text-decoration:none"><b>' + nm + '</b></a>' : '<b>' + nm + '</b>') + (u.lc ? ' <span style="color:#5c656f">last: /' + esc(u.lc) + '</span>' : '') + ' <span style="color:#5c656f">· ' + u.n + ' msg</span></span><span class="fe-a">' + (u.ts ? ago(u.ts) + ' ago' : '') + '</span></div>';
       }).join('') + '</div>' + (botUserList.length > 80 ? '<div class="cap">showing 80 of ' + botUserList.length + '</div>' : '')
     : '';
   // last visitors — who (country) + from which source (referrer), most recent 5
@@ -7618,7 +7618,7 @@ function loadTgbot(){
     var cm=document.getElementById('tgCmds'),cmds=d.commands||[],mx=Math.max.apply(null,cmds.map(function(x){return x[1];}).concat([1]));
     if(cm)cm.innerHTML=cmds.length?cmds.slice(0,18).map(function(x){return '<div class="row"><span class="lbl">/'+esc(x[0])+'</span><div class="track"><div class="fill" style="width:'+Math.max(3,x[1]/mx*100).toFixed(1)+'%"></div></div><span class="cnt">'+N(x[1])+'</span></div>';}).join(''):'<div class="empty">no commands yet</div>';
     var ac=document.getElementById('tgAct');
-    if(ac)ac.innerHTML=(d.activity||[]).length?d.activity.map(function(x){return '<div class="fe"><span class="fe-f"></span><span class="fe-t">'+(x.u?'<b>@'+esc(x.u)+'</b> ':'someone ')+'used <b>/'+esc(x.e)+'</b></span><span class="fe-a">'+ago(x.ts)+' ago</span></div>';}).join(''):'<div class="empty">no recent bot activity</div>';
+    if(ac)ac.innerHTML=(d.activity||[]).length?d.activity.map(function(x){return '<div class="fe"><span class="fe-t">'+(x.u?'<b>@'+esc(x.u)+'</b> ':'someone ')+'used <b>/'+esc(x.e)+'</b></span><span class="fe-a">'+ago(x.ts)+' ago</span></div>';}).join(''):'<div class="empty">no recent bot activity</div>';
     var pr=document.getElementById('tgPrem');
     if(pr)pr.innerHTML=(d.premReqs||[]).length?d.premReqs.map(function(x){return '<div class="row"><span class="lbl">'+esc(x.name||('chat '+x.chat))+(x.un?' <span style="color:#5c6b84">@'+esc(x.un)+'</span>':'')+'</span><span class="cnt" style="color:#8fa3c4;font-weight:400">'+(x.ts?ago(x.ts)+' ago':'')+'</span></div>';}).join(''):'<div class="empty">no premium requests yet</div>';
     renderTgUsers();

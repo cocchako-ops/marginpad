@@ -717,7 +717,7 @@
 
 <header>
   <div class="brand">
-    <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span><span></span><span></span></button>
+    <button type="button" class="hmenu" id="mBurger" aria-label="Menu"><span></span></button>
     <a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a>
   </div>
   <nav class="hnav">
@@ -987,7 +987,7 @@
       </div>
       <div class="hh-wrap" id="hhWrap" hidden>
         <button type="button" class="hh-card hh-when" id="hhWhenCard" aria-haspopup="dialog">
-          <div class="hh-top"><span class="hh-ic"></span>XP Happy Hour<span class="hh-state" id="hhState">DAILY</span><span class="hh-more">Details ›</span></div>
+          <div class="hh-top">XP Happy Hour<span class="hh-state" id="hhState">DAILY</span><span class="hh-more">Details ›</span></div>
           <div class="hh-count" id="hhCount">—</div>
           <div class="hh-sub">Every day · <b>18:00–19:00 UTC</b> · tap for details</div>
         </button>
@@ -1468,7 +1468,7 @@
       modal.hidden=false;}
     if(whenCard)whenCard.addEventListener('click',openHH);
     // ---- render promo cards ----
-    function renderPromos(){if(!promosEl)return;promosEl.innerHTML=promos.map(function(p){return '<button type="button" class="hh-card hh-promo" data-pid="'+esc(p.id)+'"><div class="hh-top"><span class="hh-ic"></span>'+esc(p.title)+'<span class="hh-state">'+(p.active?'LIVE':'SOON')+'</span><span class="hh-more">Details ›</span></div><div class="hh-count promo-count">—</div><div class="hh-sub">'+esc(coinsTxt(p.coins))+' · '+(p.winOnly!==false?'WIN ':'')+'over <b>'+p.roeMin+'% ROE</b> · max <b>'+p.levMax+'×</b> · <b>+'+p.xp+' XP</b></div></button>';}).join('');
+    function renderPromos(){if(!promosEl)return;promosEl.innerHTML=promos.map(function(p){return '<button type="button" class="hh-card hh-promo" data-pid="'+esc(p.id)+'"><div class="hh-top">'+esc(p.title)+'<span class="hh-state">'+(p.active?'LIVE':'SOON')+'</span><span class="hh-more">Details ›</span></div><div class="hh-count promo-count">—</div><div class="hh-sub">'+esc(coinsTxt(p.coins))+' · '+(p.winOnly!==false?'WIN ':'')+'over <b>'+p.roeMin+'% ROE</b> · max <b>'+p.levMax+'×</b> · <b>+'+p.xp+' XP</b></div></button>';}).join('');
       Array.prototype.forEach.call(promosEl.querySelectorAll('[data-pid]'),function(btn){btn.addEventListener('click',function(){var p=promos.filter(function(x){return x.id===btn.getAttribute('data-pid');})[0];if(p)openPromo(p);});});}
     function tick(){
       var anyHH=cfg&&cfg.enabled, now=Date.now()+off;

@@ -247,7 +247,7 @@ h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:33px;l
     <div class="wts-intake" id="wtsIntake" hidden>
       <div class="intake-h">What do you want to learn?</div>
       <div class="intake-sub">Tell us where you're at and we'll point you to the right place. No test — just pick one.</div>
-      <div class="intake-opts"><button class="intake-opt" data-goal="basics" type="button"><span class="io-ic"></span><span class="io-t"><b>I'm completely new to crypto</b><small>Start from money, wallets and exchanges</small></span><span class="io-go">›</span></button><button class="intake-opt" data-goal="fundamentals" type="button"><span class="io-ic"></span><span class="io-t"><b>I know crypto — teach me trading</b><small>Leverage, margin, liquidation, orders, funding</small></span><span class="io-go">›</span></button><button class="intake-opt" data-goal="indicators" type="button"><span class="io-ic"></span><span class="io-t"><b>I want to read charts &amp; indicators</b><small>Candles, RSI, MACD, Bollinger and more</small></span><span class="io-go">›</span></button><button class="intake-opt" data-goal="risk" type="button"><span class="io-ic"></span><span class="io-t"><b>I want to manage risk &amp; psychology</b><small>Sizing, stops, risk of ruin, the mental game</small></span><span class="io-go">›</span></button><button class="intake-opt" data-goal="all" type="button"><span class="io-ic"></span><span class="io-t"><b>Not sure — show me everything</b><small>Browse all tracks and the glossary</small></span><span class="io-go">›</span></button></div>
+      <div class="intake-opts"><button class="intake-opt" data-goal="basics" type="button"><span class="io-t"><b>I'm completely new to crypto</b><small>Start from money, wallets and exchanges</small></span><span class="io-go">›</span></button><button class="intake-opt" data-goal="fundamentals" type="button"><span class="io-t"><b>I know crypto — teach me trading</b><small>Leverage, margin, liquidation, orders, funding</small></span><span class="io-go">›</span></button><button class="intake-opt" data-goal="indicators" type="button"><span class="io-t"><b>I want to read charts &amp; indicators</b><small>Candles, RSI, MACD, Bollinger and more</small></span><span class="io-go">›</span></button><button class="intake-opt" data-goal="risk" type="button"><span class="io-t"><b>I want to manage risk &amp; psychology</b><small>Sizing, stops, risk of ruin, the mental game</small></span><span class="io-go">›</span></button><button class="intake-opt" data-goal="all" type="button"><span class="io-t"><b>Not sure — show me everything</b><small>Browse all tracks and the glossary</small></span><span class="io-go">›</span></button></div>
       <button class="intake-skip" data-goal="all" type="button">Just let me browse everything</button>
     </div>
     <div id="wtsMain">
@@ -261,10 +261,10 @@ h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:33px;l
     <div class="wts-stats">
       <div class="wts-lv"><b id="lvl">1</b><small>Level</small></div>
       <div class="wts-prog"><div class="pr-top"><span><b id="doneN">0</b> / 96 lessons</span><span><b id="xp">0</b> XP</span></div><div class="wts-bar"><i id="bar"></i></div></div>
-      <div class="wts-streak"><b id="streak"> 0</b><small>day streak</small></div>
+      <div class="wts-streak"><b id="streak">0</b><small>day streak</small></div>
     </div>
     <button class="wts-continue" id="continue" type="button">Start lesson 1 →</button>
-    <button class="wts-certbtn" id="certBtn" type="button"> View your certificate</button>
+    <button class="wts-certbtn" id="certBtn" type="button">View your certificate</button>
     <div class="sec-h">Your badges</div>
     <div class="wts-badges"><div class="wts-badge" data-b="explorer"><span class="wb-n">Crypto Explorer</span></div><div class="wts-badge" data-b="blockchain"><span class="wb-n">Blockchain Beginner</span></div><div class="wts-badge" data-b="wallet"><span class="wb-n">Wallet Master</span></div><div class="wts-badge" data-b="market"><span class="wb-n">Market Ready</span></div><div class="wts-badge" data-b="riskmgr"><span class="wb-n">Risk Manager</span></div><div class="wts-badge" data-b="firsttrade"><span class="wb-n">First Trade Ready</span></div><div class="wts-badge" data-b="b_fund"><span class="wb-n">Fundamentals Pro</span></div><div class="wts-badge" data-b="b_ta"><span class="wb-n">Chart Reader</span></div><div class="wts-badge" data-b="b_risk"><span class="wb-n">Risk Master</span></div><div class="wts-badge" data-b="b_master"><span class="wb-n">Academy Master</span></div></div>
     <div class="sec-h">Practice missions — on the real site <span id="misN" style="color:var(--lime)"></span></div>
@@ -612,7 +612,7 @@ function openLesson(i){if(lockedAt(i)){toast('Finish the previous lesson first �
   var skip=document.getElementById('lskip');if(skip)skip.addEventListener('click',function(){if(answered)return;answered=true;document.querySelectorAll('.wts-opt').forEach(function(x){x.disabled=true;});skip.disabled=true;award(null);});
 }
 function showCertificate(){var m=qs('#mcard');var dc=doneCount();
-  var h='<div class="wts-cert"><div class="cert-seal"></div><div class="cert-h">'+esc(U.certH)+'</div><div class="cert-sub">'+esc(U.certSub)+'</div>'
+  var h='<div class="wts-cert"><div class="cert-h">'+esc(U.certH)+'</div><div class="cert-sub">'+esc(U.certSub)+'</div>'
     +'<div class="cert-stats"><div><b>'+dc+'</b><small>'+esc(U.lessonsWord)+'</small></div><div><b>'+S.xp+'</b><small>'+esc(U.xpLabel)+'</small></div><div><b>'+lvl()+'</b><small>'+esc(U.lvlLabel)+'</small></div></div>'
     +'<div class="cert-acts"><button class="cert-share" id="certShare" type="button">'+esc(U.certShare)+'</button><a class="cert-cta" href="/paper-trade">'+esc(U.certCta)+'</a></div></div>'
     +'<div class="wts-done on" style="margin-top:16px"><button class="wts-next" id="lnext" type="button">'+esc(U.reviewBtn)+'</button></div>';

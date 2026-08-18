@@ -410,7 +410,7 @@ ${hreflang}
     <div class="wts-stats">
       <div class="wts-lv"><b id="lvl">1</b><small>${esc(U.lvlLabel)}</small></div>
       <div class="wts-prog"><div class="pr-top"><span><b id="doneN">0</b> / ${ALL.length} ${esc(U.lessonsWord)}</span><span><b id="xp">0</b> ${esc(U.xpLabel)}</span></div><div class="wts-bar"><i id="bar"></i></div></div>
-      <div class="wts-streak"><b id="streak"> 0</b><small>${esc(U.streakLabel)}</small></div>
+      <div class="wts-streak"><b id="streak">0</b><small>${esc(U.streakLabel)}</small></div>
     </div>
     <button class="wts-continue" id="continue" type="button">${esc(U.startBtn)}</button>
     <button class="wts-certbtn" id="certBtn" type="button">${esc(X.certBtn)}</button>
@@ -523,7 +523,7 @@ function openLesson(i){if(lockedAt(i)){toast('Finish the previous lesson first â
   var skip=document.getElementById('lskip');if(skip)skip.addEventListener('click',function(){if(answered)return;answered=true;document.querySelectorAll('.wts-opt').forEach(function(x){x.disabled=true;});skip.disabled=true;award(null);});
 }
 function showCertificate(){var m=qs('#mcard');var dc=doneCount();
-  var h='<div class="wts-cert"><div class="cert-seal"></div><div class="cert-h">'+esc(U.certH)+'</div><div class="cert-sub">'+esc(U.certSub)+'</div>'
+  var h='<div class="wts-cert"><div class="cert-h">'+esc(U.certH)+'</div><div class="cert-sub">'+esc(U.certSub)+'</div>'
     +'<div class="cert-stats"><div><b>'+dc+'</b><small>'+esc(U.lessonsWord)+'</small></div><div><b>'+S.xp+'</b><small>'+esc(U.xpLabel)+'</small></div><div><b>'+lvl()+'</b><small>'+esc(U.lvlLabel)+'</small></div></div>'
     +'<div class="cert-acts"><button class="cert-share" id="certShare" type="button">'+esc(U.certShare)+'</button><a class="cert-cta" href="/paper-trade">'+esc(U.certCta)+'</a></div></div>'
     +'<div class="wts-done on" style="margin-top:16px"><button class="wts-next" id="lnext" type="button">'+esc(U.reviewBtn)+'</button></div>';
