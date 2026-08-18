@@ -198,3 +198,13 @@ article h2:first-of-type{margin-top:44px}
 
 /* Keep the ambient layer off when motion/energy is unwelcome */
 @media (prefers-reduced-motion:reduce){body::after{filter:none}}
+
+/* Header on a phone: brand + three nav links measured 407px against a 390px viewport, so every page using
+   this header (the 21 exchange-comparison pages) scrolled sideways by 17px. Let the row wrap and tighten
+   the link tracking rather than hiding the nav — these pages have no other route back into the site. */
+@media (max-width:560px){
+  header{flex-wrap:wrap;gap:8px 0;padding:18px 0}
+  .brand{font-size:19px}
+  .nav{display:flex;flex-wrap:wrap;gap:0 16px;width:100%}
+  .nav a{margin-left:0;font-size:11px;letter-spacing:.08em}
+}

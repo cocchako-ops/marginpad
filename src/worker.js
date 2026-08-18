@@ -148,6 +148,7 @@ async function handleV1(url, request, env, ctx) {
     'open-interest': () => handleCgOpenInterest(v1remap(url, '/api/cg/openinterest'), env),
     'long-short': () => handleCgLongShort(v1remap(url, '/api/cg/longshort'), env),
     'liquidations': () => handleCgLiquidations(v1remap(url, '/api/cg/liquidations'), env),
+    'venues': () => handleVenueStats(env),
     'calendar': () => handleCalendar(request, env),
     'fear-greed': () => handleFng(env),
     'coins': () => handleGeckoMarkets(v1remap(url, '/api/gecko/markets'), env),
@@ -1059,6 +1060,53 @@ async function ssrBlogSentences(kind, env) {
   }
   return { S: [] };
 }
+// The 21 "<exchange>-vs-<exchange>" pages shared 86% of their vocabulary — one template with two names
+// swapped, which is why Google ranked none of them. Rendering the differentiating numbers client-side does
+// not fix that: crawlers read the static HTML, so the shared boilerplate is all they ever saw (measured: the
+// overlap went UP to 88.7% when the block was JS-only). So the measured comparison is injected HERE, server
+// side, before anyone crawls it — unique text per page, refreshed every 10 minutes, never stale in the file.
+async function handleSsrCompare(request, url, env, ak, bk) {
+  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const asset = await env.ASSETS.fetch(request);
+  const ct = (asset.headers && asset.headers.get('content-type')) || '';
+  if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
+  let html = '';
+  try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
+  const pass = () => new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
+  const open = html.indexOf('<div id="vstat"');
+  if (open < 0) return pass();
+  const close = html.indexOf('</div>', open);
+  if (close < 0) return pass();
+
+  let d = null;
+  try { d = await (await handleVenueStats(env)).json(); } catch (e) {}
+  const vs = (d && Array.isArray(d.venues)) ? d.venues : [];
+  if (!vs.length) return pass();
+  const nameOf = k => { const m = html.match(new RegExp('data-' + (k === ak ? 'an' : 'bn') + '="([^"]*)"')); return m ? m[1] : k; };
+  const A = vs.find(v => v.venue === ak) || null, B = vs.find(v => v.venue === bk) || null;
+  if (!A && !B) return pass();
+  const usd = v => v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + 'B' : v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + 'M' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'K' : '$' + Math.round(v);
+  const col = (n, v) => v
+    ? '<div class="vs-col"><b>' + n + '</b><span class="vs-big">' + usd(v.total) + '</span><span class="vs-sub">' + v.share + '% of all nine venues</span><span class="vs-bar"><i style="width:' + v.longPct + '%"></i></span><span class="vs-sub">' + v.longPct + '% longs / ' + (100 - v.longPct).toFixed(1) + '% shorts</span></div>'
+    : '<div class="vs-col"><b>' + n + '</b><span class="vs-none">no liquidations recorded in 24h</span></div>';
+  const an = nameOf(ak), bn = nameOf(bk);
+  let lead = '';
+  if (A && B) {
+    const big = A.total >= B.total ? A : B, bigN = A.total >= B.total ? an : bn, smallN = A.total >= B.total ? bn : an;
+    const lo = Math.min(A.total, B.total), ratio = lo > 0 ? big.total / lo : 0;
+    lead = '<p class="vs-lead">' + bigN + ' liquidated ' + (ratio >= 1.15 ? 'about ' + ratio.toFixed(1) + 'x more than ' + smallN : 'roughly the same as ' + smallN) + ' over the last 24 hours.</p>';
+  }
+  const stamp = new Date(d.ts || Date.now()).toISOString().slice(0, 16).replace('T', ' ');
+  const inner = '<div class="vs-grid">' + col(an, A) + col(bn, B) + '</div>' + lead
+    + '<p class="vs-src">Measured by the MarginPad collector across nine exchange websockets &middot; 24h window &middot; ' + stamp + ' UTC</p>';
+  html = html.slice(0, open) + '<div id="vstat" data-ssr="1">' + inner + html.slice(close);
+
+  const out = new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600' } });
+  try { await caches.default.put(ck, out.clone()); } catch (e) {}
+  return out;
+}
+
 async function handleSsrBlog(request, url, env, kind) {
   const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
@@ -2258,6 +2306,38 @@ async function _multiBase(env) {
     out.push({ s: m.s, p: med || m.p, chg: m.chg != null ? m.chg : 0, vol: m.vol, f: m.f != null ? m.f : 0, oi: m.oi, hi: m.hi, lo: m.lo, vens: m.vens, spread: +spread.toFixed(2), byb: !!m.byb, bybVol: m.bybVol || 0 });
   }
   return out;
+}
+
+// Per-exchange 24h liquidation totals, measured by our OWN collector rather than bought from an aggregator.
+// This is the one dataset here that nobody else publishes for free, which makes it the only thing that can
+// tell 21 near-identical "<exchange> vs <exchange>" pages apart: each renders the two venues it is actually
+// about, with different real numbers, instead of the same boilerplate with two names swapped.
+// Long and short are reported separately because the split is the interesting part — a venue whose flow is
+// mostly long liquidations is carrying different positioning from one that is mostly short.
+async function handleVenueStats(env) {
+  const cache = caches.default, ck = new Request('https://marginpad.io/__venues_v1');
+  try { const hit = await cache.match(ck); if (hit) return hit; } catch (e) {}
+  let venues = [], total = 0, ok = false;
+  try {
+    const COLL = (env && env.COLLECTOR_URL) || '';
+    const r = COLL ? await fetch(COLL + '/api/v1/pulse', { cf: { cacheTtl: 120 } }) : null;
+    if (r && r.ok) {
+      const j = await r.json();
+      const rows = (j && j.h24 && Array.isArray(j.h24.byEx)) ? j.h24.byEx : [];
+      venues = rows.map(x => {
+        const long = +x.l || 0, short = +x.sh || 0, t = long + short;
+        return { venue: String(x.e || x.ex || x.k || ''), long: Math.round(long), short: Math.round(short), total: Math.round(t) };
+      }).filter(v => v.venue && v.total > 0).sort((a, b) => b.total - a.total);
+      total = venues.reduce((s, v) => s + v.total, 0);
+      venues.forEach(v => { v.share = total > 0 ? +(v.total / total * 100).toFixed(1) : 0; v.longPct = v.total > 0 ? +(v.long / v.total * 100).toFixed(1) : 0; });
+      ok = venues.length > 0;
+    }
+  } catch (e) {}
+  if (!ok) return J({ error: 'collector_unavailable', note: 'Per-venue figures come from our own liquidation collector; nothing is estimated when it is down.' }, 503);
+  const body = JSON.stringify({ ts: Date.now(), window: '24h', source: 'MarginPad liquidation collector (9 exchange websockets)', total, venues });
+  const resp = new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } });
+  try { await cache.put(ck, resp.clone()); } catch (e) {}
+  return resp;
 }
 
 async function handleScreener(env, force, ctx) { // force=true (cron warmer) skips caches so the KV floor gets a FRESH compute
@@ -12736,7 +12816,8 @@ export default {
         if (mLiq[2] === 'calculator' && { bybit: 1, binance: 1, okx: 1, bitget: 1, mexc: 1, gate: 1, kraken: 1, coinbase: 1, kucoin: 1 }[mLiq[1]]) return handleSsrLiq(request, url, env, 'excalc', mLiq[1]); // exchange-slug calculators: no coin data of their own -> BTC-referenced live block
         return handleSsrLiq(request, url, env, mLiq[2] === 'map' ? 'map' : 'calc', mLiq[1]);
       }
-      if (url.pathname === '/crypto-liquidations-today/') return handleSsrBlog(request, url, env, 'liq'); // exact-match "total crypto liquidations today" landing — live market total box before the first <h2 (SEO kompas: the SERP has no clean-number answer)
+      const _mVs = url.pathname.match(/^\/([a-z]+)-vs-([a-z]+)\/$/); if (_mVs) return handleSsrCompare(request, url, env, _mVs[1], _mVs[2]);
+      if (url.pathname === '/crypto-liquidations-today/') return handleSsrBlog(request, url, env, 'liq'); // exact-match "total crypto liquidations today" landing — live market total box before thefirst <h2 (SEO kompas: the SERP has no clean-number answer)
       const _bk = ssrBlogKind(url.pathname); if (_bk) return handleSsrBlog(request, url, env, _bk);
       const _hub = { '/liquidations/': 'liquidations', '/liquidation-statistics/': 'liquidations', '/etf-flows/': 'etf', '/fear-greed/': 'fng', '/funding/': 'funding', '/open-interest/': 'oi', '/long-short/': 'ls', '/hyperliquid-whales/': 'whales', '/hyperliquid-liquidations/': 'hlliq', '/rekt/': 'rekt' }[url.pathname];
       if (_hub) return handleSsrHub(request, url, env, _hub, null);

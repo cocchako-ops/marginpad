@@ -19,6 +19,11 @@ const EX = {
   gate:    { name: 'Gate',    ref: 'https://www.gate.com/VFIWB10KUG?ref=VFIWB10KUG&ref_type=103&ut-m_cmp=rXJBDjtJ&activity_id=1778642196063', lev: 100, mmr: 0.5, maker: 0.02, taker: 0.05, accent: '#3361ff', fg: '#ffffff', known: 'the widest selection of altcoin and new-listing futures', founded: 2013, us: false, safety: 'has one of the longest track records in the industry, publishes proof-of-reserves, and lists an enormous catalogue of long-tail markets' }
 };
 
+// Exchanges our collector actually subscribes to. KuCoin, Kraken and Bitget publish no public liquidation
+// websocket, so a pair of two of them has nothing to measure — those pages skip the measured section
+// entirely rather than shipping a "loading…" box that never resolves.
+const COVERED = { bybit: 1, binance: 1, okx: 1, gate: 1 };
+
 const PAIRS = [
   ['bybit', 'binance'], ['binance', 'okx'], ['bybit', 'okx'],
   ['binance', 'kucoin'], ['bybit', 'kucoin'], ['kraken', 'binance'],
@@ -101,7 +106,7 @@ ${o.hreflang}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/assets/blog.css" />
-<style>.cmp{width:100%;border-collapse:collapse;margin:18px 0;font-size:14.5px}.cmp th,.cmp td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left}.cmp th{font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)}.cmp td:first-child{color:var(--ink-dim);font-size:13px}.cmp tr td:nth-child(2),.cmp tr td:nth-child(3){font-family:'Space Mono',monospace;color:var(--ink)}.cmpbtns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}@media(max-width:560px){.cmpbtns{grid-template-columns:1fr}}.cmpbtn{display:block;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;padding:15px;border-radius:12px}${FEEC_CSS}</style>
+<style>.cmp{width:100%;border-collapse:collapse;margin:18px 0;font-size:14.5px}.cmp th,.cmp td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left}.cmp th{font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)}.cmp td:first-child{color:var(--ink-dim);font-size:13px}.cmp tr td:nth-child(2),.cmp tr td:nth-child(3){font-family:'Space Mono',monospace;color:var(--ink)}.cmpbtns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}@media(max-width:560px){.cmpbtns{grid-template-columns:1fr}}.cmpbtn{display:block;text-align:center;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;padding:15px;border-radius:12px}.vs-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}@media(max-width:560px){.vs-grid{grid-template-columns:1fr}}.vs-col{border:1px solid var(--line);border-radius:13px;padding:14px 16px;display:flex;flex-direction:column;gap:5px;background:rgba(255,255,255,.015)}.vs-col b{font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-dim)}.vs-big{font-family:'Space Mono',monospace;font-size:25px;font-weight:700;color:var(--ink);line-height:1.1}.vs-sub{font-size:12px;color:#8b95a1}.vs-none{font-size:13px;color:#8b95a1}.vs-bar{display:block;height:5px;border-radius:3px;background:#ff5a4d;overflow:hidden;margin:3px 0 1px}.vs-bar i{display:block;height:100%;background:#2ebd85}.vs-lead{font-size:14.5px;margin:4px 0 0}.vs-src{font-family:'Space Mono',monospace;font-size:11px;color:#6f7885;margin:8px 0 0}.vstat-wait{font-family:'Space Mono',monospace;font-size:13px;color:#8b95a1}${FEEC_CSS}</style>
 ${o.ld}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"${o.crumbHome}","item":"${o.homeHref}"},{"@type":"ListItem","position":2,"name":"${o.bcName}","item":"${o.url}"}]}</script>
 </head>
@@ -114,8 +119,44 @@ ${o.ld}
   <div class="crumb"><a href="${o.homeHref}">${o.crumbHome}</a> / ${o.crumb}</div>
   <article>`;
 }
+// Renders the measured 24h liquidation comparison for the two venues this page is about. Kept as a
+// script rather than baked in at build time on purpose: a number written into 21 static pages starts
+// rotting the moment it is written, which is the failure this whole section exists to avoid.
+const VSTAT_JS = `
+<script>
+(function(){
+  var box=document.getElementById('vstat');if(!box)return;
+  if(box.getAttribute('data-ssr'))return; // the worker already rendered this from the same source
+  var ak=box.getAttribute('data-a'),bk=box.getAttribute('data-b');
+  var an=box.getAttribute('data-an'),bn=box.getAttribute('data-bn');
+  function usd(v){if(v>=1e9)return '$'+(v/1e9).toFixed(2)+'B';if(v>=1e6)return '$'+(v/1e6).toFixed(1)+'M';if(v>=1e3)return '$'+Math.round(v/1e3)+'K';return '$'+Math.round(v);}
+  fetch('/api/v1/venues').then(function(r){return r.json();}).then(function(res){
+    var d=res.data||res,vs=d.venues||[];
+    function find(k){for(var i=0;i<vs.length;i++){if(vs[i].venue===k)return vs[i];}return null;}
+    var A=find(ak),B=find(bk);
+    if(!A&&!B){box.innerHTML='<p class="vstat-wait">Our collector did not record liquidations on either venue in the last 24 hours.</p>';return;}
+    function row(n,v){
+      if(!v)return '<div class="vs-col"><b>'+n+'</b><span class="vs-none">no liquidations recorded in 24h</span></div>';
+      return '<div class="vs-col"><b>'+n+'</b>'
+        +'<span class="vs-big">'+usd(v.total)+'</span>'
+        +'<span class="vs-sub">'+v.share+'% of all nine venues</span>'
+        +'<span class="vs-bar"><i style="width:'+v.longPct+'%"></i></span>'
+        +'<span class="vs-sub">'+v.longPct+'% longs / '+(100-v.longPct).toFixed(1)+'% shorts</span></div>';
+    }
+    var lead='';
+    if(A&&B){
+      var big=A.total>=B.total?A:B,bigN=A.total>=B.total?an:bn,smallN=A.total>=B.total?bn:an;
+      var ratio=(Math.min(A.total,B.total)>0)?(big.total/Math.min(A.total,B.total)):0;
+      lead='<p class="vs-lead">'+bigN+' liquidated '+(ratio>=1.15?('about '+ratio.toFixed(1)+'x more than '+smallN):('roughly the same as '+smallN))+' over the last 24 hours.</p>';
+    }
+    box.innerHTML='<div class="vs-grid">'+row(an,A)+row(bn,B)+'</div>'+lead
+      +'<p class="vs-src">Measured by the MarginPad collector across nine exchange websockets &middot; 24h window &middot; '+new Date(d.ts).toISOString().slice(0,16).replace('T',' ')+' UTC</p>';
+  }).catch(function(){box.innerHTML='<p class="vstat-wait">Live venue figures are unavailable right now.</p>';});
+})();
+</script>`;
+
 function foot(o) {
-  return `  </article>
+  return VSTAT_JS + `  </article>
   <section style="margin:26px 0 6px;border:1px solid #262e3a;border-radius:13px;padding:15px 18px;background:rgba(255,255,255,.015)"><h2 style="font-size:15px;margin:0 0 8px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:#8b95a1">Sources &amp; methodology</h2><ul style="margin:0;padding-left:18px;font-size:12.5px;color:#9aa3ad;line-height:1.7"><li>Fees, leverage caps and KYC rules come from each exchange&#39;s <b>public fee schedule and docs</b>, read at the base (VIP-0) tier.</li><li>Ratings are <b>MarginPad&#39;s editorial opinion</b> (0-5), weighted for this page&#39;s use case — they are not paid placements.</li><li>Exchange links are referral links; they fund the free tools and <b>do not affect rankings</b>. We do not list a venue we would not use ourselves.</li><li>Liquidation and market figures cited on MarginPad come from our own <a href="/liquidations/" style="color:#c2f64a">measured liquidation feed</a>, not estimates.</li><li><b>Figures last verified: ${VDATE}</b> (page regenerated on this date). Terms change — confirm on the exchange before depositing.</li></ul></section>
   <footer>
     <span>© 2026 MarginPad</span>
@@ -154,19 +195,51 @@ function comparePage(ak, bk, lang) {
   // EN-only deep sections: real fee cost + safety/regulation (translations keep the shorter version)
   const aRt = (10000 * a.taker / 100 * 2), bRt = (10000 * b.taker / 100 * 2);
   const feeMoney = v => '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  // 573 eight-word phrases appeared on nearly every one of these 21 pages, which is what near-duplicate
+  // detection keys on and why none of them ranked. The paragraphs below are selected by what actually
+  // separates THIS pair — the size of the fee gap, the leverage spread, the age difference, who serves US
+  // traders — so two pages only read alike when the two exchanges genuinely are alike.
+  const feeGap = Math.abs(aRt - bRt) * 100, cheaper = aRt < bRt ? a : b, pricier = aRt < bRt ? b : a;
+  const levGap = Math.abs(a.lev - b.lev), older = a.founded <= b.founded ? a : b, newer = a.founded <= b.founded ? b : a;
+  const ageGap = Math.abs(a.founded - b.founded);
+  const feeIntro = feeGap < 1
+    ? `These two price the taker side within a rounding error of each other, so fees are the wrong axis to pick between them — the decision lives in leverage, listings and who will let you open an account. The arithmetic is still worth seeing, because it is paid on <em>notional</em> (the full leveraged size, not your margin) and charged twice per round trip:`
+    : feeGap > 30
+      ? `This is the one pairing on this site where the fee gap is large enough to decide the question on its own. ${cheaper.name} charges ${pct(cheaper.taker)} against ${pricier.name}'s ${pct(pricier.taker)}, and because the fee lands on <em>notional</em> — the whole leveraged position, not the margin behind it — and is paid entering and exiting, the difference compounds fast:`
+      : `Base fees look tiny until you notice they are charged on <em>notional</em> — the full leveraged position size rather than the margin you put up — and that every round trip pays them twice. On a <strong>$10,000</strong> position taken and closed at market:`;
+  const feeAfter = feeGap < 1
+    ? `Level on fees, then. What moves the needle instead is order type: resting <strong>maker</strong> limits cost less than taking the book on both venues, and both step rates down as 30-day volume grows. A trader who works limit orders pays less on the "expensive" venue than an impatient one pays on the "cheap" one.`
+    : `Over a hundred round trips that is <strong>${feeMoney(feeGap)}</strong> in ${cheaper.name}'s favour${feeGap > 30 ? ' — enough to notice on a small account' : ', which matters if you trade often and barely at all if you do not'}. Keep it in proportion though: one liquidation you could have avoided costs more than a year of the difference. Both venues price <strong>maker</strong> orders below taker and cut rates as 30-day volume grows.`;
+  const levPara = levGap === 0
+    ? `<p>Both cap out at <strong>${a.lev}x</strong>, so neither can save you from the other's worst-case position sizing. At that ceiling a move of roughly ${(100 / a.lev).toFixed(2)}% against you wipes the margin — which is why the cap is a marketing number and the size you actually choose is the risk decision.</p>`
+    : `<p>${a.lev > b.lev ? a.name : b.name} advertises <strong>${Math.max(a.lev, b.lev)}x</strong> against ${a.lev > b.lev ? b.name : a.name}'s <strong>${Math.min(a.lev, b.lev)}x</strong>. Read that as a ceiling, not a recommendation: at ${Math.max(a.lev, b.lev)}x a move of about ${(100 / Math.max(a.lev, b.lev)).toFixed(2)}% against the position is enough to end it, against ${(100 / Math.min(a.lev, b.lev)).toFixed(2)}% at the lower cap. Traders who survive rarely trade anywhere near either number, so a higher cap is only an advantage if you already know why you need it.</p>`;
+  const ageLine = ageGap >= 4
+    ? `${older.name} has been running since ${older.founded}, ${ageGap} years longer than ${newer.name} (${newer.founded}) — a real difference when the question is who has already survived a full cycle and a bad week.`
+    : `Both opened within ${ageGap === 0 ? 'the same year' : ageGap + ' year' + (ageGap > 1 ? 's' : '') + ' of each other'} (${a.name} ${a.founded}, ${b.name} ${b.founded}), so neither wins on track record alone.`;
   const deep = lang ? '' : `
     <h2>What the fees actually cost you</h2>
-    <p>Base fees look tiny, but they are paid on <em>notional</em> — the full leveraged position size, not your margin — and every round trip pays them twice (in and out). On a <strong>$10,000</strong> position taken and closed at market:</p>
+    <p>${feeIntro}</p>
     <table class="cmp">
       <tr><th>&nbsp;</th><th>${a.name}</th><th>${b.name}</th></tr>
       <tr><td>Taker per side</td><td>${pct(a.taker)}</td><td>${pct(b.taker)}</td></tr>
       <tr><td>Round-trip cost</td><td>${feeMoney(aRt)}</td><td>${feeMoney(bRt)}</td></tr>
       <tr><td>Over 100 trades</td><td>${feeMoney(aRt * 100)}</td><td>${feeMoney(bRt * 100)}</td></tr>
     </table>
-    <p>${aRt === bRt ? 'The two are level on base taker fees' : `Over a hundred round trips the gap is <strong>${feeMoney(Math.abs(aRt - bRt) * 100)}</strong> in ${aRt < bRt ? a.name : b.name}'s favour`} — real money for an active trader, but still small next to a single avoidable liquidation. Both venues charge <strong>maker</strong> orders (resting limits) less than taker, and cut rates further as your 30-day volume climbs, so patient limit-order entries beat chasing the lowest headline fee. Model any trade first with the <a href="/${lang ? lang + '/' : ''}funding-fee-calculator/">funding-fee calculator</a> and <a href="/calculators?c=pnl">PnL calculator</a>.</p>
+    <p>${feeAfter} Model it against your own size with the <a href="/${lang ? lang + '/' : ''}funding-fee-calculator/">funding-fee calculator</a> and the <a href="/calculators?c=pnl">PnL calculator</a>.</p>
 
+    <h2>Leverage: what the caps really mean here</h2>
+    ${levPara}
+
+${COVERED[ak] || COVERED[bk] ? `    <h2>Which venue is actually blowing traders up right now</h2>
+    <p>Fee schedules are published by the exchanges; forced-close flow is not. We run our own collector on the public liquidation websockets of nine venues, so the block below is a measurement of what ${COVERED[ak] && COVERED[bk] ? `${a.name} and ${b.name}` : `${COVERED[ak] ? a.name : b.name}`} liquidated in the last 24 hours, not an estimate or a vendor figure.${COVERED[ak] && COVERED[bk] ? ' It reloads on every visit — treat a single day as weather, not climate.' : ` ${COVERED[ak] ? b.name : a.name} does not publish a public liquidation websocket, so there is nothing to measure on that side and we show nothing rather than guess.`}</p>
+    <div id="vstat" data-a="${ak}" data-b="${bk}" data-an="${a.name}" data-bn="${b.name}">
+      <p class="vstat-wait" style="font-family:'Space Mono',monospace;font-size:13px;color:#8b95a1">Reading the last 24 hours from our collector&hellip;</p>
+    </div>
+    <p>A venue carrying a bigger share of the day's liquidations is not automatically the riskier place to trade — it usually means more leveraged size is open there. What the long/short split tells you is which way the crowd was leaning when it got taken out. The full nine-venue breakdown, updated continuously, sits on the <a href="/liquidations/">liquidation feed</a>, and the same numbers are free as JSON at <a href="/trading-api/"><code>/api/v1/venues</code></a>.</p>
+` : ''}
     <h2>Safety, regulation &amp; track record</h2>
-    <p><strong>${a.name}</strong> (founded ${a.founded}) ${a.safety}. <strong>${b.name}</strong> (founded ${b.founded}) ${b.safety}.</p>
+    <p>${ageLine}</p>
+    <p><strong>${a.name}</strong> ${a.safety}. <strong>${b.name}</strong> ${b.safety}.</p>
     <p>${a.us || b.us ? `On US access: ${a.us && b.us ? 'both serve US traders (subject to state rules)' : (a.us ? a.name : b.name) + ' is the US-friendly option here, while ' + (a.us ? b.name : a.name) + ' does not serve US residents'}.` : 'Neither is available to US residents — a US-regulated venue such as <a href="/kraken-liquidation-calculator/">Kraken</a> fits that case better.'} Whichever you choose, never keep more on any exchange than you are actively trading, enable withdrawal whitelists and two-factor authentication, and confirm current fees, leverage caps and regional availability on the exchange itself before funding.</p>`;
   const ld = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":${JSON.stringify(F(L.q1))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q1a))}}},{"@type":"Question","name":${JSON.stringify(F(L.q2))},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(F(L.q2a))}}}${q3}]}</script>`;
   return head({
@@ -195,12 +268,12 @@ ${verdict}
 
     ${feeWidget(a, b, lang)}
 
-    <h2>${L.h2fees}</h2>
+${lang ? `    <h2>${L.h2fees}</h2>
     <p>${F(L.feesP)}</p>
 
     <h2>${L.h2lev}</h2>
     <p>${F(L.levP)}</p>
-
+` : ''}
     <h2>${L.h2pick}</h2>
     <p>${F(L.pickP)}</p>
 ${deep}

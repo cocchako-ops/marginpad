@@ -50,6 +50,10 @@ ${crumbLd}
 ${dataLd}
 <style>
 .lqs-table{width:100%;border-collapse:collapse;margin:14px 0 22px;font-size:14.5px}
+/* Six columns of figures do not fit a phone: the table forced the whole document 28px wider than the
+   viewport, so the page scrolled sideways and the fixed bottom nav mis-sized against it. Let the table
+   scroll inside its own box instead of dragging the page with it. */
+@media (max-width:620px){.lqs-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;font-size:13.5px}.lqs-table th,.lqs-table td{padding-left:9px;padding-right:9px}}
 .lqs-table th,.lqs-table td{padding:8px 10px;text-align:right;border-bottom:1px solid rgba(255,255,255,.08)}
 .lqs-table th:first-child,.lqs-table td:first-child{text-align:left}
 .lqs-table th{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;color:#9aa3ad;text-transform:uppercase}
