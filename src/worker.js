@@ -776,6 +776,36 @@ function ssrCoinProseL10n(L, sym, name, cg, gk) {
   }
   return S;
 }
+// Liquidation-cluster analysis from our own collector. Reads the model's price levels, works out where
+// the heaviest pile-ups sit relative to spot, and says what that means — the kind of sentence a generic
+// calculator page cannot produce because it has no such data behind it.
+function ssrLiqClusterProse(sym, cg, cl) {
+  const S = [];
+  const px = cg && isFinite(+cg.price) ? +cg.price : 0;
+  if (!px || !cl || !Array.isArray(cl.clusters) || !cl.clusters.length) return S;
+  const longs = [], shorts = [];
+  for (const c of cl.clusters) {
+    const p = +c.price, v = +c.est_notional;
+    if (!isFinite(p) || !isFinite(v) || v <= 0) continue;
+    (String(c.side || '').indexOf('long') >= 0 ? longs : shorts).push({ p, v });
+  }
+  const sum = (a) => a.reduce((t, x) => t + x.v, 0);
+  const top = (a) => a.slice().sort((x, y) => y.v - x.v)[0];
+  const below = longs.filter(x => x.p < px), above = shorts.filter(x => x.p > px);
+  const pct = (p) => Math.abs((p - px) / px * 100);
+  const bl = top(below), ab = top(above);
+  if (bl) S.push('The heaviest band of ' + sym + ' long liquidations sits near ' + _spx(bl.p) + ' — roughly ' + pct(bl.p).toFixed(1) + '% below the current price — where about ' + _susd(bl.v) + ' of leveraged positions would be forced out.');
+  if (ab) S.push('On the other side, the largest short-liquidation band is around ' + _spx(ab.p) + ', about ' + pct(ab.p).toFixed(1) + '% above spot, holding roughly ' + _susd(ab.v) + '.');
+  const lb = sum(below), sa = sum(above);
+  if (lb > 0 && sa > 0) {
+    const r = lb / sa;
+    if (r > 1.6) S.push('Taken together there is roughly ' + r.toFixed(1) + 'x more long liquidity stacked below ' + sym + ' than short liquidity above it, so a move down currently has more fuel behind it than a move up.');
+    else if (r < 0.62) S.push('Short liquidity above ' + sym + ' outweighs the long side below by about ' + (1 / r).toFixed(1) + 'x — an upward squeeze has more to feed on than a flush lower.');
+    else S.push('Long and short liquidation liquidity around ' + sym + ' are close to balanced right now, with no obvious magnet in either direction.');
+  }
+  if (S.length) S.push('These levels come from MarginPad&rsquo;s own liquidation collector, which reads forced-close events across ten exchanges and models where open leverage is concentrated. They move as positions do, so treat them as a map of pressure rather than a forecast.');
+  return S;
+}
 function ssrCoinProse(sym, name, cg, gk) {
   const S = [];
   const px = cg && _spx(cg.price), ch = cg && isFinite(+cg.chg24h) ? +cg.chg24h : null;
@@ -858,8 +888,19 @@ async function handleSsrCoin(request, url, env) {
   let cg = null, gk = null;
   try { const r = await handleCgCoin(new URL('https://marginpad.io/api/cg/coin?symbol=' + sym), env); const j = await r.json(); if (j && !j.error && j.price != null) cg = j; } catch (e) {}
   try { const r = await handleGeckoCoin(new URL('https://marginpad.io/api/gecko/coin?sym=' + sym.toLowerCase()), env); const j = await r.json(); if (j && !j.error) gk = j; } catch (e) {}
+  // our own collector's per-symbol liquidation clusters — the one thing on this page no competing
+  // tool page can copy. Fail-soft: no clusters simply means those sentences are not written.
+  let cl = null;
+  try {
+    const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
+    if (base) { const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 1800);
+      const r = await fetch(base + '/api/v1/clusters?symbol=' + encodeURIComponent(sym), { signal: ctl.signal, cf: { cacheTtl: 300 } });
+      clearTimeout(tm);
+      if (r.ok) { const j = await r.json(); if (j && Array.isArray(j.clusters) && j.clusters.length) cl = j; } }
+  } catch (e) {}
   let sentences = [];
   try { sentences = L10 ? ssrCoinProseL10n(L10, sym, name, cg, gk) : ssrCoinProse(sym, name, cg, gk); } catch (e) { sentences = []; }
+  try { const cs = ssrLiqClusterProse(sym, cg, cl); if (cs.length) sentences = sentences.concat(cs); } catch (e) {}
   if (sentences.length < 3) return pass(); // not enough real data to say anything worth indexing -> static page
   const out = html.slice(0, anchor) + ssrCoinBlock(sym, name, sentences, L10) + '    ' + html.slice(anchor);
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'coin' } });
@@ -11088,6 +11129,18 @@ export default {
     // Root cause was fixed in gen-blog.js (sitemap prune) + the 2 internal links; this catches external/historical refs. (2026-07)
     const BLOG_301 = { '/blog/what-is-the-funding-rate/': '/blog/what-is-funding-rate/', '/blog/liquidation-cascades-explained/': '/blog/liquidation-cascade-explained/', '/blog/what-is-leverage-in-crypto/': '/blog/crypto-leverage-explained/', '/blog/what-is-maintenance-margin/': '/blog/what-is-liquidation-in-crypto/' };
     if (BLOG_301[url.pathname]) return Response.redirect(url.origin + BLOG_301[url.pathname], 301);
+    // 2026-08-18 consolidation: 754 /coin/ pages (58 English + 696 translations) were 96% identical to one
+    // another and returned 69 pageviews and ONE Google visit in 90 days; the 20 /liquidations/<coin> pages
+    // were 99% identical and returned 11 with none from search, while the /liquidations/ hub above them
+    // earns steadily. They were removed and 301 here. Six coin pages survive because they have real search
+    // demand and get rebuilt on our own liquidation data. Redirects point at the topical hub, never the
+    // homepage — an irrelevant redirect is read as a soft 404 and passes nothing.
+    {
+      const KEEP_COIN = { btc: 1, eth: 1, sol: 1, xrp: 1, bnb: 1, doge: 1 };
+      const mCoin = url.pathname.match(/^\/(?:([a-z]{2})\/)?coin\/([a-z0-9]+)\/?$/);
+      if (mCoin && !(mCoin[1] === undefined && KEEP_COIN[mCoin[2]])) return Response.redirect(url.origin + '/coins/', 301);
+      if (/^\/liquidations\/[a-z0-9]+\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/liquidations/', 301);
+    }
     if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
     // AI-crawler telemetry (SEO kompas 2026-08-16): count AI search/assistant bot hits per page. ChatGPT-User = a human
     // asked ChatGPT something RIGHT NOW that pulled this URL — the most direct signal of which prompts surface us.

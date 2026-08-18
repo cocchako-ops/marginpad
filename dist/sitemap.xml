@@ -189,59 +189,7 @@
   <url><loc>https://marginpad.io/coin/xrp/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://marginpad.io/coin/bnb/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://marginpad.io/coin/doge/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/ada/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/link/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/avax/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/ltc/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/dot/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/trx/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/near/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/uni/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/apt/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/arb/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/op/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/sui/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/inj/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/tia/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://marginpad.io/open-interest/</loc><lastmod>2026-06-19</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
-  <url><loc>https://marginpad.io/coin/pepe/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/shib/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/wif/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/bonk/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/floki/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/aave/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/mkr/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/crv/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/ldo/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/ena/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/pendle/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/gmx/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/dydx/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/sei/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/atom/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/fil/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/hbar/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/algo/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/vet/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/fet/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/render/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/tao/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/icp/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/imx/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/gala/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/sand/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/mana/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/axs/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/grt/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/rune/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/ondo/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/ens/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/jup/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/pyth/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/ordi/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/bch/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/etc/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/coin/ton/</loc><lastmod>2026-08-17</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>https://marginpad.io/markets/</loc><lastmod>2026-06-19</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
   <url><loc>https://marginpad.io/guides/how-to-read-funding-rates/</loc><lastmod>2026-06-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/guides/how-to-read-liquidations/</loc><lastmod>2026-06-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
@@ -398,18 +346,6 @@
   <url><loc>https://marginpad.io/gate-vs-okx/</loc><lastmod>2026-07-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/gate-vs-kucoin/</loc><lastmod>2026-07-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/calendar/</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://marginpad.io/liquidations/btc/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/eth/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/sol/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/xrp/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/bnb/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/doge/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/ada/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/avax/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/link/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/trx/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/ltc/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/pepe/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/blog/how-to-use-ai-to-analyze-crypto-charts/</loc><lastmod>2026-08-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://marginpad.io/blog/crypto-economic-calendar-guide/</loc><lastmod>2026-08-17</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://marginpad.io/community/</loc><changefreq>hourly</changefreq><priority>0.9</priority></url>
@@ -466,14 +402,6 @@
   <url><loc>https://marginpad.io/hype-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/shib-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/near-liquidation-map/</loc><lastmod>2026-06-12</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/dot/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/sui/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/wif/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/hype/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/near/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/apt/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/arb/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
-  <url><loc>https://marginpad.io/liquidations/op/</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://marginpad.io/privacy/</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
   <url><loc>https://marginpad.io/stock-trading-simulator/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
   <url><loc>https://marginpad.io/forex-trading-simulator/</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>

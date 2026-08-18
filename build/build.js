@@ -31,13 +31,19 @@ run('Exchange comparison pages', 'node build/gen-compare-pages.js');
 run('"Best for" pages', 'node build/gen-bestfor-pages.js');
 run('Liquidation-map pages', 'node build/gen-liqmap-pages.js');
 run('Liquidations data page', 'node build/gen-liquidations-page.js');
-run('Per-coin liquidation SEO pages', 'node build/gen-liq-coin-pages.js');
+// RETIRED 2026-08-18: the 20 /liquidations/<coin> pages were 99% identical to each other and drew 11
+// pageviews with none from search over 90 days, while the /liquidations/ hub they fed earns steadily.
+// Consolidated into that hub with 301s. The generator stays in the tree if we ever rebuild them properly.
+// run('Per-coin liquidation SEO pages', 'node build/gen-liq-coin-pages.js');
 run('Liquidation statistics page', 'node build/gen-liq-stats-page.js');
 run('Alternative comparison pages', 'node build/gen-alternative-pages.js');
 run('Funding data page', 'node build/gen-funding-page.js');
 run('Long/short data page', 'node build/gen-longshort-page.js');
 run('Open-interest data page', 'node build/gen-openinterest-page.js');
-run('Per-coin dashboards', 'node build/gen-coin-dashboard-pages.js');
+// RETIRED 2026-08-18: 754 pages (58 English + 696 translations) at 96% word overlap, returning 69
+// pageviews and ONE Google visit in 90 days. Six symbols survive as hand-maintained pages; the rest 301
+// to /coins/. Regenerating would recreate the duplicate estate this consolidation removed.
+// run('Per-coin dashboards', 'node build/gen-coin-dashboard-pages.js');
 run('DeFi dashboard', 'node build/gen-defi-page.js');
 run('Bitcoin cycle', 'node build/gen-cycle-page.js');
 run('ETF flows', 'node build/gen-etf-page.js');
