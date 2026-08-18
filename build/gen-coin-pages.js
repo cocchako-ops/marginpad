@@ -146,7 +146,7 @@ function foot() {
   return `  </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a> · <a href="/glossary/">Glossary</a></span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a> · <a href="/glossary/">Glossary</a></span>
   </footer>
 </div>
 <script src="/assets/liqcalc.js"></script>

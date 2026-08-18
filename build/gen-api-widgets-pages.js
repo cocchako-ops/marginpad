@@ -126,7 +126,7 @@ Format     JSON</pre>
 
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="${home}">${t.navCalc}</a> · <a href="/blog/">${t.navBlog}</a> · <a href="${url}">API</a></span>
+    <span><a href="${home}">${t.navCalc}</a> · <a href="/blog/">${t.navBlog}</a> · <a href="${url}">API</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
 <script defer src="/assets/mp-nav.js"></script>

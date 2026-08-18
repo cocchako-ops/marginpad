@@ -20,7 +20,7 @@ const DATA = [
   { href: '/liquidations/', t: 'Liquidations', d: 'Total 24h liquidations, longs vs shorts, most-rekt coins.', e: '\u{1F4A5}' },
   { href: '/funding/', t: 'Funding rates', d: 'Highest and most negative funding — crowded longs & shorts.', e: '\u{1F4CA}' },
   { href: '/open-interest/', t: 'Open interest', d: 'Where leverage is building and unwinding across coins.', e: '\u{1F4C8}' },
-  { href: '/long-short/', t: 'Long / Short ratio', d: 'How the crowd is positioned on each coin.', e: '⚖️' },
+  { href: '/long-short/', t: 'Long / Short ratio', d: 'How the crowd is positioned on each coin.', e: '' },
   { href: '/screener/', t: 'Market screener', d: 'Scored technical screener with entries and setups.', e: '\u{1F50D}' },
   { href: '/rekt/', t: 'Live liquidations feed', d: 'Real-time stream of every big liquidation as it happens.', e: '\u{1F480}' },
 ];
@@ -78,7 +78,7 @@ let html = `<!DOCTYPE html>
 
     <h2>Live market data</h2>
     <div class="mkgrid">
-      ${DATA.map(x => `<a class="mkcard" href="${x.href}"><span class="mk-e">${x.e}</span><span><span class="mk-t">${x.t}</span><p class="mk-d">${x.d}</p></span></a>`).join('\n      ')}
+      ${DATA.map(x => `<a class="mkcard" href="${x.href}"><span><span class="mk-t">${x.t}</span><p class="mk-d">${x.d}</p></span></a>`).join('\n      ')}
     </div>
 
     <h2>Per-coin dashboards <span style="color:var(--ink-faint);font-weight:400;font-size:14px">(${coins.length} coins)</span></h2>
@@ -94,7 +94,7 @@ let html = `<!DOCTYPE html>
   </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="/liquidations/">Liquidations</a> · <a href="/funding/">Funding</a> · <a href="/open-interest/">OI</a> · <a href="/long-short/">Long/Short</a> · <a href="/screener">Screener</a></span>
+    <span><a href="/liquidations/">Liquidations</a> · <a href="/funding/">Funding</a> · <a href="/open-interest/">OI</a> · <a href="/long-short/">Long/Short</a> · <a href="/screener">Screener</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
 </body>

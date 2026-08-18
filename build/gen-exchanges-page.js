@@ -85,7 +85,7 @@ const card = e => {
     + '<div class="exc-pc"><div class="exc-pros"><div class="exc-pch">What helps your trade</div>' + e.pro.map(p => '<div class="exc-li pro">' + p + '</div>').join('') + '</div>'
     + '<div class="exc-cons"><div class="exc-pch">What can bite you</div>' + e.con.map(p => '<div class="exc-li con">' + p + '</div>').join('') + '</div></div>'
     + '<a class="exc-cta' + (warn ? ' warn' : '') + '" data-ex="' + e.name + '" href="' + e.href + '" target="_blank" rel="sponsored noopener noreferrer">' + (warn ? 'Visit KuCoin (proceed with caution)' : 'Get the ' + e.name + ' bonus') + ' →</a>'
-    + '<div class="exc-bonus">' + (warn ? '⚠ ' : '🎁 ') + e.bonus + '</div></div>';
+    + '<div class="exc-bonus">' + (warn ? '⚠ ' : '') + e.bonus + '</div></div>';
 };
 
 const trow = e => '<tr' + (e.warn ? ' class="tw"' : '') + '><td class="tx"><span class="tlg" style="--c:' + e.color + '"><img src="' + lg(e.logo) + '" width="20" height="20" loading="lazy" alt="" onerror="this.parentNode.textContent=\'' + e.name[0] + '\'"></span>' + e.name + '</td>'

@@ -70,16 +70,18 @@
     else if(sortKey==='oi')d.sort(function(a,b){return (b.oi||0)-(a.oi||0);});
     else if(sortKey==='vol24')d.sort(function(a,b){return ((b.hi-b.lo)/(b.lo||1))-((a.hi-a.lo)/(a.lo||1));});
     return d;}
-  function renderTop(d){var totVol=0,bull=0,bear=0,scSum=0,scN=0,topG=null;
-    d.forEach(function(e){totVol+=(e.vol||0);if(e.score!=null){scSum+=e.score;scN++;if(e.score>=60)bull++;else if(e.score<=40)bear++;}if(topG==null||e.chg>topG.chg)topG=e;});
+  function renderTop(d){var totVol=0,bull=0,bear=0,scSum=0,scN=0,topG=null,vmax=0;
+    d.forEach(function(e){totVol+=(e.vol||0);if((e.vens||0)>vmax)vmax=e.vens;if(e.score!=null){scSum+=e.score;scN++;if(e.score>=60)bull++;else if(e.score<=40)bear++;}if(topG==null||e.chg>topG.chg)topG=e;});
     var avg=scN?Math.round(scSum/scN):0,st=document.getElementById('scrStats'),mt=document.getElementById('scrMeta');
+    // bullish/bearish can only come from rows that carry a technical score, so the denominator is scN — not
+    // every row on the board. Stocks, metals and commodities ship without a score and used to inflate it.
     if(st)st.innerHTML='<div><span>24h volume · '+d.length+' pairs</span><b>'+fmtBig(totVol)+'</b></div>'
-      +'<div><span>Bullish setups</span><b>'+bull+'<small> / '+d.length+'</small></b></div>';
-    if(mt)mt.innerHTML='<span class="mchip"><i>Avg score</i><b>'+avg+'</b></span>'
+      +'<div><span>Bullish setups</span><b>'+bull+'<small> / '+scN+' scored</small></b></div>';
+    if(mt)mt.innerHTML='<span class="mchip"><i>Avg score</i><b>'+avg+'<small> · n='+scN+'</small></b></span>'
       +'<span class="mchip"><i>Bullish</i><b class="up">'+bull+'</b></span>'
       +'<span class="mchip"><i>Bearish</i><b class="dn">'+bear+'</b></span>'
       +(topG?'<span class="mchip"><i>Top gainer</i><b class="up">'+topG.s+' '+pct(topG.chg)+'</b></span>':'')
-      +'<span class="mchip"><i>Live</i><b>7 exchanges</b></span>';}
+      +(vmax?'<span class="mchip"><i>Live</i><b>'+vmax+' exchanges</b></span>':'');}
   function renderPicks(){var el=document.getElementById('scrPicks');if(!el)return;
     var L=null,S=null,V=null;
     DATA.forEach(function(e){

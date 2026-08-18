@@ -107,7 +107,7 @@ ${crumbLd}
   </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="/">Calculators</a> · <a href="/heatmap">Heatmap</a> · <a href="/blog/">Blog</a></span>
+    <span><a href="/">Calculators</a> · <a href="/heatmap">Heatmap</a> · <a href="/blog/">Blog</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
 </body>

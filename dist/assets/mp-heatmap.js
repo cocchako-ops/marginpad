@@ -896,7 +896,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       return out;
     }
     sh.addEventListener('click', function () { try {
-      var txt = '$' + S.coin + ' liquidation heatmap — live from 6 exchanges. Price hunts the bright bands.\nhttps://marginpad.io/heatmap';
+      var txt = '$' + S.coin + ' liquidation heatmap — live from 9 exchanges. Price hunts the bright bands.\nhttps://marginpad.io/heatmap';
       shotX().toBlob(function (bl) { try {
         var f = bl ? new File([bl], 'marginpad-liqmap-' + S.coin + '.png', { type: 'image/png' }) : null;
         if (f && navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], text: txt }).catch(function () {}); return; }

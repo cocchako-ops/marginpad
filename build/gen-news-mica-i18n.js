@@ -27,7 +27,7 @@ function altLinks(slug) {
 function switcher(slug, cur) {
   const B = base(slug);
   const items = [`<a href="${B}">English</a>`].concat(LANGS.map(l => l === cur ? `<b>${NAMES[l]}</b>` : `<a href="${B}${l}/">${NAMES[l]}</a>`));
-  return `<p style="font-size:12px;color:var(--ink-faint);margin:0 0 20px;line-height:2">🌐 ${items.join(' · ')}</p>`;
+  return `<p style="font-size:12px;color:var(--ink-faint);margin:0 0 20px;line-height:2"> ${items.join(' · ')}</p>`;
 }
 
 function page(post, lang, t) {
@@ -76,7 +76,7 @@ ${ld}
   </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a></span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
 </body>

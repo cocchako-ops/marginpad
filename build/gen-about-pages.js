@@ -56,7 +56,7 @@ ${extraHead || ''}</head>
   <article>${bodyHtml}</article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="${home}">Calculators</a> · <a href="/blog/">Blog</a> · <a href="/about/">About</a> · <a href="/contact/">Contact</a></span>
+    <span><a href="${home}">Calculators</a> · <a href="/blog/">Blog</a> · <a href="/about/">About</a> · <a href="/contact/">Contact</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
 </body>
@@ -85,11 +85,11 @@ function contactBody(lang) {
   return `
     <h1>${t.cTitle}</h1>
     <p class="lead">${t.cLead}</p>
-    <h2>💬 ${t.cH1}</h2>
+    <h2> ${t.cH1}</h2>
     <p>${p1}</p>
-    <h2>✉️ ${t.cH2}</h2>
+    <h2> ${t.cH2}</h2>
     <p>${p2}</p>
-    <h2>🐞 ${t.cH3}</h2>
+    <h2> ${t.cH3}</h2>
     <p>${t.cP3}</p>
   `;
 }

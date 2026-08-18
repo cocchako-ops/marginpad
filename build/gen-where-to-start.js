@@ -34,12 +34,12 @@ const LMETA = [
   { id: 'first', mins: 3, link: '/paper-trade' },
 ];
 const BMETA = [
-  { id: 'explorer', need: 'crypto', icon: '🧭' },
-  { id: 'blockchain', need: 'blockchain', icon: '🔗' },
-  { id: 'wallet', need: 'wallet', icon: '🔐' },
-  { id: 'market', need: 'trading', icon: '📈' },
-  { id: 'riskmgr', need: 'risk', icon: '🛡️' },
-  { id: 'firsttrade', need: 'first', icon: '🚀' },
+  { id: 'explorer', need: 'crypto' },
+  { id: 'blockchain', need: 'blockchain' },
+  { id: 'wallet', need: 'wallet' },
+  { id: 'market', need: 'trading' },
+  { id: 'riskmgr', need: 'risk' },
+  { id: 'firsttrade', need: 'first' },
 ];
 
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -278,31 +278,31 @@ function buildPage(lang) {
     intakeSkip: 'Just let me browse everything', recFor: 'Recommended for you', recAll: 'Browse all tracks',
     recAllSub: 'Start with the basics or jump straight to any topic below.', startTrack: 'Start track →', changeGoal: 'Change',
     quizOptional: 'Quick check', markRead: 'Mark as read ✓',
-    certBtn: '🎓 View your certificate', certH: 'Trading Academy — Complete', certSub: "You finished every lesson. You've built the foundation — now go practice it risk-free.",
+    certBtn: 'View your certificate', certH: 'Trading Academy — Complete', certSub: "You finished every lesson. You've built the foundation — now go practice it risk-free.",
     certShare: 'Share', certCta: 'Practice on Paper Trade →', certCopied: 'Link copied ✓',
-    certShareText: 'I just completed the MarginPad Trading Academy 🎓 — every lesson on crypto futures: leverage, indicators & risk. Learn it free at https://marginpad.io/where-to-start/'
+    certShareText: 'I just completed the MarginPad Trading Academy — every lesson on crypto futures: leverage, indicators & risk. Learn it free at https://marginpad.io/where-to-start/'
   };
   // First-run intake options → recommended track (no quiz; just understand intent)
   const intakeOpts = [
-    { g: 'basics', ic: '🌱', t: "I'm completely new to crypto", s: 'Start from money, wallets and exchanges' },
-    { g: 'fundamentals', ic: '📊', t: 'I know crypto — teach me trading', s: 'Leverage, margin, liquidation, orders, funding' },
-    { g: 'indicators', ic: '📈', t: 'I want to read charts & indicators', s: 'Candles, RSI, MACD, Bollinger and more' },
-    { g: 'risk', ic: '🛡️', t: 'I want to manage risk & psychology', s: 'Sizing, stops, risk of ruin, the mental game' },
-    { g: 'all', ic: '🧭', t: "Not sure — show me everything", s: 'Browse all tracks and the glossary' }
+    { g: 'basics', ic: '', t: "I'm completely new to crypto", s: 'Start from money, wallets and exchanges' },
+    { g: 'fundamentals', ic: '', t: 'I know crypto — teach me trading', s: 'Leverage, margin, liquidation, orders, funding' },
+    { g: 'indicators', ic: '', t: 'I want to read charts & indicators', s: 'Candles, RSI, MACD, Bollinger and more' },
+    { g: 'risk', ic: '', t: 'I want to manage risk & psychology', s: 'Sizing, stops, risk of ruin, the mental game' },
+    { g: 'all', ic: '', t: "Not sure — show me everything", s: 'Browse all tracks and the glossary' }
   ];
 
   // Practice missions — "go do it on the REAL site". The academy auto-detects completion from the site's own
   // localStorage state (journal, watchlist, calculator use) when the user returns, awards XP and checks it off.
   const MISSIONS = [
-    { id: 'm_watch', lesson: 'crypto', icon: '⭐', xp: 20, t: 'Star a coin you want to follow', s: 'Open Trending on the homepage and tap the ★ on any coin — it pins to the front, just for you.', href: home + '#trending', cta: 'Open Trending', det: 'watch' },
-    { id: 'm_calc', lesson: 'leverage', icon: '🧮', xp: 25, t: 'Price a liquidation BEFORE trading', s: 'Set your entry and leverage in the liquidation calculator and see exactly where you would be wiped out.', href: '/calculators?c=liq', cta: 'Open the calculator', det: 'calc' },
-    { id: 'm_trade', lesson: 'leverage', icon: '🎯', xp: 40, t: 'Open your first demo trade', s: 'Paper Trade uses the REAL live price with a fake $100 — feel leverage without risking a cent.', href: '/paper-trade', cta: 'Open Paper Trade', det: 'open' },
-    { id: 'm_sl', lesson: 'risk', icon: '🛡️', xp: 35, t: 'Protect a position with a stop-loss', s: 'In My Trades tap SL/TP on an open position and set a stop-loss — the #1 habit of traders who survive.', href: '/paper-trade', cta: 'Set a stop-loss', det: 'sl' },
-    { id: 'm_close', lesson: 'first', icon: '💰', xp: 30, t: 'Close a trade & book the result', s: 'Close any open demo position — try closing only 50% and watch the rest keep running.', href: '/paper-trade', cta: 'Close a trade', det: 'close' },
+    { id: 'm_watch', lesson: 'crypto', xp: 20, t: 'Star a coin you want to follow', s: 'Open Trending on the homepage and tap the ★ on any coin — it pins to the front, just for you.', href: home + '#trending', cta: 'Open Trending', det: 'watch' },
+    { id: 'm_calc', lesson: 'leverage', xp: 25, t: 'Price a liquidation BEFORE trading', s: 'Set your entry and leverage in the liquidation calculator and see exactly where you would be wiped out.', href: '/calculators?c=liq', cta: 'Open the calculator', det: 'calc' },
+    { id: 'm_trade', lesson: 'leverage', xp: 40, t: 'Open your first demo trade', s: 'Paper Trade uses the REAL live price with a fake $100 — feel leverage without risking a cent.', href: '/paper-trade', cta: 'Open Paper Trade', det: 'open' },
+    { id: 'm_sl', lesson: 'risk', xp: 35, t: 'Protect a position with a stop-loss', s: 'In My Trades tap SL/TP on an open position and set a stop-loss — the #1 habit of traders who survive.', href: '/paper-trade', cta: 'Set a stop-loss', det: 'sl' },
+    { id: 'm_close', lesson: 'first', xp: 30, t: 'Close a trade & book the result', s: 'Close any open demo position — try closing only 50% and watch the rest keep running.', href: '/paper-trade', cta: 'Close a trade', det: 'close' },
   ];
 
   // Tracks: Basics (translated, optional) + the 3 advanced tracks (English)
-  const basicsTrack = { id: 'basics', name: X.basicsName, icon: '🌱', blurb: X.basicsBlurb, level: 'beginner', optional: true, lessons: basicsLessons(B, lang, U) };
+  const basicsTrack = { id: 'basics', name: X.basicsName, blurb: X.basicsBlurb, level: 'beginner', optional: true, lessons: basicsLessons(B, lang, U) };
   const advTracks = ADV_TRACKS.map(t => ({ id: t.id, name: t.name, icon: t.icon, blurb: t.blurb, level: t.level, lessons: advLessons(t, lang) }));
   const tracks = [basicsTrack, ...advTracks];
 
@@ -314,10 +314,10 @@ function buildPage(lang) {
 
   // Badges: 6 basics badges (translated) + 4 track-completion badges (English)
   const badges = BMETA.map(b => ({ id: b.id, icon: b.icon, name: B.badges[b.id], need: b.need })).concat([
-    { id: 'b_fund', icon: '📊', name: 'Fundamentals Pro', needAll: trackIds['fundamentals'] },
-    { id: 'b_ta', icon: '📈', name: 'Chart Reader', needAll: trackIds['indicators'] },
-    { id: 'b_risk', icon: '🛡️', name: 'Risk Master', needAll: trackIds['risk'] },
-    { id: 'b_master', icon: '🎓', name: 'Academy Master', needAll: ALL.map(l => l.id) }
+    { id: 'b_fund', name: 'Fundamentals Pro', needAll: trackIds['fundamentals'] },
+    { id: 'b_ta', name: 'Chart Reader', needAll: trackIds['indicators'] },
+    { id: 'b_risk', name: 'Risk Master', needAll: trackIds['risk'] },
+    { id: 'b_master', name: 'Academy Master', needAll: ALL.map(l => l.id) }
   ]);
 
   const trMap = {}; tracks.forEach(t => { trMap[t.id] = t.icon + ' ' + t.name; });
@@ -335,7 +335,7 @@ function buildPage(lang) {
     const mins = tr.lessons.reduce((a, l) => a + (l.mins || 0), 0);
     return `<div class="trk" data-trk="${tr.id}">
   <div class="trk-head">
-    <span class="trk-ic">${tr.icon}</span>
+    
     <div class="trk-htxt"><div class="trk-name">${esc(tr.name)} <span class="trk-lvl lvl-${tr.level}">${esc(X.levelWord[tr.level] || tr.level)}</span>${tr.optional ? `<span class="trk-opt">${esc(X.optional)}</span>` : ''}<span class="trk-time">~${mins} ${esc(U.minWord)}</span></div><div class="trk-blurb">${esc(tr.blurb)}</div></div>
     <div class="trk-pr"><b data-trkn="${tr.id}">0</b>/${tr.lessons.length}</div>
     <span class="trk-chev" aria-hidden="true">▾</span>
@@ -353,7 +353,7 @@ function buildPage(lang) {
       `<div class="gl-term" data-s="${esc((g.t + ' ' + g.d).toLowerCase().replace(/<[^>]+>/g, ''))}"><b>${esc(g.t)}</b><span>${g.d}</span></div>`).join('');
   }).join('');
 
-  const badgeRow = badges.map(b => `<div class="wts-badge" data-b="${b.id}"><span class="wb-ic">${b.icon}</span><span class="wb-n">${esc(b.name)}</span></div>`).join('');
+  const badgeRow = badges.map(b => `<div class="wts-badge" data-b="${b.id}"><span class="wb-n">${esc(b.name)}</span></div>`).join('');
 
   const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: basicsTrack.lessons.map(l => ({ '@type': 'Question', name: l.quiz.q, acceptedAnswer: { '@type': 'Answer', text: l.quiz.o[l.quiz.a] + '. ' + l.sum } })) };
   const bcLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
@@ -410,7 +410,7 @@ ${hreflang}
     <div class="wts-stats">
       <div class="wts-lv"><b id="lvl">1</b><small>${esc(U.lvlLabel)}</small></div>
       <div class="wts-prog"><div class="pr-top"><span><b id="doneN">0</b> / ${ALL.length} ${esc(U.lessonsWord)}</span><span><b id="xp">0</b> ${esc(U.xpLabel)}</span></div><div class="wts-bar"><i id="bar"></i></div></div>
-      <div class="wts-streak"><b id="streak">🔥0</b><small>${esc(U.streakLabel)}</small></div>
+      <div class="wts-streak"><b id="streak"> 0</b><small>${esc(U.streakLabel)}</small></div>
     </div>
     <button class="wts-continue" id="continue" type="button">${esc(U.startBtn)}</button>
     <button class="wts-certbtn" id="certBtn" type="button">${esc(X.certBtn)}</button>
@@ -440,7 +440,7 @@ function lvl(){return Math.floor(S.xp/250)+1;}
 function bumpStreak(){var t=new Date().toISOString().slice(0,10);if(S.streak.last===t)return;var y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak.d=(S.streak.last===y)?(S.streak.d+1):1;S.streak.last=t;}
 function qs(s){return document.querySelector(s);}
 function badgeGot(b){if(b.needAll){for(var i=0;i<b.needAll.length;i++)if(!S.done[b.needAll[i]])return false;return b.needAll.length>0;}return !!S.done[b.need];}
-function renderStats(){var dc=doneCount();qs('#doneN').textContent=dc;qs('#xp').textContent=S.xp;qs('#lvl').textContent=lvl();qs('#bar').style.width=Math.round(dc/N*100)+'%';qs('#streak').textContent='🔥'+(S.streak.d||0);
+function renderStats(){var dc=doneCount();qs('#doneN').textContent=dc;qs('#xp').textContent=S.xp;qs('#lvl').textContent=lvl();qs('#bar').style.width=Math.round(dc/N*100)+'%';qs('#streak').textContent=''+(S.streak.d||0);
   B.forEach(function(b){var el=document.querySelector('[data-b="'+b.id+'"]');if(el)el.classList.toggle('got',badgeGot(b));});
   var tn=document.querySelectorAll('[data-trkn]');for(var k=0;k<tn.length;k++){var el=tn[k],tid=el.getAttribute('data-trkn'),c=trackCount(tid),tot=trackTotal(tid);el.textContent=c;var trk=el.closest('.trk');if(trk)trk.classList.toggle('tdone',tot>0&&c===tot);}
   var fi=firstIncomplete(),allDone=dc===N;var cb=qs('#continue');cb.textContent=allDone?U.reviewBtn:(dc===0?U.startBtn:U.continueBtn.replace('{n}',(fi+1)));
@@ -465,7 +465,7 @@ function misCard(m){var done=!!S.miss[m.id];
 function renderMissions(){var el=document.getElementById('wtsMis');if(el)el.innerHTML=MIS.map(misCard).join('');var n=document.getElementById('misN');if(n)n.textContent=misCount()+'/'+MIS.length;}
 function toast(t){var d=document.createElement('div');d.className='wts-toast';d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.classList.add('on');},20);setTimeout(function(){d.classList.remove('on');setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d);},350);},3600);}
 function checkMissions(){var got=[];for(var i=0;i<MIS.length;i++){var m=MIS[i];if(!S.miss[m.id]&&MD[m.det]&&MD[m.det]()){S.miss[m.id]=1;S.xp+=m.xp;got.push(m);}}
-  if(got.length){bumpStreak();save(S);renderMissions();renderStats();got.forEach(function(m,gi){setTimeout(function(){toast('🎉 Mission complete: '+m.t+' (+'+m.xp+' XP)');},gi*950);});}}
+  if(got.length){bumpStreak();save(S);renderMissions();renderStats();got.forEach(function(m,gi){setTimeout(function(){toast('Mission complete: '+m.t+' (+'+m.xp+' XP)');},gi*950);});}}
 document.addEventListener('visibilitychange',function(){if(!document.hidden)checkMissions();});
 window.addEventListener('focus',function(){checkMissions();});
 // ---- interactive lesson widgets (learn by touching, not just reading) ----
@@ -485,7 +485,7 @@ function wireWidget(root){var w=root.querySelector('.wts-widget');if(!w)return;v
     var u3=function(){var mv=+sl3.value,p=side==='long'?mv:-mv;var col=p>=0?'#2ebd85':'#ff6258';out3.innerHTML='Price moves <b>'+(mv>=0?'+':'')+mv+'%</b> → your '+side.toUpperCase()+' makes <b style="color:'+col+'">'+(p>=0?'+':'−')+'$'+Math.abs(p).toFixed(0)+'</b> on $100 (no leverage). With 10× leverage that becomes <b style="color:'+col+'">'+(p>=0?'+':'−')+'$'+Math.abs(p*10).toFixed(0)+'</b>.';};
     for(var si=0;si<seg.length;si++)(function(btn){btn.addEventListener('click',function(){side=btn.getAttribute('data-s');for(var j2=0;j2<seg.length;j2++)seg[j2].classList.toggle('on',seg[j2]===btn);u3();});})(seg[si]);
     sl3.addEventListener('input',u3);u3();}}
-function openLesson(i){if(lockedAt(i)){toast('🔒 Finish the previous lesson first — one step at a time.');return;}var l=L[i],m=qs('#mcard');
+function openLesson(i){if(lockedAt(i)){toast('Finish the previous lesson first — one step at a time.');return;}var l=L[i],m=qs('#mcard');
   var h='<div class="wts-mh"><span class="mn">'+l.tn+'</span><h2>'+esc(l.t)+'</h2><button class="wts-x" data-close type="button">✕</button></div>';
   if(l.warn)h+='<div class="wts-warn"><b>⚠ '+esc(U.importantPrefix)+'</b> '+esc(l.warn)+'</div>';
   if(l.fig)h+='<div class="wts-fig">'+l.fig+'</div>';
@@ -523,7 +523,7 @@ function openLesson(i){if(lockedAt(i)){toast('🔒 Finish the previous lesson fi
   var skip=document.getElementById('lskip');if(skip)skip.addEventListener('click',function(){if(answered)return;answered=true;document.querySelectorAll('.wts-opt').forEach(function(x){x.disabled=true;});skip.disabled=true;award(null);});
 }
 function showCertificate(){var m=qs('#mcard');var dc=doneCount();
-  var h='<div class="wts-cert"><div class="cert-seal">🎓</div><div class="cert-h">'+esc(U.certH)+'</div><div class="cert-sub">'+esc(U.certSub)+'</div>'
+  var h='<div class="wts-cert"><div class="cert-seal"></div><div class="cert-h">'+esc(U.certH)+'</div><div class="cert-sub">'+esc(U.certSub)+'</div>'
     +'<div class="cert-stats"><div><b>'+dc+'</b><small>'+esc(U.lessonsWord)+'</small></div><div><b>'+S.xp+'</b><small>'+esc(U.xpLabel)+'</small></div><div><b>'+lvl()+'</b><small>'+esc(U.lvlLabel)+'</small></div></div>'
     +'<div class="cert-acts"><button class="cert-share" id="certShare" type="button">'+esc(U.certShare)+'</button><a class="cert-cta" href="/paper-trade">'+esc(U.certCta)+'</a></div></div>'
     +'<div class="wts-done on" style="margin-top:16px"><button class="wts-next" id="lnext" type="button">'+esc(U.reviewBtn)+'</button></div>';
@@ -535,7 +535,7 @@ function closeModal(){qs('#modal').classList.remove('on');qs('#modal').hidden=tr
 document.addEventListener('click',function(e){
   var th=e.target.closest&&e.target.closest('.trk-head');if(th){var trk=th.closest('.trk');if(trk)trk.classList.toggle('closed');return;}
   var c=e.target.closest&&e.target.closest('.wts-card');if(!c)return;var ci=+c.getAttribute('data-i');
-  if(c.classList.contains('locked')){toast('🔒 Finish the previous lesson first — one step at a time.');return;}
+  if(c.classList.contains('locked')){toast('Finish the previous lesson first — one step at a time.');return;}
   openLesson(ci);});
 // space saver: only the track you are currently ON starts open; tap any topic header to expand it
 (function(){var cur=L[firstIncomplete()]?L[firstIncomplete()].track:null;

@@ -125,7 +125,7 @@ function foot(scriptSrc, o) {
   return `  </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="${o.homeHref || '/'}">${o.navCalc || 'Calculators'}</a> · <a href="/blog/">${o.navBlog || 'Blog'}</a></span>
+    <span><a href="${o.homeHref || '/'}">${o.navCalc || 'Calculators'}</a> · <a href="/blog/">${o.navBlog || 'Blog'}</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
 <script src="${scriptSrc}"></script>

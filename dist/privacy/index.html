@@ -2,73 +2,102 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
-
-    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Privacy Policy — MarginPad</title>
-<meta name="description" content="MarginPad privacy policy. We do not collect, store, or transmit any personal data. All calculations run locally in your browser." />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Privacy Policy | MarginPad</title>
+<meta name="description" content="What MarginPad collects and why: cookies, analytics including session recording, accounts, rewards data, the processors involved, and how to opt out." />
 <link rel="canonical" href="https://marginpad.io/privacy/" />
+<meta name="robots" content="index,follow" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-<link rel="stylesheet" href="/assets/fonts.css">
+<link rel="stylesheet" href="/assets/fonts.css" />
 <link rel="stylesheet" href="/assets/blog.css" />
-
-<script defer src="/assets/sentry.js"></script>
+<style>
+  article ol{padding-left:22px}
+  article ol > li{margin:10px 0}
+  article h2{margin-top:34px}
+  .lgl-note{border-left:2px solid #ffb347;background:rgba(255,179,71,.06);padding:13px 16px;border-radius:0 10px 10px 0;margin:22px 0;font-size:14.5px;color:#c8d0d9}
+  .lgl-note b{color:#ffb347}
+  .lgl-toc{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0 26px}
+  .lgl-toc a{font:600 12px 'Space Mono',ui-monospace,monospace;color:#8b95a1;background:#111419;border:1px solid #232932;border-radius:8px;padding:6px 11px;text-decoration:none}
+  .lgl-toc a:hover{color:#c2f64a;border-color:#3a434f}
+  article table{width:100%;border-collapse:collapse;font-size:13.5px;margin:16px 0}
+  article th{text-align:left;font:700 11px 'Space Mono',ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;color:#5c656f;padding:9px 10px;border-bottom:1px solid #232932}
+  article td{padding:9px 10px;border-bottom:1px solid rgba(35,41,50,.6);color:#c8d0d9;vertical-align:top}
+  .tw{overflow-x:auto}
+</style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <a class="brand" href="/">MARGIN<b>PAD</b></a>
-    <nav class="nav"><a href="/">Calculators</a><a href="/blog/">Blog</a></nav>
+    <nav class="nav"><a href="/">Tools</a><a href="/blog/">Blog</a><a href="/terms/">Terms</a><a href="/privacy/">Privacy</a></nav>
   </header>
-
-  <div class="crumb"><a href="/">Home</a> / Privacy</div>
+  <div class="crumb"><a href="/">Home</a> / Privacy Policy</div>
   <article>
     <h1>Privacy Policy</h1>
-    <div class="meta">Last updated: June 2026</div>
+    <div class="meta">Last updated: August 2026</div>
 
-    <p>MarginPad (the website at marginpad.io and the MarginPad browser extension) is built around a simple principle: <strong>we don't want your data.</strong></p>
+    <p>This policy describes what MarginPad actually collects and why. It covers <strong>marginpad.io</strong>, its subdomains, the browser extensions and the Telegram bots.</p>
+
+    <div class="lgl-note"><b>Rewritten August 2026.</b> The previous version said MarginPad had no accounts, no logins and no user database. That stopped being true as the site grew, and a policy that describes a different product is worse than none. This one describes what the code does today.</div>
+
+    <h2>Using the tools without an account</h2>
+    <p>The calculators still run <strong>entirely in your browser</strong>. Numbers you type into them are never sent to us. You can use the calculators, charts, screener, heatmap and market data without giving us anything beyond what any web server sees.</p>
 
     <h2>What we collect</h2>
-    <p><strong>Nothing personal.</strong> Every calculation you perform runs entirely inside your own browser. The numbers you type into the calculators are never sent to us or to any server — they never leave your device. We have no accounts, no logins, and no database of users.</p>
+    <div class="tw"><table>
+      <thead><tr><th>What</th><th>When</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>A device identifier (<code>mp_did</code> cookie, 2 years)</td><td>Every visit</td><td>To count returning visitors without an account, and to detect abuse of the rewards programme</td></tr>
+        <tr><td>Pages visited, referrer, country, device and browser type</td><td>Every visit</td><td>Analytics &mdash; which pages work and where visitors come from</td></tr>
+        <tr><td>IP address</td><td>Every request</td><td>Seen by our infrastructure; used for country detection, rate limiting and abuse prevention</td></tr>
+        <tr><td>Email address</td><td>If you create an account</td><td>Sign-in codes, account notices, and messages you ask for</td></tr>
+        <tr><td>Session cookies (<code>mp_sess</code>, <code>mp_uid</code>, <code>mp_un</code>)</td><td>While signed in</td><td>To keep you signed in and show your own data</td></tr>
+        <tr><td>Your simulated trades, XP, missions, streaks and profile</td><td>If you create an account</td><td>To run the product you signed up for</td></tr>
+        <tr><td>Chat messages, community posts, profile text and avatar</td><td>If you post</td><td>These are public by design</td></tr>
+        <tr><td>Rewards balance, withdrawal requests and the destination you give us</td><td>If you use rewards</td><td>To pay you, and to prevent multi-accounting</td></tr>
+        <tr><td>Telegram user id and username</td><td>If you link Telegram</td><td>To connect bot messages to your account</td></tr>
+      </tbody>
+    </table></div>
 
-    <h2>The browser extension</h2>
-    <p>The MarginPad browser extension requests <strong>no permissions</strong> and collects <strong>no data</strong>. It is a self-contained set of calculators. It does not read the pages you visit, does not track your activity, and does not transmit anything.</p>
+    <h2>Analytics and session recording</h2>
+    <p>We use <strong>Google Analytics</strong> and <strong>Yandex Metrica</strong>. Yandex Metrica includes <strong>Webvisor, which records how a page is used &mdash; movement, scrolling and clicks &mdash; and is enabled on wider screens</strong>. We use it to find broken layouts and confusing flows. We also run <strong>Sentry</strong>, which captures error reports when something breaks, and those reports can include the page you were on.</p>
+    <p>You can block all three with any standard content blocker, and the site works normally when you do.</p>
 
-    <h2>Local storage</h2>
-    <p>The website may store a single preference in your browser's local storage: your chosen interface language. This stays on your device and is used only to remember your language next time. It is never transmitted.</p>
+    <h2>Who else processes your data</h2>
+    <div class="tw"><table>
+      <thead><tr><th>Provider</th><th>For</th></tr></thead>
+      <tbody>
+        <tr><td>Cloudflare</td><td>Hosting, storage and delivery of the whole Service</td></tr>
+        <tr><td>Google Analytics, Yandex Metrica</td><td>Traffic analytics and session recording</td></tr>
+        <tr><td>Sentry</td><td>Error reporting</td></tr>
+        <tr><td>Resend</td><td>Sending email &mdash; sign-in codes and notices</td></tr>
+        <tr><td>NOWPayments</td><td>Processing Premium subscription payments</td></tr>
+        <tr><td>Telegram</td><td>Bot messages, if you choose to link it</td></tr>
+      </tbody>
+    </table></div>
+    <p>We do not sell your data, and we do not share it with advertisers.</p>
 
-    <h2>Analytics &amp; cookies</h2>
-    <p>The site uses privacy-respecting infrastructure and does not set advertising or tracking cookies of its own.</p>
+    <h2>Exchange links</h2>
+    <p>Links to exchanges are <strong>affiliate links</strong> carrying a referral code. Following one tells that exchange the visit came from us. It does not send them your email, your account or anything you typed here. Once you are on their site, their privacy policy applies, not ours.</p>
 
-    <h2>Third-party exchange links</h2>
-    <p>The website contains referral links to cryptocurrency exchanges (such as Bybit, Binance, KuCoin, Gate, Kraken and OKX). If you click one and create an account, that exchange's own privacy policy applies. We may receive a referral commission, but we never receive your personal information from these links.</p>
+    <h2>How long we keep things</h2>
+    <p>Account data is kept while the account exists. Analytics is aggregated and retained in the ordinary course. The live activity feed used for operations is a rolling window of a few hours. Rewards and withdrawal records are kept longer, because we need them to resolve payment disputes and detect abuse.</p>
+
+    <h2>Your choices</h2>
+    <ol>
+      <li><strong>Use the tools signed out.</strong> Most of the Service needs no account.</li>
+      <li><strong>Block the analytics.</strong> A content blocker stops Google Analytics, Yandex Metrica and Sentry; nothing breaks.</li>
+      <li><strong>Clear cookies</strong> to reset the device identifier.</li>
+      <li><strong>Ask for a copy or a deletion.</strong> Write to us and we will action it. Deleting an account removes your profile and personal data; public chat messages may be removed on request, and anonymised aggregate statistics may remain.</li>
+    </ol>
+
+    <h2>Children</h2>
+    <p>The Service is not intended for anyone under 18 and we do not knowingly collect data from children.</p>
 
     <h2>Contact</h2>
-    <p>Questions about this policy? Reach out via the <a href="/contact/">contact page</a> or email <a href="mailto:hello@marginpad.io">hello@marginpad.io</a>.</p>
+    <p>Privacy questions, data requests and deletions: <a href="/contact/">contact us</a>. See also our <a href="/terms/">Terms of Service</a>.</p>
 
-    <h2>Explore the free tools</h2>
-    <p>Everything on MarginPad is free and runs without an account: <a href="/paper-trade">Paper Trade</a> · <a href="/charts">Charts</a> · <a href="/screener">Screener</a> · <a href="/calculators">Calculators</a> · <a href="/calendar/">Economic calendar</a> · <a href="/liquidations/">Liquidations</a> · <a href="/fear-greed/">Fear &amp; Greed</a> · <a href="/rewards/">Rewards</a></p>
   </article>
-
-  <footer>
-    <span>© 2026 MarginPad</span>
-    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a> · <a href="/privacy/">Privacy</a></span>
-  </footer>
 </div>
 <script defer src="/assets/mp-nav.js"></script>
 </body>

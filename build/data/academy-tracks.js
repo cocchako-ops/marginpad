@@ -5,7 +5,6 @@
 const FUNDAMENTALS = {
   "id": "fundamentals",
   "name": "Trading Fundamentals",
-  "icon": "📊",
   "blurb": "How crypto futures actually work — leverage, margin, liquidation, orders, funding.",
   "level": "core",
   "lessons": [
@@ -24,7 +23,6 @@ const FUNDAMENTALS = {
 const INDICATORS = {
   "id": "indicators",
   "name": "Indicators & Technical Analysis",
-  "icon": "📈",
   "blurb": "Read price like a pro — candles, trend, moving averages, RSI, MACD, Bollinger and more.",
   "level": "advanced",
   "lessons": [
@@ -46,7 +44,6 @@ const INDICATORS = {
 const RISK = {
   "id": "risk",
   "name": "Risk & Psychology",
-  "icon": "🛡️",
   "blurb": "Survive first, profit second — sizing, stops, risk of ruin and the mental game.",
   "level": "advanced",
   "lessons": [

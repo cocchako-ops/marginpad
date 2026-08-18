@@ -224,7 +224,7 @@ ${faqLd}
   </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="${nav('markets/')}">${L.navMarkets}</a> · <a href="${nav('liquidations/')}">${L.navLiq}</a> · <a href="${nav('funding/')}">${L.navFunding}</a> · <a href="/screener">${L.navScreener}</a></span>
+    <span><a href="${nav('markets/')}">${L.navMarkets}</a> · <a href="${nav('liquidations/')}">${L.navLiq}</a> · <a href="${nav('funding/')}">${L.navFunding}</a> · <a href="/screener">${L.navScreener}</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
 </body>

@@ -117,4 +117,4 @@ run('Charset meta first in head', 'node build/fix-charset.js');
 // 12) build the Browse search content index — scans EVERY page's <title>, so it must run LAST
 run('Search index (Browse suggestions)', 'node build/gen-search-index.js');
 
-process.stdout.write('\n✅ Build complete. Review dist/, then: npx wrangler deploy\n');
+process.stdout.write('\n Build complete. Review dist/, then: npx wrangler deploy\n');

@@ -95,7 +95,7 @@ const PAGES = [
       ['/paper-trade', 'Paper Trade', 'No signup, live prices'],
       ['/calculators', 'Liquidation Calculator', 'Know your exit price'],
       ['/trading-api/', 'Bot API', 'REST paper trading'],
-      ['/academy/', 'Academy', '73 free lessons + XP'],
+      ['/academy/', 'Academy', '96 free lessons + XP'],
     ],
     faq: [
       { q: 'Does the Binance futures testnet work in the US?', a: 'No — the Binance testnet follows Binance’s geoblocking, so US users cannot register. MarginPad’s paper-trading simulator is not an exchange, so it works from any country with no account.' },
@@ -168,7 +168,7 @@ ${P.tools.map(t => `        <a class="ts-card" href="${t[0]}"><b>${t[1]}</b><sma
   </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="/paper-trade">Paper Trade</a> · <a href="/liquidations/">Liquidations</a> · <a href="/blog/">Blog</a></span>
+    <span><a href="/paper-trade">Paper Trade</a> · <a href="/liquidations/">Liquidations</a> · <a href="/blog/">Blog</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
 <script defer src="/assets/mp-nav.js"></script>

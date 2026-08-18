@@ -230,11 +230,11 @@
   function st(l,v,c,dNow){var d=dNow!=null?(dNow>=0?'+':'')+dNow:null;
     return '<div class="st"><div class="l">'+l+'</div><div class="v" style="color:'+col(v)+'">'+v+'</div><div class="c">'+c+'</div>'+(d!=null?'<div class="d '+(dNow>=0?'up':'dn')+'">'+d+' vs now</div>':'<div class="d" style="color:transparent">·</div>')+'</div>';}
   function verdict(v){
-    if(v<25)return ['🩸','<b>The market is in panic.</b> Extreme fear like this has historically marked capitulation zones — most people are selling in fear. Contrarians start paying attention here.'];
-    if(v<45)return ['😟','<b>Fear is in charge.</b> Sentiment is weak and positioning is defensive — moves down feel bigger than they are. Watch for stabilization.'];
-    if(v<55)return ['😐','<b>The market is undecided.</b> Neither fear nor greed dominates — trends born here need confirmation from volume and momentum.'];
-    if(v<76)return ['😏','<b>Greed is building.</b> Momentum-chasing is on; dips get bought fast. Enjoy it, but this is where discipline starts paying.'];
-    return ['🤑','<b>Euphoria.</b> Everyone is greedy, leverage is stacked and "this time is different" is trending. Historically the zone where pullbacks are born.'];
+    if(v<25)return ['','<b>The market is in panic.</b> Extreme fear like this has historically marked capitulation zones — most people are selling in fear. Contrarians start paying attention here.'];
+    if(v<45)return ['','<b>Fear is in charge.</b> Sentiment is weak and positioning is defensive — moves down feel bigger than they are. Watch for stabilization.'];
+    if(v<55)return ['','<b>The market is undecided.</b> Neither fear nor greed dominates — trends born here need confirmation from volume and momentum.'];
+    if(v<76)return ['','<b>Greed is building.</b> Momentum-chasing is on; dips get bought fast. Enjoy it, but this is where discipline starts paying.'];
+    return ['','<b>Euphoria.</b> Everyone is greedy, leverage is stacked and "this time is different" is trending. Historically the zone where pullbacks are born.'];
   }
   function renderTop(data){
     var now=data[0],c=col(now.v);

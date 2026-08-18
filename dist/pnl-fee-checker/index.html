@@ -114,7 +114,7 @@
   <div class="fee-out" id="fOut"><div style="color:#68748a;font-size:14px">Fill in the trade above — the breakdown appears here instantly.</div></div>
 
   <div class="mexc" id="mexcBox" hidden>
-    <h3>😤 Tired of fees eating your profit?</h3>
+    <h3> Tired of fees eating your profit?</h3>
     <div class="cmp" id="mexcCmp"></div>
     <p style="color:#9aa7ba;font-size:13px;line-height:1.6;margin:6px 0 4px">MEXC runs <b style="color:#0ac2d6">0.000% maker / 0.020% taker</b> standard futures fees — the lowest of any major exchange. Same trade, same leverage, a fraction of the fee bill.</p>
     <a class="btn-m" href="https://promote.mexc.com/r/GND4jI97o0" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&__mpTrack('exchange','MEXC')}catch(e){}">Trade with near-zero fees on MEXC →</a>
@@ -180,12 +180,12 @@
     h+='<div class="fo-row"><span>Exit fee ('+(exT==='maker'?'maker '+fees[0]:'taker '+fees[1])+'% of '+money(qty*exit)+')</span><b class="neg">−'+money(feeOut).slice(1)+'</b></div>';
     h+='<div class="fo-row"><span>Funding ('+cycles+' cycle'+(cycles===1?'':'s')+' × '+(+$('fFund').value||0)+'%/8h'+(cycles?'':' — none crossed')+')</span><b class="'+(funding>0.005?'neg':funding<-0.005?'pos':'')+'">'+(funding>0.005?'−'+money(funding).slice(1):funding<-0.005?'+'+money(-funding).slice(1):'$0.00')+'</b></div>';
     h+='<div class="fo-row fo-net"><span><b>Net — what your balance should change by</b></span><b class="'+(net>=0?'pos':'neg')+'" style="font-size:19px">'+money(net)+'</b></div>';
-    if(gross>0&&totalCost>0)h+='<div class="fo-why">💸 Costs ate <b>'+money(totalCost)+'</b> — that’s <b>'+Math.min(999,Math.round(totalCost/gross*100))+'% of your gross profit</b>. The single biggest lever: fees are computed on the '+money(notional)+' position, not your '+money(margin)+' margin.</div>';
+    if(gross>0&&totalCost>0)h+='<div class="fo-why"> Costs ate <b>'+money(totalCost)+'</b> — that’s <b>'+Math.min(999,Math.round(totalCost/gross*100))+'% of your gross profit</b>. The single biggest lever: fees are computed on the '+money(notional)+' position, not your '+money(margin)+' margin.</div>';
     var got=$('fGot').value===''?null:+$('fGot').value;
     if(got!=null&&isFinite(got)){
       var diff=got-net;
-      if(Math.abs(diff)<=Math.max(0.05,Math.abs(net)*0.02)) h+='<div class="fo-why fo-match">✅ <b>The math checks out.</b> Your '+money(got)+' matches our breakdown ('+money(net)+') — nothing shady, just fees'+(cycles?' and funding':'')+' working exactly as published.</div>';
-      else h+='<div class="fo-why">🔍 You received <b>'+money(got)+'</b> but the standard schedule predicts <b>'+money(net)+'</b> — a gap of <b>'+money(diff)+'</b>. Usual suspects: more funding cycles than entered (check your open/close times vs 00:00/08:00/16:00 UTC), slippage on market fills (your real avg price ≠ the chart price), a "limit" order that partially filled as taker, or non-standard fee tier. Your exchange’s trade history shows the exact fee per fill — compare it line by line.</div>';
+      if(Math.abs(diff)<=Math.max(0.05,Math.abs(net)*0.02)) h+='<div class="fo-why fo-match"><b>The math checks out.</b> Your '+money(got)+' matches our breakdown ('+money(net)+') — nothing shady, just fees'+(cycles?' and funding':'')+' working exactly as published.</div>';
+      else h+='<div class="fo-why"> You received <b>'+money(got)+'</b> but the standard schedule predicts <b>'+money(net)+'</b> — a gap of <b>'+money(diff)+'</b>. Usual suspects: more funding cycles than entered (check your open/close times vs 00:00/08:00/16:00 UTC), slippage on market fills (your real avg price ≠ the chart price), a "limit" order that partially filled as taker, or non-standard fee tier. Your exchange’s trade history shows the exact fee per fill — compare it line by line.</div>';
     }
     out.innerHTML=h;
     // MEXC comparison (skip when MEXC is already selected)

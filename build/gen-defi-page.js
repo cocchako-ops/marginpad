@@ -288,7 +288,7 @@ ${ld}
   </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="/screener">Screener</a> · <a href="/funding/">Funding</a> · <a href="/liquidations/">Liquidations</a> · <a href="/defi/">DeFi</a></span>
+    <span><a href="/screener">Screener</a> · <a href="/funding/">Funding</a> · <a href="/liquidations/">Liquidations</a> · <a href="/defi/">DeFi</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
 <script>(function(){

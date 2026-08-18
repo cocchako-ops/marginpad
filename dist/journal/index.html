@@ -170,7 +170,7 @@
   }
   function eta(e,m){var h=hist[e.id];if(!h||h.length<4)return null;var a=h[Math.max(0,h.length-7)],b=h[h.length-1],dt=(b.t-a.t)/1000;if(dt<=0)return null;var vel=(b.p-a.p)/dt;if(Math.abs(vel)<1e-9)return null;var tgt=vel>0?(m.long?e.tp:e.stop):(m.long?e.stop:e.tp);if(tgt==null)return null;var t=(tgt-b.p)/vel;return (t>0&&isFinite(t))?t:null;}
   function checkClose(e,m){if(e.status!=='open')return false;var tp=e.tp!=null&&(m.long?m.live>=e.tp:m.live<=e.tp),sl=(m.long?m.live<=e.stop:m.live>=e.stop);if(tp||sl){e.status=tp?'win':'loss';e.exit=tp?e.tp:e.stop;e.closeTs=Date.now();e.pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(e.exit-e.entry)*(m.long?1:-1)-feeOf(e,e.exit):null;notify(e,tp);return true;}return false;}
-  function notify(e,win){if(notified[e.id])return;notified[e.id]=true;try{if('Notification'in window&&Notification.permission==='granted')new Notification('MarginPad — '+(win?'Take-Profit hit ✅':'Stop-Loss hit ❌'),{body:(e.sym||'')+' '+String(e.side).toUpperCase()+' closed @ '+fp(win?e.tp:e.stop)});}catch(_){}}
+  function notify(e,win){if(notified[e.id])return;notified[e.id]=true;try{if('Notification'in window&&Notification.permission==='granted')new Notification('MarginPad — '+(win?'Take-Profit hit':'Stop-Loss hit'),{body:(e.sym||'')+' '+String(e.side).toUpperCase()+' closed @ '+fp(win?e.tp:e.stop)});}catch(_){}}
   function pushHist(id,p){var h=hist[id]||(hist[id]=[]);var now=Date.now();if(!h.length||now-h[h.length-1].t>900){h.push({t:now,p:p});if(h.length>40)h.shift();}}
   function spark(id){var h=hist[id];if(!h||h.length<2)return '';var w=280,hh=34,lo=Math.min.apply(null,h.map(function(x){return x.p;})),hi=Math.max.apply(null,h.map(function(x){return x.p;})),rng=hi-lo||1;var pts=h.map(function(x,i){return (i/(h.length-1)*w).toFixed(1)+','+(hh-(x.p-lo)/rng*(hh-4)-2).toFixed(1);}).join(' ');var up=h[h.length-1].p>=h[0].p;return '<svg class="lt-spark" viewBox="0 0 '+w+' '+hh+'" preserveAspectRatio="none"><polyline points="'+pts+'" fill="none" stroke="'+(up?'#2ebd85':'#ff6258')+'" stroke-width="1.5"/></svg>';}
   function liveTicket(e){
@@ -186,7 +186,7 @@
       +'<div class="lt-btns"><button class="close" data-act="close" data-id="'+e.id+'">Close</button><button data-act="edit" data-id="'+e.id+'">Edit SL/TP</button><button data-act="del" data-id="'+e.id+'">Delete</button></div></div>';
   }
   function closedTicket(e){var win=e.status==='win',cls=win?'pf':'ls',d=e.closeTs?dur(e.closeTs-e.ts):'';
-    return '<div class="lt '+cls+' lt-closed" data-id="'+e.id+'"><div class="lt-h"><span class="lt-sym">'+esc(e.sym||'—')+'</span><span class="lt-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span><span class="lt-live">'+(win?'WIN ✅':'LOSS ❌')+'</span></div>'
+    return '<div class="lt '+cls+' lt-closed" data-id="'+e.id+'"><div class="lt-h"><span class="lt-sym">'+esc(e.sym||'—')+'</span><span class="lt-dir '+(e.side!=='short'?'long':'short')+'">'+(e.side!=='short'?'LONG':'SHORT')+'</span><span class="lt-live">'+(win?'WIN':'LOSS')+'</span></div>'
       +'<div class="lt-pnl '+cls+'"><span class="big">'+(e.pnl!=null?((+e.pnl>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span><span class="sub">'+esc(e.sym||'')+' '+fp(e.entry)+' → '+fp(e.exit!=null?e.exit:(win?e.tp:e.stop))+(d?' · '+d:'')+'</span></div>'
       +'<div class="lt-btns"><button data-act="reopen" data-id="'+e.id+'">Reopen</button><button data-act="del" data-id="'+e.id+'">Delete</button></div></div>';}
   function render(){

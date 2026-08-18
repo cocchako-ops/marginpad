@@ -50,7 +50,7 @@ function foot(scriptSrc) {
   return `  </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a> · <a href="/glossary/">Glossary</a> · <a href="/about/">About</a></span>
+    <span><a href="/">Calculators</a> · <a href="/blog/">Blog</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a> · <a href="/glossary/">Glossary</a> · <a href="/about/">About</a></span>
   </footer>
 </div>${scriptSrc ? '\n<script src="' + scriptSrc + '"></script>' : ''}
 </body>

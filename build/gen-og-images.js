@@ -13,7 +13,7 @@ const mono = fs.readFileSync(path.join(DIST, 'assets', 'fonts', 'spacemono.woff2
 const CARDS = [
   { file: 'liquidations', title: 'Crypto Liquidations', sub: 'Live 24h liquidations · longs vs shorts · most-rekt coins', emoji: '\u{1F4A5}' },
   { file: 'funding', title: 'Crypto Funding Rates', sub: 'Live funding · crowded longs, crowded shorts, squeeze setups', emoji: '\u{1F4CA}' },
-  { file: 'long-short', title: 'Long / Short Ratio', sub: 'Live trader positioning across the top perpetual markets', emoji: '⚖️' },
+  { file: 'long-short', title: 'Long / Short Ratio', sub: 'Live trader positioning across the top perpetual markets', emoji: '' },
   { file: 'open-interest', title: 'Crypto Open Interest', sub: 'Live OI · where leverage is building and unwinding', emoji: '\u{1F4C8}' },
   { file: 'coin', title: 'Perpetual Futures Data', sub: 'Live price, funding, open interest & liquidations per coin', emoji: '\u{1FA99}' },
 ];

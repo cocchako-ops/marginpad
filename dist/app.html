@@ -2,19 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
-
-    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
 <meta name="color-scheme" content="dark" />
 <style>html{background:#0a0b0d;color-scheme:dark}</style>
 <!-- crash/error beacon: counts JS errors & unhandled rejections so the admin dashboard can see how many users hit a broken page -->
@@ -109,10 +96,8 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=d4117844">
+<link rel="stylesheet" href="/assets/home.css?v=6831754b">
 
-
-<script defer src="/assets/sentry.js"></script>
 </head>
 <body>
 <script>
@@ -298,7 +283,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
     <div class="scr-picks" id="scrPicks"></div>
     <input class="scr-search" id="scrSearch" type="search" placeholder="Search any coin… (e.g. SOL)" autocomplete="off" spellcheck="false" aria-label="Search pairs">
     <div class="scr-filters" id="scrFilters">
-      <button type="button" data-sort="score" class="on">🔥 Top Score</button>
+      <button type="button" data-sort="score" class="on"> Top Score</button>
       <button type="button" data-sort="gain">Gainers</button>
       <button type="button" data-sort="lose">Losers</button>
       <button type="button" data-sort="vol">Volume</button>
@@ -312,7 +297,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
     </div>
     <div class="scr-list" id="scrList"><div class="scr-loading">Loading live markets…</div></div>
     <div id="scrOnchain" hidden>
-      <div class="scr-oc-tabs" id="scrOcTabs"><button type="button" data-oct="trending" class="on">🔥 Trending</button><button type="button" data-oct="fresh">🆕 New pairs</button></div>
+      <div class="scr-oc-tabs" id="scrOcTabs"><button type="button" data-oct="trending" class="on"> Trending</button><button type="button" data-oct="fresh"> New pairs</button></div>
       <div class="scr-list" id="scrOcList"><div class="scr-loading">Loading on-chain pools…</div></div>
       <p class="scr-oc-attr">On-chain DEX data by <a href="https://www.geckoterminal.com" target="_blank" rel="noopener">GeckoTerminal</a> · memecoins are EXTREMELY volatile — most new pairs go to zero. Never trade money you can't lose.</p>
     </div>
@@ -604,7 +589,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
       <div class="chads-bg"></div>
       <svg class="chads-art" viewBox="0 0 300 160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="chag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fd8e6" stop-opacity=".4"/><stop offset="1" stop-color="#3fd8e6" stop-opacity="0"/></linearGradient></defs><path d="M0,124 L40,110 L72,118 L104,86 L136,96 L168,62 L200,72 L232,38 L266,52 L300,18 L300,160 L0,160 Z" fill="url(#chag)"/><path d="M0,124 L40,110 L72,118 L104,86 L136,96 L168,62 L200,72 L232,38 L266,52 L300,18" fill="none" stroke="#3fd8e6" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
       <div class="chads-in">
-        <div class="chads-badge">⚡ Charts workspace · free</div>
+        <div class="chads-badge"> Charts workspace · free</div>
         <h3>Draw, analyze &amp; trade — all on one chart</h3>
         <ul class="chads-feat">
           <li>1–6 floating chart windows side by side</li>
@@ -740,7 +725,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
     </div>
     <div class="foot-bottom">
       <span data-i18n="footLegal">© 2026 MarginPad · Not financial advice</span>
-      <span>marginpad.io</span>
+      <span><a href="/terms/" style="color:inherit">Terms</a> &middot; <a href="/privacy/" style="color:inherit">Privacy</a> &middot; marginpad.io</span>
     </div>
   </footer>
 
@@ -822,7 +807,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=d4117844"></script>
+<script src="/assets/home.js?v=6831754b"></script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

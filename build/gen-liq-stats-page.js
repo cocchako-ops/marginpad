@@ -77,7 +77,7 @@ ${dataLd}
     <h2>How to read these numbers</h2>
     <p>Long liquidations dominate on down-moves — leveraged buyers are forced to sell, which accelerates the drop. Short liquidations dominate on squeezes — forced buying fuels the rally. A lopsided daily split therefore tells you which side of the market just paid for the move. Calm days across all futures markets wipe out tens of millions of dollars; crash or squeeze days can exceed a billion. The <a href="/btc-liquidation-map/">liquidation map</a> shows <em>where</em> the remaining leverage sits, and the <a href="/rekt/">Rekt feed</a> streams every hit as it lands.</p>
     <h2>Methodology</h2>
-    <p>MarginPad runs its own collector that subscribes to the public liquidation websockets of the 9 exchanges listed above, normalizes each event (symbol, side, price, notional, timestamp) and archives every day. Per-coin 24-hour totals are aggregated from Coinglass across 799+ tracked coins. No modelled or extrapolated values appear on this page — where data is missing, nothing is shown.</p>
+    <p>MarginPad runs its own collector that subscribes to the public liquidation websockets of the 9 exchanges listed above, normalizes each event (symbol, side, price, notional, timestamp) and archives every day. Per-coin 24-hour totals are aggregated from Coinglass for the most-liquidated coins of the day. No modelled or extrapolated values appear on this page — where data is missing, nothing is shown.</p>
     <h2>Get the raw data (free API, no key)</h2>
     <p>The same data is served as JSON by the <a href="/free-crypto-api/">MarginPad free crypto API</a>: <code>/api/v1/liquidations/recent</code> (price-level buckets per coin), <code>/api/v1/liquidations/live</code> (latest individual events) and <code>/api/v1/clusters</code> (estimated forward clusters, labelled as estimates). CORS-enabled, 60 requests/minute, no signup.</p>
     <h2>FAQ</h2>
@@ -94,7 +94,7 @@ ${dataLd}
   </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="/liquidations/">Liquidations</a> · <a href="/rekt/">Rekt</a> · <a href="/blog/">Blog</a></span>
+    <span><a href="/liquidations/">Liquidations</a> · <a href="/rekt/">Rekt</a> · <a href="/blog/">Blog</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
 <script>

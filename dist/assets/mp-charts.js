@@ -614,7 +614,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var pl=null;try{pl=w.candle.createPriceLine({price:price,color:'#ffb347',lineWidth:1,lineStyle:2,axisLabelVisible:true,title:'ALERT '+(dir==='up'?'≥':'≤')});}catch(e){}
     var rec={id:null,price:price,dir:dir,pl:pl};(w.chAlerts=w.chAlerts||[]).push(rec);
     fetch('/api/alerts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({sym:w.sym,target:price,dir:dir,channel:'email'})}).then(function(r){return r.json();}).then(function(d){
-      if(d&&d.ok){rec.id=d.id;chartToast('🔔 Alert set — '+w.sym+' '+(dir==='up'?'≥':'≤')+' '+cwFmt(price)+' · we’ll email you · click the line to remove');}
+      if(d&&d.ok){rec.id=d.id;chartToast('Alert set — '+w.sym+' '+(dir==='up'?'≥':'≤')+' '+cwFmt(price)+' · we’ll email you · click the line to remove');}
       else{chAlertDel(w,rec,true);
         if(d&&d.error==='too_many')chartToast('Too many active alerts (max 25). Remove some on /alerts.');
         else if(d&&d.error==='not_signed_in'){chartToast('Sign in (free) to set price alerts.');try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}}
@@ -630,7 +630,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // Tools/colors/line-styles live in labeled dropdown panels (.cwin-pop) so a first-time visitor reads names, not glyphs.
   function drawToolsHtml(withAlert){
     var T=[['trend','╱','Trend line'],['ray','⇗','Ray'],['arrow','➔','Arrow'],['hline','―','Horizontal line'],['vline','│','Vertical line'],['rect','▭','Rectangle'],['fib','F','Fibonacci'],['measure','⇕','Measure'],['pen','✎','Freehand'],['text','T','Text label']];
-    if(withAlert)T.push(['alert','🔔','Price alert']);
+    if(withAlert)T.push(['alert','','Price alert']);
     var items='';for(var i=0;i<T.length;i++)items+='<button class="cpop-it'+(T[i][0]==='trend'?' on':'')+'" data-tool="'+T[i][0]+'" type="button"><i>'+T[i][1]+'</i><span>'+T[i][2]+'</span></button>';
     var COLS=['#3fd8e6','#c2f64a','#ff6258','#ff9f4d','#b48cff','#ffffff'],cols='';
     for(var j=0;j<COLS.length;j++)cols+='<span class="cwin-color'+(j===0?' on':'')+'" data-color="'+COLS[j]+'" style="background:'+COLS[j]+'"></span>';
@@ -640,7 +640,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       +'<button class="cwin-tool cwin-pick" data-cpick title="Color" type="button"><span class="cdot" style="background:#3fd8e6"></span><span class="car">▾</span></button>'
       +'<button class="cwin-tool cwin-pick" data-spick title="Line style" type="button"><span class="scur">━</span><span class="car">▾</span></button>'
       +'<span class="cwin-sep"></span>'
-      +'<button class="cwin-tool cwin-del" data-del title="Delete selected drawing" type="button">🗑</button>'
+      +'<button class="cwin-tool cwin-del" data-del title="Delete selected drawing" type="button"></button>'
       +'<button class="cwin-tool cwin-undo" data-undo title="Undo last" type="button">↶</button>'
       +'<button class="cwin-tool cwin-clear" data-clear title="Clear all" type="button">Clear</button>'
       +'<div class="cwin-pop cwin-pop-tool" data-pop="tool" hidden>'+items+'</div>'
@@ -1044,7 +1044,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     else startSmooth(); // forming-bar close is eased toward the true price by the rAF loop → it glides at 60fps instead of snapping
     if(w.dr&&w.dr.shapes&&w.dr.shapes.length&&w.dr.redraw)w.dr.redraw();
     // once price crosses an alert level it has triggered (cron emails) — clear its line so it doesn't linger
-    if(w.chAlerts&&w.chAlerts.length){for(var ai=w.chAlerts.length-1;ai>=0;ai--){var al=w.chAlerts[ai];if((al.dir==='up'&&p>=al.price)||(al.dir==='down'&&p<=al.price)){if(al.pl)try{w.candle.removePriceLine(al.pl);}catch(e){}w.chAlerts.splice(ai,1);chartToast('🔔 '+w.sym+' hit '+cwFmt(al.price)+' — alert triggered');}}} }
+    if(w.chAlerts&&w.chAlerts.length){for(var ai=w.chAlerts.length-1;ai>=0;ai--){var al=w.chAlerts[ai];if((al.dir==='up'&&p>=al.price)||(al.dir==='down'&&p<=al.price)){if(al.pl)try{w.candle.removePriceLine(al.pl);}catch(e){}w.chAlerts.splice(ai,1);chartToast(''+w.sym+' hit '+cwFmt(al.price)+' — alert triggered');}}} }
   // ---- smoothness: ease each forming candle's displayed close toward its true price at 60fps so it glides (premium feel).
   // Runs only while something is still moving (self-stops when every window has settled; restarted by liveTick), and never while hidden.
   var _smRun=false;

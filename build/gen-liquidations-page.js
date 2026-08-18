@@ -116,7 +116,7 @@ ${LD}
   </article>
   <footer>
     <span>© 2026 MarginPad</span>
-    <span><a href="/screener">Screener</a> · <a href="/rekt/">Rekt</a> · <a href="/">Tools</a> · <a href="/blog/">Blog</a></span>
+    <span><a href="/screener">Screener</a> · <a href="/rekt/">Rekt</a> · <a href="/">Tools</a> · <a href="/blog/">Blog</a> · <a href="/terms/">Terms</a> · <a href="/privacy/">Privacy</a></span>
   </footer>
 </div>
 <script>(function(){

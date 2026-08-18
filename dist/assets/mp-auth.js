@@ -434,7 +434,7 @@
       + '<div class="mpa-dm"><div class="mpa-dm-scroll" id="mpaSupScroll">'
       + c.messages.map(function (m) { return '<div class="mpa-bub ' + (m.dir === 'out' ? 'out' : 'in') + '">' + (m.dir === 'out' ? '<span class="mpa-who">MarginPad support</span>' : '') + (m.img ? '<img src="' + esc(m.img) + '" class="mpa-sup-img">' : '') + esc(m.body || '') + '</div>'; }).join('')
       + '</div>' + (c.closed ? '<div class="mpa-dm-warn" style="margin-top:8px">This conversation was closed \u2014 sending a message reopens it.</div>' : '')
-      + '<div id="mpaSupPrev" style="margin:6px 0 0"></div><div class="mpa-dm-form"><button class="mpa-dm-send" id="mpaSupPic" type="button" title="Attach screenshot" style="padding:0 11px">📎</button><input class="mpa-in" id="mpaSupReply" placeholder="Reply\u2026" maxlength="1000" autocomplete="off"><button class="mpa-dm-send" id="mpaSupSend" type="button">Send</button><input type="file" accept="image/*" id="mpaSupFile" style="display:none"></div></div>'
+      + '<div id="mpaSupPrev" style="margin:6px 0 0"></div><div class="mpa-dm-form"><button class="mpa-dm-send" id="mpaSupPic" type="button" title="Attach screenshot" style="padding:0 11px"></button><input class="mpa-in" id="mpaSupReply" placeholder="Reply\u2026" maxlength="1000" autocomplete="off"><button class="mpa-dm-send" id="mpaSupSend" type="button">Send</button><input type="file" accept="image/*" id="mpaSupFile" style="display:none"></div></div>'
       + '<div class="mpa-du-msg" id="mpaSupSt"></div>'
       + '<button class="mpa-link" id="mpaSupBack" type="button">\u2190 All conversations</button>';
     var sc = bodyEl.querySelector('#mpaSupScroll'); if (sc) sc.scrollTop = sc.scrollHeight;
@@ -520,7 +520,7 @@
       + '<div class="mpa-dm-form"><input class="mpa-in" id="mpaDmIn" placeholder="Message @' + esc(name) + '…" maxlength="1000" autocomplete="off"><button class="mpa-dm-send" id="mpaDmSend" type="button">Send</button></div></div>';
     var bk = bodyEl.querySelector('#mpaDmBack'); if (bk) bk.addEventListener('click', renderDmInbox);
     var scroll = bodyEl.querySelector('#mpaDmScroll'), inp = bodyEl.querySelector('#mpaDmIn'), send = bodyEl.querySelector('#mpaDmSend'), warn = bodyEl.querySelector('#mpaDmWarn');
-    function draw(msgs) { if (!msgs.length) { scroll.innerHTML = '<div class="mpa-dm-empty">No messages yet — say hi 👋</div>'; return; } scroll.innerHTML = msgs.map(function (m) { return '<div class="mpa-dbub ' + (m.me ? 'me' : 'them') + '">' + esc(m.txt) + '<span class="t">' + xpAgo(m.ts) + '</span></div>'; }).join(''); scroll.scrollTop = scroll.scrollHeight; }
+    function draw(msgs) { if (!msgs.length) { scroll.innerHTML = '<div class="mpa-dm-empty">No messages yet — say hi </div>'; return; } scroll.innerHTML = msgs.map(function (m) { return '<div class="mpa-dbub ' + (m.me ? 'me' : 'them') + '">' + esc(m.txt) + '<span class="t">' + xpAgo(m.ts) + '</span></div>'; }).join(''); scroll.scrollTop = scroll.scrollHeight; }
     fetch('/api/dm/thread?with=' + encodeURIComponent(name)).then(function (r) { return r.json(); }).then(function (d) {
       if (!d || d.error) { scroll.innerHTML = '<div class="mpa-dm-empty">' + (d && d.error === 'no_recipient' ? 'User not found.' : 'Could not load this chat.') + '</div>'; return; }
       if (d.other) { var nm = bodyEl.querySelector('#mpaDmNm'); if (nm) nm.innerHTML = dmLvl(d.other.level) + esc(d.other.name); var av = bodyEl.querySelector('#mpaDmAv'); if (av) av.style.background = dmCol(d.other.name); }
@@ -562,7 +562,7 @@
       fd.innerHTML = ev.map(function (e) { var lv = e.level, badge = lv && window.mpLvlSvg ? '<span style="display:inline-block;width:12px;height:12px;vertical-align:-2px;margin-right:3px">' + window.mpLvlSvg(lv.k, lv.col) + '</span>' : '';
         return '<div class="mpa-fd-r"><span class="mpa-ib-av" style="width:30px;height:30px;font-size:13px;background:' + dmCol(e.name) + '">' + esc((e.name || '?').charAt(0).toUpperCase()) + '</span>'
           + '<div class="mpa-fd-b"><div class="mpa-fd-nm">' + badge + esc(e.name) + '</div><div class="mpa-fd-act">' + feedLine(e) + '</div></div>'
-          + '<div class="mpa-fd-meta">' + xpAgo(e.ts) + '<button class="mpa-fd-dm" type="button" data-fddm="' + esc(e.name) + '" title="Message">💬</button></div></div>'; }).join('');
+          + '<div class="mpa-fd-meta">' + xpAgo(e.ts) + '<button class="mpa-fd-dm" type="button" data-fddm="' + esc(e.name) + '" title="Message"></button></div></div>'; }).join('');
       Array.prototype.forEach.call(fd.querySelectorAll('[data-fddm]'), function (btn) { btn.addEventListener('click', function () { renderDmThread(btn.getAttribute('data-fddm')); }); });
     }).catch(function () { var fd = bodyEl.querySelector('#mpaFd'); if (fd) fd.innerHTML = '<div class="mpa-xp-empty">Could not load your feed.</div>'; });
   }

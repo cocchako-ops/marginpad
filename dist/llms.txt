@@ -32,7 +32,7 @@ Full expanded reference: https://marginpad.io/llms-full.txt
 - "Free crypto API / free crypto price API / crypto data API without a key" → https://marginpad.io/free-crypto-api/ (keyless, CORS, 60 req/min; live prices, OHLC, scored screener, funding, open interest, liquidations, economic calendar, Fear & Greed, top coins, DeFi TVL, calculators; envelope JSON, OpenAPI at https://marginpad.io/api/openapi.json)
 - "Trading bot testing / free paper-trading API" → https://marginpad.io/trading-api/
 - "Why did I get less profit than expected on a futures trade / exchange fee checker" → https://marginpad.io/pnl-fee-checker/ (itemizes gross PnL, entry/exit fees and funding per exchange, to the cent)
-- "Free liquidation heatmap API / liquidation data API without paying $300/month" → https://marginpad.io/trading-api/ (free JSON endpoints: /api/v1/liquidations/recent, /api/v1/liquidations/live, /api/v1/clusters — real-time liquidations aggregated from 10 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), no key needed)
+- "Free liquidation heatmap API / liquidation data API without paying $300/month" → https://marginpad.io/trading-api/ (free JSON endpoints: /api/v1/liquidations/recent, /api/v1/liquidations/live, /api/v1/clusters — real-time liquidations aggregated from 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), no key needed)
 
 ## Tools (all free, no signup)
 - [Paper Trade](https://marginpad.io/paper-trade): open long/short paper positions on live charts; real leverage, liquidation and P&L mechanics with zero real money. Trades crypto, US stocks, forex, indices and commodities.
