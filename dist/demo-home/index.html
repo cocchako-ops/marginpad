@@ -842,8 +842,8 @@
 </section>
 
 <div class="trust">
-  <div><b><em data-cnt="20000" data-suf="+">0</em></b><span>practice trades opened</span></div>
-  <div><b><em data-cnt="100" data-suf="+">0</em></b><span>markets screened live</span></div>
+  <div><b><em data-live="trades" data-cnt="16000" data-suf="+">0</em></b><span>practice trades opened (30 days)</span></div>
+  <div><b><em data-live="markets" data-cnt="100" data-suf="+">0</em></b><span>markets screened live</span></div>
   <div><b><em data-cnt="200" data-suf="+">0</em></b><span>guides &amp; lessons</span></div>
   <div><b><em data-cnt="13" data-suf="">0</em></b><span>languages</span></div>
 </div>
@@ -1557,10 +1557,21 @@
   function cntUp(el){var tgt=+el.getAttribute('data-cnt'),suf=el.getAttribute('data-suf')||'',t0=null;
     function step(t){if(!t0)t0=t;var p=Math.min(1,(t-t0)/1100);p=1-Math.pow(1-p,3);el.textContent=Math.round(tgt*p).toLocaleString('en-US')+(p>=1?suf:'');if(p<1)requestAnimationFrame(step);}
     requestAnimationFrame(step);}
-  if('IntersectionObserver' in window){
-    var cio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){cntUp(e.target);cio.unobserve(e.target);}});},{threshold:.5});
-    [].slice.call(document.querySelectorAll('[data-cnt]')).forEach(function(el){cio.observe(el);});
-  } else [].slice.call(document.querySelectorAll('[data-cnt]')).forEach(cntUp);
+  // Replace the written-in figures with what the site actually measures, before anything animates. These
+  // numbers used to be typed into the markup and drifted from the truth in both directions, with nothing in
+  // the build able to notice. The static values stay as the floor: if the fetch fails the row still renders.
+  function cntStart(){
+    if('IntersectionObserver' in window){
+      var cio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){cntUp(e.target);cio.unobserve(e.target);}});},{threshold:.5});
+      [].slice.call(document.querySelectorAll('[data-cnt]')).forEach(function(el){cio.observe(el);});
+    } else [].slice.call(document.querySelectorAll('[data-cnt]')).forEach(cntUp);
+  }
+  fetch('/api/stats/counters').then(function(r){return r.json();}).then(function(c){
+    [['trades',c.trades30],['markets',c.markets]].forEach(function(p){
+      var el=document.querySelector('[data-live="'+p[0]+'"]');
+      if(el&&p[1]>0){el.setAttribute('data-cnt',p[1]);el.setAttribute('data-suf','');}
+    });
+  }).catch(function(){}).then(cntStart);
 
   // ---- rekt feed cycles like the real one ----
   (function(){var feed=document.getElementById('rkFeed');if(!feed)return;

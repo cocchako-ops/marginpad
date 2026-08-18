@@ -2,6 +2,10 @@
    mid-trade (fees→PnL, leverage→liquidation, liquidity→slippage, funding→hold cost, trust→your money's safety).
    Affiliate links throughout (rel=sponsored, click-tracked). Includes an honest KuCoin trust/reputation section. */
 const VDATE = new Date().toISOString().slice(0, 10);
+// Bonus figures are third-party promotions that change without notice, so the page has to say WHEN we last
+// looked rather than presenting them as standing fact. Stamped at build time: rerunning the generator after a
+// check re-dates the claim automatically, which is the only version of this that stays honest.
+const CHECKED = new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 const fs = require('fs');
 const path = require('path');
 const OUT = path.join(__dirname, '..', 'dist', 'exchanges');
@@ -308,7 +312,7 @@ ${ld}
     <p>The smartest first move costs nothing: open our free <a href="/paper-trade">Paper Trade</a> terminal, run the exact setup you’re eyeing with live prices and real liquidation math, and see how it behaves before a cent of your money touches an exchange. Size your leverage with the <a href="/calculators">liquidation calculator</a>, watch the tape on the <a href="/screener">screener</a>, and only then go live — through whichever venue above fits how you actually trade.</p>
 
 <section style="margin:26px 0 6px;border:1px solid #262e3a;border-radius:13px;padding:15px 18px;background:rgba(255,255,255,.015)"><h2 style="font-size:15px;margin:0 0 8px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:#8b95a1">Sources &amp; methodology</h2><ul style="margin:0;padding-left:18px;font-size:12.5px;color:#9aa3ad;line-height:1.7"><li>Fees, leverage caps and KYC rules come from each exchange&#39;s <b>public fee schedule and docs</b>, read at the base (VIP-0) tier.</li><li>Ratings are <b>MarginPad&#39;s editorial opinion</b> (0-5), weighted for this page&#39;s use case — they are not paid placements.</li><li>Exchange links are referral links; they fund the free tools and <b>do not affect rankings</b>. We do not list a venue we would not use ourselves.</li><li>Liquidation and market figures cited on MarginPad come from our own <a href="/liquidations/" style="color:#c2f64a">measured liquidation feed</a>, not estimates.</li><li><b>Figures last verified: ${VDATE}</b> (page regenerated on this date). Terms change — confirm on the exchange before depositing.</li></ul></section>
-    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:20px 0 6px">Fees, leverage and features change often — verify on the exchange before depositing. Ratings are MarginPad’s editorial opinion. Links marked as referral are affiliate links. This page is information, not financial advice.</p>
+    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:20px 0 6px">Fees, leverage and sign-up bonuses were last checked by us in ${CHECKED}, and all of them change often — the bonus figures in particular are promotional and vary by country, campaign and referral link, so treat them as a starting point and confirm the current offer on the exchange before depositing. Ratings are MarginPad’s editorial opinion. Links marked as referral are affiliate links. This page is information, not financial advice.</p>
   </article>
 
   <footer class="site-foot"><div class="foot-bar"><span>© MarginPad · <a href="/">marginpad.io</a> · Not financial advice</span></div></footer>

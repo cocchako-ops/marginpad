@@ -56,3 +56,11 @@ promo/
 # private launch prep (never commit)
 drafts/
 CLAUDE-archive.md
+
+# loose scratch left in the repo root — kline dumps, code fragments, and addr.txt, which holds
+# wallet addresses and must never reach this public repo
+_t.txt
+addr.txt
+kl_btc.json
+liq
+NUL

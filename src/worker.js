@@ -11392,6 +11392,29 @@ export default {
       return new Response('', { status: 204, headers: CORS });
     }
     if (url.pathname === '/api/stats/reset' && (await adminCookieOk(request, env))) return handleStatsReset(env);
+    // Public site counters, every one MEASURED rather than typed into the markup. The homepage trust row used
+    // to carry hardcoded figures that drifted from the truth in both directions — "200+ markets" against 103
+    // actually served, "65+ guides" against 203 — and nothing in the build could catch it. Numbers that measure
+    // themselves cannot rot. Cached at the edge for an hour; the homepage falls back to its static text if this
+    // is unavailable, so a cold cache never shows a visitor a zero.
+    if (url.pathname === '/api/stats/counters') {
+      const cache = caches.default, ck = new Request('https://marginpad.io/__counters_v1');
+      try { const hit = await cache.match(ck); if (hit) return hit; } catch (e) {}
+      let trades30 = 0, traders = 0;
+      try {
+        const st = env.USERS.get(env.USERS.idFromName('main'));
+        const j = await (await st.fetch(new Request('https://do/counters'))).json();
+        trades30 = (+j.opens30 || 0) + (+j.closes30 || 0); traders = +j.traders || 0;
+      } catch (e) {}
+      let markets = 0;
+      try { const s = await (await handleScreener(env)).json(); markets = ((s && s.rows) || []).length; } catch (e) {}
+      let lessons = 0;
+      try { for (const c in ACAD_COURSES) lessons += ACAD_COURSES[c].length; } catch (e) {}
+      const body = JSON.stringify({ ts: Date.now(), trades30, traders, markets, lessons, languages: 13 });
+      const resp = new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=3600', ...CORS } });
+      try { await cache.put(ck, resp.clone()); } catch (e) {}
+      return resp;
+    }
     if (url.pathname === '/api/stats/login') return adminDoLogin(request, env, 'cfg:statspass', 'mp_sadm', '/', url.origin + '/api/stats');
     if (url.pathname === '/api/stats/logout') return adminLogout('mp_sadm', '/');
     if (url.pathname === '/api/stats') return handleStats(url, env, request, ctx);
@@ -14770,7 +14793,12 @@ export class UserStore {
       let srvClosed = 0, srvSc = 0, anyClosed = 0; const users = new Set(), noScUsers = new Set(), scByUser = {};
       try { for (const r of this.rows('SELECT user_id FROM utrades WHERE n > 0')) { let jn = []; try { jn = this._loadJournal(r.user_id); } catch (e) {} for (const t of jn) { if (!t || (t.status !== 'win' && t.status !== 'loss')) continue; const ct = +t.closeTs || +t.ts || 0; if (ct < since) continue; anyClosed++; if (t.src === 'srv') { srvClosed++; users.add(r.user_id); if (t.sc) { srvSc++; scByUser[r.user_id] = (scByUser[r.user_id] || 0) + 1; } else { noScUsers.add(r.user_id); } } } } } catch (e) {}
       const usersGe20 = Object.values(scByUser).filter(n => n >= 20).length; // WR board needs >=20 qualifying closed trades/week
-      return this.j({ srvClosed7d: srvClosed, srvAndSc7d: srvSc, srvUsers: users.size, anyClosed7d: anyClosed, srvNoScUsers7d: noScUsers.size, usersGe20ScTrades: usersGe20 });
+      // LIFETIME totals for the homepage trust counter ("N practice trades opened"), which was published as a
+      // round 20,000+ with no measurement behind it. life_closes is the monotonic per-close counter (blob sums
+      // are 100-capped); `opens` counts every position ever opened by signed-in users. Cheap column SUMs.
+      let lifeOpens = 0, lifeCloses = 0, tradersN = 0;
+      try { const a = this.rows('SELECT COALESCE(SUM(opens),0) o, COALESCE(SUM(life_closes),0) c, COUNT(*) u FROM utrades')[0]; if (a) { lifeOpens = +a.o || 0; lifeCloses = +a.c || 0; tradersN = +a.u || 0; } } catch (e) {}
+      return this.j({ srvClosed7d: srvClosed, srvAndSc7d: srvSc, srvUsers: users.size, anyClosed7d: anyClosed, srvNoScUsers7d: noScUsers.size, usersGe20ScTrades: usersGe20, lifeOpens, lifeCloses, tradersN });
     }
     if (path === '/levels') { // public batch: uid[] + username[] -> {k,col,name} level badge (chat/community/leaderboard)
       const ids = (Array.isArray(b && b.ids) ? b.ids : []).map(x => String(x).replace(/^u:/, '')).filter(Boolean).slice(0, 80);
@@ -15521,6 +15549,13 @@ export class UserStore {
       const dwell = this.rows('SELECT path,secs,hits,last FROM udwell WHERE user_id=? ORDER BY secs DESC LIMIT 40', u.id);
       const dwellTotal = (this.rows('SELECT COALESCE(SUM(secs),0) s FROM udwell WHERE user_id=?', u.id)[0] || { s: 0 }).s;
       return this.j({ exists: true, user: { id: u.id, email: u.email, username: u.username || '', status: u.status || 'active', susp_until: u.susp_until || 0, muted: !!u.muted, restrictions: u.restrictions || '', note: u.note || '', created: u.created, last_login: u.last_login, last_seen: u.last_seen || 0, logins: u.logins || 0, pv: u.pv || 0, cc: u.cc || '', dev: u.dev || '', br: u.br || '', ip: u.ip || '', org: u.org || '', asn: u.asn || 0, vpn: isVpnOrg(u.org, u.asn), vpnConf: vpnInfo(u.org, u.asn).conf, xp: +u.xp || 0, xpLife: +u.xp_life || 0, level: xpLevelOf(+u.xp || 0), premium: +u.premium || 0, streak: +u.streak || 0, avatar: u.avatar || '', accent: u.accent || '', bio: u.bio || '' }, activeSessions: sessions.filter(s => s.active).length, sessions, events, evTotal, clickTotal, trades, tradeSummary, dwell, dwellTotal }); // xp/level/premium/avatar added 2026-08-11 for the support user-context card
+    }
+    if (path === '/counters') { // public site counters, MEASURED — see the /api/stats/counters worker route for why
+      const since30 = Date.now() - 30 * 86400000;
+      let opens30 = 0, closes30 = 0, traders = 0;
+      try { for (const r of this.rows("SELECT kind, COUNT(*) n FROM tradeev WHERE ts > ? GROUP BY kind", since30)) { if (r.kind === 'open') opens30 = +r.n || 0; else if (r.kind === 'close') closes30 = +r.n || 0; } } catch (e) {}
+      try { traders = +(this.rows('SELECT COUNT(*) n FROM utrades WHERE n > 0')[0] || {}).n || 0; } catch (e) {}
+      return this.j({ opens30, closes30, traders });
     }
     if (path === '/tradeev') { // ops: persistent trade event history (opens/closes with REAL pnl from the journal)
       const since = +url.searchParams.get('since') || 0;
