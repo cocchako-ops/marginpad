@@ -164,7 +164,8 @@ html.jr-lock body{position:fixed;left:0;right:0;width:100%;}
 .ct-msg{font-size:13.5px;line-height:1.45;color:var(--ink);word-break:break-word;}
 /* Send time, raised in front of the name so it reads as sitting above it without costing the row
    an extra line — the chat panel has no height to spare. line-height:0 keeps it out of the metrics. */
-.ct-time{font:600 9px 'Space Mono',ui-monospace,monospace;color:#5f6770;vertical-align:5px;line-height:0;margin-right:5px;letter-spacing:.02em;white-space:nowrap;}
+.ct-msg{position:relative;}/* The send time is its own line ABOVE the name, flush with the left edge — but absolutely positioned, so it paints into the 8px gap the message list already leaves between rows and costs the row no height. Because it is out of flow, the username still starts at the very left of the line. */
+.ct-time{position:absolute;left:0;top:-8px;font:600 8.5px 'Space Mono',ui-monospace,monospace;color:#5a626b;line-height:8px;letter-spacing:.03em;white-space:nowrap;pointer-events:none;}
 .ct-msg b{font-weight:700;margin-right:5px;}
 .ct-user{cursor:pointer;}.ct-user:hover{text-decoration:underline;}
 .ct-trade{color:#38bdf8;font-family:'Space Mono',monospace;font-weight:700;cursor:pointer;border-bottom:1px dashed rgba(56,189,248,.5);padding:0 1px;}.ct-trade:hover{color:#7dd3fc;border-bottom-color:#7dd3fc;}
