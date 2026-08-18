@@ -7,7 +7,12 @@ const path = require('path');
 const { BUNDLES } = require('./data/aw-i18n');
 const DIST = path.join(__dirname, '..', 'dist');
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
-const LANG_CODES = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
+// 2026-08-18: emptied deliberately. 1,008 translated subpages drew 47 pageviews and 7 Google
+// visits in 90 days while multiplying every duplicate signal across the domain. This list drives
+// both page generation AND the hreflang alternates, so an empty list stops writing the pages and
+// stops advertising them. Restore by putting the codes back - dictionaries are untouched.
+// was: const LANG_CODES = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
+const LANG_CODES = [];
 const RTL = { ar: 1 };
 const escAttr = s => String(s).replace(/&(?!amp;|lt;|gt;|quot;)/g, '&amp;').replace(/"/g, '&quot;');
 

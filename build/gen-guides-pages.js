@@ -146,7 +146,12 @@ const GUIDES = [
 ];
 
 const { SHARED, CASES } = require('./data/guides-i18n');
-const LANG_CODES = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
+// 2026-08-18: emptied deliberately. 1,008 translated subpages drew 47 pageviews and 7 Google
+// visits in 90 days while multiplying every duplicate signal across the domain. This list drives
+// both page generation AND the hreflang alternates, so an empty list stops writing the pages and
+// stops advertising them. Restore by putting the codes back - dictionaries are untouched.
+// was: const LANG_CODES = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
+const LANG_CODES = [];
 const RTL = { ar: 1 };
 const EN_SHARED = { navMarkets: 'Markets', navScreener: 'Screener', navTools: 'Tools', navBlog: 'Blog', navLiq: 'Liquidations', navFunding: 'Funding', crumbHome: 'Home', crumbGuides: 'Guides', faqH: 'FAQ', footNote: 'For information only — not financial advice. Explore the live data on the <a href="/markets/">markets hub</a>.' };
 // internal links that have per-language variants → lang-ify on translated pages

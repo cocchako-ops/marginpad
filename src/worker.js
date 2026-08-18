@@ -11140,6 +11140,12 @@ export default {
       const mCoin = url.pathname.match(/^\/(?:([a-z]{2})\/)?coin\/([a-z0-9]+)\/?$/);
       if (mCoin && !(mCoin[1] === undefined && KEEP_COIN[mCoin[2]])) return Response.redirect(url.origin + '/coins/', 301);
       if (/^\/liquidations\/[a-z0-9]+\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/liquidations/', 301);
+      // The translated SEO subpages were removed the same day for the same reason: 1,008 pages
+      // returning 47 pageviews and 7 Google visits in 90 days while multiplying every duplicate
+      // signal twelvefold. Each 301s to its English original, which is an exact topical match.
+      // The language HOMEPAGES (/de/, /es/ ...) are untouched — they are app entry points.
+      const _I18N_SUB = url.pathname.match(/^\/(ar|de|es|fr|id|ja|ko|nl|pt|ru|tr|zh)\/(.+)$/);
+      if (_I18N_SUB && _I18N_SUB[2].replace(/\/$/, '')) return Response.redirect(url.origin + '/' + _I18N_SUB[2], 301);
     }
     if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
     // AI-crawler telemetry (SEO kompas 2026-08-16): count AI search/assistant bot hits per page. ChatGPT-User = a human

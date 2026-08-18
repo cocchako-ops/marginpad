@@ -8,7 +8,12 @@ const { SHARED } = require('./data/coin-i18n');
 const DIST = path.join(__dirname, '..', 'dist');
 const OUT = path.join(DIST, 'coin');
 
-const LANG_CODES = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
+// 2026-08-18: emptied deliberately. 1,008 translated subpages drew 47 pageviews and 7 Google
+// visits in 90 days while multiplying every duplicate signal across the domain. This list drives
+// both page generation AND the hreflang alternates, so an empty list stops writing the pages and
+// stops advertising them. Restore by putting the codes back - dictionaries are untouched.
+// was: const LANG_CODES = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
+const LANG_CODES = [];
 const RTL = { ar: 1 };
 function fill(str, map) { return str.replace(/\{(\w+)\}/g, (m, k) => (k in map ? map[k] : m)); }
 

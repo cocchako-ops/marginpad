@@ -8,7 +8,12 @@ const DIST = path.join(__dirname, '..', 'dist');
 const ALL_LANGS = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
 // Only publish a language page if it actually has a translation (D.SHARED[lc] is populated by sim-i18n.js from
 // build/data/sim-i18n/<lc>.json). Prevents English-content-in-a-foreign-lang pages + hreflang pointing at 404s.
-const LANG_CODES = ALL_LANGS.filter(lc => require('./data/sim-i18n').SHARED[lc]);
+// 2026-08-18: emptied deliberately. 1,008 translated subpages drew 47 pageviews and 7 Google
+// visits in 90 days while multiplying every duplicate signal across the domain. This list drives
+// both page generation AND the hreflang alternates, so an empty list stops writing the pages and
+// stops advertising them. Restore by putting the codes back - dictionaries are untouched.
+// was: const LANG_CODES = ALL_LANGS.filter(lc => require('./data/sim-i18n').SHARED[lc]);
+const LANG_CODES = [];
 const RTL = { ar: 1 };
 const esc = s => String(s == null ? '' : s).replace(/&(?!amp;|lt;|gt;|quot;|#)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const escA = s => String(s == null ? '' : s).replace(/&(?!amp;|lt;|gt;|quot;|#)/g, '&amp;').replace(/"/g, '&quot;');

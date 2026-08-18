@@ -9,7 +9,11 @@
 const fs = require('fs');
 const path = require('path');
 const DIST = path.join(__dirname, '..', 'dist');
-const LANGS = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
+// 2026-08-18: emptied deliberately — the translated SEO pages this sitemap listed were removed
+// (1,008 pages, 47 pageviews and 7 Google visits in 90 days). A sitemap that lists redirects or
+// 404s wastes crawl budget and is a quality signal in itself. Restore alongside the generators.
+// was: const LANGS = ['de', 'es', 'pt', 'fr', 'nl', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id'];
+const LANGS = [];
 const { CASES } = require('./data/bestfor-cases-i18n');   // CASES[lang][slug] — authoritative translated set
 const today = new Date().toISOString().slice(0, 10);
 const exists = p => fs.existsSync(path.join(p, 'index.html'));

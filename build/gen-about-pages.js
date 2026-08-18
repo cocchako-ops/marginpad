@@ -8,7 +8,12 @@ const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.go
 // translations live in build/about-data.js to keep this file readable
 const ABOUT = require('./about-data.js');
 
-const LANGS = ['es', 'pt', 'fr', 'de', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id', 'nl'];
+// 2026-08-18: emptied deliberately. 1,008 translated subpages drew 47 pageviews and 7 Google
+// visits in 90 days while multiplying every duplicate signal across the domain. This list drives
+// both page generation AND the hreflang alternates, so an empty list stops writing the pages and
+// stops advertising them. Restore by putting the codes back - dictionaries are untouched.
+// was: const LANGS = ['es', 'pt', 'fr', 'de', 'ru', 'tr', 'zh', 'ja', 'ko', 'ar', 'id', 'nl'];
+const LANGS = [];
 const RTL = ['ar'];
 const escAttr = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 

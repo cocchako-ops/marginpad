@@ -34,7 +34,13 @@ const EX = [
 const esc = s => String(s).replace(/&/g, '&amp;');
 const fmt = n => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const pct = n => n + '%';
-const { EC, ACTIVE_LANGS, RTL } = require('./data/exchangecalc-i18n');
+const { EC, ACTIVE_LANGS: _ACTIVE_LANGS_ALL, RTL } = require('./data/exchangecalc-i18n');
+// 2026-08-18: emptied deliberately. 1,008 translated subpages drew 47 pageviews and 7 Google
+// visits in 90 days while multiplying every duplicate signal across the domain. This list drives
+// both page generation AND the hreflang alternates, so an empty list stops writing the pages and
+// stops advertising them. Restore by putting the codes back - dictionaries are untouched.
+// was: ACTIVE_LANGS straight from the dictionary (12 codes). The dictionary is untouched.
+const ACTIVE_LANGS = [];
 function hreflang(slug) {
   let s = `<link rel="alternate" hreflang="en" href="https://marginpad.io/${slug}/" />\n`;
   for (const lc of ACTIVE_LANGS) s += `<link rel="alternate" hreflang="${lc}" href="https://marginpad.io/${lc}/${slug}/" />\n`;
