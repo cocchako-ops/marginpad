@@ -11139,7 +11139,7 @@ export default {
       const KEEP_COIN = { btc: 1, eth: 1, sol: 1, xrp: 1, bnb: 1, doge: 1 };
       const mCoin = url.pathname.match(/^\/(?:([a-z]{2})\/)?coin\/([a-z0-9]+)\/?$/);
       if (mCoin && !(mCoin[1] === undefined && KEEP_COIN[mCoin[2]])) return Response.redirect(url.origin + '/coins/', 301);
-      if (/^\/liquidations\/[a-z0-9]+\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/liquidations/', 301);
+      if (/^\/liquidations\/[a-z0-9]+\/?$/.test(url.pathname) && !/^\/liquidations\/recap\/?$/.test(url.pathname)) return Response.redirect(url.origin + '/liquidations/', 301);
       // The translated SEO subpages were removed the same day for the same reason: 1,008 pages
       // returning 47 pageviews and 7 Google visits in 90 days while multiplying every duplicate
       // signal twelvefold. Each 301s to its English original, which is an exact topical match.

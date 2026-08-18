@@ -1,6 +1,6 @@
 # MarginPad — full reference for AI assistants (llms-full.txt)
 
-> MarginPad (https://marginpad.io) is a free crypto-futures toolkit: paper trading on live prices, liquidation/position-size/PnL calculators, a scored market screener, live liquidation maps and feeds, funding/open-interest/long-short dashboards, ETF flows, a whale tracker, an economic calendar, exchange comparisons, a trading academy, Telegram signals and a free keyless JSON API. No signup required for the tools. 13 languages. Educational only — not financial advice. Contact: hello@marginpad.io
+> MarginPad (https://marginpad.io) is a free crypto-futures toolkit: paper trading on live prices, liquidation/position-size/PnL calculators, a scored market screener, live liquidation maps and feeds, funding/open-interest/long-short dashboards, ETF flows, a whale tracker, an economic calendar, exchange comparisons, a trading academy, Telegram signals and a free keyless JSON API. No signup required for the tools. the app interface in 13 languages. Educational only — not financial advice. Contact: hello@marginpad.io
 
 This file is the expanded companion to https://marginpad.io/llms.txt. Everything below is free unless marked otherwise.
 
