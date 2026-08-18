@@ -776,6 +776,25 @@ function ssrCoinProseL10n(L, sym, name, cg, gk) {
   }
   return S;
 }
+// Seven-day liquidation history for one symbol, from our own daily recap records. This is the part of a
+// coin page a competitor cannot reproduce: not a live number an API sells everyone, but a measured week.
+function ssrLiqHistoryProse(sym, hist) {
+  const S = [];
+  if (!Array.isArray(hist) || hist.length < 3) return S;
+  const total = hist.reduce((t, r) => t + r.usd, 0);
+  const events = hist.reduce((t, r) => t + r.n, 0);
+  const worst = hist.slice().sort((a, b) => b.usd - a.usd)[0];
+  const wLong = hist.reduce((t, r) => t + r.usd * (r.longPct / 100), 0);
+  const longShare = total > 0 ? Math.round(wLong / total * 100) : 0;
+  const dname = (d) => { try { return new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' }); } catch (e) { return d; } };
+  S.push('Over the last ' + hist.length + ' days our collector recorded ' + _susd(total) + ' of ' + sym + ' positions being force-closed across ' + events.toLocaleString('en-US') + ' individual liquidations.');
+  if (worst && worst.usd > 0) S.push('The heaviest single day was ' + dname(worst.day) + ' at ' + _susd(worst.usd) + (worst.longPct >= 65 ? ', overwhelmingly longs' : worst.longPct <= 35 ? ', overwhelmingly shorts' : ', split fairly evenly between longs and shorts') + '.');
+  if (longShare >= 62) S.push('Across those ' + hist.length + ' days ' + longShare + '% of the ' + sym + ' damage fell on longs — a market that has been punishing buyers more than sellers.');
+  else if (longShare <= 38) S.push('Across those ' + hist.length + ' days only ' + longShare + '% of the ' + sym + ' damage fell on longs; shorts took the rest, which is what a grinding move up looks like from the liquidation side.');
+  else S.push('Across those ' + hist.length + ' days the damage split roughly ' + longShare + '/' + (100 - longShare) + ' between longs and shorts, with neither side clearly on the wrong foot.');
+  S.push('You can see the day-by-day figures, including the biggest single liquidation and the busiest hour, in our <a href="/liquidations/recap/">dated liquidation archive</a>.');
+  return S;
+}
 // Liquidation-cluster analysis from our own collector. Reads the model's price levels, works out where
 // the heaviest pile-ups sit relative to spot, and says what that means — the kind of sentence a generic
 // calculator page cannot produce because it has no such data behind it.
@@ -890,7 +909,21 @@ async function handleSsrCoin(request, url, env) {
   try { const r = await handleGeckoCoin(new URL('https://marginpad.io/api/gecko/coin?sym=' + sym.toLowerCase()), env); const j = await r.json(); if (j && !j.error) gk = j; } catch (e) {}
   // our own collector's per-symbol liquidation clusters — the one thing on this page no competing
   // tool page can copy. Fail-soft: no clusters simply means those sentences are not written.
-  let cl = null;
+  let cl = null, hist = null;
+  // seven days of OUR measured liquidations for this symbol, straight from the daily recap records.
+  // Eight KV reads on a cold render, behind the 10-minute SSR page cache, on six pages.
+  try {
+    const days = [];
+    for (let i = 1; i <= 7; i++) days.push(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10));
+    const recs = await Promise.all(days.map(d => env.STATS.get('liqrecap:' + d).then(v => { try { return JSON.parse(v || 'null'); } catch (e) { return null; } }).catch(() => null)));
+    const rows = [];
+    for (let i = 0; i < recs.length; i++) {
+      const r = recs[i]; if (!r || !Array.isArray(r.top)) continue;
+      const e = r.top.find(x => String(x.sym || '').toUpperCase() === sym);
+      if (e && +e.usd > 0) rows.push({ day: days[i], usd: +e.usd, n: +e.n || 0, longPct: +e.longPct || 0 });
+    }
+    if (rows.length >= 3) hist = rows;
+  } catch (e) {}
   try {
     const base = (env.COLLECTOR_URL || '').replace(/\/$/, '');
     if (base) { const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 1800);
@@ -900,7 +933,8 @@ async function handleSsrCoin(request, url, env) {
   } catch (e) {}
   let sentences = [];
   try { sentences = L10 ? ssrCoinProseL10n(L10, sym, name, cg, gk) : ssrCoinProse(sym, name, cg, gk); } catch (e) { sentences = []; }
-  try { const cs = ssrLiqClusterProse(sym, cg, cl); if (cs.length) sentences = sentences.concat(cs); } catch (e) {}
+    try { const cs = ssrLiqClusterProse(sym, cg, cl); if (cs.length) sentences = sentences.concat(cs); } catch (e) {}
+    try { const hs = ssrLiqHistoryProse(sym, hist); if (hs.length) sentences = sentences.concat(hs); } catch (e) {}
   if (sentences.length < 3) return pass(); // not enough real data to say anything worth indexing -> static page
   const out = html.slice(0, anchor) + ssrCoinBlock(sym, name, sentences, L10) + '    ' + html.slice(anchor);
   const resp = new Response(out, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600', 'x-mp-ssr': 'coin' } });
