@@ -1010,6 +1010,9 @@
   .ct-roomitem:not(.on) .ct-ri-ck{display:none;}
   .ct-msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;}
   .ct-msg{font-size:13.5px;line-height:1.45;color:var(--ink);word-break:break-word;}
+/* Send time, raised in front of the name so it reads as sitting above it without costing the row
+   an extra line — the chat panel has no height to spare. line-height:0 keeps it out of the metrics. */
+.ct-time{font:600 9px 'Space Mono',ui-monospace,monospace;color:#5f6770;vertical-align:5px;line-height:0;margin-right:5px;letter-spacing:.02em;white-space:nowrap;}
   .ct-msg b{font-weight:700;margin-right:5px;}
   .ct-user{cursor:pointer;}.ct-user:hover{text-decoration:underline;}
   .ct-trade{color:#38bdf8;font-family:'Space Mono',monospace;font-weight:700;cursor:pointer;border-bottom:1px dashed rgba(56,189,248,.5);padding:0 1px;}.ct-trade:hover{color:#7dd3fc;border-bottom-color:#7dd3fc;}
