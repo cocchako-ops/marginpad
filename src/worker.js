@@ -4205,7 +4205,9 @@ async function liqRecapBuild(env, day) {
   if (n < 50) return null; // partial/broken day — never publish thin data as a "daily total"
   sizes.sort((a, b) => a - b);
   const q = p9 => sizes[Math.max(0, Math.ceil(p9 * sizes.length) - 1)]; // nearest-rank
-  const top = Object.entries(bySym).map(([sym, v]) => ({ sym, usd: Math.round(v.usd), n: v.n, longPct: Math.round(v.usd > 0 ? v.longUsd / v.usd * 100 : 0) })).sort((a, b) => b.usd - a.usd).slice(0, 10);
+  const top = Object.entries(bySym).map(([sym, v]) => ({ sym, usd: Math.round(v.usd), n: v.n, longPct: Math.round(v.usd > 0 ? v.longUsd / v.usd * 100 : 0) })).sort((a, b) => b.usd - a.usd).slice(0, 40); // 40, not 10: the per-coin pages read this for
+  // their seven-day history, and a coin that misses the top ten on a quiet day would otherwise have
+  // a hole in it. Costs a few hundred bytes a day; past days cannot be backfilled.
   const exs = Object.entries(byEx).map(([ex, v]) => ({ ex, usd: Math.round(v.usd), n: v.n })).sort((a, b) => b.usd - a.usd);
   let peakH = 0; for (let h = 1; h < 24; h++) if (byHour[h] > byHour[peakH]) peakH = h;
   const rec = { day, totalUsd: Math.round(totalUsd), n, longUsd: Math.round(longUsd), shortUsd: Math.round(shortUsd), longN, shortN,
@@ -4264,7 +4266,7 @@ async function handleLiqRecap(url, env) {
   const bgT = bg ? new Date(bg.ts).toISOString().slice(11, 16) : '';
   const maxH = Math.max.apply(null, rec.byHour) || 1;
   const bars = rec.byHour.map((v, h) => '<i style="height:' + Math.max(3, Math.round(v / maxH * 100)) + '%"' + (h === rec.peakH ? ' class="pk"' : '') + ' title="' + ('0' + h).slice(-2) + ':00 UTC — ' + _rcU(v) + '"></i>').join('');
-  const topRows = rec.top.map((x, i) => '<tr><td>' + (i + 1) + '. ' + x.sym + '</td><td class="r">' + _rcU(x.usd) + '</td><td class="r">' + x.n.toLocaleString('en-US') + '</td><td class="r">' + x.longPct + '% long</td></tr>').join('');
+  const topRows = rec.top.slice(0, 10).map((x, i) => '<tr><td>' + (i + 1) + '. ' + x.sym + '</td><td class="r">' + _rcU(x.usd) + '</td><td class="r">' + x.n.toLocaleString('en-US') + '</td><td class="r">' + x.longPct + '% long</td></tr>').join('');
   const exRows = rec.exs.map(x => '<tr><td>' + x.ex + '</td><td class="r">' + _rcU(x.usd) + '</td><td class="r">' + x.n.toLocaleString('en-US') + '</td></tr>').join('');
   const faq = JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
     { '@type': 'Question', name: 'How much crypto was liquidated on ' + human + '?', acceptedAnswer: { '@type': 'Answer', text: _rcU(rec.totalUsd) + ' in leveraged crypto positions was liquidated on ' + human + ' (00:00-24:00 UTC) across ' + rec.n.toLocaleString('en-US') + ' individual liquidation events measured on MarginPad’s multi-exchange feed. ' + _rcU(rec.longUsd) + ' came from longs and ' + _rcU(rec.shortUsd) + ' from shorts.' } },
@@ -12017,6 +12019,22 @@ export default {
       const stored = (env.STATS && await env.STATS.get('cfg:pmailpass')) || '';
       if (!stored || adminCookieHash(request, 'mp_pmail') !== stored) return new Response(adminLoginHTML('Private inbox', !stored, '/api/admin/pmail/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
       return new Response(PMAIL_HTML, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
+    }
+    if (url.pathname === '/api/admin/liqdiag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // where does the liquidation archive chain break?
+      const n = Math.min(30, Math.max(3, +url.searchParams.get('days') || 12));
+      const days = [];
+      for (let i = 0; i < n; i++) days.push(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10));
+      const out = [];
+      for (const d of days) {
+        let r2 = false, r2kb = 0;
+        try { if (env.BACKUP) { const o = await env.BACKUP.head('liq/' + d + '.csv.gz'); if (o) { r2 = true; r2kb = Math.round((o.size || 0) / 1024); } } } catch (e) {}
+        let rec = null;
+        try { const v = await env.STATS.get('liqrecap:' + d); if (v) { const j = JSON.parse(v); rec = { usd: j.totalUsd || 0, n: j.n || 0, syms: (j.top || []).length }; } } catch (e) {}
+        out.push({ day: d, archived: r2, archiveKB: r2kb, recap: !!rec, totalUsd: rec ? rec.usd : 0, events: rec ? rec.n : 0, symbols: rec ? rec.syms : 0 });
+      }
+      const gaps = out.filter(x => x.archived && !x.recap).map(x => x.day);
+      const unarchived = out.slice(1).filter(x => !x.archived).map(x => x.day); // today is expected to be missing
+      return new Response(JSON.stringify({ days: out, archivedButNoRecap: gaps, notArchived: unarchived }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/ssrpurge' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // drop the 10-min SSR page cache for a path so a deploy can be verified immediately
       const paths = String(url.searchParams.get('p') || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 40);
