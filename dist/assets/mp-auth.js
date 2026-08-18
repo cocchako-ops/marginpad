@@ -376,13 +376,19 @@
     + '.lbm-card.frame-owner::before,.mpa-fr-sw.frame-owner::before{content:"";position:absolute;inset:0;height:auto;border-radius:inherit;pointer-events:none;z-index:6;background:linear-gradient(115deg,transparent 38%,rgba(255,246,208,.2) 46%,rgba(255,255,255,.55) 50%,rgba(255,246,208,.2) 54%,transparent 62%),radial-gradient(130% 60% at 50% -5%,rgba(255,224,130,.24),transparent 62%),linear-gradient(180deg,rgba(255,215,90,.06),transparent 45%);background-size:250% 100%,100% 100%,100% 100%;background-repeat:no-repeat;background-position:170% 0,0 0,0 0;animation:mpaOwnerShine 4.5s linear infinite}'
     + '@keyframes mpaOwnerShine{0%{background-position:170% 0,0 0,0 0}42%{background-position:-80% 0,0 0,0 0}100%{background-position:-80% 0,0 0,0 0}}'
     // customize panel grid
-    + '.mpa-frgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:6px 0 4px}'
-    + '.mpa-fr{position:relative;display:flex;flex-direction:column;gap:6px;background:#0f131a;border:1px solid #1e2530;border-radius:11px;padding:8px;cursor:pointer;transition:border-color .15s,transform .05s;text-align:center}'
+    + '.mpa-frgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin:4px 0 4px}'
+    + '.mpa-fr{position:relative;display:flex;flex-direction:column;gap:4px;background:#0f131a;border:1px solid #1e2530;border-radius:10px;padding:6px;cursor:pointer;transition:border-color .15s,transform .05s;text-align:center}'
+    + '.mpa-frhead{display:flex;align-items:center;gap:8px;margin:-4px 0 8px}'
+    + '.mpa-frhead .mpa-sub{margin:0;flex:1;min-width:0}'
+    + '.mpa-frseg{display:inline-flex;flex:none;background:#0d1117;border:1px solid #232b36;border-radius:8px;padding:2px;gap:2px}'
+    + '.mpa-frseg button{font:700 10.5px monospace;letter-spacing:.04em;color:#8b97a5;background:none;border:none;border-radius:6px;padding:4px 9px;cursor:pointer;transition:.14s}'
+    + '.mpa-frseg button.on{background:#c2f64a;color:#0a0b0d}'
+    + '.mpa-frnone{grid-column:1/-1;color:#8b97a5;font-size:12px;line-height:1.5;padding:6px 0}'
     + '.mpa-fr:hover{border-color:#33404f}.mpa-fr:active{transform:scale(.98)}'
     + '.mpa-fr.on{border-color:#c2f64a;box-shadow:0 0 0 1px rgba(194,246,74,.4)}'
     + '.mpa-fr.lock{opacity:.55;cursor:not-allowed}'
-    + '.mpa-fr-sw{height:38px;border-radius:8px;border:1px solid #2a3340;background:linear-gradient(150deg,#141922,#0d1017)}'
-    + '.mpa-fr-nm{font:700 12px monospace;color:#e7ecf2}'
+    + '.mpa-fr-sw{height:30px;border-radius:7px;border:1px solid #2a3340;background:linear-gradient(150deg,#141922,#0d1017)}'
+    + '.mpa-fr-nm{font:700 11px monospace;color:#e7ecf2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
     + '.mpa-fr-by{font-size:10px;color:#8b97a5;line-height:1.2}.mpa-fr.on .mpa-fr-by{color:#c2f64a}'
     // PRO members: glossy gold name (replaces the old "PRO" chip — fits everywhere, never clipped on mobile)
     + '.mp-progold{background:linear-gradient(100deg,#e0a52a 0%,#ffe07a 18%,#fff6c8 30%,#ffd75a 46%,#e0a52a 68%,#ffe98a 100%) !important;background-size:200% auto !important;-webkit-background-clip:text !important;background-clip:text !important;-webkit-text-fill-color:transparent !important;color:transparent !important;font-weight:800 !important;text-shadow:none !important;animation:mpGold 3.2s linear infinite}'
@@ -816,7 +822,9 @@
     { k: 'tycoon', name: 'Tycoon', by: 'Season #1 — Spot Bank' }
   ];
   function renderCustomize() {
-    bodyEl.innerHTML = '<h3 class="mpa-h">Customize card</h3><p class="mpa-sub" style="margin:-4px 0 12px">Pick a frame for your public trader card. Unlock more by ranking up or going Premium.</p>'
+    bodyEl.innerHTML = '<h3 class="mpa-h">Customize card</h3>'
+      + '<div class="mpa-frhead"><p class="mpa-sub">Frame for your public trader card.</p>'
+      + '<span class="mpa-frseg" id="mpaFrSeg"><button type="button" data-frv="mine">YOURS</button><button type="button" data-frv="all">ALL</button></span></div>'
       + '<div class="mpa-frgrid" id="mpaFrGrid"><div class="mpa-xp-empty" style="grid-column:1/-1">Loading…</div></div>'
       + '<button class="mpa-row2" id="mpaFrPic" type="button" style="margin-top:10px">' + ic('cam') + '<span>Change profile picture</span>' + ic('chev') + '</button>'
       + '<div class="mpa-du-msg" id="mpaFrMsg" style="margin-top:8px"></div>'
@@ -827,14 +835,36 @@
     fetch('/api/auth/frames').then(function (r) { return r.json(); }).then(function (d) {
       var owned = (d && d.owned) || ['default']; var eq = (d && d.equipped) || 'default';
       var grid = bodyEl.querySelector('#mpaFrGrid'); if (!grid) return;
-      grid.innerHTML = FRAMES.map(function (f) {
-        var own = owned.indexOf(f.k) >= 0; var isEq = f.k === eq;
-        return '<button class="mpa-fr' + (isEq ? ' on' : '') + (own ? '' : ' lock') + '" data-frame="' + f.k + '"' + (own ? '' : ' disabled') + '>'
-          + '<div class="mpa-fr-sw frame-' + f.k + '"></div>'
-          + '<div class="mpa-fr-nm">' + f.name + '</div>'
-          + '<div class="mpa-fr-by">' + (own ? (isEq ? 'Equipped' : 'Owned') : f.by) + '</div>'
-          + '</button>';
-      }).join('');
+      // yours first — equipped, then the rest you own, then everything still locked. The list you scroll
+      // starts with the frames you can actually wear instead of burying them in catalogue order.
+      var ordered = FRAMES.slice().sort(function (a, b) {
+        var ra = (a.k === eq ? 0 : owned.indexOf(a.k) >= 0 ? 1 : 2);
+        var rb = (b.k === eq ? 0 : owned.indexOf(b.k) >= 0 ? 1 : 2);
+        return ra - rb || FRAMES.indexOf(a) - FRAMES.indexOf(b);
+      });
+      var view = 'mine'; try { view = localStorage.getItem('mp_frview') === 'all' ? 'all' : 'mine'; } catch (e) {}
+      function paint() {
+        var list = view === 'all' ? ordered : ordered.filter(function (f) { return owned.indexOf(f.k) >= 0; });
+        grid.innerHTML = list.map(function (f) {
+          var own = owned.indexOf(f.k) >= 0; var isEq = f.k === eq;
+          return '<button class="mpa-fr' + (isEq ? ' on' : '') + (own ? '' : ' lock') + '" data-frame="' + f.k + '"' + (own ? '' : ' disabled') + '>'
+            + '<div class="mpa-fr-sw frame-' + f.k + '"></div>'
+            + '<div class="mpa-fr-nm">' + f.name + '</div>'
+            + '<div class="mpa-fr-by">' + (own ? (isEq ? 'Equipped' : 'Owned') : f.by) + '</div>'
+            + '</button>';
+        }).join('') || '<div class="mpa-frnone">Only the Classic frame so far. Rank up, go Premium or open the Vault to unlock more &mdash; switch to ALL to see what is out there.</div>';
+        var seg = bodyEl.querySelector('#mpaFrSeg');
+        if (seg) Array.prototype.forEach.call(seg.querySelectorAll('[data-frv]'), function (b2) { b2.classList.toggle('on', b2.getAttribute('data-frv') === view); });
+        wire();
+      }
+      var seg0 = bodyEl.querySelector('#mpaFrSeg');
+      if (seg0) seg0.addEventListener('click', function (e2) {
+        var b3 = e2.target.closest && e2.target.closest('[data-frv]'); if (!b3) return;
+        view = b3.getAttribute('data-frv'); try { localStorage.setItem('mp_frview', view); } catch (e3) {}
+        paint();
+      });
+      paint();
+      function wire() {
       Array.prototype.forEach.call(grid.querySelectorAll('[data-frame]:not([disabled])'), function (b) {
         b.addEventListener('click', function () {
           var fr = b.getAttribute('data-frame');
@@ -852,6 +882,7 @@
             }).catch(function () { if (msg) msg.innerHTML = '<span style="color:#ffb347">Network error — try again.</span>'; });
         });
       });
+      }
     }).catch(function () { var grid = bodyEl.querySelector('#mpaFrGrid'); if (grid) grid.innerHTML = '<div class="mpa-xp-empty" style="grid-column:1/-1">Could not load frames.</div>'; });
   }
   function renderEditProfile() {
@@ -1219,8 +1250,8 @@
         '<h3>' + (reason || 'Unlock the full toolkit') + '</h3>' +
         '<div class="mpprem-sub">Everything the pros use to read the market — one membership.</div>';
       FEATS.forEach(function (f) { h += '<div class="mpprem-f"><span class="ck">✓</span><div><b>' + f[0] + '</b><span>' + f[1] + '</span></div></div>'; });
-      h += '<div class="mpprem-price"><b>$12.99</b> / month</div>' +
-        '<button class="mpprem-buy" type="button">Pay with crypto — $12.99 / month</button>' +
+      h += '<div class="mpprem-price"><b>$3.99</b> / month</div>' +
+        '<button class="mpprem-buy" type="button">Pay with crypto — $3.99 / month</button>' +
         '<button class="mpprem-founder" type="button" style="display:block;width:100%;margin-top:8px;background:none;border:1px solid #2a3550;color:#c2f64a;border-radius:12px;padding:11px;font-size:13px;font-weight:700;cursor:pointer">Or go Founder — lifetime access, $99 once</button>' +
         '<div style="text-align:center;font:700 11px \'Space Mono\',monospace;color:#ffd75a;margin-top:9px">The first 5 members lock in lifetime Premium.</div>' +
         '<div class="mpprem-note">Pay in BTC, USDT or any major coin via NOWPayments. Cancel anytime — it simply won’t renew.</div>';

@@ -7969,7 +7969,7 @@ async function handleNowpayIpn(request, env) {
         try { await premMarkName(env, uid); } catch (e) {}
         try { await setPremiumDO(env, { uid: uid }, expiry); } catch (e) {}
         try { await revokeUserSessions(env, uid); } catch (e) {} // the session user object carries a stale premium=false — drop it so the buyer sees Premium immediately, not after ~2 min (worst-possible moment for a paying user)
-        try { await evPush(env, null, 'sale', (life ? 'premium-founder ($' : 'premium ($') + (data.price_amount || (life ? '99' : '12.99')) + ')', ''); } catch (e) {}
+        try { await evPush(env, null, 'sale', (life ? 'premium-founder ($' : 'premium ($') + (data.price_amount || (life ? '99' : '3.99')) + ')', ''); } catch (e) {}
         await tgAdmin(env, '<b>Premium ' + (life ? 'FOUNDER (lifetime)' : 'paid') + '</b>\nUser <code>' + uid + '</code>' + (life ? '' : ' until ' + new Date(expiry).toISOString().slice(0, 10)) + (data.pay_currency ? '\nPaid in: ' + String(data.pay_currency).toUpperCase() : ''));
       }
     } else {
@@ -8030,16 +8030,16 @@ function frameOwned(fr, xp, premium, founder) {
 // reduces withdrawal liability. Catalog is versioned here; kill switch KV shop:on='0'. ----------
 const VAULT_TESTERS = ['chako']; // owner's test account — owns every item (testing)
 const VAULT_ITEMS = [
-  { id: 'carbon', name: 'Carbon', tier: 'common', xp: 400, desc: 'Matte black weave with a soft steel edge' },
-  { id: 'jade', name: 'Jade', tier: 'common', xp: 900, desc: 'Deep jade with a polished stone sheen' },
-  { id: 'royal', name: 'Royal', tier: 'rare', xp: 2500, desc: 'Imperial purple with gold corner caps' },
-  { id: 'blood', name: 'Bloodline', tier: 'rare', xp: 4000, desc: 'Crimson gradient with a dark pulse edge' },
-  { id: 'matrix', name: 'Matrix', tier: 'rare', xp: 6000, desc: 'Code-green terminal glow' },
-  { id: 'ice', name: 'Glacier', tier: 'epic', cents: 49, desc: 'Cold blue mirror with frosted corners' },
+  { id: 'carbon', name: 'Carbon', tier: 'common', xp: 300, desc: 'Matte black weave with a soft steel edge' },
+  { id: 'jade', name: 'Jade', tier: 'common', xp: 700, desc: 'Deep jade with a polished stone sheen' },
+  { id: 'royal', name: 'Royal', tier: 'rare', xp: 1500, desc: 'Imperial purple with gold corner caps' },
+  { id: 'blood', name: 'Bloodline', tier: 'rare', xp: 2200, desc: 'Crimson gradient with a dark pulse edge' },
+  { id: 'matrix', name: 'Matrix', tier: 'rare', xp: 3000, desc: 'Code-green terminal glow' },
+  { id: 'ice', name: 'Glacier', tier: 'epic', cents: 79, desc: 'Cold blue mirror with frosted corners' },
   { id: 'ember', name: 'Ember', tier: 'epic', cents: 99, desc: 'Smoldering orange-red heat shimmer' },
-  { id: 'sakura', name: 'Sakura', tier: 'epic', cents: 199, desc: 'Soft rose gradient with a silver lining' },
-  { id: 'void', name: 'Void', tier: 'legendary', cents: 499, desc: 'Black-violet depth that eats the light' },
-  { id: 'sovereign', name: 'Sovereign', tier: 'legendary', cents: 999, minLevel: 'diamond', desc: 'Diamond-gated white gold — the flex' },
+  { id: 'sakura', name: 'Sakura', tier: 'epic', cents: 149, desc: 'Soft rose gradient with a silver lining' },
+  { id: 'void', name: 'Void', tier: 'legendary', cents: 249, desc: 'Black-violet depth that eats the light' },
+  { id: 'sovereign', name: 'Sovereign', tier: 'legendary', cents: 299, minLevel: 'diamond', desc: 'Diamond-gated white gold — the flex' },
   // earn-only (no price fields -> buy routes refuse them; ownership comes from grants)
   { id: 'streak7', name: 'Kindling', tier: 'rare', earn: '7-day streak', desc: 'Seven straight days on the desk' },
   { id: 'streak30', name: 'Wildfire', tier: 'epic', earn: '30-day streak', desc: 'A full month without missing a day' },
@@ -8050,29 +8050,29 @@ const VAULT_ITEMS = [
   { id: 'overdrive', name: 'Overdrive', tier: 'legendary', earn: 'Finish #1 on the XP board (worn for the 14-day season)', desc: 'Raw voltage — the grind made visible' },
   { id: 'tycoon', name: 'Tycoon', tier: 'legendary', earn: 'Finish #1 on the Spot Bank board (worn for the 14-day season)', desc: 'Emerald and bullion — the house always notices money' },
   // limited seasonal drop — buyable only until `until` (owners keep it forever)
-  { id: 'eclipse', name: 'Eclipse', tier: 'legendary', xp: 5000, until: '2026-09-01', desc: 'August drop: a black sun with a burning corona. Gone Sep 1 — forever' },
+  { id: 'eclipse', name: 'Eclipse', tier: 'legendary', xp: 6000, until: '2026-09-01', desc: 'August drop: a black sun with a burning corona. Gone Sep 1 — forever' },
   // consumables (kind:'c') — instant effects, buyable repeatedly, never giftable
   { id: 'shield', name: 'Streak Shield', kind: 'c', tier: 'rare', xp: 300, cents: 29, desc: 'One extra streak freeze, bankable up to 5 (a missed day auto-spends one)' },
-  { id: 'surge', name: 'XP Surge', kind: 'c', tier: 'epic', cents: 89, desc: 'Double XP from everything you earn for the next 24 hours' },
+  { id: 'surge', name: 'XP Surge', kind: 'c', tier: 'epic', cents: 79, desc: 'Double XP from everything you earn for the next 24 hours' },
   // ticket skins (kind:'t') — restyle your P&L tickets in the journal, drawers and every shared chat ticket
-  { id: 'tkt_noir', name: 'Noir Ticket', kind: 't', tier: 'rare', xp: 800, desc: 'Blackout ticket with a cold silver seam' },
-  { id: 'tkt_holo', name: 'Holo Ticket', kind: 't', tier: 'epic', xp: 2000, desc: 'Iridescent foil that shifts between blue, violet and green' },
-  { id: 'tkt_aurum', name: 'Aurum Ticket', kind: 't', tier: 'legendary', cents: 149, desc: 'Liquid gold plate — for your wins and your losses alike' },
-  { id: 'tkt_dragon', name: 'Dragonhide Ticket', kind: 't', tier: 'legendary', cents: 299, desc: 'Molten dragon-scale plate with an ember seam — your wins, in armor' },
-  { id: 'tkt_vapor', name: 'Vapor Ticket', kind: 't', tier: 'epic', cents: 199, desc: 'Synthwave foil — pink sun, cyan scanlines, 1986 forever' },
+  { id: 'tkt_noir', name: 'Noir Ticket', kind: 't', tier: 'rare', xp: 1200, desc: 'Blackout ticket with a cold silver seam' },
+  { id: 'tkt_holo', name: 'Holo Ticket', kind: 't', tier: 'epic', xp: 2800, desc: 'Iridescent foil that shifts between blue, violet and green' },
+  { id: 'tkt_aurum', name: 'Aurum Ticket', kind: 't', tier: 'legendary', cents: 199, desc: 'Liquid gold plate — for your wins and your losses alike' },
+  { id: 'tkt_dragon', name: 'Dragonhide Ticket', kind: 't', tier: 'legendary', cents: 249, desc: 'Molten dragon-scale plate with an ember seam — your wins, in armor' },
+  { id: 'tkt_vapor', name: 'Vapor Ticket', kind: 't', tier: 'epic', cents: 99, desc: 'Synthwave foil — pink sun, cyan scanlines, 1986 forever' },
   // the burning one
-  { id: 'inferno', name: 'Inferno', tier: 'epic', xp: 3500, desc: 'A frame that is actually on fire — flickering flames and rising embers' },
+  { id: 'inferno', name: 'Inferno', tier: 'epic', xp: 4500, desc: 'A frame that is actually on fire — flickering flames and rising embers' },
   // earn-only: time-on-site + activity (granted automatically when /achstate sees the threshold)
   { id: 'dwell10', name: 'Local', tier: 'rare', earn: 'Spend 10 hours on MarginPad', desc: 'Ten real hours on the desk — you live here now' },
   { id: 'dwell100', name: 'Resident', tier: 'legendary', earn: 'Spend 100 hours on MarginPad', desc: 'One hundred hours. The desk has your name on it' },
   { id: 'closer', name: 'The Closer', tier: 'epic', earn: 'Close 500 trades', desc: 'Five hundred closed tickets — volume is a lifestyle' },
   { id: 'operative', name: 'Operative', tier: 'epic', earn: 'Claim 100 daily missions', desc: 'A hundred missions executed without a miss' },
   // card backgrounds (kind:'bg') — a scene behind the whole trader card
-  { id: 'bg_grid', name: 'Blueprint', kind: 'bg', tier: 'common', xp: 600, desc: 'Faint engineering grid — the builder&#39;s backdrop' },
-  { id: 'bg_stars', name: 'Night Shift', kind: 'bg', tier: 'rare', xp: 1200, desc: 'A quiet starfield for the 3am candles' },
+  { id: 'bg_grid', name: 'Blueprint', kind: 'bg', tier: 'common', xp: 500, desc: 'Faint engineering grid — the builder&#39;s backdrop' },
+  { id: 'bg_stars', name: 'Night Shift', kind: 'bg', tier: 'rare', xp: 1400, desc: 'A quiet starfield for the 3am candles' },
   { id: 'bg_candles', name: 'Uptrend', kind: 'bg', tier: 'epic', cents: 99, desc: 'Ghost candlesticks marching up and to the right' },
-  { id: 'bg_vapor', name: 'Neon Horizon', kind: 'bg', tier: 'epic', cents: 199, desc: 'A synthwave sun sets over the neon grid behind your whole card' },
-  { id: 'bg_aurora', name: 'Aurora Sky', kind: 'bg', tier: 'legendary', cents: 299, desc: 'Northern lights and a field of stars — calm above the chaos' },
+  { id: 'bg_vapor', name: 'Neon Horizon', kind: 'bg', tier: 'epic', cents: 129, desc: 'A synthwave sun sets over the neon grid behind your whole card' },
+  { id: 'bg_aurora', name: 'Aurora Sky', kind: 'bg', tier: 'legendary', cents: 249, desc: 'Northern lights and a field of stars — calm above the chaos' },
   { id: 'bg_one', name: 'MP One Field', kind: 'bg', tier: 'legendary', earn: 'Owners only', desc: 'Molten gold ground reserved for the people who built this place' },
   // F5 long-haul progression frames (earn-only, auto-granted by /achstate) — 2026-08-15
   { id: 'mission500', name: 'Quartermaster', tier: 'epic', earn: 'Claim 500 daily missions', desc: 'Five hundred missions logged — the supply line never slipped' },
@@ -8081,10 +8081,10 @@ const VAULT_ITEMS = [
   { id: 'closer2k', name: 'Overclock', tier: 'legendary', earn: 'Close 2,000 trades', desc: 'Two thousand closed tickets — the terminal runs hot' },
   { id: 'dwell500', name: 'Furniture', tier: 'legendary', earn: 'Spend 500 hours on MarginPad', desc: 'Five hundred hours. You are part of the desk now' },
   // premium paid frames — the flex tier above Sovereign (2026-08-15)
-  { id: 'dragonfire', name: 'Dragonfire', tier: 'legendary', cents: 1499, desc: 'Molten scales, breathing heat and rising embers — it smolders on your card' },
-  { id: 'singularity', name: 'Singularity', tier: 'legendary', cents: 1999, desc: 'A black core with a spinning accretion ring — light bends around your name' },
-  { id: 'midas', name: 'Midas', tier: 'legendary', cents: 2999, desc: 'Twin rings of liquid gold. Everything you touch turns to profit' },
-  { id: 'realtrader', name: 'Real Trader', tier: 'legendary', cents: 9999, desc: 'The apex of the Vault — profit-green fire in a gold storm. Money cannot really buy this one; it usually arrives as a gift from the house' },
+  { id: 'dragonfire', name: 'Dragonfire', tier: 'legendary', cents: 499, desc: 'Molten scales, breathing heat and rising embers — it smolders on your card' },
+  { id: 'singularity', name: 'Singularity', tier: 'legendary', cents: 699, desc: 'A black core with a spinning accretion ring — light bends around your name' },
+  { id: 'midas', name: 'Midas', tier: 'legendary', cents: 999, desc: 'Twin rings of liquid gold. Everything you touch turns to profit' },
+  { id: 'realtrader', name: 'Real Trader', tier: 'legendary', cents: 1999, desc: 'The apex of the Vault — profit-green fire in a gold storm. Money cannot really buy this one; it usually arrives as a gift from the house' },
 ];
 const ACH_DEFS = [ // id, name, how — all server-verified from real tables; earned once, kept forever
   { id: 'first_win', name: 'First Blood', how: 'Close your first winning trade' },
@@ -11056,14 +11056,14 @@ export default {
     if (url.pathname === '/go') return handleExchangeGo(url); // TG signal exchange buttons → deep-link into the native app
     if (url.pathname === '/api/premium/status' || url.pathname === '/api/ind/access') { // premium standing of the current user (ind/access kept as an alias for the charts client)
       const st = await premiumFor(env, request);
-      return new Response(JSON.stringify({ allowed: st.premium, premium: st.premium, signedIn: !!st.uid, until: st.until, source: st.source, price: 12.99, user: st.user }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
+      return new Response(JSON.stringify({ allowed: st.premium, premium: st.premium, signedIn: !!st.uid, until: st.until, source: st.source, price: 3.99, user: st.user }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
     }
     if (url.pathname === '/api/premium/brief') return handlePremiumBrief(env, request);
     if (url.pathname === '/api/premium/badges') { // usernames that get the PRO cosmetic badge (founders + granted + paid)
       const set = await premiumSet(env);
       return new Response(JSON.stringify({ names: [...set] }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
     }
-    if (url.pathname === '/api/premium/checkout' && request.method === 'POST') { // start a NOWPayments $12.99/mo invoice for the signed-in user
+    if (url.pathname === '/api/premium/checkout' && request.method === 'POST') { // start a NOWPayments $3.99/mo invoice for the signed-in user
       const st = await premiumFor(env, request);
       if (!st.uid) return J({ error: 'login_required' }, 401);
       if (st.premium) return J({ error: 'already_premium', until: st.until, source: st.source });
@@ -11071,8 +11071,8 @@ export default {
       const founder = url.searchParams.get('plan') === 'founder';
       const body = founder
         ? { price_amount: 99, price_currency: 'usd', order_id: 'premlife_' + st.uid, order_description: 'MarginPad Premium — Founder (lifetime)', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' }
-        : { price_amount: 12.99, price_currency: 'usd', order_id: 'prem_' + st.uid, order_description: 'MarginPad Premium — 1 month', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' };
-      try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', founder ? 'Founder $99' : '$12.99/mo', '/premium'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
+        : { price_amount: 3.99, price_currency: 'usd', order_id: 'prem_' + st.uid, order_description: 'MarginPad Premium — 1 month', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' };
+      try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', founder ? 'Founder $99' : '$3.99/mo', '/premium'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
       return J({ error: 'invoice_failed' }, 502);
     }
     if (url.pathname === '/api/admin/setrole' && request.method === 'POST' && (await adminCookieOk(request, env))) { // background role mark: {username, role} — 'gm' enables chat admin commands, '' clears. Cookie-only (grants power).

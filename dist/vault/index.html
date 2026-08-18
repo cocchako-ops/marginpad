@@ -79,6 +79,16 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;m
 .vtabs::-webkit-scrollbar{display:none}
 .vtabs button{flex:none;font:700 12.5px 'Familjen Grotesk',sans-serif;color:#9aa3ad;background:#111419;border:1px solid #232932;border-radius:10px;padding:9px 15px;cursor:pointer;white-space:nowrap;transition:.15s}
 .vtabs button:hover{border-color:#3a434f;color:#cdd3da}
+/* "Owned" is a filter, not a section — a checkbox that keeps every gallery down to what you own.
+   It reuses the tab button it replaced, so the bar costs exactly the same height as before. */
+.vtabs button[data-vfilter]{display:inline-flex;align-items:center;gap:7px}
+.vtabs .vfbox{width:13px;height:13px;border:1.5px solid #3a434f;border-radius:4px;flex:none;position:relative;transition:.15s}
+.vtabs button[aria-pressed="true"]{color:#0a0b0d;background:#c2f64a;border-color:#c2f64a}
+.vtabs button[aria-pressed="true"] .vfbox{background:#0a0b0d;border-color:#0a0b0d}
+.vtabs .vfbox::after{content:"";position:absolute;left:3.5px;top:.5px;width:3px;height:7px;border:solid #c2f64a;border-width:0 2px 2px 0;transform:rotate(45deg);opacity:0;transition:.12s}
+.vtabs button[aria-pressed="true"] .vfbox::after{opacity:1}
+.gal .fcard[data-hidden="1"]{display:none}
+.vf-none{padding:18px 0;color:#8b95a1;font-size:13.5px}
 .vtabs button.on{color:#0a0b0d;background:#c2f64a;border-color:#c2f64a}
 section[data-vsec] h2:first-child{margin-top:6px}
 .tprev{border:1px solid #232932;border-radius:12px;background:#111419;padding:12px 14px;margin-bottom:10px}
@@ -137,7 +147,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   <div class="signin" id="signin" hidden>Sign in (free, email code only) to see your XP, buy frames and equip them. <a href="/paper-trade">Open the app to sign in →</a></div>
 
   <nav class="vtabs" id="vtabs" aria-label="Vault sections">
-    <button type="button" data-vtab="owned">Owned</button>
+    <button type="button" data-vfilter="owned" id="vfOwned" aria-pressed="false"><i class="vfbox"></i>Owned</button>
     <button type="button" data-vtab="frames">Frames</button>
     <button type="button" data-vtab="tickets">Ticket skins</button>
     <button type="button" data-vtab="backgrounds">Backgrounds</button>
@@ -176,11 +186,6 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   <div class="gal" id="galLevel"></div>
   </section>
 
-  <section data-vsec="owned" hidden>
-  <h2>Your collection</h2>
-  <div class="h2s">Everything you own in one place — one tap to equip, no digging through the shop.</div>
-  <div class="gal" id="galOwned"></div>
-  </section>
 
   <section data-vsec="frames" hidden>
   <h2>Vault frames</h2>
@@ -433,6 +438,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
         document.getElementById('wBal').textContent='$'+(+d.balance||0).toFixed(2);
       }
       renderLadder();renderLevelGal();renderShopGal();renderTkt();renderBg();renderSupply();renderEarn();renderAch();
+      try{window.mpVaultOwnedFilter&&window.mpVaultOwnedFilter();}catch(e){} /* re-apply after every rebuild, so a fresh buy/equip immediately obeys the filter */
       if(d.signedIn){
         var fzEl=document.getElementById('wFz');if(fzEl)fzEl.textContent=(+d.freezes||0)+'/5';
         var bEl=document.getElementById('wBoost'),bu2=+d.boostUntil||0;
@@ -507,21 +513,34 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       if(SECS.indexOf(k)<0)k='frames';
       document.querySelectorAll('[data-vsec]').forEach(function(sc){sc.hidden=sc.getAttribute('data-vsec')!==k;});
       document.querySelectorAll('[data-vtab]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-vtab')===k);});
-    if(k==='owned')try{renderOwned();}catch(e){} /* rebuilt on every open so a fresh equip/purchase is always reflected */
+      try{window.mpVaultOwnedFilter&&window.mpVaultOwnedFilter();}catch(e){} /* entering a section keeps the Owned filter applied */
       try{localStorage.setItem('mp_vault_tab',k);}catch(e){}
       try{history.replaceState(null,'','#'+k);}catch(e){}
     }
-    function renderOwned(){ /* OWNED tab (owner 2026-08-15): clone every owned card out of the four galleries — same markup, same document-level click delegation, zero duplicated logic */
-    var g=document.getElementById('galOwned');if(!g)return;var out=[];
-    ['galLevel','galShop','galTkt','galBg'].forEach(function(id){var gal=document.getElementById(id);if(!gal)return;
-      gal.querySelectorAll('.fcard').forEach(function(c){var f=c.querySelector('.fact');if(!f)return;
-        if(f.querySelector('[data-eq],[data-eqt],[data-eqbg],.btn.eq'))out.push(c.cloneNode(true));
+    /* OWNED FILTER: a card counts as owned when its action area offers Equip or is already equipped —
+       the same test the old Owned tab used, so there is still a single definition of ownership. */
+    function cardOwned(c){var f=c.querySelector('.fact');return !!(f&&f.querySelector('[data-eq],[data-eqt],[data-eqbg],.btn.eq'));}
+    var OWNED_ONLY=false;try{OWNED_ONLY=localStorage.getItem('mp_vault_owned')==='1';}catch(e){}
+    function applyOwnedFilter(){
+      var btn=document.getElementById('vfOwned');
+      if(btn){btn.setAttribute('aria-pressed',OWNED_ONLY?'true':'false');btn.classList.toggle('on',OWNED_ONLY);}
+      Array.prototype.forEach.call(document.querySelectorAll('.gal'),function(g){
+        var cards=g.querySelectorAll('.fcard'),shown=0;
+        Array.prototype.forEach.call(cards,function(c){
+          var hide=OWNED_ONLY&&!cardOwned(c);
+          if(hide)c.setAttribute('data-hidden','1');else c.removeAttribute('data-hidden');
+          if(!hide)shown++;
+        });
+        var msg=g.parentNode&&g.parentNode.querySelector('.vf-none');
+        if(OWNED_ONLY&&cards.length&&!shown){
+          if(!msg){msg=document.createElement('div');msg.className='vf-none';msg.textContent='Nothing owned in this section yet — untick Owned to see what is available.';g.parentNode.insertBefore(msg,g.nextSibling);}
+          msg.hidden=false;
+        } else if(msg){msg.hidden=true;}
       });
-    });
-    g.innerHTML='';
-    if(!out.length){g.innerHTML='<div class="h2s" style="padding:18px 0">Nothing owned yet — frames, ticket skins and backgrounds you own will line up here for one-tap equip.</div>';return;}
-    out.forEach(function(c){g.appendChild(c);});
-  }
+    }
+    window.mpVaultOwnedFilter=applyOwnedFilter;
+    (function(){var b=document.getElementById('vfOwned');if(!b)return;
+      b.addEventListener('click',function(){OWNED_ONLY=!OWNED_ONLY;try{localStorage.setItem('mp_vault_owned',OWNED_ONLY?'1':'0');}catch(e){}applyOwnedFilter();});})();
   document.querySelectorAll('[data-vtab]').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-vtab'));window.scrollTo(0,0);});});
     var init=(location.hash||'').replace('#','');
     if(SECS.indexOf(init)<0){try{init=localStorage.getItem('mp_vault_tab')||'';}catch(e){}}
