@@ -1432,6 +1432,7 @@ const indexHtml = `<!DOCTYPE html>
 <title>MarginPad Blog — Crypto Futures Trading Guides & Calculators</title>
 <meta name="description" content="Practical, plain-English guides for crypto futures traders: liquidation, position sizing, leverage, funding, risk management and more." />
 <link rel="canonical" href="https://marginpad.io/blog/" />
+${'<scr'+'ipt type="application/ld+json">'+JSON.stringify({'@context':'https://schema.org','@type':'Blog',name:'MarginPad Blog',url:'https://marginpad.io/blog/',description:'Guides on crypto futures: liquidation, leverage, funding, risk and exchange mechanics. Free, no signup.',publisher:{'@type':'Organization',name:'MarginPad',url:'https://marginpad.io/'},blogPost:INDEX.slice(0,60).map(function(a){return {'@type':'BlogPosting',headline:a.title,url:'https://marginpad.io/blog/'+a.slug+'/',datePublished:a.date||undefined,description:a.desc||undefined};})})+'</scr'+'ipt>'}
 <meta property="og:title" content="MarginPad Blog — Crypto Futures Trading Guides" />
 <meta property="og:description" content="Practical guides for crypto futures traders, with formulas and examples." />
 <meta property="og:type" content="website" />

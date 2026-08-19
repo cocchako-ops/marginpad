@@ -1067,6 +1067,52 @@ async function ssrBlogSentences(kind, env) {
 // side, before anyone crawls it — unique text per page, refreshed every 10 minutes, never stale in the file.
 // /liquidations/by-exchange/ — the per-venue table, rendered server-side so an AI crawler (which does not
 // run JavaScript) reads real figures. Same source as /api/v1/venues; ten-minute page cache.
+// /calendar/ — the upcoming macro and crypto events, server-rendered. "When is the next FOMC" is one of the
+// questions assistants field most about markets, and the grid on this page is drawn entirely client-side,
+// so a crawler saw 92 words and none of the dates. Ten-minute cache; renders nothing if the feed is down.
+async function handleSsrCalendar(request, url, env) {
+  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const asset = await env.ASSETS.fetch(request);
+  const ct = (asset.headers && asset.headers.get('content-type')) || '';
+  if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
+  let html = ''; try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
+  const pass = () => new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
+  const slot = html.indexOf('<div id="calssr"></div>');
+  if (slot < 0) return pass();
+  let evs = [];
+  try {
+    const r = await handleCalendar(request, env);
+    const j = await r.json();
+    const all = (j && (j.events || j.data)) || (Array.isArray(j) ? j : []);
+    const now = Date.now(), horizon = now + 21 * 86400000;
+    evs = all.filter(e => e && +e.ts > now && +e.ts < horizon).sort((a, b) => a.ts - b.ts).slice(0, 14);
+  } catch (e) {}
+  if (!evs.length) return pass();
+  const esc2 = t => String(t == null ? '' : t).replace(/[<>&]/g, m => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]));
+  const fmt = ts => { const d = new Date(+ts); return d.toUTCString().replace(/:\d\d GMT$/, ' UTC').replace(/^\w+, /, ''); };
+  const li = evs.map(e => '<li><time datetime="' + new Date(+e.ts).toISOString() + '">' + fmt(e.ts) + '</time>'
+    + '<div><b>' + esc2(e.title) + '</b>' + (+e.impact >= 3 ? '<span class="imp">HIGH IMPACT</span>' : '')
+    + (e.desc ? '<span>' + esc2(e.desc) + '</span>' : '') + '</div></li>').join('');
+  const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  const block = '<section class="cssr"><h2>What is coming up</h2>'
+    + '<div class="sub">Next ' + evs.length + ' scheduled events &middot; all times UTC &middot; updated ' + stamp + '</div>'
+    + '<ol>' + li + '</ol></section>';
+  const ld = '<script type="application/ld+json">' + JSON.stringify(evs.map(e => ({
+    '@context': 'https://schema.org', '@type': 'Event', name: String(e.title || ''),
+    startDate: new Date(+e.ts).toISOString(), description: String(e.desc || ''),
+    eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
+    eventStatus: 'https://schema.org/EventScheduled',
+    location: { '@type': 'VirtualLocation', url: 'https://marginpad.io/calendar/' },
+    organizer: { '@type': 'Organization', name: 'MarginPad', url: 'https://marginpad.io/' },
+  }))) + '</scr' + 'ipt>';
+  html = html.slice(0, slot) + block + html.slice(slot + '<div id="calssr"></div>'.length);
+  html = html.replace('</head>', ld + '</head>');
+  const out = new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600' } });
+  try { await caches.default.put(ck, out.clone()); } catch (e) {}
+  return out;
+}
+
 async function handleSsrVenues(request, url, env) {
   const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
@@ -12859,7 +12905,7 @@ export default {
         '/paper-trade': { title: 'Crypto Paper Trading — Free Simulator, No Sign-Up, Real Rewards | MarginPad', desc: 'The only social paper trading platform: practice crypto futures at live prices with leverage to 1000x, climb paid weekly leaderboards, complete missions and earn real USDT while you learn. Free, no sign-up, no deposit — crypto, stocks and forex in one account.', canon: 'https://marginpad.io/paper-trade', pt: true },
         '/calculators': { title: 'Crypto Futures Calculators — Liquidation, PnL & Size | MarginPad', desc: 'Free crypto futures calculators: liquidation price, profit & loss, position size, take-profit and risk/reward. Instant, private, no signup.', canon: 'https://marginpad.io/calculators' },
         '/charts': { title: 'Multi-Chart Crypto Workspace — Live Futures Charts | MarginPad', desc: 'A free multi-window crypto charting workspace: live futures charts, indicators, drawing tools and quick paper trades on one board.', canon: 'https://marginpad.io/charts' },
-        '/screener': { title: 'Crypto Futures Screener — Scored Setups, Funding & OI | MarginPad', desc: 'Free crypto futures screener: 0-100 technical scores with RSI, MACD, funding and open interest on top USDT perps, plus ready trade setups.', canon: 'https://marginpad.io/screener' },
+        '/screener': { sc: 1, title: 'Crypto Futures Screener — Scored Setups, Funding & OI | MarginPad', desc: 'Free crypto futures screener: 0-100 technical scores with RSI, MACD, funding and open interest on top USDT perps, plus ready trade setups.', canon: 'https://marginpad.io/screener' },
         '/heatmap': { title: 'Crypto Liquidation Heatmap — Free, Live, No Login | MarginPad', desc: 'Free live crypto liquidation heatmap with no login and no paywall: see where leveraged positions cluster and get liquidated on BTC, ETH and top alts, updated in real time.', canon: 'https://marginpad.io/heatmap', hm: true },
         '/swap': { title: 'Swap Crypto — 900+ Coins, No Account | MarginPad', desc: 'Swap 900+ cryptocurrencies instantly with no account and no signup. Fast, non-custodial crypto swaps.', canon: 'https://marginpad.io/swap' },
       };
@@ -12900,6 +12946,44 @@ export default {
           + '</section>';
         rw = rw.on('head', { element(e) { e.append(PT_SCHEMA, { html: true }); } }).on('body', { element(e) { e.append(PT_SEO, { html: true }); } });
       }
+      // /screener — the scores themselves, server-rendered. The page had 2,148 words and one figure:
+      // every scored setup was client-side, so "what looks bullish right now" was unanswerable from our
+      // HTML while the data sat one call away. Ten-minute cache via handleScreener's own caching.
+      if (m.sc) {
+        let rows = [];
+        try { const sj = await (await handleScreener(env, false, ctx)).json(); rows = (sj && sj.rows) || []; } catch (e) {}
+        const scored = rows.filter(r => r && r.score != null);
+        if (scored.length >= 8) {
+          const byScore = scored.slice().sort((a, b) => b.score - a.score);
+          const top = byScore.slice(0, 6), bot = byScore.slice(-6).reverse();
+          const avg = Math.round(scored.reduce((t, r) => t + r.score, 0) / scored.length);
+          const bull = scored.filter(r => r.score >= 60).length, bear = scored.filter(r => r.score <= 40).length;
+          const pc = v => (v >= 0 ? '+' : '') + (+v).toFixed(2) + '%';
+          const li = a => a.map(r => '<li><b>' + String(r.s).replace(/[<>&]/g, '') + '</b> score <b>' + r.score + '/100</b>'
+            + (r.verdict ? ' &middot; ' + String(r.verdict).replace(/[<>&]/g, '') : '')
+            + ' &middot; 24h ' + pc(r.chg) + (r.rsi != null ? ' &middot; RSI ' + Math.round(r.rsi) : '') + '</li>').join('');
+          const stamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
+          const SC_SEO = '<section style="max-width:860px;margin:30px auto 40px;padding:0 20px;color:#9aa3ad;font-size:14px;line-height:1.7">'
+            + '<h2 style="color:#e9e7df;font-size:19px">What the screener is scoring right now</h2>'
+            + '<p>Every USDT perpetual with meaningful volume gets a 0-100 technical score from its 4-hour candles: trend direction, RSI, MACD, moving-average alignment and ATR-based volatility, combined into one number. Below is the current state, refreshed continuously. Measured at ' + stamp + ' UTC across ' + scored.length + ' scored markets.</p>'
+            + '<p><b style="color:#c8d0d9">Market average: ' + avg + '/100</b> &middot; ' + bull + ' markets scoring bullish (60+) &middot; ' + bear + ' scoring bearish (40 or below).</p>'
+            + '<h3 style="color:#c8d0d9;font-size:16px;margin-top:22px">Highest scored right now</h3><ul>' + li(top) + '</ul>'
+            + '<h3 style="color:#c8d0d9;font-size:16px;margin-top:18px">Lowest scored right now</h3><ul>' + li(bot) + '</ul>'
+            + '<p style="margin-top:18px">A high score is not a recommendation. It says the technical picture on the 4-hour chart is currently aligned upward, which is a description of the past, not a forecast. Scores move as candles close, and a market can hold a 90 into a reversal. Use it to shortlist what to look at, then check the funding rate and the liquidation map before sizing anything.</p>'
+            + '<p>The same scores are free as JSON with no key: <code>GET https://marginpad.io/api/v1/screener</code>. Full API docs at <a href="https://marginpad.io/free-crypto-api/" style="color:#c2f64a">marginpad.io/free-crypto-api</a>.</p>'
+            + '</section>';
+          const SC_LD = '<script type="application/ld+json">' + JSON.stringify({
+            '@context': 'https://schema.org', '@type': 'Dataset',
+            name: 'MarginPad crypto futures screener scores',
+            description: 'Live 0-100 technical scores for USDT perpetual futures markets, computed from 4-hour candles using trend, RSI, MACD, moving-average alignment and ATR volatility.',
+            url: 'https://marginpad.io/screener', isAccessibleForFree: true,
+            creator: { '@type': 'Organization', name: 'MarginPad', url: 'https://marginpad.io/' },
+            distribution: [{ '@type': 'DataDownload', encodingFormat: 'application/json', contentUrl: 'https://marginpad.io/api/v1/screener' }],
+            measurementTechnique: 'Technical indicators computed from 4-hour OHLC candles aggregated across multiple exchanges.',
+          }) + '</scr' + 'ipt>';
+          rw = rw.on('head', { element(e) { e.append(SC_LD, { html: true }); } }).on('body', { element(e) { e.append(SC_SEO, { html: true }); } });
+        }
+      }
       if (m.hm) { // /heatmap SEO push (2026-08-16 SEO kompas: "free/no login" is the intent Coinglass paywalls itself out of; AI crawlers only see raw HTML)
         const HM_SCHEMA = '<script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'WebApplication', name: 'MarginPad Liquidation Heatmap', url: 'https://marginpad.io/heatmap', applicationCategory: 'FinanceApplication', operatingSystem: 'Any (web browser)', description: 'Free live crypto liquidation heatmap with no login and no paywall: estimated liquidation clusters on BTC, ETH and top altcoins, rebuilt in real time from open interest and leverage profiles.', offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' } }) + '</scr' + 'ipt><script type="application/ld+json">' + JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
           { '@type': 'Question', name: 'Is this liquidation heatmap free?', acceptedAnswer: { '@type': 'Answer', text: 'Yes — fully free, no login, no paywall and no plan upsell. The heatmap loads live data the moment you open the page.' } },
@@ -12921,6 +13005,7 @@ export default {
         if (mLiq[2] === 'calculator' && { bybit: 1, binance: 1, okx: 1, bitget: 1, mexc: 1, gate: 1, kraken: 1, coinbase: 1, kucoin: 1 }[mLiq[1]]) return handleSsrLiq(request, url, env, 'excalc', mLiq[1]); // exchange-slug calculators: no coin data of their own -> BTC-referenced live block
         return handleSsrLiq(request, url, env, mLiq[2] === 'map' ? 'map' : 'calc', mLiq[1]);
       }
+      if (url.pathname === '/calendar/' || url.pathname === '/calendar') return handleSsrCalendar(request, url, env);
       if (url.pathname === '/liquidations/by-exchange/' || url.pathname === '/liquidations/by-exchange') return handleSsrVenues(request, url, env);
       const _mVs = url.pathname.match(/^\/([a-z]+)-vs-([a-z]+)\/$/); if (_mVs) return handleSsrCompare(request, url, env, _mVs[1], _mVs[2]);
       if (url.pathname === '/crypto-liquidations-today/') return handleSsrBlog(request, url, env, 'liq'); // exact-match "total crypto liquidations today" landing — live market total box before thefirst <h2 (SEO kompas: the SERP has no clean-number answer)

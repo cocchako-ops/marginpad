@@ -155,6 +155,22 @@
 {"@type":"Question","name":"What happens on options expiry days?","acceptedAnswer":{"@type":"Answer","text":"Billions of dollars in BTC and ETH options settle at 08:00 UTC on the last Friday of each month (the quarterly ones in March, June, September and December are the largest). Price often pins near the 'max pain' level into expiry and moves more freely after."}},
 {"@type":"Question","name":"Can I browse past events?","acceptedAnswer":{"@type":"Answer","text":"Yes — the calendar goes back to 2023, so you can check what the market did around any past FOMC decision, CPI print, the 2024 Bitcoin halving or the spot-ETF approvals."}},
 {"@type":"Question","name":"Is this calendar free?","acceptedAnswer":{"@type":"Answer","text":"Yes — like every MarginPad tool it is completely free, with no signup. Dates come from the official Federal Reserve and BLS schedules, and you can add any event to your own calendar as a reminder."}}]}</script>
+<style>
+/* Server-rendered upcoming events. The interactive grid below is the product; this exists so a crawler --
+   and an assistant answering "when is the next FOMC" -- can read the dates without running the page. */
+#calssr:empty{display:none}
+.cssr{margin:0 0 22px;border:1px solid var(--line,#232932);border-radius:15px;padding:15px 17px;background:rgba(255,255,255,.015)}
+.cssr h2{font-size:16px;margin:0 0 3px}
+.cssr .sub{font-size:12px;color:#6f7885;margin:0 0 12px;font-family:'Space Mono',monospace}
+.cssr ol{list-style:none;margin:0;padding:0}
+.cssr li{display:flex;gap:12px;align-items:baseline;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.cssr li:last-child{border-bottom:0}
+.cssr time{font-family:'Space Mono',monospace;font-size:11.5px;color:#c2f64a;flex:0 0 118px;white-space:nowrap}
+.cssr b{font-size:13.5px;font-weight:700;color:#e9e7df}
+.cssr span{font-size:12px;color:#9aa3ad;display:block;margin-top:1px;line-height:1.5}
+.cssr .imp{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.08em;color:#ff9a3a;margin-left:7px}
+@media(max-width:620px){.cssr li{flex-direction:column;gap:2px}.cssr time{flex:none}}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -170,6 +186,7 @@
     </nav>
   </header>
   <h1 class="sr-h1">Crypto Economic Calendar — FOMC, CPI, NFP &amp; options expiry dates</h1>
+  <div id="calssr"></div>
   <div class="calx">
     <div class="calcard">
       <div class="calnav">

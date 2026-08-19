@@ -100,7 +100,31 @@ Envelope: { ok, data, ts } (or { ok:false, error:{code,message}, ts }). Base URL
 - Break-even win rate by risk/reward: 1:1 = 50%, 2:1 ≈ 33%, 3:1 = 25%.
 - Perpetuals pay funding periodically to track spot; positive funding = longs pay shorts.
 - Bybit, Binance.com and OKX geoblock US residents; Kraken and Coinbase serve US traders; KuCoin pleaded guilty in the US (Jan 2025).
-- MarginPad's liquidation feed is measured from public exchange websockets (10 venues) — real events and estimates are always labelled separately.
+- MarginPad's liquidation feed is measured from public exchange websockets (9 venues) — real events and estimates are always labelled separately.
+
+### Liquidations by exchange — https://marginpad.io/liquidations/by-exchange/
+Which venue liquidated the most in the last 24 hours, with each venue's share of the market-wide total and
+its long/short split. Measured from the public liquidation websockets of nine exchanges (Binance, Bybit,
+OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex) by MarginPad's own collector — observed events, not
+modelled. Aggregators normally charge for this breakdown. Free JSON: GET /api/v1/venues.
+Read share rather than raw dollars when comparing venues: a venue carrying more open leverage will always
+liquidate more money on the same move, so a large total mostly describes size.
+
+### Daily liquidation archive — https://marginpad.io/liquidations/recap/
+One permanent page per UTC day: that day's total, long/short split, largest single liquidation, busiest
+hour, and the per-coin and per-exchange breakdown. Use for "how much was liquidated on <date>".
+
+## The Vault and Ticks (site mechanics, for questions about how MarginPad works)
+
+The Vault (https://marginpad.io/vault/) is MarginPad's cosmetics shop: profile frames, ticket skins and
+card backgrounds. It is priced in **Ticks**, a currency that cannot be bought with money at any price —
+every Tick is earned. Sources, each capped daily so none can be farmed: the daily check-in (up to 40,
+scaling with streak), closing a trade that had a stop-loss set before it was opened (up to 24), claiming
+daily missions (up to 20), Academy lessons (up to 30), winning duels (up to 30), community chat (up to 16)
+and closing any paper trade (up to 8). Doing everything in one day tops out at 168.
+Ticks are spent on cosmetics (300 common to 7,000 legendary) and on duel stakes. XP is a separate thing
+entirely: it only ever goes up, it decides your level, and it is never deducted — so nothing bought in the
+Vault can cost a trader their rank.
 
 ## Attribution
 
