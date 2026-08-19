@@ -697,6 +697,11 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     var e=entry?null:null; // placeholder for lint clarity
     var d=jload(),tgt=null;for(var i=0;i<d.length;i++)if(d[i].id===id){tgt=d[i];break;}
     if(!tgt||tgt.status!=='open')return;
+    if(tgt&&window.mpIsMktClosed&&window.mpIsMktClosed(tgt.sym)){
+      var _m=(window.mpMktClosedMsg?window.mpMktClosedMsg(String(tgt.sym||'').toUpperCase()):(tgt.sym+' is closed'));
+      try{(window.mpLimitToast||window.alert)(_m+' Your position cannot move while the exchange is shut, and exits fill when it reopens.');}catch(e){}
+      return;
+    }
     // legacy entries without qty AND margin can't be split meaningfully → close in full immediately (old behaviour)
     if(!(tgt.qty!=null&&isFinite(tgt.qty))&&!(+tgt.margin>0)){var m0=mx(tgt);fullClose(tgt,m0);jstore(d);done();return;}
     build();pct=100;ov.querySelector('.mpcs-sl').value=100;ov.classList.add('on');sync();
@@ -737,7 +742,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
     try{var _cp=(f>=1?(+e.pnl||0):pnl)||0,_px=(+m.live).toLocaleString('en-US',{maximumFractionDigits:6});
       if(window.mpLimitToast)window.mpLimitToast((f>=1?'Closed ':'Closed '+Math.round(f*100)+'% of ')+String(e.sym||'')+' at '+_px+' · '+(_cp>=0?'+$':'−$')+Math.abs(_cp).toFixed(2)+' — saved to My Trades.');}catch(_){}
   }
-  window.mpCloseSheet=show;
+  window.mpCloseSheet=function(id,cb){return show(id,cb);};
 })();
 
 ;/* ══════════ SL/TP edit sheet (owner tasks 2026-07 + 2026-07-13 multi-level): edit stop-loss / take-profit

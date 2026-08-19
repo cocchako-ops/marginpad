@@ -3163,6 +3163,11 @@ window.mpSrvOpen=function(payload,ok,fail){
     var e=entry?null:null; // placeholder for lint clarity
     var d=jload(),tgt=null;for(var i=0;i<d.length;i++)if(d[i].id===id){tgt=d[i];break;}
     if(!tgt||tgt.status!=='open')return;
+    if(tgt&&window.mpIsMktClosed&&window.mpIsMktClosed(tgt.sym)){
+      var _m=(window.mpMktClosedMsg?window.mpMktClosedMsg(String(tgt.sym||'').toUpperCase()):(tgt.sym+' is closed'));
+      try{(window.mpLimitToast||window.alert)(_m+' Your position cannot move while the exchange is shut, and exits fill when it reopens.');}catch(e){}
+      return;
+    }
     // legacy entries without qty AND margin can't be split meaningfully → close in full immediately (old behaviour)
     if(!(tgt.qty!=null&&isFinite(tgt.qty))&&!(+tgt.margin>0)){var m0=mx(tgt);fullClose(tgt,m0);jstore(d);done();return;}
     build();pct=100;ov.querySelector('.mpcs-sl').value=100;ov.classList.add('on');sync();

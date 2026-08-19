@@ -8117,8 +8117,15 @@ const SRV_LB_START = Date.UTC(2026, 6, 27); // P0 phase 3: first Monday when ONL
 const SPOT_LB_START = Date.UTC(2026, 7, 3); // owner 2026-08-03: from this season the FIRST paid board is Highest Demo-Spot BANK balance (replaces Highest ROE; prize amounts stay in cfg.lbRoe)
 const WR_MIN_WIN_ROE = 5; // Best-win-rate board: a win only counts once the trade cleared ≥ +5% ROE (kills dust-scalp padding). Applies from LB_V2_START.
 const WR_MIN_MOVE = 0.2; // …AND the win must reflect a ≥0.2% favorable PRICE move (roe/lev). Kills the "1000× on a low-vol pair = guaranteed safe win" exploit — leverage-independent, so it can't be farmed with extreme leverage on ANY symbol.
-// Symbols barred from the leaderboards (ROE + win-rate + duels): forex, metals, indices and stablecoins — low-volatility / mean-reverting instruments that let high leverage farm "safe" wins. Crypto only competes.
-const LB_EXCL_SET = new Set('EURUSD EURUSDT GBPUSD GBPUSDT USDJPY USDJPYT AUDUSD AUDUSDT USDCAD USDCHF NZDUSD EURGBP EURJPY GBPJPY XAU XAUUSD XAUUSDT XAG XAGUSD XAGUSDT SPX500 SPX US500 NAS100 NAS US30 DJI30 GER40 DAX40 UK100 JP225 FR40 USDC USDCUSDT DAI DAIUSDT TUSD FDUSD USDD USDP GUSD EURC PYUSD USDE SUSD'.split(' '));
+// Symbols barred from the leaderboards (ROE + win-rate + duels): forex, metals, indices, stablecoins and
+// the ETFs that wrap them — low-volatility / mean-reverting instruments that let high leverage farm
+// "safe" wins. Individual equities are NOT barred: measured 2026-08-19 over 10 days of hourly bars,
+// they realise 1.559% mean true range against crypto's 0.496%, so high leverage is harder to hold on a
+// stock than on BTC. The broad ETFs are the reverse (TLT 0.214%, DIA 0.322%, VOO 0.325%, SPY 0.328%,
+// IWM 0.456%) AND they track indices already on this list, which was a straight bypass: barred from
+// SPX500, farm SPY instead. TQQQ/SQQQ wrap the same index but realise 1.78% (3.6x crypto), so no safe
+// win exists there and they keep competing. The rule applied is the measured volatility, not the label.
+const LB_EXCL_SET = new Set('EURUSD EURUSDT GBPUSD GBPUSDT USDJPY USDJPYT AUDUSD AUDUSDT USDCAD USDCHF NZDUSD EURGBP EURJPY GBPJPY XAU XAUUSD XAUUSDT XAG XAGUSD XAGUSDT SPX500 SPX US500 NAS100 NAS US30 DJI30 GER40 DAX40 UK100 JP225 FR40 USDC USDCUSDT DAI DAIUSDT TUSD FDUSD USDD USDP GUSD EURC PYUSD USDE SUSD SPY VOO QQQ DIA IWM TLT GLD SLV'.split(' '));
 const LB_EXCL_SQL = "'" + [...LB_EXCL_SET].join("','") + "'"; // static list (no user input) → safe to inline into `UPPER(sym) NOT IN (…)`
 function lbExcluded(sym) { return LB_EXCL_SET.has(String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '')); }
 // ---- Trade League (weekly leaderboard, stored in KV) ----
@@ -9594,6 +9601,10 @@ async function handleTrade(url, request, env, ctx) {
     const symC = String(match.symbol || match.sym || '').toUpperCase();
     const pd = await fetchPriceCached(symC);
     if (!pd || !(+pd.price > 0)) return jt({ error: 'no_price' }, 503);
+    // Exiting at a frozen price is a one-sided bet: favourable overnight gaps still land at the open, while
+    // an unfavourable one can be dodged by closing before it. The price cannot move while the exchange is
+    // shut, so refusing here costs the trader nothing except that optionality.
+    if (pd.stock && /^(CLOSED|PREPRE|POSTPOST)$/i.test(String(pd.state || ''))) return jt({ error: 'market_closed', sym: symC, sess: pd.sess || null }, 409);
     const prices = {}; prices[symC.replace(/USDT$/, '')] = +pd.price; prices[symC] = +pd.price;
     const r = await usersDO(env, '/botclose', { uid, id: String(b.id), pct: b.pct, pid: b.pid, prices, via: 'site', promos: _prm });
     if (r && r.error) return jt(r, 400);
@@ -12216,6 +12227,10 @@ export default {
     if (url.pathname === '/api/admin/heatpools' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { if (url.searchParams.get('reset')) { for (const sy of HM_COINS) { try { await env.STATS.delete('hmp:st:' + sy); } catch (e) {} } } await heatPoolsCron(env); return J({ ok: true, reset: !!url.searchParams.get('reset') }); } // manual model run; ?reset=1 wipes state so the full kline window re-accumulates (e.g. after a ladder change)
     if (url.pathname === '/api/admin/mktestuser' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // E2E suites: ensure an 'e2e-' users row exists (DO enforces the prefix)
       return J(await usersDO(env, '/mktestuser', { uid: url.searchParams.get('uid') || '' }));
+    }
+    if (url.pathname === '/api/admin/classstats' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) {
+      const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/classstats'));
+      return new Response(await r.text(), { headers: { 'content-type': 'application/json' } });
     }
     if (url.pathname === '/api/admin/srvtrades' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // SRV_LB_START board-population check: src='srv' && sc closed trades in 7d (read-only)
       const users = env.USERS.get(env.USERS.idFromName('main'));
@@ -15022,6 +15037,35 @@ export class UserStore {
       const mev = this.rows('SELECT type, n FROM mev WHERE user_id=? AND day=?', String(u.id), day);
       const byType = {}; rows.forEach(r => { byType[r.type] = (byType[r.type] || 0) + 1; });
       return this.j({ found: true, uid: String(u.id), username: u.username, created: +u.created || 0, lastSeen: +u.last_seen || 0, count: rows.length, byType, todayMev: mev, rows });
+    }
+    if (path === '/classstats') { // read-only: closed-trade behaviour per asset class, to test the leaderboard-abuse question
+      const since = Date.now() - 30 * 86400000;
+      const CLS = sym => {
+        const u = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if (STOCKS[u]) return 'stock';
+        if (u === 'XAU' || u === 'XAG') return 'metal';
+        if (YAHOO_MKT[u] && u.length > 5) return 'index';
+        if (YAHOO_MKT[u]) return 'forex';
+        return 'crypto';
+      };
+      const acc = {};
+      try {
+        for (const r of this.rows('SELECT sym, roe, lev, pnl FROM tradeev WHERE ts > ? AND kind = ?', since, 'close')) {
+          const c = CLS(r.sym), roe = +r.roe, lev = Math.max(1, +r.lev || 1);
+          if (!isFinite(roe)) continue;
+          const a = acc[c] || (acc[c] = { n: 0, wins: 0, roeSum: 0, moveSum: 0, big: 0, lev: 0, excluded: lbExcluded(r.sym) ? 1 : 0 });
+          a.n++; a.lev += lev; a.roeSum += roe; a.moveSum += roe / lev; // roe/lev = the underlying price move
+          if (roe > 0) a.wins++;
+          if (roe >= 100) a.big++;
+        }
+      } catch (e) {}
+      const out = Object.keys(acc).map(c => {
+        const a = acc[c];
+        return { cls: c, trades: a.n, winRate: +(a.wins / a.n * 100).toFixed(1), avgRoe: +(a.roeSum / a.n).toFixed(1),
+          avgMovePct: +(a.moveSum / a.n).toFixed(3), avgLev: +(a.lev / a.n).toFixed(1),
+          over100Roe: a.big, countsOnBoards: !a.excluded };
+      }).sort((x, y) => y.trades - x.trades);
+      return this.j({ windowDays: 30, classes: out });
     }
     if (path === '/srvtrades') { // count src='srv' closed trades in the last 7d — answers whether the SRV_LB_START paid board (from the 2026-08-03 season, which ranks ONLY src==='srv' && sc) would be POPULATED or empty. Read-only journal scan.
       const since = Date.now() - 7 * 86400000;
