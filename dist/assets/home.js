@@ -82,7 +82,64 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       // (plan form, mterm, /charts quick-trade, mobile demo) so the market-closed block is consistent, not plan-form-only.
       window.mpMktState=window.mpMktState||{};
       window.mpIsMktClosed=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(!STK[sym])return false;return /^(CLOSED|PREPRE|POSTPOST)$/i.test(window.mpMktState[sym]||'');};
-      window.mpIsBybit=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return (MKT[sym]||STK[sym])?true:_byb0(sym);};
+  // ---- market-closed explainer -------------------------------------------------------------------
+  // window.mpMktSess[SYM] = {s,e,tz,gmt} from the price poller: the exchange's own regular session.
+  window.mpMktSess=window.mpMktSess||{};
+  // Why each class stops. Written for someone whose only reference is crypto, which never closes.
+  var MKT_WHY={
+    stock:'Shares are bought and sold through a stock exchange, and exchanges keep office hours. When New York closes there is nobody on the other side of an order, so the price simply stops until it opens again. Crypto has no central exchange, which is why it never stops.',
+    index:'An index is just a number calculated from the shares inside it. When the exchange those shares trade on is shut, there are no new prices to calculate it from, so the index sits still.',
+    metal:'Gold and silver are priced on futures exchanges that close overnight and at weekends, the same way share exchanges do.',
+    forex:'Currencies are traded between banks rather than on one exchange, so the market runs around the clock from Sunday evening to Friday evening and then stops for the weekend while those desks are shut.'
+  };
+  // Roll the exchange's regular session forward to the next weekday that has not already ended.
+  window.mpNextOpen=function(sym){
+    sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+    var ss=window.mpMktSess[sym]; if(!ss||!ss.s) return null;
+    var now=Date.now(), open=ss.s*1000, close=ss.e*1000, DAY=86400000;
+    var guard=0;
+    while((open<=now||close<=now)&&guard++<10){ open+=DAY; close+=DAY; }
+    // exchanges do not open at the weekend; step over Saturday and Sunday in the EXCHANGE's timezone
+    guard=0;
+    while(guard++<10){
+      var d=new Date(open+(ss.gmt||0)*1000).getUTCDay(); // shift into exchange-local to test the weekday
+      if(d!==0&&d!==6) break;
+      open+=DAY; close+=DAY;
+    }
+    return open>now?open:null;
+  };
+  // "14h 22m" / "6m" — a countdown reads as a wait, a timestamp reads as trivia
+  window.mpUntil=function(ms){
+    var d=Math.max(0,ms-Date.now()), mi=Math.round(d/60000);
+    if(mi<60) return mi+'m';
+    var h=Math.floor(mi/60), m2=mi%60;
+    if(h<24) return h+'h'+(m2?' '+m2+'m':'');
+    var dd=Math.floor(h/24); return dd+'d'+((h%24)?' '+(h%24)+'h':'');
+  };
+  window.mpMktExplain=function(sym){
+    sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+    var cls=window.mpAssetClass?window.mpAssetClass(sym):'crypto';
+    if(cls==='crypto') return null;
+    var open=window.mpNextOpen(sym), ss=window.mpMktSess[sym]||{};
+    var when='';
+    if(open){
+      var dt=new Date(open), now=new Date();
+      var sameDay=dt.toDateString()===now.toDateString();
+      var tmr=new Date(now.getTime()+86400000).toDateString()===dt.toDateString();
+      var t=dt.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+      var day=sameDay?'today':tmr?'tomorrow':dt.toLocaleDateString([], {weekday:'long'});
+      when=day+' at '+t+' your time';
+    }
+    return {open:open, when:when, until:open?window.mpUntil(open):'', why:MKT_WHY[cls]||MKT_WHY.stock,
+      tz:ss.tz||''};
+  };
+      // One phrasing for every "you cannot open this now" message, so the toast and the panel never disagree.
+  window.mpMktClosedMsg=function(sym){
+    var ex=window.mpMktExplain&&window.mpMktExplain(sym);
+    if(ex&&ex.until) return sym+' is closed — the exchange opens in '+ex.until+(ex.when?' ('+ex.when+')':'')+'.';
+    return sym+' market is closed right now — you can trade it when the exchange reopens.';
+  };
+  window.mpIsBybit=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return (MKT[sym]||STK[sym])?true:_byb0(sym);};
       // Asset class of a symbol → realistic per-market fees + the class selector on Paper Trade
       var IDX={SPX500:1,NAS100:1,US30:1,GER40:1,UK100:1,JPN225:1},FX={EURUSD:1,GBPUSD:1,USDJPY:1,AUDUSD:1,USDCAD:1};
       window.mpAssetClass=function(sym){sym=String(sym||'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/USDT$/,'');if(STK[sym])return 'stock';if(sym==='XAU'||sym==='XAG')return 'metal';if(IDX[sym])return 'index';if(FX[sym])return 'forex';return 'crypto';};
@@ -118,7 +175,25 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   // Stock/equity market hours: block OPENING a trade while the market is fully closed (price frozen at last close →
   // an opened position wouldn't move, which reads as broken). Extended hours (PRE/POST) still tick, so allow those.
   function mktClosed(){var sym=((document.getElementById('planSym')||{}).value||'').toUpperCase();if(!(window.mpStk&&window.mpStk[sym]))return false;return /^(CLOSED|PREPRE|POSTPOST)$/i.test(liveState||'');}
-  function updateMktGate(){var b=document.getElementById('planSave'),t=document.getElementById('planOpenTxt'),lbl=document.querySelector('.pt2-px-lbl');var closed=mktClosed();if(b){b.classList.toggle('mkt-closed',closed);b.setAttribute('aria-disabled',closed?'true':'false');}if(t&&closed){t.textContent=(window.mpT&&window.mpT('mktClosed'))||'Market closed';}else if(t&&!closed&&t.textContent==='Market closed'){t.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';}
+  // The panel a new trader needs: when it opens, why it is shut, and what they can do meanwhile. Built
+  // lazily next to the open button so an open market and every crypto pair are untouched.
+  function mktPanel(sym,closed){
+    var host=document.getElementById('planSave'); if(!host) return;
+    var box=document.getElementById('mktWhy');
+    if(!closed){ if(box) box.hidden=true; return; }
+    var ex=window.mpMktExplain&&window.mpMktExplain(sym); if(!ex) { if(box) box.hidden=true; return; }
+    if(!box){
+      box=document.createElement('div'); box.id='mktWhy'; box.className='mktwhy';
+      (host.parentNode||host).insertBefore(box, host.nextSibling);
+    }
+    box.hidden=false;
+    box.innerHTML='<div class="mw-h"><b>'+sym+' is closed</b>'+(ex.until?'<i>opens in '+ex.until+'</i>':'')+'</div>'
+      +(ex.when?'<div class="mw-w">Next open: '+ex.when+'</div>':'')
+      +'<div class="mw-y">'+ex.why+'</div>'
+      +'<div class="mw-a">The price above is the last one the exchange printed, so it will not move until then. Crypto trades every hour of every day if you want something live right now.</div>';
+  }
+  function updateMktGate(){var b=document.getElementById('planSave'),t=document.getElementById('planOpenTxt'),lbl=document.querySelector('.pt2-px-lbl');var closed=mktClosed();
+    try{mktPanel(((document.getElementById('planSym')||{}).value||'').toUpperCase(),closed);}catch(_){}if(b){b.classList.toggle('mkt-closed',closed);b.setAttribute('aria-disabled',closed?'true':'false');}if(t&&closed){t.textContent=(window.mpT&&window.mpT('mktClosed'))||'Market closed';}else if(t&&!closed&&t.textContent==='Market closed'){t.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';}
     if(lbl){var wasClosed=lbl.getAttribute('data-mkt')==='closed';if(closed!==wasClosed){lbl.setAttribute('data-mkt',closed?'closed':'open');lbl.childNodes.forEach&&Array.prototype.forEach.call(lbl.childNodes,function(n){if(n.nodeType===3)n.textContent=closed?'CLOSED':'LIVE';});}}}
   var seg=document.getElementById('planSeg');
   function num(id){var e=document.getElementById(id);var v=e?parseFloat(e.value):NaN;return isFinite(v)?v:NaN;}
@@ -137,7 +212,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   }
   // REST /api/price (Binance, edge-cached 5s) is a FALLBACK only. The Bybit WS is the real-time truth; never let
   // the slower cached REST value clobber a fresh WS tick — that 0–5s staleness was the ±$1k forming-candle flicker.
-  function poll(){if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return;if(_wsT&&Date.now()-_wsT<6000)return;var sym=((document.getElementById('planSym')||{}).value||'');if(!sym)return;fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('frm',sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0&&(!_wsT||Date.now()-_wsT>=6000)){live=+pd.price;liveChg=+pd.chg||0;liveState=(pd.state!=null?String(pd.state):'');try{if(pd.state!=null&&window.mpMktState)window.mpMktState[sym.toUpperCase()]=String(pd.state);}catch(_){}showLive();calc();}}).catch(function(){});}
+  function poll(){if(document.hidden||document.body.getAttribute('data-prod')!=='plan')return;if(_wsT&&Date.now()-_wsT<6000)return;var sym=((document.getElementById('planSym')||{}).value||'');if(!sym)return;fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('frm',sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0&&(!_wsT||Date.now()-_wsT>=6000)){live=+pd.price;liveChg=+pd.chg||0;liveState=(pd.state!=null?String(pd.state):'');try{if(pd.state!=null&&window.mpMktState)window.mpMktState[sym.toUpperCase()]=String(pd.state);if(pd.sess&&window.mpMktSess)window.mpMktSess[sym.toUpperCase()]=pd.sess;}catch(_){}showLive();calc();}}).catch(function(){});}
   if(seg)seg.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});b.classList.add('on');side=b.getAttribute('data-side');calc();});});
   ['planAmt','planLev'].forEach(function(id){var e=document.getElementById(id);if(e)e.addEventListener('input',calc);});
   var levEl=document.getElementById('planLev'),levR=document.getElementById('planLevR');
@@ -240,7 +315,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   function openSyms(){var s={};load().forEach(function(e){if(e.status==='open'&&e.sym&&e.sym!=='—')s[e.sym]=1;});if(chartSym&&!(document.hidden||document.body.getAttribute('data-prod')!=='plan'))s[chartSym]=1;return Object.keys(s);} // OPEN positions always polled (liq safety); the chart-only symbol is dropped when the Paper Trade chart isn't visible so an idle /calculators or /screener or hidden tab with no positions stops the 3s /api/price poll entirely
   // REST is only a FALLBACK: prices[] is shared with the live WS feed (window.mpLivePrices). Never clobber a
   // fresh WS tick with the slower/edge-cached /api/price value — that mismatch was the ±$1k position flicker.
-  function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('pos',sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};try{if(pd.state!=null&&window.mpMktState)window.mpMktState[sym.toUpperCase()]=String(pd.state);}catch(_){}if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
+  function pollPrices(){openSyms().forEach(function(sym){try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){} /* stream every open-position & chart symbol live, not just the base 8 */ var cur=prices[sym];if(cur&&cur.t&&(Date.now()-cur.t)<4000)return;fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('pos',sym),{cache:'no-store'}).then(function(r){return r.json();}).then(function(pd){if(pd&&pd.price>0){prices[sym]={p:+pd.price,t:Date.now(),chg:(pd.chg!=null?+pd.chg:(cur&&cur.chg))};try{if(pd.state!=null&&window.mpMktState)window.mpMktState[sym.toUpperCase()]=String(pd.state);if(pd.sess&&window.mpMktSess)window.mpMktSess[sym.toUpperCase()]=pd.sess;}catch(_){}if(window.mpJournalRender)window.mpJournalRender();}}).catch(function(){});});}
   function metrics(e){var live=(prices[e.sym]&&prices[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-((+e.qty||0)*(e.entry+live)*(+e.feeRate||0))-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L — legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);var notional=(e.qty!=null&&isFinite(e.qty))?Math.abs(e.qty)*live:(e.notional||null);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open positions cap at -99% (never show -100% until actually liquidated/closed) */return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,notional:notional,margin:margin};}
   function checkClose(e,m){if(e.status!=='open')return false;var dir=m.long?1:-1;
     // ROOT-CAUSE GUARD (proven from [LIQ-DECISION] logs): only decide an exit when there is a REAL market price for the
@@ -1009,7 +1084,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     // previously-selected coin's price, would set a wrong entry → wrong liq → the trade "instantly liquidates / vanishes".
     if(!pl||pl.sym!==sym||!(+pl.price>0)||!pl.t||(Date.now()-pl.t)>3000){_say('Waiting for the live price for '+(sym||'this coin')+' — try again in a second.');add._busy=false;return;}
     entry=+pl.price;
-    if(window.mpStk&&window.mpStk[sym]&&/^(CLOSED|PREPRE|POSTPOST)$/i.test(pl.state||'')){_say(sym+' market is closed right now — you can trade it when the market reopens.');add._busy=false;return;} // stocks: no fills while the exchange is shut (price is frozen at last close)
+    if(window.mpStk&&window.mpStk[sym]&&/^(CLOSED|PREPRE|POSTPOST)$/i.test(pl.state||'')){_say(window.mpMktClosedMsg?window.mpMktClosedMsg(sym):(sym+' market is closed right now.'));add._busy=false;return;} // stocks: no fills while the exchange is shut (price is frozen at last close)
     var L=isFinite(lev)&&lev>0?Math.min(lev,1000):1, mmr=(window.mpPlanMmr||0.005);
     var feeRate=num('planFee'); feeRate=(isFinite(feeRate)&&feeRate>=0)?feeRate/100:window.mpFeeRate(L,sym); // default to a realistic 0.055% taker fee (matches the server-fill) so EVERY trade carries a fee — was 0, which made some closed tickets show no Fees line
     var sl=num('planSlOpt'), tp=num('planTpOpt'), trail=num('planTrail'), be=num('planBE');
@@ -2496,7 +2571,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
       +'<div class="ptl-meta">'+_T('jEntry','Entry')+' <b>'+fmt(e.entry)+'</b> · '+_T('mtLiq','Liq')+' <b>'+fmt(m.liq)+'</b> ('+pc(m.liqDist)+')</div>';}
   document.addEventListener('click',function(ev){if(ev.target.closest&&ev.target.closest('[data-ptl-close]'))setTimeout(updPnl,0);}); // re-render the ticket after its Close fires (the global handler does the actual close)
   function openPos(){if(window.mpTradeGate&&!window.mpTradeGate(sym,side))return; /* enforce open-trade limits + one-way mode */
-    if(window.mpIsMktClosed&&window.mpIsMktClosed(sym)){if(window.mpLimitToast)window.mpLimitToast(sym+' market is closed right now — you can trade it when it reopens.');return;} // stocks: no fills while the exchange is shut (consistent with the plan form)
+    if(window.mpIsMktClosed&&window.mpIsMktClosed(sym)){if(window.mpLimitToast)window.mpLimitToast(window.mpMktClosedMsg?window.mpMktClosedMsg(sym):(sym+' market is closed right now.'));return;} // stocks: no fills while the exchange is shut (consistent with the plan form)
     // FRESH price only: a stale mpLivePrices[sym] (seeded long ago by another open position on the same coin, never
     // updated because the coin isn't in the live feed) must never be the entry → wrong liq → phantom "instant liquidation".
     var _lp=window.mpLivePrices&&window.mpLivePrices[sym],p=(_lp&&_lp.p>0&&_lp.t&&(Date.now()-_lp.t)<2000)?+_lp.p:0; // 2s window: majors (WS, sub-second) use the cache; a polled altcoin (US) forces a fresh fetch so the entry matches the live market to the second (else it opens past its 100× liq → instant liquidation)

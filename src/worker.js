@@ -3336,7 +3336,11 @@ async function _yahooPrice(sym, ttl) { // live/last price + DAILY %chg + market 
   let prev = 0;
   if (lastIdx >= 0 && ts.length) { const day = t => Math.floor(t / 86400), td = day(ts[lastIdx]); for (let i = lastIdx; i >= 0; i--) { if (full(i) && day(ts[i]) < td) { prev = +cl[i]; break; } } }
   if (!prev) prev = +me.chartPreviousClose || 0;
-  return { price, chg: (prev > 0) ? (price / prev - 1) * 100 : 0, state };
+  // session window + exchange timezone, so the UI can say WHEN it opens instead of just that it is shut.
+  // Yahoo publishes today's regular session; the client rolls it forward to the next weekday.
+  const cp = me.currentTradingPeriod || {}, reg = cp.regular || {};
+  return { price, chg: (prev > 0) ? (price / prev - 1) * 100 : 0, state,
+    sess: (reg.start && reg.end) ? { s: +reg.start, e: +reg.end, tz: me.exchangeTimezoneName || '', gmt: +me.gmtoffset || 0 } : null };
 }
 async function fetchPriceCached(sym) {
   const s2 = String(sym || '').toUpperCase().replace(/USDT$/, '').replace(/[^A-Z0-9]/g, '');
@@ -3356,7 +3360,7 @@ async function fetchPrice(sym) {
   const pair = s + 'USDT';
   // Stocks/forex/indices (real data via Yahoo Finance) — resolve here; NEVER fall through to the crypto cascade
   // (Bybit lists tokenized equity perps AAPLUSDT etc. that would return a mismatched 24/7 price).
-  { const ys = yahooSymFor(s); if (ys) { try { const y = await _yahooPrice(ys, 10); if (y) return { sym: s, price: y.price, chg: y.chg, state: y.state, stock: !!STOCKS[s] }; } catch (e) {} return null; } }
+  { const ys = yahooSymFor(s); if (ys) { try { const y = await _yahooPrice(ys, 10); if (y) return { sym: s, price: y.price, chg: y.chg, state: y.state, sess: y.sess || undefined, stock: !!STOCKS[s] }; } catch (e) {} return null; } }
   // Bybit USDT-perp (linear) FIRST — SAME market as the live WS feed + chart candles, so the REST fallback never reintroduces a spot-vs-perp price mismatch.
   try {
     const r = await fetch('https://api.bybit.com/v5/market/tickers?category=linear&symbol=' + pair, { cf: { cacheTtl: 8 } });
