@@ -3456,6 +3456,20 @@ async function _yahooPrice(sym, ttl) { // live/last price + DAILY %chg + market 
   return { price, chg: (prev > 0) ? (price / prev - 1) * 100 : 0, state,
     sess: (reg.start && reg.end) ? { s: +reg.start, e: +reg.end, tz: me.exchangeTimezoneName || '', gmt: +me.gmtoffset || 0 } : null };
 }
+// 1-second ceiling for FILL prices. Same shape as fetchPriceCached (5s, for display) — the short TTL keeps a fill
+// honest while making upstream load independent of how many bots are trading the same symbol at once.
+async function fetchPriceFill(sym) {
+  const s2 = String(sym || '').toUpperCase().replace(/USDT$/, '').replace(/[^A-Z0-9]/g, '');
+  if (!s2) return null;
+  try {
+    const ck = new Request('https://marginpad.io/__pxfill_' + s2);
+    const hit = await caches.default.match(ck);
+    if (hit) { const j = await hit.json(); if (j && +j.price > 0) return j; }
+    const pd = await fetchPrice(s2);
+    if (pd && +pd.price > 0) { try { await caches.default.put(ck, new Response(JSON.stringify(pd), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=1' } })); } catch (e) {} }
+    return pd;
+  } catch (e) { return fetchPrice(sym); }
+}
 async function fetchPriceCached(sym) {
   const s2 = String(sym || '').toUpperCase().replace(/USDT$/, '').replace(/[^A-Z0-9]/g, '');
   if (!s2) return null;
@@ -4304,7 +4318,7 @@ async function handleStatsReset(env) {
   return new Response('cleared ' + n + ' analytics keys (bot + league kept)');
 }
 // Live health of the liquidation collector (its own VPS), rendered into the stats dashboard.
-async function opsCfg(env) { let c = {}; try { c = JSON.parse(await env.STATS.get('ops:cfg') || '{}'); } catch (e) {} return { brief: c.brief !== false, briefHour: (Number.isFinite(+c.briefHour) && +c.briefHour >= 0 && +c.briefHour <= 23) ? +c.briefHour : 8, alerts: c.alerts !== false, bigTrade: (Number.isFinite(+c.bigTrade) && +c.bigTrade >= 0) ? +c.bigTrade : 5000, sessKv: c.sessKv !== false, srvCandle: c.srvCandle !== false, xPost: c.xPost !== false, nudgeGraceMin: (Number.isFinite(+c.nudgeGraceMin) && +c.nudgeGraceMin >= 5 && +c.nudgeGraceMin <= 1440) ? +c.nudgeGraceMin : 60, liqAlertUsd: (Number.isFinite(+c.liqAlertUsd) && +c.liqAlertUsd >= 100000) ? +c.liqAlertUsd : 5000000, liqAlertCoolMin: (Number.isFinite(+c.liqAlertCoolMin) && +c.liqAlertCoolMin >= 5 && +c.liqAlertCoolMin <= 1440) ? +c.liqAlertCoolMin : 45 }; }
+async function opsCfg(env) { let c = {}; try { c = JSON.parse(await env.STATS.get('ops:cfg') || '{}'); } catch (e) {} return { botApi: c.botApi !== false, brief: c.brief !== false, briefHour: (Number.isFinite(+c.briefHour) && +c.briefHour >= 0 && +c.briefHour <= 23) ? +c.briefHour : 8, alerts: c.alerts !== false, bigTrade: (Number.isFinite(+c.bigTrade) && +c.bigTrade >= 0) ? +c.bigTrade : 5000, sessKv: c.sessKv !== false, srvCandle: c.srvCandle !== false, xPost: c.xPost !== false, nudgeGraceMin: (Number.isFinite(+c.nudgeGraceMin) && +c.nudgeGraceMin >= 5 && +c.nudgeGraceMin <= 1440) ? +c.nudgeGraceMin : 60, liqAlertUsd: (Number.isFinite(+c.liqAlertUsd) && +c.liqAlertUsd >= 100000) ? +c.liqAlertUsd : 5000000, liqAlertCoolMin: (Number.isFinite(+c.liqAlertCoolMin) && +c.liqAlertCoolMin >= 5 && +c.liqAlertCoolMin <= 1440) ? +c.liqAlertCoolMin : 45 }; }
 // ---- Performance sampling (MarginPad Health): per-isolate buffer -> KV ring perf:ring (cap 2000, 8h). ----
 // 8h retention (was 4h): the perf-budget alarm windows over the ring, and the sparse UX beacons (1/5min/client) need
 // ~8h to accumulate the 30 samples that make a p95 a percentile. cap 2000 (was 1200) so 8h isn't silently truncated.
@@ -10115,6 +10129,12 @@ async function handleBot(url, request, env, ctx) {
     return jb({ server_time_ms: now, server_time_iso: new Date(now).toISOString(), ...(cl ? { client_time_ms: cl, drift_ms: cl - now } : {}) });
   }
 
+  // KILL SWITCH + SHED. The rest of the site has switches for its heavy paths; the Bot API had none, so under
+  // pressure its requests just queued until they timed out. `botApi:false` in ops:cfg turns the trading half off
+  // while market data keeps serving, and the response says when to come back instead of dying silently.
+  // Set from a signed-in admin console: fetch('/api/admin/opscfg',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({botApi:false})})
+  try { const _oc = await opsCfg(env); if (_oc && _oc.botApi === false) return jb({ error: 'unavailable', hint: 'Paper trading is paused for maintenance. Market data (price, klines, time) is unaffected.' }, 503, { 'retry-after': '120' }); } catch (e) {}
+
   // --- authenticated bot endpoints ---
   const key = request.headers.get('x-api-key') || url.searchParams.get('api_key') || '';
   if (!key) return jb({ error: 'missing_api_key', hint: 'Send your key in the X-API-Key header. Get one free at https://marginpad.io/trading-api/' }, 401);
@@ -10126,7 +10146,7 @@ async function handleBot(url, request, env, ctx) {
   if (path === '/v1/close' && request.method === 'POST' && b && b.symbol) {
     if (!b.id) return jb({ error: 'id_required' }, 400);
     const hint = String(b.symbol).toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
-    const [pd, _pr] = await Promise.all([fetchPrice(hint).catch(() => null), xpPromos(env).catch(() => [])]);
+    const [pd, _pr] = await Promise.all([fetchPriceFill(hint).catch(() => null), xpPromos(env).catch(() => [])]);
     const prices = {}; if (pd && +pd.price > 0) prices[hint] = +pd.price;
     const r = await doCall('/botclose', { key, ep: 'close', id: String(b.id), pct: b.pct, pid: b.pid, prices, promos: _pr, via: 'bot' });
     if (!r) return jb({ error: 'unavailable' }, 503);
@@ -10167,10 +10187,15 @@ async function handleBot(url, request, env, ctx) {
   }
 
   let promos = []; try { promos = await xpPromos(env); } catch (e) {} // so a bot's winning close earns XP promos too
-  // FILLS demand a fresh price (a stale fill is a wrong fill, and this is the money path). READS may use the same
+  // FILLS demand a fresh price (a stale fill is a wrong fill, and this is the money path) — but "fresh" does not
+  // have to mean "unbounded upstream". fetchPriceFill puts a 1s ceiling on how often any one symbol can reach
+  // Bybit/OKX/Gate no matter how many bots ask: 1s is inside the tolerance a market order already has, and without
+  // it our upstream QPS scales with traffic. Binance already blocks Cloudflare egress; that is this exact failure
+  // mode, one step further along. READS may use the same
   // 5s edge cache handleTrade's position sweep uses — measured 2026-08-19: a cold cascade costs ~400ms, and
   // /positions is 70% of all bot-API traffic, so paying that on every poll was the single most wasteful thing here.
   const priceMap = async (syms) => { const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPrice(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
+  const priceMapFill = async (syms) => { const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPriceFill(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
   const priceMapCached = async (syms) => { const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPriceCached(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
   const openSymsOf = async () => { const r = await doCall('/botpositions', { uid, prices: {} }); return r && r.positions ? Array.from(new Set(r.positions.filter(p => p.status === 'open').map(p => p.symbol))) : []; };
 
@@ -10215,7 +10240,7 @@ async function handleBot(url, request, env, ctx) {
     // cold price fetch is ~400ms. Without the hint, closing a hot BTC position could wait on an illiquid altcoin's
     // cold fetch in the same wave. With it, a close is one DO hop plus one warm price.
     const hint = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
-    const prices = hint ? await priceMap([hint]) : await priceMap(await openSymsOf());
+    const prices = hint ? await priceMapFill([hint]) : await priceMap(await openSymsOf());
     const r = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices, promos, via: 'bot' });
     if (!r) return jb({ error: 'unavailable' }, 503);
     // a wrong/stale hint means we priced the wrong feed — fall back to the full sweep once rather than fail the close

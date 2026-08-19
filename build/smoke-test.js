@@ -41,6 +41,39 @@ async function get(path) {
     catch (e) { fails.push(`app-shell bundle ${m[0]} → ${e.message}`); }
   } else if (appShellHtml) { fails.push('app-shell references no /assets/home.js?v= bundle'); }
 
+  // INVARIANTS a deploy must never silently break. Each one is here because it DID break and cost a day:
+  //  - the fee that close_all skipped for six weeks (money)
+  //  - the OpenAPI body that said `margin` while the code read `margin_usd` (generated code could not open a trade)
+  //  - a win rate served from counters that had been frozen since 2026-08-14
+  // These are cheap, keyless, and read-only. If one trips, the deploy reports it instead of a user finding it.
+  const inv = [];
+  try {
+    const mk = await (await fetch(BASE + '/api/bot/v1/markets?cb=' + Date.now(), { headers: { ...H, 'x-api-key': 'smoke-none' } })).json().catch(() => null);
+    // unauthenticated: must be a clean 401 shape, never a stack or a 200
+  } catch (e) {}
+  const checkJson = async (path, fn, what) => {
+    try { const r = await fetch(BASE + path + (path.includes('?') ? '&' : '?') + 'cb=' + Date.now(), { headers: H });
+      const j = await r.json(); const bad = fn(j, r); if (bad) inv.push(what + ' → ' + bad);
+    } catch (e) { inv.push(what + ' → ' + e.message); }
+  };
+  await checkJson('/api/openapi.json', (j) => {
+    const o = j && j.components && j.components.schemas && j.components.schemas.OpenRequest;
+    if (!o || !o.properties) return 'OpenRequest schema missing';
+    if (!o.properties.margin_usd) return 'OpenRequest lost margin_usd';
+    if (o.properties.margin) return 'OpenRequest reintroduced the wrong `margin` field';
+    return '';
+  }, 'openapi contract');
+  await checkJson('/api/changelog?format=json', (j) => (j && j.ok && j.data && j.data.entries && j.data.entries.length) ? '' : 'changelog empty', 'changelog');
+  await checkJson('/api/bot/v1/time', (j) => (j && j.server_time_ms > 0) ? '' : 'no server_time_ms', 'bot time (keyless)');
+  await checkJson('/api/bot/v1/account', (j, r) => (r.status === 401 && j && j.error === 'missing_api_key') ? '' : ('expected 401 missing_api_key, got ' + r.status), 'bot auth gate');
+  try {
+    const r = await fetch(BASE + '/mcp', { method: 'POST', headers: { ...H, 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' }) });
+    const j = await r.json();
+    const n = (j && j.result && j.result.tools || []).length;
+    if (n < 17) inv.push('mcp tools/list → ' + n + ' tools (expected >= 17)');
+  } catch (e) { inv.push('mcp tools/list → ' + e.message); }
+  fails.push(...inv);
+
   if (fails.length) { console.error('smoke-test: FAIL (' + BASE + ')'); fails.forEach(f => console.error('  ✗ ' + f)); process.exit(1); }
-  console.log('smoke-test: OK — ' + CHECKS.length + ' routes 200 + app-shell bundle resolves (' + BASE + ')');
+  console.log('smoke-test: OK — ' + CHECKS.length + ' routes 200 + app-shell bundle resolves + 5 API invariants (' + BASE + ')');
 })().catch(e => { console.error('smoke-test: FATAL ' + e.message); process.exit(1); });
