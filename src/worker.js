@@ -213,15 +213,63 @@ function handleOpenApi() {
       '/api/v1/calc/risk-reward': { get: { tags: ['Calculators'], summary: 'Risk / reward', description: 'Risk-reward ratio from entry, stop and target.', responses: { '200': { description: 'ok' } } } },
       '/api/v1/calc/take-profit': { get: { tags: ['Calculators'], summary: 'Take-profit price', description: 'Take-profit price for a target ROI/RR.', responses: { '200': { description: 'ok' } } } },
       '/api/bot/v1/price': { get: { tags: ['Paper trading'], summary: 'Paper price (keyless)', description: 'Fill price used by the paper-trading engine.', parameters: [q('symbol', 'Coin ticker.', true, 'BTC')], responses: { '200': { description: 'ok' } } } },
-      '/api/bot/v1/open': { post: { tags: ['Paper trading'], summary: 'Open a paper position', description: 'Open a simulated position. Auth: header X-API-Key (mint one at POST /api/bot/key while signed in). Body: {symbol, side, margin, leverage, sl?, tp?}. margin $1-100000, leverage 1-1000.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { symbol: { type: 'string' }, side: { type: 'string', enum: ['long', 'short'] }, margin: { type: 'number' }, leverage: { type: 'number' }, sl: { type: 'number' }, tp: { type: 'number' } }, required: ['symbol', 'side', 'margin', 'leverage'] } } } }, responses: { '200': { description: 'ok' } } } },
-      '/api/bot/v1/close': { post: { tags: ['Paper trading'], summary: 'Close a paper position', description: 'Close (fully or partially) a simulated position. Auth: X-API-Key. Body: {id, pct?}. pct 1-100 for a partial close.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok' } } } },
-      '/api/bot/v1/positions': { get: { tags: ['Paper trading'], summary: 'List paper positions', description: 'Open simulated positions with live mark price and unrealized PnL. Auth: X-API-Key.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok' } } } },
-      '/api/bot/v1/account': { get: { tags: ['Paper trading'], summary: 'Paper account', description: 'Simulated account balance and stats. Auth: X-API-Key.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok' } } } },
+      '/api/bot/v1/time': { get: { tags: ['Paper trading'], summary: 'Server time (keyless)', description: 'Server clock. Pass client_ts to get drift_ms back — a bot bucketing candles against a drifting local clock builds bars nobody else sees.', parameters: [q('client_ts', 'Your unix ms, to measure drift.', false, '1787200000000')], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/ServerTime' } } } } } } },
+      '/api/bot/v1/open': { post: { tags: ['Paper trading'], summary: 'Open a paper position', description: 'Open a simulated position at the live price. Auth: header X-API-Key (mint one at POST /api/bot/key while signed in). Send client_order_id so a network retry cannot open a second position.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/OpenRequest' } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, position: { $ref: '#/components/schemas/Position' }, idempotent: { type: 'boolean', description: 'true when this returned an existing position because client_order_id was reused.' } } } } } }, '400': { description: 'validation error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } }, '409': { description: 'too many open positions (max 50)' }, '429': { description: 'rate limited — see X-RateLimit-Reset and Retry-After' } } } },
+      '/api/bot/v1/close': { post: { tags: ['Paper trading'], summary: 'Close a paper position', description: 'Close a simulated position fully or partially. P&L settles net of the round-trip taker fee and accrued funding.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/CloseRequest' } } } }, responses: { '200': { description: 'ok', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, closed: { $ref: '#/components/schemas/Position' }, remaining: { $ref: '#/components/schemas/Position' }, position: { $ref: '#/components/schemas/Position' } } } } } }, '400': { description: 'error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } } } } },
+      '/api/bot/v1/sltp': { post: { tags: ['Paper trading'], summary: 'Move stop-loss / take-profit', description: 'Change the stop or target on an OPEN position without closing it. Both are side-checked against the entry price. Pass null to clear one.', security: [{ ApiKeyAuth: [] }], requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/SltpRequest' } } } }, responses: { '200': { description: 'ok' }, '400': { description: 'error', content: { 'application/json': { schema: { $ref: '#/components/schemas/ApiError' } } } } } } },
+      '/api/bot/v1/positions': { get: { tags: ['Paper trading'], summary: 'List paper positions', description: 'Your positions with live mark price and P&L net of fees. Supports If-None-Match (ETag over structural state, so a poll that changed nothing costs a 304) and ?since=<unix ms>.', security: [{ ApiKeyAuth: [] }], parameters: [q('since', 'Only positions opened or closed at/after this unix ms.', false, '1787200000000')], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Positions' } } } }, '304': { description: 'nothing changed since your ETag' } } } },
+      '/api/bot/v1/trades': { get: { tags: ['Paper trading'], summary: 'Closed-trade ledger', description: 'Full closed-trade history with paging — /positions is capped at 100, this pages through the whole retention window. Follow next_before for the next page.', security: [{ ApiKeyAuth: [] }], parameters: [q('limit', '1-500, default 100.', false, '100'), q('before', 'Cursor: unix ms from next_before.', false, '1787200000000')], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Trades' } } } } } } },
+      '/api/bot/v1/account': { get: { tags: ['Paper trading'], summary: 'Paper account', description: 'Open positions, margin in use, unrealized P&L, LIFETIME realized P&L, wins/losses, win rate, plus balance_usd, equity_usd, free_margin_usd and return_pct.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Account' } } } } } } },
+      '/api/bot/v1/close_all': { post: { tags: ['Paper trading'], summary: 'Close every open paper position', description: 'Closes all open bot positions at the live price. Fees and funding settle exactly as in /close.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { type: 'object', properties: { ok: { type: 'boolean' }, closed: { type: 'integer' }, positions: { type: 'array', items: { $ref: '#/components/schemas/Position' } } } } } } } } } },
+      '/api/bot/v1/balance': { get: { tags: ['Paper trading'], summary: 'Paper balance', description: 'Starting balance, balance, equity, margin in use, free margin, unrealized P&L. The balance is a scorecard: margin_enforced is false, so opens are never rejected for lack of funds.', security: [{ ApiKeyAuth: [] }], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Balance' } } } } } } },
+      '/api/bot/v1/markets': { get: { tags: ['Paper trading'], summary: 'Tradable markets', description: 'Every tradable symbol with asset_class, max_leverage and taker_fee_pct (per side, charged as a round trip at close). Call once at startup instead of discovering limits by trial and error.', security: [{ ApiKeyAuth: [] }], parameters: [q('class', 'Filter by asset class', false, 'crypto')], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Markets' } } } } } } },
+      '/api/bot/v2/{endpoint}': { get: { tags: ['Paper trading'], summary: 'Same API, standard envelope', description: 'Every /api/bot/v1/* path has a /v2 twin: identical parameters and identical data, wrapped as {ok:true,data,ts} or {ok:false,error:{code,message},ts}. v1 response bodies are frozen and will not change; new work happens on v2. Swap v1 for v2 in the URL. There is also a WebSocket that OpenAPI cannot describe: wss://marginpad.io/api/bot/v2/stream?api_key=... pushes position opened/updated/closed events and mark prices, which replaces polling /positions entirely.', security: [{ ApiKeyAuth: [] }], parameters: [{ name: 'endpoint', in: 'path', required: true, description: 'account | balance | positions | trades | markets | open | close | close_all | sltp | price | klines | time', schema: { type: 'string' }, example: 'account' }], responses: { '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/Envelope' } } } } } } },
     },
     components: {
       securitySchemes: { ApiKeyAuth: { type: 'apiKey', in: 'header', name: 'X-API-Key', description: 'Only for paper-trading endpoints. Mint a key at POST /api/bot/key while signed in. Data endpoints need no auth.' } },
       schemas: {
-        Envelope: { type: 'object', properties: { ok: { type: 'boolean' }, data: {}, error: { type: 'object', properties: { code: { type: 'string' }, message: { type: 'string' } } }, ts: { type: 'integer', description: 'Server unix ms' } }, required: ['ok', 'ts'] },
+        Envelope: { type: 'object', properties: { ok: { type: 'boolean' }, data: {}, error: { $ref: '#/components/schemas/ApiError' }, ts: { type: 'integer', description: 'Server unix ms' } }, required: ['ok', 'ts'] },
+        ApiError: { type: 'object', description: 'code is a stable identifier you can branch on; message is prose and may be reworded.', properties: { code: { type: 'string', example: 'unknown_symbol' }, message: { type: 'string' }, symbol: { type: 'string' }, live: { type: 'number', description: 'On sl_wrong_side / tp_wrong_side: the live price, so a caller can correct and retry.' }, limit: {}, max: { type: 'integer' } }, required: ['code', 'message'] },
+        Position: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', description: 'Pass to /close and /sltp.' },
+            symbol: { type: 'string' }, side: { type: 'string', enum: ['long', 'short'] },
+            entry_price: { type: 'number' }, margin_usd: { type: 'number' }, leverage: { type: 'number' }, qty: { type: 'number' },
+            liq_price: { type: 'number' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] },
+            status: { type: 'string', enum: ['open', 'closed', 'liquidated'] },
+            opened_ts: { type: 'integer' }, source: { type: 'string', enum: ['bot', 'app'] },
+            mark_price: { type: 'number', description: 'Open positions only.' },
+            unrealized_pnl_usd: { type: 'number', description: 'Open positions only. NET of the round-trip fee and accrued funding — what the position actually settles at, not a gross figure.' },
+            fees_usd: { type: 'number', description: 'Round-trip taker fee already subtracted from unrealized_pnl_usd.' },
+            funding_usd: { type: 'number', description: 'Funding accrued so far, already subtracted.' },
+            exit_price: { type: ['number', 'null'], description: 'Closed positions only.' },
+            pnl_usd: { type: ['number', 'null'], description: 'Closed positions only. Net of fees and funding, floored at -margin_usd.' },
+            closed_ts: { type: ['integer', 'null'] }, partial_pct: { type: 'integer', description: 'Present when this row is a partial close.' },
+          },
+          required: ['id', 'symbol', 'side', 'entry_price', 'margin_usd', 'leverage', 'qty', 'status'],
+        },
+        Positions: { type: 'object', properties: { positions: { type: 'array', items: { $ref: '#/components/schemas/Position' } } }, required: ['positions'] },
+        Account: {
+          type: 'object',
+          properties: {
+            open_positions: { type: 'integer' }, margin_in_use_usd: { type: 'number' }, unrealized_pnl_usd: { type: 'number' },
+            realized_pnl_usd: { type: 'number', description: 'LIFETIME, not the last 100 trades.' },
+            closed_trades: { type: 'integer' }, wins: { type: 'integer' }, losses: { type: 'integer' }, win_rate_pct: { type: ['number', 'null'] },
+            starting_balance_usd: { type: 'number', example: 10000 }, balance_usd: { type: 'number' }, equity_usd: { type: 'number' },
+            free_margin_usd: { type: 'number' }, return_pct: { type: 'number' }, best_trade_usd: { type: ['number', 'null'] },
+            margin_enforced: { type: 'boolean', description: 'Always false: the balance is a scorecard, opens are never rejected for lack of funds.' },
+          },
+        },
+        Balance: { type: 'object', properties: { starting_balance_usd: { type: 'number' }, balance_usd: { type: 'number' }, equity_usd: { type: 'number' }, margin_in_use_usd: { type: 'number' }, free_margin_usd: { type: 'number' }, unrealized_pnl_usd: { type: 'number' }, margin_enforced: { type: 'boolean' } } },
+        Market: { type: 'object', properties: { symbol: { type: 'string' }, asset_class: { type: 'string', enum: ['crypto', 'stock', 'forex', 'metal', 'index'] }, max_leverage: { type: 'number' }, taker_fee_pct: { type: 'number', description: 'Per side. Charged as a round trip at close: qty * (entry + exit) * rate.' } } },
+        Markets: { type: 'object', properties: { markets: { type: 'array', items: { $ref: '#/components/schemas/Market' } }, count: { type: 'integer' }, note: { type: 'string' } } },
+        Trade: { type: 'object', properties: { id: { type: ['string', 'null'] }, closed_ts: { type: 'integer' }, symbol: { type: 'string' }, side: { type: 'string', enum: ['long', 'short'] }, leverage: { type: 'number' }, margin_usd: { type: 'number' }, pnl_usd: { type: ['number', 'null'] }, roe_pct: { type: ['number', 'null'] }, liquidated: { type: 'boolean' }, via: { type: ['string', 'null'], description: 'Which path executed the close: bot, site, sweep, cron, sltp.' } } },
+        Trades: { type: 'object', properties: { trades: { type: 'array', items: { $ref: '#/components/schemas/Trade' } }, count: { type: 'integer' }, next_before: { type: ['integer', 'null'], description: 'Cursor for the next page; null when there are no more.' }, retention_days: { type: 'integer', example: 30 } } },
+        OpenRequest: { type: 'object', properties: { symbol: { type: 'string', example: 'BTC' }, side: { type: 'string', enum: ['long', 'short'] }, margin_usd: { type: 'number', minimum: 1, maximum: 100000 }, leverage: { type: 'number', minimum: 1 }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, client_order_id: { type: 'string', maxLength: 64, description: 'Idempotency key. Retrying with the same value returns the position the first call created (idempotent: true) instead of opening a second one. Strongly recommended.' } }, required: ['symbol', 'side', 'margin_usd', 'leverage'] },
+        CloseRequest: { type: 'object', properties: { id: { type: 'string' }, pct: { type: 'number', minimum: 1, maximum: 100, description: 'Percent to close. Omit for the whole position.' }, symbol: { type: 'string', description: 'The position symbol, copied from /positions. Optional but strongly recommended: it lets the server price exactly one feed and skip a lookup round trip, which is worth several hundred milliseconds from Asia. A wrong value costs nothing — the server falls back automatically.' } }, required: ['id'] },
+        SltpRequest: { type: 'object', properties: { id: { type: 'string' }, sl: { type: ['number', 'null'], description: 'null clears the stop.' }, tp: { type: ['number', 'null'] } }, required: ['id'] },
+        ServerTime: { type: 'object', properties: { server_time_ms: { type: 'integer' }, server_time_iso: { type: 'string' }, client_time_ms: { type: 'integer' }, drift_ms: { type: 'integer', description: 'client_ts minus server time, when you pass ?client_ts=' } } },
       },
     },
   };
@@ -7770,17 +7818,25 @@ function loadApi(){
     var today=d.today||'';
     var totalCalls=keys.reduce(function(t,k){return t+(k.calls||0);},0);
     var openTotal=open.reduce(function(t,x){return t+(x.n||0);},0);
-    if(cardsEl)cardsEl.innerHTML=card(N(keys.length),'API keys issued')+card('<span style="color:#c2f64a">'+N(d.activeToday||0)+'</span>','Users active today')+card(N(d.todayTotal||0),'Calls today')+card(N(totalCalls),'Calls all-time')+card(N(openTotal),'Open bot positions');
-    var epName={open:'Open position',close:'Close position',positions:'List positions / poll P&L',account:'Account info',other:'Other'};
+    var live=keys.filter(function(k){return !k.revoked;});
+    var unused=live.filter(function(k){return !(k.calls>0);}).length; // keys generated and never called — the onboarding leak
+    if(cardsEl)cardsEl.innerHTML=card(N(live.length),'Active keys')+card('<span style="color:#c2f64a">'+N(d.activeToday||0)+'</span>','Keys active today')+card(N(d.todayTotal||0),'Calls today')+card(N(totalCalls),'Calls all-time')+card(N(openTotal),'Open bot positions')+card('<span style="color:'+(unused?'#ffb347':'#41e3a3')+'">'+N(unused)+'</span>','Keys never used');
+    var epName={open:'Open position',close:'Close position',close_all:'Close all',positions:'List positions / poll P&L',account:'Account info',balance:'Balance',markets:'Markets',klines:'Candles',price:'Price',other:'Other'};
     var mx=Math.max.apply(null,byEp.map(function(x){return x.n;}).concat([1]));
     if(epEl)epEl.innerHTML=byEp.length?byEp.map(function(x){return '<div class="row"><span class="lbl">'+esc(epName[x.ep]||x.ep)+'</span><div class="track"><div class="fill" style="width:'+Math.max(3,x.n/mx*100).toFixed(1)+'%"></div></div><span class="cnt">'+N(x.n)+'</span></div>';}).join(''):'<div class="empty">no attributed calls in the last 14 days</div>';
-    var perUid={};use.forEach(function(u){var o2=perUid[u.uid]=perUid[u.uid]||{total:0,today:0,eps:{},last:0};o2.total+=u.n;if(u.day===today)o2.today+=u.n;o2.eps[u.ep]=(o2.eps[u.ep]||0)+u.n;if(u.last>o2.last)o2.last=u.last;});
+    // usage is attributed PER KEY now (botuse2.k) — one account can hold several keys and each is measured on its own
+    var perKey={};use.forEach(function(u){var o2=perKey[u.k]=perKey[u.k]||{total:0,today:0,eps:{},last:0};o2.total+=u.n;if(u.day===today)o2.today+=u.n;o2.eps[u.ep]=(o2.eps[u.ep]||0)+u.n;if(u.last>o2.last)o2.last=u.last;});
     var openBy={};open.forEach(function(x){openBy[x.uid]=x.n;});
+    var seenAcct={};
     if(usEl)usEl.innerHTML=keys.length?keys.map(function(k){
-      var u=perUid[k.uid]||{total:0,today:0,eps:{},last:0};
-      var who=k.username||k.email||k.uid;
+      var u=perKey[k.k]||{total:0,today:0,eps:{},last:0};
+      var who=k.username||k.email||k.uid||'unknown';
       var eps=Object.keys(u.eps).map(function(e2){return e2+' '+N(u.eps[e2]);}).join(' · ')||'no calls in 14d';
-      return '<div class="rwd-a" data-em="'+esc(k.email||'')+'" data-un="'+esc(k.username||'')+'"><span class="addr mono" style="flex:0 1 auto;min-width:120px">'+esc(who)+'</span><span class="meta" style="flex:1">'+eps+'</span><span class="meta">'+(u.last?('last '+ago(u.last)+' ago'):'idle')+(openBy[k.uid]?' · '+openBy[k.uid]+' open':'')+'</span><span class="bal">'+N(u.today)+' today · '+N(k.calls||0)+' total</span></div>';
+      var nm=k.name||'default';
+      var mask=String(k.k||'').slice(0,8)+'...';
+      var badge=k.revoked?'<span style="color:#ff8a80"> revoked</span>':(k.rpm>0?'<span style="color:#9ab4ff"> '+k.rpm+'/min</span>':'');
+      var openN=(!seenAcct[k.uid]&&openBy[k.uid])?openBy[k.uid]:0; seenAcct[k.uid]=1; // open positions belong to the ACCOUNT, show them once
+      return '<div class="rwd-a" data-em="'+esc(k.email||'')+'" data-un="'+esc(k.username||'')+'" style="'+(k.revoked?'opacity:.55':'')+'"><span class="addr mono" style="flex:0 1 auto;min-width:120px">'+esc(who)+' <span style="color:#5c656f">/ '+esc(nm)+badge+'</span></span><span class="meta" style="flex:1">'+eps+'</span><span class="meta" title="'+esc(mask)+'">'+(u.last?('last '+ago(u.last)+' ago'):'idle')+(openN?' · '+openN+' open':'')+'</span><span class="bal">'+N(u.today)+' today · '+N(k.calls||0)+' total</span></div>';
     }).join(''):'<div class="empty">no API keys issued yet</div>';
     if(usEl&&!usEl._w){usEl._w=1;usEl.addEventListener('click',function(e){var r2=e.target.closest('[data-em]');if(!r2)return;var em=r2.getAttribute('data-em'),un=r2.getAttribute('data-un');if(em||un)window.open('/api/admin/user?'+(em?('email='+encodeURIComponent(em)):('username='+encodeURIComponent(un))),'_blank');});}
   }).catch(function(){if(usEl)usEl.innerHTML='<div class="empty">could not load</div>';});
@@ -8342,6 +8398,18 @@ const CARD_TAG = { chako: 'FOUNDER', gladijator: 'CO FOUNDER' };
 // Per-coin max leverage — mirror of window.mpMaxLev in home.js. Only the deepest-liquidity coins get 1000×; illiquid tokens / metals / indices / forex are capped. Default 50×.
 const MAXLEV = { BTC: 1000, ETH: 1000, SOL: 1000, XRP: 1000, BNB: 1000, DOGE: 1000, HYPE: 1000, ADA: 1000, AVAX: 1000, LINK: 1000, LTC: 1000, DOT: 200, TRX: 1000, TON: 1000, SUI: 1000, BCH: 200, NEAR: 200, PEPE: 1000, SHIB: 200, WIF: 200, ATOM: 100, APT: 100, ARB: 100, OP: 100, MATIC: 100, POL: 100, INJ: 100, SEI: 100, TIA: 100, FIL: 100, ETC: 100, UNI: 100, AAVE: 100, RUNE: 100, LDO: 100, FTM: 100, ALGO: 100, HBAR: 100, ICP: 100, IMX: 100, STX: 100, RENDER: 100, FET: 100, ENA: 100, ONDO: 100, JUP: 100, PYTH: 100, STRK: 100, ORDI: 100, BONK: 100, FLOKI: 100, GALA: 100, SAND: 100, MANA: 100, AXS: 100, GRT: 100, CRV: 100, COMP: 100, DYDX: 100, WLD: 100, KAS: 100, TAO: 100, XLM: 100, VET: 100, XAU: 20, XAG: 20, SPX500: 20, NAS100: 20, US30: 20, GER40: 20, EURUSD: 50, GBPUSD: 50 };
 function maxLevFor(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); return MAXLEV[sym] || 50; }
+// Asset class of a symbol — MIRROR of window.mpAssetClass in dist/assets/home.js (STOCKS here == that file's STK).
+// The class drives the per-market fee below. Both copies must agree: the client DISPLAYS the fee, the server
+// CHARGES it. They didn't (server hardcoded the crypto rate) — measured 2026-08-19: a server-filled EURUSD trade
+// was charged 0.055% instead of 0.008% (6.9x), and because feeRate was not a server-held field, the same trade
+// cost a different amount depending on whether a client journal sync landed before the close.
+const FX_SYMS = { EURUSD: 1, GBPUSD: 1, USDJPY: 1, AUDUSD: 1, USDCAD: 1 };
+const IDX_SYMS = { SPX500: 1, NAS100: 1, US30: 1, GER40: 1, UK100: 1, JPN225: 1 };
+function assetClassOf(sym) { sym = String(sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, ''); if (STOCKS[sym]) return 'stock'; if (sym === 'XAU' || sym === 'XAG') return 'metal'; if (IDX_SYMS[sym]) return 'index'; if (FX_SYMS[sym]) return 'forex'; return 'crypto'; }
+// Per-market taker fee PER SIDE, settled once at close as a round trip (fee = qty*(entry+exit)*feeRate).
+// Real-world cost by class: crypto perp taker ~0.055% | stocks ~0.02% | forex majors ~0.008% | metals & indices ~0.015%.
+// Clamped so the round-trip fee can never exceed ~10% of margin at extreme leverage. Mirror of window.mpFeeRate.
+function feeRateFor(lev, sym) { const c = assetClassOf(sym); const base = c === 'forex' ? 0.00008 : c === 'stock' ? 0.0002 : (c === 'metal' || c === 'index') ? 0.00015 : 0.00055; return Math.min(base, 0.1 / Math.max(1, +lev || 1)); }
 // Resolve the current session user's premium standing: owner grant (premium:allow) OR active paid sub (prem:sub:<uid>).
 async function premiumFor(env, request) {
   const user = await sessionUser(env, getCookie(request, 'mp_sess'));
@@ -8994,7 +9062,7 @@ async function handleTelegram(request, env) {
     if (+o.margin > 100000) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: 'Margin max is $100,000 per trade. Try a smaller size.', ...base }); return new Response('ok'); } // same cap the web terminal + /api/trade enforce
     const long = o.side === 'long', mmr = 0.005, entry = p.price, lev = Math.min(maxLevFor(p.sym), Math.max(1, +o.lev || 1)), margin = o.margin; // per-coin leverage cap — this path trusted the raw /open text (x700.5 on a microcap parsed fine) while /api/trade and the bot API both clamp
     const liq = mpcLiq(entry, lev, mmr, long);
-    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: p.sym, side: o.side, entry, stop: null, tp: null, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: Math.min(0.00055, 0.1/Math.max(1,lev)), status: 'open', pnl: null, src: 'bot' };
+    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym: p.sym, side: o.side, entry, stop: null, tp: null, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, p.sym), status: 'open', pnl: null, src: 'bot' };
     let promos = []; try { promos = await xpPromos(env); } catch (e) {}
     const r = await usersDO(env, '/botopen', { uid: _lu.uid, t, promos });
     if (!r || r.error) { await tgApi(token, 'sendMessage', { chat_id: msg.chat.id, text: ' ' + (r && r.error === 'too_many_open' ? 'Max 50 open positions — close some first (/positions).' : 'Couldn’t open the trade — try again in a moment.'), ...base }); return new Response('ok'); }
@@ -9652,7 +9720,7 @@ async function handleTrade(url, request, env, ctx) {
     const sl = (b.sl != null && b.sl !== '' && isFinite(+b.sl)) ? +b.sl : null, tp = (b.tp != null && b.tp !== '' && isFinite(+b.tp)) ? +b.tp : null;
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jt({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jt({ error: 'tp_wrong_side', live: entry }, 400);
-    const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: Math.min(0.00055, 0.1/Math.max(1,lev)), status: 'open', pnl: null, src: 'srv' }; // taker 0.055%/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
+    const t = { id: 'srv' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Number(liq.toPrecision(10)) /* toPrecision, NOT 6-decimal rounding — sub-penny coins (PEPE-class) would lose the whole liq distance */, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'srv' }; // per-market taker fee/side — settled in pnl at close (fee = qty*(entry+exit)*feeRate)
     const tD = Date.now();
     const r = await usersDO(env, '/botopen', { uid, t, via: 'site', promos: _prm });
     mk('do_fill', tD);
@@ -9717,11 +9785,279 @@ async function handleTrade(url, request, env, ctx) {
   }
   return jt({ error: 'not_found' }, 404);
 }
+// ─── /api/changelog ───────────────────────────────────────────────────────────────────────────────────────────
+// ONE source for both audiences: JSON for machines (and for AI assistants asking "what changed"), server-rendered
+// HTML for people. Keeping it in the worker rather than a hand-made dist page is deliberate — a second copy of a
+// changelog is a copy that goes stale. Newest first. Append, never rewrite history.
+const API_CHANGELOG = [
+  {
+    date: '2026-08-19', version: '2.0.0', title: 'Bot API v2: correct fees, per-key metering, idempotency, MCP',
+    changes: [
+      { type: 'fixed', breaking: false, text: 'POST /v1/close_all charged no taker fee and no funding, while /v1/close charged both. Closing through close_all was free. Both paths now settle identically: pnl = qty*(exit-entry)*dir - qty*(entry+exit)*feeRate - funding, floored at -margin.' },
+      { type: 'fixed', breaking: false, text: 'Fees ignored the asset class on server-side fills: every market was charged the crypto rate of 0.055% per side. A EURUSD position paid 6.9x its real cost. Stocks, forex, metals and indices now use their own rate, and the rate is a server-held field a client sync can no longer overwrite.' },
+      { type: 'fixed', breaking: false, text: 'unrealized_pnl_usd on open positions was GROSS — it ignored the round trip you would pay to exit. Every open position looked better than it could possibly settle, and a strategy tuned on it was tuned on a number that does not exist. It is now net of fees and funding, and the new fees_usd / funding_usd fields show the deduction.' },
+      { type: 'fixed', breaking: false, text: '/v1/account reported realized_pnl_usd, closed_trades, wins, losses and win_rate_pct from the position journal, which is capped at 100 trades — so anyone past their 100th trade saw a truncated number labelled as lifetime. These now come from the trim-proof lifetime accumulator.' },
+      { type: 'added', breaking: false, text: 'client_order_id on POST /v1/open. Retrying after a network timeout returns the position the first call created (idempotent: true) instead of opening a second one. Strongly recommended for any unattended bot.' },
+      { type: 'added', breaking: false, text: 'POST /v1/sltp — move the stop-loss or take-profit on an open position. Previously the only way to trail a stop through the API was to close and reopen, which changed the entry and paid a full round trip.' },
+      { type: 'added', breaking: false, text: 'GET /v1/markets — every tradable symbol with asset_class, max_leverage and taker_fee_pct. GET /v1/balance — balance, equity, free margin. GET /v1/trades — the full closed-trade ledger with paging, beyond the 100-trade journal cap. GET /v1/time — server clock and drift, keyless.' },
+      { type: 'added', breaking: false, text: 'GET /v1/positions now supports ETag / If-None-Match and ?since=<unix ms>. The ETag covers structural state (ids, status, qty, sl, tp, exit) and deliberately not mark_price, so a poll that changed nothing costs a 304 instead of a full body. Take live prices from the keyless /v1/price, which costs no rate budget.' },
+      { type: 'added', breaking: false, text: 'X-RateLimit-Limit, X-RateLimit-Remaining and X-RateLimit-Reset on every response, including the 429, which also carries Retry-After.' },
+      { type: 'added', breaking: false, text: 'API keys: many per account instead of one. Each key has a name, its own usage counter and its own rate-limit budget, and can be revoked on its own (usage history is kept). Manage them with POST /api/bot/key {act: list|create|rename|revoke}.' },
+      { type: 'added', breaking: false, text: '/api/bot/v2/* — the same API wrapped in the standard {ok, data, ts} envelope, with {ok:false, error:{code, message}, ts} on failure. Same paths, same parameters, same key.' },
+      { type: 'added', breaking: false, text: 'Remote MCP server at /mcp — 17 tools covering market data, calculators and paper trading, so Claude, ChatGPT and Cursor can attach natively instead of being told how to call REST.' },
+      { type: 'added', breaking: false, text: 'WebSocket push at wss://marginpad.io/api/bot/v2/stream?api_key=… — position opened/updated/closed events and mark prices, so a bot learns its stop fired in about two seconds instead of on its next poll. While you are connected the stream also drives the server-side SL/TP/liquidation sweep on the same cadence. Up to 3 sockets per account.' },
+      { type: 'fixed', breaking: false, text: 'Closing a position took three sequential round trips to the trading store and priced up to twelve symbols, so a close on a liquid pair could wait on an illiquid one. Send symbol in the close body and it is now one round trip and one price. Measured: a round trip is ~20ms from Europe but ~198ms median and ~368ms at p95 from Singapore, and a cold price feed is ~400ms.' },
+      { type: 'fixed', breaking: false, text: 'The read endpoints (positions, account, balance) fetched fresh upstream prices on every call, paying a cold-fetch penalty on the 70% of traffic that is polling. They now use the same 5s price cache the website uses. Fills — open, close, close_all — still demand a fresh price, because a stale fill is a wrong fill.' },
+      { type: 'fixed', breaking: false, text: 'The website offered leverage the server refused: up to 1000x on stocks, 100x on metals and indices, 200x on forex, while the server clamps those to 50x, 20x and 50x. The ticket therefore displayed a liquidation price for leverage the fill never used. The interface now mirrors the server exactly across all 157 symbols. This affects the site, not the API — /v1/markets always reported the true server cap.' },
+      { type: 'fixed', breaking: false, text: 'The OpenAPI spec described the /v1/open body as {margin, leverage}; the API has always read margin_usd. Code generated from the old spec could not open a position. The spec now carries real request and response schemas for every paper-trading path instead of an empty "ok".' },
+      { type: 'added', breaking: false, text: 'Plans. Free stays the full product: all market data keyless, full paper trading, and the WebSocket stream — 120 requests/minute per key, 3 keys, 50 open positions. Premium raises those to 600/minute, 10 keys and 200 open positions. Streaming is free on both tiers deliberately, because gating it would push everyone back onto polling, which costs us more than the stream does. GET /v1/usage reports your plan and what is left in the current window.' },
+      { type: 'unchanged', breaking: false, text: '/api/bot/v1/* response shapes are FROZEN. Existing bots keep working: nothing was renamed or removed, and the fixes above only change values that were wrong. New fields are additive.' },
+    ],
+  },
+];
+function handleApiChangelog(url, request) {
+  const wantsJson = (url.searchParams.get('format') === 'json') || !/text\/html/i.test(request.headers.get('accept') || '');
+  if (wantsJson) {
+    return new Response(JSON.stringify({ ok: true, data: { api: 'MarginPad Bot API', current_version: API_CHANGELOG[0].version, entries: API_CHANGELOG }, ts: Date.now() }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', ...V1CORS, 'cache-control': 'public, max-age=600' } });
+  }
+  const esc2 = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const TAG = { fixed: ['#41e3a3', 'rgba(46,189,133,.14)', 'Fixed'], added: ['#c2f64a', 'rgba(194,246,74,.13)', 'Added'], changed: ['#9ab4ff', 'rgba(120,160,255,.14)', 'Changed'], removed: ['#ff8a80', 'rgba(255,98,88,.14)', 'Removed'], unchanged: ['#9aa3ad', 'rgba(154,163,173,.14)', 'Unchanged'] };
+  const entries = API_CHANGELOG.map((e) => {
+    const items = e.changes.map((c) => {
+      const t = TAG[c.type] || TAG.changed;
+      return '<li><span class="tag" style="color:' + t[0] + ';background:' + t[1] + '">' + t[2] + '</span>' + (c.breaking ? '<span class="tag brk">Breaking</span>' : '') + '<span class="txt">' + esc2(c.text) + '</span></li>';
+    }).join('');
+    return '<section><div class="hd"><h2>' + esc2(e.title) + '</h2><div class="meta"><code>v' + esc2(e.version) + '</code><time datetime="' + esc2(e.date) + '">' + esc2(e.date) + '</time></div></div><ul>' + items + '</ul></section>';
+  }).join('');
+  const html = '<!doctype html><html lang="en"><head><meta charset="utf-8">'
+    + '<title>API Changelog | MarginPad</title>'
+    + '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">'
+    + '<meta name="description" content="Every change to the MarginPad Bot API: fixes, new endpoints and what stays frozen. v1 response shapes never change.">'
+    + '<link rel="canonical" href="https://marginpad.io/api/changelog">'
+    + '<style>'
+    + '*{box-sizing:border-box}html,body{margin:0}'
+    + 'body{background:#0a0b0d;color:#e9e7df;font-family:"Familjen Grotesk",system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.6;padding:0 18px 80px}'
+    + '.wrap{max-width:820px;margin:0 auto}'
+    + 'a{color:#c2f64a}'
+    + 'header{padding:46px 0 26px;border-bottom:1px solid #1c2230}'
+    + 'h1{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:clamp(28px,5vw,40px);margin:0 0 10px;letter-spacing:-.02em}'
+    + '.lede{color:#9aa3ad;margin:0;max-width:62ch}'
+    + '.pill{display:inline-block;margin-top:16px;font-size:12.5px;color:#41e3a3;background:rgba(46,189,133,.12);border:1px solid rgba(46,189,133,.3);border-radius:999px;padding:5px 12px}'
+    + 'section{padding:30px 0;border-bottom:1px solid #151a23}'
+    + '.hd{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;justify-content:space-between;margin-bottom:14px}'
+    + 'h2{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:clamp(19px,3vw,23px);margin:0;letter-spacing:-.01em}'
+    + '.meta{display:flex;gap:10px;align-items:center;color:#5c656f;font-size:12.5px;white-space:nowrap}'
+    + '.meta code{font-family:"Space Mono",ui-monospace,monospace;color:#c2f64a;background:rgba(194,246,74,.1);border-radius:6px;padding:2px 8px}'
+    + 'ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:13px}'
+    + 'li{display:flex;flex-wrap:wrap;gap:9px;align-items:flex-start}'
+    + '.tag{flex:0 0 auto;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;border-radius:5px;padding:3px 8px;margin-top:3px}'
+    + '.tag.brk{color:#ff8a80;background:rgba(255,98,88,.14)}'
+    + '.txt{flex:1 1 320px;color:#cdd3da;font-size:15px}'
+    + 'footer{padding:34px 0;color:#5c656f;font-size:13.5px}'
+    + 'footer a{margin-right:16px;white-space:nowrap}'
+    + '@media(prefers-color-scheme:light){body{background:#0a0b0d}}'
+    + '</style></head><body><div class="wrap">'
+    + '<header><h1>API Changelog</h1>'
+    + '<p class="lede">Every change to the MarginPad Bot API. Correctness fixes are called out even when they change a number you were reading, because silently changing your P&amp;L is worse than telling you.</p>'
+    + '<span class="pill">/api/bot/v1/* response shapes are frozen — bots written against v1 keep working</span></header>'
+    + entries
+    + '<footer><a href="/trading-api/">Bot API docs</a><a href="/free-crypto-api/">Data API docs</a><a href="/api/openapi.json">OpenAPI spec</a><a href="/api/changelog?format=json">This page as JSON</a></footer>'
+    + '</div></body></html>';
+  return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600' } });
+}
+// ─── Remote MCP server (marginpad.io/mcp) ─────────────────────────────────────────────────────────────────────
+// JSON-RPC 2.0 over Streamable HTTP. This is how Claude / ChatGPT / Cursor attach to MarginPad natively: the user
+// pastes one URL and the model gets typed tools instead of guessing at REST from a blog post. Tools are thin
+// wrappers over routes that already exist (self-subrequest), so the MCP surface can never drift from the REST one
+// and paper trades keep going through the SAME auth, rate limit and per-key metering as /api/bot.
+const MCP_PROTO = '2025-06-18'; // echoed back if the client asks for a different one it supports
+const MCP_TOOLS = [
+  { name: 'get_price', description: 'Live price and 24h change for a crypto perp, stock, index, forex pair or metal. No API key needed.', path: (a) => '/api/v1/price?symbol=' + encodeURIComponent(a.symbol || 'BTC'),
+    inputSchema: { type: 'object', properties: { symbol: { type: 'string', description: 'Symbol without the USDT suffix, e.g. BTC, ETH, AAPL, EURUSD, XAU' } }, required: ['symbol'] } },
+  { name: 'get_klines', description: 'OHLC candles for a symbol. Use this to compute indicators or check a setup before trading.', path: (a) => '/api/v1/klines?symbol=' + encodeURIComponent(a.symbol || 'BTC') + '&interval=' + encodeURIComponent(a.interval || '60'),
+    inputSchema: { type: 'object', properties: { symbol: { type: 'string' }, interval: { type: 'string', description: 'Minutes: 1, 5, 15, 60, 240, 1440, 10080', default: '60' } }, required: ['symbol'] } },
+  { name: 'get_markets', description: 'Every tradable symbol with its asset class, maximum leverage and taker fee. Call this before sizing a trade.', path: (a) => '/api/bot/v2/markets' + (a.asset_class ? '?class=' + encodeURIComponent(a.asset_class) : ''), auth: true,
+    inputSchema: { type: 'object', properties: { asset_class: { type: 'string', enum: ['crypto', 'stock', 'forex', 'metal', 'index'] } } } },
+  { name: 'get_screener', description: 'Scored trade setups across top USDT perps: 0-100 technical score, RSI, MACD, funding and open interest.', path: () => '/api/v1/screener',
+    inputSchema: { type: 'object', properties: {} } },
+  { name: 'get_funding', description: 'Current funding rates across exchanges — who pays whom to hold a perp position.', path: (a) => '/api/v1/funding' + (a.symbol ? '?symbol=' + encodeURIComponent(a.symbol) : ''),
+    inputSchema: { type: 'object', properties: { symbol: { type: 'string' } } } },
+  { name: 'get_open_interest', description: 'Open interest per symbol — how much leveraged money is committed.', path: (a) => '/api/v1/open-interest' + (a.symbol ? '?symbol=' + encodeURIComponent(a.symbol) : ''),
+    inputSchema: { type: 'object', properties: { symbol: { type: 'string' } } } },
+  { name: 'get_liquidations', description: 'Recent real liquidation events aggregated from nine exchanges.', path: (a) => '/api/v1/liquidations' + (a.symbol ? '?symbol=' + encodeURIComponent(a.symbol) : ''),
+    inputSchema: { type: 'object', properties: { symbol: { type: 'string' } } } },
+  { name: 'get_fear_greed', description: 'Crypto Fear and Greed index, current value and classification.', path: () => '/api/v1/fear-greed',
+    inputSchema: { type: 'object', properties: {} } },
+  { name: 'get_economic_calendar', description: 'Upcoming macro events that move crypto (FOMC, CPI, NFP). Always check this before answering questions about dates — never answer those from memory.', path: () => '/api/v1/calendar',
+    inputSchema: { type: 'object', properties: {} } },
+  { name: 'calc_liquidation', description: 'Liquidation price for a position: entry, leverage, side.', path: (a) => '/api/v1/calc/liquidation?entry=' + (+a.entry || 0) + '&leverage=' + (+a.leverage || 1) + '&side=' + encodeURIComponent(a.side || 'long'),
+    inputSchema: { type: 'object', properties: { entry: { type: 'number' }, leverage: { type: 'number' }, side: { type: 'string', enum: ['long', 'short'] } }, required: ['entry', 'leverage', 'side'] } },
+  { name: 'calc_position_size', description: 'Risk-based position size from account balance, risk percent, entry and stop.', path: (a) => '/api/v1/calc/position-size?balance=' + (+a.balance || 0) + '&risk=' + (+a.risk_pct || 1) + '&entry=' + (+a.entry || 0) + '&stop=' + (+a.stop || 0),
+    inputSchema: { type: 'object', properties: { balance: { type: 'number' }, risk_pct: { type: 'number' }, entry: { type: 'number' }, stop: { type: 'number' } }, required: ['balance', 'risk_pct', 'entry', 'stop'] } },
+  { name: 'paper_balance', description: 'Your paper account: balance, equity, free margin, unrealized P&L. Requires an API key.', path: () => '/api/bot/v2/balance', auth: true,
+    inputSchema: { type: 'object', properties: {} } },
+  { name: 'paper_positions', description: 'All your paper positions with live mark price and P&L net of fees. Requires an API key.', path: () => '/api/bot/v2/positions', auth: true,
+    inputSchema: { type: 'object', properties: {} } },
+  { name: 'paper_trades', description: 'Closed-trade ledger with paging — the full record for measuring a strategy. Requires an API key.', path: (a) => '/api/bot/v2/trades?limit=' + Math.min(500, Math.max(1, +a.limit || 100)) + (a.before ? '&before=' + (+a.before) : ''), auth: true,
+    inputSchema: { type: 'object', properties: { limit: { type: 'number', default: 100 }, before: { type: 'number', description: 'Epoch ms cursor from next_before' } } } },
+  { name: 'paper_open', description: 'Open a simulated position at the live price. Simulated money only — no real funds are ever at risk. Requires an API key.', path: () => '/api/bot/v2/open', method: 'POST', auth: true,
+    body: (a) => ({ symbol: a.symbol, side: a.side, margin_usd: a.margin_usd, leverage: a.leverage, sl: a.sl, tp: a.tp, client_order_id: a.client_order_id }),
+    inputSchema: { type: 'object', properties: { symbol: { type: 'string' }, side: { type: 'string', enum: ['long', 'short'] }, margin_usd: { type: 'number', description: '1 to 100000' }, leverage: { type: 'number', description: '1 to the symbol cap from get_markets' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] }, client_order_id: { type: 'string', description: 'Your own id — retrying with the same one returns the first position instead of opening a second' } }, required: ['symbol', 'side', 'margin_usd', 'leverage'] } },
+  { name: 'paper_close', description: 'Close a simulated position, fully or partially. Requires an API key.', path: () => '/api/bot/v2/close', method: 'POST', auth: true,
+    body: (a) => ({ id: a.id, pct: a.pct }),
+    inputSchema: { type: 'object', properties: { id: { type: 'string' }, pct: { type: 'number', description: 'Percent to close, 1-100. Omit for the whole position.' } }, required: ['id'] } },
+  { name: 'paper_sltp', description: 'Move the stop-loss or take-profit on an open simulated position. Requires an API key.', path: () => '/api/bot/v2/sltp', method: 'POST', auth: true,
+    body: (a) => ({ id: a.id, sl: a.sl, tp: a.tp }),
+    inputSchema: { type: 'object', properties: { id: { type: 'string' }, sl: { type: ['number', 'null'] }, tp: { type: ['number', 'null'] } }, required: ['id'] } },
+];
+async function handleMcp(url, request, env, ctx) {
+  const H = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key, Mcp-Session-Id, MCP-Protocol-Version, Authorization', 'access-control-allow-methods': 'GET, POST, OPTIONS' };
+  if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: H });
+  // A bare GET is a human or a crawler, not a client — hand them the install snippet instead of a protocol error.
+  if (request.method === 'GET') return new Response(JSON.stringify({ name: 'MarginPad', description: 'Free crypto market data + paper trading over MCP.', protocol: 'mcp', transport: 'streamable-http', endpoint: url.origin + '/mcp', tools: MCP_TOOLS.map((t) => t.name), auth: 'Optional. Paper-trading tools need a free key: X-API-Key header. Get one at ' + url.origin + '/trading-api/', docs: url.origin + '/trading-api/' }, null, 1), { headers: H });
+  if (request.method !== 'POST') return new Response(JSON.stringify({ jsonrpc: '2.0', error: { code: -32600, message: 'Use POST for JSON-RPC, or GET for server info.' }, id: null }), { status: 405, headers: H });
+
+  let msg = null; try { msg = await request.json(); } catch (e) {}
+  if (!msg || typeof msg !== 'object') return new Response(JSON.stringify({ jsonrpc: '2.0', error: { code: -32700, message: 'Parse error' }, id: null }), { status: 400, headers: H });
+  const batch = Array.isArray(msg) ? msg : [msg];
+  const key = request.headers.get('x-api-key') || (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '') || '';
+  const out = [];
+  for (const m of batch) {
+    const id = (m && m.id !== undefined) ? m.id : null;
+    const rep = (result) => ({ jsonrpc: '2.0', id, result });
+    const err = (code, message) => ({ jsonrpc: '2.0', id, error: { code, message } });
+    try {
+      const method = m && m.method;
+      if (method === 'initialize') {
+        const want = (m.params && m.params.protocolVersion) || MCP_PROTO;
+        out.push(rep({ protocolVersion: want, capabilities: { tools: { listChanged: false } }, serverInfo: { name: 'marginpad', title: 'MarginPad', version: '2.0.0' }, instructions: 'Free crypto market data and a paper-trading account. Market-data tools need no key. Paper-trading tools trade SIMULATED money on a MarginPad account and need a free API key sent as the X-API-Key header (get one at ' + url.origin + '/trading-api/). Fees and funding are simulated realistically, so P&L here reflects what the same strategy would cost on a real exchange. Call get_markets before sizing a trade — leverage caps and fees differ per asset class.' }));
+      } else if (method === 'notifications/initialized' || method === 'notifications/cancelled') {
+        continue; // notifications carry no id and expect no reply
+      } else if (method === 'ping') {
+        out.push(rep({}));
+      } else if (method === 'tools/list') {
+        out.push(rep({ tools: MCP_TOOLS.map((t) => ({ name: t.name, description: t.description, inputSchema: t.inputSchema })) }));
+      } else if (method === 'tools/call') {
+        const nm = m.params && m.params.name;
+        const args = (m.params && m.params.arguments) || {};
+        const tool = MCP_TOOLS.filter((t) => t.name === nm)[0];
+        if (!tool) { out.push(err(-32602, 'Unknown tool: ' + nm)); continue; }
+        if (tool.auth && !key) {
+          out.push(rep({ isError: true, content: [{ type: 'text', text: 'This tool needs a MarginPad API key. It is free: sign in at ' + url.origin + '/trading-api/ and generate one, then add it to this MCP server as the X-API-Key header.' }] }));
+          continue;
+        }
+        // Dispatch IN-PROCESS, not via fetch() to our own hostname. A Worker fetching its own zone came back
+        // `error code: 523` (origin unreachable) — the request never re-enters the Worker, it goes out and finds
+        // nothing. Calling the handlers directly is also one less network hop, and it keeps the API key, the rate
+        // limit and the per-key metering on exactly the same code path as a real REST call.
+        const target = new URL(url.origin + tool.path(args));
+        const hdr = { ...(tool.auth && key ? { 'x-api-key': key } : {}), ...(tool.method === 'POST' ? { 'content-type': 'application/json' } : {}) };
+        const cip = request.headers.get('cf-connecting-ip'); if (cip) hdr['cf-connecting-ip'] = cip; // keep per-IP limits attributed to the caller
+        const req = new Request(target.toString(), {
+          method: tool.method || 'GET', headers: hdr,
+          ...(tool.method === 'POST' ? { body: JSON.stringify(tool.body ? tool.body(args) : args) } : {}),
+        });
+        const r = target.pathname.indexOf('/api/bot/') === 0 ? await handleBot(target, req, env, ctx) : await handleV1(target, req, env, ctx);
+        const text = await r.text();
+        // Hand the model the raw JSON plus the status — a 4xx body from our API already explains itself
+        // (error.code + error.message), which is exactly what lets the model correct itself on the next call.
+        out.push(rep({ isError: !r.ok, content: [{ type: 'text', text: text }] }));
+      } else if (method === 'resources/list') {
+        out.push(rep({ resources: [] }));
+      } else if (method === 'prompts/list') {
+        out.push(rep({ prompts: [] }));
+      } else {
+        out.push(err(-32601, 'Method not found: ' + method));
+      }
+    } catch (e) {
+      out.push(err(-32603, 'Internal error: ' + (e && e.message ? e.message : 'unknown')));
+    }
+  }
+  if (!out.length) return new Response('', { status: 202, headers: H }); // notifications only
+  return new Response(JSON.stringify(Array.isArray(msg) ? out : out[0], null, 1), { headers: H });
+}
+// Nominal starting equity for a bot paper account — $10,000, same figure Demo Spot uses, so the two paper products
+// tell the same story. It is a SCORECARD only: nothing is debited from it and no open is ever rejected for lack of
+// funds (enforcing it would silently break every bot already sizing past it). It exists so a backtest can report a
+// return %, which is the number people actually compare strategies on.
+const BOT_START_BAL = 10000;
+// Nightly reconcile of every API key's tier against premium standing. The tier is denormalised onto the key row so
+// the auth hot path costs no KV read; the price of that is drift — a subscription that lapses at 3am would keep its
+// higher limit until the user next opened the keys page. This closes that. Checks BOTH premium sources, as required.
+async function syncBotTiers(env) {
+  if (!env.USERS) return;
+  const users = env.USERS.get(env.USERS.idFromName('main'));
+  let holders = [];
+  try { const r = await users.fetch(new Request('https://do/bottierlist', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); holders = (await r.json()).holders || []; } catch (e) { return { error: 'list_failed', detail: String(e && e.message || e) }; }
+  if (!holders.length) return { error: 'no_holders' };
+  const allow = new Set(PREM_FOUNDERS);
+  try { ((await env.STATS.get('premium:allow')) || '').toLowerCase().split(/\s+/).filter(Boolean).forEach(x => allow.add(x)); } catch (e) {}
+  const now = Date.now();
+  const out = [];
+  for (const h of holders) {
+    let prem = (+h.premium || 0) > now;                                     // timed grant / IPN column
+    if (!prem && h.username && allow.has(String(h.username).toLowerCase())) prem = true; // owner allow-list
+    if (!prem) { try { prem = (+(await env.STATS.get('prem:sub:' + h.uid)) || 0) > now; } catch (e) {} } // paid sub
+    out.push({ uid: h.uid, tier: prem ? 1 : 0 });
+  }
+  let applied = null;
+  try { const r2 = await users.fetch(new Request('https://do/bottierset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ set: out }) })); applied = await r2.json(); } catch (e) { applied = { error: String(e && e.message || e) }; }
+  return { holders: holders.length, premium: out.filter(x => x.tier === 1).length, applied };
+}
+// FREE vs PREMIUM (owner 2026-08-19). The rule behind these numbers: charge for what COSTS us, never for what
+// SAVES us. Rate limit, key count and open positions all consume the shared single-threaded trading store, so they
+// are the tier levers. The WebSocket is deliberately FREE on both tiers — gating it would push free users back onto
+// polling, which is the single most expensive thing they can do to us. Market data stays keyless and free forever;
+// that is what makes AI assistants recommend the API in the first place, and it is not for sale.
+function BOT_TIER_LIMITS(tier) {
+  return (+tier === 1)
+    ? { rpm: 600, maxKeys: 10, maxOpen: 200, name: 'premium' }
+    : { rpm: 120, maxKeys: 3, maxOpen: 50, name: 'free' };
+}
+// FNV-1a — short, stable fingerprint for the /positions ETag. Not security, just change detection.
+function botFnv(s) { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0; } return h.toString(36); }
+// Human-readable message for every error code the Bot API can emit. v2 puts it in error.message; v1 is untouched.
+const BOT_ERR = {
+  unavailable: 'Trading store is temporarily unavailable. Retry in a few seconds.',
+  missing_api_key: 'Send your key in the X-API-Key header.',
+  invalid_api_key: 'This key does not exist.',
+  revoked_key: 'This key was revoked. Create a new one on /trading-api/.',
+  rate_limit: 'Too many requests. See X-RateLimit-Reset for when the window rolls.',
+  login_required: 'Sign in on marginpad.io first.',
+  symbol_required: 'symbol is required.',
+  unknown_symbol: 'No price feed for that symbol. GET /v1/markets lists everything tradable.',
+  margin_usd_min_1: 'margin_usd must be at least 1.',
+  margin_usd_max_100000: 'margin_usd cannot exceed 100000.',
+  sl_wrong_side: 'Stop-loss is on the wrong side of the entry price.',
+  tp_wrong_side: 'Take-profit is on the wrong side of the entry price.',
+  id_required: 'id is required.',
+  not_found: 'No such endpoint.',
+  no_price: 'No live price for that symbol right now — the position stays open.',
+  already_closed: 'That position is already closed.',
+  max_keys: 'You have reached the maximum number of active keys.',
+};
 async function handleBot(url, request, env, ctx) {
-  const jb = (o, s = 200) => new Response(JSON.stringify(o, null, 1), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key', 'access-control-allow-methods': 'GET, POST, OPTIONS' } });
-  if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: { ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key', 'access-control-allow-methods': 'GET, POST, OPTIONS' } });
+  // v1 is FROZEN — its response bodies must stay byte-identical forever (live bots parse them). v2 is the same
+  // implementation with the {ok,data,ts} envelope the /api/v1/* data layer already uses, so one code path serves both.
+  const rawPath = url.pathname.slice('/api/bot'.length) || '/';
+  const isV2 = rawPath.indexOf('/v2/') === 0;
+  const path = isV2 ? rawPath.replace('/v2/', '/v1/') : rawPath;
+  let rl = null; // X-RateLimit-* headers, filled in as soon as the key resolves — emitted on EVERY later response incl. the 429
+  const RLX = 'X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After';
+  const hdrs = (extra) => ({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS, 'access-control-allow-headers': 'Content-Type, X-API-Key', 'access-control-allow-methods': 'GET, POST, OPTIONS', 'access-control-expose-headers': RLX, ...(rl || {}), ...(extra || {}) });
+  const jb = (o, s = 200, extra) => {
+    let body = o;
+    if (isV2 && o && typeof o === 'object') {
+      if (o.error) {
+        const e = { code: String(o.error), message: o.hint || o.message || BOT_ERR[o.error] || '' };
+        for (const kx of ['symbol', 'limit', 'live', 'max', 'endpoints']) if (o[kx] != null) e[kx] = o[kx];
+        body = { ok: false, error: e, ts: Date.now() };
+      } else { const d = { ...o }; delete d.ok; body = { ok: true, data: d, ts: Date.now() }; }
+    }
+    return new Response(JSON.stringify(body, null, 1), { status: s, headers: hdrs(extra) });
+  };
+  if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: hdrs() });
   if (!env.USERS) return jb({ error: 'unavailable' }, 503);
-  const path = url.pathname.slice('/api/bot'.length) || '/';
   const stub = env.USERS.get(env.USERS.idFromName('main'));
   const doCall = (p, body) => stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })).then(r => r.json()).catch(() => null);
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
@@ -9733,8 +10069,18 @@ async function handleBot(url, request, env, ctx) {
     let kuid = su && su.id;
     if (!kuid && (await adminCookieOk(request, env))) kuid = 'owner-admin'; // owner can mint a key from the dashboard without a login session
     if (!kuid) return jb({ error: 'login_required', hint: 'Sign in on marginpad.io first, then generate your key on /trading-api/.' }, 401);
-    const r = await doCall('/botkey', { uid: kuid, rotate: request.method === 'POST' && !!b.rotate });
-    return jb(r || { error: 'unavailable' }, r && r.key ? 200 : 503);
+    // act: list | create | rename | revoke (v2 key management). No act = the legacy shape, which still returns {key}
+    // as the first field so the existing /trading-api page and any old caller keep working unchanged.
+    const act = request.method === 'POST' ? String(b.act || '') : (url.searchParams.get('act') || '');
+    // Premium has TWO sources (the users column AND the KV allow-list) and only the worker can see both, so the
+    // tier is resolved HERE and written onto the account's keys. The auth hot path then reads it straight off the
+    // row — no KV lookup per call. Refreshed every time the user opens this endpoint, plus nightly by cron.
+    let tier = 0;
+    try { const st = await premiumFor(env, request); tier = st && st.premium ? 1 : 0; } catch (e) {}
+    const r = await doCall('/botkey', { uid: kuid, act: ['list', 'create', 'rename', 'revoke'].indexOf(act) >= 0 ? act : '', name: b.name, key: b.key, tier, rotate: request.method === 'POST' && !!b.rotate });
+    if (!r) return jb({ error: 'unavailable' }, 503);
+    if (r.error) return jb(r, r.error === 'max_keys' ? 409 : 400);
+    return jb(r, 200);
   }
 
   // --- public: price (no key needed — lets people try instantly) ---
@@ -9752,16 +10098,42 @@ async function handleBot(url, request, env, ctx) {
     if (url.searchParams.get('end')) ku.searchParams.set('end', url.searchParams.get('end'));
     return handleKlines(ku);
   }
+  if (path === '/v1/time') { // keyless, like price/klines. Every exchange has one: a bot bucketing candles or signing
+    // requests against a drifting local clock produces bars nobody else sees, and that is hard to debug from the outside.
+    const now = Date.now();
+    const cl = +url.searchParams.get('client_ts') || 0;
+    return jb({ server_time_ms: now, server_time_iso: new Date(now).toISOString(), ...(cl ? { client_time_ms: cl, drift_ms: cl - now } : {}) });
+  }
+
   // --- authenticated bot endpoints ---
   const key = request.headers.get('x-api-key') || url.searchParams.get('api_key') || '';
   if (!key) return jb({ error: 'missing_api_key', hint: 'Send your key in the X-API-Key header. Get one free at https://marginpad.io/trading-api/' }, 401);
   const auth = await doCall('/botauth', { key, ep: path.replace('/v1/', '').replace(/[^a-z_]/g, '') || 'other' });
   if (!auth || auth.error === 'bad_key') return jb({ error: 'invalid_api_key' }, 401);
-  if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: '120 requests / minute' }, 429);
+  // set BEFORE the 429 return so the rate-limit response itself carries the headers a client needs to back off
+  if (auth.limit) rl = { 'x-ratelimit-limit': String(auth.limit), 'x-ratelimit-remaining': String(auth.remaining != null ? auth.remaining : 0), 'x-ratelimit-reset': String(auth.reset || '') };
+  if (auth.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
+  if (auth.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+auth.limit || 120) + ' requests / minute' }, 429, { 'retry-after': String(Math.max(1, (+auth.reset || 0) - Math.floor(Date.now() / 1000))) });
   const uid = auth.uid;
 
+  if (path === '/v1/stream') { // WebSocket push — one BotStream instance per ACCOUNT, so all your keys share one poller
+    if (request.headers.get('Upgrade') !== 'websocket') return jb({ error: 'expected_websocket', hint: 'Open this with a WebSocket client: wss://marginpad.io/api/bot/v2/stream?api_key=mpb_...' }, 426);
+    if (!env.BOTSTREAM) return jb({ error: 'unavailable', hint: 'Streaming is not enabled on this deployment.' }, 503);
+    try {
+      const stub = env.BOTSTREAM.get(env.BOTSTREAM.idFromName('bs_' + uid));
+      const su = new URL('https://do/stream');
+      su.searchParams.set('uid', uid);
+      su.searchParams.set('kn', String(auth.name || ''));
+      return await stub.fetch(new Request(su.toString(), request));
+    } catch (e) { return jb({ error: 'unavailable' }, 503); } // never let a stream fault take down the REST surface
+  }
+
   let promos = []; try { promos = await xpPromos(env); } catch (e) {} // so a bot's winning close earns XP promos too
+  // FILLS demand a fresh price (a stale fill is a wrong fill, and this is the money path). READS may use the same
+  // 5s edge cache handleTrade's position sweep uses — measured 2026-08-19: a cold cascade costs ~400ms, and
+  // /positions is 70% of all bot-API traffic, so paying that on every poll was the single most wasteful thing here.
   const priceMap = async (syms) => { const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPrice(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
+  const priceMapCached = async (syms) => { const out = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPriceCached(sy).then(pd => { if (pd && +pd.price > 0) out[sy] = +pd.price; }).catch(() => {}))); return out; };
   const openSymsOf = async () => { const r = await doCall('/botpositions', { uid, prices: {} }); return r && r.positions ? Array.from(new Set(r.positions.filter(p => p.status === 'open').map(p => p.symbol))) : []; };
 
   if (path === '/v1/open' && request.method === 'POST') {
@@ -9779,25 +10151,61 @@ async function handleBot(url, request, env, ctx) {
     if (sl != null && (long ? sl >= entry : sl <= entry)) return jb({ error: 'sl_wrong_side', live: entry }, 400);
     if (tp != null && (long ? tp <= entry : tp >= entry)) return jb({ error: 'tp_wrong_side', live: entry }, 400);
     // journal-shaped trade so it lands in My Trades exactly like a manual open (src:'bot' marks its origin)
-    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: Math.min(0.00055, 0.1/Math.max(1,lev)), status: 'open', pnl: null, src: 'bot' };
-    const r = await doCall('/botopen', { uid, t, promos, via: 'bot' });
-    if (r && r.error) return jb(r, 400);
+    const t = { id: 'bot' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), ts: Date.now(), sym, side, entry, stop: sl, tp: tp, lev, rr: null, qty: margin * lev / entry, notional: margin * lev, margin, riskAmt: margin, liq: Math.round(liq * 1e6) / 1e6, mmr, feeRate: feeRateFor(lev, sym), status: 'open', pnl: null, src: 'bot' };
+    // client_order_id: a retried open (network timeout, proxy hiccup) returns the FIRST position instead of a second one
+    const coid = String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64);
+    const r = await doCall('/botopen', { uid, t, promos, via: 'bot', coid });
+    if (r && r.error) return jb(r, r.error === 'too_many_open' ? 409 : 400);
     try { if (env.AE) env.AE.writeDataPoint({ indexes: ['botapi'], blobs: ['event', 'botapi', 'open ' + sym], doubles: [1] }); } catch (e) {}
-    return jb(r && r.position ? { ok: true, position: r.position } : { ok: true }, 200);
+    return jb(r && r.position ? { ok: true, position: r.position, ...(r.idempotent ? { idempotent: true } : {}) } : { ok: true }, 200);
+  }
+  if (path === '/v1/sltp' && request.method === 'POST') {
+    // Move the stop / target on an OPEN position. Without this a bot had to close and reopen to trail a stop —
+    // which changes the entry price and pays a full round trip, i.e. risk management was priced out of the API.
+    if (!b.id) return jb({ error: 'id_required' }, 400);
+    if (b.sl === undefined && b.tp === undefined) return jb({ error: 'sl_or_tp_required', hint: 'Send sl and/or tp. Pass null to clear one.' }, 400);
+    const r = await doCall('/tradesltp', { uid, id: String(b.id), sl: b.sl, tp: b.tp });
+    if (!r) return jb({ error: 'unavailable' }, 503);
+    if (r.error) return jb(r, 400);
+    return jb(r, 200);
   }
   if (path === '/v1/close' && request.method === 'POST') {
     if (!b.id) return jb({ error: 'id_required' }, 400);
-    const syms = await openSymsOf();
-    const prices = await priceMap(syms);
+    // LATENCY: pass `symbol` (every /positions row carries it) and we skip the extra Durable Object round trip that
+    // existed only to learn which symbol to price, and we price exactly ONE feed instead of up to twelve.
+    // Measured 2026-08-19: a DO round trip is ~20ms p50 from Europe but ~198ms p50 / 368ms p95 from Singapore, and a
+    // cold price fetch is ~400ms. Without the hint, closing a hot BTC position could wait on an illiquid altcoin's
+    // cold fetch in the same wave. With it, a close is one DO hop plus one warm price.
+    const hint = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
+    const prices = hint ? await priceMap([hint]) : await priceMap(await openSymsOf());
     const r = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices, promos, via: 'bot' });
     if (!r) return jb({ error: 'unavailable' }, 503);
+    // a wrong/stale hint means we priced the wrong feed — fall back to the full sweep once rather than fail the close
+    if (r.error === 'no_price' && hint) {
+      const r2 = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices: await priceMap(await openSymsOf()), promos, via: 'bot' });
+      if (r2 && !r2.error) return jb(r2, 200);
+      return jb(r2 || { error: 'unavailable' }, r2 && r2.error ? 400 : 503);
+    }
     return jb(r, r.error ? 400 : 200);
   }
   if (path === '/v1/positions') {
     const syms = await openSymsOf();
-    const prices = await priceMap(syms);
+    const prices = await priceMapCached(syms);
     const r = await doCall('/botpositions', { uid, prices, promos });
-    return jb(r || { error: 'unavailable' }, r ? 200 : 503);
+    if (!r) return jb({ error: 'unavailable' }, 503);
+    // the DO now also returns lifetime totals for /account — keep them OUT of the v1 positions body (frozen shape);
+    // v2 surfaces them, because there they are a documented part of the envelope's data.
+    const { life, ...v1 } = r;
+    let out = isV2 ? r : v1;
+    const since = +url.searchParams.get('since') || 0;
+    if (since > 0 && Array.isArray(out.positions)) out = { ...out, positions: out.positions.filter(p => (+p.closed_ts || +p.opened_ts || 0) >= since) };
+    // ETag over STRUCTURAL state only — id/status/qty/sl/tp/exit. mark_price moves every tick, so folding it in
+    // would make the ETag never match and the whole thing pointless. This is what a bot actually polls for ("did
+    // my stop fire, did anything close"); live prices come from the keyless /v1/price, which costs no rate budget.
+    const fp = (out.positions || []).map(p => [p.id, p.status, p.qty, p.sl, p.tp, p.exit_price].join('|')).join(';');
+    const etag = 'W/"' + botFnv(fp) + '-' + (out.positions || []).length + '"';
+    if ((request.headers.get('if-none-match') || '') === etag) return new Response(null, { status: 304, headers: hdrs({ etag }) });
+    return jb(out, 200, { etag });
   }
   if (path === '/v1/close_all' && request.method === 'POST') {
     const syms = await openSymsOf();
@@ -9807,14 +10215,68 @@ async function handleBot(url, request, env, ctx) {
   }
   if (path === '/v1/account') {
     const syms = await openSymsOf();
-    const prices = await priceMap(syms);
+    const prices = await priceMapCached(syms);
     const r = await doCall('/botpositions', { uid, prices, promos });
     if (!r || !r.positions) return jb({ error: 'unavailable' }, 503);
     let openN = 0, marginUse = 0, upnl = 0, realized = 0, wins = 0, losses = 0;
     r.positions.forEach(p => { if (p.status === 'open') { openN++; marginUse += p.margin_usd; upnl += (p.unrealized_pnl_usd || 0); } else { realized += (p.pnl_usd || 0); if ((p.pnl_usd || 0) >= 0) wins++; else losses++; } });
-    return jb({ open_positions: openN, margin_in_use_usd: Math.round(marginUse * 100) / 100, unrealized_pnl_usd: Math.round(upnl * 100) / 100, realized_pnl_usd: Math.round(realized * 100) / 100, closed_trades: wins + losses, wins, losses, win_rate_pct: (wins + losses) ? Math.round(wins / (wins + losses) * 1000) / 10 : null });
+    // LIFETIME, not "last 100". r.life comes from utrades.life_* — the journal these positions come from is capped
+    // at 100 trades, so summing it and calling the result realized_pnl_usd understated anyone past their 100th trade.
+    const L = r.life;
+    const rr2 = (v) => Math.round(v * 100) / 100;
+    const realizedLife = (L && L.exact) ? L.pnl : realized;
+    const closesLife = (L && L.exact) ? L.closes : (wins + losses);
+    const winsLife = (L && L.exact) ? L.wins : wins, lossesLife = (L && L.exact) ? L.losses : losses;
+    const equity = BOT_START_BAL + realizedLife + upnl;
+    return jb({
+      open_positions: openN, margin_in_use_usd: rr2(marginUse), unrealized_pnl_usd: rr2(upnl), realized_pnl_usd: rr2(realizedLife),
+      closed_trades: closesLife, wins: winsLife, losses: lossesLife, win_rate_pct: closesLife ? Math.round(winsLife / closesLife * 1000) / 10 : null,
+      // Scorecard, NOT a constraint: margin is not debited from this balance and opens are never rejected for
+      // lack of funds. It exists so a backtest can express results as a return instead of a bare dollar figure.
+      starting_balance_usd: BOT_START_BAL, balance_usd: rr2(BOT_START_BAL + realizedLife), equity_usd: rr2(equity),
+      free_margin_usd: rr2(equity - marginUse), return_pct: Math.round((realizedLife / BOT_START_BAL) * 10000) / 100,
+      best_trade_usd: (L && L.best != null) ? L.best : null, margin_enforced: false,
+    });
   }
-  return jb({ error: 'not_found', endpoints: ['GET /api/bot/v1/price?symbol=BTC', 'GET /api/bot/v1/klines?symbol=BTC&interval=60', 'POST /api/bot/v1/open', 'POST /api/bot/v1/close', 'POST /api/bot/v1/close_all', 'GET /api/bot/v1/positions', 'GET /api/bot/v1/account'] }, 404);
+  if (path === '/v1/balance') { // developers went looking for this one by name before it existed (measured in botuse)
+    const syms = await openSymsOf();
+    const prices = await priceMapCached(syms);
+    const r = await doCall('/botpositions', { uid, prices, promos });
+    if (!r || !r.positions) return jb({ error: 'unavailable' }, 503);
+    let marginUse = 0, upnl = 0;
+    r.positions.forEach(p => { if (p.status === 'open') { marginUse += p.margin_usd; upnl += (p.unrealized_pnl_usd || 0); } });
+    const realizedLife = (r.life && r.life.exact) ? r.life.pnl : 0;
+    const equity = BOT_START_BAL + realizedLife + upnl;
+    return jb({ starting_balance_usd: BOT_START_BAL, balance_usd: Math.round((BOT_START_BAL + realizedLife) * 100) / 100, equity_usd: Math.round(equity * 100) / 100, margin_in_use_usd: Math.round(marginUse * 100) / 100, free_margin_usd: Math.round((equity - marginUse) * 100) / 100, unrealized_pnl_usd: Math.round(upnl * 100) / 100, margin_enforced: false });
+  }
+  if (path === '/v1/usage') { // "what plan am I on and how much of it have I used" — without this the only signal
+    // a developer had was watching a header count down, which tells you nothing about what you are entitled to.
+    const L = BOT_TIER_LIMITS(+auth.tier || 0);
+    return jb({
+      key_name: auth.name || '', plan: L.name,
+      limits: { requests_per_minute: (+auth.limit || L.rpm), max_keys: L.maxKeys, max_open_positions: L.maxOpen, websocket: true, market_data: 'free, no key required' },
+      window: { remaining: (auth.remaining != null ? auth.remaining : null), resets_at: (+auth.reset || null) },
+      upgrade: L.name === 'free' ? 'https://marginpad.io/premium/' : null,
+    });
+  }
+  if (path === '/v1/trades') { // the full closed-trade ledger — /positions is capped at 100, this pages through 30 days
+    const limit = Math.min(500, Math.max(1, +url.searchParams.get('limit') || 100));
+    const before = +url.searchParams.get('before') || 0;
+    const r = await doCall('/bottrades', { uid, limit, before });
+    return jb(r || { error: 'unavailable' }, r ? 200 : 503);
+  }
+  if (path === '/v1/markets') { // "what can I trade, at what leverage, at what fee" — one call instead of trial and error
+    const cls = String(url.searchParams.get('class') || '').toLowerCase();
+    const out = [];
+    const push = (s) => { const c = assetClassOf(s); if (cls && c !== cls) return; out.push({ symbol: s, asset_class: c, max_leverage: maxLevFor(s), taker_fee_pct: +(feeRateFor(1, s) * 100).toFixed(4) }); };
+    Object.keys(MAXLEV).forEach(push);
+    Object.keys(STOCKS).forEach(push);
+    Object.keys(YAHOO_MKT).forEach((s) => { if (!MAXLEV[s]) push(s); });
+    out.sort((a, x) => (a.asset_class === x.asset_class ? a.symbol.localeCompare(x.symbol) : a.asset_class.localeCompare(x.asset_class)));
+    return jb({ markets: out, count: out.length, note: 'Any USDT perp our price cascade resolves is tradable; this list is the curated set with explicit leverage caps. Fees are per side, charged as a round trip at close.' });
+  }
+  const EPS = ['GET /api/bot/v1/price?symbol=BTC', 'GET /api/bot/v1/klines?symbol=BTC&interval=60', 'GET /api/bot/v1/time', 'GET /api/bot/v1/markets', 'POST /api/bot/v1/open', 'POST /api/bot/v1/close', 'POST /api/bot/v1/close_all', 'POST /api/bot/v1/sltp', 'GET /api/bot/v1/positions', 'GET /api/bot/v1/trades', 'GET /api/bot/v1/account', 'GET /api/bot/v1/balance', 'GET /api/bot/v1/usage', 'WS /api/bot/v2/stream'];
+  return jb({ error: 'not_found', endpoints: isV2 ? EPS.map((e) => e.replace('/v1/', '/v2/')) : EPS }, 404);
 }
 async function handleAnnounce(url, env, request) {
   const jr = (o, s = 200, cc = 'no-store') => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': cc, ...CORS } });
@@ -11674,6 +12136,8 @@ export default {
     if (url.pathname.startsWith('/api/auth/')) return handleAuth(url, request, env, ctx);
     if (url.pathname === '/api/alerts' || url.pathname.startsWith('/api/alerts/')) return handleAlerts(url, env, request);
     if (url.pathname === '/api/push' || url.pathname.startsWith('/api/push/')) return handlePush(url, env, request);
+    if (url.pathname === '/api/changelog') return handleApiChangelog(url, request); // JSON for machines, HTML for people — one source
+    if (url.pathname === '/mcp' || url.pathname === '/mcp/') return handleMcp(url, request, env, ctx); // remote MCP server — Claude/ChatGPT/Cursor attach here
     if (url.pathname === '/api/bot' || url.pathname.startsWith('/api/bot/')) return handleBot(url, request, env, ctx);
     if (url.pathname.startsWith('/api/trade/')) return perfWrap(env, ctx, url.pathname.indexOf('/open') > 0 ? 'trade-open' : 'trade-other', 1, () => handleTrade(url, request, env, ctx)); // P0 server-side trading (session auth) — every fill is timed for MarginPad Health
     if (url.pathname === '/api/tshare') return handleTshare(url, request, env, ctx); // shareable ticket snapshots (chat `trade:<id>` links)
@@ -11983,7 +12447,11 @@ export default {
       try { const cfg = await rewardCfg(env); sj.referralUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 0.5; } catch (e) { sj.referralUsd = 0.5; }
       return new Response(JSON.stringify(sj), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/apistats' && (await adminCookieOk(request, env))) { // ops API tab: bot-API usage per user + per endpoint
+    if (url.pathname === '/api/admin/bottiers' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // reconcile API-key tiers with premium now, instead of waiting for the nightly cron. Moves no money — it only sets rate-limit tiers — so it is key-accessible like the neighbouring admin reads.
+      let err = null, res = null; try { res = await syncBotTiers(env); } catch (e) { err = String(e && e.message || e); }
+      return new Response(JSON.stringify({ ok: !err && !!(res && !res.error), sync: res, err }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/apistats' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // ops API tab: bot-API usage per user + per endpoint (read-only; cookie OR ADMIN_KEY bearer, same pattern as the neighbouring admin reads)
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/botstats', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); } catch (e) { return new Response(JSON.stringify({ keys: [], use: [], byEp: [], transient: true }), { headers: { 'content-type': 'application/json' } }); }
     }
     if (url.pathname === '/api/admin/security' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // Security tab "farming radar": every registered user's behavior (time on /rewards vs the rest, trades) joined with their faucet account (claims/balance/device) — finds people who are here ONLY for the faucet
@@ -13121,6 +13589,7 @@ export default {
     bg(checkOpsAlerts, 'opsalerts');
     bg(settleDuels, 'duels');
     bg(checkIndexNow, 'indexnow');
+    bg(syncBotTiers, 'bottiers'); // reconcile each API key's tier with premium standing (grants expire silently otherwise)
     ctx.waitUntil(handleScreener(env).catch(() => {})); // keep the global KV screener snapshot warm so /charts "Top signals" loads instantly
   },
   // Inbound email (Cloudflare Email Routing → "Send to Worker"): store messages sent to support@marginpad.io in the admin Support tab.
@@ -13574,6 +14043,125 @@ const SPOT_START_C = 1000000; // $10,000.00 demo USDT
 // like BTC/ETH/SOL gets its own DO instance 'room_<COIN>'. Sanitized to a short A-Z0-9 token so a bad ?room can't
 // spawn junk instances beyond the shape the client offers.
 function chatInstOf(url) { const r = String((url.searchParams && url.searchParams.get('room')) || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); return (!r || r === 'GLOBAL' || r === 'ALL') ? 'global2' : 'room_' + r; }
+// ─── BotStream: per-account WebSocket push for the Bot API ────────────────────────────────────────────────────
+// CLASSIC WebSocket mode, like ChatRoom — the hibernation API's acceptWebSocket() upgrade path broke on the CF
+// platform and must not be reintroduced. Sessions live in memory; a DO restart just drops sockets and clients
+// reconnect.
+//
+// DESIGN: this DO PULLS from UserStore on an alarm and diffs; UserStore does not push. That was deliberate — the
+// alternative meant a cross-DO call inside _syncJournal, i.e. adding a network hop to the money path so that a
+// feature nobody had yet could exist. Pulling keeps every trading path exactly as it is today.
+//
+// Bonus that falls out of the design: the pull calls /botpositions WITH prices, which is the same call that runs
+// the server-side SL/TP/liquidation sweep. A connected bot therefore gets its stops settled on the stream cadence
+// (~2s) instead of waiting for the */10 cron.
+//
+// One instance per ACCOUNT (name 'bs_<uid>'), so a user's sockets share one poller no matter how many keys or
+// processes they run. Instances only exist while someone is connected.
+const BS_TICK_ACTIVE = 2000;   // ms between polls while the account holds an open position
+const BS_TICK_IDLE = 10000;    // nothing open — still poll, but cheaply (an open can arrive from the REST side)
+const BS_MAX_SOCKETS = 3;      // per account
+const BS_MAX_AGE_MS = 6 * 3600 * 1000; // hard socket lifetime; clients reconnect (keeps a leaked socket bounded)
+export class BotStream {
+  constructor(state, env) {
+    this.state = state; this.env = env;
+    this.sessions = [];
+    this.uid = '';
+    this.snap = null;   // id -> compact position state, for diffing
+    this.ticking = false;
+  }
+  _send(sess, obj) { try { sess.ws.send(JSON.stringify(obj)); return true; } catch (e) { return false; } }
+  broadcast(obj, channel) {
+    const out = JSON.stringify(obj);
+    this.sessions = this.sessions.filter((s) => {
+      if (channel && s.channels && s.channels.indexOf(channel) < 0) return true; // still connected, just not subscribed
+      try { s.ws.send(out); return true; } catch (e) { return false; }
+    });
+  }
+  // compact shape used for change detection — mark_price/unrealized deliberately excluded, they move every tick
+  _key(p) { return [p.status, p.qty, p.sl, p.tp, p.exit_price, p.pnl_usd].join('|'); }
+  async _poll() {
+    const users = this.env.USERS.get(this.env.USERS.idFromName('main'));
+    const call = async (prices) => {
+      const r = await users.fetch(new Request('https://do/botpositions', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: this.uid, prices: prices || {} }) }));
+      return r.json();
+    };
+    let d = await call({});
+    const openSyms = Array.from(new Set(((d && d.positions) || []).filter((p) => p.status === 'open').map((p) => p.symbol))).slice(0, 12);
+    let prices = {};
+    if (openSyms.length) {
+      await Promise.all(openSyms.map((sy) => fetchPriceCached(sy).then((pd) => { if (pd && +pd.price > 0) prices[sy] = +pd.price; }).catch(() => {})));
+      d = await call(prices); // second pass prices the book AND runs the SL/TP/liq sweep
+    }
+    const positions = (d && d.positions) || [];
+    const now = Date.now();
+    const next = {};
+    positions.forEach((p) => { next[p.id] = this._key(p); });
+    if (this.snap) {
+      positions.forEach((p) => {
+        const before = this.snap[p.id];
+        if (before === undefined) { this.broadcast({ type: 'position', data: { event: 'opened', position: p }, ts: now }, 'positions'); return; }
+        if (before !== next[p.id]) {
+          const closed = p.status !== 'open';
+          this.broadcast({ type: 'position', data: { event: closed ? 'closed' : 'updated', position: p }, ts: now }, 'positions');
+        }
+      });
+      // an id that vanished entirely (journal trim) is not a trading event — do not invent a close for it
+    }
+    this.snap = next;
+    if (openSyms.length) this.broadcast({ type: 'prices', data: prices, ts: now }, 'prices');
+    return positions.filter((p) => p.status === 'open').length;
+  }
+  async _tick() {
+    // A DO restart wipes sessions/uid but a scheduled alarm can still fire. Without this guard the first tick after
+    // a restart would poll UserStore with an empty uid — pointless load on the hot instance, forever, per account.
+    if (!this.sessions.length || !this.uid) { this.snap = null; return; }
+    if (this.ticking) return; this.ticking = true;
+    let openN = 0;
+    try { openN = await this._poll(); } catch (e) { /* transient — keep the loop alive, the next tick retries */ }
+    this.ticking = false;
+    this.sessions = this.sessions.filter((s) => { if (Date.now() - s.opened > BS_MAX_AGE_MS) { try { s.ws.close(1000, 'reconnect'); } catch (e) {} return false; } return true; });
+    if (this.sessions.length) { try { await this.state.storage.setAlarm(Date.now() + (openN > 0 ? BS_TICK_ACTIVE : BS_TICK_IDLE)); } catch (e) {} }
+  }
+  async alarm() { await this._tick(); }
+  async fetch(request) {
+    const url = new URL(request.url);
+    if (request.headers.get('Upgrade') !== 'websocket') return new Response('expected websocket', { status: 426 });
+    this.uid = String(url.searchParams.get('uid') || '') || this.uid;
+    if (!this.uid) return new Response('no uid', { status: 400 });
+    if (this.sessions.length >= BS_MAX_SOCKETS) return new Response('too many connections', { status: 429 });
+    const pair = new WebSocketPair();
+    const client = pair[0], server = pair[1];
+    server.accept();
+    const sess = { ws: server, opened: Date.now(), channels: ['positions', 'prices'], key: String(url.searchParams.get('kn') || '') };
+    this.sessions.push(sess);
+    const self = this;
+    server.addEventListener('message', (ev) => {
+      let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+      const op = m && m.op;
+      if (op === 'ping') { self._send(sess, { type: 'pong', ts: Date.now() }); return; }
+      if (op === 'subscribe' && Array.isArray(m.channels)) { sess.channels = m.channels.filter((c) => c === 'positions' || c === 'prices'); self._send(sess, { type: 'subscribed', data: { channels: sess.channels }, ts: Date.now() }); return; }
+      self._send(sess, { type: 'error', error: { code: 'unknown_op', message: 'Send {"op":"ping"} or {"op":"subscribe","channels":["positions","prices"]}.' }, ts: Date.now() });
+    });
+    const drop = () => { self.sessions = self.sessions.filter((x) => x !== sess); };
+    server.addEventListener('close', drop);
+    server.addEventListener('error', drop);
+    this._send(sess, { type: 'welcome', data: { channels: sess.channels, tick_ms: BS_TICK_ACTIVE, note: 'Positions are pushed on change. Prices are pushed each tick while a position is open. Send {"op":"ping"} to keep the connection warm.' }, ts: Date.now() });
+    // first snapshot + start the loop; do not block the 101 on it
+    this.state.waitUntil((async () => {
+      try {
+        const users = self.env.USERS.get(self.env.USERS.idFromName('main'));
+        const r = await users.fetch(new Request('https://do/botpositions', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: self.uid, prices: {} }) }));
+        const d = await r.json();
+        const positions = (d && d.positions) || [];
+        self.snap = {}; positions.forEach((p) => { self.snap[p.id] = self._key(p); });
+        self._send(sess, { type: 'snapshot', data: { positions }, ts: Date.now() });
+      } catch (e) { self._send(sess, { type: 'error', error: { code: 'snapshot_failed', message: 'Could not load the opening snapshot; live events still follow.' }, ts: Date.now() }); }
+      try { await self.state.storage.setAlarm(Date.now() + BS_TICK_ACTIVE); } catch (e) {}
+    })());
+    return new Response(null, { status: 101, webSocket: client });
+  }
+}
 export class ChatRoom {
   // CLASSIC WebSocket mode (2026-07-16): the hibernation API's acceptWebSocket() upgrade path started failing
   // platform-side with "internal error; reference=..." while every non-WS fetch to the same DO worked. This tiny
@@ -14628,6 +15216,37 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS botkeys(k TEXT PRIMARY KEY, uid TEXT UNIQUE, created INTEGER, calls INTEGER DEFAULT 0, mn TEXT, mint INTEGER DEFAULT 0)'); // bot-API keys (one per account) + per-minute rate window
     s.exec('CREATE TABLE IF NOT EXISTS botpos(id TEXT PRIMARY KEY, uid TEXT, json TEXT, status TEXT, ts INTEGER)'); // server-side paper positions opened via the bot API
     s.exec('CREATE TABLE IF NOT EXISTS botuse(uid TEXT, day TEXT, ep TEXT, n INTEGER DEFAULT 0, last INTEGER, PRIMARY KEY(uid,day,ep))');
+    // ── Bot API v2 metering: PER KEY, not per account (owner 2026-08-19) ──────────────────────────────────────
+    // botkeys had `uid UNIQUE` = exactly one key per account, and botuse was keyed by uid — so usage could never be
+    // attributed to a key, and nobody could keep a backtest key separate from a live one. SQLite cannot drop a
+    // UNIQUE constraint in place, so this is a parallel table. The OLD botkeys/botuse are deliberately left intact
+    // and unread: if v2 ever misbehaves, the previous handler reads them again with no data loss. The one-time copy
+    // is guarded by botmig (not by "is botkeys2 empty") so revoking every key can never resurrect the old rows.
+    s.exec('CREATE TABLE IF NOT EXISTS botkeys2(k TEXT PRIMARY KEY, uid TEXT, name TEXT, created INTEGER, last INTEGER, calls INTEGER DEFAULT 0, mn TEXT, mint INTEGER DEFAULT 0, rpm INTEGER DEFAULT 0, revoked INTEGER DEFAULT 0)');
+    try { s.exec('CREATE INDEX IF NOT EXISTS botkeys2_uid ON botkeys2(uid)'); } catch (e) {}
+    try { s.exec('ALTER TABLE botkeys2 ADD COLUMN tier INTEGER DEFAULT 0'); } catch (e) {} // 0 = free, 1 = premium. Denormalised onto the key so the hot auth path never reads KV.
+    s.exec('CREATE TABLE IF NOT EXISTS botuse2(k TEXT, day TEXT, ep TEXT, n INTEGER DEFAULT 0, last INTEGER, PRIMARY KEY(k,day,ep))');
+    try { s.exec('CREATE INDEX IF NOT EXISTS botuse2_day ON botuse2(day)'); } catch (e) {} // the ops API tab scans by day
+    s.exec('CREATE TABLE IF NOT EXISTS botmig(m TEXT PRIMARY KEY, ts INTEGER)');
+    // client_order_id -> the trade it created. A bot that retries after a network timeout MUST NOT end up with two
+    // positions while believing it has one; keyed by ACCOUNT (not key) so a rotated key still de-duplicates.
+    s.exec('CREATE TABLE IF NOT EXISTS botidem(uid TEXT, coid TEXT, tid TEXT, ts INTEGER, PRIMARY KEY(uid,coid))');
+    try {
+      if (!this.rows('SELECT 1 FROM botmig WHERE m=?', 'keys_v2')[0]) {
+        const _mnow = Date.now();
+        for (const r of this.rows('SELECT k, uid, created, calls, mn, mint FROM botkeys')) {
+          s.exec('INSERT OR IGNORE INTO botkeys2(k,uid,name,created,last,calls,mn,mint,rpm,revoked) VALUES(?,?,?,?,?,?,?,?,0,0)', r.k, r.uid, 'default', +r.created || _mnow, null, +r.calls || 0, r.mn || null, +r.mint || 0);
+        }
+        // usage history carries over: every account has exactly ONE key today, so uid -> key is unambiguous.
+        // Built as a map first — a per-row subquery here would be N queries inside the constructor.
+        const kmap = {};
+        for (const r of this.rows('SELECT k, uid, created FROM botkeys2 ORDER BY created')) { if (r.uid && !kmap[r.uid]) kmap[r.uid] = r.k; }
+        for (const r of this.rows('SELECT uid, day, ep, n, last FROM botuse')) {
+          const kk = kmap[r.uid]; if (kk) s.exec('INSERT OR IGNORE INTO botuse2(k,day,ep,n,last) VALUES(?,?,?,?,?)', kk, r.day, r.ep, +r.n || 0, +r.last || 0);
+        }
+        s.exec('INSERT OR IGNORE INTO botmig(m,ts) VALUES(?,?)', 'keys_v2', _mnow);
+      }
+    } catch (e) {}
     s.exec('CREATE TABLE IF NOT EXISTS missions(user_id TEXT, day TEXT, mid TEXT, ts INTEGER, PRIMARY KEY(user_id,day,mid))');
     s.exec('CREATE TABLE IF NOT EXISTS tradeev(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, ts INTEGER, kind TEXT, sym TEXT, side TEXT, lev REAL, margin REAL, pnl REAL, roe REAL, liq INTEGER DEFAULT 0)'); // persistent open/close trade events (diffed on journal sync — real pnl on closes)
     s.exec('CREATE INDEX IF NOT EXISTS tradeev_ts ON tradeev(ts)'); // claimed daily missions (verification runs against uevents) // per-user per-endpoint daily API usage (the ops API tab reads this)
@@ -14811,7 +15430,10 @@ export class UserStore {
   _j2bot(t, live) { // journal trade -> Bot API response shape
     const long = t.side !== 'short', open = t.status !== 'win' && t.status !== 'loss';
     const o = { id: t.id, symbol: t.sym, side: long ? 'long' : 'short', entry_price: +t.entry || 0, margin_usd: +t.margin || 0, leverage: +t.lev || 1, qty: +t.qty || 0, liq_price: +t.liq || 0, sl: (t.stop != null ? +t.stop : null), tp: (t.tp != null ? +t.tp : null), status: open ? 'open' : (t.liquidated ? 'liquidated' : 'closed'), opened_ts: +t.ts || 0, source: t.src === 'bot' ? 'bot' : 'app' };
-    if (open) { if (live > 0) { const dir = long ? 1 : -1; let pnl = (+t.qty || 0) * (live - (+t.entry || 0)) * dir; if (pnl < -(+t.margin || 0)) pnl = -(+t.margin || 0); o.mark_price = live; o.unrealized_pnl_usd = Math.round(pnl * 100) / 100; } }
+    // unrealized P&L is NET of the round trip (fee both sides + funding accrued), exactly like the close math in
+    // /botclose and like the site's own metrics(). It used to be gross, so every open position looked better than
+    // it could ever settle and a strategy tuned on it was tuned on a number that does not exist at exit.
+    if (open) { if (live > 0) { const dir = long ? 1 : -1, q = +t.qty || 0, e = +t.entry || 0, m = +t.margin || 0; let pnl = q * (live - e) * dir - q * (e + live) * (+t.feeRate || 0) - (+t.fund || 0); if (pnl < -m) pnl = -m; o.mark_price = live; o.unrealized_pnl_usd = Math.round(pnl * 100) / 100; o.fees_usd = Math.round((q * (e + live) * (+t.feeRate || 0)) * 100) / 100; o.funding_usd = Math.round((+t.fund || 0) * 100) / 100; } }
     else { o.exit_price = (t.exit != null ? +t.exit : null); o.pnl_usd = (t.pnl != null ? +t.pnl : null); o.closed_ts = (t.closeTs != null ? +t.closeTs : null); if (t.partial) o.partial_pct = +t.partial; }
     return o;
   }
@@ -14835,7 +15457,7 @@ export class UserStore {
         const cur = curById.get(String(t.id));
         if (!cur) return false;                                          // fabrication — server never issued this id
         if (cur.sc) return false;                                        // server-closed is FINAL
-        for (const k of ['sym', 'side', 'entry', 'margin', 'lev', 'qty', 'notional', 'liq', 'mmr', 'ts', 'src', 'fund', 'fundTs', 'swT', 'swGap', 'pendClose']) if (cur[k] != null) t[k] = cur[k]; // server-held fields (incl. sweep watermark swT/swGap + nudge pendClose) a client sync can't touch
+        for (const k of ['sym', 'side', 'entry', 'margin', 'lev', 'qty', 'notional', 'liq', 'mmr', 'ts', 'src', 'fund', 'fundTs', 'swT', 'swGap', 'pendClose', 'feeRate']) if (cur[k] != null) t[k] = cur[k]; // server-held fields (incl. sweep watermark swT/swGap + nudge pendClose + the per-market feeRate the server charges) a client sync can't touch
         if ((t.status === 'win' || t.status === 'loss') && cur.status !== 'win' && cur.status !== 'loss') return false; // P0.6 — srv closes are SERVER-AUTHORITATIVE: manual close routes through /botclose (sets sc); auto-close (liq/SL/TP) is settled by the sweep/nudge candle-check at the server's OWN level. A client sync can NEVER close an srv trade (its exit price can't be trusted, and the position must stay OPEN in active_srv so the sweep settles it). The client's local close still shows instantly (pullTrades keeps a locally-closed trade over a stale server 'open'); the server reconciles with sc within one sweep/nudge.
         return true;
       });
@@ -14994,42 +15616,109 @@ export class UserStore {
       if (Math.random() < 0.02) { try { sql.exec("DELETE FROM aiuse WHERE k NOT LIKE '%|' || ?", String(b.day || day)); } catch (e) {} } // occasional cleanup of past days
       return this.j({ ok: true, used: used + 1, limit });
     }
-    if (path === '/botkey') { // create / fetch / rotate the account's bot-API key
+    if (path === '/botkey') { // list / create / rename / revoke / rotate the account's bot-API keys (v2: MANY per account)
       const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
-      let row = this.rows('SELECT k FROM botkeys WHERE uid=?', uid)[0];
-      if (b.rotate && row) { sql.exec('DELETE FROM botkeys WHERE uid=?', uid); row = null; }
-      if (!row) { const k = 'mpb_' + this.rid(); sql.exec('INSERT INTO botkeys(k,uid,created) VALUES(?,?,?)', k, uid, now); return this.j({ key: k, created: now }); }
-      return this.j({ key: row.k });
+      // the worker resolves premium (it has both sources — the users column AND the KV allow-list) and passes the
+      // tier down; we write it onto every key the account owns so the hot auth path can read it for free.
+      if (b.tier != null) { try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=?', (+b.tier === 1 ? 1 : 0), uid); } catch (e) {} }
+      const tier = +(this.rows('SELECT tier FROM botkeys2 WHERE uid=? LIMIT 1', uid)[0] || {}).tier || 0;
+      const LIM = BOT_TIER_LIMITS(tier);
+      const MAX_KEYS = LIM.maxKeys;
+      const list = () => this.rows('SELECT k, name, created, last, calls, rpm, revoked, tier FROM botkeys2 WHERE uid=? ORDER BY created', uid);
+      const nameOf = (v, fb) => { const s2 = String(v == null ? '' : v).replace(/[^\w .-]/g, '').trim().slice(0, 40); return s2 || fb; };
+      const mint = (nm) => { const k = 'mpb_' + this.rid(); sql.exec('INSERT INTO botkeys2(k,uid,name,created,calls,mint,rpm,revoked,tier) VALUES(?,?,?,?,0,0,0,0,?)', k, uid, nm, now, tier); return k; };
+      const plan = { tier: LIM.name, requests_per_minute: LIM.rpm, max_keys: LIM.maxKeys, max_open_positions: LIM.maxOpen, websocket: true };
+      const act = String(b.act || '');
+      if (act === 'create') {
+        if (list().filter(r => !r.revoked).length >= MAX_KEYS) return this.j({ error: 'max_keys', max: MAX_KEYS });
+        const k = mint(nameOf(b.name, 'key ' + (list().length + 1)));
+        return this.j({ key: k, created: now, keys: list(), plan });
+      }
+      if (act === 'rename') { sql.exec('UPDATE botkeys2 SET name=? WHERE k=? AND uid=?', nameOf(b.name, 'key'), String(b.key || ''), uid); return this.j({ ok: true, keys: list(), plan }); }
+      if (act === 'revoke') { // soft-revoke: the row stays so its usage history and attribution survive
+        sql.exec('UPDATE botkeys2 SET revoked=1 WHERE k=? AND uid=?', String(b.key || ''), uid);
+        return this.j({ ok: true, keys: list(), plan });
+      }
+      if (act === 'list') { const cur = list(); if (!cur.length) { mint('default'); return this.j({ keys: list(), plan }); } return this.j({ keys: cur, plan }); }
+      // ── legacy shape (the /trading-api page and any old caller): always returns {key} ──
+      let row = list().filter(r => !r.revoked)[0];
+      if (b.rotate && row) { sql.exec('UPDATE botkeys2 SET revoked=1 WHERE k=? AND uid=?', row.k, uid); row = null; } // rotate revokes rather than DELETEs — usage history is evidence, don't destroy it
+      if (!row) { const k = mint('default'); return this.j({ key: k, created: now, keys: list(), plan }); }
+      return this.j({ key: row.k, keys: list(), plan });
     }
-    if (path === '/botauth') { // resolve key → uid + 120 req/min rate limit (atomic, single-threaded DO)
-      const k = String(b.key || ''); const row = this.rows('SELECT * FROM botkeys WHERE k=?', k)[0];
+    if (path === '/botauth') { // resolve key -> uid, meter PER KEY, enforce the per-key rate limit (atomic, single-threaded DO)
+      const k = String(b.key || ''); const row = this.rows('SELECT * FROM botkeys2 WHERE k=?', k)[0];
       if (!row) return this.j({ error: 'bad_key' });
+      if (+row.revoked) return this.j({ error: 'revoked_key' });
+      // rpm is a per-key override the owner can set by hand; otherwise the tier decides. Tier lives on the row so
+      // the hot path never reads KV — it is refreshed whenever the user touches /api/bot/key and by the daily cron.
+      const lim = (+row.rpm > 0) ? +row.rpm : BOT_TIER_LIMITS(+row.tier || 0).rpm;
       const mn = new Date().toISOString().slice(0, 16);
       const cnt = (row.mn === mn) ? (row.mint || 0) + 1 : 1;
-      if (cnt > 120) return this.j({ error: 'rate_limit' });
-      sql.exec('UPDATE botkeys SET mn=?, mint=?, calls=calls+1 WHERE k=?', mn, cnt, k);
+      const reset = Math.floor(now / 60000) * 60 + 60; // epoch SECONDS at which the current minute window rolls
+      if (cnt > lim) return this.j({ error: 'rate_limit', limit: lim, remaining: 0, reset });
+      sql.exec('UPDATE botkeys2 SET mn=?, mint=?, calls=calls+1, last=? WHERE k=?', mn, cnt, now, k);
       const ep = String(b.ep || 'other').replace(/[^a-z_]/g, '').slice(0, 20) || 'other';
       const day = new Date().toISOString().slice(0, 10);
-      sql.exec('INSERT INTO botuse(uid,day,ep,n,last) VALUES(?,?,?,1,?) ON CONFLICT(uid,day,ep) DO UPDATE SET n=n+1,last=?', row.uid, day, ep, now, now);
-      return this.j({ uid: row.uid });
+      sql.exec('INSERT INTO botuse2(k,day,ep,n,last) VALUES(?,?,?,1,?) ON CONFLICT(k,day,ep) DO UPDATE SET n=n+1,last=?', k, day, ep, now, now);
+      return this.j({ uid: row.uid, k, name: row.name || '', tier: +row.tier || 0, limit: lim, remaining: Math.max(0, lim - cnt), reset });
     }
-    if (path === '/botstats') { // ops API tab: who uses the bot API and for what
+    if (path === '/bottierlist') { // every account holding a key, with the premium column the DO can see
+      const holders = this.rows('SELECT DISTINCT bk.uid AS uid, u.username AS username, u.premium AS premium FROM botkeys2 bk LEFT JOIN users u ON u.id=bk.uid WHERE bk.uid IS NOT NULL LIMIT 500');
+      return this.j({ holders });
+    }
+    if (path === '/bottierset') {
+      const set = Array.isArray(b.set) ? b.set.slice(0, 500) : [];
+      let n = 0;
+      for (const x of set) { if (!x || !x.uid) continue; try { sql.exec('UPDATE botkeys2 SET tier=? WHERE uid=? AND tier<>?', (+x.tier === 1 ? 1 : 0), String(x.uid), (+x.tier === 1 ? 1 : 0)); n++; } catch (e) {} }
+      return this.j({ ok: true, checked: n });
+    }
+    if (path === '/bottrades') { // full closed-trade ledger with paging — the journal is capped at 100, tradeev keeps 30 days
+      const uid = String(b.uid || '');
+      const limit = Math.min(500, Math.max(1, +b.limit || 100));
+      const before = +b.before || 0;
+      const rowsQ = before
+        ? this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, via, tid FROM tradeev WHERE user_id=? AND kind='close' AND ts<? ORDER BY ts DESC LIMIT ?", uid, before, limit)
+        : this.rows("SELECT ts, sym, side, lev, margin, pnl, roe, liq, via, tid FROM tradeev WHERE user_id=? AND kind='close' ORDER BY ts DESC LIMIT ?", uid, limit);
+      const trades = rowsQ.map(r => ({ id: r.tid || null, closed_ts: +r.ts || 0, symbol: r.sym, side: r.side, leverage: +r.lev || 1, margin_usd: Math.round((+r.margin || 0) * 100) / 100, pnl_usd: (r.pnl == null ? null : Math.round(+r.pnl * 100) / 100), roe_pct: (r.roe == null ? null : Math.round(+r.roe * 100) / 100), liquidated: !!+r.liq, via: r.via || null }));
+      const oldest = trades.length ? trades[trades.length - 1].closed_ts : 0;
+      return this.j({ trades, count: trades.length, next_before: (trades.length === limit && oldest) ? oldest : null, retention_days: 30 });
+    }
+    if (path === '/botstats') { // ops API tab: which KEY is used, by whom, for what
       const cutoff = new Date(Date.now() - 14 * 86400000).toISOString().slice(0, 10);
       const today = new Date().toISOString().slice(0, 10);
-      const keys = this.rows('SELECT bk.uid, bk.created, bk.calls, u.username, u.email FROM botkeys bk LEFT JOIN users u ON u.id=bk.uid ORDER BY bk.calls DESC LIMIT 200');
-      const use = this.rows('SELECT uid, day, ep, n, last FROM botuse WHERE day>=? ORDER BY day DESC', cutoff);
-      const openPos = keys.map(k => { const jn = this._loadJournal(k.uid); const n = jn.filter(t => t && t.src === 'bot' && t.status !== 'win' && t.status !== 'loss').length; return { uid: k.uid, n }; }).filter(x => x.n > 0); // bot-opened positions live in the account journal now
-      const byEp = this.rows('SELECT ep, COALESCE(SUM(n),0) n FROM botuse WHERE day>=? GROUP BY ep ORDER BY n DESC', cutoff);
-      const todayTotal = (this.rows('SELECT COALESCE(SUM(n),0) t FROM botuse WHERE day=?', today)[0] || {}).t || 0;
-      const activeToday = (this.rows('SELECT COUNT(DISTINCT uid) c FROM botuse WHERE day=?', today)[0] || {}).c || 0;
-      return this.j({ keys, use, openPos, byEp, todayTotal, activeToday, today });
+      const keys = this.rows('SELECT bk.k, bk.uid, bk.name, bk.created, bk.last, bk.calls, bk.rpm, bk.revoked, bk.tier, u.username, u.email FROM botkeys2 bk LEFT JOIN users u ON u.id=bk.uid ORDER BY bk.calls DESC LIMIT 300');
+      const use = this.rows('SELECT k, day, ep, n, last FROM botuse2 WHERE day>=? ORDER BY day DESC', cutoff);
+      const seenUid = {}; // one journal read per ACCOUNT even when it holds several keys
+      const openPos = keys.map(r => { if (!r.uid || seenUid[r.uid]) return null; seenUid[r.uid] = 1; const jn = this._loadJournal(r.uid); const n = jn.filter(t => t && t.src === 'bot' && t.status !== 'win' && t.status !== 'loss').length; return n > 0 ? { uid: r.uid, n } : null; }).filter(Boolean);
+      const byEp = this.rows('SELECT ep, COALESCE(SUM(n),0) n FROM botuse2 WHERE day>=? GROUP BY ep ORDER BY n DESC', cutoff);
+      const todayTotal = (this.rows('SELECT COALESCE(SUM(n),0) t FROM botuse2 WHERE day=?', today)[0] || {}).t || 0;
+      const activeToday = (this.rows('SELECT COUNT(DISTINCT k) c FROM botuse2 WHERE day=?', today)[0] || {}).c || 0;
+      return this.j({ keys, use, openPos, byEp, todayTotal, activeToday, today, keyed: 'key' });
     }
     if (path === '/botopen') { // Bot API open → written straight into the account's journal (My Trades), same as a manual open
       const uid = String(b.uid || ''), t = b.t || {};
       const jn = this._loadJournal(uid);
+      // IDEMPOTENCY: same client_order_id -> the position the FIRST call created, never a second one. The DO is
+      // single-threaded, so even two simultaneous retries serialize here and the loser gets the winner's position.
+      const coid = String(b.coid || '').slice(0, 64);
+      if (coid) {
+        const prev = this.rows('SELECT tid FROM botidem WHERE uid=? AND coid=?', uid, coid)[0];
+        if (prev) {
+          const ex = jn.filter(x => x && String(x.id) === String(prev.tid))[0];
+          if (ex) return this.j({ ok: true, position: this._j2bot(ex, null), idempotent: true });
+          return this.j({ ok: true, position: null, idempotent: true, note: 'client_order_id already used; the trade is no longer in the recent journal' });
+        }
+      }
       const openN = jn.filter(x => x && x.src === 'bot' && x.status !== 'win' && x.status !== 'loss').length;
-      if (openN >= 50) return this.j({ error: 'too_many_open', max: 50 });
+      const _oTier = +(this.rows('SELECT tier FROM botkeys2 WHERE uid=? LIMIT 1', uid)[0] || {}).tier || 0;
+      const _oMax = BOT_TIER_LIMITS(_oTier).maxOpen;
+      if (openN >= _oMax) return this.j({ error: 'too_many_open', max: _oMax });
       this._syncJournal(uid, [t], b.promos, true, b.via === 'bot' ? 'bot' : 'site');
+      if (coid) {
+        sql.exec('INSERT OR IGNORE INTO botidem(uid,coid,tid,ts) VALUES(?,?,?,?)', uid, coid, String(t.id || ''), now);
+        try { sql.exec('DELETE FROM botidem WHERE ts < ?', now - 7 * 86400000); } catch (e) {} // 7d window — long past any retry
+      }
       return this.j({ ok: true, position: this._j2bot(t, null) });
     }
     if (path === '/botpositions' || path === '/botclose' || path === '/botcloseall') {
@@ -15047,7 +15736,10 @@ export class UserStore {
       if (autoClosed.length) { autoClosed.forEach(x => { x.sc = 1; }); this._syncJournal(uid, autoClosed, b.promos, true, 'sweep'); } // sc = server-executed close (prize-eligible)
       const cur = this._loadJournal(uid);
       if (path === '/botcloseall') {
-        const closes = cur.filter(t => isOpen(t) && t.src === 'bot').map(t => { const live = PR[t.sym]; if (!(live > 0)) return null; const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0; let pnl = (+t.qty || 0) * (live - (+t.entry || 0)) * dir; if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); }).filter(Boolean);
+        // fee + funding settle EXACTLY as in /botclose below — this path used to skip both, so a position closed
+        // through close_all was free while the same position closed through /close paid the round trip (measured
+        // 2026-08-19: one user's 31 close_all exits were fee-free, up to $5.58 off on a single trade).
+        const closes = cur.filter(t => isOpen(t) && t.src === 'bot').map(t => { const live = PR[t.sym]; if (!(live > 0)) return null; const long = t.side !== 'short', dir = long ? 1 : -1, margin = +t.margin || 0, qty = +t.qty || 0, entry = +t.entry || 0; let pnl = qty * (live - entry) * dir - qty * (entry + live) * (+t.feeRate || 0) - (+t.fund || 0); if (pnl < -margin) pnl = -margin; return Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now() }); }).filter(Boolean);
         if (closes.length) { closes.forEach(x => { x.sc = 1; }); this._syncJournal(uid, closes, b.promos, true, b.via === 'bot' ? 'bot' : 'site'); }
         return this.j({ ok: true, closed: closes.length, positions: closes.map(t => this._j2bot(t, null)) });
       }
@@ -15068,7 +15760,18 @@ export class UserStore {
         return this.j({ ok: true, closed: this._j2bot(part, null), remaining: this._j2bot(rem, live) });
       }
       cur.sort((a, c) => ((+c.closeTs || +c.ts || 0) - (+a.closeTs || +a.ts || 0)));
-      return this.j({ positions: cur.slice(0, 100).map(t => this._j2bot(t, PR[t.sym])) });
+      // LIFETIME totals for /account. The journal is capped at 100 (_syncJournal CAP), so summing `positions` gives
+      // "last 100 trades" while calling it lifetime — a wrong number presented as authoritative to people sizing
+      // strategies on it. utrades.life_* is the trim-proof accumulator (incremented per close, seeded once).
+      let life = null;
+      try {
+        const lr = this.rows('SELECT life_closes, life_wins, life_losses, life_pnl, best_pnl, life_seed, n, wins, losses, pnl FROM utrades WHERE user_id=?', uid)[0];
+        if (lr) {
+          const seeded = !!+lr.life_seed;
+          life = { closes: seeded ? (+lr.life_closes || 0) : (+lr.n || 0), wins: seeded ? (+lr.life_wins || 0) : (+lr.wins || 0), losses: seeded ? (+lr.life_losses || 0) : (+lr.losses || 0), pnl: Math.round((seeded ? (+lr.life_pnl || 0) : (+lr.pnl || 0)) * 100) / 100, best: (lr.best_pnl == null ? null : Math.round(+lr.best_pnl * 100) / 100), exact: seeded };
+        }
+      } catch (e) {}
+      return this.j({ positions: cur.slice(0, 100).map(t => this._j2bot(t, PR[t.sym])), life });
     }
     if (path === '/track') { // worker forwards a signed-in user's pageview/event here (best-effort)
       const uid = String(b.uid || ''); if (!uid) return this.j({ ok: false });

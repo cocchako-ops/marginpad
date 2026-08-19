@@ -104,6 +104,18 @@ class_name = "OpsLog"
 tag = "v6"
 new_sqlite_classes = ["OpsLog"]
 
+# Bot API WebSocket push (2026-08-19). Its OWN DO class for the same reason SpotStore is: UserStore 'main' is the
+# hot single instance that has reset under load, and long-lived sockets do not belong on it. One instance per
+# ACCOUNT (bs_<uid>), created only while a socket is open. It PULLS from UserStore on an alarm and diffs — nothing
+# was added to the trading path to make streaming work.
+[[durable_objects.bindings]]
+name = "BOTSTREAM"
+class_name = "BotStream"
+
+[[migrations]]
+tag = "v7"
+new_sqlite_classes = ["BotStream"]
+
 # ============================================================================
 # STAGING ENVIRONMENT (deploy: wrangler deploy --env staging → separate script
 # `marginpad-staging`, so ALL Durable Objects are physically separate instances).
@@ -165,3 +177,6 @@ class_name = "SpotStore"
 [[env.staging.durable_objects.bindings]]
 name = "OPSLOG"
 class_name = "OpsLog"
+[[env.staging.durable_objects.bindings]]
+name = "BOTSTREAM"
+class_name = "BotStream"

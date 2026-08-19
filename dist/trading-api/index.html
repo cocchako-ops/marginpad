@@ -150,13 +150,101 @@
 
 <h2>2 · Endpoints</h2>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/price?symbol=BTC</code><p>Live price for any USDT pair. <b>No key needed</b> — try it right now in your browser.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/klines?symbol=BTC&amp;interval=60</code><p>OHLC candles for your strategy (intervals: 1, 5, 15, 30, 60, 240, 1440 minutes). <b>No key needed.</b></p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/klines?symbol=BTC&amp;interval=60</code><p>OHLC candles for your strategy (intervals: 1, 5, 15, 30, 60, 240, 1440 minutes). <b>No key needed.</b> Returns up to <b>1000 candles</b> per call, newest last — that is about 16 hours on 1m, 3 days on 5m, 10 days on 15m, 41 days on 1h, 166 days on 4h and roughly 3 years on 1d.</p>
+<p style="margin:10px 0 0"><b>Going further back:</b> pass <code>&amp;end=&lt;unix ms&gt;</code> to fetch the 1000 candles ending at that moment. Take the <code>time</code> of the first candle you received (it is in <b>seconds</b>), multiply by 1000, and use that as the next <code>end</code>. Repeat until you have the history your backtest needs:</p>
+<pre><code>bars = get(f"/api/bot/v1/klines?symbol=BTC&amp;interval=1")
+while len(all_bars) &lt; wanted:
+    end_ms = bars[0]["time"] * 1000          # oldest candle in hand
+    bars = get(f"/api/bot/v1/klines?symbol=BTC&amp;interval=1&amp;end={end_ms}")
+    if not bars: break
+    all_bars = bars + all_bars</code></pre>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/open</code><p>Open a simulated position at the live price. Body: <code>{"symbol":"BTC","side":"long","margin_usd":100,"leverage":20,"sl":58000,"tp":66000}</code> (sl/tp optional). Returns the position incl. its <code>liq_price</code>.</p></div>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/close</code><p>Close a position at the live price. Body: <code>{"id":"bp...","pct":50}</code> — <code>pct</code> is optional (default 100); partial closes split the position exactly like on the site.</p></div>
 <div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/close_all</code><p>Panic button — closes every open position at the live price in one call.</p></div>
 <div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/positions</code><p>All your positions with live <code>mark_price</code> and <code>unrealized_pnl_usd</code>; crossed liquidations and SL/TP are settled automatically.</p></div>
-<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/account</code><p>Account summary: open positions, margin in use, live unrealized P&amp;L, realized P&amp;L, wins/losses and win rate.</p></div>
-<p class="note">Authenticate with the <code class="k">X-API-Key</code> header on every call except <code class="k">/price</code> and <code class="k">/klines</code>.</p>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/account</code><p>Account summary: open positions, margin in use, live unrealized P&amp;L, <b>lifetime</b> realized P&amp;L, wins/losses, win rate, plus <code>balance_usd</code>, <code>equity_usd</code>, <code>free_margin_usd</code> and <code>return_pct</code>.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/balance</code><p>Just the money: starting balance, balance, equity, margin in use, free margin, unrealized P&amp;L. Cheaper than <code>/account</code> when that is all your sizing logic needs.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/markets</code><p>Everything tradable, with <code>asset_class</code>, <code>max_leverage</code> and <code>taker_fee_pct</code> per symbol. Filter with <code>?class=crypto|stock|forex|metal|index</code>. Call this once at startup instead of discovering limits by trial and error.</p></div>
+<div class="ep"><span class="m post">POST</span><code class="u">/api/bot/v1/sltp</code><p>Move the stop-loss or take-profit on an <b>open</b> position without closing it. Body: <code>{"id":"bot...","sl":63500,"tp":66000}</code> — send <code>null</code> to clear one. Both are checked against the entry side. This is how you trail a stop; before it existed you had to close and reopen, which changed your entry and paid a full round trip.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/trades?limit=100&amp;before=…</code><p>The full closed-trade ledger with paging. <code>/positions</code> is capped at 100 rows; this pages through the whole retention window — follow <code>next_before</code> until it comes back <code>null</code>. Use it to compute strategy statistics on the complete record instead of a truncated tail.</p></div>
+<div class="ep"><span class="m get">GET</span><code class="u">/api/bot/v1/time</code><p>Server clock. <b>No key needed.</b> Pass <code>?client_ts=&lt;your unix ms&gt;</code> and you get <code>drift_ms</code> back. A bot bucketing candles against a drifting local clock builds bars nobody else sees, and that is miserable to debug from the outside.</p></div>
+<p class="note">Authenticate with the <code class="k">X-API-Key</code> header on every call except <code class="k">/price</code>, <code class="k">/klines</code> and <code class="k">/time</code>.</p>
+
+<h2 id="v2">Response format — v1 and v2</h2>
+<p><code class="k">/api/bot/v1/*</code> is <b>frozen</b>. Its response bodies will not change; bots written against it keep working indefinitely, and it still receives correctness fixes.</p>
+<p><code class="k">/api/bot/v2/*</code> is the same API with the envelope our data endpoints already use — one predictable shape for success and failure, so you write the parsing once:</p>
+<pre><code>{ "ok": true,  "data": { ... }, "ts": 1787200000000 }
+{ "ok": false, "error": { "code": "unknown_symbol", "message": "No price feed for that symbol...", "symbol": "FOO" }, "ts": 1787200000000 }</code></pre>
+<p>Same paths, same parameters, same key — swap <code>v1</code> for <code>v2</code> in the URL. Error <code>code</code> values are stable identifiers; <code>message</code> is for humans and may be reworded.</p>
+
+<h2 id="keys">Managing your keys</h2>
+<p>You can hold several keys on one account — keep a backtest bot and a live bot apart, and revoke one without touching the other. <b>Usage and rate limits are counted per key</b>, so each gets its own 120/min budget and its own line in your stats. Signed in on the site, from the browser:</p>
+<pre><code>POST /api/bot/key  {"act":"list"}                          // all your keys
+POST /api/bot/key  {"act":"create","name":"backtest-bot"}   // new key (max 10)
+POST /api/bot/key  {"act":"rename","key":"mpb_...","name":"live-bot"}
+POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is kept</code></pre>
+<p>A revoked key returns <code>401 revoked_key</code>. Keys are secrets — anyone holding one can trade your paper account.</p>
+
+<h2 id="reliable">Writing a bot that does not break</h2>
+<p><b>Always send <code>client_order_id</code> on open.</b> This is the single most important line in these docs. Without it, a request that times out on the network leaves you guessing: did the position open or not? Retry and you may have two. With it, the retry returns the position the first call created, flagged <code>idempotent: true</code>:</p>
+<pre><code>POST /api/bot/v2/open
+{"symbol":"BTC","side":"long","margin_usd":100,"leverage":5,"client_order_id":"sig-2026-08-19-1403"}
+
+// first call            -> {"ok":true,"data":{"position":{"id":"bot...", ...}}}
+// same call retried     -> {"ok":true,"data":{"position":{"id":"bot...", ...},"idempotent":true}}</code></pre>
+<p>Use a value your strategy can regenerate deterministically — a signal id, or symbol plus candle timestamp. Ids are remembered for 7 days.</p>
+
+<p><b>Send <code>symbol</code> when you close.</b> Every <code>/positions</code> row already carries it, so this is free to add and it measurably shortens the close:</p>
+<pre><code>POST /api/bot/v2/close
+{"id":"bot...","symbol":"BTC"}    // one price fetch, one round trip
+{"id":"bot..."}                   // server must first look up which symbol to price</code></pre>
+<p>Our trading store is a single region-pinned instance, so every extra hop costs what the round trip to it costs from where you are. Measured on 2026-08-19: about <b>20&nbsp;ms from Europe</b> but <b>198&nbsp;ms median and 368&nbsp;ms at the 95th percentile from Singapore</b>. A cold price feed adds around 400&nbsp;ms on top, and without the hint a close on a liquid pair could end up waiting on an illiquid one in the same batch. With the hint a close is one hop plus one warm price. A wrong or stale <code>symbol</code> costs nothing — the server notices and falls back.</p>
+
+<p><b>Do not burn your rate budget on polling.</b> Most bots spend the bulk of their calls asking "has anything changed". Two things make that nearly free:</p>
+<pre><code># 1. state changes: send back the ETag, get 304 and an empty body when nothing moved
+curl -H "X-API-Key: $KEY" -H 'If-None-Match: W/"1a2b3c-4"' \
+     https://marginpad.io/api/bot/v1/positions
+
+# 2. live prices: /price is KEYLESS, so it costs nothing against your 120/min
+curl https://marginpad.io/api/bot/v1/price?symbol=BTC</code></pre>
+<p>The ETag covers structural state — position ids, status, quantity, stop, target, exit — and deliberately <b>not</b> the mark price, which moves every tick and would make the ETag never match. So: poll <code>/positions</code> for "did my stop fire", poll the keyless <code>/price</code> for P&amp;L. Watch <code>X-RateLimit-Remaining</code> and back off on <code>Retry-After</code>.</p>
+
+<h2 id="stream">WebSocket — stop polling entirely</h2>
+<p>Positions and prices are pushed to you, so you find out your stop fired within a couple of seconds instead of on your next poll:</p>
+<pre><code>wss://marginpad.io/api/bot/v2/stream?api_key=mpb_…
+
+&lt;- {"type":"welcome","data":{"channels":["positions","prices"],"tick_ms":2000},"ts":…}
+&lt;- {"type":"snapshot","data":{"positions":[…]},"ts":…}
+&lt;- {"type":"position","data":{"event":"closed","position":{…,"pnl_usd":-1.24}},"ts":…}
+&lt;- {"type":"prices","data":{"BTC":64770.1},"ts":…}
+
+-&gt; {"op":"subscribe","channels":["positions"]}     // prices off, events only
+-&gt; {"op":"ping"}                                    // &lt;- {"type":"pong"}</code></pre>
+<p><b>Events:</b> <code>position</code> with <code>event: opened | updated | closed</code> fires when something actually changes — a fill, a stop moving, a close, a liquidation. <code>prices</code> carries the mark price of your open symbols each tick. Mark-price movement alone never raises a <code>position</code> event, so the channel stays quiet when nothing has happened.</p>
+<p><b>Stops settle faster while you are connected.</b> The stream drives the same server-side SL/TP/liquidation sweep the REST path uses, on its ~2s cadence, instead of leaving your position to the periodic sweep.</p>
+<p>Up to 3 concurrent sockets per account, shared across your keys. Sockets are recycled after 6 hours — reconnect and you get a fresh <code>snapshot</code>. If the connection drops, treat the next <code>snapshot</code> as the truth rather than replaying missed events.</p>
+
+<h2 id="mcp">Use it from Claude, ChatGPT or Cursor</h2>
+<p>MarginPad runs a remote <b>MCP</b> server, so an AI assistant can read markets and trade your paper account directly — no glue code:</p>
+<pre><code>https://marginpad.io/mcp</code></pre>
+<p>Add it as a remote MCP server in your client and set the header <code>X-API-Key: mpb_…</code> if you want the paper-trading tools. Market-data tools need no key. Seventeen tools are exposed: prices, candles, markets, screener, funding, open interest, liquidations, fear and greed, the economic calendar, two calculators, and paper open/close/sltp/positions/balance/trades. <code>GET /mcp</code> in a browser returns the server descriptor.</p>
+
+<h2 id="errors">Error codes</h2>
+<p>On <code>/v2</code>, failures are always <code>{"ok":false,"error":{"code","message"},"ts"}</code>. The <code>code</code> is a stable identifier you can branch on; the <code>message</code> is prose and may be reworded. Some errors carry the value you need to correct the call — <code>sl_wrong_side</code> and <code>tp_wrong_side</code> include the live price.</p>
+<div class="vswrap"><table class="vs">
+  <tr><th>Code</th><th class="hl">HTTP</th><th>What to do</th></tr>
+  <tr><td><code>missing_api_key</code> / <code>invalid_api_key</code></td><td class="hl">401</td><td>Send a valid key in <code>X-API-Key</code>.</td></tr>
+  <tr><td><code>revoked_key</code></td><td class="hl">401</td><td>Create a new key; this one was revoked.</td></tr>
+  <tr><td><code>rate_limit</code></td><td class="hl">429</td><td>Sleep until <code>Retry-After</code>. Do not hot-retry.</td></tr>
+  <tr><td><code>unknown_symbol</code></td><td class="hl">404</td><td>Check <code>/v1/markets</code>.</td></tr>
+  <tr><td><code>symbol_required</code>, <code>margin_usd_min_1</code>, <code>margin_usd_max_100000</code>, <code>id_required</code></td><td class="hl">400</td><td>Fix the request body.</td></tr>
+  <tr><td><code>sl_wrong_side</code> / <code>tp_wrong_side</code></td><td class="hl">400</td><td>The response carries <code>live</code> — put the level on the correct side of it.</td></tr>
+  <tr><td><code>too_many_open</code></td><td class="hl">409</td><td>You hold 50 open positions. Close something.</td></tr>
+  <tr><td><code>already_closed</code></td><td class="hl">400</td><td>Harmless on a retry — the position is already settled.</td></tr>
+  <tr><td><code>no_price</code></td><td class="hl">400</td><td>No live price this instant; the position stays open. Retry.</td></tr>
+  <tr><td><code>unavailable</code></td><td class="hl">503</td><td>Transient. Retry with backoff.</td></tr>
+</table></div>
+<p class="note">Machine-readable: <a href="/api/openapi.json">OpenAPI spec</a> (full request and response schemas) · <a href="/api/changelog">API changelog</a> · <a href="/api/changelog?format=json">changelog as JSON</a>.</p>
 
 
 <h2 id="liq-api">Free Liquidation Data API <span style="background:rgba(255,98,88,.14);border:1px solid rgba(255,98,88,.4);color:#ff8a80;font-size:11px;font-weight:800;border-radius:6px;padding:2px 8px;vertical-align:middle;letter-spacing:.04em">LIVE DATA</span></h2>
@@ -226,15 +314,36 @@ if (mySignal(price)) {  // your strategy here
   <tr><td>Risk</td><td class="y">None</td><td class="y">None — simulated dollars</td><td class="n">Real money at stake</td></tr>
   <tr><td>Catches logic bugs</td><td class="n">Rarely — replayed data hides them</td><td class="y">Yes — same code path as live</td><td class="n">Yes, but each bug costs money</td></tr>
   <tr><td>Overfitting check</td><td class="n">No — you tuned on this data</td><td class="y">Yes — unseen future data</td><td class="y">Yes</td></tr>
-  <tr><td>Cost</td><td class="y">Free</td><td class="y hl">Free</td><td class="n">Fees + losses + funding</td></tr>
+  <tr><td>Cost</td><td class="y">Free</td><td class="y hl">Free to use — trading fees &amp; funding are simulated</td><td class="n">Fees + losses + funding</td></tr>
   <tr><td>Best for</td><td>Filtering ideas fast</td><td class="hl">Proving the bot before funding it</td><td>A strategy already proven twice</td></tr>
 </table></div>
 <p class="note">Do all three, in that order. The middle step is the one most people skip — and the one that would have saved them.</p>
 
 <h2>How the simulator works</h2>
-<div class="faq"><b>Fills &amp; prices</b><p>Orders fill instantly at the real live price (multi-exchange feed — the same prices as our Paper Trade). No slippage model yet, so treat results as an upper bound.</p></div>
+<div class="faq"><b>Fills &amp; prices</b><p>Orders fill instantly at the real live price (multi-exchange feed — the same prices as our Paper Trade). API fills carry <b>no slippage</b> (fills on the website itself do), so treat entry prices as slightly optimistic.</p></div>
+<div class="faq"><b>Trading fees — read this before you measure a strategy</b><p>Every position pays a <b>taker fee on both sides</b>, settled into <code>pnl_usd</code> at close. It is charged as a round trip: <code>fee = qty × (entry + exit) × rate</code>. Funding is accrued on positions held across funding marks and deducted the same way. Open positions already show P&amp;L <b>net</b> of the round trip in <code>unrealized_pnl_usd</code>, so what you see is what settles.</p>
+<div class="vswrap"><table class="vs">
+  <tr><th>Market</th><th class="hl">Fee per side</th><th>Round trip on $10,000 notional</th></tr>
+  <tr><td>Crypto perps</td><td class="hl">0.055%</td><td>$11.00</td></tr>
+  <tr><td>Stocks &amp; ETFs</td><td class="hl">0.02%</td><td>$4.00</td></tr>
+  <tr><td>Metals &amp; indices</td><td class="hl">0.015%</td><td>$3.00</td></tr>
+  <tr><td>Forex majors</td><td class="hl">0.008%</td><td>$1.60</td></tr>
+</table></div>
+<p>Above roughly 180× leverage the rate tapers so the round trip can never exceed ~10% of your margin. <code>GET /v1/markets</code> returns the exact rate and leverage cap for every symbol. <b>Short-horizon strategies live or die on this number</b> — a scalp that clears less than the round trip is a loser no matter how often it is right.</p></div>
 <div class="faq"><b>Margin, liquidation, SL/TP</b><p>Isolated margin. Losses are capped at your margin. The liquidation price uses a 0.5% maintenance margin rate; when the live price crosses it the position settles at the liq price automatically. <b>Stop-loss and take-profit orders execute automatically too</b> — when the live price crosses your <code>sl</code> or <code>tp</code>, the position settles at that level (status <code>closed_sl</code> / <code>closed_tp</code>).</p></div>
-<div class="faq"><b>Limits</b><p>120 requests/minute per key · 50 open positions · $1–$100,000 margin per trade · leverage 1–1000×. Need more for a serious project? Message us via the site.</p></div>
+<div class="faq"><b>Limits &amp; rate-limit headers</b><p>Every response carries <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> and <code>X-RateLimit-Reset</code> (epoch seconds); a 429 adds <code>Retry-After</code>. Limits are counted <b>per key</b>, so a second key gets its own budget. <code>GET /v1/usage</code> tells you your plan and what is left in the current window.</p>
+<div class="vswrap"><table class="vs">
+  <tr><th></th><th class="hl">Free</th><th>Premium</th></tr>
+  <tr><td>Market data, candles, calculators, liquidation feed</td><td class="y hl">Unlimited, no key</td><td class="y">Same</td></tr>
+  <tr><td>Paper trading</td><td class="y hl">Full</td><td class="y">Full</td></tr>
+  <tr><td><b>WebSocket stream</b></td><td class="y hl">Yes</td><td class="y">Yes</td></tr>
+  <tr><td>Requests per minute, per key</td><td class="hl">120</td><td>600</td></tr>
+  <tr><td>API keys</td><td class="hl">3</td><td>10</td></tr>
+  <tr><td>Open positions</td><td class="hl">50</td><td>200</td></tr>
+  <tr><td>Margin per trade / leverage</td><td class="hl">$1–$100,000 · per-symbol caps</td><td>Same</td></tr>
+</table></div>
+<p><b>The streaming API is free on purpose.</b> Putting it behind a paywall would push everyone else back onto polling, which costs us far more than the stream does — so the incentives line up: use the WebSocket, we both win. Market data stays keyless and free permanently and is not part of any plan.</p></div>
+<div class="faq"><b>Balance &amp; equity</b><p>Every paper account starts at a nominal <b>$10,000</b>. <code>/v1/account</code> and <code>/v1/balance</code> report <code>balance_usd</code>, <code>equity_usd</code> and <code>free_margin_usd</code> so you can express results as a return instead of a bare dollar figure. This balance is a <b>scorecard, not a constraint</b>: margin is not debited from it and an open is never rejected for lack of funds (<code>margin_enforced: false</code>). Size your positions yourself if you want the constraint to be real.</p></div>
 <div class="faq"><b>See your bot's trades on the site</b><p>Positions opened via the API live on your account server-side. The <a href="/trading-journal/">Trading Journal</a> and account profile analytics for API positions are on the roadmap.</p></div>
 
 <h2>FAQ</h2>
