@@ -10059,7 +10059,17 @@ async function handleBot(url, request, env, ctx) {
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: hdrs() });
   if (!env.USERS) return jb({ error: 'unavailable' }, 503);
   const stub = env.USERS.get(env.USERS.idFromName('main'));
-  const doCall = (p, body) => stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })).then(r => r.json()).catch(() => null);
+  // Every Durable Object hop, timed SERVER-SIDE so the number is the store's own service time with the network to
+  // the caller excluded. Client-side timing conflates the two: measured 2026-08-19, one hop is ~20ms from Europe
+  // and ~198ms p50 / 368ms p95 from Singapore, and none of that gap is the DO's fault. Sampled 1-in-4; the ops
+  // Performance tab groups it as 'do-bot'. This is the baseline any capacity work has to be measured against.
+  const doCall = async (p, body) => {
+    const _t0 = Date.now();
+    try { const r = await stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })); const j = await r.json();
+      try { if (Math.random() < 0.25) perfPush(env, ctx, 'do-bot', Date.now() - _t0, true); } catch (e) {}
+      return j;
+    } catch (e) { try { if (Math.random() < 0.25) perfPush(env, ctx, 'do-bot', Date.now() - _t0, false); } catch (e2) {} return null; }
+  };
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
 
   // --- key management (session-cookie auth, from the site) ---
