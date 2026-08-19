@@ -1352,11 +1352,11 @@
     function durS(v){return v===3600000?'1h':v===86400000?'24h':v===259200000?'3d':'7d';}
     function row(x){
       var met=MET[x.metric]||'ROE',sym=x.sym?' · '+esc(x.sym):'',prem=x.aPrem||x.bPrem;
-      if(x.status==='open')return '<div class="df-r'+(x.aPrem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+'<span class="vs">posted an open duel</span><span class="sub">'+met+sym+' · '+durS(+x.dur)+(x.stake>0?' · stake '+x.stake+' XP, winner takes '+(x.stake*2):' · no stake')+'</span></div><button type="button" class="df-take" data-dftake="'+esc(x.id)+'">Take it</button></div>';
-      if(x.status==='active')return '<div class="df-r'+(prem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+'<span class="vs">vs</span>'+nm(x.b,x.bPrem)+'<span class="sub">'+met+sym+(x.stake>0?' · '+(x.stake*2)+' XP pot':'')+' · '+tleft(x.end)+' left</span></div><span class="df-tag active"><i></i>Live</span></div>';
+      if(x.status==='open')return '<div class="df-r'+(x.aPrem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+'<span class="vs">posted an open duel</span><span class="sub">'+met+sym+' · '+durS(+x.dur)+(x.stake>0?' · stake '+x.stake+' T, winner takes '+(x.stake*2):' · no stake')+'</span></div><button type="button" class="df-take" data-dftake="'+esc(x.id)+'">Take it</button></div>';
+      if(x.status==='active')return '<div class="df-r'+(prem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+'<span class="vs">vs</span>'+nm(x.b,x.bPrem)+'<span class="sub">'+met+sym+(x.stake>0?' · '+(x.stake*2)+' T pot':'')+' · '+tleft(x.end)+' left</span></div><span class="df-tag active"><i></i>Live</span></div>';
       var w=x.winner==='a'?x.a:x.winner==='b'?x.b:'',wp=x.winner==='a'?x.aPrem:x.bPrem,l=x.winner==='a'?x.b:x.a,lp=x.winner==='a'?x.bPrem:x.aPrem;
       if(!w)return '<div class="df-r'+(prem?' prem':'')+'"><div class="df-vs">'+nm(x.a,x.aPrem)+'<span class="vs">vs</span>'+nm(x.b,x.bPrem)+'<span class="sub">'+met+' · dead heat</span></div><span class="df-tag done">Tie</span></div>';
-      return '<div class="df-r'+(prem?' prem':'')+'"><div class="df-vs">'+nm(w,wp)+'<span class="vs">beat</span>'+nm(l,lp)+'<span class="sub">'+met+sym+(x.stake>0?' · +'+(x.stake*2)+' XP':'')+'</span></div><span class="df-tag done">Result</span></div>';
+      return '<div class="df-r'+(prem?' prem':'')+'"><div class="df-vs">'+nm(w,wp)+'<span class="vs">beat</span>'+nm(l,lp)+'<span class="sub">'+met+sym+(x.stake>0?' · +'+(x.stake*2)+' T':'')+'</span></div><span class="df-tag done">Result</span></div>';
     }
     function draw(){
       fetch('/api/duel/feed').then(function(r){return r.json();}).then(function(d){

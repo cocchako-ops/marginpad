@@ -32,7 +32,7 @@
 html,body{background:#0a0b0d;color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
 a{color:var(--lime);text-decoration:none}
 .wrap{max-width:1260px;margin:0 auto;padding:20px 16px 80px}
-/* The header used to spend 330px before a single item appeared. Title, blurb and wallet now share one
+/* The header used to spend 330px before a single item appeared. Title and blurb share one
    band, so the shop starts roughly where the second row of frames used to. */
 .vhead{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:10px}
 .vhead .sub{margin-top:2px}
@@ -43,7 +43,6 @@ h1 b{color:var(--lime)}
 .sub{color:var(--dim);font-size:15.5px;max-width:640px}
 h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;margin:40px 0 4px}
 .h2s{color:var(--faint);font-size:13px;margin-bottom:16px}
-.wallet{display:flex;gap:7px;flex-wrap:wrap;margin:0}
 .wchip{display:flex;align-items:baseline;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:7px 12px}
 .wchip b{font-family:'Space Mono',monospace;font-size:15px}
 .wchip span{font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.07em}
@@ -71,6 +70,54 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;m
 .wish.on{color:var(--lime);border-color:rgba(194,246,74,.5)}
 .wish:hover{color:var(--lime)}
 .sortsel{margin-left:auto;flex:none;font:600 12px 'Familjen Grotesk',sans-serif;color:#9aa3ad;background:#111419;border:1px solid #232932;border-radius:10px;padding:8px 10px;cursor:pointer}
+/* ---- account card: one panel replacing the six chips --------------------------------------------- */
+.acct{position:relative;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:0;border:1px solid var(--line);border-radius:18px;background:linear-gradient(150deg,#12151b,#0c0e12 62%);overflow:hidden;margin:0 0 14px}
+.acct::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 0% 0%,var(--lvc,#5c6b7a)22,transparent 58%)}
+.acct::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--lvc,#5c6b7a),transparent)}
+.acct-l{position:relative;padding:15px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.acct-r{position:relative;padding:15px 18px;border-left:1px solid var(--line);min-width:0}
+@media(max-width:820px){.acct{grid-template-columns:1fr}.acct-r{border-left:0;border-top:1px solid var(--line)}}
+.acct-top{display:flex;align-items:center;gap:11px;min-width:0}
+.acct-lvi{width:38px;height:38px;flex:0 0 38px}
+.acct-id{display:flex;flex-direction:column;min-width:0}
+.acct-lvn{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:-.02em;color:var(--lvc,#e9e7df);line-height:1.15}
+.acct-lvs{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct-bal{margin-left:auto;text-align:right;flex:0 0 auto}
+.acct-bal b{display:block;font-family:'Space Mono',monospace;font-size:16px;color:var(--lime);line-height:1.1}
+.acct-bal span{font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--faint);font-family:'Space Mono',monospace}
+.xpwrap{display:flex;flex-direction:column;gap:5px}
+.xpbar{height:6px;border-radius:4px;background:#191d24;overflow:hidden}
+.xpbar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--lvc,#5c6b7a),var(--lime));width:0;transition:width .7s cubic-bezier(.2,.7,.2,1)}
+.xpnum{display:flex;justify-content:space-between;gap:10px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--faint)}
+.tickrow{display:flex;align-items:flex-end;gap:13px;padding-top:2px}
+.tickbig{font-family:'Space Mono',monospace;font-weight:700;font-size:34px;line-height:.95;color:var(--lime);letter-spacing:-.02em}
+.tickbig small{font-size:14px;margin-left:3px;color:#7f9a4a}
+.tickcap{font-size:11.5px;color:var(--dim);line-height:1.4;padding-bottom:3px}
+.acct-foot{display:flex;flex-wrap:wrap;gap:6px 14px;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--faint)}
+.acct-foot b{color:var(--dim);font-weight:400}
+.acct-foot .hot{color:#ff9a3a}.acct-foot .cool{color:#7ee0ff}.acct-foot .boost{color:#c792ff}
+/* today's earning sources, as bars rather than a rulebook */
+.thead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:9px}
+.thead b{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:400}
+.thead i{font-style:normal;font-family:'Space Mono',monospace;font-size:11px;color:var(--dim)}
+.tsw{display:inline-flex;gap:2px;background:#14181e;border:1px solid var(--line);border-radius:9px;padding:2px}
+.tsw button{font:600 10.5px 'Familjen Grotesk',sans-serif;color:var(--faint);background:none;border:0;border-radius:7px;padding:4px 10px;cursor:pointer;transition:.14s}
+.tsw button.on{background:var(--lime);color:#0a0b0d}
+.tsw button:not(.on):hover{color:var(--dim)}
+.tlog{display:flex;align-items:baseline;gap:9px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.045);font-size:11.5px}
+.tlog:last-child{border-bottom:0}
+.tlog b{font-family:'Space Mono',monospace;font-size:11px;color:var(--lime);flex:0 0 auto;min-width:30px}
+.tlog b.neg{color:#ff7b72}
+.tlog span{color:var(--dim);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tlog i{font-style:normal;font-family:'Space Mono',monospace;font-size:9.5px;color:var(--faint);flex:0 0 auto}
+.tsrc{display:grid;grid-template-columns:1fr auto;gap:3px 10px;align-items:center;margin-bottom:7px}
+.tsrc:last-child{margin-bottom:0}
+.tsrc-n{font-size:11.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tsrc-v{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--faint)}
+.tsrc-b{grid-column:1/-1;height:4px;border-radius:3px;background:#191d24;overflow:hidden}
+.tsrc-b i{display:block;height:100%;border-radius:3px;background:var(--lime);width:0;transition:width .6s cubic-bezier(.2,.7,.2,1)}
+.tsrc.full .tsrc-n,.tsrc.full .tsrc-v{color:var(--faint)}
+.tsrc.full .tsrc-b i{background:#39502a}
 .signin{margin:14px 0 0;padding:13px 16px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.3);border-radius:12px;font-size:13.5px}
 /* ladder */
 .ladder{display:grid;grid-template-columns:repeat(auto-fit,minmax(136px,1fr));gap:10px}
@@ -139,7 +186,7 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;m
    It is your real card, with your real name, pinned under the tabs. Clicking any item in the shop dresses
    it instantly. Nothing is saved and nobody else sees it, so trying on a $19.99 frame you do not own costs
    nothing and commits to nothing — which is exactly why it makes the shop worth browsing. */
-.fit[hidden],.earn[hidden],.wallet[hidden],.collect[hidden]{display:none}
+.fit[hidden],.acct[hidden],.collect[hidden]{display:none}
 .fit{position:sticky;top:52px;z-index:29;display:flex;align-items:center;gap:14px;padding:11px 13px;margin:0 0 14px;background:rgba(13,15,19,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:16px}
 .fit-card{flex:0 0 auto}
 .fit-txt{flex:1;min-width:0}
@@ -227,16 +274,36 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       <h1>THE <b>VAULT</b></h1>
       <p class="sub">Frames, ticket skins and card backgrounds. Earn Ticks by trading and showing up, then spend them on how the room sees you.</p>
     </div>
-    <div class="wallet" id="wallet" hidden>
-      <div class="wchip tk"><b id="wTk">—</b><span>ticks</span></div>
-      <div class="wchip lvl"><b id="wLvl">—</b><span>level</span></div>
-      <div class="wchip xp"><b id="wXp">—</b><span>XP</span></div>
-      <div class="wchip bal"><b id="wBal">—</b><span>balance</span></div>
-      <div class="wchip" style="border-color:#5a3a1a"><b id="wStreak" style="color:#ff9a3a">—</b><span>streak</span></div>
-      <div class="wchip" style="border-color:#2a5a6e"><b id="wFz" style="color:#7ee0ff">—</b><span>freezes</span></div>
-      <div class="wchip" id="wBoost" hidden style="border-color:#5a3a85"><b style="color:#c792ff">2x XP</b><span id="wBoostT"></span></div>
-    </div>
   </div>
+  <section class="acct" id="acct" hidden aria-label="Your account">
+    <div class="acct-l">
+      <div class="acct-top">
+        <span class="acct-lvi" id="aLvIcon"></span>
+        <span class="acct-id">
+          <span class="acct-lvn" id="aLvName">Unranked</span>
+          <span class="acct-lvs" id="aLvPerk">the starting line</span>
+        </span>
+        <span class="acct-bal"><b id="aBal">$0.00</b><span>rewards balance</span></span>
+      </div>
+      <div class="xpwrap">
+        <div class="xpbar"><i id="aXpBar"></i></div>
+        <div class="xpnum"><span id="aXpNow">0 XP</span><span id="aXpNext"></span></div>
+      </div>
+      <div class="tickrow">
+        <span class="tickbig" id="aTicks">0<small>T</small></span>
+        <span class="tickcap" id="aTickCap">Ticks are earned, never sold. Spend them on anything in the Vault.</span>
+      </div>
+      <div class="acct-foot" id="aFoot"></div>
+    </div>
+    <div class="acct-r">
+      <div class="thead">
+        <span class="tsw"><button type="button" class="on" data-tv="caps">Today</button><button type="button" data-tv="log">Recent</button></span>
+        <i id="aToday"></i>
+      </div>
+      <div id="aSrc"></div>
+      <div id="aLog" hidden></div>
+    </div>
+  </section>
   <div class="signin" id="signin" hidden>Sign in (free, email code only) to see your Ticks, try frames on your own card and equip them. <a href="/paper-trade">Open the app to sign in →</a></div>
 
   <nav class="vtabs" id="vtabs" aria-label="Vault sections">
@@ -264,15 +331,11 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       <div class="collect" id="collect" hidden><span class="cbar"><i id="cbarF"></i></span><b id="cbarT"></b></div>
     </div>
     <div class="fit-act">
-      <button class="btn" id="fitDice" type="button" title="Try something at random (or press R)">Surprise me</button>
       <button class="btn" id="fitLink" type="button" title="Copy a link that opens this look for someone else" hidden>Share look</button>
       <button class="btn" id="fitReset" type="button" hidden>Take off</button>
     </div>
   </div>
-  <div class="earn" id="earnPanel" hidden>
-    <b>Ticks today</b>
-    <span id="earnRows"></span>
-  </div>
+
   <div class="msg" id="msg"></div>
   <div class="gmod" id="gmod" role="dialog" aria-modal="true">
     <div class="gmod-card">
@@ -387,11 +450,11 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   // TRY is purely local state. Nothing is written, nothing is sent, nothing shows on the public card, so a
   // trader can walk the whole shop wearing things they have not bought. That is the point: the frame is the
   // product, and a product you cannot hold does not sell.
-  var TRY=null;
+  var TRY=null,SEC_TRYABLE=true;
   // Items added in this drop. A returning trader should be able to see what is new without re-reading a
   // shop they already know, and a date-based rule would need a per-item timestamp the catalogue lacks.
   var NEW_IDS={obsidian:1,quicksilver:1,prism:1,circuitry:1,ink:1,cathedral:1,slate:1,bone:1,moss:1,denim:1,
-    steel:1,abyss:1,wine:1,blueprint:1,storm:1,phosphor:1,dusk:1,petrol:1,doubletick:1,
+    steel:1,abyss:1,wine:1,blueprint:1,storm:1,phosphor:1,dusk:1,petrol:1,
     tkt_carbon:1,tkt_thermal:1,tkt_ledger:1,tkt_circuit:1,tkt_marble:1,tkt_titanium:1,tkt_phosphor:1,tkt_obsidian:1,
     bg_topo:1,bg_rain:1,bg_ridge:1,bg_metro:1,bg_trench:1,bg_radar:1,bg_ember:1,bg_deepfield:1};
   // The wishlist is one item, not a list. A list of twenty things you might want is a spreadsheet; one
@@ -403,7 +466,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     for(var j=0;j<LEVEL_FRAMES.length;j++)if(LEVEL_FRAMES[j].id===id)return LEVEL_FRAMES[j];return null;}
   function renderFit(){
     var box=document.getElementById('fit');if(!box)return;
-    if(!ST||!ST.signedIn){box.hidden=true;return;}
+    if(!ST||!ST.signedIn||!SEC_TRYABLE){box.hidden=true;return;}
     box.hidden=false;
     var worn=TRY||(ST.equipped||'default');
     document.getElementById('fitCard').innerHTML=prevCard(worn,myName());
@@ -417,10 +480,83 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     var lnk=document.getElementById('fitLink');if(lnk)lnk.hidden=!TRY;
     var cards=document.querySelectorAll('.fcard[data-item]');
     for(var i=0;i<cards.length;i++)cards[i].classList.toggle('tryon',TRY===cards[i].getAttribute('data-item'));
-    renderCollect();renderEarnPanel();
+    renderCollect();
   }
   // How much of the Vault you hold. Counts only things that can actually be obtained, so the mythic
   // owners-only pieces do not permanently hold the bar below 100 for everyone else.
+  // The account card. Level leads because it is the identity the whole page is about, the XP bar shows the
+  // real distance to the next rung rather than a bare number, and Ticks carry the biggest type on the page
+  // because they are the thing this shop actually spends.
+  function renderAcct(){
+    var box=document.getElementById('acct');if(!box)return;
+    if(!ST||!ST.signedIn){box.hidden=true;return;}
+    box.hidden=false;
+    var xp=+ST.xp||0,cur=null,nxt=null;
+    for(var i=0;i<LEVELS.length;i++){if(xp>=LEVELS[i].min)cur=LEVELS[i];else{nxt=LEVELS[i];break;}}
+    cur=cur||LEVELS[0];
+    box.style.setProperty('--lvc',cur.col);
+    document.getElementById('aLvIcon').innerHTML=medal(cur.k,cur.col);
+    document.getElementById('aLvName').textContent=cur.name;
+    document.getElementById('aLvPerk').textContent=cur.perk||'';
+    document.getElementById('aBal').textContent='$'+(+ST.balance||0).toFixed(2);
+    var span=nxt?(nxt.min-cur.min):1,into=nxt?(xp-cur.min):1;
+    document.getElementById('aXpBar').style.width=Math.max(2,Math.min(100,Math.round(into/span*100)))+'%';
+    document.getElementById('aXpNow').textContent=fmt(xp)+' XP';
+    document.getElementById('aXpNext').textContent=nxt?(fmt(nxt.min-xp)+' to '+nxt.name):'top of the ladder';
+    document.getElementById('aTicks').innerHTML=fmt(+ST.ticks||0)+'<small>T</small>';
+    var w=wishGet(),wi=w?itemById(w):null,cap='Ticks are earned, never sold. Spend them on anything in the Vault.';
+    if(wi&&(ST.owned||[]).indexOf(w)<0&&wi.ticks){
+      var short=wi.ticks-(+ST.ticks||0);
+      cap=short>0?('Saving for '+wi.name+' — '+fmt(short)+' T to go.'):(wi.name+' is within reach now.');
+    }
+    document.getElementById('aTickCap').textContent=cap;
+    var f=[];
+    f.push('<span><b>'+(+ST.streak||0)+'</b> day streak</span>');
+    f.push('<span class="cool"><b>'+(+ST.freezes||0)+'</b>/5 freezes</span>');
+    var bu=+ST.boostUntil||0;
+    if(bu>Date.now())f.push('<span class="boost">2x XP · '+Math.ceil((bu-Date.now())/3600000)+'h left</span>');
+    document.getElementById('aFoot').innerHTML=f.join('');
+    renderToday();renderLog();
+  }
+  // What is still on the table today, as bars. A cap you can see is a plan; a cap you cannot is a wall.
+  function renderToday(){
+    var wrap=document.getElementById('aSrc');if(!wrap||!ST)return;
+    var rows=ST.earn||[],tot=0;
+    rows.forEach(function(r){tot+=(+r.got||0);});
+    document.getElementById('aToday').textContent=tot?('+'+fmt(tot)+' T'):'nothing yet';
+    if(!rows.length){wrap.innerHTML='<div class="tsrc-n">Earning starts with your next check-in.</div>';return;}
+    wrap.innerHTML=rows.map(function(r){
+      var got=+r.got||0,cap=+r.cap||1,full=got>=cap;
+      return '<div class="tsrc'+(full?' full':'')+'">'
+        +'<span class="tsrc-n">'+r.label+'</span>'
+        +'<span class="tsrc-v">'+got+'/'+cap+'</span>'
+        +'<span class="tsrc-b"><i style="width:'+Math.min(100,Math.round(got/cap*100))+'%"></i></span></div>';
+    }).join('');
+  }
+  // The ledger. Sources are named in plain words rather than keys, because "trade_sl" is a column name and
+  // "closed with a stop set" is the reason the Ticks arrived.
+  var TSRC_NAME={checkin:'Check-in',trade:'Trade closed',trade_sl:'Stop set',mission:'Mission',academy:'Academy',chat:'Chat',duel:'Duel'};
+  function renderLog(){
+    var box=document.getElementById('aLog');if(!box||!ST)return;
+    var rows=ST.tlog||[];
+    if(!rows.length){box.innerHTML='<div class="tsrc-n">Nothing yet. Your next check-in starts the record.</div>';return;}
+    var now=Date.now();
+    box.innerHTML=rows.map(function(r){
+      var mins=Math.max(0,Math.round((now-(+r.ts||0))/60000));
+      var when=mins<1?'now':mins<60?(mins+'m'):mins<1440?(Math.round(mins/60)+'h'):(Math.round(mins/1440)+'d');
+      var amt=+r.amt||0;
+      return '<div class="tlog"><b'+(amt<0?' class="neg"':'')+'>'+(amt>0?'+':'')+amt+'</b>'
+        +'<span>'+(r.note||TSRC_NAME[r.src]||r.src||'')+'</span><i>'+when+'</i></div>';
+    }).join('');
+  }
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('[data-tv]');if(!t)return;
+    var v=t.getAttribute('data-tv');
+    document.querySelectorAll('[data-tv]').forEach(function(b){b.classList.toggle('on',b===t);});
+    document.getElementById('aSrc').hidden=(v!=='caps');
+    document.getElementById('aLog').hidden=(v!=='log');
+    if(v==='log')renderLog();
+  });
   function renderCollect(){
     var box=document.getElementById('collect');if(!box||!ST||!ST.signedIn)return;
     var items=(ST.items||[]).filter(function(it){return it.tier!=='mythic';});
@@ -434,18 +570,6 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       if(wi&&owned.indexOf(w)<0&&wi.ticks){var short=wi.ticks-(+ST.ticks||0);
         extra=short>0?(' · saving for '+wi.name+', '+fmt(short)+' T to go'):(' · '+wi.name+' is affordable now');}}
     document.getElementById('cbarT').textContent=have+' of '+items.length+' collected'+extra;
-  }
-  // The earning rules, shown where the question gets asked. Each row states today's cap so a trader can
-  // see what is still on the table and what they have already exhausted -- caps that are invisible feel
-  // arbitrary, and caps you can see feel like a plan.
-  function renderEarnPanel(){
-    var p=document.getElementById('earnPanel');if(!p||!ST||!ST.signedIn)return;
-    p.hidden=false;
-    var rows=[['Daily check-in','up to 40'],['Close a trade','up to 8'],['Close with a stop set','up to 24'],
-      ['Claim a mission','up to 20'],['Academy lesson','up to 30']];
-    document.getElementById('earnRows').innerHTML=rows.map(function(r){
-      return '<span class="esrc">'+r[0]+' <b>'+r[1]+'</b></span>';
-    }).join('');
   }
   function tryOn(id){
     if(!ST||!ST.signedIn){say('Sign in to try frames on your own card.',false);return;}
@@ -469,10 +593,6 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     var t=e.target.closest('[data-try]');
     if(t){e.preventDefault();tryOn(t.getAttribute('data-try'));return;}
     if(e.target.closest('#fitReset')){TRY=null;renderFit();return;}
-    if(e.target.closest('#fitDice')){
-      var all=visibleTryables();
-      if(all.length){var pick=all[Math.floor(Math.random()*all.length)].getAttribute('data-try');TRY=null;tryOn(pick);}
-      return;}
     if(e.target.closest('#fitLink')&&TRY){
       var url=location.origin+location.pathname+'?try='+encodeURIComponent(TRY);
       var done=function(){say('Link copied — it opens the Vault wearing this.',true);};
@@ -485,7 +605,6 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   document.addEventListener('keydown',function(e){
     if(/^(INPUT|TEXTAREA)$/.test((e.target.tagName||''))||!ST||!ST.signedIn)return;
     if(e.key==='Escape'&&TRY){TRY=null;renderFit();return;}
-    if(e.key==='r'||e.key==='R'){var d=document.getElementById('fitDice');if(d)d.click();return;}
     if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
     var all=visibleTryables().map(function(b){return b.getAttribute('data-try');});
     if(!all.length)return;
@@ -587,7 +706,6 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       var state='';
       if(it.id==='shield')state='Freezes banked: '+fz+'/5';
       else if(it.id==='surge')state=bu>now?('Active — '+Math.ceil((bu-now)/3600000)+'h left'):'Not active';
-      else if(it.id==='reroll')state='Once per day';
       var acts='';
       if(it.id==='shield'&&fz>=5)acts='<button class="btn lock" disabled>Bank full</button>';
       else if(it.id==='surge'&&bu>now)acts='<button class="btn lock" disabled>Already active</button>';
@@ -668,7 +786,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
             say('Gifted to @'+(d.giftedTo||v)+'.',true);load();
           } else {
             var er=d&&d.error;sb.disabled=false;sb.textContent=(ST&&ST.tester)?'Send gift (free)':('Send gift · '+(gmState&&gmState.price||''));inp.classList.toggle('bad',er==='no_target');
-            gmMsg(er==='no_target'?'No trader with that username — check the spelling.':er==='self'?'That is you. You cannot gift to yourself — just buy it.':er==='target_owned'?'@'+v+' already owns '+gmState.name+'.':er==='level_floor'?'Not enough spare XP — gifting would drop you below your level threshold.':er==='insufficient'?'Not enough rewards balance for this gift.':er==='expired'?'This drop has ended — it is no longer for sale.':er==='no_gift_consumable'?'Consumables cannot be gifted.':'Gift failed: '+(er||'error')+' — try again.','err');
+            gmMsg(er==='no_target'?'No trader with that username — check the spelling.':er==='self'?'That is you. You cannot gift to yourself — just buy it.':er==='target_owned'?'@'+v+' already owns '+gmState.name+'.':er==='insufficient'?'Not enough rewards balance for this gift.':er==='expired'?'This drop has ended — it is no longer for sale.':er==='no_gift_consumable'?'Consumables cannot be gifted.':'Gift failed: '+(er||'error')+' — try again.','err');
           }
         }).catch(function(){sb.disabled=false;sb.textContent='Send gift';gmMsg('Network error — try again.','err');});
     });
@@ -676,23 +794,14 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   function load(){
     fetch('/api/auth/shop',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
       ST=d;
-      document.getElementById('wallet').hidden=!d.signedIn;
       document.getElementById('signin').hidden=!!d.signedIn;
       if(d.signedIn){
-        document.getElementById('wLvl').textContent=(d.level||'—').toUpperCase();
-        document.getElementById('wXp').textContent=fmt(d.xp);
-        document.getElementById('wTk').textContent=fmt(+d.ticks||0);
-        document.getElementById('wBal').textContent='$'+(+d.balance||0).toFixed(2);
       }
-      renderLadder();renderLevelGal();renderShopGal();renderTkt();renderBg();renderSupply();renderEarn();renderAch();renderFit();
+      renderLadder();renderLevelGal();renderShopGal();renderTkt();renderBg();renderSupply();renderEarn();renderAch();renderFit();renderAcct();
       try{var qt=new URLSearchParams(location.search).get('try');if(qt&&!TRY&&itemById(qt))tryOn(qt);}catch(e){} /* a shared look opens already worn */
       try{window.mpVaultOwnedFilter&&window.mpVaultOwnedFilter();}catch(e){} /* re-apply after every rebuild, so a fresh buy/equip immediately obeys the filter */
       if(d.signedIn){
-        var fzEl=document.getElementById('wFz');if(fzEl)fzEl.textContent=(+d.freezes||0)+'/5';
-        var bEl=document.getElementById('wBoost'),bu2=+d.boostUntil||0;
-        if(bEl){bEl.hidden=!(bu2>Date.now());if(bu2>Date.now())document.getElementById('wBoostT').textContent=Math.ceil((bu2-Date.now())/3600000)+'h left';}
       }
-      if(d.signedIn&&document.getElementById('wStreak'))document.getElementById('wStreak').textContent=(d.streak||0);
       if(!d.on)say('The Vault is temporarily paused — purchases are disabled.',false);
     }).catch(function(){say('Could not load the Vault. Refresh to retry.',false);});
   }
@@ -705,12 +814,12 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
         .then(function(r){return r.json();}).then(function(d){
           if(d&&d.ok){
             var iid=bb.getAttribute('data-buy');
-            say(iid==='shield'?'Streak Shield added — one extra freeze is banked.':iid==='surge'?'XP Surge is live — double XP for the next 24 hours.':iid==='reroll'?'Missions rerolled — open the Rewards page for your fresh set.':d.giftedTo?('Gifted to @'+d.giftedTo+' — they have been notified.'):'Purchased. It is yours forever — equip it below.',true);
+            say(iid==='shield'?'Streak Shield added — one extra freeze is banked.':iid==='surge'?'XP Surge is live — double XP for the next 24 hours.':d.giftedTo?('Gifted to @'+d.giftedTo+' — they have been notified.'):'Purchased. It is yours forever — equip it below.',true);
             load();
           }
           else{
             var er=d&&d.error;
-            say(er==='level_floor'?('Not enough spare XP — this purchase would drop you below your level threshold ('+fmt(d.floor)+' XP). Earn a bit more first.'):er==='insufficient'?('Not enough rewards balance ($'+((d.balance||0)/100).toFixed(2)+' available).'):er==='level_locked'?('Requires '+d.need+' level.'):er==='owned'?'You already own this.':er==='shop_paused'?'The Vault is paused right now.':er==='expired'?'This drop has ended — it is no longer for sale.':er==='max_freezes'?'Your freeze bank is full (5/5).':er==='boost_active'?'An XP Surge is already running — let it finish first.':er==='rerolled'?'You already rerolled today — a fresh set comes at midnight UTC.':er==='no_target'?'No trader with that username.':er==='self'?'You cannot gift to yourself — just buy it.':er==='target_owned'?'They already own that frame.':'Purchase failed: '+(er||'error'),false);
+            say(er==='short_ticks'?('Not enough Ticks — this costs '+fmt(d.need)+' T and you have '+fmt(d.have)+' T.'):er==='insufficient'?('Not enough rewards balance ($'+((d.balance||0)/100).toFixed(2)+' available).'):er==='level_locked'?('Requires '+d.need+' level.'):er==='owned'?'You already own this.':er==='shop_paused'?'The Vault is paused right now.':er==='expired'?'This drop has ended — it is no longer for sale.':er==='max_freezes'?'Your freeze bank is full (5/5).':er==='boost_active'?'An XP Surge is already running — let it finish first.':er==='no_target'?'No trader with that username.':er==='self'?'You cannot gift to yourself — just buy it.':er==='target_owned'?'They already own that frame.':'Purchase failed: '+(er||'error'),false);
             bb.disabled=false;
           }
         }).catch(function(){say('Network error.',false);bb.disabled=false;});
@@ -764,6 +873,11 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       try{window.mpVaultOwnedFilter&&window.mpVaultOwnedFilter();}catch(e){} /* entering a section keeps the Owned filter applied */
       try{localStorage.setItem('mp_vault_tab',k);}catch(e){}
       try{history.replaceState(null,'','#'+k);}catch(e){}
+      // The fitting room dresses a profile card, so it only belongs where trying something on changes what
+      // you are looking at. Ticket skins restyle a P&L receipt and the supply drop has no visual at all.
+      SEC_TRYABLE=(k==='frames'||k==='backgrounds'||k==='earned'||k==='levels');
+      if(!SEC_TRYABLE)TRY=null;
+      try{renderFit();}catch(e){}
     }
     /* OWNED FILTER: a card counts as owned when its action area offers Equip or is already equipped —
        the same test the old Owned tab used, so there is still a single definition of ownership. */

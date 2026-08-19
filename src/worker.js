@@ -8266,10 +8266,23 @@ function frameOwned(fr, xp, premium, founder) {
   return false;
 }
 
-// ---------- THE VAULT (owner 2026-08-14): cosmetic shop. XP prices spend users.xp (level-floor guarded so a
+// ---------- THE VAULT (owner 2026-08-14): cosmetic shop. Tick prices spend users.ticks (no level guard needed — Ticks are not a rank) (was: XP prices spend users.xp, level-floor guarded so a
 // purchase can never DE-LEVEL you); usd prices (integer cents) debit the RewardLedger balance — a real sink that
 // reduces withdrawal liability. Catalog is versioned here; kill switch KV shop:on='0'. ----------
 const VAULT_TESTERS = ['chako']; // owner's test account — owns every item (testing)
+// The Ticks earning table. Read by _grantTicks for the caps AND by the Vault for the "today" readout, so
+// a cap can never be changed in one place and described wrongly in the other.
+const TICK_SOURCES = [
+  { k: 'checkin', label: 'Daily check-in', cap: 40 },
+  { k: 'trade_sl', label: 'Closed with a stop set', cap: 24 },
+  { k: 'mission', label: 'Missions claimed', cap: 20 },
+  { k: 'academy', label: 'Academy lessons', cap: 30 },
+  { k: 'trade', label: 'Trades closed', cap: 8 },
+  { k: 'chat', label: 'Talking in chat', cap: 16 },
+  { k: 'duel', label: 'Duels won', cap: 30 },
+];
+const TICK_CAP = {}; TICK_SOURCES.forEach(x => { TICK_CAP[x.k] = x.cap; });
+
 const VAULT_ITEMS = [
   // ---- frames, buyable with Ticks (earned) and/or the rewards balance (real money) ----------------
   // Ticks by tier: common 300 / rare 1,200 / epic 3,000 / legendary 7,000. An active trader earns about
@@ -8330,8 +8343,6 @@ const VAULT_ITEMS = [
   // ---- consumables (kind c): instant effects, buyable again and again, never giftable --------------
   { id: 'shield', name: 'Streak Shield', kind: 'c', tier: 'rare', ticks: 600, cents: 29, desc: 'One extra streak freeze, bankable up to 5 (a missed day auto-spends one)' },
   { id: 'surge', name: 'XP Surge', kind: 'c', tier: 'epic', ticks: 1500, cents: 79, desc: 'Double XP from everything you earn for the next 24 hours' },
-  { id: 'reroll', name: 'Mission Reroll', kind: 'c', tier: 'rare', ticks: 400, cents: 39, desc: 'Throw back today&#39;s daily missions and draw a fresh set. Once a day' },
-  { id: 'doubletick', name: 'Tick Doubler', kind: 'c', tier: 'epic', ticks: 2000, cents: 99, desc: 'Double Ticks from everything you earn for the next 24 hours' },
   // ---- ticket skins (kind t): restyle every P&L ticket you keep or share --------------------------
   { id: 'tkt_carbon', name: 'Carbon Weave', kind: 't', tier: 'common', ticks: 300, desc: 'Diagonal carbon twill under a matte clearcoat' },
   { id: 'tkt_thermal', name: 'Thermal Roll', kind: 't', tier: 'common', ticks: 300, desc: 'Dark receipt stock with printer ruling and two curled, shadowed edges' },
@@ -10223,7 +10234,7 @@ async function handleAuth(url, request, env, ctx) {
     let u = tok ? await sessionUser(env, tok) : null;
     if (!u && isAdmin && url.searchParams.get('uid')) u = { id: url.searchParams.get('uid'), username: url.searchParams.get('un') || '' }; // owner/E2E testing hook (same pattern as tshare/missions)
     let on = true; try { on = (await env.STATS.get('shop:on')) !== '0'; } catch (e) {}
-    const out = { on: on, items: VAULT_ITEMS, signedIn: !!u, owned: ['default'], equipped: 'default', xp: 0, ticks: 0, level: 'unranked', balance: 0, tester: false };
+    const out = { on: on, items: VAULT_ITEMS, signedIn: !!u, owned: ['default'], equipped: 'default', xp: 0, ticks: 0, earn: [], tlog: [], level: 'unranked', balance: 0, tester: false };
     if (u) { // one page-load = 3 independent DO reads -> parallel (was serial; audit 2026-08-14)
       const stub9 = env.USERS.get(env.USERS.idFromName('main'));
       const [d1, d3, d2] = await Promise.all([
@@ -10231,7 +10242,7 @@ async function handleAuth(url, request, env, ctx) {
         stub9.fetch(new Request('https://do/achstate?uid=' + encodeURIComponent(u.id))).then(r => r.json()).catch(() => null),
         env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/account', { headers: { 'x-acct': 'u:' + u.id } })).then(r => r.json()).catch(() => null) // ledger DO reads identity from the x-acct header; balance arrives as USD float
       ]);
-      if (d1) { out.owned = d1.owned || out.owned; out.equipped = d1.equipped || 'default'; out.ticks = +d1.ticks || 0; out.xp = +d1.xp || 0; out.level = d1.level || 'unranked'; out.streak = +d1.streak || 0; out.freezes = +d1.freezes || 0; out.boostUntil = +d1.boostUntil || 0; out.equippedTkt = d1.tktskin || ''; out.equippedBg = d1.cardbg || ''; }
+      if (d1) { out.owned = d1.owned || out.owned; out.equipped = d1.equipped || 'default'; out.ticks = +d1.ticks || 0; out.earn = d1.earn || []; out.tlog = d1.tlog || []; out.xp = +d1.xp || 0; out.level = d1.level || 'unranked'; out.streak = +d1.streak || 0; out.freezes = +d1.freezes || 0; out.boostUntil = +d1.boostUntil || 0; out.equippedTkt = d1.tktskin || ''; out.equippedBg = d1.cardbg || ''; }
       if (d3) { out.ach = d3.earned || []; out.achDefs = d3.defs || []; out.progress = d3.progress || null; }
       if (d2) out.balance = +d2.balance || 0;
       out.tester = vaultIsTester(u.username);
@@ -14409,8 +14420,9 @@ export class UserStore {
     // the level-floor guard had to exist. Ticks split the jobs: XP only ever goes up and measures how far
     // you have come, Ticks are spent and measure what you have done lately. They cannot be bought for money
     // at any price, which is the whole point — a Tick-priced frame proves you played, not that you paid.
-    for (const col of ['ticks INTEGER DEFAULT 0', 'ticks_life INTEGER DEFAULT 0', 'ticks_seed INTEGER DEFAULT 0', 'tickboost_until INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} }
+    for (const col of ['ticks INTEGER DEFAULT 0', 'ticks_life INTEGER DEFAULT 0', 'ticks_seed INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} }
     try { s.exec('CREATE TABLE IF NOT EXISTS tickday(user_id TEXT, day TEXT, src TEXT, n INTEGER, PRIMARY KEY(user_id,day,src))'); } catch (e) {} // per-source daily caps, same anti-farm shape as xpday
+    try { s.exec('CREATE TABLE IF NOT EXISTS ticklog(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)'); } catch (e) {} // the readable story behind the number
     try { s.exec('ALTER TABLE users ADD COLUMN did TEXT'); } catch (e) {} // device fingerprint (mp_did cookie) captured at login → same-device multi-account detect
     try { s.exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT ''"); } catch (e) {} // background role mark (owner 2026-08-15): 'gm' = chat admin commands (/gift, /mute...); set via mp-ops /api/admin/setrole, invisible to usersion for the Security tab
     try { s.exec('ALTER TABLE users ADD COLUMN prem_seen INTEGER DEFAULT 0'); s.exec('UPDATE users SET prem_seen=1 WHERE premium>0'); } catch (e) {} // "has this user seen the premium-upgrade celebration?" The backfill (existing premium = already-seen, no retroactive mass-animation) is TIED TO THE ALTER SUCCEEDING — so it runs exactly ONCE (first boot after ship); every later boot the ALTER throws → catch → backfill skipped → a subsequent reset (e.g. the mp-ops-granted cohort set back to 0 for the delayed welcome) is NEVER overwritten. New users get DEFAULT 0 → they get the celebration.
@@ -14479,9 +14491,7 @@ export class UserStore {
   _grantTicks(uid, src, amt, o) {
     o = o || {}; amt = Math.max(0, Math.round(+amt || 0)); if (!uid || !amt) return 0;
     const sql = this.state.storage.sql;
-    const _tu = this.rows('SELECT tickboost_until FROM users WHERE id=?', uid)[0];
-    if (!_tu) return 0;
-    if ((+_tu.tickboost_until || 0) > Date.now()) amt = amt * 2; // Tick Doubler, the Ticks-side twin of XP Surge
+    if (!this.rows('SELECT 1 FROM users WHERE id=?', uid)[0]) return 0;
     if (o.dayCap) {
       const day = new Date().toISOString().slice(0, 10);
       const got = (this.rows('SELECT n FROM tickday WHERE user_id=? AND day=? AND src=?', uid, day, src)[0] || { n: 0 }).n;
@@ -14491,6 +14501,10 @@ export class UserStore {
       sql.exec('INSERT INTO tickday(user_id,day,src,n) VALUES(?,?,?,?) ON CONFLICT(user_id,day,src) DO UPDATE SET n=n+?', uid, day, src, amt, amt);
     }
     sql.exec('UPDATE users SET ticks=MAX(0,COALESCE(ticks,0)+?), ticks_life=COALESCE(ticks_life,0)+? WHERE id=?', amt, amt, uid);
+    try {
+      sql.exec('INSERT INTO ticklog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, Date.now(), src, amt, String((o && o.note) || '').slice(0, 60));
+      sql.exec('DELETE FROM ticklog WHERE user_id=? AND id NOT IN (SELECT id FROM ticklog WHERE user_id=? ORDER BY id DESC LIMIT 60)', uid, uid);
+    } catch (le) {}
     return amt;
   }
   // One-time seed so the change does not punish everyone who was already here. Long-standing accounts have
@@ -14532,6 +14546,26 @@ export class UserStore {
   _isPrem(u) { if (!u) return false; if (PREM_FOUNDERS.indexOf(String(u.username || '').toLowerCase()) >= 0) return true; return (+u.premium || 0) > Date.now(); }
   _xpBal(uid) { uid = String(uid).replace(/^u:/, ''); return (this.rows('SELECT xp FROM users WHERE id=?', uid)[0] || { xp: 0 }).xp || 0; }
   _takeXp(uid, amt, note) { uid = String(uid).replace(/^u:/, ''); amt = Math.max(0, Math.round(+amt || 0)); if (!amt) return true; if (this._xpBal(uid) < amt) return false; const sql = this.state.storage.sql; sql.exec('UPDATE users SET xp=MAX(0,COALESCE(xp,0)-?) WHERE id=?', amt, uid); sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, Date.now(), 'duel_stake', -amt, String(note || '').slice(0, 120)); return true; } // negative log; lifeCap sums filter amt>0 so unaffected
+  // Ticks movements for duel escrow. Both write the same ledger the earning path writes, so a wager and a
+  // payout read as events in one history rather than an unexplained jump in the total.
+  _giveTicks(uid, amt, note) {
+    uid = String(uid).replace(/^u:/, ''); amt = Math.max(0, Math.round(+amt || 0));
+    if (!uid || !amt) return;
+    const sql = this.state.storage.sql;
+    sql.exec('UPDATE users SET ticks=MAX(0,COALESCE(ticks,0)+?), ticks_life=COALESCE(ticks_life,0)+? WHERE id=?', amt, amt, uid);
+    try { sql.exec('INSERT INTO ticklog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, Date.now(), 'duel', amt, String(note || '').slice(0, 60)); } catch (e) {}
+  }
+  _takeTicks(uid, amt, note) {
+    uid = String(uid).replace(/^u:/, ''); amt = Math.max(0, Math.round(+amt || 0));
+    if (!uid || !amt) return false;
+    const have = (this.rows('SELECT ticks FROM users WHERE id=?', uid)[0] || {}).ticks || 0;
+    if (have < amt) return false;
+    const sql = this.state.storage.sql;
+    sql.exec('UPDATE users SET ticks=MAX(0,COALESCE(ticks,0)-?) WHERE id=?', amt, uid);
+    try { sql.exec('INSERT INTO ticklog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, Date.now(), 'duel', -amt, String(note || '').slice(0, 60)); } catch (e) {}
+    return true;
+  }
+  _tickBal(uid) { return (this.rows('SELECT ticks FROM users WHERE id=?', String(uid).replace(/^u:/, ''))[0] || {}).ticks || 0; }
   _giveXp(uid, amt, note) { uid = String(uid).replace(/^u:/, ''); amt = Math.max(0, Math.round(+amt || 0)); if (!uid || !amt) return; const sql = this.state.storage.sql; sql.exec('UPDATE users SET xp=MAX(0,COALESCE(xp,0)+?) WHERE id=?', amt, uid); sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, Date.now(), 'duel_pot', amt, String(note || '').slice(0, 120)); } // direct pot payout (zero-sum with stakes → no inflation), bypasses dayCap
   _duelLabel(m) { return ({ roe: 'ROE', wr: 'win rate', win: 'biggest win', pnl: 'profit', survival: 'survival', streak: 'win streak', sniper: 'sniper' })[m] || 'ROE'; }
   _durLabel(ms) { return ({ '3600000': '1 hour', '86400000': '24 hours', '259200000': '3 days', '604800000': '7 days' })[String(ms)] || '7 days'; }
@@ -14570,22 +14604,6 @@ export class UserStore {
       sql.exec('UPDATE users SET xpboost_until=? WHERE id=?', until, uid);
       return { ok: true, until: until };
     }
-    if (itemId === 'doubletick') {
-      const tb = this.rows('SELECT tickboost_until FROM users WHERE id=?', uid)[0];
-      if (tb && (+tb.tickboost_until || 0) > now) return { error: 'boost_active', until: +tb.tickboost_until };
-      if (check) return { ok: true };
-      const tu = now + 86400000;
-      sql.exec('UPDATE users SET tickboost_until=? WHERE id=?', tu, uid);
-      return { ok: true, until: tu };
-    }
-    if (itemId === 'reroll') {
-      sql.exec('CREATE TABLE IF NOT EXISTS msalt(user_id TEXT, day TEXT, salt INTEGER, PRIMARY KEY(user_id,day))');
-      const day = new Date().toISOString().slice(0, 10);
-      if (this.rows('SELECT 1 FROM msalt WHERE user_id=? AND day=?', uid, day)[0]) return { error: 'rerolled' };
-      if (check) return { ok: true };
-      sql.exec('INSERT INTO msalt(user_id,day,salt) VALUES(?,?,?)', uid, day, 1 + (now % 997));
-      return { ok: true };
-    }
     return { error: 'bad' };
   }
   _pushNotif(uid, kind, body, link) { // social notification (ring-buffered ~40/user)
@@ -14620,12 +14638,13 @@ export class UserStore {
     sql.exec('UPDATE duels SET status=?, winner=?, a_score=?, b_score=?, settled=1, escrowed=0 WHERE id=?', 'done', winner, sa, sb, d.id);
     if (winner) {
       const loser = String(winner) === String(d.a_uid) ? d.b_uid : d.a_uid, wName = String(winner) === String(d.a_uid) ? d.a_name : d.b_name, lName = String(winner) === String(d.a_uid) ? d.b_name : d.a_name;
-      if (stake > 0 && esc >= 2) this._giveXp(winner, stake * 2, 'Duel pot vs @' + lName); // pot = both stakes
-      try { const hh2 = hhActiveAt(Date.now()); this._grantXp(winner, 'duel', hh2 ? 300 : 150, { dayCap: 600, note: 'Won a ' + ml + ' duel' + (hh2 ? ' · Happy Hour x2' : '') }); } catch (e) {} // house win-bonus (capped, anti-farm); settles during XP Happy Hour -> doubled
-      this._pushNotif(winner, 'duel', 'Duel won. You beat @' + lName + ' on ' + ml + (stake > 0 && esc >= 2 ? '. +' + (stake * 2) + ' XP pot' : '') + '. Run it back?', 'duel');
-      this._pushNotif(loser, 'duel', '@' + wName + ' took the ' + ml + ' duel' + (stake > 0 && esc >= 2 ? '. ' + stake + ' XP gone' : '') + '. Rematch?', 'duel');
+      if (stake > 0 && esc >= 2) this._giveTicks(winner, stake * 2, 'Duel pot vs @' + lName); // pot = both stakes
+      try { const hh2 = hhActiveAt(Date.now()); this._grantXp(winner, 'duel', hh2 ? 300 : 150, { dayCap: 600, note: 'Won a ' + ml + ' duel' + (hh2 ? ' · Happy Hour x2' : '') }); } catch (e) {}
+      try { this._grantTicks(winner, 'duel', 10, { dayCap: TICK_CAP.duel, note: 'won a ' + ml + ' duel' }); } catch (e) {} // house win-bonus (capped, anti-farm); settles during XP Happy Hour -> doubled
+      this._pushNotif(winner, 'duel', 'Duel won. You beat @' + lName + ' on ' + ml + (stake > 0 && esc >= 2 ? '. +' + (stake * 2) + ' Ticks' : '') + '. Run it back?', 'duel');
+      this._pushNotif(loser, 'duel', '@' + wName + ' took the ' + ml + ' duel' + (stake > 0 && esc >= 2 ? '. ' + stake + ' Ticks gone' : '') + '. Rematch?', 'duel');
     } else {
-      if (stake > 0 && esc >= 2) { this._giveXp(d.a_uid, stake, 'Duel refund (tie)'); this._giveXp(d.b_uid, stake, 'Duel refund (tie)'); }
+      if (stake > 0 && esc >= 2) { this._giveTicks(d.a_uid, stake, 'Duel refund (tie)'); this._giveTicks(d.b_uid, stake, 'Duel refund (tie)'); }
       this._pushNotif(d.a_uid, 'duel', 'Dead heat vs @' + d.b_name + ' on ' + ml + (stake > 0 ? '. Stakes returned' : '') + '. Run it back?', 'duel');
       this._pushNotif(d.b_uid, 'duel', 'Dead heat vs @' + d.a_name + ' on ' + ml + (stake > 0 ? '. Stakes returned' : '') + '. Run it back?', 'duel');
     }
@@ -14709,7 +14728,7 @@ export class UserStore {
         // Ticks on a close, with the bonus reserved for trades that had an exit set before they were opened.
         // XP already pays for volume; paying Ticks for the same thing would just be a second grind. Paying for
         // a pre-set stop rewards the one habit that actually keeps a paper trader alive.
-        try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantTicks(uid, 'trade', 1, { dayCap: 8 }); if (e.sl != null && +e.sl > 0) this._grantTicks(uid, 'trade_sl', 3, { dayCap: 24 }); } } catch (te) {}
+        try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantTicks(uid, 'trade', 1, { dayCap: TICK_CAP.trade, note: String(e.sym || '').toUpperCase() + ' closed' }); if (e.sl != null && +e.sl > 0) this._grantTicks(uid, 'trade_sl', 3, { dayCap: TICK_CAP.trade_sl, note: String(e.sym || '').toUpperCase() + ' closed with a stop set' }); } } catch (te) {}
         try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9) && !this.rows("SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind='hh' LIMIT 1", uid, ts9)[0]) { var _gh9 = this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 190, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); if (_gh9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gh9, (String(e.sym || '').toUpperCase() + ' ' + Math.round(roe) + '% ROE +' + _gh9 + ' XP · Happy Hour').slice(0, 60), 'hh'); } catch (e7) {} } }
           if (roe != null) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
             for (var _pi = 0; _pi < _pl.length; _pi++) { var _p = _pl[_pi]; if (!_p || _p.enabled === false) continue; if (!(ts9 >= _p.startMs && ts9 < _p.endMs && _p.endMs > _p.startMs)) continue; if (_p.coins && _p.coins.length && _p.coins.indexOf(_symU) < 0) continue; if (_lv > (+_p.levMax || 1000)) continue; if (roe < (+_p.roeMin || 0)) continue; if (_p.winOnly !== false && !(pv > 0)) continue; if (!_best || (+_p.xp || 0) > (+_best.xp || 0)) _best = _p; }
@@ -14919,7 +14938,7 @@ export class UserStore {
               this._grantXp(uid, 'streak', Math.min(40, st * 2), { note: st + '-day streak' });
               // Ticks: the check-in is the single biggest source, and it scales with the streak. Retention is
               // the north star, so the currency should be won mostly by coming back rather than by grinding.
-              this._grantTicks(uid, 'checkin', 10 + Math.min(30, st), { dayCap: 40 });
+              this._grantTicks(uid, 'checkin', 10 + Math.min(30, st), { dayCap: TICK_CAP.checkin, note: st + '-day streak check-in' });
               if (usedFreeze) this._grantXp(uid, 'streak', 5, { note: 'streak freeze saved your ' + st + '-day streak' }); // small reward + shows as a toast so the save is visible
             } } catch (ce) {}
       sql.exec('DELETE FROM uevents WHERE user_id=? AND ts < (SELECT MIN(ts) FROM (SELECT ts FROM uevents WHERE user_id=? ORDER BY ts DESC LIMIT 500))', uid, uid); // keep newest ~500/user — the Journey Map user-search needs real history depth
@@ -15020,8 +15039,7 @@ export class UserStore {
       }
       const claimed = {};
       this.rows('SELECT mid FROM missions WHERE user_id=? AND day=?', uid, day).forEach(r => { claimed[r.mid] = true; });
-      let msalt = 0; try { sql.exec('CREATE TABLE IF NOT EXISTS msalt(user_id TEXT, day TEXT, salt INTEGER, PRIMARY KEY(user_id,day))'); msalt = +((this.rows('SELECT salt FROM msalt WHERE user_id=? AND day=?', uid, day)[0] || {}).salt || 0); } catch (e) {}
-      return this.j({ done, claimed, msalt });
+      return this.j({ done, claimed });
     }
     if (path === '/xp') { // internal DO->DO grant (worker calls this after money/reward events); never publicly routed
       const g = this._grantXp(String(b.uid || ''), String(b.src || 'misc').slice(0, 24), +b.amt || 0, { dayCap: +b.dayCap || 0, lifeCap: +b.lifeCap || 0, once: !!b.once, note: b.note });
@@ -15147,7 +15165,7 @@ export class UserStore {
       if (!this.rows('SELECT 1 FROM academy WHERE user_id=? AND lesson=?', uid, lesson)[0]) {
         sql.exec('INSERT INTO academy(user_id,lesson,ts) VALUES(?,?,?)', uid, lesson, now); fresh = true;
         granted = this._grantXp(uid, 'academy', 25, { lifeCap: 3000, note: 'lesson ' + lesson });
-        try { this._grantTicks(uid, 'academy', 6, { dayCap: 30 }); } catch (ae) {}
+        try { this._grantTicks(uid, 'academy', 6, { dayCap: TICK_CAP.academy, note: 'academy lesson' }); } catch (ae) {}
       }
       if (course && courseLessons.length) {
         const doneSet = {}; this.rows('SELECT lesson FROM academy WHERE user_id=?', uid).forEach(r => { doneSet[r.lesson] = 1; });
@@ -15183,7 +15201,7 @@ export class UserStore {
       if (this.rows('SELECT 1 FROM missions WHERE user_id=? AND day=? AND mid=?', uid, day, mid)[0]) return this.j({ ok: true, fresh: false });
       const mxp = (mid === 'setbonus' || mid.indexOf('wk') === 0) ? 25 : (10 + Math.floor(Math.random() * 51)); // MYSTERY XP (2026-08-15): 10-60 per mission (EV ~35, was flat 12) — variable reward, costs no money, strongest comeback mechanic; set/week bonuses pay flat 25
       sql.exec('INSERT INTO missions(user_id,day,mid,ts) VALUES(?,?,?,?)', uid, day, mid, now); try { this._grantXp(uid, 'mission', mxp, { dayCap: 320, note: 'mission ' + mid }); } catch (me) {}
-      try { this._grantTicks(uid, 'mission', 4, { dayCap: 20 }); } catch (me2) {}
+      try { this._grantTicks(uid, 'mission', 4, { dayCap: TICK_CAP.mission, note: 'mission claimed' }); } catch (me2) {}
       return this.j({ ok: true, fresh: true, xp: mxp });
     }
     if (path === '/missions/history') { // admin earnings view: every daily mission this user has claimed (mid+day+ts); cents mapped in the worker
@@ -16009,6 +16027,13 @@ export class UserStore {
       const u = this.rows('SELECT xp, premium, username, frame FROM users WHERE id=?', uid)[0];
       if (!u) return this.j({ owned: ['default'], equipped: 'default', xp: 0 });
       try { this._seedTicks(uid); } catch (se) {} // lazily converts a long-standing account's history into starting Ticks, once
+      // today's earnings per source, paired with the cap each one stops at
+      const _tday = new Date().toISOString().slice(0, 10);
+      const _got = {};
+      try { for (const r of this.rows('SELECT src, n FROM tickday WHERE user_id=? AND day=?', uid, _tday)) _got[r.src] = +r.n || 0; } catch (te) {}
+      const _earn = TICK_SOURCES.map(x => ({ k: x.k, label: x.label, got: _got[x.k] || 0, cap: x.cap }));
+      let _tlog = [];
+      try { _tlog = this.rows('SELECT ts, src, amt, note FROM ticklog WHERE user_id=? ORDER BY id DESC LIMIT 12', uid).map(r => ({ ts: +r.ts || 0, src: r.src, amt: +r.amt || 0, note: r.note || '' })); } catch (le) {}
       const founder = PREM_FOUNDERS.indexOf(String(u.username || '').toLowerCase()) >= 0;
       const premium = founder || (+u.premium || 0) > Date.now();
       const cosRows = this.rows('SELECT item_id, ts FROM cosmetics WHERE user_id=?', uid);
@@ -16018,7 +16043,7 @@ export class UserStore {
       owned = owned.filter(function(v, i, a) { return a.indexOf(v) === i; });
       const uSt = this.rows('SELECT streak, freezes, xpboost_until, tktskin, cardbg FROM users WHERE id=?', uid)[0] || {};
       const _tk = this.rows('SELECT ticks FROM users WHERE id=?', uid)[0];
-      return this.j({ owned: owned, equipped: u.frame || 'default', premium: premium, founder: founder, ticks: _tk ? +_tk.ticks || 0 : 0, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k, streak: +uSt.streak || 0, freezes: +uSt.freezes || 0, boostUntil: +uSt.xpboost_until || 0, tktskin: uSt.tktskin || '', cardbg: uSt.cardbg || '' });
+      return this.j({ owned: owned, equipped: u.frame || 'default', premium: premium, founder: founder, ticks: _tk ? +_tk.ticks || 0 : 0, earn: _earn, tlog: _tlog, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k, streak: +uSt.streak || 0, freezes: +uSt.freezes || 0, boostUntil: +uSt.xpboost_until || 0, tktskin: uSt.tktskin || '', cardbg: uSt.cardbg || '' });
     }
     if (path === '/achstate') { // THE VAULT F2: achievements — computed from REAL tables, earns PERSISTED (tradeev only holds 30d, so an earned badge must never un-earn)
       const uid = String(url.searchParams.get('uid') || '');
@@ -16286,17 +16311,17 @@ export class UserStore {
       const rules = {}; if (metric === 'sniper') rules.maxTrades = Math.min(5, Math.max(1, +(b && b.maxTrades) || 3)); if (prem && +(b && b.maxLev) > 0) rules.maxLev = Math.min(1000, Math.round(+(b && b.maxLev))); if (sym) rules.sym = sym;
       const mineActive = (this.rows("SELECT COUNT(*) c FROM duels WHERE a_uid=? AND status IN ('pending','active')", from)[0] || { c: 0 }).c;
       if (mineActive >= (prem ? 10 : 1)) return this.j({ error: 'too_many', cap: (prem ? 10 : 1) }, 429); // free: 1 live duel; premium: 10
-      if (stake > 0 && !this._takeXp(from, stake, isOpen ? 'Open duel stake (board)' : 'Duel stake vs @' + to.username)) return this.j({ error: 'need_xp', need: stake, have: this._xpBal(from) }, 402); // escrow challenger's stake now (open posts have no target yet)
+      if (stake > 0 && !this._takeTicks(from, stake, isOpen ? 'Open duel stake' : 'Duel stake vs @' + to.username)) return this.j({ error: 'need_ticks', need: stake, have: this._tickBal(from) }, 402); // escrow challenger's stake now (open posts have no target yet)
       const escrowed = stake > 0 ? 1 : 0;
       const id = (now.toString(36) + Math.abs((from + toId + metric).split('').reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)).toString(36)).slice(0, 16);
       sql.exec('INSERT INTO duels(id,a_uid,b_uid,a_name,b_name,metric,created,start_ts,end_ts,status,winner,a_score,b_score,settled,dur,stake,escrowed,sym,rules) VALUES(?,?,?,?,?,?,?,0,0,?,?,0,0,0,?,?,?,?,?)', id, from, isOpen ? '' : toId, me.username, isOpen ? '' : to.username, metric, now, isOpen ? 'open' : 'pending', '', dur, stake, escrowed, sym, JSON.stringify(rules));
-      if (!isOpen) this._pushNotif(toId, 'duel', '@' + me.username + ' challenged you to a ' + this._duelLabel(metric) + ' duel' + (sym ? ' on ' + sym : '') + ' — ' + this._durLabel(dur) + (stake > 0 ? ', ' + stake + ' XP on the line' : '') + '. Accept?', 'duel');
+      if (!isOpen) this._pushNotif(toId, 'duel', '@' + me.username + ' challenged you to a ' + this._duelLabel(metric) + ' duel' + (sym ? ' on ' + sym : '') + ' — ' + this._durLabel(dur) + (stake > 0 ? ', ' + stake + ' Ticks on the line' : '') + '. Accept?', 'duel');
       return this.j({ ok: true, id, open: isOpen || undefined });
     }
     if (path === '/duel/openlist') { // the lobby: latest open challenges anyone can take
       const uid = String((b && b.uid) || url.searchParams.get('uid') || '').replace(/^u:/, '');
       for (const d of this.rows("SELECT * FROM duels WHERE status='open' AND created<=?", now - 7 * 86400000)) { // stale posts: refund + close
-        if ((+d.stake || 0) > 0 && (+d.escrowed || 0) >= 1) this._giveXp(d.a_uid, +d.stake, 'Open duel expired — stake returned');
+        if ((+d.stake || 0) > 0 && (+d.escrowed || 0) >= 1) this._giveTicks(d.a_uid, +d.stake, 'Open duel expired — stake returned');
         sql.exec("UPDATE duels SET status='declined', escrowed=0 WHERE id=?", d.id);
       }
       const rows = this.rows("SELECT * FROM duels WHERE status='open' ORDER BY created DESC LIMIT 30");
@@ -16316,7 +16341,7 @@ export class UserStore {
       if ((acc.status && acc.status !== 'active') || acc.muted) return this.j({ error: 'restricted' }, 403);
       if (this.rows("SELECT 1 FROM duels WHERE ((a_uid=? AND b_uid=?) OR (a_uid=? AND b_uid=?)) AND status IN ('pending','active') LIMIT 1", String(d.a_uid), uid, uid, String(d.a_uid))[0]) return this.j({ error: 'exists' }, 409);
       const stake = +d.stake || 0;
-      if (stake > 0 && !this._takeXp(uid, stake, 'Duel stake vs @' + d.a_name)) return this.j({ error: 'need_xp', need: stake, have: this._xpBal(uid) }, 402);
+      if (stake > 0 && !this._takeTicks(uid, stake, 'Duel stake vs @' + d.a_name)) return this.j({ error: 'need_ticks', need: stake, have: this._tickBal(uid) }, 402);
       const dur = +d.dur || 604800000;
       sql.exec('UPDATE duels SET b_uid=?, b_name=?, status=?, start_ts=?, end_ts=?, escrowed=? WHERE id=?', uid, acc.username, 'active', now, now + dur, stake > 0 ? 2 : 0, id);
       this._pushNotif(String(d.a_uid), 'duel', '@' + acc.username + ' took your open ' + this._duelLabel(d.metric) + ' duel. It is live — ' + this._durLabel(dur) + ' on the clock.', 'duel');
@@ -16359,7 +16384,7 @@ export class UserStore {
       if (String(d.b_uid) !== uid || d.status !== 'pending') return this.j({ error: 'bad_state' }, 400);
       const stake = +d.stake || 0;
       if (action === 'accept') {
-        if (stake > 0 && !this._takeXp(uid, stake, 'Duel stake vs @' + d.a_name)) return this.j({ error: 'need_xp', need: stake, have: this._xpBal(uid) }, 402); // escrow opponent's stake
+        if (stake > 0 && !this._takeTicks(uid, stake, 'Duel stake vs @' + d.a_name)) return this.j({ error: 'need_ticks', need: stake, have: this._tickBal(uid) }, 402); // escrow opponent's stake
         if (stake > 0) sql.exec('UPDATE duels SET escrowed=2 WHERE id=?', id);
         const dur = +d.dur || 604800000; sql.exec('UPDATE duels SET status=?, start_ts=?, end_ts=? WHERE id=?', 'active', now, now + dur, id);
         this._pushNotif(d.a_uid, 'duel', '@' + d.b_name + ' accepted your ' + this._duelLabel(d.metric) + ' duel. It is live — ' + this._durLabel(dur) + ' on the clock.', 'duel');
@@ -16433,6 +16458,7 @@ export class UserStore {
       const cur9 = (this.rows('SELECT n FROM mev WHERE user_id=? AND day=? AND type=?', uid9, dk8, 'ev:chat')[0] || {}).n || 0;
       if (cur9 >= 10) return this.j({ ok: true, capped: true }); // missions need 3 — a flood past 10 counts nothing
       sql9.exec('INSERT INTO mev(user_id,day,type,n) VALUES(?,?,?,1) ON CONFLICT(user_id,day,type) DO UPDATE SET n=n+1', uid9, dk8, 'ev:chat');
+      try { this._grantTicks(uid9, 'chat', 2, { dayCap: TICK_CAP.chat, note: 'said something in chat' }); } catch (ce9) {}
       return this.j({ ok: true });
     }
     if (path === '/mentionnotify') { // chat @mention → notify each mentioned registered user (deduped per sender per 60s)
@@ -16874,7 +16900,7 @@ function _missionRng(seed) { let s = (seed ^ 0x9e3779b9) >>> 0; return function 
 function missionsForDay(day, opts) { // daily set: 1 trade mission + the Telegram-group mission + 6 category-capped picks, seeded by the date.
   // CAPS fix the "3 academy missions in one day" problem: a plain shuffle could stack one category; now each day is a designed mix.
   opts = opts || {};
-  const seed = (parseInt(String(day).replace(/-/g, ''), 10) || 0) + ((+opts.salt || 0) * 7919); // salt = Mission Reroll (Vault consumable): same-day different deterministic set
+  const seed = parseInt(String(day).replace(/-/g, ''), 10) || 0; // deterministic per UTC day, so a claim re-derives the same set the GET showed
   const rnd = _missionRng(seed);
   const tradeM = MISSION_POOL[rnd() < 0.5 ? 0 : 1]; // trade1 or trade3 (random per day)
   const PROMO2 = ['tgsignals', 'tgnews', 'tgbot']; // the free signal group / news channel / bot — rotate ONE into every day on an even 3-day cycle (guarantees fair visibility, unlike the skewed shuffle)
@@ -16957,14 +16983,6 @@ async function handleMissions(url, request, env) {
   const evDefs = defs.filter(m => m.vt !== 'comm').map(m => ({ mid: m.mid, vt: m.vt, va: m.va, n: m.n }));
   let st = { done: {}, claimed: {} };
   try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/state', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, day, dayStart, defs: evDefs }) })); st = await r.json(); } catch (e) {}
-  const _salt = +((st && st.msalt) || 0);
-  if (_salt) { // Mission Reroll: this user bought a reroll today — re-derive with their salt and re-verify. Both GET and claim POST pass here, so the claimable set is always the salted one.
-    let _ad = false;
-    try { const ar2 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/academy/state?uid=' + encodeURIComponent(uid))); const dn2 = ((await ar2.json()) || {}).done || []; _ad = dn2.filter(x => !String(x).startsWith('course:')).length >= 96; } catch (e) {}
-    defs = missionsForDay(day, { academyDone: _ad, salt: _salt });
-    const evDefs2 = defs.filter(m => m.vt !== 'comm').map(m => ({ mid: m.mid, vt: m.vt, va: m.va, n: m.n }));
-    try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/missions/state', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, day, dayStart, defs: evDefs2 }) })); st = await r.json(); } catch (e) {}
-  }
   for (const m of defs) if (m.vt === 'comm') {
     try { const r = await env.COMM.get(env.COMM.idFromName('main')).fetch(new Request('https://do/activity', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, fromTs: dayStart }) })); const d = await r.json(); st.done[m.mid] = ((d.posts || 0) + (d.comments || 0)) >= (m.n || 1); } catch (e) { st.done[m.mid] = false; }
   }
