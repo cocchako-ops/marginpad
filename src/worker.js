@@ -4665,6 +4665,25 @@ async function settleDuels(env) {
 async function checkOpsAlerts(env) {
   try {
     if (!env.STATS || !env.TELEGRAM_TOKEN || !env.TG_ADMIN_CHAT) return;
+    // BOT API HEALTH. Nothing watched it: a spike of 429s or a store that started failing would have reached us
+    // through a user complaint, or not at all. The perf ring carries the trading store's own service time now
+    // ('do-bot'), so alert when it degrades against its measured baseline rather than against a guess.
+    try {
+      const ring = (globalThis.__perfBuf || []).filter(x => x && x.g === 'do-bot');
+      if (ring.length >= 30) { // this project's own rule: no p95 below n=30
+        const ms = ring.map(x => +x.ms || 0).sort((a, b) => a - b);
+        const p95 = ms[Math.max(0, Math.ceil(0.95 * ms.length) - 1)];
+        const errRate = ring.filter(x => !x.ok).length / ring.length;
+        const BUDGET = 150; // measured 2026-08-20: p50 29ms, p95 48ms with the network excluded. 150 is ~3x that.
+        if (p95 > BUDGET || errRate > 0.02) {
+          const dk = 'alrt:boterr:' + new Date().toISOString().slice(0, 13);
+          if (!(await env.STATS.get(dk))) {
+            await env.STATS.put(dk, '1', { expirationTtl: 7200 });
+            await tgAdmin(env, 'Bot API: trading store p95 ' + p95 + 'ms (budget ' + BUDGET + '), errors ' + (errRate * 100).toFixed(1) + '%, n=' + ring.length + '. Kill switch: opscfg {botApi:false}.');
+          }
+        }
+      }
+    } catch (e) {}
     // WITHDRAWALS STALE ALARM (2026-08-16, support-driven): any payout pending >48h → one TG ping per day.
     // Users were writing support tickets ("pending for 3 days") before the queue was noticed.
     try {
@@ -10148,7 +10167,7 @@ async function handleBot(url, request, env, ctx) {
     const hint = String(b.symbol).toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
     const [pd, _pr] = await Promise.all([fetchPriceFill(hint).catch(() => null), xpPromos(env).catch(() => [])]);
     const prices = {}; if (pd && +pd.price > 0) prices[hint] = +pd.price;
-    const r = await doCall('/botclose', { key, ep: 'close', id: String(b.id), pct: b.pct, pid: b.pid, prices, promos: _pr, via: 'bot' });
+    const r = await doCall('/botclose', { key, ep: 'close', id: String(b.id), pct: b.pct, pid: b.pid, prices, promos: _pr, via: 'bot', coid: String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64) });
     if (!r) return jb({ error: 'unavailable' }, 503);
     const a = r._auth; if (a) { delete r._auth; if (a.limit) rl = { 'x-ratelimit-limit': String(a.limit), 'x-ratelimit-remaining': String(a.remaining != null ? a.remaining : 0), 'x-ratelimit-reset': String(a.reset || '') }; }
     if (r.error === 'bad_key') return jb({ error: 'invalid_api_key' }, 401);
@@ -10241,7 +10260,7 @@ async function handleBot(url, request, env, ctx) {
     // cold fetch in the same wave. With it, a close is one DO hop plus one warm price.
     const hint = String(b.symbol || '').toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
     const prices = hint ? await priceMapFill([hint]) : await priceMap(await openSymsOf());
-    const r = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices, promos, via: 'bot' });
+    const r = await doCall('/botclose', { uid, id: String(b.id), pct: b.pct, prices, promos, via: 'bot', coid: String(b.client_order_id || '').replace(/[^\w.:-]/g, '').slice(0, 64) });
     if (!r) return jb({ error: 'unavailable' }, 503);
     // a wrong/stale hint means we priced the wrong feed — fall back to the full sweep once rather than fail the close
     if (r.error === 'no_price' && hint) {
@@ -15954,12 +15973,21 @@ export class UserStore {
         return this.j({ ok: true, closed: closes.length, positions: closes.map(t => this._j2bot(t, null)) });
       }
       if (path === '/botclose') {
+        // coid on close — the other half of the open-side guarantee. A retried close after a timeout should report
+        // what the first one did, not an error the caller has to interpret. Keyed by ACCOUNT so a rotated key still
+        // de-duplicates, same table and same 7-day window as opens.
+        const _ccoid = String(b.coid || '').slice(0, 64);
+        if (_ccoid) {
+          const prev = this.rows('SELECT tid FROM botidem WHERE uid=? AND coid=?', uid, 'c:' + _ccoid)[0];
+          if (prev) { const ex = cur.filter(x => String(x.id) === String(prev.tid))[0]; if (ex) return this.j({ ok: true, position: this._j2bot(ex, null), idempotent: true, _auth: _ia || undefined }); }
+        }
         const t = cur.filter(x => String(x.id) === String(b.id || ''))[0];
         if (!t) return this.j({ error: 'not_found' });
         if (!isOpen(t)) return this.j({ error: 'already_closed', position: this._j2bot(t, null) });
         const live = PR[t.sym]; if (!(live > 0)) return this.j({ error: 'no_price' });
         const pct = Math.min(100, Math.max(1, +b.pct || 100)) / 100, long = t.side !== 'short', dir = long ? 1 : -1, entry = +t.entry || 0;
-        if (pct >= 1) { let pnl = (+t.qty || 0) * (live - entry) * dir - (+t.qty || 0) * (entry + live) * (+t.feeRate || 0) - (+t.fund || 0); const margin = +t.margin || 0; if (pnl < -margin) pnl = -margin; const closed = Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now(), sc: 1 }); this._syncJournal(uid, [closed], b.promos, true, b.via === 'bot' ? 'bot' : 'site'); return this.j({ ok: true, position: this._j2bot(closed, null), _auth: _ia || undefined }); }
+        if (pct >= 1) { let pnl = (+t.qty || 0) * (live - entry) * dir - (+t.qty || 0) * (entry + live) * (+t.feeRate || 0) - (+t.fund || 0); const margin = +t.margin || 0; if (pnl < -margin) pnl = -margin; const closed = Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now(), sc: 1 }); this._syncJournal(uid, [closed], b.promos, true, b.via === 'bot' ? 'bot' : 'site'); if (_ccoid) { try { sql.exec('INSERT OR IGNORE INTO botidem(uid,coid,tid,ts) VALUES(?,?,?,?)', uid, 'c:' + _ccoid, String(t.id || ''), now); } catch (e) {} }
+          return this.j({ ok: true, position: this._j2bot(closed, null), _auth: _ia || undefined }); }
         const part = Object.assign({}, t); part.id = (b.pid && /^[A-Za-z0-9_-]{4,60}$/.test(String(b.pid))) ? String(b.pid) : (t.id + 'p' + Date.now().toString(36)); // pid: client-proposed part id so the optimistic local split and the server split converge on ONE row
         part.qty = (+t.qty || 0) * pct; part.margin = Math.round((+t.margin || 0) * pct * 100) / 100; part.partial = Math.round(pct * 100); part.notional = Math.round(((+t.notional || 0) * pct) * 100) / 100;
         part.fund = Math.round(((+t.fund || 0) * pct) * 1e6) / 1e6;

@@ -193,6 +193,11 @@ POST /api/bot/key  {"act":"revoke","key":"mpb_..."}         // usage history is 
 // first call            -> {"ok":true,"data":{"position":{"id":"bot...", ...}}}
 // same call retried     -> {"ok":true,"data":{"position":{"id":"bot...", ...},"idempotent":true}}</code></pre>
 <p>Use a value your strategy can regenerate deterministically — a signal id, or symbol plus candle timestamp. Ids are remembered for 7 days.</p>
+<p><b>Closing takes one too.</b> Send <code>client_order_id</code> on <code>/close</code> and a retry reports what the first call did (<code>idempotent: true</code>) instead of an error you have to interpret:</p>
+<pre><code>POST /api/bot/v2/close
+{"id":"bot...","symbol":"BTC","client_order_id":"exit-sig-1403"}
+
+// retried -&gt; {"ok":true,"data":{"position":{...},"idempotent":true}}</code></pre>
 
 <p><b>Send <code>symbol</code> when you close.</b> Every <code>/positions</code> row already carries it, so this is free to add and it measurably shortens the close:</p>
 <pre><code>POST /api/bot/v2/close
