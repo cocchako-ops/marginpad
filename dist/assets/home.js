@@ -374,6 +374,14 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
       // first-touch (touch orders, and their damage is bounded); liq is the -100% outcome so it pays the 1-tick delay.
       _clArm[e.id]=(_clArm[e.id]||0)+1;if(_clArm[e.id]<2)return false;
       _clArm[e.id]=0;
+      /* SERVER-OWNED TRADES SETTLE ON THE SERVER (2026-08-20). A liquidation is the one -100% outcome, and the
+         client cannot confirm it: it sees a live tick, the server checks the actual 1m candle. Marking it here
+         wiped positions that the server then refuted, and the user watched them come back minutes later -
+         reported on ACE twice, most recently 2026-08-19 ("loaded up the site again and the positions are back").
+         The heal existed and worked; it was curing a symptom. For srv/bot rows we now show the position as it is
+         (deep red, at the level) and let the sweep settle it - which the very next /positions poll triggers, so
+         this costs seconds, not the 10-minute cron. A client sync could never close these rows anyway. */
+      if(e.src==='srv'||e.src==='bot'){try{if(window.__mpTrack)window.__mpTrack('cliqhold',e.sym+' at liq, awaiting server');}catch(_){}window.__mpSrvLiq=1;return false;}
       try{if(window.__mpTrack)window.__mpTrack('cliq',e.sym+' liq'+(+m.liq).toPrecision(6)+' px'+(+px).toPrecision(6)+' age'+((prices[e.sym]&&prices[e.sym].t)?Math.round((Date.now()-prices[e.sym].t)/1000):-1)+'s');}catch(_){} // server-side trail: every client liquidation logs symbol + level + the price that fired it
       e.status='loss';e.exit=m.liq;e.liquidated=true;e.pnl=(+e.margin>0)?-(+e.margin):pnlAt(m.liq);} // liquidated = lose the full margin
     e.closeTs=Date.now();notify(e,tp?'tp':(e.liquidated?'liq':'sl'));if(e.src==='srv')queueNudge(e.id);return true;}
@@ -871,6 +879,10 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
           else{exitPx=tp;liab=false;}
           cross=Math.max(bt,e.ts);break;}
         if(cross==null)return;
+        /* same rule as checkClose: srv/bot rows are settled by the server's own candle-check, not here. This
+           sweep reads klines the client fetched; the server reads its own and holds the watermark, so letting
+           both decide is how a position ends up liquidated on screen and open on the server. */
+        if(e.src==='srv'||e.src==='bot')return;
         var d2=load(),idx=-1;for(var k=0;k<d2.length;k++){if(d2[k].id===e.id){idx=k;break;}}if(idx<0)return;var t=d2[idx];if(t.status!=='open')return;
         var dir=(t.side!=='short')?1:-1,pnl=(t.qty!=null&&isFinite(t.qty))?t.qty*(exitPx-t.entry)*dir:null;
         if(liab){pnl=(+t.margin>0)?-(+t.margin):pnl;t.liquidated=true;try{if(window.__mpTrack)window.__mpTrack('cliq','sweep '+t.sym+' tf'+tf+' liq'+(+lossExit).toPrecision(6));}catch(_){}} else if(+t.margin>0&&pnl!=null&&pnl<-(+t.margin))pnl=-(+t.margin); // clamp any loss to −margin
