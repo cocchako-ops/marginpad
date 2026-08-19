@@ -10118,6 +10118,34 @@ async function handleBot(url, request, env, ctx) {
   // --- authenticated bot endpoints ---
   const key = request.headers.get('x-api-key') || url.searchParams.get('api_key') || '';
   if (!key) return jb({ error: 'missing_api_key', hint: 'Send your key in the X-API-Key header. Get one free at https://marginpad.io/trading-api/' }, 401);
+
+  // FAST CLOSE — one round trip to the trading store instead of two. The store is region-pinned: a hop is ~29ms of
+  // service time but ~198ms p50 / 368ms p95 of distance from Singapore, where our two busiest keys connect. Auth and
+  // the close happen in the same call, and the one price we need is fetched while that call is in flight. Requires
+  // `symbol` (every /positions row carries it); without it we still need a lookup first and take the normal path.
+  if (path === '/v1/close' && request.method === 'POST' && b && b.symbol) {
+    if (!b.id) return jb({ error: 'id_required' }, 400);
+    const hint = String(b.symbol).toUpperCase().replace(/[^A-Z0-9]/g, '').replace(/USDT$/, '');
+    const [pd, _pr] = await Promise.all([fetchPrice(hint).catch(() => null), xpPromos(env).catch(() => [])]);
+    const prices = {}; if (pd && +pd.price > 0) prices[hint] = +pd.price;
+    const r = await doCall('/botclose', { key, ep: 'close', id: String(b.id), pct: b.pct, pid: b.pid, prices, promos: _pr, via: 'bot' });
+    if (!r) return jb({ error: 'unavailable' }, 503);
+    const a = r._auth; if (a) { delete r._auth; if (a.limit) rl = { 'x-ratelimit-limit': String(a.limit), 'x-ratelimit-remaining': String(a.remaining != null ? a.remaining : 0), 'x-ratelimit-reset': String(a.reset || '') }; }
+    if (r.error === 'bad_key') return jb({ error: 'invalid_api_key' }, 401);
+    if (r.error === 'revoked_key') return jb({ error: 'revoked_key', hint: 'This key was revoked. Create a new one at https://marginpad.io/trading-api/' }, 401);
+    if (r.error === 'rate_limit') return jb({ error: 'rate_limit', limit: (+r.limit || 120) + ' requests / minute' }, 429, { 'retry-after': String(Math.max(1, (+r.reset || 0) - Math.floor(Date.now() / 1000))) });
+    if (r.error === 'no_price') { // stale or wrong hint — fall through to the normal path rather than fail the close
+      const a2 = await doCall('/botauth', { key, ep: 'close' });
+      if (a2 && a2.limit) rl = { 'x-ratelimit-limit': String(a2.limit), 'x-ratelimit-remaining': String(a2.remaining != null ? a2.remaining : 0), 'x-ratelimit-reset': String(a2.reset || '') };
+      if (!a2 || a2.error) return jb({ error: a2 && a2.error === 'rate_limit' ? 'rate_limit' : 'invalid_api_key' }, a2 && a2.error === 'rate_limit' ? 429 : 401);
+      const seed = await doCall('/botpositions', { uid: a2.uid, prices: {} });
+      const syms = seed && seed.positions ? Array.from(new Set(seed.positions.filter(p => p.status === 'open').map(p => p.symbol))) : [];
+      const px2 = {}; await Promise.all(syms.slice(0, 12).map(sy => fetchPrice(sy).then(p2 => { if (p2 && +p2.price > 0) px2[sy] = +p2.price; }).catch(() => {})));
+      const r2 = await doCall('/botclose', { uid: a2.uid, id: String(b.id), pct: b.pct, pid: b.pid, prices: px2, promos: _pr, via: 'bot' });
+      return jb(r2 || { error: 'unavailable' }, r2 ? (r2.error ? 400 : 200) : 503);
+    }
+    return jb(r, r.error ? 400 : 200);
+  }
   const auth = await doCall('/botauth', { key, ep: path.replace('/v1/', '').replace(/[^a-z_]/g, '') || 'other' });
   if (!auth || auth.error === 'bad_key') return jb({ error: 'invalid_api_key' }, 401);
   // set BEFORE the 429 return so the rate-limit response itself carries the headers a client needs to back off
@@ -15394,6 +15422,27 @@ export class UserStore {
     return { roe: bestRoe == null ? null : Math.round(bestRoe), win: bestWin == null ? null : +bestWin.toFixed(2), wr: n ? Math.round(wins / n * 100) : 0, n, wins, pnl: +totalPnl.toFixed(2), streak, equity: +equity.toFixed(2), ruined, sniperRoe: sniperRoe == null ? null : Math.round(sniperRoe) };
   }
   // ── shared journal store (single source of truth for BOTH the site's My Trades and the Bot API) ──
+  // Resolve key -> uid, meter PER KEY and enforce the per-key rate limit. Extracted so an operation can do it
+  // INLINE instead of costing its own round trip: the store is region-pinned, so a hop is ~29ms of service time
+  // but ~198ms of distance from Singapore, where our busiest keys connect. /botauth is now just this, called alone.
+  _botAuth(key, ep, now) {
+    const sql = this.state.storage.sql;
+    const k = String(key || ''); const row = this.rows('SELECT * FROM botkeys2 WHERE k=?', k)[0];
+    if (!row) return { error: 'bad_key' };
+    if (+row.revoked) return { error: 'revoked_key' };
+    // rpm is a per-key override the owner can set by hand; otherwise the tier decides. Tier lives on the row so
+    // the hot path never reads KV — it is refreshed whenever the user touches /api/bot/key and by the daily cron.
+    const lim = (+row.rpm > 0) ? +row.rpm : BOT_TIER_LIMITS(+row.tier || 0).rpm;
+    const mn = new Date().toISOString().slice(0, 16);
+    const cnt = (row.mn === mn) ? (row.mint || 0) + 1 : 1;
+    const reset = Math.floor(now / 60000) * 60 + 60; // epoch SECONDS at which the current minute window rolls
+    if (cnt > lim) return { error: 'rate_limit', limit: lim, remaining: 0, reset };
+    sql.exec('UPDATE botkeys2 SET mn=?, mint=?, calls=calls+1, last=? WHERE k=?', mn, cnt, now, k);
+    const e2 = String(ep || 'other').replace(/[^a-z_]/g, '').slice(0, 20) || 'other';
+    const day = new Date().toISOString().slice(0, 10);
+    sql.exec('INSERT INTO botuse2(k,day,ep,n,last) VALUES(?,?,?,1,?) ON CONFLICT(k,day,ep) DO UPDATE SET n=n+1,last=?', k, day, e2, now, now);
+    return { uid: row.uid, k, name: row.name || '', tier: +row.tier || 0, limit: lim, remaining: Math.max(0, lim - cnt), reset };
+  }
   _loadJournal(uid) { try { const r = this.rows('SELECT json FROM utrades WHERE user_id=?', uid)[0]; if (r && r.json) { const a = JSON.parse(r.json); return Array.isArray(a) ? a : []; } } catch (e) {} return []; }
   // can `a` DM `b`? Yes if either follows the other, OR a conversation already exists (so a reply is always allowed). Keeps DMs to your social circle → no spam-to-strangers.
   _canDm(a, b) { if (this.rows('SELECT 1 FROM ufollows WHERE k=?', a + '|' + b)[0]) return true; if (this.rows('SELECT 1 FROM ufollows WHERE k=?', b + '|' + a)[0]) return true; if (this.rows('SELECT 1 FROM dms WHERE pair=? LIMIT 1', [a, b].sort().join('|'))[0]) return true; return false; }
@@ -15692,23 +15741,7 @@ export class UserStore {
       if (!row) { const k = mint('default'); return this.j({ key: k, created: now, keys: list(), plan }); }
       return this.j({ key: row.k, keys: list(), plan });
     }
-    if (path === '/botauth') { // resolve key -> uid, meter PER KEY, enforce the per-key rate limit (atomic, single-threaded DO)
-      const k = String(b.key || ''); const row = this.rows('SELECT * FROM botkeys2 WHERE k=?', k)[0];
-      if (!row) return this.j({ error: 'bad_key' });
-      if (+row.revoked) return this.j({ error: 'revoked_key' });
-      // rpm is a per-key override the owner can set by hand; otherwise the tier decides. Tier lives on the row so
-      // the hot path never reads KV — it is refreshed whenever the user touches /api/bot/key and by the daily cron.
-      const lim = (+row.rpm > 0) ? +row.rpm : BOT_TIER_LIMITS(+row.tier || 0).rpm;
-      const mn = new Date().toISOString().slice(0, 16);
-      const cnt = (row.mn === mn) ? (row.mint || 0) + 1 : 1;
-      const reset = Math.floor(now / 60000) * 60 + 60; // epoch SECONDS at which the current minute window rolls
-      if (cnt > lim) return this.j({ error: 'rate_limit', limit: lim, remaining: 0, reset });
-      sql.exec('UPDATE botkeys2 SET mn=?, mint=?, calls=calls+1, last=? WHERE k=?', mn, cnt, now, k);
-      const ep = String(b.ep || 'other').replace(/[^a-z_]/g, '').slice(0, 20) || 'other';
-      const day = new Date().toISOString().slice(0, 10);
-      sql.exec('INSERT INTO botuse2(k,day,ep,n,last) VALUES(?,?,?,1,?) ON CONFLICT(k,day,ep) DO UPDATE SET n=n+1,last=?', k, day, ep, now, now);
-      return this.j({ uid: row.uid, k, name: row.name || '', tier: +row.tier || 0, limit: lim, remaining: Math.max(0, lim - cnt), reset });
-    }
+    if (path === '/botauth') return this.j(this._botAuth(b.key, b.ep, now));
     if (path === '/statsrepair') { // repair the counters the 2026-08-14 scope bug left frozen.
       // SEASON is rebuilt EXACTLY: tradeev keeps 30 days of close events and the season is younger than that, so
       // every close that belongs to the current period is still on record. LIFETIME cannot be made exact (history
@@ -15869,7 +15902,12 @@ export class UserStore {
       return this.j({ ok: true, position: this._j2bot(t, null) });
     }
     if (path === '/botpositions' || path === '/botclose' || path === '/botcloseall') {
-      const uid = String(b.uid || ''), PR = b.prices || {};
+      // INLINE AUTH: when the caller sends `key` instead of `uid`, resolve+meter here so the whole operation is
+      // ONE round trip to this store rather than two. Same helper, same limits, same per-key metering — the only
+      // thing that changes is that the caller stopped paying the distance twice.
+      let _ia = null;
+      if (b.key) { _ia = this._botAuth(b.key, b.ep || 'close', now); if (_ia.error) return this.j(_ia); }
+      const uid = _ia ? _ia.uid : String(b.uid || ''), PR = b.prices || {};
       const isOpen = (t) => t && t.status !== 'win' && t.status !== 'loss';
       // server-side SL/TP/liq sweep for BOT-opened trades (bots aren't always online). Returns a CLOSED copy, or null. App trades are handled by the UI.
       const sweep = (t) => { if (!isOpen(t) || (t.src !== 'bot' && t.src !== 'srv')) return null; const live = PR[t.sym]; if (!(live > 0)) return null;
@@ -15896,7 +15934,7 @@ export class UserStore {
         if (!isOpen(t)) return this.j({ error: 'already_closed', position: this._j2bot(t, null) });
         const live = PR[t.sym]; if (!(live > 0)) return this.j({ error: 'no_price' });
         const pct = Math.min(100, Math.max(1, +b.pct || 100)) / 100, long = t.side !== 'short', dir = long ? 1 : -1, entry = +t.entry || 0;
-        if (pct >= 1) { let pnl = (+t.qty || 0) * (live - entry) * dir - (+t.qty || 0) * (entry + live) * (+t.feeRate || 0) - (+t.fund || 0); const margin = +t.margin || 0; if (pnl < -margin) pnl = -margin; const closed = Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now(), sc: 1 }); this._syncJournal(uid, [closed], b.promos, true, b.via === 'bot' ? 'bot' : 'site'); return this.j({ ok: true, position: this._j2bot(closed, null) }); }
+        if (pct >= 1) { let pnl = (+t.qty || 0) * (live - entry) * dir - (+t.qty || 0) * (entry + live) * (+t.feeRate || 0) - (+t.fund || 0); const margin = +t.margin || 0; if (pnl < -margin) pnl = -margin; const closed = Object.assign({}, t, { status: pnl >= 0 ? 'win' : 'loss', exit: live, pnl: Math.round(pnl * 100) / 100, closeTs: Date.now(), sc: 1 }); this._syncJournal(uid, [closed], b.promos, true, b.via === 'bot' ? 'bot' : 'site'); return this.j({ ok: true, position: this._j2bot(closed, null), _auth: _ia || undefined }); }
         const part = Object.assign({}, t); part.id = (b.pid && /^[A-Za-z0-9_-]{4,60}$/.test(String(b.pid))) ? String(b.pid) : (t.id + 'p' + Date.now().toString(36)); // pid: client-proposed part id so the optimistic local split and the server split converge on ONE row
         part.qty = (+t.qty || 0) * pct; part.margin = Math.round((+t.margin || 0) * pct * 100) / 100; part.partial = Math.round(pct * 100); part.notional = Math.round(((+t.notional || 0) * pct) * 100) / 100;
         part.fund = Math.round(((+t.fund || 0) * pct) * 1e6) / 1e6;
@@ -15904,7 +15942,7 @@ export class UserStore {
         const rem = Object.assign({}, t, { qty: (+t.qty || 0) * (1 - pct), margin: Math.round((+t.margin || 0) * (1 - pct) * 100) / 100, notional: Math.round(((+t.notional || 0) * (1 - pct)) * 100) / 100, fund: Math.round(((+t.fund || 0) * (1 - pct)) * 1e6) / 1e6 });
         part.sc = 1;
         this._syncJournal(uid, [rem, part], b.promos, true, b.via === 'bot' ? 'bot' : 'site');
-        return this.j({ ok: true, closed: this._j2bot(part, null), remaining: this._j2bot(rem, live) });
+        return this.j({ ok: true, closed: this._j2bot(part, null), remaining: this._j2bot(rem, live), _auth: _ia || undefined });
       }
       cur.sort((a, c) => ((+c.closeTs || +c.ts || 0) - (+a.closeTs || +a.ts || 0)));
       // LIFETIME totals for /account. The journal is capped at 100 (_syncJournal CAP), so summing `positions` gives
@@ -16074,7 +16112,14 @@ export class UserStore {
           else if (d.vt === 'duel') c = (this.rows('SELECT COUNT(*) n FROM duels WHERE a_uid=? AND created>=?', uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'duelw') c = (this.rows("SELECT COUNT(*) n FROM duels WHERE winner=? AND status='done' AND end_ts>=?", uid, dayStart)[0] || {}).n || 0;
           else if (d.vt === 'follower') c = (this.rows('SELECT COUNT(*) n FROM ufollows WHERE tuid=? AND ts>=?', uid, dayStart)[0] || {}).n || 0;
-          else if (d.vt === 'win') c = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND ts>=?", uid, dayStart)[0] || {}).n || 0;
+          else if (d.vt === 'win') { // NEVER under-credit a real win. tradeev is the natural place to look but its
+            // per-sync insert cap keeps logging losses after it stops logging wins (deliberate anti-shed measure),
+            // so a user who signs in on a second device and pushes a big journal at once can close a winner and
+            // watch the mission refuse it. The journal itself is unbiased; take whichever source saw more.
+            const _tv = (this.rows("SELECT COUNT(*) n FROM tradeev WHERE user_id=? AND kind='close' AND pnl>0 AND ts>=?", uid, dayStart)[0] || {}).n || 0;
+            let _jw = 0; try { for (const t of this._loadJournal(uid)) { if (!t || t.status !== 'win') continue; if ((+t.closeTs || 0) < dayStart) continue; if (!((+t.pnl || 0) > 0)) continue; _jw++; } } catch (e2) {}
+            c = Math.max(_tv, _jw);
+          }
           else if (d.vt === 'academy') c = (this.rows("SELECT COUNT(*) n FROM academy WHERE user_id=? AND ts>=? AND lesson NOT LIKE 'course:%'", uid, dayStart)[0] || {}).n || 0;
         } catch (e) {}
         done[d.mid] = c >= (d.n || 1);
