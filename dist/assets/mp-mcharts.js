@@ -1,3 +1,28 @@
+/* ONE journal writer, shared by every bundle (first one to load defines it). localStorage is ~5MB per origin and
+   every jstore() used to be a bare setItem in a try/catch that SWALLOWED QuotaExceededError - past the limit a
+   trader's closes silently stopped being saved, with no error and no sign. Nothing is dropped preemptively: we
+   only shed when the device genuinely has no room, we shed the OLDEST CLOSED trades and never an open position,
+   and we say so once instead of failing quietly. */
+window.mpJStore=window.mpJStore||function(a){
+  try{localStorage.setItem('mp_journal',JSON.stringify(a));return true;}catch(e){}
+  try{
+    var arr=Array.isArray(a)?a:[];
+    var op=[],cl=[],i;
+    for(i=0;i<arr.length;i++){var x=arr[i];if(!x)continue;(x.status==='win'||x.status==='loss')?cl.push(x):op.push(x);}
+    cl.sort(function(p,q){return ((+p.closeTs||+p.ts||0)-(+q.closeTs||+q.ts||0));}); /* oldest first */
+    var keep=cl.length;
+    while(keep>0){
+      keep=Math.floor(keep*0.7);
+      try{
+        localStorage.setItem('mp_journal',JSON.stringify(op.concat(cl.slice(cl.length-keep))));
+        if(!window.__mpQuotaSaid){window.__mpQuotaSaid=1;try{if(window.mpLimitToast)window.mpLimitToast('This device ran out of storage, so the oldest closed trades were removed from it. Open positions and your stats are safe - your stats live on your account, not on this device.');}catch(_){}}
+        return true;
+      }catch(e2){}
+    }
+    try{localStorage.setItem('mp_journal',JSON.stringify(op));return true;}catch(e3){}
+  }catch(e4){}
+  return false;
+};
 /* Chart times render in the VIEWER'S timezone. lightweight-charts formats the axis and crosshair in UTC,
    so without this every visitor outside UTC saw a chart clock that disagreed with their own device — the
    long-standing "chart is bugging" report (Belgrade device 17:56 vs axis 15:56, measured 2026-08-17).
@@ -508,7 +533,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         var _finMc=function(P){
         var d;try{d=JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){d=[];}
         d.push(P);
-        try{localStorage.setItem('mp_journal',JSON.stringify(d));}catch(e){}
+        try{window.mpJStore(d);}catch(e){}
         if(window.mpLivePrices)window.mpLivePrices[tSym]={p:+P.entry,t:Date.now()};
         if(window.mpJournalRender)window.mpJournalRender();
         try{window.mpBuzz&&window.mpBuzz([15]);}catch(e){}

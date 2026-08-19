@@ -1,3 +1,28 @@
+/* ONE journal writer, shared by every bundle (first one to load defines it). localStorage is ~5MB per origin and
+   every jstore() used to be a bare setItem in a try/catch that SWALLOWED QuotaExceededError - past the limit a
+   trader's closes silently stopped being saved, with no error and no sign. Nothing is dropped preemptively: we
+   only shed when the device genuinely has no room, we shed the OLDEST CLOSED trades and never an open position,
+   and we say so once instead of failing quietly. */
+window.mpJStore=window.mpJStore||function(a){
+  try{localStorage.setItem('mp_journal',JSON.stringify(a));return true;}catch(e){}
+  try{
+    var arr=Array.isArray(a)?a:[];
+    var op=[],cl=[],i;
+    for(i=0;i<arr.length;i++){var x=arr[i];if(!x)continue;(x.status==='win'||x.status==='loss')?cl.push(x):op.push(x);}
+    cl.sort(function(p,q){return ((+p.closeTs||+p.ts||0)-(+q.closeTs||+q.ts||0));}); /* oldest first */
+    var keep=cl.length;
+    while(keep>0){
+      keep=Math.floor(keep*0.7);
+      try{
+        localStorage.setItem('mp_journal',JSON.stringify(op.concat(cl.slice(cl.length-keep))));
+        if(!window.__mpQuotaSaid){window.__mpQuotaSaid=1;try{if(window.mpLimitToast)window.mpLimitToast('This device ran out of storage, so the oldest closed trades were removed from it. Open positions and your stats are safe - your stats live on your account, not on this device.');}catch(_){}}
+        return true;
+      }catch(e2){}
+    }
+    try{localStorage.setItem('mp_journal',JSON.stringify(op));return true;}catch(e3){}
+  }catch(e4){}
+  return false;
+};
 window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ctx,sym){try{var t=window.__mpWsSeen[sym];return '&px='+ctx+'&pxw='+((t&&Date.now()-t<15000)?1:0);}catch(e){return '';}};if(!window.__mpWsL){window.__mpWsL=1;try{document.addEventListener('mp:price',function(ev){if(ev&&ev.detail&&ev.detail.sym)window.__mpWsSeen[ev.detail.sym]=Date.now();});}catch(e){}} /* TEMP pxtag until 2026-09-01 — DELETE with the pxtag round */
 /* My Trades drawer + price feed + Trader Chat — shared widget logic (ported from the homepage).
    View-only journal on pages without the Paper Trade form (add() simply finds no form and no-ops). */
@@ -659,7 +684,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
    and the remainder stays OPEN with entry/liq/SL/TP untouched. 100% behaves exactly like the old full close. */
 (function(){ if(window.mpCloseSheet)return;
   function jload(){try{return JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){return[];}}
-  function jstore(a){try{localStorage.setItem('mp_journal',JSON.stringify(a));}catch(e){}}
+  function jstore(a){try{window.mpJStore(a);}catch(e){}}
   function mx(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1)-((+e.qty||0)*(e.entry+live)*(+e.feeRate||0))-(+e.fund||0):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);if(margin>0&&pnl!=null){var _op=e.status!=='win'&&e.status!=='loss',_pf=_op?-margin*0.99:-margin;if(pnl<_pf)pnl=_pf;}var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;return{live:live,long:long,move:move,pnl:pnl,margin:margin,roe:roe};}
   function fm(x){x=+x||0;var n=x<0;x=Math.abs(x);return (n?'-$':'$')+x.toLocaleString('en-US',{maximumFractionDigits:2});}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
@@ -756,7 +781,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
    mirroring the nearest 100% level (so checkClose/sweepLiq/legacy displays keep working unchanged). */
 (function(){ if(window.mpSltpSheet)return;
   function jload(){try{return JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){return[];}}
-  function jstore(a){try{localStorage.setItem('mp_journal',JSON.stringify(a));}catch(e){}}
+  function jstore(a){try{window.mpJStore(a);}catch(e){}}
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   if(!window.mpLvlTxt)window.mpLvlTxt=function(e,isTp,fmt){var arr=isTp?e.tps:e.sls,lg=e.side!=='short';
@@ -934,7 +959,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       var mg=+e.margin||0,pnl=+e.pnl||0;if(!(mg>0))continue;
       try{fetch('/api/trades/guestclose',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({sym:String(e.sym||'').toUpperCase(),side:e.side==='short'?'short':'long',lev:+e.lev||1,margin:mg,pnl:pnl,liq:e.liquidated?1:0,cid:String(e.id||'')}),keepalive:true});}catch(_){}
     }
-    if(ch){try{localStorage.setItem('mp_journal',JSON.stringify(arr));sweep._l=localStorage.getItem('mp_journal');}catch(_){}}
+    if(ch){try{window.mpJStore(arr);sweep._l=localStorage.getItem('mp_journal');}catch(_){}}
     else sweep._l=raw;
   }catch(_){}}
   setInterval(sweep,4000);setTimeout(sweep,2500);

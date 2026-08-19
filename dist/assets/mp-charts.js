@@ -1,3 +1,47 @@
+/* Workspace backup. Layouts, saved layouts and sticky notes lived ONLY on this device - a cleared cache or a
+   new phone destroyed work we kept no copy of. Push is debounced and best-effort; the device stays authoritative.
+   Pull runs ONLY when this device has nothing, so an existing local workspace is never overwritten. */
+window.mpWorkspace=window.mpWorkspace||(function(){var t={},KEYS=['mp_charts','mp_charts_layouts','mp_chart_notes'];
+  function push(k){ if(KEYS.indexOf(k)<0)return; clearTimeout(t[k]); t[k]=setTimeout(function(){
+    var v=''; try{v=localStorage.getItem(k)||'';}catch(e){} if(!v)return;
+    try{fetch('/api/auth/prefs',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({k:k,v:v})});}catch(e){}
+  },1500); }
+  function pull(cb){ try{ fetch('/api/auth/prefs?keys='+KEYS.join(','),{headers:{accept:'application/json'}})
+    .then(function(r){return r.ok?r.json():null;}).then(function(d){
+      var got=null; if(d&&d.prefs){ KEYS.forEach(function(k){ var e=d.prefs[k]; if(!e||!e.v)return;
+        var cur=''; try{cur=localStorage.getItem(k)||'';}catch(x){}
+        if(cur)return;
+        try{localStorage.setItem(k,e.v);}catch(x){}
+        if(k==='mp_charts'){ try{got=JSON.parse(e.v);}catch(x){} } });}
+      cb&&cb(got);
+    }).catch(function(){cb&&cb(null);}); }catch(e){cb&&cb(null);} }
+  return {push:push,pull:pull};
+})();
+/* ONE journal writer, shared by every bundle (first one to load defines it). localStorage is ~5MB per origin and
+   every jstore() used to be a bare setItem in a try/catch that SWALLOWED QuotaExceededError - past the limit a
+   trader's closes silently stopped being saved, with no error and no sign. Nothing is dropped preemptively: we
+   only shed when the device genuinely has no room, we shed the OLDEST CLOSED trades and never an open position,
+   and we say so once instead of failing quietly. */
+window.mpJStore=window.mpJStore||function(a){
+  try{localStorage.setItem('mp_journal',JSON.stringify(a));return true;}catch(e){}
+  try{
+    var arr=Array.isArray(a)?a:[];
+    var op=[],cl=[],i;
+    for(i=0;i<arr.length;i++){var x=arr[i];if(!x)continue;(x.status==='win'||x.status==='loss')?cl.push(x):op.push(x);}
+    cl.sort(function(p,q){return ((+p.closeTs||+p.ts||0)-(+q.closeTs||+q.ts||0));}); /* oldest first */
+    var keep=cl.length;
+    while(keep>0){
+      keep=Math.floor(keep*0.7);
+      try{
+        localStorage.setItem('mp_journal',JSON.stringify(op.concat(cl.slice(cl.length-keep))));
+        if(!window.__mpQuotaSaid){window.__mpQuotaSaid=1;try{if(window.mpLimitToast)window.mpLimitToast('This device ran out of storage, so the oldest closed trades were removed from it. Open positions and your stats are safe - your stats live on your account, not on this device.');}catch(_){}}
+        return true;
+      }catch(e2){}
+    }
+    try{localStorage.setItem('mp_journal',JSON.stringify(op));return true;}catch(e3){}
+  }catch(e4){}
+  return false;
+};
 /* Chart times render in the VIEWER'S timezone. lightweight-charts formats the axis and crosshair in UTC,
    so without this every visitor outside UTC saw a chart clock that disagreed with their own device — the
    long-standing "chart is bugging" report (Belgrade device 17:56 vs axis 15:56, measured 2026-08-17).
@@ -881,7 +925,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   try{window.__mpWinsDbg=wins;}catch(e){} /* debug/E2E hook (2026-07-30, permanent): window list for headless harnesses */
   try{window.__mpAiContext=aiContext;}catch(e){} // expose the rich chart-analysis context so the mobile AI bubble can actually "read" the chart
   /* movable sticky notes on the board */
-  function saveNotes(){try{localStorage.setItem('mp_chart_notes',JSON.stringify(notes.map(function(n){return {text:n.text,html:n.html||'',x:parseInt(n.el.style.left,10)||0,y:parseInt(n.el.style.top,10)||0,w:parseInt(n.el.style.width,10)||0,h:parseInt(n.el.style.height,10)||0,color:n.color||'#e9e7df',winId:(n.winId!=null)?n.winId:null};})));}catch(e){}}
+  function saveNotes(){try{localStorage.setItem('mp_chart_notes',JSON.stringify(notes.map(function(n){return {text:n.text,html:n.html||'',x:parseInt(n.el.style.left,10)||0,y:parseInt(n.el.style.top,10)||0,w:parseInt(n.el.style.width,10)||0,h:parseInt(n.el.style.height,10)||0,color:n.color||'#e9e7df',winId:(n.winId!=null)?n.winId:null};})));try{window.mpWorkspace.push('mp_chart_notes');}catch(e){}}catch(e){}}
   function loadNotes(){try{return JSON.parse(localStorage.getItem('mp_chart_notes')||'null');}catch(e){return null;}}
   function addNote(cfg){cfg=cfg||{};var n={text:cfg.text||'',html:cfg.html||'',color:cfg.color||'#e9e7df',winId:(cfg.winId!=null)?cfg.winId:null};
     n.el=el('<div class="cws-note"><div class="cws-note-bar"><span class="cws-note-grip">&#9776;</span><span class="cws-note-cols"><span class="cws-note-col" data-c="#e9e7df" style="background:#e9e7df" title="White"></span><span class="cws-note-col" data-c="#2ebd85" style="background:#2ebd85" title="Green"></span><span class="cws-note-col" data-c="#ff6258" style="background:#ff6258" title="Red"></span></span><button class="cws-note-x" type="button" aria-label="Remove">&#10005;</button></div><div class="cws-note-ta" contenteditable="true" data-ph="Type a note…"></div><span class="cws-note-rz" title="Resize"></span></div>');
@@ -1103,7 +1147,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function nextSym(){for(var i=0;i<SYMS.length;i++){var used=false;for(var j=0;j<wins.length;j++)if(wins[j].sym===SYMS[i]){used=true;break;}if(!used)return SYMS[i];}return SYMS[wins.length%SYMS.length];}
   function showEmpty(on){var e=document.getElementById('cwsEmpty');if(e)e.hidden=!on;}
   function updateCount(){var c=wins.length,mx=MAXn(),cc=document.getElementById('cwsCount');if(cc)cc.textContent=c+'/'+mx;var add=document.getElementById('cwsAdd');if(add)add.disabled=c>=mx;}
-  function savePersist(){try{localStorage.setItem('mp_charts',JSON.stringify(wins.map(function(w){return {sym:w.sym,tf:w.tf,inds:w.inds,x:parseInt(w.el.style.left,10)||0,y:parseInt(w.el.style.top,10)||0,w:parseInt(w.el.style.width,10)||0,h:parseInt(w.el.style.height,10)||0,id:w.id,emaList:w.emaList,smaList:w.smaList};})));}catch(e){}}
+  function savePersist(){try{localStorage.setItem('mp_charts',JSON.stringify(wins.map(function(w){return {sym:w.sym,tf:w.tf,inds:w.inds,x:parseInt(w.el.style.left,10)||0,y:parseInt(w.el.style.top,10)||0,w:parseInt(w.el.style.width,10)||0,h:parseInt(w.el.style.height,10)||0,id:w.id,emaList:w.emaList,smaList:w.smaList};})));try{window.mpWorkspace.push('mp_charts');}catch(e){}}catch(e){}}
   function loadPersist(){try{return JSON.parse(localStorage.getItem('mp_charts')||'null');}catch(e){return null;}}
   function startResize(w,dir,e){ if(isMobile())return; bringFront(w);
     var sx=e.clientX,sy=e.clientY,sw=w.el.offsetWidth,sh=w.el.offsetHeight,sl=parseInt(w.el.style.left,10)||0,st=parseInt(w.el.style.top,10)||0;
@@ -1200,7 +1244,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function escAttr(s){return escHtml(s).replace(/"/g,'&quot;');}
   // ---- named layouts (save / open / delete) ----
   function layoutsLoad(){try{return JSON.parse(localStorage.getItem('mp_charts_layouts')||'[]');}catch(e){return [];}}
-  function layoutsSave(a){try{localStorage.setItem('mp_charts_layouts',JSON.stringify(a));}catch(e){}}
+  function layoutsSave(a){try{localStorage.setItem('mp_charts_layouts',JSON.stringify(a));}catch(e){}try{window.mpWorkspace.push('mp_charts_layouts');}catch(e){}}
   function snapshot(){return {wins:wins.map(function(w){return {sym:w.sym,tf:w.tf,inds:w.inds,x:parseInt(w.el.style.left,10)||0,y:parseInt(w.el.style.top,10)||0,w:parseInt(w.el.style.width,10)||0,h:parseInt(w.el.style.height,10)||0,id:w.id,emaList:w.emaList,smaList:w.smaList};}),notes:notes.map(function(n){return {text:n.text,html:n.html||'',x:parseInt(n.el.style.left,10)||0,y:parseInt(n.el.style.top,10)||0,w:parseInt(n.el.style.width,10)||0,h:parseInt(n.el.style.height,10)||0,color:n.color};})};}
   function saveLayout(){ if(!wins.length){alert('Open at least one chart first.');return;} var name=(prompt('Name this layout:','My layout')||'').trim(); if(!name)return; var arr=layoutsLoad(),snap=snapshot();snap.name=name;snap.ts=Date.now(); var idx=-1;for(var i=0;i<arr.length;i++)if(arr[i].name===name)idx=i; if(idx>=0)arr[idx]=snap;else arr.push(snap); layoutsSave(arr); var b=document.getElementById('cwsSave'),s=b&&b.querySelector('span'); if(s){var o=s.textContent;s.textContent='Saved ✓';setTimeout(function(){s.textContent=o;},1600);} }
   function loadLayout(snap){ if(!snap)return; wins.slice().forEach(function(w){closeWin(w);}); notes.slice().forEach(function(n){if(n.el.parentNode)n.el.parentNode.removeChild(n.el);}); notes=[]; (snap.wins||[]).slice(0,MAXn()).forEach(function(c){addWin(c);}); (snap.notes||[]).forEach(function(c){addNote(c);}); savePersist();saveNotes(); }
@@ -1216,7 +1260,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function openLayMenu(btn){ if(!layMenuEl)buildLayMenu(); if(!layMenuEl.hidden){layMenuEl.hidden=true;return;} renderLayMenu(); layMenuEl.hidden=false; var r=btn.getBoundingClientRect(),mw=layMenuEl.offsetWidth||240,mh=layMenuEl.offsetHeight||200; var left=Math.min(r.left,window.innerWidth-mw-8),top=r.bottom+6; if(top+mh>window.innerHeight-8)top=Math.max(8,r.top-mh-6); layMenuEl.style.left=Math.max(8,left)+'px';layMenuEl.style.top=top+'px'; }
   // ---- quick paper-trade (open a position straight from the charts) ----
   function jload(){try{return JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){return [];}}
-  function jstore(d){try{localStorage.setItem('mp_journal',JSON.stringify(d));}catch(e){}}
+  function jstore(d){try{window.mpJStore(d);}catch(e){}}
   function qtPrice(sym){var lp=window.mpLivePrices&&window.mpLivePrices[sym];return (lp&&lp.p>0)?lp.p:0;}
   function fmtP(x){return '$'+(+x).toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:6});}
   var qtEl=null,qtSide='long',qtLev=10;
@@ -1401,7 +1445,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     var _fc=null;try{_fc=sessionStorage.getItem('mp_force_chart');if(_fc)sessionStorage.removeItem('mp_force_chart');}catch(e){}if(!_fc){try{_fc=(location.search.match(/[?&]coin=([A-Za-z0-9]+)/i)||[])[1]||null;}catch(e){}} /* TG signal buttons deep-link /charts?coin=SYM */ if(_fc){_fc=String(_fc).toUpperCase().replace(/[^A-Z0-9]/g,'');if(_fc){showEmpty(false);try{addWin({sym:_fc,tf:'60'});}catch(e){}try{setTimeout(reflowWins,120);setTimeout(reflowWins,450);}catch(e){}if(wins.length)return;}}
     var sv=loadPersist(); // auto-restore the last session (owner request 2026-07-09: leaving /charts and coming back must look exactly as left — windows, symbols, TFs, indicators; drawings restore per SYM:TF via w.dr.reload)
     if(sv&&sv.length){showEmpty(false);sv.slice(0,MAXn()).forEach(function(cfg){try{addWin(cfg);}catch(e){}});if(!wins.length)showEmpty(true);}
-    else showEmpty(true);}
+    else { showEmpty(true); /* nothing on this device -> restore the account's workspace (new phone, cleared cache) */
+      try{ window.mpWorkspace.pull(function(list){ if(list&&list.length&&!wins.length){ showEmpty(false);
+        list.slice(0,MAXn()).forEach(function(cfg){try{addWin(cfg);}catch(e){}}); if(!wins.length)showEmpty(true); } }); }catch(e){}
+    }}
   function showMobileNote(){var bd=document.getElementById('cwsBoard');if(!bd)return;showEmpty(false);var d=el('<div class="cws-mobile-note"><div class="cws-mn-ic"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><h3>Charts works best on desktop</h3><p>The multi-window workspace — drag, resize, indicators &amp; drawing — needs more room than a phone offers. Open <b>marginpad.io/charts</b> on your computer for the full experience.</p><button type="button" class="cws-mn-btn" id="cwsMnGo">Continue anyway</button></div>');bd.appendChild(d);var go=d.querySelector('#cwsMnGo');if(go)go.addEventListener('click',function(){if(d.parentNode)d.parentNode.removeChild(d);buildInitial();});}
   function loadMC(){try{return JSON.parse(localStorage.getItem('mp_mchart')||'{}')||{};}catch(e){return {};}}
   function saveMC(o){try{localStorage.setItem('mp_mchart',JSON.stringify(o));}catch(e){}}

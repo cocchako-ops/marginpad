@@ -11049,6 +11049,17 @@ async function handleAuth(url, request, env, ctx) {
     let r; try { r = await mkP(); } catch (e) { try { r = await mkP(); } catch (e2) { return jr({ ok: false, busy: true }); } } // retry once on a DO reset; the client re-syncs next cycle
     try { return jr(await r.json()); } catch (e) { return jr({ ok: false }); }
   }
+  if (path === '/prefs') { // signed-in workspace state (chart layouts, saved layouts, notes) — a BACKUP, not a
+    // two-way sync: the device stays authoritative while it has state, and the server copy is what a new phone or
+    // a cleared cache restores from. Anonymous visitors keep working entirely locally, exactly as before.
+    const uid = getCookie(request, 'mp_uid');
+    if (!uid) return jr(request.method === 'GET' ? { prefs: {} } : { ok: false });
+    if (request.method === 'GET') {
+      const keys = String(url.searchParams.get('keys') || '').split(',').map(x => x.trim()).filter(Boolean).slice(0, 20);
+      try { const r = await stub.fetch(new Request('https://do/prefsget', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, keys }) })); return jr(await r.json()); } catch (e) { return jr({ prefs: {} }); }
+    }
+    try { const r = await stub.fetch(new Request('https://do/prefsput', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, k: b.k, v: b.v }) })); return jr(await r.json()); } catch (e) { return jr({ ok: false }); }
+  }
   if (path === '/dwell') { // time-on-page beacon (sendBeacon → application/json)
     const uid = getCookie(request, 'mp_uid');
     if (uid && ctx) ctx.waitUntil(stub.fetch(new Request('https://do/dwell', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, path: String(b.path || '/'), secs: +b.secs || 0 }) })).catch(() => {}));
@@ -15236,6 +15247,10 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS botuse2(k TEXT, day TEXT, ep TEXT, n INTEGER DEFAULT 0, last INTEGER, PRIMARY KEY(k,day,ep))');
     try { s.exec('CREATE INDEX IF NOT EXISTS botuse2_day ON botuse2(day)'); } catch (e) {} // the ops API tab scans by day
     s.exec('CREATE TABLE IF NOT EXISTS botmig(m TEXT PRIMARY KEY, ts INTEGER)');
+    // Workspace store: small user-authored state that until now existed ONLY on the device — chart window layouts,
+    // saved layouts, sticky notes. Clearing the cache or changing phone destroyed work we never held a copy of.
+    // Deliberately generic (user_id, key, value) so the next thing that needs a home does not need a new table.
+    s.exec('CREATE TABLE IF NOT EXISTS uprefs(user_id TEXT, k TEXT, v TEXT, ts INTEGER, PRIMARY KEY(user_id,k))');
     // client_order_id -> the trade it created. A bot that retries after a network timeout MUST NOT end up with two
     // positions while believing it has one; keyed by ACCOUNT (not key) so a rotated key still de-duplicates.
     s.exec('CREATE TABLE IF NOT EXISTS botidem(uid TEXT, coid TEXT, tid TEXT, ts INTEGER, PRIMARY KEY(uid,coid))');
@@ -15747,6 +15762,22 @@ export class UserStore {
         }
       }
       return this.j(out);
+    }
+    if (path === '/prefsget') {
+      const uid = String(b.uid || ''); if (!uid) return this.j({ prefs: {} });
+      const ks = (Array.isArray(b.keys) ? b.keys : []).map(x => String(x || '').slice(0, 40)).filter(Boolean).slice(0, 20);
+      const out = {};
+      for (const k of ks) { const r = this.rows('SELECT v, ts FROM uprefs WHERE user_id=? AND k=?', uid, k)[0]; if (r) out[k] = { v: r.v, ts: +r.ts || 0 }; }
+      return this.j({ prefs: out });
+    }
+    if (path === '/prefsput') {
+      const uid = String(b.uid || ''); if (!uid) return this.j({ error: 'no_uid' });
+      const k = String(b.k || '').slice(0, 40); if (!k) return this.j({ error: 'no_key' });
+      const v = String(b.v == null ? '' : b.v);
+      if (v.length > 131072) return this.j({ error: 'too_large', max: 131072 }); // 128KB per key — layouts are a few KB; anything near this is a bug, not a workspace
+      if ((this.rows('SELECT COUNT(*) n FROM uprefs WHERE user_id=?', uid)[0] || {}).n >= 20 && !this.rows('SELECT 1 FROM uprefs WHERE user_id=? AND k=?', uid, k)[0]) return this.j({ error: 'too_many_keys' });
+      sql.exec('INSERT INTO uprefs(user_id,k,v,ts) VALUES(?,?,?,?) ON CONFLICT(user_id,k) DO UPDATE SET v=excluded.v, ts=excluded.ts', uid, k, v, now);
+      return this.j({ ok: true, ts: now });
     }
     if (path === '/progressdump') { // PROOF endpoint: what the server's trim-proof accumulators say, next to what the
       // stored journal blob would compute. If they agree, the UI can read the server instead of recomputing from the

@@ -1,3 +1,28 @@
+/* ONE journal writer, shared by every bundle (first one to load defines it). localStorage is ~5MB per origin and
+   every jstore() used to be a bare setItem in a try/catch that SWALLOWED QuotaExceededError - past the limit a
+   trader's closes silently stopped being saved, with no error and no sign. Nothing is dropped preemptively: we
+   only shed when the device genuinely has no room, we shed the OLDEST CLOSED trades and never an open position,
+   and we say so once instead of failing quietly. */
+window.mpJStore=window.mpJStore||function(a){
+  try{localStorage.setItem('mp_journal',JSON.stringify(a));return true;}catch(e){}
+  try{
+    var arr=Array.isArray(a)?a:[];
+    var op=[],cl=[],i;
+    for(i=0;i<arr.length;i++){var x=arr[i];if(!x)continue;(x.status==='win'||x.status==='loss')?cl.push(x):op.push(x);}
+    cl.sort(function(p,q){return ((+p.closeTs||+p.ts||0)-(+q.closeTs||+q.ts||0));}); /* oldest first */
+    var keep=cl.length;
+    while(keep>0){
+      keep=Math.floor(keep*0.7);
+      try{
+        localStorage.setItem('mp_journal',JSON.stringify(op.concat(cl.slice(cl.length-keep))));
+        if(!window.__mpQuotaSaid){window.__mpQuotaSaid=1;try{if(window.mpLimitToast)window.mpLimitToast('This device ran out of storage, so the oldest closed trades were removed from it. Open positions and your stats are safe - your stats live on your account, not on this device.');}catch(_){}}
+        return true;
+      }catch(e2){}
+    }
+    try{localStorage.setItem('mp_journal',JSON.stringify(op));return true;}catch(e3){}
+  }catch(e4){}
+  return false;
+};
 ﻿/* Chart times render in the VIEWER'S timezone. lightweight-charts formats the axis and crosshair in UTC,
    so without this every visitor outside UTC saw a chart clock that disagreed with their own device — the
    long-standing "chart is bugging" report (Belgrade device 17:56 vs axis 15:56, measured 2026-08-17).
@@ -2558,7 +2583,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
   // roll the price to its new value (same count-up feel as the calculator's main result), chasing the live feed smoothly
   function rollPx(el,target){if(!el)return;var start=(el._cur!=null&&isFinite(el._cur))?el._cur:target;if(el._raf)cancelAnimationFrame(el._raf);if(Math.abs(target-start)<1e-7){el._cur=target;el.textContent=fmt(target);return;}var t0=null,dur=850;function step(now){if(t0==null)t0=now;var pr=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-pr,3),v=start+(target-start)*e;el._cur=v;el.textContent=fmt(v);if(pr<1){el._raf=requestAnimationFrame(step);}else{el._cur=target;el.textContent=fmt(target);el._raf=null;}}el._raf=requestAnimationFrame(step);}
   function jload(){try{return JSON.parse(localStorage.getItem('mp_journal')||'[]')||[];}catch(e){return [];}}
-  function jstore(d){try{localStorage.setItem('mp_journal',JSON.stringify(d));}catch(e){}}
+  function jstore(d){try{window.mpJStore(d);}catch(e){}}
   function buildTick(){tickEl.innerHTML=TICK.map(function(s){return '<div class="mtk" data-tk="'+s+'"><span class="mtk-s">'+s+'</span><span class="mtk-p" data-p>$—</span><span class="mtk-c" data-c></span></div>';}).join('');}
   function updTick(s){var row=tickEl.querySelector('.mtk[data-tk="'+s+'"]');if(!row)return;var p=price(s),c=chgv(s),pe=row.querySelector('[data-p]'),ce=row.querySelector('[data-c]');if(p>0){var old=pe._v;pe.textContent=fmt(p);if(old!=null&&p!==old){pe.style.color=p>old?'var(--up)':'var(--red)';setTimeout(function(){pe.style.color='';},260);}pe._v=p;}if(c!=null){ce.textContent=(c>=0?'+':'')+c.toFixed(2)+'%';ce.className='mtk-c '+(c>=0?'up':'dn');}}
   function updTickAll(){TICK.forEach(updTick);}
@@ -3015,7 +3040,7 @@ window.mpSrvOpen=function(payload,ok,fail){
       var notional=margin*lev,qty=entry>0?notional/entry:0,mmr=0.005;
       var liq=long?entry*(1-(1-mmr)/lev):entry*(1+(1-mmr)/lev);
       arr.push({id:String(Date.now())+'_'+Math.floor(Math.random()*1e4),ts:+p.ts||Date.now(),sym:p.sym,side:long?'long':'short',entry:entry,stop:null,tp:null,lev:lev,rr:null,qty:qty,notional:notional,margin:margin,riskAmt:margin,liq:liq,mmr:mmr,feeRate:window.mpFeeRate(lev,p.sym),status:'open',pnl:null,src:'telegram',tgClaim:tok});
-      try{localStorage.setItem('mp_journal',JSON.stringify(arr));}catch(e){}
+      try{window.mpJStore(arr);}catch(e){}
       try{window.mpLivePrices=window.mpLivePrices||{};if(!(window.mpLivePrices[p.sym]&&window.mpLivePrices[p.sym].p>0))window.mpLivePrices[p.sym]={p:entry,t:Date.now()};}catch(e){}
       cleanUrl();try{if(window.mpJournalRender)window.mpJournalRender();}catch(e){}toast();
     }).catch(function(){});
@@ -3125,7 +3150,7 @@ window.mpSrvOpen=function(payload,ok,fail){
    and the remainder stays OPEN with entry/liq/SL/TP untouched. 100% behaves exactly like the old full close. */
 (function(){ if(window.mpCloseSheet)return;
   function jload(){try{return JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){return[];}}
-  function jstore(a){try{localStorage.setItem('mp_journal',JSON.stringify(a));}catch(e){}}
+  function jstore(a){try{window.mpJStore(a);}catch(e){}}
   function mx(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var pnl=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1)-((+e.qty||0)*(e.entry+live)*(+e.feeRate||0))-(+e.fund||0):null;var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);if(margin>0&&pnl!=null){var _op=e.status!=='win'&&e.status!=='loss',_pf=_op?-margin*0.99:-margin;if(pnl<_pf)pnl=_pf;}var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;return{live:live,long:long,move:move,pnl:pnl,margin:margin,roe:roe};}
   function fm(x){x=+x||0;var n=x<0;x=Math.abs(x);return (n?'-$':'$')+x.toLocaleString('en-US',{maximumFractionDigits:2});}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
@@ -3281,7 +3306,7 @@ window.mpSrvOpen=function(payload,ok,fail){
    mirroring the nearest 100% level (so checkClose/sweepLiq/legacy displays keep working unchanged). */
 (function(){ if(window.mpSltpSheet)return;
   function jload(){try{return JSON.parse(localStorage.getItem('mp_journal'))||[];}catch(e){return[];}}
-  function jstore(a){try{localStorage.setItem('mp_journal',JSON.stringify(a));}catch(e){}}
+  function jstore(a){try{window.mpJStore(a);}catch(e){}}
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function esc(s){return String(s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
   if(!window.mpLvlTxt)window.mpLvlTxt=function(e,isTp,fmt){var arr=isTp?e.tps:e.sls,lg=e.side!=='short';
@@ -3585,7 +3610,7 @@ window.mpSrvOpen=function(payload,ok,fail){
       var mg=+e.margin||0,pnl=+e.pnl||0;if(!(mg>0))continue;
       try{fetch('/api/trades/guestclose',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({sym:String(e.sym||'').toUpperCase(),side:e.side==='short'?'short':'long',lev:+e.lev||1,margin:mg,pnl:pnl,liq:e.liquidated?1:0,cid:String(e.id||'')}),keepalive:true});}catch(_){}
     }
-    if(ch){try{localStorage.setItem('mp_journal',JSON.stringify(arr));sweep._l=localStorage.getItem('mp_journal');}catch(_){}}
+    if(ch){try{window.mpJStore(arr);sweep._l=localStorage.getItem('mp_journal');}catch(_){}}
     else sweep._l=raw;
   }catch(_){}}
   setInterval(sweep,4000);setTimeout(sweep,2500);

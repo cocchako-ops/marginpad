@@ -1202,7 +1202,7 @@
       try { var _bt = JSON.parse(localStorage.getItem('mp_bal_tags') || '{}') || {}; for (var _i = 0; _i < merged.length; _i++) { var _e = merged[_i]; if (_e && _e.id && !_e.bal && _bt[_e.id]) _e.bal = _bt[_e.id]; } } catch (e) {} // restore the Balance-Mode session tag the server strips — keeps the gold ticket (pp-gold) + BAL badge stable across syncs (no flicker)
       merged.sort(function (a, b) { return (+a.ts || 0) - (+b.ts || 0); });
       if (JSON.stringify(merged) === JSON.stringify(local)) return; // nothing new on this device
-      try { localStorage.setItem('mp_journal', JSON.stringify(merged)); } catch (e) {}
+      try { if (window.mpJStore) window.mpJStore(merged); else localStorage.setItem('mp_journal', JSON.stringify(merged)); } catch (e) {} // shared writer: sheds oldest CLOSED rows if the device is full instead of silently dropping the whole merge
       lastJ = ''; // force the next push so the server gets this device's union too
       // NOTE: we deliberately DO NOT seed window.mpLivePrices[sym] from a trade's entry here. metrics() already falls back
       // to each trade's OWN entry when there is no live price (→ P&L 0, no phantom -100%), so the seed was unnecessary — and
