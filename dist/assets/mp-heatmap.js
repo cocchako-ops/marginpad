@@ -273,17 +273,63 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var bw = 4 + rel * (W - 20);
       ctx.fillStyle = s.long ? 'rgba(46,189,133,' + (0.3 + rel * 0.6).toFixed(2) + ')' : 'rgba(255,98,88,' + (0.3 + rel * 0.6).toFixed(2) + ')';
       ctx.fillRect(0, y - bh / 2, bw, bh); }
-    // label the single biggest visible pool with its $ size
-    if (vis.length) { var top = vis[0]; var ty = Y(top.price);
+    // Label the heaviest visible bands with how they compare to an average band. A ratio is what the
+    // model can support; a dollar amount here would be invented.
+    var lab = vis.slice(0, 3);
+    for (var li = 0; li < lab.length; li++) {
+      var tp = lab[li], ty = Y(tp.price);
+      if (!(tp.rel > 1.2)) continue;
       ctx.font = '700 9.5px "Space Mono",monospace'; ctx.textAlign = 'right';
-      ctx.fillStyle = 'rgba(7,9,12,.8)'; var mt = (top.long ? 'long zone' : 'short zone'); var mw = ctx.measureText(mt).width;
+      var mt = tp.rel.toFixed(1) + 'x avg';
+      var mw = ctx.measureText(mt).width;
+      ctx.fillStyle = 'rgba(7,9,12,.82)';
       ctx.fillRect(W - mw - 10, ty - 7, mw + 8, 13);
-      ctx.fillStyle = top.long ? '#7ee2b8' : '#ffa39b';
-      ctx.fillText(mt, W - 6, ty + 3); }
+      ctx.fillStyle = tp.long ? '#7ee2b8' : '#ffa39b';
+      ctx.fillText(mt, W - 6, ty + 3);
+    }
     ctx.fillStyle = 'rgba(92,107,132,.9)'; ctx.font = '9px "Space Mono",monospace'; ctx.textAlign = 'center';
     ctx.fillText('PROJECTED ZONES', W / 2, 12);
   }
 
+  // ---- band sizing -------------------------------------------------------------------------------
+  // Two numbers per band, never blended. `obs` is measured: what our collector actually saw liquidate in
+  // that price bin over 24h. `est` is modelled: the band's share of the modelled crowd, scaled by the
+  // coin's real open interest. Anything derived from `est` is labelled "est." wherever it is shown.
+  function usdShort(v) {
+    v = +v || 0;
+    if (v >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M';
+    if (v >= 1e3) return '$' + Math.round(v / 1e3) + 'K';
+    return '$' + Math.round(v);
+  }
+  function sizePools(coin) {
+    var P = S.pools; if (!P || !P.alive || !P.alive.length) return;
+    // 1) MEASURED — real liquidations by price bucket, from our own collector
+    fetch('/api/v1/liquidations/recent?symbol=' + encodeURIComponent(coin)).then(function (r) { return r.json(); }).then(function (j) {
+      var d = (j && j.data) || j, b = (d && d.buckets) || [];
+      if (!b.length || !S.pools) return;
+      var binH = S.pools.binH || 1;
+      S.pools.alive.forEach(function (p) {
+        var lo = p.price - binH / 2, hi = p.price + binH / 2, sum = 0;
+        for (var i = 0; i < b.length; i++) {
+          var bp = +b[i].price;
+          if (bp >= lo && bp <= hi) sum += (p.long ? (+b[i].long || 0) : (+b[i].short || 0));
+        }
+        p.obs = sum;
+      });
+      S.obsWin = (d && d.minutes) || 1440;
+      draw();
+    }).catch(function () {});
+    // Deliberately NO dollar figure for the projection. Anchoring it to open interest was tried and then
+    // measured against reality: it put ~$761M on an average BTC band against a $24.4M largest-ever observed
+    // bucket, because most open interest has liquidation prices nowhere near the visible window. The model
+    // knows where crowds stack RELATIVE to each other; it does not know how many dollars are in them, so
+    // the panel reports a ratio and leaves dollars to the measurement.
+    var wSum = 0, wN = 0;
+    P.alive.forEach(function (q) { wSum += (+q.w || 0); wN++; });
+    var wAvg = wN ? wSum / wN : 0;
+    if (wAvg > 0) P.alive.forEach(function (q) { q.rel = (+q.w || 0) / wAvg; });
+  }
   function poolHit(my, H) { // nearest visible pool band to screen-y `my` (px), respecting side filter + current zoom
     if (!S || !(S.yHi > S.yLo) || !(H > 0)) return null;
     var P = S.pools, rng = S.yHi - S.yLo, bh = H * (P.binH / rng), tol = Math.max(bh / 2 + 4, 10), best = null;
@@ -321,6 +367,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
           arr.sort(function (a, b) { return b.w - a.w; });
           var pmin = 1 / 0, pmax = -1 / 0; arr.forEach(function (x) { if (x.price < pmin) pmin = x.price; if (x.price > pmax) pmax = x.price; });
           S.pools = { alive: arr, pMin: pmin, pMax: pmax, binH: +srv.binH, srv: 1 };
+          sizePools(coin);
           S.sweeps = srv.sweeps || [];
         } else { S.pools = buildPools(S.bars); S.sweeps = []; }
         if (!S._fr || Date.now() - S._fr > 300000) { S._fr = Date.now(); fetch('/api/v1/bnc?path=' + encodeURIComponent('/fapi/v1/premiumIndex') + '&symbol=' + coin + 'USDT').then(function (r) { return r.json(); }).then(function (f) { if (S && f && f.lastFundingRate != null) { S.funding = +f.lastFundingRate; updTargets(); } }).catch(function () {}); }
@@ -448,7 +495,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       } else if (S.sel.type === 'swp') { var sw = S.sel.ref;
         h += '<span class="' + (sw.long ? 'l' : 's') + '">price swept a projected ' + (sw.long ? 'long' : 'short') + ' leverage zone</span> @ <b>' + fpx(sw.p) + '</b><br>the model projected ' + (sw.long ? 'long' : 'short') + ' liquidations clustering here (estimated, not measured) · ' + ago2(sw.t);
       } else { var pl2 = S.sel.ref;
-        h += '<span class="' + (pl2.long ? 'l' : 's') + '">projected ' + (pl2.long ? 'long' : 'short') + ' liquidation zone</span> @ <b>' + fpx(pl2.price) + '</b><br>' + (pl2.long ? 'longs' : 'shorts') + ' would liquidate here if price reaches it (estimated leverage exposure, not realized) · building since ' + ago2(pl2.t0 * 1000) + (S.price > 0 ? ' · ' + (((pl2.price - S.price) / S.price * 100) >= 0 ? '+' : '') + ((pl2.price - S.price) / S.price * 100).toFixed(1) + '% from price' : '');
+        h += '<span class="' + (pl2.long ? 'l' : 's') + '">projected ' + (pl2.long ? 'long' : 'short') + ' liquidation zone</span> @ <b>' + fpx(pl2.price) + '</b><br>' + (pl2.obs > 0 ? '<b style="color:#c2f64a">' + usdShort(pl2.obs) + '</b> actually liquidated in this band in the last 24h <span style="color:#8b95a1">(measured)</span><br>' : '<span style="color:#8b95a1">nothing has actually liquidated in this band in the last 24h (measured)</span><br>') + (pl2.rel > 0 ? '<b>' + pl2.rel.toFixed(1) + 'x</b> the average standing band on screen <span style="color:#8b95a1">(model — relative weight, not dollars)</span><br>' : '') + (S.price > 0 ? 'price must move <b>' + Math.abs((pl2.price - S.price) / S.price * 100).toFixed(2) + '%</b> to reach it<br>' : '') + 'building since ' + ago2(pl2.t0 * 1000) + (S.price > 0 ? ' · ' + (((pl2.price - S.price) / S.price * 100) >= 0 ? '+' : '') + ((pl2.price - S.price) / S.price * 100).toFixed(1) + '% from price' : '');
       }
       el2.innerHTML = h + '<button type="button" class="hm-selx" title="Clear selection">×</button>';
       el2.style.display = 'block';
@@ -854,7 +901,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     stage.appendChild(cv); stage.appendChild(pf); stage.appendChild(tip); stage.appendChild(loadEl); stage.appendChild(selBox);
     var foot = el('div', 'hm-foot',
       '<div class="hm-foot-c"><div class="hm-foot-h">HOW TO READ IT</div>Bright bands are crowds of traders whose <span class="l">long</span>/<span class="s">short</span> liquidation prices stack there \u2014 price tends to sweep the brightest ones, and a band disappears the moment price trades through it. Drag to pan (any direction) \u00b7 scroll = zoom time \u00b7 Shift+scroll = zoom price \u00b7 double-click resets.</div>' +
-      '<div class="hm-foot-c"><div class="hm-foot-h">DATA</div>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 BitMEX \u00b7 Bitfinex</b> \u2014 roughly <b>85%+</b> of the market\u2019s liquidation flow. The bands are our own estimate computed from live price action (10\u2013100\u00d7 entries at each close).</div>');
+      '<div class="hm-foot-c"><div class="hm-foot-h">WHAT THE NUMBERS MEAN</div>Click any band for two figures of different kinds. <b style="color:#c2f64a">Measured</b> is what our collector recorded actually liquidating in that price band over 24 hours — observed events, no model. The <b>x avg</b> figure is the model: how heavy that band is against the average band on screen. It is a ratio and not a dollar amount on purpose — exchanges do not publish open positions, so every liquidation map reconstructs the crowd from candle history and an assumed leverage mix (ours: 2x to 100x, weighted to 10-25x), which shows where size stacks relative to itself but not how many dollars sit in it. We tried scaling it by open interest and checked the result against reality: it overstated an average BTC band by roughly thirty times what has ever actually liquidated in one, so it was dropped rather than shipped behind a disclaimer. Read a bright band as “there is probably size here”, and trust the measured figure when the two disagree.</div>' + '<div class="hm-foot-c"><div class="hm-foot-h">DATA</div>Real liquidations streamed live from <b>Binance \u00b7 Bybit \u00b7 OKX \u00b7 Hyperliquid (incl. stock &amp; commodity perps) \u00b7 Gate \u00b7 HTX \u00b7 dYdX \u00b7 BitMEX \u00b7 Bitfinex</b> \u2014 roughly <b>85%+</b> of the market\u2019s liquidation flow. The bands are our own estimate computed from live price action (10\u2013100\u00d7 entries at each close).</div>');
     var legend = el('div', 'hm-legend'); legend.style.cssText = 'order:2;display:flex;flex-wrap:wrap;gap:14px;align-items:center;font:11px "Space Mono",monospace;color:#8fa3c4;margin:-2px 0 8px';
     legend.innerHTML = '<b style="color:#c9d4e6;font-weight:700;letter-spacing:.04em">LEGEND</b><span><b style="color:#e9e7df">●</b> real liquidation</span><span><b style="color:#e9e7df">◇</b> projected zone (swept)</span><span><b style="color:#e9e7df">▬</b> leverage cluster (est.)</span>';
     wrap.appendChild(mast); wrap.appendChild(bar); wrap.appendChild(legend); wrap.appendChild(tgEl); wrap.appendChild(stage); wrap.appendChild(foot);
