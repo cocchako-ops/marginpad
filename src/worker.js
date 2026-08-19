@@ -148,7 +148,7 @@ async function handleV1(url, request, env, ctx) {
     'open-interest': () => handleCgOpenInterest(v1remap(url, '/api/cg/openinterest'), env),
     'long-short': () => handleCgLongShort(v1remap(url, '/api/cg/longshort'), env),
     'liquidations': () => handleCgLiquidations(v1remap(url, '/api/cg/liquidations'), env),
-    'venues': () => handleVenueStats(env),
+    'venues': () => handleVenueStats(env, false, ctx),
     'calendar': () => handleCalendar(request, env),
     'fear-greed': () => handleFng(env),
     'coins': () => handleGeckoMarkets(v1remap(url, '/api/gecko/markets'), env),
@@ -1113,7 +1113,7 @@ async function handleSsrCalendar(request, url, env) {
   return out;
 }
 
-async function handleSsrVenues(request, url, env) {
+async function handleSsrVenues(request, url, env, ctx) {
   const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const asset = await env.ASSETS.fetch(request);
@@ -1123,7 +1123,7 @@ async function handleSsrVenues(request, url, env) {
   const pass = () => new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
   const open = html.indexOf('<div id="vxdata">'); if (open < 0) return pass();
   const close = html.indexOf('</div>', open); if (close < 0) return pass();
-  let d = null; try { d = await (await handleVenueStats(env)).json(); } catch (e) {}
+  let d = null; try { d = await (await handleVenueStats(env, false, ctx)).json(); } catch (e) {}
   const vs = (d && Array.isArray(d.venues)) ? d.venues : [];
   const NAMES = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
   if (!vs.length) {
@@ -1144,7 +1144,7 @@ async function handleSsrVenues(request, url, env) {
   return out;
 }
 
-async function handleSsrCompare(request, url, env, ak, bk) {
+async function handleSsrCompare(request, url, env, ak, bk, ctx) {
   const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
   const asset = await env.ASSETS.fetch(request);
@@ -1159,7 +1159,7 @@ async function handleSsrCompare(request, url, env, ak, bk) {
   if (close < 0) return pass();
 
   let d = null;
-  try { d = await (await handleVenueStats(env)).json(); } catch (e) {}
+  try { d = await (await handleVenueStats(env, false, ctx)).json(); } catch (e) {}
   const vs = (d && Array.isArray(d.venues)) ? d.venues : [];
   if (!vs.length) return pass();
   const nameOf = k => { const m = html.match(new RegExp('data-' + (k === ak ? 'an' : 'bn') + '="([^"]*)"')); return m ? m[1] : k; };
@@ -2393,13 +2393,32 @@ async function _multiBase(env) {
 // about, with different real numbers, instead of the same boilerplate with two names swapped.
 // Long and short are reported separately because the split is the interesting part — a venue whose flow is
 // mostly long liquidations is carrying different positioning from one that is mostly short.
-async function handleVenueStats(env) {
+async function handleVenueStats(env, force, ctx) {
   const cache = caches.default, ck = new Request('https://marginpad.io/__venues_v1');
-  try { const hit = await cache.match(ck); if (hit) return hit; } catch (e) {}
+  if (!force) { try { const hit = await cache.match(ck); if (hit) return hit; } catch (e) {} }
+  // KV floor + stale-while-revalidate. Measured 2026-08-19 as GPTBot: 0.09s on a cache hit, 9.9s on a
+  // miss, because the miss waits on the collector (2.4-2.8s on its own). With a ten-minute cache that put
+  // one visitor every ten minutes on the slow path, and that visitor can be the crawler this page exists
+  // to reach — they time out in that range. Nothing blocks on the collector now.
+  if (!force && env && env.STATS) {
+    try {
+      const kv = await env.STATS.get('venues:cache1');
+      if (kv) {
+        const o = JSON.parse(kv), age = Date.now() - (o && o.ts || 0);
+        if (o && o.body && age < 3600000) {
+          if (age > 300000) { try { if (ctx && ctx.waitUntil) ctx.waitUntil(handleVenueStats(env, true)); } catch (e) {} }
+          const r0 = new Response(o.body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } });
+          try { await cache.put(ck, r0.clone()); } catch (e) {}
+          return r0;
+        }
+      }
+    } catch (e) {}
+  }
   let venues = [], total = 0, ok = false;
   try {
     const COLL = (env && env.COLLECTOR_URL) || '';
-    const r = COLL ? await fetch(COLL + '/api/v1/pulse', { cf: { cacheTtl: 120 } }) : null;
+    // a degraded upstream must not be able to hold a page open; 6s clears the measured 2.8s worst case
+    const r = COLL ? await fetch(COLL + '/api/v1/pulse', { cf: { cacheTtl: 120 }, signal: AbortSignal.timeout(6000) }) : null;
     if (r && r.ok) {
       const j = await r.json();
       const rows = (j && j.h24 && Array.isArray(j.h24.byEx)) ? j.h24.byEx : [];
@@ -2416,6 +2435,7 @@ async function handleVenueStats(env) {
   const body = JSON.stringify({ ts: Date.now(), window: '24h', source: 'MarginPad liquidation collector (9 exchange websockets)', total, venues });
   const resp = new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=600', ...CORS } });
   try { await cache.put(ck, resp.clone()); } catch (e) {}
+  try { if (env && env.STATS) await env.STATS.put('venues:cache1', JSON.stringify({ ts: Date.now(), body }), { expirationTtl: 7200 }); } catch (e) {} // global floor: a cold colo serves this instead of waiting on the collector
   return resp;
 }
 
@@ -13006,8 +13026,8 @@ export default {
         return handleSsrLiq(request, url, env, mLiq[2] === 'map' ? 'map' : 'calc', mLiq[1]);
       }
       if (url.pathname === '/calendar/' || url.pathname === '/calendar') return handleSsrCalendar(request, url, env);
-      if (url.pathname === '/liquidations/by-exchange/' || url.pathname === '/liquidations/by-exchange') return handleSsrVenues(request, url, env);
-      const _mVs = url.pathname.match(/^\/([a-z]+)-vs-([a-z]+)\/$/); if (_mVs) return handleSsrCompare(request, url, env, _mVs[1], _mVs[2]);
+      if (url.pathname === '/liquidations/by-exchange/' || url.pathname === '/liquidations/by-exchange') return handleSsrVenues(request, url, env, ctx);
+      const _mVs = url.pathname.match(/^\/([a-z]+)-vs-([a-z]+)\/$/); if (_mVs) return handleSsrCompare(request, url, env, _mVs[1], _mVs[2], ctx);
       if (url.pathname === '/crypto-liquidations-today/') return handleSsrBlog(request, url, env, 'liq'); // exact-match "total crypto liquidations today" landing — live market total box before thefirst <h2 (SEO kompas: the SERP has no clean-number answer)
       const _bk = ssrBlogKind(url.pathname); if (_bk) return handleSsrBlog(request, url, env, _bk);
       const _hub = { '/liquidations/': 'liquidations', '/liquidation-statistics/': 'liquidations', '/etf-flows/': 'etf', '/fear-greed/': 'fng', '/funding/': 'funding', '/open-interest/': 'oi', '/long-short/': 'ls', '/hyperliquid-whales/': 'whales', '/hyperliquid-liquidations/': 'hlliq', '/rekt/': 'rekt' }[url.pathname];

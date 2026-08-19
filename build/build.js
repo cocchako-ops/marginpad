@@ -112,6 +112,9 @@ run('Exchange rail on unmonetised pages', 'node build/add-exchange-rail.js');
 
 // 12) LAST: <meta charset> must be the FIRST tag in <head> (within the 1024-byte prescan) - the
 // Yandex/gtag head injections once pushed it deeper and the whole site rendered as windows-1252 mojibake.
+// dateModified before the charset pass, since it inserts before </head> and fix-charset must have the
+// final say on head ordering.
+run('dateModified stamps', 'node build/add-datemodified.js');
 run('Charset meta first in head', 'node build/fix-charset.js');
 
 // 12) build the Browse search content index — scans EVERY page's <title>, so it must run LAST
