@@ -8271,61 +8271,96 @@ function frameOwned(fr, xp, premium, founder) {
 // reduces withdrawal liability. Catalog is versioned here; kill switch KV shop:on='0'. ----------
 const VAULT_TESTERS = ['chako']; // owner's test account — owns every item (testing)
 const VAULT_ITEMS = [
-  { id: 'carbon', name: 'Carbon', tier: 'common', xp: 300, desc: 'Matte black weave with a soft steel edge' },
-  { id: 'jade', name: 'Jade', tier: 'common', xp: 700, desc: 'Deep jade with a polished stone sheen' },
-  { id: 'royal', name: 'Royal', tier: 'rare', xp: 1500, desc: 'Imperial purple with gold corner caps' },
-  { id: 'blood', name: 'Bloodline', tier: 'rare', xp: 2200, desc: 'Crimson gradient with a dark pulse edge' },
-  { id: 'matrix', name: 'Matrix', tier: 'rare', xp: 3000, desc: 'Code-green terminal glow' },
-  { id: 'ice', name: 'Glacier', tier: 'epic', cents: 79, desc: 'Cold blue mirror with frosted corners' },
-  { id: 'ember', name: 'Ember', tier: 'epic', cents: 99, desc: 'Smoldering orange-red heat shimmer' },
-  { id: 'sakura', name: 'Sakura', tier: 'epic', cents: 149, desc: 'Soft rose gradient with a silver lining' },
-  { id: 'void', name: 'Void', tier: 'legendary', cents: 249, desc: 'Black-violet depth that eats the light' },
-  { id: 'sovereign', name: 'Sovereign', tier: 'legendary', cents: 299, minLevel: 'diamond', desc: 'Diamond-gated white gold — the flex' },
-  // earn-only (no price fields -> buy routes refuse them; ownership comes from grants)
+  // ---- frames, buyable with Ticks (earned) and/or the rewards balance (real money) ----------------
+  // Ticks by tier: common 300 / rare 1,200 / epic 3,000 / legendary 7,000. An active trader earns about
+  // 60-90 a day, so those read as roughly a week, three weeks, six weeks and a season.
+  { id: 'carbon', name: 'Carbon', tier: 'common', ticks: 300, desc: 'Matte black weave with a soft steel edge' },
+  { id: 'jade', name: 'Jade', tier: 'common', ticks: 300, desc: 'Deep jade with a polished stone sheen' },
+  { id: 'slate', name: 'Slate', tier: 'common', ticks: 300, desc: 'Flat blue-grey stone with a single cool highlight along the top edge' },
+  { id: 'bone', name: 'Bone', tier: 'common', ticks: 300, desc: 'Dry ivory edge over a warm brown shadow, matte, with no glow at all' },
+  { id: 'moss', name: 'Moss', tier: 'common', ticks: 300, desc: 'Muted forest green, desaturated like lichen on north-facing rock' },
+  { id: 'denim', name: 'Denim', tier: 'common', ticks: 300, desc: 'Indigo workwear blue with a faint tan stitch line running outside it' },
+  { id: 'royal', name: 'Royal', tier: 'rare', ticks: 1200, desc: 'Imperial purple with gold corner caps' },
+  { id: 'blood', name: 'Bloodline', tier: 'rare', ticks: 1200, desc: 'Crimson gradient with a dark pulse edge' },
+  { id: 'matrix', name: 'Matrix', tier: 'rare', ticks: 1200, desc: 'Code-green terminal glow' },
+  { id: 'steel', name: 'Brushed Steel', tier: 'rare', ticks: 1200, desc: 'Fine machined striations running across a cool grey band' },
+  { id: 'abyss', name: 'Abyss', tier: 'rare', ticks: 1200, desc: 'Teal light at the top fading down into near-black water' },
+  { id: 'wine', name: 'Wine', tier: 'rare', ticks: 1200, desc: 'Deep burgundy shading to dusty rose, closer to plum than to red' },
+  { id: 'blueprint', name: 'Blueprint', tier: 'rare', ticks: 1200, desc: 'Draft-paper navy ruled with a fine cyan measuring grid' },
+  { id: 'storm', name: 'Storm Front', tier: 'rare', ticks: 1200, desc: 'Charcoal cloud split by one pale seam of lightning' },
+  { id: 'ice', name: 'Glacier', tier: 'epic', ticks: 3000, cents: 99, desc: 'Cold blue mirror with frosted corners' },
+  { id: 'ember', name: 'Ember', tier: 'epic', ticks: 3000, cents: 129, desc: 'Smoldering orange-red heat shimmer' },
+  { id: 'sakura', name: 'Sakura', tier: 'epic', ticks: 3000, cents: 149, desc: 'Soft rose gradient with a silver lining' },
+  { id: 'inferno', name: 'Inferno', tier: 'epic', ticks: 3000, cents: 199, desc: 'A frame that is actually on fire, flickering flames and rising embers' },
+  { id: 'phosphor', name: 'Phosphor', tier: 'epic', ticks: 3000, cents: 129, desc: 'Amber CRT band under horizontal scanlines, with the glow of a warm tube' },
+  { id: 'dusk', name: 'Desert Dusk', tier: 'epic', ticks: 3000, cents: 149, desc: 'Rose horizon bleeding upward into violet and deep night blue' },
+  { id: 'petrol', name: 'Petrol', tier: 'epic', ticks: 3000, cents: 169, desc: 'Oil-film iridescence, teal turning to blue and magenta, over an inner sheen ring' },
+  // ---- the flagship tier. Every one is earnable with Ticks as well as buyable, so the best frames on
+  // the site are not locked behind a card -- they are just a long way up.
+  { id: 'void', name: 'Void', tier: 'legendary', ticks: 7000, cents: 249, desc: 'Black-violet depth that eats the light' },
+  { id: 'obsidian', name: 'Obsidian', tier: 'legendary', ticks: 7000, cents: 399, desc: 'Volcanic black glass split into hard facets, three lime fractures burning through the breaks' },
+  { id: 'quicksilver', name: 'Quicksilver', tier: 'legendary', ticks: 7000, cents: 449, desc: 'Mirror-polished liquid metal with a razor dark horizon and two frozen specular glints' },
+  { id: 'prism', name: 'Prism', tier: 'legendary', ticks: 7000, cents: 499, desc: 'Colourless glass that catches light in one arc and throws a full spectrum out of it' },
+  { id: 'circuitry', name: 'Circuitry', tier: 'legendary', ticks: 7000, cents: 399, desc: 'Gold traces down the long edges, cyan up the sides, four solder pads lit inside the card' },
+  { id: 'ink', name: 'Ink Drift', tier: 'legendary', ticks: 7000, cents: 449, desc: 'Violet ink dropped into black water, blooming inward instead of framing' },
+  { id: 'cathedral', name: 'Cathedral', tier: 'legendary', ticks: 7000, cents: 599, desc: 'Five jewelled panes held in black lead, each lit from behind and spilling its colour' },
+  { id: 'dragonfire', name: 'Dragonfire', tier: 'legendary', ticks: 7000, cents: 499, desc: 'Molten scales, breathing heat and rising embers' },
+  { id: 'singularity', name: 'Singularity', tier: 'legendary', ticks: 7000, cents: 599, desc: 'A black core with a spinning accretion ring, light bending around your name' },
+  { id: 'sovereign', name: 'Sovereign', tier: 'legendary', ticks: 7000, cents: 349, minLevel: 'diamond', desc: 'Diamond-gated white gold, the flex' },
+  { id: 'midas', name: 'Midas', tier: 'legendary', ticks: 7000, cents: 799, desc: 'Twin rings of liquid gold. Everything you touch turns to profit' },
+  { id: 'realtrader', name: 'Real Trader', tier: 'mythic', cents: 1999, desc: 'The apex of the Vault: profit-green fire in a gold storm. Money cannot really buy this one; it usually arrives as a gift from the house' },
+  { id: 'eclipse', name: 'Eclipse', tier: 'legendary', ticks: 5000, until: '2026-09-01', desc: 'August drop: a black sun with a burning corona. Gone Sep 1, forever' },
+  // ---- earn-only frames: no price fields at all, so both buy routes refuse them by construction -----
   { id: 'streak7', name: 'Kindling', tier: 'rare', earn: '7-day streak', desc: 'Seven straight days on the desk' },
   { id: 'streak30', name: 'Wildfire', tier: 'epic', earn: '30-day streak', desc: 'A full month without missing a day' },
   { id: 'streak100', name: 'Eternal Flame', tier: 'legendary', earn: '100-day streak', desc: 'One hundred days. Unbuyable. Unquestionable.' },
-  // season-winner frames (earn-only): #1 of each 14-day board wears his frame until the NEXT season is settled, then the crown moves on
   { id: 'champion', name: 'Champion', tier: 'legendary', earn: 'Finish #1 on the Highest ROE board (worn for the 14-day season)', desc: 'Reserved for the season&#39;s #1 — expires when the crown moves on' },
   { id: 'deadeye', name: 'Deadeye', tier: 'legendary', earn: 'Finish #1 on the Win-Rate board (worn for the 14-day season)', desc: 'A scope-locked reticle for the most surgical trader on the desk' },
   { id: 'overdrive', name: 'Overdrive', tier: 'legendary', earn: 'Finish #1 on the XP board (worn for the 14-day season)', desc: 'Raw voltage — the grind made visible' },
   { id: 'tycoon', name: 'Tycoon', tier: 'legendary', earn: 'Finish #1 on the Spot Bank board (worn for the 14-day season)', desc: 'Emerald and bullion — the house always notices money' },
-  // limited seasonal drop — buyable only until `until` (owners keep it forever)
-  { id: 'eclipse', name: 'Eclipse', tier: 'legendary', xp: 6000, until: '2026-09-01', desc: 'August drop: a black sun with a burning corona. Gone Sep 1 — forever' },
-  // consumables (kind:'c') — instant effects, buyable repeatedly, never giftable
-  { id: 'shield', name: 'Streak Shield', kind: 'c', tier: 'rare', xp: 300, cents: 29, desc: 'One extra streak freeze, bankable up to 5 (a missed day auto-spends one)' },
-  { id: 'surge', name: 'XP Surge', kind: 'c', tier: 'epic', cents: 79, desc: 'Double XP from everything you earn for the next 24 hours' },
-  // ticket skins (kind:'t') — restyle your P&L tickets in the journal, drawers and every shared chat ticket
-  { id: 'tkt_noir', name: 'Noir Ticket', kind: 't', tier: 'rare', xp: 1200, desc: 'Blackout ticket with a cold silver seam' },
-  { id: 'tkt_holo', name: 'Holo Ticket', kind: 't', tier: 'epic', xp: 2800, desc: 'Iridescent foil that shifts between blue, violet and green' },
-  { id: 'tkt_aurum', name: 'Aurum Ticket', kind: 't', tier: 'legendary', cents: 199, desc: 'Liquid gold plate — for your wins and your losses alike' },
-  { id: 'tkt_dragon', name: 'Dragonhide Ticket', kind: 't', tier: 'legendary', cents: 249, desc: 'Molten dragon-scale plate with an ember seam — your wins, in armor' },
-  { id: 'tkt_vapor', name: 'Vapor Ticket', kind: 't', tier: 'epic', cents: 99, desc: 'Synthwave foil — pink sun, cyan scanlines, 1986 forever' },
-  // the burning one
-  { id: 'inferno', name: 'Inferno', tier: 'epic', xp: 4500, desc: 'A frame that is actually on fire — flickering flames and rising embers' },
-  // earn-only: time-on-site + activity (granted automatically when /achstate sees the threshold)
   { id: 'dwell10', name: 'Local', tier: 'rare', earn: 'Spend 10 hours on MarginPad', desc: 'Ten real hours on the desk — you live here now' },
   { id: 'dwell100', name: 'Resident', tier: 'legendary', earn: 'Spend 100 hours on MarginPad', desc: 'One hundred hours. The desk has your name on it' },
   { id: 'closer', name: 'The Closer', tier: 'epic', earn: 'Close 500 trades', desc: 'Five hundred closed tickets — volume is a lifestyle' },
   { id: 'operative', name: 'Operative', tier: 'epic', earn: 'Claim 100 daily missions', desc: 'A hundred missions executed without a miss' },
-  // card backgrounds (kind:'bg') — a scene behind the whole trader card
-  { id: 'bg_grid', name: 'Blueprint', kind: 'bg', tier: 'common', xp: 500, desc: 'Faint engineering grid — the builder&#39;s backdrop' },
-  { id: 'bg_stars', name: 'Night Shift', kind: 'bg', tier: 'rare', xp: 1400, desc: 'A quiet starfield for the 3am candles' },
-  { id: 'bg_candles', name: 'Uptrend', kind: 'bg', tier: 'epic', cents: 99, desc: 'Ghost candlesticks marching up and to the right' },
-  { id: 'bg_vapor', name: 'Neon Horizon', kind: 'bg', tier: 'epic', cents: 129, desc: 'A synthwave sun sets over the neon grid behind your whole card' },
-  { id: 'bg_aurora', name: 'Aurora Sky', kind: 'bg', tier: 'legendary', cents: 249, desc: 'Northern lights and a field of stars — calm above the chaos' },
-  { id: 'bg_one', name: 'MP One Field', kind: 'bg', tier: 'legendary', earn: 'Owners only', desc: 'Molten gold ground reserved for the people who built this place' },
-  // F5 long-haul progression frames (earn-only, auto-granted by /achstate) — 2026-08-15
   { id: 'mission500', name: 'Quartermaster', tier: 'epic', earn: 'Claim 500 daily missions', desc: 'Five hundred missions logged — the supply line never slipped' },
   { id: 'og180', name: 'OG', tier: 'epic', earn: 'Keep trading here for 6 months', desc: 'Here before it was cool — half a year on the pad' },
   { id: 'xp100k', name: 'Centurion', tier: 'legendary', earn: 'Earn 100,000 lifetime XP', desc: 'Six figures of XP, earned the long way' },
   { id: 'closer2k', name: 'Overclock', tier: 'legendary', earn: 'Close 2,000 trades', desc: 'Two thousand closed tickets — the terminal runs hot' },
   { id: 'dwell500', name: 'Furniture', tier: 'legendary', earn: 'Spend 500 hours on MarginPad', desc: 'Five hundred hours. You are part of the desk now' },
-  // premium paid frames — the flex tier above Sovereign (2026-08-15)
-  { id: 'dragonfire', name: 'Dragonfire', tier: 'legendary', cents: 499, desc: 'Molten scales, breathing heat and rising embers — it smolders on your card' },
-  { id: 'singularity', name: 'Singularity', tier: 'legendary', cents: 699, desc: 'A black core with a spinning accretion ring — light bends around your name' },
-  { id: 'midas', name: 'Midas', tier: 'legendary', cents: 999, desc: 'Twin rings of liquid gold. Everything you touch turns to profit' },
-  { id: 'realtrader', name: 'Real Trader', tier: 'legendary', cents: 1999, desc: 'The apex of the Vault — profit-green fire in a gold storm. Money cannot really buy this one; it usually arrives as a gift from the house' },
+  // ---- consumables (kind c): instant effects, buyable again and again, never giftable --------------
+  { id: 'shield', name: 'Streak Shield', kind: 'c', tier: 'rare', ticks: 600, cents: 29, desc: 'One extra streak freeze, bankable up to 5 (a missed day auto-spends one)' },
+  { id: 'surge', name: 'XP Surge', kind: 'c', tier: 'epic', ticks: 1500, cents: 79, desc: 'Double XP from everything you earn for the next 24 hours' },
+  { id: 'reroll', name: 'Mission Reroll', kind: 'c', tier: 'rare', ticks: 400, cents: 39, desc: 'Throw back today&#39;s daily missions and draw a fresh set. Once a day' },
+  { id: 'doubletick', name: 'Tick Doubler', kind: 'c', tier: 'epic', ticks: 2000, cents: 99, desc: 'Double Ticks from everything you earn for the next 24 hours' },
+  // ---- ticket skins (kind t): restyle every P&L ticket you keep or share --------------------------
+  { id: 'tkt_carbon', name: 'Carbon Weave', kind: 't', tier: 'common', ticks: 300, desc: 'Diagonal carbon twill under a matte clearcoat' },
+  { id: 'tkt_thermal', name: 'Thermal Roll', kind: 't', tier: 'common', ticks: 300, desc: 'Dark receipt stock with printer ruling and two curled, shadowed edges' },
+  { id: 'tkt_noir', name: 'Noir Ticket', kind: 't', tier: 'rare', ticks: 1200, desc: 'Blackout ticket with a cold silver seam' },
+  { id: 'tkt_ledger', name: 'Ledger', kind: 't', tier: 'rare', ticks: 1200, desc: 'Accountant&#39;s green paper, ruled by the line, with a red margin down the left' },
+  { id: 'tkt_circuit', name: 'Circuit', kind: 't', tier: 'rare', ticks: 1200, desc: 'Solder-mask board with copper traces running to three vias' },
+  { id: 'tkt_marble', name: 'Black Marble', kind: 't', tier: 'rare', ticks: 1200, desc: 'A charcoal slab cut through by pale veins' },
+  { id: 'tkt_holo', name: 'Holo Ticket', kind: 't', tier: 'epic', ticks: 3000, cents: 99, desc: 'Iridescent foil that shifts between blue, violet and green' },
+  { id: 'tkt_vapor', name: 'Vapor Ticket', kind: 't', tier: 'epic', ticks: 3000, cents: 99, desc: 'Synthwave foil: pink sun, cyan scanlines, 1986 forever' },
+  { id: 'tkt_titanium', name: 'Titanium', kind: 't', tier: 'epic', ticks: 3000, cents: 119, desc: 'Brushed metal with one cold sweep of light across the grain' },
+  { id: 'tkt_phosphor', name: 'Phosphor Ticket', kind: 't', tier: 'epic', ticks: 3000, cents: 119, desc: 'Amber CRT glass: scanlines, a curved centre glow, dark corners' },
+  { id: 'tkt_aurum', name: 'Aurum Ticket', kind: 't', tier: 'legendary', ticks: 7000, cents: 249, desc: 'Liquid gold plate, for your wins and your losses alike' },
+  { id: 'tkt_dragon', name: 'Dragonhide Ticket', kind: 't', tier: 'legendary', ticks: 7000, cents: 249, desc: 'Molten dragon-scale plate with an ember seam, your wins in armor' },
+  { id: 'tkt_obsidian', name: 'Obsidian Ticket', kind: 't', tier: 'legendary', ticks: 7000, cents: 299, desc: 'Volcanic glass, fracture facets catching a violet edge' },
+  // ---- card backgrounds (kind bg): a scene behind the whole trader card --------------------------
+  { id: 'bg_grid', name: 'Blueprint Field', kind: 'bg', tier: 'common', ticks: 300, desc: 'Faint engineering grid, the builder&#39;s backdrop' },
+  { id: 'bg_topo', name: 'Contours', kind: 'bg', tier: 'common', ticks: 300, desc: 'Survey contour lines stepping around two hills' },
+  { id: 'bg_rain', name: 'Wet Glass', kind: 'bg', tier: 'common', ticks: 300, desc: 'Droplets and runnels on a window at night' },
+  { id: 'bg_stars', name: 'Night Shift', kind: 'bg', tier: 'rare', ticks: 1200, desc: 'A quiet starfield for the 3am candles' },
+  { id: 'bg_ridge', name: 'Ridgeline', kind: 'bg', tier: 'rare', ticks: 1200, desc: 'Three mountain ridges stacked under a low moon' },
+  { id: 'bg_metro', name: 'Transit', kind: 'bg', tier: 'rare', ticks: 1200, desc: 'Subway lines crossing, with white dots where they meet' },
+  { id: 'bg_trench', name: 'The Trench', kind: 'bg', tier: 'rare', ticks: 1200, desc: 'Light shafts thinning out down a deep water column' },
+  { id: 'bg_candles', name: 'Uptrend', kind: 'bg', tier: 'epic', ticks: 3000, cents: 99, desc: 'Ghost candlesticks marching up and to the right' },
+  { id: 'bg_vapor', name: 'Neon Horizon', kind: 'bg', tier: 'epic', ticks: 3000, cents: 129, desc: 'A synthwave sun sets over the neon grid behind your whole card' },
+  { id: 'bg_radar', name: 'Radar', kind: 'bg', tier: 'epic', ticks: 3000, cents: 129, desc: 'Range rings, a crosshair, and one sweep frozen mid-turn' },
+  { id: 'bg_ember', name: 'Embers', kind: 'bg', tier: 'epic', ticks: 3000, cents: 129, desc: 'Sparks lifting off a bed of coals' },
+  { id: 'bg_aurora', name: 'Aurora Sky', kind: 'bg', tier: 'legendary', ticks: 7000, cents: 249, desc: 'Northern lights and a field of stars, calm above the chaos' },
+  { id: 'bg_deepfield', name: 'Deep Field', kind: 'bg', tier: 'legendary', ticks: 7000, cents: 299, desc: 'A dust lane cutting across distant nebulae and pinprick stars' },
+  { id: 'bg_one', name: 'MP One Field', kind: 'bg', tier: 'mythic', earn: 'Owners only', desc: 'Molten gold ground reserved for the people who built this place' },
 ];
 const ACH_DEFS = [ // id, name, how — all server-verified from real tables; earned once, kept forever
   { id: 'first_win', name: 'First Blood', how: 'Close your first winning trade' },
@@ -10188,7 +10223,7 @@ async function handleAuth(url, request, env, ctx) {
     let u = tok ? await sessionUser(env, tok) : null;
     if (!u && isAdmin && url.searchParams.get('uid')) u = { id: url.searchParams.get('uid'), username: url.searchParams.get('un') || '' }; // owner/E2E testing hook (same pattern as tshare/missions)
     let on = true; try { on = (await env.STATS.get('shop:on')) !== '0'; } catch (e) {}
-    const out = { on: on, items: VAULT_ITEMS, signedIn: !!u, owned: ['default'], equipped: 'default', xp: 0, level: 'unranked', balance: 0, tester: false };
+    const out = { on: on, items: VAULT_ITEMS, signedIn: !!u, owned: ['default'], equipped: 'default', xp: 0, ticks: 0, level: 'unranked', balance: 0, tester: false };
     if (u) { // one page-load = 3 independent DO reads -> parallel (was serial; audit 2026-08-14)
       const stub9 = env.USERS.get(env.USERS.idFromName('main'));
       const [d1, d3, d2] = await Promise.all([
@@ -10196,7 +10231,7 @@ async function handleAuth(url, request, env, ctx) {
         stub9.fetch(new Request('https://do/achstate?uid=' + encodeURIComponent(u.id))).then(r => r.json()).catch(() => null),
         env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/account', { headers: { 'x-acct': 'u:' + u.id } })).then(r => r.json()).catch(() => null) // ledger DO reads identity from the x-acct header; balance arrives as USD float
       ]);
-      if (d1) { out.owned = d1.owned || out.owned; out.equipped = d1.equipped || 'default'; out.xp = +d1.xp || 0; out.level = d1.level || 'unranked'; out.streak = +d1.streak || 0; out.freezes = +d1.freezes || 0; out.boostUntil = +d1.boostUntil || 0; out.equippedTkt = d1.tktskin || ''; out.equippedBg = d1.cardbg || ''; }
+      if (d1) { out.owned = d1.owned || out.owned; out.equipped = d1.equipped || 'default'; out.ticks = +d1.ticks || 0; out.xp = +d1.xp || 0; out.level = d1.level || 'unranked'; out.streak = +d1.streak || 0; out.freezes = +d1.freezes || 0; out.boostUntil = +d1.boostUntil || 0; out.equippedTkt = d1.tktskin || ''; out.equippedBg = d1.cardbg || ''; }
       if (d3) { out.ach = d3.earned || []; out.achDefs = d3.defs || []; out.progress = d3.progress || null; }
       if (d2) out.balance = +d2.balance || 0;
       out.tester = vaultIsTester(u.username);
@@ -10307,8 +10342,15 @@ async function handleAuth(url, request, env, ctx) {
     const it = vaultItem(String(b.id || ''));
     if (!it) return jr({ error: 'no_item' }, 404);
     if (it.until && Date.now() > Date.parse(it.until) && !(b.to && vaultIsTester(u.username))) return jr({ error: 'expired' }, 400); // limited drop window closed (DO re-checks on the XP path); the owner account can still GIFT an expired drop (owner 2026-08-15)
-    const cur = b.cur === 'usd' ? 'usd' : 'xp';
+    const cur = b.cur === 'usd' ? 'usd' : b.cur === 'ticks' ? 'ticks' : 'xp';
     const users = env.USERS.get(env.USERS.idFromName('main'));
+    if (cur === 'ticks') {
+      if (!it.ticks) return jr({ error: 'not_tick_priced' }, 400);
+      const r = await users.fetch(new Request('https://do/shopbuyt', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: u.id, item: it.id, to: b.to || undefined }) }));
+      const d = await r.json();
+      if (d && d.ok) { try { await evPush(env, request, 'shopbuy', it.id + ' (Ticks)', '/vault/'); } catch (e) {} try { const dk = 'shop:tk:' + new Date().toISOString().slice(0, 10); await env.STATS.put(dk, String((+(await env.STATS.get(dk)) || 0) + it.ticks)); } catch (e) {} }
+      return jr(d, d && d.ok ? 200 : 400);
+    }
     if (cur === 'xp') {
       if (!it.xp) return jr({ error: 'not_xp_priced' }, 400);
       const r = await users.fetch(new Request('https://do/shopbuy', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: u.id, item: it.id, to: b.to || undefined }) }));
@@ -14362,6 +14404,13 @@ export class UserStore {
     s.exec('CREATE TABLE IF NOT EXISTS otpip(k TEXT PRIMARY KEY, n INTEGER NOT NULL DEFAULT 0)'); // per-IP-per-day OTP send cap, so one source can't email-bomb many addresses
     for (const col of ['dev TEXT', 'br TEXT', 'last_seen INTEGER', 'pv INTEGER DEFAULT 0', 'username TEXT', "status TEXT DEFAULT 'active'", 'susp_until INTEGER DEFAULT 0', 'muted INTEGER DEFAULT 0', 'restrictions TEXT', 'note TEXT', 'asn INTEGER', 'org TEXT', 'digest INTEGER DEFAULT 1', 'tg_chat TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} }
     for (const col of ['xp INTEGER DEFAULT 0', 'streak INTEGER DEFAULT 0', 'streak_day TEXT', 'lvl_seen TEXT', 'freezes INTEGER DEFAULT 0', 'premium INTEGER DEFAULT 0', 'xpboost_until INTEGER DEFAULT 0', 'tktskin TEXT', 'cardbg TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // XP & level system (+freezes = streak-freeze; premium = expiry ms, drives the +5% XP boost)
+    // TICKS (2026-08-19): the Vault's earned currency. XP was doing two jobs at once — it was both the
+    // progress bar and the wallet, so every purchase asked a trader to pay with their own rank. That is why
+    // the level-floor guard had to exist. Ticks split the jobs: XP only ever goes up and measures how far
+    // you have come, Ticks are spent and measure what you have done lately. They cannot be bought for money
+    // at any price, which is the whole point — a Tick-priced frame proves you played, not that you paid.
+    for (const col of ['ticks INTEGER DEFAULT 0', 'ticks_life INTEGER DEFAULT 0', 'ticks_seed INTEGER DEFAULT 0', 'tickboost_until INTEGER DEFAULT 0']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} }
+    try { s.exec('CREATE TABLE IF NOT EXISTS tickday(user_id TEXT, day TEXT, src TEXT, n INTEGER, PRIMARY KEY(user_id,day,src))'); } catch (e) {} // per-source daily caps, same anti-farm shape as xpday
     try { s.exec('ALTER TABLE users ADD COLUMN did TEXT'); } catch (e) {} // device fingerprint (mp_did cookie) captured at login → same-device multi-account detect
     try { s.exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT ''"); } catch (e) {} // background role mark (owner 2026-08-15): 'gm' = chat admin commands (/gift, /mute...); set via mp-ops /api/admin/setrole, invisible to usersion for the Security tab
     try { s.exec('ALTER TABLE users ADD COLUMN prem_seen INTEGER DEFAULT 0'); s.exec('UPDATE users SET prem_seen=1 WHERE premium>0'); } catch (e) {} // "has this user seen the premium-upgrade celebration?" The backfill (existing premium = already-seen, no retroactive mass-animation) is TIED TO THE ALTER SUCCEEDING — so it runs exactly ONCE (first boot after ship); every later boot the ALTER throws → catch → backfill skipped → a subsequent reset (e.g. the mp-ops-granted cohort set back to 0 for the delayed welcome) is NEVER overwritten. New users get DEFAULT 0 → they get the celebration.
@@ -14422,6 +14471,39 @@ export class UserStore {
   }
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
+  // Ticks are deliberately NOT a second XP. XP rewards volume, so it can be farmed by doing more of the
+  // same thing; Ticks reward the behaviour the product actually wants — coming back, and closing trades with
+  // an exit already set. Every source is capped per day, because the Happy Hour incident showed that any
+  // uncapped source becomes two thirds of a grinder's income within a week.
+  // No money path exists into this function. Ticks are earned or they are not held.
+  _grantTicks(uid, src, amt, o) {
+    o = o || {}; amt = Math.max(0, Math.round(+amt || 0)); if (!uid || !amt) return 0;
+    const sql = this.state.storage.sql;
+    const _tu = this.rows('SELECT tickboost_until FROM users WHERE id=?', uid)[0];
+    if (!_tu) return 0;
+    if ((+_tu.tickboost_until || 0) > Date.now()) amt = amt * 2; // Tick Doubler, the Ticks-side twin of XP Surge
+    if (o.dayCap) {
+      const day = new Date().toISOString().slice(0, 10);
+      const got = (this.rows('SELECT n FROM tickday WHERE user_id=? AND day=? AND src=?', uid, day, src)[0] || { n: 0 }).n;
+      if (got >= o.dayCap) return 0;
+      amt = Math.min(amt, o.dayCap - got);
+      if (amt <= 0) return 0;
+      sql.exec('INSERT INTO tickday(user_id,day,src,n) VALUES(?,?,?,?) ON CONFLICT(user_id,day,src) DO UPDATE SET n=n+?', uid, day, src, amt, amt);
+    }
+    sql.exec('UPDATE users SET ticks=MAX(0,COALESCE(ticks,0)+?), ticks_life=COALESCE(ticks_life,0)+? WHERE id=?', amt, amt, uid);
+    return amt;
+  }
+  // One-time seed so the change does not punish everyone who was already here. Long-standing accounts have
+  // spent months earning XP under the old rules; without this their buying power would silently reset to zero
+  // on the day Ticks launched. Granted lazily on first read, capped so the biggest grinders cannot open the
+  // shop with everything already affordable.
+  _seedTicks(uid) {
+    const u = this.rows('SELECT xp_life, ticks_seed FROM users WHERE id=?', uid)[0];
+    if (!u || +u.ticks_seed) return 0;
+    const seed = Math.min(4000, Math.round((+u.xp_life || 0) / 60));
+    this.state.storage.sql.exec('UPDATE users SET ticks=COALESCE(ticks,0)+?, ticks_life=COALESCE(ticks_life,0)+?, ticks_seed=1 WHERE id=?', seed, seed, uid);
+    return seed;
+  }
   _grantXp(uid, src, amt, o) { // o: {dayCap, lifeCap, once, note}. Returns granted (clamped). Anti-abuse via xpday.
     o = o || {}; amt = Math.max(0, Math.round(+amt || 0)); if (!uid || !amt) return 0;
     const sql = this.state.storage.sql; const now = Date.now();
@@ -14487,6 +14569,14 @@ export class UserStore {
       const until = now + 86400000;
       sql.exec('UPDATE users SET xpboost_until=? WHERE id=?', until, uid);
       return { ok: true, until: until };
+    }
+    if (itemId === 'doubletick') {
+      const tb = this.rows('SELECT tickboost_until FROM users WHERE id=?', uid)[0];
+      if (tb && (+tb.tickboost_until || 0) > now) return { error: 'boost_active', until: +tb.tickboost_until };
+      if (check) return { ok: true };
+      const tu = now + 86400000;
+      sql.exec('UPDATE users SET tickboost_until=? WHERE id=?', tu, uid);
+      return { ok: true, until: tu };
     }
     if (itemId === 'reroll') {
       sql.exec('CREATE TABLE IF NOT EXISTS msalt(user_id TEXT, day TEXT, salt INTEGER, PRIMARY KEY(user_id,day))');
@@ -14616,6 +14706,10 @@ export class UserStore {
         const liq9 = (kind === 'close' && pv != null && pv <= -m * 0.985) ? 1 : 0;
         // XP grants BEFORE the per-sync tradeev insert cap (same principle as _lbBest above): every grant has its
         // own day-cap, so the 60-row logging cap must never be the thing that eats a winning close's XP/boost.
+        // Ticks on a close, with the bonus reserved for trades that had an exit set before they were opened.
+        // XP already pays for volume; paying Ticks for the same thing would just be a second grind. Paying for
+        // a pre-set stop rewards the one habit that actually keeps a paper trader alive.
+        try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantTicks(uid, 'trade', 1, { dayCap: 8 }); if (e.sl != null && +e.sl > 0) this._grantTicks(uid, 'trade_sl', 3, { dayCap: 24 }); } } catch (te) {}
         try { if (kind === 'close' && !lbExcluded(e.sym)) { this._grantXp(uid, 'trade', 3, { dayCap: 15, note: (e.sym || '') + ' closed' }); if (pv != null && pv > 0) { this._grantXp(uid, 'trade_win', 15, { dayCap: 60, note: (e.sym || '') + ' +$' + pv.toFixed(2) }); if (roe != null && roe >= HH.roeMin && (+e.lev || 1) <= HH.levMax && hhActiveAt(ts9) && !this.rows("SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind='hh' LIMIT 1", uid, ts9)[0]) { var _gh9 = this._grantXp(uid, 'trade_hh', HH.xp, { dayCap: 190, note: 'XP Happy Hour · ' + Math.round(roe) + '% ROE' }); if (_gh9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gh9, (String(e.sym || '').toUpperCase() + ' ' + Math.round(roe) + '% ROE +' + _gh9 + ' XP · Happy Hour').slice(0, 60), 'hh'); } catch (e7) {} } }
           if (roe != null) { var _pl = Array.isArray(promos) ? promos : [], _symU = String(e.sym || '').toUpperCase(), _lv = (+e.lev || 1), _best = null;
             for (var _pi = 0; _pi < _pl.length; _pi++) { var _p = _pl[_pi]; if (!_p || _p.enabled === false) continue; if (!(ts9 >= _p.startMs && ts9 < _p.endMs && _p.endMs > _p.startMs)) continue; if (_p.coins && _p.coins.length && _p.coins.indexOf(_symU) < 0) continue; if (_lv > (+_p.levMax || 1000)) continue; if (roe < (+_p.roeMin || 0)) continue; if (_p.winOnly !== false && !(pv > 0)) continue; if (!_best || (+_p.xp || 0) > (+_best.xp || 0)) _best = _p; }
@@ -14823,6 +14917,9 @@ export class UserStore {
               if (st === 7 || st === 30 || st === 100) { try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', uid, 'streak' + st, now, 'streak'); this._grantXp(uid, 'streak', 50, { note: st + '-day streak frame unlocked' }); } catch (eS) {} } // THE VAULT: milestone frames — earn-only, never buyable
               this._grantXp(uid, 'checkin', 20, { note: 'daily check-in' });
               this._grantXp(uid, 'streak', Math.min(40, st * 2), { note: st + '-day streak' });
+              // Ticks: the check-in is the single biggest source, and it scales with the streak. Retention is
+              // the north star, so the currency should be won mostly by coming back rather than by grinding.
+              this._grantTicks(uid, 'checkin', 10 + Math.min(30, st), { dayCap: 40 });
               if (usedFreeze) this._grantXp(uid, 'streak', 5, { note: 'streak freeze saved your ' + st + '-day streak' }); // small reward + shows as a toast so the save is visible
             } } catch (ce) {}
       sql.exec('DELETE FROM uevents WHERE user_id=? AND ts < (SELECT MIN(ts) FROM (SELECT ts FROM uevents WHERE user_id=? ORDER BY ts DESC LIMIT 500))', uid, uid); // keep newest ~500/user — the Journey Map user-search needs real history depth
@@ -15050,6 +15147,7 @@ export class UserStore {
       if (!this.rows('SELECT 1 FROM academy WHERE user_id=? AND lesson=?', uid, lesson)[0]) {
         sql.exec('INSERT INTO academy(user_id,lesson,ts) VALUES(?,?,?)', uid, lesson, now); fresh = true;
         granted = this._grantXp(uid, 'academy', 25, { lifeCap: 3000, note: 'lesson ' + lesson });
+        try { this._grantTicks(uid, 'academy', 6, { dayCap: 30 }); } catch (ae) {}
       }
       if (course && courseLessons.length) {
         const doneSet = {}; this.rows('SELECT lesson FROM academy WHERE user_id=?', uid).forEach(r => { doneSet[r.lesson] = 1; });
@@ -15085,6 +15183,7 @@ export class UserStore {
       if (this.rows('SELECT 1 FROM missions WHERE user_id=? AND day=? AND mid=?', uid, day, mid)[0]) return this.j({ ok: true, fresh: false });
       const mxp = (mid === 'setbonus' || mid.indexOf('wk') === 0) ? 25 : (10 + Math.floor(Math.random() * 51)); // MYSTERY XP (2026-08-15): 10-60 per mission (EV ~35, was flat 12) — variable reward, costs no money, strongest comeback mechanic; set/week bonuses pay flat 25
       sql.exec('INSERT INTO missions(user_id,day,mid,ts) VALUES(?,?,?,?)', uid, day, mid, now); try { this._grantXp(uid, 'mission', mxp, { dayCap: 320, note: 'mission ' + mid }); } catch (me) {}
+      try { this._grantTicks(uid, 'mission', 4, { dayCap: 20 }); } catch (me2) {}
       return this.j({ ok: true, fresh: true, xp: mxp });
     }
     if (path === '/missions/history') { // admin earnings view: every daily mission this user has claimed (mid+day+ts); cents mapped in the worker
@@ -15909,6 +16008,7 @@ export class UserStore {
       const uid = String(url.searchParams.get('uid') || '');
       const u = this.rows('SELECT xp, premium, username, frame FROM users WHERE id=?', uid)[0];
       if (!u) return this.j({ owned: ['default'], equipped: 'default', xp: 0 });
+      try { this._seedTicks(uid); } catch (se) {} // lazily converts a long-standing account's history into starting Ticks, once
       const founder = PREM_FOUNDERS.indexOf(String(u.username || '').toLowerCase()) >= 0;
       const premium = founder || (+u.premium || 0) > Date.now();
       const cosRows = this.rows('SELECT item_id, ts FROM cosmetics WHERE user_id=?', uid);
@@ -15917,7 +16017,8 @@ export class UserStore {
       if (vaultIsTester(u.username)) owned = owned.concat(VAULT_ITEMS.map(x => x.id)).concat(XP_LEVELS.map(l => l.k).filter(k => k !== 'unranked' && k !== 'bronze')).concat(['neon', 'aurora', 'founder']); // owner test account sees everything — vault items AND all level/premium frames
       owned = owned.filter(function(v, i, a) { return a.indexOf(v) === i; });
       const uSt = this.rows('SELECT streak, freezes, xpboost_until, tktskin, cardbg FROM users WHERE id=?', uid)[0] || {};
-      return this.j({ owned: owned, equipped: u.frame || 'default', premium: premium, founder: founder, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k, streak: +uSt.streak || 0, freezes: +uSt.freezes || 0, boostUntil: +uSt.xpboost_until || 0, tktskin: uSt.tktskin || '', cardbg: uSt.cardbg || '' });
+      const _tk = this.rows('SELECT ticks FROM users WHERE id=?', uid)[0];
+      return this.j({ owned: owned, equipped: u.frame || 'default', premium: premium, founder: founder, ticks: _tk ? +_tk.ticks || 0 : 0, xp: +u.xp || 0, level: xpLevelOf(u.xp || 0).k, streak: +uSt.streak || 0, freezes: +uSt.freezes || 0, boostUntil: +uSt.xpboost_until || 0, tktskin: uSt.tktskin || '', cardbg: uSt.cardbg || '' });
     }
     if (path === '/achstate') { // THE VAULT F2: achievements — computed from REAL tables, earns PERSISTED (tradeev only holds 30d, so an earned badge must never un-earn)
       const uid = String(url.searchParams.get('uid') || '');
@@ -15971,6 +16072,40 @@ export class UserStore {
       }
       sql.exec('UPDATE users SET cardbg=? WHERE id=?', bg === 'default' ? '' : bg, uid);
       return this.j({ ok: true, bg: bg });
+    }
+    // Ticks purchase. Deliberately simpler than the XP path: there is no level-floor guard to write, because
+    // Ticks are not a rank. That absence IS the feature — spending here can never cost a trader their level,
+    // their level frames or their rewards access, so the shop no longer has to refuse purchases people can
+    // clearly afford. Gifting works the same as XP; consumables stay personal.
+    if (path === '/shopbuyt') {
+      const uid = String(b.uid || ''); const it = vaultItem(String(b.item || ''));
+      if (!uid || !it || !it.ticks) return this.j({ error: 'bad' }, 400);
+      const u = this.rows('SELECT ticks, username, xp FROM users WHERE id=?', uid)[0];
+      if (!u) return this.j({ error: 'no_user' }, 404);
+      this._seedTicks(uid);
+      const have = (this.rows('SELECT ticks FROM users WHERE id=?', uid)[0] || {}).ticks || 0;
+      const toUn = String(b.to || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 24); let target = null;
+      const freeGift = !!toUn && vaultIsTester(u.username);
+      if (it.until && Date.now() > Date.parse(it.until) && !freeGift) return this.j({ error: 'expired' });
+      if (toUn) {
+        if (it.kind === 'c') return this.j({ error: 'no_gift_consumable' }, 400);
+        target = this.rows('SELECT id, username FROM users WHERE LOWER(username)=LOWER(?)', toUn)[0];
+        if (!target) return this.j({ error: 'no_target' }, 404);
+        if (String(target.id) === uid) return this.j({ error: 'self' }, 400);
+        if (this.rows('SELECT 1 FROM cosmetics WHERE user_id=? AND item_id=?', String(target.id), it.id)[0]) return this.j({ error: 'target_owned' });
+      } else if (it.kind !== 'c' && this.rows('SELECT 1 FROM cosmetics WHERE user_id=? AND item_id=?', uid, it.id)[0]) return this.j({ error: 'owned' });
+      if (!freeGift && it.minLevel) { const lv = xpLevelOf(+u.xp || 0); const need = XP_LEVELS.findIndex(x => x.k === it.minLevel); const has = XP_LEVELS.findIndex(x => x.k === lv.k); if (has < need) return this.j({ error: 'level_locked', need: it.minLevel }); }
+      if (!freeGift && have < it.ticks) return this.j({ error: 'short_ticks', have, need: it.ticks });
+      if (it.kind === 'c') { const pc = this._applyConsumable(uid, it.id, 1); if (pc.error) return this.j(pc); }
+      if (!freeGift) sql.exec('UPDATE users SET ticks=MAX(0,COALESCE(ticks,0)-?) WHERE id=?', it.ticks, uid);
+      let eff = null;
+      if (it.kind === 'c') { eff = this._applyConsumable(uid, it.id, 0); if (eff.error) return this.j(eff, 500); }
+      else if (target) {
+        sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', String(target.id), it.id, Date.now(), 'gift');
+        try { this._pushNotif(String(target.id), 'gift', '@' + (u.username || 'A trader') + ' gifted you the ' + it.name + (it.kind === 'bg' ? ' background' : it.kind === 't' ? ' ticket skin' : ' frame') + ' — open The Vault to equip it', '/vault/'); } catch (e) {}
+      } else sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', uid, it.id, Date.now(), 'ticks');
+      const nt = this.rows('SELECT ticks FROM users WHERE id=?', uid)[0];
+      return this.j({ ok: true, item: it.id, ticks: nt ? +nt.ticks : 0, eff: eff || undefined, giftedTo: target ? (target.username || '') : undefined });
     }
     if (path === '/shopbuy') { // XP purchase — atomic; LEVEL-FLOOR GUARD: spending can never drop you below your current level's threshold (a frame purchase must not cost someone their level, their level frames or the rewards gate)
       const uid = String(b.uid || ''); const it = vaultItem(String(b.item || ''));

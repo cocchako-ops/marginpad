@@ -19,7 +19,7 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>The Vault — Frames, Levels &amp; Cosmetics | MarginPad</title>
-<meta name="description" content="The Vault: unlock and buy exclusive profile-card frames with XP or your rewards balance. Every level has its own identity — climb, collect, flex.">
+<meta name="description" content="The Vault: earn Ticks by trading and showing up, then spend them on profile frames, ticket skins and card backgrounds. Try any of them on your own card first.">
 <link rel="canonical" href="https://marginpad.io/vault/">
 <meta name="robots" content="index,follow">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
@@ -31,18 +31,46 @@
 :root{--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--line:#232932;--lime:#c2f64a;--panel:#101216}
 html,body{background:#0a0b0d;color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
 a{color:var(--lime);text-decoration:none}
-.wrap{max-width:1060px;margin:0 auto;padding:26px 16px 80px}
+.wrap{max-width:1260px;margin:0 auto;padding:20px 16px 80px}
+/* The header used to spend 330px before a single item appeared. Title, blurb and wallet now share one
+   band, so the shop starts roughly where the second row of frames used to. */
+.vhead{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+.vhead .sub{margin-top:2px}
+@media(max-width:760px){.vhead{gap:10px}}
 .crumb{font-size:12.5px;color:var(--faint)}.crumb a{color:var(--faint)}
 h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(30px,5.5vw,44px);letter-spacing:-.03em;margin:8px 0 4px}
 h1 b{color:var(--lime)}
 .sub{color:var(--dim);font-size:15.5px;max-width:640px}
 h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;margin:40px 0 4px}
 .h2s{color:var(--faint);font-size:13px;margin-bottom:16px}
-.wallet{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 4px}
-.wchip{display:flex;align-items:baseline;gap:7px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 16px}
-.wchip b{font-family:'Space Mono',monospace;font-size:17px}
+.wallet{display:flex;gap:7px;flex-wrap:wrap;margin:0}
+.wchip{display:flex;align-items:baseline;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:7px 12px}
+.wchip b{font-family:'Space Mono',monospace;font-size:15px}
 .wchip span{font-size:10.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.07em}
 .wchip.xp b{color:#ffd75a}.wchip.bal b{color:var(--lime)}.wchip.lvl b{color:#7ee0ff}
+.wchip.tk{border-color:#3f6e2a;background:rgba(194,246,74,.07)}.wchip.tk b{color:var(--lime);font-size:17px}
+/* collection meter: how much of the Vault you actually hold, which is the thing a collector wants to see
+   and the shop never told anyone. Sits inside the fitting room so it costs no extra vertical space. */
+.collect{display:flex;align-items:center;gap:8px;margin-top:5px}
+.cbar{flex:1;max-width:190px;height:5px;border-radius:3px;background:#1b2028;overflow:hidden}
+.cbar i{display:block;height:100%;background:linear-gradient(90deg,#2ebd85,var(--lime));width:0;transition:width .5s cubic-bezier(.2,.7,.2,1)}
+.collect b{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--dim);font-weight:400;white-space:nowrap}
+/* what is still earnable today, and what is already capped out. Answers "how do I get Ticks" in the one
+   place the question actually occurs: standing in the shop, short of a frame. */
+.earn{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:9px 13px;margin:0 0 14px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.012)}
+.earn>b{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:400}
+.earn span{display:flex;gap:14px;flex-wrap:wrap}
+.esrc{font-size:11.5px;color:var(--dim);white-space:nowrap}
+.esrc b{font-family:'Space Mono',monospace;color:var(--lime);font-weight:700}
+.esrc.done{color:var(--faint)}.esrc.done b{color:var(--faint)}
+/* a "new" flag so a returning trader can see what changed without reading every card */
+.fcard[data-new="1"] .fbar::after{content:"NEW";font-family:'Space Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.1em;color:#0a0b0d;background:var(--lime);border-radius:99px;padding:1px 6px;margin-left:6px}
+/* wishlist: a star that pins one item as the thing you are saving toward */
+.wish{position:absolute;top:9px;right:9px;z-index:8;width:24px;height:24px;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(10,12,16,.72);color:#6b7480;cursor:pointer;font-size:13px;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:.15s}
+.fcard:hover .wish,.fcard:focus-within .wish,.wish.on{opacity:1}
+.wish.on{color:var(--lime);border-color:rgba(194,246,74,.5)}
+.wish:hover{color:var(--lime)}
+.sortsel{margin-left:auto;flex:none;font:600 12px 'Familjen Grotesk',sans-serif;color:#9aa3ad;background:#111419;border:1px solid #232932;border-radius:10px;padding:8px 10px;cursor:pointer}
 .signin{margin:14px 0 0;padding:13px 16px;background:rgba(194,246,74,.06);border:1px solid rgba(194,246,74,.3);border-radius:12px;font-size:13.5px}
 /* ladder */
 .ladder{display:grid;grid-template-columns:repeat(auto-fit,minmax(136px,1fr));gap:10px}
@@ -56,10 +84,42 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;m
 .lv.cur::after{content:"YOU";position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--lime);color:#0a0b0d;font-family:'Space Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.1em;border-radius:99px;padding:1px 8px}
 .lv.done{border-color:#2e3a2e}
 .lv.lock{opacity:.62}
-/* gallery */
-.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:14px}
-.fcard{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;transition:transform .15s}
-.fcard:hover{transform:translateY(-2px)}
+/* gallery — REBUILT 2026-08-19. The old card stacked preview + name + tier badge + a description line +
+   a button row into 251px and fitted four per row, so twenty frames meant a long scroll past text that
+   mostly repeated what the badge already said. The frame is the product, so the frame now gets the space:
+   preview, then one line carrying the name and the price. Tier moved to a colour on the card edge, and the
+   description and secondary actions surface on hover instead of holding a row open on every card forever. */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:11px}
+/* On a phone a 196px minimum collapses to a single column, which turns a 34-item shop back into the
+   long scroll this redesign existed to remove. Two columns at 360px+ keeps it a grid; the preview
+   shrinks with it so the frame still reads. */
+@media(max-width:640px){.gal{grid-template-columns:repeat(2,1fr);gap:9px}
+  /* grid items default to min-width:auto, so a column cannot shrink below the preview's unbreakable
+     content and the whole page grows sideways instead. */
+  .fcard{padding:9px;min-width:0}.prev>span:last-child{min-width:0}.prev .un{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+  .prev{height:74px;padding:0 10px;gap:8px}.prev .av{width:32px;height:32px;flex:0 0 32px;font-size:14px;border-radius:9px}
+  .prev .un{font-size:12px}.prev .us{font-size:8.5px}.fname{font-size:12px}.fnote{font-size:9px}}
+@media(max-width:360px){.gal{grid-template-columns:1fr}}
+.fcard{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:11px;display:flex;flex-direction:column;gap:9px;transition:transform .15s,border-color .15s,box-shadow .15s}
+.fcard:hover{transform:translateY(-2px);border-color:#37404d}
+.fcard::before{content:"";position:absolute;left:11px;right:11px;top:0;height:2px;border-radius:0 0 3px 3px;background:var(--tc,#3a4450);opacity:.9}
+.fcard[data-tier="common"]{--tc:#6b7480}
+.fcard[data-tier="rare"]{--tc:#5aa9ff}
+.fcard[data-tier="epic"]{--tc:#c792ff}
+.fcard[data-tier="legendary"]{--tc:#ffd75a}
+.fcard[data-tier="mythic"]{--tc:#ff5ad0}
+.fcard.tryon{border-color:var(--lime);box-shadow:0 0 0 1px rgba(194,246,74,.5),0 0 26px -10px rgba(194,246,74,.6)}
+/* name + price on one line; the price IS the buy control, so no separate button row in the resting state */
+.tryhit{display:block;width:100%;padding:0;border:0;background:none;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.tryhit:focus-visible{outline:2px solid var(--lime);outline-offset:3px;border-radius:14px}
+.fbar{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:22px}
+.fname{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fnote{font-size:10px;color:var(--faint);font-family:'Space Mono',monospace;white-space:nowrap}
+/* the hover layer: description + secondary actions, so a resting card stays two rows tall */
+.fhov{position:absolute;left:0;right:0;bottom:0;padding:10px 11px;background:linear-gradient(180deg,rgba(16,18,22,0),rgba(16,18,22,.97) 34%);border-radius:0 0 15px 15px;opacity:0;transform:translateY(6px);transition:opacity .16s,transform .16s;pointer-events:none;z-index:4}
+.fcard:hover .fhov,.fcard:focus-within .fhov{opacity:1;transform:none;pointer-events:auto}
+.fhov .fdesc2{font-size:11px;color:var(--dim);line-height:1.4;margin-bottom:8px}
+@media (hover:none){.fhov{position:static;opacity:1;transform:none;pointer-events:auto;background:none;padding:0}.fhov .fdesc2{display:none}}
 .prev{position:relative;border-radius:14px;background:linear-gradient(180deg,#151a21,#0c0f13);border:2px solid #2a313c;height:96px;display:flex;align-items:center;gap:11px;padding:0 14px}
 .prev .av{width:44px;height:44px;border-radius:11px;background:#1a2029;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;color:var(--lime);flex:0 0 44px}
 .prev .un{font-weight:800;font-size:15px;font-family:'Bricolage Grotesque',sans-serif}
@@ -75,6 +135,19 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;m
 .tier.limited{color:#ff9a3a;border-color:#7a4a1a}
 .btn.gift{color:#c792ff;border-color:#5a3a85;font-size:11px}
 .sup-state{font-family:'Space Mono',monospace;font-size:11px;color:#7ee0ff;margin-top:6px}
+/* THE FITTING ROOM — the answer to "let me preview a frame on my own card before I pay for it".
+   It is your real card, with your real name, pinned under the tabs. Clicking any item in the shop dresses
+   it instantly. Nothing is saved and nobody else sees it, so trying on a $19.99 frame you do not own costs
+   nothing and commits to nothing — which is exactly why it makes the shop worth browsing. */
+.fit[hidden],.earn[hidden],.wallet[hidden],.collect[hidden]{display:none}
+.fit{position:sticky;top:52px;z-index:29;display:flex;align-items:center;gap:14px;padding:11px 13px;margin:0 0 14px;background:rgba(13,15,19,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:16px}
+.fit-card{flex:0 0 auto}
+.fit-txt{flex:1;min-width:0}
+.fit-h{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.fit-n{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fit-s{font-size:11.5px;color:var(--dim);margin-top:1px}
+.fit-act{display:flex;gap:7px;flex:0 0 auto}
+@media(max-width:620px){.fit{gap:10px;padding:9px 10px;top:48px}.fit .prev{width:158px!important;height:66px!important;padding:0 10px!important}.fit .prev .av{width:34px;height:34px;flex:0 0 34px;font-size:15px}.fit .prev .un{font-size:12.5px}.fit .prev .us{font-size:9px}.fit-s{display:none}}
 .vtabs{position:sticky;top:0;z-index:30;display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:12px 0 10px;margin:4px 0 6px;background:linear-gradient(180deg,#0a0b0d 82%,rgba(10,11,13,0))}
 .vtabs::-webkit-scrollbar{display:none}
 .vtabs button{flex:none;font:700 12.5px 'Familjen Grotesk',sans-serif;color:#9aa3ad;background:#111419;border:1px solid #232932;border-radius:10px;padding:9px 15px;cursor:pointer;white-space:nowrap;transition:.15s}
@@ -126,6 +199,22 @@ section[data-vsec] h2:first-child{margin-top:6px}
 .note{font-size:12px;color:var(--faint);margin-top:22px;line-height:1.6}
 footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-size:12px;color:var(--faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
   .tprev.tsk-tkt_dragon{border-color:#c9302a;background:linear-gradient(135deg,rgba(255,90,40,.16),rgba(20,6,4,.95) 45%),repeating-linear-gradient(115deg,rgba(255,120,50,.10) 0 7px,rgba(60,12,6,.18) 7px 14px);box-shadow:0 0 30px -10px rgba(255,90,40,.5)}
+.pp.tsk-tkt_carbon,.mptk.tsk-tkt_carbon,.tprev.tsk-tkt_carbon{border-color:#3f454e;background:repeating-linear-gradient(45deg,rgba(255,255,255,.055) 0 2px,transparent 2px 5px),repeating-linear-gradient(-45deg,rgba(0,0,0,.45) 0 2px,transparent 2px 5px),linear-gradient(180deg,#171a1f,#0e1114);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.pp.tsk-tkt_thermal,.mptk.tsk-tkt_thermal,.tprev.tsk-tkt_thermal{border-color:#4a4740;background:repeating-linear-gradient(180deg,rgba(255,246,230,.05) 0 1px,transparent 1px 7px),linear-gradient(90deg,rgba(0,0,0,.4),transparent 11%,transparent 89%,rgba(0,0,0,.4)),linear-gradient(180deg,#1b1a17,#131210);box-shadow:inset 0 1px 0 rgba(255,240,215,.11)}
+.pp.tsk-tkt_ledger,.mptk.tsk-tkt_ledger,.tprev.tsk-tkt_ledger{border-color:#2f4a3c;background:linear-gradient(90deg,transparent 0 23px,rgba(255,90,77,.34) 23px 24.4px,transparent 24.4px),linear-gradient(90deg,transparent 0 34px,rgba(150,190,220,.11) 34px 35px,transparent 35px),repeating-linear-gradient(180deg,rgba(185,228,206,.07) 0 1px,transparent 1px 9px),linear-gradient(180deg,#131b15,#0c120f);box-shadow:inset 0 1px 0 rgba(190,235,215,.11)}
+.pp.tsk-tkt_circuit,.mptk.tsk-tkt_circuit,.tprev.tsk-tkt_circuit{border-color:#2f6b4c;background:radial-gradient(2.6px 2.6px at 22% 30%,rgba(236,178,98,.6),transparent 62%),radial-gradient(2.6px 2.6px at 62% 74%,rgba(236,178,98,.5),transparent 62%),radial-gradient(2px 2px at 86% 34%,rgba(236,178,98,.42),transparent 62%),linear-gradient(90deg,transparent 0 22%,rgba(212,146,66,.22) 22% 22.5%,transparent 22.5%),linear-gradient(90deg,transparent 0 62%,rgba(212,146,66,.18) 62% 62.5%,transparent 62.5%),linear-gradient(90deg,transparent 0 86%,rgba(212,146,66,.14) 86% 86.4%,transparent 86.4%),linear-gradient(180deg,transparent 0 30%,rgba(212,146,66,.18) 30% 30.7%,transparent 30.7%),linear-gradient(180deg,transparent 0 74%,rgba(212,146,66,.14) 74% 74.7%,transparent 74.7%),linear-gradient(45deg,transparent 0 48%,rgba(212,146,66,.1) 48% 48.5%,transparent 48.5%),linear-gradient(180deg,#0b1310,#070d0b);box-shadow:inset 0 1px 0 rgba(215,160,80,.16)}
+.pp.tsk-tkt_marble,.mptk.tsk-tkt_marble,.tprev.tsk-tkt_marble{border-color:#4b525c;background:linear-gradient(64deg,transparent 0 46%,rgba(226,232,240,.16) 46% 47.1%,transparent 47.1%),linear-gradient(71deg,transparent 0 58%,rgba(226,232,240,.09) 58% 58.7%,transparent 58.7%),linear-gradient(-58deg,transparent 0 30%,rgba(200,212,228,.07) 30% 30.6%,transparent 30.6%),radial-gradient(120% 90% at 20% 8%,rgba(255,255,255,.05),transparent 62%),linear-gradient(160deg,#191c21,#0d0f12);box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
+.pp.tsk-tkt_titanium,.mptk.tsk-tkt_titanium,.tprev.tsk-tkt_titanium{border-color:#7c8794;background:repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 1px,transparent 1px 3px,rgba(0,0,0,.22) 3px 4px,transparent 4px 7px),linear-gradient(105deg,transparent 0 34%,rgba(214,228,242,.1) 45%,transparent 57%),linear-gradient(180deg,#23272d,#141719);box-shadow:0 0 24px -14px rgba(200,220,240,.5),inset 0 1px 0 rgba(255,255,255,.15)}
+.pp.tsk-tkt_phosphor,.mptk.tsk-tkt_phosphor,.tprev.tsk-tkt_phosphor{border-color:#7a5a1e;background:radial-gradient(120% 90% at 50% 45%,rgba(255,176,60,.13),transparent 64%),repeating-linear-gradient(180deg,rgba(255,176,60,.1) 0 1px,transparent 1px 4px),radial-gradient(150% 120% at 50% 50%,transparent 52%,rgba(0,0,0,.55) 100%),linear-gradient(180deg,#100c06,#080604);box-shadow:0 0 26px -12px rgba(255,170,60,.45),inset 0 0 30px -18px rgba(255,190,90,.5)}
+.pp.tsk-tkt_obsidian,.mptk.tsk-tkt_obsidian,.tprev.tsk-tkt_obsidian{border-color:#5b5f74;background:linear-gradient(118deg,rgba(255,255,255,.09) 0 22%,transparent 22.3% 40%),linear-gradient(-142deg,rgba(190,205,235,.07) 0 30%,transparent 30.3% 55%),linear-gradient(96deg,rgba(255,255,255,.045) 0 62%,transparent 62.3%),radial-gradient(80% 60% at 30% -12%,rgba(160,180,255,.1),transparent 62%),linear-gradient(200deg,#0e0f14,#050507 60%);box-shadow:0 0 34px -14px rgba(150,170,255,.45),inset 0 1px 0 rgba(210,220,255,.2),inset 0 -18px 30px -26px rgba(120,140,220,.5)}
+.lbm-card.bg-bg_topo{background:radial-gradient(70% 80% at 22% 38%,transparent 0 26%,rgba(194,246,74,.1) 26% 27.1%,transparent 27.1% 40%,rgba(194,246,74,.075) 40% 41%,transparent 41% 55%,rgba(194,246,74,.055) 55% 56%,transparent 56% 72%,rgba(194,246,74,.04) 72% 73%,transparent 73%),radial-gradient(60% 70% at 78% 74%,transparent 0 18%,rgba(194,246,74,.07) 18% 19%,transparent 19% 33%,rgba(194,246,74,.05) 33% 34%,transparent 34% 50%,rgba(194,246,74,.035) 50% 51%,transparent 51%),linear-gradient(180deg,#0d1210,#090b0a)}
+.lbm-card.bg-bg_rain{background:radial-gradient(7px 9px at 20% 24%,transparent 0 34%,rgba(216,234,255,.34) 46% 72%,transparent 80%),radial-gradient(4.5px 6px at 63% 15%,transparent 0 32%,rgba(216,234,255,.3) 46% 72%,transparent 80%),radial-gradient(9px 11px at 80% 47%,transparent 0 36%,rgba(216,234,255,.3) 48% 74%,transparent 82%),radial-gradient(6px 8px at 50% 79%,transparent 0 34%,rgba(216,234,255,.28) 46% 72%,transparent 80%),radial-gradient(5px 6.5px at 91% 84%,transparent 0 32%,rgba(216,234,255,.26) 46% 72%,transparent 80%),radial-gradient(3.5px 4.5px at 36% 58%,rgba(216,234,255,.34),transparent 72%),radial-gradient(3px 4px at 9% 66%,rgba(216,234,255,.28),transparent 72%),radial-gradient(2.6px 3.4px at 44% 38%,rgba(216,234,255,.24),transparent 72%),radial-gradient(2.2px 3px at 72% 66%,rgba(216,234,255,.2),transparent 72%),repeating-linear-gradient(90deg,transparent 0 29px,rgba(190,215,240,.07) 29px 30px,transparent 30px 57px,rgba(190,215,240,.045) 57px 58px,transparent 58px),radial-gradient(90% 60% at 50% 112%,rgba(120,160,200,.12),transparent 62%),linear-gradient(180deg,#0c1014,#080a0c)}
+.lbm-card.bg-bg_ridge{background:linear-gradient(-19deg,#06080c 0 20%,transparent 20%),linear-gradient(13deg,#0d141d 0 30%,transparent 30%),linear-gradient(-8deg,#182231 0 40%,transparent 40%),radial-gradient(5px 5px at 76% 15%,rgba(228,240,255,.55),transparent 62%),radial-gradient(24% 20% at 76% 15%,rgba(180,205,245,.13),transparent 70%),radial-gradient(1.4px 1.4px at 24% 20%,rgba(255,255,255,.42),transparent 60%),radial-gradient(1px 1px at 46% 11%,rgba(210,225,255,.34),transparent 60%),radial-gradient(1.2px 1.2px at 90% 28%,rgba(255,255,255,.3),transparent 60%),linear-gradient(180deg,#0a0f17,#111a26)}
+.lbm-card.bg-bg_metro{background:radial-gradient(3.2px 3.2px at 21% 31%,rgba(255,255,255,.5),transparent 62%),radial-gradient(3.2px 3.2px at 66% 31%,rgba(255,255,255,.42),transparent 62%),radial-gradient(2.6px 2.6px at 66% 72%,rgba(255,255,255,.36),transparent 62%),linear-gradient(90deg,transparent 0 21%,rgba(194,246,74,.24) 21% 21.6%,transparent 21.6%),linear-gradient(90deg,transparent 0 66%,rgba(176,108,255,.22) 66% 66.6%,transparent 66.6%),linear-gradient(180deg,transparent 0 31%,rgba(127,190,255,.22) 31% 31.7%,transparent 31.7%),linear-gradient(180deg,transparent 0 72%,rgba(255,180,74,.18) 72% 72.7%,transparent 72.7%),linear-gradient(45deg,transparent 0 55%,rgba(90,214,214,.18) 55% 55.7%,transparent 55.7%),linear-gradient(180deg,#0c0f14,#090b0f)}
+.lbm-card.bg-bg_trench{background:radial-gradient(1.6px 1.6px at 34% 46%,rgba(200,230,245,.3),transparent 60%),radial-gradient(1.2px 1.2px at 72% 34%,rgba(200,230,245,.24),transparent 60%),radial-gradient(1.4px 1.4px at 56% 66%,rgba(200,230,245,.18),transparent 60%),linear-gradient(180deg,transparent 0 24%,rgba(3,8,13,.78) 86%),linear-gradient(100deg,transparent 0 12%,rgba(130,200,230,.08) 12% 17%,transparent 17%),linear-gradient(96deg,transparent 0 31%,rgba(130,200,230,.055) 31% 34%,transparent 34%),linear-gradient(106deg,transparent 0 49%,rgba(130,200,230,.04) 49% 54%,transparent 54%),linear-gradient(180deg,#0a1620,#04080c 68%,#02050a)}
+.lbm-card.bg-bg_radar{background:radial-gradient(2.6px 2.6px at 63% 34%,rgba(194,246,74,.7),transparent 62%),radial-gradient(1.8px 1.8px at 38% 61%,rgba(194,246,74,.42),transparent 62%),conic-gradient(from 198deg at 50% 50%,rgba(194,246,74,.13),rgba(194,246,74,.07) 12deg,rgba(194,246,74,.03) 26deg,transparent 40deg),radial-gradient(50% 50% at 50% 50%,transparent 0 24%,rgba(194,246,74,.1) 24% 25%,transparent 25% 48%,rgba(194,246,74,.08) 48% 49%,transparent 49% 72%,rgba(194,246,74,.06) 72% 73%,transparent 73%),linear-gradient(90deg,transparent 0 49.7%,rgba(194,246,74,.07) 49.7% 50.3%,transparent 50.3%),linear-gradient(180deg,transparent 0 49.7%,rgba(194,246,74,.07) 49.7% 50.3%,transparent 50.3%),radial-gradient(72% 72% at 50% 50%,#0c1408,#070a06 72%),#060806}
+.lbm-card.bg-bg_ember{background:radial-gradient(3.4px 3.4px at 22% 84%,rgba(255,158,70,.95),transparent 64%),radial-gradient(2.8px 2.8px at 58% 90%,rgba(255,120,48,.9),transparent 64%),radial-gradient(2.6px 2.6px at 78% 76%,rgba(255,196,120,.85),transparent 64%),radial-gradient(2.2px 2.2px at 40% 66%,rgba(255,130,58,.75),transparent 64%),radial-gradient(1.9px 1.9px at 68% 52%,rgba(255,168,88,.6),transparent 64%),radial-gradient(1.6px 1.6px at 30% 40%,rgba(255,138,66,.45),transparent 64%),radial-gradient(1.4px 1.4px at 84% 30%,rgba(255,178,98,.34),transparent 64%),radial-gradient(1.2px 1.2px at 12% 54%,rgba(255,150,70,.28),transparent 64%),radial-gradient(120% 70% at 50% 118%,rgba(255,110,40,.24),rgba(180,50,20,.09) 46%,transparent 70%),radial-gradient(58% 40% at 30% 26%,rgba(96,78,68,.11),transparent 72%),linear-gradient(180deg,#120b08,#0a0706)}
+.lbm-card.bg-bg_deepfield{background:radial-gradient(1.5px 1.5px at 12% 18%,rgba(255,255,255,.6),transparent 60%),radial-gradient(1px 1px at 34% 8%,rgba(210,225,255,.45),transparent 60%),radial-gradient(1.3px 1.3px at 58% 24%,rgba(255,255,255,.5),transparent 60%),radial-gradient(1px 1px at 82% 12%,rgba(225,210,255,.4),transparent 60%),radial-gradient(1.6px 1.6px at 90% 52%,rgba(255,255,255,.42),transparent 60%),radial-gradient(1px 1px at 20% 62%,rgba(210,225,255,.35),transparent 60%),radial-gradient(1.2px 1.2px at 44% 82%,rgba(255,255,255,.38),transparent 60%),radial-gradient(1px 1px at 70% 90%,rgba(225,210,255,.3),transparent 60%),radial-gradient(1.4px 1.4px at 6% 44%,rgba(255,255,255,.32),transparent 60%),linear-gradient(-24deg,transparent 0 44%,rgba(5,4,10,.6) 48% 56%,transparent 61%),radial-gradient(46% 34% at 68% 30%,rgba(190,90,255,.2),transparent 70%),radial-gradient(40% 30% at 26% 66%,rgba(60,140,255,.16),transparent 72%),radial-gradient(30% 22% at 46% 46%,rgba(255,120,180,.1),transparent 72%),radial-gradient(120% 90% at 50% 50%,#0b0916,#05040a 72%)}
   .tprev.tsk-tkt_vapor{border-color:#b06cff;background:linear-gradient(180deg,rgba(255,64,190,.16),rgba(24,8,40,.94) 55%),repeating-linear-gradient(0deg,transparent 0 9px,rgba(0,220,255,.12) 9px 10px);box-shadow:0 0 30px -10px rgba(176,108,255,.55)}
 </style>
 
@@ -133,28 +222,57 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
 </head><body>
 <div class="wrap">
   <div class="crumb"><a href="/">Home</a> / The Vault</div>
-  <h1>THE <b>VAULT</b></h1>
-  <p class="sub">Every level has its own identity. Every frame tells the room who you are. Unlock frames by climbing — or buy the exclusive ones with XP or your rewards balance.</p>
-
-  <div class="wallet" id="wallet" hidden>
-    <div class="wchip lvl"><b id="wLvl">—</b><span>level</span></div>
-    <div class="wchip xp"><b id="wXp">—</b><span>XP</span></div>
-    <div class="wchip bal"><b id="wBal">—</b><span>rewards balance</span></div>
-    <div class="wchip" style="border-color:#5a3a1a"><b id="wStreak" style="color:#ff9a3a">—</b><span>day streak</span></div>
-    <div class="wchip" style="border-color:#2a5a6e"><b id="wFz" style="color:#7ee0ff">—</b><span>freezes</span></div>
-    <div class="wchip" id="wBoost" hidden style="border-color:#5a3a85"><b style="color:#c792ff">2x XP</b><span id="wBoostT"></span></div>
+  <div class="vhead">
+    <div>
+      <h1>THE <b>VAULT</b></h1>
+      <p class="sub">Frames, ticket skins and card backgrounds. Earn Ticks by trading and showing up, then spend them on how the room sees you.</p>
+    </div>
+    <div class="wallet" id="wallet" hidden>
+      <div class="wchip tk"><b id="wTk">—</b><span>ticks</span></div>
+      <div class="wchip lvl"><b id="wLvl">—</b><span>level</span></div>
+      <div class="wchip xp"><b id="wXp">—</b><span>XP</span></div>
+      <div class="wchip bal"><b id="wBal">—</b><span>balance</span></div>
+      <div class="wchip" style="border-color:#5a3a1a"><b id="wStreak" style="color:#ff9a3a">—</b><span>streak</span></div>
+      <div class="wchip" style="border-color:#2a5a6e"><b id="wFz" style="color:#7ee0ff">—</b><span>freezes</span></div>
+      <div class="wchip" id="wBoost" hidden style="border-color:#5a3a85"><b style="color:#c792ff">2x XP</b><span id="wBoostT"></span></div>
+    </div>
   </div>
-  <div class="signin" id="signin" hidden>Sign in (free, email code only) to see your XP, buy frames and equip them. <a href="/paper-trade">Open the app to sign in →</a></div>
+  <div class="signin" id="signin" hidden>Sign in (free, email code only) to see your Ticks, try frames on your own card and equip them. <a href="/paper-trade">Open the app to sign in →</a></div>
 
   <nav class="vtabs" id="vtabs" aria-label="Vault sections">
     <button type="button" data-vfilter="owned" id="vfOwned" aria-pressed="false"><i class="vfbox"></i>Owned</button>
+    <button type="button" data-vfilter="afford" id="vfAfford" aria-pressed="false" title="Only what your Ticks already cover"><i class="vfbox"></i>Can afford</button>
     <button type="button" data-vtab="frames">Frames</button>
     <button type="button" data-vtab="tickets">Ticket skins</button>
     <button type="button" data-vtab="backgrounds">Backgrounds</button>
     <button type="button" data-vtab="supply">Supply drop</button>
     <button type="button" data-vtab="earned">Earned</button>
     <button type="button" data-vtab="levels">Levels</button>
+    <select class="sortsel" id="vsort" aria-label="Sort items">
+      <option value="tier">Rarest first</option>
+      <option value="cheap">Cheapest first</option>
+      <option value="rich">Priciest first</option>
+      <option value="az">A to Z</option>
+    </select>
   </nav>
+  <div class="fit" id="fit" hidden>
+    <div class="fit-card" id="fitCard"></div>
+    <div class="fit-txt">
+      <div class="fit-h">Fitting room</div>
+      <div class="fit-n" id="fitName">Your card</div>
+      <div class="fit-s" id="fitSub">Tap any item to try it on. Only you see this.</div>
+      <div class="collect" id="collect" hidden><span class="cbar"><i id="cbarF"></i></span><b id="cbarT"></b></div>
+    </div>
+    <div class="fit-act">
+      <button class="btn" id="fitDice" type="button" title="Try something at random (or press R)">Surprise me</button>
+      <button class="btn" id="fitLink" type="button" title="Copy a link that opens this look for someone else" hidden>Share look</button>
+      <button class="btn" id="fitReset" type="button" hidden>Take off</button>
+    </div>
+  </div>
+  <div class="earn" id="earnPanel" hidden>
+    <b>Ticks today</b>
+    <span id="earnRows"></span>
+  </div>
   <div class="msg" id="msg"></div>
   <div class="gmod" id="gmod" role="dialog" aria-modal="true">
     <div class="gmod-card">
@@ -189,7 +307,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
 
   <section data-vsec="frames" hidden>
   <h2>Vault frames</h2>
-  <div class="h2s">Exclusive frames — pay with XP (never drops you below your level threshold) or with your rewards balance. Balance purchases are final.</div>
+  <div class="h2s">Buy with Ticks you earned, or with your rewards balance. Ticks are never for sale — trading, streaks and lessons are the only way in. Balance purchases are final.</div>
   <div class="gal" id="galShop"></div>
   </section>
 
@@ -221,7 +339,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   <div class="gal" id="galAch" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))"></div>
   </section>
 
-  <p class="note">XP prices deduct from your XP but a purchase can never cost you a level — the shop refuses any spend that would drop you below your current level's threshold. Balance purchases are deducted from your withdrawable rewards balance and are final. Equipped frames show on your public trader card, chat and leaderboards.</p>
+  <p class="note">Ticks are the Vault's earned currency: spending them can never cost you a level, because XP is now purely your progress and is never deducted. Balance purchases come out of your withdrawable rewards balance and are final. Equipped items show on your public trader card, in chat and on the leaderboards.</p>
 
   <footer><span>© 2026 MarginPad · Not financial advice</span><span><a href="/rewards/">Rewards</a> · <a href="/levels/">Levels</a> · <a href="/paper-trade">Paper Trade</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span></footer>
 </div>
@@ -265,6 +383,116 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       return '<div class="lv '+state+'"><div class="ic">'+medal(l.k,l.col)+'</div><b style="color:'+l.col+'">'+l.name+'</b><small>'+fmt(l.min)+' XP</small><span class="perk">'+l.perk+'</span></div>';
     }).join('');
   }
+  // ---- the fitting room ----------------------------------------------------------------------------
+  // TRY is purely local state. Nothing is written, nothing is sent, nothing shows on the public card, so a
+  // trader can walk the whole shop wearing things they have not bought. That is the point: the frame is the
+  // product, and a product you cannot hold does not sell.
+  var TRY=null;
+  // Items added in this drop. A returning trader should be able to see what is new without re-reading a
+  // shop they already know, and a date-based rule would need a per-item timestamp the catalogue lacks.
+  var NEW_IDS={obsidian:1,quicksilver:1,prism:1,circuitry:1,ink:1,cathedral:1,slate:1,bone:1,moss:1,denim:1,
+    steel:1,abyss:1,wine:1,blueprint:1,storm:1,phosphor:1,dusk:1,petrol:1,doubletick:1,
+    tkt_carbon:1,tkt_thermal:1,tkt_ledger:1,tkt_circuit:1,tkt_marble:1,tkt_titanium:1,tkt_phosphor:1,tkt_obsidian:1,
+    bg_topo:1,bg_rain:1,bg_ridge:1,bg_metro:1,bg_trench:1,bg_radar:1,bg_ember:1,bg_deepfield:1};
+  // The wishlist is one item, not a list. A list of twenty things you might want is a spreadsheet; one
+  // thing you are saving for is a goal, and the wallet can show honest progress toward exactly one.
+  function wishGet(){try{return localStorage.getItem('mp_vault_wish')||'';}catch(e){return '';}}
+  function wishSet(v){try{v?localStorage.setItem('mp_vault_wish',v):localStorage.removeItem('mp_vault_wish');}catch(e){}}
+  function myName(){try{var m=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me();return (m&&m.username)||'';}catch(e){return '';}}
+  function itemById(id){var L=(ST&&ST.items)||[];for(var i=0;i<L.length;i++)if(L[i].id===id)return L[i];
+    for(var j=0;j<LEVEL_FRAMES.length;j++)if(LEVEL_FRAMES[j].id===id)return LEVEL_FRAMES[j];return null;}
+  function renderFit(){
+    var box=document.getElementById('fit');if(!box)return;
+    if(!ST||!ST.signedIn){box.hidden=true;return;}
+    box.hidden=false;
+    var worn=TRY||(ST.equipped||'default');
+    document.getElementById('fitCard').innerHTML=prevCard(worn,myName());
+    var it=TRY?itemById(TRY):null;
+    document.getElementById('fitName').textContent=TRY?(it?it.name:TRY):'Your card';
+    var owned=ST.owned||[],own=TRY&&owned.indexOf(TRY)>=0;
+    document.getElementById('fitSub').textContent=TRY
+      ?(own?'You own this. Equip it to make it public.':'Trying on. Nobody else can see this.')
+      :'Tap any item to try it on. Only you see this.';
+    var rst=document.getElementById('fitReset');if(rst)rst.hidden=!TRY;
+    var lnk=document.getElementById('fitLink');if(lnk)lnk.hidden=!TRY;
+    var cards=document.querySelectorAll('.fcard[data-item]');
+    for(var i=0;i<cards.length;i++)cards[i].classList.toggle('tryon',TRY===cards[i].getAttribute('data-item'));
+    renderCollect();renderEarnPanel();
+  }
+  // How much of the Vault you hold. Counts only things that can actually be obtained, so the mythic
+  // owners-only pieces do not permanently hold the bar below 100 for everyone else.
+  function renderCollect(){
+    var box=document.getElementById('collect');if(!box||!ST||!ST.signedIn)return;
+    var items=(ST.items||[]).filter(function(it){return it.tier!=='mythic';});
+    var owned=ST.owned||[],have=0;
+    for(var i=0;i<items.length;i++)if(owned.indexOf(items[i].id)>=0)have++;
+    if(!items.length)return;
+    box.hidden=false;
+    document.getElementById('cbarF').style.width=Math.round(have/items.length*100)+'%';
+    var w=wishGet(),extra='';
+    if(w){var wi=itemById(w);
+      if(wi&&owned.indexOf(w)<0&&wi.ticks){var short=wi.ticks-(+ST.ticks||0);
+        extra=short>0?(' · saving for '+wi.name+', '+fmt(short)+' T to go'):(' · '+wi.name+' is affordable now');}}
+    document.getElementById('cbarT').textContent=have+' of '+items.length+' collected'+extra;
+  }
+  // The earning rules, shown where the question gets asked. Each row states today's cap so a trader can
+  // see what is still on the table and what they have already exhausted -- caps that are invisible feel
+  // arbitrary, and caps you can see feel like a plan.
+  function renderEarnPanel(){
+    var p=document.getElementById('earnPanel');if(!p||!ST||!ST.signedIn)return;
+    p.hidden=false;
+    var rows=[['Daily check-in','up to 40'],['Close a trade','up to 8'],['Close with a stop set','up to 24'],
+      ['Claim a mission','up to 20'],['Academy lesson','up to 30']];
+    document.getElementById('earnRows').innerHTML=rows.map(function(r){
+      return '<span class="esrc">'+r[0]+' <b>'+r[1]+'</b></span>';
+    }).join('');
+  }
+  function tryOn(id){
+    if(!ST||!ST.signedIn){say('Sign in to try frames on your own card.',false);return;}
+    TRY=(TRY===id)?null:id;
+    renderFit();
+    if(TRY){var f=document.getElementById('fit');if(f&&f.getBoundingClientRect().top<0)f.scrollIntoView({block:'center',behavior:'smooth'});}
+  }
+  function visibleTryables(){
+    var sec=document.querySelector('section[data-vsec]:not([hidden])');
+    return sec?[].slice.call(sec.querySelectorAll('.fcard[data-item] [data-try]')):[];
+  }
+  document.addEventListener('click',function(e){
+    var w=e.target.closest('[data-wish]');
+    if(w){e.preventDefault();e.stopPropagation();
+      var id=w.getAttribute('data-wish');
+      wishSet(wishGet()===id?'':id);
+      document.querySelectorAll('[data-wish]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-wish')===wishGet());});
+      renderCollect();
+      say(wishGet()?'Saving for this one. The bar under your card tracks it.':'Removed from your goal.',true);
+      return;}
+    var t=e.target.closest('[data-try]');
+    if(t){e.preventDefault();tryOn(t.getAttribute('data-try'));return;}
+    if(e.target.closest('#fitReset')){TRY=null;renderFit();return;}
+    if(e.target.closest('#fitDice')){
+      var all=visibleTryables();
+      if(all.length){var pick=all[Math.floor(Math.random()*all.length)].getAttribute('data-try');TRY=null;tryOn(pick);}
+      return;}
+    if(e.target.closest('#fitLink')&&TRY){
+      var url=location.origin+location.pathname+'?try='+encodeURIComponent(TRY);
+      var done=function(){say('Link copied — it opens the Vault wearing this.',true);};
+      if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(done,function(){say(url,true);});
+      else say(url,true);
+    }
+  });
+  // Arrow keys walk the rack, R rolls something random, Escape takes it off. Trying twenty frames should
+  // not cost twenty round trips to the mouse.
+  document.addEventListener('keydown',function(e){
+    if(/^(INPUT|TEXTAREA)$/.test((e.target.tagName||''))||!ST||!ST.signedIn)return;
+    if(e.key==='Escape'&&TRY){TRY=null;renderFit();return;}
+    if(e.key==='r'||e.key==='R'){var d=document.getElementById('fitDice');if(d)d.click();return;}
+    if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;
+    var all=visibleTryables().map(function(b){return b.getAttribute('data-try');});
+    if(!all.length)return;
+    var i=TRY?all.indexOf(TRY):-1;
+    i=e.key==='ArrowRight'?(i+1)%all.length:(i<=0?all.length-1:i-1);
+    e.preventDefault();TRY=null;tryOn(all[i]);
+  });
   function prevCard(id,un){
     return '<div class="prev lbm-card frame-'+id+'"><span class="av">'+(un?un[0].toUpperCase():'M')+'</span><span><span class="un">'+(un||'YourName')+'</span><div class="us">MARGINPAD TRADER</div></span></div>';
   }
@@ -273,65 +501,83 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     document.getElementById('galLevel').innerHTML=LEVEL_FRAMES.map(function(f){
       var own=owned.indexOf(f.id)>=0,eq=ST&&ST.equipped===f.id;
       var act=own?(eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-eq="'+f.id+'">Equip</button>'):'<button class="btn lock" disabled>'+f.need+'</button>';
-      return '<div class="fcard">'+prevCard(f.id,un)+'<div class="fmeta"><span class="fname">'+f.name+'</span><span class="tier level">'+(f.need.indexOf('Premium')>=0?'PREMIUM':'LEVEL')+'</span></div><div class="fdesc">'+f.need+'</div><div class="fact">'+act+'</div></div>';
+      return '<div class="fcard" data-item="'+f.id+'" data-tier="rare"><button type="button" class="tryhit" data-try="'+f.id+'" title="Try it on your card">'+prevCard(f.id,un)+'</button><div class="fbar"><span class="fname">'+f.name+'</span><span class="fnote">'+(own?'UNLOCKED':(f.need.indexOf('Premium')>=0?'PREMIUM':'LOCKED'))+'</span></div><div class="fhov"><div class="fdesc2">'+f.need+'</div><div class="fact">'+act+'</div></div></div>';
     }).join('');
   }
+  // One card builder for every gallery. A resting card is preview + one line; the description and the
+  // secondary actions live in the hover layer, which is what took the old card from 251px down to ~175px
+  // and let a sixth column fit on the same screen.
+  function price(it){
+    if(it.ticks)return fmt(it.ticks)+' T';
+    if(it.cents)return '$'+(it.cents/100).toFixed(2);
+    return '';
+  }
+  function shopCard(it,opt){
+    opt=opt||{};
+    var owned=(ST&&ST.owned)||[],own=owned.indexOf(it.id)>=0;
+    var eqNow=opt.equipped,eq=eqNow===it.id;
+    var expired=it.until&&Date.now()>Date.parse(it.until);
+    var main='',extra='';
+    if(own)main=eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-'+(opt.eqAttr||'eq')+'="'+it.id+'">Equip</button>';
+    else if(expired)main='<button class="btn lock" disabled>Drop over</button>';
+    else{
+      if(it.ticks)main+='<button class="btn xp" data-buy="'+it.id+'" data-cur="ticks">'+fmt(it.ticks)+' T</button>';
+      if(it.cents)main+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
+    }
+    if(!expired&&ST&&ST.signedIn&&it.kind!=='c')extra='<button class="btn gift" data-gift="'+it.id+'" data-cur="'+(it.ticks?'ticks':'usd')+'" data-name="'+it.name+'" data-price="'+(it.ticks?fmt(it.ticks)+' T':'$'+((it.cents||0)/100).toFixed(2))+'" title="Buy this for another trader">Gift</button>';
+    var note=own?'OWNED':(it.until&&!expired?Math.max(1,Math.ceil((Date.parse(it.until)-Date.now())/86400000))+'d left':price(it));
+    var desc=(it.desc||'')+(it.minLevel?' · Requires '+it.minLevel.charAt(0).toUpperCase()+it.minLevel.slice(1):'');
+    var prev=opt.preview?opt.preview(it):prevCard(it.id,myName());
+    var wished=wishGet()===it.id;
+    return '<div class="fcard" data-item="'+it.id+'" data-tier="'+(it.tier||'common')+'"'+(NEW_IDS[it.id]&&!own?' data-new="1"':'')+'>'
+      +((own||!it.ticks)?'':'<button type="button" class="wish'+(wished?' on':'')+'" data-wish="'+it.id+'" title="Save toward this one" aria-label="Save toward this one">*</button>')
+      +(opt.noTry?prev:'<button type="button" class="tryhit" data-try="'+it.id+'" title="Try it on your card">'+prev+'</button>')
+      +'<div class="fbar"><span class="fname">'+it.name+'</span><span class="fnote">'+note+'</span></div>'
+      +'<div class="fhov"><div class="fdesc2">'+desc+'</div><div class="fact">'+(main||'<button class="btn lock" disabled>Unavailable</button>')+extra+'</div></div>'
+      +'</div>';
+  }
+  // One ordering function for every gallery. Rarest-first is the default because a shop that opens on its
+  // cheapest goods reads like a clearance rack, and the flagship frames are the reason to visit.
+  var TIER_RANK={mythic:0,legendary:1,epic:2,rare:3,common:4};
+  function sortMode(){var s=document.getElementById('vsort');return s?s.value:'tier';}
+  function sortItems(a){
+    var m=sortMode(),v=a.slice();
+    function cost(x){return x.ticks?x.ticks:(x.cents?x.cents*40:0);} // rough parity so mixed pricing sorts sanely
+    if(m==='cheap')v.sort(function(x,y){return cost(x)-cost(y);});
+    else if(m==='rich')v.sort(function(x,y){return cost(y)-cost(x);});
+    else if(m==='az')v.sort(function(x,y){return (x.name||'').localeCompare(y.name||'');});
+    else v.sort(function(x,y){function rk(t){return TIER_RANK[t]===undefined?9:TIER_RANK[t];} /* mythic is rank 0, and 0||9 is 9 */
+      var d=rk(x.tier)-rk(y.tier);return d||cost(y)-cost(x);});
+    return v;
+  }
   function renderShopGal(){
-    var items=((ST&&ST.items)||[]).filter(function(it){return (it.xp||it.cents)&&!it.kind;}),owned=ST?ST.owned:[],un=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()?window.mpAuth.me().username:'';
+    var items=sortItems(((ST&&ST.items)||[]).filter(function(it){return (it.ticks||it.cents)&&!it.kind;}));
     document.getElementById('galShop').innerHTML=items.map(function(it){
-      var own=owned.indexOf(it.id)>=0,eq=ST&&ST.equipped===it.id;
-      var acts='';
-      var expired=it.until&&Date.now()>Date.parse(it.until);
-      if(own){acts=eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-eq="'+it.id+'">Equip</button><button class="btn owned" disabled>OWNED</button>';}
-      else if(expired){acts='<button class="btn lock" disabled>Drop over</button>';}
-      else{
-        if(it.xp)acts+='<button class="btn xp" data-buy="'+it.id+'" data-cur="xp">'+fmt(it.xp)+' XP</button>';
-        if(it.cents)acts+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
-      }
-      if(!expired&&ST&&ST.signedIn)acts+='<button class="btn gift" data-gift="'+it.id+'" data-cur="'+(it.xp?'xp':'usd')+'" data-name="'+it.name+'" data-price="'+(it.xp?it.xp+' XP':'$'+((it.cents||0)/100).toFixed(2))+'" title="Buy this frame for another trader">Gift</button>';
-      var badge=it.until?'<span class="tier limited">'+(expired?'ENDED':'LIMITED')+'</span>':'';
-      var lim=it.until&&!expired?' · Available '+Math.max(1,Math.ceil((Date.parse(it.until)-Date.now())/86400000))+' more days':'';
-      return '<div class="fcard">'+prevCard(it.id,un)+'<div class="fmeta"><span class="fname">'+it.name+'</span>'+badge+'<span class="tier '+it.tier+'">'+it.tier+'</span></div><div class="fdesc">'+(it.desc||'')+(it.minLevel?' · Requires '+it.minLevel.charAt(0).toUpperCase()+it.minLevel.slice(1):'')+lim+'</div><div class="fact">'+(acts||'<button class="btn lock" disabled>Unavailable</button>')+'</div></div>';
+      return shopCard(it,{equipped:ST&&ST.equipped});
     }).join('');
   }
   function tktPrev(id){return '<div class="tprev'+(id?' tsk-'+id:'')+'"><div class="tp-h"><b>BTCUSDT</b><span class="tp-long">LONG</span><span>25x</span></div><div class="tp-roe">+184.6%</div><div class="tp-pnl">+$462.10</div></div>';}
   function renderTkt(){
-    var items=((ST&&ST.items)||[]).filter(function(it){return it.kind==='t';}),owned=ST?ST.owned:[];
+    var items=sortItems(((ST&&ST.items)||[]).filter(function(it){return it.kind==='t';})),owned=ST?ST.owned:[];
     var eqT=ST?(ST.equippedTkt||''):'';
     var cards=items.map(function(it){
-      var own=owned.indexOf(it.id)>=0,eq=eqT===it.id;
-      var acts='';
-      if(own){acts=eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-eqt="'+it.id+'">Equip</button>';}
-      else{
-        if(it.xp)acts+='<button class="btn xp" data-buy="'+it.id+'" data-cur="xp">'+fmt(it.xp)+' XP</button>';
-        if(it.cents)acts+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
-      }
-      if(ST&&ST.signedIn)acts+='<button class="btn gift" data-gift="'+it.id+'" data-cur="'+(it.xp?'xp':'usd')+'" data-name="'+it.name+'" data-price="'+(it.xp?it.xp+' XP':'$'+((it.cents||0)/100).toFixed(2))+'" title="Buy this skin for another trader">Gift</button>';
-      return '<div class="fcard">'+tktPrev(it.id)+'<div class="fmeta"><span class="fname">'+it.name+'</span><span class="tier '+it.tier+'">'+it.tier+'</span></div><div class="fdesc">'+(it.desc||'')+'</div><div class="fact">'+acts+'</div></div>';
+      return shopCard(it,{equipped:eqT,eqAttr:'eqt',noTry:1,preview:function(x){return tktPrev(x.id);}});
     });
-    cards.unshift('<div class="fcard">'+tktPrev('')+'<div class="fmeta"><span class="fname">Standard</span><span class="tier common">DEFAULT</span></div><div class="fdesc">The classic MarginPad ticket.</div><div class="fact">'+(eqT?'<button class="btn" data-eqt="default">Equip</button>':'<button class="btn eq" disabled>EQUIPPED</button>')+'</div></div>');
+    cards.unshift('<div class="fcard" data-tier="common">'+tktPrev('')+'<div class="fbar"><span class="fname">Standard</span><span class="fnote">DEFAULT</span></div><div class="fhov"><div class="fdesc2">The classic MarginPad ticket.</div><div class="fact">'+(eqT?'<button class="btn" data-eqt="default">Equip</button>':'<button class="btn eq" disabled>EQUIPPED</button>')+'</div></div></div>');
     document.getElementById('galTkt').innerHTML=cards.join('');
   }
   function bgPrev(id,un){
     return '<div class="prev lbm-card'+(id?' bg-'+id:'')+'"><span class="av">'+(un?un[0].toUpperCase():'M')+'</span><span><span class="un">'+(un||'YourName')+'</span><div class="us">MARGINPAD TRADER</div></span></div>';
   }
   function renderBg(){
-    var items=((ST&&ST.items)||[]).filter(function(it){return it.kind==='bg';}),owned=ST?ST.owned:[];
+    var items=sortItems(((ST&&ST.items)||[]).filter(function(it){return it.kind==='bg';})),owned=ST?ST.owned:[];
     var un=window.mpAuth&&window.mpAuth.me&&window.mpAuth.me()?window.mpAuth.me().username:'';
     var eqB=ST?(ST.equippedBg||''):'';
     var cards=items.map(function(it){
-      var own=owned.indexOf(it.id)>=0,eq=eqB===it.id;
-      var acts='';
-      if(own){acts=eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-eqbg="'+it.id+'">Equip</button>';}
-      else if(it.id==='bg_one'){acts='<button class="btn lock" disabled>Owners only</button>';}
-      else{
-        if(it.xp)acts+='<button class="btn xp" data-buy="'+it.id+'" data-cur="xp">'+fmt(it.xp)+' XP</button>';
-        if(it.cents)acts+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
-      }
-      if(it.id!=='bg_one'&&ST&&ST.signedIn)acts+='<button class="btn gift" data-gift="'+it.id+'" data-cur="'+(it.xp?'xp':'usd')+'" data-name="'+it.name+'" data-price="'+(it.xp?it.xp+' XP':'$'+((it.cents||0)/100).toFixed(2))+'" title="Buy this background for another trader">Gift</button>';
-      return '<div class="fcard">'+bgPrev(it.id,un)+'<div class="fmeta"><span class="fname">'+it.name+'</span><span class="tier '+it.tier+'">'+it.tier+'</span></div><div class="fdesc">'+(it.desc||'')+'</div><div class="fact">'+acts+'</div></div>';
+      if(it.id==='bg_one'&&owned.indexOf(it.id)<0)return '<div class="fcard" data-tier="'+(it.tier||'legendary')+'">'+bgPrev(it.id,un)+'<div class="fbar"><span class="fname">'+it.name+'</span><span class="fnote">OWNERS</span></div><div class="fhov"><div class="fdesc2">'+(it.desc||'')+'</div><div class="fact"><button class="btn lock" disabled>Owners only</button></div></div></div>';
+      return shopCard(it,{equipped:eqB,eqAttr:'eqbg',preview:function(x){return bgPrev(x.id,un);}});
     });
-    cards.unshift('<div class="fcard">'+bgPrev('',un)+'<div class="fmeta"><span class="fname">Plain</span><span class="tier common">DEFAULT</span></div><div class="fdesc">The standard card face.</div><div class="fact">'+(eqB?'<button class="btn" data-eqbg="default">Equip</button>':'<button class="btn eq" disabled>EQUIPPED</button>')+'</div></div>');
+    cards.unshift('<div class="fcard" data-tier="common">'+bgPrev('',un)+'<div class="fbar"><span class="fname">Plain</span><span class="fnote">DEFAULT</span></div><div class="fhov"><div class="fdesc2">The standard card face.</div><div class="fact">'+(eqB?'<button class="btn" data-eqbg="default">Equip</button>':'<button class="btn eq" disabled>EQUIPPED</button>')+'</div></div></div>');
     document.getElementById('galBg').innerHTML=cards.join('');
   }
   function renderSupply(){
@@ -346,10 +592,10 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       if(it.id==='shield'&&fz>=5)acts='<button class="btn lock" disabled>Bank full</button>';
       else if(it.id==='surge'&&bu>now)acts='<button class="btn lock" disabled>Already active</button>';
       else{
-        if(it.xp)acts+='<button class="btn xp" data-buy="'+it.id+'" data-cur="xp">'+fmt(it.xp)+' XP</button>';
+        if(it.ticks)acts+='<button class="btn xp" data-buy="'+it.id+'" data-cur="ticks">'+fmt(it.ticks)+' T</button>';
         if(it.cents)acts+='<button class="btn usd" data-buy="'+it.id+'" data-cur="usd">$'+(it.cents/100).toFixed(2)+'</button>';
       }
-      return '<div class="fcard"><div class="fmeta"><span class="fname">'+it.name+'</span><span class="tier '+it.tier+'">'+it.tier+'</span></div><div class="fdesc">'+(it.desc||'')+'</div><div class="sup-state">'+state+'</div><div class="fact">'+acts+'</div></div>';
+      return '<div class="fcard sup" data-tier="'+(it.tier||'common')+'"><div class="fbar"><span class="fname">'+it.name+'</span><span class="fnote">'+(it.ticks?fmt(it.ticks)+' T':'$'+((it.cents||0)/100).toFixed(2))+'</span></div><div class="fdesc2" style="font-size:11.5px;color:var(--dim);line-height:1.45">'+(it.desc||'')+'</div><div class="sup-state">'+state+'</div><div class="fact">'+acts+'</div></div>';
     }).join('');
   }
   var EARN_FRAMES=[
@@ -377,7 +623,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
         :(f.id==='closer'&&pg)?Math.min(pg.closes||0,500)+'/500 closes'
         :(f.id==='operative'&&pg)?Math.min(pg.missions||0,100)+'/100 missions':'';
       var act=own?(eq?'<button class="btn eq" disabled>EQUIPPED</button>':'<button class="btn" data-eq="'+f.id+'">Equip</button>'):'<button class="btn lock" disabled>'+(prog?prog:'Not earned yet')+'</button>';
-      return '<div class="fcard">'+prevCard(f.id,un)+'<div class="fmeta"><span class="fname">'+f.name+'</span><span class="tier '+f.tier+'">EARNED</span></div><div class="fdesc">'+f.need+'</div><div class="fact">'+act+'</div></div>';
+      return '<div class="fcard" data-item="'+f.id+'" data-tier="'+f.tier+'"><button type="button" class="tryhit" data-try="'+f.id+'" title="Try it on your card">'+prevCard(f.id,un)+'</button><div class="fbar"><span class="fname">'+f.name+'</span><span class="fnote">'+(own?'EARNED':(prog||'LOCKED'))+'</span></div><div class="fhov"><div class="fdesc2">'+f.need+'</div><div class="fact">'+act+'</div></div></div>';
     }).join('');
   }
   function renderAch(){
@@ -435,9 +681,11 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       if(d.signedIn){
         document.getElementById('wLvl').textContent=(d.level||'—').toUpperCase();
         document.getElementById('wXp').textContent=fmt(d.xp);
+        document.getElementById('wTk').textContent=fmt(+d.ticks||0);
         document.getElementById('wBal').textContent='$'+(+d.balance||0).toFixed(2);
       }
-      renderLadder();renderLevelGal();renderShopGal();renderTkt();renderBg();renderSupply();renderEarn();renderAch();
+      renderLadder();renderLevelGal();renderShopGal();renderTkt();renderBg();renderSupply();renderEarn();renderAch();renderFit();
+      try{var qt=new URLSearchParams(location.search).get('try');if(qt&&!TRY&&itemById(qt))tryOn(qt);}catch(e){} /* a shared look opens already worn */
       try{window.mpVaultOwnedFilter&&window.mpVaultOwnedFilter();}catch(e){} /* re-apply after every rebuild, so a fresh buy/equip immediately obeys the filter */
       if(d.signedIn){
         var fzEl=document.getElementById('wFz');if(fzEl)fzEl.textContent=(+d.freezes||0)+'/5';
@@ -519,28 +767,43 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     }
     /* OWNED FILTER: a card counts as owned when its action area offers Equip or is already equipped —
        the same test the old Owned tab used, so there is still a single definition of ownership. */
-    function cardOwned(c){var f=c.querySelector('.fact');return !!(f&&f.querySelector('[data-eq],[data-eqt],[data-eqbg],.btn.eq'));}
+    function cardAfford(c){
+    var id=c.getAttribute('data-item');if(!id||!ST)return false;
+    var it=itemById(id);if(!it||!it.ticks)return false;
+    return (+ST.ticks||0)>=it.ticks&&(ST.owned||[]).indexOf(id)<0;
+  }
+  function cardOwned(c){var f=c.querySelector('.fact');return !!(f&&f.querySelector('[data-eq],[data-eqt],[data-eqbg],.btn.eq'));}
     var OWNED_ONLY=false;try{OWNED_ONLY=localStorage.getItem('mp_vault_owned')==='1';}catch(e){}
+    var AFFORD_ONLY=false;
+    try{AFFORD_ONLY=localStorage.getItem('mp_vault_afford')==='1';}catch(e){}
     function applyOwnedFilter(){
       var btn=document.getElementById('vfOwned');
       if(btn){btn.setAttribute('aria-pressed',OWNED_ONLY?'true':'false');btn.classList.toggle('on',OWNED_ONLY);}
+      var ab=document.getElementById('vfAfford');
+      if(ab){ab.setAttribute('aria-pressed',AFFORD_ONLY?'true':'false');ab.classList.toggle('on',AFFORD_ONLY);}
       Array.prototype.forEach.call(document.querySelectorAll('.gal'),function(g){
         var cards=g.querySelectorAll('.fcard'),shown=0;
         Array.prototype.forEach.call(cards,function(c){
-          var hide=OWNED_ONLY&&!cardOwned(c);
+          var hide=(OWNED_ONLY&&!cardOwned(c))||(AFFORD_ONLY&&!cardAfford(c));
           if(hide)c.setAttribute('data-hidden','1');else c.removeAttribute('data-hidden');
           if(!hide)shown++;
         });
         var msg=g.parentNode&&g.parentNode.querySelector('.vf-none');
-        if(OWNED_ONLY&&cards.length&&!shown){
-          if(!msg){msg=document.createElement('div');msg.className='vf-none';msg.textContent='Nothing owned in this section yet — untick Owned to see what is available.';g.parentNode.insertBefore(msg,g.nextSibling);}
+        if((OWNED_ONLY||AFFORD_ONLY)&&cards.length&&!shown){
+          if(!msg){msg=document.createElement('div');msg.className='vf-none';g.parentNode.insertBefore(msg,g.nextSibling);}
+          msg.textContent=AFFORD_ONLY&&!OWNED_ONLY?'Nothing here is within your Ticks yet — keep the streak going, or untick the filter to browse.':'Nothing owned in this section yet — untick Owned to see what is available.';
           msg.hidden=false;
         } else if(msg){msg.hidden=true;}
       });
     }
     window.mpVaultOwnedFilter=applyOwnedFilter;
-    (function(){var b=document.getElementById('vfOwned');if(!b)return;
-      b.addEventListener('click',function(){OWNED_ONLY=!OWNED_ONLY;try{localStorage.setItem('mp_vault_owned',OWNED_ONLY?'1':'0');}catch(e){}applyOwnedFilter();});})();
+    (function(){var b=document.getElementById('vfOwned');if(b)
+      b.addEventListener('click',function(){OWNED_ONLY=!OWNED_ONLY;try{localStorage.setItem('mp_vault_owned',OWNED_ONLY?'1':'0');}catch(e){}applyOwnedFilter();});
+      var a=document.getElementById('vfAfford');if(a)
+      a.addEventListener('click',function(){AFFORD_ONLY=!AFFORD_ONLY;try{localStorage.setItem('mp_vault_afford',AFFORD_ONLY?'1':'0');}catch(e){}applyOwnedFilter();});
+      var so=document.getElementById('vsort');if(so)
+      so.addEventListener('change',function(){renderShopGal();renderTkt();renderBg();applyOwnedFilter();});
+    })();
   document.querySelectorAll('[data-vtab]').forEach(function(b){b.addEventListener('click',function(){show(b.getAttribute('data-vtab'));window.scrollTo(0,0);});});
     var init=(location.hash||'').replace('#','');
     if(SECS.indexOf(init)<0){try{init=localStorage.getItem('mp_vault_tab')||'';}catch(e){}}
