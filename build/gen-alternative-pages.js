@@ -11,7 +11,7 @@ const PAGES = [
     slug: 'coinglass-alternative',
     title: 'Free Coinglass Alternative — Liquidation Maps, Funding & OI | MarginPad',
     h1: 'Free Coinglass Alternative',
-    desc: 'MarginPad covers the core Coinglass feature set for free: live liquidation maps and heatmap, a real-time liquidation feed from 9 exchanges, funding rates, open interest, long/short ratio, ETF flows and a whale tracker. No signup, no paywall.',
+    desc: 'MarginPad covers the core Coinglass feature set for free: live liquidation maps and heatmap, a real-time liquidation feed from 9 exchanges with a free <a href="/liquidations/by-exchange/">per-venue breakdown</a>, funding rates, open interest, long/short ratio, ETF flows and a whale tracker. No signup, no paywall.',
     intro: 'If you use Coinglass mainly for liquidation maps, funding rates, open interest and the long/short ratio, MarginPad gives you that core set <strong>completely free, with no account</strong> — plus a real-time liquidation feed aggregated from 9 exchanges and a free JSON API for the same data. Coinglass remains the deeper research platform; this page shows exactly what you get free here and what still needs a paid plan there.',
     tableHead: ['Feature', 'MarginPad (free)', 'Coinglass'],
     rows: [

@@ -100,6 +100,12 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;m
 .thead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:9px}
 .thead b{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:400}
 .thead i{font-style:normal;font-family:'Space Mono',monospace;font-size:11px;color:var(--dim)}
+.tk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:11px}
+.tk-card{position:relative;border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--panel);display:flex;flex-direction:column;gap:5px}
+.tk-card b{font-family:'Bricolage Grotesque',sans-serif;font-size:14.5px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.tk-card b i{font-style:normal;font-family:'Space Mono',monospace;font-size:13px;color:var(--lime)}
+.tk-card span{font-size:12px;color:var(--dim);line-height:1.5}
+.tk-card small{font-family:'Space Mono',monospace;font-size:10px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase}
 .tsw{display:inline-flex;gap:2px;background:#14181e;border:1px solid var(--line);border-radius:9px;padding:2px}
 .tsw button{font:600 10.5px 'Familjen Grotesk',sans-serif;color:var(--faint);background:none;border:0;border-radius:7px;padding:4px 10px;cursor:pointer;transition:.14s}
 .tsw button.on{background:var(--lime);color:#0a0b0d}
@@ -163,10 +169,12 @@ h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;m
 .fname{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fnote{font-size:10px;color:var(--faint);font-family:'Space Mono',monospace;white-space:nowrap}
 /* the hover layer: description + secondary actions, so a resting card stays two rows tall */
-.fhov{position:absolute;left:0;right:0;bottom:0;padding:10px 11px;background:linear-gradient(180deg,rgba(16,18,22,0),rgba(16,18,22,.97) 34%);border-radius:0 0 15px 15px;opacity:0;transform:translateY(6px);transition:opacity .16s,transform .16s;pointer-events:none;z-index:4}
+.fbar{transition:opacity .14s}
+.fcard:hover .fbar,.fcard:focus-within .fbar{opacity:0}
+.fhov{position:absolute;left:0;right:0;bottom:0;padding:16px 11px 11px;background:linear-gradient(180deg,rgba(16,18,22,0) 0,#101216 15px);border-radius:0 0 15px 15px;opacity:0;transform:translateY(6px);transition:opacity .16s,transform .16s;pointer-events:none;z-index:6}
 .fcard:hover .fhov,.fcard:focus-within .fhov{opacity:1;transform:none;pointer-events:auto}
-.fhov .fdesc2{font-size:11px;color:var(--dim);line-height:1.4;margin-bottom:8px}
-@media (hover:none){.fhov{position:static;opacity:1;transform:none;pointer-events:auto;background:none;padding:0}.fhov .fdesc2{display:none}}
+.fhov .fdesc2{font-size:11px;color:var(--dim);line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@media (hover:none){.fhov{position:static;opacity:1;transform:none;pointer-events:auto;background:none;padding:0}.fhov .fdesc2{display:none}.fcard:hover .fbar,.fcard:focus-within .fbar{opacity:1}}
 .prev{position:relative;border-radius:14px;background:linear-gradient(180deg,#151a21,#0c0f13);border:2px solid #2a313c;height:96px;display:flex;align-items:center;gap:11px;padding:0 14px}
 .prev .av{width:44px;height:44px;border-radius:11px;background:#1a2029;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;color:var(--lime);flex:0 0 44px}
 .prev .un{font-weight:800;font-size:15px;font-family:'Bricolage Grotesque',sans-serif}
@@ -315,6 +323,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     <button type="button" data-vtab="supply">Supply drop</button>
     <button type="button" data-vtab="earned">Earned</button>
     <button type="button" data-vtab="levels">Levels</button>
+    <button type="button" data-vtab="ticks">How Ticks work</button>
     <select class="sortsel" id="vsort" aria-label="Sort items">
       <option value="tier">Rarest first</option>
       <option value="cheap">Cheapest first</option>
@@ -400,6 +409,19 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
   <h2>Achievements</h2>
   <div class="h2s">Server-verified from your real trading record — earned once, kept forever.</div>
   <div class="gal" id="galAch" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))"></div>
+  </section>
+
+  <section data-vsec="ticks" hidden>
+  <h2>How Ticks work</h2>
+  <div class="h2s">Ticks are the Vault&#39;s currency. They cannot be bought with money at any price &mdash; every one is earned, which is what makes a Tick-priced frame worth wearing.</div>
+  <div class="tk-grid" id="tkGrid"></div>
+  <h2>Where they go</h2>
+  <div class="h2s">Two sinks, both yours to choose.</div>
+  <div class="tk-grid">
+    <div class="tk-card"><b>The Vault</b><span>Frames, ticket skins and card backgrounds. Common 300 T, rare 1,200 T, epic 3,000 T, legendary 7,000 T.</span></div>
+    <div class="tk-card"><b>Duel stakes</b><span>Wager Ticks head to head. Winner takes the pot; a tie returns both stakes. Duels used to stake XP, which meant losing one could cost you a level &mdash; Ticks cannot.</span></div>
+  </div>
+  <p class="note" style="margin-top:18px">XP and Ticks are different things on purpose. XP only ever goes up and decides your level; Ticks are what you spend. Nothing you buy here can ever cost you a rank.</p>
   </section>
 
   <p class="note">Ticks are the Vault's earned currency: spending them can never cost you a level, because XP is now purely your progress and is never deducted. Balance purchases come out of your withdrawable rewards balance and are final. Equipped items show on your public trader card, in chat and on the leaderboards.</p>
@@ -557,6 +579,32 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     document.getElementById('aLog').hidden=(v!=='log');
     if(v==='log')renderLog();
   });
+  // Generated from ST.earn, which the worker builds from TICK_SOURCES -- the same table _grantTicks caps
+  // against. Writing these numbers by hand is how a shop ends up promising a cap the code does not honour.
+  var TK_HOW={checkin:'Sign in and open the app. The amount climbs with your streak, so a long run is worth far more than a first day.',
+    trade_sl:'Close a position that had a stop-loss set before it was opened. The best-paying source on the board, because it is the habit that keeps traders alive.',
+    mission:'Claim any of the daily missions on the Rewards page.',
+    academy:'Finish a lesson in the Academy. Every lesson counts once.',
+    trade:'Close any paper position. Small on purpose &mdash; XP already pays for volume.',
+    chat:'Say something real in the community chat. One-word noise and repeats earn nothing.',
+    duel:'Win a duel. The stake pot is separate and comes straight from your opponent.'};
+  function renderTicksHow(){
+    var g=document.getElementById('tkGrid');if(!g)return;
+    var rows=(ST&&ST.earn&&ST.earn.length)?ST.earn:[
+      {k:'checkin',label:'Daily check-in',cap:40},{k:'trade_sl',label:'Closed with a stop set',cap:24},
+      {k:'mission',label:'Missions claimed',cap:20},{k:'academy',label:'Academy lessons',cap:30},
+      {k:'trade',label:'Trades closed',cap:8},{k:'chat',label:'Talking in chat',cap:16},
+      {k:'duel',label:'Duels won',cap:30}];
+    var total=0;rows.forEach(function(r){total+=+r.cap||0;});
+    g.innerHTML=rows.map(function(r){
+      var got=(+r.got||0),cap=+r.cap||0;
+      return '<div class="tk-card"><b>'+r.label+'<i>up to '+cap+' T</i></b>'
+        +'<span>'+(TK_HOW[r.k]||'')+'</span>'
+        +(ST&&ST.signedIn?'<small>'+got+' of '+cap+' earned today</small>':'')+'</div>';
+    }).join('')
+      +'<div class="tk-card" style="border-color:#3f6e2a;background:rgba(194,246,74,.05)"><b>Every day resets<i>'+fmt(total)+' T</i></b>'
+      +'<span>That is the ceiling if you did absolutely everything in one day. Nobody does &mdash; the point is that no single source can be farmed.</span></div>';
+  }
   function renderCollect(){
     var box=document.getElementById('collect');if(!box||!ST||!ST.signedIn)return;
     var items=(ST.items||[]).filter(function(it){return it.tier!=='mythic';});
@@ -797,7 +845,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
       document.getElementById('signin').hidden=!!d.signedIn;
       if(d.signedIn){
       }
-      renderLadder();renderLevelGal();renderShopGal();renderTkt();renderBg();renderSupply();renderEarn();renderAch();renderFit();renderAcct();
+      renderLadder();renderLevelGal();renderShopGal();renderTkt();renderBg();renderSupply();renderEarn();renderAch();renderFit();renderAcct();renderTicksHow();
       try{var qt=new URLSearchParams(location.search).get('try');if(qt&&!TRY&&itemById(qt))tryOn(qt);}catch(e){} /* a shared look opens already worn */
       try{window.mpVaultOwnedFilter&&window.mpVaultOwnedFilter();}catch(e){} /* re-apply after every rebuild, so a fresh buy/equip immediately obeys the filter */
       if(d.signedIn){
@@ -865,7 +913,7 @@ footer{margin-top:52px;border-top:1px solid var(--line);padding-top:18px;font-si
     }
   });
   (function(){ /* section tabs: pick one, see only it (owner: no more mile-long scroll) */
-    var SECS=['frames','tickets','backgrounds','supply','earned','levels'];
+    var SECS=['frames','tickets','backgrounds','supply','earned','levels','ticks'];
     function show(k){
       if(SECS.indexOf(k)<0)k='frames';
       document.querySelectorAll('[data-vsec]').forEach(function(sc){sc.hidden=sc.getAttribute('data-vsec')!==k;});

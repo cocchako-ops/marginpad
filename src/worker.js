@@ -1065,6 +1065,39 @@ async function ssrBlogSentences(kind, env) {
 // not fix that: crawlers read the static HTML, so the shared boilerplate is all they ever saw (measured: the
 // overlap went UP to 88.7% when the block was JS-only). So the measured comparison is injected HERE, server
 // side, before anyone crawls it — unique text per page, refreshed every 10 minutes, never stale in the file.
+// /liquidations/by-exchange/ — the per-venue table, rendered server-side so an AI crawler (which does not
+// run JavaScript) reads real figures. Same source as /api/v1/venues; ten-minute page cache.
+async function handleSsrVenues(request, url, env) {
+  const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
+  try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+  const asset = await env.ASSETS.fetch(request);
+  const ct = (asset.headers && asset.headers.get('content-type')) || '';
+  if (!asset.ok || ct.indexOf('text/html') < 0) return asset;
+  let html = ''; try { html = await asset.text(); } catch (e) { return env.ASSETS.fetch(request); }
+  const pass = () => new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
+  const open = html.indexOf('<div id="vxdata">'); if (open < 0) return pass();
+  const close = html.indexOf('</div>', open); if (close < 0) return pass();
+  let d = null; try { d = await (await handleVenueStats(env)).json(); } catch (e) {}
+  const vs = (d && Array.isArray(d.venues)) ? d.venues : [];
+  const NAMES = { binance: 'Binance', bybit: 'Bybit', okx: 'OKX', hyperliquid: 'Hyperliquid', gate: 'Gate', htx: 'HTX', dydx: 'dYdX', bitmex: 'BitMEX', bitfinex: 'Bitfinex', 'binance-coin': 'Binance (coin-M)' };
+  if (!vs.length) {
+    const down = '<p class="vx-stamp">Our collector is not reporting right now, so this table is empty rather than showing yesterday’s numbers as if they were current. The <a href="/liquidations/">market totals</a> come from a separate source and are unaffected.</p>';
+    html = html.slice(0, open) + '<div id="vxdata" data-ssr="1">' + down + html.slice(close);
+    return new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=120' } });
+  }
+  const usd = v => v >= 1e9 ? '$' + (v / 1e9).toFixed(2) + 'B' : v >= 1e6 ? '$' + (v / 1e6).toFixed(1) + 'M' : v >= 1e3 ? '$' + Math.round(v / 1e3) + 'K' : '$' + Math.round(v);
+  const rows = vs.map(v => '<tr><td>' + (NAMES[v.venue] || v.venue) + '</td><td class="n">' + usd(v.total) + '</td><td class="n">' + v.share + '%</td><td class="n">' + usd(v.long) + '</td><td class="n">' + usd(v.short) + '</td><td style="min-width:120px"><span class="bar"><i style="width:' + v.longPct + '%"></i></span></td></tr>').join('');
+  const stamp = new Date(d.ts || Date.now()).toISOString().slice(0, 16).replace('T', ' ');
+  const lead = vs.length > 1 && vs[0].total > 0
+    ? '<p>Over the last 24 hours <strong>' + (NAMES[vs[0].venue] || vs[0].venue) + '</strong> liquidated the most at ' + usd(vs[0].total) + ', which is ' + vs[0].share + '% of everything our collector saw across nine venues (' + usd(d.total) + ' in total).</p>' : '';
+  const inner = lead + '<div class="vx-wrap"><table class="vx"><thead><tr><th>Exchange</th><th>24h liquidated</th><th>Share</th><th>Longs</th><th>Shorts</th><th>Long / short</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+    + '<p class="vx-stamp">Measured by the MarginPad collector across nine exchange websockets &middot; rolling 24h &middot; ' + stamp + ' UTC</p>';
+  html = html.slice(0, open) + '<div id="vxdata" data-ssr="1">' + inner + html.slice(close);
+  const out = new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'public, max-age=600' } });
+  try { await caches.default.put(ck, out.clone()); } catch (e) {}
+  return out;
+}
+
 async function handleSsrCompare(request, url, env, ak, bk) {
   const ck = new Request('https://marginpad.io/__ssrpage' + url.pathname);
   try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
@@ -11382,9 +11415,9 @@ export default {
       if (!env.NOWPAY_API_KEY) return J({ error: 'unconfigured' }, 503);
       const founder = url.searchParams.get('plan') === 'founder';
       const body = founder
-        ? { price_amount: 99, price_currency: 'usd', order_id: 'premlife_' + st.uid, order_description: 'MarginPad Premium — Founder (lifetime)', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' }
+        ? { price_amount: 35, price_currency: 'usd', order_id: 'premlife_' + st.uid, order_description: 'MarginPad Premium — Founder (lifetime)', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' }
         : { price_amount: 3.99, price_currency: 'usd', order_id: 'prem_' + st.uid, order_description: 'MarginPad Premium — 1 month', ipn_callback_url: 'https://marginpad.io/api/nowpayments/ipn', success_url: 'https://marginpad.io/charts?premium=ok', cancel_url: 'https://marginpad.io/charts' };
-      try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', founder ? 'Founder $99' : '$3.99/mo', '/premium'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
+      try { const r = await fetch('https://api.nowpayments.io/v1/invoice', { method: 'POST', headers: { 'x-api-key': env.NOWPAY_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(body) }); const j = await r.json(); if (j && j.invoice_url) { try { await evPush(env, request, 'checkout', founder ? 'Founder $35' : '$3.99/mo', '/premium'); } catch (e) {} return J({ invoice_url: j.invoice_url }); } } catch (e) {}
       return J({ error: 'invoice_failed' }, 502);
     }
     if (url.pathname === '/api/admin/setrole' && request.method === 'POST' && (await adminCookieOk(request, env))) { // background role mark: {username, role} — 'gm' enables chat admin commands, '' clears. Cookie-only (grants power).
@@ -12869,6 +12902,7 @@ export default {
         if (mLiq[2] === 'calculator' && { bybit: 1, binance: 1, okx: 1, bitget: 1, mexc: 1, gate: 1, kraken: 1, coinbase: 1, kucoin: 1 }[mLiq[1]]) return handleSsrLiq(request, url, env, 'excalc', mLiq[1]); // exchange-slug calculators: no coin data of their own -> BTC-referenced live block
         return handleSsrLiq(request, url, env, mLiq[2] === 'map' ? 'map' : 'calc', mLiq[1]);
       }
+      if (url.pathname === '/liquidations/by-exchange/' || url.pathname === '/liquidations/by-exchange') return handleSsrVenues(request, url, env);
       const _mVs = url.pathname.match(/^\/([a-z]+)-vs-([a-z]+)\/$/); if (_mVs) return handleSsrCompare(request, url, env, _mVs[1], _mVs[2]);
       if (url.pathname === '/crypto-liquidations-today/') return handleSsrBlog(request, url, env, 'liq'); // exact-match "total crypto liquidations today" landing — live market total box before thefirst <h2 (SEO kompas: the SERP has no clean-number answer)
       const _bk = ssrBlogKind(url.pathname); if (_bk) return handleSsrBlog(request, url, env, _bk);

@@ -96,7 +96,8 @@ ${dataLd}
       </div>
     </div>
   </article>
-  <footer>
+  <p style="margin:18px 0 0">See also: <a href="/liquidations/by-exchange/">liquidations by exchange</a> &mdash; which venue liquidated the most in the last 24 hours.</p>
+    <footer>
     <span>© 2026 MarginPad</span>
     <span><a href="/liquidations/">Liquidations</a> · <a href="/rekt/">Rekt</a> · <a href="/blog/">Blog</a> &middot; <a href="/terms/">Terms</a> &middot; <a href="/privacy/">Privacy</a></span>
   </footer>

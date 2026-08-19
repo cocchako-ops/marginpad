@@ -1308,7 +1308,7 @@
       FEATS.forEach(function (f) { h += '<div class="mpprem-f"><span class="ck">✓</span><div><b>' + f[0] + '</b><span>' + f[1] + '</span></div></div>'; });
       h += '<div class="mpprem-price"><b>$3.99</b> / month</div>' +
         '<button class="mpprem-buy" type="button">Pay with crypto — $3.99 / month</button>' +
-        '<button class="mpprem-founder" type="button" style="display:block;width:100%;margin-top:8px;background:none;border:1px solid #2a3550;color:#c2f64a;border-radius:12px;padding:11px;font-size:13px;font-weight:700;cursor:pointer">Or go Founder — lifetime access, $99 once</button>' +
+        '<button class="mpprem-founder" type="button" style="display:block;width:100%;margin-top:8px;background:none;border:1px solid #2a3550;color:#c2f64a;border-radius:12px;padding:11px;font-size:13px;font-weight:700;cursor:pointer">Or go Founder — lifetime access, $35 once</button>' +
         '<div style="text-align:center;font:700 11px \'Space Mono\',monospace;color:#ffd75a;margin-top:9px">The first 5 members lock in lifetime Premium.</div>' +
         '<div class="mpprem-note">Pay in BTC, USDT or any major coin via NOWPayments. Cancel anytime — it simply won’t renew.</div>';
       card.innerHTML = h;
