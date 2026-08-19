@@ -12448,7 +12448,7 @@ export default {
       return new Response(JSON.stringify(sj), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/statsrepair' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // ?dry=1 first, always
-      const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/statsrepair', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ dry: url.searchParams.get('dry') === '1', reset: url.searchParams.get('reset') === '1' }) }));
+      const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/statsrepair', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ dry: url.searchParams.get('dry') === '1', reset: url.searchParams.get('reset') === '1', relife: url.searchParams.get('relife') === '1' }) }));
       return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/progress' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // read-only: the PROGRESS columns (season + lifetime + xp) next to what the stored journal blob would compute. Used to prove the server's trim-proof accumulators already match what the UI shows before any display is switched over to them.
@@ -15478,6 +15478,13 @@ export class UserStore {
       const _pq = +prev.qty, _cq = +e.qty; if (isFinite(_pq) && isFinite(_cq) && _cq > _pq) return; byId.set(id, e); };
     stored.forEach(put); incoming.forEach(put);
     let arr = Array.from(byId.values());
+    // A WIN IS A TRADE THAT MADE MONEY AFTER COSTS (owner 2026-08-20). The label used to be able to disagree with
+    // the number beside it: legacy rows carried status:'win' with a NEGATIVE pnl — the price moved the trader's way
+    // and the taker fee ate it, and the label was written before the fee was. Measured: 18 of one account's 51
+    // season trades. Deriving it here, on every sync, is what makes the invariant hold: a client pushing a stale
+    // label cannot reimpose it (incoming wins the merge above), and every counter downstream reads the same truth.
+    // pnl null = not settled yet -> left alone. This intentionally LOWERS displayed win rates. That is the point.
+    for (const e of arr) { if (!e || (e.status !== 'win' && e.status !== 'loss')) continue; const p = +e.pnl; if (!isFinite(p)) continue; e.status = p >= 0 ? 'win' : 'loss'; }
     arr.sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0)));
     const isOpen = (e) => e && e.status !== 'win' && e.status !== 'loss';
     const opensArr = arr.filter(isOpen);
@@ -15696,6 +15703,19 @@ export class UserStore {
         // profile. The blob is unbiased (it is the user's own journal) and complete up to the 100-row cap.
         out.season.checked++;
         const jn = this._loadJournal(uid);
+        // apply the same win-means-net-positive rule to rows already on disk, so users who do not sync soon still
+        // see corrected labels, and so the counts below are taken from corrected data rather than the old ones
+        let _rel = 0;
+        for (const e of jn) { if (!e || (e.status !== 'win' && e.status !== 'loss')) continue; const p = +e.pnl; if (!isFinite(p)) continue; const want = p >= 0 ? 'win' : 'loss'; if (e.status !== want) { e.status = want; _rel++; } }
+        if (_rel) {
+          out.relabelled = (out.relabelled || 0) + _rel;
+          out.usersRelabelled = (out.usersRelabelled || 0) + 1;
+          if (!dry) {
+            let w2 = 0, l2 = 0, o2 = 0, p2 = 0;
+            for (const e of jn) { const st = e && e.status; if (st === 'win') w2++; else if (st === 'loss') l2++; else o2++; const pv2 = +(e && e.pnl); if ((st === 'win' || st === 'loss') && isFinite(pv2)) p2 += pv2; }
+            sql.exec('UPDATE utrades SET json=?, n=?, wins=?, losses=?, opens=?, pnl=? WHERE user_id=?', JSON.stringify(jn), jn.length, w2, l2, o2, p2, uid);
+          }
+        }
         const cl = jn.filter(x => x && (x.status === 'win' || x.status === 'loss'));
         const sc = cl.filter(x => (+x.closeTs || 0) >= per);
         let c = 0, w = 0, l = 0, p = 0, bst = null;
@@ -15714,7 +15734,11 @@ export class UserStore {
         }
         // ── lifetime, floor-repair only ──
         out.life.checked++;
-        if (cl.length && (+cs.life_closes || 0) < cl.length) {
+        // reseed when lifetime is BEHIND the blob, and also when rows were just relabelled and lifetime covers no
+        // more than the blob does — in that case lifetime IS the blob, so its win count is stale by exactly the
+        // relabelling. Where lifetime legitimately exceeds the blob we leave it: those older trades are not on disk
+        // to reclassify, and inventing a correction for them would be worse than an honest floor.
+        if (cl.length && ((+cs.life_closes || 0) < cl.length || ((_rel > 0 || b.relife) && (+cs.life_closes || 0) <= cl.length))) {
           const bw = cl.filter(x => x.status === 'win').length;
           const bp = Math.round(cl.reduce((s, x) => s + (+x.pnl || 0), 0) * 100) / 100;
           let bb = null; for (const x of cl) { const v = +x.pnl; if (isFinite(v) && (bb == null || v > bb)) bb = v; }
@@ -16938,6 +16962,11 @@ export class UserStore {
       } } catch (e) {}
       // weekly win/loss from tradeev (the blob is 100-capped so a heavy trader's old losses get trimmed → inflated WR); v2: win needs ≥5% ROE
       try { const v2w = weekStart >= LB_V2_START; const mvW = v2w ? WR_MIN_MOVE : -1e9; const wr = this.rows("SELECT SUM(CASE WHEN pnl>0 AND roe>=? AND (? <= -1e8 OR (lev>0 AND roe/lev >= ?)) THEN 1 ELSE 0 END) w, SUM(CASE WHEN pnl<=0 THEN 1 ELSE 0 END) l FROM tradeev WHERE user_id=? AND kind='close' AND ts>=? AND UPPER(sym) NOT IN (" + LB_EXCL_SQL + ")", v2w ? WR_MIN_WIN_ROE : -1e9, mvW, mvW, u.id, weekStart)[0]; if (wr) { weekW = +wr.w || 0; weekN = weekW + (+wr.l || 0); } } catch (e) {}
+      // PREFER the season counters: the tradeev scan above is subject to the per-sync insert cap, which keeps
+      // logging losses after it stops logging wins (deliberate anti-shed measure — do not remove it). That makes
+      // it a biased basis for a WIN RATE: the same 60 closes read 9W/51L there and 32W/28L in the journal.
+      // s_* counts every close before any cap, so when it covers this exact period it is the honest source.
+      try { if (+t.s_season === weekStart && (+t.s_closes || 0) > 0) { weekW = +t.s_wins || 0; weekN = +t.s_closes || 0; } } catch (e) {}
       const closed = (t.wins || 0) + (t.losses || 0);
       const lifeOn = !!+t.life_seed; // lifetime counters exist once the user has synced since the upgrade
       let lClosed = lifeOn ? Math.max(+t.life_closes || 0, closed) : closed;
