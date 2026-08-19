@@ -12447,6 +12447,14 @@ export default {
       try { const cfg = await rewardCfg(env); sj.referralUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 0.5; } catch (e) { sj.referralUsd = 0.5; }
       return new Response(JSON.stringify(sj), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
+    if (url.pathname === '/api/admin/statsrepair' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // ?dry=1 first, always
+      const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/statsrepair', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ dry: url.searchParams.get('dry') === '1', reset: url.searchParams.get('reset') === '1' }) }));
+      return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/progress' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // read-only: the PROGRESS columns (season + lifetime + xp) next to what the stored journal blob would compute. Used to prove the server's trim-proof accumulators already match what the UI shows before any display is switched over to them.
+      const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/progressdump', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: url.searchParams.get('uid') || '', email: url.searchParams.get('email') || '', username: url.searchParams.get('u') || '' }) }));
+      return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/admin/bottiers' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // reconcile API-key tiers with premium now, instead of waiting for the nightly cron. Moves no money — it only sets rate-limit tiers — so it is key-accessible like the neighbouring admin reads.
       let err = null, res = null; try { res = await syncBotTiers(env); } catch (e) { err = String(e && e.message || e); }
       return new Response(JSON.stringify({ ok: !err && !!(res && !res.error), sync: res, err }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
@@ -15485,19 +15493,25 @@ export class UserStore {
     while (json.length > 60000 && closed.filter((e) => !isProt(e)).length > 0) { closed = closed.filter(isProt).concat(closed.filter((e) => !isProt(e)).slice(5)); arr = opensArr.concat(closed).sort((a, c) => ((+a.closeTs || +a.ts || 0) - (+c.closeTs || +c.ts || 0))); json = JSON.stringify(arr); }
     let wins = 0, losses = 0, opens = 0, pnl = 0;
     arr.forEach(function (e) { const st = e && e.status; if (st === 'win') wins++; else if (st === 'loss') losses++; else opens++; const p = +(e && e.pnl); if ((st === 'win' || st === 'loss') && isFinite(p)) pnl += p; });
+    // SCOPE (fixed 2026-08-20): these live OUTSIDE the try below. They are FILLED inside it and READ after it, and
+    // being `let`/`const` inside the block meant every read threw ReferenceError straight into the silent
+    // `catch (eL)` / `catch (eS)` handlers. Result: life_* only ever got its one-time seed and s_* was never written
+    // at all, from 2026-08-14 until this fix. Measured on real accounts: one user had 64 closed trades in the blob
+    // and life_closes = 0. Declaring them here is the whole fix — do not move them back inside.
+    let _lfC = 0, _lfW = 0, _lfL = 0, _lfP = 0, _lfB = null; // lifetime deltas this sync
+    const _ssn = {}; // season deltas this sync, keyed by lbPeriodStart(closeTs) — a sync can straddle a rollover
     try {
-      const oldBy = new Map(); stored.forEach((e) => { if (e && e.id != null) oldBy.set(String(e.id), e); });
+      const oldBy = new Map(); stored.forEach((e) => { if (e &&e.id != null) oldBy.set(String(e.id), e); });
       const isCl = (e) => e && (e.status === 'win' || e.status === 'loss');
       const evs = [];
       for (const e of arr) { if (!e || e.id == null) continue; const o9 = oldBy.get(String(e.id));
         if (!o9) { if (isCl(e)) evs.push(['close', e, +e.closeTs || now]); else evs.push(['open', e, +e.ts || now]); }
         else if (!isCl(o9) && isCl(e)) evs.push(['close', e, +e.closeTs || now]);
         else if (!isCl(o9) && !isCl(e)) { const q0 = +o9.qty, q1 = +e.qty; if (isFinite(q0) && isFinite(q1) && q1 < q0 * 0.99) evs.push(['trim', e, now]); } }
-      const cut = now - 7 * 86400000; let nIns = 0; let _lfC = 0, _lfW = 0, _lfL = 0, _lfP = 0, _lfB = null; // lifetime deltas this sync
-      const _ssn = {}; // season deltas this sync, keyed by lbPeriodStart(closeTs) — a sync can straddle a rollover
+      const cut = now - 7 * 86400000; let nIns = 0; // (_lfC/_lfW/_lfL/_lfP/_lfB and _ssn are declared above this try — see the scope note)
       for (const ev9 of evs) { const kind = ev9[0], e = ev9[1], ts9 = ev9[2];
         if (kind === 'close') try { this._lbBest(uid, e, ts9); } catch (e8) {} // season-best BEFORE the per-sync cap/age skips — a qualifying close must never miss the board store
-        if (kind === 'close') { const lp9 = +e.pnl; if (isFinite(lp9)) { _lfC++; if (lp9 > 0) _lfW++; else _lfL++; _lfP += lp9; if (_lfB == null || lp9 > _lfB) _lfB = lp9; const _sk9 = lbPeriodStart(ts9), _sd9 = _ssn[_sk9] || (_ssn[_sk9] = { c: 0, w: 0, l: 0, p: 0, b: null }); _sd9.c++; if (lp9 > 0) _sd9.w++; else _sd9.l++; _sd9.p += lp9; if (_sd9.b == null || lp9 > _sd9.b) _sd9.b = lp9; } } // lifetime counters: every close counts, no matter how old/large/capped; season counters bucket the same closes by the season the close LANDED in
+        if (kind === 'close') { const lp9 = +e.pnl; if (isFinite(lp9)) { const _win9 = e.status === 'win'; /* classify by the row's own status so these counters always agree with the win rate the UI renders; pnl>0 disagrees on legacy rows where the label predates the fee */ _lfC++; if (_win9) _lfW++; else _lfL++; _lfP += lp9; if (_lfB == null || lp9 > _lfB) _lfB = lp9; const _sk9 = lbPeriodStart(ts9), _sd9 = _ssn[_sk9] || (_ssn[_sk9] = { c: 0, w: 0, l: 0, p: 0, b: null }); _sd9.c++; if (_win9) _sd9.w++; else _sd9.l++; _sd9.p += lp9; if (_sd9.b == null || lp9 > _sd9.b) _sd9.b = lp9; } } // lifetime counters: every close counts, no matter how old/large/capped; season counters bucket the same closes by the season the close LANDED in
         if (ts9 < cut) continue;
         const m = +e.margin || 0; if (!(m > 0) || m > 100000) continue;
         const pv = (kind !== 'open' && isFinite(+e.pnl)) ? +e.pnl : null;
@@ -15663,6 +15677,74 @@ export class UserStore {
       sql.exec('INSERT INTO botuse2(k,day,ep,n,last) VALUES(?,?,?,1,?) ON CONFLICT(k,day,ep) DO UPDATE SET n=n+1,last=?', k, day, ep, now, now);
       return this.j({ uid: row.uid, k, name: row.name || '', tier: +row.tier || 0, limit: lim, remaining: Math.max(0, lim - cnt), reset });
     }
+    if (path === '/statsrepair') { // repair the counters the 2026-08-14 scope bug left frozen.
+      // SEASON is rebuilt EXACTLY: tradeev keeps 30 days of close events and the season is younger than that, so
+      // every close that belongs to the current period is still on record. LIFETIME cannot be made exact (history
+      // before the 100-cap was never stored — the original code says so), but where it is provably behind the blob
+      // we re-seed it from the blob so the five columns are at least consistent with each other. Counts never drop.
+      const dry = !!b.dry;
+      const per = lbPeriodStart(now);
+      const out = { season: { checked: 0, fixed: 0 }, life: { checked: 0, reseeded: 0 }, dry };
+      const users = this.rows('SELECT user_id FROM utrades LIMIT 5000');
+      for (const u of users) {
+        const uid = u.user_id; if (!uid) continue;
+        // ── season, from the JOURNAL BLOB — NOT from tradeev ──
+        // tradeev looked like the obvious source (it is an event log) but it is NOT a faithful record of closes:
+        // the per-sync insert cap keeps logging LOSSES after it stops logging wins, so it skews hard to the loss
+        // side. Measured 2026-08-20 on one account: the same 60 closes in the same window read 9W/51L from tradeev
+        // and 32W/28L from the blob. Rebuilding win rate from it would have written a wrong number into everyone's
+        // profile. The blob is unbiased (it is the user's own journal) and complete up to the 100-row cap.
+        out.season.checked++;
+        const jn = this._loadJournal(uid);
+        const cl = jn.filter(x => x && (x.status === 'win' || x.status === 'loss'));
+        const sc = cl.filter(x => (+x.closeTs || 0) >= per);
+        let c = 0, w = 0, l = 0, p = 0, bst = null;
+        // COUNT WINS THE WAY THE UI DOES — by the row's own `status`, not by pnl>0. They disagree on legacy rows:
+        // measured 2026-08-20, one account had 18 season trades stamped status:'win' with a NEGATIVE pnl (price moved
+        // their way, the fee ate it, and the label was written before the fee was). Counting by pnl would have
+        // dropped that user's displayed win rate from 52.9% to 17.6% overnight. Money (pnl) still sums from pnl.
+        for (const r of sc) { const v = +r.pnl; if (!isFinite(v)) continue; c++; if (r.status === 'win') w++; else l++; p += v; if (bst == null || v > bst) bst = v; }
+        const cs = this.rows('SELECT s_season, s_closes, s_wins, s_losses, s_pnl, s_best, life_closes, life_seed FROM utrades WHERE user_id=?', uid)[0] || {};
+        // seed only where the stored value is missing OR provably below what the blob alone proves happened.
+        // reset=1 overwrites unconditionally — used ONCE to scrub the loss-skewed values a tradeev-based rebuild
+        // wrote before the bias was caught. Do not run it casually: it discards live-counted closes above the blob.
+        if (c > 0 && (b.reset || (+cs.s_season || 0) !== per || (+cs.s_closes || 0) < c)) {
+          if (!dry) sql.exec('UPDATE utrades SET s_season=?, s_closes=?, s_wins=?, s_losses=?, s_pnl=?, s_best=? WHERE user_id=?', per, c, w, l, Math.round(p * 100) / 100, bst, uid);
+          out.season.fixed++;
+        }
+        // ── lifetime, floor-repair only ──
+        out.life.checked++;
+        if (cl.length && (+cs.life_closes || 0) < cl.length) {
+          const bw = cl.filter(x => x.status === 'win').length;
+          const bp = Math.round(cl.reduce((s, x) => s + (+x.pnl || 0), 0) * 100) / 100;
+          let bb = null; for (const x of cl) { const v = +x.pnl; if (isFinite(v) && (bb == null || v > bb)) bb = v; }
+          if (!dry) sql.exec('UPDATE utrades SET life_closes=?, life_wins=?, life_losses=?, life_pnl=?, best_pnl=MAX(COALESCE(best_pnl,-1e15),?), life_seed=1 WHERE user_id=?', cl.length, bw, cl.length - bw, bp, bb == null ? -1e15 : bb, uid);
+          out.life.reseeded++;
+        }
+      }
+      return this.j(out);
+    }
+    if (path === '/progressdump') { // PROOF endpoint: what the server's trim-proof accumulators say, next to what the
+      // stored journal blob would compute. If they agree, the UI can read the server instead of recomputing from the
+      // device, and trimming the device stops being visible to anyone.
+      let uid = String(b.uid || '');
+      if (!uid && b.email) { const u = this.rows('SELECT id FROM users WHERE lower(email)=lower(?)', String(b.email))[0]; if (u) uid = u.id; }
+      if (!uid && b.username) { const u = this.rows('SELECT id FROM users WHERE lower(username)=lower(?)', String(b.username))[0]; if (u) uid = u.id; }
+      if (!uid) return this.j({ error: 'no_user' });
+      const t = this.rows('SELECT n, wins, losses, opens, pnl, life_closes, life_wins, life_losses, life_pnl, best_pnl, life_seed, s_season, s_closes, s_wins, s_losses, s_pnl, s_best FROM utrades WHERE user_id=?', uid)[0] || {};
+      const u = this.rows('SELECT username, email, xp, xp_life FROM users WHERE id=?', uid)[0] || {};
+      const jn = this._loadJournal(uid);
+      const closed = jn.filter(x => x && (x.status === 'win' || x.status === 'loss'));
+      const opens = jn.filter(x => x && x.status !== 'win' && x.status !== 'loss');
+      const blobWins = closed.filter(x => x.status === 'win').length;
+      const blobPnl = Math.round(closed.reduce((s, x) => s + (+x.pnl || 0), 0) * 100) / 100;
+      return this.j({
+        uid, user: u,
+        server: { season: { season: t.s_season, closes: t.s_closes, wins: t.s_wins, losses: t.s_losses, pnl: t.s_pnl, best: t.s_best }, life: { seeded: !!+t.life_seed, closes: t.life_closes, wins: t.life_wins, losses: t.life_losses, pnl: t.life_pnl, best: t.best_pnl } },
+        blob: { rows: jn.length, opens: opens.length, closed: closed.length, wins: blobWins, pnl: blobPnl, capped: jn.length >= 100 },
+        wr: { serverSeason: (+t.s_closes > 0) ? Math.round((+t.s_wins || 0) / (+t.s_closes) * 1000) / 10 : null, serverLife: (+t.life_closes > 0) ? Math.round((+t.life_wins || 0) / (+t.life_closes) * 1000) / 10 : null, fromBlob: closed.length ? Math.round(blobWins / closed.length * 1000) / 10 : null },
+      });
+    }
     if (path === '/bottierlist') { // every account holding a key, with the premium column the DO can see
       const holders = this.rows('SELECT DISTINCT bk.uid AS uid, u.username AS username, u.premium AS premium FROM botkeys2 bk LEFT JOIN users u ON u.id=bk.uid WHERE bk.uid IS NOT NULL LIMIT 500');
       return this.j({ holders });
@@ -15767,8 +15849,13 @@ export class UserStore {
       try {
         const lr = this.rows('SELECT life_closes, life_wins, life_losses, life_pnl, best_pnl, life_seed, n, wins, losses, pnl FROM utrades WHERE user_id=?', uid)[0];
         if (lr) {
-          const seeded = !!+lr.life_seed;
-          life = { closes: seeded ? (+lr.life_closes || 0) : (+lr.n || 0), wins: seeded ? (+lr.life_wins || 0) : (+lr.wins || 0), losses: seeded ? (+lr.life_losses || 0) : (+lr.losses || 0), pnl: Math.round((seeded ? (+lr.life_pnl || 0) : (+lr.pnl || 0)) * 100) / 100, best: (lr.best_pnl == null ? null : Math.round(+lr.best_pnl * 100) / 100), exact: seeded };
+          // SANITY: lifetime must be at least what the (capped) blob holds — it is a superset by definition. If it is
+          // behind, the accumulator is provably stale and must NOT be served as lifetime; fall back to the blob sum,
+          // which is at least internally consistent. This guard is what kept /v1/account honest while the counters
+          // were frozen (2026-08-14 .. 2026-08-20 scope bug), and it stays as a permanent tripwire.
+          const blobClosed = cur.filter(t => t && (t.status === 'win' || t.status === 'loss')).length;
+          const seeded = !!+lr.life_seed && (+lr.life_closes || 0) >= blobClosed;
+          life = { closes: seeded ? (+lr.life_closes || 0) : (+lr.n || 0), wins: seeded ? (+lr.life_wins || 0) : (+lr.wins || 0), losses: seeded ? (+lr.life_losses || 0) : (+lr.losses || 0), pnl: Math.round((seeded ? (+lr.life_pnl || 0) : (+lr.pnl || 0)) * 100) / 100, best: (lr.best_pnl == null ? null : Math.round(+lr.best_pnl * 100) / 100), exact: seeded, stale: !!+lr.life_seed && !seeded };
         }
       } catch (e) {}
       return this.j({ positions: cur.slice(0, 100).map(t => this._j2bot(t, PR[t.sym])), life });
