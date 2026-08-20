@@ -4323,7 +4323,14 @@ async function opsCfg(env) { let c = {}; try { c = JSON.parse(await env.STATS.ge
 // 8h retention (was 4h): the perf-budget alarm windows over the ring, and the sparse UX beacons (1/5min/client) need
 // ~8h to accumulate the 30 samples that make a p95 a percentile. cap 2000 (was 1200) so 8h isn't silently truncated.
 async function perfFlush(env) { const b = globalThis.__perfBuf; if (!b || !b.length) return; globalThis.__perfBuf = []; try { let r = []; try { r = JSON.parse(await env.STATS.get('perf:ring') || '[]'); } catch (e) {} r.unshift(...b); const cut = Date.now() - 8 * 3600000; r = r.filter(x => x && x.t > cut).slice(0, 2000); await env.STATS.put('perf:ring', JSON.stringify(r), { expirationTtl: 28800 }); } catch (e) {} }
-function perfPush(env, ctx, g, ms, ok) { try { const b = globalThis.__perfBuf = globalThis.__perfBuf || []; b.push({ g, ms: Math.round(+ms) || 0, t: Date.now(), ok: ok === false ? 0 : 1 }); if (b.length >= 10 && ctx) ctx.waitUntil(perfFlush(env)); } catch (e) {} }
+// Samples go to the 8h ring AND to Analytics Engine. The ring alone cannot answer the one question every budget
+// alert asks — "is this real drift or a one-off?" — because it has no yesterday to compare against. Without it,
+// a p95 that moved because we shipped ten asset versions in a day looks identical to a p95 that moved because
+// the code got slower. CLAUDE.md has flagged this as a gap since the ring was built; AE is the cheap half.
+function perfPush(env, ctx, g, ms, ok) {
+  try { const b = globalThis.__perfBuf = globalThis.__perfBuf || []; b.push({ g, ms: Math.round(+ms) || 0, t: Date.now(), ok: ok === false ? 0 : 1 }); if (b.length >= 10 && ctx) ctx.waitUntil(perfFlush(env)); } catch (e) {}
+  try { if (env && env.AE) env.AE.writeDataPoint({ indexes: ['perf'], blobs: ['perf', String(g || 'other')], doubles: [Math.round(+ms) || 0, ok === false ? 0 : 1] }); } catch (e) {}
+}
 async function perfWrap(env, ctx, g, samp, fn) { // samp = 1-in-N sampling (1 = every request)
   if (samp > 1 && Math.floor(Math.random() * samp) !== 0) return fn();
   const t0 = Date.now(); const r = await fn();
@@ -12544,6 +12551,17 @@ export default {
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/affiliate')); sj = await rr.json(); } catch (e) {}
       try { const cfg = await rewardCfg(env); sj.referralUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 0.5; } catch (e) { sj.referralUsd = 0.5; }
       return new Response(JSON.stringify(sj), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/perfhist' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) {
+      // DAY-OVER-DAY perf, which the 8h ring structurally cannot give. This is what turns "p95 breached" into an
+      // answerable question: a number that was fine yesterday and is bad today is drift; a number that has looked
+      // like this all week is the baseline, and the honest move there is to fix the page, not to raise the budget.
+      const g = String(url.searchParams.get('g') || '').replace(/[^a-z0-9_-]/gi, '').slice(0, 24);
+      const days = Math.min(14, Math.max(2, +url.searchParams.get('days') || 7));
+      const sql = "SELECT toDate(timestamp) AS d, blob2 AS grp, count() AS n, quantileWeighted(0.5)(double1, _sample_interval) AS p50, quantileWeighted(0.95)(double1, _sample_interval) AS p95 FROM marginpad_events WHERE index1 = 'perf' AND timestamp > now() - INTERVAL '" + days + "' DAY" + (g ? " AND blob2 = '" + g + "'" : '') + " GROUP BY d, grp ORDER BY d DESC, n DESC FORMAT JSON";
+      const r = await aeQuery(env, sql);
+      if (!r) return new Response(JSON.stringify({ error: 'ae_unavailable', hint: 'CF_API_TOKEN / CF_ACCOUNT_ID must be set for the SQL API.' }), { headers: { 'content-type': 'application/json' } });
+      return new Response(JSON.stringify(r), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/lbaudit' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // read-only integrity check on the paid ROE board
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/audit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ season: +url.searchParams.get('season') || 0 }) }));
