@@ -4666,15 +4666,20 @@ async function checkOpsAlerts(env) {
   try {
     if (!env.STATS || !env.TELEGRAM_TOKEN || !env.TG_ADMIN_CHAT) return;
     // BOT API HEALTH. Nothing watched it: a spike of 429s or a store that started failing would have reached us
-    // through a user complaint, or not at all. The perf ring carries the trading store's own service time now
-    // ('do-bot'), so alert when it degrades against its measured baseline rather than against a guess.
+    // through a user complaint, or not at all. 'do-bot' times the hop from the EDGE WORKER to the trading store —
+    // the user's own network is excluded, but the worker-to-store distance is not, and for a region-pinned store
+    // that distance IS most of it. (My first reading of 29ms was my own requests from Serbia; real traffic from
+    // Asian colos is what pulls the p95 to 227ms.) That makes this the metric Smart Placement would move.
     try {
       const ring = (globalThis.__perfBuf || []).filter(x => x && x.g === 'do-bot');
       if (ring.length >= 30) { // this project's own rule: no p95 below n=30
         const ms = ring.map(x => +x.ms || 0).sort((a, b) => a - b);
         const p95 = ms[Math.max(0, Math.ceil(0.95 * ms.length) - 1)];
         const errRate = ring.filter(x => !x.ok).length / ring.length;
-        const BUDGET = 150; // measured 2026-08-20: p50 29ms, p95 48ms with the network excluded. 150 is ~3x that.
+        // CALIBRATED PROPERLY (2026-08-20). I first set this to 150 from an n=10 sample of my own requests, which
+        // is exactly the shortcut this project forbids — n>=30 or it is not a p95. Real traffic, n=239: p50 54ms,
+        // p95 227ms. House formula max(round(p95*1.5), p95+150) gives 377. The old value would have paged nightly.
+        const BUDGET = 377;
         if (p95 > BUDGET || errRate > 0.02) {
           const dk = 'alrt:boterr:' + new Date().toISOString().slice(0, 13);
           if (!(await env.STATS.get(dk))) {
@@ -10092,10 +10097,10 @@ async function handleBot(url, request, env, ctx) {
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: hdrs() });
   if (!env.USERS) return jb({ error: 'unavailable' }, 503);
   const stub = env.USERS.get(env.USERS.idFromName('main'));
-  // Every Durable Object hop, timed SERVER-SIDE so the number is the store's own service time with the network to
-  // the caller excluded. Client-side timing conflates the two: measured 2026-08-19, one hop is ~20ms from Europe
-  // and ~198ms p50 / 368ms p95 from Singapore, and none of that gap is the DO's fault. Sampled 1-in-4; the ops
-  // Performance tab groups it as 'do-bot'. This is the baseline any capacity work has to be measured against.
+  // Every Durable Object hop, timed inside the worker: this is the EDGE-WORKER-TO-STORE round trip. It excludes
+  // the user's own network but NOT the worker-to-store distance, and for a region-pinned store that distance is
+  // most of the number — which is the point, because it is precisely what Smart Placement or a per-user store
+  // would collapse. Real traffic n=239: p50 54ms, p95 227ms. Sampled 1-in-4; ops Performance tab, group 'do-bot'.
   const doCall = async (p, body) => {
     const _t0 = Date.now();
     try { const r = await stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })); const j = await r.json();
@@ -12539,6 +12544,10 @@ export default {
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/affiliate')); sj = await rr.json(); } catch (e) {}
       try { const cfg = await rewardCfg(env); sj.referralUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 0.5; } catch (e) { sj.referralUsd = 0.5; }
       return new Response(JSON.stringify(sj), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/lbaudit' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // read-only integrity check on the paid ROE board
+      const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/audit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ season: +url.searchParams.get('season') || 0 }) }));
+      return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/statsrepair' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // ?dry=1 first, always
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/statsrepair', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ dry: url.searchParams.get('dry') === '1', reset: url.searchParams.get('reset') === '1', relife: url.searchParams.get('relife') === '1' }) }));
@@ -15357,7 +15366,8 @@ export class UserStore {
     s.exec('CREATE INDEX IF NOT EXISTS tradeev_ts ON tradeev(ts)'); // claimed daily missions (verification runs against uevents) // per-user per-endpoint daily API usage (the ops API tab reads this)
     try { s.exec('CREATE INDEX IF NOT EXISTS tradeev_uid ON tradeev(user_id, ts)'); } catch (e) {} // for per-user window stats (duels)
     try { s.exec('ALTER TABLE tradeev ADD COLUMN via TEXT'); } catch (e) {} // B3: executor attribution — client / site / bot / sweep / cron / sltp
-    try { s.exec('ALTER TABLE tradeev ADD COLUMN tid TEXT'); } catch (e) {} // trade id — lets recovery paths join open<->close EXACTLY (the lbbest backfill admitted a pre-season open at board rank 1 because closes alone can't prove when the trade opened)
+    try { s.exec('ALTER TABLE tradeev ADD COLUMN tid TEXT'); } catch (e) {}
+    try { s.exec('ALTER TABLE tradeev ADD COLUMN src TEXT'); } catch (e) {} // the trade's ORIGIN (srv/bot/app). `via` records who EXECUTED the close and cannot stand in for it: a server-filled trade closed through the bot API carries via='bot' too, so filtering on via alone either admits bot-filled trades to the paid board or wrongly excludes legitimate ones. // trade id — lets recovery paths join open<->close EXACTLY (the lbbest backfill admitted a pre-season open at board rank 1 because closes alone can't prove when the trade opened)
     s.exec('CREATE TABLE IF NOT EXISTS duels(id TEXT PRIMARY KEY, a_uid TEXT, b_uid TEXT, a_name TEXT, b_name TEXT, metric TEXT, created INTEGER, start_ts INTEGER, end_ts INTEGER, status TEXT, winner TEXT, a_score REAL, b_score REAL, settled INTEGER DEFAULT 0)'); // friend duels (stat challenges). status: pending/active/declined/done/expired. metric: roe/wr/win/pnl/survival/streak/sniper
     ['dur INTEGER', 'stake INTEGER', 'escrowed INTEGER', 'sym TEXT', 'rules TEXT'].forEach(c => { try { s.exec('ALTER TABLE duels ADD COLUMN ' + c); } catch (e) {} }); // Duels 2.0: variable duration, XP wager, escrow state, locked symbol, extra rules json
     try { s.exec('CREATE INDEX IF NOT EXISTS bp_uid ON botpos(uid, ts)'); } catch (e) {}
@@ -15654,7 +15664,7 @@ export class UserStore {
             if (_best && this.rows('SELECT 1 FROM xpboost_ev WHERE user_id=? AND ts=? AND kind=? LIMIT 1', uid, ts9, 'p:' + String(_best.id || ''))[0]) _best = null; /* this exact close already earned this promo once — a DO-reset re-sync must not double-grant */
             if (_best) { var _gp9 = this._grantXp(uid, 'trade_promo', +_best.xp || 0, { dayCap: (+_best.dayCap || 700), note: (String(_best.title || 'XP Promo')).slice(0, 30) + ' · ' + _symU + ' ' + Math.round(roe) + '% ROE' }); if (_gp9 > 0) try { sql.exec('INSERT INTO xpboost_ev(user_id,ts,xp,note,kind) VALUES(?,?,?,?,?)', uid, ts9, _gp9, (_symU + ' ' + Math.round(roe) + '% ROE +' + _gp9 + ' XP · ' + String(_best.title || 'XP Promo')).slice(0, 60), 'p:' + String(_best.id || '')); } catch (e7) {} } } } } catch (xe) {}
         if (nIns >= 60 && !(kind === 'close' && pv != null && pv <= 0)) continue; // per-sync cap (20→60); a LOSING close is ALWAYS logged so a heavy trader can't shed losses from the win-rate log in a burst
-        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24));
+        sql.exec('INSERT INTO tradeev(user_id,ts,kind,sym,side,lev,margin,pnl,roe,liq,via,tid,src) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)', uid, ts9, kind, String(e.sym || '').toUpperCase().slice(0, 12), e.side === 'short' ? 'short' : 'long', +e.lev || 1, m, pv, roe, liq9, String(via || (srvAuth ? 'server' : 'client')).slice(0, 10), String(e.id || '').slice(0, 24), String((e && e.src) || ''));
         nIns++;
       }
       if (nIns) sql.exec('DELETE FROM tradeev WHERE ts < ?', now - 30 * 86400000); // 30d (was 14d): the season is 14d long, so the old prune deleted early-season closes right before the final payout — the WR board shifted in the season's last days
@@ -16207,9 +16217,48 @@ export class UserStore {
       sql.exec('INSERT INTO xplog(user_id,ts,src,amt,note) VALUES(?,?,?,?,?)', uid, now, 'admin', add, String(b.note || ('set to ' + L.name)).slice(0, 120));
       return this.j({ ok: true, xp: L.min, level: xpLevelOf(L.min) });
     }
+    if (path === '/lbbest/audit') { // Is anything on the PAID board that the close-time rule would refuse? The old
+      // backfill filtered on `via`, which records who executed a close, not what filled the trade — so via='bot' could
+      // seat a bot-API trade on a board that pays real money. lbbest stores no trade id, so each row is matched back
+      // against the user's own journal by (symbol, side, roe) and reported as provable / unprovable / not-srv.
+      const season = +b.season || lbPeriodStart(now);
+      const out = [];
+      for (const r of this.rows('SELECT l.user_id uid, u.username, l.roe, l.pnl, l.symbol, l.side FROM lbbest l LEFT JOIN users u ON u.id=l.user_id WHERE l.season=? ORDER BY l.roe DESC', season)) {
+        let verdict = 'no_match', srcSeen = '';
+        try {
+          for (const t of this._loadJournal(r.uid)) {
+            if (!t || (t.status !== 'win' && t.status !== 'loss')) continue;
+            if (String(t.sym || '').toUpperCase() !== String(r.symbol || '').toUpperCase()) continue;
+            if ((t.side === 'short' ? 'short' : 'long') !== (r.side === 'short' ? 'short' : 'long')) continue;
+            const m = +t.margin, p = +t.pnl; if (!(m > 0) || !isFinite(p)) continue;
+            if (Math.abs((p / m * 100) - (+r.roe || 0)) > 0.5) continue;
+            srcSeen = String(t.src || 'app');
+            verdict = (t.src === 'srv' && t.sc) ? 'ok' : 'INELIGIBLE';
+            break;
+          }
+        } catch (e) {}
+        out.push({ uid: r.uid, who: r.username || r.uid, roe: Math.round((+r.roe || 0) * 10) / 10, sym: r.symbol, side: r.side, verdict, src: srcSeen });
+      }
+      return this.j({ season, rows: out.length, ineligible: out.filter(x => x.verdict === 'INELIGIBLE').length, noMatch: out.filter(x => x.verdict === 'no_match').length, flagged: out.map((x, i) => Object.assign({ rank: i + 1 }, x)).filter(x => x.verdict !== 'ok'), top: out.slice(0, 20) }); // flagged is never truncated - an audit that hides what it looked for is worthless
+    }
     if (path === '/lbbest/backfill') { // SELF-HEAL (2026-08-12, indrianta47 ticket = 3rd loss of a season-best to the blob trim): recompute every user's season-best from the 30-day tradeev close log (which survives ALL blob trims) and keep-max into lbbest. Runs daily from the cron + on demand. STRICT opened-this-season proof (Tiger90 lesson, same day: the first version admitted a pre-season 700x open at board rank 1): a close counts ONLY with a provable in-season open — exact tid match when both rows carry it, else an in-season open of the same (sym,side,lev) tuple. A recovery path must never be LOOSER than the close-time _lbBest it backs up; unprovable closes are skipped (they can still rank via the close-time path or the blob scan, both of which see the real open ts).
       const season9 = +b.season || lbPeriodStart(Date.now());
-      const rows9 = this.rows("SELECT user_id uid, ts, sym, side, lev, margin, pnl, tid FROM tradeev WHERE kind='close' AND ts>=? AND via!='client' AND pnl IS NOT NULL", season9);
+      // MUST NOT BE LOOSER THAN THE CLOSE-TIME PATH (its own rule, broken until 2026-08-20). _lbBest requires
+      // src==='srv' && sc, and the board scan requires the same — but this query filtered on `via`, which records who
+      // executed the close, not what filled the trade. via='bot' therefore slipped bot-API trades onto the PAID ROE
+      // board through the recovery path that the close-time path deliberately refuses. Now it filters on src, and a
+      // row with no src recorded is treated as unprovable and skipped: those can still rank through the close-time
+      // path or the blob scan, both of which see the real origin.
+      // Rows written before src existed carry none. Rather than lose their recovery entirely, prove them the only
+      // other way available: the user's own journal still records src and sc per trade id. Unprovable stays skipped.
+      const rows9 = this.rows("SELECT user_id uid, ts, sym, side, lev, margin, pnl, tid, src FROM tradeev WHERE kind='close' AND ts>=? AND pnl IS NOT NULL", season9);
+      const _srvIds = {}; // uid -> Set of trade ids the journal confirms as srv AND server-closed
+      for (const _u of Array.from(new Set(rows9.filter(r => !r.src).map(r => r.uid)))) {
+        const set = new Set();
+        try { for (const t of this._loadJournal(_u)) { if (t && t.src === 'srv' && t.sc && t.id) set.add(String(t.id)); } } catch (e) {}
+        _srvIds[_u] = set;
+      }
+      let _unprovable = 0;
       const opens9 = this.rows("SELECT user_id uid, ts, sym, side, lev, tid FROM tradeev WHERE kind='open'");
       const opByTid = {}, opByTuple = {};
       for (const o of opens9) {
@@ -16219,6 +16268,8 @@ export class UserStore {
       }
       const best9 = {};
       for (const t of rows9) {
+        if (t.src) { if (t.src !== 'srv') continue; }                                  // recorded origin decides
+        else if (!(t.tid && _srvIds[t.uid] && _srvIds[t.uid].has(String(t.tid)))) { _unprovable++; continue; } // pre-src row the journal cannot vouch for
         const m9 = +t.margin, p9 = +t.pnl; if (!(m9 >= 1) || m9 > 100000 || !isFinite(p9)) continue;
         if (lbExcluded(t.sym)) continue;
         const symU9 = String(t.sym || '').toUpperCase();
@@ -16247,7 +16298,7 @@ export class UserStore {
         if (c9.roe > (+row9.roe)) { sql.exec('UPDATE lbbest SET roe=?, pnl=?, symbol=?, side=? WHERE user_id=? AND season=?', c9.roe, c9.pnl, c9.sym, c9.side, uid9, season9); raised++; }
         if (c9.bp > (+row9.bp)) sql.exec('UPDATE lbbest SET bp=?, bpSym=?, bpSide=? WHERE user_id=? AND season=?', c9.bp, c9.bpSym || c9.sym, c9.bpSide || c9.side, uid9, season9);
       }
-      return this.j({ ok: true, season: season9, closes: rows9.length, users: Object.keys(best9).length, inserted, raised });
+      return this.j({ ok: true, season: season9, closes: rows9.length, users: Object.keys(best9).length, inserted, raised, unprovable: _unprovable });
     }
     if (path === '/lbbest/remove') { // admin correction: DELETE a user's lbbest row for a season — for entries proven ineligible (e.g. the backfill v1 admitted a pre-season open). The board then falls back to the blob scan / close-time values, which both enforce the real rules; the strict backfill will not re-insert it.
       const uidR = String(b.uid || ''); const seasonR = +b.season || lbPeriodStart(Date.now());
