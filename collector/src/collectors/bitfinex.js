@@ -15,6 +15,12 @@ export class BitfinexCollector extends BaseCollector {
     super('bitfinex', opts);
     this.silenceMs = 40000; // 'hb' every ~15s keeps this well-fed
     this.staleMs = 0;       // liquidations are sparse; don't event-stale
+    // POS_ID -> first-seen ts. liq:global re-reports the SAME position many times while it is being
+    // ground down (and re-lists everything in-progress in the snapshot on every reconnect), and each
+    // update carries a fresh MTS/price — so the DB dedup key (ts,price,qty) never catches it. One
+    // 2314-BTC position was re-counted into ~$848M of phantom longs in a single day (found
+    // 2026-08-21). A liquidation is ONE event: emit each POS_ID once, remember it for 7 days.
+    this._seenPos = new Map();
   }
   url() { return 'wss://api-pub.bitfinex.com/ws/2'; }
   subscribeFrames() { return [{ event: 'subscribe', channel: 'status', key: 'liq:global' }]; }
@@ -28,8 +34,18 @@ export class BitfinexCollector extends BaseCollector {
     // update = a single ["pos", ...]; snapshot = [ ["pos",...], ["pos",...] ]
     const rows = Array.isArray(payload[0]) ? payload : [payload];
     const out = [];
+    const now = Date.now();
+    if (this._seenPos.size > 5000 || (this._lastPrune || 0) < now - 3600000) { // hourly prune, 7-day memory
+      this._lastPrune = now;
+      for (const [id, ts] of this._seenPos) if (ts < now - 7 * 86400000) this._seenPos.delete(id);
+    }
     for (const row of rows) {
       if (!Array.isArray(row) || row[0] !== 'pos') continue;
+      const posId = row[1];
+      if (posId != null) {
+        if (this._seenPos.has(posId)) continue; // an update/snapshot re-report of a position we already counted
+        this._seenPos.set(posId, now);
+      }
       const m = SYM_RE.exec(row[4] || ''); if (!m) continue;
       // TESTBTC/TESTUSD etc. are Bitfinex PAPER-TRADING instruments — real fills, but not a real
       // market. They were inflating our 24h totals and one of them surfaced as "the single largest
