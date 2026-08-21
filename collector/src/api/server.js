@@ -3,6 +3,7 @@
 import express from 'express';
 import { config } from '../../config.js';
 import { log } from '../logger.js';
+import { getWhales } from '../whales.js';
 
 // ---- tiny in-memory rate limiter (per IP per minute) ----
 const hits = new Map();
@@ -232,6 +233,12 @@ export function createApiServer({ storage, getStatus, bus }) {
       res.set('Cache-Control', 'public, max-age=30');
       return res.status(r.status).type('application/json').send(body);
     } catch (e) { return res.status(502).json({ error: 'okx_unreachable', detail: String(e).slice(0, 120) }); }
+  });
+
+  // Hyperliquid whale tracker (phase D): biggest open positions + recent changes, from src/whales.js
+  app.get('/api/v1/whales', (req, res) => {
+    try { res.set('Cache-Control', 'public, max-age=60'); res.json(getWhales()); }
+    catch (e) { res.status(500).json({ error: 'server' }); }
   });
 
   // Health — per-exchange socket state, last event, events/min. Check it from your phone.

@@ -20,6 +20,7 @@ import { BinanceCoinCollector } from './collectors/binancecoin.js';
 import { GateLiqCollector, HtxLiqCollector, DydxLiqCollector } from './collectors/restpoll.js'; // REST-polled public liq feeds (2026-07-25)
 import { HyperliquidLiqCollector } from './collectors/hyperliquid.js'; // counterparty-harvest detection (no public liq stream exists)
 import { startPhase2 } from './phase2.js';
+import { startWhales } from './whales.js';
 
 const migrationsDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'migrations');
 const startedAt = Date.now();
@@ -75,6 +76,7 @@ async function main() {
   await Promise.allSettled(collectors.map((c) => c.init()));
   collectors.forEach((c) => c.start());
   const okx = collectors.find((c) => c.name === 'okx');
+startWhales(); // Hyperliquid whale tracker (positions + alerts for /hyperliquid-whales/)
   const p2 = startPhase2(storage, okx ? okx.ctVal : {});  // Phase 2 OI poller + cluster model
   const aggTimer = setInterval(aggregateTick, config.aggIntervalMs);
   const pruneTimer = setInterval(pruneTick, config.pruneIntervalMs);
