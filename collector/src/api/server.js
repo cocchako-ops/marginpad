@@ -212,6 +212,28 @@ export function createApiServer({ storage, getStatus, bus }) {
     } catch (e) { return res.status(502).json({ error: 'binance_unreachable', detail: String(e).slice(0, 120) }); }
   });
 
+  // OKX proxy (2026-08-22): the rubik stats endpoints reject Cloudflare-Worker IPs (market-data
+  // endpoints do not), so the worker reaches them through this box. Strict allowlist, same
+  // short-cache pattern as /api/v1/bnc.
+  const OKX_ALLOW = /^\/api\/v5\/rubik\/stat\/contracts\/(long-short-account-ratio|open-interest-volume)$/;
+  const okxCache = new Map();
+  setInterval(() => { const c = Date.now() - 60000; for (const [k, v] of okxCache) if (v.t < c) okxCache.delete(k); }, 60000).unref?.();
+  app.get('/api/v1/okx', async (req, res) => {
+    const p2 = String(req.query.path || '');
+    if (!OKX_ALLOW.test(p2)) return res.status(400).json({ error: 'path_not_allowed' });
+    const qs = Object.entries(req.query).filter(([k]) => k !== 'path').map(([k, v]) => k + '=' + encodeURIComponent(String(v))).join('&');
+    const url = 'https://www.okx.com' + p2 + (qs ? '?' + qs : '');
+    const hitO = okxCache.get(url);
+    if (hitO && Date.now() - hitO.t < 30000) { res.set('Cache-Control', 'public, max-age=30'); res.set('x-okx-cache', 'hit'); return res.status(hitO.status).type('application/json').send(hitO.body); }
+    try {
+      const r = await fetch(url, { signal: AbortSignal.timeout(9000) });
+      const body = await r.text();
+      if (r.status === 200) okxCache.set(url, { t: Date.now(), status: r.status, body });
+      res.set('Cache-Control', 'public, max-age=30');
+      return res.status(r.status).type('application/json').send(body);
+    } catch (e) { return res.status(502).json({ error: 'okx_unreachable', detail: String(e).slice(0, 120) }); }
+  });
+
   // Health — per-exchange socket state, last event, events/min. Check it from your phone.
   app.get('/api/v1/status', (req, res) => { res.set('Cache-Control', 'no-store'); res.json(getStatus()); });
   app.get('/api/v1/health', (req, res) => res.json({ ok: true }));
