@@ -134,6 +134,7 @@
     <div class="cta-row">
       <button class="btn btn-primary" data-buy="monthly">Get Premium — $3.99/mo</button>
       <button class="btn btn-ghost" data-buy="founder">Founder — $35 lifetime</button>
+      <button class="btn btn-ghost" data-buy="balance" id="payBal" hidden>Pay from my rewards balance — $3.99</button>
     </div>
     <div class="scarcity"><span class="dot"></span>The first 5 members lock in lifetime Premium.</div>
     <div id="pmsg"></div>
@@ -209,6 +210,7 @@
     <div class="cta-row">
       <button class="btn btn-primary" data-buy="monthly">Get Premium — $3.99/mo</button>
       <button class="btn btn-ghost" data-buy="founder">Founder — $35 lifetime</button>
+      <button class="btn btn-ghost" data-buy="balance" id="payBal" hidden>Pay from my rewards balance — $3.99</button>
     </div>
   </div>
 </div>
@@ -226,6 +228,7 @@
       if(!me){ if(window.mpAuth && window.mpAuth.open) window.mpAuth.open(); else msg.textContent='Please sign in first.'; return; }
       var label = btn && btn.textContent;
       if(btn){ btn.disabled=true; btn.style.opacity='.6'; btn.textContent='Starting checkout...'; }
+      if(plan==='balance'){ fetch('/api/premium/paybalance',{method:'POST',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ if(btn){btn.textContent='Premium is on — welcome';} msg.textContent='Active until '+new Date(j.until).toISOString().slice(0,10)+'. Reloading...'; setTimeout(function(){location.reload();},1400); return; } if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent=label;} msg.textContent=(j&&j.error==='insufficient')?('Not enough balance — you have $'+(+j.balance||0).toFixed(2)+'.'):(j&&j.error==='already_premium')?'You are already Premium — thank you!':'Could not activate. Please try again.'; }).catch(function(){ if(btn){btn.disabled=false;btn.style.opacity='1';btn.textContent=label;} msg.textContent='Network error — please try again.'; }); return; }
       fetch('/api/premium/checkout' + (plan==='founder'?'?plan=founder':''), {method:'POST'})
         .then(function(r){return r.json();}).then(function(j){
           if(j && j.invoice_url){ location.href = j.invoice_url; return; }
@@ -236,6 +239,8 @@
     document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-buy]'); if(b){ e.preventDefault(); buy(b.getAttribute('data-buy'), b); } });
     // if a premium member lands here, gently reflect it
     fetch('/api/premium/status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(s){ if(s && s.premium){ msg.textContent = 'You are already a Premium member — thank you.'; } }).catch(function(){});
+    function showBal(){ var b=document.getElementById('payBal'); if(!b) return; fetch('/api/reward/account',{credentials:'same-origin',cache:'no-store'}).then(function(r){return r.json();}).then(function(a){ var bal=a&&(a.balanceUsd!=null?+a.balanceUsd:(a.balance!=null?+a.balance/100:0)); if(bal>=3.99){ b.hidden=false; b.textContent='Pay from my rewards balance — $3.99 (you have $'+bal.toFixed(2)+')'; } }).catch(function(){}); }
+    showBal(); window.addEventListener('mp-auth-change', showBal);
   })();
 </script>
 <script defer src="/assets/mp-auth.js"></script>
