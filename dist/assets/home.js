@@ -1394,7 +1394,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
         else if(q.get('fbclid'))src='facebook';
         else if(q.get('twclid'))src='twitter';
         else if(q.get('ttclid'))src='tiktok';
-        else if(q.get('ref'))src=q.get('ref');
+        else if(q.get('ref'))src='referral';/* a referral CODE is not a traffic source — it used to land raw in ops 'By source' (2026-09-02) */
       }
       if(!src&&document.referrer){try{var h=new URL(document.referrer).hostname.replace(/^www\./,'');if(h&&h!=='marginpad.io')src=h;}catch(_){}}
       src=(src||'').slice(0,40);
@@ -1429,6 +1429,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     // Google Ads / GA4 conversion signal on affiliate (exchange) clicks — the revenue proxy the campaign optimises toward
     if(t==='exchange'&&window.gtag){try{gtag('event','affiliate_click',{exchange:e||'',page:location.pathname});if(ADS_CONV_LABEL){gtag('event','conversion',{send_to:'AW-18230384038/'+ADS_CONV_LABEL});}}catch(_){}}
   }
+  window.__mpPv=1;/* tell mp-nav.js's universal beacon this page already sent its pageview — it only scanned INLINE scripts, so every app-shell route was counted twice (2026-09-02) */
   send('pageview');
   window.__mpTrack=send;
   // log nav-bar taps (Browse / Practice / Trades / Chat) so the admin sees WHEN visitors use the nav bar, not just which pages load

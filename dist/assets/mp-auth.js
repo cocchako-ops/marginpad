@@ -9,7 +9,7 @@
   function landingSrc() { // where this person first came from (home.js stores it as mp_src0 / mp_src); sent with signup so ops reads "landed from Google"
     try { var r = localStorage.getItem('mp_src0'); if (r) { var o = JSON.parse(r); if (o && o.s) return String(o.s).slice(0, 40); } } catch (e) {}
     try { var s = sessionStorage.getItem('mp_src'); if (s) return String(s).slice(0, 40); } catch (e) {}
-    try { var q = new URLSearchParams(location.search || ''); if (q.get('gclid') || q.get('gbraid') || q.get('wbraid')) return 'google-ads'; if (q.get('utm_source')) return String(q.get('utm_source')).slice(0, 40); if (q.get('ref')) return String(q.get('ref')).slice(0, 40); } catch (e) {}
+    try { var q = new URLSearchParams(location.search || ''); if (q.get('gclid') || q.get('gbraid') || q.get('wbraid')) return 'google-ads'; if (q.get('utm_source')) return String(q.get('utm_source')).slice(0, 40); if (q.get('ref')) return 'referral:' + String(q.get('ref')).replace(/[^a-zA-Z0-9]/g, '').slice(0, 24); /* sign-up source keeps the code (the ops feed shows who referred), the traffic beacons do not */ } catch (e) {}
     try { if (document.referrer) { var h = new URL(document.referrer).hostname.replace(/^www\./, ''); if (h && h !== 'marginpad.io') return h.slice(0, 40); } } catch (e) {}
     return '';
   }
