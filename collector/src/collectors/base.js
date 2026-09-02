@@ -27,10 +27,14 @@ export class BaseCollector {
     this.lastMsgAt = 0;
     this.lastEventAt = 0;
     this.eventsTotal = 0;
+    this.connectMs = 20000;        // handshake must produce 'open' within this long, or the attempt is retried
     this._silenceTimer = null;
     this._pingTimer = null;
     this._lifeTimer = null;
     this._staleTimer = null;
+    this._connectTimer = null;
+    this._gen = 0;                 // socket generation — handlers of a superseded socket must never touch the live one
+    this._reconnPending = false;   // one reconnect per socket, whichever of error/close/timeout fires first
   }
 
   // ---- subclass surface (override these) ----
@@ -48,13 +52,26 @@ export class BaseCollector {
 
   _connect() {
     if (this.stopped) return;
+    const gen = ++this._gen;
+    this._reconnPending = false;
     const url = this.url();
     log.info(`[${this.name}] connecting`, { url });
     let ws;
-    try { const opt = this.wsOptions(); ws = opt ? new WebSocket(url, opt) : new WebSocket(url); } catch (e) { return this._reconnect('construct: ' + e.message); }
+    try { const opt = this.wsOptions(); ws = opt ? new WebSocket(url, opt) : new WebSocket(url); } catch (e) { return this._reconnect('construct: ' + e.message, gen); }
     this.ws = ws;
+    // The connecting phase had no watchdog at all: every timer below is armed on 'open', and a handshake
+    // that never opens fires no 'close'. Four venues sat dead for days that way (2026-08-23..29).
+    clearTimeout(this._connectTimer);
+    this._connectTimer = setTimeout(() => {
+      if (gen !== this._gen || this.connected) return;
+      log.warn(`[${this.name}] no 'open' within ${this.connectMs}ms — retrying`);
+      try { ws.close(); } catch {}
+      this._reconnect('connect timeout', gen);
+    }, this.connectMs);
 
     ws.addEventListener('open', () => {
+      if (gen !== this._gen) { try { ws.close(); } catch {} return; } // a superseded socket opening late must not take over
+      clearTimeout(this._connectTimer);
       this.connected = true;
       this.backoff = 1000;
       this.lastMsgAt = Date.now();
@@ -68,6 +85,7 @@ export class BaseCollector {
     });
 
     ws.addEventListener('message', (ev) => {
+      if (gen !== this._gen) return;
       this.lastMsgAt = Date.now();
       this._armSilence();
       let events;
@@ -78,14 +96,20 @@ export class BaseCollector {
     });
 
     ws.addEventListener('close', (ev) => {
+      if (gen !== this._gen) return;
       this.connected = false;
       this.onState();
-      this._reconnect(`close ${ev && ev.code}`);
+      this._reconnect(`close ${ev && ev.code}`, gen);
     });
 
     ws.addEventListener('error', (ev) => {
       log.warn(`[${this.name}] ws error`, { msg: ev && ev.message });
-      // a 'close' event follows; reconnect is handled there
+      // A failed handshake ("network error or non-101 status code") fires 'error' WITHOUT a 'close' in
+      // Node's WebSocket — so the reconnect cannot be left to the close handler. Ask for one here; if a
+      // close does follow, the pending guard in _reconnect makes the second request a no-op.
+      if (gen !== this._gen) return;
+      this.connected = false;
+      this._reconnect('error: ' + ((ev && ev.message) || 'unknown'), gen);
     });
   }
 
@@ -125,9 +149,12 @@ export class BaseCollector {
       }
     }, 30000);
   }
-  _clearTimers() { clearTimeout(this._silenceTimer); clearInterval(this._pingTimer); clearTimeout(this._lifeTimer); clearInterval(this._staleTimer); }
+  _clearTimers() { clearTimeout(this._silenceTimer); clearInterval(this._pingTimer); clearTimeout(this._lifeTimer); clearInterval(this._staleTimer); clearTimeout(this._connectTimer); }
 
-  _reconnect(reason) {
+  _reconnect(reason, gen) {
+    if (gen != null && gen !== this._gen) return; // a stale socket's late close/error must not restart the live one
+    if (this._reconnPending) return;              // error + close (or timeout + close) from one socket = one reconnect
+    this._reconnPending = true;
     this._clearTimers();
     if (this.stopped) return;
     const wait = Math.min(this.backoff, this.maxBackoff) + Math.floor(Math.random() * 1000); // backoff + jitter
