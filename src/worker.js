@@ -5303,24 +5303,53 @@ fetch('/api/admin/pmail/data').then(function(r){return r.json();}).then(function
   open_(0);
 }).catch(function(){document.getElementById('lst').innerHTML='<div class="empty">Could not load.</div>';});
 </script></body></html>`;
+// ── Admin sessions v2 (2026-09-02). v1 stored sha256(password) in KV and used THAT SAME HASH as the cookie value: a leaked
+// cookie was the (unsalted, offline-crackable) password hash and a permanent credential. v2: KV holds
+// 'v2:<salt>:<sha256(salt:password)>'; the cookie carries a random 32-byte token whose KV row adm:sess:<cookie>:<token>
+// (30d TTL) IS the session — revocable, unrelated to the password. A v1 row migrates on the next successful login (the
+// old value is kept at <kvKey>:v1 for a code rollback). Brute force: 5 wrong passwords per IP per 15 min → 429 + one
+// Telegram line per IP per hour. Shared by mp_sadm (ops), mp_badm (bug inbox) and mp_pmail (private inbox).
+function _rndHex(n) { const u = new Uint8Array(n); crypto.getRandomValues(u); return Array.from(u).map(b => b.toString(16).padStart(2, '0')).join(''); }
+async function adminPassOk(stored, pass) {
+  if (!stored) return false;
+  if (stored.startsWith('v2:')) { const p = stored.split(':'); return p.length === 3 && (await sha256hex(p[1] + ':' + pass)) === p[2]; }
+  return (await sha256hex(pass)) === stored; // v1 — accepted once, then rewritten as v2 by adminDoLogin
+}
+async function adminPassStore(pass) { const salt = _rndHex(16); return 'v2:' + salt + ':' + (await sha256hex(salt + ':' + pass)); }
+async function adminSessionOk(request, env, cookieName) {
+  try { const tok = adminCookieHash(request, cookieName); if (!/^[0-9a-f]{64}$/.test(tok) || !env || !env.STATS) return false; return !!(await env.STATS.get('adm:sess:' + cookieName + ':' + tok)); } catch (e) { return false; }
+}
 async function adminDoLogin(request, env, kvKey, cookieName, pathScope, go) {
   const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
   let b = {}; try { b = await request.json(); } catch (e) {}
   const pass = String(b.password || '');
   if (pass.length < 4) return new Response(JSON.stringify({ error: 'weak' }), { status: 400, headers: jh });
-  const hash = await sha256hex(pass);
-  const stored = (env.STATS && await env.STATS.get(kvKey)) || '';
-  if (!stored) { if (env.STATS) await env.STATS.put(kvKey, hash); } // first run → whatever he types becomes the password
-  else if (hash !== stored) return new Response(JSON.stringify({ error: 'bad_password' }), { status: 401, headers: jh });
+  if (!env.STATS) return new Response(JSON.stringify({ error: 'no_storage' }), { status: 500, headers: jh });
+  const ip = request.headers.get('cf-connecting-ip') || '', cc = (request.cf && request.cf.country) || '?';
+  const fk = 'adm:fail:' + cookieName + ':' + ip;
+  let fails = 0; try { fails = +(await env.STATS.get(fk)) || 0; } catch (e) {}
+  if (fails >= 5) return new Response(JSON.stringify({ error: 'rate_limited' }), { status: 429, headers: jh });
+  const stored = (await env.STATS.get(kvKey)) || '';
+  const firstRun = !stored;
+  if (firstRun) await env.STATS.put(kvKey, await adminPassStore(pass)); // first run → whatever he types becomes the password
+  else if (!(await adminPassOk(stored, pass))) {
+    try { await env.STATS.put(fk, String(fails + 1), { expirationTtl: 900 }); } catch (e) {}
+    if (fails + 1 >= 5) { try { const ak = 'alrt:admfail:' + cookieName + ':' + ip; if (!(await env.STATS.get(ak))) { await env.STATS.put(ak, '1', { expirationTtl: 3600 }); await tgAdmin(env, '<b>Admin login: 5 wrong passwords</b> for ' + cookieName + ' from ' + ip + ' (' + cc + '). That IP is locked out for 15 min.'); } } catch (e) {} }
+    return new Response(JSON.stringify({ error: 'bad_password' }), { status: 401, headers: jh });
+  }
+  else if (!stored.startsWith('v2:')) { try { await env.STATS.put(kvKey + ':v1', stored); await env.STATS.put(kvKey, await adminPassStore(pass)); } catch (e) {} } // v1 → v2 migration on a proven-good password
+  try { await env.STATS.delete(fk); } catch (e) {}
+  const tok = _rndHex(32);
+  await env.STATS.put('adm:sess:' + cookieName + ':' + tok, JSON.stringify({ ts: Date.now(), ip, ua: String(request.headers.get('user-agent') || '').slice(0, 80) }), { expirationTtl: 30 * 86400 });
   const h = new Headers(jh);
-  h.append('set-cookie', cookieName + '=' + hash + '; HttpOnly; Secure; SameSite=Lax; Path=' + pathScope + '; Max-Age=31536000');
+  h.append('set-cookie', cookieName + '=' + tok + '; HttpOnly; Secure; SameSite=Lax; Path=' + pathScope + '; Max-Age=' + (30 * 86400));
   if (cookieName === 'mp_sadm' && pathScope === '/') h.append('set-cookie', cookieName + '=; HttpOnly; Secure; SameSite=Lax; Path=/api/stats; Max-Age=0'); // kill any legacy path-scoped cookie so the dashboard's cross-path fetches get the new Path=/ one
-  return new Response(JSON.stringify({ ok: true, go, firstRun: !stored }), { headers: h });
+  if (cookieName === 'mp_sadm') { try { await tgAdmin(env, 'Admin login OK from ' + ip + ' (' + cc + ')' + (firstRun ? ' - password set (first run)' : '') + '. Not you? Change the password from /api/stats.'); } catch (e) {} }
+  return new Response(JSON.stringify({ ok: true, go, firstRun }), { headers: h });
 }
-async function adminCookieOk(request, env) { // mp_sadm password session == full admin (no key in URL needed)
-  try { const stored = env && env.STATS && await env.STATS.get('cfg:statspass'); return !!stored && adminCookieHash(request, 'mp_sadm') === stored; } catch (e) { return false; }
-}
-function adminLogout(cookieName, pathScope) {
+async function adminCookieOk(request, env) { return adminSessionOk(request, env, 'mp_sadm'); } // mp_sadm session == full admin (no key in URL needed)
+async function adminLogout(request, env, cookieName, pathScope) {
+  try { const tok = adminCookieHash(request, cookieName); if (/^[0-9a-f]{64}$/.test(tok) && env && env.STATS) await env.STATS.delete('adm:sess:' + cookieName + ':' + tok); } catch (e) {} // the row is the session — deleting it revokes the cookie everywhere
   const h = new Headers({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
   h.append('set-cookie', cookieName + '=; HttpOnly; Secure; SameSite=Lax; Path=' + pathScope + '; Max-Age=0');
   if (cookieName === 'mp_sadm') h.append('set-cookie', cookieName + '=; HttpOnly; Secure; SameSite=Lax; Path=/api/stats; Max-Age=0'); // also clear the legacy path-scoped cookie
@@ -5337,7 +5366,7 @@ button{width:100%;background:#c2f64a;color:#0a0b0d;border:none;border-radius:11p
 <button id="go">${firstRun ? 'Set password' : 'Unlock'}</button><div id="e"></div></div>
 <script>var FR=${firstRun ? 'true' : 'false'},P='${loginPath}';
 var p=document.getElementById('p'),p2=document.getElementById('p2'),go=document.getElementById('go'),e=document.getElementById('e');
-function submit(){var v=p.value;if(v.length<4){e.textContent='At least 4 characters.';return;}if(FR&&p2&&v!==p2.value){e.textContent='Passwords do not match.';return;}go.disabled=true;e.textContent='';fetch(P,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:v})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){location.href=d.go||location.pathname;}else{go.disabled=false;e.textContent=(d&&d.error==='weak')?'At least 4 characters.':'Wrong password.';p.value='';if(p2)p2.value='';p.focus();}}).catch(function(){go.disabled=false;e.textContent='Network error.';});}
+function submit(){var v=p.value;if(v.length<4){e.textContent='At least 4 characters.';return;}if(FR&&p2&&v!==p2.value){e.textContent='Passwords do not match.';return;}go.disabled=true;e.textContent='';fetch(P,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({password:v})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){location.href=d.go||location.pathname;}else{go.disabled=false;e.textContent=(d&&d.error==='weak')?'At least 4 characters.':(d&&d.error==='rate_limited')?'Too many attempts. Try again in 15 minutes.':'Wrong password.';p.value='';if(p2)p2.value='';p.focus();}}).catch(function(){go.disabled=false;e.textContent='Network error.';});}
 go.addEventListener('click',submit);[p,p2].forEach(function(el){if(el)el.addEventListener('keydown',function(ev){if(ev.key==='Enter')submit();});});</script></body></html>`;
 }
 
@@ -5348,14 +5377,14 @@ async function handleBug(url, request, env) {
   const STATS = env.STATS;
   if (!STATS) return new Response(JSON.stringify({ error: 'no_storage' }), { status: 500, headers: jh });
   const bugPass = (await STATS.get('cfg:bugpass2')) || ''; // SHA-256 of the bro's password (set on first login), '' until set
-  const cookOk = !!bugPass && adminCookieHash(request, 'mp_badm') === bugPass;
+  const cookOk = !!bugPass && (await adminSessionOk(request, env, 'mp_badm'));
   const authed = () => cookOk; // the /api/bug password cookie (mp_badm) is the only way in — no ?key= access
   // Read-only machine credential for the local bug-inbox watcher: a dedicated secret sent as a HEADER (never a
   // shareable URL, independent of the admin key). Gates ONLY /api/bug/list below — no mutating actions.
   const watchOk = !!env.BUG_WATCH_TOKEN && request.headers.get('x-watch-token') === env.BUG_WATCH_TOKEN;
   const readBody = async () => { try { return await request.json(); } catch (e) { return {}; } };
   if (request.method === 'POST' && path === '/api/bug/login') return adminDoLogin(request, env, 'cfg:bugpass2', 'mp_badm', '/api/bug', '/api/bug');
-  if (request.method === 'POST' && path === '/api/bug/logout') return adminLogout('mp_badm', '/api/bug');
+  if (request.method === 'POST' && path === '/api/bug/logout') return adminLogout(request, env, 'mp_badm', '/api/bug');
   async function listBugs() {
     const out = [];
     try { const r = await STATS.list({ prefix: 'bug:' });
@@ -5546,7 +5575,7 @@ async function handleStats(url, env, request, ctx) {
   // Self-heal the session scope: on every dashboard load, re-issue the cookie at Path=/ and expire any legacy
   // Path=/api/stats cookie. Fixes dashboards whose cookie was still scoped to /api/stats (so cross-path admin
   // fetches — /api/auth/*, /api/reward/*, /chat/* — got no cookie and showed "forbidden"/no data). Same value.
-  const _ph = (await env.STATS.get('cfg:statspass')) || '';
+  const _ph = adminCookieHash(request, 'mp_sadm'); // cookieOk above proved this token; re-issue it at Path=/ (same value)
   const _upg = _ph ? ['mp_sadm=' + _ph + '; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=31536000', 'mp_sadm=; HttpOnly; Secure; SameSite=Lax; Path=/api/stats; Max-Age=0'] : [];
   if (url.searchParams.get('clearerr') && isAdmin) { try { await env.STATS.delete('srverrlog'); await env.STATS.delete('st:cache'); } catch (e) {} return Response.redirect(url.origin + url.pathname + '?nc=1', 302); } // dismiss the resolved error log
   const htmlResp = (h) => { const hd = new Headers({ 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }); _upg.forEach(c => hd.append('set-cookie', c)); return new Response(h, { headers: hd }); };
@@ -12575,7 +12604,7 @@ export default {
       return resp;
     }
     if (url.pathname === '/api/stats/login') return adminDoLogin(request, env, 'cfg:statspass', 'mp_sadm', '/', url.origin + '/api/stats');
-    if (url.pathname === '/api/stats/logout') return adminLogout('mp_sadm', '/');
+    if (url.pathname === '/api/stats/logout') return adminLogout(request, env, 'mp_sadm', '/');
     if (url.pathname === '/api/stats') return handleStats(url, env, request, ctx);
     if (url.pathname === '/api/bug' || url.pathname.startsWith('/api/bug/')) return handleBug(url, request, env);
     if (url.pathname === '/api/comments') return handleComments(url, request, env);
@@ -13286,16 +13315,16 @@ export default {
       if (!had && !(await adminCookieOk(request, env)) && !isAdminKey(env, url.searchParams.get('key'))) return new Response(JSON.stringify({ error: 'admin_required_for_first_setup' }), { status: 403, headers: { 'content-type': 'application/json' } });
       return adminDoLogin(request, env, 'cfg:pmailpass', 'mp_pmail', '/api/admin/pmail', '/api/admin/pmail');
     }
-    if (url.pathname === '/api/admin/pmail/logout' && request.method === 'POST') return adminLogout('mp_pmail', '/api/admin/pmail');
+    if (url.pathname === '/api/admin/pmail/logout' && request.method === 'POST') return adminLogout(request, env, 'mp_pmail', '/api/admin/pmail');
     if (url.pathname === '/api/admin/pmail/data') {
       const stored = (env.STATS && await env.STATS.get('cfg:pmailpass')) || '';
-      if (!stored || adminCookieHash(request, 'mp_pmail') !== stored) return new Response(JSON.stringify({ error: 'locked' }), { status: 401, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+      if (!stored || !(await adminSessionOk(request, env, 'mp_pmail'))) return new Response(JSON.stringify({ error: 'locked' }), { status: 401, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
       let ring = []; try { ring = JSON.parse((await env.STATS.get('pmail')) || '[]'); } catch (e) {}
       return new Response(JSON.stringify({ mail: ring.slice(0, 100) }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/pmail') {
       const stored = (env.STATS && await env.STATS.get('cfg:pmailpass')) || '';
-      if (!stored || adminCookieHash(request, 'mp_pmail') !== stored) return new Response(adminLoginHTML('Private inbox', !stored, '/api/admin/pmail/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
+      if (!stored || !(await adminSessionOk(request, env, 'mp_pmail'))) return new Response(adminLoginHTML('Private inbox', !stored, '/api/admin/pmail/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
       return new Response(PMAIL_HTML, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
     }
     if (url.pathname === '/api/admin/liqdiag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // where does the liquidation archive chain break?
