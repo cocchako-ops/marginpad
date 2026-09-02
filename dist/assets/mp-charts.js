@@ -996,8 +996,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       w.legItems=[];var lg=document.createElement('div');lg.className='cwin-leg';host.appendChild(lg);w.legEl=lg;try{w.chart.subscribeCrosshairMove(function(param){cwLeg(w,param);syncCrosshair(w,param);});}catch(_){}try{w.chart.timeScale().subscribeVisibleLogicalRangeChange(function(r){if(r&&r.from<12)loadMoreW(w);});}catch(_){} }catch(e){return;}
     loadData(w,true); }); }
   function loadData(w,first){ if(w._ls&&w._ls!==w.sym&&w.chAlerts&&w.chAlerts.length){w.chAlerts.forEach(function(a){if(a.pl&&w.candle)try{w.candle.removePriceLine(a.pl);}catch(e){}});w.chAlerts=[];} /* alert lines are per-symbol — drop them when the window switches coins (the server alert for the old coin stays) */ w._ls=w.sym;w._lt=w.tf;w._noMore=false;w._lm=false;w._mpg=0;/* restart history pagination for the new symbol/TF (w._mpg = page counter for the hard cap) */try{aiClearPlan(w);}catch(e){}/* AI-drawn plan lines are a snapshot for the old symbol/TF — clear on switch */showSkel(w,true);try{if(window.mpWS)window.mpWS.sub(w.sym);}catch(e){} // stream this symbol live the moment its chart loads
+    var _q=w._kq=(w._kq||0)+1;/* request ticket: a full-window klines response only applies while it is the NEWEST full-window request for this window (2026-09-02) */
     fetch('/api/klines?symbol='+encodeURIComponent(w.sym)+'&interval='+w.tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
-      if(w.dead||w._ls!==w.sym||w._lt!==w.tf||!w.candle)return;
+      if(w.dead||w._ls!==w.sym||w._lt!==w.tf||!w.candle||_q!==w._kq)return;
       if(kd&&kd.length){kd=sanitizeBars(kd);w.bars=kd;applyPrec(w.candle,kd[kd.length-1].close);try{w.candle.setData(kd);}catch(e){}w.lastBar=kd[kd.length-1];w._lgp=w.lastBar&&w.lastBar.close||0;w._rej=0;w._disp=null;/* snap eased close to the new symbol */applyInds(w);try{if(w.dr&&w.dr.reload)w.dr.reload();}catch(e){}/* restore this symbol:TF's saved drawings (time-anchored) */if(first){w._userPS=false;try{w.chart.priceScale('right').applyOptions({autoScale:true});var _vn=kd.length;w.chart.timeScale().setVisibleLogicalRange({from:Math.max(0,_vn-120),to:_vn+6});}catch(e){}}}/* re-enable price auto-scale on every symbol/TF change so the chart re-fits to the new range (XRP 1.1 → BTC 63k) instead of staying stuck. setVisibleLogicalRange (was scrollToRealTime) pins the last ~120 bars so a deep-history dataset never renders squished/sparse. */
       showSkel(w,false); }); }
   // Quietly re-sync the candles with the exchange's true OHLC (no skeleton, preserves the view). The live WS feed only
@@ -1006,8 +1007,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // the authoritative klines erases any such phantom. Mirrors the mobile engine's 60s reload.
   function refreshData(w){ if(w.dead||!w.candle||w._lm)return; var sym=w.sym,tf=w.tf; // w._lm: don't race loadMoreW's pagination
     try{var _vr=w.chart.timeScale().getVisibleLogicalRange();if(_vr&&w.bars&&w.bars.length&&_vr.to<w.bars.length-3)return;}catch(e){} // user scrolled into history → don't setData under them (drops paginated bars)
+    var _q=w._kq=(w._kq||0)+1;
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
-      if(w.dead||w.sym!==sym||w.tf!==tf||!w.candle||!kd||!kd.length)return;
+      if(w.dead||w.sym!==sym||w.tf!==tf||!w.candle||_q!==w._kq||!kd||!kd.length)return;
       kd=sanitizeBars(kd);w._hole=0;/* server answered — the diff below heals any missing minutes (or the hole is legit per the authority) */
       /* WINDOW-ALIGNED diff re-sync (2026-08-12, owner: a closed candle must NEVER visibly change). Compare by
          TIME over the overlap (a roll shifts the server window → the old index/length diff full-repainted every

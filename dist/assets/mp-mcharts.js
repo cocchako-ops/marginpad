@@ -206,9 +206,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   // change, first load, re-open) → apply THEN jump to the live edge. resyncKlines = background re-sync (60s reload,
   // gap, tab-return) → a scroll-back GUARD lives INSIDE it (can't be bypassed) and it NEVER scrolls. _applyKlines is the
   // shared core and NEVER touches the time position (safe default); the edge-jump exists ONLY in loadKlines.
-  function _applyKlines(p){ if(!p.candle)return Promise.resolve(false);var sym=p.sym,tf=p.tf;p.reload=Date.now();
+  function _applyKlines(p){ if(!p.candle)return Promise.resolve(false);var sym=p.sym,tf=p.tf;p.reload=Date.now();var _q=p._kq=(p._kq||0)+1;/* request ticket (2026-09-02): only the newest full-window request for this pane may apply */
     return fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
-      if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle)return false;
+      if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle||_q!==p._kq)return false;
       var ok=false;
       if(kd&&kd.length){kd=sanitizeBars(kd);p.bars=kd;p._hole=0;p._noMore=false;p._mpg=0;p._lm=false;/* fresh full load (initial/sym/TF/edge-resync) replaces bars → restart history pagination for this pane */p.lastBar=kd[kd.length-1];p._lgp=+p.lastBar.close||0;p._rej=0;try{p.candle.setData(kd);var _lp=Math.abs(+p.lastBar.close)||0,_pc=(_lp>=1000?2:_lp>=100?3:_lp>=10?3:_lp>=1?4:_lp>=0.1?4:_lp>=0.01?5:_lp>=0.001?6:_lp>=0.0001?7:_lp>=0.00001?8:9);p.candle.applyOptions({priceFormat:{type:'price',precision:_pc,minMove:Math.pow(10,-_pc)}});if(!p._userPS)p.chart.priceScale('right').applyOptions({autoScale:true});}catch(e){}applyInds(p);if(p.trades)drawTrades(p);/* ~5 sig figs — mobile had NO precision set (LWC default 2dp hid XRP 1.0904) */try{if(p.w){p.w.sym=p.sym;p.w.tf=p.tf;p.w.bars=p.bars;if(p.w.dr&&p.w.dr.reload)p.w.dr.reload();}}catch(e){}ok=true;}
       label(p);
@@ -223,9 +223,9 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
        NOTHING, new trailing bars are appended via update(), our live forming bar is never regressed to the
        edge-cached snapshot, and setData remains only for a truly-different CLOSED bar. _applyKlines stays the
        initial/symbol-change loader (full setData is correct there). */
-    var sym=p.sym,tf=p.tf;p.reload=Date.now();
+    var sym=p.sym,tf=p.tf;p.reload=Date.now();var _q=p._kq=(p._kq||0)+1;
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
-      if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle)return;
+      if(p.dead||sym!==p.sym||tf!==p.tf||!p.candle||_q!==p._kq)return;
       if(!kd||!kd.length){label(p);return;}
       kd=sanitizeBars(kd);
       var _rm=0,_app=[],_mism=false;

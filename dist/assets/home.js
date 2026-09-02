@@ -524,12 +524,14 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
     try{var _slp=(window.mpPlanLive&&window.mpPlanLive.sym===chartSym&&+window.mpPlanLive.price>0)?+window.mpPlanLive.price:((prices[chartSym]&&prices[chartSym].p)||0);if(_slp>0&&lastBar){var _siv=parseInt(chartTf,10)*60,_snb=Math.floor(Date.now()/1000/_siv)*_siv;if(lastBar.time>=_snb){lastBar.close=_slp;if(_slp>lastBar.high)lastBar.high=_slp;if(_slp<lastBar.low)lastBar.low=_slp;candle.update(lastBar);}}}catch(e){}
     _linesSig=null;drawLines();applySignals();hideSkel(); } // reset the line-diff so lines are re-asserted after a full setData
   function preloadTfs(sym,curTf){ if(window.innerWidth<721)return; /* mobile: skip the 6-TF prewarm (~150KB/symbol) — TF switches just fetch on demand (edge-cached); desktop keeps instant switching */ ['1','5','15','60','240','1440','10080'].forEach(function(tf){ if(tf===curTf)return; var ck=sym+'|'+tf; if(klCache[ck])return; fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(kd&&kd.length)klCache[ck]=kd;}); }); }
+  var _kq=0; // klines request ticket (2026-09-02): loadKlines + refreshKlinesQuiet share it — only the newest full-window response may paint
   function loadKlines(){var sym=formSym();chartSym=sym;var tf=chartTf;try{if(window.mpWS)window.mpWS.sub(sym);}catch(e){}bars=[];loadingMore=false;noMore=false;morePages=0;
     var ck=sym+'|'+tf,cached=klCache[ck],_csT=performance.now(); // UX budget: TF/symbol switch → candles painted
     if(cached&&cached.length&&candle){renderKlines(cached);try{if(window.__mpCsWarm&&window.__mpUxm)window.__mpUxm('cs',performance.now()-_csT);}catch(e){}} // INSTANT from the preload cache — no flash on a TF/symbol switch
     var _pk=null;try{if(window.__preK){var _hit=(window.__preK.key===ck);if(_hit)_pk=window.__preK.p;window.__preR=_hit?'hit':'miss';window.__preK=null;}}catch(e){}/* cold-load waterfall: an inline <head> preload may have fired this exact klines request in parallel with the bundle download — pick up its promise instead of a fresh serial fetch. no-store means the browser won't dedupe, so the handoff MUST be the promise not the cache. DRIFT DETECTOR: __preR = hit (key matched) or miss (inline drifted from what loadKlines asks → a wasted request on EVERY cold load, silently, forever — the exact thing this optimization is supposed to REDUCE). __preR rides the perf probe → AE 'preload' rows, so drift surfaces as a metric with a denominator instead of quietly burning infra. consume __preK once either way. */
+    var _q=++_kq;
     (_pk||fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})).then(function(kd){
-      if(sym!==chartSym||tf!==chartTf)return; // user switched again before this resolved → drop the stale response
+      if(sym!==chartSym||tf!==chartTf||_q!==_kq)return; // user switched again before this resolved → drop the stale response
       if(kd&&kd.length){_holeK=0;klCache[ck]=kd;clearNoData();renderKlines(kd);if(!(cached&&cached.length)){try{if(window.__mpUxm){if(window.__mpCsWarm)window.__mpUxm('cs',performance.now()-_csT);else window.__mpUxm('cc',performance.now());}}catch(e){}}try{window.__mpCsWarm=1;}catch(e){}/* cc = COLD first-chart telemetry: performance.now() = nav->first render (the first-impression time ux-chart deliberately skips). Fires once per page load (first cold render, __mpCsWarm still falsy). */} // first load is a COLD page-load fetch, not a switch — the 100ms budget measures switches onlyelse if(!cached){hideSkel();showNoData(sym);} // empty klines = coin our feed can't resolve → show a message, don't leave a silent blank/frozen chart
       (window.requestIdleCallback?requestIdleCallback(function(){preloadTfs(sym,tf);},{timeout:4000}):setTimeout(function(){preloadTfs(sym,tf);},2500)); // warm the other timeframes so the next switch is instant — DEFERRED to browser-idle so the 6-TF prewarm (~114KB of klines) no longer competes with the essential bundle/chart on the cold-load critical path (cut cold load meaningfully); still warm within a few seconds of idle
     }); }
@@ -537,8 +539,9 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
   // tick baked into a (now closed) candle. renderKlines() scrolls to realtime so it can't be used for a periodic refresh.
   function refreshKlinesQuiet(){var sym=chartSym,tf=chartTf;if(!candle||document.hidden||loadingMore)return; // don't race loadMore's pagination (setData mid-append → duplicate/non-monotonic bars)
     try{var _vr=chart.timeScale().getVisibleLogicalRange();if(_vr&&bars.length&&_vr.to<bars.length-3)return;}catch(e){} // user is scrolled into HISTORY → skip the re-sync (setData would drop their paginated bars + the autoScale re-assert would override their zoom). The live edge they're not watching heals on their return.
+    var _q=++_kq;
     fetch('/api/klines?symbol='+encodeURIComponent(sym)+'&interval='+tf,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){
-      if(sym!==chartSym||tf!==chartTf||!candle||!kd||!kd.length)return;
+      if(sym!==chartSym||tf!==chartTf||!candle||_q!==_kq||!kd||!kd.length)return;
       kd=sanitizeBars(kd);_holeK=0;klCache[sym+'|'+tf]=kd;
       /* WINDOW-ALIGNED diff re-sync (2026-08-12, owner: a closed candle must NEVER visibly change).
          The old diff compared by INDEX with a length-equality gate, so every candle roll (server window shifts
@@ -2060,8 +2063,9 @@ window.addEventListener('load', function () {
     var lev=ev.target.closest('.heat-lev'); if(lev){ var n=+lev.getAttribute('data-lev'); levSet[n]=!levSet[n]; lev.classList.toggle('active',levSet[n]); sched(); return; }
     var sd=ev.target.closest('.heat-side'); if(sd){ var sds=document.querySelectorAll('.heat-side'); for(var s=0;s<sds.length;s++)sds[s].classList.remove('active'); sd.classList.add('active'); sideMode=sd.getAttribute('data-side'); updateStats(); sched(); return; }
     var w=ev.target.closest('.heat-win'); if(w&&w.getAttribute('data-w')){ var ws=document.querySelectorAll('.heat-win[data-w]'); for(var i=0;i<ws.length;i++)ws[i].classList.remove('active'); w.classList.add('active'); win=w.getAttribute('data-w'); if(loadedKlines)reloadKlines(); fetchLiq(); return; } });
-  function reloadKlines(){ var c=cur.coin,iv=WIN[win].iv;
-    fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin)return;
+  var _hq=0;
+  function reloadKlines(){ var c=cur.coin,iv=WIN[win].iv;var _q=++_hq;
+    fetch('/api/klines?symbol='+encodeURIComponent(c)+'&interval='+iv,{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){ if(c!==cur.coin||_q!==_hq)return;
       if(kd&&kd.length&&candle){ try{candle.setData(kd);chart.timeScale().fitContent();}catch(e){} lastBar=kd[kd.length-1]; _hlgp=lastBar&&lastBar.close||0; _hrej=0; }
       loadedKlines=true; setTimeout(sched,80); setTimeout(sched,400); }); }
   function load(coin){ // HEATMAP v2 (2026-07-24): the whole section is owned by the standalone /assets/mp-heatmap.js
@@ -2634,7 +2638,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     try{var _pp=document.getElementById('mtpPnl');if(_pp){var _pr=_pp.getBoundingClientRect();if(_pr.bottom>window.innerHeight-76||_pr.top<0)setTimeout(function(){_pp.scrollIntoView({behavior:'smooth',block:'center'});},380);}}catch(e){}/* UX: bring the live P&L pill into view right after opening — the payoff moment was below the fold */};
     if(window.mpSrvOpen){window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt},function(t){_finMt(t);},function(err){if(err&&err.blocked){if(goEl)goEl.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';return;}_finMt(pos);});}else{_finMt(pos);}}
   // ---- mini chart: Paper-Trade candlestick engine + a live LIQ preview (thin lines, tiny tag, blurred see-through red/green zone) ----
-  var chartEl=document.getElementById('mtpChart'),mtCv=null,mtCtx2=null,mtBars=[],mtChartSym=null,mtTagEl=null,_mlgp=0,_mrej=0,_mReload=0,mtReady=false;
+  var chartEl=document.getElementById('mtpChart'),mtCv=null,mtCtx2=null,mtBars=[],mtChartSym=null,mtTagEl=null,_mlgp=0,_mrej=0,_mReload=0,_mtq=0,mtReady=false;
   function sizeChart(){if(!chartEl||!term)return;var mtp=term.querySelector('.mtp');if(mtp&&mtp.offsetHeight>120)chartEl.style.height=Math.round(mtp.offsetHeight*1.2)+'px';}
   // Lightweight CUSTOM CANVAS mini-chart for the homepage preview — NO charting library (loads + runs on weak phones / old in-app WebViews). The real /charts workspace + /paper-trade keep the full LightweightCharts engine untouched.
   function mtEnsure(){if(!chartEl)return null;if(!mtCv){mtCv=document.createElement('canvas');mtCv.style.cssText='position:absolute;inset:0;width:100%;height:100%;display:block';chartEl.appendChild(mtCv);mtTagEl=document.createElement('div');mtTagEl.className='mtc-tag';chartEl.appendChild(mtTagEl);mtCtx2=mtCv.getContext('2d');}var w=chartEl.clientWidth||320,h=chartEl.clientHeight||220,dpr=Math.min(2,window.devicePixelRatio||1),pw=Math.round(w*dpr),ph=Math.round(h*dpr);if(mtCv.width!==pw||mtCv.height!==ph){mtCv.width=pw;mtCv.height=ph;}return {w:w,h:h,dpr:dpr};}
@@ -2656,7 +2660,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     }else if(mtTagEl){mtTagEl.textContent='';}}
   function mtInit(){if(mtReady||!chartEl)return;mtReady=true;mtLoadKlines();}
   function mtReset(){if(mtTagEl)mtTagEl.textContent='';mtDraw();}
-  function mtLoadKlines(){var s=sym;mtChartSym=s;try{if(window.mpWS)window.mpWS.sub(s);}catch(e){}_mReload=Date.now();fetch('/api/klines?symbol='+encodeURIComponent(s)+'&interval=1',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(s!==mtChartSym)return;if(kd&&kd.length){mtBars=kd;_mlgp=+mtBars[mtBars.length-1].close||0;_mrej=0;mtDraw();}});}
+  function mtLoadKlines(){var s=sym;mtChartSym=s;try{if(window.mpWS)window.mpWS.sub(s);}catch(e){}_mReload=Date.now();var _q=++_mtq;fetch('/api/klines?symbol='+encodeURIComponent(s)+'&interval=1',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(kd){if(s!==mtChartSym||_q!==_mtq)return;if(kd&&kd.length){mtBars=kd;_mlgp=+mtBars[mtBars.length-1].close||0;_mrej=0;mtDraw();}});}
   function mtLive(){var p=price(sym);if(!mtBars.length)return;if(Date.now()-_mReload>45000){mtLoadKlines();return;}if(!(p>0))return;if(_mlgp>0&&Math.abs(p-_mlgp)/_mlgp>0.025){if(++_mrej<3)return;}_mlgp=p;_mrej=0;var last=mtBars[mtBars.length-1];last.close=p;if(p>last.high)last.high=p;if(p<last.low)last.low=p;}
   function mtPos(){var d=jload();for(var i=d.length-1;i>=0;i--){if(d[i]&&d[i].status==='open'&&d[i].sym===sym)return d[i];}return null;}
   function mtLiqOf(e){var long=e.side!=='short',lv=(+e.lev>0)?+e.lev:1,mmr=(e.mmr||0.005);return e.liq||(long?e.entry*(1-(1-mmr)/lv):e.entry*(1+(1-mmr)/lv));}
