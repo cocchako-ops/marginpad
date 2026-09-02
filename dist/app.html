@@ -7,8 +7,7 @@
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}
     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
 
     ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
@@ -25,12 +24,10 @@ function rep(m,ln){if(n>=8)return;m=String(m||'').slice(0,140);if(!m||IGN.test(m
 window.addEventListener('error',function(e){if(!e||!e.message)return;var f=(e.filename||'');if(/-extension:/i.test(f))return;var b=f?f.split('/').pop().split('?')[0].slice(0,26):'';rep(e.message+(b?' @'+b:''),e.lineno);},true);
 window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((r&&r.message)||(typeof r==='string'?r:'unhandledrejection'),0);});})();</script>
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <!-- Warm up connections to the off-origin hosts on the critical path (fonts are LCP; gtag fires conversions; CoinGecko serves the trending logos). Discovered late otherwise: fonts.gstatic is only referenced inside fonts.css. -->
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="preconnect" href="https://www.googletagmanager.com" />
 <link rel="preconnect" href="https://api.coingecko.com" />
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <script>/* Mark dedicated-tool routes on <html> BEFORE first paint so the landing never flashes when arriving at /paper-trade, /charts, /calculators (e.g. from the Rekt nav). */(function(){var p=location.pathname,c=document.documentElement;if(/^\/paper-trade\/?$/.test(p))c.className+=' route-paper';else if(/^\/charts\/?$/.test(p))c.className+=' route-charts';else if(/^\/calculators\/?$/.test(p))c.className+=' route-calc';else if(/^\/screener\/?$/.test(p))c.className+=' route-screener';})();</script>
@@ -89,6 +86,9 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <script src="/assets/pwa-nav.js" defer></script>
 <link rel="stylesheet" href="/assets/fonts.css" />
+<!-- The two faces on the LCP path (variable fonts, latin subset) — fonts.css only reveals them after it has itself downloaded and parsed. -->
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/bricolagegrotesque/v9/3y9K6as8bTXq_nANBjzKo3IeZx8z6up5BeSl9D4dj_x9PpZBMlGIInE.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/familjengrotesk/v11/Qw3GZR9ZHiDnImG6-NEMQ41wby8WbHoEjw.woff2" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org","@type": "WebApplication","name": "MarginPad","url": "https://marginpad.io/",
@@ -109,7 +109,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=5db33305">
+<link rel="stylesheet" href="/assets/home.css?v=a61b6420">
 
 
 <script defer src="/assets/sentry.js"></script>
@@ -822,7 +822,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=5db33305"></script>
+<script src="/assets/home.js?v=a61b6420"></script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

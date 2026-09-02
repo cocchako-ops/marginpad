@@ -378,6 +378,7 @@
 // Site-wide announcement banner (set in the admin Settings tab): red = severe, orange = blocker, green = fix/small bug.
 (function () {
   try {
+    if (window.__mpAnn) return; // home.js already fetches + renders the announcement on the app shell — this copy is for standalone pages
     fetch('/api/announce').then(function (r) { return r.ok ? r.json() : null; }).then(function (a) {
       if (!a || !a.level || !a.msg) return;
       try { if (sessionStorage.getItem('mp_ann_x') === String(a.ts)) return; } catch (e) {}
@@ -434,7 +435,7 @@
   if(coinIn&&!document.getElementById('mpSymList')){
     var dl=document.createElement('datalist');dl.id='mpSymList';document.body.appendChild(dl);
     coinIn.setAttribute('list','mpSymList');coinIn.setAttribute('autocapitalize','characters');
-    fetch('/api/symbols').then(function(r){return r.ok?r.json():null;}).then(function(d){
+    (window.__mpSymJ=window.__mpSymJ||fetch('/api/symbols').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})).then(function(d){
       var syms=(d&&d.symbols)||[];dl.innerHTML=syms.slice(0,400).map(function(s){return '<option value="'+s+'">';}).join('');
     }).catch(function(){});
   }

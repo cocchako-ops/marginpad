@@ -26,8 +26,7 @@ const CANON = 'https://marginpad.io/';
 const OG_IMG = 'https://marginpad.io/assets/og.png';
 
 const GTAG = `<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>`;
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');(function(){function l(){if(window.__gtagL)return;window.__gtagL=1;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=AW-18230384038';document.head.appendChild(s);}if(document.readyState==='complete'){setTimeout(l,1500);}else{window.addEventListener('load',function(){setTimeout(l,1500);});}})();</script>`;
 
 const JSONLD = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"MarginPad","url":"https://marginpad.io/","applicationCategory":"FinanceApplication","operatingSystem":"Web","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":${JSON.stringify(DESC)}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"MarginPad","url":"https://marginpad.io/","logo":"https://marginpad.io/assets/og.png","sameAs":["https://t.me/MarginPadBot"]}</script>
@@ -42,7 +41,7 @@ const HREFLANG = ['<link rel="alternate" hreflang="x-default" href="https://marg
 
 // Yandex.Metrica (counter 110941944) — on the homepage too so quick gen-home-live deploys never drop it (build/add-metrica.js covers the rest of the site).
 const METRICA = `<!-- Yandex.Metrika counter -->
-<script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944','ym');ym(110941944,'init',{ssr:true,webvisor:(window.innerWidth>880),clickmap:true,ecommerce:"dataLayer",accurateTrackBounce:true,trackLinks:true});</script>
+<script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();var go=function(){for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a);};if(e.readyState==='complete'){setTimeout(go,2000);}else{m.addEventListener('load',function(){setTimeout(go,2000);});}})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944','ym');ym(110941944,'init',{ssr:true,webvisor:(window.innerWidth>880),clickmap:true,ecommerce:"dataLayer",accurateTrackBounce:true,trackLinks:true});</script>
 <noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute;left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->`;
 
@@ -53,10 +52,11 @@ h = h.replace('<meta name="robots" content="noindex,nofollow" />',
 h = h.replace('<title>MarginPad — Demo homepage (full-width)</title>',
               '<title>' + TITLE + '</title>');
 // 3) inject SEO head (description, canonical, OG, twitter, JSON-LD) + gtag right after <head>
+// demo-home already carries both counters in its own <head> (they are the source markup); inject only what is missing — the live homepage shipped BOTH twice for a while (double gtag config + double Metrica init, found 2026-09-02).
 const headExtra = `
-${GTAG}
+${h.indexOf("AW-18230384038") >= 0 ? "" : GTAG}
 <meta name="google-site-verification" content="7zzuR9GCpGKpdBsHoh1c4CzwY1G55I5yovmJ6WDfZPw" />
-${METRICA}
+${h.indexOf("id=110941944") >= 0 ? "" : METRICA}
 <meta name="description" content="${DESC}" />
 <meta name="keywords" content="crypto futures, paper trading, crypto futures simulator, liquidation calculator, crypto screener, liquidations feed, trading bot api, free crypto tools" />
 <link rel="canonical" href="${CANON}" />

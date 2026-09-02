@@ -498,7 +498,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   function showLeaderboard(board){board=(board===2||board===3||board===4)?board:1;var meta=LB_META[board];
     var lbMsg=sysMsg('<b style="color:#c2f64a">'+meta.t+'</b><br><span style="color:#9aa3ad">loading…</span>');
     fetch('/api/reward/lb').then(function(r){return r.json();}).then(function(d){var t=(d&&d[meta.k])||[],medal=['','',''];
-      var html='<b style="color:#c2f64a">'+meta.t+' · this week</b><br>';
+      var html='<b style="color:#c2f64a">'+meta.t+' · this season</b><br>';
       if(!t.length)html+='<span style="color:#9aa3ad">No one on this board yet — be the first!</span>';
       else html+=t.slice(0,10).map(function(x,i){var val;
         if(board===2)val='<b style="color:#c2f64a">'+(+x.wr).toFixed(0)+'%</b> <span style="color:#7f8893">('+(+x.w||0)+'W-'+(+x.l||0)+'L)</span>';
