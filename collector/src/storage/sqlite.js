@@ -26,6 +26,20 @@ export function createSqliteStorage(path) {
   }
   function ensure() { if (!insertStmt) prepareAll(); } // prepares lazily once tables exist
 
+  // Every query here runs synchronously on the main thread — the same thread that reads the exchange
+  // sockets. The market-wide aggregates are the expensive ones (whole-day scans), and the same answer is
+  // asked for by every colo of the edge cache within seconds. Memoize them for a short TTL so a burst
+  // costs one scan, not one per request. Keys carry the window so different windows never collide.
+  const memo = new Map();
+  function cached(key, ttlMs, fn) {
+    const now = Date.now(), h = memo.get(key);
+    if (h && now - h.t < ttlMs) return h.v;
+    const v = fn(); memo.set(key, { t: now, v });
+    if (memo.size > 64) for (const [k, e] of memo) if (now - e.t > 600000) memo.delete(k);
+    return v;
+  }
+  const hoursKey = (sinceTs) => String(Math.round((Date.now() - sinceTs) / 3600000)) + 'h';
+
   function migrate(dir) {
     const files = readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();
     for (const f of files) {
@@ -108,10 +122,12 @@ export function createSqliteStorage(path) {
   }
 
   function stats() {
-    const total = db.prepare('SELECT COUNT(*) AS c FROM liquidations').get().c;
-    const e24 = db.prepare('SELECT COUNT(*) AS c FROM liquidations WHERE ts>?').get(Date.now() - 86400000).c;
-    const bySym = db.prepare('SELECT symbol, COUNT(*) AS c FROM liquidations WHERE ts>? GROUP BY symbol ORDER BY c DESC').all(Date.now() - 3600000);
-    return { totalEvents: Number(total), events24h: Number(e24), lastHourBySymbol: bySym };
+    return cached('stats', 120000, () => { // /status is polled by the worker's health + ops alerts; the full-table count alone is ~2s cold
+      const total = db.prepare('SELECT COUNT(*) AS c FROM liquidations').get().c;
+      const e24 = db.prepare('SELECT COUNT(*) AS c FROM liquidations WHERE ts>?').get(Date.now() - 86400000).c;
+      const bySym = db.prepare('SELECT symbol, COUNT(*) AS c FROM liquidations WHERE ts>? GROUP BY symbol ORDER BY c DESC').all(Date.now() - 3600000);
+      return { totalEvents: Number(total), events24h: Number(e24), lastHourBySymbol: bySym };
+    });
   }
 
   // ---- Phase 2: open interest + estimated clusters ----
@@ -135,7 +151,8 @@ export function createSqliteStorage(path) {
     catch (e) { db.exec('ROLLBACK'); throw e; } // node:sqlite has no .transaction() helper (that's better-sqlite3)
     db.prepare('DELETE FROM oi_snap WHERE ts<?').run(Date.now() - 50 * 3600000); // keep ~2 days
   }
-  function oi24h() { ensure();
+  function oi24h() { ensure(); return cached('oi24h', 60000, () => oi24hRaw()); }
+  function oi24hRaw() {
     const last = db.prepare('SELECT MAX(ts) t FROM oi_snap').get();
     if (!last || !last.t) return {};
     const nowRows = db.prepare('SELECT symbol,oi_usd,funding FROM oi_snap WHERE ts=?').all(last.t);
@@ -149,7 +166,8 @@ export function createSqliteStorage(path) {
     }
     return out;
   }
-  function pulse(sinceTs) { ensure(); // aggregated market pulse (heatmap page): per-coin + per-exchange long/short split + totals + biggest order, orders >= $1k
+  function pulse(sinceTs) { ensure(); return cached('pulse:' + hoursKey(sinceTs), 30000, () => pulseRaw(sinceTs)); } // aggregated market pulse (heatmap page): per-coin + per-exchange long/short split + totals + biggest order, orders >= $1k
+  function pulseRaw(sinceTs) {
     const bySym = db.prepare("SELECT symbol s, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) l, SUM(CASE WHEN side<>'long_liquidated' THEN notional ELSE 0 END) sh, (SELECT price FROM liquidations q WHERE q.symbol=liquidations.symbol ORDER BY q.ts DESC LIMIT 1) px FROM liquidations WHERE ts>=? AND notional>=1000 GROUP BY symbol ORDER BY (l+sh) DESC LIMIT 300").all(sinceTs);
     const byEx = db.prepare("SELECT exchange e, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) l, SUM(CASE WHEN side<>'long_liquidated' THEN notional ELSE 0 END) sh FROM liquidations WHERE ts>=? AND notional>=1000 GROUP BY exchange ORDER BY (l+sh) DESC").all(sinceTs);
     const tot = db.prepare("SELECT COUNT(*) n, COALESCE(SUM(notional),0) v, COALESCE(SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END),0) l FROM liquidations WHERE ts>=? AND notional>=1000").get(sinceTs);
@@ -157,7 +175,7 @@ export function createSqliteStorage(path) {
     return { bySym, byEx, tot, big: big || null };
   }
   function liqBySymbol(since) { ensure();
-    return db.prepare("SELECT symbol s, SUM(notional) liq, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) lng, COUNT(*) n FROM liquidations WHERE ts>=? GROUP BY symbol ORDER BY liq DESC LIMIT 300").all(since);
+    return cached('liqBySym:' + hoursKey(since), 60000, () => db.prepare("SELECT symbol s, SUM(notional) liq, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) lng, COUNT(*) n FROM liquidations WHERE ts>=? GROUP BY symbol ORDER BY liq DESC LIMIT 300").all(since));
   }
 
   // Full raw dump of one UTC day — feeds the R2 archive (worker cron pulls this once/day).
