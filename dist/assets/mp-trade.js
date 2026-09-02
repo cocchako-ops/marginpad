@@ -447,7 +447,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   /* per-coin chat rooms: All + a few majors. 'global' = the original shared room (history preserved). */
   var ROOMS=['global','BTC','ETH','SOL','BNB','XRP','DOGE'],room='global',roomBar=null;
   var CT_STAR='<svg class="ct-ric ct-ricprem" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="m12 2 2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>';
-  function chatRooms(){var b=['global','BTC','ETH','SOL','BNB','XRP','DOGE'];if(window._mpPrem===true)b.splice(1,0,'PREMIUM');return b;}
+  function chatRooms(){var b=['global'];if(window._mpPrem===true)b.splice(1,0,'PREMIUM');return b;} /* per-coin rooms retired 2026-09-02: measured over the DO history, BTC 6 messages lifetime, ETH 1, XRP 3, SOL/BNB/DOGE 0 — an empty room reads as a dead site. The room_<COIN> DO instances stay; re-add a coin here to reopen it. */
   function roomLabel(r){return r==='global'?'All':r==='PREMIUM'?'Premium':r;}
   var CT_CARET='<svg class="ct-rcaret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
   var CT_CHECK='<svg class="ct-ri-ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-11"/></svg>';
@@ -456,7 +456,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
   function roomIcon(r){if(r==='PREMIUM')return CT_STAR;if(r==='global')return CT_ALL;var id=CT_COIN[r];if(id)return '<img class="ct-ricimg" data-coin="'+r+'" src="https://s2.coinmarketcap.com/static/img/coins/64x64/'+id+'.png" alt="">';return '<span class="ct-ricl">'+r.charAt(0)+'</span>';}
   function ctImgFallback(root){if(!root)return;Array.prototype.forEach.call(root.querySelectorAll('.ct-ricimg'),function(img){img.addEventListener('error',function(){var s=document.createElement('span');s.className='ct-ricl';s.textContent=(img.getAttribute('data-coin')||'?').charAt(0);if(img.parentNode)img.parentNode.replaceChild(s,img);});});}
   function buildRoomBar(){
-    if(roomBar||!box)return;var head=box.querySelector('.ct-head');if(!head)return;
+    if(roomBar||!box)return;if(chatRooms().length<2)return;/* one room = no selector */var head=box.querySelector('.ct-head');if(!head)return;
     roomBar=document.createElement('div');roomBar.className='ct-roomsel';
     roomBar.innerHTML='<button type="button" class="ct-roombtn" aria-haspopup="true"><span class="ct-ricw">'+roomIcon(room)+'</span><span class="ct-roomcur">'+roomLabel(room)+'</span>'+CT_CARET+'</button>'
       +'<div class="ct-roommenu" hidden>'+chatRooms().map(function(r){return '<button type="button" class="ct-roomitem'+(r===room?' on':'')+(r==='PREMIUM'?' ct-roomprem':'')+'" data-room="'+r+'"><span class="ct-riw">'+roomIcon(r)+'</span><span class="ct-ri-l">'+roomLabel(r)+'</span>'+CT_CHECK+'</button>';}).join('')+'</div>';
