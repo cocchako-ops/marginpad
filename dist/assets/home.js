@@ -924,6 +924,35 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(side){var seg=document.getElementById('planSeg');if(seg){var sb=seg.querySelector('[data-side="'+side+'"]');if(sb&&!sb.classList.contains('on'))sb.click();}}
     setTimeout(function(){var card=document.querySelector('.card');if(card&&card.scrollIntoView)card.scrollIntoView({behavior:'smooth',block:'start'});},170);
   }
+  // Season-board eligibility badge (owner, 2026-09-02). MIRRORS the server rules — UserStore /leaderboard tradeev path + _lbBest:
+  // server-filled + server-closed (src srv/bot, sc), opened inside the season (open time parsed from the id), margin $1..$100k,
+  // symbol not excluded, a win needs >=5% ROE and a >=0.2% price move, identical positions opened within 10 min are ONE decision.
+  // Change the server and this together. Green = this ticket counts; grey = click for the list of met/unmet conditions.
+  var _eligData=null;
+  var ELIG_EXCL={};'EURUSD EURUSDT GBPUSD GBPUSDT USDJPY USDJPYT AUDUSD AUDUSDT USDCAD USDCHF NZDUSD EURGBP EURJPY GBPJPY XAU XAUUSD XAUUSDT XAG XAGUSD XAGUSDT SPX500 SPX US500 NAS100 NAS US30 DJI30 GER40 DAX40 UK100 JP225 FR40 USDC USDCUSDT DAI DAIUSDT TUSD FDUSD USDD USDP GUSD EURC PYUSD USDE SUSD SPY VOO QQQ DIA IWM TLT GLD SLV'.split(' ').forEach(function(s){ELIG_EXCL[s]=1;});
+  function eligOpenTs(e){var m=/^(?:srv|bot)([0-9a-z]{8})/.exec(String(e.id||''));if(m){var t=parseInt(m[1],36);if(isFinite(t)&&t>1.6e12)return t;}return +e.ts||0;}
+  function tradeElig(e,all){all=all||_eligData||load();var rows=[],ok=true;
+    function add(met,text,info){rows.push({met:met,text:text,info:!!info});if(!met&&!info)ok=false;}
+    var srv=e.src==='srv'||e.src==='bot'||/^(srv|bot)/.test(String(e.id||''));
+    var closed=e.status==='win'||e.status==='loss',ss=window.mpSsnStart?window.mpSsnStart():0,openTs=eligOpenTs(e);
+    var margin=+e.margin||0,lev=(+e.lev>0)?+e.lev:1,sym=String(e.sym||'').toUpperCase().replace(/[^A-Z0-9]/g,''),pnl=(e.pnl!=null&&isFinite(+e.pnl))?+e.pnl:null;
+    add(srv,srv?MT('eligSrvOk','Opened on the server'):MT('eligSrvNo','Opened locally (guest or offline), not on the server. Local-only trades are never scored'));
+    if(!closed)add(false,MT('eligOpen','Still open. It is scored once it closes'));
+    else add(!!e.sc,e.sc?MT('eligClosedOk','Closed and settled by the server'):MT('eligClosedNo','Closed locally, not settled by the server, so it is not scored'));
+    add(!ss||openTs>=ss,(!ss||openTs>=ss)?MT('eligSeasonOk','Opened this season'):MT('eligSeasonNo','Opened before this season started. Only positions opened inside the season count'));
+    add(margin>=1&&margin<=100000,margin>=1&&margin<=100000?MT('eligMarginOk','Margin of at least $1'):MT('eligMarginNo','Margin below $1. Dust positions are not scored'));
+    add(!ELIG_EXCL[sym],!ELIG_EXCL[sym]?MT('eligSymOk','Symbol counts'):MT('eligSymNo','Forex, metals, indices and stablecoins never rank'));
+    if(closed&&pnl!=null){if(pnl>0){var roe=margin>0?pnl/margin*100:0,mv=roe/lev,q=roe>=5&&mv>=0.2;
+        add(q,q?MT('eligWinOk','Counts as a win on the win-rate board (ROE {r}%, price move {m}%)').replace('{r}',roe.toFixed(1)).replace('{m}',mv.toFixed(2)):MT('eligWinNo','Too small to count as a win: a win needs at least 5% ROE and a 0.2% price move (this one: ROE {r}%, move {m}%)').replace('{r}',roe.toFixed(1)).replace('{m}',mv.toFixed(2)));}
+      else add(true,MT('eligLoss','Closed at a loss. It counts as a loss'),true);}
+    var twins=0;for(var i=0;i<all.length;i++){var o=all[i];if(!o||o===e||o.id===e.id)continue;if(String(o.sym||'').toUpperCase()!==String(e.sym||'').toUpperCase()||(o.side==='short')!==(e.side==='short'))continue;if(Math.abs(eligOpenTs(o)-openTs)<=600000)twins++;}
+    if(twins)add(false,(twins===1?MT('eligTwinNo','Grouped with 1 identical position opened within 10 minutes. The pair counts as one result'):MT('eligTwinsNo','Grouped with {n} identical positions opened within 10 minutes. The whole group counts as one result').replace('{n}',twins)));
+    else add(true,MT('eligTwinsOk','A single position, not part of a batch'));
+    if(e.partial)add(true,MT('eligPartial','Partial close: every part of this position counts as one result'),true);
+    return {ok:ok,rows:rows};}
+  var ELIG_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+  function eligBadge(e){var r=tradeElig(e);var t=r.ok?MT('eligYes','Counts on the season boards'):MT('eligNo','Not counted on the season boards yet. Tap for details');return '<button type="button" class="pp-elig '+(r.ok?'ok':'no')+'" data-act="elig" data-id="'+e.id+'" title="'+esc(t)+'" aria-label="'+esc(t)+'">'+ELIG_SVG+'</button>';}
+  function eligPanel(e){var r=tradeElig(e);return '<div class="pp-eligp"><div class="pp-eligh '+(r.ok?'ok':'no')+'">'+esc(r.ok?MT('eligYes','Counts on the season boards'):MT('eligNoH','Not counted on the season boards yet'))+'</div>'+r.rows.map(function(x){return '<div class="pp-eligr '+(x.info?'info':(x.met?'met':'unmet'))+'"><i></i><span>'+esc(x.text)+'</span></div>';}).join('')+'</div>';}
   function ppActions(e,close){return '<div class="pp-actions"><div class="pp-icons"><button class="pp-ic pp-ic-chat" data-act="chatshare" data-id="'+e.id+'" title="'+MT('jShareChat','Share to chat')+'" aria-label="'+MT('jShareChat','Share to chat')+'">'+CHATSHARE_SVG+'</button><button class="pp-ic" data-act="share" data-id="'+e.id+'" title="'+MT('jShare','Share')+'" aria-label="'+MT('jShare','Share')+'">'+SHARE_SVG+'</button></div>'+(close?'<button class="pp-close" data-act="close" data-id="'+e.id+'">'+MT('jCloseBtn','Close')+'</button>':'')+'</div>';}
   function fp(x){x=+x||0;return '$'+x.toLocaleString('en-US',{maximumFractionDigits:x>=100?2:x>=1?4:8});}
   function pctS(x){return ((+x)>=0?'+':'')+(+x).toFixed(2)+'%';}
@@ -932,7 +961,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function metrics(e){var px=window.mpLivePrices||{};var live=(px[e.sym]&&px[e.sym].p)||(e.status!=='open'&&e.exit)||e.entry;var long=e.side!=='short',lev=(+e.lev>0)?+e.lev:1;var move=(live-e.entry)/e.entry*(long?1:-1);var gross=(e.qty!=null&&isFinite(e.qty))?e.qty*(live-e.entry)*(long?1:-1):null;var pnl=(gross!=null)?gross-(+e.fund||0):null;/* P1: taker fee (feeRate/side) settled into P&L — legacy trades carry feeRate 0 so nothing changes for them */var margin=(+e.margin>0)?+e.margin:(e.notional&&lev?e.notional/lev:null);var roe=(pnl!=null&&margin>0)?pnl/margin:move*lev;var liq=e.liq||(long?e.entry*(1-(1-(e.mmr||0.005))/lev):e.entry*(1+(1-(e.mmr||0.005))/lev));var liqDist=(live-liq)/live*100*(long?1:-1);if(margin>0){var _op=e.status!=='win'&&e.status!=='loss';var _pf=_op?-margin*0.99:-margin;if(pnl!=null&&pnl<_pf)pnl=_pf;var _rf=_op?-0.99:-1;if(roe<_rf)roe=_rf;}/* open positions cap at -99% (never show -100% until actually liquidated/closed) */return {live:live,long:long,lev:lev,move:move,roe:roe,pnl:pnl,liq:liq,liqDist:liqDist,margin:margin};}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e,true)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live">'+(e.lev||1)+'× · '+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
@@ -983,7 +1012,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
 
   function closedCard(e){var win=((+e.pnl)>=0),cls=win?'pf':'ls',long=e.side!=='short';
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'">'+ppActions(e)
-      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
+      +'<div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+eligBadge(e)+'<span class="pp-live pp-res '+(e.liquidated?'liq':(win?'win':'loss'))+'">'+(e.liquidated?'Liquidated':(win?'Win':'Loss'))+(e.partial?' · '+e.partial+'%':'')+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(e.pnl!=null?(((+e.pnl)>=0?'+':'−')+money(Math.abs(e.pnl)).replace('-','')):(win?'TP hit':'SL hit'))+'</span>'+((e.margin&&e.pnl!=null)?'<span class="roe">ROE '+pctS(((+e.pnl)/(+e.margin||1))*100)+'</span>':'')+'</div>'
       +'<div class="pp-perf"></div>'
       +'<div class="pp-meta">'
@@ -1088,7 +1117,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
   function render(){
     var listEl=document.getElementById('jrList'),statsEl=document.getElementById('jrStats'),emptyEl=document.getElementById('jrEmpty');
     if(!listEl||!statsEl)return;
-    var data=load();
+    var data=load();_eligData=data;/* one journal read per render for the eligibility twin check, not one per card */
     var open=data.filter(function(e){return e.status==='open';});
     var allClosed=data.filter(function(e){return e.status==='win'||e.status==='loss';});
     var closed=allClosed.filter(window.mpSsnShow); // season display scope (pre-epoch: identity)
@@ -1190,6 +1219,7 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     if(b.hasAttribute('data-jt')){jrTab=b.getAttribute('data-jt');jrShow=50;render();return;}
     var id=b.getAttribute('data-id'),act=b.getAttribute('data-act');
     var data=load(),i=-1; for(var k=0;k<data.length;k++){if(data[k].id===id){i=k;break;}} if(i<0)return; var e=data[i];
+    if(act==='elig'){var _card=b.closest('.pp'),_p=_card&&_card.querySelector('.pp-eligp');if(!_card)return;if(_p){_p.parentNode.removeChild(_p);}else{_eligData=data;var _h=_card.querySelector('.pp-h');if(_h)_h.insertAdjacentHTML('afterend',eligPanel(e));}return;}
     if(act==='share'){shareTicket(e);return;}
     if(act==='chatshare'){shareTicketChat(e,b);return;}
     if(act==='copy'){copyTicket(e);return;}
