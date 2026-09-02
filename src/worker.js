@@ -534,7 +534,7 @@ async function handleNewsRead(url, env, ctx) {
       system: 'You are a crypto news editor. Using ONLY the provided source text, write an original news brief of 250-380 words in clear, neutral English: 4-6 short paragraphs, lead with the single most important fact, keep every concrete number/name/date from the source that matters, no hype, no advice, and never copy sentences verbatim. Output plain paragraphs only — no headline, no markdown, no preamble.',
       messages: [{ role: 'user', content: 'Title: ' + title + '\n\nSource text:\n' + text.slice(0, 6500) }],
     }) });
-    if (!ar.ok) return jr({ error: 'ai_failed' }, 502);
+    if (!ar.ok) { aiFail(env, 'newsbrief', ar.status); return jr({ error: 'ai_failed' }, 502); }
     const ad = await ar.json();
     const brief = (ad && ad.content && ad.content[0] && ad.content[0].text || '').trim();
     if (brief.length < 200) return jr({ error: 'ai_failed' }, 502);
@@ -2435,11 +2435,11 @@ async function checkCalReminders(env) {
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/profiles', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids: [v.uid] }) })); const j = await r.json(); email = (j.profiles && j.profiles[v.uid] && j.profiles[v.uid].email) || ''; } catch (e) {}
       if (!email) continue;
       const t = String(v.title || 'Crypto event');
-      try { await fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(refTagEmail({
+      try { const _mr9 = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' }, body: JSON.stringify(refTagEmail({
         from: 'MarginPad Calendar <alerts@marginpad.io>', to: [email], reply_to: 'support@marginpad.io',
  subject: ' ' + t + ' — in about 30 minutes',
         text: t + ' is coming up in about 30 minutes (' + when + ').\n\nVolatility window — mind your leverage.\n\nCalendar: https://marginpad.io/calendar/\nPaper Trade: https://marginpad.io/paper-trade\n\n— MarginPad',
- html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:460px"><p style="font-size:19px;font-weight:800;margin:0 0 6px"> ' + t.replace(/[<>&]/g, '') + '</p><p style="margin:0 0 12px">Coming up in about <b>30 minutes</b> (' + when + '). Volatility window — mind your leverage.</p><p style="margin:0"><a href="https://marginpad.io/calendar/" style="color:#111">Open the calendar →</a></p></div>' })) }); } catch (e) {}
+ html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:460px"><p style="font-size:19px;font-weight:800;margin:0 0 6px"> ' + t.replace(/[<>&]/g, '') + '</p><p style="margin:0 0 12px">Coming up in about <b>30 minutes</b> (' + when + '). Volatility window — mind your leverage.</p><p style="margin:0"><a href="https://marginpad.io/calendar/" style="color:#111">Open the calendar →</a></p></div>' })) }); if (!_mr9.ok) mailFail(env, 'calrem', _mr9.status); } catch (e) { mailFail(env, 'calrem', 0); }
     }
   }
 }
@@ -4041,6 +4041,7 @@ async function xComposeNews(env) {
     try {
       const prompt = 'You write X/Twitter posts for MarginPad, a free crypto paper-trading site. From these live crypto headlines, write ONE short original post (in YOUR OWN words — do NOT copy a headline verbatim) about the single most interesting active development. Rules: max 170 characters; factual and neutral with a light trading angle; NO price predictions, NO financial advice, NO hype words like "moon" or "explode"; no hashtags and no links (added separately); no quotes around it. Headlines:\n- ' + heads.join('\n- ');
       const r = await fetchTO('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 160, messages: [{ role: 'user', content: prompt }] }) }, 12000, env, 'xnews');
+      if (!(r && r.ok)) aiFail(env, 'xnews', r ? r.status : 0);
       if (r && r.ok) { const j = await r.json(); let body = (j && j.content && j.content[0] && j.content[0].text || '').trim().replace(/^["']|["']$/g, '').replace(/\s+/g, ' '); if (body.length > 180) body = body.slice(0, 178) + '…'; if (body.length >= 20) { const tags = xHashtags(body + ' ' + heads.join(' ')); const s = '' + body + link + tags; if (s.length <= 275) return s; } }
     } catch (e) {}
   }
@@ -4509,7 +4510,17 @@ async function perfWrap(env, ctx, g, samp, fn) { // samp = 1-in-N sampling (1 = 
   try { perfPush(env, ctx, g, Date.now() - t0, !(r && r.status >= 500)); } catch (e) {}
   return r;
 }
-async function tgAdmin(env, text) { if (!env.TELEGRAM_TOKEN || !env.TG_ADMIN_CHAT) return false; try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, parse_mode: 'HTML', disable_web_page_preview: true, text }); return true; } catch (e) { return false; } }
+async function tgAdmin(env, text) { // tgApi never throws (null on network error, {ok:false} on API error) — the old version returned true unconditionally, so nothing could ever learn that admin alerts were dead
+  if (!env.TELEGRAM_TOKEN || !env.TG_ADMIN_CHAT) return false;
+  let r = null; try { r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, parse_mode: 'HTML', disable_web_page_preview: true, text }); } catch (e) { r = null; }
+  const ok = !!(r && r.ok);
+  try { if (env.STATS) { if (ok) { if (await env.STATS.get('tg:fail')) await env.STATS.delete('tg:fail'); } else if (!(await env.STATS.get('tg:fail'))) await env.STATS.put('tg:fail', JSON.stringify({ ts: Date.now(), err: String((r && r.description) || 'no response').slice(0, 120) }), { expirationTtl: 7 * 86400 }); } } catch (e) {} // tg:fail = first failure since the last success; checkOpsAlerts emails the owner when it is older than 30 min
+  return ok;
+}
+// Third-party failure counters (2026-09-02): Resend and Anthropic errors used to vanish into {ok:false} return values and 502s.
+// One AE row per failure (index mailerr/aierr, blob2 = call site, blob3 = HTTP status); checkOpsAlerts pages on the hourly count.
+function mailFail(env, where, status) { try { if (env && env.AE) env.AE.writeDataPoint({ indexes: ['mailerr'], blobs: ['mailerr', String(where || '?'), String(status || 0)], doubles: [1] }); } catch (e) {} }
+function aiFail(env, where, status) { try { if (env && env.AE) env.AE.writeDataPoint({ indexes: ['aierr'], blobs: ['aierr', String(where || '?'), String(status || 0)], doubles: [1] }); } catch (e) {} }
 // P0 — server-side position sweep: enforce SL/TP/liq for server/bot-filled trades even with every browser closed.
 async function sweepServerPositions(env) {
   try {
@@ -4615,6 +4626,26 @@ async function nightlyBackup(env) {
   } catch (e) {
     try { await env.STATS.delete('bkp:done:' + new Date().toISOString().slice(0, 10)); } catch (e2) {}
     try { await tgAdmin(env, '<b>NIGHTLY BACKUP FAILED</b> — ' + String(e).slice(0, 180) + '\nUser/balance data currently has NO second copy. Check /api/admin/backup?run=1'); } catch (e3) {}
+  }
+}
+// RewardLedger every 6h (2026-09-02): the nightly dump alone gave the money ledger a 24h recovery point. Four rotating
+// slots per UTC day (rewards-h00/h06/h12/h18.json); the nightly -latest/-<dow> files stay the restore-tested set.
+async function ledgerBackup6h(env) {
+  if (!env.STATS || !env.REWARDS || !env.BACKUP) return;
+  const now = new Date(), slot = Math.floor(now.getUTCHours() / 6) * 6;
+  const stamp = 'bkp:ledger6:' + now.toISOString().slice(0, 10) + 'T' + slot;
+  if (await env.STATS.get(stamp)) return;
+  await env.STATS.put(stamp, '1', { expirationTtl: 172800 }); // stamp first (no double-runs); released on failure so the next */10 retries
+  try {
+    const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/export'));
+    const txt = await r.text();
+    if (!r.ok || txt.length < 50) throw new Error('ledger export bad (' + r.status + ', ' + txt.length + 'b)');
+    await env.BACKUP.put('backup/rewards-h' + String(slot).padStart(2, '0') + '.json', txt);
+    await env.STATS.put('bkp:ledger6:last', JSON.stringify({ ts: Date.now(), slot, kb: Math.round(txt.length / 1024) }), { expirationTtl: 7 * 86400 });
+  } catch (e) {
+    try { await env.STATS.delete(stamp); } catch (e2) {}
+    const k = 'alrt:ledger6'; const last = +(await env.STATS.get(k) || 0);
+    if (Date.now() - last > 6 * 3600000) { await env.STATS.put(k, String(Date.now()), { expirationTtl: 172800 }); try { await tgAdmin(env, '<b>LEDGER 6H BACKUP FAILED</b> - ' + String(e).slice(0, 180) + '\nThe nightly copy still runs; this is the intra-day one. Retries every 10 min.'); } catch (e3) {} }
   }
 }
 // Liquidation-feed archive (2026-08-03): once/day pull yesterday's raw events from the collector
@@ -4884,6 +4915,67 @@ async function checkOpsAlerts(env) {
           const old9 = Math.max(...stale9.map(w => Date.now() - (+w.ts || 0)));
           await tgAdmin(env, 'WITHDRAWALS: ' + stale9.length + ' payout(s) pending >48h (oldest ~' + Math.round(old9 / 3600000) + 'h). Open mp-ops -> Withdrawals.');
           await env.STATS.put(dk9, '1', { expirationTtl: 172800 });
+        }
+      }
+    } catch (e) {}
+    // BACKUP AGE (2026-09-02): nightlyBackup pages only when it THROWS; a cron that never reached it stayed silent.
+    try {
+      if (env.BACKUP) {
+        const h9 = await env.BACKUP.head('backup/rewards-latest.json');
+        const age9 = h9 && h9.uploaded ? Date.now() - new Date(h9.uploaded).getTime() : Infinity;
+        const dka = 'alrt:bkpage:' + new Date().toISOString().slice(0, 10);
+        if (age9 > 30 * 3600000 && !(await env.STATS.get(dka))) { await env.STATS.put(dka, '1', { expirationTtl: 172800 }); await tgAdmin(env, '<b>BACKUP STALE</b> - last nightly ledger dump ' + (isFinite(age9) ? Math.round(age9 / 3600000) + 'h ago' : 'never found') + '. Run /api/admin/backup?run=1 and check the cron.'); }
+        let l6 = null; try { l6 = JSON.parse(await env.STATS.get('bkp:ledger6:last') || 'null'); } catch (e) {}
+        if (l6 && l6.ts && Date.now() - l6.ts > 8 * 3600000) { const dk6 = 'alrt:bkp6age:' + new Date().toISOString().slice(0, 10); if (!(await env.STATS.get(dk6))) { await env.STATS.put(dk6, '1', { expirationTtl: 172800 }); await tgAdmin(env, '<b>6H LEDGER BACKUP STALE</b> - last slot ' + Math.round((Date.now() - l6.ts) / 3600000) + 'h ago (expected every 6h).'); } }
+      }
+    } catch (e) {}
+    // THIRD-PARTY FAILURES (2026-09-02): Resend (sign-in codes, support replies, alerts) and Anthropic (AI chart, news briefs).
+    // Counted from the mailerr/aierr AE rows written at the call sites. Thresholds are counts, not rates, on purpose: three
+    // failed sign-in codes in an hour is three people who could not log in, whatever the denominator.
+    try {
+      const _me = (await aeQuery(env, "SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE index1 = 'mailerr' AND timestamp > NOW() - INTERVAL '1' HOUR")) || [];
+      const nMail = Math.round(+((_me[0] || {}).n) || 0);
+      if (nMail >= 3) { const last = +(await env.STATS.get('alrt:mailerr') || 0); if (Date.now() - last > 6 * 3600000) { await env.STATS.put('alrt:mailerr', String(Date.now()), { expirationTtl: 172800 }); await tgAdmin(env, '<b>Resend: ' + nMail + ' failed sends in the last hour</b>\nSign-in codes / support replies / alerts may not be arriving. Check resend.com status + the RESEND_API_KEY secret.'); } }
+      const _ae = (await aeQuery(env, "SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE index1 = 'aierr' AND timestamp > NOW() - INTERVAL '1' HOUR")) || [];
+      const nAi = Math.round(+((_ae[0] || {}).n) || 0);
+      if (nAi >= 5) { const last = +(await env.STATS.get('alrt:aierr') || 0); if (Date.now() - last > 6 * 3600000) { await env.STATS.put('alrt:aierr', String(Date.now()), { expirationTtl: 172800 }); await tgAdmin(env, '<b>Anthropic: ' + nAi + ' failed calls in the last hour</b>\nAsk-the-AI (Premium) and news briefs are degraded. Check the API key / credits at console.anthropic.com.'); } }
+    } catch (e) {}
+    // TELEGRAM DEAD -> EMAIL (2026-09-02): tgAdmin records its first failure in tg:fail; if it is still failing 30 min later, the
+    // only channel left is email. Owner address lives in KV cfg:owneremail (unset = no fallback). Once per day.
+    try {
+      let tf = null; try { tf = JSON.parse(await env.STATS.get('tg:fail') || 'null'); } catch (e) {}
+      if (tf && tf.ts && Date.now() - tf.ts > 30 * 60000) {
+        const to9 = await env.STATS.get('cfg:owneremail'), dkt = 'alrt:tgfailmail:' + new Date().toISOString().slice(0, 10);
+        if (to9 && env.RESEND_API_KEY && !(await env.STATS.get(dkt))) { await env.STATS.put(dkt, '1', { expirationTtl: 172800 }); await sendSupportEmail(env, to9, 'MarginPad: Telegram admin alerts are failing', 'tgAdmin has been failing since ' + new Date(tf.ts).toISOString() + ' (' + String(tf.err || '') + ').\n\nOps alarms are not reaching Telegram. Check the bot token, TG_ADMIN_CHAT and https://marginpad.io/api/health', 'alerts'); }
+      }
+    } catch (e) {}
+    // MONEY-CLICK DROP (2026-09-02): affiliate click-outs are the revenue event. Once per day after 06:00 UTC: last 24h vs the
+    // average of the 7 days before it; needs a baseline of >=30/day so a quiet site cannot page on noise. Regression detector, not a target.
+    try {
+      const dkm = 'alrt:mclick:' + new Date().toISOString().slice(0, 10);
+      if (new Date().getUTCHours() >= 6 && !(await env.STATS.get(dkm))) {
+        await env.STATS.put(dkm, '1', { expirationTtl: 172800 });
+        const q1 = (await aeQuery(env, "SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE index1 = 'exchange' AND blob1 = 'event' AND timestamp > NOW() - INTERVAL '1' DAY")) || [];
+        const q7 = (await aeQuery(env, "SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE index1 = 'exchange' AND blob1 = 'event' AND timestamp > NOW() - INTERVAL '8' DAY AND timestamp <= NOW() - INTERVAL '1' DAY")) || [];
+        const d1 = Math.round(+((q1[0] || {}).n) || 0), avg7 = (+((q7[0] || {}).n) || 0) / 7;
+        if (avg7 >= 30 && d1 < 0.4 * avg7) await tgAdmin(env, '<b>Money clicks down: ' + d1 + ' in 24h vs ' + Math.round(avg7) + '/day over the prior week</b>\nCheck exchange links + the affiliate rail render (ops Revenue tab) before assuming traffic.');
+      }
+    } catch (e) {}
+    // PREMIUM EXPIRY DIGEST (owner, 2026-09-02): he hands out free Premium to active members as promotion and wants to decide on
+    // renewals BEFORE the expiry kick, not after a support ticket. Monday >=09:00 UTC, once: everyone (paid prem:sub + column grants)
+    // expiring in the next 7 days. Founders (lifetime) are excluded.
+    try {
+      const dP = new Date();
+      if (dP.getUTCDay() === 1 && dP.getUTCHours() >= 9) {
+        const dkp = 'alrt:premexp:' + dP.toISOString().slice(0, 10);
+        if (!(await env.STATS.get(dkp))) {
+          await env.STATS.put(dkp, '1', { expirationTtl: 8 * 86400 });
+          const nowP = Date.now(), toP = nowP + 7 * 86400000, rowsP = [];
+          try { const r = await usersDO(env, '/premium/expiring', { from: nowP, to: toP }); for (const u of (r && r.rows) || []) rowsP.push({ uid: String(u.id), u: u.username || '', until: +u.premium, src: 'grant' }); } catch (e) {}
+          try { const l = await env.STATS.list({ prefix: 'prem:sub:', limit: 1000 }); for (const k of l.keys || []) { const until = +(await env.STATS.get(k.name)) || 0; if (until > nowP && until < toP) { const uid = k.name.slice(9); if (rowsP.some(x => x.uid === uid)) continue; let un = ''; try { const x = await usersDO(env, '/xpdiag', { uid }); un = (x && x.user && x.user.username) || ''; } catch (e) {} rowsP.push({ uid, u: un, until, src: (await env.STATS.get('prem:founder:' + uid)) ? 'founder' : 'paid' }); } } } catch (e) {}
+          rowsP.sort((a, b) => a.until - b.until);
+          const linesP = rowsP.filter(x => x.src !== 'founder').map(x => (x.u || x.uid.slice(0, 8)) + ' - ' + new Date(x.until).toISOString().slice(5, 10) + ' (' + x.src + ')');
+          await tgAdmin(env, '<b>Premium expiring in the next 7 days: ' + linesP.length + '</b>' + (linesP.length ? '\n' + linesP.slice(0, 40).join('\n') : '') + '\nExtend from mp-ops Users before the kick, or let them lapse.');
         }
       }
     } catch (e) {}
@@ -8953,7 +9045,7 @@ async function checkSubscriptions(env) {
     const parts = k.name.split(':'), chat = parts[1], tier = parts[2];
     if (s.expiry <= now) { // expired → remove from the channel (ban+unban = kick, can rejoin after re-paying) + notify + drop the record
       if (s.chan) { try { await tgApi(env.TELEGRAM_TOKEN, 'banChatMember', { chat_id: s.chan, user_id: +chat, until_date: Math.floor(now / 1000) + 45 }); await tgApi(env.TELEGRAM_TOKEN, 'unbanChatMember', { chat_id: s.chan, user_id: +chat, only_if_banned: true }); } catch (e) {} try { await evPush(env, null, 'subkick', String(s.tier || 'premium'), ''); } catch (e) {} }
-      try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', text: '⌛ Your <b>' + tier + '</b> signals subscription has ended. Renew to keep the signals coming: <code>/buy ' + tier + '</code>' }); } catch (e) {}
+      try { await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: chat, parse_mode: 'HTML', text: 'Your <b>' + tier + '</b> signals subscription has ended. Renew to keep the signals coming: <code>/buy ' + tier + '</code>' }); } catch (e) {}
       try { await env.STATS.delete(k.name); } catch (e) {}
     } else if (s.expiry - now <= 3 * 86400000 && !s.reminded) { // ≤3 days left → one-time renewal reminder
       s.reminded = 1; try { await env.STATS.put(k.name, JSON.stringify(s), { expirationTtl: Math.ceil((s.expiry - now) / 1000) + 5 * 86400 }); } catch (e) {}
@@ -9464,9 +9556,10 @@ async function sendSupportEmail(env, to, subject, message, fromKey) {
       })),
     });
     if (r.ok) return { ok: true };
+    mailFail(env, 'send', r.status);
     const t = await r.text().catch(() => '');
     return { ok: false, detail: ('HTTP ' + r.status + ' ' + t).slice(0, 280) };
-  } catch (e) { return { ok: false, detail: String(e).slice(0, 200) }; }
+  } catch (e) { mailFail(env, 'send', 0); return { ok: false, detail: String(e).slice(0, 200) }; }
 }
 // ---------- optional accounts: passwordless email sign-in (6-digit code via Resend) ----------
 function getCookie(request, name) { const h = request.headers.get('cookie') || ''; const m = h.match(new RegExp('(?:^|; )' + name + '=([^;]+)')); return m ? decodeURIComponent(m[1]) : ''; }
@@ -9541,8 +9634,9 @@ async function sendAuthCode(env, to, code) {
       }))
     });
     if (r.ok) return { ok: true };
+    mailFail(env, 'authcode', r.status);
     const t = await r.text().catch(() => ''); return { ok: false, detail: ('HTTP ' + r.status + ' ' + t).slice(0, 240) };
-  } catch (e) { return { ok: false, detail: String(e).slice(0, 200) }; }
+  } catch (e) { mailFail(env, 'authcode', 0); return { ok: false, detail: String(e).slice(0, 200) }; }
 }
 // ---- Web Push (RFC8291 aes128gcm payload + RFC8292 VAPID) ----
 const VAPID_PUBLIC = 'BKdr8PcbZQWGE0c8QuauG1FHf0yEoHs4fm0ise_rm9kNftX_ABmg0oJyqK8GFw-rRW9MmGsQWjNOvVg9lEX9Bcg';
@@ -9861,8 +9955,8 @@ async function handleAiChart(url, request, env) {
   const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 30000);
   let ar;
   try { ar = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', signal: ctl.signal, headers: { 'x-api-key': env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: reqBody }); }
-  catch (e) { clearTimeout(to); await refund(); return J({ error: 'ai_error' }, 502); }
-  if (!ar.ok) { clearTimeout(to); await refund(); return J({ error: 'ai_error', status: ar.status }, 502); }
+  catch (e) { clearTimeout(to); aiFail(env, 'chart', 0); await refund(); return J({ error: 'ai_error' }, 502); }
+  if (!ar.ok) { clearTimeout(to); aiFail(env, 'chart', ar.status); await refund(); return J({ error: 'ai_error', status: ar.status }, 502); }
   try { await env.STATS.put(rk, String(used + 1), { expirationTtl: 172800 }); } catch (e) {} // KV mirror only (admin panel reads it); the DO count is authoritative
   try { await env.STATS.put(gk, String(g + 1), { expirationTtl: 172800 }); } catch (e) {}
  // Mission credit ("Ask the AI about a chart") from the server, not from a client beacon: the desktop panel sent
@@ -12260,6 +12354,11 @@ export default {
     // write quota and SUM(_sample_interval) corrects any internal down-sampling, so the SHARE per family is accurate.
     if (url.pathname === '/api/geo') return new Response(JSON.stringify({ cc: (request.cf && request.cf.country) || '' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } }); // visitor country for geo-aware exchange cards (US/CA see US-legal venues first)
     if (url.pathname === '/api/heatmap/pools') return handleHeatPools(url, env);
+    if (url.pathname === '/api/health') { // external uptime target (2026-09-02): 200 only while the */10 cron is alive (stamp cron:hb <=25 min). No data beyond ages; no key.
+      let hb = 0, l6 = null; try { hb = +(await env.STATS.get('cron:hb')) || 0; } catch (e) {} try { l6 = JSON.parse(await env.STATS.get('bkp:ledger6:last') || 'null'); } catch (e) {}
+      const age = hb ? Math.round((Date.now() - hb) / 60000) : -1, ok = hb > 0 && age <= 25;
+      return new Response(JSON.stringify({ ok, cronAgeMin: age, ledgerBackupAgeMin: l6 && l6.ts ? Math.round((Date.now() - l6.ts) / 60000) : -1 }), { status: ok ? 200 : 503, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+    }
     if (url.pathname === '/api/now') return new Response(JSON.stringify({ t: Date.now() }), { headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...CORS } }); // ms server clock for the client offset sync — candle boundaries/countdown must NOT trust the device clock (measured: a 46s-skewed device rolled bars into wrong buckets, then the 30s re-sync visibly repainted them)
     if (url.pathname === '/api/prices') return perfWrap(env, ctx, 'prices', 10, () => handlePrices(env, ctx, +url.searchParams.get('prof') || 0));
     if (url.pathname === '/api/screener') return perfWrap(env, ctx, 'screener', 3, () => handleScreener(env, false, ctx));
@@ -13953,6 +14052,9 @@ export default {
     // 1-minute trigger runs ONLY the 1h chart-signal engine (live Fast flips fire near-instant; Balanced/Premium
     // still fire on candle close but detected within ~1 min instead of ~10). Everything else stays on */10.
     if (event.cron === '* * * * *') { ctx.waitUntil(checkChartSignals(env)); ctx.waitUntil(pricesKvWarm(env)); return; }
+    // DEAD-MAN (2026-09-02): every */10 run stamps cron:hb; /api/health turns 503 when the stamp is >25 min old, and an EXTERNAL
+    // monitor polls that URL. Every alarm above lives inside this worker and cannot report the worker (or this cron) being dead.
+    try { ctx.waitUntil(env.STATS.put('cron:hb', String(Date.now()), { expirationTtl: 86400 }).catch(() => {})); } catch (e) {}
     // signal-engine BACKSTOP: if the 1-min cron silently died (heartbeat stale >5 min), this */10 cron takes over
     // running the engine — signals degrade to ≤10-min latency instead of stopping. Skips entirely while healthy (no race).
     ctx.waitUntil((async () => { try { const sdbg = JSON.parse(await env.STATS.get('csig:dbg') || 'null'); if (!sdbg || Date.now() - (sdbg.ts || 0) > 5 * 60000) await checkChartSignals(env); } catch (e) {} })());
@@ -13975,6 +14077,7 @@ export default {
     bg(checkFreeSignals, 'freesig'); // screener-based signals → FREE channel (paced: fsig:daily/gap), loud guard on a missing chat id
     bg(resolveFreeSignals, 'freesigres'); // resolve open free signals' outcome (TP1 vs stop) from fresh candles → fsig:results
     bg(nightlyBackup, 'backup'); // P0.5 — once per UTC day (stamped), retries on failure each */10
+    bg(ledgerBackup6h, 'backup6'); // money ledger every 6h (4 rotating slots), on top of the nightly set
     bg(archiveLiq, 'liqarch'); // liquidation-feed daily dump → R2 liq/<day>.csv.gz (once/day, 7d self-heal backfill)
     bg(liqRecapDaily, 'liqrecap'); // R2 archive → permanent /liquidations/recap/<day>/ pages (KV summaries; builds yesterday + backfills 3/run)
     bg(checkDailyWrap, 'wrap'); // free-channel daily market wrap (16:00 UTC, no advice, internal data only)
@@ -17551,6 +17654,11 @@ export class UserStore {
     if (path === '/premlist') { // active timed-premium members (users.premium expiry in the future) — for the mp-ops panel
       const rows = this.rows('SELECT username, premium FROM users WHERE premium > ? AND username IS NOT NULL ORDER BY premium DESC LIMIT 500', now);
       return this.j({ members: rows.map(r => ({ username: r.username || '', until: +r.premium || 0 })) });
+    }
+    if (path === '/premium/expiring') { // read-only: column-timed Premium (grants) expiring inside [from,to] — feeds the weekly ops digest
+      const fromE = +b.from || Date.now(), toE = +b.to || (fromE + 7 * 86400000);
+      let rowsE = []; try { rowsE = this.rows('SELECT id, username, premium FROM users WHERE premium > ? AND premium < ? ORDER BY premium ASC LIMIT 200', fromE, toE); } catch (e) {}
+      return this.j({ rows: rowsE });
     }
     if (path === '/setpremium') { // sync premium standing onto the users row (drives the +5% XP boost + timed premium). {uid|username, until} — until=expiry ms (0 clears). b already parsed at fetch top
       const until = Math.max(0, Math.round(+b.until || 0));
