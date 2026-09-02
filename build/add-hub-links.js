@@ -19,7 +19,9 @@ const MAPS = dirs.filter(d => /^[a-z0-9]+-liquidation-map$/.test(d) && has(d)).s
 const CALCS = dirs.filter(d => /^[a-z0-9]+-liquidation-calculator$/.test(d) && has(d)).sort();
 const VS = dirs.filter(d => /^[a-z0-9]+-vs-[a-z0-9]+$/.test(d) && has(d)).sort();
 const BEST = dirs.filter(d => /^best-crypto-exchange-/.test(d) && has(d)).sort();
-const HUBS = ['liquidations', 'funding', 'defi', 'long-short'];
+// NOT 'liquidations': its /<lang>/liquidations/ copies sit under run_worker_first and the worker 301s every translated subpage to the
+// English original (retired 2026-08: 1,008 thin pages, 7 Google visits in 90 days). funding/defi/long-short are still served statically.
+const HUBS = ['funding', 'defi', 'long-short'];
 const exName = s => s.replace(/\b[a-z]/g, c => c.toUpperCase()).replace('Okx', 'OKX').replace('Kucoin', 'KuCoin');
 
 function block(title, intro, links) {

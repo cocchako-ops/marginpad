@@ -192,10 +192,13 @@ const PH = COMMON.concat([
   ['Live data unavailable right now — retry shortly.', {de:'Live-Daten gerade nicht verfügbar — bitte gleich erneut versuchen.',es:'Datos en vivo no disponibles ahora — reintenta en breve.',pt:'Dados ao vivo indisponíveis agora — tente novamente em breve.',fr:'Données en direct indisponibles — réessayez bientôt.',nl:'Live data nu niet beschikbaar — probeer zo opnieuw.',ru:'Живые данные сейчас недоступны — повторите чуть позже.',tr:'Canlı veri şu an yok — birazdan tekrar deneyin.',zh:'实时数据暂不可用 — 请稍后重试。',ja:'ライブデータが現在利用できません — まもなく再試行してください。',ko:'실시간 데이터를 지금 사용할 수 없습니다 — 잠시 후 다시 시도하세요.',ar:'البيانات المباشرة غير متاحة الآن — أعد المحاولة قريباً.',id:'Data langsung tidak tersedia sekarang — coba lagi sebentar.'}],
   ['Updated just now · refreshes automatically', {de:'Gerade aktualisiert · aktualisiert automatisch',es:'Actualizado ahora mismo · se actualiza automáticamente',pt:'Atualizado agora mesmo · atualiza automaticamente',fr:'Mis à jour à l\'instant · se met à jour automatiquement',nl:'Zojuist bijgewerkt · ververst automatisch',ru:'Обновлено только что · обновляется автоматически',tr:'Az önce güncellendi · otomatik yenilenir',zh:'刚刚更新 · 自动刷新',ja:'たった今更新 · 自動更新',ko:'방금 업데이트됨 · 자동 새로고침',ar:'حُدِّث للتو · يُحدَّث تلقائياً',id:'Baru saja diperbarui · menyegarkan otomatis'}]
 ]);
-const baked = bakeI18n({ html, slug: 'liquidations', title: TITLE, desc: DESC, kw: KW, META, PH });
-html = baked.en;
+// Translated /<lang>/liquidations/ variants are RETIRED (2026-09-02): the worker 301s every translated subpage to its English
+// original (thin-page cleanup of 2026-08: 1,008 pages, 7 Google visits in 90 days), so baking them only produced 12 dead files plus
+// an hreflang cluster pointing at redirects. English only now; META/PH above stay for the day the decision is reversed.
+void bakeI18n; void META; void PH;
 fs.writeFileSync(path.join(OUT, 'index.html'), html);
-console.log('wrote dist/liquidations/index.html + ' + baked.langs + ' langs (' + html.length + ' bytes)');
+for (const L of ['ar','de','es','fr','id','ja','ko','nl','pt','ru','tr','zh']) { const d = path.join(__dirname, '..', 'dist', L, 'liquidations'); if (fs.existsSync(d)) fs.rmSync(d, { recursive: true, force: true }); }
+console.log('wrote dist/liquidations/index.html (English only, ' + html.length + ' bytes)');
 // keep sitemap in sync (same pattern as the other generators)
 try {
   const smp = path.join(__dirname, '..', 'dist', 'sitemap.xml');
