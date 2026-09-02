@@ -279,6 +279,8 @@
   .ch-amt{flex:none;text-align:right;font-weight:700;}
   .ch-amt span{display:block;color:var(--faint);font-size:9.5px;font-weight:400;}
   .wl-acts{display:flex;justify-content:center;gap:16px;margin-bottom:20px;}
+  .cop{display:flex;flex-direction:column;gap:8px;margin:10px 0}.cop-row{display:flex;align-items:center;gap:10px;background:#0c0f13;border:1px solid #232932;border-radius:11px;padding:10px 12px}.cop-n{width:22px;height:22px;border-radius:50%;background:#1a2029;color:#c2f64a;font:700 12px/22px 'Space Mono',monospace;text-align:center;flex-shrink:0}.cop-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.cop-b b{font-size:13px;color:#e9e7df}.cop-b span{font-size:11.5px;color:#8b97a5}.cop-go{background:#c2f64a;color:#0a0b0d;border:0;border-radius:9px;padding:8px 11px;font-weight:800;font-size:12px;cursor:pointer;flex-shrink:0;white-space:nowrap}
+  .dep-box{background:#0c0f13;border:1px dashed #3a4356;border-radius:11px;padding:12px 13px;font-family:monospace;font-size:12.5px;word-break:break-all;color:#e9e7df}
   .wl-act{display:flex;flex-direction:column;align-items:center;gap:7px;background:none;border:none;cursor:pointer;color:#d9d3ec;font:600 11px 'Familjen Grotesk',sans-serif;}
   .wl-act i{width:52px;height:52px;border-radius:50%;background:rgba(167,139,250,.16);border:1px solid rgba(167,139,250,.4);display:flex;align-items:center;justify-content:center;color:#cfc3f5;font-style:normal;transition:transform .14s;}
   .wl-act:active i{transform:scale(.92);}
@@ -652,6 +654,7 @@
     </div>
     <div id="tmSellIn" hidden>
       <div class="tin-l">Sell how much?</div>
+      <label class="ckrow" id="tmUsdtRow" hidden style="margin:0 0 8px"><input type="checkbox" id="tmToUsdt" checked /> Convert the proceeds to USDT right away (0.3% swap) so they can go to the exchange and your card</label>
       <div class="chips" style="margin-top:0">
         <button class="chip" data-pct="25" type="button">25%</button>
         <button class="chip" data-pct="50" type="button">50%</button>
@@ -836,8 +839,8 @@
     var bits=cardBits(ME&&ME.id);
     var linked=(d.onb||0)>=1;
     $('bkCard').innerHTML='<div class="vcard"><div class="vc-top"><span class="vc-brand">MARGIN<b>PAD</b> BANK</span><span class="vc-type">VISA</span></div><div class="vc-chip"></div><div class="vc-num">'+bits.num+'</div><div class="vc-foot"><span><small>CARD HOLDER</small>'+esc(((ME&&ME.username)||'DEMO TRADER').toUpperCase())+'</span><span><small>EXPIRES</small>'+bits.exp+'</span><span><small>CVV</small>'+bits.cvv+'</span></div><div class="vc-bal"><small>AVAILABLE</small><b>'+fmtUsd(d.cardUsd)+'</b></div></div>'
-      +(!linked?'<div class="bk-note" style="margin:0 0 14px"><b>Card not linked yet.</b> To buy crypto, first link this card to the exchange — tap "Send to exchange" and confirm the last 4 digits.</div>':'');
-    renderBankStmt();
+      +(!linked?'<div class="bk-note" style="margin:0 0 14px"><b>Card not linked yet.</b> To buy crypto, first link this card to the exchange — tap "Send to exchange" and confirm the last 4 digits.</div>':'')+'<div id="bkCashGuide"></div>';
+    renderBankStmt();renderCashoutGuide();
   }
   var TX_CACHE=[];
   function renderBankStmt(){
@@ -933,19 +936,20 @@
   }
   function openCryptoDep(){
     openSim('<div class="m-h"><b>Deposit USDT</b><button class="m-x" type="button">&times;</button></div>'
-      +'<div class="tin-l">Asset</div>'
-      +'<div style="display:flex;align-items:center;gap:9px;background:#0c0f13;border:1px solid #26a17b66;border-radius:11px;padding:10px 13px;margin-bottom:11px"><b style="color:#2fe3ac">USDT</b><span style="color:#8b97a5;font-size:12px">Tether &middot; MarginPad Chain</span><span style="margin-left:auto;color:#8b97a5;font-size:11px">only USDT for now</span></div>'
-      +'<div class="tin-l">Your deposit address</div>'
-      +'<div id="depAddrBox" style="background:#0c0f13;border:1px dashed #3a4356;border-radius:11px;padding:12px 13px;font-family:monospace;font-size:12.5px;word-break:break-all;color:#e9e7df">loading&hellip;</div>'
-      +'<button class="m-go" id="depCopy" type="button" style="margin-top:9px" disabled>Copy address</button>'
-      +'<div class="lesson">Send USDT to this address from your <b>Wallet &rarr; Send</b> (paste it as the recipient), or share it with another trader so they can pay you straight to the exchange. Funds land on your exchange USDT balance in seconds. Send only USDT here.</div>'
+      +'<p class="m-p">Your exchange deposit addresses — one per network family. The easy way: open <b>Wallet &rarr; Exchange &rarr; Send to the exchange</b> and the address is filled in for you.</p>'
+      +'<div class="tin-l">Solana address (USDT over Solana)</div><div id="depAddrSol" class="dep-box">loading&hellip;</div>'
+      +'<div class="tin-l" style="margin-top:10px">EVM address (USDT over BNB Chain, Base or Ethereum)</div><div id="depAddrBox" class="dep-box">loading&hellip;</div>'
+      +'<button class="m-go" id="depCopy" type="button" style="margin-top:9px" disabled>Copy EVM address</button>'
+      +'<button class="m-go" id="depGo" type="button" style="margin-top:9px;background:linear-gradient(135deg,#26a17b,#1a7a5c)">Send from my wallet now</button>'
+      +'<div class="lesson">Another trader can pay you straight to the exchange with either address. Funds land on your exchange USDT balance in seconds. Send only USDT here.</div>'
       +'<div class="m-msg" id="depMsg"></div>');
     var addr='';
     fetch('/api/spot/depaddr').then(function(r){return r.json();}).then(function(d){
-      var box=$('depAddrBox'),btn=$('depCopy');
-      if(d&&d.dep){addr=d.dep;box.textContent=addr;btn.disabled=false;}
-      else{box.textContent='Could not load your deposit address — try again in a moment.';}
+      var box=$('depAddrBox'),bs=$('depAddrSol'),btn=$('depCopy');
+      if(d&&d.dep){addr=d.dep;box.textContent=addr;btn.disabled=false;}else{box.textContent='Could not load your deposit address — try again in a moment.';}
+      if(bs)bs.textContent=(d&&d.depSol)||'not available';
     }).catch(function(){var box=$('depAddrBox');if(box)box.textContent='Network error — try again.';});
+    $('depGo').addEventListener('click',function(){closeSim();openToExchangeModal();});
     $('depCopy').addEventListener('click',function(){
       if(!addr)return;var msg=$('depMsg');
       function done(){msg.className='m-msg ok';msg.textContent='Address copied — now open Wallet, tap Send and paste it.';}
@@ -981,7 +985,7 @@
       +'<button class="wl-act" id="wlRcv" type="button"><i>'+IC_RCV+'</i>Receive</button>'
       +'<button class="wl-act" id="wlSnd" type="button"><i>'+IC_SND+'</i>Send</button>'
       +'<button class="wl-act" id="wlSwp" type="button"><i>'+IC_SWP+'</i>Swap</button>'
-      +'<button class="wl-act" id="wlDep" type="button"><i>'+IC_DEP+'</i>From exchange</button>'
+      +'<button class="wl-act" id="wlDep" type="button"><i>'+IC_DEP+'</i>Exchange</button>'
       +'</div>'
       +'<div class="wl-sec"><span>Tokens</span></div>'
       +'<div class="wl-card">'+toks+'</div>'
@@ -1005,7 +1009,7 @@
     var sn=$('wlSnd');if(sn)sn.addEventListener('click',function(){openSendModal();});
     var wc9=$('wlChain');if(wc9)wc9.addEventListener('click',openChainModal);
     var sw=$('wlSwp');if(sw)sw.addEventListener('click',function(){openSwapModal();});
-    var dp=$('wlDep');if(dp)dp.addEventListener('click',function(){openWithdrawModal();});
+    var dp=$('wlDep');if(dp)dp.addEventListener('click',function(){openExChoice();});
     var sh=$('wlShort');if(sh)sh.addEventListener('click',function(){try{navigator.clipboard.writeText(PORT.addr.sol);toast('Solana address copied. Paste it, never retype it.');}catch(e){}});
     Array.prototype.forEach.call(el.querySelectorAll('#netFilt .nf'),function(b){b.addEventListener('click',function(){
       memeNetF=b.getAttribute('data-net');
@@ -1197,7 +1201,7 @@
   }
 
   function openOfframpModal(){
-    if(((PORT&&PORT.usdtUsd)||0)<10){toast('Nothing to cash out — you need at least $10 USDT on the exchange.');return;}
+    if(((PORT&&PORT.usdtUsd)||0)<10){ if(cashoutPlan().length){openCashoutGuide();return;} toast('Nothing to cash out — everything is already on your card.');return;}
     openSim('<div class="m-h"><b>Cash out to your card</b><button class="m-x" type="button">&times;</button></div>'
       +'<p class="m-p">Selling USDT back to dollars on your card — the way profits actually leave crypto. Exchange balance: <b>'+fmtUsd(PORT.usdtUsd)+' USDT</b></p>'
       +'<div class="tin-l">Amount (USDT)</div><input class="tin" id="ofAmt" type="number" inputmode="decimal" min="10" step="any" placeholder="500" />'
@@ -1311,42 +1315,151 @@
 
   function openSwapModal(pre){
     if(!(PORT&&PORT.addr&&PORT.addr.sol)){openWalletCreate();return;}
-    if((PORT.wusdtUsd||0)<1&&!pre){toast('Your wallet has no USDT yet — deposit some from the exchange first.');openWithdrawModal();return;}
-    var asset=(pre&&pre.asset)||'SOL';
-    openSim('<div class="m-h"><b>Swap USDT for a gas coin</b><button class="m-x" type="button">&times;</button></div>'
-      +'<p class="m-p">On-chain everything costs gas, and DEX trades are priced in the network coin. Wallet USDT: <b>'+fmtUsd(PORT.wusdtUsd)+'</b></p>'
-      +'<div class="tin-l">Get</div><div class="netpick" id="swAssets">'
-      +'<div class="np'+(asset==='SOL'?' on':'')+'" data-a="SOL"><b>SOL</b><span>Solana memes + gas</span></div>'
-      +'<div class="np'+(asset==='ETH'?' on':'')+'" data-a="ETH"><b>ETH</b><span>Ethereum &amp; Base memes + gas</span></div>'
-      +'<div class="np'+(asset==='BNB'?' on':'')+'" data-a="BNB"><b>BNB</b><span>BNB Chain memes + gas</span></div>'
+    var dir=(pre&&pre.dir)||'buy';
+    if(dir==='buy'&&(PORT.wusdtUsd||0)<1&&!pre){ if(gasHas()){dir='sell';} else {toast('Your wallet has no USDT yet — deposit some from the exchange first.');openWithdrawModal();return;} }
+    var asset=(pre&&pre.asset)||(dir==='sell'?(['SOL','ETH','BNB'].filter(function(a){return gasBal(a)>0;})[0]||'SOL'):'SOL');
+    openSim('<div class="m-h"><b id="swTitle">Swap</b><button class="m-x" type="button">&times;</button></div>'
+      +'<div class="netpick" id="swDir" style="margin-bottom:10px"><div class="np'+(dir==='buy'?' on':'')+'" data-d="buy"><b>USDT &rarr; gas coin</b><span>to buy memes and pay gas</span></div><div class="np'+(dir==='sell'?' on':'')+'" data-d="sell"><b>Gas coin &rarr; USDT</b><span>to send to the exchange and cash out</span></div></div>'
+      +'<p class="m-p" id="swLead"></p>'
+      +'<div class="tin-l" id="swAssetL">Get</div><div class="netpick" id="swAssets">'
+      +'<div class="np" data-a="SOL"><b>SOL</b><span>Solana memes + gas</span></div>'
+      +'<div class="np" data-a="ETH"><b>ETH</b><span>Ethereum &amp; Base memes + gas</span></div>'
+      +'<div class="np" data-a="BNB"><b>BNB</b><span>BNB Chain memes + gas</span></div>'
       +'</div>'
-      +'<div class="tin-l">Spend (wallet USDT)</div><input class="tin" id="swAmt" type="number" inputmode="decimal" min="1" step="any" placeholder="200" />'
-      +'<div class="chips"><button class="chip" data-sw="50" type="button">$50</button><button class="chip" data-sw="200" type="button">$200</button><button class="chip" data-sw="100p" type="button">All</button></div>'
+      +'<div class="tin-l" id="swAmtL">Spend (wallet USDT)</div><input class="tin" id="swAmt" type="number" inputmode="decimal" min="0" step="any" placeholder="200" />'
+      +'<div class="chips" id="swChips"></div>'
       +'<div class="m-est" id="swEst" hidden></div>'
+      +'<div class="lesson" id="swLesson"></div>'
       +'<button class="m-go" id="swGo" type="button">Swap</button><div class="m-msg" id="swMsg"></div>');
     function px(){return (PORT.natPx&&PORT.natPx[asset])||0;}
-    function est(){var v=+($('swAmt').value||0);var el=$('swEst');if(!(v>=1)||!(px()>0)){el.hidden=true;return;}
-      var fee=v*0.003;el.hidden=false;
-      el.innerHTML='<div><span>You receive (est.)</span><b>'+fmtNat((v-fee)/px())+' '+asset+'</b></div><div><span>DEX fee (0.3%)</span><b>'+fmtUsd(fee)+'</b></div><div><span>Rate</span><b>1 '+asset+' = '+fmtPx(px())+'</b></div>';}
-    Array.prototype.forEach.call($('smod').querySelectorAll('#swAssets .np'),function(n){n.addEventListener('click',function(){
-      asset=n.getAttribute('data-a');
-      Array.prototype.forEach.call($('smod').querySelectorAll('#swAssets .np'),function(x){x.classList.toggle('on',x===n);});est();});});
+    function paint(){
+      $('swTitle').textContent=dir==='buy'?'Swap USDT for a gas coin':'Swap '+asset+' back to USDT';
+      $('swLead').innerHTML=dir==='buy'?('On-chain everything costs gas, and DEX trades are priced in the network coin. Wallet USDT: <b>'+fmtUsd(PORT.wusdtUsd)+'</b>'):('Selling the network coin back to USDT is how on-chain profit becomes cash-out-able. You hold: <b>'+fmtNat(gasBal(asset))+' '+asset+'</b> ('+fmtUsd(gasBal(asset)*px())+')');
+      $('swAssetL').textContent=dir==='buy'?'Get':'Sell';
+      $('swAmtL').textContent=dir==='buy'?'Spend (wallet USDT)':('Amount ('+asset+')');
+      $('swAmt').placeholder=dir==='buy'?'200':'0.5';
+      $('swLesson').innerHTML=dir==='buy'?'Keep a little of the coin after buying memes — every later transaction (sell, send) needs gas.':'Leave a sliver for gas if you still plan to move things on this chain. The DEX takes 0.3% on the way back too.';
+      Array.prototype.forEach.call($('smod').querySelectorAll('#swAssets .np'),function(n){var a=n.getAttribute('data-a');n.classList.toggle('on',a===asset);n.style.opacity=(dir==='sell'&&!(gasBal(a)>0))?'.4':'';});
+      $('swChips').innerHTML=dir==='buy'?'<button class="chip" data-sw="50" type="button">$50</button><button class="chip" data-sw="200" type="button">$200</button><button class="chip" data-sw="100p" type="button">All</button>':'<button class="chip" data-sw="25n" type="button">25%</button><button class="chip" data-sw="50n" type="button">50%</button><button class="chip" data-sw="90n" type="button">All but gas</button><button class="chip" data-sw="100n" type="button">All</button>';
+      Array.prototype.forEach.call($('smod').querySelectorAll('[data-sw]'),function(c){c.addEventListener('click',function(){
+        var v=c.getAttribute('data-sw');var b=gasBal(asset);
+        if(v==='100p')$('swAmt').value=Math.floor(PORT.wusdtUsd*100)/100;
+        else if(v==='25n')$('swAmt').value=fmtNat(b*0.25);else if(v==='50n')$('swAmt').value=fmtNat(b*0.5);else if(v==='90n')$('swAmt').value=fmtNat(Math.max(0,b-3*(({SOL:0.0008,ETH:0.0015,BNB:0.0003})[asset]||0)));else if(v==='100n')$('swAmt').value=fmtNat(b);
+        else $('swAmt').value=v;est();});});
+      $('swAmt').value='';est();
+    }
+    function est(){var v=+($('swAmt').value||0);var el=$('swEst');if(!(v>0)||!(px()>0)){el.hidden=true;return;}
+      el.hidden=false;
+      if(dir==='buy'){var fee=v*0.003;if(v<1){el.hidden=true;return;}el.innerHTML='<div><span>You receive (est.)</span><b>'+fmtNat((v-fee)/px())+' '+asset+'</b></div><div><span>DEX fee (0.3%)</span><b>'+fmtUsd(fee)+'</b></div><div><span>Rate</span><b>1 '+asset+' = '+fmtPx(px())+'</b></div>';}
+      else{var gross=v*px();var fee2=Math.max(0.01,gross*0.003);el.innerHTML='<div><span>You receive (est.)</span><b>'+fmtUsd(gross-fee2)+' USDT</b></div><div><span>DEX fee (0.3%)</span><b>'+fmtUsd(fee2)+'</b></div><div><span>Rate</span><b>1 '+asset+' = '+fmtPx(px())+'</b></div>'+((gross-fee2)<1?'<div><span>Minimum</span><b>$1 of USDT</b></div>':'');}}
+    Array.prototype.forEach.call($('smod').querySelectorAll('#swDir .np'),function(n){n.addEventListener('click',function(){dir=n.getAttribute('data-d');Array.prototype.forEach.call($('smod').querySelectorAll('#swDir .np'),function(x){x.classList.toggle('on',x===n);});if(dir==='sell'&&!(gasBal(asset)>0))asset=['SOL','ETH','BNB'].filter(function(a){return gasBal(a)>0;})[0]||asset;paint();});});
+    Array.prototype.forEach.call($('smod').querySelectorAll('#swAssets .np'),function(n){n.addEventListener('click',function(){asset=n.getAttribute('data-a');paint();});});
     $('swAmt').addEventListener('input',est);
-    Array.prototype.forEach.call($('smod').querySelectorAll('[data-sw]'),function(c){c.addEventListener('click',function(){
-      var v=c.getAttribute('data-sw');
-      $('swAmt').value=v==='100p'?Math.floor(PORT.wusdtUsd*100)/100:v;est();});});
+    paint();
     $('swGo').addEventListener('click',function(){
       var v=+($('swAmt').value||0);var msg=$('swMsg');var btn=this;
-      if(!(v>=1)){msg.className='m-msg err';msg.textContent='Minimum swap is $1.';return;}
+      if(dir==='buy'&&!(v>=1)){msg.className='m-msg err';msg.textContent='Minimum swap is $1.';return;}
+      if(dir==='sell'&&!(v>0)){msg.className='m-msg err';msg.textContent='Enter an amount of '+asset+'.';return;}
+      if(dir==='sell'&&v>gasBal(asset)*1.0000001){msg.className='m-msg err';msg.textContent='You only hold '+fmtNat(gasBal(asset))+' '+asset+'.';return;}
       btn.disabled=true;msg.className='m-msg';msg.textContent='Swapping…';
-      fetch('/api/spot/swap',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({asset:asset,usd:v,dir:'buy'})})
+      var body=dir==='buy'?{asset:asset,usd:v,dir:'buy'}:{asset:asset,natQty:v,dir:'sell'};
+      fetch('/api/spot/swap',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)})
         .then(function(r){return r.json();}).then(function(j){btn.disabled=false;
-          if(j&&j.ok){msg.className='m-msg ok';msg.textContent='Swapped — you now hold '+fmtNat((j.gas&&j.gas[asset])||0)+' '+asset+'.';toast(asset+' in your wallet — the degen zone is open.');loadPortfolio();setTimeout(closeSim,1100);}
+          if(j&&j.ok){msg.className='m-msg ok';
+            if(dir==='buy'){msg.textContent='Swapped — you now hold '+fmtNat((j.gas&&j.gas[asset])||0)+' '+asset+'.';toast(asset+' in your wallet — the degen zone is open.');}
+            else{msg.innerHTML='Swapped — wallet USDT is now <b>'+fmtUsd(j.wusdtUsd||0)+'</b>. <a href="#" id="swNext">Send it to the exchange</a>';var nx=$('swNext');if(nx)nx.addEventListener('click',function(e){e.preventDefault();closeSim();loadPortfolio();setTimeout(openToExchangeModal,350);});toast(fmtUsd(j.wusdtUsd||0)+' USDT in your wallet.');}
+            loadPortfolio();if(dir==='buy')setTimeout(closeSim,1100);}
+          else if(j&&j.error==='insufficient'){msg.className='m-msg err';msg.textContent='Wallet only has '+fmtUsd(j.wusdtUsd||0)+' USDT.';}
+          else if(j&&j.error==='insufficient_native'){msg.className='m-msg err';msg.textContent='You only hold '+fmtNat(j.have||0)+' '+asset+'.';}
+          else if(j&&j.error==='min_trade'){msg.className='m-msg err';msg.textContent='That is under $1 of USDT after the fee — swap a little more.';}
+          else if(j&&j.error==='no_price'){msg.className='m-msg err';msg.textContent='No live price right now — try again in a moment.';}
+          else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
+        }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
+    });
+  }
+  // Wallet <-> Exchange chooser + the send-to-exchange flow (2026-09-03). Before this the only way back was: open Exchange,
+  // copy the 0x deposit address, open Wallet, Send, paste it, and hold BNB gas — 18 of 28 users who withdrew never made it back.
+  function openExChoice(){
+    if(!(PORT&&PORT.addr&&PORT.addr.sol)){openWalletCreate();return;}
+    openSim('<div class="m-h"><b>Wallet &harr; Exchange</b><button class="m-x" type="button">&times;</button></div>'
+      +'<p class="m-p">USDT moves between your exchange account and your own wallet over the network of your choice — each hop costs a network fee or gas.</p>'
+      +'<div class="netpick">'
+      +'<div class="np" id="ecFrom"><b>Deposit from the exchange<small>Exchange USDT &rarr; wallet · network fee $0.80-$8</small></b><span>'+fmtUsd((PORT&&PORT.usdtUsd)||0)+' on exchange</span></div>'
+      +'<div class="np" id="ecTo"><b>Send to the exchange<small>Wallet USDT &rarr; exchange · gas only · then cash out to your card</small></b><span>'+fmtUsd((PORT&&PORT.wusdtUsd)||0)+' in wallet</span></div>'
+      +'</div>'
+      +'<div class="lesson">Real life: an exchange gives you a deposit address per network; you send to it from your wallet and the balance shows up on the exchange. Here the address is filled in for you — the gas is still real.</div>');
+    $('ecFrom').addEventListener('click',function(){closeSim();openWithdrawModal();});
+    $('ecTo').addEventListener('click',function(){closeSim();openToExchangeModal();});
+  }
+  function openToExchangeModal(){
+    if(!(PORT&&PORT.addr&&PORT.addr.sol)){openWalletCreate();return;}
+    if((PORT.wusdtUsd||0)<1){ if(gasHas()){toast('No USDT in the wallet yet — swap your '+(['SOL','ETH','BNB'].filter(function(a){return gasBal(a)>0;})[0]||'coins')+' back to USDT first.');openSwapModal({dir:'sell'});return;} toast('Your wallet has no USDT to send.');return; }
+    var NG={solana:['SOL',0.0008,'Solana'],bsc:['BNB',0.0003,'BNB Chain'],base:['ETH',0.00004,'Base'],eth:['ETH',0.0015,'Ethereum']};
+    var pick=null;['solana','bsc','base','eth'].forEach(function(n){if(!pick&&gasBal(NG[n][0])>=NG[n][1])pick=n;});
+    openSim('<div class="m-h"><b>Send USDT to the exchange</b><button class="m-x" type="button">&times;</button></div>'
+      +'<p class="m-p">Moves wallet USDT to your MarginPad Exchange balance — the step before cashing out to your card. Wallet USDT: <b>'+fmtUsd(PORT.wusdtUsd)+'</b></p>'
+      +'<div class="tin-l">Network (picked by the gas you hold)</div>'
+      +'<div class="netpick" id="teNets">'+['solana','bsc','base','eth'].map(function(n){var ok=gasBal(NG[n][0])>=NG[n][1];return '<div class="np'+(n===pick?' on':'')+'" data-n="'+n+'" style="'+(ok?'':'opacity:.45')+'"><b>'+NG[n][2]+'</b><span>gas ~'+NG[n][1]+' '+NG[n][0]+' · you hold '+fmtNat(gasBal(NG[n][0]))+'</span></div>';}).join('')+'</div>'
+      +'<div class="tin-l" style="margin-top:10px">Amount (USDT)</div><input class="tin" id="teAmt" type="number" inputmode="decimal" min="1" step="any" placeholder="500" />'
+      +'<div class="chips"><button class="chip" data-te="25" type="button">25%</button><button class="chip" data-te="50" type="button">50%</button><button class="chip" data-te="100" type="button">All</button></div>'
+      +'<div class="m-est" id="teEst" hidden></div>'
+      +(pick?'':'<div class="lesson"><b>No gas on any network.</b> Sending on-chain always costs gas in that chain\'s coin — swap a few dollars of USDT for SOL first.</div>')
+      +'<button class="m-go" id="teGo" type="button">'+(pick?'Send to exchange':'Get gas first')+'</button><div class="m-msg" id="teMsg"></div>');
+    var net=pick;
+    function est(){var v=+($('teAmt').value||0);var el=$('teEst');if(!(v>=1)||!net){el.hidden=true;return;}el.hidden=false;el.innerHTML='<div><span>Lands on exchange</span><b>'+fmtUsd(v)+' USDT</b></div><div><span>Network</span><b>'+NG[net][2]+'</b></div><div><span>Gas (from your balance)</span><b>~'+NG[net][1]+' '+NG[net][0]+'</b></div>';}
+    Array.prototype.forEach.call($('smod').querySelectorAll('#teNets .np'),function(nb){nb.addEventListener('click',function(){var n=nb.getAttribute('data-n');if(!(gasBal(NG[n][0])>=NG[n][1])){toast('You have no '+NG[n][0]+' for gas on '+NG[n][2]+'.');return;}net=n;Array.prototype.forEach.call($('smod').querySelectorAll('#teNets .np'),function(x){x.classList.toggle('on',x===nb);});est();});});
+    Array.prototype.forEach.call($('smod').querySelectorAll('[data-te]'),function(c){c.addEventListener('click',function(){var p=+c.getAttribute('data-te');$('teAmt').value=Math.floor(PORT.wusdtUsd*p)/100;est();});});
+    $('teAmt').addEventListener('input',est);
+    $('teGo').addEventListener('click',function(){
+      var msg=$('teMsg');var btn=this;
+      if(!net){closeSim();openSwapModal({asset:'SOL',dir:'buy'});return;}
+      var v=+($('teAmt').value||0);if(!(v>=1)){msg.className='m-msg err';msg.textContent='Minimum is $1.';return;}
+      btn.disabled=true;msg.className='m-msg';msg.textContent='Broadcasting to MarginPad Chain…';
+      fetch('/api/spot/toexchange',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({usd:v,net:net})})
+        .then(function(r){return r.json();}).then(function(j){btn.disabled=false;
+          if(j&&j.ok){msg.className='m-msg ok';msg.innerHTML=fmtUsd(j.usdUsd)+' USDT is on your exchange balance (block #'+j.height+'). <a href="#" id="teCash">Cash out to your card</a>';var cs=$('teCash');if(cs)cs.addEventListener('click',function(e){e.preventDefault();closeSim();loadPortfolio();setTimeout(openOfframpModal,400);});toast(fmtUsd(j.usdUsd)+' USDT arrived on the exchange.');loadPortfolio();}
+          else if(j&&j.error==='no_gas'){msg.className='m-msg err';msg.innerHTML='No gas on that network. <a href="#" id="teGas">Swap USDT for '+esc(NG[net][0])+'</a>';var g=$('teGas');if(g)g.addEventListener('click',function(e){e.preventDefault();closeSim();openSwapModal({asset:NG[net][0],dir:'buy'});});}
           else if(j&&j.error==='insufficient'){msg.className='m-msg err';msg.textContent='Wallet only has '+fmtUsd(j.wusdtUsd||0)+' USDT.';}
           else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
         }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
     });
   }
+  // Cash-out plan from ANY state: where the money sits and the next button to press. Used by the Bank app card and by Cash out when the exchange is empty.
+  function cashoutPlan(){
+    var d=PORT||{};var holds=d.holds||[];var natPx=d.natPx||{};var g=d.gas||{};
+    var bags=holds.filter(function(h){return h.meta&&h.meta.k==='meme';}).reduce(function(s,h){return s+(+h.valueUsd||0);},0);
+    var nat=0;['SOL','ETH','BNB'].forEach(function(a){nat+=(+g[a]||0)*(natPx[a]||0);});
+    var coins=holds.filter(function(h){return !(h.meta&&h.meta.k==='meme');}).reduce(function(s,h){return s+(+h.valueUsd||0);},0);
+    var steps=[];
+    if(bags>=1)steps.push({k:'bags',t:'Sell your meme bags',s:fmtUsd(bags)+' in memes — they sell into the chain coin',cta:'Open wallet',act:function(){showView('wal');}});
+    if(nat>=1)steps.push({k:'nat',t:'Swap the chain coin back to USDT',s:fmtUsd(nat)+' in SOL / ETH / BNB — 0.3% DEX fee',cta:'Swap to USDT',act:function(){openSwapModal({dir:'sell'});}});
+    if((d.wusdtUsd||0)>=1)steps.push({k:'wusdt',t:'Send wallet USDT to the exchange',s:fmtUsd(d.wusdtUsd)+' USDT in your wallet — gas only',cta:'Send to exchange',act:openToExchangeModal});
+    if(coins>=1)steps.push({k:'coins',t:'Sell your exchange coins',s:fmtUsd(coins)+' in coins on the exchange — 0.1% fee',cta:'Open exchange',act:function(){showView('ex');}});
+    if((d.usdtUsd||0)>=10)steps.push({k:'usdt',t:'Cash out to your card',s:fmtUsd(d.usdtUsd)+' USDT on the exchange — 1% fee, min $10',cta:'Cash out',act:openOfframpModal});
+    else if((d.usdtUsd||0)>=1)steps.push({k:'usdt',t:'Exchange USDT is under the $10 minimum',s:fmtUsd(d.usdtUsd)+' USDT — move a little more first',cta:null});
+    return steps;
+  }
+  function cashoutHtml(steps,inline){
+    if(!steps.length)return '<div class="empty">Nothing left to cash out — everything is already on your card.</div>';
+    return '<div class="cop">'+steps.map(function(st,i){return '<div class="cop-row"><span class="cop-n">'+(i+1)+'</span><span class="cop-b"><b>'+esc(st.t)+'</b><span>'+esc(st.s)+'</span></span>'+(st.cta?'<button class="cop-go" type="button" data-cop="'+st.k+'">'+esc(st.cta)+'</button>':'')+'</div>';}).join('')+'</div>';
+  }
+  function wireCashout(root,steps,closeFirst){Array.prototype.forEach.call(root.querySelectorAll('[data-cop]'),function(b){b.addEventListener('click',function(){var st=steps.filter(function(x){return x.k===b.getAttribute('data-cop');})[0];if(!st)return;if(closeFirst)closeSim();st.act();});});}
+  function openCashoutGuide(){
+    var steps=cashoutPlan();
+    openSim('<div class="m-h"><b>Cash out — the whole way back</b><button class="m-x" type="button">&times;</button></div>'
+      +'<p class="m-p">Money only leaves through the exchange: everything on-chain has to come back as USDT first, then USDT sells to dollars on your card. In order:</p>'
+      +cashoutHtml(steps)
+      +'<div class="lesson">This is the real-world shape of a cash-out too: DEX &rarr; wallet &rarr; exchange &rarr; bank, a fee at every hop. That is why traders plan the exit before the entry.</div>');
+    wireCashout($('smod'),steps,true);
+  }
+  function renderCashoutGuide(){
+    var el=$('bkCashGuide');if(!el||!PORT)return;
+    var steps=cashoutPlan();var offCard=steps.length&&!(steps.length===1&&steps[0].k==='usdt');
+    if(!offCard){el.innerHTML='';return;}
+    el.innerHTML='<div class="bk-note" style="margin:0 0 14px"><b>Money outside the bank.</b> To cash it out, bring it back in this order:</div>'+cashoutHtml(steps,true);
+    wireCashout(el,steps,false);
+  }
+  
 
   function openSendModal(){
     if(!(PORT&&PORT.addr&&PORT.addr.sol)){openWalletCreate();return;}
@@ -1491,7 +1604,7 @@
   function setSide(s){
     T.side=s;
     $('segBuy').classList.toggle('on',s==='buy');$('segSell').classList.toggle('on',s==='sell');
-    $('tmBuyIn').hidden=s!=='buy';$('tmSellIn').hidden=s!=='sell';
+    $('tmBuyIn').hidden=s!=='buy';$('tmSellIn').hidden=s!=='sell';var ur=$('tmUsdtRow');if(ur)ur.hidden=!(s==='sell'&&T.kind==='meme');
     var go=$('tmGo');go.className='m-go '+s;go.textContent=s==='buy'?('Buy '+T.sym):('Sell '+T.sym);
     T.sellPct=null;updateEst();
   }
@@ -1548,6 +1661,7 @@
     } else {
       if(!T.sellPct){msg.textContent='Pick how much to sell.';msg.className='m-msg err';return;}
       body.pct=T.sellPct;
+      if(T.kind==='meme'&&$('tmToUsdt')&&$('tmToUsdt').checked)body.toUsdt=true;
     }
     go.disabled=true;msg.textContent='Filling…';msg.className='m-msg';
     fetch('/api/spot/trade',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)})
@@ -1556,7 +1670,7 @@
         if(j&&j.ok){
           msg.className='m-msg ok';
           if(j.side==='buy'){msg.innerHTML='Bought <b>'+fmtQty(j.qty)+' '+esc(T.sym)+'</b> @ '+fmtPx(j.price)+(j.native?' · paid '+fmtNat(j.natQty)+' '+j.native+' + gas':'')+' · fee '+fmtUsd(j.feeUsd)+(j.slipPct?' · slip '+j.slipPct+'%':'');toast('Bought '+esc(T.sym)+' for '+fmtUsd(j.usdUsd));}
-          else {msg.innerHTML='Sold @ '+fmtPx(j.price)+' for <b>'+fmtUsd(j.usdUsd)+'</b>'+(j.native?' (in '+j.native+')':'')+' · PnL '+pnlHtml(j.pnlUsd);toast((j.pnlUsd>=0?'Profit banked: +':'Closed at: −')+'$'+Math.abs(j.pnlUsd).toFixed(2)+' on '+esc(T.sym));T.sellPct=null;}
+          else {msg.innerHTML='Sold @ '+fmtPx(j.price)+' for <b>'+fmtUsd(j.usdUsd)+'</b>'+(j.native?' (in '+j.native+')':'')+' · PnL '+pnlHtml(j.pnlUsd)+(j.swapped?'<br>Swapped to <b>'+fmtUsd(j.swapped.usdUsd)+' USDT</b> in your wallet (fee '+fmtUsd(j.swapped.feeUsd)+'). <a href="#" id="tmToEx">Send it to the exchange</a>':'');var tx9=$('tmToEx');if(tx9)tx9.addEventListener('click',function(e){e.preventDefault();closeTrade();loadPortfolio();setTimeout(openToExchangeModal,400);});toast((j.pnlUsd>=0?'Profit banked: +':'Closed at: −')+'$'+Math.abs(j.pnlUsd).toFixed(2)+' on '+esc(T.sym));T.sellPct=null;}
           try{if(window.__mpTrack)window.__mpTrack('spot',j.side+' '+T.sym);}catch(e){}
           loadPortfolio();setTimeout(function(){renderPos();renderPayWith();updateEst();},700);
         } else {

@@ -11818,6 +11818,10 @@ async function handleSpot(url, request, env) {
     const body9 = { uid, side: 'sell', sym: holdKey, qty, pct: pct >= 100 ? 100 : 0, price: eff, feeC };
     if (kind === 'meme') { const netC9 = Math.max(0, Math.round(qty * eff * 100) - feeC); body9.native = native; body9.natOut = netC9 / 100 / natPxT; body9.gasNat = gasNat; } // proceeds come back as SOL/ETH/BNB minus gas
     let d = null; try { const r = await stub.fetch(new Request('https://do/trade', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body9) })); d = await r.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
+    if (d && d.ok && kind === 'meme' && b.toUsdt && body9.natOut > 0) { // convert the proceeds to wallet USDT right away (0.3% DEX swap) — one receipt instead of a hidden second step (2026-09-03)
+      try { const grossC = Math.round(body9.natOut * natPxT * 100); const feeS = Math.max(1, Math.round(grossC * SPOT_SWAP_BP / 10000)); const usdS = Math.max(0, grossC - feeS);
+        if (usdS >= 100) { const sr = await stub.fetch(new Request('https://do/swap', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, asset: native, dir: 'sell', usdC: usdS, natQty: body9.natOut, feeC: feeS }) })); const sd = await sr.json(); if (sd && sd.ok) { d.swapped = { usdUsd: usdS / 100, feeUsd: feeS / 100, native, natQty: body9.natOut }; d.gas = sd.gas; d.wusdtUsd = sd.wusdtUsd; } } } catch (e) {}
+    }
     if (d && d.ok) { d.slipPct = Math.round(slip * 10000) / 100; d.net = net || null; try { await evPush(env, request, 'spottrade', 'SELL ' + holdKey.replace(/^[a-z]+:/, '').slice(0, 14) + ' $' + (+d.usdUsd || 0).toFixed(2) + (d.pnlUsd != null ? ' (' + (d.pnlUsd >= 0 ? '+' : '') + (+d.pnlUsd).toFixed(2) + ')' : ''), '/spot/'); } catch (e) {} }
     return jr(d || { error: 'fail' }, d && d.ok ? 200 : 400);
   }
@@ -11853,11 +11857,32 @@ async function handleSpot(url, request, env) {
       return jr(d, d && d.ok ? 200 : 400);
     } catch (e) { return jr({ error: 'transient' }, 503); }
   }
-  if (path === '/depaddr') { // exchange USDT deposit address (generated once; wallet -> exchange deposits go through /transfer to this address)
+  if (path === '/depaddr') { // exchange USDT deposit addresses (generated once; wallet -> exchange deposits go through /transfer to one of them). EVM (0x) + Solana (2026-09-03): with only a 0x address a wallet holding just SOL gas could never deposit back — 18 users were stuck with money in the wallet
     const rnd = new Uint8Array(20); crypto.getRandomValues(rnd);
     const cand = '0x' + Array.from(rnd).map(x => x.toString(16).padStart(2, '0')).join('');
-    try { const r = await stub.fetch(new Request('https://do/depaddr', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, dep: cand }) })); return jr(await r.json()); }
+    const candSol = spotGenAddr().sol;
+    try { const r = await stub.fetch(new Request('https://do/depaddr', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, dep: cand, depSol: candSol }) })); return jr(await r.json()); }
     catch (e) { return jr({ error: 'transient' }, 503); }
+  }
+  if (path === '/toexchange' && request.method === 'POST') { // wallet USDT -> own exchange balance (2026-09-03). The old way was: open Exchange, copy the 0x deposit address, open Wallet, Send, paste, hold BNB gas. Picks the network the user has gas for and sends to the matching deposit address.
+    const usdC = Math.round((+b.usd || 0) * 100);
+    if (!(usdC >= 100)) return jr({ error: 'min_trade', minUsd: 1 }, 400);
+    let pd = null; try { const pr = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid))); pd = await pr.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
+    if (!pd || !pd.addr || !pd.addr.sol) return jr({ error: 'no_wallet' }, 400);
+    let dep = null; try { const dr = await stub.fetch(new Request('https://do/depaddr', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, dep: '0x' + Array.from(crypto.getRandomValues(new Uint8Array(20))).map(x => x.toString(16).padStart(2, '0')).join(''), depSol: spotGenAddr().sol }) })); dep = await dr.json(); } catch (e) {}
+    if (!dep || !dep.dep) return jr({ error: 'transient' }, 503);
+    const gas = pd.gas || {};
+    const want = SPOT_NETS[String(b.net || '')] ? String(b.net) : null;
+    const order = want ? [want] : ['solana', 'bsc', 'base', 'eth'];
+    let net = null; for (const n of order) { const nat = SPOT_NETS[n].native; if ((+gas[nat] || 0) >= SPOT_NETS[n].gas && (n !== 'solana' || dep.depSol)) { net = n; break; } }
+    if (!net) return jr({ error: 'no_gas', options: ['solana', 'bsc', 'base', 'eth'].map(n => ({ net: n, native: SPOT_NETS[n].native, need: SPOT_NETS[n].gas, have: +gas[SPOT_NETS[n].native] || 0 })) }, 400);
+    const toAddr = net === 'solana' ? dep.depSol : dep.dep;
+    try {
+      const r = await stub.fetch(new Request('https://do/transfer', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, toAddr, usdC, native: SPOT_NETS[net].native, gasNat: SPOT_NETS[net].gas, net, memo: 'to exchange' }) }));
+      const d = await r.json();
+      if (d && d.ok) { d.net = net; d.gasNat = SPOT_NETS[net].gas; try { await evPush(env, request, 'spottrade', 'to exchange $' + (usdC / 100).toFixed(2) + ' via ' + net, '/spot/'); } catch (e) {} }
+      return jr(d, d && d.ok ? 200 : 400);
+    } catch (e) { return jr({ error: 'transient' }, 503); }
   }
   if (path === '/wallet/create' && request.method === 'POST') { // sim step 3: self-custody wallet — addresses generated here; the seed phrase is shown ONCE and never stored (like real life)
     const addr = spotGenAddr();
@@ -14350,7 +14375,7 @@ export class SpotStore {
       const rec = this.rows('SELECT user_id, addr FROM spotacct WHERE addr LIKE ? LIMIT 1', '%' + toAddr + '%')[0];
       if (!rec) return this.j({ error: 'unknown_address' }, 404); // real chains send this into the void forever; the demo refuses and teaches instead
       let recAddr = {}; try { recAddr = JSON.parse(rec.addr || '{}'); } catch (e) {}
-      const isDep = !!recAddr.dep && recAddr.dep === toAddr; // exchange DEPOSIT address -> credit the recipient's EXCHANGE USDT, not their wallet (own dep allowed: that IS the wallet->exchange deposit flow)
+      const isDep = (!!recAddr.dep && recAddr.dep === toAddr) || (!!recAddr.depSol && recAddr.depSol === toAddr); // exchange DEPOSIT address -> credit the recipient's EXCHANGE USDT, not their wallet (own dep allowed: that IS the wallet->exchange deposit flow)
       if ((a.wusdt || 0) < usdC) return this.j({ error: 'insufficient', wusdtUsd: (a.wusdt || 0) / 100 }, 400);
       const g = this._gas(a);
       if (native) { if ((+g[native] || 0) < gasNat) return this.j({ error: 'no_gas', native, have: +g[native] || 0, need: gasNat }, 400); g[native] = (+g[native] || 0) - gasNat; }
@@ -14374,13 +14399,11 @@ export class SpotStore {
       if (!uid) return this.j({ error: 'bad' }, 400);
       const a = this._acct(uid, now);
       let cur = {}; try { cur = a.addr ? JSON.parse(a.addr) : {}; } catch (e) {}
-      if (!cur.dep) {
-        const cand = String(b.dep || '').slice(0, 64);
-        if (!/^0x[0-9a-f]{40}$/.test(cand)) return this.j({ error: 'bad' }, 400);
-        cur.dep = cand;
-        sql.exec('UPDATE spotacct SET addr=?, last_seen=? WHERE user_id=?', JSON.stringify(cur), now, uid);
-      }
-      return this.j({ ok: true, dep: cur.dep });
+      let dirty = false;
+      if (!cur.dep) { const cand = String(b.dep || '').slice(0, 64); if (!/^0x[0-9a-f]{40}$/.test(cand)) return this.j({ error: 'bad' }, 400); cur.dep = cand; dirty = true; }
+      if (!cur.depSol) { const candS = String(b.depSol || '').slice(0, 64); if (/^[1-9A-HJ-NP-Za-km-z]{32,50}$/.test(candS)) { cur.depSol = candS; dirty = true; } } // Solana deposit address (2026-09-03): the wallet -> exchange path must not force BNB gas
+      if (dirty) sql.exec('UPDATE spotacct SET addr=?, last_seen=? WHERE user_id=?', JSON.stringify(cur), now, uid);
+      return this.j({ ok: true, dep: cur.dep, depSol: cur.depSol || null });
     }
     if (path === '/walletcreate') { // step 3: self-custody wallet — worker generated the addresses (stored once, never regenerated)
       if (!uid) return this.j({ error: 'bad' }, 400);
