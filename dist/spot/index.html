@@ -279,6 +279,9 @@
   .ch-amt{flex:none;text-align:right;font-weight:700;}
   .ch-amt span{display:block;color:var(--faint);font-size:9.5px;font-weight:400;}
   .wl-acts{display:flex;justify-content:center;gap:16px;margin-bottom:20px;}
+  .cal-h{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#8b97a5;margin:10px 0 6px;text-transform:uppercase;letter-spacing:.05em}.cal-h b{color:#c8d0d9;text-transform:none;letter-spacing:0;font-size:11px}
+  .cal{display:grid;grid-template-columns:repeat(14,1fr);gap:4px}.cal i{display:block;aspect-ratio:1;border-radius:4px;background:#161b22;border:1px solid #1f2630}.cal i.g{background:#2ebd85;border-color:#2ebd85}.cal i.r{background:#ff5a4d;border-color:#ff5a4d}.cal i.f{background:#3a424d;border-color:#3a424d}
+  .sb{display:flex;flex-direction:column;gap:4px}.sb-r{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:9px;background:#0f131a;border:1px solid #1f2630;font-size:12.5px}.sb-r.me{border-color:#c2f64a}.sb-n{width:18px;color:#8b97a5;font-family:'Space Mono',monospace;font-size:11px}.sb-w{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e9e7df;font-weight:700}.sb-v{font-family:'Space Mono',monospace;font-size:12px;color:#e9e7df;text-align:right}.sb-v small{display:block;font-size:10px;color:#2ebd85}
   .cop{display:flex;flex-direction:column;gap:8px;margin:10px 0}.cop-row{display:flex;align-items:center;gap:10px;background:#0c0f13;border:1px solid #232932;border-radius:11px;padding:10px 12px}.cop-n{width:22px;height:22px;border-radius:50%;background:#1a2029;color:#c2f64a;font:700 12px/22px 'Space Mono',monospace;text-align:center;flex-shrink:0}.cop-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.cop-b b{font-size:13px;color:#e9e7df}.cop-b span{font-size:11.5px;color:#8b97a5}.cop-go{background:#c2f64a;color:#0a0b0d;border:0;border-radius:9px;padding:8px 11px;font-weight:800;font-size:12px;cursor:pointer;flex-shrink:0;white-space:nowrap}
   .dep-box{background:#0c0f13;border:1px dashed #3a4356;border-radius:11px;padding:12px 13px;font-family:monospace;font-size:12.5px;word-break:break-all;color:#e9e7df}
   .wl-act{display:flex;flex-direction:column;align-items:center;gap:7px;background:none;border:none;cursor:pointer;color:#d9d3ec;font:600 11px 'Familjen Grotesk',sans-serif;}
@@ -510,6 +513,8 @@
           <div class="spark">
             <canvas id="eqCv" height="84"></canvas>
             <div class="empty" id="eqEmpty" style="padding:8px;font-size:11px" hidden>Draws after your first full day.</div>
+            <div id="pnlCal"></div>
+            <div id="spotBoard"></div>
           </div>
         </div>
         <div class="panel" id="allocPanel">
@@ -743,7 +748,7 @@
       if(d.error)return;
       PORT=d;
       if(d.fresh)toast('<b>Your $10,000 card has arrived.</b> The map shows the way — start at the bank.');
-      [renderMast,renderMap,renderEquity,renderDonut].forEach(function(f){try{f();}catch(e){}});
+      [renderMast,renderMap,renderEquity,renderDonut,renderCal,renderSpotBoard].forEach(function(f){try{f();}catch(e){}});
       try{if(VIEW==='bank')renderBank();if(VIEW==='ex')renderEx();if(VIEW==='wal')renderWal();}catch(e){}
       loadHistory(true);
     }).catch(function(){});
@@ -818,6 +823,26 @@
     ctx.strokeStyle=col;ctx.lineWidth=3;ctx.lineJoin='round';ctx.stroke();
     ctx.lineTo(W-4,H);ctx.lineTo(4,H);ctx.closePath();
     var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,up?'rgba(46,189,133,.24)':'rgba(255,98,88,.2)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fill();
+  }
+  // Daily PnL calendar (2026-09-03): one cell per day from the start-of-day snapshots — green day = the day closed in profit. Same idea as the Green Days board, no prize.
+  function renderCal(){
+    var el=$('pnlCal');if(!el)return;var snaps=(PORT&&PORT.snaps)||[];
+    if(snaps.length<2){el.innerHTML='';return;}
+    var days={};for(var i=1;i<snaps.length;i++){days[snaps[i-1].day]=snaps[i].valueUsd-snaps[i-1].valueUsd;}
+    var last=snaps[snaps.length-1];if(PORT&&last)days[last.day]=PORT.totalUsd-last.valueUsd;
+    var A=Date.UTC(2026,6,20),P=14*86400000,ss=A+Math.floor((Date.now()-A)/P)*P;
+    var green=0,red=0,cells='';var today=new Date();
+    for(var d=27;d>=0;d--){var t=new Date(Date.UTC(today.getUTCFullYear(),today.getUTCMonth(),today.getUTCDate())-d*86400000);var k=t.toISOString().slice(0,10);var v=days[k];var cls=v==null?'':(v>0.005?'g':(v<-0.005?'r':'f'));if(t.getTime()>=ss){if(cls==='g')green++;if(cls==='r')red++;}
+      cells+='<i class="'+cls+'" title="'+k+(v!=null?' · '+(v>=0?'+':'')+'$'+Math.abs(v).toFixed(2):'')+'"></i>';}
+    el.innerHTML='<div class="cal-h"><span>Daily PnL · last 28 days</span><b>'+green+' green · '+red+' red this season</b></div><div class="cal">'+cells+'</div>';
+  }
+  var _sbLoaded=false;
+  function renderSpotBoard(){
+    var el=$('spotBoard');if(!el||_sbLoaded)return;_sbLoaded=true;
+    fetch('/api/spot/board').then(function(r){return r.json();}).then(function(j){
+      var top=(j&&j.top)||[];
+      el.innerHTML='<div class="cal-h" style="margin-top:14px"><span>Bank balances this season</span><b>bragging rights · no prize</b></div>'+(top.length?'<div class="sb">'+top.map(function(x){var me=ME&&x.who===ME.username;return '<div class="sb-r'+(me?' me':'')+'"><span class="sb-n">'+x.rank+'</span><span class="sb-w">'+esc(x.who)+'</span><span class="sb-v">'+fmtUsd(x.cardUsd)+'<small>'+(x.gainUsd>=0?'+':'')+fmtUsd(x.gainUsd)+'</small></span></div>';}).join('')+'</div>':'<div class="empty" style="font-size:11px">Nobody has cashed out above $10,000 this season yet — the card is the score.</div>');
+    }).catch(function(){});
   }
   var DCOLS=['#e6c46a','#c2f64a','#a78bfa','#38bdf8','#ff6a3d','#2ebd85','#ff5a9e','#5ad8e6','#c9a5ff','#98a1ac'];
   function renderDonut(){

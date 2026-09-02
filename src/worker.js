@@ -4943,6 +4943,12 @@ async function checkOpsAlerts(env) {
       const nAi = Math.round(+((_ae[0] || {}).n) || 0);
       if (nAi >= 5) { const last = +(await env.STATS.get('alrt:aierr') || 0); if (Date.now() - last > 6 * 3600000) { await env.STATS.put('alrt:aierr', String(Date.now()), { expirationTtl: 172800 }); await tgAdmin(env, '<b>Anthropic: ' + nAi + ' failed calls in the last hour</b>\nAsk-the-AI (Premium) and news briefs are degraded. Check the API key / credits at console.anthropic.com.'); } }
     } catch (e) {}
+    // DEMO SPOT STORE FAILURES (2026-09-03): every 'transient' answer from /api/spot/* writes an AE row; >=5 in an hour pages once per 6h.
+    try {
+      const _se = (await aeQuery(env, "SELECT SUM(_sample_interval) AS n FROM marginpad_events WHERE index1 = 'spoterr' AND timestamp > NOW() - INTERVAL '1' HOUR")) || [];
+      const nSpot = Math.round(+((_se[0] || {}).n) || 0);
+      if (nSpot >= 5) { const last = +(await env.STATS.get('alrt:spoterr') || 0); if (Date.now() - last > 6 * 3600000) { await env.STATS.put('alrt:spoterr', String(Date.now()), { expirationTtl: 172800 }); await tgAdmin(env, '<b>Demo Spot: ' + nSpot + ' failed store calls in the last hour</b>\nSpotStore DO is answering transient on /api/spot/*. Check ops Spot tab + wrangler tail.'); } }
+    } catch (e) {}
     // TELEGRAM DEAD -> EMAIL (2026-09-02): tgAdmin records its first failure in tg:fail; if it is still failing 30 min later, the
     // only channel left is email. Owner address lives in KV cfg:owneremail (unset = no fallback). Once per day.
     try {
@@ -11701,6 +11707,10 @@ function spotGenAddr() {
 }
 const SPOT_WORDS = 'apple bridge candle dolphin ember forest garden harbor island jungle kernel lantern meadow nectar orbit planet quartz river sunset timber umbrella valley walnut yellow zebra anchor breeze canyon dune eagle falcon glacier horizon iceberg jasmine karma lagoon marble nova opal prism raven silver thunder velvet willow amber blossom cedar drift'.split(' ');
 function spotGenSeed() { const r = new Uint8Array(12); crypto.getRandomValues(r); const out = []; const used = {}; let i = 0, gi = 0; while (out.length < 12 && gi < 60) { const w = SPOT_WORDS[(r[i % 12] + gi * 7) % SPOT_WORDS.length]; gi++; if (used[w]) continue; used[w] = 1; out.push(w); i++; } return out; }
+// Demo Spot -> UserStore event trail (2026-09-03): the daily missions and XP verify against uevents/mev, which only the /track path writes.
+// Fire-and-forget; a store hiccup must never fail the trade that already settled.
+async function spotTrack(env, request, uid, type, label) { try { await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/track', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, type, label: String(label || '').slice(0, 48), path: '/spot/', cc: (request && request.cf && request.cf.country) || '', dev: deviceOf((request && request.headers.get('user-agent')) || '') }) })); } catch (e) {} }
+function spotFail(env, jr, where) { try { if (env && env.AE) env.AE.writeDataPoint({ indexes: ['spoterr'], blobs: ['spoterr', String(where || '?')], doubles: [1] }); } catch (e) {} return jr({ error: 'transient' }, 503); } // every SpotStore failure becomes an AE row; checkOpsAlerts pages on the hourly count
 async function handleSpot(url, request, env) {
   const jr = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...CORS } });
   if (request.method === 'OPTIONS') return new Response('', { status: 204, headers: CORS });
@@ -11723,6 +11733,16 @@ async function handleSpot(url, request, env) {
     const bars = list.map(r => ({ time: +r[0], open: +r[1], high: +r[2], low: +r[3], close: +r[4], vol: +r[5] })).filter(x => x.time > 0 && x.close > 0).sort((x, y) => x.time - y.time);
     return new Response(JSON.stringify(bars), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
   }
+  if (path === '/board') { // season bank-balance board (2026-09-03): bragging rights only — the paid Spot board was retired 2026-08-17. Public, 60s edge cache.
+    const ck = new Request('https://marginpad.io/__spot_board_v1');
+    try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+    let rows = []; try { const r = await spotStub(env).fetch(new Request('https://do/lbbank')); const d = await r.json(); rows = ((d && d.top) || []).filter(x => (+x.cardC || 0) >= SPOT_START_C).slice(0, 10); } catch (e) {}
+    let names = {}; try { const nr = await usersDO(env, '/names', { ids: rows.map(x => x.uid) }); names = (nr && nr.names) || {}; } catch (e) {}
+    const top = rows.filter(x => names[x.uid]).map((x, i) => ({ rank: i + 1, who: names[x.uid], cardUsd: Math.round((+x.cardC || 0)) / 100, gainUsd: Math.round(((+x.cardC || 0) - SPOT_START_C)) / 100 }));
+    const resp = new Response(JSON.stringify({ top, note: 'no prize' }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+    try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+    return resp;
+  }
   if (path === '/chain') { // MarginPad Chain explorer — public (fake ledger, educational; addresses are demo-generated)
     try { const r = await spotStub(env).fetch(new Request('https://do/chain')); const d = await r.json();
       return new Response(JSON.stringify(d), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=10', ...CORS } });
@@ -11736,10 +11756,10 @@ async function handleSpot(url, request, env) {
   if (!uid) return jr({ error: 'login_required' }, 401);
   const stub = spotStub(env);
   if (path === '/start' && request.method === 'POST') { // the ONLY place an account is minted (2026-09-03): the gate's "Get the $10,000 card" button. Opening the page used to auto-create one — 32 of 82 accounts never did anything.
-    try { const r = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid) + '&create=1')); const d = await r.json(); if (d && d.fresh) { try { await evPush(env, request, 'spottrade', 'card issued', '/spot/'); } catch (e) {} } return jr({ ok: !d.error, fresh: !!d.fresh }); } catch (e) { return jr({ error: 'transient' }, 503); }
+    try { const r = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid) + '&create=1')); const d = await r.json(); if (d && d.fresh) { try { await evPush(env, request, 'spottrade', 'card issued', '/spot/'); } catch (e) {} } return jr({ ok: !d.error, fresh: !!d.fresh }); } catch (e) { return spotFail(env, jr, path); }
   }
   if (path === '/portfolio' || path === '/') {
-    let d = null; try { const r = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid))); d = await r.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
+    let d = null; try { const r = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid))); d = await r.json(); } catch (e) { return spotFail(env, jr, path); }
     if (d && d.none) return jr({ none: true }); // signed in, no Demo Spot account yet — the page shows the gate with the card button
     const holds = d.holds || [];
     for (const h of holds) {
@@ -11802,8 +11822,8 @@ async function handleSpot(url, request, env) {
       const feeC = Math.max(1, Math.round(usdC * feeBp / 10000));
       const body9 = { uid, side: 'buy', sym, usdC, price: eff, feeC, meta };
       if (kind === 'meme') { body9.native = native; body9.natQty = (usdC + feeC) / 100 / natPxT; body9.gasNat = gasNat; } // meme buys SETTLE in the chain's native coin + gas
-      let d = null; try { const r = await stub.fetch(new Request('https://do/trade', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body9) })); d = await r.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
-      if (d && d.ok) { d.slipPct = Math.round(slip * 10000) / 100; d.dispSym = meta.sym || sym; d.net = net || null; try { await evPush(env, request, 'spottrade', 'BUY ' + (meta.sym || sym) + ' $' + (usdC / 100).toFixed(2), '/spot/'); } catch (e) {} }
+      let d = null; try { const r = await stub.fetch(new Request('https://do/trade', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body9) })); d = await r.json(); } catch (e) { return spotFail(env, jr, path); }
+      if (d && d.ok) { d.slipPct = Math.round(slip * 10000) / 100; d.dispSym = meta.sym || sym; d.net = net || null; try { await evPush(env, request, 'spottrade', 'BUY ' + (meta.sym || sym) + ' $' + (usdC / 100).toFixed(2), '/spot/'); } catch (e) {} await spotTrack(env, request, uid, 'spotbuy', (meta.sym || sym)); }
       return jr(d || { error: 'fail' }, d && d.ok ? 200 : 400);
     }
     // sell: look the hold up first (slippage needs the trade SIZE, and 100% must sell the exact stored qty)
@@ -11821,28 +11841,28 @@ async function handleSpot(url, request, env) {
     const feeC = Math.max(1, Math.round(qty * eff * 100 * feeBp / 10000));
     const body9 = { uid, side: 'sell', sym: holdKey, qty, pct: pct >= 100 ? 100 : 0, price: eff, feeC };
     if (kind === 'meme') { const netC9 = Math.max(0, Math.round(qty * eff * 100) - feeC); body9.native = native; body9.natOut = netC9 / 100 / natPxT; body9.gasNat = gasNat; } // proceeds come back as SOL/ETH/BNB minus gas
-    let d = null; try { const r = await stub.fetch(new Request('https://do/trade', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body9) })); d = await r.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
+    let d = null; try { const r = await stub.fetch(new Request('https://do/trade', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body9) })); d = await r.json(); } catch (e) { return spotFail(env, jr, path); }
     if (d && d.ok && kind === 'meme' && b.toUsdt && body9.natOut > 0) { // convert the proceeds to wallet USDT right away (0.3% DEX swap) — one receipt instead of a hidden second step (2026-09-03)
       try { const grossC = Math.round(body9.natOut * natPxT * 100); const feeS = Math.max(1, Math.round(grossC * SPOT_SWAP_BP / 10000)); const usdS = Math.max(0, grossC - feeS);
         if (usdS >= 100) { const sr = await stub.fetch(new Request('https://do/swap', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, asset: native, dir: 'sell', usdC: usdS, natQty: body9.natOut, feeC: feeS }) })); const sd = await sr.json(); if (sd && sd.ok) { d.swapped = { usdUsd: usdS / 100, feeUsd: feeS / 100, native, natQty: body9.natOut }; d.gas = sd.gas; d.wusdtUsd = sd.wusdtUsd; } } } catch (e) {}
     }
-    if (d && d.ok) { d.slipPct = Math.round(slip * 10000) / 100; d.net = net || null; try { await evPush(env, request, 'spottrade', 'SELL ' + holdKey.replace(/^[a-z]+:/, '').slice(0, 14) + ' $' + (+d.usdUsd || 0).toFixed(2) + (d.pnlUsd != null ? ' (' + (d.pnlUsd >= 0 ? '+' : '') + (+d.pnlUsd).toFixed(2) + ')' : ''), '/spot/'); } catch (e) {} }
+    if (d && d.ok) { await spotTrack(env, request, uid, 'spotsell', holdKey.replace(/^[a-z]+:/, '').slice(0, 14)); d.slipPct = Math.round(slip * 10000) / 100; d.net = net || null; try { await evPush(env, request, 'spottrade', 'SELL ' + holdKey.replace(/^[a-z]+:/, '').slice(0, 14) + ' $' + (+d.usdUsd || 0).toFixed(2) + (d.pnlUsd != null ? ' (' + (d.pnlUsd >= 0 ? '+' : '') + (+d.pnlUsd).toFixed(2) + ')' : ''), '/spot/'); } catch (e) {} }
     return jr(d || { error: 'fail' }, d && d.ok ? 200 : 400);
   }
   if (path === '/link' && request.method === 'POST') { // sim step 1: link the virtual card to the exchange
-    try { const r = await stub.fetch(new Request('https://do/link', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid }) })); return jr(await r.json()); } catch (e) { return jr({ error: 'transient' }, 503); }
+    try { const r = await stub.fetch(new Request('https://do/link', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid }) })); return jr(await r.json()); } catch (e) { return spotFail(env, jr, path); }
   }
   if (path === '/onramp' && request.method === 'POST') { // sim step 2: buy USDT with the card (1.8% processing fee — the real-life lesson)
     const usdC = Math.round((+b.usd || 0) * 100);
     if (!(usdC >= 1000)) return jr({ error: 'min_onramp', minUsd: 10 }, 400);
     const feeC = Math.max(1, Math.round(usdC * SPOT_ONRAMP_BP / 10000));
-    try { const r = await stub.fetch(new Request('https://do/onramp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'on-ramp $' + (usdC / 100).toFixed(0), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return jr({ error: 'transient' }, 503); }
+    try { const r = await stub.fetch(new Request('https://do/onramp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'on-ramp $' + (usdC / 100).toFixed(0), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return spotFail(env, jr, path); }
   }
   if (path === '/offramp' && request.method === 'POST') { // cash out to the card: 1% fiat-withdrawal fee, min $1 — deducted from the amount (withdraw $500 → card gets $495)
     const usdC = Math.round((+b.usd || 0) * 100);
     if (!(usdC >= 1000)) return jr({ error: 'min_offramp', minUsd: 10 }, 400);
     const feeC = Math.max(100, Math.round(usdC * SPOT_OFFRAMP_BP / 10000));
-    try { const r = await stub.fetch(new Request('https://do/offramp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'cash-out $' + (usdC / 100).toFixed(0), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return jr({ error: 'transient' }, 503); }
+    try { const r = await stub.fetch(new Request('https://do/offramp', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'cash-out $' + (usdC / 100).toFixed(0), '/spot/'); } catch (e) {} await spotTrack(env, request, uid, 'spotcash', '$' + (usdC / 100).toFixed(0)); } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return spotFail(env, jr, path); }
   }
   if (path === '/transfer' && request.method === 'POST') { // P2P send: wallet USDT to another user's address; chain auto-detected from the address format, gas in that chain's native coin
     const toAddr = String(b.to || '').trim();
@@ -11859,22 +11879,22 @@ async function handleSpot(url, request, env) {
       const d = await r.json();
       if (d && d.ok) { d.net = net; try { await evPush(env, request, 'spottrade', 'P2P send $' + (usdC / 100).toFixed(2), '/spot/'); } catch (e) {} }
       return jr(d, d && d.ok ? 200 : 400);
-    } catch (e) { return jr({ error: 'transient' }, 503); }
+    } catch (e) { return spotFail(env, jr, path); }
   }
   if (path === '/depaddr') { // exchange USDT deposit addresses (generated once; wallet -> exchange deposits go through /transfer to one of them). EVM (0x) + Solana (2026-09-03): with only a 0x address a wallet holding just SOL gas could never deposit back — 18 users were stuck with money in the wallet
     const rnd = new Uint8Array(20); crypto.getRandomValues(rnd);
     const cand = '0x' + Array.from(rnd).map(x => x.toString(16).padStart(2, '0')).join('');
     const candSol = spotGenAddr().sol;
     try { const r = await stub.fetch(new Request('https://do/depaddr', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, dep: cand, depSol: candSol }) })); return jr(await r.json()); }
-    catch (e) { return jr({ error: 'transient' }, 503); }
+    catch (e) { return spotFail(env, jr, path); }
   }
   if (path === '/toexchange' && request.method === 'POST') { // wallet USDT -> own exchange balance (2026-09-03). The old way was: open Exchange, copy the 0x deposit address, open Wallet, Send, paste, hold BNB gas. Picks the network the user has gas for and sends to the matching deposit address.
     const usdC = Math.round((+b.usd || 0) * 100);
     if (!(usdC >= 100)) return jr({ error: 'min_trade', minUsd: 1 }, 400);
-    let pd = null; try { const pr = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid))); pd = await pr.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
+    let pd = null; try { const pr = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid))); pd = await pr.json(); } catch (e) { return spotFail(env, jr, path); }
     if (!pd || !pd.addr || !pd.addr.sol) return jr({ error: 'no_wallet' }, 400);
     let dep = null; try { const dr = await stub.fetch(new Request('https://do/depaddr', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, dep: '0x' + Array.from(crypto.getRandomValues(new Uint8Array(20))).map(x => x.toString(16).padStart(2, '0')).join(''), depSol: spotGenAddr().sol }) })); dep = await dr.json(); } catch (e) {}
-    if (!dep || !dep.dep) return jr({ error: 'transient' }, 503);
+    if (!dep || !dep.dep) return spotFail(env, jr, path);
     const gas = pd.gas || {};
     const want = SPOT_NETS[String(b.net || '')] ? String(b.net) : null;
     const order = want ? [want] : ['solana', 'bsc', 'base', 'eth'];
@@ -11886,12 +11906,12 @@ async function handleSpot(url, request, env) {
       const d = await r.json();
       if (d && d.ok) { d.net = net; d.gasNat = SPOT_NETS[net].gas; try { await evPush(env, request, 'spottrade', 'to exchange $' + (usdC / 100).toFixed(2) + ' via ' + net, '/spot/'); } catch (e) {} }
       return jr(d, d && d.ok ? 200 : 400);
-    } catch (e) { return jr({ error: 'transient' }, 503); }
+    } catch (e) { return spotFail(env, jr, path); }
   }
   if (path === '/wallet/create' && request.method === 'POST') { // sim step 3: self-custody wallet — addresses generated here; the seed phrase is shown ONCE and never stored (like real life)
     const addr = spotGenAddr();
     try { const r = await stub.fetch(new Request('https://do/walletcreate', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, addr }) })); const d = await r.json();
-      if (d && d.ok) { if (!d.existed) d.seed = spotGenSeed(); return jr(d); } return jr(d || { error: 'fail' }, 400); } catch (e) { return jr({ error: 'transient' }, 503); }
+      if (d && d.ok) { if (!d.existed) d.seed = spotGenSeed(); return jr(d); } return jr(d || { error: 'fail' }, 400); } catch (e) { return spotFail(env, jr, path); }
   }
   if (path === '/withdraw' && request.method === 'POST') { // sim step 4: exchange → wallet, network choice decides the fee (Solana $1 / BSC $0.80 / Ethereum $8)
     const net = SPOT_NETS[String(b.net || '')] ? String(b.net) : null;
@@ -11907,7 +11927,7 @@ async function handleSpot(url, request, env) {
     if (!mine) return jr({ error: 'no_wallet' }, 400);
     if (toAddr !== (expect === 'sol' ? mine.sol : mine.evm)) return jr({ error: 'address_mismatch', hint: 'That is not your wallet’s ' + SPOT_NETS[net].label + ' address. On a real exchange this money would be GONE forever — always copy-paste your own address for the right network.' }, 400);
     const feeC = SPOT_NETS[net].wdC;
-    try { const r = await stub.fetch(new Request('https://do/wdraw', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC, net }) })); const d = await r.json(); if (d && d.ok) { d.net = net; d.feeUsd = feeC / 100; try { await evPush(env, request, 'spottrade', 'withdraw $' + (usdC / 100).toFixed(0) + ' via ' + net, '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return jr({ error: 'transient' }, 503); }
+    try { const r = await stub.fetch(new Request('https://do/wdraw', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, usdC, feeC, net }) })); const d = await r.json(); if (d && d.ok) { d.net = net; d.feeUsd = feeC / 100; try { await evPush(env, request, 'spottrade', 'withdraw $' + (usdC / 100).toFixed(0) + ' via ' + net, '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return spotFail(env, jr, path); }
   }
   if (path === '/swap' && request.method === 'POST') { // wallet DEX swap: USDT ↔ SOL/ETH/BNB at live price, 0.3% fee
     const asset = String(b.asset || '').toUpperCase();
@@ -11930,13 +11950,13 @@ async function handleSpot(url, request, env) {
       usdC = Math.max(0, grossC - feeC);
       if (usdC < 100) return jr({ error: 'min_trade', minUsd: 1 }, 400);
     }
-    try { const r = await stub.fetch(new Request('https://do/swap', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, asset, dir, usdC, natQty, feeC }) })); const d = await r.json(); if (d && d.ok) { d.price = px; d.natQty = natQty; d.feeUsd = feeC / 100; try { await evPush(env, request, 'spottrade', 'swap ' + (dir === 'buy' ? 'USDT>' + asset : asset + '>USDT'), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return jr({ error: 'transient' }, 503); }
+    try { const r = await stub.fetch(new Request('https://do/swap', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, asset, dir, usdC, natQty, feeC }) })); const d = await r.json(); if (d && d.ok) { d.price = px; d.natQty = natQty; d.feeUsd = feeC / 100; try { await evPush(env, request, 'spottrade', 'swap ' + (dir === 'buy' ? 'USDT>' + asset : asset + '>USDT'), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return spotFail(env, jr, path); }
   }
   if (path === '/history') {
     try { const r = await stub.fetch(new Request('https://do/tx?uid=' + encodeURIComponent(uid))); return jr(await r.json()); } catch (e) { return jr({ tx: [] }); }
   }
   if (path === '/reset' && request.method === 'POST') {
-    try { const r = await stub.fetch(new Request('https://do/reset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'wallet reset', '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : (d && d.error === 'cooldown' ? 429 : 400)); } catch (e) { return jr({ error: 'transient' }, 503); }
+    try { const r = await stub.fetch(new Request('https://do/reset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'wallet reset', '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : (d && d.error === 'cooldown' ? 429 : 400)); } catch (e) { return spotFail(env, jr, path); }
   }
   return jr({ error: 'not_found' }, 404);
 }
@@ -16545,6 +16565,9 @@ export class UserStore {
         const mt9 = (type === 'pageview') ? ('pv:/' + (String(pth || '').split('/')[1] || '')) : ('ev:' + String(type));
         sql.exec('INSERT INTO mev(user_id,day,type,n) VALUES(?,?,?,1) ON CONFLICT(user_id,day,type) DO UPDATE SET n=n+1', uid, dk9, mt9);
         if (Math.random() < 0.02) sql.exec('DELETE FROM mev WHERE day < ?', new Date(now - 3 * 86400000).toISOString().slice(0, 10));
+        // Demo Spot XP (2026-09-03): first buy of the day +10, first cash-out of the day +25 — server-verified, once per day, no money
+        const SPOT_XP = { spotbuy: [10, 'Demo Spot: first buy of the day'], spotcash: [25, 'Demo Spot: cashed out to the card'] };
+        if (SPOT_XP[type]) { const cnt = (this.rows('SELECT n FROM mev WHERE user_id=? AND day=? AND type=?', uid, dk9, mt9)[0] || {}).n || 0; if (cnt === 1) { try { this._grantXp(uid, 'spot', SPOT_XP[type][0], { note: SPOT_XP[type][1] }); } catch (e) {} } }
       } catch (me9) {}
       sql.exec('UPDATE users SET last_seen=?, pv=pv+? WHERE id=?', now, type === 'pageview' ? 1 : 0, uid);
           try { const today9 = new Date().toISOString().slice(0, 10); const ur = this.rows('SELECT streak_day, streak, freezes FROM users WHERE id=?', uid)[0];
@@ -17068,6 +17091,11 @@ export class UserStore {
       const evs = this.rows('SELECT e.user_id uid, e.ts, e.xp, e.note, u.username FROM xpboost_ev e LEFT JOIN users u ON u.id = e.user_id WHERE e.seen = 0 ORDER BY e.ts LIMIT 40');
       try { this.sql.exec('UPDATE xpboost_ev SET seen = 1 WHERE seen = 0'); this.sql.exec('DELETE FROM xpboost_ev WHERE ts < ?', Date.now() - 7 * 86400000); } catch (e) {}
       return this.j({ events: evs });
+    }
+    if (path === '/names') { // id -> username for public boards (chunked: a large IN() silently returns 0 rows at scale)
+      const ids = Array.isArray(b.ids) ? b.ids.map(String).slice(0, 200) : []; const names = {};
+      for (let i = 0; i < ids.length; i += 50) { const part = ids.slice(i, i + 50); try { this.rows("SELECT id, username FROM users WHERE id IN (" + part.map(() => '?').join(',') + ") AND (status IS NULL OR status='active') AND username IS NOT NULL AND username!=''", ...part).forEach(u => { names[String(u.id)] = u.username; }); } catch (e) {} }
+      return this.j({ names });
     }
     if (path === '/xpdiag') { // read-only XP-credit audit (support/ops): the user row, every recent XP grant with its note, and every recent trade close with ts/sym/lev/margin/pnl/roe — the full set of promo predicate inputs, so a "boost didn't credit" report is verifiable line by line
       let u = null;
@@ -18639,6 +18667,8 @@ const MISSION_POOL = [
  { mid: 'vault', title: 'Browse The Vault', desc: 'Frames, ticket skins, backgrounds — see what your Ticks buy', cents: 2, vt: 'pv', va: '/vault', n: 1, cat: 'market' },
   { mid: 'rekt', title: 'Watch the liquidations feed', desc: 'See who got rekt in real time — and learn from it', cents: 2, vt: 'pv', va: '/rekt', n: 1, cat: 'market' },
   { mid: 'spotvisit', title: 'Open Demo Spot', desc: 'The buy-and-hold side of the house — no leverage, no liquidations', cents: 3, vt: 'pv', va: '/spot', n: 1, cat: 'market' },
+  { mid: 'spotbuy', title: 'Buy a coin in Demo Spot', desc: 'Spot is buy-and-hold: no leverage, no liquidations, a real fee on every fill', cents: 3, vt: 'ev', va: 'spotbuy', n: 1, cat: 'market' },
+  { mid: 'spotcash', title: 'Cash out in Demo Spot', desc: 'Bring money the whole way back to the card — exits are the skill', cents: 3, vt: 'ev', va: 'spotcash', n: 1, cat: 'market' },
   { mid: 'exchanges', title: 'Compare the exchanges', desc: 'Fees, leverage, funding — know where the edge is', cents: 2, vt: 'pv', va: '/exchanges', n: 1, cat: 'market' },
   { mid: 'cycle', title: 'Check the Bitcoin cycle', desc: 'Where are we in the four-year story? Look before you size up', cents: 2, vt: 'pv', va: '/bitcoin-cycle', n: 1, cat: 'market' },
   { mid: 'journalvisit', title: 'Open the trading journal', desc: 'Your trades, your stats — review before you repeat', cents: 2, vt: 'pv', va: '/trading-journal', n: 1, cat: 'market' },
