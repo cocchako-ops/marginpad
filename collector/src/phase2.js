@@ -59,7 +59,7 @@ export function startPhase2(storage, okxCtVal) {
     if (!n) return;
     price /= n;
 
-    const totalOi = storage.latestOi(sym).reduce((s, r) => s + r.oi, 0);
+    const totalOi = (await storage.async.latestOi(sym)).reduce((s, r) => s + r.oi, 0);
     const dOi = prevOi[sym] != null ? totalOi - prevOi[sym] : 0;
     const pPrev = prevPx[sym];
     prevOi[sym] = totalOi; prevPx[sym] = price;

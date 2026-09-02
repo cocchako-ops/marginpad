@@ -47,37 +47,40 @@ export function createApiServer({ storage, getStatus, bus }) {
   app.use(rateLimit);
 
   // Histogram source for the chart (aggregated; cache-friendly).
-  app.get('/api/v1/liquidations/recent', (req, res) => {
+  // Every read below goes through storage.async — the reader worker thread — so a slow query costs the
+  // request latency, never the exchange sockets on the main thread.
+  app.get('/api/v1/liquidations/recent', async (req, res) => {
     const symbol = String(req.query.symbol || 'BTC').toUpperCase();
     if (!validSymbol(symbol)) return res.status(400).json({ error: 'bad_symbol' });
     const g = gate(req, { window: req.query.window }); if (!g.ok) return res.status(g.status).json({ error: g.reason });
     const minutes = resolveWindow(req.query);
     try {
-      const buckets = storage.histogram(symbol, minutes);
+      const buckets = await storage.async.histogram(symbol, minutes);
       res.set('Cache-Control', `public, max-age=${config.api.aggCacheSeconds}`);
       res.json({ symbol, minutes, updatedAt: Date.now(), buckets });
     } catch (e) { log.error('recent failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
   // Recent raw events for the live ticker + chart bubbles.
-  app.get('/api/v1/liquidations/live', (req, res) => {
+  app.get('/api/v1/liquidations/live', async (req, res) => {
     const symbol = String(req.query.symbol || 'BTC').toUpperCase();
     if (!validSymbol(symbol)) return res.status(400).json({ error: 'bad_symbol' });
     const limit = Math.min(parseInt(req.query.limit, 10) || 200, 1000);
     const min = parseFloat(req.query.min) || 0;
     try {
+      const events = await storage.async.live(symbol, limit, min);
       res.set('Cache-Control', 'public, max-age=3');
-      res.json({ symbol, events: storage.live(symbol, limit, min) });
+      res.json({ symbol, events });
     } catch (e) { log.error('live failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
   // Market-wide recent liquidations (all symbols) — powers the global floating feed on the site.
-  app.get('/api/v1/feed', (req, res) => {
+  app.get('/api/v1/feed', async (req, res) => {
     const min = parseFloat(req.query.min) || 0;
     const since = parseInt(req.query.since, 10) || 0; // ms timestamp — backfill mode ("everything since UTC midnight")
     const cap = since > 0 ? 3000 : 200;               // a history pull may span the whole day; the live poll stays small
     const limit = Math.min(parseInt(req.query.limit, 10) || 30, cap);
-    try { res.set('Cache-Control', since > 0 ? 'public, max-age=30' : 'public, max-age=2'); res.json({ events: storage.feed(min, limit, since) }); }
+    try { const events = await storage.async.feed(min, limit, since); res.set('Cache-Control', since > 0 ? 'public, max-age=30' : 'public, max-age=2'); res.json({ events }); }
     catch (e) { log.error('feed failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
@@ -92,7 +95,7 @@ export function createApiServer({ storage, getStatus, bus }) {
     const d0 = Date.parse(day + 'T00:00:00Z');
     if (!isFinite(d0) || d0 + 86400000 > Date.now()) return res.status(400).json({ error: 'day_not_complete' });
     try {
-      const rows = storage.exportDay(d0, d0 + 86400000);
+      const rows = await storage.async.exportDay(d0, d0 + 86400000);
       let csv = 'ts,exchange,symbol,side,price,qty,notional\n';
       const chunks = [];
       for (const r of rows) {
@@ -108,10 +111,10 @@ export function createApiServer({ storage, getStatus, bus }) {
   });
 
   // aggregated liquidation market pulse (heatmap page bottom section): 1h/4h/12h/24h totals + per-coin + per-exchange
-  app.get('/api/v1/pulse', (req, res) => {
+  app.get('/api/v1/pulse', async (req, res) => {
     try {
       const now = Date.now(), out = {};
-      [['h1', 1], ['h4', 4], ['h12', 12], ['h24', 24]].forEach(([k, h]) => { out[k] = storage.pulse(now - h * 3600000); });
+      for (const [k, h] of [['h1', 1], ['h4', 4], ['h12', 12], ['h24', 24]]) out[k] = await storage.async.pulse(now - h * 3600000);
       res.set('Cache-Control', 'public, max-age=45');
       res.json(out);
     } catch (e) { log.error('pulse failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
@@ -134,12 +137,13 @@ export function createApiServer({ storage, getStatus, bus }) {
   });
 
   // Phase 2: estimated liquidation clusters (a MODEL — UI must label it as such).
-  app.get('/api/v1/clusters', (req, res) => {
+  app.get('/api/v1/clusters', async (req, res) => {
     const symbol = String(req.query.symbol || 'BTC').toUpperCase();
     if (!validSymbol(symbol)) return res.status(400).json({ error: 'bad_symbol' });
     try {
+      const clusters = await storage.async.getClusters(symbol);
       res.set('Cache-Control', 'public, max-age=20');
-      res.json({ symbol, model: true, updatedAt: Date.now(), clusters: storage.getClusters ? storage.getClusters(symbol) : [] });
+      res.json({ symbol, model: true, updatedAt: Date.now(), clusters });
     } catch (e) { log.error('clusters failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
 
@@ -148,12 +152,13 @@ export function createApiServer({ storage, getStatus, bus }) {
   // the screener's shape; cached in-memory ~30s so the upstreams aren't hammered (the Worker also edge-caches this).
   let _perpCache = { ts: 0, data: null };
   // screener enrichment: per-symbol 24h liquidations (OUR unique dataset) + OI Δ24h from hourly snapshots
-  app.get('/api/v1/screener-extra', (req, res) => {
+  app.get('/api/v1/screener-extra', async (req, res) => {
     try {
       const liq = {};
-      storage.liqBySymbol(Date.now() - 86400000).forEach((r) => { liq[r.s] = { liq: Math.round(r.liq), long: Math.round(r.lng), n: r.n }; });
+      (await storage.async.liqBySymbol(Date.now() - 86400000)).forEach((r) => { liq[r.s] = { liq: Math.round(r.liq), long: Math.round(r.lng), n: r.n }; });
+      const oi = await storage.async.oi24h();
       res.set('Cache-Control', 'public, max-age=120');
-      res.json({ updatedAt: Date.now(), oi: storage.oi24h(), liq });
+      res.json({ updatedAt: Date.now(), oi, liq });
     } catch (e) { log.error('screener-extra failed', { e: String(e) }); res.status(500).json({ error: 'server' }); }
   });
   app.get('/api/v1/perp-tickers', async (req, res) => {
@@ -242,7 +247,13 @@ export function createApiServer({ storage, getStatus, bus }) {
   });
 
   // Health — per-exchange socket state, last event, events/min. Check it from your phone.
-  app.get('/api/v1/status', (req, res) => { res.set('Cache-Control', 'no-store'); res.json(getStatus()); });
+  app.get('/api/v1/status', async (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    const st = getStatus();
+    try { st.db = await storage.async.stats(); } catch (e) { st.db = { error: String(e && e.message || e) }; }
+    st.reader = storage.async.readerStats ? storage.async.readerStats() : null;
+    res.json(st);
+  });
   app.get('/api/v1/health', (req, res) => res.json({ ok: true }));
 
   const server = app.listen(config.api.port, () => log.info('api listening', { port: config.api.port }));

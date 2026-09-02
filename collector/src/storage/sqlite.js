@@ -6,10 +6,12 @@ import { dirname, join } from 'node:path';
 import { bucketSizeFor } from '../../config.js';
 import { log } from '../logger.js';
 
-export function createSqliteStorage(path) {
+export function createSqliteStorage(path, opts = {}) {
   mkdirSync(dirname(path), { recursive: true });
-  const db = new DatabaseSync(path);
-  db.exec('PRAGMA journal_mode = WAL;');
+  // readOnly: a second connection for the reader worker thread. WAL lets it read while the main thread
+  // writes; it never migrates and never sets the journal mode (the writer owns the file).
+  const db = opts.readOnly ? new DatabaseSync(path, { readOnly: true }) : new DatabaseSync(path);
+  if (!opts.readOnly) db.exec('PRAGMA journal_mode = WAL;');
   db.exec('PRAGMA busy_timeout = 5000;');
 
   let insertStmt, aggUpsert, getMeta, setMeta, oiStmt, clAdd;
@@ -132,7 +134,15 @@ export function createSqliteStorage(path) {
 
   // ---- Phase 2: open interest + estimated clusters ----
   function insertOi(symbol, exchange, ts, oiBase, price) { ensure(); oiStmt.run(symbol, exchange, ts, oiBase, price); }
-  function latestOi(symbol) { ensure(); return db.prepare('SELECT exchange, oi_base AS oi, price, MAX(ts) AS ts FROM oi WHERE symbol=? GROUP BY exchange').all(symbol); }
+  function latestOi(symbol) { ensure();
+    // Latest row per exchange. The old GROUP BY + MAX(ts) walked every row of the symbol (30 days × 3 venues
+    // × every 2 min ≈ 65k) on each 12s poll — 2s cold. The poll only needs the last hour; (symbol, ts) makes
+    // that a short range scan, and the newest row per exchange is picked here.
+    const rows = db.prepare('SELECT exchange, oi_base AS oi, price, ts FROM oi WHERE symbol=? AND ts>=? ORDER BY ts DESC').all(symbol, Date.now() - 3600000);
+    const seen = new Map();
+    for (const r of rows) if (!seen.has(r.exchange)) seen.set(r.exchange, r);
+    return [...seen.values()];
+  }
   function addCluster(symbol, bucket, side, add, ts) { ensure(); clAdd.run(symbol, bucket, side, add, ts); }
   function decayClusters(symbol, factor, ts, minKeep) {
     ensure();
@@ -168,7 +178,11 @@ export function createSqliteStorage(path) {
   }
   function pulse(sinceTs) { ensure(); return cached('pulse:' + hoursKey(sinceTs), 30000, () => pulseRaw(sinceTs)); } // aggregated market pulse (heatmap page): per-coin + per-exchange long/short split + totals + biggest order, orders >= $1k
   function pulseRaw(sinceTs) {
-    const bySym = db.prepare("SELECT symbol s, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) l, SUM(CASE WHEN side<>'long_liquidated' THEN notional ELSE 0 END) sh, (SELECT price FROM liquidations q WHERE q.symbol=liquidations.symbol ORDER BY q.ts DESC LIMIT 1) px FROM liquidations WHERE ts>=? AND notional>=1000 GROUP BY symbol ORDER BY (l+sh) DESC LIMIT 300").all(sinceTs);
+    // px = price of the newest row in the window: SQLite takes bare columns from the row that produced a
+    // lone MAX(). The previous correlated subquery did one (symbol, ts) seek per output symbol — 300 cold
+    // seeks on a box whose page cache cannot hold the table. Every column here is in idx_liq_ts_cov, so
+    // the whole window is one contiguous index-only scan.
+    const bySym = db.prepare("SELECT symbol s, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) l, SUM(CASE WHEN side<>'long_liquidated' THEN notional ELSE 0 END) sh, MAX(ts) mt, price px FROM liquidations WHERE ts>=? AND notional>=1000 GROUP BY symbol ORDER BY (l+sh) DESC LIMIT 300").all(sinceTs).map((r) => ({ s: r.s, l: r.l, sh: r.sh, px: r.px }));
     const byEx = db.prepare("SELECT exchange e, SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END) l, SUM(CASE WHEN side<>'long_liquidated' THEN notional ELSE 0 END) sh FROM liquidations WHERE ts>=? AND notional>=1000 GROUP BY exchange ORDER BY (l+sh) DESC").all(sinceTs);
     const tot = db.prepare("SELECT COUNT(*) n, COALESCE(SUM(notional),0) v, COALESCE(SUM(CASE WHEN side='long_liquidated' THEN notional ELSE 0 END),0) l FROM liquidations WHERE ts>=? AND notional>=1000").get(sinceTs);
     const big = db.prepare("SELECT exchange,symbol,side,notional FROM liquidations WHERE ts>=? AND notional>=1000 ORDER BY notional DESC LIMIT 1").get(sinceTs);

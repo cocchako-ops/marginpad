@@ -77,7 +77,7 @@ function getStatus() {
     startedAt, uptimeSec: Math.floor((now - startedAt) / 1000),
     symbols: config.symbols, inserted, deduped,
     loopLag, slowCalls: slowStorageCalls(),
-    exchanges, db: storage.stats(),
+    exchanges, // db: filled by the /status handler from the reader thread (never a main-thread scan)
   };
 }
 
