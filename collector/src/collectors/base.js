@@ -35,6 +35,7 @@ export class BaseCollector {
     this._connectTimer = null;
     this._gen = 0;                 // socket generation — handlers of a superseded socket must never touch the live one
     this._reconnPending = false;   // one reconnect per socket, whichever of error/close/timeout fires first
+    this.msgsTotal = 0; this.pingsSent = 0; this.pingsSkipped = 0; this.pingsFailed = 0; this.lastPingAt = 0; this.reconnects = 0; // /status diagnostics
   }
 
   // ---- subclass surface (override these) ----
@@ -87,6 +88,7 @@ export class BaseCollector {
     ws.addEventListener('message', (ev) => {
       if (gen !== this._gen) return;
       this.lastMsgAt = Date.now();
+      this.msgsTotal++;
       this._armSilence();
       let events;
       try { events = this.parse(ev.data); } catch (err) { log.warn(`[${this.name}] parse error`, { err: String(err) }); return; }
@@ -127,8 +129,9 @@ export class BaseCollector {
     if (!frame) return; // protocol-level ping handled by the WebSocket implementation
     this._pingTimer = setInterval(() => {
       try {
-        if (this.ws && this.ws.readyState === 1) this.ws.send(typeof frame === 'string' ? frame : JSON.stringify(frame));
-      } catch {}
+        if (this.ws && this.ws.readyState === 1) { this.ws.send(typeof frame === 'string' ? frame : JSON.stringify(frame)); this.pingsSent++; this.lastPingAt = Date.now(); }
+        else this.pingsSkipped++;
+      } catch (e) { this.pingsFailed++; }
     }, this.pingIntervalMs());
   }
 
@@ -157,6 +160,7 @@ export class BaseCollector {
     this._reconnPending = true;
     this._clearTimers();
     if (this.stopped) return;
+    this.reconnects++;
     const wait = Math.min(this.backoff, this.maxBackoff) + Math.floor(Math.random() * 1000); // backoff + jitter
     log.warn(`[${this.name}] reconnect in ${wait}ms`, { reason });
     setTimeout(() => { this.backoff = Math.min(this.backoff * 2, this.maxBackoff); this._connect(); }, wait);
@@ -170,6 +174,8 @@ export class BaseCollector {
       lastEventAt: this.lastEventAt || null,
       eventsTotal: this.eventsTotal,
       silentMs: this.lastMsgAt ? Date.now() - this.lastMsgAt : null,
+      msgsTotal: this.msgsTotal, reconnects: this.reconnects, pingsSent: this.pingsSent, pingsSkipped: this.pingsSkipped, pingsFailed: this.pingsFailed,
+      lastPingMs: this.lastPingAt ? Date.now() - this.lastPingAt : null,
     };
   }
 }

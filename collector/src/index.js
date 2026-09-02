@@ -54,6 +54,18 @@ const collectors = [
   new HyperliquidLiqCollector({ symbols: config.symbols, onEvent }),
 ];
 
+// Event-loop stall detector: a 1s heartbeat measures how late it fires. Exposed on /status so a
+// "silent socket" can be told apart from a process that could not read its sockets at the time.
+const loopLag = { maxMs: 0, max5mMs: 0, stalls: 0, lastStallAt: 0 };
+let _lagT = Date.now(), _lag5mReset = Date.now();
+setInterval(() => {
+  const now = Date.now(); const lag = now - _lagT - 1000; _lagT = now;
+  if (lag > loopLag.maxMs) loopLag.maxMs = lag;
+  if (now - _lag5mReset > 300000) { loopLag.max5mMs = 0; _lag5mReset = now; }
+  if (lag > loopLag.max5mMs) loopLag.max5mMs = lag;
+  if (lag > 2000) { loopLag.stalls++; loopLag.lastStallAt = now; log.warn('event loop stalled', { lagMs: lag }); }
+}, 1000);
+
 function getStatus() {
   const now = Date.now();
   const exchanges = collectors.map((c) => {
@@ -64,6 +76,7 @@ function getStatus() {
     ok: exchanges.some((e) => e.connected),
     startedAt, uptimeSec: Math.floor((now - startedAt) / 1000),
     symbols: config.symbols, inserted, deduped,
+    loopLag,
     exchanges, db: storage.stats(),
   };
 }
