@@ -6,6 +6,13 @@
   var ME = null, BANNED = false;
   try { var _q = new URLSearchParams(location.search), _rf = _q.get('ref'); if (_rf) { _rf = String(_rf).replace(/[^a-zA-Z0-9]/g, '').slice(0, 40); localStorage.setItem('mp_ref', _rf); var _c = (_q.get('c') || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 24); if (_c) localStorage.setItem('mp_refc', _c); if (!sessionStorage.getItem('mp_reft')) { sessionStorage.setItem('mp_reft', '1'); var _u = '/api/reftrack?ref=' + encodeURIComponent(_rf) + (_c ? '&c=' + encodeURIComponent(_c) : ''); if (document.referrer) _u += '&r=' + encodeURIComponent(document.referrer); try { if (navigator.sendBeacon) navigator.sendBeacon(_u); else fetch(_u, { keepalive: true }); } catch (e2) {} } } } catch (e) {} // invite-a-friend: remember the referrer + campaign, and count the link visit once per session
   function refCode() { try { return localStorage.getItem('mp_ref') || ''; } catch (e) { return ''; } }
+  function landingSrc() { // where this person first came from (home.js stores it as mp_src0 / mp_src); sent with signup so ops reads "landed from Google"
+    try { var r = localStorage.getItem('mp_src0'); if (r) { var o = JSON.parse(r); if (o && o.s) return String(o.s).slice(0, 40); } } catch (e) {}
+    try { var s = sessionStorage.getItem('mp_src'); if (s) return String(s).slice(0, 40); } catch (e) {}
+    try { var q = new URLSearchParams(location.search || ''); if (q.get('gclid') || q.get('gbraid') || q.get('wbraid')) return 'google-ads'; if (q.get('utm_source')) return String(q.get('utm_source')).slice(0, 40); if (q.get('ref')) return String(q.get('ref')).slice(0, 40); } catch (e) {}
+    try { if (document.referrer) { var h = new URL(document.referrer).hostname.replace(/^www\./, ''); if (h && h !== 'marginpad.io') return h.slice(0, 40); } } catch (e) {}
+    return '';
+  }
   function esc(s) { return String(s).replace(/[<>&]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[m]; }); }
   // clean line-icon set (currentColor stroke) — replaces the emoji buttons
   var ICONS = {
@@ -1115,7 +1122,7 @@
       var c = (ci.value || '').replace(/\D/g, '');
       if (c.length !== 6) { setMsg('Enter the 6-digit code.', 'err'); return; }
       vb.disabled = true; setMsg('Verifying…', '');
-      fetch('/api/auth/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: email, code: c, ref: refCode() }) })
+      fetch('/api/auth/verify', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: email, code: c, ref: refCode(), src: landingSrc() }) })
         .then(function (r) { return r.json(); }).then(function (d) {
           vb.disabled = false;
           if (d.ok) { ME = d.user; try { window.mpTktSkin = (ME && ME.tktskin) || ''; } catch (e) {} reflect(); setMsg(d.isNew ? 'Account created ✓' : 'Signed in ✓', 'ok'); if (d.isNew && typeof gtag === 'function') { try { gtag('event', 'conversion', { send_to: 'AW-18230384038/8GygCJ2ry8IcEKar9vRD', value: 1.0, currency: 'USD' }); } catch (_) {} } setTimeout(render, 750); }
