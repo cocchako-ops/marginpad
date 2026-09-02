@@ -482,7 +482,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   }
   function chartToast(msg){var t=document.createElement('div');t.textContent=msg;t.style.cssText='position:fixed;left:50%;bottom:88px;transform:translateX(-50%) translateY(18px);z-index:130;background:#11151b;color:#e9e7df;border:1px solid #2f3742;border-left:3px solid #ffb347;border-radius:12px;padding:12px 16px;font-size:13.5px;line-height:1.4;max-width:90vw;box-shadow:0 12px 34px rgba(0,0,0,.5);opacity:0;transition:.3s;text-align:center;';document.body.appendChild(t);requestAnimationFrame(function(){t.style.opacity='1';t.style.transform='translateX(-50%) translateY(0)';});setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(18px)';setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},350);},4200);}
   /* ---- Ask AI about this chart — multi-turn, streamed, history kept, glued to the window ---- */
-  var aiEl=null,aiW=null,aiBusy=false,aiRaf=0,aiLastL=null,aiLastT=null,aiLimit=10,aiOffX=8,aiOffY=0,aiDragging=false;
+  var aiEl=null,aiW=null,aiBusy=false,aiRaf=0,aiLastL=null,aiLastT=null,aiLimit=50,aiOffX=8,aiOffY=0,aiDragging=false;
   function tfWords(tf){return {'15':'15-minute','60':'1-hour','240':'4-hour','1440':'daily'}[tf]||tfLabel(tf);}
   function _p6(x){return (x!=null&&isFinite(x))?+(+x).toPrecision(6):null;}
   function _last(a){for(var i=a.length-1;i>=0;i--)if(isFinite(a[i]))return a[i];return null;}
@@ -563,7 +563,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   function aiSetChips(w){var box=aiEl&&aiEl.querySelector('.cwin-ai-chips');if(!box)return;var chips=[['','Quick read'],['What is the trend and momentum here?','Trend'],['Where are the key support and resistance levels?','Levels'],['What would confirm or invalidate this setup?','What to watch']];var hasPos=false;try{hasPos=jload().some(function(e){return e.status==='open'&&e.sym===w.sym;});}catch(e){}if(hasPos)chips.push(['How risky is my open position on this chart right now?','My position']);box.innerHTML=chips.map(function(c){return '<button class="cwin-ai-chip" data-q="'+escAttr(c[0])+'">'+escHtml(c[1])+'</button>';}).join('');}
   var aiPremium=false;
   function aiShowPremiumGate(){if(!aiEl)return;aiEl.classList.add('gated');var body=aiEl.querySelector('.cwin-ai-body');if(!body)return;body.innerHTML='<div class="cwin-ai-gate"><b>Ask AI is a Premium feature.</b><br>A built-in analyst that reads any chart and answers your questions in plain words.<br><button class="g-btn" type="button">Unlock Premium — $3.99/mo</button></div>';var g=body.querySelector('.g-btn');if(g)g.addEventListener('click',function(){if(window.mpPremium&&window.mpPremium.show)window.mpPremium.show('Unlock Ask AI on your charts');});}
-  function aiShowGate(){if(!aiEl)return;aiEl.classList.add('gated');var body=aiEl.querySelector('.cwin-ai-body');body.innerHTML='<div class="cwin-ai-gate">Sign in (free — just an email code) to ask AI about your charts.<br>You get <b>'+aiLimit+' questions a day</b>.<br><button class="g-btn" type="button">Sign in free</button></div>';var g=body.querySelector('.g-btn');if(g)g.addEventListener('click',function(){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}});}
+  function aiShowGate(){if(!aiEl)return;aiEl.classList.add('gated');var body=aiEl.querySelector('.cwin-ai-body');body.innerHTML='<div class="cwin-ai-gate">Sign in to use Ask AI — a built-in analyst that reads any chart. It is part of MarginPad Premium ($3.99/mo): <b>'+aiLimit+' questions a day</b>.<br><button class="g-btn" type="button">Sign in free</button></div>';var g=body.querySelector('.g-btn');if(g)g.addEventListener('click',function(){try{if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();}catch(e){}});}
   function aiClose(){if(aiEl)aiEl.hidden=true;if(aiRaf){cancelAnimationFrame(aiRaf);aiRaf=0;}}
   /* The panel stays attached to its chart window via an offset (aiOffX/aiOffY from the window's top-right) — so it moves WITH the window on drag/scroll, but the user can freely drag it anywhere (which just updates the offset). */
   function aiFollow(){
@@ -605,7 +605,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     if(!me){aiShowGate();return;}
     if(!aiPremium){aiShowPremiumGate();return;}
     var w=aiW,q=String(question||'').trim();if(!q)q='Give me a sharp, practical read on this chart right now.';
-    try{window.__mpTrack&&window.__mpTrack('ai',(w&&w.sym)||'');}catch(_){}
+    /* the Ask-AI mission credit and the 'ai' activity event are recorded server-side by /api/ai/chart (2026-09-02) — no client beacon, so desktop and the mobile sheet count identically */
     var hist=aiHistLoad(w);hist.push({role:'user',text:q,ts:Date.now()});aiHistSave(w,hist);
     var payloadHist=hist.slice(0,-1).map(function(m){return {role:m.role==='user'?'user':'assistant',text:m.text};});
     aiBusy=true;aiRenderBody(w);

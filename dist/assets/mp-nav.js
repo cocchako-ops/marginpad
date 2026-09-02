@@ -170,7 +170,6 @@
     + row('brDefiT', 'brDefiS', '/defi/', '#9d7bff', 'defi')
     + row('brFngT', 'brFngS', '/fear-greed/', '#7fd957', 'fng')
     + row('Bitcoin cycle', 'Pi Cycle, Rainbow & top signals', '/bitcoin-cycle/', '#f7a600', 'charts')
-    + row('ETF flows', 'Spot BTC & ETH ETF inflows', '/etf-flows/', '#8a92ff', 'defi')
     + row('Whale tracker', 'Biggest Hyperliquid whale positions', '/hyperliquid-whales/', '#5ec6ff', 'mkt')
     + row('Compare exchanges', 'Fees, leverage, liquidity &amp; trust', '/exchanges/', '#c2f64a', 'mkt')
     + '<a class="mpnav-row" href="/heatmap"><span class="mpnav-ic" style="color:#ffb347;background:#ffb34722">'+I.heat+'</span><span class="mpnav-rt"><b>'+TR('brHeatT')+'</b><small>'+TR('brHeatS')+'</small></span></a>'
@@ -449,10 +448,9 @@
   function mount(){
     if(document.getElementById('mpCkBar'))return;
     var b=document.createElement('div');b.id='mpCkBar';
-    b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom) + 76px);z-index:94;max-width:430px;margin:0 auto;display:flex;align-items:center;gap:11px;background:rgba(13,16,21,.97);border:1px solid #2b323b;border-radius:13px;padding:11px 13px;box-shadow:0 18px 44px -14px rgba(0,0,0,.85);font-family:\'Familjen Grotesk\',system-ui,sans-serif;font-size:12.5px;line-height:1.45;color:#c8cdd4;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)';
-    if(window.matchMedia&&window.matchMedia('(min-width:721px)').matches)b.style.bottom='16px';
+    b.style.cssText='position:relative;z-index:94;margin:0;border-radius:0;display:flex;align-items:center;gap:11px;background:rgba(13,16,21,.97);border:1px solid #2b323b;border-radius:13px;padding:11px 13px;box-shadow:0 18px 44px -14px rgba(0,0,0,.85);font-family:\'Familjen Grotesk\',system-ui,sans-serif;font-size:12.5px;line-height:1.45;color:#c8cdd4;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)';
     b.innerHTML='<span style="flex:0 0 auto;display:inline-flex"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#c9a86a" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="#c9a86a" stroke="none"/><circle cx="14.5" cy="9" r="1" fill="#c9a86a" stroke="none"/><circle cx="10.5" cy="14.5" r="1" fill="#c9a86a" stroke="none"/><circle cx="15" cy="14" r="1" fill="#c9a86a" stroke="none"/></svg></span><span style="flex:1;min-width:0">We use cookies for sign-in, security (multi-account protection) and analytics, including anonymized session recordings that help us improve the product. No ad tracking.</span><button type="button" id="mpCkOk" style="flex:0 0 auto;background:#c2f64a;border:none;border-radius:9px;color:#0a0b0d;font-family:\'Space Mono\',monospace;font-size:11px;font-weight:800;letter-spacing:.03em;padding:9px 14px;cursor:pointer">OK</button>';
-    document.body.appendChild(b);
+    document.body.insertBefore(b,document.body.firstChild); // in the document flow at the top (2026-09-02): the fixed bottom card covered the primary buttons on phones
     document.getElementById('mpCkOk').addEventListener('click',function(){try{localStorage.setItem('mp_ck_ok',String(Date.now()));}catch(e){}b.remove();});
   }
   if(document.readyState!=='loading')setTimeout(mount,900);else document.addEventListener('DOMContentLoaded',function(){setTimeout(mount,900);});

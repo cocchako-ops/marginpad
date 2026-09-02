@@ -935,6 +935,30 @@
   .lg-roe{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;}
   .lg-roe.up{color:#2ebd85;}.lg-roe.dn{color:#ff6258;}
   .lg-prize{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#ffd75a;width:30px;text-align:right;}
+/* Top-ROE ticket (2026-08-20). Icon-only on purpose: a text button did not fit next to long usernames.
+   No @keyframes anywhere here — the owner runs Windows with animations off, so keyframes are invisible to him;
+   the open/close is a plain DOM insert and the hover uses a transition. */
+.lg-tk{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:1px solid rgba(255,255,255,.14);border-radius:7px;background:rgba(255,255,255,.04);color:#8b95a1;cursor:pointer;transition:color .15s,border-color .15s,background .15s;}
+.lg-tk:hover{color:#c2f64a;border-color:rgba(194,246,74,.5);background:rgba(194,246,74,.10);}
+.lg-tk:focus-visible{outline:2px solid #c2f64a;outline-offset:2px;}
+.lg-tkm{position:fixed;inset:0;z-index:9999;background:rgba(6,8,11,.82);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;}
+.lg-tkm-c{position:relative;width:100%;max-width:330px;background:linear-gradient(180deg,#12161c,#0c0f13);border:1px solid #262e3a;border-radius:16px;padding:22px 20px 20px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6);}
+.lg-tkm-x{position:absolute;top:8px;right:10px;width:30px;height:30px;border:0;background:none;color:#7f8893;font-size:22px;line-height:1;cursor:pointer;border-radius:8px;}
+.lg-tkm-x:hover{color:#e9e7df;background:rgba(255,255,255,.06);}
+.lg-tkm-h{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#5c656f;}
+.lg-tkm-who{font-family:'Space Mono',monospace;font-size:13px;color:#cdd3da;margin-top:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lg-tkm-who .r{color:#ffd75a;font-weight:700;}
+.lg-tkm-sym{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:14px;}
+.lg-tkm-sym .s{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;color:#e9e7df;}
+.lg-tkm-sym .sd{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.1em;padding:4px 9px;border-radius:6px;}
+.lg-tkm-sym .sd.up{color:#2ebd85;background:rgba(46,189,133,.14);}
+.lg-tkm-sym .sd.dn{color:#ff5a4d;background:rgba(255,90,77,.14);}
+.lg-tkm-roe{font-family:'Space Mono',monospace;font-size:34px;font-weight:700;margin-top:12px;line-height:1.1;}
+.lg-tkm-roe.up{color:#2ebd85;}.lg-tkm-roe.dn{color:#ff5a4d;}
+.lg-tkm-pnl{font-family:'Space Mono',monospace;font-size:12.5px;color:#7f8893;margin-top:5px;}
+.lg-tkm-pnl b.up{color:#2ebd85;}.lg-tkm-pnl b.dn{color:#ff5a4d;}
+.lg-tkm-cta{display:block;margin-top:18px;padding:12px 18px;border-radius:11px;background:linear-gradient(180deg,#d3ff5e,#a6e02a);color:#0a0b0d;font-weight:800;font-size:14px;text-decoration:none;}
+.lg-tkm-cta:hover{filter:brightness(1.05);color:#0a0b0d;}
   .lg-empty{color:#9aa3ad;font-size:13px;line-height:1.5;padding:14px 10px;text-align:center;}
   .lg-you{margin:18px auto 0;max-width:440px;border-top:1px solid rgba(255,255,255,.08);padding-top:16px;}
   .lg-you-h{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#9aa3ad;margin:0 0 8px;}

@@ -22,10 +22,10 @@ A **brand-new, separate extension**. Live liquidation heatmap in the toolbar, po
 - **Name:** MarginPad — Crypto Liquidation Heatmap
 - **Summary:** Live crypto liquidation heatmap in your toolbar: see where BTC, ETH & SOL liquidations cluster, 24h liquidations long vs short, and the most-rekt coins.
 - **Description:**
-  > See where leverage is stacked before it blows up. MarginPad's Liquidation Heatmap puts a live map of liquidation clusters right in your toolbar — the exact price levels where longs and shorts get liquidated, colour-coded from light to dense.
+  > See where leverage is stacked before it blows up. MarginPad's Liquidation Heatmap puts a live map of liquidation clusters right in your toolbar — the price levels where leveraged positions are estimated to cluster, colour-coded from light to dense.
   >
   > • Live liquidation heatmap for BTC, ETH, SOL, BNB, XRP & DOGE — price levels where leverage clusters
-  > • 24h liquidations across all exchanges, long vs short
+  > • 24h liquidations across nine exchanges, long vs short
   > • The most-rekt coins in the last 24h
   > • Auto-refreshes; tap any coin to switch
   >

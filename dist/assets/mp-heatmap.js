@@ -345,6 +345,42 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
   var rafP = false;
   function sched() { if (rafP) return; rafP = true; requestAnimationFrame(function () { rafP = false; try { draw(); } catch (e) {} }); }
 
+  // Yesterday's liquidations never reached the chart (owner 2026-08-20). Cause, measured: /liquidations/live
+  // returns the NEWEST rows up to a hard cap of 1000 with no time filter, so on a busy symbol that whole budget
+  // is spent inside the last hour — BTC's 1000 newest span ~1.1h, while the default window is 24h. The data is
+  // there (collector keeps raw events 30 days); it just never gets asked for.
+  // Fix: a second pass that asks for only the BIG liquidations, which spreads the same 1000-row budget across the
+  // whole window. The threshold is derived from what we just measured for THIS symbol, so it self-calibrates
+  // instead of hard-coding a dollar figure that would be wrong for both BTC and SOL.
+  // `batch` = the set the threshold is derived FROM (newest-first). Escalates: one estimate off the last hour
+  // undershoots, because liquidation intensity is bursty — so if the window is still not covered, re-estimate
+  // from the batch we just got and go bigger. Capped at 3 extra calls.
+  function backfillEvents(coin, winMins, batch, depth, prevMin) {
+    depth = depth || 0;
+    var src = batch || S.events || [];
+    if (depth > 2 || src.length < 900) return;         // budget not exhausted => nothing older is being cut off
+    var need = Date.now() - winMins * 60000;
+    var oldest = src[src.length - 1] && src[src.length - 1].ts;
+    if (!oldest || oldest <= need) return;             // window already covered
+    var span = Math.max(60000, Date.now() - oldest);
+    // Aim PAST the window edge (x0.55) rather than exactly at it. Estimating off a bursty hour always undershoots,
+    // and an estimate that lands exactly on the target converges asymptotically (measured: 1.2h -> 14.6h -> 20h -> 20h).
+    // Overshooting only thins out dots in the OLDER part, which pass 1 already covered densely up close.
+    var frac = Math.max(0.015, Math.min(0.9, span / (winMins * 60000) * 0.55));
+    var sizes = src.map(function (e) { return +e.notional || 0; }).sort(function (a, b) { return b - a; });
+    var min = Math.round(sizes[Math.min(sizes.length - 1, Math.floor(sizes.length * frac))] || 0);
+    // Force geometric growth between passes. Purely proportional estimates stall as they near the target
+    // (measured on BTC: 1.2h -> 18.2h -> 20.6h -> 20.6h), because each new batch's own ratio approaches 1.
+    if (prevMin) min = Math.max(min, Math.round(prevMin * 2.5));
+    if (!(min > 0)) return;
+    fetch('/api/v1/liquidations/live?symbol=' + coin + '&limit=1000&min=' + min).then(function (r) { return r.json(); }).then(function (d) {
+      if (!S || coin !== S.coin || !d || !d.events || !d.events.length) return;
+      var seen = {}; S.events.forEach(function (e) { seen[e.ts + '|' + e.price + '|' + e.qty] = 1; });
+      var add = d.events.filter(function (e) { return !seen[e.ts + '|' + e.price + '|' + e.qty]; });
+      if (add.length) { S.events = S.events.concat(add).sort(function (a, b) { return b.ts - a.ts; }).slice(0, 4000); updHead(); sched(); }
+      backfillEvents(coin, winMins, d.events, depth + 1, min); // still short of the window -> raise the threshold again
+    }).catch(function () {});
+  }
   function loadAll(first) {
     var coin = S.coin, w = WINS[S.win];
     if (first && S.loadEl) S.loadEl.style.display = 'flex';
@@ -373,7 +409,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         if (!S._fr || Date.now() - S._fr > 300000) { S._fr = Date.now(); fetch('/api/v1/bnc?path=' + encodeURIComponent('/fapi/v1/premiumIndex') + '&symbol=' + coin + 'USDT').then(function (r) { return r.json(); }).then(function (f) { if (S && f && f.lastFundingRate != null) { S.funding = +f.lastFundingRate; updTargets(); } }).catch(function () {}); }
         if (first || !S.view) { var last = S.bars[S.bars.length - 1]; var step = S.bars[1] ? S.bars[1].time - S.bars[0].time : 60; S.view = { t0: Date.now() / 1000 - w.mins * 60, t1: last.time + step * 5 }; }
       }
-      if (res[1] && res[1].events) S.events = res[1].events;
+      if (res[1] && res[1].events) { S.events = res[1].events; backfillEvents(coin, w.mins); }
       if (res[2] && +res[2].price > 0) { S.price = +res[2].price; S.chg = +res[2].chg || 0; }
       loadMyPos(); updHead(); updTargets(); if (S.loadEl) S.loadEl.style.display = 'none';
       sched();
@@ -412,7 +448,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       if (!S || coin !== S.coin || !d || !d.events) return;
       var seen = {}; S.events.slice(0, 200).forEach(function (e) { seen[e.ts + '|' + e.price + '|' + e.qty] = 1; });
       var fresh = d.events.filter(function (e) { return !seen[e.ts + '|' + e.price + '|' + e.qty]; });
-      if (fresh.length) { S.events = fresh.concat(S.events).slice(0, 2200); updHead(); sched(); }
+      if (fresh.length) { S.events = fresh.concat(S.events).slice(0, 4000); updHead(); sched(); } // 4000, not 2200: the poll would otherwise trim the backfilled history away over time
     }).catch(function () {});
   }
   function magnetScore(x, px) { var dist = Math.abs(x.price - px) / px; if (dist < 0.0008) dist = 0.0008; var age = Math.max(0.1, (Date.now() / 1000 - x.t0) / 86400); return x.w * Math.pow(age + 0.3, 0.35) / Math.pow(dist * 100, 0.6); }
@@ -844,7 +880,10 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
     fetch('/api/premium/status', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }).then(function (j) {
       if (!S || !stage.parentNode) return;
       if (j && j.premium) return; // full access for premium members
-      var PREVIEW = 60, left = PREVIEW, signedIn = j && j.signedIn;
+      // 5-minute preview (owner 2026-08-20; was 60s). A minute was not enough to actually read the map — the wall
+      // landed while a first-time visitor was still working out what the bands mean.
+      var PREVIEW = 300, left = PREVIEW, signedIn = j && j.signedIn;
+      var fmtLeft = function (s) { s = Math.max(0, s); var m = Math.floor(s / 60), r = s % 60; return m ? m + ':' + (r < 10 ? '0' : '') + r : r + 's'; }; // 300s reads as 5:00, not "300s"
       var LOCKKEY = 'mp_hm_lock', COOLDOWN = 12 * 3600 * 1000; // one short preview per 12h; a refresh after it locks stays locked
       function lockNow() { // paint the paywall immediately (no preview)
         if (!S || !stage.parentNode) return;
@@ -861,8 +900,8 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var lockedAt = 0; try { lockedAt = +localStorage.getItem(LOCKKEY) || 0; } catch (e) {}
       if (lockedAt && Date.now() - lockedAt < COOLDOWN) { lockNow(); return; } // already used the preview recently → stay locked across refreshes
       var rib = el('div', 'hm-prevrib'); rib.style.cssText = 'position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:7;background:rgba(10,12,16,.92);border:1px solid #c2f64a55;border-radius:20px;padding:5px 14px;font:11px "Space Mono",monospace;color:#c2f64a;pointer-events:none';
-      rib.textContent = 'Premium preview — locks in ' + left + 's'; stage.appendChild(rib);
-      var iv = setInterval(function () { left--; if (rib) rib.textContent = 'Premium preview — locks in ' + Math.max(0, left) + 's'; if (left <= 0) { try { clearInterval(iv); } catch (e) {} } }, 1000);
+      rib.textContent = 'Premium preview — locks in ' + fmtLeft(left); stage.appendChild(rib);
+      var iv = setInterval(function () { left--; if (rib) rib.textContent = 'Premium preview — locks in ' + fmtLeft(left); if (left <= 0) { try { clearInterval(iv); } catch (e) {} } }, 1000);
       S.timers.push(iv);
       var t = setTimeout(function () {
         if (!S || !stage.parentNode) return; try { clearInterval(iv); } catch (e) {} if (rib && rib.parentNode) rib.parentNode.removeChild(rib);
@@ -939,7 +978,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       ox.textAlign = 'right'; ox.fillStyle = '#8fa3c4'; ox.font = '700 17px "Space Mono",monospace';
       ox.fillText('marginpad.io/heatmap', W - 22, HEAD / 2 + 1);
       ox.textAlign = 'left'; ox.fillStyle = '#5c6b84'; ox.font = '13px "Space Mono",monospace';
-      ox.fillText('Real liquidations live from Binance \u00b7 Bybit \u00b7 OKX \u00b7 BitMEX \u00b7 Bitfinex \u2014 bright bands = where liquidations are stacking', 22, H - FOOT / 2);
+      ox.fillText('Real liquidations live from 9 exchangess = where liquidations are stacking', 22, H - FOOT / 2);
       return out;
     }
     sh.addEventListener('click', function () { try {
