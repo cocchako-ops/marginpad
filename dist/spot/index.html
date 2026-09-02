@@ -678,6 +678,7 @@
 <script>
 (function(){
   'use strict';
+  var MEMES_TS=0;
   var ME=null, PORT=null, MKT=[], MEMES=[], booted=false, memeNetF='all', VIEW='hub', exTab='assets';
   var NETS={solana:{native:'SOL',label:'Solana',cls:'net-solana',wd:1},base:{native:'ETH',label:'Base',cls:'net-base',wd:1.5},eth:{native:'ETH',label:'Ethereum',cls:'net-eth',wd:8},bsc:{native:'BNB',label:'BNB Chain',cls:'net-bsc',wd:0.8}};
   var $=function(id){return document.getElementById(id);};
@@ -1019,7 +1020,7 @@
       +'<div class="wl-sec"><span>Your bags</span></div>'
       +'<div class="wl-card" id="wlBags">'+(bags.length?bags.map(holdRow).join(''):'<div class="empty" style="color:#8f86ad">No bags yet'+(gasHas()?' — pick a meme below.':' — get some gas first (Swap).')+'</div>')+'</div>'
       +'</div><div class="wl-right">'
-      +'<div class="wl-sec" style="margin-top:16px"><span>Trending — 4 chains</span></div>'
+      +'<div class="wl-sec" style="margin-top:16px"><span>Trending — 4 chains</span><small id="memeAge" style="margin-left:auto;font-size:10px;color:#8f86ad"></small></div>'
       +'<div class="memewarn"><b>Degen zone.</b> Every meme lives on a network and is paid for in that chain’s coin plus gas. Thin pools slip. Pools can rug to zero. That is the lesson.</div>'
       +'<div class="netfilt" id="netFilt">'
       +'<button class="nf'+(memeNetF==='all'?' on':'')+'" data-net="all" type="button">All</button>'
@@ -1102,12 +1103,13 @@
   // ---- memes ----
   function loadMemes(){
     fetch('/api/spot/memes').then(function(r){return r.json();}).then(function(d){
-      MEMES=(d&&d.memes)||[];renderMemes();
+      MEMES=(d&&d.memes)||[];MEMES_TS=(d&&+d.updatedAt)||0;renderMemes();
     }).catch(function(){});
   }
   function renderMemes(){
     var el=$('memeList');if(!el)return;
     if(!MEMES.length){el.innerHTML='<div class="empty" style="color:#8f86ad">Could not load the meme feed — try again in a minute.</div>';return;}
+    var ag=$('memeAge');if(ag){var mn=MEMES_TS?Math.round((Date.now()-MEMES_TS)/60000):null;ag.textContent=mn==null?'':(mn<1?'updated just now':'updated '+mn+' min ago');}
     var list=MEMES.filter(function(m){return memeNetF==='all'||m.net===memeNetF;});
     el.innerHTML=list.map(function(m){
       var chg=+m.chg24||0;var i=MEMES.indexOf(m);
