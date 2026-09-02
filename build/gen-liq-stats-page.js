@@ -14,7 +14,7 @@ const FAQ = [
   { q: 'How much crypto is liquidated every day?', a: 'It varies enormously with volatility: calm days wipe out tens of millions of dollars across all futures markets, while crash or squeeze days can exceed a billion. The live 24-hour total measured right now is shown at the top of this page and updates continuously.' },
   { q: 'What does a liquidation mean in crypto futures?', a: 'A liquidation is the forced closure of a leveraged position after its margin can no longer cover the loss. The exchange closes the position at market, which adds sell pressure (for longs) or buy pressure (for shorts) and can cascade into further liquidations.' },
   { q: 'Why are most liquidations longs?', a: 'On most days the majority of open leverage is long, so down-moves liquidate more volume than up-moves. When shorts dominate the daily total instead, it usually means a short squeeze is running.' },
-  { q: 'Where does this liquidation data come from?', a: 'Two measured sources: MarginPad’s own collector streams individual liquidation events live from the public websockets of 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), and per-coin 24-hour totals are aggregated from Coinglass. Every figure on this page is a measurement with a timestamp, not an estimate.' },
+  { q: 'Where does this liquidation data come from?', a: 'Two measured sources: MarginPad’s own collector streams individual liquidation events live from the public websockets of 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), and per-coin 24-hour totals are summed from that same archive. Every figure on this page is a measurement with a timestamp, not an estimate.' },
   { q: 'Is there a free API for liquidation data?', a: 'Yes. MarginPad’s free keyless API serves the same data as JSON: /api/v1/liquidations/recent (price-level buckets), /api/v1/liquidations/live (latest individual events) and /api/v1/clusters. CORS-enabled, 60 requests/minute, no signup.' },
 ];
 
@@ -81,7 +81,7 @@ ${dataLd}
     <h2>How to read these numbers</h2>
     <p>Long liquidations dominate on down-moves — leveraged buyers are forced to sell, which accelerates the drop. Short liquidations dominate on squeezes — forced buying fuels the rally. A lopsided daily split therefore tells you which side of the market just paid for the move. Calm days across all futures markets wipe out tens of millions of dollars; crash or squeeze days can exceed a billion. The <a href="/btc-liquidation-map/">liquidation map</a> shows <em>where</em> the remaining leverage sits, and the <a href="/rekt/">Rekt feed</a> streams every hit as it lands.</p>
     <h2>Methodology</h2>
-    <p>MarginPad runs its own collector that subscribes to the public liquidation websockets of the 9 exchanges listed above, normalizes each event (symbol, side, price, notional, timestamp) and archives every day. Per-coin 24-hour totals are aggregated from Coinglass for the most-liquidated coins of the day. No modelled or extrapolated values appear on this page — where data is missing, nothing is shown.</p>
+    <p>MarginPad runs its own collector that subscribes to the public liquidation websockets of the 9 exchanges listed above, normalizes each event (symbol, side, price, notional, timestamp) and archives every day. Per-coin 24-hour totals are summed from that archive for the most-liquidated coins of the day. No modelled or extrapolated values appear on this page — where data is missing, nothing is shown.</p>
     <h2>Get the raw data (free API, no key)</h2>
     <p>The same data is served as JSON by the <a href="/free-crypto-api/">MarginPad free crypto API</a>: <code>/api/v1/liquidations/recent</code> (price-level buckets per coin), <code>/api/v1/liquidations/live</code> (latest individual events) and <code>/api/v1/clusters</code> (estimated forward clusters, labelled as estimates). CORS-enabled, 60 requests/minute, no signup.</p>
     <h2>FAQ</h2>
@@ -126,7 +126,7 @@ ${dataLd}
       var lng=/long/.test(e.side||'');
       return '<tr><td>'+esc(e.symbol||'')+'</td><td class="'+(lng?'lqs-long':'lqs-short')+'">'+(lng?'Long':'Short')+'</td><td>'+usd(e.notional)+'</td><td>$'+(+e.price).toLocaleString('en-US')+'</td><td>'+esc(e.exchange||'')+'</td><td>'+new Date(+e.ts).toISOString().replace('T',' ').slice(5,16)+' UTC</td></tr>';
     }).join('');
-    var note=document.getElementById('lqsBigNote');if(note)note.textContent='Largest of the last '+evs.length+' measured BTC/ETH events from our 10-exchange collector.';
+    var note=document.getElementById('lqsBigNote');if(note)note.textContent='Largest of the last '+evs.length+' measured BTC/ETH events from our 9-exchange collector.';
   }).catch(function(){});
 })();
 </script>

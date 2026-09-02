@@ -523,7 +523,7 @@
 </style>
 
 <script defer src="/assets/sentry.js"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Live Crypto Liquidations — Real-Time Feed, Free, No Login","url":"https://marginpad.io/rekt/","dateModified":"2026-08-17T12:44:12.839Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Live Crypto Liquidations — Real-Time Feed, Free, No Login","url":"https://marginpad.io/rekt/","dateModified":"2026-08-20T01:29:15.618Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="grain" aria-hidden="true"></div>
 <div class="wrap">
@@ -547,7 +547,7 @@
       <div class="rkh-eyebrow"><i></i>Live · every major exchange · last 24 hours</div>
       <div class="rkh-grid">
         <div>
-          <div class="rkh-tot"><span id="rkhTot">$0</span><small> liquidated</small></div>
+          <div class="rkh-tot"><span id="rkhTot">—</span><small> liquidated</small></div>
           <p class="rkh-sub">Every forced long and short liquidation from 9 exchanges, streamed within seconds of happening — size, price, side and time, <b>free with no login</b>. When leverage runs out of margin, it prints here: <b>watch who's getting rekt, in real time</b>. Pair it with the free <a href="/heatmap" style="color:#c2f64a">liquidation heatmap</a> and <a href="/btc-liquidation-map/" style="color:#c2f64a">per-coin liquidation maps</a>.</p>
           <div class="rkh-src" id="rkhSrc"><span class="t">Streaming live from</span><span class="chip" data-x="binance"><i></i>Binance</span><span class="chip" data-x="bybit"><i></i>Bybit</span><span class="chip" data-x="okx"><i></i>OKX</span><span class="chip" data-x="bitmex"><i></i>BitMEX</span><span class="chip" data-x="hyperliquid"><i></i>Hyperliquid</span><span class="chip" data-x="gate"><i></i>Gate</span><span class="chip" data-x="htx"><i></i>HTX</span><span class="chip" data-x="dydx"><i></i>dYdX</span><span class="chip" data-x="bitfinex"><i></i>Bitfinex</span></div>
         </div>
@@ -562,8 +562,8 @@
     </section>
 
     <div class="rk-stats">
-      <div class="rk-stat tot"><div class="l">Liquidated<span class="ls"> · last 24h</span></div><div class="v" id="rkTot">$0</div></div>
-      <div class="rk-stat cnt"><div class="l">Positions<span class="ls"> · last 24h</span></div><div class="v" id="rkCnt">0</div></div>
+      <div class="rk-stat tot"><div class="l">Liquidated<span class="ls"> · last 24h</span></div><div class="v" id="rkTot">—</div></div>
+      <div class="rk-stat cnt"><div class="l">Positions<span class="ls"> · last 24h</span></div><div class="v" id="rkCnt">—</div></div>
       <div class="rk-stat big"><div class="l">Most rekt<span class="ls"> · last 24h</span></div><div class="v" id="rkBig">—</div></div>
     </div>
 
@@ -726,7 +726,12 @@
   function matchF(e){if(fSide==='long'&&e.side!=='long_liquidated')return false;if(fSide==='short'&&e.side!=='short_liquidated')return false;if(e.notional<Math.max(fMin,1000))return false;if(fSym&&String(e.symbol).toUpperCase().indexOf(fSym)<0)return false;return true;}
   function deskOn(){return window.matchMedia&&matchMedia('(min-width:861px)').matches;}
   // accurate, all-exchange 24h liquidation totals from Coinglass (the live ticket feed above is the real-time stream; these are the true aggregates)
-  function loadLiqStats(){if(document.hidden)return;fetch('/api/cg/liquidations',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){if(!d||!d.market)return;var m=d.market,coins=d.coins||[];var T=document.getElementById('rkTot');if(T)T.textContent='$'+money(m.total||0);var C=document.getElementById('rkCnt');if(C)C.textContent=(+m.count||0).toLocaleString('en-US');var top=coins[0],B=document.getElementById('rkBig');if(B)B.textContent=top?(top.s+' · $'+money(top.liq)):'—';var l=+m.long||0,s=+m.short||0,sum=l+s||1,lp=Math.round(l/sum*100);var ml=document.getElementById('rkML'),ms=document.getElementById('rkMS');if(ml)ml.style.width=lp+'%';if(ms)ms.style.width=(100-lp)+'%';var mll=document.getElementById('rkMLl');if(mll)mll.textContent='Longs rekt '+(sum>1?lp+'%':'—');var msl=document.getElementById('rkMSl');if(msl)msl.textContent=(sum>1?(100-lp)+'%':'—')+' Shorts rekt';
+  function liqStatsDown(){ // aggregate source unavailable: show nothing rather than a fabricated zero
+    ['rkTot','rkCnt','rkBig','rkhTot','rkhCnt','rkhBig'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='\u2014';});
+    ['rkML','rkMS','rkhML','rkhMS'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.width='0%';});
+    [['rkMLl','Longs rekt \u2014'],['rkMSl','\u2014 Shorts rekt'],['rkhMLl','Longs rekt \u2014'],['rkhMSl','\u2014 Shorts rekt']].forEach(function(p){var e=document.getElementById(p[0]);if(e)e.textContent=p[1];});
+  }
+  function loadLiqStats(){if(document.hidden)return;fetch('/api/cg/liquidations',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){if(!d||!d.market){liqStatsDown();return;}var m=d.market,coins=d.coins||[];var T=document.getElementById('rkTot');if(T)T.textContent='$'+money(m.total||0);var C=document.getElementById('rkCnt');if(C)C.textContent=(+m.count||0).toLocaleString('en-US');var top=coins[0],B=document.getElementById('rkBig');if(B)B.textContent=top?(top.s+' · $'+money(top.liq)):'—';var l=+m.long||0,s=+m.short||0,sum=l+s||1,lp=Math.round(l/sum*100);var ml=document.getElementById('rkML'),ms=document.getElementById('rkMS');if(ml)ml.style.width=lp+'%';if(ms)ms.style.width=(100-lp)+'%';var mll=document.getElementById('rkMLl');if(mll)mll.textContent='Longs rekt '+(sum>1?lp+'%':'—');var msl=document.getElementById('rkMSl');if(msl)msl.textContent=(sum>1?(100-lp)+'%':'—')+' Shorts rekt';
     // desktop hero mirrors the same 24h aggregates at full size
     var hT=document.getElementById('rkhTot');if(hT)hT.textContent='$'+money(m.total||0);
     var hC=document.getElementById('rkhCnt');if(hC)hC.textContent=(+m.count||0).toLocaleString('en-US');
@@ -735,7 +740,7 @@
     var hmll=document.getElementById('rkhMLl');if(hmll)hmll.textContent='Longs rekt '+(sum>1?lp+'% · $'+money(l):'—');
     var hmsl=document.getElementById('rkhMSl');if(hmsl)hmsl.textContent=(sum>1?(100-lp)+'% · $'+money(s):'—')+' Shorts rekt';
     window.__cgLast=d;try{deskCoins(d);loadFunding();}catch(_e){} // feed the terminal rail's "Most rekt coins" + funding enrichment
-  }).catch(function(){});}
+  }).catch(function(){liqStatsDown();});}
   loadLiqStats();setInterval(loadLiqStats,60000);
   function validSym(s){s=String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');return s.length>=2&&/[A-Z]/.test(s);} // drop context-less junk like a bare "H"
   function setOffline(off){var el=document.getElementById('rkOffline');if(el)el.hidden=!off;}

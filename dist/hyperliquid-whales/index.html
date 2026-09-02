@@ -122,27 +122,10 @@
   @media(max-width:560px){.wl-thd,.wl-pr{grid-template-columns:16px 1.2fr 74px 88px}.wl-thd .cl,.wl-pr .cl{display:none}.wl-tiles{grid-template-columns:1fr}}
   @media(min-width:861px){.wrap{max-width:1280px;padding:0 clamp(24px,3vw,52px)}article h1{font-size:40px;letter-spacing:-.03em;margin:10px 0 8px}.lead{font-size:15.5px;max-width:860px}}
 </style>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a Hyperliquid whale tracker?","acceptedAnswer":{"@type":"Answer","text":"Hyperliquid is a decentralized perpetuals exchange where every position is on-chain and public. A whale tracker surfaces the largest open positions — their size, direction, leverage, entry, liquidation price and live unrealized profit or loss — so you can see exactly what the biggest traders are betting on in real time."}},{"@type":"Question","name":"Why watch whale positions?","acceptedAnswer":{"@type":"Answer","text":"Large positions can move markets and their liquidation levels often act as magnets for price. Watching whether whales are net long or net short, and where their liquidation prices cluster, gives context that funding rates and open interest alone do not."}},{"@type":"Question","name":"Is the whale data live?","acceptedAnswer":{"@type":"Answer","text":"Yes. Positions and recent whale actions are aggregated from Coinglass and refresh about once a minute. Because Hyperliquid is on-chain, the sizes, leverage and liquidation prices are the real values, not estimates."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a Hyperliquid whale tracker?","acceptedAnswer":{"@type":"Answer","text":"Hyperliquid is a decentralized perpetuals exchange where every position is on-chain and public. A whale tracker surfaces the largest open positions — their size, direction, leverage, entry, liquidation price and live unrealized profit or loss — so you can see exactly what the biggest traders are betting on in real time."}},{"@type":"Question","name":"Why watch whale positions?","acceptedAnswer":{"@type":"Answer","text":"Large positions can move markets and their liquidation levels often act as magnets for price. Watching whether whales are net long or net short, and where their liquidation prices cluster, gives context that funding rates and open interest alone do not."}},{"@type":"Question","name":"Is the whale data live?","acceptedAnswer":{"@type":"Answer","text":"Yes. Positions and recent whale actions are read from the public on-chain API of Hyperliquid by the MarginPad whale tracker and refresh every few minutes. Because Hyperliquid is on-chain, the sizes, leverage and liquidation prices are the real values, not estimates."}}]}</script>
 
 <script defer src="/assets/sentry.js"></script>
-<style id="mp-xr-css">
-.mp-xr{margin:38px 0 6px}
-.mp-xr-t{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.24em;color:#5c656f;margin-bottom:9px;white-space:nowrap}
-.mp-xr-t::before,.mp-xr-t::after{content:"";flex:1;height:1px;background:#28303c}
-.mp-xr-w{font-size:14px;line-height:1.6;color:#8b95a1;margin:0 0 13px}
-.mp-xr-r{display:flex;border:1px solid #262e3a;border-radius:13px;overflow:hidden;background:#0c0f13}
-.mp-xr-c{position:relative;flex:1;display:flex;align-items:center;gap:9px;min-width:0;padding:13px 13px 13px 16px;text-decoration:none;color:#e9e7df;transition:background .16s}
-.mp-xr-c::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--xa)}
-.mp-xr-c:hover{background:#12161c}
-.mp-xr-k{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:13.5px;flex-shrink:0;color:var(--xa)}
-.mp-xr-d{font-size:11px;color:#8b95a1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
-.mp-xr-g{color:#5c656f;flex-shrink:0;font-weight:700;transition:transform .16s,color .16s}
-.mp-xr-c:hover .mp-xr-g{transform:translateX(3px);color:#e9e7df}
-.mp-xr-cut{width:1px;background:#262e3a;transform:skewX(-14deg);flex-shrink:0}
-.mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
-@media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
-</style>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Hyperliquid Whale Tracker — Biggest Whale Positions Live","url":"https://marginpad.io/hyperliquid-whales/","dateModified":"2026-08-18T21:37:04.640Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+</head>
 <body>
 <div class="wl-glow" aria-hidden="true"></div>
 <div class="wrap">
@@ -206,10 +189,8 @@
     <h2>Whales are context, not a signal</h2>
     <p>A big position is a bet, not a guarantee — whales get liquidated too (watch the aggregate unrealized P&amp;L). Use this board the way you would <a href="/open-interest/">open interest</a> and <a href="/funding/">funding</a>: to understand positioning and where the pain points are, not as a reason to blindly copy. When many large shorts sit just above price, an upward squeeze becomes more likely; when big longs pile in with tight liquidations below, a flush can cascade.</p>
 
-    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Whale data aggregated from Coinglass / Hyperliquid. For information only — not financial advice.</p>
-  
-<div class="mp-xr"><div class="mp-xr-t">TRADE THIS DATA</div><p class="mp-xr-w">Funding, open interest and basis are only worth something if you are positioned on the venue that pays them.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#f0b90b" data-ex="Binance" href="https://www.binance.com/register?ref=MAOZM9DS" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Binance')}catch(e){}"><span class="mp-xr-k">Binance</span><span class="mp-xr-d">USDT-perp &middot; 125x</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Affiliate links. We earn a commission if you sign up; you pay the same either way.</p></div>
-</article>
+    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Whale data read from Hyperliquid on-chain by the MarginPad whale tracker. For information only — not financial advice.</p>
+  </article>
 
   <footer class="site-foot"><div class="foot-bar"><span>© MarginPad · <a href="/">marginpad.io</a> · Not financial advice</span></div></footer>
 </div>
@@ -224,7 +205,7 @@
   function ago(ts){if(!ts)return '';var s=Math.max(0,(Date.now()-ts)/1000);if(s<60)return Math.floor(s)+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
   var HL='https://hypurrscan.io/address/';
   function paint(d){
-    var w=document.getElementById('wlWait');if(w)w.hidden=!!(d&&d.active);
+    var w=document.getElementById('wlWait');if(w)w.hidden=!!(d&&(d.active||(d.positions&&d.positions.length)));
     if(!d||!d.active){var pe=document.getElementById('wlPos');if(pe&&!pe.dataset.done)pe.innerHTML='<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">Whale feed is refreshing…</div>';return;}
     var g=d.agg||{};
     var lo=+g.longUsd||0,sh=+g.shortUsd||0,tot=lo+sh||1;

@@ -23,6 +23,7 @@ const CSS = `
   .fd-val{font-family:'Space Mono',monospace;font-weight:800;font-size:20px;margin-left:auto}
   .fd-val.up{color:#34d99a}.fd-val.dn{color:#ff7b72}
   .fd-hint{font-size:12.5px;color:var(--ink-dim);margin-top:6px;line-height:1.45}
+  .fdwrap{overflow-x:auto;-webkit-overflow-scrolling:touch} /* the 6-column table is wider than a phone; it scrolls inside its own box, the page never does */
   .fdtbl{width:100%;border-collapse:collapse;margin:8px 0 4px;font-size:14px}
   .fdtbl th,.fdtbl td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
   .fdtbl th:first-child,.fdtbl td:first-child,.fdtbl th:nth-child(2),.fdtbl td:nth-child(2){text-align:left}
@@ -121,11 +122,12 @@ ${LD}
   function fn(f){return (f>=0?'+':'')+(+f).toFixed(4)+'%';}
   function render(d){
     if(!d||d.error||!d.coins||!d.coins.length){topEl.innerHTML='<div class="fdload">Live data unavailable right now — retry shortly.</div>';tEl.innerHTML='';return;}
-    var c=d.coins, hi=c[0], lo=c[c.length-1];
+    var c=d.coins; // API order = most extreme |funding| first (the table keeps that); the cards need the SIGNED extremes
+    var byF=c.slice().sort(function(a,b){return (+b.funding||0)-(+a.funding||0);}), hi=byF[0], lo=byF[byF.length-1];
     topEl.innerHTML='<div class="fdcard hi"><div class="fd-k">Most expensive longs · highest funding</div><div class="fd-row"><span class="fd-sym">'+hi.s+'</span><span class="fd-val up">'+fn(hi.funding)+'</span></div><div class="fd-hint">Longs are paying the most here — crowded longs, short-squeeze risk on a pullback.</div></div>'
       +'<div class="fdcard lo"><div class="fd-k">Most expensive shorts · lowest funding</div><div class="fd-row"><span class="fd-sym">'+lo.s+'</span><span class="fd-val dn">'+fn(lo.funding)+'</span></div><div class="fd-hint">Shorts are paying the most here — crowded shorts, long-squeeze risk on a bounce.</div></div>';
     var rows=c.map(function(x,i){var up=(x.chg24h||0)>=0,fp=(x.funding||0)>=0;return '<tr><td class="rk">'+(i+1)+'</td><td class="sym">'+x.s+'</td><td>'+fpx(x.price)+'</td><td class="chg '+(up?'up':'dn')+'">'+(up?'+':'')+(x.chg24h!=null?x.chg24h.toFixed(2):'0')+'%</td><td class="fund '+(fp?'up':'dn')+'">'+fn(x.funding)+'</td><td class="hide">'+bn(x.oiUsd)+'</td></tr>';}).join('');
-    tEl.innerHTML='<table class="fdtbl"><thead><tr><th class="rk">#</th><th>Coin</th><th>Price</th><th>24h</th><th>Funding</th><th class="hide">Open Int.</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    tEl.innerHTML='<div class="fdwrap"><table class="fdtbl"><thead><tr><th class="rk">#</th><th>Coin</th><th>Price</th><th>24h</th><th>Funding</th><th class="hide">Open Int.</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
     if(uEl)uEl.textContent='Updated just now · refreshes automatically';
   }
   function load(){fetch('/api/cg/funding',{cache:'no-store'}).then(function(r){return r.json();}).then(render).catch(function(){});}

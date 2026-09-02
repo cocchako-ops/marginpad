@@ -41,6 +41,11 @@
 <link rel="stylesheet" href="/assets/fonts.css" />
 <link rel="stylesheet" href="/assets/lab.css" />
 <style>
+  /* Top CTA (2026-08-20, owner): paid traffic lands here, reads a headline plus five lines of copy and leaves
+     before it ever reaches the hero buttons. This puts the one action we want above everything else — on a
+     390px phone the hero button sat at y=371; this sits at the very top of the content. */
+  .simtop{display:block;margin:0 0 20px}
+  .simtop .btn{display:block;width:100%;max-width:400px;text-align:center;padding:15px 22px;font-size:15.5px;text-decoration:none}
   .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
   .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:8px}
   .scard{display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink);transition:border-color .16s,transform .16s}
@@ -93,12 +98,13 @@
 .mp-xr-n{font-size:11px;color:#5c656f;margin:9px 0 0}
 @media(max-width:520px){.mp-xr-r{flex-direction:column}.mp-xr-cut{width:auto;height:1px;transform:none}}
 </style>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Free Index Trading Simulator — Practice S&amp;P 500, Nasdaq &amp; Dow, $0 Risk","url":"https://marginpad.io/index-trading-simulator/","dateModified":"2026-08-18T21:40:28.267Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Free Index Trading Simulator — Practice S&amp;P 500, Nasdaq &amp; Dow, $0 Risk","url":"https://marginpad.io/index-trading-simulator/","dateModified":"2026-08-20T01:29:16.989Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <header class="topbar"><a class="brand" href="/">MARGIN<b>PAD</b></a><nav class="tool-switch lnav"><a href="/paper-trade">Paper Trade</a><a href="/charts">Charts</a><a href="/stock-trading-simulator/">Stock simulator</a><a href="/forex-trading-simulator/">Forex simulator</a><a href="/tools/">Tools</a></nav><a class="home" href="/paper-trade">Open app &rarr;</a></header>
 
 <div class="wrap">
   <section class="hero">
+    <div class="simtop"><a class="btn" href="/paper-trade?coin=SPX500">Open trading simulator &rarr;</a></div>
     <span class="eyebrow">Free index simulator</span>
     <h1>Free Index Trading Simulator</h1>
     <p class="sub">Practice the S&amp;P 500, Nasdaq 100, Dow Jones and DAX with live prices and zero real money. Trade indices exactly the way you would for real — charts, leverage and stop-losses. No sign-up, nothing to download.</p>
@@ -168,7 +174,7 @@
 <div class="mp-xr"><div class="mp-xr-t">WHEN PRACTICE STOPS TEACHING YOU</div><p class="mp-xr-w">A simulator cannot teach you slippage, funding, or what real money does to your judgement. When the paper account stops surprising you, size down and go live.</p><div class="mp-xr-r"><a class="mp-xr-c" style="--xa:#f7a600" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Bybit')}catch(e){}"><span class="mp-xr-k">Bybit</span><span class="mp-xr-d">USDT-perp &middot; 100x</span><span class="mp-xr-g">&rarr;</span></a><i class="mp-xr-cut"></i><a class="mp-xr-c" style="--xa:#8a5cff" data-ex="Moon" href="https://moon.com/?c=moonkickstart" target="_blank" rel="sponsored noopener noreferrer" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','Moon')}catch(e){}"><span class="mp-xr-k">Moon</span><span class="mp-xr-d">Any market, up or down</span><span class="mp-xr-g">&rarr;</span></a></div><p class="mp-xr-n">Affiliate links. We earn a commission if you sign up; you pay the same either way.</p></div>
 <footer class="toolfoot"><div class="wrap" style="padding-bottom:0"><div class="cols">
   <div><a class="brand" href="/" style="font-size:18px">MARGIN<b>PAD</b></a><p class="blurb">Practice trading stocks, forex, indices and crypto with live prices and zero risk. Free, no sign-up.</p></div>
-  <div><h4>Paper Trade</h4><a href="/stock-trading-simulator/">Stock simulator</a><a href="/forex-trading-simulator/">Forex simulator</a><a href="/index-trading-simulator/">Index simulator</a><a href="/paper-trade">Paper Trade</a></div>
+  <div><h4>Practice</h4><a href="/stock-trading-simulator/">Stock simulator</a><a href="/forex-trading-simulator/">Forex simulator</a><a href="/index-trading-simulator/">Index simulator</a><a href="/paper-trade">Paper Trade</a></div>
   <div><h4>MarginPad</h4><a href="/charts">Charts</a><a href="/calculators">Calculators</a><a href="/screener">Screener</a><a href="/tools/">Tools</a></div>
 </div><div class="bottom">© MarginPad · Practice platform, not financial advice · marginpad.io</div></div></footer>
 

@@ -28,11 +28,11 @@
 <meta property="og:title" content="Leverage Calculator — Margin, Position & Liquidation Distance | MarginPad" />
 <meta property="og:description" content="Free crypto leverage calculator: see the leverage implied by your margin and position size, the margin a target position needs, and roughly how far liquidation sits." />
 <meta property="og:url" content="https://marginpad.io/leverage-calculator/" />
-<meta property="og:image" content="https://marginpad.io/assets/og-home.png" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="/assets/fonts.css" />
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" /><link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
 <style>
 :root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
@@ -68,7 +68,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Crypto Leverage Calculator","item":"https://marginpad.io/leverage-calculator/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What leverage do most professionals actually use?","acceptedAnswer":{"@type":"Answer","text":"Serious futures traders rarely run effective leverage above 3-5x on the whole account, even when an exchange offers 100x. High per-trade leverage is mainly a capital-efficiency tool: it lets you lock less margin for the same deliberately-sized position — not a way to multiply the bet."}},{"@type":"Question","name":"Is liquidation the same as my stop-loss?","acceptedAnswer":{"@type":"Answer","text":"No. Liquidation is the exchange force-closing you when margin runs out — you lose the whole margin plus liquidation fees. A stop-loss is your own exit at a price you chose. If liquidation is doing the job of your stop, the position was oversized."}},{"@type":"Question","name":"Why is my real liquidation price slightly different?","acceptedAnswer":{"@type":"Answer","text":"Exchanges compute liquidation from the maintenance-margin tier of your exact position size, plus fees, and for isolated vs cross margin differently. The distance formula here is the standard approximation for an isolated position and lands very close for typical sizes."}}]}</script>
 <script defer src="/assets/sentry.js"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Leverage Calculator — Margin, Position & Liquidation Distance","url":"https://marginpad.io/leverage-calculator/","dateModified":"2026-08-17T11:48:11.198Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+</head>
 <body>
 <div class="wrap">
 <h1>Crypto Leverage Calculator</h1>

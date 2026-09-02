@@ -2,6 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 <meta name="color-scheme" content="dark" />
 <style>html{background:#0a0b0d;color-scheme:dark}</style>
 <!-- crash/error beacon: counts JS errors & unhandled rejections so the admin dashboard can see how many users hit a broken page -->
@@ -96,8 +109,10 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
   ]
 }
 </script>
-<link rel="stylesheet" href="/assets/home.css?v=d0392bd9">
+<link rel="stylesheet" href="/assets/home.css?v=a8134daf">
 
+
+<script defer src="/assets/sentry.js"></script>
 </head>
 <body>
 <script>
@@ -301,7 +316,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
       <div class="scr-list" id="scrOcList"><div class="scr-loading">Loading on-chain pools…</div></div>
       <p class="scr-oc-attr">On-chain DEX data by <a href="https://www.geckoterminal.com" target="_blank" rel="noopener">GeckoTerminal</a> · memecoins are EXTREMELY volatile — most new pairs go to zero. Never trade money you can't lose.</p>
     </div>
-    <p class="scr-foot">Live multi-exchange data (Bybit · OKX · Gate · MEXC · BingX · Binance · Bitget) + Coinglass derivatives · paper trading only, not financial advice.</p>
+    <p class="scr-foot">Live multi-exchange data (Bybit · OKX · Gate · MEXC · BingX · Binance · Bitget) + MarginPad derivatives data (our own nine-exchange liquidation collector) · paper trading only, not financial advice.</p>
   </section>
 
   <nav class="tabs" role="tablist">
@@ -592,8 +607,8 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
         <div class="chads-badge"> Charts workspace · free</div>
         <h3>Draw, analyze &amp; trade — all on one chart</h3>
         <ul class="chads-feat">
-          <li>1–6 floating chart windows side by side</li>
-          <li>12+ indicators — RSI, MACD, Bollinger &amp; more</li>
+          <li>Up to 8 floating chart windows side by side</li>
+          <li>19+ indicators — RSI, MACD, Bollinger &amp; more</li>
           <li>Trend lines, Fibs, support/resistance &amp; notes</li>
           <li>Import your paper trades onto the chart</li>
           <li>Ask the built-in AI about any setup</li>
@@ -807,7 +822,7 @@ window.addEventListener('unhandledrejection',function(e){var r=e&&e.reason;rep((
 
 
 
-<script src="/assets/home.js?v=d0392bd9"></script>
+<script src="/assets/home.js?v=a8134daf"></script>
 <script defer src="/assets/mp-nav.js"></script>
 </body>
 </html>

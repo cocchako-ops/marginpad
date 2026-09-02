@@ -28,11 +28,11 @@
 <meta property="og:title" content="Funding Cost Calculator — What Holding a Perp Really Costs | MarginPad" />
 <meta property="og:description" content="Free funding cost calculator for crypto perpetuals: position size, funding rate and hold time turned into the exact dollars paid or earned per interval, per day and total." />
 <meta property="og:url" content="https://marginpad.io/crypto-funding-cost-calculator/" />
-<meta property="og:image" content="https://marginpad.io/assets/og-home.png" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="/assets/fonts.css" />
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" /><link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
 <style>
 :root{--bg:#08090b;--panel:#0e1116;--line:#20262f;--ink:#e9e7df;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--up:#37d398;--red:#ff6258;--rs:12px}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Familjen Grotesk',system-ui,sans-serif;line-height:1.6}
@@ -68,7 +68,7 @@ p,li{color:var(--dim);font-size:14.5px}strong,b{color:var(--ink)}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"All tools","item":"https://marginpad.io/tools/"},{"@type":"ListItem","position":2,"name":"Funding Cost Calculator","item":"https://marginpad.io/crypto-funding-cost-calculator/"}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Who pays funding to whom?","acceptedAnswer":{"@type":"Answer","text":"When the rate is positive, longs pay shorts (the perp trades above spot and the market pays people to short it back down). When negative, shorts pay longs. You pay or receive automatically every 8 hours while the position is open at the funding timestamp."}},{"@type":"Question","name":"Is funding the same on every exchange?","acceptedAnswer":{"@type":"Answer","text":"No — each exchange computes its own rate from its own perp-vs-index premium, and they diverge, especially on smaller coins. That divergence is what funding-arbitrage desks trade. Check the live per-exchange rates on the MarginPad funding page before choosing a venue for a long hold."}},{"@type":"Question","name":"Can I avoid funding entirely?","acceptedAnswer":{"@type":"Answer","text":"Close before the funding timestamp and you pay nothing for that interval — funding only hits positions open at the exact mark. Spot holdings never pay funding, and dated futures (quarterlies) replace it with a fixed basis, which suits long-term directional holds better than perps."}}]}</script>
 <script defer src="/assets/sentry.js"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Funding Cost Calculator — What Holding a Perp Really Costs","url":"https://marginpad.io/crypto-funding-cost-calculator/","dateModified":"2026-08-17T11:48:07.566Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+</head>
 <body>
 <div class="wrap">
 <h1>Funding Cost Calculator</h1>

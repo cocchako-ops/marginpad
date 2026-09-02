@@ -34,6 +34,11 @@ function hreflang(slug) {
 const lp = (lang, slug) => (lang ? `/${lang}/${slug}/` : `/${slug}/`); // lang-aware internal link to a sibling sim page
 
 const CSS = `<style>
+  /* Top CTA (2026-08-20, owner): paid traffic lands here, reads a headline plus five lines of copy and leaves
+     before it ever reaches the hero buttons. This puts the one action we want above everything else — on a
+     390px phone the hero button sat at y=371; this sits at the very top of the content. */
+  .simtop{display:block;margin:0 0 20px}
+  .simtop .btn{display:block;width:100%;max-width:400px;text-align:center;padding:15px 22px;font-size:15.5px;text-decoration:none}
   .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
   .sgrid{display:grid;gap:10px;margin-top:8px}
   .scard{display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink);transition:border-color .16s,transform .16s}
@@ -118,6 +123,7 @@ ${CSS.replace('.sgrid{display:grid;gap:10px', '.sgrid{display:grid;grid-template
 
 <div class="wrap">
   <section class="hero">
+    <div class="simtop"><a class="btn" href="/paper-trade?coin=${P.startCoin}">${esc(S.openSim || 'Open trading simulator')} &rarr;</a></div>
     <span class="eyebrow">${esc(P.eyebrow)}</span>
     <h1>${esc(P.h1)}</h1>
     <p class="sub">${esc(P.sub)}</p>

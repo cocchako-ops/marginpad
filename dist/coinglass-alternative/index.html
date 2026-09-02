@@ -2,25 +2,41 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110941944', 'ym');
+
+    ym(110941944, 'init', {ssr:true, webvisor:(window.innerWidth>880), clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/110941944" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18230384038');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Free Coinglass Alternative — Liquidation Maps, Funding & OI | MarginPad</title>
-<meta name="description" content="MarginPad covers the core Coinglass feature set for free: live liquidation maps and heatmap, a real-time liquidation feed from 9 exchanges with a free <a href="/liquidations/by-exchange/">per-venue breakdown</a>, funding rates, open interest, long/short ratio, ETF flows and a whale tracker. No signup, no paywall." />
+<meta name="description" content="MarginPad covers the core Coinglass feature set for free: live liquidation maps and heatmap, a real-time liquidation feed from 9 exchanges with a free <a href="/liquidations/by-exchange/">per-venue breakdown</a>, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker. No signup for the data; the live heatmap is a free 5-minute preview, unlimited with Premium ($3.99/mo)." />
 <link rel="canonical" href="https://marginpad.io/coinglass-alternative/" />
 <meta property="og:title" content="Free Coinglass Alternative" />
-<meta property="og:description" content="MarginPad covers the core Coinglass feature set for free: live liquidation maps and heatmap, a real-time liquidation feed from 9 exchanges with a free <a href="/liquidations/by-exchange/">per-venue breakdown</a>, funding rates, open interest, long/short ratio, ETF flows and a whale tracker. No signup, no paywall." />
+<meta property="og:description" content="MarginPad covers the core Coinglass feature set for free: live liquidation maps and heatmap, a real-time liquidation feed from 9 exchanges with a free <a href="/liquidations/by-exchange/">per-venue breakdown</a>, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker. No signup for the data; the live heatmap is a free 5-minute preview, unlimited with Premium ($3.99/mo)." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://marginpad.io/coinglass-alternative/" />
 <meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Free Coinglass Alternative" />
-<meta name="twitter:description" content="MarginPad covers the core Coinglass feature set for free: live liquidation maps and heatmap, a real-time liquidation feed from 9 exchanges with a free <a href="/liquidations/by-exchange/">per-venue breakdown</a>, funding rates, open interest, long/short ratio, ETF flows and a whale tracker. No signup, no paywall." />
+<meta name="twitter:description" content="MarginPad covers the core Coinglass feature set for free: live liquidation maps and heatmap, a real-time liquidation feed from 9 exchanges with a free <a href="/liquidations/by-exchange/">per-venue breakdown</a>, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker. No signup for the data; the live heatmap is a free 5-minute preview, unlimited with Premium ($3.99/mo)." />
 <meta name="twitter:image" content="https://marginpad.io/assets/og.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Familjen+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+<link rel="stylesheet" href="/assets/fonts.css">
 <link rel="stylesheet" href="/assets/blog.css" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is MarginPad really a free alternative to Coinglass?","acceptedAnswer":{"@type":"Answer","text":"For the core derivatives dashboard — liquidation maps and heatmap, a live liquidation feed, funding rates, open interest, long/short ratio, ETF flows and a Hyperliquid whale tracker — yes, MarginPad is free with no account. Coinglass goes deeper on historical research and multi-exchange granularity, which is what its paid plans are for."}},{"@type":"Question","name":"Where does MarginPad liquidation data come from?","acceptedAnswer":{"@type":"Answer","text":"MarginPad runs its own collector subscribed to the public liquidation websockets of 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), and aggregates per-coin 24h totals from Coinglass. Real events and estimates are always labelled separately."}},{"@type":"Question","name":"Does MarginPad have a free liquidation API?","acceptedAnswer":{"@type":"Answer","text":"Yes — /api/v1/liquidations/recent, /api/v1/liquidations/live and /api/v1/clusters are keyless, CORS-enabled JSON endpoints at 60 requests/minute. Documentation at marginpad.io/free-crypto-api/."}},{"@type":"Question","name":"What does Coinglass do better?","acceptedAnswer":{"@type":"Answer","text":"Deeper multi-year history, more granular per-exchange breakdowns, options data and institutional research tooling. If you need those, Coinglass paid plans are worth it — MarginPad covers the live day-to-day view for free."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is MarginPad really a free alternative to Coinglass?","acceptedAnswer":{"@type":"Answer","text":"For the core derivatives dashboard — liquidation maps, a live liquidation feed, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker — yes, MarginPad is free with no account; the live heatmap is a free 5-minute preview and unlimited with Premium ($3.99/mo). Coinglass goes deeper on historical research and multi-exchange granularity, which is what its paid plans are for."}},{"@type":"Question","name":"Where does MarginPad liquidation data come from?","acceptedAnswer":{"@type":"Answer","text":"MarginPad runs its own collector subscribed to the public liquidation websockets of 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), and aggregates per-coin 24h totals from its own archive of those events. Real events and estimates are always labelled separately."}},{"@type":"Question","name":"Does MarginPad have a free liquidation API?","acceptedAnswer":{"@type":"Answer","text":"Yes — /api/v1/liquidations/recent, /api/v1/liquidations/live and /api/v1/clusters are keyless, CORS-enabled JSON endpoints at 60 requests/minute. Documentation at marginpad.io/free-crypto-api/."}},{"@type":"Question","name":"What does Coinglass do better?","acceptedAnswer":{"@type":"Answer","text":"Deeper multi-year history, more granular per-exchange breakdowns, options data and institutional research tooling. If you need those, Coinglass paid plans are worth it — MarginPad covers the live day-to-day view for free."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"Free Coinglass Alternative","item":"https://marginpad.io/coinglass-alternative/"}]}</script>
 <style>
 .alt-table{width:100%;border-collapse:collapse;margin:14px 0 8px;font-size:14px}
@@ -28,7 +44,9 @@
 .alt-table th{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;color:#9aa3ad;text-transform:uppercase}
 .alt-table td:nth-child(2){color:#c2f64a}
 </style>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Free Coinglass Alternative — Liquidation Maps, Funding & OI","url":"https://marginpad.io/coinglass-alternative/","dateModified":"2026-08-19T01:09:30.847Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+
+<script defer src="/assets/sentry.js"></script>
+</head>
 <body>
 <div class="wrap">
   <header>
@@ -39,26 +57,25 @@
   <article>
     <h1>Free Coinglass Alternative</h1>
     <div class="meta">Honest comparison · everything on the MarginPad side is free</div>
-    <p>If you use Coinglass mainly for liquidation maps, funding rates, open interest and the long/short ratio, MarginPad gives you that core set <strong>completely free, with no account</strong> — plus a real-time liquidation feed aggregated from 9 exchanges and a free JSON API for the same data. Coinglass remains the deeper research platform; this page shows exactly what you get free here and what still needs a paid plan there.</p>
+    <p>If you use Coinglass mainly for liquidation maps, funding rates, open interest and the long/short ratio, MarginPad gives you that core set <strong>free, with no account</strong> (the live heatmap runs as a free 5-minute preview; unlimited access is part of Premium at $3.99/mo) — plus a real-time liquidation feed aggregated from 9 exchanges and a free JSON API for the same data. Coinglass remains the deeper research platform; this page shows exactly what you get free here and what still needs a paid plan there.</p>
     <h2>Side-by-side</h2>
     <table class="alt-table"><thead><tr><th>Feature</th><th>MarginPad (free)</th><th>Coinglass</th></tr></thead><tbody>
-      <tr><td>Liquidation map / heatmap</td><td>Free — real events from exchange websockets + estimated clusters, all coins</td><td>Free tier limited; advanced heatmaps on paid plans</td></tr>
+      <tr><td>Liquidation map / heatmap</td><td>Free 5-minute preview, unlimited with Premium ($3.99/mo) — real events from exchange websockets + estimated clusters, all coins</td><td>Free tier limited; advanced heatmaps on paid plans</td></tr>
       <tr><td>Real-time liquidation feed</td><td>Free — 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex)</td><td>Available; depth varies by plan</td></tr>
       <tr><td>Funding rates scanner</td><td>Free — 160 USDT-perp markets</td><td>Free with limits; full history paid</td></tr>
       <tr><td>Open interest by coin</td><td>Free — live totals + 24h change</td><td>Free with limits; granular history paid</td></tr>
       <tr><td>Long/short ratio</td><td>Free — 20 majors</td><td>Free with limits</td></tr>
-      <tr><td>Bitcoin/Ethereum ETF flows</td><td>Free — daily net flows + AUM per fund</td><td>Free dashboard available</td></tr>
       <tr><td>Hyperliquid whale tracker</td><td>Free — live positions, leverage, liq price, PnL</td><td>Paid feature</td></tr>
       <tr><td>Liquidation data API</td><td>Free JSON API, no key, 60 req/min</td><td>Paid API plans</td></tr>
       <tr><td>Deep multi-year history & research tools</td><td>Not the focus — live data and trading practice</td><td>Stronger — this is what you pay Coinglass for</td></tr>
-      <tr><td>Price</td><td>Free, no signup</td><td>Free tier + paid subscriptions</td></tr>
+      <tr><td>Price</td><td>Free core, no signup; Premium $3.99/mo (unlimited heatmap, advanced indicators, AI)</td><td>Free tier + paid subscriptions</td></tr>
     </tbody></table>
     <p>The honest summary: <strong>Coinglass is the better pure-research terminal</strong> — longer history, more exchanges per metric, institutional tooling. <strong>MarginPad is the better free daily driver</strong> — the core derivatives dashboard plus a paper-trading terminal to actually act on what you see, and a keyless API to build with.</p>
     <h2>FAQ</h2>
     <h3>Is MarginPad really a free alternative to Coinglass?</h3>
-    <p>For the core derivatives dashboard — liquidation maps and heatmap, a live liquidation feed, funding rates, open interest, long/short ratio, ETF flows and a Hyperliquid whale tracker — yes, MarginPad is free with no account. Coinglass goes deeper on historical research and multi-exchange granularity, which is what its paid plans are for.</p>
+    <p>For the core derivatives dashboard — liquidation maps, a live liquidation feed, funding rates, open interest, long/short ratio and a Hyperliquid whale tracker — yes, MarginPad is free with no account; the live heatmap is a free 5-minute preview and unlimited with Premium ($3.99/mo). Coinglass goes deeper on historical research and multi-exchange granularity, which is what its paid plans are for.</p>
     <h3>Where does MarginPad liquidation data come from?</h3>
-    <p>MarginPad runs its own collector subscribed to the public liquidation websockets of 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), and aggregates per-coin 24h totals from Coinglass. Real events and estimates are always labelled separately.</p>
+    <p>MarginPad runs its own collector subscribed to the public liquidation websockets of 9 exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex), and aggregates per-coin 24h totals from its own archive of those events. Real events and estimates are always labelled separately.</p>
     <h3>Does MarginPad have a free liquidation API?</h3>
     <p>Yes — /api/v1/liquidations/recent, /api/v1/liquidations/live and /api/v1/clusters are keyless, CORS-enabled JSON endpoints at 60 requests/minute. Documentation at marginpad.io/free-crypto-api/.</p>
     <h3>What does Coinglass do better?</h3>

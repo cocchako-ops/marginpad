@@ -6,7 +6,7 @@
 const SHARED = {
   en: {
     navPaper: 'Paper Trade', navCharts: 'Charts', navStock: 'Stock simulator', navForex: 'Forex simulator', navIndex: 'Index simulator', navTools: 'Tools', openApp: 'Open app',
-    startFree: 'Start practicing free', openCharts: 'Open live charts', heroNote: 'Live market data · long & short · leverage, stop-loss & take-profit · runs in your browser',
+    startFree: 'Start practicing free', openCharts: 'Open live charts', openSim: 'Open trading simulator', heroNote: 'Live market data · long & short · leverage, stop-loss & take-profit · runs in your browser',
     howH: 'How it works', s1t: 'Pick a market', s1p: 'Choose one of the instruments below. A live candlestick chart loads instantly — the same data a real screen shows.', s2t: 'Go long or short', s2p: 'Set your size and leverage, then buy if you expect it to rise or sell if you expect it to fall. Add a stop-loss and take-profit if you want.', s3t: 'Watch live P&L', s3p: 'Your profit and loss updates in real time as the price moves. Close whenever you like and review the trade in your journal. Repeat, learn, improve.',
     cmpH: 'Simulator vs. real trading', cmpCol1: 'MarginPad simulator', cmpRisk: 'Money at risk', cmpRiskR: 'Your capital', cmpData: 'Prices & charts', cmpDataV: 'Live market data', cmpLev: 'Leverage & liquidation', cmpLevV: 'Real mechanics', cmpSign: 'Sign-up needed', cmpNo: 'No', cmpYes: 'Yes (broker)', cmpCost: 'Cost of a mistake', cmpCostV: 'A lesson', cmpCostR: 'Real loss',
     faqH: 'Frequently asked questions', ctaH: 'Start practicing in seconds', pickNote: 'Click any market to open it in the simulator with a live chart.',

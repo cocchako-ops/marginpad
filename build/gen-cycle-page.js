@@ -175,7 +175,7 @@ ${ld}
     <div class="bc-x"><h3>Altcoin Season &amp; BTC Dominance</h3><p>Altcoin Season Index tells you if capital has rotated out of Bitcoin into alts (75+ = altseason). Rising dominance = Bitcoin leading; falling dominance late in a cycle often precedes the blow-off alt phase.</p></div>
     <div class="bc-x"><h3>Fear &amp; Greed</h3><p>Crowd sentiment from 0 (extreme fear) to 100 (extreme greed). Extreme greed clusters near local tops; extreme fear near bottoms. Best used to confirm the slower models above.</p></div>
 
-    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Cycle models aggregated from Coinglass. For information only — not financial advice. No indicator predicts the future.</p>
+    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Cycle models computed in-house from price history and market data. For information only — not financial advice. No indicator predicts the future.</p>
   </article>
 
   <footer class="site-foot">
@@ -245,7 +245,7 @@ ${ld}
   }
   function load(){
     fetch('/api/cg/cycle',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(d){
-      var w=document.getElementById('bcWait');if(w)w.hidden=!!(d&&d.active);
+      var w=document.getElementById('bcWait');if(w)w.hidden=!!(d&&(d.active||(d.ind&&Object.keys(d.ind).length)));
       paint(d||{});
     }).catch(function(){paint({});});
   }

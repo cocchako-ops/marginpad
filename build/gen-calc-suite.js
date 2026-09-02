@@ -63,11 +63,11 @@ function shell(pg) {
 <meta property="og:title" content="${pg.title}" />
 <meta property="og:description" content="${pg.desc}" />
 <meta property="og:url" content="https://marginpad.io/${pg.slug}/" />
-<meta property="og:image" content="https://marginpad.io/assets/og-home.png" />
+<meta property="og:image" content="https://marginpad.io/assets/og.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="/assets/fonts.css" />
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="any" /><link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
 ${STYLE}
 <script type="application/ld+json">${JSON.stringify(appLd)}</script>
 <script type="application/ld+json">${JSON.stringify(crumbLd)}</script>

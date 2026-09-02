@@ -120,7 +120,7 @@
 </style>
 
 <script defer src="/assets/sentry.js"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Free Crypto Paper Trading API — Test Your Trading Bot","url":"https://marginpad.io/trading-api/","dateModified":"2026-08-18T22:39:02.836Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Free Crypto Paper Trading API — Test Your Trading Bot","url":"https://marginpad.io/trading-api/","dateModified":"2026-08-20T01:29:15.704Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
 <body>
 <div class="wrap">
   <header>
@@ -387,7 +387,7 @@ if (mySignal(price)) {  // your strategy here
     msg.textContent='Could not create a key — try again shortly.';}).catch(function(){msg.textContent='Network error — try again.';});}
   btn.addEventListener('click',function(){var rot=btn.dataset.rot==='1';if(rot&&!confirm('Rotate the key? Your bot must switch to the new one.'))return;getKey(rot);});
   window.addEventListener('mp-auth-change',function(){if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())getKey(false);});
-  fetch('/api/bot/key',{method:'GET',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){if(d&&d.key)showKey(d.key);}).catch(function(){});
+  if(window.mpAuth&&window.mpAuth.me&&window.mpAuth.me())fetch('/api/bot/key',{method:'GET',credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){if(d&&d.key)showKey(d.key);}).catch(function(){});
 })();
 </script>
 <script defer src="/assets/mp-auth.js"></script>

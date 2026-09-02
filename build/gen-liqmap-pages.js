@@ -26,10 +26,10 @@ const SNAP_N = Object.keys(SNAP).length;
 const SNAP_TOTSHARE = (function(){ var t = 0; for (var k in SNAP) t += SNAP[k].oi; return t > 0 && SNAP.BTC ? Math.round(SNAP.BTC.oi / t * 100) : 0; })();
 const SNAP_DATE = '17 August 2026';
 const faq = (name, sym) => [
-  { q: `What is a ${name} liquidation map?`, a: `A ${name} liquidation map shows where leveraged ${sym} positions are being forcibly closed. MarginPad plots real liquidation events from Binance, Bybit and OKX as bubbles on the ${sym} price chart, with a price-level histogram showing where they cluster.` },
+  { q: `What is a ${name} liquidation map?`, a: `A ${name} liquidation map shows where leveraged ${sym} positions are being forcibly closed. MarginPad plots real liquidation events from nine exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex) as bubbles on the ${sym} price chart, with a price-level histogram showing where they cluster.` },
   { q: `Is the ${sym} liquidation data real?`, a: `Yes — the bubbles and the right-edge histogram are real liquidation events streamed live from exchange websockets. The optional "Clusters" layer is a model estimated from open-interest changes and assumed leverage, clearly labelled as an estimate.` },
   { q: `How do I read the ${sym} liquidation map?`, a: `Each bubble is one liquidation at a price and time; bigger bubbles are larger positions. Red means longs were liquidated, green means shorts. The histogram on the right shows total liquidations at each price level — the densest bands are where most leverage was wiped out.` },
-  { q: `Is the ${name} liquidation map free?`, a: `Yes, it is completely free with no signup. You can switch coins, change the timeframe (1D/1W/1M/1Y), and toggle the real, estimated and theoretical layers.` },
+  { q: `Is the ${name} liquidation map free?`, a: `The map opens without a signup and the live heatmap runs free for a 5-minute preview; unlimited access is part of MarginPad Premium ($3.99/mo). You can switch coins, change the timeframe (1D/1W/1M/1Y), and toggle the real, estimated and theoretical layers.` },
 ];
 
 function page(sym, name) {
@@ -38,7 +38,7 @@ function page(sym, name) {
   const F = faq(name, sym);
   const faqLd = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[${F.map(f => `{"@type":"Question","name":${JSON.stringify(f.q)},"acceptedAnswer":{"@type":"Answer","text":${JSON.stringify(f.a)}}}`).join(',')}]}</script>`;
   const crumbLd = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://marginpad.io/"},{"@type":"ListItem","position":2,"name":"${sym} Liquidation Map","item":"${url}"}]}</script>`;
-  const desc = `Live ${name} (${sym}) liquidation map: real ${sym} liquidations from Binance, Bybit and OKX as bubbles plus a price-level histogram, with estimated clusters. Free, no signup.`;
+  const desc = `Live ${name} (${sym}) liquidation map: real ${sym} liquidations from nine exchanges as bubbles plus a price-level histogram, with estimated clusters. Free preview, no signup.`;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,11 +76,11 @@ ${crumbLd}
   <div class="crumb"><a href="/">Home</a> / ${sym} Liquidation Map</div>
   <article>
     <h1>${name} (${sym}) Liquidation Map</h1>
-    <div class="meta">Live liquidation data · Binance · Bybit · OKX</div>
-    <p><strong>What this is:</strong> a free ${name} liquidation map with no login and no paywall — it shows, in real time, where leveraged ${sym} traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short — sized by how big the position was — plotted directly on the ${sym} price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.</p>
+    <div class="meta">Live liquidation data · 9 exchanges</div>
+    <p><strong>What this is:</strong> a ${name} liquidation map you can open without an account (free 5-minute live preview, unlimited with Premium at $3.99/mo) — it shows, in real time, where leveraged ${sym} traders are getting forced out of their positions and where the next clusters sit relative to the current price. Every red bubble is a long liquidation, every green bubble a short — sized by how big the position was — plotted directly on the ${sym} price chart. A histogram on the right edge sums the liquidations at each price level, so you can see at a glance where the bodies are buried.</p>
     <div class="liqmap-cta"><a class="cta" href="${live}">Open the live ${sym} liquidation map →</a></div>
     <h2>What the ${sym} liquidation map shows</h2>
-    <p>MarginPad streams real liquidation events from three of the largest perpetual-futures venues — Binance, Bybit and OKX — over public websockets. They are normalized and shown three ways: <strong>bubbles</strong> at the exact price and time of each liquidation, a <strong>price-level histogram</strong> of where ${sym} liquidations cluster, and a scrolling <strong>ticker</strong> of the largest hits. You can switch the timeframe between 1 day, 1 week, 1 month and 1 year.</p>
+    <p>MarginPad streams real liquidation events from nine perpetual-futures venues — Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX and Bitfinex — over public websockets. They are normalized and shown three ways: <strong>bubbles</strong> at the exact price and time of each liquidation, a <strong>price-level histogram</strong> of where ${sym} liquidations cluster, and a scrolling <strong>ticker</strong> of the largest hits. You can switch the timeframe between 1 day, 1 week, 1 month and 1 year.</p>
     <h2>How to read it</h2>
     <p>High-leverage positions liquidate on tiny moves, so they sit close to the current ${sym} price; lower-leverage positions sit further away. Dense histogram bands act like magnets and as support or resistance — once a cluster is consumed, that level often flips. Red (long) clusters sit below price; green (short) clusters sit above. Hover any bubble for the exchange, side, size and time.</p>
     <h2>Real liquidations vs estimated clusters</h2>

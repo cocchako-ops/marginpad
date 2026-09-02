@@ -262,8 +262,8 @@ ${verdict}
     </table>
 
     <div class="cmpbtns">
-      <a class="cmpbtn" style="background:${a.accent};color:${a.fg}" href="${esc(a.ref)}" target="_blank" rel="sponsored noopener noreferrer">${fill(L.open, { X: a.name })}</a>
-      <a class="cmpbtn" style="background:${b.accent};color:${b.fg}" href="${esc(b.ref)}" target="_blank" rel="sponsored noopener noreferrer">${fill(L.open, { X: b.name })}</a>
+      <a class="cmpbtn" data-ex="${a.name}" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','${a.name}')}catch(e){}" style="background:${a.accent};color:${a.fg}" href="${esc(a.ref)}" target="_blank" rel="sponsored noopener noreferrer">${fill(L.open, { X: a.name })}</a>
+      <a class="cmpbtn" data-ex="${b.name}" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','${b.name}')}catch(e){}" style="background:${b.accent};color:${b.fg}" href="${esc(b.ref)}" target="_blank" rel="sponsored noopener noreferrer">${fill(L.open, { X: b.name })}</a>
     </div>
 
     ${feeWidget(a, b, lang)}

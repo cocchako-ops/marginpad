@@ -99,7 +99,7 @@ const ld = `<script type="application/ld+json">${JSON.stringify({
   '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
     { '@type': 'Question', name: 'What is a Hyperliquid whale tracker?', acceptedAnswer: { '@type': 'Answer', text: 'Hyperliquid is a decentralized perpetuals exchange where every position is on-chain and public. A whale tracker surfaces the largest open positions — their size, direction, leverage, entry, liquidation price and live unrealized profit or loss — so you can see exactly what the biggest traders are betting on in real time.' } },
     { '@type': 'Question', name: 'Why watch whale positions?', acceptedAnswer: { '@type': 'Answer', text: 'Large positions can move markets and their liquidation levels often act as magnets for price. Watching whether whales are net long or net short, and where their liquidation prices cluster, gives context that funding rates and open interest alone do not.' } },
-    { '@type': 'Question', name: 'Is the whale data live?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Positions and recent whale actions are aggregated from Coinglass and refresh about once a minute. Because Hyperliquid is on-chain, the sizes, leverage and liquidation prices are the real values, not estimates.' } }
+    { '@type': 'Question', name: 'Is the whale data live?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Positions and recent whale actions are read from the public on-chain API of Hyperliquid by the MarginPad whale tracker and refresh every few minutes. Because Hyperliquid is on-chain, the sizes, leverage and liquidation prices are the real values, not estimates.' } }
   ]
 })}</script>`;
 
@@ -194,7 +194,7 @@ ${ld}
     <h2>Whales are context, not a signal</h2>
     <p>A big position is a bet, not a guarantee — whales get liquidated too (watch the aggregate unrealized P&amp;L). Use this board the way you would <a href="/open-interest/">open interest</a> and <a href="/funding/">funding</a>: to understand positioning and where the pain points are, not as a reason to blindly copy. When many large shorts sit just above price, an upward squeeze becomes more likely; when big longs pile in with tight liquidations below, a flush can cascade.</p>
 
-    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Whale data aggregated from Coinglass / Hyperliquid. For information only — not financial advice.</p>
+    <p class="disc" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-faint);margin:18px 0 6px">Whale data read from Hyperliquid on-chain by the MarginPad whale tracker. For information only — not financial advice.</p>
   </article>
 
   <footer class="site-foot"><div class="foot-bar"><span>© MarginPad · <a href="/">marginpad.io</a> · Not financial advice</span></div></footer>
@@ -210,7 +210,7 @@ ${ld}
   function ago(ts){if(!ts)return '';var s=Math.max(0,(Date.now()-ts)/1000);if(s<60)return Math.floor(s)+'s ago';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';}
   var HL='https://hypurrscan.io/address/';
   function paint(d){
-    var w=document.getElementById('wlWait');if(w)w.hidden=!!(d&&d.active);
+    var w=document.getElementById('wlWait');if(w)w.hidden=!!(d&&(d.active||(d.positions&&d.positions.length)));
     if(!d||!d.active){var pe=document.getElementById('wlPos');if(pe&&!pe.dataset.done)pe.innerHTML='<div class="wl-al" style="justify-content:center;color:var(--ink-faint)">Whale feed is refreshing…</div>';return;}
     var g=d.agg||{};
     var lo=+g.longUsd||0,sh=+g.shortUsd||0,tot=lo+sh||1;

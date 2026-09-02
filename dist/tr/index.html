@@ -292,6 +292,8 @@
   .fng-big{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:46px;line-height:1;font-variant-numeric:tabular-nums;}
   .fng-cls{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-top:5px;}
   .fng-hist{font-size:11px;color:var(--faint);margin-top:9px;font-family:'Space Mono',monospace;position:relative;z-index:2;}
+  /* mobile: the full-width column left the cluster hugging the left half — scale up and fill (must come AFTER the base .fng rules; the shared 640px block sits EARLIER in the sheet and loses the cascade) */
+  @media(max-width:640px){.fng-wrap{justify-content:center;gap:26px;margin-top:16px;}.fng-g{flex:0 0 46%;max-width:190px;}.fng-big{font-size:64px;}.fng-cls{font-size:13px;margin-top:6px;}.fng-hist{font-size:12.5px;text-align:center;margin-top:12px;}}
 
   /* ---------- Tools ---------- */
   .tools-list{display:flex;flex-direction:column;margin-top:10px;position:relative;z-index:2;}
@@ -748,7 +750,7 @@
 </style>
 
 <script defer src="/assets/sentry.js"></script>
-<!--dm--><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Kripto Likidasyon ve Pozisyon Boyutu Hesaplayıcı — MarginPad","url":"https://marginpad.io/tr/","dateModified":"2026-08-19T00:33:27.203Z","isPartOf":{"@type":"WebSite","name":"MarginPad","url":"https://marginpad.io/"},"publisher":{"@type":"Organization","name":"MarginPad","url":"https://marginpad.io/"}}</script><!--/dm--></head>
+</head>
 <body>
 
 <div class="bgfx" aria-hidden="true"><div class="au au1"></div><div class="au au2"></div><div class="au au3"></div><canvas id="bgline"></canvas></div>
@@ -761,7 +763,7 @@
   <nav class="hnav">
     <a href="https://t.me/MarginPadBot" target="_blank" rel="noopener" class="hlink hbot"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Bot</a><a href="https://t.me/marginpad" target="_blank" rel="noopener" class="hlink htg" title="Join our Telegram group" aria-label="Telegram group"><svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg></a>
     <button type="button" class="hlink hjr" data-mytrades><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>İşlemlerim</button>
-    <button type="button" class="hlink hauth" data-auth-open aria-label="Giriş yap"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Giriş yap</span></button>
+    <button type="button" class="hlink hauth" data-auth-open aria-label="Sign in"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-auth-status>Giriş yap</span></button>
     <select class="lang" id="langSel" aria-label="Language">
       <option value="/">EN</option><option value="/es/">ES</option><option value="/de/">DE</option><option value="/fr/">FR</option><option value="/it/">IT</option><option value="/pt/">PT</option><option value="/pl/">PL</option><option value="/nl/">NL</option><option value="/tr/">TR</option><option value="/ru/">RU</option><option value="/id/">ID</option><option value="/hi/">HI</option><option value="/vi/">VI</option>
     </select>
@@ -776,7 +778,7 @@
   <div>
     <span class="eyebrow"><span class="d"></span>Ücretsiz kripto vadeli işlem araç seti — para yatırma yok, KYC yok</span>
     <h1>Gerçekmiş gibi işlem yap.<br>Risk <b>sıfır</b>.</h1>
-    <p class="sub">Gerçek canlı fiyatlarla pratik yap, 200'den fazla piyasayı tara, likidasyonları anlık izle, stratejilerini test et ve sıfırdan öğren — bir vadeli işlem yatırımcısının ihtiyaç duyduğu her şey, tek bir terminalde ve ücretsiz.</p>
+    <p class="sub">Practice with real live prices, screen 100+ markets, watch liquidations as they happen, backtest strategies and learn from zero — everything a futures trader needs, free in one terminal.</p>
     <div class="hero-ctas">
       <a class="btn-l" href="/paper-trade">Demo İşlemi Aç →</a>
       <a class="btn-g" href="#trade">Terminali keşfet ↓</a>
@@ -880,7 +882,7 @@
 </section>
 
 <div class="trust">
-  <div><b><em data-live="trades" data-cnt="16000" data-suf="+">0</em></b><span>demo işlem açıldı (30 gün)</span></div>
+  <div><b><em data-live="trades" data-cnt="16000" data-suf="+">0</em></b><span>practice trades opened (30 days)</span></div>
   <div><b><em data-live="markets" data-cnt="100" data-suf="+">0</em></b><span>canlı taranan piyasa</span></div>
   <div><b><em data-cnt="200" data-suf="+">0</em></b><span>rehber ve ders</span></div>
   <div><b><em data-cnt="13" data-suf="">0</em></b><span>dil</span></div>
@@ -1075,7 +1077,7 @@
     </a>
 
     <a class="tile s4" href="/blog/" style="--ac:#98a1ab">
-      <div class="t-kick">65'ten fazla rehber</div>
+      <div class="t-kick">100+ guides</div>
       <div class="t-title">Blog ve Rehberler</div>
       <div class="blog-q">"Kripto vadeli işlem yatırımcılarının %90'ı neden para kaybeder — ve o %10 nasıl olunur."</div>
       <div class="blog-tags"><span>Kaldıraç</span><span>Zarar durdur</span><span>Fonlama</span><span>Vergiler</span><span>Borsalar</span></div>
@@ -1085,8 +1087,8 @@
     <a class="tile s4 lime" href="/rewards/" style="--ac:#c2f64a">
       <div class="t-kick" style="color:#a9d33f"><span class="dot"></span> Ücretsiz USDT</div>
       <div class="t-title">Ödüller</div>
-      <div class="t-sub">Her 5 dakikada bir ücretsiz USDT talep et, hakkımızda yaptığın her paylaşımdan $1 kazan, 14 günlük ligi kazan. Gerçek USDT çek.</div>
-      <div class="rw-chip"><span class="cd"></span> HER 5 DAKİKADA BİR TALEP ET · PAYLAŞIM BAŞINA $1</div>
+      <div class="t-sub">Claim free USDT every 5 minutes, finish daily missions, win the 14-day league. Withdraw real USDT.</div>
+      <div class="rw-chip"><span class="cd"></span> CLAIM EVERY 5 MIN · DAILY MISSIONS</div>
       <div class="t-go">Kazanmaya başla <i>→</i></div>
     </a>
 
@@ -1105,7 +1107,7 @@
     <div><h5>Öğren ve kazan</h5><a href="/academy/">Akademi</a><a href="/blog/">Blog</a><a href="/news/">Haberler</a><a href="/rewards/">Ödüller</a><a href="https://t.me/MarginPadBot">Telegram</a><a href="#" onclick="return false" style="cursor:default;color:var(--faint)">Reklam bildirimi: referans linkleri</a></div>
   </div>
   <div class="foot-word">MARGINPAD</div>
-  <div class="foot-bottom"><span>© 2026 MarginPad · Yalnızca simüle edilmiş işlem · Yatırım tavsiyesi değildir</span><span><a href="/about/" style="display:inline;padding:0 12px 0 0">Hakkımızda</a><a href="/contact/" style="display:inline;padding:0 12px 0 0">İletişim</a><a href="/terms/" style="display:inline;padding:0 12px 0 0">Terms</a><a href="/privacy/" style="display:inline;padding:0">Gizlilik</a></span></div>
+  <div class="foot-bottom"><span>© 2026 MarginPad · Yalnızca simüle edilmiş işlem · Yatırım tavsiyesi değildir</span><span><a href="/tr/about/" style="display:inline;padding:0 12px 0 0">Hakkımızda</a><a href="/tr/contact/" style="display:inline;padding:0 12px 0 0">İletişim</a><a href="/terms/" style="display:inline;padding:0 12px 0 0">Terms</a><a href="/privacy/" style="display:inline;padding:0">Gizlilik</a></span></div>
 </footer>
 
 
@@ -1215,12 +1217,33 @@
   }).catch(function(){});
 
   // ---- leaderboard (Top ROE + Best win rate switcher) ----
-  var lbMode='green',lbData=null;
+  var lbMode='green',lbData=null,lbRoeRows=[];
+  /* Top-ROE ticket (owner 2026-08-20): the trade behind a rank. Only what the board stores is shown
+     (symbol, side, ROE, PnL) — lbbest holds no entry price or leverage, so none is invented. */
+  function lbTicket(t){
+    if(!t)return;
+    var up=(+t.roe>=0),side=String(t.side||'').toUpperCase();
+    var w=document.createElement('div');w.className='lb-tkm';
+    w.innerHTML='<div class="lb-tkm-c" role="dialog" aria-modal="true" aria-label="Trade behind this rank">'
+      +'<button type="button" class="lb-tkm-x" aria-label="Close">&#215;</button>'
+      +'<div class="lb-tkm-h">TRADE BEHIND THIS RANK</div>'
+      +'<div class="lb-tkm-who"><span class="r">#'+((t.rank||0)||'')+'</span> '+lbEsc(t.who||'trader')+'</div>'
+      +'<div class="lb-tkm-sym"><span class="s">'+lbEsc(t.symbol||'')+'</span><span class="sd '+(side==='SHORT'?'dn':'up')+'">'+lbEsc(side)+'</span></div>'
+      +'<div class="lb-tkm-roe '+(up?'up':'dn')+'">'+(up?'+':'')+(+t.roe).toFixed(2)+'%</div>'
+      +'<div class="lb-tkm-pnl">Profit <b class="'+(up?'up':'dn')+'">'+lbMoney(t.pnl)+'</b></div>'
+      +'<a class="lb-tkm-cta" href="/paper-trade?coin='+encodeURIComponent(String(t.symbol||'BTC'))+'">Open this market &rarr;</a>'
+      +'</div>';
+    function close(){try{w.remove();}catch(e){}document.removeEventListener('keydown',onKey);}
+    function onKey(e){if(e.key==='Escape')close();}
+    w.addEventListener('click',function(e){if(e.target===w||(e.target.closest&&e.target.closest('.lb-tkm-x')))close();});
+    document.addEventListener('keydown',onKey);
+    document.body.appendChild(w);
+  }
   function lbEsc(x){return String(x).replace(/</g,'&lt;');}
   function lbMoney(x){x=+x||0;var s=x<0?'-':'+';x=Math.abs(x);return s+'$'+(x>=1000?Math.round(x).toLocaleString('en-US'):x.toFixed(2));}
   function lbMoneyC(x){x=+x||0;var s=x<0?'-':'+';var a=Math.abs(x),u='',d=a;if(a>=1e9){d=a/1e9;u='B';}else if(a>=1e6){d=a/1e6;u='M';}else if(a>=1e3){d=a/1e3;u='K';}var str=u?(d>=100?Math.round(d):d.toFixed(1))+u:(a>=1?Math.round(a).toString():a.toFixed(2));return s+'$'+str;}
   function lbPctC(x){x=+x||0;var s=x<0?'-':'+';var a=Math.abs(x),u='',d=a;if(a>=1e6){d=a/1e6;u='M';}else if(a>=1e3){d=a/1e3;u='K';}var str=u?(d>=100?Math.round(d):d.toFixed(1))+u:Math.round(a).toString();return s+str+'%';}
-  function lbRow(i,who,mid,val,cls){var med=i<3?' m'+(i+1):'';return '<div class="lb-r'+(i===0?' top':'')+'" data-lbu="'+lbEsc(who||'')+'" role="button" tabindex="0"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who"><span data-lvln="'+lbEsc(who||'')+'"></span>'+lbEsc(who||'trader')+'<span data-lpro="'+lbEsc(who||'')+'"></span></span><span class="lb-pair">'+mid+'</span><span class="lb-roe '+(cls||'')+'">'+val+'</span></div>';}
+  function lbRow(i,who,mid,val,cls,tk){var med=i<3?' m'+(i+1):'';return '<div class="lb-r'+(i===0?' top':'')+'" data-lbu="'+lbEsc(who||'')+'" role="button" tabindex="0"><span class="lb-rank'+med+'">'+(i+1)+'</span><span class="lb-who"><span data-lvln="'+lbEsc(who||'')+'"></span>'+lbEsc(who||'trader')+'<span data-lpro="'+lbEsc(who||'')+'"></span></span><span class="lb-pair">'+mid+'</span><span class="lb-roe '+(cls||'')+'">'+val+'</span>'+(tk==null?'':'<button type="button" class="lb-tk" data-lbtk="'+tk+'" title="Trade behind this rank" aria-label="Trade behind this rank"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2.5a2.5 2.5 0 0 0 0 5V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2.5a2.5 2.5 0 0 0 0-5z"/><path d="M14 6v2M14 11v2M14 16v2"/></svg></button>')+'</div>';}
   function lbRender(){
     var d=lbData,el=document.getElementById('lbBoard'),note=document.getElementById('lbNote');if(!el)return;
     if(note){
@@ -1229,8 +1252,8 @@
         note.innerHTML='<b>'+(lbMode==='green'?'Green days':lbMode==='roe'?'Top ROE':lbMode==='xp'?'Top XP':'Best win rate')+'</b> pays the top 5 in real USDT every 14-day season — climb it.'+(lbMode==='wr'?' Ranked by <b>win rate weighted by trades played</b> — more games make your % count for more, so a 45W-3L can rank above a higher % on fewer trades. Min 20 closed trades.':'')+' <button type="button" class="lbr-open lbr-inline" data-lbr="1">Kuralları gör</button>';}}
     if(lbMode==='following'){ lbRenderFollowing(el); return; }
     if(lbMode==='roe'){
-      var rt=((d&&d.top)||[]).filter(function(t){return +t.roe>0;}).slice(0,15);
-      el.innerHTML=rt.length?rt.map(function(t,i){var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');return lbRow(i,t.who,pair,'+'+Math.round(+t.roe).toLocaleString('en-US')+'%','up');}).join('')
+      var rt=((d&&d.top)||[]).filter(function(t){return +t.roe>0;}).slice(0,15);lbRoeRows=rt;
+      el.innerHTML=rt.length?rt.map(function(t,i){var pair=(t.symbol?lbEsc(t.symbol):'')+(t.side?' '+t.side:'');return lbRow(i,t.who,pair,'+'+Math.round(+t.roe).toLocaleString('en-US')+'%','up',t.symbol?i:null);}).join('')
         :'<div class="lb-empty">No winning trades yet this season — open a paper trade and close it in profit to top the board.</div>';
       lbAfter(el);return;
     }
@@ -1342,6 +1365,8 @@
     if(du){var un=du.getAttribute('data-lbduel');lbCloseModal();if(window.mpAuth&&window.mpAuth.duel)window.mpAuth.duel(un);else if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
     var db=e.target.closest&&e.target.closest('[data-lbdm]');
     if(db){var dn=db.getAttribute('data-lbdm');lbCloseModal();if(window.mpAuth&&window.mpAuth.dm)window.mpAuth.dm(dn);else if(window.mpAuth&&window.mpAuth.open)window.mpAuth.open();return;}
+    var tkb=e.target.closest&&e.target.closest('[data-lbtk]');
+    if(tkb){e.preventDefault();e.stopPropagation();lbTicket(lbRoeRows[+tkb.getAttribute('data-lbtk')]);return;}
     var row=e.target.closest&&e.target.closest('[data-lbu]');
     if(row&&!e.target.closest('[data-auth-open]')){lbOpenProfile(row.getAttribute('data-lbu'));}
   });
@@ -1595,6 +1620,9 @@
   function cntUp(el){var tgt=+el.getAttribute('data-cnt'),suf=el.getAttribute('data-suf')||'',t0=null;
     function step(t){if(!t0)t0=t;var p=Math.min(1,(t-t0)/1100);p=1-Math.pow(1-p,3);el.textContent=Math.round(tgt*p).toLocaleString('en-US')+(p>=1?suf:'');if(p<1)requestAnimationFrame(step);}
     requestAnimationFrame(step);}
+  // Replace the written-in figures with what the site actually measures, before anything animates. These
+  // numbers used to be typed into the markup and drifted from the truth in both directions, with nothing in
+  // the build able to notice. The static values stay as the floor: if the fetch fails the row still renders.
   function cntStart(){
     if('IntersectionObserver' in window){
       var cio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){cntUp(e.target);cio.unobserve(e.target);}});},{threshold:.5});
@@ -1703,7 +1731,7 @@
 </script>
 
 <aside id="jrDrawer" class="jr-drawer" hidden aria-label="Trade journal">
-  <button class="jr-grab" data-jr-close type="button" aria-label="Geri"><span>Geri</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+  <button class="jr-grab" data-jr-close type="button" aria-label="Back"><span>Geri</span><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
   <div class="jr-head"><span class="jr-title"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:8px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>İşlemlerim</span><a class="jr-stats-lnk" href="/trading-journal/" title="Full trading stats"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg>İstatistikler</a><button id="jrClose" class="jr-x" type="button" aria-label="Close">✕</button></div>
   <div class="jr-stats" id="jrStats"></div>
   <div class="jr-list" id="jrList"></div>
@@ -1803,6 +1831,28 @@
 .lbrm-sec ul{margin:4px 0 0;padding-left:17px;color:#c7ced6;font-size:12.5px;line-height:1.6}
 .lbrm-ex{margin-top:8px;border-left:3px solid rgba(255,215,90,.55);background:rgba(255,255,255,.025);border-radius:0 9px 9px 0;padding:7px 11px;font-size:12px;color:#9aa3ad;line-height:1.55}
 .lbrm-ex b{color:#ffd75a}
+
+.lb-tk{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;margin-left:8px;padding:0;border:1px solid rgba(255,255,255,.14);border-radius:7px;background:rgba(255,255,255,.04);color:#8b95a1;cursor:pointer;transition:color .15s,border-color .15s,background .15s}
+.lb-tk:hover{color:#c2f64a;border-color:rgba(194,246,74,.5);background:rgba(194,246,74,.10)}
+.lb-tk:focus-visible{outline:2px solid #c2f64a;outline-offset:2px}
+.lb-tkm{position:fixed;inset:0;z-index:9999;background:rgba(6,8,11,.82);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px}
+.lb-tkm-c{position:relative;width:100%;max-width:330px;background:linear-gradient(180deg,#12161c,#0c0f13);border:1px solid #262e3a;border-radius:16px;padding:22px 20px 20px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.lb-tkm-x{position:absolute;top:8px;right:10px;width:30px;height:30px;border:0;background:none;color:#7f8893;font-size:22px;line-height:1;cursor:pointer;border-radius:8px}
+.lb-tkm-x:hover{color:#e9e7df;background:rgba(255,255,255,.06)}
+.lb-tkm-h{font-family:'Space Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:.2em;color:#5c656f}
+.lb-tkm-who{font-family:'Space Mono',monospace;font-size:13px;color:#cdd3da;margin-top:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-tkm-who .r{color:#ffd75a;font-weight:700}
+.lb-tkm-sym{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:14px}
+.lb-tkm-sym .s{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;color:#e9e7df}
+.lb-tkm-sym .sd{font-family:'Space Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:.1em;padding:4px 9px;border-radius:6px}
+.lb-tkm-sym .sd.up{color:#2ebd85;background:rgba(46,189,133,.14)}
+.lb-tkm-sym .sd.dn{color:#ff5a4d;background:rgba(255,90,77,.14)}
+.lb-tkm-roe{font-family:'Space Mono',monospace;font-size:34px;font-weight:700;margin-top:12px;line-height:1.1}
+.lb-tkm-roe.up{color:#2ebd85}.lb-tkm-roe.dn{color:#ff5a4d}
+.lb-tkm-pnl{font-family:'Space Mono',monospace;font-size:12.5px;color:#7f8893;margin-top:5px}
+.lb-tkm-pnl b.up{color:#2ebd85}.lb-tkm-pnl b.dn{color:#ff5a4d}
+.lb-tkm-cta{display:block;margin-top:18px;padding:12px 18px;border-radius:11px;background:linear-gradient(180deg,#d3ff5e,#a6e02a);color:#0a0b0d;font-weight:800;font-size:14px;text-decoration:none}
+.lb-tkm-cta:hover{filter:brightness(1.05);color:#0a0b0d}
 </style>
 <div class="lbrm" id="lbRulesM" hidden>
   <div class="lbrm-p">

@@ -232,6 +232,62 @@ ${faqLd}
 `;
 }
 
+// /guides/ hub — every guide's breadcrumb linked here while the URL was a 404 (2026-09-02 audit: 13 pages → one dead hub).
+function hubPage() {
+  const L = EN_SHARED;
+  const url = 'https://marginpad.io/guides/';
+  const items = GUIDES.map(g => `<a class="card" href="/guides/${g.slug}/" style="display:block;padding:14px 16px;border:1px solid #232a34;border-radius:12px;text-decoration:none;color:inherit;margin:0 0 10px"><b style="display:block;font-size:16px;margin-bottom:4px">${g.title}</b><span style="color:#8d96a3;font-size:14px">${g.desc}</span></a>`).join('\n      ');
+  const listLd = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"CollectionPage","name":"Crypto futures guides","url":"${url}","hasPart":[${GUIDES.map(g => `{"@type":"Article","name":${JSON.stringify(g.title)},"url":"https://marginpad.io/guides/${g.slug}/"}`).join(',')}]}</script>`;
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>${GTAG}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Crypto Futures Guides — Liquidation, Leverage, Funding, Margin | MarginPad</title>
+<meta name="description" content="Short, tool-focused guides to crypto futures: liquidation price, position size, leverage, funding rates, isolated vs cross margin, mark price and more — each with the calculator or live data page to use next." />
+<link rel="canonical" href="${url}" />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#0a0b0d" />
+<meta property="og:title" content="Crypto Futures Guides | MarginPad" />
+<meta property="og:description" content="How-to guides for crypto futures trading: liquidation, leverage, funding, margin, PnL — with the free tool to use next." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="${url}" />
+<meta property="og:image" content="https://marginpad.io/assets/og/coin.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="stylesheet" href="/assets/fonts.css" />
+<link rel="stylesheet" href="/assets/blog.css" />
+${listLd}
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/">MARGIN<b style="color:#c2f64a">PAD</b></a>
+    <nav class="nav"><a href="/markets/">${L.navMarkets}</a><a href="/screener">${L.navScreener}</a><a href="/">${L.navTools}</a><a href="/blog/">${L.navBlog}</a></nav>
+  </header>
+  <div class="crumb"><a href="/">${L.crumbHome}</a> / ${L.crumbGuides}</div>
+  <article>
+    <h1>Crypto futures guides</h1>
+    <p class="lead">Short answers to the questions that cost beginners money — each one ends with the free tool or live data page to use next.</p>
+    <div style="margin:18px 0 8px">
+      ${items}
+    </div>
+    <p style="color:var(--ink-faint);font-size:13px;margin-top:22px">${L.footNote}</p>
+  </article>
+  <footer>
+    <span>© 2026 MarginPad</span>
+    <span><a href="/markets/">${L.navMarkets}</a> · <a href="/liquidations/">${L.navLiq}</a> · <a href="/funding/">${L.navFunding}</a> · <a href="/screener">${L.navScreener}</a> &middot; <a href="/terms/">Terms</a></span>
+  </footer>
+</div>
+</body>
+</html>
+`;
+}
+fs.mkdirSync(path.join(DIST, 'guides'), { recursive: true });
+fs.writeFileSync(path.join(DIST, 'guides', 'index.html'), hubPage());
+console.log('wrote /guides/ hub');
+
 let n = 0;
 for (const g of GUIDES) {
   // English at /guides/<slug>/

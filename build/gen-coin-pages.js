@@ -28,6 +28,9 @@ const COINS = [
   { sym: 'APT', name: 'Aptos', slug: 'apt', entry: 7, lev: 50, blurb: 'Aptos perps can move fast on unlock schedules and ecosystem news.' },
   { sym: 'ICP', name: 'Internet Computer', slug: 'icp', entry: 9, lev: 50, blurb: 'Internet Computer is a high-volatility large-cap — give liquidation extra room.' },
   { sym: 'PEPE', name: 'Pepe', slug: 'pepe', entry: 0.0000095, lev: 50, blurb: 'Pepe is one of the most volatile meme perps; high leverage here is a fast way to get liquidated.' },
+  { sym: 'BONK', name: 'Bonk', slug: 'bonk', entry: 0.00002, lev: 50, blurb: 'Bonk is a Solana meme perp with thin order books and violent intraday ranges — a small adverse move at high leverage is a liquidation, not a drawdown.' },
+  { sym: 'FLOKI', name: 'Floki', slug: 'floki', entry: 0.0001, lev: 50, blurb: 'Floki trades like the other meme perps: liquidity comes and goes with attention, so liquidation clusters build fast on both sides.' },
+  { sym: 'ORDI', name: 'ORDI', slug: 'ordi', entry: 12, lev: 50, blurb: 'ORDI, the Bitcoin BRC-20 token, follows BTC with a much bigger beta — the liquidation price sits closer than the leverage alone suggests.' },
   { sym: 'FIL', name: 'Filecoin', slug: 'fil', entry: 4.5, lev: 75, blurb: 'Filecoin perps trend with storage-narrative cycles and can swing hard.' },
   { sym: 'ARB', name: 'Arbitrum', slug: 'arb', entry: 0.65, lev: 75, blurb: 'Arbitrum moves with L2 flows and unlocks; liquidity is solid across exchanges.' },
   { sym: 'OP', name: 'Optimism', slug: 'op', entry: 1.5, lev: 75, blurb: 'Optimism perps track the broader L2 sector and react to airdrop/unlock events.' },
@@ -206,7 +209,7 @@ function coinPage(c) {
     </ul>
 
     <h2>See ${c.sym} liquidations happen live</h2>
-    <p>Numbers are one thing; watching real leverage get wiped is another. The <a href="/liquidations/">live liquidations feed</a> and the <a href="/rekt/">Rekt ticker</a> show ${c.sym} longs and shorts being force-closed across Binance, Bybit and OKX in real time — a spike in long liquidations often marks local capitulation, a spike in shorts a squeeze. Then rehearse the trade with zero risk on the <a href="/paper-trade?coin=${c.sym}">${c.sym} paper-trading terminal</a> at the live price, and screen the whole market on the <a href="/screener">futures screener</a>.</p>
+    <p>Numbers are one thing; watching real leverage get wiped is another. The <a href="/liquidations/">live liquidations feed</a> and the <a href="/rekt/">Rekt ticker</a> show ${c.sym} longs and shorts being force-closed across nine exchanges (Binance, Bybit, OKX, Hyperliquid, Gate, HTX, dYdX, BitMEX, Bitfinex) in real time — a spike in long liquidations often marks local capitulation, a spike in shorts a squeeze. Then rehearse the trade with zero risk on the <a href="/paper-trade?coin=${c.sym}">${c.sym} paper-trading terminal</a> at the live price, and screen the whole market on the <a href="/screener">futures screener</a>.</p>
 
     <div class="mprl"><div class="mprl-t">TRADE ${c.sym} FOR REAL</div><div class="mprl-row">
       <a class="mprl-c mprl-by" data-ex="Bybit" href="https://www.bybit.com/invite?ref=LZKBERJ" target="_blank" rel="sponsored noopener noreferrer"><span class="mprl-k">Bybit</span><span class="mprl-d">${c.sym} futures · up to ${c.lev}× · deep liquidity</span><span class="mprl-a">&rarr;</span></a>

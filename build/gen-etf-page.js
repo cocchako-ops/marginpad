@@ -5,6 +5,11 @@ const OUT = path.join(__dirname, '..', 'dist', 'etf-flows');
 
 const GTAG = '\n<!-- Google tag (gtag.js) -->\n<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18230384038"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'AW-18230384038\');</script>';
 
+// TEMP 2026-08-21 (owner decision, no-coinglass test period): the page has no data source, so it is
+// HIDDEN — noindex + kept OUT of the sitemap — but NOT deleted; it still resolves with its honest
+// empty state. Flip to false and rerun to restore indexing the day it has real data again.
+const HIDDEN = true;
+
 const url = 'https://marginpad.io/etf-flows/';
 const title = 'Bitcoin & Ethereum ETF Flows — Daily Spot ETF Inflows & AUM';
 const desc = 'Live spot Bitcoin and Ethereum ETF flows: daily net inflows/outflows, total assets under management, and a per-fund breakdown (IBIT, FBTC, ETHA and more). Free, no signup, updated daily.';
@@ -87,7 +92,7 @@ let html = `<!DOCTYPE html>
 <meta name="description" content="${desc}" />
 <meta name="keywords" content="${kw}" />
 <link rel="canonical" href="${url}" />
-<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="robots" content="${HIDDEN ? 'noindex, follow' : 'index, follow, max-image-preview:large'}" />
 <meta name="theme-color" content="#0a0b0d" />
 <meta property="og:title" content="${title}" />
 <meta property="og:description" content="${desc}" />
@@ -221,5 +226,8 @@ try {
   const smp = path.join(__dirname, '..', 'dist', 'sitemap.xml');
   let sm = fs.readFileSync(smp, 'utf8');
   const today = new Date().toISOString().slice(0, 10);
-  if (sm.indexOf(url) === -1) { sm = sm.replace('</urlset>', `  <url><loc>${url}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>\n</urlset>`); fs.writeFileSync(smp, sm); console.log('sitemap: +/etf-flows/'); }
+  if (HIDDEN) { // hidden: make sure the entry is ABSENT, so a full rebuild cannot resurrect it
+    const m = sm.match(new RegExp('\\s*<url><loc>' + url.replace(/[/.]/g, '\\$&') + '</loc>.*?</url>'));
+    if (m) { sm = sm.replace(m[0], ''); fs.writeFileSync(smp, sm); console.log('sitemap: -/etf-flows/ (hidden)'); }
+  } else if (sm.indexOf(url) === -1) { sm = sm.replace('</urlset>', `  <url><loc>${url}</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>\n</urlset>`); fs.writeFileSync(smp, sm); console.log('sitemap: +/etf-flows/'); }
 } catch (e) { console.log('sitemap update skipped:', e.message); }

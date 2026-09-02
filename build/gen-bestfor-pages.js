@@ -222,7 +222,7 @@ function casePage(c, lang) {
     return `<div class="rankcard${i === 0 ? ' top' : ''}">${i === 0 ? `<span class="tag-best">${L.tagBest}</span>` : ''}
       <div class="rk-no">${i + 1}</div>
       <div class="rk-body"><h3><span class="rk-mark" style="background:${e.accent};color:${e.fg}">${e.name[0]}</span>${e.name}</h3><p>${offer}</p>
-      <a class="rk-cta" href="${e.ref}" target="_blank" rel="sponsored noopener nofollow" style="background:${e.accent};color:${e.fg}">${fill(L.openCta, { X: e.name })}</a></div>
+      <a class="rk-cta" data-ex="${e.name}" onclick="try{window.__mpTrack&&window.__mpTrack('exchange','${e.name}')}catch(ev){}" href="${e.ref}" target="_blank" rel="sponsored noopener nofollow" style="background:${e.accent};color:${e.fg}">${fill(L.openCta, { X: e.name })}</a></div>
       <div class="rk-metric"><b>${c.fmt(e[c.metricKey])}</b><span>${metricLabel}</span></div>
     </div>`;
   }).join('\n');
