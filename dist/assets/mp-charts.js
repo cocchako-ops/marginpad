@@ -1298,7 +1298,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
       var _lng=qtSide==='long',_sl2=sl,_tp2=tp;
       if(isFinite(_sl2)&&((_lng&&_sl2>=p)||(!_lng&&_sl2<=p)))_sl2=NaN;
       if(isFinite(_tp2)&&((_lng&&_tp2<=p)||(!_lng&&_tp2>=p)))_tp2=NaN;
-      if(window.mpSrvOpen){window.mpSrvOpen({sym:sym,side:qtSide,lev:lev,margin:amt,sl:isFinite(_sl2)?_sl2:null,tp:isFinite(_tp2)?_tp2:null},function(t){open(p,t);},function(){open(p);});}
+      if(window.mpSrvOpen){window.mpSrvOpen({sym:sym,side:qtSide,lev:lev,margin:amt,sl:isFinite(_sl2)?_sl2:null,tp:isFinite(_tp2)?_tp2:null},function(t){open(p,t);},function(err){if(err&&err.blocked)return;open(p);});}
       else open(p);};
     if(entry>0)openVia(entry);
     else{msg.style.color='#9aa3ad';msg.textContent='Fetching price…';fetch('/api/price?symbol='+encodeURIComponent(sym)+window.__mpPQ('qt',sym),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){if(j&&j.price>0)openVia(+j.price);else{msg.style.color='#ff6258';msg.textContent='Could not get price. Try again.';}});} }

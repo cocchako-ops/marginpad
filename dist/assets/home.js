@@ -1171,6 +1171,7 @@ window.mpLevWarn=function(lev){try{lev=+lev;if(!(lev>=500))return;var now=Date.n
         .then(function(r){return r.json();})
         .then(function(d2){clearTimeout(_to);
           if(d2&&d2.ok&&d2.position&&d2.position.id){var t=d2.position;t.trail=trail;t.be=be;t.hwm=t.entry;t.feeRate=feeRate;t.rr=isFinite(rr)?rr:null;_finishOpen(t);}
+          else if(d2&&d2.error==='market_closed'){_say(d2.message||'This market is closed right now.');} // the server refused: no local fallback, the position does not exist
           else{_finishOpen(_tLocal);}
         })
         .catch(function(){clearTimeout(_to);_finishOpen(_tLocal);});
@@ -2631,7 +2632,7 @@ if(/^\/charts\/?$/.test(location.pathname)){ window.mpLoadCharts(); } /* direct 
     try{if(window.__mpTrack)window.__mpTrack('paper',sym+' '+side+' '+lev+'x');}catch(e){} /* every open shows in ops Live activity (this quick-tap path was silent) */
     if(goEl){goEl.textContent=(window.mpT&&window.mpT('mtOpened'))||'Position opened ✓';setTimeout(function(){goEl.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';},1300);}
     try{var _pp=document.getElementById('mtpPnl');if(_pp){var _pr=_pp.getBoundingClientRect();if(_pr.bottom>window.innerHeight-76||_pr.top<0)setTimeout(function(){_pp.scrollIntoView({behavior:'smooth',block:'center'});},380);}}catch(e){}/* UX: bring the live P&L pill into view right after opening — the payoff moment was below the fold */};
-    if(window.mpSrvOpen){window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt},function(t){_finMt(t);},function(){_finMt(pos);});}else{_finMt(pos);}}
+    if(window.mpSrvOpen){window.mpSrvOpen({sym:sym,side:side,lev:L,margin:amt},function(t){_finMt(t);},function(err){if(err&&err.blocked){if(goEl)goEl.textContent=(window.mpT&&window.mpT('mtOpen'))||'Open demo trade';return;}_finMt(pos);});}else{_finMt(pos);}}
   // ---- mini chart: Paper-Trade candlestick engine + a live LIQ preview (thin lines, tiny tag, blurred see-through red/green zone) ----
   var chartEl=document.getElementById('mtpChart'),mtCv=null,mtCtx2=null,mtBars=[],mtChartSym=null,mtTagEl=null,_mlgp=0,_mrej=0,_mReload=0,mtReady=false;
   function sizeChart(){if(!chartEl||!term)return;var mtp=term.querySelector('.mtp');if(mtp&&mtp.offsetHeight>120)chartEl.style.height=Math.round(mtp.offsetHeight*1.2)+'px';}
@@ -3040,7 +3041,7 @@ window.mpSrvOpen=function(payload,ok,fail){
   var to=setTimeout(function(){try{if(ac)ac.abort();}catch(e){}},1400);
   fetch('/api/trade/open',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',signal:ac?ac.signal:undefined,body:JSON.stringify(payload)})
     .then(function(r){return r.json();})
-    .then(function(d){clearTimeout(to);if(d&&d.ok&&d.position&&d.position.id)ok(d.position);else fail();})
+    .then(function(d){clearTimeout(to);if(d&&d.ok&&d.position&&d.position.id)ok(d.position);else if(d&&d.error==='market_closed'){try{if(window.mpLimitToast)window.mpLimitToast(d.message||'This market is closed right now.');}catch(e){}fail({blocked:true,message:d.message||''});}else fail();})
     .catch(function(){clearTimeout(to);fail();});
 };
 /* Daily-visit streak + comeback hook — pure client (localStorage), reaches every visitor. Builds a daily-return habit; window.mpStreak is exposed for the faucet/league to read. */

@@ -545,7 +545,7 @@ window.__mpWsSeen=window.__mpWsSeen||{};window.__mpPQ=window.__mpPQ||function(ct
         setTimeout(function(){if(document.body.contains(g))g.textContent=mcT('mtOpen','Open demo trade');},1600);
         };
         var _tr9=(isFinite(tr)&&tr>0)?tr:null,_be9=(isFinite(be)&&be>0)?be:null;
-        if(window.mpSrvOpen){window.mpSrvOpen({sym:tSym,side:side,lev:lev,margin:amt,sl:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null},function(t){t.trail=_tr9;t.be=_be9;t.hwm=null;_finMc(t);},function(){_finMc(_locT);});}
+        if(window.mpSrvOpen){window.mpSrvOpen({sym:tSym,side:side,lev:lev,margin:amt,sl:isFinite(sl)?sl:null,tp:isFinite(tp)?tp:null},function(t){t.trail=_tr9;t.be=_be9;t.hwm=null;_finMc(t);},function(err){if(err&&err.blocked){try{var g=q('mtrGo');if(g)g.textContent=mcT('mtOpen','Open demo trade');}catch(e){}return;}_finMc(_locT);});}
         else{_finMc(_locT);}
         panes.forEach(function(pn){if(pn.trades)try{drawTrades(pn);}catch(e){}});
       });
