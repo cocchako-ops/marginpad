@@ -12368,6 +12368,7 @@ export default {
         try { await setPremiumDO(env, { username: add }, Date.now() + days * 86400000); } catch (e) {} // timed premium on the users.premium column (auto-expires)
         await setName(add, true); // glossy gold name
         try { await evPush(env, request, 'premgrant', add + ' ' + days + 'd', ''); } catch (e) {} // ops feed: owner granted premium
+        try { const w9 = await usersDO(env, '/xpdiag', { username: add }); if (w9 && w9.user && w9.user.id) await revokeUserSessions(env, String(w9.user.id)); } catch (e) {} // the paid path drops the member's sessions so Premium shows at once; a manual grant left the stale premium=false session in place until it expired — a granted member wrote in asking why they were "not Premium" (2026-09-02)
       }
       if (rem) {
         roster = roster.filter(x => x !== rem);
