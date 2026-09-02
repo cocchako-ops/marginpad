@@ -82,7 +82,7 @@ function getStatus() {
 }
 
 function aggregateTick() { try { const n = storage.aggregateNew(); if (n) log.info('aggregated', { rows: n }); } catch (e) { log.error('aggregate failed', { e: String(e) }); } }
-function pruneTick() { try { const n = storage.prune(config.retentionDays); if (storage.pruneOi) storage.pruneOi(config.retentionDays); if (n) log.info('pruned old raw', { rows: n }); } catch (e) { log.error('prune failed', { e: String(e) }); } }
+function pruneTick() { try { const n = storage.prune(config.retentionDays); const oi = storage.pruneOi ? storage.pruneOi(config.retentionDays) : 0; const agg = storage.pruneAgg ? storage.pruneAgg(config.aggRetentionDays || 90) : 0; if (n || oi || agg) log.info('pruned', { raw: n, oi, agg }); } catch (e) { log.error('prune failed', { e: String(e) }); } }
 
 async function main() {
   log.info('starting collector', { symbols: config.symbols.length, exchanges: collectors.map((c) => c.name) });

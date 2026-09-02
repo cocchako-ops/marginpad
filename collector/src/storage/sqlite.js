@@ -120,7 +120,12 @@ export function createSqliteStorage(path, opts = {}) {
   function prune(days) {
     const cut = Date.now() - days * 86400000;
     const r = db.prepare('DELETE FROM liquidations WHERE ts<?').run(cut);
-    return Number(r.changes); // aggregates kept indefinitely
+    return Number(r.changes);
+  }
+  // 5-min aggregates were kept forever (196MB by 2026-09-02, growing ~7MB/day, no reader ever asks past the 30d window).
+  function pruneAgg(days) {
+    ensure();
+    return Number(db.prepare('DELETE FROM agg_5m WHERE win_start<?').run(Date.now() - days * 86400000).changes);
   }
 
   function stats() {
@@ -199,7 +204,7 @@ export function createSqliteStorage(path, opts = {}) {
   }
 
   return { migrate, insert, aggregateNew, histogram, live, feed, prune, stats,
-    insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi,
+    insertOi, latestOi, addCluster, decayClusters, consumeClusters, getClusters, pruneOi, pruneAgg,
     saveOiSnap, oi24h, liqBySymbol, pulse, exportDay,
     close: () => db.close() };
 }

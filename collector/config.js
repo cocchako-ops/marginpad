@@ -23,14 +23,15 @@ export const config = {
   defaultBucketDivisor: 800, // fallback bucket size = price / 800 (rounded) for symbols without an explicit size
 
   tickerMinNotional: 50000,  // live ticker only shows events above this USD notional (UI-adjustable)
-  retentionDays: 30,         // raw events kept 30 days; aggregates kept indefinitely
+  retentionDays: 14,         // raw events kept 14 days (live/feed/pulse read <=7d; every day is archived to R2 liq/<day>.csv.gz by the worker before it ages out). Was 30 until 2026-09-02: 743MB DB, 2M rows, aggregate queries stalling the socket thread.
+  aggRetentionDays: 90,      // 5-min aggregates (histogram windows, max 30d) kept 90 days — were kept forever (196MB and growing)
   aggIntervalMs: 60_000,     // roll new raw rows into 5-min aggregates every 60s
   pruneIntervalMs: 6 * 3600_000,
   oiPollMs: 120_000,         // Phase 2: poll Open Interest per symbol every 2 min (staggered)
 
   // Selectable chart windows -> minutes
   windows: { '1h': 60, '4h': 240, '24h': 1440, '7d': 10080, '30d': 43200 },
-  maxWindowMinutes: 43200, // allow up to 30 days (raw kept 30d, aggregates kept indefinitely)
+  maxWindowMinutes: 43200, // allow up to 30 days (served from agg_5m, kept aggRetentionDays; raw rows only feed live/feed/pulse + the daily archive)
 
   db: {
     driver: process.env.DB_DRIVER || 'sqlite',
