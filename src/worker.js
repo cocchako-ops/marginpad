@@ -11735,8 +11735,12 @@ async function handleSpot(url, request, env) {
   if (!uid) { const ov = url.searchParams.get('uid'); if (ov && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) uid = String(ov); }
   if (!uid) return jr({ error: 'login_required' }, 401);
   const stub = spotStub(env);
+  if (path === '/start' && request.method === 'POST') { // the ONLY place an account is minted (2026-09-03): the gate's "Get the $10,000 card" button. Opening the page used to auto-create one — 32 of 82 accounts never did anything.
+    try { const r = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid) + '&create=1')); const d = await r.json(); if (d && d.fresh) { try { await evPush(env, request, 'spottrade', 'card issued', '/spot/'); } catch (e) {} } return jr({ ok: !d.error, fresh: !!d.fresh }); } catch (e) { return jr({ error: 'transient' }, 503); }
+  }
   if (path === '/portfolio' || path === '/') {
     let d = null; try { const r = await stub.fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid))); d = await r.json(); } catch (e) { return jr({ error: 'transient' }, 503); }
+    if (d && d.none) return jr({ none: true }); // signed in, no Demo Spot account yet — the page shows the gate with the card button
     const holds = d.holds || [];
     for (const h of holds) {
       let px = 0;
@@ -13355,6 +13359,9 @@ export default {
       if (!stored || !(await adminSessionOk(request, env, 'mp_pmail'))) return new Response(adminLoginHTML('Private inbox', !stored, '/api/admin/pmail/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
       return new Response(PMAIL_HTML, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
     }
+    if (url.pathname === '/api/admin/spotpurge' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // drop never-used Demo Spot accounts (see SpotStore /purgeempty)
+      try { const r = await spotStub(env).fetch(new Request('https://do/purgeempty', { method: 'POST' })); return new Response(await r.text(), { headers: { 'content-type': 'application/json' } }); } catch (e) { return new Response(JSON.stringify({ error: 'transient' }), { status: 503, headers: { 'content-type': 'application/json' } }); }
+    }
     if (url.pathname === '/api/admin/liqdiag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // where does the liquidation archive chain break?
       const n = Math.min(30, Math.max(3, +url.searchParams.get('days') || 12));
       const days = [];
@@ -14331,13 +14338,15 @@ export class SpotStore {
     const uid = String(b.uid || url.searchParams.get('uid') || '').slice(0, 64);
     if (path === '/portfolio') {
       if (!uid) return this.j({ error: 'bad' }, 400);
+      if (url.searchParams.get('create') !== '1' && !this.rows('SELECT 1 FROM spotacct WHERE user_id=?', uid)[0]) return this.j({ none: true }); // no auto-create on a read (2026-09-03)
       const a = this._acct(uid, now);
       sql.exec('UPDATE spotacct SET last_seen=? WHERE user_id=?', now, uid);
       const holds = this.rows('SELECT sym,qty,cost,meta FROM spothold WHERE user_id=? AND qty>0', uid).map(h => { let m = {}; try { m = JSON.parse(h.meta || '{}'); } catch (e) {} return { sym: h.sym, qty: h.qty, costUsd: h.cost / 100, meta: m }; });
       const snaps = this.rows('SELECT day,value FROM spotsnap WHERE user_id=? ORDER BY day DESC LIMIT 120', uid).reverse().map(r => ({ day: r.day, valueUsd: r.value / 100 }));
       const txN = (this.rows('SELECT COUNT(*) n FROM spottx WHERE user_id=?', uid)[0] || { n: 0 }).n;
+      const buys = (this.rows("SELECT COUNT(*) n FROM spottx WHERE user_id=? AND side='buy'", uid)[0] || { n: 0 }).n;
       let addr = null; try { addr = a.addr ? JSON.parse(a.addr) : null; } catch (e) {}
-      return this.j({ fresh: !!a._fresh, usdtUsd: a.usdt / 100, cardUsd: (a.card || 0) / 100, wusdtUsd: (a.wusdt || 0) / 100, gas: this._gas(a), addr, onb: +a.onb || 0, realizedUsd: (a.realized || 0) / 100, created: a.created, resetTs: a.reset_ts || 0, resets: a.resets || 0, holds, snaps, txN });
+      return this.j({ fresh: !!a._fresh, usdtUsd: a.usdt / 100, cardUsd: (a.card || 0) / 100, wusdtUsd: (a.wusdt || 0) / 100, gas: this._gas(a), addr, onb: +a.onb || 0, realizedUsd: (a.realized || 0) / 100, created: a.created, resetTs: a.reset_ts || 0, resets: a.resets || 0, holds, snaps, txN, buys });
     }
     if (path === '/link') { // step 1: "link" the virtual card to the exchange
       if (!uid) return this.j({ error: 'bad' }, 400);
@@ -14525,7 +14534,7 @@ export class SpotStore {
       const since = Math.max(a.reset_ts || 0, 0);
       if (since && now - since < 7 * 86400000) return this.j({ error: 'cooldown', nextMs: since + 7 * 86400000 - now }, 429);
       sql.exec('DELETE FROM spothold WHERE user_id=?', uid);
-      sql.exec("UPDATE spotacct SET card=?, usdt=0, wusdt=0, gas='{}', reset_ts=?, resets=COALESCE(resets,0)+1, realized=0 WHERE user_id=?", SPOT_START_C, now, uid);
+      sql.exec("UPDATE spotacct SET card=?, usdt=0, wusdt=0, gas='{}', reset_ts=?, resets=COALESCE(resets,0)+1, realized=0, onb=CASE WHEN COALESCE(onb,0)>=1 THEN 1 ELSE 0 END WHERE user_id=?", SPOT_START_C, now, uid); // onb back to 1: the card stays linked, everything after it is redone (2026-09-03)
       sql.exec('INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,?,?,0,0,?,0,0,?)', uid, now, 'reset', 'USD', SPOT_START_C, '{}');
       return this.j({ ok: true, cardUsd: SPOT_START_C / 100 });
     }
@@ -14559,6 +14568,11 @@ export class SpotStore {
       // P2P can't inflate the card: received wallet-USDT has no path back to it (card<-offramp<-exchange only).
       const rows = this.rows('SELECT a.user_id uid, a.card FROM spotacct a WHERE EXISTS(SELECT 1 FROM spottx t WHERE t.user_id=a.user_id) OR EXISTS(SELECT 1 FROM spotxfer x WHERE x.from_uid=a.user_id OR x.to_uid=a.user_id) ORDER BY a.card DESC LIMIT 40');
       return this.j({ top: rows.map(r => ({ uid: r.uid, cardC: +r.card || 0 })) });
+    }
+    if (path === '/purgeempty') { // ops (2026-09-03): remove accounts minted by a page view that never did anything — no tx, no holds, no transfers, untouched card
+      const r = sql.exec("DELETE FROM spotacct WHERE card=? AND COALESCE(usdt,0)=0 AND COALESCE(wusdt,0)=0 AND (addr IS NULL OR addr='') AND NOT EXISTS(SELECT 1 FROM spottx t WHERE t.user_id=spotacct.user_id) AND NOT EXISTS(SELECT 1 FROM spothold h WHERE h.user_id=spotacct.user_id) AND NOT EXISTS(SELECT 1 FROM spotxfer x WHERE x.from_uid=spotacct.user_id OR x.to_uid=spotacct.user_id)", SPOT_START_C);
+      sql.exec('DELETE FROM spotsnap WHERE user_id NOT IN (SELECT user_id FROM spotacct)');
+      return this.j({ ok: true, removed: r.rowsWritten || 0 });
     }
     if (path === '/stats') { // ops: headline numbers
       const a = this.rows('SELECT COUNT(*) n, COALESCE(SUM(usdt),0) u FROM spotacct')[0];

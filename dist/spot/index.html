@@ -739,6 +739,7 @@
   function loadPortfolio(first){
     fetch('/api/spot/portfolio').then(function(r){return r.json();}).then(function(d){
       if(!d||d.error==='login_required'){ME=null;$('gate').hidden=false;$('app').hidden=true;return;}
+      if(d.none){PORT=null;$('gate').hidden=false;$('app').hidden=true;var gb=document.querySelector('#gate .cta');if(gb&&gb.hasAttribute('data-auth-open')){gb.removeAttribute('data-auth-open');gb.addEventListener('click',function(){gb.disabled=true;gb.textContent='Issuing your card…';fetch('/api/spot/start',{method:'POST'}).then(function(r){return r.json();}).then(function(j){gb.disabled=false;gb.textContent='Get the $10,000 card';if(j&&j.ok){booted=false;boot();}else toast('Could not issue the card — try again.');}).catch(function(){gb.disabled=false;gb.textContent='Get the $10,000 card';toast('Network error.');});});}return;} // signed in, no account yet (2026-09-03): nothing is created until they ask for the card
       if(d.error)return;
       PORT=d;
       if(d.fresh)toast('<b>Your $10,000 card has arrived.</b> The map shows the way — start at the bank.');
@@ -755,7 +756,8 @@
       {t:'Buy USDT with the card', done:(d.onb||0)>=2, act:openOnrampModal, cta:'Buy USDT', coach:'USDT is the dollar of crypto — it is what you trade with. Card purchases cost a 1.8% processing fee; in real life a bank transfer is cheaper.'},
       {t:'Create a self-custody wallet', done:!!(d.addr&&d.addr.sol), act:openWalletCreate, cta:'Create wallet', coach:'The exchange holds coins FOR you; a wallet is YOURS. You get real-looking addresses and a seed phrase — guard it with your life.'},
       {t:'Send USDT to your wallet', done:(d.wusdtUsd||0)>0||hasGas, act:openWithdrawModal, cta:'Withdraw', coach:'Withdraw USDT from the exchange to your own address. Pick the network carefully — Solana costs $1, Ethereum $8.'},
-      {t:'Swap for SOL — gas money', done:hasGas, act:openSwapModal, cta:'Swap', coach:'On-chain everything costs gas, and memes are paid for in the network’s coin. Swap some wallet USDT for SOL to unlock the degen zone.'}
+      {t:'Swap for SOL — gas money', done:hasGas, act:openSwapModal, cta:'Swap', coach:'On-chain everything costs gas, and memes are paid for in the network’s coin. Swap some wallet USDT for SOL to unlock the degen zone.'},
+      {t:'Buy your first coin', done:((d.buys||0)>0)||((d.holds||[]).length>0), act:function(){showView('ex');}, cta:'Open exchange', coach:'The setup is done — now trade. Bitcoin and the top 250 live on the exchange; the memes live in your wallet. Every fill shows its fee before you confirm.'}
     ];
   }
   var STN_CARD='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M3 21h18"/><path d="M12 3 3 8h18l-9-5z"/><path d="M6 10v8M10 10v8M14 10v8M18 10v8"/></svg>';
@@ -772,8 +774,8 @@
       +'<div class="stn s-ex" id="stnEx">'+CHEV+'<i class="s-ic">'+STN_EX+'</i><div class="s-k">Exchange</div><div class="s-v">'+fmtUsd0(d.exchangeUsd)+'</div><div class="s-s">'+fmtUsd0(d.usdtUsd)+' USDT free</div></div>'
       +'<div class="stn s-wal'+(!(d.addr&&d.addr.sol)?' dead':'')+'" id="stnWal">'+CHEV+'<i class="s-ic">'+STN_WAL+'</i><div class="s-k">Wallet</div><div class="s-v">'+((d.addr&&d.addr.sol)?fmtUsd0(d.walletUsd):'—')+'</div><div class="s-s">'+((d.addr&&d.addr.sol)?(gasBits.length?gasBits.join(' · '):'self-custody'):'not created yet')+'</div></div>';
     var c=$('coach');
-    if(nextIdx<0){c.hidden=true;}
-    else{c.hidden=false;c.innerHTML='<span class="cnum">STEP '+(nextIdx+1)+' OF 5</span><span><b>'+esc(steps[nextIdx].t)+'.</b> '+esc(steps[nextIdx].coach)+'</span><button class="go2" type="button" id="coachGo">'+esc(steps[nextIdx].cta)+'</button>';
+    if(nextIdx<0){c.hidden=false;var tips=[['Cash out when you are up','Money only leaves through the exchange — the Bank app shows the whole way back.','Cash-out plan',openCashoutGuide],['Come back tomorrow','Your daily PnL and equity curve draw after each full day — the boards reward showing up, not one lucky session.','See the map',function(){showView('hub');}],['Reset when you want a clean slate','One reset per 7 days puts a fresh $10,000 on the card; the wallet addresses stay yours.','Bank app',function(){showView('bank');}]];var tp=tips[Math.floor(Date.now()/3600000)%tips.length];c.innerHTML='<span class="cnum">ALL SET</span><span><b>'+esc(tp[0])+'.</b> '+esc(tp[1])+'</span><button class="go2" type="button" id="coachGo">'+esc(tp[2])+'</button>';var cg0=$('coachGo');if(cg0)cg0.addEventListener('click',tp[3]);}
+    else{c.hidden=false;c.innerHTML='<span class="cnum">STEP '+(nextIdx+1)+' OF 6</span><span><b>'+esc(steps[nextIdx].t)+'.</b> '+esc(steps[nextIdx].coach)+'</span><button class="go2" type="button" id="coachGo">'+esc(steps[nextIdx].cta)+'</button>';
       var cg=$('coachGo');if(cg)cg.addEventListener('click',function(){steps[nextIdx].act();});}
     $('stnCard').addEventListener('click',function(){showView('bank');});
     $('stnEx').addEventListener('click',function(){showView('ex');});
@@ -1175,7 +1177,7 @@
     if(((PORT&&PORT.onb)||0)<1){openCardModal();return;}
     openSim('<div class="m-h"><b>Buy USDT with your card</b><button class="m-x" type="button">&times;</button></div>'
       +'<p class="m-p">USDT is a stablecoin — 1 USDT stays worth ~$1. It is what you actually trade with. Card balance: <b>'+fmtUsd(PORT.cardUsd)+'</b></p>'
-      +'<div class="tin-l">Amount (USD)</div><input class="tin" id="orAmt" type="number" inputmode="decimal" min="10" step="any" placeholder="1000" />'
+      +'<div class="tin-l">Amount (USD) · min $10</div><input class="tin" id="orAmt" type="number" inputmode="decimal" min="10" step="any" placeholder="1000" />'
       +'<div class="chips"><button class="chip" data-or="500" type="button">$500</button><button class="chip" data-or="2000" type="button">$2,000</button><button class="chip" data-or="5000" type="button">$5,000</button><button class="chip" data-or="max" type="button">All of it</button></div>'
       +'<div class="m-est" id="orEst" hidden></div>'
       +'<div class="lesson">Card purchases cost <b>1.8%</b> here (real on-ramps charge 1.8-4%). A bank transfer is usually near-free — worth the wait for big amounts.</div>'
@@ -1204,7 +1206,7 @@
     if(((PORT&&PORT.usdtUsd)||0)<10){ if(cashoutPlan().length){openCashoutGuide();return;} toast('Nothing to cash out — everything is already on your card.');return;}
     openSim('<div class="m-h"><b>Cash out to your card</b><button class="m-x" type="button">&times;</button></div>'
       +'<p class="m-p">Selling USDT back to dollars on your card — the way profits actually leave crypto. Exchange balance: <b>'+fmtUsd(PORT.usdtUsd)+' USDT</b></p>'
-      +'<div class="tin-l">Amount (USDT)</div><input class="tin" id="ofAmt" type="number" inputmode="decimal" min="10" step="any" placeholder="500" />'
+      +'<div class="tin-l">Amount (USDT) · min $10</div><input class="tin" id="ofAmt" type="number" inputmode="decimal" min="10" step="any" placeholder="500" />'
       +'<div class="chips"><button class="chip" data-of="25" type="button">25%</button><button class="chip" data-of="50" type="button">50%</button><button class="chip" data-of="100" type="button">All</button></div>'
       +'<div class="m-est" id="ofEst" hidden></div>'
       +'<div class="lesson">Cashing out costs <b>1%</b> here (min $1). Real exchanges charge fiat-withdrawal fees too — and your bank may add its own. In and out, someone always takes a cut.</div>'
@@ -1281,7 +1283,7 @@
       +'<div class="tin-l">Destination address <span style="text-transform:none;letter-spacing:0;font-family:Familjen Grotesk,sans-serif;font-weight:600">(<a href="#" id="wdPaste">paste my address</a>)</span></div>'
       +'<input class="tin sm" id="wdAddr" type="text" autocomplete="off" spellcheck="false" placeholder="your wallet address for the chosen network" />'
       +'<div class="tin-hint">Your own address lives in the <b>Wallet app → Receive</b>. Always copy-paste it — never type an address by hand.</div>'
-      +'<div class="tin-l" style="margin-top:10px">Amount (USDT)</div><input class="tin" id="wdAmt" type="number" inputmode="decimal" min="5" step="any" placeholder="500" />'
+      +'<div class="tin-l" style="margin-top:10px">Amount (USDT) · min $5</div><input class="tin" id="wdAmt" type="number" inputmode="decimal" min="5" step="any" placeholder="500" />'
       +'<div class="chips"><button class="chip" data-wd="25" type="button">25%</button><button class="chip" data-wd="50" type="button">50%</button><button class="chip" data-wd="100" type="button">All</button></div>'
       +'<div class="m-est" id="wdEst" hidden></div>'
       +'<div class="lesson">The network on the exchange MUST match the network of the destination address. USDT sent over the wrong chain to the wrong address is gone forever. Here it is safe to get it wrong — try it.</div>'
