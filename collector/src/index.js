@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { config } from '../config.js';
 import { log } from './logger.js';
-import { createStorage } from './storage/index.js';
+import { createStorage, slowStorageCalls } from './storage/index.js';
 import { createApiServer } from './api/server.js';
 import { BinanceCollector } from './collectors/binance.js';
 import { BybitCollector } from './collectors/bybit.js';
@@ -76,7 +76,7 @@ function getStatus() {
     ok: exchanges.some((e) => e.connected),
     startedAt, uptimeSec: Math.floor((now - startedAt) / 1000),
     symbols: config.symbols, inserted, deduped,
-    loopLag,
+    loopLag, slowCalls: slowStorageCalls(),
     exchanges, db: storage.stats(),
   };
 }

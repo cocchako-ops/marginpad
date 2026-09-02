@@ -32,7 +32,9 @@ async function refreshLeaderboard() {
   try {
     const r = await fetch(LEADERBOARD_URL, { signal: AbortSignal.timeout(60000) });
     if (!r.ok) throw new Error('lb ' + r.status);
-    const j = await r.json();
+    const t0 = Date.now();
+    const j = await r.json(); // ~36MB parsed synchronously — on this 512MB box that is a real event-loop pause, so it is measured
+    const parseMs = Date.now() - t0; if (parseMs > 800) log.warn('[whales] slow leaderboard parse', { ms: parseMs });
     const rows = Array.isArray(j.leaderboardRows) ? j.leaderboardRows : [];
     if (rows.length < 1000) throw new Error('lb too small: ' + rows.length);
     state.tracked = rows
