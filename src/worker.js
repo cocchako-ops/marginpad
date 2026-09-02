@@ -3906,7 +3906,10 @@ const STATS_KEY = 'mp_rotated_use_wrangler_secret'; // INERT fallback (2026-08-1
 // requires the ADMIN_KEY Wrangler secret. Until ADMIN_KEY is set, admin routes fall back to the stats key so a
 // deploy without the secret changes nothing.
 const statsKeyOf = (env) => (env && env.STATS_KEY) || STATS_KEY;
-const adminKeyOf = (env) => (env && (env.ADMIN_KEY || env.STATS_KEY)) || STATS_KEY;
+const adminKeyOf = (env) => (env && env.ADMIN_KEY) || ""; // ONLY the secret. The old fallback to the hardcoded read-only STATS_KEY meant an unset secret silently turned the public dashboard key into the master key (2026-09-02).
+// ADMIN_KEY arrives as the x-admin-key HEADER (2026-09-02). ?key= is still read for one transition window so nothing breaks, but a URL carries the key into browser history, referers and logs — every script now sends the header; the ?key= fallback goes away next.
+function adminKeyFrom(request, url) { try { return (request && request.headers.get("x-admin-key")) || (url && url.searchParams.get("key")) || ""; } catch (e) { return ""; } }
+
 const isAdminKey = (env, k) => !!k && k === adminKeyOf(env);
 const isStatsKey = (env, k) => !!k && (k === statsKeyOf(env) || k === adminKeyOf(env));
 async function sha8(s) {
@@ -10021,7 +10024,7 @@ async function handleTshare(url, request, env, ctx) {
   const tok = getCookie(request, SESS_COOKIE);
   if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { uid = su.id; uname = String(su.username || (su.email ? su.email.split('@')[0] : '') || '').slice(0, 24); } }
   const adminUid = url.searchParams.get('uid'); // owner testing hook (same pattern as missions/academy/trade)
-  if (adminUid && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { uid = adminUid; if (!uname) uname = adminUid; }
+  if (adminUid && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { uid = adminUid; if (!uname) uname = adminUid; }
   if (!uid) return jt({ error: 'login_required' }, 401);
   // rate limit: 60 shares / user / day (a share is cheap but this stops a scripted flood)
   try { const rk = 'tsrl:' + uid + ':' + new Date().toISOString().slice(0, 10); const n = +(await env.STATS.get(rk)) || 0; if (n >= 60) return jt({ error: 'rate_limited' }, 429); const p = env.STATS.put(rk, String(n + 1), { expirationTtl: 90000 }); if (ctx) ctx.waitUntil(p.catch(() => {})); else await p; } catch (e) {}
@@ -10064,7 +10067,7 @@ async function handleTrade(url, request, env, ctx) {
   if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) uid = su.id; }
   mk('session', tS);
   const adminUid = url.searchParams.get('uid'); // owner testing hook, same pattern as missions/academy
-  if (adminUid && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) uid = adminUid;
+  if (adminUid && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) uid = adminUid;
   if (!uid) return jt({ error: 'login_required' }, 401);
   const path = url.pathname.slice('/api/trade'.length) || '/';
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
@@ -11120,7 +11123,7 @@ async function handleAuth(url, request, env, ctx) {
   const asn = (request.cf && request.cf.asn) || 0;
   const stub = env.USERS.get(env.USERS.idFromName('main'));
   let b = {}; if (request.method === 'POST') { try { b = await request.json(); } catch (e) {} }
-  const isAdmin = (await adminCookieOk(request, env)) || isAdminKey(env, url.searchParams.get('key')); // cookie OR the ADMIN_KEY bearer — the ops user-360 UI already sends ?key= on /xp/adjust
+  const isAdmin = (await adminCookieOk(request, env)) || isAdminKey(env, adminKeyFrom(request, url)); // cookie OR the ADMIN_KEY bearer — the ops user-360 UI already sends ?key= on /xp/adjust
 
 
   if (path === '/start') {
@@ -11729,7 +11732,7 @@ async function handleSpot(url, request, env) {
   let uid = null;
   const tok = getCookie(request, SESS_COOKIE);
   if (tok && env.USERS) { const su = await sessionUser(env, tok); if (su && su.id) { if (su.status && su.status !== 'active') return jr({ error: 'restricted' }, 403); uid = String(su.id); } }
-  if (!uid) { const ov = url.searchParams.get('uid'); if (ov && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) uid = String(ov); }
+  if (!uid) { const ov = url.searchParams.get('uid'); if (ov && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) uid = String(ov); }
   if (!uid) return jr({ error: 'login_required' }, 401);
   const stub = spotStub(env);
   if (path === '/portfolio' || path === '/') {
@@ -12014,7 +12017,7 @@ async function handleReward(url, request, env) {
     return jr({ error: 'need_xp', need: REWARDS_MIN_XP, have: suXp, level: 'unranked', earn: '/academy/' }, 403);
   // admin: Moon sign-up approval tally (key-gated read — the ops Moon panel is cookie-only; this lets the owner get the count with the ADMIN_KEY bearer)
   if (path === '/moonstat') {
-    if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403);
+    if (!adminOk && !isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'forbidden' }, 403);
     const out = { approved: 0, rejected: 0, pending: 0, approvedUsd: 0 };
     try {
       const rr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/exsign/list'));
@@ -12027,7 +12030,7 @@ async function handleReward(url, request, env) {
   }
   // admin: read/write the live config (Settings tab) — applies instantly, no deploy
   if (path === '/config') {
-    if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403); // cookie OR the ADMIN_KEY manual-recovery bearer (same pattern as the newer admin routes)
+    if (!adminOk && !isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'forbidden' }, 403); // cookie OR the ADMIN_KEY manual-recovery bearer (same pattern as the newer admin routes)
     if (request.method === 'POST') {
       let cur = {}; try { cur = JSON.parse(await env.STATS.get('rwd:cfg') || '{}'); } catch (e) {}
       const next = { ...cur };
@@ -12059,7 +12062,7 @@ async function handleReward(url, request, env) {
   }
   // admin: support inbox (+ reply history) with an email-config flag injected at the Worker (DO can't see secrets)
   if (path === '/support' && request.method === 'GET') {
-    if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403); // cookie OR the ADMIN_KEY manual-recovery bearer (read-only; same pattern as /config)
+    if (!adminOk && !isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'forbidden' }, 403); // cookie OR the ADMIN_KEY manual-recovery bearer (read-only; same pattern as /config)
     const sst = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
     let sj = { open: [], closed: [], replies: [], transient: true }; // polled every 30s; a DO reset mid-flight (every deploy) must not 500
     for (let attempt = 0; attempt < 2; attempt++) { try { const rr = await sst.fetch(new Request('https://do/support')); sj = await rr.json(); break; } catch (e) {} }
@@ -12067,7 +12070,7 @@ async function handleReward(url, request, env) {
     return jr(sj);
   }
   if (path === '/support/convs' && request.method === 'GET') { // admin: support threads grouped into conversations (chat view)
-    if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403); // cookie OR the ADMIN_KEY manual-recovery bearer (read-only; same pattern as /config)
+    if (!adminOk && !isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'forbidden' }, 403); // cookie OR the ADMIN_KEY manual-recovery bearer (read-only; same pattern as /config)
     const sst = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
     let sj = { conversations: [], transient: true };
     for (let attempt = 0; attempt < 2; attempt++) { try { const rr = await sst.fetch(new Request('https://do/support/convs')); sj = await rr.json(); break; } catch (e) {} }
@@ -12076,7 +12079,7 @@ async function handleReward(url, request, env) {
   }
   // admin: reply to a support message by email — sent FROM support@marginpad.io via Resend
   if (path === '/reply') {
-    if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403); // cookie OR ADMIN_KEY (same pattern as /support above — replying is the same trust tier as reading the inbox)
+    if (!adminOk && !isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'forbidden' }, 403); // cookie OR ADMIN_KEY (same pattern as /support above — replying is the same trust tier as reading the inbox)
     const to = String(b.to || '').trim();
     const subject = (String(b.subject || '').trim() || 'Re: your message to MarginPad').slice(0, 160);
     const message = String(b.message || '').slice(0, 4000);
@@ -12112,14 +12115,14 @@ async function handleReward(url, request, env) {
     if (!(await verifyTurnstile(env, b.token, ip))) return jr({ error: 'captcha' }, 403);
     // no on-chain wallet check at claim anymore — there is no wallet here; the BEP20 address is validated at /withdraw (full.requireOnchain still gates the payout address there if you wire it later)
   }
-  if ((path === '/detail' || path === '/adjust' || path === '/lbban') && !adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403); // cookie OR ADMIN_KEY — same tier as the neighbouring /wd/cancel and /dispense/adjust key-accepting admin routes
+  if ((path === '/detail' || path === '/adjust' || path === '/lbban') && !adminOk && !isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'forbidden' }, 403); // cookie OR ADMIN_KEY — same tier as the neighbouring /wd/cancel and /dispense/adjust key-accepting admin routes
   if ((path === '/admin' || path === '/admin/paid' || path === '/accounts' || path === '/log' || path === '/unlock' || path === '/remove' || path === '/earnings' || path === '/note' || path === '/ban' || path === '/unban' || path === '/lbtop' || path === '/lbhistory' || path === '/message' || path === '/support/close' || path === '/support/new' || path === '/promo/list' || path === '/promo/review' || path === '/exsign/list' || path === '/exsign/review' || path === '/moonsign/list' || path === '/moonsign/review' || path === '/xengage/list' || path === '/xengage/review' || (path === '/support' && request.method === 'GET')) && !adminOk) return jr({ error: 'forbidden' }, 403);
   if (path === '/dispense/adjust' && request.method === 'POST') { // admin: correct today's dispensed counter (clawback truth)
-    if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403);
+    if (!adminOk && !isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'forbidden' }, 403);
     try { const rr = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/dispenseadjust', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ deltaUsd: +((b && b.deltaUsd) || 0) }) })); return jr(await rr.json()); } catch (e) { return jr({ error: 'transient' }, 503); }
   }
   if (path === '/wd/cancel' && request.method === 'POST') { // SILENT admin cancel — refund + row deleted, user gets NOTHING (no banner/email/history entry)
-    if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403);
+    if (!adminOk && !isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'forbidden' }, 403);
     const idC = String((b && b.id) || ''); if (!idC) return jr({ error: 'bad' }, 400);
     const stubC = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
     let rc = null;
@@ -12129,7 +12132,7 @@ async function handleReward(url, request, env) {
     return jr({ ok: true, refundedUsd: rc.amountUsd, acct: rc.acct });
   }
   if (path === '/wd/reject' && request.method === 'POST') { // ops one-click: reject a pending WD whose Bybit UID isn't via our affiliate link → DO refunds the balance, then the user gets a site banner + email telling them to contact support. Auth: admin cookie OR ?key= (manual recovery bearer, same as the newer admin routes)
-    if (!adminOk && !isAdminKey(env, url.searchParams.get('key'))) return jr({ error: 'forbidden' }, 403);
+    if (!adminOk && !isAdminKey(env, adminKeyFrom(request, url))) return jr({ error: 'forbidden' }, 403);
     const id9 = String((b && b.id) || ''); if (!id9) return jr({ error: 'bad' }, 400);
     const stub9 = env.REWARDS.get(env.REWARDS.idFromName('ledger'));
     const noteIn = String((b && b.note) || '').trim().slice(0, 300); // owner-typed reason — shown to the user verbatim (banner + email + wd history)
@@ -12455,32 +12458,32 @@ export default {
       (out.rows || []).forEach(rr => { const dd = byId9[rr.mid]; rr.title = dd ? dd.title : rr.mid; rr.cents = dd ? dd.cents : 0; rr.cat = dd ? (dd.cat || 'market') : ''; });
       return new Response(JSON.stringify(out), { headers: { 'content-type': 'application/json; charset=utf-8' } });
     }
-    if (url.pathname === '/api/admin/premseen' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // reset the premium-celebration-seen flag for the mp-ops cohort (?username=&seen=0 → they get the delayed welcome) + read it (?username=&read=1, persistence proof)
+    if (url.pathname === '/api/admin/premseen' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // reset the premium-celebration-seen flag for the mp-ops cohort (?username=&seen=0 → they get the delayed welcome) + read it (?username=&read=1, persistence proof)
       const un = url.searchParams.get('username') || '', seen = url.searchParams.get('seen'), read = url.searchParams.get('read') === '1';
       const body = read ? { username: un, read: 1 } : { username: un, seen: (seen === '0' ? 0 : 1) };
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/premseen', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }));
       return J(await r.json());
     }
-    if (url.pathname === '/api/admin/lbremove' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // delete a proven-ineligible lbbest row: ?uid=&season=<ms, optional>
+    if (url.pathname === '/api/admin/lbremove' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // delete a proven-ineligible lbbest row: ?uid=&season=<ms, optional>
       const r7 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/remove', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: url.searchParams.get('uid') || '', season: +url.searchParams.get('season') || 0 }) }));
       return new Response(await r7.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/lbbackfill' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // on-demand run of the tradeev->lbbest self-heal (also runs daily from the cron); ?season=<ms> targets a past season
+    if (url.pathname === '/api/admin/lbbackfill' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // on-demand run of the tradeev->lbbest self-heal (also runs daily from the cron); ?season=<ms> targets a past season
       const s8 = +url.searchParams.get('season') || 0;
       const r8 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/backfill', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...(s8 ? { season: s8 } : {}), ...(url.searchParams.get('verify') ? { verify: 1 } : {}) }) }));
       return new Response(await r8.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/lbfloor' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // ROE-board recovery: forward {season?, targets:{uid:{roe,pnl,symbol,side}}} to UserStore /lbbest/floor (keep-max only — restores season-best values provably lost to the utrades blob trim)
+    if (url.pathname === '/api/admin/lbfloor' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ROE-board recovery: forward {season?, targets:{uid:{roe,pnl,symbol,side}}} to UserStore /lbbest/floor (keep-max only — restores season-best values provably lost to the utrades blob trim)
       let body8 = {}; try { body8 = await request.json(); } catch (e) { return J({ error: 'bad_json' }, 400); }
       const r8 = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/floor', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body8) }));
       return J(await r8.json());
     }
-    if (url.pathname === '/api/admin/xpfloor' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // XP-board recovery: forward {season, targets:{uid:base}} to UserStore /xpseason/floor (min-only — can only RAISE a user's shown seasonal XP; used to restore totals eaten by the old xplog-trim SUM, values reconstructed from nightly backups)
+    if (url.pathname === '/api/admin/xpfloor' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // XP-board recovery: forward {season, targets:{uid:base}} to UserStore /xpseason/floor (min-only — can only RAISE a user's shown seasonal XP; used to restore totals eaten by the old xplog-trim SUM, values reconstructed from nightly backups)
       let body9 = {}; try { body9 = await request.json(); } catch (e) { return J({ error: 'bad_json' }, 400); }
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/xpseason/floor', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body9) }));
       return J(await r.json());
     }
-    if ((url.pathname === '/api/admin/premium' || url.pathname === '/api/admin/indaccess') && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // mp-ops: manage premium members
+    if ((url.pathname === '/api/admin/premium' || url.pathname === '/api/admin/indaccess') && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // mp-ops: manage premium members
       const q = url.searchParams;
       const add = (q.get('add') || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
       const rem = (q.get('remove') || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -12637,7 +12640,7 @@ export default {
       if (request.method === 'POST') { const t = (await request.text()).slice(0, 6000); await env.STATS.put('ops:diag', JSON.stringify({ ts: Date.now(), d: t }), { expirationTtl: 86400 }); return new Response('{"ok":true}', { headers: jh2 }); }
       return new Response((await env.STATS.get('ops:diag')) || '{}', { headers: jh2 });
     }
-    if (url.pathname === '/api/admin/opscfg' && (await adminCookieOk(request, env) || ((request.method !== 'POST' || env.ENVIRONMENT === 'staging') && isAdminKey(env, url.searchParams.get('key'))))) { // GET may use ?key= (read-only); POST is COOKIE-ONLY on prod — it flips the sessKv/srvCandle kill switches, and a URL key leaks into history/logs/Referer (same class as runcron). ?key= POST allowed on staging only (E2E harness).
+    if (url.pathname === '/api/admin/opscfg' && (await adminCookieOk(request, env) || ((request.method !== 'POST' || env.ENVIRONMENT === 'staging') && isAdminKey(env, adminKeyFrom(request, url))))) { // GET may use ?key= (read-only); POST is COOKIE-ONLY on prod — it flips the sessKv/srvCandle kill switches, and a URL key leaks into history/logs/Referer (same class as runcron). ?key= POST allowed on staging only (E2E harness).
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       if (request.method === 'POST') {
         let b = {}; try { b = await request.json(); } catch (e) {}
@@ -12719,7 +12722,7 @@ export default {
       try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60' } })); } catch (e) {}
       return new Response(body, { headers: jh2 });
     }
-    if (url.pathname === '/api/admin/revenue' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // Revenue tab: affiliate clicks by day/exchange/page (AE) + exchange sign-ups; edge-cached 120s
+    if (url.pathname === '/api/admin/revenue' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Revenue tab: affiliate clicks by day/exchange/page (AE) + exchange sign-ups; edge-cached 120s
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const ck = new Request('https://marginpad.io/__adm_revenue_v4');
       // latest money clicks are read fresh on EVERY call (one KV get) and appended to the cached AE core
@@ -12743,7 +12746,7 @@ export default {
       if (byDayEx && byEx) try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=120' } })); } catch (e) {} // never cache an AE failure — it would pin an empty tab for 2 min
       return new Response(withClicks(body), { headers: jh2 });
     }
-    if (url.pathname === '/api/admin/bybituids' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // owner-editable Bybit affiliate UID allowlist (copied from the Bybit Affiliate Portal). Withdrawals to a UID NOT on it are auto-rejected with a contact-support message. Empty list = gate OFF.
+    if (url.pathname === '/api/admin/bybituids' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // owner-editable Bybit affiliate UID allowlist (copied from the Bybit Affiliate Portal). Withdrawals to a UID NOT on it are auto-rejected with a contact-support message. Empty list = gate OFF.
       const jh9 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       if (request.method === 'POST') {
         let b9 = {}; try { b9 = await request.json(); } catch (e) {}
@@ -12834,7 +12837,7 @@ export default {
     if (url.pathname === '/api/admin/feedcard' && (await adminCookieOk(request, env))) { // Overview "Data feed" card refreshed live (the card is baked at page-load; this lets a recovered source flip back to green without a manual reload)
       try { return new Response(JSON.stringify({ html: await collectorHealth(env) }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); } catch (e) { return J({ html: '' }); }
     }
-    if (url.pathname === '/api/admin/health' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // Overview System Health card: collector/AE/KV/UserStore + JS errors today; edge-cached 60s
+    if (url.pathname === '/api/admin/health' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Overview System Health card: collector/AE/KV/UserStore + JS errors today; edge-cached 60s
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const ck = new Request('https://marginpad.io/__adm_health_v2'); // v2: bumped after excluding whyme/chako from avg time-on-site — forces a fresh recompute (old v1 entry held the pre-exclusion avg)
       try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
@@ -12929,14 +12932,14 @@ export default {
       const posts = ((cr && cr.posts) || []).slice(0, 6).map(x => ({ id: x.id, title: x.title, author: x.author, ncom: x.ncom || 0, likes: x.likes || 0 }));
       return new Response(JSON.stringify({ users, accounts, posts }), { headers: jh2 });
     }
-    if (url.pathname === '/api/admin/tgbot' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) return handleTgbotStats(env); // ops Telegram Bot tab
-    if (url.pathname === '/api/admin/affiliate' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // ops Affiliate tab: referral-link performance per user
+    if (url.pathname === '/api/admin/tgbot' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) return handleTgbotStats(env); // ops Telegram Bot tab
+    if (url.pathname === '/api/admin/affiliate' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ops Affiliate tab: referral-link performance per user
       let sj = { affiliates: [], totals: {} };
       try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/affiliate')); sj = await rr.json(); } catch (e) {}
       try { const cfg = await rewardCfg(env); sj.referralUsd = (cfg.raw && cfg.raw.referralUsd != null) ? +cfg.raw.referralUsd : 0.5; } catch (e) { sj.referralUsd = 0.5; }
       return new Response(JSON.stringify(sj), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/perfhist' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) {
+    if (url.pathname === '/api/admin/perfhist' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       // DAY-OVER-DAY perf, which the 8h ring structurally cannot give. This is what turns "p95 breached" into an
       // answerable question: a number that was fine yesterday and is bad today is drift; a number that has looked
       // like this all week is the baseline, and the honest move there is to fix the page, not to raise the budget.
@@ -12947,26 +12950,26 @@ export default {
       if (!r) return new Response(JSON.stringify({ error: 'ae_unavailable', hint: 'CF_API_TOKEN / CF_ACCOUNT_ID must be set for the SQL API.' }), { headers: { 'content-type': 'application/json' } });
       return new Response(JSON.stringify(r), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/lbaudit' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // read-only integrity check on the paid ROE board
+    if (url.pathname === '/api/admin/lbaudit' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only integrity check on the paid ROE board
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/lbbest/audit', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ season: +url.searchParams.get('season') || 0 }) }));
       return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/statsrepair' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // ?dry=1 first, always
+    if (url.pathname === '/api/admin/statsrepair' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ?dry=1 first, always
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/statsrepair', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ dry: url.searchParams.get('dry') === '1', reset: url.searchParams.get('reset') === '1', relife: url.searchParams.get('relife') === '1' }) }));
       return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/progress' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // read-only: the PROGRESS columns (season + lifetime + xp) next to what the stored journal blob would compute. Used to prove the server's trim-proof accumulators already match what the UI shows before any display is switched over to them.
+    if (url.pathname === '/api/admin/progress' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: the PROGRESS columns (season + lifetime + xp) next to what the stored journal blob would compute. Used to prove the server's trim-proof accumulators already match what the UI shows before any display is switched over to them.
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/progressdump', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid: url.searchParams.get('uid') || '', email: url.searchParams.get('email') || '', username: url.searchParams.get('u') || '' }) }));
       return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/bottiers' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // reconcile API-key tiers with premium now, instead of waiting for the nightly cron. Moves no money — it only sets rate-limit tiers — so it is key-accessible like the neighbouring admin reads.
+    if (url.pathname === '/api/admin/bottiers' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // reconcile API-key tiers with premium now, instead of waiting for the nightly cron. Moves no money — it only sets rate-limit tiers — so it is key-accessible like the neighbouring admin reads.
       let err = null, res = null; try { res = await syncBotTiers(env); } catch (e) { err = String(e && e.message || e); }
       return new Response(JSON.stringify({ ok: !err && !!(res && !res.error), sync: res, err }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/apistats' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // ops API tab: bot-API usage per user + per endpoint (read-only; cookie OR ADMIN_KEY bearer, same pattern as the neighbouring admin reads)
+    if (url.pathname === '/api/admin/apistats' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ops API tab: bot-API usage per user + per endpoint (read-only; cookie OR ADMIN_KEY bearer, same pattern as the neighbouring admin reads)
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/botstats', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' })); return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } }); } catch (e) { return new Response(JSON.stringify({ keys: [], use: [], byEp: [], transient: true }), { headers: { 'content-type': 'application/json' } }); }
     }
-    if (url.pathname === '/api/admin/security' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // Security tab "farming radar": every registered user's behavior (time on /rewards vs the rest, trades) joined with their faucet account (claims/balance/device) — finds people who are here ONLY for the faucet
+    if (url.pathname === '/api/admin/security' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Security tab "farming radar": every registered user's behavior (time on /rewards vs the rest, trades) joined with their faucet account (claims/balance/device) — finds people who are here ONLY for the faucet
       const [ur, ar, cfg] = await Promise.all([
         env.USERS ? env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/security')).then(r => r.json()).catch(() => ({ users: [] })) : { users: [] },
         env.REWARDS ? env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/accounts')).then(r => r.json()).catch(() => ({ accounts: [] })) : { accounts: [] },
@@ -13002,12 +13005,12 @@ export default {
       const authRows = authlog.slice(0, 200).map(e => ({ ...e, devN: e.did ? (devAccts[e.did] ? devAccts[e.did].size : 1) : 0, ipN: e.ip ? (ipAccts[e.ip] ? ipAccts[e.ip].size : 1) : 0 }));
       return new Response(JSON.stringify({ rows, emailClusters: clusters.slice(0, 60), ipClusters, didClusters, vpnCount, authlog: authRows, minWdUsd: (cfg.minWdC || 500) / 100 }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/indexnow' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // force IndexNow submit (Bing/Yandex/Seznam/Naver): ?urls=a,b,c pings those, else re-diffs the sitemaps now
+    if (url.pathname === '/api/admin/indexnow' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // force IndexNow submit (Bing/Yandex/Seznam/Naver): ?urls=a,b,c pings those, else re-diffs the sitemaps now
       const raw = url.searchParams.get('urls');
       if (raw) { const list = raw.split(',').map(s => s.trim()).filter(u => /^https:\/\/marginpad\.io\//.test(u)).slice(0, 1000); await indexNowPing(list); return J({ ok: true, pinged: list.length, urls: list }); }
       await checkIndexNow(env, true); return J({ ok: true, mode: 'sitemap-diff' });
     }
-    if (url.pathname === '/api/admin/setchatphoto' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // set a Telegram chat/channel photo via the bot (bot must be admin with "change info"). POST the raw image bytes, or ?path=/assets/... (read via ASSETS binding to avoid a self-fetch loop)
+    if (url.pathname === '/api/admin/setchatphoto' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // set a Telegram chat/channel photo via the bot (bot must be admin with "change info"). POST the raw image bytes, or ?path=/assets/... (read via ASSETS binding to avoid a self-fetch loop)
       const chat = url.searchParams.get('chat') || (await env.STATS.get('csig:chat'));
       if (!chat) return J({ error: 'need chat' }, 400);
       try {
@@ -13020,7 +13023,7 @@ export default {
         return J(await tr.json());
       } catch (e) { return J({ error: String(e).slice(0, 120) }, 500); }
     }
-    if (url.pathname === '/api/admin/csig' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // 1h chart-signal config: ?chat= (channel @username or numeric id) ?coins= ?on=0|1 ?test=1
+    if (url.pathname === '/api/admin/csig' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // 1h chart-signal config: ?chat= (channel @username or numeric id) ?coins= ?on=0|1 ?test=1
       const q = url.searchParams;
       if (q.get('chat') != null) await env.STATS.put('csig:chat', q.get('chat').trim());
       if (q.get('coins') != null) await env.STATS.put('csig:coins', q.get('coins').trim().toUpperCase());
@@ -13059,7 +13062,7 @@ export default {
       return J({ coins: (await env.STATS.get('csig:coins')) || '(default majors + HYPE)', on: (await env.STATS.get('csig:on')) !== '0', adx: +(await env.STATS.get('csig:adx') || 20), volmul: +(await env.STATS.get('csig:volmul') || 1.2), htf: (await env.STATS.get('csig:htf')) !== '0', evguard: (await env.STATS.get('csig:evguard')) !== '0', channels: { fast: (await env.STATS.get('csig:chat:fast')) || '(unset)', balanced: (await env.STATS.get('csig:chat:balanced')) || '(unset)', premium: (await env.STATS.get('csig:chat:premium')) || (await env.STATS.get('csig:chat')) || '(unset)' } });
     }
     // FREE-channel (screener) signal config/state/proof. adminCookie OR ?key=ADMIN_KEY.
-    if (url.pathname === '/api/admin/content' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // free-channel content + C-paper state (read-only; ?preview=1 builds the wrap text WITHOUT sending)
+    if (url.pathname === '/api/admin/content' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // free-channel content + C-paper state (read-only; ?preview=1 builds the wrap text WITHOUT sending)
       const jh3 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const cfg = await opsCfg(env);
       let cRes = [], cOpen = [], cCfg = {};
@@ -13077,7 +13080,7 @@ export default {
       if (url.searchParams.get('preview') === '1') { try { out.wrapPreview = await buildWrapText(env); } catch (e) { out.wrapPreview = null; } }
       return new Response(JSON.stringify(out), { headers: jh3 });
     }
-    if (url.pathname === '/api/admin/fsig' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) {
+    if (url.pathname === '/api/admin/fsig' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const q = url.searchParams, day = new Date().toISOString().slice(0, 10);
       if (q.get('on') != null) await env.STATS.put('fsig:on', q.get('on') === '0' ? '0' : '1');
       if (q.get('daily') != null) await env.STATS.put('fsig:daily', String(Math.max(1, Math.min(30, +q.get('daily') || 5))));
@@ -13103,7 +13106,7 @@ export default {
     }
     // READ-ONLY SEO measurement from Analytics Engine (pageview blobs: blob3=path, blob4=src). Organic Google =
     // src 'google.<tld>' (referrer host); Google Ads is 'google-ads' → excluded by the dot. adminCookie OR ?key=.
-    if (url.pathname === '/api/admin/aibots' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // AI-crawler hit summary (writer: aibot telemetry in the main fetch). ?days=N (1-90, def 7)
+    if (url.pathname === '/api/admin/aibots' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // AI-crawler hit summary (writer: aibot telemetry in the main fetch). ?days=N (1-90, def 7)
       const dA = Math.max(1, Math.min(90, +url.searchParams.get('days') || 7)), DA = "timestamp > NOW() - INTERVAL '" + dA + "' DAY";
       const [byBot, byPath, byDay] = await Promise.all([
         aeQuery(env, `SELECT blob2 AS bot, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='aibot' AND ${DA} GROUP BY bot ORDER BY n DESC LIMIT 30`),
@@ -13112,7 +13115,7 @@ export default {
       ]);
       return J({ days: dA, byBot: byBot || [], byPath: byPath || [], byDay: byDay || [] });
     }
-    if (url.pathname === '/api/admin/seoae' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) {
+    if (url.pathname === '/api/admin/seoae' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const days = Math.max(1, Math.min(90, +url.searchParams.get('days') || 30)), D = "timestamp > NOW() - INTERVAL '" + days + "' DAY";
       const AI = "(blob4 LIKE 'chatgpt%' OR blob4 LIKE '%openai%' OR blob4 LIKE 'claude.ai%' OR blob4 LIKE '%perplexity%' OR blob4 LIKE 'gemini.%' OR blob4 LIKE 'copilot.%')"; // AI-assistant referrers (their crawlers run NO JavaScript → they only ever see the static HTML)
       const [srcTop, totalPv, googleOrgPv, searchOrgPv, pathsTotal, pathsGoogle, pathsAI] = await Promise.all([
@@ -13145,28 +13148,28 @@ export default {
       } catch (e) {}
       return new Response('{}', { headers: { 'content-type': 'application/json', ...CORS } });
     }
-    if (url.pathname === '/api/admin/fundtest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // P1 funding E2E: force-apply a rate to ONE uid's open srv trades (never touches real users)
+    if (url.pathname === '/api/admin/fundtest' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // P1 funding E2E: force-apply a rate to ONE uid's open srv trades (never touches real users)
       const fu = url.searchParams.get('uid') || ''; if (!fu) return J({ error: 'uid_required' }, 400);
       const frate = +(url.searchParams.get('rate') || 0.0001); const fsym = (url.searchParams.get('sym') || 'BTC').toUpperCase();
       const fpd = await fetchPrice(fsym); if (!fpd || !(+fpd.price > 0)) return J({ error: 'no_price' }, 503);
       const fprices = {}; fprices[fsym] = +fpd.price; const frates = {}; frates[fsym] = frate;
       return J(await usersDO(env, '/tradesweepall', { prices: fprices, rates: frates, force: true, onlyUid: fu }));
     }
-    if (url.pathname === '/api/admin/journal' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // admin/E2E raw journal read
+    if (url.pathname === '/api/admin/journal' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // admin/E2E raw journal read
       return J(await usersDO(env, '/journaldump', { uid: url.searchParams.get('uid') || '' }));
     }
- if (url.pathname === '/api/admin/duels' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // read-only: a user's duels (both sides, with their scored stats under the current rules) + recent Ticks log
+ if (url.pathname === '/api/admin/duels' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: a user's duels (both sides, with their scored stats under the current rules) + recent Ticks log
  const out = await usersDO(env, '/duel/admin', { username: url.searchParams.get('u') || '' });
  out.now = Date.now();
  return J(out);
  }
- if (url.pathname === '/api/admin/ticks' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // manual Ticks credit/debit {username|uid, amt, note}; audited in the user's ticklog + TG ping
+ if (url.pathname === '/api/admin/ticks' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // manual Ticks credit/debit {username|uid, amt, note}; audited in the user's ticklog + TG ping
  let b = {}; try { b = await request.json(); } catch (e) {}
  const out = await usersDO(env, '/ticks/adjust', { username: String(b.username || b.uid || ''), amt: +b.amt || 0, note: String(b.note || '') });
  if (out && out.ok) { try { await tgAdmin(env, '<b>Ticks adjust</b> @' + out.username + ' ' + (out.amt > 0 ? '+' : '') + out.amt + ' (' + out.before + ' → ' + out.after + ') — ' + out.note); } catch (e) {} }
  return J(out);
  }
-    if (url.pathname === '/api/admin/credit' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // manual rewards-balance movement {username, usd, note, op:'gift'|'refund', item?} — gift = ledger /gift (cap $5, logged 'gift'), refund = ledger /shoprefund (a Vault purchase given back). Not a withdrawal path.
+    if (url.pathname === '/api/admin/credit' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // manual rewards-balance movement {username, usd, note, op:'gift'|'refund', item?} — gift = ledger /gift (cap $5, logged 'gift'), refund = ledger /shoprefund (a Vault purchase given back). Not a withdrawal path.
       let b = {}; try { b = await request.json(); } catch (e) {}
       const who = await usersDO(env, '/xpdiag', { username: String(b.username || ''), uid: String(b.uid || '') });
       if (!who || !who.user) return J({ error: 'not_found' }, 404);
@@ -13182,13 +13185,13 @@ export default {
       if (out && !out.error) { try { await tgAdmin(env, '<b>Balance ' + (b.op === 'refund' ? 'refund' : b.op === 'debit' ? 'debit' : 'credit') + '</b> @' + who.user.username + ' ' + (b.op === 'debit' ? '-' : '+') + '$' + (cents / 100).toFixed(2) + ' — ' + String(b.note || b.item || '')); } catch (e) {} }
       return J({ ...(out || {}), username: who.user.username, usd: cents / 100 });
     }
-    if (url.pathname === '/api/admin/xpdiag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // read-only XP-credit audit: user + xp log + trade closes + promo config in one response — every "boost didn't credit" ticket becomes checkable against the exact predicate inputs
+    if (url.pathname === '/api/admin/xpdiag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only XP-credit audit: user + xp log + trade closes + promo config in one response — every "boost didn't credit" ticket becomes checkable against the exact predicate inputs
       const out = await usersDO(env, '/xpdiag', { uid: url.searchParams.get('uid') || '', email: url.searchParams.get('email') || '', username: url.searchParams.get('u') || '' });
       try { out.promosRaw = JSON.parse(await env.STATS.get('xp:promos') || '[]'); } catch (e) { out.promosRaw = []; }
       out.hh = HH; out.now = Date.now();
       return J(out);
     }
-    if (url.pathname === '/api/admin/shopstats' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // The Vault ops: sales per item/currency + buyers + daily sinks
+    if (url.pathname === '/api/admin/shopstats' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // The Vault ops: sales per item/currency + buyers + daily sinks
       let ds = { per: [], buyers: 0 };
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/shopstats')); ds = await r.json(); } catch (e) {}
       const day = new Date().toISOString().slice(0, 10);
@@ -13197,11 +13200,11 @@ export default {
       try { usdDay = +(await env.STATS.get('shop:usd:' + day)) || 0; } catch (e) {}
       return J({ ...ds, day, xpSinkToday: xpDay, usdSinkTodayCents: usdDay });
     }
-    if (url.pathname === '/api/admin/sweepstat' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // last srv-sweep summary (swept/checked/staleN) — observability for the candle-check rollout
+    if (url.pathname === '/api/admin/sweepstat' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // last srv-sweep summary (swept/checked/staleN) — observability for the candle-check rollout
       let last = null; try { last = JSON.parse(await env.STATS.get('sweep:last') || 'null'); } catch (e) {}
       return J({ last });
     }
-    if (url.pathname === '/api/admin/uxperf' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // UX-perf AE history (past the 8h ring): count + p50/p95 per metric. The waterfall deploy waits for ux-cold n>=15 HERE.
+    if (url.pathname === '/api/admin/uxperf' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // UX-perf AE history (past the 8h ring): count + p50/p95 per metric. The waterfall deploy waits for ux-cold n>=15 HERE.
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const hrs = Math.min(720, Math.max(1, +url.searchParams.get('h') || 168));
       const rows = (await aeQuery(env, "SELECT blob2 metric, SUM(_sample_interval) n, quantileWeighted(0.5)(double2,_sample_interval) p50, quantileWeighted(0.95)(double2,_sample_interval) p95, MAX(double2) mx FROM marginpad_events WHERE blob1='uxperf' AND timestamp > NOW() - INTERVAL '" + hrs + "' HOUR GROUP BY metric")) || [];
@@ -13209,7 +13212,7 @@ export default {
       for (const r of rows) out.metrics[r.metric || '?'] = { n: +r.n || 0, p50: r.p50 != null ? Math.round(+r.p50) : null, p95: r.p95 != null ? Math.round(+r.p95) : null, max: r.mx != null ? Math.round(+r.mx) : null };
       return new Response(JSON.stringify(out, null, 1), { headers: jh });
     }
-    if (url.pathname === '/api/admin/xtest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // manual test post to X — ?auto=1 runs the live-data auto-composer once (proves the cron content); ?text= posts custom text
+    if (url.pathname === '/api/admin/xtest' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // manual test post to X — ?auto=1 runs the live-data auto-composer once (proves the cron content); ?text= posts custom text
       if (url.searchParams.get('dry')) { const gens = { liq: xComposeLiq, movers: xComposeMovers, calendar: xComposeCalendar, funding: xComposeFunding }; const out = {}; for (const k in gens) { try { const t = await gens[k](env); out[k] = t ? { len: t.length, text: t } : null; } catch (e) { out[k] = 'err:' + e.message; } } out.evergreen = xEvergreen(); return J(out); }
       if (url.searchParams.get('list')) { // list our recent posts (accountability / cleanup)
         const r = await _xGet(env, 'https://api.twitter.com/2/users/1860380518950576128/tweets?max_results=20&tweet.fields=created_at');
@@ -13246,13 +13249,13 @@ export default {
       const res = await xTweet(env, text || ('MarginPad — free crypto futures tools: live liquidation heatmap, paper trading (no sign-up), and a macro calendar with FOMC/CPI countdowns. https://marginpad.io [' + new Date().toISOString().slice(11, 16) + ']'));
       return J(res, res.ok ? 200 : 502);
     }
-    if (url.pathname === '/api/admin/xstat' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // X auto-poster status + usage (watch the credit drain, know when to top up)
+    if (url.pathname === '/api/admin/xstat' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // X auto-poster status + usage (watch the credit drain, know when to top up)
       const count = +(await env.STATS.get('xpost:count') || 0); let log = []; try { log = JSON.parse(await env.STATS.get('xpost:log') || '[]'); } catch (e) {}
       let cfg = {}; try { cfg = await opsCfg(env); } catch (e) {}
       let imgGen = null, imgAgeDays = null; try { const m = await (await env.ASSETS.fetch(new Request('https://marginpad.io/assets/x/manifest.json'))).json(); imgGen = m && m.generated; if (imgGen) imgAgeDays = Math.round((Date.now() - Date.parse(imgGen)) / 86400000); } catch (e) {}
       return J({ enabled: cfg.xPost !== false, slotsUTC: [14, 20], totalPosts: count, promoImages: X_PROMO_IMGS, imagesGenerated: imgGen, imageAgeDays: imgAgeDays, regenerateHint: (imgAgeDays != null && imgAgeDays > 21) ? 'Promo screenshots are ' + imgAgeDays + 'd old (stale prices/coins) — re-run: node build/gen-x-promo.js' : null, note: 'Compare totalPosts to the credit drain in your X Usage tab → cost per post → runway on the remaining $ balance.', recent: log.slice(0, 20) });
     }
-    if (url.pathname === '/api/admin/pxtag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // TEMP: WHO drives /api/price (33% of invocations) — by call-site ctx / WS-covered / cache h-m / symbol. '?' = untagged call site (goal ~0).
+    if (url.pathname === '/api/admin/pxtag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // TEMP: WHO drives /api/price (33% of invocations) — by call-site ctx / WS-covered / cache h-m / symbol. '?' = untagged call site (goal ~0).
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const hrs = Math.min(168, Math.max(1, +url.searchParams.get('h') || 24));
       const W = "blob1='pxtag' AND timestamp > NOW() - INTERVAL '" + hrs + "' HOUR";
@@ -13280,7 +13283,7 @@ export default {
         topSym: topSym.map(r => ({ sym: r.sym || '?', n: +r.n || 0 })),
       }, null, 1), { headers: jh });
     }
-    if (url.pathname === '/api/admin/restoretest' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // E1: prove the backup is restorable — load users-latest into the 'bkp-restore-test' DO sandbox and diff row counts vs the dump
+    if (url.pathname === '/api/admin/restoretest' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // E1: prove the backup is restorable — load users-latest into the 'bkp-restore-test' DO sandbox and diff row counts vs the dump
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const which = url.searchParams.get('which') === 'rewards' ? 'rewards' : 'users';
       let txt = null;
@@ -13297,22 +13300,22 @@ export default {
       for (const tn of Object.keys(src)) { const a = src[tn], b2 = res.counts ? res.counts[tn] : null; tables[tn] = { dump: a, restored: b2, match: a === b2 }; if (a !== b2) allOk = false; }
       return new Response(JSON.stringify({ ok: allOk, backupAt: dump.at, ageHours: dump.at ? Math.round((Date.now() - dump.at) / 3600000 * 10) / 10 : null, store: env.BACKUP ? 'r2' : 'kv', tables }, null, 1), { headers: jh });
     }
-    if (url.pathname === '/api/admin/heatpools' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { if (url.searchParams.get('reset')) { for (const sy of HM_COINS) { try { await env.STATS.delete('hmp:st:' + sy); } catch (e) {} } } await heatPoolsCron(env); return J({ ok: true, reset: !!url.searchParams.get('reset') }); } // manual model run; ?reset=1 wipes state so the full kline window re-accumulates (e.g. after a ladder change)
-    if (url.pathname === '/api/admin/mktestuser' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // E2E suites: ensure an 'e2e-' users row exists (DO enforces the prefix)
+    if (url.pathname === '/api/admin/heatpools' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { if (url.searchParams.get('reset')) { for (const sy of HM_COINS) { try { await env.STATS.delete('hmp:st:' + sy); } catch (e) {} } } await heatPoolsCron(env); return J({ ok: true, reset: !!url.searchParams.get('reset') }); } // manual model run; ?reset=1 wipes state so the full kline window re-accumulates (e.g. after a ladder change)
+    if (url.pathname === '/api/admin/mktestuser' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // E2E suites: ensure an 'e2e-' users row exists (DO enforces the prefix)
       return J(await usersDO(env, '/mktestuser', { uid: url.searchParams.get('uid') || '' }));
     }
-    if (url.pathname === '/api/admin/classstats' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) {
+    if (url.pathname === '/api/admin/classstats' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) {
       const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/classstats'));
       return new Response(await r.text(), { headers: { 'content-type': 'application/json' } });
     }
-    if (url.pathname === '/api/admin/srvtrades' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // SRV_LB_START board-population check: src='srv' && sc closed trades in 7d (read-only)
+    if (url.pathname === '/api/admin/srvtrades' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // SRV_LB_START board-population check: src='srv' && sc closed trades in 7d (read-only)
       const users = env.USERS.get(env.USERS.idFromName('main'));
       const r = await users.fetch(new Request('https://do/srvtrades'));
       return new Response(await r.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/pmail/login' && request.method === 'POST') { // first run sets the password; claiming it needs admin so a stranger cannot get there first
       const had = (env.STATS && await env.STATS.get('cfg:pmailpass')) || '';
-      if (!had && !(await adminCookieOk(request, env)) && !isAdminKey(env, url.searchParams.get('key'))) return new Response(JSON.stringify({ error: 'admin_required_for_first_setup' }), { status: 403, headers: { 'content-type': 'application/json' } });
+      if (!had && !(await adminCookieOk(request, env)) && !isAdminKey(env, adminKeyFrom(request, url))) return new Response(JSON.stringify({ error: 'admin_required_for_first_setup' }), { status: 403, headers: { 'content-type': 'application/json' } });
       return adminDoLogin(request, env, 'cfg:pmailpass', 'mp_pmail', '/api/admin/pmail', '/api/admin/pmail');
     }
     if (url.pathname === '/api/admin/pmail/logout' && request.method === 'POST') return adminLogout(request, env, 'mp_pmail', '/api/admin/pmail');
@@ -13327,7 +13330,7 @@ export default {
       if (!stored || !(await adminSessionOk(request, env, 'mp_pmail'))) return new Response(adminLoginHTML('Private inbox', !stored, '/api/admin/pmail/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
       return new Response(PMAIL_HTML, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
     }
-    if (url.pathname === '/api/admin/liqdiag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // where does the liquidation archive chain break?
+    if (url.pathname === '/api/admin/liqdiag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // where does the liquidation archive chain break?
       const n = Math.min(30, Math.max(3, +url.searchParams.get('days') || 12));
       const days = [];
       for (let i = 0; i < n; i++) days.push(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10));
@@ -13343,7 +13346,7 @@ export default {
       const unarchived = out.slice(1).filter(x => !x.archived).map(x => x.day); // today is expected to be missing
       return new Response(JSON.stringify({ days: out, archivedButNoRecap: gaps, notArchived: unarchived }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/ssrpurge' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // drop the 10-min SSR page cache for a path so a deploy can be verified immediately
+    if (url.pathname === '/api/admin/ssrpurge' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // drop the 10-min SSR page cache for a path so a deploy can be verified immediately
       const paths = String(url.searchParams.get('p') || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 40);
       if (!paths.length) return new Response(JSON.stringify({ error: 'p_required' }), { status: 400, headers: { 'content-type': 'application/json' } });
       const done = [];
@@ -13354,7 +13357,7 @@ export default {
       }
       return new Response(JSON.stringify({ done }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/shop' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // Shop tab: every Vault acquisition + the cash side, joined to the catalogue
+    if (url.pathname === '/api/admin/shop' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Shop tab: every Vault acquisition + the cash side, joined to the catalogue
       const META = {}; VAULT_ITEMS.forEach(it => { META[it.id] = { name: it.name, tier: it.tier || '', kind: it.kind || 'frame', xp: it.xp || 0, cents: it.cents || 0, earn: it.earn || '' }; });
       let g = { rows: [], byItem: [], total: 0, buyers: 0, since: 0, byDay: [] }, m = { rows: [], totalCents: 0, count: 0 };
       try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/shopdiag?n=400')); g = await r.json(); } catch (e) {}
@@ -13393,7 +13396,7 @@ export default {
         topSpenders: Object.keys(cashByUid).map(u3 => ({ uid: u3, un: nameOf[u3] || '', cents: cashByUid[u3] })).sort((a, b) => b.cents - a.cents).slice(0, 10) });
       return new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/uidlookup' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // whose Bybit UID is this? (read-only)
+    if (url.pathname === '/api/admin/uidlookup' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // whose Bybit UID is this? (read-only)
       const uids = String(url.searchParams.get('uid') || url.searchParams.get('uids') || '');
       if (url.searchParams.get('all')) {
         let rows = [];
@@ -13410,7 +13413,7 @@ export default {
       for (const k in found) out[k] = (found[k] || []).map(w => { const id = String(w.acct || '').replace(/^u:/, ''); return { ...w, username: (names[id] && names[id].username) || '', accountStatus: (names[id] && names[id].status) || '' }; });
       return new Response(JSON.stringify({ uids: out }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/actdiag' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // read-only: compare the three activity sources for one user
+    if (url.pathname === '/api/admin/actdiag' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // read-only: compare the three activity sources for one user
       const who = String(url.searchParams.get('user') || '').toLowerCase();
       const n = Math.min(400, Math.max(10, +url.searchParams.get('n') || 120));
       let evlog = [], pvlog = [];
@@ -13432,7 +13435,7 @@ export default {
         pvlog: { total: pvlog.length, withUsername: pvlog.filter(x => x.u).length, withS0: pvlog.filter(x => x.s0).length, mine: minePv.slice(0, n) },
         uevents: uev }, null, 1), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/greencheck' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // Green Days board over an arbitrary window (read-only): an empty board must be provably "nobody qualified", not a broken query
+    if (url.pathname === '/api/admin/greencheck' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Green Days board over an arbitrary window (read-only): an empty board must be provably "nobody qualified", not a broken query
       const ws = +url.searchParams.get('ws') || lbPeriodStart(Date.now());
       const we = +url.searchParams.get('we') || (ws + LB_PERIOD);
       const users = env.USERS.get(env.USERS.idFromName('main'));
@@ -13456,7 +13459,7 @@ export default {
       try { await fn(env); return new Response(JSON.stringify({ ok: true, task, ms: Date.now() - t0 }), { headers: jh }); }
       catch (e) { return new Response(JSON.stringify({ ok: false, task, ms: Date.now() - t0, error: String((e && e.stack) || e).slice(0, 2000) }), { headers: jh }); }
     }
-    if (url.pathname === '/api/admin/dolatency' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // DO round-trip latency by edge colo — measures WHERE the UserStore('main') ceiling is + what geography costs (from aeDO() writes)
+    if (url.pathname === '/api/admin/dolatency' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // DO round-trip latency by edge colo — measures WHERE the UserStore('main') ceiling is + what geography costs (from aeDO() writes)
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const hrs = Math.min(168, Math.max(1, +url.searchParams.get('h') || 24));
       const op = (String(url.searchParams.get('op') || 'session').replace(/[^a-z_]/g, '').slice(0, 20)) || 'session';
@@ -13478,7 +13481,7 @@ export default {
       const overallOut = oTot ? { total: oTot, iso: sum('iso'), kv: sum('kv'), do: oDo, err: oErr, doReachRate: +(oReach / oTot * 100).toFixed(1), errRate: oReach ? +(oErr / oReach * 100).toFixed(1) : 0, p95_ms: (overall && overall.p95_ms != null) ? Math.round(+overall.p95_ms) : null } : null;
       return new Response(JSON.stringify({ op, hours: hrs, overall: overallOut, byColo, note: 'state=iso(per-isolate cache)|kv(KV cache, unused until read-through)|do(DO round-trip OK)|err(DO failed). p50/p95/p99 = ms over DO SUCCESSES only (errors fast-fail, hits are 0ms). doReachRate = share still reaching the DO = exactly what a KV read-through would cut. errRate = failed DO attempts. High p95 on a far colo = cross-region hop. Need a few thousand samples before trusting a colo.' }), { headers: jh });
     }
-    if (url.pathname === '/api/admin/perf' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // MarginPad Health data: per-group latency percentiles + presence + errors/hr
+    if (url.pathname === '/api/admin/perf' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // MarginPad Health data: per-group latency percentiles + presence + errors/hr
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       let ring = []; try { ring = JSON.parse(await env.STATS.get('perf:ring') || '[]'); } catch (e) {}
       const cut = Date.now() - 3600000;
@@ -13504,7 +13507,7 @@ export default {
       let preload = null; try { const _ph = Math.min(168, Math.max(1, +url.searchParams.get('ph') || 24)); const rows = (await aeQuery(env, `SELECT blob2 AS k, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='preload' AND timestamp > NOW() - INTERVAL '${_ph}' HOUR GROUP BY k`)) || []; const g = k => { const r = rows.find(x => x.k === k); return r ? Math.round(+r.n) : 0; }; const hn = g('hit'), mn = g('miss'), fn = g('fired'), tot = hn + mn + fn; if (tot) preload = { hit: hn, miss: mn, fired: fn, total: tot, missRate: +(mn / tot * 100).toFixed(1), firedRate: +(fn / tot * 100).toFixed(1), usefulRate: +(hn / tot * 100).toFixed(1) }; } catch (e) {} // hit=useful pickup, miss=drift (inline URL/symbol diverged from loadKlines), fired=loadKlines never ran (bounce-before-boot). missRate+firedRate together = share of preloads spent for nothing — watch both, not missRate alone.
       return new Response(JSON.stringify({ groups, budgetSuggest, apiP95: pct(srvAll, 0.95), apiP50: pct(srvAll, 0.5), apiN: srvAll.length, errHr, srvErrHr, online, sessDo, cronErrs, preload, at: Date.now() }), { headers: jh });
     }
-    if (url.pathname === '/api/admin/backup' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // P0.5: ?run=1 force a backup now · ?get=users|rewards download the latest dump
+    if (url.pathname === '/api/admin/backup' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // P0.5: ?run=1 force a backup now · ?get=users|rewards download the latest dump
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const getW = url.searchParams.get('get');
       if (getW === 'users' || getW === 'rewards') {
@@ -13523,7 +13526,7 @@ export default {
       const u = await env.STATS.get('bkp:users:latest'), rr = await env.STATS.get('bkp:rewards:latest');
       return new Response(JSON.stringify({ store: env.BACKUP ? 'r2' : 'kv', hasUsers: !!u, hasRewards: !!rr, usersKB: u ? Math.round(u.length / 1024) : 0, rewardsKB: rr ? Math.round(rr.length / 1024) : 0, note: 'daily @ first */10 cron after midnight UTC; 7-day rotation bkp:<store>:<dow>' }), { headers: jh });
     }
-    if (url.pathname === '/api/admin/sendmail' && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // owner utility + the mp-ops Email tab: send as any whitelisted identity via Resend; GET = sent log + address list
+    if (url.pathname === '/api/admin/sendmail' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // owner utility + the mp-ops Email tab: send as any whitelisted identity via Resend; GET = sent log + address list
       const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       if (request.method === 'GET') { // Email tab bootstrap: identities + last sends
         let log9 = []; try { log9 = JSON.parse(await env.STATS.get('mlog') || '[]'); } catch (e) {}
@@ -13607,7 +13610,7 @@ export default {
       try { await env.STATS.put(cdKey, String(Date.now()), { expirationTtl: 72000 }); } catch (e) {} // 20h cooldown — no accidental spam
       return new Response(JSON.stringify({ ok: true, to: email, positions: rows.length }), { headers: jh });
     }
-    if (url.pathname === '/api/admin/tgsetwebhook' && ((await adminCookieOk(request, env)) || isAdminKey(env, url.searchParams.get('key')))) { // (re)register the Telegram webhook WITH the anti-forgery secret token (see handleTelegram)
+    if (url.pathname === '/api/admin/tgsetwebhook' && ((await adminCookieOk(request, env)) || isAdminKey(env, adminKeyFrom(request, url)))) { // (re)register the Telegram webhook WITH the anti-forgery secret token (see handleTelegram)
       const jh = { 'content-type': 'application/json' };
       if (!env.TELEGRAM_TOKEN) return new Response(JSON.stringify({ error: 'no_bot' }), { status: 503, headers: jh });
       if (url.searchParams.get('info') === '1') { // ?info=1 → read current webhook state (allowed_updates, pending, last error) without re-registering
@@ -13856,7 +13859,7 @@ export default {
         return resp;
       }
       const tok = getCookie(request, SESS_COOKIE); let su = tok ? await sessionUser(env, tok) : null;
-      if ((!su || !su.id) && url.searchParams.get('uid') && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) su = { id: url.searchParams.get('uid') }; // owner/E2E hook (same pattern as /shop, missions)
+      if ((!su || !su.id) && url.searchParams.get('uid') && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) su = { id: url.searchParams.get('uid') }; // owner/E2E hook (same pattern as /shop, missions)
       if (!su || !su.id) return new Response('{"error":"login_required"}', { status: 401, headers: jh });
       const call = async (p, body) => { try { const r = await stub.fetch(new Request('https://do' + p, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })); return new Response(await r.text(), { status: r.status, headers: jh }); } catch (e) { return new Response('{"error":"busy"}', { status: 503, headers: jh }); } };
       if (sub === 'challenge' && request.method === 'POST') { let bd = {}; try { bd = await request.json(); } catch (e) {}
@@ -13886,7 +13889,7 @@ export default {
       if (!env.CHAT) return new Response('na', { status: 503 });
       return env.CHAT.get(env.CHAT.idFromName('global2')).fetch(new Request('https://do/reset'));
     }
-    if (url.pathname.startsWith('/chat/admin/') && (await adminCookieOk(request, env) || isAdminKey(env, url.searchParams.get('key')))) { // dashboard chat moderation: /history /post /delete /poll (cookie or ADMIN_KEY — key added 2026-07-25 for tooling/E2E)
+    if (url.pathname.startsWith('/chat/admin/') && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // dashboard chat moderation: /history /post /delete /poll (cookie or ADMIN_KEY — key added 2026-07-25 for tooling/E2E)
       if (!env.CHAT) return new Response('na', { status: 503 });
       const sub = url.pathname.slice('/chat/admin'.length); // -> /history /post /delete /import
       const body = request.method === 'POST' ? await request.text() : undefined;
