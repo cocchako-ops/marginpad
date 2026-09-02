@@ -1400,7 +1400,7 @@
             loadPortfolio();if(dir==='buy')setTimeout(closeSim,1100);}
           else if(j&&j.error==='insufficient'){msg.className='m-msg err';msg.textContent='Wallet only has '+fmtUsd(j.wusdtUsd||0)+' USDT.';}
           else if(j&&j.error==='insufficient_native'){msg.className='m-msg err';msg.textContent='You only hold '+fmtNat(j.have||0)+' '+asset+'.';}
-          else if(j&&j.error==='min_trade'){msg.className='m-msg err';msg.textContent='That is under $1 of USDT after the fee — swap a little more.';}
+          else if(j&&j.error==='min_trade'){msg.className='m-msg err';msg.textContent=dir==='sell'?('That is under $1 of USDT after the fee — the DEX will not route dust. You hold '+fmtNat(gasBal(asset))+' '+asset+' ('+fmtUsd(gasBal(asset)*px())+'); keep it as gas.'):'Minimum swap is $1.';}
           else if(j&&j.error==='no_price'){msg.className='m-msg err';msg.textContent='No live price right now — try again in a moment.';}
           else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
         }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
@@ -1422,7 +1422,7 @@
   }
   function openToExchangeModal(){
     if(!(PORT&&PORT.addr&&PORT.addr.sol)){openWalletCreate();return;}
-    if((PORT.wusdtUsd||0)<1){ if(gasHas()){toast('No USDT in the wallet yet — swap your '+(['SOL','ETH','BNB'].filter(function(a){return gasBal(a)>0;})[0]||'coins')+' back to USDT first.');openSwapModal({dir:'sell'});return;} toast('Your wallet has no USDT to send.');return; }
+    if((PORT.wusdtUsd||0)<1){ var natUsd=0;['SOL','ETH','BNB'].forEach(function(a){natUsd+=gasBal(a)*((PORT.natPx||{})[a]||0);}); if(natUsd<1&&gasHas()){toast('Only dust is left in the wallet ('+fmtUsd(natUsd)+' in gas coins) — under the $1 minimum, not worth moving. Everything else is already on the exchange or the card.');return;} if(gasHas()){toast('No USDT in the wallet yet — swap your '+(['SOL','ETH','BNB'].filter(function(a){return gasBal(a)>0;})[0]||'coins')+' back to USDT first.');openSwapModal({dir:'sell'});return;} toast('Your wallet has no USDT to send.');return; }
     var NG={solana:['SOL',0.0008,'Solana'],bsc:['BNB',0.0003,'BNB Chain'],base:['ETH',0.00004,'Base'],eth:['ETH',0.0015,'Ethereum']};
     var pick=null;['solana','bsc','base','eth'].forEach(function(n){if(!pick&&gasBal(NG[n][0])>=NG[n][1])pick=n;});
     openSim('<div class="m-h"><b>Send USDT to the exchange</b><button class="m-x" type="button">&times;</button></div>'
@@ -1432,11 +1432,11 @@
       +'<div class="tin-l" style="margin-top:10px">Amount (USDT)</div><input class="tin" id="teAmt" type="number" inputmode="decimal" min="1" step="any" placeholder="500" />'
       +'<div class="chips"><button class="chip" data-te="25" type="button">25%</button><button class="chip" data-te="50" type="button">50%</button><button class="chip" data-te="100" type="button">All</button></div>'
       +'<div class="m-est" id="teEst" hidden></div>'
-      +(pick?'':'<div class="lesson"><b>No gas on any network.</b> Sending on-chain always costs gas in that chain\'s coin — swap a few dollars of USDT for SOL first.</div>')
+      +(pick?'':'<div class="lesson"><b>Not enough gas on any network.</b> A transfer needs 0.0008 SOL, 0.0003 BNB or a little ETH; you hold '+(['SOL','ETH','BNB'].filter(function(a){return gasBal(a)>0;}).map(function(a){return fmtNat(gasBal(a))+' '+a;}).join(', ')||'none')+'. Swap a couple of dollars of USDT for SOL first.</div>')
       +'<button class="m-go" id="teGo" type="button">'+(pick?'Send to exchange':'Get gas first')+'</button><div class="m-msg" id="teMsg"></div>');
     var net=pick;
     function est(){var v=+($('teAmt').value||0);var el=$('teEst');if(!(v>=1)||!net){el.hidden=true;return;}el.hidden=false;el.innerHTML='<div><span>Lands on exchange</span><b>'+fmtUsd(v)+' USDT</b></div><div><span>Network</span><b>'+NG[net][2]+'</b></div><div><span>Gas (from your balance)</span><b>~'+NG[net][1]+' '+NG[net][0]+'</b></div>';}
-    Array.prototype.forEach.call($('smod').querySelectorAll('#teNets .np'),function(nb){nb.addEventListener('click',function(){var n=nb.getAttribute('data-n');if(!(gasBal(NG[n][0])>=NG[n][1])){toast('You have no '+NG[n][0]+' for gas on '+NG[n][2]+'.');return;}net=n;Array.prototype.forEach.call($('smod').querySelectorAll('#teNets .np'),function(x){x.classList.toggle('on',x===nb);});est();});});
+    Array.prototype.forEach.call($('smod').querySelectorAll('#teNets .np'),function(nb){nb.addEventListener('click',function(){var n=nb.getAttribute('data-n');if(!(gasBal(NG[n][0])>=NG[n][1])){var hv=gasBal(NG[n][0]);toast(hv>0?('Not enough '+NG[n][0]+' for gas on '+NG[n][2]+': you hold '+fmtNat(hv)+', a transfer needs '+NG[n][1]+'. Swap a couple of dollars of USDT for '+NG[n][0]+'.'):('You have no '+NG[n][0]+' for gas on '+NG[n][2]+' — swap a couple of dollars of USDT for it first.'));return;}net=n;Array.prototype.forEach.call($('smod').querySelectorAll('#teNets .np'),function(x){x.classList.toggle('on',x===nb);});est();});});
     Array.prototype.forEach.call($('smod').querySelectorAll('[data-te]'),function(c){c.addEventListener('click',function(){var p=+c.getAttribute('data-te');$('teAmt').value=Math.floor(PORT.wusdtUsd*p)/100;est();});});
     $('teAmt').addEventListener('input',est);
     $('teGo').addEventListener('click',function(){
@@ -1539,8 +1539,8 @@
             toast(fmtUsd(j.usdUsd)+' sent. Block #'+j.height+' sealed.');loadPortfolio();
           }
           else if(j&&j.error==='unknown_address'){msg.className='m-msg err';msg.textContent='No MarginPad account has that address. On a real chain this money would be GONE forever — we refuse instead. Double-check with your friend.';}
-          else if(j&&j.error==='self'){msg.className='m-msg err';msg.textContent='That is your own address.';}
-          else if(j&&j.error==='no_gas'){msg.className='m-msg err';msg.innerHTML='Not enough '+esc(j.native||'SOL')+' for gas (have '+fmtNat(j.have)+'). <a href="#" id="sdGas">Swap USDT for '+esc(j.native||'SOL')+'</a>';var sg=$('sdGas');if(sg)sg.addEventListener('click',function(e){e.preventDefault();closeSim();openSwapModal({asset:j.native||'SOL'});});}
+          else if(j&&j.error==='self'){msg.className='m-msg err';msg.innerHTML='That is your own wallet address (Receive). To move USDT to the exchange use <a href="#" id="sdToEx">Wallet &rarr; Exchange &rarr; Send to the exchange</a> — the deposit address is filled in for you.';var se=$('sdToEx');if(se)se.addEventListener('click',function(e){e.preventDefault();closeSim();openToExchangeModal();});}
+          else if(j&&j.error==='no_gas'){msg.className='m-msg err';msg.innerHTML='Not enough '+esc(j.native||'SOL')+' for gas: you hold '+fmtNat(j.have)+', this transfer needs '+fmtNat(j.need)+'. <a href="#" id="sdGas">Swap a couple of dollars of USDT for '+esc(j.native||'SOL')+'</a>';var sg=$('sdGas');if(sg)sg.addEventListener('click',function(e){e.preventDefault();closeSim();openSwapModal({asset:j.native||'SOL'});});}
           else if(j&&j.error==='insufficient'){msg.className='m-msg err';msg.textContent='Wallet only has '+fmtUsd(j.wusdtUsd||0)+' USDT.';}
           else if(j&&j.error==='bad_address'){msg.className='m-msg err';msg.textContent=j.hint||'Invalid address.';}
           else{msg.className='m-msg err';msg.textContent='Send failed — try again.';}
