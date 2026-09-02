@@ -158,7 +158,7 @@
     +   '<a class="mpnav-subrow" href="/leverage-trading-simulator/">Leverage trading simulator (1x-1000x)</a>'
     +   '<a class="mpnav-subrow" href="/crypto-trading-simulator-no-sign-up/">No sign-up crypto simulator</a>'
     + '</div>'
-    + '<a class="mpnav-row" href="/spot/"><span class="mpnav-ic" style="color:#c2f64a;background:#c2f64a22"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/></svg></span><span class="mpnav-rt"><b>Demo Spot <i style="font-style:normal;background:#c2f64a;color:#0a0b0d;font-size:9px;font-weight:800;border-radius:5px;padding:1px 5px;vertical-align:1px">NEW</i></b><small>$10,000 practice wallet &middot; buy BTC &amp; Solana memes</small></span>' + I.chev + '</a>'
+    + '<a class="mpnav-row" href="/spot/"><span class="mpnav-ic" style="color:#c2f64a;background:#c2f64a22"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="13" rx="2.5"/><path d="M16 13.5h4"/><path d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h7A1.5 1.5 0 0 1 17 5.5V7"/></svg></span><span class="mpnav-rt"><b>Demo Spot</b><small>$10,000 practice card &middot; exchange, wallet &amp; memes on 4 chains</small></span>' + I.chev + '</a>'
     + row('prodCharts', 'prodChartsS', '/charts', '#3fd8e6', 'charts')
     + row('prodScreener', 'brScrS', '/screener', '#6aa3ff', 'scr')
     + row('Calendar', 'FOMC, CPI & key crypto dates', '/calendar/', '#ffd75a', 'cal')

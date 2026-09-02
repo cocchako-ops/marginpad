@@ -882,7 +882,7 @@
     { k: 'champion', name: 'Champion', by: 'Season #1 — Highest ROE' },
     { k: 'deadeye', name: 'Deadeye', by: 'Season #1 — Win-Rate' },
     { k: 'overdrive', name: 'Overdrive', by: 'Season #1 — XP' },
-    { k: 'tycoon', name: 'Tycoon', by: 'Season #1 — Spot Bank' }
+    { k: 'tycoon', name: 'Tycoon', by: 'Season #1 — Green Days' }
   ];
   function renderCustomize() {
     bodyEl.innerHTML = '<h3 class="mpa-h">Customize card</h3>'
