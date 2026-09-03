@@ -281,6 +281,8 @@
   .wl-acts{display:flex;justify-content:center;gap:16px;margin-bottom:20px;}
   .tok{margin:0 0 8px;padding:8px;border:1px solid #3a2f5c;border-radius:12px;background:#120f1c}.tok .crow{cursor:pointer}.tok-l{font-size:11.5px;color:#a79fc4;line-height:1.45;padding:6px 4px 2px}.tok-l a{color:#c2f64a}.tok.warn{color:#e9e7df;font-size:12.5px;padding:10px 12px}
   .o-list{display:flex;flex-direction:column;gap:6px;margin:6px 0 12px}.o-row{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:10px;background:#0f131a;border:1px solid #1f2630;font-size:12.5px}.o-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.o-b b{color:#e9e7df}.o-b span{font-size:11px;color:#8b97a5}.o-st{font-size:11px;color:#8b97a5;text-align:right;max-width:46%}.o-st.filled{color:#2ebd85}.o-st.failed{color:#ff5a4d}.o-done{opacity:.75;display:flex;flex-direction:column;gap:6px}
+  .share-btn{margin-left:10px;background:#161b26;border:1px solid #2a3140;color:#c2f64a;border-radius:8px;padding:4px 10px;font-weight:800;font-size:11px;cursor:pointer;vertical-align:middle}.share-btn:hover{border-color:#c2f64a}
+  .shc{text-align:center;padding:6px 0 2px}.shc-t{font-family:'Space Mono',monospace;font-size:34px;font-weight:700;color:#e9e7df}.shc-s{font-size:13px;margin:4px 0 12px}.shc-g{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 0 12px}.shc-g div{background:#0f131a;border:1px solid #1f2630;border-radius:10px;padding:10px}.shc-g b{display:block;font-family:'Space Mono',monospace;font-size:16px;color:#e9e7df}.shc-g span{font-size:11px;color:#8b97a5}
   .meme-more{display:block;width:100%;margin-top:8px;background:#161b26;border:1px solid #2a3140;color:#c8d0d9;border-radius:10px;padding:10px;font-weight:700;font-size:12.5px;cursor:pointer}.meme-more:hover{color:#c2f64a;border-color:#c2f64a}
   .cal-h{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#8b97a5;margin:10px 0 6px;text-transform:uppercase;letter-spacing:.05em}.cal-h b{color:#c8d0d9;text-transform:none;letter-spacing:0;font-size:11px}
   .cal{display:grid;grid-template-columns:repeat(14,1fr);gap:4px}.cal i{display:block;aspect-ratio:1;border-radius:4px;background:#161b22;border:1px solid #1f2630}.cal i.g{background:#2ebd85;border-color:#2ebd85}.cal i.r{background:#ff5a4d;border-color:#ff5a4d}.cal i.f{background:#3a424d;border-color:#3a424d}
@@ -811,6 +813,7 @@
     var pct=(d.allTimePnlUsd/100).toFixed(2);
     var line='<span class="pl-main '+(up?'pnl-up':'pnl-dn')+'">'+arrow+(up?'+':'−')+'$'+Math.abs(d.allTimePnlUsd).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ('+(up?'+':'')+pct+'%)</span><span class="pl-sub">since your $10,000</span>';
     if(d.realizedUsd)line+='<span class="pl-dot">·</span><span class="pl-sub">realized <b class="'+(d.realizedUsd>=0?'pnl-up':'pnl-dn')+'" style="font-weight:700">'+(d.realizedUsd>=0?'+':'−')+'$'+Math.abs(d.realizedUsd).toFixed(2)+'</b></span>';
+    if((d.txN||0)>0)line+='<button type="button" class="share-btn" id="shareBtn">Share</button>';
     $('wPnl').innerHTML=line;
     $('nPort').textContent=(d.holds&&d.holds.length)?(d.holds.length+' positions'):'';
     var rb=$('wReset');var cd=d.resetTs?(d.resetTs+7*86400000-Date.now()):0;
@@ -863,6 +866,27 @@
       }).catch(function(){if(_tokLast===v)card.innerHTML='<div class="tok warn">Lookup failed — try again in a moment.</div>';});
     },350);
   }
+  // Share card (2026-09-03): the server snapshots the portfolio into a 30-day public link; the page shows it as a card to anyone.
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#shareBtn');if(!b)return;b.disabled=true;b.textContent='Sharing…';
+    fetch('/api/spot/share',{method:'POST',headers:{'content-type':'application/json'},body:'{}'}).then(function(r){return r.json();}).then(function(j){b.disabled=false;b.textContent='Share';if(!j||!j.ok){toast('Could not create the card — try again.');return;}
+      var url=j.url;var done=function(){toast('Link copied — paste it in the chat or anywhere.');};
+      if(navigator.share){navigator.share({title:'My Demo Spot portfolio',text:'My Demo Spot run on MarginPad — practice money, real fees.',url:url}).catch(function(){});}
+      if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(done).catch(function(){prompt('Your share link:',url);});else prompt('Your share link:',url);
+      openShareCard(j.id,true);
+    }).catch(function(){b.disabled=false;b.textContent='Share';toast('Network error.');});
+  });
+  function openShareCard(id,mine){
+    fetch('/api/spot/share?id='+encodeURIComponent(id)).then(function(r){return r.json();}).then(function(c){
+      if(!c||c.error){toast('That share link has expired.');return;}
+      var up=(c.sinceUsd||0)>=0;
+      openSim('<div class="m-h"><b>'+esc(c.who)+'\'s Demo Spot</b><button class="m-x" type="button">&times;</button></div>'
+        +'<div class="shc"><div class="shc-t">'+fmtUsd(c.totalUsd)+'</div><div class="shc-s '+(up?'pnl-up':'pnl-dn')+'">'+(up?'+':'−')+'$'+Math.abs(c.sinceUsd||0).toFixed(2)+' ('+(up?'+':'')+(c.sincePct||0).toFixed(2)+'%) since the $10,000 card</div>'
+        +'<div class="shc-g"><div><b>'+(c.greenDays||0)+'</b><span>green days</span></div><div><b>'+(c.txN||0)+'</b><span>moves</span></div><div><b>'+fmtUsd0(c.cardUsd||0)+'</b><span>back on the card</span></div>'+(c.best?'<div><b>'+esc(c.best.sym)+'</b><span>best coin '+(c.best.pnlPct>=0?'+':'')+(+c.best.pnlPct).toFixed(1)+'%</span></div>':'')+'</div>'
+        +'<div class="lesson">Practice money, real fees: card 1.8% in, exchange 0.1%, DEX 0.3%, network fees and gas, 1% out. Nothing here pays real money.</div>'
+        +(mine?'':'<a class="m-go" href="/spot/" style="display:block;text-align:center;text-decoration:none">Get your own $10,000 card</a>')+'</div>');
+    }).catch(function(){toast('Could not load that card.');});
+  }
+  try{var _sh=(location.search.match(/[?&]share=([a-z0-9]{8,24})/)||[])[1];if(_sh)setTimeout(function(){openShareCard(_sh,false);},600);}catch(e){}
   var _sbLoaded=false;
   function renderSpotBoard(){
     var el=$('spotBoard');if(!el||_sbLoaded)return;_sbLoaded=true;
@@ -1259,6 +1283,7 @@
       fetch('/api/spot/onramp',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({usd:v})})
         .then(function(r){return r.json();}).then(function(j){btn.disabled=false;
           if(j&&j.ok){msg.className='m-msg ok';msg.textContent='Done — '+fmtUsd(v)+' USDT is on your exchange balance (fee '+fmtUsd(j.feeUsd)+').';toast('USDT bought — the Exchange app is open for business.');loadPortfolio();setTimeout(closeSim,1200);}
+          else if(j&&j.error==='not_linked'){msg.className='m-msg err';msg.textContent='Link the card to the exchange first.';setTimeout(function(){closeSim();openCardModal();},900);}
           else if(j&&j.error==='card_insufficient'){msg.className='m-msg err';msg.textContent='Card only has '+fmtUsd(j.cardUsd)+' (remember the 1.8% fee).';}
           else{msg.className='m-msg err';msg.textContent=(j&&j.error==='transient')?'Our store hiccuped — nothing was charged. Try again in a few seconds.':'Failed ('+((j&&j.error)||'no answer')+') — try again.';}
         }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
@@ -1751,7 +1776,7 @@
           if(j&&j.error==='no_gas'){msg.innerHTML='Not enough '+esc(j.native||'SOL')+' in your wallet (have '+fmtNat(j.have)+', need ~'+fmtNat(j.need)+'). <a href="#" id="tmGetGas">Swap USDT for '+esc(j.native||'SOL')+'</a>';var gg=$('tmGetGas');if(gg)gg.addEventListener('click',function(e){e.preventDefault();closeTrade();openSwapModal({asset:j.native||'SOL'});});}
           else if(j&&j.error==='no_wallet'){msg.innerHTML='You need a wallet for on-chain coins. <a href="#" id="tmMkW">Create it now</a>';var mw=$('tmMkW');if(mw)mw.addEventListener('click',function(e){e.preventDefault();closeTrade();openWalletCreate();});}
           else{
-            var E={insufficient:'Not enough USDT on the exchange — you have '+fmtUsd((j&&j.usdtUsd)||0)+'.',min_trade:'Minimum trade is $1.',no_position:'Nothing to sell.',no_price:'No live price right now — try again in a moment.',login_required:'Please sign in first.',restricted:'Your account is restricted.'};
+            var E={insufficient:'Not enough USDT on the exchange — you have '+fmtUsd((j&&j.usdtUsd)||0)+'.',min_trade:'Minimum trade is $1.',no_position:'Nothing to sell.',too_much:'That is more than you hold.',dust:'That position is dust — sell 100% of it to clear it.',bad_sym:'That symbol cannot be traded here (stablecoins stay as USDT).',bad_token:'That token cannot be traded — check the contract address.',no_price:'No live price right now — try again in a moment.',login_required:'Please sign in first.',restricted:'Your account is restricted.'};
             msg.textContent=E[j&&j.error]||((j&&j.error==='transient')?'Our store hiccuped — nothing was charged. Try again in a few seconds.':(j&&j.error==='too_big')?'Maximum per trade is $1,000,000.':'Trade failed ('+((j&&j.error)||'no answer')+') — try again.');
           }
         }

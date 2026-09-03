@@ -11809,6 +11809,12 @@ async function handleSpot(url, request, env) {
     const logo = SPOT_LOGO_OK.test(String(a.image_url || '')) ? String(a.image_url).slice(0, 300) : '';
     return jr({ ok: true, mint: addr, pool: top.id, net, native: SPOT_NETS[net].native, sym, name: String(a.name || '').slice(0, 48), logo, price: +a.price_usd || 0, liqUsd: top.liq, vol24: top.vol24, fdv: +a.fdv_usd || 0, thin: top.liq < 8000, listed: false });
   }
+  if (path === '/share' && request.method === 'GET') { // public: a shared portfolio snapshot (server-made, 30 days)
+    const id = String(url.searchParams.get('id') || ''); if (!/^[a-z0-9]{8,24}$/.test(id)) return jr({ error: 'bad' }, 400);
+    let snap = null; try { snap = JSON.parse(await env.STATS.get('spotshare:' + id) || 'null'); } catch (e) {}
+    if (!snap) return jr({ error: 'not_found' }, 404);
+    return new Response(JSON.stringify(snap), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+  }
   if (path === '/board') { // season bank-balance board (2026-09-03): bragging rights only — the paid Spot board was retired 2026-08-17. Public, 60s edge cache.
     const ck = new Request('https://marginpad.io/__spot_board_v1');
     try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
@@ -12027,6 +12033,18 @@ async function handleSpot(url, request, env) {
       if (usdC < 100) return jr({ error: 'min_trade', minUsd: 1 }, 400);
     }
     try { const r = await stub.fetch(new Request('https://do/swap', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, asset, dir, usdC, natQty, feeC }) })); const d = await r.json(); if (d && d.ok) { d.price = px; d.natQty = natQty; d.feeUsd = feeC / 100; try { await evPush(env, request, 'spottrade', 'swap ' + (dir === 'buy' ? 'USDT>' + asset : asset + '>USDT'), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return spotFail(env, jr, path); }
+  }
+  if (path === '/share' && request.method === 'POST') { // make a share card: the SERVER reads the portfolio, so a shared number can never be typed in
+    let pd = null; try { const u = new URL('https://marginpad.io/api/spot/portfolio?uid=' + encodeURIComponent(uid)); const rq = new Request(u.toString(), { headers: { 'x-admin-key': env.ADMIN_KEY || '' } }); const r = await handleSpot(u, rq, env); pd = await r.json(); } catch (e) {}
+    if (!pd || pd.none || pd.error) return jr({ error: 'no_account' }, 400);
+    let who = ''; try { const nr = await usersDO(env, '/names', { ids: [uid] }); who = (nr && nr.names && nr.names[uid]) || ''; } catch (e) {}
+    const snaps = pd.snaps || []; let green = 0; for (let i = 1; i < snaps.length; i++) if (snaps[i].valueUsd - snaps[i - 1].valueUsd > 0.005) green++;
+    const best = (pd.holds || []).slice().sort((a, b) => (b.pnlUsd || 0) - (a.pnlUsd || 0))[0];
+    const id = Date.now().toString(36) + Math.floor(Math.random() * 1e8).toString(36);
+    const snap = { id, who: who || 'A trader', totalUsd: +pd.totalUsd || 0, sinceUsd: +pd.allTimePnlUsd || 0, sincePct: Math.round(((+pd.allTimePnlUsd || 0) / 10000) * 10000) / 100, realizedUsd: +pd.realizedUsd || 0, cardUsd: +pd.cardUsd || 0, greenDays: green, days: snaps.length, best: best ? { sym: (best.meta && best.meta.sym) || best.sym, pnlUsd: +best.pnlUsd || 0, pnlPct: +best.pnlPct || 0 } : null, txN: +pd.txN || 0, ts: Date.now() };
+    try { await env.STATS.put('spotshare:' + id, JSON.stringify(snap), { expirationTtl: 30 * 86400 }); } catch (e) { return spotFail(env, jr, path); }
+    try { await evPush(env, request, 'spottrade', 'shared portfolio', '/spot/'); } catch (e) {}
+    return jr({ ok: true, id, url: 'https://marginpad.io/spot/?share=' + id });
   }
   if (path === '/order' && request.method === 'POST') { // limit orders (2026-09-03): add / cancel / list. Fills happen in spotOrdersSweep through the normal /trade path.
     const action = String(b.action || '');
@@ -14516,6 +14534,7 @@ export class SpotStore {
       const usdC = Math.round(+b.usdC || 0), feeC = Math.max(0, Math.round(+b.feeC || 0));
       if (!uid || usdC < 1000) return this.j({ error: 'min_onramp', minUsd: 10 }, 400); // $10 minimum like real on-ramps
       const a = this._acct(uid, now);
+      if ((+a.onb || 0) < 1) return this.j({ error: 'not_linked' }, 400); // step 1 first — the API used to let a client skip the card link (2026-09-03)
       if (usdC + feeC > (a.card || 0)) return this.j({ error: 'card_insufficient', cardUsd: (a.card || 0) / 100 }, 400);
       sql.exec('UPDATE spotacct SET card=card-?, usdt=usdt+?, onb=MAX(onb,2), last_seen=? WHERE user_id=?', usdC + feeC, usdC, now, uid);
       sql.exec("INSERT INTO spottx(user_id,ts,side,sym,qty,price,usd,fee,pnl,meta) VALUES(?,?,'onramp','USDT',?,1,?,?,0,'{}')", uid, now, usdC / 100, usdC, feeC);
