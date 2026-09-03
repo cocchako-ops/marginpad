@@ -13144,7 +13144,9 @@ export default {
     }
     if (url.pathname === '/api/admin/usage' && (await adminCookieOk(request, env) || (request.method === 'GET' && isAdminKey(env, adminKeyFrom(request, url))))) { // Ops plan block G (2026-09-03): which dashboard tabs the owner actually opens. POST {tab} = one open (sendBeacon from show()); GET = opens per tab, last 30 days, from AE. Tabs never opened are merge/kill candidates.
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
-      if (request.method === 'POST') { let b = {}; try { b = JSON.parse(await request.text() || '{}'); } catch (e) {} const tab = String(b.tab || '').replace(/[^a-z]/g, '').slice(0, 20); if (tab && env.AE) { try { env.AE.writeDataPoint({ indexes: ['admuse'], blobs: ['admuse', tab], doubles: [1] }); } catch (e) {} } return new Response('{"ok":true}', { headers: jh2 }); }
+      if (request.method === 'POST') { let b = {}; try { b = JSON.parse(await request.text() || '{}'); } catch (e) {} const tab = String(b.tab || '').replace(/[^a-z]/g, '').slice(0, 20);
+        let e2e = false; try { const row = JSON.parse(await env.STATS.get('adm:sess:mp_sadm:' + adminCookieHash(request, 'mp_sadm')) || 'null'); e2e = !!(row && row.e2e); } catch (e) {} // build/ops-e2e.js opens every tab on every run — those are not the owner's opens
+        if (tab && env.AE && !e2e) { try { env.AE.writeDataPoint({ indexes: ['admuse'], blobs: ['admuse', tab], doubles: [1] }); } catch (e) {} } return new Response('{"ok":true}', { headers: jh2 }); }
       const ck = new Request('https://marginpad.io/__adm_usage_v1');
       if (!url.searchParams.get('nc')) { try { const hit = await caches.default.match(ck); if (hit) return new Response(await hit.text(), { headers: jh2 }); } catch (e) {} }
       let rows = []; try { rows = await aeQuery(env, "SELECT blob2 AS tab, SUM(_sample_interval) AS n, MAX(timestamp) AS last FROM marginpad_events WHERE index1 = 'admuse' AND timestamp > NOW() - INTERVAL '30' DAY GROUP BY blob2 ORDER BY n DESC") || []; } catch (e) {}
