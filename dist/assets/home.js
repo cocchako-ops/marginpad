@@ -3738,10 +3738,9 @@ window.mpSrvOpen=function(payload,ok,fail){
   var IOS=/iPhone|iPod/.test(navigator.userAgent||'')&&!window.MSStream;
   if(IOS){try{document.documentElement.classList.add('mp-ios');}catch(e){}}
   function kbd(){try{var a=document.activeElement;return !!(a&&a.matches&&a.matches('input,textarea,select')&&side.contains(a));}catch(e){return false;}}
-  function vh(){ if(!IOS)return; try{ if(!built){document.documentElement.style.removeProperty('--pts-vh');return;}
-    var h=window.innerHeight,vv=window.visualViewport;
-    if(vv&&vv.height>0&&!kbd()&&vv.height<h)h=Math.round(vv.height); // Safari: whichever of the two excludes the bottom bar wins (never while the keyboard is up — that would shrink the terminal to the space above it)
-    if(h>0)document.documentElement.style.setProperty('--pts-vh',h+'px'); }catch(e){} }
+  /* RETIRED the same evening: window.innerHeight / visualViewport.height on the owner's iPhone reported the LARGE viewport at
+     load, which pushed the whole sheet below the fold. The iPhone height is now pure CSS (100svh, home.css); vh() only cleans up. */
+  function vh(){ if(!IOS)return; try{ document.documentElement.style.removeProperty('--pts-vh'); }catch(e){} }
   if(IOS&&window.visualViewport){try{window.visualViewport.addEventListener('resize',function(){if(!kbd()){vh();measure();}});}catch(e){}}
   /* ?ptdbg=1 → on-screen numbers from the real device (owner's iPhone report 2026-09-04: Safari's bottom bar over the Open button) */
   if(/[?&]ptdbg=1/.test(location.search)){try{var _dbg=document.createElement('div');_dbg.id='ptsDbg';_dbg.style.cssText='position:fixed;top:64px;left:6px;z-index:2147483000;background:rgba(0,0,0,.85);color:#c2f64a;font:11px/1.4 monospace;padding:6px 8px;border-radius:8px;pointer-events:none;white-space:pre;max-width:92vw';document.body.appendChild(_dbg);

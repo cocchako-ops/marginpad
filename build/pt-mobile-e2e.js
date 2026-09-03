@@ -71,7 +71,7 @@ async function phone(b, w, h, tag, full, ua) {
   try {
     const vhInfo = await ev(p, () => ({ ios: document.documentElement.classList.contains('mp-ios'), vh: document.documentElement.style.getPropertyValue('--pts-vh'), bodyH: Math.round(document.body.getBoundingClientRect().height), inner: innerHeight }));
     if (ua) ok('Android UA: pure-CSS height path (no mp-ios, no --pts-vh)', !vhInfo.ios && !vhInfo.vh && vhInfo.bodyH === vhInfo.inner, JSON.stringify(vhInfo));
-    else ok('iPhone UA: body height = window.innerHeight via --pts-vh', vhInfo.ios && vhInfo.vh === vhInfo.inner + 'px' && vhInfo.bodyH === vhInfo.inner, JSON.stringify(vhInfo));
+    else ok('iPhone UA: mp-ios class, body height = 100svh (no JS var)', vhInfo.ios && !vhInfo.vh && vhInfo.bodyH === vhInfo.inner, JSON.stringify(vhInfo));
     for (let i = 0; i < 8; i++) { const t = await ev(p, () => (document.getElementById('ptsCd') || {}).textContent || ''); if (/\d/.test(t)) break; await wait(400); } // the countdown mirror follows tickCd's 1s tick
     const st = await ev(p, () => {
       const c = document.getElementById('ptChart').getBoundingClientRect(), cc = document.querySelector('.ptt-chart').getBoundingClientRect();

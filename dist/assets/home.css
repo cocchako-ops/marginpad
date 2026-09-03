@@ -2973,7 +2973,7 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 @media (max-width:720px) and (min-height:560px){
   /* --- fit-screen page: header / chart / sheet / bottom tab bar, nothing scrolls --- */
   body.paper-page{display:flex;flex-direction:column;overflow:hidden;height:100vh;height:100dvh;padding-bottom:env(safe-area-inset-bottom)!important;} /* no bottom tab bar on the terminal: the sheet docks on the screen edge (home indicator respected) */
-  html.mp-ios body.paper-page{height:var(--pts-vh,100dvh);} /* iPhone Safari: measured visible height (home.js mpPtSheet vh()) — dvh left the address bar over the sheet */
+  html.mp-ios body.paper-page{height:100vh;height:100svh;} /* iPhone Safari: the SMALL viewport (bottom bar expanded). dvh left the bar over the sheet and a JS innerHeight measurement pushed the sheet below the fold (Safari reports the large viewport at load) — svh is the one deterministic answer */
   body.paper-page>#mpCkBar{flex:0 0 auto;margin:6px 8px 0;} /* cookie consent (mp-nav) is inserted in flow before .wrap — as a flex item it takes its own space instead of pushing the terminal off-screen */
   body.paper-page>section,body.paper-page>footer{display:none!important;} /* worker-appended SEO block (invisible on desktop fit-screen too; stays in the DOM for crawlers) */
   body.paper-page .wrap{flex:1 1 auto;min-height:0;align-self:stretch;width:100%;max-width:none;margin:0;display:flex;flex-direction:column;height:auto;overflow:hidden;padding:0;} /* margin:0 auto on a flex item would shrink-wrap the whole terminal to its content width */
