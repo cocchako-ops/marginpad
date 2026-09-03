@@ -4523,7 +4523,7 @@ async function tgAdmin(env, text, opts) { // tgApi never throws (null on network
   if (!env.TELEGRAM_TOKEN || !env.TG_ADMIN_CHAT) return false;
   const kind = (opts && opts.kind) || alertKindOf(text), sev = (opts && opts.sev) || alertSevOf(text), plain = String(text || '').replace(/<[^>]+>/g, '').slice(0, 220);
   try { const sz = +(await env.STATS.get('alrt:snooze:' + kind)) || 0; if (sz > Date.now()) { try { await opslogPush(env, 'alertlog', { ts: Date.now(), k: kind, s: sev, t: plain, ok: false, sup: true }, 400, 30 * 86400000); } catch (e) {} return true; } } catch (e) {} // snoozed from Telegram/mp-ops: swallowed but recorded; "true" so callers keep their own dedupe bookkeeping
-  const kb = sev === 'info' ? undefined : { inline_keyboard: [[{ text: 'Ack', callback_data: 'ak:' + kind }, { text: 'Snooze 6h', callback_data: 'sz6:' + kind }, { text: 'Snooze 24h', callback_data: 'sz24:' + kind }]] };
+  const kb = sev === 'info' ? undefined : { inline_keyboard: [[{ text: 'Ack', callback_data: 'ak:' + kind }, { text: 'Snooze 6h', callback_data: 'sz6:' + kind }, { text: 'Snooze 24h', callback_data: 'sz24:' + kind }], [{ text: 'Open pocket view', url: 'https://marginpad.io/api/stats/pocket' }]] };
   let r = null; try { r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, parse_mode: 'HTML', disable_web_page_preview: true, text, ...(kb ? { reply_markup: kb } : {}) }); } catch (e) { r = null; }
   const ok = !!(r && r.ok);
   try { await opslogPush(env, 'alertlog', { ts: Date.now(), k: kind, s: sev, t: plain, ok, sup: false }, 400, 30 * 86400000); } catch (e) {} // alert history for the mp-ops Alerts panel
