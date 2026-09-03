@@ -57,10 +57,24 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     const p = await page.evaluate(() => ({ open: !document.getElementById('pal').hidden, items: Array.from(document.querySelectorAll('#palRes .pr')).map(x => x.innerText.replace(/\s+/g, ' ').slice(0, 40)) }));
     chk('palette opens with Ctrl+K and finds users for "kof"', p.open && p.items.some(x => /user/i.test(x)), p);
     await page.keyboard.press('Escape');
-    // phone
-    await page.setViewport({ width: 390, height: 780 }); await page.evaluate(() => { location.hash = 'today/overview'; }); await sleep(1500);
+    // phone — REACHABILITY, not existence: every native view must paint visible content at 390px without any click,
+    // and Support must open a thread from a real tap on a visible row (the first phone release shipped an empty Support
+    // because the panes were hidden until a JS click that only the test could make).
+    await page.setViewport({ width: 390, height: 780, isMobile: true, hasTouch: true }); await page.evaluate(() => { location.hash = 'today/overview'; }); await sleep(1500);
     const m = await page.evaluate(() => ({ hscroll: document.documentElement.scrollWidth > window.innerWidth + 2, menu: getComputedStyle(document.getElementById('menuBtn')).display !== 'none', tiles: document.querySelectorAll('.tile').length }));
     chk('phone: no horizontal scroll, menu button, tiles', !m.hscroll && m.menu && m.tiles >= 4, m);
+    for (const v of views) {
+      if (v.legacy) continue; if (only.length && !only.includes(v.key)) continue;
+      await page.evaluate((k) => { location.hash = k; }, v.key); await sleep(3000);
+      const vis = await page.evaluate(() => { const el = document.getElementById('view'); let h = 0; el.querySelectorAll('.tile,.card,.sup-l,.sup-row,.tbl,.sw').forEach(x => { const r = x.getBoundingClientRect(); if (r.height > 0 && r.width > 0) h += r.height; }); return { visibleHeight: Math.round(h), hscroll: document.documentElement.scrollWidth > window.innerWidth + 2 }; });
+      chk('phone view ' + v.key + ': visible content', vis.visibleHeight > 150 && !vis.hscroll, vis);
+    }
+    if (!only.length || only.includes('inbox/support')) {
+      await page.evaluate(() => { location.hash = 'inbox/support'; }); await sleep(3000);
+      const row = await page.evaluate(() => { const r = document.querySelector('.sup-row'); if (!r) return null; const b = r.getBoundingClientRect(); const hit = document.elementFromPoint(b.x + b.width / 2, b.y + b.height / 2); return { x: b.x + b.width / 2, y: b.y + b.height / 2, reachable: !!(hit && (hit === r || r.contains(hit))) }; });
+      chk('phone support: first ticket row is reachable at its center', !!(row && row.reachable), row);
+      if (row && row.reachable) { await page.touchscreen.tap(row.x, row.y); await sleep(3000); const th = await page.evaluate(() => { const t = document.getElementById('supThread'); const s = document.getElementById('supSend'); const b = s && s.getBoundingClientRect(); return { threadH: t ? Math.round(t.getBoundingClientRect().height) : 0, msgs: document.querySelectorAll('.sup-msg').length, sendVisible: !!(b && b.height > 0 && b.y < window.innerHeight + 2000) }; }); chk('phone support: tap opens the thread with messages and a composer', th.threadH > 200 && th.msgs > 0 && th.sendVisible, th); }
+    }
     await page.evaluate(() => document.getElementById('menuBtn').click()); await sleep(400);
     const mo = await page.evaluate(() => document.getElementById('side').classList.contains('open') && document.getElementById('side').getBoundingClientRect().left >= -1);
     chk('phone: menu drawer opens', mo);
