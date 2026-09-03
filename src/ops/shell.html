@@ -24,7 +24,7 @@
     <header class="top">
       <button class="iconbtn menubtn" id="menuBtn" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
       <div class="crumb" id="crumb">Today</div>
-      <div class="topright"><span class="online" id="online"><i></i><b>—</b> online</span><span class="stamp" id="stamp"></span><button class="btn sm" id="refreshBtn" type="button">Refresh</button></div>
+      <div class="topright"><span class="mkt" id="mkt"></span><span class="pulse" id="pulse"></span><span class="online" id="online"><i></i><b>—</b> online</span><span class="clock" id="clock"></span><span class="stamp" id="stamp"></span><button class="btn sm" id="tzBtn" type="button" title="switch every time on the page between UTC and your local zone">UTC</button><button class="btn sm" id="refreshBtn" type="button">Refresh</button></div>
     </header>
     <div class="attnbar" id="attnbar"></div>
     <main id="view" class="view"></main>
@@ -34,7 +34,7 @@
   <a href="#today/overview" data-sec="today">Today</a><a href="#inbox/support" data-sec="inbox">Inbox</a><a href="#money/withdrawals" data-sec="money">Money</a><a href="#people/users" data-sec="people">People</a><button type="button" id="tabMore">More</button>
 </nav>
 <div class="pal" id="help" hidden><div class="palbox"><div class="helpbox"><b>Keyboard</b>
-<div class="hk"><kbd>Ctrl K</kbd> or <kbd>/</kbd> search or jump</div><div class="hk"><kbd>r</kbd> refresh this view</div><div class="hk"><kbd>[</kbd> <kbd>]</kbd> previous / next view</div><div class="hk"><kbd>Ctrl Enter</kbd> send a reply (Support, chat)</div><div class="hk"><kbd>Esc</kbd> close card, palette or this</div><div class="hk"><kbd>?</kbd> this help</div>
+<div class="hk"><kbd>Ctrl K</kbd> or <kbd>/</kbd> search or jump</div><div class="hk"><kbd>r</kbd> refresh this view</div><div class="hk"><kbd>[</kbd> <kbd>]</kbd> previous / next view</div><div class="hk"><kbd>1</kbd> … <kbd>8</kbd> jump to a section (Today, Inbox, Money, People, Trading, Growth, Health, Settings)</div><div class="hk"><kbd>u</kbd> switch times between UTC and local</div><div class="hk">click any table header to sort it · <b style="display:inline;font:inherit;color:var(--lime)">csv</b> in a card header downloads the table</div><div class="hk"><kbd>Ctrl Enter</kbd> send a reply (Support, chat)</div><div class="hk"><kbd>Esc</kbd> close card, palette or this</div><div class="hk"><kbd>?</kbd> this help</div>
 <div class="line" style="margin-top:10px;font-size:12px">Click any @user anywhere for the quick card; Ctrl-click opens the full profile in a new tab.</div></div></div></div>
 <div class="pal" id="pal" hidden><div class="palbox"><input id="palIn" type="text" placeholder="Type a user, wallet, page or a section name…" autocomplete="off" spellcheck="false"><div class="palres" id="palRes"></div><div class="palhint">Enter opens · Esc closes · sections, users, faucet accounts, community posts</div></div></div>
 <div class="toast" id="toast" hidden></div>

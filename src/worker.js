@@ -13302,6 +13302,32 @@ export default {
       try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=45' } })); } catch (e) {}
       return new Response(body, { headers: jh2 });
     }
+    if (url.pathname === '/api/admin/hourly' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // ops Today "pace": pageviews per UTC hour today vs the average of the same hour over the prior 7 full days (AE). Edge-cached 120s.
+      const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const ck = new Request('https://marginpad.io/__adm_hourly_v1');
+      try { const hit = await caches.default.match(ck); if (hit) return hit; } catch (e) {}
+      const rows = await aeQuery(env, "SELECT toStartOfInterval(timestamp, INTERVAL '1' HOUR) AS h, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1='pageview' AND timestamp > NOW() - INTERVAL '8' DAY GROUP BY h ORDER BY h");
+      const now = new Date(), day0 = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()), hour = now.getUTCHours(), frac = (now.getUTCMinutes() * 60 + now.getUTCSeconds()) / 3600;
+      const today = new Array(24).fill(0), sum = new Array(24).fill(0), cnt = new Array(24).fill(0);
+      (rows || []).forEach(r => { const t = Date.parse(String(r.h).replace(' ', 'T') + (/Z$|[+-]\d\d:?\d\d$/.test(String(r.h)) ? '' : 'Z')); if (!isFinite(t)) return; const h = new Date(t).getUTCHours(), n = +r.n || 0; if (t >= day0) today[h] += n; else if (t >= day0 - 7 * 86400000) { sum[h] += n; cnt[h]++; } });
+      const avg = sum.map((s, h) => cnt[h] ? s / cnt[h] : 0); // average over the prior 7 days for that hour (days with no sample do not drag it down)
+      let soFar = 0, usual = 0; for (let h = 0; h <= hour; h++) { soFar += today[h]; usual += h < hour ? avg[h] : avg[h] * frac; }
+      const body = JSON.stringify({ ae: !!rows, hour, frac: +frac.toFixed(2), today, avg: avg.map(v => Math.round(v)), soFar, usual: Math.round(usual), pct: usual >= 20 ? Math.round((soFar - usual) / usual * 100) : null, ts: Date.now() });
+      const resp = new Response(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=120' } });
+      if (rows) try { await caches.default.put(ck, resp.clone()); } catch (e) {}
+      return new Response(body, { headers: jh2 });
+    }
+    if (url.pathname === '/api/admin/notes' && (await adminCookieOk(request, env))) { // owner's scratchpad on ops Today (KV ops:notes, cookie-only, survives devices unlike localStorage)
+      const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      if (request.method === 'POST') {
+        let b = {}; try { b = await request.json(); } catch (e) {}
+        const text = String(b.text == null ? '' : b.text).slice(0, 20000); const rec = { text, ts: Date.now() };
+        try { await env.STATS.put('ops:notes', JSON.stringify(rec)); } catch (e) { return new Response(JSON.stringify({ error: 'kv' }), { status: 503, headers: jh2 }); }
+        return new Response(JSON.stringify({ ok: true, ts: rec.ts }), { headers: jh2 });
+      }
+      let rec = { text: '', ts: 0 }; try { rec = JSON.parse(await env.STATS.get('ops:notes') || '{"text":"","ts":0}'); } catch (e) {}
+      return new Response(JSON.stringify(rec), { headers: jh2 });
+    }
     if (url.pathname === '/api/admin/health' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Overview System Health card: collector/AE/KV/UserStore + JS errors today; edge-cached 60s
       const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
       const ck = new Request('https://marginpad.io/__adm_health_v2'); // v2: bumped after excluding whyme/chako from avg time-on-site — forces a fresh recompute (old v1 entry held the pre-exclusion avg)

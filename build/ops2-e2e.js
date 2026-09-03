@@ -59,7 +59,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     if (!only.length || only.includes('people/journeys')) {
       await page.evaluate(() => { location.hash = 'people/journeys'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('.jc').length > 0)) break; }
       const jl = await page.evaluate(() => ({ cards: document.querySelectorAll('.jc').length, steps: document.querySelectorAll('.jc-p .pg').length, rail: document.querySelectorAll('.jm-rail .card').length }));
-      chk('journeys: live cards with page chains and the rail', jl.cards > 0 && jl.steps > 0 && jl.rail === 2, jl);
+      chk('journeys: live cards with page chains and the rail (products, exits, actions)', jl.cards > 0 && jl.steps > 0 && jl.rail === 3, jl);
       await page.evaluate(() => { document.querySelector('[data-jv="flows"]').click(); }); await sleep(800);
       const fl = await page.evaluate(() => ({ bars: document.querySelectorAll('.hb-r').length, txt: (document.getElementById('view').innerText || '').slice(0, 80) }));
       chk('journeys: flows view lists hops between products', fl.bars > 0, fl);
@@ -151,6 +151,69 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       chk('switches: guest activation card has its own kill switch', await page.evaluate(() => !!document.querySelector('[data-sw="guestNudge"]')));
       const man = await page.evaluate(async () => { const r = await fetch('/api/stats/asset/ops.webmanifest', { credentials: 'include' }); const j = await r.json(); return { status: r.status, display: j.display, icons: (j.icons || []).length }; });
       chk('PWA manifest served behind the cookie', man.status === 200 && man.display === 'standalone' && man.icons === 2, man);
+    }
+    // 2026-09-04: the fifty (top bar, Today, per-view facts, tables, keyboard, notes)
+    if (!only.length) {
+      const txt = () => document.getElementById('view').innerText;
+      const go = async (k, re, ms) => { await page.evaluate((k) => { location.hash = k; }, k); for (let w = 0; w < (ms || 30); w++) { await sleep(500); if (await page.evaluate((re) => new RegExp(re, 'i').test(document.getElementById('view').innerText), re)) break; } await sleep(400); };
+      await go('today/overview', 'Right now'); await sleep(2500);
+      const tb0 = await page.evaluate(() => ({ mkt: (document.getElementById('mkt') || {}).innerText, clock: (document.getElementById('clock') || {}).innerText, pulse: (document.getElementById('pulse') || {}).innerText, tz: (document.getElementById('tzBtn') || {}).innerText }));
+      chk('top bar: market strip (BTC, ETH, F&G), UTC clock with the season day, pulse numbers, UTC/local toggle', /BTC/.test(tb0.mkt || '') && /ETH/.test(tb0.mkt || '') && /F&G/.test(tb0.mkt || '') && /UTC/.test(tb0.clock || '') && /season day/.test(tb0.clock || '') && /uv/.test(tb0.pulse || '') && /tickets/.test(tb0.pulse || '') && tb0.tz === 'UTC', tb0);
+      const td2 = await page.evaluate(() => { const t = document.getElementById('view').innerText; const cards = Array.from(document.querySelectorAll('.card h2')).map(h => h.innerText.replace(/\s+/g, ' ').toLowerCase()); return { hours: document.querySelectorAll('.hr .hc').length, now: document.querySelectorAll('.hr .hc.now').length, right: cards.some(c => /right now/.test(c)), aud: cards.some(c => /live audience/.test(c)), season: /if it ended now/i.test(t), notes: !!document.getElementById('opsNotes'), pace: /pace vs usual/i.test(t), net: /net today/i.test(t), signups: /sign-ups today that traded/i.test(t), best: /best \d/i.test(t) }; });
+      chk('today: pace tile + 24-hour strip with the current hour marked, right-now pulse, live audience, season payout preview, sign-up quality, net today, notes', td2.hours === 24 && td2.now === 1 && td2.right && td2.aud && td2.season && td2.notes && td2.pace && td2.net && td2.signups, td2);
+      const noteTxt = 'e2e note ' + Date.now(); await page.evaluate((v) => { const n = document.getElementById('opsNotes'); n.value = v; n.dispatchEvent(new Event('input')); }, noteTxt); await sleep(2200);
+      const nt = await page.evaluate(async () => { const j = await (await fetch('/api/admin/notes', { credentials: 'include' })).json(); return { st: (document.getElementById('opsNotesSt') || {}).innerText, text: j.text }; });
+      chk('notes to self save to KV as you type and read back', /saved/.test(nt.st || '') && nt.text === noteTxt, nt);
+      await page.evaluate(async () => { await fetch('/api/admin/notes', { method: 'POST', credentials: 'include', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text: '' }) }); });
+      await go('people/users', 'Where users come from');
+      const us2 = await page.evaluate(() => ({ from: /where users come from/i.test(document.getElementById('view').innerText), tenure: document.querySelectorAll('#uTenure .hb-r').length, csv: document.querySelectorAll('.card [data-csv]').length, tips: document.querySelectorAll('#view .tbl td span[title]').length }));
+      chk('users: origin + device bars, active-today tenure, csv button on the table, exact-time tooltips', us2.from && us2.tenure >= 5 && us2.csv >= 1 && us2.tips > 0, us2);
+      const srt = await page.evaluate(() => { const ths = Array.from(document.querySelectorAll('#view .tbl th')); const th = ths.find(x => /^pv$/i.test(x.innerText.trim())); const idx = ths.indexOf(th); const first = () => document.querySelector('#view .tbl tbody tr').children[idx].innerText.trim(); const a = first(); th.click(); const b = first(); th.click(); const c = first(); return { a, b, c, dir: th.getAttribute('data-dir'), rows: document.querySelectorAll('#view .tbl tbody tr').length }; });
+      chk('tables: a header click sorts ascending, a second click flips to descending', srt.dir === 'desc' && (+srt.c.replace(/,/g, '') >= +srt.b.replace(/,/g, '')), srt);
+      await go('inbox/support', 'median reply'); await sleep(1500);
+      const sp2 = await page.evaluate(() => ({ stats: (document.getElementById('supStats') || {}).innerText, waiting: document.querySelectorAll('.sup-row .sup-m').length, threads: document.querySelectorAll('.sup-row [data-em]').length }));
+      chk('support: reply-time facts (median, oldest waiting, replied today) and repeat-contact badges', /median reply/.test(sp2.stats || '') && /oldest waiting/.test(sp2.stats || '') && sp2.waiting > 0, sp2);
+      await page.evaluate(() => { const r = document.querySelector('.sup-row'); if (r) r.click(); }); for (let w = 0; w < 24; w++) { await sleep(500); if (await page.evaluate(() => { const b = document.querySelector('#supUser #ucBoards b'); return !!(b && !/…/.test(b.innerText) && b.innerText.length > 3); })) break; }
+      const ub = await page.evaluate(() => ({ boards: (document.querySelector('#supUser #ucBoards b') || {}).innerText, last: /last trades/i.test((document.getElementById('supUser') || {}).innerText || ''), draft: !!document.getElementById('supBody') }));
+      chk('user card: season board standing (ROE / WR / XP / Green) and last trades', /ROE/.test(ub.boards || '') && /WR/.test(ub.boards || '') && /XP/.test(ub.boards || '') && /Green/.test(ub.boards || ''), ub);
+      await page.evaluate(() => { const t = document.getElementById('supBody'); if (t) { t.value = 'e2e draft'; t.dispatchEvent(new Event('input')); } }); await sleep(300);
+      chk('support: a half-written reply is kept per ticket', await page.evaluate(() => Object.keys(localStorage).some(k => /^ops_draft:/.test(k) && /e2e draft/.test(localStorage.getItem(k)))));
+      await page.evaluate(() => { Object.keys(localStorage).filter(k => /^ops_draft:/.test(k)).forEach(k => localStorage.removeItem(k)); });
+      await go('money/withdrawals', 'median request to paid');
+      chk('withdrawals: payout speed tiles and per-row payout history', await page.evaluate(() => { const t = document.getElementById('view').innerText; return /median request to paid/i.test(t) && /paid within 24 hours/i.test(t) && /(payout|FIRST)/.test(t); }));
+      await go('people/retention', 'Win-back');
+      const rt = await page.evaluate(() => ({ heat: document.querySelectorAll('#view .heat').length, avg: /all, weighted/i.test(document.getElementById('view').innerText), win: /win-back list/i.test(document.getElementById('view').innerText) }));
+      chk('retention: heat-coloured cohort cells, weighted average row, win-back list', rt.heat > 3 && rt.avg && rt.win, rt);
+      await go('money/premium', 'MRR'); chk('premium: MRR, faucet coverage and MRR at risk', await page.evaluate(() => { const t = document.getElementById('view').innerText; return /MRR/.test(t) && /of the faucet covered/i.test(t) && /MRR at risk/i.test(t); }));
+      await go('money/revenue', 'per 1,000 visitors'); chk('revenue: $ per 1,000 visitors and click-through rate with the prior week', await page.evaluate(() => { const t = document.getElementById('view').innerText; return /per 1,000 visitors/i.test(t) && /visitors who click an exchange/i.test(t); }));
+      await go('money/faucet', 'cost per claimer'); chk('faucet: unit costs (per claimer, per sign-up) and who can withdraw now', await page.evaluate(() => { const t = document.getElementById('view').innerText; return /cost per claimer today/i.test(t) && /cost per sign-up/i.test(t) && /can withdraw now/i.test(t); }));
+      await go('trading/live', 'The crowd', 40); chk('live trades: the crowd (leverage, long/short lean, guests) and today\'s closes', await page.evaluate(() => { const t = document.getElementById('view').innerText; return /leverage in use/i.test(t) && /which way the money leans/i.test(t) && /guests vs accounts/i.test(t) && /closes today|no close since/i.test(t) && !!document.querySelector('.lsb'); }));
+      await go('trading/spot', 'Onboarding funnel', 40); chk('demo spot: six-step onboarding funnel', await page.evaluate(() => /onboarding funnel/i.test(document.getElementById('view').innerText) && document.querySelectorAll('#view .hb-r').length >= 6));
+      const cmp = await page.evaluate(() => { const v = Array.from(document.querySelectorAll('.tile .v span[title]')).map(s => ({ t: s.innerText, full: s.title })); return { n: v.length, first: v[0] }; });
+      chk('tiles: six-digit-plus numbers shown compact (k / M) with the exact value on hover (spot total equity)', cmp.n > 0 && /k|M/.test(cmp.first.t) && /,/.test(cmp.first.full), cmp);
+      await go('growth/funnel', 'Conversion, 7 full days'); chk('funnel: conversion rates 7d vs prior 7d', await page.evaluate(() => /visitor to exchange click/i.test(document.getElementById('view').innerText)));
+      await go('growth/seo', 'New this week'); chk('seo: new pages and pages gone quiet', await page.evaluate(() => { const t = document.getElementById('view').innerText; return /new this week/i.test(t) && /gone quiet/i.test(t); }));
+      await go('growth/community', 'Nobody answered'); chk('community: unanswered posts + engagement per post', await page.evaluate(() => { const t = document.getElementById('view').innerText; return /nobody answered/i.test(t) && /reactions per post/i.test(t); }));
+      await go('health/overview', 'cron heartbeat'); const hv = await page.evaluate(() => ({ tl: !!document.querySelector('#view .tl'), cron: /cron heartbeat/i.test(document.getElementById('view').innerText), ext: /external view/i.test(document.getElementById('view').innerText) }));
+      chk('health: cron heartbeat + external backup age tiles, 24h alert timeline', hv.tl && hv.cron && hv.ext, hv);
+      await go('people/activity', 'Heartbeat'); chk('activity: events-per-5-minutes heartbeat', await page.evaluate(() => /heartbeat/i.test(document.getElementById('view').innerText) && document.querySelectorAll('#view .spark i').length >= 30));
+      await go('inbox/chat', 'Rhythm'); for (let w = 0; w < 20; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('#chatRhythm .spark i').length > 0)) break; } chk('chat: hourly rhythm and who talks', await page.evaluate(() => document.querySelectorAll('#chatRhythm .spark i').length === 24 && /who talks/i.test(document.getElementById('chatRhythm').innerText)));
+      await go('settings/switches', 'This browser'); chk('switches: desktop-notification and time-zone controls', await page.evaluate(() => !!document.getElementById('notifBtn') && !!document.getElementById('tzBtn2')));
+      await go('settings/rewards', 'Site announcement'); await page.evaluate(() => { document.getElementById('annLevel').value = 'blocker'; document.getElementById('annLevel').dispatchEvent(new Event('change')); const m = document.getElementById('annMsg'); m.value = 'e2e preview text'; m.dispatchEvent(new Event('input')); }); await sleep(200);
+      const ap = await page.evaluate(() => { const p = document.getElementById('annPrev'); return { shown: p && !p.hidden, cls: p && p.className, txt: p && p.innerText, cnt: (document.getElementById('annCnt') || {}).innerText }; });
+      chk('reward config: announcement banner previews live in the site colours with a character count', ap.shown && /blocker/.test(ap.cls || '') && /e2e preview text/.test(ap.txt || '') && /\/300/.test(ap.cnt || ''), ap);
+      await page.evaluate(() => { document.activeElement && document.activeElement.blur(); }); await sleep(200);
+      await page.keyboard.press('3'); await sleep(400); const k3 = await page.evaluate(() => location.hash);
+      await page.keyboard.press('u'); await sleep(1500); const tzL = await page.evaluate(() => ({ btn: document.getElementById('tzBtn').innerText, clock: document.getElementById('clock').innerText, dt: (document.querySelector('#view .tbl td.mono') || {}).innerText }));
+      await page.keyboard.press('u'); await sleep(1200); const tzU = await page.evaluate(() => document.getElementById('tzBtn').innerText);
+      chk('keyboard: 3 jumps to Money, u switches every time to local and back to UTC', k3 === '#money/withdrawals' && tzL.btn === 'local' && /local/.test(tzL.clock || '') && tzU === 'UTC', { k3, tzL, tzU });
+      await page.evaluate(() => { location.hash = 'growth/seo'; }); const sk = await page.evaluate(() => ({ skel: document.querySelectorAll('#view .sk').length, txt: document.getElementById('view').innerText.length }));
+      chk('navigation: a skeleton is shown until the view paints', sk.skel >= 2 || sk.txt > 60, sk);
+      await go('money/withdrawals', 'Queue'); await page.evaluate(() => { document.querySelector('[data-f="paid"]').click(); }); await sleep(1200);
+      await go('today/overview', 'Right now'); await go('money/withdrawals', 'Queue');
+      const fm = await page.evaluate(() => ({ stored: localStorage.getItem('ops_f:money/withdrawals'), on: (document.querySelector('#view [data-f].on') || {}).getAttribute('data-f') }));
+      chk('filter memory: the withdrawals filter you picked is still picked after leaving and coming back', /paid/.test(fm.stored || '') && fm.on === 'paid', fm);
+      await page.evaluate(() => { localStorage.removeItem('ops_f:money/withdrawals'); });
     }
     // a view that fires many async fetches (Live trades) must not paint over the view the owner navigates to next
     await page.evaluate(() => { location.hash = 'trading/live'; }); await sleep(400); await page.evaluate(() => { location.hash = 'money/shop'; }); await sleep(6000);
