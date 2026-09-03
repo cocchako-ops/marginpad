@@ -1,0 +1,606 @@
+{
+ "id": "risk",
+ "name": "Manajemen Risiko",
+ "sub": "Satu-satunya keunggulan yang benar-benar bisa dimiliki pemula",
+ "lessons": [
+  {
+   "id": "r1",
+   "t": "Ukuran posisi: keahlian nomor 1",
+   "cards": [
+    {
+     "h": "Pertaruhkan seiris, jangan pernah seloyang",
+     "prompt": "Turunkan risiko per trade sampai kamu bisa bertahan minimal 30 kali kalah beruntun.",
+     "p": "Profesional mengukur posisi supaya satu trade kalah hanya memakan bagian kecil tetap dari akun — umumnya 1-2%. Lihat apa yang pengaturan risikomu lakukan pada peluang bertahan."
+    },
+    {
+     "h": "Ukuran dari stop, bukan dari keserakahan",
+     "p": "Urutan yang benar: pilih di mana trade-nya salah (level stop-loss-mu), ukur jarak entry ke stop, lalu ukur posisi supaya jarak itu setara risiko 1-2%. Ukuran adalah HASIL perhitungan — tak pernah titik awal."
+    },
+    {
+     "h": "Leverage itu alat, ukuran itu keputusan",
+     "p": "Leverage hanya menentukan berapa margin yang kamu setor untuk ukuran tertentu; risiko datang dari ukurannya sendiri. Trade 10× yang diukur benar berisiko lebih kecil daripada 2× yang kebesaran. Berhenti bertanya leverage berapa dan mulai bertanya ukuran berapa yang menahan risikoku di 1%."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Dengan risiko 1% per trade, berapa kekalahan beruntun yang menyisakan 80% akunmu?",
+     "o": [
+      "Sekitar 5",
+      "Sekitar 20",
+      "Sekitar 50",
+      "Satu"
+     ]
+    },
+    {
+     "q": "Langkah PERTAMA yang benar mengukur trade?",
+     "o": [
+      "Memilih leverage",
+      "Menentukan di mana trade-nya salah",
+      "Memilih target profit",
+      "Memaksimalkan ukuran yang margin izinkan"
+     ]
+    },
+    {
+     "q": "Risiko pada akhirnya datang dari…",
+     "o": [
+      "Pengali leverage semata, tidak ada yang lain",
+      "Ukuran posisi relatif terhadap jarak stop-mu",
+      "Koin yang kamu pilih",
+      "Jam berapa kamu trading"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Ukur trade sungguhan: akun, % risiko, entry dan stop — kalkulator mengembalikan ukuran posisi persis.",
+    "label": "Kalkulator Ukuran Posisi →"
+   }
+  },
+  {
+   "id": "r2",
+   "t": "Stop-loss dan take-profit ala profesional",
+   "cards": [
+    {
+     "h": "Stop diletakkan di tempat ide mati",
+     "p": "Stop-loss berada di harga tempat tesismu terbukti salah — di bawah support yang kamu beli, di luar level yang menginvalidasi setup. Menaruhnya di \"rasa sakit maksimal yang kutahan\" itu terbalik: pasar tidak tahu dan tidak peduli ambang sakitmu."
+    },
+    {
+     "h": "Buktikan: letakkan stop-nya",
+     "prompt": "Kamu beli di garis hijau karena zona support. Sentuh tempat stop-loss seharusnya berada.",
+     "p": "Satu dari tiga tempat ini benar. Dua lainnya adalah cara pemula kalah."
+    },
+    {
+     "h": "Perburuan stop itu nyata, paniknya tidak perlu",
+     "p": "Harga sering menembus level jelas dengan sumbu, memicu stop yang menumpuk, lalu berbalik. Solusinya bukan menghapus stop (itu mengubah rugi kecil jadi likuidasi) — tapi menaruh stop di luar angka bulat yang jelas dan mengukur supaya kena stop itu membosankan, bukan menghancurkan."
+    },
+    {
+     "h": "Take-profit: putuskan selagi waras",
+     "p": "Order take-profit mengunci untung otomatis. Putuskan keluar sebelum masuk, selagi objektif — karena setelah entry kamu jadi orang paling tidak objektif yang menatap chart itu. Take-profit parsial (menutup separuh di target pertama, misalnya) adalah kompromi yang sah."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Tempat terbaik untuk stop-loss adalah…",
+     "o": [
+      "Di mana kalah akan terlalu menyakitkan",
+      "Di mana ide trade terbukti salah",
+      "Sedekat mungkin dengan entry",
+      "Tidak ada — stop untuk pengecut"
+     ]
+    },
+    {
+     "q": "Saat harga memburu stop lewat level yang jelas, respons benar adalah…",
+     "o": [
+      "Tidak pernah lagi memakai stop-loss di trade mana pun",
+      "Stop di luar level jelas dan ukuran yang tertahankan",
+      "Menggandakan posisi",
+      "Ganti koin"
+     ]
+    },
+    {
+     "q": "Kapan rencana keluar harus diputuskan?",
+     "o": [
+      "Baru setelah trade masuk profit yang lumayan",
+      "Sebelum masuk, selagi kamu objektif",
+      "Hanya saat kalah",
+      "Tidak pernah"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Buka posisi paper dan pasang SL dan TP sungguhan — latih ritual lengkapnya dengan risiko nol.",
+    "label": "Paper Trade →"
+   }
+  },
+  {
+   "id": "r3",
+   "t": "Risk:reward — salah tapi tetap untung",
+   "cards": [
+    {
+     "h": "Rasio yang memaafkan kesalahan",
+     "p": "Risk:reward membandingkan yang kamu pertaruhkan dengan yang kamu incar. Mempertaruhkan $50 demi $150 adalah 1:3. Di 1:3, menang cuma 3 dari 10 trade tetap membuatmu untung — gambar di bawah adalah sepuluh trade itu. Rasio membelikanmu hak untuk salah hampir sepanjang waktu."
+    },
+    {
+     "h": "Win rate dan R:R saling tukar",
+     "p": "Strategi win rate tinggi biasanya untungnya kecil; strategi R:R tinggi sering kalah tapi menang besar. Keduanya jalan; tak ada yang jalan dengan kombinasi buruk (win rate rendah DAN R:R rendah — kondisi default pemula impulsif). Ketahui permainan mana yang dimainkan strategimu."
+    },
+    {
+     "h": "Ekspektasi: satu-satunya angka yang memutuskan",
+     "p": "Ekspektasi = (win rate × untung rata-rata) − (tingkat kalah × rugi rata-rata). Positif berarti pendekatannya menghasilkan uang dalam banyak trade; negatif berarti ukuran mana pun tak menyelamatkannya. Satu trade tak berarti apa-apa — ekspektasi diukur lewat puluhan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Di risk:reward 1:3, win rate berapa yang kira-kira impas?",
+     "o": [
+      "75%",
+      "50%",
+      "25%",
+      "90%"
+     ]
+    },
+    {
+     "q": "Strategi dengan ekspektasi negatif…",
+     "o": [
+      "Baik-baik saja selama kamu trading ukuran lebih kecil",
+      "Jalan dengan leverage lebih besar",
+      "Rugi seiring waktu berapa pun ukurannya",
+      "Hanya butuh satu kemenangan besar"
+     ]
+    },
+    {
+     "q": "Berapa trade dibutuhkan untuk menilai strategi?",
+     "o": [
+      "Satu yang bagus",
+      "Puluhan — ekspektasi itu statistik",
+      "Dua",
+      "Tidak bisa diukur dengan akurasi sungguhan"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Masukkan win rate dan R:R-mu ke kalkulator Risk of Ruin — lihat kata matematika tentang peluangmu bertahan.",
+    "label": "Kalkulator Risk of Ruin →"
+   }
+  },
+  {
+   "id": "r4",
+   "t": "Matematika brutal drawdown",
+   "cards": [
+    {
+     "h": "Kerugian lebih berat dari keuntungan",
+     "prompt": "Seret kerugian makin dalam dan lihat apa yang pemulihan minta. Temukan kerugian di mana kamu butuh +100% hanya untuk kembali.",
+     "p": "Rugi 10% dan kamu butuh 11% untuk pulih. Asimetri ini bukan bahan poster motivasi — ini aritmetika, dan alasan menjaga modal mengalahkan mengejar profit."
+    },
+    {
+     "h": "Rentetan itu normal, kehancuran itu pilihan",
+     "p": "Bahkan strategi yang menang 60% akan rutin kena rentetan 5 kekalahan — itu probabilitas, bukan kegagalan. Apakah rentetan normal jadi akhir akun tergantung sepenuhnya pada ukuran risiko per trade. Ukuran benar mengubah variansi jadi noise; ukuran berlebih mengubahnya jadi kehancuran."
+    },
+    {
+     "h": "Jebakan balas dendam",
+     "p": "Setelah rugi, dorongannya adalah MEMBESARKAN ukuran demi cepat balik modal. Itu persis terbalik: ukuran besar setelah kalah berarti keputusan terburukmu mendapat taruhan terbesarmu. Profesional melakukan sebaliknya — mengecil saat drawdown, membesar saat lancar."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Setelah kehilangan 50% akun, pemulihan butuh…",
+     "o": [
+      "+50%",
+      "+75%",
+      "+100%",
+      "+25%"
+     ]
+    },
+    {
+     "q": "Rentetan 5 kekalahan di strategi bagus adalah…",
+     "o": [
+      "Bukti strateginya rusak",
+      "Normal secara statistik",
+      "Mustahil",
+      "Alasan menggandakan ukuran"
+     ]
+    },
+    {
+     "q": "Setelah rentetan kalah, profesional biasanya…",
+     "o": [
+      "Menaikkan ukuran supaya pulih lebih cepat",
+      "Menurunkan ukuran sampai performa kembali",
+      "Menghapus stop-loss",
+      "Pindah ke leverage 100×"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r5",
+   "t": "Psikologi: musuh di cermin",
+   "cards": [
+    {
+     "h": "Revenge trading",
+     "p": "Trade termahal dalam sejarah setiap pemula adalah yang dibuka 90 detik setelah kerugian menyakitkan — kebesaran, tanpa rencana, didorong kebutuhan balik modal. Namai polanya sekarang dan adopsi aturan profesional: setelah kena stop, tak ada trade baru sampai ada rencana tertulis."
+    },
+    {
+     "h": "FOMO membeli puncak",
+     "p": "Koin yang hari ini sudah naik 30% terasa paling aman dibeli — semua setuju, chart mengonfirmasi. Tapi masuk di gerakan vertikal berarti: stop-mu jauh, R:R-mu buruk, dan kamu likuiditas keluar bagi pembeli awal. Trade hebat biasanya tidak nyaman di entry, bukan yang jelas."
+    },
+    {
+     "h": "Jurnal adalah cermin",
+     "p": "Jurnal trading — setiap entry, keluar, ukuran, dan alasan — mengubah perasaan samar jadi pola kasatmata: \"trade Minggu malamku selalu kalah\", \"aku selalu memotong untung terlalu cepat\". Tidak glamor dan merupakan alat perbaikan diri tercepat di trading. Trade uang bohongan juga dihitung."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Revenge trade klasik terjadi…",
+     "o": [
+      "Setelah perencanaan matang dan checklist tertulis lengkap",
+      "Beberapa menit setelah kerugian menyakitkan, kebesaran",
+      "Hanya di bull market",
+      "Saat menulis jurnal"
+     ]
+    },
+    {
+     "q": "Membeli koin yang hari ini sudah naik 30% biasanya berarti…",
+     "o": [
+      "Entry teraman yang mungkin ada di pasar",
+      "Risk:reward buruk — entry yang tampak nyaman itu",
+      "Kelanjutan yang dijamin",
+      "Volatilitas rendah"
+     ]
+    },
+    {
+     "q": "Tujuan utama jurnal trading adalah…",
+     "o": [
+      "Cuma berkas pajak",
+      "Membuat polamu terlihat agar bisa diperbaiki",
+      "Membuat trader lain terkesan",
+      "Memprediksi ke mana pasar kemungkinan bergerak berikutnya"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Trade paper-mu sudah mengisi jurnal analitik gratis — lihat win rate, rentetan, dan kebiasaanmu.",
+    "label": "Jurnal Trading →"
+   }
+  },
+  {
+   "id": "r6",
+   "t": "Batas rugi harian dan tilt",
+   "cards": [
+    {
+     "h": "Tilt: trading dalam kondisi rusak",
+     "p": "Setelah dua-tiga kekalahan, kimia otakmu berubah — kebutuhan balik modal menimpa rencana. Pemain poker menyebutnya tilt dan mengelolanya secara struktural, bukan dengan tekad: batas tersentuh, sesi berakhir. Tanpa pengecualian, tanpa \"satu trade lagi\"."
+    },
+    {
+     "h": "Batas rugi harian",
+     "p": "Putuskan di muka: rugi X% akun dalam sehari (umumnya 2-3R) dan kamu selesai sampai besok. Pasar buka lagi tiap hari; disiplinmu tidak beregenerasi di tengah tilt. Trade terbaik di hari buruk adalah menutup laptop."
+    },
+    {
+     "h": "Jadikan mekanis",
+     "p": "Aturan yang harus kamu ingat saat tilt akan gagal. Tulis batasnya di jurnal, beri tahu seseorang, pasang alarm — apa pun yang membuat berhenti jadi bawaan, bukan pilihan. Konsistensi di sini lebih berharga dari indikator mana pun yang akan kamu pelajari."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Tilt adalah…",
+     "o": [
+      "Pola chart yang muncul di puncak reli yang kuat",
+      "Kondisi rusak di mana balas dendam menimpa rencana",
+      "Jenis order",
+      "Menguntungkan"
+     ]
+    },
+    {
+     "q": "Batas rugi harian bekerja karena…",
+     "o": [
+      "Memprediksi kapan pasar akan berbalik melawanmu",
+      "Mengakhiri sesi SEBELUM tilt merusak maksimal",
+      "Exchange memaksakannya",
+      "Menaikkan leverage"
+     ]
+    },
+    {
+     "q": "Pertahanan terbaik melawan tilt adalah…",
+     "o": [
+      "Tekad kuat yang dipanggil di tengah momen panas",
+      "Akhir sesi mekanis yang diputuskan di muka",
+      "Kopi lebih banyak",
+      "Ukuran lebih besar untuk pulih"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r7",
+   "t": "Korelasi: taruhan ganda tersembunyi",
+   "cards": [
+    {
+     "h": "Tiga posisi, satu trade",
+     "p": "Long BTC, long ETH, dan long SOL terasa terdiversifikasi. Tidak: dalam tekanan, korelasi kripto menuju hampir 1 — semuanya jatuh bersama. Kamu tidak memegang tiga trade; kamu memegang satu trade berukuran tiga kali lipat, dengan permukaan likuidasi tiga kali lipat."
+    },
+    {
+     "h": "Diversifikasi asli di kripto itu langka",
+     "p": "Di dalam kripto, hampir semuanya taruhan ber-leverage pada pasang yang sama (Bitcoin dan likuiditas global). Beberapa pasangan terlepas korelasinya di masa tenang — dan berkorelasi lagi persis saat menyakitkan. Anggap korelasi = 1 dalam matematika risikomu dan kamu tak akan terkejut."
+    },
+    {
+     "h": "Hitung eksposur TOTALMU",
+     "p": "Aturan risiko per trade harus berlaku untuk JUMLAH posisi yang berkorelasi. Tiga long 1% risiko di koin besar adalah taruhan 3% pada satu hasil. Perkecil masing-masing, atau terima dan namai konsentrasinya — tapi jangan pernah menyebutnya diversifikasi."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Long BTC + long ETH + long SOL saat crash berperilaku seperti…",
+     "o": [
+      "Tiga trade yang sepenuhnya independen satu sama lain",
+      "Satu trade berukuran tiga kali lipat",
+      "Hedge",
+      "Uang tunai"
+     ]
+    },
+    {
+     "q": "Dalam tekanan pasar, korelasi kripto biasanya…",
+     "o": [
+      "Jatuh ke nol, tiap koin bergerak sendiri-sendiri",
+      "Menuju hampir 1 — semuanya bergerak bersama",
+      "Menjadi negatif",
+      "Menghilang"
+     ]
+    },
+    {
+     "q": "Aturan risiko 1%-mu harus berlaku untuk…",
+     "o": [
+      "Tiap posisi terpisah, selalu",
+      "Jumlah posisi yang berkorelasi",
+      "Hanya Bitcoin",
+      "Hanya kerugian"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Lihat seberapa rapat koin-koin besar sebenarnya bergerak bersama — matriks korelasi live membuatnya terasa.",
+    "label": "Matriks Korelasi →"
+   }
+  },
+  {
+   "id": "r8",
+   "t": "Setup A+: keahlian melewatkan",
+   "cards": [
+    {
+     "h": "Keunggulanmu hidup di sedikit trade",
+     "p": "Tinjau jurnal profit mana pun dan sebuah pola muncul: sebagian besar profit datang dari minoritas setup berkualitas, dan sebagian besar kerugian dari pengisi — trade kebosanan, hampir-setup, entry balas dendam. Peningkatan performa tercepat adalah menghapus pengisi."
+    },
+    {
+     "h": "Definisikan A+ sebelum melihat chart",
+     "p": "Tulis seperti apa setup terbaikmu: tren searah, level kunci, konfluens, invalidasi bersih, R:R minimal 2. Kalau sebuah trade tidak mencentang daftar, dia tidak ada. Standar samar ternegosiasi habis di waktu nyata; yang tertulis bertahan."
+    },
+    {
+     "h": "Kebosanan itu mahal",
+     "p": "Pasar menghukum kebutuhan akan aksi. Tanpa posisi adalah posisi — sering yang terbaik. Profesional menggambarkan pekerjaannya sebagai menunggu; amatir sebagai trading. Bedanya langsung tampak di matematika ekspektasi yang kamu pelajari di r3."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Di kebanyakan jurnal profit, mayoritas untung datang dari…",
+     "o": [
+      "Tiap trade dengan porsi sama",
+      "Minoritas setup berkualitas tinggi",
+      "Trade kebosanan",
+      "Trading akhir pekan"
+     ]
+    },
+    {
+     "q": "Setup A+ harus didefinisikan…",
+     "o": [
+      "Sambil menatap chart live dan mengikuti tiap candle",
+      "Secara tertulis, sebelum melihat chart",
+      "Setelah trade",
+      "Oleh seseorang di media sosial"
+     ]
+    },
+    {
+     "q": "Tanpa posisi (flat) adalah…",
+     "o": [
+      "Waktu terbuang yang trader serius tak boleh biarkan",
+      "Sebuah posisi — sering yang terbaik",
+      "Hanya untuk pemula",
+      "Mustahil"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r9",
+   "t": "Masuk dan keluar bertahap",
+   "cards": [
+    {
+     "h": "Entry tak harus semua-atau-tidak",
+     "p": "Masuk bertahap berarti membangun posisi per bagian — sepertiga di harga pasar, sepertiga di level lebih baik, sepertiga saat konfirmasi. Kamu menukar sedikit presisi harga rata-rata dengan fleksibilitas, dan tak ada satu eksekusi pun yang menentukan trade."
+    },
+    {
+     "h": "Jebakan martingale",
+     "p": "Menambah posisi PEMENANG di level terencana adalah strategi. Menggandakan posisi yang KALAH demi menurunkan rata-rata — martingale — adalah cara akun mati: ukuranmu terbesar persis saat kamu paling salah. Bedanya: apakah penambahan direncanakan sebelum entry."
+    },
+    {
+     "h": "Keluar bertahap mencerminkan masuk",
+     "p": "Menjual posisi menang per bagian menghaluskan keluar dengan cara sama. Aturan yang menjaga semua ini jujur: setiap penambahan dan pengurangan sudah tertulis di rencana SEBELUM posisinya ada. Penambahan dadakan adalah tilt berkostum strategi."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Beda masuk bertahap dan martingale adalah…",
+     "o": [
+      "Koinnya",
+      "Apakah penambahan direncanakan sebelum entry",
+      "Exchange-nya",
+      "Tidak ada — dua nama untuk hal yang sama"
+     ]
+    },
+    {
+     "q": "Martingale berarti ukuran terbesarmu tiba…",
+     "o": [
+      "Saat kamu paling benar tentang pasar",
+      "Persis saat kamu paling salah",
+      "Acak",
+      "Tidak pernah"
+     ]
+    },
+    {
+     "q": "Penambahan dadakan di tengah trade biasanya…",
+     "o": [
+      "Tanda kejeniusan membaca pasar secara langsung",
+      "Tilt berkostum strategi",
+      "Wajib",
+      "Bebas biaya"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r10",
+   "t": "Risk of ruin: matematika bertahan hidup",
+   "cards": [
+    {
+     "h": "Kehancuran adalah probabilitas yang bisa dihitung",
+     "p": "Dengan win rate, R:R, dan risiko per trade tertentu, peluang akunmu suatu saat menabrak drawdown fatal bisa dihitung — namanya risk of ruin. Wawasan brutalnya: pada risiko per trade tinggi, bahkan strategi yang benar-benar profit membawa peluang TINGGI hancur sebelum keunggulannya membayar."
+    },
+    {
+     "h": "Keunggulan sama, nasib berbeda",
+     "p": "Strategi win rate 50%, 1:2 pada risiko 2% punya probabilitas hancur mendekati nol. Strategi identik pada risiko 15% dengan probabilitas tinggi cepat atau lambat menabrak rentetan mematikan. Strateginya tidak berubah — hanya ukuran taruhan. Bertahan adalah sifat ukuran, bukan keahlian."
+    },
+    {
+     "h": "Jalankan angkamu sendiri",
+     "p": "Jangan telan mentah-mentah: masukkan win rate dan R:R paper trading-mu ke kalkulator risk of ruin dan geser slider risiko. Menonton peluang bertahanmu runtuh saat risiko melewati 5% mengajarkan ukuran lebih baik dari paragraf mana pun."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Risk of ruin bergantung pada…",
+     "o": [
+      "Win rate, R:R, dan risiko per trade",
+      "Hanya koin spesifik yang kamu pilih",
+      "Exchange-nya",
+      "Hanya keberuntungan"
+     ]
+    },
+    {
+     "q": "Strategi profit pada risiko 15% per trade…",
+     "o": [
+      "Tidak mungkin gagal",
+      "Tetap membawa peluang hancur tinggi dari rentetan normal",
+      "Optimal",
+      "Tidak punya drawdown berarti di sepanjang jalan"
+     ]
+    },
+    {
+     "q": "Bertahan hidup pertama-tama adalah sifat dari…",
+     "o": [
+      "Keahlian",
+      "Ukuran taruhan",
+      "Membaca berita",
+      "Jam trading"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Masukkan win rate dan R:R aslimu ke kalkulator dan seret slider risiko — tonton peluang kehancuranmu bergerak.",
+    "label": "Kalkulator Risk of Ruin →"
+   }
+  },
+  {
+   "id": "r11",
+   "t": "Checklist pra-trade",
+   "cards": [
+    {
+     "h": "Pilot tidak percaya ingatan. Kamu juga jangan.",
+     "p": "Di bawah tekanan, manusia melompati langkah — makanya penerbangan berjalan di atas checklist. Checklist pra-trade mengeksternalkan disiplinmu: lima pertanyaan dijawab tertulis sebelum setiap entry, setiap kali, apalagi saat setup terasa mendesak."
+    },
+    {
+     "h": "Lima pertanyaannya",
+     "p": "1) Apakah trade SEARAH tren timeframe besar? 2) Apakah di sebuah level, dengan konfluens? 3) Di mana persisnya invalidasi (stop), dan apakah R:R minimal 2? 4) Apakah ukurannya pas untuk risiko 1-2%? 5) Adakah acara terjadwal (CPI, FOMC) dalam jendela trade?"
+    },
+    {
+     "h": "Ketergesaan adalah musuh daftar",
+     "p": "Trade yang paling butuh checklist adalah yang terasa terlalu mendesak untuknya — breakout vertikal, setup balas dendam. Kalau sebuah trade tak bisa menunggu enam puluh detik untuk lima pertanyaan, itu bukan trade; itu impuls dengan chart terlampir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Checklist ada karena…",
+     "o": [
+      "Trader itu bodoh",
+      "Di bawah tekanan manusia pasti melompati langkah",
+      "Exchange mewajibkannya",
+      "Membantu memprediksi arah harga berikutnya"
+     ]
+    },
+    {
+     "q": "Mana yang BUKAN salah satu dari lima pemeriksaan?",
+     "o": [
+      "Tren timeframe besar",
+      "Invalidasi dan R:R",
+      "Ukuran yang benar",
+      "Pendapat media sosial"
+     ]
+    },
+    {
+     "q": "Trade yang tak bisa menunggu 60 detik untuk checklist adalah…",
+     "o": [
+      "Jenis terbaik — peluang sungguhan tak pernah menunggu",
+      "Impuls dengan chart terlampir",
+      "Profit terjamin",
+      "Langka"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r12",
+   "t": "Tinjau jurnalmu seperti pelatih",
+   "cards": [
+    {
+     "h": "Ritual mingguan",
+     "p": "Seminggu sekali, baca setiap trade seperti pelatih meninjau rekaman pertandingan: entry sesuai rencana? Keluarnya? Aturan mana yang dilanggar, dan berapa harga pelanggarannya? Tujuannya bukan menyiksa diri — tapi menemukan SATU kebocoran berulang yang paling mahal."
+    },
+    {
+     "h": "Iris datanya",
+     "p": "Kelompokkan trade: per jenis setup, hari, sesi, koin, kondisi emosi kalau kamu mencatatnya. Kebocoran bersembunyi di total dan melompat keluar dari irisan — trade Minggu malam kalah, satu setup menopang segalanya, long mengalahkan short 3 banding 1."
+    },
+    {
+     "h": "Tutup satu kebocoran per minggu",
+     "p": "Jangan perbaiki semuanya sekaligus. Pilih satu pola termahal, tulis satu aturan melawannya, dan cek minggu depan apakah bertahan. Menggandakan perbaikan proses kecil-kecil persis seperti menggandakan modal — lambat, membosankan, dan luar biasa kuat."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Tujuan tinjauan mingguan adalah…",
+     "o": [
+      "Merasa buruk",
+      "Menemukan satu kebocoran berulang termahal",
+      "Menghitung profit minggu itu dan merayakan kemenangan",
+      "Membagikan tangkapan layar"
+     ]
+    },
+    {
+     "q": "Kebocoran paling mudah ditemukan dengan…",
+     "o": [
+      "Menatap total P&L sampai semuanya membaur",
+      "Mengiris trade per setup, hari, sesi, dan koin",
+      "Bertanya pada teman",
+      "Intuisi"
+     ]
+    },
+    {
+     "q": "Irama perbaikan terbaik adalah…",
+     "o": [
+      "Memperbaiki semuanya sekaligus dalam satu rombak besar",
+      "Satu kebocoran, satu aturan, satu minggu sekali",
+      "Tidak mengubah apa pun",
+      "Strategi baru tiap minggu"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Trade paper-mu sudah mengisi jurnal analitik — buka dan temukan pola termahalmu.",
+    "label": "Jurnal Trading →"
+   }
+  }
+ ]
+}

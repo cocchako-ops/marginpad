@@ -1,0 +1,420 @@
+{
+ "id": "words",
+ "name": "Kamus Trader",
+ "sub": "Jargonnya, diurai",
+ "lessons": [
+  {
+   "id": "wd1",
+   "t": "Long, short, dan punya posisi",
+   "cards": [
+    {
+     "h": "Posisi adalah taruhan terbuka",
+     "p": "Sebelum trading kamu flat: kamu tak memegang apa pun dan tak ada yang bisa terjadi padamu. Begitu kamu beli atau jual, kamu punya posisi — taruhan terbuka dengan arah dan ukuran. Dia tetap terbuka, untung dan rugi mengikuti setiap pergerakan harga, sampai kamu menutupnya. Trader bilang \"aku sedang di dalam posisi\" persis seperti kamu bilang \"aku pasang uang di sini\"."
+    },
+    {
+     "h": "Long berarti kamu mau harganya naik",
+     "p": "Long berarti kamu untung saat harga naik. Beli Bitcoin di $60,000, jual di $63,000, dan kamu dapat $3,000 per koin — itu long. Tak ada yang dipinjam dan tak ada yang eksotis; ini membeli, cuma dengan nama lain. Hampir semua orang mulai dari sini, karena cocok dengan cara kita sudah terbiasa berpikir tentang memiliki sesuatu. \"Long BTC\" cuma berarti: aku memposisikan diri untuk harga naik."
+    },
+    {
+     "h": "Short untung saat harga turun",
+     "p": "Short adalah cerminannya. Kamu jual dulu di harga tinggi dan beli balik nanti di harga lebih rendah, dan selisihnya milikmu. Short di $60,000, beli balik di $57,000, dan kamu menyimpan $3,000 per koin sementara pasar jatuh. Di futures tak ada koin yang berpindah tangan sama sekali — kamu memegang kontrak yang membayarmu saat harga turun. Beginilah trader menghasilkan uang di pasar yang sedang turun."
+    },
+    {
+     "h": "Ukuran melengkapi kalimatnya",
+     "p": "Arah saja bukan posisi. \"Long BTC\" tak bilang apa-apa soal berapa harga sebuah pergerakan bagimu; \"long BTC, $500\" bilang. Ukuran posisi adalah uang yang bekerja, dan dia yang menentukan nilai setiap pergerakan 1%: $500 bergerak 1% adalah $5, menang atau kalah. Pemula berdebat soal arah dan mengabaikan ukuran, padahal itulah separuh yang benar-benar mengendalikan kerusakannya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kamu short dan harga turun. Apa yang terjadi?",
+     "o": [
+      "Kamu menghasilkan uang",
+      "Kamu kehilangan uang",
+      "Posisinya menutup otomatis",
+      "Tak ada apa-apa sampai harga naik lagi"
+     ]
+    },
+    {
+     "q": "Apa arti \"posisi\"?",
+     "o": [
+      "Sejenis akun exchange",
+      "Prediksi harga untuk sepekan",
+      "Pola chart dengan dua puncak",
+      "Taruhan terbuka dengan arah dan ukuran"
+     ]
+    },
+    {
+     "q": "Keduanya long BTC — satu $200, satu $2,000. Pergerakan 1% bernilai:",
+     "o": [
+      "$2 dan $20",
+      "$2 untuk keduanya",
+      "$20 untuk keduanya",
+      "Mustahil diketahui tanpa leverage"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd2",
+   "t": "Bull, bear, pump, dump, crash",
+   "cards": [
+    {
+     "h": "Bull dan bear adalah arah",
+     "p": "Bull market adalah rentang panjang harga naik; bear market rentang panjang harga turun. Nama hewannya datang dari cara mereka menyerang: banteng melempar tanduk ke atas, beruang menyabet cakar ke bawah. Sebut dirimu bullish dan kamu menunggu naik; bearish, turun. Ini kata-kata lambat — mereka menggambarkan bulan, bukan sore ini."
+    },
+    {
+     "h": "Pump dan dump adalah kecepatan",
+     "p": "Pump adalah kenaikan cepat, dump penurunan cepat. Keduanya tak bilang apa pun soal sebabnya. Tapi hati-hati: \"pump and dump\" sebagai satu frasa menamai sebuah skema — sekelompok orang diam-diam memborong koin kecil, mempromosikannya keras-keras, lalu menjual ke pembeli yang mereka tarik. Kenaikannya nyata, dan pintu keluarnya milik mereka, bukan milikmu."
+    },
+    {
+     "h": "Koreksi, crash, dan bedanya",
+     "p": "Konvensi umumnya: penurunan sekitar 10% dari puncak terkini disebut koreksi, dan jatuh 20% atau lebih adalah bear market. Crash bukan soal seberapa besar, tapi soal seberapa cepat — sebagian besar penurunannya tiba dalam hitungan jam atau hari. Di kripto, hari dengan pergerakan 10% itu biasa, jadi orang memakai kata-kata ini seenaknya. Minta angkanya, bukan sebutannya."
+    },
+    {
+     "h": "Kata-kata ini menggambarkan, tak pernah meramal",
+     "p": "Tak ada satu pun di pelajaran ini yang memberitahumu apa yang terjadi berikutnya. Orang yang bilang \"ini cuma koreksi\" tidak sedang melaporkan fakta; dia menebak, biasanya sambil memegang posisi yang butuh tebakan itu jadi benar. Kata-kata ini label untuk apa yang sudah terjadi. Saat sebuah label datang dengan keyakinan tentang besok, keyakinan itulah klaim yang sedang dibuat."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Crash terutama ditentukan oleh:",
+     "o": [
+      "Seberapa jauh harga jatuh",
+      "Seberapa cepat harga jatuh",
+      "Berapa banyak koin jatuh bersamaan",
+      "Berapa lama bear market berlangsung"
+     ]
+    },
+    {
+     "q": "\"Pump and dump\" sebagai frasa menggambarkan:",
+     "o": [
+      "Kenaikan cepat apa pun yang diikuti penurunan",
+      "Skema yang mempromosikan koin, lalu menjual ke pembeli",
+      "Pola candlestick dengan dua puncak",
+      "Proses listing normal di sebuah exchange"
+     ]
+    },
+    {
+     "q": "Menurut konvensi umum, jatuh 20% dari puncak disebut:",
+     "o": [
+      "Koreksi",
+      "Flash crash",
+      "Bear market",
+      "Dump yang dalam"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd3",
+   "t": "Margin, leverage, likuidasi, P&L",
+   "cards": [
+    {
+     "h": "Margin adalah uangmu di dalamnya",
+     "p": "Margin adalah uang tunai yang kamu setor untuk memegang posisi. Nosional adalah ukuran penuh yang dikendalikan posisi itu. Setor margin $100 untuk mengendalikan $1,000 Bitcoin, dan $100 adalah marginmu, $1,000 nosionalmu. Setiap biaya, setiap untung dan setiap rugi dihitung atas nosional lalu mendarat di marginmu — persis itulah kenapa persentase kecil terasa raksasa."
+    },
+    {
+     "h": "Leverage adalah rasionya",
+     "p": "Leverage adalah nosional dibagi margin. $1,000 yang dikendalikan dengan $100 adalah 10x. Itu seluruh definisinya; sisanya konsekuensi. Di 10x, pergerakan harga 1% adalah pergerakan 10% pada marginmu, naik atau turun. Mekanika lengkapnya punya kursus sendiri, Leverage dan Likuidasi. Di sini cukup pegang rasionya, dan fakta bahwa dia mengalikan kedua arah sama rata."
+    },
+    {
+     "h": "Likuidasi adalah keluar paksa",
+     "p": "Kerugianmu keluar dari marginmu. Saat rugi sudah memakan hampir semuanya, exchange menutup posisi itu untukmu, karena bagian pinjamannya harus dilindungi. Itulah likuidasi. Dia bukan peringatan — dia akhir dari posisi itu, di harga berapa pun pasar kebetulan berada. Di 10x, pergerakan sekitar 10% melawanmu sudah cukup."
+    },
+    {
+     "h": "Yang mana yang sedang untung",
+     "prompt": "Harga baru saja turun. Sentuh posisi yang sedang untung.",
+     "p": "P&L berarti profit and loss, untung dan rugi: berapa nilai posisi terbukamu sekarang juga. Dia belum terealisasi selama posisinya terbuka, dan terealisasi begitu kamu menutup. Harga baru saja turun. Satu sentuhan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kamu setor $200 untuk mengendalikan $2,000. Leverage-mu:",
+     "o": [
+      "2x",
+      "10x",
+      "20x",
+      "200x"
+     ]
+    },
+    {
+     "q": "Likuidasi terjadi saat:",
+     "o": [
+      "Kamu menutup posisinya sendiri",
+      "Harga mencapai level take-profit-mu",
+      "Rugi sudah memakan hampir seluruh marginmu",
+      "Exchange menagih biaya funding"
+     ]
+    },
+    {
+     "q": "Biaya dan P&L dihitung atas:",
+     "o": [
+      "Ukuran nosional posisi",
+      "Marginmu saja",
+      "Jumlah yang kamu tarik",
+      "Pengali leverage"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd4",
+   "t": "Bagaimana sebuah order sampai ke pasar",
+   "cards": [
+    {
+     "h": "Order market: kecepatan di atas harga",
+     "p": "Order market bilang: ambil harga berapa pun yang tersedia sekarang. Dia tereksekusi seketika — fill adalah momen order-mu benar-benar jadi posisi — karena dia menerima apa yang sedang diminta sisi lain. Kamu selalu masuk. Kamu tidak selalu dapat harga yang kamu lihat. Pakai saat masuknya lebih penting daripada presisinya."
+    },
+    {
+     "h": "Order limit: harga di atas kecepatan",
+     "p": "Order limit bilang: eksekusi aku di harga ini atau lebih baik, dan tunggu kalau perlu. Dia duduk di order book sampai ada yang trading melawannya, dan mungkin tak pernah tereksekusi sama sekali. Kamu mengendalikan harga dan melepas kepastian. Order limit biasanya juga membayar biaya lebih rendah, karena kamulah yang menunggu, bukan yang menuntut."
+    },
+    {
+     "h": "Stop adalah pemicu",
+     "p": "Stop belum jadi order — dia instruksi yang berubah jadi order saat harga menyentuh level yang kamu pilih. Stop-loss duduk di bawah posisi long dan menutupnya kalau harga jatuh ke situ, membatasi kerusakan. Take-profit melakukan hal yang sama di sisi yang menang. Keduanya tidak menjamin harga persisnya: begitu terpicu, biasanya mereka tereksekusi di harga pasar."
+    },
+    {
+     "h": "Spread dan slippage",
+     "p": "Order book punya pembeli tertinggi, disebut bid, dan penjual terendah, disebut ask. Jarak di antara keduanya adalah spread, dan melintasinya memakan biaya. Slippage itu hal terpisah: order market besar melahap beberapa level harga, jadi harga rata-rata yang kamu dapat lebih buruk dari yang kamu klik. Lihat $100.00, tereksekusi di $100.05, dan slippage memakan 0.05% darimu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Order limit memberimu kendali atas:",
+     "o": [
+      "Harga, tapi bukan apakah dia tereksekusi",
+      "Harga sekaligus eksekusi instan",
+      "Daftar biaya exchange",
+      "Seberapa cepat pasar bergerak"
+     ]
+    },
+    {
+     "q": "Stop-loss terpicu, lalu:",
+     "o": [
+      "Tereksekusi tepat di harga stop-mu",
+      "Biasanya tereksekusi di harga pasar, dekat harga itu",
+      "Membatalkan posisi tanpa menutupnya",
+      "Menunggu di order book sampai membaik"
+     ]
+    },
+    {
+     "q": "Slippage adalah:",
+     "o": [
+      "Komisi yang ditagih exchange",
+      "Jarak antara bid dan ask",
+      "Selisih antara harga yang dilihat dan harga eksekusi",
+      "Keterlambatan yang disebabkan blockchain"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd5",
+   "t": "Kata-kata untuk emosi kerumunan",
+   "cards": [
+    {
+     "h": "FOMO dan FUD",
+     "p": "FOMO adalah fear of missing out: dorongan membeli karena harganya sudah naik tanpa kamu. FUD adalah fear, uncertainty and doubt — takut, ragu, bimbang: dorongan menjual karena ada yang terdengar buruk. Keduanya menamai emosi, bukan fakta tentang pasar. Dan keduanya dipakai sebagai tuduhan — menyebut kehati-hatianmu FUD adalah cara menghentikanmu berpikir."
+    },
+    {
+     "h": "HODL, paper hands, diamond hands",
+     "p": "HODL lahir sebagai salah ketik \"hold\" di sebuah posting forum tahun 2013 dan mengeras jadi perintah untuk tidak pernah menjual. Paper hands mengejek orang yang menjual; diamond hands memuji yang bertahan. Perhatikan apa yang kata-kata ini lakukan: mereka mengubah keputusan tentang uangmu jadi ujian karakter, dinilai orang asing yang tidak ikut menanggung rugimu."
+    },
+    {
+     "h": "Whale dan retail",
+     "p": "Whale adalah pemegang yang cukup besar sampai aksi beli atau jualnya sendiri menggerakkan harga. Retail berarti semua yang kecil — kamu, hampir pasti, dan tak ada hinaan di dalamnya. Bagian yang berguna adalah asimetrinya: whale harus merencanakan pintu keluar, karena ukuran besar tak bisa pergi diam-diam, sementara kamu bisa keluar dalam satu klik."
+    },
+    {
+     "h": "Kapitulasi, dan siapa yang memakainya",
+     "p": "Kapitulasi adalah momen para pemegang berhenti berharap dan menjual di harga berapa pun: volume berat, penurunan brutal, lalu kelelahan. Dia hanya bisa dikenali setelahnya. Itulah batas jujur setiap kata di pelajaran ini — mereka menggambarkan perasaan kerumunan dengan baik dan meramal nol. Saat seseorang memakai salah satunya untuk menyuruhmu bertindak sekarang, tanyakan posisi apa yang dia pegang."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Dibilang bahwa kehati-hatianmu itu FUD biasanya berarti:",
+     "o": [
+      "Ada koreksi faktual yang ditawarkan",
+      "Tekanan supaya kamu berhenti bertanya",
+      "Sebuah istilah analisis teknikal dipakai",
+      "Exchange mengeluarkan peringatan"
+     ]
+    },
+    {
+     "q": "Whale adalah:",
+     "o": [
+      "Pemegang yang cukup besar untuk menggerakkan harga",
+      "Penambang Bitcoin generasi awal",
+      "Trader mana pun yang pakai leverage tinggi",
+      "Karyawan sebuah exchange"
+     ]
+    },
+    {
+     "q": "Kapitulasi bisa dikenali:",
+     "o": [
+      "Di muka, dari volume yang naik",
+      "Hanya setelahnya",
+      "Dari tarif funding",
+      "Oleh exchange, sebelum dia mulai"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd6",
+   "t": "Support, resistance, tren, breakout",
+   "cards": [
+    {
+     "h": "Support dan resistance adalah zona",
+     "p": "Support adalah area harga tempat pembelian berulang kali muncul dan menghentikan penurunan. Resistance adalah tempat penjualan berulang kali menghentikan kenaikan. Mereka zona, bukan garis — level di $60,000 sebenarnya berarti sekitar $59,800 sampai $60,200. Mereka penting karena cukup banyak trader mengawasi dan bertindak di situ, yang juga persis alasan kenapa akhirnya mereka jebol."
+    },
+    {
+     "h": "Tren dan range",
+     "p": "Uptrend adalah rangkaian high yang makin tinggi dan low yang makin tinggi; downtrend kebalikannya. Range bukan keduanya: harga memantul antara lantai dan langit-langit, tak ke mana-mana. Menyebut kamu sedang berada di yang mana adalah hal paling berguna yang kata-kata ini lakukan, karena pasar yang terjebak di range menghukum siapa pun yang trading seolah-olah pasarnya sedang tren."
+    },
+    {
+     "h": "Breakout berarti keluar dari kotak",
+     "p": "Breakout adalah harga meninggalkan range atau menembus resistance. Kata ini sering dipakai sebelum pantas: harga menyembul keluar, semua menyebutnya breakout, lalu dia jatuh langsung kembali ke dalam. Kegagalan itu punya namanya sendiri, fakeout. Kamu baru tahu yang mana setelah candle tutup dan harga tetap di luar."
+    },
+    {
+     "h": "Setiap level butuh timeframe",
+     "p": "Timeframe adalah berapa banyak waktu yang dicakup satu candle — 5 menit, 4 jam, sehari. Support yang digambar di chart 5 menit tak terlihat di chart harian. Pasar yang sama bisa downtrend di 5 menit dan uptrend di harian, dan kedua pernyataan itu benar. Saat seseorang bilang \"trennya\", kata yang hilang adalah timeframe yang mana."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Support paling tepat digambarkan sebagai:",
+     "o": [
+      "Lantai terjamin di bawah harga",
+      "Area tempat pembelian berulang kali muncul",
+      "Harga terendah yang pernah dicapai koin itu",
+      "Garis yang diterbitkan exchange tiap hari"
+     ]
+    },
+    {
+     "q": "Harga menembus resistance lalu langsung jatuh kembali. Itu:",
+     "o": [
+      "Fakeout",
+      "Breakout terkonfirmasi",
+      "Downtrend",
+      "Koreksi"
+     ]
+    },
+    {
+     "q": "Uptrend adalah rangkaian:",
+     "o": [
+      "Candle dengan warna yang sama",
+      "Level yang digambar para pemegang besar",
+      "Kenaikan harian di atas 1%",
+      "High yang makin tinggi dan low yang makin tinggi"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd7",
+   "t": "Likuiditas, volume, volatilitas, market cap",
+   "cards": [
+    {
+     "h": "Volume menghitung, likuiditas menyerap",
+     "p": "Volume adalah berapa banyak yang benar-benar ditradingkan sepanjang satu periode — fakta tentang masa lalu. Likuiditas adalah berapa banyak yang sedang duduk menunggu di order book sekarang — fakta tentang saat ini. Sebuah koin bisa punya hari bervolume raksasa dan tetap tipis, sampai jualan $50,000 masih menjatuhkannya beberapa persen. Volume memberitahu minat; likuiditas memberitahu apakah kamu bisa keluar."
+    },
+    {
+     "h": "Volatilitas mengukur gerakan, bukan arah",
+     "p": "Volatilitas adalah seberapa banyak harga bergerak, ke arah mana pun. Koin yang berayun 5% sehari lima kali lebih volatil dari yang berayun 1%, entah hari-hari itu naik atau turun. Itulah kenapa leverage penting di sini: jarakmu ke likuidasi itu tetap, dan volatilitas yang menentukan seberapa sering harga menempuh jarak itu. Volatilitas tinggi tidak buruk — dia lebih cepat, ke dua arah."
+    },
+    {
+     "h": "Market cap bukan uang yang masuk",
+     "p": "Market cap adalah harga dikali suplai beredar. Dia label, bukan ukuran uang yang benar-benar masuk. Kalau transaksi terakhir di $1 dan ada 100 juta koin, cap-nya terbaca $100 juta meski hanya beberapa ribu dolar berpindah tangan sepanjang hari. Koin tipis membawa cap besar dengan cara ini. Baca dia sebagai ukuran, lalu cek volume sebelum mempercayainya."
+    },
+    {
+     "h": "Order flow: siapa yang agresif",
+     "p": "Setiap transaksi punya pembeli dan penjual, jadi \"pembeli lebih banyak dari penjual\" itu mustahil. Yang berbeda adalah agresivitasnya. Order flow adalah catatan sisi mana yang melintasi spread demi tereksekusi seketika, menghantam order limit yang beristirahat di sisi lain. Harga naik saat pembelilah yang tidak sabar. Pasar yang sama, digambarkan lewat siapa yang mau membayar demi kecepatan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Volume raksasa kemarin menjamin:",
+     "o": [
+      "Kamu bisa keluar dari posisi besar dengan mudah hari ini",
+      "Tidak ada apa pun soal likuiditas di sana hari ini",
+      "Bahwa volatilitas akan rendah hari ini",
+      "Bahwa harganya akan terus naik"
+     ]
+    },
+    {
+     "q": "Market cap $100 juta berarti:",
+     "o": [
+      "Harga dikali suplai beredar adalah $100 juta",
+      "$100 juta diinvestasikan ke koin itu",
+      "Proyeknya memegang cadangan $100 juta",
+      "Volume hariannya $100 juta"
+     ]
+    },
+    {
+     "q": "\"Pembeli lebih banyak dari penjual\" adalah:",
+     "o": [
+      "Cara setiap kenaikan harga terjadi",
+      "Mustahil — setiap transaksi punya keduanya",
+      "Cara lain menyebut volume tinggi",
+      "Ukuran kedalaman order book"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd8",
+   "t": "Kata-kata yang memakan uangmu",
+   "cards": [
+    {
+     "h": "Shill dan ape",
+     "p": "Shill adalah mempromosikan koin yang sudah kamu pegang ke orang yang akan membelinya darimu. Kata ini biasanya diucapkan sambil bercanda, dan di situlah triknya — dia membuat konflik kepentingan terdengar seperti kepribadian. Ape adalah membeli besar-besaran tanpa riset, dikemas sebagai keberanian. Kedua kata itu membuat kesalahan mahal terdengar seperti gaya hidup."
+    },
+    {
+     "h": "Rug pull, moon, 100x",
+     "p": "Rug pull adalah token yang penciptanya menarik kolam uang yang membuat orang bisa menjual, begitu cukup banyak pembeli masuk. Chart-nya menunjukkan garis vertikal turun ke nol. Kata-kata yang dipakai merekrut pembeli itu selalu sama: moon, 100x, early. Target harga tanpa metode di belakangnya bukan analisis, itu umpan."
+    },
+    {
+     "h": "\"Dijamin\" adalah kata alarm",
+     "p": "Di trading, return yang dijamin tak mungkin ada, karena setiap posisi butuh seseorang di sisi lain yang rugi. Siapa pun yang menawarkan persentase harian tetap membayarmu entah dengan uang penyetor baru atau sama sekali tidak. Tak ada pengecualian, semewah apa pun situsnya terlihat. Begitu kamu membaca \"dijamin\", kamu sudah tahu sedang melihat apa."
+    },
+    {
+     "h": "Bukan nasihat keuangan",
+     "p": "Frasa ini dipakai seperti jimat, seolah menambahkannya membuat promosi berbayar jadi tak berbahaya. Dia tak mengubah apa pun tentang yang orang itu lakukan. Ganti dia dengan satu pertanyaan, setiap kali: apa yang orang ini dapat kalau aku membeli? Kalau jawaban jujurnya adalah dia menjual ke kamu, kamu sudah punya semua analisis yang kamu butuhkan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Seseorang menawarkan jaminan 3% per hari. Itu:",
+     "o": [
+      "Realistis dengan software yang cukup bagus",
+      "Penipuan, tanpa kecuali",
+      "Mungkin dengan leverage tinggi",
+      "Boleh untuk jumlah kecil saja"
+     ]
+    },
+    {
+     "q": "Rug pull terjadi saat:",
+     "o": [
+      "Exchange men-delist koin itu",
+      "Harga jatuh tajam dengan volume berat",
+      "Pencipta menarik uang yang membuat pemegang bisa menjual",
+      "Timnya berhenti memposting kabar terbaru"
+     ]
+    },
+    {
+     "q": "\"Bukan nasihat keuangan\" di sebuah posting memberitahumu:",
+     "o": [
+      "Postingnya sudah ditinjau secara hukum",
+      "Tidak ada apa pun soal motif penulisnya",
+      "Penulisnya tidak memegang koin itu",
+      "Klaim di dalamnya sudah diperiksa"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Sekarang kamu punya kosakata yang dipakai menulis sisa jalurnya. Buka terminal paper trading dan taruh salah satu kata ini di layar: buka posisi kecil, lihat P&L-nya bergerak, lalu tutup.",
+    "label": "Buka Paper Trade →"
+   }
+  }
+ ]
+}

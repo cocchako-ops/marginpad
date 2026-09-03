@@ -1,0 +1,422 @@
+{
+ "id": "structure",
+ "name": "Advanced Market Structure",
+ "sub": "Where orders live and why price goes there",
+ "color": "#ff9d5c",
+ "icon": "layers",
+ "lessons": [
+  {
+   "id": "a1",
+   "t": "Liquidity: where the orders actually live",
+   "cards": [
+    {
+     "h": "Price moves toward orders",
+     "v": "stopplace",
+     "p": "Big players cannot fill large positions where the book is empty — they need resting orders to trade against. Clusters of stop-losses and liquidations ARE those resting orders. That is why price so often spikes through an obvious level, fills there, and reverses: it went shopping."
+    },
+    {
+     "h": "Stops are someone else's entry",
+     "p": "Your stop-loss below support is a sell order waiting to happen. A thousand traders placing it in the same obvious spot creates a pool of guaranteed sellers — the perfect place for a large buyer to absorb. This is not a conspiracy; it is simply how large size gets filled."
+    },
+    {
+     "h": "Trading it, not fearing it",
+     "p": "You cannot avoid the game, but you can stop being the easiest target: place invalidations beyond the obvious pools, expect the sweep-and-reverse at clean levels, and treat a wick through a level that instantly reclaims it as information — someone just got filled."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Why does price often spike through obvious levels and reverse?",
+     "o": [
+      "Random chance",
+      "Large players fill against the stop/liquidation orders clustered there",
+      "Exchange bugs",
+      "News timing"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A cluster of stop-losses below support is effectively…",
+     "o": [
+      "Protection",
+      "A pool of guaranteed sell orders — liquidity for big buyers",
+      "Nothing",
+      "A bug"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A wick through a level that instantly reclaims it suggests…",
+     "o": [
+      "The level failed forever",
+      "A liquidity sweep — someone got filled",
+      "Time to panic",
+      "Low volume"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "a2",
+   "t": "Ranges: accumulation and distribution",
+   "cards": [
+    {
+     "h": "Sideways is where the story is written",
+     "v": "wyckoff",
+     "p": "Trends are the result; ranges are the cause. In a range, large players quietly build (accumulate) or unload (distribute) positions without moving price against themselves. The breakout direction is usually decided long before it happens — inside the range."
+    },
+    {
+     "h": "Reading the range",
+     "p": "Watch how price behaves at the range edges: repeated probes below the low that recover fast (sweeps into demand) hint at accumulation; failing rallies at the high on shrinking volume hint at distribution. The middle of the range is noise — the edges are the tell."
+    },
+    {
+     "h": "The spring and the trap",
+     "p": "The classic ending: a false breakout AGAINST the real direction — the spring — that sweeps stops, fills the big player's final size, and reverses into the true move. If you learn to expect the trap, the trap becomes your entry instead of your exit."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Large positions are typically built…",
+     "o": [
+      "During vertical trends",
+      "Inside ranges, quietly",
+      "At the exact top",
+      "On weekends"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The most informative part of a range is…",
+     "o": [
+      "The middle",
+      "The behaviour at its edges",
+      "The colour of candles",
+      "Its duration"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A spring is…",
+     "o": [
+      "A season",
+      "A false breakout against the real direction that sweeps stops before the true move",
+      "A type of fee",
+      "A moving average"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "a3",
+   "t": "Imbalances: when price moves too fast",
+   "cards": [
+    {
+     "h": "Gaps in the auction",
+     "v": "gap",
+     "p": "When price moves violently in one direction, it skips levels — barely any trading happened there. That thin zone is an imbalance (often called a fair value gap). Markets frequently revisit these zones later, because untraded prices are unfinished business for the auction."
+    },
+    {
+     "h": "Why revisits happen",
+     "p": "Nothing mystical: participants who missed the move leave orders in the skipped zone, and market makers who sold into the spike look to buy back where volume was thin. The zone acts like a magnet not because of magic, but because orders accumulate there."
+    },
+    {
+     "h": "Using imbalances honestly",
+     "p": "An imbalance is a CANDIDATE zone for entries in the trend direction — never a guarantee. Stack it with structure: an imbalance that overlaps a support level and the higher-timeframe trend is a real setup; a lone gap on a 1-minute chart is noise with a fancy name."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "An imbalance (fair value gap) is…",
+     "o": [
+      "A broken chart",
+      "A zone price skipped with barely any trading",
+      "A type of order",
+      "An exchange error"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Price often revisits imbalances because…",
+     "o": [
+      "Magic",
+      "Missed orders and rebalancing interest accumulate in the thin zone",
+      "Regulators require it",
+      "It never does"
+     ],
+     "a": 1
+    },
+    {
+     "q": "An imbalance becomes a real setup when…",
+     "o": [
+      "It exists at all",
+      "It overlaps structure and the higher-timeframe trend",
+      "It is on the 1-minute chart",
+      "Someone posts it"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "a4",
+   "t": "Volume profile: the market's memory",
+   "cards": [
+    {
+     "h": "Volume by PRICE, not by time",
+     "v": "vprofile",
+     "p": "The volume bars under your chart show volume per time period. A volume profile turns them sideways: how much traded at each PRICE. High-volume nodes are prices the market accepted for a long time; low-volume nodes are prices it rejected quickly."
+    },
+    {
+     "h": "Acceptance and rejection",
+     "p": "Price entering a high-volume node tends to slow down and chop — plenty of business was done there, and it attracts trade again. Price entering a low-volume node tends to slice through fast — nobody wanted to trade there before, and nobody does now. This explains many fast moves better than any indicator."
+    },
+    {
+     "h": "Practical use",
+     "p": "Mark the highest-volume node of the recent range (the point of control). Above it, dips into it often find buyers; below it, rallies into it often find sellers. Combine with your levels from m1 — when a volume node and a structural level agree, you have found a real zone."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "A volume profile shows volume…",
+     "o": [
+      "Per hour",
+      "At each price level",
+      "Per exchange",
+      "Per trader"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Price moving through a LOW-volume node usually…",
+     "o": [
+      "Slows down",
+      "Slices through fast — the market rejected those prices before",
+      "Reverses always",
+      "Stops"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The point of control is…",
+     "o": [
+      "A stop-loss",
+      "The price with the highest traded volume in the range",
+      "The daily open",
+      "A candle pattern"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "a5",
+   "t": "Fibonacci: math or mirror?",
+   "cards": [
+    {
+     "h": "What fib levels are",
+     "v": "fib",
+     "p": "Fibonacci retracements mark fixed fractions of a prior move — 38.2%, 50%, 61.8%. There is no physical law forcing price to respect them. And yet they often do get respected. Why? Because millions of traders draw the same levels and act on them — a self-fulfilling mirror."
+    },
+    {
+     "h": "The honest way to use them",
+     "p": "Treat fibs as a MAP of where other traders expect reactions, not as gravity. The 61.8% retracement in an uptrend is a popular buy zone — which makes it a real zone, whatever you believe about the math. Self-fulfilling is still fulfilling."
+    },
+    {
+     "h": "Confluence, again",
+     "p": "A fib level alone is a coin flip dressed in mathematics. A fib level that lands on a volume node, a prior support and the higher-timeframe trendline is a zone with several independent reasons to matter. By now you know the pattern: nothing works alone; stacks work."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Fibonacci levels often work because…",
+     "o": [
+      "A law of nature",
+      "Enough traders watch and act on the same levels — self-fulfilling",
+      "Exchanges enforce them",
+      "They never work"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The honest use of a fib retracement is…",
+     "o": [
+      "Blind entries at 61.8%",
+      "A map of where crowds expect reactions, to stack with other evidence",
+      "Predicting exact tops",
+      "Replacing stops"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A fib level with no other confluence is…",
+     "o": [
+      "An A+ setup",
+      "Roughly a coin flip in fancy clothes",
+      "Guaranteed",
+      "Illegal"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "a6",
+   "t": "Relative strength: pick the strongest horse",
+   "cards": [
+    {
+     "h": "Not all green is equal",
+     "v": "domi",
+     "p": "When the market bounces, some coins recover to new highs while others barely lift off their lows. That difference — relative strength — is one of the most durable edges in trading: what refused to fall in the storm usually leads the recovery."
+    },
+    {
+     "h": "Measuring it simply",
+     "p": "No indicator needed: when BTC dipped 5%, what did your candidate do? The coin that fell 2% has buyers defending it; the one that fell 12% does not. Compare a handful of charts against BTC over the same window and the leaders reveal themselves."
+    },
+    {
+     "h": "Strong with the tide",
+     "p": "Combine with m9: in a risk-on tape with falling dominance, longing the relatively strongest alts is fishing where the fish are — trend, tide and strength aligned. Longing the weakest coin because it is cheap is the exact opposite trade wearing a discount sticker."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Relative strength compares…",
+     "o": [
+      "A coin's price to its history alone",
+      "How a coin performs versus the market (e.g., BTC) over the same window",
+      "Volume to fees",
+      "Exchanges"
+     ],
+     "a": 1
+    },
+    {
+     "q": "In a market dip, the coin that fell least likely has…",
+     "o": [
+      "No buyers",
+      "Buyers defending it — strength worth noting",
+      "A bug",
+      "Low liquidity only"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Buying the WEAKEST coin because it looks cheap is…",
+     "o": [
+      "The pro move",
+      "The opposite of relative-strength logic, with a discount sticker",
+      "Risk-free",
+      "Required"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "a7",
+   "t": "Volatility regimes: calm and storm",
+   "cards": [
+    {
+     "h": "Volatility clusters",
+     "v": "regime",
+     "p": "Markets alternate between regimes: long stretches of tight, quiet ranges and bursts of violent expansion. Volatility clusters — calm follows calm, storm follows storm — until the regime breaks. The same strategy cannot treat both worlds identically."
+    },
+    {
+     "h": "Adapting size and stops",
+     "p": "In a storm regime, a stop that was sensible last week now sits inside the noise — and your size must shrink to keep risk constant (bigger stop distance × smaller size = same 1% risk). In dead-calm regimes, breakout trades die repeatedly while mean-reversion thrives."
+    },
+    {
+     "h": "The regime check",
+     "p": "Add one question to your checklist: what regime am I in? A glance at recent candle sizes or an ATR reading answers it. Most inexplicable losing streaks are a strategy built for one regime being run in the other."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Volatility tends to…",
+     "o": [
+      "Be random each day",
+      "Cluster — calm follows calm, storm follows storm",
+      "Only rise",
+      "Only fall"
+     ],
+     "a": 1
+    },
+    {
+     "q": "In a high-volatility regime, keeping risk constant means…",
+     "o": [
+      "Same stop, same size",
+      "Wider stop and SMALLER size",
+      "Tighter stop and bigger size",
+      "No stops"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Many losing streaks are really…",
+     "o": [
+      "Bad luck",
+      "A strategy built for one regime running in the other",
+      "Manipulation",
+      "Fees"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "a8",
+   "t": "Confluence systems: stacking evidence",
+   "cards": [
+    {
+     "h": "From tools to a system",
+     "v": "checklist",
+     "p": "You now hold many lenses: structure, liquidity, ranges, imbalances, volume nodes, fibs, relative strength, regimes — plus everything from courses 1-4. A professional does not use all of them everywhere; they define a fixed STACK that must align before a trade exists."
+    },
+    {
+     "h": "Build your stack",
+     "p": "Example stack: higher-timeframe trend + a structural level + a volume node agreeing + positioning not crowded against you + no red-calendar event inside the window. Five checks. Your stack can differ — what matters is that it is WRITTEN and fixed, so every trade is comparable in the journal."
+    },
+    {
+     "h": "Fewer, heavier trades",
+     "p": "A real stack filters brutally: most days produce nothing, and that is the design. The trades that pass carry several independent reasons — which is exactly what makes their R:R honest. This is the bridge from knowing things to having an edge."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "A confluence system is…",
+     "o": [
+      "Using every indicator at once",
+      "A fixed, written stack of conditions that must align before any trade",
+      "A chat group",
+      "An exchange feature"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A proper stack produces…",
+     "o": [
+      "Constant trades",
+      "Few trades with several independent reasons behind each",
+      "Daily profits",
+      "No losses"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The stack must be written down so that…",
+     "o": [
+      "It looks professional",
+      "Every trade is comparable and reviewable in the journal",
+      "Regulators approve",
+      "It can be sold"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Open the charts workspace and mark ONE complete stack on any coin: trend, level, volume node, and check positioning. No trade needed — just the read.",
+    "label": "Open Charts →",
+    "href": "/charts"
+   }
+  }
+ ]
+}

@@ -1,0 +1,408 @@
+{
+ "id": "firsttrade",
+ "name": "Dein erster Trade, Klick für Klick",
+ "sub": "Jeder Button, der Reihe nach",
+ "lessons": [
+  {
+   "id": "ft1",
+   "t": "Drei Entscheidungen vor jedem Klick",
+   "cards": [
+    {
+     "h": "Ein Trade sind drei Antworten",
+     "p": "Bevor du das Order-Ticket anfasst, müssen drei Fragen beantwortet sein: welche Richtung, bei welchem Preis du widerlegt bist und wie groß die Position ist. Richtung allein ist geraten. Richtung plus Falsch-Preis, aber ohne Größe, ist unfertig. Fehlt eine der drei, hast du noch keinen Trade — du hast einen Wunsch."
+    },
+    {
+     "h": "Richtung: long oder short",
+     "p": "Long heißt, du gewinnst, wenn der Preis steigt, und verlierst, wenn er fällt. Short ist das Spiegelbild: Du gewinnst, wenn er fällt. Bei Futures liegt zwischen beiden ein Klick, und keins von beiden ist das sicherere. Sag deine Richtung als schlichten Satz — long BTC — bevor irgendetwas anderes kommt, denn jedes weitere Feld auf dem Ticket hängt davon ab."
+    },
+    {
+     "h": "Invalidierung: wo du falsch liegst",
+     "p": "Die Invalidierung ist der Preis, an dem dein Grund für den Trade aufgehört hat, wahr zu sein. Bist du long gegangen, weil der Preis ein Level gehalten hat, dann ist ein sauberer Bruch unter dieses Level deine Invalidierung. Lies sie vom Chart ab, nicht daraus, wie viel du gerade zu verlieren magst. Genau diesen Preis tippst du später ins Stop-Loss-Feld."
+    },
+    {
+     "h": "Die Größe ist die letzte Antwort",
+     "p": "Die Größe ist nicht, wie sicher du dich fühlst. Sie ist Arithmetik. Wähl die Dollar, die du in diesem Trade zu verlieren bereit bist, miss die Distanz von Einstieg zu Invalidierung als Prozentsatz und teile. Riskierst du $50 bei einer Invalidierung 2% entfernt, ergibt das eine $2,500-Position, denn $50 geteilt durch 0.02 sind $2,500. Das Größenfeld wird gleich entschlüsselt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Was macht aus einer Richtung einen echten Trade?",
+     "o": [
+      "Starkes Vertrauen in das Setup",
+      "Ein Invalidierungspreis und eine Größe",
+      "Ein größeres Guthaben auf dem Konto",
+      "Eine höher eingestellte Hebelstufe"
+     ]
+    },
+    {
+     "q": "Woher soll dein Invalidierungspreis kommen?",
+     "o": [
+      "Aus dem Betrag, den du verlieren magst",
+      "Aus dem Chart-Level, das dich widerlegt",
+      "Aus dem, was der Hebelwähler anzeigt",
+      "Aus der Größe deines eigenen Kontos"
+     ]
+    },
+    {
+     "q": "Du riskierst $50, die Invalidierung liegt 2% entfernt. Größe?",
+     "o": [
+      "$100",
+      "$1,000",
+      "$2,500",
+      "$5,000"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft2",
+   "t": "Market-Order oder Limit-Order",
+   "cards": [
+    {
+     "h": "Market-Order: füllt sofort",
+     "p": "Eine Market-Order nimmt die Preise, die gerade im Orderbuch liegen, beginnt beim besten und arbeitet sich nach außen, bis deine Größe gefüllt ist. Sie füllt immer. Was sie nicht verspricht, ist der Preis: In einem dünnen Markt frisst sich deine eigene Order durch mehrere Stufen, und der Durchschnitt, den du bekommst, ist schlechter als die Zahl, die du gesehen hast."
+    },
+    {
+     "h": "Limit-Order: dein Preis oder nichts",
+     "p": "Eine Limit-Order sagt: Füll mich zu diesem Preis oder besser, sonst warte. Du legst einen Kauf unter den aktuellen Preis oder einen Verkauf darüber, und die Order liegt im Orderbuch, bis jemand gegen sie handelt. Der Preis ist garantiert, der Fill nicht. Kommt der Preis nie zu deinem Level zurück, bekommst du den Trade einfach nicht."
+    },
+    {
+     "h": "Der Gebührenunterschied ist echt",
+     "p": "Den Spread zu kreuzen macht dich zum Taker und kostet die höhere Gebühr, oft 0.055%. Im Buch zu liegen macht dich zum Maker, oft 0.02%. Auf einer $5,000-Position sind das $2.75 gegen $1.00 pro Seite. Market rein und Market raus kostet $5.50 für hin und zurück, Limit rein und Limit raus kostet $2.00. Derselbe Trade, eine andere Rechnung."
+    },
+    {
+     "h": "Die Wahl zwischen beiden",
+     "p": "Nimm eine Market-Order, wenn Drinsein wichtiger ist als ein paar Dollar, oder wenn du etwas schließt, das schiefgelaufen ist, und jetzt raus willst. Nimm eine Limit-Order, wenn du einen Preis im Kopf hast und damit leben kannst, den Trade zu verpassen. Einen Trade zu verpassen ist ein normales, überlebbares Ergebnis. Einem hinterherzujagen meist nicht."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Eine Limit-Order garantiert…",
+     "o": [
+      "einen Fill zu irgendeinem Preis",
+      "deinen Preis, aber keinen Fill",
+      "immer die niedrigste Gebühr",
+      "eine sofortige Ausführung"
+     ]
+    },
+    {
+     "q": "Auf einer $5,000-Position kostet 0.055% Taker-Gebühr…",
+     "o": [
+      "$0.55",
+      "$5.50",
+      "$2.75",
+      "$27.50"
+     ]
+    },
+    {
+     "q": "Welche Lage rechtfertigt eine Market-Order am ehesten?",
+     "o": [
+      "Du willst die denkbar günstigste Gebühr",
+      "Du bist beim Einstiegspreis geduldig",
+      "Du legst eine Order über Nacht ins Buch",
+      "Du musst aus einer schiefen Position raus"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft3",
+   "t": "Das Größenfeld, entschlüsselt",
+   "cards": [
+    {
+     "h": "Margin, Notional, Menge",
+     "p": "Drei Zahlen beschreiben eine Position. Die Menge ist, wie viel vom Coin du kontrollierst, sagen wir 0.02 BTC. Das Notional ist diese Menge in Dollar: bei $50,000 pro BTC sind 0.02 BTC ein Notional von $1,000. Die Margin ist das Geld, das tatsächlich aus deinem Guthaben gesperrt wird — bei 10x Hebel auf dieser Position $100. Gewinn und Verlust folgen dem Notional, nie der Margin."
+    },
+    {
+     "h": "Was der Hebel wirklich verändert",
+     "p": "Der Hebel ändert nicht, wie viele Dollar du pro 1% Preisbewegung gewinnst oder verlierst. Das macht das Notional. Der Hebel ändert zwei andere Dinge: wie viel Margin gesperrt wird und wie nah der Liquidierungspreis hinter dir sitzt. Dieselbe $1,000-Position verdient und verliert bei 5x und bei 25x identische Dollar. Nur das Polster ist anders."
+    },
+    {
+     "h": "Die Größe folgt der Stop-Distanz",
+     "p": "Rechne rückwärts. Entscheide die Dollar, die du zu verlieren bereit bist: $50. Miss Einstieg bis Invalidierung als Bruchteil: 2%, also 0.02. Das Notional ist das Risiko geteilt durch diesen Bruchteil, also $50 / 0.02 = $2,500. Erst danach wählst du einen Hebel, mit dem sich die gesperrte Margin bequem anfühlt. Ehrgeiz setzt hier gar nichts. Die Stop-Distanz setzt alles."
+    },
+    {
+     "h": "Weiterer Stop heißt kleinere Größe",
+     "p": "Dieselben $50 Risiko kaufen eine $2,500-Position, wenn der Stop 2% entfernt ist, aber nur eine $1,000-Position bei 5%, denn $50 / 0.05 = $1,000. Das ist der Zielkonflikt, den niemand erwähnt: Ein Stop, der zur Beruhigung weit weg liegt, kostet dich Größe. Beide Versionen verlieren exakt $50, wenn du falsch liegst — und genau darum geht es."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Deine Dollar pro 1% Bewegung hängen ab von…",
+     "o": [
+      "dem Hebel, den du gewählt hast",
+      "der Notional-Größe der Position",
+      "der gesperrten Margin im Konto",
+      "deinem gesamten Kontoguthaben"
+     ]
+    },
+    {
+     "q": "0.02 BTC bei $50,000 pro BTC ergeben ein Notional von…",
+     "o": [
+      "$100",
+      "$500",
+      "$1,000",
+      "$2,000"
+     ]
+    },
+    {
+     "q": "Du ziehst den Stop von 2% auf 5% und riskierst weiter $50. Die Größe…",
+     "o": [
+      "bleibt gleich",
+      "wird kleiner",
+      "wird größer",
+      "verdoppelt sich"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft4",
+   "t": "Der Stop-Loss, zuerst gesetzt",
+   "cards": [
+    {
+     "h": "Was ein Stop-Loss ist",
+     "p": "Ein Stop-Loss ist eine Order, die bei der Börse liegt und deine Position automatisch schließt, wenn der Preis ein von dir gewähltes Level erreicht. Auf dem Order-Ticket ist er ein Feld neben deinem Einstieg: Du tippst einen Preis hinein. Er arbeitet, während du schläfst, während dein Handy leer ist und während du gerade damit beschäftigt bist, dir sicher zu sein, dass der Markt falsch liegt."
+    },
+    {
+     "h": "Er geht mit dem Einstieg rein",
+     "p": "Gib den Stop-Loss in derselben Handlung ein wie den Einstieg, nicht erst, nachdem du gesehen hast, wie sich der Trade verhält. Der Grund ist schlicht: Die ruhige Version von dir sucht ein Level im Chart aus, die Version, die schon einer verlierenden Position zusieht, sucht ein Level aus Hoffnung aus. Objektiver als vor dem Fill wirst du nie sein."
+    },
+    {
+     "h": "Setz ihn selbst",
+     "prompt": "Das ist ein Long. Tippe dorthin, wo der Stop-Loss hingehört — knapp unter das Swing-Tief.",
+     "p": "Bevor du dem Feld vertraust, beweise, dass du das Level kennst. Ein Tipp."
+    },
+    {
+     "h": "Einen Stop zu verschieben ist teuer",
+     "p": "Einen Stop weiter wegzuziehen, damit er nicht getroffen wird, ist die teuerste Gewohnheit im Trading. Sie macht aus einem geplanten Verlust von $50 einen ungeplanten von $200, und sie bringt dir bei, dass dein Plan verhandelbar ist. Ein Stop darf in Richtung Gewinn nachgezogen werden, wenn ein Trade läuft. Ihn vom Einstieg weg zu schieben ist kein Risikomanagement, es ist Aufschieben."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Warum den Stop-Loss im selben Moment wie den Einstieg?",
+     "o": [
+      "Börsen schreiben es so vor",
+      "Es senkt deine Handelsgebühr",
+      "Vor dem Fill bist du am objektivsten",
+      "Es vergrößert deine Positionsgröße"
+     ]
+    },
+    {
+     "q": "Was macht ein weiter weggezogener Stop mit deinem geplanten Verlust?",
+     "o": [
+      "Er verschwindet komplett",
+      "Er wird größer und ungeplant",
+      "Er halbiert sich sofort",
+      "Nichts, er bleibt genau gleich"
+     ]
+    },
+    {
+     "q": "Eine Stop-Loss-Order…",
+     "o": [
+      "garantiert Gewinn an deinem Level",
+      "wirkt nur, solange die App offen ist",
+      "ist dasselbe wie ein Take-Profit",
+      "schließt zu einem gewählten Preis"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft5",
+   "t": "Der Take-Profit und das Verhältnis",
+   "cards": [
+    {
+     "h": "Entscheide den Ausstieg vor dem Gefühl",
+     "p": "Ein Take-Profit ist eine Order, die die Position automatisch schließt, bei einem Long über deinem Einstieg, bei einem Short darunter. Ihn gleichzeitig mit dem Stop zu setzen heißt, dass beide Ausstiege gewählt wurden, als nichts auf dem Spiel stand. Eine Position mit Stop, aber ohne Ziel, wird meist von dem Gefühl geschlossen, das zuerst eintrifft."
+    },
+    {
+     "h": "Einen Teil abgeben",
+     "p": "Du musst nicht alles auf einmal schließen. Die Hälfte an einem ersten Ziel zu schließen und den Rest laufen zu lassen, mit dem Stop nachgezogen auf deinen Einstiegspreis, ist eine verbreitete Struktur. Sie verkleinert beide Ergebnisse: einen kleineren Gewinn, wenn der Preis weiterläuft, einen kleineren Verlust, wenn er dreht. Es gibt keine richtige Aufteilung, nur eine, die du vorher gewählt hast."
+    },
+    {
+     "h": "Das Verhältnis, das deine zwei Linien ergeben",
+     "p": "Dein Stop und dein Ziel legen ein Verhältnis fest, bevor der Trade beginnt. Einstieg $50,000, Stop $49,000, Ziel $52,000 riskiert $1,000, um $2,000 zu machen — ein Chance-Risiko-Verhältnis von 2:1. Bei 2:1 kommst du vor Gebühren auf null heraus, wenn du einen von drei Trades gewinnst. Das ist Arithmetik, kein Versprechen. Nichts sagt, dass das Ziel je erreicht wird. Prüf das Verhältnis, bevor du klickst."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Einstieg $50,000, Stop $49,000, Ziel $52,000 — das Verhältnis ist…",
+     "o": [
+      "1:1",
+      "1:2",
+      "2:1",
+      "3:1"
+     ]
+    },
+    {
+     "q": "Warum den Take-Profit gleichzeitig mit dem Stop setzen?",
+     "o": [
+      "Es senkt die Gebühr für den Trade",
+      "Börsen lehnen Orders ohne ihn ab",
+      "Es garantiert, dass das Ziel fällt",
+      "Beide Ausstiege entstehen in Ruhe"
+     ]
+    },
+    {
+     "q": "Die halbe Position am ersten Ziel zu schließen…",
+     "o": [
+      "nimmt alles restliche Risiko weg",
+      "macht Gewinn wie Verlust kleiner",
+      "erhöht automatisch deinen Hebel",
+      "ist an Futures-Börsen so Pflicht"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft6",
+   "t": "Deine offene Position lesen",
+   "cards": [
+    {
+     "h": "Die Positionszeile, Feld für Feld",
+     "p": "Nach dem Fill erscheint deine Position als Zeile: Richtung und Größe, Einstiegspreis, Mark Price, unrealisierter Gewinn und Verlust, Margin und Liquidierungspreis. Jedes Futures-Terminal zeigt ungefähr diese Felder, in irgendeiner Reihenfolge. Nichts in der Zeile sagt dir, ob der Trade ein guter ist. Sie sagt dir, was gerade wahr ist, und das ist eine andere Aufgabe."
+    },
+    {
+     "h": "Einstiegspreis und Mark Price",
+     "p": "Der Einstieg ist der Durchschnittspreis, zu dem du tatsächlich gefüllt wurdest, vor Gebühren. Der Mark Price ist der faire Referenzpreis der Börse, mit dem deine Position bewertet und die Liquidierung entschieden wird — meist an einen breiteren Index gebunden statt an den letzten Trade in einem einzelnen Buch. Das ist Absicht: Es macht es viel schwerer, einen einzelnen ausgerissenen Preis gegen dich zu verwenden."
+    },
+    {
+     "h": "Unrealisiert heißt: noch nicht deins",
+     "p": "Unrealisierter Gewinn und Verlust ist das, wofür die Position abrechnen würde, wenn du sie in dieser Sekunde zum Mark Price schließt. Er bewegt sich mit jedem Tick, und er ist kein Geld, das dir gehört. Realisierter Gewinn und Verlust ist das, was übrig bleibt, wenn du wirklich schließt, Gebühren abgezogen. Konten werden an der zweiten Zahl gemessen, und immer nur an der zweiten."
+    },
+    {
+     "h": "Der Liquidierungspreis ist der Boden",
+     "p": "Der Liquidierungspreis ist der Punkt, an dem deine Margin den Verlust nicht mehr deckt und die Börse die Position für dich schließt und diese Margin behält. Er liegt weiter weg, wenn du Margin nachlegst, und näher, wenn du den Hebel erhöhst. Liegt dein Stop-Loss näher als dein Liquidierungspreis, entscheidet der Stop über den Ausgang. Genau so soll es sein: Beobachte den Stop."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wofür wird der Mark Price benutzt?",
+     "o": [
+      "Den Preis deines Fills festzuhalten",
+      "Position bewerten und Liquidierung auslösen",
+      "Die Gebühr für den Trade festzulegen",
+      "Das heute gehandelte Volumen zu zeigen"
+     ]
+    },
+    {
+     "q": "Unrealisierter Gewinn und Verlust ist…",
+     "o": [
+      "Geld, das schon im Guthaben liegt",
+      "wofür die Position jetzt abrechnen würde",
+      "die Gebühr, die du bisher zahltest",
+      "die von der Position gesperrte Margin"
+     ]
+    },
+    {
+     "q": "Welches Level soll normalerweise über den Ausgang entscheiden?",
+     "o": [
+      "Der Liquidierungspreis",
+      "Der Mark Price der Börse",
+      "Dein Stop-Loss-Level",
+      "Die aktuelle Funding-Rate"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft7",
+   "t": "Eine Position schließen",
+   "cards": [
+    {
+     "h": "Zu Market schließen",
+     "p": "Schließen schickt die Gegenorder in derselben Größe: Ein Long wird durch Verkaufen geschlossen, ein Short durch Kaufen. Schließ zu Market und sie füllt sofort gegen das, was im Buch liegt, und zahlt die Taker-Gebühr. In dem Moment, in dem sie füllt, wird die unrealisierte Zahl realisiert, die Margin geht zurück auf dein Guthaben, und die Zeile verschwindet."
+    },
+    {
+     "h": "Teilschließungen und ausgestoppt werden",
+     "p": "Du kannst einen Teil einer Position schließen. Verkauf die halbe Menge, und die Zeile bleibt in der kleineren Größe offen, mit unverändertem Einstiegspreis. Ausgestoppt zu werden ist dasselbe Ereignis, nur ausgelöst von der Stop-Order, die du gesetzt hast, statt von deinem Finger. So oder so schickt die Börse eine schließende Order. Der einzige Unterschied ist, wer entschieden hat, und wann."
+    },
+    {
+     "h": "Ein geplanter Verlust ist in Ordnung",
+     "p": "Realisiert heißt endgültig: Das Geld hat dein Guthaben verlassen oder ist darin angekommen, Gebühren inklusive. Ein Trade, der den Stop getroffen hat, den du gewählt hast, in der Größe, die du berechnet hast, hat genau das getan, wofür du ihn gebaut hast. Er hat den Betrag gekostet, den du fürs Herausfinden ausgeben wolltest. Beurteile einen Trade danach, ob du dem Plan gefolgt bist, nicht am Vorzeichen der Zahl."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Einen Long zu schließen heißt…",
+     "o": [
+      "mehr von demselben Coin zu kaufen",
+      "die gehaltene Menge zu verkaufen",
+      "Margin zur Position hinzuzufügen",
+      "die Hebel-Einstellung zu erhöhen"
+     ]
+    },
+    {
+     "q": "Was passiert in dem Moment, in dem eine Position schließt?",
+     "o": [
+      "Unrealisiert wird realisiert, Margin frei",
+      "Der Einstiegspreis wird neu berechnet",
+      "Deine Hebel-Einstellung verdoppelt sich",
+      "Die gezahlten Gebühren werden erstattet"
+     ]
+    },
+    {
+     "q": "Ein Trade, der seinen geplanten Stop trifft, ist…",
+     "o": [
+      "ein Fehler, den du nicht wiederholen darfst",
+      "ein Beweis, dass der Ansatz gescheitert ist",
+      "ein Trade, der seinem eigenen Plan folgte",
+      "immer nur eine Frage von schlechtem Glück"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft8",
+   "t": "Ein kompletter Trade, von Anfang bis Ende",
+   "cards": [
+    {
+     "h": "Drei Antworten, dann das Ticket",
+     "p": "Long BTC, weil der Preis $50,000 gehalten hat. Falsch unter $49,000 — das ist die Invalidierung, und sie liegt exakt 2% entfernt. Risiko $50, das Notional ist also $50 / 0.02 = $2,500, und bei 10x sperrt das $250 Margin. Drei Antworten, entschieden und aufgeschrieben, bevor ein einziges Feld auf dem Ticket angefasst wurde."
+    },
+    {
+     "h": "Das Ticket ausfüllen",
+     "p": "Seite Kauf. Ordertyp Limit, Preis $50,000, also zahlst du die Maker-Gebühr und akzeptierst, dass sie vielleicht nie füllt. Größe $2,500 Notional, Hebel 10x. Tipp $49,000 ins Stop-Loss-Feld und $52,000 ins Take-Profit-Feld, bevor du abschickst — dieses Ziel steht 2:1 zu deinem Risiko. Lies das ganze Ticket einmal zurück, dann schick es ab."
+    },
+    {
+     "h": "Nach dem Fill: nichts tun",
+     "p": "Die Positionszeile erscheint und ihre unrealisierte Zahl fängt an zu laufen. Deine Arbeit ist schon fertig, denn beide Ausstiege liegen bei der Börse. Entweder wird $49,000 gehandelt und du verlierst $50, oder $52,000 wird gehandelt und du gewinnst $100, oder du schließt von Hand aus einem Grund, den du hinterher aufschreiben kannst. Härter auf den Bildschirm zu starren ändert an keinem der drei etwas."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Warum ist das Notional im Beispiel $2,500?",
+     "o": [
+      "Es ist das Zehnfache der Margin",
+      "Es sind 5% des Kontoguthabens",
+      "Es ist die Mindestgröße der Börse",
+      "Es sind $50 Risiko geteilt durch 0.02"
+     ]
+    },
+    {
+     "q": "Wann werden Stop-Loss und Take-Profit eingegeben?",
+     "o": [
+      "Nach dem Fill, wenn der Preis lief",
+      "Auf demselben Ticket wie der Einstieg",
+      "Nur wenn der Trade schlecht läuft",
+      "Erst am Ende des Handelstages"
+     ]
+    },
+    {
+     "q": "Erreicht der Preis in dem Trade $52,000, ist das Ergebnis…",
+     "o": [
+      "+$50",
+      "+$250",
+      "+$100",
+      "+$2,500"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Du kennst jetzt jedes Feld auf dem Ticket. Öffne das Paper-Trading-Terminal und platziere einen kompletten Trade mit Spielgeld: Einstieg, Größe, Stop-Loss, Take-Profit. Und dann lass ihn in Ruhe.",
+    "label": "Paper Trade öffnen →"
+   }
+  }
+ ]
+}

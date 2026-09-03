@@ -1,0 +1,459 @@
+{
+ "id": "money",
+ "name": "Novac i Matematika, Jednostavno",
+ "sub": "Jedina aritmetika koja trejdingu treba",
+ "lessons": [
+  {
+   "id": "mo1",
+   "t": "Procenti, kako treba",
+   "cards": [
+    {
+     "h": "Procenat od čega",
+     "p": "Procenat je uvek kriška jednog određenog broja. Deset procenata od $100 je $10. Deset procenata od $10,000 je $1,000. Sam procenat ti ne govori ništa dok ne znaš njegovu osnovu. Kad neko kaže da je trejd doneo 40%, tvoje prvo pitanje je uvek isto: četrdeset procenata od kog iznosa?"
+    },
+    {
+     "h": "Procentni poeni nisu procenti",
+     "p": "To su dve različite stvari. Ako ti win rate poraste sa 40% na 44%, to je rast od 4 procentna poena. Ali kao procenat od mesta odakle si krenuo, to je 4 podeljeno sa 40, što je 10%. Ista promena, dva poštena broja. Kad god vidiš procenat od procenta, uspori i proveri koji se od to dvoje misli."
+    },
+    {
+     "h": "Gore deset, dole deset, nije nula",
+     "p": "Kreni od $100. Dodaj 10% i imaš $110. Sad oduzmi 10% — ali 10% od $110 je $11, ne $10. Završavaš na $99. Dobitak je meren u odnosu na $100, a gubitak u odnosu na $110, pa se ne poništavaju. Obrni redosled i opet sletiš na $99: $100 dole na $90, pa gore $9."
+    },
+    {
+     "h": "Procentne promene se množe",
+     "p": "Postoji prečica. Dobitak od 10% je množenje sa 1.10; gubitak od 10% je množenje sa 0.90. Uradi oba i dobiješ 1.10 puta 0.90, što je 0.99 — neto gubitak od 1%. Nanižeš tako ceo mesec trejdova i ono što je tvoj nalog stvarno uradio je to množenje, a ne sabiranje."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Zaradiš 10%, pa izgubiš 10%. Gde završavaš?",
+     "o": [
+      "Tačno tamo odakle si krenuo",
+      "1% ispod mesta odakle si krenuo",
+      "1% iznad mesta odakle si krenuo",
+      "10% ispod mesta odakle si krenuo"
+     ]
+    },
+    {
+     "q": "Win rate raste sa 40% na 44%. Ta promena je…",
+     "o": [
+      "Rast od 4 procenta naloga",
+      "Pad od 4 procentna poena",
+      "Rast od 4 procentna poena",
+      "Rast od 44 procentna poena"
+     ]
+    },
+    {
+     "q": "Zašto se +10% i -10% ne ponište?",
+     "o": [
+      "Drugi procenat se uzima od većeg broja",
+      "Provizije pojedu razliku",
+      "Procenti se po definiciji nikad ne poništavaju",
+      "Menjačnica zaokruži drugi nadole"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo2",
+   "t": "Zašto gubici bole više od dobitaka",
+   "cards": [
+    {
+     "h": "Gubici kopaju dublju rupu",
+     "p": "Izgubi 50% od $1,000 i imaš $500. Da se vratiš na $1,000 moraš da dodaš $500 — a $500 je 100% od onoga što ti je ostalo. Gubitku od 50% treba dobitak od 100% da bi bio poništen. Gubitak i njegova popravka nisu iste veličine, i nikad nisu."
+    },
+    {
+     "h": "Tabela oporavka",
+     "p": "Provuci istu aritmetiku niz skalu. Minus 10% traži oko 11% nazad. Minus 20% traži 25%. Minus trećina traži 50%. Minus 50% traži 100%. Minus 80% ostavlja $200 od $1,000, pa ti treba $800 povrh tih $200 — to je 400%. Minus 90% traži 900%. Kriva se ne savija blago. Ona ide vertikalno."
+    },
+    {
+     "h": "Dokaži sam",
+     "p": "Dva naloga, dve rupe. Jedan dodir, pa proveri svoj instinkt naspram aritmetike.",
+     "prompt": "Dodirni nalog kome treba veći dobitak da se vrati na nulu."
+    },
+    {
+     "h": "Šta ovo menja kod tebe",
+     "p": "Zato profesionalci prate drawdown — koliko je nalog pao ispod svoje najviše tačke — pažljivije nego prinose. Niz malih gubitaka je aritmetika koja se preživljava. Jedan veliki gubitak je druga kategorija problema. Sve posle ove kartice, od veličine pozicije do stop-lossova, postoji zato da bi pojedinačni gubici ostali dovoljno mali da oporavak ostane običan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Nalog ti padne 50%. Koji dobitak ga vraća na nulu?",
+     "o": [
+      "Dobitak od 100%",
+      "Dobitak od 50%",
+      "Dobitak od 75%",
+      "Dobitak od 150%"
+     ]
+    },
+    {
+     "q": "Nalogu koji je pao 80% treba otprilike koliki dobitak?",
+     "o": [
+      "Dobitak od 80%",
+      "Dobitak od 180%",
+      "Dobitak od 400%",
+      "Dobitak od 800%"
+     ]
+    },
+    {
+     "q": "Zašto je jedan ogroman gubitak gori od nekoliko malih?",
+     "o": [
+      "Veliki trejdovi plaćaju veće provizije",
+      "Potreban dobitak raste brže od gubitka",
+      "Menjačnice kažnjavaju velike drawdown-e",
+      "Mali gubici se ne računaju kao gubici"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo3",
+   "t": "Kako se profit i gubitak računaju",
+   "cards": [
+    {
+     "h": "Tri broja prave rezultat",
+     "p": "Profit i gubitak — P&L — dolazi od tačno tri broja: cene po kojoj si ušao, cene po kojoj si izašao, i koliko si jedinica držao. Ništa drugo ne ulazi u račun. Za long, opkladu da cena raste, P&L je izlazna cena minus ulazna cena, pomnoženo brojem jedinica."
+    },
+    {
+     "h": "Long, izračunat",
+     "p": "Kupiš 0.1 BTC na $60,000 i prodaš na $63,000. Izlaz minus ulaz je $3,000 po coinu. Pomnoži sa 0.1 coina i tvoj profit je $300. Primeti i drugi način da se to vidi: tvoja pozicija je na ulazu vredela $6,000, cena se pomerila 5%, a 5% od $6,000 je istih $300."
+    },
+    {
+     "h": "Short, izračunat",
+     "p": "Short je opklada da cena pada, pa se oduzimanje obrće: ulazna cena minus izlazna, puta broj jedinica. Shortuješ 2 ETH na $3,000 i zatvoriš na $2,850. Ulaz minus izlaz je $150 po coinu, puta 2 coina, pa si zaradio $300. Pozicija ti je bila $6,000 a cena je pala 5%. Ista aritmetika, u ogledalu."
+    },
+    {
+     "h": "Nerealizovan dok ne zatvoriš",
+     "p": "Dok je pozicija otvorena, njen P&L se pomera sa svakom promenom cene i zove se nerealizovan. To je živa procena, a ne novac koji poseduješ. Postaje realizovan tek kad zatvoriš i menjačnica ga proknjiži na tvoj balans. Početnici često računaju nerealizovan profit kao potrošen; pozicija koja se nikad nije zatvorila nikome nije ništa isplatila."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kupiš 0.5 ETH na $2,000 i prodaš na $2,100. Tvoj profit je…",
+     "o": [
+      "$500",
+      "$100",
+      "$1,050",
+      "$50"
+     ]
+    },
+    {
+     "q": "Shortuješ 1 BTC na $60,000 i zatvoriš na $58,800. Rezultat?",
+     "o": [
+      "Profit od $1,200",
+      "Gubitak od $1,200",
+      "Profit od $600",
+      "Nikakva promena"
+     ]
+    },
+    {
+     "q": "Nerealizovan P&L je…",
+     "o": [
+      "Novac koji već sedi na tvom balansu",
+      "Živa procena na još otvorenoj poziciji",
+      "Provizija koju ćeš platiti pri zatvaranju",
+      "Uvek negativan broj"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo4",
+   "t": "Veličina pozicije odlučuje o šteti",
+   "cards": [
+    {
+     "h": "Pomak ne biraš",
+     "p": "Ne kontrolišeš da li će se Bitcoin danas pomeriti 2%. Kontrolišeš tačno jedan broj: koliko je tvoja pozicija velika. Sve ostalo — smer, tajming, volatilnost — je nagađanje ili poklon. Veličina pozicije je jedini ulaz u celom računu koji je potpuno tvoj, što je čini pravom odlukom koju donosiš."
+    },
+    {
+     "h": "Isti pomak, bilo kakav ishod",
+     "p": "Bitcoin padne 2% sa $60,000, što je $1,200 po coinu. Držiš 0.01 BTC i gubiš $12. Držiš 0.5 BTC i gubiš $600. Tržište je uradilo jednu stvar; dva naloga su imala potpuno različit dan. Grafikon je za oba bio identičan. Razlikovao se samo red sa veličinom, a njega je neko ukucao rukom."
+    },
+    {
+     "h": "Razmišljaj u vrednosti pozicije",
+     "p": "Čistiji način da odrediš veličinu: odluči dolarsku vrednost pozicije, a ne broj coina. Pozicija od $600 u bilo čemu gubi $12 na pomaku od 2%, bilo da je to 0.01 BTC ili 0.2 ETH. Procentni pomaci se primenjuju na vrednost, pa ti rad u dolarima omogućava da porediš pozicije na potpuno različitim coinima."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Koji deo trejda je potpuno pod tvojom kontrolom?",
+     "o": [
+      "Smer koji cena odluči da uzme",
+      "Veličina pozicije koju otvaraš",
+      "Koliko je tržište danas volatilno",
+      "Cena po kojoj se tvoj izlaz izvrši"
+     ]
+    },
+    {
+     "q": "Pozicija od $600 ide 2% protiv tebe. To košta…",
+     "o": [
+      "$12",
+      "$6",
+      "$60",
+      "$120"
+     ]
+    },
+    {
+     "q": "Dva tradera uzmu isti trejd; jedan izgubi deset puta više. Zašto?",
+     "o": [
+      "Gledali su različite grafikone",
+      "Jedan je platio mnogo veće provizije",
+      "Jedan je držao mnogo veću poziciju",
+      "Jedan je koristio market, drugi limit nalog"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo5",
+   "t": "Odluči o gubitku pre nego što uđeš",
+   "cards": [
+    {
+     "h": "Rizik je broj koji biraš",
+     "p": "Pre nego što pomisliš na profit, odluči koliko ovaj trejd sme da te košta ako propadne. Zapiši to kao iznos u dolarima. Česta polazna tačka je 1% naloga, pa nalog od $1,000 rizikuje $10 po trejdu. Taj broj nije predviđanje. To je granica koju postavljaš dok si još miran."
+    },
+    {
+     "h": "Veličina dolazi od stopa",
+     "p": "Sad aritmetika ide unazad. Hoćeš da kupiš ETH na $2,000 sa stop-lossom na $1,960 — nalogom koji zatvara trejd ako cena padne dotle. Razdaljina je $40 po coinu. Rizikuješ ukupno $10, pa deli: $10 podeljeno sa $40 je 0.25 ETH. To je tvoja veličina, pozicija od $500."
+    },
+    {
+     "h": "Širi stop, manja veličina",
+     "p": "Promeni jednu stvar. Stavi stop na $1,900 umesto toga, razdaljina od $100 po coinu. Rizik ostaje $10, pa veličina postaje $10 podeljeno sa $100, što je 0.1 ETH — pozicija od $200. Stop nije učinio trejd ni bezbednijim ni rizičnijim. Promenio je koliko coina smeš da držiš uz isti fiksni rizik."
+    },
+    {
+     "h": "Zašto 1%, a ne 10%",
+     "p": "Na riziku od 1%, deset gubitaka zaredom te košta oko 10% naloga, a tabela oporavka kaže da rupa od 10% traži otprilike 11% za popravku. Na riziku od 10%, istih deset gubitaka ostavlja oko trećine onoga s čim si počeo — rupa iz koje treba oko 187% da se ispenješ. Isti trejdovi, isto umeće, druga aritmetika."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Nalog ti je $2,000 i rizikuješ 1% po trejdu. To je…",
+     "o": [
+      "$2 po trejdu",
+      "$20 po trejdu",
+      "$200 po trejdu",
+      "$100 po trejdu"
+     ]
+    },
+    {
+     "q": "Ulaz $2,000, stop $1,960, rizik $10. Koju veličinu uzimaš?",
+     "o": [
+      "0.1 ETH",
+      "0.5 ETH",
+      "0.25 ETH",
+      "2.5 ETH"
+     ]
+    },
+    {
+     "q": "Proširiš stop ali držiš dolarski rizik fiksnim. Veličina mora…",
+     "o": [
+      "Da se smanji",
+      "Da se poveća",
+      "Da ostane potpuno ista",
+      "Da se udvostruči"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo6",
+   "t": "R: jedan jezik za svaki nalog",
+   "cards": [
+    {
+     "h": "Jedan R je ono što si rizikovao",
+     "p": "Prestani da brojiš trejdove u dolarima i broj ih u R. Jedan R je prosto iznos koji si odlučio da rizikuješ na tom trejdu. Rizikuj $10 i izgubi trejd: to je minus jedan R. Zaradi $30 na njemu: plus tri R. Dolarska cifra se menja sa tvojim nalogom. R cifra opisuje sam trejd."
+    },
+    {
+     "h": "Odnos dobitka i rizika pre ulaska",
+     "p": "Uzmi isti ETH trejd: ulaz $2,000, stop $1,960, dakle rizik je $40 po coinu. Postavi take-profit na $2,120 i dobitak je $120 po coinu. Podeli $120 sa $40 i dobiješ 3. Taj trejd nudi tri prema jedan, ili 3R. Ovo možeš da izračunaš pre nego što išta rizikuješ, i treba."
+    },
+    {
+     "h": "Zašto R putuje između naloga",
+     "p": "Nalog od $50 koji rizikuje $0.50 i nalog od $50,000 koji rizikuje $500 mogu da odrade identičan trejd i oba prijave plus 3R. To je poenta. R izbacuje veličinu naloga, pa možeš da porediš svoje trejdove međusobno, sa prošlim mesecom, i sa tuđim, a da dolarski iznosi nijedan ne čine impresivnim."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Rizikuješ $20 i trejd donese $60. U R terminima to je…",
+     "o": [
+      "Plus 3R",
+      "Plus 1R",
+      "Plus 2R",
+      "Plus 6R"
+     ]
+    },
+    {
+     "q": "Ulaz $100, stop $95, take-profit $115. Odnos dobitka i rizika je…",
+     "o": [
+      "1 prema 1",
+      "2 prema 1",
+      "3 prema 1",
+      "5 prema 1"
+     ]
+    },
+    {
+     "q": "Zašto meriti trejdove u R umesto u dolarima?",
+     "o": [
+      "Izbacuje provizije iz računa",
+      "Čini trejdove uporedivim preko različitih naloga",
+      "Garantuje doslednije rezultate",
+      "Menjačnice tako prijavljuju profit"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo7",
+   "t": "Win rate nije cela priča",
+   "cards": [
+    {
+     "h": "Formula za expectancy",
+     "p": "Jedan broj ti kaže da li način trgovanja zarađuje: expectancy, očekivana vrednost jednog trejda. To je tvoj win rate puta prosečan dobitak, minus stopa gubitaka puta prosečan gubitak. Mereno u R, kaže koliko vredi jedan prosečan trejd. Pozitivan expectancy znači da je aritmetika na tvojoj strani kroz mnogo trejdova. Negativan znači da nije."
+    },
+    {
+     "h": "Gubiš većinu trejdova, i dalje si u plusu",
+     "p": "Recimo da dobijaš 40% trejdova, svaki dobitnik donosi 3R, a svaki gubitnik košta 1R. Dobici doprinose 0.4 puta 3, što je 1.2R. Gubici koštaju 0.6 puta 1, što je 0.6R. Expectancy je 1.2 minus 0.6, ili plus 0.6R po trejdu. Kroz 100 trejdova sa rizikom od $10, ta aritmetika pokazuje na $600."
+    },
+    {
+     "h": "Dobijaš većinu trejdova, i dalje si u minusu",
+     "p": "Sad dobijaj 70% trejdova, ali svaki dobitnik donosi samo 0.3R dok svaki gubitnik i dalje košta 1R. Dobici daju 0.7 puta 0.3, što je 0.21R. Gubici uzimaju 0.3 puta 1, što je 0.3R. Expectancy je minus 0.09R po trejdu. Win rate od 70%, a 100 trejdova sa rizikom od $10 pokazuje na gubitak od $90."
+    },
+    {
+     "h": "Win rate na nuli",
+     "p": "Za svaki odnos dobitka i rizika možeš da izračunaš win rate koji izlazi na nulu: jedan podeljeno sa jedan plus R množilac. Na 3R to je jedan podeljeno sa četiri, dakle 25%. Na 0.3R to je jedan podeljeno sa 1.3, oko 77%. Zato primer sa 70% gubi. Nijedan od ta dva broja sam po sebi nije ni dobar ni loš."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Win rate 40%, prosečan dobitak 3R, prosečan gubitak 1R. Expectancy je…",
+     "o": [
+      "Minus 0.6R po trejdu",
+      "Plus 0.6R po trejdu",
+      "Plus 1.2R po trejdu",
+      "Plus 3R po trejdu"
+     ]
+    },
+    {
+     "q": "Šta od ovoga zarađuje kroz mnogo trejdova?",
+     "o": [
+      "Win rate od 40% uz 3R",
+      "Win rate od 70% uz 0.3R",
+      "Bilo koji win rate preko 50%",
+      "Ono što češće dobija"
+     ]
+    },
+    {
+     "q": "Pri odnosu dobitka i rizika od 3R, koji win rate izlazi na nulu?",
+     "o": [
+      "50%",
+      "33%",
+      "25%",
+      "10%"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo8",
+   "t": "Koliko stvarno košta pun krug",
+   "cards": [
+    {
+     "h": "Provizije se naplaćuju na notional",
+     "p": "Provizija na fjučersima je procenat cele vrednosti pozicije — zvane notional — a ne gotovine koju si uložio. Otvori poziciju od $6,000 i taker provizija od 0.055% košta $3.30. Zatvori je i plaćaš ponovo. Proviziju nikad ne zanima koliko je tvog novca iza trejda. Ona vidi samo veličinu pozicije."
+    },
+    {
+     "h": "Poluga množi proviziju",
+     "p": "Poluga omogućava da mali iznos tvoje gotovine — margina — kontroliše veću poziciju. Na 20x, pozicija od $6,000 traži $300 margine. Provizija od $3.30 je 0.055% pozicije, ali 1.1% tvojih $300. Pun krug, unutra i napolje, to je 2.2% tvoje margine nestalo pre nego što se cena uopšte pomerila."
+    },
+    {
+     "h": "Spread i slippage takođe koštaju",
+     "p": "Provizije su samo vidljivi trošak. Spread je razmak između najbolje kupovne i najbolje prodajne cene: kupiš na $3,000.50 i prodaš na $2,999.50 i izgubio si $1 po coinu samo na taj razmak. Slippage je kad se tvoj market nalog izvrši gore od cene koju si video. Oboje je stvaran novac, i nijedno se ne pojavljuje u tarifi provizija."
+    },
+    {
+     "h": "Izaći na nulu nije besplatno",
+     "p": "Dve taker provizije po 0.055% sabiraju se u 0.11% pozicije. Cena mora da se pomeri 0.11% u tvoju korist pre nego što si zaradio ijedan cent, i to je pre spreada. Poluga ovo ne menja: to je 0.11% pozicije u svakom slučaju. Deset punih krugova dnevno na 20x je 22% tvoje margine."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Taker provizija od 0.055% na poziciji od $6,000 košta…",
+     "o": [
+      "$3.30",
+      "$0.33",
+      "$33",
+      "$330"
+     ]
+    },
+    {
+     "q": "Na 20x, jedna taker provizija od 0.055% je koji deo tvoje margine?",
+     "o": [
+      "0.055%",
+      "0.55%",
+      "1.1%",
+      "20%"
+     ]
+    },
+    {
+     "q": "Slippage je…",
+     "o": [
+      "Provizija objavljena u tarifi menjačnice",
+      "Tvoj nalog koji se izvrši gore od viđene cene",
+      "Kamata koja se naplaćuje na pozajmljena sredstva",
+      "Stop-loss koji se aktivira prerano"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo9",
+   "t": "Izračunaj pre nego što klikneš",
+   "cards": [
+    {
+     "h": "Pet brojeva, po redu",
+     "p": "Pre svakog ulaska zapiši pet stvari. Prvo: veličinu naloga. Drugo: dolare koje si spreman da izgubiš. Treće: ulaznu cenu i stop cenu, koje daju razdaljinu do stopa. Četvrto: veličinu pozicije, iz rizika podeljenog tom razdaljinom. Peto: cilj, i R množilac koji iz njega sledi. Ako je peti korak ispod 1R, već znaš odgovor."
+    },
+    {
+     "h": "Ceo račun, jednom",
+     "p": "Nalog $1,000. Rizik 1%, dakle $10. Ulaz ETH na $2,000, stop $1,960, razdaljina $40. Veličina je $10 podeljeno sa $40, ili 0.25 ETH — pozicija od $500. Cilj $2,120 daje $120 po coinu, pa 0.25 coina donosi $30. To je 3R. Provizije za pun krug od 0.11% na $500 iznose $0.55, sitno pored $30."
+    },
+    {
+     "h": "Matematika ne predviđa",
+     "p": "Ništa od ovoga ti ne govori da li trejd dobija. Govori ti tačno šta rizikuješ, koliko možeš da zaradiš i koliko trejd košta da se odradi. Gubici su normalni i ova aritmetika ih ne sprečava. Ono što sprečava jeste da te iznenadi broj koji si mogao da izračunaš za trideset sekundi."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Nalog $500, rizik 2%, razdaljina do stopa $25 po coinu. Veličina?",
+     "o": [
+      "0.2 coina",
+      "2 coina",
+      "4 coina",
+      "0.4 coina"
+     ]
+    },
+    {
+     "q": "Tvoj planirani cilj daje samo 0.5R. Šta ti to govori?",
+     "o": [
+      "Dobitak je mali u odnosu na rizik",
+      "To je neobično jak trejd",
+      "Treba da rizikuješ više da to nadoknadiš",
+      "Provizije će nadoknaditi razliku"
+     ]
+    },
+    {
+     "q": "Šta ti ova aritmetika unapred zapravo daje?",
+     "o": [
+      "Garanciju da trejd dobija",
+      "Poznat rizik, poznat dobitak, poznat trošak",
+      "Veći win rate vremenom",
+      "Niže provizije od menjačnice"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Sad imaš ceo račun. Otvori kalkulatore i provuci svoje brojeve — nalog, rizik, razdaljina do stopa — dok ti računanje veličine ne postane automatsko.",
+    "label": "Otvori Kalkulatore →"
+   }
+  }
+ ]
+}

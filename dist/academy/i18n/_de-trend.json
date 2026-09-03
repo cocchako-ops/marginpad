@@ -1,0 +1,467 @@
+{
+ "id": "trend",
+ "name": "Trend, Support & Resistance",
+ "sub": "Einen Chart von Grund auf lesen",
+ "lessons": [
+  {
+   "id": "tr1",
+   "t": "Was ein Trend wirklich ist",
+   "cards": [
+    {
+     "h": "Höhere Hochs und höhere Tiefs",
+     "p": "Ein Aufwärtstrend hat eine Form, die du prüfen kannst, und keine Stimmung, die du spürst. Jeder Schub nach oben endet höher als der vorige Schub. Jeder Rücksetzer stoppt höher als der vorige Rücksetzer. Höhere Hochs, höhere Tiefs, in dieser Reihenfolge, von links nach rechts. Kannst du nicht auf je zwei davon im Chart zeigen, bist du nicht in einem Aufwärtstrend."
+    },
+    {
+     "h": "Der Abwärtstrend ist das Spiegelbild",
+     "p": "Ein Abwärtstrend ist dieselbe Regel, umgedreht. Jede Erholung stoppt tiefer als die vorige. Jeder Absturz geht unter den vorigen. Tiefere Hochs, tiefere Tiefs. Nichts daran sagt, dass der Preis weiter fallen wird. Es beschreibt nur, was schon passiert ist — und zwar so, dass ein anderer Mensch es im selben Chart nachprüfen und dir zustimmen könnte."
+    },
+    {
+     "h": "Benenne die Swings laut",
+     "p": "Mach es die ersten hundert Male von Hand. Leg den Finger auf den Chart, such die offensichtlichen Spitzen und die offensichtlichen Tiefpunkte und sprich die Folge aus: Hoch, Tief, höheres Hoch, höheres Tief. Musst du die Augen zusammenkneifen, damit es passt, dann passt es nicht. Ein Trend, den du nur siehst, weil du ihn sehen willst, ist nicht da."
+    },
+    {
+     "h": "Wann ein Trend aufhört, einer zu sein",
+     "p": "Ein Aufwärtstrend endet, wenn die Folge bricht: Der Preis macht ein Tief unter dem vorigen Tief. Das ist der ganze Test. Es heißt nicht, dass ein Abwärtstrend begonnen hat, und oft läuft der Preis danach wochenlang einfach seitwärts. Es heißt, dass der Grund, aus dem du es einen Aufwärtstrend genannt hast, weg ist — und jeder Plan, der auf diesem Grund stand, ebenfalls."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Was macht einen Chart zum Aufwärtstrend?",
+     "o": [
+      "Überwiegend grüne Kerzen am heutigen Tag",
+      "Eine Folge höherer Hochs und Tiefs",
+      "Der Preis steht über einer runden Zahl",
+      "Steigendes Volumen bei jeder Kerze"
+     ]
+    },
+    {
+     "q": "Ein Abwärtstrend ist definiert durch…",
+     "o": [
+      "Tiefere Hochs und tiefere Tiefs",
+      "Mehr rote als grüne Kerzen im Chart",
+      "Der Preis fällt schneller als er stieg",
+      "Schweres Verkaufsvolumen den ganzen Tag"
+     ]
+    },
+    {
+     "q": "Im Aufwärtstrend fällt der Preis unter das vorige Tief. Das heißt…",
+     "o": [
+      "Ein Abwärtstrend hat definitiv begonnen",
+      "Nichts — nur Hochs definieren einen Trend",
+      "Die Folge des Aufwärtstrends ist gebrochen",
+      "Der Trend ist dadurch stärker geworden"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr2",
+   "t": "Deine erste Trendlinie",
+   "cards": [
+    {
+     "h": "Im Aufwärtstrend verbindest du die Tiefs",
+     "p": "Im Aufwärtstrend zeichnest du die Linie unter die Tiefs der Rücksetzer, denn dort steigen die Käufer immer wieder ein. Im Abwärtstrend legst du sie stattdessen über die Hochs der Erholungen. Zwei Punkte definieren eine Linie, zwei Berührungen sind also das Minimum, mit dem du arbeiten kannst. Es ist zugleich die schwächste denkbare Version, und hier ist der Grund."
+    },
+    {
+     "h": "Drei Berührungen machen sie interessant",
+     "p": "Zwei beliebige Punkte im Chart lassen sich mit einer Linie verbinden, zwei Berührungen beweisen also fast nichts. Eine dritte Berührung ist der erste Beleg, dass die Linie etwas Echtes beschreibt und nicht bloß einen Zufall deines Startpunkts. Über die vierte Berührung sagt sie trotzdem nichts. Eine Berührung ist Rauschen, zwei sind eine Skizze, drei sind eine Skizze, die vermutlich auch andere anschauen."
+    },
+    {
+     "h": "Passend zeichnen ist Schummeln",
+     "p": "Eine Linie findest du immer. Verschieb den Start um eine Kerze, kipp sie um ein Grad, ignorier die zwei Berührungen, die sie ruinieren — und jeder Chart stützt jede Geschichte. Der ehrliche Test: Zeichne die Linie, bevor du eine Position hast, und zeichne sie nie neu, weil der Preis dir widersprochen hat. Hast du sie verschoben, hast du keine Linie mehr. Du hast einen Wunsch."
+    },
+    {
+     "h": "Steile Linien brechen früher",
+     "p": "Eine Trendlinie mit flachem Winkel kann Monate halten, weil der Preis nur langsam weiter nach oben mahlen muss, um über ihr zu bleiben. Eine fast senkrechte Linie verlangt, dass der Markt ewig beschleunigt, und nichts beschleunigt ewig. Steile Linien brechen früh und oft, und dieser Bruch heißt meist, dass das Tempo abgekühlt ist — nicht, dass der Trend gedreht hat."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wo zeichnest du im Aufwärtstrend die Trendlinie?",
+     "o": [
+      "Quer über die Swing-Hochs",
+      "Mitten durch die Kerzenkörper",
+      "Unter die Tiefs der Rücksetzer",
+      "Flach, am letzten Schlusskurs"
+     ]
+    },
+    {
+     "q": "Warum ist eine Linie mit zwei Berührungen schwach?",
+     "o": [
+      "Zwei beliebige Punkte lassen sich verbinden",
+      "Zwei Berührungen gibt es nur im Abwärtstrend",
+      "Eine Linie zählt erst mit Volumen dahinter",
+      "Zwei Berührungen heißen, der Trend ist vorbei"
+     ]
+    },
+    {
+     "q": "Der Preis bricht deine Trendlinie, du zeichnest sie flacher. Das ist…",
+     "o": [
+      "Gute Praxis — Charts verändern sich ständig",
+      "Die Linie an das angepasst, was du willst",
+      "Nötig, sobald die dritte Berührung fällt",
+      "So managen Profis ihr laufendes Risiko"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr3",
+   "t": "Support und Resistance sind Zonen",
+   "cards": [
+    {
+     "h": "Eine Menschenmenge, kein Laser",
+     "p": "Support (Unterstützung) ist kein einzelner Preis. Es ist ein Band, in dem genug Käufer auftauchten, um den Fall zu stoppen — mal bei $100.00, mal bei $99.40, mal nach einem Stich hinunter auf $98.80. Eine Linie von einem Pixel zu ziehen und zu erwarten, dass der Preis sie auf den Cent respektiert, ist ein verbreiteter Weg, aus einer eigentlich guten Idee geschüttelt zu werden."
+    },
+    {
+     "h": "Lass die Dochte die Ränder setzen",
+     "p": "Such die letzten drei oder vier Male, an denen der Preis ungefähr im selben Bereich gedreht hat. Die Kerzenkörper zeigen, wo tatsächlich am meisten gehandelt wurde. Die Dochte, die du in Candlestick-Muster kennengelernt hast, zeigen, wie weit der Kampf ging, bevor er abgewiesen wurde. Zieh den oberen Rand am höchsten Körper und den unteren Rand am tiefsten Docht. Dieses Band ist dein Level."
+    },
+    {
+     "h": "Beweis es mit einem Tipp",
+     "prompt": "Tippe irgendwo in die Support-Zone — das Band, in dem sich die Tiefs häufen.",
+     "p": "Ein Tipp. Es gibt hier kein einziges richtiges Pixel, und genau das ist die Lektion."
+    },
+    {
+     "h": "Wenn eine Zone zu breit ist",
+     "p": "Eine Zone muss eng genug sein, um dagegen zu handeln. Sind die Dochte über 2% des Preises verteilt, muss dein Stop hinter das gesamte Band, und an vielen Tagen sind 2% die komplette Tagesspanne. Das ist kein Level, das ist ein Stadtteil. Schreib es auf und warte, bis der Preis dir ein engeres reicht."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Support zeichnet man am besten als…",
+     "o": [
+      "Einen exakten Preis auf den Cent",
+      "Den tiefsten je gedruckten Preis",
+      "Ein Band aus Kerzenkörpern und Dochten",
+      "Eine diagonale Linie unter den Tiefs"
+     ]
+    },
+    {
+     "q": "Was sagen dir die Dochte an einem Level?",
+     "o": [
+      "Wie weit der Preis vor der Abweisung ging",
+      "Den durchschnittlich gehandelten Preis",
+      "Wie viele Trader daran beteiligt waren",
+      "Welche Börse den besten Preis hatte"
+     ]
+    },
+    {
+     "q": "Der Preis taucht $0.60 unter deinen Support und schließt wieder darüber. Am wahrscheinlichsten…",
+     "o": [
+      "Dein Level war schlicht falsch",
+      "Ein neuer Abwärtstrend hat begonnen",
+      "Support ist jetzt zu Resistance geworden",
+      "Normal — das Level ist Zone, nicht Linie"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr4",
+   "t": "Warum Levels überhaupt zählen",
+   "cards": [
+    {
+     "h": "Levels sind ein Protokoll von Trades",
+     "p": "Ein Level zählt, weil dort etwas passiert ist. An einem alten Hoch haben Leute direkt vor einem Absturz gekauft und stecken seither im Minus. Viele davon verkaufen zum Einstand, falls der Preis je zurückkommt. Andere haben zu früh verkauft und geschworen, den Retest zu kaufen. Der Preis ist nur eine Zahl. Es sind die offenen Entscheidungen rundherum, die Märkte bewegen."
+    },
+    {
+     "h": "Orders stapeln sich an einer Stelle",
+     "p": "Schau, wo die Stop-Losses liegen. Fast jeder, der an einer Support-Zone gekauft hat, legt seinen Stop knapp darunter, also sitzt eine dicke Tasche von Verkaufsorders ein Stück unter dem Level. Ruhende Kauf-Limits liegen knapp darüber. Ein Level ist ein Ort, an dem das Orderbuch schief ist, und diese Schieflage ist überhaupt erst der Grund, warum der Preis dort reagiert."
+    },
+    {
+     "h": "Der Teil, der sich selbst erfüllt",
+     "p": "Ist ein Level im Tageschart offensichtlich, schaut eine große Zahl von Leuten auf dieselbe Linie, und ein Teil von ihnen handelt danach. Damit ist die Reaktion halb echt und halb eine Geschichte, die die Masse gemeinsam erzählt. Die unbequeme Hälfte derselben Tatsache: An offensichtlichen Levels weiß auch jeder, wo die Stops liegen."
+    },
+    {
+     "h": "Ein Level ist keine Mauer",
+     "p": "Nichts davon lässt ein Level halten. Orders werden zurückgezogen, die Stimmung dreht, und ein Level, das den Preis viermal gestoppt hat, kann beim fünften Mal ohne jede Vorwarnung fallen. Der Wert eines Levels liegt nicht darin, dass der Preis dort stoppt. Er liegt darin, dass es dir einen konkreten Preis gibt, an dem deine Idee erledigt ist — und genau daraus besteht ein Plan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Warum wirkt ein altes Hoch oft als Resistance?",
+     "o": [
+      "Börsen drosseln Orders über alten Hochs",
+      "Dort gefangene Käufer verkaufen zum Einstand",
+      "Über einem Hoch ist das Volumen dünner",
+      "Charts ziehen den Preis zu runden Zahlen"
+     ]
+    },
+    {
+     "q": "Wo liegen die Stop-Losses der Käufer am Support meist?",
+     "o": [
+      "Knapp unter der Support-Zone",
+      "Exakt auf ihrem Einstiegspreis",
+      "Über dem jüngsten Swing-Hoch",
+      "Gleichmäßig über die Range verteilt"
+     ]
+    },
+    {
+     "q": "Ein Level hat viermal gehalten. Bei der fünften Berührung…",
+     "o": [
+      "Muss es halten — vier Berührungen zählen",
+      "Wird es automatisch zur Trendlinie",
+      "Kann es ohne jede Vorwarnung fallen",
+      "Garantiert es einen Breakout für dich"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr5",
+   "t": "Der Flip: Rollen tauschen am Level",
+   "cards": [
+    {
+     "h": "Gebrochene Resistance kann Support werden",
+     "p": "Der Preis mahlt sich dreimal in eine Decke — eine Resistance (Widerstand) — und schließt schließlich darüber. Oft stoppt der nächste Rücksetzer genau an dieser alten Decke, statt direkt wieder hindurchzufallen. Die Linie hat sich nicht geändert, die Rollen haben es. Umgekehrt passiert dasselbe: Ein Support, der bricht, wird häufig zu dem Level, das die nächste Erholung deckelt."
+    },
+    {
+     "h": "Der Mechanismus, nicht die Magie",
+     "p": "Denk darüber nach, wer an diesem Preis steht. Verkäufer, die dort raus wollten, haben schon verkauft, ihr Angebot ist also weg. Käufer, die den Breakout gesehen und verpasst haben, bekommen eine zweite Chance und warten. Trader, die das Level geshortet haben, werden ausgestoppt, und einen Short zu schließen heißt kaufen. Drei getrennte Gruppen, alle kaufen im selben Band."
+    },
+    {
+     "h": "Der Retest liefert den Beleg",
+     "p": "Ein Flip wird erst im Retest sichtbar, wenn der Preis zum gebrochenen Level zurückkommt. Verteidigen es die Käufer, hast du ein Level und einen konkreten Preis knapp darunter, an dem du falsch liegst. Schneidet der Preis glatt hindurch, war der Bruch Rauschen. Auf den Retest zu warten kostet dich manche Bewegung. Es nimmt dir auch das Raten."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Resistance, die klar bricht, wird oft:",
+     "o": [
+      "Stattdessen eine steigende Trendlinie",
+      "Dauerhaft und völlig bedeutungslos",
+      "Support auf dem Weg nach unten",
+      "Ein garantiertes Einstiegssignal"
+     ]
+    },
+    {
+     "q": "Warum kann alte Resistance den Preis danach tragen?",
+     "o": [
+      "Verkäufer sind fertig, Shorts müssen zurückkaufen",
+      "Börsensoftware verteidigt frühere Preishochs",
+      "Der Chart selbst erinnert sich an die Spitze",
+      "Über alten Hochs versiegt das Volumen immer"
+     ]
+    },
+    {
+     "q": "Der Preis bricht über Resistance und schneidet sofort wieder zurück. Das heißt…",
+     "o": [
+      "Dort hat sich definitiv Support gebildet",
+      "Ein neuer Aufwärtstrend ist bestätigt",
+      "Das Level muss höher gezeichnet werden",
+      "Der Flip scheiterte, der Bruch war Rauschen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr6",
+   "t": "Breakouts und Fakeouts",
+   "cards": [
+    {
+     "h": "Der Schlusskurs zählt, nicht die Berührung",
+     "p": "Ein Docht durch ein Level sagt dir, dass der Preis zu Besuch war. Ein Schlusskurs jenseits davon sagt dir, dass der Markt bereit war, eine ganze Periode dort draußen zu beenden. Im Tageschart ist dieser Unterschied enorm: Ein Stich durch das Level, der wieder drinnen schließt, ist eine Abweisung, kein Breakout. Entscheide vorher, welchen Timeframe-Schlusskurs du als Bruch akzeptierst."
+    },
+    {
+     "h": "Volumen sagt dir, wer aufgetaucht ist",
+     "p": "Ein Bruch auf Volumen, das klar über den letzten Kerzen liegt, bedeutet echte Beteiligung: Die Leute mussten handeln, um durch das Level zu kommen. Derselbe Bruch auf dünnem Volumen heißt, dass sich kaum jemand darum gekümmert hat, oft zu einer stillen Stunde. Volumen sagt dir nie die Richtung. Es sagt dir, wie viel Gewicht du dem geben sollst, was du gerade gesehen hast."
+    },
+    {
+     "h": "Wie ein Fakeout aussieht",
+     "p": "Die Form wiederholt sich. Der Preis drückt knapp über das Level, löst die dort liegenden Stop-Orders aus, findet keine Anschlussbewegung und schließt zurück in der Range. Von außen war es ein Docht. Aus einer gehebelten Position heraus war es ein Stop-Out. Genau deshalb ist der Schlusskurs und nicht das Extrem das, worauf du zu handeln vereinbart hast."
+    },
+    {
+     "h": "Ausgetrickst zu werden ist normal",
+     "p": "Du wirst ausgetrickst werden, immer wieder, und es gibt keinen Indikator, der das abstellt. Die ganze Verteidigung ist prozedural: Der Stop wird im selben Moment gesetzt, in dem der Trade eröffnet wird, die Größe ist klein genug, dass der Stop-Out langweilig ist, und du steigst nicht dreimal hintereinander neu ein, um zu beweisen, dass du mit dem Level recht hattest."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Was ist der stärkere Beleg für einen echten Bruch?",
+     "o": [
+      "Ein Docht, der über das Level lugt",
+      "Eine Kerze, die jenseits davon schließt",
+      "Jede einzelne Berührung des Levels",
+      "Eine Bewegung von mindestens 1% am Tag"
+     ]
+    },
+    {
+     "q": "Ein Level bricht auf ungewöhnlich dünnem Volumen. Du…",
+     "o": [
+      "Nimmst es leicht — kaum jemand war dabei",
+      "Nimmst es als bestätigt, Volumen ist Rauschen",
+      "Gehst von einer garantierten Umkehr aus",
+      "Verdoppelst die Position für die Bewegung"
+     ]
+    },
+    {
+     "q": "Die praktische Verteidigung gegen Fakeouts ist…",
+     "o": [
+      "Ein Indikator, der sie herausfiltert",
+      "Jedes Mal auf einen Volumenschub warten",
+      "Nur an Levels runder Zahlen zu handeln",
+      "Zuerst der Stop, und kleine Größe"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr7",
+   "t": "Ranges: wenn es keinen Trend gibt",
+   "cards": [
+    {
+     "h": "Die meisten Charts haben keinen Trend",
+     "p": "Zoom in fast jedem Chart heraus und du findest lange Strecken, in denen der Preis schlicht zwischen einer Decke und einem Boden pendelt. Keine höheren Hochs, keine tieferen Tiefs, nur hin und her. Das ist eine Range. Sie ist kein kaputter Markt und keine Pause vor der eigentlichen Bewegung. Sie ist ein normaler Zustand, und sie kann lange dauern."
+    },
+    {
+     "h": "In der Range gilt das umgekehrte Spiel",
+     "p": "Im Trend kaufst du Stärke und gibst der Position Luft zum Atmen. In der Range machst du das Gegenteil: interessiert nahe am unteren Rand, skeptisch nahe am oberen Rand, und dein Ziel ist die andere Seite der Box statt offen nach oben. Derselbe Chart, dieselben Fähigkeiten, komplett umgedrehte Regeln darüber, wo ein Einstieg attraktiv ist."
+    },
+    {
+     "h": "Das falsche Spiel zu spielen ist teuer",
+     "p": "Wendest du Trendregeln in einer Range an, kaufst du jeden Schub am oberen Rand und verkaufst jede Spülung am unteren — teuer kaufen, billig verkaufen, immer wieder, und jedes Mal Gebühren zahlen. Wendest du Range-Regeln in einem Trendmarkt an, shortest du ständig in die Stärke hinein. Den Zustand zu benennen, bevor du handelst, ist keine optionale Hausaufgabe."
+    },
+    {
+     "h": "Ranges werden enger, bevor sie enden",
+     "p": "Beobachte die Swings innerhalb der Box. Wenn jede Erholung hinter der letzten Decke zurückbleibt und jeder Rücksetzer über dem letzten Boden stoppt, komprimiert sich die Range, und meist werden die Kerzen dabei kleiner. Das sagt dir, dass eine größere Bewegung aufgebaut wird. Es sagt dir überhaupt nichts darüber, in welche Richtung sie geht."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Eine Range ist…",
+     "o": [
+      "Ein Markt, der zusammengebrochen ist",
+      "Ein Preis, der zwischen Boden und Decke pendelt",
+      "Eine kurze Pause vor jedem neuen Trend",
+      "Eine waagerecht gezeichnete Trendlinie"
+     ]
+    },
+    {
+     "q": "In einer Range ist ein Käufer am meisten interessiert…",
+     "o": [
+      "Am oberen Rand, wo er Stärke kauft",
+      "Genau in der Mitte der ganzen Box",
+      "Ganz nahe am unteren Rand der Box",
+      "Sofort nach jedem beliebigen Docht"
+     ]
+    },
+    {
+     "q": "Die Swings in einer Range werden kleiner. Das sagt dir…",
+     "o": [
+      "Ein Breakout nach oben wird vorbereitet",
+      "Die Range hält jetzt unbegrenzt weiter",
+      "Ein Bruch nach unten ist wahrscheinlicher",
+      "Eine größere Bewegung kommt, Richtung offen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr8",
+   "t": "Wo das Level deinen Stop hinsetzt",
+   "cards": [
+    {
+     "h": "Wo die Idee falsch ist",
+     "p": "Du glaubst, der Preis hält diesen Support, also kaufst du. Dieser Satz hat ein eingebautes Ende: Schließt der Preis unter der Zone, ist das, was du geglaubt hast, nicht mehr wahr. Dieser Preis ist keine Vorliebe und keine Schmerzgrenze. Er ist der Punkt, an dem der Markt selbst deinem Grund für den Trade widersprochen hat."
+    },
+    {
+     "h": "Hinter die Zone, nie hinein",
+     "p": "Läuft deine Zone von $99.00 hinunter bis $98.80, dann sitzt ein Stop bei $98.90 mitten in dem Rauschen, dessen Existenz du selbst festgestellt hast. Die Dochte holen ihn ab, während deine Idee noch völlig intakt ist. Setz den Stop unter die ganze Zone, mit etwas Luft, und akzeptier, dass diese Distanz der Preis ist, den das Level dich kostet."
+    },
+    {
+     "h": "Die Distanz entscheidet über die Größe",
+     "p": "Jetzt die Arithmetik. Du hast $1,000 und riskierst davon 1%, also $10. Einstieg $100, Stop $98.60, die Distanz sind also 1.4%. Die Positionsgröße ist $10 geteilt durch 0.014, also rund $714 Notional. Zieh den Stop weiter und die Position muss schrumpfen. Der Stop kommt zuerst, die Größe folgt aus ihm, nie umgekehrt. Die Werkzeuge auf /calculators erledigen diese Division für dich."
+    },
+    {
+     "h": "Zieh den Stop nicht weiter",
+     "p": "Wenn der Preis auf den Stop zuläuft, fühlt es sich offensichtlich an, dass das Level nur ein bisschen mehr Luft braucht. Ihn weiterzuziehen macht aus einem kleinen geplanten Verlust einen ungeplanten großen, und es zerstört die Rechnung, die du gerade gemacht hast, denn die Größe war für genau diese Distanz berechnet. Ist das Level falsch, ist der Trade falsch. Nimm den kleinen Verlust."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wohin gehört ein Stop-Loss relativ zur Support-Zone?",
+     "o": [
+      "Auf die halbe Strecke in der Zone",
+      "Genau auf den Einstiegspreis selbst",
+      "Knapp hinter den fernen Rand, mit Luft",
+      "Auf die nächstgelegene runde Zahl"
+     ]
+    },
+    {
+     "q": "$1,000 Konto, 1% Risiko, Stop 1.4% entfernt. Die Größe ist rund…",
+     "o": [
+      "$140 Notional",
+      "$714 Notional",
+      "$1,400 Notional",
+      "$10 Notional"
+     ]
+    },
+    {
+     "q": "Den Stop weiterzuziehen, wenn der Preis näher kommt…",
+     "o": [
+      "Verbessert die Chancen des Trades",
+      "Ist ganz normales Risikomanagement",
+      "Verkleinert die Höhe des Verlusts",
+      "Zerstört die Rechnung zur Größe"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr9",
+   "t": "Einen Chart in sechzig Sekunden lesen",
+   "cards": [
+    {
+     "h": "Zoom zuerst heraus",
+     "p": "Fang im Tageschart an, auch wenn du einen 15-Minuten-Chart handeln willst. Der Tageschart zeigt dir die Levels, die eine große Zahl von Leuten tatsächlich sieht, und die Form der letzten Monate auf einem Bildschirm. Ein Level, das es nur im 1-Minuten-Chart gibt, ist für fast alle unsichtbar und oft binnen einer Stunde weg."
+    },
+    {
+     "h": "Benenne den Trend, markiere zwei Levels",
+     "p": "Sprich die Folge laut aus: höhere Hochs und höhere Tiefs, das Spiegelbild davon, oder keins von beidem, was Range heißt. Dann markiere genau zwei waagerechte Zonen — die nächste über dem Preis und die nächste darunter. Zwei. Hast du sechs Linien gezeichnet, hast du einen Chart gebaut, der zu allem passt, was du als Nächstes beschließt."
+    },
+    {
+     "h": "Sprich den Satz zu Ende, dann hör auf",
+     "p": "Sag es in einer Zeile: Das ist ein Aufwärtstrend, das Level, das zählt, geht von $98.80 bis $99.00, und schließt der Preis darunter, liege ich falsch. Kannst du nicht alle drei Teile füllen, hast du keinen Trade, du hast einen Chart. Dieser Satz dauert rund sechzig Sekunden, und er ist die ganze Routine."
+    },
+    {
+     "h": "Die meisten Charts verdienen keine Meinung",
+     "p": "Das ehrliche Ergebnis dieser Routine ist meistens: nichts. Kein klarer Trend, kein Level in der Nähe, nichts Konkretes, worin man falsch liegen könnte. Das ist ein Resultat und kein Versagen — die Routine ist ein Filter, und ein Filter, der nie etwas aussortiert, filtert nicht. Schließ den Chart und schau dir ein anderes Symbol an."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Welchen Chart öffnest du zuerst?",
+     "o": [
+      "Den 1-Minuten, wegen der Präzision",
+      "Den Tageschart, für die Levels aller",
+      "Den 5-Minuten-Chart, als Kompromiss",
+      "Einfach den, der zuletzt offen war"
+     ]
+    },
+    {
+     "q": "Wie viele waagerechte Zonen verlangt die Routine?",
+     "o": [
+      "So viele, wie du finden kannst",
+      "Sechs Stück, eine pro Timeframe",
+      "Zwei — die nächste oben und unten",
+      "Keine, Trendlinien genügen völlig"
+     ]
+    },
+    {
+     "q": "Die Routine endet ohne klaren Trend und ohne Level. Du…",
+     "o": [
+      "Gehst in einen kleineren Timeframe",
+      "Zeichnest Linien, bis etwas auftaucht",
+      "Handelst es trotzdem, nur kleiner",
+      "Gehst weiter zum nächsten Symbol"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Öffne einen Chart, stell BTC auf den Tageschart und fahr die Sechzig-Sekunden-Routine: Benenne den Trend, markiere zwei Zonen, sag den Preis, an dem du falsch liegst. Dann mach es noch einmal mit einem Coin, den du noch nie angesehen hast.",
+    "label": "Charts öffnen →"
+   }
+  }
+ ]
+}

@@ -1,0 +1,420 @@
+{
+ "id": "words",
+ "name": "Woordenboek van de Trader",
+ "sub": "Het jargon, ontcijferd",
+ "lessons": [
+  {
+   "id": "wd1",
+   "t": "Long, short en een positie hebben",
+   "cards": [
+    {
+     "h": "Een positie is een open weddenschap",
+     "p": "Voordat je handelt sta je flat: je bezit niets en er kan je niets gebeuren. Op het moment dat je koopt of verkoopt heb je een positie — een open weddenschap met een richting en een grootte. Die blijft open, wint en verliest bij elke prijsbeweging, tot je hem sluit. Traders zeggen 'ik zit in een positie' zoals jij zou zeggen 'ik heb hier geld op staan'."
+    },
+    {
+     "h": "Long betekent dat je hem hoger wilt",
+     "p": "Long gaan betekent dat je winst maakt als de prijs stijgt. Koop Bitcoin op $60,000, verkoop op $63,000, en je verdiende $3,000 per munt — dat is een long. Er wordt niets geleend en er is niets exotisch aan; het is kopen, met een naam. Bijna iedereen begint hier, omdat het aansluit bij hoe we al over bezit denken. 'Long BTC' betekent simpelweg: ik ben gepositioneerd voor een stijgende prijs."
+    },
+    {
+     "h": "Short wint als de prijs daalt",
+     "p": "Een short is de spiegel. Je verkoopt eerst op een hoge prijs en koopt later terug op een lagere, en het verschil is voor jou. Short op $60,000, terugkopen op $57,000, en je hield $3,000 per munt over terwijl de markt daalde. Bij futures wisselen er helemaal geen munten van eigenaar — je houdt een contract dat uitbetaalt als de prijs daalt. Zo verdienen traders geld in een dalende markt."
+    },
+    {
+     "h": "Grootte maakt de zin af",
+     "p": "Richting alleen is geen positie. 'Long BTC' zegt niets over wat een beweging je kost; 'long BTC, $500' wel. Positiegrootte is het geld dat aan het werk is, en het bepaalt wat elke beweging van 1% waard is: $500 die 1% beweegt is $5, winst of verlies. Beginners ruziën over richting en negeren grootte — precies de helft die de schade bepaalt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Je bent short en de prijs daalt. Wat gebeurt er?",
+     "o": [
+      "Je verdient geld",
+      "Je verliest geld",
+      "De positie sluit automatisch",
+      "Niets tot de prijs weer stijgt"
+     ]
+    },
+    {
+     "q": "Wat betekent 'positie'?",
+     "o": [
+      "Een soort exchange-account",
+      "Een prijsvoorspelling voor de week",
+      "Een grafiekpatroon met twee toppen",
+      "Een open weddenschap met richting en grootte"
+     ]
+    },
+    {
+     "q": "Beiden zijn long BTC — één $200, één $2,000. Een beweging van 1% is waard:",
+     "o": [
+      "$2 en $20",
+      "$2 voor allebei",
+      "$20 voor allebei",
+      "Niet te weten zonder de hefboom"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd2",
+   "t": "Bull, bear, pump, dump, crash",
+   "cards": [
+    {
+     "h": "Bull en bear gaan over richting",
+     "p": "Een bullmarkt is een lange periode van stijgende prijzen; een bearmarkt een lange periode van dalende. De dieren komen van hoe ze aanvallen: een stier gooit zijn horens omhoog, een beer slaat met zijn poot omlaag. Noem jezelf bullish en je verwacht omhoog; bearish, omlaag. Dit zijn trage woorden — ze beschrijven maanden, niet deze middag."
+    },
+    {
+     "h": "Pump en dump gaan over snelheid",
+     "p": "Een pump is een snelle stijging, een dump een snelle daling. Geen van beide zegt iets over het waarom. Let wel op: 'pump and dump' als één uitdrukking benoemt een opzet — een groep koopt stilletjes een kleine munt, promoot hem luid en verkoopt dan aan de kopers die ze aantrokken. De stijging is echt, en de uitstap is van hen, niet van jou."
+    },
+    {
+     "h": "Correctie, crash, en het verschil",
+     "p": "De gangbare afspraak: een daling van ongeveer 10% vanaf een recente top heet een correctie, en een val van 20% of meer is een bearmarkt. Een crash is geen omvang maar een snelheid — het grootste deel van de val komt in uren of dagen. In crypto is een dag van 10% doodgewoon, dus mensen lenen deze woorden losjes. Vraag om het getal, niet om het zelfstandig naamwoord."
+    },
+    {
+     "h": "Deze woorden beschrijven, ze voorspellen nooit",
+     "p": "Niets in deze les vertelt je wat er hierna gebeurt. Wie zegt 'dit is gewoon een correctie' rapporteert geen feit; die gokt, meestal met een positie die het waar moet laten zijn. De woorden zijn etiketten voor wat al gebeurd is. Komt een etiket met stelligheid over morgen, dan is die stelligheid de claim die wordt gemaakt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een crash wordt vooral bepaald door:",
+     "o": [
+      "Hoe ver de prijs valt",
+      "Hoe snel de prijs valt",
+      "Hoeveel munten samen vallen",
+      "Hoe lang de bearmarkt duurt"
+     ]
+    },
+    {
+     "q": "'Pump and dump' als uitdrukking beschrijft:",
+     "o": [
+      "Elke snelle stijging gevolgd door een val",
+      "Een opzet die een munt promoot en dan aan kopers verkoopt",
+      "Een candlestickpatroon met twee toppen",
+      "Het normale listingproces op een exchange"
+     ]
+    },
+    {
+     "q": "Volgens de gangbare afspraak heet een val van 20% vanaf de top:",
+     "o": [
+      "Een correctie",
+      "Een flash crash",
+      "Een bearmarkt",
+      "Een diepe dump"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd3",
+   "t": "Marge, hefboom, liquidatie, P&L",
+   "cards": [
+    {
+     "h": "Marge is jouw geld erin",
+     "p": "Marge is het geld dat je inlegt om een positie aan te houden. Notioneel is de volledige grootte die die positie beheert. Leg $100 marge in om $1,000 aan Bitcoin te beheren, en $100 is je marge, $1,000 je notioneel. Elke fee, elke winst en elk verlies wordt berekend over het notioneel en landt daarna in je marge — precies daarom voelen kleine percentages enorm."
+    },
+    {
+     "h": "Hefboom is de verhouding",
+     "p": "Hefboom is notioneel gedeeld door marge. $1,000 beheerd met $100 is 10x. Dat is de hele definitie; al het andere zijn gevolgen. Op 10x is een beweging van 1% in de prijs een beweging van 10% in je marge, omhoog of omlaag. De volledige mechanica krijgt een eigen cursus, Hefboom en Liquidatie. Onthoud hier alleen de verhouding, en dat hij beide richtingen even hard vermenigvuldigt."
+    },
+    {
+     "h": "Liquidatie is de gedwongen uitstap",
+     "p": "Je verliezen komen uit je marge. Als het verlies er bijna alles van heeft opgegeten, sluit de exchange de positie voor je, want het geleende deel moet beschermd worden. Dat is liquidatie. Het is geen waarschuwing — het is het einde van die positie, tegen welke prijs de markt op dat moment ook heeft. Op 10x is ruwweg een beweging van 10% tegen je genoeg."
+    },
+    {
+     "h": "Welke staat in de winst",
+     "prompt": "De prijs is net gedaald. Tik op de positie die in de winst staat.",
+     "p": "P&L betekent winst en verlies: wat je open positie op dit moment waard is. Hij is ongerealiseerd zolang de positie open staat, en gerealiseerd op het moment dat je sluit. De prijs is net gedaald. Eén tik."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Je legt $200 in om $2,000 te beheren. Je hefboom is:",
+     "o": [
+      "2x",
+      "10x",
+      "20x",
+      "200x"
+     ]
+    },
+    {
+     "q": "Liquidatie gebeurt wanneer:",
+     "o": [
+      "Je de positie zelf sluit",
+      "De prijs je take-profit-niveau raakt",
+      "Verliezen bijna je hele marge hebben opgegeten",
+      "De exchange een funding-fee rekent"
+     ]
+    },
+    {
+     "q": "Kosten en P&L worden berekend over:",
+     "o": [
+      "De notionele positiegrootte",
+      "Alleen je marge",
+      "Het bedrag dat je opneemt",
+      "De hefboomvermenigvuldiger"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd4",
+   "t": "Hoe een order de markt bereikt",
+   "cards": [
+    {
+     "h": "Marktorder: snelheid boven prijs",
+     "p": "Een marktorder zegt: neem welke prijs er nu ook beschikbaar is. Hij wordt direct gevuld — een fill is het moment waarop je order echt een positie wordt — omdat hij accepteert wat de andere kant op dit moment vraagt. Je komt altijd binnen. Je krijgt niet altijd de prijs die je zag. Gebruik hem als erin zitten belangrijker is dan precies zijn."
+    },
+    {
+     "h": "Limietorder: prijs boven snelheid",
+     "p": "Een limietorder zegt: vul me op deze prijs of beter, en wacht als het moet. Hij blijft in het orderboek staan tot iemand ertegen handelt, en misschien wordt hij nooit gevuld. Jij bepaalt de prijs en geeft de zekerheid op. Limietorders betalen meestal ook een lagere fee, omdat jij degene bent die wacht in plaats van degene die eist."
+    },
+    {
+     "h": "Een stop is een trigger",
+     "p": "Een stop is nog geen order — het is een instructie die er een wordt zodra de prijs een niveau raakt dat jij koos. Een stop-loss staat onder een longpositie en sluit hem als de prijs daar komt, waarmee de schade begrensd is. Een take-profit doet hetzelfde aan de winnende kant. Geen van beide garandeert de exacte prijs: eenmaal getriggerd worden ze meestal tegen marktprijs gevuld."
+    },
+    {
+     "h": "Spread en slippage",
+     "p": "Het orderboek heeft een hoogste koper, de bid, en een laagste verkoper, de ask. Het gat ertussen is de spread, en dat oversteken kost je geld. Slippage is iets anders: een grote marktorder eet door meerdere prijsniveaus heen, dus de gemiddelde prijs die je kreeg is slechter dan die je aanklikte. Zie $100.00, vul op $100.05, en slippage kostte je 0.05%."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een limietorder geeft je controle over:",
+     "o": [
+      "De prijs, maar niet of hij gevuld wordt",
+      "Zowel de prijs als directe uitvoering",
+      "Het feeschema van de exchange",
+      "Hoe snel de markt beweegt"
+     ]
+    },
+    {
+     "q": "Een stop-loss triggert, en daarna:",
+     "o": [
+      "Vult hij precies op je stopprijs",
+      "Vult hij meestal tegen marktprijs, dicht daarbij",
+      "Annuleert hij de positie zonder te sluiten",
+      "Wacht hij in het boek tot het beter wordt"
+     ]
+    },
+    {
+     "q": "Slippage is:",
+     "o": [
+      "De commissie die de exchange rekent",
+      "Het gat tussen de bid en de ask",
+      "Het verschil tussen de geziene en de gevulde prijs",
+      "Een vertraging veroorzaakt door de blockchain"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd5",
+   "t": "De woorden voor massa-emotie",
+   "cards": [
+    {
+     "h": "FOMO en FUD",
+     "p": "FOMO is fear of missing out — angst om het te missen: de drang om te kopen omdat het al zonder jou omhoog gaat. FUD is fear, uncertainty and doubt — angst, onzekerheid en twijfel: de drang om te verkopen omdat iets slecht klinkt. Allebei benoemen ze een emotie, geen feit over de markt. En allebei worden ze als beschuldiging gebruikt — je voorzichtigheid FUD noemen is een manier om je te laten stoppen met nadenken."
+    },
+    {
+     "h": "HODL, paper hands, diamond hands",
+     "p": "HODL begon als een typefout voor 'hold' in een forumpost uit 2013 en verhardde tot het bevel om nooit te verkopen. Paper hands bespot wie verkoopt; diamond hands prijst wie dat niet doet. Let op wat die woorden doen: ze maken van een beslissing over jouw geld een test van je karakter, beoordeeld door vreemden die jouw verliezen niet delen."
+    },
+    {
+     "h": "Whales en retail",
+     "p": "Een whale is een houder die groot genoeg is dat zijn eigen kopen of verkopen de prijs beweegt. Retail betekent iedereen die klein is — jij vrijwel zeker, en daar zit niets beledigends in. Het nuttige is de asymmetrie: een whale moet zijn uitstap plannen, want grootte kan niet stil vertrekken, terwijl jij er met één klik uit bent."
+    },
+    {
+     "h": "Capitulatie, en wie het woord gebruikt",
+     "p": "Capitulatie is het moment waarop houders stoppen met hopen en tegen elke prijs verkopen: zwaar volume, een gewelddadige daling, dan uitputting. Het wordt altijd pas achteraf vastgesteld. Dat is de eerlijke grens van elk woord in deze les — ze beschrijven massagevoel goed en voorspellen niets. Gebruikt iemand er een om je te vertellen wat je nu moet doen, vraag dan welke positie diegene aanhoudt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Als je te horen krijgt dat je voorzichtigheid FUD is, betekent dat meestal:",
+     "o": [
+      "Er werd een feitelijke correctie geboden",
+      "Druk om te stoppen met vragen stellen",
+      "Er werd een term uit technische analyse gebruikt",
+      "De exchange gaf een waarschuwing af"
+     ]
+    },
+    {
+     "q": "Een whale is:",
+     "o": [
+      "Een houder groot genoeg om de prijs te bewegen",
+      "Een vroege Bitcoin-miner",
+      "Elke trader die hoge hefboom gebruikt",
+      "Een medewerker van een exchange"
+     ]
+    },
+    {
+     "q": "Capitulatie kun je vaststellen:",
+     "o": [
+      "Vooraf, aan het stijgende volume",
+      "Alleen achteraf, nooit op het moment zelf",
+      "Aan de funding rate van dat moment",
+      "Door de exchange, voordat het begint"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd6",
+   "t": "Steun, weerstand, trend, breakout",
+   "cards": [
+    {
+     "h": "Steun en weerstand zijn zones",
+     "p": "Steun is een prijsgebied waar kopers herhaaldelijk zijn opgedoken en een daling stopten. Weerstand is waar verkopers herhaaldelijk een stijging stopten. Het zijn zones, geen lijnen — een niveau op $60,000 betekent in werkelijkheid ergens tussen $59,800 en $60,200. Ze doen ertoe omdat genoeg traders ernaar kijken en er handelen, en precies daarom breken ze uiteindelijk."
+    },
+    {
+     "h": "Trend en range",
+     "p": "Een uptrend is een reeks hogere toppen en hogere bodems; een downtrend is het omgekeerde. Een range is geen van beide: de prijs stuitert tussen een bodem en een plafond en gaat nergens heen. Benoemen in welke van de twee je zit is het nuttigste wat deze woorden doen, want een markt die in een range vastzit, straft iedereen af die hem verhandelt alsof er trend in zit."
+    },
+    {
+     "h": "Een breakout is uit de doos stappen",
+     "p": "Een breakout is de prijs die een range verlaat of door weerstand duwt. Het woord wordt gebruikt voordat het verdiend is: de prijs prikt erdoorheen, iedereen roept breakout, en hij valt meteen weer naar binnen. Dat mislukken heeft zijn eigen naam: een fakeout. Je weet pas welke van de twee het was nadat de candle gesloten is en de prijs buiten blijft."
+    },
+    {
+     "h": "Elk niveau heeft een timeframe nodig",
+     "p": "Een timeframe is hoeveel tijd één candle beslaat — 5 minuten, 4 uur, een dag. Steun getekend op een 5-minutengrafiek is onzichtbaar op de daggrafiek. Dezelfde markt kan op 5 minuten in een downtrend zitten en op de daggrafiek in een uptrend, en beide uitspraken zijn waar. Zegt iemand 'de trend', dan is het ontbrekende woord: welk timeframe."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Steun kun je het best omschrijven als:",
+     "o": [
+      "Een gegarandeerde bodem onder de prijs",
+      "Een gebied waar herhaaldelijk kopers opdoken",
+      "De laagste prijs die de munt ooit bereikte",
+      "Een lijn die de exchange dagelijks publiceert"
+     ]
+    },
+    {
+     "q": "De prijs duwt door weerstand en valt meteen terug. Dat is:",
+     "o": [
+      "Een fakeout",
+      "Een bevestigde breakout",
+      "Een downtrend",
+      "Een correctie"
+     ]
+    },
+    {
+     "q": "Een uptrend is een reeks:",
+     "o": [
+      "Candles van dezelfde kleur",
+      "Niveaus getekend door grote houders",
+      "Dagelijkse winsten boven 1%",
+      "Hogere toppen en hogere bodems"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd7",
+   "t": "Liquiditeit, volume, volatiliteit, market cap",
+   "cards": [
+    {
+     "h": "Volume telt, liquiditeit absorbeert",
+     "p": "Volume is hoeveel er in een periode echt verhandeld is — een feit over het verleden. Liquiditeit is hoeveel er op dit moment in het orderboek klaarligt — een feit over het heden. Een munt kan een dag met enorm volume hebben en toch dun zijn, zodat een verkoop van $50,000 hem nog steeds meerdere procenten laat zakken. Volume vertelt je over interesse; liquiditeit vertelt je of je eruit kunt."
+    },
+    {
+     "h": "Volatiliteit meet beweging, geen richting",
+     "p": "Volatiliteit is hoeveel de prijs beweegt, in welke richting dan ook. Een munt die 5% per dag schommelt is vijf keer zo volatiel als een die 1% schommelt, of die dagen nu groen of rood zijn. Daarom doet hefboom hier zoveel: je afstand tot liquidatie ligt vast, en volatiliteit bepaalt hoe vaak de prijs die afstand aflegt. Hoge volatiliteit is niet slecht — ze is sneller, in beide richtingen."
+    },
+    {
+     "h": "Market cap is niet het geïnvesteerde geld",
+     "p": "Market cap is prijs vermenigvuldigd met het circulerende aanbod. Het is een etiket, geen maat voor het geld dat erin ging. Was de laatste trade op $1 en bestaan er 100 miljoen munten, dan leest de cap $100 miljoen, ook al wisselde er de hele dag maar een paar duizend dollar van eigenaar. Zo dragen dunne munten grote caps. Lees het als omvang, en check dan het volume voordat je het gelooft."
+    },
+    {
+     "h": "Order flow: wie is agressief",
+     "p": "Elke trade heeft een koper en een verkoper, dus 'meer kopers dan verkopers' kan niet bestaan. Wat verschilt is de agressie. Order flow is het verslag van welke kant de spread overstak om direct gevuld te worden en daarmee de limietorders raakte die aan de andere kant lagen. De prijs stijgt wanneer de kopers de ongeduldige partij zijn. Dezelfde markt, beschreven door wie bereid was voor snelheid te betalen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Enorm volume gisteren garandeert:",
+     "o": [
+      "Dat je vandaag makkelijk een grote positie verlaat",
+      "Niets over de liquiditeit daar vandaag",
+      "Dat de volatiliteit vandaag laag zal zijn",
+      "Dat de prijs blijft stijgen"
+     ]
+    },
+    {
+     "q": "Een market cap van $100 miljoen betekent:",
+     "o": [
+      "Prijs maal circulerend aanbod is $100 miljoen",
+      "Er ging $100 miljoen in de munt",
+      "Het project houdt $100 miljoen in reserve",
+      "Het dagvolume is $100 miljoen"
+     ]
+    },
+    {
+     "q": "'Meer kopers dan verkopers' is:",
+     "o": [
+      "Hoe elke prijsstijging ontstaat",
+      "Onmogelijk — elke trade heeft beide",
+      "Een andere manier om hoog volume te zeggen",
+      "Een maat voor de diepte van het orderboek"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd8",
+   "t": "De woorden die je geld kosten",
+   "cards": [
+    {
+     "h": "Shill en ape",
+     "p": "Shillen is een munt promoten die je zelf al bezit, bij mensen die hem van jou zullen kopen. Het woord wordt meestal gekscherend gezegd, en dat is precies de truc — het laat een belangenconflict klinken als een karaktertrek. Apen is groot instappen zonder onderzoek, verpakt als moed. Beide woorden laten een dure fout klinken als een levensstijl."
+    },
+    {
+     "h": "Rug pull, moon, 100x",
+     "p": "Een rug pull is een token waarvan de makers de pot geld weghalen die mensen laat verkopen, zodra er genoeg kopers in zitten. De grafiek toont een verticale streep omlaag naar niets. De woorden waarmee die kopers geworven worden zijn altijd dezelfde: moon, 100x, early. Een koersdoel zonder methode erachter is geen analyse, het is aas."
+    },
+    {
+     "h": "'Gegarandeerd' is het alarmwoord",
+     "p": "In trading kan een gegarandeerd rendement niet bestaan, want elke positie heeft iemand aan de andere kant nodig die verliest. Wie een vast dagelijks percentage aanbiedt, betaalt je met het geld van nieuwe inleggers of met helemaal niets. Er is geen uitzondering, hoe professioneel de website er ook uitziet. Op het moment dat je 'gegarandeerd' leest, weet je al waar je naar kijkt."
+    },
+    {
+     "h": "Geen financieel advies",
+     "p": "Deze zin wordt gedragen als een amulet, alsof toevoegen ervan een betaalde promotie onschadelijk maakt. Het verandert niets aan wat die persoon doet. Vervang hem elke keer door één vraag: wat wint deze persoon als ik koop? Is het eerlijke antwoord dat diegene aan jou verkoopt, dan heb je alle analyse die je nodig hebt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Iemand biedt een gegarandeerde 3% per dag. Dat is:",
+     "o": [
+      "Realistisch met goed genoeg software",
+      "Een scam, zonder uitzondering",
+      "Mogelijk met hoge hefboom",
+      "Alleen acceptabel voor kleine bedragen"
+     ]
+    },
+    {
+     "q": "Een rug pull gebeurt wanneer:",
+     "o": [
+      "Een exchange de munt van de lijst haalt",
+      "De prijs scherp valt op zwaar volume",
+      "Makers het geld weghalen dat houders laat verkopen",
+      "Het team stopt met updates plaatsen"
+     ]
+    },
+    {
+     "q": "'Geen financieel advies' onder een post vertelt je:",
+     "o": [
+      "Dat de post juridisch is getoetst",
+      "Niets over het motief van de poster",
+      "Dat de poster geen enkele munt bezit",
+      "Dat de beweringen erin zijn gecontroleerd"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Je hebt nu de woordenschat waarin de rest van het pad geschreven is. Open de paper-trading terminal en zet een van deze woorden op het scherm: open een kleine positie, kijk hoe de P&L beweegt en sluit hem daarna.",
+    "label": "Open Paper Trade →"
+   }
+  }
+ ]
+}

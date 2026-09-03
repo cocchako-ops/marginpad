@@ -1,0 +1,459 @@
+{
+ "id": "money",
+ "name": "Para ve Matematik, Basitçe",
+ "sub": "Trading'in ihtiyaç duyduğu tek aritmetik",
+ "lessons": [
+  {
+   "id": "mo1",
+   "t": "Yüzdeler, doğru dürüst",
+   "cards": [
+    {
+     "h": "Neyin yüzdesi",
+     "p": "Yüzde her zaman belirli bir sayının dilimidir. $100'ın yüzde onu $10'dır. $10.000'ın yüzde onu $1.000'dır. Tabanını bilmeden yüzde tek başına sana hiçbir şey söylemez. Biri bir işlemin %40 yaptığını söylediğinde ilk sorun hep aynıdır: hangi tutarın yüzde kırkı?"
+    },
+    {
+     "h": "Yüzde puan, yüzde değildir",
+     "p": "Bunlar iki ayrı şeydir. Kazanma oranın %40'tan %44'e çıktıysa bu 4 yüzde puanlık bir artıştır. Ama başladığın yere oranla, 4 bölü 40 eder, yani %10. Aynı değişim, iki dürüst sayı. Ne zaman bir yüzdenin yüzdesini görsen, yavaşla ve hangisinin kastedildiğine bak."
+    },
+    {
+     "h": "On yukarı, on aşağı, başa değil",
+     "p": "$100 ile başla. %10 ekle, $110 olur. Şimdi %10 çıkar — ama $110'un %10'u $11'dir, $10 değil. $99'da bitirirsin. Kazanç $100 üzerinden, kayıp $110 üzerinden ölçüldü; bu yüzden birbirlerini götürmezler. Sırayı ters çevir, yine $99'a inersin: $100 düşüp $90 olur, sonra $9 eklenir."
+    },
+    {
+     "h": "Yüzde değişimleri çarpılır",
+     "p": "Bir kısayol var. %10 kazanç, 1,10 ile çarpmaktır; %10 kayıp, 0,90 ile çarpmak. İkisini de yap, 1,10 çarpı 0,90 elde edersin, yani 0,99 — net %1 kayıp. Koca bir ayın işlemlerini böyle arka arkaya diz; hesabının gerçekte ne yaptığını toplama değil, çarpma söyler."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "%10 kazandın, sonra %10 kaybettin. Nerede bitirirsin?",
+     "o": [
+      "Tam olarak başladığın yerde",
+      "Başlangıcına göre %1 aşağıda",
+      "Başlangıcına göre %1 yukarıda",
+      "Başlangıcına göre %10 aşağıda"
+     ]
+    },
+    {
+     "q": "Kazanma oranı %40'tan %44'e çıktı. Bu değişim…",
+     "o": [
+      "Hesabın %4'ü kadar bir artış",
+      "4 yüzde puanlık bir düşüş",
+      "4 yüzde puanlık bir artış",
+      "44 yüzde puanlık bir artış"
+     ]
+    },
+    {
+     "q": "+%10 ile -%10 neden birbirini götürmez?",
+     "o": [
+      "İkinci yüzde daha büyük bir sayıdan alınır",
+      "İşlem komisyonları farkı yer",
+      "Yüzdeler tanım gereği hiç götürmez",
+      "Borsa ikincisini aşağı yuvarlar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo2",
+   "t": "Kayıplar neden kazançlardan çok acıtır",
+   "cards": [
+    {
+     "h": "Kayıplar daha derin bir çukur kazar",
+     "p": "$1.000'ın %50'sini kaybet, elinde $500 kalır. $1.000'a dönmek için $500 eklemen gerekir — ve $500, kalan paranın %100'üdür. %50'lik bir kayıp, geri alınması için %100'lük bir kazanç ister. Kayıp ile onun tamiri aynı büyüklükte değildir; hiçbir zaman da olmaz."
+    },
+    {
+     "h": "Toparlanma tablosu",
+     "p": "Aynı aritmetiği ölçek boyunca yürüt. %10 düşüş, geri gelmek için yaklaşık %11 ister. %20 düşüş %25 ister. Üçte bir düşüş %50 ister. %50 düşüş %100 ister. %80 düşüş, $1.000'dan geriye $200 bırakır; $200'ün üstüne $800 gerekir — yani %400. %90 düşüş %900 ister. Eğri nazikçe bükülmez. Dikleşir."
+    },
+    {
+     "h": "Kendin kanıtla",
+     "prompt": "Başa dönmek için daha büyük kazanca ihtiyacı olan hesaba dokun.",
+     "p": "İki hesap, iki çukur. Tek dokunuş; sonra içgüdünü aritmetikle karşılaştır."
+    },
+    {
+     "h": "Bu, sende neyi değiştirir",
+     "p": "Profesyonellerin drawdown'ı — hesabın en yüksek noktasının ne kadar altına düştüğünü — getirilerden daha yakından izlemesinin sebebi budur. Arka arkaya küçük kayıplar, atlatılabilir bir aritmetiktir. Tek bir büyük kayıp ise bambaşka bir problem sınıfıdır. Bu karttan sonraki her şey, pozisyon boyutundan stop-loss'lara kadar, tek tek kayıpları toparlanma sıradan kalacak kadar küçük tutmak için vardır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Hesabın %50 düştü. Onu başa döndüren kazanç nedir?",
+     "o": [
+      "%100'lük bir kazanç",
+      "%50'lik bir kazanç",
+      "%75'lik bir kazanç",
+      "%150'lik bir kazanç"
+     ]
+    },
+    {
+     "q": "%80 düşmüş bir hesap toparlanmak için kabaca ne kadar kazanç ister?",
+     "o": [
+      "%80'lik bir kazanç",
+      "%180'lik bir kazanç",
+      "%400'lük bir kazanç",
+      "%800'lük bir kazanç"
+     ]
+    },
+    {
+     "q": "Tek bir devasa kayıp neden birkaç küçük kayıptan kötüdür?",
+     "o": [
+      "Büyük işlemlerden daha yüksek komisyon alınır",
+      "Gereken kazanç, kayıptan daha hızlı büyür",
+      "Borsalar büyük drawdown'ları cezalandırır",
+      "Küçük kayıplar kayıp sayılmaz"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo3",
+   "t": "Kâr ve zarar nasıl hesaplanır",
+   "cards": [
+    {
+     "h": "Sonucu üç sayı yapar",
+     "p": "Kâr ve zarar — K/Z — tam olarak üç sayıdan çıkar: girdiğin fiyat, çıktığın fiyat ve kaç birim tuttuğun. Hesaba başka hiçbir şey girmez. Fiyatın yükseleceğine oynayan long için K/Z, çıkış fiyatı eksi giriş fiyatı çarpı birim sayısıdır."
+    },
+    {
+     "h": "Bir long, adım adım",
+     "p": "0,1 BTC'yi $60.000'dan alıp $63.000'dan satıyorsun. Çıkış eksi giriş, coin başına $3.000. 0,1 coinle çarp, kârın $300. Şu ikinci bakışı da fark et: pozisyonun girişte $6.000 ediyordu, fiyat %5 oynadı ve $6.000'ın %5'i yine aynı $300."
+    },
+    {
+     "h": "Bir short, adım adım",
+     "p": "Short, fiyatın düşeceğine oynamaktır; o yüzden çıkarma ters döner: giriş fiyatı eksi çıkış fiyatı, çarpı birim. 2 ETH'yi $3.000'dan short açıp $2.850'den kapatıyorsun. Giriş eksi çıkış, coin başına $150; 2 coinle çarpınca $300 kazandın. Pozisyonun $6.000'dı ve fiyat %5 düştü. Aynı aritmetik, aynada."
+    },
+    {
+     "h": "Kapatana kadar gerçekleşmemiş",
+     "p": "Pozisyon açıkken K/Z'si her fiyat değişimiyle oynar ve buna gerçekleşmemiş denir. Canlı bir tahmindir, sahip olduğun para değil. Ancak kapattığında ve borsa bunu bakiyene işlediğinde gerçekleşir. Yeni başlayanlar gerçekleşmemiş kârı çoktan harcanmış sayar; oysa hiç kapanmamış bir pozisyon kimseye bir kuruş ödememiştir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "0,5 ETH'yi $2.000'dan alıp $2.100'den sattın. Kârın…",
+     "o": [
+      "$500",
+      "$100",
+      "$1.050",
+      "$50"
+     ]
+    },
+    {
+     "q": "1 BTC'yi $60.000'dan short açıp $58.800'den kapattın. Sonuç?",
+     "o": [
+      "$1.200 kâr",
+      "$1.200 zarar",
+      "$600 kâr",
+      "Değişen bir şey yok"
+     ]
+    },
+    {
+     "q": "Gerçekleşmemiş K/Z nedir…",
+     "o": [
+      "Bakiyende çoktan duran para",
+      "Hâlâ açık bir pozisyondaki canlı tahmin",
+      "Kapanışta ödeyeceğin komisyon",
+      "Her zaman negatif bir sayı"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo4",
+   "t": "Hasara pozisyon boyutu karar verir",
+   "cards": [
+    {
+     "h": "Hareketi sen seçemezsin",
+     "p": "Bitcoin'in bugün %2 oynayıp oynamayacağını sen kontrol etmiyorsun. Kontrol ettiğin tek bir sayı var: pozisyonunun ne kadar büyük olduğu. Geri kalan her şey — yön, zamanlama, volatilite — ya tahmindir ya hediye. Pozisyon boyutu, tüm hesaptaki tamamen sana ait tek girdidir; asıl verdiğin karar da bu yüzden odur."
+    },
+    {
+     "h": "Aynı hareket, istediğin her sonuç",
+     "p": "Bitcoin $60.000'dan %2 düşüyor, yani coin başına $1.200. 0,01 BTC tutuyorsan $12 kaybedersin. 0,5 BTC tutuyorsan $600. Piyasa tek bir şey yaptı; iki hesap bambaşka birer gün geçirdi. Grafik ikisi için de aynıydı. Farklı olan tek şey boyut satırıydı ve o satır elle yazılmıştı."
+    },
+    {
+     "h": "Pozisyon değeriyle düşün",
+     "p": "Daha temiz bir boyutlandırma: coin adedini değil, pozisyonun dolar değerini belirle. Neyin olursa olsun $600'lık bir pozisyon %2'lik harekette $12 kaybeder; ister 0,01 BTC olsun ister 0,2 ETH. Yüzde hareketler değere uygulanır, dolayısıyla dolarla çalışmak bambaşka coinlerdeki pozisyonları karşılaştırmanı sağlar."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bir işlemin hangi kısmı tamamen senin kontrolünde?",
+     "o": [
+      "Fiyatın seçeceği yön",
+      "Açtığın pozisyonun boyutu",
+      "Piyasanın bugünkü volatilitesi",
+      "Çıkışının dolduğu fiyat"
+     ]
+    },
+    {
+     "q": "$600'lık pozisyon aleyhine %2 oynuyor. Bu şuna mal olur…",
+     "o": [
+      "$12",
+      "$6",
+      "$60",
+      "$120"
+     ]
+    },
+    {
+     "q": "İki trader aynı işlemi aldı; biri on kat fazla kaybetti. Neden?",
+     "o": [
+      "Farklı grafiklere bakıyorlardı",
+      "Biri çok daha yüksek komisyon ödedi",
+      "Biri çok daha büyük pozisyon tutuyordu",
+      "Biri piyasa, biri limit emri kullandı"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo5",
+   "t": "Kaybı girmeden önce belirle",
+   "cards": [
+    {
+     "h": "Risk, senin seçtiğin bir sayıdır",
+     "p": "Kârı düşünmeden önce, bu işlemin başarısız olursa sana neye mal olmasına izin verdiğine karar ver. Bunu dolar cinsinden yaz. Yaygın bir başlangıç noktası hesabın %1'idir; yani $1.000'lık bir hesap işlem başına $10 riske eder. O sayı bir tahmin değildir. Hâlâ sakinken koyduğun bir sınırdır."
+    },
+    {
+     "h": "Boyut, stop'tan çıkar",
+     "p": "Şimdi aritmetik tersine işler. ETH'yi $2.000'dan almak, stop-loss'u $1.960'a koymak istiyorsun — fiyat oraya düşerse işlemi kapatan emir. Mesafe coin başına $40. Toplamda $10 riske ediyorsun, o hâlde böl: $10 bölü $40, 0,25 ETH eder. Boyutun bu; $500'lık bir pozisyon."
+    },
+    {
+     "h": "Geniş stop, küçük boyut",
+     "p": "Tek bir şeyi değiştir. Stop'u $1.900'e koy; mesafe coin başına $100 olur. Risk $10 kalır, dolayısıyla boyut $10 bölü $100, yani 0,1 ETH — $200'lük bir pozisyon. Stop, işlemi daha güvenli ya da daha riskli yapmadı. Aynı sabit riskte kaç coin tutabileceğini değiştirdi."
+    },
+    {
+     "h": "Neden %1, neden %10 değil",
+     "p": "%1 riskte, arka arkaya on kayıp sana hesabın yaklaşık %10'una mal olur ve toparlanma tablosu %10'luk çukurun tamiri için kabaca %11 gerektiğini söyler. %10 riskte ise aynı on kayıp, başladığın paranın yaklaşık üçte birini bırakır — dışarı tırmanmak için yaklaşık %187 isteyen bir çukur. Aynı işlemler, aynı beceri, farklı aritmetik."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Hesabın $2.000 ve işlem başına %1 riske ediyorsun. Bu…",
+     "o": [
+      "İşlem başına $2",
+      "İşlem başına $20",
+      "İşlem başına $200",
+      "İşlem başına $100"
+     ]
+    },
+    {
+     "q": "Giriş $2.000, stop $1.960, risk $10. Hangi boyutu alırsın?",
+     "o": [
+      "0,1 ETH",
+      "0,5 ETH",
+      "0,25 ETH",
+      "2,5 ETH"
+     ]
+    },
+    {
+     "q": "Stop'u genişlettin ama dolar riskini sabit tuttun. Boyut…",
+     "o": [
+      "Küçülmeli",
+      "Büyümeli",
+      "Tıpatıp aynı kalmalı",
+      "İkiye katlanmalı"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo6",
+   "t": "R: her hesap için tek dil",
+   "cards": [
+    {
+     "h": "Bir R, riske ettiğindir",
+     "p": "İşlemleri dolarla saymayı bırak, R ile say. Bir R, o işlemde riske etmeye karar verdiğin tutardır. $10 riske et ve işlemi kaybet: bu eksi bir R'dir. Aynı işlemde $30 kazan: artı üç R. Dolar rakamı hesabınla birlikte değişir. R rakamı ise işlemin kendisini anlatır."
+    },
+    {
+     "h": "Girmeden önce getiri-risk oranı",
+     "p": "Aynı ETH işlemini al: giriş $2.000, stop $1.960, yani risk coin başına $40. Take-profit'i $2.120'ye koy; getiri coin başına $120 olur. $120'yi $40'a böl, 3 çıkar. O işlem üçe bir, yani 3R sunuyor. Bunu hiçbir şeyi riske etmeden önce hesaplayabilirsin ve hesaplamalısın."
+    },
+    {
+     "h": "R neden hesaplar arasında taşınır",
+     "p": "$0,50 riske eden $50'lık bir hesapla $500 riske eden $50.000'lık bir hesap birebir aynı işlemi yapabilir ve ikisi de artı 3R yazar. Mesele tam olarak bu. R, hesap büyüklüğünü denklemden çıkarır; böylece işlemlerini birbiriyle, geçen ayla ve başkasınınkilerle, dolar tutarları birini gösterişli göstermeden karşılaştırabilirsin."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "$20 riske ettin ve işlem $60 kazandırdı. R cinsinden bu…",
+     "o": [
+      "Artı 3R",
+      "Artı 1R",
+      "Artı 2R",
+      "Artı 6R"
+     ]
+    },
+    {
+     "q": "Giriş $100, stop $95, take-profit $115. Getiri-risk oranı…",
+     "o": [
+      "1'e 1",
+      "2'ye 1",
+      "3'e 1",
+      "5'e 1"
+     ]
+    },
+    {
+     "q": "İşlemleri neden dolar yerine R ile ölçersin?",
+     "o": [
+      "Komisyonları hesaptan çıkarır",
+      "İşlemleri farklı hesap boyutlarında karşılaştırılabilir kılar",
+      "Daha tutarlı sonuçlar garantiler",
+      "Borsalar kârı böyle raporlar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo7",
+   "t": "Kazanma oranı hikayenin tamamı değildir",
+   "cards": [
+    {
+     "h": "Beklenti formülü",
+     "p": "Bir işlem tarzının para kazanıp kazanmadığını tek bir sayı söyler: beklenti (expectancy). Kazanma oranın çarpı ortalama kazancın, eksi kaybetme oranın çarpı ortalama kaybın. R cinsinden ölçüldüğünde, ortalama bir işlemin ne ettiğini söyler. Pozitif beklenti, çok sayıda işlemde aritmetiğin senin tarafında olduğu demektir. Negatif ise olmadığı."
+    },
+    {
+     "h": "İşlemlerin çoğunu kaybedip yine de öndesin",
+     "p": "Diyelim işlemlerin %40'ını kazanıyorsun; her kazanan 3R getiriyor, her kaybeden 1R götürüyor. Kazançlar 0,4 çarpı 3, yani 1,2R katkı yapar. Kayıplar 0,6 çarpı 1, yani 0,6R götürür. Beklenti 1,2 eksi 0,6, yani işlem başına artı 0,6R'dir. $10 riskle 100 işlemde bu aritmetik $600'ı gösterir."
+    },
+    {
+     "h": "İşlemlerin çoğunu kazanıp yine de geridesin",
+     "p": "Şimdi işlemlerin %70'ini kazan, ama her kazanan sadece 0,3R getirsin, her kaybeden yine 1R götürsün. Kazançlar 0,7 çarpı 0,3, yani 0,21R verir. Kayıplar 0,3 çarpı 1, yani 0,3R alır. Beklenti işlem başına eksi 0,09R'dir. %70 kazanma oranı ve $10 riskle 100 işlem, $90 kaybetmeyi gösteriyor."
+    },
+    {
+     "h": "Başabaş kazanma oranı",
+     "p": "Her getiri-risk oranı için başabaş getiren kazanma oranını çıkarabilirsin: bir bölü bir artı R katı. 3R'de bu bir bölü dört, yani %25. 0,3R'de bir bölü 1,3, yani yaklaşık %77. %70'lik örneğin kaybetmesinin sebebi bu. İki sayı da tek başına iyi ya da kötü değildir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kazanma oranı %40, ortalama kazanç 3R, ortalama kayıp 1R. Beklenti…",
+     "o": [
+      "İşlem başına eksi 0,6R",
+      "İşlem başına artı 0,6R",
+      "İşlem başına artı 1,2R",
+      "İşlem başına artı 3R"
+     ]
+    },
+    {
+     "q": "Bunlardan hangisi çok sayıda işlemde para kazandırır?",
+     "o": [
+      "3R'de %40 kazanma oranı",
+      "0,3R'de %70 kazanma oranı",
+      "%50'nin üstündeki her kazanma oranı",
+      "Hangisi daha sık kazanıyorsa o"
+     ]
+    },
+    {
+     "q": "3R getiri-risk oranında hangi kazanma oranı başabaştır?",
+     "o": [
+      "%50",
+      "%33",
+      "%25",
+      "%10"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo8",
+   "t": "Bir gidiş dönüş gerçekte neye mal olur",
+   "cards": [
+    {
+     "h": "Komisyonlar notional üzerinden alınır",
+     "p": "Vadeli işlem komisyonu, ortaya koyduğun nakdin değil, pozisyonun tamamının — yani notional'ın — bir yüzdesidir. $6.000'lık pozisyon aç, %0,055'lik taker komisyonu $3,30 tutar. Kapat, bir daha ödersin. Komisyon, işlemin arkasında kendi paranın ne kadar olduğunu hiç sormaz. Sadece pozisyon büyüklüğünü görür."
+    },
+    {
+     "h": "Kaldıraç komisyonu çarpar",
+     "p": "Kaldıraç, nakdinin küçük bir kısmının — teminatın — daha büyük bir pozisyonu kontrol etmesini sağlar. 20x'te $6.000'lık pozisyon $300 teminat ister. $3,30'luk komisyon pozisyonun %0,055'i, ama $300'ünün %1,1'idir. Gidiş dönüş, girip çıkınca, fiyat daha hiç oynamadan teminatının %2,2'si gitmiş olur."
+    },
+    {
+     "h": "Spread ve slipaj da para götürür",
+     "p": "Komisyonlar sadece görünen maliyettir. Spread, en iyi alış ile en iyi satış fiyatı arasındaki boşluktur: $3.000,50'den alıp $2.999,50'den satarsan sırf o boşluğa coin başına $1 kaptırdın. Slipaj ise piyasa emrinin gördüğün fiyattan daha kötü dolmasıdır. İkisi de gerçek paradır ve hiçbiri komisyon tarifesinde yazmaz."
+    },
+    {
+     "h": "Başabaş gelmek bedava değildir",
+     "p": "%0,055'lik iki taker komisyonu, pozisyonun %0,11'ini eder. Tek bir sent kazanmadan önce fiyatın lehine %0,11 oynaması gerekir — üstelik bu spread'den önce. Kaldıraç bunu değiştirmez: her hâlükârda pozisyonun %0,11'idir. 20x'te günde on gidiş dönüş, teminatının %22'si demektir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "$6.000'lık pozisyonda %0,055'lik taker komisyonu…",
+     "o": [
+      "$3,30",
+      "$0,33",
+      "$33",
+      "$330"
+     ]
+    },
+    {
+     "q": "20x'te tek bir %0,055 taker komisyonu teminatının yüzde kaçıdır?",
+     "o": [
+      "%0,055",
+      "%0,55",
+      "%1,1",
+      "%20"
+     ]
+    },
+    {
+     "q": "Slipaj nedir…",
+     "o": [
+      "Borsa tarifesinde yayımlanan bir komisyon",
+      "Emrinin gördüğün fiyattan kötü dolması",
+      "Ödünç fonlara işletilen faiz",
+      "Çok erken tetiklenen bir stop-loss"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo9",
+   "t": "Tıklamadan önce matematiği yap",
+   "cards": [
+    {
+     "h": "Beş sayı, sırayla",
+     "p": "Her girişten önce beş şeyi yaz. Bir: hesabının büyüklüğü. İki: kaybetmeye razı olduğun dolar. Üç: giriş fiyatı ve stop fiyatı; bunlar stop mesafesini verir. Dört: pozisyon boyutu — risk bölü o mesafe. Beş: hedef ve onun ima ettiği R katı. Beşinci adım 1R'nin altındaysa cevabı zaten biliyorsun."
+    },
+    {
+     "h": "Baştan sona, bir kez",
+     "p": "Hesap $1.000. Risk %1, yani $10. ETH girişi $2.000, stop $1.960, mesafe $40. Boyut $10 bölü $40, yani 0,25 ETH — $500'lük bir pozisyon. Hedef $2.120 coin başına $120 verir, 0,25 coin de $30 eder. Bu 3R'dir. Gidiş dönüş komisyonu $500'ün %0,11'i, yani $0,55; $30'un yanında küçük kalır."
+    },
+    {
+     "h": "Matematik tahmin yapmaz",
+     "p": "Bunların hiçbiri işlemin kazanıp kazanmayacağını söylemez. Sana tam olarak neyi riske ettiğini, ne kazanabileceğini ve işlemi yürütmenin neye mal olduğunu söyler. Kayıplar normaldir ve bu aritmetik onları engellemez. Engellediği şey, otuz saniyede çıkarabileceğin bir sayı yüzünden şaşırmandır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Hesap $500, risk %2, stop mesafesi coin başına $25. Boyut?",
+     "o": [
+      "0,2 coin",
+      "2 coin",
+      "4 coin",
+      "0,4 coin"
+     ]
+    },
+    {
+     "q": "Planladığın hedef sadece 0,5R veriyor. Bu sana ne söyler?",
+     "o": [
+      "Getiri, riskin yanında küçük kalıyor",
+      "Alışılmadık derecede güçlü bir işlem",
+      "Telafi için daha çok riske etmelisin",
+      "Komisyonlar farkı kapatır"
+     ]
+    },
+    {
+     "q": "Bu aritmetiği önce yapmak sana gerçekte ne verir?",
+     "o": [
+      "İşlemin kazanacağının garantisi",
+      "Bilinen risk, bilinen getiri, bilinen maliyet",
+      "Zamanla daha yüksek kazanma oranı",
+      "Borsadan daha düşük komisyon"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Hesabın tamamı artık elinde. Hesaplayıcıları aç ve kendi sayılarını çalıştır — hesap, risk, stop mesafesi — boyutlandırma aritmetiği otomatikleşene kadar.",
+    "label": "Hesaplayıcıları Aç →"
+   }
+  }
+ ]
+}

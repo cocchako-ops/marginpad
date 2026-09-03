@@ -1,0 +1,666 @@
+{
+ "id": "risk",
+ "name": "Risk Management",
+ "sub": "The only edge beginners can actually have",
+ "color": "#ff6258",
+ "icon": "shield",
+ "lessons": [
+  {
+   "id": "r1",
+   "t": "Position sizing: the #1 skill",
+   "cards": [
+    {
+     "h": "Risk a slice, never the pie",
+     "act": {
+      "kind": "risk",
+      "prompt": "Drag your risk-per-trade down until you could survive at least 30 losses in a row."
+     },
+     "p": "Professionals size positions so one losing trade costs a fixed small share of the account — commonly 1-2%. Watch what your risk setting does to survival."
+    },
+    {
+     "h": "Size from the stop, not from greed",
+     "v": "stopsize",
+     "p": "The correct order: choose where the trade is wrong (your stop-loss level), measure the distance from entry to stop, then size the position so that distance equals your 1-2% risk. Size is an OUTPUT of the calculation — never the starting point."
+    },
+    {
+     "h": "Leverage is a tool, size is the decision",
+     "p": "Leverage only determines how much margin you post for a given size; the risk comes from the size itself. A properly-sized 10× trade risks less than an oversized 2× trade. Stop asking what leverage should I use and start asking what size keeps my risk at 1%."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "With 1% risk per trade, how many straight losses leave you 80% intact?",
+     "o": [
+      "About 5",
+      "About 20",
+      "About 50",
+      "One"
+     ],
+     "a": 1
+    },
+    {
+     "q": "What is the correct FIRST step of sizing a trade?",
+     "o": [
+      "Choosing leverage",
+      "Deciding where the trade is wrong (the stop level)",
+      "Picking a profit target",
+      "Maximising position size"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Risk ultimately comes from…",
+     "o": [
+      "Leverage alone",
+      "Position size relative to your stop distance",
+      "The coin you pick",
+      "The time of day"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Size a real trade: account, risk %, entry and stop — the calculator returns the exact position size.",
+    "label": "Position Size Calculator →",
+    "href": "/#size"
+   }
+  },
+  {
+   "id": "r2",
+   "t": "Stop-loss and take-profit, placed like a pro",
+   "cards": [
+    {
+     "h": "The stop goes where the idea dies",
+     "v": "stopplace",
+     "p": "A stop-loss belongs at the price where your trade thesis is proven wrong — below the support you bought, beyond the level that invalidates the setup. Placing it at the most pain I can tolerate is backwards: the market does not know or care about your pain threshold."
+    },
+    {
+     "h": "Prove it: place the stop",
+     "act": {
+      "kind": "tap",
+      "viz": "tapstop",
+      "prompt": "You bought at the green line because of the support zone. Tap where the stop-loss belongs."
+     },
+     "p": "One of these three spots is right. Two of them are how beginners lose."
+    },
+    {
+     "h": "Stop-hunting is real, panic about it is not",
+     "p": "Price often wicks through obvious levels, triggers clustered stops, then reverses. The fix is not removing your stop (that converts a small loss into a liquidation) — it is placing stops beyond obvious round numbers and sizing so a stop-out is boring, not devastating."
+    },
+    {
+     "h": "Take-profit: decide while you are sane",
+     "p": "A take-profit order banks the win automatically. Decide the exit before entering, while you are objective — because after entry you become the least objective person watching that chart. Partial take-profits (closing, say, half at the first target) are a legitimate compromise."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "The best place for a stop-loss is…",
+     "o": [
+      "Where losing would hurt too much",
+      "Where the trade idea is proven wrong",
+      "As close to entry as possible",
+      "Nowhere — stops are for cowards"
+     ],
+     "a": 1
+    },
+    {
+     "q": "When price hunts stops through an obvious level, the right response is…",
+     "o": [
+      "Never use stops again",
+      "Place stops beyond obvious levels and size so a stop-out is tolerable",
+      "Double the position",
+      "Switch coins"
+     ],
+     "a": 1
+    },
+    {
+     "q": "When should the exit plan be decided?",
+     "o": [
+      "After the trade is in profit",
+      "Before entering, while you are objective",
+      "Only when losing",
+      "Never"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Open a paper position and attach a real SL and TP to it — practise the full ritual with zero risk.",
+    "label": "Paper Trade →",
+    "href": "/paper-trade"
+   }
+  },
+  {
+   "id": "r3",
+   "t": "Risk:reward — being wrong profitably",
+   "cards": [
+    {
+     "h": "The ratio that forgives mistakes",
+     "v": "rrbars",
+     "p": "Risk:reward compares what you risk with what you aim to win. Risking $50 to make $150 is 1:3. At 1:3, winning just 3 trades out of 10 leaves you profitable — the picture below is those ten trades. The ratio buys you the right to be wrong most of the time."
+    },
+    {
+     "h": "Win rate and R:R trade off",
+     "p": "High win-rate strategies usually have small wins; high R:R strategies lose often but win big. Both work; neither works with a bad combination (low win rate AND low R:R — the default state of an impulsive beginner). Know which game your strategy plays."
+    },
+    {
+     "h": "Expectancy: the only number that decides",
+     "p": "Expectancy = (win rate × average win) − (loss rate × average loss). Positive means the approach makes money over many trades; negative means no position sizing can save it. One trade means nothing — expectancy is measured across dozens."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "At 1:3 risk:reward, what win rate is roughly break-even?",
+     "o": [
+      "75%",
+      "50%",
+      "25%",
+      "90%"
+     ],
+     "a": 2
+    },
+    {
+     "q": "A strategy with negative expectancy…",
+     "o": [
+      "Works with smaller size",
+      "Works with more leverage",
+      "Loses money over time no matter the sizing",
+      "Just needs one big win"
+     ],
+     "a": 2
+    },
+    {
+     "q": "How many trades does it take to judge a strategy?",
+     "o": [
+      "One good one",
+      "Dozens — expectancy is statistical",
+      "Two",
+      "It cannot be measured"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Feed your win rate and R:R into the Risk of Ruin calculator — see what the math says about your survival odds.",
+    "label": "Risk of Ruin Calculator →",
+    "href": "/risk-of-ruin-calculator/"
+   }
+  },
+  {
+   "id": "r4",
+   "t": "The brutal math of drawdowns",
+   "cards": [
+    {
+     "h": "Losses are heavier than gains",
+     "act": {
+      "kind": "dd",
+      "prompt": "Drag the loss deeper and watch what recovery requires. Find the loss where you need +100% just to get back."
+     },
+     "p": "Lose 10% and you need 11% to recover. This asymmetry is not motivational-poster material — it is arithmetic, and it is the reason capital preservation beats profit-chasing."
+    },
+    {
+     "h": "Streaks are normal, ruin is optional",
+     "p": "Even a strategy that wins 60% of the time will hit 5-loss streaks regularly — that is probability, not failure. Whether a normal streak becomes account-ending depends entirely on the size you risked per trade. Sizing turns variance into noise; oversizing turns it into ruin."
+    },
+    {
+     "h": "The comeback trap",
+     "p": "After a loss, the urge is to size UP to win it back fast. That is exactly backwards: bigger size after losses means your worst decisions get your largest bets. Professionals do the opposite — size down in drawdowns, back up when performing."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "After losing 50% of an account, recovery requires…",
+     "o": [
+      "+50%",
+      "+75%",
+      "+100%",
+      "+25%"
+     ],
+     "a": 2
+    },
+    {
+     "q": "A 5-loss streak on a good strategy is…",
+     "o": [
+      "Proof the strategy is broken",
+      "Statistically normal — sizing decides if it matters",
+      "Impossible",
+      "A reason to double size"
+     ],
+     "a": 1
+    },
+    {
+     "q": "After a losing streak, professionals typically…",
+     "o": [
+      "Increase size to recover faster",
+      "Reduce size until performance returns",
+      "Remove stop-losses",
+      "Switch to 100× leverage"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "r5",
+   "t": "Psychology: the enemy in the mirror",
+   "cards": [
+    {
+     "h": "Revenge trading",
+     "p": "The most expensive trade in any beginner's history is the one placed 90 seconds after a painful loss — oversized, unplanned, driven by the need to be made whole. Name the pattern now, and adopt the professional rule: after a stop-out, no new trade until a written plan exists."
+    },
+    {
+     "h": "FOMO buys the top",
+     "v": "fomo",
+     "p": "A coin already up 30% today feels safest to buy — everyone agrees, the chart confirms it. But entering on a vertical move means your stop is far away, your R:R is terrible, and you are exit liquidity for earlier buyers. Great trades usually feel uncomfortable at entry, not obvious."
+    },
+    {
+     "h": "The journal is a mirror",
+     "p": "A trading journal — every entry, exit, size and reason — converts vague feelings into visible patterns: my Sunday-night trades all lose, I always cut winners early. It is unglamorous and it is the fastest self-improvement tool trading has. Fake-money trades count too."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "The classic revenge trade happens…",
+     "o": [
+      "After careful planning",
+      "Minutes after a painful loss, oversized",
+      "Only in bull markets",
+      "When following a journal"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Buying a coin that is already up 30% today usually means…",
+     "o": [
+      "The safest possible entry",
+      "Terrible risk:reward — the comfortable-looking entry",
+      "A guaranteed continuation",
+      "Low volatility"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The main purpose of a trading journal is…",
+     "o": [
+      "Tax paperwork only",
+      "Making your patterns visible so you can fix them",
+      "Impressing other traders",
+      "Predicting the market"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Your paper trades already feed a free analytics journal — see your win rate, streaks and habits.",
+    "label": "Trading Journal →",
+    "href": "/trading-journal/"
+   }
+  },
+  {
+   "id": "r6",
+   "t": "The daily loss limit and tilt",
+   "cards": [
+    {
+     "h": "Tilt: trading while compromised",
+     "p": "After two or three losses, your brain chemistry changes — the need to win it back overrides the plan. Poker players call it tilt, and they manage it structurally, not with willpower: when a limit is hit, the session ends. No exceptions, no one more trade."
+    },
+    {
+     "h": "The daily loss limit",
+     "p": "Decide in advance: lose X% of the account in a day (commonly 2-3R) and you are done until tomorrow. The market reopens every day; your discipline does not regenerate mid-tilt. The best trade you will make on a bad day is closing the laptop."
+    },
+    {
+     "h": "Make it mechanical",
+     "p": "A rule you must remember while tilted will fail. Write the limit in your journal, tell someone, set an alarm — anything that makes stopping the default instead of a choice. Consistency here is worth more than any indicator you will ever learn."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Tilt is…",
+     "o": [
+      "A chart pattern",
+      "The compromised state after losses where revenge overrides the plan",
+      "A type of order",
+      "Profitable"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A daily loss limit works because…",
+     "o": [
+      "It predicts the market",
+      "It ends the session BEFORE tilt does maximum damage",
+      "Exchanges enforce it",
+      "It increases leverage"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The best defence against tilt is…",
+     "o": [
+      "Willpower in the moment",
+      "A mechanical, pre-decided stop to the session",
+      "More coffee",
+      "Bigger size to recover"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "r7",
+   "t": "Correlation: the hidden double bet",
+   "cards": [
+    {
+     "h": "Three positions, one trade",
+     "p": "Long BTC, long ETH and long SOL feels diversified. It is not: in stress, crypto correlations go to nearly 1 — everything falls together. You are not holding three trades; you are holding one trade at triple size, with triple the liquidation surface."
+    },
+    {
+     "h": "Real diversification in crypto is rare",
+     "p": "Within crypto, almost everything is a leveraged bet on the same tide (Bitcoin and global liquidity). Some pairs decorrelate in calm times — and recorrelate exactly when it hurts. Assume correlation = 1 in your risk math and you will never be surprised."
+    },
+    {
+     "h": "Count your TOTAL exposure",
+     "p": "Your risk per trade rule must apply to the SUM of correlated positions. Three 1%-risk longs on majors is a 3% bet on one outcome. Either size each smaller, or accept and name the concentration — but never call it diversification."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Long BTC + long ETH + long SOL in a crash behaves like…",
+     "o": [
+      "Three independent trades",
+      "One trade at triple size",
+      "A hedge",
+      "Cash"
+     ],
+     "a": 1
+    },
+    {
+     "q": "In market stress, crypto correlations typically…",
+     "o": [
+      "Fall to zero",
+      "Go to nearly 1 — everything moves together",
+      "Turn negative",
+      "Disappear"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Your 1% risk rule should apply to…",
+     "o": [
+      "Each position separately, always",
+      "The sum of correlated positions",
+      "Only Bitcoin",
+      "Only losses"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "See how tightly the majors actually move together — the live correlation matrix makes it visceral.",
+    "label": "Correlation Matrix →",
+    "href": "/crypto-correlation-matrix/"
+   }
+  },
+  {
+   "id": "r8",
+   "t": "A+ setups: the skill of skipping",
+   "cards": [
+    {
+     "h": "Your edge lives in a few trades",
+     "p": "Review any profitable journal and a pattern appears: most of the profit came from a minority of high-quality setups, and most of the losses from filler — boredom trades, almost-setups, revenge entries. The fastest performance upgrade is deleting the filler."
+    },
+    {
+     "h": "Define A+ before you see the chart",
+     "p": "Write down what your best setup looks like: trend aligned, key level, confluence, clean invalidation, R:R at least 2. If a trade does not tick the list, it does not exist. Vague standards get negotiated away in real time; written ones survive."
+    },
+    {
+     "h": "Boredom is expensive",
+     "p": "The market punishes the need for action. Flat is a position — often the best one. Professionals describe their job as waiting; amateurs describe it as trading. The difference shows up directly in the expectancy math you learned in r3."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "In most profitable journals, the bulk of profit comes from…",
+     "o": [
+      "Every trade equally",
+      "A minority of high-quality setups",
+      "Boredom trades",
+      "Weekend trading"
+     ],
+     "a": 1
+    },
+    {
+     "q": "An A+ setup should be defined…",
+     "o": [
+      "While staring at a live chart",
+      "In writing, before you see the chart",
+      "After the trade",
+      "By someone on social media"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Being flat (no position) is…",
+     "o": [
+      "Wasted time",
+      "A position — often the best one",
+      "Only for beginners",
+      "Impossible"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "r9",
+   "t": "Scaling in and out",
+   "cards": [
+    {
+     "h": "Entries do not have to be all-or-nothing",
+     "p": "Scaling in means building a position in parts — a third at market, a third at a better level, a third on confirmation. You trade some average-price precision for flexibility, and no single fill decides the trade."
+    },
+    {
+     "h": "The martingale trap",
+     "p": "Scaling into a WINNING thesis at planned levels is a strategy. Doubling into a LOSING trade to lower your average — martingale — is how accounts die: your size is largest exactly when you are most wrong. The difference is whether the adds were planned before entry."
+    },
+    {
+     "h": "Scaling out mirrors scaling in",
+     "p": "Selling a winner in parts (r10 covered the first slice) smooths the exit the same way. The rule that keeps all of this honest: every add and every trim was written in the plan BEFORE the position existed. Improvised adds are tilt wearing a strategy costume."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "The difference between scaling in and martingale is…",
+     "o": [
+      "The coin",
+      "Whether the adds were planned before entry vs doubling a losing trade",
+      "The exchange",
+      "Nothing"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Martingale sizing means your biggest size arrives…",
+     "o": [
+      "When you are most right",
+      "Exactly when you are most wrong",
+      "Randomly",
+      "Never"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Improvised mid-trade adds are usually…",
+     "o": [
+      "Genius",
+      "Tilt wearing a strategy costume",
+      "Required",
+      "Fee-free"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "r10",
+   "t": "Risk of ruin: the math of survival",
+   "cards": [
+    {
+     "h": "Ruin is a probability you can compute",
+     "p": "Given a win rate, an R:R and a risk-per-trade, the chance your account ever hits a fatal drawdown is computable — it is called risk of ruin. The brutal insight: at high per-trade risk, even a genuinely profitable strategy carries a HIGH chance of ruin before the edge pays."
+    },
+    {
+     "h": "Same edge, different fates",
+     "p": "A 50%-win-rate, 1:2 strategy at 2% risk has near-zero ruin probability. The identical strategy at 15% risk will, with high probability, hit a killing streak eventually. The strategy did not change — only the bet size did. Survival is a sizing property, not a skill property."
+    },
+    {
+     "h": "Run your own numbers",
+     "p": "Do not take this on faith: put your paper-trading win rate and R:R into a risk-of-ruin calculator and move the risk slider. Watching your own survival odds collapse as risk grows past 5% teaches sizing better than any paragraph."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Risk of ruin depends on…",
+     "o": [
+      "Win rate, R:R and risk per trade",
+      "Only the coin",
+      "The exchange",
+      "Luck alone"
+     ],
+     "a": 0
+    },
+    {
+     "q": "A profitable strategy at 15% risk per trade…",
+     "o": [
+      "Cannot fail",
+      "Still carries a high chance of ruin from a normal streak",
+      "Is optimal",
+      "Has no drawdowns"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Survival is primarily a property of…",
+     "o": [
+      "Skill",
+      "Bet sizing",
+      "News reading",
+      "Trading hours"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Feed your real win rate and R:R into the calculator and drag the risk slider — watch your ruin odds move.",
+    "label": "Risk of Ruin Calculator →",
+    "href": "/risk-of-ruin-calculator/"
+   }
+  },
+  {
+   "id": "r11",
+   "t": "The pre-trade checklist",
+   "cards": [
+    {
+     "h": "Pilots do not trust memory. Neither should you.",
+     "v": "checklist",
+     "p": "Under stress, humans skip steps — that is why aviation runs on checklists. A pre-trade checklist externalises your discipline: five questions answered in writing before any entry, every time, especially when the setup feels urgent."
+    },
+    {
+     "h": "The five questions",
+     "p": "1) Is the trade WITH the higher-timeframe trend? 2) Is it at a level, with confluence? 3) Where exactly is the invalidation (stop), and is R:R at least 2? 4) Is the size correct for 1-2% risk? 5) Is there a scheduled event (CPI, FOMC) inside the trade window?"
+    },
+    {
+     "h": "Urgency is the enemy of the list",
+     "p": "The trades that most need the checklist are the ones that feel too urgent for it — the vertical breakout, the revenge setup. If a trade cannot wait sixty seconds for five questions, it is not a trade; it is an impulse with a chart attached."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Checklists exist because…",
+     "o": [
+      "Traders are stupid",
+      "Under stress humans reliably skip steps",
+      "Exchanges require them",
+      "They predict price"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Which is NOT one of the five checks?",
+     "o": [
+      "Higher-timeframe trend",
+      "Invalidation and R:R",
+      "Correct size",
+      "What social media thinks"
+     ],
+     "a": 3
+    },
+    {
+     "q": "A trade that cannot wait 60 seconds for the checklist is…",
+     "o": [
+      "The best kind",
+      "An impulse with a chart attached",
+      "Guaranteed profit",
+      "Rare"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "r12",
+   "t": "Review your journal like a coach",
+   "cards": [
+    {
+     "h": "The weekly ritual",
+     "p": "Once a week, read every trade like a coach reviewing game tape: was the entry per plan? Was the exit? Which rule was broken, and what did breaking it cost? The goal is not self-flagellation — it is finding the ONE repeated leak that costs the most."
+    },
+    {
+     "h": "Slice the data",
+     "p": "Group your trades: by setup type, by day of week, by session, by coin, by emotional state if you log it. Leaks hide in aggregates and jump out of slices — Sunday-night trades losing, one setup carrying everything, longs outperforming shorts 3 to 1."
+    },
+    {
+     "h": "Kill one leak per week",
+     "p": "Do not fix everything at once. Pick the single most expensive pattern, write one rule against it, and check next week whether it held. Compounding tiny process improvements is exactly like compounding capital — slow, boring and unreasonably powerful."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "The purpose of a weekly review is…",
+     "o": [
+      "Feeling bad",
+      "Finding the single most expensive repeated leak",
+      "Counting profits",
+      "Sharing screenshots"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Leaks are easiest to find by…",
+     "o": [
+      "Staring at the total P&L",
+      "Slicing trades by setup, day, session and coin",
+      "Asking friends",
+      "Intuition"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The best improvement cadence is…",
+     "o": [
+      "Fix everything at once",
+      "One leak, one rule, one week at a time",
+      "Change nothing",
+      "New strategy weekly"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Your paper trades already feed the analytics journal — open it and find your most expensive pattern.",
+    "label": "Trading Journal →",
+    "href": "/trading-journal/"
+   }
+  }
+ ]
+}

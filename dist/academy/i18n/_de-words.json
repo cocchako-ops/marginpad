@@ -1,0 +1,420 @@
+{
+ "id": "words",
+ "name": "Das Trader-Wörterbuch",
+ "sub": "Der Jargon, entschlüsselt",
+ "lessons": [
+  {
+   "id": "wd1",
+   "t": "Long, short und eine Position haben",
+   "cards": [
+    {
+     "h": "Eine Position ist eine offene Wette",
+     "p": "Bevor du handelst, bist du flat: Dir gehört nichts und dir kann nichts passieren. In dem Moment, in dem du kaufst oder verkaufst, hast du eine Position — eine offene Wette mit einer Richtung und einer Größe. Sie bleibt offen und gewinnt und verliert mit jeder Preisbewegung, bis du sie schließt. Trader sagen 'ich bin in einer Position' so, wie du sagen würdest: Da habe ich Geld drauf."
+    },
+    {
+     "h": "Long heißt, du willst höher",
+     "p": "Long gehen heißt, du gewinnst, wenn der Preis steigt. Kauf Bitcoin bei $60,000, verkauf bei $63,000, und du hast $3,000 pro Coin gemacht — das ist ein Long. Nichts ist geliehen und nichts ist exotisch; es ist Kaufen, mit einem Namen. Fast jeder fängt hier an, weil es dazu passt, wie wir ohnehin über Besitz denken. 'Long BTC' heißt einfach: Ich bin darauf positioniert, dass der Preis steigt."
+    },
+    {
+     "h": "Short gewinnt, wenn der Preis fällt",
+     "p": "Ein Short ist das Spiegelbild. Du verkaufst zuerst zu einem hohen Preis und kaufst später billiger zurück, und die Differenz gehört dir. Short bei $60,000, Rückkauf bei $57,000, und du hast $3,000 pro Coin behalten, während der Markt fiel. Bei Futures wechseln überhaupt keine Coins den Besitzer — du hältst einen Kontrakt, der dich bezahlt, wenn der Preis fällt. So verdienen Trader in einem fallenden Markt."
+    },
+    {
+     "h": "Die Größe vollendet den Satz",
+     "p": "Richtung allein ist keine Position. 'Long BTC' sagt nichts darüber, was dich eine Bewegung kostet; 'long BTC, $500' schon. Die Positionsgröße ist das Geld, das arbeitet, und sie entscheidet, was jede 1%-Bewegung wert ist: $500, die sich 1% bewegen, sind $5 — Gewinn oder Verlust. Anfänger streiten über die Richtung und ignorieren die Größe, also genau die Hälfte, die den Schaden tatsächlich steuert."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Du bist short und der Preis fällt. Was passiert?",
+     "o": [
+      "Du verdienst Geld",
+      "Du verlierst Geld",
+      "Die Position schließt automatisch",
+      "Nichts, bis der Preis wieder steigt"
+     ]
+    },
+    {
+     "q": "Was bedeutet 'Position'?",
+     "o": [
+      "Eine Art Börsenkonto",
+      "Eine Preisprognose für die Woche",
+      "Ein Chartmuster mit zwei Hochs",
+      "Eine offene Wette mit Richtung und Größe"
+     ]
+    },
+    {
+     "q": "Beide sind long BTC — einer $200, einer $2,000. Eine 1%-Bewegung ist wert:",
+     "o": [
+      "$2 und $20",
+      "$2 für jeden von beiden",
+      "$20 für jeden von beiden",
+      "Ohne Hebel nicht zu wissen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd2",
+   "t": "Bulle, Bär, Pump, Dump, Crash",
+   "cards": [
+    {
+     "h": "Bulle und Bär sind Richtung",
+     "p": "Ein Bullenmarkt ist eine lange Phase steigender Preise; ein Bärenmarkt eine lange Phase fallender. Die Tiere kommen von ihrer Art anzugreifen: Der Bulle wirft die Hörner nach oben, der Bär schlägt die Pranke nach unten. Nennst du dich bullish, erwartest du oben; bearish, unten. Das sind langsame Wörter — sie beschreiben Monate, nicht diesen Nachmittag."
+    },
+    {
+     "h": "Pump und Dump sind Tempo",
+     "p": "Ein Pump ist ein schneller Anstieg, ein Dump ein schneller Absturz. Keins von beiden sagt etwas über das Warum. Vorsicht aber: 'Pump and Dump' als feste Wendung bezeichnet eine Masche — eine Gruppe kauft leise einen kleinen Coin, bewirbt ihn laut und verkauft dann an die Käufer, die sie angelockt hat. Der Anstieg ist echt, und der Ausstieg gehört ihnen, nicht dir."
+    },
+    {
+     "h": "Korrektur, Crash und der Unterschied",
+     "p": "Die übliche Konvention: Ein Rückgang von rund 10% vom jüngsten Hoch heißt Korrektur, ein Fall von 20% oder mehr heißt Bärenmarkt. Ein Crash ist keine Größe, sondern ein Tempo — der Großteil des Falls kommt in Stunden oder Tagen. In Krypto ist ein 10%-Tag ganz gewöhnlich, also nehmen die Leute diese Wörter locker. Frag nach der Zahl, nicht nach dem Substantiv."
+    },
+    {
+     "h": "Diese Wörter beschreiben, sie sagen nichts voraus",
+     "p": "Nichts in dieser Lektion sagt dir, was als Nächstes passiert. Wer 'das ist nur eine Korrektur' sagt, berichtet keine Tatsache; er rät, meist während er eine Position hält, die genau das braucht. Die Wörter sind Etiketten für das, was schon passiert ist. Kommt ein Etikett mit Zuversicht über morgen daher, ist die Zuversicht die eigentliche Behauptung."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ein Crash wird vor allem definiert durch:",
+     "o": [
+      "Wie weit der Preis fällt",
+      "Wie schnell der Preis fällt",
+      "Wie viele Coins zusammen fallen",
+      "Wie lange der Bärenmarkt dauert"
+     ]
+    },
+    {
+     "q": "'Pump and Dump' als Wendung beschreibt:",
+     "o": [
+      "Jeden schnellen Anstieg mit Absturz danach",
+      "Eine Masche: bewerben, dann an Käufer verkaufen",
+      "Ein Kerzenmuster mit zwei Hochs",
+      "Den normalen Listing-Prozess einer Börse"
+     ]
+    },
+    {
+     "q": "Nach der üblichen Konvention heißt ein Fall von 20% vom Hoch:",
+     "o": [
+      "Eine Korrektur",
+      "Ein Flash Crash",
+      "Ein Bärenmarkt",
+      "Ein tiefer Dump"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd3",
+   "t": "Margin, Hebel, Liquidierung, P&L",
+   "cards": [
+    {
+     "h": "Margin ist dein Geld darin",
+     "p": "Margin ist das Geld, das du hinterlegst, um eine Position zu halten. Notional ist die volle Größe, die diese Position kontrolliert. Hinterleg $100 Margin, um $1,000 Bitcoin zu kontrollieren, dann sind $100 deine Margin und $1,000 dein Notional. Jede Gebühr, jeder Gewinn und jeder Verlust wird auf das Notional gerechnet und landet dann in deiner Margin — genau deshalb fühlen sich kleine Prozentsätze riesig an."
+    },
+    {
+     "h": "Hebel ist das Verhältnis",
+     "p": "Hebel ist Notional geteilt durch Margin. $1,000, kontrolliert mit $100, sind 10x. Das ist die ganze Definition; alles andere sind Folgen. Bei 10x ist eine 1%-Bewegung im Preis eine 10%-Bewegung in deiner Margin, nach oben wie nach unten. Die volle Mechanik bekommt einen eigenen Kurs, Hebel & Liquidierung. Halt hier nur das Verhältnis fest — und dass es beide Richtungen gleich multipliziert."
+    },
+    {
+     "h": "Liquidierung ist der erzwungene Ausstieg",
+     "p": "Deine Verluste kommen aus deiner Margin. Wenn der Verlust fast alles davon gefressen hat, schließt die Börse die Position für dich, weil der geliehene Teil geschützt werden muss. Das ist Liquidierung. Es ist keine Warnung — es ist das Ende dieser Position, zu welchem Preis der Markt gerade auch steht. Bei 10x reicht dafür grob eine 10%-Bewegung gegen dich."
+    },
+    {
+     "h": "Welche ist im Gewinn",
+     "prompt": "Der Preis ist gerade gefallen. Tippe auf die Position, die im Gewinn ist.",
+     "p": "P&L heißt profit and loss, Gewinn und Verlust: was deine offene Position gerade jetzt wert ist. Er ist unrealisiert, solange die Position offen ist, und realisiert in dem Moment, in dem du schließt. Der Preis ist gerade gefallen. Ein Tipp."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Du hinterlegst $200, um $2,000 zu kontrollieren. Dein Hebel ist:",
+     "o": [
+      "2x",
+      "10x",
+      "20x",
+      "200x"
+     ]
+    },
+    {
+     "q": "Liquidierung passiert, wenn:",
+     "o": [
+      "Du die Position selbst schließt",
+      "Der Preis dein Take-Profit erreicht",
+      "Verluste fast deine ganze Margin gefressen haben",
+      "Die Börse eine Funding-Gebühr abbucht"
+     ]
+    },
+    {
+     "q": "Gebühren und P&L werden berechnet auf:",
+     "o": [
+      "Die Notional-Positionsgröße",
+      "Nur deine Margin",
+      "Den Betrag, den du abhebst",
+      "Den Hebel-Multiplikator"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd4",
+   "t": "Wie eine Order an den Markt kommt",
+   "cards": [
+    {
+     "h": "Market-Order: Tempo vor Preis",
+     "p": "Eine Market-Order sagt: Nimm den Preis, der gerade zu haben ist. Sie wird sofort gefüllt — ein Fill ist der Moment, in dem deine Order wirklich zur Position wird — weil sie akzeptiert, was die Gegenseite gerade verlangt. Du kommst immer rein. Du bekommst nicht immer den Preis, den du gesehen hast. Nutze sie, wenn Drinsein wichtiger ist als Genauigkeit."
+    },
+    {
+     "h": "Limit-Order: Preis vor Tempo",
+     "p": "Eine Limit-Order sagt: Füll mich zu diesem Preis oder besser, und warte notfalls. Sie liegt im Orderbuch, bis jemand gegen sie handelt, und wird vielleicht nie gefüllt. Du kontrollierst den Preis und gibst die Sicherheit auf. Limit-Orders zahlen meist auch eine niedrigere Gebühr, weil du derjenige bist, der wartet, statt derjenige, der drängt."
+    },
+    {
+     "h": "Ein Stop ist ein Auslöser",
+     "p": "Ein Stop ist noch keine Order — er ist eine Anweisung, die zu einer wird, sobald der Preis ein von dir gewähltes Level berührt. Ein Stop-Loss liegt unter einer Long-Position und schließt sie, wenn der Preis dorthin fällt; das deckelt den Schaden. Ein Take-Profit macht dasselbe auf der Gewinnseite. Keiner von beiden garantiert den exakten Preis: einmal ausgelöst, werden sie meist zu Market gefüllt."
+    },
+    {
+     "h": "Spread und Slippage",
+     "p": "Das Orderbuch hat einen höchsten Käufer, den Bid, und einen niedrigsten Verkäufer, den Ask. Die Lücke dazwischen ist der Spread, und ihn zu kreuzen kostet dich. Slippage ist etwas anderes: Eine große Market-Order frisst sich durch mehrere Preisstufen, sodass dein Durchschnittspreis schlechter ist als der, den du angeklickt hast. Du siehst $100.00, wirst bei $100.05 gefüllt — Slippage hat dich 0.05% gekostet."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Eine Limit-Order gibt dir Kontrolle über:",
+     "o": [
+      "Den Preis, aber nicht ob sie füllt",
+      "Preis und sofortige Ausführung zugleich",
+      "Die Gebührenordnung der Börse",
+      "Wie schnell sich der Markt bewegt"
+     ]
+    },
+    {
+     "q": "Ein Stop-Loss löst aus, und dann:",
+     "o": [
+      "Füllt er exakt zu deinem Stop-Preis",
+      "Füllt er meist zu Market, nahe daran",
+      "Storniert er die Position, ohne zu schließen",
+      "Wartet er im Buch auf einen besseren Preis"
+     ]
+    },
+    {
+     "q": "Slippage ist:",
+     "o": [
+      "Die Provision, die die Börse berechnet",
+      "Die Lücke zwischen Bid und Ask",
+      "Die Lücke zwischen gesehenem Preis und Ausführungspreis",
+      "Eine Verzögerung durch die Blockchain"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd5",
+   "t": "Die Wörter für Massengefühle",
+   "cards": [
+    {
+     "h": "FOMO und FUD",
+     "p": "FOMO ist fear of missing out, die Angst etwas zu verpassen: der Sog zu kaufen, weil es schon ohne dich steigt. FUD ist fear, uncertainty and doubt: der Sog zu verkaufen, weil irgendetwas schlecht klingt. Beide benennen ein Gefühl, keine Tatsache über den Markt. Und beide werden als Vorwurf benutzt — deine Vorsicht FUD zu nennen, ist eine Art, dich am Nachdenken zu hindern."
+    },
+    {
+     "h": "HODL, Paper Hands, Diamond Hands",
+     "p": "HODL begann 2013 als Tippfehler für 'hold' in einem Forumsbeitrag und verhärtete sich zur Anweisung, niemals zu verkaufen. Paper Hands verspottet Leute, die verkaufen; Diamond Hands lobt die, die es nicht tun. Achte darauf, was diese Wörter tun: Sie machen aus einer Entscheidung über dein Geld eine Charakterprüfung, bewertet von Fremden, die deine Verluste nicht mittragen."
+    },
+    {
+     "h": "Whales und Retail",
+     "p": "Ein Whale ist ein Halter, der groß genug ist, dass sein eigenes Kaufen oder Verkaufen den Preis bewegt. Retail heißt alle Kleinen — du, ziemlich sicher, und es liegt nichts Beleidigendes darin. Nützlich ist die Asymmetrie: Ein Whale muss seinen Ausstieg planen, weil Größe nicht leise gehen kann, während du mit einem Klick draußen bist."
+    },
+    {
+     "h": "Kapitulation, und wer das Wort benutzt",
+     "p": "Kapitulation ist der Moment, in dem Halter aufhören zu hoffen und zu jedem Preis verkaufen: schweres Volumen, ein brutaler Absturz, dann Erschöpfung. Erkannt wird sie immer erst hinterher. Das ist die ehrliche Grenze jedes Wortes in dieser Lektion — sie beschreiben Massengefühle gut und sagen nichts voraus. Wenn dir jemand mit einem davon sagt, was du jetzt tun sollst, frag, welche Position er hält."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wenn dir jemand sagt, deine Vorsicht sei FUD, heißt das meist:",
+     "o": [
+      "Eine sachliche Richtigstellung kam",
+      "Druck, das Hinterfragen zu lassen",
+      "Ein Begriff der Chartanalyse fiel",
+      "Die Börse hat eine Warnung gegeben"
+     ]
+    },
+    {
+     "q": "Ein Whale ist:",
+     "o": [
+      "Ein Halter, groß genug den Preis zu bewegen",
+      "Ein früher Bitcoin-Miner",
+      "Jeder Trader mit hohem Hebel",
+      "Ein Angestellter einer Börse"
+     ]
+    },
+    {
+     "q": "Kapitulation lässt sich erkennen:",
+     "o": [
+      "Vorher, am steigenden Volumen",
+      "Erst hinterher",
+      "An der Funding-Rate",
+      "Von der Börse, bevor sie beginnt"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd6",
+   "t": "Support, Resistance, Trend, Breakout",
+   "cards": [
+    {
+     "h": "Support und Resistance sind Zonen",
+     "p": "Support (Unterstützung) ist ein Preisbereich, in dem immer wieder Käufer aufgetaucht sind und einen Fall gestoppt haben. Resistance (Widerstand) ist, wo Verkäufer immer wieder einen Anstieg gestoppt haben. Es sind Zonen, keine Linien — ein Level bei $60,000 heißt in Wahrheit irgendwo zwischen $59,800 und $60,200. Sie zählen, weil genug Trader sie beobachten und dort handeln, und genau deshalb brechen sie irgendwann."
+    },
+    {
+     "h": "Trend und Range",
+     "p": "Ein Aufwärtstrend ist eine Folge höherer Hochs und höherer Tiefs; ein Abwärtstrend das Gegenteil. Eine Range ist keins von beidem: Der Preis springt zwischen Boden und Decke und kommt nirgendwo hin. Zu benennen, worin du gerade steckst, ist das Nützlichste an diesen Wörtern, denn ein Markt in der Range bestraft jeden, der ihn handelt, als wäre er im Trend."
+    },
+    {
+     "h": "Breakout heißt, die Box verlassen",
+     "p": "Ein Breakout ist, wenn der Preis eine Range verlässt oder durch Resistance drückt. Das Wort wird benutzt, bevor es verdient ist: Der Preis lugt heraus, alle rufen Breakout, und er fällt direkt wieder hinein. Dieser Fehlschlag hat einen eigenen Namen, Fakeout. Welches von beidem es war, weißt du erst, wenn die Kerze geschlossen hat und der Preis draußen bleibt."
+    },
+    {
+     "h": "Jedes Level braucht einen Timeframe",
+     "p": "Ein Timeframe ist, wie viel Zeit eine Kerze abdeckt — 5 Minuten, 4 Stunden, ein Tag. Ein Support, der auf dem 5-Minuten-Chart gezeichnet ist, ist im Tageschart unsichtbar. Derselbe Markt kann auf 5 Minuten im Abwärtstrend und im Tageschart im Aufwärtstrend sein, und beide Aussagen sind wahr. Sagt jemand 'der Trend', fehlt das entscheidende Wort: welcher Timeframe."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Support beschreibt man am besten als:",
+     "o": [
+      "Einen garantierten Boden unter dem Preis",
+      "Einen Bereich, in dem immer wieder gekauft wurde",
+      "Den tiefsten je erreichten Preis des Coins",
+      "Eine Linie, die die Börse täglich meldet"
+     ]
+    },
+    {
+     "q": "Der Preis drückt durch Resistance und fällt sofort zurück. Das ist:",
+     "o": [
+      "Ein Fakeout",
+      "Ein bestätigter Breakout",
+      "Ein Abwärtstrend",
+      "Eine Korrektur"
+     ]
+    },
+    {
+     "q": "Ein Aufwärtstrend ist eine Folge von:",
+     "o": [
+      "Kerzen derselben Farbe",
+      "Levels, die Großhalter zeichnen",
+      "Tagesgewinnen über 1%",
+      "Höheren Hochs und höheren Tiefs"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd7",
+   "t": "Liquidität, Volumen, Volatilität, Market Cap",
+   "cards": [
+    {
+     "h": "Volumen zählt, Liquidität absorbiert",
+     "p": "Volumen ist, wie viel in einem Zeitraum tatsächlich gehandelt wurde — eine Tatsache über die Vergangenheit. Liquidität ist, wie viel gerade jetzt im Orderbuch wartet — eine Tatsache über die Gegenwart. Ein Coin kann einen riesigen Volumentag haben und trotzdem dünn sein, sodass ein Verkauf über $50,000 ihn mehrere Prozent drückt. Volumen zeigt Interesse; Liquidität zeigt, ob du wieder rauskommst."
+    },
+    {
+     "h": "Volatilität misst Bewegung, nicht Richtung",
+     "p": "Volatilität ist, wie stark sich der Preis bewegt, in welche Richtung auch immer. Ein Coin, der 5% am Tag schwankt, ist fünfmal so volatil wie einer, der 1% schwankt — egal ob diese Tage grün oder rot sind. Genau deshalb zählt sie beim Hebel so sehr: Deine Distanz zur Liquidierung steht fest, und die Volatilität entscheidet, wie oft der Preis so weit reist. Hohe Volatilität ist nicht schlecht — sie ist schneller, in beide Richtungen."
+    },
+    {
+     "h": "Market Cap ist kein investiertes Geld",
+     "p": "Market Cap ist Preis mal umlaufende Menge. Sie ist ein Etikett, kein Maß für Geld, das hineingeflossen ist. War der letzte Trade bei $1 und es existieren 100 Millionen Coins, steht die Cap bei $100 Millionen — auch wenn den ganzen Tag nur ein paar tausend Dollar den Besitzer wechselten. So tragen dünne Coins große Caps. Lies sie als Größe und prüf das Volumen, bevor du ihr glaubst."
+    },
+    {
+     "h": "Order Flow: wer aggressiv ist",
+     "p": "Jeder Trade hat einen Käufer und einen Verkäufer, also ist 'mehr Käufer als Verkäufer' unmöglich. Was sich unterscheidet, ist die Aggressivität. Order Flow ist die Aufzeichnung, welche Seite den Spread gekreuzt hat, um sofort gefüllt zu werden, und dabei die ruhenden Limit-Orders der Gegenseite genommen hat. Der Preis steigt, wenn die Käufer die Ungeduldigen sind. Derselbe Markt, beschrieben danach, wer für Tempo zu zahlen bereit war."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Riesiges Volumen gestern garantiert:",
+     "o": [
+      "Dass du heute leicht groß aussteigst",
+      "Nichts über die Liquidität von heute",
+      "Dass die Volatilität heute niedrig ist",
+      "Dass der Preis weiter steigen wird"
+     ]
+    },
+    {
+     "q": "Eine Market Cap von $100 Millionen bedeutet:",
+     "o": [
+      "Preis mal Umlaufmenge sind $100 Millionen",
+      "$100 Millionen wurden in den Coin investiert",
+      "Das Projekt hält $100 Millionen an Reserven",
+      "Sein Tagesvolumen beträgt $100 Millionen"
+     ]
+    },
+    {
+     "q": "'Mehr Käufer als Verkäufer' ist:",
+     "o": [
+      "Wie jeder Preisanstieg entsteht",
+      "Unmöglich — jeder Trade hat beide",
+      "Ein anderes Wort für hohes Volumen",
+      "Ein Maß für die Orderbuch-Tiefe"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd8",
+   "t": "Die Wörter, die dich Geld kosten",
+   "cards": [
+    {
+     "h": "Shill und Ape",
+     "p": "Shillen heißt, einen Coin zu bewerben, den du schon hältst, bei Leuten, die ihn dir abkaufen sollen. Das Wort fällt meist im Scherz, und das ist der Trick — es lässt einen Interessenkonflikt wie eine Charaktereigenschaft klingen. Apen heißt, groß zu kaufen ohne jede Recherche, verkleidet als Mut. Beide Wörter lassen einen teuren Fehler wie einen Lebensstil klingen."
+    },
+    {
+     "h": "Rug Pull, Moon, 100x",
+     "p": "Ein Rug Pull ist ein Token, dessen Macher den Geldtopf entfernen, der das Verkaufen überhaupt erst möglich macht, sobald genug Käufer drin sind. Der Chart zeigt eine senkrechte Linie nach unten ins Nichts. Die Wörter, mit denen diese Käufer angeworben werden, sind immer dieselben: Moon, 100x, früh dabei. Ein Kursziel ohne Methode dahinter ist keine Analyse, es ist Köder."
+    },
+    {
+     "h": "'Garantiert' ist das Alarmwort",
+     "p": "Im Trading kann es keine garantierte Rendite geben, denn jede Position braucht jemanden auf der anderen Seite, der verliert. Wer dir einen festen Tagesprozentsatz anbietet, bezahlt dich entweder mit dem Geld neuer Einzahler oder gar nicht. Es gibt keine Ausnahme, egal wie professionell die Website aussieht. In dem Moment, in dem du 'garantiert' liest, weißt du schon, was du vor dir hast."
+    },
+    {
+     "h": "Keine Anlageberatung",
+     "p": "Dieser Satz wird wie ein Talisman getragen, als würde er eine bezahlte Werbung harmlos machen. Er ändert nichts daran, was die Person tut. Ersetz ihn jedes Mal durch eine Frage: Was gewinnt dieser Mensch, wenn ich kaufe? Wenn die ehrliche Antwort ist, dass er an dich verkauft, hast du die ganze Analyse, die du brauchst."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Jemand bietet garantierte 3% pro Tag. Das ist:",
+     "o": [
+      "Realistisch mit guter Software",
+      "Ein Scam, ohne Ausnahme",
+      "Mit hohem Hebel möglich",
+      "Nur für kleine Beträge okay"
+     ]
+    },
+    {
+     "q": "Ein Rug Pull passiert, wenn:",
+     "o": [
+      "Eine Börse den Coin delistet",
+      "Der Preis auf hohem Volumen stark fällt",
+      "Macher das Geld entfernen, das Verkaufen erlaubt",
+      "Das Team keine Updates mehr postet"
+     ]
+    },
+    {
+     "q": "'Keine Anlageberatung' unter einem Post sagt dir:",
+     "o": [
+      "Der Post wurde juristisch geprüft",
+      "Nichts über das Motiv des Posters",
+      "Der Poster hält keinen dieser Coins",
+      "Die Behauptungen darin wurden geprüft"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Du hast jetzt das Vokabular, in dem der Rest des Pfads geschrieben ist. Öffne das Paper-Trading-Terminal und bring eines dieser Wörter auf den Bildschirm: Eröffne eine kleine Position, sieh dem P&L beim Laufen zu, dann schließ sie.",
+    "label": "Paper Trade öffnen →"
+   }
+  }
+ ]
+}

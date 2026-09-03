@@ -1,0 +1,459 @@
+{
+ "id": "money",
+ "name": "Geld en Rekenen, Simpel Gemaakt",
+ "sub": "Het enige rekenwerk dat trading nodig heeft",
+ "lessons": [
+  {
+   "id": "mo1",
+   "t": "Procenten, goed begrepen",
+   "cards": [
+    {
+     "h": "Procent van wat",
+     "p": "Een procent is altijd een stukje van één specifiek getal. Tien procent van $100 is $10. Tien procent van $10,000 is $1,000. Het procent alleen zegt je niets tot je de basis kent. Zegt iemand dat een trade 40% maakte, dan is je eerste vraag altijd dezelfde: veertig procent van welk bedrag?"
+    },
+    {
+     "h": "Procentpunten zijn geen procenten",
+     "p": "Dit zijn twee verschillende dingen. Gaat je winrate van 40% naar 44%, dan is dat een stijging van 4 procentpunten. Maar als percentage van waar je begon is het 4 gedeeld door 40, oftewel 10%. Dezelfde verandering, twee eerlijke getallen. Zie je ergens een procent van een procent, ga dan langzamer en check welke van de twee bedoeld wordt."
+    },
+    {
+     "h": "Tien omhoog, tien omlaag, niet gelijk",
+     "p": "Begin met $100. Tel er 10% bij op en je hebt $110. Trek er nu 10% af — maar 10% van $110 is $11, niet $10. Je eindigt op $99. De winst werd gemeten tegen $100 en het verlies tegen $110, dus ze heffen elkaar niet op. Draai de volgorde om en je komt weer op $99 uit: $100 omlaag naar $90, dan $9 omhoog."
+    },
+    {
+     "h": "Procentuele veranderingen vermenigvuldigen",
+     "p": "Er is een kortere weg. Een winst van 10% is vermenigvuldigen met 1.10; een verlies van 10% is vermenigvuldigen met 0.90. Doe allebei en je krijgt 1.10 maal 0.90, wat 0.99 is — een nettoverlies van 1%. Rijg zo een hele maand aan trades aan elkaar, en de vermenigvuldiging, niet de optelling, is wat je account werkelijk deed."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Je wint 10% en verliest daarna 10%. Waar eindig je?",
+     "o": [
+      "Precies terug waar je begon",
+      "1% onder waar je begon",
+      "1% boven waar je begon",
+      "10% onder waar je begon"
+     ]
+    },
+    {
+     "q": "Een winrate stijgt van 40% naar 44%. Die verandering is…",
+     "o": [
+      "Een stijging van 4 procent van het account",
+      "Een daling van 4 procentpunten",
+      "Een stijging van 4 procentpunten",
+      "Een stijging van 44 procentpunten"
+     ]
+    },
+    {
+     "q": "Waarom heffen +10% en -10% elkaar niet op?",
+     "o": [
+      "Het tweede procent wordt van een groter getal genomen",
+      "Handelskosten eten het verschil op",
+      "Percentages heffen elkaar per definitie nooit op",
+      "De exchange rondt de tweede naar beneden af"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo2",
+   "t": "Waarom verliezen harder aankomen dan winsten",
+   "cards": [
+    {
+     "h": "Verliezen graven een dieper gat",
+     "p": "Verlies 50% van $1,000 en je hebt $500. Om terug te komen op $1,000 moet je er $500 bij doen — en $500 is 100% van wat je nog hebt. Een verlies van 50% heeft een winst van 100% nodig om ongedaan te maken. Het verlies en de reparatie zijn niet even groot, en dat zijn ze nooit."
+    },
+    {
+     "h": "De hersteltabel",
+     "p": "Loop hetzelfde rekenwerk de schaal af. 10% omlaag heeft ongeveer 11% terug nodig. 20% omlaag heeft 25% nodig. Een derde omlaag heeft 50% nodig. 50% omlaag heeft 100% nodig. 80% omlaag laat $200 van $1,000 over, dus je hebt $800 bovenop $200 nodig — dat is 400%. 90% omlaag heeft 900% nodig. De curve buigt niet zachtjes. Hij gaat verticaal."
+    },
+    {
+     "h": "Bewijs het zelf",
+     "prompt": "Tik op het account dat de grotere winst nodig heeft om weer op nul uit te komen.",
+     "p": "Twee accounts, twee gaten. Eén tik, en toets dan je gevoel aan het rekenwerk."
+    },
+    {
+     "h": "Wat dit aan jou verandert",
+     "p": "Daarom letten professionals meer op drawdown — hoe ver een account onder zijn hoogste punt is gezakt — dan op rendement. Een reeks kleine verliezen is overleefbaar rekenwerk. Eén groot verlies is een ander soort probleem. Alles na deze kaart, van positiegrootte tot stop-losses, bestaat om losse verliezen klein genoeg te houden dat herstel gewoon blijft."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Je account valt 50%. Welke winst brengt het terug op nul?",
+     "o": [
+      "Een winst van 100%",
+      "Een winst van 50%",
+      "Een winst van 75%",
+      "Een winst van 150%"
+     ]
+    },
+    {
+     "q": "Een account dat 80% lager staat heeft ruwweg welke winst nodig?",
+     "o": [
+      "Een winst van 80%",
+      "Een winst van 180%",
+      "Een winst van 400%",
+      "Een winst van 800%"
+     ]
+    },
+    {
+     "q": "Waarom is één enorm verlies erger dan meerdere kleine?",
+     "o": [
+      "Grote trades betalen hogere kosten",
+      "De benodigde winst groeit sneller dan het verlies",
+      "Exchanges straffen grote drawdowns af",
+      "Kleine verliezen tellen niet als verlies"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo3",
+   "t": "Hoe winst en verlies wordt berekend",
+   "cards": [
+    {
+     "h": "Drie getallen maken een uitkomst",
+     "p": "Winst en verlies — P&L — komt uit precies drie getallen: de prijs waarop je instapte, de prijs waarop je uitstapte, en hoeveel eenheden je hield. Verder komt er niets in de berekening. Voor een long, een weddenschap dat de prijs stijgt, is P&L de uitstapprijs min de entryprijs, maal het aantal eenheden."
+    },
+    {
+     "h": "Een long, uitgerekend",
+     "p": "Je koopt 0.1 BTC op $60,000 en verkoopt op $63,000. Uitstap min entry is $3,000 per munt. Maal 0.1 munt en je winst is $300. Merk de andere manier op om het te zien: je positie was bij entry $6,000 waard, de prijs bewoog 5%, en 5% van $6,000 is diezelfde $300."
+    },
+    {
+     "h": "Een short, uitgerekend",
+     "p": "Een short is een weddenschap dat de prijs daalt, dus de aftrekking klapt om: entryprijs min uitstapprijs, maal eenheden. Je short 2 ETH op $3,000 en sluit op $2,850. Entry min uitstap is $150 per munt, maal 2 munten, dus je verdiende $300. Je positie was $6,000 en de prijs daalde 5%. Hetzelfde rekenwerk, gespiegeld."
+    },
+    {
+     "h": "Ongerealiseerd tot je sluit",
+     "p": "Zolang een positie open staat, beweegt haar P&L met elke prijsverandering en heet die ongerealiseerd. Het is een levende schatting, geen geld dat je bezit. Hij wordt pas gerealiseerd als je sluit en de exchange hem tegen je saldo boekt. Beginners rekenen ongerealiseerde winst vaak al uitgegeven; een positie die nooit sloot heeft nog nooit iemand uitbetaald."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Je koopt 0.5 ETH op $2,000 en verkoopt op $2,100. Je winst is…",
+     "o": [
+      "$500",
+      "$100",
+      "$1,050",
+      "$50"
+     ]
+    },
+    {
+     "q": "Je short 1 BTC op $60,000 en sluit op $58,800. Resultaat?",
+     "o": [
+      "Een winst van $1,200",
+      "Een verlies van $1,200",
+      "Een winst van $600",
+      "Geen verschil, hoe dan ook"
+     ]
+    },
+    {
+     "q": "Ongerealiseerde P&L is…",
+     "o": [
+      "Geld dat al op je saldo staat",
+      "Een levende schatting op een nog open positie",
+      "De fee die je bij sluiten verschuldigd bent",
+      "Altijd een negatief getal"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo4",
+   "t": "Positiegrootte bepaalt de schade",
+   "cards": [
+    {
+     "h": "De beweging kies je niet",
+     "p": "Jij bepaalt niet of Bitcoin vandaag 2% beweegt. Je bepaalt precies één getal: hoe groot je positie is. Al het andere — richting, timing, volatiliteit — is een gok of een cadeau. Positiegrootte is de enige invoer in de hele berekening die volledig van jou is, en dat maakt het de echte beslissing die je neemt."
+    },
+    {
+     "h": "Dezelfde beweging, elke uitkomst die je wilt",
+     "p": "Bitcoin zakt 2% vanaf $60,000, wat $1,200 per munt is. Houd 0.01 BTC en je verliest $12. Houd 0.5 BTC en je verliest $600. De markt deed één ding; de twee accounts hadden totaal verschillende dagen. De grafiek was voor allebei identiek. Alleen de regel met de grootte verschilde, en die was met de hand ingetypt."
+    },
+    {
+     "h": "Denk in positiewaarde",
+     "p": "Een schonere manier om je grootte te kiezen: bepaal de dollarwaarde van de positie, niet het aantal munten. Een positie van $600 verliest in wat dan ook $12 op een beweging van 2%, of dat nu 0.01 BTC of 0.2 ETH is. Procentbewegingen gelden voor de waarde, dus in dollars werken laat je posities over totaal verschillende munten vergelijken."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Welk deel van een trade heb je volledig in de hand?",
+     "o": [
+      "De richting die de prijs kiest",
+      "De grootte van de positie die je opent",
+      "Hoe volatiel de markt vandaag is",
+      "De prijs waarop je uitstap vult"
+     ]
+    },
+    {
+     "q": "Een positie van $600 beweegt 2% tegen je in. Dat kost…",
+     "o": [
+      "$12",
+      "$6",
+      "$60",
+      "$120"
+     ]
+    },
+    {
+     "q": "Twee traders nemen dezelfde trade; één verliest tien keer meer. Waarom?",
+     "o": [
+      "Ze keken naar verschillende grafieken",
+      "Een van hen betaalde veel hogere kosten",
+      "Een van hen hield een veel grotere positie",
+      "De een gebruikte een marktorder, de ander een limiet"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo5",
+   "t": "Bepaal het verlies voordat je instapt",
+   "cards": [
+    {
+     "h": "Risico is een getal dat jij kiest",
+     "p": "Voordat je aan winst denkt, bepaal je wat deze trade mag kosten als hij mislukt. Schrijf het op als een dollarbedrag. Een gangbaar beginpunt is 1% van het account, dus een account van $1,000 riskeert $10 per trade. Dat getal is geen voorspelling. Het is een grens die je stelt terwijl je nog kalm bent."
+    },
+    {
+     "h": "De grootte volgt uit de stop",
+     "p": "Nu loopt het rekenwerk achteruit. Je wilt ETH kopen op $2,000 met een stop-loss op $1,960 — een order die de trade sluit als de prijs daar komt. De afstand is $40 per munt. Je riskeert in totaal $10, dus delen: $10 gedeeld door $40 is 0.25 ETH. Dat is je grootte, een positie van $500."
+    },
+    {
+     "h": "Bredere stop, kleinere grootte",
+     "p": "Verander één ding. Zet de stop in plaats daarvan op $1,900, een afstand van $100 per munt. Het risico blijft $10, dus de grootte wordt $10 gedeeld door $100, oftewel 0.1 ETH — een positie van $200. De stop maakte de trade niet veiliger of riskanter. Hij veranderde hoeveel munten je bij hetzelfde vaste risico mag houden."
+    },
+    {
+     "h": "Waarom 1% en niet 10%",
+     "p": "Bij 1% risico kosten tien verliezen op rij je ongeveer 10% van het account, en de hersteltabel zegt dat een gat van 10% ruwweg 11% nodig heeft om te repareren. Bij 10% risico laten diezelfde tien verliezen ongeveer een derde over van waar je begon — een gat dat zo'n 187% nodig heeft om eruit te klimmen. Dezelfde trades, dezelfde vaardigheid, ander rekenwerk."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Je account is $2,000 en je riskeert 1% per trade. Dat is…",
+     "o": [
+      "$2 per trade",
+      "$20 per trade",
+      "$200 per trade",
+      "$100 per trade"
+     ]
+    },
+    {
+     "q": "Entry $2,000, stop $1,960, risico $10. Welke grootte neem je?",
+     "o": [
+      "0.1 ETH",
+      "0.5 ETH",
+      "0.25 ETH",
+      "2.5 ETH"
+     ]
+    },
+    {
+     "q": "Je zet de stop breder maar houdt het dollarrisico vast. De grootte moet…",
+     "o": [
+      "Kleiner worden",
+      "Groter worden",
+      "Precies gelijk blijven",
+      "Verdubbelen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo6",
+   "t": "R: één taal voor elk account",
+   "cards": [
+    {
+     "h": "Eén R is wat je riskeerde",
+     "p": "Stop met je trades in dollars tellen en tel ze in R. Eén R is simpelweg het bedrag dat je besloot te riskeren op die trade. Riskeer $10 en verlies de trade: dat is min één R. Verdien er $30 op: plus drie R. Het dollarbedrag verandert met je account. Het R-getal beschrijft de trade zelf."
+    },
+    {
+     "h": "Reward-to-risk voordat je instapt",
+     "p": "Neem dezelfde ETH-trade: entry $2,000, stop $1,960, dus het risico is $40 per munt. Zet een take-profit op $2,120 en de beloning is $120 per munt. Deel $120 door $40 en je krijgt 3. Die trade biedt drie tegen één, oftewel 3R. Je kunt dit uitrekenen voordat je iets riskeert, en dat hoor je ook te doen."
+    },
+    {
+     "h": "Waarom R tussen accounts meereist",
+     "p": "Een account van $50 dat $0.50 riskeert en een account van $50,000 dat $500 riskeert kunnen dezelfde trade doen en allebei plus 3R rapporteren. Dat is het punt. R haalt de accountgrootte eruit, zodat je je trades kunt vergelijken met elkaar, met vorige maand en met die van wie dan ook, zonder dat de dollarbedragen er een indrukwekkend laten lijken."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Je riskeert $20 en de trade maakt $60. In R is dat…",
+     "o": [
+      "Plus 3R",
+      "Plus 1R",
+      "Plus 2R",
+      "Plus 6R"
+     ]
+    },
+    {
+     "q": "Entry $100, stop $95, take-profit $115. De reward-to-risk is…",
+     "o": [
+      "1 tegen 1",
+      "2 tegen 1",
+      "3 tegen 1",
+      "5 tegen 1"
+     ]
+    },
+    {
+     "q": "Waarom trades in R meten in plaats van in dollars?",
+     "o": [
+      "Het haalt de kosten uit de berekening",
+      "Het maakt trades vergelijkbaar over accountgroottes",
+      "Het garandeert constantere resultaten",
+      "Exchanges rapporteren de winst zo"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo7",
+   "t": "Winrate is niet het hele verhaal",
+   "cards": [
+    {
+     "h": "De formule voor verwachtingswaarde",
+     "p": "Eén getal vertelt je of een manier van handelen geld verdient: de verwachtingswaarde. Het is je winrate maal je gemiddelde winst, min je verliesratio maal je gemiddelde verlies. Gemeten in R zegt het wat één gemiddelde trade waard is. Een positieve verwachtingswaarde betekent dat het rekenwerk over veel trades aan jouw kant staat. Negatief betekent van niet."
+    },
+    {
+     "h": "De meeste trades verliezen en toch voorstaan",
+     "p": "Stel dat je 40% van je trades wint, elke winnaar 3R oplevert en elke verliezer 1R kost. Winsten dragen 0.4 maal 3 bij, wat 1.2R is. Verliezen kosten 0.6 maal 1, wat 0.6R is. De verwachtingswaarde is 1.2 min 0.6, oftewel plus 0.6R per trade. Over 100 trades bij $10 risico wijst dat rekenwerk naar $600."
+    },
+    {
+     "h": "De meeste trades winnen en toch achterlopen",
+     "p": "Win nu 70% van je trades, maar elke winnaar levert maar 0.3R op terwijl elke verliezer nog steeds 1R kost. Winsten geven 0.7 maal 0.3, wat 0.21R is. Verliezen nemen 0.3 maal 1, wat 0.3R is. De verwachtingswaarde is min 0.09R per trade. Een winrate van 70%, en 100 trades bij $10 risico wijzen naar $90 verlies."
+    },
+    {
+     "h": "De winrate die breakeven draait",
+     "p": "Voor elke reward-to-risk kun je de winrate uitrekenen die precies quitte speelt: één gedeeld door één plus het R-veelvoud. Bij 3R is dat één gedeeld door vier, dus 25%. Bij 0.3R is het één gedeeld door 1.3, ongeveer 77%. Daarom verliest het voorbeeld met 70%. Geen van beide getallen is op zichzelf goed of slecht."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Winrate 40%, gemiddelde winst 3R, gemiddeld verlies 1R. De verwachtingswaarde is…",
+     "o": [
+      "Min 0.6R per trade",
+      "Plus 0.6R per trade",
+      "Plus 1.2R per trade",
+      "Plus 3R per trade"
+     ]
+    },
+    {
+     "q": "Welke van deze verdient geld over veel trades?",
+     "o": [
+      "Een winrate van 40% bij 3R",
+      "Een winrate van 70% bij 0.3R",
+      "Elke winrate boven 50%",
+      "Degene die het vaakst wint"
+     ]
+    },
+    {
+     "q": "Bij een reward-to-risk van 3R, welke winrate speelt quitte?",
+     "o": [
+      "50%",
+      "33%",
+      "25%",
+      "10%"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo8",
+   "t": "Wat heen en terug echt kost",
+   "cards": [
+    {
+     "h": "Kosten worden berekend over het notioneel",
+     "p": "Een futures-fee is een percentage van de hele positiewaarde — het notioneel — en niet van het geld dat je inlegde. Open een positie van $6,000 en een taker-fee van 0.055% kost $3.30. Sluit hem en je betaalt opnieuw. De fee vraagt nooit hoeveel van je eigen geld er achter de trade zit. Hij ziet alleen de positiegrootte."
+    },
+    {
+     "h": "Hefboom vermenigvuldigt de fee",
+     "p": "Hefboom laat een klein deel van je geld — de marge — een grotere positie beheren. Op 20x heeft een positie van $6,000 $300 marge nodig. De fee van $3.30 is 0.055% van de positie maar 1.1% van jouw $300. Heen en terug, in en uit, is dat 2.2% van je marge weg voordat de prijs ook maar bewogen heeft."
+    },
+    {
+     "h": "Spread en slippage kosten ook",
+     "p": "Kosten zijn alleen de zichtbare rekening. De spread is het gat tussen de beste koop- en verkoopprijs: koop op $3,000.50 en verkoop op $2,999.50 en je verloor $1 per munt aan dat gat alleen. Slippage is als je marktorder slechter vult dan de prijs die je zag. Beide zijn echt geld, en geen van beide staat op een feeschema."
+    },
+    {
+     "h": "Quitte spelen is niet gratis",
+     "p": "Twee taker-fees van 0.055% tellen op tot 0.11% van de positie. De prijs moet 0.11% in jouw voordeel bewegen voordat je één cent verdiend hebt, en dat is nog vóór de spread. Hefboom verandert dit niet: het is hoe dan ook 0.11% van de positie. Tien keer heen en terug per dag op 20x is 22% van je marge."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een taker-fee van 0.055% op een positie van $6,000 kost…",
+     "o": [
+      "$3.30",
+      "$0.33",
+      "$33",
+      "$330"
+     ]
+    },
+    {
+     "q": "Op 20x is één taker-fee van 0.055% welk deel van je marge?",
+     "o": [
+      "0.055%",
+      "0.55%",
+      "1.1%",
+      "20%"
+     ]
+    },
+    {
+     "q": "Slippage is…",
+     "o": [
+      "Een fee die op het schema van de exchange staat",
+      "Je order die slechter vult dan de prijs die je zag",
+      "De rente die over geleend geld wordt gerekend",
+      "Een stop-loss die te vroeg triggert"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo9",
+   "t": "Reken het uit voordat je klikt",
+   "cards": [
+    {
+     "h": "Vijf getallen, op volgorde",
+     "p": "Schrijf voor elke entry vijf dingen op. Eén: je accountgrootte. Twee: de dollars die je bereid bent te verliezen. Drie: entryprijs en stopprijs, die samen de stopafstand geven. Vier: positiegrootte, uit risico gedeeld door die afstand. Vijf: het doel, en het R-veelvoud dat eruit volgt. Komt stap vijf onder 1R uit, dan weet je het antwoord al."
+    },
+    {
+     "h": "Het hele ding, één keer",
+     "p": "Account $1,000. Risico 1%, dus $10. Entry ETH op $2,000, stop $1,960, afstand $40. De grootte is $10 gedeeld door $40, oftewel 0.25 ETH — een positie van $500. Doel $2,120 geeft $120 per munt, dus 0.25 munt maakt $30. Dat is 3R. De kosten heen en terug van 0.11% over $500 komen op $0.55, klein naast $30."
+    },
+    {
+     "h": "Het rekenwerk voorspelt niets",
+     "p": "Niets hiervan vertelt je of de trade wint. Het vertelt je precies wat je riskeert, wat je kunt verdienen en wat de trade kost om te draaien. Verliezen zijn normaal en dit rekenwerk voorkomt ze niet. Wat het wél voorkomt is verrast worden door een getal dat je in dertig seconden had kunnen uitrekenen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Account $500, risico 2%, stopafstand $25 per munt. Grootte?",
+     "o": [
+      "0.2 munt",
+      "2 munten",
+      "4 munten",
+      "0.4 munt"
+     ]
+    },
+    {
+     "q": "Je geplande doel geeft maar 0.5R. Wat zegt dat je?",
+     "o": [
+      "De beloning is klein naast het risico",
+      "Het is een ongewoon sterke trade",
+      "Je moet meer riskeren om te compenseren",
+      "De kosten maken het verschil wel goed"
+     ]
+    },
+    {
+     "q": "Wat levert dit rekenwerk vooraf je nou echt op?",
+     "o": [
+      "Een garantie dat de trade wint",
+      "Bekend risico, bekende beloning, bekende kosten",
+      "Een hogere winrate op termijn",
+      "Lagere kosten bij de exchange"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Je hebt nu de hele berekening. Open de calculators en draai je eigen getallen — account, risico, stopafstand — tot het rekenwerk voor je grootte vanzelf gaat.",
+    "label": "Open Calculators →"
+   }
+  }
+ ]
+}

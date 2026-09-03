@@ -1,0 +1,467 @@
+{
+ "id": "trend",
+ "name": "Trend, Steun & Weerstand",
+ "sub": "Een grafiek lezen vanaf nul",
+ "lessons": [
+  {
+   "id": "tr1",
+   "t": "Wat een trend eigenlijk is",
+   "cards": [
+    {
+     "h": "Hogere toppen en hogere bodems",
+     "p": "Een uptrend heeft een vorm die je kunt controleren, geen stemming die je aanvoelt. Elke duw omhoog eindigt hoger dan de vorige duw omhoog. Elke pullback stopt hoger dan de vorige pullback. Hogere toppen, hogere bodems, in die volgorde, van links naar rechts. Kun je er niet twee van elk aanwijzen op de grafiek, dan zit je niet in een uptrend."
+    },
+    {
+     "h": "De downtrend is de spiegel",
+     "p": "Een downtrend is dezelfde regel omgeklapt. Elke stuiter stopt lager dan de vorige stuiter. Elke daling gaat onder de vorige daling. Lagere toppen, lagere bodems. Niets hieraan zegt dat de prijs blijft dalen. Het beschrijft alleen wat er al gebeurd is, op een manier die iemand anders op dezelfde grafiek kan nachecken en beamen."
+    },
+    {
+     "h": "Benoem de swings hardop",
+     "p": "Doe het de eerste honderd keer met de hand. Leg je vinger op de grafiek, zoek de duidelijke toppen en de duidelijke dalen, en zeg de reeks op: top, bodem, hogere top, hogere bodem. Moet je turen om het passend te maken, dan past het niet. Een trend die je alleen ziet omdat je hem wilt zien, is er niet."
+    },
+    {
+     "h": "Wanneer een trend er geen meer is",
+     "p": "Een uptrend eindigt wanneer de reeks breekt: de prijs zet een bodem onder de vorige bodem. Dat is de hele test. Het betekent niet dat er een downtrend begonnen is, en vaak gaat de prijs daarna wekenlang zijwaarts. Het betekent dat de reden waarom je het een uptrend noemde weg is, en elk plan dat op die reden gebouwd was ook."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat maakt van een grafiek een uptrend?",
+     "o": [
+      "Vandaag vooral groene candles",
+      "Een reeks hogere toppen en hogere bodems",
+      "De prijs die boven een rond getal staat",
+      "Stijgend volume op elke candle"
+     ]
+    },
+    {
+     "q": "Een downtrend wordt bepaald door…",
+     "o": [
+      "Lagere toppen en lagere bodems",
+      "Meer rode candles dan groene",
+      "De prijs die sneller daalt dan hij steeg",
+      "Zwaar verkoopvolume de hele dag"
+     ]
+    },
+    {
+     "q": "In een uptrend zakt de prijs onder de vorige bodem. Dat betekent…",
+     "o": [
+      "Er is zeker een downtrend begonnen",
+      "Niets — alleen toppen bepalen een trend",
+      "De reeks van de uptrend is gebroken",
+      "De trend is sterker geworden"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr2",
+   "t": "Je eerste trendlijn",
+   "cards": [
+    {
+     "h": "Verbind de bodems in een uptrend",
+     "p": "In een uptrend teken je de lijn onder de pullbackbodems, want daar stappen de kopers steeds weer in. In een downtrend teken je hem juist langs de toppen van de stuiters. Twee punten bepalen een lijn, dus twee raakpunten is het minimum waarmee je kunt werken. Het is ook de zwakst mogelijke versie, en dit is waarom."
+    },
+    {
+     "h": "Drie raakpunten maken het interessant",
+     "p": "Elke twee punten op een grafiek kun je met een lijn verbinden, dus twee raakpunten bewijzen bijna niets. Een derde raakpunt is het eerste bewijs dat de lijn iets echts beschrijft en niet een toevalligheid van waar je begon te tekenen. Over het vierde raakpunt zegt hij nog steeds niets. Eén raakpunt is ruis, twee is een schets, drie is een schets waar anderen waarschijnlijk ook naar kijken."
+    },
+    {
+     "h": "Passend tekenen is vals spelen",
+     "p": "Je vindt altijd wel een lijn. Verschuif het begin één candle, kantel hem een graad, negeer de twee raakpunten die hem verpesten, en elke grafiek ondersteunt elk verhaal. De eerlijke test: teken de lijn voordat je een positie hebt, en teken hem nooit opnieuw omdat de prijs het niet met je eens was. Heb je hem verplaatst, dan heb je geen lijn meer. Dan heb je een wens."
+    },
+    {
+     "h": "Steile lijnen breken eerder",
+     "p": "Een trendlijn die onder een flauwe hoek stijgt kan maandenlang standhouden, want de prijs hoeft alleen maar langzaam omhoog te blijven kruipen om erboven te blijven. Een bijna verticale lijn eist dat de markt eeuwig versnelt, en niets versnelt eeuwig. Steile lijnen breken vroeg en vaak, en die breuk betekent meestal dat het tempo is afgekoeld, niet dat de trend is gedraaid."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Waar teken je in een uptrend de trendlijn?",
+     "o": [
+      "Langs de toppen van de swings",
+      "Door het midden van de candles",
+      "Onder de pullbackbodems",
+      "Vlak, op de laatste slotkoers"
+     ]
+    },
+    {
+     "q": "Waarom is een trendlijn met twee raakpunten zwak bewijs?",
+     "o": [
+      "Elke twee punten op een grafiek zijn te verbinden",
+      "Twee raakpunten komen alleen in downtrends voor",
+      "Een lijn heeft volume nodig voordat hij telt",
+      "Twee raakpunten betekenen dat de trend voorbij is"
+     ]
+    },
+    {
+     "q": "De prijs breekt je trendlijn, dus teken je hem vlakker opnieuw. Dat is…",
+     "o": [
+      "Goede praktijk — grafieken blijven veranderen",
+      "De lijn passend maken aan wat jij wilt",
+      "Verplicht zodra het derde raakpunt faalt",
+      "Hoe professionals open risico beheren"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr3",
+   "t": "Steun en weerstand zijn zones",
+   "cards": [
+    {
+     "h": "Een menigte, geen laser",
+     "p": "Steun is niet één prijs. Het is een band waar genoeg kopers opdoken om de daling te stoppen — soms op $100.00, soms op $99.40, soms na een steek omlaag naar $98.80. Een lijn van één pixel tekenen en verwachten dat de prijs hem tot op de cent respecteert, is een gangbare manier om uit een idee geschud te worden dat prima was."
+    },
+    {
+     "h": "Laat de wieken de randen bepalen",
+     "p": "Zoek de laatste drie of vier keer dat de prijs in ruwweg hetzelfde gebied draaide. De lichamen van de candles tonen waar de meeste handel echt plaatsvond. De wieken, die je in Candlestick-Patronen tegenkwam, tonen hoe ver het gevecht ging voordat het werd afgewezen. Teken de bovenrand op het hoogste lichaam en de onderrand op de laagste wiek. Die band is je niveau."
+    },
+    {
+     "h": "Bewijs het met één tik",
+     "prompt": "Tik ergens binnen de steunzone — de band waar de bodems zich verzamelen.",
+     "p": "Eén tik. Er is hier geen enkele juiste pixel, en dat is precies de les."
+    },
+    {
+     "h": "Wanneer een zone te breed is",
+     "p": "Een zone moet strak genoeg zijn om tegen te handelen. Liggen de wieken verspreid over 2% van de prijs, dan moet je stop voorbij dat hele gebied liggen, en op veel dagen is 2% de complete dagrange. Dat is geen niveau, dat is een buurt. Schrijf hem op en wacht tot de prijs je een strakkere aanreikt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Steun teken je het best als…",
+     "o": [
+      "Eén exacte prijs, tot op de cent",
+      "De laagste prijs die ooit geprint is",
+      "Een band met randen uit lichamen en wieken",
+      "Een diagonale lijn onder de bodems"
+     ]
+    },
+    {
+     "q": "Wat vertellen de wieken bij een niveau je?",
+     "o": [
+      "Hoe ver de prijs werd geduwd voor de afwijzing",
+      "De gemiddelde prijs die in de sessie verhandeld werd",
+      "Hoeveel traders er meededen",
+      "Welke exchange de beste prijs had"
+     ]
+    },
+    {
+     "q": "De prijs duikt $0.60 onder je steunlijn en sluit dan weer erboven. Waarschijnlijk…",
+     "o": [
+      "Je niveau was gewoon fout",
+      "Er is een nieuwe downtrend begonnen",
+      "Steun is nu weerstand geworden",
+      "Normaal — het niveau is een zone, geen lijn"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr4",
+   "t": "Waarom niveaus überhaupt tellen",
+   "cards": [
+    {
+     "h": "Niveaus zijn een verslag van trades",
+     "p": "Een niveau doet ertoe omdat daar dingen gebeurd zijn. Bij een oude top kochten mensen vlak voor een daling en staan ze sindsdien onder water. Genoeg van hen verkopen op break-even als de prijs ooit terugkomt. Anderen verkochten te vroeg en zwoeren dat ze de retest zouden kopen. De prijs is maar een getal. De openstaande beslissingen eromheen zijn wat markten beweegt."
+    },
+    {
+     "h": "Orders stapelen zich op één plek op",
+     "p": "Kijk waar de stop-losses wonen. Bijna iedereen die in een steunzone kocht legt zijn stop er net onder, dus vlak onder het niveau ligt een dikke pocket verkooporders. Wachtende limietkooporders liggen er net boven. Een niveau is een plek waar het orderboek scheef is, en die scheefheid is de reden dat de prijs daar überhaupt reageert."
+    },
+    {
+     "h": "Het deel dat zichzelf vervult",
+     "p": "Is een niveau duidelijk op de daggrafiek, dan kijken heel veel mensen naar dezelfde lijn, en een deel van hen handelt ernaar. Dat maakt de reactie deels echt en deels een verhaal dat de massa samen vertelt. De ongemakkelijke helft van datzelfde feit: bij duidelijke niveaus weet ook iedereen waar de stops liggen."
+    },
+    {
+     "h": "Een niveau is geen muur",
+     "p": "Niets hiervan zorgt dat een niveau houdt. Orders worden weggehaald, het sentiment draait, en een niveau dat de prijs vier keer stopte kan bij de vijfde zonder enige waarschuwing falen. De waarde van een niveau is niet dat de prijs daar stopt. Het is dat het je één specifieke prijs geeft waarop je idee klaar is, en daar bestaat een plan uit."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Waarom werkt een oude top vaak als weerstand?",
+     "o": [
+      "Exchanges knijpen orders boven oude toppen af",
+      "Kopers die daar vastzitten verkopen op break-even",
+      "Boven een top is het volume altijd dunner",
+      "Grafieken trekken de prijs naar ronde getallen"
+     ]
+    },
+    {
+     "q": "Waar liggen de stop-losses van kopers bij steun meestal?",
+     "o": [
+      "Net onder de steunzone",
+      "Precies op hun entryprijs",
+      "Boven de meest recente top",
+      "Gelijkmatig verdeeld over de range"
+     ]
+    },
+    {
+     "q": "Een niveau hield vier keer stand. Bij het vijfde raakpunt…",
+     "o": [
+      "Moet het houden — vier raakpunten bevestigen het",
+      "Verandert het vanzelf in een trendlijn",
+      "Kan het zonder enige waarschuwing falen",
+      "Garandeert het een breakout in jouw voordeel"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr5",
+   "t": "De flip: rollen wisselen bij een niveau",
+   "cards": [
+    {
+     "h": "Gebroken weerstand kan steun worden",
+     "p": "De prijs schuurt drie keer tegen een plafond en sluit uiteindelijk erboven. Vaak stopt de volgende pullback bij dat oude plafond in plaats van er direct doorheen terug te vallen. De lijn veranderde niet; de rollen wel. Hetzelfde gebeurt ondersteboven, waar steun die breekt vaak het niveau wordt dat de volgende stuiter afkapt."
+    },
+    {
+     "h": "Het mechanisme, niet de magie",
+     "p": "Denk aan wie er op die prijs staat. Verkopers die daar eruit wilden hebben al verkocht, dus hun aanbod is weg. Kopers die de breakout zagen en hem misten krijgen een tweede kans en staan te wachten. Traders die het niveau shortten worden uitgestopt, en een short sluiten betekent kopen. Drie aparte groepen, allemaal kopend in dezelfde band."
+    },
+    {
+     "h": "Bij de retest komt het bewijs",
+     "p": "Een flip wordt pas zichtbaar bij de retest, wanneer de prijs terugkomt naar het gebroken niveau. Verdedigen kopers hem, dan heb je een niveau én een specifieke prijs er net onder waar je fout zou zitten. Snijdt de prijs er meteen weer doorheen, dan was de breuk ruis. Wachten op de retest kost je een aantal bewegingen. Het haalt ook het gokken eruit."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Weerstand die duidelijk breekt wordt vaak…",
+     "o": [
+      "In plaats daarvan een stijgende trendlijn",
+      "Voorgoed irrelevant",
+      "Steun op de weg terug omlaag",
+      "Een gegarandeerd entrysignaal"
+     ]
+    },
+    {
+     "q": "Waarom kan oude weerstand de prijs daarna omhoog houden?",
+     "o": [
+      "Verkopers daar zijn klaar en shorters moeten terugkopen",
+      "Exchangesoftware verdedigt eerdere koerstoppen",
+      "De grafiek zelf onthoudt de eerdere top",
+      "Boven oude toppen droogt het volume altijd op"
+     ]
+    },
+    {
+     "q": "De prijs breekt boven weerstand en snijdt er meteen weer doorheen omlaag. Dat wijst op…",
+     "o": [
+      "Daar heeft zich zeker steun gevormd",
+      "Een nieuwe uptrend is bevestigd",
+      "Het niveau moet hoger opnieuw getekend",
+      "De flip mislukte en de breuk was ruis"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr6",
+   "t": "Breakouts en fakeouts",
+   "cards": [
+    {
+     "h": "De slotkoers telt, niet de aanraking",
+     "p": "Een wiek door een niveau vertelt je dat de prijs er even was. Een slot erbuiten vertelt je dat de markt bereid was een hele periode daarbuiten te eindigen. Op een daggrafiek is dat verschil enorm: een steek door het niveau die weer binnen sluit is een afwijzing, geen breakout. Beslis vooraf welke slotkoers van welk timeframe je als breuk accepteert."
+    },
+    {
+     "h": "Volume vertelt je wie er kwam opdagen",
+     "p": "Een breuk op volume dat duidelijk groter is dan dat van de recente candles betekent echte deelname: mensen moesten handelen om door het niveau te komen. Dezelfde breuk op dun volume betekent dat er nauwelijks iemand moeite deed, vaak op een stil uur. Volume vertelt je nooit de richting. Het vertelt je hoeveel gewicht je moet geven aan wat je net zag gebeuren."
+    },
+    {
+     "h": "Hoe een fakeout eruitziet",
+     "p": "De vorm herhaalt zich. De prijs duwt net voorbij het niveau, triggert de stoporders die daar liggen, vindt geen vervolg en sluit weer binnen de range. Van buitenaf was het een wiek. Vanuit een positie met hefboom was het een stop-out. Precies daarom is de slotkoers, en niet het uiterste, waarop je afgesproken hebt te handelen."
+    },
+    {
+     "h": "In een fakeout lopen is normaal",
+     "p": "Je zult keer op keer in een fakeout lopen, en er is geen indicator die dat wegneemt. De hele verdediging is procedureel: de stop wordt geplaatst op hetzelfde moment dat de trade wordt geopend, de grootte is klein genoeg dat de stop-out saai is, en je stapt niet drie keer achter elkaar opnieuw in om te bewijzen dat je gelijk had over het niveau."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat is het sterkere bewijs van een echte breuk?",
+     "o": [
+      "Een wiek die voorbij het niveau prikt",
+      "Een candle die voorbij het niveau sluit",
+      "Elke willekeurige aanraking van het niveau",
+      "Een beweging van minstens 1% intraday"
+     ]
+    },
+    {
+     "q": "Een niveau breekt op ongewoon laag volume. Je moet…",
+     "o": [
+      "Het licht opvatten — er deden weinig mensen mee",
+      "Het als bevestigd zien, volume is ruis",
+      "Aannemen dat een omkeer nu gegarandeerd is",
+      "De positie verdubbelen om de beweging te pakken"
+     ]
+    },
+    {
+     "q": "De praktische verdediging tegen fakeouts is…",
+     "o": [
+      "Een indicator vinden die ze eruit filtert",
+      "Elke keer wachten op een volumepiek",
+      "Alleen op ronde getallen als niveau handelen",
+      "Eerst een stop plaatsen, en klein dimensioneren"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr7",
+   "t": "Ranges: als er geen trend is",
+   "cards": [
+    {
+     "h": "De meeste grafieken hebben geen trend",
+     "p": "Zoom uit op vrijwel elke grafiek en je vindt lange stukken waarin de prijs simpelweg tussen een plafond en een bodem heen en weer schommelt. Geen hogere toppen, geen lagere bodems, alleen heen en weer. Dat is een range. Het is geen kapotte markt en geen pauze voor de echte beweging. Het is een normale toestand, en hij kan lang duren."
+    },
+    {
+     "h": "Een range is het omgekeerde spel",
+     "p": "In een trend koop je kracht en geef je de positie ruimte om te ademen. In een range doe je het omgekeerde: geïnteresseerd bij de onderrand, sceptisch bij de bovenrand, en je doel is de andere kant van de doos in plaats van open einde. Dezelfde grafiek, dezelfde vaardigheden, volledig omgekeerde regels over waar een entry aantrekkelijk is."
+    },
+    {
+     "h": "Het verkeerde spel spelen is duur",
+     "p": "Pas trendregels toe binnen een range en je koopt elke duw aan de bovenrand en verkoopt elke spoeling aan de onderkant — hoog kopen en laag verkopen, keer op keer, en elke ronde kosten betalen. Pas rangeregels toe op een markt met trend en je blijft in kracht shorten. De toestand benoemen voordat je handelt is geen vrijblijvend huiswerk."
+    },
+    {
+     "h": "Ranges worden strakker voordat ze eindigen",
+     "p": "Kijk naar de swings binnen de doos. Als elke stuiter het laatste plafond niet meer haalt en elke dip boven de laatste bodem stopt, comprimeert de range, en meestal worden de candles er kleiner bij. Dat vertelt je dat er een grotere beweging wordt opgebouwd. Over de richting ervan vertelt het je helemaal niets."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een range is…",
+     "o": [
+      "Een markt die is ingestort",
+      "De prijs die tussen een bodem en een plafond schommelt",
+      "Een korte pauze voorafgaand aan elke trend",
+      "Een horizontaal getekende trendlijn"
+     ]
+    },
+    {
+     "q": "Binnen een range is een koper het meest geïnteresseerd…",
+     "o": [
+      "Aan de bovenrand, kracht kopend",
+      "Precies in het midden van de doos",
+      "Dicht bij de onderrand van de doos",
+      "Meteen na elke willekeurige wiek"
+     ]
+    },
+    {
+     "q": "De swings binnen een range worden kleiner. Dat vertelt je…",
+     "o": [
+      "Er wordt een breakout omhoog voorbereid",
+      "De range houdt nu voor onbepaalde tijd stand",
+      "Een breuk omlaag is waarschijnlijker",
+      "Een grotere beweging bouwt op, richting onbekend"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr8",
+   "t": "Waar het niveau je stop legt",
+   "cards": [
+    {
+     "h": "Waar het idee fout is",
+     "p": "Je denkt dat de prijs deze steun houdt, dus je koopt. Die zin heeft een ingebouwd einde: sluit de prijs onder de zone, dan is wat je geloofde niet langer waar. Die prijs is geen voorkeur en geen pijngrens. Het is het punt waarop je reden om in de trade te zitten door de markt zelf is tegengesproken."
+    },
+    {
+     "h": "Voorbij de zone, nooit erbinnen",
+     "p": "Loopt je zone van $99.00 omlaag naar $98.80, dan zit een stop op $98.90 midden in de ruis waarvan je zelf zei dat hij bestond. De wieken halen hem eruit terwijl je idee nog volop leeft. Zet de stop onder de hele zone met een beetje ruimte extra, en accepteer dat die afstand is wat het niveau je kost."
+    },
+    {
+     "h": "De afstand bepaalt je grootte",
+     "p": "Nu het rekenwerk. Je hebt $1,000 en je riskeert daar 1% van, dus $10. Entry $100, stop $98.60, dus de afstand is 1.4%. De positiegrootte is $10 gedeeld door 0.014, ongeveer $714 aan notioneel. Verbreed de stop en de positie moet krimpen. De stop komt eerst en de grootte volgt eruit, nooit andersom. De tools op /calculators doen deze deling voor je."
+    },
+    {
+     "h": "Verbreed de stop niet",
+     "p": "Als de prijs de stop nadert, voelt het vanzelfsprekend dat het niveau gewoon iets meer ruimte nodig heeft. Hem verbreden maakt van een klein gepland verlies een groot ongepland verlies, en het vernietigt het rekenwerk dat je net deed, want de grootte was berekend voor precies die afstand. Is het niveau fout, dan is de trade fout. Neem het kleine verlies."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Waar hoort een stop-loss ten opzichte van een steunzone?",
+     "o": [
+      "Halverwege binnen de zone",
+      "Precies op de entryprijs zelf",
+      "Net voorbij de verste rand, met ruimte",
+      "Op het dichtstbijzijnde ronde getal"
+     ]
+    },
+    {
+     "q": "Account $1,000, risico 1%, stop 1.4% weg. De positiegrootte is ongeveer…",
+     "o": [
+      "$140 aan notioneel",
+      "$714 aan notioneel",
+      "$1,400 aan notioneel",
+      "$10 aan notioneel"
+     ]
+    },
+    {
+     "q": "De stop verbreden terwijl de prijs hem nadert…",
+     "o": [
+      "Verbetert de kansen van de trade",
+      "Is standaard risicobeheer",
+      "Verkleint de omvang van het verlies",
+      "Breekt het rekenwerk van je grootte"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr9",
+   "t": "Een grafiek lezen in zestig seconden",
+   "cards": [
+    {
+     "h": "Zoom eerst uit, voor al het andere",
+     "p": "Begin op de daggrafiek, ook als je van plan bent een 15-minutengrafiek te verhandelen. De daggrafiek toont je de niveaus die heel veel mensen daadwerkelijk kunnen zien, en de vorm van de laatste paar maanden op één scherm. Een niveau dat alleen op een 1-minuutgrafiek te vinden is, is voor bijna iedereen onzichtbaar en vaak binnen het uur weer weg."
+    },
+    {
+     "h": "Benoem de trend, markeer twee niveaus",
+     "p": "Zeg de reeks hardop: hogere toppen en hogere bodems, de spiegel daarvan, of geen van beide, wat een range betekent. Markeer dan precies twee horizontale zones — de dichtstbijzijnde boven de prijs en de dichtstbijzijnde eronder. Twee. Heb je zes lijnen getekend, dan heb je een grafiek gebouwd die het eens is met wat je hierna ook besluit."
+    },
+    {
+     "h": "Maak de zin af, en stop dan",
+     "p": "Zeg het in één regel: dit is een uptrend, het niveau dat telt is $98.80 tot $99.00, en sluit de prijs daaronder, dan zit ik fout. Kun je die drie delen niet invullen, dan heb je geen trade, dan heb je een grafiek. Die zin kost ongeveer zestig seconden en is de hele routine."
+    },
+    {
+     "h": "De meeste grafieken verdienen geen mening",
+     "p": "De eerlijke uitkomst van deze routine is meestal: niets. Geen duidelijke trend, geen niveau in de buurt, niets specifieks om fout over te zitten. Dat is een resultaat en geen mislukking — de routine is een filter, en een filter dat nooit iets afwijst, filtert niet. Sluit de grafiek en kijk naar een ander symbool."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Welke grafiek open je als eerste?",
+     "o": [
+      "De 1-minuut, voor de precisie",
+      "De daggrafiek, voor de niveaus die iedereen ziet",
+      "De 5-minuut, als compromis",
+      "Welke er de vorige keer openstond"
+     ]
+    },
+    {
+     "q": "Hoeveel horizontale zones vraagt de routine je te markeren?",
+     "o": [
+      "Zoveel als je er kunt vinden",
+      "Zes, één per timeframe",
+      "Twee — dichtstbij boven en eronder",
+      "Geen, trendlijnen zijn genoeg"
+     ]
+    },
+    {
+     "q": "De routine eindigt zonder duidelijke trend en zonder niveau in de buurt. Je moet…",
+     "o": [
+      "Naar een lager timeframe zakken om er een te vinden",
+      "Meer lijnen tekenen tot er iets verschijnt",
+      "Er toch met een kleinere grootte op handelen",
+      "Doorgaan en een ander symbool checken"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Open een grafiek, zet BTC op de daggrafiek en draai de zestig-secondenroutine: benoem de trend, markeer twee zones, zeg de prijs waarop je fout zit. Doe het daarna nog eens op een munt waar je nog nooit naar hebt gekeken.",
+    "label": "Open Charts →"
+   }
+  }
+ ]
+}

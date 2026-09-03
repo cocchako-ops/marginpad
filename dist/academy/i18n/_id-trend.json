@@ -1,0 +1,467 @@
+{
+ "id": "trend",
+ "name": "Tren, Support & Resistance",
+ "sub": "Membaca chart dari nol",
+ "lessons": [
+  {
+   "id": "tr1",
+   "t": "Apa itu tren, sebenarnya",
+   "cards": [
+    {
+     "h": "High makin tinggi, low makin tinggi",
+     "p": "Uptrend punya bentuk yang bisa kamu periksa, bukan suasana hati yang kamu rasakan. Setiap dorongan naik berakhir lebih tinggi dari dorongan naik sebelumnya. Setiap pullback berhenti lebih tinggi dari pullback sebelumnya. High makin tinggi, low makin tinggi, dalam urutan itu, dari kiri ke kanan. Kalau kamu tak bisa menunjuk dua dari masing-masing di chart, kamu tidak sedang di uptrend."
+    },
+    {
+     "h": "Downtrend adalah cerminannya",
+     "p": "Downtrend adalah aturan yang sama, dibalik. Setiap pantulan berhenti lebih rendah dari pantulan sebelumnya. Setiap penurunan menembus di bawah penurunan sebelumnya. High makin rendah, low makin rendah. Tak ada satu pun di sini yang bilang harga akan terus turun. Dia cuma menggambarkan apa yang sudah terjadi, dengan cara yang bisa dicek orang lain di chart yang sama dan disetujui."
+    },
+    {
+     "h": "Sebut ayunannya keras-keras",
+     "p": "Lakukan dengan tangan seratus kali pertama. Taruh jarimu di chart, temukan puncak yang jelas dan lembah yang jelas, lalu sebut urutannya: high, low, high yang lebih tinggi, low yang lebih tinggi. Kalau kamu harus memicingkan mata supaya cocok, berarti memang tidak cocok. Tren yang hanya terlihat karena kamu menginginkannya memang tidak ada di sana."
+    },
+    {
+     "h": "Kapan tren berhenti jadi tren",
+     "p": "Uptrend berakhir saat urutannya jebol: harga membuat low di bawah low sebelumnya. Itu saja tesnya. Ini tidak berarti downtrend sudah dimulai, dan sering harga cuma bergerak menyamping berminggu-minggu setelahnya. Artinya alasan kamu menyebutnya uptrend sudah hilang, dan rencana apa pun yang dibangun di atas alasan itu juga hilang."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Apa yang membuat sebuah chart jadi uptrend?",
+     "o": [
+      "Kebanyakan candle hijau hari ini",
+      "Rangkaian high dan low yang makin tinggi",
+      "Harga berada di atas angka bulat",
+      "Volume naik di setiap candle"
+     ]
+    },
+    {
+     "q": "Downtrend ditentukan oleh…",
+     "o": [
+      "High dan low yang makin rendah",
+      "Candle merah lebih banyak dari hijau",
+      "Harga turun lebih cepat dari naiknya",
+      "Volume jual berat sepanjang hari"
+     ]
+    },
+    {
+     "q": "Di uptrend, harga jatuh di bawah low sebelumnya. Artinya…",
+     "o": [
+      "Downtrend pasti sudah dimulai",
+      "Tidak ada — hanya high yang menentukan tren",
+      "Urutan uptrend-nya sudah jebol",
+      "Trennya jadi makin kuat"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr2",
+   "t": "Trendline pertamamu",
+   "cards": [
+    {
+     "h": "Hubungkan low-nya di uptrend",
+     "p": "Di uptrend kamu menggambar trendline — garis tren — di bawah low pullback, karena di situlah pembeli terus bermunculan. Di downtrend kamu menggambarnya melintasi high pantulan. Dua titik menentukan sebuah garis, jadi dua sentuhan adalah minimum yang bisa kamu pakai. Itu juga versi paling lemah yang mungkin, dan ini alasannya."
+    },
+    {
+     "h": "Tiga sentuhan baru bikin menarik",
+     "p": "Dua titik mana pun di chart bisa dihubungkan sebuah garis, jadi dua sentuhan hampir tak membuktikan apa-apa. Sentuhan ketiga adalah bukti pertama bahwa garisnya menggambarkan sesuatu yang nyata, bukan kebetulan dari tempat kamu mulai menggambar. Dia tetap tidak bilang apa pun soal sentuhan keempat. Satu sentuhan itu noise, dua itu sketsa, tiga itu sketsa yang mungkin diawasi orang lain juga."
+    },
+    {
+     "h": "Menggambar supaya cocok itu curang",
+     "p": "Kamu selalu bisa menemukan sebuah garis. Geser awalnya satu candle, miringkan satu derajat, abaikan dua sentuhan yang merusaknya, dan chart apa pun mendukung cerita apa pun. Tes jujurnya: gambar garisnya sebelum kamu punya posisi, dan jangan pernah menggambarnya ulang karena harga tidak setuju denganmu. Kalau kamu memindahkannya, kamu bukan lagi punya garis. Kamu punya harapan."
+    },
+    {
+     "h": "Garis curam lebih cepat jebol",
+     "p": "Trendline yang naik dengan sudut landai bisa bertahan berbulan-bulan, karena harga hanya perlu terus merangkak naik pelan untuk tetap di atasnya. Garis yang hampir vertikal menuntut pasar berakselerasi selamanya, dan tak ada yang berakselerasi selamanya. Garis curam jebol lebih awal dan lebih sering, dan jebolnya biasanya berarti temponya mendingin, bukan trennya berbalik."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Di uptrend, trendline digambar di mana?",
+     "o": [
+      "Melintasi swing high",
+      "Menembus tengah candle-candle",
+      "Di bawah low pullback",
+      "Datar, di harga tutup terbaru"
+     ]
+    },
+    {
+     "q": "Kenapa trendline dua sentuhan itu bukti lemah?",
+     "o": [
+      "Dua titik mana pun di chart bisa dihubungkan",
+      "Dua sentuhan hanya terjadi di downtrend",
+      "Garis butuh volume dulu supaya dihitung",
+      "Dua sentuhan berarti trennya sudah berakhir"
+     ]
+    },
+    {
+     "q": "Harga menembus trendline-mu, jadi kamu gambar ulang lebih landai. Itu…",
+     "o": [
+      "Praktik bagus — chart terus berkembang",
+      "Mencocokkan garis dengan yang kamu mau",
+      "Wajib begitu sentuhan ketiga gagal",
+      "Cara profesional mengelola risiko terbuka"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr3",
+   "t": "Support dan resistance adalah zona",
+   "cards": [
+    {
+     "h": "Kerumunan, bukan laser",
+     "p": "Support bukan satu harga. Dia pita tempat cukup banyak pembeli muncul untuk menghentikan penurunan — kadang di $100.00, kadang di $99.40, kadang setelah tusukan turun ke $98.80. Menggambar garis setebal satu piksel dan berharap harga menghormatinya sampai ke sen adalah cara umum terlempar dari ide yang sebenarnya baik-baik saja."
+    },
+    {
+     "h": "Biarkan sumbu yang menentukan tepinya",
+     "p": "Temukan tiga atau empat kali terakhir harga berbalik di area yang kurang lebih sama. Badan candle menunjukkan di mana sebagian besar trading benar-benar terjadi. Sumbunya, yang kamu temui di Pola Candlestick, menunjukkan sejauh mana perkelahiannya sampai sebelum ditolak. Gambar tepi atas di badan tertinggi dan tepi bawah di sumbu terendah. Pita itulah levelmu."
+    },
+    {
+     "h": "Buktikan dengan satu sentuhan",
+     "prompt": "Sentuh di mana saja di dalam zona support — pita tempat low-nya berkumpul.",
+     "p": "Satu sentuhan. Tak ada satu piksel yang benar di sini, dan itulah persis pelajarannya."
+    },
+    {
+     "h": "Kapan sebuah zona terlalu lebar",
+     "p": "Zona harus cukup rapat untuk bisa ditradingkan. Kalau sumbunya tersebar sepanjang 2% dari harga, stop-mu harus duduk di luar semuanya, dan di banyak hari 2% adalah seluruh rentang hariannya. Itu bukan level, itu sebuah kawasan. Catat saja, dan tunggu sampai harga memberimu yang lebih rapat."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Support paling tepat digambar sebagai…",
+     "o": [
+      "Satu harga persis sampai ke sen",
+      "Harga terendah yang pernah tercetak",
+      "Pita bertepi dari badan dan sumbu",
+      "Garis diagonal di bawah low-nya"
+     ]
+    },
+    {
+     "q": "Apa yang sumbu di sebuah level beritahukan padamu?",
+     "o": [
+      "Sejauh mana harga didorong sebelum ditolak",
+      "Harga rata-rata yang ditradingkan di sesi itu",
+      "Berapa banyak trader yang berpartisipasi",
+      "Exchange mana yang punya harga terbaik"
+     ]
+    },
+    {
+     "q": "Harga menyelam $0.60 di bawah garis support-mu, lalu tutup kembali di atasnya. Kemungkinan besar…",
+     "o": [
+      "Levelmu memang salah",
+      "Downtrend baru sudah dimulai",
+      "Support kini sudah jadi resistance",
+      "Normal — levelnya zona, bukan garis"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr4",
+   "t": "Kenapa level itu penting sama sekali",
+   "cards": [
+    {
+     "h": "Level adalah catatan transaksi",
+     "p": "Sebuah level penting karena ada hal yang terjadi di sana. Di high lama, orang membeli tepat sebelum penurunan dan sejak itu nyangkut. Banyak dari mereka akan menjual di titik impas kalau harga pernah kembali. Yang lain menjual terlalu dini dan bersumpah akan membeli saat retest. Harganya cuma angka. Keputusan-keputusan yang menggantung di sekitarnya itulah yang menggerakkan pasar."
+    },
+    {
+     "h": "Order menumpuk di satu tempat",
+     "p": "Lihat di mana stop-loss tinggal. Hampir semua yang membeli di zona support menaruh stop-nya tepat di bawahnya, jadi ada kantong tebal order jual sedikit di bawah level itu. Order limit beli yang beristirahat duduk tepat di atasnya. Level adalah tempat order book jadi berat sebelah, dan kemiringan itulah alasan harga bereaksi di situ sama sekali."
+    },
+    {
+     "h": "Bagian yang memenuhi dirinya sendiri",
+     "p": "Kalau sebuah level jelas terlihat di chart harian, banyak sekali orang menatap garis yang sama, dan sebagian akan bertindak atasnya. Itu membuat reaksinya sebagian nyata dan sebagian cerita yang diceritakan kerumunan bersama-sama. Sisi tak nyaman dari fakta yang sama: level yang jelas juga tempat semua orang tahu stop-stop itu duduk."
+    },
+    {
+     "h": "Level bukan tembok",
+     "p": "Tak satu pun dari ini membuat sebuah level bertahan. Order ditarik, sentimen berubah, dan level yang sudah menghentikan harga empat kali bisa jebol di kali kelima tanpa peringatan sama sekali. Nilai sebuah level bukan bahwa harga berhenti di situ. Nilainya adalah dia memberimu satu harga spesifik tempat idemu selesai, dan dari situlah sebuah rencana dibuat."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kenapa high lama sering bertindak sebagai resistance?",
+     "o": [
+      "Exchange membatasi order di atas high lama",
+      "Pembeli yang nyangkut di situ jual di titik impas",
+      "Volume selalu lebih tipis di atas sebuah high",
+      "Chart menarik harga ke arah angka bulat"
+     ]
+    },
+    {
+     "q": "Stop-loss para pembeli di support biasanya duduk di mana?",
+     "o": [
+      "Tepat di bawah zona support",
+      "Persis di harga entry mereka",
+      "Di atas swing high terbaru",
+      "Tersebar merata di sepanjang range"
+     ]
+    },
+    {
+     "q": "Sebuah level sudah bertahan empat kali. Di sentuhan kelima dia…",
+     "o": [
+      "Pasti bertahan — empat sentuhan mengonfirmasinya",
+      "Otomatis berubah jadi trendline",
+      "Bisa jebol tanpa peringatan sama sekali",
+      "Menjamin breakout yang menguntungkanmu"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr5",
+   "t": "Flip: peran berganti di sebuah level",
+   "cards": [
+    {
+     "h": "Resistance yang jebol bisa jadi support",
+     "p": "Harga merangkak ke sebuah langit-langit tiga kali dan akhirnya tutup di atasnya. Sering pullback berikutnya berhenti di langit-langit lama itu alih-alih jatuh langsung menembusnya kembali. Garisnya tidak berubah; perannya yang berubah. Hal yang sama terjadi terbalik, di mana support yang jebol sering jadi level yang membatasi pantulan berikutnya."
+    },
+    {
+     "h": "Mekanismenya, bukan sihirnya",
+     "p": "Pikirkan siapa yang berdiri di harga itu. Penjual yang ingin keluar di situ sudah menjual, jadi pasokan mereka habis. Pembeli yang menonton breakout-nya dan ketinggalan kini dapat kesempatan kedua dan sedang menunggu. Trader yang short di level itu kena stop, dan menutup short berarti membeli. Tiga kelompok terpisah, semuanya membeli di pita yang sama."
+    },
+    {
+     "h": "Retest adalah tempat buktinya datang",
+     "p": "Flip — pergantian peran itu — baru terlihat saat retest, ketika harga kembali ke level yang jebol. Kalau pembeli mempertahankannya, kamu punya level sekaligus harga spesifik tepat di bawahnya tempat kamu akan salah. Kalau harga menyayat lurus kembali menembusnya, jebolnya cuma noise. Menunggu retest membuatmu melewatkan sebagian pergerakan. Dia juga menghapus tebak-tebakannya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Resistance yang jelas jebol sering jadi…",
+     "o": [
+      "Trendline naik sebagai gantinya",
+      "Tidak relevan selamanya",
+      "Support saat harga turun kembali",
+      "Sinyal entry yang dijamin"
+     ]
+    },
+    {
+     "q": "Kenapa resistance lama bisa menopang harga setelahnya?",
+     "o": [
+      "Penjual di situ sudah habis dan short harus beli balik",
+      "Software exchange membela high harga sebelumnya",
+      "Chart-nya sendiri mengingat puncak yang lebih awal",
+      "Volume trading selalu mengering di atas high lama"
+     ]
+    },
+    {
+     "q": "Harga menembus ke atas resistance, lalu menyayat lurus turun kembali menembusnya. Itu menunjukkan…",
+     "o": [
+      "Support pasti sudah terbentuk di situ",
+      "Uptrend baru sudah terkonfirmasi",
+      "Levelnya harus digambar ulang lebih tinggi",
+      "Flip-nya gagal dan jebolnya cuma noise"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr6",
+   "t": "Breakout dan fakeout",
+   "cards": [
+    {
+     "h": "Yang penting harga tutup, bukan sentuhannya",
+     "p": "Sumbu yang menembus sebuah level memberitahumu harga sempat mampir. Tutup di luarnya memberitahumu pasar bersedia mengakhiri satu periode penuh di luar sana. Di chart harian selisih itu raksasa: tusukan menembus level yang tutup kembali di dalam adalah penolakan, bukan breakout. Putuskan di muka harga tutup timeframe mana yang kamu terima sebagai jebol."
+    },
+    {
+     "h": "Volume memberitahu siapa yang datang",
+     "p": "Jebol dengan volume yang jelas lebih besar dari candle-candle terakhir berarti partisipasi nyata: orang harus benar-benar trading untuk menembus level itu. Jebol yang identik dengan volume tipis berarti sangat sedikit yang peduli, sering di jam sepi. Volume tak pernah memberitahumu arah. Dia memberitahu seberapa berat bobot yang boleh kamu taruh pada apa yang baru saja kamu lihat terjadi."
+    },
+    {
+     "h": "Seperti apa fakeout itu",
+     "p": "Bentuknya berulang. Harga mendorong sedikit melewati level, memicu order stop yang duduk di sana, tidak menemukan kelanjutan, lalu tutup kembali di dalam range. Dari luar itu cuma sebuah sumbu. Dari dalam posisi ber-leverage itu adalah kena stop. Persis itulah kenapa harga tutup, dan bukan titik ekstremnya, yang kamu sepakati jadi dasar trading."
+    },
+    {
+     "h": "Kena fakeout itu normal",
+     "p": "Kamu akan kena fakeout, berulang kali, dan tak ada indikator yang menghapusnya. Seluruh pertahanannya bersifat prosedural: stop dipasang di saat yang sama trade dibuka, ukurannya cukup kecil sampai kena stop terasa membosankan, dan kamu tidak masuk lagi tiga kali berturut-turut demi membuktikan kamu benar soal levelnya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Mana bukti yang lebih kuat bahwa jebolnya nyata?",
+     "o": [
+      "Sumbu yang menyembul melewati level",
+      "Candle yang tutup di luar level",
+      "Sentuhan tunggal apa pun ke level",
+      "Pergerakan minimal 1% dalam sehari"
+     ]
+    },
+    {
+     "q": "Sebuah level jebol dengan volume luar biasa rendah. Kamu sebaiknya…",
+     "o": [
+      "Anggap ringan — sedikit yang ikut serta",
+      "Anggap terkonfirmasi, volume itu noise",
+      "Anggap pembalikan kini dijamin",
+      "Gandakan posisi demi menangkap pergerakannya"
+     ]
+    },
+    {
+     "q": "Pertahanan praktis melawan fakeout adalah…",
+     "o": [
+      "Menemukan indikator yang menyaringnya",
+      "Menunggu lonjakan volume setiap kali",
+      "Trading hanya di level angka bulat",
+      "Stop dipasang duluan, dan ukuran kecil"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr7",
+   "t": "Range: saat tak ada tren",
+   "cards": [
+    {
+     "h": "Kebanyakan chart tidak sedang tren",
+     "p": "Zoom out di hampir chart mana pun dan kamu akan menemukan rentang panjang di mana harga cuma berayun antara langit-langit dan lantai. Tak ada high yang makin tinggi, tak ada low yang makin rendah, cuma bolak-balik. Itu range. Dia bukan pasar yang rusak atau jeda sebelum pergerakan sungguhan. Dia keadaan yang normal, dan bisa bertahan lama."
+    },
+    {
+     "h": "Range adalah permainan kebalikan",
+     "p": "Di tren kamu membeli kekuatan dan memberi posisimu ruang untuk bernapas. Di range kamu melakukan sebaliknya: tertarik di dekat tepi bawah, skeptis di dekat tepi atas, dan targetmu adalah sisi seberang kotaknya, bukan terbuka tanpa batas. Chart yang sama, keahlian yang sama, aturan yang sepenuhnya terbalik soal di mana sebuah entry itu menarik."
+    },
+    {
+     "h": "Salah main permainan itu mahal",
+     "p": "Terapkan aturan tren di dalam range dan kamu membeli setiap dorongan di tepi atas dan menjual setiap luruhan di tepi bawah — beli mahal jual murah berulang-ulang, membayar biaya setiap putaran. Terapkan aturan range ke pasar yang sedang tren dan kamu terus short melawan kekuatan. Menyebut nama keadaannya sebelum bertindak bukan PR yang opsional."
+    },
+    {
+     "h": "Range menyempit sebelum berakhir",
+     "p": "Perhatikan ayunan di dalam kotaknya. Saat setiap pantulan gagal mencapai langit-langit sebelumnya dan setiap penurunan berhenti di atas lantai sebelumnya, range-nya sedang memampat, dan candle-nya biasanya ikut mengecil. Itu memberitahumu pergerakan yang lebih besar sedang menumpuk tenaga. Dia sama sekali tak memberitahumu ke arah mana."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Range adalah…",
+     "o": [
+      "Pasar yang sudah runtuh",
+      "Harga berayun antara lantai dan langit-langit",
+      "Jeda singkat sebelum setiap tren",
+      "Trendline yang digambar mendatar"
+     ]
+    },
+    {
+     "q": "Di dalam range, pembeli paling tertarik…",
+     "o": [
+      "Di tepi atas, membeli kekuatan",
+      "Persis di tengah kotaknya",
+      "Di dekat tepi bawah kotaknya",
+      "Segera setelah sumbu apa pun"
+     ]
+    },
+    {
+     "q": "Ayunan di dalam range makin mengecil. Itu memberitahumu…",
+     "o": [
+      "Breakout ke atas sedang disiapkan",
+      "Range-nya kini akan bertahan selamanya",
+      "Jebol ke bawah lebih mungkin terjadi",
+      "Pergerakan lebih besar sedang menumpuk, arah tak diketahui"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr8",
+   "t": "Di mana level menaruh stop-mu",
+   "cards": [
+    {
+     "h": "Di mana idenya salah",
+     "p": "Kamu pikir harga bertahan di support ini, jadi kamu beli. Kalimat itu punya akhiran bawaan: kalau harga tutup di bawah zonanya, hal yang kamu percaya sudah tidak benar lagi. Harga itu bukan preferensi dan bukan ambang rasa sakit. Dia titik di mana alasanmu berada di trade itu sudah dibantah oleh pasar itu sendiri."
+    },
+    {
+     "h": "Di luar zona, jangan pernah di dalamnya",
+     "p": "Kalau zonamu membentang dari $99.00 turun ke $98.80, stop di $98.90 duduk di dalam noise yang tadi kamu sendiri bilang ada. Sumbunya akan mengambilnya padahal idemu masih hidup sempurna. Taruh stop di bawah seluruh zona dengan sedikit kelonggaran, dan terima bahwa jarak itulah harga yang level ini bebankan padamu."
+    },
+    {
+     "h": "Jarak menentukan ukuranmu",
+     "p": "Sekarang aritmetikanya. Kamu punya $1,000 dan mempertaruhkan 1% darinya, yaitu $10. Entry $100, stop $98.60, jadi jaraknya 1.4%. Ukuran posisinya adalah $10 dibagi 0.014, sekitar $714 nosional. Lebarkan stop-nya dan posisinya harus mengecil. Stop datang duluan dan ukuran mengikuti darinya, tak pernah sebaliknya. Alat di /calculators mengerjakan pembagian ini untukmu."
+    },
+    {
+     "h": "Jangan melebarkan stop",
+     "p": "Saat harga mendekati stop, terasa jelas bahwa levelnya cuma butuh sedikit ruang lagi. Melebarkannya mengubah kerugian kecil yang terencana jadi kerugian besar yang tak terencana, dan itu menghancurkan aritmetika yang baru saja kamu kerjakan, karena ukurannya dihitung untuk jarak yang persis itu. Kalau levelnya salah, trade-nya salah. Ambil kerugian kecilnya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Stop-loss seharusnya berada di mana relatif terhadap zona support?",
+     "o": [
+      "Setengah jalan di dalam zonanya",
+      "Di harga entry itu sendiri",
+      "Tepat di luar tepi terjauh, dengan ruang",
+      "Di angka bulat yang terdekat"
+     ]
+    },
+    {
+     "q": "Akun $1,000, risiko 1%, stop berjarak 1.4%. Ukuran posisinya sekitar…",
+     "o": [
+      "$140 nosional",
+      "$714 nosional",
+      "$1,400 nosional",
+      "$10 nosional"
+     ]
+    },
+    {
+     "q": "Melebarkan stop saat harga mendekatinya…",
+     "o": [
+      "Memperbaiki peluang trade-nya",
+      "Adalah manajemen risiko standar",
+      "Mengurangi besar kerugiannya",
+      "Merusak aritmetika ukuran yang kamu kerjakan"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr9",
+   "t": "Membaca chart dalam enam puluh detik",
+   "cards": [
+    {
+     "h": "Zoom out sebelum apa pun yang lain",
+     "p": "Mulai dari chart harian, bahkan saat kamu berniat trading di 15 menit. Harian menunjukkan level yang benar-benar bisa dilihat banyak sekali orang, dan bentuk beberapa bulan terakhir dalam satu layar. Level yang hanya ditemukan di chart 1 menit tak terlihat oleh hampir semua orang dan sering hilang dalam hitungan jam."
+    },
+    {
+     "h": "Sebut trennya, tandai dua level",
+     "p": "Ucapkan urutannya keras-keras: high dan low yang makin tinggi, cerminannya, atau tidak keduanya, yang berarti range. Lalu tandai tepat dua zona mendatar — yang terdekat di atas harga dan yang terdekat di bawahnya. Dua. Kalau kamu sudah menggambar enam garis, kamu sudah membangun chart yang menyetujui apa pun yang kamu putuskan berikutnya."
+    },
+    {
+     "h": "Selesaikan kalimatnya, lalu berhenti",
+     "p": "Katakan dalam satu baris: ini uptrend, level yang penting adalah $98.80 sampai $99.00, dan kalau harga tutup di bawah situ aku salah. Kalau kamu tak bisa mengisi ketiga bagiannya, kamu tidak punya trade, kamu punya chart. Kalimat itu makan sekitar enam puluh detik dan itulah seluruh rutinnya."
+    },
+    {
+     "h": "Kebanyakan chart tak layak dapat pendapat",
+     "p": "Keluaran jujur dari rutin ini, sebagian besar waktu, adalah nihil. Tak ada tren yang jelas, tak ada level di dekatnya, tak ada yang spesifik untuk disalahi. Itu sebuah hasil, bukan kegagalan — rutinnya adalah filter, dan filter yang tak pernah menolak apa pun bukanlah filter. Tutup chart-nya dan lihat simbol lain."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Chart mana yang kamu buka duluan?",
+     "o": [
+      "1 menit, demi presisi",
+      "Harian, demi level yang semua orang lihat",
+      "5 menit, sebagai kompromi",
+      "Yang mana pun yang terakhir terbuka"
+     ]
+    },
+    {
+     "q": "Berapa zona mendatar yang rutin ini minta kamu tandai?",
+     "o": [
+      "Sebanyak yang bisa kamu temukan",
+      "Enam, satu per timeframe",
+      "Dua — terdekat di atas dan di bawah",
+      "Nol, trendline sudah cukup"
+     ]
+    },
+    {
+     "q": "Rutinnya berakhir tanpa tren yang jelas dan tanpa level di dekatnya. Kamu sebaiknya…",
+     "o": [
+      "Turun ke timeframe lebih kecil untuk mencarinya",
+      "Gambar lebih banyak garis sampai ada yang muncul",
+      "Tetap trading dengan ukuran lebih kecil",
+      "Lanjut saja dan cek simbol lain"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Buka chart, pasang BTC di harian, dan jalankan rutin enam puluh detiknya: sebut trennya, tandai dua zona, ucapkan harga di mana kamu akan salah. Lalu lakukan lagi di koin yang belum pernah kamu lihat sebelumnya.",
+    "label": "Buka Charts →"
+   }
+  }
+ ]
+}

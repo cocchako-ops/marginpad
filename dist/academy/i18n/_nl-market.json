@@ -1,0 +1,614 @@
+{
+ "id": "market",
+ "name": "De Markt Lezen",
+ "sub": "Data in plaats van gevoel",
+ "lessons": [
+  {
+   "id": "m1",
+   "t": "Trend, steun en weerstand",
+   "cards": [
+    {
+     "h": "Handel met de stroom, niet ertegen",
+     "p": "Een trend is een reeks hogere toppen en bodems (omhoog) of lagere (omlaag). Tegen een sterke trend handelen omdat iets \"te hoog\" of \"te goedkoop\" lijkt, is een donatie. De trend heeft niet altijd gelijk — maar vaker gelijk dan jouw gevoelens erover."
+    },
+    {
+     "h": "Spot de vraagzone",
+     "prompt": "Kopers stapten drie keer in hetzelfde gebied in. Tik op die zone.",
+     "p": "Steun en weerstand zijn zones, geen exacte lijnen. Train je oog op deze grafiek."
+    },
+    {
+     "h": "Confluentie verslaat elk los signaal",
+     "p": "Eén niveau betekent weinig. Een niveau dat samenvalt met een trendlijn, een rond getal en een eerdere top is confluentie — meerdere onafhankelijke redenen die naar dezelfde zone wijzen. Professionals wachten op confluentie; beginners handelen op de eerste lijn die ze tekenen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een opwaartse trend wordt gedefinieerd door…",
+     "o": [
+      "Een lange reeks groene candles, wat de structuur ook is",
+      "Hogere toppen en hogere bodems",
+      "Hoog volume",
+      "Positief nieuws"
+     ]
+    },
+    {
+     "q": "Als weerstand breekt, wordt hij vaak…",
+     "o": [
+      "Voorgoed van de grafiek gewist",
+      "Nieuwe steun",
+      "Een gegarandeerde crash",
+      "Betekenisloos"
+     ]
+    },
+    {
+     "q": "Confluentie betekent…",
+     "o": [
+      "Een ordertype",
+      "Meerdere onafhankelijke signalen op één zone",
+      "Een cryptoconferentie",
+      "Meerdere verschillende munten tegelijk verhandelen"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Teken je eerste niveaus: open een grafiek en markeer de meest recente duidelijke steun- en weerstandszones.",
+    "label": "Open Grafieken →"
+   }
+  },
+  {
+   "id": "m2",
+   "t": "Voortschrijdende gemiddelden: de trend, gladgestreken",
+   "cards": [
+    {
+     "h": "Wat een MA werkelijk toont",
+     "p": "Een voortschrijdend gemiddelde tekent de gemiddelde slotprijs van de laatste N candles — het recente geheugen van de markt als één gladde lijn. Prijs boven een stijgende MA is trendgezond; prijs die door een vlakke MA zaagt betekent dat er geen trend is en trendtools alleen ruis genereren."
+    },
+    {
+     "h": "EMA versus SMA en de beroemde paren",
+     "p": "Het simpele gemiddelde (SMA) weegt elke candle gelijk; het exponentiële (EMA) reageert sneller op recente prijzen. Instellingen waar iedereen naar kijkt: EMA 9/21 voor kortetermijnmomentum, SMA 50/200 voor het grote plaatje. Ze werken deels OMDAT iedereen kijkt — zelfvervullende zones."
+    },
+    {
+     "h": "Kruisingen: signaal en vertraging",
+     "p": "Kruist de 50 boven de 200 (golden cross), dan bevestigt dat een gevestigde opwaartse trend; het omgekeerde (death cross) bevestigt een neerwaartse. Let op het woord bevestigt — MA's lopen per constructie achter. Ze vertellen aan welke kant je moet handelen, niet het exacte klikmoment."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een voortschrijdend gemiddelde toont…",
+     "o": [
+      "De prijs die de markt binnenkort verwacht te zien",
+      "Het gemiddelde van recente sluitingen",
+      "Het handelsvolume",
+      "De reserves van exchanges"
+     ]
+    },
+    {
+     "q": "Welke MA reageert sneller op verse prijsbewegingen?",
+     "o": [
+      "SMA",
+      "EMA",
+      "Ze zijn identiek",
+      "Geen van beide beweegt"
+     ]
+    },
+    {
+     "q": "Een golden cross (50 boven 200) gebruik je het best als…",
+     "o": [
+      "Een precieze timer voor het ideale instapmoment",
+      "Bevestiging van een gevestigde opwaartse trend",
+      "Een verkoopsignaal",
+      "Een liquidatiewaarschuwing"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m3",
+   "t": "RSI en momentum",
+   "cards": [
+    {
+     "h": "Wat RSI meet",
+     "p": "RSI comprimeert de laatste 14 candles van winsten versus verliezen tot een schaal van 0-100. Boven 70 heet de markt overbought, onder 30 oversold. Hij meet de SNELHEID van de beweging, niet de juistheid — een markt kan overbought zijn en weken blijven stijgen."
+    },
+    {
+     "h": "De beginnersfout",
+     "p": "Verkopen puur omdat RSI 70 aantikte, is een van de betrouwbaarste manieren om een razende bulltrend te shorten. In sterke trends blijft RSI vastgepind in extreem gebied. De overbought/oversold-lezing wordt pas interessant als de trend AL verzwakt of op grote niveaus."
+    },
+    {
+     "h": "Divergentie: de nuttige truc",
+     "p": "Maakt de prijs een nieuwe top maar RSI een lagere top, dan dooft het momentum onder de oppervlakte — dat is bearish divergentie, een vroege waarschuwingsvlag (geen verkoopknop). Het omgekeerde op bodems is bullish divergentie. Divergentie plus sleutelniveau plus confluentie — nu is het een setup."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "RSI boven 70 betekent…",
+     "o": [
+      "Gegarandeerde omkering, dus ervaren traders verkopen direct",
+      "De recente beweging was snel; in sterke trends kan hij daar blijven",
+      "De exchange stopt de handel",
+      "Het volume is nep"
+     ]
+    },
+    {
+     "q": "Bearish divergentie is…",
+     "o": [
+      "Prijs nieuwe top, RSI lagere top",
+      "Prijs en RSI stijgen samen en bevestigen elkaar",
+      "RSI onder 30",
+      "Een candlepatroon"
+     ]
+    },
+    {
+     "q": "Op zichzelf is één indicatorlezing…",
+     "o": [
+      "Een complete strategie op zich voor de meeste traders",
+      "Zwak — hij heeft confluentie met niveaus en trend nodig",
+      "Illegaal om te verhandelen",
+      "Alleen voor professionals"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m4",
+   "t": "Open interest en de positionering van de massa",
+   "cards": [
+    {
+     "h": "Open interest: geld in het spel",
+     "p": "Open interest (OI) telt de totale waarde van de nu openstaande futuresposities. Stijgende OI met stijgende prijs = nieuw geld koopt de beweging (gezond). Stijgende prijs met DALENDE OI = shorts sluiten, geen nieuwe vraag — een beweging die waarschijnlijk stokt. OI vertelt WIE een beweging aandrijft."
+    },
+    {
+     "h": "De long/short-verhouding",
+     "p": "De long/short-verhouding toont aan welke kant de massa staat. Extreme waarden zijn contrair: als bijna iedereen al long is, blijven er weinig kopers over — maar onder de prijs ligt een meer aan liquidatieprijzen, klaar om de tegengestelde beweging te voeden."
+    },
+    {
+     "h": "De stapel van drie signalen",
+     "p": "De derivatensetup met hoge overtuiging stapelt drie dingen: een eenzijdige long/short-verhouding + stijgende OI + funding betaald door de overvolle kant. Dat is een massa die gehefboomd is, groeit en betaalt om te blijven — een gespannen veer. Elk signaal alleen is zwak; samen zijn ze de tell van de markt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Prijs stijgt terwijl open interest daalt betekent meestal…",
+     "o": [
+      "Sterke nieuwe aankopen van institutionele partijen",
+      "Shorts dekken zich in — de beweging kan brandstof tekortkomen",
+      "Een gegarandeerde uitbraak",
+      "Niets"
+     ]
+    },
+    {
+     "q": "Een extreem eenzijdige long/short-verhouding is…",
+     "o": [
+      "Een betrouwbaar signaal om je bij de meerderheid aan te sluiten",
+      "Een contraire waarschuwing — de overvolle kant is de brandstof",
+      "Bewijs van een gezonde markt",
+      "Willekeurige ruis"
+     ]
+    },
+    {
+     "q": "De gespannen-veer-setup combineert…",
+     "o": [
+      "RSI, MACD en volume die allemaal dezelfde kant op wijzen",
+      "Overvolle verhouding + stijgende OI + funding van die kant",
+      "Drie groene candles",
+      "Nieuws en social media"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Check de live long/short-verhouding en open interest — welke kant is nu overvol?",
+    "label": "Long/Short-Verhouding →"
+   }
+  },
+  {
+   "id": "m5",
+   "t": "Liquidatiecascades: waarom crashes doorschieten",
+   "cards": [
+    {
+     "h": "Het dominomechanisme",
+     "p": "Raakt de prijs het liquidatieniveau van een hefboomtrader, dan verkoopt de exchange de positie gedwongen tegen marktprijs. Die verkoop duwt de prijs omlaag — in de VOLGENDE cluster liquidatieprijzen, wat meer gedwongen verkopen triggert. Bekijk de dominostenen hieronder: één trigger, een keten gedwongen exits."
+    },
+    {
+     "h": "Waarom de prijs bepaalde niveaus jaagt",
+     "p": "Liquidatieprijzen clusteren op voorspelbare plekken — net voorbij ronde getallen en duidelijke steun, waar massa's vergelijkbare traders vergelijkbare posities openden. Grote spelers kunnen die clusters zien. Een wiek die door een niveau prikt, de cluster triggert en direct omkeert, is dat mechanisme aan het werk."
+    },
+    {
+     "h": "De brandstof in de gaten houden",
+     "p": "Live liquidatiefeeds tonen cascades terwijl ze gebeuren — een uitbarsting van gedwongen longs markeert capitulatiebodems betrouwbaarder dan de meeste indicatoren. Voor je eigen trades is de les defensief: leg je liquidatieprijs buiten het bereik van een routinejacht, of beter, dimensioneer zo dat liquidatie onmogelijk is."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een liquidatiecascade is…",
+     "o": [
+      "Een gepland exchange-evenement dat ruim vooraf is aangekondigd",
+      "Gedwongen verkopen die in een keten meer gedwongen verkopen triggeren",
+      "Een soort stakingbeloning",
+      "Een grafiekpatroon"
+     ]
+    },
+    {
+     "q": "Liquidatieclusters vormen zich…",
+     "o": [
+      "Willekeurig over de hele grafiek zonder enig patroon",
+      "Net voorbij ronde getallen en duidelijke niveaus",
+      "Alleen in het weekend",
+      "Alleen bij kleine munten"
+     ]
+    },
+    {
+     "q": "De defensieve les voor je eigen trades is…",
+     "o": [
+      "De maximale hefboom gebruiken die de exchange toestaat",
+      "Je liquidatie buiten het bereik van routinewieken houden",
+      "Stop-losses verwijderen",
+      "Alleen 's nachts handelen"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Kijk hoe gedwongen liquidaties live binnenstromen op Rekt — zie het cascademechanisme met eigen ogen.",
+    "label": "Open Rekt →"
+   }
+  },
+  {
+   "id": "m6",
+   "t": "Macro: het tij onder elke trade",
+   "cards": [
+    {
+     "h": "Crypto verhandelt de dollar en de rente",
+     "p": "Bitcoin is een liquiditeitsgevoelig risicoactivum: lijkt de rente te gaan dalen, dan stroomt geld richting risico en stijgt crypto; hoger-voor-langer doet het omgekeerde. Daarom kan een Amerikaans inflatiecijfer Bitcoin binnen een seconde bewegen — algoritmes herprijzen direct het hele rentepad."
+    },
+    {
+     "h": "De events die ertoe doen",
+     "p": "Een handvol geplande publicaties drijft de grootste uren in crypto: het FOMC-rentebesluit van de Fed, de CPI- en PCE-inflatiecijfers en het NFP-banenrapport. Ze staan weken vooraf op de kalender — erdoor verrast worden is een keuze. Hieronder: hoe 12:30 UTC op een CPI-dag eruitziet."
+    },
+    {
+     "h": "Eventrisico is een groottevraagstuk",
+     "p": "Je kunt het cijfer niet voorspellen, maar je kunt het overleven: ken de publicatietijd en dimensioneer zo dat een instant wiek van 2-3% je niet kan liquideren. De eerste candle na de publicatie is vaak een fake-out — professionals laten hem uitspelen in plaats van na te jagen op de slechtste spread van de dag."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Waarom beweegt een Amerikaans inflatiecijfer Bitcoin in seconden?",
+     "o": [
+      "Toeval",
+      "Algoritmes herprijzen renteverwachtingen onmiddellijk",
+      "Miners dumpen hun voorraad zodra het nieuws uitkomt",
+      "Dat doet het niet"
+     ]
+    },
+    {
+     "q": "De publicatietijden van FOMC, CPI en NFP zijn…",
+     "o": [
+      "Geheim",
+      "Willekeurig",
+      "Gepland en weken vooraf openbaar",
+      "Alleen relevant voor aandelentraders, niet voor crypto"
+     ]
+    },
+    {
+     "q": "De professionele aanpak van een grote geplande publicatie is…",
+     "o": [
+      "Maximale hefboom vlak voordat het cijfer naar buiten komt",
+      "Grootte die een instant wiek van 2-3% overleeft",
+      "De eerste candle met een marktorder kopen",
+      "Negeren"
+     ]
+    },
+    {
+     "q": "Het allerbelangrijkste idee in deze cursus tot nu toe was…",
+     "o": [
+      "Perfecte entries vinden op de kleinste timeframes",
+      "Lang genoeg overleven om te leren",
+      "Vaker handelen",
+      "Hogere hefboom"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Open de economische kalender en vind de volgende FOMC- of CPI-datum — zet een herinnering voordat hij valt.",
+    "label": "Economische Kalender →"
+   }
+  },
+  {
+   "id": "m7",
+   "t": "Grafiekpatronen: compressie en expansie",
+   "cards": [
+    {
+     "h": "Wat patronen werkelijk zijn",
+     "p": "Driehoeken, vlaggen, ranges — onder elk benoemd patroon ligt één fysiek feit: volatiliteit COMPRIMEERT terwijl kopers en verkopers tijdelijk overeenstemming bereiken, en EXPANDEERT als één kant wint. De naam telt minder dan compressie herkennen, want expansie volgt erop."
+    },
+    {
+     "h": "Patronen zijn kansen, geen beloftes",
+     "p": "Een driehoek weet niet welke kant hij op breekt. Patronen kantelen de kansen licht en — nuttiger — geven schone invalidatieniveaus: instappen op de breuk, stop voorbij de tegenoverliggende kant. De R:R-structuur is het echte geschenk, niet de voorspelling."
+    },
+    {
+     "h": "De valstrik: patroonhallucinatie",
+     "p": "Staar lang genoeg en elke grafiek kweekt patronen zoals wolken gezichten kweken. Veranker patronen in de context die je al hebt — trend, sleutelniveaus, volume op de breuk. Een schoolboekvlag tegen de grotere trend op geen enkel niveau is gewoon een vorm."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Onder elk grafiekpatroon ligt…",
+     "o": [
+      "Magie",
+      "Volatiliteit die comprimeert en dan expandeert",
+      "Insider trading van goed verbonden grote spelers",
+      "Ronde getallen"
+     ]
+    },
+    {
+     "q": "Het nuttigste dat een patroon je geeft is…",
+     "o": [
+      "Een gegarandeerde richting voor de komende uitbraak",
+      "Een schoon invalidatieniveau voor de R:R-structuur",
+      "Een naam om online te posten",
+      "Volume"
+     ]
+    },
+    {
+     "q": "Een perfecte vlag tegen de grotere trend op geen enkel niveau is…",
+     "o": [
+      "Een A+ setup die volle grootte en overtuiging waard is",
+      "Gewoon een vorm zonder context",
+      "Een shortsignaal",
+      "Een koopsignaal"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m8",
+   "t": "Multi-timeframe-analyse",
+   "cards": [
+    {
+     "h": "Drie kaarten van één gebied",
+     "p": "De daggrafiek bepaalt het WEER (trend en sleutelniveaus), de 4-uurs bepaalt de SETUP (structuur die zich op die niveaus vormt), de 15-minuten bepaalt de TRIGGER (precieze entry en stop). Eén markt, drie hoogtes — verwarring ontstaat als je een trigger zonder weer verhandelt."
+    },
+    {
+     "h": "Het top-down-ritueel",
+     "p": "Altijd in deze volgorde: eerst dagelijks (aan welke kant mag ik handelen?), dan 4H (vormt zich een setup op een belangrijk niveau?), dan het lage timeframe (exacte entry, exacte invalidatie). De volgorde omdraaien — een spannende 5-minutengrafiek vinden en er een verhaal bij verzinnen — is hoe tegen-trend-donaties ontstaan."
+    },
+    {
+     "h": "Conflicten lossen OMHOOG op",
+     "p": "Als timeframes het oneens zijn, wint de grotere. Een bullish 15-minuten binnen een bearish daggrafiek is een opleving om te verkopen, geen omkering om mee te trouwen. Structuurbreuken verspreiden zich langzaam omhoog — respecteer de grote kaart tot die echt verandert."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "De juiste analysevolgorde is…",
+     "o": [
+      "15m → 4H → dagelijks",
+      "Dagelijks → 4H → 15m",
+      "Elke volgorde",
+      "Slechts één timeframe"
+     ]
+    },
+    {
+     "q": "Als timeframes botsen, gaat de prioriteit naar…",
+     "o": [
+      "Het kleinste, want dat is het preciest",
+      "Het grotere timeframe",
+      "Het volatielste",
+      "Het mooiste"
+     ]
+    },
+    {
+     "q": "Een bullish 15m binnen een bearish daggrafiek is meestal…",
+     "o": [
+      "Een trendomkering om vast te houden",
+      "Een opleving binnen de neerwaartse trend",
+      "Onmogelijk",
+      "Een koop-en-houd-signaal"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m9",
+   "t": "Bitcoin-dominantie en rotatie",
+   "cards": [
+    {
+     "h": "De inhoudsopgave van de markt",
+     "p": "Bitcoin-dominantie (BTC.D) is Bitcoins aandeel in de totale crypto-marktkapitalisatie. Stijgende dominantie: geld verkiest BTC — alts bloeden zelfs in groene markten. Dalende dominantie met stijgende prijzen: risicobereidheid stroomt naar buiten — de klassieke handtekening van altseason."
+    },
+    {
+     "h": "De rotatiecyclus",
+     "p": "Liquiditeit cascadeert doorgaans: eerst naar BTC, dan ETH, dan large caps, dan de lange staart van kleine alts — elke golf riskanter dan de vorige. Tegen de tijd dat microcaps verticaal gaan, is de cyclus laat. Dominantiegrafieken tonen in welk hoofdstuk je zit."
+    },
+    {
+     "h": "Verhandel het tij, niet alleen de boot",
+     "p": "Een altcoin-long is eigenlijk twee inzetten: de munt ÉN het dominantietij. Een sterke alt-setup tegen stijgende BTC.D is stroomopwaarts zwemmen. Check het tij vóór de trade — het is één extra grafiek en het herkadert alles."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Stijgende BTC-dominantie betekent…",
+     "o": [
+      "Alts presteren beter dan Bitcoin in elke rally",
+      "Geld verkiest Bitcoin — alts bloeden",
+      "Niets",
+      "Stablecoins falen"
+     ]
+    },
+    {
+     "q": "De klassieke liquiditeitsrotatie loopt…",
+     "o": [
+      "Van de kleinste caps rechtstreeks naar BTC",
+      "BTC → ETH → large caps → small caps",
+      "Willekeurig",
+      "ETH als laatste"
+     ]
+    },
+    {
+     "q": "Een altcoin-long tijdens stijgende dominantie is…",
+     "o": [
+      "Twee gelijkgerichte inzetten die elkaar versterken",
+      "Stroomopwaarts zwemmen — het tij vecht tegen de trade",
+      "Risicovrij",
+      "De standaardzet"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m10",
+   "t": "ETF-stromen: institutionele voetafdrukken",
+   "cards": [
+    {
+     "h": "Het dagelijkse bonnetje van Wall Street",
+     "p": "Sinds de Amerikaanse spot-Bitcoin-ETF's in 2024 lanceerden, werd institutionele vraag meetbaar: elke instroom dwingt het fonds echte BTC te kopen, elke uitstroom dwingt tot verkopen — dagelijks gerapporteerd. Het is het helderste venster dat crypto ooit had op groot, traag geld."
+    },
+    {
+     "h": "Spotvraag versus hefboomschuim",
+     "p": "Een rally gedreven door ETF-instroom haalt echte munten van de markt — duurzame brandstof. Een rally met uitstroom en piekende funding is hefboom die zijn eigen gewicht optilt — het soort dat cascadeert (m5). Stromen vertellen in welke rally je staat."
+    },
+    {
+     "h": "Trend, geen tik",
+     "p": "Eén rode stromendag betekent weinig; een reeks van weken is een regime. Combineer de stromentrend met funding en open interest voor het volledige beeld van wie er stuurt — hetzelfde driesignalendenken uit m4, nu met een institutionele laag."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een ETF-instroom dwingt de uitgever om…",
+     "o": [
+      "BTC te verkopen",
+      "Echte BTC te kopen om nieuwe aandelen te dekken",
+      "Aandelen uit het niets te drukken, zonder dekking",
+      "Dividend te betalen"
+     ]
+    },
+    {
+     "q": "Een rally met ETF-uitstroom en piekende funding wordt aangedreven door…",
+     "o": [
+      "Grote instellingen die voor de lange termijn accumuleren",
+      "Hefboom — schuim dat vatbaar is voor cascades",
+      "Miners",
+      "Overheden"
+     ]
+    },
+    {
+     "q": "Stromen tellen het meest als…",
+     "o": [
+      "Eendaagse tikken die de winnaar van de dag onthullen",
+      "Wekenlange trends naast funding en OI",
+      "Uurlijkse ruis",
+      "Vervanging van alle analyse"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "m11",
+   "t": "Sentiment: angst en hebzucht",
+   "cards": [
+    {
+     "h": "De polsslag van de massa meten",
+     "p": "Sentimentmeters zoals de Fear & Greed-index comprimeren volatiliteit, momentum, sociale drukte en dominantie tot één getal. Het is een thermometer voor emotie — nuttig juist omdat massa's het meest fout zitten op hun emotionele extremen."
+    },
+    {
+     "h": "Extremen zijn signalen, het midden is ruis",
+     "p": "Een lezing van 55 zegt je niets. Extreme hebzucht zegt dat laatkomers zich met hefboom opstapelen — check funding en de long/short-verhouding ter bevestiging. Extreme angst markeert de capitulatiezones waar gedwongen verkopers eindigen en geduldige kopers beginnen."
+    },
+    {
+     "h": "Gebruik het als rem, niet als motor",
+     "p": "Sentiment genereert geen entries; het matigt grootte en agressie. Bij extreme hebzucht: scherp het risico op longs aan, ook al ziet de grafiek er nog perfect uit. Bij extreme angst: weersta paniekverkoop het gat in. Het is disciplinegereedschap in een datakostuum."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Sentimentindexen zijn het nuttigst op…",
+     "o": [
+      "Neutrale lezingen midden op de schaal van de index",
+      "Emotionele extremen van de massa",
+      "Precies 50",
+      "Weekends"
+     ]
+    },
+    {
+     "q": "Extreme hebzucht gecombineerd met hoge funding suggereert…",
+     "o": [
+      "Een veilige entry met brede marktconsensus",
+      "Late gehefboomde longs — verhoogd squeeze-risico",
+      "Laag risico",
+      "Koop meer"
+     ]
+    },
+    {
+     "q": "Sentiment werkt het best als…",
+     "o": [
+      "Een entrygenerator voor elke trade",
+      "Een rem op grootte en agressie",
+      "Vervanging van grafieken",
+      "Een prijsvoorspeller"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Check waar de emoties van de markt nu staan — live Fear & Greed met historie.",
+    "label": "Fear & Greed Index →"
+   }
+  },
+  {
+   "id": "m12",
+   "t": "Een complete tradethese bouwen",
+   "cards": [
+    {
+     "h": "Eén pagina, elke laag",
+     "p": "Een these stapelt alles wat deze cursus leerde in één alinea: trend en niveau van het grotere timeframe (m1, m8), patroon of structuur (m7), derivatenpositionering — funding, OI, long/short (m4, l5), de macrokalender (m6), en stromen of sentiment als regimelaag (m10, m11)."
+    },
+    {
+     "h": "Dan de risicohelft",
+     "p": "De tweede helft is Cursus 3: exacte invalidatie, R:R van minstens 2, grootte via de 1-2%-regel, geplande gedeeltelijke exits en de eventcheck. Een these zonder de risicohelft is een marktmening — meningen zijn gratis en kosten het meest."
+    },
+    {
+     "h": "Schrijf hem, verhandel hem, beoordeel hem",
+     "p": "Schrijf de these VÓÓR de entry, voer hem uit zoals geschreven, en beoordeel in je journal het PROCES — niet de uitkomst. Een perfect uitgevoerd verlies is een goede trade; een gelukswinst die het plan brak is een slechte die later de rekening stuurt. Deze lus, herhaald, is het hele vak."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een complete these bevat…",
+     "o": [
+      "Alleen een grafiekpatroon",
+      "Trend, niveau, positioneringsdata, macro ÉN het volledige risicoplan",
+      "Een prijsvoorspelling",
+      "Een consensus van gerespecteerde stemmen op social media"
+     ]
+    },
+    {
+     "q": "Een these zonder invalidatie en grootte is…",
+     "o": [
+      "Efficiënt — minder tijd kwijt aan papierwerk",
+      "Slechts een mening — de dure soort",
+      "Professioneel",
+      "Compleet"
+     ]
+    },
+    {
+     "q": "Je moet je trades beoordelen op…",
+     "o": [
+      "Alleen de uitkomst — winst is wat telt",
+      "Het proces — is het plan gevolgd?",
+      "Screenshots",
+      "Gevoelens"
+     ]
+    },
+    {
+     "q": "Over deze hele cursus is het allerbelangrijkste idee…",
+     "o": [
+      "Perfecte entries op de kleinste timeframes",
+      "Lang genoeg overleven om te leren",
+      "Meer indicatoren",
+      "Hogere hefboom"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Schrijf één volledige these over welke munt dan ook en voer hem uit als paper trade — de complete lus, nul risico.",
+    "label": "Paper Trade →"
+   }
+  }
+ ]
+}

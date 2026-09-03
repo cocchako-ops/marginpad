@@ -1,0 +1,348 @@
+{
+ "id": "systems",
+ "name": "Sistemi i Automatizacija",
+ "sub": "Pretvaranje pravila u mašine",
+ "lessons": [
+  {
+   "id": "s1",
+   "t": "Zašto sistemi pobeđuju osećaj",
+   "cards": [
+    {
+     "h": "Porez na diskreciju",
+     "p": "Svaka diskreciona odluka je prilika da se uvuku tilt, FOMO i naknadna pamet. Sistem — fiksna pravila za setap, ulaz, izlaz i veličinu — uklanja odluku u trenutku maksimalne emocije. Većini tradera ne trebaju bolji instinkti; treba im manje prilika da ih koriste."
+    },
+    {
+     "h": "Pravila čine rezultate merljivim",
+     "p": "Ako su ti ulasci raspoloženja, tvoji pregledi dnevnika su astrologija. Ako su ti ulasci pravila, svaki trejd je podatak: OVAJ setap, odigran OVAKO, proizvodi OVO očekivanje. Samo trgovanje po pravilima može stvarno da se poboljša, jer samo ono može da se izmeri."
+    },
+    {
+     "h": "Diskrecija ima mesto — za radnim stolom",
+     "p": "Veština ne nestaje; seli se. Koristiš procenu da DIZAJNIRAŠ i PREGLEDAŠ pravila — nedeljno, mirno, daleko od živih cena. Mašina (ili kontrolna lista) izvršava. Procena za stolom, disciplina na okidaču."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Glavna prednost sistema zasnovanog na pravilima je…",
+     "o": [
+      "Garantovan profit čim su pravila gotova",
+      "Uklanjanje odluka u trenutku maksimalne emocije",
+      "Veća poluga",
+      "Manje posla"
+     ]
+    },
+    {
+     "q": "Ulasci po raspoloženju čine tvoj dnevnik…",
+     "o": [
+      "Zabavniji za čitanje na kraju nedelje",
+      "Nemerljivim — ne možeš porediti raspoloženja",
+      "Kraćim",
+      "Savršenim"
+     ]
+    },
+    {
+     "q": "U sistematskom trejdingu, ljudska procena pripada…",
+     "o": [
+      "Živom okidaču, gde se donose prave odluke",
+      "Radnom stolu — građenju i pregledu pravila",
+      "Nigde",
+      "Chat sobama"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "t": "Backtest: saslušavanje prošlosti",
+   "cards": [
+    {
+     "h": "Najjeftinije pitanje u trejdingu",
+     "p": "Pre nego što rizikuješ i cent — pa i paper vreme — možeš da pitaš istoriju: da sam trgovao tačno ova pravila prošle godine, šta bi se desilo? To je backtest. Neće obećati budućnost, ali izvršava pravila sa nula naknadne pameti i nula milosti."
+    },
+    {
+     "h": "Šta ti backtest zapravo govori",
+     "p": "Ne \"ovo će zaraditi\" — nego PROFIL strategije: win rate, prosečan R, najgora serija gubitaka, najdublji drawdown, koliko trejdova mesečno. Iz r10 već znaš da ti brojevi, uz dimenzionisanje, odlučuju o preživljavanju. Backtest ti ih daje za par minuta."
+    },
+    {
+     "h": "Poštuj njegove granice",
+     "p": "Backtestovi pretpostavljaju izvršenja po istorijskim cenama — pravi spread, slippage i funding biće gori. Tretiraj rezultate backtesta kao OPTIMISTIČAN plafon, mentalno oduzmi troškove i veruj samo profilima koji taj rez prežive sa rezervom."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Backtest ti govori…",
+     "o": [
+      "Budućnost",
+      "Istorijski profil tvojih tačnih pravila",
+      "Koji coin će pumpati sledeće nedelje",
+      "Ništa"
+     ]
+    },
+    {
+     "q": "Rezultati backtesta naspram živih rezultata su obično…",
+     "o": [
+      "Identični",
+      "Optimistični — pravi troškovi pogoršaju živo",
+      "Pesimistični, jer backtestovi potcene dobitke",
+      "Nasumični"
+     ]
+    },
+    {
+     "q": "Pravi način čitanja backtesta je…",
+     "o": [
+      "Kao obećanje",
+      "Kao optimističan plafon minus troškovi",
+      "Kao zabavu za vikend, ništa više od toga",
+      "Naopako"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Pokreni svoj prvi pravi backtest — EMA cross ili RSI pravila na kvalitetnim podacima, jedan klik, puna statistika.",
+    "label": "Backtester Strategija →"
+   }
+  },
+  {
+   "id": "s3",
+   "t": "Overfitting: tihi ubica",
+   "cards": [
+    {
+     "h": "Savršen backtest koji nikad ne radi",
+     "p": "Štimaj parametre strategije dovoljno dugo i savršeno će se uklopiti u prošlost — jer je zapamtila šum, a ne naučila signal. To je overfitting: što je lepša kriva backtesta posle teškog štimovanja, to sumnjičaviji treba da budeš."
+    },
+    {
+     "h": "Simptomi",
+     "p": "Znaci upozorenja: mnogo fino naštimovanih parametara (zašto 13.5, a ne 14?), performansa koja se sruši kad pomeriš prozor testa za mesec, prednost koja postoji samo na jednom coinu i jednom okviru. Robusne prednosti su obično jednostavne, pomalo ružne, i rade široko."
+    },
+    {
+     "h": "Lek: manje dugmića",
+     "p": "Svaki parametar koji dodaš je još jedan način da se zapamti prošlost. Preferiraj strategije sa 2-3 dugmeta umesto 10. Ako male promene parametara izazivaju velike promene rezultata, uklopio si šum. Osrednji backtest koji je STABILAN pobeđuje spektakularan koji je krhak."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Overfitting znači…",
+     "o": [
+      "Previše trgovanja u jednoj jedinoj sesiji",
+      "Štimovanje pravila dok ne zapamte prošli šum",
+      "Korišćenje poluge",
+      "Formaciju na grafikonu"
+     ]
+    },
+    {
+     "q": "Sumnjiv znak overfittinga je…",
+     "o": [
+      "Jednostavna pravila",
+      "Performansa koja se sruši kad se prozor pomeri",
+      "Malo parametara",
+      "Dosledan rad na mnogo različitih coina"
+     ]
+    },
+    {
+     "q": "Između stabilnog osrednjeg backtesta i krhkog spektakularnog, biraj…",
+     "o": [
+      "Spektakularan",
+      "Stabilan",
+      "Nijedan",
+      "Oba"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s4",
+   "t": "Out-of-sample: test poštenja",
+   "cards": [
+    {
+     "h": "Nikad ne ocenjuj na podacima za trening",
+     "p": "Lek za overfitting je disciplina u testiranju: dizajniraj i štimuj pravila na JEDNOM isečku istorije (in-sample), pa ih pusti NETAKNUTA na isečak koji nikad nisu videla (out-of-sample). Samo out-of-sample rezultat se računa — to je najbliže budućnosti što se može kupiti."
+    },
+    {
+     "h": "Walk-forward: ponovi poštenje",
+     "p": "Walk-forward testiranje ovo ponavlja na kliznom prozoru: štimuj na mesecima 1-6, testiraj na mesecu 7; pomeri; ponovi. Strategija koja nastavlja da isporučuje na podacima koje nikad nije videla zaslužila je nešto poverenja. Ona koja sija samo in-sample nije zaslužila ništa."
+    },
+    {
+     "h": "Paper trading je poslednji out-of-sample",
+     "p": "Posle testova, pusti sistem na živim cenama sa lažnim novcem — jedini skup podataka u koji se ne može zaviriti: sadašnjost. Ako se backtest, out-of-sample I paper slažu, imaš nešto. Ako se ne slažu, veruj najživljem."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Out-of-sample testiranje znači…",
+     "o": [
+      "Testiranje na podacima na kojima si štimovao",
+      "Testiranje na podacima koje pravila nikad nisu videla",
+      "Preskakanje testova",
+      "Testiranje samo vikendom"
+     ]
+    },
+    {
+     "q": "Koji rezultat zaslužuje najviše poverenja?",
+     "o": [
+      "In-sample",
+      "Out-of-sample i živi paper rezultati",
+      "Najlepši grafikon sa najglađom krivom",
+      "Najstariji"
+     ]
+    },
+    {
+     "q": "Paper trading služi kao…",
+     "o": [
+      "Gubljenje vremena kad je backtest već gotov",
+      "Poslednji out-of-sample test",
+      "Marketing",
+      "Poresko sklonište"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s5",
+   "t": "Od pravila do robota",
+   "cards": [
+    {
+     "h": "Automatizacija je spektar",
+     "p": "Ne skačeš sa klikćanja dugmića na pun autopilot. Merdevine: napisana kontrolna lista → alarmi koji te pinguju kad se uslovi poklope → poluautomatizacija (mašina predlaže, ti potvrđuješ) → pun bot. Svaka prečka uklanja jedan ljudski način otkaza; penji se samo koliko se tvoja pravila dokazuju stabilnim."
+    },
+    {
+     "h": "Šta bot traži od tebe",
+     "p": "Bot su tvoja pravila, zamrznuta. Trebaju mu NEDVOSMISLENI uslovi (ne \"izgleda jako\"), tačno dimenzionisanje, tačni izlasci i uputstva za ružne slučajeve: delimična izvršenja, prekidi veze, gapovi. Zapisivanje toga često otkrije da je tvoj \"sistem\" držao na okupu ljudski lepak."
+    },
+    {
+     "h": "Testiraj mašinu kao strategiju",
+     "p": "Bot može da izgubi novac na dva načina: loša pravila ili loš kod. Testiraj ih odvojeno — pravila u backtesteru, kod na paper-trading API-ju gde bag ne košta ništa. Tek kad oba prežive, ulazi pravi novac — prvo mali."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Razumne merdevine automatizacije počinju sa…",
+     "o": [
+      "Punim botom od prvog dana, dok je fokus svež",
+      "Napisanom listom, pa alarmima, pa poluautomatizacijom",
+      "Pozajmljenim kodom",
+      "Maksimalnom veličinom"
+     ]
+    },
+    {
+     "q": "Bot zahteva pravila koja su…",
+     "o": [
+      "Na osećaj",
+      "Nedvosmislena, sa definisanom veličinom i izlascima",
+      "Tajna",
+      "Dovoljno fleksibilna da se prilagodi u trenutku"
+     ]
+    },
+    {
+     "q": "Trading bot prvo treba da radi na…",
+     "o": [
+      "Tvojoj životnoj ušteđevini",
+      "Paper-trading API-ju gde bagovi ne koštaju ništa",
+      "Nalog prijatelja od poverenja sa pravim sredstvima",
+      "Ničemu"
+     ]
+    }
+   ],
+   "try": {
+    "p": "MarginPad ima besplatan paper-trading REST API napravljen tačno za ovo — testiraj bota sa nula rizika.",
+    "label": "Bot API Dokumentacija →"
+   }
+  },
+  {
+   "id": "s6",
+   "t": "Nadzor i prekidači",
+   "cards": [
+    {
+     "h": "Automatizacija nije napuštanje",
+     "p": "Sistemu koji radi trebaju kontrolna tabla i povodac: dnevne provere da se izvršenja poklapaju sa namerama, da je rizik po trejdu onaj koji si postavio, da tržišni režim još liči na onaj za koji je pravljen. Tihi drift — u troškovima, u volatilnosti, u tvom sopstvenom praćenju pravila — ubija polako."
+    },
+    {
+     "h": "Definiši smrt unapred",
+     "p": "Pre puštanja, napiši kriterijume gašenja: maksimalan drawdown (recimo 15%), seriju gubitaka goru od najgore u backtestu, ili lom režima. Udari bilo koji od njih i sistem STAJE — nema pregovaranja sa nadom. To si lično naučio u r6; mašine zaslužuju istu disciplinu."
+    },
+    {
+     "h": "Incidenti će se dešavati",
+     "p": "Menjačnice padaju, API-ji pucaju na timeout, pogrešan config duplira veličinu. Pretpostavi incidente, pa će te iznenaditi samo blago: limiti pozicija na nivou menjačnice, alarmi na svako izvršenje, i ručni glavni STOP koji možeš da pritisneš s telefona. Dosadan inženjering — tako izgleda bezbednost."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kriterijumi gašenja treba da se definišu…",
+     "o": [
+      "Tek posle prvog ozbiljnijeg drawdowna",
+      "Pre puštanja — i poštuju bez pregovaranja",
+      "Nikad",
+      "Od strane menjačnice"
+     ]
+    },
+    {
+     "q": "Sistemu koji radi treba…",
+     "o": [
+      "Nula pažnje čim se jednom pusti u produkciju",
+      "Dnevne provere da se ponašanje poklapa sa namerom",
+      "Više poluge",
+      "Tajnost"
+     ]
+    },
+    {
+     "q": "Zdrava zaštita od incidenata uključuje…",
+     "o": [
+      "Optimizam",
+      "Limiti pozicija, alarmi i ručni STOP",
+      "Veću veličinu",
+      "Ignorisanje dok se stvarno ne dese"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s7",
+   "t": "Portfolio prednosti",
+   "cards": [
+    {
+     "h": "Prednosti su sezonske",
+     "p": "Nijedan sistem ne radi zauvek — trendovi se završavaju, režimi volatilnosti se okreću, mase se prilagođavaju. Profesionalci vode mali PORTFOLIO nekorelisanih sistema: pratilac trenda, vraćač na prosek, možda žetelac fundinga. Kad jedan spava, drugi obično jede."
+    },
+    {
+     "h": "Penzionisanje sistema",
+     "p": "Najteža veština: ugasiti strategiju koju voliš. Kriterijumi su ista pravila gašenja iz s6, plus jedno — ako je strukturni razlog zašto je radila nestao (promena provizija, promena režima, svi to rade), penzioniši je dok još ima dostojanstvo. Istorija rezultata je istorija, ne pravo."
+    },
+    {
+     "h": "Zanat, kompletan",
+     "p": "Pogledaj luk: mehanika (kursevi 1-2), preživljavanje (3), čitanje trake (4-5)… i sada proces koji radi bez tvojih raspoloženja. Bilo da automatizuješ ili ostaneš ručno, destinacija je ista: napisana, izmerena, pregledana prednost — i trader dovoljno smiren da je prati."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Profesionalci vode više sistema jer…",
+     "o": [
+      "Više je otmenije",
+      "Prednosti su sezonske",
+      "Menjačnice to zahtevaju",
+      "Botovima je dosadno"
+     ]
+    },
+    {
+     "q": "Sistem treba penzionisati kad…",
+     "o": [
+      "Prvi put kad ima jednu jedinu crvenu nedelju",
+      "Pravila gašenja okinu ili strukturni razlog nestane",
+      "Nikad",
+      "Neko mu se smeje"
+     ]
+    },
+    {
+     "q": "Krajnje stanje celog ovog kursa je…",
+     "o": [
+      "Nula gubitaka",
+      "Napisana, izmerena, pregledana prednost praćena smireno",
+      "Tajni indikator koji niko drugi nije otkrio",
+      "Maksimalna poluga"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Cela petlja je sada tvoja — vozi je tamo gde su greške besplatne, i neka nivoi prate put.",
+    "label": "Paper Trade →"
+   }
+  }
+ ]
+}

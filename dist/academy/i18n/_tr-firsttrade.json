@@ -1,0 +1,408 @@
+{
+ "id": "firsttrade",
+ "name": "İlk İşlemin, Adım Adım",
+ "sub": "Her düğme, sırayla",
+ "lessons": [
+  {
+   "id": "ft1",
+   "t": "Her tıklamadan önce üç karar",
+   "cards": [
+    {
+     "h": "Bir işlem üç cevaptır",
+     "p": "Emir fişine dokunmadan önce üç sorunun cevabı olmalı: hangi yön, hangi fiyatta yanıldığın kanıtlanır ve pozisyon ne kadar büyük. Yön tek başına bir tahmindir. Yön artı yanılma fiyatı, ama boyut yoksa yarım kalmıştır. Üçünden biri eksikse henüz elinde bir işlem yok — bir dilek var."
+    },
+    {
+     "h": "Yön: long mu, short mu",
+     "p": "Long, fiyat yükselirse kazanırsın, düşerse kaybedersin demektir. Short bunun aynadaki hâlidir: fiyat düşerse kazanırsın. Vadeli işlemlerde ikisi tek tıkla ayrılır ve hiçbiri diğerinden güvenli değildir. Yönünü düz bir cümle olarak söyle — BTC long — çünkü fişteki diğer her alan ona bağlıdır."
+    },
+    {
+     "h": "Geçersizleşme: yanıldığın yer",
+     "p": "Geçersizleşme, işleme girme sebebinin doğru olmaktan çıktığı fiyattır. Fiyat bir seviyeyi tuttuğu için long açtıysan, o seviyenin net biçimde aşağı kırılması senin geçersizleşmendir. Onu grafikten oku, ne kadar kaybetmek istediğinden değil. Birazdan stop-loss alanına yazacağın fiyat tam olarak budur."
+    },
+    {
+     "h": "Boyut son cevaptır",
+     "p": "Boyut, ne kadar emin hissettiğin değildir. Aritmetiktir. Bu işlemde kaybetmeye razı olduğun doları seç, girişten geçersizleşmeye olan mesafeyi yüzde olarak ölç ve böl. Geçersizleşme %2 uzaktayken $50 riske etmek $2.500'lük bir pozisyon verir, çünkü $50 bölü 0,02, $2.500 eder. Boyut alanını birazdan çözeceğiz."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bir yönü gerçek bir işleme çeviren nedir?",
+     "o": [
+      "Kuruluma duyulan güçlü inanç",
+      "Bir geçersizleşme fiyatı ve boyut",
+      "Hesapta daha büyük bir bakiye",
+      "Daha yüksek bir kaldıraç ayarı"
+     ]
+    },
+    {
+     "q": "Geçersizleşme fiyatın nereden gelmeli?",
+     "o": [
+      "Kaybetmek istediğin tutardan",
+      "Yanıldığını kanıtlayan seviyeden",
+      "Kaldıraç seçicisi ne diyorsa ondan",
+      "Hesabının büyüklüğünden"
+     ]
+    },
+    {
+     "q": "$50 riske edeceksin ve geçersizleşme %2 uzakta. Pozisyon boyutu?",
+     "o": [
+      "$100",
+      "$1.000",
+      "$2.500",
+      "$5.000"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft2",
+   "t": "Piyasa emri mi, limit emri mi",
+   "cards": [
+    {
+     "h": "Piyasa emri: şimdi dolar",
+     "p": "Piyasa emri, emir defterinde şu an bekleyen fiyatları en iyisinden başlayarak alır ve boyutun dolana kadar dışa doğru yürür. Her zaman dolar. Söz vermediği şey fiyattır: ince bir piyasada kendi emrin birkaç seviyeyi birden yer ve elde ettiğin ortalama, gördüğün rakamdan kötüdür."
+    },
+    {
+     "h": "Limit emri: senin fiyatın ya da hiç",
+     "p": "Limit emri şunu der: beni bu fiyattan ya da daha iyisinden doldur, yoksa bekle. Alışı güncel fiyatın altına, satışı üstüne koyarsın ve emir, biri karşısına geçip işlem yapana kadar emir defterinde bekler. Fiyat garantilidir; dolum değil. Fiyat seviyene hiç dönmezse işlemi basitçe alamazsın."
+    },
+    {
+     "h": "Komisyon farkı gerçektir",
+     "p": "Spread'i geçmek seni taker yapar ve yüksek komisyonu ödetir, genelde %0,055. Defterde beklemek ise seni maker yapar, genelde %0,02. $5.000'lık bir pozisyonda bu, yön başına $2,75'e karşı $1,00 demektir. Piyasadan girip piyasadan çıkmak gidiş dönüş $5,50; limitle girip limitle çıkmak $2,00. Aynı işlem, farklı fatura."
+    },
+    {
+     "h": "İkisi arasında seçim",
+     "p": "İşlemde olmak birkaç dolardan önemliyse ya da ters giden bir pozisyonu kapatıp hemen çıkmak istiyorsan piyasa emri kullan. Aklında bir fiyat varsa ve işlemi kaçırmaya razıysan limit emri kullan. Bir işlemi kaçırmak normal ve atlatılabilir bir sonuçtur. Bir işlemin peşinden koşmak genelde değildir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Limit emri şunu garantiler…",
+     "o": [
+      "bir fiyattan dolumu",
+      "fiyatını, ama dolumu değil",
+      "her zaman en düşük komisyonu",
+      "anında gerçekleşmeyi"
+     ]
+    },
+    {
+     "q": "$5.000'lık bir pozisyonda %0,055'lik taker komisyonu…",
+     "o": [
+      "$0,55",
+      "$5,50",
+      "$2,75",
+      "$27,50"
+     ]
+    },
+    {
+     "q": "Piyasa emrini en çok hangi durum haklı çıkarır?",
+     "o": [
+      "Mümkün olan en ucuz komisyonu istiyorsun",
+      "Giriş fiyatı konusunda sabırlısın",
+      "Emri gece boyunca defterde bekletiyorsun",
+      "Ters giden bir pozisyondan çıkman gerek"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft3",
+   "t": "Boyut alanı, çözülmüş",
+   "cards": [
+    {
+     "h": "Teminat, notional, adet",
+     "p": "Tek bir pozisyonu üç sayı anlatır. Adet, kontrol ettiğin coin miktarıdır; diyelim 0,02 BTC. Notional, o adedin dolar karşılığıdır: BTC $50.000'ken 0,02 BTC, $1.000 notional eder. Teminat ise bakiyenden fiilen kilitlenen paradır — o pozisyonda 10x kaldıraçla $100. Kâr ve zarar notional'ı izler, asla teminatı değil."
+    },
+    {
+     "h": "Kaldıraç gerçekte neyi değiştirir",
+     "p": "Kaldıraç, fiyat %1 oynadığında kaç dolar kazanıp kaybedeceğini değiştirmez. Onu notional yapar. Kaldıraç başka iki şeyi değiştirir: ne kadar teminatın kilitlendiğini ve likidasyon fiyatının arkanda ne kadar yakın durduğunu. Aynı $1.000'lık pozisyon 5x'te de 25x'te de birebir aynı doları kazandırır ve kaybettirir. Sadece tampon farklıdır."
+    },
+    {
+     "h": "Boyut stop mesafesinden çıkar",
+     "p": "Geriye doğru çalış. Kaybetmeye razı olduğun doları belirle: $50. Girişten geçersizleşmeye olan mesafeyi kesir olarak ölç: %2, yani 0,02. Notional, riskin o kesire bölümüdür: $50 / 0,02 = $2.500. Ancak ondan sonra kilitlenen teminatı rahat kılacak bir kaldıraç seç. Burada hırsın hiçbir şeye karar vermez. Her şeye stop mesafesi karar verir."
+    },
+    {
+     "h": "Geniş stop, küçük boyut",
+     "p": "Aynı $50'lık risk, stop %2 uzaktayken $2.500'lük bir pozisyon alır; %5 uzaktayken sadece $1.000'lık, çünkü $50 / 0,05 = $1.000. Kimsenin söylemediği takas budur: rahat etmek için uzağa konan stop sana boyut olarak pahalıya patlar. Yanılırsan iki versiyon da tam olarak $50 kaybeder — bütün mesele de zaten bu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "%1'lik harekette kazandığın ya da kaybettiğin dolar şuna bağlıdır…",
+     "o": [
+      "seçtiğin kaldıraca",
+      "pozisyonun notional büyüklüğüne",
+      "kilitlenen teminata",
+      "toplam hesap bakiyene"
+     ]
+    },
+    {
+     "q": "BTC $50.000'ken 0,02 BTC'nin notional'ı…",
+     "o": [
+      "$100",
+      "$500",
+      "$1.000",
+      "$2.000"
+     ]
+    },
+    {
+     "q": "Stopu %2'den %5'e genişletip $50 riski koruyorsun. Boyut…",
+     "o": [
+      "aynı kalır",
+      "küçülür",
+      "büyür",
+      "ikiye katlanır"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft4",
+   "t": "Stop-loss, önce konur",
+   "cards": [
+    {
+     "h": "Stop-loss nedir",
+     "p": "Stop-loss, borsada duran ve fiyat senin seçtiğin bir seviyeye ulaşırsa pozisyonunu otomatik kapatan bir emirdir. Emir fişinde girişinin yanındaki bir alandır: içine bir fiyat yazarsın. Sen uyurken, telefonun şarjı bitmişken ve sen piyasanın yanıldığından emin olmakla meşgulken çalışır."
+    },
+    {
+     "h": "Girişle birlikte girilir",
+     "p": "Stop-loss'u, işlemin nasıl davrandığını gördükten sonra değil, girişle aynı hareketin içinde gir. Sebebi açık: senin sakin versiyonun seviyeyi grafikten seçer, pozisyonunun para kaybettiğini izleyen versiyonun ise seviyeyi umuttan seçer. Dolumdan önceki hâlinden daha objektif hiç olmayacaksın."
+    },
+    {
+     "h": "Kendin yerleştir",
+     "prompt": "Bu bir long. Stop-loss'un ait olduğu yere dokun — salınım dibinin hemen altına.",
+     "p": "Alana güvenmeden önce seviyeyi bildiğini kanıtla. Tek dokunuş."
+    },
+    {
+     "h": "Stopu oynatmak pahalıdır",
+     "p": "Vurulmasın diye stopu daha uzağa sürüklemek, trading'deki en pahalı alışkanlıktır. Planlanmış $50'lık bir kaybı planlanmamış $200'lük bir kayba çevirir ve sana planının pazarlığa açık olduğunu öğretir. İşlem yürüdükçe stop kâr yönüne taşınabilir. Girişten uzağa taşımak ise risk yönetimi değil, ertelemedir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Stop-loss neden girişle aynı anda girilir?",
+     "o": [
+      "Borsalar bunu zorunlu tutar",
+      "İşlem komisyonunu düşürür",
+      "Dolumdan önce en objektif hâlindesin",
+      "Pozisyon boyutunu büyütür"
+     ]
+    },
+    {
+     "q": "Stopu girişten uzağa taşımak planladığın kayba ne yapar?",
+     "o": [
+      "Onu tamamen ortadan kaldırır",
+      "Onu büyütür ve plansızlaştırır",
+      "Onu yarıya indirir",
+      "Hiçbir şey, aynı kalır"
+     ]
+    },
+    {
+     "q": "Stop-loss emri…",
+     "o": [
+      "seviyende kâr garantiler",
+      "sadece uygulaman açıkken çalışır",
+      "take-profit ile aynı şeydir",
+      "pozisyonu seçilen fiyattan kapatır"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft5",
+   "t": "Take-profit ve oran",
+   "cards": [
+    {
+     "h": "Çıkışa duygudan önce karar ver",
+     "p": "Take-profit, pozisyonu long'da girişinin üstünde, short'ta altında bir fiyattan otomatik kapatan bir emirdir. Onu stop ile aynı anda koymak, iki çıkışın da ortada hiçbir şey yokken seçildiği anlamına gelir. Stopu olan ama hedefi olmayan bir pozisyon, genelde önce hangi duygu gelirse onun tarafından kapatılır."
+    },
+    {
+     "h": "Bir kısmını almak",
+     "p": "Hepsinden aynı anda çıkmak zorunda değilsin. İlk hedefte yarısını kapatıp, stopu giriş fiyatına taşıyarak kalanı koşturmak yaygın bir yapıdır. İki sonucu da küçültür: fiyat devam ederse daha küçük bir kazanç, dönerse daha küçük bir kayıp. Doğru bir bölüşüm yoktur; sadece önceden seçtiğin bir bölüşüm vardır."
+    },
+    {
+     "h": "İki çizginin ima ettiği oran",
+     "p": "Stopun ve hedefin, işlem başlamadan bir oranı sabitler. Giriş $50.000, stop $49.000, hedef $52.000: $2.000 kazanmak için $1.000 riske ediyorsun — yani 2:1 getiri-risk. 2:1'de üç işlemden birini kazanmak, komisyonlar hariç başabaş getirir. Bu bir söz değil, aritmetiktir. Hedefe ulaşılacağının hiçbir garantisi yoktur. Tıklamadan önce oranı kontrol et."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Giriş $50.000, stop $49.000, hedef $52.000. Getiri-risk oranı…",
+     "o": [
+      "1:1",
+      "1:2",
+      "2:1",
+      "3:1"
+     ]
+    },
+    {
+     "q": "Take-profit neden stopla aynı anda konur?",
+     "o": [
+      "İşlem komisyonunu azaltır",
+      "Borsalar onsuz emirleri reddeder",
+      "Hedefe ulaşılmasını garantiler",
+      "İki çıkış da sakinken seçilir"
+     ]
+    },
+    {
+     "q": "İlk hedefte pozisyonun yarısını kapatmak…",
+     "o": [
+      "kalan tüm riski ortadan kaldırır",
+      "hem kazancı hem kaybı küçültür",
+      "kaldıracını otomatik yükseltir",
+      "vadeli borsalarda zorunludur"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft6",
+   "t": "Açık pozisyonunu okumak",
+   "cards": [
+    {
+     "h": "Pozisyon satırı, alan alan",
+     "p": "Dolduktan sonra pozisyonun bir satır olarak görünür: yön ve boyut, giriş fiyatı, mark fiyatı, gerçekleşmemiş kâr ve zarar, teminat ve likidasyon fiyatı. Her vadeli terminal aşağı yukarı bu alanları bir sırayla gösterir. Satırdaki hiçbir şey sana işlemin iyi olup olmadığını söylemez. Şu an neyin doğru olduğunu söyler — o başka bir iştir."
+    },
+    {
+     "h": "Giriş fiyatı ve mark fiyatı",
+     "p": "Giriş, komisyonlar hariç fiilen dolduğun ortalama fiyattır. Mark fiyatı ise borsanın adil referans fiyatıdır; pozisyonunu değerlemek ve likidasyona karar vermek için kullanılır — genelde tek bir defterdeki son işleme değil, daha geniş bir endekse bağlanır. Bu bilinçlidir: tek bir tuhaf işlemin sana karşı kullanılmasını çok zorlaştırır."
+    },
+    {
+     "h": "Gerçekleşmemiş, henüz senin değil demek",
+     "p": "Gerçekleşmemiş kâr ve zarar, pozisyonu bu saniyede mark fiyatından kapatsan ne edeceğidir. Her tikte oynar ve sahip olduğun para değildir. Gerçekleşmiş kâr ve zarar ise fiilen kapattığında, komisyonlar düşüldükten sonra geriye kalandır. Hesaplar ikinci sayıya göre değerlendirilir; hep ve sadece ikinci sayıya göre."
+    },
+    {
+     "h": "Likidasyon fiyatı zemindir",
+     "p": "Likidasyon fiyatı, teminatının zararı artık karşılamadığı ve borsanın pozisyonu senin yerine kapatıp o teminatı aldığı yerdir. Teminat eklersen uzaklaşır, kaldıracı yükseltirsen yaklaşır. Stop-loss'un likidasyon fiyatından daha yakınsa sonuca stop karar verir. Olması gereken de budur: stopu izle."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Mark fiyatı ne için kullanılır?",
+     "o": [
+      "Girişinin dolduğu fiyatı kaydetmek için",
+      "Pozisyonu değerlemek ve likide etmek için",
+      "İşlemden alınacak komisyonu belirlemek için",
+      "Bugün işlem gören hacmi göstermek için"
+     ]
+    },
+    {
+     "q": "Gerçekleşmemiş kâr ve zarar…",
+     "o": [
+      "bakiyende çoktan duran paradır",
+      "pozisyonun şu an ne edeceğidir",
+      "şimdiye kadar ödediğin komisyondur",
+      "pozisyonun kilitlediği teminattır"
+     ]
+    },
+    {
+     "q": "Bir işlemin nasıl bittiğine normalde hangi seviye karar vermeli?",
+     "o": [
+      "Likidasyon fiyatı",
+      "Mark fiyatı",
+      "Stop-loss seviyen",
+      "Funding oranı"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft7",
+   "t": "Pozisyonu kapatmak",
+   "cards": [
+    {
+     "h": "Piyasadan kapatmak",
+     "p": "Kapatmak, aynı boyut için ters emri göndermektir: long satılarak, short alınarak kapanır. Piyasadan kapatırsan defterde ne varsa ona karşı anında dolar ve taker komisyonunu ödersin. Dolduğu anda gerçekleşmemiş sayı gerçekleşir, teminat bakiyene geri salınır ve satır kaybolur."
+    },
+    {
+     "h": "Kısmi kapanışlar ve stop olmak",
+     "p": "Pozisyonun bir kısmını kapatabilirsin. Adedin yarısını sat; satır daha küçük boyutla açık kalır, giriş fiyatı değişmez. Stop olmak da aynı olaydır, sadece tetikleyen senin parmağın yerine koyduğun stop emridir. Her iki durumda da borsa kapanış emrini gönderir. Tek fark, kimin ve ne zaman karar verdiğidir."
+    },
+    {
+     "h": "Planlanmış kayıp sorun değildir",
+     "p": "Gerçekleşmiş demek kesinleşmiş demektir: para, komisyonlar dahil, bakiyenden çıkmış ya da içine girmiştir. Senin seçtiğin stopa, senin hesapladığın boyutla giden bir işlem, tam olarak onu tasarlarken istediğin şeyi yapmıştır. Öğrenmek için harcamaya karar verdiğin tutara mal olmuştur. Bir işlemi sayının işaretine göre değil, planına uyup uymadığına göre değerlendir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Long pozisyonu kapatmak…",
+     "o": [
+      "aynı coinden daha çok almaktır",
+      "elindeki adedi satmaktır",
+      "pozisyona teminat eklemektir",
+      "kaldıraç ayarını yükseltmektir"
+     ]
+    },
+    {
+     "q": "Pozisyon kapandığı anda ne olur?",
+     "o": [
+      "Gerçekleşmemiş gerçekleşir, teminat serbest kalır",
+      "Giriş fiyatı yukarı doğru yeniden hesaplanır",
+      "Kaldıraç ayarın ikiye katlanır",
+      "Ödediğin komisyonlar iade edilir"
+     ]
+    },
+    {
+     "q": "Planladığı stop-loss'a değen bir işlem…",
+     "o": [
+      "tekrarlamaman gereken bir hatadır",
+      "tüm yaklaşımın çöktüğünün kanıtıdır",
+      "kendi planına uymuş bir işlemdir",
+      "her zaman sadece kötü şanstır"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft8",
+   "t": "Baştan sona tek bir işlem",
+   "cards": [
+    {
+     "h": "Önce üç cevap, sonra fiş",
+     "p": "BTC long, çünkü fiyat $50.000'i tuttu. $49.000'in altında yanılmışım demektir; geçersizleşme bu ve tam olarak %2 uzakta. Risk $50, yani notional $50 / 0,02 = $2.500 ve 10x'te bu $250 teminat kilitler. Üç cevap; fişte tek bir alana dokunulmadan önce karara bağlanmış ve yazılmış."
+    },
+    {
+     "h": "Fişi doldurmak",
+     "p": "Yön alış. Emir türü limit, fiyat $50.000; yani maker komisyonunu ödersin ve hiç dolmayabileceğini kabul edersin. Boyut $2.500 notional, kaldıraç 10x. Göndermeden önce stop-loss alanına $49.000, take-profit alanına $52.000 yaz — o hedef, riskine karşı 2:1. Fişin tamamını bir kez baştan oku, sonra gönder."
+    },
+    {
+     "h": "Dolumdan sonra hiçbir şey yapma",
+     "p": "Pozisyon satırı belirir ve gerçekleşmemiş sayısı oynamaya başlar. Senin işin çoktan bitti, çünkü iki çıkış da borsada bekliyor. Ya $49.000 görülür ve $50 kaybedersin, ya $52.000 görülür ve $100 kazanırsın, ya da sonradan yazabileceğin bir sebeple elle kapatırsın. Ekrana daha dikkatli bakmak bu üçünden hiçbirini değiştirmez."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Anlatılan işlemde notional neden $2.500?",
+     "o": [
+      "Kilitlenen teminatın on katı olduğu için",
+      "Hesap bakiyesinin %5'i olduğu için",
+      "Borsanın minimum boyutu olduğu için",
+      "$50'lık risk 0,02'ye bölündüğü için"
+     ]
+    },
+    {
+     "q": "Stop-loss ve take-profit ne zaman girilir?",
+     "o": [
+      "Dolumdan sonra, fiyat oynayınca",
+      "Girişle aynı fişin üstünde",
+      "Sadece işlem kötüye gitmeye başlarsa",
+      "İşlem gününün sonunda"
+     ]
+    },
+    {
+     "q": "O işlemde fiyat $52.000'e ulaşırsa sonuç…",
+     "o": [
+      "+$50",
+      "+$250",
+      "+$100",
+      "+$2.500"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Artık fişteki her alanı biliyorsun. Paper trade terminalini aç ve sahte parayla eksiksiz tek bir işlem yap: giriş, boyut, stop-loss, take-profit. Sonra ona hiç dokunma.",
+    "label": "Paper Trade'i Aç →"
+   }
+  }
+ ]
+}

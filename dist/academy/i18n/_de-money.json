@@ -1,0 +1,459 @@
+{
+ "id": "money",
+ "name": "Geld & Mathe leicht gemacht",
+ "sub": "Die einzige Rechnung, die Trading braucht",
+ "lessons": [
+  {
+   "id": "mo1",
+   "t": "Prozente, richtig verstanden",
+   "cards": [
+    {
+     "h": "Prozent wovon",
+     "p": "Ein Prozent ist immer ein Stück von einer ganz bestimmten Zahl. Zehn Prozent von $100 sind $10. Zehn Prozent von $10,000 sind $1,000. Das Prozent allein sagt dir nichts, solange du seine Basis nicht kennst. Sagt jemand, ein Trade habe 40% gemacht, ist deine erste Frage immer dieselbe: vierzig Prozent von welchem Betrag?"
+    },
+    {
+     "h": "Prozentpunkte sind keine Prozent",
+     "p": "Das sind zwei verschiedene Dinge. Steigt deine Trefferquote von 40% auf 44%, ist das ein Anstieg um 4 Prozentpunkte. Als Prozent deines Ausgangswerts ist es aber 4 geteilt durch 40, also 10%. Dieselbe Änderung, zwei ehrliche Zahlen. Wann immer du ein Prozent von einem Prozent siehst, geh langsam ran und prüf, welches gemeint ist."
+    },
+    {
+     "h": "Zehn rauf, zehn runter, nicht neutral",
+     "p": "Starte mit $100. Rechne 10% dazu und du hast $110. Zieh jetzt 10% ab — aber 10% von $110 sind $11, nicht $10. Du landest bei $99. Der Gewinn wurde an $100 gemessen und der Verlust an $110, also heben sie sich nicht auf. Dreh die Reihenfolge um und du landest wieder bei $99: $100 runter auf $90, dann $9 rauf."
+    },
+    {
+     "h": "Prozentänderungen multiplizieren sich",
+     "p": "Es gibt eine Abkürzung. Ein Gewinn von 10% ist eine Multiplikation mit 1.10; ein Verlust von 10% eine Multiplikation mit 0.90. Machst du beides, bekommst du 1.10 mal 0.90, also 0.99 — ein Nettoverlust von 1%. Reih so einen ganzen Monat an Trades aneinander, und die Multiplikation, nicht die Addition, ist das, was dein Konto wirklich getan hat."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Du gewinnst 10%, dann verlierst du 10%. Wo landest du?",
+     "o": [
+      "Genau wieder am Ausgangspunkt",
+      "1% unter dem Ausgangspunkt",
+      "1% über dem Ausgangspunkt",
+      "10% unter dem Ausgangspunkt"
+     ]
+    },
+    {
+     "q": "Eine Trefferquote steigt von 40% auf 44%. Diese Änderung ist…",
+     "o": [
+      "Ein Anstieg um 4 Prozent des Kontos",
+      "Ein Fall um 4 Prozentpunkte",
+      "Ein Anstieg um 4 Prozentpunkte",
+      "Ein Anstieg um 44 Prozentpunkte"
+     ]
+    },
+    {
+     "q": "Warum heben sich +10% und -10% nicht auf?",
+     "o": [
+      "Das zweite Prozent kommt von einer größeren Zahl",
+      "Die Handelsgebühren fressen die Differenz",
+      "Prozente heben sich per Definition nie auf",
+      "Die Börse rundet das zweite nach unten"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo2",
+   "t": "Warum Verluste mehr wehtun als Gewinne",
+   "cards": [
+    {
+     "h": "Verluste graben ein tieferes Loch",
+     "p": "Verlier 50% von $1,000 und du hast $500. Um zurück auf $1,000 zu kommen, musst du $500 dazuverdienen — und $500 sind 100% von dem, was dir geblieben ist. Ein Verlust von 50% braucht einen Gewinn von 100%, um ihn ungeschehen zu machen. Der Verlust und seine Reparatur sind nicht gleich groß, und sie sind es nie."
+    },
+    {
+     "h": "Die Erholungstabelle",
+     "p": "Rechne dieselbe Arithmetik die Skala hinunter. 10% runter braucht rund 11% zurück. 20% runter braucht 25%. Ein Drittel runter braucht 50%. 50% runter braucht 100%. 80% runter lässt $200 von $1,000 übrig, du brauchst also $800 auf $200 — das sind 400%. 90% runter braucht 900%. Die Kurve biegt sich nicht sanft. Sie geht senkrecht."
+    },
+    {
+     "h": "Beweis es dir selbst",
+     "prompt": "Tippe auf das Konto, das den größeren Gewinn braucht, um wieder bei null zu sein.",
+     "p": "Zwei Konten, zwei Löcher. Ein Tipp, dann prüf dein Bauchgefühl gegen die Arithmetik."
+    },
+    {
+     "h": "Was das an dir ändert",
+     "p": "Deshalb beobachten Profis den Drawdown — wie weit ein Konto unter seinen Höchststand gefallen ist — genauer als die Rendite. Eine Serie kleiner Verluste ist überlebbare Arithmetik. Ein großer Verlust ist eine andere Kategorie von Problem. Alles nach dieser Karte, von der Positionsgröße bis zum Stop-Loss, existiert, um einzelne Verluste klein genug zu halten, dass die Erholung gewöhnlich bleibt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Dein Konto fällt 50%. Welcher Gewinn bringt es zurück auf null?",
+     "o": [
+      "Ein Gewinn von 100%",
+      "Ein Gewinn von 50%",
+      "Ein Gewinn von 75%",
+      "Ein Gewinn von 150%"
+     ]
+    },
+    {
+     "q": "Ein Konto 80% im Minus braucht ungefähr welchen Gewinn zur Erholung?",
+     "o": [
+      "Einen Gewinn von 80%",
+      "Einen Gewinn von 180%",
+      "Einen Gewinn von 400%",
+      "Einen Gewinn von 800%"
+     ]
+    },
+    {
+     "q": "Warum ist ein riesiger Verlust schlimmer als mehrere kleine?",
+     "o": [
+      "Große Trades kosten höhere Gebühren",
+      "Der nötige Gewinn wächst schneller als der Verlust",
+      "Börsen bestrafen große Drawdowns",
+      "Kleine Verluste zählen nicht als Verluste"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo3",
+   "t": "Wie Gewinn und Verlust berechnet werden",
+   "cards": [
+    {
+     "h": "Drei Zahlen ergeben das Ergebnis",
+     "p": "Gewinn und Verlust — P&L — kommen aus genau drei Zahlen: dem Preis, zu dem du eingestiegen bist, dem Preis, zu dem du ausgestiegen bist, und wie viele Einheiten du gehalten hast. Nichts sonst geht in die Rechnung ein. Für einen Long, eine Wette auf steigende Preise, ist der P&L der Ausstiegspreis minus Einstiegspreis, mal Anzahl der Einheiten."
+    },
+    {
+     "h": "Ein Long, durchgerechnet",
+     "p": "Du kaufst 0.1 BTC bei $60,000 und verkaufst bei $63,000. Ausstieg minus Einstieg sind $3,000 pro Coin. Mal 0.1 Coins ergibt einen Gewinn von $300. Sieh es auch andersherum: Deine Position war beim Einstieg $6,000 wert, der Preis bewegte sich 5%, und 5% von $6,000 sind dieselben $300."
+    },
+    {
+     "h": "Ein Short, durchgerechnet",
+     "p": "Ein Short ist eine Wette auf fallende Preise, also dreht sich die Subtraktion um: Einstiegspreis minus Ausstiegspreis, mal Einheiten. Du shortest 2 ETH bei $3,000 und schließt bei $2,850. Einstieg minus Ausstieg sind $150 pro Coin, mal 2 Coins, also hast du $300 gemacht. Deine Position war $6,000 und der Preis fiel 5%. Dieselbe Arithmetik, gespiegelt."
+    },
+    {
+     "h": "Unrealisiert, bis du schließt",
+     "p": "Solange eine Position offen ist, bewegt sich ihr P&L mit jeder Preisänderung und heißt unrealisiert. Er ist eine Live-Schätzung, kein Geld, das dir gehört. Realisiert wird er erst, wenn du schließt und die Börse ihn gegen dein Guthaben verbucht. Anfänger verplanen unrealisierten Gewinn gern schon; eine Position, die nie geschlossen wurde, hat noch niemanden bezahlt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Du kaufst 0.5 ETH bei $2,000 und verkaufst bei $2,100. Dein Gewinn ist…",
+     "o": [
+      "$500",
+      "$100",
+      "$1,050",
+      "$50"
+     ]
+    },
+    {
+     "q": "Du shortest 1 BTC bei $60,000 und schließt bei $58,800. Ergebnis?",
+     "o": [
+      "Ein Gewinn von $1,200",
+      "Ein Verlust von $1,200",
+      "Ein Gewinn von $600",
+      "Gar keine Veränderung"
+     ]
+    },
+    {
+     "q": "Unrealisierter P&L ist…",
+     "o": [
+      "Geld, das schon in deinem Guthaben liegt",
+      "Eine Live-Schätzung auf einer offenen Position",
+      "Die Gebühr, die du beim Schließen zahlst",
+      "Immer eine negative Zahl"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo4",
+   "t": "Die Positionsgröße entscheidet über den Schaden",
+   "cards": [
+    {
+     "h": "Die Bewegung kannst du dir nicht aussuchen",
+     "p": "Du kontrollierst nicht, ob sich Bitcoin heute 2% bewegt. Du kontrollierst genau eine Zahl: wie groß deine Position ist. Alles andere — Richtung, Timing, Volatilität — ist geraten oder geschenkt. Die Positionsgröße ist der einzige Input in der ganzen Rechnung, der vollständig dir gehört, und damit die eigentliche Entscheidung, die du triffst."
+    },
+    {
+     "h": "Dieselbe Bewegung, jedes beliebige Ergebnis",
+     "p": "Bitcoin fällt 2% von $60,000, das sind $1,200 pro Coin. Halte 0.01 BTC und du verlierst $12. Halte 0.5 BTC und du verlierst $600. Der Markt hat eine Sache getan; die zwei Konten hatten völlig verschiedene Tage. Der Chart war für beide identisch. Nur die Zeile mit der Größe war anders, und die wurde von Hand eingetippt."
+    },
+    {
+     "h": "Denk in Positionswert",
+     "p": "Sauberer geht Sizing so: Entscheide den Dollarwert der Position, nicht die Anzahl der Coins. Eine $600-Position verliert bei einer 2%-Bewegung $12, egal ob das 0.01 BTC oder 0.2 ETH sind. Prozentbewegungen gelten für den Wert, also lässt dich das Rechnen in Dollar Positionen über völlig verschiedene Coins hinweg vergleichen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Welcher Teil eines Trades liegt vollständig bei dir?",
+     "o": [
+      "Die Richtung, die der Preis nimmt",
+      "Die Größe der Position, die du eröffnest",
+      "Wie volatil der Markt heute ist",
+      "Der Preis, zu dem dein Exit füllt"
+     ]
+    },
+    {
+     "q": "Eine $600-Position läuft 2% gegen dich. Das kostet…",
+     "o": [
+      "$12",
+      "$6",
+      "$60",
+      "$120"
+     ]
+    },
+    {
+     "q": "Zwei Trader machen denselben Trade; einer verliert zehnmal mehr. Warum?",
+     "o": [
+      "Sie haben verschiedene Charts angeschaut",
+      "Einer hat viel höhere Gebühren gezahlt",
+      "Einer hielt eine viel größere Position",
+      "Einer nahm Market, einer Limit"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo5",
+   "t": "Entscheide den Verlust vor dem Einstieg",
+   "cards": [
+    {
+     "h": "Risiko ist eine Zahl, die du wählst",
+     "p": "Bevor du an Gewinn denkst, entscheide, was dieser Trade dich kosten darf, wenn er scheitert. Schreib es als Dollarbetrag auf. Ein üblicher Startpunkt sind 1% des Kontos, ein $1,000-Konto riskiert also $10 pro Trade. Diese Zahl ist keine Prognose. Sie ist eine Grenze, die du setzt, solange du noch ruhig bist."
+    },
+    {
+     "h": "Die Größe folgt aus dem Stop",
+     "p": "Jetzt läuft die Rechnung rückwärts. Du willst ETH bei $2,000 kaufen, mit einem Stop-Loss bei $1,960 — einer Order, die den Trade schließt, wenn der Preis dorthin fällt. Die Distanz sind $40 pro Coin. Du riskierst insgesamt $10, also teilst du: $10 geteilt durch $40 sind 0.25 ETH. Das ist deine Größe, eine $500-Position."
+    },
+    {
+     "h": "Weiterer Stop, kleinere Größe",
+     "p": "Ändere eine Sache. Setz den Stop stattdessen auf $1,900, eine Distanz von $100 pro Coin. Das Risiko bleibt $10, also wird die Größe $10 geteilt durch $100, also 0.1 ETH — eine $200-Position. Der Stop hat den Trade nicht sicherer oder riskanter gemacht. Er hat verändert, wie viele Coins du bei gleichem festem Risiko halten darfst."
+    },
+    {
+     "h": "Warum 1% und nicht 10%",
+     "p": "Bei 1% Risiko kosten dich zehn Verluste in Folge rund 10% des Kontos, und die Erholungstabelle sagt: Ein 10%-Loch braucht etwa 11% zur Reparatur. Bei 10% Risiko lassen dieselben zehn Verluste etwa ein Drittel von dem übrig, womit du gestartet bist — ein Loch, aus dem du rund 187% herausklettern musst. Dieselben Trades, dasselbe Können, andere Arithmetik."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Dein Konto hat $2,000 und du riskierst 1% pro Trade. Das sind…",
+     "o": [
+      "$2 pro Trade",
+      "$20 pro Trade",
+      "$200 pro Trade",
+      "$100 pro Trade"
+     ]
+    },
+    {
+     "q": "Einstieg $2,000, Stop $1,960, Risiko $10. Welche Größe nimmst du?",
+     "o": [
+      "0.1 ETH",
+      "0.5 ETH",
+      "0.25 ETH",
+      "2.5 ETH"
+     ]
+    },
+    {
+     "q": "Du ziehst den Stop weiter, hältst das Dollarrisiko aber fest. Die Größe muss…",
+     "o": [
+      "Kleiner werden",
+      "Größer werden",
+      "Exakt gleich bleiben",
+      "Sich verdoppeln"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo6",
+   "t": "R: eine Sprache für jedes Konto",
+   "cards": [
+    {
+     "h": "Ein R ist das, was du riskiert hast",
+     "p": "Hör auf, Trades in Dollar zu zählen, und zähl sie in R. Ein R ist schlicht der Betrag, den du bei diesem Trade zu riskieren beschlossen hast. Riskier $10 und verlier den Trade: das ist minus ein R. Mach $30 damit: plus drei R. Der Dollarbetrag ändert sich mit deinem Konto. Die R-Zahl beschreibt den Trade selbst."
+    },
+    {
+     "h": "Chance-Risiko-Verhältnis vor dem Einstieg",
+     "p": "Nimm denselben ETH-Trade: Einstieg $2,000, Stop $1,960, das Risiko sind also $40 pro Coin. Setz einen Take-Profit bei $2,120 und die Chance ist $120 pro Coin. Teile $120 durch $40 und du bekommst 3. Dieser Trade bietet drei zu eins, also 3R. Das kannst du ausrechnen, bevor du irgendetwas riskierst, und du solltest es tun."
+    },
+    {
+     "h": "Warum R zwischen Konten reist",
+     "p": "Ein $50-Konto, das $0.50 riskiert, und ein $50,000-Konto, das $500 riskiert, können denselben Trade fahren und beide plus 3R melden. Genau das ist der Sinn. R rechnet die Kontogröße heraus, sodass du deine Trades miteinander vergleichen kannst, mit dem letzten Monat und mit denen von anderen — ohne dass die Dollarbeträge einen davon beeindruckend aussehen lassen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Du riskierst $20 und der Trade macht $60. In R ist das…",
+     "o": [
+      "Plus 3R",
+      "Plus 1R",
+      "Plus 2R",
+      "Plus 6R"
+     ]
+    },
+    {
+     "q": "Einstieg $100, Stop $95, Take-Profit $115. Das Chance-Risiko-Verhältnis ist…",
+     "o": [
+      "1 zu 1",
+      "2 zu 1",
+      "3 zu 1",
+      "5 zu 1"
+     ]
+    },
+    {
+     "q": "Warum Trades in R messen statt in Dollar?",
+     "o": [
+      "Es rechnet die Gebühren aus der Rechnung heraus",
+      "Es macht Trades über Kontogrößen hinweg vergleichbar",
+      "Es garantiert gleichmäßigere Ergebnisse",
+      "Börsen melden den Gewinn auf diese Weise"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo7",
+   "t": "Die Trefferquote ist nicht die ganze Geschichte",
+   "cards": [
+    {
+     "h": "Die Erwartungswert-Formel",
+     "p": "Eine Zahl sagt dir, ob eine Art zu traden Geld verdient: der Erwartungswert. Er ist deine Trefferquote mal dein durchschnittlicher Gewinn, minus deine Verlustquote mal dein durchschnittlicher Verlust. In R gemessen sagt er, was ein durchschnittlicher Trade wert ist. Positiver Erwartungswert heißt, die Arithmetik ist über viele Trades auf deiner Seite. Negativer heißt, sie ist es nicht."
+    },
+    {
+     "h": "Die meisten Trades verlieren und trotzdem vorn",
+     "p": "Angenommen, du gewinnst 40% der Trades, jeder Gewinner macht 3R und jeder Verlierer kostet 1R. Die Gewinne bringen 0.4 mal 3, also 1.2R. Die Verluste kosten 0.6 mal 1, also 0.6R. Der Erwartungswert ist 1.2 minus 0.6, also plus 0.6R pro Trade. Über 100 Trades bei $10 Risiko zeigt diese Rechnung auf $600."
+    },
+    {
+     "h": "Die meisten Trades gewinnen und trotzdem hinten",
+     "p": "Jetzt gewinnst du 70% der Trades, aber jeder Gewinner macht nur 0.3R, während jeder Verlierer weiter 1R kostet. Die Gewinne bringen 0.7 mal 0.3, also 0.21R. Die Verluste nehmen 0.3 mal 1, also 0.3R. Der Erwartungswert ist minus 0.09R pro Trade. Eine Trefferquote von 70%, und 100 Trades bei $10 Risiko zeigen auf einen Verlust von $90."
+    },
+    {
+     "h": "Die Trefferquote für die schwarze Null",
+     "p": "Für jedes Chance-Risiko-Verhältnis kannst du die Trefferquote ausrechnen, bei der du auf null herauskommst: eins geteilt durch eins plus das R-Vielfache. Bei 3R ist das eins geteilt durch vier, also 25%. Bei 0.3R ist es eins geteilt durch 1.3, also rund 77%. Deshalb verliert das 70%-Beispiel. Keine der beiden Zahlen ist für sich allein gut oder schlecht."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Trefferquote 40%, Durchschnittsgewinn 3R, Durchschnittsverlust 1R. Der Erwartungswert ist…",
+     "o": [
+      "Minus 0.6R pro Trade",
+      "Plus 0.6R pro Trade",
+      "Plus 1.2R pro Trade",
+      "Plus 3R pro Trade"
+     ]
+    },
+    {
+     "q": "Was davon verdient über viele Trades Geld?",
+     "o": [
+      "Eine Trefferquote von 40% bei 3R",
+      "Eine Trefferquote von 70% bei 0.3R",
+      "Jede Trefferquote über 50%",
+      "Was auch immer öfter gewinnt"
+     ]
+    },
+    {
+     "q": "Bei einem Chance-Risiko-Verhältnis von 3R — welche Trefferquote ist die schwarze Null?",
+     "o": [
+      "50%",
+      "33%",
+      "25%",
+      "10%"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo8",
+   "t": "Was ein Hin und Zurück wirklich kostet",
+   "cards": [
+    {
+     "h": "Gebühren fallen auf das Notional an",
+     "p": "Eine Futures-Gebühr ist ein Prozentsatz des gesamten Positionswerts — des Notionals — nicht des Geldes, das du hinterlegst. Eröffne eine $6,000-Position und eine Taker-Gebühr von 0.055% kostet $3.30. Schließ sie und du zahlst erneut. Die Gebühr fragt nie, wie viel eigenes Geld hinter dem Trade steckt. Sie sieht nur die Positionsgröße."
+    },
+    {
+     "h": "Hebel multipliziert die Gebühr",
+     "p": "Hebel lässt einen kleinen Teil deines Geldes — die Margin — eine größere Position kontrollieren. Bei 20x braucht eine $6,000-Position $300 Margin. Die Gebühr von $3.30 sind 0.055% der Position, aber 1.1% deiner $300. Hin und zurück, rein und raus, sind das 2.2% deiner Margin weg, bevor sich der Preis überhaupt bewegt hat."
+    },
+    {
+     "h": "Spread und Slippage kosten auch",
+     "p": "Gebühren sind nur die sichtbaren Kosten. Der Spread ist die Lücke zwischen bestem Kauf- und Verkaufspreis: Kaufst du bei $3,000.50 und verkaufst bei $2,999.50, hast du allein an die Lücke $1 pro Coin verloren. Slippage ist, wenn deine Market-Order schlechter füllt als der Preis, den du gesehen hast. Beides ist echtes Geld, und keins von beidem steht in einer Gebührenordnung."
+    },
+    {
+     "h": "Die schwarze Null ist nicht gratis",
+     "p": "Zwei Taker-Gebühren zu 0.055% ergeben zusammen 0.11% der Position. Der Preis muss sich 0.11% zu deinen Gunsten bewegen, bevor du auch nur einen Cent verdient hast, und das ist vor dem Spread. Hebel ändert daran nichts: Es sind so oder so 0.11% der Position. Zehn Mal hin und zurück am Tag bei 20x sind 22% deiner Margin."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Eine Taker-Gebühr von 0.055% auf eine $6,000-Position kostet…",
+     "o": [
+      "$3.30",
+      "$0.33",
+      "$33",
+      "$330"
+     ]
+    },
+    {
+     "q": "Bei 20x — welchen Anteil deiner Margin macht eine 0.055% Taker-Gebühr aus?",
+     "o": [
+      "0.055%",
+      "0.55%",
+      "1.1%",
+      "20%"
+     ]
+    },
+    {
+     "q": "Slippage ist…",
+     "o": [
+      "Eine Gebühr aus der Preisliste der Börse",
+      "Deine Order füllt schlechter als der gesehene Preis",
+      "Der Zins auf geliehenes Geld",
+      "Ein Stop-Loss, der zu früh auslöst"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo9",
+   "t": "Rechne, bevor du klickst",
+   "cards": [
+    {
+     "h": "Fünf Zahlen, der Reihe nach",
+     "p": "Schreib vor jedem Einstieg fünf Dinge auf. Erstens: deine Kontogröße. Zweitens: die Dollar, die du bereit bist zu verlieren. Drittens: Einstiegspreis und Stop-Preis, daraus ergibt sich die Stop-Distanz. Viertens: die Positionsgröße, aus Risiko geteilt durch diese Distanz. Fünftens: das Ziel und das R-Vielfache, das daraus folgt. Liegt Schritt fünf unter 1R, kennst du die Antwort schon."
+    },
+    {
+     "h": "Das Ganze, einmal durch",
+     "p": "Konto $1,000. Risiko 1%, also $10. Einstieg ETH bei $2,000, Stop $1,960, Distanz $40. Die Größe ist $10 geteilt durch $40, also 0.25 ETH — eine $500-Position. Ziel $2,120 gibt $120 pro Coin, 0.25 Coins machen also $30. Das sind 3R. Die Gebühren für hin und zurück von 0.11% auf $500 sind $0.55, klein neben $30."
+    },
+    {
+     "h": "Die Rechnung sagt nichts voraus",
+     "p": "Nichts davon sagt dir, ob der Trade gewinnt. Es sagt dir genau, was du riskierst, was du verdienen kannst und was der Trade im Betrieb kostet. Verluste sind normal, und diese Arithmetik verhindert sie nicht. Was sie verhindert, ist, von einer Zahl überrascht zu werden, die du in dreißig Sekunden hättest ausrechnen können."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Konto $500, Risiko 2%, Stop-Distanz $25 pro Coin. Größe?",
+     "o": [
+      "0.2 Coins",
+      "2 Coins",
+      "4 Coins",
+      "0.4 Coins"
+     ]
+    },
+    {
+     "q": "Dein geplantes Ziel gibt nur 0.5R. Was sagt dir das?",
+     "o": [
+      "Die Chance ist klein neben dem Risiko",
+      "Es ist ein ungewöhnlich starker Trade",
+      "Du solltest mehr riskieren, um auszugleichen",
+      "Die Gebühren gleichen die Differenz aus"
+     ]
+    },
+    {
+     "q": "Was bringt dir diese Rechnung vorab wirklich?",
+     "o": [
+      "Eine Garantie, dass der Trade gewinnt",
+      "Bekanntes Risiko, bekannte Chance, bekannte Kosten",
+      "Eine höhere Trefferquote mit der Zeit",
+      "Niedrigere Gebühren bei der Börse"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Du hast jetzt die ganze Rechnung. Öffne die Rechner und spiel deine eigenen Zahlen durch — Konto, Risiko, Stop-Distanz — bis sich das Sizing automatisch anfühlt.",
+    "label": "Rechner öffnen →"
+   }
+  }
+ ]
+}

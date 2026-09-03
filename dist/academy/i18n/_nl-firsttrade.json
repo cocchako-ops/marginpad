@@ -1,0 +1,408 @@
+{
+ "id": "firsttrade",
+ "name": "Je Eerste Trade, Klik voor Klik",
+ "sub": "Elke knop, op volgorde",
+ "lessons": [
+  {
+   "id": "ft1",
+   "t": "Drie beslissingen vóór elke klik",
+   "cards": [
+    {
+     "h": "Een trade is drie antwoorden",
+     "p": "Voordat je het orderticket aanraakt, moeten drie vragen een antwoord hebben: welke richting, op welke prijs blijkt dat je fout zit, en hoe groot de positie is. Richting alleen is een gok. Richting plus een foutprijs maar zonder grootte is onaf. Ontbreekt er één van de drie, dan heb je nog geen trade — dan heb je een wens."
+    },
+    {
+     "h": "Richting: long of short",
+     "p": "Long betekent dat je wint als de prijs stijgt en verliest als hij daalt. Short is de spiegel: je wint als hij daalt. Bij futures liggen ze één klik uit elkaar, en geen van beide is de veiligere. Zeg je richting als een gewone zin — long BTC — voordat je iets anders doet, want elk ander veld op het ticket hangt ervan af."
+    },
+    {
+     "h": "Invalidatie: waar je fout zit",
+     "p": "Invalidatie is de prijs waarop je reden voor de trade niet langer waar is. Ging je long omdat de prijs een niveau hield, dan is een duidelijke breuk onder dat niveau je invalidatie. Lees hem af van de grafiek, niet van hoeveel je zin hebt om te verliezen. Deze prijs is degene die je straks in het stop-loss-veld typt."
+    },
+    {
+     "h": "Grootte is het laatste antwoord",
+     "p": "Grootte is niet hoe zeker je je voelt. Het is rekenwerk. Kies de dollars die je op deze trade bereid bent te verliezen, meet de afstand van entry tot invalidatie als een percentage, en deel. $50 riskeren met de invalidatie 2% verderop geeft een positie van $2,500, want $50 gedeeld door 0.02 is $2,500. Het grootteveld wordt zo meteen ontcijferd."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat maakt van een richting een echte trade?",
+     "o": [
+      "Sterk vertrouwen in de setup",
+      "Een invalidatieprijs en een grootte",
+      "Een groter saldo op het account",
+      "Een hogere hefboominstelling"
+     ]
+    },
+    {
+     "q": "Waar hoort je invalidatieprijs vandaan te komen?",
+     "o": [
+      "Het bedrag dat je wilt verliezen",
+      "Het grafiekniveau dat je fout bewijst",
+      "Wat de hefboomkiezer aangeeft",
+      "De grootte van je account"
+     ]
+    },
+    {
+     "q": "Je riskeert $50 en je invalidatie ligt 2% verderop. Positiegrootte?",
+     "o": [
+      "$100",
+      "$1,000",
+      "$2,500",
+      "$5,000"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft2",
+   "t": "Marktorder of limietorder",
+   "cards": [
+    {
+     "h": "Marktorder: vult nu",
+     "p": "Een marktorder neemt de prijzen die op dit moment in het orderboek liggen, te beginnen bij de beste en naar buiten toe werkend tot je grootte gevuld is. Hij wordt altijd gevuld. Wat hij niet belooft is de prijs: in een dunne markt eet je eigen order door meerdere niveaus heen, en het gemiddelde dat je krijgt is slechter dan het getal dat je zag."
+    },
+    {
+     "h": "Limietorder: jouw prijs of niets",
+     "p": "Een limietorder zegt: vul me op deze prijs of beter, en wacht anders. Je legt een koop onder de huidige prijs of een verkoop erboven, en de order blijft in het orderboek staan tot iemand ertegen handelt. De prijs is gegarandeerd; de fill niet. Komt de prijs nooit terug naar jouw niveau, dan krijg je de trade simpelweg niet."
+    },
+    {
+     "h": "Het feeverschil is echt",
+     "p": "De spread oversteken maakt je de taker en kost de hogere fee, vaak 0.055%. In het boek wachten maakt je de maker, vaak 0.02%. Op een positie van $5,000 is dat $2.75 tegen $1.00 per kant. Markt erin en markt eruit kost $5.50 heen en terug; limiet erin en limiet eruit kost $2.00. Dezelfde trade, een andere rekening."
+    },
+    {
+     "h": "Kiezen tussen de twee",
+     "p": "Gebruik een marktorder wanneer in de trade zitten belangrijker is dan een paar dollar, of wanneer je iets sluit dat misging en er nu uit wilt. Gebruik een limietorder wanneer je een prijs in gedachten hebt en het prima vindt om de trade te missen. Een trade missen is een normale uitkomst waar je overheen komt. Er achteraan rennen meestal niet."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een limietorder garandeert…",
+     "o": [
+      "een fill, op wat voor prijs dan ook",
+      "jouw prijs, maar geen fill",
+      "altijd de laagste fee",
+      "directe uitvoering"
+     ]
+    },
+    {
+     "q": "Op een positie van $5,000 kost een taker-fee van 0.055%…",
+     "o": [
+      "$0.55",
+      "$5.50",
+      "$2.75",
+      "$27.50"
+     ]
+    },
+    {
+     "q": "Welke situatie rechtvaardigt een marktorder het meest?",
+     "o": [
+      "Je wilt de laagst mogelijke fee",
+      "Je hebt geduld met de entryprijs",
+      "Je laat een order de nacht overstaan",
+      "Je moet uit een positie die misging"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft3",
+   "t": "Het grootteveld, ontcijferd",
+   "cards": [
+    {
+     "h": "Marge, notioneel, hoeveelheid",
+     "p": "Drie getallen beschrijven één positie. Hoeveelheid is hoeveel van de munt je beheert, zeg 0.02 BTC. Notioneel is die hoeveelheid in dollars: op $50,000 per BTC is 0.02 BTC een notioneel van $1,000. Marge is het geld dat echt uit je saldo wordt vastgezet — op 10x hefboom bij die positie, $100. Winst en verlies volgen het notioneel, nooit de marge."
+    },
+    {
+     "h": "Wat hefboom werkelijk verandert",
+     "p": "Hefboom verandert niet hoeveel dollars je wint of verliest per 1% dat de prijs beweegt. Dat doet het notioneel. Hefboom verandert twee andere dingen: hoeveel marge er vastgezet wordt, en hoe dicht de liquidatieprijs achter je zit. Dezelfde positie van $1,000 verdient en verliest op 5x of op 25x identieke dollars. Alleen de buffer verschilt."
+    },
+    {
+     "h": "De grootte volgt uit de stopafstand",
+     "p": "Reken achteruit. Bepaal de dollars die je bereid bent te verliezen: $50. Meet entry tot invalidatie als een fractie: 2%, oftewel 0.02. Het notioneel is het risico gedeeld door die fractie, dus $50 / 0.02 = $2,500. Pas daarna kies je een hefboom die de vastgezette marge comfortabel maakt. Ambitie bepaalt hier niets. De stopafstand bepaalt alles."
+    },
+    {
+     "h": "Een bredere stop betekent een kleinere grootte",
+     "p": "Dezelfde $50 risico koopt een positie van $2,500 als de stop 2% weg ligt, maar slechts een positie van $1,000 als hij 5% weg ligt, want $50 / 0.05 = $1,000. Dat is de ruil die niemand noemt: een stop die voor de gemoedsrust ver weg gelegd wordt, kost je grootte. Beide versies verliezen exact $50 als je fout zit, en dat is precies de bedoeling."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Je dollars winst of verlies per beweging van 1% hangen af van…",
+     "o": [
+      "de hefboom die je koos",
+      "de notionele grootte van de positie",
+      "de vastgezette marge",
+      "je totale accountsaldo"
+     ]
+    },
+    {
+     "q": "0.02 BTC op $50,000 per BTC is een notioneel van…",
+     "o": [
+      "$100",
+      "$500",
+      "$1,000",
+      "$2,000"
+     ]
+    },
+    {
+     "q": "Je verbreedt de stop van 2% naar 5% en blijft $50 riskeren. De grootte…",
+     "o": [
+      "blijft gelijk",
+      "wordt kleiner",
+      "wordt groter",
+      "verdubbelt"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft4",
+   "t": "De stop-loss, als eerste geplaatst",
+   "cards": [
+    {
+     "h": "Wat een stop-loss is",
+     "p": "Een stop-loss is een order die bij de exchange klaarligt en je positie automatisch sluit als de prijs een niveau bereikt dat jij koos. Op het orderticket is het een veld naast je entry: je typt er een prijs in. Hij werkt terwijl je slaapt, terwijl je telefoon leeg is, en terwijl jij het druk hebt met zeker weten dat de markt fout zit."
+    },
+    {
+     "h": "Hij gaat mee met de entry",
+     "p": "Voer de stop-loss in bij dezelfde handeling als de entry, niet nadat je gezien hebt hoe de trade zich gedraagt. De reden is simpel: de kalme versie van jou kiest een niveau van de grafiek, en de versie die al naar een verliezende positie kijkt kiest een niveau uit hoop. Objectiever dan vóór de fill word je nooit."
+    },
+    {
+     "h": "Plaats hem zelf",
+     "prompt": "Dit is een long. Tik waar de stop-loss hoort — net onder de swingbodem.",
+     "p": "Bewijs dat je het niveau kent voordat je het veld vertrouwt. Eén tik."
+    },
+    {
+     "h": "Een stop verplaatsen is duur",
+     "p": "Een stop verder wegslepen zodat hij niet geraakt wordt is de duurste gewoonte in trading. Het maakt van een gepland verlies van $50 een ongepland verlies van $200, en het leert je dat je plan onderhandelbaar is. Een stop mag richting winst verplaatst worden als een trade werkt. Hem verder van de entry af zetten is geen risicobeheer, het is uitstel."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Waarom voer je de stop-loss op hetzelfde moment als de entry in?",
+     "o": [
+      "Exchanges verplichten het",
+      "Het verlaagt je handelskosten",
+      "Je bent het objectiefst vóór de fill",
+      "Het vergroot je positiegrootte"
+     ]
+    },
+    {
+     "q": "Wat doet een stop verder van de entry zetten met je geplande verlies?",
+     "o": [
+      "Haalt het helemaal weg",
+      "Maakt het groter en ongepland",
+      "Halveert het",
+      "Niets, het blijft gelijk"
+     ]
+    },
+    {
+     "q": "Een stop-loss-order…",
+     "o": [
+      "garandeert winst op jouw niveau",
+      "werkt alleen als je app open staat",
+      "is hetzelfde als een take-profit",
+      "sluit de positie op een gekozen prijs"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft5",
+   "t": "De take-profit en de verhouding",
+   "cards": [
+    {
+     "h": "Bepaal de uitstap vóór de emotie",
+     "p": "Een take-profit is een order die de positie automatisch sluit op een prijs boven je entry bij een long, of eronder bij een short. Hem tegelijk met de stop instellen betekent dat beide uitstappen gekozen zijn toen er nog niets op het spel stond. Een positie met een stop maar zonder doel wordt meestal gesloten door welk gevoel er als eerste langskomt."
+    },
+    {
+     "h": "Een deel eraf halen",
+     "p": "Je hoeft niet in één keer uit te stappen. De helft sluiten op een eerste doel en de rest laten lopen, met de stop verplaatst naar je entryprijs, is een gangbare structuur. Het verkleint beide uitkomsten: een kleinere winst als de prijs doorloopt, een kleiner verlies als hij omdraait. Er is geen juiste verdeling, alleen een verdeling die je vooraf koos."
+    },
+    {
+     "h": "De verhouding die je twee lijnen impliceren",
+     "p": "Je stop en je doel leggen een verhouding vast voordat de trade begint. Entry $50,000, stop $49,000, doel $52,000 riskeert $1,000 om $2,000 te maken — een reward-to-risk van 2:1. Bij 2:1 speel je met één winnaar op drie trades quitte, nog vóór kosten. Dat is rekenwerk, geen belofte. Niets zegt dat het doel ooit geraakt wordt. Check de verhouding voordat je klikt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Entry $50,000, stop $49,000, doel $52,000 is een reward-to-risk van…",
+     "o": [
+      "1:1",
+      "1:2",
+      "2:1",
+      "3:1"
+     ]
+    },
+    {
+     "q": "Waarom zet je de take-profit tegelijk met de stop?",
+     "o": [
+      "Het verlaagt de handelskosten",
+      "Exchanges weigeren orders zonder",
+      "Het garandeert dat het doel geraakt wordt",
+      "Beide uitstappen worden kalm gekozen"
+     ]
+    },
+    {
+     "q": "De helft van een positie sluiten op het eerste doel…",
+     "o": [
+      "haalt al het resterende risico weg",
+      "maakt zowel de winst als het verlies kleiner",
+      "verhoogt automatisch je hefboom",
+      "is verplicht op futures-exchanges"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft6",
+   "t": "Je open positie lezen",
+   "cards": [
+    {
+     "h": "De positieregel, veld voor veld",
+     "p": "Eenmaal gevuld verschijnt je positie als een regel: richting en grootte, entryprijs, mark price, ongerealiseerde winst en verlies, marge, en liquidatieprijs. Elke futures-terminal toont ruwweg deze velden, in een of andere volgorde. Niets in die regel vertelt je of de trade een goede is. Hij vertelt je wat er nu waar is, en dat is een andere taak."
+    },
+    {
+     "h": "Entryprijs en mark price",
+     "p": "Entry is de gemiddelde prijs waarop je echt gevuld bent, vóór kosten. Mark price is de eerlijke referentieprijs van de exchange, gebruikt om je positie te waarderen en om liquidatie te bepalen — meestal verankerd aan een bredere index in plaats van aan de laatste trade op één boek. Dat is met opzet: het maakt één vreemde print veel moeilijker om tegen je te gebruiken."
+    },
+    {
+     "h": "Ongerealiseerd betekent nog niet van jou",
+     "p": "Ongerealiseerde winst en verlies is waarvoor de positie zou afrekenen als je haar deze seconde op de mark price sloot. Het beweegt bij elke tick, en het is geen geld dat je bezit. Gerealiseerde winst en verlies is wat er overblijft zodra je echt sluit, kosten eraf. Accounts worden beoordeeld op dat tweede getal, en alleen ooit op dat tweede getal."
+    },
+    {
+     "h": "De liquidatieprijs is de bodem",
+     "p": "De liquidatieprijs is waar je marge het verlies niet meer dekt en de exchange de positie voor je sluit, en die marge houdt. Hij ligt verder weg als je marge toevoegt en dichterbij als je de hefboom verhoogt. Ligt je stop-loss dichterbij dan je liquidatieprijs, dan bepaalt de stop de uitkomst. Zo hoort het: kijk naar de stop."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Waarvoor wordt de mark price gebruikt?",
+     "o": [
+      "Vastleggen op welke prijs je entry gevuld is",
+      "De positie waarderen en liquidatie triggeren",
+      "De fee bepalen die over de trade gerekend wordt",
+      "Het volume tonen dat vandaag verhandeld is"
+     ]
+    },
+    {
+     "q": "Ongerealiseerde winst en verlies is…",
+     "o": [
+      "geld dat al op je saldo staat",
+      "waarvoor de positie nu zou afrekenen",
+      "de fee die je tot nu toe betaald hebt",
+      "de marge die de positie vastzet"
+     ]
+    },
+    {
+     "q": "Welk niveau hoort normaal te bepalen hoe een trade eindigt?",
+     "o": [
+      "De liquidatieprijs",
+      "De mark price",
+      "Je stop-loss-niveau",
+      "De funding rate"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft7",
+   "t": "Een positie sluiten",
+   "cards": [
+    {
+     "h": "Sluiten tegen marktprijs",
+     "p": "Sluiten stuurt de tegenovergestelde order voor dezelfde grootte: een long sluit je door te verkopen, een short door te kopen. Sluit je tegen marktprijs, dan wordt hij direct gevuld tegen wat er in het boek ligt, en betaal je de taker-fee. Op het moment dat hij vult wordt het ongerealiseerde getal gerealiseerd, komt de marge terug op je saldo en verdwijnt de regel."
+    },
+    {
+     "h": "Gedeeltelijk sluiten en uitgestopt worden",
+     "p": "Je kunt een deel van een positie sluiten. Verkoop de helft van de hoeveelheid en de regel blijft open op de kleinere grootte, met de entryprijs ongewijzigd. Uitgestopt worden is dezelfde gebeurtenis, getriggerd door de stoporder die je plaatste in plaats van door je vinger. Hoe dan ook stuurt de exchange een sluitende order. Het enige verschil is wie besloot, en wanneer."
+    },
+    {
+     "h": "Een gepland verlies is prima",
+     "p": "Gerealiseerd betekent definitief: het geld is van je saldo af of erop bijgekomen, kosten inbegrepen. Een trade die de stop raakte die jij koos, op de grootte die je uitrekende, deed precies waarvoor je hem ontwierp. Hij kostte het bedrag dat je besloot uit te geven om erachter te komen. Beoordeel een trade op of je het plan volgde, niet op het teken van het getal."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een longpositie sluiten betekent…",
+     "o": [
+      "meer van dezelfde munt kopen",
+      "dezelfde hoeveelheid verkopen die je houdt",
+      "marge aan de positie toevoegen",
+      "de hefboominstelling verhogen"
+     ]
+    },
+    {
+     "q": "Wat gebeurt er op het moment dat een positie sluit?",
+     "o": [
+      "Ongerealiseerd wordt gerealiseerd, marge komt vrij",
+      "De entryprijs wordt naar boven herberekend",
+      "Je hefboominstelling verdubbelt",
+      "De kosten die je betaalde worden terugbetaald"
+     ]
+    },
+    {
+     "q": "Een trade die zijn geplande stop-loss raakte is…",
+     "o": [
+      "een fout die je niet moet herhalen",
+      "bewijs dat de hele aanpak faalde",
+      "een trade die zijn eigen plan volgde",
+      "altijd gewoon een kwestie van pech"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft8",
+   "t": "Eén complete trade, van begin tot eind",
+   "cards": [
+    {
+     "h": "Drie antwoorden, dan het ticket",
+     "p": "Long BTC, omdat de prijs $50,000 hield. Fout onder $49,000, wat de invalidatie is en precies 2% verderop ligt. Riskeer $50, dus het notioneel is $50 / 0.02 = $2,500, en op 10x zet dat $250 marge vast. Drie antwoorden, besloten en opgeschreven, voordat er ook maar één veld op het ticket is aangeraakt."
+    },
+    {
+     "h": "Het ticket invullen",
+     "p": "Richting kopen. Ordertype limiet, prijs $50,000, dus je betaalt de maker-fee en accepteert dat hij misschien nooit vult. Grootte $2,500 notioneel, hefboom 10x. Typ $49,000 in het stop-loss-veld en $52,000 in het take-profit-veld voordat je verstuurt — dat doel is 2:1 tegenover je risico. Lees het hele ticket één keer terug, en verstuur dan."
+    },
+    {
+     "h": "Na de fill: doe niets",
+     "p": "De positieregel verschijnt en het ongerealiseerde getal begint te bewegen. Jouw werk is al klaar, want beide uitstappen liggen klaar bij de exchange. Of $49,000 wordt verhandeld en je verliest $50, of $52,000 wordt verhandeld en je wint $100, of je sluit met de hand om een reden die je achteraf kunt opschrijven. Harder naar het scherm kijken verandert geen van de drie."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Waarom is het notioneel in het voorbeeld $2,500?",
+     "o": [
+      "Het is tien keer de vastgezette marge",
+      "Het is 5% van het accountsaldo",
+      "Het is de minimumgrootte van de exchange",
+      "Het is $50 risico gedeeld door 0.02"
+     ]
+    },
+    {
+     "q": "Wanneer worden de stop-loss en de take-profit ingevoerd?",
+     "o": [
+      "Na de fill, zodra de prijs bewogen heeft",
+      "Op hetzelfde ticket als de entry",
+      "Alleen als de trade slecht begint te lopen",
+      "Aan het eind van de handelsdag"
+     ]
+    },
+    {
+     "q": "Bereikt de prijs $52,000 in die trade, dan is het resultaat…",
+     "o": [
+      "+$50",
+      "+$250",
+      "+$100",
+      "+$2,500"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Je kent nu elk veld op het ticket. Open de paper-trading terminal en plaats één complete trade met nepgeld: entry, grootte, stop-loss, take-profit. Laat hem daarna met rust.",
+    "label": "Open Paper Trade →"
+   }
+  }
+ ]
+}

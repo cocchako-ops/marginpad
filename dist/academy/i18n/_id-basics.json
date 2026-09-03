@@ -1,0 +1,439 @@
+{
+ "id": "basics",
+ "name": "Dasar-Dasar Kripto",
+ "sub": "Apa yang sebenarnya kamu tradingkan",
+ "lessons": [
+  {
+   "id": "b1",
+   "t": "Apa itu kripto, sebenarnya?",
+   "cards": [
+    {
+     "h": "Uang tanpa perantara",
+     "p": "Bitcoin lahir tahun 2009 sebagai uang yang tidak dikendalikan bank atau pemerintah mana pun. Alih-alih satu bank memegang catatan siapa punya apa, ribuan komputer di seluruh dunia menyimpan salinan identiknya — buku besar bersama itu disebut blockchain."
+    },
+    {
+     "h": "Kenapa dia tidak pernah tidur",
+     "p": "Bursa saham buka dan tutup. Kripto diperdagangkan 24 jam sehari, 7 hari seminggu, di seluruh dunia sekaligus. Harga bisa bergerak liar jam 3 pagi di hari Minggu — persis karena itulah trader memakai alert dan stop-loss, bukan menatap chart seharian."
+    },
+    {
+     "h": "Ribuan koin, hanya segelintir yang penting",
+     "p": "Bitcoin (BTC) adalah yang terbesar dan menggerakkan seluruh pasar. Ethereum (ETH) nomor dua. Di luar papan atas ada ribuan koin kecil (altcoin) — kebanyakan jauh lebih berisiko dan kurang likuid. Sebagai pemula, semua yang perlu kamu pelajari bisa dipelajari di BTC dan ETH."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Apa yang mencatat siapa memiliki kripto apa?",
+     "o": [
+      "Bank sentral",
+      "Buku besar bersama yang disalin di ribuan komputer (blockchain)",
+      "Setiap exchange menyimpan daftar privatnya sendiri tanpa catatan bersama",
+      "Pemerintah"
+     ]
+    },
+    {
+     "q": "Kapan pasar kripto tutup?",
+     "o": [
+      "Jam 5 sore waktu New York",
+      "Akhir pekan",
+      "Tidak pernah — trading 24/7",
+      "Hari libur"
+     ]
+    },
+    {
+     "q": "Sebagai pemula, koin mana yang masuk akal untuk belajar?",
+     "o": [
+      "Koin baru dengan kenaikan persentase raksasa",
+      "BTC dan ETH — terbesar dan paling likuid",
+      "Apa pun yang sedang tren di media sosial",
+      "Koin termurah per keping"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b2",
+   "t": "Exchange, wallet, dan arti membeli",
+   "cards": [
+    {
+     "h": "Tempat trading terjadi",
+     "p": "Exchange adalah pasar yang mempertemukan pembeli dan penjual — Binance, Coinbase, Kraken, dan Bybit adalah exchange. Saat kamu beli Bitcoin di sana, exchange memperbarui catatan internalnya; koinnya berada dalam penyimpanan exchange sampai kamu menariknya."
+    },
+    {
+     "h": "Spot vs derivatif",
+     "p": "Membeli koin aslinya disebut trading spot — kamu memilikinya, dan kerugian maksimalmu adalah yang kamu bayar. Derivatif (seperti futures yang akan kamu temui di Kursus 2) adalah kontrak yang mengikuti harga tanpa memiliki koin — memungkinkan leverage, yang memotong dua arah."
+    },
+    {
+     "h": "Bukan kuncimu, bukan koinmu",
+     "p": "Wallet adalah tempat kripto tinggal saat benar-benar milikmu — dikendalikan kunci rahasia yang hanya kamu pegang. Koin yang ditinggal di exchange adalah janji dari exchange itu. Tidak masalah untuk jumlah trading aktif, tapi sejarah (Mt. Gox, FTX) menunjukkan kenapa jumlah besar seharusnya ada di wallet-mu sendiri."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Apa itu trading spot?",
+     "o": [
+      "Bertaruh pada harga dengan uang pinjaman",
+      "Membeli koin aslinya — kamu memilikinya",
+      "Jenis wallet",
+      "Trading hanya di jam tertentu"
+     ]
+    },
+    {
+     "q": "Koin yang tersimpan di exchange adalah…",
+     "o": [
+      "Selalu aman sempurna apa pun yang terjadi pada exchange itu",
+      "Wallet pribadimu",
+      "Praktis sebuah janji utang dari exchange",
+      "Mustahil ditarik"
+     ]
+    },
+    {
+     "q": "Berapa maksimal kerugianmu membeli spot dengan $100?",
+     "o": [
+      "$100 — yang kamu bayar",
+      "Lebih dari $100",
+      "Tidak ada, spot bebas risiko",
+      "Tergantung leverage"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b3",
+   "t": "Membaca chart harga",
+   "cards": [
+    {
+     "h": "Candle",
+     "p": "Setiap candle merangkum harga dalam satu periode: di mana buka, di mana tutup, serta titik tertinggi dan terendah yang disentuh. Candle hijau tutup lebih tinggi dari buka; merah tutup lebih rendah. Garis tipis (sumbu/wick) menunjukkan titik ekstrem yang disentuh sebentar."
+    },
+    {
+     "h": "Temukan sendiri",
+     "prompt": "Sentuh SUMBU ATAS candle — garis yang menunjukkan harga tertinggi yang disentuh.",
+     "p": "Sebelum lanjut, buktikan pada matamu sendiri. Satu sentuhan."
+    },
+    {
+     "h": "Timeframe mengubah cerita",
+     "p": "Pasar yang sama tampak berbeda di timeframe berbeda. Chart 1 menit menunjukkan noise; chart harian menunjukkan tren. Kesalahan klasik pemula: panik karena candle 5 menit yang menakutkan padahal tak terlihat di chart harian. Zoom out dulu, selalu."
+    },
+    {
+     "h": "Volume adalah detektor kebohongan",
+     "p": "Volume menunjukkan berapa banyak yang benar-benar ditradingkan. Pergerakan harga dengan volume tinggi berarti partisipasi nyata; pergerakan sama dengan volume tipis itu rapuh dan sering berbalik. Harga bilang apa yang terjadi — volume bilang seberapa besar kamu boleh percaya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Candle merah berarti…",
+     "o": [
+      "Harga tutup lebih rendah dari harga buka",
+      "Perdagangan dihentikan",
+      "Volume rendah",
+      "Harga pasti terus turun sepanjang hari"
+     ]
+    },
+    {
+     "q": "Apa yang ditunjukkan sumbu candle?",
+     "o": [
+      "Harga yang diprediksi pasar untuk periode berikutnya",
+      "Harga tertinggi dan terendah yang disentuh di periode itu",
+      "Biaya trading",
+      "Jumlah trader"
+     ]
+    },
+    {
+     "q": "Pergerakan harga besar dengan volume sangat rendah adalah…",
+     "o": [
+      "Sinyal terkuat yang mungkin ada di chart mana pun",
+      "Rapuh — sering berbalik",
+      "Mustahil",
+      "Selalu awal sebuah tren"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b4",
+   "t": "Market cap, likuiditas, dan kenapa harga saja berbohong",
+   "cards": [
+    {
+     "h": "Harga per koin sendirian tak berarti apa-apa",
+     "p": "Koin seharga $0.001 tidak lebih murah dari Bitcoin dalam arti apa pun. Yang penting adalah market cap: harga × suplai beredar. Koin $0.001 dengan 100 miliar token adalah proyek $100M. \"Tinggal naik ke $1 saja\" adalah jebakan tertua di kripto."
+    },
+    {
+     "h": "Likuiditas: bisakah kamu keluar?",
+     "p": "Likuiditas adalah seberapa banyak kamu bisa beli atau jual tanpa menggerakkan harga. BTC menyerap jutaan dolar per detik; altcoin kecil bisa anjlok 10% dari satu jualan besar. Koin tidak likuid gampang dimasuki dan brutal saat keluar — persis saat kamu paling butuh."
+    },
+    {
+     "h": "Slippage",
+     "p": "Saat beli di harga pasar, kamu membayar apa yang penjual minta saat itu. Di pasar tipis, order-mu sendiri mendorong harga — selisih antara harga yang kamu lihat dan harga eksekusi disebut slippage. Ini biaya nyata: membesar dengan ukuran posisi, mengecil dengan likuiditas."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Apa yang menentukan ukuran asli sebuah koin?",
+     "o": [
+      "Harga per koin",
+      "Market cap — harga × suplai beredar",
+      "Seberapa baru koinnya",
+      "Seberapa sering dia muncul dan disebut di media sosial"
+     ]
+    },
+    {
+     "q": "Likuiditas mengukur…",
+     "o": [
+      "Kecepatan blockchain mengonfirmasi transaksi-transaksi baru",
+      "Berapa banyak yang bisa ditradingkan tanpa menggeser harga",
+      "Jumlah koin yang beredar",
+      "Seberapa volatil sebuah koin"
+     ]
+    },
+    {
+     "q": "Slippage adalah…",
+     "o": [
+      "Biaya tetap yang ditentukan exchange di muka untuk setiap order",
+      "Selisih antara harga yang kamu lihat dan harga eksekusi order pasarmu",
+      "Pola chart",
+      "Jenis wallet"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b5",
+   "t": "Kenapa kripto bergerak seliar itu",
+   "cards": [
+    {
+     "h": "Perahu kecil di samudra luas",
+     "p": "Total pasar kripto sangat kecil dibanding saham atau obligasi, dan sebagian besarnya ditradingkan dengan leverage. Gelombang uang yang sama yang nyaris tak menggeser S&P 500 bisa menggerakkan Bitcoin beberapa persen — dan koin kecil berkali-kali lipat lebih."
+    },
+    {
+     "h": "Berita, likuiditas, dan penjual terpaksa",
+     "p": "Pergerakan besar biasanya menggabungkan tiga hal: pemicu (berita, angka makro), likuiditas tipis (malam, akhir pekan), dan jual paksa dari trader leverage yang dilikuidasi. Bahan ketiga itu — yang akan kamu pelajari di Kursus 2 — adalah alasan crash kripto begitu cepat dan dalam."
+    },
+    {
+     "h": "Volatilitas adalah seluruh permainannya",
+     "p": "Volatilitas bukan cacat — dia alasan para trader ada di sini. Tapi dia simetris: pergerakan 10% yang sama yang menggandakan akun ber-leverage juga menghapusnya. Setiap pelajaran setelah ini sebenarnya tentang bertahan dari volatilitas cukup lama untuk mengambil untung darinya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kenapa jumlah uang yang sama menggerakkan kripto lebih dari saham?",
+     "o": [
+      "Exchange memanipulasi harga kripto setiap kali volume turun",
+      "Pasar kripto jauh lebih kecil dan lebih ber-leverage",
+      "Saham tidak punya volatilitas",
+      "Kripto trading lebih lambat"
+     ]
+    },
+    {
+     "q": "Bahan apa yang membuat crash kripto sangat cepat dan dalam?",
+     "o": [
+      "Hari libur bank",
+      "Jual paksa dari trader leverage yang dilikuidasi",
+      "Internet lambat",
+      "Lonjakan mendadak tingkat kesulitan mining di seluruh jaringan"
+     ]
+    },
+    {
+     "q": "Volatilitas bagi seorang trader adalah…",
+     "o": [
+      "Risiko murni yang harus dihindari sepenuhnya",
+      "Peluang DAN risiko — bertahan hidup adalah keahliannya",
+      "Masalah hanya untuk pemula",
+      "Ilegal di exchange teregulasi"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b6",
+   "t": "Stablecoin dan pasangan trading",
+   "cards": [
+    {
+     "h": "Dolar yang hidup di blockchain",
+     "p": "Stablecoin adalah token kripto yang dirancang bernilai tepat $1 — USDT dan USDC adalah raksasanya. Mereka ada supaya trader bisa memegang dolar di dalam kripto: memarkir profit, kabur dari volatilitas, dan menghargai segalanya dalam satuan stabil."
+    },
+    {
+     "h": "Arti sebenarnya BTC/USDT",
+     "p": "Setiap pasar adalah PASANGAN: yang kamu tradingkan dan satuan penilaiannya. BTC/USDT berarti Bitcoin dihargai dalam dolar Tether. Jual BTC di pasangan itu dan kamu menerima USDT, bukan dolar bank. Hampir semua futures yang akan kamu tradingkan adalah pasangan bermargin USDT."
+    },
+    {
+     "h": "Stabil bukan berarti bebas risiko",
+     "p": "Stablecoin hanya sebaik jaminannya. Depeg pernah terjadi — paling terkenal: Terra UST runtuh ke nol di 2022. Untuk saldo trading, penerbit besar bertahan, tapi ketahui yang kamu pegang: token yang bisa ditukar dolar, bukan dolarnya sendiri."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Stablecoin dirancang untuk apa?",
+     "o": [
+      "Tumbuh stabil 10% per tahun",
+      "Bernilai tepat $1",
+      "Mengikuti Bitcoin",
+      "Menggantikan bank"
+     ]
+    },
+    {
+     "q": "Di pasangan BTC/USDT, apa yang kamu terima saat menjual BTC?",
+     "o": [
+      "Dolar bank",
+      "USDT",
+      "ETH",
+      "Tidak ada sampai penarikan"
+     ]
+    },
+    {
+     "q": "Stablecoin adalah…",
+     "o": [
+      "Benar-benar dolar",
+      "Sepenuhnya bebas risiko menurut definisinya sendiri",
+      "Token berjaminan cadangan",
+      "Dijamin pemerintah"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b7",
+   "t": "Biaya: pajak diam-diam di setiap trade",
+   "cards": [
+    {
+     "h": "Maker, taker, spread",
+     "p": "Setiap trade membayar. Biaya taker (melintasi spread seketika, order pasar) lebih tinggi; biaya maker (order limit yang menunggu dan menambah likuiditas) lebih rendah — kadang malah rabat. Spread sendiri — jarak antara harga beli dan jual terbaik — juga biaya."
+    },
+    {
+     "h": "Kenapa biaya lebih menyakitkan di futures",
+     "p": "Biaya futures dikenakan pada NOSIONAL, bukan marginmu. Di leverage 20x, biaya taker 0.055% adalah 1.1% dari marginmu per sisi — lebih dari 2% pulang-pergi. Sepuluh trade sehari dengan tarif itu adalah tagihan yang jarang bisa dikalahkan strategi mana pun."
+    },
+    {
+     "h": "Spiral kematian overtrading",
+     "p": "Kebanyakan pemula yang rugi tidak kalah oleh arah — mereka berdarah oleh biaya dan spread karena trading terlalu sering. Lebih sedikit trade, lebih baik, dengan entry limit bukan cuma nasihat disiplin; itu aritmetika. Hitung biayamu mingguan di jurnal dan perlakukan sebagai posisi melawanmu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Jenis order mana yang biasanya membayar biaya LEBIH RENDAH?",
+     "o": [
+      "Pasar (taker), dieksekusi seketika",
+      "Limit yang menunggu (maker)",
+      "Order stop",
+      "Sama saja"
+     ]
+    },
+    {
+     "q": "Biaya futures dikenakan pada…",
+     "o": [
+      "Hanya margin yang kamu setor untuk trade itu",
+      "Ukuran nosional penuh posisi",
+      "Hanya profit",
+      "Hanya penarikan"
+     ]
+    },
+    {
+     "q": "Di 20x, biaya taker 0.055% memakan kira-kira berapa bagian marginmu per sisi?",
+     "o": [
+      "0.055%",
+      "0.5%",
+      "1.1%",
+      "11%"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b8",
+   "t": "Siklus pasar dan narasi",
+   "cards": [
+    {
+     "h": "Empat musim kripto",
+     "p": "Kripto bergerak dalam siklus dramatis: akumulasi (sepi, tak ada yang peduli), markup (bull run yang dimasuki semua orang terlambat), distribusi (uang pintar menjual ke euforia), dan markdown (bear yang meyakinkan semua bahwa sudah tamat). Tiap siklus terasa belum pernah terjadi; emosinya identik."
+    },
+    {
+     "h": "Narasi berganti, keserakahan konstan",
+     "p": "Setiap siklus menobatkan cerita baru — ICO, DeFi, NFT, koin AI. Ceritanya berubah; polanya tidak: inovasi nyata, hiruk spekulatif jauh melampauinya, keruntuhan yang membunuh proyek lemah, dan fondasi siklus berikutnya dari para penyintas."
+    },
+    {
+     "h": "Di mana siklus bertemu tradingmu",
+     "p": "Kamu tak bisa menepatkan waktu siklus, tapi bisa memperkirakan posisimu: apakah keserakahan ekstrem? tukang cukurmu merekomendasikan koin? memecoin 100x mengalahkan segalanya? Akhir siklus adalah saat mengurangi risiko paling penting — persis saat terasa paling tidak perlu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Di fase mana uang pintar biasanya MENJUAL?",
+     "o": [
+      "Akumulasi, saat belum ada yang memperhatikan",
+      "Markdown",
+      "Distribusi — ke dalam euforia akhir",
+      "Tidak pernah"
+     ]
+    },
+    {
+     "q": "Apa yang berulang di setiap siklus kripto?",
+     "o": [
+      "Koin yang sama menang",
+      "Pola emosinya: ketidakpercayaan, euforia, keputusasaan",
+      "Level harga yang persis sama",
+      "Narasi yang sama kembali memimpin setiap siklus"
+     ]
+    },
+    {
+     "q": "Kapan mengurangi risiko paling penting?",
+     "o": [
+      "Saat semua orang takut",
+      "Di euforia akhir siklus",
+      "Tidak pernah — selalu risiko maksimal",
+      "Hanya di bear market yang panjang dan dalam"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b9",
+   "t": "Penipuan dan pertahanan diri",
+   "cards": [
+    {
+     "h": "Kalau menjanjikan return, produknya adalah kamu",
+     "p": "2% per hari dijamin. Bot trading tanpa bulan rugi. Orang asing menawarkan mengelola danamu. Semua itu penipuan, selalu, tanpa kecuali — trading sungguhan punya periode rugi, dan tak ada pemilik mesin cetak uang yang membaginya dengan orang asing."
+    },
+    {
+     "h": "Yang klasik: rug pull dan phishing",
+     "p": "Rug pull adalah token yang penciptanya menguras likuiditas begitu pembeli menumpuk — lazim di microcap baru. Phishing adalah situs palsu exchange atau wallet yang memanen login atau seed phrase-mu. Bookmark situs asli; jangan pernah klik link login dari pesan."
+    },
+    {
+     "h": "Kebersihan dasar yang menghentikan 95%",
+     "p": "Pakai 2FA (aplikasi autentikator, bukan SMS) di setiap exchange. Jangan pernah bagikan seed phrase pada siapa pun — tak ada tim dukungan yang membutuhkannya. Paranoidlah pada pesan langsung: platform asli tidak menghubungi duluan. Aturan membosankan — dan itulah seluruh permainannya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Sebuah layanan menjamin return 2% per hari. Itu…",
+     "o": [
+      "Peluang bagus",
+      "Mungkin sah kalau sudah diaudit",
+      "Penipuan, selalu",
+      "Boleh untuk jumlah kecil"
+     ]
+    },
+    {
+     "q": "Siapa yang secara sah membutuhkan seed phrase-mu?",
+     "o": [
+      "Tim dukungan resmi exchange tempat akunmu berada",
+      "Pengembang wallet",
+      "Tidak ada, tidak pernah",
+      "Kantor pajak"
+     ]
+    },
+    {
+     "q": "Metode 2FA terbaik adalah…",
+     "o": [
+      "Kode SMS ke nomor terdaftarmu",
+      "Aplikasi autentikator",
+      "Link lewat email",
+      "Tanggal lahirmu"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Kamu menyelesaikan Dasar-Dasar Kripto — seluruh kursus. SEKARANG buka terminal paper trading: pantau harga live, dan saat merasa siap, buka trade pertamamu dengan uang bohongan.",
+    "label": "Buka Paper Trade →"
+   }
+  }
+ ]
+}

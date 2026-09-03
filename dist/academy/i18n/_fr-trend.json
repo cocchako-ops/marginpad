@@ -1,0 +1,467 @@
+{
+ "id": "trend",
+ "name": "Tendance, support et résistance",
+ "sub": "Lire un graphique en partant de zéro",
+ "lessons": [
+  {
+   "id": "tr1",
+   "t": "Ce qu’est vraiment une tendance",
+   "cards": [
+    {
+     "h": "Des sommets plus hauts et des creux plus hauts",
+     "p": "Une tendance haussière a une forme que tu peux vérifier, pas une ambiance que tu ressens. Chaque poussée vers le haut finit plus haut que la précédente. Chaque repli s’arrête plus haut que le précédent. Sommets plus hauts, creux plus hauts, dans cet ordre, de gauche à droite. Si tu ne peux pas pointer deux de chaque sur le graphique, tu n’es pas dans une tendance haussière."
+    },
+    {
+     "h": "La tendance baissière est le miroir",
+     "p": "Une tendance baissière, c’est la même règle retournée. Chaque rebond s’arrête plus bas que le précédent. Chaque chute passe sous la précédente. Sommets plus bas, creux plus bas. Rien là-dedans ne dit que le prix va continuer à baisser. Ça décrit seulement ce qui a déjà eu lieu, d’une façon qu’une autre personne peut vérifier sur le même graphique et confirmer."
+    },
+    {
+     "h": "Nomme les sommets et les creux à voix haute",
+     "p": "Fais-le à la main les cent premières fois. Pose ton doigt sur le graphique, repère les sommets évidents et les creux évidents, et énonce la séquence : sommet, creux, sommet plus haut, creux plus haut. Si tu dois plisser les yeux pour que ça colle, ça ne colle pas. Une tendance qu’on ne voit qu’en la désirant n’est pas là."
+    },
+    {
+     "h": "Quand une tendance cesse d’en être une",
+     "p": "Une tendance haussière se termine quand la séquence casse : le prix inscrit un creux sous le creux précédent. C’est tout le test. Ça ne veut pas dire qu’une tendance baissière a commencé, et souvent le prix part simplement à l’horizontale pendant des semaines. Ça veut dire que la raison pour laquelle tu parlais de tendance haussière a disparu, et que tout plan bâti sur cette raison a disparu avec elle."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Qu’est-ce qui fait d’un graphique une tendance haussière ?",
+     "o": [
+      "Surtout des bougies vertes aujourd’hui",
+      "Une séquence de sommets et de creux plus hauts",
+      "Le prix posé au-dessus d’un chiffre rond",
+      "Un volume en hausse sur chaque bougie"
+     ]
+    },
+    {
+     "q": "Une tendance baissière se définit par…",
+     "o": [
+      "Des sommets plus bas et des creux plus bas",
+      "Plus de bougies rouges que de vertes",
+      "Le prix qui baisse plus vite qu’il n’est monté",
+      "Un gros volume vendeur toute la journée"
+     ]
+    },
+    {
+     "q": "En tendance haussière, le prix passe sous le creux précédent. Ça veut dire…",
+     "o": [
+      "Qu’une tendance baissière a forcément commencé",
+      "Rien — seuls les sommets définissent une tendance",
+      "Que la séquence haussière est cassée",
+      "Que la tendance s’est renforcée"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr2",
+   "t": "Ta première ligne de tendance",
+   "cards": [
+    {
+     "h": "En tendance haussière, relie les creux",
+     "p": "En tendance haussière, tu traces la ligne sous les creux des replis, parce que c’est là que les acheteurs reviennent se placer. En tendance baissière, tu la traces au contraire sur les sommets des rebonds. Deux points définissent une ligne, donc deux touches est le minimum exploitable. C’est aussi la version la plus faible possible, et voici pourquoi."
+    },
+    {
+     "h": "Trois touches, ça devient intéressant",
+     "p": "Deux points quelconques sur un graphique peuvent toujours être reliés par une ligne, donc deux touches ne prouvent presque rien. Une troisième touche est la première preuve que la ligne décrit quelque chose de réel, et pas un hasard lié à l’endroit où tu as commencé à tracer. Elle ne dit toujours rien de la quatrième. Une touche c’est du bruit, deux c’est une esquisse, trois c’est une esquisse que d’autres regardent probablement aussi."
+    },
+    {
+     "h": "Tracer pour que ça colle, c’est tricher",
+     "p": "Tu trouveras toujours une ligne. Décale le départ d’une bougie, incline-la d’un degré, ignore les deux touches qui gênent, et n’importe quel graphique confirme n’importe quelle histoire. Le test honnête : trace la ligne avant d’avoir une position, et ne la retrace jamais parce que le prix t’a contredit. Si tu l’as déplacée, tu n’as plus une ligne. Tu as un souhait."
+    },
+    {
+     "h": "Les lignes trop raides cassent plus vite",
+     "p": "Une ligne de tendance qui monte en pente douce peut tenir des mois, parce que le prix n’a qu’à continuer à grimper lentement pour rester au-dessus. Une ligne quasi verticale exige que le marché accélère indéfiniment, et rien n’accélère indéfiniment. Les lignes raides cassent tôt et souvent, et cette cassure signifie en général que le rythme s’est calmé, pas que la tendance s’est retournée."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "En tendance haussière, où trace-t-on la ligne de tendance ?",
+     "o": [
+      "Sur les sommets des vagues",
+      "Au milieu des bougies",
+      "Sous les creux des replis",
+      "À l’horizontale, sur la dernière clôture"
+     ]
+    },
+    {
+     "q": "Pourquoi une ligne à deux touches est-elle une preuve faible ?",
+     "o": [
+      "Deux points quelconques peuvent toujours être reliés",
+      "Deux touches n’arrivent qu’en tendance baissière",
+      "Une ligne a besoin de volume pour compter",
+      "Deux touches signifient que la tendance est finie"
+     ]
+    },
+    {
+     "q": "Le prix casse ta ligne de tendance, donc tu la retraces plus plate. C’est…",
+     "o": [
+      "Une bonne pratique — les graphiques évoluent",
+      "Ajuster la ligne à ce que tu veux voir",
+      "Obligatoire dès que la troisième touche échoue",
+      "La façon dont les pros gèrent le risque ouvert"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr3",
+   "t": "Le support et la résistance sont des zones",
+   "cards": [
+    {
+     "h": "Une foule, pas un laser",
+     "p": "Le support n’est pas un prix unique. C’est une bande où assez d’acheteurs se sont présentés pour stopper la baisse — parfois à 100,00 $, parfois à 99,40 $, parfois après une pointe jusqu’à 98,80 $. Tracer une ligne d’un pixel et attendre que le prix la respecte au centime près est une façon classique de se faire sortir d’une idée qui allait très bien."
+    },
+    {
+     "h": "Laisse les mèches fixer les bords",
+     "p": "Repère les trois ou quatre dernières fois où le prix s’est retourné à peu près au même endroit. Les corps des bougies montrent où l’essentiel des échanges a vraiment eu lieu. Les mèches, que tu as rencontrées dans Figures de chandeliers, montrent jusqu’où le combat est allé avant d’être rejeté. Trace le bord haut au corps le plus haut et le bord bas à la mèche la plus basse. Cette bande, c’est ton niveau."
+    },
+    {
+     "h": "Prouve-le en un seul tap",
+     "p": "Un seul tap. Il n’y a pas un pixel correct unique ici, et c’est exactement ça, la leçon.",
+     "prompt": "Tape n’importe où dans la zone de support — la bande où les creux se regroupent."
+    },
+    {
+     "h": "Quand une zone est trop large",
+     "p": "Une zone doit être assez serrée pour qu’on puisse trader contre. Si les mèches s’étalent sur 2% du prix, ton stop doit se placer au-delà de tout ça, et certains jours 2%, c’est toute l’amplitude de la séance. Ce n’est pas un niveau, c’est un quartier. Note-la, et attends que le prix t’en offre une plus serrée."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Le support se trace le mieux comme…",
+     "o": [
+      "Un prix exact, au centime près",
+      "Le prix le plus bas jamais atteint",
+      "Une bande bornée par les corps et les mèches",
+      "Une ligne oblique sous les creux"
+     ]
+    },
+    {
+     "q": "Que t’apprennent les mèches sur un niveau ?",
+     "o": [
+      "Jusqu’où le prix a été poussé avant d’être rejeté",
+      "Le prix moyen échangé pendant la séance",
+      "Combien de traders participaient",
+      "Quel exchange avait le meilleur prix"
+     ]
+    },
+    {
+     "q": "Le prix passe 0,60 $ sous ta ligne de support, puis reclôture au-dessus. Le plus probable…",
+     "o": [
+      "Ton niveau était tout simplement faux",
+      "Une tendance baissière a commencé",
+      "Le support est devenu une résistance",
+      "Normal — le niveau est une zone, pas une ligne"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr4",
+   "t": "Pourquoi les niveaux comptent",
+   "cards": [
+    {
+     "h": "Un niveau est la trace de transactions passées",
+     "p": "Un niveau compte parce qu’il s’y est passé des choses. Sur un ancien sommet, des gens ont acheté juste avant une chute et sont sous l’eau depuis. Beaucoup vendront à l’équilibre si le prix y revient un jour. D’autres ont vendu trop tôt et se sont juré d’acheter le retest. Le prix n’est qu’un nombre. Ce sont les décisions en attente autour de lui qui font bouger les marchés."
+    },
+    {
+     "h": "Les ordres s’empilent au même endroit",
+     "p": "Regarde où vivent les stop-loss. Presque tous ceux qui ont acheté sur une zone de support placent leur stop juste en dessous, donc une poche épaisse d’ordres de vente se trouve un peu sous le niveau. Les ordres d’achat limit posés se trouvent juste au-dessus. Un niveau, c’est un endroit où le carnet d’ordres est déséquilibré, et c’est ce déséquilibre qui explique que le prix y réagisse."
+    },
+    {
+     "h": "La part autoréalisatrice",
+     "p": "Si un niveau est évident sur un graphique daily, un grand nombre de gens regardent la même ligne, et certains agiront dessus. La réaction est donc en partie réelle et en partie une histoire que la foule se raconte ensemble. La moitié inconfortable du même fait : les niveaux évidents sont aussi ceux où tout le monde sait où sont posés les stops."
+    },
+    {
+     "h": "Un niveau n’est pas un mur",
+     "p": "Rien de tout ça ne fait tenir un niveau. Les ordres sont retirés, le sentiment change, et un niveau qui a stoppé le prix quatre fois peut céder à la cinquième sans le moindre avertissement. La valeur d’un niveau n’est pas que le prix s’y arrête. C’est qu’il te donne un prix précis auquel ton idée est terminée, et c’est de ça qu’un plan est fait."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Pourquoi un ancien sommet fait-il souvent résistance ?",
+     "o": [
+      "Les exchanges brident les ordres au-dessus",
+      "Les acheteurs piégés y vendent à l’équilibre",
+      "Le volume est toujours plus fin au-dessus",
+      "Les graphiques attirent le prix vers les chiffres ronds"
+     ]
+    },
+    {
+     "q": "Où se trouvent en général les stop-loss des acheteurs sur un support ?",
+     "o": [
+      "Juste sous la zone de support",
+      "Exactement à leur prix d’entrée",
+      "Au-dessus du dernier sommet en date",
+      "Répartis uniformément dans le range"
+     ]
+    },
+    {
+     "q": "Un niveau a tenu quatre fois. À la cinquième touche, il…",
+     "o": [
+      "Doit tenir — quatre touches le confirment",
+      "Devient automatiquement une ligne de tendance",
+      "Peut céder sans le moindre avertissement",
+      "Garantit un breakout en ta faveur"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr5",
+   "t": "Le flip : les rôles s’inversent sur un niveau",
+   "cards": [
+    {
+     "h": "Une résistance cassée peut devenir un support",
+     "p": "Le prix bute trois fois sur un plafond et finit par clôturer au-dessus. Souvent, le repli suivant s’arrête sur cet ancien plafond au lieu de retomber directement à travers. La ligne n’a pas changé ; les rôles, si. La même chose se produit à l’envers : un support qui casse devient fréquemment le niveau qui plafonne le rebond suivant."
+    },
+    {
+     "h": "Le mécanisme, pas la magie",
+     "p": "Demande-toi qui se tient à ce prix. Les vendeurs qui voulaient sortir là ont déjà vendu, donc leur offre a disparu. Les acheteurs qui ont vu le breakout et l’ont raté ont maintenant une seconde chance et attendent. Les traders qui ont shorté le niveau se font sortir, et fermer un short, c’est acheter. Trois groupes distincts, tous acheteurs dans la même bande."
+    },
+    {
+     "h": "Le retest, c’est là qu’arrive la preuve",
+     "p": "Un flip ne devient visible qu’au retest, quand le prix revient sur le niveau cassé. Si les acheteurs le défendent, tu as un niveau et un prix précis juste en dessous où tu aurais tort. Si le prix le retraverse d’un trait, la cassure n’était que du bruit. Attendre le retest te coûte quelques mouvements. Ça t’enlève aussi les devinettes."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Une résistance nettement cassée devient souvent…",
+     "o": [
+      "Une ligne de tendance haussière",
+      "Définitivement sans importance",
+      "Un support lors du retour vers le bas",
+      "Un signal d’entrée garanti"
+     ]
+    },
+    {
+     "q": "Pourquoi une ancienne résistance peut-elle ensuite soutenir le prix ?",
+     "o": [
+      "Les vendeurs ont fini et les shorts doivent racheter",
+      "Le logiciel de l’exchange défend les anciens sommets",
+      "Le graphique lui-même se souvient du sommet",
+      "Le volume se tarit toujours au-dessus d’un sommet"
+     ]
+    },
+    {
+     "q": "Le prix casse la résistance, puis la retraverse aussitôt vers le bas. Ça suggère…",
+     "o": [
+      "Qu’un support s’est formé là, c’est certain",
+      "Qu’une tendance haussière est confirmée",
+      "Qu’il faut retracer le niveau plus haut",
+      "Que le flip a échoué et la cassure était du bruit"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr6",
+   "t": "Breakouts et fakeouts",
+   "cards": [
+    {
+     "h": "C’est la clôture qui compte, pas la touche",
+     "p": "Une mèche qui traverse un niveau te dit que le prix est passé par là. Une clôture au-delà te dit que le marché a accepté de finir toute une période là-bas. Sur un graphique daily, l’écart est énorme : une pointe à travers le niveau qui reclôture à l’intérieur est un rejet, pas un breakout. Décide à l’avance quelle unité de temps fera foi pour valider une cassure."
+    },
+    {
+     "h": "Le volume te dit qui s’est présenté",
+     "p": "Une cassure sur un volume nettement supérieur à celui des bougies récentes signifie une vraie participation : il a fallu que des gens tradent pour passer le niveau. La même cassure sur volume faible signifie que très peu de monde s’en est soucié, souvent à une heure creuse. Le volume ne te donne jamais la direction. Il te dit quel poids accorder à ce que tu viens de voir."
+    },
+    {
+     "h": "À quoi ressemble un fakeout",
+     "p": "La forme se répète. Le prix dépasse le niveau d’un cheveu, déclenche les ordres stop qui traînaient là, ne trouve aucune suite, et reclôture dans le range. Vu de l’extérieur, c’était une mèche. Vu de l’intérieur d’une position à levier, c’était un stop-out. C’est précisément pour ça que c’est la clôture, et non l’extrême, qui sert de règle."
+    },
+    {
+     "h": "Se faire piéger est normal",
+     "p": "Tu te feras avoir, à répétition, et aucun indicateur ne supprime ça. Toute la défense est procédurale : le stop est placé au moment même où le trade est ouvert, la taille est assez petite pour que le stop-out soit ennuyeux, et tu ne rentres pas trois fois de suite pour prouver que tu avais raison sur le niveau."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Quelle est la preuve la plus forte d’une vraie cassure ?",
+     "o": [
+      "Une mèche qui dépasse le niveau",
+      "Une bougie qui clôture au-delà du niveau",
+      "N’importe quelle touche du niveau",
+      "Un mouvement d’au moins 1% dans la journée"
+     ]
+    },
+    {
+     "q": "Un niveau casse sur un volume anormalement faible. Tu devrais…",
+     "o": [
+      "Le prendre à la légère — peu de participants",
+      "Le tenir pour confirmé, le volume est du bruit",
+      "Supposer qu’un retournement est garanti",
+      "Doubler la position pour prendre le mouvement"
+     ]
+    },
+    {
+     "q": "La défense pratique contre les fakeouts, c’est…",
+     "o": [
+      "Trouver un indicateur qui les filtre",
+      "Attendre un pic de volume à chaque fois",
+      "Ne trader que sur les chiffres ronds",
+      "Un stop placé d’abord, et une petite taille"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr7",
+   "t": "Le range : quand il n’y a pas de tendance",
+   "cards": [
+    {
+     "h": "La plupart des graphiques ne sont pas en tendance",
+     "p": "Dézoome sur presque n’importe quel graphique et tu trouveras de longues plages où le prix oscille simplement entre un plafond et un plancher. Pas de sommets plus hauts, pas de creux plus bas, juste un va-et-vient. Ça, c’est un range. Ce n’est ni un marché cassé ni une pause avant le vrai mouvement. C’est un état normal, et il peut durer longtemps."
+    },
+    {
+     "h": "Le range, c’est le jeu inverse",
+     "p": "En tendance, tu achètes la force et tu laisses de l’air à la position. En range, tu fais l’inverse : intéressé près du bord bas, sceptique près du bord haut, et ton objectif est l’autre côté de la boîte plutôt qu’un horizon ouvert. Même graphique, mêmes compétences, règles complètement inversées sur ce qui rend une entrée attirante."
+    },
+    {
+     "h": "Jouer au mauvais jeu coûte cher",
+     "p": "Applique les règles de tendance dans un range et tu achètes chaque poussée sur le bord haut et vends chaque purge sur le bord bas — acheter haut et vendre bas en boucle, en payant des frais à chaque tour. Applique les règles de range à un marché en tendance et tu passes ton temps à shorter la force. Nommer l’état avant d’agir n’est pas un devoir facultatif."
+    },
+    {
+     "h": "Un range se resserre avant de finir",
+     "p": "Observe les oscillations dans la boîte. Quand chaque rebond n’atteint plus le plafond précédent et que chaque creux s’arrête au-dessus du plancher précédent, le range se comprime, et les bougies rapetissent en général avec lui. Ça te dit qu’un plus gros mouvement se construit. Ça ne te dit absolument rien sur la direction qu’il prendra."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Un range, c’est…",
+     "o": [
+      "Un marché qui s’est effondré",
+      "Le prix qui oscille entre un plancher et un plafond",
+      "Une brève pause avant chaque tendance",
+      "Une ligne de tendance tracée à l’horizontale"
+     ]
+    },
+    {
+     "q": "Dans un range, un acheteur est le plus intéressé…",
+     "o": [
+      "Au bord haut, en achetant la force",
+      "Exactement au milieu de la boîte",
+      "Près du bord bas de la boîte",
+      "Juste après n’importe quelle mèche"
+     ]
+    },
+    {
+     "q": "Les oscillations dans un range rétrécissent. Ça t’apprend…",
+     "o": [
+      "Qu’un breakout haussier se prépare",
+      "Que le range va tenir indéfiniment",
+      "Qu’une cassure baissière est plus probable",
+      "Qu’un plus gros mouvement se prépare, sens inconnu"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr8",
+   "t": "Où le niveau place ton stop",
+   "cards": [
+    {
+     "h": "L’endroit où l’idée est fausse",
+     "p": "Tu penses que le prix tient ce support, donc tu achètes. Cette phrase a une fin intégrée : si le prix clôture sous la zone, ce que tu croyais n’est plus vrai. Ce prix n’est ni une préférence ni un seuil de douleur. C’est le point où ta raison d’être dans le trade a été contredite par le marché lui-même."
+    },
+    {
+     "h": "Au-delà de la zone, jamais dedans",
+     "p": "Si ta zone va de 99,00 $ à 98,80 $, un stop à 98,90 $ se trouve à l’intérieur du bruit dont tu viens toi-même de reconnaître l’existence. Les mèches iront le chercher alors que ton idée est encore parfaitement vivante. Place le stop sous toute la zone, avec un peu de marge, et accepte que cette distance soit ce que le niveau te coûte."
+    },
+    {
+     "h": "La distance décide de ta taille",
+     "p": "Maintenant l’arithmétique. Tu as 1 000 $ et tu en risques 1%, soit 10 $. Entrée à 100 $, stop à 98,60 $, donc la distance est de 1,4%. La taille de position, c’est 10 $ divisés par 0,014, soit environ 714 $ de notionnel. Élargis le stop et la position doit rétrécir. Le stop vient d’abord et la taille en découle, jamais l’inverse. Les outils sur /calculators font cette division pour toi."
+    },
+    {
+     "h": "N’élargis pas le stop",
+     "p": "Quand le prix s’approche du stop, il paraît évident qu’il suffirait de laisser un peu plus de place au niveau. L’élargir transforme une petite perte prévue en une grosse perte non prévue, et ça détruit l’arithmétique que tu viens de faire, parce que la taille avait été calculée pour cette distance exacte. Si le niveau est faux, le trade est faux. Prends la petite perte."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Où se place un stop-loss par rapport à une zone de support ?",
+     "o": [
+      "À mi-chemin dans la zone",
+      "Au prix d’entrée lui-même",
+      "Juste au-delà du bord opposé, avec de la marge",
+      "Sur le chiffre rond le plus proche"
+     ]
+    },
+    {
+     "q": "Compte de 1 000 $, risque de 1%, stop à 1,4%. La taille de position est d’environ…",
+     "o": [
+      "140 $ de notionnel",
+      "714 $ de notionnel",
+      "1 400 $ de notionnel",
+      "10 $ de notionnel"
+     ]
+    },
+    {
+     "q": "Élargir le stop quand le prix s’en approche…",
+     "o": [
+      "Améliore les chances du trade",
+      "Est une gestion du risque standard",
+      "Réduit la taille de la perte",
+      "Casse le calcul de taille que tu as fait"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr9",
+   "t": "Lire un graphique en soixante secondes",
+   "cards": [
+    {
+     "h": "Dézoome avant tout le reste",
+     "p": "Commence par le graphique daily, même si tu comptes trader en 15 minutes. Le daily te montre les niveaux qu’un grand nombre de gens voient réellement, et la forme des derniers mois sur un seul écran. Un niveau trouvé uniquement sur un graphique 1 minute est invisible pour presque tout le monde et a souvent disparu dans l’heure."
+    },
+    {
+     "h": "Nomme la tendance, marque deux niveaux",
+     "p": "Énonce la séquence à voix haute : sommets plus hauts et creux plus hauts, le miroir de ça, ou ni l’un ni l’autre, ce qui veut dire un range. Puis marque exactement deux zones horizontales — la plus proche au-dessus du prix et la plus proche en dessous. Deux. Si tu as tracé six lignes, tu as fabriqué un graphique qui approuve tout ce que tu décideras de faire ensuite."
+    },
+    {
+     "h": "Termine la phrase, puis arrête-toi",
+     "p": "Dis-le en une ligne : c’est une tendance haussière, le niveau qui compte va de 98,80 $ à 99,00 $, et si le prix clôture en dessous, j’ai tort. Si tu ne peux pas remplir les trois parties, tu n’as pas un trade, tu as un graphique. Cette phrase prend environ soixante secondes et c’est toute la routine."
+    },
+    {
+     "h": "La plupart des graphiques ne méritent aucun avis",
+     "p": "Le résultat honnête de cette routine, la plupart du temps, c’est rien du tout. Pas de tendance claire, pas de niveau proche, rien de précis sur quoi avoir tort. C’est un résultat, pas un échec — la routine est un filtre, et un filtre qui ne rejette jamais rien ne filtre pas. Ferme le graphique et regarde un autre symbole."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Quel graphique ouvres-tu en premier ?",
+     "o": [
+      "Le 1 minute, pour la précision",
+      "Le daily, pour les niveaux que tout le monde voit",
+      "Le 5 minutes, comme compromis",
+      "Celui qui était ouvert la dernière fois"
+     ]
+    },
+    {
+     "q": "Combien de zones horizontales la routine demande-t-elle de marquer ?",
+     "o": [
+      "Autant que tu peux en trouver",
+      "Six, une par unité de temps",
+      "Deux — la plus proche au-dessus et en dessous",
+      "Aucune, les lignes de tendance suffisent"
+     ]
+    },
+    {
+     "q": "La routine se termine sans tendance claire ni niveau proche. Tu devrais…",
+     "o": [
+      "Descendre d’unité de temps pour en trouver un",
+      "Tracer plus de lignes jusqu’à ce que ça sorte",
+      "Le trader quand même en plus petite taille",
+      "Passer à autre chose et regarder un autre symbole"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Ouvre un graphique, mets BTC en daily, et fais tourner la routine de soixante secondes : nomme la tendance, marque deux zones, dis le prix auquel tu aurais tort. Puis recommence sur un coin que tu n’as jamais regardé.",
+    "label": "Ouvrir les graphiques →"
+   }
+  }
+ ]
+}

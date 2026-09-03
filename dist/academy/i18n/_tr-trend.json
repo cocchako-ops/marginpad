@@ -1,0 +1,467 @@
+{
+ "id": "trend",
+ "name": "Trend, Destek ve Direnç",
+ "sub": "Grafiği sıfırdan okumak",
+ "lessons": [
+  {
+   "id": "tr1",
+   "t": "Trend aslında nedir",
+   "cards": [
+    {
+     "h": "Yükselen tepeler ve yükselen dipler",
+     "p": "Yükseliş trendinin sezdiğin bir havası değil, kontrol edebileceğin bir şekli vardır. Her yukarı atak bir öncekinden daha yüksekte biter. Her geri çekilme bir öncekinden daha yüksekte durur. Yükselen tepeler, yükselen dipler; bu sırayla, soldan sağa. Grafikte her birinden ikisini parmağınla gösteremiyorsan, yükseliş trendinde değilsin."
+    },
+    {
+     "h": "Düşüş trendi bunun aynadaki hâli",
+     "p": "Düşüş trendi aynı kuralın ters çevrilmişidir. Her sıçrayış bir öncekinden daha alçakta durur. Her düşüş bir öncekinin altına iner. Alçalan tepeler, alçalan dipler. Bunların hiçbiri fiyatın düşmeye devam edeceğini söylemez. Sadece olup biteni tarif eder — üstelik başka birinin aynı grafikte kontrol edip katılabileceği bir biçimde."
+    },
+    {
+     "h": "Salınımları yüksek sesle adlandır",
+     "p": "İlk yüz seferi elle yap. Parmağını grafiğe koy, bariz tepeleri ve bariz dipleri bul ve diziyi söyle: tepe, dip, daha yüksek tepe, daha yüksek dip. Uydurmak için gözünü kısman gerekiyorsa, uymuyordur. Sırf istediğin için gördüğün bir trend orada yoktur."
+    },
+    {
+     "h": "Trend ne zaman trend olmaktan çıkar",
+     "p": "Yükseliş trendi dizi bozulunca biter: fiyat bir önceki dibin altında yeni bir dip yapar. Testin tamamı bu. Bu, düşüş trendi başladı demek değildir; fiyat çoğu zaman haftalarca yatay gider. Sadece ona yükseliş trendi deme sebebin ortadan kalktı demektir — ve o sebep üstüne kurulmuş her plan da onunla gitmiştir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bir grafiği yükseliş trendi yapan nedir?",
+     "o": [
+      "Bugün çoğunlukla yeşil mumlar",
+      "Yükselen tepe ve dip dizisi",
+      "Fiyatın yuvarlak sayı üstünde olması",
+      "Her mumda artan hacim"
+     ]
+    },
+    {
+     "q": "Düşüş trendini tanımlayan şey…",
+     "o": [
+      "Alçalan tepeler ve alçalan dipler",
+      "Yeşilden çok kırmızı mum olması",
+      "Fiyatın yükseldiğinden hızlı düşmesi",
+      "Gün boyu ağır satış hacmi"
+     ]
+    },
+    {
+     "q": "Yükseliş trendinde fiyat önceki dibin altına indi. Bu…",
+     "o": [
+      "Kesinlikle düşüş trendi başladı",
+      "Hiçbir şey — trendi tepeler tanımlar",
+      "Yükseliş trendi dizisi bozuldu",
+      "Trend daha da güçlendi"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr2",
+   "t": "İlk trend çizgin",
+   "cards": [
+    {
+     "h": "Yükseliş trendinde dipleri birleştir",
+     "p": "Yükseliş trendinde çizgiyi geri çekilme diplerinin altına çizersin, çünkü alıcılar hep orada devreye giriyor. Düşüş trendinde ise sıçrayış tepelerinin üstünden geçirirsin. İki nokta bir doğru tanımlar, yani çalışabileceğin minimum iki temastır. Aynı zamanda mümkün olan en zayıf versiyondur; nedeni de şu."
+    },
+    {
+     "h": "Üçüncü temas işi ilginçleştirir",
+     "p": "Grafikteki herhangi iki nokta bir doğruyla birleştirilebilir, dolayısıyla iki temas neredeyse hiçbir şey kanıtlamaz. Üçüncü temas, çizginin nereden çizmeye başladığının tesadüfünü değil de gerçek bir şeyi tarif ettiğine dair ilk kanıttır. Dördüncü temas hakkında yine de hiçbir şey söylemez. Bir temas gürültü, iki temas karalama, üç temas ise muhtemelen başkalarının da izlediği bir karalamadır."
+    },
+    {
+     "h": "Uydurmak için çizmek hiledir",
+     "p": "Her zaman bir çizgi bulabilirsin. Başlangıcı bir mum kaydır, bir derece eğ, işine gelmeyen iki teması yok say — ve her grafik her hikayeyi destekler. Dürüst test şu: çizgiyi pozisyon almadan önce çiz ve fiyat sana katılmadı diye onu asla yeniden çizme. Yerini değiştirdiysen artık elinde çizgi yoktur. Dilek vardır."
+    },
+    {
+     "h": "Dik çizgiler daha erken kırılır",
+     "p": "Yatıya yakın bir açıyla yükselen trend çizgisi aylarca tutabilir, çünkü fiyatın üstünde kalmak için ağır ağır yukarı öğütmesi yeter. Dikeye yakın bir çizgi ise piyasadan sonsuza dek hızlanmasını ister ve hiçbir şey sonsuza dek hızlanmaz. Dik çizgiler erken ve sık kırılır; o kırılım da genelde trendin döndüğünü değil, temponun soğuduğunu gösterir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Yükseliş trendinde trend çizgisi nereye çizilir?",
+     "o": [
+      "Salınım tepelerinin üstünden",
+      "Mumların tam ortasından",
+      "Geri çekilme diplerinin altına",
+      "Yatay, son kapanış seviyesinde"
+     ]
+    },
+    {
+     "q": "İki temaslı trend çizgisi neden zayıf kanıttır?",
+     "o": [
+      "Grafikteki iki nokta hep birleştirilebilir",
+      "İki temas sadece düşüş trendinde olur",
+      "Çizgi sayılmak için hacim ister",
+      "İki temas trendin bittiğini gösterir"
+     ]
+    },
+    {
+     "q": "Fiyat trend çizgini kırdı, sen de onu daha yatık çizdin. Bu…",
+     "o": [
+      "İyi bir alışkanlık — grafikler değişir",
+      "Çizgiyi istediğine uydurmaktır",
+      "Üçüncü temas tutmayınca zorunludur",
+      "Profesyonellerin risk yönetme şekli"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr3",
+   "t": "Destek ve direnç birer bölgedir",
+   "cards": [
+    {
+     "h": "Lazer değil, kalabalık",
+     "p": "Destek tek bir fiyat değildir. Düşüşü durduracak kadar alıcının ortaya çıktığı bir şerittir — bazen $100,00'da, bazen $99,40'ta, bazen $98,80'e inen bir batıştan sonra. Tek piksellik bir çizgi çizip fiyatın ona kuruşu kuruşuna saygı göstermesini beklemek, aslında gayet iyi olan bir fikirden silkelenip atılmanın yaygın yoludur."
+    },
+    {
+     "h": "Kenarları fitiller belirlesin",
+     "p": "Fiyatın kabaca aynı bölgede döndüğü son üç dört seferi bul. Mum gövdeleri işlemlerin çoğunun gerçekte nerede olduğunu gösterir. Mum Formasyonları kursunda tanıştığın fitiller ise kavganın reddedilmeden önce ne kadar ileri gittiğini gösterir. Üst kenarı en yüksek gövdeye, alt kenarı en düşük fitile çiz. O şerit senin seviyendir."
+    },
+    {
+     "h": "Tek dokunuşla kanıtla",
+     "prompt": "Destek bölgesinin içinde herhangi bir yere dokun — diplerin kümelendiği şeride.",
+     "p": "Tek dokunuş. Burada tek bir doğru piksel yok; dersin ta kendisi de bu."
+    },
+    {
+     "h": "Bölge fazla genişse",
+     "p": "Bir bölge, karşısında işlem yapılabilecek kadar dar olmalı. Fitiller fiyatın %2'sine yayılmışsa stopun hepsinin ötesinde durmak zorundadır ve çoğu gün %2 zaten günün tüm aralığıdır. Bu bir seviye değil, bir mahalledir. Not al ve fiyatın sana daha darını vermesini bekle."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Destek en iyi nasıl çizilir…",
+     "o": [
+      "Kuruşu kuruşuna tek bir fiyat",
+      "Görülmüş en düşük fiyat olarak",
+      "Kenarları gövde ve fitilden bir şerit",
+      "Diplerin altında eğik bir çizgi"
+     ]
+    },
+    {
+     "q": "Bir seviyedeki fitiller sana neyi söyler?",
+     "o": [
+      "Fiyatın reddedilene kadar nereye ulaştığını",
+      "Seansta işlem gören ortalama fiyatı",
+      "Kaç trader'ın işleme katıldığını",
+      "Hangi borsanın en iyi fiyatı verdiğini"
+     ]
+    },
+    {
+     "q": "Fiyat destek çizginin $0,60 altına sarkıp üstünde kapandı. Büyük ihtimalle…",
+     "o": [
+      "Seviyen basitçe yanlıştı",
+      "Yeni bir düşüş trendi başladı",
+      "Destek artık dirence dönüştü",
+      "Normal — seviye çizgi değil, bölge"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr4",
+   "t": "Seviyeler neden önemli",
+   "cards": [
+    {
+     "h": "Seviyeler bir işlem kaydıdır",
+     "p": "Bir seviye önemlidir çünkü orada bir şeyler olmuştur. Eski bir tepede insanlar düşüşten hemen önce almış ve o gün bugündür zararda. Fiyat oraya dönerse birçoğu başabaşta satacak. Başkaları çok erken satmış ve retesti alacaklarına yemin etmiştir. Fiyat sadece bir sayıdır. Piyasaları hareket ettiren şey, etrafındaki bekleyen kararlardır."
+    },
+    {
+     "h": "Emirler tek bir yerde yığılır",
+     "p": "Stop-loss'ların nerede yaşadığına bak. Destek bölgesinden alan hemen herkes stopunu onun hemen altına koyar, yani seviyenin biraz aşağısında kalın bir satış emri cebi durur. Bekleyen limit alım emirleri ise hemen üstünde oturur. Seviye, emir defterinin çarpık olduğu yerdir; fiyatın orada tepki vermesinin sebebi de tam olarak o çarpıklıktır."
+    },
+    {
+     "h": "Kendi kendini gerçekleştiren kısım",
+     "p": "Bir seviye günlük grafikte bariz görünüyorsa çok sayıda insan aynı çizgiye bakıyordur ve bir kısmı ona göre hareket edecektir. Bu, tepkiyi kısmen gerçek, kısmen de kalabalığın birlikte anlattığı bir hikaye yapar. Aynı gerçeğin rahatsız edici yarısı şu: bariz seviyeler, stopların nerede durduğunu herkesin bildiği yerlerdir."
+    },
+    {
+     "h": "Seviye bir duvar değildir",
+     "p": "Bunların hiçbiri seviyenin tutmasını sağlamaz. Emirler geri çekilir, hava değişir ve fiyatı dört kez durdurmuş bir seviye beşincide hiçbir uyarı vermeden çöker. Seviyenin değeri fiyatın orada durması değildir. Değeri, fikrinin bittiği tek bir kesin fiyatı sana vermesidir — bir plan da zaten bundan yapılır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Eski bir tepe neden sık sık direnç gibi davranır?",
+     "o": [
+      "Borsalar eski tepe üstünde emri kısar",
+      "Orada sıkışan alıcılar başabaşta satar",
+      "Tepenin üstünde hacim hep incedir",
+      "Grafikler fiyatı yuvarlak sayıya çeker"
+     ]
+    },
+    {
+     "q": "Destekten alanların stop-loss'ları genelde nerede durur?",
+     "o": [
+      "Destek bölgesinin hemen altında",
+      "Tam olarak giriş fiyatlarında",
+      "Son salınım tepesinin üstünde",
+      "Bandın içine eşit yayılmış"
+     ]
+    },
+    {
+     "q": "Bir seviye dört kez tuttu. Beşinci temasta…",
+     "o": [
+      "Tutmak zorunda — dört temas teyit etti",
+      "Otomatik olarak trend çizgisine döner",
+      "Hiç uyarı vermeden çökebilir",
+      "Lehine bir kırılımı garantiler"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr5",
+   "t": "Rol değişimi: seviyede roller yer değiştirir",
+   "cards": [
+    {
+     "h": "Kırılan direnç desteğe dönüşebilir",
+     "p": "Fiyat üç kez bir tavana dayanır ve sonunda üstünde kapanır. Sonraki geri çekilme çoğu zaman dosdoğru içeri düşmek yerine o eski tavanda durur. Değişen çizgi değil, rollerdir. Aynı şey baş aşağı da olur: kırılan destek sıklıkla bir sonraki sıçrayışın tavanı hâline gelir."
+    },
+    {
+     "h": "Sihir değil, mekanizma",
+     "p": "O fiyatta kimin durduğunu düşün. Orada çıkmak isteyen satıcılar zaten sattı, yani arzları bitti. Kırılımı izleyip kaçıran alıcıların şimdi ikinci bir şansı var ve bekliyorlar. Seviyeden short açanlar stop olur ve short kapatmak demek almak demektir. Üç ayrı grup, hepsi aynı şeritte alıyor."
+    },
+    {
+     "h": "Kanıt retestte gelir",
+     "p": "Rol değişimi ancak retestte, fiyat kırılan seviyeye geri geldiğinde görünür olur. Alıcılar seviyeyi savunursa elinde hem bir seviye hem de hemen altında yanılacağın kesin bir fiyat var demektir. Fiyat dosdoğru içeri geçerse kırılım gürültüydü. Retesti beklemek sana bazı hareketleri kaybettirir. Tahmin etmeyi de ortadan kaldırır."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Net biçimde kırılan direnç sıklıkla…",
+     "o": [
+      "Yükselen trend çizgisine döner",
+      "Kalıcı olarak önemsizleşir",
+      "Aşağı dönüşte destek olur",
+      "Garantili giriş sinyali olur"
+     ]
+    },
+    {
+     "q": "Eski direnç sonradan neden fiyatı yukarıda tutabilir?",
+     "o": [
+      "Oradaki satıcılar bitti, short'lar geri alır",
+      "Borsa yazılımı eski tepeleri savunur",
+      "Grafiğin kendisi eski tepeyi hatırlar",
+      "Eski tepelerin üstünde hacim hep kurur"
+     ]
+    },
+    {
+     "q": "Fiyat direnci yukarı kırdı, sonra dosdoğru geri indi. Bu…",
+     "o": [
+      "Orada kesinlikle destek oluştu",
+      "Yeni bir yükseliş trendi teyit edildi",
+      "Seviye daha yukarı çizilmeli",
+      "Rol değişimi tutmadı, kırılım gürültüydü"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr6",
+   "t": "Kırılımlar ve fakeout'lar",
+   "cards": [
+    {
+     "h": "Önemli olan temas değil, kapanış",
+     "p": "Seviyeden geçen bir fitil sana fiyatın oraya uğradığını söyler. Ötesindeki bir kapanış ise piyasanın koca bir periyodu orada bitirmeye razı olduğunu söyler. Günlük grafikte bu fark devasadır: seviyeyi delip içeride kapanan bir batış kırılım değil, reddir. Hangi zaman diliminin kapanışını kırılım sayacağına önceden karar ver."
+    },
+    {
+     "h": "Hacim sana kimin geldiğini söyler",
+     "p": "Son mumlardan belirgin şekilde yüksek hacimle gelen bir kırılım gerçek katılım demektir: insanlar seviyeyi geçmek için işlem yapmak zorunda kalmıştır. Aynı kırılım ince hacimde gelirse çok az kişi zahmet etmiştir, genelde de sessiz bir saatte. Hacim sana asla yön söylemez. Az önce izlediğin şeye ne kadar ağırlık vereceğini söyler."
+    },
+    {
+     "h": "Fakeout neye benzer",
+     "p": "Şekil hep aynıdır. Fiyat seviyeyi azıcık aşar, orada bekleyen stop emirlerini tetikler, devamını getiremez ve bandın içinde kapanır. Dışarıdan bakınca bir fitildi. Kaldıraçlı bir pozisyonun içinden bakınca stop olmaktı. Üzerinde işlem yapmaya söz verdiğin şeyin uç nokta değil kapanış olmasının sebebi tam olarak budur."
+    },
+    {
+     "h": "Fakeout yemek normaldir",
+     "p": "Fakeout yiyeceksin, hem de defalarca; bunu ortadan kaldıran bir indikatör de yok. Savunmanın tamamı prosedüreldir: stop, işlemin açıldığı anda konur; boyut, stop olmanın sıkıcı kalacağı kadar küçüktür; ve seviye konusunda haklı olduğunu kanıtlamak için üst üste üç kez geri girmezsin."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Gerçek bir kırılımın daha güçlü kanıtı hangisi?",
+     "o": [
+      "Seviyenin ötesine uzanan fitil",
+      "Seviyenin ötesinde kapanan mum",
+      "Seviyeye yapılan herhangi bir temas",
+      "Gün içinde en az %1'lik hareket"
+     ]
+    },
+    {
+     "q": "Bir seviye alışılmadık düşük hacimle kırıldı. Sen…",
+     "o": [
+      "Hafife al — çok az kişi katıldı",
+      "Teyitli say, hacim zaten gürültü",
+      "Dönüşün garanti olduğunu varsay",
+      "Hareketi yakalamak için boyutu katla"
+     ]
+    },
+    {
+     "q": "Fakeout'lara karşı pratik savunma…",
+     "o": [
+      "Onları eleyen bir indikatör bulmak",
+      "Her seferinde hacim sıçraması beklemek",
+      "Sadece yuvarlak seviyelerde işlem yapmak",
+      "Önce konan stop ve küçük boyut"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr7",
+   "t": "Yatay bantlar: trend yokken",
+   "cards": [
+    {
+     "h": "Grafiklerin çoğu trendli değildir",
+     "p": "Hemen hemen her grafikte uzaklaş; fiyatın bir tavan ile taban arasında salınıp durduğu uzun dönemler bulursun. Ne yükselen tepeler var, ne alçalan dipler; sadece gidiş geliş. İşte bu bir yatay banttır. Bozuk bir piyasa ya da asıl hareketten önceki bir duraklama değildir. Normal bir hâldir ve uzun sürebilir."
+    },
+    {
+     "h": "Yatay bant ters bir oyundur",
+     "p": "Trendde gücü satın alır ve pozisyona nefes alacak alan bırakırsın. Bantta tersini yaparsın: alt kenara yakın ilgilenir, üst kenara yakın şüphelenirsin ve hedefin ucu açık değil, kutunun diğer tarafıdır. Aynı grafik, aynı beceriler, girişin nerede cazip olduğu konusunda tamamen tersine çevrilmiş kurallar."
+    },
+    {
+     "h": "Yanlış oyunu oynamak pahalıdır",
+     "p": "Bant içinde trend kurallarını uygularsan üst kenardaki her atağı alır, alt kenardaki her boşalmayı satarsın — yani sürekli yüksekten alıp düşükten satar, her turda komisyon ödersin. Trendli bir piyasaya bant kurallarını uygularsan da güce karşı short atıp durursun. Hareket etmeden önce hangi hâlde olduğunu adlandırmak isteğe bağlı bir ödev değildir."
+    },
+    {
+     "h": "Bantlar bitmeden önce daralır",
+     "p": "Kutunun içindeki salınımları izle. Her sıçrayış son tavanın gerisinde kalıyor ve her dip son tabanın üstünde duruyorsa bant sıkışıyordur; mumlar da genelde onunla birlikte küçülür. Bu sana daha büyük bir hareketin biriktiğini söyler. Hangi yöne gideceği hakkında ise kesinlikle hiçbir şey söylemez."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Yatay bant nedir…",
+     "o": [
+      "Aşağı kırılmış bir piyasa",
+      "Taban ile tavan arasında salınan fiyat",
+      "Her trendden önceki kısa duraklama",
+      "Yatay çizilmiş bir trend çizgisi"
+     ]
+    },
+    {
+     "q": "Bant içinde alıcı en çok nerede ilgilenir…",
+     "o": [
+      "Üst kenarda, gücü satın alarak",
+      "Tam olarak kutunun ortasında",
+      "Kutunun alt kenarına yakın",
+      "Herhangi bir fitilden hemen sonra"
+     ]
+    },
+    {
+     "q": "Bant içindeki salınımlar küçülüyor. Bu şunu gösterir…",
+     "o": [
+      "Yukarı kırılım hazırlanıyor",
+      "Bant artık süresiz tutacak",
+      "Aşağı kırılım daha olası",
+      "Büyük hareket birikiyor, yön belirsiz"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr8",
+   "t": "Seviye stopunu nereye koyar",
+   "cards": [
+    {
+     "h": "Fikrin yanlış olduğu yer",
+     "p": "Fiyatın bu desteği tutacağını düşünüyorsun ve alıyorsun. Bu cümlenin içine gömülü bir sonu var: fiyat bölgenin altında kapanırsa, inandığın şey artık doğru değildir. O fiyat bir tercih ya da bir acı eşiği değildir. İşlemde olma sebebinin bizzat piyasa tarafından yalanlandığı noktadır."
+    },
+    {
+     "h": "Bölgenin ötesine, asla içine değil",
+     "p": "Bölgen $99,00'dan $98,80'e iniyorsa, $98,90'daki bir stop tam da var olduğunu kendi söylediğin gürültünün içinde oturur. Fikrin hâlâ dipdiri ayaktayken fitiller onu alır götürür. Stopu bölgenin tamamının altına, biraz da pay bırakarak koy ve bu mesafenin seviyenin sana maliyeti olduğunu kabul et."
+    },
+    {
+     "h": "Mesafe boyutuna karar verir",
+     "p": "Şimdi aritmetik. $1.000'ın var ve bunun %1'ini, yani $10'u riske ediyorsun. Giriş $100, stop $98,60, yani mesafe %1,4. Pozisyon boyutu $10 bölü 0,014, yani yaklaşık $714 notional. Stopu genişletirsen pozisyon küçülmek zorundadır. Önce stop gelir, boyut ondan çıkar; asla tersi olmaz. /calculators'taki araçlar bu bölmeyi senin yerine yapar."
+    },
+    {
+     "h": "Stopu genişletme",
+     "p": "Fiyat stopa yaklaşırken seviyenin sadece biraz daha alana ihtiyacı varmış gibi gelir. Onu genişletmek, planlanmış küçük bir kaybı planlanmamış büyük bir kayba çevirir ve az önce yaptığın aritmetiği yok eder, çünkü boyut tam olarak o mesafe için hesaplanmıştı. Seviye yanlışsa işlem de yanlıştır. Küçük kaybı al."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Stop-loss destek bölgesine göre nereye aittir?",
+     "o": [
+      "Bölgenin tam yarısında",
+      "Doğrudan giriş fiyatında",
+      "Uzak kenarın hemen ötesinde, payla",
+      "En yakın yuvarlak sayıda"
+     ]
+    },
+    {
+     "q": "$1.000 hesap, %1 risk, stop %1,4 uzakta. Pozisyon boyutu yaklaşık…",
+     "o": [
+      "$140 notional",
+      "$714 notional",
+      "$1.400 notional",
+      "$10 notional"
+     ]
+    },
+    {
+     "q": "Fiyat yaklaşırken stopu genişletmek…",
+     "o": [
+      "İşlemin ihtimallerini iyileştirir",
+      "Standart risk yönetimidir",
+      "Kaybın büyüklüğünü azaltır",
+      "Yaptığın boyut aritmetiğini bozar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr9",
+   "t": "Grafiği altmış saniyede okumak",
+   "cards": [
+    {
+     "h": "Her şeyden önce uzaklaş",
+     "p": "15 dakikalık grafikte işlem yapmayı düşünsen bile günlük grafikte başla. Günlük sana çok sayıda insanın gerçekten görebildiği seviyeleri ve son birkaç ayın şeklini tek ekranda gösterir. Sadece 1 dakikalık grafikte bulunan bir seviye neredeyse hiç kimseye görünmez ve genelde bir saat içinde yok olur."
+    },
+    {
+     "h": "Trendi adlandır, iki seviye işaretle",
+     "p": "Diziyi yüksek sesle söyle: yükselen tepeler ve yükselen dipler, bunun aynadaki hâli ya da hiçbiri — ki bu bir yatay bant demektir. Sonra tam olarak iki yatay bölge işaretle: fiyatın üstündeki en yakın olan ve altındaki en yakın olan. İki. Altı çizgi çizdiysen, bundan sonra ne yapmaya karar verirsen ona hak veren bir grafik inşa etmişsin demektir."
+    },
+    {
+     "h": "Cümleyi tamamla, sonra dur",
+     "p": "Tek satırda söyle: bu bir yükseliş trendi, önemli seviye $98,80 ile $99,00 arası ve fiyat oranın altında kapanırsa yanılmışım demektir. Üç parçayı da dolduramıyorsan elinde işlem yok, grafik var. O cümle yaklaşık altmış saniye sürer ve rutinin tamamı da odur."
+    },
+    {
+     "h": "Grafiklerin çoğu bir fikri hak etmez",
+     "p": "Bu rutinin dürüst çıktısı çoğu zaman hiçbir şeydir. Net trend yok, yakın seviye yok, hakkında yanılabileceğin belirli bir şey yok. Bu bir başarısızlık değil, bir sonuçtur — rutin bir filtredir ve hiçbir şeyi elemeyen filtre filtrelemiyordur. Grafiği kapat ve başka bir sembole bak."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Önce hangi grafiği açarsın?",
+     "o": [
+      "1 dakikalık, hassasiyet için",
+      "Günlük, herkesin gördüğü seviyeler için",
+      "5 dakikalık, orta yol olarak",
+      "En son hangisi açıksa o"
+     ]
+    },
+    {
+     "q": "Rutin kaç yatay bölge işaretlemeni ister?",
+     "o": [
+      "Bulabildiğin kadar çok",
+      "Altı, her zaman dilimine bir",
+      "İki — üstteki ve alttaki en yakın",
+      "Hiç, trend çizgileri yeter"
+     ]
+    },
+    {
+     "q": "Rutin net trend ve yakın seviye olmadan bitti. Sen…",
+     "o": [
+      "Bulmak için alt zaman dilimine in",
+      "Bir şey çıkana kadar çizgi çiz",
+      "Yine de küçük boyutla işlem yap",
+      "Devam et ve başka bir sembole bak"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Bir grafik aç, BTC'yi günlüğe al ve altmış saniyelik rutini çalıştır: trendi adlandır, iki bölge işaretle, yanılacağın fiyatı söyle. Sonra aynısını daha önce hiç bakmadığın bir coinde tekrarla.",
+    "label": "Grafikleri Aç →"
+   }
+  }
+ ]
+}

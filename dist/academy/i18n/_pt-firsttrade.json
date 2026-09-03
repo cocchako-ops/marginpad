@@ -1,0 +1,408 @@
+{
+ "id": "firsttrade",
+ "name": "Seu Primeiro Trade, Clique a Clique",
+ "sub": "Cada botão, em ordem",
+ "lessons": [
+  {
+   "id": "ft1",
+   "t": "Três decisões antes de qualquer clique",
+   "cards": [
+    {
+     "h": "Um trade são três respostas",
+     "p": "Antes de tocar no ticket de ordem, três perguntas precisam de resposta: qual direção, em que preço você está provado errado e qual o tamanho da posição. Direção sozinha é um chute. Direção mais o preço do erro, mas sem tamanho, está pela metade. Se qualquer uma das três estiver faltando, você ainda não tem um trade — tem um desejo."
+    },
+    {
+     "h": "Direção: long ou short",
+     "p": "Long significa lucrar se o preço sobe e perder se ele cai. Short é o espelho: você lucra se ele cai. Nos futuros os dois estão a um clique de distância, e nenhum é o mais seguro. Diga sua direção como uma frase simples — long em BTC — antes de qualquer coisa, porque todos os outros campos do ticket dependem dela."
+    },
+    {
+     "h": "Invalidação: onde você está errado",
+     "p": "Invalidação é o preço em que o seu motivo para o trade deixou de ser verdade. Se você ficou long porque o preço segurou um nível, então um rompimento limpo abaixo desse nível é a sua invalidação. Leia isso no gráfico, não no quanto você tem vontade de perder. Esse preço é o que você vai digitar depois no campo do stop-loss."
+    },
+    {
+     "h": "O tamanho é a última resposta",
+     "p": "Tamanho não é o quanto você se sente confiante. É aritmética. Escolha os dólares que aceita perder neste trade, meça a distância da entrada até a invalidação em porcentagem e divida. Arriscar $50 com a invalidação a 2% de distância dá uma posição de $2,500, porque $50 dividido por 0.02 são $2,500. O campo de tamanho é decifrado logo adiante."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "O que transforma uma direção num trade de verdade?",
+     "o": [
+      "Muita confiança no setup",
+      "Um preço de invalidação e um tamanho",
+      "Um saldo maior na conta",
+      "Uma alavancagem mais alta"
+     ]
+    },
+    {
+     "q": "De onde deve vir o seu preço de invalidação?",
+     "o": [
+      "Do valor que você quer perder",
+      "Do nível no gráfico que te prova errado",
+      "Do que o seletor de alavancagem disser",
+      "Do tamanho da sua conta"
+     ]
+    },
+    {
+     "q": "Você vai arriscar $50 e a sua invalidação está a 2%. Tamanho da posição?",
+     "o": [
+      "$100",
+      "$1,000",
+      "$2,500",
+      "$5,000"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft2",
+   "t": "Ordem a mercado ou ordem limitada",
+   "cards": [
+    {
+     "h": "Ordem a mercado: executa agora",
+     "p": "Uma ordem a mercado pega os preços que estão parados no livro de ofertas agora, começando pelo melhor e caminhando para fora até completar o seu tamanho. Ela sempre executa. O que ela não promete é o preço: num mercado fino a sua própria ordem come vários níveis, e a média que você recebe é pior que o número que você viu."
+    },
+    {
+     "h": "Ordem limitada: seu preço ou nada",
+     "p": "Uma ordem limitada diz: me execute neste preço ou melhor, senão espere. Você coloca uma compra abaixo do preço atual ou uma venda acima dele, e a ordem fica parada no livro de ofertas até alguém negociar contra ela. O preço é garantido; a execução não. Se o preço nunca voltar ao seu nível, você simplesmente não faz o trade."
+    },
+    {
+     "h": "A diferença de taxa é real",
+     "p": "Cruzar o spread faz de você o taker e custa a taxa maior, muitas vezes 0.055%. Ficar parado no livro faz de você o maker, muitas vezes 0.02%. Numa posição de $5,000 isso é $2.75 contra $1.00 por lado. Entrar e sair a mercado custa $5.50 na ida e volta; entrar e sair na limitada custa $2.00. Mesmo trade, conta diferente."
+    },
+    {
+     "h": "Escolhendo entre as duas",
+     "p": "Use ordem a mercado quando estar no trade importa mais do que alguns dólares, ou quando você está fechando algo que deu errado e quer sair agora. Use ordem limitada quando você tem um preço em mente e aceita perder o trade. Perder um trade é um desfecho normal e sobrevivível. Correr atrás de um, normalmente não."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Uma ordem limitada garante…",
+     "o": [
+      "execução em algum preço",
+      "o seu preço, mas não a execução",
+      "a menor taxa sempre",
+      "execução instantânea"
+     ]
+    },
+    {
+     "q": "Numa posição de $5,000, uma taxa taker de 0.055% custa…",
+     "o": [
+      "$0.55",
+      "$5.50",
+      "$2.75",
+      "$27.50"
+     ]
+    },
+    {
+     "q": "Qual situação mais justifica uma ordem a mercado?",
+     "o": [
+      "Você quer a taxa mais barata possível",
+      "Você tem paciência com o preço de entrada",
+      "Você vai deixar uma ordem parada a noite toda",
+      "Você precisa sair de uma posição que deu errado"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft3",
+   "t": "O campo de tamanho, decifrado",
+   "cards": [
+    {
+     "h": "Margem, nocional, quantidade",
+     "p": "Três números descrevem uma posição. Quantidade é quanto da moeda você controla, digamos 0.02 BTC. Nocional é essa quantidade em dólares: a $50,000 por BTC, 0.02 BTC é um nocional de $1,000. Margem é o dinheiro efetivamente travado do seu saldo — a 10x de alavancagem nessa posição, $100. Lucro e prejuízo seguem o nocional, nunca a margem."
+    },
+    {
+     "h": "O que a alavancagem realmente muda",
+     "p": "A alavancagem não muda quantos dólares você ganha ou perde a cada 1% que o preço anda. Quem faz isso é o nocional. A alavancagem muda outras duas coisas: quanta margem fica travada e o quão perto o preço de liquidação fica atrás de você. A mesma posição de $1,000 a 5x ou a 25x ganha e perde os mesmos dólares. Só o colchão é diferente."
+    },
+    {
+     "h": "O tamanho sai da distância do stop",
+     "p": "Trabalhe de trás para frente. Decida os dólares que aceita perder: $50. Meça da entrada até a invalidação como fração: 2%, ou 0.02. O nocional é o risco dividido por essa fração, então $50 / 0.02 = $2,500. Só então escolha uma alavancagem que deixe a margem travada confortável. A ambição não decide nada aqui. A distância do stop decide tudo."
+    },
+    {
+     "h": "Stop mais largo, tamanho menor",
+     "p": "Os mesmos $50 de risco compram uma posição de $2,500 quando o stop está a 2%, mas só uma de $1,000 quando ele está a 5%, porque $50 / 0.05 = $1,000. Esse é o custo que ninguém menciona: um stop colocado longe por conforto te tira tamanho. As duas versões perdem exatamente $50 se você estiver errado, e é esse justamente o ponto."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Os dólares que você ganha ou perde por 1% de movimento dependem…",
+     "o": [
+      "da alavancagem que você escolheu",
+      "do tamanho nocional da posição",
+      "da margem travada",
+      "do saldo total da sua conta"
+     ]
+    },
+    {
+     "q": "0.02 BTC a $50,000 por BTC é um nocional de…",
+     "o": [
+      "$100",
+      "$500",
+      "$1,000",
+      "$2,000"
+     ]
+    },
+    {
+     "q": "Você alarga o stop de 2% para 5% e continua arriscando $50. O tamanho…",
+     "o": [
+      "fica igual",
+      "diminui",
+      "aumenta",
+      "dobra"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft4",
+   "t": "O stop-loss, colocado primeiro",
+   "cards": [
+    {
+     "h": "O que é um stop-loss",
+     "p": "Um stop-loss é uma ordem que fica na exchange e fecha a sua posição automaticamente se o preço chegar a um nível que você escolheu. No ticket de ordem ele é um campo ao lado da sua entrada: você digita um preço nele. Ele funciona enquanto você dorme, enquanto seu celular está sem bateria e enquanto você está ocupado tendo certeza de que o mercado está errado."
+    },
+    {
+     "h": "Ele entra junto com a entrada",
+     "p": "Coloque o stop-loss na mesma ação da entrada, não depois de ver como o trade se comporta. O motivo é simples: a sua versão calma escolhe um nível no gráfico, e a versão que já está vendo a posição perder dinheiro escolhe um nível na esperança. Você nunca vai ser mais objetivo do que é antes da execução."
+    },
+    {
+     "h": "Coloque você mesmo",
+     "prompt": "Isto é um long. Toque onde o stop-loss deve ficar — logo abaixo do fundo.",
+     "p": "Antes de confiar no campo, prove que você conhece o nível. Um toque."
+    },
+    {
+     "h": "Mexer no stop sai caro",
+     "p": "Arrastar o stop para mais longe para ele não ser atingido é o hábito mais caro do trading. Transforma uma perda planejada de $50 numa não planejada de $200, e te ensina que o seu plano é negociável. Um stop pode ser movido na direção do lucro conforme o trade dá certo. Movê-lo para longe da entrada não é gestão de risco, é adiamento."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Por que colocar o stop-loss no mesmo momento da entrada?",
+     "o": [
+      "As exchanges exigem",
+      "Isso reduz a sua taxa de negociação",
+      "Você é mais objetivo antes da execução",
+      "Isso aumenta o tamanho da posição"
+     ]
+    },
+    {
+     "q": "Mover o stop para mais longe da entrada faz o quê com a sua perda planejada?",
+     "o": [
+      "Elimina ela por completo",
+      "Deixa ela maior e não planejada",
+      "Corta ela pela metade",
+      "Nada, ela continua igual"
+     ]
+    },
+    {
+     "q": "Uma ordem de stop-loss…",
+     "o": [
+      "garante lucro no seu nível",
+      "só funciona com o app aberto",
+      "é a mesma coisa que um take-profit",
+      "fecha a posição num preço escolhido"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft5",
+   "t": "O take-profit e a proporção",
+   "cards": [
+    {
+     "h": "Decida a saída antes da emoção",
+     "p": "Um take-profit é uma ordem que fecha a posição automaticamente num preço acima da sua entrada, num long, ou abaixo dela, num short. Colocá-lo ao mesmo tempo que o stop significa que as duas saídas foram escolhidas enquanto nada estava em jogo. Uma posição com stop mas sem alvo costuma ser fechada pelo primeiro sentimento que chegar."
+    },
+    {
+     "h": "Tirando uma parte",
+     "p": "Você não precisa sair tudo de uma vez. Fechar metade num primeiro alvo e deixar o resto correr, com o stop movido para o seu preço de entrada, é uma estrutura comum. Ela encolhe os dois desfechos: um ganho menor se o preço continuar, uma perda menor se ele virar. Não existe divisão correta, só uma divisão que você escolheu antes."
+    },
+    {
+     "h": "A proporção que suas duas linhas definem",
+     "p": "O seu stop e o seu alvo fixam uma proporção antes de o trade começar. Entrada $50,000, stop $49,000, alvo $52,000 arrisca $1,000 para fazer $2,000 — um retorno-risco de 2:1. A 2:1, acertar um trade em cada três já empata antes das taxas. Isso é aritmética, não promessa. Nada diz que o alvo será atingido. Confira a proporção antes de clicar."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Entrada $50,000, stop $49,000, alvo $52,000 dá um retorno-risco de…",
+     "o": [
+      "1:1",
+      "1:2",
+      "2:1",
+      "3:1"
+     ]
+    },
+    {
+     "q": "Por que colocar o take-profit ao mesmo tempo que o stop?",
+     "o": [
+      "Isso reduz a taxa de negociação",
+      "As exchanges recusam ordens sem ele",
+      "Isso garante que o alvo seja atingido",
+      "As duas saídas são escolhidas com calma"
+     ]
+    },
+    {
+     "q": "Fechar metade da posição no primeiro alvo…",
+     "o": [
+      "elimina todo o risco restante",
+      "deixa o ganho e a perda menores",
+      "aumenta sua alavancagem automaticamente",
+      "é obrigatório nas exchanges de futuros"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft6",
+   "t": "Lendo a sua posição aberta",
+   "cards": [
+    {
+     "h": "A linha da posição, campo por campo",
+     "p": "Depois de executada, a sua posição aparece como uma linha: lado e tamanho, preço de entrada, preço de marcação, lucro e prejuízo não realizado, margem e preço de liquidação. Todo terminal de futuros mostra mais ou menos esses campos, em alguma ordem. Nada na linha te diz se o trade é bom. Ela te diz o que é verdade agora, que é outro trabalho."
+    },
+    {
+     "h": "Preço de entrada e preço de marcação",
+     "p": "Entrada é o preço médio em que você realmente executou, antes das taxas. O preço de marcação é a referência de valor justo da exchange, usada para valorar a sua posição e para decidir a liquidação — normalmente ancorada num índice mais amplo, e não na última negociação de um livro só. Isso é de propósito: dificulta muito que um preço estranho isolado seja usado contra você."
+    },
+    {
+     "h": "Não realizado significa que ainda não é seu",
+     "p": "Lucro e prejuízo não realizado é o que a posição renderia se você a fechasse pelo preço de marcação neste segundo. Ele se mexe a cada tick, e não é dinheiro seu. Lucro e prejuízo realizado é o que sobra depois que você fecha de verdade, taxas descontadas. Contas são julgadas pelo segundo número, e só pelo segundo número."
+    },
+    {
+     "h": "O preço de liquidação é o chão",
+     "p": "O preço de liquidação é onde a sua margem não cobre mais a perda e a exchange fecha a posição por você, ficando com essa margem. Ele fica mais longe se você adicionar margem e mais perto se você aumentar a alavancagem. Quando o seu stop-loss está mais perto que o preço de liquidação, é o stop que decide o desfecho. E é assim que tem que ser: olhe o stop."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Para que serve o preço de marcação?",
+     "o": [
+      "Registrar o preço em que a sua entrada executou",
+      "Valorar a posição e disparar a liquidação",
+      "Definir a taxa cobrada no trade",
+      "Mostrar o volume negociado hoje"
+     ]
+    },
+    {
+     "q": "Lucro e prejuízo não realizado é…",
+     "o": [
+      "dinheiro que já está no seu saldo",
+      "o que a posição renderia se fechasse agora",
+      "a taxa que você já pagou até aqui",
+      "a margem travada pela posição"
+     ]
+    },
+    {
+     "q": "Qual nível normalmente deve decidir como um trade termina?",
+     "o": [
+      "O preço de liquidação",
+      "O preço de marcação",
+      "O seu nível de stop-loss",
+      "A taxa de funding"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft7",
+   "t": "Fechando uma posição",
+   "cards": [
+    {
+     "h": "Fechando a mercado",
+     "p": "Fechar envia a ordem contrária do mesmo tamanho: um long se fecha vendendo, um short comprando. Feche a mercado e ela executa na hora contra o que estiver no livro, pagando a taxa taker. No instante em que executa, o número não realizado vira realizado, a margem é liberada de volta ao seu saldo e a linha desaparece."
+    },
+    {
+     "h": "Fechamentos parciais e ser stopado",
+     "p": "Você pode fechar parte de uma posição. Venda metade da quantidade e a linha continua aberta no tamanho menor, com o preço de entrada inalterado. Ser stopado é o mesmo evento, disparado pela ordem de stop que você colocou em vez de pelo seu dedo. De um jeito ou de outro a exchange envia uma ordem de fechamento. A única diferença é quem decidiu, e quando."
+    },
+    {
+     "h": "Uma perda planejada está tudo bem",
+     "p": "Realizado significa final: o dinheiro saiu do seu saldo ou entrou nele, taxas incluídas. Um trade que bateu o stop que você escolheu, no tamanho que você calculou, fez exatamente o que você projetou. Custou o valor que você decidiu gastar para descobrir. Julgue um trade por ter seguido ou não o plano, e não pelo sinal do número."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Fechar uma posição long significa…",
+     "o": [
+      "comprar mais da mesma moeda",
+      "vender a mesma quantidade que você tem",
+      "adicionar margem à posição",
+      "aumentar a alavancagem"
+     ]
+    },
+    {
+     "q": "O que acontece no momento em que uma posição fecha?",
+     "o": [
+      "O não realizado vira realizado, a margem é liberada",
+      "O preço de entrada é recalculado para cima",
+      "A sua alavancagem dobra",
+      "As taxas que você pagou são devolvidas"
+     ]
+    },
+    {
+     "q": "Um trade que bateu o stop-loss planejado é…",
+     "o": [
+      "um erro que você não deve repetir",
+      "prova de que a abordagem toda falhou",
+      "um trade que seguiu o próprio plano",
+      "sempre só uma questão de azar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft8",
+   "t": "Um trade completo, do começo ao fim",
+   "cards": [
+    {
+     "h": "Três respostas, depois o ticket",
+     "p": "Long em BTC, porque o preço segurou $50,000. Errado abaixo de $49,000, que é a invalidação e está exatamente a 2% de distância. Risco de $50, então o nocional é $50 / 0.02 = $2,500, e a 10x isso trava $250 de margem. Três respostas, decididas e anotadas, antes de um único campo do ticket ser tocado."
+    },
+    {
+     "h": "Preenchendo o ticket",
+     "p": "Lado: compra. Tipo de ordem: limitada, preço $50,000, então você paga a taxa maker e aceita que ela pode nunca executar. Tamanho: $2,500 de nocional, alavancagem 10x. Digite $49,000 no campo do stop-loss e $52,000 no do take-profit antes de enviar — esse alvo é 2:1 contra o seu risco. Leia o ticket inteiro em voz alta uma vez e envie."
+    },
+    {
+     "h": "Depois da execução, não faça nada",
+     "p": "A linha da posição aparece e o número não realizado começa a se mexer. O seu trabalho já acabou, porque as duas saídas estão paradas na exchange. Ou $49,000 negocia e você perde $50, ou $52,000 negocia e você ganha $100, ou você fecha na mão por um motivo que consiga escrever depois. Olhar a tela com mais força não muda nenhuma das três."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "No exemplo, por que o nocional é $2,500?",
+     "o": [
+      "É dez vezes a margem travada",
+      "É 5% do saldo da conta",
+      "É o tamanho mínimo da exchange",
+      "É $50 de risco dividido por 0.02"
+     ]
+    },
+    {
+     "q": "Quando o stop-loss e o take-profit são colocados?",
+     "o": [
+      "Depois da execução, com o preço já andado",
+      "No mesmo ticket da entrada",
+      "Só se o trade começar a dar errado",
+      "No fim do dia de negociação"
+     ]
+    },
+    {
+     "q": "Se o preço chegar a $52,000 nesse trade, o resultado é…",
+     "o": [
+      "+$50",
+      "+$250",
+      "+$100",
+      "+$2,500"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Agora você conhece cada campo do ticket. Abra o terminal de paper trading e coloque um trade completo com dinheiro fictício: entrada, tamanho, stop-loss, take-profit. Depois deixe quieto.",
+    "label": "Abrir Paper Trade →"
+   }
+  }
+ ]
+}

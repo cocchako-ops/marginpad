@@ -1,0 +1,408 @@
+{
+ "id": "firsttrade",
+ "name": "Trade Pertamamu, Klik demi Klik",
+ "sub": "Setiap tombol, berurutan",
+ "lessons": [
+  {
+   "id": "ft1",
+   "t": "Tiga keputusan sebelum klik apa pun",
+   "cards": [
+    {
+     "h": "Sebuah trade adalah tiga jawaban",
+     "p": "Sebelum kamu menyentuh tiket order, tiga pertanyaan harus sudah punya jawaban: arah mana, di harga berapa kamu terbukti salah, dan seberapa besar posisinya. Arah saja adalah tebakan. Arah plus harga-salah tapi tanpa ukuran itu belum selesai. Kalau salah satu dari ketiganya hilang, kamu belum punya trade — kamu punya harapan."
+    },
+    {
+     "h": "Arah: long atau short",
+     "p": "Long berarti kamu untung kalau harga naik dan rugi kalau turun. Short adalah cerminannya: kamu untung kalau harga turun. Di futures keduanya cuma berjarak satu klik, dan tak ada yang lebih aman di antaranya. Ucapkan arahmu sebagai kalimat biasa — long BTC — sebelum apa pun yang lain, karena setiap kolom lain di tiket bergantung padanya."
+    },
+    {
+     "h": "Invalidasi: di mana kamu salah",
+     "p": "Invalidasi adalah harga di mana alasanmu mengambil trade itu berhenti jadi benar. Kalau kamu long karena harga bertahan di sebuah level, maka jebol bersih di bawah level itu adalah invalidasimu. Baca dari chart, bukan dari seberapa banyak yang rela kamu rugikan. Harga inilah yang nanti kamu ketik ke kolom stop-loss."
+    },
+    {
+     "h": "Ukuran adalah jawaban terakhir",
+     "p": "Ukuran bukan seberapa yakin perasaanmu. Dia aritmetika. Pilih dolar yang rela kamu kehilangan di trade ini, ukur jarak dari entry ke invalidasi sebagai persentase, lalu bagi. Mempertaruhkan $50 dengan invalidasi berjarak 2% memberi posisi $2,500, karena $50 dibagi 0.02 adalah $2,500. Kolom ukuran akan diurai sebentar lagi."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Apa yang mengubah sebuah arah jadi trade sungguhan?",
+     "o": [
+      "Keyakinan kuat pada setup-nya",
+      "Harga invalidasi dan sebuah ukuran",
+      "Saldo akun yang lebih besar",
+      "Setelan leverage yang lebih tinggi"
+     ]
+    },
+    {
+     "q": "Harga invalidasimu seharusnya datang dari mana?",
+     "o": [
+      "Jumlah yang mau kamu rugikan",
+      "Level chart yang membuktikan kamu salah",
+      "Apa pun kata pemilih leverage",
+      "Berapa besar akunmu sekarang"
+     ]
+    },
+    {
+     "q": "Kamu akan mempertaruhkan $50 dan invalidasimu berjarak 2%. Ukuran posisinya?",
+     "o": [
+      "$100",
+      "$1,000",
+      "$2,500",
+      "$5,000"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft2",
+   "t": "Order market atau order limit",
+   "cards": [
+    {
+     "h": "Order market: tereksekusi sekarang",
+     "p": "Order market mengambil harga apa pun yang sedang beristirahat di order book saat ini, mulai dari yang terbaik lalu berjalan keluar sampai ukuranmu terpenuhi. Dia selalu tereksekusi. Yang tidak dia janjikan adalah harganya: di pasar tipis order-mu sendiri melahap beberapa level, dan rata-rata yang kamu dapat lebih buruk dari angka yang kamu lihat."
+    },
+    {
+     "h": "Order limit: hargamu atau tidak sama sekali",
+     "p": "Order limit bilang: eksekusi aku di harga ini atau lebih baik, kalau tidak, tunggu. Kamu menaruh beli di bawah harga saat ini atau jual di atasnya, dan order-nya beristirahat di order book sampai ada yang trading melawannya. Harganya terjamin; eksekusinya tidak. Kalau harga tak pernah kembali ke levelmu, kamu sekadar tidak mendapat trade-nya."
+    },
+    {
+     "h": "Selisih biayanya nyata",
+     "p": "Melintasi spread membuatmu jadi taker dan membayar biaya yang lebih tinggi, sering 0.055%. Beristirahat di order book membuatmu jadi maker, sering 0.02%. Di posisi $5,000 itu $2.75 berbanding $1.00 per sisi. Masuk market dan keluar market memakan $5.50 pulang-pergi; masuk limit dan keluar limit memakan $2.00. Trade yang sama, tagihan yang berbeda."
+    },
+    {
+     "h": "Memilih di antara keduanya",
+     "p": "Pakai order market saat berada di dalam trade lebih penting daripada beberapa dolar, atau saat kamu menutup sesuatu yang sudah salah dan mau keluar sekarang. Pakai order limit saat kamu punya harga di kepala dan rela melewatkan trade-nya. Melewatkan trade adalah hasil yang normal dan bisa dilalui. Mengejar trade biasanya tidak."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Order limit menjamin…",
+     "o": [
+      "eksekusi di harga berapa pun",
+      "hargamu, tapi bukan eksekusinya",
+      "biaya terendah, selalu",
+      "eksekusi instan"
+     ]
+    },
+    {
+     "q": "Di posisi $5,000, biaya taker 0.055% memakan…",
+     "o": [
+      "$0.55",
+      "$5.50",
+      "$2.75",
+      "$27.50"
+     ]
+    },
+    {
+     "q": "Situasi mana yang paling membenarkan order market?",
+     "o": [
+      "Kamu mau biaya semurah mungkin",
+      "Kamu sabar soal harga entry-nya",
+      "Kamu menaruh order semalaman",
+      "Kamu harus keluar dari posisi yang salah"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft3",
+   "t": "Kolom ukuran, diurai",
+   "cards": [
+    {
+     "h": "Margin, nosional, kuantitas",
+     "p": "Tiga angka menggambarkan satu posisi. Kuantitas adalah berapa banyak koin yang kamu kendalikan, katakanlah 0.02 BTC. Nosional adalah kuantitas itu dalam dolar: di $50,000 per BTC, 0.02 BTC adalah nosional $1,000. Margin adalah uang yang benar-benar terkunci dari saldomu — di leverage 10x pada posisi itu, $100. Untung dan rugi mengikuti nosional, tak pernah margin."
+    },
+    {
+     "h": "Apa yang sebenarnya leverage ubah",
+     "p": "Leverage tidak mengubah berapa dolar yang kamu untung atau rugi per pergerakan harga 1%. Nosional yang melakukan itu. Leverage mengubah dua hal lain: berapa margin yang terkunci, dan seberapa dekat harga likuidasi duduk di belakangmu. Posisi $1,000 yang sama di 5x atau di 25x menghasilkan dan merugikan dolar yang identik. Hanya bantalannya yang berbeda."
+    },
+    {
+     "h": "Ukuran mengikuti jarak stop",
+     "p": "Kerjakan mundur. Tentukan dolar yang rela kamu kehilangan: $50. Ukur entry ke invalidasi sebagai pecahan: 2%, atau 0.02. Nosional adalah risiko dibagi pecahan itu, jadi $50 / 0.02 = $2,500. Baru setelah itu pilih leverage yang membuat margin terkuncinya terasa nyaman. Ambisi tidak menentukan apa pun di sini. Jarak stop yang menentukan segalanya."
+    },
+    {
+     "h": "Stop lebih lebar berarti ukuran lebih kecil",
+     "p": "Risiko $50 yang sama membeli posisi $2,500 saat stop-nya berjarak 2%, tapi hanya posisi $1,000 saat jaraknya 5%, karena $50 / 0.05 = $1,000. Itulah pertukaran yang tak pernah disebut siapa pun: stop yang ditaruh jauh demi kenyamanan memakan ukuranmu. Kedua versinya rugi persis $50 kalau kamu salah, dan itulah seluruh intinya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Dolar yang kamu untung atau rugi per pergerakan 1% bergantung pada…",
+     "o": [
+      "leverage yang kamu pilih",
+      "ukuran nosional posisinya",
+      "margin yang terkunci",
+      "total saldo akunmu"
+     ]
+    },
+    {
+     "q": "0.02 BTC di $50,000 per BTC adalah nosional sebesar…",
+     "o": [
+      "$100",
+      "$500",
+      "$1,000",
+      "$2,000"
+     ]
+    },
+    {
+     "q": "Kamu melebarkan stop dari 2% ke 5% dan tetap mempertaruhkan $50. Ukurannya…",
+     "o": [
+      "tetap sama",
+      "jadi lebih kecil",
+      "jadi lebih besar",
+      "berlipat dua"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft4",
+   "t": "Stop-loss, dipasang duluan",
+   "cards": [
+    {
+     "h": "Apa itu stop-loss",
+     "p": "Stop-loss adalah order yang duduk di exchange dan menutup posisimu otomatis kalau harga mencapai level yang kamu pilih. Di tiket order dia sebuah kolom di sebelah entry-mu: kamu mengetik sebuah harga ke dalamnya. Dia bekerja saat kamu tidur, saat ponselmu mati, dan saat kamu sedang sibuk merasa yakin bahwa pasarlah yang salah."
+    },
+    {
+     "h": "Dia masuk bersama entry",
+     "p": "Masukkan stop-loss dalam aksi yang sama dengan entry, bukan setelah kamu melihat bagaimana trade-nya berperilaku. Alasannya sederhana: versi dirimu yang tenang memilih level dari chart, dan versi yang sudah menonton posisinya merugi memilih level dari harapan. Kamu tak akan pernah lebih objektif dari dirimu sebelum tereksekusi."
+    },
+    {
+     "h": "Pasang sendiri",
+     "prompt": "Ini long. Sentuh tempat stop-loss seharusnya berada — tepat di bawah swing low.",
+     "p": "Sebelum kamu memercayai kolomnya, buktikan kamu tahu levelnya. Satu sentuhan."
+    },
+    {
+     "h": "Memindahkan stop itu mahal",
+     "p": "Menyeret stop makin jauh supaya tidak kena adalah kebiasaan paling mahal dalam trading. Dia mengubah kerugian terencana $50 jadi $200 yang tak terencana, dan dia mengajarimu bahwa rencanamu bisa dinegosiasi. Stop boleh dipindahkan ke arah profit saat trade-nya berjalan. Memindahkannya menjauh dari entry bukan manajemen risiko, itu penundaan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kenapa memasukkan stop-loss di saat yang sama dengan entry?",
+     "o": [
+      "Exchange mewajibkannya",
+      "Dia menurunkan biaya tradingmu",
+      "Kamu paling objektif sebelum tereksekusi",
+      "Dia menambah ukuran posisimu"
+     ]
+    },
+    {
+     "q": "Memindahkan stop menjauh dari entry berbuat apa pada kerugian terencanamu?",
+     "o": [
+      "Menghapusnya sepenuhnya",
+      "Membuatnya lebih besar dan tak terencana",
+      "Memotongnya jadi separuh",
+      "Tidak apa-apa, dia tetap sama"
+     ]
+    },
+    {
+     "q": "Order stop-loss…",
+     "o": [
+      "menjamin profit di levelmu",
+      "hanya bekerja saat aplikasimu terbuka",
+      "sama saja dengan take-profit",
+      "menutup posisi di harga yang dipilih"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft5",
+   "t": "Take-profit dan rasionya",
+   "cards": [
+    {
+     "h": "Putuskan exit-nya sebelum emosi",
+     "p": "Take-profit adalah order yang menutup posisi otomatis di harga di atas entry-mu untuk long, atau di bawahnya untuk short. Memasangnya bersamaan dengan stop berarti kedua exit dipilih saat belum ada apa pun yang dipertaruhkan. Posisi dengan stop tapi tanpa target cenderung ditutup oleh perasaan mana pun yang datang duluan."
+    },
+    {
+     "h": "Mengambil sebagiannya",
+     "p": "Kamu tidak harus keluar sekaligus. Menutup separuh di target pertama dan membiarkan sisanya melaju, dengan stop dipindah ke harga entry-mu, adalah struktur yang lazim. Dia mengecilkan kedua hasilnya: kemenangan lebih kecil kalau harga terus jalan, kerugian lebih kecil kalau dia berbalik. Tak ada pembagian yang benar, hanya pembagian yang kamu pilih di muka."
+    },
+    {
+     "h": "Rasio yang diimplikasikan dua garismu",
+     "p": "Stop dan targetmu mengunci sebuah rasio sebelum trade-nya dimulai. Entry $50,000, stop $49,000, target $52,000 mempertaruhkan $1,000 untuk menghasilkan $2,000 — reward-to-risk 2:1. Di 2:1, menang satu dari tiga trade sudah impas sebelum biaya. Itu aritmetika, bukan janji. Tak ada yang bilang targetnya pernah tercapai. Cek rasionya sebelum kamu klik."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Entry $50,000, stop $49,000, target $52,000 adalah reward-to-risk…",
+     "o": [
+      "1:1",
+      "1:2",
+      "2:1",
+      "3:1"
+     ]
+    },
+    {
+     "q": "Kenapa memasang take-profit bersamaan dengan stop?",
+     "o": [
+      "Dia mengurangi biaya trading",
+      "Exchange menolak order tanpa itu",
+      "Dia menjamin targetnya tercapai",
+      "Kedua exit dipilih saat masih tenang"
+     ]
+    },
+    {
+     "q": "Menutup separuh posisi di target pertama…",
+     "o": [
+      "menghapus seluruh sisa risikonya",
+      "mengecilkan kemenangan sekaligus kerugiannya",
+      "menaikkan leverage-mu otomatis",
+      "wajib di exchange futures"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft6",
+   "t": "Membaca posisi terbukamu",
+   "cards": [
+    {
+     "h": "Baris posisi, kolom demi kolom",
+     "p": "Begitu tereksekusi, posisimu muncul sebagai satu baris: sisi dan ukuran, harga entry, mark price, untung dan rugi belum terealisasi, margin, dan harga likuidasi. Setiap terminal futures menampilkan kurang lebih kolom-kolom ini dalam urutan tertentu. Tak ada satu pun di baris itu yang memberitahumu apakah trade-nya bagus. Dia memberitahu apa yang benar sekarang juga, dan itu tugas yang berbeda."
+    },
+    {
+     "h": "Harga entry dan mark price",
+     "p": "Entry adalah harga rata-rata yang benar-benar kamu dapat, sebelum biaya. Mark price adalah harga acuan wajar milik exchange, dipakai untuk menilai posisimu dan menentukan likuidasi — biasanya berjangkar pada indeks yang lebih luas, bukan pada transaksi terakhir di satu order book. Itu disengaja: dia membuat satu cetakan harga aneh jauh lebih sulit dipakai melawanmu."
+    },
+    {
+     "h": "Belum terealisasi berarti belum jadi milikmu",
+     "p": "Untung dan rugi belum terealisasi adalah nilai penyelesaian posisi itu andai kamu menutupnya detik ini di mark price. Dia bergerak di setiap tick, dan dia bukan uang yang kamu miliki. Untung dan rugi terealisasi adalah yang tersisa begitu kamu benar-benar menutup, biaya sudah dipotong. Akun dinilai dari angka kedua, dan hanya dari angka kedua."
+    },
+    {
+     "h": "Harga likuidasi adalah lantainya",
+     "p": "Harga likuidasi adalah tempat marginmu tak lagi menutup kerugiannya dan exchange menutup posisi itu untukmu, sambil menyimpan margin tersebut. Dia duduk lebih jauh kalau kamu menambah margin dan lebih dekat kalau kamu menaikkan leverage. Saat stop-loss-mu lebih dekat daripada harga likuidasimu, stop-lah yang menentukan hasilnya. Memang begitu seharusnya: awasi stop-nya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Mark price dipakai untuk apa?",
+     "o": [
+      "Mencatat harga saat entry-mu tereksekusi",
+      "Menilai posisi dan memicu likuidasi",
+      "Menentukan biaya yang ditagih pada trade itu",
+      "Menampilkan volume yang ditradingkan hari ini"
+     ]
+    },
+    {
+     "q": "Untung dan rugi belum terealisasi adalah…",
+     "o": [
+      "uang yang sudah duduk di saldomu",
+      "nilai penyelesaian posisi itu sekarang",
+      "biaya yang sudah kamu bayar sejauh ini",
+      "margin yang dikunci posisi itu"
+     ]
+    },
+    {
+     "q": "Level mana yang normalnya menentukan bagaimana sebuah trade berakhir?",
+     "o": [
+      "Harga likuidasi",
+      "Mark price",
+      "Level stop-loss-mu",
+      "Tarif funding"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft7",
+   "t": "Menutup posisi",
+   "cards": [
+    {
+     "h": "Menutup di harga pasar",
+     "p": "Menutup berarti mengirim order berlawanan dengan ukuran yang sama: long ditutup dengan menjual, short dengan membeli. Tutup di market dan dia tereksekusi seketika melawan apa pun yang ada di order book, membayar biaya taker. Begitu tereksekusi, angka belum terealisasi jadi terealisasi, marginnya dilepas kembali ke saldomu, dan barisnya hilang."
+    },
+    {
+     "h": "Tutup parsial dan kena stop",
+     "p": "Kamu bisa menutup sebagian posisi. Jual separuh kuantitasnya dan barisnya tetap terbuka di ukuran yang lebih kecil, dengan harga entry tak berubah. Kena stop adalah peristiwa yang sama, dipicu oleh order stop yang kamu pasang alih-alih oleh jarimu. Bagaimanapun juga exchange mengirim sebuah order penutup. Satu-satunya bedanya adalah siapa yang memutuskan, dan kapan."
+    },
+    {
+     "h": "Kerugian terencana itu tidak apa-apa",
+     "p": "Terealisasi berarti final: uangnya sudah keluar dari saldomu atau masuk ke dalamnya, biaya termasuk. Trade yang kena stop yang kamu pilih sendiri, di ukuran yang kamu hitung, melakukan persis apa yang kamu rancang. Dia memakan jumlah yang kamu putuskan untuk dibelanjakan demi mencari tahu. Nilai sebuah trade dari apakah kamu mengikuti rencananya, bukan dari tanda angkanya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Menutup posisi long berarti…",
+     "o": [
+      "membeli lebih banyak koin yang sama",
+      "menjual kuantitas yang sama yang kamu pegang",
+      "menambah margin ke posisinya",
+      "menaikkan setelan leverage"
+     ]
+    },
+    {
+     "q": "Apa yang terjadi di saat sebuah posisi ditutup?",
+     "o": [
+      "Belum terealisasi jadi terealisasi, margin dilepas",
+      "Harga entry-nya dihitung ulang ke atas",
+      "Setelan leverage-mu berlipat dua",
+      "Biaya yang kamu bayar dikembalikan"
+     ]
+    },
+    {
+     "q": "Trade yang kena stop-loss terencananya adalah…",
+     "o": [
+      "kesalahan yang sebaiknya tak kamu ulangi",
+      "bukti bahwa seluruh pendekatannya gagal",
+      "trade yang mengikuti rencananya sendiri",
+      "selalu sekadar soal nasib buruk"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft8",
+   "t": "Satu trade utuh, dari awal sampai akhir",
+   "cards": [
+    {
+     "h": "Tiga jawaban, lalu tiketnya",
+     "p": "Long BTC, karena harga bertahan di $50,000. Salah di bawah $49,000, itulah invalidasinya dan jaraknya persis 2%. Risiko $50, jadi nosionalnya $50 / 0.02 = $2,500, dan di 10x itu mengunci margin $250. Tiga jawaban, diputuskan dan ditulis, sebelum satu kolom pun di tiket disentuh."
+    },
+    {
+     "h": "Mengisi tiketnya",
+     "p": "Sisi beli. Jenis order limit, harga $50,000, jadi kamu membayar biaya maker dan menerima bahwa dia mungkin tak pernah tereksekusi. Ukuran nosional $2,500, leverage 10x. Ketik $49,000 ke kolom stop-loss dan $52,000 ke kolom take-profit sebelum kamu submit — target itu 2:1 terhadap risikomu. Baca ulang seluruh tiketnya sekali, lalu submit."
+    },
+    {
+     "h": "Setelah tereksekusi, jangan lakukan apa-apa",
+     "p": "Baris posisinya muncul dan angka belum terealisasinya mulai bergerak. Pekerjaanmu sudah selesai, karena kedua exit sudah beristirahat di exchange. Entah $49,000 tertransaksi dan kamu rugi $50, atau $52,000 tertransaksi dan kamu untung $100, atau kamu menutup manual dengan alasan yang bisa kamu tulis setelahnya. Menatap layar lebih keras tidak mengubah satu pun dari ketiganya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Di panduan tadi, kenapa nosionalnya $2,500?",
+     "o": [
+      "Dia sepuluh kali margin yang terkunci",
+      "Dia 5% dari saldo akunnya",
+      "Dia ukuran minimum dari exchange",
+      "Dia risiko $50 dibagi 0.02"
+     ]
+    },
+    {
+     "q": "Kapan stop-loss dan take-profit dimasukkan?",
+     "o": [
+      "Setelah tereksekusi, saat harga sudah bergerak",
+      "Di tiket yang sama dengan entry-nya",
+      "Hanya kalau trade-nya mulai memburuk",
+      "Di akhir hari trading"
+     ]
+    },
+    {
+     "q": "Kalau harga mencapai $52,000 di trade itu, hasilnya…",
+     "o": [
+      "+$50",
+      "+$250",
+      "+$100",
+      "+$2,500"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Sekarang kamu tahu setiap kolom di tiketnya. Buka terminal paper trading dan pasang satu trade utuh dengan uang bohongan: entry, ukuran, stop-loss, take-profit. Lalu biarkan saja.",
+    "label": "Buka Paper Trade →"
+   }
+  }
+ ]
+}

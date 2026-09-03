@@ -1,0 +1,674 @@
+{
+ "id": "market",
+ "name": "Reading the Market",
+ "sub": "Data instead of vibes",
+ "color": "#3fd8e6",
+ "icon": "chart",
+ "lessons": [
+  {
+   "id": "m1",
+   "t": "Trend, support and resistance",
+   "cards": [
+    {
+     "h": "Trade with the current, not against it",
+     "v": "trend",
+     "p": "A trend is a sequence of higher highs and higher lows (up) or lower highs and lower lows (down). Trading against a strong trend because something looks too high or too cheap is a donation. The trend is not always right — but it is right more often than your feelings about it."
+    },
+    {
+     "h": "Spot the demand zone",
+     "act": {
+      "kind": "tap",
+      "viz": "tapsupport",
+      "prompt": "Buyers stepped in at the same area three times. Tap that zone."
+     },
+     "p": "Support and resistance are zones, not exact lines. Train your eye on this chart."
+    },
+    {
+     "h": "Confluence beats any single signal",
+     "p": "One level means little. A level that coincides with a trend line, a round number and a prior high is confluence — several independent reasons pointing at the same zone. Professionals wait for confluence; beginners act on the first line they draw."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "An uptrend is defined by…",
+     "o": [
+      "Green candles only",
+      "Higher highs and higher lows",
+      "High volume",
+      "Positive news"
+     ],
+     "a": 1
+    },
+    {
+     "q": "When resistance breaks, it often…",
+     "o": [
+      "Disappears forever",
+      "Becomes new support",
+      "Guarantees a crash",
+      "Means nothing"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Confluence means…",
+     "o": [
+      "A type of order",
+      "Several independent signals pointing at the same zone",
+      "A crypto conference",
+      "Trading multiple coins at once"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Draw your first levels: open a chart, mark the most recent obvious support and resistance zones.",
+    "label": "Open Charts →",
+    "href": "/charts"
+   }
+  },
+  {
+   "id": "m2",
+   "t": "Moving averages: the trend, smoothed",
+   "cards": [
+    {
+     "h": "What an MA actually shows",
+     "v": "machart",
+     "p": "A moving average draws the average closing price of the last N candles — the market's recent memory as one smooth line. Price above a rising MA is trend-healthy; price chopping through a flat MA means no trend exists and trend tools will just generate noise."
+    },
+    {
+     "h": "EMA vs SMA, and the famous pairs",
+     "p": "The simple MA (SMA) weights every candle equally; the exponential MA (EMA) reacts faster to recent prices. Watched-by-everyone settings: EMA 9/21 for short-term momentum, SMA 50/200 for the big picture. They work partly BECAUSE everyone watches them — self-fulfilling zones."
+    },
+    {
+     "h": "Crosses: signal and lag",
+     "p": "When the 50 crosses above the 200 (golden cross), it confirms an uptrend is established; the reverse (death cross) confirms a downtrend. Note the word confirms — MAs are lagging by construction. They tell you which side to trade FROM, not the exact moment to click."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "A moving average shows…",
+     "o": [
+      "Future price",
+      "The average of recent closes — the trend smoothed",
+      "Trading volume",
+      "Exchange reserves"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Which MA reacts faster to fresh price moves?",
+     "o": [
+      "SMA",
+      "EMA",
+      "They are identical",
+      "Neither moves"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A golden cross (50 over 200) is best used as…",
+     "o": [
+      "A precise entry timer",
+      "Confirmation of an established uptrend",
+      "A sell signal",
+      "A liquidation warning"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "m3",
+   "t": "RSI and momentum",
+   "cards": [
+    {
+     "h": "What RSI measures",
+     "v": "rsigauge",
+     "p": "RSI compresses the last 14 candles of gains vs losses into a 0-100 scale. Above 70 the market is called overbought, below 30 oversold. It measures the SPEED of the move, not its correctness — a market can be overbought and keep rising for weeks."
+    },
+    {
+     "h": "The beginner mistake",
+     "p": "Selling just because RSI touched 70 is one of the most reliable ways to short a raging bull trend. In strong trends, RSI stays pinned in extreme territory. The overbought/oversold reading only becomes interesting when the trend is ALREADY weakening or at major levels."
+    },
+    {
+     "h": "Divergence: the useful trick",
+     "v": "diverge",
+     "p": "When price makes a new high but RSI makes a lower high, momentum is fading under the surface — that is bearish divergence, an early caution flag (not a sell button). The reverse at lows is bullish divergence. Divergence plus a key level plus confluence — now it is a setup."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "RSI above 70 means…",
+     "o": [
+      "Guaranteed reversal — sell now",
+      "The recent move has been fast; in strong trends it can stay there",
+      "The exchange will halt trading",
+      "Volume is fake"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Bearish divergence is…",
+     "o": [
+      "Price new high, RSI lower high — momentum fading",
+      "Price and RSI both rising",
+      "RSI below 30",
+      "A candle pattern"
+     ],
+     "a": 0
+    },
+    {
+     "q": "On its own, a single indicator reading is…",
+     "o": [
+      "A complete strategy",
+      "Weak — it needs confluence with levels and trend",
+      "Illegal to trade",
+      "Only for professionals"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "m4",
+   "t": "Open interest and crowd positioning",
+   "cards": [
+    {
+     "h": "Open interest: money in the game",
+     "p": "Open interest (OI) counts the total value of futures positions currently open. Rising OI with rising price = new money buying the move (healthy). Rising price with FALLING OI = shorts closing, not new demand — a move likely to stall. OI tells you WHO is powering a move."
+    },
+    {
+     "h": "The long/short ratio",
+     "v": "crowd",
+     "p": "The long/short ratio shows which side the crowd is on. Extreme readings are contrarian: when nearly everyone is already long, few buyers remain — but a huge pool of liquidation prices sits below, ready to fuel the opposite move."
+    },
+    {
+     "h": "The three-signal stack",
+     "p": "The high-conviction derivative setup stacks three things: one-sided long/short ratio + rising OI + funding paying the crowded side. That is a crowd that is leveraged, growing, and paying to stay — a loaded spring. Any one signal alone is weak; together they are the market's tell."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Price rising while open interest falls usually means…",
+     "o": [
+      "Strong new buying",
+      "Shorts covering — the move may lack fuel",
+      "A guaranteed breakout",
+      "Nothing"
+     ],
+     "a": 1
+    },
+    {
+     "q": "An extremely one-sided long/short ratio is…",
+     "o": [
+      "A signal to join the majority",
+      "A contrarian warning — the crowded side is the fuel",
+      "Proof of a healthy market",
+      "Random noise"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The loaded spring setup combines…",
+     "o": [
+      "RSI, MACD and volume",
+      "Crowded ratio + rising OI + funding paying that side",
+      "Three green candles",
+      "News and social media"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Check the live long/short ratio and open interest — which side is crowded right now?",
+    "label": "Long/Short Ratio →",
+    "href": "/long-short/"
+   }
+  },
+  {
+   "id": "m5",
+   "t": "Liquidation cascades: why crashes overshoot",
+   "cards": [
+    {
+     "h": "The domino mechanism",
+     "v": "cascade",
+     "p": "When price hits a leveraged trader's liquidation level, the exchange force-sells the position at market. That sell pushes price down — into the NEXT cluster of liquidation prices, triggering more forced sells. Watch the dominoes below: one trigger, a chain of forced exits."
+    },
+    {
+     "h": "Why price hunts certain levels",
+     "p": "Liquidation prices cluster at predictable places — just beyond round numbers and obvious support, where crowds of similar traders opened similar positions. Large players can see these clusters. A wick that spikes through a level, triggers the cluster and instantly reverses is that mechanism working."
+    },
+    {
+     "h": "Watching the fuel",
+     "p": "Live liquidation feeds show cascades as they happen — a burst of forced longs marks capitulation lows more reliably than most indicators. For your own trades the lesson is defensive: put your liquidation price where a routine hunt cannot reach it, or better, size so liquidation is impossible."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "A liquidation cascade is…",
+     "o": [
+      "A planned exchange event",
+      "Forced sells triggering more forced sells in a chain",
+      "A type of staking reward",
+      "A chart pattern"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Liquidation clusters form…",
+     "o": [
+      "Randomly",
+      "Just beyond round numbers and obvious levels where crowds positioned alike",
+      "Only on weekends",
+      "Only on small coins"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The defensive lesson for your own trades is…",
+     "o": [
+      "Use maximum leverage",
+      "Keep your liquidation out of routine wick range — or size so it cannot exist",
+      "Remove stop-losses",
+      "Trade only at night"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Watch forced liquidations stream in live on Rekt — see the cascade mechanism with your own eyes.",
+    "label": "Open Rekt →",
+    "href": "/rekt/"
+   }
+  },
+  {
+   "id": "m6",
+   "t": "Macro: the tide under every trade",
+   "cards": [
+    {
+     "h": "Crypto trades the dollar and rates",
+     "p": "Bitcoin is a liquidity-sensitive risk asset: when rates look set to fall, money flows toward risk and crypto rises; higher-for-longer does the opposite. This is why a US inflation number can move Bitcoin within one second — algorithms reprice the entire rate path instantly."
+    },
+    {
+     "h": "The events that matter",
+     "v": "eventspike",
+     "p": "A handful of scheduled releases drive the biggest hours in crypto: the Fed's FOMC rate decision, CPI and PCE inflation prints, and the NFP jobs report. They are on the calendar weeks ahead — being surprised by one is a choice. Below: what 12:30 UTC on CPI day looks like."
+    },
+    {
+     "h": "Event risk is a sizing problem",
+     "p": "You cannot predict the number, but you can survive it: know the release time, and size so a 2-3% instant wick cannot liquidate you. The first candle after a release is frequently a fake-out — professionals let it play out rather than market-chasing at the worst spread of the day."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Why does a US inflation print move Bitcoin in seconds?",
+     "o": [
+      "Coincidence",
+      "Algorithms instantly reprice rate expectations — crypto is a liquidity asset",
+      "Miners sell on news",
+      "It does not"
+     ],
+     "a": 1
+    },
+    {
+     "q": "FOMC, CPI and NFP release times are…",
+     "o": [
+      "Secret",
+      "Random",
+      "Scheduled and public weeks in advance",
+      "Only for stock traders"
+     ],
+     "a": 2
+    },
+    {
+     "q": "The professional approach to a big scheduled release is…",
+     "o": [
+      "Max leverage right before it",
+      "Size so an instant 2-3% wick cannot liquidate you",
+      "Market-buy the first candle",
+      "Ignore it"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The single most important idea in this course so far was…",
+     "o": [
+      "Finding perfect entries",
+      "Surviving: sizing and risk control keep you in the game long enough to learn",
+      "Trading more often",
+      "Higher leverage"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Open the economic calendar and find the next FOMC or CPI date — set a reminder before it hits.",
+    "label": "Economic Calendar →",
+    "href": "/calendar/"
+   }
+  },
+  {
+   "id": "m7",
+   "t": "Chart patterns: compression and expansion",
+   "cards": [
+    {
+     "h": "What patterns actually are",
+     "v": "patterns",
+     "p": "Triangles, flags, ranges — under every named pattern is one physical fact: volatility COMPRESSES as buyers and sellers reach temporary agreement, then EXPANDS when one side wins. The name matters less than recognising compression, because expansion follows it."
+    },
+    {
+     "h": "Patterns are probabilities, not promises",
+     "p": "A triangle does not know which way it will break. Patterns tilt odds slightly and — more usefully — give you clean invalidation levels: enter on the break, stop beyond the opposite side. The R:R structure is the real gift, not prediction."
+    },
+    {
+     "h": "The trap: pattern hallucination",
+     "p": "Stare long enough and any chart grows patterns like clouds grow faces. Anchor patterns to the context you already have — trend, key levels, volume on the break. A textbook flag against the higher-timeframe trend at no level is just a shape."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Underneath every chart pattern is…",
+     "o": [
+      "Magic",
+      "Volatility compressing, then expanding",
+      "Insider trading",
+      "Round numbers"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The most useful thing a pattern gives you is…",
+     "o": [
+      "A guaranteed direction",
+      "A clean invalidation level for R:R structure",
+      "A name to post online",
+      "Volume"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A perfect flag against the higher-timeframe trend at no level is…",
+     "o": [
+      "An A+ setup",
+      "Just a shape without context",
+      "A short signal",
+      "A buy signal"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "m8",
+   "t": "Multi-timeframe analysis",
+   "cards": [
+    {
+     "h": "Three maps of one territory",
+     "v": "mtf",
+     "p": "The daily chart sets the WEATHER (trend and key levels), the 4-hour sets the SETUP (structure forming at those levels), the 15-minute sets the TRIGGER (precise entry and stop). One market, three altitudes — confusion happens when you trade a trigger without weather."
+    },
+    {
+     "h": "The top-down ritual",
+     "p": "Always in this order: daily first (which side am I allowed to trade?), then 4H (is a setup forming at a level that matters?), then LTF (exact entry, exact invalidation). Reversing the order — finding an exciting 5-minute chart and inventing a story — is how counter-trend donations happen."
+    },
+    {
+     "h": "Conflicts resolve UP",
+     "p": "When timeframes disagree, the higher one wins. A bullish 15-minute inside a bearish daily is a bounce to sell, not a reversal to marry. Structure breaks propagate upward slowly — respect the big map until it actually changes."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "The correct analysis order is…",
+     "o": [
+      "15m → 4H → daily",
+      "Daily → 4H → 15m",
+      "Any order",
+      "Only one timeframe"
+     ],
+     "a": 1
+    },
+    {
+     "q": "When timeframes conflict, priority goes to…",
+     "o": [
+      "The lowest",
+      "The higher timeframe",
+      "The most volatile",
+      "The prettiest"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A bullish 15m inside a bearish daily is usually…",
+     "o": [
+      "A trend reversal to hold",
+      "A bounce within a downtrend",
+      "Impossible",
+      "A buy-and-hold signal"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "m9",
+   "t": "Bitcoin dominance and rotation",
+   "cards": [
+    {
+     "h": "The market's table of contents",
+     "v": "domi",
+     "p": "Bitcoin dominance (BTC.D) is Bitcoin's share of total crypto market cap. Rising dominance: money favours BTC — alts bleed even in green markets. Falling dominance with rising prices: risk appetite is spilling outward — the classic alt-season signature."
+    },
+    {
+     "h": "The rotation cycle",
+     "p": "Liquidity typically cascades: into BTC first, then ETH, then large caps, then the long tail of small alts — each wave riskier than the last. By the time micro-caps go vertical, the cycle is late. Dominance charts let you see which chapter you are in."
+    },
+    {
+     "h": "Trading the tide, not just the boat",
+     "p": "An altcoin long is really two bets: the coin AND the dominance tide. A strong alt setup against rising BTC.D is swimming upstream. Check the tide before the trade — it is one extra chart and it reframes everything."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Rising BTC dominance means…",
+     "o": [
+      "Alts outperform",
+      "Money favours Bitcoin — alts usually bleed relatively",
+      "Nothing",
+      "Stablecoins are failing"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The classic liquidity rotation runs…",
+     "o": [
+      "Small caps → BTC",
+      "BTC → ETH → large caps → small caps",
+      "Randomly",
+      "ETH last"
+     ],
+     "a": 1
+    },
+    {
+     "q": "An altcoin long during rising dominance is…",
+     "o": [
+      "Two aligned bets",
+      "Swimming upstream — the tide fights the trade",
+      "Risk-free",
+      "The standard play"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "m10",
+   "t": "ETF flows: institutional footprints",
+   "cards": [
+    {
+     "h": "Wall Street's daily receipt",
+     "p": "Since US spot Bitcoin ETFs launched in 2024, institutional demand became measurable: every inflow forces the fund to buy real BTC, every outflow forces selling — reported daily. It is the clearest window crypto has ever had into big, slow money."
+    },
+    {
+     "h": "Spot demand vs leverage froth",
+     "p": "A rally powered by ETF inflows has real coins being taken off the market — durable fuel. A rally with outflows and spiking funding is leverage lifting its own weight — the kind that cascades (m5). Flows tell you which rally you are standing in."
+    },
+    {
+     "h": "Trend, not tick",
+     "p": "One red day of flows means little; a multi-week streak is a regime. Combine the flow trend with funding and open interest for the full picture of who is driving — the same three-signal thinking you learned in m4, now with an institutional layer."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "An ETF inflow forces the issuer to…",
+     "o": [
+      "Sell BTC",
+      "Buy real BTC to back new shares",
+      "Print shares from nothing",
+      "Pay dividends"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A rally with ETF outflows and spiking funding is powered by…",
+     "o": [
+      "Institutions",
+      "Leverage — froth prone to cascades",
+      "Miners",
+      "Governments"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Flows matter most as…",
+     "o": [
+      "Single-day ticks",
+      "Multi-week trends alongside funding and OI",
+      "Hourly noise",
+      "A replacement for all analysis"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "m11",
+   "t": "Sentiment: fear and greed",
+   "cards": [
+    {
+     "h": "Measuring the crowd's pulse",
+     "p": "Sentiment gauges like the Fear & Greed index compress volatility, momentum, social buzz and dominance into one number. It is a thermometer for emotion — useful precisely because crowds are most wrong at their emotional extremes."
+    },
+    {
+     "h": "Extremes are signals, the middle is noise",
+     "p": "A reading of 55 tells you nothing. Extreme greed says late-comers are piling in with leverage — check funding and the long/short ratio for confirmation. Extreme fear marks the capitulation zones where forced sellers finish and patient buyers begin."
+    },
+    {
+     "h": "Use it as a brake, not an engine",
+     "p": "Sentiment does not generate entries; it moderates size and aggression. In extreme greed, tighten risk on longs even if the chart still looks perfect. In extreme fear, resist panic-selling into the hole. It is a discipline tool wearing a data costume."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Sentiment indexes are most useful at…",
+     "o": [
+      "Neutral readings",
+      "Emotional extremes, where crowds are most wrong",
+      "Exactly 50",
+      "Weekends"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Extreme greed combined with high funding suggests…",
+     "o": [
+      "A safe entry",
+      "Late leveraged longs — elevated squeeze risk",
+      "Low risk",
+      "Buy more"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Sentiment works best as…",
+     "o": [
+      "An entry generator",
+      "A brake on size and aggression",
+      "A replacement for charts",
+      "A price predictor"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Check where the market's emotions sit right now — live Fear & Greed with history.",
+    "label": "Fear & Greed Index →",
+    "href": "/fear-greed/"
+   }
+  },
+  {
+   "id": "m12",
+   "t": "Building a complete trade thesis",
+   "cards": [
+    {
+     "h": "One page, every layer",
+     "p": "A thesis stacks everything this course taught into one paragraph: higher-timeframe trend and level (m1, m8), pattern or structure (m7), derivative positioning — funding, OI, long/short (m4, l5), the macro calendar (m6), and flows or sentiment as the regime layer (m10, m11)."
+    },
+    {
+     "h": "Then the risk half",
+     "p": "The second half is Course 3: exact invalidation, R:R of at least 2, size from the 1-2% rule, planned partials, and the event check. A thesis without the risk half is a market opinion — opinions are free and cost the most."
+    },
+    {
+     "h": "Write it, trade it, grade it",
+     "p": "Write the thesis BEFORE entry, execute it as written, then grade the PROCESS in your journal — not the outcome. A perfectly executed loss is a good trade; a lucky, plan-breaking win is a bad one that will bill you later. This loop, repeated, is the entire craft."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "A complete thesis includes…",
+     "o": [
+      "Just a chart pattern",
+      "Trend, level, positioning data, macro AND the full risk plan",
+      "A price prediction",
+      "A social media consensus"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A thesis without invalidation and sizing is…",
+     "o": [
+      "Efficient",
+      "Just an opinion — the expensive kind",
+      "Professional",
+      "Complete"
+     ],
+     "a": 1
+    },
+    {
+     "q": "You should grade your trades on…",
+     "o": [
+      "Outcome only",
+      "Process — was the plan followed?",
+      "Screenshots",
+      "Feelings"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Across this whole course, the single most important idea is…",
+     "o": [
+      "Perfect entries",
+      "Surviving: sizing and risk control keep you in the game long enough to learn",
+      "More indicators",
+      "Higher leverage"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Write one full thesis on any coin and execute it as a paper trade — the complete loop, zero risk.",
+    "label": "Paper Trade →",
+    "href": "/paper-trade"
+   }
+  }
+ ]
+}

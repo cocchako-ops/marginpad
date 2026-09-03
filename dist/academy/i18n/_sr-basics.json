@@ -1,0 +1,439 @@
+{
+ "id": "basics",
+ "name": "Kripto Osnove",
+ "sub": "Šta zapravo trguješ",
+ "lessons": [
+  {
+   "id": "b1",
+   "t": "Šta je kripto, u stvari?",
+   "cards": [
+    {
+     "h": "Novac bez posrednika",
+     "p": "Bitcoin je nastao 2009. kao novac koji ne kontroliše nijedna banka ni država. Umesto da jedna banka vodi knjigu ko šta poseduje, hiljade računara širom sveta drže identične kopije te knjige — ta zajednička knjiga se zove blockchain."
+    },
+    {
+     "h": "Zašto nikad ne spava",
+     "p": "Berze akcija se otvaraju i zatvaraju. Kripto se trguje 24 sata dnevno, 7 dana u nedelji, svuda na svetu istovremeno. Cene mogu divlje da se pomere u 3 ujutru u nedelju — i baš zato traderi koriste alarme i stop-lossove umesto da bulje u grafikone ceo dan."
+    },
+    {
+     "h": "Hiljade coina, nekoliko bitnih",
+     "p": "Bitcoin (BTC) je najveći i pomera celo tržište. Ethereum (ETH) je drugi. Iza prvih nekoliko postoje hiljade manjih coina (altcoina) — većina je daleko rizičnija i manje likvidna. Kao početnik, sve što treba da naučiš možeš da naučiš na BTC i ETH."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Šta vodi evidenciju ko poseduje koji kripto?",
+     "o": [
+      "Centralna banka",
+      "Zajednička knjiga kopirana na hiljade računara (blockchain)",
+      "Svaka menjačnica vodi svoju privatnu listu, bez zajedničkog zapisa",
+      "Država"
+     ]
+    },
+    {
+     "q": "Kada se kripto tržište zatvara?",
+     "o": [
+      "U 17h po njujorškom vremenu",
+      "Vikendom",
+      "Nikad — trguje se 24/7",
+      "Praznicima"
+     ]
+    },
+    {
+     "q": "Kao početnik, na kojim coinima ima smisla učiti?",
+     "o": [
+      "Na potpuno novim coinima sa ogromnim % rastom",
+      "Na BTC i ETH — najvećim i najlikvidnijim",
+      "Na onome što je u trendu na društvenim mrežama",
+      "Na najjeftinijem coinu po komadu"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b2",
+   "t": "Menjačnice, novčanici i šta kupovina znači",
+   "cards": [
+    {
+     "h": "Gde se trguje",
+     "p": "Menjačnica (exchange) je pijaca koja spaja kupce i prodavce — Binance, Coinbase, Kraken i Bybit su menjačnice. Kad tamo kupiš Bitcoin, menjačnica ažurira svoju internu knjigu; coini stoje kod menjačnice dok ih ne povučeš."
+    },
+    {
+     "h": "Spot vs derivati",
+     "p": "Kupovina pravog coina zove se spot trgovina — poseduješ ga, i maksimalni gubitak je ono što si platio. Derivati (poput fjučersa koje ćeš upoznati u Kursu 2) su ugovori koji prate cenu bez posedovanja coina — omogućavaju polugu, koja seče na obe strane."
+    },
+    {
+     "h": "Nisu tvoji ključevi, nisu tvoji coini",
+     "p": "Novčanik je mesto gde kripto živi kad je stvarno tvoj — pod kontrolom tajnog ključa koji samo ti držiš. Coini ostavljeni na menjačnici su priznanica te menjačnice. To je u redu za aktivne trejding iznose, ali istorija (Mt. Gox, FTX) pokazuje zašto veliki iznosi pripadaju tvom novčaniku."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Šta je spot trgovina?",
+     "o": [
+      "Klađenje na cenu pozajmljenim novcem",
+      "Kupovina pravog coina — poseduješ ga",
+      "Vrsta novčanika",
+      "Trgovanje samo u određeno vreme"
+     ]
+    },
+    {
+     "q": "Coini koji stoje na menjačnici su…",
+     "o": [
+      "Uvek savršeno sigurni šta god se desilo menjačnici",
+      "U tvom ličnom novčaniku",
+      "Praktično priznanica menjačnice",
+      "Nemoguće ih je povući"
+     ]
+    },
+    {
+     "q": "Koliko maksimalno možeš da izgubiš kupujući spot sa $100?",
+     "o": [
+      "$100 — ono što si platio",
+      "Više od $100",
+      "Ništa, spot je bez rizika",
+      "Zavisi od poluge"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b3",
+   "t": "Čitanje grafikona cene",
+   "cards": [
+    {
+     "h": "Sveća",
+     "p": "Svaka sveća sažima cenu u jednom periodu: gde se otvorila, zatvorila, i najviše i najniže tačke koje je dotakla. Zelena sveća se zatvorila iznad otvaranja; crvena ispod. Tanke linije (fitilji) pokazuju ekstreme koje je cena nakratko dotakla."
+    },
+    {
+     "h": "Pronađi sam",
+     "prompt": "Dodirni GORNJI FITILJ sveće — liniju koja pokazuje najvišu dotaknutu cenu.",
+     "p": "Pre nego što nastaviš, dokaži to svojim očima. Jedan dodir."
+    },
+    {
+     "h": "Vremenski okviri menjaju priču",
+     "p": "Isto tržište izgleda drugačije na različitim vremenskim okvirima. Grafikon od 1 minuta pokazuje šum; dnevni pokazuje trend. Česta početnička greška je panika zbog strašne petominutne sveće koja je nevidljiva na dnevnom grafikonu. Prvo zumiraj napolje, uvek."
+    },
+    {
+     "h": "Volumen je detektor laži",
+     "p": "Volumen pokazuje koliko se stvarno trgovalo. Pomeranje cene na velikom volumenu znači pravo učešće; isti potez na tankom volumenu je krhk i često se okrene. Cena ti kaže šta se desilo — volumen koliko da veruješ u to."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Crvena sveća znači…",
+     "o": [
+      "Cena se zatvorila ispod otvaranja",
+      "Trgovanje je zaustavljeno",
+      "Volumen je bio nizak",
+      "Cena garantovano nastavlja da pada do kraja dana"
+     ]
+    },
+    {
+     "q": "Šta pokazuju fitilji sveće?",
+     "o": [
+      "Cenu koju tržište predviđa za sledeći period",
+      "Najvišu i najnižu cenu dotaknutu u tom periodu",
+      "Proviziju",
+      "Broj tradera"
+     ]
+    },
+    {
+     "q": "Veliki pomak cene na vrlo niskom volumenu je…",
+     "o": [
+      "Najjači mogući signal",
+      "Krhk — malo učesnika",
+      "Nemoguć",
+      "Uvek početak trenda"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b4",
+   "t": "Tržišna kapitalizacija, likvidnost i zašto sama cena laže",
+   "cards": [
+    {
+     "h": "Cena po coinu sama po sebi ne znači ništa",
+     "p": "Coin od $0.001 nije jeftiniji od Bitcoina ni u kom smislenom pogledu. Bitna je tržišna kapitalizacija: cena × broj coina u opticaju. Coin od $0.001 sa 100 milijardi tokena je projekat od $100M. \"Treba samo da stigne do $1\" je najstarija zamka u kriptu."
+    },
+    {
+     "h": "Likvidnost: možeš li stvarno da izađeš?",
+     "p": "Likvidnost je koliko možeš da kupiš ili prodaš bez pomeranja cene. BTC upija milione dolara u sekundi; mali altcoin može da padne 10% od jedne veće prodaje. U nelikvidne coine se lako ulazi, a brutalno izlazi — baš onda kad ti je najpotrebnije."
+    },
+    {
+     "h": "Slippage",
+     "p": "Kad kupuješ po tržišnoj ceni, plaćaš ono što prodavci trenutno traže. Na tankom tržištu tvoj sopstveni nalog gura cenu — razlika između cene koju si video i cene koju si dobio je slippage. To je stvaran trošak, raste sa veličinom pozicije, a smanjuje se sa likvidnošću."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Šta određuje stvarnu veličinu coina?",
+     "o": [
+      "Cena po coinu",
+      "Tržišna kapitalizacija",
+      "Koliko je nov",
+      "Koliko visoko kotira i koliko se pominje na društvenim mrežama"
+     ]
+    },
+    {
+     "q": "Likvidnost meri…",
+     "o": [
+      "Koliko brzo blockchain potvrđuje nove transakcije",
+      "Koliko možeš da trguješ bez pomeranja cene",
+      "Broj coina u opticaju",
+      "Koliko je coin volatilan"
+     ]
+    },
+    {
+     "q": "Slippage je…",
+     "o": [
+      "Fiksna provizija koju menjačnica unapred određuje za svaki nalog",
+      "Razlika između cene koju si video i cene po kojoj se tvoj tržišni nalog izvršio",
+      "Formacija na grafikonu",
+      "Vrsta novčanika"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b5",
+   "t": "Zašto se kripto tako divlje pomera",
+   "cards": [
+    {
+     "h": "Mali čamac na velikom okeanu",
+     "p": "Ukupno kripto tržište je sićušno u poređenju sa akcijama ili obveznicama, i veliki deo se trguje sa polugom. Isti talas novca koji jedva pomeri S&P 500 može da pomeri Bitcoin nekoliko procenata — a manje coine i višestruko više."
+    },
+    {
+     "h": "Vesti, likvidnost i prinudni prodavci",
+     "p": "Veliki potezi obično kombinuju tri stvari: okidač (vest, makro podatak), tanku likvidnost (noći, vikendi) i prinudnu prodaju likvidiranih tradera sa polugom. Taj treći sastojak — koji ćeš izučiti u Kursu 2 — je razlog zašto su kripto padovi tako brzi i tako duboki."
+    },
+    {
+     "h": "Volatilnost je cela igra",
+     "p": "Volatilnost nije mana — ona je razlog zašto su traderi ovde. Ali je simetrična: isti potez od 10% koji udvostruči nalog sa polugom takođe ga i briše. Svaka lekcija posle ove je zapravo o tome kako da preživiš volatilnost dovoljno dugo da imaš koristi od nje."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Zašto ista količina novca pomera kripto više nego akcije?",
+     "o": [
+      "Menjačnice nameštaju kripto cene kad god je volumen nizak",
+      "Kripto tržište je mnogo manje i sa više poluge",
+      "Akcije nemaju volatilnost",
+      "Kripto se trguje sporije"
+     ]
+    },
+    {
+     "q": "Koji sastojak čini kripto padove posebno brzim i dubokim?",
+     "o": [
+      "Bankarski praznici",
+      "Prinudna prodaja likvidiranih tradera sa polugom",
+      "Spor internet",
+      "Nagli skokovi težine rudarenja širom mreže"
+     ]
+    },
+    {
+     "q": "Volatilnost je za tradera…",
+     "o": [
+      "Čist rizik koji treba potpuno izbegavati",
+      "Prilika I rizik",
+      "Problem samo za početnike",
+      "Ilegalna na regulisanim menjačnicama"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b6",
+   "t": "Stablecoini i trgovinski parovi",
+   "cards": [
+    {
+     "h": "Dolar koji živi na blockchainu",
+     "p": "Stablecoin je kripto token dizajniran da vredi tačno $1 — USDT i USDC su giganti. Postoje da bi traderi mogli da drže dolare unutar kripta: parkiraju profit, pobegnu od volatilnosti i sve ostalo mere u stabilnoj jedinici."
+    },
+    {
+     "h": "Šta BTC/USDT zapravo znači",
+     "p": "Svako tržište je PAR: ono čime trguješ i ono u čemu to meriš. BTC/USDT znači Bitcoin izražen u Tether dolarima. Kad prodaš BTC u tom paru dobijaš USDT, ne bankovne dolare. Skoro svi fjučersi koje ćeš trgovati su parovi sa USDT marginom."
+    },
+    {
+     "h": "Stabilan ne znači bez rizika",
+     "p": "Stablecoin vredi onoliko koliko vredi ono što ga pokriva. Depegovi su se dešavali — najpoznatije, Terra UST se srušila na nulu 2022. Za trejding balanse veliki izdavaoci su se držali, ali znaj šta držiš: token zamenljiv za dolare, a ne same dolare."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Šta stablecoin treba da radi?",
+     "o": [
+      "Da raste stabilnih 10% svake godine",
+      "Da vredi tačno $1",
+      "Da prati Bitcoin",
+      "Da zameni banke"
+     ]
+    },
+    {
+     "q": "U paru BTC/USDT, šta dobijaš kad prodaš BTC?",
+     "o": [
+      "Bankovne dolare",
+      "USDT",
+      "ETH",
+      "Ništa dok ne povučeš"
+     ]
+    },
+    {
+     "q": "Stablecoini su…",
+     "o": [
+      "Bukvalno dolari",
+      "Bez rizika po definiciji",
+      "Tokeni pokriveni rezervama",
+      "Garantovani od strane država"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b7",
+   "t": "Provizije: tihi porez na svaki trejd",
+   "cards": [
+    {
+     "h": "Maker, taker, spread",
+     "p": "Svaki trejd plaća. Taker provizija (trenutno presecanje spreda, tržišni nalozi) je viša; maker provizija (limit nalozi koji čekaju i dodaju likvidnost) je niža — nekad čak i rabat. I sam spread — razmak između najbolje kupovne i prodajne cene — je trošak."
+    },
+    {
+     "h": "Zašto provizije jače udaraju fjučerse",
+     "p": "Provizije na fjučersima se naplaćuju na NOTIONAL, ne na tvoju marginu. Na 20x poluzi, taker provizija od 0.055% je 1.1% tvoje margine po strani — preko 2% za ceo krug. Deset trejdova dnevno po toj stopi je račun koji retko koja strategija može da pretekne."
+    },
+    {
+     "h": "Smrtonosna spirala pretrgovanja",
+     "p": "Većina početnika koji gube ne gubi zbog pogrešnog smera — iskrvare na provizijama i spredu jer trguju prečesto. Manje, boljih trejdova sa limit ulazima nije samo savet o disciplini; to je aritmetika. Broji provizije nedeljno u dnevniku i tretiraj ih kao poziciju protiv sebe."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Koja vrsta naloga obično plaća NIŽU proviziju?",
+     "o": [
+      "Tržišni (taker)",
+      "Limit koji čeka",
+      "Stop nalog",
+      "Identične su"
+     ]
+    },
+    {
+     "q": "Provizije na fjučersima se naplaćuju na…",
+     "o": [
+      "Samo marginu koju si uložio za trejd",
+      "Punu notional poziciju",
+      "Samo profit",
+      "Samo povlačenja"
+     ]
+    },
+    {
+     "q": "Na 20x poluzi, taker provizija od 0.055% košta otprilike koji deo tvoje margine po strani?",
+     "o": [
+      "0.055%",
+      "0.5%",
+      "1.1%",
+      "11%"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b8",
+   "t": "Tržišni ciklusi i narativi",
+   "cards": [
+    {
+     "h": "Četiri godišnja doba kripta",
+     "p": "Kripto se kreće u dramatičnim ciklusima: akumulacija (tišina, nikog nije briga), rast (bull run u koji svi ulaze kasno), distribucija (pametan novac prodaje u euforiju) i pad (medveđe tržište koje sve ubedi da je gotovo). Svaki ciklus deluje neviđeno; emocije su identične."
+    },
+    {
+     "h": "Narativi se smenjuju, pohlepa je konstanta",
+     "p": "Svaki ciklus kruniše nove priče — ICO, DeFi, NFT, AI coini. Priča se menja; obrazac ne: prava inovacija, spekulativna pomama daleko iznad nje, kolaps koji ubije slabe projekte i baza za sledeći ciklus izgrađena od preživelih."
+    },
+    {
+     "h": "Gde se ciklusi sreću s tvojim trejdingom",
+     "p": "Ne možeš precizno da tempiraš cikluse, ali možeš grubo da se lociraš: da li je pohlepa ekstremna, da li ti frizer preporučuje coine, da li 100x memecoini nadmašuju sve? Kasni ciklus je kad smanjivanje rizika najviše znači — baš onda kad deluje najmanje potrebno."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "U kojoj fazi pametan novac tipično PRODAJE?",
+     "o": [
+      "Akumulacija, dok još niko ne obraća pažnju",
+      "Pad",
+      "Distribucija — u kasnu euforiju",
+      "Nikad"
+     ]
+    },
+    {
+     "q": "Šta se ponavlja u svakom kripto ciklusu?",
+     "o": [
+      "Isti coini pobeđuju",
+      "Emocionalni obrazac: neverica, euforija, očaj",
+      "Tačni nivoi cena",
+      "Isti narativi se vraćaju i vode svaki ciklus"
+     ]
+    },
+    {
+     "q": "Kada smanjivanje rizika najviše znači?",
+     "o": [
+      "Kad se svi plaše",
+      "U kasnoj euforiji ciklusa",
+      "Nikad — uvek maksimalan rizik",
+      "Samo u medveđim tržištima"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b9",
+   "t": "Prevare i samoodbrana",
+   "cards": [
+    {
+     "h": "Ako obećava prinose, ti si proizvod",
+     "p": "Garantovanih 2% dnevno. Trejding bot bez gubitničkog meseca. Neznanac koji nudi da upravlja tvojim sredstvima. Svako od ovoga je prevara, uvek, bez izuzetka — pravi trejding ima gubitničke periode, a niko ko ima mašinu za štampanje novca ne deli je sa strancima."
+    },
+    {
+     "h": "Klasici: rug pull i phishing",
+     "p": "Rug pull je token čiji kreatori isprazne likvidnost čim se kupci nagomilaju — endemski među svežim mikro-kapovima. Phishing je lažni sajt menjačnice ili novčanika koji krade tvoj login ili seed frazu. Bookmark-uj prave sajtove; nikad ne klikći login linkove iz poruka."
+    },
+    {
+     "h": "Osnovna higijena koja zaustavi 95% svega",
+     "p": "Koristi 2FA (aplikaciju, ne SMS) na svakoj menjačnici. Nikad ne deli seed frazu ni sa kim, nikad — nijednoj podršci ne treba. Budi paranoičan prema direktnim porukama: prave platforme ti ne pišu prve. Dosadna pravila — i ona su cela igra."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Servis garantuje 2% dnevnog prinosa. To je…",
+     "o": [
+      "Sjajna prilika",
+      "Možda legitimno ako je revidirano",
+      "Prevara, uvek",
+      "U redu za male iznose"
+     ]
+    },
+    {
+     "q": "Kome legitimno treba tvoja seed fraza?",
+     "o": [
+      "Podršci menjačnice",
+      "Developerima novčanika",
+      "Nikome, nikad",
+      "Poreskoj upravi"
+     ]
+    },
+    {
+     "q": "Najbolja 2FA metoda je…",
+     "o": [
+      "SMS kodovi poslati na tvoj registrovani broj",
+      "Authenticator aplikacija",
+      "Email linkovi",
+      "Tvoj rođendan"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Završio si Kripto Osnove — ceo kurs. SADA otvori paper-trading terminal: gledaj žive cene, i kad budeš spreman, otvori svoj prvi trejd lažnim novcem.",
+    "label": "Otvori Paper Trade →"
+   }
+  }
+ ]
+}

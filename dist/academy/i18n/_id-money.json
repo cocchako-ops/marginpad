@@ -1,0 +1,459 @@
+{
+ "id": "money",
+ "name": "Uang dan Matematika, Disederhanakan",
+ "sub": "Satu-satunya aritmetika yang dibutuhkan trading",
+ "lessons": [
+  {
+   "id": "mo1",
+   "t": "Persentase, dengan benar",
+   "cards": [
+    {
+     "h": "Persen dari apa",
+     "p": "Persen selalu irisan dari satu angka tertentu. Sepuluh persen dari $100 adalah $10. Sepuluh persen dari $10,000 adalah $1,000. Persennya sendiri tak memberitahumu apa pun sampai kamu tahu basisnya. Saat seseorang bilang sebuah trade menghasilkan 40%, pertanyaan pertamamu selalu sama: empat puluh persen dari jumlah berapa?"
+    },
+    {
+     "h": "Poin persentase bukan persen",
+     "p": "Ini dua hal yang berbeda. Kalau win rate-mu naik dari 40% ke 44%, itu kenaikan 4 poin persentase. Tapi sebagai persen dari titik awalmu, itu 4 dibagi 40, yaitu 10%. Perubahan yang sama, dua angka yang sama-sama jujur. Setiap kali kamu melihat persen dari persen, pelankan dan cek yang mana yang dimaksud."
+    },
+    {
+     "h": "Naik sepuluh, turun sepuluh, bukan impas",
+     "p": "Mulai dari $100. Tambah 10% dan kamu punya $110. Sekarang kurangi 10% — tapi 10% dari $110 adalah $11, bukan $10. Kamu berakhir di $99. Untungnya diukur terhadap $100 dan ruginya terhadap $110, jadi keduanya tidak saling menghapus. Balik urutannya dan kamu mendarat di $99 lagi: $100 turun ke $90, lalu naik $9."
+    },
+    {
+     "h": "Perubahan persen itu dikalikan",
+     "p": "Ada jalan pintas. Untung 10% adalah mengalikan dengan 1.10; rugi 10% adalah mengalikan dengan 0.90. Lakukan keduanya dan kamu dapat 1.10 kali 0.90, yaitu 0.99 — rugi bersih 1%. Rangkai trade sebulan penuh dengan cara ini dan perkalian, bukan penjumlahan, itulah yang sebenarnya dilakukan akunmu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kamu untung 10%, lalu rugi 10%. Kamu berakhir di mana?",
+     "o": [
+      "Tepat kembali ke titik awal",
+      "Turun 1% dari titik awal",
+      "Naik 1% dari titik awal",
+      "Turun 10% dari titik awal"
+     ]
+    },
+    {
+     "q": "Win rate naik dari 40% ke 44%. Perubahan itu…",
+     "o": [
+      "Kenaikan 4 persen dari akun",
+      "Penurunan 4 poin persentase",
+      "Kenaikan 4 poin persentase",
+      "Kenaikan 44 poin persentase"
+     ]
+    },
+    {
+     "q": "Kenapa +10% dan -10% tidak saling menghapus?",
+     "o": [
+      "Persen yang kedua diambil dari angka yang lebih besar",
+      "Biaya trading memakan selisihnya",
+      "Persentase memang tak pernah saling menghapus",
+      "Exchange membulatkan yang kedua ke bawah"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo2",
+   "t": "Kenapa rugi lebih sakit daripada untung",
+   "cards": [
+    {
+     "h": "Rugi menggali lubang lebih dalam",
+     "p": "Rugi 50% dari $1,000 dan kamu punya $500. Untuk kembali ke $1,000 kamu harus menambah $500 — dan $500 adalah 100% dari sisa yang kamu pegang. Rugi 50% butuh untung 100% untuk menghapusnya. Kerugian dan perbaikannya tidak sama besar, dan tidak pernah sama."
+    },
+    {
+     "h": "Tabel pemulihan",
+     "p": "Jalankan aritmetika yang sama menuruni skalanya. Turun 10% butuh sekitar 11% balik. Turun 20% butuh 25%. Turun sepertiga butuh 50%. Turun 50% butuh 100%. Turun 80% menyisakan $200 dari $1,000, jadi kamu butuh $800 di atas $200 — itu 400%. Turun 90% butuh 900%. Kurvanya tidak melengkung lembut. Dia berdiri vertikal."
+    },
+    {
+     "h": "Buktikan sendiri",
+     "prompt": "Sentuh akun yang butuh kenaikan lebih besar untuk kembali impas.",
+     "p": "Dua akun, dua lubang. Satu sentuhan, lalu adu instingmu dengan aritmetikanya."
+    },
+    {
+     "h": "Apa yang ini ubah tentang dirimu",
+     "p": "Inilah kenapa profesional mengawasi drawdown — seberapa jauh sebuah akun jatuh di bawah titik tertingginya — lebih ketat daripada return. Rentetan kerugian kecil adalah aritmetika yang bisa dilalui. Satu kerugian besar adalah kategori masalah yang berbeda. Semua yang datang setelah kartu ini, dari ukuran posisi sampai stop-loss, ada untuk menjaga kerugian tunggal tetap cukup kecil supaya pemulihannya tetap biasa saja."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Akunmu jatuh 50%. Kenaikan berapa yang mengembalikannya ke impas?",
+     "o": [
+      "Kenaikan 100%",
+      "Kenaikan 50%",
+      "Kenaikan 75%",
+      "Kenaikan 150%"
+     ]
+    },
+    {
+     "q": "Akun yang turun 80% butuh kenaikan kira-kira berapa untuk pulih?",
+     "o": [
+      "Kenaikan 80%",
+      "Kenaikan 180%",
+      "Kenaikan 400%",
+      "Kenaikan 800%"
+     ]
+    },
+    {
+     "q": "Kenapa satu kerugian besar lebih buruk dari beberapa yang kecil?",
+     "o": [
+      "Trade besar ditagih biaya lebih tinggi",
+      "Kenaikan yang dibutuhkan tumbuh lebih cepat dari kerugiannya",
+      "Exchange menghukum drawdown besar",
+      "Kerugian kecil tidak dihitung sebagai kerugian"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo3",
+   "t": "Bagaimana untung dan rugi dihitung",
+   "cards": [
+    {
+     "h": "Tiga angka membentuk hasilnya",
+     "p": "Untung dan rugi — P&L — datang dari tepat tiga angka: harga saat kamu masuk, harga saat kamu keluar, dan berapa banyak unit yang kamu pegang. Tak ada lagi yang masuk ke perhitungannya. Untuk long, taruhan bahwa harga naik, P&L adalah harga keluar dikurangi harga masuk, dikali jumlah unit."
+    },
+    {
+     "h": "Sebuah long, dihitung tuntas",
+     "p": "Kamu beli 0.1 BTC di $60,000 dan jual di $63,000. Keluar dikurangi masuk adalah $3,000 per koin. Kalikan dengan 0.1 koin dan untungmu $300. Perhatikan cara lain melihatnya: posisimu bernilai $6,000 saat masuk, harga bergerak 5%, dan 5% dari $6,000 adalah $300 yang sama."
+    },
+    {
+     "h": "Sebuah short, dihitung tuntas",
+     "p": "Short adalah taruhan bahwa harga turun, jadi pengurangannya dibalik: harga masuk dikurangi harga keluar, dikali unit. Kamu short 2 ETH di $3,000 dan tutup di $2,850. Masuk dikurangi keluar adalah $150 per koin, dikali 2 koin, jadi kamu dapat $300. Posisimu $6,000 dan harga turun 5%. Aritmetika yang sama, dicerminkan."
+    },
+    {
+     "h": "Belum terealisasi sampai kamu menutup",
+     "p": "Selama posisinya terbuka, P&L-nya bergerak mengikuti setiap perubahan harga dan disebut belum terealisasi. Dia perkiraan hidup, bukan uang yang kamu miliki. Dia jadi terealisasi hanya saat kamu menutup dan exchange membukukannya ke saldomu. Pemula sering menghitung untung yang belum terealisasi sebagai sudah terpakai; posisi yang tak pernah ditutup tak pernah membayar siapa pun."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kamu beli 0.5 ETH di $2,000 dan jual di $2,100. Untungmu…",
+     "o": [
+      "$500",
+      "$100",
+      "$1,050",
+      "$50"
+     ]
+    },
+    {
+     "q": "Kamu short 1 BTC di $60,000 dan tutup di $58,800. Hasilnya?",
+     "o": [
+      "Untung $1,200",
+      "Rugi $1,200",
+      "Untung $600",
+      "Tidak berubah sama sekali"
+     ]
+    },
+    {
+     "q": "P&L belum terealisasi adalah…",
+     "o": [
+      "Uang yang sudah duduk di saldomu",
+      "Perkiraan hidup pada posisi yang masih terbuka",
+      "Biaya yang akan kamu bayar saat menutup",
+      "Selalu angka negatif"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo4",
+   "t": "Ukuran posisi menentukan kerusakannya",
+   "cards": [
+    {
+     "h": "Kamu tak bisa memilih pergerakannya",
+     "p": "Kamu tak mengendalikan apakah Bitcoin bergerak 2% hari ini. Kamu mengendalikan tepat satu angka: seberapa besar posisimu. Semua yang lain — arah, waktu, volatilitas — adalah tebakan atau hadiah. Ukuran posisi adalah satu-satunya input di seluruh perhitungan yang sepenuhnya milikmu, dan itulah yang membuatnya jadi keputusan sungguhan yang sedang kamu ambil."
+    },
+    {
+     "h": "Pergerakan sama, hasil sesukamu",
+     "p": "Bitcoin turun 2% dari $60,000, yaitu $1,200 per koin. Pegang 0.01 BTC dan kamu rugi $12. Pegang 0.5 BTC dan kamu rugi $600. Pasar melakukan satu hal; dua akun itu mengalami hari yang sama sekali berbeda. Chart-nya identik untuk keduanya. Hanya baris ukurannya yang berbeda, dan itu diketik dengan tangan."
+    },
+    {
+     "h": "Berpikir dalam nilai posisi",
+     "p": "Cara menentukan ukuran yang lebih bersih: tentukan nilai dolar posisinya, bukan jumlah koinnya. Posisi $600 di apa pun rugi $12 pada pergerakan 2%, entah itu 0.01 BTC atau 0.2 ETH. Pergerakan persen berlaku atas nilainya, jadi bekerja dalam dolar membuatmu bisa membandingkan posisi di koin yang sama sekali berbeda."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bagian mana dari sebuah trade yang sepenuhnya dalam kendalimu?",
+     "o": [
+      "Arah yang diputuskan harga",
+      "Ukuran posisi yang kamu buka",
+      "Seberapa volatil pasar hari ini",
+      "Harga saat exit-mu tereksekusi"
+     ]
+    },
+    {
+     "q": "Posisi $600 bergerak 2% melawanmu. Itu memakan…",
+     "o": [
+      "$12",
+      "$6",
+      "$60",
+      "$120"
+     ]
+    },
+    {
+     "q": "Dua trader mengambil trade yang sama; satu rugi sepuluh kali lebih banyak. Kenapa?",
+     "o": [
+      "Mereka melihat chart yang berbeda",
+      "Salah satunya membayar biaya jauh lebih tinggi",
+      "Salah satunya memegang posisi jauh lebih besar",
+      "Satu pakai order market, satu order limit"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo5",
+   "t": "Tentukan kerugiannya sebelum kamu masuk",
+   "cards": [
+    {
+     "h": "Risiko adalah angka yang kamu pilih",
+     "p": "Sebelum memikirkan untung, tentukan berapa trade ini boleh memakan uangmu kalau dia gagal. Tulis sebagai jumlah dolar. Titik awal yang lazim adalah 1% dari akun, jadi akun $1,000 mempertaruhkan $10 per trade. Angka itu bukan ramalan. Dia batas yang kamu pasang selagi masih tenang."
+    },
+    {
+     "h": "Ukuran datang dari stop",
+     "p": "Sekarang aritmetikanya berjalan mundur. Kamu mau beli ETH di $2,000 dengan stop-loss di $1,960 — order yang menutup trade kalau harga jatuh ke situ. Jaraknya $40 per koin. Kamu mempertaruhkan total $10, jadi bagi: $10 dibagi $40 adalah 0.25 ETH. Itulah ukuranmu, posisi $500."
+    },
+    {
+     "h": "Stop lebih lebar, ukuran lebih kecil",
+     "p": "Ubah satu hal. Taruh stop-nya di $1,900 saja, jarak $100 per koin. Risikonya tetap $10, jadi ukurannya jadi $10 dibagi $100, yaitu 0.1 ETH — posisi $200. Stop-nya tidak membuat trade-nya lebih aman atau lebih berisiko. Dia mengubah berapa banyak koin yang boleh kamu pegang pada risiko tetap yang sama."
+    },
+    {
+     "h": "Kenapa 1% dan bukan 10%",
+     "p": "Pada risiko 1%, sepuluh kekalahan beruntun memakan sekitar 10% akun, dan tabel pemulihan bilang lubang 10% butuh sekitar 11% untuk diperbaiki. Pada risiko 10%, sepuluh kekalahan yang sama menyisakan sekitar sepertiga dari yang kamu mulai — lubang yang butuh sekitar 187% untuk dipanjat keluar. Trade sama, keahlian sama, aritmetika berbeda."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Akunmu $2,000 dan kamu mempertaruhkan 1% per trade. Itu…",
+     "o": [
+      "$2 per trade",
+      "$20 per trade",
+      "$200 per trade",
+      "$100 per trade"
+     ]
+    },
+    {
+     "q": "Entry $2,000, stop $1,960, risiko $10. Ukuran berapa yang kamu ambil?",
+     "o": [
+      "0.1 ETH",
+      "0.5 ETH",
+      "0.25 ETH",
+      "2.5 ETH"
+     ]
+    },
+    {
+     "q": "Kamu melebarkan stop tapi risiko dolarnya tetap. Ukurannya harus…",
+     "o": [
+      "Mengecil",
+      "Membesar",
+      "Tetap persis sama",
+      "Berlipat dua"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo6",
+   "t": "R: satu bahasa untuk setiap akun",
+   "cards": [
+    {
+     "h": "Satu R adalah yang kamu pertaruhkan",
+     "p": "Berhenti menghitung trade dalam dolar dan hitung dalam R. Satu R sederhananya jumlah yang kamu putuskan untuk dipertaruhkan di trade itu. Pertaruhkan $10 dan kalah: itu minus satu R. Hasilkan $30 darinya: plus tiga R. Angka dolarnya berubah mengikuti akunmu. Angka R menggambarkan trade-nya sendiri."
+    },
+    {
+     "h": "Reward-to-risk sebelum kamu masuk",
+     "p": "Ambil trade ETH yang sama: entry $2,000, stop $1,960, jadi risikonya $40 per koin. Pasang take-profit di $2,120 dan imbalannya $120 per koin. Bagi $120 dengan $40 dan kamu dapat 3. Trade itu menawarkan tiga banding satu, atau 3R. Kamu bisa menghitung ini sebelum mempertaruhkan apa pun, dan memang seharusnya."
+    },
+    {
+     "h": "Kenapa R berpindah antar akun",
+     "p": "Akun $50 yang mempertaruhkan $0.50 dan akun $50,000 yang mempertaruhkan $500 bisa menjalankan trade yang identik dan keduanya melaporkan plus 3R. Itulah intinya. R membuang ukuran akun, jadi kamu bisa membandingkan trade-mu satu sama lain, dengan bulan lalu, dan dengan milik siapa pun, tanpa jumlah dolarnya membuat salah satu terlihat mengesankan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kamu mempertaruhkan $20 dan trade-nya menghasilkan $60. Dalam R itu…",
+     "o": [
+      "Plus 3R",
+      "Plus 1R",
+      "Plus 2R",
+      "Plus 6R"
+     ]
+    },
+    {
+     "q": "Entry $100, stop $95, take-profit $115. Reward-to-risk-nya…",
+     "o": [
+      "1 banding 1",
+      "2 banding 1",
+      "3 banding 1",
+      "5 banding 1"
+     ]
+    },
+    {
+     "q": "Kenapa mengukur trade dalam R alih-alih dolar?",
+     "o": [
+      "Dia menghapus biaya dari perhitungan",
+      "Dia membuat trade sebanding lintas ukuran akun",
+      "Dia menjamin hasil yang lebih konsisten",
+      "Exchange melaporkan profit dengan cara itu"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo7",
+   "t": "Win rate bukan seluruh ceritanya",
+   "cards": [
+    {
+     "h": "Rumus ekspektansi",
+     "p": "Satu angka memberitahumu apakah sebuah cara trading menghasilkan uang: ekspektansi. Dia adalah win rate dikali rata-rata kemenanganmu, dikurangi loss rate dikali rata-rata kekalahanmu. Diukur dalam R, dia bilang berapa nilai satu trade rata-rata. Ekspektansi positif berarti aritmetikanya berpihak padamu sepanjang banyak trade. Negatif berarti tidak."
+    },
+    {
+     "h": "Kalah di kebanyakan trade, tetap unggul",
+     "p": "Misalkan kamu menang di 40% trade, tiap kemenangan menghasilkan 3R, dan tiap kekalahan memakan 1R. Kemenangan menyumbang 0.4 kali 3, yaitu 1.2R. Kekalahan memakan 0.6 kali 1, yaitu 0.6R. Ekspektansinya 1.2 dikurangi 0.6, atau plus 0.6R per trade. Sepanjang 100 trade dengan risiko $10, aritmetika itu menunjuk ke $600."
+    },
+    {
+     "h": "Menang di kebanyakan trade, tetap tertinggal",
+     "p": "Sekarang menang di 70% trade, tapi tiap kemenangan hanya menghasilkan 0.3R sementara tiap kekalahan tetap memakan 1R. Kemenangan memberi 0.7 kali 0.3, yaitu 0.21R. Kekalahan mengambil 0.3 kali 1, yaitu 0.3R. Ekspektansinya minus 0.09R per trade. Win rate 70%, dan 100 trade dengan risiko $10 menunjuk ke rugi $90."
+    },
+    {
+     "h": "Win rate impas",
+     "p": "Untuk reward-to-risk berapa pun kamu bisa menghitung win rate yang membuatmu impas: satu dibagi satu ditambah pengali R-nya. Di 3R itu satu dibagi empat, jadi 25%. Di 0.3R itu satu dibagi 1.3, sekitar 77%. Itulah kenapa contoh 70% tadi rugi. Tak ada satu pun dari angka-angka itu yang baik atau buruk kalau berdiri sendiri."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Win rate 40%, rata-rata menang 3R, rata-rata kalah 1R. Ekspektansinya…",
+     "o": [
+      "Minus 0.6R per trade",
+      "Plus 0.6R per trade",
+      "Plus 1.2R per trade",
+      "Plus 3R per trade"
+     ]
+    },
+    {
+     "q": "Mana dari ini yang menghasilkan uang sepanjang banyak trade?",
+     "o": [
+      "Win rate 40% pada 3R",
+      "Win rate 70% pada 0.3R",
+      "Win rate berapa pun di atas 50%",
+      "Yang mana pun yang lebih sering menang"
+     ]
+    },
+    {
+     "q": "Pada reward-to-risk 3R, win rate berapa yang impas?",
+     "o": [
+      "50%",
+      "33%",
+      "25%",
+      "10%"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo8",
+   "t": "Berapa sebenarnya biaya satu putaran penuh",
+   "cards": [
+    {
+     "h": "Biaya dikenakan atas nosional",
+     "p": "Biaya futures adalah persen dari seluruh nilai posisi — disebut nosional — bukan dari uang tunai yang kamu setor. Buka posisi $6,000 dan biaya taker 0.055% memakan $3.30. Tutup posisinya dan kamu membayar lagi. Biaya itu tak pernah bertanya berapa banyak uangmu sendiri di balik trade-nya. Dia hanya melihat ukuran posisinya."
+    },
+    {
+     "h": "Leverage mengalikan biayanya",
+     "p": "Leverage membuat sedikit uang tunaimu — marginnya — mengendalikan posisi yang lebih besar. Di 20x, posisi $6,000 butuh margin $300. Biaya $3.30 itu 0.055% dari posisinya tapi 1.1% dari $300 milikmu. Satu putaran penuh, masuk dan keluar, itu 2.2% marginmu lenyap sebelum harga bergerak sama sekali."
+    },
+    {
+     "h": "Spread dan slippage juga memakan biaya",
+     "p": "Biaya hanyalah ongkos yang terlihat. Spread adalah jarak antara harga beli dan jual terbaik: beli di $3,000.50 dan jual di $2,999.50 dan kamu kehilangan $1 per koin hanya karena jaraknya. Slippage adalah saat order market-mu tereksekusi lebih buruk dari harga yang kamu lihat. Keduanya uang sungguhan, dan tak satu pun muncul di daftar biaya."
+    },
+    {
+     "h": "Impas pun tidak gratis",
+     "p": "Dua biaya taker di 0.055% berjumlah 0.11% dari posisi. Harga harus bergerak 0.11% ke arahmu sebelum kamu menghasilkan satu sen pun, dan itu belum termasuk spread. Leverage tidak mengubah ini: dia tetap 0.11% dari posisi. Sepuluh putaran penuh sehari di 20x adalah 22% marginmu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Biaya taker 0.055% pada posisi $6,000 memakan…",
+     "o": [
+      "$3.30",
+      "$0.33",
+      "$33",
+      "$330"
+     ]
+    },
+    {
+     "q": "Di 20x, satu biaya taker 0.055% adalah berapa bagian marginmu?",
+     "o": [
+      "0.055%",
+      "0.55%",
+      "1.1%",
+      "20%"
+     ]
+    },
+    {
+     "q": "Slippage adalah…",
+     "o": [
+      "Biaya yang diterbitkan di daftar biaya exchange",
+      "Order-mu tereksekusi lebih buruk dari harga yang kamu lihat",
+      "Bunga yang ditagih atas dana pinjaman",
+      "Stop-loss yang terpicu terlalu dini"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mo9",
+   "t": "Hitung dulu sebelum kamu klik",
+   "cards": [
+    {
+     "h": "Lima angka, berurutan",
+     "p": "Sebelum setiap entry, tulis lima hal. Satu: ukuran akunmu. Dua: dolar yang rela kamu kehilangan. Tiga: harga entry dan harga stop, yang memberi jarak stop. Empat: ukuran posisi, dari risiko dibagi jarak itu. Lima: targetnya, dan pengali R yang dia implikasikan. Kalau langkah lima di bawah 1R, kamu sudah tahu jawabannya."
+    },
+    {
+     "h": "Semuanya sekaligus, sekali",
+     "p": "Akun $1,000. Risiko 1%, jadi $10. Entry ETH di $2,000, stop $1,960, jarak $40. Ukurannya $10 dibagi $40, atau 0.25 ETH — posisi $500. Target $2,120 memberi $120 per koin, jadi 0.25 koin menghasilkan $30. Itu 3R. Biaya putaran penuh 0.11% dari $500 jadinya $0.55, kecil di sebelah $30."
+    },
+    {
+     "h": "Matematikanya tidak meramal",
+     "p": "Tak ada satu pun dari ini yang memberitahumu apakah trade-nya menang. Dia memberitahumu persis apa yang kamu pertaruhkan, berapa yang bisa kamu dapat, dan berapa biaya menjalankan trade itu. Kerugian itu normal dan aritmetika ini tidak mencegahnya. Yang dia cegah adalah kamu dikejutkan angka yang sebenarnya bisa kamu hitung dalam tiga puluh detik."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Akun $500, risiko 2%, jarak stop $25 per koin. Ukurannya?",
+     "o": [
+      "0.2 koin",
+      "2 koin",
+      "4 koin",
+      "0.4 koin"
+     ]
+    },
+    {
+     "q": "Target rencanamu hanya memberi 0.5R. Apa artinya itu?",
+     "o": [
+      "Imbalannya kecil dibanding risikonya",
+      "Ini trade yang luar biasa kuat",
+      "Kamu harus mempertaruhkan lebih banyak sebagai kompensasi",
+      "Biaya akan menutup selisihnya"
+     ]
+    },
+    {
+     "q": "Apa yang sebenarnya kamu dapat dengan menghitung ini lebih dulu?",
+     "o": [
+      "Jaminan bahwa trade-nya menang",
+      "Risiko diketahui, imbalan diketahui, biaya diketahui",
+      "Win rate yang lebih tinggi seiring waktu",
+      "Biaya lebih rendah dari exchange"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Sekarang kamu punya seluruh perhitungannya. Buka kalkulator dan jalankan angkamu sendiri — akun, risiko, jarak stop — sampai aritmetika penentuan ukuran terasa otomatis.",
+    "label": "Buka Kalkulator →"
+   }
+  }
+ ]
+}

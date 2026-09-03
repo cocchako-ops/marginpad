@@ -1,0 +1,387 @@
+{
+ "id": "structure",
+ "name": "Geavanceerde Marktstructuur",
+ "sub": "Waar orders wonen en waarom de prijs erheen gaat",
+ "lessons": [
+  {
+   "id": "a1",
+   "t": "Liquiditeit: waar orders werkelijk wonen",
+   "cards": [
+    {
+     "h": "De prijs beweegt richting de orders",
+     "p": "Grote spelers kunnen geen grote posities vullen waar het boek leeg is — ze hebben rustende orders nodig als tegenpartij. Clusters van stop-losses en liquidaties ZIJN die orders. Daarom prikt de prijs zo vaak door een duidelijk niveau, vult daar en keert om: hij ging winkelen."
+    },
+    {
+     "h": "Jouw stop is andermans entry",
+     "p": "Je stop-loss onder de steun is een verkooporder in wording. Duizend traders die hem op dezelfde duidelijke plek zetten, creëren een poel gegarandeerde verkopers — de perfecte plek voor een grote koper om te absorberen. Geen complot; zo wordt grote omvang nu eenmaal gevuld."
+    },
+    {
+     "h": "Het verhandelen, niet vrezen",
+     "p": "Je kunt het spel niet vermijden, maar je kunt stoppen het makkelijkste doelwit te zijn: leg invalidaties voorbij de duidelijke poelen, verwacht de veeg-en-keer op schone niveaus, en zie een wiek door een niveau die het direct herovert als informatie — iemand is net gevuld."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Waarom prikt de prijs vaak door duidelijke niveaus en keert dan om?",
+     "o": [
+      "Puur toeval in een onvoorspelbare markt",
+      "Grote spelers vullen zich aan de daar geclusterde stops",
+      "Exchange-bugs",
+      "Nieuws dat precies op die momenten wordt vrijgegeven"
+     ]
+    },
+    {
+     "q": "Een cluster stop-losses onder de steun is in feite…",
+     "o": [
+      "Bescherming waar grote spelers niet aan kunnen komen",
+      "Een poel gegarandeerde verkooporders",
+      "Niets",
+      "Een bug"
+     ]
+    },
+    {
+     "q": "Een wiek door een niveau die het direct herovert suggereert…",
+     "o": [
+      "Het niveau is voorgoed gebroken en werkt nooit meer",
+      "Een liquiditeitsveeg — iemand is gevuld",
+      "Tijd voor paniek",
+      "Laag volume"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a2",
+   "t": "Ranges: accumulatie en distributie",
+   "cards": [
+    {
+     "h": "Het verhaal wordt zijwaarts geschreven",
+     "p": "Trends zijn het resultaat; ranges zijn de oorzaak. In een range bouwen grote spelers stilletjes posities op (accumuleren) of laden ze af (distribueren) zonder de prijs tegen zichzelf te bewegen. De uitbraakrichting is meestal lang van tevoren beslist — binnen de range."
+    },
+    {
+     "h": "De range lezen",
+     "p": "Kijk hoe de prijs zich aan de randen gedraagt: herhaalde prikken onder de low die snel herstellen (vegen in de vraag) wijzen op accumulatie; falende rally's aan de top op krimpend volume wijzen op distributie. Het midden van de range is ruis — de randen zijn de aanwijzing."
+    },
+    {
+     "h": "De spring en de val",
+     "p": "Het klassieke einde: een valse uitbraak TEGEN de echte richting — de spring — die stops veegt, de laatste omvang van de grote speler vult en omkeert naar de echte beweging. Leer je de val te verwachten, dan wordt de val je entry in plaats van je exit."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Grote posities worden doorgaans opgebouwd…",
+     "o": [
+      "Tijdens verticale trends",
+      "Binnen ranges, stilletjes",
+      "Exact op de top",
+      "In het weekend"
+     ]
+    },
+    {
+     "q": "Het meest informatieve deel van een range is…",
+     "o": [
+      "Het midden, waar het meeste volume doorheen gaat",
+      "Het gedrag aan de randen",
+      "De kleur van de candles",
+      "De duur"
+     ]
+    },
+    {
+     "q": "Een spring is…",
+     "o": [
+      "Een seizoen",
+      "Een valse uitbraak tegen de echte richting",
+      "Een soort kost",
+      "Een voortschrijdend gemiddelde dat terug door de prijs kruist"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a3",
+   "t": "Imbalances: als de prijs te snel gaat",
+   "cards": [
+    {
+     "h": "Gaten in de veiling",
+     "p": "Beweegt de prijs gewelddadig in één richting, dan slaat hij prijzen over — daar is nauwelijks gehandeld. Die dunne zone is een imbalance (vaak fair value gap genoemd). Markten bezoeken die zones later vaak opnieuw, want onverhandelde prijzen zijn onafgemaakte zaken van de veiling."
+    },
+    {
+     "h": "Waarom herbezoeken gebeuren",
+     "p": "Niets mystieks: deelnemers die de beweging misten laten orders achter in de overgeslagen zone, en market makers die in de piek verkochten willen terugkopen waar het volume dun was. De zone werkt als een magneet, niet door magie, maar omdat orders zich er opstapelen."
+    },
+    {
+     "h": "Imbalances eerlijk gebruiken",
+     "p": "Een imbalance is een KANDIDAAT-zone voor entries in de trendrichting — nooit een garantie. Stapel hem met structuur: een imbalance die overlapt met een steunniveau en de trend van het grotere timeframe is een echte setup; een eenzame gap op een 1-minuutgrafiek is ruis met een chique naam."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een imbalance (fair value gap) is…",
+     "o": [
+      "Een kapotte grafiek door ontbrekende exchange-data",
+      "Een zone die de prijs oversloeg met nauwelijks handel",
+      "Een ordertype",
+      "Een exchange-fout"
+     ]
+    },
+    {
+     "q": "De prijs herbezoekt imbalances vaak omdat…",
+     "o": [
+      "Magie",
+      "Gemiste orders zich opstapelen in de dunne zone",
+      "Toezichthouders eisen dat gaps snel worden gevuld",
+      "Dat doet hij nooit"
+     ]
+    },
+    {
+     "q": "Een imbalance wordt een echte setup wanneer…",
+     "o": [
+      "Hij simpelweg bestaat",
+      "Hij overlapt met structuur en de trend van het grotere timeframe",
+      "Hij duidelijk print op de 1-minuutgrafiek in stille uren",
+      "Iemand hem post"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a4",
+   "t": "Volume profile: het geheugen van de markt",
+   "cards": [
+    {
+     "h": "Volume per PRIJS, niet per tijd",
+     "p": "De volumebalken onder je grafiek tonen volume per tijdsperiode. Een volume profile kantelt ze zijwaarts: hoeveel er op elke PRIJS is verhandeld. Hoogvolumeknopen zijn prijzen die de markt lang accepteerde; laagvolumeknopen zijn prijzen die hij snel afwees."
+    },
+    {
+     "h": "Acceptatie en afwijzing",
+     "p": "Prijs die een hoogvolumeknoop binnenkomt, vertraagt en zaagt meestal — daar is veel zaken gedaan en het trekt opnieuw handel aan. Prijs die een laagvolumeknoop binnenkomt, snijdt er meestal snel doorheen — niemand wilde daar eerder handelen, en nu ook niet. Dit verklaart veel snelle bewegingen beter dan welke indicator ook."
+    },
+    {
+     "h": "Praktisch gebruik",
+     "p": "Markeer de hoogste volumeknoop van de recente range (het point of control). Erboven vinden dips erin vaak kopers; eronder vinden rally's erin vaak verkopers. Combineer met je niveaus uit m1 — als een volumeknoop en een structureel niveau samenvallen, heb je een echte zone gevonden."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een volume profile toont volume…",
+     "o": [
+      "Per uur van de handelsdag",
+      "Op elk prijsniveau",
+      "Per exchange",
+      "Per trader"
+     ]
+    },
+    {
+     "q": "Prijs die door een LAAGvolumeknoop beweegt…",
+     "o": [
+      "Vertraagt",
+      "Snijdt er snel doorheen",
+      "Keert elke keer direct om, zonder uitzondering",
+      "Stopt"
+     ]
+    },
+    {
+     "q": "Het point of control is…",
+     "o": [
+      "Een stop-loss",
+      "De prijs met het hoogste verhandelde volume",
+      "De dagopening",
+      "Een candlepatroon van de randen van de range"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a5",
+   "t": "Fibonacci: wiskunde of spiegel?",
+   "cards": [
+    {
+     "h": "Wat fib-niveaus zijn",
+     "p": "Fibonacci-retracements markeren vaste fracties van een eerdere beweging — 38.2%, 50%, 61.8%. Geen natuurwet dwingt de prijs ze te respecteren. En toch worden ze vaak gerespecteerd. Waarom? Miljoenen traders tekenen dezelfde lijnen en handelen ernaar — een zelfvervullende spiegel."
+    },
+    {
+     "h": "De eerlijke manier om ze te gebruiken",
+     "p": "Behandel fibs als een KAART van waar andere traders reacties verwachten, niet als zwaartekracht. De 61.8%-retracement in een opwaartse trend is een populaire koopzone — wat haar een echte zone maakt, wat je ook van de wiskunde vindt. Zelfvervullend is nog steeds vervullend."
+    },
+    {
+     "h": "Confluentie, alweer",
+     "p": "Een fib-niveau alleen is kop of munt in een wiskundekostuum. Een fib-niveau dat op een volumeknoop, eerdere steun en de trendlijn van het grotere timeframe valt, is een zone met meerdere onafhankelijke redenen om ertoe te doen. Je kent het patroon inmiddels: niets werkt alleen; stapels werken."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Fibonacci-niveaus werken vaak omdat…",
+     "o": [
+      "Een natuurwet",
+      "Genoeg traders dezelfde niveaus volgen en ernaar handelen",
+      "Exchanges ze in hun matchingengines inbouwen",
+      "Ze werken nooit"
+     ]
+    },
+    {
+     "q": "Het eerlijke gebruik van een fib-retracement is…",
+     "o": [
+      "Blinde entries op elke 61.8%-retracement",
+      "Een kaart van waar massa's reacties verwachten",
+      "Exacte toppen voorspellen",
+      "Stops vervangen"
+     ]
+    },
+    {
+     "q": "Een fib-niveau zonder andere confluentie is…",
+     "o": [
+      "Een A+ setup klaar voor volle positiegrootte",
+      "Ruwweg kop of munt in mooie kleren",
+      "Gegarandeerd",
+      "Illegaal"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a6",
+   "t": "Relatieve sterkte: kies het sterkste paard",
+   "cards": [
+    {
+     "h": "Niet al het groen is gelijk",
+     "p": "Als de markt opveert, herstellen sommige munten naar nieuwe toppen terwijl andere nauwelijks van hun bodems loskomen. Dat verschil — relatieve sterkte — is een van de duurzaamste voordelen in trading: wat weigerde te vallen in de storm, leidt meestal het herstel."
+    },
+    {
+     "h": "Simpel meten",
+     "p": "Geen indicator nodig: toen BTC 5% dipte, wat deed jouw kandidaat? De munt die 2% viel heeft kopers die hem verdedigen; die 12% viel niet. Vergelijk een handvol grafieken met BTC over hetzelfde venster en de leiders onthullen zichzelf."
+    },
+    {
+     "h": "Sterk met het tij",
+     "p": "Combineer met m9: in een risk-on markt met dalende dominantie de relatief sterkste alts longen is vissen waar de vissen zijn — trend, tij en sterkte uitgelijnd. De zwakste munt longen omdat hij \"goedkoop\" is, is exact de tegenovergestelde trade met een kortingssticker."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Relatieve sterkte vergelijkt…",
+     "o": [
+      "De prijs van een munt alleen met zijn eigen geschiedenis",
+      "Hoe een munt presteert versus de markt in hetzelfde venster",
+      "Volume met kosten",
+      "Exchanges"
+     ]
+    },
+    {
+     "q": "In een marktdip heeft de munt die het minst viel waarschijnlijk…",
+     "o": [
+      "Geen kopers",
+      "Kopers die hem verdedigen",
+      "Een bug",
+      "Alleen lage liquiditeit en verder helemaal niets"
+     ]
+    },
+    {
+     "q": "De ZWAKSTE munt kopen omdat hij goedkoop lijkt is…",
+     "o": [
+      "De professionele zet die de meeste beginners missen",
+      "Het omgekeerde van relatieve-sterktelogica",
+      "Risicovrij",
+      "Verplicht"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a7",
+   "t": "Volatiliteitsregimes: kalmte en storm",
+   "cards": [
+    {
+     "h": "Volatiliteit clustert",
+     "p": "Markten wisselen tussen regimes: lange stukken strakke, stille ranges en uitbarstingen van gewelddadige expansie. Volatiliteit clustert — kalmte volgt kalmte, storm volgt storm — tot het regime breekt. Dezelfde strategie kan beide werelden niet identiek behandelen."
+    },
+    {
+     "h": "Grootte en stops aanpassen",
+     "p": "In een stormregime zit een stop die vorige week verstandig was nu binnen de ruis — en je grootte moet krimpen om het risico constant te houden (grotere stopafstand × kleinere grootte = hetzelfde 1%-risico). In doodse kalmte sterven uitbraaktrades keer op keer terwijl mean-reversion floreert."
+    },
+    {
+     "h": "De regimecheck",
+     "p": "Voeg één vraag toe aan je checklist: in welk regime zit ik? Een blik op recente candlegroottes of een ATR-lezing beantwoordt hem. De meeste onverklaarbare verliesreeksen zijn een strategie gebouwd voor het ene regime die in het andere draait."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Volatiliteit neigt ertoe…",
+     "o": [
+      "Elke dag volledig willekeurig te zijn, zonder geheugen",
+      "Te clusteren — kalmte volgt kalmte, storm volgt storm",
+      "Alleen te stijgen",
+      "Alleen te dalen"
+     ]
+    },
+    {
+     "q": "In een hoogvolatiliteitsregime betekent constant risico…",
+     "o": [
+      "Zelfde stop, zelfde grootte",
+      "Ruimere stop en KLEINERE grootte",
+      "Krappere stop en grotere grootte",
+      "Geen stops"
+     ]
+    },
+    {
+     "q": "Veel verliesreeksen zijn in werkelijkheid…",
+     "o": [
+      "Pech",
+      "Een strategie van het ene regime die in het andere draait",
+      "Manipulatie van market makers die retail jagen",
+      "Kosten"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "a8",
+   "t": "Confluentiesystemen: bewijs stapelen",
+   "cards": [
+    {
+     "h": "Van gereedschap naar systeem",
+     "p": "Je hebt nu veel lenzen: structuur, liquiditeit, ranges, imbalances, volumeknopen, fibs, relatieve sterkte, regimes — plus alles uit cursus 1-4. Een professional gebruikt ze niet allemaal overal; hij definieert een vaste STAPEL die moet uitlijnen voordat een trade bestaat."
+    },
+    {
+     "h": "Bouw je stapel",
+     "p": "Voorbeeldstapel: trend van het grotere timeframe + een structureel niveau + een instemmende volumeknoop + positionering die niet vol tegen je staat + geen rood kalenderevent binnen het venster. Vijf checks. Jouw stapel mag anders zijn — wat telt is dat hij GESCHREVEN en vast is, zodat elke trade vergelijkbaar is in het journal."
+    },
+    {
+     "h": "Minder, zwaardere trades",
+     "p": "Een echte stapel filtert bruut: de meeste dagen leveren niets op, en dat is het ontwerp. De trades die doorkomen dragen meerdere onafhankelijke redenen — precies wat hun R:R eerlijk maakt. Dit is de brug van dingen weten naar een voordeel hebben."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een confluentiesysteem is…",
+     "o": [
+      "Elke beschikbare indicator tegelijk op de grafiek gebruiken",
+      "Een vaste, geschreven stapel voorwaarden",
+      "Een chatgroep",
+      "Een exchange-functie"
+     ]
+    },
+    {
+     "q": "Een goede stapel produceert…",
+     "o": [
+      "Een constante stroom trades, elke dag opnieuw",
+      "Weinig trades met meerdere onafhankelijke redenen elk",
+      "Dagelijkse winst",
+      "Nul verliezen"
+     ]
+    },
+    {
+     "q": "De stapel moet opgeschreven zijn zodat…",
+     "o": [
+      "Hij professioneel oogt als je hem aan andere traders toont",
+      "Elke trade vergelijkbaar en naleesbaar is in het journal",
+      "Toezichthouders goedkeuren",
+      "Hij verkocht kan worden"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Open de grafiekwerkruimte en markeer ÉÉN complete stapel op welke munt dan ook: trend, niveau, volumeknoop — en check de positionering. Geen trade nodig — alleen de lezing.",
+    "label": "Open Grafieken →"
+   }
+  }
+ ]
+}

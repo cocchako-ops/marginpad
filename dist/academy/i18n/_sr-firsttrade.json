@@ -1,0 +1,408 @@
+{
+ "id": "firsttrade",
+ "name": "Tvoj Prvi Trejd, Klik po Klik",
+ "sub": "Svako dugme, redom",
+ "lessons": [
+  {
+   "id": "ft1",
+   "t": "Tri odluke pre bilo kakvog klika",
+   "cards": [
+    {
+     "h": "Trejd su tri odgovora",
+     "p": "Pre nego što dodirneš tiket naloga, tri pitanja moraju da imaju odgovore: koji smer, na kojoj ceni si dokazano u krivu, i kolika je pozicija. Sam smer je nagađanje. Smer plus cena na kojoj si u krivu, ali bez veličine, je nedovršen posao. Ako bilo koji od ta tri nedostaje, još nemaš trejd — imaš želju."
+    },
+    {
+     "h": "Smer: long ili short",
+     "p": "Long znači da profitiraš ako cena raste, a gubiš ako pada. Short je ogledalo: profitiraš ako pada. Na fjučersima su oba udaljena jedan klik, i nijedno nije ono bezbednije. Izgovori svoj smer kao običnu rečenicu — long BTC — pre svega ostalog, jer svako drugo polje na tiketu zavisi od njega."
+    },
+    {
+     "h": "Invalidacija: gde si u krivu",
+     "p": "Invalidacija je cena na kojoj tvoj razlog za trejd prestaje da bude tačan. Ako si ušao long zato što je cena izdržala neki nivo, onda je čist proboj ispod tog nivoa tvoja invalidacija. Očitaj je sa grafikona, a ne iz toga koliko ti se gubi. Baš tu cenu ćeš kasnije ukucati u polje za stop-loss."
+    },
+    {
+     "h": "Veličina je poslednji odgovor",
+     "p": "Veličina nije koliko si siguran. To je aritmetika. Izaberi dolare koje si spreman da izgubiš na ovom trejdu, izmeri razdaljinu od ulaza do invalidacije kao procenat, i podeli. Rizik od $50 uz invalidaciju 2% daleko daje poziciju od $2,500, jer je $50 podeljeno sa 0.02 jednako $2,500. Polje za veličinu dešifrujemo uskoro."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Šta pretvara smer u stvaran trejd?",
+     "o": [
+      "Jaka sigurnost u postavku",
+      "Cena invalidacije i veličina",
+      "Veći balans na nalogu",
+      "Više podešena poluga"
+     ]
+    },
+    {
+     "q": "Odakle treba da dođe tvoja cena invalidacije?",
+     "o": [
+      "Iz iznosa koji hoćeš da izgubiš",
+      "Sa nivoa na grafikonu koji te demantuje",
+      "Iz poluge koju si izabrao",
+      "Iz veličine tvog naloga"
+     ]
+    },
+    {
+     "q": "Rizikuješ $50, a invalidacija je 2% daleko. Veličina pozicije?",
+     "o": [
+      "$100",
+      "$1,000",
+      "$2,500",
+      "$5,000"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft2",
+   "t": "Market nalog ili limit nalog",
+   "cards": [
+    {
+     "h": "Market nalog: izvršava se odmah",
+     "p": "Market nalog uzima sve cene koje trenutno miruju u knjizi naloga, kreće od najbolje i ide dalje napolje dok tvoja veličina ne bude popunjena. Uvek se izvrši. Ono što ne obećava je cena: na tankom tržištu tvoj sopstveni nalog pojede nekoliko nivoa, pa je prosek koji dobiješ gori od broja koji si video."
+    },
+    {
+     "h": "Limit nalog: tvoja cena ili ništa",
+     "p": "Limit nalog kaže: izvrši me po ovoj ceni ili boljoj, inače čekaj. Postavljaš kupovinu ispod trenutne cene ili prodaju iznad nje, i nalog miruje u knjizi naloga dok neko ne trguje protiv njega. Cena je zagarantovana; izvršenje nije. Ako se cena nikad ne vrati na tvoj nivo, prosto nemaš trejd."
+    },
+    {
+     "h": "Razlika u proviziji je stvarna",
+     "p": "Presecanje spreada te čini takerom i košta višu proviziju, često 0.055%. Mirovanje u knjizi te čini makerom, često 0.02%. Na poziciji od $5,000 to je $2.75 naspram $1.00 po strani. Market unutra i market napolje košta $5.50 za pun krug; limit unutra i limit napolje košta $2.00. Isti trejd, drugi račun."
+    },
+    {
+     "h": "Kako biraš između njih",
+     "p": "Koristi market nalog kad ti je važnije da budeš u trejdu nego nekoliko dolara, ili kad zatvaraš nešto što je krenulo naopako i hoćeš napolje odmah. Koristi limit nalog kad imaš cenu na umu i miran si ako propustiš trejd. Propušten trejd je normalan ishod koji se preživi. Jurenje trejda obično nije."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Limit nalog garantuje…",
+     "o": [
+      "izvršenje po nekoj ceni",
+      "tvoju cenu, ali ne i izvršenje",
+      "uvek najnižu proviziju",
+      "trenutno izvršenje"
+     ]
+    },
+    {
+     "q": "Na poziciji od $5,000, taker provizija od 0.055% košta…",
+     "o": [
+      "$0.55",
+      "$5.50",
+      "$2.75",
+      "$27.50"
+     ]
+    },
+    {
+     "q": "Koja situacija najviše opravdava market nalog?",
+     "o": [
+      "Hoćeš najjeftiniju moguću proviziju",
+      "Strpljiv si oko ulazne cene",
+      "Ostavljaš nalog da čeka preko noći",
+      "Moraš da izađeš iz pozicije koja je propala"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft3",
+   "t": "Polje za veličinu, dešifrovano",
+   "cards": [
+    {
+     "h": "Margina, notional, količina",
+     "p": "Tri broja opisuju jednu poziciju. Količina je koliko coina kontrolišeš, recimo 0.02 BTC. Notional je ta količina u dolarima: na $50,000 po BTC, 0.02 BTC je notional od $1,000. Margina je novac stvarno zaključan sa tvog balansa — na 10x poluzi na toj poziciji, $100. Profit i gubitak prate notional, nikad marginu."
+    },
+    {
+     "h": "Šta poluga zapravo menja",
+     "p": "Poluga ne menja koliko dolara dobijaš ili gubiš na svaki 1% pomaka cene. To radi notional. Poluga menja dve druge stvari: koliko je margine zaključano i koliko blizu iza tebe sedi cena likvidacije. Ista pozicija od $1,000 na 5x ili na 25x zarađuje i gubi identične dolare. Razlikuje se samo jastuk."
+    },
+    {
+     "h": "Veličina sledi iz razdaljine do stopa",
+     "p": "Radi unazad. Odluči dolare koje si spreman da izgubiš: $50. Izmeri od ulaza do invalidacije kao razlomak: 2%, odnosno 0.02. Notional je rizik podeljen tim razlomkom, dakle $50 / 0.02 = $2,500. Tek onda izaberi polugu uz koju je zaključana margina prijatna. Ambicija ovde ne određuje ništa. Razdaljina do stopa određuje sve."
+    },
+    {
+     "h": "Širi stop znači manju veličinu",
+     "p": "Istih $50 rizika kupuje poziciju od $2,500 kad je stop 2% daleko, ali samo poziciju od $1,000 kad je 5% daleko, jer je $50 / 0.05 = $1,000. To je kompromis koji niko ne pominje: stop postavljen daleko zbog komfora te košta veličine. Obe verzije gube tačno $50 ako si u krivu, i to je cela poenta."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Dolari koje dobijaš ili gubiš na pomak od 1% zavise od…",
+     "o": [
+      "poluge koju si izabrao",
+      "notional veličine pozicije",
+      "zaključane margine",
+      "ukupnog balansa naloga"
+     ]
+    },
+    {
+     "q": "0.02 BTC po ceni od $50,000 za BTC je notional od…",
+     "o": [
+      "$100",
+      "$500",
+      "$1,000",
+      "$2,000"
+     ]
+    },
+    {
+     "q": "Proširiš stop sa 2% na 5% i i dalje rizikuješ $50. Veličina…",
+     "o": [
+      "ostaje ista",
+      "se smanjuje",
+      "se povećava",
+      "se udvostručuje"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft4",
+   "t": "Stop-loss, postavljen prvi",
+   "cards": [
+    {
+     "h": "Šta je stop-loss",
+     "p": "Stop-loss je nalog koji stoji kod menjačnice i automatski zatvara tvoju poziciju ako cena stigne do nivoa koji si izabrao. Na tiketu naloga to je polje pored tvog ulaza: u njega ukucaš cenu. Radi dok spavaš, dok ti je telefon mrtav i dok si zauzet time što si siguran da tržište greši."
+    },
+    {
+     "h": "Ide unutra zajedno sa ulazom",
+     "p": "Unesi stop-loss u istoj radnji kao i ulaz, a ne pošto vidiš kako se trejd ponaša. Razlog je jednostavan: mirna verzija tebe bira nivo sa grafikona, a verzija koja već gleda kako pozicija gubi novac bira nivo iz nade. Nikad nećeš biti objektivniji nego pre izvršenja."
+    },
+    {
+     "h": "Postavi ga sam",
+     "prompt": "Ovo je long. Dodirni gde stop-loss pripada — tik ispod dna pokreta.",
+     "p": "Pre nego što se pouzdaš u to polje, dokaži da znaš nivo. Jedan dodir."
+    },
+    {
+     "h": "Pomeranje stopa je skupo",
+     "p": "Vučenje stopa dalje da ne bi bio pogođen je najskuplja navika u trejdingu. Pretvara planirani gubitak od $50 u neplanirani od $200, i uči te da je tvoj plan pregovaračka stavka. Stop sme da se pomera ka profitu dok trejd radi. Pomeranje od ulaza nije upravljanje rizikom, to je odlaganje."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Zašto uneti stop-loss u istom trenutku kad i ulaz?",
+     "o": [
+      "Menjačnice to zahtevaju",
+      "Snižava ti proviziju za trgovanje",
+      "Najobjektivniji si pre izvršenja",
+      "Povećava ti veličinu pozicije"
+     ]
+    },
+    {
+     "q": "Šta pomeranje stopa dalje od ulaza radi tvom planiranom gubitku?",
+     "o": [
+      "Potpuno ga uklanja",
+      "Čini ga većim i neplaniranim",
+      "Prepolovljuje ga",
+      "Ništa, ostaje isti"
+     ]
+    },
+    {
+     "q": "Stop-loss nalog…",
+     "o": [
+      "garantuje profit na tvom nivou",
+      "radi samo dok ti je aplikacija otvorena",
+      "je isto što i take-profit",
+      "zatvara poziciju na izabranoj ceni"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft5",
+   "t": "Take-profit i odnos koji iz njega sledi",
+   "cards": [
+    {
+     "h": "Odluči o izlazu pre emocije",
+     "p": "Take-profit je nalog koji automatski zatvara poziciju na ceni iznad tvog ulaza za long, ili ispod njega za short. Postaviti ga u istom trenutku kad i stop znači da su oba izlaza izabrana dok ništa nije bilo na kocki. Poziciju sa stopom, a bez cilja, obično zatvori ono osećanje koje prvo stigne."
+    },
+    {
+     "h": "Skidanje dela pozicije",
+     "p": "Ne moraš da izađeš sve odjednom. Zatvoriti polovinu na prvom cilju i pustiti ostatak da radi, sa stopom pomerenim na ulaznu cenu, česta je struktura. Ona smanjuje oba ishoda: manji dobitak ako cena nastavi, manji gubitak ako se okrene. Ne postoji ispravna podela, samo podela koju si izabrao unapred."
+    },
+    {
+     "h": "Odnos koji tvoje dve linije podrazumevaju",
+     "p": "Tvoj stop i tvoj cilj fiksiraju odnos pre nego što trejd uopšte počne. Ulaz $50,000, stop $49,000, cilj $52,000 rizikuje $1,000 da bi zaradio $2,000 — odnos dobitka i rizika 2:1. Na 2:1 jedan dobitak u tri trejda izlazi na nulu pre provizija. To je aritmetika, a ne obećanje. Ništa ne kaže da će cilj ikad biti dostignut. Proveri odnos pre nego što klikneš."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ulaz $50,000, stop $49,000, cilj $52,000 daje odnos dobitka i rizika…",
+     "o": [
+      "1:1",
+      "1:2",
+      "2:1",
+      "3:1"
+     ]
+    },
+    {
+     "q": "Zašto postaviti take-profit u isto vreme kad i stop?",
+     "o": [
+      "Smanjuje proviziju za trgovanje",
+      "Menjačnice odbijaju naloge bez njega",
+      "Garantuje da će cilj biti pogođen",
+      "Oba izlaza se biraju dok si miran"
+     ]
+    },
+    {
+     "q": "Zatvaranje polovine pozicije na prvom cilju…",
+     "o": [
+      "uklanja sav preostali rizik",
+      "čini i dobitak i gubitak manjim",
+      "automatski podiže tvoju polugu",
+      "obavezno je na fjučers menjačnicama"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft6",
+   "t": "Čitanje otvorene pozicije",
+   "cards": [
+    {
+     "h": "Red pozicije, polje po polje",
+     "p": "Kad se izvrši, tvoja pozicija se pojavljuje kao red: strana i veličina, ulazna cena, mark cena, nerealizovani profit i gubitak, margina i cena likvidacije. Svaki fjučers terminal prikazuje otprilike ova polja, nekim redosledom. Ništa u tom redu ti ne govori da li je trejd dobar. Govori ti šta je istina upravo sada, a to je drugi posao."
+    },
+    {
+     "h": "Ulazna cena i mark cena",
+     "p": "Ulaz je prosečna cena po kojoj si se stvarno izvršio, pre provizija. Mark cena je fer referentna cena menjačnice, kojom se vrednuje tvoja pozicija i odlučuje o likvidaciji — obično je vezana za širi indeks, a ne za poslednji trejd u jednoj knjizi. To je namerno: čini da se jedna čudna, usamljena cena mnogo teže upotrebi protiv tebe."
+    },
+    {
+     "h": "Nerealizovano znači još nije tvoje",
+     "p": "Nerealizovani profit i gubitak je ono za šta bi se pozicija namirila da je zatvoriš po mark ceni ove sekunde. Pomera se na svaki tik i to nije novac koji poseduješ. Realizovani profit i gubitak je ono što ostane kad stvarno zatvoriš, sa odbijenim provizijama. Nalozi se ocenjuju po tom drugom broju, i uvek samo po njemu."
+    },
+    {
+     "h": "Cena likvidacije je pod",
+     "p": "Cena likvidacije je mesto gde tvoja margina više ne pokriva gubitak i menjačnica ti zatvara poziciju, zadržavajući tu marginu. Sedi dalje ako dodaš marginu, a bliže ako podigneš polugu. Kad ti je stop-loss bliži od cene likvidacije, stop odlučuje o ishodu. Tako i treba: gledaj stop."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Za šta se koristi mark cena?",
+     "o": [
+      "Beleženje cene po kojoj se tvoj ulaz izvršio",
+      "Vrednovanje pozicije i okidanje likvidacije",
+      "Određivanje provizije naplaćene na trejd",
+      "Prikaz volumena trgovanog danas"
+     ]
+    },
+    {
+     "q": "Nerealizovani profit i gubitak je…",
+     "o": [
+      "novac koji već sedi na tvom balansu",
+      "ono za šta bi se pozicija namirila sada",
+      "provizija koju si do sada platio",
+      "margina zaključana tom pozicijom"
+     ]
+    },
+    {
+     "q": "Koji nivo bi normalno trebalo da odluči kako se trejd završava?",
+     "o": [
+      "Cena likvidacije",
+      "Mark cena",
+      "Tvoj stop-loss nivo",
+      "Funding stopa"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft7",
+   "t": "Zatvaranje pozicije",
+   "cards": [
+    {
+     "h": "Zatvaranje po marketu",
+     "p": "Zatvaranje šalje suprotan nalog iste veličine: long se zatvara prodajom, short kupovinom. Zatvori po marketu i izvršava se odmah protiv onoga što je u knjizi, uz taker proviziju. Onog trenutka kad se izvrši, nerealizovani broj postaje realizovan, margina se oslobađa nazad na tvoj balans, a red nestaje."
+    },
+    {
+     "h": "Parcijalna zatvaranja i izbačaj stopom",
+     "p": "Možeš da zatvoriš deo pozicije. Prodaj polovinu količine i red ostaje otvoren na manjoj veličini, sa nepromenjenom ulaznom cenom. Izbačaj stopom je isti taj događaj, samo ga okida stop nalog koji si postavio umesto tvog prsta. U oba slučaja menjačnica šalje nalog za zatvaranje. Razlika je samo u tome ko je odlučio, i kada."
+    },
+    {
+     "h": "Planiran gubitak je u redu",
+     "p": "Realizovano znači konačno: novac je otišao sa tvog balansa ili stigao na njega, provizije uključene. Trejd koji je pogodio stop koji si izabrao, u veličini koju si izračunao, uradio je tačno ono za šta si ga napravio. Koštao te je onoliko koliko si odlučio da potrošiš da bi saznao. Oceni trejd po tome da li si ispratio plan, a ne po znaku broja."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Zatvaranje long pozicije znači…",
+     "o": [
+      "kupovinu još istog coina",
+      "prodaju iste količine koju držiš",
+      "dodavanje margine na poziciju",
+      "podizanje podešene poluge"
+     ]
+    },
+    {
+     "q": "Šta se dešava onog trenutka kad se pozicija zatvori?",
+     "o": [
+      "Nerealizovano postaje realizovano, margina se oslobađa",
+      "Ulazna cena se ponovo računa naviše",
+      "Podešena poluga ti se udvostručuje",
+      "Provizije koje si platio se refundiraju"
+     ]
+    },
+    {
+     "q": "Trejd koji je pogodio svoj planirani stop-loss je…",
+     "o": [
+      "greška koju ne treba ponavljati",
+      "dokaz da je ceo pristup propao",
+      "trejd koji je ispratio svoj plan",
+      "uvek samo stvar loše sreće"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ft8",
+   "t": "Jedan kompletan trejd, od početka do kraja",
+   "cards": [
+    {
+     "h": "Tri odgovora, pa tiket",
+     "p": "Long BTC, jer je cena izdržala $50,000. U krivu ispod $49,000, što je invalidacija i sedi tačno 2% daleko. Rizik $50, dakle notional je $50 / 0.02 = $2,500, a na 10x to zaključava $250 margine. Tri odgovora, doneta i zapisana, pre nego što je ijedno polje na tiketu uopšte dodirnuto."
+    },
+    {
+     "h": "Popunjavanje tiketa",
+     "p": "Strana buy. Tip naloga limit, cena $50,000, pa plaćaš maker proviziju i prihvataš da se možda nikad ne izvrši. Veličina $2,500 notionala, poluga 10x. Ukucaj $49,000 u polje za stop-loss i $52,000 u polje za take-profit pre nego što pošalješ — taj cilj je 2:1 u odnosu na tvoj rizik. Pročitaj ceo tiket jednom naglas, pa pošalji."
+    },
+    {
+     "h": "Posle izvršenja, ne radi ništa",
+     "p": "Red pozicije se pojavljuje i njegov nerealizovani broj počinje da se pomera. Tvoj posao je već završen, jer oba izlaza miruju kod menjačnice. Ili se otrguje $49,000 i gubiš $50, ili se otrguje $52,000 i dobijaš $100, ili zatvaraš ručno iz razloga koji posle možeš da zapišeš. Jače buljenje u ekran ne menja nijedno od to troje."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "U ovom primeru, zašto je notional $2,500?",
+     "o": [
+      "To je deset puta zaključana margina",
+      "To je 5% balansa naloga",
+      "To je minimalna veličina na menjačnici",
+      "To je $50 rizika podeljeno sa 0.02"
+     ]
+    },
+    {
+     "q": "Kada se unose stop-loss i take-profit?",
+     "o": [
+      "Posle izvršenja, kad se cena pomeri",
+      "Na istom tiketu kao i ulaz",
+      "Samo ako trejd krene loše",
+      "Na kraju trgovačkog dana"
+     ]
+    },
+    {
+     "q": "Ako cena stigne do $52,000 u tom trejdu, rezultat je…",
+     "o": [
+      "+$50",
+      "+$250",
+      "+$100",
+      "+$2,500"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Sad znaš svako polje na tiketu. Otvori paper-trading terminal i odradi jedan kompletan trejd lažnim novcem: ulaz, veličina, stop-loss, take-profit. Pa ga ostavi na miru.",
+    "label": "Otvori Paper Trade →"
+   }
+  }
+ ]
+}

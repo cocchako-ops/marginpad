@@ -1,0 +1,420 @@
+{
+ "id": "words",
+ "name": "Dicionário do Trader",
+ "sub": "O jargão, decifrado",
+ "lessons": [
+  {
+   "id": "wd1",
+   "t": "Long, short e ter uma posição",
+   "cards": [
+    {
+     "h": "Uma posição é uma aposta aberta",
+     "p": "Antes de operar você está zerado: não tem nada e nada pode te acontecer. No instante em que compra ou vende, você tem uma posição — uma aposta aberta, com direção e tamanho. Ela fica aberta, ganhando e perdendo a cada movimento do preço, até você fechá-la. Traders dizem 'estou posicionado' do mesmo jeito que você diria 'tenho dinheiro nisso'."
+    },
+    {
+     "h": "Long é querer o preço mais alto",
+     "p": "Ficar long significa lucrar quando o preço sobe. Compre Bitcoin a $60,000, venda a $63,000, e você fez $3,000 por moeda — isso é um long. Nada é emprestado e nada é exótico; é comprar, com outro nome. Quase todo mundo começa aqui, porque combina com o jeito que já pensamos sobre possuir coisas. 'Long em BTC' quer dizer só isto: estou posicionado para o preço subir."
+    },
+    {
+     "h": "Short lucra quando o preço cai",
+     "p": "O short é o espelho. Você vende primeiro num preço alto e recompra mais tarde num mais baixo, e a diferença é sua. Fique short a $60,000, recompre a $57,000, e você ficou com $3,000 por moeda enquanto o mercado caía. Nos futuros nenhuma moeda troca de mãos — você segura um contrato que te paga quando o preço cai. É assim que traders ganham dinheiro em mercado caindo."
+    },
+    {
+     "h": "O tamanho completa a frase",
+     "p": "Direção sozinha não é uma posição. 'Long em BTC' não diz nada sobre quanto um movimento te custa; 'long em BTC, $500' diz. O tamanho da posição é o dinheiro em jogo, e é ele que decide quanto vale cada 1% de movimento: $500 andando 1% são $5, para ganhar ou perder. Iniciantes discutem direção e ignoram tamanho, que é justamente a metade que controla o estrago."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Você está short e o preço cai. O que acontece?",
+     "o": [
+      "Você ganha dinheiro",
+      "Você perde dinheiro",
+      "A posição fecha sozinha",
+      "Nada até o preço subir de novo"
+     ]
+    },
+    {
+     "q": "O que significa 'posição'?",
+     "o": [
+      "Um tipo de conta na exchange",
+      "Uma previsão de preço para a semana",
+      "Um padrão gráfico com dois topos",
+      "Uma aposta aberta, com direção e tamanho"
+     ]
+    },
+    {
+     "q": "Os dois estão long em BTC — um com $200, outro com $2,000. Um movimento de 1% vale:",
+     "o": [
+      "$2 e $20",
+      "$2 para cada um",
+      "$20 para cada um",
+      "Impossível saber sem a alavancagem"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd2",
+   "t": "Bull, bear, pump, dump, crash",
+   "cards": [
+    {
+     "h": "Bull e bear são direção",
+     "p": "Um bull market é um longo período de preços subindo; um bear market, um longo período de preços caindo. Os bichos vêm do jeito que atacam: o touro joga os chifres para cima, o urso desce a pata. Diga que está bullish e você espera alta; bearish, queda. São palavras lentas — descrevem meses, não esta tarde."
+    },
+    {
+     "h": "Pump e dump são velocidade",
+     "p": "Um pump é uma subida rápida; um dump, uma queda rápida. Nenhum dos dois diz nada sobre o porquê. Mas cuidado: 'pump and dump', como expressão única, dá nome a um golpe — um grupo compra em silêncio uma moeda pequena, promove alto e depois vende para os compradores que atraiu. A subida é real, e a saída pertence a eles, não a você."
+    },
+    {
+     "h": "Correção, crash e a diferença",
+     "p": "A convenção usual: uma queda de cerca de 10% desde a máxima recente se chama correção, e uma queda de 20% ou mais é um bear market. Um crash não é tamanho, é velocidade — quase toda a queda chegando em horas ou dias. Em cripto um dia de 10% é comum, então as pessoas usam essas palavras de forma solta. Peça o número, não o substantivo."
+    },
+    {
+     "h": "Essas palavras descrevem, nunca preveem",
+     "p": "Nada nesta lição te diz o que vem depois. Quem diz 'isso é só uma correção' não está relatando um fato; está chutando, normalmente segurando uma posição que precisa que aquilo seja verdade. As palavras são rótulos para o que já aconteceu. Quando um rótulo chega acompanhado de certeza sobre amanhã, é a certeza que está sendo afirmada — e ela não vem com prova."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Um crash é definido principalmente por:",
+     "o": [
+      "O quanto o preço cai",
+      "A velocidade da queda",
+      "Quantas moedas caem juntas",
+      "Quanto tempo dura o bear market"
+     ]
+    },
+    {
+     "q": "'Pump and dump', como expressão, descreve:",
+     "o": [
+      "Qualquer subida rápida seguida de queda",
+      "Um golpe que promove a moeda e vende aos compradores",
+      "Um padrão de candles com dois topos",
+      "O processo normal de listagem numa exchange"
+     ]
+    },
+    {
+     "q": "Pela convenção usual, uma queda de 20% desde a máxima se chama:",
+     "o": [
+      "Correção",
+      "Flash crash",
+      "Bear market",
+      "Dump profundo"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd3",
+   "t": "Margem, alavancagem, liquidação, P&L",
+   "cards": [
+    {
+     "h": "Margem é o seu dinheiro na jogada",
+     "p": "Margem é o dinheiro que você deposita para sustentar uma posição. Nocional é o tamanho total que essa posição controla. Coloque $100 de margem para controlar $1,000 de Bitcoin: $100 é sua margem, $1,000 é seu nocional. Toda taxa, todo lucro e toda perda é calculada sobre o nocional e depois cai na sua margem — que é exatamente por que porcentagens pequenas parecem enormes."
+    },
+    {
+     "h": "Alavancagem é a razão entre os dois",
+     "p": "Alavancagem é o nocional dividido pela margem. $1,000 controlados com $100 é 10x. Essa é a definição inteira; todo o resto são consequências. A 10x, um movimento de 1% no preço é um movimento de 10% na sua margem, para cima ou para baixo. A mecânica completa tem um curso só dela, Alavancagem e Liquidação. Aqui, guarde a razão — e o fato de que ela multiplica os dois lados igualmente."
+    },
+    {
+     "h": "Liquidação é a saída forçada",
+     "p": "Suas perdas saem da sua margem. Quando a perda come quase toda ela, a exchange fecha a posição por você, porque a parte emprestada precisa ser protegida. Isso é a liquidação. Não é um aviso — é o fim daquela posição, ao preço que o mercado tiver na hora. A 10x, um movimento de mais ou menos 10% contra você já basta."
+    },
+    {
+     "h": "Qual das duas está no lucro",
+     "prompt": "O preço acabou de cair. Toque na posição que está no lucro.",
+     "p": "P&L significa lucro e prejuízo: quanto sua posição aberta vale agora. É não realizado enquanto a posição está aberta, e realizado no instante em que você fecha. O preço acabou de cair. Um toque."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Você deposita $200 para controlar $2,000. Sua alavancagem é:",
+     "o": [
+      "2x",
+      "10x",
+      "20x",
+      "200x"
+     ]
+    },
+    {
+     "q": "A liquidação acontece quando:",
+     "o": [
+      "Você fecha a posição por conta própria",
+      "O preço chega no seu take-profit",
+      "As perdas comeram quase toda a sua margem",
+      "A exchange cobra uma taxa de funding"
+     ]
+    },
+    {
+     "q": "Taxas e P&L são calculados sobre:",
+     "o": [
+      "O tamanho nocional da posição",
+      "Apenas a sua margem",
+      "O valor que você saca",
+      "O multiplicador da alavancagem"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd4",
+   "t": "Como uma ordem chega ao mercado",
+   "cards": [
+    {
+     "h": "Ordem a mercado: velocidade acima do preço",
+     "p": "Uma ordem a mercado diz: pegue qualquer preço disponível agora. Ela executa na hora — a execução é o momento em que sua ordem vira posição de verdade — porque aceita o que o outro lado está pedindo. Você sempre entra. Você nem sempre pega o preço que viu. Use quando estar dentro importa mais do que ser preciso."
+    },
+    {
+     "h": "Ordem limitada: preço acima da velocidade",
+     "p": "Uma ordem limitada diz: me execute neste preço ou melhor, e espere o quanto for preciso. Ela fica parada no livro de ofertas até alguém negociar contra ela, e pode nunca executar. Você controla o preço e abre mão da certeza. Ordens limitadas normalmente pagam taxa menor também, porque você é quem espera, não quem exige."
+    },
+    {
+     "h": "O stop é um gatilho",
+     "p": "Um stop ainda não é uma ordem — é uma instrução que vira uma quando o preço toca um nível que você escolheu. Um stop-loss fica abaixo de uma posição long e a fecha se o preço chegar lá, limitando o estrago. O take-profit faz o mesmo do lado vencedor. Nenhum dos dois garante preço exato: uma vez disparados, normalmente executam a mercado."
+    },
+    {
+     "h": "Spread e slippage",
+     "p": "O livro de ofertas tem um comprador mais alto, chamado bid, e um vendedor mais baixo, chamado ask. A distância entre os dois é o spread, e cruzá-la custa dinheiro. O slippage é outra coisa: uma ordem a mercado grande atravessa vários níveis de preço, então o preço médio que você pegou é pior do que o que você clicou. Ver $100.00 e executar a $100.05 significa 0.05% de slippage."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "A ordem limitada te dá controle sobre:",
+     "o": [
+      "O preço, mas não sobre executar ou não",
+      "O preço e a execução instantânea",
+      "A tabela de taxas da exchange",
+      "A velocidade com que o mercado se move"
+     ]
+    },
+    {
+     "q": "O stop-loss dispara, e então:",
+     "o": [
+      "Executa exatamente no seu preço de stop",
+      "Normalmente executa a mercado, perto daquele preço",
+      "Cancela a posição sem fechá-la",
+      "Espera no livro até o preço melhorar"
+     ]
+    },
+    {
+     "q": "Slippage é:",
+     "o": [
+      "A comissão que a exchange cobra",
+      "A distância entre o bid e o ask",
+      "A diferença entre o preço visto e o preço executado",
+      "Um atraso causado pela blockchain"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd5",
+   "t": "As palavras da emoção da multidão",
+   "cards": [
+    {
+     "h": "FOMO e FUD",
+     "p": "FOMO é o medo de ficar de fora: aquele puxão de comprar porque já está subindo sem você. FUD é medo, incerteza e dúvida: o puxão de vender porque alguma coisa soa ruim. Os dois nomeiam uma emoção, não um fato sobre o mercado. E os dois viram acusação — chamar sua cautela de FUD é um jeito de te fazer parar de pensar."
+    },
+    {
+     "h": "HODL, paper hands, diamond hands",
+     "p": "HODL começou como um erro de digitação de 'hold' num post de fórum em 2013 e endureceu numa ordem: nunca venda. Paper hands zomba de quem vende; diamond hands elogia quem não vende. Repare no que essas palavras fazem: transformam uma decisão sobre o seu dinheiro num teste de caráter, julgado por estranhos que não dividem seus prejuízos."
+    },
+    {
+     "h": "Baleias e varejo",
+     "p": "Uma baleia é um detentor grande o bastante para que a própria compra ou venda mova o preço. Varejo é todo mundo pequeno — você, quase com certeza, e não há nada de ofensivo nisso. A parte útil é a assimetria: a baleia precisa planejar a saída, porque tamanho não sai em silêncio, enquanto você sai num clique."
+    },
+    {
+     "h": "Capitulação, e quem usa a palavra",
+     "p": "Capitulação é o momento em que os detentores param de ter esperança e vendem a qualquer preço: volume pesado, queda violenta, depois exaustão. Ela só é identificada depois. Esse é o limite honesto de toda palavra desta lição — descrevem bem o sentimento da multidão e não preveem nada. Quando alguém usa uma delas para te dizer o que fazer agora, pergunte que posição essa pessoa tem."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Te dizerem que sua cautela é FUD normalmente significa:",
+     "o": [
+      "Que te ofereceram uma correção factual",
+      "Pressão para você parar de questionar",
+      "Que usaram um termo de análise técnica",
+      "Que a exchange emitiu um alerta"
+     ]
+    },
+    {
+     "q": "Uma baleia é:",
+     "o": [
+      "Um detentor grande o bastante para mover o preço",
+      "Um minerador antigo de Bitcoin",
+      "Qualquer trader usando alavancagem alta",
+      "Um funcionário de uma exchange"
+     ]
+    },
+    {
+     "q": "A capitulação pode ser identificada:",
+     "o": [
+      "Antes, pelo volume subindo",
+      "Só depois",
+      "Pela taxa de funding",
+      "Pela exchange, antes de começar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd6",
+   "t": "Suporte, resistência, tendência, rompimento",
+   "cards": [
+    {
+     "h": "Suporte e resistência são zonas",
+     "p": "Suporte é uma faixa de preço onde a compra apareceu várias vezes e segurou uma queda. Resistência é onde a venda parou uma subida repetidamente. São zonas, não linhas — um nível em $60,000 quer dizer, na prática, algo entre $59,800 e $60,200. Eles importam porque traders suficientes olham para eles e agem ali, que é exatamente por que eles acabam rompendo."
+    },
+    {
+     "h": "Tendência e range",
+     "p": "Uma tendência de alta é uma sequência de topos e fundos cada vez mais altos; a de baixa é o contrário. Um range não é nenhuma das duas: o preço quicando entre um piso e um teto, sem sair do lugar. Nomear em qual dos dois você está é a coisa mais útil que essas palavras fazem, porque um mercado preso num range castiga quem opera como se ele tivesse tendência."
+    },
+    {
+     "h": "Rompimento é sair da caixa",
+     "p": "Um rompimento — breakout — é o preço saindo de um range ou furando a resistência. A palavra é usada antes de ser merecida: o preço espeta para fora, todo mundo chama de rompimento, e ele volta direto para dentro. Essa falha tem nome próprio: fakeout, o falso rompimento. Você só descobre qual dos dois era depois que o candle fecha e o preço continua fora."
+    },
+    {
+     "h": "Todo nível precisa de um timeframe",
+     "p": "Timeframe é quanto tempo um candle cobre — 5 minutos, 4 horas, um dia. Um suporte desenhado no gráfico de 5 minutos é invisível no diário. O mesmo mercado pode estar em tendência de baixa nos 5 minutos e de alta no diário, e as duas frases são verdadeiras. Quando alguém diz 'a tendência', a palavra que falta é qual timeframe."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Suporte é melhor descrito como:",
+     "o": [
+      "Um piso garantido sob o preço",
+      "Uma faixa onde a compra apareceu repetidamente",
+      "O menor preço que a moeda já atingiu",
+      "Uma linha que a exchange publica todo dia"
+     ]
+    },
+    {
+     "q": "O preço fura a resistência e volta direto. Isso é:",
+     "o": [
+      "Um fakeout",
+      "Um rompimento confirmado",
+      "Uma tendência de baixa",
+      "Uma correção"
+     ]
+    },
+    {
+     "q": "Uma tendência de alta é uma sequência de:",
+     "o": [
+      "Candles da mesma cor",
+      "Níveis desenhados por grandes detentores",
+      "Ganhos diários acima de 1%",
+      "Topos e fundos cada vez mais altos"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd7",
+   "t": "Liquidez, volume, volatilidade, market cap",
+   "cards": [
+    {
+     "h": "Volume conta, liquidez absorve",
+     "p": "Volume é quanto foi realmente negociado num período — um fato sobre o passado. Liquidez é quanto está parado no livro de ofertas esperando agora — um fato sobre o presente. Uma moeda pode ter um dia de volume enorme e ainda assim ser fina, a ponto de uma venda de $50,000 derrubá-la vários por cento. Volume te diz interesse; liquidez te diz se você consegue sair."
+    },
+    {
+     "h": "Volatilidade mede movimento, não direção",
+     "p": "Volatilidade é o quanto o preço se move, para qualquer lado. Uma moeda que oscila 5% por dia é cinco vezes mais volátil que uma que oscila 1%, sejam esses dias de alta ou de queda. É por isso que a alavancagem pesa aqui: sua distância até a liquidação é fixa, e a volatilidade decide com que frequência o preço percorre essa distância. Volatilidade alta não é ruim — é mais rápida, nos dois sentidos."
+    },
+    {
+     "h": "Market cap não é dinheiro investido",
+     "p": "Market cap é o preço multiplicado pela oferta circulante. É um rótulo, não uma medida de quanto dinheiro entrou. Se a última negociação saiu a $1 e existem 100 milhões de moedas, o cap marca $100 milhões mesmo que só alguns milhares de dólares tenham trocado de mãos o dia inteiro. É assim que moedas finas carregam caps grandes. Leia como tamanho e confira o volume antes de acreditar."
+    },
+    {
+     "h": "Fluxo de ordens: quem é agressivo",
+     "p": "Toda negociação tem um comprador e um vendedor, então 'mais compradores do que vendedores' é impossível. O que difere é a agressividade. Fluxo de ordens é o registro de qual lado cruzou o spread para executar na hora, batendo nas ordens limitadas paradas do outro lado. O preço sobe quando os compradores são os impacientes. Mesmo mercado, descrito por quem se dispôs a pagar pela velocidade."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Volume enorme ontem garante:",
+     "o": [
+      "Que você sai de uma posição grande fácil hoje",
+      "Nada sobre a liquidez que existe hoje",
+      "Que a volatilidade vai ser baixa hoje",
+      "Que o preço vai continuar subindo"
+     ]
+    },
+    {
+     "q": "Um market cap de $100 milhões significa:",
+     "o": [
+      "Preço vezes oferta circulante dá $100 milhões",
+      "Que $100 milhões foram investidos na moeda",
+      "Que o projeto tem $100 milhões em reservas",
+      "Que o volume diário dela é de $100 milhões"
+     ]
+    },
+    {
+     "q": "'Mais compradores do que vendedores' é:",
+     "o": [
+      "Como toda subida de preço acontece",
+      "Impossível — toda negociação tem os dois",
+      "Outro jeito de dizer volume alto",
+      "Uma medida de profundidade do livro"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd8",
+   "t": "As palavras que te custam dinheiro",
+   "cards": [
+    {
+     "h": "Shill e ape",
+     "p": "Fazer shill é promover uma moeda que você já tem para quem vai comprá-la de você. A palavra costuma ser dita na brincadeira, e é aí que está o truque — faz um conflito de interesse soar como traço de personalidade. Dar ape é comprar pesado sem pesquisa nenhuma, vestido de coragem. As duas palavras fazem um erro caro soar como estilo de vida."
+    },
+    {
+     "h": "Rug pull, moon, 100x",
+     "p": "Um rug pull é um token cujos criadores tiram o dinheiro que permite às pessoas vender, assim que compradores suficientes entraram. O gráfico mostra uma linha vertical até o nada. As palavras usadas para recrutar esses compradores são sempre as mesmas: moon, 100x, cedo. Um alvo de preço sem método por trás não é análise, é isca."
+    },
+    {
+     "h": "'Garantido' é a palavra de alarme",
+     "p": "Em trading, retorno garantido não pode existir, porque toda posição precisa de alguém do outro lado, perdendo. Quem oferece uma porcentagem diária fixa está te pagando com o dinheiro de novos depositantes ou com nada. Não há exceção, por mais profissional que o site pareça. No instante em que você lê 'garantido', já sabe o que está olhando."
+    },
+    {
+     "h": "Isto não é conselho financeiro",
+     "p": "A frase é usada como amuleto, como se acrescentá-la deixasse uma promoção paga inofensiva. Ela não muda nada do que a pessoa está fazendo. Troque por uma pergunta, sempre: o que essa pessoa ganha se eu comprar? Se a resposta honesta é que ela vende para você, você já tem toda a análise de que precisa."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Alguém oferece 3% ao dia garantidos. Isso é:",
+     "o": [
+      "Realista com um software bom o suficiente",
+      "Golpe, sem exceção",
+      "Possível usando alavancagem alta",
+      "Aceitável só para valores pequenos"
+     ]
+    },
+    {
+     "q": "Um rug pull acontece quando:",
+     "o": [
+      "Uma exchange tira a moeda da listagem",
+      "O preço cai forte com volume pesado",
+      "Os criadores tiram o dinheiro que permite vender",
+      "O time para de publicar novidades"
+     ]
+    },
+    {
+     "q": "'Não é conselho financeiro' num post te diz:",
+     "o": [
+      "Que o post passou por revisão jurídica",
+      "Nada sobre a motivação de quem postou",
+      "Que quem postou não tem a moeda",
+      "Que as afirmações dele foram verificadas"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Agora você tem o vocabulário em que o resto da trilha está escrito. Abra o terminal de paper trading e coloque uma dessas palavras na tela: abra uma posição pequena, veja o P&L se mexer e depois feche.",
+    "label": "Abrir Paper Trade →"
+   }
+  }
+ ]
+}

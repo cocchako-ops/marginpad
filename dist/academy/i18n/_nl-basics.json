@@ -1,0 +1,439 @@
+{
+ "id": "basics",
+ "name": "Crypto Basis",
+ "sub": "Wat je eigenlijk verhandelt",
+ "lessons": [
+  {
+   "id": "b1",
+   "t": "Wat is crypto nou echt?",
+   "cards": [
+    {
+     "h": "Geld zonder tussenpersoon",
+     "p": "Bitcoin ontstond in 2009 als geld dat geen enkele bank of overheid beheert. In plaats van één bank die bijhoudt wie wat bezit, bewaren duizenden computers wereldwijd identieke kopieën van dat register — dat gedeelde grootboek heet de blockchain."
+    },
+    {
+     "h": "Waarom het nooit slaapt",
+     "p": "Aandelenbeurzen openen en sluiten. Crypto handelt 24 uur per dag, 7 dagen per week, overal ter wereld tegelijk. Prijzen kunnen om 3 uur 's nachts op zondag wild bewegen — precies daarom gebruiken traders alerts en stop-losses in plaats van de hele dag naar grafieken te staren."
+    },
+    {
+     "h": "Duizenden munten, een paar die ertoe doen",
+     "p": "Bitcoin (BTC) is de grootste en beweegt de hele markt. Ethereum (ETH) is de tweede. Voorbij de top bestaan duizenden kleinere munten (altcoins) — de meeste veel riskanter en minder liquide. Als beginner kun je alles wat je moet leren, leren op BTC en ETH."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat houdt bij wie welke crypto bezit?",
+     "o": [
+      "Een centrale bank",
+      "Een gedeeld register gekopieerd over duizenden computers (blockchain)",
+      "Elke exchange houdt zijn eigen privélijst bij zonder gedeeld register",
+      "De overheid"
+     ]
+    },
+    {
+     "q": "Wanneer sluit de cryptomarkt?",
+     "o": [
+      "Om 17:00 New Yorkse tijd",
+      "In het weekend",
+      "Nooit — er wordt 24/7 gehandeld",
+      "Op feestdagen"
+     ]
+    },
+    {
+     "q": "Op welke munten kun je als beginner het best leren?",
+     "o": [
+      "Gloednieuwe munten met enorme procentuele winsten",
+      "BTC en ETH — de grootste en meest liquide",
+      "Wat er trending is op social media",
+      "De goedkoopste munt per stuk"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b2",
+   "t": "Exchanges, wallets en wat kopen betekent",
+   "cards": [
+    {
+     "h": "Waar de handel plaatsvindt",
+     "p": "Een exchange is een marktplaats die kopers en verkopers samenbrengt — Binance, Coinbase, Kraken en Bybit zijn exchanges. Koop je daar Bitcoin, dan werkt de exchange zijn interne register bij; de munten staan bij de exchange in bewaring tot je ze opneemt."
+    },
+    {
+     "h": "Spot versus derivaten",
+     "p": "De munt zelf kopen heet spothandel — je bezit hem, en je maximale verlies is wat je betaalde. Derivaten (zoals de futures uit Cursus 2) zijn contracten die de prijs volgen zonder de munt te bezitten — ze maken hefboom mogelijk, en die snijdt aan twee kanten."
+    },
+    {
+     "h": "Niet jouw sleutels, niet jouw munten",
+     "p": "Een wallet is waar crypto woont als hij echt van jou is — beheerd door een geheime sleutel die alleen jij hebt. Munten op een exchange zijn een belofte van die exchange. Prima voor actieve handelsbedragen, maar de geschiedenis (Mt. Gox, FTX) laat zien waarom grote bedragen in je eigen wallet horen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat is spothandel?",
+     "o": [
+      "Gokken op de prijs met geleend geld",
+      "De munt zelf kopen — je bezit hem",
+      "Een soort wallet",
+      "Alleen handelen op vaste tijden"
+     ]
+    },
+    {
+     "q": "Munten die op een exchange staan zijn…",
+     "o": [
+      "Altijd volkomen veilig wat er ook met de exchange gebeurt",
+      "Je persoonlijke wallet",
+      "In feite een schuldbekentenis van de exchange",
+      "Onmogelijk op te nemen"
+     ]
+    },
+    {
+     "q": "Wat is het maximale verlies bij spot kopen met $100?",
+     "o": [
+      "$100 — wat je betaalde",
+      "Meer dan $100",
+      "Niets, spot is risicovrij",
+      "Hangt van de hefboom af"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b3",
+   "t": "Een prijsgrafiek lezen",
+   "cards": [
+    {
+     "h": "De candle",
+     "p": "Elke candle vat de prijs van een periode samen: waar hij opende, sloot, en de hoogste en laagste punten die werden aangeraakt. Een groene candle sloot hoger dan hij opende; een rode lager. De dunne lijnen (wieken) tonen de uitersten die de prijs kort aanraakte."
+    },
+    {
+     "h": "Vind het zelf",
+     "prompt": "Tik op de BOVENSTE WIEK van de candle — de lijn die de hoogst aangeraakte prijs toont.",
+     "p": "Bewijs het eerst aan je eigen ogen voordat je verdergaat. Eén tik."
+    },
+    {
+     "h": "Timeframes veranderen het verhaal",
+     "p": "Dezelfde markt ziet er anders uit op verschillende timeframes. Een 1-minuutgrafiek toont ruis; een daggrafiek toont de trend. Een klassieke beginnersfout is paniek om een enge 5-minutencandle die op de daggrafiek onzichtbaar is. Eerst uitzoomen, altijd."
+    },
+    {
+     "h": "Volume is de leugendetector",
+     "p": "Volume toont hoeveel er echt verhandeld is. Een prijsbeweging op hoog volume betekent echte deelname; dezelfde beweging op dun volume is broos en draait vaak om. De prijs vertelt wat er gebeurde — het volume vertelt hoeveel je het moet geloven."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een rode candle betekent…",
+     "o": [
+      "De prijs sloot lager dan hij opende",
+      "De handel is stilgelegd",
+      "Het volume was laag",
+      "De prijs blijft gegarandeerd de hele dag dalen"
+     ]
+    },
+    {
+     "q": "Wat tonen de wieken van een candle?",
+     "o": [
+      "De prijs die de markt voor de volgende periode voorspelt",
+      "De hoogste en laagste prijzen die in die periode zijn aangeraakt",
+      "De handelskosten",
+      "Het aantal traders"
+     ]
+    },
+    {
+     "q": "Een grote prijsbeweging op heel laag volume is…",
+     "o": [
+      "Het sterkst mogelijke signaal op welke grafiek dan ook",
+      "Broos — draait vaak om",
+      "Onmogelijk",
+      "Altijd het begin van een trend"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b4",
+   "t": "Market cap, liquiditeit en waarom prijs alleen liegt",
+   "cards": [
+    {
+     "h": "Prijs per munt zegt op zichzelf niets",
+     "p": "Een munt van $0.001 is op geen enkele zinnige manier goedkoper dan Bitcoin. Wat telt is de market cap: prijs × circulerend aanbod. Een munt van $0.001 met 100 miljard tokens is een project van $100M. \"Hij hoeft alleen maar naar $1\" is de oudste valstrik in crypto."
+    },
+    {
+     "h": "Liquiditeit: kun je er echt uit?",
+     "p": "Liquiditeit is hoeveel je kunt kopen of verkopen zonder de prijs te bewegen. BTC absorbeert miljoenen dollars per seconde; een kleine altcoin kan 10% crashen door één grote verkoop. Illiquide munten zijn makkelijk in te stappen en bruut om te verlaten — precies wanneer je het het hardst nodig hebt."
+    },
+    {
+     "h": "Slippage",
+     "p": "Koop je tegen marktprijs, dan betaal je wat verkopers nu vragen. In een dunne markt duwt je eigen order de prijs — het verschil tussen de prijs die je zag en de prijs die je kreeg is slippage. Het is een echte kostenpost: groeit met positiegrootte, krimpt met liquiditeit."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Wat bepaalt de echte grootte van een munt?",
+     "o": [
+      "De prijs per munt",
+      "De market cap — prijs × circulerend aanbod",
+      "Hoe nieuw hij is",
+      "Hoe vaak hij op social media wordt genoemd en gedeeld"
+     ]
+    },
+    {
+     "q": "Liquiditeit meet…",
+     "o": [
+      "Hoe snel de blockchain nieuwe transacties bevestigt",
+      "Hoeveel je kunt handelen zonder de prijs te bewegen",
+      "Het aantal munten in omloop",
+      "Hoe volatiel een munt is"
+     ]
+    },
+    {
+     "q": "Slippage is…",
+     "o": [
+      "Een vast tarief dat de exchange vooraf instelt voor elke afzonderlijke order",
+      "Het gat tussen de prijs die je zag en je uitvoeringsprijs",
+      "Een grafiekpatroon",
+      "Een soort wallet"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b5",
+   "t": "Waarom crypto zo heftig beweegt",
+   "cards": [
+    {
+     "h": "Een klein bootje op een grote oceaan",
+     "p": "De totale cryptomarkt is piepklein vergeleken met aandelen of obligaties, en veel ervan wordt met hefboom verhandeld. Dezelfde geldgolf die de S&P 500 nauwelijks beweegt, kan Bitcoin meerdere procenten verplaatsen — en kleinere munten vele malen meer."
+    },
+    {
+     "h": "Nieuws, liquiditeit en gedwongen verkopers",
+     "p": "Grote bewegingen combineren meestal drie dingen: een trigger (nieuws, een macrocijfer), dunne liquiditeit (nachten, weekends) en gedwongen verkopen van geliquideerde hefboomtraders. Dat derde ingrediënt — dat je in Cursus 2 bestudeert — is waarom cryptocrashes zo snel en diep zijn."
+    },
+    {
+     "h": "Volatiliteit is het hele spel",
+     "p": "Volatiliteit is geen fout — het is waarom traders hier zijn. Maar ze is symmetrisch: dezelfde beweging van 10% die een hefboomaccount verdubbelt, veegt het ook weg. Elke les hierna gaat eigenlijk over volatiliteit lang genoeg overleven om ervan te profiteren."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Waarom beweegt hetzelfde geldbedrag crypto meer dan aandelen?",
+     "o": [
+      "Exchanges manipuleren de cryptoprijzen zodra het volume daalt",
+      "De cryptomarkt is veel kleiner en meer gehefboomd",
+      "Aandelen hebben geen volatiliteit",
+      "Crypto handelt langzamer"
+     ]
+    },
+    {
+     "q": "Welk ingrediënt maakt cryptocrashes extra snel en diep?",
+     "o": [
+      "Bankfeestdagen",
+      "Gedwongen verkopen van geliquideerde hefboomtraders",
+      "Traag internet",
+      "Plotselinge sprongen in de miningmoeilijkheid van het netwerk"
+     ]
+    },
+    {
+     "q": "Volatiliteit is voor een trader…",
+     "o": [
+      "Puur risico dat je volledig moet vermijden",
+      "De kans ÉN het risico — overleven is de vaardigheid",
+      "Alleen een probleem voor beginners",
+      "Illegaal op gereguleerde exchanges"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b6",
+   "t": "Stablecoins en handelsparen",
+   "cards": [
+    {
+     "h": "De dollar die op de blockchain woont",
+     "p": "Een stablecoin is een cryptotoken ontworpen om exact $1 waard te zijn — USDT en USDC zijn de reuzen. Ze bestaan zodat traders dollars binnen crypto kunnen aanhouden: winst parkeren, aan volatiliteit ontsnappen en al het andere prijzen in een stabiele eenheid."
+    },
+    {
+     "h": "Wat BTC/USDT echt betekent",
+     "p": "Elke markt is een PAAR: wat je verhandelt en waarin je het prijst. BTC/USDT betekent Bitcoin geprijsd in Tether-dollars. Verkoop je BTC in dat paar, dan ontvang je USDT, geen bankdollars. Vrijwel alle futures die je zult verhandelen zijn paren met USDT-marge."
+    },
+    {
+     "h": "Stabiel betekent niet risicovrij",
+     "p": "Een stablecoin is maar zo goed als zijn dekking. Depegs zijn gebeurd — het beroemdst: Terra UST stortte in 2022 naar nul. Voor handelssaldi houden de grote uitgevers stand, maar weet wat je vasthoudt: een token inwisselbaar voor dollars, niet de dollars zelf."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Waarvoor is een stablecoin ontworpen?",
+     "o": [
+      "Stabiel 10% per jaar groeien",
+      "Exact $1 waard zijn",
+      "Bitcoin volgen",
+      "Banken vervangen"
+     ]
+    },
+    {
+     "q": "In het paar BTC/USDT, wat ontvang je als je BTC verkoopt?",
+     "o": [
+      "Bankdollars",
+      "USDT",
+      "ETH",
+      "Niets tot de opname"
+     ]
+    },
+    {
+     "q": "Stablecoins zijn…",
+     "o": [
+      "Letterlijk dollars",
+      "Per definitie volledig risicovrij, wat er ook gebeurt",
+      "Tokens gedekt door reserves",
+      "Gegarandeerd door overheden"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b7",
+   "t": "Kosten: de stille belasting op elke trade",
+   "cards": [
+    {
+     "h": "Maker, taker, spread",
+     "p": "Elke trade betaalt. De taker-fee (direct de spread oversteken, marktorders) is hoger; de maker-fee (wachtende limietorders die liquiditeit toevoegen) is lager — soms zelfs een korting. De spread zelf — het gat tussen beste bied- en laatprijs — is ook een kostenpost."
+    },
+    {
+     "h": "Waarom kosten harder aankomen bij futures",
+     "p": "Futures-kosten worden berekend over het NOTIONEEL, niet je marge. Op 20x hefboom is een taker-fee van 0.055% al 1.1% van je marge per kant — ruim 2% heen en terug. Tien trades per dag tegen dat tarief is een rekening die weinig strategieën verslaan."
+    },
+    {
+     "h": "De doodsspiraal van overtrading",
+     "p": "De meeste verliezende beginners verliezen niet aan de richting — ze bloeden leeg aan kosten en spread door te vaak te handelen. Minder, betere trades met limietentries is niet alleen disciplineadvies; het is rekenwerk. Tel je kosten wekelijks in je journal en behandel ze als een positie tegen je."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Welk ordertype betaalt meestal de LAGERE fee?",
+     "o": [
+      "Markt (taker), direct uitgevoerd",
+      "Wachtende limiet (maker)",
+      "Stoporder",
+      "Ze zijn identiek"
+     ]
+    },
+    {
+     "q": "Futures-kosten worden berekend over…",
+     "o": [
+      "Alleen de marge die je voor de trade inlegde",
+      "De volledige notionele positiegrootte",
+      "Alleen de winst",
+      "Alleen opnames"
+     ]
+    },
+    {
+     "q": "Op 20x kost een taker-fee van 0.055% ruwweg welk deel van je marge per kant?",
+     "o": [
+      "0.055%",
+      "0.5%",
+      "1.1%",
+      "11%"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b8",
+   "t": "Marktcycli en narratieven",
+   "cards": [
+    {
+     "h": "De vier seizoenen van crypto",
+     "p": "Crypto beweegt in dramatische cycli: accumulatie (stil, niemand geeft erom), markup (de bull run waar iedereen te laat instapt), distributie (slim geld verkoopt in de euforie) en markdown (de bear die iedereen overtuigt dat het voorbij is). Elke cyclus voelt ongekend; de emoties zijn identiek."
+    },
+    {
+     "h": "Narratieven wisselen, hebzucht is constant",
+     "p": "Elke cyclus kroont nieuwe verhalen — ICO's, DeFi, NFT's, AI-munten. Het verhaal verandert; het patroon niet: een echte innovatie, een speculatieve razernij ver daarbuiten, een instorting die de zwakke projecten doodt en een basis voor de volgende cyclus uit de overlevenden."
+    },
+    {
+     "h": "Waar cycli jouw trading raken",
+     "p": "Je kunt cycli niet exact timen, maar je kunt jezelf grofweg plaatsen: is de hebzucht extreem? raadt je kapper munten aan? verslaan 100x-memecoins alles? Laat in de cyclus is risico verlagen het belangrijkst — precies wanneer het het minst nodig voelt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "In welke fase VERKOOPT slim geld doorgaans?",
+     "o": [
+      "Accumulatie, terwijl nog niemand oplet",
+      "Markdown",
+      "Distributie — in de late euforie",
+      "Nooit"
+     ]
+    },
+    {
+     "q": "Wat herhaalt zich in elke cryptocyclus?",
+     "o": [
+      "Dezelfde munten winnen",
+      "Het emotionele patroon: ongeloof, euforie, wanhoop",
+      "Exacte prijsniveaus",
+      "Dezelfde narratieven keren terug en leiden elke cyclus"
+     ]
+    },
+    {
+     "q": "Wanneer is risico verlagen het belangrijkst?",
+     "o": [
+      "Als iedereen bang is",
+      "In de late euforie van de cyclus",
+      "Nooit — altijd maximaal risico",
+      "Alleen in lange en diepe bearmarkten"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "b9",
+   "t": "Scams en zelfverdediging",
+   "cards": [
+    {
+     "h": "Als het rendement belooft, ben jij het product",
+     "p": "Gegarandeerd 2% per dag. Een tradingbot zonder verliesmaanden. Een vreemde die aanbiedt je geld te beheren. Al deze dingen zijn scams, altijd, zonder uitzondering — echte trading kent verliesperiodes, en niemand met een gelddrukmachine deelt die met vreemden."
+    },
+    {
+     "h": "De klassiekers: rug pulls en phishing",
+     "p": "Een rug pull is een token waarvan de makers de liquiditeit leegtrekken zodra kopers zich opstapelen — endemisch bij verse microcaps. Phishing is een neppe exchange- of walletsite die je login of seed phrase oogst. Zet echte sites in je favorieten; klik nooit op loginlinks uit berichten."
+    },
+    {
+     "h": "Basishygiëne die 95% tegenhoudt",
+     "p": "Gebruik 2FA (een authenticator-app, geen sms) op elke exchange. Deel nooit een seed phrase met wie dan ook — geen enkele supportafdeling heeft hem nodig. Wees paranoïde over privéberichten: echte platforms sturen jou nooit als eerste een bericht. Saaie regels — en ze zijn het hele spel."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een dienst garandeert 2% rendement per dag. Dat is…",
+     "o": [
+      "Een geweldige kans",
+      "Mogelijk legitiem als het geauditeerd is",
+      "Een scam, altijd",
+      "Prima voor kleine bedragen"
+     ]
+    },
+    {
+     "q": "Wie heeft legitiem je seed phrase nodig?",
+     "o": [
+      "De support van de exchange",
+      "De ontwikkelaars van de wallet",
+      "Niemand, nooit",
+      "De belastingdienst"
+     ]
+    },
+    {
+     "q": "De beste 2FA-methode is…",
+     "o": [
+      "Sms-codes naar je geregistreerde nummer",
+      "Een authenticator-app",
+      "E-maillinks",
+      "Je geboortedatum"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Je hebt Crypto Basis afgerond — de hele cursus. Open NU de paper-trading terminal: bekijk live prijzen en plaats, zodra je je klaar voelt, je eerste trade met nepgeld.",
+    "label": "Open Paper Trade →"
+   }
+  }
+ ]
+}

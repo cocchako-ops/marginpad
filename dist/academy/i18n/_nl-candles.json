@@ -1,0 +1,388 @@
+{
+ "id": "candles",
+ "name": "Candlestick-Patronen",
+ "sub": "De strijd lezen, candle voor candle",
+ "lessons": [
+  {
+   "id": "c1",
+   "t": "Doji: de markt haalt zijn schouders op",
+   "cards": [
+    {
+     "h": "Als niemand wint",
+     "p": "Een doji is een candle die vrijwel exact sluit waar hij opende — een lang gevecht tussen kopers en verkopers dat gelijkspel eindigde. Op zichzelf betekent hij besluiteloosheid. Zijn POSITIE geeft hem betekenis: een doji na een lange trend zegt dat de winnende kant zijn overtuiging verliest."
+    },
+    {
+     "h": "Context is alles",
+     "p": "Een doji midden in een range is ruis — besluiteloosheid binnen besluiteloosheid. Een doji op een belangrijke weerstand na vijf groene candles is een echt signaal: de kopers die de prijs opduwden, faalden net om verder te duwen. Zelfde candle, totaal andere boodschap."
+    },
+    {
+     "h": "Handel nooit op de doji alleen",
+     "p": "Een doji is een vraagteken, geen antwoord. Hij vraagt: is de trend moe? Het antwoord komt van de VOLGENDE candle en het niveau waarop het gebeurt. Doji op weerstand + rode bevestigingscandle = een verhaal. Doji alleen = kop of munt met een chique naam."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een doji vertelt je…",
+     "o": [
+      "Kopers wonnen overtuigend en houden de controle",
+      "Verkopers wonnen overtuigend",
+      "De sessie eindigde gelijk — besluiteloosheid",
+      "Het volume was nul"
+     ]
+    },
+    {
+     "q": "Waar DOET een doji er echt toe?",
+     "o": [
+      "Overal",
+      "Midden in een range, waar beide kanten blijven twijfelen",
+      "Na een lange trend, op een belangrijk niveau",
+      "Alleen op zondag"
+     ]
+    },
+    {
+     "q": "De juiste reactie op een doji is…",
+     "o": [
+      "Meteen instappen, voordat de kans verdwijnt",
+      "Wachten tot de volgende candle bevestigt op het niveau",
+      "Je positie verdubbelen",
+      "Grafieken voorgoed negeren"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "t": "Engulfing: één kant neemt het over",
+   "cards": [
+    {
+     "h": "De overnamecandle",
+     "p": "Een bullish engulfing is een rode candle gevolgd door een groene waarvan het lichaam hem volledig opslokt. Iedereen die tijdens die rode candle verkocht, staat nu onder water — en de boodschap is direct: kopers hebben zojuist de controle gegrepen op deze prijs."
+    },
+    {
+     "h": "Waarom de engulfing werkt",
+     "p": "Het is de mechaniek van gevangen traders, geen magie. De verkopers uit de opgeslokte candle hebben verliesposities; hun exits (terugkopen) voeden de nieuwe richting. Hoe groter de opgeslokte candle en hoe belangrijker het niveau, hoe meer gevangenen — en hoe sterker het signaal."
+    },
+    {
+     "h": "De checklist voor een echte engulfing",
+     "p": "Drie eisen: het gebeurt OP een niveau (steun voor bullish, weerstand voor bearish), het opslokkende lichaam bedekt het vorige volledig, en het volume stijgt op de opslokkende candle. Ontbreken alle drie? Dan kijk je naar twee willekeurige candles."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een bullish engulfing is…",
+     "o": [
+      "Twee even grote groene candles die op hetzelfde niveau sluiten",
+      "Een groen lichaam dat het vorige rode lichaam volledig opslokt",
+      "Een gap omhoog",
+      "Een paar doji's"
+     ]
+    },
+    {
+     "q": "De mechanische reden dat engulfing-patronen werken is…",
+     "o": [
+      "Geluk",
+      "Gevangen traders voeden de omkering bij hun exit",
+      "Exchanges die de munt promoten om verse kopers naar de beweging te lokken",
+      "Astrologie"
+     ]
+    },
+    {
+     "q": "Een echte engulfing vereist…",
+     "o": [
+      "Twee willekeurige candles",
+      "Niveau + volledige lichaamsbedekking + stijgend volume",
+      "Een weekend",
+      "Bevestiging van grote accounts op social media"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "t": "Hammer en shooting star: de afwijzingswieken",
+   "cards": [
+    {
+     "h": "De hammer",
+     "p": "Een hammer verschijnt na een daling: een klein lichaam bovenaan met een lange onderste wiek — minstens twee keer het lichaam. Het verhaal: verkopers duwden de prijs tijdens de sessie ver omlaag, en kopers sloegen alles terug. Die lange wiek is een mislukte uitbraak omlaag, geschreven in één candle."
+    },
+    {
+     "h": "Vind hem zelf",
+     "prompt": "Eén van deze drie candles is een hammer. Tik erop.",
+     "p": "Onthoud: klein lichaam bovenaan, lange onderste wiek, na een daling."
+    },
+    {
+     "h": "De shooting star — hetzelfde verhaal, ondersteboven",
+     "p": "De shooting star is het spiegelbeeld op de top van een rally: lange BOVENSTE wiek, klein lichaam onderaan. Kopers probeerden de rally voort te zetten, werden hard afgewezen, en de candle sloot bij zijn dieptepunt. Op weerstand is het een van de schoonste short-setups die candles kunnen printen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "De lange onderste wiek van een hammer toont…",
+     "o": [
+      "Niets",
+      "Verkopers duwden omlaag en kopers wezen de hele beweging af",
+      "Een handelsstop die de exchange tijdens de sessie activeerde",
+      "Hoge kosten"
+     ]
+    },
+    {
+     "q": "Een hammer doet er het meest toe…",
+     "o": [
+      "Midden in de zaagbeweging",
+      "Na een daling, op steun",
+      "Op de hoogste koers ooit",
+      "Nooit"
+     ]
+    },
+    {
+     "q": "Een shooting star is…",
+     "o": [
+      "Een hammer die op de bodem van een lange daling verschijnt",
+      "Een afwijzing met lange bovenste wiek op de top van een rally",
+      "Een gap",
+      "Een volumepiek"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c4",
+   "t": "Morning star en evening star",
+   "cards": [
+    {
+     "h": "Drie candles, één omkering",
+     "p": "De morning star is een omkering in drie bedrijven op de bodem: een sterke rode candle (verkopers aan de macht), een candle met piepklein lichaam (het gevecht stokt — vaak een doji), dan een sterke groene die diep in de eerste sluit (kopers nemen over). De evening star is hetzelfde patroon omgekeerd, op de top."
+    },
+    {
+     "h": "Waarom drie er één verslaan",
+     "p": "Eén candle kan ruis zijn; drie opeenvolgende candles die één samenhangend verhaal vertellen zijn moeilijker te vervalsen. De middelste candle is het scharnier — het moment dat het momentum stierf. De derde is het bewijs. Zonder de sterke derde sluiting heb je een pauze, geen omkering."
+    },
+    {
+     "h": "De ster beoordelen",
+     "p": "Sterker wanneer: de middelste candle een gap maakt of duidelijk apart staat, de derde voorbij het midden van de eerste sluit, en het hele patroon op een niveau van jouw kaart ligt. Zoals altijd — het patroon geeft de trigger en de invalidatie (voorbij het uiterste van de ster), het niveau geeft de reden."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "De middelste candle van de morning star staat voor…",
+     "o": [
+      "Een plotselinge versnelling van de bestaande trendrichting",
+      "Het moment dat het momentum stokt — het scharnier",
+      "Een feestdag",
+      "Volume"
+     ]
+    },
+    {
+     "q": "De omkering wordt bevestigd door…",
+     "o": [
+      "De middelste candle alleen, zonder verdere beweging",
+      "Een sterke derde candle die diep in de eerste sluit",
+      "Elke groene candle",
+      "Nieuws"
+     ]
+    },
+    {
+     "q": "De stop voor een sterpatroon hoort…",
+     "o": [
+      "Nergens",
+      "Voorbij het uiterste punt van het patroon",
+      "Op de entry",
+      "Altijd exact 1% van de entryprijs"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c5",
+   "t": "Inside bars en compressie",
+   "cards": [
+    {
+     "h": "De oprollende candle",
+     "p": "Een inside bar past volledig binnen het bereik van de vorige candle — lagere high, hogere low. De markt comprimeert: ranges krimpen, beide kanten wachten. Je weet uit m7 wat compressie belooft: expansie. Een reeks inside bars is een veer die wordt opgewonden."
+    },
+    {
+     "h": "De uitbraakspeelwijze",
+     "p": "De klassieke setup: markeer de high en low van de moederbar. Een breuk van één kant met volume is de trigger; de tegenoverliggende kant is de natuurlijke invalidatie. Het is een van de strakste risico-rendementstructuren in trading, omdat de stopafstand de breedte van de veer is."
+    },
+    {
+     "h": "De valstrik om te respecteren",
+     "p": "Compressie-uitbraken FALEN vaak — de eerste beweging is dikwijls de valse (dat weet je van de spring uit a2). Bescherm jezelf: verkies uitbraken in de richting van de grotere trend, eis volume, en jaag nooit een uitbraak na die direct terugkeert in de moederbar — die terugkeer IS het faalsignaal."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een inside bar is…",
+     "o": [
+      "Een candle die duidelijk groter is dan de vorige",
+      "Een candle volledig binnen het bereik van de vorige candle",
+      "Een doji",
+      "Een gap"
+     ]
+    },
+    {
+     "q": "De natuurlijke stop voor een inside-bar-uitbraak is…",
+     "o": [
+      "De tegenoverliggende kant van de moederbar",
+      "Een vaste 10% vanaf de uitbraakprijs",
+      "Op de entry",
+      "Die is er niet"
+     ]
+    },
+    {
+     "q": "Een uitbraak die direct terugkeert in de moederbar is…",
+     "o": [
+      "Een bevestiging dat de uitbraak echt is en veilig na te jagen",
+      "Het faalsignaal — jaag hem niet na",
+      "Een koopsignaal",
+      "Onmogelijk"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c6",
+   "t": "Wiekverhalen: absorptie en uitputting",
+   "cards": [
+    {
+     "h": "Wieken lezen als voetafdrukken",
+     "p": "Wieken zijn afgewezen prijzen — en hun locatie vertelt wie er wordt afgewezen. Herhaalde lange onderste wieken in één zone betekenen dat iemand daar de verkoop absorbeert: elke dip wordt gekocht. Herhaalde bovenste wieken in een zone betekenen dat er aanbod boven zit en elke rally wordt verkocht."
+    },
+    {
+     "h": "Uitputtingswieken",
+     "p": "Een ENORME wiek na een langgerekte beweging — veel groter dan recente candles — markeert vaak uitputting: de laatste uitbarsting van de trend botste op een muur van tegenorders (dit is de liquidatiecascade-wiek uit m5 van dichtbij). Trend + climaxvolume + reuzenwiek = de beweging is waarschijnlijk voorlopig klaar."
+    },
+    {
+     "h": "Wiekclusters tekenen je niveaus voor je",
+     "p": "Vergeet lijnen op gevoel tekenen: zones waar meerdere wieken prikken en worden afgewezen ZIJN de eigen steun en weerstand van de markt. Teken de zone langs de wiekpunten en pas dan de volledige gereedschapskist toe — trend, volumeknoop, positionering — op die zone."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Herhaalde lange onderste wieken in één zone suggereren…",
+     "o": [
+      "Niets",
+      "Iemand absorbeert de verkoop — dips worden gekocht",
+      "Verkopers winnen en blijven de zone omlaag drukken",
+      "Een dode markt"
+     ]
+    },
+    {
+     "q": "Een reuzenwiek na een langgerekte trend markeert vaak…",
+     "o": [
+      "Voortzetting van de trend met nog meer kracht",
+      "Uitputting — de climax botste op een muur van orders",
+      "Laag volume",
+      "Een bug"
+     ]
+    },
+    {
+     "q": "De beste steun/weerstand-zones teken je op basis van…",
+     "o": [
+      "Alleen ronde getallen, want daar kijkt iedereen naar",
+      "Clusters van afwijzingswieken",
+      "Het nieuws van gisteren",
+      "Alleen voortschrijdende gemiddelden"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c7",
+   "t": "Patronen liegen: de faaltrade",
+   "cards": [
+    {
+     "h": "Elk patroon heeft een faalpercentage",
+     "p": "Hammers worden overreden. Engulfings worden opgeslokt. In crypto's stop-jacht-omgeving (a1) falen schoolboekpatronen CONSTANT — omdat iedereen ze ziet, en zichtbare orders zijn voer. Dit accepteren is het verschil tussen een patroongebruiker en een patroonslachtoffer."
+    },
+    {
+     "h": "Het mislukte patroon IS een patroon",
+     "p": "Hier is het professionele geheim: een MISLUKT signaal is vaak een beter signaal. Een bullish hammer op steun die omlaag breekt betekent dat elke hammerkoper nu gevangen zit — hun stops voeden de beweging omlaag. De mislukking verhandelen (met de gevangen massa als brandstof) is vaak schoner dan het schoolboek verhandelen."
+    },
+    {
+     "h": "Positioneer je voor beide verhalen",
+     "p": "Praktische regel: weet vooraf wat het patroon ongeldig maakt en hoe de faaltrade eruit zou zien. Breekt de hammer-low, stap je dan alleen uit — of draai je om? Dit vóór de entry beslissen verandert het patroon van een gebed in een plan met twee takken."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Schoolboekpatronen falen vaak in crypto omdat…",
+     "o": [
+      "De grafieken op de meeste exchanges gewoon vaak kapot zijn",
+      "Iedereen ze ziet — zichtbare orders worden jachtliquiditeit",
+      "Patronen illegaal zijn",
+      "Kosten"
+     ]
+    },
+    {
+     "q": "Een mislukt bullish patroon wordt vaak…",
+     "o": [
+      "Niets",
+      "Een sterk bearish signaal — gevangen kopers voeden de beweging",
+      "Een nog sterker koopsignaal voor geduldige bulls",
+      "Een doji"
+     ]
+    },
+    {
+     "q": "Voor je een patroontrade ingaat moet je weten…",
+     "o": [
+      "Alleen het winstdoel, want het patroon bevestigt de richting",
+      "Wat het ongeldig maakt en hoe de faaltrade eruitziet",
+      "Het oprichtingsjaar van de exchange",
+      "Niets"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c8",
+   "t": "Candles op hun plek zetten",
+   "cards": [
+    {
+     "h": "Candles zijn de laatste 10%",
+     "p": "Een candlepatroon is een TRIGGER, nooit een reden. De reden komt van al het andere dat je leerde: trend (m1), niveau (m1/a4), positionering (m4), regime (a7). De candle beantwoordt alleen de laatste vraag: is NU het moment om op dit niveau te handelen?"
+    },
+    {
+     "h": "De volledige volgorde",
+     "p": "Van boven naar beneden: de dagtrend staat de richting toe → 4H toont een setup op een niveau → de positionering staat niet vol tegen je → DAN pas zoom je in en wacht je op de candle — de engulfing, de hammer, de star — als entrytrigger met ingebouwde invalidatie. Candles zonder die stapel zijn gokken met extra stappen."
+    },
+    {
+     "h": "Train het oog, vertrouw dan het proces",
+     "p": "Patroonherkenning is een vaardigheid die groeit met herhalingen — en paper trading geeft onbeperkte gratis herhalingen. Spot een patroon, schrijf het tweetakkenplan, voer uit, noteer in het journal. Honderd gelogde patronen later WEET je welke jou betalen — in jouw markt, op jouw timeframe."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "In een complete trade is een candlepatroon…",
+     "o": [
+      "De hele strategie",
+      "De laatste trigger — de laatste 10% bovenop de rest",
+      "Optionele versiering zodat de screenshot er mooi uitziet",
+      "De stop-loss"
+     ]
+    },
+    {
+     "q": "De juiste volgorde eindigt met de candle omdat…",
+     "o": [
+      "Candles alles voorspellen wat op grotere timeframes gebeurt",
+      "Hij de entry timet op een niveau dat al redenen had",
+      "Hij het mooist is",
+      "Het volume dat zegt"
+     ]
+    },
+    {
+     "q": "De manier om te leren welke patronen JOU betalen is…",
+     "o": [
+      "Influencers vertrouwen",
+      "Honderd gelogde herhalingen in paper trading + het journal",
+      "Eén gelukstrade",
+      "De namen en vormen van elk bekend patroon uit je hoofd leren"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Ga patronen jagen: open een grafiek, vind één engulfing of hammer op een echt niveau en log het tweetakkenplan als paper trade.",
+    "label": "Open Paper Trade →"
+   }
+  }
+ ]
+}

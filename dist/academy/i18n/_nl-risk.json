@@ -1,0 +1,606 @@
+{
+ "id": "risk",
+ "name": "Risicobeheer",
+ "sub": "Het enige voordeel dat een beginner echt kan hebben",
+ "lessons": [
+  {
+   "id": "r1",
+   "t": "Positiegrootte: vaardigheid nummer 1",
+   "cards": [
+    {
+     "h": "Riskeer een plakje, nooit de hele taart",
+     "prompt": "Sleep je risico per trade omlaag tot je minstens 30 verliezen op rij kunt overleven.",
+     "p": "Professionals dimensioneren posities zo dat één verliestrade een vast klein deel van het account kost — meestal 1-2%. Kijk wat jouw risico-instelling doet met je overlevingskansen."
+    },
+    {
+     "h": "Grootte vanuit de stop, niet vanuit hebzucht",
+     "p": "De juiste volgorde: kies waar de trade fout is (je stop-lossniveau), meet de afstand van entry tot stop, en dimensioneer de positie zo dat die afstand je 1-2% risico is. Grootte is een UITKOMST van de berekening — nooit het startpunt."
+    },
+    {
+     "h": "Hefboom is gereedschap, grootte is de beslissing",
+     "p": "Hefboom bepaalt alleen hoeveel marge je inlegt voor een gegeven grootte; het risico komt uit de grootte zelf. Een goed gedimensioneerde 10×-trade riskeert minder dan een opgeblazen 2×-trade. Stop met vragen welke hefboom, begin met vragen welke grootte je risico op 1% houdt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Met 1% risico per trade, hoeveel verliezen op rij laten je 80% intact?",
+     "o": [
+      "Ongeveer 5",
+      "Ongeveer 20",
+      "Ongeveer 50",
+      "Eén"
+     ]
+    },
+    {
+     "q": "Wat is de juiste EERSTE stap bij het dimensioneren van een trade?",
+     "o": [
+      "De hefboom kiezen",
+      "Beslissen waar de trade fout is",
+      "Een winstdoel kiezen",
+      "De grootte maximaliseren die je marge toestaat"
+     ]
+    },
+    {
+     "q": "Risico komt uiteindelijk van…",
+     "o": [
+      "Alleen de hefboomvermenigvuldiger, niets anders",
+      "Positiegrootte ten opzichte van je stopafstand",
+      "De munt die je kiest",
+      "Het tijdstip van de dag"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Dimensioneer een echte trade: account, risico-%, entry en stop — de calculator geeft de exacte positiegrootte terug.",
+    "label": "Positiegrootte-Calculator →"
+   }
+  },
+  {
+   "id": "r2",
+   "t": "Stop-loss en take-profit, geplaatst als een pro",
+   "cards": [
+    {
+     "h": "De stop gaat waar het idee sterft",
+     "p": "Een stop-loss hoort op de prijs waar je these bewezen fout is — onder de steun die je kocht, voorbij het niveau dat de setup ongeldig maakt. Hem plaatsen op \"de meeste pijn die ik aankan\" is omgekeerd: de markt kent je pijngrens niet en geeft er niet om."
+    },
+    {
+     "h": "Bewijs het: plaats de stop",
+     "prompt": "Je kocht op de groene lijn vanwege de steunzone. Tik waar de stop-loss hoort.",
+     "p": "Eén van deze drie plekken is juist. De andere twee zijn hoe beginners verliezen."
+    },
+    {
+     "h": "Stopjacht is echt, paniek erover niet",
+     "p": "De prijs prikt vaak met een wiek door duidelijke niveaus, triggert de opgestapelde stops en draait om. De oplossing is niet je stop verwijderen (dat maakt van een klein verlies een liquidatie) — maar stops voorbij duidelijke ronde getallen plaatsen en zo dimensioneren dat een stop-out saai is, niet verwoestend."
+    },
+    {
+     "h": "Take-profit: beslis terwijl je helder bent",
+     "p": "Een take-profit-order verzilvert de winst automatisch. Beslis de exit vóór de entry, terwijl je objectief bent — want na de entry ben je de minst objectieve persoon die naar die grafiek kijkt. Gedeeltelijke winstnemingen (bijvoorbeeld de helft sluiten op het eerste doel) zijn een legitiem compromis."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "De beste plek voor een stop-loss is…",
+     "o": [
+      "Waar verliezen te veel pijn zou doen",
+      "Waar het trade-idee bewezen fout is",
+      "Zo dicht mogelijk bij de entry",
+      "Nergens — stops zijn voor lafaards"
+     ]
+    },
+    {
+     "q": "Als de prijs stops jaagt door een duidelijk niveau, is de juiste reactie…",
+     "o": [
+      "Nooit meer stop-losses gebruiken in welke trade dan ook",
+      "Stops voorbij duidelijke niveaus en een draaglijke grootte",
+      "De positie verdubbelen",
+      "Van munt wisselen"
+     ]
+    },
+    {
+     "q": "Wanneer moet het exitplan beslist worden?",
+     "o": [
+      "Pas als de trade in behoorlijke winst staat",
+      "Vóór de entry, terwijl je objectief bent",
+      "Alleen bij verlies",
+      "Nooit"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Open een paper-positie en hang er een echte SL en TP aan — oefen het volledige ritueel met nul risico.",
+    "label": "Paper Trade →"
+   }
+  },
+  {
+   "id": "r3",
+   "t": "Risk:reward — winstgevend fout zitten",
+   "cards": [
+    {
+     "h": "De verhouding die fouten vergeeft",
+     "p": "Risk:reward vergelijkt wat je riskeert met wat je mikt te winnen. $50 riskeren om $150 te winnen is 1:3. Op 1:3 blijf je winstgevend met maar 3 van de 10 trades goed — de afbeelding hieronder zijn die tien trades. De verhouding koopt je het recht om meestal fout te zitten."
+    },
+    {
+     "h": "Winrate en R:R wisselen uit",
+     "p": "Strategieën met hoge winrate hebben meestal kleine winsten; strategieën met hoge R:R verliezen vaak maar winnen groot. Beide werken; geen van beide werkt met de slechte combinatie (lage winrate ÉN lage R:R — de standaardtoestand van een impulsieve beginner). Weet welk spel jouw strategie speelt."
+    },
+    {
+     "h": "Verwachtingswaarde: het enige getal dat beslist",
+     "p": "Verwachtingswaarde = (winrate × gemiddelde winst) − (verliespercentage × gemiddeld verlies). Positief betekent dat de aanpak over veel trades geld verdient; negatief betekent dat geen enkele dimensionering hem redt. Eén trade betekent niets — verwachtingswaarde meet je over tientallen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bij 1:3 risk:reward, welke winrate is ongeveer break-even?",
+     "o": [
+      "75%",
+      "50%",
+      "25%",
+      "90%"
+     ]
+    },
+    {
+     "q": "Een strategie met negatieve verwachtingswaarde…",
+     "o": [
+      "Werkt prima zolang je met kleinere grootte handelt",
+      "Werkt met meer hefboom",
+      "Verliest op termijn geld, welke grootte dan ook",
+      "Heeft maar één grote winst nodig"
+     ]
+    },
+    {
+     "q": "Hoeveel trades zijn er nodig om een strategie te beoordelen?",
+     "o": [
+      "Eén goede",
+      "Tientallen — verwachtingswaarde is statistiek",
+      "Twee",
+      "Het valt niet met echte nauwkeurigheid te meten"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Voer je winrate en R:R in de Risk of Ruin-calculator in — zie wat de wiskunde zegt over je overlevingskansen.",
+    "label": "Risk of Ruin-Calculator →"
+   }
+  },
+  {
+   "id": "r4",
+   "t": "De brute wiskunde van drawdowns",
+   "cards": [
+    {
+     "h": "Verliezen wegen zwaarder dan winsten",
+     "prompt": "Sleep het verlies dieper en zie wat herstel vereist. Vind het verlies waarbij je +100% nodig hebt om alleen maar terug te komen.",
+     "p": "Verlies 10% en je hebt 11% nodig om te herstellen. Deze asymmetrie is geen motivatiepostermateriaal — het is rekenwerk, en de reden waarom kapitaalbehoud winstjacht verslaat."
+    },
+    {
+     "h": "Reeksen zijn normaal, ondergang is optioneel",
+     "p": "Zelfs een strategie die 60% van de tijd wint, raakt regelmatig reeksen van 5 verliezen — dat is kansrekening, geen falen. Of een normale reeks het einde van je account wordt, hangt volledig af van de grootte die je per trade riskeerde. Dimensioneren maakt van variantie ruis; overdimensioneren maakt er ondergang van."
+    },
+    {
+     "h": "De comeback-valstrik",
+     "p": "Na een verlies wil je de grootte VERHOGEN om het snel terug te winnen. Dat is precies omgekeerd: grotere grootte na verliezen betekent dat je slechtste beslissingen je grootste inzetten krijgen. Professionals doen het tegenovergestelde — kleiner in drawdowns, groter als het loopt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Na 50% van een account te verliezen, vereist herstel…",
+     "o": [
+      "+50%",
+      "+75%",
+      "+100%",
+      "+25%"
+     ]
+    },
+    {
+     "q": "Een reeks van 5 verliezen bij een goede strategie is…",
+     "o": [
+      "Bewijs dat de strategie kapot is",
+      "Statistisch normaal",
+      "Onmogelijk",
+      "Een reden om de grootte te verdubbelen"
+     ]
+    },
+    {
+     "q": "Na een verliesreeks doen professionals doorgaans…",
+     "o": [
+      "De grootte verhogen om sneller te herstellen",
+      "De grootte verlagen tot de prestaties terugkeren",
+      "Stop-losses verwijderen",
+      "Overschakelen naar 100× hefboom"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r5",
+   "t": "Psychologie: de vijand in de spiegel",
+   "cards": [
+    {
+     "h": "Revenge trading",
+     "p": "De duurste trade in de geschiedenis van elke beginner is die 90 seconden na een pijnlijk verlies — opgeblazen, ongepland, gedreven door de behoefte om quitte te staan. Benoem het patroon nu en neem de profregel over: na een stop-out geen nieuwe trade tot er een geschreven plan ligt."
+    },
+    {
+     "h": "FOMO koopt de top",
+     "p": "Een munt die vandaag al 30% steeg voelt het veiligst om te kopen — iedereen is het eens, de grafiek bevestigt het. Maar instappen in een verticale beweging betekent: je stop is ver weg, je R:R is beroerd, en jij bent de exitliquiditeit voor eerdere kopers. Geweldige trades voelen bij de entry meestal ongemakkelijk, niet vanzelfsprekend."
+    },
+    {
+     "h": "Het journal is een spiegel",
+     "p": "Een tradingjournal — elke entry, exit, grootte en reden — zet vage gevoelens om in zichtbare patronen: \"mijn zondagnachttrades verliezen allemaal\", \"ik knip winnaars altijd te vroeg\". Het is onglamoureus en het snelste zelfverbeteringsgereedschap dat trading kent. Nepgeldtrades tellen ook."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "De klassieke revenge trade gebeurt…",
+     "o": [
+      "Na zorgvuldige planning en een gedetailleerde geschreven checklist",
+      "Minuten na een pijnlijk verlies, opgeblazen",
+      "Alleen in bullmarkten",
+      "Bij het bijhouden van een journal"
+     ]
+    },
+    {
+     "q": "Een munt kopen die vandaag al 30% steeg betekent meestal…",
+     "o": [
+      "De veiligst mogelijke entry die de markt biedt",
+      "Beroerde risk:reward — de comfortabele entry",
+      "Gegarandeerde voortzetting",
+      "Lage volatiliteit"
+     ]
+    },
+    {
+     "q": "Het hoofddoel van een tradingjournal is…",
+     "o": [
+      "Alleen belastingpapierwerk",
+      "Je patronen zichtbaar maken zodat je ze kunt repareren",
+      "Andere traders imponeren",
+      "Voorspellen waar de markt waarschijnlijk heen gaat"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Je paper trades voeden al een gratis analytisch journal — bekijk je winrate, reeksen en gewoontes.",
+    "label": "Trading Journal →"
+   }
+  },
+  {
+   "id": "r6",
+   "t": "De dagelijkse verlieslimiet en tilt",
+   "cards": [
+    {
+     "h": "Tilt: handelen in gecompromitteerde staat",
+     "p": "Na twee of drie verliezen verandert je hersenchemie — de drang om terug te winnen overschrijft het plan. Pokerspelers noemen het tilt en beheren het structureel, niet met wilskracht: limiet geraakt, sessie voorbij. Geen uitzonderingen, geen \"nog één trade\"."
+    },
+    {
+     "h": "De dagelijkse verlieslimiet",
+     "p": "Beslis vooraf: verlies je X% van je account op een dag (meestal 2-3R), dan ben je klaar tot morgen. De markt opent elke dag opnieuw; je discipline regenereert niet midden in de tilt. De beste trade op een slechte dag is de laptop dichtklappen."
+    },
+    {
+     "h": "Maak het mechanisch",
+     "p": "Een regel die je midden in de tilt moet onthouden, faalt. Schrijf de limiet in je journal, vertel het iemand, zet een alarm — alles wat stoppen de standaard maakt in plaats van een keuze. Consistentie hier is meer waard dan welke indicator je ooit zult leren."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Tilt is…",
+     "o": [
+      "Een grafiekpatroon dat op de top van een rally verschijnt",
+      "De gecompromitteerde staat na verliezen waarin wraak het plan overschrijft",
+      "Een ordertype",
+      "Winstgevend"
+     ]
+    },
+    {
+     "q": "Een dagelijkse verlieslimiet werkt omdat…",
+     "o": [
+      "Hij voorspelt wanneer de markt tegen je gaat keren",
+      "Hij eindigt de sessie VOORDAT tilt maximaal schaadt",
+      "Exchanges hem afdwingen",
+      "Hij de hefboom verhoogt"
+     ]
+    },
+    {
+     "q": "De beste verdediging tegen tilt is…",
+     "o": [
+      "Wilskracht opgeroepen in het heetst van het moment",
+      "Een mechanisch, vooraf besloten einde van de sessie",
+      "Meer koffie",
+      "Grotere grootte om te herstellen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r7",
+   "t": "Correlatie: de verborgen dubbele inzet",
+   "cards": [
+    {
+     "h": "Drie posities, één trade",
+     "p": "Long BTC, long ETH en long SOL voelt gediversifieerd. Dat is het niet: in stress gaan crypto-correlaties naar bijna 1 — alles daalt samen. Je houdt geen drie trades; je houdt één trade op driedubbele grootte, met driedubbele liquidatie-oppervlakte."
+    },
+    {
+     "h": "Echte diversificatie in crypto is zeldzaam",
+     "p": "Binnen crypto is bijna alles een hefboominzet op hetzelfde tij (Bitcoin en wereldwijde liquiditeit). Sommige paren decorreleren in kalme tijden — en hercorreleren precies wanneer het pijn doet. Neem correlatie = 1 aan in je risicowiskunde en je wordt nooit verrast."
+    },
+    {
+     "h": "Tel je TOTALE blootstelling",
+     "p": "Je risico-per-trade-regel moet gelden voor de SOM van gecorreleerde posities. Drie longs van 1% risico op majors is een inzet van 3% op één uitkomst. Dimensioneer elk kleiner, of accepteer en benoem de concentratie — maar noem het nooit diversificatie."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Long BTC + long ETH + long SOL gedraagt zich in een crash als…",
+     "o": [
+      "Drie volledig onafhankelijke trades",
+      "Eén trade op driedubbele grootte",
+      "Een hedge",
+      "Cash"
+     ]
+    },
+    {
+     "q": "In marktstress gaan crypto-correlaties doorgaans…",
+     "o": [
+      "Naar nul, elke munt beweegt op zichzelf",
+      "Naar bijna 1 — alles beweegt samen",
+      "Negatief",
+      "Ze verdwijnen"
+     ]
+    },
+    {
+     "q": "Je 1%-risicoregel moet gelden voor…",
+     "o": [
+      "Elke positie apart, altijd",
+      "De som van gecorreleerde posities",
+      "Alleen Bitcoin",
+      "Alleen verliezen"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Zie hoe strak de majors werkelijk samen bewegen — de live correlatiematrix maakt het tastbaar.",
+    "label": "Correlatiematrix →"
+   }
+  },
+  {
+   "id": "r8",
+   "t": "A+ setups: de vaardigheid van overslaan",
+   "cards": [
+    {
+     "h": "Je voordeel woont in weinig trades",
+     "p": "Loop een winstgevend journal na en er verschijnt een patroon: het meeste van de winst kwam uit een minderheid van hoogwaardige setups, en de meeste verliezen uit vulling — verveelingstrades, bijna-setups, wraakentries. De snelste prestatie-upgrade is de vulling schrappen."
+    },
+    {
+     "h": "Definieer A+ voordat je de grafiek ziet",
+     "p": "Schrijf op hoe je beste setup eruitziet: trend uitgelijnd, sleutelnivau, confluentie, schone invalidatie, R:R minstens 2. Vinkt een trade de lijst niet af, dan bestaat hij niet. Vage normen worden in realtime wegonderhandeld; geschreven normen overleven."
+    },
+    {
+     "h": "Verveling is duur",
+     "p": "De markt straft de behoefte aan actie. Vlak staan is een positie — vaak de beste. Professionals omschrijven hun werk als wachten; amateurs als handelen. Het verschil zie je direct terug in de verwachtingswaarde-wiskunde uit r3."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "In de meeste winstgevende journals komt het gros van de winst uit…",
+     "o": [
+      "Elke trade in exact gelijke mate, netjes verdeeld",
+      "Een minderheid van hoogwaardige setups",
+      "Verveelingstrades",
+      "Weekendhandel"
+     ]
+    },
+    {
+     "q": "Een A+ setup moet gedefinieerd worden…",
+     "o": [
+      "Terwijl je naar een live grafiek staart en elke candle volgt",
+      "Schriftelijk, voordat je de grafiek ziet",
+      "Na de trade",
+      "Door iemand op social media"
+     ]
+    },
+    {
+     "q": "Vlak staan (geen positie) is…",
+     "o": [
+      "Verspilde tijd die een serieuze trader zich niet kan veroorloven",
+      "Een positie — vaak de beste",
+      "Alleen voor beginners",
+      "Onmogelijk"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r9",
+   "t": "Getrapt in- en uitstappen",
+   "cards": [
+    {
+     "h": "Entries hoeven niet alles-of-niets te zijn",
+     "p": "Getrapt instappen betekent een positie in delen opbouwen — een derde tegen marktprijs, een derde op een beter niveau, een derde bij bevestiging. Je ruilt wat precisie in gemiddelde prijs voor flexibiliteit, en geen enkele vulling beslist de trade."
+    },
+    {
+     "h": "De martingale-valstrik",
+     "p": "Bijkopen in een WINNENDE these op geplande niveaus is een strategie. Verdubbelen in een VERLIEZENDE trade om je gemiddelde te drukken — martingale — is hoe accounts sterven: je grootte is het grootst precies wanneer je het meest fout zit. Het verschil is of de bijkopen vóór de entry gepland waren."
+    },
+    {
+     "h": "Getrapt uitstappen spiegelt het instappen",
+     "p": "Een winnaar in delen verkopen verzacht de exit op dezelfde manier. De regel die dit alles eerlijk houdt: elke bijkoop en elke afbouw stond in het plan VOORDAT de positie bestond. Geïmproviseerde bijkopen zijn tilt in een strategiekostuum."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Het verschil tussen getrapt instappen en martingale is…",
+     "o": [
+      "De munt",
+      "Of de bijkopen vóór de entry gepland waren",
+      "De exchange",
+      "Geen — het zijn twee namen voor hetzelfde"
+     ]
+    },
+    {
+     "q": "Martingale betekent dat je grootste grootte arriveert…",
+     "o": [
+      "Wanneer je het meest gelijk hebt over de markt",
+      "Precies wanneer je het meest fout zit",
+      "Willekeurig",
+      "Nooit"
+     ]
+    },
+    {
+     "q": "Geïmproviseerde bijkopen midden in een trade zijn meestal…",
+     "o": [
+      "Een teken van geniale marktlezing in realtime",
+      "Tilt in een strategiekostuum",
+      "Verplicht",
+      "Kostenvrij"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r10",
+   "t": "Risk of ruin: de wiskunde van overleven",
+   "cards": [
+    {
+     "h": "Ondergang is een berekenbare kans",
+     "p": "Gegeven een winrate, een R:R en een risico per trade is de kans dat je account ooit een fatale drawdown raakt berekenbaar — dat heet risk of ruin. Het brute inzicht: bij hoog risico per trade draagt zelfs een oprecht winstgevende strategie een HOGE kans op ondergang voordat het voordeel uitbetaalt."
+    },
+    {
+     "h": "Zelfde voordeel, verschillende lotsbestemmingen",
+     "p": "Een strategie met 50% winrate en 1:2 op 2% risico heeft een ondergangskans van bijna nul. De identieke strategie op 15% risico raakt met hoge waarschijnlijkheid ooit een dodelijke reeks. De strategie veranderde niet — alleen de inzetgrootte. Overleven is een eigenschap van grootte, niet van vaardigheid."
+    },
+    {
+     "h": "Draai je eigen cijfers",
+     "p": "Geloof het niet zomaar: stop je paper-trading winrate en R:R in een risk-of-ruin-calculator en beweeg de risicoschuif. Zien hoe je eigen overlevingskansen instorten als het risico voorbij 5% gaat, leert dimensioneren beter dan welke alinea dan ook."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Risk of ruin hangt af van…",
+     "o": [
+      "Winrate, R:R en risico per trade",
+      "Alleen de specifieke munt die je koos",
+      "De exchange",
+      "Alleen geluk"
+     ]
+    },
+    {
+     "q": "Een winstgevende strategie op 15% risico per trade…",
+     "o": [
+      "Kan niet falen",
+      "Draagt nog steeds een hoge ondergangskans",
+      "Is optimaal",
+      "Heeft onderweg geen enkele noemenswaardige drawdown"
+     ]
+    },
+    {
+     "q": "Overleven is vooral een eigenschap van…",
+     "o": [
+      "Vaardigheid",
+      "Inzetgrootte",
+      "Nieuws lezen",
+      "Handelsuren"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Voer je echte winrate en R:R in de calculator in en sleep de risicoschuif — zie je ondergangskansen bewegen.",
+    "label": "Risk of Ruin-Calculator →"
+   }
+  },
+  {
+   "id": "r11",
+   "t": "De pre-trade checklist",
+   "cards": [
+    {
+     "h": "Piloten vertrouwen hun geheugen niet. Jij ook niet.",
+     "p": "Onder stress slaan mensen stappen over — daarom draait de luchtvaart op checklists. Een pre-trade checklist externaliseert je discipline: vijf vragen schriftelijk beantwoord vóór elke entry, elke keer, vooral wanneer de setup dringend voelt."
+    },
+    {
+     "h": "De vijf vragen",
+     "p": "1) Is de trade MET de trend van het grotere timeframe? 2) Ligt hij op een niveau, met confluentie? 3) Waar precies is de invalidatie (stop), en is de R:R minstens 2? 4) Klopt de grootte voor 1-2% risico? 5) Is er een gepland event (CPI, FOMC) binnen het tradevenster?"
+    },
+    {
+     "h": "Urgentie is de vijand van de lijst",
+     "p": "De trades die de checklist het hardst nodig hebben, zijn de trades die er te dringend voor voelen — de verticale uitbraak, de wraaksetup. Kan een trade geen zestig seconden wachten op vijf vragen, dan is het geen trade; het is een impuls met een grafiek eraan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Checklists bestaan omdat…",
+     "o": [
+      "Traders dom zijn",
+      "Mensen onder stress betrouwbaar stappen overslaan",
+      "Exchanges ze vereisen",
+      "Ze helpen voorspellen waar de prijs heen gaat"
+     ]
+    },
+    {
+     "q": "Welke hoort NIET bij de vijf checks?",
+     "o": [
+      "Trend van het grotere timeframe",
+      "Invalidatie en R:R",
+      "Juiste grootte",
+      "Wat social media ervan vindt"
+     ]
+    },
+    {
+     "q": "Een trade die geen 60 seconden op de checklist kan wachten is…",
+     "o": [
+      "De beste soort — echte kansen wachten nooit",
+      "Een impuls met een grafiek eraan",
+      "Gegarandeerde winst",
+      "Zeldzaam"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r12",
+   "t": "Loop je journal na als een coach",
+   "cards": [
+    {
+     "h": "Het wekelijkse ritueel",
+     "p": "Lees eens per week elke trade zoals een coach de wedstrijdbeelden terugkijkt: was de entry volgens plan? De exit? Welke regel werd gebroken, en wat kostte dat breken? Het doel is geen zelfkastijding — het is HET herhaalde lek vinden dat het meest kost."
+    },
+    {
+     "h": "Snijd de data",
+     "p": "Groepeer je trades: per setuptype, dag van de week, sessie, munt, emotionele staat als je die bijhoudt. Lekken verstoppen zich in totalen en springen uit plakjes — zondagnachttrades die verliezen, één setup die alles draagt, longs die shorts met 3 tegen 1 verslaan."
+    },
+    {
+     "h": "Dicht één lek per week",
+     "p": "Repareer niet alles tegelijk. Kies het duurste patroon, schrijf er één regel tegen, en check volgende week of hij standhield. Kleine procesverbeteringen laten renderen is precies zoals kapitaal laten renderen — traag, saai en onredelijk krachtig."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Het doel van een wekelijkse review is…",
+     "o": [
+      "Je slecht voelen",
+      "Het duurste herhaalde lek vinden",
+      "De winst van de week tellen en overwinningen vieren",
+      "Screenshots delen"
+     ]
+    },
+    {
+     "q": "Lekken vind je het makkelijkst door…",
+     "o": [
+      "Naar de totale P&L staren tot alles vervaagt",
+      "Trades te snijden per setup, dag, sessie en munt",
+      "Vrienden te vragen",
+      "Intuïtie"
+     ]
+    },
+    {
+     "q": "Het beste verbeterritme is…",
+     "o": [
+      "Alles tegelijk repareren in één grote verbouwing",
+      "Eén lek, één regel, één week per keer",
+      "Niets veranderen",
+      "Elke week een nieuwe strategie"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Je paper trades voeden al het analytische journal — open het en vind je duurste patroon.",
+    "label": "Trading Journal →"
+   }
+  }
+ ]
+}

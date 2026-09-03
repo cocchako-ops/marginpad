@@ -1,0 +1,265 @@
+{
+ "id": "going",
+ "name": "Going Live",
+ "sub": "From paper to real, without dying",
+ "color": "#8b5cff",
+ "icon": "rocket",
+ "lessons": [
+  {
+   "id": "g1",
+   "t": "Are you ready? The honest metrics",
+   "cards": [
+    {
+     "h": "Readiness is measurable",
+     "v": "checklist",
+     "p": "Going live is not a feeling — it is a checklist: at least 100 paper trades, positive expectancy across 3 consecutive months, a journal you actually keep, a written strategy with defined A+ setups, and zero revenge-trading incidents in the last month."
+    },
+    {
+     "h": "The paper-to-real gap",
+     "p": "Assume your live performance will be WORSE than paper at first — execution hesitation, emotional interference, spread and fees you barely noticed. If your paper edge is thin, real conditions will erase it. You want a margin of safety in the numbers, not a coin flip."
+    },
+    {
+     "h": "There is no deadline",
+     "p": "Nobody hands out medals for going live early, and the market will still be here next year. Every month of disciplined paper trading is cheap tuition; every premature live month is expensive tuition for the same lesson. The patient path and the fast path end at the same place — one just costs more."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "A reasonable readiness bar includes…",
+     "o": [
+      "10 lucky trades",
+      "100+ trades and 3 months of positive expectancy with a journal",
+      "A hot streak this week",
+      "A friend's approval"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Your first live months will likely perform…",
+     "o": [
+      "Better than paper",
+      "Worse than paper — plan a margin of safety",
+      "Identically",
+      "Perfectly"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Going live early earns you…",
+     "o": [
+      "Medals",
+      "Nothing — just more expensive tuition",
+      "Better fees",
+      "An edge"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "g2",
+   "t": "Choosing an exchange",
+   "cards": [
+    {
+     "h": "The four questions that matter",
+     "p": "1) Is it legal and available in YOUR country — regulation decides everything downstream. 2) Is it liquid in the pairs you trade — thin books eat profits. 3) What are the REAL fees at your size, including funding. 4) What is its security and solvency history — has it ever frozen withdrawals?"
+    },
+    {
+     "h": "Custody discipline from day one",
+     "p": "An exchange account is a trading venue, not a savings account. Keep only active trading capital there; withdraw profits on a schedule. Enable every security feature — authenticator 2FA, withdrawal allow-lists, anti-phishing codes — before the first deposit, not after the first scare."
+    },
+    {
+     "h": "Start where you are protected",
+     "p": "A regulated venue in your jurisdiction with modest leverage beats an offshore casino with a 100x button — you now know the 100x button is not the prize, survival is. Deposit small, verify the full loop (deposit → trade → withdraw) with a trivial amount first."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "The FIRST question when choosing an exchange is…",
+     "o": [
+      "Maximum leverage",
+      "Is it legal and available in your country",
+      "Logo design",
+      "Sign-up bonuses"
+     ],
+     "a": 1
+    },
+    {
+     "q": "How much should live on an exchange account?",
+     "o": [
+      "Everything",
+      "Only active trading capital — withdraw the rest",
+      "Your savings",
+      "Borrowed money"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Before real size, you should first…",
+     "o": [
+      "Verify the whole deposit-trade-withdraw loop with a trivial amount",
+      "Max out leverage",
+      "Disable 2FA for speed",
+      "Deposit everything"
+     ],
+     "a": 0
+    }
+   ]
+  },
+  {
+   "id": "g3",
+   "t": "Your first real trade",
+   "cards": [
+    {
+     "h": "One-tenth size, full process",
+     "p": "Your first live trades should risk about a TENTH of your normal paper risk — small enough that the outcome is irrelevant. The goal is not profit; it is executing your full process (checklist, entry, stop, journal) while real feelings fire for the first time."
+    },
+    {
+     "h": "The goal is boredom",
+     "p": "Success in week one is: trades that look exactly like your paper trades, just smaller. Same setups, same sizing math, same exits. If your live trading immediately looks different from your paper trading — more trades, bigger size, no stops — stop and go back to paper."
+    },
+    {
+     "h": "Scale by calendar, not by confidence",
+     "p": "Increase size on a schedule (for example, monthly) and only if the month was disciplined — never mid-week because you feel hot. Feelings of invincibility are a lagging indicator of a winning streak and a leading indicator of the give-back."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "First live trades should risk…",
+     "o": [
+      "Normal size",
+      "About a tenth of normal — outcome irrelevant, process everything",
+      "Double, to make it count",
+      "Everything"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Success in your first live week looks like…",
+     "o": [
+      "Huge profits",
+      "Trades identical to your paper trades, just smaller",
+      "Constant action",
+      "No stops"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Size should increase…",
+     "o": [
+      "When you feel hot",
+      "On a schedule, after disciplined months",
+      "Daily",
+      "Never"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "g4",
+   "t": "Real money psychology",
+   "cards": [
+    {
+     "h": "The same trade feels different",
+     "p": "Paper losses are information; real losses are pain. Expect to cut winners earlier, hesitate on entries and widen mental stops — everyone does at first. This is not a character flaw; it is your brain treating money as survival. Naming it is half the fix."
+    },
+    {
+     "h": "Shrink until sleep is easy",
+     "p": "The professional heuristic: if a position affects your sleep, your mood or your relationships, it is too big — regardless of what the risk math allows. Trade a size where you can follow the plan with total indifference to any single outcome. Indifference is the edge."
+    },
+    {
+     "h": "Protect the process under fire",
+     "p": "Under real pressure, your process is what you practised, not what you know. This is why the paper months mattered: checklist, journal, loss limits — drilled until they run on autopilot. When emotions spike, the autopilot flies the plane."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Cutting winners early when going live is…",
+     "o": [
+      "Rare",
+      "A near-universal first reaction to real money — name it and size down",
+      "A strategy",
+      "Profitable"
+     ],
+     "a": 1
+    },
+    {
+     "q": "If a position affects your sleep, it is…",
+     "o": [
+      "Exciting",
+      "Too big, regardless of the math",
+      "Normal",
+      "A sign of commitment"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Under pressure, you perform…",
+     "o": [
+      "What you know",
+      "What you practised until automatic",
+      "Better than usual",
+      "Randomly"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "g5",
+   "t": "The long game",
+   "cards": [
+    {
+     "h": "Survive first, compound second",
+     "p": "Every lesson in this academy reduces to one sentence: stay in the game. Edges are found, lost and refound; markets change regimes; strategies decay. The trader still standing — capital intact, process intact, curiosity intact — gets every future opportunity for free."
+    },
+    {
+     "h": "Keep the loop running",
+     "p": "The learning loop never ends: trade the plan, journal everything, review weekly, kill one leak, repeat. Add tools as they earn their place — the calendar for events, funding and OI for positioning, the screener for candidates. Complexity is earned, never bolted on."
+    },
+    {
+     "h": "You now know more than most",
+     "p": "Leverage math, liquidation mechanics, sizing, R:R, expectancy, tilt control, market structure, positioning data, macro events — this is genuinely more than the majority of people who fund a futures account ever learn. Keep practising it where mistakes are free, and let the levels mark the road ahead."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "The one-sentence summary of the entire academy is…",
+     "o": [
+      "Find perfect entries",
+      "Stay in the game — survival gets you every future opportunity",
+      "Trade more",
+      "Trust influencers"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The learning loop is…",
+     "o": [
+      "Finished after this course",
+      "Trade → journal → review → kill one leak → repeat, forever",
+      "Optional",
+      "Only for beginners"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Complexity in a trading process should be…",
+     "o": [
+      "Added immediately",
+      "Earned — each tool must prove its place",
+      "Avoided forever",
+      "Random"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "The Academy is done — the practice never is. Keep the streak alive and let the XP levels track the road.",
+    "label": "Your Levels →",
+    "href": "/levels/"
+   }
+  }
+ ]
+}

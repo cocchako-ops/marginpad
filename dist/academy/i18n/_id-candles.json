@@ -1,0 +1,388 @@
+{
+ "id": "candles",
+ "name": "Pola Candlestick",
+ "sub": "Membaca pertempuran, candle demi candle",
+ "lessons": [
+  {
+   "id": "c1",
+   "t": "Doji: pasar angkat bahu",
+   "cards": [
+    {
+     "h": "Saat tidak ada yang menang",
+     "p": "Doji adalah candle yang tutup hampir persis di tempat bukanya — pertarungan panjang pembeli vs penjual yang berakhir seri. Sendirian dia berarti keraguan. POSISINYA yang memberi makna: doji setelah tren panjang bilang pihak yang menang mulai kehabisan keyakinan."
+    },
+    {
+     "h": "Konteks adalah segalanya",
+     "p": "Doji di tengah range adalah noise — keraguan di dalam keraguan. Doji di resistance kunci setelah lima candle hijau adalah sinyal sungguhan: pembeli yang mendorong harga baru saja gagal mendorong lebih jauh. Candle sama, pesan sama sekali berbeda."
+    },
+    {
+     "h": "Jangan pernah trading doji sendirian",
+     "p": "Doji adalah tanda tanya, bukan jawaban. Dia bertanya: apakah tren lelah? Jawabannya datang dari candle BERIKUTNYA dan level tempatnya terjadi. Doji di resistance + candle merah konfirmasi = sebuah cerita. Doji sendirian = lempar koin dengan nama keren."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Doji memberitahumu…",
+     "o": [
+      "Pembeli menang telak dan tetap memegang kendali",
+      "Penjual menang telak",
+      "Sesi berakhir seri — keraguan",
+      "Volume nol"
+     ]
+    },
+    {
+     "q": "Di mana doji benar-benar PENTING?",
+     "o": [
+      "Di mana saja",
+      "Di tengah range, tempat kedua sisi terus ragu-ragu",
+      "Setelah tren panjang, di level kunci",
+      "Hanya hari Minggu"
+     ]
+    },
+    {
+     "q": "Cara yang benar bereaksi pada doji adalah…",
+     "o": [
+      "Masuk segera, sebelum peluangnya hilang",
+      "Tunggu candle berikutnya mengonfirmasi di level",
+      "Gandakan posisi",
+      "Abaikan chart selamanya"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "t": "Engulfing: satu pihak mengambil alih",
+   "cards": [
+    {
+     "h": "Candle pengambilalihan",
+     "p": "Bullish engulfing adalah candle merah diikuti candle hijau yang badannya menelan seluruhnya. Semua yang menjual selama candle merah itu kini merugi — dan pesannya lugas: pembeli baru saja mengambil kendali di harga ini."
+    },
+    {
+     "h": "Kenapa engulfing bekerja",
+     "p": "Ini mekanika trader terjebak, bukan sihir. Penjual dari candle yang ditelan memegang posisi rugi; keluarnya mereka (beli balik) menambah bahan bakar ke arah baru. Makin besar candle yang ditelan dan makin penting levelnya, makin banyak yang terjebak — makin kuat sinyalnya."
+    },
+    {
+     "h": "Checklist engulfing sungguhan",
+     "p": "Tiga syarat: terjadi DI sebuah level (support untuk bullish, resistance untuk bearish), badan penelan menutup penuh badan sebelumnya, dan volume naik di candle penelan. Ketiganya tidak ada? Kamu sedang menatap dua candle acak."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bullish engulfing adalah…",
+     "o": [
+      "Dua candle hijau berukuran sama yang tutup di level sama",
+      "Badan hijau yang menelan penuh badan merah sebelumnya",
+      "Gap ke atas",
+      "Sepasang doji"
+     ]
+    },
+    {
+     "q": "Alasan mekanis pola engulfing bekerja adalah…",
+     "o": [
+      "Keberuntungan",
+      "Trader terjebak mengipasi pembalikan saat keluar",
+      "Exchange mempromosikan koin demi menarik pembeli segar ke pergerakan",
+      "Astrologi"
+     ]
+    },
+    {
+     "q": "Engulfing sungguhan butuh…",
+     "o": [
+      "Dua candle apa saja",
+      "Level + penutupan penuh badan + volume naik",
+      "Akhir pekan",
+      "Konfirmasi dari akun besar di media sosial"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "t": "Hammer dan shooting star: sumbu penolakan",
+   "cards": [
+    {
+     "h": "Hammer",
+     "p": "Hammer muncul setelah penurunan: badan kecil di atas dengan sumbu bawah panjang — minimal dua kali badannya. Ceritanya: penjual mendorong harga jauh ke bawah selama sesi, dan pembeli membanting semuanya kembali. Sumbu panjang itu adalah breakdown gagal, tertulis dalam satu candle."
+    },
+    {
+     "h": "Temukan sendiri",
+     "prompt": "Salah satu dari tiga candle ini adalah hammer. Sentuh dia.",
+     "p": "Ingat: badan kecil di atas, sumbu bawah panjang, setelah penurunan."
+    },
+    {
+     "h": "Shooting star — cerita sama, terbalik",
+     "p": "Shooting star adalah cermin di puncak kenaikan: sumbu ATAS panjang, badan kecil di bawah. Pembeli mencoba melanjutkan reli, ditolak keras, dan candle tutup dekat titik terendahnya. Di resistance, ini salah satu setup short terbersih yang bisa dicetak candle."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Sumbu bawah panjang pada hammer menunjukkan…",
+     "o": [
+      "Tidak ada apa-apa",
+      "Penjual mendorong turun dan pembeli menolak seluruh pergerakannya",
+      "Penghentian perdagangan yang dipicu exchange selama sesi",
+      "Biaya tinggi"
+     ]
+    },
+    {
+     "q": "Hammer paling penting…",
+     "o": [
+      "Di tengah pasar gergaji",
+      "Setelah penurunan, di support",
+      "Di harga tertinggi sepanjang masa",
+      "Tidak pernah"
+     ]
+    },
+    {
+     "q": "Shooting star adalah…",
+     "o": [
+      "Hammer yang muncul di dasar penurunan panjang",
+      "Penolakan bersumbu atas panjang di puncak reli",
+      "Gap",
+      "Lonjakan volume"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c4",
+   "t": "Morning star dan evening star",
+   "cards": [
+    {
+     "h": "Tiga candle, satu pembalikan",
+     "p": "Morning star adalah pembalikan tiga babak di dasar: candle merah kuat (penjual memegang kendali), candle berbadan mungil (pertarungan macet — sering doji), lalu candle hijau kuat yang tutup dalam ke candle pertama (pembeli mengambil alih). Evening star adalah pola sama dibalik, di puncak."
+    },
+    {
+     "h": "Kenapa tiga mengalahkan satu",
+     "p": "Satu candle bisa jadi noise; tiga candle berurutan yang menceritakan satu kisah utuh lebih sulit dipalsukan. Candle tengah adalah engselnya — saat momentum mati. Candle ketiga adalah buktinya. Tanpa penutupan ketiga yang kuat, kamu punya jeda, bukan pembalikan."
+    },
+    {
+     "h": "Menilai bintangnya",
+     "p": "Lebih kuat saat: candle tengah membuat gap atau berdiri jelas terpisah, candle ketiga tutup melewati titik tengah candle pertama, dan seluruh pola duduk di level dari petamu. Seperti biasa — pola memberi pemicu dan invalidasi (di luar titik ekstrem bintang), level memberi alasannya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Candle tengah morning star mewakili…",
+     "o": [
+      "Percepatan mendadak arah tren yang ada",
+      "Saat momentum macet — engselnya",
+      "Hari libur",
+      "Volume"
+     ]
+    },
+    {
+     "q": "Pembalikan dikonfirmasi oleh…",
+     "o": [
+      "Candle tengah saja tanpa gerakan lanjutan apa pun",
+      "Candle ketiga kuat yang tutup dalam ke candle pertama",
+      "Candle hijau apa saja",
+      "Berita"
+     ]
+    },
+    {
+     "q": "Stop untuk pola bintang diletakkan…",
+     "o": [
+      "Tidak di mana pun",
+      "Di luar titik ekstrem polanya",
+      "Di entry",
+      "Selalu tepat 1% dari harga entry"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c5",
+   "t": "Inside bar dan kompresi",
+   "cards": [
+    {
+     "h": "Candle yang menggulung",
+     "p": "Inside bar berada sepenuhnya di dalam jangkauan candle sebelumnya — high lebih rendah, low lebih tinggi. Pasar sedang memampat: range mengecil, kedua sisi menunggu. Dari m7 kamu sudah tahu janji kompresi: ekspansi. Rentetan inside bar adalah pegas yang sedang diputar."
+    },
+    {
+     "h": "Permainan breakout",
+     "p": "Setup klasik: tandai high dan low candle induk. Tembusnya satu sisi dengan volume adalah pemicu; sisi berlawanan adalah invalidasi alami. Ini salah satu struktur risk-reward paling ketat di trading, karena jarak stop adalah lebar pegasnya."
+    },
+    {
+     "h": "Jebakan yang harus dihormati",
+     "p": "Breakout kompresi SERING gagal — gerakan pertama kerap yang palsu (kamu tahu ini dari spring di a2). Lindungi diri: pilih breakout searah tren timeframe besar, tuntut volume, dan jangan pernah kejar breakout yang langsung kembali ke dalam candle induk — kembalinya itu ADALAH sinyal kegagalan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Inside bar adalah…",
+     "o": [
+      "Candle yang jelas lebih besar dari sebelumnya",
+      "Candle sepenuhnya di dalam jangkauan candle sebelumnya",
+      "Doji",
+      "Gap"
+     ]
+    },
+    {
+     "q": "Stop alami untuk breakout inside bar adalah…",
+     "o": [
+      "Sisi berlawanan dari candle induk",
+      "Tetap 10% dari harga breakout",
+      "Di entry",
+      "Tidak ada"
+     ]
+    },
+    {
+     "q": "Breakout yang langsung kembali ke dalam candle induk adalah…",
+     "o": [
+      "Konfirmasi bahwa breakout-nya asli dan aman dikejar",
+      "Sinyal kegagalan — jangan dikejar",
+      "Sinyal beli",
+      "Mustahil"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c6",
+   "t": "Kisah sumbu: penyerapan dan kelelahan",
+   "cards": [
+    {
+     "h": "Membaca sumbu seperti jejak kaki",
+     "p": "Sumbu adalah harga yang ditolak — dan lokasinya memberitahu siapa yang ditolak. Sumbu bawah panjang berulang di satu zona berarti ada yang menyerap jualan di sana: setiap penurunan dibeli. Sumbu atas berulang di satu zona berarti pasokan menunggu di atas dan setiap reli dijual."
+    },
+    {
+     "h": "Sumbu kelelahan",
+     "p": "Sumbu RAKSASA setelah pergerakan panjang — jauh lebih besar dari candle terbaru — sering menandai kelelahan: ledakan terakhir tren menabrak tembok order lawan (ini sumbu kaskade likuidasi dari m5 dilihat dari dekat). Tren + volume klimaks + sumbu raksasa = pergerakan kemungkinan selesai untuk saat ini."
+    },
+    {
+     "h": "Gerombolan sumbu menggambar levelmu",
+     "p": "Lupakan menggambar garis dengan perasaan: zona tempat beberapa sumbu menusuk dan ditolak ADALAH support dan resistance milik pasar sendiri. Gambar zonanya melalui ujung-ujung sumbu, lalu terapkan perangkat lengkap — tren, node volume, positioning — di zona itu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Sumbu bawah panjang berulang di satu zona menunjukkan…",
+     "o": [
+      "Tidak ada apa-apa",
+      "Ada yang menyerap jualan — penurunan dibeli",
+      "Penjual menang dan akan terus menekan zona ke bawah",
+      "Pasar mati"
+     ]
+    },
+    {
+     "q": "Sumbu raksasa setelah tren panjang sering menandai…",
+     "o": [
+      "Kelanjutan tren dengan tenaga lebih besar lagi",
+      "Kelelahan — klimaks menabrak tembok order",
+      "Volume rendah",
+      "Bug"
+     ]
+    },
+    {
+     "q": "Zona support/resistance terbaik digambar dari…",
+     "o": [
+      "Hanya angka bulat, karena semua orang menatapnya",
+      "Gerombolan sumbu penolakan",
+      "Berita kemarin",
+      "Hanya moving average"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c7",
+   "t": "Pola berbohong: trade kegagalan",
+   "cards": [
+    {
+     "h": "Setiap pola punya tingkat kegagalan",
+     "p": "Hammer dilindas. Engulfing ditelan. Di lingkungan berburu stop khas kripto (a1), pola buku teks gagal TERUS-MENERUS — karena semua orang melihatnya, dan order yang terlihat adalah makanan. Menerima ini adalah beda antara pengguna pola dan korban pola."
+    },
+    {
+     "h": "Pola yang gagal ADALAH pola",
+     "p": "Ini rahasia profesionalnya: sinyal yang GAGAL sering jadi sinyal lebih baik. Hammer bullish di support yang jebol ke bawah berarti setiap pembeli hammer kini terjebak — stop mereka mengipasi pergerakan turun. Mentradingkan kegagalan (dengan kerumunan terjebak sebagai bahan bakar) sering lebih bersih daripada mentradingkan buku teks."
+    },
+    {
+     "h": "Bersiaplah untuk dua cerita",
+     "p": "Aturan praktis: ketahui di muka apa yang menginvalidasi pola dan seperti apa trade kegagalannya. Kalau low hammer jebol, kamu cuma keluar — atau balik arah? Memutuskan ini sebelum entry mengubah pola dari doa menjadi rencana dua cabang."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Pola buku teks sering gagal di kripto karena…",
+     "o": [
+      "Chart di kebanyakan exchange memang sering rusak sendiri",
+      "Semua melihatnya — order terlihat jadi buruan",
+      "Pola itu ilegal",
+      "Biaya"
+     ]
+    },
+    {
+     "q": "Pola bullish yang gagal sering berubah menjadi…",
+     "o": [
+      "Tidak ada apa-apa",
+      "Sinyal bearish kuat — pembeli terjebak mengipasi pergerakan",
+      "Sinyal beli yang lebih kuat lagi untuk banteng sabar",
+      "Doji"
+     ]
+    },
+    {
+     "q": "Sebelum masuk trade berbasis pola kamu harus tahu…",
+     "o": [
+      "Hanya target profit, karena polanya sudah mengonfirmasi arah",
+      "Apa yang menginvalidasinya dan bentuk trade kegagalannya",
+      "Tahun berdirinya exchange",
+      "Tidak ada"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c8",
+   "t": "Menempatkan candle pada tempatnya",
+   "cards": [
+    {
+     "h": "Candle adalah 10% terakhir",
+     "p": "Pola candle adalah PEMICU, tidak pernah alasan. Alasannya datang dari semua yang sudah kamu pelajari: tren (m1), level (m1/a4), positioning (m4), rezim (a7). Candle hanya menjawab pertanyaan terakhir: apakah SEKARANG saatnya bertindak di level ini?"
+    },
+    {
+     "h": "Urutan lengkapnya",
+     "p": "Dari atas ke bawah: tren harian mengizinkan arah → 4H menunjukkan setup di sebuah level → positioning tidak menumpuk melawanmu → BARU kamu zoom in dan menunggu candle-nya — engulfing, hammer, star — sebagai pemicu entry dengan invalidasi bawaan. Candle tanpa susunan itu adalah judi dengan langkah ekstra."
+    },
+    {
+     "h": "Latih matanya, lalu percayai prosesnya",
+     "p": "Mengenali pola adalah keahlian yang tumbuh dengan pengulangan — dan paper trading memberi pengulangan tak terbatas gratis. Temukan pola, tulis rencana dua cabang, eksekusi, catat di jurnal. Seratus pola tercatat kemudian, kamu akan TAHU mana yang membayarmu — di pasarmu, di timeframe-mu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Dalam trade yang lengkap, pola candle adalah…",
+     "o": [
+      "Seluruh strateginya",
+      "Pemicu terakhir — 10% terakhir di atas sisanya",
+      "Hiasan opsional biar tangkapan layar tampak keren",
+      "Stop-loss"
+     ]
+    },
+    {
+     "q": "Urutan yang benar berakhir dengan candle karena…",
+     "o": [
+      "Candle memprediksi semua yang terjadi di timeframe besar",
+      "Dia menepatkan waktu entry di level yang sudah punya alasan",
+      "Dia paling cantik",
+      "Kata volume begitu"
+     ]
+    },
+    {
+     "q": "Cara mempelajari pola mana yang membayar KAMU adalah…",
+     "o": [
+      "Percaya influencer",
+      "Seratus pengulangan tercatat di paper trading + jurnal",
+      "Satu trade beruntung",
+      "Menghafal nama dan bentuk semua pola yang dikenal"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Pergilah berburu pola: buka chart, temukan satu engulfing atau hammer di level nyata, dan catat rencana dua cabangnya sebagai paper trade.",
+    "label": "Buka Paper Trade →"
+   }
+  }
+ ]
+}

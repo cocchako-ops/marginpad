@@ -1,0 +1,589 @@
+{
+ "id": "leverage",
+ "name": "Hefboom en Liquidatie",
+ "sub": "De machine die accounts uitwist",
+ "lessons": [
+  {
+   "id": "l1",
+   "t": "Wat is een futures-contract?",
+   "cards": [
+    {
+     "h": "De prijs verhandelen zonder munten te bezitten",
+     "p": "Een futures-contract is een afspraak die de prijs van een munt volgt. Je bezit de Bitcoin nooit — je houdt een positie die exact wint of verliest zoals de prijs beweegt. Crypto's favoriete versie is de perpetual future (perp), zonder vervaldatum: je houdt hem zolang je marge overleeft."
+    },
+    {
+     "h": "Long en short",
+     "p": "Met futures kun je in beide richtingen winnen: long betekent winnen als de prijs stijgt; short betekent winnen als hij daalt. Tik op de knoppen hieronder en zie dezelfde prijsbeweging omslaan van winst naar verlies."
+    },
+    {
+     "h": "Waarom perps crypto domineren",
+     "p": "Perpetual futures zijn het meest verhandelde product in crypto — het dagelijkse perp-volume overschaduwt spot. Ze zijn populair om precies de twee eigenschappen die ze gevaarlijk maken: hefboom en de mogelijkheid om te shorten. Alles in deze cursus bestaat vanwege wat je in de volgende twee lessen leert."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Als je een perpetual future koopt, bezit je…",
+     "o": [
+      "De echte munten",
+      "Een positie die de prijs volgt — geen munten",
+      "Een klein eigendomsaandeel van de exchange zelf",
+      "Een wallet"
+     ]
+    },
+    {
+     "q": "Een shortpositie wint wanneer…",
+     "o": [
+      "De prijs stijgt",
+      "De prijs daalt",
+      "De prijs stilstaat",
+      "Het volume stijgt"
+     ]
+    },
+    {
+     "q": "Wat maakt een perpetual future perpetual?",
+     "o": [
+      "Hij verliest nooit geld",
+      "Hij heeft geen vervaldatum",
+      "Hij heeft geen kosten",
+      "Hij gaat alleen omhoog"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l2",
+   "t": "Hefboom: handelen met geleende grootte",
+   "cards": [
+    {
+     "h": "Marge en vermenigvuldiger",
+     "p": "Met hefboom beheer je een positie groter dan je geld. Leg $100 marge in op 10× en je beheert een positie van $1,000. Elke 1% prijsbeweging wint of verliest $10 — dat is 10% van JOUW geld. De vermenigvuldiger geldt voor verliezen exact zoals voor winsten."
+    },
+    {
+     "h": "Voel het: sleep de hefboom",
+     "prompt": "Sleep de schuif tot een routinebeweging van 1% tegen je 100% van je marge zou wegvagen.",
+     "p": "De rode markering is je liquidatie. Kijk wat de hefboom ermee doet."
+    },
+    {
+     "h": "De eerlijke wiskunde van 100×",
+     "p": "Op 100× hefboom veegt een beweging van 1% tegen je 100% van je marge weg. Bitcoin beweegt routinematig 1% — meerdere keren per dag. Dat is geen marktcrash; het is achtergrondruis. Hoge hefboom maakt een strategie niet beter — het comprimeert alleen de tijd tot een normale schommel je eruit haalt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Je opent $100 op 10×. De prijs beweegt 1% in je voordeel. Je winst is ongeveer…",
+     "o": [
+      "$1 (1%)",
+      "$10 (10% van je marge)",
+      "$100",
+      "Niets tot je sluit"
+     ]
+    },
+    {
+     "q": "Het notioneel van een positie van $100 op 20× is…",
+     "o": [
+      "$100",
+      "$20",
+      "$2,000",
+      "$100 plus kosten"
+     ]
+    },
+    {
+     "q": "Op 100×, welke beweging tegen je wist je hele marge uit?",
+     "o": [
+      "Ongeveer 1%",
+      "Ongeveer 10%",
+      "Ongeveer 50%",
+      "100%"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Open de positiegrootte-calculator en zie hoe notioneel en risico veranderen terwijl je de hefboom van 5× naar 100× schuift.",
+    "label": "Positiegrootte-Calculator →"
+   }
+  },
+  {
+   "id": "l3",
+   "t": "Liquidatie: het punt van geen terugkeer",
+   "cards": [
+    {
+     "h": "Wat liquidatie is",
+     "p": "Als een hefboompositie bijna al haar marge verliest, sluit de exchange haar gedwongen om zichzelf te beschermen — dat is liquidatie. Je positie is weg, je marge is weg, en herstel is onmogelijk, ook al veert de prijs een seconde later terug. Het is de belangrijkste prijs op je scherm."
+    },
+    {
+     "h": "Jouw beurt: maak het veilig",
+     "prompt": "Doe nu het omgekeerde: sleep de hefboom OMLAAG tot je liquidatie minstens 10% van de entry af ligt.",
+     "p": "Dit is exact de beslissing die je bij elke echte trade zult nemen."
+    },
+    {
+     "h": "\"Het veert wel terug\" geldt hier niet",
+     "p": "Een spot-holder kan een dip van 30% uitzitten en jaren wachten. Een geliquideerde futures-trader niet — de positie bestaat niet meer. Deze asymmetrie is HET verschil tussen spot en hefboom: spot straft geduldlozen langzaam, hefboom executeert onmiddellijk."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Als de prijs na liquidatie meteen herstelt, dan…",
+     "o": [
+      "Krijg je je positie automatisch terug op dezelfde prijs",
+      "Krijg je de helft van je marge terug",
+      "Krijg je niets — de positie is weg",
+      "Ben je de exchange geld schuldig"
+     ]
+    },
+    {
+     "q": "Bij welke ongunstige beweging liquideert een 50×-positie ongeveer?",
+     "o": [
+      "Ongeveer 50%",
+      "Ongeveer 25%",
+      "Ongeveer 2%",
+      "Ongeveer 0.1%"
+     ]
+    },
+    {
+     "q": "Het eerste wat je moet weten voor elke hefboomtrade is…",
+     "o": [
+      "Het nieuws van vandaag",
+      "Je exacte liquidatieprijs",
+      "Wat influencers zeggen",
+      "Het oprichtingsjaar van de exchange"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Bereken een echte liquidatieprijs: entry, hefboom, richting — zie exact waar de positie sterft.",
+    "label": "Liquidatie-Calculator →"
+   }
+  },
+  {
+   "id": "l4",
+   "t": "Longs, shorts en hoe P&L echt werkt",
+   "cards": [
+    {
+     "h": "De P&L-formule in gewone woorden",
+     "p": "Je winst of verlies = positiegrootte × het percentage dat de prijs bewoog. ROE — rendement op eigen vermogen — is die P&L gemeten tegen je marge. Sleep de prijsbeweging hieronder en zie beide getallen reageren op 10× met $100 marge."
+    },
+    {
+     "h": "Shorten is niet slecht, het is gereedschap",
+     "p": "Shorten — winnen aan dalingen — voelt eerst onnatuurlijk. Maar markten dalen sneller dan ze stijgen (met de lift omlaag, met de trap omhoog), en een trader die alleen long kan is blind in de helft van de markt. Oefen op een paper-account beide tot geen van beide bijzonder voelt."
+    },
+    {
+     "h": "Kosten en funding knagen constant",
+     "p": "Elke opening en sluiting betaalt kosten over het notioneel, en perpetuals wisselen periodieke funding-betalingen uit tussen longs en shorts (volgende les). Op hoge hefboom stapelen die kleine kosten zich op tot een merkbare tegenwind — nog een stille reden waarom overtraders verliezen."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Je bent long met $1,000 notioneel en de prijs stijgt 3%. Je P&L is…",
+     "o": [
+      "+$3",
+      "+$30",
+      "+$300",
+      "Hangt van de munt af"
+     ]
+    },
+    {
+     "q": "\"Met de lift omlaag, met de trap omhoog\" betekent…",
+     "o": [
+      "Markten dalen sneller dan ze stijgen",
+      "Markten stijgen sneller dan ze dalen",
+      "De prijs keert altijd terug naar de entry",
+      "Shorten is verboden"
+     ]
+    },
+    {
+     "q": "Handelskosten op futures worden berekend over…",
+     "o": [
+      "Alleen de marge die je voor de trade inlegde",
+      "De volledige notionele positiegrootte",
+      "Alleen je winst",
+      "Niets — futures zijn gratis"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l5",
+   "t": "Funding: de onzichtbare geldstroom",
+   "cards": [
+    {
+     "h": "Hoe perps aan de echte prijs blijven plakken",
+     "p": "Zonder vervaldatum zou een perpetual kunnen wegdrijven van de echte muntprijs. Funding voorkomt dat: om de paar uur betaalt één kant de andere een klein percentage. Schakel hieronder: handelen perps BOVEN spot (massa is long), dan betalen longs shorts; ONDER spot betalen shorts longs."
+    },
+    {
+     "h": "Funding als massathermometer",
+     "p": "Extreem positieve funding betekent dat de massa zwaar long is ÉN betaalt voor dat voorrecht — historisch een waarschuwing, want overvolle trades ontrafelen gewelddadig. Extreem negatieve funding markeert overvolle shorts, brandstof voor een short squeeze."
+    },
+    {
+     "h": "Het stapelt op",
+     "p": "Funding van 0.01% per 8 uur klinkt als niets — maar dat is zo'n 11% per jaar over het notioneel, en op 10× is het een driecijferige jaarlijkse druk op je marge. Positiehouders die funding negeren, zien hun P&L stilletjes weglekken."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Als de perp boven de spotprijs handelt, wie betaalt de funding?",
+     "o": [
+      "Shorts betalen longs",
+      "Longs betalen shorts",
+      "De exchange betaalt iedereen",
+      "Niemand"
+     ]
+    },
+    {
+     "q": "Extreem positieve funding signaleert meestal…",
+     "o": [
+      "Een gegarandeerde rally",
+      "Een zwaar overvolle longkant — squeeze-risico",
+      "Een lange periode van lage volatiliteit in het verschiet",
+      "Een storing van de exchange"
+     ]
+    },
+    {
+     "q": "Waarom doet kleine funding ertoe op hoge hefboom?",
+     "o": [
+      "Doet het niet",
+      "Het stapelt op tot een grote jaarlijkse druk op je marge",
+      "Het geldt alleen voor shorts",
+      "Het wordt bij het sluiten van de positie altijd volledig terugbetaald"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Bekijk live funding over 160+ paren — vind nu het extreemste tarief.",
+    "label": "Funding-Tarieven →"
+   }
+  },
+  {
+   "id": "l6",
+   "t": "Ordertypes: market, limit, stop",
+   "cards": [
+    {
+     "h": "Drie gereedschappen, drie taken",
+     "p": "Een marktorder wordt direct uitgevoerd tegen wat het orderboek biedt — je betaalt de spread en eventuele slippage. Een limietorder noemt jouw prijs en wacht. Een stoporder activeert wanneer de prijs een niveau kruist. De afbeelding hieronder toont alle drie in het orderboek."
+    },
+    {
+     "h": "Market: snelheid voor een prijs. Limit: prijs voor geduld.",
+     "p": "Gebruik marktorders wanneer NU in- of uitstappen belangrijker is dan de exacte prijs — wetende dat slippage het ergst is tijdens heftige bewegingen. Professionele entries zijn meestal limieten: je wordt misschien nooit gevuld, maar als het gebeurt is het op jouw prijs of beter, meestal met lagere kosten."
+    },
+    {
+     "h": "Stops: automatisering die accounts redt",
+     "p": "De stoporder is het fundament van de stop-loss (Cursus 3). Hij voert je plan uit terwijl je slaapt, werkt of emotioneel gecompromitteerd bent. De trader die in plaats daarvan naar de grafiek staart, is de trader die bevriest op het slechtste moment."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "De order met gegarandeerde uitvoering maar onzekere prijs is…",
+     "o": [
+      "Limiet",
+      "Markt",
+      "Stop",
+      "Iceberg"
+     ]
+    },
+    {
+     "q": "Een limietorder garandeert…",
+     "o": [
+      "Dat hij hoe dan ook zeker wordt uitgevoerd",
+      "Jouw prijs of beter, ALS hij wordt gevuld",
+      "Geen kosten",
+      "Directe uitvoering"
+     ]
+    },
+    {
+     "q": "Het hoofddoel van een stoporder is…",
+     "o": [
+      "Een betere entryprijs krijgen dan de markt nu biedt",
+      "Je exitplan automatisch uitvoeren wanneer een niveau breekt",
+      "Alle verliezen vermijden",
+      "De positie verdubbelen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l7",
+   "t": "Isolated versus cross-marge",
+   "cards": [
+    {
+     "h": "Twee manieren om een positie te dekken",
+     "p": "Isolated marge zet een vast bedrag apart voor één positie — liquideert die, dan verlies je alleen dat muurtje. Cross-marge laat je HELE futures-saldo elke positie dekken — meer ruimte vóór liquidatie, maar één ontploffing kan het hele account meenemen."
+    },
+    {
+     "h": "Wanneer welke logisch is",
+     "p": "Isolated is de beginnersstandaard en de eerlijke keuze voor riskante trades: de schade staat vooraf vast. Cross past bij gehedgde portefeuilles en ervaren traders die marge actief beheren. Cross gebruiken om een slechte trade langer te laten leven is geen strategie — het is een grotere begrafenis."
+    },
+    {
+     "h": "Controleer vóór je klikt",
+     "p": "Exchanges hebben verschillende standaarden, en de margemodus verandert je liquidatieprijs drastisch. Het hoort bij het pre-trade-ritueel: richting, grootte, hefboom, margemodus, liquidatieprijs. Elke keer, zonder uitzondering."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bij isolated marge kost een liquidatie je…",
+     "o": [
+      "Je hele accountsaldo, inclusief elke open positie",
+      "Alleen de marge die voor die positie apart stond",
+      "Niets",
+      "Je andere posities"
+     ]
+    },
+    {
+     "q": "Cross-marge betekent…",
+     "o": [
+      "Slechts één open positie tegelijk toegestaan",
+      "Je hele saldo dekt elke positie",
+      "Geen liquidaties",
+      "Lagere kosten"
+     ]
+    },
+    {
+     "q": "Cross-marge gebruiken om een verliezende trade uit te stellen is…",
+     "o": [
+      "Professioneel risicobeheer van hoog niveau",
+      "Een grotere begrafenis in wording — geen strategie",
+      "Verplicht door exchanges",
+      "Gratis"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l8",
+   "t": "Mark price versus last price",
+   "cards": [
+    {
+     "h": "Twee prijzen op hetzelfde scherm",
+     "p": "De last price is de meest recente transactie op JOUW exchange. De mark price is een eerlijke-waardemix van meerdere exchanges plus de spotindex. Ze verschillen centen in rustige markten — en flink in heftige markten of op dunne beurzen."
+    },
+    {
+     "h": "Liquidaties gebruiken de mark price",
+     "p": "Exchanges liquideren op MARK, niet op last. Dat beschermt je: één gemanipuleerde wiek op één beurs kan niet overal posities liquideren. Het verklaart ook de klassieke verwarring — je kunt geliquideerd worden terwijl de grafiekwiek op je scherm je niveau nooit raakte, omdat de mark er wél kwam."
+    },
+    {
+     "h": "Welke je in de gaten houdt",
+     "p": "Handelsbeslissingen: last price (daar worden je orders gevuld). Overlevingswiskunde: mark price (die gebruiken liquidatie en ongerealiseerde P&L). Serieuze platforms tonen beide — leer waar het jouwe de mark toont, en zet alarmen daarop, niet op de candlewiek."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Liquidaties worden getriggerd door…",
+     "o": [
+      "De laatst verhandelde prijs op jouw exchange",
+      "De mark price — een multi-exchange eerlijke waarde",
+      "Je entryprijs",
+      "De dagopening"
+     ]
+    },
+    {
+     "q": "Waarom gebruiken exchanges de mark price voor liquidaties?",
+     "o": [
+      "Het is goedkoper",
+      "Eén gemanipuleerde wiek op één beurs kan niet iedereen liquideren",
+      "Het is sneller",
+      "Toezichthouders vereisen het op elke gelicentieerde beurs"
+     ]
+    },
+    {
+     "q": "Je positie is geliquideerd maar de grafiekwiek raakte je liq-niveau nooit. Waarschijnlijk…",
+     "o": [
+      "De exchange nam de positie expres af om je marge te innen",
+      "De mark price bereikte het niveau, de last price niet",
+      "Een bug",
+      "Onmogelijk"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l9",
+   "t": "Onderhoudsmarge: de echte liq-wiskunde",
+   "cards": [
+    {
+     "h": "Waarom liq niet exact 100 ÷ hefboom is",
+     "p": "De exchange vereist een veiligheidsbuffer — onderhoudsmarge (vaak rond 0.5% van het notioneel) — die altijd apart staat. Liquidatie vuurt wanneer je vermogen TOT die buffer zakt, niet tot nul. Dus een 10x long liquideert rond −9.5%, niet exact op −10%."
+    },
+    {
+     "h": "Grotere posities, grotere buffers",
+     "p": "Onderhoudsmarge is getrapt: enorme posities vereisen een hoger percentage, omdat het gedwongen sluiten ervan de markt beweegt. Dat is één reden waarom liquidatieniveaus van whales dichter bij de entry liggen dan de simpele formule suggereert."
+    },
+    {
+     "h": "Gedeeltelijke liquidatie",
+     "p": "Bij grote posities liquideren veel exchanges in plakken — een deel van de positie sluiten om de marge boven onderhoud te brengen, in plaats van alles in één keer op te blazen. Handig, maar reken er niet op: tegen de tijd dat gedeeltelijke liquidatie je redt, is de trade al mislukt."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Een 10x long liquideert ruwweg op…",
+     "o": [
+      "Exact −10%, zoals de simpele hefboomformule zegt",
+      "Rond −9.5% — de onderhoudsmarge vuurt eerst",
+      "−5%",
+      "−20%"
+     ]
+    },
+    {
+     "q": "Onderhoudsmarge is…",
+     "o": [
+      "Een eenmalige kost bij het openen van de positie",
+      "Een veiligheidsbuffer die de exchange altijd vereist",
+      "Optioneel",
+      "Je winstdoel"
+     ]
+    },
+    {
+     "q": "Gedeeltelijke liquidatie betekent…",
+     "o": [
+      "Je verliest direct de helft van je hele accountsaldo",
+      "De exchange sluit plakken om de marge te herstellen",
+      "Een korting op kosten",
+      "Liquidatie alleen in het weekend"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l10",
+   "t": "Een levende positie beheren",
+   "cards": [
+    {
+     "h": "De trade begint na de entry",
+     "p": "Beginners zijn geobsedeerd door entries; professionals beheren wat daarna komt. Een levende positie is een reeks beslissingen: geldt de these nog, is de invalidatie verschoven, klopt de grootte nog? Beheren is geen gepruts — het is het plan uitvoeren dat je vóór de entry schreef."
+    },
+    {
+     "h": "Gedeeltelijk sluiten: betaal jezelf",
+     "p": "Een deel van een winnaar sluiten op het eerste doel verzilvert echte winst terwijl de rest doorloopt. Het maakt van papieren winst zekere winst, kalmeert het hoofd en houdt je in de trend. De klassieke structuur: neem een deel op 1R, verplaats de stop, laat de rest werken."
+    },
+    {
+     "h": "Breakeven-stops: gratis trades, voorzichtig gebruiken",
+     "p": "Als de prijs flink in je voordeel bewoog, maakt de stop naar entry verplaatsen de trade risicovrij — psychologisch onbetaalbaar. Doe je het te vroeg, dan gooit normale ruis je uit een goede trade. Geef het ruimte: breakeven NA het eerste doel, niet na de eerste groene minuut."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Gedeeltelijk sluiten op het eerste doel…",
+     "o": [
+      "Is zwakte toegeven",
+      "Verzilvert zekere winst terwijl de rest doorloopt",
+      "Verdubbelt alleen je kosten zonder enig echt voordeel",
+      "Annuleert de stop-loss"
+     ]
+    },
+    {
+     "q": "Je stop naar breakeven verplaatsen maakt de trade…",
+     "o": [
+      "Risicovrij (op gaps na) — maar te vroeg en ruis gooit je eruit",
+      "Gegarandeerd winstgevend, wat er daarna ook gebeurt",
+      "Illegaal",
+      "Meer gehefboomd"
+     ]
+    },
+    {
+     "q": "Het juiste moment om een positie te beheren is…",
+     "o": [
+      "Nooit — altijd instellen en vergeten",
+      "Volgens het plan dat VÓÓR de entry is geschreven",
+      "Telkens als de positie eng of spannend begint te voelen",
+      "Elke 30 seconden"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l11",
+   "t": "De hefboommythes",
+   "cards": [
+    {
+     "h": "Mythe: hogere hefboom = hogere winst",
+     "p": "Winst komt van positieGROOTTE maal prijsbeweging. Hefboom bepaalt alleen hoeveel marge je voor die grootte inlegt. Een positie van $1,000 verdient dezelfde $30 op een beweging van 3%, of hij nu 2x of 50x gebruikt — de 50x-versie liquideert alleen 25 keer eerder."
+    },
+    {
+     "h": "Mythe: professionals gebruiken maximale hefboom",
+     "p": "Professionele desks draaien routinematig eencijferige effectieve hefboom. De 100x-knop bestaat omdat hij winstgevend is voor exchanges, niet voor gebruikers. Hoge hefboom is een liquiditeitsefficiëntie-tool voor hedgers en scalpers die in seconden meten — geen rijkdommachine."
+    },
+    {
+     "h": "Het eerlijke gebruik van hefboom",
+     "p": "Hefboom laat je minder kapitaal op een (hackbare, bevriesbare) exchange houden voor dezelfde blootstelling — dat is kapitaalefficiëntie. Gebruikt met piepkleine posities is het legitiem. Gebruikt om grootte te maximaliseren verandert het normale volatiliteit in zekere ondergang — met een timer."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Twee traders houden dezelfde positie van $1,000; één op 2x, één op 50x. Een gunstige beweging van 3% betaalt…",
+     "o": [
+      "De 50x-trader vijfentwintig keer meer geld dan de ander",
+      "Beiden dezelfde ~$30 — grootte veranderde niet",
+      "De 2x-trader meer",
+      "Niets op 2x"
+     ]
+    },
+    {
+     "q": "De 100x-optie bestaat vooral omdat…",
+     "o": [
+      "Professionele traders hem eisen voor hun strategieën",
+      "Hij winstgevend is voor exchanges",
+      "Hij veiliger is",
+      "Toezichthouders het vereisen"
+     ]
+    },
+    {
+     "q": "Het legitieme voordeel van hefboom is…",
+     "o": [
+      "Grotere gegarandeerde winsten op elke winnende trade",
+      "Minder kapitaal op de exchange voor dezelfde blootstelling",
+      "Kosten vermijden",
+      "Anderen imponeren"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "l12",
+   "t": "Een futures-ticket lezen",
+   "cards": [
+    {
+     "h": "Elk getal, ontcijferd",
+     "p": "Een positieticket toont: richting en hefboom (LONG 10x), entryprijs, mark price, grootte of notioneel, marge, liquidatieprijs, ongerealiseerde P&L en ROE. Je kent ze nu allemaal. Verwart een getal op een live ticket je, voeg dan geen grootte toe — ontcijfer het eerst."
+    },
+    {
+     "h": "De twee getallen die het meest tellen",
+     "p": "Liquidatieprijs (hoe ver is de dood?) en positiegrootte (hoeveel verlies ik per 1% beweging?). P&L en ROE zijn uitkomsten — ze volgen uit die twee. Traders die alleen naar het groen/rode getal kijken, beheren gevoelens; wie naar liq-afstand en grootte kijkt, beheert risico."
+    },
+    {
+     "h": "Afstudeeropdracht",
+     "p": "Open een paper-positie en lees het hele ticket hardop: richting, hefboom, entry, grootte, marge, liquidatie en haar afstand, stop, doel. Als dat je tien seconden en nul verwarring kost, heeft Cursus 2 zijn werk gedaan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "De twee belangrijkste getallen op een live ticket zijn…",
+     "o": [
+      "De P&L- en ROE-getallen bovenaan het ticket",
+      "Liquidatie-afstand en positiegrootte",
+      "Entrytijd en muntlogo",
+      "Kosten en funding"
+     ]
+    },
+    {
+     "q": "ROE op een ticket meet P&L tegen…",
+     "o": [
+      "Het notioneel",
+      "Je marge",
+      "De muntprijs",
+      "Het dagvolume"
+     ]
+    },
+    {
+     "q": "Als een getal op je ticket je verwart, moet je…",
+     "o": [
+      "Toch grootte toevoegen",
+      "Het ontcijferen voordat je de positie aanraakt",
+      "Je ogen sluiten",
+      "Het in de chat vragen en ondertussen doorhandelen"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Open een paper-positie en lees elk veld op het ticket — entry, grootte, marge, liq, afstand. Tien seconden, nul verwarring.",
+    "label": "Paper Trade →"
+   }
+  }
+ ]
+}

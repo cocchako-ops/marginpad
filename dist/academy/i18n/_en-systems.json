@@ -1,0 +1,378 @@
+{
+ "id": "systems",
+ "name": "Systems & Automation",
+ "sub": "Turning rules into machines",
+ "color": "#7ee0ff",
+ "icon": "bot",
+ "lessons": [
+  {
+   "id": "s1",
+   "t": "Why systems beat vibes",
+   "cards": [
+    {
+     "h": "The discretion tax",
+     "v": "sysloop",
+     "p": "Every discretionary decision is a chance for tilt, FOMO and hindsight to leak in. A system — fixed rules for setup, entry, exit and size — removes the decision at the moment of maximum emotion. Most traders do not need better instincts; they need fewer opportunities to use them."
+    },
+    {
+     "h": "Rules make results measurable",
+     "p": "If your entries are moods, your journal reviews are astrology. If your entries are rules, every trade is a data point: THIS setup, taken THIS way, produces THIS expectancy. Only rule-based trading can actually be improved, because only it can be measured."
+    },
+    {
+     "h": "Discretion has a place — at the design desk",
+     "p": "The skill does not disappear; it moves. You use judgement to DESIGN and REVIEW the rules — weekly, calmly, away from live prices. The machine (or the checklist) executes. Judgement at the desk, discipline at the trigger."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "The main advantage of a rules-based system is…",
+     "o": [
+      "Guaranteed profit",
+      "Removing decisions at the moment of maximum emotion",
+      "Higher leverage",
+      "Less work"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Mood-based entries make your journal…",
+     "o": [
+      "More fun",
+      "Unmeasurable — you cannot improve what you cannot compare",
+      "Shorter",
+      "Perfect"
+     ],
+     "a": 1
+    },
+    {
+     "q": "In systematic trading, human judgement belongs…",
+     "o": [
+      "At the live trigger",
+      "At the design desk — building and reviewing rules",
+      "Nowhere",
+      "In chat rooms"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "t": "Backtesting: interrogating the past",
+   "cards": [
+    {
+     "h": "The cheapest question in trading",
+     "p": "Before risking a cent — or even paper time — you can ask history: had I traded these exact rules for the last year, what would have happened? That is a backtest. It will not promise the future, but it executes rules with zero hindsight and zero mercy."
+    },
+    {
+     "h": "What a backtest actually tells you",
+     "p": "Not \\u201cthis will make money\\u201d — rather: the strategy's PROFILE. Win rate, average R, worst losing streak, deepest drawdown, how many trades per month. You already know from r10 that these numbers, with sizing, decide survival. The backtest hands them to you in minutes."
+    },
+    {
+     "h": "Respect its limits",
+     "p": "Backtests assume fills at historical prices — real spread, slippage and funding will be worse. Treat backtest results as the OPTIMISTIC ceiling, subtract costs mentally, and only trust profiles that survive that haircut with room to spare."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "A backtest tells you…",
+     "o": [
+      "The future",
+      "The historical profile of your exact rules: win rate, R, streaks, drawdown",
+      "Which coin will pump",
+      "Nothing"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Backtest results versus live results are usually…",
+     "o": [
+      "Identical",
+      "Optimistic — real costs (slippage, fees, funding) make live worse",
+      "Pessimistic",
+      "Random"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The right way to read a backtest is…",
+     "o": [
+      "As a promise",
+      "As an optimistic ceiling that must survive a cost haircut",
+      "As entertainment",
+      "Upside down"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Run your first real backtest — EMA cross or RSI rules on live-quality data, one click, full stats.",
+    "label": "Strategy Backtester →",
+    "href": "/crypto-backtester/"
+   }
+  },
+  {
+   "id": "s3",
+   "t": "Overfitting: the silent killer",
+   "cards": [
+    {
+     "h": "The perfect backtest that never works",
+     "v": "overfit",
+     "p": "Tune a strategy's parameters long enough and it will fit the past PERFECTLY — because it has memorised the noise, not learned the signal. That is overfitting: the more beautiful the backtest curve after heavy tuning, the more suspicious you should be."
+    },
+    {
+     "h": "Symptoms",
+     "p": "Warning signs: many finely-tuned parameters (why 13.5 and not 14?), performance that collapses when you shift the test window by a month, an edge that only exists on one coin and one timeframe. Robust edges are usually simple, slightly ugly, and work broadly."
+    },
+    {
+     "h": "The cure: fewer knobs",
+     "p": "Every parameter you add is another way to memorise the past. Prefer strategies with 2-3 knobs over 10. If small parameter changes cause big result changes, you have fit noise. A mediocre backtest that is STABLE beats a spectacular one that is fragile."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Overfitting means…",
+     "o": [
+      "Trading too much",
+      "Tuning rules until they memorise past noise instead of learning signal",
+      "Using leverage",
+      "A chart pattern"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A suspicious sign of overfitting is…",
+     "o": [
+      "Simple rules",
+      "Performance collapsing when the test window shifts slightly",
+      "Few parameters",
+      "Working on many coins"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Between a stable mediocre backtest and a fragile spectacular one, choose…",
+     "o": [
+      "The spectacular one",
+      "The stable one",
+      "Neither",
+      "Both"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "s4",
+   "t": "Out-of-sample: the honesty test",
+   "cards": [
+    {
+     "h": "Never grade on the training data",
+     "p": "The fix for overfitting is discipline in testing: design and tune your rules on ONE slice of history (in-sample), then run them UNTOUCHED on a slice they have never seen (out-of-sample). Only the out-of-sample result counts — it is the closest thing to the future you can buy."
+    },
+    {
+     "h": "Walk-forward: repeat the honesty",
+     "p": "Walk-forward testing repeats this on a rolling window: tune on months 1-6, test on month 7; slide forward; repeat. A strategy that keeps performing on data it never saw has earned some trust. One that only shines in-sample has earned none."
+    },
+    {
+     "h": "Paper trading is the final out-of-sample",
+     "p": "After the tests, run the system on live prices with fake money — the one dataset that cannot be peeked at: the present. If backtest, out-of-sample AND paper agree, you have something. If they disagree, believe the most live one."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Out-of-sample testing means…",
+     "o": [
+      "Testing on the data you tuned on",
+      "Testing on data the rules have never seen",
+      "Skipping tests",
+      "Testing weekends only"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Which result deserves the most trust?",
+     "o": [
+      "In-sample",
+      "Out-of-sample and live paper results",
+      "The prettiest chart",
+      "The oldest"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Paper trading serves as…",
+     "o": [
+      "A waste of time",
+      "The final out-of-sample test — the present cannot be peeked at",
+      "Marketing",
+      "A tax shelter"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "s5",
+   "t": "From rules to robot",
+   "cards": [
+    {
+     "h": "Automation is a spectrum",
+     "p": "You do not jump from clicking buttons to full autopilot. The ladder: written checklist → alerts that ping you when conditions align → semi-automation (the machine proposes, you confirm) → full bot. Each rung removes one human failure mode; climb only as your rules prove stable."
+    },
+    {
+     "h": "What a bot needs from you",
+     "p": "A bot is your rules, frozen. It needs UNAMBIGUOUS conditions (no \\u201clooks strong\\u201d), exact position sizing, exact exits, and instructions for the ugly cases: partial fills, disconnects, gaps. Writing these down often reveals that your \\u201csystem\\u201d had human glue holding it together."
+    },
+    {
+     "h": "Test the machine like a strategy",
+     "p": "A bot can lose money two ways: bad rules or bad code. Test them separately — rules in the backtester, code against a paper-trading API where a bug costs nothing. Only after both survive do real funds enter the picture, small first."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "The sensible automation ladder starts with…",
+     "o": [
+      "A full bot on day one",
+      "A written checklist, then alerts, then semi-automation",
+      "Borrowed code",
+      "Maximum size"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A bot requires rules that are…",
+     "o": [
+      "Vibes-based",
+      "Unambiguous, including sizing, exits and failure cases",
+      "Secret",
+      "Flexible in the moment"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A trading bot should first run against…",
+     "o": [
+      "Your life savings",
+      "A paper-trading API where bugs cost nothing",
+      "A friend's account",
+      "Nothing"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "MarginPad has a free paper-trading REST API built exactly for this — test a bot with zero risk.",
+    "label": "Bot API Docs →",
+    "href": "/trading-api/"
+   }
+  },
+  {
+   "id": "s6",
+   "t": "Monitoring and kill switches",
+   "cards": [
+    {
+     "h": "Automation is not abandonment",
+     "v": "checklist",
+     "p": "A running system needs a dashboard and a leash: daily checks that fills match intentions, that risk per trade is what you set, that the market regime still resembles the one it was built for. Silent drift — in costs, in volatility, in your own rule-following — kills slowly."
+    },
+    {
+     "h": "Define death in advance",
+     "p": "Before deploying, write the kill criteria: a maximum drawdown (say 15%), a losing streak beyond backtest-worst, or a regime break. Hit any of them and the system STOPS — no renegotiation with hope. You learned this personally in r6; machines deserve the same discipline."
+    },
+    {
+     "h": "Incidents will happen",
+     "p": "Exchanges go down, APIs time out, a fat-finger config doubles your size. Assume incidents, so they surprise you only mildly: position caps at the exchange level, alerts on every fill, and a manual master OFF you can hit from your phone. Boring engineering is what safety looks like."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kill criteria should be defined…",
+     "o": [
+      "After the drawdown",
+      "Before deployment — and honoured without renegotiation",
+      "Never",
+      "By the exchange"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A running system needs…",
+     "o": [
+      "No attention",
+      "Daily checks that behaviour matches intention",
+      "More leverage",
+      "Secrecy"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Sound protection against incidents includes…",
+     "o": [
+      "Optimism",
+      "Position caps, fill alerts and a manual master OFF",
+      "Bigger size",
+      "Ignoring them"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "s7",
+   "t": "A portfolio of edges",
+   "cards": [
+    {
+     "h": "Edges are seasonal",
+     "v": "cycle",
+     "p": "No single system works forever — trends end, volatility regimes flip, crowds adapt. Professionals run a small PORTFOLIO of uncorrelated systems: a trend-follower, a mean-reverter, perhaps a funding harvester. When one sleeps, another usually eats."
+    },
+    {
+     "h": "Retiring a system",
+     "p": "The hardest skill: shutting down a strategy you love. The criteria are the same kill rules from s6, plus one more — if the structural reason it worked has disappeared (a fee change, a regime shift, everyone doing it), retire it while it still has dignity. Track record is history, not entitlement."
+    },
+    {
+     "h": "The craft, complete",
+     "p": "Look at the arc: mechanics (courses 1-2), survival (3), reading the tape (4-5)… and now process that runs without your moods. Whether you automate or stay manual, the destination is the same: a written, measured, reviewed edge — and a trader calm enough to follow it."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Professionals run multiple systems because…",
+     "o": [
+      "More is fancier",
+      "Edges are seasonal — uncorrelated systems smooth the equity curve",
+      "Exchanges require it",
+      "Bots get lonely"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A system should be retired when…",
+     "o": [
+      "It has one red week",
+      "Kill rules hit or its structural reason disappeared",
+      "Never",
+      "Someone laughs at it"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The end state of this whole course is…",
+     "o": [
+      "Zero losses",
+      "A written, measured, reviewed edge followed calmly",
+      "A secret indicator",
+      "Maximum leverage"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "The full loop is yours now — run it where mistakes are free, and let the levels track the road.",
+    "label": "Paper Trade →",
+    "href": "/paper-trade"
+   }
+  }
+ ]
+}

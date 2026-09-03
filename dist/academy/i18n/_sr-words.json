@@ -1,0 +1,420 @@
+{
+ "id": "words",
+ "name": "Traderov Rečnik",
+ "sub": "Žargon, dešifrovan",
+ "lessons": [
+  {
+   "id": "wd1",
+   "t": "Long, short i imati poziciju",
+   "cards": [
+    {
+     "h": "Pozicija je otvorena opklada",
+     "p": "Pre nego što uđeš u trejd si flat: ništa ne poseduješ i ništa ne može da ti se desi. Onog trenutka kad kupiš ili prodaš, imaš poziciju — otvorenu opkladu sa smerom i veličinom. Ostaje otvorena, dobija i gubi sa svakim pomakom cene, dok je ne zatvoriš. Traderi kažu \"u poziciji sam\" onako kako bi ti rekao \"imam pare na ovome\"."
+    },
+    {
+     "h": "Long znači da hoćeš gore",
+     "p": "Ići long znači da profitiraš kad cena raste. Kupiš Bitcoin na $60,000, prodaš na $63,000, i zaradio si $3,000 po coinu — to je long. Ništa se ne pozajmljuje i ništa nije egzotično; to je kupovina, samo sa imenom. Skoro svi počinju ovde, jer se poklapa sa načinom na koji ionako razmišljamo o posedovanju stvari. \"Long BTC\" samo znači: pozicioniran sam da cena ide gore."
+    },
+    {
+     "h": "Short zarađuje kad cena pada",
+     "p": "Short je ogledalo. Prvo prodaješ po visokoj ceni pa kasnije otkupljuješ po nižoj, i razlika je tvoja. Shortuješ na $60,000, otkupiš na $57,000, i zadržao si $3,000 po coinu dok je tržište padalo. Na fjučersima coini uopšte ne menjaju vlasnika — držiš ugovor koji ti plaća kad cena padne. Tako traderi zarađuju na tržištu koje pada."
+    },
+    {
+     "h": "Veličina dovršava rečenicu",
+     "p": "Sam smer nije pozicija. \"Long BTC\" ne govori ništa o tome koliko te pomak košta; \"long BTC, $500\" govori. Veličina pozicije je novac na poslu, i ona odlučuje koliko vredi svaki pomak od 1%: $500 na pomaku od 1% je $5, u dobitku ili u gubitku. Početnici se svađaju oko smera i ignorišu veličinu, a to je baš ona polovina koja stvarno kontroliše štetu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Short si i cena pada. Šta se dešava?",
+     "o": [
+      "Zarađuješ novac",
+      "Gubiš novac",
+      "Pozicija se sama zatvara",
+      "Ništa dok cena opet ne poraste"
+     ]
+    },
+    {
+     "q": "Šta znači \"pozicija\"?",
+     "o": [
+      "Vrsta naloga na menjačnici",
+      "Predviđanje cene za tu nedelju",
+      "Formacija na grafikonu sa dva vrha",
+      "Otvorena opklada sa smerom i veličinom"
+     ]
+    },
+    {
+     "q": "Oba su long BTC — jedan $200, drugi $2,000. Pomak od 1% vredi:",
+     "o": [
+      "$2 i $20",
+      "$2 za svakog od njih",
+      "$20 za svakog od njih",
+      "Nemoguće je znati bez poluge"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd2",
+   "t": "Bull, bear, pump, dump, krah",
+   "cards": [
+    {
+     "h": "Bull i bear su smer",
+     "p": "Bull tržište je dug period rastućih cena; bear, odnosno medveđe tržište, je dug period padajućih. Životinje dolaze od načina na koji napadaju: bik zabacuje rogove nagore, medved obara šapu nadole. Kažeš da si bullish i očekuješ gore; bearish, dole. To su spore reči — opisuju mesece, ne ovo popodne."
+    },
+    {
+     "h": "Pump i dump su brzina",
+     "p": "Pump je brz rast, dump brz pad. Nijedno ne govori ništa o tome zašto. Ali pažljivo: \"pump and dump\" kao jedna fraza imenuje šemu — grupa tiho pokupuje mali coin, glasno ga reklamira, pa proda kupcima koje je privukla. Rast je stvaran, a izlaz pripada njima, ne tebi."
+    },
+    {
+     "h": "Korekcija, krah i razlika",
+     "p": "Uobičajena konvencija: pad od oko 10% sa skorašnjeg vrha zove se korekcija, a pad od 20% ili više je medveđe tržište. Krah nije veličina, nego brzina — najveći deo pada stigne za sate ili dane. U kriptu je dan od 10% običan, pa ljudi ove reči pozajmljuju olako. Traži broj, ne imenicu."
+    },
+    {
+     "h": "Ove reči opisuju, nikad ne predviđaju",
+     "p": "Ništa u ovoj lekciji ti ne govori šta sledi. Neko ko kaže \"ovo je samo korekcija\" ne saopštava činjenicu; nagađa, obično dok drži poziciju kojoj treba da to bude tačno. Reči su etikete za ono što se već desilo. Kad etiketa stigne sa sigurnošću o sutrašnjici, ta sigurnost je tvrdnja koja se iznosi."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Krah se prvenstveno definiše time:",
+     "o": [
+      "Koliko daleko cena padne",
+      "Koliko brzo cena padne",
+      "Koliko coina padne zajedno",
+      "Koliko dugo traje medveđe tržište"
+     ]
+    },
+    {
+     "q": "\"Pump and dump\" kao fraza opisuje:",
+     "o": [
+      "Bilo koji brz rast praćen padom",
+      "Šemu koja reklamira coin pa proda kupcima",
+      "Formaciju sveća sa dva vrha",
+      "Normalan proces listiranja na menjačnici"
+     ]
+    },
+    {
+     "q": "Po uobičajenoj konvenciji, pad od 20% sa vrha zove se:",
+     "o": [
+      "Korekcija",
+      "Fleš krah",
+      "Medveđe tržište",
+      "Dubok dump"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd3",
+   "t": "Margina, poluga, likvidacija, P&L",
+   "cards": [
+    {
+     "h": "Margina je tvoj novac u tome",
+     "p": "Margina je gotovina koju uložiš da bi držao poziciju. Notional je puna veličina koju ta pozicija kontroliše. Uložiš $100 margine da kontrolišeš $1,000 Bitcoina — $100 je tvoja margina, $1,000 je tvoj notional. Svaka provizija, svaki profit i svaki gubitak računaju se na notional pa sleću na tvoju marginu — i baš zato mali procenti deluju ogromno."
+    },
+    {
+     "h": "Poluga je odnos",
+     "p": "Poluga je notional podeljen marginom. $1,000 kontrolisano sa $100 je 10x. To je cela definicija; sve ostalo su posledice. Na 10x, pomak cene od 1% je pomak od 10% na tvojoj margini, gore ili dole. Puna mehanika ima svoj kurs, Poluga i Likvidacija. Ovde samo zapamti odnos, i to da množi oba smera podjednako."
+    },
+    {
+     "h": "Likvidacija je prinudni izlaz",
+     "p": "Tvoji gubici izlaze iz tvoje margine. Kad gubitak pojede skoro svu, menjačnica ti zatvara poziciju, jer pozajmljeni deo mora da bude zaštićen. To je likvidacija. Nije upozorenje — to je kraj te pozicije, po ceni koja se zatekne na tržištu. Na 10x, otprilike pomak od 10% protiv tebe je dovoljan."
+    },
+    {
+     "h": "Koja je u profitu",
+     "p": "P&L znači profit i gubitak: koliko tvoja otvorena pozicija vredi upravo sada. Nerealizovan je dok je pozicija otvorena, a realizovan onog trenutka kad zatvoriš. Cena je upravo pala. Jedan dodir.",
+     "prompt": "Cena je upravo pala. Dodirni poziciju koja je u profitu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Uložiš $200 da kontrolišeš $2,000. Tvoja poluga je:",
+     "o": [
+      "2x",
+      "10x",
+      "20x",
+      "200x"
+     ]
+    },
+    {
+     "q": "Likvidacija se dešava kad:",
+     "o": [
+      "Sam zatvoriš poziciju",
+      "Cena stigne do tvog take-profita",
+      "Gubici pojedu skoro svu tvoju marginu",
+      "Menjačnica naplati funding"
+     ]
+    },
+    {
+     "q": "Provizije i P&L se računaju na:",
+     "o": [
+      "Notional veličinu pozicije",
+      "Samo tvoju marginu",
+      "Iznos koji povučeš",
+      "Množilac poluge"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd4",
+   "t": "Kako nalog stiže na tržište",
+   "cards": [
+    {
+     "h": "Market nalog: brzina pre cene",
+     "p": "Market nalog kaže: uzmi bilo koju cenu koja je dostupna upravo sada. Izvršava se odmah — izvršenje je trenutak kad tvoj nalog stvarno postane pozicija — jer prihvata ono što druga strana trenutno traži. Uvek uđeš. Ne dobiješ uvek cenu koju si video. Koristi ga kad je važnije biti unutra nego biti precizan."
+    },
+    {
+     "h": "Limit nalog: cena pre brzine",
+     "p": "Limit nalog kaže: izvrši me po ovoj ceni ili boljoj, i čekaj ako treba. Stoji u knjizi naloga dok neko ne trguje protiv njega, i moguće je da se nikad ne izvrši. Kontrolišeš cenu, a odričeš se sigurnosti. Limit nalozi obično plaćaju i nižu proviziju, jer si ti taj koji čeka, a ne onaj koji zahteva."
+    },
+    {
+     "h": "Stop je okidač",
+     "p": "Stop još nije nalog — to je uputstvo koje postaje nalog kad cena dodirne nivo koji si izabrao. Stop-loss stoji ispod long pozicije i zatvara je ako cena padne dotle, ograničavajući štetu. Take-profit radi isto na dobitnoj strani. Nijedan ne garantuje tačnu cenu: kad se aktiviraju, obično se izvršavaju po marketu."
+    },
+    {
+     "h": "Spread i slippage",
+     "p": "Knjiga naloga ima najvišeg kupca, koji se zove bid, i najnižeg prodavca, koji se zove ask. Razmak između njih je spread, i preseći ga te košta. Slippage je nešto drugo: veliki market nalog pojede nekoliko nivoa cene, pa je prosečna cena koju si dobio gora od one na koju si kliknuo. Vidiš $100.00, izvršiš se na $100.05, i slippage te je koštao 0.05%."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Limit nalog ti daje kontrolu nad:",
+     "o": [
+      "Cenom, ali ne i nad tim da li se izvršava",
+      "I cenom i trenutnim izvršenjem",
+      "Tarifom provizija na menjačnici",
+      "Time koliko se brzo tržište kreće"
+     ]
+    },
+    {
+     "q": "Stop-loss se aktivira, a onda:",
+     "o": [
+      "Izvršava se tačno po tvojoj stop ceni",
+      "Obično se izvrši po marketu, blizu te cene",
+      "Otkazuje poziciju bez zatvaranja",
+      "Čeka u knjizi dok se ne popravi"
+     ]
+    },
+    {
+     "q": "Slippage je:",
+     "o": [
+      "Provizija koju menjačnica naplaćuje",
+      "Razmak između bida i aska",
+      "Razlika između viđene cene i cene izvršenja",
+      "Kašnjenje koje pravi blockchain"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd5",
+   "t": "Reči za emocije mase",
+   "cards": [
+    {
+     "h": "FOMO i FUD",
+     "p": "FOMO je strah od propuštanja: poriv da kupiš zato što već raste bez tebe. FUD je strah, nesigurnost i sumnja: poriv da prodaš zato što nešto zvuči loše. Oba imenuju emociju, ne činjenicu o tržištu. I oba se koriste kao optužba — nazvati tvoj oprez FUD-om je način da te zaustave da razmišljaš."
+    },
+    {
+     "h": "HODL, paper hands, diamond hands",
+     "p": "HODL je počeo kao slovna greška za \"hold\" u forumskoj poruci iz 2013. i otvrdnuo u uputstvo da se nikad ne prodaje. Paper hands ismeva one koji prodaju; diamond hands hvali one koji ne prodaju. Primeti šta ove reči rade: pretvaraju odluku o tvom novcu u test tvog karaktera, koji ocenjuju stranci koji ne dele tvoje gubitke."
+    },
+    {
+     "h": "Kitovi i retail",
+     "p": "Kit je držalac dovoljno veliki da njegova sopstvena kupovina ili prodaja pomera cenu. Retail znači svi mali — ti, skoro sigurno, i u tome nema ničeg uvredljivog. Korisni deo je asimetrija: kit mora da planira izlaz, jer velika pozicija ne može tiho da ode, dok ti možeš napolje jednim klikom."
+    },
+    {
+     "h": "Kapitulacija, i ko je koristi",
+     "p": "Kapitulacija je trenutak kad držaoci prestanu da se nadaju i prodaju po bilo kojoj ceni: težak volumen, nasilan pad, pa iscrpljenost. Prepoznaje se uvek tek posle. To je poštena granica svake reči u ovoj lekciji — dobro opisuju osećaj mase i ne predviđaju ništa. Kad neko upotrebi jednu da ti kaže šta da radiš sada, pitaj koju poziciju drži."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kad ti kažu da je tvoj oprez FUD, to obično znači:",
+     "o": [
+      "Ponuđena ti je činjenična ispravka",
+      "Pritisak da prestaneš da preispituješ",
+      "Upotrebljen je termin tehničke analize",
+      "Menjačnica je izdala upozorenje"
+     ]
+    },
+    {
+     "q": "Kit je:",
+     "o": [
+      "Držalac dovoljno veliki da pomeri cenu",
+      "Rani Bitcoin rudar",
+      "Svaki trader sa velikom polugom",
+      "Zaposleni na menjačnici"
+     ]
+    },
+    {
+     "q": "Kapitulacija može da se prepozna:",
+     "o": [
+      "Unapred, po rastućem volumenu",
+      "Tek posle",
+      "Po funding stopi",
+      "Od strane menjačnice, pre početka"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd6",
+   "t": "Podrška, otpor, trend, breakout",
+   "cards": [
+    {
+     "h": "Podrška i otpor su zone",
+     "p": "Podrška (support) je područje cene gde se kupovina više puta pojavljivala i zaustavljala pad. Otpor (rezistencija) je gde je prodaja više puta zaustavljala rast. To su zone, ne linije — nivo na $60,000 zapravo znači negde između $59,800 i $60,200. Znače zato što ih dovoljno tradera prati i tu deluje, što je istovremeno i tačan razlog zašto na kraju puknu."
+    },
+    {
+     "h": "Trend i range",
+     "p": "Uzlazni trend je niz viših vrhova i viših dna; silazni je obrnuto. Range nije ni jedno ni drugo: cena odskače između poda i plafona i ne ide nigde. Imenovati u kom si od to dvoje je najkorisnija stvar koju ove reči rade, jer tržište zaglavljeno u range-u kažnjava svakog ko ga trguje kao da je u trendu."
+    },
+    {
+     "h": "Breakout znači izlazak iz kutije",
+     "p": "Breakout je cena koja napušta range ili probija otpor. Reč se koristi pre nego što je zaslužena: cena proviri napolje, svi to prozovu breakout, i ona padne pravo nazad unutra. Taj neuspeh ima svoje ime, fakeout. Koje je od to dvoje bilo, saznaješ tek kad se sveća zatvori i cena ostane napolju."
+    },
+    {
+     "h": "Svaki nivo traži vremenski okvir",
+     "p": "Vremenski okvir je koliko vremena pokriva jedna sveća — 5 minuta, 4 sata, dan. Podrška nacrtana na petominutnom grafikonu je nevidljiva na dnevnom. Isto tržište može biti u silaznom trendu na 5 minuta i u uzlaznom na dnevnom, i obe tvrdnje su tačne. Kad neko kaže \"trend\", reč koja nedostaje je koji vremenski okvir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Podrška se najbolje opisuje kao:",
+     "o": [
+      "Garantovan pod ispod cene",
+      "Područje gde se kupovina više puta pojavljivala",
+      "Najniža cena koju je coin ikad dotakao",
+      "Linija koju menjačnica objavljuje dnevno"
+     ]
+    },
+    {
+     "q": "Cena probije otpor i padne pravo nazad. To je:",
+     "o": [
+      "Fakeout",
+      "Potvrđen breakout",
+      "Silazni trend",
+      "Korekcija"
+     ]
+    },
+    {
+     "q": "Uzlazni trend je niz:",
+     "o": [
+      "Sveća iste boje",
+      "Nivoa koje crtaju veliki držaoci",
+      "Dnevnih dobitaka preko 1%",
+      "Viših vrhova i viših dna"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd7",
+   "t": "Likvidnost, volumen, volatilnost, tržišna kapitalizacija",
+   "cards": [
+    {
+     "h": "Volumen broji, likvidnost upija",
+     "p": "Volumen je koliko se stvarno trgovalo u nekom periodu — činjenica o prošlosti. Likvidnost je koliko sedi u knjizi naloga i čeka upravo sada — činjenica o sadašnjosti. Coin može da ima dan ogromnog volumena i da i dalje bude tanak, pa ga prodaja od $50,000 spusti za nekoliko procenata. Volumen ti kaže koliko ima interesovanja; likvidnost da li možeš da izađeš."
+    },
+    {
+     "h": "Volatilnost meri kretanje, ne smer",
+     "p": "Volatilnost je koliko se cena pomera, u bilo kom smeru. Coin koji se ljulja 5% dnevno je pet puta volatilniji od onog koji se ljulja 1%, bez obzira da li su ti dani zeleni ili crveni. Zato je poluga baš ovde bitna: tvoja razdaljina do likvidacije je fiksna, a volatilnost odlučuje koliko često cena pređe toliko. Velika volatilnost nije loša — ona je brža, u oba smera."
+    },
+    {
+     "h": "Tržišna kapitalizacija nije uloženi novac",
+     "p": "Tržišna kapitalizacija je cena pomnožena brojem coina u opticaju. To je etiketa, a ne mera novca koji je ušao. Ako je poslednji trejd bio na $1 i postoji 100 miliona coina, kapitalizacija piše $100 miliona čak i ako je ceo dan promenilo vlasnika par hiljada dolara. Tanki coini tako nose velike kapitalizacije. Čitaj je kao veličinu, pa proveri volumen pre nego što joj poveruješ."
+    },
+    {
+     "h": "Order flow: ko je agresivan",
+     "p": "Svaki trejd ima kupca i prodavca, pa je \"više kupaca nego prodavaca\" nemoguće. Ono što se razlikuje je agresija. Order flow je zapis o tome koja je strana presekla spread da bi se izvršila odmah, udarajući u limit naloge koji miruju na drugoj strani. Cena raste kad su kupci ti nestrpljivi. Isto tržište, opisano preko toga ko je bio spreman da plati za brzinu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ogroman volumen juče garantuje:",
+     "o": [
+      "Da danas lako izađeš iz velike pozicije",
+      "Ništa o današnjoj likvidnosti tamo",
+      "Da će volatilnost danas biti niska",
+      "Da će cena nastaviti da raste"
+     ]
+    },
+    {
+     "q": "Tržišna kapitalizacija od $100 miliona znači:",
+     "o": [
+      "Cena puta broj coina u opticaju je $100 miliona",
+      "U coin je uloženo $100 miliona",
+      "Projekat drži $100 miliona u rezervama",
+      "Dnevni volumen mu je $100 miliona"
+     ]
+    },
+    {
+     "q": "\"Više kupaca nego prodavaca\" je:",
+     "o": [
+      "Način na koji nastaje svaki rast cene",
+      "Nemoguće — svaki trejd ima oboje",
+      "Drugi način da se kaže veliki volumen",
+      "Mera dubine knjige naloga"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd8",
+   "t": "Reči koje te koštaju novca",
+   "cards": [
+    {
+     "h": "Shill i ape",
+     "p": "Shill-ovati znači reklamirati coin koji već poseduješ ljudima koji će ga kupiti od tebe. Reč se obično izgovara u šali, i to je trik — čini da sukob interesa zvuči kao crta ličnosti. Ape-ovati znači ući veliko bez ikakvog istraživanja, obučeno u hrabrost. Obe reči čine da skupa greška zvuči kao stil života."
+    },
+    {
+     "h": "Rug pull, moon, 100x",
+     "p": "Rug pull je token čiji kreatori uklone bazen novca koji ljudima omogućava da prodaju, čim se dovoljno kupaca skupi. Grafikon pokazuje vertikalnu liniju do nule. Reči kojima se ti kupci regrutuju su uvek iste: moon, 100x, rano. Cenovni cilj bez metode iza sebe nije analiza, to je mamac."
+    },
+    {
+     "h": "\"Garantovano\" je reč za uzbunu",
+     "p": "U trejdingu garantovan prinos ne može da postoji, jer svakoj poziciji treba neko na drugoj strani ko gubi. Ko god nudi fiksni dnevni procenat plaća te ili novcem novih uplatilaca ili ničim. Nema izuzetka, koliko god sajt izgledao profesionalno. Onog trenutka kad pročitaš \"garantovano\", već znaš u šta gledaš."
+    },
+    {
+     "h": "Nije finansijski savet",
+     "p": "Ova fraza se nosi kao amajlija, kao da je njeno dodavanje čini plaćenu reklamu bezopasnom. Ona ne menja ništa u onome što ta osoba radi. Zameni je jednim pitanjem, svaki put: šta ta osoba dobija ako ja kupim? Ako je pošten odgovor da prodaje tebi, imaš svu analizu koja ti treba."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Neko nudi garantovanih 3% dnevno. To je:",
+     "o": [
+      "Realno uz dovoljno dobar softver",
+      "Prevara, bez izuzetka",
+      "Moguće uz veliku polugu",
+      "Prihvatljivo samo za male iznose"
+     ]
+    },
+    {
+     "q": "Rug pull se dešava kad:",
+     "o": [
+      "Menjačnica skine coin sa listinga",
+      "Cena naglo padne na velikom volumenu",
+      "Kreatori uklone novac koji omogućava prodaju",
+      "Tim prestane da objavljuje novosti"
+     ]
+    },
+    {
+     "q": "\"Nije finansijski savet\" na objavi ti govori:",
+     "o": [
+      "Da je objava pravno proverena",
+      "Ništa o motivu onoga ko je objavio",
+      "Da autor ne poseduje nimalo tog coina",
+      "Da su tvrdnje u njoj proverene"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Sad imaš rečnik na kom je napisan ostatak puta. Otvori paper-trading terminal i stavi jednu od ovih reči na ekran: otvori malu poziciju, gledaj kako se P&L pomera, pa je zatvori.",
+    "label": "Otvori Paper Trade →"
+   }
+  }
+ ]
+}

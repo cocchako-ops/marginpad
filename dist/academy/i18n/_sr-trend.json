@@ -1,0 +1,467 @@
+{
+ "id": "trend",
+ "name": "Trend, Podrška i Otpor",
+ "sub": "Čitanje grafikona od nule",
+ "lessons": [
+  {
+   "id": "tr1",
+   "t": "Šta je trend zapravo",
+   "cards": [
+    {
+     "h": "Viši vrhovi i viša dna",
+     "p": "Uzlazni trend ima oblik koji možeš da proveriš, a ne raspoloženje koje osećaš. Svaki nalet naviše završava više od prethodnog naleta. Svako povlačenje (pullback) staje više od prethodnog povlačenja. Viši vrhovi, viša dna, tim redom, sleva nadesno. Ako ne možeš prstom da pokažeš po dva od svakog na grafikonu, nisi u uzlaznom trendu."
+    },
+    {
+     "h": "Silazni trend je ogledalo",
+     "p": "Silazni trend je isto pravilo, okrenuto. Svaki odskok staje niže od prethodnog odskoka. Svaki pad ide ispod prethodnog pada. Niži vrhovi, niža dna. Ništa u ovome ne kaže da će cena nastaviti da pada. Samo opisuje ono što se već desilo, i to tako da neko drugi može da proveri na istom grafikonu i složi se s tobom."
+    },
+    {
+     "h": "Imenuj vrhove i dna naglas",
+     "p": "Prvih sto puta radi to rukom. Stavi prst na grafikon, nađi očigledne vrhove i očigledne padove, i izgovori niz: vrh, dno, viši vrh, više dno. Ako moraš da žmiriš da bi se uklopilo, ne uklapa se. Trend koji vidiš samo zato što ga želiš nije tu."
+    },
+    {
+     "h": "Kad trend prestane da bude trend",
+     "p": "Uzlazni trend se završava kad se niz prekine: cena napravi dno ispod prethodnog dna. To je ceo test. Ne znači da je počeo silazni trend, i cena posle toga često samo ide bočno nedeljama. Znači da je razlog zbog kog si ga zvao uzlaznim trendom nestao, a s njim i svaki plan sagrađen na tom razlogu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Šta čini grafikon uzlaznim trendom?",
+     "o": [
+      "Uglavnom zelene sveće danas",
+      "Niz viših vrhova i viših dna",
+      "Cena koja stoji iznad okrugle cifre",
+      "Rastući volumen na svakoj sveći"
+     ]
+    },
+    {
+     "q": "Silazni trend definišu…",
+     "o": [
+      "Niži vrhovi i niža dna",
+      "Više crvenih sveća nego zelenih",
+      "Cena koja pada brže nego što je rasla",
+      "Težak prodajni volumen ceo dan"
+     ]
+    },
+    {
+     "q": "U uzlaznom trendu cena padne ispod prethodnog dna. To znači…",
+     "o": [
+      "Silazni trend je sigurno počeo",
+      "Ništa — trend definišu samo vrhovi",
+      "Niz uzlaznog trenda je prekinut",
+      "Trend je postao jači"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr2",
+   "t": "Tvoja prva linija trenda",
+   "cards": [
+    {
+     "h": "U uzlaznom trendu spajaj dna",
+     "p": "U uzlaznom trendu liniju crtaš ispod dna povlačenja, jer se tu kupci stalno vraćaju. U silaznom trendu je crtaš preko vrhova odskoka. Dve tačke definišu liniju, pa su dva dodira minimum s kojim možeš da radiš. To je ujedno i najslabija moguća verzija, i evo zašto."
+    },
+    {
+     "h": "Tri dodira je čine zanimljivom",
+     "p": "Bilo koje dve tačke na grafikonu mogu da se spoje linijom, pa dva dodira ne dokazuju skoro ništa. Treći dodir je prvi dokaz da linija opisuje nešto stvarno, a ne slučajnost mesta odakle si počeo da crtaš. I dalje ne govori ništa o četvrtom dodiru. Jedan dodir je šum, dva su skica, tri su skica koju verovatno gledaju i drugi."
+    },
+    {
+     "h": "Crtanje da bi se uklopilo je varanje",
+     "p": "Liniju uvek možeš da nađeš. Pomeri početak za jednu sveću, nagni je za stepen, ignoriši dva dodira koja je kvare, i svaki grafikon podržava svaku priču. Pošten test: nacrtaj liniju pre nego što imaš poziciju, i nikad je ne crtaj ponovo zato što se cena nije složila s tobom. Ako si je pomerio, više nemaš liniju. Imaš želju."
+    },
+    {
+     "h": "Strme linije pucaju ranije",
+     "p": "Linija trenda koja se penje pod blagim uglom može da drži mesecima, jer cena samo treba da polako grebe naviše da bi ostala iznad nje. Skoro vertikalna linija zahteva da tržište zauvek ubrzava, a ništa ne ubrzava zauvek. Strme linije pucaju rano i često, a to pucanje obično znači da se tempo ohladio, ne da se trend okrenuo."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "U uzlaznom trendu, gde se crta linija trenda?",
+     "o": [
+      "Preko vrhova pokreta",
+      "Kroz sredinu sveća",
+      "Ispod dna povlačenja",
+      "Vodoravno, na poslednjem zatvaranju"
+     ]
+    },
+    {
+     "q": "Zašto je linija sa dva dodira slab dokaz?",
+     "o": [
+      "Bilo koje dve tačke na grafikonu mogu da se spoje",
+      "Dva dodira se dešavaju samo u silaznim trendovima",
+      "Liniji treba volumen da bi se uopšte računala",
+      "Dva dodira znače da je trend gotov"
+     ]
+    },
+    {
+     "q": "Cena probije tvoju liniju, pa je ti ponovo nacrtaš položenije. To je…",
+     "o": [
+      "Dobra praksa — grafikoni se stalno menjaju",
+      "Prilagođavanje linije onome što želiš",
+      "Obavezno čim treći dodir padne",
+      "Način na koji profesionalci vode otvoreni rizik"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr3",
+   "t": "Podrška i otpor su zone",
+   "cards": [
+    {
+     "h": "Masa, a ne laser",
+     "p": "Podrška nije jedna cena. To je pojas u kom se pojavilo dovoljno kupaca da zaustave pad — nekad na $100.00, nekad na $99.40, nekad tek posle uboda dole na $98.80. Nacrtati liniju od jednog piksela i očekivati da je cena poštuje u cent je čest način da te izbaci iz ideje koja je bila sasvim u redu."
+    },
+    {
+     "h": "Neka fitilji odrede ivice",
+     "p": "Nađi poslednja tri ili četiri puta kad se cena okrenula otprilike u istom području. Tela sveća pokazuju gde se stvarno najviše trgovalo. Fitilji, koje si upoznao u Formacijama Sveća, pokazuju dokle je borba stigla pre nego što je odbijena. Nacrtaj gornju ivicu na najvišem telu, a donju na najnižem fitilju. Taj pojas je tvoj nivo."
+    },
+    {
+     "h": "Dokaži jednim dodirom",
+     "prompt": "Dodirni bilo gde unutar zone podrške — pojas u kom se dna grupišu.",
+     "p": "Jedan dodir. Ovde ne postoji jedan tačan piksel, i baš to je lekcija."
+    },
+    {
+     "h": "Kad je zona preširoka",
+     "p": "Zona mora da bude dovoljno uska da bi mogao da trguješ protiv nje. Ako su fitilji razvučeni preko 2% cene, tvoj stop mora da stane iza svega toga, a mnogog dana je 2% ceo dnevni raspon. To nije nivo, to je kvart. Zapiši ga i čekaj da ti cena da uži."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Podršku je najbolje nacrtati kao…",
+     "o": [
+      "Jednu tačnu cenu, u cent",
+      "Najnižu cenu koja je ikad odštampana",
+      "Pojas sa ivicama iz tela i fitilja",
+      "Kosu liniju ispod dna"
+     ]
+    },
+    {
+     "q": "Šta ti fitilji na nivou govore?",
+     "o": [
+      "Dokle je cena gurnuta pre odbijanja",
+      "Prosečnu cenu trgovanu u toj sesiji",
+      "Koliko je tradera učestvovalo",
+      "Koja menjačnica je imala najbolju cenu"
+     ]
+    },
+    {
+     "q": "Cena zaroni $0.60 ispod tvoje linije podrške, pa se zatvori nazad iznad. Najverovatnije…",
+     "o": [
+      "Tvoj nivo je prosto bio pogrešan",
+      "Počeo je novi silazni trend",
+      "Podrška je sada postala otpor",
+      "Normalno — nivo je zona, a ne linija"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr4",
+   "t": "Zašto nivoi uopšte znače",
+   "cards": [
+    {
+     "h": "Nivoi su zapis o trejdovima",
+     "p": "Nivo znači zato što se tu nešto desilo. Na starom vrhu ljudi su kupili tik pre pada i od tada su pod vodom. Dosta njih će prodati čim izađu na nulu, ako se cena ikad vrati. Drugi su prodali prerano i zakleli se da će kupiti na retestu. Cena je samo broj. Odluke koje čekaju oko nje su ono što pomera tržišta."
+    },
+    {
+     "h": "Nalozi se gomilaju na jednom mestu",
+     "p": "Pogledaj gde žive stop-lossovi. Skoro svako ko je kupio u zoni podrške stavlja stop tik ispod nje, pa gust džep prodajnih naloga sedi malo ispod nivoa. Limit nalozi za kupovinu miruju tik iznad. Nivo je mesto na kom je knjiga naloga nakrivljena, i baš zbog te nakrivljenosti cena tu uopšte reaguje."
+    },
+    {
+     "h": "Deo koji se sam ispunjava",
+     "p": "Ako je nivo očigledan na dnevnom grafikonu, veliki broj ljudi gleda istu liniju, i neki od njih će po njoj delovati. Zbog toga je reakcija delom stvarna, a delom priča koju masa priča zajedno. Neprijatna polovina iste činjenice: očigledni nivoi su i mesta na kojima svi znaju gde stopovi sede."
+    },
+    {
+     "h": "Nivo nije zid",
+     "p": "Ništa od ovoga ne čini da nivo drži. Nalozi se povuku, raspoloženje se promeni, i nivo koji je četiri puta zaustavio cenu može peti put da padne bez ikakve najave. Vrednost nivoa nije u tome što cena tu staje. Vrednost je što ti daje jednu određenu cenu na kojoj je tvoja ideja gotova, a od toga se plan pravi."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Zašto stari vrh često deluje kao otpor?",
+     "o": [
+      "Menjačnice usporavaju naloge iznad starih vrhova",
+      "Kupci zarobljeni tamo prodaju na nuli",
+      "Volumen je uvek tanji iznad vrha",
+      "Grafikoni vuku cenu ka okruglim ciframa"
+     ]
+    },
+    {
+     "q": "Gde obično sede stop-lossovi kupaca na podršci?",
+     "o": [
+      "Tik ispod zone podrške",
+      "Tačno na njihovoj ulaznoj ceni",
+      "Iznad najskorijeg vrha pokreta",
+      "Ravnomerno razvučeni preko raspona"
+     ]
+    },
+    {
+     "q": "Nivo je izdržao četiri puta. Na petom dodiru…",
+     "o": [
+      "Mora da izdrži — četiri dodira ga potvrđuju",
+      "Automatski postaje linija trenda",
+      "Može da padne bez ikakve najave",
+      "Garantuje breakout u tvoju korist"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr5",
+   "t": "Flip: uloge se menjaju na nivou",
+   "cards": [
+    {
+     "h": "Probijen otpor može da postane podrška",
+     "p": "Cena se tri puta grebe o plafon i konačno se zatvori iznad njega. Često se sledeće povlačenje zaustavi baš na tom starom plafonu, umesto da propadne pravo kroz njega. Linija se nije promenila; uloge jesu. Isto se dešava naopako, gde podrška koja pukne često postane nivo koji zaustavi sledeći odskok."
+    },
+    {
+     "h": "Mehanizam, a ne magija",
+     "p": "Razmisli ko stoji na toj ceni. Prodavci koji su tu hteli napolje već su prodali, pa je njihova ponuda nestala. Kupci koji su gledali breakout i propustili ga sad imaju drugu šansu i čekaju. Traderi koji su shortovali nivo bivaju izbačeni stopom, a zatvaranje shorta znači kupovinu. Tri odvojene grupe, sve kupuju u istom pojasu."
+    },
+    {
+     "h": "Dokaz stiže na retestu",
+     "p": "Flip postaje vidljiv tek na retestu, kad se cena vrati na probijeni nivo. Ako ga kupci brane, imaš nivo i tačnu cenu tik ispod njega na kojoj bi bio u krivu. Ako cena preseče pravo nazad kroz njega, proboj je bio šum. Čekanje retesta te košta nekih poteza. Takođe uklanja nagađanje."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Otpor koji jasno pukne često postaje…",
+     "o": [
+      "Rastuća linija trenda umesto toga",
+      "Trajno nebitan za cenu",
+      "Podrška na povratku nadole",
+      "Garantovan signal za ulazak"
+     ]
+    },
+    {
+     "q": "Zašto stari otpor posle može da drži cenu?",
+     "o": [
+      "Prodavci su tu gotovi, a shortovi moraju da otkupe",
+      "Softver menjačnice brani prethodne vrhove cene",
+      "Sam grafikon pamti raniji vrh",
+      "Volumen uvek presuši iznad starih vrhova"
+     ]
+    },
+    {
+     "q": "Cena probije iznad otpora, pa preseče pravo nazad dole kroz njega. To govori…",
+     "o": [
+      "Podrška se tu sigurno formirala",
+      "Potvrđen je novi uzlazni trend",
+      "Nivo treba nacrtati više",
+      "Flip je propao i proboj je bio šum"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr6",
+   "t": "Breakout i fakeout",
+   "cards": [
+    {
+     "h": "Bitno je zatvaranje, a ne dodir",
+     "p": "Fitilj kroz nivo ti kaže da je cena bila u poseti. Zatvaranje iza njega kaže da je tržište bilo spremno da tamo završi ceo period. Na dnevnom grafikonu ta razlika je ogromna: ubod kroz nivo koji se zatvori nazad unutra je odbijanje, a ne breakout. Odluči unapred zatvaranje kog vremenskog okvira prihvataš kao proboj."
+    },
+    {
+     "h": "Volumen ti kaže ko se pojavio",
+     "p": "Proboj na volumenu jasno većem od skorašnjih sveća znači stvarno učešće: ljudi su morali da trguju da bi prošli kroz nivo. Identičan proboj na tankom volumenu znači da se retko ko potrudio, često u miran čas. Volumen ti nikad ne govori smer. Govori ti koliku težinu da daš onome što si upravo gledao."
+    },
+    {
+     "h": "Kako fakeout izgleda",
+     "p": "Oblik se ponavlja. Cena gurne tik preko nivoa, okine stop naloge koji tu sede, ne nađe nastavak, i zatvori se nazad unutar raspona. Spolja je to bio fitilj. Iznutra, iz pozicije sa polugom, to je bio izbačaj stopom. Baš zato je zatvaranje, a ne ekstrem, ono na šta si pristao da trguješ."
+    },
+    {
+     "h": "Biti prevaren je normalno",
+     "p": "Bićeš prevaren fakeoutom, više puta, i ne postoji indikator koji to uklanja. Cela odbrana je proceduralna: stop se postavlja u istom trenutku kad se trejd otvara, veličina je dovoljno mala da izbačaj bude dosadan, i ne ulaziš tri puta zaredom da bi dokazao da si bio u pravu za nivo."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Šta je jači dokaz pravog proboja?",
+     "o": [
+      "Fitilj koji viri preko nivoa",
+      "Sveća koja se zatvori iza nivoa",
+      "Bilo koji pojedinačni dodir nivoa",
+      "Pomak od bar 1% tokom dana"
+     ]
+    },
+    {
+     "q": "Nivo pukne na neobično niskom volumenu. Treba da…",
+     "o": [
+      "Uzmeš to olako — malo ljudi je učestvovalo",
+      "Uzmeš to kao potvrđeno, volumen je šum",
+      "Pretpostaviš da je preokret sada zagarantovan",
+      "Udvostručiš poziciju da uhvatiš potez"
+     ]
+    },
+    {
+     "q": "Praktična odbrana od fakeouta je…",
+     "o": [
+      "Pronaći indikator koji ih filtrira",
+      "Čekati skok volumena svaki put",
+      "Trgovati samo na okruglim ciframa",
+      "Prvo postavljen stop, i mala veličina"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr7",
+   "t": "Range: kad trenda nema",
+   "cards": [
+    {
+     "h": "Većina grafikona nije u trendu",
+     "p": "Zumiraj napolje na skoro bilo kom grafikonu i naći ćeš duge deonice u kojima cena prosto osciluje između plafona i poda. Nema viših vrhova, nema nižih dna, samo tamo-amo. To je range. Nije pokvareno tržište ni pauza pred pravi potez. To je normalno stanje, i može da traje dugo."
+    },
+    {
+     "h": "Range je obrnuta igra",
+     "p": "U trendu kupuješ snagu i daješ poziciji prostora da diše. U range-u radiš suprotno: zainteresovan si blizu donje ivice, skeptičan blizu gornje, a cilj ti je druga strana kutije, umesto otvorenog kraja. Isti grafikon, iste veštine, potpuno obrnuta pravila o tome gde je ulazak privlačan."
+    },
+    {
+     "h": "Igrati pogrešnu igru je skupo",
+     "p": "Primeni pravila trenda unutar range-a i kupovaćeš svaki nalet na gornjoj ivici i prodavati svako ispiranje na donjoj — kupovina skupo, prodaja jeftino, u krug, uz provizije svaki put. Primeni pravila range-a na tržište u trendu i stalno ćeš shortovati u snagu. Imenovati stanje pre nego što deluješ nije opcioni domaći."
+    },
+    {
+     "h": "Range se steže pre nego što se završi",
+     "p": "Gledaj vrhove i dna unutar kutije. Kad svaki odskok stane ispod prethodnog plafona i svaki pad stane iznad prethodnog poda, range se sabija, a sveće uz to obično postaju manje. To ti kaže da se gradi veći potez. Ne kaže ti baš ništa o tome u kom smeru će ići."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Range je…",
+     "o": [
+      "Tržište koje se slomilo",
+      "Cena koja osciluje između poda i plafona",
+      "Kratka pauza pre svakog trenda",
+      "Vodoravno nacrtana linija trenda"
+     ]
+    },
+    {
+     "q": "Unutar range-a, kupac je najzainteresovaniji…",
+     "o": [
+      "Na gornjoj ivici, kupujući snagu",
+      "Tačno na sredini kutije",
+      "Blizu donje ivice kutije",
+      "Odmah posle bilo kog fitilja"
+     ]
+    },
+    {
+     "q": "Pokreti unutar range-a postaju sve manji. To ti govori…",
+     "o": [
+      "Priprema se breakout naviše",
+      "Range će sada držati zauvek",
+      "Proboj naniže je verovatniji",
+      "Gradi se veći potez, smer nepoznat"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr8",
+   "t": "Gde ti nivo postavlja stop",
+   "cards": [
+    {
+     "h": "Gde je ideja pogrešna",
+     "p": "Misliš da će ova podrška da izdrži, pa kupuješ. Ta rečenica ima ugrađen kraj: ako se cena zatvori ispod zone, ono u šta si verovao više nije tačno. Ta cena nije stvar ukusa ni prag bola. To je tačka na kojoj je tvoj razlog za ulazak u trejd demantovalo samo tržište."
+    },
+    {
+     "h": "Iza zone, nikad unutar nje",
+     "p": "Ako ti se zona pruža od $99.00 dole do $98.80, stop na $98.90 sedi unutar šuma za koji si već rekao da postoji. Fitilji će ga pokupiti dok je tvoja ideja još savršeno živa. Stavi stop ispod cele zone, sa malo prostora povrh toga, i prihvati da je ta razdaljina ono što te taj nivo košta."
+    },
+    {
+     "h": "Razdaljina odlučuje o veličini",
+     "p": "Sad aritmetika. Imaš $1,000 i rizikuješ 1% toga, što je $10. Ulaz $100, stop $98.60, dakle razdaljina je 1.4%. Veličina pozicije je $10 podeljeno sa 0.014, što je oko $714 notionala. Proširi stop i pozicija mora da se smanji. Stop ide prvi, a veličina sledi iz njega, nikad obrnuto. Alati na /calculators rade to deljenje umesto tebe."
+    },
+    {
+     "h": "Ne širi stop",
+     "p": "Kako se cena približava stopu, deluje očigledno da nivou treba samo malo više prostora. Širenje pretvara mali planirani gubitak u neplanirani veliki, i uništava aritmetiku koju si upravo uradio, jer je veličina izračunata za tačno tu razdaljinu. Ako je nivo pogrešan, trejd je pogrešan. Uzmi mali gubitak."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Gde stop-loss pripada u odnosu na zonu podrške?",
+     "o": [
+      "Na pola puta unutar zone",
+      "Na samoj ulaznoj ceni",
+      "Tik iza dalje ivice, sa prostorom",
+      "Na najbližoj okrugloj cifri"
+     ]
+    },
+    {
+     "q": "Nalog $1,000, rizik 1%, stop 1.4% daleko. Veličina pozicije je oko…",
+     "o": [
+      "$140 notionala",
+      "$714 notionala",
+      "$1,400 notionala",
+      "$10 notionala"
+     ]
+    },
+    {
+     "q": "Širenje stopa dok mu se cena približava…",
+     "o": [
+      "Poboljšava izglede trejda",
+      "Je standardno upravljanje rizikom",
+      "Smanjuje veličinu gubitka",
+      "Ruši aritmetiku veličine koju si uradio"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr9",
+   "t": "Čitanje grafikona za šezdeset sekundi",
+   "cards": [
+    {
+     "h": "Prvo zumiraj napolje",
+     "p": "Počni od dnevnog grafikona, čak i kad nameravaš da trguješ na petnaestominutnom. Dnevni ti pokazuje nivoe koje veliki broj ljudi stvarno vidi, i oblik poslednjih par meseci na jednom ekranu. Nivo koji postoji samo na jednominutnom grafikonu nevidljiv je skoro svima i često nestane u roku od sata."
+    },
+    {
+     "h": "Imenuj trend, obeleži dva nivoa",
+     "p": "Izgovori niz naglas: viši vrhovi i viša dna, ogledalo toga, ili nijedno — što znači range. Zatim obeleži tačno dve vodoravne zone: najbližu iznad cene i najbližu ispod. Dve. Ako si nacrtao šest linija, napravio si grafikon koji se slaže sa bilo čim što odlučiš da uradiš."
+    },
+    {
+     "h": "Dovrši rečenicu, pa stani",
+     "p": "Reci to u jednom redu: ovo je uzlazni trend, nivo koji je bitan je $98.80 do $99.00, i ako se cena zatvori ispod toga, u krivu sam. Ako ne možeš da popuniš sva tri dela, nemaš trejd, imaš grafikon. Ta rečenica traje oko šezdeset sekundi i ona je cela rutina."
+    },
+    {
+     "h": "Većina grafikona ne zaslužuje mišljenje",
+     "p": "Pošten rezultat ove rutine je, najčešće, ništa. Nema jasnog trenda, nema bliskog nivoa, nema ničeg konkretnog u čemu bi mogao da pogrešiš. To je rezultat, a ne neuspeh — rutina je filter, a filter koji nikad ništa ne odbaci ne filtrira. Zatvori grafikon i pogledaj drugi simbol."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Koji grafikon prvo otvaraš?",
+     "o": [
+      "Jednominutni, zbog preciznosti",
+      "Dnevni, zbog nivoa koje svi vide",
+      "Petominutni, kao kompromis",
+      "Onaj koji je poslednji bio otvoren"
+     ]
+    },
+    {
+     "q": "Koliko vodoravnih zona rutina traži da obeležiš?",
+     "o": [
+      "Koliko god ih nađeš",
+      "Šest, po jednu za svaki vremenski okvir",
+      "Dve — najbližu iznad i najbližu ispod",
+      "Nijednu, linije trenda su dovoljne"
+     ]
+    },
+    {
+     "q": "Rutina se završi bez jasnog trenda i bez bliskog nivoa. Treba da…",
+     "o": [
+      "Siđeš na niži vremenski okvir da ga nađeš",
+      "Crtaš još linija dok se nešto ne pojavi",
+      "Ipak trguješ, samo manjom veličinom",
+      "Kreneš dalje i proveriš drugi simbol"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Otvori grafikon, stavi BTC na dnevni, i odradi rutinu od šezdeset sekundi: imenuj trend, obeleži dve zone, izgovori cenu na kojoj bi bio u krivu. Pa uradi to ponovo na coinu koji nikad pre nisi gledao.",
+    "label": "Otvori Grafikone →"
+   }
+  }
+ ]
+}

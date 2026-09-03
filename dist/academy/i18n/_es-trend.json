@@ -1,0 +1,467 @@
+{
+ "id": "trend",
+ "name": "Tendencia, soporte y resistencia",
+ "sub": "Leer un gráfico desde cero",
+ "lessons": [
+  {
+   "id": "tr1",
+   "t": "Qué es de verdad una tendencia",
+   "cards": [
+    {
+     "h": "Máximos más altos y mínimos más altos",
+     "p": "Una tendencia alcista tiene una forma que puedes comprobar, no un estado de ánimo que intuyes. Cada empuje al alza termina más arriba que el anterior. Cada retroceso se detiene más arriba que el anterior. Máximos más altos, mínimos más altos, en ese orden, de izquierda a derecha. Si no puedes señalar dos de cada uno en el gráfico, no estás en una tendencia alcista."
+    },
+    {
+     "h": "La tendencia bajista es el espejo",
+     "p": "Una tendencia bajista es la misma regla dada la vuelta. Cada rebote se detiene más abajo que el anterior. Cada caída va por debajo de la anterior. Máximos más bajos, mínimos más bajos. Nada de esto dice que el precio vaya a seguir cayendo. Solo describe lo que ya ocurrió, de una forma que otra persona podría comprobar en el mismo gráfico y darte la razón."
+    },
+    {
+     "h": "Nombra los swings en voz alta",
+     "p": "Hazlo a mano las primeras cien veces. Pon el dedo en el gráfico, busca los picos evidentes y los valles evidentes, y di la secuencia: máximo, mínimo, máximo más alto, mínimo más alto. Si tienes que entrecerrar los ojos para que encaje, no encaja. Una tendencia que solo se ve porque quieres verla no está ahí."
+    },
+    {
+     "h": "Cuándo deja una tendencia de serlo",
+     "p": "Una tendencia alcista termina cuando la secuencia se rompe: el precio hace un mínimo por debajo del mínimo anterior. Esa es toda la prueba. No significa que haya empezado una tendencia bajista, y a menudo el precio simplemente se va de lado durante semanas. Significa que la razón por la que la llamabas tendencia alcista ya no está, y cualquier plan construido sobre esa razón tampoco."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Qué convierte un gráfico en una tendencia alcista?",
+     "o": [
+      "Sobre todo velas verdes hoy",
+      "Una secuencia de máximos y mínimos más altos",
+      "El precio por encima de un número redondo",
+      "Volumen creciente en cada vela"
+     ]
+    },
+    {
+     "q": "Una tendencia bajista se define por…",
+     "o": [
+      "Máximos más bajos y mínimos más bajos",
+      "Más velas rojas que verdes",
+      "Que el precio caiga más rápido de lo que subió",
+      "Volumen de venta pesado todo el día"
+     ]
+    },
+    {
+     "q": "En una tendencia alcista, el precio cae por debajo del mínimo anterior. Eso significa…",
+     "o": [
+      "Que ha empezado una tendencia bajista, seguro",
+      "Nada — solo los máximos definen la tendencia",
+      "Que la secuencia alcista se ha roto",
+      "Que la tendencia se ha vuelto más fuerte"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr2",
+   "t": "Tu primera línea de tendencia",
+   "cards": [
+    {
+     "h": "Une los mínimos en una tendencia alcista",
+     "p": "En una tendencia alcista dibujas la línea por debajo de los mínimos de los retrocesos, porque ahí es donde los compradores siguen apareciendo. En una bajista la trazas en cambio por los máximos de los rebotes. Dos puntos definen una recta, así que dos toques es el mínimo con el que puedes trabajar. También es la versión más débil posible, y aquí está el porqué."
+    },
+    {
+     "h": "Con tres toques empieza a interesar",
+     "p": "Dos puntos cualesquiera de un gráfico se pueden unir con una recta, así que dos toques no demuestran casi nada. Un tercer toque es la primera prueba de que la línea describe algo real y no un accidente de dónde empezaste a dibujar. Sigue sin decir nada del cuarto toque. Un toque es ruido, dos es un boceto, tres es un boceto que probablemente también estén mirando otros."
+    },
+    {
+     "h": "Dibujar para que encaje es hacer trampa",
+     "p": "Siempre puedes encontrar una línea. Mueve el inicio una vela, inclínala un grado, ignora los dos toques que la estropean, y cualquier gráfico sostiene cualquier historia. La prueba honesta: dibuja la línea antes de tener posición, y no la vuelvas a dibujar nunca porque el precio te haya llevado la contraria. Si la moviste, ya no tienes una línea. Tienes un deseo."
+    },
+    {
+     "h": "Las líneas empinadas se rompen antes",
+     "p": "Una línea de tendencia que sube con poca inclinación puede aguantar meses, porque al precio le basta con seguir arañando terreno despacio para quedarse por encima. Una línea casi vertical exige que el mercado acelere para siempre, y nada acelera para siempre. Las líneas empinadas se rompen pronto y a menudo, y esa rotura suele significar que el ritmo se ha enfriado, no que la tendencia se haya girado."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "En una tendencia alcista, ¿dónde se dibuja la línea de tendencia?",
+     "o": [
+      "Por los máximos de los swings",
+      "Por el medio de las velas",
+      "Por debajo de los mínimos de los retrocesos",
+      "Plana, en el último cierre"
+     ]
+    },
+    {
+     "q": "¿Por qué una línea de dos toques es prueba débil?",
+     "o": [
+      "Dos puntos cualesquiera se pueden unir",
+      "Los dos toques solo pasan en tendencias bajistas",
+      "Una línea necesita volumen para contar",
+      "Dos toques significan que la tendencia acabó"
+     ]
+    },
+    {
+     "q": "El precio rompe tu línea y la vuelves a dibujar más plana. Eso es…",
+     "o": [
+      "Buena práctica — los gráficos evolucionan",
+      "Ajustar la línea a lo que quieres",
+      "Obligatorio cuando falla el tercer toque",
+      "Cómo gestionan el riesgo los profesionales"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr3",
+   "t": "El soporte y la resistencia son zonas",
+   "cards": [
+    {
+     "h": "Una multitud, no un láser",
+     "p": "El soporte no es un precio. Es una banda donde aparecieron suficientes compradores como para frenar la caída — a veces en $100.00, a veces en $99.40, a veces tras un pinchazo hasta $98.80. Dibujar una línea de un píxel y esperar que el precio la respete al centavo es una forma habitual de que te saquen de una idea que estaba bien."
+    },
+    {
+     "h": "Deja que las mechas marquen los bordes",
+     "p": "Busca las últimas tres o cuatro veces que el precio se dio la vuelta más o menos en la misma zona. Los cuerpos de las velas muestran dónde se negoció de verdad la mayor parte. Las mechas, que ya conociste en Patrones de velas, muestran hasta dónde llegó la pelea antes de ser rechazada. Traza el borde superior en el cuerpo más alto y el inferior en la mecha más baja. Esa banda es tu nivel."
+    },
+    {
+     "h": "Demuéstralo con un toque",
+     "prompt": "Toca en cualquier punto dentro de la zona de soporte — la banda donde se agrupan los mínimos.",
+     "p": "Un solo toque. Aquí no hay un píxel correcto, y esa es exactamente la lección."
+    },
+    {
+     "h": "Cuándo una zona es demasiado ancha",
+     "p": "Una zona tiene que ser lo bastante estrecha como para operar contra ella. Si las mechas se reparten por un 2% del precio, tu stop tiene que quedar más allá de todo eso, y muchos días el 2% es el rango entero. Eso no es un nivel, es un barrio. Apúntalo y espera a que el precio te dé uno más ajustado."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "El soporte se dibuja mejor como…",
+     "o": [
+      "Un precio exacto, al centavo",
+      "El precio más bajo jamás impreso",
+      "Una banda con bordes de cuerpos y mechas",
+      "Una línea diagonal bajo los mínimos"
+     ]
+    },
+    {
+     "q": "¿Qué te dicen las mechas en un nivel?",
+     "o": [
+      "Hasta dónde se empujó el precio antes del rechazo",
+      "El precio medio negociado en la sesión",
+      "Cuántos traders estaban participando",
+      "Qué exchange tenía el mejor precio"
+     ]
+    },
+    {
+     "q": "El precio se hunde $0.60 por debajo de tu línea de soporte y luego cierra otra vez encima. Lo más probable…",
+     "o": [
+      "Tu nivel estaba simplemente mal",
+      "Ha empezado una nueva tendencia bajista",
+      "El soporte ya se ha vuelto resistencia",
+      "Normal — el nivel es una zona, no una línea"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr4",
+   "t": "Por qué importan los niveles",
+   "cards": [
+    {
+     "h": "Los niveles son un registro de operaciones",
+     "p": "Un nivel importa porque ahí pasaron cosas. En un máximo antiguo hay gente que compró justo antes de una caída y lleva desde entonces bajo el agua. Muchos de ellos venderán a precio de entrada si el precio vuelve alguna vez. Otros vendieron demasiado pronto y juraron que comprarían el retest. El precio es solo un número. Lo que mueve los mercados son las decisiones pendientes a su alrededor."
+    },
+    {
+     "h": "Las órdenes se amontonan en un mismo sitio",
+     "p": "Mira dónde viven los stop-loss. Casi todo el que compró en una zona de soporte pone su stop justo por debajo, así que un bolsón espeso de órdenes de venta se queda un poco por debajo del nivel. Las órdenes limit de compra esperan justo por encima. Un nivel es un sitio donde el libro de órdenes está descompensado, y ese desequilibrio es la razón de que el precio reaccione ahí."
+    },
+    {
+     "h": "La parte que se cumple sola",
+     "p": "Si un nivel es evidente en el gráfico diario, mucha gente está mirando la misma línea y algunos actuarán sobre ella. Eso hace que la reacción sea en parte real y en parte una historia que la multitud se cuenta junta. La mitad incómoda del mismo hecho: los niveles evidentes son también donde todo el mundo sabe que están los stops."
+    },
+    {
+     "h": "Un nivel no es un muro",
+     "p": "Nada de esto hace que un nivel aguante. Las órdenes se retiran, el sentimiento cambia, y un nivel que frenó el precio cuatro veces puede fallar a la quinta sin ningún aviso. El valor de un nivel no es que el precio se pare ahí. Es que te da un precio concreto en el que tu idea se ha terminado, y de eso está hecho un plan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Por qué un máximo antiguo suele actuar como resistencia?",
+     "o": [
+      "Los exchanges limitan las órdenes por encima",
+      "Los compradores atrapados venden a precio de entrada",
+      "El volumen siempre es más fino por encima",
+      "Los gráficos atraen el precio a números redondos"
+     ]
+    },
+    {
+     "q": "¿Dónde suelen estar los stop-loss de quien compró en soporte?",
+     "o": [
+      "Justo por debajo de la zona de soporte",
+      "Exactamente en su precio de entrada",
+      "Por encima del máximo de swing más reciente",
+      "Repartidos por igual a lo largo del rango"
+     ]
+    },
+    {
+     "q": "Un nivel ha aguantado cuatro veces. Al quinto toque…",
+     "o": [
+      "Tiene que aguantar — cuatro toques lo confirman",
+      "Se convierte automáticamente en línea de tendencia",
+      "Puede fallar sin ningún aviso",
+      "Garantiza un breakout a tu favor"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr5",
+   "t": "El flip: los roles cambian en un nivel",
+   "cards": [
+    {
+     "h": "Una resistencia rota puede volverse soporte",
+     "p": "El precio araña un techo tres veces y por fin cierra por encima. A menudo el siguiente retroceso se detiene en ese techo antiguo en vez de caer directo a través de él. La línea no cambió; cambiaron los papeles. Lo mismo ocurre del revés: un soporte que se rompe se convierte con frecuencia en el nivel que tapa el siguiente rebote."
+    },
+    {
+     "h": "El mecanismo, no la magia",
+     "p": "Piensa en quién está parado en ese precio. Los vendedores que querían salir ahí ya vendieron, así que su oferta desapareció. Los compradores que vieron el breakout y se lo perdieron tienen ahora una segunda oportunidad y están esperando. Los traders que se pusieron short en el nivel saltan por el stop, y cerrar un short significa comprar. Tres grupos distintos, todos comprando en la misma banda."
+    },
+    {
+     "h": "El retest es donde llega la prueba",
+     "p": "Un flip solo se hace visible en el retest, cuando el precio vuelve al nivel roto. Si los compradores lo defienden, tienes un nivel y un precio concreto justo debajo donde estarías equivocado. Si el precio lo atraviesa de vuelta sin frenar, la rotura era ruido. Esperar al retest te cuesta algunos movimientos. También te quita las adivinanzas."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Una resistencia que se rompe con claridad suele convertirse en…",
+     "o": [
+      "Una línea de tendencia alcista",
+      "Irrelevante para siempre",
+      "Soporte en la vuelta hacia abajo",
+      "Una señal de entrada garantizada"
+     ]
+    },
+    {
+     "q": "¿Por qué una resistencia antigua puede sostener el precio después?",
+     "o": [
+      "Los vendedores ya salieron y los shorts recompran",
+      "El software del exchange defiende los máximos",
+      "El propio gráfico recuerda el pico anterior",
+      "El volumen siempre se seca sobre máximos antiguos"
+     ]
+    },
+    {
+     "q": "El precio rompe la resistencia al alza y enseguida la atraviesa de vuelta hacia abajo. Eso sugiere…",
+     "o": [
+      "Que ahí se ha formado soporte, seguro",
+      "Que se ha confirmado una tendencia alcista",
+      "Que el nivel hay que redibujarlo más arriba",
+      "Que el flip falló y la rotura era ruido"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr6",
+   "t": "Breakouts y fakeouts",
+   "cards": [
+    {
+     "h": "Importa el cierre, no el toque",
+     "p": "Una mecha que atraviesa un nivel te dice que el precio lo visitó. Un cierre más allá te dice que el mercado estuvo dispuesto a terminar un período entero ahí fuera. En un gráfico diario esa diferencia es enorme: un pinchazo a través del nivel que cierra otra vez dentro es un rechazo, no un breakout. Decide de antemano el cierre de qué marco temporal aceptarás como rotura."
+    },
+    {
+     "h": "El volumen te dice quién apareció",
+     "p": "Una rotura con un volumen claramente mayor que el de las velas recientes significa participación real: hubo que operar para atravesar el nivel. La misma rotura con volumen fino significa que muy pocos se molestaron, a menudo a una hora tranquila. El volumen nunca te dice la dirección. Te dice cuánto peso darle a lo que acabas de ver."
+    },
+    {
+     "h": "Qué aspecto tiene un fakeout",
+     "p": "La forma se repite. El precio empuja justo más allá del nivel, dispara las órdenes stop que había ahí, no encuentra continuidad y cierra otra vez dentro del rango. Desde fuera fue una mecha. Desde dentro de una posición apalancada fue un stop saltado. Justo por eso el cierre, y no el extremo, es aquello sobre lo que acordaste operar."
+    },
+    {
+     "h": "Que te engañen es normal",
+     "p": "Te van a engañar, una y otra vez, y no hay indicador que lo elimine. Toda la defensa es de procedimiento: el stop se coloca en el mismo momento en que se abre el trade, el tamaño es lo bastante pequeño como para que saltar sea aburrido, y no vuelves a entrar tres veces seguidas para demostrar que tenías razón sobre el nivel."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Qué es prueba más fuerte de una rotura real?",
+     "o": [
+      "Una mecha que asoma más allá del nivel",
+      "Una vela que cierra más allá del nivel",
+      "Cualquier toque suelto del nivel",
+      "Un movimiento intradía de al menos el 1%"
+     ]
+    },
+    {
+     "q": "Un nivel se rompe con un volumen inusualmente bajo. Deberías…",
+     "o": [
+      "Tomártelo a la ligera — participó poca gente",
+      "Darlo por confirmado, el volumen es ruido",
+      "Dar por garantizado un giro",
+      "Doblar la posición para pillar el movimiento"
+     ]
+    },
+    {
+     "q": "La defensa práctica contra los fakeouts es…",
+     "o": [
+      "Encontrar un indicador que los filtre",
+      "Esperar siempre un pico de volumen",
+      "Operar solo en números redondos",
+      "Un stop puesto primero, y tamaño pequeño"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr7",
+   "t": "Rangos: cuando no hay tendencia",
+   "cards": [
+    {
+     "h": "La mayoría de los gráficos no tienen tendencia",
+     "p": "Aleja el zoom en casi cualquier gráfico y encontrarás tramos largos donde el precio simplemente oscila entre un techo y un suelo. Sin máximos más altos, sin mínimos más bajos, solo ida y vuelta. Eso es un rango. No es un mercado roto ni una pausa antes del movimiento de verdad. Es un estado normal, y puede durar mucho tiempo."
+    },
+    {
+     "h": "El rango es el juego contrario",
+     "p": "En tendencia compras fuerza y le das aire a la posición. En un rango haces lo contrario: te interesa la parte de abajo, desconfías de la de arriba, y tu objetivo es el otro lado de la caja en lugar de algo abierto. El mismo gráfico, las mismas habilidades, y reglas completamente invertidas sobre dónde una entrada resulta atractiva."
+    },
+    {
+     "h": "Jugar el juego equivocado sale caro",
+     "p": "Aplica reglas de tendencia dentro de un rango y comprarás cada empuje en el borde de arriba y venderás cada purga en el de abajo — comprar caro y vender barato en bucle, pagando comisiones en cada vuelta. Aplica reglas de rango a un mercado en tendencia y te pasarás la vida poniéndote short contra la fuerza. Nombrar el estado antes de actuar no son deberes opcionales."
+    },
+    {
+     "h": "Los rangos se estrechan antes de acabar",
+     "p": "Observa los swings dentro de la caja. Cuando cada rebote se queda corto del techo anterior y cada caída se detiene por encima del suelo anterior, el rango se está comprimiendo, y las velas suelen hacerse más pequeñas con él. Eso te dice que se está acumulando un movimiento mayor. No te dice absolutamente nada sobre en qué dirección irá."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Un rango es…",
+     "o": [
+      "Un mercado que se ha venido abajo",
+      "El precio oscilando entre un suelo y un techo",
+      "Una pausa breve antes de cada tendencia",
+      "Una línea de tendencia trazada en horizontal"
+     ]
+    },
+    {
+     "q": "Dentro de un rango, a un comprador le interesa más…",
+     "o": [
+      "El borde de arriba, comprando fuerza",
+      "Exactamente el centro de la caja",
+      "La parte baja de la caja",
+      "Justo después de cualquier mecha"
+     ]
+    },
+    {
+     "q": "Los swings dentro del rango se hacen más pequeños. Eso te dice…",
+     "o": [
+      "Que se prepara un breakout al alza",
+      "Que el rango aguantará ya indefinidamente",
+      "Que una rotura a la baja es más probable",
+      "Que se acumula un movimiento mayor, dirección desconocida"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr8",
+   "t": "Dónde pone tu stop el nivel",
+   "cards": [
+    {
+     "h": "Dónde la idea está equivocada",
+     "p": "Crees que el precio aguanta este soporte, así que compras. Esa frase lleva un final incorporado: si el precio cierra por debajo de la zona, lo que creías ya no es cierto. Ese precio no es una preferencia ni un umbral de dolor. Es el punto en el que el propio mercado ha contradicho tu razón para estar en el trade."
+    },
+    {
+     "h": "Más allá de la zona, nunca dentro",
+     "p": "Si tu zona va de $99.00 a $98.80, un stop en $98.90 se sienta dentro del ruido que tú mismo dijiste que existía. Las mechas se lo llevarán mientras tu idea sigue perfectamente viva. Pon el stop por debajo de toda la zona con un poco de margen, y acepta que esa distancia es lo que te cuesta el nivel."
+    },
+    {
+     "h": "La distancia decide tu tamaño",
+     "p": "Ahora la aritmética. Tienes $1,000 y arriesgas el 1%, o sea $10. Entrada $100, stop $98.60, así que la distancia es del 1.4%. El tamaño de la posición es $10 dividido entre 0.014, unos $714 de nocional. Ensancha el stop y la posición tiene que encoger. Primero va el stop y el tamaño sale de él, nunca al revés. Las herramientas de /calculators hacen esa división por ti."
+    },
+    {
+     "h": "No ensanches el stop",
+     "p": "Según el precio se acerca al stop, parece evidente que al nivel solo le hace falta un poco más de aire. Ensancharlo convierte una pérdida pequeña y planeada en una grande y no planeada, y destruye la aritmética que acabas de hacer, porque el tamaño se calculó para esa distancia exacta. Si el nivel está mal, el trade está mal. Asume la pérdida pequeña."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Dónde va el stop-loss respecto a una zona de soporte?",
+     "o": [
+      "A mitad de camino dentro de la zona",
+      "En el propio precio de entrada",
+      "Justo pasado el borde lejano, con margen",
+      "En el número redondo más cercano"
+     ]
+    },
+    {
+     "q": "Cuenta de $1,000, riesgo del 1%, stop a un 1.4%. El tamaño es de unos…",
+     "o": [
+      "$140 de nocional",
+      "$714 de nocional",
+      "$1,400 de nocional",
+      "$10 de nocional"
+     ]
+    },
+    {
+     "q": "Ensanchar el stop cuando el precio se le acerca…",
+     "o": [
+      "Mejora las probabilidades del trade",
+      "Es gestión de riesgo estándar",
+      "Reduce el tamaño de la pérdida",
+      "Rompe la aritmética del tamaño que hiciste"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tr9",
+   "t": "Leer un gráfico en sesenta segundos",
+   "cards": [
+    {
+     "h": "Aleja el zoom antes que nada",
+     "p": "Empieza en el gráfico diario, aunque pienses operar en uno de 15 minutos. El diario te enseña los niveles que mucha gente puede ver de verdad, y la forma de los últimos meses en una sola pantalla. Un nivel que solo existe en un gráfico de 1 minuto es invisible para casi todos y a menudo desaparece dentro de la misma hora."
+    },
+    {
+     "h": "Nombra la tendencia, marca dos niveles",
+     "p": "Di la secuencia en voz alta: máximos más altos y mínimos más altos, el espejo de eso, o ninguna de las dos, que significa rango. Luego marca exactamente dos zonas horizontales — la más cercana por encima del precio y la más cercana por debajo. Dos. Si has dibujado seis líneas, has construido un gráfico que te dará la razón hagas lo que hagas."
+    },
+    {
+     "h": "Termina la frase y para",
+     "p": "Dilo en una línea: esto es una tendencia alcista, el nivel que importa es de $98.80 a $99.00, y si el precio cierra por debajo estoy equivocado. Si no puedes rellenar las tres partes, no tienes un trade, tienes un gráfico. Esa frase tarda unos sesenta segundos y es toda la rutina."
+    },
+    {
+     "h": "La mayoría de los gráficos no merecen opinión",
+     "p": "El resultado honesto de esta rutina, la mayoría de las veces, es nada. Ninguna tendencia clara, ningún nivel cerca, nada concreto en lo que estar equivocado. Eso es un resultado, no un fracaso — la rutina es un filtro, y un filtro que nunca rechaza nada no está filtrando. Cierra el gráfico y mira otro símbolo."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "¿Qué gráfico abres primero?",
+     "o": [
+      "El de 1 minuto, por precisión",
+      "El diario, por los niveles que todos ven",
+      "El de 5 minutos, como compromiso",
+      "El que quedó abierto la última vez"
+     ]
+    },
+    {
+     "q": "¿Cuántas zonas horizontales pide marcar la rutina?",
+     "o": [
+      "Todas las que puedas encontrar",
+      "Seis, una por marco temporal",
+      "Dos — la más cercana arriba y abajo",
+      "Ninguna, bastan las líneas de tendencia"
+     ]
+    },
+    {
+     "q": "La rutina acaba sin tendencia clara y sin ningún nivel cerca. Deberías…",
+     "o": [
+      "Bajar de marco temporal hasta encontrar uno",
+      "Dibujar más líneas hasta que aparezca algo",
+      "Operarlo igual, con un tamaño más pequeño",
+      "Pasar página y mirar otro símbolo"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Abre un gráfico, pon BTC en diario y ejecuta la rutina de sesenta segundos: nombra la tendencia, marca dos zonas, di el precio en el que estarías equivocado. Luego hazlo otra vez con una moneda que no hayas mirado nunca.",
+    "label": "Abrir Gráficos →"
+   }
+  }
+ ]
+}

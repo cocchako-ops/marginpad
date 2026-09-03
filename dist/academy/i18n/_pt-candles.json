@@ -1,0 +1,388 @@
+{
+ "id": "candles",
+ "name": "Padrões de Candles",
+ "sub": "Lendo a batalha, candle por candle",
+ "lessons": [
+  {
+   "id": "c1",
+   "t": "Doji: o mercado dá de ombros",
+   "cards": [
+    {
+     "h": "Quando ninguém vence",
+     "p": "Um doji é um candle que fecha quase exatamente onde abriu — uma longa briga entre compradores e vendedores que terminou empatada. Sozinho significa indecisão. A POSIÇÃO é que lhe dá sentido: um doji depois de uma tendência longa diz que o lado vencedor está ficando sem convicção."
+    },
+    {
+     "h": "Contexto é tudo",
+     "p": "Um doji no meio de um range é ruído — indecisão dentro da indecisão. Um doji numa resistência-chave após cinco candles verdes é sinal de verdade: os compradores que empurravam o preço acabaram de falhar em empurrar mais. Mesmo candle, mensagem completamente diferente."
+    },
+    {
+     "h": "Nunca opere o doji sozinho",
+     "p": "Um doji é um ponto de interrogação, não uma resposta. Ele pergunta: a tendência cansou? A resposta vem do PRÓXIMO candle e do nível em que acontece. Doji na resistência + candle vermelho de confirmação = uma história. Doji sozinho = cara ou coroa com nome chique."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Um doji diz que…",
+     "o": [
+      "Os compradores venceram com folga e seguem no controle",
+      "Os vendedores venceram com folga",
+      "A sessão terminou empatada — indecisão",
+      "O volume foi zero"
+     ]
+    },
+    {
+     "q": "Onde um doji realmente IMPORTA?",
+     "o": [
+      "Em qualquer lugar",
+      "No meio de um range, onde os dois lados seguem hesitando",
+      "Depois de uma tendência longa, num nível-chave",
+      "Só aos domingos"
+     ]
+    },
+    {
+     "q": "O jeito certo de agir num doji é…",
+     "o": [
+      "Entrar imediatamente, antes que a oportunidade suma",
+      "Esperar o próximo candle confirmar no nível",
+      "Dobrar a posição",
+      "Ignorar gráficos para sempre"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "t": "Engolfo: um lado assume",
+   "cards": [
+    {
+     "h": "O candle da tomada de controle",
+     "p": "Um engolfo de alta é um candle vermelho seguido de um verde cujo corpo o engole por completo. Todos que venderam durante aquele candle vermelho agora estão no prejuízo — e a mensagem é direta: os compradores acabaram de assumir o controle nesse preço."
+    },
+    {
+     "h": "Por que o engolfo funciona",
+     "p": "É mecânica de traders presos, não magia. Os vendedores do candle engolido têm posições perdedoras; as saídas deles (recompras) adicionam combustível à nova direção. Quanto maior o candle engolido e mais importante o nível, mais presos — e mais forte o sinal."
+    },
+    {
+     "h": "O checklist de um engolfo de verdade",
+     "p": "Três requisitos: acontece NUM nível (suporte para alta, resistência para baixa), o corpo que engole cobre inteiramente o anterior, e o volume sobe no candle que engole. Faltam os três? Você está olhando dois candles aleatórios."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Um engolfo de alta é…",
+     "o": [
+      "Dois candles verdes do mesmo tamanho fechando no mesmo nível",
+      "Um corpo verde que engole por completo o corpo vermelho anterior",
+      "Um gap para cima",
+      "Um par de dojis"
+     ]
+    },
+    {
+     "q": "A razão mecânica de os engolfos funcionarem é…",
+     "o": [
+      "Sorte",
+      "Traders presos no candle engolido alimentam a reversão ao sair",
+      "Exchanges promovendo a moeda para atrair novos compradores",
+      "Astrologia"
+     ]
+    },
+    {
+     "q": "Um engolfo de verdade precisa de…",
+     "o": [
+      "Quaisquer dois candles",
+      "Nível + cobertura total do corpo + volume subindo",
+      "Um fim de semana",
+      "Confirmação de contas grandes nas redes sociais"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "t": "Martelo e estrela cadente: os pavios de rejeição",
+   "cards": [
+    {
+     "h": "O martelo",
+     "p": "O martelo aparece depois de uma queda: corpo pequeno no topo com um pavio inferior longo — pelo menos o dobro do corpo. A história: os vendedores empurraram o preço bem para baixo durante a sessão, e os compradores devolveram tudo. Aquele pavio longo é um rompimento de baixa fracassado, escrito num só candle."
+    },
+    {
+     "h": "Encontre você mesmo",
+     "prompt": "Um destes três candles é um martelo. Toque nele.",
+     "p": "Lembre: corpo pequeno em cima, pavio inferior longo, depois de uma queda."
+    },
+    {
+     "h": "A estrela cadente — a mesma história, de cabeça para baixo",
+     "p": "A estrela cadente é o espelho no topo de uma alta: pavio SUPERIOR longo, corpo pequeno embaixo. Os compradores tentaram continuar a alta, foram rejeitados com força, e o candle fechou perto da mínima. Na resistência, é um dos setups de short mais limpos que os candles imprimem."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "O pavio inferior longo do martelo mostra…",
+     "o": [
+      "Nada",
+      "Vendedores empurraram e compradores rejeitaram tudo",
+      "Uma parada de negociação acionada pela exchange durante a sessão",
+      "Taxas altas"
+     ]
+    },
+    {
+     "q": "O martelo importa mais…",
+     "o": [
+      "No meio da serra, entre os dois lados",
+      "Depois de uma queda, no suporte",
+      "Na máxima histórica",
+      "Nunca"
+     ]
+    },
+    {
+     "q": "Uma estrela cadente é…",
+     "o": [
+      "Um martelo que aparece no fundo de uma longa queda",
+      "Uma rejeição com pavio superior longo no topo de uma alta",
+      "Um gap",
+      "Um pico de volume"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c4",
+   "t": "Estrela da manhã e estrela da noite",
+   "cards": [
+    {
+     "h": "Três candles, uma reversão",
+     "p": "A estrela da manhã é uma reversão em três atos no fundo: um candle vermelho forte (vendedores no controle), um candle de corpo minúsculo (a briga trava — muitas vezes um doji), e um verde forte fechando fundo dentro do primeiro (compradores assumem). A estrela da noite é o mesmo padrão invertido, no topo."
+    },
+    {
+     "h": "Por que três vencem um",
+     "p": "Um candle sozinho pode ser ruído; três seguidos contando uma história coerente são mais difíceis de falsificar. O candle do meio é a dobradiça — o momento em que o impulso morreu. O terceiro é a prova. Sem o terceiro fechamento forte, você tem uma pausa, não uma reversão."
+    },
+    {
+     "h": "Avaliando a estrela",
+     "p": "Mais forte quando: o candle do meio abre com gap ou fica claramente separado, o terceiro fecha além do meio do primeiro, e o padrão inteiro está num nível do seu mapa. Como sempre — o padrão dá o gatilho e a invalidação (além do extremo da estrela), o nível dá o motivo."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "O candle do meio da estrela da manhã representa…",
+     "o": [
+      "Uma aceleração repentina da direção atual da tendência",
+      "O momento em que o impulso trava — a dobradiça",
+      "Um feriado",
+      "Volume"
+     ]
+    },
+    {
+     "q": "A reversão é confirmada por…",
+     "o": [
+      "Apenas o candle do meio, sem nenhum movimento adicional",
+      "Um terceiro candle forte fechando fundo dentro do primeiro",
+      "Qualquer candle verde",
+      "Notícias"
+     ]
+    },
+    {
+     "q": "O stop de um padrão de estrela fica…",
+     "o": [
+      "Em lugar nenhum",
+      "Além do ponto extremo do padrão",
+      "Na entrada",
+      "Sempre exatamente a 1% do preço de entrada"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c5",
+   "t": "Inside bar e compressão",
+   "cards": [
+    {
+     "h": "O candle que se enrola",
+     "p": "Um inside bar cabe inteiro dentro do alcance do candle anterior — máxima mais baixa, mínima mais alta. O mercado está comprimindo: os ranges encolhem, os dois lados esperam. Você já sabe de m7 o que a compressão promete: expansão. Uma sequência de inside bars é uma mola sendo armada."
+    },
+    {
+     "h": "A jogada do rompimento",
+     "p": "O setup clássico: marque a máxima e a mínima do candle-mãe. O rompimento de um lado com volume é o gatilho; o lado oposto é a invalidação natural. É uma das estruturas de risco-retorno mais apertadas do trading, porque a distância do stop é a largura da mola."
+    },
+    {
+     "h": "A armadilha a respeitar",
+     "p": "Rompimentos de compressão FALHAM com frequência — o primeiro movimento é muitas vezes o falso (você sabe disso pelo spring de a2). Proteja-se: prefira rompimentos na direção da tendência maior, exija volume e nunca persiga um rompimento que volta imediatamente para dentro do candle-mãe — esse retorno É o sinal de falha."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Um inside bar é…",
+     "o": [
+      "Um candle visivelmente maior que o candle anterior",
+      "Um candle inteiramente dentro do alcance do candle anterior",
+      "Um doji",
+      "Um gap"
+     ]
+    },
+    {
+     "q": "O stop natural de um rompimento de inside bar é…",
+     "o": [
+      "O lado oposto do candle-mãe",
+      "Uns 10% fixos de distância do preço do rompimento",
+      "Na entrada",
+      "Não existe"
+     ]
+    },
+    {
+     "q": "Um rompimento que volta imediatamente para dentro do candle-mãe é…",
+     "o": [
+      "Uma confirmação de que o rompimento é genuíno e seguro de perseguir",
+      "O sinal de falha — não o persiga",
+      "Um sinal de compra",
+      "Impossível"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c6",
+   "t": "Histórias de pavios: absorção e exaustão",
+   "cards": [
+    {
+     "h": "Lendo pavios como pegadas",
+     "p": "Pavios são preços rejeitados — e a localização diz quem está sendo rejeitado. Pavios inferiores longos repetidos numa zona significam que alguém está absorvendo a venda ali: cada queda é comprada. Pavios superiores repetidos numa zona significam que há oferta acima e cada alta é vendida."
+    },
+    {
+     "h": "Pavios de exaustão",
+     "p": "Um pavio ENORME depois de um movimento prolongado — muito maior que os candles recentes — costuma marcar exaustão: o arranco final da tendência bateu numa parede de ordens contrárias (é o pavio da cascata de liquidações de m5 de perto). Tendência + volume clímax + pavio gigante = o movimento provavelmente acabou por ora."
+    },
+    {
+     "h": "Aglomerados de pavios desenham seus níveis por você",
+     "p": "Esqueça linhas no olhômetro: zonas onde vários pavios espetam e são rejeitados SÃO o suporte e a resistência do próprio mercado. Trace a zona pelas pontas dos pavios e aplique o kit completo — tendência, nó de volume, posicionamento — naquela zona."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Pavios inferiores longos repetidos numa zona sugerem…",
+     "o": [
+      "Nada",
+      "Alguém está absorvendo a venda — as quedas são compradas",
+      "Vendedores vencendo e prestes a empurrar a zona para baixo",
+      "Um mercado morto"
+     ]
+    },
+    {
+     "q": "Um pavio gigante depois de uma tendência prolongada costuma marcar…",
+     "o": [
+      "Continuação da tendência com ainda mais força",
+      "Exaustão — o clímax bateu numa parede de ordens",
+      "Volume baixo",
+      "Um bug"
+     ]
+    },
+    {
+     "q": "As melhores zonas de suporte/resistência são traçadas a partir de…",
+     "o": [
+      "Apenas números redondos, porque todos olham para eles",
+      "Aglomerados de pavios de rejeição",
+      "Notícias de ontem",
+      "Apenas médias móveis"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c7",
+   "t": "Padrões mentem: o trade da falha",
+   "cards": [
+    {
+     "h": "Todo padrão tem taxa de falha",
+     "p": "Martelos são atropelados. Engolfos são engolidos. No ambiente de caça a stops da cripto (a1), padrões de livro falham CONSTANTEMENTE — porque todos os veem, e ordens visíveis são comida. Aceitar isso é a diferença entre usuário de padrões e vítima de padrões."
+    },
+    {
+     "h": "O padrão que falhou É um padrão",
+     "p": "Eis o segredo profissional: um sinal FALHO é muitas vezes um sinal melhor. Um martelo de alta no suporte que rompe para baixo significa que todo comprador do martelo está preso — os stops deles alimentam a queda. Operar a falha (com a multidão presa como combustível) é muitas vezes mais limpo que operar o livro."
+    },
+    {
+     "h": "Posicione-se para as duas histórias",
+     "p": "Regra prática: saiba de antemão o que invalida o padrão e como seria o trade da falha. Se a mínima do martelo romper, você só sai — ou vira a mão? Decidir isso antes da entrada transforma o padrão de uma prece num plano com dois ramos."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Padrões de livro falham com frequência na cripto porque…",
+     "o": [
+      "Os gráficos da maioria das exchanges vivem quebrados",
+      "Todos os veem — ordens visíveis viram liquidez para caçar",
+      "Padrões são ilegais",
+      "Taxas"
+     ]
+    },
+    {
+     "q": "Um padrão de alta que falhou vira, muitas vezes…",
+     "o": [
+      "Nada",
+      "Um sinal forte de baixa — compradores presos alimentam o movimento",
+      "Um sinal de compra ainda mais forte para os touros pacientes",
+      "Um doji"
+     ]
+    },
+    {
+     "q": "Antes de entrar num trade por padrão, você deve saber…",
+     "o": [
+      "Só o alvo de lucro, já que o padrão confirma a direção",
+      "O que o invalida e como é o trade da falha",
+      "O ano de fundação da exchange",
+      "Nada"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c8",
+   "t": "Colocando os candles no lugar deles",
+   "cards": [
+    {
+     "h": "Candles são os últimos 10%",
+     "p": "Um padrão de candle é um GATILHO, nunca um motivo. O motivo vem de tudo o mais que você aprendeu: tendência (m1), nível (m1/a4), posicionamento (m4), regime (a7). O candle só responde à última pergunta: AGORA é a hora de agir nesse nível?"
+    },
+    {
+     "h": "A sequência completa",
+     "p": "De cima para baixo: a tendência diária permite a direção → o 4H mostra um setup num nível → o posicionamento não está lotado contra você → SÓ ENTÃO você aproxima e espera o candle — o engolfo, o martelo, a estrela — como gatilho de entrada com invalidação embutida. Candles sem esse conjunto são aposta com passos extras."
+    },
+    {
+     "h": "Treine o olho, depois confie no processo",
+     "p": "Reconhecer padrões é habilidade que cresce com repetições — e o paper trading dá repetições ilimitadas de graça. Ache um padrão, escreva o plano de dois ramos, execute, registre no diário. Cem padrões registrados depois, você SABERÁ quais pagam você — no seu mercado, no seu timeframe."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Num trade completo, um padrão de candle é…",
+     "o": [
+      "A estratégia inteira",
+      "O gatilho final — os últimos 10% sobre o resto",
+      "Decoração opcional para deixar o print bonito",
+      "O stop-loss"
+     ]
+    },
+    {
+     "q": "A sequência correta termina no candle porque…",
+     "o": [
+      "Candles preveem tudo que acontece nos timeframes maiores",
+      "Ele cronometra a entrada num nível que já tinha motivos",
+      "É o mais bonito",
+      "O volume manda"
+     ]
+    },
+    {
+     "q": "O jeito de aprender quais padrões pagam VOCÊ é…",
+     "o": [
+      "Confiar em influencers",
+      "Cem repetições registradas no paper trading + o diário",
+      "Um trade de sorte",
+      "Decorar os nomes e formas de todos os padrões conhecidos"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Vá caçar padrões: abra um gráfico, encontre um engolfo ou martelo num nível de verdade e registre o plano de dois ramos como paper trade.",
+    "label": "Abrir Paper Trade →"
+   }
+  }
+ ]
+}

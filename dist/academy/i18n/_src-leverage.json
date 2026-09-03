@@ -1,0 +1,648 @@
+{
+ "id": "leverage",
+ "name": "Leverage & Liquidation",
+ "sub": "The machinery that wipes accounts",
+ "color": "#ffcf3f",
+ "icon": "bolt",
+ "lessons": [
+  {
+   "id": "l1",
+   "t": "What is a futures contract?",
+   "cards": [
+    {
+     "h": "Trading price without owning coins",
+     "p": "A futures contract is an agreement that tracks a coin's price. You never own the Bitcoin — you hold a position that gains or loses exactly as the price moves. Crypto's favourite version is the perpetual future (perp), which has no expiry date: you can hold it as long as your margin survives."
+    },
+    {
+     "h": "Long and short",
+     "v": "longshort",
+     "p": "With futures you can profit in both directions: going long means you gain when price rises; going short means you gain when price falls. Tap the buttons below and watch the same price move flip from profit to loss."
+    },
+    {
+     "h": "Why perps dominate crypto",
+     "p": "Perpetual futures are the most traded product in crypto — daily perp volume dwarfs spot. They are popular for exactly the two features that make them dangerous: leverage, and the ability to short. Everything in this course exists because of what you will learn in the next two lessons."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "When you buy a perpetual future, you own…",
+     "o": [
+      "The actual coins",
+      "A position that tracks the price — no coins",
+      "A share of the exchange",
+      "A wallet"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A short position profits when…",
+     "o": [
+      "Price rises",
+      "Price falls",
+      "Price stays flat",
+      "Volume rises"
+     ],
+     "a": 1
+    },
+    {
+     "q": "What makes a perpetual future perpetual?",
+     "o": [
+      "It never loses money",
+      "It has no expiry date",
+      "It has no fees",
+      "It only goes up"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "l2",
+   "t": "Leverage: trading with borrowed size",
+   "cards": [
+    {
+     "h": "Margin and multiplier",
+     "v": "notional",
+     "p": "Leverage lets you control a position bigger than your money. Put down $100 of margin at 10× leverage and you control a $1,000 position. Every 1% the price moves, your position gains or loses $10 — which is 10% of YOUR money. The multiplier applies to losses exactly as it does to gains."
+    },
+    {
+     "h": "Feel it: drag the leverage",
+     "act": {
+      "kind": "lev",
+      "goal": "wipe1",
+      "prompt": "Drag the slider until a routine 1% move against you would wipe 100% of your margin."
+     },
+     "p": "The red marker is your liquidation. Watch what leverage does to it."
+    },
+    {
+     "h": "The honest math of 100×",
+     "p": "At 100× leverage, a 1% move against you wipes 100% of your margin. Bitcoin moves 1% routinely — several times a day. That is not a market crash; it is background noise. High leverage does not make a strategy better, it just compresses the time until a normal wiggle takes you out."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "You open $100 at 10× leverage. Price moves 1% in your favour. Your profit is about…",
+     "o": [
+      "$1 (1%)",
+      "$10 (10% of your margin)",
+      "$100",
+      "Nothing until you close"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The notional of a $100 position at 20× is…",
+     "o": [
+      "$100",
+      "$20",
+      "$2,000",
+      "$100 plus fees"
+     ],
+     "a": 2
+    },
+    {
+     "q": "At 100× leverage, what price move against you erases your whole margin?",
+     "o": [
+      "About 1%",
+      "About 10%",
+      "About 50%",
+      "100%"
+     ],
+     "a": 0
+    }
+   ],
+   "try": {
+    "p": "Open the position size calculator and see how notional and risk change as you slide leverage from 5× to 100×.",
+    "label": "Position Size Calculator →",
+    "href": "/#size"
+   }
+  },
+  {
+   "id": "l3",
+   "t": "Liquidation: the point of no return",
+   "cards": [
+    {
+     "h": "What liquidation is",
+     "v": "liqladder",
+     "p": "When a leveraged position loses almost all its margin, the exchange force-closes it to protect itself — that is liquidation. Your position is gone, your margin is gone, and no recovery is possible even if price bounces one second later. It is the single most important price on your screen."
+    },
+    {
+     "h": "Your turn: make it safe",
+     "act": {
+      "kind": "lev",
+      "goal": "safe10",
+      "prompt": "Now do the opposite: drag the leverage DOWN until your liquidation sits at least 10% away from entry."
+     },
+     "p": "This is the exact decision you will make on every real trade."
+    },
+    {
+     "h": "Why it will bounce back does not apply",
+     "p": "A spot holder can ride a 30% dip and wait years. A liquidated futures trader cannot — the position no longer exists. This asymmetry is THE difference between spot and leverage: spot punishes patience-free traders slowly, leverage executes them instantly."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "After liquidation, if the price immediately recovers, you…",
+     "o": [
+      "Get your position back",
+      "Get half your margin back",
+      "Get nothing — the position is gone",
+      "Owe the exchange money"
+     ],
+     "a": 2
+    },
+    {
+     "q": "At roughly what adverse move does a 50× position liquidate?",
+     "o": [
+      "About 50%",
+      "About 25%",
+      "About 2%",
+      "About 0.1%"
+     ],
+     "a": 2
+    },
+    {
+     "q": "The first thing to know before opening any leveraged trade is…",
+     "o": [
+      "Today's news",
+      "Your exact liquidation price",
+      "What influencers say",
+      "The exchange's founding year"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Compute a real liquidation price: entry, leverage, side — see exactly where the position dies.",
+    "label": "Liquidation Calculator →",
+    "href": "/#liq"
+   }
+  },
+  {
+   "id": "l4",
+   "t": "Longs, shorts and how P&L actually works",
+   "cards": [
+    {
+     "h": "The P&L formula in plain words",
+     "v": "pnlmeter",
+     "p": "Your profit or loss = position size × the percentage the price moved. ROE — return on equity — is that P&L measured against your margin. Drag the price move below and watch both numbers react at 10× leverage on a $100 margin."
+    },
+    {
+     "h": "Shorting is not evil, it is a tool",
+     "p": "Shorting — profiting from falls — feels unnatural at first. But markets fall faster than they rise (down the elevator, up the stairs), and a trader who can only long is blind in half the market. In a paper account, practise both until neither feels special."
+    },
+    {
+     "h": "Fees and funding nibble constantly",
+     "p": "Every open and close pays a fee on the notional, and perpetuals exchange periodic funding payments between longs and shorts (next lesson). At high leverage these small costs compound into a meaningful headwind — another quiet reason overtraders lose."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "You are long $1,000 notional and price rises 3%. Your P&L is…",
+     "o": [
+      "+$3",
+      "+$30",
+      "+$300",
+      "Depends on the coin"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Down the elevator, up the stairs means…",
+     "o": [
+      "Markets fall faster than they rise",
+      "Markets rise faster than they fall",
+      "Price always returns to entry",
+      "Shorting is banned"
+     ],
+     "a": 0
+    },
+    {
+     "q": "Trading fees on futures are charged on…",
+     "o": [
+      "Your margin only",
+      "The full notional position size",
+      "Your profit only",
+      "Nothing — futures are free"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "l5",
+   "t": "Funding: the invisible cash flow",
+   "cards": [
+    {
+     "h": "How perps stay glued to the real price",
+     "v": "funding",
+     "p": "With no expiry, a perpetual could drift away from the actual coin price. Funding prevents that: every few hours, one side pays the other a small percentage. Toggle below: when perps trade ABOVE spot (crowd is long), longs pay shorts; BELOW spot, shorts pay longs."
+    },
+    {
+     "h": "Funding as a crowd thermometer",
+     "p": "Extreme positive funding means the crowd is heavily long AND paying for the privilege — historically a warning sign, because crowded trades unwind violently. Extreme negative funding marks crowded shorts, fuel for a short squeeze."
+    },
+    {
+     "h": "It compounds",
+     "p": "Funding of 0.01% per 8 hours sounds like nothing — but that is about 11% per year on your notional, and at 10× leverage it is a triple-digit annualised drag on margin. Position holders who ignore funding find their P&L quietly leaking."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "When the perp trades above the spot price, who pays funding?",
+     "o": [
+      "Shorts pay longs",
+      "Longs pay shorts",
+      "The exchange pays everyone",
+      "Nobody"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Extremely positive funding usually signals…",
+     "o": [
+      "A guaranteed rally",
+      "A heavily crowded long side — squeeze risk",
+      "Low volatility ahead",
+      "An exchange outage"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Why does small funding matter at high leverage?",
+     "o": [
+      "It doesn't",
+      "It compounds into a large annualised drag on your margin",
+      "It only applies to shorts",
+      "It is refunded at close"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Look at live funding across 160+ pairs — find the most extreme rate right now.",
+    "label": "Funding Rates →",
+    "href": "/funding/"
+   }
+  },
+  {
+   "id": "l6",
+   "t": "Order types: market, limit, stop",
+   "cards": [
+    {
+     "h": "Three tools, three jobs",
+     "v": "orderbook",
+     "p": "A market order fills instantly at whatever the book offers — you pay the spread and any slippage. A limit order names your price and waits. A stop order triggers when price crosses a level. The picture below shows all three living on the order book."
+    },
+    {
+     "h": "Market: speed for a price. Limit: price for patience.",
+     "p": "Use market orders when getting in or out RIGHT NOW matters more than the exact price — knowing slippage is worst during violent moves. Professional entries are mostly limits: you may never get filled, but when you do it is at your price or better, usually with lower fees."
+    },
+    {
+     "h": "Stops: automation that saves accounts",
+     "p": "The stop order is the foundation of the stop-loss (Course 3). It executes your plan when you are asleep, at work, or emotionally compromised. The trader who watches the chart instead is the trader who freezes at the worst moment."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "The guaranteed-fill, price-uncertain order is…",
+     "o": [
+      "Limit",
+      "Market",
+      "Stop",
+      "Iceberg"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A limit order guarantees…",
+     "o": [
+      "It will definitely fill",
+      "Your price or better, IF it fills",
+      "No fees",
+      "Instant execution"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The main purpose of a stop order is…",
+     "o": [
+      "Getting a better entry price",
+      "Executing your exit plan automatically when a level breaks",
+      "Avoiding all losses",
+      "Doubling the position"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "l7",
+   "t": "Isolated vs cross margin",
+   "cards": [
+    {
+     "h": "Two ways to back a position",
+     "v": "margins",
+     "p": "Isolated margin walls off a fixed amount for one position — if it liquidates, you lose only that wall. Cross margin lets your ENTIRE futures balance back every position — more room before liquidation, but a blowup can take the whole account with it."
+    },
+    {
+     "h": "When each makes sense",
+     "p": "Isolated is the beginner default and the honest choice for risky trades: the damage is predefined. Cross suits hedged books and experienced traders who actively manage margin. Using cross to survive a bad trade longer is not a strategy — it is a bigger funeral."
+    },
+    {
+     "h": "Check before you click",
+     "p": "Exchanges default differently, and the margin mode changes your liquidation price dramatically. It is part of the pre-trade ritual: side, size, leverage, margin mode, liquidation price. Every time, no exceptions."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "In isolated margin, a liquidation costs you…",
+     "o": [
+      "Your whole account",
+      "Only the margin walled off for that position",
+      "Nothing",
+      "Your other positions"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Cross margin means…",
+     "o": [
+      "Only one position allowed",
+      "Your entire balance backs every position",
+      "No liquidations",
+      "Lower fees"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Using cross margin to delay a losing trade is…",
+     "o": [
+      "Professional risk management",
+      "A bigger funeral waiting — not a strategy",
+      "Required by exchanges",
+      "Free"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "l8",
+   "t": "Mark price vs last price",
+   "cards": [
+    {
+     "h": "Two prices on the same screen",
+     "p": "Last price is the most recent trade on YOUR exchange. Mark price is a fair-value blend of several exchanges plus the spot index. They differ by pennies in calm markets — and meaningfully in violent ones or on thin venues."
+    },
+    {
+     "h": "Liquidations use mark price",
+     "p": "Exchanges liquidate on MARK, not last. This protects you: a single manipulated wick on one venue cannot liquidate positions everywhere. It also explains the classic confusion — you can be liquidated when the chart wick on your screen never touched your level, because mark got there."
+    },
+    {
+     "h": "Which one to watch",
+     "p": "Trade decisions: last price (that is where your orders fill). Survival math: mark price (that is what liquidation and unrealized P&L use). Serious platforms show both — learn where yours displays mark, and set alarms on it, not on the candle wick."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Liquidations are triggered by…",
+     "o": [
+      "Last traded price on your exchange",
+      "Mark price — a multi-exchange fair value",
+      "Your entry price",
+      "The daily open"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Why do exchanges use mark price for liquidations?",
+     "o": [
+      "It is cheaper",
+      "One venue's manipulated wick cannot liquidate everyone",
+      "It is faster",
+      "Regulators require it"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Your position was liquidated but the chart wick never touched your liq level. Most likely…",
+     "o": [
+      "The exchange stole it",
+      "Mark price reached the level even though last price did not",
+      "A bug",
+      "Impossible"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "l9",
+   "t": "Maintenance margin: the real liq math",
+   "cards": [
+    {
+     "h": "Why liq is not exactly 100 ÷ leverage",
+     "p": "The exchange requires a safety buffer — maintenance margin (often around 0.5% of notional) — kept aside at all times. Liquidation fires when your equity falls TO that buffer, not to zero. So a 10x long liquidates around −9.5%, not exactly −10%."
+    },
+    {
+     "h": "Bigger positions, bigger buffers",
+     "p": "Maintenance margin is tiered: enormous positions require a higher percentage, because force-closing them moves the market. This is one reason whale liquidation levels sit closer to entry than the simple formula suggests."
+    },
+    {
+     "h": "Partial liquidation",
+     "p": "On large positions many exchanges liquidate in slices — closing part of the position to bring margin back above maintenance, rather than nuking it all at once. Helpful, but do not rely on it: by the time partial liquidation is saving you, the trade has already failed."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "A 10x long liquidates at roughly…",
+     "o": [
+      "Exactly −10%",
+      "Around −9.5% — maintenance margin fires first",
+      "−5%",
+      "−20%"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Maintenance margin is…",
+     "o": [
+      "A one-time fee",
+      "A safety buffer the exchange requires at all times",
+      "Optional",
+      "Your profit target"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Partial liquidation means…",
+     "o": [
+      "You lose half your account",
+      "The exchange closes slices of a big position to restore margin",
+      "A discount on fees",
+      "Liquidation on weekends only"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "l10",
+   "t": "Managing a live position",
+   "cards": [
+    {
+     "h": "The trade begins after the entry",
+     "p": "Beginners obsess over entries; professionals manage what happens next. A live position is a series of decisions: is the thesis still valid, has the invalidation moved, is the size still right? Managing is not fiddling — it is executing the plan you wrote before entry."
+    },
+    {
+     "h": "Partial close: paying yourself",
+     "p": "Closing part of a winner at the first target banks real profit while the rest rides. It converts a paper win into a certain one, calms the mind, and keeps you in the trend. The classic structure: take a portion at 1R, move the stop, let the remainder work."
+    },
+    {
+     "h": "Breakeven stops: free trades, used carefully",
+     "p": "After price moves meaningfully in your favour, moving the stop to entry makes the trade risk-free — psychologically priceless. Do it too early and normal noise stops you out of a good trade. Give it room: breakeven AFTER the first target, not the first green minute."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "A partial close at the first target…",
+     "o": [
+      "Is admitting weakness",
+      "Banks certain profit while the rest rides",
+      "Doubles your fees pointlessly",
+      "Cancels the stop-loss"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Moving your stop to breakeven makes the trade…",
+     "o": [
+      "Risk-free (excluding gaps) — but do it too early and noise stops you out",
+      "Guaranteed profitable",
+      "Illegal",
+      "More leveraged"
+     ],
+     "a": 0
+    },
+    {
+     "q": "The right time to manage a position is…",
+     "o": [
+      "Never — set and forget always",
+      "According to the plan written BEFORE entry",
+      "Whenever it feels scary",
+      "Every 30 seconds"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "l11",
+   "t": "The leverage myths",
+   "cards": [
+    {
+     "h": "Myth: higher leverage = higher profit",
+     "v": "notional",
+     "p": "Profit comes from position SIZE times price move. Leverage only decides how much margin you post for that size. A $1,000 position makes the same $30 on a 3% move whether it uses 2x or 50x — the 50x version just liquidates 25 times sooner."
+    },
+    {
+     "h": "Myth: professionals use max leverage",
+     "p": "Professional desks routinely run single-digit effective leverage. The 100x button exists because it is profitable for exchanges, not for users. High leverage is a liquidity-efficiency tool for hedgers and scalpers measured in seconds — not a wealth machine."
+    },
+    {
+     "h": "The honest use of leverage",
+     "p": "Leverage lets you keep less capital on a (hackable, freezable) exchange for the same exposure — that is capital efficiency. Used with tiny position sizes it is legitimate. Used to maximise size it converts normal volatility into certain ruin, on a timer."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Two traders hold the same $1,000 position; one at 2x, one at 50x. A 3% favourable move pays…",
+     "o": [
+      "The 50x trader 25 times more",
+      "Both the same ~$30 — leverage did not change the size",
+      "The 2x trader more",
+      "Nothing at 2x"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The 100x option exists mainly because…",
+     "o": [
+      "Pros demand it",
+      "It is profitable for exchanges",
+      "It is safer",
+      "Regulators require it"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The legitimate benefit of leverage is…",
+     "o": [
+      "Bigger guaranteed profits",
+      "Keeping less capital on-exchange for the same exposure",
+      "Avoiding fees",
+      "Impressing others"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "l12",
+   "t": "Reading a futures ticket",
+   "cards": [
+    {
+     "h": "Every number, decoded",
+     "v": "liqladder",
+     "p": "A position ticket shows: side and leverage (LONG 10x), entry price, mark price, size or notional, margin, liquidation price, unrealized P&L and ROE. You now know every one of these. If any number on a live ticket confuses you, do not add size — decode it first."
+    },
+    {
+     "h": "The two numbers that matter most",
+     "p": "Liquidation price (how far is death?) and position size (how much do I lose per 1% move?). P&L and ROE are outputs — they follow from the two inputs. Traders who watch only the green/red number manage feelings; traders who watch liq distance and size manage risk."
+    },
+    {
+     "h": "Graduation exercise",
+     "p": "Open a paper position and read the whole ticket out loud: side, leverage, entry, size, margin, liquidation and its distance, stop, target. When that takes you ten seconds and zero confusion, Course 2 has done its job."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "The two most important numbers on a live ticket are…",
+     "o": [
+      "P&L and ROE",
+      "Liquidation distance and position size",
+      "Entry time and coin logo",
+      "Fees and funding"
+     ],
+     "a": 1
+    },
+    {
+     "q": "ROE on a ticket measures P&L against…",
+     "o": [
+      "Notional",
+      "Your margin",
+      "The coin price",
+      "Daily volume"
+     ],
+     "a": 1
+    },
+    {
+     "q": "If a number on your ticket confuses you, you should…",
+     "o": [
+      "Add size anyway",
+      "Decode it before touching the position",
+      "Close your eyes",
+      "Ask in chat and keep trading"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Open a paper position and read every field on the ticket — entry, size, margin, liq, distance. Ten seconds, zero confusion.",
+    "label": "Paper Trade →",
+    "href": "/paper-trade"
+   }
+  }
+ ]
+}

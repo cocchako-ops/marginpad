@@ -1,0 +1,424 @@
+{
+ "id": "candles",
+ "name": "Candlestick Patterns",
+ "sub": "Reading the battle, candle by candle",
+ "color": "#ff7ab8",
+ "icon": "candle",
+ "lessons": [
+  {
+   "id": "c1",
+   "t": "Doji: the market shrugs",
+   "cards": [
+    {
+     "h": "When nobody wins",
+     "v": "vdoji",
+     "p": "A doji is a candle that closes almost exactly where it opened — a long fight between buyers and sellers that ended in a draw. Alone it means indecision. Its POSITION gives it meaning: a doji after a long trend says the winning side is running out of conviction."
+    },
+    {
+     "h": "Context is everything",
+     "p": "A doji in the middle of a range is noise — indecision inside indecision. A doji at a key resistance after five green candles is a real signal: the buyers who pushed price up just failed to push further. Same candle, completely different message."
+    },
+    {
+     "h": "Never trade the doji alone",
+     "p": "A doji is a question mark, not an answer. It asks: is the trend tired? The answer comes from the NEXT candle and the level it happens at. Doji at resistance + red confirmation candle = a story. Doji alone = a coin flip with a fancy name."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "A doji tells you…",
+     "o": [
+      "Buyers won decisively",
+      "Sellers won decisively",
+      "The session ended in a draw — indecision",
+      "Volume was zero"
+     ],
+     "a": 2
+    },
+    {
+     "q": "Where does a doji actually MATTER?",
+     "o": [
+      "Anywhere",
+      "In the middle of a range",
+      "After a long trend at a key level",
+      "Only on Sundays"
+     ],
+     "a": 2
+    },
+    {
+     "q": "The right way to act on a doji is…",
+     "o": [
+      "Enter immediately",
+      "Wait for the next candle to confirm at the level",
+      "Double your position",
+      "Ignore charts forever"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "t": "Engulfing: one side takes over",
+   "cards": [
+    {
+     "h": "The takeover candle",
+     "v": "vengulf",
+     "p": "A bullish engulfing pattern is a red candle followed by a green one whose body completely swallows it. Everyone who sold during that red candle is now underwater — and the message is blunt: buyers just took control at this price."
+    },
+    {
+     "h": "Why the engulf works",
+     "p": "It is trapped-trader mechanics, not magic. The sellers from the engulfed candle have losing positions; their exits (buy-backs) add fuel to the new direction. The bigger the engulfed candle and the more important the level, the more trapped traders — and the stronger the signal."
+    },
+    {
+     "h": "The checklist for a real engulf",
+     "p": "Three requirements: it happens AT a level (support for bullish, resistance for bearish), the engulfing body fully covers the previous body, and volume rises on the engulfing candle. Missing all three? You are looking at two random candles."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "A bullish engulfing is…",
+     "o": [
+      "Two green candles",
+      "A green body that completely swallows the previous red body",
+      "A gap up",
+      "A doji pair"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The mechanical reason engulfing patterns work is…",
+     "o": [
+      "Luck",
+      "Trapped traders from the engulfed candle fuel the reversal as they exit",
+      "Exchange promotions",
+      "Astrology"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A real engulf needs…",
+     "o": [
+      "Any two candles",
+      "Level + full body coverage + rising volume",
+      "A weekend",
+      "Twitter confirmation"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "t": "Hammer and shooting star: the rejection wicks",
+   "cards": [
+    {
+     "h": "The hammer",
+     "v": "vhammer",
+     "p": "A hammer appears after a decline: a small body at the top with a long lower wick — at least twice the body. The story: sellers pushed price far down during the session, and buyers slammed it all the way back. That long wick is a failed breakdown, written in one candle."
+    },
+    {
+     "h": "Find it yourself",
+     "act": {
+      "kind": "tap",
+      "viz": "taphammer",
+      "prompt": "One of these three candles is a hammer. Tap it."
+     },
+     "p": "Remember: small body on top, long lower wick, after a decline."
+    },
+    {
+     "h": "The shooting star — the same story, upside down",
+     "p": "A shooting star is the mirror image at the top of a rally: long UPPER wick, small body at the bottom. Buyers tried to continue the rally, got rejected hard, and the candle closed near its low. At resistance, it is one of the cleanest short setups candles can print."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "A hammer's long lower wick shows…",
+     "o": [
+      "Nothing",
+      "Sellers pushed down and buyers rejected the entire move",
+      "A trading halt",
+      "High fees"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A hammer matters most…",
+     "o": [
+      "In the middle of chop",
+      "After a decline, at support",
+      "At all-time highs",
+      "Never"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A shooting star is…",
+     "o": [
+      "A hammer at the bottom",
+      "A long upper wick rejection at the top of a rally",
+      "A gap",
+      "A volume spike"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "c4",
+   "t": "Morning star and evening star",
+   "cards": [
+    {
+     "h": "Three candles, one reversal",
+     "v": "vstar",
+     "p": "The morning star is a three-act reversal at the bottom: a strong red candle (sellers in control), a tiny-bodied candle (the fight stalls — often a doji), then a strong green candle closing deep into the first one (buyers take over). The evening star is the same pattern flipped, at the top."
+    },
+    {
+     "h": "Why three beats one",
+     "p": "A single candle can be noise; three consecutive candles telling one coherent story is harder to fake. The middle candle is the hinge — the moment momentum died. The third candle is the proof. Without the strong third close, you have a stall, not a reversal."
+    },
+    {
+     "h": "Grading the star",
+     "p": "Stronger when: the middle candle gaps or stands clearly apart, the third candle closes past the midpoint of the first, and the whole pattern sits at a level from your map. As always — the pattern gives the trigger and the invalidation (beyond the star's extreme), the level gives the reason."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "The morning star's middle candle represents…",
+     "o": [
+      "Acceleration",
+      "The moment momentum stalls — the hinge",
+      "A holiday",
+      "Volume"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The reversal is confirmed by…",
+     "o": [
+      "The middle candle alone",
+      "A strong third candle closing deep into the first",
+      "Any green candle",
+      "News"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The stop for a star pattern belongs…",
+     "o": [
+      "Nowhere",
+      "Beyond the pattern's extreme point",
+      "At the entry",
+      "1% away always"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "c5",
+   "t": "Inside bars and compression",
+   "cards": [
+    {
+     "h": "The coiling candle",
+     "p": "An inside bar sits entirely within the range of the previous candle — lower high, higher low. The market is compressing: ranges shrink, both sides wait. You already know from m7 what compression promises: expansion. A cluster of inside bars is a spring being wound."
+    },
+    {
+     "h": "The breakout play",
+     "p": "The classic setup: mark the mother bar's high and low. A break of one side with volume is the trigger; the opposite side is the natural invalidation. It is one of the tightest risk-to-reward structures in trading, because the stop distance is the coil's width."
+    },
+    {
+     "h": "The trap to respect",
+     "p": "Compression breaks FAIL often — the first move is frequently the fake (you know this from a2's spring). Protect against it: prefer breaks in the higher-timeframe trend direction, demand volume, and never chase a break that instantly returns inside the mother bar — that reentry IS the failure signal."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "An inside bar is…",
+     "o": [
+      "A candle bigger than the last",
+      "A candle entirely within the previous candle's range",
+      "A doji",
+      "A gap"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The natural stop for an inside-bar breakout is…",
+     "o": [
+      "The opposite side of the mother bar",
+      "10% away",
+      "At the entry",
+      "There is none"
+     ],
+     "a": 0
+    },
+    {
+     "q": "A break that instantly returns inside the mother bar is…",
+     "o": [
+      "A confirmation",
+      "The failure signal — do not chase it",
+      "A buy signal",
+      "Impossible"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "c6",
+   "t": "Wick stories: absorption and exhaustion",
+   "cards": [
+    {
+     "h": "Reading wicks like footprints",
+     "p": "Wicks are rejected prices — and their location tells you who is being rejected. Repeated long lower wicks at one zone mean someone is absorbing the selling there: every dip gets bought. Repeated upper wicks at a zone mean supply sits above and every rally gets sold."
+    },
+    {
+     "h": "Exhaustion wicks",
+     "p": "A HUGE wick after an extended move — much larger than recent candles — often marks exhaustion: the final burst of the trend met a wall of opposite orders (this is the liquidation-cascade wick from m5 seen up close). Trend + climax volume + giant wick = the move is likely done for now."
+    },
+    {
+     "h": "Wick clusters draw your levels for you",
+     "p": "Forget drawing lines by feel: zones where multiple wicks poke and reject ARE the market's own support and resistance. Draw the zone across the wick tips, then apply the full toolkit — trend, volume node, positioning — at that zone."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Repeated long lower wicks at one zone suggest…",
+     "o": [
+      "Nothing",
+      "Someone is absorbing the selling — dips get bought",
+      "Sellers are winning",
+      "A dead market"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A giant wick after an extended trend often marks…",
+     "o": [
+      "Continuation",
+      "Exhaustion — the climax met a wall of orders",
+      "Low volume",
+      "A bug"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The best support/resistance zones are drawn from…",
+     "o": [
+      "Round numbers only",
+      "Clusters of rejection wicks",
+      "Yesterday's news",
+      "Moving averages only"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "c7",
+   "t": "Patterns lie: the failure trade",
+   "cards": [
+    {
+     "h": "Every pattern has a failure rate",
+     "p": "Hammers get run over. Engulfs get engulfed. In crypto's stop-hunting environment (a1), textbook patterns fail CONSTANTLY — because everyone sees them, and visible orders are food. Accepting this is the difference between a pattern user and a pattern victim."
+    },
+    {
+     "h": "The failed pattern IS a pattern",
+     "p": "Here is the professional secret: a FAILED signal is often a better signal. A bullish hammer at support that breaks down means every hammer-buyer is now trapped — their stops fuel the move down. Trading the failure (with the trapped crowd as fuel) is often cleaner than trading the textbook."
+    },
+    {
+     "h": "Position for both stories",
+     "p": "Practical rule: know in advance what invalidates the pattern, and what the failure trade would look like. If the hammer low breaks, do you exit only — or flip? Deciding this before entry turns a pattern from a prayer into a plan with two branches."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Textbook patterns in crypto fail often because…",
+     "o": [
+      "Charts are broken",
+      "Everyone sees them — visible orders become liquidity to hunt",
+      "Patterns are illegal",
+      "Fees"
+     ],
+     "a": 1
+    },
+    {
+     "q": "A failed bullish pattern often becomes…",
+     "o": [
+      "Nothing",
+      "A strong bearish signal — trapped buyers fuel the move",
+      "A buy signal",
+      "A doji"
+     ],
+     "a": 1
+    },
+    {
+     "q": "Before entering a pattern trade you should know…",
+     "o": [
+      "Only the target",
+      "What invalidates it and what the failure trade looks like",
+      "The exchange's founding year",
+      "Nothing"
+     ],
+     "a": 1
+    }
+   ]
+  },
+  {
+   "id": "c8",
+   "t": "Putting candles in their place",
+   "cards": [
+    {
+     "h": "Candles are the last 10%",
+     "v": "checklist",
+     "p": "A candle pattern is a TRIGGER, never a reason. The reason comes from everything else you have learned: trend (m1), level (m1/a4), positioning (m4), regime (a7). The candle only answers the final question: is NOW the moment to act at this level?"
+    },
+    {
+     "h": "The full sequence",
+     "p": "Top-down: daily trend allows the direction → 4H shows a setup at a level → positioning is not crowded against you → THEN you zoom in and wait for the candle — the engulf, the hammer, the star — as your entry trigger with a built-in invalidation. Candles without that stack are gambling with extra steps."
+    },
+    {
+     "h": "Train the eye, then trust the process",
+     "p": "Pattern recognition is a skill that builds with reps — and paper trading gives you unlimited reps for free. Spot a pattern, write the two-branch plan, execute, journal it. A hundred logged patterns later, you will KNOW which ones pay you — in your market, on your timeframe."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "In a complete trade, a candle pattern is…",
+     "o": [
+      "The whole strategy",
+      "The final trigger — the last 10% on top of trend, level and positioning",
+      "Optional decoration",
+      "The stop-loss"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The correct sequence ends with the candle because…",
+     "o": [
+      "Candles predict everything",
+      "It times the entry at a level that already had reasons",
+      "It is prettiest",
+      "Volume says so"
+     ],
+     "a": 1
+    },
+    {
+     "q": "The way to learn which patterns pay YOU is…",
+     "o": [
+      "Trusting influencers",
+      "A hundred logged reps in paper trading + the journal",
+      "One lucky trade",
+      "Memorizing names"
+     ],
+     "a": 1
+    }
+   ],
+   "try": {
+    "p": "Go pattern hunting: open a chart, find one engulf or hammer at a real level, and log the two-branch plan as a paper trade.",
+    "label": "Open Paper Trade →",
+    "href": "/paper-trade"
+   }
+  }
+ ]
+}

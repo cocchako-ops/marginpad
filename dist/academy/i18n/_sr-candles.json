@@ -1,0 +1,388 @@
+{
+ "id": "candles",
+ "name": "Formacije Sveća",
+ "sub": "Čitanje bitke, sveću po sveću",
+ "lessons": [
+  {
+   "id": "c1",
+   "t": "Doji: tržište sleže ramenima",
+   "cards": [
+    {
+     "h": "Kad niko ne pobedi",
+     "p": "Doji je sveća koja se zatvori skoro tačno gde se otvorila — duga borba kupaca i prodavaca završena nerešeno. Sam po sebi znači neodlučnost. Značenje mu daje POZICIJA: doji posle dugog trenda kaže da pobedničkoj strani ponestaje ubeđenja."
+    },
+    {
+     "h": "Kontekst je sve",
+     "p": "Doji usred rejndža je šum — neodlučnost unutar neodlučnosti. Doji na ključnom otporu posle pet zelenih sveća je pravi signal: kupci koji su gurali cenu gore upravo nisu uspeli da guraju dalje. Ista sveća, potpuno drugačija poruka."
+    },
+    {
+     "h": "Nikad ne trguj doji sam",
+     "p": "Doji je znak pitanja, ne odgovor. Pita: da li je trend umoran? Odgovor dolazi od SLEDEĆE sveće i nivoa na kom se dešava. Doji na otporu + crvena potvrdna sveća = priča. Doji sam = bacanje novčića sa otmenim imenom."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Doji ti govori…",
+     "o": [
+      "Kupci su ubedljivo pobedili i ostaju u kontroli",
+      "Prodavci su ubedljivo pobedili",
+      "Sesija je završena nerešeno",
+      "Volumen je bio nula"
+     ]
+    },
+    {
+     "q": "Gde doji zapravo ZNAČI nešto?",
+     "o": [
+      "Bilo gde",
+      "Usred rejndža, gde obe strane i dalje oklevaju",
+      "Posle dugog trenda, na ključnom nivou",
+      "Samo nedeljom"
+     ]
+    },
+    {
+     "q": "Pravi način da reaguješ na doji je…",
+     "o": [
+      "Uđi odmah, pre nego što prilika nestane",
+      "Sačekaj da sledeća sveća potvrdi na nivou",
+      "Udvostruči poziciju",
+      "Zauvek ignoriši grafikone"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c2",
+   "t": "Engulfing: jedna strana preuzima",
+   "cards": [
+    {
+     "h": "Sveća preuzimanja",
+     "p": "Bullish engulfing je crvena sveća praćena zelenom čije telo je potpuno proguta. Svako ko je prodavao tokom te crvene sveće sada je u minusu — a poruka je direktna: kupci su upravo preuzeli kontrolu na ovoj ceni."
+    },
+    {
+     "h": "Zašto engulfing radi",
+     "p": "To je mehanika zarobljenih tradera, ne magija. Prodavci iz progutane sveće imaju gubitničke pozicije; njihovi izlasci (otkupi) dodaju gorivo novom smeru. Što je progutana sveća veća i nivo važniji, to je više zarobljenih tradera — i jači signal."
+    },
+    {
+     "h": "Kontrolna lista za pravi engulfing",
+     "p": "Tri zahteva: dešava se NA nivou (podrška za bullish, otpor za bearish), telo koje guta potpuno pokriva prethodno telo, i volumen raste na sveći koja guta. Nedostaje sve troje? Gledaš dve nasumične sveće."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Bullish engulfing je…",
+     "o": [
+      "Dve zelene sveće iste veličine koje se zatvaraju na istom nivou",
+      "Zeleno telo koje potpuno proguta prethodno crveno telo",
+      "Gap naviše",
+      "Par doji sveća"
+     ]
+    },
+    {
+     "q": "Mehanički razlog zašto engulfing formacije rade je…",
+     "o": [
+      "Sreća",
+      "Zarobljeni traderi iz progutane sveće hrane preokret dok izlaze",
+      "Menjačnice promovišu coin da privuku sveže kupce u potez",
+      "Astrologija"
+     ]
+    },
+    {
+     "q": "Pravom engulfingu treba…",
+     "o": [
+      "Bilo koje dve sveće",
+      "Nivo + potpuno pokrivanje tela + rastući volumen",
+      "Vikend",
+      "Potvrda više velikih naloga na društvenim mrežama"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c3",
+   "t": "Čekić i padajuća zvezda: fitilji odbijanja",
+   "cards": [
+    {
+     "h": "Čekić",
+     "p": "Čekić se pojavljuje posle pada: malo telo na vrhu sa dugim donjim fitiljem — bar duplo dužim od tela. Priča: prodavci su tokom sesije gurnuli cenu daleko dole, a kupci je vratili do kraja. Taj dugi fitilj je propali proboj naniže, zapisan u jednoj sveći."
+    },
+    {
+     "h": "Pronađi ga sam",
+     "prompt": "Jedna od ove tri sveće je čekić. Dodirni je.",
+     "p": "Zapamti: malo telo gore, dug donji fitilj, posle pada."
+    },
+    {
+     "h": "Padajuća zvezda — ista priča, naopako",
+     "p": "Padajuća zvezda je ogledalo na vrhu rasta: dug GORNJI fitilj, malo telo na dnu. Kupci su pokušali da nastave rast, žestoko su odbijeni, i sveća se zatvorila blizu svog minimuma. Na otporu, to je jedan od najčistijih short setapova koje sveće mogu da odštampaju."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Dugi donji fitilj čekića pokazuje…",
+     "o": [
+      "Ništa",
+      "Prodavci su gurali dole",
+      "Zaustavljanje trgovanja koje menjačnica okine tokom sesije",
+      "Visoke provizije"
+     ]
+    },
+    {
+     "q": "Čekić najviše znači…",
+     "o": [
+      "Usred testere",
+      "Posle pada, na podršci",
+      "Na istorijskom maksimumu",
+      "Nikad"
+     ]
+    },
+    {
+     "q": "Padajuća zvezda je…",
+     "o": [
+      "Čekić koji se pojavi na dnu dugog pada",
+      "Odbijanje dugim gornjim fitiljem na vrhu rasta",
+      "Gap",
+      "Skok volumena"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c4",
+   "t": "Jutarnja i večernja zvezda",
+   "cards": [
+    {
+     "h": "Tri sveće, jedan preokret",
+     "p": "Jutarnja zvezda je preokret u tri čina na dnu: jaka crvena sveća (prodavci kontrolišu), sveća sa sićušnim telom (borba zastaje — često doji), pa jaka zelena sveća koja se zatvara duboko u prvu (kupci preuzimaju). Večernja zvezda je ista formacija okrenuta, na vrhu."
+    },
+    {
+     "h": "Zašto tri pobeđuju jednu",
+     "p": "Jedna sveća može biti šum; tri uzastopne sveće koje pričaju jednu koherentnu priču teže je lažirati. Srednja sveća je šarka — trenutak kad je momentum umro. Treća sveća je dokaz. Bez jakog trećeg zatvaranja imaš zastoj, ne preokret."
+    },
+    {
+     "h": "Ocenjivanje zvezde",
+     "p": "Jača je kad: srednja sveća napravi gap ili jasno stoji odvojeno, treća sveća se zatvori iznad sredine prve, i cela formacija sedi na nivou sa tvoje mape. Kao i uvek — formacija daje okidač i invalidaciju (iza ekstrema zvezde), nivo daje razlog."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Srednja sveća jutarnje zvezde predstavlja…",
+     "o": [
+      "Naglo ubrzanje postojećeg smera trenda",
+      "Trenutak kad momentum zastane — šarku",
+      "Praznik",
+      "Volumen"
+     ]
+    },
+    {
+     "q": "Preokret potvrđuje…",
+     "o": [
+      "Samo srednja sveća, bez ikakvog daljeg kretanja",
+      "Jaka treća sveća koja se zatvara duboko u prvu",
+      "Bilo koja zelena sveća",
+      "Vest"
+     ]
+    },
+    {
+     "q": "Stop za zvezdanu formaciju ide…",
+     "o": [
+      "Nigde",
+      "Iza ekstremne tačke formacije",
+      "Na ulaz",
+      "Uvek tačno 1% udaljeno od ulazne cene"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c5",
+   "t": "Inside bar i kompresija",
+   "cards": [
+    {
+     "h": "Sveća koja se namotava",
+     "p": "Inside bar ceo stane u raspon prethodne sveće — niži maksimum, viši minimum. Tržište se sabija: rasponi se skupljaju, obe strane čekaju. Iz m7 već znaš šta kompresija obećava: ekspanziju. Grupa inside barova je opruga koja se navija."
+    },
+    {
+     "h": "Igra proboja",
+     "p": "Klasičan setap: obeleži maksimum i minimum matične sveće. Proboj jedne strane sa volumenom je okidač; suprotna strana je prirodna invalidacija. To je jedna od najužih risk-reward struktura u trejdingu, jer je razdaljina do stopa širina namotaja."
+    },
+    {
+     "h": "Zamka koju treba poštovati",
+     "p": "Proboji iz kompresije ČESTO propadaju — prvi potez je često lažan (znaš to iz spring-a u a2). Zaštiti se: preferiraj proboje u smeru trenda višeg vremenskog okvira, traži volumen i nikad ne juri proboj koji se odmah vrati unutar matične sveće — taj povratak JESTE signal neuspeha."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Inside bar je…",
+     "o": [
+      "Sveća primetno veća od prethodne sveće",
+      "Sveća koja cela stane u raspon prethodne",
+      "Doji",
+      "Gap"
+     ]
+    },
+    {
+     "q": "Prirodan stop za proboj inside bara je…",
+     "o": [
+      "Suprotna strana matične sveće",
+      "Fiksnih 10% udaljeno od cene proboja",
+      "Na ulazu",
+      "Ne postoji"
+     ]
+    },
+    {
+     "q": "Proboj koji se odmah vrati unutar matične sveće je…",
+     "o": [
+      "Potvrda da je proboj pravi i bezbedan za jurenje",
+      "Signal neuspeha",
+      "Signal za kupovinu",
+      "Nemoguć"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c6",
+   "t": "Priče fitilja: apsorpcija i iscrpljenost",
+   "cards": [
+    {
+     "h": "Čitanje fitilja kao otisaka stopala",
+     "p": "Fitilji su odbijene cene — a njihova lokacija ti govori ko biva odbijen. Ponovljeni dugi donji fitilji u jednoj zoni znače da neko tamo apsorbuje prodaju: svaki pad se kupuje. Ponovljeni gornji fitilji u zoni znače da iznad sedi ponuda i svaki rast se prodaje."
+    },
+    {
+     "h": "Fitilji iscrpljenosti",
+     "p": "OGROMAN fitilj posle produženog poteza — mnogo veći od skorašnjih sveća — često označava iscrpljenost: poslednji nalet trenda udario je u zid suprotnih naloga (to je fitilj likvidacione kaskade iz m5 izbliza). Trend + klimaks volumena + džinovski fitilj = potez je verovatno gotov za sada."
+    },
+    {
+     "h": "Grupe fitilja crtaju nivoe umesto tebe",
+     "p": "Zaboravi crtanje linija po osećaju: zone gde više fitilja bode i biva odbijeno JESU tržišna sopstvena podrška i otpor. Nacrtaj zonu preko vrhova fitilja, pa primeni ceo alat — trend, volumenski čvor, pozicioniranje — na tu zonu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Ponovljeni dugi donji fitilji u jednoj zoni sugerišu…",
+     "o": [
+      "Ništa",
+      "Neko apsorbuje prodaju — padovi se kupuju",
+      "Prodavci pobeđuju i nastaviće da pritiskaju zonu naniže",
+      "Mrtvo tržište"
+     ]
+    },
+    {
+     "q": "Džinovski fitilj posle produženog trenda često označava…",
+     "o": [
+      "Nastavak trenda sa još više snage iza sebe",
+      "Iscrpljenost — klimaks je udario u zid naloga",
+      "Nizak volumen",
+      "Grešku"
+     ]
+    },
+    {
+     "q": "Najbolje zone podrške/otpora se crtaju iz…",
+     "o": [
+      "Samo okrugli brojevi, jer ih ionako svi gledaju",
+      "Grupa fitilja odbijanja",
+      "Jučerašnjih vesti",
+      "Samo pokretnih proseka"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c7",
+   "t": "Formacije lažu: trejd neuspeha",
+   "cards": [
+    {
+     "h": "Svaka formacija ima stopu neuspeha",
+     "p": "Čekiće pregaze. Engulfinge progutaju. U kripto okruženju lova na stopove (a1), udžbeničke formacije propadaju STALNO — jer ih svi vide, a vidljivi nalozi su hrana. Prihvatanje toga je razlika između korisnika formacija i žrtve formacija."
+    },
+    {
+     "h": "Propala formacija JESTE formacija",
+     "p": "Evo profesionalne tajne: PROPALI signal je često bolji signal. Bullish čekić na podršci koji se slomi naniže znači da je svaki kupac čekića sada zarobljen — njihovi stopovi hrane potez nadole. Trgovanje neuspeha (sa zarobljenom masom kao gorivom) često je čistije od trgovanja udžbenika."
+    },
+    {
+     "h": "Pozicioniraj se za obe priče",
+     "p": "Praktično pravilo: znaj unapred šta invalidira formaciju i kako bi izgledao trejd neuspeha. Ako se minimum čekića slomi, da li samo izlaziš — ili okrećeš poziciju? Odluka pre ulaska pretvara formaciju iz molitve u plan sa dve grane."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Udžbeničke formacije u kriptu često propadaju jer…",
+     "o": [
+      "Grafikoni na menjačnicama su često pokvareni",
+      "Svi ih vide, pa vidljivi nalozi postaju plen",
+      "Formacije su ilegalne",
+      "Provizije"
+     ]
+    },
+    {
+     "q": "Propala bullish formacija često postaje…",
+     "o": [
+      "Ništa",
+      "Jak bearish signal",
+      "Još jači signal za kupovinu za strpljive bikove",
+      "Doji"
+     ]
+    },
+    {
+     "q": "Pre ulaska u trejd na formaciju treba da znaš…",
+     "o": [
+      "Samo cilj profita, pošto formacija potvrđuje smer",
+      "Šta je invalidira i kako izgleda trejd neuspeha",
+      "Godinu osnivanja menjačnice",
+      "Ništa"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "c8",
+   "t": "Stavljanje sveća na njihovo mesto",
+   "cards": [
+    {
+     "h": "Sveće su poslednjih 10%",
+     "p": "Formacija sveća je OKIDAČ, nikad razlog. Razlog dolazi od svega ostalog što si naučio: trend (m1), nivo (m1/a4), pozicioniranje (m4), režim (a7). Sveća odgovara samo na poslednje pitanje: da li je SADA trenutak da se deluje na ovom nivou?"
+    },
+    {
+     "h": "Puna sekvenca",
+     "p": "Odozgo nadole: dnevni trend dozvoljava smer → 4H pokazuje setap na nivou → pozicioniranje nije nagomilano protiv tebe → TEK ONDA zumiraš i čekaš sveću — engulfing, čekić, zvezdu — kao okidač za ulaz sa ugrađenom invalidacijom. Sveće bez tog sklopa su kockanje sa dodatnim koracima."
+    },
+    {
+     "h": "Istreniraj oko, pa veruj procesu",
+     "p": "Prepoznavanje formacija je veština koja se gradi ponavljanjem — a paper trading ti daje neograničena besplatna ponavljanja. Uoči formaciju, napiši plan sa dve grane, izvrši, zapiši u dnevnik. Sto zabeleženih formacija kasnije, ZNAĆEŠ koje tebi plaćaju — na tvom tržištu, na tvom vremenskom okviru."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "U kompletnom trejdu, formacija sveća je…",
+     "o": [
+      "Cela strategija",
+      "Poslednji okidač",
+      "Opciona dekoracija",
+      "Stop-loss"
+     ]
+    },
+    {
+     "q": "Ispravna sekvenca se završava svećom jer…",
+     "o": [
+      "Sveće predviđaju sve što se dešava na višim okvirima",
+      "Ona tempira ulaz na nivou koji već ima razloge",
+      "Najlepša je",
+      "Volumen tako kaže"
+     ]
+    },
+    {
+     "q": "Način da naučiš koje formacije plaćaju TEBI je…",
+     "o": [
+      "Verovanje influenserima",
+      "Sto zabeleženih ponavljanja u paper tradingu + dnevnik",
+      "Jedan srećan trejd",
+      "Bubanje imena i oblika svake poznate formacije"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Idi u lov na formacije: otvori grafikon, nađi jedan engulfing ili čekić na pravom nivou i zabeleži plan sa dve grane kao paper trejd.",
+    "label": "Otvori Paper Trade →"
+   }
+  }
+ ]
+}

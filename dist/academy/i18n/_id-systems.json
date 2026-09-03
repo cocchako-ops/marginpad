@@ -1,0 +1,348 @@
+{
+ "id": "systems",
+ "name": "Sistem dan Otomasi",
+ "sub": "Mengubah aturan menjadi mesin",
+ "lessons": [
+  {
+   "id": "s1",
+   "t": "Kenapa sistem mengalahkan feeling",
+   "cards": [
+    {
+     "h": "Pajak diskresi",
+     "p": "Tiap keputusan diskresioner adalah celah bagi tilt, FOMO, dan bias melihat ke belakang untuk menyusup. Sistem — aturan tetap untuk setup, entry, keluar, dan ukuran — menghapus keputusan di saat emosi memuncak. Kebanyakan trader tak butuh insting lebih baik; mereka butuh lebih sedikit kesempatan memakainya."
+    },
+    {
+     "h": "Aturan membuat hasil terukur",
+     "p": "Kalau entry-mu adalah suasana hati, tinjauan jurnalmu adalah astrologi. Kalau entry-mu adalah aturan, tiap trade adalah titik data: setup INI, dimainkan BEGINI, menghasilkan ekspektasi SEGINI. Hanya trading berbasis aturan yang benar-benar bisa diperbaiki, karena hanya dia yang bisa diukur."
+    },
+    {
+     "h": "Diskresi punya tempat — di meja desain",
+     "p": "Keahliannya tidak hilang; dia pindah. Kamu memakai penilaian untuk MERANCANG dan MENINJAU aturan — mingguan, tenang, jauh dari harga live. Mesin (atau checklist) yang mengeksekusi. Penilaian di meja, disiplin di pelatuk."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Keunggulan utama sistem berbasis aturan adalah…",
+     "o": [
+      "Profit terjamin begitu aturannya jadi",
+      "Menghapus keputusan di saat emosi memuncak",
+      "Leverage lebih tinggi",
+      "Kerja lebih sedikit"
+     ]
+    },
+    {
+     "q": "Entry berbasis suasana hati membuat jurnalmu…",
+     "o": [
+      "Jauh lebih seru dibaca di akhir minggu",
+      "Tak terukur — tak ada yang bisa dibandingkan",
+      "Lebih pendek",
+      "Sempurna"
+     ]
+    },
+    {
+     "q": "Di trading sistematis, penilaian manusia berada…",
+     "o": [
+      "Di pelatuk live, tempat keputusan sungguhan dibuat",
+      "Di meja desain — membangun dan meninjau aturan",
+      "Tidak di mana pun",
+      "Di grup chat"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s2",
+   "t": "Backtest: menginterogasi masa lalu",
+   "cards": [
+    {
+     "h": "Pertanyaan termurah di trading",
+     "p": "Sebelum mempertaruhkan sesen pun — bahkan waktu paper — kamu bisa bertanya pada sejarah: kalau aku mentradingkan persis aturan ini setahun terakhir, apa yang terjadi? Itulah backtest. Dia tak menjanjikan masa depan, tapi mengeksekusi aturan tanpa bias belakang dan tanpa ampun."
+    },
+    {
+     "h": "Yang backtest benar-benar katakan",
+     "p": "Bukan \"ini bakal cuan\" — melainkan PROFIL strategi: win rate, R rata-rata, rentetan kalah terburuk, drawdown terdalam, berapa trade per bulan. Dari r10 kamu tahu angka-angka itu bersama ukuran memutuskan bertahan hidup. Backtest menyerahkannya dalam hitungan menit."
+    },
+    {
+     "h": "Hormati batasnya",
+     "p": "Backtest mengasumsikan eksekusi di harga historis — spread, slippage, dan funding asli akan lebih buruk. Anggap hasil backtest sebagai plafon OPTIMIS, kurangi biaya secara mental, dan hanya percayai profil yang lolos potongan itu dengan sisa ruang."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Backtest memberitahumu…",
+     "o": [
+      "Masa depan",
+      "Profil historis aturan persismu",
+      "Koin mana yang akan pump minggu depan",
+      "Tidak ada"
+     ]
+    },
+    {
+     "q": "Hasil backtest versus live biasanya…",
+     "o": [
+      "Identik",
+      "Optimis — biaya nyata membuat live lebih buruk",
+      "Pesimis, karena backtest kurang menghitung kemenangan",
+      "Acak"
+     ]
+    },
+    {
+     "q": "Cara benar membaca backtest adalah…",
+     "o": [
+      "Sebagai janji",
+      "Sebagai plafon optimis dikurangi biaya",
+      "Sebagai hiburan akhir pekan, tak lebih",
+      "Terbalik"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Jalankan backtest sungguhan pertamamu — aturan EMA cross atau RSI pada data berkualitas, satu klik, statistik lengkap.",
+    "label": "Backtester Strategi →"
+   }
+  },
+  {
+   "id": "s3",
+   "t": "Overfitting: pembunuh senyap",
+   "cards": [
+    {
+     "h": "Backtest sempurna yang tak pernah bekerja",
+     "p": "Utak-atik parameter strategi cukup lama dan dia akan pas SEMPURNA dengan masa lalu — karena dia menghafal noise, bukan mempelajari sinyal. Itulah overfitting: makin cantik kurva backtest setelah tuning berat, makin curiga kamu seharusnya."
+    },
+    {
+     "h": "Gejalanya",
+     "p": "Tanda bahaya: banyak parameter yang di-tuning halus (kenapa 13.5 bukan 14?), performa runtuh saat jendela tes digeser sebulan, keunggulan yang cuma ada di satu koin dan satu timeframe. Keunggulan tangguh biasanya sederhana, agak jelek, dan bekerja luas."
+    },
+    {
+     "h": "Obatnya: lebih sedikit kenop",
+     "p": "Tiap parameter yang kamu tambah adalah satu lagi cara menghafal masa lalu. Pilih strategi dengan 2-3 kenop, bukan 10. Kalau perubahan kecil parameter menyebabkan perubahan besar hasil, kamu memfit noise. Backtest biasa-biasa tapi STABIL mengalahkan yang spektakuler tapi rapuh."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Overfitting berarti…",
+     "o": [
+      "Trading terlalu banyak kali dalam satu sesi harian",
+      "Men-tuning aturan sampai menghafal noise",
+      "Memakai leverage",
+      "Pola chart"
+     ]
+    },
+    {
+     "q": "Tanda mencurigakan overfitting adalah…",
+     "o": [
+      "Aturan sederhana",
+      "Performa runtuh saat jendela tes digeser",
+      "Sedikit parameter",
+      "Bekerja konsisten di banyak koin berbeda"
+     ]
+    },
+    {
+     "q": "Antara backtest biasa yang stabil dan spektakuler yang rapuh, pilih…",
+     "o": [
+      "Yang spektakuler",
+      "Yang stabil",
+      "Tidak keduanya",
+      "Keduanya"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s4",
+   "t": "Out-of-sample: tes kejujuran",
+   "cards": [
+    {
+     "h": "Jangan pernah menilai di data latihan",
+     "p": "Obat overfitting adalah disiplin pengujian: rancang dan tuning aturan di SATU potongan sejarah (in-sample), lalu jalankan TANPA DIUBAH di potongan yang belum pernah mereka lihat (out-of-sample). Hanya hasil out-of-sample yang dihitung — itu yang paling dekat dengan masa depan yang bisa dibeli."
+    },
+    {
+     "h": "Walk-forward: ulangi kejujurannya",
+     "p": "Pengujian walk-forward mengulangnya di jendela bergulir: tuning di bulan 1-6, uji di bulan 7; geser; ulangi. Strategi yang terus tampil di data yang belum pernah dilihat sudah pantas dapat sedikit kepercayaan. Yang cuma bersinar in-sample tak pantas dapat apa-apa."
+    },
+    {
+     "h": "Paper trading adalah out-of-sample terakhir",
+     "p": "Setelah tes, jalankan sistem di harga live dengan uang bohongan — satu-satunya kumpulan data yang tak bisa diintip: masa kini. Kalau backtest, out-of-sample, DAN paper setuju, kamu punya sesuatu. Kalau berselisih, percayai yang paling hidup."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Pengujian out-of-sample berarti…",
+     "o": [
+      "Menguji di data tempat kamu men-tuning",
+      "Menguji di data yang belum pernah dilihat aturan",
+      "Melewatkan pengujian",
+      "Menguji hanya akhir pekan"
+     ]
+    },
+    {
+     "q": "Hasil mana yang paling pantas dipercaya?",
+     "o": [
+      "In-sample",
+      "Out-of-sample dan hasil paper live",
+      "Chart tercantik dengan kurva termulus",
+      "Yang tertua"
+     ]
+    },
+    {
+     "q": "Paper trading berfungsi sebagai…",
+     "o": [
+      "Buang-buang waktu, toh backtest sudah selesai dan menunjukkan semuanya",
+      "Tes out-of-sample terakhir",
+      "Pemasaran",
+      "Tempat berlindung pajak"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s5",
+   "t": "Dari aturan ke robot",
+   "cards": [
+    {
+     "h": "Otomasi adalah spektrum",
+     "p": "Kamu tidak melompat dari mengklik tombol ke autopilot penuh. Tangganya: checklist tertulis → alert yang membangunkanmu saat kondisi sejajar → semi-otomasi (mesin mengusulkan, kamu mengonfirmasi) → bot penuh. Tiap anak tangga menghapus satu mode kegagalan manusia; naik hanya sejauh aturanmu terbukti stabil."
+    },
+    {
+     "h": "Yang bot butuhkan darimu",
+     "p": "Bot adalah aturanmu, dibekukan. Dia butuh kondisi TAK AMBIGU (bukan \"kelihatan kuat\"), ukuran posisi persis, keluar persis, dan instruksi untuk kasus jelek: eksekusi parsial, koneksi putus, gap. Menuliskannya sering menyingkap bahwa \"sistemmu\" selama ini direkatkan lem manusia."
+    },
+    {
+     "h": "Uji mesin seperti strategi",
+     "p": "Bot bisa rugi lewat dua jalan: aturan buruk atau kode buruk. Uji keduanya terpisah — aturan di backtester, kode terhadap API paper trading tempat bug tak merugikan apa pun. Baru setelah keduanya lolos, uang sungguhan masuk — kecil dulu."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Tangga otomasi yang waras dimulai dari…",
+     "o": [
+      "Bot penuh di hari pertama, selagi semangat tinggi",
+      "Checklist tertulis, lalu alert, lalu semi-otomasi",
+      "Kode pinjaman",
+      "Ukuran maksimal"
+     ]
+    },
+    {
+     "q": "Bot menuntut aturan yang…",
+     "o": [
+      "Berbasis feeling dan menyesuaikan di tempat",
+      "Tak ambigu, termasuk ukuran, keluar, dan kasus gagal",
+      "Rahasia",
+      "Fleksibel seketika"
+     ]
+    },
+    {
+     "q": "Bot trading sebaiknya pertama berjalan melawan…",
+     "o": [
+      "Tabungan seumur hidupmu",
+      "API paper trading tempat bug tak merugikan apa pun",
+      "Akun teman terpercaya dengan dana sungguhan",
+      "Tidak ada"
+     ]
+    }
+   ],
+   "try": {
+    "p": "MarginPad punya REST API paper trading gratis yang dibuat persis untuk ini — uji bot dengan risiko nol.",
+    "label": "Dokumentasi Bot API →"
+   }
+  },
+  {
+   "id": "s6",
+   "t": "Pemantauan dan tombol darurat",
+   "cards": [
+    {
+     "h": "Otomasi bukan pengabaian",
+     "p": "Sistem yang berjalan butuh dasbor dan tali kekang: pemeriksaan harian bahwa eksekusi sesuai niat, risiko per trade sesuai setelan, dan rezim pasar masih mirip yang jadi dasar pembuatannya. Pergeseran senyap — di biaya, di volatilitas, di kepatuhanmu sendiri pada aturan — membunuh pelan-pelan."
+    },
+    {
+     "h": "Tetapkan kematian di muka",
+     "p": "Sebelum meluncurkan, tulis kriteria mematikan: drawdown maksimal (misal 15%), rentetan kalah melebihi yang terburuk di backtest, atau patahnya rezim. Kena salah satunya dan sistem BERHENTI — tanpa negosiasi ulang dengan harapan. Kamu mempelajarinya sendiri di r6; mesin pantas dapat disiplin yang sama."
+    },
+    {
+     "h": "Insiden pasti terjadi",
+     "p": "Exchange tumbang, API timeout, salah konfigurasi menggandakan ukuranmu. Asumsikan insiden, maka mereka hanya mengejutkanmu sedikit: batas posisi di level exchange, alert di setiap eksekusi, dan tombol MATI utama manual yang bisa ditekan dari ponsel. Rekayasa membosankan — begitulah rupa keselamatan."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Kriteria mematikan harus ditetapkan…",
+     "o": [
+      "Tepat setelah drawdown serius pertama pada akun",
+      "Sebelum peluncuran — tanpa negosiasi ulang",
+      "Tidak pernah",
+      "Oleh exchange"
+     ]
+    },
+    {
+     "q": "Sistem yang berjalan butuh…",
+     "o": [
+      "Nol perhatian begitu masuk produksi",
+      "Pemeriksaan harian bahwa perilaku sesuai niat",
+      "Leverage lebih tinggi",
+      "Kerahasiaan"
+     ]
+    },
+    {
+     "q": "Perlindungan sehat dari insiden meliputi…",
+     "o": [
+      "Optimisme",
+      "Batas posisi, alert, dan tombol MATI manual",
+      "Ukuran lebih besar",
+      "Mengabaikannya sampai benar-benar terjadi"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "s7",
+   "t": "Portofolio keunggulan",
+   "cards": [
+    {
+     "h": "Keunggulan itu musiman",
+     "p": "Tak ada satu sistem yang bekerja selamanya — tren berakhir, rezim volatilitas berbalik, kerumunan beradaptasi. Profesional menjalankan PORTOFOLIO kecil sistem tak berkorelasi: pengikut tren, pembalik ke rata-rata, mungkin pemanen funding. Saat satu tidur, yang lain biasanya makan."
+    },
+    {
+     "h": "Memensiunkan sistem",
+     "p": "Keahlian tersulit: mematikan strategi yang kamu cintai. Kriterianya sama dengan aturan mematikan dari s6, plus satu — kalau alasan struktural yang membuatnya bekerja sudah lenyap (perubahan biaya, pergeseran rezim, semua orang melakukannya), pensiunkan selagi masih bermartabat. Rekam jejak adalah sejarah, bukan hak."
+    },
+    {
+     "h": "Keahlian itu, lengkap",
+     "p": "Lihat busurnya: mekanika (kursus 1-2), bertahan hidup (3), membaca pita (4-5)… dan kini proses yang berjalan tanpa suasana hatimu. Mau otomatis atau tetap manual, tujuannya sama: keunggulan yang tertulis, terukur, tertinjau — dan trader yang cukup tenang untuk mengikutinya."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Profesional menjalankan beberapa sistem karena…",
+     "o": [
+      "Lebih banyak sistem selalu terlihat lebih keren dan serius",
+      "Keunggulan musiman — portofolio menghaluskan kurva",
+      "Exchange mengharuskan",
+      "Bot kesepian"
+     ]
+    },
+    {
+     "q": "Sistem harus dipensiunkan saat…",
+     "o": [
+      "Pertama kali dia mengalami satu minggu merah saja",
+      "Aturan mematikan kena atau alasannya lenyap",
+      "Tidak pernah",
+      "Ada yang menertawakannya"
+     ]
+    },
+    {
+     "q": "Kondisi akhir seluruh kursus ini adalah…",
+     "o": [
+      "Nol kerugian",
+      "Keunggulan tertulis, terukur, dan tertinjau",
+      "Indikator rahasia yang belum ditemukan siapa pun juga",
+      "Leverage maksimal"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Putaran penuh kini milikmu — jalankan di tempat kesalahan gratis, dan biarkan level menandai jalannya.",
+    "label": "Paper Trade →"
+   }
+  }
+ ]
+}

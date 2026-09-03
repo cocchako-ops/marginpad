@@ -1,0 +1,420 @@
+{
+ "id": "words",
+ "name": "Trader Sözlüğü",
+ "sub": "Jargon, sade bir dille",
+ "lessons": [
+  {
+   "id": "wd1",
+   "t": "Long, short ve pozisyon sahibi olmak",
+   "cards": [
+    {
+     "h": "Pozisyon, açık bir bahistir",
+     "p": "İşlem yapmadan önce pozisyonsuzsun: elinde hiçbir şey yok ve başına hiçbir şey gelemez. Alım ya da satım yaptığın anda bir pozisyonun olur — yönü ve boyutu olan açık bir bahis. Sen kapatana kadar açık kalır, her fiyat hareketiyle kazanır ve kaybeder. Trader'lar 'pozisyondayım' der; senin 'buna para koydum' demen gibi."
+    },
+    {
+     "h": "Long: yukarı gitmesini istersin",
+     "p": "Long olmak, fiyat yükselince kazanırsın demektir. Bitcoin'i $60.000'dan al, $63.000'dan sat: coin başına $3.000 kazandın — bu bir long'dur. Ödünç alınan bir şey yok, egzotik bir şey yok; adı konmuş bir alımdan ibaret. Neredeyse herkes buradan başlar, çünkü sahip olmayı zaten böyle düşünürüz. 'BTC long' demek şu demek: fiyatın yükselmesine göre konumlandım."
+    },
+    {
+     "h": "Short, fiyat düşünce kazanır",
+     "p": "Short bunun aynadaki hâlidir. Önce yüksek fiyattan satarsın, sonra daha düşükten geri alırsın; aradaki fark senindir. $60.000'dan short aç, $57.000'dan geri al: piyasa düşerken coin başına $3.000 cebinde kaldı. Vadeli işlemlerde ise el değiştiren hiçbir coin yoktur — fiyat düştüğünde sana ödeyen bir kontrat tutarsın. Trader'lar düşen piyasada işte böyle para kazanır."
+    },
+    {
+     "h": "Cümleyi boyut tamamlar",
+     "p": "Tek başına yön, pozisyon değildir. 'BTC long' bir hareketin sana neye mal olacağı hakkında hiçbir şey söylemez; 'BTC long, $500' söyler. Pozisyon boyutu, çalışan paradır ve her %1'lik hareketin kaç para ettiğine o karar verir: $500'ın %1'i $5'tir, kazansan da kaybetsen de. Yeni başlayanlar yön üzerine tartışır ve boyutu görmezden gelir — oysa hasarı asıl kontrol eden yarı odur."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Short'sun ve fiyat düşüyor. Ne olur?",
+     "o": [
+      "Para kazanırsın",
+      "Para kaybedersin",
+      "Pozisyon otomatik kapanır",
+      "Fiyat yükselene kadar hiçbir şey"
+     ]
+    },
+    {
+     "q": "'Pozisyon' ne demek?",
+     "o": [
+      "Bir borsa hesabı türü",
+      "Haftalık bir fiyat tahmini",
+      "İki tepeli bir grafik formasyonu",
+      "Yönü ve boyutu olan açık bir bahis"
+     ]
+    },
+    {
+     "q": "İkisi de BTC long — biri $200, biri $2.000. %1'lik hareket kaç eder:",
+     "o": [
+      "$2 ve $20",
+      "İkisi için de $2",
+      "İkisi için de $20",
+      "Kaldıraç olmadan bilinemez"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd2",
+   "t": "Boğa, ayı, pump, dump, çöküş",
+   "cards": [
+    {
+     "h": "Boğa ve ayı yön belirtir",
+     "p": "Boğa piyasası, fiyatların uzun süre yükseldiği dönemdir; ayı piyasası ise uzun süre düştüğü dönem. Hayvanlar saldırma biçimlerinden gelir: boğa boynuzlarını yukarı savurur, ayı pençesini aşağı indirir. Kendine bullish diyorsan yukarı beklersin; bearish diyorsan aşağı. Bunlar yavaş kelimelerdir — bu öğleden sonrayı değil, ayları anlatır."
+    },
+    {
+     "h": "Pump ve dump hızı anlatır",
+     "p": "Pump hızlı bir yükseliş, dump hızlı bir düşüştür. İkisi de nedenini söylemez. Ama dikkat: tek bir kalıp olarak 'pump and dump' bir düzenin adıdır — bir grup küçük bir coini sessizce toplar, sonra yüksek sesle över ve çektiği alıcılara satar. Yükseliş gerçektir; çıkış ise onların, senin değil."
+    },
+    {
+     "h": "Düzeltme, çöküş ve aradaki fark",
+     "p": "Yaygın kabul şudur: son zirveden yaklaşık %10'luk düşüşe düzeltme (correction), %20 ve üzeri düşüşe ayı piyasası denir. Çöküş (crash) ise bir büyüklük değil, bir hızdır — düşüşün büyük kısmının saatler ya da günler içinde gelmesi. Kriptoda %10'luk bir gün sıradan olduğu için bu kelimeler gevşek kullanılır. İsmi değil, sayıyı sor."
+    },
+    {
+     "h": "Bu kelimeler tarif eder, asla tahmin etmez",
+     "p": "Bu derste sonrasında ne olacağını söyleyen hiçbir şey yok. 'Bu sadece bir düzeltme' diyen biri bir olguyu aktarmıyor; tahmin yürütüyor — genelde de bunun doğru olmasına ihtiyaç duyan bir pozisyon taşırken. Bu kelimeler olup bitene yapıştırılan etiketlerdir. Bir etiket yarın hakkında özgüvenle geliyorsa, asıl iddia o özgüvendir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Çöküşü esas olarak belirleyen:",
+     "o": [
+      "Fiyatın ne kadar düştüğü",
+      "Fiyatın ne kadar hızlı düştüğü",
+      "Kaç coinin birlikte düştüğü",
+      "Ayı piyasasının ne kadar sürdüğü"
+     ]
+    },
+    {
+     "q": "Kalıp olarak 'pump and dump' şunu anlatır:",
+     "o": [
+      "Ardından düşüş gelen her hızlı yükseliş",
+      "Coini över, sonra alıcılara satan bir düzen",
+      "İki tepeli bir mum formasyonu",
+      "Borsadaki normal listeleme süreci"
+     ]
+    },
+    {
+     "q": "Yaygın kabule göre zirveden %20'lik düşüşün adı:",
+     "o": [
+      "Düzeltme",
+      "Flash crash",
+      "Ayı piyasası",
+      "Derin dump"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd3",
+   "t": "Teminat, kaldıraç, likidasyon, K/Z",
+   "cards": [
+    {
+     "h": "Teminat, içine koyduğun paradır",
+     "p": "Teminat, bir pozisyonu taşımak için ortaya koyduğun nakittir. Notional ise o pozisyonun kontrol ettiği tam büyüklüktür. $100 teminat koyup $1.000'lık Bitcoin kontrol edersin: $100 teminatın, $1.000 notional'ın. Her komisyon, her kâr ve her zarar notional üzerinden hesaplanır ve sonra teminatının içine düşer — küçük yüzdelerin devasa hissettirmesinin sebebi tam olarak budur."
+    },
+    {
+     "h": "Kaldıraç bir orandır",
+     "p": "Kaldıraç, notional bölü teminattır. $100 ile kontrol edilen $1.000, 10x eder. Tanımın tamamı bu; gerisi sonuçtur. 10x'te fiyattaki %1'lik hareket, teminatında %10'luk harekettir — yukarı da aşağı da. Mekaniğin tamamının kendi kursu var: Kaldıraç ve Likidasyon. Burada sadece oranı ve her iki yönü eşit çarptığı gerçeğini aklında tut."
+    },
+    {
+     "h": "Likidasyon, zorla çıkıştır",
+     "p": "Zararların teminatından çıkar. Zarar teminatının neredeyse tamamını yediğinde borsa pozisyonu senin yerine kapatır, çünkü ödünç verilen kısmın korunması gerekir. Likidasyon budur. Bir uyarı değildir — o pozisyonun sonudur, piyasa o an hangi fiyattaysa o fiyattan. 10x'te aleyhine yaklaşık %10'luk bir hareket yeter."
+    },
+    {
+     "h": "Hangisi kârda",
+     "prompt": "Fiyat az önce düştü. Kârda olan pozisyona dokun.",
+     "p": "K/Z, kâr ve zarar demektir: açık pozisyonunun şu an ne ettiği. Pozisyon açıkken gerçekleşmemiştir, kapattığın anda gerçekleşir. Fiyat az önce düştü. Tek bir dokunuş."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "$2.000 kontrol etmek için $200 koydun. Kaldıracın:",
+     "o": [
+      "2x",
+      "10x",
+      "20x",
+      "200x"
+     ]
+    },
+    {
+     "q": "Likidasyon ne zaman olur:",
+     "o": [
+      "Pozisyonu kendin kapattığında",
+      "Fiyat take-profit seviyene ulaştığında",
+      "Zarar teminatının neredeyse tamamını yediğinde",
+      "Borsa funding kestiğinde"
+     ]
+    },
+    {
+     "q": "Komisyonlar ve K/Z neyin üzerinden hesaplanır:",
+     "o": [
+      "Notional pozisyon büyüklüğü",
+      "Sadece teminatın",
+      "Çektiğin tutar",
+      "Kaldıraç çarpanı"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd4",
+   "t": "Bir emir piyasaya nasıl ulaşır",
+   "cards": [
+    {
+     "h": "Piyasa emri: fiyat yerine hız",
+     "p": "Piyasa emri şunu der: şu an hangi fiyat varsa onu al. Anında dolar — dolum, emrinin gerçekten pozisyona dönüştüğü andır — çünkü karşı tarafın o an istediği fiyatı kabul eder. Her zaman girersin. Gördüğün fiyatı her zaman almazsın. İçeride olmak isabetli olmaktan önemliyken kullan."
+    },
+    {
+     "h": "Limit emri: hız yerine fiyat",
+     "p": "Limit emri şunu der: beni bu fiyattan ya da daha iyisinden doldur, gerekirse bekle. Biri karşısına geçip işlem yapana kadar emir defterinde oturur ve hiç dolmayabilir. Fiyatı sen belirlersin, kesinlikten vazgeçersin. Limit emirleri genelde daha düşük komisyon da öder, çünkü talep eden değil bekleyen taraf sensin."
+    },
+    {
+     "h": "Stop bir tetikleyicidir",
+     "p": "Stop henüz bir emir değildir — fiyat senin seçtiğin seviyeye dokununca emre dönüşen bir talimattır. Stop-loss, long pozisyonun altında durur ve fiyat oraya düşerse pozisyonu kapatarak hasarı sınırlar. Take-profit aynı şeyi kazançlı tarafta yapar. İkisi de kesin fiyatı garanti etmez: tetiklendiklerinde genelde piyasadan dolarlar."
+    },
+    {
+     "h": "Spread ve slipaj",
+     "p": "Emir defterinde en yüksek alıcı vardır, adı bid; ve en düşük satıcı vardır, adı ask. Aradaki boşluk spread'dir ve onu geçmek sana para kaybettirir. Slipaj (kayma) ayrı bir şeydir: büyük bir piyasa emri birkaç fiyat seviyesini birden yer, böylece elde ettiğin ortalama fiyat tıkladığından daha kötü olur. $100,00 görüp $100,05'ten dolarsan, slipaj sana %0,05'e mal olmuştur."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Limit emri sana neyin kontrolünü verir:",
+     "o": [
+      "Fiyatı, ama dolup dolmayacağını değil",
+      "Hem fiyatı hem anında gerçekleşmeyi",
+      "Borsanın komisyon tarifesini",
+      "Piyasanın ne hızda hareket ettiğini"
+     ]
+    },
+    {
+     "q": "Stop-loss tetiklenir, sonra:",
+     "o": [
+      "Tam olarak stop fiyatından dolar",
+      "Genelde o fiyata yakın, piyasadan dolar",
+      "Pozisyonu kapatmadan iptal eder",
+      "Fiyat düzelene kadar defterde bekler"
+     ]
+    },
+    {
+     "q": "Slipaj nedir:",
+     "o": [
+      "Borsanın aldığı komisyon",
+      "Bid ile ask arasındaki boşluk",
+      "Görülen fiyat ile dolan fiyat arasındaki fark",
+      "Blockchainin yol açtığı gecikme"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd5",
+   "t": "Kalabalığın duygusunu anlatan kelimeler",
+   "cards": [
+    {
+     "h": "FOMO ve FUD",
+     "p": "FOMO, kaçırma korkusudur: sensiz zaten yükseliyor diye alma dürtüsü. FUD ise korku, belirsizlik ve şüphe: kulağa kötü gelen bir şey yüzünden satma dürtüsü. İkisi de piyasa hakkında bir olguyu değil, bir duyguyu adlandırır. Ve ikisi de suçlama olarak kullanılır — temkinli olmana FUD demek, seni düşünmekten alıkoymanın bir yoludur."
+    },
+    {
+     "h": "HODL, paper hands, diamond hands",
+     "p": "HODL, 2013'te bir forum gönderisinde 'hold' yazarken yapılmış bir yazım hatası olarak başladı ve 'asla satma' talimatına dönüştü. Paper hands satanlarla dalga geçer; diamond hands satmayanları över. Bu kelimelerin ne yaptığına dikkat et: paranla ilgili bir kararı, zararını paylaşmayan yabancıların not verdiği bir karakter testine çeviriyorlar."
+    },
+    {
+     "h": "Balinalar ve retail",
+     "p": "Balina, kendi alımı ya da satımı fiyatı hareket ettirecek kadar büyük olan kişidir. Retail ise küçük olan herkes demektir — büyük ihtimalle sen ve bunda aşağılayıcı bir şey yok. İşe yarayan kısım asimetridir: balina çıkışını planlamak zorundadır, çünkü büyüklük sessizce çıkamaz; sen ise tek tıkla dışarıdasın."
+    },
+    {
+     "h": "Kapitülasyon ve onu kimin kullandığı",
+     "p": "Kapitülasyon, elinde tutanların umudu kesip ne fiyat olursa olsun sattığı andır: ağır hacim, şiddetli bir düşüş, sonra tükeniş. Ancak sonradan teşhis edilebilir. Bu dersteki her kelimenin dürüst sınırı da bu — kalabalığın hissini iyi tarif ederler, hiçbir şey öngörmezler. Biri sana bunlardan biriyle şimdi ne yapman gerektiğini söylüyorsa, hangi pozisyonu taşıdığını sor."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Temkinine FUD denmesi genelde şu demektir:",
+     "o": [
+      "Sana olgusal bir düzeltme sunuldu",
+      "Sorgulamayı bırakman için baskı",
+      "Teknik analiz terimi kullanıldı",
+      "Borsa bir uyarı yayımladı"
+     ]
+    },
+    {
+     "q": "Balina nedir:",
+     "o": [
+      "Fiyatı oynatacak kadar büyük bir yatırımcı",
+      "Erken dönem Bitcoin madencisi",
+      "Yüksek kaldıraç kullanan her trader",
+      "Bir borsa çalışanı"
+     ]
+    },
+    {
+     "q": "Kapitülasyon ne zaman teşhis edilebilir:",
+     "o": [
+      "Önceden, artan hacimden",
+      "Sadece sonradan",
+      "Funding oranından",
+      "Borsa tarafından, başlamadan önce"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd6",
+   "t": "Destek, direnç, trend, kırılım",
+   "cards": [
+    {
+     "h": "Destek ve direnç birer bölgedir",
+     "p": "Destek, alımın defalarca ortaya çıkıp düşüşü durdurduğu fiyat bölgesidir. Direnç ise satışın defalarca yükselişi durdurduğu yerdir. Bunlar çizgi değil bölgedir — $60.000'daki bir seviye aslında $59.800 ile $60.200 arası demektir. Önemlidirler çünkü yeterince trader onları izler ve orada işlem yapar; sonunda kırılmalarının sebebi de tam olarak budur."
+    },
+    {
+     "h": "Trend ve yatay bant",
+     "p": "Yükseliş trendi, giderek yükselen tepeler ve diplerden oluşur; düşüş trendi bunun tersidir. Yatay bant (range) ise hiçbiri değildir: fiyatın bir taban ile tavan arasında zıplayıp hiçbir yere gitmemesi. Bu kelimelerin en işe yarar tarafı, hangisinin içinde olduğunu adlandırmandır; çünkü bant içindeki bir piyasa, onu trendliymiş gibi işleyen herkesi cezalandırır."
+    },
+    {
+     "h": "Kırılım, kutudan çıkmaktır",
+     "p": "Kırılım (breakout), fiyatın bir banttan çıkması ya da direnci geçmesidir. Kelime hak edilmeden kullanılır: fiyat burnunu dışarı uzatır, herkes kırılım der ve fiyat dosdoğru içeri geri düşer. Bu başarısızlığın kendi adı vardır: fakeout. Hangisi olduğunu ancak mum kapandıktan ve fiyat dışarıda kaldıktan sonra öğrenirsin."
+    },
+    {
+     "h": "Her seviyenin bir zaman dilimi vardır",
+     "p": "Zaman dilimi, bir mumun kapsadığı süredir — 5 dakika, 4 saat, bir gün. 5 dakikalık grafikte çizilen destek, günlükte görünmez bile. Aynı piyasa 5 dakikada düşüş trendinde, günlükte yükseliş trendinde olabilir ve iki cümle de doğrudur. Biri 'trend' dediğinde eksik olan kelime, hangi zaman dilimi olduğudur."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Desteği en iyi anlatan:",
+     "o": [
+      "Fiyatın altındaki garantili bir taban",
+      "Alımın defalarca ortaya çıktığı bir bölge",
+      "Coinin gördüğü en düşük fiyat",
+      "Borsanın her gün yayımladığı bir çizgi"
+     ]
+    },
+    {
+     "q": "Fiyat direnci geçip dosdoğru geri düşüyor. Bu:",
+     "o": [
+      "Fakeout",
+      "Teyitli kırılım",
+      "Düşüş trendi",
+      "Düzeltme"
+     ]
+    },
+    {
+     "q": "Yükseliş trendi neyin serisidir:",
+     "o": [
+      "Aynı renkte mumlar",
+      "Büyük oyuncuların çizdiği seviyeler",
+      "%1'in üzerinde günlük kazançlar",
+      "Yükselen tepeler ve yükselen dipler"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd7",
+   "t": "Likidite, hacim, volatilite, piyasa değeri",
+   "cards": [
+    {
+     "h": "Hacim sayar, likidite emer",
+     "p": "Hacim, bir dönemde gerçekte ne kadar işlem yapıldığıdır — geçmişe dair bir olgu. Likidite ise şu anda emir defterinde bekleyen miktardır — bugüne dair bir olgu. Bir coin devasa hacimli bir gün geçirip yine de ince olabilir; öyle ki $50.000'lık bir satış onu yüzde birkaç düşürür. Hacim sana ilgiyi söyler; likidite ise çıkabilip çıkamayacağını."
+    },
+    {
+     "h": "Volatilite hareketi ölçer, yönü değil",
+     "p": "Volatilite, fiyatın her iki yönde de ne kadar hareket ettiğidir. Günde %5 salınan bir coin, %1 salınandan beş kat volatildir; o günler yukarı da olsa aşağı da. Kaldıracın burada bu kadar önemli olmasının sebebi budur: likidasyona olan mesafen sabittir ve fiyatın o kadar yolu ne sıklıkla katedeceğine volatilite karar verir. Yüksek volatilite kötü değildir — sadece daha hızlıdır, iki yönde de."
+    },
+    {
+     "h": "Piyasa değeri, yatırılan para değildir",
+     "p": "Piyasa değeri, fiyat çarpı dolaşımdaki arzdır. Bir etikettir; içeri giren parayı ölçmez. Son işlem $1'dan olduysa ve 100 milyon coin varsa, bütün gün sadece birkaç bin dolar el değiştirse bile değer $100 milyon görünür. İnce coinler büyük piyasa değerlerini böyle taşır. Onu bir büyüklük olarak oku, inanmadan önce hacme bak."
+    },
+    {
+     "h": "Emir akışı: kim agresif",
+     "p": "Her işlemin bir alıcısı ve bir satıcısı vardır, yani 'satıcıdan çok alıcı var' diye bir şey mümkün değildir. Farklı olan şey agresifliktir. Emir akışı, hangi tarafın anında dolmak için spread'i geçtiğinin ve karşıda bekleyen limit emirlerini vurduğunun kaydıdır. Sabırsız olan alıcılarsa fiyat yükselir. Aynı piyasa, hız için ödemeye kimin razı olduğuyla anlatılmış hâli."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Dünkü devasa hacim neyi garanti eder:",
+     "o": [
+      "Bugün büyük pozisyondan kolayca çıkabileceğini",
+      "Bugünkü likidite hakkında hiçbir şeyi",
+      "Bugün volatilitenin düşük olacağını",
+      "Fiyatın yükselmeye devam edeceğini"
+     ]
+    },
+    {
+     "q": "$100 milyonluk piyasa değeri şu demek:",
+     "o": [
+      "Fiyat çarpı dolaşımdaki arz $100 milyon",
+      "Coine $100 milyon yatırıldı",
+      "Proje rezervde $100 milyon tutuyor",
+      "Günlük hacmi $100 milyon"
+     ]
+    },
+    {
+     "q": "'Satıcıdan çok alıcı var' ifadesi:",
+     "o": [
+      "Her fiyat yükselişinin oluş biçimi",
+      "İmkansız — her işlemde ikisi de var",
+      "Yüksek hacmin başka bir söylenişi",
+      "Emir defteri derinliğinin ölçüsü"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "wd8",
+   "t": "Sana paraya mal olan kelimeler",
+   "cards": [
+    {
+     "h": "Shill ve ape",
+     "p": "Shill yapmak, zaten elinde olan bir coini senden alacak insanlara övmektir. Kelime genelde şakayla söylenir ve numara da budur — bir çıkar çatışmasını kişilik özelliği gibi gösterir. Ape yapmak ise hiç araştırmadan büyük almaktır, cesaret kılığına sokulmuş hâlde. İki kelime de pahalı bir hatayı bir yaşam tarzı gibi gösterir."
+    },
+    {
+     "h": "Rug pull, moon, 100x",
+     "p": "Rug pull, yeterince alıcı girdikten sonra yaratıcılarının insanların satmasını sağlayan para havuzunu çektiği bir tokendir. Grafikte dümdüz aşağı inen bir çizgi görürsün. O alıcıları toplamak için kullanılan kelimeler hep aynıdır: moon, 100x, erken. Arkasında yöntem olmayan bir fiyat hedefi analiz değil, yemdir."
+    },
+    {
+     "h": "'Garantili' alarm kelimesidir",
+     "p": "Trading'de garantili getiri var olamaz, çünkü her pozisyonun karşı tarafında kaybeden birine ihtiyaç vardır. Sana sabit bir günlük yüzde teklif eden kişi, ya yeni yatırımcıların parasıyla ya da hiçbir şeyle ödüyordur. İstisnası yoktur, site ne kadar profesyonel görünürse görünsün. 'Garantili' kelimesini okuduğun anda neye baktığını zaten biliyorsun."
+    },
+    {
+     "h": "Yatırım tavsiyesi değildir",
+     "p": "Bu cümle bir muska gibi taşınır; sanki eklendiğinde ücretli bir reklamı zararsız hâle getirirmiş gibi. Kişinin yaptığı şeyde hiçbir şeyi değiştirmez. Her seferinde onun yerine tek bir soru koy: ben alırsam bu kişi ne kazanır? Dürüst cevap 'sana satar' ise, ihtiyacın olan bütün analiz elinde demektir."
+    }
+   ],
+   "quiz": [
+    {
+     "q": "Biri günde garantili %3 teklif ediyor. Bu:",
+     "o": [
+      "Yeterince iyi yazılımla gerçekçi",
+      "İstisnasız bir dolandırıcılık",
+      "Yüksek kaldıraçla mümkün",
+      "Sadece küçük tutarlar için kabul edilebilir"
+     ]
+    },
+    {
+     "q": "Rug pull ne zaman olur:",
+     "o": [
+      "Borsa coini listeden çıkardığında",
+      "Fiyat ağır hacimle sert düştüğünde",
+      "Yaratıcılar satışı sağlayan parayı çektiğinde",
+      "Ekip güncelleme paylaşmayı bıraktığında"
+     ]
+    },
+    {
+     "q": "Bir gönderideki 'yatırım tavsiyesi değildir' sana şunu söyler:",
+     "o": [
+      "Gönderi hukuken incelendi",
+      "Paylaşanın niyeti hakkında hiçbir şey",
+      "Paylaşanın o coinden hiç yok",
+      "İçindeki iddialar doğrulandı"
+     ]
+    }
+   ],
+   "try": {
+    "p": "Artık yolun geri kalanının yazıldığı kelimeler elinde. Paper trade terminalini aç ve bu kelimelerden birini ekrana koy: küçük bir pozisyon aç, K/Z'nin hareketini izle, sonra kapat.",
+    "label": "Paper Trade'i Aç →"
+   }
+  }
+ ]
+}
