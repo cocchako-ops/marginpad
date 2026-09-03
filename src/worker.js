@@ -5586,6 +5586,15 @@ render();setInterval(reload,15000);
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }
 
+// RFC 2047 "encoded words" in mail subjects (=?UTF-8?Q?Creator_program_=E2=80=A6?=) used to land in support tickets verbatim
+// (2026-09-03). Decodes Q and B words, joins adjacent words, tolerates bad input by leaving it as is.
+function mimeDecodeWords(s) {
+  return String(s || '').replace(/\?=\s+=\?/g, '?==?').replace(/=\?([^?]+)\?([bBqQ])\?([^?]*)\?=/g, (m, cs, enc, txt) => {
+    try { let bytes; if (/^b$/i.test(enc)) { const bin = atob(txt); bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i); }
+      else { const t = txt.replace(/_/g, ' '); const arr = []; for (let i = 0; i < t.length; i++) { if (t[i] === '=' && /^[0-9A-Fa-f]{2}$/.test(t.substr(i + 1, 2))) { arr.push(parseInt(t.substr(i + 1, 2), 16)); i += 2; } else arr.push(t.charCodeAt(i) & 255); } bytes = new Uint8Array(arr); }
+      return new TextDecoder(/8859-1|latin1|windows-1252/i.test(cs) ? 'windows-1252' : 'utf-8').decode(bytes); } catch (e) { return m; }
+  });
+}
 // ---- mp-ops v2 (2026-09-03) ----
 function _fnv(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h.toString(16).padStart(8, '0'); }
 const OPS_V = _fnv(OPS_SHELL + OPS_CSS + OPS_JS);
@@ -12376,6 +12385,7 @@ async function handleReward(url, request, env) {
     let sj = { open: [], closed: [], replies: [], transient: true }; // polled every 30s; a DO reset mid-flight (every deploy) must not 500
     for (let attempt = 0; attempt < 2; attempt++) { try { const rr = await sst.fetch(new Request('https://do/support')); sj = await rr.json(); break; } catch (e) {} }
     sj.emailReady = !!env.RESEND_API_KEY;
+    try { for (const k of ['open', 'closed']) for (const t of sj[k] || []) if (t && /=\?[^?]+\?[bBqQ]\?/.test(t.message || '')) t.message = mimeDecodeWords(t.message); for (const r of sj.replies || []) if (r && /=\?/.test(r.subject || '')) r.subject = mimeDecodeWords(r.subject); } catch (e) {} // tickets filed before the ingest decode (2026-09-03)
     return jr(sj);
   }
   if (path === '/support/convs' && request.method === 'GET') { // admin: support threads grouped into conversations (chat view)
@@ -12384,6 +12394,7 @@ async function handleReward(url, request, env) {
     let sj = { conversations: [], transient: true };
     for (let attempt = 0; attempt < 2; attempt++) { try { const rr = await sst.fetch(new Request('https://do/support/convs')); sj = await rr.json(); break; } catch (e) {} }
     sj.emailReady = !!env.RESEND_API_KEY;
+    try { for (const c of sj.conversations || []) { if (/=\?[^?]+\?[bBqQ]\?/.test(c.title || '')) c.title = mimeDecodeWords(c.title); for (const m of c.messages || []) if (m && /=\?[^?]+\?[bBqQ]\?/.test(m.body || '')) m.body = mimeDecodeWords(m.body); } } catch (e) {} // tickets filed before the ingest decode (2026-09-03)
     return jr(sj);
   }
   // admin: reply to a support message by email — sent FROM support@marginpad.io via Resend
@@ -13247,13 +13258,13 @@ export default {
           } catch (e) {}
         })(),
         (async () => { // support: conversations, not rows — the old strip counted every user message in an open thread as a "ticket"
-          try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/support')); const d = await r.json(); const conv = {}, repC = {}, repE = {};
-            for (const x of (d && d.replies) || []) { if (x.conv) repC[x.conv] = Math.max(repC[x.conv] || 0, +x.ts || 0); if (x.email) repE[x.email] = Math.max(repE[x.email] || 0, +x.ts || 0); } // admin email replies live in sreply, not in the support rows
-            for (const t of (d && d.open) || []) { const c = t.conv || String(t.ts); const cur = conv[c]; if (!cur || t.ts > cur.ts) conv[c] = { ts: t.ts, email: t.email || '', admin: t.address === 'admin' }; }
-            const answered = c => conv[c].admin || Math.max(repC[c] || 0, repE[conv[c].email] || 0) >= conv[c].ts;
-            const ids = Object.keys(conv), unans = ids.filter(c => !answered(c)), old = unans.filter(c => now - conv[c].ts > 24 * H);
-            if (unans.length) add('support', old.length ? 'amber' : 'info', 'support', '<b>' + unans.length + '</b> support ' + (unans.length === 1 ? 'thread' : 'threads') + ' waiting for a reply' + (old.length ? ' · <b>' + old.length + '</b> older than 24h' : '') + (ids.length > unans.length ? ' · ' + ids.length + ' open' : ''));
-            else if (ids.length) add('support', 'ok', 'support', ids.length + ' open support ' + (ids.length === 1 ? 'thread' : 'threads') + ', all answered');
+          // Same source as the Support view (/support/convs): conversations with their email replies merged, closed flag,
+          // last inbound time. "Waiting" = open and the last message came from the user. The earlier row-based count was wrong twice.
+          try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/support/convs')); const d = await r.json();
+            const open = ((d && d.conversations) || []).filter(c => !c.closed && (c.messages || []).length);
+            const unans = open.filter(c => c.messages[c.messages.length - 1].dir === 'in'), old = unans.filter(c => now - (+c.lastInTs || +c.lastTs || 0) > 24 * H);
+            if (unans.length) add('support', old.length ? 'amber' : 'info', 'support', '<b>' + unans.length + '</b> support ' + (unans.length === 1 ? 'thread' : 'threads') + ' waiting for a reply' + (old.length ? ' · <b>' + old.length + '</b> older than 24h' : '') + (open.length > unans.length ? ' · ' + open.length + ' open' : ''));
+            else if (open.length) add('support', 'ok', 'support', open.length + ' open support ' + (open.length === 1 ? 'thread' : 'threads') + ', all answered');
           } catch (e) {}
         })(),
         (async () => { // cron dead-man + backups + Telegram channel
@@ -14605,7 +14616,7 @@ export default {
   async email(message, env, ctx) {
     try {
       const from = String(message.from || '').slice(0, 120);
-      let subject = ''; try { subject = String(message.headers.get('subject') || '').slice(0, 200); } catch (e) {}
+      let subject = ''; try { subject = mimeDecodeWords(String(message.headers.get('subject') || '')).slice(0, 200); } catch (e) {}
       let raw = ''; try { raw = await new Response(message.raw).text(); } catch (e) {}
       const text = extractEmailText(raw);
       const msg = ((subject ? subject + '\n\n' : '') + text).slice(0, 1000) || '(no text body)';
