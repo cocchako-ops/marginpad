@@ -12385,7 +12385,7 @@ async function handleReward(url, request, env) {
     let sj = { open: [], closed: [], replies: [], transient: true }; // polled every 30s; a DO reset mid-flight (every deploy) must not 500
     for (let attempt = 0; attempt < 2; attempt++) { try { const rr = await sst.fetch(new Request('https://do/support')); sj = await rr.json(); break; } catch (e) {} }
     sj.emailReady = !!env.RESEND_API_KEY;
-    try { for (const k of ['open', 'closed']) for (const t of sj[k] || []) if (t && /=\?[^?]+\?[bBqQ]\?/.test(t.message || '')) t.message = mimeDecodeWords(t.message); for (const r of sj.replies || []) if (r && /=\?/.test(r.subject || '')) r.subject = mimeDecodeWords(r.subject); } catch (e) {} // tickets filed before the ingest decode (2026-09-03)
+    try { for (const k of ['open', 'closed']) for (const t of sj[k] || []) if (t && t.address !== 'admin' && t.message && /=\?[^?]+\?[bBqQ]\?|^--[0-9A-Za-z_-]{8,}|Content-Type:|<div dir=/im.test(t.message)) t.message = mailBodyClean(mimeDecodeWords(t.message)); for (const r of sj.replies || []) if (r && /=\?/.test(r.subject || '')) r.subject = mimeDecodeWords(r.subject); } catch (e) {} // tickets filed before the ingest rewrite (2026-09-03)
     return jr(sj);
   }
   if (path === '/support/convs' && request.method === 'GET') { // admin: support threads grouped into conversations (chat view)
@@ -12394,7 +12394,7 @@ async function handleReward(url, request, env) {
     let sj = { conversations: [], transient: true };
     for (let attempt = 0; attempt < 2; attempt++) { try { const rr = await sst.fetch(new Request('https://do/support/convs')); sj = await rr.json(); break; } catch (e) {} }
     sj.emailReady = !!env.RESEND_API_KEY;
-    try { for (const c of sj.conversations || []) { if (/=\?[^?]+\?[bBqQ]\?/.test(c.title || '')) c.title = mimeDecodeWords(c.title); for (const m of c.messages || []) if (m && /=\?[^?]+\?[bBqQ]\?/.test(m.body || '')) m.body = mimeDecodeWords(m.body); } } catch (e) {} // tickets filed before the ingest decode (2026-09-03)
+    try { for (const c of sj.conversations || []) { if (/=\?[^?]+\?[bBqQ]\?/.test(c.title || '')) c.title = mimeDecodeWords(c.title); for (const m of c.messages || []) if (m && m.dir === 'in' && m.body && /=\?[^?]+\?[bBqQ]\?|^--[0-9A-Za-z_-]{8,}|Content-Type:|<div dir=/im.test(m.body)) m.body = mailBodyClean(mimeDecodeWords(m.body)); } } catch (e) {} // tickets filed before the ingest rewrite (2026-09-03): decode words, drop MIME lines and tag debris
     return jr(sj);
   }
   // admin: reply to a support message by email — sent FROM support@marginpad.io via Resend
@@ -14640,16 +14640,45 @@ export default {
 };
 // Pull a readable text body out of a raw MIME email (best-effort, no library).
 function decodeQP(s) { return String(s).replace(/=\r?\n/g, '').replace(/=([0-9A-Fa-f]{2})/g, (_, h) => String.fromCharCode(parseInt(h, 16))); }
+// Inbound mail → ticket text (rewritten 2026-09-03). The old version searched for the first "text/plain" and otherwise
+// tag-stripped the WHOLE raw message, so HTML-only mails (every phone mail client) filed MIME boundaries and
+// "Content-Type: text/html" lines as the ticket body. This one walks the MIME tree: split on the boundary, decode each
+// part by its own Content-Transfer-Encoding and charset, prefer text/plain, fall back to text/html turned into text,
+// then drop quoted reply history.
+function _mimeSplit(raw) { let bs = raw.indexOf('\r\n\r\n'), sep = 4; if (bs < 0) { bs = raw.indexOf('\n\n'); sep = 2; } return bs < 0 ? { h: raw, b: '' } : { h: raw.slice(0, bs), b: raw.slice(bs + sep) }; }
+function _mimeHeader(h, name) { const m = h.match(new RegExp('(?:^|\\r?\\n)' + name + ':[ \\t]*([^\\r\\n]*(?:\\r?\\n[ \\t][^\\r\\n]*)*)', 'i')); return m ? m[1].replace(/\r?\n[ \t]+/g, ' ').trim() : ''; }
+function _mimeDecodeBody(body, cte, charset) {
+  const cs = /8859-1|latin1|windows-1252|cp1252/i.test(charset || '') ? 'windows-1252' : 'utf-8';
+  try { if (/base64/i.test(cte)) { const bin = atob(body.replace(/[^A-Za-z0-9+/=]/g, '')); const bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i); return new TextDecoder(cs).decode(bytes); } } catch (e) {}
+  if (/quoted-printable/i.test(cte)) { try { const t = body.replace(/=\r?\n/g, ''); const arr = []; for (let i = 0; i < t.length; i++) { if (t[i] === '=' && /^[0-9A-Fa-f]{2}$/.test(t.substr(i + 1, 2))) { arr.push(parseInt(t.substr(i + 1, 2), 16)); i += 2; } else arr.push(t.charCodeAt(i) & 255); } return new TextDecoder(cs).decode(new Uint8Array(arr)); } catch (e) { return decodeQP(body); } }
+  return body;
+}
+function _htmlToText(h) { return String(h || '').replace(/<style[\s\S]*?<\/style>|<script[\s\S]*?<\/script>/gi, ' ').replace(/<br\s*\/?>|<\/p>|<\/div>|<\/li>|<\/tr>/gi, '\n').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/[ \t]+/g, ' ').replace(/\n[ \t]+/g, '\n').replace(/\n{3,}/g, '\n\n').trim(); }
+function _mimeParts(raw, depth) { // returns [{ctype, text}] leaves in document order
+  const { h, b } = _mimeSplit(raw); const ct = _mimeHeader(h, 'content-type') || 'text/plain', cte = _mimeHeader(h, 'content-transfer-encoding') || '7bit';
+  const bm = ct.match(/boundary="?([^";\r\n]+)"?/i);
+  if (/^multipart\//i.test(ct) && bm && depth < 4) { const parts = b.split(new RegExp('\\r?\\n?--' + bm[1].replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?:--)?(?:\\r?\\n|$)')); const out = []; for (const p of parts) { if (!p || !/\S/.test(p) || /^\s*--\s*$/.test(p)) continue; if (!/^[\w-]+:/i.test(p.replace(/^\s+/, ''))) continue; out.push(..._mimeParts(p.replace(/^\r?\n/, ''), depth + 1)); } return out; }
+  const csm = ct.match(/charset="?([^";\r\n]+)"?/i);
+  return [{ ctype: ct.split(';')[0].trim().toLowerCase(), text: _mimeDecodeBody(b, cte, csm ? csm[1] : '') }];
+}
 function extractEmailText(raw) {
   if (!raw) return '';
-  const m = raw.search(/content-type:\s*text\/plain/i);
-  if (m >= 0) {
-    let part = raw.slice(m), bs = part.indexOf('\r\n\r\n'); if (bs < 0) bs = part.indexOf('\n\n');
-    if (bs >= 0) { let body = part.slice(bs).replace(/^[\r\n]+/, ''); const bnd = body.search(/\r?\n--/); if (bnd > 0) body = body.slice(0, bnd); return decodeQP(body).trim().slice(0, 4000); }
-  }
-  let bs2 = raw.indexOf('\r\n\r\n'); if (bs2 < 0) bs2 = raw.indexOf('\n\n');
-  let body2 = bs2 >= 0 ? raw.slice(bs2) : raw;
-  return decodeQP(body2).replace(/<[^>]+>/g, ' ').replace(/[ \t]+/g, ' ').trim().slice(0, 4000);
+  let parts; try { parts = _mimeParts(String(raw), 0); } catch (e) { parts = []; }
+  const plain = parts.filter(p => p.ctype === 'text/plain' && /\S/.test(p.text))[0];
+  const html = parts.filter(p => p.ctype === 'text/html' && /\S/.test(p.text))[0];
+  let text = plain ? plain.text : (html ? _htmlToText(html.text) : _htmlToText(decodeQP(_mimeSplit(String(raw)).b)));
+  return mailBodyClean(text).slice(0, 4000);
+}
+// Strips what should never be in a ticket body: MIME boundary/header lines that older ingests let through, quoted reply
+// history, signatures' "Sent from my iPhone". Used at ingest and when serving tickets stored before 2026-09-03.
+function mailBodyClean(t) {
+  let s = String(t || '').replace(/\r/g, '');
+  s = s.split('\n').filter(l => !/^--[0-9A-Za-z'()+_,\-./:=?]{8,}(--)?\s*$/.test(l) && !/^(Content-(Type|Transfer-Encoding|Disposition|ID)|MIME-Version|charset=)[:\s]/i.test(l.trim())).join('\n');
+  s = s.replace(/<div dir="auto"><\/div>/gi, '').replace(/<[^>]+>/g, function (m) { return /^<\/?(br|p|div)/i.test(m) ? '\n' : ' '; });
+  const cut = s.search(/\n(On .{3,120} wrote:|-{3,}\s*Original Message\s*-{3,}|From: .*\nSent: |Le .{3,120} a écrit\s*:)/i); if (cut > 0) s = s.slice(0, cut);
+  s = s.split('\n').filter(l => !/^\s*>/.test(l)).join('\n');
+  s = s.replace(/\n\s*Sent from my (iPhone|iPad|Galaxy|Samsung|Android)[^\n]*/gi, '').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  return s;
 }
 
 // ---------- Demo Spot (Durable Object, 2026-08-02) ----------
