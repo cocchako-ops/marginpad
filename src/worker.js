@@ -4519,9 +4519,9 @@ async function perfWrap(env, ctx, g, samp, fn) { // samp = 1-in-N sampling (1 = 
 // no call site had to change; it is stable per alarm because every alarm starts with a fixed phrase.
 function alertKindOf(text) { const t = String(text || '').replace(/<[^>]+>/g, ' ').replace(/[^A-Za-z ]+/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase(); const k = t.split(' ').filter(w => w.length > 1).slice(0, 4).join('-').slice(0, 36); return k || 'misc'; }
 function alertSevOf(text) { const t = String(text || ''); if (/recovered|login OK|E2E session|paid<\/b>|digest|expiring|minted|config changed|Ticks adjust|self-heal|premium signals request|content post/i.test(t)) return 'info'; if (/FAIL|DOWN|STALE|DEAD|BREACH|SILENT|PAO|not being paged|errRate|wrong passwords|Cron task|Server error|Collector je/i.test(t)) return 'red'; return 'warn'; }
-async function tgAdmin(env, text) { // tgApi never throws (null on network error, {ok:false} on API error) — the old version returned true unconditionally, so nothing could ever learn that admin alerts were dead
+async function tgAdmin(env, text, opts) { // tgApi never throws (null on network error, {ok:false} on API error) — the old version returned true unconditionally, so nothing could ever learn that admin alerts were dead. opts {kind, sev} override the derived alert identity (digests whose text starts with a username need it).
   if (!env.TELEGRAM_TOKEN || !env.TG_ADMIN_CHAT) return false;
-  const kind = alertKindOf(text), sev = alertSevOf(text), plain = String(text || '').replace(/<[^>]+>/g, '').slice(0, 220);
+  const kind = (opts && opts.kind) || alertKindOf(text), sev = (opts && opts.sev) || alertSevOf(text), plain = String(text || '').replace(/<[^>]+>/g, '').slice(0, 220);
   try { const sz = +(await env.STATS.get('alrt:snooze:' + kind)) || 0; if (sz > Date.now()) { try { await opslogPush(env, 'alertlog', { ts: Date.now(), k: kind, s: sev, t: plain, ok: false, sup: true }, 400, 30 * 86400000); } catch (e) {} return true; } } catch (e) {} // snoozed from Telegram/mp-ops: swallowed but recorded; "true" so callers keep their own dedupe bookkeeping
   const kb = sev === 'info' ? undefined : { inline_keyboard: [[{ text: 'Ack', callback_data: 'ak:' + kind }, { text: 'Snooze 6h', callback_data: 'sz6:' + kind }, { text: 'Snooze 24h', callback_data: 'sz24:' + kind }]] };
   let r = null; try { r = await tgApi(env.TELEGRAM_TOKEN, 'sendMessage', { chat_id: env.TG_ADMIN_CHAT, parse_mode: 'HTML', disable_web_page_preview: true, text, ...(kb ? { reply_markup: kb } : {}) }); } catch (e) { r = null; }
@@ -4875,7 +4875,7 @@ async function checkMorningBrief(env) {
       '',
       '<a href="https://marginpad.io/api/stats">Otvori ops →</a>',
     ];
-    await tgAdmin(env, lines.join('\n'));
+    await tgAdmin(env, lines.join('\n'), { kind: 'morning-brief', sev: 'info' });
   } catch (e) {}
 }
 // Friend duels: settle every active duel whose 7-day window has ended → decide winner + grant XP (idempotent in the DO).
@@ -5126,7 +5126,7 @@ async function checkOpsAlerts(env) {
             ? '<b>' + fmtU(e2) + '</b> otvorio ' + (e2.side === 'short' ? 'SHORT' : 'LONG') + ' ' + e2.sym + ' ' + Math.round(+e2.lev || 1) + 'x · <b>$' + Math.round(+e2.margin).toLocaleString('en-US') + '</b>'
             : '<b>' + fmtU(e2) + '</b> LIKVIDIRAN na ' + e2.sym + ' ' + (e2.side === 'short' ? 'SHORT' : 'LONG') + ' · −$' + Math.round(Math.abs(+e2.pnl || +e2.margin)).toLocaleString('en-US'));
           const extra = hot.length > 6 ? '\n… i još ' + (hot.length - 6) : '';
-          if (await tgAdmin(env, lines.join('\n') + extra + '\n<a href="https://marginpad.io/api/stats">Live trades →</a>')) await env.STATS.put('alrt:tevts', String(maxTs));
+          if (await tgAdmin(env, lines.join('\n') + extra + '\n<a href="https://marginpad.io/api/stats">Live trades →</a>', { kind: 'live-trades', sev: 'info' })) await env.STATS.put('alrt:tevts', String(maxTs));
         } else {
           await env.STATS.put('alrt:tevts', String(maxTs)); // advance the watermark even with nothing hot
         }
