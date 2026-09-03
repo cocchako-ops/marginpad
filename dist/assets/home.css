@@ -2972,8 +2972,12 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
 
 @media (max-width:720px) and (min-height:560px){
   /* --- fit-screen page: header / chart / sheet / bottom tab bar, nothing scrolls --- */
-  body.paper-page{display:flex;flex-direction:column;overflow:hidden;height:100vh;height:100dvh;padding-bottom:env(safe-area-inset-bottom)!important;} /* no bottom tab bar on the terminal: the sheet docks on the screen edge (home indicator respected) */
-  html.mp-ios body.paper-page{height:100vh;height:100svh;} /* iPhone Safari: the SMALL viewport (bottom bar expanded). dvh left the bar over the sheet and a JS innerHeight measurement pushed the sheet below the fold (Safari reports the large viewport at load) — svh is the one deterministic answer */
+  body.paper-page{display:flex;flex-direction:column;overflow:hidden;height:100vh;height:100dvh;min-height:0;padding-bottom:env(safe-area-inset-bottom)!important;} /* no bottom tab bar on the terminal: the sheet docks on the screen edge (home indicator respected). min-height:0 — the base body{min-height:100vh} (LARGE viewport, browser bar collapsed) silently kept the body taller than the visible area → the sheet sat under Safari's bottom bar (owner's iPhone, 2026-09-04) */
+  /* iPhone Safari: 100vh/dvh/svh and JS innerHeight all left the sheet under the bottom bar on the owner's phone (svh/dvh
+     unsupported there → 100vh = LARGE viewport, bar collapsed). Percent heights resolve against the initial containing block,
+     which iOS sizes to the VISIBLE area with the bar expanded — the one measure that works on every iOS version. */
+  html.mp-ios{height:100%;}
+  html.mp-ios body.paper-page{height:100%;min-height:0;max-height:100%;}
   body.paper-page>#mpCkBar{flex:0 0 auto;margin:6px 8px 0;} /* cookie consent (mp-nav) is inserted in flow before .wrap — as a flex item it takes its own space instead of pushing the terminal off-screen */
   body.paper-page>section,body.paper-page>footer{display:none!important;} /* worker-appended SEO block (invisible on desktop fit-screen too; stays in the DOM for crawlers) */
   body.paper-page .wrap{flex:1 1 auto;min-height:0;align-self:stretch;width:100%;max-width:none;margin:0;display:flex;flex-direction:column;height:auto;overflow:hidden;padding:0;} /* margin:0 auto on a flex item would shrink-wrap the whole terminal to its content width */
