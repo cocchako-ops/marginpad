@@ -11611,6 +11611,23 @@ async function gtFetch(env, path, ttl, ckey) {
   }
   return null;
 }
+// Same as gtFetch but the caller learns WHY it failed (GT 429 vs a real 404) — the contract lookup must not call a rate-limit "no such token". 3 attempts, 700/1500ms.
+async function gtFetchX(env, path, ttl, ckey) {
+  const ck = new Request('https://marginpad.io/__gt_' + ckey);
+  try { const hit = await caches.default.match(ck); if (hit) return { j: await hit.json(), status: 200 }; } catch (e) {}
+  let last = 0;
+  for (let att = 0; att < 3; att++) {
+    try {
+      const r = await fetch('https://api.geckoterminal.com/api/v2' + path, { headers: { accept: 'application/json' }, cf: { cacheTtl: ttl } });
+      last = r.status;
+      if (r.ok) { const j = await r.json(); try { await caches.default.put(ck, new Response(JSON.stringify(j), { headers: { 'content-type': 'application/json', 'cache-control': 'max-age=' + ttl } })); } catch (e) {} return { j, status: 200 }; }
+      if (r.status !== 429 && r.status < 500) return { j: null, status: r.status };
+    } catch (e) { last = 0; }
+    await new Promise(rs => setTimeout(rs, att === 0 ? 700 : 1500));
+  }
+  return { j: null, status: last || 429 };
+}
+const SPOT_WRAPPED = { 'So11111111111111111111111111111111111111112': 'SOL', '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'ETH', '0x4200000000000000000000000000000000000006': 'ETH', '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c': 'BNB', '0x55d398326f99059ff775485246999027b3197955': 'USDT', '0xdac17f958d2ee523a2206206994597c13d831ec7': 'USDT', '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d': 'USDC', 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v': 'USDC', 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB': 'USDT' }; // wrapped natives + stables by ADDRESS — a lookup would otherwise route them through the DEX path
 // Symbols that are NOT memes even when they head a hot pool (wrapped natives, stables, majors) — filtered out of the universe
 const SPOT_MEME_BLOCK = /^(W?ETH|W?BTC|CBBTC|W?SOL|W?BNB|USDT|USDC|USDE|DAI|FDUSD|TUSD|PYUSD|WSTETH|STETH|WEETH|JITOSOL|MSOL|JLP|SUI|XRP|DOGE|ADA|LINK|AVAX|TRX|TON|LTC)$/i;
 function _gtRows(j, net) { // one GeckoTerminal pool-list response → normalized meme rows
@@ -11734,6 +11751,32 @@ async function handleSpot(url, request, env) {
     const list = (j && j.data && j.data.attributes && j.data.attributes.ohlcv_list) || [];
     const bars = list.map(r => ({ time: +r[0], open: +r[1], high: +r[2], low: +r[3], close: +r[4], vol: +r[5] })).filter(x => x.time > 0 && x.close > 0).sort((x, y) => x.time - y.time);
     return new Response(JSON.stringify(bars), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60', ...CORS } });
+  }
+  if (path === '/token') { // any token by CONTRACT ADDRESS (owner, 2026-09-03, "like Phantom"). Our trending list first (no upstream call), then GeckoTerminal token + deepest pool; a GT rate-limit is reported as busy, never as "no such token".
+    const addr = String(url.searchParams.get('addr') || '').trim();
+    const isSol = /^[1-9A-HJ-NP-Za-km-z]{32,50}$/.test(addr), isEvm = /^0x[0-9a-fA-F]{40}$/.test(addr);
+    if (!isSol && !isEvm) return jr({ error: 'bad_address' }, 400);
+    const wrapped = SPOT_WRAPPED[addr] || SPOT_WRAPPED[addr.toLowerCase()];
+    if (wrapped) return jr({ error: 'major', sym: wrapped }, 400);
+    try { const m = (await spotMemeList(env)).find(x => x.mint === addr || x.mint === addr.toLowerCase()); if (m) return jr({ ok: true, mint: m.mint, pool: m.pool, net: m.net, native: m.native, sym: m.sym, name: m.name, logo: m.logo, price: +m.price || 0, liqUsd: +m.liqUsd || 0, vol24: +m.vol24 || 0, fdv: +m.fdv || 0, thin: (+m.liqUsd || 0) < 8000, listed: true }); } catch (e) {}
+    const want = String(url.searchParams.get('net') || '');
+    const nets = isSol ? ['solana'] : (SPOT_NETS[want] && want !== 'solana' ? [want] : ['bsc', 'base', 'eth']);
+    let found = null, net = null, busy = false;
+    for (const n of nets) {
+      const r = await gtFetchX(env, '/networks/' + n + '/tokens/' + addr + '?include=top_pools', 60, 'tok_' + n + '_' + addr);
+      if (r.j && r.j.data && r.j.data.attributes) { found = r.j; net = n; break; }
+      if (r.status === 429 || r.status >= 500 || r.status === 0) busy = true;
+    }
+    if (!found) return busy ? jr({ error: 'busy' }, 503) : jr({ error: 'not_found', nets }, 404);
+    const a = found.data.attributes || {};
+    const sym = String(a.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12) || '?';
+    if (SPOT_MEME_BLOCK.test(sym)) return jr({ error: 'major', sym }, 400); // majors and stables trade on the exchange, not through the DEX path
+    const pools = (found.included || []).filter(x => x && x.type === 'pool' && x.attributes).map(x => ({ id: String(x.id || '').replace(/^[a-z0-9_-]+_/, ''), liq: +x.attributes.reserve_in_usd || 0, vol24: +((x.attributes.volume_usd || {}).h24) || 0 })).filter(p => /^[A-Za-z0-9]{20,60}$/.test(p.id)).sort((x, y) => y.liq - x.liq);
+    if (!pools.length) return jr({ error: 'no_pool' }, 404);
+    const top = pools[0];
+    if (top.liq < 1000) return jr({ error: 'thin_pool', liqUsd: top.liq }, 400); // under $1k of liquidity the price is fiction, not a lesson
+    const logo = SPOT_LOGO_OK.test(String(a.image_url || '')) ? String(a.image_url).slice(0, 300) : '';
+    return jr({ ok: true, mint: addr, pool: top.id, net, native: SPOT_NETS[net].native, sym, name: String(a.name || '').slice(0, 48), logo, price: +a.price_usd || 0, liqUsd: top.liq, vol24: top.vol24, fdv: +a.fdv_usd || 0, thin: top.liq < 8000, listed: false });
   }
   if (path === '/board') { // season bank-balance board (2026-09-03): bragging rights only — the paid Spot board was retired 2026-08-17. Public, 60s edge cache.
     const ck = new Request('https://marginpad.io/__spot_board_v1');
