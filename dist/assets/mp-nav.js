@@ -218,8 +218,12 @@
   }
   // ===== give every standalone page the SAME desktop header as the homepage =====
   function canonHeaderHTML() {
-    var opts = [['/', 'EN'], ['/es/', 'ES'], ['/de/', 'DE'], ['/fr/', 'FR'], ['/it/', 'IT'], ['/pt/', 'PT'], ['/pl/', 'PL'], ['/nl/', 'NL'], ['/tr/', 'TR'], ['/ru/', 'RU'], ['/id/', 'ID'], ['/hi/', 'HI'], ['/vi/', 'VI']];
-    var lo = opts.map(function (o) { var code = o[0] === '/' ? 'en' : o[0].replace(/\//g, ''); return '<option value="' + o[0] + '"' + (code === _NL ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('');
+    // Language list = the 13 homepages that actually exist (/es/ … /ar/; it/pl/hi/vi were 404s until 2026-09-03). A page that
+    // translates ITSELF at runtime (Demo Spot) publishes window.__mpLangs (its codes, may include sr) + window.__mpSetLang(code)
+    // and the globe switches the page in place instead of navigating to a language homepage.
+    var opts = (window.__mpLangs || ['en', 'es', 'de', 'fr', 'pt', 'nl', 'tr', 'ru', 'id', 'zh', 'ja', 'ko', 'ar']).map(function (c) { return [c === 'en' ? '/' : '/' + c + '/', c.toUpperCase()]; });
+    var cur = window.__mpLangCur || _NL;
+    var lo = opts.map(function (o) { var code = o[0] === '/' ? 'en' : o[0].replace(/\//g, ''); return '<option value="' + o[0] + '"' + (code === cur ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('');
     return '<div class="brand"><button type="button" class="hmenu" id="mBurger" aria-label="' + TR('navMenu') + '"><span></span><span></span><span></span></button>'
       + '<a href="/" class="mark" aria-label="MarginPad — home">MARGIN<b>PAD</b></a></div>'
       + '<nav class="hnav">'
@@ -238,7 +242,7 @@
       if (h.querySelector('input,form,canvas,table,.tabs,[role="tablist"]')) return;
       h.classList.add('mpnav-hdr');
       h.innerHTML = canonHeaderHTML();   // burger click is bound by wireBurgers() below (mp-auth handles [data-auth-open] by delegation)
-      var ls = h.querySelector('#langSel'); if (ls) ls.addEventListener('change', function () { if (ls.value) { try { var _ln = (ls.options[ls.selectedIndex] || {}).textContent || ls.value; window.__mpTrack && window.__mpTrack('lang', _ln); } catch (e) {} location.href = ls.value; } });
+      var ls = h.querySelector('#langSel'); if (ls) ls.addEventListener('change', function () { if (ls.value) { try { var _ln = (ls.options[ls.selectedIndex] || {}).textContent || ls.value; window.__mpTrack && window.__mpTrack('lang', _ln); } catch (e) {} var _code = ls.value === '/' ? 'en' : ls.value.replace(/\//g, ''); if (window.__mpSetLang && window.__mpSetLang(_code) === true) return; location.href = ls.value; } });
     } catch (e) {}
   }
   // EVERY header burger opens THE shared drawer. Pages' own scripts may also route here (defi, demo-home,
