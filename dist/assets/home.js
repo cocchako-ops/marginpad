@@ -3731,19 +3731,27 @@ window.mpSrvOpen=function(payload,ok,fail){
   var form=side&&side.querySelector('.ptt-form'),pxTop=form&&form.querySelector('.pt2-top'),seg=document.getElementById('planSeg');
   var rail=document.getElementById('ptRecent'),tickets=document.getElementById('ptLastTrade'),tfw=top&&top.querySelector('.ptt-tfwrap'),saveBtn=document.getElementById('planSave');
   if(!chartEl||!top||!side||!form||!pxTop||!seg)return;
-  var bar=null,head=null,grab=null,cd=null,built=false,_lastSave=0,_seenIds=null;
+  var bar=null,head=null,grab=null,top_=null,cd=null,built=false,_lastSave=0,_seenIds=null;
   function build(){ if(built)return; built=true;
     bar=document.createElement('div');bar.className='pts-bar';chartEl.insertBefore(bar,chartEl.firstChild);bar.appendChild(top);if(rail)bar.appendChild(rail);
     if(!head){head=document.createElement('div');head.className='pts-head';form.insertBefore(head,form.firstChild);head.appendChild(pxTop);head.appendChild(seg);}
-    grab=document.createElement('button');grab.type='button';grab.className='pts-grab';grab.setAttribute('aria-label','Order form');side.insertBefore(grab,side.firstChild);
+    /* top row = Browse + Trades | grab | Chat. The bottom tab bar is hidden on the terminal (owner 2026-09-04); the three
+       actions ride mp-nav's global [data-mpbn] click handler (browse → drawer, trades → My Trades, chat → chat box). */
+    var S='fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+    var ICO={browse:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',trades:'<path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>',chat:'<path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5z"/>'};
+    function act(k,label){return '<button type="button" class="pts-act" data-mpbn="'+k+'" aria-label="'+label+'"><svg viewBox="0 0 24 24" '+S+'>'+ICO[k]+'</svg></button>';}
+    top_=document.createElement('div');top_.className='pts-top';
+    top_.innerHTML='<div class="pts-acts">'+act('browse','Browse')+act('trades','My Trades')+'</div><button type="button" class="pts-grab" aria-label="Order form"></button><div class="pts-acts r">'+act('chat','Chat')+'</div>';
+    side.insertBefore(top_,side.firstChild);grab=top_.querySelector('.pts-grab');
     grab.addEventListener('click',function(e){e.preventDefault();setOpen(!isOpen());});
+    top_.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pts-act');if(b&&b.getAttribute('data-mpbn')==='chat'&&!document.getElementById('chatFab')&&window.mpOpenChat){e.preventDefault();window.mpOpenChat();}}); // mp-nav's handler clicks #chatFab; fall back if a page has no fab
     if(tfw&&!cd){cd=document.createElement('span');cd.id='ptsCd';cd.className='pts-cd';cd.setAttribute('aria-hidden','true');tfw.appendChild(cd);}
     side.setAttribute('aria-expanded','false');
     measure();more();
   }
   function unbuild(){ if(!built)return; built=false;
     try{chartEl.insertBefore(top,chartEl.firstChild);if(rail)ptt.insertBefore(rail,side);if(bar&&bar.parentNode)bar.parentNode.removeChild(bar);}catch(e){}
-    try{if(grab&&grab.parentNode)grab.parentNode.removeChild(grab);}catch(e){}
+    try{if(top_&&top_.parentNode)top_.parentNode.removeChild(top_);top_=null;grab=null;}catch(e){}
     try{if(cd&&cd.parentNode){cd.parentNode.removeChild(cd);cd=null;}}catch(e){}
     ptt.classList.remove('pts-open');ptt.style.removeProperty('--pts-h');document.documentElement.style.removeProperty('--pts-h');side.removeAttribute('aria-expanded');
   }
@@ -3766,7 +3774,9 @@ window.mpSrvOpen=function(payload,ok,fail){
   function more(){ if(!tickets)return; var open=0;try{var d=JSON.parse(localStorage.getItem('mp_journal')||'[]')||[];for(var i=0;i<d.length;i++)if(d[i]&&d[i].status==='open')open++;}catch(e){}
     var extra=Math.max(0,open-1);if(extra&&built){if(tickets.getAttribute('data-more')!=='+'+extra)tickets.setAttribute('data-more','+'+extra);}else if(tickets.hasAttribute('data-more'))tickets.removeAttribute('data-more'); }
   // candle countdown mirror: tickCd owns .pt-cd (re-attaches it to #ptChart every second), we only copy its text
-  setInterval(function(){ if(!built||!cd)return; var s=document.querySelector('#ptChart .pt-cd'),t=s?String(s.textContent||'').replace(/^close in\s*/i,''):''; if(cd.textContent!==t)cd.textContent=t; },1000);
+  setInterval(function(){ if(!built)return; if(cd){var s=document.querySelector('#ptChart .pt-cd'),t=s?String(s.textContent||'').replace(/^close in\s*/i,''):''; if(cd.textContent!==t)cd.textContent=t;}
+    if(top_){var src=document.querySelector('.mpbn [data-mpbn="chat"]'),on=!!(src&&src.classList.contains('ct-alert')),mine=top_.querySelector('.pts-act[data-mpbn="chat"]');if(mine&&mine.classList.contains('ct-alert')!==on)mine.classList.toggle('ct-alert',on);} // unread-chat dot: mirror the (hidden) tab bar's state, which home.js's chat code maintains
+  },1000);
   // triggers
   seg.addEventListener('click',function(e){ if(!built)return; if(e.target&&e.target.closest&&e.target.closest('button'))setOpen(true); });
   ptt.addEventListener('click',function(e){ if(!built)return; if(e.target===ptt&&isOpen()){e.preventDefault();setOpen(false);} }); // the dim is .ptt::after → its clicks target .ptt itself

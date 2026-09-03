@@ -56,7 +56,7 @@ async function reach(p, sel, opts) {
     if (cx < 0 || cy < 0 || cx > innerWidth || cy > innerHeight) return { ok: false, why: 'outside viewport ' + JSON.stringify({ x: Math.round(cx), y: Math.round(cy) }) };
     const hit = document.elementFromPoint(cx, cy); if (!hit) return { ok: false, why: 'no hit' };
     if (!(hit === el || el.contains(hit))) return { ok: false, why: 'covered by ' + (hit.id ? '#' + hit.id : hit.tagName.toLowerCase() + '.' + String(hit.className).split(' ')[0]) };
-    if (opts && opts.aboveNav) { const nav = document.querySelector('.mpbn'); if (nav && r.bottom > nav.getBoundingClientRect().top + 1) return { ok: false, why: 'under the tab bar (bottom ' + Math.round(r.bottom) + ' > nav top ' + Math.round(nav.getBoundingClientRect().top) + ')' }; }
+    if (opts && opts.aboveNav) { const nav = document.querySelector('.mpbn'); const navTop = (nav && getComputedStyle(nav).display !== 'none') ? nav.getBoundingClientRect().top : innerHeight; if (r.bottom > navTop + 1) return { ok: false, why: 'below the usable edge (bottom ' + Math.round(r.bottom) + ' > ' + Math.round(navTop) + ')' }; }
     return { ok: true, rect: { x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height) } };
   }, sel, opts || null);
 }
@@ -72,7 +72,7 @@ async function phone(b, w, h, tag, full) {
     const st = await ev(p, () => {
       const c = document.getElementById('ptChart').getBoundingClientRect(), cc = document.querySelector('.ptt-chart').getBoundingClientRect();
       const nav = document.querySelector('.mpbn'), side = document.querySelector('.ptt-side'), sr = document.querySelector('.ptt').getBoundingClientRect();
-      return { bars: window.__mpPT().bars.length, built: !!(window.mpPtSheet && window.mpPtSheet.built()), chartH: Math.round(c.height), chartW: Math.round(c.width), chartTop: Math.round(cc.top), navTop: nav ? Math.round(nav.getBoundingClientRect().top) : null,
+      return { bars: window.__mpPT().bars.length, built: !!(window.mpPtSheet && window.mpPtSheet.built()), chartH: Math.round(c.height), chartW: Math.round(c.width), chartTop: Math.round(cc.top), navTop: nav ? Math.round(nav.getBoundingClientRect().top) : null, navShown: !!(nav && getComputedStyle(nav).display !== 'none'),
         sideTop: Math.round(side.getBoundingClientRect().top), sideBottom: Math.round(sr.bottom), open: side.getAttribute('aria-expanded'), ptsH: getComputedStyle(document.querySelector('.ptt')).getPropertyValue('--pts-h').trim(), bodyOverflow: getComputedStyle(document.body).overflow, scrollH: document.documentElement.scrollHeight, vh: innerHeight, bar: !!document.querySelector('.pts-bar'), cdText: (document.getElementById('ptsCd') || {}).textContent || '', cdOld: (() => { const e = document.querySelector('#ptChart .pt-cd'); return e ? getComputedStyle(e).display : 'none'; })() };
     });
     console.log('  state', JSON.stringify(st));
@@ -81,7 +81,8 @@ async function phone(b, w, h, tag, full) {
     ok('chart full width', st.chartW >= w - 1, 'w=' + st.chartW);
     ok('chart tall (>= 55% of viewport)', st.chartH >= h * 0.55, 'h=' + st.chartH);
     ok('page does not scroll', st.bodyOverflow === 'hidden' && st.scrollH <= st.vh + 1, 'overflow=' + st.bodyOverflow + ' scrollH=' + st.scrollH);
-    ok('sheet docked just above the tab bar', st.navTop != null && st.navTop - st.sideBottom >= 4 && st.navTop - st.sideBottom <= 16, 'terminalBottom=' + st.sideBottom + ' navTop=' + st.navTop);
+    ok('bottom tab bar hidden on the terminal (owner 2026-09-04)', st.navShown === false);
+    ok('sheet docked on the screen edge', st.vh - st.sideBottom >= 0 && st.vh - st.sideBottom <= 2, 'terminalBottom=' + st.sideBottom + ' vh=' + st.vh);
     ok('sheet collapsed by default', st.open === 'false');
     ok('countdown mirrored into the toolbar', /\d/.test(st.cdText), 'text=' + JSON.stringify(st.cdText));
     ok('old in-chart countdown hidden', st.cdOld === 'none', st.cdOld);
@@ -96,6 +97,9 @@ async function phone(b, w, h, tag, full) {
     await R(p, 'Long reachable (collapsed)', '#planSeg button[data-side="long"]', { aboveNav: true });
     await R(p, 'Short reachable (collapsed)', '#planSeg button[data-side="short"]', { aboveNav: true });
     await R(p, 'grab handle reachable', '.pts-grab', { aboveNav: true });
+    await R(p, 'Browse action reachable (sheet top row)', '.pts-act[data-mpbn="browse"]', { aboveNav: true });
+    await R(p, 'Trades action reachable (sheet top row)', '.pts-act[data-mpbn="trades"]', { aboveNav: true });
+    await R(p, 'Chat action reachable (sheet top row)', '.pts-act[data-mpbn="chat"]', { aboveNav: true });
     await R(p, 'live price visible', '#planLivePx', { aboveNav: true });
     const openHidden = await reach(p, '#planSave');
     ok('Open button hidden while collapsed', !openHidden.ok, JSON.stringify(openHidden));
@@ -204,14 +208,21 @@ async function phone(b, w, h, tag, full) {
     await shot(p, '10-advanced');
     await p.keyboard.press('Escape'); await wait(400);
     ok('Escape collapses', !(await ev(p, () => window.mpPtSheet.isOpen())));
-    // --- bottom bar: chat + browse ---
-    await tap(p, '[data-mpbn="chat"]'); await wait(900);
-    ok('Chat opens over the terminal', await ev(p, () => { const c = document.getElementById('chatBox'); return !!c && !c.hidden && c.getBoundingClientRect().height > 200; }));
+    // --- sheet top row actions: chat, browse, trades (replace the hidden bottom tab bar) ---
+    await tap(p, '.pts-act[data-mpbn="chat"]'); await wait(900);
+    ok('Chat opens from the sheet action', await ev(p, () => { const c = document.getElementById('chatBox'); return !!c && !c.hidden && c.getBoundingClientRect().height > 200; }));
     await shot(p, '11-chat');
     await ev(p, () => { const x = document.getElementById('ctClose'); if (x) x.click(); }); await wait(500);
-    await tap(p, '[data-mpbn="browse"]'); await wait(700);
-    ok('Browse opens', await ev(p, () => { const n = document.querySelector('.mpnav'); return !!n && !n.hidden; }));
-    await ev(p, () => { const x = document.querySelector('.mpnav-x'); if (x) x.click(); }); await wait(400);
+    await tap(p, '.pts-act[data-mpbn="browse"]'); await wait(700);
+    ok('Browse opens from the sheet action', await ev(p, () => { const n = document.querySelector('.mpnav'); return !!n && !n.hidden; }));
+    await shot(p, '12-browse');
+    await ev(p, () => { const x = document.querySelector('.mpnav-x'); if (x) x.click(); }); await wait(500);
+    await tap(p, '.pts-act[data-mpbn="trades"]'); await wait(800);
+    ok('Trades opens from the sheet action', await ev(p, () => { const d = document.getElementById('jrDrawer'); return !!d && !d.hidden; }));
+    await ev(p, () => { const x = document.querySelector('#jrDrawer .jr-x'); if (x) x.click(); }); await wait(500);
+    const dot = await ev(p, () => { const src = document.querySelector('.mpbn [data-mpbn="chat"]'); if (!src) return 'no src'; src.classList.add('ct-alert'); return 'set'; }); await wait(1300);
+    ok('unread-chat dot mirrored onto the sheet action', await ev(p, () => document.querySelector('.pts-act[data-mpbn="chat"]').classList.contains('ct-alert')), dot);
+    await ev(p, () => { const src = document.querySelector('.mpbn [data-mpbn="chat"]'); if (src) src.classList.remove('ct-alert'); });
     // --- guest nudge card (mp-auth) must clear the collapsed sheet: replay mp-auth's own stylesheet on a stand-in card ---
     const nudge = await ev(p, () => { const s = document.createElement('style'); s.textContent = '#mpGn{position:fixed;right:18px;bottom:18px;z-index:1450;width:min(340px,calc(100vw - 24px));background:#0e1116;border:1px solid rgba(194,246,74,.55);border-radius:14px;padding:14px 16px}@media(max-width:640px){#mpGn{right:12px;left:12px;bottom:76px;width:auto}}'; document.head.appendChild(s); const g = document.createElement('div'); g.id = 'mpGn'; g.textContent = 'stand-in'; document.body.appendChild(g); const r = g.getBoundingClientRect(), t = document.querySelector('.ptt-side').getBoundingClientRect(); const out = { cardBottom: Math.round(r.bottom), sheetTop: Math.round(t.top), clear: r.bottom <= t.top + 1 }; g.remove(); s.remove(); return out; });
     ok('guest nudge card would sit above the sheet', nudge.clear, JSON.stringify(nudge));
