@@ -1,6 +1,6 @@
 /* MarginPad ops v2 — one stylesheet, real file (2026-09-03). Dark palette shared with the site: bg #0a0b0d, lime #c2f64a, green #2ebd85, red #ff5a4d. */
 :root{--bg:#0a0b0d;--bg2:#0e1116;--panel:#10141a;--panel2:#141922;--line:#1c2230;--line2:#2a323c;--ink:#e8ecf1;--dim:#9aa3ad;--faint:#5c656f;--lime:#c2f64a;--green:#2ebd85;--red:#ff5a4d;--amber:#ffb347;--blue:#7fb2ff;--viol:#a78bfa;--mono:Consolas,'Space Mono',monospace;--sidew:232px}
-*{box-sizing:border-box}html{height:100%}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,system-ui,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;min-height:100%}
+*{box-sizing:border-box}[hidden]{display:none!important}html{height:100%}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,system-ui,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;min-height:100%}
 a{color:var(--lime);text-decoration:none}a:hover{text-decoration:underline}button{font:inherit;color:inherit}
 .app{display:flex;min-height:100vh}
 .side{width:var(--sidew);flex:0 0 auto;background:var(--bg2);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:auto}
