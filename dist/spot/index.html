@@ -280,6 +280,7 @@
   .ch-amt span{display:block;color:var(--faint);font-size:9.5px;font-weight:400;}
   .wl-acts{display:flex;justify-content:center;gap:16px;margin-bottom:20px;}
   .tok{margin:0 0 8px;padding:8px;border:1px solid #3a2f5c;border-radius:12px;background:#120f1c}.tok .crow{cursor:pointer}.tok-l{font-size:11.5px;color:#a79fc4;line-height:1.45;padding:6px 4px 2px}.tok-l a{color:#c2f64a}.tok.warn{color:#e9e7df;font-size:12.5px;padding:10px 12px}
+  .o-list{display:flex;flex-direction:column;gap:6px;margin:6px 0 12px}.o-row{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:10px;background:#0f131a;border:1px solid #1f2630;font-size:12.5px}.o-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.o-b b{color:#e9e7df}.o-b span{font-size:11px;color:#8b97a5}.o-st{font-size:11px;color:#8b97a5;text-align:right;max-width:46%}.o-st.filled{color:#2ebd85}.o-st.failed{color:#ff5a4d}.o-done{opacity:.75;display:flex;flex-direction:column;gap:6px}
   .meme-more{display:block;width:100%;margin-top:8px;background:#161b26;border:1px solid #2a3140;color:#c8d0d9;border-radius:10px;padding:10px;font-weight:700;font-size:12.5px;cursor:pointer}.meme-more:hover{color:#c2f64a;border-color:#c2f64a}
   .cal-h{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#8b97a5;margin:10px 0 6px;text-transform:uppercase;letter-spacing:.05em}.cal-h b{color:#c8d0d9;text-transform:none;letter-spacing:0;font-size:11px}
   .cal{display:grid;grid-template-columns:repeat(14,1fr);gap:4px}.cal i{display:block;aspect-ratio:1;border-radius:4px;background:#161b22;border:1px solid #1f2630}.cal i.g{background:#2ebd85;border-color:#2ebd85}.cal i.r{background:#ff5a4d;border-color:#ff5a4d}.cal i.f{background:#3a424d;border-color:#3a424d}
@@ -588,6 +589,7 @@
       <div id="exAssets">
         <div class="ex-colh"><span>Your assets</span><span class="exch-s">live P&amp;L per coin</span></div>
         <div id="exHolds"><div class="empty">Loading…</div></div>
+        <div id="exOrders"></div>
       </div>
       <div id="exMarkets" hidden>
         <div class="ex-colh"><span>Markets</span><span class="exch-s">top 250 by market cap</span></div>
@@ -649,6 +651,8 @@
       <button class="buy on" id="segBuy" type="button">Buy</button>
       <button class="sell" id="segSell" type="button">Sell</button>
     </div>
+    <div class="seg" id="tmModeSeg" style="margin-top:8px"><button class="buy on" id="modeMkt" type="button" style="color:#e9e7df">Market</button><button class="sell" id="modeLim" type="button" style="color:#e9e7df">Limit</button></div>
+    <div id="tmLimitRow" hidden><div class="tin-l">Limit price (USD) — buys fill at or below, sells at or above · checked every 10 minutes</div><input class="tin" id="tmLimit" type="number" inputmode="decimal" min="0" step="any" placeholder="price" /></div>
     <div id="tmBuyIn">
       <div class="tin-l" id="tmBuyLbl">Amount (USDT)</div>
       <input class="tin" id="tmUsd" type="number" inputmode="decimal" min="1" step="any" placeholder="100" />
@@ -752,6 +756,7 @@
       PORT=d;
       if(d.fresh)toast('<b>Your $10,000 card has arrived.</b> The map shows the way — start at the bank.');
       [renderMast,renderMap,renderEquity,renderDonut,renderCal,renderSpotBoard].forEach(function(f){try{f();}catch(e){}});
+      loadOrders();
       try{if(VIEW==='bank')renderBank();if(VIEW==='ex')renderEx();if(VIEW==='wal')renderWal();}catch(e){}
       loadHistory(true);
     }).catch(function(){});
@@ -959,12 +964,15 @@
       openTrade({kind:m.k==='meme'?'meme':'cex',sym:m.k==='meme'?(m.sym||'?'):h.sym,name:m.name||'',logo:m.logo||'',price:h.price,mint:m.mint,pool:m.pool,net:m.net||'solana',holdSym:h.sym,defaultSide:'sell'});
     });});
   }
+  function loadOrders(){fetch('/api/spot/order',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'list'})}).then(function(r){return r.json();}).then(function(j){if(j&&j.open){ORDERS=j;renderOrders();}}).catch(function(){});}
+  function ordersHtml(list){return list.map(function(o){var sym=(o.meta&&o.meta.symbol)||String(o.sym||'').replace(/^[a-z]+:/,'');var what=o.side==='buy'?(fmtUsd(o.usdUsd)+' of '+esc(sym)):(o.pct+'% of '+esc(sym));var st=o.status==='open'?'<button class="cop-go" type="button" data-ocancel="'+esc(o.id)+'" style="background:#3a424d;color:#e9e7df">Cancel</button>':'<span class="o-st '+esc(o.status)+'">'+esc(o.status)+(o.note?' · '+esc(o.note):'')+'</span>';return '<div class="o-row"><span class="o-b"><b>'+(o.side==='buy'?'Buy':'Sell')+' '+what+'</b><span>'+(o.side==='buy'?'at or below ':'at or above ')+fmtPx(o.price)+' · placed '+ago(o.ts)+'</span></span>'+st+'</div>';}).join('');}
+  function renderOrders(){var hosts=[$('exOrders'),$('wlOrders')];if(!ORDERS)return;hosts.forEach(function(h){if(!h)return;var isWal=h.id==='wlOrders';var open=ORDERS.open.filter(function(o){return isWal?o.kind==='meme':o.kind!=='meme';}),done=ORDERS.done.filter(function(o){return isWal?o.kind==='meme':o.kind!=='meme';}).slice(0,5);if(!open.length&&!done.length){h.innerHTML='';return;}h.innerHTML='<div class="'+(isWal?'wl-sec':'ex-colh')+'"><span>'+(open.length?'Open orders ('+open.length+')':'Recent orders')+'</span><span class="exch-s">limit · checked every 10 min</span></div><div class="o-list">'+ordersHtml(open)+(done.length?'<div class="o-done">'+ordersHtml(done)+'</div>':'')+'</div>';Array.prototype.forEach.call(h.querySelectorAll('[data-ocancel]'),function(b){b.addEventListener('click',function(){b.disabled=true;fetch('/api/spot/order',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'cancel',id:b.getAttribute('data-ocancel')})}).then(function(r){return r.json();}).then(function(){toast('Order cancelled.');loadOrders();}).catch(function(){b.disabled=false;});});});});}
   function renderExAssets(){
     var el=$('exHolds');var d=PORT;if(!el||!d)return;
     var ex=((d.holds)||[]).filter(function(h){return !(h.meta&&h.meta.k==='meme');}).sort(function(a,b){return b.valueUsd-a.valueUsd;});
     var usdtRow='<div class="crow" style="cursor:default"><span class="clogo txt">$</span><div class="cname"><b>USDT</b><span>Tether — your buying power</span></div><div class="hpnl"><b>'+fmtUsd(d.usdtUsd)+'</b><span style="color:var(--faint)">stable</span></div></div>';
     el.innerHTML=usdtRow+(ex.length?ex.map(holdRow).join(''):'<div class="empty">'+((d.usdtUsd||0)>0?'No coins yet — open Markets and pick one.':'No USDT yet — tap Deposit to buy some with your card.')+'</div>');
-    wireHoldRows(el);
+    wireHoldRows(el);renderOrders();
   }
   Array.prototype.forEach.call(document.querySelectorAll('.ex-tab'),function(b){b.addEventListener('click',function(){
     exTab=b.getAttribute('data-extab');
@@ -1039,6 +1047,7 @@
       +'<div class="wl-sec"><span>Tokens</span></div>'
       +'<div class="wl-card">'+toks+'</div>'
       +'<div class="wl-sec"><span>Your bags</span></div>'
+      +'<div id="wlOrders"></div>'
       +'<div class="wl-card" id="wlBags">'+(bags.length?bags.map(holdRow).join(''):'<div class="empty" style="color:#8f86ad">No bags yet'+(gasHas()?' — pick a meme below.':' — get some gas first (Swap).')+'</div>')+'</div>'
       +'</div><div class="wl-right">'
       +'<div class="wl-sec" style="margin-top:16px"><span>Trending — 4 chains</span><small id="memeAge" style="margin-left:auto;font-size:10px;color:#8f86ad"></small></div>'
@@ -1054,7 +1063,7 @@
       +'<div class="wl-card list" id="memeList"><div class="empty" style="color:#8f86ad">Loading trending memes…</div></div>'
       +'<div class="wl-chain" id="wlChain"><b>MarginPad Chain</b> — the public ledger of every transfer. View explorer</div>'
       +'</div></div>';
-    wireHoldRows($('wlBags'));
+    wireHoldRows($('wlBags'));renderOrders();
     var rc=$('wlRcv');if(rc)rc.addEventListener('click',openReceive);
     var sn=$('wlSnd');if(sn)sn.addEventListener('click',function(){openSendModal();});
     var wc9=$('wlChain');if(wc9)wc9.addEventListener('click',openChainModal);
@@ -1610,10 +1619,12 @@
   }
 
   // ============ TRADE MODAL ============
-  var T=null, chart=null, candle=null, chartTf='1h', libP=null;
+  var T=null, chart=null, candle=null, chartTf='1h', libP=null, tmMode='market', ORDERS=null;
+  function setMode(m){tmMode=m;$('modeMkt').classList.toggle('on',m==='market');$('modeLim').classList.toggle('on',m==='limit');$('tmLimitRow').hidden=m!=='limit';var go=$('tmGo');if(T)go.textContent=(m==='limit'?'Place limit ':'')+(T.side==='buy'?'Buy ':'Sell ')+T.sym;updateEst();}
+  $('modeMkt').addEventListener('click',function(){setMode('market');});$('modeLim').addEventListener('click',function(){setMode('limit');});$('tmLimit').addEventListener('input',updateEst);
   function loadLib(){if(window.LightweightCharts)return Promise.resolve();if(libP)return libP;libP=new Promise(function(res,rej){var s=document.createElement('script');s.src='/assets/lightweight-charts-4.2.0.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});return libP;}
   function openTrade(o){
-    T=o;T.side=o.defaultSide||'buy';chartTf='1h';
+    T=o;T.side=o.defaultSide||'buy';chartTf='1h';tmMode='market';$('modeMkt').classList.add('on');$('modeLim').classList.remove('on');$('tmLimitRow').hidden=true;$('tmLimit').value='';
     $('tmSym').textContent=o.sym;$('tmName').textContent=o.name||(o.kind==='meme'?'meme coin':'');if(o.kind==='cex'){$('tmName').innerHTML=esc(o.name||'')+' · <a href="/alerts/?coin='+encodeURIComponent(o.sym)+'" style="color:#c2f64a">price alert</a>';}
     var nb=$('tmNet');
     if(o.kind==='meme'){var n=NETS[o.net]||NETS.solana;nb.hidden=false;nb.className='netb '+n.cls;nb.textContent=n.label.toUpperCase();}
@@ -1662,7 +1673,7 @@
     T.side=s;
     $('segBuy').classList.toggle('on',s==='buy');$('segSell').classList.toggle('on',s==='sell');
     $('tmBuyIn').hidden=s!=='buy';$('tmSellIn').hidden=s!=='sell';var ur=$('tmUsdtRow');if(ur)ur.hidden=!(s==='sell'&&T.kind==='meme');
-    var go=$('tmGo');go.className='m-go '+s;go.textContent=s==='buy'?('Buy '+T.sym):('Sell '+T.sym);
+    var go=$('tmGo');go.className='m-go '+s;go.textContent=(tmMode==='limit'?'Place limit ':'')+(s==='buy'?('Buy '+T.sym):('Sell '+T.sym));
     T.sellPct=null;updateEst();
   }
   $('segBuy').addEventListener('click',function(){setSide('buy');});
@@ -1688,7 +1699,7 @@
     if(T.side==='buy'){
       var usd=+($('tmUsd').value||0);
       if(!(usd>=1)){el.hidden=true;return;}
-      var slip=estSlip(usd);var eff=T.price*(1+slip);var fee=usd*feeR;var qty=usd/eff;
+      var lpx=(tmMode==='limit'&&+($('tmLimit').value||0)>0)?+$('tmLimit').value:0;var slip=estSlip(usd);var eff=(lpx||T.price)*(1+slip);var fee=usd*feeR;var qty=usd/eff;
       el.hidden=false;
       el.innerHTML='<div><span>You receive (est.)</span><b>'+fmtQty(qty)+' '+esc(T.sym)+'</b></div>'
         +'<div><span>Fill price (est.)</span><b>'+fmtPx(eff)+'</b></div>'
@@ -1720,6 +1731,11 @@
       body.pct=T.sellPct;
       if(T.kind==='meme'&&$('tmToUsdt')&&$('tmToUsdt').checked)body.toUsdt=true;
     }
+    if(tmMode==='limit'){var lp=+($('tmLimit').value||0);if(!(lp>0)){msg.textContent='Enter a limit price.';msg.className='m-msg err';return;}
+      var ob={action:'add',side:T.side,kind:T.kind,price:lp};if(T.kind==='meme'){ob.mint=T.mint;ob.pool=T.pool;ob.net=T.net;ob.symbol=T.sym;ob.name=T.name;ob.logo=T.logo;}else{ob.sym=T.sym;ob.logo=T.logo;}if(T.side==='buy')ob.usd=+($('tmUsd').value||0);else ob.pct=T.sellPct;
+      go.disabled=true;msg.textContent='Placing…';msg.className='m-msg';
+      fetch('/api/spot/order',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(ob)}).then(function(r){return r.json();}).then(function(j){go.disabled=false;if(j&&j.ok){msg.className='m-msg ok';msg.innerHTML='Limit order placed — '+(T.side==='buy'?'buys':'sells')+' when '+esc(T.sym)+' trades '+(T.side==='buy'?'at or below':'at or above')+' '+fmtPx(lp)+'. Checked every 10 minutes; see Open orders.';toast('Limit order placed for '+esc(T.sym));loadOrders();}else{msg.className='m-msg err';var E2={too_many:'You already have 20 open orders — cancel one first.',min_trade:'Minimum is $1.',bad_price:'Enter a valid price.',no_price:'No live price for that coin right now.'};msg.textContent=E2[j&&j.error]||('Could not place the order ('+((j&&j.error)||'no answer')+').');}}).catch(function(){go.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
+      return;}
     go.disabled=true;msg.textContent='Filling…';msg.className='m-msg';
     fetch('/api/spot/trade',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)})
       .then(function(r){return r.json();}).then(function(j){

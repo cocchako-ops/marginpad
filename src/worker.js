@@ -12028,6 +12028,29 @@ async function handleSpot(url, request, env) {
     }
     try { const r = await stub.fetch(new Request('https://do/swap', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, asset, dir, usdC, natQty, feeC }) })); const d = await r.json(); if (d && d.ok) { d.price = px; d.natQty = natQty; d.feeUsd = feeC / 100; try { await evPush(env, request, 'spottrade', 'swap ' + (dir === 'buy' ? 'USDT>' + asset : asset + '>USDT'), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return spotFail(env, jr, path); }
   }
+  if (path === '/order' && request.method === 'POST') { // limit orders (2026-09-03): add / cancel / list. Fills happen in spotOrdersSweep through the normal /trade path.
+    const action = String(b.action || '');
+    if (action === 'list') { try { const r = await stub.fetch(new Request('https://do/order/list?uid=' + encodeURIComponent(uid))); return jr(await r.json()); } catch (e) { return spotFail(env, jr, path); } }
+    if (action === 'cancel') { try { const r = await stub.fetch(new Request('https://do/order/cancel', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, id: String(b.id || '') }) })); return jr(await r.json()); } catch (e) { return spotFail(env, jr, path); } }
+    if (action !== 'add') return jr({ error: 'bad' }, 400);
+    const side = b.side === 'sell' ? 'sell' : 'buy', kind = b.kind === 'meme' ? 'meme' : 'cex';
+    const price = +b.price; if (!(price > 0) || !isFinite(price)) return jr({ error: 'bad_price' }, 400);
+    let sym, meta = { k: kind };
+    if (kind === 'meme') {
+      const mint = String(b.mint || ''), pool = String(b.pool || ''); if (!/^[A-Za-z0-9]{20,60}$/.test(mint) || !/^[A-Za-z0-9]{20,60}$/.test(pool)) return jr({ error: 'bad_token' }, 400);
+      const net = SPOT_NETS[String(b.net || '')] ? String(b.net) : 'solana';
+      sym = (net === 'solana' ? 'sol:' : net + ':') + mint;
+      meta = { k: 'meme', mint, pool, net, symbol: String(b.symbol || '').replace(/[^A-Za-z0-9$]/g, '').slice(0, 12), name: String(b.name || '').slice(0, 48), logo: SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '' };
+    } else {
+      sym = String(b.sym || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12); if (!sym || sym === 'USDT' || sym === 'USDC') return jr({ error: 'bad_sym' }, 400);
+      const pd = await fetchPriceCached(sym); if (!pd || !(+pd.price > 0)) return jr({ error: 'no_price' }, 503);
+      meta = { k: 'cex', logo: SPOT_LOGO_OK.test(String(b.logo || '')) ? String(b.logo).slice(0, 300) : '' };
+    }
+    let usdC = 0, pct = 0;
+    if (side === 'buy') { usdC = Math.round((+b.usd || 0) * 100); if (!(usdC >= 100)) return jr({ error: 'min_trade', minUsd: 1 }, 400); if (usdC > 100000000) return jr({ error: 'too_big' }, 400); }
+    else { pct = Math.min(100, Math.max(1, +b.pct || 0)); }
+    try { const r = await stub.fetch(new Request('https://do/order/add', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, kind, sym, side, price, usd: usdC, pct, meta }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'limit ' + side + ' ' + (meta.symbol || sym) + ' @ ' + price, '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return spotFail(env, jr, path); }
+  }
   if (path === '/history') {
     try { const r = await stub.fetch(new Request('https://do/tx?uid=' + encodeURIComponent(uid))); const d = await r.json();
       if (url.searchParams.get('csv') === '1') { // paper trail as a file (2026-09-03) — the same rows the page shows, oldest first
@@ -12044,6 +12067,31 @@ async function handleSpot(url, request, env) {
 }
 // Daily portfolio snapshot (start-of-day value per wallet) → powers Today PnL + the equity curve. First */10 cron
 // after midnight UTC; idempotent via KV stamp. Missing meme prices fall back to each hold's lastPx inside the DO.
+// Limit-order sweep (2026-09-03): every */10, price every open order's market and fill the crossed ones THROUGH handleSpot's
+// /trade (same fee, slippage, gas and settlement as a tap). A fill at a crossed price lands at the CURRENT price, which is at
+// or better than the limit — the demo's honest version of a limit fill. Failures (no funds, no gas, no price) close the order with a note.
+async function spotOrdersSweep(env) {
+  if (!env || !env.SPOT || !env.ADMIN_KEY) return { checked: 0 };
+  let orders = []; try { const r = await spotStub(env).fetch(new Request('https://do/order/open')); orders = ((await r.json()) || {}).orders || []; } catch (e) { return { checked: 0 }; }
+  const px = {}; let filled = 0, failed = 0;
+  for (const o of orders) {
+    let meta = {}; try { meta = JSON.parse(o.meta || '{}'); } catch (e) {}
+    const key = o.sym;
+    if (px[key] === undefined) { try { if (meta.k === 'meme') { const mp = await spotMemePrice(env, meta.net || 'solana', meta.pool); px[key] = mp ? +mp.price : 0; } else { const pd = await fetchPriceCached(o.sym); px[key] = pd ? +pd.price : 0; } } catch (e) { px[key] = 0; } }
+    const p = px[key]; if (!(p > 0)) continue;
+    const crossed = o.side === 'buy' ? p <= o.price : p >= o.price;
+    if (!crossed) continue;
+    const body = meta.k === 'meme' ? { side: o.side, kind: 'meme', mint: meta.mint, pool: meta.pool, net: meta.net, symbol: meta.symbol, name: meta.name, logo: meta.logo, holdSym: o.sym } : { side: o.side, kind: 'cex', sym: o.sym, logo: meta.logo };
+    if (o.side === 'buy') body.usd = (o.usd || 0) / 100; else body.pct = o.pct || 100;
+    let res = null;
+    try { const u = new URL('https://marginpad.io/api/spot/trade?uid=' + encodeURIComponent(o.uid)); const req = new Request(u.toString(), { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-key': env.ADMIN_KEY }, body: JSON.stringify(body) }); const r = await handleSpot(u, req, env); res = await r.json(); } catch (e) { res = { error: 'sweep_error' }; }
+    const ok = !!(res && res.ok);
+    const note = ok ? ('filled at $' + (+res.price).toPrecision(6) + ' (limit $' + (+o.price).toPrecision(6) + ')') : ('not filled: ' + String((res && res.error) || 'error'));
+    try { await spotStub(env).fetch(new Request('https://do/order/done', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: o.id, status: ok ? 'filled' : 'failed', note }) })); } catch (e) {}
+    if (ok) { filled++; try { await evPush(env, null, 'spottrade', 'limit fill ' + o.side + ' ' + (meta.symbol || o.sym) + ' @ ' + (+res.price).toPrecision(5), '/spot/'); } catch (e) {} } else failed++;
+  }
+  return { checked: orders.length, filled, failed };
+}
 async function spotDailySnapshot(env) {
   try {
     if (!env || !env.SPOT || !env.STATS) return;
@@ -13461,6 +13509,9 @@ export default {
       if (!stored || !(await adminSessionOk(request, env, 'mp_pmail'))) return new Response(adminLoginHTML('Private inbox', !stored, '/api/admin/pmail/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
       return new Response(PMAIL_HTML, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } });
     }
+    if (url.pathname === '/api/admin/spotorders' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // run the limit-order sweep now (E2E / support)
+      return new Response(JSON.stringify(await spotOrdersSweep(env)), { headers: { 'content-type': 'application/json' } });
+    }
     if (url.pathname === '/api/admin/spotpurge' && request.method === 'POST' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // drop never-used Demo Spot accounts (see SpotStore /purgeempty)
       try { const r = await spotStub(env).fetch(new Request('https://do/purgeempty', { method: 'POST' })); return new Response(await r.text(), { headers: { 'content-type': 'application/json' } }); } catch (e) { return new Response(JSON.stringify({ error: 'transient' }), { status: 503, headers: { 'content-type': 'application/json' } }); }
     }
@@ -14244,7 +14295,8 @@ export default {
     bg(resolveFreeSignals, 'freesigres'); // resolve open free signals' outcome (TP1 vs stop) from fresh candles → fsig:results
     bg(nightlyBackup, 'backup'); // P0.5 — once per UTC day (stamped), retries on failure each */10
     bg(ledgerBackup6h, 'backup6');
-    bg(spotStuckNudge, 'spotnudge'); // one email, once per account, to Demo Spot wallets that never came back (2026-09-03) // money ledger every 6h (4 rotating slots), on top of the nightly set
+    bg(spotStuckNudge, 'spotnudge');
+    bg(spotOrdersSweep, 'spotorders'); // limit-order fills through the normal trade path // one email, once per account, to Demo Spot wallets that never came back (2026-09-03) // money ledger every 6h (4 rotating slots), on top of the nightly set
     bg(archiveLiq, 'liqarch'); // liquidation-feed daily dump → R2 liq/<day>.csv.gz (once/day, 7d self-heal backfill)
     bg(liqRecapDaily, 'liqrecap'); // R2 archive → permanent /liquidations/recap/<day>/ pages (KV summaries; builds yesterday + backfills 3/run)
     bg(checkDailyWrap, 'wrap'); // free-channel daily market wrap (16:00 UTC, no advice, internal data only)
@@ -14413,6 +14465,9 @@ export class SpotStore {
     // (users literally share their Receive addresses with each other — the real-life flow).
     s.exec('CREATE TABLE IF NOT EXISTS spotxfer(hash TEXT PRIMARY KEY, height INTEGER, from_uid TEXT, to_uid TEXT, from_addr TEXT, to_addr TEXT, amt INTEGER, net TEXT, memo TEXT, ts INTEGER)');
     try { s.exec('CREATE INDEX IF NOT EXISTS spx_h ON spotxfer(height)'); } catch (e) {}
+    // limit orders (2026-09-03): buy at-or-below / sell at-or-above a price; the */10 sweep fills them through the normal /trade path (fee, slippage, gas all apply)
+    s.exec('CREATE TABLE IF NOT EXISTS spotorder(id TEXT PRIMARY KEY, user_id TEXT, ts INTEGER, kind TEXT, sym TEXT, side TEXT, price REAL, usd INTEGER, pct REAL, meta TEXT, status TEXT, done_ts INTEGER, note TEXT)');
+    try { s.exec('CREATE INDEX IF NOT EXISTS spo_u ON spotorder(user_id, status)'); s.exec('CREATE INDEX IF NOT EXISTS spo_s ON spotorder(status)'); } catch (e) {}
   }
   j(o, s = 200) { return new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json' } }); }
   rows(q, ...b) { return this.state.storage.sql.exec(q, ...b).toArray(); }
@@ -14671,6 +14726,33 @@ export class SpotStore {
       // P2P can't inflate the card: received wallet-USDT has no path back to it (card<-offramp<-exchange only).
       const rows = this.rows('SELECT a.user_id uid, a.card FROM spotacct a WHERE EXISTS(SELECT 1 FROM spottx t WHERE t.user_id=a.user_id) OR EXISTS(SELECT 1 FROM spotxfer x WHERE x.from_uid=a.user_id OR x.to_uid=a.user_id) ORDER BY a.card DESC LIMIT 40');
       return this.j({ top: rows.map(r => ({ uid: r.uid, cardC: +r.card || 0 })) });
+    }
+    if (path === '/order/add') {
+      if (!uid) return this.j({ error: 'bad' }, 400);
+      const openN = (this.rows("SELECT COUNT(*) n FROM spotorder WHERE user_id=? AND status='open'", uid)[0] || {}).n || 0;
+      if (openN >= 20) return this.j({ error: 'too_many', max: 20 }, 400);
+      const id = 'o' + now.toString(36) + Math.floor(Math.random() * 1e6).toString(36);
+      sql.exec('INSERT INTO spotorder(id,user_id,ts,kind,sym,side,price,usd,pct,meta,status) VALUES(?,?,?,?,?,?,?,?,?,?,?)', id, uid, now, String(b.kind || 'cex'), String(b.sym || '').slice(0, 64), b.side === 'sell' ? 'sell' : 'buy', +b.price || 0, Math.round(+b.usd || 0), +b.pct || 0, JSON.stringify(b.meta || {}), 'open');
+      return this.j({ ok: true, id });
+    }
+    if (path === '/order/cancel') {
+      if (!uid) return this.j({ error: 'bad' }, 400);
+      const r = sql.exec("UPDATE spotorder SET status='cancelled', done_ts=? WHERE id=? AND user_id=? AND status='open'", now, String(b.id || ''), uid);
+      return this.j({ ok: (r.rowsWritten || 0) > 0 });
+    }
+    if (path === '/order/list') {
+      if (!uid) return this.j({ error: 'bad' }, 400);
+      const map = r => { let m = {}; try { m = JSON.parse(r.meta || '{}'); } catch (e) {} return { id: r.id, ts: r.ts, kind: r.kind, sym: r.sym, side: r.side, price: r.price, usdUsd: (r.usd || 0) / 100, pct: r.pct || 0, meta: m, status: r.status, doneTs: r.done_ts || 0, note: r.note || '' }; };
+      const open = this.rows("SELECT * FROM spotorder WHERE user_id=? AND status='open' ORDER BY ts DESC", uid).map(map);
+      const done = this.rows("SELECT * FROM spotorder WHERE user_id=? AND status<>'open' ORDER BY done_ts DESC LIMIT 20", uid).map(map);
+      return this.j({ open, done });
+    }
+    if (path === '/order/open') { // sweep: every open order (bounded)
+      return this.j({ orders: this.rows("SELECT id,user_id uid,ts,kind,sym,side,price,usd,pct,meta FROM spotorder WHERE status='open' ORDER BY ts ASC LIMIT 500") });
+    }
+    if (path === '/order/done') {
+      sql.exec("UPDATE spotorder SET status=?, done_ts=?, note=? WHERE id=? AND status='open'", String(b.status || 'failed'), now, String(b.note || '').slice(0, 120), String(b.id || ''));
+      return this.j({ ok: true });
     }
     if (path === '/purgeempty') { // ops (2026-09-03): remove accounts minted by a page view that never did anything — no tx, no holds, no transfers, untouched card
       const r = sql.exec("DELETE FROM spotacct WHERE card=? AND COALESCE(usdt,0)=0 AND COALESCE(wusdt,0)=0 AND (addr IS NULL OR addr='') AND NOT EXISTS(SELECT 1 FROM spottx t WHERE t.user_id=spotacct.user_id) AND NOT EXISTS(SELECT 1 FROM spothold h WHERE h.user_id=spotacct.user_id) AND NOT EXISTS(SELECT 1 FROM spotxfer x WHERE x.from_uid=spotacct.user_id OR x.to_uid=spotacct.user_id)", SPOT_START_C);
