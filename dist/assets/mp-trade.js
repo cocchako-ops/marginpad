@@ -805,6 +805,7 @@ window.mpSsnShow = window.mpSsnShow || function (e) { var s = window.mpSsnStart(
       part.status=pnl>=0?'win':'loss';part.exit=m.live;part.closeTs=Date.now();part.pnl=pnl;part.partial=Math.round(f*100);
       d.push(part);
       try{window.__mpTrack&&window.__mpTrack('close',(e.sym||'trade')+' — closed '+part.partial+'% '+(pnl>=0?'+$':'−$')+Math.abs(pnl).toFixed(2));}catch(_){}
+      try{if(part.partial>=100&&window.mpGuestNudge)window.mpGuestNudge('manual',e.sym,pnl);}catch(_){} /* guest activation card (mp-auth.js), full closes only - mirror of home.js */
     }
     jstore(d);hide();done();
     // confirm the close (parity with home.js) — the card just vanishing left users asking "where did my trade go?"

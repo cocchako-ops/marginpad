@@ -401,7 +401,8 @@ function mpWhenVisible(el,fn){var done=false;function go(){if(done)return;done=t
     buzz(kind==='liq'?[50,45,50,45,95]:(kind==='tp'?[18,55,18]:[35]));   // distinct haptic per outcome (liq = strongest)
     var pnl=(e.pnl!=null&&isFinite(e.pnl))?((e.pnl>=0?'+$':'−$')+Math.abs(e.pnl).toFixed(2)):'';
     try{if('Notification'in window&&Notification.permission==='granted')new Notification(sym+' '+side+' — '+t,{body:'Closed at '+fp(e.exit)+(pnl?' · PnL '+pnl:''),tag:'mp-'+e.id});}catch(_){}
-    try{window.__mpTrack&&window.__mpTrack('close',sym+(kind==='liq'?' — liquidated':kind==='tp'?' — take-profit':' — stop-loss')+(pnl?' '+pnl:''));}catch(_){}}
+    try{window.__mpTrack&&window.__mpTrack('close',sym+(kind==='liq'?' — liquidated':kind==='tp'?' — take-profit':' — stop-loss')+(pnl?' '+pnl:''));}catch(_){}
+    try{if(window.mpGuestNudge)window.mpGuestNudge(kind,e.sym,(e.pnl!=null&&isFinite(e.pnl))?+e.pnl:null);}catch(_){} /* guest activation card (mp-auth.js): liquidation / TP / SL closes */}
   function openCard(e){var m=metrics(e),long=m.long,cls=(m.pnl!=null?(m.pnl>0?'pf':(m.pnl<0?'ls':'be')):(m.move>0?'pf':(m.move<0?'ls':'be')));
     return '<div class="pp '+cls+(window.mpBalTkt(e)?' pp-gold':'')+(window.mpTktSkin?' tsk-'+window.mpTktSkin:'')+'" data-id="'+e.id+'"><div class="pp-h"><span class="pp-sym">'+esc(e.sym||'—')+'</span><span class="pp-dir '+(long?'long':'short')+'">'+(long?'LONG':'SHORT')+'</span>'+(window.mpBalTkt(e)?'<span class="pp-bal">BAL</span>':'')+'<span class="pp-live">'+fp(m.live)+'</span></div>'
       +'<div class="pp-pnl"><span class="big">'+(m.pnl!=null?((m.pnl>=0?'+':'−')+money(Math.abs(m.pnl)).replace('-','')):pctS(m.move*100))+'</span><span class="roe">ROE '+pctS(m.roe*100)+'</span></div>'
@@ -3318,6 +3319,7 @@ window.mpSrvOpen=function(payload,ok,fail){
       part.status=pnl>=0?'win':'loss';part.exit=m.live;part.closeTs=Date.now();part.pnl=pnl;part.partial=Math.round(f*100);
       d.push(part);
       try{window.__mpTrack&&window.__mpTrack('close',(e.sym||'trade')+' — closed '+part.partial+'% '+(pnl>=0?'+$':'−$')+Math.abs(pnl).toFixed(2));}catch(_){}
+      try{if(part.partial>=100&&window.mpGuestNudge)window.mpGuestNudge('manual',e.sym,pnl);}catch(_){} /* guest activation card (mp-auth.js), full closes only */
     }
     jstore(d);hide();
     var _tear=(f>=1)?mpcsCaptureTear(curId):null; // desktop full-close receipt tear

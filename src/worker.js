@@ -4414,7 +4414,7 @@ async function handleTrack(url, request, env, ctx) {
         if (!(await env.STATS.get(dk))) { await inc('err:day:' + de, 3456000); await env.STATS.put(dk, '1', { expirationTtl: 93600 }); }
       } catch (e) { await inc('err:day:' + de, 3456000); } // dedupe path failed → count it anyway (fail toward visibility)
     }
-    try { if (env.AE) env.AE.writeDataPoint({ indexes: [type], blobs: ['event', type, label, (request.cf && request.cf.country) || '', (p.get('p') || '/').slice(0, 90), _evSrc(p)], doubles: [1] }); } catch (e) {}
+    try { if (env.AE) env.AE.writeDataPoint({ indexes: [type], blobs: ['event', type, label, (request.cf && request.cf.country) || '', (p.get('p') || '/').slice(0, 90), _evSrc(p), getCookie(request, 'mp_un') ? 'user' : 'guest'], doubles: [1] }); } catch (e) {} // blob7 = signed in or not (2026-09-04): the guest funnel (how many trade without an account, how many convert) needs the split per day
     if (type === 'exchange' || type === 'tool') { // affiliate click-outs only (exchange = Bybit/Binance/…, tool = TradingView/Koinly/3Commas). NOT 'hotpair' — Trending now opens Paper Trade, it is not a money click.
       const d2 = new Date().toISOString().slice(0, 10);
       await inc('aff:total'); await inc('aff:day:' + d2, 3456000);        // affiliate-click totals + daily series
@@ -10850,7 +10850,8 @@ async function handleAnnounce(url, env, request) {
     const ck = new Request('https://marginpad.io/__announce_v1');
     try { const hit = await caches.default.match(ck); if (hit) return new Response(await hit.text(), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20', ...CORS } }); } catch (e) {}
     let a = {}; try { a = JSON.parse(await env.STATS.get('mp:announce') || '{}'); } catch (e) {}
-    const body = JSON.stringify({ msg: a.msg || '', level: a.level || '', ts: a.ts || 0 });
+    let gn = true; try { const oc = JSON.parse(await env.STATS.get('ops:cfg') || '{}'); gn = oc.guestNudge !== false; } catch (e) {} // guest activation nudge kill switch rides on the public announce payload (every page already fetches it)
+    const body = JSON.stringify({ msg: a.msg || '', level: a.level || '', ts: a.ts || 0, guestNudge: gn });
     try { await caches.default.put(ck, new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } })); } catch (e) {}
     return new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20', ...CORS } });
   }
@@ -13869,6 +13870,20 @@ export default {
         catalogue: VAULT_ITEMS.map(it => ({ id: it.id, name: it.name, kind: it.kind || 'frame', tier: it.tier || '', cents: it.cents || 0, xp: it.xp || 0, ticks: it.ticks || 0, earn: it.earn || '', until: it.until || '' })),
         topSpenders: Object.keys(spend).map(u3 => ({ uid: u3, un: nameOf[u3] || '', cents: spend[u3] })).sort((a, b) => b.cents - a.cents).slice(0, 10) });
       return new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === '/api/admin/guests' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Guest funnel (2026-09-04): who trades without an account, how the activation nudge performs, how many sign up
+      const jh2 = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const [nudge, trades, closes, ua, ot] = await Promise.all([
+        aeQuery(env, "SELECT toDate(timestamp) AS d, blob3 AS label, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1 = 'event' AND blob2 = 'nudge' AND timestamp > NOW() - INTERVAL '14' DAY GROUP BY d, label ORDER BY d FORMAT JSON").catch(() => null),
+        aeQuery(env, "SELECT toDate(timestamp) AS d, blob7 AS who, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1 = 'event' AND blob2 = 'paper' AND timestamp > NOW() - INTERVAL '14' DAY GROUP BY d, who ORDER BY d FORMAT JSON").catch(() => null),
+        aeQuery(env, "SELECT toDate(timestamp) AS d, blob7 AS who, SUM(_sample_interval) AS n FROM marginpad_events WHERE blob1 = 'event' AND blob2 = 'close' AND timestamp > NOW() - INTERVAL '14' DAY GROUP BY d, who ORDER BY d FORMAT JSON").catch(() => null),
+        env.USERS ? env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/admin?limit=1')).then(r => r.json()).catch(() => ({})) : Promise.resolve({}),
+        env.USERS ? env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/opentrades')).then(r => r.json()).catch(() => ({})) : Promise.resolve({}),
+      ]);
+      const day = new Date().toISOString().slice(0, 10);
+      const gcc = async k => { try { const r = await env.STATS.getWithMetadata(k); return (r && r.metadata && r.metadata.c) || (r && r.value ? parseInt(r.value, 10) : 0) || 0; } catch (e) { return 0; } };
+      const uvToday = await gcc('uv:day:' + day);
+      return new Response(JSON.stringify({ nudge: nudge || [], trades: trades || [], closes: closes || [], signups: (ua && ua.byDay) || [], uvToday, activeToday: +(ua && ua.activeToday) || 0, newToday: +(ua && ua.newToday) || 0, guestsTradingNow: +(ot && ot.guests) || 0, signedInTradingNow: +(ot && ot.signedIn) || 0, aeOk: !!(nudge && trades), aeErr: aeQuery.lastErr || '' }), { headers: jh2 });
     }
     if (url.pathname === '/api/admin/uidlookup' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // whose Bybit UID is this? (read-only)
       const uids = String(url.searchParams.get('uid') || url.searchParams.get('uids') || '');
@@ -18030,7 +18045,7 @@ export class UserStore {
           if (any) anonTraders++;
         }
       } catch (e) {}
-      return this.j({ positions, traders: rows.length + anonTraders });
+      return this.j({ positions, traders: rows.length + anonTraders, guests: anonTraders, signedIn: rows.length });
     }
     if (path === '/leaderboard') { // authoritative weekly Trade League — best CLOSED-trade ROE per signed-in user in [ws,we), straight from the synced journal
       const ws = +url.searchParams.get('ws') || 0, we = +url.searchParams.get('we') || (now + 1);

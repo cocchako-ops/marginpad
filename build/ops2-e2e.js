@@ -144,6 +144,11 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       await page.evaluate(() => { location.hash = 'money/premium'; }); await sleep(4000);
       const pm = await page.evaluate(() => ({ folds: document.querySelectorAll('#view details.fold').length, height: document.getElementById('view').scrollHeight, lapses: /lapses|expiring/i.test(document.getElementById('view').innerText) }));
       chk('premium desk: members first, positions and closes folded, page under 2000px', pm.folds === 2 && pm.height < 2000, pm);
+      await page.evaluate(() => { location.hash = 'growth/guests'; }); await sleep(5000);
+      const gu = await page.evaluate(() => { const t = document.getElementById('view').innerText; return { funnel: /activation card funnel/i.test(t), perDay: document.querySelectorAll('#view .tbl tbody tr').length, tiles: document.querySelectorAll('#view .tile').length, aeDown: /did not answer/i.test(t) }; });
+      chk('guests: funnel, per-day split and tiles render from Analytics Engine', gu.funnel && gu.perDay === 14 && gu.tiles >= 8 && !gu.aeDown, gu);
+      await page.evaluate(() => { location.hash = 'settings/switches'; }); await sleep(2500);
+      chk('switches: guest activation card has its own kill switch', await page.evaluate(() => !!document.querySelector('[data-sw="guestNudge"]')));
       const man = await page.evaluate(async () => { const r = await fetch('/api/stats/asset/ops.webmanifest', { credentials: 'include' }); const j = await r.json(); return { status: r.status, display: j.display, icons: (j.icons || []).length }; });
       chk('PWA manifest served behind the cookie', man.status === 200 && man.display === 'standalone' && man.icons === 2, man);
     }

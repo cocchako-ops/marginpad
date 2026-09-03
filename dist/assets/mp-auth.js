@@ -1599,3 +1599,44 @@
     } }).catch(function () {});
   } else { ME = null; reflect(); }
 })();
+// ---- Guest activation nudge (2026-09-04). One small card in the terminal, never a modal, only for guests who have ACTUALLY
+// traded: the first winning close, a liquidation, or the third close - whichever comes first. At most three times ever,
+// seven days apart, 45 s on screen. Kill switch ops:cfg.guestNudge rides on /api/announce. Every step is measured
+// (nudge shown/click/dismiss/timeout/converted) so ops can say whether it earns accounts or just annoys. No emojis.
+(function () {
+  if (window.mpGuestNudge) return;
+  var LS = function (k, v) { try { if (v === undefined) return localStorage.getItem('mp_gn_' + k); localStorage.setItem('mp_gn_' + k, String(v)); } catch (e) { return null; } };
+  var T = function (k, d) { try { return (window.mpT && window.mpT(k)) || d; } catch (e) { return d; } };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[<>&"]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[m]; }); };
+  var track = function (e) { try { window.__mpTrack && window.__mpTrack('nudge', e); } catch (e2) {} };
+  var cfgOff = null;
+  function guest() { try { return !(window.mpAuth && window.mpAuth.me && window.mpAuth.me()); } catch (e) { return false; } }
+  function eligible(kind, pnl) {
+    if (!guest()) return false;
+    var n = (+LS('closes') || 0) + 1; LS('closes', n);
+    if ((+LS('n') || 0) >= 3) return false;
+    if (Date.now() - (+LS('last') || 0) < 7 * 86400000) return false;
+    return (pnl != null && +pnl > 0) || kind === 'liq' || n >= 3;
+  }
+  function css() { if (document.getElementById('mpGnCss')) return; var s = document.createElement('style'); s.id = 'mpGnCss'; s.textContent = '#mpGn{position:fixed;right:18px;bottom:18px;z-index:1450;width:min(340px,calc(100vw - 24px));background:#0e1116;border:1px solid rgba(194,246,74,.55);border-radius:14px;padding:14px 16px;box-shadow:0 18px 50px rgba(0,0,0,.55);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#e8ecf1;opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s}#mpGn.on{opacity:1;transform:none}.mpgn-t{font-weight:800;font-size:14.5px;margin-bottom:4px}.mpgn-b{font-size:13px;line-height:1.5;color:#b7c0ca}.mpgn-a{display:flex;gap:8px;margin-top:11px;flex-wrap:wrap}.mpgn-go{background:#c2f64a;color:#0a0b0d;border:0;border-radius:9px;padding:9px 13px;font-weight:800;font-size:13px;cursor:pointer}.mpgn-no{background:transparent;color:#9aa3ad;border:1px solid #2a323c;border-radius:9px;padding:9px 12px;font-weight:600;font-size:13px;cursor:pointer}@media(max-width:640px){#mpGn{right:12px;left:12px;bottom:76px;width:auto}}'; document.head.appendChild(s); }
+  function show(kind, sym, pnl) {
+    if (document.getElementById('mpGn')) return; css();
+    var win = pnl != null && +pnl > 0;
+    var title = kind === 'liq' ? T('gnLiqT', 'Liquidated. That is what practice is for.') : win ? T('gnWinT', 'Nice close on ' + (sym || 'that one') + '.') : T('gnT', 'Three trades in. Keep them.');
+    var body = kind === 'liq' ? T('gnLiqB', 'With a free account every trade stays in your history, so you can see exactly what went wrong and try again.') : T('gnB', 'A free account keeps your history, XP and streak, and puts you on the 14-day season board. Ten seconds, no card.');
+    var box = document.createElement('div'); box.id = 'mpGn';
+    box.innerHTML = '<div class="mpgn-t">' + esc(title) + '</div><div class="mpgn-b">' + esc(body) + '</div><div class="mpgn-a"><button type="button" class="mpgn-go">' + esc(T('gnGo', 'Create a free account')) + '</button><button type="button" class="mpgn-no">' + esc(T('gnNo', 'Not now')) + '</button></div>';
+    document.body.appendChild(box); requestAnimationFrame(function () { box.classList.add('on'); });
+    LS('n', (+LS('n') || 0) + 1); LS('last', Date.now()); track('shown:' + (kind === 'liq' ? 'liq' : win ? 'win' : 'third'));
+    var hide = function () { box.classList.remove('on'); setTimeout(function () { if (box.parentNode) box.parentNode.removeChild(box); }, 260); };
+    var t = setTimeout(function () { if (box.parentNode) { track('timeout'); hide(); } }, 45000);
+    box.querySelector('.mpgn-go').onclick = function () { clearTimeout(t); track('click'); LS('clicked', Date.now()); hide(); try { if (window.mpAuth && window.mpAuth.open) window.mpAuth.open(); } catch (e) {} };
+    box.querySelector('.mpgn-no').onclick = function () { clearTimeout(t); track('dismiss'); hide(); };
+  }
+  window.mpGuestNudge = function (kind, sym, pnl) {
+    try { if (!eligible(kind, pnl)) return; } catch (e) { return; }
+    if (cfgOff === null) { fetch('/api/announce').then(function (r) { return r.ok ? r.json() : null; }).then(function (a) { cfgOff = !!(a && a.guestNudge === false); if (!cfgOff) show(kind, sym, pnl); }).catch(function () { cfgOff = false; show(kind, sym, pnl); }); return; }
+    if (!cfgOff) show(kind, sym, pnl);
+  };
+  window.addEventListener('mp-auth-change', function (e) { try { if (e.detail && e.detail.user && LS('clicked') && Date.now() - (+LS('clicked') || 0) < 3600000) { track('converted'); LS('clicked', ''); } } catch (e2) {} });
+})();
