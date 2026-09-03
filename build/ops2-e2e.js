@@ -72,7 +72,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       await page.evaluate(() => { location.hash = 'trading/live'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('.trd').length > 0)) break; }
       await page.evaluate(() => { const t = document.querySelector('.trd-h .t.up'); const h = t && t.closest('.trd-h'); if (h) h.click(); }); await sleep(600); // first trader that actually has an open position (the newest row may be flat: closes only)
       const lv = await page.evaluate(() => { const t = Array.from(document.querySelectorAll('.tile')).find(x => /live prices/i.test(x.innerText)); return { traders: document.querySelectorAll('.trd').length, expanded: document.querySelectorAll('.trd-b .pos').length, prices: t ? +t.querySelector('.v').innerText.replace(/[^0-9]/g, '') : 0, tiles: document.querySelectorAll('.tile').length, dash: document.querySelectorAll('.trd-b .pos b').length ? Array.from(document.querySelectorAll('.trd-b .pos b')).filter(b => b.innerText.trim() === '—').length : -1 }; });
-      chk('live trades: trader rows expand to positions; base prices loaded (/api/prices pairs) so P&L is real', lv.traders > 0 && lv.expanded > 0 && lv.tiles >= 8 && lv.prices >= 30, lv);
+      chk('live trades: trader rows expand to positions; base prices loaded (/api/prices pairs) so P&L is real', lv.traders > 0 && lv.expanded > 0 && lv.tiles >= 8 && lv.prices >= 20 && lv.dash === 0, lv); // /api/prices carries ~24 majors; the rest fill in per symbol over time
       await page.evaluate(() => { document.querySelector('[data-v="markets"]').click(); }); await sleep(500);
       chk('live trades: markets view', await page.evaluate(() => document.querySelectorAll('.hb-r').length > 0));
       try { await page.screenshot({ path: path.join(SHOTS, 'v2-trading-live.png') }); } catch (e) {}
@@ -121,12 +121,35 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       chk('live: danger-zone card or none needed', await page.evaluate(() => { const t = document.getElementById('view').innerText; return /danger zone/i.test(t) || /open positions/i.test(t); }));
       await page.evaluate(() => { location.hash = 'inbox/support'; }); await sleep(3000); await page.evaluate(() => { const r = document.querySelector('.sup-row'); if (r) r.click(); }); await sleep(2500);
       chk('support: canned-reply bar in the composer', await page.evaluate(() => !!document.getElementById('supTplSave')));
+      // 2026-09-04: trade counts are no longer the 100-row journal; Shop shows the durable cash ledger; Overview tiles drill down
+      await page.evaluate(() => { location.hash = 'people/users'; }); await sleep(3500);
+      const uc2 = await page.evaluate(() => { const hs = Array.from(document.querySelectorAll('#view .tbl th')).map(h => h.innerText.toLowerCase()); const tr = Array.from(document.querySelectorAll('#view .tbl tbody tr')); const i = hs.indexOf('trades'); const vals = tr.map(r => +((r.children[i] || {}).innerText || '0').replace(/,/g, '')); return { season: hs.includes('season'), max: Math.max.apply(null, vals.concat([0])) }; });
+      chk('users: season column present; lifetime trades exceed the old 100 cap for at least one user', uc2.season && uc2.max > 100, uc2);
+      await page.evaluate(() => { location.hash = 'money/shop'; }); await sleep(5000);
+      const sh = await page.evaluate(() => { const t = document.getElementById('view').innerText; return { rows: document.querySelectorAll('#shList tr').length, cash: /cash purchases/i.test(t), cons: /consumables/i.test(t), history: /history/.test(t), cat: /catalogue/i.test(t), cashRows: Array.from(document.querySelectorAll('#shList td')).filter(td => /\$\d/.test(td.innerText)).length }; });
+      chk('shop: purchase log with cash rows, consumables filter, AE history and the catalogue', sh.rows > 5 && sh.cash && sh.cons && sh.cat && sh.cashRows > 0, sh);
+      await page.evaluate(() => { location.hash = 'today/overview'; }); await sleep(4000);
+      await page.evaluate(() => { const t = document.querySelector('.tile[data-drill="affiliate"]'); if (t) t.click(); }); for (let w = 0; w < 20; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('#drBody .row').length > 0 || /nothing yet/.test((document.getElementById('drBody') || {}).innerText || ''))) break; }
+      const dr = await page.evaluate(() => ({ open: !!document.querySelector('.modal'), title: (document.querySelector('.modal .mhead b') || {}).innerText, rows: document.querySelectorAll('#drBody .row').length, clickable: document.querySelectorAll('.tile[data-drill]').length }));
+      chk('overview: KPI tiles drill down to the people behind the number', dr.open && /money clicks/i.test(dr.title || '') && dr.clickable >= 5, dr);
+      await page.keyboard.press('Escape'); await sleep(300);
+      // arrows where a baseline exists; compact views fold their long lists
+      const ar = await page.evaluate(() => ({ arrows: document.querySelectorAll('#view .tile .up, #view .tile .dn').length }));
+      chk('overview: up/down arrows on the KPI tiles', ar.arrows >= 3, ar);
+      await page.evaluate(() => { location.hash = 'people/security'; }); await sleep(4000);
+      const sc = await page.evaluate(() => ({ folds: document.querySelectorAll('#view details.fold').length, openFolds: document.querySelectorAll('#view details.fold[open]').length, clusters: document.querySelectorAll('#view details.cl').length, needs: /needs a look/i.test(document.getElementById('view').innerText), height: document.getElementById('view').scrollHeight }));
+      chk('multi-account: folded sections, one-line clusters, needs-a-look first, page under 2500px', sc.folds >= 4 && sc.openFolds === 0 && sc.clusters > 0 && sc.needs && sc.height < 2500, sc);
+      await page.evaluate(() => { const d = document.querySelector('#view details.fold'); d.open = true; }); await sleep(300);
+      chk('multi-account: a fold opens on demand', await page.evaluate(() => document.querySelectorAll('#view details.fold[open] details.cl').length > 0));
+      await page.evaluate(() => { location.hash = 'money/premium'; }); await sleep(4000);
+      const pm = await page.evaluate(() => ({ folds: document.querySelectorAll('#view details.fold').length, height: document.getElementById('view').scrollHeight, lapses: /lapses|expiring/i.test(document.getElementById('view').innerText) }));
+      chk('premium desk: members first, positions and closes folded, page under 2000px', pm.folds === 2 && pm.height < 2000, pm);
       const man = await page.evaluate(async () => { const r = await fetch('/api/stats/asset/ops.webmanifest', { credentials: 'include' }); const j = await r.json(); return { status: r.status, display: j.display, icons: (j.icons || []).length }; });
       chk('PWA manifest served behind the cookie', man.status === 200 && man.display === 'standalone' && man.icons === 2, man);
     }
     // a view that fires many async fetches (Live trades) must not paint over the view the owner navigates to next
     await page.evaluate(() => { location.hash = 'trading/live'; }); await sleep(400); await page.evaluate(() => { location.hash = 'money/shop'; }); await sleep(6000);
-    const ov = await page.evaluate(() => ({ crumb: (document.getElementById('crumb') || {}).innerText, live: !!document.querySelector('#view .trd, #view [data-v="markets"]'), shop: /acqui/i.test(document.getElementById('view').innerText) }));
+    const ov = await page.evaluate(() => ({ crumb: (document.getElementById('crumb') || {}).innerText, live: !!document.querySelector('#view .trd, #view [data-v="markets"]'), shop: /every purchase/i.test(document.getElementById('view').innerText) }));
     chk('late responses of the previous view never overwrite the current view', /Shop/.test(ov.crumb || '') && !ov.live && ov.shop, ov);
     // attention strip lives on Today/Overview only; flags are images that actually load; scrollbars are dark (color-scheme)
     await page.evaluate(() => { location.hash = 'people/users'; }); await sleep(1500);

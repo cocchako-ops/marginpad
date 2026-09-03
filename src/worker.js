@@ -5262,10 +5262,10 @@ async function aeQuery(env, sql) {
     const r = await fetch('https://api.cloudflare.com/client/v4/accounts/' + env.CF_ACCOUNT_ID + '/analytics_engine/sql', {
       method: 'POST', headers: { Authorization: 'Bearer ' + env.CF_API_TOKEN }, body: sql, signal: ctl.signal,
     }).finally(() => clearTimeout(tm));
-    if (!r.ok) return null;
-    const j = await r.json();
+    if (!r.ok) { try { aeQuery.lastErr = r.status + ' ' + (await r.text()).slice(0, 300); } catch (e) { aeQuery.lastErr = String(r.status); } return null; } // kept on the function for the caller that wants to show WHY history is missing
+    const j = await r.json(); aeQuery.lastErr = '';
     return (j && Array.isArray(j.data)) ? j.data : null;
-  } catch (e) { return null; }
+  } catch (e) { aeQuery.lastErr = String(e && e.message || e).slice(0, 200); return null; }
 }
 // "Message Claude" admin inbox. Items (bug/task/question) are stored in KV STATS as `bug:<id>` with a message
 // thread. The bro writes from the password-locked /api/bug page; a local Claude Code watcher polls /api/bug/list,
@@ -13827,43 +13827,47 @@ export default {
       }
       return new Response(JSON.stringify({ done }), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
-    if (url.pathname === '/api/admin/shop' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Shop tab: every Vault acquisition + the cash side, joined to the catalogue
-      const META = {}; VAULT_ITEMS.forEach(it => { META[it.id] = { name: it.name, tier: it.tier || '', kind: it.kind || 'frame', xp: it.xp || 0, cents: it.cents || 0, earn: it.earn || '' }; });
-      let g = { rows: [], byItem: [], total: 0, buyers: 0, since: 0, byDay: [] }, m = { rows: [], totalCents: 0, count: 0 };
-      try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/shopdiag?n=400')); g = await r.json(); } catch (e) {}
-      try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/shopspend?n=400')); m = await r.json(); } catch (e) {}
-      // cash rows carry an account id, not a name — resolve once per account
-      const nameOf = {};
-      for (const row of (g.rows || [])) if (row.uid && row.un) nameOf[row.uid] = row.un;
-      for (const row of (m.rows || [])) {
-        const uid = String(row.acct || '').replace(/^u:/, '');
-        if (uid && nameOf[uid] === undefined) {
-          nameOf[uid] = '';
-          try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/roleof?uid=' + encodeURIComponent(uid) + '&full=1')); const jj = await rr.json(); nameOf[uid] = (jj && jj.username) || ''; } catch (e) {}
-        }
-      }
-      const cashByUid = {};
-      (m.rows || []).forEach(r2 => { const u2 = String(r2.acct || '').replace(/^u:/, ''); cashByUid[u2] = (cashByUid[u2] || 0) + (r2.cents || 0); });
-      // one feed: a grant row and its cash row are the same purchase, so cents come from the catalogue
-      const feed = (g.rows || []).map(r3 => {
-        const mt = META[r3.item] || { name: r3.item, tier: '', kind: '?' };
-        return { ts: r3.ts, uid: r3.uid, un: r3.un || nameOf[r3.uid] || '', item: r3.item, name: mt.name, tier: mt.tier, kind: mt.kind,
-          src: r3.src, cents: r3.src === 'usd' ? (mt.cents || 0) : 0, xp: r3.src === 'xp' ? (mt.xp || 0) : 0 };
+    if (url.pathname === '/api/admin/shop' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // Shop: every Vault acquisition (cosmetics, with the gifter), every cash debit and refund (DURABLE shoplog since 2026-09-04), AE history for purchases that predate the durable log, and the per-day KV counters that survive every ring
+      const META = {}; VAULT_ITEMS.forEach(it => { META[it.id] = { name: it.name, tier: it.tier || '', kind: it.kind || 'frame', xp: it.xp || 0, cents: it.cents || 0, ticks: it.ticks || 0, earn: it.earn || '' }; });
+      let g = { rows: [], byItem: [], total: 0, buyers: 0, since: 0, byDay: [] }, m = { rows: [], totalCents: 0, count: 0, refunds: [] };
+      try { const r = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/shopdiag?n=500')); g = await r.json(); } catch (e) {}
+      try { const r = await env.REWARDS.get(env.REWARDS.idFromName('ledger')).fetch(new Request('https://do/shopspend?n=500')); m = await r.json(); } catch (e) {}
+      const nameOf = {}; for (const row of (g.rows || [])) if (row.uid && row.un) nameOf[row.uid] = row.un;
+      const need = []; (m.rows || []).forEach(r2 => { const u2 = String(r2.acct || '').replace(/^u:/, ''); if (u2 && nameOf[u2] === undefined) { nameOf[u2] = ''; need.push(u2); } });
+      for (const uid of need) { try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/roleof?uid=' + encodeURIComponent(uid) + '&full=1')); const jj = await rr.json(); nameOf[uid] = (jj && jj.username) || ''; } catch (e) {} }
+      const feed = [];
+      const cash = (m.rows || []).map(r => ({ ts: +r.ts || 0, uid: String(r.acct || '').replace(/^u:/, ''), item: r.item, cents: +r.cents || 0, kind: r.kind || 'buy', used: false }));
+      // a cosmetic bought with cash = one cosmetics row + one ledger row: join them (same item, within 2 minutes; a gift is paid by someone else)
+      (g.rows || []).forEach(r3 => {
+        const mt = META[r3.item] || { name: r3.item, tier: '', kind: '?' }; let cents = 0, payer = '';
+        if (r3.src === 'usd' || r3.src === 'gift') { const c = cash.find(x => !x.used && x.kind === 'buy' && x.item === r3.item && Math.abs(x.ts - r3.ts) < 120000 && (r3.src === 'gift' || x.uid === r3.uid)); if (c) { c.used = true; cents = c.cents; payer = c.uid; } else if (r3.src === 'usd') cents = mt.cents || 0; }
+        feed.push({ ts: r3.ts, uid: r3.uid, un: r3.un || nameOf[r3.uid] || '', item: r3.item, name: mt.name, tier: mt.tier, kind: mt.kind, src: r3.src, via: r3.via || (payer && payer !== r3.uid ? (nameOf[payer] || '') : ''), cents, xp: r3.src === 'xp' ? (mt.xp || 0) : 0, ticks: r3.src === 'ticks' ? (mt.ticks || 0) : 0 });
       });
-      // consumables are repeatable so they never land in cosmetics — take them straight off the money log
-      const seen = {}; feed.forEach(f => { seen[f.uid + '|' + f.item + '|' + f.ts] = 1; });
-      (m.rows || []).forEach(r4 => {
-        const mt = META[r4.item] || {};
-        if (mt.kind !== 'c') return;
-        const uid = String(r4.acct || '').replace(/^u:/, '');
-        feed.push({ ts: r4.ts, uid, un: nameOf[uid] || '', item: r4.item, name: mt.name || r4.item, tier: mt.tier || '', kind: 'c', src: 'usd', cents: r4.cents || 0, xp: 0 });
-      });
+      // consumables (XP Surge, Streak Shield) never land in cosmetics: they exist only as ledger rows - and refunds
+      cash.filter(x => !x.used).forEach(x => { const mt = META[x.item] || {}; feed.push({ ts: x.ts, uid: x.uid, un: nameOf[x.uid] || '', item: x.item, name: mt.name || x.item, tier: mt.tier || '', kind: x.kind === 'refund' ? 'refund' : (mt.kind || '?'), src: x.kind === 'refund' ? 'refund' : 'usd', via: '', cents: x.kind === 'refund' ? -x.cents : x.cents, xp: 0, ticks: 0 }); });
+      // before the durable ledger log there is only Analytics Engine: item + price + country per purchase, buyer unknown (the event never carried the name)
+      const firstDurable = +m.durableFrom || Date.now(); // the durable ledger starts at its first row; everything before it is AE-only territory (the 200-row live log may still hold a few recent rows - those are deduped below)
+      let ae = [], aeErr = ''; try { ae = (await aeQuery(env, "SELECT timestamp, blob3 AS label, blob4 AS cc FROM marginpad_events WHERE blob1 = 'event' AND blob2 = 'shopbuy' AND timestamp > NOW() - INTERVAL '90' DAY ORDER BY timestamp DESC LIMIT 500 FORMAT JSON")) || []; aeErr = aeQuery.lastErr || ''; } catch (e) { aeErr = String(e && e.message || e); }
+      if (!Array.isArray(ae)) ae = (ae && ae.data) || [];
+      ae = ae.map(r => ({ ts: r.timestamp || r.ts, label: r.label, cc: r.cc }));
+      ae.forEach(r => { const ts = Date.parse(r.ts) || 0; const mm = String(r.label || '').match(/^(\S+) \((\$([0-9.]+)|XP|Ticks|owner gift)\)/); if (!mm || !ts) return; if (mm[2] === 'XP' || mm[2] === 'Ticks' || mm[2] === 'owner gift') return; // those have a cosmetics row with the buyer
+        const item = mm[1]; if (ts >= firstDurable - 60000) return; if (feed.some(f => f.item === item && Math.abs(f.ts - ts) < 120000 && (f.cents || 0) > 0)) return;
+        const mt = META[item] || {}; feed.push({ ts, uid: '', un: '', item, name: mt.name || item, tier: mt.tier || '', kind: mt.kind || '?', src: 'usd', via: '', cents: Math.round(parseFloat(mm[3] || '0') * 100), xp: 0, ticks: 0, cc: r.cc || '', hist: true }); });
+      // an XP Surge leaves a fingerprint (xpboost_until = purchase + 24h): name the buyer where the fingerprint is unique
+      for (const f of feed) { if (!f.hist || f.item !== 'surge') continue; try { const rr = await env.USERS.get(env.USERS.idFromName('main')).fetch(new Request('https://do/xpboostwho?ts=' + f.ts)); const jj = await rr.json(); if (jj && jj.uid) { f.uid = jj.uid; f.un = jj.username || nameOf[jj.uid] || ''; f.attributed = 'xpboost_until fingerprint'; } } catch (e) {} }
       feed.sort((a, b) => b.ts - a.ts);
-      const xpSpent = feed.reduce((t, f) => t + (f.xp || 0), 0);
+      // per-day counters (written at purchase time in KV): cash cents, XP spent, ticks spent - 60 days, so 30d vs the 30d before is honest
+      const days = []; for (let i = 0; i < 60; i++) days.push(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10));
+      const kvGet = k => env.STATS.get(k).then(v => +v || 0).catch(() => 0);
+      const kv = await Promise.all(days.map(async d => ({ day: d, cents: await kvGet('shop:usd:' + d), xp: await kvGet('shop:xp:' + d), ticks: await kvGet('shop:tk:' + d) })));
+      const sum = (k, a, b) => kv.slice(a, b).reduce((s, x) => s + (+x[k] || 0), 0);
       const items = (g.byItem || []).map(r5 => { const mt = META[r5.item] || {}; return { item: r5.item, name: mt.name || r5.item, tier: mt.tier || '', kind: mt.kind || '?', src: r5.src, n: +r5.n || 0, cents: mt.cents || 0, xp: mt.xp || 0 }; });
-      const body = JSON.stringify({ feed: feed.slice(0, 300), items, byDay: g.byDay || [], grants: g.total || 0, buyers: g.buyers || 0,
-        since: g.since || 0, cashCents: m.totalCents || 0, cashCount: m.count || 0, xpSpent,
-        topSpenders: Object.keys(cashByUid).map(u3 => ({ uid: u3, un: nameOf[u3] || '', cents: cashByUid[u3] })).sort((a, b) => b.cents - a.cents).slice(0, 10) });
+      const spend = {}; feed.forEach(f => { if (f.cents > 0 && f.uid) spend[f.uid] = (spend[f.uid] || 0) + f.cents; });
+      const body = JSON.stringify({ feed: feed.slice(0, 400), items, byDay: g.byDay || [], kvByDay: kv, grants: g.total || 0, buyers: g.buyers || 0, since: g.since || 0,
+        cash30: sum('cents', 0, 30), cashPrev30: sum('cents', 30, 60), xp30: sum('xp', 0, 30), xpPrev30: sum('xp', 30, 60), ticks30: sum('ticks', 0, 30), ticksPrev30: sum('ticks', 30, 60),
+        durableCents: m.totalCents || 0, durableCount: m.count || 0, durableSince: +m.durableFrom || 0, refunds: (m.refunds || []).length, aeRows: ae.length, aeErr,
+        catalogue: VAULT_ITEMS.map(it => ({ id: it.id, name: it.name, kind: it.kind || 'frame', tier: it.tier || '', cents: it.cents || 0, xp: it.xp || 0, ticks: it.ticks || 0, earn: it.earn || '', until: it.until || '' })),
+        topSpenders: Object.keys(spend).map(u3 => ({ uid: u3, un: nameOf[u3] || '', cents: spend[u3] })).sort((a, b) => b.cents - a.cents).slice(0, 10) });
       return new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/api/admin/uidlookup' && (await adminCookieOk(request, env) || isAdminKey(env, adminKeyFrom(request, url)))) { // whose Bybit UID is this? (read-only)
@@ -15384,6 +15388,7 @@ export class RewardLedger {
     try { s.exec('ALTER TABLE withdrawals ADD COLUMN note TEXT DEFAULT ""'); } catch (e) {} // reject reason (shown to the user in their withdrawal history)
     s.exec('CREATE TABLE IF NOT EXISTS msgs(address TEXT PRIMARY KEY, message TEXT, ts INTEGER, seen INTEGER NOT NULL DEFAULT 0)'); // admin → user message, shown as a banner on /rewards when that address loads
     s.exec('CREATE TABLE IF NOT EXISTS log(ts INTEGER, type TEXT, address TEXT, cc TEXT, dev TEXT, amount INTEGER)'); // live activity feed: claim / visit / withdraw
+    s.exec('CREATE TABLE IF NOT EXISTS shoplog(ts INTEGER, acct TEXT, item TEXT, cents INTEGER, kind TEXT)'); // DURABLE Vault cash ledger (2026-09-04): the 200-row live log above lost every shop purchase within hours, so the Shop tab showed $0 while people paid
     s.exec('CREATE TABLE IF NOT EXISTS vidlock(vid TEXT PRIMARY KEY, address TEXT, ts INTEGER)'); // one address per device; admin can unlock
     s.exec('CREATE TABLE IF NOT EXISTS support(ts INTEGER, email TEXT, address TEXT, message TEXT)'); // contact-us submissions from the rewards page
     try { s.exec('ALTER TABLE support ADD COLUMN closed INTEGER NOT NULL DEFAULT 0'); } catch (e) {} // open vs closed ticket state for the admin Support tab
@@ -15490,13 +15495,15 @@ export class RewardLedger {
       this.log('withdraw', acct, cc, dev, amt + bonusC);
       return this.j({ ok: true, amount: amt / 100, bonus: bonusC / 100, total: (amt + bonusC) / 100, level: xLvl, id, status: 'pending' });
     }
-    if (path === '/shopspend') { // ops Shop tab: cash spent in the Vault (log type 'shop'; item id rides in cc)
+    if (path === '/shopspend') { // ops Shop: cash debits + refunds. The durable shoplog (2026-09-04) is the source; the 200-row live log only fills in rows that predate it
       const n = Math.min(500, Math.max(10, +url.searchParams.get('n') || 200));
       let rows = [], tot = 0, cnt = 0;
-      try { rows = this.rows("SELECT ts, address, cc AS item, amount FROM log WHERE type='shop' ORDER BY ts DESC LIMIT ?", n)
-        .map(r => ({ ts: +r.ts || 0, acct: r.address || '', item: r.item || '', cents: Math.abs(+r.amount || 0) })); } catch (e) {}
-      try { const t = this.rows("SELECT COUNT(*) AS n, SUM(-amount) AS c FROM log WHERE type='shop'")[0]; cnt = +(t && t.n) || 0; tot = +(t && t.c) || 0; } catch (e) {}
-      return this.j({ rows, totalCents: tot, count: cnt });
+      try { rows = this.rows('SELECT ts, acct, item, cents, kind FROM shoplog ORDER BY ts DESC LIMIT ?', n).map(r => ({ ts: +r.ts || 0, acct: r.acct || '', item: r.item || '', cents: +r.cents || 0, kind: r.kind || 'buy' })); } catch (e) {}
+      try { const seen = new Set(rows.map(r => r.ts + '|' + r.acct)); this.rows("SELECT ts, type, address, cc AS item, amount FROM log WHERE type IN ('shop','shoprefund') ORDER BY ts DESC LIMIT ?", n).forEach(r => { const k = (+r.ts) + '|' + (r.address || ''); if (seen.has(k)) return; rows.push({ ts: +r.ts || 0, acct: r.address || '', item: r.item || '', cents: Math.abs(+r.amount || 0), kind: r.type === 'shoprefund' ? 'refund' : 'buy' }); }); } catch (e) {}
+      rows.sort((a, b) => b.ts - a.ts);
+      try { const t = this.rows("SELECT SUM(CASE WHEN kind='buy' THEN 1 ELSE 0 END) AS n, SUM(CASE WHEN kind='buy' THEN cents ELSE -cents END) AS c FROM shoplog")[0]; cnt = +(t && t.n) || 0; tot = +(t && t.c) || 0; } catch (e) {}
+      let durableFrom = 0; try { durableFrom = +((this.rows('SELECT MIN(ts) t FROM shoplog')[0] || {}).t) || 0; } catch (e) {}
+      return this.j({ rows, totalCents: tot, count: cnt, refunds: rows.filter(r => r.kind === 'refund'), durableFrom });
     }
     if (path === '/uidall') { // every sign-up UID on record, newest first
       let rows = [];
@@ -15695,6 +15702,7 @@ export class RewardLedger {
       if ((+srow.balance || 0) < scents) return this.j({ error: 'insufficient', balance: +srow.balance || 0 });
       sql.exec('UPDATE accounts SET balance=balance-? WHERE address=?', scents, sacct);
       this.log('shop', sacct, sitem, '', -scents);
+      try { sql.exec('INSERT INTO shoplog(ts,acct,item,cents,kind) VALUES(?,?,?,?,?)', Date.now(), sacct, sitem, scents, 'buy'); } catch (e) {}
       const sb = this.rows('SELECT balance FROM accounts WHERE address=?', sacct)[0];
       return this.j({ ok: true, balance: sb ? +sb.balance : 0 });
     }
@@ -15703,6 +15711,7 @@ export class RewardLedger {
       if (!racct || racct.indexOf('u:') !== 0) return this.j({ error: 'bad' }, 400);
       sql.exec('UPDATE accounts SET balance=balance+? WHERE address=?', rcents, racct);
       this.log('shoprefund', racct, ritem, '', rcents);
+      try { sql.exec('INSERT INTO shoplog(ts,acct,item,cents,kind) VALUES(?,?,?,?,?)', Date.now(), racct, ritem, rcents, 'refund'); } catch (e) {}
       return this.j({ ok: true });
     }
     if (path === '/gift') { // chat /gift credit — same shape as /mission but WITHOUT its 50-cent clamp (ibrar ticket 2026-08-16: a $1 gift silently landed as $0.50); cap mirrors the /gift command max ($5), logged as 'gift' for audit
@@ -16280,7 +16289,8 @@ export class UserStore {
     try { s.exec('ALTER TABLE users ADD COLUMN prem_seen INTEGER DEFAULT 0'); s.exec('UPDATE users SET prem_seen=1 WHERE premium>0'); } catch (e) {} // "has this user seen the premium-upgrade celebration?" The backfill (existing premium = already-seen, no retroactive mass-animation) is TIED TO THE ALTER SUCCEEDING — so it runs exactly ONCE (first boot after ship); every later boot the ALTER throws → catch → backfill skipped → a subsequent reset (e.g. the mp-ops-granted cohort set back to 0 for the delayed welcome) is NEVER overwritten. New users get DEFAULT 0 → they get the celebration.
     for (const col of ['bio TEXT', 'avatar TEXT', 'accent TEXT', 'coins TEXT', 'frame TEXT']) { try { s.exec('ALTER TABLE users ADD COLUMN ' + col); } catch (e) {} } // public profile personalization: bio, avatar emoji, accent colour, favourite coins (csv)
     s.exec('CREATE TABLE IF NOT EXISTS xplog(user_id TEXT, ts INTEGER, src TEXT, amt INTEGER, note TEXT)');
-    s.exec('CREATE TABLE IF NOT EXISTS cosmetics(user_id TEXT, item_id TEXT, ts INTEGER, src TEXT, PRIMARY KEY(user_id,item_id))'); // The Vault: purchased/granted cosmetic items (frames F1) // XP earn/adjust history (ring-buffered ~150/user)
+    s.exec('CREATE TABLE IF NOT EXISTS cosmetics(user_id TEXT, item_id TEXT, ts INTEGER, src TEXT, PRIMARY KEY(user_id,item_id))');
+    try { s.exec('ALTER TABLE cosmetics ADD COLUMN via TEXT'); } catch (e) {} // who gifted it (username) - the Shop log could not say who gave what before 2026-09-04 // The Vault: purchased/granted cosmetic items (frames F1) // XP earn/adjust history (ring-buffered ~150/user)
     s.exec('CREATE TABLE IF NOT EXISTS xpboost_ev(user_id TEXT, ts INTEGER, xp INTEGER, note TEXT, seen INTEGER DEFAULT 0)');
     try { s.exec('ALTER TABLE xpboost_ev ADD COLUMN kind TEXT'); } catch (e) {} // dedupe discriminator: 'hh' or 'p:<promoId>' — (user_id, ts=closeTs, kind) uniquely names one grant of one boost on one close // XP boost/happy-hour hits queued for the ops live feed (drained by the minute cron via /xpboostev)
     s.exec('CREATE TABLE IF NOT EXISTS xpday(user_id TEXT, day TEXT, src TEXT, n INTEGER DEFAULT 0, PRIMARY KEY(user_id,day,src))'); // per-source per-UTC-day earned, for anti-abuse caps
@@ -17173,7 +17183,7 @@ export class UserStore {
     }
     if (path === '/security') { // internal: behavioral profile per user for the ops Security tab — how much of their time is spent on /rewards, do they trade at all, VPN org. Joined with RewardLedger accounts in the worker.
       const dw = {}; try { this.rows("SELECT user_id uid, SUM(secs) tot, SUM(CASE WHEN path LIKE '/rewards%' THEN secs ELSE 0 END) rw, COUNT(DISTINCT path) np FROM udwell GROUP BY user_id").forEach(r => { dw[r.uid] = r; }); } catch (e) {}
-      const tr = {}; try { this.rows('SELECT user_id uid, COALESCE(n,0) n, COALESCE(opens,0) opens FROM utrades').forEach(r => { tr[r.uid] = r; }); } catch (e) {}
+      const tr = {}; try { this.rows('SELECT user_id uid, MAX(COALESCE(n,0), COALESCE(life_closes,0)+COALESCE(opens,0)) n, COALESCE(opens,0) opens FROM utrades').forEach(r => { tr[r.uid] = r; }); } catch (e) {} // n = journal length, capped at 100 by the trim: lifetime counters are the honest count
       const users = this.rows("SELECT id,email,username,created,last_seen,pv,cc,dev,org,asn,ip,did,status FROM users ORDER BY created DESC LIMIT 3000").map(u => { const d = dw[u.id] || {}, t = tr[u.id] || {}; return { uid: u.id, email: u.email || '', username: u.username || '', created: u.created || 0, lastSeen: u.last_seen || 0, pv: u.pv || 0, cc: u.cc || '', dev: u.dev || '', org: u.org || '', asn: u.asn || 0, ip: u.ip || '', did: u.did || '', status: u.status || 'active', dwellTotal: +d.tot || 0, dwellRewards: +d.rw || 0, paths: +d.np || 0, trades: +t.n || 0, opens: +t.opens || 0 }; });
       return this.j({ users });
     }
@@ -17572,6 +17582,11 @@ export class UserStore {
       return this.j({ ok: true, swept, checked, funded, staleN });
     }
     if (path === '/journaldump') { return this.j({ journal: this._loadJournal(String(b.uid || '')) }); } // admin/E2E raw journal read (sc/exit/swT/pendClose visible, unlike _j2bot)
+    if (path === '/xpboostwho') { // ops Shop: who bought an XP Surge at ts? The consumable sets xpboost_until = ts + 24h, so the buyer is the user whose boost ends exactly then (history rows from Analytics Engine carry no name)
+      const ts = +url.searchParams.get('ts') || 0; if (!ts) return this.j({});
+      const r = this.rows('SELECT id, username FROM users WHERE xpboost_until BETWEEN ? AND ? LIMIT 2', ts + 86400000 - 180000, ts + 86400000 + 180000);
+      return this.j(r.length === 1 ? { uid: r[0].id, username: r[0].username || '' } : {});
+    }
     if (path === '/xpboostev') { // minute-cron drain: unseen XP boost/HH hits -> ops live feed (who hit the boost)
       const evs = this.rows('SELECT e.user_id uid, e.ts, e.xp, e.note, u.username FROM xpboost_ev e LEFT JOIN users u ON u.id = e.user_id WHERE e.seen = 0 ORDER BY e.ts LIMIT 40');
       try { this.sql.exec('UPDATE xpboost_ev SET seen = 1 WHERE seen = 0'); this.sql.exec('DELETE FROM xpboost_ev WHERE ts < ?', Date.now() - 7 * 86400000); } catch (e) {}
@@ -17628,8 +17643,8 @@ export class UserStore {
       const a1 = (this.rows('SELECT COUNT(*) n FROM users WHERE last_seen>=?', dayMs)[0] || {}).n || 0;
       const a7 = (this.rows('SELECT COUNT(*) n FROM users WHERE last_seen>=?', now - 7 * DAY)[0] || {}).n || 0;
       const a30 = (this.rows('SELECT COUNT(*) n FROM users WHERE last_seen>=?', now - 30 * DAY)[0] || {}).n || 0;
-      const power = this.rows('SELECT id,email,username,cc,pv,logins,last_seen,created,(SELECT n FROM utrades t WHERE t.user_id=users.id) AS trades FROM users WHERE last_seen>=? ORDER BY pv DESC LIMIT 10', now - 7 * DAY);
-      const churned = this.rows('SELECT id,email,username,cc,pv,logins,last_seen,created,(SELECT n FROM utrades t WHERE t.user_id=users.id) AS trades FROM users WHERE last_seen<? AND last_seen>? AND (pv>=10 OR logins>=2) ORDER BY pv DESC LIMIT 12', now - 14 * DAY, now - 60 * DAY);
+      const power = this.rows('SELECT id,email,username,cc,pv,logins,last_seen,created,(SELECT MAX(COALESCE(t.n,0), COALESCE(t.life_closes,0)+COALESCE(t.opens,0)) FROM utrades t WHERE t.user_id=users.id) AS trades FROM users WHERE last_seen>=? ORDER BY pv DESC LIMIT 10', now - 7 * DAY);
+      const churned = this.rows('SELECT id,email,username,cc,pv,logins,last_seen,created,(SELECT MAX(COALESCE(t.n,0), COALESCE(t.life_closes,0)+COALESCE(t.opens,0)) FROM utrades t WHERE t.user_id=users.id) AS trades FROM users WHERE last_seen<? AND last_seen>? AND (pv>=10 OR logins>=2) ORDER BY pv DESC LIMIT 12', now - 14 * DAY, now - 60 * DAY);
       return this.j({ cohorts, dau: a1, wau: a7, mau: a30, power, churned });
     }
     // ---- weekly digest opt-in ----
@@ -17920,7 +17935,9 @@ export class UserStore {
       const byDay = this.rows("SELECT date(created/1000,'unixepoch') d, COUNT(*) n FROM users WHERE created>=? GROUP BY d", Date.now() - 13 * 86400000);
       const byCc = this.rows("SELECT cc, COUNT(*) n FROM users WHERE cc IS NOT NULL AND cc!='' GROUP BY cc ORDER BY n DESC LIMIT 8");
       const byDev = this.rows("SELECT COALESCE(dev,'?') dev, COUNT(*) n FROM users GROUP BY dev ORDER BY n DESC LIMIT 4");
-      const cols = 'id,email,username,status,muted,created,last_login,last_seen,logins,pv,cc,dev,org,asn,(SELECT n FROM utrades t WHERE t.user_id=users.id) AS trades';
+      // trades = lifetime (journal length is trimmed to 100, life_* counters are not); sTrades = closes this season + open positions (season-scoped by the counters' season stamp)
+      const _ws9 = lbPeriodStart(Date.now());
+      const cols = 'id,email,username,status,muted,created,last_login,last_seen,logins,pv,cc,dev,org,asn,(SELECT MAX(COALESCE(t.n,0), COALESCE(t.life_closes,0)+COALESCE(t.opens,0)) FROM utrades t WHERE t.user_id=users.id) AS trades,(SELECT (CASE WHEN COALESCE(t.s_season,0)=? THEN COALESCE(t.s_closes,0) ELSE 0 END)+COALESCE(t.opens,0) FROM utrades t WHERE t.user_id=users.id) AS sTrades';
       const W = []; const A = [];
       if (q) { W.push('(LOWER(email) LIKE ? OR LOWER(username) LIKE ?)'); A.push('%' + q + '%', '%' + q + '%'); }
       if (flt === 'active') { W.push('last_seen>=?'); A.push(dayMs); }
@@ -17936,7 +17953,7 @@ export class UserStore {
       const whereSql = W.length ? (' WHERE ' + W.join(' AND ')) : '';
       const ORD = { new: 'created DESC', seen: 'last_seen DESC', pv: 'pv DESC', trades: 'trades DESC', logins: 'logins DESC' };
       const orderSql = ORD[sort] || ORD.new;
-      let users = this.rows('SELECT ' + cols + ' FROM users' + whereSql + ' ORDER BY ' + orderSql + ' LIMIT ? OFFSET ?', ...A, limit, offset);
+      let users = this.rows('SELECT ' + cols + ' FROM users' + whereSql + ' ORDER BY ' + orderSql + ' LIMIT ? OFFSET ?', _ws9, ...A, limit, offset);
       const matched = (this.rows('SELECT COUNT(*) n FROM users' + whereSql, ...A)[0] || { n: 0 }).n;
       // referral attribution (retroactive): who invited each user — referrals.referrer -> referred.
       // Load the WHOLE referrals table (small, one row per referred signup) into a map — a big "referred IN (...200 ids)" clause
@@ -17960,9 +17977,13 @@ export class UserStore {
       const events = this.rows('SELECT ts,type,label,path,cc,dev FROM uevents WHERE user_id=? ORDER BY ts DESC LIMIT 80', u.id);
       const evTotal = (this.rows('SELECT COUNT(*) n FROM uevents WHERE user_id=?', u.id)[0] || { n: 0 }).n;
       const clickTotal = (this.rows('SELECT COUNT(*) n FROM uclicks WHERE user_id=?', u.id)[0] || { n: 0 }).n;
-      const tr = this.rows('SELECT json,n,wins,losses,opens,pnl FROM utrades WHERE user_id=?', u.id)[0];
+      const tr = this.rows('SELECT json,n,wins,losses,opens,pnl,life_closes,life_wins,life_losses,life_pnl,life_seed,s_season,s_closes,s_wins,s_losses,s_pnl FROM utrades WHERE user_id=?', u.id)[0];
       let trades = []; if (tr && tr.json) { try { trades = JSON.parse(tr.json); } catch (e) {} }
-      const tradeSummary = tr ? { n: tr.n || 0, wins: tr.wins || 0, losses: tr.losses || 0, opens: tr.opens || 0, pnl: tr.pnl || 0 } : { n: 0, wins: 0, losses: 0, opens: 0, pnl: 0 };
+      // n = journal length (trimmed to 100): the honest lifetime count is the seeded life_* counters + open positions; the season count is the s_* counters for THIS season + positions opened in it
+      const _ws = lbPeriodStart(Date.now()); const _sOpen = trades.filter(e => e && (!e.status || e.status === 'open') && (+e.ts || 0) >= _ws).length;
+      const _life = tr ? Math.max(+tr.n || 0, (+tr.life_closes || 0) + (+tr.opens || 0)) : 0;
+      const _sOk = tr && (+tr.s_season || 0) === _ws;
+      const tradeSummary = tr ? { n: _life, journal: tr.n || 0, wins: Math.max(+tr.wins || 0, +tr.life_wins || 0), losses: Math.max(+tr.losses || 0, +tr.life_losses || 0), opens: tr.opens || 0, pnl: +tr.life_seed ? (+tr.life_pnl || 0) : (tr.pnl || 0), season: { start: _ws, trades: (_sOk ? (+tr.s_closes || 0) : 0) + _sOpen, closes: _sOk ? (+tr.s_closes || 0) : 0, wins: _sOk ? (+tr.s_wins || 0) : 0, losses: _sOk ? (+tr.s_losses || 0) : 0, pnl: _sOk ? (+tr.s_pnl || 0) : 0, opens: _sOpen } } : { n: 0, journal: 0, wins: 0, losses: 0, opens: 0, pnl: 0, season: { start: _ws, trades: 0, closes: 0, wins: 0, losses: 0, pnl: 0, opens: 0 } };
       const dwell = this.rows('SELECT path,secs,hits,last FROM udwell WHERE user_id=? ORDER BY secs DESC LIMIT 40', u.id);
       const dwellTotal = (this.rows('SELECT COALESCE(SUM(secs),0) s FROM udwell WHERE user_id=?', u.id)[0] || { s: 0 }).s;
       return this.j({ exists: true, user: { id: u.id, email: u.email, username: u.username || '', status: u.status || 'active', susp_until: u.susp_until || 0, muted: !!u.muted, restrictions: u.restrictions || '', note: u.note || '', created: u.created, last_login: u.last_login, last_seen: u.last_seen || 0, logins: u.logins || 0, pv: u.pv || 0, cc: u.cc || '', dev: u.dev || '', br: u.br || '', ip: u.ip || '', org: u.org || '', asn: u.asn || 0, vpn: isVpnOrg(u.org, u.asn), vpnConf: vpnInfo(u.org, u.asn).conf, xp: +u.xp || 0, xpLife: +u.xp_life || 0, level: xpLevelOf(+u.xp || 0), premium: +u.premium || 0, streak: +u.streak || 0, avatar: u.avatar || '', accent: u.accent || '', bio: u.bio || '' }, activeSessions: sessions.filter(s => s.active).length, sessions, events, evTotal, clickTotal, trades, tradeSummary, dwell, dwellTotal }); // xp/level/premium/avatar added 2026-08-11 for the support user-context card
@@ -18189,9 +18210,10 @@ export class UserStore {
       const t = this.rows('SELECT json, n, wins, losses, opens, pnl, life_closes, life_wins, life_losses, life_pnl, best_pnl, life_seed, s_season, s_closes, s_wins, s_pnl, s_best FROM utrades WHERE user_id = ?', u.id)[0] || {};
       const weekStart = lbPeriodStart(now);
       let bestRoe = null, bestPnl = null, weekPnl = 0, weekN = 0, weekW = 0;
-      let sbRoe = null, sbPnl = null, sbC = 0, sbW = 0, sbSum = 0; // this-season floor derived from the display blob (backstop under the s_* counters)
+      let sbRoe = null, sbPnl = null, sbC = 0, sbW = 0, sbSum = 0, sbO = 0; // this-season floor derived from the display blob (backstop under the s_* counters); sbO = positions OPENED this season and still open
       try { const arr = JSON.parse(t.json || '[]'); if (Array.isArray(arr)) for (const e of arr) {
-        if (!e || (e.status !== 'win' && e.status !== 'loss')) continue;
+        if (!e) continue;
+        if (e.status !== 'win' && e.status !== 'loss') { if ((!e.status || e.status === 'open') && (+e.ts || 0) >= weekStart) sbO++; continue; }
         const m = +e.margin, p = +e.pnl; if (!(m > 0) || !isFinite(p)) continue;
         const roe = Math.max(-100, Math.min(p / m * 100, 1000000));
         if (bestRoe == null || roe > bestRoe) bestRoe = roe;
@@ -18220,7 +18242,7 @@ export class UserStore {
         lPnl = sOk ? +(+t.s_pnl || 0) : sbSum; // sums must not be max()-ed (a partial floor would hide losses) — counters when the row is on this season, blob floor otherwise
         bestRoe = sbRoe; bestPnl = (sOk && t.s_best != null) ? Math.max(+t.s_best, sbPnl == null ? -1e15 : sbPnl) : sbPnl;
         try { const lbr = this.rows('SELECT roe, bp FROM lbbest WHERE user_id=? AND season=?', u.id, weekStart)[0]; if (lbr) { if (lbr.roe != null && (bestRoe == null || +lbr.roe > bestRoe)) bestRoe = +lbr.roe; if (lbr.bp != null && (bestPnl == null || +lbr.bp > bestPnl)) bestPnl = +lbr.bp; } } catch (e) {} // trim-proof season bests survive any blob trim
-        tradesShown = lClosed + (+t.opens || 0);
+        tradesShown = lClosed + sbO; // trades OPENED this season = season closes + positions opened this season that are still open (an old open position is not a season trade; owner 2026-09-04)
       }
       const followers = (this.rows('SELECT COUNT(*) c FROM ufollows WHERE tuid = ?', u.id)[0] || { c: 0 }).c;
       // viewer-relative relationship (mutual follow = "friends") — only when a signed-in viewer is passed
@@ -18375,7 +18397,7 @@ export class UserStore {
       let eff = null;
       if (it.kind === 'c') { eff = this._applyConsumable(uid, it.id, 0); if (eff.error) return this.j(eff, 500); }
       else if (target) {
-        sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', String(target.id), it.id, Date.now(), 'gift');
+        sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src,via) VALUES(?,?,?,?,?)', String(target.id), it.id, Date.now(), 'gift', String(u.username || '').slice(0, 24));
         try { this._pushNotif(String(target.id), 'gift', '@' + (u.username || 'A trader') + ' gifted you the ' + it.name + (it.kind === 'bg' ? ' background' : it.kind === 't' ? ' ticket skin' : ' frame') + ' — open The Vault to equip it', '/vault/'); } catch (e) {}
       } else sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', uid, it.id, Date.now(), 'ticks');
       const nt = this.rows('SELECT ticks FROM users WHERE id=?', uid)[0];
@@ -18405,7 +18427,7 @@ export class UserStore {
       let eff = null;
       if (it.kind === 'c') { eff = this._applyConsumable(uid, it.id, 0); if (eff.error) return this.j(eff, 500); }
       else if (target) {
-        sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', String(target.id), it.id, Date.now(), 'gift');
+        sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src,via) VALUES(?,?,?,?,?)', String(target.id), it.id, Date.now(), 'gift', String(u.username || '').slice(0, 24));
         try { this._pushNotif(String(target.id), 'gift', '@' + (u.username || 'A trader') + ' gifted you the ' + it.name + (it.kind === 'bg' ? ' background' : it.kind === 't' ? ' ticket skin' : ' frame') + ' — open The Vault to equip it', '/vault/'); } catch (e) {}
       }
       else sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', uid, it.id, Date.now(), 'xp');
@@ -18419,8 +18441,8 @@ export class UserStore {
     }
     if (path === '/shopdiag') { // ops Shop tab: who acquired which cosmetic, when and how (read-only)
       const n = Math.min(500, Math.max(10, +url.searchParams.get('n') || 200));
-      const rows = this.rows('SELECT c.user_id AS uid, c.item_id AS item, c.ts AS ts, c.src AS src, u.username AS un FROM cosmetics c LEFT JOIN users u ON u.id=c.user_id ORDER BY c.ts DESC LIMIT ?', n)
-        .map(r => ({ uid: r.uid, item: r.item, ts: +r.ts || 0, src: r.src || '', un: r.un || '' }));
+      const rows = this.rows('SELECT c.user_id AS uid, c.item_id AS item, c.ts AS ts, c.src AS src, c.via AS via, u.username AS un FROM cosmetics c LEFT JOIN users u ON u.id=c.user_id ORDER BY c.ts DESC LIMIT ?', n)
+        .map(r => ({ uid: r.uid, item: r.item, ts: +r.ts || 0, src: r.src || '', via: r.via || '', un: r.un || '' }));
       const byItem = this.rows('SELECT item_id AS item, src, COUNT(*) AS n FROM cosmetics GROUP BY item_id, src');
       const totals = this.rows('SELECT COUNT(*) AS n, COUNT(DISTINCT user_id) AS buyers FROM cosmetics')[0] || { n: 0, buyers: 0 };
       const first = this.rows('SELECT MIN(ts) AS t FROM cosmetics')[0];
@@ -18462,7 +18484,7 @@ export class UserStore {
     if (path === '/shopgrant') { // balance purchase grant (worker already debited the ledger) / admin grant — idempotent
       const uid = String(b.uid || ''); const it = vaultItem(String(b.item || ''));
       if (!uid || !it) return this.j({ error: 'bad' }, 400);
-      try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src) VALUES(?,?,?,?)', uid, it.id, Date.now(), String(b.src || 'usd').slice(0, 12)); } catch (e) { /* already owned = fine (idempotent) */ }
+      try { sql.exec('INSERT INTO cosmetics(user_id,item_id,ts,src,via) VALUES(?,?,?,?,?)', uid, it.id, Date.now(), String(b.src || 'usd').slice(0, 12), String(b.fromUn || '').slice(0, 24)); } catch (e) { /* already owned = fine (idempotent) */ }
       if (String(b.src || '') === 'gift' && b.fromUn) { try { this._pushNotif(uid, 'gift', '@' + String(b.fromUn) + ' gifted you the ' + it.name + (it.kind === 'bg' ? ' background' : it.kind === 't' ? ' ticket skin' : ' frame') + ' — open The Vault to equip it', '/vault/'); } catch (e) {} }
       return this.j({ ok: true, item: it.id });
     }

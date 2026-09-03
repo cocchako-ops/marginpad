@@ -88,7 +88,7 @@
         + bioHtml + coinsHtml
         + '<div class="lbm-bar"><i style="width:' + (L.pct || 0) + '%;background:' + lc + '"></i></div>'
         + '<div class="lbm-grid">'
-          + stat((s2.trades || 0), 'Trades')
+          + stat((s2.trades || 0), s2.season ? 'Trades · season' : 'Trades')
           + stat((s2.winRate || 0) + '%', 'Win rate', s2.winRate >= 50 ? '#34d99a' : '')
           + stat((s2.bestRoe == null ? '—' : pctC(s2.bestRoe)), 'Best ROE', s2.bestRoe > 0 ? '#34d99a' : '')
           + stat((s2.bestPnl == null ? '—' : moneyC(s2.bestPnl)), 'Best trade', s2.bestPnl > 0 ? '#34d99a' : '')
