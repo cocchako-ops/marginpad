@@ -68,3 +68,6 @@ NUL
 # throwaway probes written at the repo root during a session
 scratch-*.js
 scratch-*.png
+
+# ops E2E screenshots (build/ops-e2e.js)
+build/ops-shots/

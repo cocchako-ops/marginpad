@@ -8111,7 +8111,7 @@ function loadRevenue(retry){
     var t14=days.reduce(function(t,x){return t+x[1];},0),t7=days.slice(7).reduce(function(t,x){return t+x[1];},0),tToday=days[13][1];
     var best=byEx.length?byEx[0]:null;
     var cc=document.getElementById('rvCards');
-    if(cc)cc.innerHTML=card(N(tToday),'Clicks today')+card(N(t7),'Clicks 7d')+card(N(t14),'Clicks 14d')+card('<span style="color:#c2f64a">$'+(t7*usd).toFixed(2)+'</span>','Est. revenue 7d')+card(best?esc(best.ex):'—','Top exchange 30d')+card((pend.length?'<span style="color:#ffb347">'+N(pend.length)+'</span>':'0'),'Sign-ups pending');
+    if(cc)cc.innerHTML=card(N(tToday),'Clicks today')+card(N(t7),'Clicks 7d')+card(N(t14),'Clicks 14d')+card('<span style="color:#c2f64a">$'+(t7*usd).toFixed(2)+'</span>','Est. revenue 7d')+card(best?esc(best.ex):'—','Top exchange 30d'); // "Sign-ups pending" card removed 2026-09-03: it read the undefined pend (exsign feature, gone since 2026-08-03) -> ReferenceError -> the catch below painted the whole tab "could not load" for a month; build/ops-e2e.js now catches this class of break
     var ch=document.getElementById('rvChart');
     if(ch){if(!d.ae){ch.innerHTML='<div class="empty" style="margin:auto">Analytics Engine unavailable</div>';}else{var mx=Math.max.apply(null,days.map(function(x){return x[1];}).concat([1]));ch.innerHTML=days.map(function(x){return '<div class="dcol"><div class="dbar" style="height:'+Math.max(3,x[1]/mx*100)+'%" title="'+x[0]+' — '+x[1]+' clicks · ~$'+(x[1]*usd).toFixed(2)+'"></div><div class="dlbl">'+x[0].slice(8)+'</div></div>';}).join('');}}
     var ex=document.getElementById('rvEx');
@@ -8129,7 +8129,7 @@ function loadRevenue(retry){
         if(c2.src)who+=' <span style="color:#7f8893;font-size:11px">via '+esc(c2.src)+'</span>';
         return '<div class="wd-row"><span>'+flag(c2.cc)+'</span><span style="flex:0 0 auto;min-width:110px;font-size:12.5px">'+who+'</span><span style="color:#ffd75a;font-weight:800;font-family:Consolas,monospace;font-size:12px;flex:0 0 auto;min-width:84px">'+esc(String(c2.e||'?').toUpperCase())+'</span><span class="meta mono" style="flex:1;overflow:hidden;text-overflow:ellipsis">from '+esc(c2.p||'/')+'</span><span class="meta" style="margin-left:auto">'+ago(c2.ts)+' ago</span></div>';
       }).join(''):'<div class="empty">no exchange click-outs recorded yet (ring buffer holds the most recent ones)</div>';}
-  }).catch(function(){var cc=document.getElementById('rvCards');if(cc)cc.innerHTML=card('—','could not load');});
+  }).catch(function(e){try{console.error('[ops revenue] '+(e&&(e.stack||e.message)||e));}catch(e2){}var cc=document.getElementById('rvCards');if(cc)cc.innerHTML=card('—','could not load');}); // logged (2026-09-03) so a silent catch can never again hide a broken tab from the E2E console capture
 }
 function loadShop(){
   fetch('/api/admin/shop?_='+Date.now()).then(function(r){return r.json();}).then(function(d){
@@ -12802,6 +12802,15 @@ export default {
       const resp = new Response(body, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=3600', ...CORS } });
       try { await cache.put(ck, resp.clone()); } catch (e) {}
       return resp;
+    }
+    if (url.pathname === '/api/stats/session' && request.method === 'POST') { // E2E-only (2026-09-03): mint a SHORT dashboard session with the ADMIN_KEY header, so build/ops-e2e.js can render every tab after a deploy without the owner's password. Widens nothing (the key already unlocks every mutating route); 2h TTL, tagged, and it posts the same Telegram line a login does.
+      const jh = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' };
+      const ak = adminKeyOf(env); if (!ak || adminKeyFrom(request, null) !== ak || !env.STATS) return new Response(JSON.stringify({ error: 'forbidden' }), { status: 403, headers: jh });
+      const ip = request.headers.get('cf-connecting-ip') || '', cc = (request.cf && request.cf.country) || '?';
+      const tok = _rndHex(32);
+      await env.STATS.put('adm:sess:mp_sadm:' + tok, JSON.stringify({ ts: Date.now(), ip, ua: 'ops-e2e', e2e: true }), { expirationTtl: 2 * 3600 });
+      try { await tgAdmin(env, 'Ops E2E session minted from ' + ip + ' (' + cc + ') - expires in 2h.'); } catch (e) {}
+      return new Response(JSON.stringify({ ok: true, token: tok, ttl: 7200 }), { headers: jh });
     }
     if (url.pathname === '/api/stats/login') return adminDoLogin(request, env, 'cfg:statspass', 'mp_sadm', '/', url.origin + '/api/stats');
     if (url.pathname === '/api/stats/logout') return adminLogout(request, env, 'mp_sadm', '/');
