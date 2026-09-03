@@ -5,7 +5,7 @@
    - everything else   → static assets (the website) */
 // mp-ops v2 shell (2026-09-03): real files under src/ops/, bundled as text modules (wrangler.toml [[rules]] type=Text).
 import OPS_SHELL from './ops/shell.html';
-import OPS_CSS from './ops/ops.css';
+import OPS_CSS from './ops/ops.css.txt'; // .css.txt: a .css import comes through as a CSS-module object ("[object Object]" on the wire), only .txt is plain text
 import OPS_JS from './ops/client/ops.js.txt'; // .js.txt on purpose: a .js import is bundled and EXECUTED as code at startup ("window is not defined"); the Text rule only applies to .txt
 
 const CORS = {

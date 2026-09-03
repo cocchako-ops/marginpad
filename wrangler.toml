@@ -9,7 +9,7 @@ preview_urls = false
 # deliberately narrow so src/worker.js itself stays an ES module.
 [[rules]]
 type = "Text"
-globs = ["src/ops/*.html", "src/ops/*.css", "src/ops/client/*.txt"]
+globs = ["src/ops/*.html", "src/ops/*.txt", "src/ops/client/*.txt"]
 fallthrough = true
 
 [assets]
