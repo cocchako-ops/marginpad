@@ -5582,6 +5582,62 @@ render();setInterval(reload,15000);
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }
 
+// Ops pocket view (2026-09-03, ops plan block F): the phone page. One column, three things — what needs the owner (the
+// same /api/admin/attention list as the dashboard strip), the alert kinds with Ack/Snooze, and the kill switches — plus
+// yesterday's numbers and who is online. Same password session as the dashboard; nothing here is a new capability,
+// every action calls the existing cookie-only POST routes. No backticks or ${} inside the client script (template literal).
+async function handleStatsPocket(url, env, request) {
+  const cookieOk = await adminCookieOk(request, env);
+  if (!cookieOk) { const _stored = (env.STATS && await env.STATS.get('cfg:statspass')) || ''; return new Response(adminLoginHTML('Ops pocket', !_stored, '/api/stats/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } }); }
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0a0b0d"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>MarginPad ops · pocket</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#0a0b0d;color:#e8ecf1;font-family:-apple-system,system-ui,'Segoe UI',sans-serif;padding:calc(env(safe-area-inset-top) + 14px) 14px calc(env(safe-area-inset-bottom) + 30px)}
+h1{font-size:17px;margin:0 0 2px;letter-spacing:-.01em}h1 b{color:#c2f64a}.sub{color:#7f8893;font-size:12px;margin-bottom:14px}
+.sec{font-family:Consolas,monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#5c656f;margin:18px 0 8px}
+.it{display:flex;gap:10px;align-items:flex-start;border:1px solid #232b36;border-radius:12px;padding:12px 13px;margin-bottom:8px;background:#0f1218;font-size:14px;line-height:1.4;text-decoration:none;color:#e8ecf1}
+.it b{font-family:Consolas,monospace}.it.red{border-color:rgba(255,98,88,.5);color:#ff9d95}.it.amber{border-color:rgba(255,179,71,.5);color:#ffcf8a}.it.info{border-color:rgba(120,170,255,.4);color:#b9d3ff}.it.ok{color:#8fe9c4;border-color:rgba(46,189,133,.4)}
+.al{display:flex;flex-direction:column;gap:8px;border:1px solid #232b36;border-radius:12px;padding:11px 13px;margin-bottom:8px;background:#0f1218}
+.al .t{font-size:13px;color:#c9d1db;line-height:1.35}.al .k{font-family:Consolas,monospace;font-size:11.5px;color:#e8ecf1}.al .m{color:#7f8893;font-size:11.5px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.row{display:flex;gap:8px;flex-wrap:wrap}button{font:600 13px -apple-system,system-ui,sans-serif;border:1px solid #2a323c;background:#151a22;color:#e8ecf1;border-radius:10px;padding:10px 14px;cursor:pointer;min-height:40px}
+button.on{background:#c2f64a;color:#0a0b0d;border-color:#c2f64a}button.off{background:#2a1416;color:#ff9d95;border-color:rgba(255,98,88,.5)}button:disabled{opacity:.5}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid #232b36;border-radius:12px;padding:10px 13px;margin-bottom:8px;background:#0f1218;font-size:14px}.sw small{display:block;color:#7f8893;font-size:11.5px;margin-top:2px}
+.y{font-size:13px;color:#aab3bf;line-height:1.6}.y b{color:#e8ecf1;font-family:Consolas,monospace}.up{color:#7fe7bd}.dn{color:#ff8a80}
+.foot{margin-top:22px;font-size:12px;color:#5c656f}.foot a{color:#c2f64a}.empty{color:#5c656f;font-size:13px;padding:8px 2px}
+#on{float:right;font-family:Consolas,monospace;font-size:12px;color:#7fe7bd}</style></head><body>
+<h1>MARGIN<b>PAD</b> · pocket <span id="on"></span></h1><div class="sub">Needs you · alerts · kill switches. Refreshes every 60s. <a href="/api/stats" style="color:#c2f64a">Full dashboard</a></div>
+<div class="sec">Needs attention <span id="attnMeta"></span></div><div id="attn"><div class="empty">loading…</div></div>
+<div class="sec">Yesterday</div><div class="y" id="yday">loading…</div>
+<div class="sec">Alerts · last 7 days</div><div id="alerts"><div class="empty">loading…</div></div>
+<div class="sec">Kill switches</div><div id="sw"><div class="empty">loading…</div></div>
+<div class="foot">Every switch here is the same cookie-only POST the dashboard uses. Turning a switch OFF degrades the site on purpose; the label under each says what breaks. · <a href="/api/stats">Full dashboard</a></div>
+<script>(function(){
+function esc(s){return String(s==null?'':s).replace(/[<>&]/g,function(m){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[m];});}
+function N(x){return (+x||0).toLocaleString('en-US');}
+function ago(t){var s=Math.round((Date.now()-t)/1000);return s<60?s+'s':s<3600?Math.floor(s/60)+'m':s<86400?Math.floor(s/3600)+'h':Math.floor(s/86400)+'d';}
+function J(u,o){return fetch(u,o).then(function(r){return r.json();});}
+function loadAttn(){J('/api/admin/attention').then(function(d){var el=document.getElementById('attn'),it=(d&&d.items)||[];var seed=[];
+  el.innerHTML=(it.length?it.map(function(a){return '<a class="it '+a.cls+'" href="/api/stats#'+a.go+'"><span>'+a.html+'</span></a>';}).join(''):'<div class="it ok">All clear — nothing needs your attention</div>');
+  var m=document.getElementById('attnMeta');if(m)m.textContent='· '+(d.red||0)+' urgent · '+(d.amber||0)+' soon';
+  var yd=d&&d.yday,ye=document.getElementById('yday');if(yd&&ye){var y=yd.y||{},av=yd.avg||{};function dl(k){var a=+av[k]||0,v=+y[k]||0;if(a<5)return '';var p=Math.round((v-a)/a*100);return ' <span class="'+(p>=0?'up':'dn')+'">'+(p>=0?'&#9650;':'&#9660;')+Math.abs(p)+'%</span>';}
+    ye.innerHTML='<b>'+N(y.uv)+'</b> visitors'+dl('uv')+' · <b>'+N(y.ret)+'</b> returning'+dl('ret')+' · <b>'+N(y.nu)+'</b> new'+dl('nu')+'<br><b>'+N(y.aff)+'</b> money clicks'+dl('aff')+' · <b>'+N(y.pv)+'</b> pageviews'+dl('pv')+' <span style="color:#5c656f">· vs the 7 full days before ('+esc(yd.day)+')</span>';}
+}).catch(function(){});}
+function loadAlerts(){J('/api/admin/alerts').then(function(d){var el=document.getElementById('alerts'),ks=(d&&d.kinds)||[];var SEV={red:'#ff8a80',warn:'#ffc371',info:'#9fc4ff'};
+  if(!ks.length){el.innerHTML='<div class="empty">Nothing paged you yet.</div>';return;}
+  el.innerHTML=ks.slice(0,10).map(function(k){var st=k.snooze?('snoozed until '+new Date(k.snooze).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})):(k.ack&&k.ack>=k.last?'acked':'');
+    return '<div class="al"><div class="k"><span class="dot" style="background:'+(SEV[k.s]||SEV.warn)+'"></span>'+esc(k.k)+' <span class="m">· '+ago(k.last)+' ago · '+k.n7+'&times; in 7d'+(st?' · <span style="color:#7fe7bd">'+st+'</span>':'')+'</span></div><div class="t">'+esc(k.lastText)+'</div>'+(k.s==='info'?'':'<div class="row"><button data-k="'+esc(k.k)+'" data-op="ack">Ack</button><button data-k="'+esc(k.k)+'" data-op="'+(k.snooze?'unsnooze':'snooze')+'">'+(k.snooze?'Unsnooze':'Snooze 24h')+'</button></div>')+'</div>';}).join('')
+    +((d.silent||[]).length?'<div class="empty" style="color:#ffc371">Quiet 7+ days: '+d.silent.map(function(k){return esc(k.k);}).join(', ')+'</div>':'');
+}).catch(function(){});}
+document.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('[data-op]');if(!b)return;b.disabled=true;J('/api/admin/alerts',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({op:b.getAttribute('data-op'),kind:b.getAttribute('data-k'),hours:24})}).then(loadAlerts).catch(function(){b.disabled=false;});});
+var SW=[['sessKv','Session cache','OFF = every session read hits the UserStore DO'],['srvCandle','Server candle settle','OFF = money path settles on the current price only'],['botApi','Bot API','OFF = every /api/v1 bot call is refused'],['xPost','X auto-poster','OFF = no scheduled posts'],['alerts','Ops alerts','OFF = checkOpsAlerts pages nothing (signal watchdog still does)']];
+function loadSw(){J('/api/admin/opscfg').then(function(d){var c=(d&&(d.cfg||d))||{};var el=document.getElementById('sw');
+  el.innerHTML=SW.map(function(s){var on=c[s[0]]!==false;return '<div class="sw"><div>'+s[1]+'<small>'+s[2]+'</small></div><button class="'+(on?'on':'off')+'" data-sw="'+s[0]+'" data-to="'+(on?'0':'1')+'">'+(on?'ON':'OFF')+'</button></div>';}).join('');
+}).catch(function(){var el=document.getElementById('sw');el.innerHTML='<div class="empty">could not load</div>';});}
+document.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('[data-sw]');if(!b)return;var k=b.getAttribute('data-sw'),to=b.getAttribute('data-to')==='1';if(!confirm((to?'Turn ON ':'Turn OFF ')+k+'?'))return;b.disabled=true;var body={};body[k]=to;J('/api/admin/opscfg',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(loadSw).catch(function(){b.disabled=false;});});
+function loadOn(){J('/api/stats?format=json').then(function(d){var o=document.getElementById('on');if(o&&d)o.textContent=(d.online||0)+' online';}).catch(function(){});}
+function all(){loadAttn();loadAlerts();loadSw();loadOn();}all();setInterval(function(){if(!document.hidden)all();},60000);document.addEventListener('visibilitychange',function(){if(!document.hidden)all();});
+})();</script></body></html>`;
+  return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
+}
 async function handleStats(url, env, request, ctx) {
   // The ?key= link scheme no longer exists — any non-empty key makes the URL a dead 404 (even for a logged-in
   // browser), so old bookmarked/shared "?key=" links open NOTHING. The only entry is the bare /api/stats login.
@@ -12845,6 +12901,7 @@ export default {
     }
     if (url.pathname === '/api/stats/login') return adminDoLogin(request, env, 'cfg:statspass', 'mp_sadm', '/', url.origin + '/api/stats');
     if (url.pathname === '/api/stats/logout') return adminLogout(request, env, 'mp_sadm', '/');
+    if (url.pathname === '/api/stats/pocket') return handleStatsPocket(url, env, request);
     if (url.pathname === '/api/stats') return handleStats(url, env, request, ctx);
     if (url.pathname === '/api/bug' || url.pathname.startsWith('/api/bug/')) return handleBug(url, request, env);
     if (url.pathname === '/api/comments') return handleComments(url, request, env);
@@ -12890,7 +12947,11 @@ export default {
         const xPost = (b.xPost === false) ? false : (b.xPost === true ? true : (cur.xPost !== false)); // preserved (was silently reset to ON by every Settings save — same class as the lbRoe2 snapshot bug)
         const liqAlertUsd = (Number.isFinite(+b.liqAlertUsd) && +b.liqAlertUsd >= 100000) ? +b.liqAlertUsd : (Number.isFinite(+cur.liqAlertUsd) ? +cur.liqAlertUsd : 5000000); // free-channel liq cascade alert threshold; change without deploy: POST {liqAlertUsd:N}
         const liqAlertCoolMin = (Number.isFinite(+b.liqAlertCoolMin) && +b.liqAlertCoolMin >= 5 && +b.liqAlertCoolMin <= 1440) ? +b.liqAlertCoolMin : (Number.isFinite(+cur.liqAlertCoolMin) ? +cur.liqAlertCoolMin : 45); // per-symbol alert cooldown (min)
-        const next = { brief: b.brief !== false, briefHour: (Number.isFinite(+b.briefHour) && +b.briefHour >= 0 && +b.briefHour <= 23) ? +b.briefHour : 8, alerts: b.alerts !== false, bigTrade: (Number.isFinite(+b.bigTrade) && +b.bigTrade >= 0) ? +b.bigTrade : 5000, sessKv, srvCandle, nudgeGraceMin, xPost, liqAlertUsd, liqAlertCoolMin };
+        // Fields the POST does not mention keep their stored value (2026-09-03): a kill-switch POST like {sessKv:false} or {botApi:false}
+        // used to reset brief/alerts/bigTrade/briefHour to defaults, and botApi was never written at all — the documented
+        // "opscfg {botApi:false}" kill switch silently did nothing. The Settings save still sends every field explicitly.
+        const has = k => Object.prototype.hasOwnProperty.call(b, k);
+        const next = { brief: has('brief') ? b.brief !== false : (cur.brief !== false), briefHour: (has('briefHour') && Number.isFinite(+b.briefHour) && +b.briefHour >= 0 && +b.briefHour <= 23) ? +b.briefHour : ((Number.isFinite(+cur.briefHour) && +cur.briefHour >= 0 && +cur.briefHour <= 23) ? +cur.briefHour : 8), alerts: has('alerts') ? b.alerts !== false : (cur.alerts !== false), bigTrade: (has('bigTrade') && Number.isFinite(+b.bigTrade) && +b.bigTrade >= 0) ? +b.bigTrade : ((Number.isFinite(+cur.bigTrade) && +cur.bigTrade >= 0) ? +cur.bigTrade : 5000), botApi: has('botApi') ? b.botApi !== false : (cur.botApi !== false), sessKv, srvCandle, nudgeGraceMin, xPost, liqAlertUsd, liqAlertCoolMin };
         await env.STATS.put('ops:cfg', JSON.stringify(next));
         return new Response(JSON.stringify({ ok: true, ...next }), { headers: jh2 });
       }
