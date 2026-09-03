@@ -10778,19 +10778,50 @@ async function digestContent(env) {
   } catch (e) {}
   return { top };
 }
+// Demo Spot summary for one user (weekly digest line + stuck nudge). Read-only portfolio; null when there is no account.
+async function spotSummary(env, uid) {
+  try { if (!env.SPOT) return null; const r = await spotStub(env).fetch(new Request('https://do/portfolio?uid=' + encodeURIComponent(uid))); const d = await r.json(); if (!d || d.none || d.error) return null;
+    const gas = d.gas || {}; const hasGas = Object.keys(gas).some(k => +gas[k] > 0);
+    return { cardUsd: +d.cardUsd || 0, exUsd: +d.usdtUsd || 0, walUsd: +d.wusdtUsd || 0, hasGas, holds: (d.holds || []).length, txN: +d.txN || 0 }; } catch (e) { return null; }
+}
+function spotDigestHtml(sp) { if (!sp || !sp.txN) return ''; const back = (sp.walUsd >= 1 || sp.hasGas) ? ' Money is sitting in your wallet — bring it back: Wallet &rarr; Exchange &rarr; Send to the exchange, then Cash out in the Bank app.' : ''; return '<p style="margin:14px 0 0;color:#333"><b>Demo Spot:</b> $' + sp.cardUsd.toFixed(0) + ' on your card, $' + sp.exUsd.toFixed(0) + ' on the exchange, $' + sp.walUsd.toFixed(0) + ' USDT in the wallet' + (sp.holds ? ', ' + sp.holds + ' coin' + (sp.holds === 1 ? '' : 's') + ' held' : '') + '.' + back + ' <a href="https://marginpad.io/spot/" style="color:#111">Open Demo Spot</a></p>'; }
+function spotDigestText(sp) { if (!sp || !sp.txN) return ''; return '\n\nDemo Spot: $' + sp.cardUsd.toFixed(0) + ' on your card, $' + sp.exUsd.toFixed(0) + ' on the exchange, $' + sp.walUsd.toFixed(0) + ' USDT in the wallet.' + ((sp.walUsd >= 1 || sp.hasGas) ? ' Money is sitting in your wallet: Wallet -> Exchange -> Send to the exchange, then Cash out in the Bank app.' : '') + ' https://marginpad.io/spot/'; }
+// Stuck-wallet nudge (2026-09-03): 18 of 28 users who withdrew to the wallet never brought the money back. Once per account, ever
+// (KV stamp, 60d), for accounts with wallet money and no action for 7 days; max 25 emails per run.
+async function spotStuckNudge(env) {
+  if (!env.SPOT || !env.STATS || !env.RESEND_API_KEY) return;
+  const day = new Date().toISOString().slice(0, 10);
+  if (await env.STATS.get('spot:nudge:' + day)) return;
+  await env.STATS.put('spot:nudge:' + day, '1', { expirationTtl: 172800 });
+  let list = null; try { const r = await spotStub(env).fetch(new Request('https://do/adminspot')); list = await r.json(); } catch (e) { return; }
+  const now = Date.now();
+  const stuck = ((list && list.accounts) || []).filter(a => ((+a.wusdt || 0) >= 100 || Object.values((() => { try { return JSON.parse(a.gas || '{}'); } catch (e) { return {}; } })()).some(v => +v > 0.01)) && (now - (+a.txLast || 0)) > 7 * 86400000 && !/^(spot|e2e-)/.test(String(a.uid))).slice(0, 60);
+  if (!stuck.length) return;
+  const prof = await resolveProfiles(env, stuck.map(a => 'u:' + a.uid));
+  let sent = 0;
+  for (const a of stuck) {
+    if (sent >= 25) break;
+    const p = prof[a.uid]; if (!p || !p.email) continue;
+    const k = 'spot:nudged:' + a.uid; if (await env.STATS.get(k)) continue;
+    await env.STATS.put(k, '1', { expirationTtl: 60 * 86400 });
+    const msg = 'Hi' + (p.username ? ' ' + p.username : '') + ',\n\nYour Demo Spot wallet still holds practice money that never made it back to your card. It takes three taps now:\n\n1. Wallet app -> Swap -> Gas coin -> USDT (if the money sits in SOL, ETH or BNB). Meme bags: sell them; the Sell screen can convert straight to USDT.\n2. Wallet app -> Exchange -> Send to the exchange (the network is picked from the gas you hold, no address to copy).\n3. Bank app -> Cash out (1% fee, minimum $10).\n\nThe Bank app also shows the whole plan with a button for each step: https://marginpad.io/spot/\n\nDemo Spot is practice money only and never pays real USDT.\n\nMarginPad';
+    try { const r = await sendSupportEmail(env, p.email, 'Your Demo Spot money is waiting in the wallet', msg, 'hello'); if (r && r.ok) { sent++; try { await evPush(env, null, 'spottrade', 'stuck nudge sent', '/spot/'); } catch (e) {} } } catch (e) {}
+  }
+}
 async function sendDigestEmail(env, to, uid, content) {
   if (!env.RESEND_API_KEY) return { ok: false };
   const unsub = 'https://marginpad.io/unsubscribe?u=' + encodeURIComponent(uid), medal = ['', '', ''];
-  const lb = (content.top || []).length
+  const spotH = spotDigestHtml(content.spot), spotT = spotDigestText(content.spot);
+  const lb = spotH + ((content.top || []).length
  ? '<p style="margin:0 0 8px;font-weight:700">Green Days board right now:</p>' + content.top.map((x, i) => '<div style="padding:4px 0;color:#333">' + (medal[i] || (i + 1) + '.') + ' <b>' + String(x.who || 'Trader').replace(/[<>&]/g, '') + '</b> &middot; ' + (+x.days || 0) + ' green day' + ((+x.days === 1) ? '' : 's') + '</div>').join('') + '<p style="margin:10px 0 0;color:#555">A day turns green when you close at least 3 paper trades and finish it in profit. The top 5 on the Green Days board win real USDT when the 14-day season ends — so do the top 5 on ROE, win rate and XP.</p>'
- : '<p style="margin:0;color:#333">The Trade League season is on: 14 days, four boards (Green Days, ROE, win rate, XP), real USDT for the top 5 on each. Close at least 3 paper trades a day and finish the day in profit to start stacking green days.</p>';
+ : '<p style="margin:0;color:#333">The Trade League season is on: 14 days, four boards (Green Days, ROE, win rate, XP), real USDT for the top 5 on each. Close at least 3 paper trades a day and finish the day in profit to start stacking green days.</p>');
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST', headers: { 'authorization': 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },
       body: JSON.stringify(refTagEmail({
         from: 'MarginPad <hello@marginpad.io>', to: [to], reply_to: 'support@marginpad.io',
         subject: 'Your weekly MarginPad recap',
- text: 'The MarginPad Trade League season is on — 14 days, four boards, real USDT for the top 5 on each.\n\nTrade (free, no risk): https://marginpad.io/paper-trade\nSet price alerts: https://marginpad.io/alerts/\nClaim free USDT: https://marginpad.io/rewards/\n\n' + MAIL_AFF_TEXT + '\n\nUnsubscribe: ' + unsub + '\n— MarginPad',
+ text: 'The MarginPad Trade League season is on — 14 days, four boards, real USDT for the top 5 on each.' + spotT + '\n\nTrade (free, no risk): https://marginpad.io/paper-trade\nSet price alerts: https://marginpad.io/alerts/\nClaim free USDT: https://marginpad.io/rewards/\n\n' + MAIL_AFF_TEXT + '\n\nUnsubscribe: ' + unsub + '\n— MarginPad',
         html: '<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.6;color:#111;max-width:480px"><p style="font-size:20px;font-weight:800;margin:0 0 4px">Your weekly recap </p><p style="color:#555;margin:0 0 16px">Here\'s what\'s happening on MarginPad this week.</p><div style="background:#f6f8f2;border:1px solid #e3ead0;border-radius:12px;padding:14px 16px;margin:0 0 16px">' + lb + '</div><p style="margin:0 0 8px"><a href="https://marginpad.io/paper-trade" style="display:inline-block;background:#0a0b0d;color:#c2f64a;text-decoration:none;font-weight:700;padding:11px 18px;border-radius:10px">Open Paper Trade &rarr;</a></p><p style="margin:14px 0 0;color:#555">Don\'t miss a move &mdash; <a href="https://marginpad.io/alerts/" style="color:#15a06a">set a free price alert</a>, or <a href="https://marginpad.io/rewards/" style="color:#15a06a">claim free USDT</a>.</p>' + MAIL_AFF_HTML + '<p style="color:#aaa;font-size:12px;margin:20px 0 0">You get this because you have a MarginPad account. <a href="' + unsub + '" style="color:#999">Unsubscribe</a> &middot; <a href="https://marginpad.io" style="color:#999">marginpad.io</a></p></div>'
       }))
     });
@@ -10827,7 +10858,7 @@ async function checkDigest(env) {
   await env.STATS.put(curKey, String(cur + batch), { expirationTtl: 1209600 });
   await env.STATS.put(dayKey, String(sentToday + batch), { expirationTtl: 172800 });
   const content = await digestContent(env);
-  for (const u of recips.slice(cur, cur + batch)) { try { await sendDigestEmail(env, u.email, u.id, content); } catch (e) {} }
+  for (const u of recips.slice(cur, cur + batch)) { try { const sp = await spotSummary(env, u.id); await sendDigestEmail(env, u.email, u.id, Object.assign({}, content, { spot: sp })); } catch (e) {} }
   if (cur + batch >= recips.length) { try { await env.STATS.put(flag, '1', { expirationTtl: 1209600 }); } catch (e) {} }
 }
 // One-click unsubscribe from the weekly digest (link in every email; uid is a random unguessable id).
@@ -11998,7 +12029,13 @@ async function handleSpot(url, request, env) {
     try { const r = await stub.fetch(new Request('https://do/swap', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid, asset, dir, usdC, natQty, feeC }) })); const d = await r.json(); if (d && d.ok) { d.price = px; d.natQty = natQty; d.feeUsd = feeC / 100; try { await evPush(env, request, 'spottrade', 'swap ' + (dir === 'buy' ? 'USDT>' + asset : asset + '>USDT'), '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : 400); } catch (e) { return spotFail(env, jr, path); }
   }
   if (path === '/history') {
-    try { const r = await stub.fetch(new Request('https://do/tx?uid=' + encodeURIComponent(uid))); return jr(await r.json()); } catch (e) { return jr({ tx: [] }); }
+    try { const r = await stub.fetch(new Request('https://do/tx?uid=' + encodeURIComponent(uid))); const d = await r.json();
+      if (url.searchParams.get('csv') === '1') { // paper trail as a file (2026-09-03) — the same rows the page shows, oldest first
+        const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+        const rows = ((d && d.tx) || []).slice().reverse().map(t => [new Date(t.ts).toISOString(), t.side, String(t.sym || '').replace(/^[a-z]+:/, ''), t.name || '', t.qty, t.price, t.usdUsd, t.feeUsd, t.pnlUsd, t.hash || ''].map(q).join(','));
+        return new Response('time,side,symbol,name,qty,price,usd,fee,pnl,tx_hash\n' + rows.join('\n') + '\n', { headers: { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': 'attachment; filename="demo-spot-history.csv"', 'cache-control': 'no-store', ...CORS } });
+      }
+      return jr(d); } catch (e) { return jr({ tx: [] }); }
   }
   if (path === '/reset' && request.method === 'POST') {
     try { const r = await stub.fetch(new Request('https://do/reset', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ uid }) })); const d = await r.json(); if (d && d.ok) { try { await evPush(env, request, 'spottrade', 'wallet reset', '/spot/'); } catch (e) {} } return jr(d, d && d.ok ? 200 : (d && d.error === 'cooldown' ? 429 : 400)); } catch (e) { return spotFail(env, jr, path); }
@@ -14206,7 +14243,8 @@ export default {
     bg(checkFreeSignals, 'freesig'); // screener-based signals → FREE channel (paced: fsig:daily/gap), loud guard on a missing chat id
     bg(resolveFreeSignals, 'freesigres'); // resolve open free signals' outcome (TP1 vs stop) from fresh candles → fsig:results
     bg(nightlyBackup, 'backup'); // P0.5 — once per UTC day (stamped), retries on failure each */10
-    bg(ledgerBackup6h, 'backup6'); // money ledger every 6h (4 rotating slots), on top of the nightly set
+    bg(ledgerBackup6h, 'backup6');
+    bg(spotStuckNudge, 'spotnudge'); // one email, once per account, to Demo Spot wallets that never came back (2026-09-03) // money ledger every 6h (4 rotating slots), on top of the nightly set
     bg(archiveLiq, 'liqarch'); // liquidation-feed daily dump → R2 liq/<day>.csv.gz (once/day, 7d self-heal backfill)
     bg(liqRecapDaily, 'liqrecap'); // R2 archive → permanent /liquidations/recap/<day>/ pages (KV summaries; builds yesterday + backfills 3/run)
     bg(checkDailyWrap, 'wrap'); // free-channel daily market wrap (16:00 UTC, no advice, internal data only)

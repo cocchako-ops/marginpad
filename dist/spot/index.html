@@ -533,7 +533,7 @@
       </div>
 
       <div class="trail">
-        <div class="p-k"><span>Paper trail — everything you did</span></div>
+        <div class="p-k"><span>Paper trail — everything you did</span><a id="txCsv" href="/api/spot/history?csv=1" download="demo-spot-history.csv" style="margin-left:auto;font-size:11px;color:#c2f64a;text-decoration:none">Export CSV</a></div>
         <div id="txList"><div class="empty">No activity yet.</div></div>
       </div>
     </div>
@@ -1614,7 +1614,7 @@
   function loadLib(){if(window.LightweightCharts)return Promise.resolve();if(libP)return libP;libP=new Promise(function(res,rej){var s=document.createElement('script');s.src='/assets/lightweight-charts-4.2.0.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});return libP;}
   function openTrade(o){
     T=o;T.side=o.defaultSide||'buy';chartTf='1h';
-    $('tmSym').textContent=o.sym;$('tmName').textContent=o.name||(o.kind==='meme'?'meme coin':'');
+    $('tmSym').textContent=o.sym;$('tmName').textContent=o.name||(o.kind==='meme'?'meme coin':'');if(o.kind==='cex'){$('tmName').innerHTML=esc(o.name||'')+' · <a href="/alerts/?coin='+encodeURIComponent(o.sym)+'" style="color:#c2f64a">price alert</a>';}
     var nb=$('tmNet');
     if(o.kind==='meme'){var n=NETS[o.net]||NETS.solana;nb.hidden=false;nb.className='netb '+n.cls;nb.textContent=n.label.toUpperCase();}
     else nb.hidden=true;
