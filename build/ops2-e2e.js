@@ -42,8 +42,16 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       chk('view ' + v.key + (v.legacy ? ' (legacy ' + v.legacy + ')' : ''), ok, Object.assign({ errs: newErrs, bad: newBad }, v.legacy ? { iframe: s.iframe, tab: s.tabVisible, chrome: s.chromeHidden, inner: s.inner, err: s.err } : { chars: s.chars }));
       try { await page.screenshot({ path: path.join(SHOTS, 'v2-' + v.key.replace('/', '-') + '.png') }); } catch (e) {}
     }
+    // attention strip lives on Today/Overview only; flags are images that actually load; scrollbars are dark (color-scheme)
+    await page.evaluate(() => { location.hash = 'people/users'; }); await sleep(1500);
+    const a1 = await page.evaluate(() => document.querySelectorAll('#attnbar .al').length);
+    await page.evaluate(() => { location.hash = 'today/overview'; }); await sleep(3500);
+    const a2 = await page.evaluate(() => ({ strip: document.querySelectorAll('#attnbar .al').length, flags: Array.from(document.querySelectorAll('img.fl')).length, loaded: Array.from(document.querySelectorAll('img.fl')).filter(i => i.complete && i.naturalWidth > 0).length, scheme: getComputedStyle(document.documentElement).colorScheme, legacyLabel: /legacy/i.test(document.getElementById('side').innerText) }));
+    chk('attention strip only on Today (users view: none, overview: items)', a1 === 0 && a2.strip >= 1, { users: a1, overview: a2.strip });
+    chk('flag images render in the live feed', a2.flags > 0 && a2.loaded === a2.flags, { flags: a2.flags, loaded: a2.loaded });
+    chk('dark color-scheme, no "legacy" wording in the sidebar', a2.scheme === 'dark' && !a2.legacyLabel, { scheme: a2.scheme, legacyLabel: a2.legacyLabel });
     // palette
-    await page.evaluate(() => { location.hash = 'today/overview'; }); await sleep(800);
+    await sleep(300);
     await page.keyboard.down('Control'); await page.keyboard.press('KeyK'); await page.keyboard.up('Control'); await sleep(300);
     await page.type('#palIn', 'kof'); await sleep(1800);
     const p = await page.evaluate(() => ({ open: !document.getElementById('pal').hidden, items: Array.from(document.querySelectorAll('#palRes .pr')).map(x => x.innerText.replace(/\s+/g, ' ').slice(0, 40)) }));

@@ -10,7 +10,9 @@
   var USD = function (v, d) { return '$' + (+v || 0).toLocaleString('en-US', { minimumFractionDigits: d == null ? 2 : d, maximumFractionDigits: d == null ? 2 : d }); };
   var ago = function (t) { if (!t) return '—'; var s = Math.round((Date.now() - t) / 1000); if (s < 0) s = 0; return s < 60 ? s + 's' : s < 3600 ? Math.floor(s / 60) + 'm' : s < 86400 ? Math.floor(s / 3600) + 'h' : Math.floor(s / 86400) + 'd'; };
   var dt = function (t) { try { return new Date(t).toISOString().slice(0, 16).replace('T', ' '); } catch (e) { return '—'; } };
-  var flag = function (c) { return /^[A-Z]{2}$/.test(c || '') ? String.fromCodePoint(127397 + c.charCodeAt(0), 127397 + c.charCodeAt(1)) : ''; };
+  // Country flag as an IMAGE: emoji flags (regional-indicator pairs) render as bare letters on Windows, so the legacy
+  // dashboard never showed a single flag there. flagcdn serves 20x15 PNGs; the code stays next to it as text.
+  var flag = function (c) { c = String(c || '').toUpperCase(); return /^[A-Z]{2}$/.test(c) ? '<span class="cc"><img class="fl" src="https://flagcdn.com/20x15/' + c.toLowerCase() + '.png" width="20" height="15" alt="" loading="lazy" onerror="this.style.display=\'none\'">' + c + '</span>' : ''; };
   function J(u, o) { return fetch(u, o).then(function (r) { return r.json().then(function (j) { if (!r.ok && j && !j.error) j.error = 'http_' + r.status; return j; }); }); }
   function post(u, body) { return J(u, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) }); }
   var toastT = null; function toast(msg) { var t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 3500); }
@@ -33,7 +35,7 @@
   var cur = null, timers = [];
 
   function route() { var h = (location.hash || '').replace(/^#\/?/, ''); var p = h.split('/'); var sec = NAV.filter(function (s) { return s.id === p[0]; })[0] || NAV[0]; var v = sec.views.filter(function (x) { return x.id === p[1]; })[0] || sec.views[0]; return { sec: sec, view: v, key: sec.id + '/' + v.id, arg: p.slice(2).join('/') }; }
-  function renderNav() { var r = route(); $('nav').innerHTML = NAV.map(function (s) { return '<div class="sec">' + esc(s.title) + '</div>' + s.views.map(function (v) { var k = s.id + '/' + v.id; return '<a href="#' + k + '" class="' + (k === r.key ? 'on' : '') + '">' + esc(v.title) + (counts[k] ? '<span class="cnt">' + counts[k] + '</span>' : (v.legacy ? '<span class="lg">legacy</span>' : '')) + '</a>'; }).join(''); }).join(''); }
+  function renderNav() { var r = route(); $('nav').innerHTML = NAV.map(function (s) { return '<div class="sec">' + esc(s.title) + '</div>' + s.views.map(function (v) { var k = s.id + '/' + v.id; return '<a href="#' + k + '" class="' + (k === r.key ? 'on' : '') + '">' + esc(v.title) + (counts[k] ? '<span class="cnt">' + counts[k] + '</span>' : '') + '</a>'; }).join(''); }).join(''); }
   function clearTimers() { timers.forEach(clearInterval); timers = []; }
   function every(ms, fn) { timers.push(setInterval(function () { if (!document.hidden) fn(); }, ms)); }
   function show() {
@@ -41,6 +43,7 @@
     $('crumb').innerHTML = esc(r.sec.title) + ' <small>' + esc(r.view.title) + '</small>';
     document.title = r.view.title + ' · ' + r.sec.title + ' · MarginPad ops';
     var el = $('view'); el.innerHTML = '<div class="empty">loading…</div>'; window.scrollTo(0, 0);
+    el.classList.toggle('legacyview', !!r.view.legacy); paintAttn();
     var v = VIEWS[r.key];
     if (r.view.legacy) renderLegacy(el, r.view.legacy, r.view.title); else if (v) v.render(el, r.arg); else el.innerHTML = '<div class="empty">No such view.</div>';
     try { if (navigator.sendBeacon) navigator.sendBeacon('/api/admin/usage', JSON.stringify({ tab: 'v2:' + r.key })); } catch (e) {}
@@ -51,12 +54,15 @@
   $('refreshBtn').addEventListener('click', function () { show(); loadTop(); });
 
   // ---------- top bar: online + attention strip ----------
+  var attnItems = [];
+  // The strip lives on Today/Overview only (owner 2026-09-03: on the phone it ate half of every screen); everywhere else the
+  // sidebar counters carry the same signal.
+  function paintAttn() { var box = $('attnbar'); if (route().key !== 'today/overview') { box.innerHTML = ''; return; } box.innerHTML = attnItems.map(function (a) { var go = GO[a.go] || 'today/overview'; return '<a class="al ' + esc(a.cls) + '" href="#' + go + '">' + a.html + '</a>'; }).join(''); }
   function loadTop() {
     J('/api/stats?format=json').then(function (d) { if (d && typeof d.online === 'number') $('online').innerHTML = '<i></i><b>' + N(d.online) + '</b> online'; }).catch(function () {});
     J('/api/admin/attention').then(function (d) {
-      var it = (d && d.items) || []; var box = $('attnbar');
-      box.innerHTML = it.length ? it.map(function (a) { var go = GO[a.go] || 'today/overview'; return '<a class="al ' + esc(a.cls) + '" href="#' + go + '">' + a.html + '</a>'; }).join('') : '';
-      counts = {}; it.forEach(function (a) { if (a.cls === 'red' || a.cls === 'amber') { var go = GO[a.go]; if (go) counts[go] = (counts[go] || 0) + 1; } }); renderNav(); stamp();
+      attnItems = (d && d.items) || []; paintAttn();
+      counts = {}; attnItems.forEach(function (a) { if (a.cls === 'red' || a.cls === 'amber') { var go = GO[a.go]; if (go) counts[go] = (counts[go] || 0) + 1; } }); renderNav(); stamp();
     }).catch(function () {});
   }
   var GO = { wd: 'money/withdrawals', rewards: 'money/faucet', support: 'inbox/support', stats: 'health/overview', spot: 'trading/spot', premium: 'money/premium', users: 'people/users' };
@@ -70,7 +76,7 @@
   // ---------- legacy embed ----------
   var LEG = {}; // tab -> iframe (kept alive)
   function renderLegacy(el, tab, title) {
-    el.innerHTML = '<p class="legacynote">' + esc(title) + ' still runs on the legacy dashboard inside this frame — every button works; it will be ported to v2 in a later pass. <a href="/api/stats?legacy=1#' + esc(tab) + '" target="_blank" rel="noopener">Open in a full tab</a></p><div class="legacy" id="legacyHost"></div>';
+    el.innerHTML = '<div class="legacy" id="legacyHost"></div>'; // one dashboard from the owner's point of view: no "legacy" wording, the frame IS the view until it is ported
     var host = $('legacyHost'); var f = LEG[tab];
     if (!f) { f = document.createElement('iframe'); f.src = '/api/stats?legacy=1&embed=1#' + tab; f.setAttribute('title', title); LEG[tab] = f; }
     host.appendChild(f);
@@ -193,8 +199,8 @@
   var pal = $('pal'), palIn = $('palIn'), palRes = $('palRes'), palItems = [], palIdx = 0, palT = null;
   function palOpen() { pal.hidden = false; palIn.value = ''; palRender(''); setTimeout(function () { palIn.focus(); }, 0); }
   function palClose() { pal.hidden = true; }
-  function palStatic(q) { var out = []; NAV.forEach(function (s) { s.views.forEach(function (v) { var t = s.title + ' / ' + v.title; if (!q || t.toLowerCase().indexOf(q) >= 0 || s.id.indexOf(q) >= 0 || v.id.indexOf(q) >= 0) out.push({ k: 'go', t: t, s: v.legacy ? 'legacy' : '', href: '#' + s.id + '/' + v.id }); }); });
-    [['Pocket view', '/api/stats/pocket'], ['Legacy dashboard', '/api/stats?legacy=1'], ['Site', '/'], ['Bug inbox', '/api/bug'], ['Private inbox', '/api/admin/pmail']].forEach(function (x) { if (!q || x[0].toLowerCase().indexOf(q) >= 0) out.push({ k: 'open', t: x[0], s: x[1], href: x[1], blank: true }); }); return out; }
+  function palStatic(q) { var out = []; NAV.forEach(function (s) { s.views.forEach(function (v) { var t = s.title + ' / ' + v.title; if (!q || t.toLowerCase().indexOf(q) >= 0 || s.id.indexOf(q) >= 0 || v.id.indexOf(q) >= 0) out.push({ k: 'go', t: t, s: '', href: '#' + s.id + '/' + v.id }); }); });
+    [['Pocket view', '/api/stats/pocket'], ['Site', '/'], ['Bug inbox', '/api/bug'], ['Private inbox', '/api/admin/pmail']].forEach(function (x) { if (!q || x[0].toLowerCase().indexOf(q) >= 0) out.push({ k: 'open', t: x[0], s: x[1], href: x[1], blank: true }); }); return out; }
   function palRender(q) { q = (q || '').trim().toLowerCase(); palItems = palStatic(q).slice(0, q ? 6 : 12);
     if (q.length >= 2) { clearTimeout(palT); palT = setTimeout(function () { J('/api/admin/search?q=' + encodeURIComponent(q)).then(function (d) { if ((palIn.value || '').trim().toLowerCase() !== q) return; var more = [];
       (d.users || []).slice(0, 8).forEach(function (u) { more.push({ k: 'user', t: '@' + (u.username || u.email || ''), s: (u.email || '') + (u.cc ? ' · ' + u.cc : ''), href: '/api/admin/user?u=' + encodeURIComponent(u.username || u.email || ''), blank: true }); });
