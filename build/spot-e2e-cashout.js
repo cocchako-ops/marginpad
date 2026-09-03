@@ -56,7 +56,7 @@ function chk(name, ok, extra) { out.push((ok ? 'PASS ' : 'FAIL ') + name + (extr
       await page.click('#ecTo'); await new Promise(r => setTimeout(r, 900));
       const te = await page.evaluate(() => ({ modal: !!document.getElementById('teGo'), picked: (document.querySelector('#teNets .np.on') || {}).getAttribute ? document.querySelector('#teNets .np.on').getAttribute('data-n') : null, btn: (document.getElementById('teGo') || {}).textContent }));
       chk(name + ' to-exchange modal picks Solana (gas held)', te.modal && te.picked === 'solana', te);
-      await page.type('#teAmt', '25'); await page.click('#teGo'); await new Promise(r => setTimeout(r, 2500));
+      await page.type('#teAmt', '25'); await page.click('#teGo'); for (let i = 0; i < 16; i++) { await new Promise(r => setTimeout(r, 500)); if (/exchange balance/.test(await page.evaluate(() => (document.getElementById('teMsg') || {}).textContent || ''))) break; }
       const teMsg = await page.evaluate(() => (document.getElementById('teMsg') || {}).textContent || '');
       chk(name + ' sent 25 to exchange', /on your exchange balance/.test(teMsg), { msg: teMsg.slice(0, 80) });
       await page.evaluate(() => { const x = document.querySelector('#smod .m-x'); if (x) x.click(); }); await new Promise(r => setTimeout(r, 600));
