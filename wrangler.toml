@@ -4,6 +4,14 @@ compatibility_date = "2026-06-01"
 workers_dev = false
 preview_urls = false
 
+# mp-ops v2 (2026-09-03): the admin dashboard shell, stylesheet and client script are REAL FILES under src/ops/, imported
+# into the worker as text modules (no template-literal minefield, node --check works on the client). The client glob is
+# deliberately narrow so src/worker.js itself stays an ES module.
+[[rules]]
+type = "Text"
+globs = ["src/ops/*.html", "src/ops/*.css", "src/ops/client/*.txt"]
+fallthrough = true
+
 [assets]
 directory = "./dist"
 binding = "ASSETS"

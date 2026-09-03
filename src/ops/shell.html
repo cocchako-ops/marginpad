@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0b0d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>MarginPad ops</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="stylesheet" href="/api/stats/asset/ops.css?v=__V__">
+</head>
+<body>
+<div id="app" class="app">
+  <aside class="side" id="side">
+    <div class="brand"><span>MARGIN<b>PAD</b></span><small>ops v2</small><button class="iconbtn sideclose" id="sideClose" type="button" aria-label="Close menu">&times;</button></div>
+    <button class="palbtn" id="palBtn" type="button"><span>Search or jump to</span><kbd>Ctrl K</kbd></button>
+    <nav id="nav" class="nav"></nav>
+    <div class="sidefoot"><a href="/api/stats/pocket">Pocket view</a> · <a href="/api/stats?legacy=1" target="_blank" rel="noopener">Legacy ops</a> · <a href="/" target="_blank" rel="noopener">Site</a></div>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <button class="iconbtn menubtn" id="menuBtn" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
+      <div class="crumb" id="crumb">Today</div>
+      <div class="topright"><span class="online" id="online"><i></i><b>—</b> online</span><span class="stamp" id="stamp"></span><button class="btn sm" id="refreshBtn" type="button">Refresh</button></div>
+    </header>
+    <div class="attnbar" id="attnbar"></div>
+    <main id="view" class="view"></main>
+  </div>
+</div>
+<div class="pal" id="pal" hidden><div class="palbox"><input id="palIn" type="text" placeholder="Type a user, wallet, page or a section name…" autocomplete="off" spellcheck="false"><div class="palres" id="palRes"></div><div class="palhint">Enter opens · Esc closes · sections, users, faucet accounts, community posts</div></div></div>
+<div class="toast" id="toast" hidden></div>
+<script src="/api/stats/asset/ops.js?v=__V__"></script>
+</body>
+</html>

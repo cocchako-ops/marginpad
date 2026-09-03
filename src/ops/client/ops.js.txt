@@ -1,0 +1,218 @@
+/* MarginPad ops v2 client (2026-09-03). Real file (named .js.txt so wrangler ships it as TEXT, not code; node --check still parses it), served at /api/stats/asset/ops.js behind the admin cookie.
+   Hash router (#section/view), sidebar built from NAV, every native view renders from JSON endpoints only; views that are
+   not ported yet embed the legacy dashboard (/api/stats?legacy=1&embed=1#<tab>) so nothing is lost while porting.
+   No frameworks. No emojis. */
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[<>&"]/g, function (m) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[m]; }); };
+  var N = function (x) { return (+x || 0).toLocaleString('en-US'); };
+  var USD = function (v, d) { return '$' + (+v || 0).toLocaleString('en-US', { minimumFractionDigits: d == null ? 2 : d, maximumFractionDigits: d == null ? 2 : d }); };
+  var ago = function (t) { if (!t) return '—'; var s = Math.round((Date.now() - t) / 1000); if (s < 0) s = 0; return s < 60 ? s + 's' : s < 3600 ? Math.floor(s / 60) + 'm' : s < 86400 ? Math.floor(s / 3600) + 'h' : Math.floor(s / 86400) + 'd'; };
+  var dt = function (t) { try { return new Date(t).toISOString().slice(0, 16).replace('T', ' '); } catch (e) { return '—'; } };
+  var flag = function (c) { return /^[A-Z]{2}$/.test(c || '') ? String.fromCodePoint(127397 + c.charCodeAt(0), 127397 + c.charCodeAt(1)) : ''; };
+  function J(u, o) { return fetch(u, o).then(function (r) { return r.json().then(function (j) { if (!r.ok && j && !j.error) j.error = 'http_' + r.status; return j; }); }); }
+  function post(u, body) { return J(u, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) }); }
+  var toastT = null; function toast(msg) { var t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 3500); }
+  function stamp() { $('stamp').textContent = 'updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+
+  // ---------- information architecture ----------
+  // 8 sections instead of 24 flat tabs. `legacy` = which old tab the view embeds until it is ported natively.
+  var NAV = [
+    { id: 'today', title: 'Today', views: [{ id: 'overview', title: 'Overview' }] },
+    { id: 'inbox', title: 'Inbox', views: [{ id: 'support', title: 'Support', legacy: 'support' }, { id: 'chat', title: 'Trader chat', legacy: 'chat' }, { id: 'mail', title: 'Email', legacy: 'mail' }, { id: 'tgbot', title: 'Telegram bot', legacy: 'tgbot' }] },
+    { id: 'money', title: 'Money', views: [{ id: 'withdrawals', title: 'Withdrawals' }, { id: 'faucet', title: 'Faucet & rewards', legacy: 'rewards' }, { id: 'premium', title: 'Premium desk', legacy: 'premium' }, { id: 'revenue', title: 'Revenue', legacy: 'revenue' }, { id: 'affiliate', title: 'Affiliate', legacy: 'affiliate' }, { id: 'shop', title: 'Shop', legacy: 'shop' }] },
+    { id: 'people', title: 'People', views: [{ id: 'users', title: 'Users' }, { id: 'security', title: 'Multi-account', legacy: 'security' }, { id: 'retention', title: 'Retention', legacy: 'retention' }, { id: 'journeys', title: 'Journey map', legacy: 'jmap' }, { id: 'activity', title: 'Activity', legacy: 'activity' }] },
+    { id: 'trading', title: 'Trading', views: [{ id: 'live', title: 'Live trades', legacy: 'ops' }, { id: 'botapi', title: 'Bot API', legacy: 'api' }, { id: 'spot', title: 'Demo Spot', legacy: 'spot' }] },
+    { id: 'growth', title: 'Growth', views: [{ id: 'seo', title: 'Traffic & SEO', legacy: 'seo' }, { id: 'funnel', title: 'Funnel', legacy: 'funnel' }, { id: 'community', title: 'Community', legacy: 'community' }] },
+    { id: 'health', title: 'Health', views: [{ id: 'overview', title: 'Alerts & health' }, { id: 'perf', title: 'Performance', legacy: 'perf' }] },
+    { id: 'settings', title: 'Settings', views: [{ id: 'switches', title: 'Switches' }, { id: 'rewards', title: 'Reward config', legacy: 'settings' }] }
+  ];
+  var VIEWS = {}; // 'section/view' -> { render(el), refresh() }
+  var counts = {}; // sidebar counters from the attention list
+  var cur = null, timers = [];
+
+  function route() { var h = (location.hash || '').replace(/^#\/?/, ''); var p = h.split('/'); var sec = NAV.filter(function (s) { return s.id === p[0]; })[0] || NAV[0]; var v = sec.views.filter(function (x) { return x.id === p[1]; })[0] || sec.views[0]; return { sec: sec, view: v, key: sec.id + '/' + v.id, arg: p.slice(2).join('/') }; }
+  function renderNav() { var r = route(); $('nav').innerHTML = NAV.map(function (s) { return '<div class="sec">' + esc(s.title) + '</div>' + s.views.map(function (v) { var k = s.id + '/' + v.id; return '<a href="#' + k + '" class="' + (k === r.key ? 'on' : '') + '">' + esc(v.title) + (counts[k] ? '<span class="cnt">' + counts[k] + '</span>' : (v.legacy ? '<span class="lg">legacy</span>' : '')) + '</a>'; }).join(''); }).join(''); }
+  function clearTimers() { timers.forEach(clearInterval); timers = []; }
+  function every(ms, fn) { timers.push(setInterval(function () { if (!document.hidden) fn(); }, ms)); }
+  function show() {
+    var r = route(); cur = r; clearTimers(); renderNav(); $('side').classList.remove('open');
+    $('crumb').innerHTML = esc(r.sec.title) + ' <small>' + esc(r.view.title) + '</small>';
+    document.title = r.view.title + ' · ' + r.sec.title + ' · MarginPad ops';
+    var el = $('view'); el.innerHTML = '<div class="empty">loading…</div>'; window.scrollTo(0, 0);
+    var v = VIEWS[r.key];
+    if (r.view.legacy) renderLegacy(el, r.view.legacy, r.view.title); else if (v) v.render(el, r.arg); else el.innerHTML = '<div class="empty">No such view.</div>';
+    try { if (navigator.sendBeacon) navigator.sendBeacon('/api/admin/usage', JSON.stringify({ tab: 'v2:' + r.key })); } catch (e) {}
+  }
+  window.addEventListener('hashchange', show);
+  $('menuBtn').addEventListener('click', function () { $('side').classList.add('open'); });
+  $('sideClose').addEventListener('click', function () { $('side').classList.remove('open'); });
+  $('refreshBtn').addEventListener('click', function () { show(); loadTop(); });
+
+  // ---------- top bar: online + attention strip ----------
+  function loadTop() {
+    J('/api/stats?format=json').then(function (d) { if (d && typeof d.online === 'number') $('online').innerHTML = '<i></i><b>' + N(d.online) + '</b> online'; }).catch(function () {});
+    J('/api/admin/attention').then(function (d) {
+      var it = (d && d.items) || []; var box = $('attnbar');
+      box.innerHTML = it.length ? it.map(function (a) { var go = GO[a.go] || 'today/overview'; return '<a class="al ' + esc(a.cls) + '" href="#' + go + '">' + a.html + '</a>'; }).join('') : '';
+      counts = {}; it.forEach(function (a) { if (a.cls === 'red' || a.cls === 'amber') { var go = GO[a.go]; if (go) counts[go] = (counts[go] || 0) + 1; } }); renderNav(); stamp();
+    }).catch(function () {});
+  }
+  var GO = { wd: 'money/withdrawals', rewards: 'money/faucet', support: 'inbox/support', stats: 'health/overview', spot: 'trading/spot', premium: 'money/premium', users: 'people/users' };
+
+  // ---------- components ----------
+  function tile(v, l, cls, sub) { return '<div class="tile ' + (cls || '') + '"><div class="v">' + v + (sub ? '<small>' + sub + '</small>' : '') + '</div><div class="l">' + l + '</div></div>'; }
+  function card(title, body, sub, right) { return '<div class="card"><h2>' + title + (sub ? '<span>' + sub + '</span>' : '') + (right ? '<span class="r">' + right + '</span>' : '') + '</h2>' + body + '</div>'; }
+  function dl(v, a) { a = +a || 0; v = +v || 0; if (a < 5) return ''; var p = Math.round((v - a) / a * 100); return ' <span class="' + (p >= 0 ? 'up' : 'dn') + '">' + (p >= 0 ? '&#9650;' : '&#9660;') + Math.abs(p) + '%</span>'; }
+  function spark(arr, key) { if (!arr || !arr.length) return ''; var mx = 1; arr.forEach(function (x) { if (+x[key] > mx) mx = +x[key]; }); return '<div class="spark">' + arr.map(function (x, i) { return '<i class="' + (i === arr.length - 1 ? 'last' : '') + '" style="height:' + Math.max(2, (+x[key] || 0) / mx * 100) + '%" title="' + esc(x.day || x.d || '') + ' · ' + N(x[key]) + '"></i>'; }).join('') + '</div>'; }
+
+  // ---------- legacy embed ----------
+  var LEG = {}; // tab -> iframe (kept alive)
+  function renderLegacy(el, tab, title) {
+    el.innerHTML = '<p class="legacynote">' + esc(title) + ' still runs on the legacy dashboard inside this frame — every button works; it will be ported to v2 in a later pass. <a href="/api/stats?legacy=1#' + esc(tab) + '" target="_blank" rel="noopener">Open in a full tab</a></p><div class="legacy" id="legacyHost"></div>';
+    var host = $('legacyHost'); var f = LEG[tab];
+    if (!f) { f = document.createElement('iframe'); f.src = '/api/stats?legacy=1&embed=1#' + tab; f.setAttribute('title', title); LEG[tab] = f; }
+    host.appendChild(f);
+  }
+
+  // ---------- TODAY ----------
+  VIEWS['today/overview'] = { render: function (el) {
+    function paint() {
+      Promise.all([J('/api/stats?format=json').catch(function () { return null; }), J('/api/admin/attention').catch(function () { return null; }), J('/api/admin/money').catch(function () { return null; }), J('/api/admin/health').catch(function () { return null; }), J('/api/admin/funnel').catch(function () { return null; })]).then(function (r) {
+        var s = r[0] || {}, at = r[1] || {}, m = r[2] || {}, h = r[3] || {}, fn = r[4] || {};
+        var y = (at.yday && at.yday.y) || {}, av = (at.yday && at.yday.avg) || {};
+        var html = '<div class="grid g4">'
+          + tile(N(s.uvToday), 'visitors today', '', y.uv ? 'yday ' + N(y.uv) : '') + tile(N(s.retToday), 'returning today', 'dim', s.uvToday ? Math.round((s.retToday || 0) / s.uvToday * 100) + '%' : '')
+          + tile(N(s.affToday), 'money clicks today', s.affToday ? '' : 'dim', y.aff != null ? 'yday ' + N(y.aff) : '') + tile(USD(s.revToday, 0), 'est. revenue today', 'dim', 'clicks x ~$0.45')
+          + tile(N(s.pvToday), 'pageviews today', 'dim') + tile(N(s.newToday), 'sign-ups today', 'dim') + tile(USD(m.dispensedTodayUsd), 'faucet dispensed today', (m.dailyCapUsd && m.dispensedTodayUsd >= m.dailyCapUsd * 0.9) ? 'amber' : 'dim', m.dailyCapUsd ? '/ ' + USD(m.dailyCapUsd, 0) : '') + tile(N(s.botToday), 'bots filtered today', 'dim') + '</div>';
+        var yl = at.yday ? '<div class="line"><b>Yesterday</b> (' + esc(at.yday.day) + '): <b>' + N(y.uv) + '</b> visitors' + dl(y.uv, av.uv) + ' · <b>' + N(y.ret) + '</b> returning' + dl(y.ret, av.ret) + ' · <b>' + N(y.nu) + '</b> new visitors' + dl(y.nu, av.nu) + ' · <b>' + N(y.aff) + '</b> money clicks' + dl(y.aff, av.aff) + ' · <b>' + N(y.pv) + '</b> pageviews' + dl(y.pv, av.pv) + ' <span style="color:var(--faint)">· vs the 7 full days before</span></div>' : '';
+        var net = +m.net7dUsd || 0;
+        var ml = m.owedUsd != null ? '<div class="line"><b>Money 7d</b>: faucet cost <b>' + USD(m.dispensed7dUsd) + '</b> · paid out <b>' + USD(m.paid7dUsd) + '</b> · est. income <b>' + USD(m.income7dUsd) + '</b> · net <b class="' + (net >= 0 ? 'up' : 'dn') + '">' + (net >= 0 ? '+' : '') + USD(net) + '</b> · ledger owes <b>' + USD(m.owedUsd) + '</b>' + (m.pendingN ? ' (<b>' + USD(m.pendingUsd) + '</b> pending)' : '') + (m.backup ? ' · backup ' + m.backup.ageH + 'h ago &Delta; ' + (m.backup.deltaUsd >= 0 ? '+' : '') + USD(m.backup.deltaUsd) : '') + '</div>' : '';
+        var days = (fn && (fn.days || fn.rows)) || []; var sp = days.length ? card('Last 14 days', spark(days.slice(-14), 'uv') + '<div class="line" style="margin-top:6px">visitors per day · ' + spark(days.slice(-14), 'clicks').replace('class="spark"', 'class="spark" style="height:26px"') + ' money clicks</div>') : '';
+        var hl = '<div class="grid g4" style="margin-top:12px">' + tile((h.coll && h.coll.state) || '?', 'liquidation collector', (h.coll && /LIVE|OK/.test(h.coll.state)) ? '' : 'red') + tile(h.ae && h.ae.ok ? N(h.ae.evHour) + '<small>ev/h</small>' : 'down', 'analytics engine', h.ae && h.ae.ok ? 'dim' : 'red') + tile(h.users && h.users.ok ? N(h.users.active24) : '?', 'users active 24h', 'dim') + tile(h.kv ? N(h.kv.errToday) : '?', 'broken pages today', h.kv && h.kv.errToday > 3 ? 'amber' : 'dim') + '</div>';
+        var feed = (s.feed || []).slice(0, 40).map(function (e) { return '<div class="row"><span class="who">' + (e.u ? '@' + esc(e.u) : '<span style="color:var(--faint)">visitor</span>') + '</span><span class="grow">' + esc(e.t || '') + ' <b>' + esc(e.e || '') + '</b> <span class="meta">' + esc(e.p || '') + ' ' + flag(e.cc) + '</span></span><span class="meta">' + ago(e.ts) + ' ago</span></div>'; }).join('');
+        el.innerHTML = html + card('Yesterday and money', yl + ml, 'full-day numbers; the tiles above are today so far') + sp + hl + card('Live activity', '<div class="feed">' + (feed || '<div class="empty">quiet</div>') + '</div>', 'last events · refreshes every 30s', '<a href="#people/activity">all activity</a>');
+        stamp();
+      });
+    }
+    paint(); every(30000, paint);
+  } };
+
+  // ---------- MONEY / WITHDRAWALS ----------
+  VIEWS['money/withdrawals'] = { render: function (el) {
+    var st = { f: 'pending', q: '' };
+    function paint() {
+      J('/api/admin/withdrawals').then(function (d) {
+        var all = (d && d.wds) || []; var pend = all.filter(function (w) { return w.status === 'pending'; });
+        var paid7 = all.filter(function (w) { return w.status === 'paid' && Date.now() - (+w.paidTs || 0) < 7 * 86400000; });
+        var rows = all.filter(function (w) { return (st.f === 'all' || w.status === st.f) && (!st.q || ((w.who || '') + ' ' + (w.email || '') + ' ' + (w.wallet || '')).toLowerCase().indexOf(st.q) >= 0); }).slice(0, 200);
+        el.innerHTML = '<div class="grid g4">' + tile(N(pend.length), 'pending payouts', pend.length ? 'amber' : 'dim', USD(pend.reduce(function (s, w) { return s + (+w.usd || 0); }, 0))) + tile(USD(paid7.reduce(function (s, w) { return s + (+w.usd || 0); }, 0)), 'paid last 7 days', 'dim', paid7.length + ' payouts') + tile(N(pend.filter(function (w) { return Date.now() - (+w.ts || 0) > 48 * 3600000; }).length), 'pending over 48h', 'dim') + tile(N(d.uidListCount || 0), 'UIDs on the allowlist', 'dim') + '</div>'
+          + card('Queue', '<div class="bar"><div class="chips" style="margin:0">' + ['pending', 'paid', 'rejected', 'all'].map(function (f) { return '<span class="chip ' + (st.f === f ? 'on' : '') + '" data-f="' + f + '">' + f + '</span>'; }).join('') + '</div><input class="in" id="wdq" placeholder="search user, email, wallet" value="' + esc(st.q) + '"></div>'
+          + '<div class="tblwrap"><table class="tbl"><thead><tr><th>when</th><th>who</th><th>wallet (Bybit UID)</th><th class="r">amount</th><th>status</th><th>UID</th><th>history</th><th></th></tr></thead><tbody>'
+          + (rows.length ? rows.map(function (w) { var uid = w.uidCheck === 'ok' ? '<span class="badge ok">UID OK</span>' : w.uidCheck === 'missing' ? '<span class="badge red">NOT ON LIST</span>' : '<span class="badge">' + esc(w.uidCheck || '—') + '</span>';
+            var stb = w.status === 'pending' ? '<span class="badge amber">PENDING</span>' : w.status === 'paid' ? '<span class="badge ok">PAID</span>' : '<span class="badge red">REJECTED</span>';
+            var act = w.status === 'pending' ? '<button class="btn sm lime" data-pay="' + esc(w.id) + '">Pay</button> <button class="btn sm red" data-rej="' + esc(w.id) + '">Reject + notify</button>' : (w.txid ? '<a href="https://bscscan.com/tx/' + esc(w.txid) + '" target="_blank" rel="noopener">TXID</a>' : '');
+            return '<tr><td class="mono">' + dt(w.ts) + '</td><td><a href="/api/admin/user?u=' + encodeURIComponent(w.who || '') + '" target="_blank">@' + esc(w.who || '?') + '</a><br><span class="meta" style="color:var(--faint);font-size:11px">' + esc(w.email || '') + '</span></td><td class="mono">' + esc(w.wallet) + ' <button class="btn sm" data-copy="' + esc(w.wallet) + '">copy</button></td><td class="r mono">' + USD(w.usd) + '</td><td>' + stb + '</td><td>' + uid + '</td><td class="meta">' + N(w.claims) + ' claims · bal ' + USD(w.balUsd) + (w.banned ? ' · <span class="badge red">BANNED</span>' : '') + '</td><td>' + act + '</td></tr>'; }).join('') : '<tr><td colspan="8" class="empty">nothing here</td></tr>')
+          + '</tbody></table></div>', 'Pay = mark paid after you sent USDT on BSC · Reject + notify emails the user', '<a href="#money/faucet">faucet &amp; flags</a>')
+          + card('Bybit UID allowlist', '<div class="line">' + N(d.uidListCount || 0) + ' UIDs on the list. Withdrawals to a UID not on it are auto-rejected. Edit the list in <a href="#money/faucet">Faucet &amp; rewards</a> (legacy) for now.</div>');
+        el.querySelectorAll('[data-f]').forEach(function (c) { c.onclick = function () { st.f = c.getAttribute('data-f'); paint(); }; });
+        var q = $('wdq'); if (q) q.oninput = function () { st.q = q.value.trim().toLowerCase(); paint(); q.focus(); };
+        el.querySelectorAll('[data-copy]').forEach(function (b) { b.onclick = function () { try { navigator.clipboard.writeText(b.getAttribute('data-copy')); toast('copied'); } catch (e) {} }; });
+        el.querySelectorAll('[data-pay]').forEach(function (b) { b.onclick = function () { var tx = prompt('Mark as PAID. Tx hash (optional):'); if (tx === null) return; b.disabled = true; post('/api/reward/admin/paid', { id: b.getAttribute('data-pay'), txid: tx || '' }).then(function (j) { toast(j && j.ok !== false ? 'marked paid' : 'failed'); paint(); loadTop(); }); }; });
+        el.querySelectorAll('[data-rej]').forEach(function (b) { b.onclick = function () { var r = prompt('Reject and email the user. Reason:'); if (!r) return; b.disabled = true; post('/api/reward/wd/reject', { id: b.getAttribute('data-rej'), note: r }).then(function (j) { toast(j && j.ok ? 'rejected, user notified' : 'failed: ' + ((j && j.error) || '?')); paint(); loadTop(); }); }; });
+        stamp();
+      }).catch(function () { el.innerHTML = '<div class="empty err">could not load withdrawals</div>'; });
+    }
+    paint(); every(30000, paint);
+  } };
+
+  // ---------- PEOPLE / USERS ----------
+  VIEWS['people/users'] = { render: function (el, arg) {
+    var st = { f: '', q: '', sort: 'new', offset: 0, limit: 60 };
+    var SEG = [['', 'All'], ['active', 'Active today'], ['new7', 'New 7d'], ['hot', 'Hot new'], ['traders', 'Traders'], ['churn', 'Churn risk'], ['premium', 'Premium'], ['premexp', 'Expiring 7d'], ['tg', 'Telegram'], ['flagged', 'Flagged']];
+    var SEGT = { hot: 'signed up this week and already 5+ trades', churn: 'traded before, not seen for 7-30 days', premexp: 'Premium ending within 7 days' };
+    function paint() {
+      J('/api/auth/admin?limit=' + st.limit + '&offset=' + st.offset + '&sort=' + st.sort + (st.f ? '&f=' + st.f : '') + (st.q ? '&q=' + encodeURIComponent(st.q) : '') + '&_=' + Date.now()).then(function (d) {
+        var us = (d && d.users) || [];
+        el.innerHTML = '<div class="grid g4">' + tile(N(d.count), 'total users', 'dim') + tile(N(d.newToday), 'new today', d.newToday ? '' : 'dim') + tile(N(d.activeToday), 'active today', 'dim') + tile(N(d.active7), 'active 7 days', 'dim') + '</div>'
+          + card('Users', '<div class="chips">' + SEG.map(function (s) { return '<span class="chip ' + (st.f === s[0] ? 'on' : '') + '" data-f="' + s[0] + '" title="' + esc(SEGT[s[0]] || '') + '">' + s[1] + '</span>'; }).join('') + '</div><div class="bar"><input class="in" id="uq" placeholder="search email or username" value="' + esc(st.q) + '"><select class="in" id="usort">' + [['new', 'Newest'], ['seen', 'Last seen'], ['trades', 'Most trades'], ['pv', 'Most pageviews'], ['logins', 'Most logins']].map(function (o) { return '<option value="' + o[0] + '"' + (st.sort === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>'
+          + '<div class="tblwrap"><table class="tbl"><thead><tr><th>user</th><th>where</th><th class="r">trades</th><th class="r">pv</th><th class="r">logins</th><th>last seen</th><th>joined</th><th>status</th></tr></thead><tbody>'
+          + (us.length ? us.map(function (u) { var name = u.username || (u.email || '').split('@')[0] || ('#' + u.id); var stt = (u.status && u.status !== 'active') ? '<span class="badge red">' + esc(u.status) + '</span>' : (u.muted ? '<span class="badge amber">muted</span>' : '<span class="badge ok">ok</span>');
+            return '<tr><td><a href="/api/admin/user?u=' + encodeURIComponent(u.username || u.email || '') + '" target="_blank"><b>' + esc(name) + '</b></a><br><span style="color:var(--faint);font-size:11px">' + esc(u.email || '') + '</span></td><td>' + flag(u.cc) + ' ' + esc(u.cc || '') + ' <span class="meta">' + esc(u.dev || '') + '</span></td><td class="r mono">' + N(u.trades) + '</td><td class="r mono">' + N(u.pv) + '</td><td class="r mono">' + N(u.logins) + '</td><td class="mono">' + ago(u.last_seen) + ' ago</td><td class="mono">' + dt(u.created).slice(0, 10) + '</td><td>' + stt + '</td></tr>'; }).join('') : '<tr><td colspan="8" class="empty">no users match</td></tr>')
+          + '</tbody></table></div><div class="bar" style="margin-top:8px"><button class="btn sm" id="uprev" ' + (st.offset ? '' : 'disabled') + '>Previous</button><button class="btn sm" id="unext" ' + (us.length < st.limit ? 'disabled' : '') + '>Next</button><span class="meta" style="color:var(--faint);font-size:12px">' + (st.offset + 1) + '–' + (st.offset + us.length) + '</span></div>', 'click a user for the full profile and controls');
+        el.querySelectorAll('[data-f]').forEach(function (c) { c.onclick = function () { st.f = c.getAttribute('data-f'); st.offset = 0; paint(); }; });
+        var q = $('uq'); if (q) { var t; q.oninput = function () { clearTimeout(t); t = setTimeout(function () { st.q = q.value.trim(); st.offset = 0; paint(); }, 350); }; }
+        var so = $('usort'); if (so) so.onchange = function () { st.sort = so.value; st.offset = 0; paint(); };
+        var p = $('uprev'); if (p) p.onclick = function () { st.offset = Math.max(0, st.offset - st.limit); paint(); };
+        var nx = $('unext'); if (nx) nx.onclick = function () { st.offset += st.limit; paint(); };
+        stamp();
+      }).catch(function () { el.innerHTML = '<div class="empty err">could not load users</div>'; });
+    }
+    if (arg) st.q = decodeURIComponent(arg);
+    paint();
+  } };
+
+  // ---------- HEALTH / OVERVIEW ----------
+  VIEWS['health/overview'] = { render: function (el) {
+    function paint() {
+      Promise.all([J('/api/admin/alerts').catch(function () { return null; }), J('/api/admin/health').catch(function () { return null; }), J('/api/admin/money').catch(function () { return null; }), J('/api/admin/usage').catch(function () { return null; }), J('/api/admin/attention').catch(function () { return null; })]).then(function (r) {
+        var al = r[0] || {}, h = r[1] || {}, m = r[2] || {}, us = r[3] || {}, at = r[4] || {};
+        var SEV = { red: '#ff8a80', warn: '#ffc371', info: '#9fc4ff' };
+        var sys = (at.items || []).filter(function (a) { return a.go === 'stats'; });
+        var tiles = '<div class="grid g4">' + tile((h.coll && h.coll.state) || '?', 'collector', (h.coll && /LIVE|OK/.test(h.coll.state)) ? '' : 'red') + tile(h.ae && h.ae.ok ? N(h.ae.evHour) + '<small>ev/h</small>' : 'down', 'analytics engine', h.ae && h.ae.ok ? 'dim' : 'red') + tile(m.backup ? m.backup.ageH + 'h' : '?', 'ledger backup age', m.backup && m.backup.ageH > 8 ? 'red' : 'dim', m.backup ? '&Delta; ' + USD(m.backup.deltaUsd) : '') + tile(h.kv ? N(h.kv.errToday) : '?', 'broken pages today', h.kv && h.kv.errToday > 3 ? 'amber' : 'dim') + '</div>';
+        var sysl = sys.length ? '<div>' + sys.map(function (a) { return '<div class="al ' + a.cls + '" style="margin:0 6px 6px 0">' + a.html + '</div>'; }).join('') + '</div>' : '<div class="line up">Cron, backups, Telegram and the liquidation venues are all fine.</div>';
+        var ks = al.kinds || [];
+        var alh = ks.length ? '<div class="tblwrap"><table class="tbl"><thead><tr><th></th><th>kind</th><th>last</th><th class="r">7d</th><th>state</th><th>last message</th><th></th></tr></thead><tbody>' + ks.map(function (k) { var stt = k.snooze ? 'snoozed until ' + new Date(k.snooze).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (k.ack && k.ack >= k.last ? 'acked' : ''); return '<tr><td><span class="dot" style="background:' + (SEV[k.s] || SEV.warn) + '"></span></td><td class="mono">' + esc(k.k) + '</td><td class="mono">' + ago(k.last) + ' ago</td><td class="r mono">' + k.n7 + '</td><td class="up">' + stt + '</td><td class="grow" style="color:var(--dim);max-width:420px;overflow:hidden;text-overflow:ellipsis" title="' + esc(k.lastText) + '">' + esc(k.lastText) + '</td><td>' + (k.s === 'info' ? '' : '<button class="btn sm" data-ak="' + esc(k.k) + '" data-op="ack">Ack</button> <button class="btn sm" data-ak="' + esc(k.k) + '" data-op="' + (k.snooze ? 'unsnooze' : 'snooze') + '">' + (k.snooze ? 'Unsnooze' : 'Snooze 24h') + '</button>') + '</td></tr>'; }).join('') + '</tbody></table></div>' + ((al.silent || []).length ? '<div class="line" style="margin-top:8px;color:var(--amber)">Quiet 7+ days after firing within 30d (fixed, or dead): ' + al.silent.map(function (k) { return esc(k.k); }).join(', ') + '</div>' : '') : '<div class="empty">nothing paged you yet (history starts 2026-09-03)</div>';
+        var tabs = (us.tabs || []); var uh = tabs.length ? tabs.map(function (t) { return '<span style="display:inline-block;margin:0 10px 6px 0"><b class="mono" style="color:var(--ink)">' + esc(t.tab) + '</b> ' + N(t.n) + '</span>'; }).join('') : '<span class="meta">no opens recorded yet</span>';
+        el.innerHTML = tiles + card('System', sysl, 'what the cron, backups, Telegram and the collector say right now') + card('Alerts', alh, 'per alarm kind · Ack = seen · Snooze = swallow repeats · same buttons as under each Telegram message') + card('Tab usage', '<div class="line">' + uh + '</div>', 'opens per tab, last 30 days · what you never open is a merge or kill candidate', '<a href="#health/perf">performance</a>');
+        el.querySelectorAll('[data-ak]').forEach(function (b) { b.onclick = function () { b.disabled = true; post('/api/admin/alerts', { op: b.getAttribute('data-op'), kind: b.getAttribute('data-ak'), hours: 24 }).then(paint); }; });
+        stamp();
+      });
+    }
+    paint(); every(60000, paint);
+  } };
+
+  // ---------- SETTINGS / SWITCHES ----------
+  VIEWS['settings/switches'] = { render: function (el) {
+    var SW = [['sessKv', 'Session cache', 'OFF = every session read hits the UserStore DO'], ['srvCandle', 'Server candle settle', 'OFF = the money path settles on the current price only'], ['botApi', 'Bot API', 'OFF = every /api/v1 bot call is refused'], ['xPost', 'X auto-poster', 'OFF = no scheduled posts'], ['alerts', 'Ops alerts', 'OFF = checkOpsAlerts pages nothing (the signal watchdog still does)'], ['brief', 'Morning brief', 'the daily Telegram summary']];
+    function paint() {
+      Promise.all([J('/api/admin/opscfg'), J('/api/reward/config').catch(function () { return null; })]).then(function (r) { var c = r[0] || {}, rc = (r[1] && r[1].config) || null;
+        var rows = SW.map(function (s) { var on = c[s[0]] !== false; return '<div class="sw"><div>' + s[1] + '<small>' + s[2] + '</small></div><button class="btn ' + (on ? 'on' : 'off') + '" data-sw="' + s[0] + '" data-to="' + (on ? '0' : '1') + '">' + (on ? 'ON' : 'OFF') + '</button></div>'; }).join('');
+        var frows = rc ? [['enabled', 'Faucet claims', 'OFF = nobody can claim; the pause message from Reward config shows'], ['wdEnabled', 'Withdrawals', 'OFF = users cannot request a payout']].map(function (s) { var on = rc[s[0]] !== false; return '<div class="sw"><div>' + s[1] + '<small>' + s[2] + '</small></div><button class="btn ' + (on ? 'on' : 'off') + '" data-rw="' + s[0] + '" data-to="' + (on ? '0' : '1') + '">' + (on ? 'ON' : 'OFF') + '</button></div>'; }).join('') : '<div class="empty">reward config unavailable</div>';
+        el.innerHTML = card('Kill switches', rows, 'ops:cfg · applies instantly, no deploy · every flip is confirmed') + card('Money switches', frows, 'rwd:cfg · every change also pings Telegram (config audit)') + card('More', '<div class="line">Claim economics, anti-abuse limits, pause message and site announcement live in <a href="#settings/rewards">Reward config</a> (legacy). Kill-switch reference: <span class="mono">sessKv</span>, <span class="mono">srvCandle</span>, <span class="mono">botApi</span>.</div>');
+        el.querySelectorAll('[data-sw]').forEach(function (b) { b.onclick = function () { var k = b.getAttribute('data-sw'), to = b.getAttribute('data-to') === '1'; if (!confirm((to ? 'Turn ON ' : 'Turn OFF ') + k + '?')) return; b.disabled = true; var body = {}; body[k] = to; post('/api/admin/opscfg', body).then(function () { toast(k + (to ? ' ON' : ' OFF')); paint(); }); }; });
+        el.querySelectorAll('[data-rw]').forEach(function (b) { b.onclick = function () { var k = b.getAttribute('data-rw'), to = b.getAttribute('data-to') === '1'; if (!confirm((to ? 'Turn ON ' : 'Turn OFF ') + k + '? (audited on Telegram)')) return; b.disabled = true; var body = {}; body[k] = to; post('/api/reward/config', body).then(function (j) { toast(j && j.ok !== false ? k + (to ? ' ON' : ' OFF') : 'failed'); paint(); }); }; });
+        stamp();
+      }).catch(function () { el.innerHTML = '<div class="empty err">could not load</div>'; });
+    }
+    paint();
+  } };
+
+  // ---------- command palette ----------
+  var pal = $('pal'), palIn = $('palIn'), palRes = $('palRes'), palItems = [], palIdx = 0, palT = null;
+  function palOpen() { pal.hidden = false; palIn.value = ''; palRender(''); setTimeout(function () { palIn.focus(); }, 0); }
+  function palClose() { pal.hidden = true; }
+  function palStatic(q) { var out = []; NAV.forEach(function (s) { s.views.forEach(function (v) { var t = s.title + ' / ' + v.title; if (!q || t.toLowerCase().indexOf(q) >= 0 || s.id.indexOf(q) >= 0 || v.id.indexOf(q) >= 0) out.push({ k: 'go', t: t, s: v.legacy ? 'legacy' : '', href: '#' + s.id + '/' + v.id }); }); });
+    [['Pocket view', '/api/stats/pocket'], ['Legacy dashboard', '/api/stats?legacy=1'], ['Site', '/'], ['Bug inbox', '/api/bug'], ['Private inbox', '/api/admin/pmail']].forEach(function (x) { if (!q || x[0].toLowerCase().indexOf(q) >= 0) out.push({ k: 'open', t: x[0], s: x[1], href: x[1], blank: true }); }); return out; }
+  function palRender(q) { q = (q || '').trim().toLowerCase(); palItems = palStatic(q).slice(0, q ? 6 : 12);
+    if (q.length >= 2) { clearTimeout(palT); palT = setTimeout(function () { J('/api/admin/search?q=' + encodeURIComponent(q)).then(function (d) { if ((palIn.value || '').trim().toLowerCase() !== q) return; var more = [];
+      (d.users || []).slice(0, 8).forEach(function (u) { more.push({ k: 'user', t: '@' + (u.username || u.email || ''), s: (u.email || '') + (u.cc ? ' · ' + u.cc : ''), href: '/api/admin/user?u=' + encodeURIComponent(u.username || u.email || ''), blank: true }); });
+      (d.accounts || []).slice(0, 5).forEach(function (a) { more.push({ k: 'faucet', t: a.username || a.address || '', s: 'balance ' + USD(a.balanceUsd || a.balance || 0), href: '#money/faucet' }); });
+      (d.posts || []).slice(0, 5).forEach(function (p) { more.push({ k: 'post', t: p.title || '', s: p.author || '', href: p.url || '#growth/community', blank: !!p.url }); });
+      palItems = palItems.concat(more); palIdx = 0; palDraw(); }).catch(function () {}); }, 200); }
+    palIdx = 0; palDraw(); }
+  function palDraw() { palRes.innerHTML = palItems.length ? palItems.map(function (it, i) { return '<div class="pr ' + (i === palIdx ? 'on' : '') + '" data-i="' + i + '"><span class="k">' + esc(it.k) + '</span><span class="t">' + esc(it.t) + '</span><span class="s">' + esc(it.s || '') + '</span></div>'; }).join('') : '<div class="pr"><span class="t" style="color:var(--faint)">nothing matches</span></div>';
+    palRes.querySelectorAll('.pr[data-i]').forEach(function (r) { r.onclick = function () { palGo(+r.getAttribute('data-i')); }; }); }
+  function palGo(i) { var it = palItems[i]; if (!it) return; palClose(); if (it.blank) window.open(it.href, '_blank'); else location.hash = it.href.replace(/^#/, ''); }
+  palIn.addEventListener('input', function () { palRender(palIn.value); });
+  palIn.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown') { palIdx = Math.min(palItems.length - 1, palIdx + 1); palDraw(); e.preventDefault(); } else if (e.key === 'ArrowUp') { palIdx = Math.max(0, palIdx - 1); palDraw(); e.preventDefault(); } else if (e.key === 'Enter') { palGo(palIdx); } else if (e.key === 'Escape') palClose(); });
+  pal.addEventListener('click', function (e) { if (e.target === pal) palClose(); });
+  $('palBtn').addEventListener('click', palOpen);
+  document.addEventListener('keydown', function (e) { if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) { e.preventDefault(); if (pal.hidden) palOpen(); else palClose(); } else if (e.key === 'Escape' && !pal.hidden) palClose(); });
+
+  // ---------- boot ----------
+  show(); loadTop(); setInterval(function () { if (!document.hidden) loadTop(); }, 45000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) { loadTop(); } });
+  window.__ops2 = { NAV: NAV, VIEWS: VIEWS, route: route, show: show };
+})();

@@ -1,0 +1,67 @@
+// mp-ops v2 E2E (2026-09-03): the new shell at /api/stats. Mints a session from ADMIN_KEY (POST /api/stats/session),
+// then walks every NAV view: native views must render content without page/console errors or failed admin fetches;
+// legacy views must load the embedded legacy frame with the right tab visible. Also: palette opens and searches,
+// phone width has no horizontal scroll, and the legacy page still answers directly. Screenshots in build/ops-shots/v2-*.png.
+// Run: node build/ops2-e2e.js            node build/ops2-e2e.js today/overview money/withdrawals
+const fs = require('fs'), path = require('path');
+const { withBrowser } = require('D:/part1/money-mission/build/e2e-browser.js');
+const K = fs.readFileSync('D:/part1/money-mission/ADMIN_KEY.local.txt', 'utf8').split(/\r?\n/)[1].trim();
+const BASE = 'https://marginpad.io';
+const only = process.argv.slice(2).filter(a => a.indexOf('/') > 0);
+const SHOTS = path.join(__dirname, 'ops-shots'); if (!fs.existsSync(SHOTS)) fs.mkdirSync(SHOTS);
+const out = []; const chk = (n, ok, x) => out.push((ok ? 'PASS ' : 'FAIL ') + n + (x ? ' ' + JSON.stringify(x).slice(0, 220) : ''));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+(async () => {
+  const sess = await (await fetch(BASE + '/api/stats/session', { method: 'POST', headers: { 'x-admin-key': K } })).json();
+  chk('session minted', sess.ok && /^[0-9a-f]{64}$/.test(sess.token));
+  if (!sess.ok) { console.log(out.join('\n')); process.exit(1); }
+  await withBrowser(async (browser) => {
+    const ctx = await browser.createBrowserContext(); const page = await ctx.newPage();
+    await page.setViewport({ width: 1440, height: 900 });
+    await page.setCookie({ name: 'mp_sadm', value: sess.token, domain: 'marginpad.io', path: '/', httpOnly: true, secure: true });
+    const errs = [], bad = [];
+    page.on('pageerror', e => errs.push(String(e.message).slice(0, 140)));
+    page.on('console', m => { if (m.type() === 'error') errs.push('console: ' + m.text().slice(0, 140)); });
+    page.on('response', r => { try { const u = r.url(); if (u.indexOf(BASE + '/api/') === 0 && r.status() >= 400 && !/\/api\/prices?\b/.test(u)) bad.push(r.status() + ' ' + u.slice(BASE.length, BASE.length + 70)); } catch (e) {} });
+    const t0 = Date.now(); await page.goto(BASE + '/api/stats', { waitUntil: 'networkidle2', timeout: 120000 }); const load = Date.now() - t0; await sleep(2500);
+    const g = await page.evaluate(() => ({ v2: !!(window.__ops2 && window.__ops2.NAV), nav: document.querySelectorAll('#nav a').length, gate: !!document.querySelector('input[type="password"]'), attn: document.querySelectorAll('#attnbar .al').length, online: (document.getElementById('online') || {}).textContent, bytes: document.documentElement.outerHTML.length }));
+    chk('v2 shell renders (no gate, nav built, attention strip)', g.v2 && !g.gate && g.nav >= 20, { load, nav: g.nav, attn: g.attn, online: g.online, kb: Math.round(g.bytes / 1024) });
+    const views = await page.evaluate(() => { const o = []; window.__ops2.NAV.forEach(s => s.views.forEach(v => o.push({ key: s.id + '/' + v.id, legacy: v.legacy || '' }))); return o; });
+    for (const v of views) {
+      if (only.length && !only.includes(v.key)) continue;
+      const e0 = errs.length, b0 = bad.length;
+      await page.evaluate((k) => { location.hash = k; }, v.key); await sleep(v.legacy ? 6000 : 3500);
+      const s = await page.evaluate(async (v) => {
+        const el = document.getElementById('view'); const txt = (el.innerText || '').replace(/\s+/g, ' ');
+        const r = { chars: txt.length, crumb: (document.getElementById('crumb') || {}).innerText, loading: /loading…/.test(txt) && txt.length < 40 };
+        if (v.legacy) { const f = el.querySelector('iframe'); r.iframe = !!f; try { const d = f && f.contentDocument; const p = d && d.getElementById('tab-' + v.legacy); r.tabVisible = !!(p && !p.hidden && p.getBoundingClientRect().height > 40); r.chromeHidden = !!(d && d.querySelector('nav.tabbar') && d.querySelector('nav.tabbar').style.display === 'none'); r.inner = d ? (p ? p.innerText.replace(/\s+/g, ' ').slice(0, 60) : 'no panel') : 'no doc'; } catch (e) { r.err = String(e).slice(0, 80); } }
+        return r;
+      }, v);
+      const newErrs = errs.slice(e0), newBad = bad.slice(b0);
+      const ok = v.legacy ? (s.iframe && s.tabVisible && s.chromeHidden && newErrs.length === 0) : (s.chars > 60 && !s.loading && newErrs.length === 0 && newBad.length === 0);
+      chk('view ' + v.key + (v.legacy ? ' (legacy ' + v.legacy + ')' : ''), ok, Object.assign({ errs: newErrs, bad: newBad }, v.legacy ? { iframe: s.iframe, tab: s.tabVisible, chrome: s.chromeHidden, inner: s.inner, err: s.err } : { chars: s.chars }));
+      try { await page.screenshot({ path: path.join(SHOTS, 'v2-' + v.key.replace('/', '-') + '.png') }); } catch (e) {}
+    }
+    // palette
+    await page.evaluate(() => { location.hash = 'today/overview'; }); await sleep(800);
+    await page.keyboard.down('Control'); await page.keyboard.press('KeyK'); await page.keyboard.up('Control'); await sleep(300);
+    await page.type('#palIn', 'kof'); await sleep(1800);
+    const p = await page.evaluate(() => ({ open: !document.getElementById('pal').hidden, items: Array.from(document.querySelectorAll('#palRes .pr')).map(x => x.innerText.replace(/\s+/g, ' ').slice(0, 40)) }));
+    chk('palette opens with Ctrl+K and finds users for "kof"', p.open && p.items.some(x => /user/i.test(x)), p);
+    await page.keyboard.press('Escape');
+    // phone
+    await page.setViewport({ width: 390, height: 780 }); await page.evaluate(() => { location.hash = 'today/overview'; }); await sleep(1500);
+    const m = await page.evaluate(() => ({ hscroll: document.documentElement.scrollWidth > window.innerWidth + 2, menu: getComputedStyle(document.getElementById('menuBtn')).display !== 'none', tiles: document.querySelectorAll('.tile').length }));
+    chk('phone: no horizontal scroll, menu button, tiles', !m.hscroll && m.menu && m.tiles >= 4, m);
+    await page.evaluate(() => document.getElementById('menuBtn').click()); await sleep(400);
+    const mo = await page.evaluate(() => document.getElementById('side').classList.contains('open') && document.getElementById('side').getBoundingClientRect().left >= -1);
+    chk('phone: menu drawer opens', mo);
+    try { await page.screenshot({ path: path.join(SHOTS, 'v2-_phone.png') }); } catch (e) {}
+    chk('zero page errors overall', errs.length === 0, errs.slice(0, 6));
+    await page.evaluate(() => fetch('/api/stats/logout', { method: 'POST' }).catch(() => {}));
+    await ctx.close();
+  });
+  console.log(out.join('\n'));
+  console.log('pass', out.filter(x => x[0] === 'P').length, 'fail', out.filter(x => x[0] === 'F').length, '· shots in build/ops-shots/v2-*.png');
+  process.exit(out.some(x => x[0] === 'F') ? 1 : 0);
+})().catch(e => { console.error(e); console.log(out.join('\n')); process.exit(1); });

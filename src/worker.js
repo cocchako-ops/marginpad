@@ -3,6 +3,10 @@
    - /api/prices       → live prices (proxied + cached + fallback)
    - /telegram/webhook → Telegram bot with inline-button UI (needs TELEGRAM_TOKEN secret)
    - everything else   → static assets (the website) */
+// mp-ops v2 shell (2026-09-03): real files under src/ops/, bundled as text modules (wrangler.toml [[rules]] type=Text).
+import OPS_SHELL from './ops/shell.html';
+import OPS_CSS from './ops/ops.css';
+import OPS_JS from './ops/client/ops.js.txt'; // .js.txt on purpose: a .js import is bundled and EXECUTED as code at startup ("window is not defined"); the Text rule only applies to .txt
 
 const CORS = {
   'access-control-allow-origin': '*',
@@ -5582,6 +5586,20 @@ render();setInterval(reload,15000);
   return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
 }
 
+// ---- mp-ops v2 (2026-09-03) ----
+function _fnv(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h.toString(16).padStart(8, '0'); }
+const OPS_V = _fnv(OPS_SHELL + OPS_CSS + OPS_JS);
+async function handleOpsShell(url, env, request) { // the v2 dashboard: static shell + JSON endpoints; ?legacy=1 keeps the old server-rendered page
+  if (!(await adminCookieOk(request, env))) { const _stored = (env.STATS && await env.STATS.get('cfg:statspass')) || ''; return new Response(adminLoginHTML('Stats dashboard', !_stored, '/api/stats/login'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } }); }
+  const _ph = adminCookieHash(request, 'mp_sadm'); const hd = new Headers({ 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+  if (_ph) hd.append('set-cookie', 'mp_sadm=' + _ph + '; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=31536000');
+  return new Response(OPS_SHELL.replace(/__V__/g, OPS_V), { headers: hd });
+}
+async function handleOpsAsset(url, env, request) {
+  if (!(await adminCookieOk(request, env))) return new Response('forbidden', { status: 403, headers: { 'cache-control': 'no-store' } });
+  const isCss = url.pathname.endsWith('.css');
+  return new Response(isCss ? OPS_CSS : OPS_JS, { headers: { 'content-type': (isCss ? 'text/css' : 'application/javascript') + '; charset=utf-8', 'cache-control': 'private, max-age=31536000, immutable', 'x-ops-v': OPS_V } });
+}
 // Ops pocket view (2026-09-03, ops plan block F): the phone page. One column, three things — what needs the owner (the
 // same /api/admin/attention list as the dashboard strip), the alert kinds with Ack/Snooze, and the kill switches — plus
 // yesterday's numbers and who is online. Same password session as the dashboard; nothing here is a new capability,
@@ -7406,7 +7424,7 @@ var opsBodyEl=document.getElementById('opsBody');if(opsBodyEl)opsBodyEl.addEvent
 // Restore where you were: the old <meta refresh> hard-reloaded the whole page every 5 min and dumped you back on
 // the Dashboard tab mid-work. Now the active tab + subtab survive any reload, and the auto-refresh below only fires
 // when it can't interrupt anything.
-setTimeout(function(){try{var _rt=sessionStorage.getItem('adm_tab');if(_rt&&_rt!=='stats')show(_rt);var _rs=sessionStorage.getItem('adm_sub');if(_rs&&_rs!=='overview')showSub(_rs);}catch(e){}},0); /* deferred: show() calls tab loaders whose state vars are declared LATER in this script — running restore synchronously hit them before initialization (Users tab stuck on 'loading…' after any reload) */
+setTimeout(function(){try{var _hh=(location.hash||'').slice(1);if(/[?&]embed=1/.test(location.search)){document.body.classList.add('embed');var _tb=document.querySelector('nav.tabbar');if(_tb){if(_tb.previousElementSibling)_tb.previousElementSibling.style.display='none';_tb.style.display='none';}var _aa=document.getElementById('admAlert');if(_aa)_aa.style.display='none';document.body.style.setProperty('padding-left','14px','important');document.body.style.setProperty('padding-right','14px','important');}if(_hh&&document.querySelector('.tab[data-tab="'+_hh+'"]')){show(_hh);return;}var _rt=sessionStorage.getItem('adm_tab');if(_rt&&_rt!=='stats')show(_rt);var _rs=sessionStorage.getItem('adm_sub');if(_rs&&_rs!=='overview')showSub(_rs);}catch(e){}},0); /* v2 (2026-09-03): #tab deep-links a legacy tab, ?embed=1 hides the legacy chrome inside the v2 frame */ /* deferred: show() calls tab loaders whose state vars are declared LATER in this script — running restore synchronously hit them before initialization (Users tab stuck on 'loading…' after any reload) */
 setInterval(function(){
   var modal=document.querySelector('.amodal:not([hidden])');
   var ae=document.activeElement,typing=ae&&(ae.tagName==='INPUT'||ae.tagName==='TEXTAREA'||ae.tagName==='SELECT');
@@ -12909,7 +12927,11 @@ export default {
     if (url.pathname === '/api/stats/login') return adminDoLogin(request, env, 'cfg:statspass', 'mp_sadm', '/', url.origin + '/api/stats');
     if (url.pathname === '/api/stats/logout') return adminLogout(request, env, 'mp_sadm', '/');
     if (url.pathname === '/api/stats/pocket') return handleStatsPocket(url, env, request);
-    if (url.pathname === '/api/stats') return handleStats(url, env, request, ctx);
+    if (url.pathname === '/api/stats/asset/ops.css' || url.pathname === '/api/stats/asset/ops.js') return handleOpsAsset(url, env, request);
+    if (url.pathname === '/api/stats') { // v2 shell by default (2026-09-03); the legacy server render stays reachable (?legacy=1) and still owns the JSON/CSV feeds and cache-bypass renders
+      const sp = url.searchParams; if (sp.get('legacy') === '1' || sp.get('format') || sp.get('nc') || sp.get('clearerr') || sp.get('_bg')) return handleStats(url, env, request, ctx);
+      return handleOpsShell(url, env, request);
+    }
     if (url.pathname === '/api/bug' || url.pathname.startsWith('/api/bug/')) return handleBug(url, request, env);
     if (url.pathname === '/api/comments') return handleComments(url, request, env);
     if (url.pathname.startsWith('/api/reward/')) return handleReward(url, request, env);
