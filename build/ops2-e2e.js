@@ -30,7 +30,10 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     for (const v of views) {
       if (only.length && !only.includes(v.key)) continue;
       const e0 = errs.length, b0 = bad.length;
-      await page.evaluate((k) => { location.hash = k; }, v.key); await sleep(v.legacy ? 6000 : 3500);
+      await page.evaluate((k) => { location.hash = k; }, v.key);
+      // wait until the view has painted (slow endpoints like /api/admin/spot price 240 holdings on a cold miss), max 15s
+      for (let w = 0; w < 30; w++) { await sleep(500); const ready = await page.evaluate((v) => { const el = document.getElementById('view'); if (v.legacy) { const f = el.querySelector('iframe'); try { return !!(f && f.contentDocument && f.contentDocument.getElementById('tab-' + v.legacy)); } catch (e) { return false; } } const t = (el.innerText || '').replace(/\s+/g, ' '); return t.length > 60 && !/^loading/i.test(t.trim()); }, v); if (ready) break; }
+      await sleep(v.legacy ? 2500 : 800);
       const s = await page.evaluate(async (v) => {
         const el = document.getElementById('view'); const txt = (el.innerText || '').replace(/\s+/g, ' ');
         const r = { chars: txt.length, crumb: (document.getElementById('crumb') || {}).innerText, loading: /loading…/.test(txt) && txt.length < 40 };
@@ -65,7 +68,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     chk('phone: no horizontal scroll, menu button, tiles', !m.hscroll && m.menu && m.tiles >= 4, m);
     for (const v of views) {
       if (v.legacy) continue; if (only.length && !only.includes(v.key)) continue;
-      await page.evaluate((k) => { location.hash = k; }, v.key); await sleep(3000);
+      await page.evaluate((k) => { location.hash = k; }, v.key);
+      for (let w = 0; w < 30; w++) { await sleep(500); const ready = await page.evaluate(() => { const t = (document.getElementById('view').innerText || '').replace(/\s+/g, ' ').trim(); return t.length > 60 && !/^loading/i.test(t); }); if (ready) break; }
+      await sleep(600);
       const vis = await page.evaluate(() => { const el = document.getElementById('view'); let h = 0; el.querySelectorAll('.tile,.card,.sup-l,.sup-row,.tbl,.sw').forEach(x => { const r = x.getBoundingClientRect(); if (r.height > 0 && r.width > 0) h += r.height; }); return { visibleHeight: Math.round(h), hscroll: document.documentElement.scrollWidth > window.innerWidth + 2 }; });
       chk('phone view ' + v.key + ': visible content', vis.visibleHeight > 150 && !vis.hscroll, vis);
     }
