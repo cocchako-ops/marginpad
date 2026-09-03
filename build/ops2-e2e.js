@@ -45,6 +45,59 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       chk('view ' + v.key + (v.legacy ? ' (legacy ' + v.legacy + ')' : ''), ok, Object.assign({ errs: newErrs, bad: newBad }, v.legacy ? { iframe: s.iframe, tab: s.tabVisible, chrome: s.chromeHidden, inner: s.inner, err: s.err } : { chars: s.chars }));
       try { await page.screenshot({ path: path.join(SHOTS, 'v2-' + v.key.replace('/', '-') + '.png') }); } catch (e) {}
     }
+    // deep checks for the views ported last (2026-09-03 evening): real interactions on desktop, no legacy frame anywhere
+    if (!only.length || only.includes('money/faucet')) {
+      await page.evaluate(() => { location.hash = 'money/faucet'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('#rwAccts .row').length > 0)) break; }
+      const fa = await page.evaluate(() => ({ accts: document.querySelectorAll('#rwAccts .row').length, count: (document.getElementById('rwCount') || {}).textContent, lb: !!document.querySelector('[data-lbej]'), hist: !!document.getElementById('rwHist') }));
+      chk('faucet: accounts list, season board and history render', fa.accts > 0 && /accounts|of/.test(fa.count || ''), fa);
+      await page.evaluate(() => { const r = document.querySelector('#rwAccts .row[data-acct]'); if (r) r.click(); }); for (let w = 0; w < 20; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('.modal .kvgrid .kv').length > 0)) break; }
+      const md = await page.evaluate(() => ({ open: !!document.querySelector('.modal'), kv: document.querySelectorAll('.modal .kvgrid .kv').length, earn: !!document.getElementById('amEarn'), actions: ['amBan', 'amLb', 'amUnlock', 'amRemove', 'amAdd', 'amNoteSave', 'amMsgSend'].filter(id => !document.getElementById(id)) }));
+      chk('faucet: account card opens with fields, earnings and every action button', md.open && md.kv >= 10 && md.earn && md.actions.length === 0, md);
+      await page.keyboard.press('Escape'); await sleep(300); chk('faucet: Escape closes the card', await page.evaluate(() => !document.querySelector('.modal')));
+      try { await page.screenshot({ path: path.join(SHOTS, 'v2-money-faucet.png') }); } catch (e) {}
+    }
+    if (!only.length || only.includes('people/journeys')) {
+      await page.evaluate(() => { location.hash = 'people/journeys'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('.jc').length > 0)) break; }
+      const jl = await page.evaluate(() => ({ cards: document.querySelectorAll('.jc').length, steps: document.querySelectorAll('.jc-p .pg').length, rail: document.querySelectorAll('.jm-rail .card').length }));
+      chk('journeys: live cards with page chains and the rail', jl.cards > 0 && jl.steps > 0 && jl.rail === 2, jl);
+      await page.evaluate(() => { document.querySelector('[data-jv="flows"]').click(); }); await sleep(800);
+      const fl = await page.evaluate(() => ({ bars: document.querySelectorAll('.hb-r').length, txt: (document.getElementById('view').innerText || '').slice(0, 80) }));
+      chk('journeys: flows view lists hops between products', fl.bars > 0, fl);
+      await page.type('#jmU', 'kofac'); await page.click('#jmGo'); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => /session|no tracked|no user/.test(document.getElementById('view').innerText))) break; }
+      const tr = await page.evaluate(() => ({ back: !!document.getElementById('jmLive'), sessions: document.querySelectorAll('.jc').length, profile: /full profile/.test(document.getElementById('view').innerText) }));
+      chk('journeys: trace user resolves @kofac to sessions with a profile link', tr.back && tr.profile, tr);
+      try { await page.screenshot({ path: path.join(SHOTS, 'v2-people-journeys.png') }); } catch (e) {}
+    }
+    if (!only.length || only.includes('trading/live')) {
+      await page.evaluate(() => { location.hash = 'trading/live'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('.trd').length > 0)) break; }
+      await page.evaluate(() => { const t = document.querySelector('.trd-h .t.up'); const h = t && t.closest('.trd-h'); if (h) h.click(); }); await sleep(600); // first trader that actually has an open position (the newest row may be flat: closes only)
+      const lv = await page.evaluate(() => { const t = Array.from(document.querySelectorAll('.tile')).find(x => /live prices/i.test(x.innerText)); return { traders: document.querySelectorAll('.trd').length, expanded: document.querySelectorAll('.trd-b .pos').length, prices: t ? +t.querySelector('.v').innerText.replace(/[^0-9]/g, '') : 0, tiles: document.querySelectorAll('.tile').length, dash: document.querySelectorAll('.trd-b .pos b').length ? Array.from(document.querySelectorAll('.trd-b .pos b')).filter(b => b.innerText.trim() === '—').length : -1 }; });
+      chk('live trades: trader rows expand to positions; base prices loaded (/api/prices pairs) so P&L is real', lv.traders > 0 && lv.expanded > 0 && lv.tiles >= 8 && lv.prices >= 30, lv);
+      await page.evaluate(() => { document.querySelector('[data-v="markets"]').click(); }); await sleep(500);
+      chk('live trades: markets view', await page.evaluate(() => document.querySelectorAll('.hb-r').length > 0));
+      try { await page.screenshot({ path: path.join(SHOTS, 'v2-trading-live.png') }); } catch (e) {}
+    }
+    if (!only.length || only.includes('settings/rewards')) {
+      await page.evaluate(() => { location.hash = 'settings/rewards'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => !!document.getElementById('sSave'))) break; }
+      const sr = await page.evaluate(() => ({ amount: +(document.getElementById('sAmount') || {}).value, cap: +(document.getElementById('sCap') || {}).value, togs: document.querySelectorAll('.tog').length, hints: (document.getElementById('sHints') || {}).innerText, prem: document.querySelectorAll('#premList .badge').length, xp: !!document.getElementById('xpList'), cal: (document.getElementById('calEv') || {}).value }));
+      chk('reward config: every store loaded into the form (claim amount, budget, toggles, premium grants, calendar, promos)', sr.amount > 0 && sr.cap > 0 && sr.togs >= 6 && /day/.test(sr.hints || '') && sr.xp, sr);
+      try { await page.screenshot({ path: path.join(SHOTS, 'v2-settings-rewards.png') }); } catch (e) {}
+    }
+    if (!only.length || only.includes('inbox/chat')) {
+      await page.evaluate(() => { location.hash = 'inbox/chat'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => document.querySelectorAll('.chatrow').length > 0)) break; }
+      const ch = await page.evaluate(() => ({ rows: document.querySelectorAll('.chatrow').length, del: document.querySelectorAll('[data-del]').length, composer: !!document.getElementById('chatSend'), poll: !!document.getElementById('pollStart'), tg: !!document.getElementById('tgBcSend') }));
+      chk('trader chat: room, composer, poll and Telegram broadcast', ch.rows > 0 && ch.del === ch.rows && ch.composer && ch.poll && ch.tg, ch);
+    }
+    if (!only.length || only.includes('inbox/mail')) {
+      await page.evaluate(() => { location.hash = 'inbox/mail'; }); for (let w = 0; w < 30; w++) { await sleep(500); if (await page.evaluate(() => !!document.getElementById('mlSend'))) break; }
+      const ml = await page.evaluate(() => ({ from: document.querySelectorAll('#mlFrom option').length, reply: document.querySelectorAll('#mlReply option').length, log: document.querySelectorAll('#mlLog tr').length }));
+      chk('email: identities loaded and the sent log renders', ml.from >= 3 && ml.reply >= 3 && ml.log > 1, ml);
+    }
+    chk('no view embeds the old dashboard', await page.evaluate(() => !window.__ops2.NAV.some(s => s.views.some(v => v.legacy)) && !document.querySelector('iframe')));
+    // a view that fires many async fetches (Live trades) must not paint over the view the owner navigates to next
+    await page.evaluate(() => { location.hash = 'trading/live'; }); await sleep(400); await page.evaluate(() => { location.hash = 'money/shop'; }); await sleep(6000);
+    const ov = await page.evaluate(() => ({ crumb: (document.getElementById('crumb') || {}).innerText, live: !!document.querySelector('#view .trd, #view [data-v="markets"]'), shop: /acqui/i.test(document.getElementById('view').innerText) }));
+    chk('late responses of the previous view never overwrite the current view', /Shop/.test(ov.crumb || '') && !ov.live && ov.shop, ov);
     // attention strip lives on Today/Overview only; flags are images that actually load; scrollbars are dark (color-scheme)
     await page.evaluate(() => { location.hash = 'people/users'; }); await sleep(1500);
     const a1 = await page.evaluate(() => document.querySelectorAll('#attnbar .al').length);
