@@ -197,6 +197,14 @@ async function phone(b, w, h, tag, full, ua) {
     await shot(p, '09-symbol');
     await p.keyboard.press('Escape'); await wait(300);
     await ev(p, () => { const t = document.querySelector('.pts-bar .csel-trigger.open'); if (t) t.click(); }); await wait(300);
+    // --- Balance Mode tag lives in the Advanced row, never in the price row ---
+    await ev(p, () => { localStorage.setItem('mp_balmode', JSON.stringify({ on: true, ts: Date.now() })); window.dispatchEvent(new Event('mp-balmode')); }); await wait(300);
+    await tap(p, '.pts-grab'); await wait(400);
+    const bal = await ev(p, () => { const n = document.getElementById('mpBalNote'); if (!n) return { missing: true }; const r = n.getBoundingClientRect(), px = document.getElementById('planLivePx').getBoundingClientRect(), adv = document.querySelector('.lev-row .adv-toggle').getBoundingClientRect(); return { inLevRow: !!n.closest('.lev-row'), hidden: n.hidden, sameRowAsAdvanced: Math.abs((r.top + r.height / 2) - (adv.top + adv.height / 2)) < 12, rightOfAdvanced: r.left > adv.right, clearOfPrice: r.top >= px.bottom || r.bottom <= px.top || r.left >= px.right }; });
+    ok('Balance Mode tag sits in the Advanced row, right of the checkbox, clear of the price', bal.inLevRow && !bal.hidden && bal.sameRowAsAdvanced && bal.rightOfAdvanced && bal.clearOfPrice, JSON.stringify(bal));
+    await R(p, 'Balance Mode tag visible in the open sheet', '#mpBalNote', { aboveNav: true });
+    await shot(p, '09b-balance');
+    await ev(p, () => { localStorage.removeItem('mp_balmode'); window.dispatchEvent(new Event('mp-balmode')); }); await p.keyboard.press('Escape'); await wait(400);
     // --- signed-in simulation: Advanced + SL/TP fields inside the sheet ---
     await ev(p, () => { window.mpAuth = window.mpAuth || {}; window.mpAuth.me = function () { return { id: 'e2e-sim', name: 'e2e' }; }; document.dispatchEvent(new Event('mp:auth')); });
     await wait(300);

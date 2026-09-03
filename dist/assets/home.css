@@ -3015,6 +3015,7 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
   body.paper-page .ptt-form .pt2-px-v{font-size:19px;letter-spacing:-.6px;transition:color .18s;}
   body.paper-page .pt2-px-chg{font-size:11px;}
   body.paper-page .mp-balnote{position:static;margin-left:4px;}
+  body.paper-page .lev-row .mp-balnote{margin-left:auto;align-self:center;order:3;font-size:9.5px;padding:5px 10px;} /* Advanced row, right of the checkbox (owner 2026-09-04) */
   body.paper-page .ptt-form .pt2-side{margin:0;gap:6px;grid-template-columns:auto auto;}
   body.paper-page .ptt-form .pt2-side button{min-width:82px;padding:11px 12px;font-size:13px;border-radius:11px;background:linear-gradient(180deg,#151a20,#0d1014);box-shadow:inset 0 1px 0 rgba(255,255,255,.05);transition:background .16s,border-color .16s,color .16s,box-shadow .16s,transform .1s;}
   body.paper-page .ptt-form .pt2-side button:active{transform:scale(.97);}
@@ -3028,7 +3029,7 @@ body[data-prod="plan"] #chatBox{right:auto;left:20px;}
   body.paper-page .lev-slidewrap{flex:1 1 100%;order:-1;}
   body.paper-page .lev-slider{margin:2px 0 1px;}
   body.paper-page .lev-row .adv-toggle{margin:0;padding:8px 12px;font-size:12px;border-radius:9px;}
-  body.paper-page #advGateNote{flex:1 1 auto;min-width:0;font-size:10.5px;line-height:1.3;}
+  body.paper-page #advGateNote{flex:1 1 0px;min-width:0;font-size:10.5px;line-height:1.3;} /* basis 0: the note yields to the Balance Mode tag instead of wrapping it onto a new line */
   body.paper-page .ptt-stats{margin:0 0 6px;}
   body.paper-page .ptt-stats>div{padding:4px 0;font-size:11.5px;}
   body.paper-page .plan-adv{padding-top:2px;}

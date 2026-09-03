@@ -3737,7 +3737,17 @@ window.mpSrvOpen=function(payload,ok,fail){
      Safari's bars; it does NOT change when the keyboard opens, unlike visualViewport). Android keeps the pure-CSS dvh path. */
   var IOS=/iPhone|iPod/.test(navigator.userAgent||'')&&!window.MSStream;
   if(IOS){try{document.documentElement.classList.add('mp-ios');}catch(e){}}
-  function vh(){ if(!IOS)return; try{ if(!built){document.documentElement.style.removeProperty('--pts-vh');return;} var h=window.innerHeight; if(h>0)document.documentElement.style.setProperty('--pts-vh',h+'px'); }catch(e){} }
+  function kbd(){try{var a=document.activeElement;return !!(a&&a.matches&&a.matches('input,textarea,select')&&side.contains(a));}catch(e){return false;}}
+  function vh(){ if(!IOS)return; try{ if(!built){document.documentElement.style.removeProperty('--pts-vh');return;}
+    var h=window.innerHeight,vv=window.visualViewport;
+    if(vv&&vv.height>0&&!kbd()&&vv.height<h)h=Math.round(vv.height); // Safari: whichever of the two excludes the bottom bar wins (never while the keyboard is up — that would shrink the terminal to the space above it)
+    if(h>0)document.documentElement.style.setProperty('--pts-vh',h+'px'); }catch(e){} }
+  if(IOS&&window.visualViewport){try{window.visualViewport.addEventListener('resize',function(){if(!kbd()){vh();measure();}});}catch(e){}}
+  /* ?ptdbg=1 → on-screen numbers from the real device (owner's iPhone report 2026-09-04: Safari's bottom bar over the Open button) */
+  if(/[?&]ptdbg=1/.test(location.search)){try{var _dbg=document.createElement('div');_dbg.id='ptsDbg';_dbg.style.cssText='position:fixed;top:64px;left:6px;z-index:2147483000;background:rgba(0,0,0,.85);color:#c2f64a;font:11px/1.4 monospace;padding:6px 8px;border-radius:8px;pointer-events:none;white-space:pre;max-width:92vw';document.body.appendChild(_dbg);
+    var _pr=document.createElement('div');_pr.style.cssText='position:fixed;top:0;left:0;width:1px;height:100dvh;visibility:hidden;pointer-events:none;padding-bottom:env(safe-area-inset-bottom)';document.body.appendChild(_pr);
+    setInterval(function(){try{var vv=window.visualViewport;var b=document.body.getBoundingClientRect(),sb=document.getElementById('planSave'),sr=sb?sb.getBoundingClientRect():null,ptr=ptt.getBoundingClientRect();
+      _dbg.textContent='ios '+IOS+' built '+built+'\ninnerH '+window.innerHeight+' outerH '+window.outerHeight+'\nvv.h '+(vv?Math.round(vv.height):'-')+' vv.top '+(vv?Math.round(vv.offsetTop):'-')+' vv.pageTop '+(vv?Math.round(vv.pageTop):'-')+'\nscreen '+screen.width+'x'+screen.height+' dpr '+devicePixelRatio+'\n100dvh '+Math.round(_pr.getBoundingClientRect().height)+' safe-b '+Math.round(parseFloat(getComputedStyle(_pr).paddingBottom)||0)+'\nbody '+Math.round(b.height)+' bottom '+Math.round(b.bottom)+' scrollY '+Math.round(window.scrollY)+'\nptt bottom '+Math.round(ptr.bottom)+' pts-vh '+document.documentElement.style.getPropertyValue('--pts-vh')+' pts-h '+ptt.style.getPropertyValue('--pts-h')+'\nOpen btn top '+(sr?Math.round(sr.top):'-')+' bottom '+(sr?Math.round(sr.bottom):'-')+' open '+isOpen()+'\ndocH '+document.documentElement.scrollHeight+' ua '+navigator.userAgent.slice(0,60);}catch(e){_dbg.textContent='dbg err '+e;}},500);}catch(e){}}
   function build(){ if(built)return; built=true;
     bar=document.createElement('div');bar.className='pts-bar';chartEl.insertBefore(bar,chartEl.firstChild);bar.appendChild(top);if(rail)bar.appendChild(rail);
     if(!head){head=document.createElement('div');head.className='pts-head';form.insertBefore(head,form.firstChild);head.appendChild(pxTop);head.appendChild(seg);}
@@ -3753,14 +3763,20 @@ window.mpSrvOpen=function(payload,ok,fail){
     top_.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pts-act');if(b&&b.getAttribute('data-mpbn')==='chat'&&!document.getElementById('chatFab')&&window.mpOpenChat){e.preventDefault();window.mpOpenChat();}}); // mp-nav's handler clicks #chatFab; fall back if a page has no fab
     if(tfw&&!cd){cd=document.createElement('span');cd.id='ptsCd';cd.className='pts-cd';cd.setAttribute('aria-hidden','true');tfw.appendChild(cd);}
     side.setAttribute('aria-expanded','false');
-    vh();measure();more();
+    balNote();vh();measure();more();
   }
+  /* "Balance Mode ON" tag (#mpBalNote, created in the form IIFE inside .pt2-top): on the phone it ate the live price's room
+     (owner 2026-09-04) → it lives in the Advanced row, right of the checkbox, while the sheet is built; moved back on unbuild. */
+  var levRow=form.querySelector('.lev-row');
+  function balNote(){ try{ var n=document.getElementById('mpBalNote'); if(!n)return;
+    if(built&&levRow){ if(n.parentNode!==levRow)levRow.appendChild(n); }
+    else if(!built&&n.parentNode!==pxTop)pxTop.appendChild(n); }catch(e){} }
   function unbuild(){ if(!built)return; built=false;
     try{chartEl.insertBefore(top,chartEl.firstChild);if(rail)ptt.insertBefore(rail,side);if(bar&&bar.parentNode)bar.parentNode.removeChild(bar);}catch(e){}
     try{if(top_&&top_.parentNode)top_.parentNode.removeChild(top_);top_=null;grab=null;}catch(e){}
     try{if(cd&&cd.parentNode){cd.parentNode.removeChild(cd);cd=null;}}catch(e){}
     ptt.classList.remove('pts-open');ptt.style.removeProperty('--pts-h');document.documentElement.style.removeProperty('--pts-h');side.removeAttribute('aria-expanded');
-    vh();
+    balNote();vh();
   }
   function isOpen(){return ptt.classList.contains('pts-open');}
   function setOpen(v){ if(!built)return; v=!!v; if(isOpen()===v)return;
@@ -3783,6 +3799,7 @@ window.mpSrvOpen=function(payload,ok,fail){
   // candle countdown mirror: tickCd owns .pt-cd (re-attaches it to #ptChart every second), we only copy its text
   setInterval(function(){ if(!built)return; if(cd){var s=document.querySelector('#ptChart .pt-cd'),t=s?String(s.textContent||'').replace(/^close in\s*/i,''):''; if(cd.textContent!==t)cd.textContent=t;}
     if(top_){var src=document.querySelector('.mpbn [data-mpbn="chat"]'),on=!!(src&&src.classList.contains('ct-alert')),mine=top_.querySelector('.pts-act[data-mpbn="chat"]');if(mine&&mine.classList.contains('ct-alert')!==on)mine.classList.toggle('ct-alert',on);} // unread-chat dot: mirror the (hidden) tab bar's state, which home.js's chat code maintains
+    balNote(); // the tag may be (re)created after build
   },1000);
   // triggers
   seg.addEventListener('click',function(e){ if(!built)return; if(e.target&&e.target.closest&&e.target.closest('button'))setOpen(true); });
