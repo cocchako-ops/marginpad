@@ -68,8 +68,8 @@ function chk(name, ok, extra) { out.push((ok ? 'PASS ' : 'FAIL ') + name + (extr
       chk(name + ' swap sell mode', /back to USDT/.test(swSell.title || ''), swSell);
       await page.evaluate(() => { const x = document.querySelector('#smod .m-x'); if (x) x.click(); }); await new Promise(r => setTimeout(r, 500));
       await page.evaluate(() => { document.querySelector('.appsw button[data-view="bank"]') ? document.querySelector('.appsw button[data-view="bank"]').click() : document.getElementById('stnCard').click(); }); await new Promise(r => setTimeout(r, 1200));
-      const guide = await page.evaluate(() => ({ rows: document.querySelectorAll('#bkCashGuide .cop-row').length, first: (document.querySelector('#bkCashGuide .cop-row b') || {}).textContent }));
-      chk(name + ' bank shows cash-out guide (money outside bank)', guide.rows >= 1, guide);
+      const guide = await page.evaluate(() => { const b = document.getElementById('bkPlan'); if (!b) return { btn: false }; b.click(); return { btn: true, rows: document.querySelectorAll('#smod .cop-row').length, first: (document.querySelector('#smod .cop-row b') || {}).textContent }; });
+      chk(name + ' bank guide: compact line + plan modal with steps', guide.btn && guide.rows >= 1, guide); await page.evaluate(() => { const x = document.querySelector('#smod .m-x'); if (x) x.click(); });
       const ov = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
       chk(name + ' no horizontal overflow', ov);
       await page.screenshot({ path: 'C:/Users/PC/AppData/Local/Temp/claude/D--part1-money-mission/ce085515-827e-410d-ad3c-a93aaa89df8c/scratchpad/spotB-' + name + '.png' });

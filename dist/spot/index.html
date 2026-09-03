@@ -279,6 +279,7 @@
   .ch-amt{flex:none;text-align:right;font-weight:700;}
   .ch-amt span{display:block;color:var(--faint);font-size:9.5px;font-weight:400;}
   .wl-acts{display:flex;justify-content:center;gap:16px;margin-bottom:20px;}
+  .meme-more{display:block;width:100%;margin-top:8px;background:#161b26;border:1px solid #2a3140;color:#c8d0d9;border-radius:10px;padding:10px;font-weight:700;font-size:12.5px;cursor:pointer}.meme-more:hover{color:#c2f64a;border-color:#c2f64a}
   .cal-h{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#8b97a5;margin:10px 0 6px;text-transform:uppercase;letter-spacing:.05em}.cal-h b{color:#c8d0d9;text-transform:none;letter-spacing:0;font-size:11px}
   .cal{display:grid;grid-template-columns:repeat(14,1fr);gap:4px}.cal i{display:block;aspect-ratio:1;border-radius:4px;background:#161b22;border:1px solid #1f2630}.cal i.g{background:#2ebd85;border-color:#2ebd85}.cal i.r{background:#ff5a4d;border-color:#ff5a4d}.cal i.f{background:#3a424d;border-color:#3a424d}
   .sb{display:flex;flex-direction:column;gap:4px}.sb-r{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:9px;background:#0f131a;border:1px solid #1f2630;font-size:12.5px}.sb-r.me{border-color:#c2f64a}.sb-n{width:18px;color:#8b97a5;font-family:'Space Mono',monospace;font-size:11px}.sb-w{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e9e7df;font-weight:700}.sb-v{font-family:'Space Mono',monospace;font-size:12px;color:#e9e7df;text-align:right}.sb-v small{display:block;font-size:10px;color:#2ebd85}
@@ -407,7 +408,7 @@
   .m-msg{font-size:12.5px;margin-top:9px;text-align:center;min-height:16px;line-height:1.5;}
   .m-msg.ok{color:var(--up);}.m-msg.err{color:var(--red);}
   .lesson{background:rgba(230,196,106,.06);border:1px solid rgba(230,196,106,.26);border-radius:10px;color:#f0dfae;font-size:11.5px;line-height:1.55;padding:8px 11px;margin:10px 0;}
-  .netpick{display:flex;flex-direction:column;gap:7px;margin:10px 0;}
+  .netpick{display:flex;flex-direction:column;gap:7px;margin:10px 0;}.netpick[hidden]{display:none;}
   .np{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:10px 12px;cursor:pointer;}
   .np.on{border-color:rgba(194,246,74,.5);background:#141a10;}
   .np b{flex:1;font-size:13.5px;}
@@ -659,7 +660,7 @@
     </div>
     <div id="tmSellIn" hidden>
       <div class="tin-l">Sell how much?</div>
-      <label class="ckrow" id="tmUsdtRow" hidden style="margin:0 0 8px"><input type="checkbox" id="tmToUsdt" checked /> Convert the proceeds to USDT right away (0.3% swap) so they can go to the exchange and your card</label>
+      <label class="ckrow" id="tmUsdtRow" hidden style="margin:0 0 8px"><input type="checkbox" id="tmToUsdt" checked onchange="try{updateEst()}catch(e){}" /> Convert the proceeds to USDT right away (0.3% swap) so they can go to the exchange and your card</label>
       <div class="chips" style="margin-top:0">
         <button class="chip" data-pct="25" type="button">25%</button>
         <button class="chip" data-pct="50" type="button">50%</button>
@@ -678,7 +679,7 @@
 <script>
 (function(){
   'use strict';
-  var MEMES_TS=0;
+  var MEMES_TS=0,memeShow=24,memeQ='';
   var ME=null, PORT=null, MKT=[], MEMES=[], booted=false, memeNetF='all', VIEW='hub', exTab='assets';
   var NETS={solana:{native:'SOL',label:'Solana',cls:'net-solana',wd:1},base:{native:'ETH',label:'Base',cls:'net-base',wd:1.5},eth:{native:'ETH',label:'Ethereum',cls:'net-eth',wd:8},bsc:{native:'BNB',label:'BNB Chain',cls:'net-bsc',wd:0.8}};
   var $=function(id){return document.getElementById(id);};
@@ -1022,6 +1023,7 @@
       +'</div><div class="wl-right">'
       +'<div class="wl-sec" style="margin-top:16px"><span>Trending — 4 chains</span><small id="memeAge" style="margin-left:auto;font-size:10px;color:#8f86ad"></small></div>'
       +'<div class="memewarn"><b>Degen zone.</b> Every meme lives on a network and is paid for in that chain’s coin plus gas. Thin pools slip. Pools can rug to zero. That is the lesson.</div>'
+      +'<input class="tin sm" id="memeQ" type="search" autocomplete="off" placeholder="Search 220 memes…" value="'+esc(memeQ)+'" style="margin:8px 0 6px" />'
       +'<div class="netfilt" id="netFilt">'
       +'<button class="nf'+(memeNetF==='all'?' on':'')+'" data-net="all" type="button">All</button>'
       +'<button class="nf'+(memeNetF==='solana'?' on':'')+'" data-net="solana" type="button">Solana</button>'
@@ -1039,8 +1041,9 @@
     var sw=$('wlSwp');if(sw)sw.addEventListener('click',function(){openSwapModal();});
     var dp=$('wlDep');if(dp)dp.addEventListener('click',function(){openExChoice();});
     var sh=$('wlShort');if(sh)sh.addEventListener('click',function(){try{navigator.clipboard.writeText(PORT.addr.sol);toast('Solana address copied. Paste it, never retype it.');}catch(e){}});
+    var mq=$('memeQ');if(mq)mq.addEventListener('input',function(){memeQ=mq.value;memeShow=24;renderMemes();});
     Array.prototype.forEach.call(el.querySelectorAll('#netFilt .nf'),function(b){b.addEventListener('click',function(){
-      memeNetF=b.getAttribute('data-net');
+      memeNetF=b.getAttribute('data-net');memeShow=24;
       Array.prototype.forEach.call(el.querySelectorAll('#netFilt .nf'),function(x){x.classList.toggle('on',x===b);});
       renderMemes();
     });});
@@ -1110,8 +1113,10 @@
     var el=$('memeList');if(!el)return;
     if(!MEMES.length){el.innerHTML='<div class="empty" style="color:#8f86ad">Could not load the meme feed — try again in a minute.</div>';return;}
     var ag=$('memeAge');if(ag){var mn=MEMES_TS?Math.round((Date.now()-MEMES_TS)/60000):null;ag.textContent=mn==null?'':(mn<1?'updated just now':'updated '+mn+' min ago');}
-    var list=MEMES.filter(function(m){return memeNetF==='all'||m.net===memeNetF;});
-    el.innerHTML=list.map(function(m){
+    var q=(memeQ||'').trim().toLowerCase();
+    var list=MEMES.filter(function(m){return (memeNetF==='all'||m.net===memeNetF)&&(!q||String(m.sym||'').toLowerCase().indexOf(q)>=0||String(m.name||'').toLowerCase().indexOf(q)>=0);});
+    var shown=list.slice(0,memeShow);
+    el.innerHTML=shown.map(function(m){
       var chg=+m.chg24||0;var i=MEMES.indexOf(m);
       return '<div class="crow" data-meme="'+i+'">'
         +logoImg(m.logo,m.sym)
@@ -1119,7 +1124,9 @@
         +'<div class="cpx">'+fmtPx(m.price)+'</div>'
         +'<div class="cchg '+(chg>=0?'pnl-up':'pnl-dn')+'">'+(chg>=0?'+':'')+chg.toFixed(1)+'%</div>'
         +'</div>';
-    }).join('')||'<div class="empty" style="color:#8f86ad">No memes on this chain right now.</div>';
+    }).join('')||'<div class="empty" style="color:#8f86ad">'+(q?'Nothing matches “'+esc(q)+'”.':'No memes on this chain right now.')+'</div>';
+    if(list.length>shown.length)el.innerHTML+='<button class="meme-more" type="button" id="memeMore">Show '+Math.min(24,list.length-shown.length)+' more · '+(list.length-shown.length)+' left</button>';
+    var mm=$('memeMore');if(mm)mm.addEventListener('click',function(){memeShow+=24;renderMemes();});
     Array.prototype.forEach.call(el.querySelectorAll('[data-meme]'),function(r){r.addEventListener('click',function(){
       var m=MEMES[+r.getAttribute('data-meme')];if(!m)return;
       openTrade({kind:'meme',sym:m.sym,name:m.name,logo:m.logo,price:m.price,chg:m.chg24,mint:m.mint,pool:m.pool,net:m.net,liqUsd:m.liqUsd});
@@ -1195,7 +1202,7 @@
       fetch('/api/spot/link',{method:'POST'}).then(function(r){return r.json();}).then(function(j){
         lk.disabled=false;
         if(j&&j.ok){if(PORT)PORT.onb=Math.max(PORT.onb||0,1);msg.className='m-msg ok';msg.textContent='Card linked. Next: buy USDT.';loadPortfolio();setTimeout(function(){closeSim();openOnrampModal();},900);}
-        else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
+        else{msg.className='m-msg err';msg.textContent=(j&&j.error==='transient')?'Our store hiccuped — nothing was charged. Try again in a few seconds.':'Failed ('+((j&&j.error)||'no answer')+') — try again.';}
       }).catch(function(){lk.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
     });
   }
@@ -1224,7 +1231,7 @@
         .then(function(r){return r.json();}).then(function(j){btn.disabled=false;
           if(j&&j.ok){msg.className='m-msg ok';msg.textContent='Done — '+fmtUsd(v)+' USDT is on your exchange balance (fee '+fmtUsd(j.feeUsd)+').';toast('USDT bought — the Exchange app is open for business.');loadPortfolio();setTimeout(closeSim,1200);}
           else if(j&&j.error==='card_insufficient'){msg.className='m-msg err';msg.textContent='Card only has '+fmtUsd(j.cardUsd)+' (remember the 1.8% fee).';}
-          else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
+          else{msg.className='m-msg err';msg.textContent=(j&&j.error==='transient')?'Our store hiccuped — nothing was charged. Try again in a few seconds.':'Failed ('+((j&&j.error)||'no answer')+') — try again.';}
         }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
     });
   }
@@ -1254,7 +1261,7 @@
           if(j&&j.ok){msg.className='m-msg ok';msg.textContent='Done — '+fmtUsd(j.receivedUsd)+' landed on your card (fee '+fmtUsd(j.feeUsd)+').';toast(fmtUsd(j.receivedUsd)+' is back on your card. Full circle.');loadPortfolio();setTimeout(closeSim,1200);}
           else if(j&&j.error==='insufficient'){msg.className='m-msg err';msg.textContent='Exchange only has '+fmtUsd(j.usdtUsd||0)+' USDT.';}
           else if(j&&j.error==='min_offramp'){msg.className='m-msg err';msg.textContent='Minimum cash-out is $10.';}
-          else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
+          else{msg.className='m-msg err';msg.textContent=(j&&j.error==='transient')?'Our store hiccuped — nothing was charged. Try again in a few seconds.':'Failed ('+((j&&j.error)||'no answer')+') — try again.';}
         }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
     });
   }
@@ -1337,7 +1344,7 @@
           else if(j&&j.error==='address_mismatch'){msg.className='m-msg err';msg.textContent=j.hint;}
           else if(j&&j.error==='min_wd'){msg.className='m-msg err';msg.textContent='Minimum withdrawal is $5.';}
           else if(j&&j.error==='insufficient'){msg.className='m-msg err';msg.textContent='Not enough on the exchange (remember the network fee).';}
-          else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
+          else{msg.className='m-msg err';msg.textContent=(j&&j.error==='transient')?'Our store hiccuped — nothing was charged. Try again in a few seconds.':'Failed ('+((j&&j.error)||'no answer')+') — try again.';}
         }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
     });
   }
@@ -1402,7 +1409,7 @@
           else if(j&&j.error==='insufficient_native'){msg.className='m-msg err';msg.textContent='You only hold '+fmtNat(j.have||0)+' '+asset+'.';}
           else if(j&&j.error==='min_trade'){msg.className='m-msg err';msg.textContent=dir==='sell'?('That is under $1 of USDT after the fee — the DEX will not route dust. You hold '+fmtNat(gasBal(asset))+' '+asset+' ('+fmtUsd(gasBal(asset)*px())+'); keep it as gas.'):'Minimum swap is $1.';}
           else if(j&&j.error==='no_price'){msg.className='m-msg err';msg.textContent='No live price right now — try again in a moment.';}
-          else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
+          else{msg.className='m-msg err';msg.textContent=(j&&j.error==='transient')?'Our store hiccuped — nothing was charged. Try again in a few seconds.':'Failed ('+((j&&j.error)||'no answer')+') — try again.';}
         }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
     });
   }
@@ -1449,7 +1456,7 @@
           if(j&&j.ok){msg.className='m-msg ok';msg.innerHTML=fmtUsd(j.usdUsd)+' USDT is on your exchange balance (block #'+j.height+'). <a href="#" id="teCash">Cash out to your card</a>';var cs=$('teCash');if(cs)cs.addEventListener('click',function(e){e.preventDefault();closeSim();loadPortfolio();setTimeout(openOfframpModal,400);});toast(fmtUsd(j.usdUsd)+' USDT arrived on the exchange.');loadPortfolio();}
           else if(j&&j.error==='no_gas'){msg.className='m-msg err';msg.innerHTML='No gas on that network. <a href="#" id="teGas">Swap USDT for '+esc(NG[net][0])+'</a>';var g=$('teGas');if(g)g.addEventListener('click',function(e){e.preventDefault();closeSim();openSwapModal({asset:NG[net][0],dir:'buy'});});}
           else if(j&&j.error==='insufficient'){msg.className='m-msg err';msg.textContent='Wallet only has '+fmtUsd(j.wusdtUsd||0)+' USDT.';}
-          else{msg.className='m-msg err';msg.textContent='Failed — try again.';}
+          else{msg.className='m-msg err';msg.textContent=(j&&j.error==='transient')?'Our store hiccuped — nothing was charged. Try again in a few seconds.':'Failed ('+((j&&j.error)||'no answer')+') — try again.';}
         }).catch(function(){btn.disabled=false;msg.className='m-msg err';msg.textContent='Network error.';});
     });
   }
@@ -1485,8 +1492,9 @@
     var el=$('bkCashGuide');if(!el||!PORT)return;
     var steps=cashoutPlan();var offCard=steps.length&&!(steps.length===1&&steps[0].k==='usdt');
     if(!offCard){el.innerHTML='';return;}
-    el.innerHTML='<div class="bk-note" style="margin:0 0 14px"><b>Money outside the bank.</b> To cash it out, bring it back in this order:</div>'+cashoutHtml(steps,true);
-    wireCashout(el,steps,false);
+    var outside=steps.filter(function(x){return x.k!=='usdt';}).length;
+    el.innerHTML='<div class="bk-note" style="margin:0 0 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="flex:1;min-width:180px"><b>Money outside the bank.</b> '+outside+' step'+(outside===1?'':'s')+' before it can come back to this card.</span><button class="cop-go" type="button" id="bkPlan">Show the plan</button></div>';
+    var bp=$('bkPlan');if(bp)bp.addEventListener('click',openCashoutGuide);
   }
   
 
@@ -1673,7 +1681,7 @@
       var gross=q*T.price;var slip2=estSlip(gross);var net=gross*(1-slip2);var fee2=net*feeR;
       el.hidden=false;
       el.innerHTML='<div><span>Selling</span><b>'+fmtQty(q)+' '+esc(T.sym)+' ('+T.sellPct+'%)</b></div>'
-        +'<div><span>You receive (est.)</span><b>'+(isMeme&&natPx>0?fmtNat((net-fee2)/natPx)+' '+nat:fmtUsd(net-fee2))+'</b></div>'
+        +'<div><span>You receive (est.)</span><b>'+(isMeme&&natPx>0?(($('tmToUsdt')&&$('tmToUsdt').checked)?(fmtUsd((net-fee2)*0.997)+' USDT (after the 0.3% swap)'):(fmtNat((net-fee2)/natPx)+' '+nat)):fmtUsd(net-fee2))+'</b></div>'
         +'<div><span>'+(isMeme?'DEX fee (0.3%)':'Exchange fee (0.1%)')+'</span><b>'+fmtUsd(fee2)+'</b></div>'
         +(isMeme?'<div><span>Slippage (est.)</span><b>'+(slip2*100).toFixed(2)+'%</b></div>':'');
     }
@@ -1708,7 +1716,7 @@
           else if(j&&j.error==='no_wallet'){msg.innerHTML='You need a wallet for on-chain coins. <a href="#" id="tmMkW">Create it now</a>';var mw=$('tmMkW');if(mw)mw.addEventListener('click',function(e){e.preventDefault();closeTrade();openWalletCreate();});}
           else{
             var E={insufficient:'Not enough USDT on the exchange — you have '+fmtUsd((j&&j.usdtUsd)||0)+'.',min_trade:'Minimum trade is $1.',no_position:'Nothing to sell.',no_price:'No live price right now — try again in a moment.',login_required:'Please sign in first.',restricted:'Your account is restricted.'};
-            msg.textContent=E[j&&j.error]||'Trade failed — try again.';
+            msg.textContent=E[j&&j.error]||((j&&j.error==='transient')?'Our store hiccuped — nothing was charged. Try again in a few seconds.':(j&&j.error==='too_big')?'Maximum per trade is $1,000,000.':'Trade failed ('+((j&&j.error)||'no answer')+') — try again.');
           }
         }
       }).catch(function(){go.disabled=false;msg.className='m-msg err';msg.textContent='Network error — try again.';});
