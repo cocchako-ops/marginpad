@@ -14,12 +14,13 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 let pass = 0, fail = 0; const fails = [];
 function ok(name, cond, detail) { if (cond) { pass++; console.log('  OK   ' + name); } else { fail++; fails.push(name + (detail ? ' — ' + detail : '')); console.log('  FAIL ' + name + (detail ? ' — ' + detail : '')); } }
 
-async function setup(b, w, h, tag) {
+const UA_ANDROID = 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36';
+async function setup(b, w, h, tag, ua) {
   // fresh browser context per viewport: isolated localStorage (otherwise the 3 trades of the first run trigger
   // the graduation modal / nudges on the next one and the reachability checks measure that popup, not the layout)
   let ctx = null; try { ctx = b.createBrowserContext ? await b.createBrowserContext() : await b.createIncognitoBrowserContext(); } catch (e) { ctx = null; }
   const p = ctx ? await ctx.newPage() : await newPage(b, { mobile: true });
-  if (ctx) { await p.setUserAgent(require('./e2e-browser.js').UA_MOBILE); p._ctx = ctx; }
+  if (ctx) { await p.setUserAgent(ua || require('./e2e-browser.js').UA_MOBILE); p._ctx = ctx; } else if (ua) await p.setUserAgent(ua);
   await p.setViewport({ width: w, height: h, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
   const cdp = await p.target().createCDPSession();
   await cdp.send('Network.enable'); // the two commands below are silently ignored without it (the 2nd page then got the cached PROD bundle)
@@ -36,7 +37,7 @@ async function setup(b, w, h, tag) {
   }
   const errs = [];
   p.on('pageerror', e => errs.push('pageerror: ' + e.message));
-  p.on('console', m => { if (m.type() === 'error' && !/favicon|ERR_BLOCKED_BY_CLIENT|net::ERR|404/.test(m.text())) errs.push('console: ' + m.text()); });
+  p.on('console', m => { if (m.type() === 'error' && !/favicon|ERR_BLOCKED_BY_CLIENT|net::ERR|Failed to load resource/.test(m.text())) errs.push('console: ' + m.text()); }); // 4xx resource lines are server answers (e.g. a klines miss), not page faults — pageerror still catches every thrown exception
   p._errs = errs; p._tag = tag;
   await p.goto(BASE + '/paper-trade?cb=' + Date.now(), { waitUntil: 'networkidle2', timeout: 60000 });
   await p.evaluate(() => { const b = [...document.querySelectorAll('button')].find(x => /^ok$/i.test(x.textContent.trim())); if (b) b.click(); });
@@ -64,10 +65,13 @@ async function R(p, name, sel, opts) { const r = await reach(p, sel, opts); ok(n
 async function tap(p, sel) { const r = await reach(p, sel); if (!r.ok) { console.log('  (tap skipped: ' + sel + ' — ' + r.why + ')'); return false; } await p.touchscreen.tap(r.rect.x + r.rect.w / 2, r.rect.y + r.rect.h / 2); await wait(450); return true; }
 const ev = (p, fn, ...a) => p.evaluate(fn, ...a);
 
-async function phone(b, w, h, tag, full) {
-  console.log('\n== ' + tag + ' (' + w + 'x' + h + ') ==');
-  const p = await setup(b, w, h, tag);
+async function phone(b, w, h, tag, full, ua) {
+  console.log('\n== ' + tag + ' (' + w + 'x' + h + (ua ? ', Android UA' : ', iPhone UA') + ') ==');
+  const p = await setup(b, w, h, tag, ua);
   try {
+    const vhInfo = await ev(p, () => ({ ios: document.documentElement.classList.contains('mp-ios'), vh: document.documentElement.style.getPropertyValue('--pts-vh'), bodyH: Math.round(document.body.getBoundingClientRect().height), inner: innerHeight }));
+    if (ua) ok('Android UA: pure-CSS height path (no mp-ios, no --pts-vh)', !vhInfo.ios && !vhInfo.vh && vhInfo.bodyH === vhInfo.inner, JSON.stringify(vhInfo));
+    else ok('iPhone UA: body height = window.innerHeight via --pts-vh', vhInfo.ios && vhInfo.vh === vhInfo.inner + 'px' && vhInfo.bodyH === vhInfo.inner, JSON.stringify(vhInfo));
     for (let i = 0; i < 8; i++) { const t = await ev(p, () => (document.getElementById('ptsCd') || {}).textContent || ''); if (/\d/.test(t)) break; await wait(400); } // the countdown mirror follows tickCd's 1s tick
     const st = await ev(p, () => {
       const c = document.getElementById('ptChart').getBoundingClientRect(), cc = document.querySelector('.ptt-chart').getBoundingClientRect();
@@ -296,7 +300,7 @@ async function desktop(b) {
   const t0 = Date.now();
   await withBrowser(async (b) => {
     await phone(b, 390, 844, 'p390', true);
-    await phone(b, 360, 740, 'p360', false);
+    await phone(b, 360, 740, 'p360', false, UA_ANDROID);
     await phone(b, 430, 932, 'p430', false);
     await landscape(b);
     await tablet(b);

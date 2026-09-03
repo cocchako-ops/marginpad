@@ -3732,6 +3732,12 @@ window.mpSrvOpen=function(payload,ok,fail){
   var rail=document.getElementById('ptRecent'),tickets=document.getElementById('ptLastTrade'),tfw=top&&top.querySelector('.ptt-tfwrap'),saveBtn=document.getElementById('planSave');
   if(!chartEl||!top||!side||!form||!pxTop||!seg)return;
   var bar=null,head=null,grab=null,top_=null,cd=null,built=false,_lastSave=0,_seenIds=null;
+  /* iPhone Safari (owner 2026-09-04): its bottom address/tab bar overlapped the sheet by a few mm — 100dvh does not track the
+     visible area reliably there. On iPhone ONLY the terminal height comes from window.innerHeight (the layout viewport minus
+     Safari's bars; it does NOT change when the keyboard opens, unlike visualViewport). Android keeps the pure-CSS dvh path. */
+  var IOS=/iPhone|iPod/.test(navigator.userAgent||'')&&!window.MSStream;
+  if(IOS){try{document.documentElement.classList.add('mp-ios');}catch(e){}}
+  function vh(){ if(!IOS)return; try{ if(!built){document.documentElement.style.removeProperty('--pts-vh');return;} var h=window.innerHeight; if(h>0)document.documentElement.style.setProperty('--pts-vh',h+'px'); }catch(e){} }
   function build(){ if(built)return; built=true;
     bar=document.createElement('div');bar.className='pts-bar';chartEl.insertBefore(bar,chartEl.firstChild);bar.appendChild(top);if(rail)bar.appendChild(rail);
     if(!head){head=document.createElement('div');head.className='pts-head';form.insertBefore(head,form.firstChild);head.appendChild(pxTop);head.appendChild(seg);}
@@ -3747,13 +3753,14 @@ window.mpSrvOpen=function(payload,ok,fail){
     top_.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pts-act');if(b&&b.getAttribute('data-mpbn')==='chat'&&!document.getElementById('chatFab')&&window.mpOpenChat){e.preventDefault();window.mpOpenChat();}}); // mp-nav's handler clicks #chatFab; fall back if a page has no fab
     if(tfw&&!cd){cd=document.createElement('span');cd.id='ptsCd';cd.className='pts-cd';cd.setAttribute('aria-hidden','true');tfw.appendChild(cd);}
     side.setAttribute('aria-expanded','false');
-    measure();more();
+    vh();measure();more();
   }
   function unbuild(){ if(!built)return; built=false;
     try{chartEl.insertBefore(top,chartEl.firstChild);if(rail)ptt.insertBefore(rail,side);if(bar&&bar.parentNode)bar.parentNode.removeChild(bar);}catch(e){}
     try{if(top_&&top_.parentNode)top_.parentNode.removeChild(top_);top_=null;grab=null;}catch(e){}
     try{if(cd&&cd.parentNode){cd.parentNode.removeChild(cd);cd=null;}}catch(e){}
     ptt.classList.remove('pts-open');ptt.style.removeProperty('--pts-h');document.documentElement.style.removeProperty('--pts-h');side.removeAttribute('aria-expanded');
+    vh();
   }
   function isOpen(){return ptt.classList.contains('pts-open');}
   function setOpen(v){ if(!built)return; v=!!v; if(isOpen()===v)return;
@@ -3793,10 +3800,11 @@ window.mpSrvOpen=function(payload,ok,fail){
   }
   // keep --pts-h honest whenever the head, the tickets or the sheet change size
   if('ResizeObserver'in window){var ro=new ResizeObserver(function(){measure();});[side,form,tickets,pxTop,seg].forEach(function(el){if(el)ro.observe(el);});setTimeout(function(){if(head)ro.observe(head);},0);}
-  window.addEventListener('resize',function(){ if(mob()){if(!built)build();measure();}else if(built)unbuild(); });
-  window.addEventListener('orientationchange',function(){setTimeout(measure,120);});
+  window.addEventListener('resize',function(){ if(mob()){if(!built)build();vh();measure();}else if(built)unbuild(); });
+  window.addEventListener('orientationchange',function(){setTimeout(function(){vh();measure();},120);setTimeout(function(){vh();measure();},450);}); // Safari animates its bars after the rotation → re-measure twice
+  window.addEventListener('pageshow',function(){vh();measure();});
   window.addEventListener('storage',function(e){if(!e||e.key==='mp_journal')more();});
-  document.addEventListener('visibilitychange',function(){if(!document.hidden)measure();});
+  document.addEventListener('visibilitychange',function(){if(!document.hidden){vh();measure();}});
   if(mob())build();
   window.mpPtSheet={open:function(){setOpen(true);},close:function(){setOpen(false);},isOpen:isOpen,measure:measure,built:function(){return built;}}; // debug/E2E hook
 })();
